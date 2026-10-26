@@ -57,8 +57,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern void CreatePointLight(int);
@@ -118,7 +118,7 @@ extern int mc_gamedata[];
 extern int mc_leveldata[];
 extern int memcard_GetDataSize(int *p);
 extern int memcard_PrepData(void *dst, int i, int *table);
-extern int func_001236F0(void);
+extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
 

@@ -59,9 +59,9 @@ typedef struct {
 
 extern int top_thread_semaphore;
 extern char D_001527E8[];
-extern int func_00118CB0(int);
+extern int wait_semaphore(int);
 extern int func_00118C10(int);
-extern int func_00118BC0(int);
+extern int rotate_thread_ready_queue(int);
 extern int func_00118C40(int);
 extern int func_0011A690(const char *, ...);
 
@@ -72,7 +72,7 @@ void func_001194C8(void *arg0) {
     unsigned char type;
 
     for (;;) {
-        func_00118CB0(top_thread_semaphore);
+        wait_semaphore(top_thread_semaphore);
         i = ctx->counter & 0x1FF;
         ctx->counter = i + 1;
         type = ctx->entries[i].type;
@@ -81,7 +81,7 @@ void func_001194C8(void *arg0) {
             func_00118C10(ctx->entries[i].id);
             break;
         case 1:
-            func_00118BC0(ctx->entries[i].id);
+            rotate_thread_ready_queue(ctx->entries[i].id);
             break;
         case 2:
             func_00118C40(ctx->entries[i].id);
@@ -112,10 +112,10 @@ void func_001194C8(void *arg0) {
  * with the store in the bltz slot. Under 2.95.3 the CreateThread failure
  * block is laid out after the success path (48/212, same size).
  */
-extern int func_00118C70(void *);
-extern int func_00118B50(void *);
-extern int func_00118B70(int, void *);
-extern int func_00118BA0(int, int);
+extern int create_semaphore(void *);
+extern int create_thread(void *);
+extern int start_thread(int, void *);
+extern int change_thread_priority(int, int);
 extern void func_001194C8(void *);
 extern int top_thread_id;
 extern char D_00154200[];
@@ -156,7 +156,7 @@ int func_001195A0(void) {
     }
     sp.maxCount = 0xFF;
     sp.initCount = 0;
-    top_thread_semaphore = func_00118C70(&sp);
+    top_thread_semaphore = create_semaphore(&sp);
     if (top_thread_semaphore < 0) {
         return -1;
     }
@@ -165,16 +165,16 @@ int func_001195A0(void) {
     tp.stackSize = 0x400;
     tp.gpReg = gp_base;
     tp.initPriority = 0;
-    tid = func_00118B50(&tp);
+    tid = create_thread(&tp);
     top_thread_id = tid;
     if (tid < 0) {
-        func_00118C80(top_thread_semaphore);
+        delete_semaphore(top_thread_semaphore);
         return -1;
     }
     top_thread_queue[0] = 0;
     top_thread_queue[1] = 0;
-    func_00118B70(tid, top_thread_queue);
-    func_00118BA0(func_00118BE0(), 1);
+    start_thread(tid, top_thread_queue);
+    change_thread_priority(get_thread_id(), 1);
     return top_thread_id;
 }
 

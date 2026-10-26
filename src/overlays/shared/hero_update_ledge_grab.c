@@ -469,7 +469,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
         float d;
         *(int *)(g + 0x240) = *(int *)(q + 0x18);
         *(int *)(q + 0x48) = 0;
-        func_001252C0(q + 0x40, q + 0x40);
+        sceVu0Normalize(q + 0x40, q + 0x40);
         d = -*(float *)(g + 0xE0) * *(float *)(q + 0x40) - *(float *)(g + 0xE4) * *(float *)(q + 0x44);
         if (d > 0.0f) {
             FastVecScale(q + 0x40, q + 0x40, d);

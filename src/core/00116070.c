@@ -41,7 +41,7 @@ int func_00116078(const char *fmt, ...) {
     return ret;
 }
 
-void func_001160C8(int arg0) {
+void srand(int arg0) {
     *(int *)((char *)D_0012F86C + 0x58) = arg0;
 }
 
@@ -55,7 +55,7 @@ int func_001160D8(void) {
 
 extern int func_00119088();
 
-int func_00116108(int *errOut, void *a, void *b, void *c) {
+int reentrant_read(int *errOut, void *a, void *b, void *c) {
     int r;
     SbrkErrno = 0;
     r = func_00119088(a, b, c);
@@ -86,7 +86,7 @@ typedef union {
 } ieee_double_shape_type;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/runtime/newlib/double_is_not_nan.c, double_is_not_nan. */
-s32 func_00116168(f64 x) {
+s32 double_is_not_nan(f64 x) {
     s32 hx;
     s32 lx;
     ieee_double_shape_type ew_u;

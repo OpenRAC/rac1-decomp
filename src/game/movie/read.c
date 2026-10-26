@@ -57,7 +57,7 @@ int pcmCallback(void *unused, char *entry, char *buffer) {
     audioDecEndPut(decoder_state + 0xD9100, copied);
     return copied > 0;
 }
-extern void *func_00115248(void *dest, const void *src, int n);
+extern void *libc_memcpy(void *dest, const void *src, int n);
 
 /* cpy2area(unsigned char *, int, unsigned char *, int, unsigned char *, int, unsigned char *, int) */
 int cpy2area(char *dst1, int size1, char *dst2, int size2,
@@ -66,18 +66,18 @@ int cpy2area(char *dst1, int size1, char *dst2, int size2,
         return 0;
     }
     if (len1 >= size1) {
-        func_00115248(dst1, src1, size1);
-        func_00115248(dst2, src1 + size1, len1 - size1);
-        func_00115248(dst2 + len1 - size1, src2, len2);
+        libc_memcpy(dst1, src1, size1);
+        libc_memcpy(dst2, src1 + size1, len1 - size1);
+        libc_memcpy(dst2 + len1 - size1, src2, len2);
     } else {
         int rem = size1 - len1;
         if (len2 >= rem) {
-            func_00115248(dst1, src1, len1);
-            func_00115248(dst1 + len1, src2, rem);
-            func_00115248(dst2, src2 + size1 - len1, len2 - rem);
+            libc_memcpy(dst1, src1, len1);
+            libc_memcpy(dst1 + len1, src2, rem);
+            libc_memcpy(dst2, src2 + size1 - len1, len2 - rem);
         } else {
-            func_00115248(dst1, src1, len1);
-            func_00115248(dst1 + len1, src2, len2);
+            libc_memcpy(dst1, src1, len1);
+            libc_memcpy(dst1 + len1, src2, len2);
         }
     }
     return len1 + len2;

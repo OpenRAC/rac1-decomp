@@ -40,8 +40,8 @@ extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
 extern void *InitBlockData NOT_SDA;
 extern int D_00155080[];
-extern void func_001193F8(int);
-extern void func_00118AD0(int, int);
+extern void disable_dmac_atomic(int);
+extern void remove_dmac_handler(int, int);
 extern int D_00154F54;
 extern int D_0012FD04;
 extern int D_00154F64 NOT_SDA;
@@ -49,9 +49,9 @@ extern int D_00154F6C NOT_SDA;
 extern void func_0011AA90(int, int, int, int, int, int, int);
 extern void func_0011AA00(void);
 extern int RpcCommandState NOT_SDA;
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
-extern int func_00118C70(void *);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
+extern int create_semaphore(void *);
 extern int D_0012FDA0;
 extern int D_0012FDA4;
 extern char D_00157E80[];
@@ -61,7 +61,7 @@ extern int D_0012FD9C NOT_SDA;
 extern char D_0012FCEC[];
 extern char FsResetBuffer[];
 extern int D_0012FDA8;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FsResetState;
 extern int D_0012FDAC;
 extern char D_00158140[];
@@ -69,8 +69,8 @@ extern int D_00158180;
 extern int D_001581C0;
 extern int func_0011BEB8(void);
 
-extern int func_0011B2F8();
-extern int func_0011B4C8();
+extern int sceSifBindRpc();
+extern int sif_call_rpc();
 extern void *memcpy(void *, const void *, unsigned int);
 
 extern int D_0012FDB0;
@@ -97,12 +97,12 @@ int func_0011CCE0(void) {
     for (;;) {
         char *slot = D_00158500;
 
-        if (func_0011B2F8(slot, 0x80000006, 0) < 0)
+        if (sceSifBindRpc(slot, 0x80000006, 0) < 0)
             return -1;
 
         if (*(int *)(slot + 0x24) != 0) {
             D_0012FDB0 = 0;
-            if (func_0011B4C8(slot, 0xFF, 0, 0, 0, D_00158300, 4, 0, 0) < 0)
+            if (sif_call_rpc(slot, 0xFF, 0, 0, 0, D_00158300, 4, 0, 0) < 0)
                 return 0xFFFEFFFF;
             memcpy(D_00158528, D_00158300, 4);
             return 0;
@@ -124,9 +124,9 @@ int func_0011CDE0(void) {
     char *slot = D_00158528;
     int r = 0;
 
-    if (func_001151B4(slot, buf, 4) != 0 &&
-        func_001151B4(slot, D_0012FDB4, 4) != 0) {
-        r = func_001151B4(buf, D_0012FDB4, 4) != 0;
+    if (libc_memcmp(slot, buf, 4) != 0 &&
+        libc_memcmp(slot, D_0012FDB4, 4) != 0) {
+        r = libc_memcmp(buf, D_0012FDB4, 4) != 0;
     }
     return r;
 }
@@ -161,7 +161,7 @@ int func_0011CE70(int arg0, int arg1, int arg2, void *out) {
     } else {
         SIFCMD->unk4 = 0;
     }
-    if (func_0011B4C8(D_00158500, 6, 0, D_00158300, 0x200, D_00158300, 8, 0, 0) < 0) {
+    if (sif_call_rpc(D_00158500, 6, 0, D_00158300, 0x200, D_00158300, 8, 0, 0) < 0) {
         return 0xFFFEFFFF;
     }
     temp = SIFCMD->unk0;
@@ -171,7 +171,7 @@ int func_0011CE70(int arg0, int arg1, int arg2, void *out) {
 
 extern int func_0011CE70(int arg0, int arg1, int arg2, void *arg3);
 
-int func_0011D078(int arg0, int arg1, int arg2) {
+int sif_load_iop_module_buffer(int arg0, int arg1, int arg2) {
     char buf[0x10];
     return func_0011CE70(arg0, arg1, arg2, buf);
 }

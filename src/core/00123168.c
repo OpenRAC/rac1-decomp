@@ -40,8 +40,8 @@ extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
 extern void *InitBlockData NOT_SDA;
 extern int D_00155080[];
-extern void func_001193F8(int);
-extern void func_00118AD0(int, int);
+extern void disable_dmac_atomic(int);
+extern void remove_dmac_handler(int, int);
 extern int D_00154F54;
 extern int D_0012FD04;
 extern int D_00154F64 NOT_SDA;
@@ -49,9 +49,9 @@ extern int D_00154F6C NOT_SDA;
 extern void func_0011AA90(int, int, int, int, int, int, int);
 extern void func_0011AA00(void);
 extern int RpcCommandState NOT_SDA;
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
-extern int func_00118C70(void *);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
+extern int create_semaphore(void *);
 extern int D_0012FDA0;
 extern int D_0012FDA4;
 extern char D_00157E80[];
@@ -61,7 +61,7 @@ extern int D_0012FD9C NOT_SDA;
 extern char D_0012FCEC[];
 extern char FsResetBuffer[];
 extern int D_0012FDA8;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FsResetState;
 extern int D_0012FDAC;
 extern char D_00158140[];
@@ -78,8 +78,8 @@ extern int SecondSemaphore;
 extern int D_00130BD0[];
 extern char D_00130428[];
 extern int func_0011DC50(void);
-extern void func_00118D80(int);
-extern int func_00120F30(int);
+extern void flush_cache(int);
+extern int sce_cd_sync_s(int);
 extern void *D_00159840;
 extern int D_001313E0;
 extern int D_001313E8;
@@ -87,13 +87,13 @@ extern int D_001313EC;
 extern int D_001313F0;
 extern int D_001313E4;
 extern int D_001313FC;
-extern int func_0011B4C8();
+extern int sif_call_rpc();
 extern int func_00120D28(int);
-extern void func_00118C90(int);
+extern void signal_semaphore(int);
 extern char D_00132590[];
 extern int D_00131440;
 extern void func_0011A6C8();
-extern int func_0011B6B8(void *);
+extern int sce_sif_check_stat_rpc(void *);
 extern char D_00153000[];
 extern char D_00132E08[];
 extern int D_001313D0;
@@ -102,10 +102,10 @@ extern int D_001325C0;
 extern char CoreDataTable[];
 
 extern void *func_00121D08(void);
-extern int func_00119328(int);
-extern int func_00118AA0(int, int);
-extern int func_00118A90(int, void *, int);
-extern void func_00119390(int);
+extern int disable_intc_atomic(int);
+extern int remove_intc_handler(int, int);
+extern int add_intc_handler(int, void *, int);
+extern void enable_intc_atomic(int);
 
 /*
  * libgraph's sceGsSyncVCallback: install (or, called with arg0 == 0,
@@ -120,24 +120,24 @@ extern void func_00119390(int);
  * compiler set up a0 (lvl) before a1 (arg0) for the func_00118A90 call
  * whatever the spelling, where retail (and 2.9-ee) has a1 first.
  */
-int func_00123168(void *arg0) {
+int sceGsSyncVCallback(void *arg0) {
     char *g = (char *)func_00121D08();
     int lvl = 2;
     int prev = *(int *)(g + 8);
 
     if (arg0 == 0) {
-        func_00119328(lvl);
-        func_00118AA0(lvl, *(int *)(g + 0xC));
+        disable_intc_atomic(lvl);
+        remove_intc_handler(lvl, *(int *)(g + 0xC));
         *(int *)(g + 0xC) = 0;
         *(int *)(g + 8) = 0;
     } else {
         if (prev != 0) {
-            func_00119328(lvl);
-            func_00118AA0(lvl, *(int *)(g + 0xC));
+            disable_intc_atomic(lvl);
+            remove_intc_handler(lvl, *(int *)(g + 0xC));
         }
         *(int *)(g + 8) = (int)arg0;
-        *(int *)(g + 0xC) = func_00118A90(lvl, arg0, -1);
-        func_00119390(lvl);
+        *(int *)(g + 0xC) = add_intc_handler(lvl, arg0, -1);
+        enable_intc_atomic(lvl);
     }
     return prev;
 }
@@ -199,7 +199,7 @@ extern int DmaChannels[];
 /* sceDmaGetChan: the channel's register block, 0 for an id past the ten
    channels. The in-range return comes first under 2.9-ee (the
    `>= 0xA` guard-first form matched 2.95.3 and is 21/40 here). */
-int func_001232E0(unsigned int arg0) {
+int sce_dma_get_chan(unsigned int arg0) {
     if (arg0 < 0xA) {
         return DmaChannels[arg0];
     }
@@ -228,7 +228,7 @@ int func_001232E0(unsigned int arg0) {
 extern int DmaChannelsUsed[];
 extern int func_001233E8(void *);
 
-int func_00123308(int arg0) {
+int sceDmaReset(int arg0) {
     char buf[0x14];
     int flag;
     int i;
@@ -332,7 +332,7 @@ extern void func_00123208(void *);
 /* Reset the record at p with func_00123208, keep func_00123280(arg1) in
    p[12] unless it holds -1, clear p[8], and set flags 0x105 in p[0] with
    bits 2-3 cleared. The -1 test is unsigned, as retail builds 0xFFFFFFFF. */
-void func_001235C8(int *p, int arg1) {
+void sce_dma_send(int *p, int arg1) {
     int r = func_00123280(arg1);
 
     func_00123208(p);
@@ -362,7 +362,7 @@ int func_00123650(void *arg0) {
     volatile unsigned int *d = arg0;
     int en;
     unsigned int prev, old;
-    en = func_0011D960();
+    en = disable_interrupts();
     prev = *(volatile unsigned int *)0x1000F520;
     if ((prev & 0x10000) == 0)
         *(volatile unsigned int *)0x1000F590 = prev | 0x10000;
@@ -370,7 +370,7 @@ int func_00123650(void *arg0) {
     old = *d;
     *d = old & 0xFFFFFEFF;
     *(volatile unsigned int *)0x1000F590 = prev;
-    if (en != 0) func_0011D9A8();
+    if (en != 0) enable_interrupts();
     return old;
 }
 

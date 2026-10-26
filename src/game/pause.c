@@ -61,8 +61,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern void CreatePointLight(int);
@@ -123,7 +123,7 @@ extern int mc_gamedata[];
 extern int mc_leveldata[];
 extern int memcard_GetDataSize(int *p);
 extern int memcard_PrepData(void *dst, int i, int *table);
-extern int func_001236F0(void);
+extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
 extern int D_0013D844 NOT_SDA;
@@ -152,7 +152,7 @@ extern int g_hero_moby NOT_SDA;
 extern float shadow_light_dir[] NOT_SDA;
 extern float FastCos(float);
 extern float FastSin(float);
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern char normal_lut[];
 extern int render_packet_end;
 extern short vu1_chain_safe_end;
@@ -170,28 +170,28 @@ extern float round_float_to_decimal_places(int, float);
 extern unsigned char gold_bolts_collected[];
 extern unsigned char gold_weapon_purchased[];
 extern unsigned char gSkillPoints[];
-extern void func_0012F068(void *);
+extern void snd_StreamSafeCdCallback(void *);
 extern void finish_audio_stream_read(int);
 extern short cd_read_state[];
-extern void func_0012EDE0(void *);
-extern void func_0012EFE8(void);
+extern void snd_ContinueVAGStream(void *);
+extern void snd_StreamSafeCdBreak(void);
 extern char load_file_start_failed_string[];
-extern int func_0012EE98(int, int, int, void *);
+extern int snd_StreamSafeCdRead(int, int, int, void *);
 extern int start_audio_stream_read_v(void) __asm__("func_00217628");
-extern void func_00122598(int);
+extern void sce_gs_sync_v(int);
 extern void music_Update(void);
-extern void func_0012EC40(void);
-extern void func_0012DDC0(void);
-extern void func_0012EC30(void);
-extern int func_0012F030(void);
+extern void snd_reset_state_and_flush_commands(void);
+extern void snd_FlushSoundCommands(void);
+extern void snd_reenable_command_flush(void);
+extern int snd_StreamSafeCdGetError(void);
 extern void music_start_track_by_id(short, short, short);
 extern void music_PreseekTrack(short, short, short);
 extern short D_001517F0 NOT_SDA;
 extern char g_controller_state[];
 extern int pad_socket_param NOT_SDA;
-extern void func_00124650(void);
-extern void func_00124B88(int);
-extern int func_00124BC8(void *, void *);
+extern void sce_dbc_init(void);
+extern void sce_pad2_init(int);
+extern int sce_pad2_create_socket(void *, void *);
 extern void poll_pad_device_state(void *);
 extern void FontPrintLarge(void *a, void *b, void *c, void *d, void *e);
 extern void *msg_string(void);
@@ -217,7 +217,7 @@ void reset_active_camera_position_and_basis(void) {
     gCamera_r.matrix[2].f[3] = 1.0f;
 }
 
-extern void func_0012E528(int);
+extern void snd_PauseAllSoundsInGroup(int);
 extern void music_Pause(int);
 extern int camera_position_publication_suppressed;
 extern int D_0015F754 MACRO_ADDR;
@@ -231,7 +231,7 @@ extern char D_001CEB18[];
 extern int selected_level_index;
 extern int D_001D0718;
 extern int update_mission_list_i(void) __asm__("func_0020C7A0");
-extern int func_0012DDC0_i(void) __asm__("func_0012DDC0");
+extern int snd_FlushSoundCommands_i(void) __asm__("func_0012DDC0");
 extern void update_skill_point_and_gold_weapon_menu_entries(void);
 extern char menu_system[] NOT_SDA;
 extern int g_game_mode MACRO_ADDR;
@@ -245,9 +245,9 @@ extern int g_game_mode MACRO_ADDR;
    its own `char *` local (retail's saved %hi); func_0012DDC0 and
    func_0020C7A0 return values, which moves the next temporary to $v1. */
 void PauseAllSounds(int arg0) {
-    func_0012E528(0x1D);
+    snd_PauseAllSoundsInGroup(0x1D);
     music_Pause(0);
-    func_0012DDC0_i();
+    snd_FlushSoundCommands_i();
     if (camera_position_publication_suppressed != 0) {
         D_0015F754 = 1;
         return;
@@ -426,7 +426,7 @@ extern u8 menu_light_direction_init_r __asm__("D_001602C0") MACRO_ADDR;
 extern u8 menu_light_color_init_r __asm__("D_001602D0") MACRO_ADDR;
 extern s32 FastVecScale_r(s32, s32, f32) __asm__("func_001F9C30");
 extern void VU1_syncChain_r(s32) __asm__("func_00234AC8");
-extern s32 func_00122598_19E90(s32) __asm__("func_00122598");
+extern s32 sce_gs_sync_v_r(s32) __asm__("func_00122598");
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
 extern struct O2_19E90 *create_menu_preview_moby_r() __asm__("func_00226720");
 extern s32 MobySetAnimation_r() __asm__("func_00213D28");
@@ -448,7 +448,7 @@ void initialize_menu_preview_scene(void) {
     qzero(menu_light_direction_r + 0x20);
     qzero(D_0019C260_19E90);
     VU1_syncChain_r(1);
-    func_00122598_19E90(0);
+    sce_gs_sync_v_r(0);
     a = level_resource_buffers_r[1] + 0xA0000;
     b = level_resource_buffers_r[2] + 0xA0000;
     c = a + 0x30000;
@@ -1317,8 +1317,8 @@ extern char *current_menu_page NOT_SDA;
 extern void VU1_addGSregister(int, int);
 extern int scale_game_frame_count(int);
 extern void find_help_entry(int, int, void *);
-extern int func_00116248(char *, const char *, ...);
-extern void func_001153FC(void *, int, int);
+extern int sprintf(char *, const char *, ...);
+extern void libc_memset(void *, int, int);
 extern int FastTweenColor(int, int, float);
 extern int fade_menu_color(int, int, int);
 #define TEXT(id) ((char *(*)(int))func_001FE540)(id)
@@ -1486,7 +1486,7 @@ int render_configured_text_label(unsigned char *w) {
         char *table = *(char **)(w + 0x34);
         int id = *(int *)(at + (unsigned int)table);
         if (id != 0x4ED2 && id != 0x4ED9 && id != 0x4EDD) {
-            func_00116248(buf, fmt_two_strings, TEXT(0x4ECC), text);
+            sprintf(buf, fmt_two_strings, TEXT(0x4ECC), text);
             text = buf;
         }
     }
@@ -1516,7 +1516,7 @@ int render_configured_text_label(unsigned char *w) {
 
     SetupGifPaging(0);
     tex = GetEffectTex(font);
-    ((void *(*)(void *, int, int))func_001153FC)(&tmp, 0, 0x18);
+    ((void *(*)(void *, int, int))libc_memset)(&tmp, 0, 0x18);
     tmp.s[0] = menu_label_text_inset;
     tmp.s[1] = *(unsigned short *)(w + 0x24) - menu_label_text_inset;
     tmp.s[2] = 1;
@@ -3550,7 +3550,7 @@ int update_menu_help_text_load(char *arg0) {
 extern void FontPrintWindow_a(void *, long, char *, int, int, unsigned char *) __asm__("func_001F7070");
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 extern void *msg_string_id(int) __asm__("func_001FE540");
-extern void func_001153FC(void *, int, int); /* memset */
+extern void libc_memset(void *, int, int); /* memset */
 extern void Font_DisableColorCodes(void);
 extern void Font_EnableColorCodes(void);
 extern void draw_menu_selection_marker(int x, int y, int flag);
@@ -4561,7 +4561,7 @@ int Menu_BackInput(char *arg0) {
     return 0;
 }
 
-extern void func_001153FC(void *, int, int); /* memset */
+extern void libc_memset(void *, int, int); /* memset */
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 extern void FontPrintCenter(int, int, long, void *, int);
 extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
@@ -4581,7 +4581,7 @@ int DrawQuitGameMenu(char *arg0) {
     int y1, y2, y3;
     int a, b, x;
 
-    func_001153FC(box, 0, 0x18);
+    libc_memset(box, 0, 0x18);
     cx = w / 2;
     y1 = h - 0x40;
     y2 = h - 0x28;
@@ -4698,11 +4698,11 @@ extern void DrawMobyList(s32, s32);
 extern s32 compute_clamped_count_difference(void);
 extern s32 count_nonzero_entries_up_to_40(void);
 extern s32 count_nonzero_entries_up_to_10(void);
-extern void *func_001153FC_1FB28(void *, s32, u32) __asm__("func_001153FC");
-extern int func_00116248(char *, const char *, ...);
-extern char *func_00116428(const char *, int);
-extern char *func_001166FC_1FB28(char *, const char *) __asm__("func_001166FC");
-extern u32 func_00116810_1FB28(const char *) __asm__("func_00116810");
+extern void *libc_memset_r(void *, s32, u32) __asm__("func_001153FC");
+extern int sprintf(char *, const char *, ...);
+extern char *libc_strchr(const char *, int);
+extern char *libc_strcpy_r(char *, const char *) __asm__("func_001166FC");
+extern u32 libc_strlen_r(const char *) __asm__("func_00116810");
 /* Returns arg0 + arg1. */
 static inline int add_offset(s32 arg0, int arg1) {
     return arg0 + arg1;
@@ -4735,7 +4735,7 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
         struct TextRegion text_window;
         struct TextRegion window_fields;
 
-        func_001153FC_1FB28(&window_fields, 0, sizeof(window_fields));
+        libc_memset_r(&window_fields, 0, sizeof(window_fields));
         window_fields.bottom = menu->height;
         window_fields.left = 8;
         window_fields.right = divide_coordinate(menu->width, column_divisor);
@@ -4743,11 +4743,11 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
         window_fields.flags = 5;
         text_window = window_fields;
         text_window.anchor_x = add_offset(text_window.left, text_window.right) >> 1;
-        func_001166FC_1FB28(text_buffer, msg_string_r3(0x4F4E));
+        libc_strcpy_r(text_buffer, msg_string_r3(0x4F4E));
         if (g_game_language_r2[0] == column_divisor) {
-            hyphen = func_00116428(text_buffer, 0x2D);
+            hyphen = libc_strchr(text_buffer, 0x2D);
             if (hyphen != 0) {
-                text_length = func_00116810_1FB28(text_buffer);
+                text_length = libc_strlen_r(text_buffer);
                 source_end = text_buffer + text_length;
                 if (hyphen < source_end) {
                     destination_end = source_end;
@@ -4779,15 +4779,15 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
     font_print_right(0xC8, 0x36, 0x80FFA888L, msg_string_r3(0x4F50), -1);
     font_print_right(0xC8, 0x54, 0x80FFA888L, msg_string_r3(0x4F51), -1);
     collected_count = count_nonzero_entries_up_to_40();
-    func_00116248(text_buffer, fmt_decimal, collected_count);
+    sprintf(text_buffer, fmt_decimal, collected_count);
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x1D), 0x80000000L,
                     text_buffer, -1);
     font_print_right_large(0xF0, 0x1D, 0x80FFA888L, text_buffer, -1);
-    func_00116248(text_buffer, fmt_decimal, count_nonzero_entries_up_to_10() * 4);
+    sprintf(text_buffer, fmt_decimal, count_nonzero_entries_up_to_10() * 4);
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x36), 0x80000000L,
                     text_buffer, -1);
     font_print_right_large(0xF0, 0x36, 0x80FFA888L, text_buffer, -1);
-    func_00116248(text_buffer, fmt_decimal, compute_clamped_count_difference());
+    sprintf(text_buffer, fmt_decimal, compute_clamped_count_difference());
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x54), 0x80000000L,
                     text_buffer, -1);
     font_print_right_large(0xF0, 0x54, 0x80FFA888L, text_buffer, -1);
@@ -4808,7 +4808,7 @@ extern short gold_bolt_marker_y_offset_s __asm__("D_001603A4");
 extern char fmt_gold_bolt_count_line[];
 extern int map_gold_bolt_totals[];
 extern int g_screen_extent[];
-extern int func_00116248(char *, const char *, ...);
+extern int sprintf(char *, const char *, ...);
 extern void font_print_right_c(int, int, long, char *, int) __asm__("func_001F6CF8");
 
 /* DrawGBsShipMenu (maybe): parks the marker object at arg0+0x44 by the
@@ -4841,7 +4841,7 @@ int DrawGBsShipMenu__maybe(char *arg0) {
             }
         }
     }
-    func_00116248(buf, fmt_gold_bolt_count_line, msg_string_id(0x4F4F), count,
+    sprintf(buf, fmt_gold_bolt_count_line, msg_string_id(0x4F4F), count,
                   msg_string_id(0x4F53), map_gold_bolt_totals[level_map_selection[0x89]]);
     font_print_right_c(*(int *)(arg0 + 0x20) - 0x10, (g_screen_extent[1] >> 1) - 8,
                     0x80000000L, buf, -1);
@@ -4867,7 +4867,7 @@ void rotate_preview_moby_x(void *arg0) {
    mobyfunc.c); the (int, int) declaration below this point is kept for
    the functions matched against it. */
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
-extern int func_00116248(char *, const char *, ...); /* sprintf */
+extern int sprintf(char *, const char *, ...); /* sprintf */
 extern int weapon_ammo_counts[];
 extern char vendor_item_prices[];
 extern char fmt_decimal[]; /* "%d" */
@@ -4898,18 +4898,18 @@ int draw_selected_item_ammo(char *arg0) {
     VU1_addGSregister_l(0x42, 0x44);
     VU1_addGSregister_l(0x47, 0xB);
     if (*(unsigned short *)(rec + 8) == 0) {
-        func_00116248(text, msg_string_id(0x4F52));
+        sprintf(text, msg_string_id(0x4F52));
     } else {
         char *q;
         if (have < 1000) {
-            q = text + func_00116248(text, fmt_ammo_have, have);
+            q = text + sprintf(text, fmt_ammo_have, have);
         } else {
-            q = text + func_00116248(text, fmt_ammo_have_thousands, have / 1000, have % 1000);
+            q = text + sprintf(text, fmt_ammo_have_thousands, have / 1000, have % 1000);
         }
         if (total < 1000) {
-            func_00116248(q, fmt_decimal, total);
+            sprintf(q, fmt_decimal, total);
         } else {
-            func_00116248(q, fmt_number_thousands, total / 1000, total % 1000);
+            sprintf(q, fmt_number_thousands, total / 1000, total % 1000);
         }
     }
     SetupGifPaging(0);
@@ -5024,7 +5024,7 @@ int draw_mission_menu_labels(void) {
 }
 
 /* A pause-style list screen: title, the menu's rows (box size at +0x20/+0x24, rows at +0x30) with the selection highlighted, an optional footer; returns 2. */
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern void draw_menu_selection_marker(int, int, int);
 
 #define FP68E8 ((void (*)(int, int, long, void *, int))func_001F68E8)
@@ -5052,7 +5052,7 @@ int MissionMenu_DrawObjectives(char *arg) {
     VU1_addGSregister(0x42, 0x44);
     VU1_addGSregister(0x47, 0x10B);
     FP68E8(4, 4, 0x80FFA888L, MSGS(0x4F59), -1);
-    ((void *(*)(void *, int, int))func_001153FC)(s.f, 0, 0x18);
+    ((void *(*)(void *, int, int))libc_memset)(s.f, 0, 0x18);
     s.f[1] = *(unsigned short *)(arg + 0x24);
     s.f[3] = *(unsigned short *)(arg + 0x20);
     s.f[8] = 0x10;
@@ -6078,7 +6078,7 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
         }
         SetupGifPaging(0);
         text = ((char *(*)(int))msg_string)(((struct MS_21380 *)menu_system)->card_op_pending ? ((struct MS_21380 *)menu_system)->card_op_text : 0x4FB9);
-        ((void *(*)(void *, int, unsigned int))func_001153FC)(window_fields, 0, sizeof(window_fields));
+        ((void *(*)(void *, int, unsigned int))libc_memset)(window_fields, 0, sizeof(window_fields));
         window_fields[1] = menu->height + 1;
         window_fields[0] = 1;
         window_fields[2] = 1;
@@ -6506,7 +6506,7 @@ struct CheatsMenu {
     s32 selected_entry;
 };
 extern void VU1_addGSregister_r3(s32, u64) __asm__("func_00234C98");
-extern void func_001153FC_22070(void *, s32, u32) __asm__("func_001153FC");
+extern void libc_memset_r2(void *, s32, u32) __asm__("func_001153FC");
 extern char *msg_string_r4(s32) __asm__("func_001FE540");
 extern void font_print_window_regular_r2(FontWindow *, u64, char *, s32) __asm__("func_001F7560");
 extern void FontPrintLarge_r2(s32, s32, u64, char *, s32) __asm__("func_001F68E8");
@@ -6527,7 +6527,7 @@ s32 DrawCheatsMenu(struct CheatsMenu *menu) {
     VU1_addGSregister_r3(0x47, 0x2004B);
     SetupGifPaging(0);
     if ((menu->flags & 1) && menu->entries->text_id == 0) {
-        func_001153FC_22070(window_fields, 0, sizeof(window_fields));
+        libc_memset_r2(window_fields, 0, sizeof(window_fields));
         window_fields[1] = menu->height + 1;
         window_fields[3] = menu->width + 1;
         window_fields[4] = menu->width >> 1;
@@ -7525,7 +7525,7 @@ int draw_menu_text_box(char *arg0) {
     return 2;
 }
 
-extern void func_001153FC(void *, int, int); /* memset */
+extern void libc_memset(void *, int, int); /* memset */
 typedef struct {
     short f0, f2, f4, f6;
     short x, y;
@@ -7545,7 +7545,7 @@ int ObtainAllGoldWeaponsMenu(char *arg0) {
     Box18 tmp;
     int x, y;
 
-    func_001153FC(&tmp, 0, 0x18);
+    libc_memset(&tmp, 0, 0x18);
     tmp.f2 = *(unsigned short *)(arg0 + 0x24);
     tmp.f6 = *(unsigned short *)(arg0 + 0x20);
     tmp.f10 = 0x10;
@@ -7580,7 +7580,7 @@ extern char *msg_string_r5(s32) __asm__("func_001FE540");
 extern s32 count_nonzero_entries_up_to_40_r(void) __asm__("func_002160E0");
 extern s32 count_nonzero_entries_up_to_10_r(void) __asm__("func_00216150");
 extern s32 count_nonzero_entries_up_to_30_r(void) __asm__("func_00216198");
-extern s32 func_00116248_23B40(char *, const char *, ...) __asm__("func_00116248");
+extern s32 sprintf_r(char *, const char *, ...) __asm__("func_00116248");
 extern s32 measure_text_width_regular_r(char *, s32) __asm__("func_001F6600");
 extern void Font_DisableColorCodes_r(void) __asm__("func_001F65A8");
 extern void Font_EnableColorCodes_r(void) __asm__("func_001F6598");
@@ -7607,17 +7607,17 @@ s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu_23B40 *menu) {
     line_spacing = menu->height / 5;
     draw_y = menu->height / 5 - 8;
     maximum_text_width = 0;
-    func_00116248_23B40(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40_r(), 0x28);
+    sprintf_r(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40_r(), 0x28);
     measured_width = measure_text_width_regular_r(text_buffer, -1);
     if (maximum_text_width < measured_width) {
         maximum_text_width = measured_width;
     }
-    func_00116248_23B40(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10_r(), 10);
+    sprintf_r(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10_r(), 10);
     measured_width = measure_text_width_regular_r(text_buffer, -1);
     if (maximum_text_width < measured_width) {
         maximum_text_width = measured_width;
     }
-    func_00116248_23B40(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30_r(), 0x1E);
+    sprintf_r(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30_r(), 0x1E);
     measured_width = measure_text_width_regular_r(text_buffer, -1);
     if (maximum_text_width < measured_width) {
         maximum_text_width = measured_width;
@@ -7631,17 +7631,17 @@ s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu_23B40 *menu) {
     FontPrintCenter_r(menu->menu_width >> 1, draw_y, 0x80FFA888, msg_string_r5(0x5233), -1);
     draw_y += line_spacing;
     draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_40_r() == 0x28);
-    func_00116248_23B40(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40_r(), 0x28);
+    sprintf_r(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40_r(), 0x28);
     FontPrint_r2(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(font_texture_index),
                         glyphs);
     draw_y += line_spacing;
     draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_10_r() == 10);
-    func_00116248_23B40(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10_r(), 10);
+    sprintf_r(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10_r(), 10);
     FontPrint_r2(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(font_texture_index),
                         glyphs);
     draw_y += line_spacing;
     draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_30_r() == 0x1E);
-    func_00116248_23B40(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30_r(), 0x1E);
+    sprintf_r(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30_r(), 0x1E);
     FontPrint_r2(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(font_texture_index),
                         glyphs);
     Font_EnableColorCodes_r();
@@ -8265,7 +8265,7 @@ extern char *func_001FE540_24C30(s32) __asm__("func_001FE540");
 extern s32 GetIconFrame_r2(s32, s32) __asm__("func_00200198");
 extern void HudSprite_r(s32, s32, s32, s32, s32, s32) __asm__("func_00200468");
 extern void draw_hud_rect_blended_r4(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
-extern s32 func_00116248_24C30(char *, const char *, ...) __asm__("func_00116248");
+extern s32 sprintf_r2(char *, const char *, ...) __asm__("func_00116248");
 
 /* Draws the five save slots of the memory card page: the cursor frame around the selected
    one once the card is idle, then per slot "empty" or play time, gold bolts, bolts and date.
@@ -8321,14 +8321,14 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
                     hours = 99;
                     minutes = 59;
                 }
-                func_00116248_24C30(text, fmt_save_play_time_r, hours, minutes);
+                sprintf_r2(text, fmt_save_play_time_r, hours, minutes);
                 HudSprite_r(GetIconFrame_r2(0xE99E, 3), 4, y, 0x10, 0x10,
                                 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
                 if (slot->count != 0) {
                     HudSprite_r(GetIconFrame_r2(0xE99E, 4), 0x4E, y, 0x10,
                                     0x10, 0x80);
-                    func_00116248_24C30(text, fmt_decimal_r, slot->count < 100 ? slot->count : 99);
+                    sprintf_r2(text, fmt_decimal_r, slot->count < 100 ? slot->count : 99);
                     FontPrintSmall_r(0x60, y, color, text, -1);
                 }
                 bolts = slot->bolts;
@@ -8337,18 +8337,18 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
                 }
                 y += 0x10;
                 if (bolts < 1000) {
-                    func_00116248_24C30(text, fmt_decimal_r, bolts);
+                    sprintf_r2(text, fmt_decimal_r, bolts);
                 } else if (bolts < 1000000) {
-                    func_00116248_24C30(text, fmt_number_thousands_r, bolts / 1000, bolts % 1000);
+                    sprintf_r2(text, fmt_number_thousands_r, bolts / 1000, bolts % 1000);
                 } else {
-                    func_00116248_24C30(text, fmt_save_bolt_count_r, bolts / 1000000, bolts % 1000000 / 1000,
+                    sprintf_r2(text, fmt_save_bolt_count_r, bolts / 1000000, bolts % 1000000 / 1000,
                             bolts % 1000);
                 }
                 HudSprite_r(GetIconFrame_r2(0x754F, 0xF), 4, y, 0x10, 0x10,
                                 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
                 y += 0x10;
-                func_00116248_24C30(text, fmt_save_date_r, slot->b16, slot->b15, slot->b17);
+                sprintf_r2(text, fmt_save_date_r, slot->b16, slot->b15, slot->b17);
                 HudSprite_r(GetIconFrame_r2(0xE99E, 2), 4, y, 0x10, 0x10,
                                 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
@@ -10189,8 +10189,8 @@ void load_preview_resource_bindings(s32 first_resource, s32 resource_count) {
 
 extern char save_clock_time[] MACRO_ADDR;
 extern char level_map_coverage[];
-extern void func_00121A80(void *);
-extern void func_0012D818(void *);
+extern void sce_cd_read_clock(void *);
+extern void sce_scf_get_local_time_from_rtc(void *);
 extern void copy_level_object_positions(void);
 extern void save_map_coverage(void *);
 
@@ -10198,8 +10198,8 @@ extern void save_map_coverage(void *);
    and stores arg0 and arg1 in the memory card state; starts state 0x13 when idle. */
 void prepare_save_game(int arg0, int arg1) {
     char *b = memory_card_state;
-    func_00121A80(save_clock_time);
-    func_0012D818(save_clock_time);
+    sce_cd_read_clock(save_clock_time);
+    sce_scf_get_local_time_from_rtc(save_clock_time);
     copy_level_object_positions();
     save_map_coverage(level_map_coverage + (g_current_level_index << 11));
     memcard_MakeWholeSave((char *)arg0);
@@ -10223,8 +10223,8 @@ extern void load_and_initialize_level_chunk(void);
    callee-saved register, the reverse of retail's. */
 void start_memory_card_save(int arg0, int arg1) {
     load_and_initialize_level_chunk();
-    func_00121A80(save_clock_time);
-    func_0012D818(save_clock_time);
+    sce_cd_read_clock(save_clock_time);
+    sce_scf_get_local_time_from_rtc(save_clock_time);
     memcard_MakeWholeSave((char *)arg0);
     {
         char *b = memory_card_state;
@@ -10283,8 +10283,8 @@ extern s32 preserved_item_available_indices_r[] __asm__("D_001D5F20");
 extern void copy_memory_aligned_r(void *dst, void *src, s32 size) __asm__("func_001F9A00");
 extern void load_and_initialize_level_chunk_r(void) __asm__("func_00209DC0");
 extern void memcard_MakeWholeSave_r(s32) __asm__("func_0020BA00");
-extern s32 func_00121A80_27DB0(u8 *clock) __asm__("func_00121A80");
-extern void func_0012D818_27DB0(u8 *clock) __asm__("func_0012D818");
+extern s32 sce_cd_read_clock_r(u8 *clock) __asm__("func_00121A80");
+extern void sce_scf_get_local_time_from_rtc_r(u8 *clock) __asm__("func_0012D818");
 
 /* Resets the game state (func_00209DC0) while keeping what carries over: copies the kept
    blocks to the scratchpad, resets, copies them back (of D_0013D5C8 only the bytes listed in
@@ -10343,8 +10343,8 @@ void load_level_zero_preserving_progress(s32 slot) {
     D_0015EF20_27DB0 = count + 1;
     gHelpDeskVoice_r[0] = 0;
     gHelpDeskText_r[0] = 0;
-    func_00121A80_27DB0(save_clock_time_r);
-    func_0012D818_27DB0(save_clock_time_r);
+    sce_cd_read_clock_r(save_clock_time_r);
+    sce_scf_get_local_time_from_rtc_r(save_clock_time_r);
     if (slot >= 0) {
         memory_card_state_r5.slot = slot;
         memory_card_state_r5.entries[slot].unk0 = 0;

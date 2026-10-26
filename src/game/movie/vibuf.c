@@ -40,24 +40,24 @@ int getFIFOindex(ViBuf *vb, unsigned int addr) {
     }
     return (addr - vb->base) >> 11;
 }
-extern void func_0011D960(void);
-extern void func_0011D9A8(void);
+extern void disable_interrupts(void);
+extern void enable_interrupts(void);
 
 /* setD3_CHCR(unsigned int) */
 void setD3_CHCR(unsigned int chcr) {
-    func_0011D960();
+    disable_interrupts();
     *(volatile unsigned int *)0x1000F590 = *(volatile unsigned int *)0x1000F520 | 0x10000;
     *(volatile unsigned int *)0x1000B000 = chcr;
     *(volatile unsigned int *)0x1000F590 = *(volatile unsigned int *)0x1000F520 & 0xFFFEFFFF;
-    func_0011D9A8();
+    enable_interrupts();
 }
 /* setD4_CHCR(unsigned int) */
 void setD4_CHCR(unsigned int chcr) {
-    func_0011D960();
+    disable_interrupts();
     *(volatile unsigned int *)0x1000F590 = *(volatile unsigned int *)0x1000F520 | 0x10000;
     *(volatile unsigned int *)0x1000B400 = chcr;
     *(volatile unsigned int *)0x1000F590 = *(volatile unsigned int *)0x1000F520 & 0xFFFEFFFF;
-    func_0011D9A8();
+    enable_interrupts();
 }
 /* scTag2 */
 void scTag2(unsigned long *tag, unsigned int a, unsigned int b, unsigned int c) {
@@ -87,7 +87,7 @@ typedef struct SemaParam {
     int f14;
 } SemaParam;
 
-extern int func_00118C70(SemaParam *);
+extern int create_semaphore(SemaParam *);
 extern int viBufReset();
 
 /* viBufCreate: fill the header, make a semaphore (1/1), reset, clear 0x48 */
@@ -102,7 +102,7 @@ int viBufCreate(VB *vb, int data, unsigned int tags, int count, int f50, int f54
     vb->f54 = f54;
     sp.init = 1;
     sp.max = 1;
-    vb->sema = func_00118C70(&sp);
+    vb->sema = create_semaphore(&sp);
     viBufReset(vb);
     vb->f48 = 0;
     return 1;
@@ -149,7 +149,7 @@ void viBufBeginPut(ViBuf *vb, unsigned char **p1, int *n1, unsigned char **p2, i
     int pos;
     int available;
 
-    func_00118CB0(vb->sema);
+    wait_semaphore(vb->sema);
 
     tagIdx = vb->f10 + 2;
     pos = ((vb->fC + vb->f10) << 11) + vb->f14;
@@ -168,14 +168,14 @@ void viBufBeginPut(ViBuf *vb, unsigned char **p1, int *n1, unsigned char **p2, i
         *n2 = available - (vb->f18 - pos);
     }
 
-    func_00118C90(vb->sema);
+    signal_semaphore(vb->sema);
 }
 /* viBufEndPut(ViBuf *, int) */
 void viBufEndPut(ViBuf *vb, int size) {
-    func_00118CB0(vb->sema);
+    wait_semaphore(vb->sema);
     vb->f14 += size;
     *(long *)(vb->pad48) += size;
-    func_00118C90(vb->sema);
+    signal_semaphore(vb->sema);
 }
 extern char vibuf_dma_not_active_msg[];
 extern int getFIFOindex(ViBuf *, unsigned int);
@@ -193,7 +193,7 @@ int viBufAddDMA(ViBuf *vb) {
     int rd;
     int pos;
 
-    func_00118CB0(vb->sema);
+    wait_semaphore(vb->sema);
     if (vb->f44 == 0) {
         ErrMessage(vibuf_dma_not_active_msg);
         return 0;
@@ -230,7 +230,7 @@ int viBufAddDMA(ViBuf *vb) {
         }
         setD4_CHCR(chcr | 0x100);
     }
-    func_00118C90(vb->sema);
+    signal_semaphore(vb->sema);
     return 1;
 }
 extern void setD3_CHCR(unsigned int);
@@ -255,7 +255,7 @@ typedef struct VbDmaSave {
 int viBufStopDMA(ViBuf *vb) {
     VbDmaSave *s = (VbDmaSave *)vb;
 
-    func_00118CB0(vb->sema);
+    wait_semaphore(vb->sema);
     vb->f44 = 0;
     setD4_CHCR(5);
     s->d4_madr = *(volatile unsigned int *)0x1000B410;
@@ -273,7 +273,7 @@ int viBufStopDMA(ViBuf *vb) {
     s->d3_chcr = *(volatile unsigned int *)0x1000B000;
     s->ipu_top = *(volatile unsigned int *)0x10002020;
     s->ipu_ctrl = *(volatile unsigned int *)0x10002010;
-    func_00118C90(vb->sema);
+    signal_semaphore(vb->sema);
     return 1;
 }
 extern int getFIFOindex(ViBuf *, unsigned int);
@@ -297,7 +297,7 @@ int viBufRestartDMA(ViBuf *vb) {
     unsigned int chcr = s->d4_chcr | 0x100;
     unsigned int tadr = s->d4_tadr;
 
-    func_00118CB0(vb->sema);
+    wait_semaphore(vb->sema);
 
     if (madr < vb->base) {
         int id;
@@ -354,10 +354,10 @@ int viBufRestartDMA(ViBuf *vb) {
     }
     *(volatile unsigned int *)0x10002010 = s->ipu_ctrl;
     vb->f44 = 1;
-    func_00118C90(vb->sema);
+    signal_semaphore(vb->sema);
     return 1;
 }
-extern void func_00118C80(int);     /* DeleteSema */
+extern void delete_semaphore(int);     /* DeleteSema */
 
 /* viBufDelete(ViBuf *) -- stops DMA channel 4 (setD4_CHCR(5)), zeroes its MADR/QWC/TADR
  * and deletes the buffer's semaphore. Returns 1. */
@@ -366,25 +366,25 @@ int viBufDelete(ViBuf *vb) {
     *(volatile unsigned int *)0x1000B420 = 0;
     *(volatile unsigned int *)0x1000B410 = 0;
     *(volatile unsigned int *)0x1000B430 = 0;
-    func_00118C80(vb->sema);
+    delete_semaphore(vb->sema);
     return 1;
 }
-extern int func_00118CB0(int);
-extern int func_00118C90(int);
+extern int wait_semaphore(int);
+extern int signal_semaphore(int);
 
 /* viBufCount(ViBuf *) */
 int viBufCount(ViBuf *vb) {
     int count;
-    func_00118CB0(vb->sema);
+    wait_semaphore(vb->sema);
     count = (vb->f10 << 11) + vb->f14;
-    func_00118C90(vb->sema);
+    signal_semaphore(vb->sema);
     return count;
 }
 /* viBufFlush(ViBuf *) */
 void viBufFlush(ViBuf *vb) {
-    func_00118CB0(vb->sema);
+    wait_semaphore(vb->sema);
     vb->f14 = ((vb->f14 + 0x7FF) / 0x800) * 0x800;
-    func_00118C90(vb->sema);
+    signal_semaphore(vb->sema);
 }
 /* a % b as a helper: once inlined, its zero-divisor check is tested against $0 */
 static inline int ring_mod(int a, int b) { return a % b; }
@@ -430,7 +430,7 @@ extern int viBufModifyPts(ViBuf *, TimeStamp *);
 /* viBufPutTs(ViBuf *, TimeStamp *) */
 int viBufPutTs(ViBuf *vb, TimeStamp *ts) {
     int ret = 0;
-    func_00118CB0(vb->sema);
+    wait_semaphore(vb->sema);
     if (vb->f58 < vb->ntbl) {
         viBufModifyPts(vb, ts);
         if (ts->pts >= 0 || ts->dts >= 0) {
@@ -443,7 +443,7 @@ int viBufPutTs(ViBuf *vb, TimeStamp *ts) {
         }
         ret = 1;
     }
-    func_00118C90(vb->sema);
+    signal_semaphore(vb->sema);
     return ret;
 }
 /* viBufGetTs(ViBuf *, TimeStamp *): works out the ring position the IPU is decoding
@@ -468,7 +468,7 @@ int viBufGetTs(ViBuf *vb, TimeStamp *ts) {
     int j;
 
     madr -= (((top >> 16) & 3) + ((top >> 8) & 0xF)) << 4;
-    func_00118CB0(vb->sema);
+    wait_semaphore(vb->sema);
     ts->pts = -1;
     ts->dts = -1;
     madr += bp >> 3;
@@ -487,6 +487,6 @@ int viBufGetTs(ViBuf *vb, TimeStamp *ts) {
             vb->f58 -= (vb->f58 < 2) ? vb->f58 : 1;
         }
     }
-    func_00118C90(vb->sema);
+    signal_semaphore(vb->sema);
     return 1;
 }

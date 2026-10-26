@@ -324,7 +324,7 @@ f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 f32 FastVecDist(void *, void *);
-void func_001252C0(void *, void *);
+void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
 f32 fast_atan2(f32, f32);
 void FastVecSub(void *, void *, void *);
@@ -470,7 +470,7 @@ void HeroL06_ResetMotionState(void) {
         g_hero.u2d8.F = blarg_coll_hit.v20.f[2];
         g_hero.xF2dc = FastVecDist((u8 *)&g_hero + 0x80, ((u8 *)&g_hero + 0x2A0));
         g_hero.xI2fc = blarg_coll_hit.i18;
-        func_001252C0((u8 *)&g_hero + 0x270, (u8 *)&blarg_coll_hit.f40);
+        sceVu0Normalize((u8 *)&g_hero + 0x270, (u8 *)&blarg_coll_hit.f40);
         g_hero.u2e0.F = compute_gravity_relative_vector_inclination((u8 *)&blarg_coll_hit.f40);
         g_hero.xF2ec = fast_atan2(blarg_coll_hit.f40, blarg_coll_hit.f44);
         FastVecSub(&v20, ((u8 *)&g_hero + 0x2A0), (u8 *)&g_hero + 0x80);
@@ -544,7 +544,7 @@ d1:
             if (0.4f < FastAbsF(f)) {
                 g_hero.a2c0.f[i] = 0.0f;
             }
-            func_001252C0(&v60, (u8 *)&blarg_coll_hit.f40);
+            sceVu0Normalize(&v60, (u8 *)&blarg_coll_hit.f40);
             compute_rotated_vector_angles(&v60, &v50);
             if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
                 g_hero.a2c8.f[i] = v50.f[1];

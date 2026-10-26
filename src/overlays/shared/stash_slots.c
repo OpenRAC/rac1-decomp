@@ -4,7 +4,7 @@
 #include "include_asm.h"
 
 extern StashBlock stash_slots[];
-extern int func_00118E20(void *buf, int flag);
+extern int sce_sif_set_dma(void *buf, int flag);
 // Starts a DMA transfer of size*16 bytes at offset*16 into a slot; -3 bad slot, -1 out of range.
 int send_dma_to_stash_slot(int arg, unsigned int slot, int off, int size) {
     int req[4];
@@ -17,7 +17,7 @@ int send_dma_to_stash_slot(int arg, unsigned int slot, int off, int size) {
     req[1] = (int)((char *)stash_slots[slot].ram + off * 16);
     req[2] = size * 16;
     req[3] = 0;
-    func_00118E20(req, IOP_STASH_FETCH);
+    sce_sif_set_dma(req, IOP_STASH_FETCH);
     return 0;
 }
 /* The quadword count of stash slot SLOT, or -3 when there is no such slot. The catalogue splits

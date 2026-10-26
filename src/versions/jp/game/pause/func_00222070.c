@@ -13,7 +13,7 @@ s32 DrawCheatsMenu(struct CheatsMenu *menu) {
     VU1_addGSregister_r3(0x47, 0x2004B);
     SetupGifPaging(0);
     if ((menu->flags & 1) && menu->entries->text_id == 0) {
-        func_001153FC_22070(window_fields, 0, sizeof(window_fields));
+        libc_memset_r2(window_fields, 0, sizeof(window_fields));
         window_fields[1] = menu->height + 1;
         window_fields[3] = menu->width + 1;
         window_fields[4] = menu->width >> 1;

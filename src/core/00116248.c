@@ -29,7 +29,7 @@ extern int func_001170A0(void *, const char *, va_list);
 
 /* sprintf: vfprintf into a string FILE of unbounded size, then terminate
    the string. */
-int func_00116248(char *str, const char *fmt, ...) {
+int sprintf(char *str, const char *fmt, ...) {
     int ret;
     va_list ap;
     NewlibFile f;

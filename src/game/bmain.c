@@ -25,19 +25,19 @@ extern Globals137C80 disc_table_g __asm__("D_00137C80");
 extern char voice_pool[];
 extern char memory_card_state[];
 extern char level_resource_buffers[];
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern void sound_StopAllSounds(void);
 extern void music_Stop(void);
 extern int scale_game_frame_count(int);
 extern void FadeToBlack(int);
-extern void func_0012EF48(int);
+extern void snd_StreamSafeCdSync(int);
 extern void memcard_update_state(void);
 extern void Movie_Play(int, int, int, int, int);
-extern void func_00120F30(int);
-extern void func_00122598(int);
-extern void func_00120858(int, int);
-extern void func_0012F308(void);
-extern void func_00123168(void (*)(void));
+extern void sce_cd_sync_s(int);
+extern void sce_gs_sync_v(int);
+extern void wait_for_graphics_pipeline_idle(int, int);
+extern void vsync_callback(void);
+extern void sceGsSyncVCallback(void (*)(void));
 extern void Hud_sendTexture(int, int, int, int, int, int);
 
 /* Start level `level`: pick its two load parameters from the level
@@ -61,15 +61,15 @@ void start_level(int level) {
     }
     decode_mode = 2;
     voice_pool[0x6B] |= 8;
-    func_00118D80(0);
+    flush_cache(0);
     sound_StopAllSounds();
     music_Stop();
     FadeToBlack(scale_game_frame_count(12));
     g_game_mode = 1;
-    func_00118D80(0);
+    flush_cache(0);
     sound_StopAllSounds();
     music_Stop();
-    func_0012EF48(0);
+    snd_StreamSafeCdSync(0);
     for (;;) {
         char *ld = memory_card_state;
         if (*(int *)(ld + 0xDC) < 3 && *(int *)(ld + 0xE4) < 0) {
@@ -82,10 +82,10 @@ void start_level(int level) {
         t = *(int *)(g + 0x1C);
     }
     Movie_Play(b, a, t + 0x100000, t + 0x400000, 0);
-    func_00120F30(0);
-    func_00122598(0);
-    func_00120858(0, 0);
-    func_00123168(func_0012F308);
+    sce_cd_sync_s(0);
+    sce_gs_sync_v(0);
+    wait_for_graphics_pipeline_idle(0, 0);
+    sceGsSyncVCallback(vsync_callback);
     Hud_sendTexture(0x1000000, depth_buffer_address, 0x1B, 6, 6, 1);
     decode_mode = 0;
     FadeToBlack(4);
@@ -151,12 +151,12 @@ extern void initialize_streaming_state_r(void) __asm__("func_001E94A8");
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
 extern void DMAC_VIF1_Enable_r(void) __asm__("func_00235018");
 extern void clear_dma_queue_entry_r(void) __asm__("func_001F0F30");
-extern s32 func_00122598_E99D8(s32) __asm__("func_00122598");
+extern s32 sce_gs_sync_v_r(s32) __asm__("func_00122598");
 extern void PutDispBuffer_r(void) __asm__("func_001FB470");
 extern void ResetGsRegisters_r(void) __asm__("func_001F3C10");
 extern void ResetGsRegistersPr_r(void) __asm__("func_001F3D00");
 extern void SetBackgroundColor_r(s32, u64, u64) __asm__("func_001FB448");
-extern void func_00118D80_E99D8(s32) __asm__("func_00118D80");
+extern void flush_cache_r(s32) __asm__("func_00118D80");
 extern void fast_decompress_r(s32, s32) __asm__("func_0020C468");
 extern void PutDrawBufferLarge_r(void) __asm__("func_001FB498");
 extern void append_gif_transfer_packet_r(void) __asm__("func_001FB530");
@@ -176,10 +176,10 @@ extern void Movie_Play_r(s32, s32, s32, s32, s32) __asm__("func_0023B670");
 extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
 extern void STUB_printf_r(char *, ...) __asm__("func_001E9730");
 extern s32 load_audio_bank_by_location_r(s32) __asm__("func_0022EA20");
-extern void func_0012E2E8_E99D8(void) __asm__("func_0012E2E8");
+extern void snd_ResolveBankXREFS_r(void) __asm__("func_0012E2E8");
 extern s32 transition_do_transition_r(void) __asm__("func_001EBB48");
-extern s32 func_001207B8_E99D8(void) __asm__("func_001207B8");
-extern void func_00121B78_E99D8(s16, s16, s16, s16) __asm__("func_00121B78");
+extern s32 reset_vif1_gif_r(void) __asm__("func_001207B8");
+extern void sceGsResetGraph_r(s16, s16, s16, s16) __asm__("func_00121B78");
 extern void SetPalMode_r(void) __asm__("func_001F3890");
 extern void DoSpaceTransition_r(void) __asm__("func_00233308");
 
@@ -217,7 +217,7 @@ void startlevel(void) {
     DMAC_VIF1_Enable_r();
     clear_dma_queue_entry_r();
     game_frame_counter_r = 0;
-    func_00122598_E99D8(0);
+    sce_gs_sync_v_r(0);
     g_game_mode_r = 0;
     ResetGsRegisters_r();
     ResetGsRegistersPr_r();
@@ -232,9 +232,9 @@ void startlevel(void) {
             } else {
                 tbl = hdr->loading;
             }
-            func_00118D80_E99D8(0);
+            flush_cache_r(0);
             fast_decompress_r(tbl[g_game_language_r].off + (s32)hdr, hdr->code + (s32)hdr);
-            func_00118D80_E99D8(0);
+            flush_cache_r(0);
         }
         SetBackgroundColor_r(0, 0, 0);
         PutDrawBufferLarge_r();
@@ -249,7 +249,7 @@ void startlevel(void) {
         VU1_sendChain_r();
         VU1_swapChain_r();
         VU1_syncChain_r(1);
-        func_00122598_E99D8(0);
+        sce_gs_sync_v_r(0);
         prev = cur;
         fade -= 0x10;
         UpdatePad_r();
@@ -270,13 +270,13 @@ void startlevel(void) {
     }
     decode_mode_r = 0;
     FadeToBlack_r(scale_game_frame_count_r(0xC));
-    func_00118D80_E99D8(0);
+    flush_cache_r(0);
     if (pal_mode_r != 0) {
         fast_decompress_r(hdr->gfx_alt + (s32)hdr, hdr->code + (s32)hdr);
     } else {
         fast_decompress_r(hdr->gfx + (s32)hdr, hdr->code + (s32)hdr);
     }
-    func_00118D80_E99D8(0);
+    flush_cache_r(0);
     VU1_initChain_r();
     SetBackgroundColor_r(0, 0, 0);
     PutDrawBufferLarge_r();
@@ -287,11 +287,11 @@ void startlevel(void) {
     VU1_sendChain_r();
     VU1_swapChain_r();
     VU1_syncChain_r(1);
-    func_00122598_E99D8(0);
+    sce_gs_sync_v_r(0);
     game_frame_counter_r++;
     STUB_printf_r(str_loading_sound_bank_r);
     bank = load_audio_bank_by_location_r(disc_table_r.sound_bank);
-    func_0012E2E8_E99D8();
+    snd_ResolveBankXREFS_r();
     startlevel_sound_defs_r[0].bank = bank;
     startlevel_sound_defs_r[1].bank = bank;
     startlevel_sound_defs_r[2].bank = bank;
@@ -309,8 +309,8 @@ void startlevel(void) {
     transition_do_transition_r();
     if (pal_mode_r != requested_video_mode_r[0]) {
         pal_mode_r = requested_video_mode_r[0];
-        func_001207B8_E99D8();
-        func_00121B78_E99D8(0, 1, pal_mode_r != 0 ? 3 : 2, 0);
+        reset_vif1_gif_r();
+        sceGsResetGraph_r(0, 1, pal_mode_r != 0 ? 3 : 2, 0);
         SetPalMode_r();
         PutDispBuffer_r();
     }

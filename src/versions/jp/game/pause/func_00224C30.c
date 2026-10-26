@@ -49,14 +49,14 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
                     hours = 99;
                     minutes = 59;
                 }
-                func_00116248_24C30(text, fmt_save_play_time_r, hours, minutes);
+                sprintf_r2(text, fmt_save_play_time_r, hours, minutes);
                 HudSprite_r(GetIconFrame_r2(0xE99E, 3), 4, y, 0x10, 0x10,
                                 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
                 if (slot->count != 0) {
                     HudSprite_r(GetIconFrame_r2(0xE99E, 4), 0x4E, y, 0x10,
                                     0x10, 0x80);
-                    func_00116248_24C30(text, fmt_decimal_r, slot->count < 100 ? slot->count : 99);
+                    sprintf_r2(text, fmt_decimal_r, slot->count < 100 ? slot->count : 99);
                     FontPrintSmall_r(0x60, y, color, text, -1);
                 }
                 bolts = slot->bolts;
@@ -65,18 +65,18 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
                 }
                 y += 0x10;
                 if (bolts < 1000) {
-                    func_00116248_24C30(text, fmt_decimal_r, bolts);
+                    sprintf_r2(text, fmt_decimal_r, bolts);
                 } else if (bolts < 1000000) {
-                    func_00116248_24C30(text, fmt_number_thousands_r, bolts / 1000, bolts % 1000);
+                    sprintf_r2(text, fmt_number_thousands_r, bolts / 1000, bolts % 1000);
                 } else {
-                    func_00116248_24C30(text, fmt_save_bolt_count_r, bolts / 1000000, bolts % 1000000 / 1000,
+                    sprintf_r2(text, fmt_save_bolt_count_r, bolts / 1000000, bolts % 1000000 / 1000,
                             bolts % 1000);
                 }
                 HudSprite_r(GetIconFrame_r2(0x754F, 0xF), 4, y, 0x10, 0x10,
                                 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
                 y += 0x10;
-                func_00116248_24C30(text, fmt_save_date_r, slot->b16, slot->b15, slot->b17);
+                sprintf_r2(text, fmt_save_date_r, slot->b16, slot->b15, slot->b17);
                 HudSprite_r(GetIconFrame_r2(0xE99E, 2), 4, y, 0x10, 0x10,
                                 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);

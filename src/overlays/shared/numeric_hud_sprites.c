@@ -171,7 +171,7 @@ void update_trick_combo_hud(char *a) {
         break;
     }
 }
-extern int func_00116248_002670A0(char *, const char *, ...) __asm__("func_00116248");
+extern int sprintf_r(char *, const char *, ...) __asm__("func_00116248");
 extern float IntToFloat(int);
 extern int FastTweenColor(int, int, float);
 extern int FontPrintCenterLarge_x(int, int, u64, int, int) __asm__("func_001F6FD8");
@@ -224,7 +224,7 @@ int draw_trick_combo_hud(char *a) {
         return *(int *)(a + 0x58);
     }
     if (u[2] != 0) {
-        func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_spins * 0x168);
+        sprintf_r(buf, rilgar_fmt_number, trick_combo_spins * 0x168);
         f20 = IntToFloat(u[1]);
         r = scale_ticks(*(int *)&trick_combo_flash_ticks);
         f12 = f20 / (float)r;
@@ -238,7 +238,7 @@ int draw_trick_combo_hud(char *a) {
         if (u[2] == 1 || u[2] == 2) {
             FontPrintCenterLarge_x(*(int *)&trick_combo_spin_text_x + 1, *(int *)&trick_combo_spin_text_y + 1, h, (int)buf, -1);
             FontPrintCenterLarge_x(*(int *)&trick_combo_spin_text_x, *(int *)&trick_combo_spin_text_y, acc, (int)buf, -1);
-            func_00116248_002670A0(buf, rilgar_fmt_count_and_word, trick_combo_trick_count,
+            sprintf_r(buf, rilgar_fmt_count_and_word, trick_combo_trick_count,
                                    msg_string_r(trick_combo_trick_count == 1 ? 0x517C : 0x517D));
             FontPrintCenterLarge_x(*(int *)&trick_combo_count_text_x + 1, *(int *)&trick_combo_count_text_y + 1, h, (int)buf, -1);
             FontPrintCenterLarge_x(*(int *)&trick_combo_count_text_x, *(int *)&trick_combo_count_text_y, acc, (int)buf, -1);
@@ -273,9 +273,9 @@ int draw_trick_combo_hud(char *a) {
                     }
                 }
                 trick_combo_score = trick_combo_score / cnt;
-                func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
+                sprintf_r(buf, rilgar_fmt_number, trick_combo_score);
                 draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
-                func_00116248_002670A0(buf, rilgar_fmt_string, msg_string_r(idx + 0x5092));
+                sprintf_r(buf, rilgar_fmt_string, msg_string_r(idx + 0x5092));
                 draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
             } else if (trick_combo_trick_count > 0) {
                 int n = 0;
@@ -288,16 +288,16 @@ int draw_trick_combo_hud(char *a) {
                 }
                 if (trick_combo_trick_count == 1) {
                     trick_combo_score = trick_combo_spins * 10;
-                    func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
+                    sprintf_r(buf, rilgar_fmt_number, trick_combo_score);
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
-                    func_00116248_002670A0(buf, rilgar_fmt_single_trick_line, msg_string_r(out[0] + 0x5183), trick_combo_spins,
+                    sprintf_r(buf, rilgar_fmt_single_trick_line, msg_string_r(out[0] + 0x5183), trick_combo_spins,
                                            msg_string_r(trick_combo_spins == 0x168 ? 0x50A7 : 0x50A8));
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
                 } else {
                     trick_combo_score = trick_combo_spins * 20;
-                    func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
+                    sprintf_r(buf, rilgar_fmt_number, trick_combo_score);
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
-                    func_00116248_002670A0(buf, rilgar_fmt_double_trick_line, msg_string_r(out[0] + 0x5183),
+                    sprintf_r(buf, rilgar_fmt_double_trick_line, msg_string_r(out[0] + 0x5183),
                                            msg_string_r(out[1] + 0x5183), trick_combo_spins);
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
                 }
@@ -322,7 +322,7 @@ int draw_trick_combo_hud(char *a) {
         f0 = IntToFloat(rilgar_frame_count % r3) / (float)r3;
         f0 = FastSin(f0 * 6.283180236816406f - 3.141590118408203f);
         r3 = FastTweenColor(*(int *)&trick_combo_banner_color_from, *(int *)&trick_combo_banner_color_to, f0 * 0.5f + 0.5f);
-        func_00116248_002670A0(buf, msg_string_r(0x531F));
+        sprintf_r(buf, msg_string_r(0x531F));
         draw_framed_text(*(int *)&trick_combo_banner_x + 1, *(int *)&trick_combo_banner_y + 1, 0x80000000, (int)buf);
         draw_framed_text(*(int *)&trick_combo_banner_x, *(int *)&trick_combo_banner_y, r3, (int)buf);
     }
@@ -397,7 +397,7 @@ extern char rilgar_fmt_progress_number[];
 extern char rilgar_fmt_rank_label[];
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern char *msg_string(int);
-extern int func_00116248(char *, char *, ...);
+extern int sprintf(char *, char *, ...);
 extern void print_text_with_texture_3(int, int, long, char *, int);
 extern int measure_text_width_regular(char *, int);
 
@@ -434,7 +434,7 @@ int draw_hud_progress_and_rank(char *e) {
     y1 = y + 1;
     draw_stretchable_ui_frame(*(int *)&(rilgar_progress_frame_x), x, *(int *)&(rilgar_progress_frame_width), *(int *)&(rilgar_progress_frame_height), *(int *)&(rilgar_progress_frame_alpha));
     tx = *(int *)&(rilgar_progress_label_x);
-    func_00116248(buf, rilgar_fmt_label, msg_string(0x5244));
+    sprintf(buf, rilgar_fmt_label, msg_string(0x5244));
     print_text_with_texture_3(tx - 1, y1, 0x80000000L, buf, -1);
     print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
     w = measure_text_width_regular(buf, -1);
@@ -442,7 +442,7 @@ int draw_hud_progress_and_rank(char *e) {
     {
         int n = *(short *)(hd + 0x89A) + 1;
         if (!(n < 4)) n = 3;
-        func_00116248(buf, rilgar_fmt_progress_number, n);
+        sprintf(buf, rilgar_fmt_progress_number, n);
     }
     print_text_with_texture_3(tx - 1, y + 2, 0x80000000L, buf, -1);
     print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_value_color), buf, -1);
@@ -451,20 +451,20 @@ int draw_hud_progress_and_rank(char *e) {
         tx = *(int *)&(rilgar_progress_rank_right_x);
         n = n - 1;
         if (!(n < 5)) n = 4;
-        func_00116248(buf, rilgar_fmt_string, msg_string(n + 0x5229));
+        sprintf(buf, rilgar_fmt_string, msg_string(n + 0x5229));
     }
     w = measure_text_width_regular(buf, -1);
     tx = tx - w;
     print_text_with_texture_3(tx + 1, y1, 0x80000000L, buf, -1);
     print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_value_color), buf, -1);
-    func_00116248(buf, rilgar_fmt_rank_label, msg_string(0x5245));
+    sprintf(buf, rilgar_fmt_rank_label, msg_string(0x5245));
     w = measure_text_width_regular(buf, -1);
     tx = tx - w;
     print_text_with_texture_3(tx + 1, y1, 0x80000000L, buf, -1);
     print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
     if (g_current_level_index != 0x10)
         return *(int *)(e + 0x58);
-    func_00116248(buf + 0x40, rilgar_fmt_number, *(unsigned char *)(hd + 0x8CE));
+    sprintf(buf + 0x40, rilgar_fmt_number, *(unsigned char *)(hd + 0x8CE));
     py = pal_mode ? 0xA : 0x12;
     px = *(int *)(e + 0x50);
     if (*(unsigned char *)(special_items_base + 0x13B) == 0) {
@@ -513,7 +513,7 @@ extern char rilgar_fmt_race_time_label_r[] __asm__("D_L05_0015FB20");
 extern char rilgar_fmt_race_time_value_r[] __asm__("D_L05_0015FB28");
 extern void draw_stretchable_ui_frame_r(int, int, int, int, int) __asm__("func_00201960");
 extern char *msg_string_r(int) __asm__("func_001FE540");
-extern int func_00116248_002670A0(char *, const char *, ...) __asm__("func_00116248");
+extern int sprintf_r(char *, const char *, ...) __asm__("func_00116248");
 extern int measure_text_width_regular_r(char *, int) __asm__("func_001F6600");
 extern void print_text_with_texture_3_r(int x, int y, u64 color, char *text, int len) __asm__("func_L00_001FB7F8");
 
@@ -544,24 +544,24 @@ int draw_hud_timer(HudElem_002670A0 *e) {
     if (gSpecialItems_r[0]) {
         draw_stretchable_ui_frame_r(D_L05_0015FACC_002670A0, y0, D_L05_0015FAD4_002670A0, D_L05_0015FAD8_002670A0, D_L05_0015FADC_002670A0);
         x = D_L05_0015FAE8_002670A0;
-        func_00116248_002670A0(buf, rilgar_fmt_race_score_width_r, msg_string_r(0x50A6), hero_002670A0.race_score);
+        sprintf_r(buf, rilgar_fmt_race_score_width_r, msg_string_r(0x50A6), hero_002670A0.race_score);
         x -= measure_text_width_regular_r(buf, -1) >> 1;
-        func_00116248_002670A0(buf, rilgar_fmt_label_r, msg_string_r(0x50A6));
+        sprintf_r(buf, rilgar_fmt_label_r, msg_string_r(0x50A6));
         print_text_with_texture_3_r(x + 1, y1 + 1, 0x80000000, buf, -1);
         print_text_with_texture_3_r(x, y1, D_L05_0015FAE0_002670A0, buf, -1);
         x += measure_text_width_regular_r(buf, -1);
-        func_00116248_002670A0(buf, rilgar_fmt_race_score_value_r, hero_002670A0.race_score);
+        sprintf_r(buf, rilgar_fmt_race_score_value_r, hero_002670A0.race_score);
         print_text_with_texture_3_r(x + 1, y1 + 1, 0x80000000, buf, -1);
         print_text_with_texture_3_r(x, y1, D_L05_0015FAE4_002670A0, buf, -1);
     }
     x = D_L05_0015FAE8_002670A0;
-    func_00116248_002670A0(buf, rilgar_fmt_race_time_width_r, msg_string_r(0x5246));
+    sprintf_r(buf, rilgar_fmt_race_time_width_r, msg_string_r(0x5246));
     x -= measure_text_width_regular_r(buf, -1) >> 1;
-    func_00116248_002670A0(buf, rilgar_fmt_race_time_label_r, msg_string_r(0x5246));
+    sprintf_r(buf, rilgar_fmt_race_time_label_r, msg_string_r(0x5246));
     print_text_with_texture_3_r(x + 1, y2 + 1, 0x80000000, buf, -1);
     print_text_with_texture_3_r(x, y2, D_L05_0015FAE0_002670A0, buf, -1);
     x += measure_text_width_regular_r(buf, -1);
-    func_00116248_002670A0(buf, rilgar_fmt_race_time_value_r, min, sec, hund);
+    sprintf_r(buf, rilgar_fmt_race_time_value_r, min, sec, hund);
     print_text_with_texture_3_r(x + 1, y2 + 1, 0x80000000, buf, -1);
     print_text_with_texture_3_r(x, y2, D_L05_0015FAE4_002670A0, buf, -1);
     return e->w;

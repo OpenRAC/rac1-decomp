@@ -57,8 +57,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern void CreatePointLight(int);
@@ -118,7 +118,7 @@ extern int mc_gamedata[];
 extern int mc_leveldata[];
 extern int memcard_GetDataSize(int *p);
 extern int memcard_PrepData(void *dst, int i, int *table);
-extern int func_001236F0(void);
+extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
 extern int D_0013D844 NOT_SDA;
@@ -147,7 +147,7 @@ extern int g_hero_moby NOT_SDA;
 extern float shadow_light_dir[] NOT_SDA;
 extern float FastCos(float);
 extern float FastSin(float);
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern char normal_lut[];
 extern int render_packet_end;
 extern short vu1_chain_safe_end;
@@ -165,28 +165,28 @@ extern float round_float_to_decimal_places(int, float);
 extern unsigned char gold_bolts_collected[];
 extern unsigned char gold_weapon_purchased[];
 extern unsigned char gSkillPoints[];
-extern void func_0012F068(void *);
+extern void snd_StreamSafeCdCallback(void *);
 extern void finish_audio_stream_read(int);
 extern short cd_read_state[];
-extern void func_0012EDE0(void *);
-extern void func_0012EFE8(void);
+extern void snd_ContinueVAGStream(void *);
+extern void snd_StreamSafeCdBreak(void);
 extern char load_file_start_failed_string[];
-extern int func_0012EE98(int, int, int, void *);
+extern int snd_StreamSafeCdRead(int, int, int, void *);
 extern int start_audio_stream_read_v(void) __asm__("func_00217628");
-extern void func_00122598(int);
+extern void sce_gs_sync_v(int);
 extern void music_Update(void);
-extern void func_0012EC40(void);
-extern void func_0012DDC0(void);
-extern void func_0012EC30(void);
-extern int func_0012F030(void);
+extern void snd_reset_state_and_flush_commands(void);
+extern void snd_FlushSoundCommands(void);
+extern void snd_reenable_command_flush(void);
+extern int snd_StreamSafeCdGetError(void);
 extern void music_start_track_by_id(short, short, short);
 extern void music_PreseekTrack(short, short, short);
 extern short D_001517F0 NOT_SDA;
 extern char g_controller_state[];
 extern int pad_socket_param NOT_SDA;
-extern void func_00124650(void);
-extern void func_00124B88(int);
-extern int func_00124BC8(void *, void *);
+extern void sce_dbc_init(void);
+extern void sce_pad2_init(int);
+extern int sce_pad2_create_socket(void *, void *);
 extern void poll_pad_device_state(void *);
 extern int pause_action_list_mode;
 extern char pause_action_list_pal[];
@@ -261,12 +261,12 @@ extern void transform_vector(void *, void *, void *);
 extern float vec_length_xy(void *);
 extern float fast_arc_tan_a(float, float) __asm__("func_001FA058");
 extern void truncate_float_to_s32(float);
-extern void func_00120F30(int);
-extern int func_0012E060(void *, int);
-extern void func_0012EE70(int);
-extern void func_0012EF48(int);
-extern void func_0012E2E8(void);
-extern void func_0011AE20(int arg0);
+extern void sce_cd_sync_s(int);
+extern int snd_BankLoadByLoc(void *, int);
+extern void snd_StreamSafeCheckCDIdle(int);
+extern void snd_StreamSafeCdSync(int);
+extern void snd_ResolveBankXREFS(void);
+extern void sceSifInitRpc(int arg0);
 typedef struct {
     int unk_00;
     int unk_04;
@@ -398,7 +398,7 @@ void render_capture_scrolling_text(char *text, s32 start_x, s32 start_y, f32 sca
     }
 }
 
-extern int func_00116810_s(char *) __asm__("func_00116810");
+extern int libc_strlen_s(char *) __asm__("func_00116810");
 extern int random_integer_below(int);
 extern int status_message_text_ids[];
 extern void set_scrolling_status_message(void *);
@@ -413,7 +413,7 @@ void update_scrolling_status_message(void) {
     char *w;
     draw_framebuffer_rect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
     v = vendor_state;
-    if (func_00116810_s(*(char **)(v + 0x2C)) - *(int *)(v + 0x44) / 20 > 0) {
+    if (libc_strlen_s(*(char **)(v + 0x2C)) - *(int *)(v + 0x44) / 20 > 0) {
         *(int *)(v + 0x44) += 2;
     } else {
         set_scrolling_status_message(msg_string_id(status_message_text_ids[random_integer_below(0x18)]));
@@ -438,14 +438,14 @@ void render_capture_effect_pass(void) {
 extern char fmt_thousands_grouped_int[];
 extern char fmt_plain_int[];
 /* Unprototyped: the two call sites pass different argument counts. */
-extern void func_00116248();
+extern void sprintf();
 
 /* Formats a number into a string, with a thousands separator from 1000 up. */
 void format_scaled_display_value(void *arg0, int arg1) {
     if (arg1 >= 1000) {
-        func_00116248(arg0, fmt_thousands_grouped_int, arg1 / 1000, arg1 % 1000);
+        sprintf(arg0, fmt_thousands_grouped_int, arg1 / 1000, arg1 % 1000);
     } else {
-        func_00116248(arg0, fmt_plain_int, arg1);
+        sprintf(arg0, fmt_plain_int, arg1);
     }
 }
 
@@ -627,7 +627,7 @@ extern int weapon_ammo_counts[];
 extern int gBolts MACRO_ADDR;
 extern char vendor_item_prices[];
 extern unsigned char discount_purchase_pricing[];
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern void font_print_window_small(void *, long, void *, int);
 
 /* Draws the vendor's buy label and price for the selected slot. */
@@ -640,7 +640,7 @@ void render_vendor_buy_label_pass(char *unused, int x, int y) {
     int sz = 0x18;
 
     draw_framebuffer_rect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
-    ((void *(*)(void *, int, int))func_001153FC)(sp, 0, 0x18);
+    ((void *(*)(void *, int, int))libc_memset)(sp, 0, 0x18);
     *(short *)(sp + 0x2) = y;
     *(short *)(sp + 0x6) = x;
     *(short *)(sp + 0x8) = x >> 1;

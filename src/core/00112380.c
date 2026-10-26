@@ -12,12 +12,12 @@
 
 extern long func_00116F68(int arg0, int arg1, int arg2);
 
-int func_00112380(int arg0) {
+int libc_atoi(int arg0) {
     return (int)func_00116F68(arg0, 0, 10);
 }
 
 extern void *func_00114920(void *, unsigned int);          /* _malloc_r */
-extern void *func_001153FC_c(void *, int, unsigned int) __asm__("func_001153FC"); /* memset */
+extern void *libc_memset_c(void *, int, unsigned int) __asm__("func_001153FC"); /* memset */
 
 /* newlib's MALLOC_ZERO (mallocr.c, dlmalloc 2.6.5, public domain),
    verbatim: its do/while(0) is the library's own macro wrapper. */
@@ -42,7 +42,7 @@ do {                                                                          \
         *mz++ = 0;                                                            \
         *mz = 0;                                                              \
     } else {                                                                  \
-        func_001153FC_c((charp), 0, mzsz);                                    \
+        libc_memset_c((charp), 0, mzsz);                                    \
     }                                                                         \
 } while (0)
 

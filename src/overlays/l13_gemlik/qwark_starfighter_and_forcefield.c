@@ -1234,7 +1234,7 @@ void spawn_forcefield_contact_effects(void *moby, void *data) {
     extern void transform_vector(void *, void *, void *);
     extern int coll_sphere_mobys(void *, float, int, void *, void *);
     extern void spawn_nearby_effect_without_direction(float, void *, void *, int, void *);
-    extern void *func_00115248(void *, const void *, unsigned int);
+    extern void *libc_memcpy(void *, const void *, unsigned int);
     extern char sphere_hits_ed158[];
     float matrix[12];
     float query[4];
@@ -1260,7 +1260,7 @@ void spawn_forcefield_contact_effects(void *moby, void *data) {
     count = coll_sphere_mobys(query, radius, 0x10, moby, 0);
     if (count == 0) return;
     candidates = __builtin_alloca(((unsigned)count << 5) >> 3);
-    func_00115248(candidates, ((void **)sphere_hits_ed158), count * 4);
+    libc_memcpy(candidates, ((void **)sphere_hits_ed158), count * 4);
     for (i = 0; i < count; i++) {
         candidate = *(void **)((u32)candidates + (i << 2));
         if (candidate == 0 || (unsigned char)candidate[0x20] == 0xfe ||

@@ -282,7 +282,7 @@ extern void RerollEffectCounter(void *m, short *p);
 extern void SetDeathBits(void *, int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float normalize_angle(float);
 extern float FastCos(float);
@@ -481,7 +481,7 @@ void ChildSpawnerUpdate(Moby *moby) {
     }
     if (spawn && cond && timerDone && room) {
         int *u = used;
-        func_001153FC(u, 0, 0x10);
+        libc_memset(u, 0, 0x10);
         while (d->h8A == 0 ? d->count < d->max : d->timer == 0) {
             Moby_GetJointWorldPos(moby, 0, &v30);
             switch (d->b85) {

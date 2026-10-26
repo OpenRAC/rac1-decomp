@@ -58,8 +58,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern void CreatePointLight(int);
@@ -119,7 +119,7 @@ extern int mc_gamedata[];
 extern int mc_leveldata[];
 extern int memcard_GetDataSize(int *p);
 extern int memcard_PrepData(void *dst, int i, int *table);
-extern int func_001236F0(void);
+extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
 extern int D_0013D844 NOT_SDA;
@@ -148,7 +148,7 @@ extern int g_hero_moby NOT_SDA;
 extern float shadow_light_dir[] NOT_SDA;
 extern float FastCos(float);
 extern float FastSin(float);
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern char normal_lut[];
 extern int render_packet_end;
 extern short vu1_chain_safe_end;
@@ -166,28 +166,28 @@ extern float round_float_to_decimal_places(int, float);
 extern unsigned char gold_bolts_collected[];
 extern unsigned char gold_weapon_purchased[];
 extern unsigned char gSkillPoints[];
-extern void func_0012F068(void *);
+extern void snd_StreamSafeCdCallback(void *);
 extern void finish_audio_stream_read(int);
 extern short cd_read_state[];
-extern void func_0012EDE0(void *);
-extern void func_0012EFE8(void);
+extern void snd_ContinueVAGStream(void *);
+extern void snd_StreamSafeCdBreak(void);
 extern char load_file_start_failed_string[];
-extern int func_0012EE98(int, int, int, void *);
+extern int snd_StreamSafeCdRead(int, int, int, void *);
 extern int start_audio_stream_read_v(void) __asm__("func_00217628");
-extern void func_00122598(int);
+extern void sce_gs_sync_v(int);
 extern void music_Update(void);
-extern void func_0012EC40(void);
-extern void func_0012DDC0(void);
-extern void func_0012EC30(void);
-extern int func_0012F030(void);
+extern void snd_reset_state_and_flush_commands(void);
+extern void snd_FlushSoundCommands(void);
+extern void snd_reenable_command_flush(void);
+extern int snd_StreamSafeCdGetError(void);
 extern void music_start_track_by_id(short, short, short);
 extern void music_PreseekTrack(short, short, short);
 extern short D_001517F0 NOT_SDA;
 extern char g_controller_state[];
 extern int pad_socket_param NOT_SDA;
-extern void func_00124650(void);
-extern void func_00124B88(int);
-extern int func_00124BC8(void *, void *);
+extern void sce_dbc_init(void);
+extern void sce_pad2_init(int);
+extern int sce_pad2_create_socket(void *, void *);
 extern void poll_pad_device_state(void *);
 extern int pause_action_list_mode;
 extern char pause_action_list_pal[];
@@ -262,11 +262,11 @@ extern void transform_vector(void *, void *, void *);
 extern float vec_length_xy(void *);
 extern float fast_arc_tan_a(float, float) __asm__("func_001FA058");
 extern void truncate_float_to_s32(float);
-extern void func_00120F30(int);
-extern int func_0012E060(void *, int);
-extern void func_0012EE70(int);
-extern void func_0012EF48(int);
-extern void func_0012E2E8(void);
+extern void sce_cd_sync_s(int);
+extern int snd_BankLoadByLoc(void *, int);
+extern void snd_StreamSafeCheckCDIdle(int);
+extern void snd_StreamSafeCdSync(int);
+extern void snd_ResolveBankXREFS(void);
 
 extern char render_sequence_c[] __asm__("D_0018CC20");
 extern float view_tan_half_fov;
@@ -292,10 +292,10 @@ unsigned char build_object_rotation_matrix(void) {
     UpdateViewContext();
     pos = camera_position;
     qcopy(pos, key);
-    func_00125358(m);
-    func_001254A0(m, m, *(float *)(key + 0x10));
-    func_00125548(m, m, ang[1]);
-    func_001253F8(m, m, ang[2]);
+    sceVu0UnitMatrix(m);
+    sceVu0RotMatrixX(m, m, *(float *)(key + 0x10));
+    sceVu0RotMatrixY(m, m, ang[1]);
+    sceVu0RotMatrixZ(m, m, ang[2]);
     cam = pos - 0x140;
     *(float *)(cam + 0x350) = -m[8];
     *(float *)(cam + 0x360) = -m[0];
@@ -1825,7 +1825,7 @@ extern s32 upload_mip_texture(s32, void *);
 extern void FastMemZero16(void *, s32);
 extern void ResetDrawGlobals(void);
 extern void parse_space_scene_chunk(s32 index);
-extern void func_0012E1C8(s32 cmd, void *arg, s64 data);
+extern void snd_BankLoadFromEE_CB(s32 cmd, void *arg, s64 data);
 extern void SoundBank_StoreHandle();
 #define sequence (*(f32 *)&D_0015F53C)
 #define D_001413D0 ((s32 *)&D_001414D0)
@@ -2059,9 +2059,9 @@ extern int pal_mode MACRO_ADDR;
 extern int g_game_language MACRO_ADDR;
 extern int D_001941D4;
 extern int Movie_Play(int, int, int, int, int);
-extern void func_00120858(int, int);
-extern void func_00123168(void *);
-extern void func_0012F308(void);
+extern void wait_for_graphics_pipeline_idle(int, int);
+extern void sceGsSyncVCallback(void *);
+extern void vsync_callback(void);
 extern void FadeToBlack(int);
 
 /* Plays movie id, taking its {sector, size} from the WAD table of
@@ -2082,9 +2082,9 @@ void play_level_transition_movie(int id) {
     buf = D_001941D4;
     Movie_Play(sector, size, (buf + 0x3F) & ~0x3F,
                   (buf + 0x300000 + 0x3F) & ~0x3F, g_game_language);
-    func_00122598(0);
-    func_00120858(0, 0);
-    func_00123168(func_0012F308);
+    sce_gs_sync_v(0);
+    wait_for_graphics_pipeline_idle(0, 0);
+    sceGsSyncVCallback(vsync_callback);
     FadeToBlack(4);
     voice_pool[0x6B] |= 0x10;
 }
@@ -2210,11 +2210,11 @@ struct CommonArchiveMemory {
 };
 extern s32 g_gs_texture_allocation_base MACRO_ADDR;
 extern struct CommonArchiveMemory level_resource_buffers;
-extern void func_00118D80(s32 a0);
-extern s32 func_00120F30_32B90(s32 a0) __asm__("func_00120F30");
-extern s32 func_00122958(sceGsLoadImage *load_image, s32 image_address);
-extern s32 func_00122630(sceGsLoadImage *load_image, s32 block_offset, s32 buffer_width, s32 pixel_storage_format, s32 x, s32 y, s32 width, s32 height);
-extern s32 func_00120858_32B90(s32 a0, s32 a1) __asm__("func_00120858");
+extern void flush_cache(s32 a0);
+extern s32 sce_cd_sync_s_r(s32 a0) __asm__("func_00120F30");
+extern s32 sceGsExecLoadImage(sceGsLoadImage *load_image, s32 image_address);
+extern s32 sceGsSetDefLoadImage(sceGsLoadImage *load_image, s32 block_offset, s32 buffer_width, s32 pixel_storage_format, s32 x, s32 y, s32 width, s32 height);
+extern s32 wait_for_graphics_pipeline_idle_r(s32 a0, s32 a1) __asm__("func_00120858");
 extern s32 fast_decompress(s32 source_address, s32 destination_address);
 extern s32 Stream_SubmitRead(void *a0, u32 a1, u32 a2);
 
@@ -2239,57 +2239,57 @@ void prepare_loading_slide_textures(s32 language_index, s32 first_slide, s32 sec
     Stream_SubmitRead((void *)(archive_memory->archive_base + 0x100000),
                            disc_table.loading_slides[language_index].sector,
                            disc_table.loading_slides[language_index].size);
-    func_00120F30_32B90(0);
-    func_00118D80(0);
+    sce_cd_sync_s_r(0);
+    flush_cache(0);
     fast_decompress(archive_memory->archive_base + 0x100000, archive_memory->archive_base);
-    func_00118D80(0);
+    flush_cache(0);
     archive_base = archive_memory->archive_base;
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;
     g_gs_texture_allocation_start = g_gs_texture_allocation_base;
     texture_base_output = texture_bases;
     for (upload_index = 0; upload_index < 6; upload_index++) {
         if (upload_index == 0) {
-            func_00122630(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 1, 0, 0, 0,
+            sceGsSetDefLoadImage(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 1, 0, 0, 0,
                                  0x10, 0x10);
             upload_bytes = 0x400;
             image_address = (s32)((u8 *)archive_base + *(s32 *)((u8 *)archive_base + 4)) + 0x20;
         } else if (upload_index == 1) {
-            func_00122630(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 1, 0x13, 0,
+            sceGsSetDefLoadImage(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 1, 0x13, 0,
                                  0, 0x40, 0x40);
             upload_bytes = 0x1000;
             image_address = (s32)((u8 *)archive_base + *(s32 *)((u8 *)archive_base + 4)) + 0x420;
         } else if (upload_index == 2) {
-            func_00122630(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 1, 0, 0, 0,
+            sceGsSetDefLoadImage(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 1, 0, 0, 0,
                                  0x10, 0x10);
             upload_bytes = 0x400;
             image_address =
                 (s32)((u8 *)archive_base + *(s32 *)((u8 *)archive_base + first_slide * 4 + 8)) +
                 0x20;
         } else if (upload_index == 3) {
-            func_00122630(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 8, 0x13, 0,
+            sceGsSetDefLoadImage(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 8, 0x13, 0,
                                  0, 0x200, 0x40);
             upload_bytes = 0x8000;
             image_address =
                 (s32)((u8 *)archive_base + *(s32 *)((u8 *)archive_base + first_slide * 4 + 8)) +
                 0x420;
         } else if (upload_index == 4) {
-            func_00122630(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 1, 0, 0, 0,
+            sceGsSetDefLoadImage(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 1, 0, 0, 0,
                                  0x10, 0x10);
             upload_bytes = 0x400;
             image_address =
                 (s32)((u8 *)archive_base + *(s32 *)((u8 *)archive_base + second_slide * 4 + 8)) +
                 0x20;
         } else {
-            func_00122630(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 8, 0x13, 0,
+            sceGsSetDefLoadImage(&load_image, (g_gs_texture_allocation_cursor << 8) >> 16, 8, 0x13, 0,
                                  0, 0x200, 0x40);
             upload_bytes = 0x8000;
             image_address =
                 (s32)((u8 *)archive_base + *(s32 *)((u8 *)archive_base + second_slide * 4 + 8)) +
                 0x420;
         }
-        func_00118D80(0);
-        func_00122958(&load_image, image_address);
-        func_00120858_32B90(0, 0);
+        flush_cache(0);
+        sceGsExecLoadImage(&load_image, image_address);
+        wait_for_graphics_pipeline_idle_r(0, 0);
         *texture_base_output = g_gs_texture_allocation_cursor >> 8;
         g_gs_texture_allocation_cursor = g_gs_texture_allocation_cursor + upload_bytes;
         texture_base_output++;
@@ -2344,7 +2344,7 @@ extern ScreenOfs_32EF0 g_screen_extent_r2 __asm__("D_0013E600");
 /* Retail stores both with `lui $at`: unsized, or the two-byte size makes them small data. */
 extern s16 level_archive_load_state_r[] __asm__("D_0015EF48") MACRO_ADDR;
 extern s16 level_archive_load_busy_r[] __asm__("D_0015EF4A") MACRO_ADDR;
-extern void func_0012F4A8_32EF0(s32) __asm__("func_0012F4A8");
+extern void read_file_entry_with_retry_r(s32) __asm__("func_0012F4A8");
 extern void ResetGsRegisters(void);
 extern void ResetGsRegistersPr(void);
 extern void FadeToBlack(s32);
@@ -2361,7 +2361,7 @@ extern void VU1_swapChain(void);
 extern void VU1_sendChain(void);
 extern void VU1_syncChain(s32);
 extern void VU1_addGSregister_r2(s32, u64) __asm__("func_00234C98");
-extern void func_00122598(s32);
+extern void sce_gs_sync_v(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/play_level_loading_slides.c, play_level_loading_slides. */
 void play_level_loading_slides(s32 language_index, s32 first_slide, s32 second_slide,
@@ -2379,11 +2379,11 @@ void play_level_loading_slides(s32 language_index, s32 first_slide, s32 second_s
     prepare_loading_slide_textures(language_index, first_slide, second_slide, &shared_texture,
                                    &first_texture, &second_texture);
     if (preload_level != 0) {
-        func_0012F4A8_32EF0((*(s32 *)&g_current_level_index));
+        read_file_entry_with_retry_r((*(s32 *)&g_current_level_index));
         level_archive_load_state_r[0] = 0;
         level_archive_load_busy_r[0] = 0;
     }
-    func_00122598(0);
+    sce_gs_sync_v(0);
     VU1_initChain();
     for (frame = 0; frame < duration_ticks && memory_card_state_r2.state < 3 && memory_card_state_r2.pending_state < 0;
          frame++) {
@@ -2433,7 +2433,7 @@ void play_level_loading_slides(s32 language_index, s32 first_slide, s32 second_s
         memcard_update_state();
         Menu_RunStateHandler();
         VU1_syncChain(1);
-        func_00122598(0);
+        sce_gs_sync_v(0);
         ResetGsRegistersPr();
         VU1_sendChain();
         VU1_swapChain();
@@ -2495,20 +2495,20 @@ extern int sound_bank_handle_m __asm__("D_0015EE5C") MACRO_ADDR;
 extern short D_0015EF48_m SDATA(D_0015EF48);
 extern int level_archive_load_busy_i __asm__("D_0015EF4A") MACRO_ADDR;
 extern char unloaded_sound_bank_format[];
-extern int func_00122598_i(int) __asm__("func_00122598");
-extern int func_0012EF48_i(int) __asm__("func_0012EF48");
-extern int func_00120F30_i(int) __asm__("func_00120F30");
+extern int sce_gs_sync_v_i(int) __asm__("func_00122598");
+extern int snd_StreamSafeCdSync_i(int) __asm__("func_0012EF48");
+extern int sce_cd_sync_s_i(int) __asm__("func_00120F30");
 
-extern void func_0012F0A8(int, int, int, int, int);
+extern void snd_set_reverb_ex(int, int, int, int, int);
 extern void sound_StopAllSounds(void);
 extern void music_Stop(void);
-extern void func_0012E318(int);
+extern void snd_UnloadBank(int);
 extern void SetBackgroundColor(int, int, int);
 extern int load_level_chunk_from_disc(void);
 extern void DMAC_VIF1_Disable(void);
 extern void play_level_loading_slides(int, int, int, int, int);
 extern void initialize_level_runtime(void);
-extern int func_0012F4A8(int);
+extern int read_file_entry_with_retry(int);
 extern void append_palette_transfer_packet(void);
 extern void UpdatePad(void);
 extern void update_resident_gameplay_state(void);
@@ -2535,21 +2535,21 @@ void DoSpaceTransition(void) {
     if (level_available_b.fE != 0 || space_load_level >= 14) {
         level_render_state.set = 2;
     }
-    func_00118D80(0);
-    func_0012F0A8(2, 0, 0, 0, 0);
-    func_0012EC40();
-    func_0012DDC0();
+    flush_cache(0);
+    snd_set_reverb_ex(2, 0, 0, 0, 0);
+    snd_reset_state_and_flush_commands();
+    snd_FlushSoundCommands();
     sound_StopAllSounds();
     music_Stop();
     cd_read_state_b.fB = 1;
     if (level_sound_defs != 0) {
-        func_0012E318(*(int *)(level_sound_defs + 0x1C));
-        func_0012E2E8();
+        snd_UnloadBank(*(int *)(level_sound_defs + 0x1C));
+        snd_ResolveBankXREFS();
         STUB_printf(unloaded_sound_bank_format, *(int *)(level_sound_defs + 0x1C));
     }
     sound_bank_handle_m = 0;
-    func_0012F068(0);
-    func_0012EF48_i(0);
+    snd_StreamSafeCdCallback(0);
+    snd_StreamSafeCdSync_i(0);
     view_context_b.f238 = 16;
     view_context_b.f21C = 524288.0f;
     view_context_b.f228 = 255.0f;
@@ -2566,7 +2566,7 @@ void DoSpaceTransition(void) {
         FadeToBlack(scale_game_frame_count(6));
         g_current_level_index_m = space_load_level;
         load_level_chunk_from_disc();
-        func_00120F30_i(0);
+        sce_cd_sync_s_i(0);
         cd_read_state_b.fB = 0;
         DMAC_VIF1_Disable();
         return;
@@ -2633,7 +2633,7 @@ void DoSpaceTransition(void) {
         g_current_level_index_m = space_load_level;
         D_0015EF48_m = 0;
         initialize_level_runtime();
-        func_0012F4A8(g_current_level_index_m);
+        read_file_entry_with_retry(g_current_level_index_m);
         while (space_load_in_progress_m == 0) {
             VU1_sendChain();
             VU1_swapChain();
@@ -2646,7 +2646,7 @@ void DoSpaceTransition(void) {
             memcard_update_state();
             Menu_RunStateHandler();
             VU1_syncChain(1);
-            func_00122598_i(0);
+            sce_gs_sync_v_i(0);
             game_frame_counter++;
             SpaceTransition_Tick();
             if (!done) {
@@ -2655,22 +2655,22 @@ void DoSpaceTransition(void) {
         }
         if (!done) {
             do {
-                func_00118D80(0);
-                func_00122598_i(0);
+                flush_cache(0);
+                sce_gs_sync_v_i(0);
                 memcard_update_state();
                 Menu_RunStateHandler();
                 SpaceTransition_Tick();
             } while (service_level_archive_load() == 0);
         }
         while (memory_card_state_b.fDC != 2 || memory_card_state_b.fE4 >= 0) {
-            func_00118D80(0);
-            func_00122598_i(0);
+            flush_cache(0);
+            sce_gs_sync_v_i(0);
             memcard_update_state();
             Menu_RunStateHandler();
             SpaceTransition_Tick();
         }
     }
-    func_00120F30_i(0);
+    sce_cd_sync_s_i(0);
     cd_read_state_b.fB = 0;
     DMAC_VIF1_Disable();
 }

@@ -342,7 +342,7 @@ f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 f32 FastVecDist(void *, void *);
-void func_001252C0(void *, void *);
+void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
 f32 fast_atan2(f32, f32);
 void FastVecSub(void *, void *, void *);
@@ -452,7 +452,7 @@ void Hero_UpdateGroundContact(void) {
         g_hero.ground_z.f = aridia_coll_hit.v20.f[2];
         g_hero.ground_distance = FastVecDist((u8 *)&g_hero.motion.pos, (u8 *)&g_hero.ground_point);
         g_hero.ground_moby = (struct Moby *)aridia_coll_hit.i18;
-        func_001252C0((u8 *)&g_hero.ground_normal, (u8 *)&aridia_coll_hit.f40);
+        sceVu0Normalize((u8 *)&g_hero.ground_normal, (u8 *)&aridia_coll_hit.f40);
         g_hero.ground_slope.f = compute_gravity_relative_vector_inclination((u8 *)&aridia_coll_hit.f40);
         g_hero.downhill_yaw = fast_atan2(aridia_coll_hit.f40, aridia_coll_hit.f44);
         FastVecSub(&ground_geometry_scratch, (u8 *)&g_hero.ground_point, (u8 *)&g_hero.motion.pos);
@@ -526,7 +526,7 @@ d1:
             if (0.4f < FastAbsF(f)) {
                 g_hero.unk2C0.f[i] = 0.0f;
             }
-            func_001252C0(&normalized_probe_hit_normal, (u8 *)&aridia_coll_hit.f40);
+            sceVu0Normalize(&normalized_probe_hit_normal, (u8 *)&aridia_coll_hit.f40);
             compute_rotated_vector_angles(&normalized_probe_hit_normal, &probe_surface_angles);
             if (-0.78539819f < probe_surface_angles.f[1] && probe_surface_angles.f[1] < 0.78539819f) {
                 g_hero.unk2C8.f[i] = probe_surface_angles.f[1];

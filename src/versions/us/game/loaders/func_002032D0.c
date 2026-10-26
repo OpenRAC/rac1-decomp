@@ -49,7 +49,7 @@ void LoadHudBanks(void) {
     if (size58 != 0) {
         bank58 = Hud_HeapAlloc_d(size58, 0, fname, 0x261);
         LoadCompressedHudBank(1, (int) bank58);
-        func_00118D80(0);
+        flush_cache(0);
         LinkHudBank(1, (int) bank58);
     }
 

@@ -744,7 +744,7 @@ extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
 extern int FontPrintCenter(int, int, long, void *, int);
 extern float FastVecDist(void *, void *);
 extern void *msg_string(int);
-extern int func_00116248(char *, const char *, ...);
+extern int sprintf(char *, const char *, ...);
 extern void draw_framed_text(int, int, int, char *);
 extern int pal_mode MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
@@ -849,10 +849,10 @@ int draw_hud_text_panel(char *e) {
                 rem = elapsed - seconds * interval;
                 minutes = rem / per;
                 rem = (rem - minutes * per) * 100 / per;
-                func_00116248(text, hud_text_panel_time_format, msg_string(0x5320), seconds, minutes, rem);
+                sprintf(text, hud_text_panel_time_format, msg_string(0x5320), seconds, minutes, rem);
                 draw_framed_text(0x100, y + 0x28, color, text);
                 if (score != 0) {
-                    func_00116248(text, hud_text_panel_score_format, msg_string(0x5321), score);
+                    sprintf(text, hud_text_panel_score_format, msg_string(0x5321), score);
                     draw_framed_text(0x100, y + 0x48, color, text);
                 }
             }
@@ -1181,14 +1181,14 @@ typedef struct { char pad[0x46]; short h46, h48; char pad4A[2]; } TI_238C30;
 extern int GetIconFrame(int, int);
 extern void HudSprite(int, int, int, int, int, int);
 extern void HudFrame(char *, int, int, int, int, int);
-extern int func_00116248(char *, const char *, ...);
+extern int sprintf(char *, const char *, ...);
 extern int FastTweenColor(int, int, float);
 extern float FastAddRots(float, float);
 extern float FastCos(float);
 extern float FastSin(float);
 extern int FontPrintCenter(int, int, long, void *, int);
 extern void * msg_string(int);
-extern int func_00116810(char *);
+extern int libc_strlen(char *);
 extern unsigned char screen_globals_base[];
 extern short quick_select_pulse_period;
 extern short quick_select_ring_radius;
@@ -1288,7 +1288,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
         if (*(unsigned short *)(wr + 8) != 0) {
             int shadow, item;
             item = *(int *)(menu_item_enabled_115 + 0x21 + id * 4);
-            func_00116248(formatted, hud_ammo_format, item, *(unsigned short *)(wr + 0xE));
+            sprintf(formatted, hud_ammo_format, item, *(unsigned short *)(wr + 0xE));
             if (item != 0)
                 shadow = FastTweenColor(GI(quick_select_ammo_color_from), GI(hud_item_selector_nonzero_ammo_text_color_to), open * fade);
             else
@@ -1309,8 +1309,8 @@ int draw_hud_item_selector_panel(HudElem *rec) {
             text = msg_string(id);
         }
         if (text == 0) return rec->w;
-        if (func_00116810((char *)text) == 0) return rec->w;
-        text_length = func_00116810((char *)text);
+        if (libc_strlen((char *)text) == 0) return rec->w;
+        text_length = libc_strlen((char *)text);
         suffix = text;
         for (j = 0; j < text_length; j++) {
             suffix++;
@@ -1501,7 +1501,7 @@ extern int GetIconFrame_r(int, int) __asm__("func_00200198");
 extern void HudSprite_r(int, int, int, int, int, int) __asm__("func_00200468");
 extern void HudFrame_r(void *, int, int, int, int, int) __asm__("func_L00_0023BAB8");
 extern int msg_string_r(int) __asm__("func_001FE540");
-extern int func_00116810_239918(int) __asm__("func_00116810");
+extern int libc_strlen_r(int) __asm__("func_00116810");
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern int FontPrintCenter_r(int, int, int, int, int) __asm__("func_001F6EA8");
 extern int hud_screen_position_r(void *, int *, int *) __asm__("func_L00_00236400");
@@ -1582,7 +1582,7 @@ int draw_hud_radial_selector_panel(Elem_239918 *e) {
         tmp = quick_select_label_msg_ids_r;
         if (hud_selector_slot_tables_r3[D_L00_0015F80C_239918][k].f0 != 0) {
             str = msg_string_r(tmp.v[k]);
-            if (str != 0 && func_00116810_239918(str) != 0) {
+            if (str != 0 && libc_strlen_r(str) != 0) {
                 float f20 = f23 * f22;
                 col = FastTweenColor_r(D_L00_0015F8B4_239918, D_L00_0015F8B8_239918, f20);
                 shadow = FastTweenColor_r(0, 0x80000000, f20);
@@ -1903,7 +1903,7 @@ extern char bolt_separator_alt_string[];
 extern f32 IntToFloat(int);
 extern int FastTweenColor(int, int, f32);
 extern void HudFrame_r2(void *, int, int, int, int, int) __asm__("func_L00_0023BAB8");
-extern int func_00116248_3A788() __asm__("func_00116248");
+extern int sprintf_r() __asm__("func_00116248");
 extern void font_print_right(int, int, int, char *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/text/002377b8.c, FUN_L00_00239df8. */
@@ -1959,14 +1959,14 @@ int draw_bolt_counter_hud_panel(HudElem_3A788 *m)
     /* the count, shadow first */
     color = FastTweenColor((*(s32 *)&bolt_text_color_clear), (*(s32 *)&bolt_text_color_opaque), text);
     shadow = FastTweenColor(0, 0x80000000, text);
-    func_00116248_3A788(buf, bolt_count_format, gBolts);
+    sprintf_r(buf, bolt_count_format, gBolts);
     font_print_right(x + (*(s32 *)&bolt_count_text_x) + 1, y + (*(s32 *)&bolt_count_text_y) + 1, shadow, buf, -1);
     font_print_right(x + (*(s32 *)&bolt_count_text_x), y + (*(s32 *)&bolt_count_text_y), color, buf, -1);
 
     /* thousands separators */
     if (g_game_language != 3)
         apostrophe = g_game_language != 5;
-    func_00116248_3A788(buf, apostrophe ? bolt_separator_string : bolt_separator_alt_string);
+    sprintf_r(buf, apostrophe ? bolt_separator_string : bolt_separator_alt_string);
     dy = apostrophe ? (*(s32 *)&bolt_separator_y) : (*(s32 *)&bolt_separator_alt_y);
     dx = apostrophe ? (*(s32 *)&bolt_separator_x) : (*(s32 *)&bolt_separator_alt_x);
     for (i = 3; i < digits; i += 3) {
@@ -2027,7 +2027,7 @@ extern short bolt_exclamation_color_from;
 extern short bolt_exclamation_color_to;
 extern short bolt_exclamation_pulse_ticks;
 extern char bolt_exclamation_format[];
-extern int func_00116248(char *str, const char *fmt, ...);
+extern int sprintf(char *str, const char *fmt, ...);
 extern float FastSin(float);
 extern int FastTweenColor(int, int, float);
 extern void print_text_with_texture_3(int, int, int, char *, int);
@@ -2078,7 +2078,7 @@ int draw_hud_bolt_exclamation_panel(char *m) {
     HudSprite(GetIconFrame(0x7580, 1), panel_left - 32, y, 32, 32, alpha);
     HudFrame(m, GetIconFrame(0x754f, level_frame_counter % 60 >> 1), x - 32, y, 0, text_alpha);
 
-    func_00116248(buf, bolt_exclamation_format);
+    sprintf(buf, bolt_exclamation_format);
     text_x = x + *(int *)&bolt_exclamation_text_x;
     text_y = y + *(int *)&bolt_exclamation_text_y;
     period = scale_ticks(*(int *)&bolt_exclamation_pulse_ticks);
@@ -2145,7 +2145,7 @@ extern short weapon_hud_text_y;
 extern char hud_ammo_format[];
 extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
 extern void HudFrame(char *, int, int, int, int, int);
-extern int func_00116248(char *, const char *, ...);
+extern int sprintf(char *, const char *, ...);
 extern int FastTweenColor(int, int, float);
 
 /* Draws the weapon HUD tile: three-part frame, weapon icon and ammo text with shadow, faded by the slide-in timers. */
@@ -2181,7 +2181,7 @@ int draw_weapon_ammo_hud_panel(char *m) {
         *(int *)(m + 0x44) = tex;
         HudFrame(m, tex, x, y, 0, alpha);
         v74 = *(int *)(m + 0x74);
-        func_00116248(buf, hud_ammo_format, v74, *(int *)(m + 8));
+        sprintf(buf, hud_ammo_format, v74, *(int *)(m + 8));
         if (v74 != 0)
             s16 = FastTweenColor(*(int *)&weapon_hud_ammo_color_from, *(int *)&weapon_hud_ammo_color_to, f20);
         else

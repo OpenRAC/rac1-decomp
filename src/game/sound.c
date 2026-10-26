@@ -58,8 +58,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern void CreatePointLight(int);
@@ -119,7 +119,7 @@ extern int mc_gamedata[];
 extern int mc_leveldata[];
 extern int memcard_GetDataSize(int *p);
 extern int memcard_PrepData(void *dst, int i, int *table);
-extern int func_001236F0(void);
+extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
 extern int D_0013D844 NOT_SDA;
@@ -148,7 +148,7 @@ extern int g_hero_moby NOT_SDA;
 extern float shadow_light_dir[] NOT_SDA;
 extern float FastCos(float);
 extern float FastSin(float);
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern char normal_lut[];
 extern int render_packet_end;
 extern short vu1_chain_safe_end;
@@ -166,28 +166,28 @@ extern float round_float_to_decimal_places(int, float);
 extern unsigned char gold_bolts_collected[];
 extern unsigned char gold_weapon_purchased[];
 extern unsigned char gSkillPoints[];
-extern void func_0012F068(void *);
+extern void snd_StreamSafeCdCallback(void *);
 extern void finish_audio_stream_read(int);
 extern short cd_read_state[];
-extern void func_0012EDE0(void *);
-extern void func_0012EFE8(void);
+extern void snd_ContinueVAGStream(void *);
+extern void snd_StreamSafeCdBreak(void);
 extern char load_file_start_failed_string[];
-extern int func_0012EE98(int, int, int, void *);
+extern int snd_StreamSafeCdRead(int, int, int, void *);
 extern int start_audio_stream_read_v(void) __asm__("func_00217628");
-extern void func_00122598(int);
+extern void sce_gs_sync_v(int);
 extern void music_Update(void);
-extern void func_0012EC40(void);
-extern void func_0012DDC0(void);
-extern void func_0012EC30(void);
-extern int func_0012F030(void);
+extern void snd_reset_state_and_flush_commands(void);
+extern void snd_FlushSoundCommands(void);
+extern void snd_reenable_command_flush(void);
+extern int snd_StreamSafeCdGetError(void);
 extern void music_start_track_by_id(short, short, short);
 extern void music_PreseekTrack(short, short, short);
 extern short D_001517F0 NOT_SDA;
 extern char g_controller_state[];
 extern int pad_socket_param NOT_SDA;
-extern void func_00124650(void);
-extern void func_00124B88(int);
-extern int func_00124BC8(void *, void *);
+extern void sce_dbc_init(void);
+extern void sce_pad2_init(int);
+extern int sce_pad2_create_socket(void *, void *);
 extern void poll_pad_device_state(void *);
 extern int pause_action_list_mode;
 extern char pause_action_list_pal[];
@@ -368,12 +368,12 @@ typedef struct {
 extern int playback_mode MACRO_ADDR;
 extern int music_volume MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
-extern void func_0012DB68(void);
-extern void func_0012E380(int);
-extern void func_0012E3C0(int, int);
-extern void func_0012F0E8(int, int);
-extern void func_0012E3F8(int, int, int);
-extern void func_0012E348(int, int);
+extern void snd_StartSoundSystem(void);
+extern void snd_SetPlaybackMode(int);
+extern void snd_set_mixer_mode(int, int);
+extern void snd_PreAllocReverbWorkArea(int, int);
+extern void snd_SetGroupVoiceRange(int, int, int);
+extern void snd_SetMasterVolume(int, int);
 extern void reset_music(void);
 
 /* Reset the voice pool, set up the sound library, voices and volumes, and reset music. */
@@ -395,13 +395,13 @@ void initialize_gameplay_sound_system(void) {
         ((SndVoice_2DBE8 *)p)[1].x4 = 0;
         p += 0x70;
     } while (p < end);
-    func_0012DB68();
-    func_0012E380(playback_mode == 0);
-    func_0012E3C0(0, 1);
-    func_0012F0E8(2, 4);
-    func_0012E3F8(1, 0x18, 0x2F);
-    func_0012E3F8(2, 0x18, 0x2F);
-    func_0012E3F8(4, 0x18, 0x2F);
+    snd_StartSoundSystem();
+    snd_SetPlaybackMode(playback_mode == 0);
+    snd_set_mixer_mode(0, 1);
+    snd_PreAllocReverbWorkArea(2, 4);
+    snd_SetGroupVoiceRange(1, 0x18, 0x2F);
+    snd_SetGroupVoiceRange(2, 0x18, 0x2F);
+    snd_SetGroupVoiceRange(4, 0x18, 0x2F);
     v = sound_volume;
     ((SndState_2DBE8 *)voice_pool)->vol[0] = (v * 8) / 10;
     ((SndState_2DBE8 *)voice_pool)->vol[1] = music_volume;
@@ -410,12 +410,12 @@ void initialize_gameplay_sound_system(void) {
     ((SndState_2DBE8 *)voice_pool)->vol[4] = (v * 7) / 10;
     ((SndState_2DBE8 *)voice_pool)->vol[5] = v;
     reset_music();
-    func_0012E348(0, ((SndState_2DBE8 *)voice_pool)->vol[0]);
-    func_0012E348(1, ((SndState_2DBE8 *)voice_pool)->vol[1]);
-    func_0012E348(2, ((SndState_2DBE8 *)voice_pool)->vol[2]);
-    func_0012E348(3, ((SndState_2DBE8 *)voice_pool)->vol[3]);
-    func_0012E348(4, ((SndState_2DBE8 *)voice_pool)->vol[4]);
-    func_0012E348(5, ((SndState_2DBE8 *)voice_pool)->vol[5]);
+    snd_SetMasterVolume(0, ((SndState_2DBE8 *)voice_pool)->vol[0]);
+    snd_SetMasterVolume(1, ((SndState_2DBE8 *)voice_pool)->vol[1]);
+    snd_SetMasterVolume(2, ((SndState_2DBE8 *)voice_pool)->vol[2]);
+    snd_SetMasterVolume(3, ((SndState_2DBE8 *)voice_pool)->vol[3]);
+    snd_SetMasterVolume(4, ((SndState_2DBE8 *)voice_pool)->vol[4]);
+    snd_SetMasterVolume(5, ((SndState_2DBE8 *)voice_pool)->vol[5]);
 }
 
 typedef unsigned int u128_DD68 __attribute__((mode(TI), aligned(16)));
@@ -885,11 +885,11 @@ s32 func_0022DD68_r(void) {
     return 0;
 }
 
-extern void func_00120F30(int);
-extern int func_0012E060(void *, int);
-extern int func_0012EE70(int);
-extern void func_0012EF48(int);
-extern void func_0012E2E8(void);
+extern void sce_cd_sync_s(int);
+extern int snd_BankLoadByLoc(void *, int);
+extern int snd_StreamSafeCheckCDIdle(int);
+extern void snd_StreamSafeCdSync(int);
+extern void snd_ResolveBankXREFS(void);
 
 /* Reentrancy-guarded: base+0x44 is held at 1 for the duration. The
    return value is func_0012E060's, captured in the delay slot of the
@@ -902,11 +902,11 @@ int load_audio_bank_by_location(void *arg0) {
 
     if (*(int *)(base + 0x44) == 0) {
         *(int *)(base + 0x44) = 1;
-        func_00120F30(0);
-        r = func_0012E060(arg0, 0);
-        func_0012EE70(1);
-        func_0012EF48(0);
-        func_0012E2E8();
+        sce_cd_sync_s(0);
+        r = snd_BankLoadByLoc(arg0, 0);
+        snd_StreamSafeCheckCDIdle(1);
+        snd_StreamSafeCdSync(0);
+        snd_ResolveBankXREFS();
         *(int *)(base + 0x44) = 0;
     }
     return r;
@@ -1245,9 +1245,9 @@ typedef struct {
     SndVoice voices[30];
 } SndState;
 extern SndState voice_pool_r2 __asm__("D_0013E650");
-extern s32 func_0012DDC0_2EFE8() __asm__("func_0012DDC0");
-extern s32 func_0012E4F8();
-extern s32 func_0012EC40_2EFE8() __asm__("func_0012EC40");
+extern s32 snd_FlushSoundCommands_r() __asm__("func_0012DDC0");
+extern s32 snd_StopAllSounds();
+extern s32 snd_reset_state_and_flush_commands_r() __asm__("func_0012EC40");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/audio/voices/sound_stop_all_sounds.c, sound_stop_all_sounds. */
 void sound_StopAllSounds(void) {
@@ -1257,10 +1257,10 @@ void sound_StopAllSounds(void) {
     s32 p;
     s32 end;
 
-    func_0012EC40_2EFE8();
-    func_0012DDC0_2EFE8();
-    func_0012E4F8();
-    while (func_0012DDC0_2EFE8() != 0) {
+    snd_reset_state_and_flush_commands_r();
+    snd_FlushSoundCommands_r();
+    snd_StopAllSounds();
+    while (snd_FlushSoundCommands_r() != 0) {
     }
     for (i = 0; i < 4; i++) {
         qzero(&voice_pool_r2.q[i]);

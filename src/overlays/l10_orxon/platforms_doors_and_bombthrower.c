@@ -622,7 +622,7 @@ extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void matrix_from_basis_rows_r(void *, void *) __asm__("func_001FA4A0");
 extern int coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern void *func_00115248_2CAD18(void *, const void *, u32) __asm__("func_00115248");
+extern void *libc_memcpy_r(void *, const void *, u32) __asm__("func_00115248");
 extern void spawn_nearby_effect_without_direction_r(unsigned char *m, int x, int y, void *p, float f) __asm__("func_L00_0025AD38");
 
 /* Hits every moby inside the box in front of this one: collects the mobys in a sphere around the box, clamps each
@@ -658,7 +658,7 @@ void spawn_linked_hitbox_contact_effects(struct Moby *moby, HitBox_2CAD18 *box) 
     if (count != 0) {
         struct Moby *found[count];
 
-        func_00115248_2CAD18(found, nearby_mobys_r, count * 4);
+        libc_memcpy_r(found, nearby_mobys_r, count * 4);
         for (i = 0; i < count; i++) {
             struct Moby *other = found[i];
 

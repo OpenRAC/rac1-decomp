@@ -374,7 +374,7 @@ typedef struct {
 
 extern u64 GetEffectTex(int);
 extern float IntToFloat(int);
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FastBSphereCheck(void *, float);
 extern void draw_world_quad(void *, int, int);
 extern unsigned char gCheats[] MACRO_ADDR;
@@ -433,7 +433,7 @@ void draw_group_scenery_ship_trails(char *moby) {
             packet[i].color[j] = FastTweenColor(*(int *)&rilgar_ship_trail_color_head, *(int *)&rilgar_ship_trail_color_tail, ratio);
         }
     }
-    func_001153FC(matrix, 0, 0x20);
+    libc_memset(matrix, 0, 0x20);
     matrix[2] = 0.15f;
     matrix[6] = -0.15f;
     list = rilgar_moby_groups[(unsigned char)moby[0x21]];

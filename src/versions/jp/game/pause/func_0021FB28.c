@@ -20,7 +20,7 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
         struct TextRegion text_window;
         struct TextRegion window_fields;
 
-        func_001153FC_1FB28(&window_fields, 0, sizeof(window_fields));
+        libc_memset_r(&window_fields, 0, sizeof(window_fields));
         window_fields.bottom = menu->height;
         window_fields.left = 8;
         window_fields.right = divide_coordinate(menu->width, column_divisor);
@@ -28,11 +28,11 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
         window_fields.flags = 5;
         text_window = window_fields;
         text_window.anchor_x = add_offset(text_window.left, text_window.right) >> 1;
-        func_001166FC_1FB28(text_buffer, msg_string_r3(0x4F4F));
+        libc_strcpy_r(text_buffer, msg_string_r3(0x4F4F));
         if (g_game_language_r2[0] == column_divisor) {
-            hyphen = func_00116428(text_buffer, 0x2D);
+            hyphen = libc_strchr(text_buffer, 0x2D);
             if (hyphen != 0) {
-                text_length = func_00116810_1FB28(text_buffer);
+                text_length = libc_strlen_r(text_buffer);
                 source_end = text_buffer + text_length;
                 if (hyphen < source_end) {
                     destination_end = source_end;
@@ -64,15 +64,15 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
     font_print_right(0xC8, 0x36, 0x80FFA888L, msg_string_r3(0x4F51), -1);
     font_print_right(0xC8, 0x54, 0x80FFA888L, msg_string_r3(0x4F52), -1);
     collected_count = count_nonzero_entries_up_to_40();
-    func_00116248(text_buffer, fmt_decimal, collected_count);
+    sprintf(text_buffer, fmt_decimal, collected_count);
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x1D), 0x80000000L,
                     text_buffer, -1);
     font_print_right_large(0xF0, 0x1D, 0x80FFA888L, text_buffer, -1);
-    func_00116248(text_buffer, fmt_decimal, count_nonzero_entries_up_to_10() * 4);
+    sprintf(text_buffer, fmt_decimal, count_nonzero_entries_up_to_10() * 4);
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x36), 0x80000000L,
                     text_buffer, -1);
     font_print_right_large(0xF0, 0x36, 0x80FFA888L, text_buffer, -1);
-    func_00116248(text_buffer, fmt_decimal, compute_clamped_count_difference());
+    sprintf(text_buffer, fmt_decimal, compute_clamped_count_difference());
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x54), 0x80000000L,
                     text_buffer, -1);
     font_print_right_large(0xF0, 0x54, 0x80FFA888L, text_buffer, -1);

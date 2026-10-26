@@ -3,7 +3,7 @@ int ObtainAllGoldWeaponsMenu(char *arg0) {
     Box18 tmp;
     int x, y;
 
-    func_001153FC(&tmp, 0, 0x18);
+    libc_memset(&tmp, 0, 0x18);
     tmp.f2 = *(unsigned short *)(arg0 + 0x24);
     tmp.f6 = *(unsigned short *)(arg0 + 0x20);
     tmp.f10 = 0x10;

@@ -57,8 +57,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern void CreatePointLight(int);
@@ -118,7 +118,7 @@ extern int mc_gamedata[];
 extern int mc_leveldata[];
 extern int memcard_GetDataSize(int *p);
 extern int memcard_PrepData(void *dst, int i, int *table);
-extern int func_001236F0(void);
+extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
 extern int D_0013D844 NOT_SDA;
@@ -745,7 +745,7 @@ void configure_graphics_setup_dma_chain(void) {
     ProfileMarker_End(graphics_setup_profile_label, 8);
 }
 
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern char normal_lut[];
 extern int render_packet_end MACRO_ADDR;
 extern int vu1_chain_safe_end MACRO_ADDR;
@@ -754,7 +754,7 @@ extern int vu1_chain_safe_end MACRO_ADDR;
    loads with retail's one-register lui $4 / lw $4, and D_0015F71C's
    load, scheduled into the jal delay slot, becomes $gp-relative. */
 void ProcessMobyAnimData(void) {
-    func_00118D80(0);
+    flush_cache(0);
     FastMemCopy((void *)0x70003800, normal_lut, 0x800);
     MobyAnimProc(render_packet_end, vu1_chain_safe_end);
 }
@@ -818,7 +818,7 @@ extern int moby_proc(int, int, int, int);
 /* DrawMobyList */
 void DrawMobyList(int arg0, int arg1) {
     VU1_addGSregister(0x47, 0x5360B);
-    func_00118D80(0);
+    flush_cache(0);
     RestoreMobyClassDists();
     moby_anim_head = moby_proc(arg0, moby_anim_head, arg1, 0);
     StashMobyClassDists();

@@ -591,7 +591,7 @@ extern void FastVecScale(void *, void *, float);
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 extern void AttachManipulator(void *, int, void *);
 extern void initialize_woodcut_bot_movement_data(void *);
-extern void *func_001153FC(void *, int, int);
+extern void *libc_memset(void *, int, int);
 extern int random_integer_below(int);
 extern int IsPointInPolygon(void *, void *, int);
 extern int IsFrameWithinWindow(void *, float);
@@ -820,7 +820,7 @@ void woodcut_bot_update(Moby *m) {
             if (excited ? (d->f3E8 * 2.0f < dist) : (d->f3E8 < dist)) {
                 int anims[6];
 
-                func_001153FC(anims, 0, 0x18);
+                libc_memset(anims, 0, 0x18);
                 anims[5] = 1;
                 MobyBlendAnimation(m, anims[random_integer_below(6)], 0, scale_ticks(0x14));
             } else {

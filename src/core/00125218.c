@@ -38,8 +38,8 @@ extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
 extern void *InitBlockData NOT_SDA;
 extern int D_00155080[];
-extern void func_001193F8(int);
-extern void func_00118AD0(int, int);
+extern void disable_dmac_atomic(int);
+extern void remove_dmac_handler(int, int);
 extern int D_00154F54;
 extern int D_0012FD04;
 extern int D_00154F64 NOT_SDA;
@@ -47,9 +47,9 @@ extern int D_00154F6C NOT_SDA;
 extern void func_0011AA90(int, int, int, int, int, int, int);
 extern void func_0011AA00(void);
 extern int RpcCommandState NOT_SDA;
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
-extern int func_00118C70(void *);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
+extern int create_semaphore(void *);
 extern int D_0012FDA0;
 extern int D_0012FDA4;
 extern char D_00157E80[];
@@ -59,7 +59,7 @@ extern int D_0012FD9C NOT_SDA;
 extern char D_0012FCEC[];
 extern char FsResetBuffer[];
 extern int D_0012FDA8;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FsResetState;
 extern int D_0012FDAC;
 extern char D_00158140[];
@@ -76,8 +76,8 @@ extern int SecondSemaphore;
 extern int D_00130BD0[];
 extern char D_00130428[];
 extern int func_0011DC50(void);
-extern void func_00118D80(int);
-extern int func_00120F30(int);
+extern void flush_cache(int);
+extern int sce_cd_sync_s(int);
 extern void *D_00159840;
 extern int D_001313E0;
 extern int D_001313E8;
@@ -85,13 +85,13 @@ extern int D_001313EC;
 extern int D_001313F0;
 extern int D_001313E4;
 extern int D_001313FC;
-extern int func_0011B4C8();
+extern int sif_call_rpc();
 extern int func_00120D28(int);
-extern void func_00118C90(int);
+extern void signal_semaphore(int);
 extern char D_00132590[];
 extern int D_00131440;
 extern void func_0011A6C8();
-extern int func_0011B6B8(void *);
+extern int sce_sif_check_stat_rpc(void *);
 extern char D_00153000[];
 extern char D_00132E08[];
 extern int D_001313D0;
@@ -101,16 +101,16 @@ extern char CoreDataTable[];
 extern void func_00123650(void *);
 extern char D_001534E0[];
 extern int DmaChannels[];
-extern int func_001238B0(int, int, int, int);
+extern int sce_mc_open(int, int, int, int);
 extern int D_00132EA8;
 extern int *D_00159B28;
 extern int *D_00159B2C;
 extern int *D_00159B30;
 extern char RpcQueueData[];
 extern int RpcReceiveData;
-extern void func_00124B60(void *);
+extern void debug_print_stub(void *);
 extern char D_00153658[];
-extern int func_00124920(int);
+extern int sceDbcGetDepNumber(int);
 typedef struct {
     char unk_00[4];
     int  unk_04;
@@ -128,13 +128,13 @@ typedef struct {
     unsigned long d : 8;
 } Mode125218;
 
-extern int func_00124A70(int, Mode125218, int *, int);
+extern int sceDbcReceiveData(int, Mode125218, int *, int);
 
 /* Builds a mode word from bitfields and runs the func_00124A70 round
    trip. The fields are 64-bit, so each insert is a doubleword and/or,
    and the struct is passed by value. `if (r >= 0) return out;` keeps
    retail's two returns; an `r = out` spelling becomes slt/movz. */
-int func_00125218(int arg0, int arg1) {
+int sce_vib_get_profile(int arg0, int arg1) {
     Mode125218 m;
     int out;
     int r;
@@ -143,7 +143,7 @@ int func_00125218(int arg0, int arg1) {
     m.b = 2;
     m.c = 3;
     m.d = 1;
-    r = func_00124A70(arg0, m, &out, arg1);
+    r = sceDbcReceiveData(arg0, m, &out, arg1);
     if (r >= 0) {
         return out;
     }

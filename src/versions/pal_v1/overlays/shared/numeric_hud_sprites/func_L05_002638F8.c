@@ -16,7 +16,7 @@ int draw_trick_combo_hud(char *a) {
         return *(int *)(a + 0x58);
     }
     if (u[2] != 0) {
-        func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_spins * 0x168);
+        sprintf_r(buf, rilgar_fmt_number, trick_combo_spins * 0x168);
         f20 = IntToFloat(u[1]);
         r = scale_ticks(*(int *)&trick_combo_flash_ticks);
         f12 = f20 / (float)r;
@@ -30,7 +30,7 @@ int draw_trick_combo_hud(char *a) {
         if (u[2] == 1 || u[2] == 2) {
             FontPrintCenterLarge_x(*(int *)&trick_combo_spin_text_x + 1, *(int *)&trick_combo_spin_text_y + 1, h, (int)buf, -1);
             FontPrintCenterLarge_x(*(int *)&trick_combo_spin_text_x, *(int *)&trick_combo_spin_text_y, acc, (int)buf, -1);
-            func_00116248_002670A0(buf, rilgar_fmt_count_and_word, trick_combo_trick_count,
+            sprintf_r(buf, rilgar_fmt_count_and_word, trick_combo_trick_count,
                                    msg_string_r(trick_combo_trick_count == 1 ? 0x5177 : 0x5178));
             FontPrintCenterLarge_x(*(int *)&trick_combo_count_text_x + 1, *(int *)&trick_combo_count_text_y + 1, h, (int)buf, -1);
             FontPrintCenterLarge_x(*(int *)&trick_combo_count_text_x, *(int *)&trick_combo_count_text_y, acc, (int)buf, -1);
@@ -65,9 +65,9 @@ int draw_trick_combo_hud(char *a) {
                     }
                 }
                 trick_combo_score = trick_combo_score / cnt;
-                func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
+                sprintf_r(buf, rilgar_fmt_number, trick_combo_score);
                 draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
-                func_00116248_002670A0(buf, rilgar_fmt_string, msg_string_r(idx + 0x5092));
+                sprintf_r(buf, rilgar_fmt_string, msg_string_r(idx + 0x5092));
                 draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
             } else if (trick_combo_trick_count > 0) {
                 int n = 0;
@@ -80,16 +80,16 @@ int draw_trick_combo_hud(char *a) {
                 }
                 if (trick_combo_trick_count == 1) {
                     trick_combo_score = trick_combo_spins * 10;
-                    func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
+                    sprintf_r(buf, rilgar_fmt_number, trick_combo_score);
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
-                    func_00116248_002670A0(buf, rilgar_fmt_single_trick_line, msg_string_r(out[0] + 0x517E), trick_combo_spins,
+                    sprintf_r(buf, rilgar_fmt_single_trick_line, msg_string_r(out[0] + 0x517E), trick_combo_spins,
                                            msg_string_r(trick_combo_spins == 0x168 ? 0x50A7 : 0x50A8));
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
                 } else {
                     trick_combo_score = trick_combo_spins * 20;
-                    func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
+                    sprintf_r(buf, rilgar_fmt_number, trick_combo_score);
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
-                    func_00116248_002670A0(buf, rilgar_fmt_double_trick_line, msg_string_r(out[0] + 0x517E),
+                    sprintf_r(buf, rilgar_fmt_double_trick_line, msg_string_r(out[0] + 0x517E),
                                            msg_string_r(out[1] + 0x517E), trick_combo_spins);
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
                 }
@@ -114,7 +114,7 @@ int draw_trick_combo_hud(char *a) {
         f0 = IntToFloat(rilgar_frame_count % r3) / (float)r3;
         f0 = FastSin(f0 * 6.283180236816406f - 3.141590118408203f);
         r3 = FastTweenColor(*(int *)&trick_combo_banner_color_from, *(int *)&trick_combo_banner_color_to, f0 * 0.5f + 0.5f);
-        func_00116248_002670A0(buf, msg_string_r(0x531A));
+        sprintf_r(buf, msg_string_r(0x531A));
         draw_framed_text(*(int *)&trick_combo_banner_x + 1, *(int *)&trick_combo_banner_y + 1, 0x80000000, (int)buf);
         draw_framed_text(*(int *)&trick_combo_banner_x, *(int *)&trick_combo_banner_y, r3, (int)buf);
     }

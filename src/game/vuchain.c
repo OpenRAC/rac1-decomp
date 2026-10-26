@@ -56,8 +56,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern void CreatePointLight(int);
@@ -117,7 +117,7 @@ extern int mc_gamedata[];
 extern int mc_leveldata[];
 extern int memcard_GetDataSize(int *p);
 extern int memcard_PrepData(void *dst, int i, int *table);
-extern int func_001236F0(void);
+extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
 extern int D_0013D844 NOT_SDA;
@@ -146,7 +146,7 @@ extern int g_hero_moby NOT_SDA;
 extern float shadow_light_dir[] NOT_SDA;
 extern float FastCos(float);
 extern float FastSin(float);
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern char normal_lut[];
 extern char moby_backup_buffer[];
 extern int func_001160D8(void);
@@ -162,28 +162,28 @@ extern float round_float_to_decimal_places(int, float);
 extern unsigned char gold_bolts_collected[];
 extern unsigned char gold_weapon_purchased[];
 extern unsigned char gSkillPoints[];
-extern void func_0012F068(void *);
+extern void snd_StreamSafeCdCallback(void *);
 extern void finish_audio_stream_read(int);
 extern short cd_read_state[];
-extern void func_0012EDE0(void *);
-extern void func_0012EFE8(void);
+extern void snd_ContinueVAGStream(void *);
+extern void snd_StreamSafeCdBreak(void);
 extern char load_file_start_failed_string[];
-extern int func_0012EE98(int, int, int, void *);
+extern int snd_StreamSafeCdRead(int, int, int, void *);
 extern int start_audio_stream_read_v(void) __asm__("func_00217628");
-extern void func_00122598(int);
+extern void sce_gs_sync_v(int);
 extern void music_Update(void);
-extern void func_0012EC40(void);
-extern void func_0012DDC0(void);
-extern void func_0012EC30(void);
-extern int func_0012F030(void);
+extern void snd_reset_state_and_flush_commands(void);
+extern void snd_FlushSoundCommands(void);
+extern void snd_reenable_command_flush(void);
+extern int snd_StreamSafeCdGetError(void);
 extern void music_start_track_by_id(short, short, short);
 extern void music_PreseekTrack(short, short, short);
 extern short D_001517F0 NOT_SDA;
 extern char g_controller_state[];
 extern int pad_socket_param NOT_SDA;
-extern void func_00124650(void);
-extern void func_00124B88(int);
-extern int func_00124BC8(void *, void *);
+extern void sce_dbc_init(void);
+extern void sce_pad2_init(int);
+extern int sce_pad2_create_socket(void *, void *);
 extern void poll_pad_device_state(void *);
 extern int pause_action_list_mode;
 extern char pause_action_list_pal[];
@@ -258,12 +258,12 @@ extern void transform_vector(void *, void *, void *);
 extern float vec_length_xy(void *);
 extern float fast_arc_tan_a(float, float) __asm__("func_001FA058");
 extern void truncate_float_to_s32(float);
-extern void func_00120F30(int);
-extern int func_0012E060(void *, int);
-extern void func_0012EE70(int);
-extern void func_0012EF48(int);
-extern void func_0012E2E8(void);
-extern void func_0011AE20(int arg0);
+extern void sce_cd_sync_s(int);
+extern int snd_BankLoadByLoc(void *, int);
+extern void snd_StreamSafeCheckCDIdle(int);
+extern void snd_StreamSafeCdSync(int);
+extern void snd_ResolveBankXREFS(void);
+extern void sceSifInitRpc(int arg0);
 typedef struct {
     int unk_00;
     int unk_04;
@@ -371,8 +371,8 @@ void VU1_swapChain(void) {
 extern int vu1_chain_peak_bytes MACRO_ADDR;
 extern short vif_chain_flags;
 extern char vu1_chain_overflow_msg[];
-extern int *func_001232E0(int);
-extern void func_001235C8(int *, int);
+extern int *sce_dma_get_chan(int);
+extern void sce_dma_send(int *, int);
 
 /* VU1_sendChain. D_00160FE0 is volatile, so its store stays out of the
    delay slot (reorg never moves a volatile access there). */
@@ -396,10 +396,10 @@ void VU1_sendChain(void) {
         g_render_packet_cursor[1] = 0;
         g_render_packet_cursor[2] = 0;
         g_render_packet_cursor[3] = 0;
-        chan = func_001232E0(1);
+        chan = sce_dma_get_chan(1);
         *chan |= 0xC0;
-        func_00118D80(0);
-        func_001235C8(chan, vu1_chain_buffers[vu1_chain_buffer_index]);
+        flush_cache(0);
+        sce_dma_send(chan, vu1_chain_buffers[vu1_chain_buffer_index]);
     } else {
         *(volatile int *)&vif_chain_flags = 0;
     }
@@ -573,8 +573,8 @@ LINKER_REMNANT("asm/remnants/text", func_00235008);
 extern int vif1_dma_handler_id MACRO_ADDR;
 extern int vu1_halt_handler_id MACRO_ADDR;
 
-extern int func_00118AB0(int, void *, void *);
-extern void func_00119460(int);
+extern int add_dmac_handler(int, void *, void *);
+extern void enable_dmac_atomic(int);
 extern void vif1_dma_interrupt_handler(void);
 extern void print_register_values_and_halt(void);
 
@@ -590,9 +590,9 @@ void DMAC_VIF1_Enable(void) {
         if ((*(volatile int *)0x1000E010 & 0x20000) == 0) {
             *(int *)0x1000E010 = 0x20000;
         }
-        vif1_dma_handler_id = func_00118AB0(1, (void *)vif1_dma_interrupt_handler, (void *)0);
-        vu1_halt_handler_id = func_00118AB0(0xF, (void *)print_register_values_and_halt, (void *)0);
-        func_00119460(1);
+        vif1_dma_handler_id = add_dmac_handler(1, (void *)vif1_dma_interrupt_handler, (void *)0);
+        vu1_halt_handler_id = add_dmac_handler(0xF, (void *)print_register_values_and_halt, (void *)0);
+        enable_dmac_atomic(1);
     }
 }
 
@@ -602,17 +602,17 @@ void DMAC_VIF1_Enable(void) {
  * taken path is the lui/%lo expansion of the same macro. The volatile
  * D_STAT write is what forces the reload on that path.
  */
-extern int func_00118AD0(int, int);
-extern int func_001193F8(int);
+extern int remove_dmac_handler(int, int);
+extern int disable_dmac_atomic(int);
 
 /* Stop VIF1 DMA, remove the VIF1 DMA and VU1 halt interrupt handlers. */
 void DMAC_VIF1_Disable(void) {
     if ((*(volatile int *)0x1000E010 & 0x20000) != 0) {
         *(volatile int *)0x1000E010 = 0x20000;
     }
-    func_00118AD0(1, vif1_dma_handler_id);
-    func_00118AD0(0xF, vu1_halt_handler_id);
-    func_001193F8(1);
+    remove_dmac_handler(1, vif1_dma_handler_id);
+    remove_dmac_handler(0xF, vu1_halt_handler_id);
+    disable_dmac_atomic(1);
     vif1_dma_handler_id = 0;
     vu1_halt_handler_id = 0;
 }

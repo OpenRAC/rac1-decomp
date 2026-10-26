@@ -39,8 +39,8 @@ extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
 extern void *InitBlockData NOT_SDA;
 extern int D_00155080[];
-extern void func_001193F8(int);
-extern void func_00118AD0(int, int);
+extern void disable_dmac_atomic(int);
+extern void remove_dmac_handler(int, int);
 extern int D_00154F54;
 extern int D_0012FD04;
 extern int D_00154F64 NOT_SDA;
@@ -48,8 +48,8 @@ extern int D_00154F6C NOT_SDA;
 extern void func_0011AA90(int, int, int, int, int, int, int);
 extern void func_0011AA00(void);
 extern int RpcCommandState NOT_SDA;
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
 extern int D_0012FDA0;
 extern int D_0012FDA4;
 extern char D_00157E80[];
@@ -59,7 +59,7 @@ extern int D_0012FD9C NOT_SDA;
 extern char D_0012FCEC[];
 extern char FsResetBuffer[];
 extern int D_0012FDA8;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FsResetState;
 extern int D_0012FDAC;
 extern char D_00158140[];
@@ -76,7 +76,7 @@ ASM_FUNC("asm/handwritten/core_text", func_0011D960);
 
 ASM_FUNC("asm/handwritten/core_text", func_0011D9A8);
 
-extern int func_00118C70(void *);
+extern int create_semaphore(void *);
 extern int FirstSemaphore;
 extern int SecondSemaphore;
 
@@ -87,8 +87,8 @@ void func_0011D9C0(void) {
     a[2] = 1;
     b[1] = 1;
     b[2] = 1;
-    FirstSemaphore = func_00118C70(a);
-    SecondSemaphore = func_00118C70(b);
+    FirstSemaphore = create_semaphore(a);
+    SecondSemaphore = create_semaphore(b);
 }
 
 /*

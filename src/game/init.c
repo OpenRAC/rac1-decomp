@@ -56,16 +56,16 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 
-extern int func_0011CBC8(int arg0);
-extern int func_00118E20(void *buf, int flag);
-extern int func_00118E10(int modid);
-extern int func_0011D078(int a, int b, int c);
-extern void func_0011CCB0();
+extern int sce_sif_alloc_iop_heap(int arg0);
+extern int sce_sif_set_dma(void *buf, int flag);
+extern int sce_sif_dma_stat(int modid);
+extern int sif_load_iop_module_buffer(int a, int b, int c);
+extern void sce_sif_free_iop_heap();
 
 /* LoadIRXModule(name, args): starts an IOP module load through an RPC
    helper, hands func_00118E20 a 4-word tagged buffer, polls the returned
@@ -80,20 +80,20 @@ int LoadIRXModule(void *arg0, void *arg1) {
     int status;
     int ret = 1;
 
-    result = func_0011CBC8((int)arg1);
+    result = sce_sif_alloc_iop_heap((int)arg1);
     buf[0] = (int)arg0;
     buf[1] = result;
     buf[2] = (int)arg1;
     buf[3] = 0;
-    modid = func_00118E20(buf, 1);
+    modid = sce_sif_set_dma(buf, 1);
     if (modid != 0) {
-        while (func_00118E10(modid) >= 0) {
+        while (sce_sif_dma_stat(modid) >= 0) {
         }
-        status = func_0011D078(result, 0, 0);
+        status = sif_load_iop_module_buffer(result, 0, 0);
         if (status < 0) {
             ret = 0;
         }
-        func_0011CCB0(result);
+        sce_sif_free_iop_heap(result);
     }
     return ret;
 }

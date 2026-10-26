@@ -22,7 +22,7 @@ extern void func_00114438(void *, void *);
 extern char D_00152470[];
 extern int func_00119088();
 extern int func_00114518(int *errOut, void *a, void *b, void *c);
-extern int func_00116108(int *errOut, void *a, void *b, void *c);
+extern int reentrant_read(int *errOut, void *a, void *b, void *c);
 
 
 /* Reclaimed from a banked revert. The old note blamed retail's

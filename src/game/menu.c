@@ -57,8 +57,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern void CreatePointLight(int);
@@ -952,8 +952,8 @@ extern void *msg_string_id(int) __asm__("func_001FE540");
 extern char menu_item_price_fmt[]; /* "%d" */
 extern char D_0015FE68[]; /* "error" */
 extern char vendor_item_prices[];
-extern int func_00116248_3(void *, char *, int) __asm__("func_00116248");
-extern int func_00116248_2(void *, char *) __asm__("func_00116248");
+extern int sprintf_3(void *, char *, int) __asm__("func_00116248");
+extern int sprintf_2(void *, char *) __asm__("func_00116248");
 
 /* Copies the text of menu entry `bank` (text id at +0xA of its 0x28-byte
    record in the table at D_001A01F0[8]) into dst, expanding the first
@@ -985,10 +985,10 @@ void FormatMenuItemText(int bank, unsigned char *dst) {
     src++;
     if (*src == 'b') {
         char *t2 = (char *)level_map_selection;
-        func_00116248_3(buf, menu_item_price_fmt,
+        sprintf_3(buf, menu_item_price_fmt,
                         *(int *)(vendor_item_prices + *(short *)(*(char **)(t2 + 0x20) + bank * 0x28 + 0xC) * 0x18));
     } else {
-        func_00116248_2(buf, D_0015FE68);
+        sprintf_2(buf, D_0015FE68);
     }
     src++;
     while (*p != 0) {

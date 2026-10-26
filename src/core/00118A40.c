@@ -188,8 +188,8 @@ void func_00118EC0(void) {
     CoreGlobalWord = 0;
 }
 
-extern int func_0011D960(void); /* DIntr */
-extern void func_0011D9A8(void); /* EIntr */
+extern int disable_interrupts(void); /* DIntr */
+extern void enable_interrupts(void); /* EIntr */
 
 /* VSync (glue.o): clear INTC_STAT's VBlank-start bit (guarded by
  * DIntr/EIntr so the read-modify-write can't race the interrupt handler),
@@ -199,26 +199,26 @@ extern void func_0011D9A8(void); /* EIntr */
 void func_00118ED0(void) {
     int old;
 
-    old = func_0011D960();
+    old = disable_interrupts();
     *(volatile unsigned int *)0x1000F000 = 4;
     __asm__ __volatile__("sync");
     if (old) {
-        func_0011D9A8();
+        enable_interrupts();
     }
     while ((*(volatile unsigned int *)0x1000F000 & 4) == 0) {
     }
 
-    old = func_0011D960();
+    old = disable_interrupts();
     *(volatile unsigned int *)0x1000F000 = 4;
     __asm__ __volatile__("sync");
     if (old) {
-        func_0011D9A8();
+        enable_interrupts();
     }
 }
 
 extern void func_00118E00(unsigned int *, long *); /* SetVSyncFlag */
-extern int func_0011D960(void);                    /* DIntr */
-extern void func_0011D9A8(void);                    /* EIntr */
+extern int disable_interrupts(void);                    /* DIntr */
+extern void enable_interrupts(void);                    /* EIntr */
 
 /* VSync2 (glue.o): like VSync, but also arms an asynchronous flag via
  * SetVSyncFlag before the guarded INTC_STAT clear, and the poll loop
@@ -232,20 +232,20 @@ long func_00118F60(void) {
     flag = 0;
     func_00118E00((unsigned int *)&flag, (long *)&result);
 
-    old = func_0011D960();
+    old = disable_interrupts();
     *(volatile unsigned int *)0x1000F000 = 4;
     __asm__ __volatile__("sync");
     if (old) {
-        func_0011D9A8();
+        enable_interrupts();
     }
     while ((*(volatile unsigned int *)0x1000F000 & 4) == 0 && flag == 0) {
     }
 
-    old = func_0011D960();
+    old = disable_interrupts();
     *(volatile unsigned int *)0x1000F000 = 4;
     __asm__ __volatile__("sync");
     if (old) {
-        func_0011D9A8();
+        enable_interrupts();
     }
     return result;
 }

@@ -57,8 +57,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern void CreatePointLight(int);
@@ -118,7 +118,7 @@ extern int mc_gamedata[];
 extern int mc_leveldata[];
 extern int memcard_GetDataSize(int *p);
 extern int memcard_PrepData(void *dst, int i, int *table);
-extern int func_001236F0(void);
+extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
 extern int D_0013D844 NOT_SDA;
@@ -147,7 +147,7 @@ extern int g_hero_moby NOT_SDA;
 extern float shadow_light_dir[] NOT_SDA;
 extern float FastCos(float);
 extern float FastSin(float);
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern char normal_lut[];
 extern int render_packet_end;
 extern short vu1_chain_safe_end;
@@ -167,8 +167,8 @@ extern unsigned char gold_weapon_purchased[];
 extern unsigned char gSkillPoints[];
 
 extern short cd_read_state[];
-extern int func_0012EC60(int, int, int, int);
-extern int func_0012DDC0(void);
+extern int snd_InitVAGStreamingEx(int, int, int, int);
+extern int snd_FlushSoundCommands(void);
 extern void register_audio_stream_callback(void);
 
 /* Music init: resets the music state at D_001517D0 (+0x30 = 0x20, the
@@ -194,18 +194,18 @@ void reset_music(void) {
     *(int *)(s + 0x6C) = 0;
     *(short *)(s + 0x76) = 0;
     *(char *)(s + 0x22) = *(int *)(s + 0x1C) = -1;
-    func_0012EC60(4, 0xF000, 0, 1);
-    while (func_0012DDC0() != 0) {
+    snd_InitVAGStreamingEx(4, 0xF000, 0, 1);
+    while (snd_FlushSoundCommands() != 0) {
     }
     register_audio_stream_callback();
 }
 
-extern void func_0012F068(void *);
+extern void snd_StreamSafeCdCallback(void *);
 extern void finish_audio_stream_read(int);
 
 /* Register the CD read callback used by the music stream. */
 void register_audio_stream_callback(void) {
-    func_0012F068(finish_audio_stream_read);
+    snd_StreamSafeCdCallback(finish_audio_stream_read);
 }
 
 /* The sound tables in the WAD table of contents at D_00137C80, as far as
@@ -244,7 +244,7 @@ extern int disc_table[];
 extern short cd_read_state[];
 extern int g_game_language MACRO_ADDR;
 extern void music_secondary_start_callback(int, long);
-extern void func_0012ED48(int, int, int, int, short, int, int, int,
+extern void snd_PlayVAGStreamByLocEx_CB(int, int, int, int, short, int, int, int,
                           int, void (*)(int, long), long);
 
 /* Plays sound arg0 in 60000..: the other play functions below differ
@@ -293,7 +293,7 @@ void music_start_track_60000(int arg0, int arg1, int arg2) {
     s->secondary.remaining_time = 0xBB80;
     s->secondary.volume = arg2;
     s->secondary.crossfade_enabled = 0;
-    func_0012ED48(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
+    snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
                   music_secondary_start_callback, (long)(unsigned int)&s->secondary);
 }
 
@@ -330,7 +330,7 @@ void music_start_track_50000(int track, int flags, int volume) {
     music_stream_state->secondary.remaining_time = 48000;
     music_stream_state->secondary.volume = volume;
     music_stream_state->secondary.crossfade_enabled = 0;
-    func_0012ED48(handle, 0, 0, 0, (s16)volume, 0, 2, 0, 0x21,
+    snd_PlayVAGStreamByLocEx_CB(handle, 0, 0, 0, (s16)volume, 0, 2, 0, 0x21,
                   music_secondary_start_callback,
                   (long)(unsigned int)&music_stream_state->secondary);
 }
@@ -363,7 +363,7 @@ void music_start_track_40000(int track, int track_flags, int volume) {
     s->secondary.remaining_time = 0xBB80;
     s->secondary.volume = volume;
     s->secondary.crossfade_enabled = 0;
-    func_0012ED48(location, 0, 0, 0, volume, 0, 2, 0, 0x21,
+    snd_PlayVAGStreamByLocEx_CB(location, 0, 0, 0, volume, 0, 2, 0, 0x21,
                   music_secondary_start_callback, (long)(unsigned int)&s->secondary);
 }
 
@@ -393,7 +393,7 @@ void music_start_track_30000(int arg0, int arg1, int arg2) {
     *(int *)(s + 0x68) = 0xBB80;
     *(short *)(s + 0x56) = arg2;
     *(short *)(s + 0x60) = 0;
-    func_0012ED48(*p, 0, 0, 0, *(unsigned char *)&gHelpDeskVoice_w ? arg2 : 0,
+    snd_PlayVAGStreamByLocEx_CB(*p, 0, 0, 0, *(unsigned char *)&gHelpDeskVoice_w ? arg2 : 0,
                   0, 2, 0, 0x21, music_secondary_start_callback, (long)(unsigned int)music_player_dialogue);
 }
 
@@ -439,7 +439,7 @@ void music_start_track_20000(int track, int track_flags, int volume) {
     state->secondary.remaining_time = 0xBB80;
     state->secondary.volume = volume;
     state->secondary.crossfade_enabled = 0;
-    func_0012ED48(handle, 0, 0, 0, volume, 0, 2, 0, 0x21,
+    snd_PlayVAGStreamByLocEx_CB(handle, 0, 0, 0, volume, 0, 2, 0, 0x21,
                   music_secondary_start_callback, (long)(unsigned int)&state->secondary);
 }
 
@@ -487,7 +487,7 @@ void music_start_track_10000(int track, int flags, int volume) {
     rec->secondary.remaining_time = 0xBB80;
     rec->secondary.volume = volume;
     rec->secondary.crossfade_enabled = 0;
-    func_0012ED48(stream, 0, 0, 0, volume, 0, 2, 0, 0x21,
+    snd_PlayVAGStreamByLocEx_CB(stream, 0, 0, 0, volume, 0, 2, 0, 0x21,
                   music_secondary_start_callback, (long)(unsigned int)&rec->secondary);
 }
 
@@ -548,12 +548,12 @@ void music_start_track_by_id(int track, int track_flags, int volume) {
     s->secondary.remaining_time = 0xBB80;
     s->secondary.volume = volume;
     s->secondary.crossfade_enabled = 0;
-    func_0012ED48(handle, 0, 0, 0, volume, 0, 2, 0, 0x21,
+    snd_PlayVAGStreamByLocEx_CB(handle, 0, 0, 0, volume, 0, 2, 0, 0x21,
                   music_secondary_start_callback, (long)(unsigned int)&s->secondary);
 }
 
 extern short cd_read_state[];
-extern void func_0012EDE0(void *);
+extern void snd_ContinueVAGStream(void *);
 
 /* Resume the secondary stream once its channel is ready; return 1 if it was resumed. */
 int Music_ContinueStreamIfReady(void) {
@@ -561,7 +561,7 @@ int Music_ContinueStreamIfReady(void) {
     void *p = *(void **)(d + 0x50);
     if (p != 0) {
         if (*(short *)(d + 0x5A) == 3) {
-            func_0012EDE0(p);
+            snd_ContinueVAGStream(p);
             *(short *)(d + 0x5A) = 4;
             return 1;
         }
@@ -613,7 +613,7 @@ void music_PreseekTrack(int arg0, int arg1, int arg2) {
             music_stream_state->primary.volume = arg2;
             music_stream_state->primary.crossfade_enabled = 0;
             stream_location = *entry;
-            func_0012ED48(stream_location, 0, 0, 0, arg2, 0, 1, 0, 0x21,
+            snd_PlayVAGStreamByLocEx_CB(stream_location, 0, 0, 0, arg2, 0, 1, 0, 0x21,
                           music_primary_preseek_callback,
                           (long)(unsigned int)&music_stream_state->primary.handle);
         }
@@ -661,7 +661,7 @@ void music_StartTrack(int arg0, int arg1, int arg2) {
     s->flags = arg1;
     s->volume = arg2;
     s->crossfade_enabled = 0;
-    func_0012ED48(h, 0, 0, 0, arg2, 0, 1, 0, 0x20,
+    snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg2, 0, 1, 0, 0x20,
                   music_primary_start_callback, (long)(unsigned int)&s->handle);
 }
 
@@ -707,7 +707,7 @@ void music_StartTrackBody(int arg0, int arg1, int arg2) {
     *(int *)(s + 0x4C) = 0xBB80;
     *(short *)(s + 0x3A) = arg2;
     *(short *)(s + 0x44) = 0;
-    func_0012ED48(h, 0, 0, 0, arg2, 0, 1, cur, flags,
+    snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg2, 0, 1, cur, flags,
                   music_primary_replace_callback, (long)(unsigned int)(s + 0x34));
 }
 
@@ -764,7 +764,7 @@ int music_Transition(int arg0, int arg1, int arg2, int arg3) {
             s->transition.state = 1;
             s->transition.crossfade_enabled = 1;
             s->transition.volume = arg3;
-            func_0012ED48(h, 0, 0, 0, arg3, 0, 1, 0, 0x20,
+            snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg3, 0, 1, 0, 0x20,
                           music_transition_start_callback, (long)(unsigned int)&s->transition.handle);
         } else {
             return 0;
@@ -798,8 +798,8 @@ void Music_QueueTrack(int arg0, int arg1) {
     }
 }
 
-extern void func_0012ED10(void);
-extern void func_0012EE70(int);
+extern void snd_StopAllStreams(void);
+extern void snd_StreamSafeCheckCDIdle(int);
 
 /* music_Stop: waits (func_0012DDC0, snd_FlushSoundCommands) while each
    of the three playing records at +0x34, +0x6C and +0x50 is still
@@ -828,25 +828,25 @@ void music_Stop(void) {
     {
         MusicStreamBlock *d;
         while (d = (MusicStreamBlock *)cd_read_state, d->primary.handle == 0xFFFFFFFF) {
-            func_0012DDC0();
+            snd_FlushSoundCommands();
         }
     }
     {
         MusicStreamBlock *d;
         while (d = (MusicStreamBlock *)cd_read_state, d->transition.handle == 0xFFFFFFFF) {
-            func_0012DDC0();
+            snd_FlushSoundCommands();
         }
     }
     {
         MusicStreamBlock *d;
         while (d = (MusicStreamBlock *)cd_read_state, d->secondary.handle == 0xFFFFFFFF) {
-            func_0012DDC0();
+            snd_FlushSoundCommands();
         }
     }
-    func_0012ED10();
-    while (func_0012DDC0() != 0) {
+    snd_StopAllStreams();
+    while (snd_FlushSoundCommands() != 0) {
     }
-    func_0012EE70(1);
+    snd_StreamSafeCheckCDIdle(1);
     {
         MusicStreamBlock *s = (MusicStreamBlock *)cd_read_state;
         s->primary.state = 0;
@@ -899,12 +899,12 @@ typedef struct {
     short fadeT;         /* 0x0E */
 } MusicPlaying;
 
-extern void func_0012E4A8(int);
-extern void func_0012EDB0(int);
+extern void snd_stop_sound(int);
+extern void snd_PauseVAGStream(int);
 extern int FastDecTimer(void *);
-extern void func_0012EE10(int, void (*)(int, long), long);
-extern void func_0012E588(int, void (*)(int, long), long);
-extern void func_0012EE40(int, void (*)(int, long), long);
+extern void snd_GetVAGStreamTimeRemaining_CB(int, void (*)(int, long), long);
+extern void snd_SoundIsStillPlaying_CB(int, void (*)(int, long), long);
+extern void snd_IsVAGStreamBuffered_CB(int, void (*)(int, long), long);
 extern void music_remaining_time_callback(int, long);
 extern void set_sound_handle_id(int, long);
 extern void music_channel_ready_callback(int, long);
@@ -927,7 +927,7 @@ void music_UpdateStream(MusicPlaying *p) {
     if (p->state != 9 && p->handle != 0 && p->handle != 0xFFFFFFFF) {
         if (p->state == 5) {
             if (p->handle != 0) {
-                func_0012E4A8(p->handle);
+                snd_stop_sound(p->handle);
                 p->state = 6;
             } else {
                 p->state = 0;
@@ -942,14 +942,14 @@ void music_UpdateStream(MusicPlaying *p) {
         }
         if (p->fade & 0x8000) {
             if (!(p->state & 0x8000)) {
-                func_0012EDB0(p->handle);
+                snd_PauseVAGStream(p->handle);
                 p->state |= 0x8000;
             }
             if (FastDecTimer(&p->fadeT) == 2) {
                 p->fade = 4;
             }
         } else if (p->state & 0x8000) {
-            func_0012EDE0((void *)p->handle);
+            snd_ContinueVAGStream((void *)p->handle);
             p->state ^= 0x8000;
         }
         if (p->state & 0x8000) {
@@ -961,12 +961,12 @@ void music_UpdateStream(MusicPlaying *p) {
         if (p->state != 2 && p->state != 3) {
             h = p->handle;
             p->handle = 0xFFFFFFFF;
-            func_0012EE10(h, music_remaining_time_callback, (long)(unsigned int)p);
-            func_0012E588(h, set_sound_handle_id, (long)(unsigned int)p);
+            snd_GetVAGStreamTimeRemaining_CB(h, music_remaining_time_callback, (long)(unsigned int)p);
+            snd_SoundIsStillPlaying_CB(h, set_sound_handle_id, (long)(unsigned int)p);
             return;
         }
         if (p->handle != 0xFFFFFFFF && p->state == 2) {
-            func_0012EE40(p->handle, music_channel_ready_callback, (long)(unsigned int)p);
+            snd_IsVAGStreamBuffered_CB(p->handle, music_channel_ready_callback, (long)(unsigned int)p);
         }
     } else if (p->state == 7 || p->handle == 0) {
         p->state = 0;
@@ -1002,10 +1002,10 @@ struct MusicStreamState {
     struct MusicStreamChannel transition; /* 0x6C */
 };
 extern struct MusicStreamState cd_read_state_r __asm__("D_001517D0");
-extern void func_0012E600(s32, s32, s32, s32, s32, s32, void (*)(u32, s64), s64);
+extern void snd_set_sound_params_cb(s32, s32, s32, s32, s32, s32, void (*)(u32, s64), s64);
 extern void set_sound_handle_id_r(u32, s64) __asm__("func_00217A08");
-extern void func_0012EDE0_17130(s32) __asm__("func_0012EDE0");
-extern s32 func_0012EF48(s32);
+extern void snd_ContinueVAGStream_r(s32) __asm__("func_0012EDE0");
+extern s32 snd_StreamSafeCdSync(s32);
 extern s32 scale_game_frame_count(s32);
 extern s32 fast_dec_timer(void *);
 extern void music_start_track_by_id(s32, s32, s32);
@@ -1083,7 +1083,7 @@ void music_Update(void) {
             } else if (cd_read_state_r.primary.state != 9) {
                 /* The callback receives the old handle; mark its slot pending before submission. */
                 *(u32 *)&cd_read_state_r.primary.handle = 0xFFFFFFFF;
-                func_0012E600(handle, 5, fade_volume, 0, 0, 0, set_sound_handle_id_r,
+                snd_set_sound_params_cb(handle, 5, fade_volume, 0, 0, 0, set_sound_handle_id_r,
                                         (s64)&cd_read_state_r.primary.handle);
             }
             break;
@@ -1102,7 +1102,7 @@ void music_Update(void) {
                     cd_read_state_r.transition.state != 4 ||
                     (cd_read_state_r.transition.crossfade_enabled == 0 &&
                      cd_read_state_r.transition.handle == 0)) {
-                    func_0012EDE0_17130(cd_read_state_r.primary.handle);
+                    snd_ContinueVAGStream_r(cd_read_state_r.primary.handle);
                     cd_read_state_r.primary.state = 8;
                     cd_read_state_r.crossfade_state = 5;
                 }
@@ -1120,7 +1120,7 @@ void music_Update(void) {
     music_UpdateStream_r(&cd_read_state_r.transition.handle);
     music_UpdateStream_r(&cd_read_state_r.secondary.handle);
     if (cd_read_state_r.break_requested != 0) {
-        if (func_0012EF48(1) == 0) {
+        if (snd_StreamSafeCdSync(1) == 0) {
             cd_read_state_r.read_state = 0;
             cd_read_state_r.break_requested = 0;
         }

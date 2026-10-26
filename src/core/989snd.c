@@ -35,8 +35,8 @@ extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
 extern void *InitBlockData NOT_SDA;
 extern int D_00155080[];
-extern void func_001193F8(int);
-extern void func_00118AD0(int, int);
+extern void disable_dmac_atomic(int);
+extern void remove_dmac_handler(int, int);
 extern int D_00154F54;
 extern int D_0012FD04;
 extern int D_00154F64 NOT_SDA;
@@ -44,9 +44,9 @@ extern int D_00154F6C NOT_SDA;
 extern void func_0011AA90(int, int, int, int, int, int, int);
 extern void func_0011AA00(void);
 extern int RpcCommandState NOT_SDA;
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
-extern int func_00118C70(void *);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
+extern int create_semaphore(void *);
 extern int D_0012FDA0;
 extern int D_0012FDA4;
 extern char D_00157E80[];
@@ -56,7 +56,7 @@ extern int D_0012FD9C NOT_SDA;
 extern char D_0012FCEC[];
 extern char FsResetBuffer[];
 extern int D_0012FDA8;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FsResetState;
 extern int D_0012FDAC;
 extern char D_00158140[];
@@ -73,8 +73,8 @@ extern int SecondSemaphore;
 extern int D_00130BD0[];
 extern char D_00130428[];
 extern int func_0011DC50(void);
-extern void func_00118D80(int);
-extern int func_00120F30(int);
+extern void flush_cache(int);
+extern int sce_cd_sync_s(int);
 extern void *D_00159840;
 extern int D_001313E0;
 extern int D_001313E8;
@@ -82,13 +82,13 @@ extern int D_001313EC;
 extern int D_001313F0;
 extern int D_001313E4;
 extern int D_001313FC;
-extern int func_0011B4C8();
+extern int sif_call_rpc();
 extern int func_00120D28(int);
-extern void func_00118C90(int);
+extern void signal_semaphore(int);
 extern char D_00132590[];
 extern int D_00131440;
 extern void func_0011A6C8();
-extern int func_0011B6B8(void *);
+extern int sce_sif_check_stat_rpc(void *);
 extern char D_00153000[];
 extern char D_00132E08[];
 extern int D_001313D0;
@@ -98,16 +98,16 @@ extern char CoreDataTable[];
 extern void func_00123650(void *);
 extern char D_001534E0[];
 extern int DmaChannels[];
-extern int func_001238B0(int, int, int, int);
+extern int sce_mc_open(int, int, int, int);
 extern int D_00132EA8;
 extern int *D_00159B28;
 extern int *D_00159B2C;
 extern int *D_00159B30;
 extern char RpcQueueData[];
 extern int RpcReceiveData;
-extern void func_00124B60(void *);
+extern void debug_print_stub(void *);
 extern char D_00153658[];
-extern int func_00124920(int);
+extern int sceDbcGetDepNumber(int);
 typedef struct {
     char unk_00[4];
     int  unk_04;
@@ -126,7 +126,7 @@ extern int func_00128860(void *, int);
 extern int func_00128A58(void *, int);
 extern void func_00129180(void *);
 extern char D_00153A80[];
-extern void func_00116248_4(void *, char *, int, int) __asm__("func_00116248");
+extern void sprintf_4(void *, char *, int, int) __asm__("func_00116248");
 extern void func_0012C468_a(void *, void *) __asm__("func_0012C468");
 extern void func_0012AAC8(void *, int);
 extern void func_0012C468(void *, void *);
@@ -137,7 +137,7 @@ extern void func_0012C278(void *);
 extern void func_00129E30(void *, int, int, int);
 extern char D_00153BB8[];
 extern char D_00153BD8[];
-extern void func_00116248(void *);
+extern void sprintf(void *);
 extern void func_0012C420(void *);
 extern char D_00153C48[];
 extern char D_00153C78[];
@@ -182,13 +182,13 @@ extern short snd_cd_callback_pending;
 extern short snd_cd_callback_fn;
 extern s64 snd_cd_callback_data MACRO_ADDR;
 extern s32 snd_cd_callback_arg_r __asm__("D_0015EE00") MACRO_ADDR;
-extern void func_0011AE20(u32);
-extern s32 func_0011B2F8(struct SifClientDataStartSound *, u32, s32);
+extern void sceSifInitRpc(u32);
+extern s32 sceSifBindRpc(struct SifClientDataStartSound *, u32, s32);
 extern s32 func_00116078_2DB68(const char *, ...) __asm__("func_00116078");
-extern s32 func_0012E688(s32, s32, void *);
+extern s32 snd_SendIOPCommandAndWait(s32, s32, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/audio/snd_start_sound_system.c, snd_start_sound_system. */
-s32 func_0012DB68(void) {
+s32 snd_StartSoundSystem(void) {
     s32 bind_result;
     s32 command_arg;
     u8 *const command_buffer1 = snd_command_buffer2;
@@ -200,10 +200,10 @@ s32 func_0012DB68(void) {
     ((u8 **)&snd_batch_return_buffers)[1] = snd_return_buffer2;
     ((u8 **)&snd_stream_buffers)[0] = snd_stream_buffer1;
     ((u8 **)&snd_stream_buffers)[1] = snd_stream_buffer2;
-    func_0011AE20(0);
+    sceSifInitRpc(0);
 
     for (;;) {
-        bind_result = func_0011B2F8(&sound_command_client_r, 0x123456, 0);
+        bind_result = sceSifBindRpc(&sound_command_client_r, 0x123456, 0);
         if (bind_result < 0) {
             func_00116078_2DB68((const char *)snd_sif_bind_rpc_error_string, snd_989_snd_source_file, 0x73);
             for (;;) {
@@ -223,7 +223,7 @@ s32 func_0012DB68(void) {
     snd_cd_callback_arg_r = 0;
 
     do {
-        bind_result = func_0011B2F8(&sound_stream_client_r, 0x123457, 0);
+        bind_result = sceSifBindRpc(&sound_stream_client_r, 0x123457, 0);
         if (bind_result < 0) {
             func_00116078_2DB68((const char *)snd_sif_bind_rpc_error_string, snd_989_snd_source_file, 0x88);
             for (;;) {
@@ -241,7 +241,7 @@ s32 func_0012DB68(void) {
     (*(s32 *)&snd_batch_free_bytes) = 0xFFC;
     D_0015EDAC = 0xFFC;
     command_arg = (s32)(u32)&sound_read_work_r.read_active;
-    return func_0012E688(0, 4, &command_arg);
+    return snd_SendIOPCommandAndWait(0, 4, &command_arg);
 }
 
 typedef void (*SndCallback)(int, long);
@@ -270,9 +270,9 @@ extern short snd_return_callback_data;   /* its argument (64-bit) */
 extern volatile long snd_cd_callback_data_l __asm__("D_0015EDD8") MACRO_ADDR;
 extern unsigned int snd_cd_callback_arg MACRO_ADDR;
 extern int snd_iop_return_word[];
-extern int func_0012DFB0(void);
-extern void func_0012EB18(void);
-extern int func_0012EF48(int);
+extern int snd_GotReturns(void);
+extern void snd_SendCurrentBatch(void);
+extern int snd_StreamSafeCdSync(int);
 
 #define SDA_I(x) (*(int *)&(x))
 #define SND_COUNT ((int **)&D_0015EDA0)
@@ -285,13 +285,13 @@ extern int func_0012EF48(int);
    send the next batch when idle; and poll a stop request. Returns
    whether an RPC or a CD read is still in flight. Adapted from Lombyte's project
    (GPL-3.0) for PAL. */
-int func_0012DDC0(void) {
+int snd_FlushSoundCommands(void) {
     int i;
     int idx;
     SndCallback fn;
     long arg;
 
-    if (SDA_I(snd_current_buffer) != 0 && func_0012DFB0() != 0) {
+    if (SDA_I(snd_current_buffer) != 0 && snd_GotReturns() != 0) {
         if (SDA_I(snd_return_callback_pending) != 0) {
             if ((SndCallback)SDA_I(snd_return_callback) != 0) {
                 ((SndCallback)SDA_I(snd_return_callback))(snd_iop_return_word[0], *(long *)&snd_return_callback_data);
@@ -308,7 +308,7 @@ int func_0012DDC0(void) {
         }
     }
     if (SDA_I(snd_cd_callback_pending) != 0) {
-        func_00118D80(0);
+        flush_cache(0);
         if (snd_cd_callback_arg != 0xFFFFFFFF) {
             if ((SndCallback)SDA_I(snd_cd_callback_fn) != 0) {
                 arg = snd_cd_callback_data_l;
@@ -323,11 +323,11 @@ int func_0012DDC0(void) {
     }
     if (SDA_I(snd_current_buffer) == 0) {
         if (*SND_COUNT[SDA_I(snd_batch_index)] != 0 && SDA_I(GlobalTableStatus) == 0) {
-            func_0012EB18();
+            snd_SendCurrentBatch();
         }
     }
     if (SDA_I(snd_cd_sync_pending) != 0) {
-        func_0012EF48(1);
+        snd_StreamSafeCdSync(1);
         if (SDA_I(snd_cd_stream_end_pending) != 0) {
             SDA_I(snd_cd_sync_pending) = 0;
             SDA_I(snd_cd_stream_end_pending) = 0;
@@ -346,11 +346,11 @@ int func_0012DDC0(void) {
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012DFA0);
 
-extern void func_00118D80(int arg0);
+extern void flush_cache(int arg0);
 extern int sound_command_client;
 extern int func_00116078(void *arg0);
 extern char snd_no_return_error_string[];
-extern int func_0011B6B8(void *arg0);
+extern int sce_sif_check_stat_rpc(void *arg0);
 extern short snd_current_buffer;
 extern short snd_current_buffer_index;
 
@@ -360,14 +360,14 @@ extern short snd_current_buffer_index;
  * plain flag; D_0015ED84 is the slot index within it. The slot address
  * is left as one inlined expression (no separate idx/slot locals) --
  * that is what gets retail's addu operand order and epilogue merge. */
-int func_0012DFB0(void) {
+int snd_GotReturns(void) {
     int *p;
 
-    func_00118D80(0);
+    flush_cache(0);
     if (*(int *)&snd_current_buffer == 0) {
         return 1;
     }
-    if (func_0011B6B8(&sound_command_client) != 0) {
+    if (sce_sif_check_stat_rpc(&sound_command_client) != 0) {
         return 0;
     }
     p = *(int **)&snd_current_buffer;
@@ -386,7 +386,7 @@ int func_0012DFB0(void) {
 
 
 /* snd_PrepareReturnBuffer */
-void func_0012E038(void *arg0, int arg1) {
+void snd_PrepareReturnBuffer(void *arg0, int arg1) {
     int *p = (int *)arg0;
     *(int *)&snd_current_buffer_index = arg1;
     *(int *)&snd_current_buffer = (int)arg0;
@@ -404,37 +404,37 @@ extern char D_00153EA8[];
 extern char D_00153ED8[];
 extern char snd_bank_load_by_loc_rpc_error_string[];
 extern char snd_non_idle_error_string[];
-extern int func_0012DDC0(void);
+extern int snd_FlushSoundCommands(void);
 
 /* IOP command 3 with two words, waiting for the reply word in
    D_0015EE00; 0 (and a message) when a stream is pending, the CD is
    busy or the RPC fails (error 0x106 in D_0015ED88). */
-unsigned int func_0012E060(int arg0, int arg1) {
+unsigned int snd_BankLoadByLoc(int arg0, int arg1) {
     *(int *)&snd_cd_load_error = 0;
     if (*(int *)&snd_cd_callback_pending != 0) {
         func_00116078(D_00153EA8);
         return 0;
     }
-    if (func_0012EF48(1) == 1) {
+    if (snd_StreamSafeCdSync(1) == 1) {
         func_00116078(D_00153ED8);
         return 0;
     }
     snd_cd_bank_load_request_a[1] = arg1;
     snd_cd_callback_arg = 0xFFFFFFFF;
     snd_cd_bank_load_request_a[0] = arg0;
-    while (func_0011B6B8(&sound_stream_client) != 0) {
+    while (sce_sif_check_stat_rpc(&sound_stream_client) != 0) {
         func_00116078(snd_non_idle_error_string);
-        func_0012DDC0();
-        func_00118D80(0);
+        snd_FlushSoundCommands();
+        flush_cache(0);
     }
-    if (func_0011B4C8(&sound_stream_client, 3, 1, snd_cd_bank_load_request_a, 8, &snd_cd_callback_arg, 4, 0, 0) < 0) {
+    if (sif_call_rpc(&sound_stream_client, 3, 1, snd_cd_bank_load_request_a, 8, &snd_cd_callback_arg, 4, 0, 0) < 0) {
         func_00116078(snd_bank_load_by_loc_rpc_error_string);
         *(int *)&snd_cd_load_error = 0x106;
         return 0;
     }
     if (snd_cd_callback_arg == 0xFFFFFFFF) {
         do {
-            func_00118D80(0);
+            flush_cache(0);
         } while (snd_cd_callback_arg == 0xFFFFFFFF);
     }
     return snd_cd_callback_arg;
@@ -451,13 +451,13 @@ extern char snd_bank_load_from_ee_cd_busy_string[];
 /* Start an IOP stream (command 0x57) for arg0, unless one is already
    pending (D_0015EDC8) or the CD is busy (func_0012EF48); the reply word
    lands in D_0015EE00. */
-void func_0012E1C8(int arg0, int arg1, long arg2) {
+void snd_BankLoadFromEE_CB(int arg0, int arg1, long arg2) {
     *(int *)&snd_cd_load_error = 0;
     if (*(int *)&snd_cd_callback_pending != 0) {
         func_00116078(snd_bank_load_from_ee_progress_string);
         return;
     }
-    if (func_0012EF48(1) == 1) {
+    if (snd_StreamSafeCdSync(1) == 1) {
         func_00116078(snd_bank_load_from_ee_cd_busy_string);
         return;
     }
@@ -465,69 +465,69 @@ void func_0012E1C8(int arg0, int arg1, long arg2) {
     snd_cd_callback_arg = 0xFFFFFFFF;
     *(int *)&snd_cd_callback_fn = arg1;
     snd_cd_callback_data = arg2;
-    while (func_0011B6B8(&sound_stream_client) != 0) {
+    while (sce_sif_check_stat_rpc(&sound_stream_client) != 0) {
         func_00116078(snd_non_idle_error_string);
-        func_0012DDC0();
-        func_00118D80(0);
+        snd_FlushSoundCommands();
+        flush_cache(0);
     }
     *(int *)&snd_cd_callback_pending = 1;
-    func_0011B4C8(&sound_stream_client, 0x57, 1, &snd_cd_bank_load_request, 4, &snd_cd_callback_arg, 4, 0, 0);
+    sif_call_rpc(&sound_stream_client, 0x57, 1, &snd_cd_bank_load_request, 4, &snd_cd_callback_arg, 4, 0, 0);
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012E2D8);
 
-extern int func_0012E820(int, int, void *, int, int);
+extern int snd_SendIOPCommandNoWait(int, int, void *, int, int);
 
 /* Command 8 with no data. */
-void func_0012E2E8(void) {
-    func_0012E820(8, 0, 0, 0, 0);
+void snd_ResolveBankXREFS(void) {
+    snd_SendIOPCommandNoWait(8, 0, 0, 0, 0);
 }
 
-extern int func_0012E820(int, int, void *, int, int);
+extern int snd_SendIOPCommandNoWait(int, int, void *, int, int);
 
 /* snd_UnloadBank */
-void func_0012E318(int arg0) {
+void snd_UnloadBank(int arg0) {
     int local = arg0;
-    func_0012E820(6, 4, &local, 0, 0);
+    snd_SendIOPCommandNoWait(6, 4, &local, 0, 0);
 }
 
 /* snd_SetMasterVolume */
-void func_0012E348(int arg0, int arg1) {
+void snd_SetMasterVolume(int arg0, int arg1) {
     int local[2];
     local[0] = arg0;
     local[1] = arg1;
-    func_0012E820(9, 8, local, 0, 0);
+    snd_SendIOPCommandNoWait(9, 8, local, 0, 0);
 }
 
 /* snd_SetPlaybackMode */
-void func_0012E380(int arg0) {
+void snd_SetPlaybackMode(int arg0) {
     int local = arg0;
-    func_0012E820(0xB, 4, &local, 0, 0);
+    snd_SendIOPCommandNoWait(0xB, 4, &local, 0, 0);
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012E3B0);
 
 /* Command 0xD with two ints. */
-void func_0012E3C0(int arg0, int arg1) {
+void snd_set_mixer_mode(int arg0, int arg1) {
     int local[2];
     local[0] = arg0;
     local[1] = arg1;
-    func_0012E820(0xD, 8, local, 0, 0);
+    snd_SendIOPCommandNoWait(0xD, 8, local, 0, 0);
 }
 
 /* snd_SetGroupVoiceRange */
-void func_0012E3F8(int arg0, int arg1, int arg2) {
+void snd_SetGroupVoiceRange(int arg0, int arg1, int arg2) {
     int local[3];
     local[0] = arg0;
     local[1] = arg1;
     local[2] = arg2;
-    func_0012E820(0x4E, 0xC, local, 0, 0);
+    snd_SendIOPCommandNoWait(0x4E, 0xC, local, 0, 0);
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012E438);
 
 /* Command 0x11 with six ints; the last two arguments are passed through. */
-void func_0012E448(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5,
+void snd_play_sound_vol_pan_pmpb(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5,
                    int arg6, int arg7) {
     int local[6];
     local[0] = arg0;
@@ -536,46 +536,46 @@ void func_0012E448(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5,
     local[3] = arg3;
     local[4] = arg4;
     local[5] = arg5;
-    func_0012E820(0x11, 0x18, local, arg6, arg7);
+    snd_SendIOPCommandNoWait(0x11, 0x18, local, arg6, arg7);
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012E490);
 
 /* Command 0x15 with one int. */
-void func_0012E4A8(int arg0) {
+void snd_stop_sound(int arg0) {
     int local = arg0;
-    func_0012E820(0x15, 4, &local, 0, 0);
+    snd_SendIOPCommandNoWait(0x15, 4, &local, 0, 0);
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012E4D8);
 
 /* Command 0x18 with no data. */
-void func_0012E4F8(void) {
-    func_0012E820(0x18, 0, 0, 0, 0);
+void snd_StopAllSounds(void) {
+    snd_SendIOPCommandNoWait(0x18, 0, 0, 0, 0);
 }
 
 /* snd_PauseAllSoundsInGroup */
-void func_0012E528(int arg0) {
+void snd_PauseAllSoundsInGroup(int arg0) {
     int local = arg0;
-    func_0012E820(0x16, 4, &local, 0, 0);
+    snd_SendIOPCommandNoWait(0x16, 4, &local, 0, 0);
 }
 
 /* snd_ContinueAllSoundsInGroup */
-void func_0012E558(int arg0) {
+void snd_ContinueAllSoundsInGroup(int arg0) {
     int local = arg0;
-    func_0012E820(0x17, 4, &local, 0, 0);
+    snd_SendIOPCommandNoWait(0x17, 4, &local, 0, 0);
 }
 
 /* snd_SoundIsStillPlaying_CB */
-void func_0012E588(int arg0, int arg1, int arg2) {
+void snd_SoundIsStillPlaying_CB(int arg0, int arg1, int arg2) {
     int local = arg0;
-    func_0012E820(0x19, 4, &local, arg1, arg2);
+    snd_SendIOPCommandNoWait(0x19, 4, &local, arg1, arg2);
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012E5B8);
 
 /* Command 0x21 with six ints; the last two arguments are passed through. */
-void func_0012E600(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5,
+void snd_set_sound_params_cb(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5,
                    int arg6, int arg7) {
     int local[6];
     local[0] = arg0;
@@ -584,20 +584,20 @@ void func_0012E600(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5,
     local[3] = arg3;
     local[4] = arg4;
     local[5] = arg5;
-    func_0012E820(0x21, 0x18, local, arg6, arg7);
+    snd_SendIOPCommandNoWait(0x21, 0x18, local, arg6, arg7);
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012E648);
 
 extern unsigned char snd_sync_send_buffer_c[] __asm__("D_00133240");
 extern int snd_sync_buffer_w[] __asm__("D_00133200");
-extern int func_0012E038_s(int *, int) __asm__("func_0012E038");
+extern int snd_PrepareReturnBuffer_s(int *, int) __asm__("func_0012E038");
 
 /* snd_SendIOPCommandAndWait: copy the command data into the send buffer,
    flush pending commands, wait for the RPC server, call command cmd and
    wait for its reply; the reply's second word is the result. Adapted
    from Lombyte's project (GPL-3.0) for PAL. */
-int func_0012E688(int cmd, int size, void *arg) {
+int snd_SendIOPCommandAndWait(int cmd, int size, void *arg) {
     unsigned char *data = arg;
     int i;
     int result;
@@ -607,26 +607,26 @@ int func_0012E688(int cmd, int size, void *arg) {
     }
     goto check;
     do {
-        func_0012DDC0();
-        func_00118D80(0);
+        snd_FlushSoundCommands();
+        flush_cache(0);
 check:;
     } while (*(int *)&snd_current_buffer != 0);
-    func_0012E038_s(snd_sync_buffer_w, 1);
-    while (func_0011B6B8(&sound_command_client) != 0) {
+    snd_PrepareReturnBuffer_s(snd_sync_buffer_w, 1);
+    while (sce_sif_check_stat_rpc(&sound_command_client) != 0) {
         func_00116078(snd_non_idle_error_string);
-        func_0012DDC0();
-        func_00118D80(0);
+        snd_FlushSoundCommands();
+        flush_cache(0);
     }
     if (size != 0) {
-        func_0011B4C8(&sound_command_client, cmd, 1, snd_sync_send_buffer_c, size, snd_sync_buffer_w, 0xC, 0, 0);
+        sif_call_rpc(&sound_command_client, cmd, 1, snd_sync_send_buffer_c, size, snd_sync_buffer_w, 0xC, 0, 0);
     } else {
-        func_0011B4C8(&sound_command_client, cmd, 1, 0, 0, snd_sync_buffer_w, 0xC, 0, 0);
+        sif_call_rpc(&sound_command_client, cmd, 1, 0, 0, snd_sync_buffer_w, 0xC, 0, 0);
     }
-    while (func_0012DFB0() == 0) {
+    while (snd_GotReturns() == 0) {
     }
     result = snd_sync_buffer_w[1];
     if (*((int **)&snd_batch_command_buffers)[*(int *)&snd_batch_index] != 0 && *(int *)&GlobalTableStatus == 0) {
-        func_0012EB18();
+        snd_SendCurrentBatch();
     }
     return result;
 }
@@ -643,7 +643,7 @@ extern short snd_batch_free_bytes;
 extern short snd_stream_buffers;
 extern char D_00154110[];
 extern char snd_no_wait_continuing_string[];
-extern void func_0012EAE0(void);
+extern void snd_PostMessage(void);
 extern int func_00116078_p(const char *, ...) __asm__("func_00116078");
 
 /* snd_SendIOPCommandNoWait: sends a bare command at once when nothing is queued or pending; otherwise waits
@@ -661,13 +661,13 @@ void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_dat
 
     held = 0;
     if (*(int *)&GlobalTableStatus == 0 && *(int *)&snd_current_buffer == 0 && size == 0 && cb == 0) {
-        func_0012E038_s(snd_sync_buffer_w, 1);
-        while (func_0011B6B8(&sound_command_client) != 0) {
+        snd_PrepareReturnBuffer_s(snd_sync_buffer_w, 1);
+        while (sce_sif_check_stat_rpc(&sound_command_client) != 0) {
             func_00116078_p(snd_non_idle_error_string);
-            func_0012DDC0();
-            func_00118D80(0);
+            snd_FlushSoundCommands();
+            flush_cache(0);
         }
-        func_0011B4C8(&sound_command_client, cmd, 1, 0, 0, snd_sync_buffer_w, 0xC, 0, 0);
+        sif_call_rpc(&sound_command_client, cmd, 1, 0, 0, snd_sync_buffer_w, 0xC, 0, 0);
         return;
     }
     need = size + 4;
@@ -681,7 +681,7 @@ void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_dat
             *(int *)&GlobalTableStatus = 0;
             held = 1;
         }
-        func_0012DDC0();
+        snd_FlushSoundCommands();
         if (tries == 1) {
             func_00116078_p(D_00154110, *(int *)&snd_batch_index, *((int **)&snd_batch_command_buffers)[*(int *)&snd_batch_index]);
         }
@@ -706,7 +706,7 @@ void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_dat
     slot = *(int *)&snd_batch_index;
     ((SndCb_2E820 **)&snd_stream_buffers)[slot][*((int **)&snd_batch_command_buffers)[slot]].func = cb;
     ((SndCb_2E820 **)&snd_stream_buffers)[slot][*((int **)&snd_batch_command_buffers)[slot]].data = cb_data;
-    func_0012EAE0();
+    snd_PostMessage();
 }
 
 /* gp-relative, no retail symbol: gp 0x166D00 - 0x7F40 = 0x15EDC0
@@ -714,13 +714,13 @@ void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_dat
    pointers to the per-queue message-count int). */
 
 /* snd_PostMessage */
-void func_0012EAE0(void) {
+void snd_PostMessage(void) {
     int idx = *(int *)&snd_batch_index;
     int **base = (int **)&snd_batch_command_buffers;
     int *msg = base[idx];
 
     *msg = *msg + 1;
-    func_0012DDC0();
+    snd_FlushSoundCommands();
 }
 
 extern s32 snd_batch_index_sb SDATA(D_0015EDC0);
@@ -740,7 +740,7 @@ extern s32 sceSifCallRpc_sb(void *, u32, u32, void *, s32, void *, s32, void (*)
    cache while it is not), send the batch (command 0x4D) with its return
    buffer, then flip to the other batch and reset it.
    Adapted from Lombyte's project (GPL-3.0): src/audio/rpc/snd_send_current_batch.c, snd_send_current_batch. */
-void func_0012EB18(void) {
+void snd_SendCurrentBatch(void) {
     s32 next;
 
     StoreObjectIndex_sb(snd_batch_return_buffers_sb[snd_batch_index_sb], *snd_batch_command_buffers_sb[snd_batch_index_sb], snd_batch_command_buffers_sb[snd_batch_index_sb]);
@@ -760,7 +760,7 @@ void func_0012EB18(void) {
    accessed as the word it really is. gp 0x166D00 - 0x7F3C = 0x15EDC4. */
 
 /* snd_UnkFunction_0012eaf0 */
-void func_0012EC30(void) {
+void snd_reenable_command_flush(void) {
     *(int *)&GlobalTableStatus = 1;
 }
 
@@ -773,9 +773,9 @@ void func_0012EC30(void) {
  * still-open half of the sq/lq question, not a source-shape problem.
  */
 /* snd_UnkFunction_0012eb00 */
-void func_0012EC40(void) {
+void snd_reset_state_and_flush_commands(void) {
     *(int *)&GlobalTableStatus = 0;
-    func_0012DDC0();
+    snd_FlushSoundCommands();
 }
 
 /* gp-relative, no retail symbol: gp 0x166D00 - 0x7F74 = 0x15ED8C
@@ -783,15 +783,15 @@ void func_0012EC40(void) {
    gp 0x166D00 - 0x7F38 = 0x15EDC8 (drain-commands-first flag). */
 extern short snd_cd_stream_active;
 extern short D_0015EDBC;   /* the word at +0xC, SDA ($gp -0x7F38) */
-extern int func_0012EF48(int);              /* snd_StreamSafeCdSync */
-extern int func_0012E688(int, int, void *); /* snd_SendIOPCommandAndWait */
+extern int snd_StreamSafeCdSync(int);              /* snd_StreamSafeCdSync */
+extern int snd_SendIOPCommandAndWait(int, int, void *); /* snd_SendIOPCommandAndWait */
 
 /* snd_InitVAGStreamingEx: no-op (returns 0) if VAG streaming is already
  * enabled; otherwise drains any pending sound commands, syncs the CD
  * stream, and sends the "init streaming" IOP command with the four
  * arguments packed into a header, storing (and returning) its result as
  * the streaming-enabled flag. */
-int func_0012EC60(int arg0, int arg1, int arg2, int arg3) {
+int snd_InitVAGStreamingEx(int arg0, int arg1, int arg2, int arg3) {
     int hdr[4];
     int r;
 
@@ -799,31 +799,31 @@ int func_0012EC60(int arg0, int arg1, int arg2, int arg3) {
         return 0;
     }
     if (*(int *)&snd_cd_callback_pending != 0) {
-        while (func_0012DDC0() != 0) {
+        while (snd_FlushSoundCommands() != 0) {
         }
     }
-    func_0012EF48(0);
+    snd_StreamSafeCdSync(0);
     hdr[0] = arg0;
     hdr[1] = arg1;
     hdr[2] = arg2;
     hdr[3] = arg3;
-    r = func_0012E688(0x2A, 0x10, hdr);
+    r = snd_SendIOPCommandAndWait(0x2A, 0x10, hdr);
     *(int *)&snd_cd_stream_active = r;
     return r;
 }
 
 /* snd_StopAllStreams */
-void func_0012ED10(void) {
-    func_0012E820(0x34, 0, 0, 0, 0);
+void snd_StopAllStreams(void) {
+    snd_SendIOPCommandNoWait(0x34, 0, 0, 0, 0);
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012ED40);
 
-extern int func_0012E820_l(int, int, void *, int, long) __asm__("func_0012E820");
+extern int snd_SendIOPCommandNoWait_l(int, int, void *, int, long) __asm__("func_0012E820");
 
 /* Command 0x2C: seven words, the middle two each packing two 16-bit
    values; the last two arguments are passed through. */
-void func_0012ED48(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5,
+void snd_PlayVAGStreamByLocEx_CB(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5,
                    int arg6, int arg7, int arg8, int arg9, long arg10) {
     int local[7];
     local[0] = arg0;
@@ -833,39 +833,39 @@ void func_0012ED48(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5,
     local[4] = arg6;
     local[5] = arg7;
     local[6] = arg8;
-    func_0012E820_l(0x2C, 0x1C, local, arg9, arg10);
+    snd_SendIOPCommandNoWait_l(0x2C, 0x1C, local, arg9, arg10);
 }
 
 /* snd_PauseVAGStream */
-void func_0012EDB0(int arg0) {
+void snd_PauseVAGStream(int arg0) {
     int local = arg0;
-    func_0012E820(0x2D, 4, &local, 0, 0);
+    snd_SendIOPCommandNoWait(0x2D, 4, &local, 0, 0);
 }
 
 /* snd_ContinueVAGStream */
-void func_0012EDE0(int arg0) {
+void snd_ContinueVAGStream(int arg0) {
     int local = arg0;
-    func_0012E820(0x2E, 4, &local, 0, 0);
+    snd_SendIOPCommandNoWait(0x2E, 4, &local, 0, 0);
 }
 
 /* snd_GetVAGStreamTimeRemaining_CB */
-void func_0012EE10(int arg0, int arg1, int arg2) {
+void snd_GetVAGStreamTimeRemaining_CB(int arg0, int arg1, int arg2) {
     int local = arg0;
-    func_0012E820(0x32, 4, &local, arg1, arg2);
+    snd_SendIOPCommandNoWait(0x32, 4, &local, arg1, arg2);
 }
 
 /* snd_IsVAGStreamBuffered_CB */
-void func_0012EE40(int arg0, int arg1, int arg2) {
+void snd_IsVAGStreamBuffered_CB(int arg0, int arg1, int arg2) {
     int local = arg0;
-    func_0012E820(0x4F, 4, &local, arg1, arg2);
+    snd_SendIOPCommandNoWait(0x4F, 4, &local, arg1, arg2);
 }
 
-extern int func_0012E688(int, int, void *);
+extern int snd_SendIOPCommandAndWait(int, int, void *);
 
 /* snd_StreamSafeCheckCDIdle */
-void func_0012EE70(int arg0) {
+void snd_StreamSafeCheckCDIdle(int arg0) {
     int local = arg0;
-    func_0012E688(0x36, 4, &local);
+    snd_SendIOPCommandAndWait(0x36, 4, &local);
 }
 
 /* gp-relative, no retail symbol: gp 0x166D00 - 0x7F74 = 0x15ED8C
@@ -879,17 +879,17 @@ typedef struct {
 } CdSafeState;
 extern CdSafeState sound_read_work;
 
-extern int func_00121750(int, int, int);
+extern int sce_cd_read(int, int, int);
 
 /* snd_StreamSafeCdRead */
-int func_0012EE98(int arg0, int arg1, int arg2) {
+int snd_StreamSafeCdRead(int arg0, int arg1, int arg2) {
     int local[3];
 
     if (*(int *)&snd_cd_stream_active == 0) {
-        return func_00121750(arg0, arg1, arg2);
+        return sce_cd_read(arg0, arg1, arg2);
     }
 
-    if (func_0012EF48(1) == 1) {
+    if (snd_StreamSafeCdSync(1) == 1) {
         return 0;
     }
 
@@ -898,21 +898,21 @@ int func_0012EE98(int arg0, int arg1, int arg2) {
     sound_read_work.error = 0;
     local[1] = arg1;
     local[2] = arg2;
-    func_0012E820(0x38, 12, local, 0, 0);
+    snd_SendIOPCommandNoWait(0x38, 12, local, 0, 0);
     *(int *)&snd_cd_sync_pending = 1;
     *(int *)&snd_cd_stream_end_pending = 0;
     return 1;
 }
 
-extern void func_00118D80(int);
+extern void flush_cache(int);
 
 /* snd_StreamSafeCdSync */
-int func_0012EF48(int arg0) {
+int snd_StreamSafeCdSync(int arg0) {
     if (*(int *)&snd_cd_stream_active == 0) {
-        return func_00120F30(arg0);
+        return sce_cd_sync_s(arg0);
     }
 
-    func_00118D80(0);
+    flush_cache(0);
     *(int *)&snd_cd_stream_end_pending = sound_read_work.count == 0;
     if (*(int *)&snd_cd_stream_end_pending == 1) {
         return 0;
@@ -923,35 +923,35 @@ int func_0012EF48(int arg0) {
     }
 
     while (*(int *)&snd_cd_stream_end_pending == 0) {
-        func_0012DDC0();
-        func_00118D80(0);
+        snd_FlushSoundCommands();
+        flush_cache(0);
         *(int *)&snd_cd_stream_end_pending = sound_read_work.count == 0;
     }
 
     return 0;
 }
 
-extern int func_001219C8(void);
+extern int sce_cd_break(void);
 
 /* snd_StreamSafeCdBreak */
-int func_0012EFE8(void) {
+int snd_StreamSafeCdBreak(void) {
     if (*(int *)&snd_cd_stream_active == 0) {
-        return func_001219C8();
+        return sce_cd_break();
     }
-    func_0012E820(0x37, 0, 0, 0, 0);
+    snd_SendIOPCommandNoWait(0x37, 0, 0, 0, 0);
     return 1;
 }
 
-extern int func_00121930(void);
+extern int sce_cd_get_error(void);
 
 /* snd_StreamSafeCdGetError: returns the last CD error while VAG streaming
  * owns the drive (the cached value at D_00137C00.error), otherwise defers
  * to sceCdGetError. The field access (not a byte-offset cast) plus
  * volatile is what makes retail's separate lui+addiu base and its
  * duplicated epilogue restore come out of this compiler. */
-int func_0012F030(void) {
+int snd_StreamSafeCdGetError(void) {
     if (*(int *)&snd_cd_stream_active == 0) {
-        return func_00121930();
+        return sce_cd_get_error();
     }
     return sound_read_work.error;
 }
@@ -963,7 +963,7 @@ extern short snd_cd_status_callback;
 extern int func_00120978(void);
 
 /* snd_StreamSafeCdCallback */
-int func_0012F068(int arg0) {
+int snd_StreamSafeCdCallback(int arg0) {
     int old;
 
     if (*(int *)&snd_cd_stream_active == 0) {
@@ -977,38 +977,38 @@ int func_0012F068(int arg0) {
 LINKER_REMNANT("asm/remnants/core_text", func_0012F098);
 
 /* Command 0x50 with five ints. */
-void func_0012F0A8(int arg0, int arg1, int arg2, int arg3, int arg4) {
+void snd_set_reverb_ex(int arg0, int arg1, int arg2, int arg3, int arg4) {
     int local[5];
     local[0] = arg0;
     local[1] = arg1;
     local[2] = arg2;
     local[3] = arg3;
     local[4] = arg4;
-    func_0012E820(0x50, 0x14, local, 0, 0);
+    snd_SendIOPCommandNoWait(0x50, 0x14, local, 0, 0);
 }
 
 /* snd_PreAllocReverbWorkArea */
-void func_0012F0E8(int arg0, int arg1) {
+void snd_PreAllocReverbWorkArea(int arg0, int arg1) {
     int local[2];
     local[0] = arg0;
     local[1] = arg1;
-    func_0012E820(0x51, 8, local, 0, 0);
+    snd_SendIOPCommandNoWait(0x51, 8, local, 0, 0);
 }
 
 /* snd_AutoReverb */
-void func_0012F120(int arg0, int arg1, int arg2, int arg3) {
+void snd_AutoReverb(int arg0, int arg1, int arg2, int arg3) {
     int local[4];
     local[0] = arg0;
     local[1] = arg1;
     local[2] = arg2;
     local[3] = arg3;
-    func_0012E820(0x10, 0x10, local, 0, 0);
+    snd_SendIOPCommandNoWait(0x10, 0x10, local, 0, 0);
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012F160);
 
 /* Command 0x3B with six ints, waiting for the reply. */
-int func_0012F1A8(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
+int snd_init_movie_sound(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
     int local[6];
     local[0] = arg0;
     local[1] = arg1;
@@ -1016,48 +1016,48 @@ int func_0012F1A8(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
     local[3] = arg3;
     local[4] = arg4;
     local[5] = arg5;
-    return func_0012E688(0x3B, 0x18, local);
+    return snd_SendIOPCommandAndWait(0x3B, 0x18, local);
 }
 
 /* snd_ResetMovieSound */
-void func_0012F1E8(void) {
-    func_0012E688(0x3D, 0, 0);
+void snd_ResetMovieSound(void) {
+    snd_SendIOPCommandAndWait(0x3D, 0, 0);
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012F210);
 
 /* Command 0x3C with no data, waiting for the reply. */
-int func_0012F220(void) {
-    return func_0012E688(0x3C, 0, 0);
+int snd_close_movie_sound(void) {
+    return snd_SendIOPCommandAndWait(0x3C, 0, 0);
 }
 
 /* snd_StartMovieSound */
-void func_0012F248(int arg0, int arg1, int arg2, int arg3, int arg4) {
+void snd_StartMovieSound(int arg0, int arg1, int arg2, int arg3, int arg4) {
     int local[5];
     local[0] = arg0;
     local[1] = arg1;
     local[2] = arg2;
     local[3] = arg3;
     local[4] = arg4;
-    func_0012E688(0x3E, 0x14, local);
+    snd_SendIOPCommandAndWait(0x3E, 0x14, local);
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012F280);
 
 /* Command 0x5A with two ints, waiting for the reply. */
-int func_0012F288(int arg0, int arg1) {
+int snd_UpdateMovieADPCM(int arg0, int arg1) {
     int local[2];
     local[0] = arg0;
     local[1] = arg1;
-    return func_0012E688(0x5A, 8, local);
+    return snd_SendIOPCommandAndWait(0x5A, 8, local);
 }
 
 /* snd_GetMovieNAX */
-void func_0012F2B8(void) {
-    func_0012E688(0x5B, 0, 0);
+void snd_GetMovieNAX(void) {
+    snd_SendIOPCommandAndWait(0x5B, 0, 0);
 }
 
 /* snd_GetDopplerPitchMod */
-int func_0012F2E0(int arg0) {
+int snd_GetDopplerPitchMod(int arg0) {
     return (arg0 * 0x5F4) / 0x2E5;
 }

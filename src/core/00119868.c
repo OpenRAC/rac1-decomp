@@ -197,8 +197,8 @@ struct Mmio {
 extern struct TtyState D_00154B50_19AA8 __asm__("D_00154B50");
 extern u8 D_00154B80[];
 extern s32 func_00119768(s32, s32);
-extern s32 func_0011D960();
-extern s32 func_0011D9A8();
+extern s32 disable_interrupts();
+extern s32 enable_interrupts();
 extern void func_00119798(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/debug/sce_tty_write.c, sceTtyWrite. */
@@ -215,7 +215,7 @@ s32 func_00119AA8(s8 *text, s32 text_len) {
     window_bytes = 0;
     src = text;
     if (D_00154B50_19AA8.unkC == 0) {
-        func_0011D960();
+        disable_interrupts();
         D_00154B50_19AA8.unkC = 1;
         mmio = (struct Mmio *)((u32)D_00154B80 | 0x20000000);
         D_00154B50_19AA8.unk10 = (s32)mmio;
@@ -243,7 +243,7 @@ s32 func_00119AA8(s8 *text, s32 text_len) {
         mmio->unk0 = D_00154B50_19AA8.unk4;
         if (func_00119768(D_00154B50_19AA8.unk0, mmio->unk7) < 0) {
             *(s32 *)&D_00154B50_19AA8.unkC = 0;
-            func_0011D9A8();
+            enable_interrupts();
             return -1;
         }
         if (D_00154B50_19AA8.unkC != 0) {
@@ -251,7 +251,7 @@ s32 func_00119AA8(s8 *text, s32 text_len) {
                 func_00119798(D_00154B50_19AA8.unk0);
             } while (D_00154B50_19AA8.unkC != 0);
         }
-        func_0011D9A8();
+        enable_interrupts();
         return written_count;
     }
     return -1;
@@ -318,7 +318,7 @@ struct TtyMmio {
 };
 extern struct TtyInitState D_00154B50;
 extern u8 D_00154CC0[];
-extern s32 func_00118D80();
+extern s32 flush_cache();
 extern s32 func_00119868_tty(int) __asm__("func_00119868");
 extern s32 func_00119718();
 extern void func_00119910();
@@ -331,7 +331,7 @@ s32 func_00119CC8(void) {
     s32 baud;
     s32 cmd;
 
-    func_00118D80(0);
+    flush_cache(0);
     *(volatile s32 *)&state->unk0 = func_00119718(0x210, state, &func_00119910);
     if (state->unk0 < 0) {
         return 0;

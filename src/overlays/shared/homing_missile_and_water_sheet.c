@@ -14,7 +14,7 @@ extern char D_L11_0021ABF0[];
 extern int proximity_removal_frame_count MACRO_ADDR;
 extern float FastVecDist(void *, void *);
 extern int scale_ticks(int);
-extern int func_00116248(void *, void *);
+extern int sprintf(void *, void *);
 extern void DeleteMoby(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002c8830.c, FUN_L11_002cb790. */
@@ -22,7 +22,7 @@ void remove_moby_when_near_hero(char *a0)
 {
     if (FastVecDist(a0 + 0x10, gHeroPos) < 2.0f) {
         D_0013D491[0] = 1;
-        func_00116248(D_L11_00179B98, D_L11_0021ABF0);
+        sprintf(D_L11_00179B98, D_L11_0021ABF0);
         proximity_removal_frame_count = scale_ticks(0xB4);
         DeleteMoby(a0);
     }
@@ -1223,7 +1223,7 @@ void emit_type_74_particles_from_moby_joints(void *m, char *t) {
 extern unsigned char gCheats[] MACRO_ADDR;
 extern short moby_trail_length;
 extern float moby_trail_quad_uvs[][2];
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 
 typedef struct {
     float v[4][4];
@@ -1273,7 +1273,7 @@ void draw_linked_moby_trails(char *m) {
         }
     }
 
-    func_001153FC(off, 0, 0x20);
+    libc_memset(off, 0, 0x20);
     off[0][2] = 0.25f;
     off[1][2] = -0.25f;
 

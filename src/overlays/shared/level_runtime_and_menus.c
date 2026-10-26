@@ -66,7 +66,7 @@ extern void initialize_level_map_archive_r(void) __asm__("func_L00_00246EC0");
 extern void init_hud_r(void) __asm__("func_001FF6B8");
 extern void load_misc_animations_into_stash_r(void) __asm__("func_L00_00276F18");
 extern void prepare_level_entry_transition_r(void) __asm__("func_L00_002901A8");
-extern int func_00122598_2465F8(int) __asm__("func_00122598");
+extern int sce_gs_sync_v_r(int) __asm__("func_00122598");
 extern void PutDispBuffer_r(void) __asm__("func_001FB470");
 extern void music_StartTrack_r(int, int, int) __asm__("func_00216A90");
 /* The empty function (`jr $31; nop`) and func_00216270 have several identical copies in level 00. The catalogue
@@ -99,11 +99,11 @@ extern void VU1_swapChain_r(void) __asm__("func_00234948");
 extern void PutDrawBufferSmall_r(void) __asm__("func_001FB598");
 extern void AA_BlurPass_r(void) __asm__("func_001FB848");
 extern void PutDrawBufferLarge_r(void) __asm__("func_001FB498");
-extern int func_0012DDC0_2465F8(void) __asm__("func_0012DDC0");
+extern int snd_FlushSoundCommands_r(void) __asm__("func_0012DDC0");
 extern void VU1_syncChain_r(int) __asm__("func_00234AC8");
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
-extern void func_0012EC30_2465F8(void) __asm__("func_0012EC30");
-extern void func_0012EC40_2465F8(void) __asm__("func_0012EC40");
+extern void snd_reenable_command_flush_r(void) __asm__("func_0012EC30");
+extern void snd_reset_state_and_flush_commands_r(void) __asm__("func_0012EC40");
 extern void sound_StopAllSounds_r(void) __asm__("func_0022EFE8");
 extern void music_Stop_r(void) __asm__("func_00216D88");
 extern void memcard_update_state_r(void) __asm__("func_00209E68");
@@ -163,7 +163,7 @@ void run_level_main_loop(void) {
     load_misc_animations_into_stash_r();
     prepare_level_entry_transition_r();
     rendered_frame_count_r = 0;
-    func_00122598_2465F8(0);
+    sce_gs_sync_v_r(0);
     PutDispBuffer_r();
     music_StartTrack_r(((Music_2465F8 *)cd_read_state_r)->track, 1, 0x400);
     if ((g_current_level_index_r == one && D_0013DE4B_2465F8[0] == 0) ||
@@ -184,7 +184,7 @@ void run_level_main_loop(void) {
     }
     item_usage_r[g_current_level_index_r].flags =
         item_usage_r[g_current_level_index_r].flags | (1 << g_current_level_index_r) | 0x80000000;
-    func_0012EC30_2465F8();
+    snd_reenable_command_flush_r();
 
     while (level_loop_exit_requested_r == 0) {
         quit = 0;
@@ -198,7 +198,7 @@ void run_level_main_loop(void) {
         PutDrawBufferSmall_r();
         AA_BlurPass_r();
         PutDrawBufferLarge_r();
-        func_0012DDC0_2465F8();
+        snd_FlushSoundCommands_r();
         v = cinematic_mode_r;
         switch (v) {
         case -1:
@@ -306,12 +306,12 @@ void run_level_main_loop(void) {
                         update_cutscene_playback_r();
                     }
                 }
-                func_00122598_2465F8(0);
+                sce_gs_sync_v_r(0);
                 rendered_frame_count_r = rendered_frame_count_r + 1;
                 SpaceTransition_Tick_r();
                 D_L00_0015F690_2465F8 = 0;
             } else {
-                func_00122598_2465F8(0);
+                sce_gs_sync_v_r(0);
                 rendered_frame_count_r = rendered_frame_count_r + 1;
                 SpaceTransition_Tick_r();
                 D_L00_0015F690_f_2465F8 = 0.0f;
@@ -324,8 +324,8 @@ void run_level_main_loop(void) {
         }
         if (quit != 0) {
             VU1_initChain_r();
-            func_0012EC40_2465F8();
-            func_0012DDC0_2465F8();
+            snd_reset_state_and_flush_commands_r();
+            snd_FlushSoundCommands_r();
             sound_StopAllSounds_r();
             music_Stop_r();
             load_level_archive_resources_r(0, full);

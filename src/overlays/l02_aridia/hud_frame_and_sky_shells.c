@@ -50,7 +50,7 @@ typedef struct {
 extern int hud_screen_position(HudElem *, int *, int *);
 extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);
-extern int func_00116248(char *str, const char *fmt, ...);
+extern int sprintf(char *str, const char *fmt, ...);
 extern s32 GetIconFrame(s32, s32);
 extern void HudSprite(s32, s32, s32, s32, s32, s32);
 extern void draw_hud_sprite_flipped(s32, s32, s32, s32, s32, s32);
@@ -115,7 +115,7 @@ s32 draw_hud_counter(HudElem *m) {
     } else if (shade < 0.0f) {
         shade = 0.0f;
     }
-    func_00116248(text, aridia_hud_counter_format, m->unk74);
+    sprintf(text, aridia_hud_counter_format, m->unk74);
     alpha = truncate_float_to_s32((f32)truncate_float_to_s32(grow * 128.0f) * 0.7f);
     if (m->unk08 < 10) {
         len = (*(s32 *)&aridia_hud_counter_panel_width);

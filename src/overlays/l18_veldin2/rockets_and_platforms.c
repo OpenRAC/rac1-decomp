@@ -3208,7 +3208,7 @@ extern short drek_missile_trail_alpha_c;
 extern short drek_missile_trail_alpha_d;
 extern short drek_missile_trail_color_head;
 extern short drek_missile_trail_color_tail;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern float drek_missile_trail_uvs[4][2];
 extern char *veldin2_moby_table MACRO_ADDR;
 /* Draw callback that renders the trails of the class 0x54B mobys in the group. */
@@ -3248,7 +3248,7 @@ void draw_drek_fight_missile_group_trails(struct Moby *moby) {
             quads[i].colors[j] = FastTweenColor(*(int *)&drek_missile_trail_color_head, *(int *)&drek_missile_trail_color_tail, t);
         }
     }
-    func_001153FC(extra, 0, 0x20);
+    libc_memset(extra, 0, 0x20);
     extra[2] = 0.15f;
     extra[6] = -0.15f;
     p = (short *)veldin2_moby_groups[moby->group];

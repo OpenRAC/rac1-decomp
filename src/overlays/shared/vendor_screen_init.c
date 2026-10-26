@@ -18,9 +18,9 @@ extern short D_L01_0015F500;
 extern char novalis_vendor_screen_anchor_offset;
 extern char hero_globals_base[];
 extern unsigned char help_stats_base[] NOT_SDA;
-extern void func_0012E528(int);
+extern void snd_PauseAllSoundsInGroup(int);
 extern void music_Pause(int);
-extern void func_0012DDC0(void);
+extern void snd_FlushSoundCommands(void);
 extern void FastMemSet();
 extern void reset_hud_and_suspend_weapon_updates(void);
 extern void clear_active_help_record(void);
@@ -36,7 +36,7 @@ extern void clear_hero_item_slot(int, int);
 extern void select_world_object_resource_tables(int, int);
 extern void load_scene_chunks_with_fade(int);
 extern void parse_space_scene_chunk(int);
-extern int func_00122598(int);
+extern int sce_gs_sync_v(int);
 extern void update_item_tint_from_hero(int, int);
 extern int Music_ContinueStreamIfReady(void);
 
@@ -52,9 +52,9 @@ void initialize_vendor_screen(char *m, int lvl) {
     char *qq;
     int n;
     int r;
-    func_0012E528(0x1D);
+    snd_PauseAllSoundsInGroup(0x1D);
     music_Pause(0);
-    func_0012DDC0();
+    snd_FlushSoundCommands();
     novalis_skip_frame = 1;
     FastMemSet(s, 0, 0x220);
     *(int *)novalis_vendor_screen_state = 3;
@@ -93,7 +93,7 @@ void initialize_vendor_screen(char *m, int lvl) {
     parse_space_scene_chunk(0);
     while (qq = (char *)help_stats_base + 0x100B5, *(short *)(qq + 0x5A) != 3) {
         sound_update();
-        func_00122598(0);
+        sce_gs_sync_v(0);
     }
     c2 = fx_cutscene;
     g2 = hero_globals_base + 0xE1D;

@@ -3,11 +3,11 @@
 #include "include_asm.h"
 
 extern void draw_framebuffer_rect(int, int, int, int, int, int, int);
-extern void *func_001153FC(void *, int, int);
+extern void *libc_memset(void *, int, int);
 extern void DrawMobyList(int, int);
 extern char *msg_string(int);
 extern void font_print_window_small(void *, long, char *, int);
-extern int func_00116248(char *str, const char *fmt, ...);
+extern int sprintf(char *str, const char *fmt, ...);
 extern void FontPrintSmall(int, int, long, char *, int);
 extern void font_print_right_small(int, int, long, char *, int);
 typedef struct { int i0; int i4; unsigned short h8; unsigned short hA; unsigned short hC; unsigned short hE; int i10; int i14; } Row;
@@ -37,7 +37,7 @@ void draw_vendor_purchase_text(void *m, int x, int y) {
     int total;
 
     draw_framebuffer_rect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
-    { int n = sizeof(box); func_001153FC((void *)&box, 0, n); }
+    { int n = sizeof(box); libc_memset((void *)&box, 0, n); }
     box.half_x = x / 2;
     box.half_y = y / 2;
     box.left = x - 8;
@@ -63,7 +63,7 @@ void draw_vendor_purchase_text(void *m, int x, int y) {
     box.half_y = 6;
     box.style = 1;
     font_print_window_small((void *)&box, 0x80f0f0f0L, msg_string(0x523C), -1);
-    func_00116248(text, vendor_quantity_format, vendor_buy_quantity);
+    sprintf(text, vendor_quantity_format, vendor_buy_quantity);
     if (vendor_buy_quantity >= 100)
         text_x = 0x17;
     else {
@@ -83,7 +83,7 @@ quantity_done:
         total = vendor_buy_quantity * item_price_table[MENU.rows[MENU.f58].fD0].hA;
     else
         total = vendor_buy_quantity * item_price_table[MENU.rows[MENU.f58].fD0].h8;
-    func_00116248(text, fmt, total);
+    sprintf(text, fmt, total);
     font_print_right_small(0x40, 0x4c, 0x80f0f0f0L, text, -1);
     return;
 no_money:
@@ -366,7 +366,7 @@ extern A02b0_tab_2A1540 vendor_item_slot2_placement_r[] __asm__("D_L00_001C92F0"
 extern void append_gif_transfer_packet_r(void) __asm__("func_001FB530");
 extern void DrawDebugProfiler_r(void) __asm__("func_001F3D78");
 extern void VU1_syncChain_r(s32) __asm__("func_00234AC8");
-extern s32 func_00122598_2A1540(s32) __asm__("func_00122598");
+extern s32 sce_gs_sync_v_r(s32) __asm__("func_00122598");
 extern void VU1_sendChain_r(void) __asm__("func_002349B8");
 extern void VU1_swapChain_r(void) __asm__("func_00234948");
 extern void capture_draw_buffer_r(s32) __asm__("func_L00_001F9D40");
@@ -423,7 +423,7 @@ void draw_vendor_screen(void) {
         ((A02b0_obj_2A1540 *)vendor_menu_r)->f8 = 1;
         ((A02b0_obj_2A1540 *)vendor_menu_r)->fC = 0;
         VU1_syncChain_r(1);
-        func_00122598_2A1540(0);
+        sce_gs_sync_v_r(0);
         rendered_frame_count_r = rendered_frame_count_r + 1;
         VU1_sendChain_r();
         VU1_swapChain_r();

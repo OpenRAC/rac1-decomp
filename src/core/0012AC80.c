@@ -41,8 +41,8 @@ extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
 extern void *InitBlockData NOT_SDA;
 extern int D_00155080[];
-extern void func_001193F8(int);
-extern void func_00118AD0(int, int);
+extern void disable_dmac_atomic(int);
+extern void remove_dmac_handler(int, int);
 extern int D_00154F54;
 extern int D_0012FD04;
 extern int D_00154F64 NOT_SDA;
@@ -50,9 +50,9 @@ extern int D_00154F6C NOT_SDA;
 extern void func_0011AA90(int, int, int, int, int, int, int);
 extern void func_0011AA00(void);
 extern int RpcCommandState NOT_SDA;
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
-extern int func_00118C70(void *);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
+extern int create_semaphore(void *);
 extern int D_0012FDA0;
 extern int D_0012FDA4;
 extern char D_00157E80[];
@@ -62,7 +62,7 @@ extern int D_0012FD9C NOT_SDA;
 extern char D_0012FCEC[];
 extern char FsResetBuffer[];
 extern int D_0012FDA8;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FsResetState;
 extern int D_0012FDAC;
 extern char D_00158140[];
@@ -79,8 +79,8 @@ extern int SecondSemaphore;
 extern int D_00130BD0[];
 extern char D_00130428[];
 extern int func_0011DC50(void);
-extern void func_00118D80(int);
-extern int func_00120F30(int);
+extern void flush_cache(int);
+extern int sce_cd_sync_s(int);
 extern void *D_00159840;
 extern int D_001313E0;
 extern int D_001313E8;
@@ -88,12 +88,12 @@ extern int D_001313EC;
 extern int D_001313F0;
 extern int D_001313E4;
 extern int D_001313FC;
-extern int func_0011B4C8();
+extern int sif_call_rpc();
 extern int func_00120D28(int);
-extern void func_00118C90(int);
+extern void signal_semaphore(int);
 extern char D_00132590[];
 extern int D_00131440;
-extern int func_0011B6B8(void *);
+extern int sce_sif_check_stat_rpc(void *);
 extern char D_00153000[];
 extern char D_00132E08[];
 extern int D_001313D0;
@@ -103,16 +103,16 @@ extern char CoreDataTable[];
 extern void func_00123650(void *);
 extern char D_001534E0[];
 extern int DmaChannels[];
-extern int func_001238B0(int, int, int, int);
+extern int sce_mc_open(int, int, int, int);
 extern int D_00132EA8;
 extern int *D_00159B28;
 extern int *D_00159B2C;
 extern int *D_00159B30;
 extern char RpcQueueData[];
 extern int RpcReceiveData;
-extern void func_00124B60(void *);
+extern void debug_print_stub(void *);
 extern char D_00153658[];
-extern int func_00124920(int);
+extern int sceDbcGetDepNumber(int);
 typedef struct {
     char unk_00[4];
     int  unk_04;
@@ -130,7 +130,7 @@ extern void func_00128968(void *, int);
 extern int func_00128860(void *, int);
 extern void func_00129180(void *);
 extern char D_00153A80[];
-extern void func_00116248_4(void *, char *, int, int) __asm__("func_00116248");
+extern void sprintf_4(void *, char *, int, int) __asm__("func_00116248");
 extern void func_0012C468_a(void *, void *) __asm__("func_0012C468");
 extern void func_0012AAC8(void *, int);
 extern void func_00127378(int arg0);
@@ -225,7 +225,7 @@ extern s32 func_0012B100_2AD10(SysBit *bs, PackHdr *pack) __asm__("func_0012B100
 extern s32 func_0012B2C0_2AD10(MpegSys *sys, SysBit *bs, PesHdr *pes) __asm__("func_0012B2C0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/dma/sce_mpeg_demux_pss_ring.c, sceMpegDemuxPssRing. */
-int func_0012AD10(sceMpeg *mp, u8 *start, int size, u8 *bufstart, int bufsize) {
+int sce_mpeg_demux_pss_ring_buffer(sceMpeg *mp, u8 *start, int size, u8 *bufstart, int bufsize) {
     SysBit bs;
     PssHdr hdr;
     SysBit *b;
@@ -328,7 +328,7 @@ extern Tbl16 D_00132FD8[];
  * D_00132FD8[arg1], and bump the stored count unconditionally. Returns
  * the previous callback.
  */
-int func_0012B008(void *arg0, int arg1, int arg2, int arg3, int arg4) {
+int sce_mpeg_add_str_callback(void *arg0, int arg1, int arg2, int arg3, int arg4) {
     int old = 0;
     char *obj = *(char **)((char *)arg0 + 0x40);
     StrCbEnt *tbl = *(StrCbEnt **)(obj + 0x44);
@@ -594,8 +594,8 @@ extern void func_0012D068(void);
  * masked off, and two more (0x1000B020/0x1000B420) are zeroed before the
  * tail call into func_0012D068.
  */
-void func_0012B870(void) {
-    int r = func_0011D960();
+void sce_mpeg_init(void) {
+    int r = disable_interrupts();
 
     *(volatile unsigned int *)0x1000F590 =
         *(volatile unsigned int *)0x1000F520 | 0x10000;
@@ -605,7 +605,7 @@ void func_0012B870(void) {
         *(volatile unsigned int *)0x1000F520 & ~0x10000;
 
     if (r != 0) {
-        func_0011D9A8();
+        enable_interrupts();
     }
 
     *(volatile unsigned int *)0x1000B020 = 0;
@@ -616,12 +616,12 @@ void func_0012B870(void) {
 extern void func_0012C468(void *, void *);
 /* memset returns its pointer: the unused return moves the first temporary
    after the call from $v0 to $v1. */
-extern void *func_001153FC_p(void *, int, unsigned int) __asm__("func_001153FC");
+extern void *libc_memset_p(void *, int, unsigned int) __asm__("func_001153FC");
 extern char D_00153B10[];
 extern void func_0012BD28(void *, int, int);
-extern unsigned int func_0012BD60(void *, char *, unsigned int, unsigned int);
+extern unsigned int reserve_aligned_buffer_space(void *, char *, unsigned int, unsigned int);
 extern void func_0012C2F8(void *);
-extern void func_0012BBA8(void *);
+extern void sce_mpeg_reset(void *);
 extern int func_0012BBF8(void *);
 extern void func_0012BD40(void *);
 extern void func_0012CC70(void);
@@ -645,7 +645,7 @@ extern void func_0012CC80(void);
  * fills that call's delay slot, and the last four stores are in the
  * order that schedules as retail's.
  */
-int func_0012B918(void *arg0, void *workarea, int size) {
+int sce_mpeg_create(void *arg0, void *workarea, int size) {
     char *w = (char *)arg0;
     unsigned int wa = (unsigned int)workarea;
     char *aligned;
@@ -653,7 +653,7 @@ int func_0012B918(void *arg0, void *workarea, int size) {
     unsigned int avail;
     int neg1;
 
-    func_001153FC_p(workarea, 0, size);
+    libc_memset_p(workarea, 0, size);
 
     aligned = (char *)(((wa + 3) >> 2) << 2);
     avail = (unsigned int)size - ((unsigned int)aligned - wa);
@@ -703,7 +703,7 @@ int func_0012B918(void *arg0, void *workarea, int size) {
     *(int *)(aligned + 0x1C) = (int)func_0012CC70;
     *(int *)(aligned + 0x24) = (int)func_0012CC80;
 
-    *(int *)(aligned + 0x44) = (int)func_0012BD60(aligned, area2, 0x600, 8);
+    *(int *)(aligned + 0x44) = (int)reserve_aligned_buffer_space(aligned, area2, 0x600, 8);
 
     *(int *)(aligned + 0x48) = 0;
     *(int *)(aligned + 0xFC) = 0;
@@ -722,7 +722,7 @@ int func_0012B918(void *arg0, void *workarea, int size) {
     *(int *)(aligned + 0xB0) = 1;
 
     func_0012C2F8(aligned);
-    func_0012BBA8(w);
+    sce_mpeg_reset(w);
     func_0012BBF8(w);
 
     *(int *)(aligned + 0x1B8) = (int)(aligned + 0x1E8);
@@ -743,7 +743,7 @@ int func_0012B918(void *arg0, void *workarea, int size) {
     *(int *)(aligned + 0x854) = 0;
 }
 
-int func_0012BB20(void) {
+int sce_mpeg_delete(void) {
     return 1;
 }
 
@@ -751,7 +751,7 @@ LINKER_REMNANT("asm/remnants/core_text", func_0012BB28);
 
 extern int func_0012BDD0(void *);
 
-int func_0012BB30(char *p, unsigned int addr, int size) {
+int sce_mpeg_get_picture(char *p, unsigned int addr, int size) {
     char *t = *(char **)(p + 0x40);
 
     *(int *)(t + 0xB0) = 1;
@@ -764,11 +764,11 @@ int func_0012BB30(char *p, unsigned int addr, int size) {
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012BB78);
 
-int func_0012BB88(char *p) {
+int sce_mpeg_is_end(char *p) {
     return **(int **)(p + 0x40);
 }
 
-int func_0012BB98(void *arg0) {
+int sce_mpeg_is_ref_buff_empty(void *arg0) {
     return ((Wrapper *)arg0)->obj->unk004 == 0;
 }
 
@@ -782,7 +782,7 @@ extern void func_0012C268(void *arg0);
  * the object to func_0012C268 (zero +0x848, kick the IPU chain via
  * func_00127378).
  */
-void func_0012BBA8(void *arg0) {
+void sce_mpeg_reset(void *arg0) {
     char *w = (char *)arg0;
     char *inner = *(char **)(w + 0x40);
 
@@ -826,7 +826,7 @@ typedef struct { char pad[0xC]; MpegCbEnt cb[1]; } MpegCbTbl;
  * 2.95.3 (no type-based aliasing) the same C is 17/36; the old int-offset
  * spelling was 12/36 under both.
  */
-int func_0012BC50(void *arg0, int arg1, int arg2, int arg3) {
+int sce_mpeg_add_callback(void *arg0, int arg1, int arg2, int arg3) {
     MpegCbTbl *t = *(MpegCbTbl **)((char *)arg0 + 0x40);
     MpegCbFn old;
     t->cb[arg1].data = (void *)arg3;
@@ -901,7 +901,7 @@ extern char D_00153B38[];
    of the fall-through `b`, as retail. Written overflow-first, as 2.95.3
    needed, 2.9-ee inverts the test and puts the store in a beql slot,
    one instruction short (SIZE 104/108). */
-unsigned int func_0012BD60(void *arg0, char *r, unsigned int size,
+unsigned int reserve_aligned_buffer_space(void *arg0, char *r, unsigned int size,
                            unsigned int align) {
     unsigned int aligned;
     unsigned int end;
@@ -1276,7 +1276,7 @@ void func_0012C358(void *arg0) {
 
     *(int *)(s + 0x818) = 1;
     *(int *)(s + 0x1B0) = 0;
-    r = func_0011D960();
+    r = disable_interrupts();
 
     *(volatile unsigned int *)0x1000F590 =
         *(volatile unsigned int *)0x1000F520 | 0x10000;
@@ -1287,7 +1287,7 @@ void func_0012C358(void *arg0) {
         *(volatile unsigned int *)0x1000F520 & ~0x10000;
 
     if (r != 0) {
-        func_0011D9A8();
+        enable_interrupts();
     }
 
     *(volatile unsigned int *)0x1000B020 = 0;
@@ -1306,11 +1306,11 @@ void func_0012C420(void *arg0) {
     func_0011A6C8(D_00153BD8, arg0);
 }
 
-extern int func_00116248_f(char *, char *, int) __asm__("func_00116248");
+extern int sprintf_f(char *, char *, int) __asm__("func_00116248");
 
 void func_0012C430(void *arg0, char *fmt, int code) {
     char buf[0x100];
-    func_00116248_f(buf, fmt, code);
+    sprintf_f(buf, fmt, code);
     func_0012C468(arg0, buf);
 }
 
@@ -1447,12 +1447,12 @@ void func_0012C990(void *arg, int cmd, int addr) {
     func_00128590(mp);
     *(volatile int *)0x10002000 = 0;
     func_00128590(mp);
-    intr = func_0011D960();
+    intr = disable_interrupts();
     *(volatile int *)0x1000B410 = addr & 0x0FFFFFFF;
     *(volatile int *)0x1000B420 = 4;
     *(volatile int *)0x1000B400 = 0x101;
     if (intr != 0) {
-        func_0011D9A8();
+        enable_interrupts();
     }
     func_00128560(mp, cmd);
     func_00128590(mp);

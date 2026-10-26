@@ -90,10 +90,10 @@ int draw_hud_text_panel(char *e) {
                 rem = elapsed - seconds * interval;
                 minutes = rem / per;
                 rem = (rem - minutes * per) * 100 / per;
-                func_00116248(text, hud_text_panel_time_format, msg_string(0x531B), seconds, minutes, rem);
+                sprintf(text, hud_text_panel_time_format, msg_string(0x531B), seconds, minutes, rem);
                 draw_framed_text(0x100, y + 0x28, color, text);
                 if (score != 0) {
-                    func_00116248(text, hud_text_panel_score_format, msg_string(0x531C), score);
+                    sprintf(text, hud_text_panel_score_format, msg_string(0x531C), score);
                     draw_framed_text(0x100, y + 0x48, color, text);
                 }
             }

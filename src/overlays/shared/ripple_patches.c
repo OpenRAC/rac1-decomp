@@ -16,21 +16,21 @@ typedef struct VuChainRecord {
     char pad48[8];
     VuChainSlot slots[3];
 } VuChainRecord;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 /* Clears each record's three buffer groups and resets its scalar parameters. */
 void RipplePatchesInit(VuChainRecord *records, int count) {
     int i;
     for (i = 0; i < count; i++) {
         int j;
         for (j = 0; j < 3; j++) {
-            func_001153FC(records[i].slots[j].data, 0, 0x400);
-            func_001153FC(records[i].slots[j].blocks[0], 0, 0x40);
-            func_001153FC(records[i].slots[j].blocks[1], 0, 0x40);
-            func_001153FC(records[i].slots[j].blocks[2], 0, 0x40);
-            func_001153FC(records[i].slots[j].blocks[4], 0, 0x40);
-            func_001153FC(records[i].slots[j].blocks[3], 0, 0x40);
-            func_001153FC(records[i].slots[j].blocks[5], 0, 0x40);
-            func_001153FC(records[i].slots[j].tail, 0, 0x18);
+            libc_memset(records[i].slots[j].data, 0, 0x400);
+            libc_memset(records[i].slots[j].blocks[0], 0, 0x40);
+            libc_memset(records[i].slots[j].blocks[1], 0, 0x40);
+            libc_memset(records[i].slots[j].blocks[2], 0, 0x40);
+            libc_memset(records[i].slots[j].blocks[4], 0, 0x40);
+            libc_memset(records[i].slots[j].blocks[3], 0, 0x40);
+            libc_memset(records[i].slots[j].blocks[5], 0, 0x40);
+            libc_memset(records[i].slots[j].tail, 0, 0x18);
         }
         records[i].f30 = 1.57079637f;
         records[i].f34 = -1.57079637f;

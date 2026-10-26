@@ -2970,8 +2970,8 @@ extern short quartu_cutscene_msg_y;
 extern short quartu_cutscene_msg_color;
 extern short quartu_cutscene_msg_shadow_color;
 extern int msg_string(int);
-extern int func_00116248(char *str, const char *fmt, ...);
-extern int func_00116810(char *);
+extern int sprintf(char *str, const char *fmt, ...);
+extern int libc_strlen(char *);
 extern void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e);
 
 // Draws the score/progress readout for the current stage's step ranges, clamped to the current value.
@@ -2987,7 +2987,7 @@ void draw_quartu_cutscene_messages(void) {
         if (scale_ticks(0xB5) < *(int *)(s + 0x34)) {
             if (*(int *)(s + 0x34) < scale_ticks(0x104)) {
                 flag = 1;
-                func_00116248(buf, quartu_cutscene_msg_format, msg_string(0x526F));
+                sprintf(buf, quartu_cutscene_msg_format, msg_string(0x526F));
                 val = (*(int *)(s + 0x34) - scale_ticks(0xB5)) >> 2;
             }
         }
@@ -2995,7 +2995,7 @@ void draw_quartu_cutscene_messages(void) {
         if (scale_ticks(0x1C2) < *(int *)(s2 + 0x34)) {
             if (*(int *)(s2 + 0x34) < scale_ticks(0x280)) {
                 flag = 1;
-                func_00116248(buf, quartu_cutscene_msg_format, msg_string(0x5270));
+                sprintf(buf, quartu_cutscene_msg_format, msg_string(0x5270));
                 val = (*(int *)(s2 + 0x34) - scale_ticks(0x1C2)) >> 2;
             }
         }
@@ -3003,7 +3003,7 @@ void draw_quartu_cutscene_messages(void) {
         if (scale_ticks(0x2EE) < *(int *)(s3 + 0x34)) {
             if (*(int *)(s3 + 0x34) < scale_ticks(0x3A2)) {
                 flag = 1;
-                func_00116248(buf, quartu_cutscene_msg_format, msg_string(0x5271));
+                sprintf(buf, quartu_cutscene_msg_format, msg_string(0x5271));
                 val = (*(int *)(s3 + 0x34) - scale_ticks(0x2EE)) >> 2;
             }
         }
@@ -3011,13 +3011,13 @@ void draw_quartu_cutscene_messages(void) {
         if (scale_ticks(0x8FC) < *(int *)(s + 0x34)) {
             if (*(int *)(s + 0x34) < scale_ticks(0x960)) {
                 flag = 1;
-                func_00116248(buf, quartu_cutscene_msg_format, msg_string(0x5273));
+                sprintf(buf, quartu_cutscene_msg_format, msg_string(0x5273));
                 val = (*(int *)(s + 0x34) - scale_ticks(0x8FC)) >> 2;
             }
         }
     }
     if (flag == 0) return;
-    n = func_00116810(buf);
+    n = libc_strlen(buf);
     if (val < n) {
         n = val;
     } else if (n < val) {

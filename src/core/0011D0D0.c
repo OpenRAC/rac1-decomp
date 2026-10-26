@@ -40,8 +40,8 @@ extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
 extern void *InitBlockData NOT_SDA;
 extern int D_00155080[];
-extern void func_001193F8(int);
-extern void func_00118AD0(int, int);
+extern void disable_dmac_atomic(int);
+extern void remove_dmac_handler(int, int);
 extern int D_00154F54;
 extern int D_0012FD04;
 extern int D_00154F64 NOT_SDA;
@@ -49,9 +49,9 @@ extern int D_00154F6C NOT_SDA;
 extern void func_0011AA90(int, int, int, int, int, int, int);
 extern void func_0011AA00(void);
 extern int RpcCommandState NOT_SDA;
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
-extern int func_00118C70(void *);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
+extern int create_semaphore(void *);
 extern int D_0012FDA0;
 extern int D_0012FDA4;
 extern char D_00157E80[];
@@ -61,7 +61,7 @@ extern int D_0012FD9C NOT_SDA;
 extern char D_0012FCEC[];
 extern char FsResetBuffer[];
 extern int D_0012FDA8;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FsResetState;
 extern int D_0012FDAC;
 extern char D_00158140[];
@@ -98,7 +98,7 @@ extern void func_00118DA0(void);
 extern u32 func_00118E70_u(u32 reg) __asm__("func_00118E70");
 extern u32 func_00118E60(u32 reg, u32 val);
 extern void func_0011AD70(void *p, s32 size);
-extern u32 func_00118E20(SifDmaData *dma, s32 count);
+extern u32 sce_sif_set_dma(SifDmaData *dma, s32 count);
 
 /* sceSifResetIop: like sceSifRebootIop (func_0011D248) but with a caller
    -supplied argument string and reboot mode. Adapted from Lombyte's project (GPL-3.0)
@@ -125,7 +125,7 @@ s32 func_0011D0D0(const char *arg, s32 mode) {
     dma.mode = 0x44;
     func_0011AD70(&D_00158540, sizeof(SifResetPacket));
     func_00118E60(4, 0x40000);
-    if (func_00118E20(&dma, 1)) {
+    if (sce_sif_set_dma(&dma, 1)) {
         func_00118E60(4, 0x10000);
         func_00118E60(4, 0x20000);
         func_00118E60(0x80000002, 0);
@@ -137,7 +137,7 @@ s32 func_0011D0D0(const char *arg, s32 mode) {
 
 extern void func_00118EC0(void);
 
-int func_0011D210(void) {
+int sce_sif_sync_iop(void) {
     if (func_00118E70(0x4) & 0x40000) {
         func_00118EC0();
         return 1;
@@ -148,12 +148,12 @@ int func_0011D210(void) {
 extern char D_00152A60[];   /* "rom0:UDNL " */
 extern char D_00152A70[];
 extern void func_0011A6C8();
-extern void func_0011AE20(int);
+extern void sceSifInitRpc(int);
 extern void func_0011AFC0(void);
 
 /* sceSifRebootIop: reset the IOP with "rom0:UDNL " + img (at most 80
    characters). Adapted from Lombyte's project (GPL-3.0) for PAL. */
-int func_0011D248(char *img) {
+int sce_sif_reboot_iop(char *img) {
     char *prefix = D_00152A60;
     char param[80];
     char *p;
@@ -167,7 +167,7 @@ int func_0011D248(char *img) {
         func_0011A6C8(D_00152A70, img);
         return 0;
     }
-    func_0011AE20(0);
+    sceSifInitRpc(0);
     func_0011AFC0();
     d = param;
     while (*prefix) {
@@ -208,7 +208,7 @@ ASM_FUNC("asm/handwritten/core_text", func_0011D3B8);
 extern int func_0011D3B8(int, int);
 extern void func_0011D360(void *, void *, int);
 extern int func_0011D3A8(int);
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern int D_00130138[];
 extern char D_0012FDB8[];
 extern int D_00130130;
@@ -247,8 +247,8 @@ int func_0011D3C8(void) {
 
     func_0011D3B8_v(t[0], t[1]);
     func_0011D360((void *)0x80075000, D_0012FDB8, 0x330);
-    func_00118D80(0);
-    func_00118D80(2);
+    flush_cache(0);
+    flush_cache(2);
     func_0011D3B8_v(t[2], t[3]);
     func_0011D3B8_v(t[4], t[5]);
 

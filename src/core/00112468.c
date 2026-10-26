@@ -154,7 +154,7 @@ extern s32 func_00115CE8_126D8(_Bigint *, _Bigint *) __asm__("func_00115CE8");
 extern _Bigint *func_00115D50(struct _reent *, _Bigint *, _Bigint *);
 extern _Bigint *func_001155A8(struct _reent *, _Bigint *, s32, s32);
 extern s32 func_001124C0_126D8(_Bigint *, _Bigint *) __asm__("func_001124C0");
-extern void *func_00115248(void *, const void *, u32);
+extern void *libc_memcpy(void *, const void *, u32);
 
 /* dtoa for IEEE arithmetic (dmg): convert double to ASCII string. Inspired by "How to Print Floating-Point Numbers Accurately" by Guy L. Steele, Jr. and Jon L. White [Proc. ACM SIGPLAN '90, pp. 92-101]. Modifications: 1. Rather than iterating, we use a simple numeric overestimate to determine k = floor(log10(d)). We scale relevant quantities using O(log2(k)) rather than O(k) multiplications. 2. For some modes > 2 (corresponding to ecvt and fcvt), we don't try to generate digits strictly left to right. Instead, we compute with fewer bits and propagate the carry if necessary when rounding the final digit up. This is often faster. 3. Under the assumption that input will be rounded nearest, mode 0 renders 1e23 as 1e23 rather than 9.999999999999999e22. That is, we allow equality in stopping tests when the round-nearest rule will give the same floating-point value as would satisfaction of the stopping test with strict inequality. 4. We remove common factors of powers of 2 from relevant quantities. 5. When converting floating-point integers less than 1e16, we use floating-point arithmetic rather than resorting to multiple-precision integers. 6. When asked to produce fewer than 15 digits, we first try to get by with floating-point arithmetic; we resort to multiple-precision integer arithmetic only if we cannot guarantee that the floating-point calculation has given the correctly rounded result. For k requested digits and "uniformly" distributed input, the probability is something like 10^(k-15) that we must resort to the long calculation.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/library/_dtoa_r.c, _dtoa_r. */
@@ -682,7 +682,7 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
       if (spec_case)
  {
    mhi = func_001154D0 (ptr, mhi->_k);
-   func_00115248(&(mhi)->_sign, &(mlo)->_sign, (mlo)->_wds * sizeof(u32) + 2*sizeof(s32));
+   libc_memcpy(&(mhi)->_sign, &(mlo)->_sign, (mlo)->_wds * sizeof(u32) + 2*sizeof(s32));
    mhi = func_00115B70 (ptr, mhi, 1);
  }
 

@@ -469,14 +469,14 @@ extern float FastSubRots(float, float);
 extern float IntToFloat(s32);
 extern void UpdateViewContext(void);
 extern void UpdateFog(void);
-extern s32 func_00116248(char *, const char *, ...);
+extern s32 sprintf(char *, const char *, ...);
 extern double func_00120778(float);
-extern s32 func_0011BF80(char *, s32, ...);
-extern s32 func_0011C388(s32, s32, s32);
-extern s32 func_00116810(char *);
-extern s32 func_0011C820(s32, void *, s32);
-extern s32 func_0011C208(s32);
-extern s32 func_0011C5C0(s32, void *, s32);
+extern s32 sceOpen(char *, s32, ...);
+extern s32 sceLseek(s32, s32, s32);
+extern s32 libc_strlen(char *);
+extern s32 sceWrite(s32, void *, s32);
+extern s32 sceClose(s32);
+extern s32 sceRead(s32, void *, s32);
 
 // Handles rendering debug menu navigation, display settings and point files.
 void update_debug_menu(void) {
@@ -731,45 +731,45 @@ void update_debug_menu(void) {
             }
             }
             if (found) break;
-            func_00116248(buf.points.path,dev,fmt,g_current_level_index,occlusion_deltas_file_name,iso_version_suffix);
-            func_00116248(buf.points.text,add_sample_format,func_00120778(((CameraSystem *)player_camera)->pos.f[0]),func_00120778(((CameraSystem *)player_camera)->pos.f[1]),func_00120778(((CameraSystem *)player_camera)->pos.f[2]));
-            fd=func_0011BF80(buf.points.path,0x303);
+            sprintf(buf.points.path,dev,fmt,g_current_level_index,occlusion_deltas_file_name,iso_version_suffix);
+            sprintf(buf.points.text,add_sample_format,func_00120778(((CameraSystem *)player_camera)->pos.f[0]),func_00120778(((CameraSystem *)player_camera)->pos.f[1]),func_00120778(((CameraSystem *)player_camera)->pos.f[2]));
+            fd=sceOpen(buf.points.path,0x303);
             if (fd >= 0) {
-                func_0011C388(fd,0,2);
-                func_0011C820(fd,buf.points.text,func_00116810(buf.points.text));
-                func_0011C208(fd);
+                sceLseek(fd,0,2);
+                sceWrite(fd,buf.points.text,libc_strlen(buf.points.text));
+                sceClose(fd);
                 ((DebugMenu_1F4918 *)g_debug_menu)->point_timer=121;
             }
             {
             float *p=g_occlusion_samples;
-            func_00116248(buf.points.path,dev,fmt,g_current_level_index,occlusion_samples_file_name,iso_version_suffix);
-            fd=func_0011BF80(buf.points.path,0x303);
+            sprintf(buf.points.path,dev,fmt,g_current_level_index,occlusion_samples_file_name,iso_version_suffix);
+            fd=sceOpen(buf.points.path,0x303);
             if (fd >= 0) {
-                func_0011C388(fd,0,2);
-                func_0011C820(fd,&((CameraSystem *)player_camera)->pos.f[0],4);
-                func_0011C820(fd,&((CameraSystem *)player_camera)->pos.f[1],4);
-                func_0011C820(fd,&((CameraSystem *)player_camera)->pos.f[2],4);
-                func_0011C388(fd,0,0);
-                size=func_0011C388(fd,0,2);
+                sceLseek(fd,0,2);
+                sceWrite(fd,&((CameraSystem *)player_camera)->pos.f[0],4);
+                sceWrite(fd,&((CameraSystem *)player_camera)->pos.f[1],4);
+                sceWrite(fd,&((CameraSystem *)player_camera)->pos.f[2],4);
+                sceLseek(fd,0,0);
+                size=sceLseek(fd,0,2);
                 if (size <= 0x100000) {
-                    func_0011C388(fd,0,0);
-                    func_0011C5C0(fd,p,size);
+                    sceLseek(fd,0,0);
+                    sceRead(fd,p,size);
                     occlusion_sample_count=size/12;
                 } else occlusion_sample_count=0;
-                func_0011C208(fd);
+                sceClose(fd);
             }
         }
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 3 && (g_controller_state.keys.word.pressed&0xF0)) {
             extern char level_file_path_format[];
             s32 fd;
-            func_00116248(buf.saved.path,level_file_path_format,level_directory,g_current_level_index,occlusion_deltas_file_name,iso_version_suffix);
-            func_00116248(buf.saved.text,start_point_format,func_00120778(((CameraSystem *)player_camera)->pos.f[0]),func_00120778(((CameraSystem *)player_camera)->pos.f[1]),func_00120778(((CameraSystem *)player_camera)->pos.f[2]));
-            fd=func_0011BF80(buf.saved.path,0x303);
+            sprintf(buf.saved.path,level_file_path_format,level_directory,g_current_level_index,occlusion_deltas_file_name,iso_version_suffix);
+            sprintf(buf.saved.text,start_point_format,func_00120778(((CameraSystem *)player_camera)->pos.f[0]),func_00120778(((CameraSystem *)player_camera)->pos.f[1]),func_00120778(((CameraSystem *)player_camera)->pos.f[2]));
+            fd=sceOpen(buf.saved.path,0x303);
             if (fd >= 0) {
-                func_0011C388(fd,0,2);
-                func_0011C820(fd,buf.saved.text,func_00116810(buf.saved.text));
-                func_0011C208(fd);
+                sceLseek(fd,0,2);
+                sceWrite(fd,buf.saved.text,libc_strlen(buf.saved.text));
+                sceClose(fd);
                 ((DebugMenu_1F4918 *)g_debug_menu)->saved_timer=121;
             }
         }
@@ -800,7 +800,7 @@ extern void append_gif_transfer_packet(void);
 extern void flush_debug_text_queue(void);
 extern int print_debug_text_centered(int,int,int,char*);
 extern void print_debug_text(int,int,int,char*);
-extern int func_00116248(char*,const char*,...);
+extern int sprintf(char*,const char*,...);
 extern double promote_float60(float) __asm__("func_00120778");
 extern char debug_menu_title[];
 extern char debug_menu_title_underline[];
@@ -941,7 +941,7 @@ void draw_debug_menu(void) {
         print_debug_text(0x108, 0xB8, 0x80F0F0F0, debug_screen_names[debug_menu60.f34]);
         print_debug_text(0xB0, 0xC7, 0x8000C0C0, debug_label_scene);
         if (debug_menu60.selection >= 0) {
-            func_00116248(buf, debug_int_format, debug_menu60.selection);
+            sprintf(buf, debug_int_format, debug_menu60.selection);
             print_debug_text(0x108, 0xC7, 0x80F0F0F0, buf);
         } else {
             print_debug_text(0x108, 0xC7, 0x80F0F0F0, debug_scene_none_text);
@@ -950,7 +950,7 @@ void draw_debug_menu(void) {
         print_debug_text(0xB0, 0xD6, 0x8000C0C0, debug_label_segment);
         {
             int mission = debug_menu60.mission;
-            func_00116248(buf, debug_segment_format, mission, (help_stats_base + 0xAA35)[mission + g_current_level_index * stride]);
+            sprintf(buf, debug_segment_format, mission, (help_stats_base + 0xAA35)[mission + g_current_level_index * stride]);
         }
         print_debug_text(0x108, 0xD6, 0x80F0F0F0, buf);
         if (debug_menu60.group == 1) {
@@ -986,61 +986,61 @@ void draw_debug_menu(void) {
         }
         print_debug_text(0x14, 0xBA, 0x8000C0C0, debug_label_suck_cannon);
         weapon_order = (u8 *)screen_globals_base + 0x4C6;
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0x9]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0x9]);
         print_debug_text(0x7A, 0xBA, 0x80406080, buf);
         print_debug_text(0x14, 0xC9, 0x8000C0C0, debug_label_morph_o_ray);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0x15]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0x15]);
         print_debug_text(0x7A, 0xC9, 0x80406080, buf);
         print_debug_text(0x14, 0xD8, 0x8000C0C0, debug_label_inflato);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0x19]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0x19]);
         print_debug_text(0x7A, 0xD8, 0x80406080, buf);
         print_debug_text(0x14, 0xE7, 0x8000C0C0, debug_label_weapon_row3);
         ammo = (AmmoDisplay60 *)(menu_item_enabled_115 + 0x21);
-        func_00116248(buf, debug_int_format, ammo->ammo5C);
+        sprintf(buf, debug_int_format, ammo->ammo5C);
         print_debug_text(0x8C, 0xE7, 0x80F0F0F0, buf);
         print_debug_text(0x14, 0xF6, 0x8000C0C0, debug_label_d_droids);
-        func_00116248(buf, debug_int_format, ammo->ammo60);
+        sprintf(buf, debug_int_format, ammo->ammo60);
         print_debug_text(0x8C, 0xF6, 0x80F0F0F0, buf);
         print_debug_text(0x14, 0x105, 0x8000C0C0, debug_label_weapon_row5);
-        func_00116248(buf, debug_int_format, ammo->ammo28);
+        sprintf(buf, debug_int_format, ammo->ammo28);
         print_debug_text(0x8C, 0x105, 0x80F0F0F0, buf);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0xA]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0xA]);
         print_debug_text(0x7A, 0x105, 0x80406080, buf);
         print_debug_text(0x14, 0x114, 0x8000C0C0, debug_label_devastator);
-        func_00116248(buf, debug_int_format, ammo->ammo2C);
+        sprintf(buf, debug_int_format, ammo->ammo2C);
         print_debug_text(0x8C, 0x114, 0x80F0F0F0, buf);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0xB]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0xB]);
         print_debug_text(0x7A, 0x114, 0x80406080, buf);
         print_debug_text(0x14, 0x123, 0x8000C0C0, debug_label_visibomb);
-        func_00116248(buf, debug_int_format, ammo->ammo34);
+        sprintf(buf, debug_int_format, ammo->ammo34);
         print_debug_text(0x8C, 0x123, 0x80F0F0F0, buf);
         print_debug_text(0x14, 0x132, 0x8000C0C0, debug_label_agents);
-        func_00116248(buf, debug_int_format, ammo->ammo50);
+        sprintf(buf, debug_int_format, ammo->ammo50);
         print_debug_text(0x8C, 0x132, 0x80F0F0F0, buf);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0x14]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0x14]);
         print_debug_text(0x7A, 0x132, 0x80406080, buf);
         print_debug_text(0x14, 0x141, 0x8000C0C0, debug_label_pyrocitor);
-        func_00116248(buf, debug_int_format, ammo->ammo40);
+        sprintf(buf, debug_int_format, ammo->ammo40);
         print_debug_text(0x8C, 0x141, 0x80F0F0F0, buf);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0x10]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0x10]);
         print_debug_text(0x7A, 0x141, 0x80406080, buf);
         print_debug_text(0x14, 0x150, 0x8000C0C0, debug_label_tesla_claw);
-        func_00116248(buf, debug_int_format, ammo->ammo4C);
+        sprintf(buf, debug_int_format, ammo->ammo4C);
         print_debug_text(0x8C, 0x150, 0x80F0F0F0, buf);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0x13]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0x13]);
         print_debug_text(0x7A, 0x150, 0x80406080, buf);
         print_debug_text(0x14, 0x15F, 0x8000C0C0, debug_label_mine_glove);
-        func_00116248(buf, fmt = debug_int_format, ammo->ammo44);
+        sprintf(buf, fmt = debug_int_format, ammo->ammo44);
         print_debug_text(0x8C, 0x15F, 0x80F0F0F0, buf);
-        func_00116248(buf, fmt, (s32) weapon_order[0x11]);
+        sprintf(buf, fmt, (s32) weapon_order[0x11]);
         print_debug_text(0x7A, 0x15F, 0x80406080, buf);
         print_debug_text(0x14, 0x16E, 0x8000C0C0, debug_label_blaster);
-        func_00116248(buf, fmt, ammo->ammo3C);
+        sprintf(buf, fmt, ammo->ammo3C);
         print_debug_text(0x8C, 0x16E, 0x80F0F0F0, buf);
-        func_00116248(buf, fmt, (s32) weapon_order[0xF]);
+        sprintf(buf, fmt, (s32) weapon_order[0xF]);
         print_debug_text(0x7A, 0x16E, 0x80406080, buf);
         print_debug_text(0x14, 0x17D, 0x8000C0C0, debug_label_bolts);
-        func_00116248(buf, fmt, gBolts);
+        sprintf(buf, fmt, gBolts);
         print_debug_text(0x8C, 0x17D, 0x80F0F0F0, buf);
         print_debug_text(0xBC, 0x100, 0x8000C000, debug_menu_fog_header);
         print_debug_text(0xBC, 0x106, 0x8000C000, debug_menu_fog_underline);
@@ -1048,25 +1048,25 @@ void draw_debug_menu(void) {
             print_debug_text(0xB9, (debug_menu60.item * 0xF) + 0x112, 0x800000C0, debug_menu_cursor);
         }
         print_debug_text(0xC4, 0x114, 0x8000C0C0, debug_label_near_dist);
-        func_00116248(buf, debug_fog_value_format, promote_float60(level_fog_near_distance * 0.0009765625f));
+        sprintf(buf, debug_fog_value_format, promote_float60(level_fog_near_distance * 0.0009765625f));
         print_debug_text(0x11C, 0x114, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x123, 0x8000C0C0, debug_label_near_int);
-        func_00116248(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_near_intensity / 2.55f)));
+        sprintf(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_near_intensity / 2.55f)));
         print_debug_text(0x11C, 0x123, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x132, 0x8000C0C0, debug_label_far_dist);
-        func_00116248(buf, debug_fog_value_format, promote_float60(level_fog_far_distance * 0.0009765625f));
+        sprintf(buf, debug_fog_value_format, promote_float60(level_fog_far_distance * 0.0009765625f));
         print_debug_text(0x11C, 0x132, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x141, 0x8000C0C0, debug_label_far_int);
-        func_00116248(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_far_intensity / 2.55f)));
+        sprintf(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_far_intensity / 2.55f)));
         print_debug_text(0x11C, 0x141, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x150, 0x8000C0C0, debug_label_color_r);
-        func_00116248(buf, fmt, (s32) level_fog_color_red[0]);
+        sprintf(buf, fmt, (s32) level_fog_color_red[0]);
         print_debug_text(0x11C, 0x150, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x15F, 0x8000C0C0, debug_label_color_g);
-        func_00116248(buf, fmt, (s32) level_fog_color_green[0]);
+        sprintf(buf, fmt, (s32) level_fog_color_green[0]);
         print_debug_text(0x11C, 0x15F, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x16E, 0x8000C0C0, debug_label_color_b);
-        func_00116248(buf, fmt, (s32) level_fog_color_blue[0]);
+        sprintf(buf, fmt, (s32) level_fog_color_blue[0]);
         print_debug_text(0x11C, 0x16E, 0x80F0F0F0, buf);
         print_debug_text(0x160, 0x100, 0x8000C000, debug_menu_samples_header);
         print_debug_text(0x160, 0x106, 0x8000C000, debug_menu_header_underline);
@@ -1248,14 +1248,14 @@ void draw_framebuffer_with_timed_text(void) {
 extern int rendered_frame_count MACRO_ADDR;
 extern int draw_buffer_address MACRO_ADDR;
 extern void VU1_syncChain(int);
-extern int func_00122598(int);
+extern int sce_gs_sync_v(int);
 extern void VU1_initChain(void);
 extern void transfer_draw_buffer_chunks(void *, int, int);
 /* Grabs the current frame buffer into A: syncs VU1, counts the grab in D_L00_0015F4F8 and downloads frame buffer
    D_0015EF84 (its height from D_0013E15A + 0x4AA, in 2 KB rows). */
 void capture_draw_buffer(void *a) {
     VU1_syncChain(1);
-    func_00122598(0);
+    sce_gs_sync_v(0);
     rendered_frame_count = rendered_frame_count + 1;
     VU1_initChain();
     transfer_draw_buffer_chunks(a, draw_buffer_address, *(int *)((char *)screen_globals_base + 0x4AA) << 11);

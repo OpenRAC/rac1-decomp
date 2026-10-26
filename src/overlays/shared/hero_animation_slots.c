@@ -2538,7 +2538,7 @@ void correct_hero_airborne_wall_velocity(void) {
             if (fast_atan2(*(float *)(p + 0x208), vec_length_xy(p + 0x200)) >= 0.87266463f) {
                 qcopy(v, p + 0x200);
                 v[2] = 0.0f;
-                func_001252C0(v, v);
+                sceVu0Normalize(v, v);
                 x = -*(float *)(p + 0xE0) * v[0] - *(float *)(p + 0xE4) * v[1];
                 if (x > 0.0f) {
                     FastVecScale(v, v, x);
@@ -2628,7 +2628,7 @@ void clip_hero_velocity_against_probed_surfaces(int arg) {
             hit = (CollisionHit *)coll_hit_result;
             *(s32 *)&hit->normal_z = 0;
             h4->unk240 = hit->moby;
-            func_001252C0(&hit->normal_x, &hit->normal_x);
+            sceVu0Normalize(&hit->normal_x, &hit->normal_x);
             inward_velocity_component = -h4->motion.velocity.f[0] * hit->normal_x - h4->motion.velocity.f[1] * hit->normal_y;
             if (inward_velocity_component > 0.0f) {
                 FastVecScale(&hit->normal_x, &hit->normal_x, inward_velocity_component);
@@ -2678,7 +2678,7 @@ f32 resolve_camera_surface_height(void *, void *);
 s32 func_L00_0025F410_12E70(s32) __asm__("func_L00_0025F410");
 u8 *func_L00_0025D390_12E70(s32) __asm__("func_L00_0025D390");
 f32 FastVecDist(void *, void *);
-void func_001252C0(void *, void *);
+void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
 f32 fast_atan2(f32, f32);
 void func_001F9BF0_12E70(void *, void *, void *) __asm__("func_001F9BF0");
@@ -2835,7 +2835,7 @@ void update_hero_ground_contact_and_surface_slopes(void) {
         D_0013F450_12E70.u2d8.F = coll_hit_result_r2.v20.f[2];
         D_0013F450_12E70.xF2dc = FastVecDist((u8 *)&D_0013F450_12E70 + 0x80, ((u8 *)&D_0013F450_12E70 + 0x2A0));
         D_0013F450_12E70.xI2fc = coll_hit_result_r2.i18;
-        func_001252C0((u8 *)&D_0013F450_12E70 + 0x270, (u8 *)&coll_hit_result_r2.f40);
+        sceVu0Normalize((u8 *)&D_0013F450_12E70 + 0x270, (u8 *)&coll_hit_result_r2.f40);
         D_0013F450_12E70.u2e0.F = compute_gravity_relative_vector_inclination((u8 *)&coll_hit_result_r2.f40);
         D_0013F450_12E70.xF2ec = fast_atan2(coll_hit_result_r2.f40, coll_hit_result_r2.f44);
         func_001F9BF0_12E70(&v20, ((u8 *)&D_0013F450_12E70 + 0x2A0), (u8 *)&D_0013F450_12E70 + 0x80);
@@ -2909,7 +2909,7 @@ d1:
             if (0.4f < FastAbsF(f)) {
                 D_0013F450_12E70.a2c0.f[i] = 0.0f;
             }
-            func_001252C0(&v60, (u8 *)&coll_hit_result_r2.f40);
+            sceVu0Normalize(&v60, (u8 *)&coll_hit_result_r2.f40);
             compute_rotated_vector_angles(&v60, &v50);
             if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
                 D_0013F450_12E70.a2c8.f[i] = v50.f[1];

@@ -35,7 +35,7 @@ extern int func_00112468(int *errOut, int arg1);
  * the same algorithm was reverted under 2.95.3, which duplicated the
  * `return 0` / `return searchee` tails instead of sharing them.)
  */
-char *func_00116CC0(const char *searchee, const char *lookfor) {
+char *find_substring(const char *searchee, const char *lookfor) {
     if (*searchee == 0)
     {
         if (*lookfor)

@@ -56,8 +56,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 
@@ -96,43 +96,43 @@ void InitMemSlots(void) {
 }
 
 /* Externs this function needs that initonce.c does not already declare. */
-extern void func_001207B8(void);
-extern int func_00123308(int);
-extern void func_001211B0(int);
-extern void func_00121490(int);
-extern int func_0011D248(void *);
-extern int func_0011D210(void);
+extern void reset_vif1_gif(void);
+extern int sceDmaReset(int);
+extern void sce_cd_init(int);
+extern void sce_cd_disk_ready(int);
+extern int sce_sif_reboot_iop(void *);
+extern int sce_sif_sync_iop(void);
 extern int STUB_printf(); /* debug-log stub: void func_001E9730(int, ...) */
-extern void func_00118D60(int);
-extern void func_0011AE20(int);
-extern int func_0011D960(void); /* DIntr */
-extern void func_0011CB40(void);
-extern void func_0011D9A8(void); /* EIntr */
-extern int func_00121688(int);
-extern int func_0011BF48(void);
-extern int func_0012F348(int lba, int sectors, void *buf);
-extern void func_00118D80(int);
+extern void enable_cache(int);
+extern void sceSifInitRpc(int);
+extern int disable_interrupts(void); /* DIntr */
+extern void sce_sif_init_iop_heap(void);
+extern void enable_interrupts(void); /* EIntr */
+extern int sce_cd_mmode(int);
+extern int sce_fs_reset(void);
+extern int wad_GetSectors_FiiPv(int lba, int sectors, void *buf);
+extern void flush_cache(int);
 extern void memcard_get_name(void *arg0);
-extern void func_00121B78(int, int, int, int);
+extern void sceGsResetGraph(int, int, int, int);
 extern void InitDma(void);
 extern void SetPalMode(void);
 extern void VU0_loadMicroProgram(void *);
-extern int func_0012F3F8(void);
+extern int load_disc_sectors_into_global_buffer(void);
 extern void fast_decompress(void *, void *);
 extern int LoadIRXModule(void *arg0, void *arg1);
 extern void init_pads(void);
-extern void func_0012F308(void); /* vsync_callback(int) */
-extern int func_00123168(void *arg0);
+extern void vsync_callback(void); /* vsync_callback(int) */
+extern int sceGsSyncVCallback(void *arg0);
 extern void memcard_Init(void);
 extern void VU1_initChain(void);
 extern void initialize_gameplay_sound_system(void);
-extern int func_00122630(void *, short, short, short, short, short, short, short);
-extern int func_00122958(void *src, void *dst);
-extern void func_00120858(int, unsigned short);
+extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
+extern int sceGsExecLoadImage(void *src, void *dst);
+extern void wait_for_graphics_pipeline_idle(int, unsigned short);
 extern void LoadDebugFont(void);
 extern void initialize_sif_rpc(void);
 extern void initialize_alpha_lookup_table(void);
-extern int func_0012D380(void);
+extern int sce_scf_get_language(void);
 
 extern char iop_reboot_image_path[]; /* "cdrom0:\\IOPRP243.IMG;1" */
 extern char rebooted_iop_message[]; /* "Rebooted IOP\n" */
@@ -162,44 +162,44 @@ void InitOnce(void) {
     int region;
     int lang;
 
-    func_001207B8();
-    func_00123308(1);
-    func_001211B0(0);
-    func_00121490(0);
+    reset_vif1_gif();
+    sceDmaReset(1);
+    sce_cd_init(0);
+    sce_cd_disk_ready(0);
     do {
-    } while (func_0011D248(iop_reboot_image_path) == 0);
+    } while (sce_sif_reboot_iop(iop_reboot_image_path) == 0);
     do {
-    } while (func_0011D210() == 0);
+    } while (sce_sif_sync_iop() == 0);
     STUB_printf(rebooted_iop_message);
-    func_00118D60(3);
-    func_0011AE20(0);
-    func_0011D960();
-    func_0011CB40();
-    func_0011D9A8();
-    func_001211B0(0);
-    func_00121490(0);
-    func_00121688(2);
-    func_0011BF48();
-    func_0012F348(0x121, 1, buf);
-    func_00118D80(0);
+    enable_cache(3);
+    sceSifInitRpc(0);
+    disable_interrupts();
+    sce_sif_init_iop_heap();
+    enable_interrupts();
+    sce_cd_init(0);
+    sce_cd_disk_ready(0);
+    sce_cd_mmode(2);
+    sce_fs_reset();
+    wad_GetSectors_FiiPv(0x121, 1, buf);
+    flush_cache(0);
 
     region = buf[0x33] != 0x4E;
     pause_action_list_mode = pal_mode = region;
     memcard_get_name(buf);
 
-    func_00121B78(0, 1, (pal_mode != 0) ? 3 : 2, 0);
+    sceGsResetGraph(0, 1, (pal_mode != 0) ? 3 : 2, 0);
     InitDma();
     SetPalMode();
     VU0_loadMicroProgram(&vu0_micro_program);
-    func_0012F3F8();
+    load_disc_sectors_into_global_buffer();
 
     base = (int)image_end_round_16k & 0xFFFFC000;
     tbl = (int *)(base + 0x2C0000);
     seg = D_1FF8000 - (disc_table[0x4B1] << 0xB);
-    func_0012F348(disc_table[0x4B0], disc_table[0x4B1], seg);
-    func_00118D80(0);
+    wad_GetSectors_FiiPv(disc_table[0x4B0], disc_table[0x4B1], seg);
+    flush_cache(0);
     fast_decompress(seg, tbl);
-    func_00118D80(0);
+    flush_cache(0);
     LoadIRXModule((void *)(tbl[0x1C] + (int)tbl), (void *)(int)tbl[0x1D]);
     LoadIRXModule((void *)(tbl[0x1E] + (int)tbl), (void *)(int)tbl[0x1F]);
     LoadIRXModule((void *)(tbl[0x20] + (int)tbl), (void *)(int)tbl[0x21]);
@@ -212,30 +212,30 @@ void InitOnce(void) {
     LoadIRXModule((void *)(tbl[0x28] + (int)tbl), (void *)(int)tbl[0x29]);
 
     STUB_printf(loaded_irx_modules_message);
-    func_00121490(0);
+    sce_cd_disk_ready(0);
     init_pads();
-    func_00123168(func_0012F308);
+    sceGsSyncVCallback(vsync_callback);
     current_vu_chain = 0x160000;
     InitMemSlots();
-    func_00121490(0);
+    sce_cd_disk_ready(0);
     memcard_Init();
     InitViewContext();
     UpdateViewContext();
     VU1_initChain();
-    func_00121490(0);
+    sce_cd_disk_ready(0);
     initialize_gameplay_sound_system();
     FastMemSet(image_clear_buffer, 0x80808080, 0x100);
-    func_00122630(buf, 0x3FFB, 1, 0, 0, 0, 8, 8);
-    func_00118D80(0);
-    func_00122958(buf, image_clear_buffer);
-    func_00120858(0, 0);
+    sceGsSetDefLoadImage(buf, 0x3FFB, 1, 0, 0, 0, 8, 8);
+    flush_cache(0);
+    sceGsExecLoadImage(buf, image_clear_buffer);
+    wait_for_graphics_pipeline_idle(0, 0);
     LoadDebugFont();
     *(volatile int *)0x10000810 = 0x82;
     *(volatile int *)0x10000800 = 0;
     initialize_sif_rpc();
     initialize_alpha_lookup_table();
 
-    lang = func_0012D380();
+    lang = sce_scf_get_language();
     switch (lang) {
     case 2:
         g_game_language = 2;

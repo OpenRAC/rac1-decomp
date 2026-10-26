@@ -219,7 +219,7 @@ int MoveKeepingOverGround(void *ign, Vec4 *to, Vec4 *pos, int flags, float h, fl
             nrm = (float *)(c + 0x40);
             if (slope <= fast_atan2(*(float *)(c + 0x48), vec_length_xy(nrm))) {
                 *(int *)(c + 0x48) = 0;
-                func_001252C0(nrm, nrm);
+                sceVu0Normalize(nrm, nrm);
                 {
                     float k = -d.f[0] * *(float *)(c + 0x40) - d.f[1] * *(float *)(c + 0x44);
                     if (0.0f < k) {

@@ -15,18 +15,18 @@ int draw_selected_item_ammo(char *arg0) {
     VU1_addGSregister_l(0x42, 0x44);
     VU1_addGSregister_l(0x47, 0xB);
     if (*(unsigned short *)(rec + 8) == 0) {
-        func_00116248(text, msg_string_id(0x4F53));
+        sprintf(text, msg_string_id(0x4F53));
     } else {
         char *q;
         if (have < 1000) {
-            q = text + func_00116248(text, fmt_ammo_have, have);
+            q = text + sprintf(text, fmt_ammo_have, have);
         } else {
-            q = text + func_00116248(text, fmt_ammo_have_thousands, have / 1000, have % 1000);
+            q = text + sprintf(text, fmt_ammo_have_thousands, have / 1000, have % 1000);
         }
         if (total < 1000) {
-            func_00116248(q, fmt_decimal, total);
+            sprintf(q, fmt_decimal, total);
         } else {
-            func_00116248(q, fmt_number_thousands, total / 1000, total % 1000);
+            sprintf(q, fmt_number_thousands, total / 1000, total % 1000);
         }
     }
     SetupGifPaging(0);

@@ -264,7 +264,7 @@ extern void Music_ContinueStreamIfReady(void);
 extern int update_audio_stream_until_idle(int);
 extern void update_world_object_animation(void);
 extern int HeroEnterMoveState(int, int);
-extern int func_00122598(int);
+extern int sce_gs_sync_v(int);
 
 typedef struct { char pad[0x30]; int a30; } Vd;
 
@@ -329,14 +329,14 @@ void StartCutscene(int arg) {
     *(int *)(h + 0x1C) = ((Vd *)cutscene_state)->a30;
     while (qq = (char *)help_stats_base + 0x100B5, *(short *)(qq + 0x5A) != 3) {
         sound_update();
-        func_00122598(0);
+        sce_gs_sync_v(0);
     }
     q = cutscene_state;
     *(short *)(q + 0x46) = -3;
     ((int (*)(void))Music_ContinueStreamIfReady)();
     ((int (*)(int))start_cutscene_chunk_read)(1);
     for (i = 0; *(short *)(q + 0x46) < i; i--) {
-        func_00122598(0);
+        sce_gs_sync_v(0);
     }
 }
 extern void calculate_dma_transfer_address(void);
@@ -484,10 +484,10 @@ unsigned char apply_cutscene_camera_key(void) {
     UpdateViewContext();
     c = g_debug_camera;
     qcopy(c, e);
-    func_00125358(m);
-    func_001254A0(m, m, e->values[0]);
-    func_00125548(m, m, p[1]);
-    func_001253F8(m, m, p[2]);
+    sceVu0UnitMatrix(m);
+    sceVu0RotMatrixX(m, m, e->values[0]);
+    sceVu0RotMatrixY(m, m, p[1]);
+    sceVu0RotMatrixZ(m, m, p[2]);
     cc = (CameraBlock *)(c - 0x140);
     cc->matrix[0].x = -m[8];
     cc->matrix[1].x = -m[0];
@@ -823,13 +823,13 @@ void queue_movie_with_game_language(int i) {
     prepare_movie_playback(b, a, g_game_language);
 }
 extern char voice_pool[];
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern void sound_StopAllSounds(void);
 extern void music_Stop(void);
 extern void clear_active_help_record(void);
-extern int func_00122630(void *, short, short, short, short, short, short, short);
-extern int func_00122958(void *, void *);
-extern int func_00120858(int, unsigned short);
+extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
+extern int sceGsExecLoadImage(void *, void *);
+extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 extern int STUB_printf(char *, int);
 extern void raise_kernel_trap(void);
 typedef struct {
@@ -850,7 +850,7 @@ void prepare_movie_playback(int sector, int size, int arg2) {
     int image[24];
     int big, small, gs_addr, src, i, j;
     voice_pool[0x6B] |= 8;
-    func_00118D80(0);
+    flush_cache(0);
     sound_StopAllSounds();
     music_Stop();
     queued_movie_request_m.sector = sector;
@@ -868,24 +868,24 @@ void prepare_movie_playback(int sector, int size, int arg2) {
     gs_addr = g_gs_texture_allocation_start_r[4];
     i = 0;
     while (i < big) {
-        func_00122630(image, gs_addr >> 8, 2, 1, 0, 0, 0x80, 0x80);
+        sceGsSetDefLoadImage(image, gs_addr >> 8, 2, 1, 0, 0, 0x80, 0x80);
         i++;
         gs_addr += 0x10000;
-        func_00118D80(0);
-        func_00122958(image, (void *)src);
+        flush_cache(0);
+        sceGsExecLoadImage(image, (void *)src);
         src += 0xC000;
-        func_00120858(0, 0);
+        wait_for_graphics_pipeline_idle(0, 0);
     }
     gs_addr = g_gs_texture_allocation_start_r[0];
     j = 0;
     while (j < small) {
-        func_00122630(image, gs_addr >> 8, 1, 0, 0, 0, 0x40, 0x40);
+        sceGsSetDefLoadImage(image, gs_addr >> 8, 1, 0, 0, 0, 0x40, 0x40);
         j++;
         gs_addr += 0x4000;
-        func_00118D80(0);
-        func_00122958(image, (void *)src);
+        flush_cache(0);
+        sceGsExecLoadImage(image, (void *)src);
         src += 0x4000;
-        func_00120858(0, 0);
+        wait_for_graphics_pipeline_idle(0, 0);
     }
     if (gs_addr > 0x400000) {
         STUB_printf(movie_gs_overflow_message, gs_addr - 0x400000);
@@ -893,10 +893,10 @@ void prepare_movie_playback(int sector, int size, int arg2) {
     }
 }
 extern int D_L00_00161118 MACRO_ADDR;
-extern void func_00123168(void *);
-extern void func_0012F308(void);
-extern void func_00122818(void *, int, int, int, int, int, int, int);
-extern void func_00122AD8(void *, int);
+extern void sceGsSyncVCallback(void *);
+extern void vsync_callback(void);
+extern void sceGsSetDefStoreImage(void *, int, int, int, int, int, int, int);
+extern void sceGsExecStoreImage(void *, int);
 extern void music_StartTrack(int, int, int);
 
 /* Leaves movie playback: restores the GS and draw buffers and returns to the game. */
@@ -906,33 +906,33 @@ void movie_exit_to_gameplay(void) {
     AB *cb;
 
     skip_frame = 1;
-    func_00122598(0);
-    ((void (*)(int, int))func_00120858)(0, 0);
-    func_00123168(func_0012F308);
+    sce_gs_sync_v(0);
+    ((void (*)(int, int))wait_for_graphics_pipeline_idle)(0, 0);
+    sceGsSyncVCallback(vsync_callback);
     destination = D_L00_00161118;
     source = g_gs_texture_allocation_start_r[4];
     big = pal_mode != 0 ? 0xE : 0xD;
     small = pal_mode != 0 ? 0xE : 0x11;
     i = 0;
     while (i < big) {
-        func_00122818(sp, (source << 8) >> 16, 2, 1, 0, 0, 0x80, 0x80);
+        sceGsSetDefStoreImage(sp, (source << 8) >> 16, 2, 1, 0, 0, 0x80, 0x80);
         i++;
         source += 0x10000;
-        func_00118D80(0);
-        func_00122AD8(sp, destination);
+        flush_cache(0);
+        sceGsExecStoreImage(sp, destination);
         destination += 0xc000;
-        ((void (*)(int, int))func_00120858)(0, 0);
+        ((void (*)(int, int))wait_for_graphics_pipeline_idle)(0, 0);
     }
     source = g_gs_texture_allocation_start_r[0];
     j = 0;
     while (j < small) {
-        func_00122818(sp, (source << 8) >> 16, 1, 0, 0, 0, 0x40, 0x40);
+        sceGsSetDefStoreImage(sp, (source << 8) >> 16, 1, 0, 0, 0, 0x40, 0x40);
         j++;
         source += 0x4000;
-        func_00118D80(0);
-        func_00122AD8(sp, destination);
+        flush_cache(0);
+        sceGsExecStoreImage(sp, destination);
         destination += 0x4000;
-        ((void (*)(int, int))func_00120858)(0, 0);
+        ((void (*)(int, int))wait_for_graphics_pipeline_idle)(0, 0);
     }
     if (decode_mode == 2)
         decode_mode = 0;
@@ -956,13 +956,13 @@ void movie_exit_to_gameplay(void) {
     }
 }
 extern char memory_card_state[];
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern void sound_StopAllSounds(void);
 extern void music_Stop(void);
-extern int func_0012EF48(int);
+extern int snd_StreamSafeCdSync(int);
 extern void memcard_update_state(void);
 extern void Movie_Play(int, int, int, int, int);
-extern int func_00120F30(int);
+extern int sce_cd_sync_s(int);
 extern void movie_exit_to_gameplay(void);
 extern int D_L00_00161118 MACRO_ADDR;
 extern int D_L00_0016110C MACRO_ADDR;
@@ -972,10 +972,10 @@ extern short D_L00_00161114;
 
 /* Stop sound, wait for the loader to go idle, then start the movie load. */
 void play_queued_movie(void) {
-    func_00118D80(0);
+    flush_cache(0);
     sound_StopAllSounds();
     music_Stop();
-    func_0012EF48(0);
+    snd_StreamSafeCdSync(0);
     for (;;) {
         char *ld = memory_card_state;
         if (*(int *)(ld + 0xDC) < 3 && *(int *)(ld + 0xE4) < 0) {
@@ -986,7 +986,7 @@ void play_queued_movie(void) {
     Movie_Play(queued_movie_request, D_L00_0016110C,
                   (*(int *)&D_L00_00161114 + 0x3F) & ~0x3F,
                   (D_L00_00161118 + 0x3F) & ~0x3F, D_L00_00161110);
-    func_00120F30(0);
+    sce_cd_sync_s(0);
     movie_exit_to_gameplay();
 }
 extern void FastMemSet(void *, int, int);

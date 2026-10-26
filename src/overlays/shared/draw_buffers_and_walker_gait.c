@@ -4,10 +4,10 @@
 #include "include_asm.h"
 #include "moby.h"
 
-extern void func_00122818(void *, int, int, int, int, int, int, int);
-extern void func_00118D80(int);
-extern void func_00122AD8(void *, int);
-extern void func_00120858(int, int);
+extern void sceGsSetDefStoreImage(void *, int, int, int, int, int, int, int);
+extern void flush_cache(int);
+extern void sceGsExecStoreImage(void *, int);
+extern void wait_for_graphics_pipeline_idle(int, int);
 
 // Copies the frame buffer out in 0x4000-sized strips.
 void transfer_draw_buffer_chunks(int a, int b, int n) {
@@ -18,14 +18,14 @@ void transfer_draw_buffer_chunks(int a, int b, int n) {
         int t = b + i;
         t <<= 8;
         t >>= 16;
-        func_00122818(buf, t, 1, 0, 0, 0, 0x40, 0x40);
-        func_00118D80(0);
-        func_00122AD8(buf, a + i);
+        sceGsSetDefStoreImage(buf, t, 1, 0, 0, 0, 0x40, 0x40);
+        flush_cache(0);
+        sceGsExecStoreImage(buf, a + i);
         i += 0x4000;
-        func_00120858(0, 0);
+        wait_for_graphics_pipeline_idle(0, 0);
     }
 }
-extern int func_00122630(void *, short, short, short, short, short, short, short);
+extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
 extern int *dma_packet_cursor MACRO_ADDR;
 
 /* Uploads a 64-wide image strip in 0x4000-sized chunks: each chunk is a DMA tag pair around a GS load image. */
@@ -39,7 +39,7 @@ void append_draw_buffer_upload_packets(int a, int b, int n) {
         dma_packet_cursor[2] = 0;
         dma_packet_cursor[3] = 0x50000006;
         k -= 0x4000;
-        func_00122630(dma_packet_cursor = dma_packet_cursor + 4, (b + i) >> 8, 1, 0, 0, 0, 0x40, 0x40);
+        sceGsSetDefLoadImage(dma_packet_cursor = dma_packet_cursor + 4, (b + i) >> 8, 1, 0, 0, 0, 0x40, 0x40);
         p = dma_packet_cursor;
         dma_packet_cursor = p + 0x18;
         p[0x18] = 0x30000400;

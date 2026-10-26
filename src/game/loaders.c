@@ -57,8 +57,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern void CreatePointLight(int);
@@ -103,10 +103,10 @@ typedef struct {
 extern int g_gs_texture_allocation_cursor MACRO_ADDR; /* gs texture allocation cursor */
 extern void FastMemSet(void *, s32, s32);
 extern s32 log2dim(s32);
-extern void func_00118D80(int);
-extern int func_00122630(void *, short, short, short, short, short, short, short);
-extern int func_00122958(void *, void *);
-extern int func_00120858(int, unsigned short);
+extern void flush_cache(int);
+extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
+extern int sceGsExecLoadImage(void *, void *);
+extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 
 /* Uploads a texture and its mip levels to GS memory (with the palette for the 4/8-bit formats
    0x14/0x13) and writes the matching GS register words to regs. */
@@ -169,14 +169,14 @@ s32 upload_mip_texture(MipTexture_202AA8 *tex, u64 *regs)
         upload.palette_block = g_gs_texture_allocation_cursor >> 8;
         if (tex->psm == 0x14) {
             g_gs_texture_allocation_cursor += 0x100;
-            func_00122630(&load_image, upload.palette_block, 1, tex->palette_psm, 0, 0, 8, 2);
+            sceGsSetDefLoadImage(&load_image, upload.palette_block, 1, tex->palette_psm, 0, 0, 8, 2);
         } else {
             g_gs_texture_allocation_cursor += upload.palette_size;
-            func_00122630(&load_image, upload.palette_block, 1, tex->palette_psm, 0, 0, 16, 16);
+            sceGsSetDefLoadImage(&load_image, upload.palette_block, 1, tex->palette_psm, 0, 0, 16, 16);
         }
-        func_00118D80(0);
-        func_00122958(&load_image, (void *)upload.palette_address);
-        func_00120858(0, 0);
+        flush_cache(0);
+        sceGsExecLoadImage(&load_image, (void *)upload.palette_address);
+        wait_for_graphics_pipeline_idle(0, 0);
     }
     for (i = 1; i < tex->mip_count; i++) {
         upload.mip_sizes[i] = upload.mip_sizes[i - 1] >> 2;
@@ -188,11 +188,11 @@ s32 upload_mip_texture(MipTexture_202AA8 *tex, u64 *regs)
             upload.buffer_widths[i] = 1;
         }
         upload.blocks[i] = g_gs_texture_allocation_cursor >> 8;
-        func_00122630(&load_image, upload.blocks[i], upload.buffer_widths[i], tex->psm, 0, 0,
+        sceGsSetDefLoadImage(&load_image, upload.blocks[i], upload.buffer_widths[i], tex->psm, 0, 0,
                       tex->width >> i, tex->height >> i);
-        func_00118D80(0);
-        func_00122958(&load_image, (void *)upload.mip_addresses[i]);
-        func_00120858(0, 0);
+        flush_cache(0);
+        sceGsExecLoadImage(&load_image, (void *)upload.mip_addresses[i]);
+        wait_for_graphics_pipeline_idle(0, 0);
         bytes = upload.mip_sizes[0] >> (i * 2);
         if (bytes <= 0xFF) {
             bytes = 0x100;
@@ -424,7 +424,7 @@ extern char *Hud_HeapAlloc_d(int, int, char *, int) __asm__("func_001FFAB8");
 extern void LoadCompressedHudBank(int idx, int size);
 extern int Stash_SendData(int arg0, int arg1, int arg2, int arg3);
 extern void Hud_SendResidentBank(int, void *, int);
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern void LinkHudBank(int bank, int addr);
 
 extern int level_resource_buffers[];
@@ -489,7 +489,7 @@ void LoadHudBanks(void) {
     if (size58 != 0) {
         bank58 = Hud_HeapAlloc_d(size58, 0, fname, 0x262);
         LoadCompressedHudBank(1, (int) bank58);
-        func_00118D80(0);
+        flush_cache(0);
         LinkHudBank(1, (int) bank58);
     }
 
@@ -698,9 +698,9 @@ extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 /* libgraph: sceGsSetDefLoadImage, sceGsExecLoadImage, sceGsSyncPath;
    func_00118D80 is the kernel's FlushCache. */
-extern int func_00122630(void *, short, short, short, short, short, short, short);
-extern int func_00122958(void *, void *);
-extern int func_00120858(int, unsigned short);
+extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
+extern int sceGsExecLoadImage(void *, void *);
+extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 
 typedef struct {
     int type;   /* GS pixel format: 0x13 PSMT8, 2 PSMCT16, 0 PSMCT32 */
@@ -741,22 +741,22 @@ void upload_texture_images(int base, int count, Chunk *list) {
             if (dbw < 1) {
                 dbw = 1;
             }
-            func_00122630(&li, t >> 8, dbw, 0x13, 0, 0, w, h);
+            sceGsSetDefLoadImage(&li, t >> 8, dbw, 0x13, 0, 0, w, h);
             sz = w * h;
             if (sz < 0x100) {
                 sz = 0x100;
             }
             g_gs_texture_allocation_cursor += sz;
         } else if (list->type == 2) {
-            func_00122630(&li, t >> 8, 1, 2, 0, 0, 0x10, 0x10);
+            sceGsSetDefLoadImage(&li, t >> 8, 1, 2, 0, 0, 0x10, 0x10);
             g_gs_texture_allocation_cursor += 0x200;
         } else if (list->type == 0) {
-            func_00122630(&li, t >> 8, 1, 0, 0, 0, 0x10, 0x10);
+            sceGsSetDefLoadImage(&li, t >> 8, 1, 0, 0, 0, 0x10, 0x10);
             g_gs_texture_allocation_cursor += 0x400;
         }
-        func_00118D80(0);
-        func_00122958(&li, (void *)addr);
-        func_00120858(0, 0);
+        flush_cache(0);
+        sceGsExecLoadImage(&li, (void *)addr);
+        wait_for_graphics_pipeline_idle(0, 0);
     }
     g_gs_texture_allocation_start = g_gs_texture_allocation_cursor;
 }
@@ -1577,15 +1577,15 @@ extern s32 cd_read_wait_frames_r __asm__("D_0015EFBC") MACRO_ADDR;
 extern s32 cd_read_slowdown_applied_r __asm__("D_0015EFC0") MACRO_ADDR;
 extern u8 D_1FF8000_04C60[] __asm__("D_1FF8000");
 extern void SoundBank_StoreHandle_r() __asm__("func_0022F090");
-extern s32 func_0012DDC0_04C60() __asm__("func_0012DDC0");
-extern void func_0012E1C8_04C60(s32, s32, u64) __asm__("func_0012E1C8");
-extern void func_0012E2E8_04C60() __asm__("func_0012E2E8");
-extern s32 func_0012E318_04C60(s32) __asm__("func_0012E318");
-extern void func_0012E4F8_04C60() __asm__("func_0012E4F8");
+extern s32 snd_FlushSoundCommands_r() __asm__("func_0012DDC0");
+extern void snd_BankLoadFromEE_CB_r(s32, s32, u64) __asm__("func_0012E1C8");
+extern void snd_ResolveBankXREFS_r() __asm__("func_0012E2E8");
+extern s32 snd_UnloadBank_r(s32) __asm__("func_0012E318");
+extern void snd_StopAllSounds_r() __asm__("func_0012E4F8");
 extern s32 Stream_SubmitRead_r(void *, u32, u32) __asm__("func_002175C8");
-extern s32 func_001219C8_04C60() __asm__("func_001219C8");
-extern s32 func_00121930_04C60() __asm__("func_00121930");
-extern s32 func_00120F30_04C60(s32) __asm__("func_00120F30");
+extern s32 sce_cd_break_r() __asm__("func_001219C8");
+extern s32 sce_cd_get_error_r() __asm__("func_00121930");
+extern s32 sce_cd_sync_s_r(s32) __asm__("func_00120F30");
 
 /* One step of the level archive load: waits for the disc, steps back a stage on a read
    error or a 720-frame stall, then by stage reads the shared, level and sound archives
@@ -1609,7 +1609,7 @@ s32 service_level_archive_load(void) {
     struct LevelArchiveHeader_04C60 *shared_header;
 
     level_index = ship_index_r[0] + 1;
-    if (func_00120F30_04C60(1) != 0) {
+    if (sce_cd_sync_s_r(1) != 0) {
         cd_read_wait_frames_r = cd_read_wait_frames_r + 1;
         if (cd_read_spindle_speed_r == 1) {
             if (cd_read_wait_frames_r >= 0x2D1) {
@@ -1619,12 +1619,12 @@ s32 service_level_archive_load(void) {
                 if ((u16)retry_stage < 3) {
                     level_archive_load_state_r.stage = retry_stage;
                 }
-                func_001219C8_04C60();
+                sce_cd_break_r();
             }
         }
         return 0;
     }
-    if (func_00121930_04C60() != 0) {
+    if (sce_cd_get_error_r() != 0) {
         if (cd_read_slowdown_applied_r == 0) {
             cd_read_slowdown_applied_r = 1;
             retry_stage = level_archive_load_state_r.stage - 1;
@@ -1678,7 +1678,7 @@ s32 service_level_archive_load(void) {
         if (level_archive_load_state_r.busy != 0) {
             return 0;
         }
-        func_0012E4F8_04C60();
+        snd_StopAllSounds_r();
         if (sound_bank_handle_r != 0) {
             next_stage = level_archive_load_state_r.stage;
             level_archive_load_state_r.stage = next_stage + 1;
@@ -1687,39 +1687,39 @@ s32 service_level_archive_load(void) {
         }
         break;
     case 4:
-        if (func_0012DDC0_04C60() != 0) {
+        if (snd_FlushSoundCommands_r() != 0) {
             return 0;
         }
-        func_0012E318_04C60(sound_bank_handle_r);
+        snd_UnloadBank_r(sound_bank_handle_r);
         next_stage = level_archive_load_state_r.stage;
         sound_bank_handle_r = 0;
         level_archive_load_state_r.stage = next_stage + 1;
         break;
     case 5:
-        if (func_0012DDC0_04C60() != 0) {
+        if (snd_FlushSoundCommands_r() != 0) {
             return 0;
         }
-        func_0012E2E8_04C60();
+        snd_ResolveBankXREFS_r();
         level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
         break;
     case 6:
-        if (func_0012DDC0_04C60() != 0) {
+        if (snd_FlushSoundCommands_r() != 0) {
             return 0;
         }
         shared_header = level_archive_load_state_r.shared;
         sound_bank_handle_r = 0xFFFFFFFFU;
-        func_0012E1C8_04C60(shared_header->sound_bank_offset + (s32)shared_header,
+        snd_BankLoadFromEE_CB_r(shared_header->sound_bank_offset + (s32)shared_header,
                             (s32)SoundBank_StoreHandle_r, (u32)&sound_bank_handle_r);
         level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
         break;
     case 7:
-        if (func_0012DDC0_04C60() != 0) {
+        if (snd_FlushSoundCommands_r() != 0) {
             return 0;
         }
         if ((u32)sound_bank_handle_r == 0xFFFFFFFFU) {
             return 0;
         }
-        func_0012E2E8_04C60();
+        snd_ResolveBankXREFS_r();
         return 1;
     }
     return 0;
@@ -1806,9 +1806,9 @@ void update_world_object_animation(void *arg0) {
     int endp;
     int pc;
 
-    func_00118D80(0);
+    flush_cache(0);
     fast_decompress_2(render_sequence_t.unk5C, (int)render_sequence_t.rec);
-    func_00118D80(0);
+    flush_cache(0);
 
     rec = render_sequence_t.rec;
     render_sequence_t.unk38 = 0;
@@ -1937,9 +1937,9 @@ void select_world_object_resource_tables(int class_id, int buffer_index) {
     }
     active_decode_buffer = buffer_index;
     resource_data = (ClassResourceHeader_05270 *)((char *)level_resource_buffers[4] + buffer_index * 0x18000);
-    func_00118D80(0);
+    flush_cache(0);
     ((void (*)(int, void *))fast_decompress)(compressed_class_resources[active_class_resource_index], resource_data);
-    func_00118D80(0);
+    flush_cache(0);
     class_slot = resident_class_slot_by_id[class_id];
     resource_table = moby_class_resources;
     resource_table[class_slot] = resource_data;

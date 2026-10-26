@@ -41,8 +41,8 @@ extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
 extern void *InitBlockData NOT_SDA;
 extern int D_00155080[];
-extern void func_001193F8(int);
-extern void func_00118AD0(int, int);
+extern void disable_dmac_atomic(int);
+extern void remove_dmac_handler(int, int);
 extern int D_00154F54;
 extern int D_0012FD04;
 extern int D_00154F64 NOT_SDA;
@@ -50,9 +50,9 @@ extern int D_00154F6C NOT_SDA;
 extern void func_0011AA90(int, int, int, int, int, int, int);
 extern void func_0011AA00(void);
 extern int RpcCommandState NOT_SDA;
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
-extern int func_00118C70(void *);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
+extern int create_semaphore(void *);
 extern int D_0012FDA0;
 extern int D_0012FDA4;
 extern char D_00157E80[];
@@ -62,7 +62,7 @@ extern int D_0012FD9C NOT_SDA;
 extern char D_0012FCEC[];
 extern char FsResetBuffer[];
 extern int D_0012FDA8;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FsResetState;
 extern int D_0012FDAC;
 extern char D_00158140[];
@@ -79,8 +79,8 @@ extern int SecondSemaphore;
 extern int D_00130BD0[];
 extern char D_00130428[];
 extern int func_0011DC50(void);
-extern void func_00118D80(int);
-extern int func_00120F30(int);
+extern void flush_cache(int);
+extern int sce_cd_sync_s(int);
 extern void *D_00159840;
 extern int D_001313E0;
 extern int D_001313E8;
@@ -88,13 +88,13 @@ extern int D_001313EC;
 extern int D_001313F0;
 extern int D_001313E4;
 extern int D_001313FC;
-extern int func_0011B4C8();
+extern int sif_call_rpc();
 extern int func_00120D28(int);
-extern void func_00118C90(int);
+extern void signal_semaphore(int);
 extern char D_00132590[];
 extern int D_00131440;
 extern void func_0011A6C8();
-extern int func_0011B6B8(void *);
+extern int sce_sif_check_stat_rpc(void *);
 extern char D_00153000[];
 extern char D_00132E08[];
 extern int D_001313D0;
@@ -104,16 +104,16 @@ extern char CoreDataTable[];
 extern void func_00123650(void *);
 extern char D_001534E0[];
 extern int DmaChannels[];
-extern int func_001238B0(int, int, int, int);
+extern int sce_mc_open(int, int, int, int);
 extern int D_00132EA8;
 extern int *D_00159B28;
 extern int *D_00159B2C;
 extern int *D_00159B30;
 extern char RpcQueueData[];
 extern int RpcReceiveData;
-extern void func_00124B60(void *);
+extern void debug_print_stub(void *);
 extern char D_00153658[];
-extern int func_00124920(int);
+extern int sceDbcGetDepNumber(int);
 typedef struct {
     char unk_00[4];
     int  unk_04;
@@ -635,12 +635,12 @@ int func_001273A0(void *arg0) {
         *(unsigned int *)0x10002010 = 0x40000000;
         cb2[0] = 3;
         func_0012BC78((int)d->cbData, cb2);
-        intr = func_0011D960();
+        intr = disable_interrupts();
         *D_ENABLEW = *D_ENABLER | 0x10000;
         *D4_CHCR = 0;
         *D_ENABLEW = *D_ENABLER & ~0x10000;
         if (intr) {
-            func_0011D9A8();
+            enable_interrupts();
         }
         ret = 0;
         *D4_QWC = 0;
@@ -794,7 +794,7 @@ extern char D_00153928[];
  * and the picture's mb width (+0x12C), overwrite *arg3 with 1, latch
  * +0x1B0, and zero eight fields of the *arg4 output struct.
  */
-int func_00127960(void *arg0, int arg1, int *arg2, int *arg3, void *arg4) {
+int _sliceA0(void *arg0, int arg1, int *arg2, int *arg3, void *arg4) {
     char *s = (char *)arg0;
     char *p5 = (char *)arg4;
     unsigned int code;
@@ -836,7 +836,7 @@ int func_00127960(void *arg0, int arg1, int *arg2, int *arg3, void *arg4) {
     return 0;
 }
 
-extern int func_00127960(void *, int, int *, int *, void *);
+extern int _sliceA0(void *, int, int *, int *, void *);
 extern int func_00127748(void *);
 extern void func_0012C468(void *, void *);
 extern char D_00153948[];
@@ -870,7 +870,7 @@ int func_00127A90(void *arg0, int mbCount) {
     int scratch30[4];
     int r;
 
-    r = func_00127960(s, mbCount, &mbAddr, &mbInc, local0);
+    r = _sliceA0(s, mbCount, &mbAddr, &mbInc, local0);
     if (r != 0) {
         return r;
     }
@@ -2071,7 +2071,7 @@ int func_00129690(void *p, int arg1) {
 #undef RDY_
 
 extern char D_00153A80[];
-extern void func_00116248_4(void *, char *, int, int) __asm__("func_00116248");
+extern void sprintf_4(void *, char *, int, int) __asm__("func_00116248");
 extern void func_0012C468_a(void *, void *) __asm__("func_0012C468");
 
 /* Does the request at arg1 fit the heap described by arg0? A sized
@@ -2093,7 +2093,7 @@ int func_00129948(void *arg0, void *arg1) {
         ok = *(int *)(h + 0xE4) >= *(int *)(q + 0xC) * *(int *)(q + 0x10);
     }
     if (ok == 0) {
-        func_00116248_4(buf, D_00153A80, *(int *)(q + 0x4),
+        sprintf_4(buf, D_00153A80, *(int *)(q + 0x4),
                         *(int *)(q + 0x8));
         func_0012C468_a(arg0, buf);
     }
@@ -2174,7 +2174,7 @@ block_9:
     while (f < fields) {
         dst = base;
         for (i = 0; i < arg1->unkC; i++) {
-            intr1 = func_0011D960();
+            intr1 = disable_interrupts();
             *(volatile int *)0x1000D480 = 0;
             *(volatile int *)0x1000D410 = src;
             *(volatile int *)0x1000D420 = qwc;
@@ -2182,11 +2182,11 @@ block_9:
             if (intr1 == 0) {
                 goto block_15;
             }
-            func_0011D9A8();
+            enable_interrupts();
         block_15:
             while (*(volatile unsigned int *)0x1000D400 & 0x100) {
             }
-            intr2 = func_0011D960();
+            intr2 = disable_interrupts();
             *(volatile int *)0x1000D080 = 0;
             *(volatile int *)0x1000D010 = dst;
             *(volatile int *)0x1000D020 = qwc;
@@ -2194,7 +2194,7 @@ block_9:
             if (intr2 == 0) {
                 goto block_19;
             }
-            func_0011D9A8();
+            enable_interrupts();
         block_19:
             while (*(volatile unsigned int *)0x1000D000 & 0x100) {
             }
@@ -2404,14 +2404,14 @@ void func_0012A0F8(void *arg0) {
         p[2] = ((long)hi << 32) | (tag << 28) | 0x30;
         p += 4;
     } while (++i < n);
-    r = func_0011D960();
+    r = disable_interrupts();
     __asm__ __volatile__("sync");
     *(volatile int *)0x1000D480 = s->e[s->unk810].unk0;
     *(volatile int *)0x1000D430 = (int)mpeg_ref_image_chain;
     *(volatile int *)0x1000D420 = 0;
     *(volatile int *)0x1000D400 = 0x105;
     if (r != 0) {
-        func_0011D9A8();
+        enable_interrupts();
     }
 }
 
@@ -2425,12 +2425,12 @@ void func_0012A0F8(void *arg0) {
  * (start, from-memory... actually to-memory chain/normal mode).
  */
 void func_0012A268(void *arg0, int arg1) {
-    int r = func_0011D960();
+    int r = disable_interrupts();
     *(volatile unsigned int *)0x1000B010 = ((unsigned int)arg0 & 0x0FFFFFFF) | 0x80000000;
     *(volatile unsigned int *)0x1000B020 = arg1 >> 4;
     *(volatile unsigned int *)0x1000B000 = 0x100;
     if (r != 0) {
-        func_0011D9A8();
+        enable_interrupts();
     }
 }
 

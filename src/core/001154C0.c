@@ -105,7 +105,7 @@ void func_00115578(void *arg0, void *arg1) {
 
 extern void *func_001154D0(void *ptr, int k);        /* Balloc */
 extern void func_00115578(void *ptr, void *b);        /* Bfree */
-extern void *func_00115248(void *dest, void *src, unsigned int n); /* memcpy */
+extern void *libc_memcpy(void *dest, void *src, unsigned int n); /* memcpy */
 
 /* newlib mprec.c multadd(ptr,b,m,a): b = b*m+a in place (16-bit limbs
  * packed two to a 32-bit word, Pack_32); if the carry out of the top
@@ -131,7 +131,7 @@ void *func_001155A8(void *ptr, void *arg1, int m, int a) {
     if (a) {
         if (wds >= ((Bigint_1154D0 *)arg1)->maxwds) {
             b1 = func_001154D0(ptr, ((Bigint_1154D0 *)arg1)->k + 1);
-            func_00115248(&b1->sign, &((Bigint_1154D0 *)arg1)->sign,
+            libc_memcpy(&b1->sign, &((Bigint_1154D0 *)arg1)->sign,
                           ((Bigint_1154D0 *)arg1)->wds * sizeof(unsigned int) + 2 * sizeof(int));
             func_00115578(ptr, arg1);
             arg1 = b1;

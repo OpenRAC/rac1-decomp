@@ -41,8 +41,8 @@ extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
 extern void *InitBlockData NOT_SDA;
 extern int D_00155080[];
-extern void func_001193F8(int);
-extern void func_00118AD0(int, int);
+extern void disable_dmac_atomic(int);
+extern void remove_dmac_handler(int, int);
 extern int D_00154F54;
 extern int D_0012FD04;
 extern int D_00154F64 NOT_SDA;
@@ -50,9 +50,9 @@ extern int D_00154F6C NOT_SDA;
 extern void func_0011AA90(int, int, int, int, int, int, int);
 extern void func_0011AA00(void);
 extern int RpcCommandState NOT_SDA;
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
-extern int func_00118C70(void *);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
+extern int create_semaphore(void *);
 extern int D_0012FDA0;
 extern int D_0012FDA4;
 extern char D_00157E80[];
@@ -62,7 +62,7 @@ extern int D_0012FD9C NOT_SDA;
 extern char D_0012FCEC[];
 extern char FsResetBuffer[];
 extern int D_0012FDA8;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FsResetState;
 extern int D_0012FDAC;
 extern char D_00158140[];
@@ -79,8 +79,8 @@ extern int SecondSemaphore;
 extern int D_00130BD0[];
 extern char D_00130428[];
 extern int func_0011DC50(void);
-extern void func_00118D80(int);
-extern int func_00120F30(int);
+extern void flush_cache(int);
+extern int sce_cd_sync_s(int);
 extern void *D_00159840;
 extern int D_001313E0;
 extern int D_001313E8;
@@ -88,13 +88,13 @@ extern int D_001313EC;
 extern int D_001313F0;
 extern int D_001313E4;
 extern int D_001313FC;
-extern int func_0011B4C8();
+extern int sif_call_rpc();
 extern int func_00120D28(int);
-extern void func_00118C90(int);
+extern void signal_semaphore(int);
 extern char D_00132590[];
 extern int D_00131440;
 extern void func_0011A6C8();
-extern int func_0011B6B8(void *);
+extern int sce_sif_check_stat_rpc(void *);
 extern char D_00153000[];
 extern char D_00132E08[];
 extern int D_001313D0;
@@ -106,7 +106,7 @@ extern int func_00120E98(void);
  * The volatile state clears precede the semaphore read; the verified
  * GNU 2.10-ee profile fills SignalSema's call slot with that word load.
  * Sector size by mode->datapattern: 1 -> 0x918, 2 -> 0x924, else 0x800. */
-extern int func_0011B4C8(void *, int, int, void *, int, void *, int, void *, void *);
+extern int sif_call_rpc(void *, int, int, void *, int, void *, int, void *, void *);
 extern int D_001313F4 NOT_SDA;
 extern char D_001314C0[];
 extern char D_001324C0[];
@@ -117,7 +117,7 @@ extern volatile int D_00131414;
 extern void func_0011AD70(void *, int);
 extern void func_00120A88();
 
-int func_00121750(int lba, int sectors, void *buf, unsigned char *mode) {
+int sce_cd_read(int lba, int sectors, void *buf, unsigned char *mode) {
     char *req = D_001314C0;
     int size;
     int r;
@@ -166,12 +166,12 @@ int func_00121750(int lba, int sectors, void *buf, unsigned char *mode) {
 
     D_00131414 = 1;
     *(volatile int *)&D_001313F0 = 1;
-    r = func_0011B4C8(D_00132590, 1, 1, req, 0x18, 0, 0,
+    r = sif_call_rpc(D_00132590, 1, 1, req, 0x18, 0, 0,
                       (void *)func_00120A88, D_001324C0);
     if (r < 0) {
         D_00131414 = 0;
         *(volatile int *)&D_001313F0 = 0;
-        func_00118C90(*(volatile int *)&D_001313E8);
+        signal_semaphore(*(volatile int *)&D_001313E8);
         return 0;
     }
     if (D_001313D0 > 0) {
@@ -190,18 +190,18 @@ extern int D_001325C0;
    success path. That is the layout retail has, and it keeps 2.9-ee from
    cross-jumping the two `return -1` tails into one (SIZE 144/152 with
    the success path first, which 2.95.3 needed). */
-int func_00121930(void) {
+int sce_cd_get_error(void) {
     int r;
 
     if (func_00121040(3) == 0) {
         return -1;
     }
-    if (func_0011B4C8(D_00132E08, 4, 0, 0, 0, &D_001325C0, 4, 0, 0) < 0) {
-        func_00118C90(D_001313EC);
+    if (sif_call_rpc(D_00132E08, 4, 0, 0, 0, &D_001325C0, 4, 0, 0) < 0) {
+        signal_semaphore(D_001313EC);
         return -1;
     }
     r = *(int *)((unsigned int)&D_001325C0 | 0x20000000);
-    func_00118C90(D_001313EC);
+    signal_semaphore(D_001313EC);
     return r;
 }
 
@@ -216,21 +216,21 @@ extern volatile int D_00131414;
 
    As in func_00121930, the RPC failure path comes first: with the success
    path first 2.9-ee merges the two `return 0` tails (SIZE 176/184). */
-int func_001219C8(void) {
+int sce_cd_break(void) {
     int r;
 
     if (func_00121040(0x1E) == 0) {
         return 0;
     }
     D_00131414 = 8;
-    if (func_0011B4C8(D_00132E08, 0x16, 0, 0, 0, &D_001325C0, 4, 0, 0) < 0) {
-        func_00118C90(*(volatile int *)&D_001313EC);
+    if (sif_call_rpc(D_00132E08, 0x16, 0, 0, 0, &D_001325C0, 4, 0, 0) < 0) {
+        signal_semaphore(*(volatile int *)&D_001313EC);
         D_00131414 = 0;
         return 0;
     }
     D_00131414 = 0;
     r = *(int *)((unsigned int)&D_001325C0 | 0x20000000);
-    func_00118C90(*(volatile int *)&D_001313EC);
+    signal_semaphore(*(volatile int *)&D_001313EC);
     return r;
 }
 
@@ -243,7 +243,7 @@ typedef struct {
 /* sceCdReadClock: S-command 0xF, RPC 1 with a 0x10-byte reply; the
    8-byte clock after the status word is copied out uncached. Failure
    path first, as in func_00121930. */
-int func_00121A80(CdClock *out) {
+int sce_cd_read_clock(CdClock *out) {
     int r;
 
     if (func_00121040(0xF) == 0) {
@@ -252,8 +252,8 @@ int func_00121A80(CdClock *out) {
     if (D_001313D0 > 0) {
         func_0011A6C8(D_001530F0);
     }
-    if (func_0011B4C8(D_00132E08, 1, 0, 0, 0, &D_001325C0, 0x10, 0, 0) < 0) {
-        func_00118C90(D_001313EC);
+    if (sif_call_rpc(D_00132E08, 1, 0, 0, 0, &D_001325C0, 0x10, 0, 0) < 0) {
+        signal_semaphore(D_001313EC);
         return 0;
     }
     *out = *(CdClock *)(((unsigned int)&D_001325C0 + 4) | 0x20000000);
@@ -261,7 +261,7 @@ int func_00121A80(CdClock *out) {
         func_0011A6C8(D_00153110);
     }
     r = *(int *)((unsigned int)&D_001325C0 | 0x20000000);
-    func_00118C90(D_001313EC);
+    signal_semaphore(D_001313EC);
     return r;
 }
 
@@ -276,12 +276,12 @@ typedef struct {
 
 extern void *func_00121D08(void);          /* sceGsGetGParam */
 extern int func_00118DE0();                /* GsPutIMR */
-extern int func_00118AA0();                /* RemoveIntcHandler */
-extern int func_00119328();
+extern int remove_intc_handler();                /* RemoveIntcHandler */
+extern int disable_intc_atomic();
 extern void func_00118A50(int, int, int);  /* SetGsCrt */
 
 /* sceGsResetGraph. Adapted from Lombyte's project (GPL-3.0) for PAL. */
-void func_00121B78(short mode, short inter, short out, short ff) {
+void sceGsResetGraph(short mode, short inter, short out, short ff) {
     sceGsGParam *gp;
 
     switch (mode) {
@@ -294,8 +294,8 @@ void func_00121B78(short mode, short inter, short out, short ff) {
         func_00118DE0(0xFF00);
         gp->sceGsFFMode = (ff != 0);
         if (gp->sceGsVSCfunc != 0) {
-            func_00119328(2);
-            func_00118AA0(2, gp->sceGsVSCid);
+            disable_intc_atomic(2);
+            remove_intc_handler(2, gp->sceGsVSCid);
             gp->sceGsVSCfunc = 0;
             gp->sceGsVSCid = 0;
         }

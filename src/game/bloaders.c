@@ -37,10 +37,10 @@ typedef struct {
 extern void FastMemSet(void *, int, int);
 extern int log2dim(int);
 /* sceGsSetDefLoadImage, FlushCache, sceGsExecLoadImage, sceGsSyncPath */
-extern int func_00122630(GsLoadImage *, short, short, short, short, short, short, short);
-extern void func_00118D80(int);
-extern int func_00122958(GsLoadImage *, void *);
-extern int func_00120858(int, unsigned short);
+extern int sceGsSetDefLoadImage(GsLoadImage *, short, short, short, short, short, short, short);
+extern void flush_cache(int);
+extern int sceGsExecLoadImage(GsLoadImage *, void *);
+extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 
 /* LoadPifAsPSMT8H: uploads a PIF image (header arg0, CLUT at +0x20 of
    0x200 bytes when +0x14 is set, else 0x400, then w * h pixels) to GS
@@ -68,19 +68,19 @@ void LoadPifAsPSMT8H(void *arg0, void *arg1, int tbp, int cbp) {
     d.th = log2dim(pif->h);
     d.image = (char *)pif + (d.clutSize + 0x20);
     d.imageSize = pif->w * pif->h;
-    func_00122630(&li, c, 1, pif->psm, 0, 0, 16, 16);
-    func_00118D80(0);
-    func_00122958(&li, d.clut);
-    func_00120858(0, 0);
+    sceGsSetDefLoadImage(&li, c, 1, pif->psm, 0, 0, 16, 16);
+    flush_cache(0);
+    sceGsExecLoadImage(&li, d.clut);
+    wait_for_graphics_pipeline_idle(0, 0);
     d.tbw = pif->w >> 6;
     if (d.tbw <= 0) {
         d.tbw = 1;
     }
     d.tbp = tbp >> 8;
-    func_00122630(&li, d.tbp, d.tbw, 0x1B, 0, 0, pif->w, pif->h);
-    func_00118D80(0);
-    func_00122958(&li, d.image);
-    func_00120858(0, 0);
+    sceGsSetDefLoadImage(&li, d.tbp, d.tbw, 0x1B, 0, 0, pif->w, pif->h);
+    flush_cache(0);
+    sceGsExecLoadImage(&li, d.image);
+    wait_for_graphics_pipeline_idle(0, 0);
     out[0] = (unsigned long)d.tbp | ((unsigned long)d.tbw << 14)
            | ((unsigned long)0x1B << 20) | ((unsigned long)d.tw << 26)
            | ((unsigned long)d.th << 30) | ((unsigned long)1 << 34)

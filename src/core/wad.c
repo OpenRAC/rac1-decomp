@@ -34,8 +34,8 @@ extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
 extern void *InitBlockData NOT_SDA;
 extern int D_00155080[];
-extern void func_001193F8(int);
-extern void func_00118AD0(int, int);
+extern void disable_dmac_atomic(int);
+extern void remove_dmac_handler(int, int);
 extern int D_00154F54;
 extern int D_0012FD04;
 extern int D_00154F64 NOT_SDA;
@@ -43,9 +43,9 @@ extern int D_00154F6C NOT_SDA;
 extern void func_0011AA90(int, int, int, int, int, int, int);
 extern void func_0011AA00(void);
 extern int RpcCommandState NOT_SDA;
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
-extern int func_00118C70(void *);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
+extern int create_semaphore(void *);
 extern int D_0012FDA0;
 extern int D_0012FDA4;
 extern char D_00157E80[];
@@ -55,7 +55,7 @@ extern int D_0012FD9C NOT_SDA;
 extern char D_0012FCEC[];
 extern char FsResetBuffer[];
 extern int D_0012FDA8;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FsResetState;
 extern int D_0012FDAC;
 extern char D_00158140[];
@@ -72,8 +72,8 @@ extern int SecondSemaphore;
 extern int D_00130BD0[];
 extern char D_00130428[];
 extern int func_0011DC50(void);
-extern void func_00118D80(int);
-extern int func_00120F30(int);
+extern void flush_cache(int);
+extern int sce_cd_sync_s(int);
 extern void *D_00159840;
 extern int D_001313E0;
 extern int D_001313E8;
@@ -81,13 +81,13 @@ extern int D_001313EC;
 extern int D_001313F0;
 extern int D_001313E4;
 extern int D_001313FC;
-extern int func_0011B4C8();
+extern int sif_call_rpc();
 extern int func_00120D28(int);
-extern void func_00118C90(int);
+extern void signal_semaphore(int);
 extern char D_00132590[];
 extern int D_00131440;
 extern void func_0011A6C8();
-extern int func_0011B6B8(void *);
+extern int sce_sif_check_stat_rpc(void *);
 extern char D_00153000[];
 extern char D_00132E08[];
 extern int D_001313D0;
@@ -97,16 +97,16 @@ extern char CoreDataTable[];
 extern void func_00123650(void *);
 extern char D_001534E0[];
 extern int DmaChannels[];
-extern int func_001238B0(int, int, int, int);
+extern int sce_mc_open(int, int, int, int);
 extern int D_00132EA8;
 extern int *D_00159B28;
 extern int *D_00159B2C;
 extern int *D_00159B30;
 extern char RpcQueueData[];
 extern int RpcReceiveData;
-extern void func_00124B60(void *);
+extern void debug_print_stub(void *);
 extern char D_00153658[];
-extern int func_00124920(int);
+extern int sceDbcGetDepNumber(int);
 typedef struct {
     char unk_00[4];
     int  unk_04;
@@ -125,7 +125,7 @@ extern int func_00128860(void *, int);
 extern int func_00128A58(void *, int);
 extern void func_00129180(void *);
 extern char D_00153A80[];
-extern void func_00116248_4(void *, char *, int, int) __asm__("func_00116248");
+extern void sprintf_4(void *, char *, int, int) __asm__("func_00116248");
 extern void func_0012C468_a(void *, void *) __asm__("func_0012C468");
 extern void func_0012AAC8(void *, int);
 extern void func_0012C468(void *, void *);
@@ -136,7 +136,7 @@ extern void func_0012C278(void *);
 extern void func_00129E30(void *, int, int, int);
 extern char D_00153BB8[];
 extern char D_00153BD8[];
-extern void func_00116248(void *);
+extern void sprintf(void *);
 extern void func_0012C420(void *);
 extern char D_00153C48[];
 extern char D_00153C78[];
@@ -151,17 +151,17 @@ extern void func_0011DDA0(int);
 extern short snd_current_buffer_index;
 extern short snd_current_buffer;
 extern short GlobalTableStatus;
-extern void func_0012DDC0(void);
+extern void snd_FlushSoundCommands(void);
 
 extern unsigned char cd_read_spindle_speed[4] MACRO_ADDR;
-extern int func_00121750(int, int, void *, void *);
-extern void func_00122598(int);
-extern int func_00121930(void);
+extern int sce_cd_read(int, int, void *, void *);
+extern void sce_gs_sync_v(int);
+extern int sce_cd_get_error(void);
 
 /* wad_GetSectors_FiiPv(lba, sectors, buf): sceCdRead with the usual
  * request/poll/retry shape (see func_0012F3F8/func_0012F4A8 below),
  * returning the byte count read (sectors << 11 = sectors * 0x800). */
-int func_0012F348(int lba, int sectors, void *buf) {
+int wad_GetSectors_FiiPv(int lba, int sectors, void *buf) {
     char hdr[4];
 
     hdr[0] = 0x20;
@@ -170,11 +170,11 @@ int func_0012F348(int lba, int sectors, void *buf) {
     hdr[3] = 0;
 
     do {
-        func_00121750(lba, sectors, buf, &hdr);
-        while (func_00120F30(1) != 0) {
-            func_00122598(0);
+        sce_cd_read(lba, sectors, buf, &hdr);
+        while (sce_cd_sync_s(1) != 0) {
+            sce_gs_sync_v(0);
         }
-    } while (func_00121930() != 0);
+    } while (sce_cd_get_error() != 0);
 
     return sectors << 11;
 }
@@ -186,7 +186,7 @@ extern int disc_table[];
    sectors into a stack buffer and copying 0x2960 bytes of it into
    D_00137C80. The nop after `jal func_00120F30` in the poll loop is
    ps2eeas's short-loop padding (tools/ps2eeas_nops.py). */
-int func_0012F3F8(void) {
+int load_disc_sectors_into_global_buffer(void) {
     char buf[0x3000];
     StreamHdr hdr;
     unsigned int i;
@@ -197,11 +197,11 @@ int func_0012F3F8(void) {
     hdr.b[3] = 0;
 
     do {
-        func_00121750(0x5DC, 6, buf, &hdr);
-        while (func_00120F30(1) != 0) {
-            func_00122598(0);
+        sce_cd_read(0x5DC, 6, buf, &hdr);
+        while (sce_cd_sync_s(1) != 0) {
+            sce_gs_sync_v(0);
         }
-    } while (func_00121930() != 0);
+    } while (sce_cd_get_error() != 0);
 
     for (i = 0; i < 0x2960; i++) {
         ((char *)disc_table)[i] = buf[i];
@@ -217,7 +217,7 @@ extern int pad_globals_base[];
    copied into D_0013A5E0. The entry address is formed after the header
    stores, which orders the two constant-address computations as retail
    does. */
-int func_0012F4A8(int arg0) {
+int read_file_entry_with_retry(int arg0) {
     int *entry;
     char buf[0x2800];
     StreamHdr hdr;
@@ -230,11 +230,11 @@ int func_0012F4A8(int arg0) {
     entry = &D_0013A548[arg0 * 2];
 
     do {
-        func_00121750(*entry, 5, buf, &hdr);
-        while (func_00120F30(1) != 0) {
-            func_00122598(0);
+        sce_cd_read(*entry, 5, buf, &hdr);
+        while (sce_cd_sync_s(1) != 0) {
+            sce_gs_sync_v(0);
         }
-    } while (func_00121930() != 0);
+    } while (sce_cd_get_error() != 0);
 
     for (i = 0; i < 0x2434; i++) {
         ((char *)pad_globals_base)[i] = buf[i];

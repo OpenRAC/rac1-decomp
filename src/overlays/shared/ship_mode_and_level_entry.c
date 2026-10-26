@@ -71,7 +71,7 @@ extern void HeroSetObjectFlags(void);
 extern int scale_ticks(int);
 extern void load_chunks_with_optional_fade(int, int);
 extern void parse_space_scene_chunk(int);
-extern int func_00122598(int);
+extern int sce_gs_sync_v(int);
 extern void Music_ContinueStreamIfReady(void);
 // Puts the hero into ship mode: clears the ship records, flags the matching mobys and picks the ship's start sound and camera set. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028e9c8.
 void initialize_level_transition_with_audio(int a) {
@@ -137,7 +137,7 @@ void initialize_level_transition_with_audio(int a) {
     parse_space_scene_chunk(0);
     while (3 != z->x5a) {
         sound_update();
-        func_00122598(0);
+        sce_gs_sync_v(0);
     }
     Music_ContinueStreamIfReady();
 }

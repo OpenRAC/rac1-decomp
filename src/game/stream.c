@@ -57,8 +57,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern void CreatePointLight(int);
@@ -118,7 +118,7 @@ extern int mc_gamedata[];
 extern int mc_leveldata[];
 extern int memcard_GetDataSize(int *p);
 extern int memcard_PrepData(void *dst, int i, int *table);
-extern int func_001236F0(void);
+extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
 extern int D_0013D844 NOT_SDA;
@@ -147,7 +147,7 @@ extern int g_hero_moby NOT_SDA;
 extern float shadow_light_dir[] NOT_SDA;
 extern float FastCos(float);
 extern float FastSin(float);
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern char normal_lut[];
 extern int render_packet_end;
 extern short vu1_chain_safe_end;
@@ -165,21 +165,21 @@ extern float round_float_to_decimal_places(int, float);
 extern unsigned char gold_bolts_collected[];
 extern unsigned char gold_weapon_purchased[];
 extern unsigned char gSkillPoints[];
-extern void func_0012F068(void *);
+extern void snd_StreamSafeCdCallback(void *);
 extern void finish_audio_stream_read(int);
 extern short cd_read_state[];
-extern void func_0012EDE0(void *);
+extern void snd_ContinueVAGStream(void *);
 
-extern void func_0012EFE8(void);
+extern void snd_StreamSafeCdBreak(void);
 
-extern int func_0012EFE8_i(void) __asm__("func_0012EFE8");
+extern int snd_StreamSafeCdBreak_i(void) __asm__("func_0012EFE8");
 
 /* func_0012EFE8 returns int (989snd.c): with the result in $v0, the
    constant goes to the register retail uses. */
 void request_audio_stream_break(void) {
     short *p = cd_read_state;
     if (p[4] != 0) {
-        func_0012EFE8_i();
+        snd_StreamSafeCdBreak_i();
         ((char *)p)[0xA] = 1;
     }
 }
@@ -193,7 +193,7 @@ extern StreamHdr stream_read_mode_template;
 extern unsigned char cd_read_spindle_speed[4] MACRO_ADDR;
 extern int cd_read_wait_frames MACRO_ADDR;
 extern int cd_read_slowdown_applied MACRO_ADDR;
-extern void func_00121750(int, int, int, void *);
+extern void sce_cd_read(int, int, int, void *);
 
 /* Start a CD stream read of arg2 sectors from arg1 into arg0 at the current spindle speed. */
 int Stream_SubmitRead(int arg0, int arg1, int arg2) {
@@ -202,12 +202,12 @@ int Stream_SubmitRead(int arg0, int arg1, int arg2) {
     hdr.b[1] = cd_read_spindle_speed[0];
     cd_read_wait_frames = 0;
     cd_read_slowdown_applied = 0;
-    func_00121750(arg1, arg2, arg0, &hdr);
+    sce_cd_read(arg1, arg2, arg0, &hdr);
     return 1;
 }
 
 extern char load_file_start_failed_string[];
-extern int func_0012EE98(int, int, int, void *);
+extern int snd_StreamSafeCdRead(int, int, int, void *);
 
 /* Start a stream: refuse if one is already running (+0x8) or the length
    is zero, otherwise hand the request to func_0012EE98 with the header
@@ -223,7 +223,7 @@ int start_audio_stream_read(int arg0, int arg1, int arg2) {
     if (arg2 == 0) {
         return 0;
     }
-    if (func_0012EE98(arg1, arg2, arg0, d + 0x30) == 0) {
+    if (snd_StreamSafeCdRead(arg1, arg2, arg0, d + 0x30) == 0) {
         STUB_printf(load_file_start_failed_string);
         raise_kernel_trap();
         return 0;
@@ -239,11 +239,11 @@ int start_audio_stream_read(int arg0, int arg1, int arg2) {
    just above with three. Reach it through an alias rather than
    redeclaring it. */
 extern int start_audio_stream_read_v(void) __asm__("func_00217628");
-extern void func_00122598(int);
+extern void sce_gs_sync_v(int);
 extern void music_Update(void);
-extern void func_0012EC40(void);
-extern void func_0012DDC0(void);
-extern void func_0012EC30(void);
+extern void snd_reset_state_and_flush_commands(void);
+extern void snd_FlushSoundCommands(void);
+extern void snd_reenable_command_flush(void);
 
 /*
  * Close, not exact (15/124), same size so inert. Semantics confirmed:
@@ -274,11 +274,11 @@ int Load(int arg0, int arg1, int arg2) {
     int r = start_audio_stream_read(arg0, arg1, arg2);
     if (r != 0) {
         while (d = (char *)cd_read_state, *(short *)(d + 0x8) != 0) {
-            func_00122598(0);
+            sce_gs_sync_v(0);
             music_Update();
-            func_0012EC40();
-            func_0012DDC0();
-            func_0012EC30();
+            snd_reset_state_and_flush_commands();
+            snd_FlushSoundCommands();
+            snd_reenable_command_flush();
         }
     }
     return r;
@@ -306,17 +306,17 @@ short update_audio_stream_until_idle(int arg0) {
     if (arg0 != 0) {
         struct MusicStreamState *d;
         while (d = (struct MusicStreamState *)cd_read_state, d->read_state != 0) {
-            func_00122598(0);
+            sce_gs_sync_v(0);
             music_Update();
-            func_0012EC40();
-            func_0012DDC0();
-            func_0012EC30();
+            snd_reset_state_and_flush_commands();
+            snd_FlushSoundCommands();
+            snd_reenable_command_flush();
         }
     } else {
         music_Update();
-        func_0012EC40();
-        func_0012DDC0();
-        func_0012EC30();
+        snd_reset_state_and_flush_commands();
+        snd_FlushSoundCommands();
+        snd_reenable_command_flush();
     }
     {
         struct MusicStreamState *d = (struct MusicStreamState *)cd_read_state;
@@ -324,7 +324,7 @@ short update_audio_stream_until_idle(int arg0) {
     }
 }
 
-extern int func_0012F030(void);
+extern int snd_StreamSafeCdGetError(void);
 
 /* CD read callback: mark the music stream read finished, or done if more data is ready. */
 void finish_audio_stream_read(int callback_value) {
@@ -332,7 +332,7 @@ void finish_audio_stream_read(int callback_value) {
     if (callback_value == 1) {
         state = (struct MusicStreamState *)cd_read_state;
         state->read_state = 0;
-        if (func_0012F030() != 0) {
+        if (snd_StreamSafeCdGetError() != 0) {
             state->read_state = 2;
         }
     }
@@ -538,8 +538,8 @@ extern s32 remove_hud_item(s32);
 extern void noop_callback_o(s32);
 extern void *msg_string(s32);
 
-extern char *func_00116CC0(char *, char *);
-extern s32 func_00116248(char *, const char *, ...);
+extern char *find_substring(char *, char *);
+extern s32 sprintf(char *, const char *, ...);
 extern void copy_text_to_shared_buffer(void *);
 extern s32 compute_clamped_count_difference(void);
 
@@ -592,16 +592,16 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
     kind = e->unk8;
     if (kind == 6) {
         sfx = menu_time_suffixes;
-        func_001166FC((Cfg13*)((char *)0x70000000), msg_string(e->unk0));
-        p = func_00116CC0(((char *)0x70000000), menu_entry_find_token);
+        libc_strcpy((Cfg13*)((char *)0x70000000), msg_string(e->unk0));
+        p = find_substring(((char *)0x70000000), menu_entry_find_token);
         if (p != 0) {
             p[1] = 's';
         }
         t = vendor_item_prices[e->unkA].unk14;
-        func_00116248(num, menu_time_value_format, t / 1000, sfx.s[g_game_language % 6], t % 1000);
-        func_00116248(buf, ((char *)0x70000000), num);
+        sprintf(num, menu_time_value_format, t / 1000, sfx.s[g_game_language % 6], t % 1000);
+        sprintf(buf, ((char *)0x70000000), num);
     } else {
-        func_00116248(buf, msg_string(e->unk0));
+        sprintf(buf, msg_string(e->unk0));
     }
     if (menu_entry_trigger_state[5] != 0) {
         copy_text_to_shared_buffer(buf);
@@ -665,9 +665,9 @@ void pad_resetState(void) {
 LINKER_REMNANT("asm/remnants/text", func_00217ED8);
 
 extern int pad_socket_param NOT_SDA;
-extern void func_00124650(void);
-extern void func_00124B88(int);
-extern int func_00124BC8(void *, void *);
+extern void sce_dbc_init(void);
+extern void sce_pad2_init(int);
+extern int sce_pad2_create_socket(void *, void *);
 
 /* Minimal layouts for init_pads: the port/slot socket parameter (NTSC name unknown)
    and the leading part of PadState from pad.h, up to the fields init_pads writes. */
@@ -680,11 +680,11 @@ typedef struct {
 void init_pads(void) {
     PadSocketParam *p = (PadSocketParam *)&pad_socket_param;
 
-    func_00124650();
-    func_00124B88(0);
+    sce_dbc_init();
+    sce_pad2_init(0);
     pad_socket_param = 2;
     p->slot = 0;
-    ((struct PadState *)g_controller_state)->socket = func_00124BC8(p, g_controller_state);
+    ((struct PadState *)g_controller_state)->socket = sce_pad2_create_socket(p, g_controller_state);
     pad_socket_param = 2;
     p->slot = 1;
     ((struct PadState *)g_controller_state)->profile_state = 0;

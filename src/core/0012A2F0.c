@@ -34,8 +34,8 @@ extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
 extern void *InitBlockData NOT_SDA;
 extern int D_00155080[];
-extern void func_001193F8(int);
-extern void func_00118AD0(int, int);
+extern void disable_dmac_atomic(int);
+extern void remove_dmac_handler(int, int);
 extern int D_00154F54;
 extern int D_0012FD04;
 extern int D_00154F64 NOT_SDA;
@@ -43,9 +43,9 @@ extern int D_00154F6C NOT_SDA;
 extern void func_0011AA90(int, int, int, int, int, int, int);
 extern void func_0011AA00(void);
 extern int RpcCommandState NOT_SDA;
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
-extern int func_00118C70(void *);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
+extern int create_semaphore(void *);
 extern int D_0012FDA0;
 extern int D_0012FDA4;
 extern char D_00157E80[];
@@ -55,7 +55,7 @@ extern int D_0012FD9C NOT_SDA;
 extern char D_0012FCEC[];
 extern char FsResetBuffer[];
 extern int D_0012FDA8;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FsResetState;
 extern int D_0012FDAC;
 extern char D_00158140[];
@@ -72,8 +72,8 @@ extern int SecondSemaphore;
 extern int D_00130BD0[];
 extern char D_00130428[];
 extern int func_0011DC50(void);
-extern void func_00118D80(int);
-extern int func_00120F30(int);
+extern void flush_cache(int);
+extern int sce_cd_sync_s(int);
 extern void *D_00159840;
 extern int D_001313E0;
 extern int D_001313E8;
@@ -81,13 +81,13 @@ extern int D_001313EC;
 extern int D_001313F0;
 extern int D_001313E4;
 extern int D_001313FC;
-extern int func_0011B4C8();
+extern int sif_call_rpc();
 extern int func_00120D28(int);
-extern void func_00118C90(int);
+extern void signal_semaphore(int);
 extern char D_00132590[];
 extern int D_00131440;
 extern void func_0011A6C8();
-extern int func_0011B6B8(void *);
+extern int sce_sif_check_stat_rpc(void *);
 extern char D_00153000[];
 extern char D_00132E08[];
 extern int D_001313D0;
@@ -97,16 +97,16 @@ extern char CoreDataTable[];
 extern void func_00123650(void *);
 extern char D_001534E0[];
 extern int DmaChannels[];
-extern int func_001238B0(int, int, int, int);
+extern int sce_mc_open(int, int, int, int);
 extern int D_00132EA8;
 extern int *D_00159B28;
 extern int *D_00159B2C;
 extern int *D_00159B30;
 extern char RpcQueueData[];
 extern int RpcReceiveData;
-extern void func_00124B60(void *);
+extern void debug_print_stub(void *);
 extern char D_00153658[];
-extern int func_00124920(int);
+extern int sceDbcGetDepNumber(int);
 typedef struct {
     char unk_00[4];
     int  unk_04;
@@ -125,7 +125,7 @@ extern int func_00128860(void *, int);
 extern int func_00128A58(void *, int);
 extern void func_00129180(void *);
 extern char D_00153A80[];
-extern void func_00116248_4(void *, char *, int, int) __asm__("func_00116248");
+extern void sprintf_4(void *, char *, int, int) __asm__("func_00116248");
 extern void func_0012C468_a(void *, void *) __asm__("func_0012C468");
 
 extern void func_00128560();
@@ -142,12 +142,12 @@ void func_0012A2F0(void *arg0, unsigned int arg1, int arg2) {
 
     while (*(volatile int *)0x10002010 < 0) {
     }
-    r = func_0011D960();
+    r = disable_interrupts();
     *(volatile unsigned int *)0x1000B010 = arg1 & 0x0FFFFFFF;
     *(volatile unsigned int *)0x1000B020 = (unsigned int)arg2 << 6;
     *(volatile unsigned int *)0x1000B000 = 0x100;
     if (r != 0) {
-        func_0011D9A8();
+        enable_interrupts();
     }
     func_00128560(arg0, arg2 | 0x70000000);
     event[0] = 4;
@@ -161,7 +161,7 @@ void func_0012A2F0(void *arg0, unsigned int arg1, int arg2) {
 ASM_FUNC("asm/handwritten/core_text", func_0012A418);
 
 extern int func_00118AC0_2A558(int, void *, int, void *) __asm__("func_00118AC0");
-extern void func_00119460_2A558(int) __asm__("func_00119460");
+extern void enable_dmac_atomic_r(int) __asm__("func_00119460");
 extern void func_0012A418_2A558(void) __asm__("func_0012A418");
 extern char D_00153AB0[];
 
@@ -192,8 +192,8 @@ void func_0012A558(void *arg0, unsigned int arg1, int arg2) {
     }
     h = func_00118AC0_2A558(3, (void *)func_0012A418_2A558, 0, rp);
     *(volatile unsigned int *)0x1000E010 = 8;
-    func_00119460_2A558(3);
-    r = func_0011D960();
+    enable_dmac_atomic_r(3);
+    r = disable_interrupts();
     {
         volatile unsigned int *madr = (volatile unsigned int *)0x1000B010;
         volatile unsigned int *qwc = (volatile unsigned int *)0x1000B020;
@@ -203,7 +203,7 @@ void func_0012A558(void *arg0, unsigned int arg1, int arg2) {
         *chcr = 0x100;
     }
     if (r != 0) {
-        func_0011D9A8();
+        enable_interrupts();
     }
     *(volatile unsigned int *)0x10002000 = 0x700003FF;
     event[0] = 4;
@@ -215,8 +215,8 @@ void func_0012A558(void *arg0, unsigned int arg1, int arg2) {
     }
     while (*(volatile int *)0x10002010 < 0) {
     }
-    func_001193F8(3);
-    func_00118AD0(3, h);
+    disable_dmac_atomic(3);
+    remove_dmac_handler(3, h);
 }
 
 ASM_FUNC("asm/handwritten/core_text", func_0012A718);
@@ -224,7 +224,7 @@ ASM_FUNC("asm/handwritten/core_text", func_0012A718);
 extern void *func_0012BC78_result(void *, int *) __asm__("func_0012BC78");
 /* Transfer the MPEG input through the IPU/SPR DMA channel, splitting large blocks. */
 extern void *func_00118AC0(int, void *, int, void *);
-extern void func_00119460(int);
+extern void enable_dmac_atomic(int);
 extern void func_0012A558(void *, unsigned int, int);
 extern void func_0012A718();
 
@@ -255,13 +255,13 @@ void func_0012A7E8(void *arg0, int *arg1) {
     if ((unsigned int)loc[0] > 0xFFFF) {
         h = func_00118AC0(4, (void *)func_0012A718, 0, &loc[0]);
         *(volatile unsigned int *)0x1000E010 = 0x10;
-        func_00119460(4);
-        r = func_0011D960();
+        enable_dmac_atomic(4);
+        r = disable_interrupts();
         *(volatile unsigned int *)0x1000B410 = loc[1];
         *(volatile unsigned int *)0x1000B420 = 0xFFFF;
         *(volatile unsigned int *)0x1000B400 = 0x101;
         if (r != 0) {
-            func_0011D9A8();
+            enable_interrupts();
         }
         loc[1] = (loc[1] + 0xFFFF0) & mask;
         loc[0] = loc[0] - 0xFFFF;
@@ -270,15 +270,15 @@ void func_0012A7E8(void *arg0, int *arg1) {
         } else {
             func_0012A558(arg0, *(int *)(p + 0xD8), n);
         }
-        func_001193F8(4);
-        func_00118AD0(4, (int)h);
+        disable_dmac_atomic(4);
+        remove_dmac_handler(4, (int)h);
     } else {
-        r = func_0011D960();
+        r = disable_interrupts();
         *(volatile unsigned int *)0x1000B410 = arg1[0] & mask;
         *(volatile unsigned int *)0x1000B420 = loc[0];
         *(volatile unsigned int *)0x1000B400 = 0x101;
         if (r != 0) {
-            func_0011D9A8();
+            enable_interrupts();
         }
         loc[0] = 0;
         if (small) {

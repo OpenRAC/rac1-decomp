@@ -56,8 +56,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern void CreatePointLight(int);
@@ -117,7 +117,7 @@ extern int mc_gamedata[];
 extern int mc_leveldata[];
 extern int memcard_GetDataSize(int *p);
 extern int memcard_PrepData(void *dst, int i, int *table);
-extern int func_001236F0(void);
+extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
 extern int D_0013D844 NOT_SDA;
@@ -146,7 +146,7 @@ extern int g_hero_moby NOT_SDA;
 extern float shadow_light_dir[] NOT_SDA;
 extern float FastCos(float);
 extern float FastSin(float);
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern char normal_lut[];
 extern int render_packet_end;
 extern short vu1_chain_safe_end;
@@ -164,28 +164,28 @@ extern float round_float_to_decimal_places(int, float);
 extern unsigned char gold_bolts_collected[];
 extern unsigned char gold_weapon_purchased[];
 extern unsigned char gSkillPoints[];
-extern void func_0012F068(void *);
+extern void snd_StreamSafeCdCallback(void *);
 extern void finish_audio_stream_read(int);
 extern short cd_read_state[];
-extern void func_0012EDE0(void *);
-extern void func_0012EFE8(void);
+extern void snd_ContinueVAGStream(void *);
+extern void snd_StreamSafeCdBreak(void);
 extern char load_file_start_failed_string[];
-extern int func_0012EE98(int, int, int, void *);
+extern int snd_StreamSafeCdRead(int, int, int, void *);
 extern int start_audio_stream_read_v(void) __asm__("func_00217628");
-extern void func_00122598(int);
+extern void sce_gs_sync_v(int);
 extern void music_Update(void);
-extern void func_0012EC40(void);
-extern void func_0012DDC0(void);
-extern void func_0012EC30(void);
-extern int func_0012F030(void);
+extern void snd_reset_state_and_flush_commands(void);
+extern void snd_FlushSoundCommands(void);
+extern void snd_reenable_command_flush(void);
+extern int snd_StreamSafeCdGetError(void);
 extern void music_start_track_by_id(short, short, short);
 extern void music_PreseekTrack(short, short, short);
 extern short D_001517F0 NOT_SDA;
 extern char g_controller_state[];
 extern int pad_socket_param NOT_SDA;
-extern void func_00124650(void);
-extern void func_00124B88(int);
-extern int func_00124BC8(void *, void *);
+extern void sce_dbc_init(void);
+extern void sce_pad2_init(int);
+extern int sce_pad2_create_socket(void *, void *);
 extern void poll_pad_device_state(void *);
 extern int pause_action_list_mode;
 extern char pause_action_list_pal[];
@@ -260,21 +260,21 @@ extern void transform_vector(void *, void *, void *);
 extern float vec_length_xy(void *);
 extern float fast_arc_tan_a(float, float) __asm__("func_001FA058");
 extern void truncate_float_to_s32(float);
-extern void func_00120F30(int);
-extern int func_0012E060(void *, int);
-extern void func_0012EE70(int);
-extern void func_0012EF48(int);
-extern void func_0012E2E8(void);
+extern void sce_cd_sync_s(int);
+extern int snd_BankLoadByLoc(void *, int);
+extern void snd_StreamSafeCheckCDIdle(int);
+extern void snd_StreamSafeCdSync(int);
+extern void snd_ResolveBankXREFS(void);
 
-extern void func_0011AE20(int arg0);
+extern void sceSifInitRpc(int arg0);
 
 void initialize_sif_rpc(void) {
-    func_0011AE20(0);
+    sceSifInitRpc(0);
 }
 
-extern int func_0011B2F8(void *client, int id, int mode);
-extern int func_0011B6B8(void *client);
-extern int func_0011B4C8(void *, int, int, void *, int, void *, int, void *, void *); /* sceSifCallRpc */
+extern int sceSifBindRpc(void *client, int id, int mode);
+extern int sce_sif_check_stat_rpc(void *client);
+extern int sif_call_rpc(void *, int, int, void *, int, void *, int, void *, void *); /* sceSifCallRpc */
 
 /*
  * Authentic structs from IOPSTASH.IRX STABS debug symbols:
@@ -299,11 +299,11 @@ void init_stash(void) {
     int i;
 
     for (;;) {
-        if (func_0011B2F8(stash_state_alias.cd, 0x11, 1) < 0) {
+        if (sceSifBindRpc(stash_state_alias.cd, 0x11, 1) < 0) {
             for (;;) {
             }
         }
-        while (func_0011B6B8(stash_state_alias.cd) != 0) {
+        while (sce_sif_check_stat_rpc(stash_state_alias.cd) != 0) {
         }
         s = &stash_state_alias;
         if (*(int *)((char *)s->cd + 0x24) != 0) {
@@ -313,7 +313,7 @@ void init_stash(void) {
         while (i--) {
         }
     }
-    func_0011B4C8(stash_state_alias.cd, 2, 0, 0, 0, reply, 0x10, 0, 0);
+    sif_call_rpc(stash_state_alias.cd, 2, 0, 0, 0, reply, 0x10, 0, 0);
     stash_state_alias.base = reply[0];
     stash_state_alias.size = reply[1];
     stash_state_alias.free = reply[0];
@@ -331,7 +331,7 @@ extern StashBlock stash_entries[];
    RPC), the SIF RPC client at D_001DD538, and a bump allocator over the
    buffer that hands out up to 0x40 slots in D_001DD568. */
 extern StashInfo stash_state;
-extern int func_00118E20(void *, int);
+extern int sce_sif_set_dma(void *, int);
 
 /* Stash_SendData: DMA arg1 quadwords from arg0 to the stash's next free
    address (func_00118E20 takes a {src, dst, size, mode} record), reserve
@@ -352,7 +352,7 @@ int Stash_SendData(int arg0, int arg1, int arg2, int arg3) {
     dma[1] = h->free;
     dma[2] = arg1 * 16;
     dma[3] = 0;
-    func_00118E20(dma, IOP_STASH_FETCH);
+    sce_sif_set_dma(dma, IOP_STASH_FETCH);
     n = h->block++;
     stash_entries[n].ram = h->free;
     stash_entries[n].qwc = arg2;
@@ -362,7 +362,7 @@ int Stash_SendData(int arg0, int arg1, int arg2, int arg3) {
 }
 
 extern int stash_get_reserved_qwords(unsigned int);
-extern int func_0011B4C8(void *, int, int, void *, int, void *, int, void *, void *); /* sceSifCallRpc */
+extern int sif_call_rpc(void *, int, int, void *, int, void *, int, void *, void *); /* sceSifCallRpc */
 extern char stash_rpc_client_address[];
 
 /* stash_receive_data(dest, slot, offset, size, mode): size -1 means the
@@ -391,7 +391,7 @@ int stash_receive_data(void *dest, unsigned int slot, int offset, int size, int 
     src = stash_entries[slot].ram + offset * 16;
     while (size != 0) {
         chunk = (size > 0xFFFF) ? 0xFFFF : size;
-        func_0011B4C8(stash_rpc_client_address, IOP_STASH_FETCH, mode, &src, 0x10, dest, chunk * 16, 0, 0);
+        sif_call_rpc(stash_rpc_client_address, IOP_STASH_FETCH, mode, &src, 0x10, dest, chunk * 16, 0, 0);
         size -= chunk;
         dest = (char *)dest + chunk * 16;
         src += chunk * 16;

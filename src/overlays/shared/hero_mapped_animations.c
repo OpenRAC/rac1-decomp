@@ -318,7 +318,7 @@ extern char hero_anim_slot_positions[];
 extern short hero_anim_blend_presets;
 extern int SlotTable_Insert(void *);
 extern void func_L00_00252D20(void *, int);
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern void update_moby_animation_state(void *);
 extern int truncate_float_to_s32(float);
 extern void clear_hero_queued_animation(void);
@@ -349,7 +349,7 @@ void set_hero_animation(int a0, int a1, float t) {
     slot = SlotTable_Insert(obj);
     if (slot >= 0) {
         func_L00_00252D20(obj, slot | 0x300);
-        func_00118D80(0);
+        flush_cache(0);
         e = hero_anim_slot_positions + slot * 16;
         qcopy(e, obj);
         if (*(unsigned char *)(obj + 0x52) != 0xFF) {

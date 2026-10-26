@@ -1210,22 +1210,22 @@ void draw_trail(void *p0, void *p1, void *vel, float a, float b) {
 extern int banner_display_ticks MACRO_ADDR;
 extern char banner_text_buffer[];
 extern int msg_string(int);
-extern void func_001166FC(void *, int);
+extern void libc_strcpy(void *, int);
 
 /* Shows message arg0 in the on-screen text box for arg1 ticks. */
 void ShowBanner(int arg0, int arg1) {
     if (arg1 == -1) {
         arg1 = scale_ticks(0xB4);
     }
-    func_001166FC(banner_text_buffer, msg_string(arg0));
+    libc_strcpy(banner_text_buffer, msg_string(arg0));
     banner_display_ticks = arg1;
 }
 extern char banner_text_buffer[] NOT_SDA;
-extern void func_00116248(void *, int, int);
+extern void sprintf(void *, int, int);
 /* Like func_L00_00264DB8, but draws message a with parameter b. */
 void queue_formatted_dialogue_message(int a, int b, int c) {
     if (c == -1) c = scale_ticks(0xB4);
-    func_00116248(banner_text_buffer, msg_string(a), b);
+    sprintf(banner_text_buffer, msg_string(a), b);
     banner_display_ticks = c;
 }
 extern float veldin1_zero_vec[] MACRO_ADDR;

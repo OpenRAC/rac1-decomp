@@ -645,9 +645,9 @@ extern s32 tfrag_texture_size_table_r[] __asm__("D_001E0C00");
 extern s32 object_render_texture_addrs_r[] __asm__("D_001E2900");
 extern void calculate_dma_transfer_address_r(void) __asm__("func_002348B8");
 extern void FastMemSet_r(void *, s32, s32) __asm__("func_001F99B0");
-extern void func_00118D80_EABE8(s32) __asm__("func_00118D80");
+extern void flush_cache_r(s32) __asm__("func_00118D80");
 extern void queue_dma_transfer_r(s32) __asm__("func_001EB300");
-extern void func_00120858_EABE8(s32, s32) __asm__("func_00120858");
+extern void wait_for_graphics_pipeline_idle_r(s32, s32) __asm__("func_00120858");
 extern s32 initialize_level_render_state_r(u8 *) __asm__("func_001E9EC8");
 extern void InitViewContext_r(void) __asm__("func_001F3008");
 extern void UpdateViewContext_r(void) __asm__("func_001F3140");
@@ -667,8 +667,8 @@ extern void start_audio_stream_read_r(u8 *, s32, s32) __asm__("func_00217628");
 extern unsigned int Load_r(s32, s32, s32) __asm__("func_002176C8");
 extern void update_audio_stream_until_idle_r(s32) __asm__("func_00217748");
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
-extern s32 func_00122630_EABE8(void *, s16, s16, s16, s16, s16, s16, s16) __asm__("func_00122630");
-extern s32 func_00122958_EABE8(void *, u8 *) __asm__("func_00122958");
+extern s32 sceGsSetDefLoadImage_r(void *, s16, s16, s16, s16, s16, s16, s16) __asm__("func_00122630");
+extern s32 sceGsExecLoadImage_r(void *, u8 *) __asm__("func_00122958");
 
 /* Loads the space-transition wad to 0x1400000 and unpacks it at the level arena: textures and
    their tables, the three kinds of moby classes, sound and help text tables, the loading image;
@@ -717,9 +717,9 @@ void transition_load_wad(void)
   VU1_initChain_r();
   start_audio_stream_read_r((u8 *)0x1400000, disc_table_r.unk14E8.sector, disc_table_r.unk14E8.size);
   update_audio_stream_until_idle_r(1);
-  func_00118D80_EABE8(0);
+  flush_cache_r(0);
   size = fast_decompress_r((u8 *)0x1400000, level_resource_buffers_r.hdr);
-  func_00118D80_EABE8(0);
+  flush_cache_r(0);
   hdr = (WadHeader_EABE8 *) level_resource_buffers_r.hdr;
   upload_texture_images_r(((u8 *) hdr) + hdr->x0, hdr->x8, ((u8 *) hdr) + hdr->xC);
   t = ((s64) ((g_gs_texture_allocation_base_r + hdr->x70) >> 8)) | 0x1D308000;
@@ -803,10 +803,10 @@ void transition_load_wad(void)
   new_var3 = data + hdr->x64;
   new_var4 = hdr->x54;
   ParseParticleTexs_r(((u8 *) hdr) + (new_var = hdr->x6C), new_var3, ((u8 *) hdr) + new_var4, hdr->x50);
-  func_00122630_EABE8(li, (g_gs_texture_allocation_cursor_r << 8) >> 16, 4, 0, 0, 0, 0x100, 0x80);
-  func_00118D80_EABE8(0);
-  func_00122958_EABE8(li, data + hdr->x84);
-  func_00120858_EABE8(0, 0);
+  sceGsSetDefLoadImage_r(li, (g_gs_texture_allocation_cursor_r << 8) >> 16, 4, 0, 0, 0, 0x100, 0x80);
+  flush_cache_r(0);
+  sceGsExecLoadImage_r(li, data + hdr->x84);
+  wait_for_graphics_pipeline_idle_r(0, 0);
   level_resource_buffers_r.x18 = ((s32) level_resource_buffers_r.hdr) + size;
   v = g_gs_texture_allocation_cursor_r;
   intro_overlay_tex0_r = ((v >> 8) | 0x20010000) | (((s64) 0xB800) << 19);
@@ -907,10 +907,10 @@ unsigned char Transition_UpdateMovieCamera(void) {
     UpdateViewContext();
     pos = camera_position;
     qcopy(pos, key);
-    func_00125358(m);
-    func_001254A0(m, m, *(float *)(key + 0x10));
-    func_00125548(m, m, ang[1]);
-    func_001253F8(m, m, ang[2]);
+    sceVu0UnitMatrix(m);
+    sceVu0RotMatrixX(m, m, *(float *)(key + 0x10));
+    sceVu0RotMatrixY(m, m, ang[1]);
+    sceVu0RotMatrixZ(m, m, ang[2]);
     cam = pos - 0x140;
     *(float *)(cam + 0x350) = -m[8];
     *(float *)(cam + 0x360) = -m[0];
@@ -1089,7 +1089,7 @@ extern u8 tfrag_dma_block[];
 extern u8 tie_light_data[];
 extern s32 append_dma_tag();
 extern s32 FastMemSet();
-extern s32 func_00118D80();
+extern s32 flush_cache();
 extern s32 Transition_DrawSky_r() __asm__("func_001E9E70");
 extern s32 Transition_UpdateMovieCamera_r2() __asm__("func_001EB338");
 extern s32 BuildViewMatrices();
@@ -1163,7 +1163,7 @@ void Transition_DefaultDraw(s32 *arg0)
     if (transition_draw_particles[0] != 0) {
         VU1_addGSregister_r(8, 5);
         vu1_gs_regs_alt();
-        func_00118D80(0);
+        flush_cache(0);
         PartProc();
         font_state = 8;
     }
@@ -1189,7 +1189,7 @@ void Transition_DefaultDraw(s32 *arg0)
         emit_rgba_draw_packet(0, 0, 0, truncate_float_to_s32(gFade * 128.0f));
     }
     VU0_loadMicroProgram(frame_vu0_micro_program);
-    func_00118D80(0);
+    flush_cache(0);
     if (g_game_mode == 4) {
         draw_freeze_message_box();
     }
@@ -1295,7 +1295,7 @@ extern s32 sync_v_BB48(s32) __asm__("func_00122598");
 extern s32 scale_frames_BB48(s32) __asm__("func_001F98C0");
 extern s32 snd_reset_BB48(void) __asm__("func_0012EC40");
 extern s32 snd_flush_BB48(void) __asm__("func_0012DDC0");
-extern void func_0012EC30_BB48(void) __asm__("func_0012EC30");
+extern void snd_reenable_command_flush_r(void) __asm__("func_0012EC30");
 extern void vu1_send_chain_BB48(void) __asm__("func_002349B8");
 extern void swap_chain_BB48(void) __asm__("func_00234948");
 extern void put_draw_small_BB48(void) __asm__("func_001FB598");
@@ -1374,7 +1374,7 @@ void transition_do_transition(void) {
     snd_reset_BB48();
     while (snd_flush_BB48() != 0) {
     }
-    func_0012EC30_BB48();
+    snd_reenable_command_flush_r();
     level = 1;
     wait = 0;
     while (space_load_pending_BB48 == 0) {

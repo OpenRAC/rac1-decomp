@@ -6,7 +6,7 @@ int DrawQuitGameMenu(char *arg0) {
     int y1, y2, y3;
     int a, b, x;
 
-    func_001153FC(box, 0, 0x18);
+    libc_memset(box, 0, 0x18);
     cx = w / 2;
     y1 = h - 0x40;
     y2 = h - 0x28;

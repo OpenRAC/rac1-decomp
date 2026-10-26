@@ -291,7 +291,7 @@ int advance_path_node_index(char *p)
     *(int *)p = next;
     return next;
 }
-extern void *func_001153FC_c(void *, int, unsigned int) __asm__("func_001153FC");
+extern void *libc_memset_c(void *, int, unsigned int) __asm__("func_001153FC");
 extern void *get_path_node(void *, int);
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
@@ -308,7 +308,7 @@ void compute_path_node_tangent(void *out, int *l, int idx, float a, float b) {
     float v3[4];
     float d1, d2, m, len;
     float wa, wb;
-    func_001153FC_c(p, 0, 12);
+    libc_memset_c(p, 0, 12);
     p[0] = get_path_node(l, *l + idx - 1);
     p[1] = get_path_node(l, *l + idx);
     p[2] = get_path_node(l, *l + idx + 1);

@@ -46,7 +46,7 @@ extern DrawTextRec font_text_slots[];
 extern short font_text_cursor;
 extern short font_text_slot_index;
 extern char font_text_format[];
-extern int func_00116248();
+extern int sprintf();
 
 /* Queues one text item: D_0018AC00[n] = {x, y, colour, pool position},
    then sprintf(pool, "%s", str) (D_0015F108 is "%s") advances the
@@ -61,7 +61,7 @@ void print_debug_text(int x, int y, int color, char *str) {
     font_text_slots[n].color = color;
     font_text_slots[n].str = *(char **)&font_text_cursor;
     *(int *)&font_text_slot_index = n + 1;
-    *(char **)&font_text_cursor += func_00116248(*(char **)&font_text_cursor, font_text_format, str) + 1;
+    *(char **)&font_text_cursor += sprintf(*(char **)&font_text_cursor, font_text_format, str) + 1;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001F0FF0);
@@ -194,12 +194,12 @@ extern float FastSubRots(float, float);
 extern float IntToFloat(int);
 extern void UpdateViewContext(void);
 extern void UpdateFog(void);
-extern int func_00116810(char *);
-extern int func_0011BF80(char *, int);
-extern int func_0011C388(int, int, int);
-extern int func_0011C820(int, void *, int);
-extern int func_0011C5C0(int, void *, int);
-extern int func_0011C208(int);
+extern int libc_strlen(char *);
+extern int sceOpen(char *, int);
+extern int sceLseek(int, int, int);
+extern int sceWrite(int, void *, int);
+extern int sceRead(int, void *, int);
+extern int sceClose(int);
 
 /* Debug menu: pages of toggles, counters, fog and occlusion sample tools. */
 void update_render_debug_menu(void) {
@@ -614,34 +614,34 @@ void update_render_debug_menu(void) {
                 float *samples;
                 int fd, size;
 
-                func_00116248(path, dev, fmt, g_current_level_index, camera_sample_text_name, camera_sample_path_suffix);
-                func_00116248(line, camera_sample_line_format, func_00120778(gCamera.pos[0]),
+                sprintf(path, dev, fmt, g_current_level_index, camera_sample_text_name, camera_sample_path_suffix);
+                sprintf(line, camera_sample_line_format, func_00120778(gCamera.pos[0]),
                               func_00120778(gCamera.pos[1]), func_00120778(gCamera.pos[2]));
-                fd = func_0011BF80(path, 0x303);
+                fd = sceOpen(path, 0x303);
                 if (fd >= 0) {
-                    func_0011C388(fd, 0, 2);
-                    func_0011C820(fd, line, func_00116810(line));
-                    func_0011C208(fd);
+                    sceLseek(fd, 0, 2);
+                    sceWrite(fd, line, libc_strlen(line));
+                    sceClose(fd);
                     occl_cam_state.bF9 = 0x79;
                 }
                 samples = camera_sample_points;
-                func_00116248(path, dev, fmt, g_current_level_index, camera_sample_bin_name, camera_sample_path_suffix);
-                fd = func_0011BF80(path, 0x303);
+                sprintf(path, dev, fmt, g_current_level_index, camera_sample_bin_name, camera_sample_path_suffix);
+                fd = sceOpen(path, 0x303);
                 if (fd >= 0) {
-                    func_0011C388(fd, 0, 2);
-                    func_0011C820(fd, &gCamera.pos[0], 4);
-                    func_0011C820(fd, &gCamera.pos[1], 4);
-                    func_0011C820(fd, &gCamera.pos[2], 4);
-                    func_0011C388(fd, 0, 0);
-                    size = func_0011C388(fd, 0, 2);
+                    sceLseek(fd, 0, 2);
+                    sceWrite(fd, &gCamera.pos[0], 4);
+                    sceWrite(fd, &gCamera.pos[1], 4);
+                    sceWrite(fd, &gCamera.pos[2], 4);
+                    sceLseek(fd, 0, 0);
+                    size = sceLseek(fd, 0, 2);
                     if (size <= 0x100000) {
-                        func_0011C388(fd, 0, 0);
-                        func_0011C5C0(fd, samples, size);
+                        sceLseek(fd, 0, 0);
+                        sceRead(fd, samples, size);
                         camera_sample_point_count = size / 12;
                     } else {
                         camera_sample_point_count = 0;
                     }
-                    func_0011C208(fd);
+                    sceClose(fd);
                 }
             }
         }
@@ -651,14 +651,14 @@ void update_render_debug_menu(void) {
             char line[64];
             int fd;
 
-            func_00116248(path, camera_sample_path_format, camera_sample_dir, g_current_level_index, camera_sample_text_name, camera_sample_path_suffix);
-            func_00116248(line, camera_sample_alt_line_format, func_00120778(gCamera.pos[0]),
+            sprintf(path, camera_sample_path_format, camera_sample_dir, g_current_level_index, camera_sample_text_name, camera_sample_path_suffix);
+            sprintf(line, camera_sample_alt_line_format, func_00120778(gCamera.pos[0]),
                           func_00120778(gCamera.pos[1]), func_00120778(gCamera.pos[2]));
-            fd = func_0011BF80(path, 0x303);
+            fd = sceOpen(path, 0x303);
             if (fd >= 0) {
-                func_0011C388(fd, 0, 2);
-                func_0011C820(fd, line, func_00116810(line));
-                func_0011C208(fd);
+                sceLseek(fd, 0, 2);
+                sceWrite(fd, line, libc_strlen(line));
+                sceClose(fd);
                 occl_cam_state.bF8 = 0x79;
             }
         }
@@ -722,10 +722,10 @@ extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern int *g_render_packet_cursor MACRO_ADDR;
 
 extern void DMAC_VIF1_Disable(void);
-extern int func_00123308(int);
+extern int sceDmaReset(int);
 extern void InitDma(void);
-extern void func_00121B78(int, int, int, int);
-extern void func_001207B8(void);
+extern void sceGsResetGraph(int, int, int, int);
+extern void reset_vif1_gif(void);
 extern void VU1_initChain(void);
 extern void SetPalMode(void);
 extern void DMAC_VIF1_Enable(void);
@@ -745,11 +745,11 @@ void reset_graphics(void) {
     space_load_in_progress_m = 1;
     vif_chain_flags_v = 0;
     DMAC_VIF1_Disable();
-    func_00123308(1);
+    sceDmaReset(1);
     InitDma();
     flag = pal_mode;
-    func_00121B78(0, 1, flag ? 3 : 2, 0);
-    func_001207B8();
+    sceGsResetGraph(0, 1, flag ? 3 : 2, 0);
+    reset_vif1_gif();
     VU1_initChain();
     pal = g_gs_texture_allocation_start;
     g_render_packet_cursor = 0;
@@ -788,10 +788,10 @@ void BuildViewMatrices(void) {
         qcopy(m[1], camera_rows + 0x10);
         qcopy(m[2], camera_rows + 0x20);
     } else {
-        func_00125358(m[0]);
-        func_001254A0(m[0], m[0], gCamera_g.f[0x150 / 4]);
-        func_00125548(m[0], m[0], gCamera_g.f[0x154 / 4]);
-        func_001253F8(m[0], m[0], gCamera_g.f[0x158 / 4]);
+        sceVu0UnitMatrix(m[0]);
+        sceVu0RotMatrixX(m[0], m[0], gCamera_g.f[0x150 / 4]);
+        sceVu0RotMatrixY(m[0], m[0], gCamera_g.f[0x154 / 4]);
+        sceVu0RotMatrixZ(m[0], m[0], gCamera_g.f[0x158 / 4]);
     }
     g = &gCamera_g;
     x = D_0018CEC0;
@@ -1437,14 +1437,14 @@ extern int display_buffer_address MACRO_ADDR;
 extern int draw_buffer_address MACRO_ADDR;
 extern int depth_buffer_address MACRO_ADDR;
 extern int g_gs_texture_allocation_base MACRO_ADDR;
-extern void func_00118D80(int);
-extern int func_00120858(int, int);
+extern void flush_cache(int);
+extern int wait_for_graphics_pipeline_idle(int, int);
 extern void SetupFS_AA_buffer(int, int, int, int, int, int);
 extern void PutDrawBufferLarge(void);
 extern void append_gif_transfer_packet(void);
 extern void PutDispBuffer(void);
-extern int func_00122630(GsLoadImage *, s16, s16, s16, s16, s16, s16, s16);
-extern int func_00122958(GsLoadImage *, unsigned char *);
+extern int sceGsSetDefLoadImage(GsLoadImage *, s16, s16, s16, s16, s16, s16, s16);
+extern int sceGsExecLoadImage(GsLoadImage *, unsigned char *);
 
 /* Adapted from Lombyte's project (GPL-3.0): src/video/display/set_pal_mode.c, set_pal_mode. */
 void SetPalMode(void) {
@@ -1456,7 +1456,7 @@ void SetPalMode(void) {
     u64 scissor;
     s16 w;
 
-    func_00118D80(0);
+    flush_cache(0);
     if (pal_mode != 0) {
         draw_buffer_address = 0x100000;
         depth_buffer_address = 0x1E0000;
@@ -1478,8 +1478,8 @@ void SetPalMode(void) {
     screen_extent_3890.top = (0x800 - screen_extent_3890.half_height) << 4;
     screen_extent_3890.right = (screen_extent_3890.half_width + 0x800) << 4;
     screen_extent_3890.bottom = (screen_extent_3890.half_height + 0x800) << 4;
-    func_00118D80(0);
-    func_00120858(0, 0);
+    flush_cache(0);
+    wait_for_graphics_pipeline_idle(0, 0);
     frame = (draw_buffer_address >> 13) | ((u64)(screen_extent_3890.width >> 6) << 16);
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;
     draw_env_3890.frame1 = frame;
@@ -1495,19 +1495,19 @@ void SetPalMode(void) {
     draw_env_3890.scissor1 = scissor;
     draw_env_3890.scissor2 = scissor;
     masked_depth_reg_3890 = zbuf | ((u64)0x8000 << 17);
-    func_00118D80(0);
+    flush_cache(0);
     PutDrawBufferLarge();
     append_gif_transfer_packet();
-    func_00118D80(0);
-    func_00120858(0, 0);
+    flush_cache(0);
+    wait_for_graphics_pipeline_idle(0, 0);
     PutDispBuffer();
     FastMemSet(clear_buf_3890, 0, 0x1000);
     n = (fs_aa_buffer_3890.storage_width * fs_aa_buffer_3890.storage_height) >> 10;
     for (i = 0; i < n; i++) {
-        func_00122630(&image, i << 4, 1, 0, 0, 0, 32, 32);
-        func_00118D80(0);
-        func_00122958(&image, clear_buf_3890);
-        func_00120858(0, 0);
+        sceGsSetDefLoadImage(&image, i << 4, 1, 0, 0, 0, 32, 32);
+        flush_cache(0);
+        sceGsExecLoadImage(&image, clear_buf_3890);
+        wait_for_graphics_pipeline_idle(0, 0);
     }
 }
 
@@ -1655,7 +1655,7 @@ extern void VU1_addDataRef(void *, int);
 extern void dispatch_callback_list_1(void);
 extern void draw_lens_flare(void);
 extern void draw_light_quads(void);
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern void PartProc(void);
 extern void dispatch_callback_list_4(void);
 extern void append_billboard_batch(void);
@@ -1770,7 +1770,7 @@ void DrawDebugProfiler(void) {
         if (draw_config[0x38 / 4] != 0) {
             VU1_addGSregister(8, 5);
             vu1_gs_regs_alt();
-            func_00118D80(0);
+            flush_cache(0);
             PartProc();
             font_state = 8;
         }
@@ -1834,7 +1834,7 @@ void DrawDebugProfiler(void) {
         ProfileMarker_Begin_a(profile_mark_after_fades, 0xA);
     }
     VU0_loadMicroProgram(frame_vu0_micro_program);
-    func_00118D80(0);
+    flush_cache(0);
     t = IntToFloat(*(volatile int *)0x10000800);
     draw_frame_time_ratio = t / (pal_mode != 0 ? 11520.0f : 9600.0f);
     VU1_syncChain(2);
@@ -2235,7 +2235,7 @@ void draw_light_quads(void) {
     }
 }
 
-extern int func_00122598_i(int) __asm__("func_00122598");
+extern int sce_gs_sync_v_i(int) __asm__("func_00122598");
 extern void VU1_swapChain(void);
 extern void VU1_sendChain(void);
 extern void PutDrawBufferLarge(void);
@@ -2256,7 +2256,7 @@ void FadeToBlack(int frames) {
     int q;
 
     VU1_syncChain(1);
-    func_00122598_i(0);
+    sce_gs_sync_v_i(0);
     game_frame_counter = game_frame_counter + 1;
     VU1_initChain();
     n = frames - 1;
@@ -2280,7 +2280,7 @@ void FadeToBlack(int frames) {
             g_render_packet_cursor += 4;
 
             VU1_syncChain(1);
-            func_00122598_i(0);
+            sce_gs_sync_v_i(0);
             game_frame_counter = game_frame_counter + 1;
             VU1_sendChain();
             VU1_swapChain();
@@ -2288,7 +2288,7 @@ void FadeToBlack(int frames) {
     }
 
     VU1_syncChain(1);
-    func_00122598_i(0);
+    sce_gs_sync_v_i(0);
     game_frame_counter = game_frame_counter + 1;
     VU1_initChain();
     PutDrawBufferLarge();

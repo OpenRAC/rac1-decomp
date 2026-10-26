@@ -466,12 +466,12 @@ typedef struct {
     int *a7;
 } CmdData;
 typedef struct { char pad[0xC]; int pad2; void *u10; } CmdPkt;
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
-extern void func_00118D80(int);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
+extern void flush_cache(int);
 extern void func_00118E40(void);
-extern int func_00118AB0(int, void *, int);
-extern void func_00119460(int);
+extern int add_dmac_handler(int, void *, int);
+extern void enable_dmac_atomic(int);
 extern void func_0011AC48(void);
 extern unsigned char D_00154E80[];
 extern unsigned char D_00154F00[];
@@ -482,9 +482,9 @@ extern CmdPkt sif_init_packet;
 void func_0011A780(void) {
     int i;
     unsigned t5, t6;
-    func_0011D960();
+    disable_interrupts();
     if (D_0012FD04 != 0) {
-        func_0011D9A8();
+        enable_interrupts();
         return;
     }
     D_0012FD04 = 1;
@@ -509,16 +509,16 @@ void func_0011A780(void) {
     sif_system_handlers[1].f = (void (*)(void *, void *))func_0011A728;
     sif_system_handlers[0].arg = &sif_cmd_data;
     sif_system_handlers[1].arg = &sif_cmd_data;
-    func_0011D9A8();
-    func_00118D80(0);
+    enable_interrupts();
+    flush_cache(0);
     if (*(volatile unsigned *)0x1000E010 & 0x20) {
         *(volatile unsigned *)0x1000E010 = 0x20;
     }
     if (!(*(volatile unsigned *)0x1000C000 & 0x100)) {
         func_00118E40();
     }
-    D_00154F54 = func_00118AB0(5, func_0011AC48, 0);
-    func_00119460(5);
+    D_00154F54 = add_dmac_handler(5, func_0011AC48, 0);
+    enable_dmac_atomic(5);
     sif_cmd_data.a2 = ((int (*)(unsigned))func_00118E70)(0x80000000);
     if (sif_cmd_data.a2 != 0) {
         sif_init_packet.u10 = D_00154E80;
@@ -535,19 +535,19 @@ void func_0011A780(void) {
     func_0011ABC8(0x80000002, (int)&sif_init_packet, 0x14, 0, 0, 0);
 }
 
-extern void func_001193F8(int);
-extern void func_00118AD0(int, int);
+extern void disable_dmac_atomic(int);
+extern void remove_dmac_handler(int, int);
 extern int D_00154F54;
 extern int D_0012FD04;
 
-extern int func_001193F8_i(int) __asm__("func_001193F8");
-extern int func_00118AD0_i(int, int) __asm__("func_00118AD0");
+extern int disable_dmac_atomic_i(int) __asm__("func_001193F8");
+extern int remove_dmac_handler_i(int, int) __asm__("func_00118AD0");
 
 /* func_001193F8 and func_00118AD0 both return int; their results decide
    which registers the globals' addresses get. */
 void func_0011AA00(void) {
-    func_001193F8_i(0x5);
-    func_00118AD0_i(0x5, D_00154F54);
+    disable_dmac_atomic_i(0x5);
+    remove_dmac_handler_i(0x5, D_00154F54);
     D_0012FD04 = 0;
 }
 
@@ -594,7 +594,7 @@ typedef struct {
 } SifDma;
 extern u32 D_00154F60[];
 extern void func_0011AD70(void *addr, s32 size);
-extern s32 func_00118E20();
+extern s32 sce_sif_set_dma();
 extern s32 func_00118E30();
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/rpc/sce_sif_send_cmd.c, _sceSifSendCmd. */
@@ -635,7 +635,7 @@ s32 func_0011AA90(u32 packet, s32 mode, SifCmd *cmd, s32 size, u32 src, u32 dst,
     if (mode & 1) {
         return func_00118E30(tags, num);
     }
-    return func_00118E20(tags, num);
+    return sce_sif_set_dma(tags, num);
 }
 
 /* sceSifSendCmd and isceSifSendCmd: forward to the common sender
@@ -688,8 +688,8 @@ extern char D_00155100[];
 extern char D_00155900[];
 extern char D_00156100[];
 extern SifRpcData D_00156900_d __asm__("D_00156900");
-extern int func_0011D960(void);           /* DI */
-extern void func_0011D9A8(void);          /* EI */
+extern int disable_interrupts(void);           /* DI */
+extern void enable_interrupts(void);          /* EI */
 extern void func_0011A780(void);          /* sceSifInitCmd */
 extern int func_00118E70(int);            /* sceSifGetReg */
 extern int func_00118E60(int, int);       /* sceSifSetReg */
@@ -701,18 +701,18 @@ extern void func_0011B198(void *, void *);
 /* sceSifInitRpc: once, set up the RPC tables and command handlers, then
    tell the IOP (SIF register 0x80000002) and wait for it. Adapted from
    Lombyte's project (GPL-3.0) for PAL. */
-void func_0011AE20(int mode) {
+void sceSifInitRpc(int mode) {
     int *packet;
 
-    func_0011D960();
+    disable_interrupts();
     if (RpcCommandState) {
-        func_0011D9A8();
+        enable_interrupts();
         return;
     }
     RpcCommandState = 1;
-    func_0011D9A8();
+    enable_interrupts();
     func_0011A780();
-    func_0011D960();
+    disable_interrupts();
     D_00156900_d.pkt_table = (void *)((unsigned int)D_00155100 | 0x20000000);
     D_00156900_d.pkt_table_len = 32;
     D_00156900_d.unk0C = 0;
@@ -727,7 +727,7 @@ void func_0011AE20(int mode) {
     func_0011AA38(0x80000009, (int)func_0011B248, (int)&D_00156900_d);
     func_0011AA38(0x8000000A, (int)func_0011B438, (int)&D_00156900_d);
     func_0011AA38(0x8000000C, (int)func_0011B198, (int)&D_00156900_d);
-    func_0011D9A8();
+    enable_interrupts();
     if (func_00118E70(0x80000002)) {
         return;
     }
@@ -746,8 +746,8 @@ void func_0011AFC0(void) {
     RpcCommandState = 0;
 }
 
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
 
 /* Claim the first free 0x40-byte slot in the table {next_id, base,
    count} at arg0, with interrupts held off across the search. A claimed
@@ -768,7 +768,7 @@ extern void func_0011D9A8(void);
    `id = 1;` after the store -- survives: the compiler folds it away and
    the function comes out 4 bytes short. Giving the two arms their own
    assignments to `id` keeps both definitions alive. */
-void *func_0011AFE8(void *arg0) {
+void *get_available_rpc_packet(void *arg0) {
     char *a = (char *)arg0;
     int n;
     char *p;
@@ -776,7 +776,7 @@ void *func_0011AFE8(void *arg0) {
     int id;
     int v;
 
-    func_0011D960();
+    disable_interrupts();
     n = *(int *)(a + 0x8);
     i = 0;
     p = *(char **)(a + 0x4);
@@ -793,13 +793,13 @@ void *func_0011AFE8(void *arg0) {
             }
             *(char **)(p + 0x14) = p;
             *(int *)(p + 0x18) = id;
-            func_0011D9A8();
+            enable_interrupts();
             return p;
         }
         i++;
         p += 0x40;
     }
-    func_0011D9A8();
+    enable_interrupts();
     return 0;
 }
 
@@ -994,12 +994,12 @@ typedef struct {
 } BindPacket;
 
 extern char D_00156900[];
-extern int func_00118C70(void *);   /* CreateSema */
-extern void func_00118C80(int);     /* DeleteSema */
-extern int func_00118CB0(int);      /* WaitSema */
+extern int create_semaphore(void *);   /* CreateSema */
+extern void delete_semaphore(int);     /* DeleteSema */
+extern int wait_semaphore(int);      /* WaitSema */
 
 /* sceSifBindRpc. Adapted from Lombyte's project (GPL-3.0) for PAL. */
-int func_0011B2F8(void *client, int arg1, int arg2) {
+int sceSifBindRpc(void *client, int arg1, int arg2) {
     BindClient *arg0 = client;
     int sema_param[6];
     int temp_2_31;
@@ -1007,7 +1007,7 @@ int func_0011B2F8(void *client, int arg1, int arg2) {
 
     arg0->unk10 = 0;
     arg0->unk24 = 0;
-    temp_2_15 = (BindPacket *)func_0011AFE8(D_00156900);
+    temp_2_15 = (BindPacket *)get_available_rpc_packet(D_00156900);
     if (temp_2_15 == 0) {
         return -1;
     }
@@ -1021,7 +1021,7 @@ int func_0011B2F8(void *client, int arg1, int arg2) {
     }
     sema_param[1] = 1;
     sema_param[2] = 0;
-    temp_2_31 = func_00118C70(sema_param);
+    temp_2_31 = create_semaphore(sema_param);
     arg0->unk8 = temp_2_31;
     if (temp_2_31 >= 0) {
         goto block_4;
@@ -1033,11 +1033,11 @@ block_4:
         goto block_6;
     }
     func_0011B090(temp_2_15);
-    func_00118C80(arg0->unk8);
+    delete_semaphore(arg0->unk8);
     return -2;
 block_6:
-    func_00118CB0(arg0->unk8);
-    func_00118C80(arg0->unk8);
+    wait_semaphore(arg0->unk8);
+    delete_semaphore(arg0->unk8);
     return 0;
 block_7:
     arg0->unk8 = -1;
@@ -1124,10 +1124,10 @@ struct SifRpcPacket_1B4C8 {
     s32_1B4C8 server;
 };
 extern u8_1B4C8 D_00156900_1B4C8[] __asm__("D_00156900");
-extern s32_1B4C8 func_00118C70();
-extern s32_1B4C8 func_00118C80_1B4C8() __asm__("func_00118C80");
-extern s32_1B4C8 func_00118CB0();
-extern s32_1B4C8 func_0011AFE8_1B4C8() __asm__("func_0011AFE8");
+extern s32_1B4C8 create_semaphore();
+extern s32_1B4C8 delete_semaphore_r() __asm__("func_00118C80");
+extern s32_1B4C8 wait_semaphore();
+extern s32_1B4C8 get_available_rpc_packet_r() __asm__("func_0011AFE8");
 extern s32_1B4C8 func_0011B090_1B4C8() __asm__("func_0011B090");
 extern s32_1B4C8 func_0011ABC8();
 extern s32_1B4C8 func_0011AD70_1B4C8() __asm__("func_0011AD70");
@@ -1143,7 +1143,7 @@ s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_numbe
     s32_1B4C8 skip_cache_writeback;
     s32_1B4C8 request_id;
     s32_1B4C8 allocation_failure_result;
-    packet = (struct SifRpcPacket_1B4C8 *)func_0011AFE8_1B4C8(D_00156900_1B4C8);
+    packet = (struct SifRpcPacket_1B4C8 *)get_available_rpc_packet_r(D_00156900_1B4C8);
     allocation_failure_result = -1;
     if (packet == 0) {
         return allocation_failure_result;
@@ -1189,7 +1189,7 @@ s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_numbe
     } else {
         semaphore_parameters[1] = 1;
         semaphore_parameters[2] = 0;
-        semaphore_id = func_00118C70(semaphore_parameters);
+        semaphore_id = create_semaphore(semaphore_parameters);
         client->semaphore_id = semaphore_id;
         if (semaphore_id < 0) {
             func_0011B090_1B4C8(packet);
@@ -1197,12 +1197,12 @@ s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_numbe
         }
         packet->completion_mode = 1;
         if (func_0011ABC8(0x8000000A, packet, 0x40, send_buf, client->server_buffer, send_size) == 0) {
-            func_00118C80_1B4C8(client->semaphore_id);
+            delete_semaphore_r(client->semaphore_id);
             func_0011B090_1B4C8(packet);
             return -2;
         }
-        func_00118CB0(client->semaphore_id);
-        func_00118C80_1B4C8(client->semaphore_id);
+        wait_semaphore(client->semaphore_id);
+        delete_semaphore_r(client->semaphore_id);
         return 0;
     }
 }
@@ -1232,7 +1232,7 @@ s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_numbe
    the assembler, which fills them with nops as retail has them. The &&
    form returning 1 merges the exits; early returns give bnel. */
 /* One test for the three failure cases, then return 1. */
-int func_0011B6B8(void *arg0) {
+int sce_sif_check_stat_rpc(void *arg0) {
     char *p = (char *)arg0;
     char *q = *(char **)p;
 
@@ -1245,7 +1245,7 @@ int func_0011B6B8(void *arg0) {
 
 LINKER_REMNANT("asm/remnants/core_text", func_0011B6F8);
 
-extern int func_00118C70(void *);
+extern int create_semaphore(void *);
 extern int D_0012FDA0;
 extern int D_0012FDA4;
 
@@ -1266,8 +1266,8 @@ void func_0011B710(void) {
         buf[2] = 1;
         buf[1] = 1;
         buf[5] = 0;
-        D_0012FDA0 = func_00118C70(buf);
-        D_0012FDA4 = func_00118C70(buf);
+        D_0012FDA0 = create_semaphore(buf);
+        D_0012FDA4 = create_semaphore(buf);
     }
 }
 
@@ -1290,15 +1290,15 @@ void *func_0011B770(void) {
     char *p;
 
     func_0011B710();
-    func_00118CB0(D_0012FDA0);
+    wait_semaphore(D_0012FDA0);
     for (p = D_00157E80; p < D_00157E80 + 0x200; p += 0x10) {
         if (*(int *)(p + 0x4) == 0) {
             *(int *)(p + 0x4) = 0x10000000;
-            func_00118C90(D_0012FDA0);
+            signal_semaphore(D_0012FDA0);
             return p;
         }
     }
-    func_00118C90(D_0012FDA0);
+    signal_semaphore(D_0012FDA0);
     return 0;
 }
 
@@ -1309,13 +1309,13 @@ void *func_0011B770(void) {
 void *func_0011B7F8(unsigned int arg0) {
     void *ret;
     func_0011B710();
-    func_00118CB0(D_0012FDA0);
+    wait_semaphore(D_0012FDA0);
     if (arg0 >= 0x20) {
-        func_00118C90(D_0012FDA0);
+        signal_semaphore(D_0012FDA0);
         return 0;
     }
     ret = &D_00157E80[arg0 * 0x10];
-    func_00118C90(D_0012FDA0);
+    signal_semaphore(D_0012FDA0);
     return ret;
 }
 
@@ -1360,7 +1360,7 @@ extern volatile s32 D_0012FD10[];
 extern u32 D_0012FD90[];
 extern s32 D_0012FD98[];
 extern u8 D_00157600[];
-extern void *func_00115248(void *, const void *, u32);
+extern void *libc_memcpy(void *, const void *, u32);
 
 void func_0011B868(s32 *arg) {
     FsRcvHead h;
@@ -1393,7 +1393,7 @@ void func_0011B868(s32 *arg) {
     h.dest = src->dest;
     h.size = src->size;
     if (h.ret.v >= 0) {
-        func_00115248((void *)h.dest.v, pkt + 0x10, h.size.v);
+        libc_memcpy((void *)h.dest.v, pkt + 0x10, h.size.v);
     }
     switch (h.func.v) {
     case 2:
@@ -1430,7 +1430,7 @@ void func_0011B868(s32 *arg) {
             u.b.size.v = 0x400;
             n = 0x400;
         }
-        func_00115248((void *)u.b.dest.v, pkt + 0x1C, n);
+        libc_memcpy((void *)u.b.dest.v, pkt + 0x1C, n);
         break;
     }
     if (h.ret.v < 0) {
@@ -1449,7 +1449,7 @@ void func_0011B868(s32 *arg) {
 }
 
 extern int D_0012FD9C;
-extern int func_00118C70(void *);
+extern int create_semaphore(void *);
 
 void func_0011BBF0(void) {
     int buf[8];
@@ -1457,7 +1457,7 @@ void func_0011BBF0(void) {
         buf[5] = 0;
         buf[2] = 1;
         buf[1] = 1;
-        D_0012FD9C = func_00118C70(buf);
+        D_0012FD9C = create_semaphore(buf);
     }
 }
 
@@ -1466,14 +1466,14 @@ extern int D_0012FD9C NOT_SDA;
 
 int func_0011BC40(void) {
     func_0011BBF0();
-    func_00118CB0(D_0012FD9C);
+    wait_semaphore(D_0012FD9C);
     return 0;
 }
 
 /* A tail jump with the argument load in its delay slot (`lui / j /
    lw`), as 2.9-ee, which builds this SDK object, emits it. */
 void func_0011BC70(void) {
-    func_00118C90(D_0012FD9C);
+    signal_semaphore(D_0012FD9C);
 }
 
 ASM_FUNC("asm/handwritten/core_text", func_0011BC80);
@@ -1502,17 +1502,17 @@ s32 func_0011BCB0(void) {
     s32 *q;
 
     struct RpcCb *rq = &D_00158100;
-    func_0011AE20(0);
+    sceSifInitRpc(0);
     D_00158100.cb = 0;
     rq->data = 0;
-    r = func_0011D960();
+    r = disable_interrupts();
     func_0011AA38(0x80000011, (int)func_0011B868, (int)D_001580C0);
     func_0011AA38(0x80000013, (int)func_0011BC80, (int)rq);
     if (r != 0) {
-        func_0011D9A8();
+        enable_interrupts();
     }
     for (;;) {
-        r = func_0011B2F8(D_00158080, 0x80000001, 0);
+        r = sceSifBindRpc(D_00158080, 0x80000001, 0);
         if (r < 0) {
             return -1;
         }
@@ -1523,14 +1523,14 @@ s32 func_0011BCB0(void) {
         }
     }
     func_0011B710();
-    func_00118CB0(D_0012FDA0);
+    wait_semaphore(D_0012FDA0);
     for (p = D_00157E80; p < D_00157E80 + 0x200; p += 0x10) {
         *(s32 *)(p + 4) = 0;
     }
-    func_00118C90(D_0012FDA0);
+    signal_semaphore(D_0012FDA0);
     D_00156940[0] = D_00157600;
     D_00156940[1] = D_00157600 + 0x440;
-    r = func_0011B4C8(D_00158080, 0xFF, 0, D_00156940, 8, D_001575C0, 8, 0, 0);
+    r = sif_call_rpc(D_00158080, 0xFF, 0, D_00156940, 8, D_001575C0, 8, 0, 0);
     if (r < 0) {
         return (s32)0xFFFEFFFF;
     }
@@ -1559,19 +1559,19 @@ int func_0011BEB8(void) {
     char *slot = FsResetBuffer;
     int r = 0;
 
-    if (func_001151B4(slot, buf, 4) != 0 &&
-        func_001151B4(slot, D_0012FDA8, 4) != 0) {
-        r = func_001151B4(buf, D_0012FDA8, 4) != 0;
+    if (libc_memcmp(slot, buf, 4) != 0 &&
+        libc_memcmp(slot, D_0012FDA8, 4) != 0) {
+        r = libc_memcmp(buf, D_0012FDA8, 4) != 0;
     }
     return r;
 }
 
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FsResetState;
 
-int func_0011BF48(void) {
+int sce_fs_reset(void) {
     FsResetState = 0;
-    func_001153FC(FsResetBuffer, 0, 0x4);
+    libc_memset(FsResetBuffer, 0, 0x4);
     return 0;
 }
 
@@ -1605,19 +1605,19 @@ extern struct FsOpenRequest D_00156980_1BF80 __asm__("D_00156980");
 extern u8 D_001575C0_1BF80[] __asm__("D_001575C0");
 extern struct SifFileSlot D_00157E80_1BF80[] __asm__("D_00157E80");
 extern u8 D_00158080_1BF80[] __asm__("D_00158080");
-extern s32 func_00118C70_1BF80(struct SemaphoreParameters *) __asm__("func_00118C70");
-extern s32 func_00118C80_1BF80(s32) __asm__("func_00118C80");
+extern s32 create_semaphore_r(struct SemaphoreParameters *) __asm__("func_00118C70");
+extern s32 delete_semaphore_r2(s32) __asm__("func_00118C80");
 extern s32 func_0011BC70_1BF80(void) __asm__("func_0011BC70");
-extern s32 func_00118C90(s32);
-extern s32 func_00118CB0(s32);
+extern s32 signal_semaphore(s32);
+extern s32 wait_semaphore(s32);
 extern s32 func_0011BC40_1BF80(s32) __asm__("func_0011BC40");
 extern s32 func_0011BEB8(void);
 extern struct SifFileSlot *func_0011B770_1BF80(void) __asm__("func_0011B770");
 extern s32 func_0011BCB0(void);
-extern s32 func_0011B4C8(void *, s32, s32, void *, s32, void *, s32, void *, void *);
+extern s32 sif_call_rpc(void *, s32, s32, void *, s32, void *, s32, void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/library/sceopen.c, sceOpen. */
-s32 func_0011BF80(const u8 *path, s32 flags, ...)
+s32 sceOpen(const u8 *path, s32 flags, ...)
 {
     struct SemaphoreParameters semaphore_parameters;
     va_list_1BF80 arguments;
@@ -1663,35 +1663,35 @@ s32 func_0011BF80(const u8 *path, s32 flags, ...)
     request->slot = slot_index;
     semaphore_parameters.init_count = 0;
     semaphore_parameters.option = 0;
-    completion_semaphore = func_00118C70_1BF80(&semaphore_parameters);
+    completion_semaphore = create_semaphore_r(&semaphore_parameters);
     request->result = &result;
     request->completion_semaphore = completion_semaphore;
     request->result_size = 4;
-    if (func_0011B4C8(D_00158080_1BF80, 0, 0, &D_00156980_1BF80, 0x418, D_001575C0_1BF80, 4, 0, 0) < 0) {
-        func_00118C80_1BF80(completion_semaphore);
+    if (sif_call_rpc(D_00158080_1BF80, 0, 0, &D_00156980_1BF80, 0x418, D_001575C0_1BF80, 4, 0, 0) < 0) {
+        delete_semaphore_r2(completion_semaphore);
         func_0011BC70_1BF80();
         return -0xB;
     }
     return_value = *(u32 *)((u32) D_001575C0_1BF80 | 0x20000000);
     func_0011BC70_1BF80();
     if (return_value == 0) {
-        func_00118C80_1BF80(completion_semaphore);
+        delete_semaphore_r2(completion_semaphore);
         return -0xB;
     }
-    func_00118CB0(completion_semaphore);
-    func_00118C80_1BF80(completion_semaphore);
+    wait_semaphore(completion_semaphore);
+    delete_semaphore_r2(completion_semaphore);
     if (result < 0) {
-        func_00118CB0(D_0012FDA0_1BF80[0]);
+        wait_semaphore(D_0012FDA0_1BF80[0]);
         file_slot->flags = 0;
-        func_00118C90(D_0012FDA0_1BF80[0]);
+        signal_semaphore(D_0012FDA0_1BF80[0]);
         return result;
     }
     return_value = slot_index;
-    func_00118CB0(D_0012FDA0_1BF80[0]);
+    wait_semaphore(D_0012FDA0_1BF80[0]);
     slot_mutex = D_0012FDA0_1BF80[0];
     file_slot->fd = result;
     file_slot->flags = (s32) (file_slot->flags | flags);
-    func_00118C90(slot_mutex);
+    signal_semaphore(slot_mutex);
     return return_value;
 }
 
@@ -1720,12 +1720,12 @@ typedef struct {
 extern CloseState D_00156980;
 extern char D_001575C0[];
 extern char D_00158080[];
-extern int func_00118CB0(int);
-extern int func_0011B4C8();
+extern int wait_semaphore(int);
+extern int sif_call_rpc();
 extern int func_0011BC40_arg(int) __asm__("func_0011BC40");
 
 /* sceClose: close a SIF file handle, adapted from Lombyte's project (GPL-3.0) for PAL. */
-int func_0011C208(unsigned int fd) {
+int sceClose(unsigned int fd) {
     CloseSema sema;
     int result;
     int sid;
@@ -1748,14 +1748,14 @@ int func_0011C208(unsigned int fd) {
     state->slot = ((char *)iob - D_00157E80) >> 4;
     sema.initialCount = 0;
     sema.option = 0;
-    sid = func_00118C70(&sema);
+    sid = create_semaphore(&sema);
     state->sema = sid;
     state->result = (int)&result;
     state->size = 4;
-    rpcResult = func_0011B4C8(D_00158080, 1, 0, state, 0x14,
+    rpcResult = sif_call_rpc(D_00158080, 1, 0, state, 0x14,
                                 D_001575C0, 4, 0, 0);
     if (rpcResult < 0) {
-        func_00118C80(sid);
+        delete_semaphore(sid);
         func_0011BC70();
         return -11;
     }
@@ -1763,11 +1763,11 @@ int func_0011C208(unsigned int fd) {
     rpcResult = *(int *)((unsigned int)D_001575C0 | 0x20000000);
     func_0011BC70();
     if (rpcResult == 0) {
-        func_00118C80(sid);
+        delete_semaphore(sid);
         return -11;
     }
-    func_00118CB0(sid);
-    func_00118C80(sid);
+    wait_semaphore(sid);
+    delete_semaphore(sid);
     if (result < 0) {
         return result;
     }
@@ -1801,11 +1801,11 @@ extern struct SifClient D_00158080_1C388 __asm__("D_00158080");
 extern struct SifFileSlot *func_0011B7F8_1C388(s32 fd) __asm__("func_0011B7F8");
 extern s32 func_0011BC40_1C388(s32) __asm__("func_0011BC40");
 extern s32 func_0011BC70_1C388(void) __asm__("func_0011BC70");
-extern s32 func_00118C70_1C388(struct SemaphoreParameters2 *) __asm__("func_00118C70");
-extern s32 func_00118C80_1C388(s32) __asm__("func_00118C80");
+extern s32 create_semaphore_r2(struct SemaphoreParameters2 *) __asm__("func_00118C70");
+extern s32 delete_semaphore_r3(s32) __asm__("func_00118C80");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/library/sce_lseek.c, sceLseek. */
-s32 func_0011C388(s32 fd, s32 offset, s32 origin)
+s32 sceLseek(s32 fd, s32 offset, s32 origin)
 {
     struct FsSeekRequest *request;
     struct SifFileSlot *file_slot;
@@ -1835,12 +1835,12 @@ s32 func_0011C388(s32 fd, s32 offset, s32 origin)
     semaphore_parameters.max_count = 1;
     semaphore_parameters.init_count = 0;
     semaphore_parameters.option = 0;
-    completion_semaphore = func_00118C70_1C388(&semaphore_parameters);
+    completion_semaphore = create_semaphore_r2(&semaphore_parameters);
     request->result = &result;
     request->result_size = 4;
     D_00156980_1C388.completion_semaphore = completion_semaphore;
     if ((s16)flags & 0x8000) {
-        func_00118CB0(D_0012FDA4_1C388[0]);
+        wait_semaphore(D_0012FDA4_1C388[0]);
         for (async_index = 0; async_index < 32; async_index++) {
             volatile s32 *async_semaphores = D_0012FD10;
 
@@ -1851,25 +1851,25 @@ s32 func_0011C388(s32 fd, s32 offset, s32 origin)
                 break;
             }
         }
-        func_00118C90(D_0012FDA4_1C388[0]);
+        signal_semaphore(D_0012FDA4_1C388[0]);
     }
-    if (func_0011B4C8(&D_00158080_1C388, 4, 0, &D_00156980_1C388, 0x1C, D_001575C0_1BF80, 4, 0, 0) < 0) {
-        func_00118C80_1C388(completion_semaphore);
+    if (sif_call_rpc(&D_00158080_1C388, 4, 0, &D_00156980_1C388, 0x1C, D_001575C0_1BF80, 4, 0, 0) < 0) {
+        delete_semaphore_r3(completion_semaphore);
         func_0011BC70_1C388();
         return -11;
     }
     rpc_result = *(s32 *)((u32)D_001575C0_1BF80 | 0x20000000);
     func_0011BC70_1C388();
     if (rpc_result == 0) {
-        func_00118C80_1C388(completion_semaphore);
+        delete_semaphore_r3(completion_semaphore);
         return -11;
     }
     if (flags & 0x8000) {
-        func_00118C80_1C388(completion_semaphore);
+        delete_semaphore_r3(completion_semaphore);
         return 0;
     }
-    func_00118CB0(completion_semaphore);
-    func_00118C80_1C388(completion_semaphore);
+    wait_semaphore(completion_semaphore);
+    delete_semaphore_r3(completion_semaphore);
     return result;
 }
 
@@ -1887,12 +1887,12 @@ extern struct FsReadRequest D_00156980_1C5C0 __asm__("D_00156980");
 extern struct SifFileSlot *func_0011B7F8_1C5C0(s32 fd) __asm__("func_0011B7F8");
 extern s32 func_0011BC40_1C5C0(s32) __asm__("func_0011BC40");
 extern s32 func_0011BC70_1C5C0(void) __asm__("func_0011BC70");
-extern s32 func_00118C70_1C5C0(struct SemaphoreParameters2 *) __asm__("func_00118C70");
-extern s32 func_00118C80_1C5C0(s32) __asm__("func_00118C80");
+extern s32 create_semaphore_r3(struct SemaphoreParameters2 *) __asm__("func_00118C70");
+extern s32 delete_semaphore_r4(s32) __asm__("func_00118C80");
 extern void func_0011AD70(void *, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/library/sceRead.c, sceRead. */
-s32 func_0011C5C0(s32 fd, void *buffer, s32 length)
+s32 sceRead(s32 fd, void *buffer, s32 length)
 {
     struct FsReadRequest *request;
     struct SifFileSlot *file_slot;
@@ -1922,12 +1922,12 @@ s32 func_0011C5C0(s32 fd, void *buffer, s32 length)
     request->length = length;
     semaphore_parameters.init_count = 0;
     semaphore_parameters.option = 0;
-    completion_semaphore = func_00118C70_1C5C0(&semaphore_parameters);
+    completion_semaphore = create_semaphore_r3(&semaphore_parameters);
     request->result = &result;
     request->result_size = 4;
     D_00156980_1C5C0.completion_semaphore = completion_semaphore;
     if ((s16)flags & 0x8000) {
-        func_00118CB0(D_0012FDA4_1C388[0]);
+        wait_semaphore(D_0012FDA4_1C388[0]);
         for (async_index = 0; async_index < 32; async_index++) {
             volatile s32 *async_semaphores = D_0012FD10;
 
@@ -1938,29 +1938,29 @@ s32 func_0011C5C0(s32 fd, void *buffer, s32 length)
                 break;
             }
         }
-        func_00118C90(D_0012FDA4_1C388[0]);
+        signal_semaphore(D_0012FDA4_1C388[0]);
     }
     if (!(flags & 0x20000000)) {
         func_0011AD70(buffer, length);
     }
     func_0011AD70(request, 0x20);
-    if (func_0011B4C8(&D_00158080_1C388, 2, 0, &D_00156980_1C5C0, 0x20, D_001575C0_1BF80, 4, 0, 0) < 0) {
-        func_00118C80_1C5C0(completion_semaphore);
+    if (sif_call_rpc(&D_00158080_1C388, 2, 0, &D_00156980_1C5C0, 0x20, D_001575C0_1BF80, 4, 0, 0) < 0) {
+        delete_semaphore_r4(completion_semaphore);
         func_0011BC70_1C5C0();
         return -11;
     }
     rpc_result = *(s32 *)((u32)D_001575C0_1BF80 | 0x20000000);
     func_0011BC70_1C5C0();
     if (rpc_result == 0) {
-        func_00118C80_1C5C0(completion_semaphore);
+        delete_semaphore_r4(completion_semaphore);
         return -11;
     }
     if (flags & 0x8000) {
-        func_00118C80_1C5C0(completion_semaphore);
+        delete_semaphore_r4(completion_semaphore);
         return 0;
     }
-    func_00118CB0(completion_semaphore);
-    func_00118C80_1C5C0(completion_semaphore);
+    wait_semaphore(completion_semaphore);
+    delete_semaphore_r4(completion_semaphore);
     return result;
 }
 
@@ -1979,14 +1979,14 @@ extern struct FsWriteRequest D_00156980_1C820 __asm__("D_00156980");
 extern struct SifFileSlot *func_0011B7F8_1C820(s32 fd) __asm__("func_0011B7F8");
 extern s32 func_0011BC40_1C820(s32) __asm__("func_0011BC40");
 extern s32 func_0011BC70_1C820(void) __asm__("func_0011BC70");
-extern s32 func_00118C70_1C820(struct SemaphoreParameters2 *) __asm__("func_00118C70");
-extern s32 func_00118C80_1C820(s32) __asm__("func_00118C80");
-extern s32 func_00118CB0(s32);
+extern s32 create_semaphore_r4(struct SemaphoreParameters2 *) __asm__("func_00118C70");
+extern s32 delete_semaphore_r5(s32) __asm__("func_00118C80");
+extern s32 wait_semaphore(s32);
 extern void func_0011AD70(void *, s32);
-extern s32 func_0011B4C8(void *, s32, s32, void *, s32, void *, s32, void *, void *);
+extern s32 sif_call_rpc(void *, s32, s32, void *, s32, void *, s32, void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/library/scewrite.c, sceWrite. */
-s32 func_0011C820(s32 fd, u8 *buffer, s32 length)
+s32 sceWrite(s32 fd, u8 *buffer, s32 length)
 {
     struct FsWriteRequest *request;
     struct SifFileSlot *file_slot;
@@ -2019,12 +2019,12 @@ s32 func_0011C820(s32 fd, u8 *buffer, s32 length)
     request->buffer = buffer;
     semaphore_parameters.init_count = 0;
     semaphore_parameters.option = 0;
-    completion_semaphore = func_00118C70_1C820(&semaphore_parameters);
+    completion_semaphore = create_semaphore_r4(&semaphore_parameters);
     request->result = &result;
     request->result_size = 4;
     D_00156980_1C820.completion_semaphore = completion_semaphore;
     if ((s16)flags & 0x8000) {
-        func_00118CB0(D_0012FDA4_1C388[0]);
+        wait_semaphore(D_0012FDA4_1C388[0]);
         for (async_index = 0; async_index < 32; async_index++) {
             volatile s32 *async_semaphores = D_0012FD10;
 
@@ -2035,7 +2035,7 @@ s32 func_0011C820(s32 fd, u8 *buffer, s32 length)
                 break;
             }
         }
-        func_00118C90(D_0012FDA4_1C388[0]);
+        signal_semaphore(D_0012FDA4_1C388[0]);
     }
     if (((u32)buffer & 0xF) == 0) {
         prefix_length = 0;
@@ -2054,29 +2054,29 @@ s32 func_0011C820(s32 fd, u8 *buffer, s32 length)
     for (prefix_index = 0; prefix_index < prefix_length; prefix_index++) {
         request->prefix[prefix_index] = buffer[prefix_index];
     }
-    if (func_0011B4C8(&D_00158080_1C388, 3, 0, &D_00156980_1C820, 0x30, D_001575C0_1BF80, 4, 0, 0) < 0) {
-        func_00118C80_1C820(completion_semaphore);
+    if (sif_call_rpc(&D_00158080_1C388, 3, 0, &D_00156980_1C820, 0x30, D_001575C0_1BF80, 4, 0, 0) < 0) {
+        delete_semaphore_r5(completion_semaphore);
         func_0011BC70_1C820();
         return -11;
     }
     rpc_result = *(s32 *)((u32)D_001575C0_1BF80 | 0x20000000);
     func_0011BC70_1C820();
     if (rpc_result == 0) {
-        func_00118C80_1C820(completion_semaphore);
+        delete_semaphore_r5(completion_semaphore);
         return -11;
     }
     if (flags & 0x8000) {
-        func_00118C80_1C820(completion_semaphore);
+        delete_semaphore_r5(completion_semaphore);
         return 0;
     }
-    func_00118CB0(completion_semaphore);
-    func_00118C80_1C820(completion_semaphore);
+    wait_semaphore(completion_semaphore);
+    delete_semaphore_r5(completion_semaphore);
     return result;
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0011CAE0);
 
-extern int func_0011B2F8(void *, int, int);
+extern int sceSifBindRpc(void *, int, int);
 extern char D_00158140[];
 extern int D_0012FDAC;
 
@@ -2084,12 +2084,12 @@ extern int D_0012FDAC;
    0x80000003, busy-waiting until the server answers; -1 if binding fails.
    Built with -fno-schedule-insns (config/func_cflags.txt), the flag
 /* func_0011CB40: matched only with -fno-schedule-insns, which the rest of its object does not build with (docs/BUILD_FIDELITY.md, "Removed"). */
-int func_0011CB40(void) {
+int sce_sif_init_iop_heap(void) {
     int k;
     int r;
 
     for (;;) {
-        r = func_0011B2F8(D_00158140, 0x80000003, 0);
+        r = sceSifBindRpc(D_00158140, 0x80000003, 0);
         if (r < 0) {
             return -1;
         }
@@ -2109,12 +2109,12 @@ extern int D_001581C0;
 /* Another func_0011B4C8 RPC (see func_001245F8), guarded on the handle
    D_0012FDAC being valid. Both failure exits share the single `return 0`
    that the early guard branches to. */
-int func_0011CBC8(int arg0) {
+int sce_sif_alloc_iop_heap(int arg0) {
     if (D_0012FDAC < 0) {
         return 0;
     }
     D_001581C0 = arg0;
-    if (func_0011B4C8(D_00158140, 1, 0, &D_001581C0, 4,
+    if (sif_call_rpc(D_00158140, 1, 0, &D_001581C0, 4,
                       &D_00158180, 4, 0, 0) >= 0) {
         return D_00158180;
     } else {
@@ -2136,7 +2136,7 @@ int arg0;
         return 0;
     }
     D_001581C0 = arg0;
-    if (func_0011B4C8(D_00158140, 2, 0, &D_001581C0, 4,
+    if (sif_call_rpc(D_00158140, 2, 0, &D_001581C0, 4,
                       &D_00158180, 4, 0, 0) >= 0) {
         return D_00158180;
     } else {
@@ -2146,8 +2146,8 @@ int arg0;
 
 /* Returns its callee's value: retail keeps the frame and calls, and
    2.9-ee would tail-call it (a bare `j`) if it were void. */
-int func_0011CCB0(void) {
-    return func_0011CC38();
+int sce_sif_free_iop_heap(void) {
+    return free_sif_system_memory();
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0011CCD0);

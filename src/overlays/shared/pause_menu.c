@@ -122,7 +122,7 @@ extern void UpdateViewContext(void);
 extern void reset_active_camera_position_and_basis(void);
 extern void BuildViewMatrices(void);
 extern void VU1_syncChain(int);
-extern int func_00122598(int);
+extern int sce_gs_sync_v(int);
 extern void initialize_menu_stream_buffers(int);
 extern void VU1_initChain(void);
 extern void initialize_render_archive_transfer(void);
@@ -222,7 +222,7 @@ void initialize_pause_menu(void) {
     reset_active_camera_position_and_basis();
     BuildViewMatrices();
     VU1_syncChain(1);
-    func_00122598(0);
+    sce_gs_sync_v(0);
     rendered_frame_count = rendered_frame_count + 1;
 
     if (queued) {
@@ -540,9 +540,9 @@ extern void queue_movie_with_game_language(int);
 extern void queue_language_zero_movie(int);
 extern void StartCutscene(int);
 extern void start_slideshow(void);
-extern void func_0012E558(int);
+extern void snd_ContinueAllSoundsInGroup(int);
 extern void music_Unpause(void);
-extern int func_0012DDC0(void);
+extern int snd_FlushSoundCommands(void);
 extern int sound_update(void); /* sound update: ends in `return 0`, so it returns a value */
 extern void initialize_pause_menu(void);
 extern void mode_freeze_init(int, void *, int);
@@ -654,11 +654,11 @@ void update_pause_menu(void) {
         } else {
             cinematic_mode = 0;
         }
-        func_0012E558(0x1D);
+        snd_ContinueAllSoundsInGroup(0x1D);
         if (GS.unkC != 2) {
             music_Unpause();
         }
-        func_0012DDC0();
+        snd_FlushSoundCommands();
         sound_update();
         return;
     }

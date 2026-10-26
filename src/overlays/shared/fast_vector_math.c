@@ -134,8 +134,8 @@ extern char fs_aa_draw_packet[];
 extern char fs_aa_transfer_packet[];
 extern char fs_aa_resample_packet[];
 extern char fs_aa_clear_packet[];
-extern void func_00121DC8(void *, short, short, short, short, short);
-extern int func_001222C8(void *, short, short, short, short, short);
+extern void sceGsDefDispEnv(void *, short, short, short, short, short);
+extern int sce_gs_set_def_draw_env(void *, short, short, short, short, short);
 
 #define FA ((FsAa_FAB40 *)D_0015EFB8)
 
@@ -158,10 +158,10 @@ void setup_fs_aa_buffer_level(int display_width, int display_height, int storage
     fs_aa_buffer.fbp1 = display_buffer_address >> 13;
     fs_aa_buffer.fbp0 = draw_buffer_address >> 13;
     fs_aa_buffer.zbp = depth_buffer_address >> 13;
-    func_00121DC8(&fs_aa_buffer, 0, storage_width, storage_height, display_offset_x,
+    sceGsDefDispEnv(&fs_aa_buffer, 0, storage_width, storage_height, display_offset_x,
                   display_offset_y);
     FA->dispfb.FBP = fs_aa_buffer.fbp1;
-    func_001222C8(&FA->frame0, fs_aa_buffer.psm, fs_aa_buffer.display_width,
+    sce_gs_set_def_draw_env(&FA->frame0, fs_aa_buffer.psm, fs_aa_buffer.display_width,
                   fs_aa_buffer.display_height, 3, fs_aa_buffer.zpsm);
     FA->frame0.FBP = fs_aa_buffer.fbp0;
     *(unsigned long *)&FA->draw0[1] =
@@ -171,7 +171,7 @@ void setup_fs_aa_buffer_level(int display_width, int display_height, int storage
     FA->giftag0.EOP = 1;
     FA->giftag0.NREG = 1;
     FA->giftag0.REGS0 = 0xE;
-    func_001222C8(&FA->frame1, fs_aa_buffer.storage_psm, fs_aa_buffer.storage_width,
+    sce_gs_set_def_draw_env(&FA->frame1, fs_aa_buffer.storage_psm, fs_aa_buffer.storage_width,
                   fs_aa_buffer.storage_height, 0, 0);
     FA->frame1.FBP = fs_aa_buffer.fbp1;
     *(unsigned long *)&FA->draw1[1] = 1UL << 32;

@@ -41,7 +41,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         copy_memory_by_alignment(mission_state, saved_mission_state + g_current_level_index * 16, 0x10);
         upload_texture_images((char *)(src[6] + (s32)src), h->v[0], (char *)h + h->v[1]);
         level_sound_bank_handle = sound_bank_handle;
-        func_00118D80(0);
+        flush_cache(0);
         used = fast_decompress((char *)(src[0x14] + (s32)src), base);
 
         level_texture_data_base = (s32)(base + h->v[0x18]);

@@ -8,7 +8,7 @@
 extern int vendor_menu[];
 extern unsigned char D_L00_00197F4C NOT_SDA;
 extern char *moby_class_headers[] NOT_SDA;
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern int fast_decompress(int, int);
 extern void relocateObjectPointers(char *arg0, int idx);
 
@@ -19,9 +19,9 @@ void decompress_and_relocate_vendor_moby_assets(void) {
     char *base;
     int v;
     v = vendor_menu[6] + 0x80000;
-    func_00118D80(0);
+    flush_cache(0);
     fast_decompress(v, vendor_menu[6]);
-    func_00118D80(0);
+    flush_cache(0);
     p = (int *)vendor_menu[6];
     base = moby_class_headers[D_L00_00197F4C];
     for (i = 0; i < 16; i++) {
@@ -197,9 +197,9 @@ extern void FastMemSet(void *, s32, s32);
 extern VendorMoby_pv *CreateMoby(s32);
 extern void clear_u64_value(void *);
 extern void moby_build_matrix(void *);
-extern void func_0012E528(s32);
+extern void snd_PauseAllSoundsInGroup(s32);
 extern void music_Pause(s32);
-extern int func_0012DDC0(void);
+extern int snd_FlushSoundCommands(void);
 extern void build_vendor_menu_rows(s32);
 extern void reset_hud_and_suspend_weapon_updates(void);
 extern s32 queue_animation_update(s32, s32, void *, void *, void *, void *, s32);
@@ -266,9 +266,9 @@ void open_vendor_menu(VendorMoby_pv *m) {
     VP.f5C = 0;
     vendor_buy_quantity = 0;
     vendor_item_spin_angle = 0;
-    func_0012E528(0x1D);
+    snd_PauseAllSoundsInGroup(0x1D);
     music_Pause(0);
-    func_0012DDC0();
+    snd_FlushSoundCommands();
     build_vendor_menu_rows(VP.mode != 0);
     half = VP.count;
     sel = half / 2;
@@ -357,9 +357,9 @@ extern float FastAddRots(float, float);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void CameraScript2(int);
 extern void DeleteMoby(void *);
-extern void func_0012E558(int);
+extern void snd_ContinueAllSoundsInGroup(int);
 extern void music_Unpause(void);
-extern int func_0012DDC0(void);
+extern int snd_FlushSoundCommands(void);
 extern int skip_frame MACRO_ADDR;
 extern short cinematic_mode;
 extern unsigned char D_001414F5[] NOT_SDA;
@@ -420,9 +420,9 @@ void close_vendor_menu(int exit_cutscene_completed) {
         if ((unsigned short)(music->mode - 6) >= 2) music->mode = 5;
         if (vendor_state->unk40) DeleteMoby(vendor_state->moby);
     }
-    func_0012E558(0x1D);
+    snd_ContinueAllSoundsInGroup(0x1D);
     music_Unpause();
-    func_0012DDC0();
+    snd_FlushSoundCommands();
 }
 extern s32 skip_frame MACRO_ADDR;
 extern s32 lvl_vu_chain_buffer_size MACRO_ADDR;
@@ -512,7 +512,7 @@ extern void load_scene_chunks_with_fade(s32);
 extern void select_world_object_resource_tables(s32, s32);
 extern void parse_space_scene_chunk(s32);
 extern void Music_ContinueStreamIfReady(void);
-extern void func_00122598(s32);
+extern void sce_gs_sync_v(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00295100.c, FUN_L00_0029ad08. */
 void start_vendor_exit_cutscene(void) {
@@ -567,7 +567,7 @@ void start_vendor_exit_cutscene(void) {
     mode = cd_read_state.mode;
     while (mode != 3) {
         sound_update();
-        func_00122598(0);
+        sce_gs_sync_v(0);
         mode = cd_read_state.mode;
     }
     Music_ContinueStreamIfReady();
@@ -610,9 +610,9 @@ void restore_hero_after_vendor_exit_cutscene(void) {
     update_resource_counter();
     mode_block = (MusicModeBlock *)((char *)help_stats_base + 0x100B5);
     if (!(mode_block->mode >= 6 && mode_block->mode <= 7)) mode_block->mode = 5;
-    func_0012E558(0x1D);
+    snd_ContinueAllSoundsInGroup(0x1D);
     music_Unpause();
-    func_0012DDC0();
+    snd_FlushSoundCommands();
 }
 extern int random_integer_below(int);
 extern int scale_ticks(int);
@@ -1119,10 +1119,10 @@ extern void calculate_dma_transfer_address();
 extern void initialize_vendor_selected_item_mobys();
 extern void UpdateViewContext();
 extern void restore_hero_after_vendor_exit_cutscene();
-extern void func_00125358();
-extern void func_001254A0();
-extern void func_00125548();
-extern void func_001253F8();
+extern void sceVu0UnitMatrix();
+extern void sceVu0RotMatrixX();
+extern void sceVu0RotMatrixY();
+extern void sceVu0RotMatrixZ();
 extern f32 IntToFloat();
 extern void FastVecScale();
 extern void update_moby_shadow_range();

@@ -56,8 +56,8 @@ typedef struct {
 } Cfg13;
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 extern void CreatePointLight(int);
@@ -120,7 +120,7 @@ extern char memcard_icon_path_a[];
 extern char memcard_icon_path_b[];
 extern char memcard_icon_path_c[];
 extern char memcard_slot_path_format[];
-extern void func_00116B00(void *, void *, int);
+extern void libc_strncpy(void *, void *, int);
 
 /* Builds a 13-byte name/version stamp in D_0013D2D0 from the record's
    region byte (arg0[0x12]) and the record's date/version fields, then
@@ -144,18 +144,18 @@ void memcard_get_name(void *arg0) {
     for (i = 0xB; i < 0xD; i++) {
         memcard_save_dir_name[i] = a[i + 0xE];
     }
-    func_00116B00(memcard_dir_search_path, memcard_save_dir_name, 0xD);
-    func_00116B00(memcard_icon_path_a, memcard_save_dir_name, 0xD);
-    func_00116B00(memcard_icon_path_b, memcard_save_dir_name, 0xD);
-    func_00116B00(memcard_icon_path_c, memcard_save_dir_name, 0xD);
-    func_00116B00(memcard_icon_path_c + 0x14, memcard_save_dir_name, 0xD);
-    func_00116B00(memcard_slot_path_format, memcard_save_dir_name, 0xD);
+    libc_strncpy(memcard_dir_search_path, memcard_save_dir_name, 0xD);
+    libc_strncpy(memcard_icon_path_a, memcard_save_dir_name, 0xD);
+    libc_strncpy(memcard_icon_path_b, memcard_save_dir_name, 0xD);
+    libc_strncpy(memcard_icon_path_c, memcard_save_dir_name, 0xD);
+    libc_strncpy(memcard_icon_path_c + 0x14, memcard_save_dir_name, 0xD);
+    libc_strncpy(memcard_slot_path_format, memcard_save_dir_name, 0xD);
 }
 
-extern int func_00124068(int, int, int *, int *, int *);
-extern int func_00123F30(int, int *, int *);
-extern void func_00122598(int);
-extern int func_001241F0(int, int, char *, int, int, void *);
+extern int sce_mc_get_info(int, int, int *, int *, int *);
+extern int sce_mc_sync(int, int *, int *);
+extern void sce_gs_sync_v(int);
+extern int sce_mc_get_dir(int, int, char *, int, int, void *);
 extern char memcard_save_dir_name[];
 extern int memory_card_state_i[] __asm__("D_0013D390");
 
@@ -165,17 +165,17 @@ extern int memory_card_state_i[] __asm__("D_0013D390");
 int check_memory_card(void) {
     int type, free, format, cmd, result;
 
-    result = func_00124068(memory_card_state_i[0], memory_card_state_i[1], &type, &free, &format);
-    while (func_00123F30(1, &memory_card_state_i[0x30], &memory_card_state_i[0x31]) == 0) {
-        func_00122598(0);
+    result = sce_mc_get_info(memory_card_state_i[0], memory_card_state_i[1], &type, &free, &format);
+    while (sce_mc_sync(1, &memory_card_state_i[0x30], &memory_card_state_i[0x31]) == 0) {
+        sce_gs_sync_v(0);
     }
     if (memory_card_state_i[0x31] == -5 || memory_card_state_i[0x31] < -9 || type != 2) {
         return 1;
     }
     if (memory_card_state_i[0x31] != -2 && format != 0) {
-        result = func_001241F0(memory_card_state_i[0], memory_card_state_i[1], memcard_save_dir_name, 0, -1, 0);
-        while (func_00123F30(1, &cmd, &result) == 0) {
-            func_00122598(0);
+        result = sce_mc_get_dir(memory_card_state_i[0], memory_card_state_i[1], memcard_save_dir_name, 0, -1, 0);
+        while (sce_mc_sync(1, &cmd, &result) == 0) {
+            sce_gs_sync_v(0);
         }
         if (result <= 0) {
             int t = free < 350;
@@ -1401,7 +1401,7 @@ void memcard_MakeWholeSave(char *out) {
     }
 }
 
-extern int func_001236F0(void);
+extern int sce_mc_init(void);
 /* Unprototyped deliberately: this is the varargs function, so callers
    legitimately pass different argument counts/types, and two agents
    declared it incompatibly. Both callers are byte-exact and must not
@@ -1413,7 +1413,7 @@ extern char memcard_error_message[];
 
 /* memcard_Init */
 void memcard_Init(void) {
-    if (func_001236F0()) {
+    if (sce_mc_init()) {
         STUB_printf(memcard_error_message);
     }
 }
@@ -1598,7 +1598,7 @@ typedef struct {
 } RestoreCardState;
 extern RestoreCardState memory_card_state_c __asm__("D_0013D390");
 extern short memcard_restore_mismatch_count;               /* SDA, gp -0x6DB0: mismatch count */
-extern int func_001151B4(const void *, const void *, int); /* memcmp */
+extern int libc_memcmp(const void *, const void *, int); /* memcmp */
 
 /* memcard_RestoreData: unpack the save blocks after buf's 8-byte header
    into the table entries with the same id (slot selects the element),
@@ -1651,7 +1651,7 @@ int memcard_RestoreData(void *src, int slot, int *table) {
                 n = e->size;
                 e->status = -2;
             }
-            if (func_001151B4(dst, ((struct RestoreBlock *)buf)->data, n) != 0) {
+            if (libc_memcmp(dst, ((struct RestoreBlock *)buf)->data, n) != 0) {
                 (*(int *)&memcard_restore_mismatch_count)++;
             }
             copy_memory_aligned(dst, ((struct RestoreBlock *)buf)->data, n);
@@ -1676,8 +1676,8 @@ int memcard_RestoreData(void *src, int slot, int *table) {
     return errors;
 }
 
-extern void func_00121A80(void *);
-extern void func_0012D818(void *);
+extern void sce_cd_read_clock(void *);
+extern void sce_scf_get_local_time_from_rtc(void *);
 extern void copy_level_object_positions(void);
 extern void save_map_coverage(void *);
 extern char save_clock_time[] MACRO_ADDR;
@@ -1706,8 +1706,8 @@ extern char memcard_level_data_buffer[];
 int memcard_Save(int slot, int flags) {
     unsigned char saved;
 
-    func_00121A80(save_clock_time);
-    func_0012D818(save_clock_time);
+    sce_cd_read_clock(save_clock_time);
+    sce_scf_get_local_time_from_rtc(save_clock_time);
     copy_level_object_positions();
     save_map_coverage(level_map_coverage + (g_current_level_index_m << 11));
     {

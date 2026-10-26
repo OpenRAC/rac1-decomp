@@ -34,8 +34,8 @@ extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
 extern void *InitBlockData NOT_SDA;
 extern int D_00155080[];
-extern void func_001193F8(int);
-extern void func_00118AD0(int, int);
+extern void disable_dmac_atomic(int);
+extern void remove_dmac_handler(int, int);
 extern int D_00154F54;
 extern int D_0012FD04;
 extern int D_00154F64 NOT_SDA;
@@ -43,9 +43,9 @@ extern int D_00154F6C NOT_SDA;
 extern void func_0011AA90(int, int, int, int, int, int, int);
 extern void func_0011AA00(void);
 extern int RpcCommandState NOT_SDA;
-extern int func_0011D960(void);
-extern void func_0011D9A8(void);
-extern int func_00118C70(void *);
+extern int disable_interrupts(void);
+extern void enable_interrupts(void);
+extern int create_semaphore(void *);
 extern int D_0012FDA0;
 extern int D_0012FDA4;
 extern char D_00157E80[];
@@ -55,7 +55,7 @@ extern int D_0012FD9C NOT_SDA;
 extern char D_0012FCEC[];
 extern char FsResetBuffer[];
 extern int D_0012FDA8;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 extern int FsResetState;
 extern int D_0012FDAC;
 extern char D_00158140[];
@@ -72,8 +72,8 @@ extern int SecondSemaphore;
 extern int D_00130BD0[];
 extern char D_00130428[];
 extern int func_0011DC50(void);
-extern void func_00118D80(int);
-extern int func_00120F30(int);
+extern void flush_cache(int);
+extern int sce_cd_sync_s(int);
 extern void *D_00159840;
 extern int D_001313E0;
 extern int D_001313E8;
@@ -82,11 +82,11 @@ extern int D_001313F0;
 extern int D_001313E4;
 extern int D_001313FC;
 extern int func_00120D28(int);
-extern void func_00118C90(int);
+extern void signal_semaphore(int);
 extern char D_00132590[];
 extern int D_00131440;
 extern void func_0011A6C8();
-extern int func_0011B6B8(void *);
+extern int sce_sif_check_stat_rpc(void *);
 extern char D_00153000[];
 extern char D_00132E08[];
 extern int D_001313D0;
@@ -103,15 +103,15 @@ typedef struct {
 } SifRpcClientData;
 
 extern int D_00132EAC;
-extern int func_00123F30(int, int *, int *);
-extern int func_00118CB0(int);
-extern int func_0011AE20(int);
+extern int sce_mc_sync(int, int *, int *);
+extern int wait_semaphore(int);
+extern int sceSifInitRpc(int);
 extern char D_00159B00[];
 extern int D_00159B80;
 extern char D_0015B0C0[];
-extern int func_0011B2F8(void *, int, int);
+extern int sceSifBindRpc(void *, int, int);
 extern char D_00153550[];
-extern int func_0011B4C8();
+extern int sif_call_rpc();
 extern char D_00153568[];
 extern char D_00153590[];
 
@@ -126,7 +126,7 @@ extern char D_00153590[];
    failure. Each ->serve access is a fresh cast of D_00159B00, matching
    the local SifRpcClientData idiom already used in
    src/core/001208E8.c, rather than a cached pointer local. */
-int func_001236F0(void) {
+int sce_mc_init(void) {
     int buf[8];
     int *rbuf;
     int i;
@@ -136,21 +136,21 @@ int func_001236F0(void) {
         buf[5] = 0;
         buf[2] = 1;
         buf[1] = 1;
-        D_00132EAC = func_00118C70(buf);
+        D_00132EAC = create_semaphore(buf);
     }
-    func_00123F30(0, 0, 0);
-    func_00118CB0(D_00132EAC);
-    func_0011AE20(0);
+    sce_mc_sync(0, 0, 0);
+    wait_semaphore(D_00132EAC);
+    sceSifInitRpc(0);
     for (;;) {
-        if (func_0011B2F8(D_00159B00, 0x80000400, 0) < 0) {
+        if (sceSifBindRpc(D_00159B00, 0x80000400, 0) < 0) {
             func_0011A6C8(D_00153550);
             for (;;) ;
         }
         if (((SifRpcClientData *)D_00159B00)->serve != 0) break;
         for (i = 0x100000; i != 0; i--) ;
     }
-    r = func_0011B4C8(D_00159B00, 0xFE, 0, &D_00159B80, 0x30, D_0015B0C0, 0xC, 0, 0);
-    func_00118C90(D_00132EAC);
+    r = sif_call_rpc(D_00159B00, 0xFE, 0, &D_00159B80, 0x30, D_0015B0C0, 0xC, 0, 0);
+    signal_semaphore(D_00132EAC);
     if (r < 0) {
         ((SifRpcClientData *)D_00159B00)->serve = 0;
         return r - 100;
@@ -174,13 +174,13 @@ LINKER_REMNANT("asm/remnants/core_text", func_001238A8);
 extern char D_00159B00[];
 extern int func_00118CC0(int);
 extern char D_00159BB0[];
-extern void *func_00116B00(void *, const void *, int);
+extern void *libc_strncpy(void *, const void *, int);
 extern int D_00132EA8;
 
 /* sceMcOpen(port, slot, fname, mode) (libmc): same RPC-wrapper shape as
    sceMcDelete (func_00124410) but with the flags/mode argument stored to
    the descriptor's +0x8 word instead of a hardcoded 0, and RPC command 2. */
-int func_001238B0(int port, int slot, int fname_, int mode) {
+int sce_mc_open(int port, int slot, int fname_, int mode) {
     char *cd = D_00159B00;
     char *fname = (char *)fname_;
     char *fp;
@@ -193,28 +193,28 @@ int func_001238B0(int port, int slot, int fname_, int mode) {
         return -200;
     }
     if (fname == 0 || *fname == 0) {
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
         return -210;
     }
-    func_00116B00(D_00159BB0 + 0x14, fname, 0x3FF);
+    libc_strncpy(D_00159BB0 + 0x14, fname, 0x3FF);
     fp = D_00159BB0;
     *(int *)(fp + 0x0) = port;
     fp[0x413] = 0;
     *(int *)(fp + 0x8) = mode;
     *(int *)(fp + 0x4) = slot;
-    r = func_0011B4C8(cd, 2, 1, fp, 0x414, D_0015B0C0, 4, 0, 0);
+    r = sif_call_rpc(cd, 2, 1, fp, 0x414, D_0015B0C0, 4, 0, 0);
     if (r == 0) {
         D_00132EA8 = 2;
     } else {
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
     }
     return r;
 }
 
-extern int func_001238B0(int, int, int, int);
+extern int sce_mc_open(int, int, int, int);
 
-int func_001239D8(int arg0, int arg1, int arg2) {
-    int r = func_001238B0(arg0, arg1, arg2, 0x40);
+int sce_mc_mkdir(int arg0, int arg1, int arg2) {
+    int r = sce_mc_open(arg0, arg1, arg2, 0x40);
     if (r == 0) {
         D_00132EA8 = 0xB;
     }
@@ -226,7 +226,7 @@ extern int D_00159B80;
 
 /* RPC 3 on the client D_00159B00, in func_001239D8's shape: -100 with
    no server bound, -200 when the semaphore wait fails. */
-int func_00123A10(int arg0) {
+int sce_mc_close(int arg0) {
     char *cd = D_00159B00;
     int r;
 
@@ -237,11 +237,11 @@ int func_00123A10(int arg0) {
         return -200;
     }
     D_00159B80 = arg0;
-    r = func_0011B4C8(cd, 3, 1, &D_00159B80, 0x30, D_0015B0C0, 4, 0, 0);
+    r = sif_call_rpc(cd, 3, 1, &D_00159B80, 0x30, D_0015B0C0, 4, 0, 0);
     if (r == 0) {
         D_00132EA8 = 3;
     } else {
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
     }
     return r;
 }
@@ -251,7 +251,7 @@ extern int D_00159B80;
 
 /* RPC 4, the same shape with three request words. `buf` is assigned
    after the semaphore call, so retail builds its address in a temp. */
-int func_00123AC8(int arg0, int arg1, int arg2) {
+int sce_mc_seek(int arg0, int arg1, int arg2) {
     char *cd = D_00159B00;
     int *buf;
     int r;
@@ -266,11 +266,11 @@ int func_00123AC8(int arg0, int arg1, int arg2) {
     buf[0] = arg0;
     buf[4] = arg1;
     buf[5] = arg2;
-    r = func_0011B4C8(cd, 4, 1, buf, 0x30, D_0015B0C0, 4, 0, 0);
+    r = sif_call_rpc(cd, 4, 1, buf, 0x30, D_0015B0C0, 4, 0, 0);
     if (r == 0) {
         D_00132EA8 = 4;
     } else {
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
     }
     return r;
 }
@@ -329,7 +329,7 @@ extern char D_0015A000[];
 extern int func_0011AD70(void *, int);
 extern void func_00123BA0(void *);
 
-int func_00123C30(int fd, void *buf, int nbyte) {
+int sce_mc_read(int fd, void *buf, int nbyte) {
     char *cd = D_00159B00;
     int *p;
     char *next;
@@ -347,11 +347,11 @@ int func_00123C30(int fd, void *buf, int nbyte) {
     p[7] = (int)next;
     func_0011AD70((void *)(p[6] = (int)buf), p[3] = nbyte);
     func_0011AD70(next, 0xC0);
-    r = func_0011B4C8(cd, 5, 1, p, 0x30, D_0015B0C0, 4, func_00123BA0, next);
+    r = sif_call_rpc(cd, 5, 1, p, 0x30, D_0015B0C0, 4, func_00123BA0, next);
     if (r == 0) {
         D_00132EA8 = 5;
     } else {
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
     }
     return r;
 }
@@ -375,7 +375,7 @@ extern struct McClient D_00159B00_c __asm__("D_00159B00");
 extern struct McWriteReq D_00159B80_r __asm__("D_00159B80");
 
 /* sceMcWrite: copies the unaligned lead of the buffer into the request, sends RPC 6. Adapted from Lombyte's project (GPL-3.0) for PAL: src/sdk/storage/memory_card/sce_mc_write.c, sceMcWrite. */
-int func_00123D48(int fd, unsigned char *buffer, int size) {
+int sce_mc_write_buffer(int fd, unsigned char *buffer, int size) {
     int rpc_result;
     unsigned int i;
     int root_off;
@@ -402,12 +402,12 @@ int func_00123D48(int fd, unsigned char *buffer, int size) {
     for (i = 0; i < D_00159B80_r.origin; i++) {
         D_00159B80_r.data[i] = buffer[i];
     }
-    func_00118D80(0);
-    rpc_result = func_0011B4C8(&D_00159B00_c, 6, 1, &D_00159B80_r, 0x30, D_0015B0C0, 4, 0, 0);
+    flush_cache(0);
+    rpc_result = sif_call_rpc(&D_00159B00_c, 6, 1, &D_00159B80_r, 0x30, D_0015B0C0, 4, 0, 0);
     if (rpc_result == 0) {
         D_00132EA8 = 6;
     } else {
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
     }
     return rpc_result;
 }
@@ -421,7 +421,7 @@ extern void func_00123EC0(int, unsigned short, void *);
    h-lines wakes it: SetAlarm (func_00118B20) with mcHearAlarm
    (func_00123EC0) on GetThreadId(), then SleepThread(). */
 void func_00123EE8(int time) {
-    func_00118B20((unsigned short)time, func_00123EC0, func_00118BE0());
+    func_00118B20((unsigned short)time, func_00123EC0, get_thread_id());
     func_00118C00();
 }
 
@@ -431,15 +431,15 @@ extern void func_00123EE8(int);
 /* sceMcSync(mode, &cmd, &result): polls the pending memory card command
    (or waits for it when mode is 0) and hands back its result. Exact
    only under 2.9-ee: 2.95.3's gcse leaves two extra %hi copies. */
-int func_00123F30(int mode, int *cmd, int *result) {
+int sce_mc_sync(int mode, int *cmd, int *result) {
     int r;
 
     if (D_00132EA8 == 0) {
         return -1;
     }
-    r = func_0011B6B8(D_00159B00);
+    r = sce_sif_check_stat_rpc(D_00159B00);
     if (mode == 0 && r != 0) {
-        while (func_0011B6B8(D_00159B00) != 0) {
+        while (sce_sif_check_stat_rpc(D_00159B00) != 0) {
             func_00123EE8(0x3C);
         }
         r = 0;
@@ -453,7 +453,7 @@ int func_00123F30(int mode, int *cmd, int *result) {
         if (result != 0) {
             *result = *(int *)D_0015B0C0;
         }
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
     }
     return r;
 }
@@ -474,7 +474,7 @@ extern int D_00159B80_a[] __asm__("D_00159B80");
 /* sceMcGetInfo-style RPC 1 (libmc): asks for the card type, free space
    and format state (each only when its result pointer is given); the
    reply lands in D_0015A000 and func_00124010 copies it out. */
-int func_00124068(int port, int slot, int *type, int *free, int *format) {
+int sce_mc_get_info(int port, int slot, int *type, int *free, int *format) {
     int r;
 
     {
@@ -508,11 +508,11 @@ int func_00124068(int port, int slot, int *type, int *free, int *format) {
     D_00159B2C = free;
     D_00159B30 = format;
     func_0011AD70(D_0015A000, 0xC0);
-    r = func_0011B4C8(D_00159B00, 1, 1, D_00159B80_a, 0x30, D_0015B0C0, 4, func_00124010, D_0015A000);
+    r = sif_call_rpc(D_00159B00, 1, 1, D_00159B80_a, 0x30, D_0015B0C0, 4, func_00124010, D_0015A000);
     if (r == 0) {
         D_00132EA8 = 1;
     } else {
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
     }
     return r;
 }
@@ -522,7 +522,7 @@ LINKER_REMNANT("asm/remnants/core_text", func_001241E8);
 /* sceMcGetDir-style RPC 0xD (libmc): name (non-empty), mode, the table
    size and the table, whose cache is written back first (func_0011AD70)
    when count >= 0. Shape as sceMcOpen (func_001238B0). */
-int func_001241F0(int port, int slot, char *name, int mode, int count, void *table) {
+int sce_mc_get_dir(int port, int slot, char *name, int mode, int count, void *table) {
     char *cd = D_00159B00;
     char *fp;
     int r;
@@ -534,7 +534,7 @@ int func_001241F0(int port, int slot, char *name, int mode, int count, void *tab
         return -200;
     }
     if (name == 0 || *name == 0) {
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
         return -210;
     }
     fp = D_00159BB0;
@@ -543,16 +543,16 @@ int func_001241F0(int port, int slot, char *name, int mode, int count, void *tab
     *(int *)(fp + 0x8) = mode;
     *(int *)(fp + 0xC) = count;
     *(void **)(fp + 0x10) = table;
-    func_00116B00(fp + 0x14, name, 0x3FF);
+    libc_strncpy(fp + 0x14, name, 0x3FF);
     fp[0x413] = 0;
     if (count >= 0) {
         func_0011AD70(table, count << 6);
     }
-    r = func_0011B4C8(cd, 0xD, 1, fp, 0x414, D_0015B0C0, 4, 0, 0);
+    r = sif_call_rpc(cd, 0xD, 1, fp, 0x414, D_0015B0C0, 4, 0, 0);
     if (r == 0) {
         D_00132EA8 = 0xD;
     } else {
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
     }
     return r;
 }
@@ -560,7 +560,7 @@ int func_001241F0(int port, int slot, char *name, int mode, int count, void *tab
 LINKER_REMNANT("asm/remnants/core_text", func_00124338);
 
 /* RPC 0x10 with two request words, as func_00124528 below. */
-int func_00124340(int arg0, int arg1) {
+int sce_mc_format(int arg0, int arg1) {
     char *cd = D_00159B00;
     int *buf;
     int r;
@@ -574,11 +574,11 @@ int func_00124340(int arg0, int arg1) {
     buf = &D_00159B80;
     buf[1] = arg0;
     buf[2] = arg1;
-    r = func_0011B4C8(cd, 0x10, 1, buf, 0x30, D_0015B0C0, 4, 0, 0);
+    r = sif_call_rpc(cd, 0x10, 1, buf, 0x30, D_0015B0C0, 4, 0, 0);
     if (r == 0) {
         D_00132EA8 = 0x10;
     } else {
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
     }
     return r;
 }
@@ -592,7 +592,7 @@ extern char D_00159B00[];
    through cd_base. Nonzero (queued) result SignalSemas and returns the
    handle; 0 records the command and returns 0 -- the same idiom as
    func_00123C30/sceMcRead. */
-int func_00124410(int port, int slot, char *fname) {
+int sce_mc_delete(int port, int slot, char *fname) {
     char *cd = D_00159B00;
     char *fp;
     int r;
@@ -604,20 +604,20 @@ int func_00124410(int port, int slot, char *fname) {
         return -200;
     }
     if (fname == 0 || *fname == 0) {
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
         return -210;
     }
-    func_00116B00(D_00159BB0 + 0x14, fname, 0x3FF);
+    libc_strncpy(D_00159BB0 + 0x14, fname, 0x3FF);
     fp = D_00159BB0;
     *(int *)(fp + 0x0) = port;
     *(int *)(fp + 0x4) = slot;
     fp[0x413] = 0;
     *(int *)(fp + 0x8) = 0;
-    r = func_0011B4C8(cd, 0xF, 1, fp, 0x414, D_0015B0C0, 4, 0, 0);
+    r = sif_call_rpc(cd, 0xF, 1, fp, 0x414, D_0015B0C0, 4, 0, 0);
     if (r == 0) {
         D_00132EA8 = 0xF;
     } else {
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
     }
     return r;
 }
@@ -626,7 +626,7 @@ extern char D_00159B00[];
 extern int D_00159B80;
 
 /* RPC 0x11, the same shape with two request words. */
-int func_00124528(int arg0, int arg1) {
+int sce_mc_unformat(int arg0, int arg1) {
     char *cd = D_00159B00;
     int *buf;
     int r;
@@ -640,11 +640,11 @@ int func_00124528(int arg0, int arg1) {
     buf = &D_00159B80;
     buf[1] = arg0;
     buf[2] = arg1;
-    r = func_0011B4C8(cd, 0x11, 1, buf, 0x30, D_0015B0C0, 4, 0, 0);
+    r = sif_call_rpc(cd, 0x11, 1, buf, 0x30, D_0015B0C0, 4, 0, 0);
     if (r == 0) {
         D_00132EA8 = 0x11;
     } else {
-        func_00118C90(D_00132EAC);
+        signal_semaphore(D_00132EAC);
     }
     return r;
 }
@@ -653,7 +653,7 @@ extern char RpcQueueData[];
 extern int RpcReceiveData;
 
 int func_001245F8(void) {
-    func_0011B4C8(RpcQueueData, 0x80000963, 0, &RpcReceiveData, 0x400,
+    sif_call_rpc(RpcQueueData, 0x80000963, 0, &RpcReceiveData, 0x400,
                   &RpcReceiveData, 0x400, 0, 0);
     return RpcReceiveData;
 }
@@ -666,22 +666,22 @@ extern char D_00153640[];
 extern int D_0015B600[];
 extern char D_0015B580[];
 extern void func_001138B8(int) __attribute__((noreturn)); /* exit */
-extern void func_00124B60(void *, ...);
-extern int func_001247E8(int);
+extern void debug_print_stub(void *, ...);
+extern int sceDbcSetWorkAddr(int);
 
 /* Bind the two IOP servers 0x80000900 and 0x8000091B (retrying with a
    busy wait; exit(-1) if binding fails), check the server version
    (func_001245F8: major 2), clear the 16-word table D_0015B600 and read
    the configuration into D_0015B580. Returns 1, or 0 on a version
    mismatch. */
-int func_00124650(void) {
+int sce_dbc_init(void) {
     int i;
     int v;
 
-    func_0011AE20(0);
+    sceSifInitRpc(0);
     for (;;) {
-        if (func_0011B2F8(RpcQueueData, 0x80000900, 0) < 0) {
-            func_00124B60(D_001535D8);
+        if (sceSifBindRpc(RpcQueueData, 0x80000900, 0) < 0) {
+            debug_print_stub(D_001535D8);
             func_001138B8(-1);
         }
         if (*(int *)(RpcQueueData + 0x24) != 0) {
@@ -692,8 +692,8 @@ int func_00124650(void) {
         }
     }
     for (;;) {
-        if (func_0011B2F8(D_0015B130, 0x8000091B, 0) < 0) {
-            func_00124B60(D_001535D8);
+        if (sceSifBindRpc(D_0015B130, 0x8000091B, 0) < 0) {
+            debug_print_stub(D_001535D8);
             func_001138B8(-1);
         }
         if (*(int *)(D_0015B130 + 0x24) != 0) {
@@ -712,8 +712,8 @@ int func_00124650(void) {
     for (i = 15; i >= 0; i--) {
         D_0015B600[i] = 0;
     }
-    func_00124B60(D_00153640, D_0015B580);
-    func_001247E8((int)D_0015B580);
+    debug_print_stub(D_00153640, D_0015B580);
+    sceDbcSetWorkAddr((int)D_0015B580);
     return 1;
 }
 
@@ -731,15 +731,15 @@ extern char D_00153658[];
    The test is written >= 0 so the error path is the fall-through and the
    success path is the branch target, letting the result load sit in the
    bgez delay slot. */
-int func_001247E8(int arg0) {
+int sceDbcSetWorkAddr(int arg0) {
     int *buf = &RpcReceiveData;
 
     buf[1] = arg0;
-    if (func_0011B4C8(RpcQueueData, 0x80000904, 0, buf, 0x400,
+    if (sif_call_rpc(RpcQueueData, 0x80000904, 0, buf, 0x400,
                       buf, 0x400, 0, 0) >= 0) {
         return RpcReceiveData;
     } else {
-        func_00124B60(D_00153658);
+        debug_print_stub(D_00153658);
         return 0;
     }
 }
@@ -758,7 +758,7 @@ extern char D_00153678[];
    loop registers come out in $t0-$t2 as in retail. namesrc/namedst are
    precomputed so each byte address is one base+index add, and the call
    re-takes &D_0015B180 for its buffer arguments. */
-int func_00124858(void *arg0, int arg1, int arg2) {
+int sceDbcCreateSocket(void *arg0, int arg1, int arg2) {
     int *buf = &RpcReceiveData;
     char *namesrc = (char *)arg0 + 0x14;
     char *namedst = (char *)buf + 0x14;
@@ -774,9 +774,9 @@ int func_00124858(void *arg0, int arg1, int arg2) {
     for (i = 0; i < 0x10; i++) {
         namedst[i] = namesrc[i];
     }
-    if (func_0011B4C8(RpcQueueData, 0x80000901, 0, &RpcReceiveData, 0x400,
+    if (sif_call_rpc(RpcQueueData, 0x80000901, 0, &RpcReceiveData, 0x400,
                        &RpcReceiveData, 0x400, 0, 0) < 0) {
-        func_00124B60(D_00153678);
+        debug_print_stub(D_00153678);
         return 0;
     }
     return buf[9];
@@ -786,7 +786,7 @@ extern void func_00119288(void *, void *);
 /* EIntr returns the previous interrupt state; the file declares it void.
    A call that returns a value changes how the lookup after it is
    allocated. */
-extern int func_0011D9A8_i(void) __asm__("func_0011D9A8");
+extern int enable_interrupts_i(void) __asm__("func_0011D9A8");
 extern void *memcpy(void *, const void *, unsigned int);
 extern char D_001536B8[];
 
@@ -802,21 +802,21 @@ extern char D_001536B8[];
  * `buf` is only assigned where it is used, so the table base and the
  * buffer share retail's saved register.
  */
-int func_00124920(int port) {
+int sceDbcGetDepNumber(int port) {
     int *buf;
 
     func_00119288(D_0015B580, D_0015B580 + 0x80);
-    func_0011D960();
+    disable_interrupts();
     memcpy(D_0015B600, D_0015B580, 0x40);
-    func_0011D9A8_i();
+    enable_interrupts_i();
     if (D_0015B600[port] != 1) {
         return -0xC;
     }
     buf = &RpcReceiveData;
     buf[0] = port;
-    if (func_0011B4C8(RpcQueueData, 0x80000903, 0, &RpcReceiveData, 0x400,
+    if (sif_call_rpc(RpcQueueData, 0x80000903, 0, &RpcReceiveData, 0x400,
                        &RpcReceiveData, 0x400, 0, 0) < 0) {
-        func_00124B60(D_001536B8);
+        debug_print_stub(D_001536B8);
         return 0;
     }
     return buf[1];
@@ -830,7 +830,7 @@ extern char D_001537A0[];
    and reply), copying the reply's bytes to arg3. `r` is assigned in both
    arms of the copy guard with one return; two returns would be
    cross-jumped into one. */
-int func_00124A70(int arg0, int arg1, int *arg2, char *arg3) {
+int sceDbcReceiveData(int arg0, int arg1, int *arg2, char *arg3) {
     int *buf = &RpcReceiveData;
     unsigned char *src;
     int i;
@@ -839,8 +839,8 @@ int func_00124A70(int arg0, int arg1, int *arg2, char *arg3) {
     buf[0] = arg0;
     buf[1] = arg1;
     buf[2] = *arg2;
-    if (func_0011B4C8(RpcQueueData, 0x8000091A, 0, buf, 0x400, buf, 0x400, 0, 0) < 0) {
-        func_00124B60(D_001537A0);
+    if (sif_call_rpc(RpcQueueData, 0x8000091A, 0, buf, 0x400, buf, 0x400, 0, 0) < 0) {
+        debug_print_stub(D_001537A0);
         return 0;
     }
     r = buf[0x23];
@@ -865,7 +865,7 @@ int func_00124A70(int arg0, int arg1, int *arg2, char *arg3) {
    Only Sony's 2.9-ee gives retail's shape, spilling $5-$11 and no FP
    argument registers; the game's 2.95.3 also saves $f12-$f18. That is
    how this file was found to be built with 2.9-ee (Makefile.sn). */
-void func_00124B60(void *fmt, ...) {
+void debug_print_stub(void *fmt, ...) {
 }
 
 /*
@@ -915,7 +915,7 @@ typedef struct {
 } Ent330;
 extern Ent330 D_0015B640[];
 
-int func_00124B88(void) {
+int sce_pad2_init(void) {
     int p;
     int end;
 
@@ -931,7 +931,7 @@ int func_00124B88(void) {
     return 1;
 }
 
-extern int func_00124858(void *, int, int);
+extern int sceDbcCreateSocket(void *, int, int);
 
 extern char D_0015B640_b[] __asm__("D_0015B640");
 
@@ -947,7 +947,7 @@ typedef struct {
 /* scePad2CreateSocket(param, buf). c5: `desc.w0 = 0` moved inside the
    else (null) block instead of shared before the if, probing the last
    1-byte beqz/beql (branch-likely) difference from c4. */
-int func_00124BC8(void *param, char *buf) {
+int sce_pad2_create_socket(void *param, char *buf) {
     Pad2SockParam desc;
     int r;
     int i;
@@ -972,7 +972,7 @@ int func_00124BC8(void *param, char *buf) {
     }
     desc.w0 |= 1;
     desc.mode = 1;
-    r = func_00124858(&desc, (int)buf, (int)buf + 0x80);
+    r = sceDbcCreateSocket(&desc, (int)buf, (int)buf + 0x80);
     if (r < 0) {
         return r;
     }
@@ -986,7 +986,7 @@ int func_00124BC8(void *param, char *buf) {
         p[3] = 0;
         p[2] = 0;
         *(int *)(p + 4) = 0;
-        func_001153FC(p + 0x1C, 0xFF, 0x20);
+        libc_memset(p + 0x1C, 0xFF, 0x20);
         p += 0x80;
     }
     return r;
@@ -998,13 +998,13 @@ extern char D_0015B650[];
 extern void *func_00125078(int);
 extern int func_00125020(int);
 extern int func_00125160(unsigned char *, int *);
-extern void *func_00115248(void *, void *, int);
+extern void *libc_memcpy(void *, void *, int);
 
 /* Read entry id's current record into dst: open the entry if it is not
    (func_00125020), fetch the record (func_00125078), copy its p[2]-byte
    payload from +0x1C and hand the bytes after it to func_00125160 with
    the entry's slot array. Returns the length, or -1. */
-int func_00124D18(int id, void *dst) {
+int scePad2Read(int id, void *dst) {
     unsigned char *p;
 
     if (*(int *)((char *)D_0015B640 + id * 0x330) == 0) {
@@ -1020,7 +1020,7 @@ int func_00124D18(int id, void *dst) {
         unsigned char *src = p + 0x1C;
 
         if (src != 0) {
-            func_00115248(dst, src, p[2]);
+            libc_memcpy(dst, src, p[2]);
             func_00125160(p + 0x1C + p[2], (int *)(D_0015B650 + id * 0x330));
         }
     }
@@ -1056,7 +1056,7 @@ typedef union {
    command {2, 3, 2, 1} through func_00124A70, expands the 40-bit mask it
    returns into the entry's slots (func_00125160) and returns the result
    word func_00124A70 filled in. */
-int func_00124DF0(int port, void *arg1) {
+int sce_pad2_get_button_profile(int port, void *arg1) {
     McCmd cmd;
     int result;
     int r;
@@ -1070,7 +1070,7 @@ int func_00124DF0(int port, void *arg1) {
     cmd.b.f1 = 3;
     cmd.b.f2 = 2;
     cmd.b.f3 = 1;
-    r = func_00124A70(port, cmd.i, &result, arg1);
+    r = sceDbcReceiveData(port, cmd.i, &result, arg1);
     if (r < 0) {
         return r;
     }
@@ -1101,7 +1101,7 @@ typedef struct {
    func_00124DF0's {2,3,2,1}, here {0xC,2,1,1}) and round-trip it
    through func_00124A70; return its state byte on success, 0 on
    failure. */
-int func_00124EE0(int port) {
+int sce_pad2_get_state(int port) {
     Pad2Buf buf;
     char *side;
     McCmd cmd;
@@ -1127,20 +1127,20 @@ int func_00124EE0(int port) {
     cmd.b.f1 = 2;
     cmd.b.f2 = 1;
     cmd.b.f3 = 1;
-    if (func_00124A70(port, cmd.i, &buf.result, (char *)&buf) < 0) {
+    if (sceDbcReceiveData(port, cmd.i, &buf.result, (char *)&buf) < 0) {
         return 0;
     }
     return buf.state;
 }
 
-extern int func_00124920(int);
+extern int sceDbcGetDepNumber(int);
 
 /* scePad2LinkDriver(port): opens the link driver for `port` and, on
    success, records the handle in its table entry. The failure path needs
    its own early return: with one shared `return t` the compiler moves the
    result copy to the end of the function. */
 int func_00125020(int arg0) {
-    int t = func_00124920(arg0);
+    int t = sceDbcGetDepNumber(arg0);
     if (t < 0) {
         return t;
     }

@@ -78,7 +78,7 @@ struct PMoby {
     s16 oclass;
 };
 
-extern void *func_001153FC(void *, int, unsigned int);
+extern void *libc_memset(void *, int, unsigned int);
 extern float IntToFloat(int);
 extern float FastAddRots(float, float);
 extern float FastCos(float);
@@ -147,7 +147,7 @@ void update_class_55_swarm_controller(struct PMoby *moby) {
 
     if (*(int *)&eudora_swarm_initialized == 0) {
         f32 *effect_dest = eudora_swarm_steer_params;
-        func_001153FC(effect, 0, 0x20);
+        libc_memset(effect, 0, 0x20);
         effect[1] = IntToFloat(data->child_count) * 2.073f;
         effect[3] = 2.0f;
         effect[4] = 1.0f;
@@ -450,7 +450,7 @@ extern void HeadingFromVector(void *, float *, void *, void *);
 extern void SetDeathBits(void *, int, int);
 extern int fast_subtract_rotations_cf(void *);
 extern void AttachManipulator(char *, int, void *);
-extern void *func_001153FC(void *, int, unsigned int);
+extern void *libc_memset(void *, int, unsigned int);
 extern int random_integer_below(int);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern float SpringTurn(float cur, float target, float *vel, float k, float d, float max);
@@ -706,7 +706,7 @@ void big_axebot_update(M_B7B0 *moby) {
         if ((moby->f70 & 2) && (flag ? data->f43C * 2.0f < dist : data->f43C < dist)) {
             int arr[6];
 
-            func_001153FC(arr, 0, 0x18);
+            libc_memset(arr, 0, 0x18);
             arr[5] = 1;
             blend_big_axebot_and_axe_animation((char *)moby, (void *)arr[random_integer_below(6)], 0, (void *)scale_ticks(0x18));
         } else if (moby->f53 != 0xD && (moby->f53 != 6 || (moby->f70 & 2))) {

@@ -47,7 +47,7 @@ extern void UpdateViewContext(void);
 extern int bit_swap_lut[];
 extern long background_rgbaq NOT_SDA;
 
-extern void func_0012E528(int);
+extern void snd_PauseAllSoundsInGroup(int);
 extern void music_Pause(int);
 extern int msg_string(int);
 extern void push_help_history(int);
@@ -70,7 +70,7 @@ void mode_freeze_init(int arg0, int arg1, int arg2) {
 
     *(int *)(s + 0x30) = arg2;
     if (g_game_mode != 3) {
-        func_0012E528(0x1D);
+        snd_PauseAllSoundsInGroup(0x1D);
         music_Pause(0);
     }
     *(int *)(s + 0x18) = arg1;
@@ -237,9 +237,9 @@ extern s64 GetFrameTex(s32);
 extern void HudSprite(s32, s32, s32, s32, s32, s32);
 extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, s64);
 extern void VU1_addGSregister(s32, s64);
-extern void *func_00116B00(void *, char *, s32);
-extern s32 func_00116248(char *, const char *, ...);
-extern void func_001153FC(void *, s32, s32);
+extern void *libc_strncpy(void *, char *, s32);
+extern s32 sprintf(char *, const char *, ...);
+extern void libc_memset(void *, s32, s32);
 /* Draws a freeze-mode message box sized to its text and centred on screen, fading with the box timer. */
 static __inline__ void draw_box_p(char *text, s32 left, s32 mid, s32 right, struct TextRegionP box) {
     s32 tint;
@@ -297,7 +297,7 @@ void draw_freeze_message_box(void) {
             f32 pivot;
 
             color = FastTweenColor(*(s32 *)&freeze_text_fade_color_start, *(s32 *)&freeze_text_fade_color_end, alpha);
-            func_00116B00((void *)0x70000000, msg_string(0x4E2B), 0x400);
+            libc_strncpy((void *)0x70000000, msg_string(0x4E2B), 0x400);
             p = (u8 *)0x70000000;
             while (*p >= 2) {
                 p++;
@@ -336,7 +336,7 @@ void draw_freeze_message_box(void) {
         if (((MessageBoxP *)mode_freeze_info)->unk20 <= 0) {
             break;
         }
-        text = func_00116B00((void *)0x70000000, msg_string(0x4FA6), 0x400);
+        text = libc_strncpy((void *)0x70000000, msg_string(0x4FA6), 0x400);
         p = (u8 *)0x70000000;
         while (*p >= 2) {
             p++;
@@ -424,7 +424,7 @@ void draw_freeze_message_box(void) {
             } else if (boot_level_active != 0) {
                 left = 0x5253;
                 right = 0x5250;
-                func_00116248(buf, freeze_prompt_number_format, msg_string(0x4FA9), 1, 1, msg_string(0x4FAA));
+                sprintf(buf, freeze_prompt_number_format, msg_string(0x4FA9), 1, 1, msg_string(0x4FAA));
                 text = buf;
             } else {
                 mid = 0x4FA8;
@@ -442,7 +442,7 @@ void draw_freeze_message_box(void) {
         case 24:
             left = 0x5253;
             right = 0x5250;
-            func_00116248(buf, freeze_prompt_number_format, msg_string(0x4FAE), 1, 1, msg_string(0x4FAA));
+            sprintf(buf, freeze_prompt_number_format, msg_string(0x4FAE), 1, 1, msg_string(0x4FAA));
             text = buf;
             break;
         case 23:
@@ -578,7 +578,7 @@ void draw_freeze_message_box(void) {
             if (!(sel < 5)) {
                 sel = 4;
             }
-            func_00116248(line, freeze_rank_line_format, msg_string(sel + 0x5229), msg_string(0x5245));
+            sprintf(line, freeze_rank_line_format, msg_string(sel + 0x5229), msg_string(0x5245));
             if (((Hero *)g_hero)->race_position == 1) {
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y, c2, line, -1);
             } else {
@@ -592,22 +592,22 @@ void draw_freeze_message_box(void) {
                 rem = best - min * unit;
                 sec = rem / per;
                 hund = (rem - sec * per) * 100 / per;
-                func_00116248(line, freeze_text_line_format, msg_string(0x50A3));
+                sprintf(line, freeze_text_line_format, msg_string(0x50A3));
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x26, c2, line, -1);
-                func_00116248(line, freeze_race_time_format, min, sec, hund);
+                sprintf(line, freeze_race_time_format, min, sec, hund);
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x3A, c2, line, -1);
             } else {
-                func_00116248(line, freeze_text_line_format, msg_string(0x50A2));
+                sprintf(line, freeze_text_line_format, msg_string(0x50A2));
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x30, c3, line, -1);
             }
             record = race_best_records[(g_current_level_index ^ 0x10) ? 0 : 1];
             if (record != 0 && record == ((Hero *)g_hero)->race_score) {
-                func_00116248(line, freeze_text_line_format, msg_string(0x50A5));
+                sprintf(line, freeze_text_line_format, msg_string(0x50A5));
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x56, c2, line, -1);
-                func_00116248(line, freeze_record_value_format, ((Hero *)g_hero)->race_score);
+                sprintf(line, freeze_record_value_format, ((Hero *)g_hero)->race_score);
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x6A, c2, line, -1);
             } else {
-                func_00116248(line, freeze_text_line_format, msg_string(0x50A4));
+                sprintf(line, freeze_text_line_format, msg_string(0x50A4));
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x60, c3, line, -1);
             }
             FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x90, c1, msg_string(0x524E), -1);

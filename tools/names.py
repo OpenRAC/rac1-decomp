@@ -469,7 +469,6 @@ def header_rows(rows=None):
     """Rows names.h defines, and rows left out because the name is already
     an identifier in src/ or include/ (it would be silently renamed)."""
     rows = rows if rows is not None else read_table()
-    game = game_symbols()
     # A name names.h already maps to the same symbol is in src/ because
     # `apply` put it there; only new names can clash with an identifier.
     current = dict(re.findall(r"(?m)^#define (\w+)\s+(\w+)$",
@@ -480,9 +479,6 @@ def header_rows(rows=None):
     for r in rows:
         if r["tier"] == "candidate":
             continue
-        sym = r["symbol"]
-        if sym.startswith("func_") and not sym.startswith("func_L") and sym not in game:
-            continue   # core/SDK/libc: its own well-known names stay unaliased
         (clash if r["name"] in in_use else keep).append(r)
     return keep, clash
 

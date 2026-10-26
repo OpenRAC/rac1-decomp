@@ -516,19 +516,19 @@ typedef struct {
 
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
 
 /* The struct copy is a plain assignment: at alignment 1 this compiler
    expands the 0x13 bytes as unaligned ldl/ldr + sdl/sdr pairs with the
    trailing three bytes done singly, which is exactly retail's shape. */
-extern int func_00116810_hud(void *) __asm__("func_00116810");
+extern int libc_strlen_hud(void *) __asm__("func_00116810");
 /* Copies text into the shared message buffer, preloading the too-long label when under 80 chars. */
 void copy_text_to_shared_buffer(void *arg0) {
-    if ((unsigned int)func_00116810_hud(arg0) < 0x50) {
+    if ((unsigned int)libc_strlen_hud(arg0) < 0x50) {
         message_text_buffer = message_too_long_label;
     }
-    func_001166FC(&message_text_buffer, arg0);
+    libc_strcpy(&message_text_buffer, arg0);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001FFF08);
@@ -1136,9 +1136,9 @@ void draw_hud_sprite_rect(int tex, int x0, int y0, int x1, int y1,
 }
 
 extern int *g_render_packet_cursor MACRO_ADDR;
-extern void func_00122630(void *, int, int, int, int, int, int, int);
-extern void func_00118D80(int);
-extern void func_00122958(void *, void *);
+extern void sceGsSetDefLoadImage(void *, int, int, int, int, int, int, int);
+extern void flush_cache(int);
+extern void sceGsExecLoadImage(void *, void *);
 
 /* Hud_sendTexture(char *tex, int x, int y, int levelShift, int sizeShift,
    int useStackBuf): builds a mip level count (clamped to >=1) and a
@@ -1185,7 +1185,7 @@ void Hud_sendTexture(char *arg0, int arg1, int arg2, int arg3, int arg4, int arg
     p10 = 1 << arg3;
     p11 = 1 << arg4;
 
-    func_00122630(dst, p5, p6, p7, 0, 0, p10, p11);
+    sceGsSetDefLoadImage(dst, p5, p6, p7, 0, 0, p10, p11);
 
     if (arg5 == 0) {
         int *cur = g_render_packet_cursor;
@@ -1195,8 +1195,8 @@ void Hud_sendTexture(char *arg0, int arg1, int arg2, int arg3, int arg4, int arg
         g_render_packet_cursor[3] = 0x50000000 | nloop2;
         g_render_packet_cursor = g_render_packet_cursor + 4;
     } else {
-        func_00118D80(0);
-        func_00122958(dst, arg0);
+        flush_cache(0);
+        sceGsExecLoadImage(dst, arg0);
     }
 }
 

@@ -15,15 +15,15 @@ void start_level(int level) {
     }
     decode_mode = 2;
     voice_pool[0x6B] |= 8;
-    func_00118D80(0);
+    flush_cache(0);
     sound_StopAllSounds();
     music_Stop();
     FadeToBlack(scale_game_frame_count(12));
     g_game_mode = 1;
-    func_00118D80(0);
+    flush_cache(0);
     sound_StopAllSounds();
     music_Stop();
-    func_0012EF48(0);
+    snd_StreamSafeCdSync(0);
     for (;;) {
         char *ld = memory_card_state;
         if (*(int *)(ld + 0xD4) < 3 && *(int *)(ld + 0xDC) < 0) {
@@ -36,10 +36,10 @@ void start_level(int level) {
         t = *(int *)(g + 0x1C);
     }
     Movie_Play(b, a, t + 0x100000, t + 0x400000, 0);
-    func_00120F30(0);
-    func_00122598(0);
-    func_00120858(0, 0);
-    func_00123168(func_0012F308);
+    sce_cd_sync_s(0);
+    sce_gs_sync_v(0);
+    wait_for_graphics_pipeline_idle(0, 0);
+    sceGsSyncVCallback(vsync_callback);
     Hud_sendTexture(0x1000000, depth_buffer_address, 0x1B, 6, 6, 1);
     decode_mode = 0;
     FadeToBlack(4);

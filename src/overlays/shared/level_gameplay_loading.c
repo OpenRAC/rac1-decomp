@@ -47,10 +47,10 @@ extern int D_L00_00160628_240398 __asm__("D_L00_00160628") MACRO_ADDR;
 extern int D_L00_00160624_240398 __asm__("D_L00_00160624") MACRO_ADDR;
 extern int D_L00_0016062C_240398 __asm__("D_L00_0016062C") MACRO_ADDR;
 extern void FastMemCopy_r(void *, void *, int) __asm__("func_001F9A98");
-extern int func_00122630_240398(void *, short, short, short, short, short, short, short) __asm__("func_00122630");
-extern void func_00118D80_240398(int) __asm__("func_00118D80");
-extern int func_00122958_240398(void *, void *) __asm__("func_00122958");
-extern int func_00120858_240398(int, unsigned short) __asm__("func_00120858");
+extern int sceGsSetDefLoadImage_r(void *, short, short, short, short, short, short, short) __asm__("func_00122630");
+extern void flush_cache_r(int) __asm__("func_00118D80");
+extern int sceGsExecLoadImage_r(void *, void *) __asm__("func_00122958");
+extern int wait_for_graphics_pipeline_idle_r(int, unsigned short) __asm__("func_00120858");
 extern void register_moby_class_r(void *, void *, void *, int) __asm__("func_00203E78");
 
 /* Loads a level's four packed images through the GS loader and registers the image records and their data blocks. */
@@ -76,26 +76,26 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     c = ((Hdr_240398 *)buf)->c;
     do {
         if (i == 0) {
-            func_00122630_240398(img, (depth_buffer_address_r[1] + tbl[0x2B]) >> 8, 1, 0x13, 0, 0, 0x40, 0x40);
+            sceGsSetDefLoadImage_r(img, (depth_buffer_address_r[1] + tbl[0x2B]) >> 8, 1, 0x13, 0, 0, 0x40, 0x40);
             src = buf + off;
             dst = p + 0x14430;
         } else if (i == 1) {
-            func_00122630_240398(img, (depth_buffer_address_r[1] + tbl[0x2C]) >> 8, 1, 0x13, 0, 0, 0x20, 0x20);
+            sceGsSetDefLoadImage_r(img, (depth_buffer_address_r[1] + tbl[0x2C]) >> 8, 1, 0x13, 0, 0, 0x20, 0x20);
             src = buf + off;
             dst = p + 0x15430;
         } else if (i == 2) {
-            func_00122630_240398(img, (depth_buffer_address_r[1] + tbl[0x2D]) >> 8, 1, 0, 0, 0, 0x10, 0x10);
+            sceGsSetDefLoadImage_r(img, (depth_buffer_address_r[1] + tbl[0x2D]) >> 8, 1, 0, 0, 0, 0x10, 0x10);
             dst = p + 0x30;
             src = buf + off;
         } else {
-            func_00122630_240398(img, (depth_buffer_address_r[1] + tbl[0x2E]) >> 8, 1, 0, 0, 0, 0x10, 0x10);
+            sceGsSetDefLoadImage_r(img, (depth_buffer_address_r[1] + tbl[0x2E]) >> 8, 1, 0, 0, 0, 0x10, 0x10);
             src = buf + off;
             dst = buf + c + 0x30;
         }
-        func_00118D80_240398(0);
+        flush_cache_r(0);
         i++;
-        func_00122958_240398(img, dst);
-        func_00120858_240398(0, 0);
+        sceGsExecLoadImage_r(img, dst);
+        wait_for_graphics_pipeline_idle_r(0, 0);
     } while (i < 4);
     base = buf;
     buf = src;
@@ -428,10 +428,10 @@ typedef struct {
 } Ship_422D8;
 
 extern void Load_r(void *, int, int) __asm__("func_002176C8");
-extern void func_00118D80(int);
+extern void flush_cache(int);
 extern int fast_decompress(void *, void *);
 extern void FastMemSet(void *, int, int);
-extern void func_001160C8(int);
+extern void srand(int);
 extern void SetUpdateModeTiming(int);
 extern void UpdateFog();
 extern void SetBackgroundColor(int, int, int);
@@ -603,13 +603,13 @@ char *load_level_gameplay(int arg0) {
         }
         level_root_r[1] = mem; /* D_0015EF50 */
     }
-    func_00118D80(0);
+    flush_cache(0);
     fast_decompress(level_root_r[1], hdr);
-    func_00118D80(0);
+    flush_cache(0);
     FastMemSet(&g_hero, 0, 0x2310);
     FastMemSet(player_camera, 0, 0x3A0);
     FastMemSet(moby_animation_slots, 0, 0x180);
-    func_001160C8(0x4D2);
+    srand(0x4D2);
     if (pal_mode != 0) {
         if (frame_scale == 1.0f) {
             SetUpdateModeTiming(1);
@@ -1855,7 +1855,7 @@ extern s32 moby_texture_count MACRO_ADDR;
 extern u8 mission_state[] MACRO_ADDR;
 extern s32 level_frame_counter MACRO_ADDR;
 extern UpdD244 active_scene_trigger;
-extern void func_00118D80(s32);
+extern void flush_cache(s32);
 extern void Profile_Mark(void *, s32);
 extern s32 log2dim(s32);
 extern void FastMemSet(void *, s32, s32);
@@ -1926,7 +1926,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         copy_memory_by_alignment(mission_state, saved_mission_state + g_current_level_index * 16, 0x10);
         upload_texture_images((char *)(src[6] + (s32)src), h->v[0], (char *)h + h->v[1]);
         level_sound_bank_handle = sound_bank_handle;
-        func_00118D80(0);
+        flush_cache(0);
         used = fast_decompress((char *)(src[0x14] + (s32)src), base);
 
         level_texture_data_base = (s32)(base + h->v[0x18]);

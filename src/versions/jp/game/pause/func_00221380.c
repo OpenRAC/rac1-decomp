@@ -21,7 +21,7 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
         }
         SetupGifPaging(0);
         text = ((char *(*)(int))msg_string)(((struct MS_21380 *)menu_system)->card_op_pending ? ((struct MS_21380 *)menu_system)->card_op_text : 0x4FBA);
-        ((void *(*)(void *, int, unsigned int))func_001153FC)(window_fields, 0, sizeof(window_fields));
+        ((void *(*)(void *, int, unsigned int))libc_memset)(window_fields, 0, sizeof(window_fields));
         window_fields[1] = menu->height + 1;
         window_fields[0] = 1;
         window_fields[2] = 1;

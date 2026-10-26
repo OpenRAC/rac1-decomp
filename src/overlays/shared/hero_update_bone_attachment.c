@@ -396,7 +396,7 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
         char *q2 = quartu_coll_hit;
         *(float *)(q2 + 0x48) = 0.0f;
         *(int *)(b3 + 0x240) = *(int *)(q2 + 0x18);
-        func_001252C0(q2 + 0x40, q2 + 0x40);
+        sceVu0Normalize(q2 + 0x40, q2 + 0x40);
         f = -*(float *)(b3 + 0xE0) * *(float *)(q2 + 0x40)
             - *(float *)(b3 + 0xE4) * *(float *)(q2 + 0x44);
         if (0.0f < f) {
@@ -417,7 +417,7 @@ f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 f32 FastVecDist(void *, void *);
-void func_001252C0(void *, void *);
+void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
 f32 fast_atan2(f32, f32);
 void FastVecSub(void *, void *, void *);
@@ -595,7 +595,7 @@ void HeroL15_ResetMotionState(void) {
         g_hero_r.u2d8.F = quartu_coll_hit_r.v20.f[2];
         g_hero_r.xF2dc = FastVecDist((u8 *)&g_hero_r + 0x80, ((u8 *)&g_hero_r + 0x2A0));
         g_hero_r.xI2fc = quartu_coll_hit_r.i18;
-        func_001252C0((u8 *)&g_hero_r + 0x270, (u8 *)&quartu_coll_hit_r.f40);
+        sceVu0Normalize((u8 *)&g_hero_r + 0x270, (u8 *)&quartu_coll_hit_r.f40);
         g_hero_r.u2e0.F = compute_gravity_relative_vector_inclination((u8 *)&quartu_coll_hit_r.f40);
         g_hero_r.xF2ec = fast_atan2(quartu_coll_hit_r.f40, quartu_coll_hit_r.f44);
         FastVecSub(&v20, ((u8 *)&g_hero_r + 0x2A0), (u8 *)&g_hero_r + 0x80);
@@ -670,7 +670,7 @@ d1:
             if (0.4f < FastAbsF(f)) {
                 g_hero_r.a2c0.f[i] = 0.0f;
             }
-            func_001252C0(&v60, (u8 *)&quartu_coll_hit_r.f40);
+            sceVu0Normalize(&v60, (u8 *)&quartu_coll_hit_r.f40);
             compute_rotated_vector_angles(&v60, &v50);
             if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
                 g_hero_r.a2c8.f[i] = v50.f[1];
