@@ -2368,6 +2368,7 @@ func_L00_00260AB0	src/overlays/shared/moby_ground_collision.c	match	00:00261A10	
 func_L00_00260B68	src/overlays/shared/moby_ground_collision.c	match	00:00261AC8	136	100.00
 func_L00_00260D30	src/overlays/shared/moby_ground_collision.c	match	00:00261C90	640	100.00
 func_L00_00260FB0	src/overlays/shared/moby_ground_collision.c	match	00:00261F10	1164	100.00
+func_L00_00261448	src/overlays/shared/moby_ground_collision.c	match	00:002623A8	48	100.00
 func_L00_00261478	src/overlays/shared/moby_ground_collision.c	match	00:002623D8	240	100.00
 func_L00_00261568	src/overlays/shared/moby_ground_collision.c	match	00:002624C8	372	100.00
 func_L00_002616E0	src/overlays/shared/moby_ground_collision.c	match	00:00262640	204	100.00

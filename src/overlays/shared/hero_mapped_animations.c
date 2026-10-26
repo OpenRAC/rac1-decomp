@@ -1307,6 +1307,7 @@ typedef struct {
 } Plat_234800_34800;
 extern void scale_ticks_r2(int) __asm__("func_001F9850");
 extern Plat_234800_34800 *GetFlaggedPvarWord(void *);
+extern Plat_234800_34800 *func_L00_00261448(void *);
 extern float FastVecLength(void *);
 extern float FastAddRots(float, float);
 extern void RotateWithMoby(int, void *, void *, void *, void *, void *);
@@ -1360,7 +1361,7 @@ void update_hero_attachment(void) {
     if (!mode) {
         return;
     }
-    plat = GetFlaggedPvarWord(((Hero *)g_hero)->platform_moby);
+    plat = func_L00_00261448(((Hero *)g_hero)->platform_moby);
     if (plat == 0) {
         return;
     }

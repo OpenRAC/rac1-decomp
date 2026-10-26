@@ -2567,7 +2567,7 @@ extern float D_L15_0016203C_2E9358 SDATA(D_L15_0016203C);
 extern char *quartu_coll_sphere_moby_hits_r[] __asm__("D_L15_00178580");
 extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0");
 extern Res_2E9358 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
-extern char *GetFlaggedPvarWord_r(int) __asm__("func_L00_0025D390");
+extern char *GetFlaggedPvarWord_r(int) __asm__("func_L00_00261448");
 extern void add_vectors_r(void *, void *, void *) __asm__("func_L00_001FF240");
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");

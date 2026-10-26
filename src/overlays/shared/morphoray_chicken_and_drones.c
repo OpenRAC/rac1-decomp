@@ -11,6 +11,7 @@ extern char hero_globals_base[];
 extern char collision_hit_point[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern int GetFlaggedPvarWord(char *);
+extern int func_L00_00261448(char *);
 extern void FastVecAdd(void *, void *, void *);
 extern int coll_line(void *, void *, int, int, int);
 extern void vec_scale_to_length(void *, void *, float);
@@ -31,7 +32,7 @@ void release_glove_of_doom_held_moby(Q4 *release_position, char *released_moby, 
     Vec4 collision_start, collision_position_offset;
     qcopy(q, initial_velocity);
     P = (Hero *)(hero_globals_base + 0xE1D);
-    if (P->ground_moby && GetFlaggedPvarWord(P->ground_moby)) {
+    if (P->ground_moby && func_L00_00261448(P->ground_moby)) {
         FastVecAdd(q, q, &P->motion.displacement);
     }
     released_moby_position = &moby->pos;
@@ -102,7 +103,7 @@ extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 extern void ProbeGroundHeight_r(void *, s32, f32) __asm__("func_00214358");
 extern void AddDrawCallback_r(void *, void *) __asm__("func_001F49B0");
 extern void draw_bomb_landing_marker_r(void) __asm__("func_L00_002ADE90");
-extern unsigned char *GetFlaggedPvarWord_r(int) __asm__("func_L00_0025D390");
+extern unsigned char *GetFlaggedPvarWord_r(int) __asm__("func_L00_00261448");
 extern s32 CollType_r(void) __asm__("func_L00_001F3958");
 
 /* Predicts where a thrown moby lands: steps the velocity (with gravity) from its start until collision_line_2c8440 hits ground (or a moby other than the hero and the holder), for up to `timer` steps. Stores the landing point and normal in vars and pulls the point 5% toward D_L00_00166DC0_2c8440. mode 0 needs a live hit moby; mode 1 starts from the hero's hand. Returns 1 on a hit.
@@ -261,7 +262,7 @@ void update_doom_bot_spawner(char *m) {
         if (*(short *)(*(char **)(s + 0x30) + 0xA6) == 0xE5 && *(short *)(s + 0x3A) == 0 &&
             FastVecLength(s) > 0.0f) {
             char *P = hero_globals_base + 0xE1D;
-            if (*(int *)(P + 0x2FC) == 0 || GetFlaggedPvarWord(*(char **)(P + 0x2FC)) == 0) {
+            if (*(int *)(P + 0x2FC) == 0 || func_L00_00261448(*(char **)(P + 0x2FC)) == 0) {
                 predict_doom_bot_spawner_landing(s, m, 1);
             } else {
                 if (predict_doom_bot_spawner_landing(s, m, 0) == 0) {
@@ -365,7 +366,7 @@ void update_doom_bot_spawner(char *m) {
             if (FastVecLength(s) < frame_scale * f21) goto L344;
         }
         if (*(int *)(P + 0x2FC) == 0) goto Lfin;
-        if (GetFlaggedPvarWord(*(char **)(P + 0x2FC)) != 0) {
+        if (func_L00_00261448(*(char **)(P + 0x2FC)) != 0) {
             float a20 = FastVecLength(s);
             if (a20 < frame_scale * f21 + FastVecLength(Q - 0x40)) {
                 goto L344;
@@ -384,7 +385,7 @@ void update_doom_bot_spawner(char *m) {
         }
     L394:
         w = hero_globals_base + 0xE1D;
-        if (*(int *)(w + 0x2FC) != 0 && GetFlaggedPvarWord(*(char **)(w + 0x2FC)) != 0) {
+        if (*(int *)(w + 0x2FC) != 0 && func_L00_00261448(*(char **)(w + 0x2FC)) != 0) {
             FastVecAdd(s, s, w + 0x100);
         }
     Lfin:
@@ -425,7 +426,7 @@ void update_doom_bot_spawner(char *m) {
                 f20 = f20 * f0;
                 v1.v[1] = f20;
                 v1.v[2] = frame_scale * 0.02f;
-                if (*(int *)(P + 0x2FC) != 0 && GetFlaggedPvarWord(*(char **)(P + 0x2FC)) != 0) {
+                if (*(int *)(P + 0x2FC) != 0 && func_L00_00261448(*(char **)(P + 0x2FC)) != 0) {
                     FastVecAdd(&v1, &v1, P + 0x100);
                 }
                 FastVecAdd(&v0, &v1, m + 0x10);

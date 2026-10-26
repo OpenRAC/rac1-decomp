@@ -1226,6 +1226,7 @@ u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
 }
 typedef int u128 __attribute__((mode(TI)));
 extern unsigned char *GetFlaggedPvarWord(int);
+extern unsigned char *func_L00_00261448(int);
 extern void FastVecAdd(void *,void *,void *);
 extern void FastVecSub(void *,void *,void *);
 extern float FastVecLength(void *);
@@ -1258,7 +1259,7 @@ void release_moby_with_collision_check(float *release_position,char *m,void *ini
  struct Moby *player;
  qcopy(&state->vel,initial_velocity);
  { struct Hero *view=(struct Hero *)g_hero;
-   if(view->ground_moby && GetFlaggedPvarWord((int)view->ground_moby)) FastVecAdd(&state->vel,&state->vel,&view->motion.displacement);
+   if(view->ground_moby && func_L00_00261448((int)view->ground_moby)) FastVecAdd(&state->vel,&state->vel,&view->motion.displacement);
  }
  qcopy(&moby->pos,release_position);
  camera=(struct Hero *)g_hero;
@@ -1350,7 +1351,7 @@ s32 predict_thrown_moby_landing(ThrowVars *v, struct Moby *m, s32 mode)
         qcopy(&e, &v->vel);
         if (g_hero_r4.state.control_mode == 15)
             FastVecAdd(&e, &e, &g_hero_r4.motion.displacement);
-        if (g_hero_r4.ground_moby && GetFlaggedPvarWord((int)g_hero_r4.ground_moby) && mode)
+        if (g_hero_r4.ground_moby && func_L00_00261448((int)g_hero_r4.ground_moby) && mode)
             FastVecAdd(&e, &e, &g_hero_r4.motion.displacement);
         t = scale_ticks(300);
     } else {
@@ -1416,10 +1417,10 @@ s32 predict_thrown_moby_landing(ThrowVars *v, struct Moby *m, s32 mode)
     if (mode == 0) {
         if (coll_hit_result_r3.moby == 0)
             return 0;
-        if (GetFlaggedPvarWord(coll_hit_result_r3.moby) == 0)
+        if (func_L00_00261448(coll_hit_result_r3.moby) == 0)
             goto ret0;
     }
-    if (mode != 2 || coll_hit_result_r3.moby == 0 || !GetFlaggedPvarWord(coll_hit_result_r3.moby))
+    if (mode != 2 || coll_hit_result_r3.moby == 0 || !func_L00_00261448(coll_hit_result_r3.moby))
         AddDrawCallback(draw_moby_oscillating_textured_quads_r, m);
     v->normal.q = coll_hit_normal.q;
     FastVecSub(&a, &v->landing, &g_debug_camera_r3);
@@ -1573,7 +1574,7 @@ void decoy_update(char *moby) {
     if (*(short *)(*(char **)(vars + 0x40) + 0xA6) == 0x232 && *(short *)(vars + 0x46) == 0 &&
         FastVecLength(vars + 0x10) > 0.0f) {
         ground = (char *)g_hero_r4.ground_moby;
-        if (ground == 0 || GetFlaggedPvarWord(ground) == 0) {
+        if (ground == 0 || func_L00_00261448(ground) == 0) {
             predict_thrown_moby_landing(vars, moby, 1);
         } else if (predict_thrown_moby_landing(vars, moby, 0) == 0) {
             predict_thrown_moby_landing(vars, moby, 2);
@@ -1644,7 +1645,7 @@ void decoy_update(char *moby) {
                     FastVecScale(vars + 0x10, vars + 0x10, 0.2f);
                 len = FastVecLength(vars + 0x10);
                 if (len < frame_scale * 0.01f ||
-                    (g_hero_r4.ground_moby != 0 && GetFlaggedPvarWord((int)g_hero_r4.ground_moby) != 0 &&
+                    (g_hero_r4.ground_moby != 0 && func_L00_00261448((int)g_hero_r4.ground_moby) != 0 &&
                      FastVecLength(vars + 0x10) < frame_scale * 0.01f + FastVecLength(&g_hero_r4.motion.displacement))) {
                     angle = fast_atan2(coll_hit_result_r3.normal_z, vec_length_xy(&coll_hit_result_r3.normal_x));
                     if (angle < 0.61086524f) {

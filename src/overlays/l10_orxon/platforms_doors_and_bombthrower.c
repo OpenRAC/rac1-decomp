@@ -540,10 +540,7 @@ void gadgebot_telepot_pad_update(char *m)
         func_L00_002E9A18_2BFBB8(0);
     }
 }
-INCLUDE_ASM("asm/overlays", func_L10_002C0378);
-INCLUDE_ASM("asm/overlays", func_L10_002C0388);
-INCLUDE_ASM("asm/overlays", func_L10_002C03EC);
-INCLUDE_ASM("asm/overlays", func_L10_002C04C4);
+INCLUDE_ASM("asm/overlays", func_L10_002C0348);
 extern char hero_globals_base[];
 extern int fast_dec_timer(int *arg0);
 extern void euler_to_matrix(float *, float *);

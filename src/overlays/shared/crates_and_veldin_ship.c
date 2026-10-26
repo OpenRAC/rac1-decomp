@@ -58,7 +58,7 @@ extern f32 FastAddRots(f32, f32);
 extern void DeleteMoby_r(M_2cfcb8 *) __asm__("func_0020D678");
 extern s32 coll_line_r(V_2cfcb8 *, V_2cfcb8 *, s32, M_2cfcb8 *, s32) __asm__("func_L00_001EFFF0");
 extern s32 is_moby_in_class_range_500_to_540_r(M_2cfcb8 *) __asm__("func_L00_0025F410");
-extern s32 GetFlaggedPvarWord_r(M_2cfcb8 *) __asm__("func_L00_0025D390");
+extern s32 GetFlaggedPvarWord_r(M_2cfcb8 *) __asm__("func_L00_00261448");
 extern int convert_pose_to_reference_local(M_2cfcb8 *, M_2cfcb8 *, V_2cfcb8 *, f32 *, V_2cfcb8 *, V_2cfcb8 *);
 extern int get_first_moby_in_group(M_2cfcb8 **, s32, s32, s32);
 extern int get_next_moby_in_group(M_2cfcb8 **, M_2cfcb8 *, s32, s32);
@@ -656,6 +656,7 @@ extern void crate_drop_bolts(void *);
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, float *s);
 extern int GetFlaggedPvarWord(char *);
+extern int func_L00_00261448(char *);
 extern void update_entity_matrix(char *a, Vx *b, void *c, void *d);
 extern int coll_line(void *, void *, int, int, int);
 extern float FastVecLength(void *);
@@ -742,7 +743,7 @@ void update_crate_stack_motion(char *a) {
                 qcopy(v5, a + 0x10);
                 qcopy(v6, a + 0x40);
                 transform_attachment_pose((int)a, *(char **)(o + 0xF0), v4, (float *)(o + 0xE0), (float *)(a + 0x10), (float *)(a + 0x40));
-                if (*(int *)(GetFlaggedPvarWord(*(char **)(o + 0xF0)) + 0x3C) & 4) {
+                if (*(int *)(func_L00_00261448(*(char **)(o + 0xF0)) + 0x3C) & 4) {
                     qcopy(o + 0xD0, v4);
                     *(float *)(o + 0xD8) = *(float *)(o + 0xD8) - *(float *)(o + 0xF4);
                 }

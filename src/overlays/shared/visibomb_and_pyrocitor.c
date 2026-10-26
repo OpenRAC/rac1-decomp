@@ -1305,7 +1305,7 @@ extern short visibomb_missile_cruise_speed_r __asm__("D_L00_0016156C");
 extern float g_frame_time_r2 __asm__("D_0015EE6C") __attribute__((section(".sdata")));
 extern q_2b58d8 collision_hit_point_r __asm__("D_L00_00173F60") __attribute__((section(".data")));
 unsigned char *func_0020D348_2b58d8(int) __asm__("func_0020D348");
-int func_L00_0025D390_2b58d8(void *) __asm__("func_L00_0025D390");
+int func_L00_0025D390_2b58d8(void *) __asm__("func_L00_00261448");
 float func_001F9CB8_2b58d8(void *) __asm__("func_001F9CB8");
 int func_001F9850_2b58d8(int) __asm__("func_001F9850");
 void func_L00_002B69C0_2b58d8(void *) __asm__("func_L00_002B69C0");
