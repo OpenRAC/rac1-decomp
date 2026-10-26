@@ -2988,7 +2988,7 @@ int rand_range(int, int);
 E *PartType23Spawn(Vec4f *, int, float, float, Vec4f *, float, int, float);
 s16 scale_ticks_r(int) __asm__("func_001F9850");
 void AddDrawCallback(void *, P *);
-void draw_smoke_fire_spawner(void);
+void draw_smoke_fire_spawner(P *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d6f28. */
 void particle_spawner_smoke_fire_update(P *p) {
@@ -3068,7 +3068,179 @@ void particle_spawner_smoke_fire_update(P *p) {
         return;
     }
 }
-INCLUDE_ASM("asm/overlays", func_L00_002D8898);
+typedef struct {
+    s16 start; s16 count; int idx; char pad08[0x30];
+    int col; /* 38 */
+    char pad3C[4];
+    s16 extra; s16 flag42; /* 40 42 */
+    float f44, f48, f4C, f50; /* 44..50 */
+    int texture; /* 54 */
+    int mesh_texture; /* 58 */
+    u8 mesh_alpha, mesh_red, mesh_green, mesh_blue; /* 5C..5F */
+} Q_2D8898;
+struct GeometryQuad_2D8898 {
+    Vec4 positions[4];
+    u32 colors[4];
+    f32 texture_coordinates[4][2];
+    union { u64 value; } reserved;
+    u64 texture;
+    u64 texture_state;
+    u64 primitive;
+};
+extern float smoke_particle_speed_a[];
+extern float smoke_particle_speed_b[];
+extern float smoke_particle_scroll[];
+extern float smoke_particle_scroll_speed[];
+extern s16 smoke_particle_life_timer[];
+extern char smoke_particle_is_mesh[];
+extern s16 smoke_particle_start_delay[];
+extern float smoke_scroll_offset MACRO_ADDR;
+extern float smoke_particle_timer_ticks_inv MACRO_ADDR;
+extern float smoke_particle_aux_ticks_inv MACRO_ADDR;
+extern unsigned short smoke_particle_aux_ticks SDATA(D_L00_00161450);
+extern int D_L00_00161A68 SDATA(D_L00_00161A68);
+extern float D_L00_00161A6C SDATA(D_L00_00161A6C);
+extern u8 D_L00_00161A70[4] SDATA(D_L00_00161A70);
+extern u8 D_L00_00161A78[8] SDATA(D_L00_00161A78);
+extern int D_L00_001E16D0[][4];
+extern float D_L00_001E1610[][4];
+extern float D_L00_001E1790[];
+extern float D_L00_001E1794[];
+extern float D_L00_001E14F0[][4];
+extern float D_L00_001E1530[];
+extern float D_L00_001E1550[][4];
+extern float D_L00_001E1730[];
+extern float D_L00_001E1734[];
+extern void FastVecCross(void *, void *, void *);
+extern void VU1_addGSregister(s32, s64);
+
+void draw_smoke_fire_spawner(P *spawner) {
+    Vec4 position, up;
+    Vec4 facing[4], flipped[4];
+    struct GeometryQuad_2D8898 quad;
+    Q_2D8898 *q = (Q_2D8898 *)spawner->q;
+    T *volume;
+    int mesh_alpha, mesh_color, end;
+    Vec4 *transform;
+    int alpha, i, k, j, index, particle_quad_vertex_index;
+    float width, height, phase, one;
+    float *vertex;
+    Vec4 *front;
+    int (*rows)[4];
+
+    mesh_alpha = q->mesh_alpha << 24;
+    mesh_color = q->mesh_blue << 16 | q->mesh_green << 8 | q->mesh_red;
+    volume = &level_cuboids[q->idx];
+    end = q->start + q->count + q->extra;
+    qcopy(&position, &spawner->pos);
+    up.q = 0;
+    position.f[3] = 1.0f;
+    up.f[2] = 1.0f;
+    FastVecSub(&facing[0], &g_debug_camera_r2, &position);
+    vec_scale_to_length(&facing[0], &facing[0], 1.0f);
+    FastVecCross(&facing[1], &facing[0], &up);
+    vec_scale_to_length(&facing[1], &facing[1], 1.0f);
+    FastVecCross(&facing[2], &facing[1], &facing[0]);
+    qcopy(&facing[3], &position);
+    do {
+        FastVecScale(&flipped[0], &facing[0], -1.0f);
+        FastVecCross(&flipped[1], &flipped[0], &up);
+        vec_scale_to_length(&flipped[1], &flipped[1], 1.0f);
+        FastVecCross(&flipped[2], &flipped[1], &flipped[0]);
+        qcopy(&flipped[3], &facing[3]);
+    } while (0);
+    quad.texture = ((int (*)(int))GetEffectTex)(q->texture + 0x28);
+    quad.texture_state = 0xFF9000000260L;
+    quad.primitive = 0x8000000048L;
+    quad.reserved.value = 0;
+    VU1_addGSregister(0x4A, 0);
+    VU1_addGSregister(0x47, 0x51001);
+    front = facing;
+    for (i = q->start; i < end; i++) {
+        phase = smoke_particle_scroll[i] - smoke_particle_scroll_speed[i] * frame_scale;
+        smoke_particle_scroll[i] = phase;
+        transform = smoke_particle_matrix_select[i] ? flipped : front;
+        if (phase <= -8.0f) {
+            smoke_particle_scroll[i] = phase + 8.0f;
+        }
+        transform_vector((Vec4f *)&transform[3], &smoke_particle_unit_positions_r[i], volume);
+        width = smoke_particle_speed_a[i];
+        height = smoke_particle_speed_b[i];
+        if (((u8 *)smoke_particle_is_mesh)[i]) {
+            rows = D_L00_001E16D0;
+            quad.primitive = 0x8000000044L;
+            one = 1.0f;
+            for (k = 2; k < 4; k++) {
+                for (j = 0; j < 4; j++) {
+                    index = rows[k][j];
+                    vertex = D_L00_001E1610[index];
+                    quad.positions[j].f[0] = vertex[0];
+                    quad.positions[j].f[1] = vertex[1] * width;
+                    quad.positions[j].f[2] = vertex[2] * height;
+                    quad.positions[j].f[3] = one;
+                    transform_vector((Vec4f *)&quad.positions[j], (Vec4f *)&quad.positions[j], transform);
+                    quad.texture_coordinates[j][0] = D_L00_001E1794[index * 2] + smoke_particle_scroll[i];
+                    quad.texture_coordinates[j][1] = D_L00_001E1790[index * 2];
+                    quad.colors[j] = mesh_alpha * D_L00_00161A78[index] | mesh_color;
+                }
+                draw_world_quad(&quad, 0, 0);
+            }
+        } else {
+            if (smoke_particle_timer[i]) {
+                FastDecTimer(&smoke_particle_timer[i]);
+                alpha = truncate_float_to_s32((1.0f - IntToFloat(smoke_particle_timer[i]) * smoke_particle_timer_ticks_inv) * D_L00_00161A6C);
+            } else if (smoke_particle_life_timer[i]) {
+                if (FastDecTimer(&smoke_particle_life_timer[i])) {
+                    reset_smoke_fire_spawner_particle(spawner, i);
+                    alpha = 0;
+                    smoke_particle_matrix_select[i] = random_integer_below(2);
+                } else {
+                    alpha = truncate_float_to_s32(IntToFloat(smoke_particle_life_timer[i]) * smoke_particle_aux_ticks_inv * D_L00_00161A6C);
+                }
+            } else {
+                if (FastDecTimer(&smoke_particle_start_delay[i])) {
+                    smoke_particle_life_timer[i] = smoke_particle_aux_ticks;
+                }
+                alpha = D_L00_00161A68;
+            }
+            alpha <<= 24;
+            quad.primitive = 0x8000000048L;
+            one = 1.0f;
+            for (particle_quad_vertex_index = 0; particle_quad_vertex_index < 4; particle_quad_vertex_index++) {
+                quad.positions[particle_quad_vertex_index].f[0] = D_L00_001E14F0[particle_quad_vertex_index][0];
+                quad.positions[particle_quad_vertex_index].f[1] = D_L00_001E14F0[particle_quad_vertex_index][1] * width;
+                quad.positions[particle_quad_vertex_index].f[2] = D_L00_001E14F0[particle_quad_vertex_index][2] * height;
+                quad.positions[particle_quad_vertex_index].f[3] = one;
+                quad.texture_coordinates[particle_quad_vertex_index][0] = D_L00_001E1530[particle_quad_vertex_index * 2] - smoke_particle_scroll[i];
+                quad.texture_coordinates[particle_quad_vertex_index][1] = D_L00_001E1530[particle_quad_vertex_index * 2 + 1];
+                quad.colors[particle_quad_vertex_index] = alpha * D_L00_00161A70[particle_quad_vertex_index] | q->col;
+                transform_vector((Vec4f *)&quad.positions[particle_quad_vertex_index], (Vec4f *)&quad.positions[particle_quad_vertex_index], transform);
+            }
+            draw_world_quad(&quad, 0, 0);
+        }
+    }
+    quad.texture = ((int (*)(int))GetEffectTex)(q->mesh_texture + 0x28);
+    quad.primitive = 0x8000000044L;
+    qcopy(&facing[3], volume->pos);
+    facing[3].f[2] -= q->f50;
+    if (q->flag42 == 0) {
+        for (k = 0; k < 6; k++) {
+            for (j = 0; j < 4; j++) {
+                index = D_L00_001E16D0[k][j];
+                vertex = D_L00_001E1550[index];
+                quad.positions[j].f[0] = vertex[0];
+                quad.positions[j].f[1] = vertex[1] * q->f48;
+                quad.positions[j].f[2] = vertex[2] * q->f4C;
+                quad.positions[j].f[3] = 1.0f;
+                transform_vector((Vec4f *)&quad.positions[j], (Vec4f *)&quad.positions[j], facing);
+                quad.texture_coordinates[j][0] = D_L00_001E1734[index * 2] + smoke_scroll_offset;
+                quad.texture_coordinates[j][1] = D_L00_001E1730[index * 2];
+                quad.colors[j] = D_L00_00161A78[index] * 0xFF000000 | mesh_color;
+            }
+            draw_world_quad(&quad, 0, 0);
+        }
+    }
+}
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 typedef struct {
     s16 start; /* 00 */

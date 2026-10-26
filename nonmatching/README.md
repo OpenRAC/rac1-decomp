@@ -7,7 +7,6 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 |---|---|---|---|---|
 | [`func_L00_002C12B0`](shared/func_L00_002C12B0.c) | shared | 5996 | BYTES 12/5996 | 99.8% |
 | [`func_L00_0026ABC0`](shared/func_L00_0026ABC0.c) | shared | 1780 | BYTES 26/1780 | 98.5% |
-| [`func_L00_002D8898`](shared/func_L00_002D8898.c) | shared | 2052 | BYTES 34/2052 | 98.3% |
 | [`func_L08_002F7318`](l08_batalia/func_L08_002F7318.c) | l08_batalia | 4676 | BYTES 225/4676 | 95.2% |
 | [`func_L00_002A62D0`](shared/func_L00_002A62D0.c) | shared | 1896 | BYTES 721/1896 | 62.0% |
 | [`func_L00_002BA7C8`](shared/func_L00_002BA7C8.c) | shared | 5292 | BYTES 3888/5292 | 26.5% |
@@ -186,7 +185,6 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 | [`func_0022D3F8`](functional/func_0022D3F8.c) | functional | 296 | ? | - |
 | [`func_0022D520`](functional/func_0022D520.c) | functional | 404 | ? | - |
 | [`func_0022D7E0`](functional/func_0022D7E0.c) | functional | 0 | ? | - |
-| [`func_0022FDC0`](game/func_0022FDC0.c) | game | 2012 | ? | - |
 | [`func_00235118`](functional/func_00235118.c) | functional | 252 | ? | - |
 | [`func_00235EF0`](functional/func_00235EF0.c) | functional | 364 | ? | - |
 | [`func_002362B0`](functional/func_002362B0.c) | functional | 1700 | ? | - |
@@ -233,7 +231,6 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 | [`func_L00_00203F08`](functional/func_L00_00203F08.c) | functional | 24 | ? | - |
 | [`func_L00_0020E3B8`](functional/func_L00_0020E3B8.c) | functional | 1596 | ? | - |
 | [`func_L00_00232EF0`](game/func_L00_00232EF0.c) | game | 1312 | ? | - |
-| [`func_L00_00248EF8`](shared/func_L00_00248EF8.c) | shared | 1808 | SIZE ours 1804 / retail 1808 | - |
 | [`func_L00_0024DFC4`](functional/func_L00_0024DFC4.c) | functional | 96 | ? | - |
 | [`func_L00_0024E798`](game/func_L00_0024E798.c) | game | 352 | ? | - |
 | [`func_L00_0024EBF8`](game/func_L00_0024EBF8.c) | game | 40 | ? | - |
@@ -273,7 +270,6 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 | [`func_L01_00262FE8`](functional/func_L01_00262FE8.c) | functional | 848 | ? | - |
 | [`func_L01_00263338`](functional/func_L01_00263338.c) | functional | 656 | ? | - |
 | [`func_L01_002635C8`](functional/func_L01_002635C8.c) | functional | 312 | ? | - |
-| [`func_L01_002F6540`](shared/func_L01_002F6540.c) | shared | 3984 | SIZE ours 3980 / retail 3984 | - |
 | [`func_L02_002100E8`](functional/func_L02_002100E8.c) | functional | 48 | ? | - |
 | [`func_L02_00250720`](functional/func_L02_00250720.c) | functional | 824 | ? | - |
 | [`func_L02_00250A58`](functional/func_L02_00250A58.c) | functional | 544 | ? | - |

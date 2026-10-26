@@ -2152,45 +2152,45 @@ extern char D_L00_001670F0[];
 extern char collision_hit_point[];
 extern Order_2B8AE8 gold_weapon_purchased;
 
-extern void func_L00_002B9528(unsigned char *);
-extern void func_L00_00250800(void *, int, void *);
-extern float func_0020D830(void *);
-extern int func_001F9850(int);
-extern void func_00213DE0(void *, int, int, int);
-extern Moby *func_L00_002BC668(void *);
-extern void func_001F9C08(void *, void *, void *, float);
-extern float func_001F9CB8(void *);
-extern void func_L00_0023F1D0(int);
-extern int func_L00_00234718(int);
-extern void func_L00_0020EB60(void);
-extern int func_L00_0023EF78(void *, float, float, int);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001F9FA8(float);
-extern float func_001FA888(int);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern float func_001F9D10(void *, void *);
-extern float func_00214D88(float, float, float, float, float *, float *);
-extern void func_L00_00258DB0(float *, float, float);
-extern float func_002140F8(float, float);
-extern void func_001F9C30(void *, void *, float);
-extern void *func_L00_0026C0D0(void *, void *, unsigned long, float);
-extern void func_L00_002B9A90();
-extern void func_L00_001FF500(void *, void *, float);
-extern void func_L00_001F2BE8(void *, float, int, void *, void *);
-extern int func_001F9938(void *);
-extern float func_001F9878(float);
-extern int func_001FA898(float);
-extern void func_L00_0026E438(void *, void *, int);
-extern int func_L00_00234638(int, int);
-extern void func_L00_0020ED30(void);
-extern void func_L00_0028EBF0(int);
-extern void func_001FA1F8(void *, void *);
-extern void func_001FA4F0(void *, void *, void *);
-extern void func_L00_00251E30(Moby *);
-extern void func_L00_002B9730(char *);
+extern void update_pyrocitor_usage_and_cleanup(unsigned char *);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern float MobyGetFrameValue(void *);
+extern int scale_ticks(int);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern Moby *spawn_linked_moby_from_basis(void *);
+extern void lerp_vector(void *, void *, void *, float);
+extern float FastVecLength(void *);
+extern void release_point_light_slot(int);
+extern int get_ammo(int);
+extern void start_equipped_item_animation(void);
+extern int allocate_packed_color_point_light_slot(void *, float, float, int);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastSin(float);
+extern float IntToFloat(int);
+extern void vec_scale_to_length(void *, void *, float);
+extern int coll_line(void *, void *, int, int, int);
+extern float FastVecDist(void *, void *);
+extern float ApproachWithVelocity(float, float, float, float, float *, float *);
+extern void rand_vec(float *, float, float);
+extern float random_float_between(float, float);
+extern void FastVecScale(void *, void *, float);
+extern void *spawn_spinning_and_fading_effect_particle(void *, void *, unsigned long, float);
+extern void register_pyrocitor_flame_effect();
+extern void vec_set_length_xy(void *, void *, float);
+extern void coll_sphere_mobys(void *, float, int, void *, void *);
+extern int FastDecTimer(void *);
+extern float multiply_global_factor(float);
+extern int truncate_float_to_s32(float);
+extern void spawn_color_decaying_effect_particle(void *, void *, int);
+extern int use_ammo(int, int);
+extern void cancel_hero_item_animation(void);
+extern void Sound_StopSlot(int);
+extern void euler_rotation_basis(void *, void *);
+extern void multiply_matrix3x3(void *, void *, void *);
+extern void moby_build_matrix(Moby *);
+extern void update_pyrocitor_flame_effect_slots(char *);
 
-void func_L00_002B8AE8(Moby *moby) {
+void pyrocitor_update(Moby *moby) {
     Data_2B8AE8 *v = (Data_2B8AE8 *)moby->pvars;
     V_2B8AE8 pos, dir, scratch, endpoint, particle_pos, random_vec;
     Hit_2B8AE8 hit;
@@ -2204,8 +2204,8 @@ void func_L00_002B8AE8(Moby *moby) {
     s32 h;
     Moby *other;
 
-    func_L00_002B9528((unsigned char *)moby);
-    func_L00_00250800(moby, 0, &pos);
+    update_pyrocitor_usage_and_cleanup((unsigned char *)moby);
+    Moby_GetJointWorldPos(moby, 0, &pos);
     switch (moby->state) {
     case 0:
         v->light = -1;
@@ -2217,69 +2217,69 @@ void func_L00_002B8AE8(Moby *moby) {
             moby->state = 2;
         if (moby->seq != 0)
             break;
-        if (func_0020D830(moby) > 10.0f && ((*(PadState *)g_controller_state).held & (*(Hero *)&g_hero).items[0].button_mask) &&
+        if (MobyGetFrameValue(moby) > 10.0f && ((*(PadState *)g_controller_state).held & (*(Hero *)&g_hero).items[0].button_mask) &&
             moby->prev_seq != 1)
-            func_00213DE0(moby, 1, 0, func_001F9850(5));
+            MobyBlendAnimation(moby, 1, 0, scale_ticks(5));
         break;
     case 2:
         if (v->other == 0) {
-            v->other = func_L00_002BC668(moby);
+            v->other = spawn_linked_moby_from_basis(moby);
             if (v->other != 0) {
                 v->other->flags |= 0x100;
                 *(f32 *)((char *)v->other->pvars + 0xC) = D_L00_001615E0;
             }
         }
         if (v->light != -1) {
-            func_001F9C08(&level_point_lights[v->light], &level_point_lights[v->light], &veldin1_zero_vec, 0.1f);
-            if (func_001F9CB8(&level_point_lights[v->light]) < 0.001f) {
-                func_L00_0023F1D0(v->light);
+            lerp_vector(&level_point_lights[v->light], &level_point_lights[v->light], &veldin1_zero_vec, 0.1f);
+            if (FastVecLength(&level_point_lights[v->light]) < 0.001f) {
+                release_point_light_slot(v->light);
                 v->light = -1;
             }
         }
-        if (((*(PadState *)g_controller_state).held & (*(Hero *)&g_hero).items[0].button_mask) && !(*(Hero *)&g_hero).item_use_locked && func_L00_00234718(-1)) {
+        if (((*(PadState *)g_controller_state).held & (*(Hero *)&g_hero).items[0].button_mask) && !(*(Hero *)&g_hero).item_use_locked && get_ammo(-1)) {
             moby->state = 3;
-            func_L00_0020EB60();
-            v->timer = func_001F9850(10);
+            start_equipped_item_animation();
+            v->timer = scale_ticks(10);
             if (v->light == -1)
-                v->light = func_L00_0023EF78(&moby->pos, 7.5f, 0.0f, 0);
-        } else if (((*(PadState *)g_controller_state).pressed & (*(Hero *)&g_hero).items[0].button_mask) && !func_L00_00234718(-1)) {
-            func_0022ED80(0, 0, (int)moby);
+                v->light = allocate_packed_color_point_light_slot(&moby->pos, 7.5f, 0.0f, 0);
+        } else if (((*(PadState *)g_controller_state).pressed & (*(Hero *)&g_hero).items[0].button_mask) && !get_ammo(-1)) {
+            Moby_PlaySound(0, 0, (int)moby);
         }
         break;
     case 3:
-        if (!func_L00_0028EB98(moby, v->voice))
-            v->voice = func_0022ED80(1, 4, (int)moby);
+        if (!Sound_IsPlaying(moby, v->voice))
+            v->voice = Moby_PlaySound(1, 4, (int)moby);
         if (v->light != -1 && moby->state == 3) {
             dir.q = 0;
             dir.f.x = 2.0f;
             dir.f.z = 2.0f;
-            func_001F9EC0((V4 *)&dir, (V4 *)&dir, (V4 *)&(*(Hero *)&g_hero).basis);
-            func_001F9BD8(&level_point_lights[v->light].pos, &(*(Hero *)&g_hero).motion.pos, &dir);
+            matrix_mul_vec3((V4 *)&dir, (V4 *)&dir, (V4 *)&(*(Hero *)&g_hero).basis);
+            FastVecAdd(&level_point_lights[v->light].pos, &(*(Hero *)&g_hero).motion.pos, &dir);
             level_point_lights[v->light].pos.f.w = 7.5f;
-            func_001F9C08(&scratch, &D_L00_001615C0, &D_L00_001615D0,
-                func_001F9FA8(((f32)((*(int *)&level_frame_counter) % 120) / 120.0f) * 6.28318f - 3.14159f) * 0.5f + 0.5f);
-            func_001F9C08(&level_point_lights[v->light], &level_point_lights[v->light], &scratch, 0.1f);
+            lerp_vector(&scratch, &D_L00_001615C0, &D_L00_001615D0,
+                FastSin(((f32)((*(int *)&level_frame_counter) % 120) / 120.0f) * 6.28318f - 3.14159f) * 0.5f + 0.5f);
+            lerp_vector(&level_point_lights[v->light], &level_point_lights[v->light], &scratch, 0.1f);
         }
         pos_out = vel_out = 0.0f;
-        speed = func_001FA888(gold_weapon_purchased.level) * 4.0f;
+        speed = IntToFloat(gold_weapon_purchased.level) * 4.0f;
         if (!((*(int *)&level_frame_counter) & 3))
             gate = 1;
         else
             gate = 0;
         if (hero_current_state == 1 && (moby->flags & 1)) {
-            func_L00_001FF4B0(&scratch, D_L00_001670F0, -1.0f);
-            func_001F9BD8(&scratch, &scratch, D_L00_001670F0 - 0x230);
-            func_L00_001FF4B0(&dir, D_L00_001670F0 - 0x20, D_L00_001615F0 + speed + 0.75f);
-            func_001F9BD8(&endpoint, &dir, &scratch);
+            vec_scale_to_length(&scratch, D_L00_001670F0, -1.0f);
+            FastVecAdd(&scratch, &scratch, D_L00_001670F0 - 0x230);
+            vec_scale_to_length(&dir, D_L00_001670F0 - 0x20, D_L00_001615F0 + speed + 0.75f);
+            FastVecAdd(&endpoint, &dir, &scratch);
         } else {
             qcopy(&scratch, &pos);
-            func_L00_001FF4B0(&dir, &(*(Hero *)&g_hero).facing_x, D_L00_001615F0 + speed + 0.75f);
-            func_001F9BD8(&endpoint, &dir, &pos);
+            vec_scale_to_length(&dir, &(*(Hero *)&g_hero).facing_x, D_L00_001615F0 + speed + 0.75f);
+            FastVecAdd(&endpoint, &dir, &pos);
         }
-        if (func_L00_001EFFF0(&(*(Hero *)&g_hero).motion.body_center, &scratch, 2, 0, 0)) {
+        if (coll_line(&(*(Hero *)&g_hero).motion.body_center, &scratch, 2, 0, 0)) {
             length = 0.0f;
-        } else if (func_L00_001EFFF0(&scratch, &endpoint, 2, 0, 0)) {
-            length = func_001F9D10(&scratch, collision_hit_point) - 0.75f;
+        } else if (coll_line(&scratch, &endpoint, 2, 0, 0)) {
+            length = FastVecDist(&scratch, collision_hit_point) - 0.75f;
             if (length < 0.0f)
                 length = 0.0f;
         } else {
@@ -2287,8 +2287,8 @@ void func_L00_002B8AE8(Moby *moby) {
         }
         accel = spin_particle_speed_decay * g_frame_time_sq;
         damping = D_L00_001615E4 * g_frame_time;
-        func_00214D88(length, 1.0f, accel, damping, &pos_out, &vel_out);
-        func_L00_001FF4B0(&dir, &dir, vel_out);
+        ApproachWithVelocity(length, 1.0f, accel, damping, &pos_out, &vel_out);
+        vec_scale_to_length(&dir, &dir, vel_out);
         {
             s32 initial_count, extra;
             initial_count = D_L00_001615E8;
@@ -2296,75 +2296,75 @@ void func_L00_002B8AE8(Moby *moby) {
             if (length < 4.0f || (moby->flags & 1))
                 initial_count = 1;
             for (i = 0; i < extra + initial_count; i++) {
-                func_L00_00258DB0((float *)&random_vec, 0.0f,
+                rand_vec((float *)&random_vec, 0.0f,
                     ((D_L00_001615F4 - D_L00_001615F8) * (length / (D_L00_001615F0 + speed)) + D_L00_001615F8) *
                         g_frame_time);
-                func_001F9BD8(&random_vec, &random_vec, &dir);
-                func_001F9C30(&particle_pos, &dir, func_002140F8(0.0f, 1.0f));
-                func_001F9BD8(&particle_pos, &particle_pos, &scratch);
+                FastVecAdd(&random_vec, &random_vec, &dir);
+                FastVecScale(&particle_pos, &dir, random_float_between(0.0f, 1.0f));
+                FastVecAdd(&particle_pos, &particle_pos, &scratch);
                 if (i < initial_count)
                     fl = 1;
                 else
                     fl = 0;
-                effect = func_L00_0026C0D0(&particle_pos, &random_vec, fl | 4, length);
+                effect = spawn_spinning_and_fading_effect_particle(&particle_pos, &random_vec, fl | 4, length);
                 if (i == 2 && gate)
-                    func_L00_002B9A90(moby, effect);
+                    register_pyrocitor_flame_effect(moby, effect);
             }
         }
         particle_pos.q = 0;
         particle_pos.f.x = -0.3f;
-        func_001F9EC0((V4 *)&random_vec, (V4 *)&particle_pos, (V4 *)&(*(Hero *)&g_hero).basis);
-        func_001F9BD8(&random_vec, &random_vec, &pos);
+        matrix_mul_vec3((V4 *)&random_vec, (V4 *)&particle_pos, (V4 *)&(*(Hero *)&g_hero).basis);
+        FastVecAdd(&random_vec, &random_vec, &pos);
         hit.moby = moby;
         hit.flags = 0x10000;
-        hit.scale = func_001FA888(gold_weapon_purchased.level) + 1.0f;
+        hit.scale = IntToFloat(gold_weapon_purchased.level) + 1.0f;
         hit.point.q = dir.q;
         hit.mode = 1;
-        func_L00_001FF500(&hit.point, &hit.point, 1.0f);
+        vec_set_length_xy(&hit.point, &hit.point, 1.0f);
         hit.point.f.z = 1.0f;
         hit.point.f.w = 5627.9248f;
         hit.mode = 1;
         hit.type = 5;
-        func_L00_001F2BE8(&random_vec, 0.42f, 5, (*(Hero *)&g_hero).moby, &hit);
+        coll_sphere_mobys(&random_vec, 0.42f, 5, (*(Hero *)&g_hero).moby, &hit);
         particle_pos.f.x = -0.8f;
-        func_001F9EC0((V4 *)&random_vec, (V4 *)&particle_pos, (V4 *)&(*(Hero *)&g_hero).basis);
-        func_001F9BD8(&random_vec, &random_vec, &pos);
-        func_L00_001F2BE8(&random_vec, 0.42f, 5, (*(Hero *)&g_hero).moby, &hit);
-        if (func_001F9938(&v->spark)) {
-            v->spark = func_001FA898(func_001F9878(func_002140F8(10.0f, 30.0f)));
-            func_L00_00258DB0((float *)&random_vec, 0.0f, g_frame_time + g_frame_time);
-            func_001F9C30(&particle_pos, &dir, func_002140F8(0.5f, 0.1f));
-            func_001F9BD8(&particle_pos, &particle_pos, &random_vec);
-            func_L00_0026E438(&scratch, &particle_pos, gold_weapon_purchased.level);
+        matrix_mul_vec3((V4 *)&random_vec, (V4 *)&particle_pos, (V4 *)&(*(Hero *)&g_hero).basis);
+        FastVecAdd(&random_vec, &random_vec, &pos);
+        coll_sphere_mobys(&random_vec, 0.42f, 5, (*(Hero *)&g_hero).moby, &hit);
+        if (FastDecTimer(&v->spark)) {
+            v->spark = truncate_float_to_s32(multiply_global_factor(random_float_between(10.0f, 30.0f)));
+            rand_vec((float *)&random_vec, 0.0f, g_frame_time + g_frame_time);
+            FastVecScale(&particle_pos, &dir, random_float_between(0.5f, 0.1f));
+            FastVecAdd(&particle_pos, &particle_pos, &random_vec);
+            spawn_color_decaying_effect_particle(&scratch, &particle_pos, gold_weapon_purchased.level);
         }
-        if ((*(int *)&level_frame_counter) % func_001F9850(D_L00_00161600) == 0)
-            func_L00_00234638(-1, 1);
-        ready = func_L00_00234718(-1);
-        if (func_001F9938(&v->timer)) {
+        if ((*(int *)&level_frame_counter) % scale_ticks(D_L00_00161600) == 0)
+            use_ammo(-1, 1);
+        ready = get_ammo(-1);
+        if (FastDecTimer(&v->timer)) {
             if (((*(PadState *)g_controller_state).held & (*(Hero *)&g_hero).items[0].button_mask) && !(*(Hero *)&g_hero).item_use_locked && ready)
                 break;
             moby->state = 2;
-            func_L00_0020ED30();
+            cancel_hero_item_animation();
             h = v->voice;
             if (h != -1) {
                 unsigned char *slot = voice_pool + h * 0x70;
                 if (*(Moby **)(slot + 0x88) == moby && slot[0x74])
-                    func_L00_0028EBF0(h);
+                    Sound_StopSlot(h);
             }
             v->voice = -1;
             if (!ready)
-                func_0022ED80(0, 0, (int)moby);
+                Moby_PlaySound(0, 0, (int)moby);
         }
         break;
     }
     if (v->other) {
-        func_001FA1F8(&v->other->rot_row0, &v->other->rot);
-        func_001FA4F0(&v->other->rot_row0, &moby->rot_row0, &v->other->rot_row0);
+        euler_rotation_basis(&v->other->rot_row0, &v->other->rot);
+        multiply_matrix3x3(&v->other->rot_row0, &moby->rot_row0, &v->other->rot_row0);
         other = v->other;
         qcopy(&other->pos, &pos);
-        func_L00_00251E30(other);
+        moby_build_matrix(other);
     }
-    func_L00_002B9730((char *)moby);
+    update_pyrocitor_flame_effect_slots((char *)moby);
 }
 extern unsigned char voice_pool[];
 extern unsigned char g_hero_r5[] __asm__("D_0013F450");

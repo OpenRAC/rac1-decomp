@@ -669,7 +669,325 @@ void draw_resident_textured_banner(int arg0) {
     VU1_addGSregister_l(0x47, 0x5360B);
 }
 
-INCLUDE_ASM("asm/nonmatchings/text", func_0022FDC0);
+typedef unsigned int LevelFrame_u128 __attribute__((mode(TI)));
+typedef union {
+    LevelFrame_u128 quadword;
+    f32 components[4];
+} LevelFrame_V4;
+typedef struct {
+    LevelFrame_V4 rows[4];
+} LevelFrame_M4;
+
+typedef struct {
+    u8 pad00[0xC];
+    u8 count; /* 0x0C */
+    u8 pad0D[0x24 - 0x0D];
+    f32 base_scale; /* 0x24 */
+    u8 pad28[0x48 - 0x28];
+    s32 frames[1]; /* 0x48 */
+} LevelFrame_RM;
+
+typedef struct {
+    u8 pad00[0x10];
+    LevelFrame_V4 position;   /* 0x10 */
+    LevelFrame_RM *model; /* 0x20 */
+} LevelFrame_ROH;
+
+typedef struct {
+    u8 pad00[0x10];
+    u8 position[0x14];  /* 0x10 */
+    LevelFrame_RM *model; /* 0x24 */
+    u8 pad28[4];
+    f32 fade; /* 0x2C */
+    u8 pad30[2];
+    s16 selected_index; /* 0x32 */
+    u16 flags;          /* 0x34 */
+    u8 pad36[0x50 - 0x36];
+    u8 state_a; /* 0x50 */
+    u8 state_b;
+    u8 selected_a;
+    u8 selected_b;
+    f32 blend; /* 0x54 */
+    u8 pad58[0x68 - 0x58];
+    u8 *frame_data_a; /* 0x68 */
+    u8 *frame_data_b; /* 0x6C */
+    u8 pad70;
+    u8 cached_selector;
+    u8 opacity;
+    u8 pad73[5];
+    u8 *animation_positions; /* 0x78 */
+} LevelFrame_LRO;
+
+typedef struct {
+    u8 pad00[0x34];
+    s32 time;           /* 0x34 */
+    s32 frame;          /* 0x38 */
+    s32 sequence_frame; /* 0x3C */
+    s16 end;            /* 0x40 */
+    u8 pad42[2];
+    s16 count; /* 0x44 */
+    u8 pad46[0x58 - 0x46];
+    s32 source_begin;              /* 0x58 */
+    s32 source_end;                /* 0x5C */
+    s32 prepared_frames[0x46];     /* 0x60 */
+    LevelFrame_LRO *objects[1]; /* 0x178 */
+} LevelFrame_LGS;
+
+typedef struct {
+    u8 pad00[0x50];
+    s32 history_index; /* 0x50 */
+    s32 history_count; /* 0x54 */
+    s32 mode;          /* 0x58 */
+    s32 state;         /* 0x5C */
+    u8 pad60[0xC0 - 0x60];
+    LevelFrame_V4 primary_history_positions[32];   /* 0xC0 */
+    LevelFrame_V4 secondary_history_positions[32]; /* 0x2C0 */
+} LevelFrame_LRS;
+
+typedef struct {
+    u8 pad00[0xB0];
+    f32 projection_scale;
+} LevelFrame_LPS;
+
+typedef struct {
+    s32 offset;
+    s32 available;
+} LevelFrame_RAE;
+
+typedef struct {
+    u8 pad00[4];
+    s32 data_offset; /* 0x04 */
+    u8 pad08[0x50 - 0x08];
+    s32 scene_offsets[5]; /* 0x50 */
+} LevelFrame_RAT;
+
+typedef struct {
+    u8 pad00[4];
+    s32 source_begin_offset;
+    s32 source_end_offset;
+    u8 pad0C[8];
+    LevelFrame_RAT *archive_table; /* 0x14 */
+} LevelFrame_LRA;
+
+typedef struct {
+    u32 w0;
+    u32 w1;
+} LevelFrame_CP;
+
+typedef struct {
+    u16 stage;
+    s16 busy;
+} LevelFrame_LAL;
+
+extern u8 D_0013E6C0[] MACRO_ADDR;
+extern u32 sound_bank_handle MACRO_ADDR;
+extern short D_0015EF48_m SDATA(D_0015EF48);
+extern LevelFrame_LAL level_archive_load_state MACRO_ADDR;
+extern f32 gFade MACRO_ADDR;
+extern f32 sky_shell_base_rot_z MACRO_ADDR;
+extern u8 sky_shell_translation[] MACRO_ADDR;
+extern s32 D_001605E0_gp SDATA(D_001605E0);
+extern s32 D_001605F0_gp SDATA(D_001605F0);
+extern s32 D_00160600_gp SDATA(D_00160600);
+extern s32 render_sequence_slots[];
+extern struct LevelProjectionState_305A0 view_context;
+extern struct CommonArchiveMemory level_resource_buffers;
+extern LevelFrame_CP warp_trail_colors[] NOT_SDA;
+extern LevelFrame_u128 D_001D9E70[] NOT_SDA;
+extern f32 D_001D9EC0[] NOT_SDA;
+extern f32 cam_mode_min_fov[] NOT_SDA;
+extern u8 level_available[20] NOT_SDA;
+
+extern void noop_callback_i(void);
+extern void noop_callback_h(void);
+extern void snd_play_sound_vol_pan_pmpb(s32, s32, s32, s32, s32, s32, s32, void *);
+extern void DeleteMoby(void *);
+extern void update_moby_animation_state(void *);
+extern void refresh_moby_spatial_bounds(void *);
+extern void MobyTransformScaledVertex();
+extern float IntToFloat(int);
+extern void parse_space_scene_chunk(s32);
+
+void update_level_gameplay_frame(void) {
+    LevelFrame_V4 first_position;
+    LevelFrame_V4 second_position;
+    LevelFrame_M4 first_transform;
+    LevelFrame_M4 second_transform;
+    u16 transform_count;
+    LevelFrame_LRO *object;
+    LevelFrame_LRO *expired_object;
+    s32 mode_advance;
+    LevelFrame_RM *model;
+    LevelFrame_RAT *archive_table;
+    u8 *archive_data;
+    LevelFrame_RAE *archive_entry;
+    s32 expired_object_index;
+    s32 prepared_frame_index;
+    s32 payload_offset;
+    u8 *frame_offsets;
+    s32 *current_frame_pointer;
+    s32 *next_frame_pointer;
+    s32 subframe;
+    s32 color_index;
+    s32 fill_index;
+    s32 history_slot;
+    s32 next_frame_payload;
+    s32 current_frame_payload;
+    s32 frame;
+    u8 *animation_positions;
+    s32 current_frame;
+    s32 next_frame;
+    f32 blend;
+    f32 scale;
+    s32 object_index;
+
+    noop_callback_i();
+    gFade -= 0.25f;
+    ((*(LevelFrame_LGS *)&render_sequence)).frame++;
+    ((*(LevelFrame_LGS *)&render_sequence)).time++;
+    if (gFade < 0.0f) {
+        gFade = 0.0f;
+    }
+    if (((*(LevelFrame_LGS *)&render_sequence)).time == 1 && g_current_level_index_m != 0 &&
+        (g_current_level_index_m != 1 || level_available[3] != 0)) {
+        snd_reenable_command_flush();
+        snd_play_sound_vol_pan_pmpb(sound_bank_handle, ((*(LevelFrame_LRS *)&level_render_state)).mode, 0x400, 0, 0, 0, 0, D_0013E6C0);
+        snd_reset_state_and_flush_commands();
+        snd_FlushSoundCommands();
+    }
+    if (((*(LevelFrame_LGS *)&render_sequence)).time >= ((*(LevelFrame_LGS *)&render_sequence)).end) {
+        for (expired_object_index = 0; expired_object_index < ((*(LevelFrame_LGS *)&render_sequence)).count;
+             expired_object_index++) {
+            expired_object = ((*(LevelFrame_LGS *)&render_sequence)).objects[expired_object_index];
+            if (expired_object != 0) {
+                expired_object->model->count--;
+                expired_object->model->frames[expired_object->model->count] = 0;
+                DeleteMoby(expired_object);
+            }
+        }
+        if (g_current_level_index_m != 0 && (g_current_level_index_m != 1 || level_available[3] != 0) &&
+            D_0015EF48_m < 3) {
+            ((*(LevelFrame_LRS *)&level_render_state)).state = 0;
+        }
+        if (((*(LevelFrame_LRS *)&level_render_state)).state < 2) {
+            if (((*(LevelFrame_LRS *)&level_render_state)).state == 0) {
+                mode_advance = (func_001160D8() >> 16) % 3 + 1;
+                ((*(LevelFrame_LRS *)&level_render_state)).mode = (((*(LevelFrame_LRS *)&level_render_state)).mode + mode_advance) & 3;
+            } else {
+                ((*(LevelFrame_LRS *)&level_render_state)).mode = 4;
+            }
+            ((*(LevelFrame_LRS *)&level_render_state)).history_index = 0;
+            ((*(LevelFrame_LRS *)&level_render_state)).history_count = 0;
+            ((*(LevelFrame_LRS *)&level_render_state)).state++;
+            qcopy(&D_001605F0_gp, &D_001605E0_gp);
+            FastMemSet(&((*(LevelFrame_LGS *)&render_sequence)), 0, 0x1C0);
+            ((*(LevelFrame_LGS *)&render_sequence)).source_begin = ((*(LevelFrame_LRA *)&level_resource_buffers)).source_begin_offset + current_vu_chain;
+            ((*(LevelFrame_LGS *)&render_sequence)).source_end = ((*(LevelFrame_LRA *)&level_resource_buffers)).source_end_offset + current_vu_chain;
+            archive_table = ((*(LevelFrame_LRA *)&level_resource_buffers)).archive_table;
+            archive_data = (u8 *)archive_table + archive_table->data_offset;
+            archive_entry = (LevelFrame_RAE *)(archive_data + archive_table->scene_offsets[((*(LevelFrame_LRS *)&level_render_state)).mode]);
+            for (prepared_frame_index = 0;
+                 prepared_frame_index < 0x46 && archive_entry->available != 0;
+                 prepared_frame_index++, archive_entry++) {
+                payload_offset = archive_entry->offset + 0x800;
+                ((*(LevelFrame_LGS *)&render_sequence)).prepared_frames[prepared_frame_index] =
+                    (s32)(archive_data + archive_table->scene_offsets[((*(LevelFrame_LRS *)&level_render_state)).mode]) + payload_offset;
+            }
+            parse_space_scene_chunk(0);
+        } else {
+            if (level_archive_load_state.busy != 0) {
+                level_archive_load_state.busy = 0;
+            }
+            space_load_in_progress_m = 1;
+            return;
+        }
+    } else if (((*(LevelFrame_LGS *)&render_sequence)).frame >= 0x60) {
+        parse_space_scene_chunk(++((*(LevelFrame_LGS *)&render_sequence)).sequence_frame);
+    }
+    build_object_rotation_matrix();
+    if (((*(LevelFrame_LPS *)&view_context)).projection_scale < cam_mode_min_fov[((*(LevelFrame_LRS *)&level_render_state)).mode]) {
+        ((*(LevelFrame_LPS *)&view_context)).projection_scale = cam_mode_min_fov[((*(LevelFrame_LRS *)&level_render_state)).mode];
+    }
+    UpdateViewContext();
+    scale = 1.0f;
+    if (((*(LevelFrame_LRS *)&level_render_state)).mode == 4) {
+        scale = (f32)(((*(LevelFrame_LGS *)&render_sequence)).end - ((*(LevelFrame_LGS *)&render_sequence)).time) / (f32)((*(LevelFrame_LGS *)&render_sequence)).end;
+        FastVecScale(&first_position, &D_00160600_gp, scale);
+        FastVecAdd(&D_001605F0_gp, &D_001605F0_gp, &first_position);
+    }
+    FastVecScale(sky_shell_translation, &D_001D9E70[((*(LevelFrame_LRS *)&level_render_state)).mode],
+                 (f32)(((*(LevelFrame_LGS *)&render_sequence)).time - scale_game_frame_count(0x78)) * 20.0f * scale);
+    sky_shell_base_rot_z = D_001D9EC0[((*(LevelFrame_LRS *)&level_render_state)).mode];
+    for (object_index = 0; object_index < ((*(LevelFrame_LGS *)&render_sequence)).count; object_index++) {
+        object = (((LevelFrame_LRO **)render_sequence_slots))[object_index];
+        for (subframe = 0; subframe < 2; subframe++) {
+            frame = ((*(LevelFrame_LGS *)&render_sequence)).frame;
+            current_frame = frame >> 1;
+            next_frame = current_frame + 1;
+            model = object->model;
+            frame_offsets = (u8 *)model->frames[model->count - 1] + 0x1C;
+            current_frame_pointer = (s32 *)(frame_offsets + current_frame * 4);
+            next_frame_pointer = (s32 *)(frame_offsets + next_frame * 4);
+            current_frame_payload = *current_frame_pointer + 0x10;
+            next_frame_payload = *next_frame_pointer + 0x10;
+            blend = IntToFloat(frame & 1) * 0.5f + (f32)subframe * 0.25f;
+            object->blend = blend;
+            animation_positions = object->animation_positions;
+            FastVecScale(&first_position, animation_positions + current_frame * 16, 1.0f - blend);
+            FastVecScale(&second_position, animation_positions + next_frame * 16, object->blend);
+            /* Fakematch: the u16 copy gives the second 2 its own register. */
+            transform_count = 2;
+            FastVecAdd(object->position, &first_position, &second_position);
+            object->selected_a = 2;
+            object->selected_b = transform_count;
+            object->state_a = 0;
+            object->state_b = 0;
+            update_moby_animation_state(object);
+            FastMemCopy(object->frame_data_a + 0x10, (void *)current_frame_payload, 0x20);
+            FastMemCopy(object->frame_data_b + 0x10, (void *)next_frame_payload, 0x20);
+            object->opacity = 0xFF;
+            object->selected_index = 0x1FF;
+            object->cached_selector = 0xFF;
+            refresh_moby_spatial_bounds(object);
+            object->selected_a = object->model->count - 1;
+            object->selected_b = object->model->count - 1;
+            MobyTransformScaledVertex(object, 1, &first_transform);
+            MobyTransformScaledVertex(object, 2, &second_transform);
+            ((*(LevelFrame_LRS *)&level_render_state)).history_index = (((*(LevelFrame_LRS *)&level_render_state)).history_index + 1) & 0x1F;
+            if (((*(LevelFrame_LRS *)&level_render_state)).history_count < 0x20) {
+                ((*(LevelFrame_LRS *)&level_render_state)).history_count++;
+            }
+            history_slot = ((*(LevelFrame_LRS *)&level_render_state)).history_index;
+            qcopy(&((*(LevelFrame_LRS *)&level_render_state)).primary_history_positions[history_slot],
+                  &first_transform.rows[3]);
+            qcopy(&((*(LevelFrame_LRS *)&level_render_state)).secondary_history_positions[history_slot],
+                  &second_transform.rows[3]);
+            if (((*(LevelFrame_LRS *)&level_render_state)).mode == 4) {
+                if (g_current_level_index_m == 0 || (g_current_level_index_m == 1 && level_available[3] == 0)) {
+                    object->flags |= 1;
+                    ((*(LevelFrame_LRS *)&level_render_state)).history_count = 0;
+                }
+                if (((*(LevelFrame_LGS *)&render_sequence)).time > ((*(LevelFrame_LGS *)&render_sequence)).end - 0x38) {
+                    object->fade =
+                        object->model->base_scale *
+                        ((f32)(((*(LevelFrame_LGS *)&render_sequence)).end - ((*(LevelFrame_LGS *)&render_sequence)).time) * 0.017857144f);
+                    for (color_index = 0; color_index < 3; color_index++) {
+                        /* Fakematch: ((*(LevelFrame_LGS *)&render_sequence)), see its declaration. */
+                        warp_trail_colors[color_index].w0 =
+                            (warp_trail_colors[color_index].w0 & 0xFFFFFF) |
+                            ((((LevelFrame_LGS *)render_sequence_c)->end - ((*(LevelFrame_LGS *)&render_sequence)).time) << 24);
+                    }
+                } else {
+                    for (fill_index = 0; fill_index < 3; fill_index++) {
+                        warp_trail_colors[fill_index].w0 =
+                            (warp_trail_colors[fill_index].w0 & 0xFFFFFF) | 0x38000000;
+                    }
+                }
+            }
+        }
+    }
+    noop_callback_h();
+}
 
 extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 struct LevelRenderState_305A0 {

@@ -1242,7 +1242,7 @@ extern void MobyTransformScaledVertex(void *, s32, void *);
 extern void enqueue_hero_glow_draw_callback_once(void);
 extern s32 truncate_float_to_s32(f32);
 
-void func_L00_0020FC18(void)
+void update_hero_item_mobys(void)
 {
     union
     {

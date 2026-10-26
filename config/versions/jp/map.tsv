@@ -1519,6 +1519,7 @@ func_0022F4C8	src/game/space.c	absent	-	0	0.00
 func_0022F738	src/game/space.c	match	boot:002304A0	1188	100.00
 func_0022FBE0	src/game/space.c	match	boot:00230948	316	100.00
 func_0022FD20	src/game/space.c	match	boot:00230A88	160	100.00
+func_0022FDC0	src/game/space.c	match	boot:00230B28	2012	100.00
 func_002305A0	src/game/space.c	match	boot:00231308	808	100.00
 func_002308C8	src/game/space.c	match	boot:00231630	456	100.00
 func_00230A90	src/game/space.c	match	boot:002317F8	5996	100.00
@@ -2138,6 +2139,7 @@ func_L00_00247620	src/overlays/shared/level_runtime_and_menus.c	match	00:002485C
 func_L00_00247650	-	joined	00:002485F0	20	100.00
 func_L00_002477A0	src/overlays/shared/level_runtime_and_menus.c	match	00:00248740	48	100.00
 func_L00_002477D0	-	joined	00:00248770	36	100.00
+func_L00_00248EF8	src/overlays/shared/level_runtime_and_menus.c	match	00:00249E98	1808	100.00
 func_L00_00249720	src/overlays/shared/map_menu_filters.c	match	00:0024A6C0	48	100.00
 func_L00_00249750	src/overlays/shared/map_menu_filters.c	match	00:0024A6F0	76	100.00
 func_L00_002497A0	src/overlays/shared/map_menu_filters.c	match	00:0024A740	64	100.00
@@ -2253,6 +2255,8 @@ func_L00_00254130	-	joined	00:00255090	232	100.00
 func_L00_00254218	-	asm	00:00255178	2136	100.00
 func_L00_00254A70	-	asm	00:002559D0	1040	100.00
 func_L00_00255B90	-	asm	00:00256AF0	2664	100.00
+func_L00_002569F8	-	asm	00:00257958	3664	100.00
+func_L00_00257848	-	asm	00:002587A8	1488	100.00
 func_L00_00257E18	-	asm	00:00258D78	164	100.00
 func_L00_00257EBC	-	joined	00:00258E1C	144	100.00
 func_L00_00257F4C	-	asm	00:00258EAC	104	100.00
@@ -2852,6 +2856,7 @@ func_L00_002D7298	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D7E50
 func_L00_002D80A0	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D8C58	224	100.00
 func_L00_002D8180	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D8D38	600	100.00
 func_L00_002D83D8	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D8F90	1212	100.00
+func_L00_002D8898	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D9450	2052	100.00
 func_L00_002D90A0	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D9C58	356	100.00
 func_L00_002D9208	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D9DC0	312	100.00
 func_L00_002D9340	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D9EF8	164	100.00
@@ -3166,6 +3171,7 @@ func_L01_002F5800	src/versions/jp/overlays/l01_novalis/elevator_and_birdbot/func
 func_L01_002F5AE8	src/overlays/l01_novalis/elevator_and_birdbot.c	match	01:002F6698	588	100.00
 func_L01_002F5D38	src/overlays/l01_novalis/elevator_and_birdbot.c	match	01:002F68E8	1756	100.00
 func_L01_002F6418	src/overlays/shared/water_pool_and_sand_mouse.c	match	01:002F6FC8	296	100.00
+func_L01_002F6540	src/overlays/shared/water_pool_and_sand_mouse.c	match	01:002F70F0	3984	100.00
 func_L01_002F74D0	src/overlays/l01_novalis/elevator_and_birdbot.c	match	01:002F8080	44	100.00
 func_L01_002F7528	src/overlays/l01_novalis/elevator_and_birdbot.c	match	01:002F80D8	44	100.00
 func_L01_002F7558	src/overlays/l01_novalis/elevator_and_birdbot.c	match	01:002F8108	424	100.00
