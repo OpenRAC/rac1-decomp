@@ -29,7 +29,7 @@ extern void rand_vec(float *, float, float);
 extern float random_float_between(float, float);
 extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z, float w, float pw);
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern char *rocket_smoke_texture_ptr_c __asm__("D_L18_001B2DDC");
 
@@ -51,7 +51,7 @@ void update_projectile_motion_collision_and_trail(char *moby) {
     ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, g_frame_time * 6.2831855f);
     if (*(short *)(data + 0x12) != 0) {
         f20 = FastVecLength(data);
-        FastVecSub(data, D_0013E633 + 0xEDD, moby + 0x10);
+        FastVecSub(data, hero_globals_base + 0xEDD, moby + 0x10);
         f1 = FastVecLength(data);
         if (f20 < f1) {
             vec_scale_to_length(data, data, f20);
@@ -287,7 +287,7 @@ void spawn_rocket_explosion(void *m, void *src) {
     d = (flags & 4) ? 0.0f : 1.5f;
     spawn_explosion_x(moby, qp, moby + 0x10, d, 1.0f, 0x14, 6, 0x20, 1, 0, a, b, 9.0f, c, 5.0f, 0, -1, 0);
     if (d != 0.0f) {
-        if ((unsigned char)D_0013E633[0x2EC1] == 2) {
+        if ((unsigned char)hero_globals_base[0x2EC1] == 2) {
             MobySphereHitDirectional((int)moby, 2.0f, moby + 0x10, 2, *(float *)&rocket_explosion_damage, 1.0f, 0, 1, 0);
         }
     }
@@ -874,7 +874,7 @@ void thruster_pack_lock_green_update(char *moby) {
                 moby_vars->f24 = 0;
             }
             {
-                Hero *hero_ptr = (Hero *)(D_0013E633 + 0xE1D);
+                Hero *hero_ptr = (Hero *)(hero_globals_base + 0xE1D);
                 if (hero_ptr->air_frames.s == 0 && hero_ptr->state.current == 0x22) {
                     Moby_PlaySound(0, 0, (int)moby);
                     moby_vars->f24 = 0;
@@ -1772,7 +1772,7 @@ void process_expanding_ring_collisions(char *moby) {
     float p, q, step;
     int i;
 
-    FastVecSub(v, D_0013E633 + 0xE9D, moby + 0x10);
+    FastVecSub(v, hero_globals_base + 0xE9D, moby + 0x10);
     v[2] = 0.0f;
     vec_scale_to_length(v, v, g_frame_time * 4.0f);
     v[2] = g_frame_time * 4.0f;
@@ -1859,7 +1859,7 @@ void update_class_274_ring_effect(char *moby) {
         return;
     }
     pos = moby + 0x10;
-    tgt = D_0013E633 + 0xE9D;
+    tgt = hero_globals_base + 0xE9D;
     if (vec_distance_xy(pos, tgt) < d[0] + 0.5f) {
         FastVecSub(v, tgt, pos);
         v[2] = 0.0f;
@@ -2077,7 +2077,7 @@ void update_position_and_rotation_transition(char *moby) {
             Hero_ResetToPosition(data + 0x40, v + 8, 0, 0);
             CameraScript2(2);
             moby[0x20] = 5;
-        } else if (*(int *)(D_0013E633 + 0x2EA1) != 0x72) {
+        } else if (*(int *)(hero_globals_base + 0x2EA1) != 0x72) {
             clear_u64_value(v + 8);
             v[10] = ((Moby *)data)->rot.w;
             Hero_ResetToPosition(data + 0x40, v + 8, 0x72, 1);
@@ -2112,7 +2112,7 @@ void update_position_and_rotation_transition(char *moby) {
                 CameraScript2(3);
                 moby[0x20] = 5;
             }
-        } else if (*(int *)(D_0013E633 + 0x2EA1) != 0x72) {
+        } else if (*(int *)(hero_globals_base + 0x2EA1) != 0x72) {
             clear_u64_value(v + 8);
             v[10] = ((Moby *)data)->rot.w;
             Hero_ResetToPosition(data + 0x40, v + 8, 0x72, 1);
@@ -2149,7 +2149,7 @@ void start_position_and_rotation_transition(char *moby, void *v0, void *v1, void
     *(float *)(data + 0x70) = 1.0f / (float)scale_ticks(a6);
     *(int *)(data + 0x74) = scale_ticks(a7);
     *(int *)(data + 0x78) = a8;
-    *(int *)(D_0013E633 + 0xFDD) = scale_ticks(a6);
+    *(int *)(hero_globals_base + 0xFDD) = scale_ticks(a6);
 }
 typedef struct {
     char pad0[0x60];
@@ -2193,7 +2193,7 @@ char *create_class_326_moby(void *vector) {
 typedef struct { int w[6]; } Blk24;
 extern Blk24 hit_burst_start_colors;
 extern Blk24 hit_burst_end_colors;
-extern unsigned char D_0014171B[];
+extern unsigned char help_stats_base[];
 extern float randf_sym(float lo, float hi);
 extern int coll_sphere(float, void *, int, void *);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
@@ -2221,7 +2221,7 @@ void update_moby_hit_response_burst_and_ballistic_flight(char *moby) {
 
     switch (((struct Moby *)moby)->state) {
     case STATE_INITIALIZE:
-        if (((struct Moby *)moby)->mission != 0xFF && (D_0014171B + 0xAA35)[((struct Moby *)moby)->mission + (g_current_level_index << 4)] == 0xFF) {
+        if (((struct Moby *)moby)->mission != 0xFF && (help_stats_base + 0xAA35)[((struct Moby *)moby)->mission + (g_current_level_index << 4)] == 0xFF) {
             DeleteMoby(moby);
             return;
         }
@@ -2297,7 +2297,7 @@ void update_moby_hit_response_burst_and_ballistic_flight(char *moby) {
             ((struct Moby *)moby)->state = 3;
             data[2] = randf_sym(0.0f, 90.0f) * 0.017453292f * g_frame_time;
             data[3] = randf_sym(0.0f, 90.0f) * 0.017453292f * g_frame_time;
-            FastVecSub(data + 4, &((struct Moby *)moby)->pos, D_0013E633 + 0xE9D);
+            FastVecSub(data + 4, &((struct Moby *)moby)->pos, hero_globals_base + 0xE9D);
             data[6] = 0.0f;
             vec_scale_to_length(data + 4, data + 4, s);
             rand_vec(u.tmp, s, s);
@@ -2756,7 +2756,7 @@ extern float veldin2_camera_pos[];
 void update_electric_bolt_geometry_and_particles(void *moby) {
     V_ec290 s[10];
     V_ec290 d[5];
-    unsigned char flag = *(unsigned char *)D_0013E633;
+    unsigned char flag = *(unsigned char *)hero_globals_base;
     char *data = ((char *)((Moby *)moby)->pvars);
     float scale;
     int i;
@@ -2958,7 +2958,7 @@ void draw_moby_billboard_quad_pair(V_2bb0b0 *pos) {
     mat[3].f[3] = 1.0f;
     FastVecSub(&mat[0], veldin2_camera_pos, &mat[3]);
     vec_scale_to_length(&mat[0], &mat[0], 1.0f);
-    FastVecCross(&mat[1], &mat[0], D_0013E633 + 0x10AD);
+    FastVecCross(&mat[1], &mat[0], hero_globals_base + 0x10AD);
     vec_scale_to_length(&mat[1], &mat[1], -1.0f);
     FastVecCross(&mat[2], &mat[1], &mat[0]);
     c = *(int *)&electric_bolt_glow_core_color;

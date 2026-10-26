@@ -5,12 +5,12 @@
 
 typedef struct { char pad[0x24]; int v; char pad2[0x24]; } Rec;
 extern Rec fleet_item_defs[];
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern int hero_slot_item_id(int);
 
 /* Returns the current help record's value, 0x54 or 0x6E in two special states, or 0 when no record applies. */
 int select_hero_help_value(int a) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     switch (*(unsigned char *)(g + 0x20A4)) {
     case 1:
         return 0;
@@ -18,7 +18,7 @@ int select_hero_help_value(int a) {
         return 0;
     }
     {
-        char *g2 = (char *)D_0013E633 + 0xE1D;
+        char *g2 = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(g2 + 0x22A8) == 1) {
             return 0x54;
         }
@@ -239,7 +239,7 @@ extern float g_frame_time MACRO_ADDR;
 
 /* Per-frame easing of the camera blend parameters at the shared global block, by mode. */
 void update_hero_smoothing(void) {
-    char *a = (char *)D_0013E633 + 0xE1D;
+    char *a = (char *)hero_globals_base + 0xE1D;
     char *b;
     char *c;
     char *g;
@@ -262,7 +262,7 @@ void update_hero_smoothing(void) {
         *(float *)(a + 0x230) = 0.45f;
         break;
     }
-    b = (char *)D_0013E633 + 0xE1D;
+    b = (char *)hero_globals_base + 0xE1D;
     if (*(int *)(b + 0x208C) == 4) {
         if (*(int *)(b + 0x198) > *(int *)(b + 0x420)) {
             if (*(short *)(b + 0x41E) == 0) {
@@ -280,12 +280,12 @@ void update_hero_smoothing(void) {
         *(float *)(b + 0x228) = 0.8f;
         *(float *)(b + 0x22C) = 0.9f;
     } else {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(q + 0x2084) == 0x7F) {
             *(float *)(q + 0x230) = 0.8f;
         }
     }
-    c = (char *)D_0013E633 + 0xE1D;
+    c = (char *)hero_globals_base + 0xE1D;
     if (*(unsigned char *)(c + 0x257) != 0 && *(int *)(c + 0x2094) != 0x12
         && *(int *)(c + 0x208C) != 0x11 && *(unsigned char *)(c + 0x12E4) == 0) {
         float d = vec_distance_xy(c + 0x210, c + 0x80);
@@ -293,7 +293,7 @@ void update_hero_smoothing(void) {
             return;
         }
     }
-    p = (float *)(D_0013E633 + 0x103D);
+    p = (float *)(hero_globals_base + 0x103D);
     g = (char *)p - 0x220;
     ApproachValue(p, *(float *)(g + 0x228), frame_scale * 0.02f);
     ApproachValue(p + 1, *(float *)(g + 0x22C), frame_scale * 0.02f);

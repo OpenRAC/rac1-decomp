@@ -4,7 +4,7 @@ void magnetboots_update(Moby *m) {
     switch (m->state) {
     case 0:
         initialize_moby_particle_effect_r(m);
-        if (*(D_0013D605_00299818 + 7) != 0) {
+        if (*(race_gates_base_r + 7) != 0) {
             remove_00299818(m);
             return;
         }

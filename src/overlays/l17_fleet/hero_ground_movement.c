@@ -27,7 +27,7 @@ typedef struct { char p0[0x158]; float f158; char p15C[4]; float f160; char p164
 typedef struct { char p0[8]; float f8; float fC; char p10[8]; float f18; } S17BEB8;
 extern Hero g_hero;
 extern PadState g_controller_state;
-extern char D_0013A5E0[];
+extern char pad_globals_base[];
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern S141948 usage_stats;
@@ -1290,7 +1290,7 @@ void HeroL17_UpdateStatePhysics(void) {
 
                     a = FastAddRots(g_hero.motion.rot.f[2], 3.1415927f);
                     s = g_frame_time * 2.5f;
-                    if (*(int *)(D_0013A5E0 + 0x2600) & 0xA) {
+                    if (*(int *)(pad_globals_base + 0x2600) & 0xA) {
                         s = g_frame_time * 3.0f;
                     }
                     g_hero.motion.velocity.f[0] += FastCos(a) * s;
@@ -2468,7 +2468,7 @@ void HeroL17_UpdateStatePhysics(void) {
                         g_hero.ground_speed = 0.0f;
                     }
                     if (g_hero.rail_land_frames != 0) {
-                        if (*(int *)(D_0013A5E0 + 0x2634) != 0) {
+                        if (*(int *)(pad_globals_base + 0x2634) != 0) {
                             if (g_hero.on_flagged_ground_moby != 0) {
                                 g_hero.ground_speed = 0.0f;
                             }

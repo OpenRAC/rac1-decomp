@@ -48,10 +48,10 @@ void DrawGemlikTurretHud(char *moby) {
     }
     y = 0x40;
     x = 0x18;
-    base = D_0013E633 + 0xE1D;
+    base = hero_globals_base + 0xE1D;
     n = base[0x15F7];
     for (i = 0; i < n; i++) {
-        g = D_0013E633 + 0xE1D;
+        g = hero_globals_base + 0xE1D;
         if (i < g[0x15F6]) {
             append_scaled_screen_triangle_strip(x, y, 0.5f, gemlik_turret_hud_pip_strip, 0x19, 0xFFFFF3, 0x50008F00);
         } else {
@@ -70,11 +70,11 @@ void DrawGemlikTurretHud(char *moby) {
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, GetEffectTex(0x12), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, GetEffectTex(8), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
-    b = D_0013E633 + 0xE1D;
+    b = hero_globals_base + 0xE1D;
     if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) / 10.0f && (gemlik_frame_count / 90) & 1) {
         FontPrintCenterSmall_c(0x100, 0x186, 0x80000080L, msg_string_id(0x52C0), 0x64);
     }
-    h = D_0013E633 + 0xE1D;
+    h = hero_globals_base + 0xE1D;
     f = *(float *)(h + 0x15FC) - *(float *)(d + 0xF0);
     f *= 0.2f;
     q = FastAbsF(f);
@@ -93,7 +93,7 @@ void DrawGemlikTurretHud(char *moby) {
             (*(int **)&jet_hud_palette)[idx] = 0x80000000;
         }
     }
-    s = (char *)D_0013E15A + 0x4A6;
+    s = (char *)screen_globals_base + 0x4A6;
     DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(*(int *)(d + 0x104) + 0x28));
     DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(*(int *)(d + 0x104) + 0x29));
     *(int *)(d + 0xF4) = v;

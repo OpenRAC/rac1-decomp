@@ -295,7 +295,7 @@ extern Path_31E6B0 *umbris_paths_r[] __asm__("D_L07_001B0830");
 extern char umbris_item_price_table_r[] __asm__("D_L07_001C43B0");
 extern int D_L07_00161D30_31E6B0 SDATA(D_L07_00161D30);
 extern Moby256_31E6B0 *level_mobys_r __asm__("D_L07_00160058") MACRO_ADDR;
-extern unsigned char D_0013E633_31E6B0[] __asm__("D_0013E633");
+extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern unsigned char menu_item_enabled_115_r[] __asm__("D_0013D50F");
 
 // Update for moby class 1142 on level 07: measures its path once, then places sparks for the listed counters.
@@ -344,7 +344,7 @@ void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby)
         int done;
         int i, k, m, n, rem;
         float have, max, ratio, at, a, b, v, c, near, step;
-        if (is_point_inside_clip_volume_r(D_0013E633_31E6B0 + 0xE9D, d->vol) == 0) {
+        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->vol) == 0) {
             return;
         }
         for (i = 0; (&D_L07_00161D30_31E6B0)[i] != -1; i++) {

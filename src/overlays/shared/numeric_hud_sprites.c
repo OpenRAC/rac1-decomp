@@ -31,7 +31,7 @@ void initialize_trick_combo_hud(HudElemX *e) {
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int scale_ticks(int);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern Hero hero_002670A0 __asm__("D_0013F450");
 extern int trick_combo_spins MACRO_ADDR;
 extern int trick_combo_trick_flag3 MACRO_ADDR;
@@ -59,7 +59,7 @@ void update_trick_combo_hud(char *a) {
     *(int *)(a + 0x74) = truncate_float_to_s32_r(cur);
     switch (u[2]) {
     case 0: {
-        char *H = D_0013E633 + 0xE1D;
+        char *H = hero_globals_base + 0xE1D;
         if (*(short *)(H + 0x30E) < 6) {
             return;
         }
@@ -90,7 +90,7 @@ void update_trick_combo_hud(char *a) {
         if (u[1] != 0) {
             u[1]--;
         }
-        T = D_0013E633 + 0xE1D;
+        T = hero_globals_base + 0xE1D;
         trick_combo_trick_count = *(int *)(T + 0x6F0);
         {
             int k;
@@ -98,7 +98,7 @@ void update_trick_combo_hud(char *a) {
                 (&trick_combo_trick_flags)[k] = ((int *)(T + 0x6E0))[k];
             }
         }
-        H = D_0013E633 + 0xE1D;
+        H = hero_globals_base + 0xE1D;
         if (trick_combo_spins < *(int *)(H + 0x70C)) {
             trick_combo_spins = *(int *)(H + 0x70C);
             u[1] = *(unsigned char *)&trick_combo_flash_ticks;
@@ -125,7 +125,7 @@ void update_trick_combo_hud(char *a) {
             }
         }
         {
-        char *K = D_0013E633 + 0xE1D;
+        char *K = hero_globals_base + 0xE1D;
         if (*(int *)(K + 0x2084) == 0x6B) {
             if (trick_combo_trick_count >= 3) {
                 trick_combo_recent3 = trick_combo_recent2;
@@ -160,7 +160,7 @@ void update_trick_combo_hud(char *a) {
             u[0] = 0;
         } else if (u[2] == 3 && u[0] == scale_ticks(0x6E)) {
             int n = trick_combo_score;
-            H = D_0013E633 + 0xE1D;
+            H = hero_globals_base + 0xE1D;
             *(int *)(H + 0x8A8) += n;
             *(int *)(H + 0x864) += n * 5;
             if ((int)((float)scale_ticks(0x11) * 60.0f) < *(int *)(H + 0x864)) {
@@ -219,7 +219,7 @@ int draw_trick_combo_hud(char *a) {
     if (f21 > 1.0f) {
         f21 = 1.0f;
     }
-    E = D_0013E633 + 0xE1D;
+    E = hero_globals_base + 0xE1D;
     if (*(int *)(E + 0x208C) != 0x16) {
         return *(int *)(a + 0x58);
     }
@@ -315,7 +315,7 @@ int draw_trick_combo_hud(char *a) {
     draw_cropped_hud_sprite(id, xa, xb, s16, 0x40, 0x80);
     id2 = GetIconFrame(0x7558, 0);
     HudSprite(id2, xa, xb, 0x100, 0x40, 0x80);
-    E = D_0013E633 + 0xE1D;
+    E = hero_globals_base + 0xE1D;
     t = (unsigned char)E[0x8AE];
     if (scale_ticks(0x78) < t) {
         r3 = scale_ticks(0x3C);
@@ -362,13 +362,13 @@ void initialize_hud_element_defaults(HudElem *e) {
     e->h = 0x80;
     e->unk4A = 0;
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern int scale_ticks(int);
 
 /* Fades the progress HUD in when the hero is in mode 0x16, else fades it out. */
 void set_progress_hud_fade_from_hero_mode(char *moby)
 {
-    if (*(int *)(D_0013E633 + 0x2EA9) == 0x16) {
+    if (*(int *)(hero_globals_base + 0x2EA9) == 0x16) {
         *(int *)(moby + 0x7C) = scale_ticks(0x1E);
         *(int *)(moby + 0x6C) = 5;
     } else {
@@ -378,7 +378,7 @@ void set_progress_hud_fade_from_hero_mode(char *moby)
 extern int pal_mode MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern int g_screen_extent[];
-extern char D_0013D355[];
+extern char special_items_base[];
 extern short rilgar_progress_frame_x;
 extern short rilgar_progress_frame_bottom;
 extern short rilgar_progress_frame_width;
@@ -430,7 +430,7 @@ int draw_hud_progress_and_rank(char *e) {
     pal = pal_mode;
     x = hud_sub_66D10(g_screen_extent[1], pal, &rilgar_progress_frame_bottom);
     y = hud_sub_66D10(g_screen_extent[1], pal, &rilgar_progress_text_bottom);
-    hd = D_0013E633 + 0xE1D;
+    hd = hero_globals_base + 0xE1D;
     y1 = y + 1;
     draw_stretchable_ui_frame(*(int *)&(rilgar_progress_frame_x), x, *(int *)&(rilgar_progress_frame_width), *(int *)&(rilgar_progress_frame_height), *(int *)&(rilgar_progress_frame_alpha));
     tx = *(int *)&(rilgar_progress_label_x);
@@ -467,7 +467,7 @@ int draw_hud_progress_and_rank(char *e) {
     func_00116248(buf + 0x40, rilgar_fmt_number, *(unsigned char *)(hd + 0x8CE));
     py = pal_mode ? 0xA : 0x12;
     px = *(int *)(e + 0x50);
-    if (*(unsigned char *)(D_0013D355 + 0x13B) == 0) {
+    if (*(unsigned char *)(special_items_base + 0x13B) == 0) {
         py = pal_mode ? 0xA : 0x12;
     } else {
         px = *(int *)&(rilgar_counter_box_alt_x);
@@ -477,7 +477,7 @@ int draw_hud_progress_and_rank(char *e) {
     w = GetIconFrame(0x7558, 2);
     HudSprite(w, px, py, 0x20, 0x20, 0x80);
     print_text_with_texture_3(px + 0x29, py + 8, 0x80000000L, buf + 0x40, -1);
-    h2 = D_0013E633 + 0xE1D;
+    h2 = hero_globals_base + 0xE1D;
     if (*(unsigned char *)(h2 + 0x8CE) != 0)
         print_text_with_texture_3(px + 0x28, py + 7, 0x80E08060L, buf + 0x40, -1);
     else

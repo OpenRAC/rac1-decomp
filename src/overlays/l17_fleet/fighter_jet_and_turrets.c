@@ -32,7 +32,7 @@ extern char *fleet_camera_points MACRO_ADDR;
 extern char *fleet_mobys MACRO_ADDR;
 extern char (*fleet_mobys_t)[256] __asm__("D_L17_00160058") MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern char fleet_coll_hit_point[];
 extern short fleet_beam_peer_inset;
 
@@ -123,7 +123,7 @@ void update_fleet_beam(char *m) {
         *(v128 *)beam_vars->p30 = *(v128 *)b;
         break;
     case BEAM_UPDATE_STATIONARY:
-        if (beam_vars->clip_volume == -1 || is_point_inside_clip_volume(D_0013E633 + 0xE9D, beam_vars->clip_volume)) {
+        if (beam_vars->clip_volume == -1 || is_point_inside_clip_volume(hero_globals_base + 0xE9D, beam_vars->clip_volume)) {
             flag = 1;
         }
         break;
@@ -141,7 +141,7 @@ void update_fleet_beam(char *m) {
         } else {
             lerp_vector(&beam_moby->pos, beam_vars, fleet_camera_points + (beam_vars->path_index << 7) + 0x30, beam_vars->osc_t);
         }
-        if (beam_vars->clip_volume == -1 || is_point_inside_clip_volume(D_0013E633 + 0xE9D, beam_vars->clip_volume)) {
+        if (beam_vars->clip_volume == -1 || is_point_inside_clip_volume(hero_globals_base + 0xE9D, beam_vars->clip_volume)) {
             *(v128 *)beam_vector_scratch = 0;
             beam_vector_scratch[0] = 13.0f;
             matrix_mul_vec3(beam_vector_scratch, beam_vector_scratch, beam_moby->rot_row0);
@@ -181,7 +181,7 @@ void update_fleet_beam(char *m) {
         lerp_vector(b, beam_vars->p10, beam_vars->p20, 0.5f);
         b[3] = signed_beam_length * 0.5f;
         if (FastBSphereCheck((char *)b, 32.0f) != -1) {
-            FastVecSub(hero_offset, D_0013E633 + 0xE9D, &beam_moby->pos);
+            FastVecSub(hero_offset, hero_globals_base + 0xE9D, &beam_moby->pos);
             vec_scale_to_length(axis_aligned_hero_offset, beam_moby->rot_row0, FastVecDot(beam_moby->rot_row0, hero_offset));
             FastVecSub(hero_offset, hero_offset, axis_aligned_hero_offset);
             InitDirectionalHitQuery_alt((char *)hit_descriptor_and_vector_scratch, (int)beam_moby, 0x10001, 1.0f, hero_offset);
@@ -289,7 +289,7 @@ extern char *try_activate_blarg_ship_from_list(int list);
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10, float *v11, float *v12);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern int g_current_level_index MACRO_ADDR;
-extern unsigned char D_0014171B[] NOT_SDA;
+extern unsigned char help_stats_base[] NOT_SDA;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern int fleet_frame_count MACRO_ADDR;
@@ -337,12 +337,12 @@ void dreks_fleet_turret_update(char *m) {
         d->f20 = 15.0f;
         d->s24 = 0xF;
         distribute_class_733_group_mobys_along_path(m);
-        if ((D_0014171B + 0xAA35)[((Moby *)m)->mission + (g_current_level_index << 4)] == 0xFF) {
+        if ((help_stats_base + 0xAA35)[((Moby *)m)->mission + (g_current_level_index << 4)] == 0xFF) {
             DeleteMoby(m);
         }
         break;
     case 1: {
-        char *g = (char *)D_0013E633 + 0xE1D;
+        char *g = (char *)hero_globals_base + 0xE1D;
         if (*(short *)(g + 0x308) != 0) {
             qcopy(dir, m + 0x10);
             dir[2] += 10.0f;
@@ -364,7 +364,7 @@ void dreks_fleet_turret_update(char *m) {
         break;
     }
     case 2: {
-        if (*(short *)(D_0013E633 + 0x1125) == 0) {
+        if (*(short *)(hero_globals_base + 0x1125) == 0) {
             ((Moby *)m)->state = 1;
         }
         {
@@ -411,7 +411,7 @@ void dreks_fleet_turret_update(char *m) {
         break;
     }
     case 3: {
-        char *g = (char *)D_0013E633 + 0xE1D;
+        char *g = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(g + 0x2084) != 0x32 || *(char **)(g + 0x15F0) == 0 || *(short *)(*(char **)(g + 0x15F0) + 0xA6) != 0x563) {
             ((Moby *)m)->state = 1;
         } else {
@@ -640,7 +640,7 @@ void update_fleet_rotating_radial_effect(char *m) {
             AddDrawCallback(draw_fleet_scrolling_radial_quads, m);
             break;
         }
-        FastVecSub(sp0, D_0013E633 + 0xE9D, (m + 0x10));
+        FastVecSub(sp0, hero_globals_base + 0xE9D, (m + 0x10));
         if (FastVecDot(sp0, (m + 0xC0)) > 0.0f) {
             vec_scale_to_length(sp10, (m + 0xC0), 1.0f);
         } else {
@@ -669,7 +669,7 @@ void update_fleet_rotating_radial_effect(char *m) {
                 BuildSphericalOffset(spC0, *(float *)&fleet_ring_radius, 1.5707964f, FastAddRots(FastAddRots(g, FastNormalizeAngle(IntToFloat(i) * 2.0943952f)), f21));
                 transform_vector(spC0, spC0, mat2);
                 add_vectors(spD0, spC0, (m + 0x10));
-                if (FastVecDist((m + 0x10), D_0013E633 + 0xE9D) < 30.0f) {
+                if (FastVecDist((m + 0x10), hero_globals_base + 0xE9D) < 30.0f) {
                     coll_line((m + 0x10), spC0, 9, m, &blk);
                 }
                 spD0[0] = *(u128_2D8CC8 *)(m + 0x10);
@@ -835,7 +835,7 @@ void update_fleet_bobbing_moby(char *m) {
         InitDirectionalHitQuery_alt(w, (int)m, 0x10001, 1.0f, v);
         qcopy(pos, m + 0x10);
         pos[2] = pos[2] + 0.75f;
-        g = (char *)D_0013E633 + 0xE1D;
+        g = (char *)hero_globals_base + 0xE1D;
         if (*(char **)(g + 0x23C) == m || *(char **)(g + 0x240) == m || coll_sphere_mobys_alt(1.0f, pos, 0x10, m, w)) {
             if (fleet_coll_hit_moby != 0 && *(short *)(fleet_coll_hit_moby + 0xA6) != 0x343) {
                 spawn_explosion_alt(m, v, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 1, 7.0f, 0, 1, -1, 0);
@@ -913,7 +913,7 @@ void StopsPlatformUpdate(char *m) {
         if (FastAbsF((*(float *)(d + ((0x14))))) > 2.0f) {
             idx = (*(int *)(d + ((0x20))));
             if (idx != -1) {
-                char *e = (char *)D_0013E633 + 0x1D + idx * 0x70;
+                char *e = (char *)hero_globals_base + 0x1D + idx * 0x70;
                 if (*(char **)(e + 0x88) == m) {
                     if (*(unsigned char *)(e + 0x74) != 0) Sound_StopSlot(idx);
                 }
@@ -926,14 +926,14 @@ void StopsPlatformUpdate(char *m) {
         (*(float *)(d + ((0x14)))) = 0.0f;
         idx = (*(int *)(d + ((0x20))));
         if (idx != -1) {
-            char *e = (char *)D_0013E633 + 0x1D + idx * 0x70;
+            char *e = (char *)hero_globals_base + 0x1D + idx * 0x70;
             if (*(char **)(e + 0x88) == m) {
                 if (*(unsigned char *)(e + 0x74) != 0) Sound_StopSlot(idx);
             }
         }
         (*(int *)(d + ((0x20)))) = -1;
-        if (FastAbsF(((Moby *)m)->rot.x) < 0.7853982f || *(short *)(D_0013E633 + 0x1125) != 0) {
-            if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, (*(int *)(d + ((0x18))))) == 0) {
+        if (FastAbsF(((Moby *)m)->rot.x) < 0.7853982f || *(short *)(hero_globals_base + 0x1125) != 0) {
+            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, (*(int *)(d + ((0x18))))) == 0) {
                 if ((*(int *)(d + ((0x10)))) == -1) break;
                 if (is_point_inside_clip_volume(fleet_mobys + (*(int *)(d + ((0x10)))) * 0x100 + 0x10, (*(int *)(d + ((0x18))))) == 0) break;
             }
@@ -948,13 +948,13 @@ void StopsPlatformUpdate(char *m) {
     case 4:
         idx = (*(int *)(d + ((0x20))));
         if (idx != -1) {
-            char *e = (char *)D_0013E633 + 0x1D + idx * 0x70;
+            char *e = (char *)hero_globals_base + 0x1D + idx * 0x70;
             if (*(char **)(e + 0x88) == m) {
                 if (*(unsigned char *)(e + 0x74) != 0) Sound_StopSlot(idx);
             }
         }
         (*(int *)(d + ((0x20)))) = -1;
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, (*(int *)(d + ((0x1C)))))) break;
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, (*(int *)(d + ((0x1C)))))) break;
         if (is_point_inside_clip_volume(fleet_camera_pos, (*(int *)(d + ((0x1C)))))) break;
         if ((*(int *)(d + ((0x10)))) != -1 && is_point_inside_clip_volume(fleet_mobys + (*(int *)(d + ((0x10)))) * 0x100 + 0x10, (*(int *)(d + ((0x18)))))) break;
         if (*(int *)(*(char **)(m + 0x24) + 0x28) != 0 && Sound_IsPlaying(m, (*(int *)(d + ((0x20))))) == 0) {
@@ -966,7 +966,7 @@ void StopsPlatformUpdate(char *m) {
         if (*(int *)(*(char **)(m + 0x24) + 0x28) != 0 && Sound_IsPlaying(m, (*(int *)(d + ((0x20))))) == 0) {
             (*(int *)(d + ((0x20)))) = Moby_PlaySound(0, 4, (int)m);
         }
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, (*(int *)(d + ((0x18))))) || is_point_inside_clip_volume(fleet_camera_pos, (*(int *)(d + ((0x18)))))
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, (*(int *)(d + ((0x18))))) || is_point_inside_clip_volume(fleet_camera_pos, (*(int *)(d + ((0x18)))))
             || ((*(int *)(d + ((0x10)))) != -1 && is_point_inside_clip_volume(fleet_mobys + (*(int *)(d + ((0x10)))) * 0x100 + 0x10, (*(int *)(d + ((0x18))))))) {
             m[0x20] = 2;
             break;
@@ -1001,7 +1001,7 @@ void StopsPlatformUpdate(char *m) {
         if ((*(float *)(d + ((0x14)))) == 0.0f) {
             idx = (*(int *)(d + ((0x20))));
             if (idx != -1) {
-                char *e = (char *)D_0013E633 + 0x1D + idx * 0x70;
+                char *e = (char *)hero_globals_base + 0x1D + idx * 0x70;
                 if (*(char **)(e + 0x88) == m) {
                     if (*(unsigned char *)(e + 0x74) != 0) Sound_StopSlot(idx);
                 }
@@ -1040,7 +1040,7 @@ void update_drone_flight_and_sparks(char *moby) {
         ((Moby *)moby)->draw_dist = 0;
         moby[0x31] = 0;
         t = d + 0x10;
-        *(u128 *)e = *(u128 *)(D_0013E633 + 0xEED);
+        *(u128 *)e = *(u128 *)(hero_globals_base + 0xEED);
         e[2] = e[2] - 0.5f;
         if (vec_distance_xy(e, t) < 8.0f) {
             lerp_vector(t, e, t, 0.99f);
@@ -1074,9 +1074,9 @@ void update_drone_flight_and_sparks(char *moby) {
             hit = *(int *)(r + 0x18);
             if (hit != 0) {
                 if (hit != *(int *)(d + 0x3C)) {
-                    g = (char *)D_0013E633 + 0xE1D;
+                    g = (char *)hero_globals_base + 0xE1D;
                     if (*(short *)(g + 0x308) != 0 && hit == *(int *)(g + 0x2080)) {
-                        unsigned char *rec = D_0014171B + 0x34D;
+                        unsigned char *rec = help_stats_base + 0x34D;
                         if (*(unsigned short *)(rec + 0x458) == 0) {
                             (*(unsigned short *)(rec + 0x458))++;
                             n = scale_ticks(gameplay_event_frame_count) / 600;
@@ -1088,9 +1088,9 @@ void update_drone_flight_and_sparks(char *moby) {
                     }
                     qcopy(moby + 0x10, fleet_coll_hit_point);
                     MobySphereHitDirectional((int)moby, 0.75f, moby + 0x10, 1, 6.0f, 0.0f, 0, 1, 0);
-                    g2 = (char *)D_0013E633 + 0xE1D;
+                    g2 = (char *)hero_globals_base + 0xE1D;
                     if (*(short *)(g2 + 0x308) != 0 && *(int *)(fleet_coll_hit_point - 8) == *(int *)(g2 + 0x2080)) {
-                        unsigned char *rec = D_0014171B + 0x34D;
+                        unsigned char *rec = help_stats_base + 0x34D;
                         if (*(unsigned short *)(rec + 0x458) == 0) {
                             (*(unsigned short *)(rec + 0x458))++;
                             n = scale_ticks(gameplay_event_frame_count) / 600;
@@ -1208,7 +1208,7 @@ void draw_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsig
 extern float FastSubRots(float, float);
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern unsigned char draw_map51[4] MACRO_ADDR;
-extern unsigned char D_0013E15A[];
+extern unsigned char screen_globals_base[];
 
 /* One radar icon: its texture (counted from the radar's own), its rectangle in that texture and its hot spot. */
 typedef struct {
@@ -1259,7 +1259,7 @@ void draw_fighter_jet_radar_contact_icon(char *rot, char *from, char *moby, int 
         }
         t = &fleet_radar_icon_table[icon];
         y -= 0x50;
-        y += *(int *)(D_0013E15A + 0x4AA);
+        y += *(int *)(screen_globals_base + 0x4AA);
         x += 0x1B0;
         DrawTexturedQuad(x - t->x, y - t->y, t->w, t->h, t->u, t->v, t->w, t->h, color, GetEffectTex(tex + 0x28 + t->tex));
     }
@@ -1301,7 +1301,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
     bestd = 100000.0f;
     near = 0;
     while (m != 0) {
-        scr = (int *)(D_0013E15A + 0x4A6);
+        scr = (int *)(screen_globals_base + 0x4A6);
         if ((*(unsigned short *)(m + 0x34) & 0x1000) && *(unsigned char *)(m + 0x31) != 0 && m != 0 &&
             *(char **)(m + 0x24) != 0 && *(short *)(*(char **)(m + 0x24) + 0x46) == 5) {
             project_world_point_to_screen_pixels(m + 0x10, &sx, &sy, 0);
@@ -1391,7 +1391,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                     emit_transformed_2d_vertex_packet(fleet_target_reticle_shape, 0x1E, 0xFFFFF3, 0x400000FF, x, y, 2.5f, -ang);
                 }
             }
-            dd = FastVecDist(m + 0x10, D_0013E633 + 0xE9D);
+            dd = FastVecDist(m + 0x10, hero_globals_base + 0xE9D);
             if (dd < bestd) {
                 near = m;
                 bestd = dd;
@@ -1451,7 +1451,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
         ap = (char *)a + 0x10;
         project_to_screen(w, u);
         matrix_from_basis_rows(mat, fleet_camera_matrix);
-        FastVecSub(v, np, D_0013E633 + 0xE9D);
+        FastVecSub(v, np, hero_globals_base + 0xE9D);
         transform_vector(v, v, mat);
         v[0] = -v[1];
         v[1] = -v[2];
@@ -1476,7 +1476,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
     }
     return (int)ret;
 }
-extern unsigned char D_0013A5E0[];
+extern unsigned char pad_globals_base[];
 extern char fleet_camera_rot[];
 extern short fleet_jet_lock_time;
 extern int select_fighter_jet_target_and_draw_contacts(int, char *, char *, char *, float, float, float, char *, char *);
@@ -1499,7 +1499,7 @@ void update_fighter_jet_target_lock(int a, char *p) {
     }
     if (W(p, 0x8C) != 0 && P(p, 0x88) != 0 && H(P(p, 0x88), 0xA6) == W(p, 0x128) &&
         B(P(p, 0x88), 0x20) != 0xFE && B(P(p, 0x88), 0x20) != 0xFD) {
-        pad = (char *)D_0013A5E0 + 0x2460;
+        pad = (char *)pad_globals_base + 0x2460;
         if (B(P(p, 0x88), 0x31) != 0) {
             if (W(pad, 0x1B4) & 0x2000) {
                 goto take;
@@ -1509,7 +1509,7 @@ void update_fighter_jet_target_lock(int a, char *p) {
             }
         }
     }
-    pad = (char *)D_0013A5E0 + 0x2460;
+    pad = (char *)pad_globals_base + 0x2460;
     if (W(pad, 0x1B4) & 0x2000) {
 take:
         g = P(p, 0x88);
@@ -1596,7 +1596,7 @@ void DrawFleetHud(char *moby) {
     float q;
 
     VU1_addGSregister(0x42, 0x8000000044L);
-    DrawTexturedQuad(0x170, (s = (char *)D_0013E15A + 0x4A6, *(int *)(s + 4)) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(*(int *)(d + 0x104) + 0x28));
+    DrawTexturedQuad(0x170, (s = (char *)screen_globals_base + 0x4A6, *(int *)(s + 4)) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(*(int *)(d + 0x104) + 0x28));
     DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(*(int *)(d + 0x104) + 0x29));
     VU1_addGSregister(0x42, 0x8000000048L);
     update_fighter_jet_target_lock((int)moby, d);
@@ -1620,10 +1620,10 @@ void DrawFleetHud(char *moby) {
     }
     y = 0x40;
     x = 0x18;
-    base = D_0013E633 + 0xE1D;
+    base = hero_globals_base + 0xE1D;
     n = base[0x15F7];
     for (i = 0; i < n; i++) {
-        g = D_0013E633 + 0xE1D;
+        g = hero_globals_base + 0xE1D;
         if (i < g[0x15F6]) {
             append_scaled_screen_triangle_strip(x, y, 0.5f, fleet_hud_ammo_pip_shape, 0x19, 0xFFFFF3, 0x50008F00);
         } else {
@@ -1642,14 +1642,14 @@ void DrawFleetHud(char *moby) {
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, GetEffectTex(0x12), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, GetEffectTex(8), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
-    b = D_0013E633 + 0xE1D;
+    b = hero_globals_base + 0xE1D;
     if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) / 10.0f && (fleet_frame_count / 90) & 1) {
         FontPrintCenterSmall_c(0x100, 0x186, 0x80000080L, msg_string_id(0x526E), 0x64);
     }
     if (((Moby *)moby)->state == 8) {
         FontPrintCenterSmall_c(0x100, 0xC8, 0x80005080L, msg_string_id(0x5243), 0x64);
     }
-    h = D_0013E633 + 0xE1D;
+    h = hero_globals_base + 0xE1D;
     f = *(float *)(h + 0x15FC) - *(float *)(d + 0xF0);
     f *= 0.2f;
     q = FastAbsF(f);
@@ -1684,7 +1684,7 @@ void update_fighter_jet_aim_and_fire_projectile(char *moby, char *obj, float p2,
     char d[16];
     BuildSphericalOffset(a, *(float *)&fleet_jet_gun_aim_distance * *(float *)&fleet_frame_scale, p2, p3);
     FastVecAdd(a, a, obj);
-    if (fast_dec_timer(obj + 0x80) && (*(int *)(D_0013A5E0 + 0x2610) & 0x84)) {
+    if (fast_dec_timer(obj + 0x80) && (*(int *)(pad_globals_base + 0x2610) & 0x84)) {
         Moby_PlaySound(3, 0, (int)moby);
         vec_scale_to_length(c, a, 2.2f);
         Moby_GetJointWorldPos(moby, 3 + (obj[0x61] & 1), b);
@@ -1719,8 +1719,8 @@ typedef struct FighterJetVars {
 void try_fire_fighter_jet_rocket(char *moby, char *ship_vars) {
     char projectile_spawn_position[16];
     char projectile_spawn_offset[16];
-    if (fast_dec_timer(&((FighterJetVars *)ship_vars)->fire_timer) && (*(int *)(D_0013A5E0 + 0x2610) & 0x28)) {
-        HeroShipAmmo *hero = (HeroShipAmmo *)((char *)D_0013E633 + 0xE1D);
+    if (fast_dec_timer(&((FighterJetVars *)ship_vars)->fire_timer) && (*(int *)(pad_globals_base + 0x2610) & 0x28)) {
+        HeroShipAmmo *hero = (HeroShipAmmo *)((char *)hero_globals_base + 0xE1D);
         if (hero->ship_ammo != 0) {
             char *projectile_initial_rotation = (char *)&((FleetMoby *)moby)->rot;
             float projectile_scale;
@@ -1885,11 +1885,11 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
     m->flags &= 0xFEFF;
     if (m->command == 0) {
         if (fleet_jet_launch_frames < o->count) {
-            pad = (char *)D_0013A5E0 + 0x2460;
+            pad = (char *)pad_globals_base + 0x2460;
             if (*(int *)(pad + 0x1B4) & 0x40) {
                 idx = o->i10C;
                 if (idx != -1) {
-                    e = (char *)D_0013E633 + 0x1D + idx * 0x70;
+                    e = (char *)hero_globals_base + 0x1D + idx * 0x70;
                     if (*(char **)(e + 0x88) == (char *)m && *(unsigned char *)(e + 0x74) != 0) {
                         Sound_StopSlot(idx);
                     }
@@ -1899,14 +1899,14 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
             } else if (*(int *)(pad + 0x1B8) & 0x40) {
                 idx = o->i10C;
                 if (idx != -1) {
-                    e = (char *)D_0013E633 + 0x1D + idx * 0x70;
+                    e = (char *)hero_globals_base + 0x1D + idx * 0x70;
                     if (*(char **)(e + 0x88) == (char *)m && *(unsigned char *)(e + 0x74) != 0) {
                         Sound_StopSlot(idx);
                     }
                 }
                 o->i10C = -1;
             }
-            pad = (char *)D_0013A5E0 + 0x2460;
+            pad = (char *)pad_globals_base + 0x2460;
             if (*(int *)(pad + 0x1B0) & 0x40) {
                 float f = o->speed + fleet_jet_boost_accel * D_L17_00162120_f;
                 float max = fleet_jet_max_speed * D_L17_00162120_f;
@@ -1935,14 +1935,14 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
     }
 
     if (fleet_jet_steer_start_frame < o->count) {
-        g = (char *)D_0013E633 + 0xE1D;
+        g = (char *)hero_globals_base + 0xE1D;
         x = *(float *)(g + 0x1D20);
         y = *(float *)(g + 0x1D24);
         ka = fleet_jet_yaw_steer_max_rate;
         kb = fleet_jet_pitch_steer_max_rate;
         a = x;
         b = y;
-        if (*(int *)(D_0013A5E0 + 0x2600) & 0x200) {
+        if (*(int *)(pad_globals_base + 0x2600) & 0x200) {
             a = x / fleet_jet_yaw_rate * fleet_jet_sharp_yaw_rate;
             b = y / fleet_jet_pitch_rate * fleet_jet_sharp_pitch_rate;
             ka = fleet_jet_sharp_yaw_steer_max_rate;
@@ -2057,7 +2057,7 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
             o->speed = k;
             if (*(char **)(p + 0x18) != 0 && *(short *)(*(char **)(p + 0x18) + 0xA6) != 0x15B) {
                 if (o->iDC == 0) {
-                    g = (char *)D_0013E633 + 0xE1D;
+                    g = (char *)hero_globals_base + 0xE1D;
                     *(float *)(g + 0x15FC) = *(float *)(g + 0x15FC) - fleet_jet_wall_hit_damage;
                     if (*(float *)(g + 0x15FC) < 0.0f) {
                         FastVecSub(side, p + 0x50, p + 0x60);
@@ -2071,7 +2071,7 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
                     o->iDC = fleet_jet_wall_hit_cooldown;
                 }
             } else {
-                *(int *)(D_0013E633 + 0x2419) = 0;
+                *(int *)(hero_globals_base + 0x2419) = 0;
                 spawn_explosion_alt(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 1.0f, -1, 50.0f, 1, 1, -1, 0);
                 o->s62 = fleet_jet_crash_time;
                 m->state = 7;
@@ -2247,7 +2247,7 @@ void FighterJetUpdate(Moby1379 *moby) {
         if (st != 7 && st != 1 && st != 2) {
             r = MobyGetHitMessage(moby, 0x30001, 0);
             if (r != 0 && moby->state == 4) {
-                Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+                Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
                 if (*(float *)(r + 0x2C) < g->t) {
                     g->t = g->t - *(float *)(r + 0x2C);
                     if (*(int *)(r + 0x30) & 1) {
@@ -2286,7 +2286,7 @@ void FighterJetUpdate(Moby1379 *moby) {
         }
         moby->a4 = 0xFF;
         {
-            Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+            Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
             if (g->cur == (int)moby) {
                 g->i1608 = (int)(g->t / fleet_jet_max_health * 200.0f);
             }
@@ -2328,12 +2328,12 @@ void FighterJetUpdate(Moby1379 *moby) {
             d->i124 = -1;
             break;
         case 1: {
-            Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+            Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
             int ok = 0;
             if (jet_distance(moby, g->p2080) < *(float *)&fleet_jet_board_radius) {
                 int t = g->i2084;
                 if (t != 0x32 && t != 0x1D && g->b20A4 == 0 && try_set_help_message(7, 0x53E9) != 0) {
-                    int m = *(int *)(D_0013A5E0 + 0x2604) & 0x10;
+                    int m = *(int *)(pad_globals_base + 0x2604) & 0x10;
                     ok = m != 0;
                 }
             }
@@ -2355,7 +2355,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             f = d->f130;
             fleet_fade_level = f;
             if (f == 1.0f) {
-                Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+                Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
                 g->cur = (int)moby;
                 g->id = moby->a6;
                 g->n6 = fleet_jet_start_ammo;
@@ -2435,7 +2435,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 fleet_fade_level = d->f130;
             }
             {
-                Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+                Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
                 if (g->b160F & 1) {
                     moby->state = 5;
                 }
@@ -2443,7 +2443,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             break;
         }
         case 5: {
-            Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+            Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
             char *e;
             g->b20A5 = 0;
             g->p2080->i98 = 0;
@@ -2482,7 +2482,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             if (FastDecTimer(&d->t62) != 0) {
                 clear_jet_camera_mode_latch();
                 {
-                    Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+                    Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
                     g->p2080->i98 = 0;
                 }
                 Hero_OnKilled();
@@ -2517,7 +2517,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 fleet_fade_level = d->f130;
             }
             if (d->f130 >= 1.0f) {
-                Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+                Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
                 int i;
                 g->b20A5 = 0;
                 g->p2080->i98 = 0;
@@ -2627,7 +2627,7 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
         } else {
             *a = (1.0f - *a) * r + *a;
         }
-        base = D_0013E633 + 0xE1D;
+        base = hero_globals_base + 0xE1D;
         base[0x160F] |= 2;
     }
     if (t - 10.0f < zz) {
@@ -2639,7 +2639,7 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
         q = q * w;
         *b = (-1.0f - *b) * q + *b;
         {
-            unsigned char *p = D_0013E633 + 0xE1D;
+            unsigned char *p = hero_globals_base + 0xE1D;
             p[0x160F] |= 2;
         }
     } else if (zz < k + 10.0f) {
@@ -2651,7 +2651,7 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
         q = q * w;
         *b = (1.0f - *b) * q + *b;
         {
-            unsigned char *p = D_0013E633 + 0xE1D;
+            unsigned char *p = hero_globals_base + 0xE1D;
             p[0x160F] |= 2;
         }
     }
@@ -2724,10 +2724,10 @@ void magnet_elevator_update(char *moby) {
         float target;
         int s;
         W(moby, 0x90) = FastTweenColor(W(moby, 0x90), 0x80808040, 0.1f);
-        if (B(moby, 0x20) == 2 && P(D_0013E633, 0x1119) != moby) {
+        if (B(moby, 0x20) == 2 && P(hero_globals_base, 0x1119) != moby) {
             B(moby, 0x20) = 4;
         }
-        if (B(moby, 0x20) == 3 && P(D_0013E633, 0x1119) != moby) {
+        if (B(moby, 0x20) == 3 && P(hero_globals_base, 0x1119) != moby) {
             B(moby, 0x20) = 5;
         }
         if (!Sound_IsPlaying(moby, W(state, 0x6C))) {
@@ -2767,7 +2767,7 @@ void magnet_elevator_update(char *moby) {
             Sound_StopSlot(W(state, 0x6C));
             W(state, 0x6C) = -1;
         }
-        if (P(D_0013E633, 0x1119) != moby) {
+        if (P(hero_globals_base, 0x1119) != moby) {
             if (B(moby, 0x20) == 9) {
                 B(moby, 0x20) = 7;
             } else {
@@ -2787,7 +2787,7 @@ void magnet_elevator_update(char *moby) {
             i = 0x20;
         }
         W(moby, 0x90) = 0x80000000 | (i << 16) | (i << 8) | i;
-        g = (char *)D_0013E633 + 0xE1D;
+        g = (char *)hero_globals_base + 0xE1D;
         if (H(g, 0x308) != 0 || W(state, 0x7C) == 0) {
             if (P(g, 0x2FC) == moby && H(g, 0x30E) == 0 && vec_distance_xy(g + 0x80, moby + 0x10) < 0.5f) {
                 Moby_PlaySound(1, 0, (int)moby);
@@ -2797,7 +2797,7 @@ void magnet_elevator_update(char *moby) {
                     B(moby, 0x20) = 3;
                 }
             } else if (B(moby, 0x20) == 6) {
-                char *p = (char *)D_0013E633 + 0xE9D;
+                char *p = (char *)hero_globals_base + 0xE9D;
                 float d = vec_distance_xy(moby + 0x10, p);
                 float e = FastAbsF((*(float *)((char *)(p) + (0x258))) - (*(float *)((char *)(state) + (0x64))));
                 if (e < FastAbsF((*(float *)((char *)(state) + (0x60))) - (*(float *)((char *)(state) + (0x64)))) * 0.5f && d < 32.0f && d > 2.0f) {
@@ -2806,7 +2806,7 @@ void magnet_elevator_update(char *moby) {
                     W(state, 0x68) = 0;
                 }
             } else if (B(moby, 0x20) == 7) {
-                char *p = (char *)D_0013E633 + 0xE9D;
+                char *p = (char *)hero_globals_base + 0xE9D;
                 float d = vec_distance_xy(moby + 0x10, p);
                 float e = FastAbsF((*(float *)((char *)(p) + (0x258))) - (*(float *)((char *)(state) + (0x60))));
                 if (e < FastAbsF((*(float *)((char *)(state) + (0x60))) - (*(float *)((char *)(state) + (0x64)))) * 0.5f && d < 32.0f && d > 2.0f) {
@@ -3003,7 +3003,7 @@ void Moby1382Update(unsigned char *m) {
                     if (((Moby *)m)->prev_seq != s) {
                         MobyBlendAnimation(m, 2, 0, scale_ticks(10));
                     }
-                } else if (D_0013E633[0x2EC1] != 3) {
+                } else if (hero_globals_base[0x2EC1] != 3) {
                     ((Moby *)m)->state = 7;
                     if (((Moby *)m)->prev_seq != 8) {
                         MobyBlendAnimation(m, 8, 0, scale_ticks(10));
@@ -3051,12 +3051,12 @@ void Moby1382Update(unsigned char *m) {
             }
             ((Moby *)m)->anim_speed = 1.7f;
             mode = d->mode;
-            if (mode == 2 && (FastDecTimer(&d->t1E2) || D_0013E633[0x2EC1] != 3)) {
+            if (mode == 2 && (FastDecTimer(&d->t1E2) || hero_globals_base[0x2EC1] != 3)) {
                 if (random_integer_below(3) == 0) {
                     if (((Moby *)m)->prev_seq != mode) {
                         MobyBlendAnimation(m, 2, 0, scale_ticks(10));
                     }
-                } else if (D_0013E633[0x2EC1] != 3) {
+                } else if (hero_globals_base[0x2EC1] != 3) {
                     ((Moby *)m)->state = 7;
                     if (((Moby *)m)->prev_seq != 8) {
                         MobyBlendAnimation(m, 8, 0, scale_ticks(10));
@@ -3105,7 +3105,7 @@ void Moby1382Update(unsigned char *m) {
             }
             break;
         }
-        if (d->f1D4 != 0.0f || IsPointInPolygon(D_0013E633 + 0xE9D, ((int **)fleet_paths)[d->path] + 4, ((int **)fleet_paths)[d->path][0]) != 0) {
+        if (d->f1D4 != 0.0f || IsPointInPolygon(hero_globals_base + 0xE9D, ((int **)fleet_paths)[d->path] + 4, ((int **)fleet_paths)[d->path][0]) != 0) {
             if (random_integer_below(20) == 0) {
                 ((Moby *)m)->state = 8;
                 if (((Moby *)m)->prev_seq != 1) {
@@ -3135,7 +3135,7 @@ void Moby1382Update(unsigned char *m) {
         MobySpringTurn((char *)m, &d->yawvel, ang, 0.03f, 0.3f, g_frame_time * 7.8539815f);
         if (((Moby *)m)->anim_flags & 2) {
             if (d->f1D4 == 0.0f) {
-                if (IsPointInPolygon(D_0013E633 + 0xE9D, ((int **)fleet_paths)[d->path] + 4, ((int **)fleet_paths)[d->path][0]) == 0) {
+                if (IsPointInPolygon(hero_globals_base + 0xE9D, ((int **)fleet_paths)[d->path] + 4, ((int **)fleet_paths)[d->path][0]) == 0) {
                     ((Moby *)m)->state = 11;
                     if (((Moby *)m)->prev_seq != 9) {
                         MobyBlendAnimation(m, 9, 0, scale_ticks(10));
@@ -3153,7 +3153,7 @@ void Moby1382Update(unsigned char *m) {
     case 9:
         move_robot_dog_toward_position((char *)m, d->v180, d->f1EC);
         ((Moby *)m)->anim_speed = 1.8f;
-        if (IsPointInPolygon(D_0013E633 + 0xE9D, ((int **)fleet_paths)[d->path] + 4, ((int **)fleet_paths)[d->path][0]) == 0 && d->f1D4 == 0.0f) {
+        if (IsPointInPolygon(hero_globals_base + 0xE9D, ((int **)fleet_paths)[d->path] + 4, ((int **)fleet_paths)[d->path][0]) == 0 && d->f1D4 == 0.0f) {
             ((Moby *)m)->state = 11;
         } else if (vec_distance_xy(m + 0x10, d->v180) < 1.8f) {
             ((Moby *)m)->state = 10;
@@ -3206,7 +3206,7 @@ void Moby1382Update(unsigned char *m) {
             k2 = multiply_global_factor(10.0f);
             v = d->speed * g_frame_time;
             if (far < v * k1 * 0.5f + v * k2 + 1.5f) {
-                if (IsPointInPolygon(D_0013E633 + 0xE9D, ((int **)fleet_paths)[d->path] + 4, ((int **)fleet_paths)[d->path][0]) != 0) {
+                if (IsPointInPolygon(hero_globals_base + 0xE9D, ((int **)fleet_paths)[d->path] + 4, ((int **)fleet_paths)[d->path][0]) != 0) {
                     ((Moby *)m)->state = 10;
                     if (((Moby *)m)->prev_seq != 10) {
                         MobyBlendAnimation(m, 10, 0, scale_ticks(10));

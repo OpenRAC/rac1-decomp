@@ -63,7 +63,7 @@ extern unsigned char D_001414F5[] NOT_SDA;
 extern O_28e9c8 *level_mobys_end MACRO_ADDR;
 extern unsigned char gHaveHeliPack[] NOT_SDA;
 typedef struct { char pad[0x1C]; int x1c; char pad20[0x3A]; short x5a; } S_171b;
-extern unsigned char D_0014171B[] NOT_SDA;
+extern unsigned char help_stats_base[] NOT_SDA;
 extern void FastMemSet(void *, int, int);
 extern void calculate_dma_transfer_address(void);
 extern int HeroEnterMoveState(int, int);
@@ -132,7 +132,7 @@ void initialize_level_transition_with_audio(int a) {
         if (!level_render_state_s.x2c) r = scale_ticks(6);
         load_chunks_with_optional_fade(m2, r);
     }
-    z = (S_171b *)(D_0014171B + 0x100B5);
+    z = (S_171b *)(help_stats_base + 0x100B5);
     z->x1c = t + 40000;
     parse_space_scene_chunk(0);
     while (3 != z->x5a) {
@@ -143,7 +143,7 @@ void initialize_level_transition_with_audio(int a) {
 }
 extern char g_hero[] NOT_SDA;
 extern short skip_frame;
-extern unsigned char D_0013E15A[] NOT_SDA;
+extern unsigned char screen_globals_base[] NOT_SDA;
 extern void music_Pause(int);
 extern void clear_active_help_record(void);
 extern void initialize_level_transition_with_audio(int);
@@ -155,14 +155,14 @@ void prepare_level_transition_with_help_cleanup(void) {
     *(int *)&skip_frame = 1;
     music_Pause(0);
     {
-        char *p = (char *)D_0014171B + 0x100B5;
+        char *p = (char *)help_stats_base + 0x100B5;
         unsigned short h = *(unsigned short *)(p + 0x5A);
         if ((unsigned short)(h - 6) >= 2) *(short *)(p + 0x5A) = 5;
     }
     sound_update();
     clear_active_help_record();
     initialize_level_transition_with_audio(0);
-    *(short *)(D_0013E15A + 2) = 0;
+    *(short *)(screen_globals_base + 2) = 0;
 }
 extern char D_0013DE6E[];
 extern int level_draw_frame_load[] MACRO_ADDR;

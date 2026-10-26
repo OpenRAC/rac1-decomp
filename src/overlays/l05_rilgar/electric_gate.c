@@ -47,7 +47,7 @@ extern float FastVecDist(void *, void *);
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 extern void draw_electric_gate_beams(char *);
 extern char rilgar_camera_pos[];
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern short electric_gate_last_draw_frame;
 extern int rilgar_frame_count MACRO_ADDR;
 extern unsigned char *moby_pool_4f60_r __asm__("D_L05_00160098") MACRO_ADDR;
@@ -80,7 +80,7 @@ void electric_gate_update(char *m) {
         if (FastVecDist(pos, tab) < 64.0f) {
             idx = **(int **)(data + 4);
             if (idx >= 0) {
-                base = D_0013E633 + 0x1D;
+                base = hero_globals_base + 0x1D;
                 o = *(char **)(base + idx * 0x70 + 0x88);
                 if (o != 0) {
                     if (*(short *)(o + 0xA6) == 0x346) {
@@ -237,7 +237,7 @@ void update_fog_zone(char *m) {
     char *d = ((char *)((Moby *)m)->pvars);
     float v[4];
     float w[4];
-    char *g = D_0013E633 + 0xE9D;
+    char *g = hero_globals_base + 0xE9D;
     if (is_point_inside_clip_volume(g, *(int *)(d + 0x28))) {
         *(float *)(g + 0x270) = 500.0f;
     }
@@ -271,7 +271,7 @@ void update_fog_zone(char *m) {
         m[0x20] = 1;
         break;
     case 1:
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x2C))) {
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(d + 0x2C))) {
             rilgar_fog_color_red[0] = d[0x23];
             rilgar_fog_color_green[0] = d[0x24];
             rilgar_fog_color_blue[0] = d[0x25];
@@ -289,7 +289,7 @@ void update_fog_zone(char *m) {
         }
         break;
     case 2:
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x28))) {
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(d + 0x28))) {
             rilgar_fog_color_red[0] = d[0x20];
             rilgar_fog_color_green[0] = d[0x21];
             rilgar_fog_color_blue[0] = d[0x22];
@@ -307,7 +307,7 @@ void update_fog_zone(char *m) {
         }
         break;
     }
-    g = D_0013E633 + 0xE9D;
+    g = hero_globals_base + 0xE9D;
     if (is_point_inside_clip_volume(g, *(int *)(d + 0x38))) {
         int c;
         FastVecSub(v, g, rilgar_level_cuboids_c + *(int *)(d + 0x38) * 128 + 0x30);
@@ -494,7 +494,7 @@ void drain_cover_update(Moby *moby) {
     } else if (Sound_IsPlaying(moby, d->sound) != 0) {
         h = d->sound;
         if (h != -1) {
-            e = D_0013E633 + 0x1D + h * 0x70;
+            e = hero_globals_base + 0x1D + h * 0x70;
             if (*(Moby **)(e + 0x88) == moby && *(unsigned char *)(e + 0x74) != 0) {
                 Sound_StopSlot(h);
             }
@@ -518,7 +518,7 @@ void drain_cover_update(Moby *moby) {
         break;
     case 1:
         update_drain_cover_tilt((char *)moby, 0.0f, 8.0f);
-        if (rilgar_cinematic_mode == 0 && vec_distance_xy(&moby->pos, D_0013E633 + 0xE9D) < 24.0f && fast_dec_timer(&d->timer) != 0) {
+        if (rilgar_cinematic_mode == 0 && vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D) < 24.0f && fast_dec_timer(&d->timer) != 0) {
             moby->state = 2;
             clear_u64_value(d->vel);
             d->vel[2] = vec_length(d->f80 * 2.0f * (drain_cover_gravity * g_frame_time_sq));
@@ -593,7 +593,7 @@ void drain_cover_update(Moby *moby) {
         }
         break;
     }
-    hero = (Hero *)(D_0013E633 + 0xE1D);
+    hero = (Hero *)(hero_globals_base + 0xE1D);
     if (moby->pos.z - 2.0f > hero->motion.pos.f[2] && vec_distance_xy(&moby->pos, hero->motion.pos.f) < drain_cover_push_radius) {
         v40[0] = FastCos(fast_atan2(hero->motion.pos.f[0] - moby->pos.x, hero->motion.pos.f[1] - moby->pos.y)) * 0.2f;
         v40[1] = FastSin(fast_atan2(hero->motion.pos.f[0] - moby->pos.x, hero->motion.pos.f[1] - moby->pos.y)) * 0.2f;
@@ -683,7 +683,7 @@ extern short drain_cover_tilt_max_speed;
 void update_drain_cover_tilt(char *moby, float turn_scale, float speed_scale) {
     Moby *m = (Moby *)moby;
     u8 *data = m->pvars;
-    Hero *game = (Hero *)(D_0013E633 + 0xE1D);
+    Hero *game = (Hero *)(hero_globals_base + 0xE1D);
     float offset[4];
     float vertical;
     float horizontal;
@@ -1323,7 +1323,7 @@ void draw_ocean_grid_outside_clip_volumes(char *moby) {
 }
 extern void prepare_scaled_table_with_byte_128(void *, float);
 extern void draw_ocean_grid_outside_clip_volumes_r(void) __asm__("func_L05_00317538");
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float rilgar_ocean_grid_r[] __asm__("D_L05_00211E60");
 extern int rilgar_frame_count MACRO_ADDR;
 
@@ -1340,7 +1340,7 @@ void ocean_rilgar_update(char *moby) {
         ((Moby *)moby)->update_dist = 0xFF;
         break;
     case OCEAN_RILGAR_UPDATE_BOBBING:
-        if (((Hero *)(D_0013E633 + 0xE1D))->state.control_mode == 0x16) {
+        if (((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 0x16) {
             rilgar_ocean_grid_r[2] = FastSin((float)(*(int *)&rilgar_frame_count % 360) * 0.017444444f - 3.14f) * 0.25f + 61.5f;
         } else {
             rilgar_ocean_grid_r[2] = FastSin((float)(*(int *)&rilgar_frame_count % 360) * 0.017444444f - 3.14f) * 0.25f + 59.5f;
@@ -1594,9 +1594,9 @@ typedef struct {
 } HGState;
 typedef struct { unsigned char pad00[0x10C]; int first_gate; unsigned char pad110[0xC]; int second_gate; } HGGates;
 typedef struct { unsigned char pad00[4]; short state; } HGRaceEntry;
-extern char D_0013D355[];
+extern char special_items_base[];
 extern unsigned char menu_item_enabled_115[];
-extern unsigned char D_0013D605[];
+extern unsigned char race_gates_base[];
 extern HGRaceEntry * race_entries[] ;
 extern const char race_girl_dialogue_name[] ;
 extern HGVec rilgar_race_camera_vectors[] ;
@@ -1678,7 +1678,7 @@ void update_hoverboard_girl(Moby *moby) {
             blend_moby_animation(moby, 0, 0, scale_frame_count(20));
         }
         moby->pos.z = find_ground_height(0.5f, (HGVec *)&moby->pos, 0);
-        if ((*(HGGates *)(D_0013D605 + 0xB3)).first_gate == 0 || (*(HGGates *)(D_0013D605 + 0xB3)).second_gate == 0) {
+        if ((*(HGGates *)(race_gates_base + 0xB3)).first_gate == 0 || (*(HGGates *)(race_gates_base + 0xB3)).second_gate == 0) {
             HGRaceEntry **entries = race_entries_r;
             int entry = get_dialogue_entry_r(moby);
             entries[entry]->state = 13;
@@ -1689,7 +1689,7 @@ void update_hoverboard_girl(Moby *moby) {
         initialize_moby_grounding_r(moby);
         break;
     case 1:
-        if ((*(Hero *)(D_0013E633 + 0xE1D)).state.current != 0x1D) {
+        if ((*(Hero *)(hero_globals_base + 0xE1D)).state.current != 0x1D) {
         if (update_npc_dialogue(moby, state) != 0) {
             begin_dialogue_camera_transition(2.0f, moby);
             moby->state = 3;
@@ -1700,16 +1700,16 @@ void update_hoverboard_girl(Moby *moby) {
             state->dialogue_state_frame = frame_number;
             moby->command = 0;
             set_race_camera(&race_camera_vectors[0], &race_camera_vectors[1], 0, 1);
-            qcopy(&((HGVec *)(D_0013E633 + 0x2B1D))[0], &race_camera_vectors[2]);
-            qcopy(&((HGVec *)(D_0013E633 + 0x2B1D))[1], &race_camera_vectors[3]);
-            (*(Hero *)(D_0013E633 + 0xE1D)).item_use_locked = 1;
+            qcopy(&((HGVec *)(hero_globals_base + 0x2B1D))[0], &race_camera_vectors[2]);
+            qcopy(&((HGVec *)(hero_globals_base + 0x2B1D))[1], &race_camera_vectors[3]);
+            (*(Hero *)(hero_globals_base + 0xE1D)).item_use_locked = 1;
             set_race_camera_mode(2, 6);
         }
         }
         if (moby->command == 1) {
             set_race_camera(&race_camera_vectors[2], &race_camera_vectors[3], 0, 1);
             set_race_camera_mode(0, 8);
-            if ((*(unsigned char *)(D_0013D355 + 0x13B)) == 0) {
+            if ((*(unsigned char *)(special_items_base + 0x13B)) == 0) {
                 state->previous_dialogue_state = state->dialogue_state;
                 state->dialogue_state = 4;
                 state->dialogue_state_frame = frame_number;
@@ -1726,8 +1726,8 @@ void update_hoverboard_girl(Moby *moby) {
             set_race_camera_mode(0, 8);
             moby->command = 0;
             set_race_camera(&race_camera_vectors[0], &race_camera_vectors[1], 0, 1);
-            qcopy(&((HGVec *)(D_0013E633 + 0x2B1D))[0], &race_camera_vectors[2]);
-            qcopy(&((HGVec *)(D_0013E633 + 0x2B1D))[1], &race_camera_vectors[3]);
+            qcopy(&((HGVec *)(hero_globals_base + 0x2B1D))[0], &race_camera_vectors[2]);
+            qcopy(&((HGVec *)(hero_globals_base + 0x2B1D))[1], &race_camera_vectors[3]);
         }
         if ((moby->prev_seq == 0 || moby->prev_seq == 2) &&
             advance_timer(&state->idle_animation_timer)) {
@@ -1746,7 +1746,7 @@ void update_hoverboard_girl(Moby *moby) {
         if (game_mode != 2) {
             moby->state = 1;
             if (state->previous_dialogue_state == 4) {
-                (*(unsigned char *)(D_0013D355 + 0x13B)) = 1;
+                (*(unsigned char *)(special_items_base + 0x13B)) = 1;
                 queue_dialogue_message(0x1395, scale_frame_count(300));
                 if (menu_item_enabled_115[0xA] != 0) {
                     func_0022EE28_x(1, 0, 0);
@@ -1769,20 +1769,20 @@ void update_hoverboard_girl(Moby *moby) {
     look_enabled = 0;
     if (moby->prev_seq == 0 || moby->prev_seq == 2) {
         look_enabled = 1;
-        if (vector_distance(&moby->pos, &(*(Hero *)(D_0013E633 + 0xE1D)).motion.pos) < 8.0f &&
+        if (vector_distance(&moby->pos, &(*(Hero *)(hero_globals_base + 0xE1D)).motion.pos) < 8.0f &&
             absolute_angle_difference(
                 moby->rot.z,
-                angle_from_xy((*(Hero *)(D_0013E633 + 0xE1D)).motion.body_center.f[0] - moby->pos.x,
-                              (*(Hero *)(D_0013E633 + 0xE1D)).motion.body_center.f[1] -
+                angle_from_xy((*(Hero *)(hero_globals_base + 0xE1D)).motion.body_center.f[0] - moby->pos.x,
+                              (*(Hero *)(hero_globals_base + 0xE1D)).motion.body_center.f[1] -
                                   moby->pos.y)) < 1.5707964f) {
-            if (vector_length(&(*(Hero *)(D_0013E633 + 0xE1D)).motion.displacement) > 0.01f) {
+            if (vector_length(&(*(Hero *)(hero_globals_base + 0xE1D)).motion.displacement) > 0.01f) {
                 state->player_look_timer = scale_frame_count(120);
             } else {
                 advance_timer(&state->player_look_timer);
             }
         } else if (state->player_look_timer != 0) {
             state->player_look_timer = 0;
-            qcopy(&state->look_target, &(*(Hero *)(D_0013E633 + 0xE1D)).motion.body_center);
+            qcopy(&state->look_target, &(*(Hero *)(hero_globals_base + 0xE1D)).motion.body_center);
         }
         if (advance_timer(&state->random_look_timer)) {
             state->random_look_timer = truncate_time(scale_time(random_float(180.0f, 300.0f)));
@@ -1792,7 +1792,7 @@ void update_hoverboard_girl(Moby *moby) {
             add_vector(&state->look_target, &state->look_target, &moby->pos);
         }
         if (state->player_look_timer != 0) {
-            qcopy(&target_position, &(*(Hero *)(D_0013E633 + 0xE1D)).motion.body_center);
+            qcopy(&target_position, &(*(Hero *)(hero_globals_base + 0xE1D)).motion.body_center);
             rotation_step = 0.03f;
             rotation_limit = 0.3f;
         } else {
@@ -1819,19 +1819,19 @@ void update_hoverboard_girl(Moby *moby) {
         state->joints[1].target_rotation[2] = yaw * 0.4f;
     }
 
-    if (vector_distance(&moby->pos, &(*(Hero *)(D_0013E633 + 0xE1D)).motion.pos) < 15.0f &&
+    if (vector_distance(&moby->pos, &(*(Hero *)(hero_globals_base + 0xE1D)).motion.pos) < 15.0f &&
         absolute_angle_difference(
             moby->rot.z,
-            angle_from_xy((*(Hero *)(D_0013E633 + 0xE1D)).motion.pos.f[0] - moby->pos.x,
-                          (*(Hero *)(D_0013E633 + 0xE1D)).motion.pos.f[1] - moby->pos.y)) <
+            angle_from_xy((*(Hero *)(hero_globals_base + 0xE1D)).motion.pos.f[0] - moby->pos.x,
+                          (*(Hero *)(hero_globals_base + 0xE1D)).motion.pos.f[1] - moby->pos.y)) <
             1.2217305f) {
-        if ((*(Hero *)(D_0013E633 + 0xE1D)).state.current == 11 && (*(Hero *)(D_0013E633 + 0xE1D)).state_timer == 15) {
+        if ((*(Hero *)(hero_globals_base + 0xE1D)).state.current == 11 && (*(Hero *)(hero_globals_base + 0xE1D)).state_timer == 15) {
             state->breast_growth_count_gp++;
             if (state->breast_growth_count_gp > 20)
                 state->breast_growth_count_gp = 20;
             breast_growth_count_gp_q = state->breast_growth_count_gp;
         }
-        if ((*(Hero *)(D_0013E633 + 0xE1D)).state.current == 4 && scale_frame_count(20) < (*(Hero *)(D_0013E633 + 0xE1D)).state_timer &&
+        if ((*(Hero *)(hero_globals_base + 0xE1D)).state.current == 4 && scale_frame_count(20) < (*(Hero *)(hero_globals_base + 0xE1D)).state_timer &&
             frame_number % 10 == 0) {
             state->breast_growth_count_gp--;
             if (state->breast_growth_count_gp < 0)
@@ -2008,7 +2008,7 @@ void qwarks_bouncer_update(char *m)
     head_rate = 0.3f;
     tracking = 0;
     if (bouncer_moby->prev_seq == 0) {
-        p = (char *)&D_0013E633 + 0xE9D;
+        p = (char *)&hero_globals_base + 0xE9D;
         tracking = 1;
         if (vec_distance_xy(&bouncer_moby->pos, p) < 8.0f &&
             FastDiffRots(bouncer_moby->rot.z,
@@ -2020,7 +2020,7 @@ void qwarks_bouncer_update(char *m)
                 fast_dec_timer(&bouncer_data->moving_timer);
         } else if (bouncer_data->moving_timer != 0) {
             bouncer_data->moving_timer = 0;
-            qcopy(bouncer_data->target, (char *)&D_0013E633 + 0xEED);
+            qcopy(bouncer_data->target, (char *)&hero_globals_base + 0xEED);
         }
         if (fast_dec_timer(&bouncer_data->target_timer)) {
             float heading;
@@ -2031,7 +2031,7 @@ void qwarks_bouncer_update(char *m)
             FastVecAdd(bouncer_data->target, bouncer_data->target, &bouncer_moby->pos);
         }
         if (bouncer_data->moving_timer != 0) {
-            qcopy(s_target, (char *)&D_0013E633 + 0xEED);
+            qcopy(s_target, (char *)&hero_globals_base + 0xEED);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -2066,7 +2066,7 @@ extern void ShowBanner(int, int);
 extern float FastVecLength(void *);
 extern float FastSubRots(float, float);
 extern char shady_salesman_dialogue_name[];
-extern unsigned char D_0013D605[];
+extern unsigned char race_gates_base[];
 
 typedef struct ShadySalesmanNpc {
     u8 pad_00[0x4];
@@ -2120,7 +2120,7 @@ void shady_salesman_update(char *m)
     }
     switch (moby->state) {
     case 0:
-        if (D_0013D605[2] != 0) {
+        if (race_gates_base[2] != 0) {
             DeleteMoby(m);
             return;
         }
@@ -2153,7 +2153,7 @@ void shady_salesman_update(char *m)
     head_rate = 0.3f;
     tracking = 0;
     if (moby->prev_seq == 0) {
-        p = (char *)&D_0013E633 + 0xE9D;
+        p = (char *)&hero_globals_base + 0xE9D;
         tracking = 1;
         if (vec_distance_xy(&moby->pos, p) < 8.0f &&
             FastDiffRots(moby->rot.z,
@@ -2165,7 +2165,7 @@ void shady_salesman_update(char *m)
                 fast_dec_timer(&npc_data->moving_timer);
         } else if (npc_data->moving_timer != 0) {
             npc_data->moving_timer = 0;
-            qcopy(npc_data->target, (char *)&D_0013E633 + 0xEED);
+            qcopy(npc_data->target, (char *)&hero_globals_base + 0xEED);
         }
         if (fast_dec_timer(&npc_data->target_timer)) {
             float heading;
@@ -2175,7 +2175,7 @@ void shady_salesman_update(char *m)
             FastVecAdd(npc_data->target, npc_data->target, &moby->pos);
         }
         if (npc_data->moving_timer != 0) {
-            qcopy(s_target, (char *)&D_0013E633 + 0xEED);
+            qcopy(s_target, (char *)&hero_globals_base + 0xEED);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -2207,7 +2207,7 @@ void shady_salesman_update(char *m)
     EaseManipulatorOffsets(m, npc_data->body, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
     EaseManipulatorOffsets(m, npc_data->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
-extern char D_0013E633_319F78[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern int hero_inside_clip_volume_r __asm__("D_L05_0016139C") MACRO_ADDR;
 extern float hero_clip_volume_bounds_r[4] __asm__("D_L05_001613A0") MACRO_ADDR;
 extern int rilgar_frame_count_r __asm__("D_L05_0015F6B0") MACRO_ADDR;
@@ -2230,7 +2230,7 @@ void update_hero_clip_volume_outputs(char *m) {
         *(int *)&((Moby *)m)->collision = 0;
         break;
     case 1:
-        t = D_0013E633_319F78 + 0xE9D;
+        t = hero_globals_base_r + 0xE9D;
         if (find_319F78(t, *v) != 0) {
             hero_inside_clip_volume_r = state;
             qcopy(hero_clip_volume_bounds_r, t);
@@ -2308,8 +2308,8 @@ typedef struct {
 extern L05PickupPose *rilgar_level_cuboids MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern char D_0013A5E0[];
-extern char D_0014171B[];
+extern char pad_globals_base[];
+extern char help_stats_base[];
 
 /* Update the moving pickup, interpolate its path transitions, and manage its sound handle. */
 void PickupL05_Update(char *moby) {
@@ -2344,7 +2344,7 @@ void PickupL05_Update(char *moby) {
         PickNearestTargetSlot(moby);
         break;
     case TAXI_WAIT_FOR_PICKUP:
-        pickup_hero = (struct Hero *)(D_0013E633 + 0xE1D);
+        pickup_hero = (struct Hero *)(hero_globals_base + 0xE1D);
         if (((char *)pickup_hero->ground_moby) == moby && pickup_hero->air_frames.s == 0) {
             matrix_from_basis_rows(rotation_or_start_position_scratch, &((struct Moby *)moby)->rot_row0);
             FastVecSub(hero_offset, &pickup_hero->motion.pos, &((struct Moby *)moby)->pos);
@@ -2353,7 +2353,7 @@ void PickupL05_Update(char *moby) {
             if (FastAbsF(hero_offset[1]) < 1.2f && hero_offset[0] < 1.0f && -0.75f < hero_offset[0]) {
                 select_taxi_route(moby);
                 request_moby_variant_help_message(moby);
-                if (*(int *)(D_0013A5E0 + 0x2604) & 0x10) {
+                if (*(int *)(pad_globals_base + 0x2604) & 0x10) {
                     ((struct Moby *)moby)->state = 3;
                     destination_stop_moby = FindMobyByDataId(moby, ((Moby *)taxi_data)->unkB6);
                     if (destination_stop_moby != 0) {
@@ -2410,7 +2410,7 @@ void PickupL05_Update(char *moby) {
         }
         break;
     case TAXI_WAIT_FOR_ACTIVATION:
-        t = (unsigned char *)D_0014171B + 0xAA35;
+        t = (unsigned char *)help_stats_base + 0xAA35;
         k = g_current_level_index * 16;
         if (t[*(int *)(taxi_data + 0xB8) + k] == 0xFF || t[*(int *)(taxi_data + 0xBC) + k] == 0xFF) {
             struct MobyClass *model = ((struct Moby *)moby)->pclass;
@@ -2425,7 +2425,7 @@ void PickupL05_Update(char *moby) {
     }
     apply_moby_position_and_rotation_wobble(moby);
     if (((struct Moby *)moby)->state >= 3 && ((struct Moby *)moby)->state <= 5) {
-        travel_hero = (struct Hero *)(D_0013E633 + 0xE1D);
+        travel_hero = (struct Hero *)(hero_globals_base + 0xE1D);
         travel_hero->jump_lock_timer = 2;
         travel_hero->unk1F4 = 2;
         transform_moby_vector_table_to_world_space(moby);
@@ -2435,7 +2435,7 @@ void PickupL05_Update(char *moby) {
     } else if (Sound_IsPlaying(moby, *(short *)&((Moby *)taxi_data)->save_id) != 0) {
         voice_slot_index = *(short *)&((Moby *)taxi_data)->save_id;
         if (voice_slot_index != -1) {
-            voice_slot = D_0013E633 + 0x1D + voice_slot_index * 0x70;
+            voice_slot = hero_globals_base + 0x1D + voice_slot_index * 0x70;
             if (*(char **)(voice_slot + 0x88) == moby && *(unsigned char *)(voice_slot + 0x74) != 0) {
                 Sound_StopSlot(voice_slot_index);
             }

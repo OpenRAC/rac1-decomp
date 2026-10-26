@@ -10070,6 +10070,12 @@
 #define tesla_pulse_timer                                                    D_L00_001618A8
 #define tesla_pulse_travel                                                   D_L00_001618C8
 #define tesla_spark_colors                                                   D_L00_001E9E30
+#define hero_globals_base                                                    D_0013E633
+#define help_stats_base                                                      D_0014171B
+#define pad_globals_base                                                     D_0013A5E0
+#define special_items_base                                                   D_0013D355
+#define screen_globals_base                                                  D_0013E15A
+#define race_gates_base                                                      D_0013D605
 #define noop_callback_a                                                      func_001E9770
 #define noop_callback_d                                                      func_001E9788
 #define noop_callback_e                                                      func_001E9790

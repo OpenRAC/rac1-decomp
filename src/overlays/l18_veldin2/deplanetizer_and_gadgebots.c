@@ -1032,7 +1032,7 @@ extern short gadgebot_knockback_drag;
 extern short gadgebot_knockback_speed;
 extern short gadgebot_knockback_lift;
 extern int veldin2_paths[];
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern void draw_group_class_0772_joint_glows(unsigned char *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);

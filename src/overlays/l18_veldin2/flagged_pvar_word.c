@@ -15,7 +15,7 @@ typedef struct {
 extern Level18Effect *GetFlaggedPvarWord(Level18Moby *);
 extern float FastVecDist(void *, void *);
 extern int truncate_float_to_s32(float);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 /* Set an attached effect's alpha from distance and the supplied scale. */
 void set_moby_attached_effect_alpha_from_distance(Level18Moby *moby, float scale) {
@@ -29,7 +29,7 @@ void set_moby_attached_effect_alpha_from_distance(Level18Moby *moby, float scale
     if (effect == 0) {
         return;
     }
-    alpha = truncate_float_to_s32(FastVecDist(D_0013E633 + 0xE9D, moby->position) * 8.0f * scale) - 1;
+    alpha = truncate_float_to_s32(FastVecDist(hero_globals_base + 0xE9D, moby->position) * 8.0f * scale) - 1;
     if (alpha >= 256) {
         alpha = 255;
     } else if (alpha < 0) {

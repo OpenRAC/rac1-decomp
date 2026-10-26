@@ -177,7 +177,7 @@ extern char aridia_camera_pos[];
 extern char *aridia_paths[];
 extern char sand_shark_no_path_fmt[];
 extern char sand_shark_empty_path_fmt[];
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int frame_counter_ref MACRO_ADDR;
@@ -347,7 +347,7 @@ void sand_shark_update(unsigned char *moby) {
         if (w[0x20] < 5) {
             break;
         }
-        if (*(int *)(D_0013E633 + 0x2EA1) == 0x72) {
+        if (*(int *)(hero_globals_base + 0x2EA1) == 0x72) {
             break;
         }
         ((Moby *)moby)->flags &= 0xFFBE;
@@ -360,7 +360,7 @@ void sand_shark_update(unsigned char *moby) {
         break;
     }
     case 1:
-        FastVecSub(v0, D_0013E633 + 0xE9D, moby + 0x10);
+        FastVecSub(v0, hero_globals_base + 0xE9D, moby + 0x10);
         ((Moby *)moby)->state = 0x12;
         if (((Moby *)moby)->prev_seq != 0) {
             MobyBlendAnimation(moby, 0, 0, scale_ticks(3));
@@ -741,10 +741,10 @@ void sand_shark_update(unsigned char *moby) {
     case 0xC:
     {
         int in;
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->i26C)) {
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->i26C)) {
             in = 1;
         } else {
-            in = is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->i270) != 0;
+            in = is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->i270) != 0;
         }
         if (in) {
             float dz, vz, ft, k;
@@ -1049,7 +1049,7 @@ extern float sand_shark_death_knock_speed SDATA(D_L02_0016199C);
 extern float sand_shark_death_knock_gravity SDATA(D_L02_001619A4);
 extern float sand_shark_death_knock_drag SDATA(D_L02_001619A8);
 extern int *aridia_paths_r[] __asm__("D_L02_001B0DB0");
-extern char D_0013E633_2D70C0[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_sq MACRO_ADDR;
 extern int FastDecTimer(void *);
 extern float vec_distance_xy(void *, void *);
@@ -1098,7 +1098,7 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
         ((Moby *)moby)->pos.z -= 10.0f;
     }
     if (d->i38 != 0 ||
-        (!FastDecTimer(&d->t25C) && vec_distance_xy(moby + 0x10, D_0013E633_2D70C0 + 0xE9D) < 10.0f)) {
+        (!FastDecTimer(&d->t25C) && vec_distance_xy(moby + 0x10, hero_globals_base_r + 0xE9D) < 10.0f)) {
         d->t25E = truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 240.0f)));
     }
     d->i38 = 0;
@@ -1160,7 +1160,7 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
         d->i214 = 2;
     }
     if (d->i210 == 0) {
-        Hero *hero = (Hero *)(D_0013E633_2D70C0 + 0xE1D);
+        Hero *hero = (Hero *)(hero_globals_base_r + 0xE1D);
         d->i210 = (int)((void *)hero->moby);
         qcopy(d->tgt, hero->motion.pos.f);
     }
@@ -1268,7 +1268,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
 /* The scale before the three vectors, as the other level files declare it. */
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10, float *v11, float *v12);
 extern char aridia_camera_pos[];
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern char *aridia_scene_points MACRO_ADDR;
 extern int frame_counter_ref MACRO_ADDR;
@@ -1380,7 +1380,7 @@ void update_level02_bot(unsigned char *raw) {
         data->b58 = 0xF;
         data->b5A = 8;
         data->b29 = 0;
-        *(long *)&moby->spawn_frame = *(long *)(*(char **)(D_0013E633 + 0x2E9D) + 0x38);
+        *(long *)&moby->spawn_frame = *(long *)(*(char **)(hero_globals_base + 0x2E9D) + 0x38);
         MoveCtl_Init(data->walk);
         step = g_frame_time * 4.0f;
         data->b28 = 2;
@@ -1525,8 +1525,8 @@ void update_level02_bot(unsigned char *raw) {
     case L02_BOT_WAIT_FOR_WAKE_TRIGGER:
         triggered = 0;
         if (data->wake_volume >= 0) {
-            triggered = is_point_inside_clip_volume(D_0013E633 + 0x10BD, data->wake_volume) != 0;
-        } else if (FastVecDist(D_0013E633 + 0xE9D, aridia_scene_points + data->post * 0x80 + 0x30) < data->wake_range) {
+            triggered = is_point_inside_clip_volume(hero_globals_base + 0x10BD, data->wake_volume) != 0;
+        } else if (FastVecDist(hero_globals_base + 0xE9D, aridia_scene_points + data->post * 0x80 + 0x30) < data->wake_range) {
             triggered = 1;
         }
         if (triggered) {
@@ -2047,7 +2047,7 @@ extern char *select_inactive_group_sand_shark_for_nest(char *m);
 extern float MobyGetFrameValue(void *);
 extern void vec_set_length_xy(void *, void *, float);
 void launch_sand_shark(unsigned char *moby, void *position, float *direction);
-extern unsigned char D_0014171B[] NOT_SDA;
+extern unsigned char help_stats_base[] NOT_SDA;
 
 typedef struct { char pad[0x200]; struct { unsigned short a; unsigned short b; } e[1]; } NestTable;
 
@@ -2092,7 +2092,7 @@ void sand_shark_nest_update(char *m)
     case 0: {
         unsigned short b4 = *(unsigned short *)&((struct Moby *)m)->unkB4;
         unsigned char u5 = ((struct Moby *)m)->unkB1;
-        int r = b4 - ((NestTable *)(D_0014171B + 0xBF75))->e[u5].b;
+        int r = b4 - ((NestTable *)(help_stats_base + 0xBF75))->e[u5].b;
         ((struct Moby *)m)->unkB4 = r;
         if ((short)r <= 0) {
             ((struct Moby *)m)->unkB4 = 1;
@@ -2136,7 +2136,7 @@ void sand_shark_nest_update(char *m)
             return;
         }
         {
-            int spawn_delay_factor = *(int *)((char *)D_0014171B + 0xD875 + (((struct Moby *)m)->mission << 2));
+            int spawn_delay_factor = *(int *)((char *)help_stats_base + 0xD875 + (((struct Moby *)m)->mission << 2));
             int delay_ticks;
             int timer_ticks;
             char *launched_shark;
@@ -2485,7 +2485,7 @@ void transport_pod_update(unsigned char *moby) {
         snap_transport_pod_rails_to_offsets((char *)moby);
         break;
     case TRANSPORT_POD_WAIT_FOR_GEAR_MOVEMENT_TRIGGER:
-        if (((unsigned char *)D_0014171B + 0xAA35)[((struct Moby *)moby)->mission + (g_current_level_index << 4)] == 0xFF) {
+        if (((unsigned char *)help_stats_base + 0xAA35)[((struct Moby *)moby)->mission + (g_current_level_index << 4)] == 0xFF) {
             transport_pod_vars->timer = scale_ticks(30);
             moby[0x20] = 2;
         }
@@ -2549,8 +2549,8 @@ void transport_pod_update(unsigned char *moby) {
             ((struct Moby *)moby)->command = 0;
             moby[0x20] = 3;
             Moby_PlaySound(1, 0, (int)moby);
-        } else if (((PPlayer *)(D_0013E633 + 0xE1D))->pod == moby && ((PPlayer *)(D_0013E633 + 0xE1D))->mode == 0 &&
-                   ((PPlayer *)(D_0013E633 + 0xE1D))->blocked == 0) {
+        } else if (((PPlayer *)(hero_globals_base + 0xE1D))->pod == moby && ((PPlayer *)(hero_globals_base + 0xE1D))->mode == 0 &&
+                   ((PPlayer *)(hero_globals_base + 0xE1D))->blocked == 0) {
             qcopy(b, moby + 0x10);
             b[2] += 2.0f;
             if (((struct Moby *)moby)->command == 0) {
@@ -2666,7 +2666,7 @@ void transport_pod_update(unsigned char *moby) {
                 adjusted_help_ticks = scale_ticks(gameplay_event_frame_count) - g_help_play_time_offset[0] * 600;
             }
             lim = scale_ticks(3600) * 60.0f;
-            if (!(lim < adjusted_help_ticks) || (*(unsigned int *)(D_0014171B + 0x591) & (1 << g_current_level_index))) {
+            if (!(lim < adjusted_help_ticks) || (*(unsigned int *)(help_stats_base + 0x591) & (1 << g_current_level_index))) {
             } else {
                     Help_Request(0x7DD, 0x48);
             }
@@ -2682,7 +2682,7 @@ void transport_pod_update(unsigned char *moby) {
         }
         break;
     case TRANSPORT_POD_WAIT_FOR_RIDER_TO_LEAVE:
-        if (*(unsigned char **)(D_0013E633 + 0x1119) != moby) {
+        if (*(unsigned char **)(hero_globals_base + 0x1119) != moby) {
             moby[0x20] = 5;
         }
         break;
@@ -2804,7 +2804,7 @@ void snap_transport_pod_rails_to_offsets(char *moby)
     moby_build_matrix(*(char **)(d + 0x84));
     moby_build_matrix(*(char **)(d + 0x88));
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern short aridia_crane_anim_speed;
 extern int Moby_PlaySound(int, int, int);
 extern int random_integer_below(int);
@@ -2843,7 +2843,7 @@ void crane_update(unsigned char *moby) {
             }
             voice_slot_index = crane_vars[0];
             if (voice_slot_index != -1) {
-                VoiceSlot *voice_slot = (VoiceSlot *)(D_0013E633 + 0x1D + voice_slot_index * 0x70);
+                VoiceSlot *voice_slot = (VoiceSlot *)(hero_globals_base + 0x1D + voice_slot_index * 0x70);
                 if (voice_slot->owner == (struct Moby *)moby && voice_slot->active != 0) {
                     Sound_StopSlot(voice_slot_index);
                 }
@@ -2954,7 +2954,7 @@ void rocket_launcher_update(unsigned char *m) {
         if (r2 < 0.01745329238f && rocket_launcher_vars->yaw_vel == 0.0f) {
             s = rocket_launcher_vars->voice;
             if (s != -1) {
-                voice_slot = (TurretVoiceSlot *)(D_0013E633 + 0x1D + s * 0x70);
+                voice_slot = (TurretVoiceSlot *)(hero_globals_base + 0x1D + s * 0x70);
                 if (voice_slot->owner == moby && voice_slot->active != 0) {
                     Sound_StopSlot(s);
                 }

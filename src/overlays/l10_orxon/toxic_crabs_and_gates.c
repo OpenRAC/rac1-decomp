@@ -74,9 +74,9 @@ typedef struct Crab2E30F8 {
     unsigned char q2B0[4];
 } Crab2E30F8;
 
-extern unsigned char D_0013E633[];
-extern unsigned char D_0014171B[] NOT_SDA;
-extern unsigned char D_0014171B_t[] __asm__("D_0014171B") NOT_SDA;
+extern unsigned char hero_globals_base[];
+extern unsigned char help_stats_base[] NOT_SDA;
+extern unsigned char help_stats_base_t[] __asm__("D_0014171B") NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
@@ -162,12 +162,12 @@ void toxic_crab_update(Moby *m) {
         see = coll_line(from, to, 2, m, 0) == 0;
     }
     if (!see || (!(FastAbsF(*(float *)(t + 0x18) - m->pos.z) < 1.0f)
-                 && is_moby_in_class_range_500_to_540(*(int *)(D_0013E633 + 0x1119)) == 0)) {
+                 && is_moby_in_class_range_500_to_540(*(int *)(hero_globals_base + 0x1119)) == 0)) {
         see = 0;
     }
     switch (m->state) {
     case 0:
-        if (d->i1DC != 0 && D_0013E633[0x2EC1] == 1) {
+        if (d->i1DC != 0 && hero_globals_base[0x2EC1] == 1) {
             DeleteMoby(m);
             return;
         }
@@ -200,8 +200,8 @@ void toxic_crab_update(Moby *m) {
             char *base = orxon_mobys_c;
             Moby *p = (Moby *)(base + (d->i1BC << 8));
             if (p == 0 || p->state == 0xFE || p->state == 0xFD
-                || (((*(int *)(D_0014171B + 0xAB75 + (((short)p->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >> (p->save_id & 0x1F)) & 1)
-                    && (D_0014171B_t + 0xAA35)[p->mission + (g_current_level_index_m << 4)] == 0xFF)) {
+                || (((*(int *)(help_stats_base + 0xAB75 + (((short)p->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >> (p->save_id & 0x1F)) & 1)
+                    && (help_stats_base_t + 0xAA35)[p->mission + (g_current_level_index_m << 4)] == 0xFF)) {
                 d->i1BC = -1;
             }
         }
@@ -217,7 +217,7 @@ void toxic_crab_update(Moby *m) {
             char *base = orxon_mobys_c;
             Moby *p = (Moby *)(base + (d->i1BC << 8));
             if (p == 0 || p->state == 0xFE || p->state == 0xFD
-                || ((*(int *)(D_0014171B + 0xAB75 + (((short)p->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >> (p->save_id & 0x1F)) & 1)) {
+                || ((*(int *)(help_stats_base + 0xAB75 + (((short)p->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >> (p->save_id & 0x1F)) & 1)) {
                 m->state = 2;
                 d->i1A8 = scale_ticks(1);
                 if (m->group != 0xFF) {
@@ -249,7 +249,7 @@ void toxic_crab_update(Moby *m) {
                 }
             }
         } else if (m->anim_flags & 2) {
-            if (vec_distance_xy(&m->pos, D_0013E633 + 0xE9D) < *(float *)&toxic_crab_aggro_radius) {
+            if (vec_distance_xy(&m->pos, hero_globals_base + 0xE9D) < *(float *)&toxic_crab_aggro_radius) {
                 float x;
                 m->state = 5;
                 d->i1D8 = 0;
@@ -330,7 +330,7 @@ void toxic_crab_update(Moby *m) {
             v[1] = FastSin(aim) * (*(short *)(t + 0xA6) == 0x359 ? 2.0f : 3.57f);
             v[2] = 0.0f;
             FastVecAdd(v, v, t + 0x10);
-            if (((Hero2E30F8 *)(D_0013E633 + 0xE1D))->f20A4 != 1) {
+            if (((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f20A4 != 1) {
                 float rot = m->rot.z;
                 int r;
                 m->rot.z = fast_atan2(v[0] - m->pos.x, v[1] - m->pos.y);
@@ -399,11 +399,11 @@ void toxic_crab_update(Moby *m) {
             m->anim_speed = 1.2f;
             {
                 float home = FastVecDist(&m->pos, d->v170);
-                if ((((Hero2E30F8 *)(D_0013E633 + 0xE1D))->f20A4 == 1 ? 1.0f : 30.0f) < home || d->i164 == 2) {
+                if ((((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f20A4 == 1 ? 1.0f : 30.0f) < home || d->i164 == 2) {
                     m->state = 8;
                     MobyBlendAnimation(m, 4, 0, scale_ticks(0xC));
                 } else if (vec_distance_xy(&m->pos, t + 0x10) < (*(short *)(t + 0xA6) == 0x359 ? 2.45f : 4.02f)) {
-                    if (((Hero2E30F8 *)(D_0013E633 + 0xE1D))->f1C0 < scale_ticks(10) && diff < 0.34906584f && see) {
+                    if (((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f1C0 < scale_ticks(10) && diff < 0.34906584f && see) {
                         int anim = 7;
                         if (random_integer_below(100) & 1) {
                             anim = 6;
@@ -452,11 +452,11 @@ void toxic_crab_update(Moby *m) {
         }
         {
             float home = FastVecDist(&m->pos, d->v170);
-            if ((((Hero2E30F8 *)(D_0013E633 + 0xE1D))->f20A4 == 1 ? 1.0f : 30.0f) < home || d->i164 == 2) {
+            if ((((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f20A4 == 1 ? 1.0f : 30.0f) < home || d->i164 == 2) {
                 m->state = 8;
                 MobyBlendAnimation(m, 4, 0, scale_ticks(0xC));
             } else if (vec_distance_xy(&m->pos, t + 0x10) < (*(short *)(t + 0xA6) == 0x359 ? 2.45f : 4.02f)) {
-                if (((Hero2E30F8 *)(D_0013E633 + 0xE1D))->f1C0 < scale_ticks(10)
+                if (((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f1C0 < scale_ticks(10)
                     && diff < *(float *)&toxic_crab_turn_threshold_deg * 0.017453292f && see) {
                     int anim = 7;
                     if (random_integer_below(100) & 1) {
@@ -507,7 +507,7 @@ void toxic_crab_update(Moby *m) {
             }
         } else if (m->prev_seq >= 6 && m->prev_seq <= 7 && (m->anim_flags & 2)) {
             float home = FastVecDist(&m->pos, d->v170);
-            if ((D_0013E633[0x2EC1] == 1 ? 1.0f : 30.0f) < home || d->i164 == 2) {
+            if ((hero_globals_base[0x2EC1] == 1 ? 1.0f : 30.0f) < home || d->i164 == 2) {
                 m->state = 8;
                 MobyBlendAnimation(m, 4, 0, scale_ticks(0xC));
             } else {
@@ -860,7 +860,7 @@ extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
-extern char D_0013E633_2E52B0[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char menu_item_enabled_115_r[] __asm__("D_0013D50F");
 extern float D_L10_00161EC0_2E52B0 SDATA(D_L10_00161EC0);
 extern float D_L10_00161EAC_2E52B0 SDATA(D_L10_00161EAC);
@@ -883,8 +883,8 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     Moby *q;
     int v21;
 
-    if (((Hero *)(D_0013E633_2E52B0 + 0xE1D))->items[0].item_id == 0x15) {
-        if (((D_2E52B0 *)((Hero *)(D_0013E633_2E52B0 + 0xE1D))->items[0].moby->pvars)->f10 == m) {
+    if (((Hero *)(hero_globals_base_r + 0xE1D))->items[0].item_id == 0x15) {
+        if (((D_2E52B0 *)((Hero *)(hero_globals_base_r + 0xE1D))->items[0].moby->pvars)->f10 == m) {
             activate_waiting_moby_group_members_r(m);
             if (m->state == 1) m->state = 2;
         }
@@ -912,9 +912,9 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             v21 = 11;
             if (B < 3.0f) B = 0.0f;
         }
-        if (((Hero *)(D_0013E633_2E52B0 + 0xE1D))->state.current == 32
-            || (((Hero *)(D_0013E633_2E52B0 + 0xE1D))->state.prev == 32
-                && ((Hero *)(D_0013E633_2E52B0 + 0xE1D))->state_timer < scale_ticks_r(30))) {
+        if (((Hero *)(hero_globals_base_r + 0xE1D))->state.current == 32
+            || (((Hero *)(hero_globals_base_r + 0xE1D))->state.prev == 32
+                && ((Hero *)(hero_globals_base_r + 0xE1D))->state_timer < scale_ticks_r(30))) {
             if (2.0f < B) B = 2.0f;
         }
         if (r->h2A == m->oclass) {
@@ -922,14 +922,14 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             v21 = 11;
         }
         if ((unsigned int)(m->prev_seq - 6) < 2) {
-            if (((Hero *)(D_0013E633_2E52B0 + 0xE1D))->vehicle_mode == 1
-                && r->f20 == ((Hero *)(D_0013E633_2E52B0 + 0xE1D))->moby) {
+            if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 1
+                && r->f20 == ((Hero *)(hero_globals_base_r + 0xE1D))->moby) {
                 B = 0.0f;
                 v21 = 11;
             }
         }
         if (r->h2A == 0x47) {
-            *(u128_2E52B0 *)&vA = *(u128_2E52B0 *)(D_0013E633_2E52B0 + 0xE9D);
+            *(u128_2E52B0 *)&vA = *(u128_2E52B0 *)(hero_globals_base_r + 0xE9D);
             *(u128_2E52B0 *)&vB = *(u128_2E52B0 *)((V_2E52B0 *)&m->pos);
             vA.z += 1.0f;
             vB.z += 1.0f;
@@ -986,7 +986,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             m->state = 10;
             d->h26 = scale_ticks_r(60);
             d->f80 = D_L10_00161EAC_2E52B0 * g_frame_time_sq_r;
-            s = ((Hero *)(D_0013E633_2E52B0 + 0xE1D))->vehicle_mode == 1 ? 1.0f : 3.0f;
+            s = ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 1 ? 1.0f : 3.0f;
             trooper_set_knockback_r(d->a70, s, 0.5f);
             d->fC0 = 3.5f;
             d->fC4 = 7.0f;
@@ -1016,12 +1016,12 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     if (d->f1AC != 0) {
         d->f1A0 = D_L10_00161EC0_2E52B0 + 6.0f;
     } else if (m->state == 1) {
-        if (m == ((Moby *)((Hero *)(D_0013E633_2E52B0 + 0xE1D))->unk240) || m == ((Moby *)((Hero *)(D_0013E633_2E52B0 + 0xE1D))->coll_hit_moby)) {
+        if (m == ((Moby *)((Hero *)(hero_globals_base_r + 0xE1D))->unk240) || m == ((Moby *)((Hero *)(hero_globals_base_r + 0xE1D))->coll_hit_moby)) {
             d->f1A0 = 6.0f;
         } else {
             d->f1A0 = 0.0f;
         }
-        if (((Hero *)(D_0013E633_2E52B0 + 0xE1D))->vehicle_mode == 1) activate_waiting_moby_group_members_r(m);
+        if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 1) activate_waiting_moby_group_members_r(m);
     } else {
         d->f1A0 = D_L10_00161EC0_2E52B0;
     }
@@ -1043,7 +1043,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             if (1.0f < FastVecDist_r(&m->pos, &d->a170)) {
                 m->state = 8;
                 if (m->prev_seq != 4) MobyBlendAnimation_r(m, 4, 0, scale_ticks_r(12));
-            } else if (((Hero *)(D_0013E633_2E52B0 + 0xE1D))->vehicle_mode != 1) {
+            } else if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode != 1) {
                 m->state = 1;
                 if (m->prev_seq != 0) MobyBlendAnimation_r(m, 0, 0, scale_ticks_r(20));
             }
@@ -1051,9 +1051,9 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     } else {
         d->f1D4 = 0;
     }
-    if (d->f160 == 0) d->f160 = ((Hero *)(D_0013E633_2E52B0 + 0xE1D))->moby;
+    if (d->f160 == 0) d->f160 = ((Hero *)(hero_globals_base_r + 0xE1D))->moby;
 }
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern short toxic_crab_group_spread_deg;
 extern short *orxon_moby_groups[];
 typedef struct { char p0[0x10]; float x; float y; char p1[8]; unsigned char state; char p2[0xDF]; } Ent;
@@ -1083,7 +1083,7 @@ float compute_toxic_crab_group_approach_angle(char *self) {
     v[0] = FastCos(owner_to_self_angle) * 2.0f;
     v[1] = FastSin(owner_to_self_angle) * 2.0f;
     v[2] = 0.0f;
-    FastVecAdd(v, v, D_0013E633 + 0xE9D);
+    FastVecAdd(v, v, hero_globals_base + 0xE9D);
     group_entry = orxon_moby_groups[((struct Moby *)self)->group];
     if (group_entry != 0) {
         do {
@@ -1242,7 +1242,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
         m->s34 |= 0x41;
         if (m->b53 != 0) MobyBlendAnimation(m, 0, 0, 0);
         m->state = 1;
-        if ((D_0014171B_t + 0xAA35)[m->bB0 + (g_current_level_index_m << 4)] != 0xFF) break;
+        if ((help_stats_base_t + 0xAA35)[m->bB0 + (g_current_level_index_m << 4)] != 0xFF) break;
         goto del;
     case 1:
         if (!is_point_inside_clip_volume(&tgt->pos, d->i148)) break;
@@ -1251,7 +1251,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
         m->s34 &= 0xFFBE;
         m->i94 = *(int *)(m->p24 + 0x10);
         if (*(int *)orxon_help_state == 0 && *(int *)(orxon_help_state + 0x24) == -1
-            && D_0013E633[0x2EC1] == 0 && *(unsigned short *)(D_0014171B + 0x62D) == 0
+            && hero_globals_base[0x2EC1] == 0 && *(unsigned short *)(help_stats_base + 0x62D) == 0
             && gHaveHeliPack[9] == 0) {
             Help_Request(0x2715, 0x5C);
         }
@@ -1289,17 +1289,17 @@ void BlargShipUpdate(Ship_5E48 *m) {
         }
         break;
     case 4:
-        if (is_point_inside_clip_volume(&((struct Hero *)(D_0013E633 + 0xE1D))->motion.pos, d->i1B0)) {
+        if (is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->i1B0)) {
             m->state = 6;
             break;
         }
         *(u128_2E52B0 *)&A = *(u128_2E52B0 *)&tgt->pos;
-        if (((struct Hero *)(D_0013E633 + 0xE1D))->vehicle_mode != 1) {
+        if (((struct Hero *)(hero_globals_base + 0xE1D))->vehicle_mode != 1) {
             *(u128_2E52B0 *)&A = *(u128_2E52B0 *)&d->vF0;
             coll_line(&m->pos, &A, 0, m, 0);
         } else {
-            if ((Ship_5E48 *)((struct Hero *)(D_0013E633 + 0xE1D))->moby == tgt) {
-                FastVecScale(&C, &((struct Hero *)(D_0013E633 + 0xE1D))->motion.displacement, (float)scale_ticks(20));
+            if ((Ship_5E48 *)((struct Hero *)(hero_globals_base + 0xE1D))->moby == tgt) {
+                FastVecScale(&C, &((struct Hero *)(hero_globals_base + 0xE1D))->motion.displacement, (float)scale_ticks(20));
                 *(u128_2E52B0 *)&B = *(u128_2E52B0 *)&C;
                 add_vectors(&C, &A, &B);
                 A.z = ProbeGroundHeight(&A, 0, 0.5f);
@@ -1347,17 +1347,17 @@ void BlargShipUpdate(Ship_5E48 *m) {
         }
         break;
     case 5:
-        if (is_point_inside_clip_volume(&((struct Hero *)(D_0013E633 + 0xE1D))->motion.pos, d->i1B0)) {
+        if (is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->i1B0)) {
             m->state = 6;
             break;
         }
         *(u128_2E52B0 *)&A = *(u128_2E52B0 *)&tgt->pos;
-        if (((struct Hero *)(D_0013E633 + 0xE1D))->vehicle_mode != 1) {
+        if (((struct Hero *)(hero_globals_base + 0xE1D))->vehicle_mode != 1) {
             *(u128_2E52B0 *)&A = *(u128_2E52B0 *)&d->vF0;
             coll_line(&m->pos, &A, 0, m, 0);
         } else {
-            if ((Ship_5E48 *)((struct Hero *)(D_0013E633 + 0xE1D))->moby == tgt) {
-                FastVecScale(&C, &((struct Hero *)(D_0013E633 + 0xE1D))->motion.displacement, (float)scale_ticks(20));
+            if ((Ship_5E48 *)((struct Hero *)(hero_globals_base + 0xE1D))->moby == tgt) {
+                FastVecScale(&C, &((struct Hero *)(hero_globals_base + 0xE1D))->motion.displacement, (float)scale_ticks(20));
                 *(u128_2E52B0 *)&B = *(u128_2E52B0 *)&C;
                 add_vectors(&C, &A, &B);
                 A.z = ProbeGroundHeight(&A, 0, 0.5f);
@@ -1439,7 +1439,7 @@ extern void select_hero_or_gadgebot_target(float,void *,void *);
 extern int IsPointInPolygon(void *,void *,int);
 extern int FindNearestEligibleMoby(float,char *,void *,int,int,void *,int);
 extern char *orxon_paths[];
-extern unsigned char D_0013E633_e1d[] __asm__("D_0013E633");
+extern unsigned char hero_globals_base_e1d[] __asm__("D_0013E633");
 // Updates hit reactions and selects an enemy's movement target.
 void update_blarg_ship_hit_reactions_and_targeting(char *m) {
  char *d=((char *)((Moby *)m)->pvars),*hit=MobyGetHitMessage(m,0x370000,0); int flag; float amount=0;
@@ -1474,7 +1474,7 @@ void update_blarg_ship_hit_reactions_and_targeting(char *m) {
  }
  finish:
  ((unsigned char *)m)[0xa4]=255;StepColorFade(m,d+0xc0);
- { unsigned char *hero=D_0013E633_e1d+0xE1D;
+ { unsigned char *hero=hero_globals_base_e1d+0xE1D;
  if(hero[0x20a4]==1) {
   char *v;select_hero_or_gadgebot_target(101.0f,m,d+0x110);
   if(*(char **)(d+0x110)==0) *(int *)(d+0x114)=2;
@@ -1490,7 +1490,7 @@ finaltarget:
  ;
  }
  if(*(int *)(d+0x110)==0) {
- unsigned char *hero2=D_0013E633_e1d+0xE1D;
+ unsigned char *hero2=hero_globals_base_e1d+0xE1D;
  *(char **)(d+0x110)=*(char **)(hero2+0x2080);
  }
 }
@@ -1553,8 +1553,8 @@ extern int try_set_help_message(int, int);
 extern void StartCutscene(int);
 extern int memcard_Save(int, int);
 extern void ShowBanner(int, int);
-extern unsigned char D_0013D355[];
-extern char D_0013A5E0[];
+extern unsigned char special_items_base[];
+extern char pad_globals_base[];
 extern int orxon_cinematic_mode MACRO_ADDR;
 extern int gBolts MACRO_ADDR;
 extern short hero_max_health;
@@ -1562,7 +1562,7 @@ extern short dialogue_message_duration;
 
 /* Pick one of two banner message ids by a game flag. */
 static inline short msgSel(void) {
-    if (D_0013D355[0x140] != 0) {
+    if (special_items_base[0x140] != 0) {
         return 0x271D;
     }
     return 0x271C;
@@ -1578,17 +1578,17 @@ void nanotech_upgrade_vendor_update(char *m) {
     fast_dec_timer((int *)(d + 4));
     switch (moby->state) {
     case 0:
-        g = (Hero *)(D_0013E633 + 0xE1D);
+        g = (Hero *)(hero_globals_base + 0xE1D);
         if (FastDiffRots(moby->rot.z, fast_atan2(g->motion.pos.f[0] - moby->pos.x, g->motion.pos.f[1] - moby->pos.y)) < 1.5707964f) {
             if (vec_distance_xy(&moby->pos, &g->motion.pos) < 4.0f) {
                 if (*(int *)(d + 4) == 0) {
                     if (orxon_cinematic_mode != 2) {
                         set_moby_dialogue_record_value((char *)moby, 1);
-                        alternate_item_available = D_0013D355 + 0x13B;
+                        alternate_item_available = special_items_base + 0x13B;
                         if (alternate_item_available[4] == 0) {
                             if (gBolts > 4000) {
                                 int accepted = try_set_help_message(1, 0x271E) != 0;
-                                if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && accepted) {
+                                if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && accepted) {
                                     d = (u8 *)1;
                                     alternate_item_available[4] = (int)d;
                                     g->health.hp = 5;
@@ -1604,7 +1604,7 @@ void nanotech_upgrade_vendor_update(char *m) {
                             if (*(int *)(d + 4) == 0) {
                                 if (gBolts > 30000) {
                                     int accepted = try_set_help_message(1, 0x271F) != 0;
-                                    if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && accepted) {
+                                    if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && accepted) {
                                         d = (u8 *)1;
                                         alternate_item_available[5] = (int)d;
                                         g->health.hp = 8;
@@ -1681,10 +1681,10 @@ extern Moby *orxon_moby_list_r __asm__("D_L10_00160064") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern int D_L10_00161FB8_2E9978 SDATA(D_L10_00161FB8);
 extern char orxon_help_state_r[] __asm__("D_L10_00179910");
-extern unsigned char D_0014171B_2E9978[] __asm__("D_0014171B");
+extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern unsigned char gHaveHeliPack_r[] __asm__("D_0013D5CA");
-extern unsigned char D_0013D605_2E9978[] __asm__("D_0013D605");
-extern char D_0013D355_2E9978[] __asm__("D_0013D355");
+extern unsigned char race_gates_base_r[] __asm__("D_0013D605");
+extern char special_items_base_r[] __asm__("D_0013D355");
 
 /* Level 10 moby update (class 1344): tracks nearby targets and fires the level's event messages. */
 void update_conditional_help_messages(Moby *m)
@@ -1694,7 +1694,7 @@ void update_conditional_help_messages(Moby *m)
     int flag;
     int sub;
 
-    if (is_point_inside_clip_volume_r(D_0013E633_2E52B0 + 0xE9D, d->f1C)) {
+    if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->f1C)) {
         D_L10_00161FB8_2E9978 = 1;
     } else {
         D_L10_00161FB8_2E9978 = 0;
@@ -1705,39 +1705,39 @@ void update_conditional_help_messages(Moby *m)
         m->state = 1;
         break;
     case 1:
-        if (is_point_inside_clip_volume_r(D_0013E633_2E52B0 + 0xE9D, d->f0) != 0
-            && (((HeroPos_2E9978 *)(D_0013E633_2E52B0 + 0xE9D))->f200C < 2 || ((HeroPos_2E9978 *)(D_0013E633_2E52B0 + 0xE9D))->f200C == 9)
+        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->f0) != 0
+            && (((HeroPos_2E9978 *)(hero_globals_base_r + 0xE9D))->f200C < 2 || ((HeroPos_2E9978 *)(hero_globals_base_r + 0xE9D))->f200C == 9)
             && ((Msg_2E9978 *)orxon_help_state_r)->f0 == 0
             && ((Msg_2E9978 *)orxon_help_state_r)->f24 == -1
-            && *(unsigned short *)(D_0014171B_2E9978 + 0x4F5) == 0) {
+            && *(unsigned short *)(help_stats_base_r + 0x4F5) == 0) {
             Help_Request_r(0x2710, 0x35);
         }
-        if (is_point_inside_clip_volume_r(D_0013E633_2E52B0 + 0xE9D, d->f4) != 0
-            && (((HeroPos_2E9978 *)(D_0013E633_2E52B0 + 0xE9D))->f200C < 2 || ((HeroPos_2E9978 *)(D_0013E633_2E52B0 + 0xE9D))->f200C == 9)
+        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->f4) != 0
+            && (((HeroPos_2E9978 *)(hero_globals_base_r + 0xE9D))->f200C < 2 || ((HeroPos_2E9978 *)(hero_globals_base_r + 0xE9D))->f200C == 9)
             && ((Msg_2E9978 *)orxon_help_state_r)->f0 == 0
             && ((Msg_2E9978 *)orxon_help_state_r)->f24 == -1) {
-            if (((Flags_2E9978 *)(D_0013D355_2E9978 + 0x13B))->f4 == 0) {
-                if (*(unsigned short *)(D_0014171B_2E9978 + 0x505) == 0) {
+            if (((Flags_2E9978 *)(special_items_base_r + 0x13B))->f4 == 0) {
+                if (*(unsigned short *)(help_stats_base_r + 0x505) == 0) {
                     Help_Request_r(0x2712, 0x37);
                 }
-            } else if (((Flags_2E9978 *)(D_0013D355_2E9978 + 0x13B))->f5 == 0) {
-                if (*(unsigned short *)(D_0014171B_2E9978 + 0x50D) == 0) {
+            } else if (((Flags_2E9978 *)(special_items_base_r + 0x13B))->f5 == 0) {
+                if (*(unsigned short *)(help_stats_base_r + 0x50D) == 0) {
                     Help_Request_r(0x2713, 0x38);
                 }
             }
         }
-        if (orxon_cinematic_mode_r == 0 && D_0013D605_2E9978[7] != 0
+        if (orxon_cinematic_mode_r == 0 && race_gates_base_r[7] != 0
             && ((Msg_2E9978 *)orxon_help_state_r)->f0 == 0
             && ((Msg_2E9978 *)orxon_help_state_r)->f24 == -1
-            && *(unsigned short *)(D_0014171B_2E9978 + 0x4FD) == 0) {
+            && *(unsigned short *)(help_stats_base_r + 0x4FD) == 0) {
             Help_Request_r(0x2711, 0x36);
         }
-        if (is_point_inside_clip_volume_r(D_0013E633_2E52B0 + 0xE9D, d->f8) != 0
-            && (((HeroPos_2E9978 *)(D_0013E633_2E52B0 + 0xE9D))->f200C < 2 || ((HeroPos_2E9978 *)(D_0013E633_2E52B0 + 0xE9D))->f200C == 9)
+        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->f8) != 0
+            && (((HeroPos_2E9978 *)(hero_globals_base_r + 0xE9D))->f200C < 2 || ((HeroPos_2E9978 *)(hero_globals_base_r + 0xE9D))->f200C == 9)
             && gHaveHeliPack_r[9] == 0
             && ((Msg_2E9978 *)orxon_help_state_r)->f0 == 0
             && ((Msg_2E9978 *)orxon_help_state_r)->f24 == -1
-            && *(unsigned short *)(D_0014171B_2E9978 + 0x62D) == 0) {
+            && *(unsigned short *)(help_stats_base_r + 0x62D) == 0) {
             Help_Request_r(0x2715, 0x5C);
         }
         flag = 0;
@@ -1746,33 +1746,33 @@ void update_conditional_help_messages(Moby *m)
         }
         if (flag == 0) break;
         if (d->f10 != -1
-            && vec_distance_xy_r2(D_0013E633_2E52B0 + 0xE9D, &orxon_mobys_r[d->f10].pos) < 15.0f
+            && vec_distance_xy_r2(hero_globals_base_r + 0xE9D, &orxon_mobys_r[d->f10].pos) < 15.0f
             && d->f14 != -1
-            && vec_distance_xy_r2(D_0013E633_2E52B0 + 0xE9D, &orxon_mobys_r[d->f14].pos) < 15.0f
-            && *(unsigned short *)(D_0014171B_2E9978 + 0x69D) == 0) {
+            && vec_distance_xy_r2(hero_globals_base_r + 0xE9D, &orxon_mobys_r[d->f14].pos) < 15.0f
+            && *(unsigned short *)(help_stats_base_r + 0x69D) == 0) {
             Help_Request_r(0x2717, 0x6A);
         }
         if (flag == 0) break;
-        if (is_point_inside_clip_volume_r(D_0013E633_2E52B0 + 0xE9D, d->f18) == 0) break;
+        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->f18) == 0) break;
         if (d->f20 == -1) break;
         if (orxon_mobys_r[d->f20].oclass != 0x3F7) break;
         if (orxon_mobys_r[d->f20].state == 4) break;
-        if (((Save_2E9978 *)(D_0014171B_2E9978 + 0x34D))->f358 != 0) {
-            sub = scale_ticks_r2(gameplay_event_frame_count_r) - ((Save_2E9978 *)(D_0014171B_2E9978 + 0x34D))->f35A * 600;
-            if ((int)((float)scale_ticks_r2(0x12) * 60.0f) < sub || ((Save_2E9978 *)(D_0014171B_2E9978 + 0x34D))->f35A * 600 == 0) {
+        if (((Save_2E9978 *)(help_stats_base_r + 0x34D))->f358 != 0) {
+            sub = scale_ticks_r2(gameplay_event_frame_count_r) - ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A * 600;
+            if ((int)((float)scale_ticks_r2(0x12) * 60.0f) < sub || ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A * 600 == 0) {
                 Help_Request_r(0x2718, 0x6B);
                 break;
             }
-            if (scale_ticks_r2(gameplay_event_frame_count_r) / 600 > ((Save_2E9978 *)(D_0014171B_2E9978 + 0x34D))->f35A) {
-                ((Save_2E9978 *)(D_0014171B_2E9978 + 0x34D))->f35A = scale_ticks_r2(gameplay_event_frame_count_r) / 600;
+            if (scale_ticks_r2(gameplay_event_frame_count_r) / 600 > ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A) {
+                ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A = scale_ticks_r2(gameplay_event_frame_count_r) / 600;
             }
             break;
         }
-        ((Save_2E9978 *)(D_0014171B_2E9978 + 0x34D))->f358++;
-        if (scale_ticks_r2(gameplay_event_frame_count_r) / 600 > ((Save_2E9978 *)(D_0014171B_2E9978 + 0x34D))->f35A) {
-            ((Save_2E9978 *)(D_0014171B_2E9978 + 0x34D))->f35A = scale_ticks_r2(gameplay_event_frame_count_r) / 600;
+        ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f358++;
+        if (scale_ticks_r2(gameplay_event_frame_count_r) / 600 > ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A) {
+            ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A = scale_ticks_r2(gameplay_event_frame_count_r) / 600;
         }
-        ((Save_2E9978 *)(D_0014171B_2E9978 + 0x34D))->f35C = ((Save_2E9978 *)(D_0014171B_2E9978 + 0x34D))->f35C | (1 << g_current_level_index_m) | 0x80000000;
+        ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35C = ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35C | (1 << g_current_level_index_m) | 0x80000000;
         break;
     }
 }
@@ -1824,7 +1824,7 @@ state_zero:
         save_id = moby->save_id;
         signed_save_id = (short)save_id;
         if (D_L10_001BB9C0.collected[(short)save_id] != 0 ||
-            ((*(int *)(D_0014171B + 0xAB75 + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >> (save_id & 31)) & 1) != 0) {
+            ((*(int *)(help_stats_base + 0xAB75 + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >> (save_id & 31)) & 1) != 0) {
             moby->state = 3;
             return;
         }
@@ -1847,7 +1847,7 @@ state_two:
         save_id = moby->save_id;
         signed_save_id = (short)save_id;
         if (D_L10_001BB9C0.collected[(short)save_id] != 0 ||
-            ((*(int *)(D_0014171B + 0xAB75 + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >> (save_id & 31)) & 1) != 0) {
+            ((*(int *)(help_stats_base + 0xAB75 + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >> (save_id & 31)) & 1) != 0) {
             moby->state = 3;
             return;
         }
@@ -1942,7 +1942,7 @@ no_second_target:
 remove_candidate:
         if (candidate != 0) DeleteMoby(candidate);
         save_id = moby->save_id;
-        bits = (int *)(D_0014171B + 0xAB75 + (((int)((unsigned int)save_id << 16) >> 21) * 4 + (g_current_level_index << 8)));
+        bits = (int *)(help_stats_base + 0xAB75 + (((int)((unsigned int)save_id << 16) >> 21) * 4 + (g_current_level_index << 8)));
         *bits |= 1 << (save_id & 31);
         save_id = moby->save_id;
         orxon_moby_killed[(int)((unsigned int)save_id << 16) >> 21] |= 1 << (save_id & 31);
@@ -2067,9 +2067,9 @@ void gate_2_update(Moby *m)
     case 0:
         m->update_dist = 0xFF;
         d->home = (*(Vec4A *)&m->pos);
-        if (D_0013E633_e1d[0x2EC1] != 0 ||
+        if (hero_globals_base_e1d[0x2EC1] != 0 ||
             D_L10_001BB9C0_2EAD50.collected[(short)m->save_id] != 0 ||
-            ((*(int *)(D_0014171B_2E9978 + 0xAB75 + ((((short)m->save_id >> 5) * 4) + (g_current_level_index_m << 8))) >> (m->save_id & 0x1F)) & 1) != 0) {
+            ((*(int *)(help_stats_base_r + 0xAB75 + ((((short)m->save_id >> 5) * 4) + (g_current_level_index_m << 8))) >> (m->save_id & 0x1F)) & 1) != 0) {
             v[0] = FastCos_r(FastAddRots_r(m->rot.z, 3.14159265f)) * 1.5f;
             v[1] = FastSin_r(FastAddRots_r(m->rot.z, 3.14159265f)) * 1.5f;
             v[2] = 0.0f;
@@ -2085,9 +2085,9 @@ void gate_2_update(Moby *m)
         break;
     case 1: {
         unsigned char *bits;
-        if (D_0013E633_e1d[0x2EC1] != 0 ||
+        if (hero_globals_base_e1d[0x2EC1] != 0 ||
             D_L10_001BB9C0_2EAD50.collected[(short)m->save_id] != 0 ||
-            ((*(int *)((bits = D_0014171B_2E9978 + 0xAB75) + ((((short)m->save_id >> 5) * 4) + (g_current_level_index_m << 8))) >> (m->save_id & 0x1F)) & 1) != 0) {
+            ((*(int *)((bits = help_stats_base_r + 0xAB75) + ((((short)m->save_id >> 5) * 4) + (g_current_level_index_m << 8))) >> (m->save_id & 0x1F)) & 1) != 0) {
             (*(Vec4A *)&m->pos) = d->home;
             m->state = 3;
             if (d->door > 0) {
@@ -2122,9 +2122,9 @@ void gate_2_update(Moby *m)
         }
         break;
     case 3:
-        if (D_0013E633_e1d[0x2EC1] == 0 &&
+        if (hero_globals_base_e1d[0x2EC1] == 0 &&
             D_L10_001BB9C0_2EAD50.collected[(short)m->save_id] == 0 &&
-            (((*(int *)(D_0014171B_2E9978 + 0xAB75 + ((((short)m->save_id >> 5) * 4) + (g_current_level_index_m << 8))) >> (m->save_id & 0x1F)) ^ 1) & 1)) {
+            (((*(int *)(help_stats_base_r + 0xAB75 + ((((short)m->save_id >> 5) * 4) + (g_current_level_index_m << 8))) >> (m->save_id & 0x1F)) ^ 1) & 1)) {
             (*(Vec4A *)&m->pos) = d->home;
             m->state = 0;
         }

@@ -8,7 +8,7 @@
 #include "camera.h"
 
 extern CameraSystem player_camera;
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern void vec_scale_to_length(void *, void *, float);
 extern Camera gCameraSlotsLvl[];
 extern int gCameraSlotUsedLvl[];
@@ -38,7 +38,7 @@ void setup_level_cameras(void) {
         gCameraSlotUsedLvl[k] = 0;
     }
     g1 = &player_camera;
-    base = D_0013E633 + 0xE1D;
+    base = hero_globals_base + 0xE1D;
     q = &g1->follow;
     p1 = &g1->follow.up;
     g1->previous = 0;

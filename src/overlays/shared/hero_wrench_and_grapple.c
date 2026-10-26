@@ -7,7 +7,7 @@
 #include "hero.h"
 
 LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern float aridia_hero_speed_bands[];
 extern void stick_target(int, float);
@@ -16,7 +16,7 @@ extern void stick_target(int, float);
 void update_hero_stick_target_magnitude(void) {
     char *x;
     stick_target(0, 1.0f);
-    x = D_0013E633 + 0xE1D;
+    x = hero_globals_base + 0xE1D;
     if (*(int *)(x + 0x2084) == 0x3F) {
         float two = g_frame_time + g_frame_time;
         float v = g_frame_time * 3.5f * *(float *)(x + 0x190);
@@ -61,7 +61,7 @@ void Hero_ApplyMotionCollisionL02(void) {
     Hero *contact_player;
     Hero *motion_player;
     Hero *cap_player;
-    float *start = (float *)(D_0013E633 + 0xE9D);
+    float *start = (float *)(hero_globals_base + 0xE9D);
     float *position;
     float *horizontal;
     float *extra_step;
@@ -84,7 +84,7 @@ void Hero_ApplyMotionCollisionL02(void) {
             limit = ((Hero *)position)->capsule_radius - 0.02f;
             if (limit < length) vec_scale_to_length(start, start, limit);
         }
-        position = (float *)(D_0013E633 + 0xEFD);
+        position = (float *)(hero_globals_base + 0xEFD);
         magnitude = gravity_z(position);
         limit = -*(float *)((char *)position + 0x1FC);
         if (magnitude < limit) {
@@ -104,7 +104,7 @@ void Hero_ApplyMotionCollisionL02(void) {
             }
         }
     }
-    position = (float *)(D_0013E633 + 0xE9D);
+    position = (float *)(hero_globals_base + 0xE9D);
     FastVecAdd(position, position, (char *)position + 0x60);
     extra_step = (float *)((char *)position + 0x8A0);
     FastVecAdd(position, position, extra_step);
@@ -120,7 +120,7 @@ void Hero_ApplyMotionCollisionL02(void) {
     } else {
         Hero_UpdateGroundContact();
     }
-    position = (float *)(D_0013E633 + 0xF2D);
+    position = (float *)(hero_globals_base + 0xF2D);
     new_position = (float *)((char *)position - 0x90);
     horizontal = (float *)((char *)position + 0x20);
     FastVecSub(position, new_position, previous.f);
@@ -178,7 +178,7 @@ void Hero_ApplyMotionCollisionL02(void) {
         if (motion_player->motion.move_slope > 0.5f) motion_player->motion.move_slope = 0.5f;
         else if (motion_player->motion.move_slope < -0.5f) motion_player->motion.move_slope = -0.5f;
     }
-    cap_player = (Hero *)(D_0013E633 + 0xE1D);
+    cap_player = (Hero *)(hero_globals_base + 0xE1D);
     magnitude = g_frame_time * 52.0f;
     if (magnitude < cap_player->motion.speed_xy) {
         FastVecScale(cap_player->motion.displacement.f, cap_player->motion.displacement.f, magnitude / cap_player->motion.speed_xy);

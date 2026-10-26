@@ -352,7 +352,7 @@ extern int *D_L00_00173F08;
 extern char map_archive_stash_comment[];
 extern unsigned char D_L00_00184494[];
 extern unsigned char menu_item_enabled_115[] NOT_SDA;
-extern unsigned char D_0014171B[] NOT_SDA;
+extern unsigned char help_stats_base[] NOT_SDA;
 
 /* Sets up the map's tables, loads its data from disc and builds the circular mask. */
 void initialize_level_map_archive(void) {
@@ -428,7 +428,7 @@ void initialize_level_map_archive(void) {
             map_menu_state[14 + i * 4] = map_menu_state[2] + i * 0x200;
         }
         w = Hud_HeapAlloc(0x8000, 0, render_archive_source_file, 0x2FC);
-        level_data = D_0014171B + 0x8A5 + map_menu_state[0x89] * 0x800;
+        level_data = help_stats_base + 0x8A5 + map_menu_state[0x89] * 0x800;
         map_menu_state[3] = w;
         if (level_data[0] != 0) {
             load_map_chunk((void *)map_menu_state[3], level_data, map_menu_state[5]);

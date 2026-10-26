@@ -233,7 +233,7 @@ int UpdateAllCamerasLvl(void) {
     Camera_RunQueuedCallbacks();
     return -1;
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern void vec_scale_to_length(void *, void *, float);
 extern void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1, void *axis);
 
@@ -243,7 +243,7 @@ void Camera_CaptureHeroRelativeView(void) {
     float a[4];
     float b[4];
     float c[4];
-    char *g = D_0013E633 + 0xE1D;
+    char *g = hero_globals_base + 0xE1D;
     CamBlend *d = &player_camera.blend;
 
     vec_scale_to_length(a, *(char **)(g + 0x2080) + 0xC0, 1.0f);
@@ -286,7 +286,7 @@ void Camera_CaptureTransform(Camera *from) {
             extract_matrix_rotation_quaternion(&r->orbit.saved_rot, from);
             Camera_CaptureHeroRelativeView();
         } else {
-            char *g = D_0013E633 + 0xE1D;
+            char *g = hero_globals_base + 0xE1D;
 
             vec_scale_to_length(local0, *(char **)(g + 0x2080) + 0xC0, 1.0f);
             vec_scale_to_length(local1, *(char **)(g + 0x2080) + 0xD0, 1.0f);
@@ -347,13 +347,13 @@ void Camera_PickCollisionMasksLvl(void) {
 
     D_L00_0015F05C_g = 0x14;
     {
-        unsigned char *g = (unsigned char *)(D_0013E633 + 0xE1D);
+        unsigned char *g = (unsigned char *)(hero_globals_base + 0xE1D);
         if ((unsigned int)(*(int *)(g + 0x208C) - 0x11) < 2 || *(int *)(g + 0x2084) == 0x73) {
             gCamSphereMaskLvl_w = 0x34;
         }
     }
     {
-        unsigned char *g = (unsigned char *)(D_0013E633 + 0xE1D);
+        unsigned char *g = (unsigned char *)(hero_globals_base + 0xE1D);
         if (*(int *)(g + 0x208C) != 0x11) {
             if (*(float *)(g + 0x2F0) < player_camera.pos.f[2]) {
                 gCamSphereMaskLvl_w = 0x14;
@@ -367,7 +367,7 @@ void Camera_PickCollisionMasksLvl(void) {
     }
     camera_collision_mask = 0xB4;
     {
-        unsigned char *g = (unsigned char *)(D_0013E633 + 0xE1D);
+        unsigned char *g = (unsigned char *)(hero_globals_base + 0xE1D);
         if (g[0x12E5]) {
             d->coll_bits = 0x100;
             camera_collision_mask = 0x1B4;
@@ -511,7 +511,7 @@ void init_camera_system(void) {
     d[0] = s[0];
     d[1] = s[1];
     d[2] = s[2];
-    t = (float *)(D_0013E633 + 0xE9D);
+    t = (float *)(hero_globals_base + 0xE9D);
     u = g->follow.pos.f;
     u[0] = t[0];
     u[1] = t[1];
@@ -585,7 +585,7 @@ void resolve_camera_movement_collisions(float *pos, float r) {
     for (i = 0; i < n; i++) {
         q = coll_resolved_pos;
         FastVecAdd(pos, pos, d);
-        base = D_0013E633 + 0xE1D;
+        base = hero_globals_base + 0xE1D;
         for (j = 0; j < 6 && coll_sphere_f(pos, *(int *)&gCamSphereMaskLvl, *(void **)(base + 0x2080), r); j++) {
             qcopy(pos, q);
             {

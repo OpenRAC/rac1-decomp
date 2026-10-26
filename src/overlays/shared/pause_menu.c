@@ -108,11 +108,11 @@ extern int rendered_frame_count MACRO_ADDR;
 extern Vram_277208 lvl_resource_buffers;
 extern int lvl_vu_chain_buffer_size MACRO_ADDR;
 extern short D_L00_0015F658;
-extern int D_0013E15A[];
+extern int screen_globals_base[];
 extern int draw_buffer_address MACRO_ADDR;
 extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern char *moby_class_headers[] NOT_SDA;
-extern unsigned char D_0014171B NOT_SDA;
+extern unsigned char help_stats_base NOT_SDA;
 extern struct HEnt *menu_preview_mobys[];
 extern char player_camera[];
 
@@ -270,7 +270,7 @@ void initialize_pause_menu(void) {
     } else {
         decompress_and_relocate_selected_groups(0);
     }
-    transfer_draw_buffer_chunks((*(Menu_277208 *)level_menu_system).unk10, draw_buffer_address, *(int *)((char *)D_0013E15A + 0x4AA) << 11);
+    transfer_draw_buffer_chunks((*(Menu_277208 *)level_menu_system).unk10, draw_buffer_address, *(int *)((char *)screen_globals_base + 0x4AA) << 11);
     t = g_gs_texture_allocation_start;
     (*(Menu_277208 *)level_menu_system).unk18 = t;
     if ((*(Menu_277208 *)level_menu_system).state == 11 || (*(Menu_277208 *)level_menu_system).state == 15) {
@@ -297,7 +297,7 @@ void initialize_pause_menu(void) {
     (*(Menu_277208 *)level_menu_system).unkCC = ((Cnt_277208 *)moby_class_headers[0])->bC;
     ((Cnt_277208 *)moby_class_headers[0])->bC += 0x1C;
     for (n = 0; n < 4; n++) {
-        (*(Menu_277208 *)level_menu_system).unk30[n] = ((int *)(&D_0014171B + 0x45))[n];
+        (*(Menu_277208 *)level_menu_system).unk30[n] = ((int *)(&help_stats_base + 0x45))[n];
     }
 
     if ((*(Menu_277208 *)level_menu_system).page != 0) {
@@ -323,8 +323,8 @@ void initialize_pause_menu(void) {
 }
 extern char level_menu_system[] NOT_SDA;
 extern int skip_frame MACRO_ADDR;
-extern unsigned char D_0014171B NOT_SDA;
-extern unsigned char D_0013E633 NOT_SDA;
+extern unsigned char help_stats_base NOT_SDA;
+extern unsigned char hero_globals_base NOT_SDA;
 extern int gBolts MACRO_ADDR;
 extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern struct HEnt *menu_preview_mobys[];
@@ -381,8 +381,8 @@ void close_pause_menu(void) {
             int value = 0x26;
             for (i = 3; i >= 0; i--) {
                 char *s = level_menu_system;
-                char *h = (char *)&D_0013E633 + 0xE1D;
-                if (((int *)(&D_0014171B + 0x45))[3 - i] != ((int *)s)[15 - i]) {
+                char *h = (char *)&hero_globals_base + 0xE1D;
+                if (((int *)(&help_stats_base + 0x45))[3 - i] != ((int *)s)[15 - i]) {
                     ((int *)(h + 0x20B8))[3 - i] =
                         ((int *)s)[15 - i] != 0
                             ? ((int *)s)[15 - i]
@@ -790,7 +790,7 @@ typedef struct PageMenu {
 } PageMenu;
 extern PageMenu PM __asm__("D_L00_001BA070");
 extern int draw_buffer_address MACRO_ADDR;
-extern int D_0013E15A[];
+extern int screen_globals_base[];
 extern int pause_menu_panel_enabled[];
 extern long capture_texture_tex0 MACRO_ADDR;
 extern int pause_menu_panel_bg_color SDATA(D_L00_00160330);
@@ -824,7 +824,7 @@ void draw_pause_menu_pages(int transfer_only) {
 
     append_gif_transfer_packet();
     page_objects = 0;
-    append_draw_buffer_upload_packets(PM.unk10, draw_buffer_address, *(int *)((char *)D_0013E15A + 0x4AA) << 11);
+    append_draw_buffer_upload_packets(PM.unk10, draw_buffer_address, *(int *)((char *)screen_globals_base + 0x4AA) << 11);
     if (transfer_only != 0) {
         return;
     }
@@ -1128,11 +1128,11 @@ int Menu_GoBackWithFlag(void) {
     }
     return 0;
 }
-extern unsigned char D_0013A5E0[] NOT_SDA;
+extern unsigned char pad_globals_base[] NOT_SDA;
 extern char level_menu_system[] NOT_SDA;
 /* Menu left/right handler; sets the page flag and next page link. Returns 0. */
 int Menu_GoNextWithFlag(void) {
-    int f = *(int *)(D_0013A5E0 + 0x2604);
+    int f = *(int *)(pad_globals_base + 0x2604);
     if (f & 0x20) {
         char *p = level_menu_system;
         char *q;
@@ -1156,11 +1156,11 @@ extern unsigned char unlock_code_key_table[];
 extern short unlock_code_input_count;
 extern char discount_purchase_pricing[];
 extern unsigned char menu_item_enabled_115[];
-extern char D_0013D355[];
+extern char special_items_base[];
 
 /* Cheat-code entry on the pause screen. */
 void process_unlock_code_input(void) {
-    char *pad = (char *)D_0013A5E0 + 0x2460;
+    char *pad = (char *)pad_globals_base + 0x2460;
     int lim0, lim;
     int va, vb, vc;
     int pressed, direction, count, j, code, index, matched;
@@ -1205,7 +1205,7 @@ void process_unlock_code_input(void) {
         } else if ((unsigned)(code - 0x25) < 0x12) {
             unlock_planet(va);
         } else if ((unsigned)vb < 6) {
-            char *p3 = D_0013D355 + 0x13B;
+            char *p3 = special_items_base + 0x13B;
             p3[vb] = 1;
         } else if ((unsigned)vc < 0x1e) {
             unsigned char *q = menu_item_enabled_115 + 1 + vc;
@@ -1357,8 +1357,8 @@ extern int level_moby_killed[][64] NOT_SDA;
 extern unsigned char checkpoint_level_state[0xC58];
 
 /* core data, big blobs addressed with lui/addiu, never through $gp */
-extern unsigned char D_0014171B NOT_SDA;
-extern unsigned char D_0013E633 NOT_SDA;
+extern unsigned char help_stats_base NOT_SDA;
+extern unsigned char hero_globals_base NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
 /* Seeds the pause-menu snapshot: copies the header, marks valid entries in the bitmasks, fills the state record. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_state_00284e50.c, FUN_L00_00284e50. */
@@ -1441,7 +1441,7 @@ void restore_or_clear_level_state(void) {
     b[0x68] = p[0x40];
     b[0x69] = p[0x41];
     b[0x6A] = p[0x42];
-    *(unsigned short *)(&D_0014171B + 0x100ED) = *(unsigned short *)(p + 0xC54);
+    *(unsigned short *)(&help_stats_base + 0x100ED) = *(unsigned short *)(p + 0xC54);
     b[0x6B] |= 7;
     k = *(int *)(p + 0x44);
     if (k == 0 || k == 3) goto done;

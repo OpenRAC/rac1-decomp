@@ -141,7 +141,7 @@ void memcard_update_state(void) {
                     blocks += (entry->size + 1023U) >> 10;
                     if (mc_strcmp(filename, D_0013D315) == 0) icon0 = 1;
                     if (mc_strcmp(filename, D_0013D335) == 0) icon1 = 1;
-                    if (mc_strcmp(filename, D_0013D355) == 0) icon2 = 1;
+                    if (mc_strcmp(filename, special_items_base) == 0) icon2 = 1;
                     if (mc_strncmp(filename, memcard_slot_file_prefix, 4) == 0 &&
                         mc_strncmp(filename + 5, memcard_slot_file_suffix, 4) == 0) {
                         slot = (u8)entry->name[4] - '0';

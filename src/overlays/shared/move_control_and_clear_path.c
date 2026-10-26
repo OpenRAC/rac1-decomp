@@ -237,10 +237,10 @@ s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius,
     qcopy(out, target);
     return 1;
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 /* Return 1 when the hero is standing on or riding moby m. */
 int is_hero_on_moby(char *m) {
-    char *h = D_0013E633 + 0xE1D;
+    char *h = hero_globals_base + 0xE1D;
 
     if (*(int *)(h + 0x208C) == 3 || *(int *)(h + 0x2084) == 0x1C) {
         if (*(char **)(h + 0x4F8) == m) {
@@ -277,13 +277,13 @@ void PlaceMarkerAheadOfMoby(float scale, char *moby) {
 }
 extern float vec_distance_xy(void *, void *);
 extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 // Breaks an object into fragments, with a flag when it is near the origin.
 void spawn_proximity_gated_bolts(char *moby)
 {
     int r = 0;
-    if (vec_distance_xy(moby + 0x10, D_0013E633 + 0xE9D) < 7.0f) {
+    if (vec_distance_xy(moby + 0x10, hero_globals_base + 0xE9D) < 7.0f) {
         r = 2;
     }
     spawn_randomized_bolt_drop(moby, 4, 7, r, -1);

@@ -466,7 +466,7 @@ void draw_group_scenery_ship_trails(char *moby) {
         }
     } while (*list++ >= 0);
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern void handle_amoeboid_hits(unsigned char *m);
 extern void spawn_amoeboid_particles(unsigned char *moby);
@@ -524,7 +524,7 @@ void amoeboid_update(unsigned char *m) {
         break;
     }
     case 2:
-        if (48.0f < vec_distance_xy(m + 0x10, D_0013E633 + 0xE9D)) {
+        if (48.0f < vec_distance_xy(m + 0x10, hero_globals_base + 0xE9D)) {
             ((Moby *)m)->state = 1;
             ((Moby *)m)->visible = 1;
             ((Moby *)m)->flags &= 0xFFFE;
@@ -533,7 +533,7 @@ void amoeboid_update(unsigned char *m) {
         break;
     }
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_amoeboid_hit_sparks(void *, void *);
 extern void Moby_PlaySound(int, int, int);
@@ -543,7 +543,7 @@ extern int scale_ticks(int);
 void handle_amoeboid_hits(unsigned char *m) {
     char *r = MobyGetHitMessage(m, 0x330000, 0);
     if (r != 0) {
-        char *b = D_0013E633 + 0xF1D;
+        char *b = hero_globals_base + 0xF1D;
         char *o;
         m[0x20] = 2;
         m[0x31] = 0;
@@ -875,7 +875,7 @@ void extermibot_update(unsigned char *m) {
         break;
     case 15:
         if ((*(int *)(d + 0x2B8) != -1 && ((unsigned char *)*(int *)&moby_pool_4f60)[*(int *)(d + 0x2B8) * 256 + 0xBC] != 0)
-            || (*(int *)(d + 0x2BC) != -1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x2BC)) != 0)) {
+            || (*(int *)(d + 0x2BC) != -1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(d + 0x2BC)) != 0)) {
             ((Moby *)m)->draw_dist = 0x40;
             ((Moby *)m)->flags |= 0x1000;
             ((Moby *)m)->state = 1;
@@ -977,7 +977,7 @@ void extermibot_update(unsigned char *m) {
             dir[3] = 5627.9248f;
             qcopy(out, t + 0x10);
             out[2] += 0.75f;
-            PostHitMessage(t, (int)m, *(int *)(D_0013E633 + 0x1F75) != 6 ? 0x10001 : 0x10000, out, dir, 1.0f);
+            PostHitMessage(t, (int)m, *(int *)(hero_globals_base + 0x1F75) != 6 ? 0x10001 : 0x10000, out, dir, 1.0f);
         }
         if (((Moby *)m)->anim_flags & 2) {
             ((Moby *)m)->state = 9;
@@ -1154,7 +1154,7 @@ extern float D_L05_00161B50_3047E8 SDATA(D_L05_00161B50);
 extern float D_L05_00161B54_3047E8 SDATA(D_L05_00161B54);
 extern int D_L05_00161B34_3047E8 SDATA(D_L05_00161B34);
 extern int D_L05_00161B38_3047E8 SDATA(D_L05_00161B38);
-extern char D_0013E633_3047E8[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 
 /* Level 5 moby update (a flying enemy): takes hits through func_L00_0025B4D0 and reacts per hit kind, then
    follows its path, retargets the closest moby and turns its head toward the hero. */
@@ -1179,7 +1179,7 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
         v0[2] = v0[2] + 0.5f;
         if (r->who != 0) {
             if (r->who->oclass == 0x47) {
-                qcopy(v10, D_0013E633_3047E8 + 0xEED);
+                qcopy(v10, hero_globals_base_r + 0xEED);
             } else if ((*(struct Moby **)&r->who->pclass != 0 && *(short *)((u8 *)((struct Moby *)r->who->pclass) + 0x46) == 5) || r->who->oclass == 0xBA) {
                 qcopy(v10, v0);
             } else {
@@ -1279,13 +1279,13 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
         }
     }
     if (d->target == 0) {
-        d->target = *(Moby **)(D_0013E633_3047E8 + 0x2E9D);
+        d->target = *(Moby **)(hero_globals_base_r + 0x2E9D);
     }
     d->f2D8 = FastAddRots_r2(d->f2D8, g_frame_time_r * 9.424778f);
     m->glow_color = FastTweenColor_r2(D_L05_00161B34_3047E8, D_L05_00161B38_3047E8, (FastSin_r2(d->f2D8) + 1.0f) * 0.5f);
     k = m->state;
     if (k < 10) {
-    if (k >= 4 && d->target == *(Moby **)(D_0013E633_3047E8 + 0x2E9D)) {
+    if (k >= 4 && d->target == *(Moby **)(hero_globals_base_r + 0x2E9D)) {
         float yaw, pitch;
         FastVecSub_r(v0, ((float *)&d->target->pos), ((float *)&m->pos));
         yaw = FastSubRots_r2(fast_atan2_r2(v0[0], v0[1]), m->rot.z);
@@ -1587,7 +1587,7 @@ void extermitank_update(unsigned char *m) {
             *(short *)(*(char **)(d + 0x184) + 0x32) = 0x40;
             (*(char **)(d + 0x184))[0x31] = 1;
             {
-                char *g2 = D_0013E633 + 0xE1D;
+                char *g2 = hero_globals_base + 0xE1D;
                 *(long *)(*(char **)(d + 0x184) + 0x38) = *(long *)(*(char **)(g2 + 0x2080) + 0x38);
             }
             *(short *)(*(char **)(d + 0x184) + 0x34) = 0x4000;
@@ -1602,7 +1602,7 @@ void extermitank_update(unsigned char *m) {
             *(short *)(*(char **)(d + 0x188) + 0x32) = 0x40;
             (*(char **)(d + 0x188))[0x31] = 1;
             {
-                char *g2 = D_0013E633 + 0xE1D;
+                char *g2 = hero_globals_base + 0xE1D;
                 *(long *)(*(char **)(d + 0x188) + 0x38) = *(long *)(*(char **)(g2 + 0x2080) + 0x38);
             }
             *(short *)(*(char **)(d + 0x188) + 0x34) = 0x4000;
@@ -1614,7 +1614,7 @@ void extermitank_update(unsigned char *m) {
         AttachManipulator((char *)m, 0, (unsigned char *)(d + 0xF0));
         AttachManipulator((char *)m, 1, (unsigned char *)(d + 0x130));
         ((Moby *)m)->flags |= 0x1000;
-        g = D_0013E633 + 0xE1D;
+        g = hero_globals_base + 0xE1D;
         *(long *)(m + 0x38) = *(long *)(*(char **)(g + 0x2080) + 0x38);
         MoveCtl_Init(d + 0x70);
         *(float *)(d + 0x7C) = 2.0f;
@@ -1667,7 +1667,7 @@ void extermitank_update(unsigned char *m) {
             }
             *(int *)pp = idx;
         }
-        h = D_0013E633 + 0xE9D;
+        h = hero_globals_base + 0xE9D;
         if (vec_distance_xy(m + 0x10, h) < *(float *)(d + 0x174)) {
             if (FastAbsF(((Moby *)m)->pos.z - *(float *)(h + 8)) < 4.0f) {
                 if (*(int *)(d + 0x190) == -1
@@ -1682,8 +1682,8 @@ void extermitank_update(unsigned char *m) {
                 }
             }
         }
-        if (vec_distance_xy(m + 0x10, D_0013E633 + 0xE9D) < 16.0f) {
-            char *g = D_0013E633 + 0xE1D;
+        if (vec_distance_xy(m + 0x10, hero_globals_base + 0xE9D) < 16.0f) {
+            char *g = hero_globals_base + 0xE1D;
             float a = fast_atan2(*(float *)(g + 0x80) - ((Moby *)m)->pos.x, *(float *)(g + 0x84) - ((Moby *)m)->pos.y);
             step_angle_toward_target((float *)(d + 0x194), 0, a, g_frame_time * 1.5707964f);
             step_angle_toward_target((float *)(d + 0x198), 0, 0.08726646f, g_frame_time * 1.5707964f);
@@ -1780,18 +1780,18 @@ void extermitank_update(unsigned char *m) {
         }
         qcopy(v40, m + 0x10);
         v40[2] = v40[2] + 3.0f;
-        h = D_0013E633 + 0xE9D;
+        h = hero_globals_base + 0xE9D;
         if (*(float *)(d + 0x174) < vec_distance_xy(m + 0x10, h)
             || 4.0f <= FastAbsF(((Moby *)m)->pos.z - *(float *)(h + 8))
             || (*(int *)(d + 0x190) != -1
                 && IsPointInPolygon(h, rilgar_paths[*(int *)(d + 0x190)] + 0x10,
                                      *(int *)rilgar_paths[*(int *)(d + 0x190)]) == 0)
-            || coll_line(v40, D_0013E633_3047E8 + 0xEED, 2, m, 0) != 0) {
+            || coll_line(v40, hero_globals_base_r + 0xEED, 2, m, 0) != 0) {
             if (((Moby *)m)->prev_seq != 0) MobyBlendAnimation(m, 0, 0, 3);
             ((Moby *)m)->state = 1;
         }
         {
-            char *g = D_0013E633 + 0xE1D;
+            char *g = hero_globals_base + 0xE1D;
             float a = fast_atan2(*(float *)(g + 0x80) - ((Moby *)m)->pos.x, *(float *)(g + 0x84) - ((Moby *)m)->pos.y);
             step_angle_toward_target((float *)(d + 0x194), 0, a, g_frame_time * 1.5707964f);
             step_angle_toward_target((float *)(d + 0x198), 0, 0.08726646f, g_frame_time * 1.5707964f);
@@ -1991,7 +1991,7 @@ void process_extermitank_particle_hits(char *m) {
             }
         }
     }
-    base = D_0013E633 + 0xE1D;
+    base = hero_globals_base + 0xE1D;
     if (*(int *)(base + 0x1158) == 6) return;
     h.flags |= 1;
     h.owner = m;
@@ -2240,7 +2240,7 @@ extern int FastDecTimer(void *);
 extern void Manipulator_SetScale(void *, float);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char rilgar_camera_pos[];
-extern unsigned char D_0013D355[];
+extern unsigned char special_items_base[];
 extern float g_frame_scale_sq MACRO_ADDR;
 extern int rilgar_hoverboard_races_finished MACRO_ADDR;
 extern int rilgar_nearby_mobys[];
@@ -2321,7 +2321,7 @@ void SkidMcMarxUpdate(Moby *moby) {
         moby->rot.z = fast_atan2(p->points[1].x - p->points[0].x, p->points[1].y - p->points[0].y);
         d->f238 = g_frame_time * 17.0f + (float)d->f250 * (g_frame_time * 1.55f);
         d->f23C = g_frame_time * 24.0f + (float)d->f250 * (g_frame_time * 1.55f);
-        if (D_0013D355[0x13B] == 0) {
+        if (special_items_base[0x13B] == 0) {
             float s = (float)(rilgar_hoverboard_races_finished - 4);
 
             if (s < 0.0f) {
@@ -2339,7 +2339,7 @@ void SkidMcMarxUpdate(Moby *moby) {
         break;
     }
     case 1:
-        if (*(int *)(D_0013E633 + 0x2EA9) == 0x16) {
+        if (*(int *)(hero_globals_base + 0x2EA9) == 0x16) {
             moby->update_dist = 0xFF;
             moby->flags &= ~0x41;
             d->f258 = 0;
@@ -2367,7 +2367,7 @@ void SkidMcMarxUpdate(Moby *moby) {
         }
         break;
     case 2: {
-        Hero *h = (Hero *)(D_0013E633 + 0xE1D);
+        Hero *h = (Hero *)(hero_globals_base + 0xE1D);
 
         if (h->state.control_mode != 0x16) {
             moby->state = 0;
@@ -2442,7 +2442,7 @@ void SkidMcMarxUpdate(Moby *moby) {
                 if (ground < d->pos[2]) {
                     target = g_frame_time * 19.0f;
                 }
-                h2 = (Hero *)(D_0013E633 + 0xE1D);
+                h2 = (Hero *)(hero_globals_base + 0xE1D);
                 if (h2->race_time_frames < scale_ticks(0x2BC)) {
                     target += g_frame_time * 3.0f;
                 }
@@ -2637,7 +2637,7 @@ typedef struct {
 
 extern int rilgar_cinematic_mode MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern unsigned char D_0014171B_0030DED8[] __asm__("D_0014171B");
+extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern Rec_0030DED8 water_records_r[] __asm__("D_L05_001D6BC0");
 extern Cam_0030DED8 D_L05_00180440;
 extern Light_0030DED8 g_light;
@@ -2748,7 +2748,7 @@ void WaterSurfaceUpdate(Moby *moby) {
                     }
                 }
             }
-            if ((D_0014171B_0030DED8 + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
+            if ((help_stats_base_r + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
                 moby->state = 7;
                 moby->pos.z = 44.0f;
             } else {
@@ -2784,7 +2784,7 @@ void WaterSurfaceUpdate(Moby *moby) {
             d->f24 = 1;
             set_moby_list_state(moby->group, 1);
         } else if (d->f10 >= 0) {
-            if ((D_0014171B_0030DED8 + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
+            if ((help_stats_base_r + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
                 moby->state = 1;
                 moby->pos.z = d->f0;
             }
@@ -2811,7 +2811,7 @@ void WaterSurfaceUpdate(Moby *moby) {
         if (d->f24 != 0) {
             ApproachWithVelocity(&moby->pos.z, &d->f20, d->f0, rilgar_water_gate_accel * g_frame_time_sq, rilgar_water_gate_accel * g_frame_time_sq, rilgar_water_gate_max_speed * g_frame_time);
             if (FastAbsF(moby->pos.z - d->f0) > 0.1f) {
-                Hero *h = (Hero *)(D_0013E633 + 0xE1D);
+                Hero *h = (Hero *)(hero_globals_base + 0xE1D);
                 if (h->state.control_mode == 0x11 || h->state.control_mode == 0x12) {
                     if (moby->pos.z > h->water_surface_z) {
                         h->water_surface_z = moby->pos.z;
@@ -2828,8 +2828,8 @@ void WaterSurfaceUpdate(Moby *moby) {
         }
         break;
     case 3:
-        if (vec_distance_xy(((float *)&moby->pos), ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f) < 16.0f) {
-            Hero *h = (Hero *)(D_0013E633 + 0xE1D);
+        if (vec_distance_xy(((float *)&moby->pos), ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f) < 16.0f) {
+            Hero *h = (Hero *)(hero_globals_base + 0xE1D);
             if (h->motion.pos.f[2] < moby->pos.z) {
                 if (h->state.control_mode == 0x11) {
                     if (h->water_surface_z < moby->pos.z) {
@@ -2839,8 +2839,8 @@ void WaterSurfaceUpdate(Moby *moby) {
             }
         }
         if (d->f10 >= 0) {
-            if (vec_distance_xy(((float *)&moby->pos), ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f) < 10.0f) {
-                Hero *h = (Hero *)(D_0013E633 + 0xE1D);
+            if (vec_distance_xy(((float *)&moby->pos), ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f) < 10.0f) {
+                Hero *h = (Hero *)(hero_globals_base + 0xE1D);
                 if (h->ground_moby != 0 && h->air_frames.s == 0 && h->ground_moby->oclass == 0x33E) {
                     d->f1C = 0;
                     moby->state = 8;
@@ -2858,7 +2858,7 @@ void WaterSurfaceUpdate(Moby *moby) {
         break;
     case 7:
         if (d->f10 >= 0) {
-            Hero *h = (Hero *)(D_0013E633 + 0xE1D);
+            Hero *h = (Hero *)(hero_globals_base + 0xE1D);
             if (h->state.current == 0x6A && h->state_timer == 2) {
                 rilgar_flood_slowdown_count++;
             }
@@ -2885,7 +2885,7 @@ void WaterSurfaceUpdate(Moby *moby) {
             v.f[0] = 211.0f;
             v.f[1] = 338.0f;
             v.f[2] = 25.0f;
-            if (FastVecDist(v.f, D_0013E633 + 0xE9D) < 6.0f) {
+            if (FastVecDist(v.f, hero_globals_base + 0xE9D) < 6.0f) {
                 if (rilgar_flood_checkpoint_reached == 0) {
                     rilgar_flood_checkpoint_reached = 1;
                     if (moby->pos.z > rilgar_flood_skip_height) {
@@ -2895,7 +2895,7 @@ void WaterSurfaceUpdate(Moby *moby) {
             }
         }
         if (d->f10 >= 0) {
-            Hero *h = (Hero *)(D_0013E633 + 0xE1D);
+            Hero *h = (Hero *)(hero_globals_base + 0xE1D);
             if (h->state.current == 0x6A && h->state_timer == 2) {
                 rilgar_flood_slowdown_count++;
             }

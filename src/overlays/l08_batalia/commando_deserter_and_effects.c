@@ -235,7 +235,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
 /* Moby update: deletes its group's mobys when triggered, else runs a small state machine. */
 void update_moby_height_from_driver(char *m)
 {
-    extern unsigned char D_0013D355[];
+    extern unsigned char special_items_base[];
     extern char ApproachValue[];
     extern unsigned short *batalia_moby_groups[];
     int k;
@@ -244,7 +244,7 @@ void update_moby_height_from_driver(char *m)
     unsigned short *p;
     int i;
     int t;
-    unsigned char *g = D_0013D355 + 0x13B;
+    unsigned char *g = special_items_base + 0x13B;
     unsigned char *g2;
     if (g[0x2E] != 0 && *(int *)(d + 8) < 0) {
         o = (char *)&batalia_moby_groups[((Moby *)m)->group];
@@ -285,7 +285,7 @@ void update_moby_height_from_driver(char *m)
         }
         if (((Moby *)o)->oclass == 0x267 || ((Moby *)o)->oclass == 0x23F) {
             if (((Moby *)o)->state != 4) break;
-            g2 = D_0013D355 + 0x13B;
+            g2 = special_items_base + 0x13B;
             g2[0x35] = 1;
             Moby_PlaySound_r(0, 0, (struct Moby *)m);
             ((Moby *)m)->state = 2;
@@ -824,8 +824,8 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 extern unsigned char D_0013DE4B[] NOT_SDA;
 extern unsigned char menu_item_enabled_25[] NOT_SDA;
-extern unsigned char D_0014171B_q[] __asm__("D_0014171B") NOT_SDA;
-extern char D_0013E633[] NOT_SDA;
+extern unsigned char help_stats_base_q[] __asm__("D_0014171B") NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
 
 typedef struct WD8 {
     u8 pad_00[0x24];           /* 0x00 dialog block at +0x20, passed as a pointer */
@@ -885,7 +885,7 @@ void commando_update(char *m) {
         moby->update_dist = 0xFF;
         if (moby->prev_seq != 1)
             MobyBlendAnimation(m, 1, 0, scale_ticks(10));
-        if (D_0013DE4B[7] != 0 && (D_0014171B_q + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
+        if (D_0013DE4B[7] != 0 && (help_stats_base_q + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
             DeleteMoby(m);
             return;
         }
@@ -932,7 +932,7 @@ void commando_update(char *m) {
             unlock_planet(10);
             queue_planet_unlock_message(10);
             jet_clear_persistent((unsigned char)m[0xB0]);
-            g = D_0013E633 + 0xE9D;
+            g = hero_globals_base + 0xE9D;
             jet_reset_camera(g, g + 0x10);
             memcard_Save(0, -1);
             DeleteMoby(m);
@@ -947,7 +947,7 @@ void commando_update(char *m) {
         float head_rate = 0.3f;
         int tracking = 0;
         if (moby->prev_seq == 1) {
-            char *player = D_0013E633 + 0xE9D;
+            char *player = hero_globals_base + 0xE9D;
             char *a_;
             tracking = 1;
             if (vec_distance_xy(&moby->pos, player) < 8.0f
@@ -961,7 +961,7 @@ void commando_update(char *m) {
                 }
             } else if (commando_vars->moving_timer != 0) {
                 commando_vars->moving_timer = 0;
-                qcopy(commando_vars->target, D_0013E633 + 0xEED);
+                qcopy(commando_vars->target, hero_globals_base + 0xEED);
             }
             if (fast_dec_timer(&commando_vars->target_timer) != 0) {
                 float y;
@@ -974,7 +974,7 @@ void commando_update(char *m) {
                 FastVecAdd(commando_vars->target, commando_vars->target, &moby->pos);
             }
             if (commando_vars->moving_timer != 0) {
-                qcopy(target, D_0013E633 + 0xEED);
+                qcopy(target, hero_globals_base + 0xEED);
                 rate = 0.04f;
                 head_rate = 0.3f;
             } else {
@@ -1084,7 +1084,7 @@ void batalia_deserter_update(char *m) {
     switch (moby->state) {
     case 0:
         if (moby->prev_seq != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(20));
-        if (D_0013DE4B[6] != 0 && (D_0014171B_q + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
+        if (D_0013DE4B[6] != 0 && (help_stats_base_q + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
             DeleteMoby(m);
             return;
         }
@@ -1094,7 +1094,7 @@ void batalia_deserter_update(char *m) {
         if (deserter_data->i64 >= 0) DialogRequest_Init(m, (char *)deserter_data + 0x20);
         break;
     case 1:
-        if (vec_distance_xy(&moby->pos, D_0013E633 + 0xE9D) < 8.0f) {
+        if (vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D) < 8.0f) {
             jet_clear_persistent((unsigned char)moby->mission);
             moby->state = 2;
         }
@@ -1107,7 +1107,7 @@ void batalia_deserter_update(char *m) {
             }
         }
         {
-            char *h = D_0013E633 + 0xE1D;
+            char *h = hero_globals_base + 0xE1D;
             if (*(int *)(h + 0x2FC) == 0) {
                 if (scale_ticks(30) < *(int *)(h + 0x300) || deserter_data->h56 != 0) {
                     Npc_TryStartDialog(m, (char *)deserter_data + 0x20);
@@ -1129,7 +1129,7 @@ void batalia_deserter_update(char *m) {
         float head_rate = 0.3f;
         int tracking = 0;
         if (moby->prev_seq == 1) {
-            char *player = D_0013E633 + 0xE9D;
+            char *player = hero_globals_base + 0xE9D;
             char *hero_base;
             tracking = 1;
             if (vec_distance_xy(&moby->pos, player) < 8.0f
@@ -1143,7 +1143,7 @@ void batalia_deserter_update(char *m) {
                 }
             } else if (deserter_data->moving_timer != 0) {
                 deserter_data->moving_timer = 0;
-                qcopy(deserter_data->target, D_0013E633 + 0xEED);
+                qcopy(deserter_data->target, hero_globals_base + 0xEED);
             }
             if (fast_dec_timer(&deserter_data->target_timer) != 0) {
                 float y;
@@ -1156,7 +1156,7 @@ void batalia_deserter_update(char *m) {
                 FastVecAdd(deserter_data->target, deserter_data->target, &moby->pos);
             }
             if (deserter_data->moving_timer != 0) {
-                qcopy(target, D_0013E633 + 0xEED);
+                qcopy(target, hero_globals_base + 0xEED);
                 rate = 0.04f;
                 head_rate = 0.3f;
             } else {
@@ -1276,7 +1276,7 @@ void the_plumber_batalia_update(char *m) {
     switch (((struct Moby *)m)->state) {
     case 0:
         ((struct Moby *)m)->update_dist = 0xFF;
-        if ((D_0014171B_q + 0xAA35)[((struct Moby *)m)->mission + (g_current_level_index << 4)] == 0xFF) goto del;
+        if ((help_stats_base_q + 0xAA35)[((struct Moby *)m)->mission + (g_current_level_index << 4)] == 0xFF) goto del;
         d->p20 = batalia_plumber_dialogue_name;
         ((struct Moby *)m)->state = 1;
         DialogRequest_Init(m, d);
@@ -1317,7 +1317,7 @@ void the_plumber_batalia_update(char *m) {
         float sy = 0.3f;
         int doit = 0;
         if (((struct Moby *)m)->prev_seq == 0) {
-            char *g = D_0013E633 + 0xE9D;
+            char *g = hero_globals_base + 0xE9D;
             Hero *a_;
             doit = 1;
             if (vec_distance_xy(&((struct Moby *)m)->pos, g) < 8.0f
@@ -1331,7 +1331,7 @@ void the_plumber_batalia_update(char *m) {
                 }
             } else if (d->moving_timer != 0) {
                 d->moving_timer = 0;
-                qcopy(d->target, D_0013E633 + 0xEED);
+                qcopy(d->target, hero_globals_base + 0xEED);
             }
             if (fast_dec_timer(&d->target_timer) != 0) {
                 float y;
@@ -1344,7 +1344,7 @@ void the_plumber_batalia_update(char *m) {
                 FastVecAdd(d->target, d->target, &((struct Moby *)m)->pos);
             }
             if (d->moving_timer != 0) {
-                qcopy(b, D_0013E633 + 0xEED);
+                qcopy(b, hero_globals_base + 0xEED);
                 sx = 0.0300000f;
                 sy = 0.3f;
             } else {

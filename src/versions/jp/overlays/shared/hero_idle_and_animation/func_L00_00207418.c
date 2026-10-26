@@ -3,7 +3,7 @@ void scan_hero_input_sequences(void) {
     int s;
     int i;
     if (challenge_mode == 0 && D_0015EF20 == 0) return;
-    g = (char *)D_0013E633 + 0xE1D;
+    g = (char *)hero_globals_base + 0xE1D;
     s = 0;
     if (*(int *)(g + 0x198) == scale_ticks(0xF)) {
         if (*(int *)(g + 0x208C) == 4) {
@@ -47,12 +47,12 @@ void scan_hero_input_sequences(void) {
     }
     if (s == 0) return;
     {
-    char *q = (char *)D_0013E633 + 0xE1D;
+    char *q = (char *)hero_globals_base + 0xE1D;
     unsigned char *b0 = (unsigned char *)q + 0x21C4;
     b0[*(int *)(q + 0x21D4)] = s;
     *(int *)(q + 0x21D4) += 1;
     for (i = 0; i < 12; i++) {
-        char *g2 = (char *)D_0013E633 + 0xE1D;
+        char *g2 = (char *)hero_globals_base + 0xE1D;
         unsigned char *b = (unsigned char *)g2 + 0x21C4;
         int n = 0;
         int j;
@@ -79,7 +79,7 @@ void scan_hero_input_sequences(void) {
     }
     }
     {
-        char *r = (char *)D_0013E633 + 0xE1D;
+        char *r = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(r + 0x21D4) >= 16) *(int *)(r + 0x21D4) = 0;
     }
 }

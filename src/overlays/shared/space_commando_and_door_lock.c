@@ -429,7 +429,7 @@ extern short space_commando_death_knockback_speed;
 extern short space_commando_death_knockback_lift;
 extern short space_commando_sight_range;
 extern unsigned char gSkillPoints[];
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 // Level 06 update for a moby with a 12-state machine: aims at a target, runs timed effects, and sets its rotation.
 void func_L06_002FFF70_r(char *m) __asm__("func_L06_002FFF70");
@@ -579,7 +579,7 @@ void process_blarg_space_commando_hits(char *m) {
     }
     }
     if (*(int *)(d + 0x160) == 0) {
-        *(int *)(d + 0x160) = *(int *)(D_0013E633 + 0x2E9D);
+        *(int *)(d + 0x160) = *(int *)(hero_globals_base + 0x2E9D);
     }
 }
 extern float ProbeGroundHeight(void *, int, float);
@@ -1224,7 +1224,7 @@ void spawn_timed_projected_sprite_effect(char *src, int a1, int a2, int a3) {
         ((Moby *)m)->state = 1;
     }
 }
-extern unsigned char D_0013E15A[];
+extern unsigned char screen_globals_base[];
 extern void project_to_screen(float *, void *);
 extern void draw_geometry_quad_5188(void *, void *, void *, u64, int);
 extern s32 D_L06_001624A4_FF000 SDATA(D_L06_001624A4);
@@ -1259,7 +1259,7 @@ void draw_projected_fading_quad(char *moby) {
     else if (fade < 0.0f) fade = 0.0f;
     VU1_addGSregister(0x47, 0x5380B);
     project_to_screen(screen, &pos);
-    screen_center = (s32 *)(D_0013E15A + 0x4A6);
+    screen_center = (s32 *)(screen_globals_base + 0x4A6);
     raw_x = truncate_float_to_s32(screen[0] - (float)screen_center[4]);
     screen_offset = (float)screen_center[4];
     y = truncate_float_to_s32(screen[1] - screen_offset);

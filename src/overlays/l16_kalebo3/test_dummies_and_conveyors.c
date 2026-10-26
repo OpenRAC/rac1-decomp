@@ -11,7 +11,7 @@ typedef struct {float direction[4]; void *owner;int flags;unsigned char kind,ena
 typedef struct {char pad[0x18];char *moby;int count;float position[4];float unk30[4];float normal[4];} L16SparkHit;
 extern L16SparkHit kalebo3_coll_hit_hit __asm__("D_L16_001742C0");
 extern char *D_L16_001B285C;
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern char kalebo3_zero_vec_spark[] __asm__("D_L16_0015F660") MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR,g_frame_time_sq MACRO_ADDR;
 extern float ApproachValue(float*,float,float);
@@ -94,7 +94,7 @@ void HomingSparkUpdate(unsigned char *m) {
         query.active=impact_state;
         qcopy(query.direction,desired.f);
         vec_set_length_xy(query.direction,query.direction,1.0f);
-        player=D_0013E633+0xE1D;
+        player=hero_globals_base+0xE1D;
         query.direction[2]=1.0f;
         query.direction[3]=5627.9248046875f;
         query.kind=3;
@@ -122,7 +122,7 @@ remove:
     }
 }
 extern char *kalebo3_path_table[];
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern void DeleteMoby(void *);
 extern float FastVecDist(void *, void *);
@@ -166,7 +166,7 @@ void update_path_following_rocket(unsigned char *moby) {
         m->command = 0;
         break;
     case 1: {
-        struct Hero *player = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *player = (struct Hero *)(hero_globals_base + 0xE1D);
         if (player->state.control_mode != 15)
             break;
         if (is_point_inside_clip_volume(&player->motion.body_center, data->clip_volume)) {
@@ -189,7 +189,7 @@ void update_path_following_rocket(unsigned char *moby) {
             data->sound = Moby_PlaySound_i(0, 4, m);
         }
         if (data->triggered == 0 &&
-            vec_distance_xy(&m->pos, &((struct Hero *)(D_0013E633 + 0xE1D))->motion.pos) < 7.0f) {
+            vec_distance_xy(&m->pos, &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos) < 7.0f) {
             data->triggered = 1;
             Moby_PlaySound(1, 0, m);
         }
@@ -200,7 +200,7 @@ void update_path_following_rocket(unsigned char *moby) {
             m->collision = 0;
             m->flags |= 1;
         }
-        if (((struct Hero *)(D_0013E633 + 0xE1D))->state.control_mode != 15) {
+        if (((struct Hero *)(hero_globals_base + 0xE1D))->state.control_mode != 15) {
             float pos[4];
             qcopy(pos, path + 0x10);
             pos[3] = 3.0f;
@@ -538,7 +538,7 @@ void Moby471Update(unsigned char *m) {
             vec_scale_to_length(vec, m + 0xC0, *(float *)(d + 0x6C));
             update_conveyor_group_motion_transforms(((Moby *)m)->group, vec);
         }
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x68))) ((Moby *)m)->state = one;
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(d + 0x68))) ((Moby *)m)->state = one;
         AddDrawCallback(draw_conveyor_belt_strips, m);
         break;
     case 1:
@@ -548,7 +548,7 @@ void Moby471Update(unsigned char *m) {
             vec_scale_to_length(vec, m + 0xC0, *(float *)(d + 0x6C));
             update_conveyor_group_motion_transforms(((Moby *)m)->group, vec);
         }
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x64))) ((Moby *)m)->state = 2;
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(d + 0x64))) ((Moby *)m)->state = 2;
         AddDrawCallback(draw_conveyor_belt_strips, m);
         break;
     }
@@ -584,12 +584,12 @@ void update_conveyor_group_voice(unsigned char *m) {
         char *slot;
         if (idx >= 0) {
             char *target;
-            slot = D_0013E633 + 0x1D + idx * 0x70;
+            slot = hero_globals_base + 0x1D + idx * 0x70;
             target = *(char **)(slot + 0x88);
             if (target && *(short *)(target + 0xA6) == 0x1D7) {
                 vec_scale_to_length(v, nearest + 0xE0, 2.5f);
-                FastVecAdd(D_0013E633 + 0xAD + *(int *)(d + 0x74) * 0x70, v, nearest + 0x10);
-                *(char **)(D_0013E633 + 0xA5 + *(int *)(d + 0x74) * 0x70) = nearest;
+                FastVecAdd(hero_globals_base + 0xAD + *(int *)(d + 0x74) * 0x70, v, nearest + 0x10);
+                *(char **)(hero_globals_base + 0xA5 + *(int *)(d + 0x74) * 0x70) = nearest;
                 return;
             }
         }
@@ -597,7 +597,7 @@ void update_conveyor_group_voice(unsigned char *m) {
         *(int *)(d + 0x74) = idx;
         if (idx >= 0) {
             vec_scale_to_length(v, m + 0xE0, 2.5f);
-            FastVecAdd(D_0013E633 + 0xAD + *(int *)(d + 0x74) * 0x70, v, m + 0x10);
+            FastVecAdd(hero_globals_base + 0xAD + *(int *)(d + 0x74) * 0x70, v, m + 0x10);
         }
     }
 }
@@ -911,7 +911,7 @@ void test_dummy_update(unsigned char *moby) {
             FastVecAdd(position, position, position_or_delta.f);
             Moby_GetJointWorldPos(moby, test_dummy_hold_joint, position_or_direction.f);
             MobySphereHitDirectional_r((int)moby, 0.333f, position_or_direction.f, 1, 1.0f, 1.0f, 0, 1, 0);
-            g = D_0013E633 + 0xE1D;
+            g = hero_globals_base + 0xE1D;
             if (D_L16_001742D8 == *(char **)(g + 0x2080) && *(int *)(g + 0x1C0) == 0) {
                 Moby_PlaySound_i(6, 0, moby);
             }
@@ -1149,7 +1149,7 @@ void update_test_dummy_damage_and_respawn(void *moby) {
             }
             {
                 float x = m->position[0], y = m->position[1];
-                L16HitPlayer *player = (L16HitPlayer *)(D_0013E633 + 0xE1D);
+                L16HitPlayer *player = (L16HitPlayer *)(hero_globals_base + 0xE1D);
                 d->heading = fast_atan2(player->position[0] - x, player->position[1] - y);
             }
             m->state = 9;
@@ -1313,7 +1313,7 @@ void draw_test_dummy_group_glows(L16BeamMoby *moby) {
             pos[3] = 1.0f;
             FastVecSub(a, kalebo3_camera_pos, pos);
             vec_scale_to_length(a, a, 1.0f);
-            FastVecCross(b, a, D_0013E633 + 0x10AD);
+            FastVecCross(b, a, hero_globals_base + 0x10AD);
             vec_scale_to_length(b, b, -1.0f);
             FastVecCross(c, b, a);
             draw_world_quad(&packet, a, 0);
@@ -1325,7 +1325,7 @@ extern char *MobyGetHitMessage(void*,int,int);
 extern int Moby_PlaySound_i(int,int,void*) __asm__("func_0022ED80");
 extern void set_class_056b_collision_enabled(void*,int);
 extern int fast_dec_timer(int*);
-extern char D_0014171B[];
+extern char help_stats_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern short D_L16_0015EE6C;
 /* Pulse a linked control object and toggle its child when hit or its timer expires. */
@@ -1334,7 +1334,7 @@ void wall_button_update(char *m) {
     switch((*(unsigned char *)((char *)(m)+(0x20)))) {
     case 0:
         (*(float *)((char *)(d)+(0x68)))=random_angle_radians();(*(float *)((char *)(d)+(0x30)))=0.001f;
-        if((*(unsigned char *)((char *)(D_0014171B+0xAA35+(g_current_level_index<<4))+((*(unsigned char *)((char *)(m)+(0xB0))))))==255 && (*(int *)((char *)(d)+(0x64)))==-1) {
+        if((*(unsigned char *)((char *)(help_stats_base+0xAA35+(g_current_level_index<<4))+((*(unsigned char *)((char *)(m)+(0xB0))))))==255 && (*(int *)((char *)(d)+(0x64)))==-1) {
             (*(unsigned char *)((char *)(m)+(0xBC)))=1;(*(unsigned char *)((char *)(m)+(0x20)))=2;
             if((*(int *)((char *)(d)+(0x60)))!=-1) {
                 set_class_056b_collision_enabled(kalebo3_moby_array+((*(int *)((char *)(d)+(0x60)))<<8),0);
@@ -1377,7 +1377,7 @@ extern int is_linked_pair_effect_enabled(void *);
 extern void draw_linked_pair_group_ribbons(char *);
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 extern void Sound_StopSlot(int);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 /* Updates a moby: waits for trigger, registers a draw callback and a sound handle. */
 void update_linked_pair_effect(char *moby) {
@@ -1402,7 +1402,7 @@ void update_linked_pair_effect(char *moby) {
                 int h = data[3];
                 data[2] = 0;
                 if (h != -1) {
-                    char *e = D_0013E633 + 0x1D + h * 0x70;
+                    char *e = hero_globals_base + 0x1D + h * 0x70;
                     if (*(char **)(e + 0x88) == moby && *(unsigned char *)(e + 0x74) != 0) {
                         Sound_StopSlot(h);
                     }
@@ -1606,7 +1606,7 @@ void advance_hoverboard_dummy_path_node(char *m) {
         heading = fast_atan2(target[0] - moby->pos.x, target[1] - moby->pos.y);
     }
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern int fast_dec_timer(int *arg0);
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
@@ -1617,7 +1617,7 @@ extern void transform_vector(void *, void *, void *);
 // Checks the nearby list entries of two classes against the moby and adds a timed delay when one is close.
 void accumulate_moby_frames_in_group_bounds(char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
-    char *g = D_0013E633 + 0xE1D;
+    char *g = hero_globals_base + 0xE1D;
     float v[4];
     char *l1;
     char *l2;
@@ -1852,7 +1852,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
         break;
     }
     case 1:
-        if (*(int *)(D_0013E633 + 0x2EA9) == 22) {
+        if (*(int *)(hero_globals_base + 0x2EA9) == 22) {
             ((Moby *)m)->update_dist = 255;
             *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
             ((Moby *)m)->flags &= ~0x41;
@@ -1871,7 +1871,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
         }
         break;
     case 3:
-        if (*(int *)(D_0013E633 + 0x2EA9) != 22) {
+        if (*(int *)(hero_globals_base + 0x2EA9) != 22) {
             ((Moby *)m)->state = 0;
         } else {
             int count = *(unsigned short *)(d + 0x2F2) + 1;
@@ -1893,7 +1893,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
         }
         break;
     case 2:
-        g = D_0013E633 + 0xE1D;
+        g = hero_globals_base + 0xE1D;
         if (*(int *)(g + 0x208C) != 22) {
             ((Moby *)m)->state = 0;
             break;
@@ -1981,7 +1981,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
             if (z < *(float *)(d + 0x268)) {
                 speed = g_frame_time * 19.0f;
             }
-            g = D_0013E633 + 0xE1D;
+            g = hero_globals_base + 0xE1D;
             if (*(int *)(g + 0x894) < scale_ticks(700)) {
                 speed += g_frame_time * 3.0f;
             }
@@ -2216,7 +2216,7 @@ extern void CameraScript2(int);
 extern void Hero_ResetToPosition(void*,void*,int,int);
 extern void MobySphereHitDirectional(int,float,void*,int,float,float,int,int,int);
 extern void Moby_PlaySound(int,int,void*);
-extern char D_0013E633[],D_0014171B[],D_0013D355[],kalebo3_camera_pos[];
+extern char hero_globals_base[],help_stats_base[],special_items_base[],kalebo3_camera_pos[];
 typedef struct {char pad[0x72];unsigned char complete;} L16ObjectiveEntry;
 typedef struct {int trigger,helper,path,hidden,pose,camera,objective,pad1,pad2,timer;} L16SceneData;
 /* Drive a triggered scene, player pose and objective completion. */
@@ -2251,7 +2251,7 @@ void update_triggered_group_objective(char *m) {
         }
         break;
     case SCENE_STATE_WAIT_FOR_TRIGGER: {
-        char *player = D_0013E633+0xE9D;
+        char *player = hero_globals_base+0xE9D;
         if (!is_point_inside_clip_volume(player, scene_data->trigger))
             break;
         scene_data->timer = scale_ticks(60);
@@ -2264,7 +2264,7 @@ void update_triggered_group_objective(char *m) {
     }
     case SCENE_STATE_WAIT_TO_HIDE:
         if (scene_data->camera >= 0)
-            *(unsigned short *)(D_0014171B+0xF) = *(unsigned short *)&scene_data->camera;
+            *(unsigned short *)(help_stats_base+0xF) = *(unsigned short *)&scene_data->camera;
         if (fast_dec_timer(&scene_data->timer)) {
             moby->state = 3;
             scene_data->timer = scale_ticks(60);
@@ -2278,7 +2278,7 @@ void update_triggered_group_objective(char *m) {
         set_camera_position(position);
         set_camera_rotation(rotation);
         if (scene_data->camera >= 0)
-            *(unsigned short *)(D_0014171B+0xF) = *(unsigned short *)&scene_data->camera;
+            *(unsigned short *)(help_stats_base+0xF) = *(unsigned short *)&scene_data->camera;
         if (count_active_moby_group_members(scene_data->path, -1))
             break;
         if (!fast_dec_timer(&scene_data->timer))
@@ -2291,7 +2291,7 @@ void update_triggered_group_objective(char *m) {
                              kalebo3_level_cuboids_m + (scene_data->pose << 7) + 0x70, 0, 1);
         MobySphereHitDirectional((int)m, 5.0f, kalebo3_level_cuboids_m + (scene_data->pose << 7) + 0x30,
                                  0x10000, 50.0f, 1.0f, 0, 1, 0);
-        ((L16ObjectiveEntry *)(D_0013D355+0x13B+scene_data->objective))->complete = 1;
+        ((L16ObjectiveEntry *)(special_items_base+0x13B+scene_data->objective))->complete = 1;
         helper = set_class_0287_group_activation_and_find_nearest(scene_data->helper, 0);
 notify:
         if (helper)
@@ -2300,14 +2300,14 @@ notify:
     case SCENE_STATE_COMPLETE:
         break;
     case SCENE_STATE_HIDDEN_WAIT_FOR_TRIGGER:
-        if (is_point_inside_clip_volume(D_0013E633+0xE9D, scene_data->trigger)) {
+        if (is_point_inside_clip_volume(hero_globals_base+0xE9D, scene_data->trigger)) {
             activate_class_0287_group_and_find_nearest(scene_data->helper, 0);
             activate_test_dummy_group(scene_data->path);
             moby->state = 6;
         }
         break;
     case SCENE_STATE_HIDDEN_WAIT_FOR_LINKED_MOBYS: {
-        char *player = D_0013E633+0xE9D;
+        char *player = hero_globals_base+0xE9D;
         if (is_point_inside_clip_volume(player, scene_data->trigger) && scene_data->camera >= 0)
             *(unsigned short *)(player + 0x225A) = *(unsigned short *)&scene_data->camera;
         if (!count_active_moby_group_members(scene_data->path, -1)) {
@@ -2315,7 +2315,7 @@ notify:
             helper = set_class_0287_group_activation_and_find_nearest(scene_data->helper, 0);
             if (helper)
                 Moby_PlaySound(1, 0, helper);
-            ((L16ObjectiveEntry *)(D_0013D355+0x13B+scene_data->objective))->complete = 1;
+            ((L16ObjectiveEntry *)(special_items_base+0x13B+scene_data->objective))->complete = 1;
         }
         break;
     }
@@ -2332,7 +2332,7 @@ void compute_triggered_scene_path_pose(char *moby, void *out1, float *out2) {
     float v[4];
     char *entry = kalebo3_level_cuboids_m + (*(int *)data << 7);
     char *tbl = kalebo3_path_table[*(int *)(data + 0xC)];
-    FastVecSub(v, D_0013E633 + 0xE9D, entry + 0x30);
+    FastVecSub(v, hero_globals_base + 0xE9D, entry + 0x30);
     v[3] = 0;
     matrix_mul_vec3(v, v, entry + 0x40);
     ApproachWithVelocity((v[1] + 1.0f) * 0.5f, g_frame_time_sq, g_frame_time_sq, g_frame_time + g_frame_time, (float *)(data + 0x1C), (float *)(data + 0x20));
@@ -2455,8 +2455,8 @@ typedef struct {
     float eye[4];
     float delta[4];
 } L16WatchScratch;
-extern L16WatchPlayer D_0013E633_watch __asm__("D_0013E633");
-extern L16WatchFlags D_0013D355_watch __asm__("D_0013D355");
+extern L16WatchPlayer hero_globals_base_watch __asm__("D_0013E633");
+extern L16WatchFlags special_items_base_watch __asm__("D_0013D355");
 
 /* Activate the watcher and steer its body and head toward the player. */
 void help_desk_lady_update(Moby *moby) {
@@ -2482,7 +2482,7 @@ void help_desk_lady_update(Moby *moby) {
         moby->update_dist = 0xFF;
         break;
     case HELP_DESK_POLL_DIALOGUE: {
-        L16WatchPlayer *player = (L16WatchPlayer *)((char *)&D_0013E633_watch + 0xE1D);
+        L16WatchPlayer *player = (L16WatchPlayer *)((char *)&hero_globals_base_watch + 0xE1D);
         if (player->disabled == 0 && player->mode != 15 && player->mode != 22) {
             if (is_point_inside_clip_volume((char *)player->position, watch_data->activation_region) &&
                 Npc_TryStartDialog(moby, activation))
@@ -2498,32 +2498,32 @@ void help_desk_lady_update(Moby *moby) {
             Help_Request(0x3E82, 0x84);
             grant_inventory_item(0x21, 1);
             jet_clear_persistent(moby->mission);
-            player = (char *)&D_0013E633_watch + 0xE9D;
+            player = (char *)&hero_globals_base_watch + 0xE9D;
             jet_reset_camera(player, player + 0x10);
             memcard_Save(0, -1);
             moby->state = 3;
         }
         break;
     }
-    flags = (L16WatchFlags *)((char *)&D_0013D355_watch + 0x13B);
+    flags = (L16WatchFlags *)((char *)&special_items_base_watch + 0x13B);
     if (!flags->entered &&
-        is_point_inside_clip_volume((char *)&D_0013E633_watch + 0xE9D, watch_data->entry_region))
+        is_point_inside_clip_volume((char *)&hero_globals_base_watch + 0xE9D, watch_data->entry_region))
         flags->entered = 1;
-    if (!((L16WatchFlags *)((char *)&D_0013D355_watch + 0x13B))->mission &&
-        ((L16WatchPlayer *)((char *)&D_0013E633_watch + 0xE1D))->mode == 15)
-        ((L16WatchFlags *)((char *)&D_0013D355_watch + 0x13B))->mission = 1;
+    if (!((L16WatchFlags *)((char *)&special_items_base_watch + 0x13B))->mission &&
+        ((L16WatchPlayer *)((char *)&hero_globals_base_watch + 0xE1D))->mode == 15)
+        ((L16WatchFlags *)((char *)&special_items_base_watch + 0x13B))->mission = 1;
     rate = 0.02f;
     head_rate = 0.3f;
     tracking = 0;
     if (moby->prev_seq == 0) {
-        char *player = (char *)&D_0013E633_watch + 0xE9D;
+        char *player = (char *)&hero_globals_base_watch + 0xE9D;
         tracking = 1;
         if (vec_distance_xy(&moby->pos, player) < 8.0f &&
             FastDiffRots(
                 moby->rot.z,
-                fast_atan2(((L16WatchPlayer *)((char *)&D_0013E633_watch + 0xE1D))->aim[0] -
+                fast_atan2(((L16WatchPlayer *)((char *)&hero_globals_base_watch + 0xE1D))->aim[0] -
                                       moby->pos.x,
-                                  ((L16WatchPlayer *)((char *)&D_0013E633_watch + 0xE1D))->aim[1] -
+                                  ((L16WatchPlayer *)((char *)&hero_globals_base_watch + 0xE1D))->aim[1] -
                                       moby->pos.y)) < 1.5707964f) {
             if (FastVecLength(player + 0x80) > 0.01f)
                 watch_data->moving_timer = scale_ticks(120);
@@ -2531,7 +2531,7 @@ void help_desk_lady_update(Moby *moby) {
                 fast_dec_timer(&watch_data->moving_timer);
         } else if (watch_data->moving_timer) {
             watch_data->moving_timer = 0;
-            qcopy(watch_data->target, ((L16WatchPlayer *)((char *)&D_0013E633_watch + 0xE1D))->aim);
+            qcopy(watch_data->target, ((L16WatchPlayer *)((char *)&hero_globals_base_watch + 0xE1D))->aim);
         }
         if (fast_dec_timer(&watch_data->target_timer)) {
             float heading;
@@ -2543,7 +2543,7 @@ void help_desk_lady_update(Moby *moby) {
             FastVecAdd(watch_data->target, watch_data->target, &moby->pos);
         }
         if (watch_data->moving_timer) {
-            qcopy(scratch.target, ((L16WatchPlayer *)((char *)&D_0013E633_watch + 0xE1D))->aim);
+            qcopy(scratch.target, ((L16WatchPlayer *)((char *)&hero_globals_base_watch + 0xE1D))->aim);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -2684,13 +2684,13 @@ void CratePlatformUpdate(L16CrateMoby *m) {
 
     if ((m->status & 2) && m->frame == m->animation && m->frame == 1)
         MobyBlendAnimation(m, 4, 0, scale_ticks(5));
-    if (((L16CratePlayer *)(D_0013E633 + 0xE1D))->standing == m && m->animation != 1 && m->frame != 1)
+    if (((L16CratePlayer *)(hero_globals_base + 0xE1D))->standing == m && m->animation != 1 && m->frame != 1)
         MobyBlendAnimation(m, 1, 0, scale_ticks(5));
     hit = MobyGetHitMessage(m, 0x210000, 0);
     if (!hit && d->child)
         hit = MobyGetHitMessage(d->child, 0x210000, 0);
     if (hit && m->state != 6) {
-        L16CratePlayer *hero = (L16CratePlayer *)(D_0013E633 + 0xE1D);
+        L16CratePlayer *hero = (L16CratePlayer *)(hero_globals_base + 0xE1D);
 
         d->knock_drag = 0.008f;
         d->knock_gravity = 0.0005f;
@@ -2748,7 +2748,7 @@ void CratePlatformUpdate(L16CrateMoby *m) {
         d->child = 0;
         break;
     case 1: {
-        L16CratePlayer *hero = (L16CratePlayer *)(D_0013E633 + 0xE1D);
+        L16CratePlayer *hero = (L16CratePlayer *)(hero_globals_base + 0xE1D);
 
         MobySpringTurn_path54((char *)m,
                                  fast_atan2(hero->position[0] - m->position[0], hero->position[1] - m->position[1]),
@@ -2757,7 +2757,7 @@ void CratePlatformUpdate(L16CrateMoby *m) {
         break;
     }
     case 2:
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->trigger)) {
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->trigger)) {
             if (d->mode == 1) {
                 MobySetAnimation(m, 0, 0);
             } else {
@@ -2891,7 +2891,7 @@ extern L16PickupPose *kalebo3_level_cuboids MACRO_ADDR;
 extern unsigned char gHaveMapOMatic NOT_SDA;
 extern short kalebo3_help_message_selector;
 extern char g_hero[];
-extern char D_0013A5E0[];
+extern char pad_globals_base[];
 
 /* Update the moving pickup, interpolate its path transitions, and manage its sound handle. */
 void PathPickup_Update(char *moby) {
@@ -2924,7 +2924,7 @@ void PathPickup_Update(char *moby) {
             if (FastAbsF(v70[1]) < 1.2f) {
                 prepare_taxi_departure_path(moby);
                 request_moby_help_message(moby);
-                if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && *(int *)&kalebo3_help_message_selector == 8) {
+                if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && *(int *)&kalebo3_help_message_selector == 8) {
                     moby[0x20] = 3;
                     m = FindMobyByDataId(moby, *(short *)(d + 0xAE));
                     if (m != 0) {
@@ -3004,7 +3004,7 @@ void PathPickup_Update(char *moby) {
     } else if (Sound_IsPlaying(moby, *(short *)(d + 0xAA)) != 0) {
         h = *(short *)(d + 0xAA);
         if (h != -1) {
-            e = D_0013E633 + 0x1D + h * 0x70;
+            e = hero_globals_base + 0x1D + h * 0x70;
             if (*(char **)(e + 0x88) == moby && *(unsigned char *)(e + 0x74) != 0) {
                 Sound_StopSlot(h);
             }
@@ -3222,7 +3222,7 @@ void update_grindrail_gate(unsigned char *m) {
         gate_moby->update_dist = 0xFF;
         break;
     case GRINDRAIL_GATE_CHECK_HERO_BOUNDS:
-        hero_position = D_0013E633 + 0xE9D;
+        hero_position = hero_globals_base + 0xE9D;
         if (FastVecDist(&gate_moby->pos, hero_position) < 16.0f) {
             matrix_from_basis_rows(pos, &gate_moby->rot_row0);
             FastVecSub(hero_offset_from_gate, hero_position, &gate_moby->pos);
@@ -3270,7 +3270,7 @@ void update_local_bounds_command_trigger(unsigned char *m) {
         trigger_moby->update_dist = 0xFF;
         break;
     case GRINDRAIL_TRIGGER_CHECK_LOCAL_BOUNDS:
-        bounds_check_position = D_0013E633 + 0xE9D;
+        bounds_check_position = hero_globals_base + 0xE9D;
         if (FastVecDist(&trigger_moby->pos, bounds_check_position) < 16.0f) {
             matrix_from_basis_rows(pos, &trigger_moby->rot_row0);
             FastVecSub(bounds_check_offset_from_trigger, bounds_check_position, &trigger_moby->pos);
@@ -3320,7 +3320,7 @@ void grindrail_button_update(unsigned char *m) {
         break;
     case GRINDRAIL_BUTTON_CHECK_ACTIVATION:
         if (fast_dec_timer((int *)(button_data + 4))) {
-            g = D_0013E633 + 0xE9D;
+            g = hero_globals_base + 0xE9D;
             if (vec_distance_xy(&button_moby->pos, g) < 4.0f) {
                 base = g - 0x80;
                 if (*(int *)(base + 0x2084) == 0x28 && *(int *)(base + 0x5A8) != -1) {
@@ -3574,7 +3574,7 @@ void update_chomper_hit_reaction_and_target(void *chomper_instance) {
         }
     }
     if (pursuit_data->i1C0 == 0) {
-        struct Hero *player = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *player = (struct Hero *)(hero_globals_base + 0xE1D);
         pursuit_data->i1C0 = (int)player->moby;
         qcopy(pursuit_data->target, &player->motion.pos);
     }

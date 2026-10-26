@@ -4,13 +4,13 @@
 #include "hero.h"
 #include "vector.h"
 
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern char hoven_item_defs[];
 extern int hero_slot_item_id(int);
 
 // Returns a value selected by game-state flags, or an entry field of a 0x4C-byte table.
 int Hero_GetGadgetAnimId(int a) {
-    char *base = D_0013E633 + 0xE1D;
+    char *base = hero_globals_base + 0xE1D;
     int i;
     char *p;
     if (((unsigned char *)base)[0x20A4] == 3) {

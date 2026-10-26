@@ -627,7 +627,7 @@ unsigned char *spawn_spinning_and_fading_effect_particle(void *pos, void *vel, u
  *   p3.c is one instruction over (660 vs 656): retail keeps the blend ratio in $f12 (div.s $f12,$f20,$f0) with lo 
  *   Tried: ratio inline vs via locals a/b, lo reassigned vs a separate x, declaration orders. Would need whatever 
  */
-extern unsigned char D_0013E15A[];
+extern unsigned char screen_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern short spin_particle_speed_decay;
 extern short spin_particle_rise_speed;
@@ -644,7 +644,7 @@ void update_spinning_and_fading_effect_particle(unsigned char *m) {
     float ratio;
     m[8] = m[8] + p[0x1E];
     if (p[0x1F] & 4) {
-        w = IntToFloat(D_0013E15A[0x4D6]) * 0.5f + w;
+        w = IntToFloat(screen_globals_base[0x4D6]) * 0.5f + w;
     }
     FastVecAdd(m + 0x10, m + 0x10, p);
     r = -FastVecLength(p);
@@ -1471,7 +1471,7 @@ typedef struct { float f[4]; } __attribute__((aligned(16))) PartVec;
 typedef int PartQ __attribute__((mode(TI)));
 typedef struct { float x0, x4, x8, xc, r, g, b, a; } PartS;
 typedef struct { char pad0[4]; int x4; unsigned char x8; char pad9; short xa; float xc; PartQ pos; PartS s; } PartP;
-extern char D_0013E633[] NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
 extern PartQ collision_hit_point_q __asm__("D_L00_00173F60") NOT_SDA;
 extern void clear_u64_value(void *);
 
@@ -2075,7 +2075,7 @@ extern int rand_range(int, int);
 extern float random_angle_radians(void);
 extern char *part_type34_textures;
 extern float g_frame_time MACRO_ADDR;
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 /* spawns a type-34 particle at a position with random colour, size and velocity */
 char *PartType34Spawn(char *vec, float *pos, float sc, float vy) {
@@ -2099,7 +2099,7 @@ char *PartType34Spawn(char *vec, float *pos, float sc, float vy) {
         b = scale_ticks(0x8C);
         *(short *)(p + 0xA) = rand_range(a, b);
         if (vy == -1.0f) {
-            char *x = D_0013E633 + 0xE1D;
+            char *x = hero_globals_base + 0xE1D;
             if (*(int *)(x + 0x2084) == 0x31) {
                 *(float *)(q + 0x10) = *(float *)(x + 0x88) + 0.4f;
             } else {
@@ -2206,7 +2206,7 @@ void PartType35Spawn(void *pos, void *vel, int mode, int life) {
 typedef struct { int a[4]; } V __attribute__((aligned(16)));
 extern V collision_hit_point;
 extern int coll_hit_result[];
-extern char D_0013E633[] NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
 extern int coll_line(void *, void *, int, int, int);
 extern int CollType(void);
 extern void spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
@@ -2254,7 +2254,7 @@ void update_ballistic_effect_particle_with_contact_spawns(char *particle) {
     } else if (mode == 3) {
         particle_position = &p->pos;
         FastVecAdd(particle_position, particle_position, particle_data);
-        water_surface_z = *(float *)(D_0013E633 + 0x110D);
+        water_surface_z = *(float *)(hero_globals_base + 0x110D);
         if (p->pos.z < water_surface_z) {
             p->pos.z = water_surface_z;
             spawn_moving_resizing_height_snapped_alpha_fade_particle(particle_position, 0, -1, 0.2f, 5250.0f);

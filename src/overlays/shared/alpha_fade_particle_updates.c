@@ -53,7 +53,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern void scale_vector_xyz_in_place(void *, void *, float);
 extern void add_vectors(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
-extern unsigned char D_0013E633[] NOT_SDA;
+extern unsigned char hero_globals_base[] NOT_SDA;
 
 /* Per-frame update of a type 0x2C particle: fade colour, move and rotate its velocity.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/rendering_002712b8.c, FUN_L00_00271450. */
@@ -82,10 +82,10 @@ void update_moving_rotating_resizing_alpha_fade_particle(unsigned char *p) {
         v[2] = *(float *)(q + 8);
         *(int *)&v[3] = 0;
         FastVecAdd(r, r, v);
-        t[0] = *(Q *)(D_0013E633 + 0xF5D);
+        t[0] = *(Q *)(hero_globals_base + 0xF5D);
         scale_vector_xyz_in_place(m, t, *(float *)(p + 0x1C));
         add_vectors(m, r, t);
-        FastVecScale(m, D_0013E633 + 0xF5D + 0x150, *(float *)(q + 0xC));
+        FastVecScale(m, hero_globals_base + 0xF5D + 0x150, *(float *)(q + 0xC));
         FastVecAdd(v, v, m);
         FastVecScale(v, v, *(float *)(q + 0x18));
         *(float *)(p + 0x20) = v[0];
@@ -745,7 +745,7 @@ void update_color_tween_emitter_particle(unsigned char *p) {
         if (FastDecTimer(p + 0xA)) {
             KillPart(p);
         }
-        c = D_0013E633 + 0xE9D;
+        c = hero_globals_base + 0xE9D;
         if (vec_distance_xy(p + 0x10, c) < 0.3f) {
             g = (P_272bc0 *)(c - 0x80);
             if (g->f88 < *(float *)(p + 0x18) + 1.2f) {
@@ -813,7 +813,7 @@ unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int
 void update_timed_hero_relative_particle(char *m) {
     char *v = m + 0x20;
     if (*(int *)(v + 0x10) == 1) {
-        FastVecAdd(m + 0x10, D_0013E633 + 0xE9D, v);
+        FastVecAdd(m + 0x10, hero_globals_base + 0xE9D, v);
     }
     if (FastDecTimer(m + 0xA)) {
         KillPart(m);
@@ -837,7 +837,7 @@ unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *pos, char *
         qcopy(v, vel);
         *(int *)(v + 7) = mode;
         if (mode == 1) {
-            G_2730e0 *g = (G_2730e0 *)(D_0013E633 + 0xE1D);
+            G_2730e0 *g = (G_2730e0 *)(hero_globals_base + 0xE1D);
             v[4] = *(float *)(m + 0x10) - g->x;
             v[5] = *(float *)(m + 0x14) - g->y;
             v[6] = *(float *)(m + 0x18) - g->z;
@@ -859,7 +859,7 @@ void update_moving_hero_relative_alpha_fade_particle(char *m) {
     int col;
     float a;
     if (*(int *)(v + 0x1C) == 1) {
-        char *g = (char *)D_0013E633 + 0xE1D;
+        char *g = (char *)hero_globals_base + 0xE1D;
         *(float *)(m + 0x10) = *(float *)(g + 0x80) + *(float *)(v + 0x10);
         *(float *)(m + 0x14) = *(float *)(g + 0x84) + *(float *)(v + 0x14);
         *(float *)(m + 0x18) = *(float *)(g + 0x88) + *(float *)(v + 0x18);
@@ -1021,7 +1021,7 @@ unsigned char *spawn_gravity_floor_burst_particle(void *pos, void *vel, float sc
     if (r != 0) {
         u = r + 0x20;
         qcopy(r + 0x10, pos);
-        if (vec_distance_xy(D_0013E633 + 0xE9D, pos) < 80.0f) {
+        if (vec_distance_xy(hero_globals_base + 0xE9D, pos) < 80.0f) {
             r[9] = truncate_float_to_s32(1.0f) + 0x30;
         } else {
             r[9] = truncate_float_to_s32(1.0f) + 0x20;
@@ -1515,7 +1515,7 @@ void update_three_phase_motion_alpha_fade_particle(char *m) {
     char *v = m + 0x20;
     float f;
     if (level_frame_counter & 1) m[8]++;
-    f = FastVecDist(m + 0x10, D_0013E633 + 0xEED);
+    f = FastVecDist(m + 0x10, hero_globals_base + 0xEED);
     if (f < 5.0f) {
         char *t = *(char **)(v + 0x18);
         if (0.0f < *(float *)(t + 8)) {
@@ -1875,7 +1875,7 @@ void update_proximity_corrected_size_alpha_tween_particle(char *m) {
     if (*(int *)(v + 0x18) != 0) {
         FastVecSub(d, *(char **)(v + 0x18) + 0x10, p);
         if (d[0] <= 2.0f && d[1] <= 2.0f) {
-            FastVecCross(e, d, D_0013E633 + 0x10AD);
+            FastVecCross(e, d, hero_globals_base + 0x10AD);
             vec_scale_to_length(e, e, *(float *)&proximity_particle_side_offset);
             FastVecAdd(p, p, e);
             if (d[0] <= 0.5f && d[1] <= 0.5f) {

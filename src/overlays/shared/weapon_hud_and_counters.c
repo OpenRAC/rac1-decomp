@@ -978,7 +978,7 @@ extern SrcElem item_defs[];
 extern short quick_select_width;
 extern short quick_select_height;
 extern short quick_select_page;
-extern int D_0014171B_i[] __asm__("D_0014171B");
+extern int help_stats_base_i[] __asm__("D_0014171B");
 
 // initializes a quick-select object and fills its 8-entry table from the info table
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_text_002377b8.c, FUN_L00_00237ae8.
@@ -999,7 +999,7 @@ void initialize_eight_slot_hud_selector(Obj238478 *o) {
     *(int *)&quick_select_page = 0;
     d = quick_select_slot_entries;
     tab = item_defs;
-    s = (int *)((char *)D_0014171B_i + 0x885);
+    s = (int *)((char *)help_stats_base_i + 0x885);
     for (i = 7; i >= 0; i--) {
         d->x18 = *s;
         d->x0 = tab[*s].x38;
@@ -1189,7 +1189,7 @@ extern float FastSin(float);
 extern int FontPrintCenter(int, int, long, void *, int);
 extern void * msg_string(int);
 extern int func_00116810(char *);
-extern unsigned char D_0013E15A[];
+extern unsigned char screen_globals_base[];
 extern short quick_select_pulse_period;
 extern short quick_select_ring_radius;
 extern short quick_select_ring_aspect;
@@ -1275,7 +1275,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
             else
                 icon_alpha = alpha;
             HudFrame((char *)rec, GetIconFrame(((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].id,
-                          ((unsigned char *)D_0013E15A + 0x4C6)[((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].item] ? 4 : 0), icon_x, icon_y, 1, icon_alpha);
+                          ((unsigned char *)screen_globals_base + 0x4C6)[((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].item] ? 4 : 0), icon_x, icon_y, 1, icon_alpha);
         }
     }
     selected = rec->unk74;
@@ -1283,7 +1283,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
         color = FastTweenColor(GI(quick_select_text_shadow_from), GI(hud_item_selector_text_shadow_color_to), open * fade);
         {
         int id;
-        id = *(int *)((char *)D_0014171B_i + 0x885 + selected * 4);
+        id = *(int *)((char *)help_stats_base_i + 0x885 + selected * 4);
         wr = item_price_table + id * 24;
         if (*(unsigned short *)(wr + 8) != 0) {
             int shadow, item;
@@ -1302,7 +1302,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
         {
             int item, id;
             item = *(int *)(((char **)hud_selector_slot_tables)[GI(quick_select_page)] + selected * 0x1C + 0x18);
-            if (((unsigned char *)D_0013E15A + 0x4C6)[item])
+            if (((unsigned char *)screen_globals_base + 0x4C6)[item])
                 id = ((TI_238C30 *)item_defs)[item].h48;
             else
                 id = ((TI_238C30 *)item_defs)[item].h46;
@@ -1335,7 +1335,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
         {
         int id;
         char *wr;
-        id = *(int *)((char *)D_0014171B_i + 0x885 + selected * 4);
+        id = *(int *)((char *)help_stats_base_i + 0x885 + selected * 4);
         wr = item_price_table + id * 24;
         if (*(unsigned short *)(wr + 8) != 0)
             text_y += GI(hud_item_selector_title_with_ammo_y_offset);
@@ -1684,7 +1684,7 @@ void update_health_hud_animation_and_visibility(HudElem *e) {
     }
     update_hud_animation_frame((char *)e + 0x40);
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern int pal_mode_m __asm__("D_0015EE80") MACRO_ADDR;
 extern int hero_max_health MACRO_ADDR;
 extern short health_hud_y;
@@ -1712,7 +1712,7 @@ int draw_health_hud_panel(char *e) {
     float f20, f21, f22;
     unsigned char *q;
 
-    if (({ char *gb = D_0013E633 + 0xE1D; *(unsigned char *)(gb + (0x20A4)); }) == 2 || ({ char *gb = D_0013E633 + 0xE1D; *(int *)(gb + (0x2084)); }) == 0x32) {
+    if (({ char *gb = hero_globals_base + 0xE1D; *(unsigned char *)(gb + (0x20A4)); }) == 2 || ({ char *gb = hero_globals_base + 0xE1D; *(int *)(gb + (0x2084)); }) == 0x32) {
         return *(int *)&((Moby *)e)->anim_speed;
     }
     x0 = *(int *)(e + 0x50);
@@ -1748,8 +1748,8 @@ int draw_health_hud_panel(char *e) {
         phase = 0x1E;
     }
     cnt = hero_max_health;
-    if (({ char *gb = D_0013E633 + 0xE1D; *(unsigned char *)(gb + (0x20A4)); }) == 1) {
-        cnt = ({ char *gb = D_0013E633 + 0xE1D; *(int *)(gb + (0x22AC)); });
+    if (({ char *gb = hero_globals_base + 0xE1D; *(unsigned char *)(gb + (0x20A4)); }) == 1) {
+        cnt = ({ char *gb = hero_globals_base + 0xE1D; *(int *)(gb + (0x22AC)); });
     }
     if (cnt == 8) {
         f20 = 48.0f;
@@ -2305,7 +2305,7 @@ void update_weapon_hud_state(void) {
     int mode;
 
     if (*(int *)&weapon_hud_suspended == 0) {
-        base = D_0013E633 + 0xE1D;
+        base = hero_globals_base + 0xE1D;
         w = *(int *)(base + 0x10B8);
         mode = *(unsigned char *)(base + 0x20A4);
         if (((WeaponRec *)((char *)item_price_table + w * 24))->unk8 == 0) {
@@ -2599,7 +2599,7 @@ extern int level_item_ids[];
 extern void append_level_item_if_absent(int idx);
 extern unsigned char discount_purchase_pricing[] NOT_SDA;
 extern unsigned char gHaveHeliPack[] NOT_SDA;
-extern unsigned char D_0014171B[] NOT_SDA;
+extern unsigned char help_stats_base[] NOT_SDA;
 extern void grant_inventory_item(int, int);
 
 /* Initialise the vendor stock list: fixed defaults once the level is at least 19, else prune unknown entries. */
@@ -2623,19 +2623,19 @@ void init_level_item_inventory(void) {
         vendor_stock[9] = 0x59;
         vendor_stock[10] = 0x58;
         vendor_stock[11] = 0x53;
-        *(int *)(D_0014171B + 0x885) = 0xF;
-        *(int *)(D_0014171B + 0x889) = 0xC;
-        *(int *)(D_0014171B + 0x88D) = 0xD;
-        *(int *)(D_0014171B + 0x891) = 0xB;
-        *(int *)(D_0014171B + 0x895) = 0x11;
-        *(int *)(D_0014171B + 0x899) = 0xA;
-        *(int *)(D_0014171B + 0x89D) = 0x10;
-        *(int *)(D_0014171B + 0x8A1) = 0x13;
+        *(int *)(help_stats_base + 0x885) = 0xF;
+        *(int *)(help_stats_base + 0x889) = 0xC;
+        *(int *)(help_stats_base + 0x88D) = 0xD;
+        *(int *)(help_stats_base + 0x891) = 0xB;
+        *(int *)(help_stats_base + 0x895) = 0x11;
+        *(int *)(help_stats_base + 0x899) = 0xA;
+        *(int *)(help_stats_base + 0x89D) = 0x10;
+        *(int *)(help_stats_base + 0x8A1) = 0x13;
     } else {
         if (gHaveHeliPack[8] == 0) {
             grant_inventory_item(0xA, 1);
             vendor_stock[0] = 0x4A;
-            *(int *)(D_0014171B + 0x45) = 0xA;
+            *(int *)(help_stats_base + 0x45) = 0xA;
         }
         for (i = 0; i < 12; i++) {
             c = vendor_stock[i];

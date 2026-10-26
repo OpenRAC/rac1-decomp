@@ -10,7 +10,7 @@ typedef struct { char pad0[0x44]; int use_state_40; char pad48[8]; int item_id; 
 extern Ent idle_fidgets[] NOT_SDA;
 extern int D_L00_00179BB0 NOT_SDA;
 extern int g_current_level_index MACRO_ADDR;
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern int hero_slot_item_id(int);
 extern float random_float_between(float, float);
 extern int coll_line(void *, void *, int, int, int);
@@ -86,8 +86,8 @@ int pick_idle_fidget(int *index) {
     }
     return 0;
 }
-extern char D_0013E633[];
-extern char D_0013A5E0_229B78[] __asm__("D_0013A5E0");
+extern char hero_globals_base[];
+extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern int HeroEnterMoveState(int, int);
 extern int scale_ticks(int);
 extern void set_hero_animation(int, int, float);
@@ -103,20 +103,20 @@ extern int D_L00_0015F7BC MACRO_ADDR;
 void update_hero_locomotion_state(void) {
     char *b, *c, *d;
     int n;
-    b = D_0013E633 + 0xE1D;
+    b = hero_globals_base + 0xE1D;
     *(int *)(b + 0x2284) = 0;
     if (*(unsigned char *)(b + 0x12E2) != 0 && *(float *)&g_frame_time_r * 0.5f < *(float *)(b + 0x164)) {
         HeroEnterMoveState(0x2F, 1);
         return;
     }
     stick_target(0, 1.0f);
-    if (*(int *)(D_0013A5E0_229B78 + 0x2600) & 0xA) {
+    if (*(int *)(pad_globals_base_r + 0x2600) & 0xA) {
         HeroEnterMoveState(4, 0);
         set_hero_animation(0xD, 2, -2.0f);
         HeroQueueSequence(3, 0x12);
         return;
     }
-    c = D_0013E633 + 0xE1D;
+    c = hero_globals_base + 0xE1D;
     if (0.3f < *(float *)(c + 0x229C) && *(int *)(c + 0x1C4) == 0) {
         if (*(unsigned char *)(c + 0x12E2) != 0 || *(unsigned char *)(c + 0x20A9) != 0) {
             HeroEnterMoveState(2, 1);
@@ -131,11 +131,11 @@ void update_hero_locomotion_state(void) {
         }
         return;
     }
-    d = D_0013E633 + 0xE1D;
+    d = hero_globals_base + 0xE1D;
     if ((*(float *)&g_frame_time_r * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) || *(int *)(d + 0x2084) == 0x10) {
         if (HeroEnterMoveState(3, 0)) {
             set_hero_animation(5, 0, -1.0f);
-            ClampVectorLength(D_0013E633 + 0xF6D, *(float *)((char *)&g_frame_scale_sq + 8) * 5.0f);
+            ClampVectorLength(hero_globals_base + 0xF6D, *(float *)((char *)&g_frame_scale_sq + 8) * 5.0f);
         }
         return;
     }
@@ -150,7 +150,7 @@ void update_hero_locomotion_state(void) {
         }
     }
 }
-extern unsigned char D_0013A5E0[] NOT_SDA;
+extern unsigned char pad_globals_base[] NOT_SDA;
 extern unsigned char gHaveHeliPack NOT_SDA;
 extern float g_frame_time MACRO_ADDR;
 extern int get_hero_high_jump_input_window_frames(void);
@@ -162,7 +162,7 @@ extern int hero_slot_item_id(int);
 
 // Tries the crouch-jump style moves in priority order and starts the first whose conditions hold. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00229010.c, FUN_L00_00229660.
 int hero_handle_jump_press(void) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     int n, t, k;
     int m;
     char *p;
@@ -171,14 +171,14 @@ int hero_handle_jump_press(void) {
     }
     n = get_hero_high_jump_input_window_frames();
     t = scale_ticks(5);
-    if ((*(int *)(D_0013A5E0 + 0x2600) & 0xA) != 0 && n > 0 && check_pad_press_separation(0x40, 0x1F000, t + n, n) != 0) {
+    if ((*(int *)(pad_globals_base + 0x2600) & 0xA) != 0 && n > 0 && check_pad_press_separation(0x40, 0x1F000, t + n, n) != 0) {
         m = 0xB;
 found:
         HeroEnterMoveState(m, 1);
         return 1;
     }
     k = scale_ticks(9);
-    p = (char *)D_0013E633 + 0xE1D;
+    p = (char *)hero_globals_base + 0xE1D;
     if (scale_ticks(6) < *(int *)(p + 0x198)) {
         if (pad_pressed_within(0x40, k, 0) == 0) {
             return 0;
@@ -190,7 +190,7 @@ found:
             goto found;
         }
         if (hero_slot_item_id(3) == 3) {
-            char *q = (char *)D_0013E633 + 0xE1D;
+            char *q = (char *)hero_globals_base + 0xE1D;
             if (*(short *)(q + 0x22D8) == 0 &&
                 0.7f < *(float *)(q + 0x229C) &&
                 (2.5f < *(float *)(q + 0x248) || *(unsigned char *)(q + 0x254) != 0) &&
@@ -203,14 +203,14 @@ found:
             }
         }
         if (hero_slot_item_id(3) == 3) {
-            char *r = (char *)D_0013E633 + 0xE1D;
+            char *r = (char *)hero_globals_base + 0xE1D;
             if (*(short *)(r + 0x22D8) == 0) {
                 m = 0xD;
                 goto found;
             }
         }
         if (hero_slot_item_id(3) == 2) {
-            char *s = (char *)D_0013E633 + 0xE1D;
+            char *s = (char *)hero_globals_base + 0xE1D;
             if (*(short *)(s + 0x22D8) == 0 && gHaveHeliPack != 0) {
                 m = 0xF;
                 goto found;
@@ -230,7 +230,7 @@ extern float coll_hit_point_z;
 
 /* Test whether the player can reach the point in front of him. */
 int check_hero_forward_collision_height(void) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     Vec4A a, b;
     float t, d;
     if (*(float *)(g + 0x164) < *(float *)(g + 0x234) / (float)scale_ticks(0x14))
@@ -259,7 +259,7 @@ extern int HeroEnterMoveState(int, int);
 
 /* starts the pending global action if conditions hold; returns 1 on success */
 int try_start_hero_item_idle_animation(void) {
-    char *p = D_0013E633 + 0xE1D;
+    char *p = hero_globals_base + 0xE1D;
     if (*(unsigned char *)(p + 0x20A8) != 0 && *(unsigned char *)(p + 0x20AA) != 0 && *(short *)(p + 0x22C8) == 0) {
         int i = hero_slot_item_id(0);
         int v;

@@ -578,7 +578,7 @@ typedef struct {
     struct PeMoby *src;
 } PeHit;
 
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern char *camera_points MACRO_ADDR;
 extern int cutscene_active MACRO_ADDR;
@@ -677,7 +677,7 @@ void birdbot_update(PeMoby *m) {
     FastDecTimer(&v->h26);
     if (hit != 0 && v->h26 == 0) {
         if (hit->src != 0) {
-            Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
+            Hero *hero = (Hero *)(hero_globals_base + 0xE1D);
 
             if (hit->src != ((struct PeMoby *)hero->items[0].moby)) {
                 ang = fast_atan2(m->pos.f[0] - hit->src->pos.f[0], m->pos.f[1] - hit->src->pos.f[1]);
@@ -685,7 +685,7 @@ void birdbot_update(PeMoby *m) {
                 ang = fast_atan2(m->pos.f[0] - hero->motion.pos.f[0], m->pos.f[1] - hero->motion.pos.f[1]);
             }
         } else {
-            Hero *hero = (Hero *)(D_0013E633 + 0xE1D);
+            Hero *hero = (Hero *)(hero_globals_base + 0xE1D);
 
             ang = fast_atan2(m->pos.f[0] - hero->motion.pos.f[0], m->pos.f[1] - hero->motion.pos.f[1]);
         }
@@ -802,7 +802,7 @@ void birdbot_update(PeMoby *m) {
         }
         m->h34 |= 0x1000;
         v->b29 = 0;
-        m->l38 = ((struct PeMoby *)((Hero *)(D_0013E633 + 0xE1D))->moby)->l38;
+        m->l38 = ((struct PeMoby *)((Hero *)(hero_globals_base + 0xE1D))->moby)->l38;
         v->b58 = 8;
         v->b5A = 8;
         MoveCtl_Init(v->xD0);
@@ -889,7 +889,7 @@ void birdbot_update(PeMoby *m) {
     }
     case 2:
         if (vec_distance_xy(&m->pos, &tgt) < v->f1A8
-            || is_point_inside_clip_volume(D_0013E633 + 0xE9D, v->w1C0) != 0
+            || is_point_inside_clip_volume(hero_globals_base + 0xE9D, v->w1C0) != 0
             || v->w1E8 != 0) {
             if (v->w1C4 != -1) {
                 char *p;
@@ -2791,7 +2791,7 @@ void bomber_jet_update(Moby *m) {
             if (m->state == 0) {
                 gunship_follow_path((char *)m);
             }
-            if (d->timer == -1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->flag170)) {
+            if (d->timer == -1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->flag170)) {
                 if (D_L01_001BBE14[(short)m->save_id] != 0
                     || (level_moby_killed[g_current_level_index][(short)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
                     for (j = 0; j < 4; j++) {
@@ -2898,7 +2898,7 @@ void bomber_jet_update(Moby *m) {
                     FastVecSub(&dir, camera_points + (i << 7) + 0x30, &pos);
                     vec_scale_to_length(&dir, &dir, g_frame_time * 160.0f);
                     col.q = *(u128 *)((i << 7) + (int)camera_points + 0x30);
-                    bm = spawn_beam_r(m, &pos, &dir, &col, is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->flag18C), d->flag170 != -1);
+                    bm = spawn_beam_r(m, &pos, &dir, &col, is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->flag18C), d->flag170 != -1);
                     if (bm != 0) {
                         int k = 0;
                         int *out = (int *)((char *)((void *)bm->pvars) + 0x20);
@@ -2912,7 +2912,7 @@ void bomber_jet_update(Moby *m) {
                                 if (o->oclass == 0x2BC) {
                                     Guard_F8B00 *g = (void *)o->pvars;
                                     if (g->f4 == 0 && g->f0 == 0 && random_integer_below(0x64) < 0x64
-                                        && is_point_inside_clip_volume(D_0013E633 + 0xE9D, g->f8)
+                                        && is_point_inside_clip_volume(hero_globals_base + 0xE9D, g->f8)
                                         && is_point_inside_clip_volume(camera_pos, g->f8)) {
                                         out[k] = d->guards[i];
                                         k++;
@@ -3174,7 +3174,7 @@ typedef struct {
 } CapPlayer;
 typedef struct { unsigned int c[3]; } CapColors;
 
-extern unsigned char D_0014171B[] NOT_SDA;
+extern unsigned char help_stats_base[] NOT_SDA;
 extern CapColors novalis_falling_rock_debris_colors;
 typedef struct { char pad0[0x454]; unsigned char collected[1]; } CapLevelState;
 extern CapLevelState D_L01_001BB9C0;
@@ -3238,7 +3238,7 @@ void falling_rock_update(Moby *falling_rock) {
         qcopy(&falling_rock_vars->home, &falling_rock->pos);
         falling_rock->state = 1;
         if (D_L01_001BB9C0.collected[(short)falling_rock->save_id] != 0
-            || (*(int *)(D_0014171B + 0xAB75 + (((short)falling_rock->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >> (falling_rock->save_id & 0x1F)) & 1) {
+            || (*(int *)(help_stats_base + 0xAB75 + (((short)falling_rock->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >> (falling_rock->save_id & 0x1F)) & 1) {
             clear_u64_value(&falling_rock_vars->rot);
             falling_rock->state = 4;
             falling_rock->pos.z = falling_rock_vars->home.f[2] - 20.0f;
@@ -3283,7 +3283,7 @@ void falling_rock_update(Moby *falling_rock) {
             falling_rock->state = 4;
             Moby_PlaySound_r2(0, 0, falling_rock);
             falling_rock->pos.z = falling_rock_vars->home.f[2] - 20.0f;
-            *(int *)(D_0014171B + 0xAB75 + (((short)falling_rock->save_id >> 5) * 4 + (g_current_level_index_m << 8))) |= 1 << (falling_rock->save_id & 0x1F);
+            *(int *)(help_stats_base + 0xAB75 + (((short)falling_rock->save_id >> 5) * 4 + (g_current_level_index_m << 8))) |= 1 << (falling_rock->save_id & 0x1F);
             moby_killed[(short)falling_rock->save_id >> 5] |= 1 << (falling_rock->save_id & 0x1F);
         }
         falling_rock->pos.z += 0.0f;

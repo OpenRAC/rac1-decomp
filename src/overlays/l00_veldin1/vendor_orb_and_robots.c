@@ -6,13 +6,13 @@
 #include "hero.h"
 
 extern int cinematic_mode MACRO_ADDR;
-extern char D_0014171B[];
-extern unsigned char D_0013D355[];
+extern char help_stats_base[];
+extern unsigned char special_items_base[];
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void initialize_global_state_entry(int arg0);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 typedef struct {
     char pad0[0x20];
@@ -50,10 +50,10 @@ void clank_cutscene_trigger_update(M *m) {
     }
     switch (m->state) {
     case 0:
-        *(short *)(D_0014171B + 0xD) = 1;
+        *(short *)(help_stats_base + 0xD) = 1;
         DialogRequest_Init(m, (char *)e + 0x20);
         
-        g = D_0013D355 + 0x13B;
+        g = special_items_base + 0x13B;
         if (g[8]) {
             e->s56 = 1;
             e->f2c = 3.0f;
@@ -61,14 +61,14 @@ void clank_cutscene_trigger_update(M *m) {
         } else {
             e->f2c = 255.0f;
         }
-        h = D_0013D355 + 0x13B;
+        h = special_items_base + 0x13B;
         h[8] = 1;
         m->c30 = 0xFF;
         m->state = 1;
         break;
     case 1:
         if (e->s56) {
-            if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, e->i60))
+            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, e->i60))
                 e->f2c = 16.0f;
             else
                 e->f2c = 3.0f;
@@ -88,7 +88,7 @@ void clank_cutscene_trigger_update(M *m) {
         break;
     }
 }
-extern unsigned char D_0014171B_q[] __asm__("D_0014171B") NOT_SDA;
+extern unsigned char help_stats_base_q[] __asm__("D_0014171B") NOT_SDA;
 extern char *moby_array_start MACRO_ADDR;
 extern int Help_Request(int a, int b);
 extern int is_point_inside_clip_volume(void *, int);
@@ -129,34 +129,34 @@ void update_level_help_controller(unsigned char *moby) {
         help->state = 1;
         help->alpha = 0xFF;
     }
-    trig = (u16 *)(D_0014171B + 0x34D);
+    trig = (u16 *)(help_stats_base + 0x34D);
     if (trig[0x18 / 2] == 0) Help_Request(3, 3);
     if (trig[0x3A0 / 2] == 0) {
-        if (is_point_inside_clip_volume((void *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, vars[4])) Help_Request(0x4E2A, 0x74);
+        if (is_point_inside_clip_volume((void *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, vars[4])) Help_Request(0x4E2A, 0x74);
     }
     {
-    u16 *trig2 = (u16 *)(D_0014171B + 0x34D);
+    u16 *trig2 = (u16 *)(help_stats_base + 0x34D);
     if (trig2[0x48 / 2] == 0) {
-        if (is_point_inside_clip_volume((void *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, vars[0])) {
-            if (*(unsigned short *)(D_0014171B_q + 0x235) == 0) Help_Request(5, 9);
+        if (is_point_inside_clip_volume((void *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, vars[0])) {
+            if (*(unsigned short *)(help_stats_base_q + 0x235) == 0) Help_Request(5, 9);
         }
     }
     }
     {
-    u16 *trig3 = (u16 *)(D_0014171B + 0x34D);
-    if (trig3[0x40 / 2] == 0 && *(unsigned short *)(D_0014171B_q + 0x22D) == 0) {
-        if (is_point_inside_clip_volume((void *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, vars[1])) Help_Request(4, 8);
+    u16 *trig3 = (u16 *)(help_stats_base + 0x34D);
+    if (trig3[0x40 / 2] == 0 && *(unsigned short *)(help_stats_base_q + 0x22D) == 0) {
+        if (is_point_inside_clip_volume((void *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, vars[1])) Help_Request(4, 8);
     }
     }
-    if (((u16 *)(D_0014171B + 0x34D))[0] == 0) {
-        if (is_point_inside_clip_volume((void *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, vars[2])) Help_Request(0, 0);
+    if (((u16 *)(help_stats_base + 0x34D))[0] == 0) {
+        if (is_point_inside_clip_volume((void *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, vars[2])) Help_Request(0, 0);
     }
     {
-    u16 *trig4 = (u16 *)(D_0014171B + 0x34D);
+    u16 *trig4 = (u16 *)(help_stats_base + 0x34D);
     if (trig4[0x8 / 2] != 0) return;
     if (trig4[0x10 / 2] != 0) return;
     }
-    hero_ptr = (Hero *)(D_0013E633 + 0xE1D);
+    hero_ptr = (Hero *)(hero_globals_base + 0xE1D);
     target_index_ptr = vars + 5;
     k = -1;
     e = 0xFE;
@@ -626,7 +626,7 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
         }
     }
     if (vars->targetMoby == 0) {
-        g = D_0013E633 + 0xE1D;
+        g = hero_globals_base + 0xE1D;
         vars->targetMoby = *(TrollMoby **)(g + 0x2080);
         qcopy(&vars->target, g + 0x80);
     }
@@ -718,7 +718,7 @@ void draw_veldin_robot_effect_quad(char *m) {
     bb[3] = 1.0f;
     FastVecSub(c, g_debug_camera, bb);
     vec_scale_to_length(c, c, 1.0f);
-    FastVecCross(d, c, D_0013E633 + 0x10AD);
+    FastVecCross(d, c, hero_globals_base + 0x10AD);
     vec_scale_to_length(d, d, -1.0f);
     FastVecCross(e, d, c);
     t.q0 = GetEffectTex(11);

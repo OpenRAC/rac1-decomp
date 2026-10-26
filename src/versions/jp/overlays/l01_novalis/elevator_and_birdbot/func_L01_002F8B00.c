@@ -78,7 +78,7 @@ void bomber_jet_update(Moby *m) {
             if (m->state == 0) {
                 gunship_follow_path((char *)m);
             }
-            if (d->timer == -1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->flag170)) {
+            if (d->timer == -1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->flag170)) {
                 if (D_L01_001BBE14[(short)m->save_id] != 0
                     || (level_moby_killed[g_current_level_index][(short)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
                     for (j = 0; j < 4; j++) {
@@ -185,7 +185,7 @@ void bomber_jet_update(Moby *m) {
                     FastVecSub(&dir, camera_points + (i << 7) + 0x30, &pos);
                     vec_scale_to_length(&dir, &dir, g_frame_time * 160.0f);
                     col.q = *(u128 *)((i << 7) + (int)camera_points + 0x30);
-                    bm = spawn_beam_r(m, &pos, &dir, &col, is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->flag18C), d->flag170 != -1);
+                    bm = spawn_beam_r(m, &pos, &dir, &col, is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->flag18C), d->flag170 != -1);
                     if (bm != 0) {
                         int k = 0;
                         int *out = (int *)((char *)((void *)bm->pvars) + 0x20);
@@ -199,7 +199,7 @@ void bomber_jet_update(Moby *m) {
                                 if (o->oclass == 0x2BC) {
                                     Guard_F8B00 *g = (void *)o->pvars;
                                     if (g->f4 == 0 && g->f0 == 0 && random_integer_below(0x64) < 0x64
-                                        && is_point_inside_clip_volume(D_0013E633 + 0xE9D, g->f8)
+                                        && is_point_inside_clip_volume(hero_globals_base + 0xE9D, g->f8)
                                         && is_point_inside_clip_volume(camera_pos, g->f8)) {
                                         out[k] = d->guards[i];
                                         k++;

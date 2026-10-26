@@ -9750,3 +9750,9 @@ D_L00_00161898	morphoray_beam_voice	MorphorayUpdate: voice handle of the beam so
 D_L00_001618A8	tesla_pulse_timer	update_beam_ring_rail_and_pulse_effects: per-pulse (3) life countdown from tesla_pulse_life_ticks	
 D_L00_001618C8	tesla_pulse_travel	update_beam_ring_rail_and_pulse_effects: per-pulse distance along the chain, += tesla_pulse_speed each frame	
 D_L00_001E9E30	tesla_spark_colors	update_beam_ring_rail_and_pulse_effects: colour table, one picked at random (of 5) per spark burst	
+D_0013E633	hero_globals_base	fake base for address materialisation: +0xE1D is g_hero, +0xE9D gHeroPos, +0x1D voice_pool	
+D_0014171B	help_stats_base	fake base: +0x34D is help_records, +0x22D usage_stats, +0xAB75 level_moby_killed	
+D_0013A5E0	pad_globals_base	fake base: +0x2460 is g_controller_state, +0x2604 pad0_pressed, +0x2600 pad_held	
+D_0013D355	special_items_base	fake base: +0x13B is gSpecialItems, +0x3B memory_card_state	
+D_0013E15A	screen_globals_base	fake base: +0x4A6 is g_screen_extent, +0x4C6 gold_weapon_purchased, +0x4AA frame_size	
+D_0013D605	race_gates_base	fake base: +0xB3 is race_gates	

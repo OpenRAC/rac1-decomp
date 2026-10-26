@@ -39,7 +39,7 @@ void alien_queen_update(unsigned char *moby)
         *(unsigned short *)(moby + 0x34) = (*(unsigned short *)(moby + 0x34) | 0x4001) & 0xEFFF;
         *(float *)(moby + 0x18) = *(float *)(moby + 0x18) + 17.5f;
         set_moby_list_state_18_q(*(int *)(data + 0xF4));
-        if (menu_item_enabled_19_q[4] != 0 && D_0013D605_q[8] == 0) {
+        if (menu_item_enabled_19_q[4] != 0 && race_gates_base_q[8] == 0) {
             DeleteMoby_q(moby);
             return;
         }

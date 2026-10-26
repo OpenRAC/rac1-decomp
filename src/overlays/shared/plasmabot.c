@@ -6,7 +6,7 @@
 #include "moby.h"
 #include "hero.h"
 
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern int *oltanis_paths[];
 extern int oltanis_game_mode MACRO_ADDR;
 extern char plasmabot_no_path_a_msg[];
@@ -107,7 +107,7 @@ void update_plasmabot(char *m) {
     owner = 0;
     Manipulator_ApplyScale(2.5f, m, 2, data + 0x120);
     if (*(int *)(data + 0x288) != 0) {
-        if (((unsigned char *)D_0013E633)[0x2EC1] != 2) {
+        if (((unsigned char *)hero_globals_base)[0x2EC1] != 2) {
             ((Moby *)m)->flags |= 0x41;
             *(int *)&((Moby *)m)->collision = 0;
             if (((unsigned char *)m)[0x53] == 5) {
@@ -425,7 +425,7 @@ void update_plasmabot(char *m) {
         Moby_GetJointWorldPos(m, 2, mat);
         spawn_plasmabot_death_debris(m, (char *)mat);
         call_F4A8(m, data + 0x40, m + 0x10, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
-        if (((unsigned char *)D_0013E633)[0x2EC1] == 2) {
+        if (((unsigned char *)hero_globals_base)[0x2EC1] == 2) {
             SetDeathBits(m, 0x200, -1);
             { call_D678(m); return; }
         }
@@ -589,7 +589,7 @@ void draw_plasmabot_effect_quads(char *moby) {
     m[3].f[3] = 1.0f;
     FastVecSub(&m[0], oltanis_camera_pos, &m[3]);
     vec_scale_to_length(&m[0], &m[0], 1.0f);
-    FastVecCross(&m[1], &m[0], D_0013E633 + 0x10AD);
+    FastVecCross(&m[1], &m[0], hero_globals_base + 0x10AD);
     vec_scale_to_length(&m[1], &m[1], -1.0f);
     FastVecCross(&m[2], &m[1], &m[0]);
     pk.t[1] = GetEffectTex(11);
@@ -620,7 +620,7 @@ void draw_plasmabot_effect_quads(char *moby) {
     r = data + 0x210;
     q = data + 0x1F0;
     vec_scale_to_length(&m[0], &m[0], 1.0f);
-    FastVecCross(&m[1], &m[0], D_0013E633 + 0x10AD);
+    FastVecCross(&m[1], &m[0], hero_globals_base + 0x10AD);
     vec_scale_to_length(&m[1], &m[1], -1.0f);
     FastVecCross(&m[2], &m[1], &m[0]);
     pk.c[3] = 0x202020FF;
@@ -636,7 +636,7 @@ void draw_plasmabot_effect_quads(char *moby) {
     qcopy(&m[3], q);
     FastVecSub(&m[0], oltanis_camera_pos, &m[3]);
     vec_scale_to_length(&m[0], &m[0], 1.0f);
-    FastVecCross(&m[1], &m[0], D_0013E633 + 0x10AD);
+    FastVecCross(&m[1], &m[0], hero_globals_base + 0x10AD);
     vec_scale_to_length(&m[1], &m[1], -1.0f);
     FastVecCross(&m[2], &m[1], &m[0]);
     FastVecScale(&w, &m[0], D_L14_00161574_3B78);
@@ -655,7 +655,7 @@ void draw_plasmabot_effect_quads(char *moby) {
     qcopy(&m[3], r);
     FastVecSub(&m[0], oltanis_camera_pos, &m[3]);
     vec_scale_to_length(&m[0], &m[0], 1.0f);
-    FastVecCross(&m[1], &m[0], D_0013E633 + 0x10AD);
+    FastVecCross(&m[1], &m[0], hero_globals_base + 0x10AD);
     vec_scale_to_length(&m[1], &m[1], -1.0f);
     FastVecCross(&m[2], &m[1], &m[0]);
     FastVecScale(&w, &m[0], D_L14_00161584_3B78);
@@ -673,7 +673,7 @@ void draw_plasmabot_effect_quads(char *moby) {
     qcopy(&m[3], pp);
     FastVecSub(&m[0], oltanis_camera_pos, &m[3]);
     vec_scale_to_length(&m[0], &m[0], 1.0f);
-    FastVecCross(&m[1], &m[0], D_0013E633 + 0x10AD);
+    FastVecCross(&m[1], &m[0], hero_globals_base + 0x10AD);
     vec_scale_to_length(&m[1], &m[1], -1.0f);
     FastVecCross(&m[2], &m[1], &m[0]);
     FastVecScale(&w, &m[0], D_L14_00161584_3B78);
@@ -717,7 +717,7 @@ void update_plasmabot_target_range(struct Moby *m) {
         pv->unk234 = (*(f32 *)&plasmabot_target_range);
     }
 }
-extern char D_0013E633_x[] __asm__("D_0013E633");
+extern char hero_globals_base_x[] __asm__("D_0013E633");
 extern float g_frame_time_x __asm__("D_0015EE6C") MACRO_ADDR;
 extern short plasmabot_knockback_lift_factor;
 extern void StepColorFade(void *, void *);
@@ -797,7 +797,7 @@ void process_plasmabot_hit_reaction(char *m) {
             y = fast_atan2(*(float *)(h + 0x10), *(float *)(h + 0x14));
             InitKnockback_i(m, d + 0x60, y, 8, scale_ticks(5), 0);
             ((unsigned char *)d)[0xC7] = 0xFA;
-            if (((unsigned char *)D_0013E633_x)[0x2EC1] == 2) {
+            if (((unsigned char *)hero_globals_base_x)[0x2EC1] == 2) {
                 SetDeathBits(m, 0x200, -1);
             } else {
                 SetDeathBits(m, 0, -1);
@@ -813,7 +813,7 @@ void process_plasmabot_hit_reaction(char *m) {
     ((unsigned char *)m)[0xA4] = 0xFF;
     StepColorFade(m, d + 0xC0);
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern int *oltanis_paths[];
 extern int FindNearestEligibleMoby(char *, char *, float, int, int, int *, int);
 extern float vec_distance_xy(void *, void *);
@@ -828,7 +828,7 @@ void update_plasmabot_target(char *moby) {
         }
     }
     if (*(int *)(data + 0x110) == 0) {
-        *(int *)(data + 0x110) = *(int *)(D_0013E633 + 0x2E9D);
+        *(int *)(data + 0x110) = *(int *)(hero_globals_base + 0x2E9D);
     }
 }
 // Manipulate moby flags and clear field
@@ -934,7 +934,7 @@ float update_plasmabot_aim_quaternion(char *moby, int flag, float x) {
         char *g;
         float t;
         qcopy(a, owner + 0x10);
-        g = D_0013E633 + 0xE1D;
+        g = hero_globals_base + 0xE1D;
         if (*(char **)(g + 0x2080) == owner) a[2] = a[2] - *(float *)(g + 0x2DC);
         bp = b;
         FastVecSub(bp, a, moby + 0x10);
@@ -1244,7 +1244,7 @@ void update_spinning_moby_with_particle_trail(struct MobyDf *moby) {
     if (fast_dec_timer(velocity + 8) != 0 || coll_sphere(0.5f, &moby->pos, 0, *(void **)(velocity + 9)) != 0) {
         spawn_explosion((struct Moby *)moby, velocity, &moby->pos, 0.0f, 0.0f, 5, 2, 4,
                              1.0f, 0.5f, 9.0f, 1.0f, 0, 15.0f, 1, 5, -1, 0);
-        coll_sphere(1.0f, &moby->pos, 0, *(void **)(D_0013E633 + 0x2E9D));
+        coll_sphere(1.0f, &moby->pos, 0, *(void **)(hero_globals_base + 0x2E9D));
         DeleteMoby((struct Moby *)moby);
         return;
     }
@@ -1297,7 +1297,7 @@ unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos) {
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0xFF;
         ((Moby *)m)->visible = 1;
-        g = D_0013E633 + 0xE9D;
+        g = hero_globals_base + 0xE9D;
         FastVecSub(vec, m + 0x10, g);
         g = g + 0x210;
         vec[2] = 0.0f;
@@ -1452,14 +1452,14 @@ unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mod
         } else {
             float angle;
             *(int *)(d + 4) = scale_ticks(200);
-            FastVecSub(vec, pos, D_0013E633 + 0xE9D);
+            FastVecSub(vec, pos, hero_globals_base + 0xE9D);
             vec[2] = 0.0f;
             vec_scale_to_length(vec, vec,
                 random_float_between(*(float *)&path_debris_min_speed * frame_scale,
                               *(float *)&path_debris_max_speed * frame_scale));
-            FastVecCross(vec + 4, D_0013E633 + 0xE9D + 0x210, vec);
+            FastVecCross(vec + 4, hero_globals_base + 0xE9D + 0x210, vec);
             angle = randf_sym(0.5759586691856384f, 1.3962633609771729f);
-            build_look_at_matrix(d + 0x30, vec, D_0013E633 + 0xE9D + 0x210, angle);
+            build_look_at_matrix(d + 0x30, vec, hero_globals_base + 0xE9D + 0x210, angle);
             *(float *)(d + 0x38) = random_float_between(*(float *)&path_debris_min_spin * frame_scale,
                 *(float *)&path_debris_max_spin * frame_scale);
             *(float *)(d + 0x20) = randf_sym(0.0f, 0.008726646f);
@@ -1951,7 +1951,7 @@ void update_vendor_beam(unsigned char *m) {
         break;
     }
     if (*(int *)&vendor_beam_damage_disabled_s == 0) {
-        if (vec_distance_xy(m + 0x10, D_0013E633 + 0xE9D) < 10.0f) {
+        if (vec_distance_xy(m + 0x10, hero_globals_base + 0xE9D) < 10.0f) {
             apply_vendor_beam_damage((char *)m);
         }
     }

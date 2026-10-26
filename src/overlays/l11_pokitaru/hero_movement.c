@@ -6,7 +6,7 @@
 #include "hero.h"
 #include "moby.h"
 
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 extern int CollType(void);
@@ -15,7 +15,7 @@ extern float FastAbsF(float);
 extern void exit_hero_vehicle_mode_if_mode_three(void);
 /* Per-frame update of the player state flags from the current state. */
 void update_hero_surface_condition_flags(void) {
-    struct Hero *hero_object_ptr = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+    struct Hero *hero_object_ptr = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     unsigned char saved;
     int state;
     saved = hero_object_ptr->ground_sound_class;
@@ -36,23 +36,23 @@ void update_hero_surface_condition_flags(void) {
         }
     }
     if (state == 0xE) {
-        struct Hero *hero_ptr = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        struct Hero *hero_ptr = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         hero_ptr->base_condition = 1;
         hero_ptr->water_depth = 0.2f;
         hero_ptr->water_surface_z = hero_ptr->ground_z.f + 0.2f;
     }
     if (state == 0) {
-        struct Hero *hero_ptr = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        struct Hero *hero_ptr = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         struct Hero *base_condition_hero_ptr;
         float water_surface_to_ground_z_difference = hero_ptr->water_surface_z - hero_ptr->ground_z.f;
         hero_ptr->water_depth = water_surface_to_ground_z_difference;
         if (water_surface_to_ground_z_difference < 0.85f && 0.25f < water_surface_to_ground_z_difference)
             hero_ptr->wading = 1;
-        base_condition_hero_ptr = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        base_condition_hero_ptr = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         base_condition_hero_ptr->base_condition = 1;
     }
     if (g_current_level_index_m == 0xD) {
-        struct Hero *collision_hero_ptr = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        struct Hero *collision_hero_ptr = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (collision_hero_ptr->state.current != 0x7B) {
             if (coll_sphere(collision_hero_ptr->capsule_radius + 0.03f, &collision_hero_ptr->motion.body_center, 2, 0)) {
                 if (CollType() == 0xB) {
@@ -63,27 +63,27 @@ void update_hero_surface_condition_flags(void) {
         }
     }
     if (state == 0xB) {
-        struct Hero *d = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         d->selector_11 = 1;
     }
     if (state == 0xD) {
-        struct Hero *d = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         d->selector_13 = 1;
     }
     if (state == 8) {
-        struct Hero *d = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         d->on_slip_ground = 1;
     }
     if (state == 9) {
-        struct Hero *d = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         d->unk12EE = 1;
     }
     if (state == 0xC) {
-        struct Hero *d = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         d->on_slip_ground = 1;
     }
     {
-        struct Hero *hero_ptr = (struct Hero *)((char *)D_0013E633 + 0xE1D);
+        struct Hero *hero_ptr = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (hero_ptr->selector_13) {
             if (hero_ptr->state.current != 0x7F) {
                 float absolute_water_surface_z_difference = FastAbsF(hero_ptr->water_surface_z - (hero_ptr->motion.pos.f[2] + 0.25f));
@@ -119,7 +119,7 @@ typedef struct { char p0[0x158]; float f158; char p15C[4]; float f160; char p164
 typedef struct { char p0[8]; float f8; float fC; char p10[8]; float f18; } S17BEB8;
 extern Hero g_hero;
 extern PadState g_controller_state;
-extern char D_0013A5E0[];
+extern char pad_globals_base[];
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern S141948 usage_stats;
@@ -1913,7 +1913,7 @@ void HeroL11_UpdateMovement(void) {
                     g_hero.ground_speed = 0.0f;
                 }
                 if (g_hero.rail_land_frames != 0) {
-                    if (*(int *)(D_0013A5E0 + 0x2634) != 0) {
+                    if (*(int *)(pad_globals_base + 0x2634) != 0) {
                         if (g_hero.on_flagged_ground_moby != 0) {
                             g_hero.ground_speed = 0.0f;
                         }

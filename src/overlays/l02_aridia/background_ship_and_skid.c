@@ -97,8 +97,8 @@ typedef struct Node_2E21F8 {
     float f70[4];
 } Node_2E21F8;
 
-extern Hero D_0013E633_2E21F8 __asm__("D_0013E633");
-extern unsigned char D_0014171B[];
+extern Hero hero_globals_base_r __asm__("D_0013E633");
+extern unsigned char help_stats_base[];
 extern unsigned char discount_purchase_pricing[];
 extern unsigned char gHaveHeliPack[];
 extern char skids_agent_dialogue_name[];
@@ -139,7 +139,7 @@ void skids_agent_update(Moby *m) {
         d->f178->flags |= 0x100;
         break;
     case 1:
-        if (d->f8 == 1 && is_point_inside_clip_volume((char *)&D_0013E633_2E21F8 + 0xE9D, d->f154) != 0) {
+        if (d->f8 == 1 && is_point_inside_clip_volume((char *)&hero_globals_base_r + 0xE9D, d->f154) != 0) {
             d->fC = 255.0f;
         } else {
             d->fC = 3.7f;
@@ -147,8 +147,8 @@ void skids_agent_update(Moby *m) {
         if (Npc_TryStartDialog(m, d) != 0) {
             PlaceMarkerAheadOfMoby(2.2f, m);
             m->state = 2;
-        } else if (gHaveHeliPack[3] == 0 && vec_distance_xy(((float *)&m->pos), (char *)&D_0013E633_2E21F8 + 0xE9D) < 3.0f) {
-            Stats_2E21F8 *stats = (Stats_2E21F8 *)(D_0014171B + 0x34D);
+        } else if (gHaveHeliPack[3] == 0 && vec_distance_xy(((float *)&m->pos), (char *)&hero_globals_base_r + 0xE9D) < 3.0f) {
+            Stats_2E21F8 *stats = (Stats_2E21F8 *)(help_stats_base + 0x34D);
             if (stats->f70 != 0) {
                 int elapsed, period;
                 elapsed = scale_ticks(gameplay_event_frame_count);
@@ -264,17 +264,17 @@ void skids_agent_update(Moby *m) {
     head_rate = 0.3f;
     tracking = 0;
     if (m->prev_seq == 0) {
-        char *player = (char *)&D_0013E633_2E21F8 + 0xE9D;
+        char *player = (char *)&hero_globals_base_r + 0xE9D;
         tracking = 1;
         if (vec_distance_xy(((float *)&m->pos), player) < 8.0f &&
             FastDiffRots(m->rot.z,
-                fast_atan2(((Hero *)((char *)&D_0013E633_2E21F8 + 0xE1D))->motion.body_center.f[0] - m->pos.x,
-                    ((Hero *)((char *)&D_0013E633_2E21F8 + 0xE1D))->motion.body_center.f[1] - m->pos.y)) < 1.5707964f) {
+                fast_atan2(((Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center.f[0] - m->pos.x,
+                    ((Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center.f[1] - m->pos.y)) < 1.5707964f) {
             if (FastVecLength(player + 0x80) > 0.01f) d->f174 = scale_ticks(120);
             else FastDecTimer((int *)&d->f174);
         } else if (d->f174) {
             d->f174 = 0;
-            qcopy(d->f160, (char *)&D_0013E633_2E21F8 + 0xEED);
+            qcopy(d->f160, (char *)&hero_globals_base_r + 0xEED);
         }
         if (FastDecTimer((int *)&d->f176)) {
             float heading;
@@ -284,7 +284,7 @@ void skids_agent_update(Moby *m) {
             FastVecAdd(d->f160, d->f160, ((float *)&m->pos));
         }
         if (d->f174) {
-            qcopy(v0, (char *)&D_0013E633_2E21F8 + 0xEED);
+            qcopy(v0, (char *)&hero_globals_base_r + 0xEED);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -317,8 +317,8 @@ extern int random_integer_below(int);
 extern void EaseManipulatorOffsets_r2(char *, char *, int, float, float) __asm__("func_L00_00263950");
 extern char skid_mcmarx_dialogue_name[];
 extern char talk_camera[];
-extern unsigned char D_0013D605[];
-extern unsigned char D_0013E633[];
+extern unsigned char race_gates_base[];
+extern unsigned char hero_globals_base[];
 
 /* Skid McMarx update: spawn, talk and warp states, aims at the player and sets the body and head poses. */
 void SkidMcMarxAridiaUpdate(char *m)
@@ -338,7 +338,7 @@ void SkidMcMarxAridiaUpdate(char *m)
     update_skid_mcmarx_relocation_sequence(m);
     switch (((Moby *)m)->state) {
     case 0:
-        if (D_0013D605[9] != 0) {
+        if (race_gates_base[9] != 0) {
             DeleteMoby(m);
             return;
         }
@@ -351,7 +351,7 @@ void SkidMcMarxAridiaUpdate(char *m)
         break;
     case 1:
         if (*(unsigned char *)(d + 8) == 1 &&
-            is_point_inside_clip_volume((char *)&D_0013E633 + 0xE9D, *(int *)(d + 0x16C)) != 0) {
+            is_point_inside_clip_volume((char *)&hero_globals_base + 0xE9D, *(int *)(d + 0x16C)) != 0) {
             *(float *)(d + 0xC) = 255.0f;
         } else {
             *(float *)(d + 0xC) = 2.5f;
@@ -364,7 +364,7 @@ void SkidMcMarxAridiaUpdate(char *m)
             Help_Request(0x7D0, 0xA);
             grant_inventory_item(0x1E, 1);
             jet_clear_persistent(((Moby *)m)->mission);
-            jet_reset_camera((char *)&D_0013E633 + 0xE9D, (char *)&D_0013E633 + 0xEAD);
+            jet_reset_camera((char *)&hero_globals_base + 0xE9D, (char *)&hero_globals_base + 0xEAD);
             memcard_Save(0, -1);
             DeleteMoby(m);
             return;
@@ -400,7 +400,7 @@ void SkidMcMarxAridiaUpdate(char *m)
     head_rate = 0.3f;
     tracking = 0;
     if (((Moby *)m)->prev_seq == 0) {
-        p = (char *)&D_0013E633 + 0xE9D;
+        p = (char *)&hero_globals_base + 0xE9D;
         tracking = 1;
         if (vec_distance_xy(m + 0x10, p) < 8.0f &&
             FastDiffRots(((Moby *)m)->rot.z,
@@ -412,7 +412,7 @@ void SkidMcMarxAridiaUpdate(char *m)
                 fast_dec_timer((int *)(d + 0x188));
         } else if (*(int *)(d + 0x188) != 0) {
             *(int *)(d + 0x188) = 0;
-            qcopy(d + 0x170, (char *)&D_0013E633 + 0xEED);
+            qcopy(d + 0x170, (char *)&hero_globals_base + 0xEED);
         }
         if (fast_dec_timer((int *)(d + 0x18C))) {
             float heading;
@@ -422,7 +422,7 @@ void SkidMcMarxAridiaUpdate(char *m)
             FastVecAdd(d + 0x170, d + 0x170, m + 0x10);
         }
         if (*(int *)(d + 0x188) != 0) {
-            qcopy(s_target, (char *)&D_0013E633 + 0xEED);
+            qcopy(s_target, (char *)&hero_globals_base + 0xEED);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -842,9 +842,9 @@ extern int PlayBankSound(int, int, int);
 extern void ShowBanner(int arg0, int arg1);
 extern int scale_ticks(int);
 extern Entry_L02_0017A140 aridia_item_defs[];
-extern unsigned char D_0013D355[];
+extern unsigned char special_items_base[];
 extern unsigned char menu_item_enabled_115[];
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern unsigned short D_001419E8 NOT_SDA;
 extern unsigned short D_001418A2 NOT_SDA;
 extern unsigned short D_00141988 NOT_SDA;
@@ -857,9 +857,9 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
     int *data = ((int *)((Moby *)moby)->pvars);
     ((Moby *)moby)->update_dist = 0xFF;
 
-    if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[0x17]) != 0
-        && *(unsigned int *)(D_0013E633 + 0xE9D + 0x200C) < 2) {
-        char *b = D_0014171B + 0x34D;
+    if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[0x17]) != 0
+        && *(unsigned int *)(hero_globals_base + 0xE9D + 0x200C) < 2) {
+        char *b = help_stats_base + 0x34D;
         if (*(unsigned short *)(b + 0x278) == 0 && D_001419E8 == 0) {
             int count = 0;
             int i;
@@ -878,14 +878,14 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
 
     switch (data[0x15]) {
     case 0:
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[0x12]) != 0) {
-            if (*(int *)(D_0013E633 + 0xE9D + 0x2004) == 0x2C) {
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[0x12]) != 0) {
+            if (*(int *)(hero_globals_base + 0xE9D + 0x2004) == 0x2C) {
                 data[0x15] = 1;
             }
         }
         break;
     case 1: {
-        char *h = D_0013E633 + 0xE1D;
+        char *h = hero_globals_base + 0xE1D;
         if (*(int *)(h + 0x300) != 0) {
             data[0x15] = 0;
         } else if (is_point_inside_clip_volume(h + 0x80, data[0x13]) != 0) {
@@ -901,13 +901,13 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
     }
 
     {
-        char *b = D_0014171B + 0x34D;
+        char *b = help_stats_base + 0x34D;
         if (*(unsigned short *)(b + 0x60) == 0) {
-            if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[4]) != 0) {
+            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[4]) != 0) {
                 int lvl = data[0];
                 if (saved_mission_state[g_current_level_index][lvl] != 0xFF) {
                     unsigned char *f = menu_item_enabled_115 + 0xB9;
-                    if (f[0x10] != 0 && ((int *)(D_0014171B + 0xD875))[lvl] >= 6) {
+                    if (f[0x10] != 0 && ((int *)(help_stats_base + 0xD875))[lvl] >= 6) {
                         int t = scale_ticks(gameplay_event_frame_count) - D_001418A2 * 600;
                         if (scale_ticks(0x4650) < t) {
                             Help_Request(0x7D2, 0xC);
@@ -918,35 +918,35 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
         }
     }
 
-    if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[0x10]) != 0) {
+    if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[0x10]) != 0) {
         data[0x16] = 1;
     }
     if (data[0x16] != 0) {
         if (D_00141988 < 3) {
-            char *b = D_0014171B + 0x34D;
+            char *b = help_stats_base + 0x34D;
             if (!(*(unsigned int *)(b + 0x264) & (1 << g_current_level_index))) {
                 Help_Request(0x4E22, 0x4C);
             }
         }
         if (invert52[0] != 0 && opt_cam_invert[0] != 0) {
-            char *b = D_0014171B + 0x34D;
+            char *b = help_stats_base + 0x34D;
             if (!(*(unsigned int *)(b + 0x3B4) & (1 << g_current_level_index))) {
                 Help_Request(0x4E2C, 0x76);
             }
         } else {
-            char *b = D_0014171B + 0x34D;
+            char *b = help_stats_base + 0x34D;
             *(unsigned short *)(b + 0x3B0) = 0xFFFF;
         }
     }
 
     {
-        char *b = D_0014171B + 0x34D;
+        char *b = help_stats_base + 0x34D;
         if (*(unsigned short *)(b + 0x68) == 0) {
-            if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[4]) != 0) {
+            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[4]) != 0) {
                 int lvl = data[0];
                 if (saved_mission_state[g_current_level_index][lvl] != 0xFF) {
                     unsigned char *f = menu_item_enabled_115 + 0xB9;
-                    if (f[0x10] == 0 && (float)((int *)(D_0014171B + 0xD875))[lvl] >= 3.0f) {
+                    if (f[0x10] == 0 && (float)((int *)(help_stats_base + 0xD875))[lvl] >= 3.0f) {
                         Help_Request(0x7D3, 0xD);
                     }
                 }
@@ -955,18 +955,18 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
     }
 
     {
-        char *b = D_0014171B + 0x34D;
+        char *b = help_stats_base + 0x34D;
         if (*(unsigned short *)(b + 0x80) == 0) {
             char *h;
-            if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[6]) != 0) {
+            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[6]) != 0) {
                 *(unsigned short *)(b + 0x80) = 0xFFFF;
             }
-            h = D_0013E633 + 0xE1D;
+            h = hero_globals_base + 0xE1D;
             if (*(int *)(h + 0x2084) != 0x2C && *(int *)(h + 0x2090) == 0x2C && *(int *)(h + 0x198) == 1) {
                 data[0xC]++;
             }
             if (data[0xC] >= 2) {
-                if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[7]) != 0) {
+                if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[7]) != 0) {
                     Help_Request(0x7D6, 0x10);
                 }
             }
@@ -974,8 +974,8 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
     }
 
     if (((Flags_0013D5C8 *)(menu_item_enabled_115 + 0xB9))->b[0xC] == 0) {
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[5]) != 0) {
-            char *b = D_0014171B + 0x34D;
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[5]) != 0) {
+            char *b = help_stats_base + 0x34D;
             int t = scale_ticks(gameplay_event_frame_count) - *(unsigned short *)(b + 0x8A) * 600;
             if ((int)(scale_ticks(0x12) * 60.0f) < t || *(unsigned short *)(b + 0x8A) * 600 == 0) {
                 Help_Request(0x7D7, 0x11);
@@ -987,8 +987,8 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
             }
         }
     }
-    if (((Flags_0013D5C8 *)(menu_item_enabled_115 + 0xB9))->b[0xC] != 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[5]) != 0) {
-        char *b = D_0014171B + 0x34D;
+    if (((Flags_0013D5C8 *)(menu_item_enabled_115 + 0xB9))->b[0xC] != 0 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[5]) != 0) {
+        char *b = help_stats_base + 0x34D;
         if (*(unsigned short *)(b + 0x90) != 0) {
             int t = scale_ticks(gameplay_event_frame_count) - *(unsigned short *)(b + 0x92) * 600;
             if ((int)(scale_ticks(0x12) * 60.0f) < t || *(unsigned short *)(b + 0x92) * 600 == 0) {
@@ -1008,16 +1008,16 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
             }
             *(int *)(b + 0x94) = *(int *)(b + 0x94) | (1 << g_current_level_index) | 0x80000000;
         }
-    } else if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[7]) != 0) {
-        char *b = D_0014171B + 0x34D;
+    } else if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[7]) != 0) {
+        char *b = help_stats_base + 0x34D;
         *(unsigned short *)(b + 0x90) = 0xFFFF;
     }
 
     {
-        char *b = D_0014171B + 0x34D;
+        char *b = help_stats_base + 0x34D;
         unsigned short v = *(unsigned short *)(b + 0x230);
         if (v == 0 || *(unsigned short *)(b + 0x238) == 0) {
-            char *h = D_0013E633 + 0xE1D;
+            char *h = hero_globals_base + 0xE1D;
             if (*(int *)(h + 0x2084) == 0x72) {
                 char *p = *(char **)(h + 0x2FC);
                 if (p != 0 && *(short *)(p + 0xA6) == 0x267) {
@@ -1035,14 +1035,14 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
     }
 
     {
-        unsigned char *g = D_0013D355 + 0x13B;
+        unsigned char *g = special_items_base + 0x13B;
         if (g[0x14] == 0) {
-            if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[0x11]) != 0) {
+            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[0x11]) != 0) {
                 g[0x14] = 1;
             }
         }
     }
-    qcopy(data + 8, D_0013E633 + 0xE9D);
+    qcopy(data + 8, hero_globals_base + 0xE9D);
 }
 typedef struct { float x, y, z, w; } __attribute__((aligned(16))) V_2F0458;
 typedef struct D_2F0458 { unsigned char b0; char p1[0xBF]; int fC0; int fC4; int fC8; } D_2F0458;

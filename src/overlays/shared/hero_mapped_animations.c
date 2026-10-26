@@ -312,7 +312,7 @@ void sync_hero_mapped_moby_animation_frames(void) {
     obj->id[0] = obj->model->banks[obj->bank[0]]->ids[obj->seq[0]];
     obj->id[1] = obj->model->banks[obj->bank[1]]->ids[obj->seq[1]];
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern char hero_anim_slot_positions[];
 extern short hero_anim_blend_presets;
@@ -330,7 +330,7 @@ extern void blend_hero_mapped_moby_animation(int, int, float);
 void set_hero_animation(int a0, int a1, float t) {
     char *g2;
     char *g3;
-    char *g1 = D_0013E633 + 0xE1D;
+    char *g1 = hero_globals_base + 0xE1D;
     char *obj = *(char **)(g1 + 0x2080);
     int slot;
     int o;
@@ -362,7 +362,7 @@ void set_hero_animation(int a0, int a1, float t) {
     *(unsigned char *)(obj + 0x51) = a1;
     *(unsigned char *)(obj + 0x53) = a0;
     update_moby_animation_state(obj);
-    g2 = D_0013E633 + 0xE1D;
+    g2 = hero_globals_base + 0xE1D;
     *(float *)(g2 + 0xA90) = 1.0f;
     if (t > 0.0f) {
         *(float *)(g2 + 0xA94) = 1.0f / t;
@@ -375,7 +375,7 @@ void set_hero_animation(int a0, int a1, float t) {
         *(float *)(obj + 0x54) = 0.0f;
     }
     clear_hero_queued_animation();
-    g3 = D_0013E633 + 0xE1D;
+    g3 = hero_globals_base + 0xE1D;
     o = a0 * 4;
     *(unsigned char *)(obj + 0x7C) = *(unsigned char *)(*(int *)(*(int *)(obj + 0x24) + o + 0x48) + 0x11);
     *(int *)(g3 + 0xA9C) = 1;
@@ -424,10 +424,10 @@ void HeroQueueSequence(int bank, int seq) {
         }
     }
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 // resets two fields in the global game block
 void clear_hero_queued_animation(void) {
-    char *b = D_0013E633 + 0xE1D;
+    char *b = hero_globals_base + 0xE1D;
     *(int *)(b + 0xAB0) = -1;
     *(int *)(b + 0xAB8) = 0;
 }
@@ -543,7 +543,7 @@ void advance_hero_animation(void) {
         }
     }
     if (m->sound_slot != 0xFF) {
-        VoiceSlot_32EF0 *v = (VoiceSlot_32EF0 *)(D_0013E633 + 0x1D + m->sound_slot * 0x70);
+        VoiceSlot_32EF0 *v = (VoiceSlot_32EF0 *)(hero_globals_base + 0x1D + m->sound_slot * 0x70);
         if (v->owner != m) {
             m->sound_slot = 0xFF;
         } else if (v->sound != m->unk7C) {
@@ -809,7 +809,7 @@ void clear_hero_moby_flag_bit0(void) {
 }
 /* Stores two floats, an index and a byte, and sets the bits of a byte mask in a flag halfword. */
 void configure_hero_point_effect_emission(float a, float b, short c, unsigned char d, unsigned char e, unsigned char f) {
-    char *base = D_0013E633 + 0xE1D;
+    char *base = hero_globals_base + 0xE1D;
 
     *(int *)(base + 0x12A8) = c;
     *(short *)(base + 0x12AC) = d;
@@ -1279,7 +1279,7 @@ typedef struct {
     char p0[0x3C];
     int i3C;
 } Plat_234800;
-extern char D_0013E633_234800[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern void scale_ticks_v_234800(int) __asm__("func_001F9850");
@@ -1570,7 +1570,7 @@ void update_hero_slot4_and_slot5_mobys(int a0) {
 extern short hero_scale;
 extern int g_current_level_index MACRO_ADDR;
 extern char hero_scale_manipulator[];
-extern char D_0013E633[] NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
 extern float FastAddRots(float, float);
 extern int FastTweenColor(int, int, float);
 
@@ -1606,7 +1606,7 @@ void HeroAttachManipulators(char *obj) {
             }
         }
     }
-    q = D_0013E633 + 0xE1D;
+    q = hero_globals_base + 0xE1D;
     c1 = 0x806E8C6E;
     c0 = 0x805A3232;
     *(float *)(q + 0x1628) = FastAddRots(*(float *)(q + 0x1628), g_frame_time * 2.0943951f);
@@ -1622,7 +1622,7 @@ void HeroAttachManipulators(char *obj) {
             }
         }
     }
-    q2 = D_0013E633 + 0xE1D;
+    q2 = hero_globals_base + 0xE1D;
     t = FastSin(*(float *)(q2 + 0x1628));
     *(int *)(obj + 0x90) = FastTweenColor(c1, c0, t * 0.5f + 0.5f);
     update_hero_slot4_and_slot5_mobys((int)obj);

@@ -954,7 +954,7 @@ typedef struct {
 typedef struct { unsigned char pad0[0x10]; float x, y; } O_25a478;
 typedef struct { unsigned char pad0[0x80]; float x, y; } G_25a478;
 extern G_25a478 G_25a478v __asm__("D_0013F450");
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern short hit_damage_by_reaction_class;
 extern float hit_push_scale_table[][8];
 extern unsigned char hit_reaction_table[][4];
@@ -1065,7 +1065,7 @@ int ComputeHitResponse(O_25a478 *obj, P_25a478 *p, Q_25a478 *q, unsigned int fla
         case 1: q->h1C = scale_ticks(0xF); break;
         case 4: q->h1C = scale_ticks(0x3C); break;
         case 7:
-            if (D_0013E633[0]) q->h1C = scale_ticks(0x2D);
+            if (hero_globals_base[0]) q->h1C = scale_ticks(0x2D);
             else q->h1C = scale_ticks(0x3C);
             break;
         case 11: q->h1C = scale_ticks(0x3C); break;
@@ -1686,7 +1686,7 @@ extern void BuildSphericalOffset(void *, float, float, float);
 extern int rand_range(int, int);
 extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
 extern float g_frame_time MACRO_ADDR;
-extern unsigned char D_0013E15A[];
+extern unsigned char screen_globals_base[];
 
 typedef struct { float v[4]; } V4 __attribute__((aligned(16)));
 
@@ -1703,7 +1703,7 @@ void spawn_particles_at_shape_points(void *a0, void *a1, void *a2) {
     for (i = 0; i < n; i++) {
         float y = random_angle_radians();
         float z = random_angle_radians();
-        unsigned char *flag = D_0013E15A + 0x4C6;
+        unsigned char *flag = screen_globals_base + 0x4C6;
         int a, b;
 
         BuildSphericalOffset(tmp, g_frame_time * 1.8f, y, z);

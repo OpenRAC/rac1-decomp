@@ -11,7 +11,7 @@ int draw_trick_combo_hud(char *a) {
     if (f21 > 1.0f) {
         f21 = 1.0f;
     }
-    E = D_0013E633 + 0xE1D;
+    E = hero_globals_base + 0xE1D;
     if (*(int *)(E + 0x208C) != 0x16) {
         return *(int *)(a + 0x58);
     }
@@ -107,7 +107,7 @@ int draw_trick_combo_hud(char *a) {
     draw_cropped_hud_sprite(id, xa, xb, s16, 0x40, 0x80);
     id2 = GetIconFrame(0x7558, 0);
     HudSprite(id2, xa, xb, 0x100, 0x40, 0x80);
-    E = D_0013E633 + 0xE1D;
+    E = hero_globals_base + 0xE1D;
     t = (unsigned char)E[0x8AE];
     if (scale_ticks(0x78) < t) {
         r3 = scale_ticks(0x3C);

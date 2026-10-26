@@ -55,7 +55,7 @@ extern float FastVecLength(void*);
 extern void MobySphereHitDirectional(int,float,void*,int,float,float,int,int,int);
 extern void spawn_explosion(void*,void*,void*,float,float,int,int,int,float,float,float,int,float,float,int,int,int,int);
 extern void DeleteMoby(void*);
-extern char kalebo3_camera_pos[],D_0013E633[];
+extern char kalebo3_camera_pos[],hero_globals_base[];
 /* Steer a projectile toward its target and emit its impact effects. */
 void HomingProjectileUpdate(char *m) {
     float desired[4],next[4],delta[4],blend[4];
@@ -88,7 +88,7 @@ void HomingProjectileUpdate(char *m) {
     }
     remaining=delta;
     if(coll_line((m+0x10),next,0,m,0)!=0 || FastVecLength(remaining)<*(float *)(d+0x24)) {
-        if(*(unsigned char*)(D_0013E633+0x2EC1)==2) MobySphereHitDirectional((int)m,2.0f,(m+0x10),3,2.0f,1.0f,0,1,0);
+        if(*(unsigned char*)(hero_globals_base+0x2EC1)==2) MobySphereHitDirectional((int)m,2.0f,(m+0x10),3,2.0f,1.0f,0,1,0);
         Sound_PlayClassSound(4,0,(int)m,0x54C);
         spawn_explosion(m,d,(m+0x10),4.0f,4.0f,10,3,16,4.0f,2.0f,9.0f,-1,1.0f,15.0f,1,1,-1,0);
         DeleteMoby(m);
@@ -159,7 +159,7 @@ extern float ApproachValue(float *, float, float);
 extern float FastSin(float);
 extern float FastVecDist_update(void *, void *) __asm__("func_001F9D10");
 extern int Sound_IsPlaying(void *, int);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern unsigned char draw_map51_update[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
@@ -185,7 +185,7 @@ void blarg_elite_commando_update(char *m) {
     owner = *(char **)(d + 0x110);
     cls = *(short *)(owner + 0xA6);
     if (cls == 0 || cls == 0x1A3) {
-        qcopy(target, D_0013E633 + 0xEDD);
+        qcopy(target, hero_globals_base + 0xEDD);
     } else {
         qcopy(target, owner + 0x10);
     }
@@ -379,7 +379,7 @@ animate_idle:
             *(int *)(d + 0x304) = Moby_PlaySound_update(7, 4, m);
     }
     if (*(int *)&blarg_elite_commando_joint_aim_enabled) update_blarg_elite_commando_joint_aim(m);
-    if (*(int *)&blarg_elite_commando_joint_sparks_enabled && *(int *)(D_0013E633 + 0x2EA9) != 22) emit_blarg_elite_commando_joint_sparks(m);
+    if (*(int *)&blarg_elite_commando_joint_sparks_enabled && *(int *)(hero_globals_base + 0x2EA9) != 22) emit_blarg_elite_commando_joint_sparks(m);
     if (g_current_level_index == 18 && kalebo3_game_mode == 2 && (unsigned int)(D_L16_0016CD10 - 3) < 3U) DeleteMoby(m);
 }
 extern char *MobyGetHitMessage(void *, int, int);
@@ -399,7 +399,7 @@ extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int)
 extern int FindNearestTargetMoby(float, char *, void *);
 extern float vec_distance_xy(void *, void *);
 extern short elite_commando_reward_hit_count;
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern char menu_item_enabled_115[];
 
 typedef struct {
@@ -758,7 +758,7 @@ void update_blarg_elite_commando_joint_aim(char *m) {
         float *savedTarget,*savedMatrix;
         float yaw,pitch;
         qcopy(position,m+0x10);position[2]+=2.0f;
-        if(*(short*)(*(char**)(d+0x110)+0xA6)==0) qcopy(target,D_0013E633+0xEED);
+        if(*(short*)(*(char**)(d+0x110)+0xA6)==0) qcopy(target,hero_globals_base+0xEED);
         else qcopy(target,d+0xD0);
         savedTarget=target;
         matrix_from_basis_rows(matrix,m+0xC0);
@@ -1052,7 +1052,7 @@ void update_armed_transport_damage_and_targeting(char *m) {
     } else if(Sound_IsPlaying(m,(*(int*)((char*)(d)+(0x190))))) {
         int slot=(*(int*)((char*)(d)+(0x190)));
         if(slot!=-1) {
-            L16InteractionSlot *s=(L16InteractionSlot*)(D_0013E633+0x1D+slot*0x70);
+            L16InteractionSlot *s=(L16InteractionSlot*)(hero_globals_base+0x1D+slot*0x70);
             if(s->owner==m && s->active!=0) Sound_StopSlot(slot);
         }
         (*(int*)((char*)(d)+(0x190)))=-1;
@@ -1062,7 +1062,7 @@ void update_armed_transport_damage_and_targeting(char *m) {
     response=ComputeHitResponse(m,record,d+0x20,0,&hit.status,&hit.amount,0,4);
     if(hit.status!=1 && (*(unsigned char*)((char*)(m)+(0x20)))!=8) {
         (*(float*)((char*)(d)+(0x20)))-=hit.amount;
-        if((*(float*)((char*)(d)+(0x20)))<=zero || ((*(unsigned char*)((char*)(D_0013E633)+(0x2EC1)))==2 && hit.amount>=2.0f)) response=1;
+        if((*(float*)((char*)(d)+(0x20)))<=zero || ((*(unsigned char*)((char*)(hero_globals_base)+(0x2EC1)))==2 && hit.amount>=2.0f)) response=1;
             if(response>0) {
             if(response>=3) {
                 if(response<9) {
@@ -1072,7 +1072,7 @@ void update_armed_transport_damage_and_targeting(char *m) {
                 }
             } else {
                 Moby_PlaySound_r(3,0,m);
-                if((*(unsigned char*)((char*)(D_0013E633)+(0x2EC1)))!=2) Moby_PlaySound_r(2,0,m);
+                if((*(unsigned char*)((char*)(hero_globals_base)+(0x2EC1)))!=2) Moby_PlaySound_r(2,0,m);
                 {int *child=(int*)(d+0xC0),count=3;
                 do {
                     char *pool=kalebo3_moby_array;
@@ -1088,12 +1088,12 @@ void update_armed_transport_damage_and_targeting(char *m) {
     }
     (*(unsigned char*)((char*)(m)+(0xA4)))=255;
     StepColorFade(m,d+0x60);
-    if((*(int*)((char*)(d)+(0xD0)))!=-1 && (*(int*)((char*)(D_0013E633)+(0x2EA9)))!=22) {
+    if((*(int*)((char*)(d)+(0xD0)))!=-1 && (*(int*)((char*)(hero_globals_base)+(0x2EA9)))!=22) {
         char *path=kalebo3_path_table[(*(int*)((char*)(d)+(0xD0)))];
         FindNearestEligibleMoby(128.0f,m,d+0x70,0,0,path+0x10,*(int*)path);
     } else (*(int*)((char*)(d)+(0xB4)))=2;
     if((*(int*)((char*)(d)+(0xB0)))==0) {
-        L16PursuitPlayer *player=(L16PursuitPlayer*)(D_0013E633+0xE1D);
+        L16PursuitPlayer *player=(L16PursuitPlayer*)(hero_globals_base+0xE1D);
         (*(int*)((char*)(d)+(0xB0)))=player->owner;
         qcopy(d+0x70,player->position);
     }
@@ -1322,7 +1322,7 @@ int check_grindrail_barrier_release_condition(int idx) {
     return 1;
 }
 INCLUDE_ASM("asm/overlays", func_L16_002E7160);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern void Moby_PlaySound(int, int, int);
 
@@ -1335,7 +1335,7 @@ void Group_TriggerNearest(int idx) {
         do {
             char *m = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
             if (*(short *)(m + 0xA6) != 0x5A3) {
-                float d = FastVecDist_r(D_0013E633 + 0xE9D, m + 0x10);
+                float d = FastVecDist_r(hero_globals_base + 0xE9D, m + 0x10);
                 if (d < bestd) {
                     bestd = d;
                     best = m;

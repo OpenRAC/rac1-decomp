@@ -8,7 +8,7 @@ extern int STUB_printf();
 extern void DeleteMoby(void *);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void set_moby_list_state(int list, int state);
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern char *gemlik_moby_array_start_m __asm__("D_L13_00160058") MACRO_ADDR;
 extern char volume_trigger_bad_target_msg[];
 
@@ -21,7 +21,7 @@ void update_moby_volume_trigger(char *moby)
         DeleteMoby(moby);
         return;
     }
-    if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)data) != 0) {
+    if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)data) != 0) {
         if (data[0x38] == 0) {
             {
                 int uid = *(int *)(data + 0x4);
@@ -282,7 +282,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
             Sound_StopSlot(vars->voice);
             vars->voice = -1;
         }
-        g = (char *)D_0013E633 + 0xE1D;
+        g = (char *)hero_globals_base + 0xE1D;
         if (*(struct Moby **)(g + 0x2FC) == m && *(short *)(g + 0x30E) == 0
             && !(vec_distance_xy(g + 0x80, &m->pos) > 0.5f)) {
             break;
@@ -308,13 +308,13 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
             i = 0x20;
         }
         m->glow_color = 0x80000000 | (i << 16) | (i << 8) | i;
-        g = (char *)D_0013E633 + 0xE1D;
+        g = (char *)hero_globals_base + 0xE1D;
         if (*(struct Moby **)(g + 0x2FC) != m || *(short *)(g + 0x30E) != 0
             || vec_distance_xy(g + 0x80, &m->pos) > 1.1f) {
             vars->armed = 1;
         }
         if (vars->armed != 0) {
-            char *h = (char *)D_0013E633 + 0xE1D;
+            char *h = (char *)hero_globals_base + 0xE1D;
             if (*(struct Moby **)(h + 0x2FC) == m && *(short *)(h + 0x30E) == 0
                 && vec_distance_xy(h + 0x80, &m->pos) < 0.5f) {
                 m->glow_color = 0x80208020;
@@ -331,7 +331,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
             }
         }
         if (m->state == 4) {
-            char *p = (char *)D_0013E633 + 0xE9D;
+            char *p = (char *)hero_globals_base + 0xE9D;
             float d = vec_distance_xy(&m->pos, p);
             float e = FastAbsF((*(float *)(p + 0x258)) - vars->bottom);
             if (e < 2.0f && d < 32.0f && d > 5.0f) {
@@ -340,7 +340,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
                 vars->speed = -(g_frame_time * 5.0f);
             }
         } else if (m->state == 5) {
-            char *p = (char *)D_0013E633 + 0xE9D;
+            char *p = (char *)hero_globals_base + 0xE9D;
             float d = vec_distance_xy(&m->pos, p);
             float e = FastAbsF((*(float *)(p + 0x258)) - vars->top);
             if (e < 2.0f && d < 32.0f && d > 5.0f) {
@@ -360,7 +360,7 @@ extern float FastAddRots(float, float);
 extern float FastCos(float);
 extern void clear_u64_value(void *);
 extern float fast_atan2(float, float);
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 
 // Places the point v at a radius around the moby for the facing angle and sets w to the direction toward the target.
 void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w)
@@ -383,7 +383,7 @@ void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w)
     v[2] = z;
     FastVecAdd(v, v, moby + 0x10);
     clear_u64_value(w);
-    x = D_0013E633 + 0xE1D;
+    x = hero_globals_base + 0xE1D;
     w[2] = fast_atan2(*(float *)(x + 0xD0) - v[0], *(float *)(x + 0xD4) - v[1]);
     *(int *)(w + 1) = 0;
 }
@@ -422,7 +422,7 @@ extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void rand_vec_r(float *, float, float) __asm__("func_L00_00258DB0");
-extern unsigned char D_0013E633_2B5368[] __asm__("D_0013E633");
+extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 /* Update for moby class 29 (blarg_turret) on level 13: turns toward its target and fires its gun moby. */
@@ -450,7 +450,7 @@ void blarg_turret_update(Moby *m) {
     case 1:
         r = FastDiffRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
         if (r < 1.5707964f && vec_distance_xy_r(&m->pos, &t->pos) < 20.0f
-            && (data->volume == -1 || is_point_inside_clip_volume_r(D_0013E633_2B5368 + 0xEED, data->volume) != 0)) {
+            && (data->volume == -1 || is_point_inside_clip_volume_r(hero_globals_base_r + 0xEED, data->volume) != 0)) {
             data->f68 = 8.0f;
             if (m->prev_seq != 1) {
                 int a = rand_range_r(0, 3);
@@ -471,7 +471,7 @@ void blarg_turret_update(Moby *m) {
     case 3:
         r = FastDiffRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
         if (r >= 1.5707964f || vec_distance_xy_r(&m->pos, &t->pos) > 22.0f
-            || (data->volume != -1 && is_point_inside_clip_volume_r(D_0013E633_2B5368 + 0xEED, data->volume) == 0)) {
+            || (data->volume != -1 && is_point_inside_clip_volume_r(hero_globals_base_r + 0xEED, data->volume) == 0)) {
             if (m->prev_seq != 0) {
                 MobyBlendAnimation_r(m, 0, 0, rand_range_r(7, 13));
             }
@@ -565,7 +565,7 @@ void update_blarg_turret_target_and_state(unsigned char *moby) {
     else distance = 20.0f;
     FindNearestTargetMoby(moby, data, distance);
     if (*(int *)(data + 0x40) == 0) {
-        *(int *)(data + 0x40) = *(int *)(D_0013E633 + 0x2E9D);
+        *(int *)(data + 0x40) = *(int *)(hero_globals_base + 0x2E9D);
     }
     if (((Moby *)moby)->command >= 4) ((Moby *)moby)->state = ((Moby *)moby)->command;
 }
@@ -1023,7 +1023,7 @@ void robosquawker_update(Moby *m) {
                 release_robosquawker_particle((Level13VendorMoby *)v);
                 v->x110[7] = 0x78;
                 RerollEffectCounter(m, (short *)v->x110);
-                if (FastAbsF(*(float *)(D_0013E633 + 0xEA5) - 248.0f) < 4.0f) {
+                if (FastAbsF(*(float *)(hero_globals_base + 0xEA5) - 248.0f) < 4.0f) {
                     SetDeathBits(m, 0x200, -1);
                 } else {
                     SetDeathBits(m, 0, -1);
@@ -1881,7 +1881,7 @@ extern void project_to_screen(float *, void *);
 extern float normalize_angle(float);
 extern void emit_transformed_2d_vertex_packet(void *, int, int, long, float, float, float, float);
 extern void matrix_from_basis_rows(void *, void *);
-extern unsigned char D_0013E15A[];
+extern unsigned char screen_globals_base[];
 extern float gemlik_view_basis_row1[];
 extern char jet_target_marker_shape[];
 extern char gemlik_view_basis[];
@@ -1908,7 +1908,7 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
     *(int *)(p + 0xE8) = 0;
     while (m != 0) {
         tab = jet_target_marker_shape;
-        scr = (int *)(D_0013E15A + 0x4A6);
+        scr = (int *)(screen_globals_base + 0x4A6);
         if ((((Moby *)m)->flags & 0x1000) && !(((Moby *)m)->flags & 3) && *(unsigned char *)(m + 0x31) != 0 &&
             m != 0 && *(char **)(m + 0x24) != 0 && *(short *)(*(char **)(m + 0x24) + 0x46) == 5) {
             project_world_point_to_screen_pixels(m + 0x10, &sx, &sy, 0);
@@ -1979,7 +1979,7 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                     char *np = m + 0x10;
                     int c;
                     matrix_from_basis_rows(mat, gemlik_view_basis);
-                    FastVecSub(u, np, D_0013E633 + 0xE9D);
+                    FastVecSub(u, np, hero_globals_base + 0xE9D);
                     transform_vector(u, u, mat);
                     u[0] = -u[1];
                     u[1] = -u[2];
@@ -2062,8 +2062,8 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
     }
     return (int)ret;
 }
-extern unsigned char D_0013A5E0[];
-extern unsigned char D_0013E633[];
+extern unsigned char pad_globals_base[];
+extern unsigned char hero_globals_base[];
 extern char gemlik_camera_rot[];
 extern void fast_dec_timer(int *arg0);
 extern int select_fighter_jet_target_and_draw_indicators(int, char *, char *, void *, float, float, float, char *, char *);
@@ -2086,7 +2086,7 @@ void update_fighter_jet_target_tracking(int a, char *p) {
     }
     if (W(p, 0x8C) != 0 && P(p, 0x88) != 0 && H(P(p, 0x88), 0xA6) == W(p, 0x124) &&
         B(P(p, 0x88), 0x20) != 0xFE && B(P(p, 0x88), 0x20) != 0xFD) {
-        pad = (char *)D_0013A5E0 + 0x2460;
+        pad = (char *)pad_globals_base + 0x2460;
         if (B(P(p, 0x88), 0x31) != 0) {
             if (W(pad, 0x1B4) & 0x2000) {
                 goto take;
@@ -2096,7 +2096,7 @@ void update_fighter_jet_target_tracking(int a, char *p) {
             }
         }
     }
-    pad = (char *)D_0013A5E0 + 0x2460;
+    pad = (char *)pad_globals_base + 0x2460;
     if (W(pad, 0x1B4) & 0x2000) {
 take:
         g = P(p, 0x88);
@@ -2196,10 +2196,10 @@ void DrawGemlikTurretHud(char *moby) {
     }
     y = 0x40;
     x = 0x18;
-    base = D_0013E633 + 0xE1D;
+    base = hero_globals_base + 0xE1D;
     n = base[0x15F7];
     for (i = 0; i < n; i++) {
-        g = D_0013E633 + 0xE1D;
+        g = hero_globals_base + 0xE1D;
         if (i < g[0x15F6]) {
             append_scaled_screen_triangle_strip(x, y, 0.5f, gemlik_turret_hud_pip_strip, 0x19, 0xFFFFF3, 0x50008F00);
         } else {
@@ -2218,11 +2218,11 @@ void DrawGemlikTurretHud(char *moby) {
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, GetEffectTex(0x12), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, GetEffectTex(8), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
-    b = D_0013E633 + 0xE1D;
+    b = hero_globals_base + 0xE1D;
     if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) / 10.0f && (gemlik_frame_count / 90) & 1) {
         FontPrintCenterSmall_c(0x100, 0x186, 0x80000080L, msg_string_id(0x526E), 0x64);
     }
-    h = D_0013E633 + 0xE1D;
+    h = hero_globals_base + 0xE1D;
     f = *(float *)(h + 0x15FC) - *(float *)(d + 0xF0);
     f *= 0.2f;
     q = FastAbsF(f);
@@ -2241,7 +2241,7 @@ void DrawGemlikTurretHud(char *moby) {
             (*(int **)&jet_hud_palette)[idx] = 0x80000000;
         }
     }
-    s = (char *)D_0013E15A + 0x4A6;
+    s = (char *)screen_globals_base + 0x4A6;
     DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(*(int *)(d + 0x104) + 0x28));
     DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(*(int *)(d + 0x104) + 0x29));
     *(int *)(d + 0xF4) = v;
@@ -2259,7 +2259,7 @@ void update_fighter_jet_gun_and_aim(char *moby, char *obj, float p2, float p3) {
     char d[16];
     BuildSphericalOffset(a, g_frame_time * 400.0f, p2, p3);
     FastVecAdd(a, a, obj);
-    if (fast_dec_timer_i(obj + 0x80) && (*(int *)(D_0013A5E0 + 0x2610) & 0x84)) {
+    if (fast_dec_timer_i(obj + 0x80) && (*(int *)(pad_globals_base + 0x2610) & 0x84)) {
         Moby_PlaySound(3, 0, (int)moby);
         vec_scale_to_length(c, a, 2.2f);
         Moby_GetJointWorldPos(moby, 3 + (obj[0x61] & 1), b);
@@ -2276,8 +2276,8 @@ extern int spawn_ship_rocket(void *, void *, float, int, void *, int);
 
 /* Fires a timed burst from a moby while a pad button is held and ammo remains. */
 void fire_fighter_jet_rocket(char *moby, char *obj) {
-    if (fast_dec_timer_i(obj + 0x84) && (*(int *)(D_0013A5E0 + 0x2610) & 0x28)) {
-        unsigned char *u = D_0013E633 + 0xE1D;
+    if (fast_dec_timer_i(obj + 0x84) && (*(int *)(pad_globals_base + 0x2610) & 0x28)) {
+        unsigned char *u = hero_globals_base + 0xE1D;
         if (u[0x15F6] != 0) {
             char a[16];
             char b[16];
@@ -2389,11 +2389,11 @@ void PlayerFighterFlight(void *a0, void *a1) {
     m->flags &= 0xFEFF;
     if (m->bc == 0) {
         if (o->count > scale_ticks(120)) {
-            pad = (char *)D_0013A5E0 + 0x2460;
+            pad = (char *)pad_globals_base + 0x2460;
             if (*(int *)(pad + 0x1B4) & 0x40) {
                 idx = o->i10C;
                 if (idx != -1) {
-                    e = (char *)D_0013E633 + 0x1D + idx * 0x70;
+                    e = (char *)hero_globals_base + 0x1D + idx * 0x70;
                     if (*(char **)(e + 0x88) == (char *)m && *(unsigned char *)(e + 0x74) != 0) {
                         Sound_StopSlot(idx);
                     }
@@ -2403,14 +2403,14 @@ void PlayerFighterFlight(void *a0, void *a1) {
             } else if (*(int *)(pad + 0x1B8) & 0x40) {
                 idx = o->i10C;
                 if (idx != -1) {
-                    e = (char *)D_0013E633 + 0x1D + idx * 0x70;
+                    e = (char *)hero_globals_base + 0x1D + idx * 0x70;
                     if (*(char **)(e + 0x88) == (char *)m && *(unsigned char *)(e + 0x74) != 0) {
                         Sound_StopSlot(idx);
                     }
                 }
                 o->i10C = -1;
             }
-            pad = (char *)D_0013A5E0 + 0x2460;
+            pad = (char *)pad_globals_base + 0x2460;
             if (*(int *)(pad + 0x1B0) & 0x40) {
                 float f = o->speed + frame_scale * 0.035f;
                 float max = g_frame_time * 30.0f;
@@ -2439,12 +2439,12 @@ void PlayerFighterFlight(void *a0, void *a1) {
     }
 
     if (o->count > scale_ticks(5)) {
-        char *h = (char *)D_0013E633 + 0xE1D;
+        char *h = (char *)hero_globals_base + 0xE1D;
         ka = frame_scale * 0.1f;
         kb = frame_scale * 0.25f;
         a = *(float *)(h + 0x1D20);
         b = *(float *)(h + 0x1D24);
-        if (*(int *)(D_0013A5E0 + 0x2600) & 0x200) {
+        if (*(int *)(pad_globals_base + 0x2600) & 0x200) {
             a = a / (frame_scale * 0.012271847f);
             a = a * (frame_scale * 0.015707964f);
             b = b / (frame_scale * 0.012271847f);
@@ -2572,7 +2572,7 @@ void PlayerFighterFlight(void *a0, void *a1) {
             o->speed = o->speed * 0.7f;
             if (*(char **)(p + 0x18) != 0) {
                 if (o->iDC == 0) {
-                    g = (char *)D_0013E633 + 0xE1D;
+                    g = (char *)hero_globals_base + 0xE1D;
                     *(float *)(g + 0x15FC) = *(float *)(g + 0x15FC) - 5.0f;
                     if (*(float *)(g + 0x15FC) < 0.0f) {
                         FastVecSub(side, p + 0x50, p + 0x60);
@@ -2587,7 +2587,7 @@ void PlayerFighterFlight(void *a0, void *a1) {
                     o->iDC = scale_ticks(10);
                 }
             } else {
-                *(float *)(D_0013E633 + 0x2419) = 0.0f;
+                *(float *)(hero_globals_base + 0x2419) = 0.0f;
                 spawn_explosion(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 6, 1.0f, 50.0f, 1, 1, -1, 0);
                 m->flags |= 0x41;
                 o->s62 = scale_ticks(240);
@@ -2635,7 +2635,7 @@ typedef struct { char pad0[0x30]; JVec47 position; char pad40[0x30]; JVec47 rota
 typedef struct { char pad0[0x10]; JVec47 velocity; Jet47 *source; int pad24,pad28; float damage; int flags; } JetHit47;
 extern float frame_scale MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern unsigned char D_0014171B[];
+extern unsigned char help_stats_base[];
 extern JetCamera47 jet_camera47_r __asm__("D_L13_00167000");
 extern float gemlik_view_tan_half_fov;
 extern JetTexture47 gemlik_texture_table[];
@@ -2675,15 +2675,15 @@ void JetFighterUpdateL13(Jet47 *m) {
     JetData47 *d;
     JVec47 impulse;
     int state,initial_state;
-    if (((JetPlayer47*)(D_0013E633+0xE1D))->state==0x72) return;
+    if (((JetPlayer47*)(hero_globals_base+0xE1D))->state==0x72) return;
     d=m->data; d->hit_class=0;
     fast_dec_timer((int*)&d->timer);
     initial_state=m->state;
     if ((unsigned int)(initial_state-6)>=2 && (unsigned char)initial_state!=1 && (unsigned char)initial_state!=2) {
         JetHit47 *hit=(JetHit47*)MobyGetHitMessage(m,0x30001,0);
         if (hit && m->state==4) {
-            if (((JetPlayer47*)(D_0013E633+0xE1D))->health>hit->damage) {
-                ((JetPlayer47*)(D_0013E633+0xE1D))->health-=hit->damage;
+            if (((JetPlayer47*)(hero_globals_base+0xE1D))->health>hit->damage) {
+                ((JetPlayer47*)(hero_globals_base+0xE1D))->health-=hit->damage;
                 if (hit->source && (unsigned int)(hit->source->class_id-0x52)<2) d->hit_class=(short)hit->source->class_id;
                 if (hit->flags&1) {
                     float weight,yaw_delta,pitch_delta;
@@ -2702,14 +2702,14 @@ void JetFighterUpdateL13(Jet47 *m) {
                 BuildSphericalOffset(impulse,d->speed,d->angles[2],-d->angles[1]);
                 if (hit->source && (unsigned int)(hit->source->class_id-0x52)<2) d->hit_class=(short)hit->source->class_id+10000;
                 jet_camera47_r.flash=0.2f; jet_camera47_r.ticks=scale_ticks(5);
-                ((JetPlayer47*)(D_0013E633+0xE1D))->health=0.0f; m->flags|=0x41;
+                ((JetPlayer47*)(hero_globals_base+0xE1D))->health=0.0f; m->flags|=0x41;
                 spawn_explosion(m,impulse,0,0.0f,0.0f,10,3,16,4.0f,2.0f,9.0f,6,1.0f,15.0f,1,1,-1,0);
                 m->animation=0; d->death_timer=scale_ticks(240); m->state=6;
             }
         }
     }
     m->status=0xFF;
-    if (((JetPlayer47*)(D_0013E633+0xE1D))->craft==m) ((JetPlayer47*)(D_0013E633+0xE1D))->health_meter=(int)(((JetPlayer47*)(D_0013E633+0xE1D))->health*0.00390625f*200.0f);
+    if (((JetPlayer47*)(hero_globals_base+0xE1D))->craft==m) ((JetPlayer47*)(hero_globals_base+0xE1D))->health_meter=(int)(((JetPlayer47*)(hero_globals_base+0xE1D))->health*0.00390625f*200.0f);
     switch(m->state) {
     case 0: {
         float limit;
@@ -2732,7 +2732,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         jet_palette47=palette;
         if (!initialized) __builtin_memcpy(jet_hud_palette_backup,palette,1024);
         jet_palette_ready47=1; d->wait_timer=1; d->energy=1;
-        if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(g_current_level_index<<4)]==0xFF) m->state=9;
+        if (m->persistent!=0xFF && (help_stats_base+0xAA35)[m->persistent+(g_current_level_index<<4)]==0xFF) m->state=9;
         if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
         if (d->group_b>0) jet_group_state(d->group_b,0,0,0);
         jet_group_switch(jet_boarding_group_ids,1,1,-1); jet_group_switch(&jet_boarding_group_ids_b,1,-1,-1); jet_group_flag(0x102,0);
@@ -2741,11 +2741,11 @@ void JetFighterUpdateL13(Jet47 *m) {
     }
     case 1: {
         short enter=0;
-        if (m->persistent!=0xFF && (D_0014171B+0xAA35)[m->persistent+(g_current_level_index<<4)]==0xFF) m->state=9;
-        else if (d->trigger!=-1 && is_point_inside_clip_volume(D_0013E633+0xE9D,d->trigger)) { d->blend=0.99f; gemlik_fade_level=0.99f; enter=1; }
-        else if (jet_distance(m,((JetPlayer47*)(D_0013E633+0xE1D))->moby)<2.0f && ((JetPlayer47*)(D_0013E633+0xE1D))->state!=50 && ((JetPlayer47*)(D_0013E633+0xE1D))->state!=29 && !((JetPlayer47*)(D_0013E633+0xE1D))->busy) {
+        if (m->persistent!=0xFF && (help_stats_base+0xAA35)[m->persistent+(g_current_level_index<<4)]==0xFF) m->state=9;
+        else if (d->trigger!=-1 && is_point_inside_clip_volume(hero_globals_base+0xE9D,d->trigger)) { d->blend=0.99f; gemlik_fade_level=0.99f; enter=1; }
+        else if (jet_distance(m,((JetPlayer47*)(hero_globals_base+0xE1D))->moby)<2.0f && ((JetPlayer47*)(hero_globals_base+0xE1D))->state!=50 && ((JetPlayer47*)(hero_globals_base+0xE1D))->state!=29 && !((JetPlayer47*)(hero_globals_base+0xE1D))->busy) {
             int pressed=try_set_help_message(7,0x53E9)!=0;
-            if (*(int*)(D_0013A5E0+0x2604)&0x10) enter=pressed;
+            if (*(int*)(pad_globals_base+0x2604)&0x10) enter=pressed;
         }
         if (enter) {
             float limit;
@@ -2772,14 +2772,14 @@ void JetFighterUpdateL13(Jet47 *m) {
             }
             CameraScript(m->position,m->rotation,0,0,0);
             d->missile_index=0; d->counter6C=0; d->counter70=0; d->missile_timer=0; d->speed=frame_scale*0.1f; d->gun_timer=0;
-            m->alpha=m->render_flags=0xFF; *(int*)((char*)((JetPlayer47*)(D_0013E633+0xE1D))->moby+0x98)=-1;
+            m->alpha=m->render_flags=0xFF; *(int*)((char*)((JetPlayer47*)(hero_globals_base+0xE1D))->moby+0x98)=-1;
             qcopy(d->previous_rotation,m->rotation);
-            d->angle_a=0; d->angle_b=0; d->angle_c=0; d->angle_d=0; d->angle_e=0; d->angle_f=0; ((JetPlayer47*)(D_0013E633+0xE1D))->craft=m; { unsigned short cls=m->class_id; ((JetPlayer47*)(D_0013E633+0xE1D))->health=255.0f; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo=10; ((JetPlayer47*)(D_0013E633+0xE1D))->pad160E=1; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo2=20; ((JetPlayer47*)(D_0013E633+0xE1D))->class_id=cls; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo3=20; d->hud_previous=255; d->hud_health=0; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo4=3; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo5=3; ((JetPlayer47*)(D_0013E633+0xE1D))->ammo6=3; ((JetPlayer47*)(D_0013E633+0xE1D))->pad160F=0; ((JetPlayer47*)(D_0013E633+0xE1D))->max_health=256.0f; ((JetPlayer47*)(D_0013E633+0xE1D))->health_scale=100.0f; }
+            d->angle_a=0; d->angle_b=0; d->angle_c=0; d->angle_d=0; d->angle_e=0; d->angle_f=0; ((JetPlayer47*)(hero_globals_base+0xE1D))->craft=m; { unsigned short cls=m->class_id; ((JetPlayer47*)(hero_globals_base+0xE1D))->health=255.0f; ((JetPlayer47*)(hero_globals_base+0xE1D))->ammo=10; ((JetPlayer47*)(hero_globals_base+0xE1D))->pad160E=1; ((JetPlayer47*)(hero_globals_base+0xE1D))->ammo2=20; ((JetPlayer47*)(hero_globals_base+0xE1D))->class_id=cls; ((JetPlayer47*)(hero_globals_base+0xE1D))->ammo3=20; d->hud_previous=255; d->hud_health=0; ((JetPlayer47*)(hero_globals_base+0xE1D))->ammo4=3; ((JetPlayer47*)(hero_globals_base+0xE1D))->ammo5=3; ((JetPlayer47*)(hero_globals_base+0xE1D))->ammo6=3; ((JetPlayer47*)(hero_globals_base+0xE1D))->pad160F=0; ((JetPlayer47*)(hero_globals_base+0xE1D))->max_health=256.0f; ((JetPlayer47*)(hero_globals_base+0xE1D))->health_scale=100.0f; }
             BuildSphericalOffset(d,frame_scale*0.1f,d->angles[2],-d->angles[1]);
             if (d->group_a>0) jet_group_state(d->group_a,1,1,1);
             if (d->group_b>0) jet_group_state(d->group_b,1,1,1);
             jet_group_switch(jet_boarding_group_ids,0,0,-1); jet_group_switch(&jet_boarding_group_ids_b,0,-1,-1); jet_group_flag(0x102,0);
-            m->position[2]+=3.0f; m->scale=m->model->scale*0.25f; ((JetPlayer47*)(D_0013E633+0xE1D))->in_craft=1;
+            m->position[2]+=3.0f; m->scale=m->model->scale*0.25f; ((JetPlayer47*)(hero_globals_base+0xE1D))->in_craft=1;
             if (d->engine_sound==-1) d->engine_sound=Moby_PlaySound(0,4,(int)m);
             gemlik_play_mode=2; PlayerFighterFlight(m,d); jet_camera_mode(); MusicRequestTrack(2,4); m->state=4;
         }
@@ -2788,16 +2788,16 @@ void JetFighterUpdateL13(Jet47 *m) {
         unsigned char *audio;
         if (d->blend!=0.0f) { ApproachValue(&d->blend,0.0f,g_frame_time*4.0f); gemlik_fade_level=d->blend; }
         force_help_message(6,0); gemlik_play_mode=2;
-        audio=D_0013E633+0x1D+d->engine_sound*0x70;
+        audio=hero_globals_base+0x1D+d->engine_sound*0x70;
         if (*(Jet47**)(audio+0x88)!=m || !audio[0x74]) { d->engine_sound=-1; d->engine_sound=Moby_PlaySound(0,4,(int)m); }
         PlayerFighterFlight(m,d);
-        if (((JetPlayer47*)(D_0013E633+0xE1D))->pad160F&1) m->state=5;
+        if (((JetPlayer47*)(hero_globals_base+0xE1D))->pad160F&1) m->state=5;
         if (d->energy<=0) { d->wait_timer=scale_ticks(1200); m->state=8; }
         break;
     }
     case 5:
-        ((JetPlayer47*)(D_0013E633+0xE1D))->in_craft=0; *(int*)((char*)((JetPlayer47*)(D_0013E633+0xE1D))->moby+0x98)=0;
-        HeroEnterMoveState(0,1); CameraScript2(0); Hud_SetBarValueById(((JetPlayer47*)(D_0013E633+0xE1D))->weapon,0);
+        ((JetPlayer47*)(hero_globals_base+0xE1D))->in_craft=0; *(int*)((char*)((JetPlayer47*)(hero_globals_base+0xE1D))->moby+0x98)=0;
+        HeroEnterMoveState(0,1); CameraScript2(0); Hud_SetBarValueById(((JetPlayer47*)(hero_globals_base+0xE1D))->weapon,0);
         qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation);
         m->scale=m->model->scale; moby_anim_sphere_lerp(m);
         if (d->group_a>0) jet_group_state(d->group_a,0,0,0);
@@ -2808,10 +2808,10 @@ void JetFighterUpdateL13(Jet47 *m) {
         {
             int id=d->engine_sound;
             unsigned char *audio;
-            if (id!=-1) { audio=D_0013E633+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
+            if (id!=-1) { audio=hero_globals_base+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
             d->engine_sound=-1;
             id=d->weapon_sound;
-            if (id!=-1) { audio=D_0013E633+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
+            if (id!=-1) { audio=hero_globals_base+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
             d->weapon_sound=-1;
         }
         MusicRequestTrack(0,5); d->blend=0.99f; gemlik_fade_level=0.99f; m->state=1;
@@ -2821,10 +2821,10 @@ void JetFighterUpdateL13(Jet47 *m) {
         {
             int id=d->engine_sound;
             unsigned char *audio;
-            if (id!=-1) { audio=D_0013E633+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
+            if (id!=-1) { audio=hero_globals_base+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
             d->engine_sound=-1;
             id=d->weapon_sound;
-            if (id!=-1) { audio=D_0013E633+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
+            if (id!=-1) { audio=hero_globals_base+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
             d->weapon_sound=-1;
         }
         m->state=7; break;
@@ -2832,7 +2832,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         JetTransition47 *transition;
         gemlik_play_mode=2;
         if (FastDecTimer(&d->death_timer)) {
-            transition=(JetTransition47*)(D_0014171B+0x100B5);
+            transition=(JetTransition47*)(help_stats_base+0x100B5);
             if (!transition->pending) {
             int active=transition->active;
             if (active==-1) {
@@ -2841,10 +2841,10 @@ void JetFighterUpdateL13(Jet47 *m) {
                 {
             int id=d->engine_sound;
             unsigned char *audio;
-            if (id!=active) { audio=D_0013E633+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
+            if (id!=active) { audio=hero_globals_base+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
             d->engine_sound=-1;
             id=d->weapon_sound;
-            if (id!=-1) { audio=D_0013E633+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
+            if (id!=-1) { audio=hero_globals_base+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
             d->weapon_sound=-1;
         }
                 m->state=0;
@@ -2854,7 +2854,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         break;
     }
     case 8:
-        ((JetPlayer47*)(D_0013E633+0xE1D))->in_craft=0; *(int*)((char*)((JetPlayer47*)(D_0013E633+0xE1D))->moby+0x98)=0; HeroEnterMoveState(0,1); CameraScript2(0);
+        ((JetPlayer47*)(hero_globals_base+0xE1D))->in_craft=0; *(int*)((char*)((JetPlayer47*)(hero_globals_base+0xE1D))->moby+0x98)=0; HeroEnterMoveState(0,1); CameraScript2(0);
         if (d->escape_path==-1) { STUB_printf(jet_no_escape_path_msg); qcopy(m->position,d->spawn_position); qcopy(m->rotation,d->spawn_rotation); }
         else { int index=d->escape_path; JetPath47 *paths=gemlik_scene_points; qcopy(m->position,paths[index].position); qcopy(m->rotation,paths[index].rotation); m->position[2]+=0.57318f; }
         m->scale=m->model->scale; moby_anim_sphere_lerp(m);
@@ -2870,13 +2870,13 @@ void JetFighterUpdateL13(Jet47 *m) {
         {
             int id=d->engine_sound;
             unsigned char *audio;
-            if (id!=-1) { audio=D_0013E633+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
+            if (id!=-1) { audio=hero_globals_base+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
             d->engine_sound=-1;
             id=d->weapon_sound;
-            if (id!=-1) { audio=D_0013E633+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
+            if (id!=-1) { audio=hero_globals_base+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
             d->weapon_sound=-1;
         }
-        jet_reset_camera(D_0013E633+0xE9D,D_0013E633+0xEAD); m->state=9;
+        jet_reset_camera(hero_globals_base+0xE9D,hero_globals_base+0xEAD); m->state=9;
         break;
     case 9: DeleteMoby(m); return;
     case 10: break;
@@ -2889,6 +2889,6 @@ void JetFighterUpdateL13(Jet47 *m) {
     if (m->position[2]<15.0f) m->position[2]=15.0f;
     if (m->position[2]>1008.0f) m->position[2]=1008.0f;
     state=m->state;
-    if ((unsigned char)state==4) { qcopy_nc(D_0013E633+0xE9D,m->position); qcopy_nc(D_0013E633+0xEAD,d->angles); }
+    if ((unsigned char)state==4) { qcopy_nc(hero_globals_base+0xE9D,m->position); qcopy_nc(hero_globals_base+0xEAD,d->angles); }
     if ((unsigned int)(state-3)<2 || (unsigned char)state==8) spawn_fighter_jet_joint_particles(m,(char*)d);
 }

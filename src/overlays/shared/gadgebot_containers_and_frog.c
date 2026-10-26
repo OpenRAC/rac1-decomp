@@ -323,7 +323,7 @@ extern char D_L06_00167640[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern char D_L06_00174700[];
 extern int *blarg_paths[];
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern void update_frog_health_respawn_and_target_x(void *) __asm__("func_L06_002EA920");
@@ -461,7 +461,7 @@ void frog_update(unsigned char *m) {
         FastVecSub(A, t + 0x10, m + 0x10);
         probe_frog_local_z_collision((char *)m);
         blend_frog_rotation_to_facing_frame((char *)m, (float *)D_L06_00174700, A);
-        if (vec_distance_xy(D_0013E633 + 0xE9D, m + 0x10) < *(float *)(d + 0x24C)) {
+        if (vec_distance_xy(hero_globals_base + 0xE9D, m + 0x10) < *(float *)(d + 0x24C)) {
             ((Moby *)m)->state = 4;
             if (((Moby *)m)->prev_seq != 4) MobyBlendAnimation(m, 4, 0, scale_ticks(5));
         }
@@ -613,7 +613,7 @@ void frog_update(unsigned char *m) {
         B[2] = 0.0f;
         blend_frog_rotation_to_facing_frame((char *)m, (float *)(m + 0xE0), B);
         f = MobyGetFrameValue(m);
-        if (((Moby *)m)->seq == ((Moby *)m)->prev_seq && f >= 10.0f && f <= 15.0f && *(int *)(D_0013E633 + 0x2EA1) != 0x51) {
+        if (((Moby *)m)->seq == ((Moby *)m)->prev_seq && f >= 10.0f && f <= 15.0f && *(int *)(hero_globals_base + 0x2EA1) != 0x51) {
             vec_scale_to_length(A, m + 0xC0, (*(float *)(d + 0x1E4) + *(float *)(d + 0x1E4)) * g_frame_time);
             move_frog_with_collision_resolution(m, A, 1, 0.3f, 0.3f);
             collect_mobies_in_sphere_at_moby_point(m, 0, 1, 0.333f, 1.0f, 1.0f, 0, 1, 0);
@@ -2670,7 +2670,7 @@ extern float blarg_rotation_group_turn_decel_deg SDATA(D_L06_00161DCC);
 extern float blarg_rotation_group_turn_max_speed_deg SDATA(D_L06_00161DD0);
 extern float D_L06_00161DD4 SDATA(D_L06_00161DD4);
 extern float blarg_rotation_group_pivot_offset SDATA(D_L06_00161DD8);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern Moby *CreateMoby_r(int) __asm__("func_0020D348");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
@@ -2716,7 +2716,7 @@ void update_moby_rotation_group(Moby *m) {
             flag = 0;
             if (d->idx >= 0) {
                                 if (level_mobys_q_r3[d->idx].oclass == 0x5A8) {
-                    if (vec_distance_xy(D_0013E633 + 0xE9D, (*(float (*)[4])&level_mobys_q_r3[d->idx].pos)) < 20.0f) {
+                    if (vec_distance_xy(hero_globals_base + 0xE9D, (*(float (*)[4])&level_mobys_q_r3[d->idx].pos)) < 20.0f) {
                         flag = 1;
                     }
                 } else if (level_mobys_q_r3[d->idx].oclass == 0x24A) {
@@ -2725,7 +2725,7 @@ void update_moby_rotation_group(Moby *m) {
                     flag = level_mobys_q_r3[d->idx].state >= 3;
                 }
             } else {
-                if (vec_distance_xy((*(float (*)[4])&m->pos), D_0013E633 + 0xE9D) < 6.0f && D_L06_00161DD4 == 0.0f) {
+                if (vec_distance_xy((*(float (*)[4])&m->pos), hero_globals_base + 0xE9D) < 6.0f && D_L06_00161DD4 == 0.0f) {
                     flag = 1;
                 }
             }
@@ -2784,8 +2784,8 @@ void update_moby_rotation_group(Moby *m) {
         break;
     }
 }
-extern char D_0014171B_86b8[] __asm__("D_0014171B");
-extern char D_0014171B_aa35[] __asm__("D_0014171B");
+extern char help_stats_base_r[] __asm__("D_0014171B");
+extern char help_stats_base_r2[] __asm__("D_0014171B");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern int blarg_session_moby_bit_flags[];
 extern void initialize_energy_sphere_holder_vars(char *);
@@ -2799,9 +2799,9 @@ void energy_sphere_holder_update(char *m) {
     unsigned char *q;
     switch (((unsigned char *)m)[0x20]) {
     case 0:
-        if ((*(int *)(g_current_level_index_r * 256 + ((short)((Moby *)m)->save_id >> 5) * 4 + (D_0014171B_86b8 + 0xAB75))
+        if ((*(int *)(g_current_level_index_r * 256 + ((short)((Moby *)m)->save_id >> 5) * 4 + (help_stats_base_r + 0xAB75))
              >> (((Moby *)m)->save_id & 0x1F) & 1)
-            && (g_current_level_index_r != 10 || (q = (unsigned char *)(D_0014171B_aa35 + 0xAA35), (q + ((unsigned char *)m)[0xB0]))[0xA0] == 0xFF)) {
+            && (g_current_level_index_r != 10 || (q = (unsigned char *)(help_stats_base_r2 + 0xAA35), (q + ((unsigned char *)m)[0xB0]))[0xA0] == 0xFF)) {
             m[0x20] = 2;
             m[0xBC] = 1;
             break;
@@ -2820,7 +2820,7 @@ void energy_sphere_holder_update(char *m) {
         *(char **)(d + 0x40) = o;
         m[0x20] = 1;
         initialize_energy_sphere_holder_vars(m);
-        *(int *)(g_current_level_index_r * 256 + ((short)((Moby *)m)->save_id >> 5) * 4 + (D_0014171B_86b8 + 0xAB75))
+        *(int *)(g_current_level_index_r * 256 + ((short)((Moby *)m)->save_id >> 5) * 4 + (help_stats_base_r + 0xAB75))
             &= ~(1 << (((Moby *)m)->save_id & 0x1F));
         blarg_session_moby_bit_flags[(short)((Moby *)m)->save_id >> 5] &= ~(1 << (((Moby *)m)->save_id & 0x1F));
         break;
@@ -2833,7 +2833,7 @@ void energy_sphere_holder_update(char *m) {
         if ((*(char **)(d + 0x40))[0x20] < 0) {
             m[0xBC] = 1;
             m[0x20] = 2;
-            *(int *)(g_current_level_index_r * 256 + ((short)((Moby *)m)->save_id >> 5) * 4 + (D_0014171B_86b8 + 0xAB75))
+            *(int *)(g_current_level_index_r * 256 + ((short)((Moby *)m)->save_id >> 5) * 4 + (help_stats_base_r + 0xAB75))
                 |= 1 << (((Moby *)m)->save_id & 0x1F);
             blarg_session_moby_bit_flags[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
         } else {
@@ -3025,7 +3025,7 @@ void energy_sphere_update(char *m) {
         Moby_PlaySound(1, 0, (int)m);
         voice_slot_index = sphere_vars->voice_slot_index;
         if (voice_slot_index != -1) {
-            struct VoiceSlot *voice_slot = (struct VoiceSlot *)(D_0013E633 + 0x1D + voice_slot_index * 0x70);
+            struct VoiceSlot *voice_slot = (struct VoiceSlot *)(hero_globals_base + 0x1D + voice_slot_index * 0x70);
             if (voice_slot->moby == sphere_moby && voice_slot->looping != 0) {
                 Sound_StopSlot(voice_slot_index);
             }

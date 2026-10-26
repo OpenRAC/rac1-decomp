@@ -176,11 +176,11 @@ void HeroMoveStateVelocity(void) {
 extern void stick_target(int, float);
 extern char *find_best_hero_heading_target(float, float, float, float);
 extern float fast_atan2(float, float);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 /* tracks the nearest target for the camera and stores the heading toward it */
 void update_hero_target_heading(float a, float b, float c) {
-    char *g = D_0013E633 + 0xE1D;
+    char *g = hero_globals_base + 0xE1D;
     float d;
     char *m;
     if (*(int *)(g + 0xA58) == 0) {
@@ -196,7 +196,7 @@ void update_hero_target_heading(float a, float b, float c) {
             *(float *)(g + 0xA5C) = fast_atan2(*(float *)(m + 0x10) - *(float *)(g + 0x80), *(float *)(m + 0x14) - *(float *)(g + 0x84));
             *(char **)(g + 0xA54) = m;
         } else {
-            { char *h = D_0013E633 + 0xE1D; *(float *)(h + 0xA5C) = d; }
+            { char *h = hero_globals_base + 0xE1D; *(float *)(h + 0xA5C) = d; }
         }
     }
 }
@@ -397,7 +397,7 @@ extern float g_frame_time MACRO_ADDR;
 
 /* Sets the camera lean/offset terms from the pad input for the glide, spin and hover states. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00214658.c, FUN_L00_00215b68. */
 void update_hero_motion_response_parameters(void) {
-    char *g = D_0013E633 + 0xE1D;
+    char *g = hero_globals_base + 0xE1D;
     char *x;
     char *x2;
     char *x2b;
@@ -413,7 +413,7 @@ void update_hero_motion_response_parameters(void) {
         if (0.7f < t) t = 0.7f;
         else if (t < -0.7f) t = -0.7f;
         t = t * FastAbsF(t) * 1.25f;
-        h = D_0013E633 + 0xE1D;
+        h = hero_globals_base + 0xE1D;
         r = *(float *)(h + 0x164) / (g_frame_time * 3.0f);
         x = lean_state;
         n = -t;
@@ -521,7 +521,7 @@ void update_hero_lean_and_sway_parameters(void)
 }
 typedef struct { float x, y, z, w; } Vx __attribute__((aligned(16)));
 typedef struct { int a[16]; } Mx __attribute__((aligned(16)));
-extern char D_0013E633[] NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
 extern void euler_to_matrix(void *, void *);
 extern void matrix_from_basis_rows(void *, void *);
 extern void transform_vector(void *, void *, void *);
@@ -534,7 +534,7 @@ void compute_rotated_vector_angles(Vx *in, float *out) {
     Vx v0;
     Vx *v = &v0;
     qcopy(v, in);
-    euler_to_matrix(&m0, (char *)*(int *)(D_0013E633 + 0x2E9D) + 0x40);
+    euler_to_matrix(&m0, (char *)*(int *)(hero_globals_base + 0x2E9D) + 0x40);
     matrix_from_basis_rows(&n0, &m0);
     transform_vector(v, v, &n0);
     out[0] = fast_atan2(vec_length(v0.x * v0.x + v0.z * v0.z), v0.y);
@@ -561,7 +561,7 @@ void compute_hero_reference_tilt_rotation(V_c *v, M_c *m, void *p, float a, floa
     float d, pitch, yaw, roll;
     t = 0.0f;
     {
-        QM_c *d = (QM_c *)m, *s = (QM_c *)(D_0013E633 + 0xE1D);
+        QM_c *d = (QM_c *)m, *s = (QM_c *)(hero_globals_base + 0xE1D);
         d->q[0] = s->q[0];
         d->q[1] = s->q[1];
         d->q[2] = s->q[2];
@@ -593,7 +593,7 @@ void compute_hero_reference_tilt_rotation(V_c *v, M_c *m, void *p, float a, floa
         r.f[2] = pitch;
         r.f[0] = 0.0f;
     } else {
-        SpringAngle((char *)&t, D_0013E633 + 0xEC1, 0, pitch, a, b, c);
+        SpringAngle((char *)&t, hero_globals_base + 0xEC1, 0, pitch, a, b, c);
         r.f[0] = 0.0f;
         r.f[2] = t;
     }
@@ -609,7 +609,7 @@ void compute_hero_reference_tilt_rotation(V_c *v, M_c *m, void *p, float a, floa
     fast_euler_to_matrix(&m1, &r);
     sce_vu0_mul_matrix(m, &m1, m);
     if (p) matrix_to_euler(m, p);
-    else matrix_to_euler(m, D_0013E633 + 0xEAD);
+    else matrix_to_euler(m, hero_globals_base + 0xEAD);
 }
 typedef int U128 __attribute__((mode(TI)));
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -618,7 +618,7 @@ extern int scale_ticks(int);
 
 /* builds the three view vectors and applies the camera offset to the moby. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00214658.c, FUN_L00_002163f0. */
 void apply_hero_reference_tilt(void) {
-    unsigned char *g = (unsigned char *)D_0013E633 + 0xE1D;
+    unsigned char *g = (unsigned char *)hero_globals_base + 0xE1D;
     unsigned char *h;
     M_c m;
     V_c a, b, c;
@@ -638,14 +638,14 @@ void apply_hero_reference_tilt(void) {
         if (*(short *)(g + 0x30E) < scale_ticks(10) || *(float *)(g + 0x2DC) < one)
             *(U128 *)&a = *(U128 *)(g + 0x270);
     }
-    h = (unsigned char *)D_0013E633 + 0xE1D;
+    h = (unsigned char *)hero_globals_base + 0xE1D;
     if (*(short *)(h + 0x30E) != 0 && *(short *)(h + 0x1F8) != 0) {
         f20 = g_frame_scale_sq * 0.001f;
         f21 = f20;
     }
     compute_hero_reference_tilt_rotation(&a, &m, 0, f21, f20, f22);
     {
-    unsigned char *n = (unsigned char *)D_0013E633 + 0xE1D;
+    unsigned char *n = (unsigned char *)hero_globals_base + 0xE1D;
     if (n[0x20B3] == 1 && *(short *)(n + 0x30E) != 0) {
         transform_vector(&c, &c, &m);
         FastVecSub(n + 0x80, n + 0x80, &c);
@@ -660,7 +660,7 @@ extern float g_frame_time MACRO_ADDR;
 
 /* Applies the two camera-offset adjustments when the game is in a free state. */
 void update_hero_tilt(void) {
-    char *g = D_0013E633 + 0xE1D;
+    char *g = hero_globals_base + 0xE1D;
     int r;
     float t[2];
     r = *(unsigned char *)(g + 0x20B3);
@@ -693,7 +693,7 @@ extern void set_gravity_relative_vector_length_xy(float *dst, float *src, float 
 extern void clear_u64_value(void *);
 // Bleeds off the hero's momentum vector by amount a, clearing it when it is tiny.
 void reduce_and_apply_hero_planar_velocity_addend(float a) {
-    float *v = (float *)(D_0013E633 + 0xF6D);
+    float *v = (float *)(hero_globals_base + 0xF6D);
     float s = gravity_length_xy(v);
     if (s > 0.001f) {
         float z = 0.0f;
@@ -887,7 +887,7 @@ extern int Moby_PlaySound(int, int, int);
 
 /* passes a pointer chosen by a mode byte to func_0022ED80, copying a vector first in mode 3 */
 int allocate_hero_voice_for_entry(int a, int b) {
-    char *p = D_0013E633 + 0xE1D;
+    char *p = hero_globals_base + 0xE1D;
     int c;
     if (*(unsigned char *)(p + 0x20A4) == 3) {
         c = *(int *)(p + 0xA88);
@@ -961,7 +961,7 @@ extern void apply_nearest_environment_sample(int);
 
 /* resets the level state from two vectors: sets up camera matrices, clears flags, starts sound bank */
 void Hero_ResetToPosition(void *a, void *b, int c, int d) {
-    char *p = D_0013E633 + 0xE9D;
+    char *p = hero_globals_base + 0xE9D;
     char *q;
     qcopy(p, a);
     q = p - 0x80;
@@ -994,7 +994,7 @@ void Hero_ResetToPosition(void *a, void *b, int c, int d) {
     else D_L00_00167114 = 0;
     update_hero_ground_contact_and_surface_slopes();
     if (d) init_camera_system();
-    apply_nearest_environment_sample(*(int *)(D_0013E633 + 0x2E9D));
+    apply_nearest_environment_sample(*(int *)(hero_globals_base + 0x2E9D));
 }
 typedef struct {
     unsigned char pad0[0x80];
@@ -1082,7 +1082,7 @@ extern int *coll_sphere_moby_hits[];
 /* Initialise the pool once, then for each of the first n entries of type 5 or 9 halve and apply its position. */
 void emit_filtered_entry_sparkles(int a, int n) {
     if (n != 0) {
-        char *d = D_0013E633 + 0xE1D;
+        char *d = hero_globals_base + 0xE1D;
         int i;
         if (*(int *)(d + 0xA64) == 0) {
             Moby_PlaySound(1, 0, a);

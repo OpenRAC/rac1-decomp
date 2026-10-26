@@ -9,7 +9,7 @@
    4-byte one through lui. */
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float veldin2_zero_vec[] MACRO_ADDR;
 extern int scale_ticks(int);
 extern void DeleteMoby(void *);
@@ -156,7 +156,7 @@ void rocket_tank_update(M1454 *m) {
             *(short *)(d->c138 + 0x32) = 0x40;
             d->c138[0x31] = 1;
             {
-                char *pl = *(char **)(D_0013E633 + 0x2E9D);
+                char *pl = *(char **)(hero_globals_base + 0x2E9D);
                 long t = *(long *)(pl + 0x38);
                 *(long *)(d->c138 + 0x38) = t;
             }
@@ -176,7 +176,7 @@ void rocket_tank_update(M1454 *m) {
             *(short *)(d->c13c + 0x32) = 0x40;
             d->c13c[0x31] = 1;
             {
-                char *pl = *(char **)(D_0013E633 + 0x2E9D);
+                char *pl = *(char **)(hero_globals_base + 0x2E9D);
                 long t = *(long *)(pl + 0x38);
                 *(long *)(d->c13c + 0x38) = t;
             }
@@ -227,7 +227,7 @@ void rocket_tank_update(M1454 *m) {
             v[2] = -FastSin(d->f118) * s;
             Moby_PlaySound(0, 0, (int)m);
             emit_radial_particle_burst(m, w, 0);
-            if (vec_distance_xy((char *)m + 0x10, D_0013E633 + 0xE9D) > 10.0f) {
+            if (vec_distance_xy((char *)m + 0x10, hero_globals_base + 0xE9D) > 10.0f) {
                 create_class_29_moby((char *)m, w, v, 0);
             } else {
                 create_class_29_moby((char *)m, w, v, 1);
@@ -301,7 +301,7 @@ void update_rocket_tank_damage_and_aim(void *mv) {
     ((Moby *)m)->hit_slot = 0xFF;
     if (FindNearestTargetMoby(m, d + 0x70, 30.0f) != 2) {
         float *pa = (float *)(m + 0x10);
-        char *pl = D_0013E633 + 0xE9D;
+        char *pl = hero_globals_base + 0xE9D;
         if (vec_distance_xy(pa, pl) < 10.0f) {
             char *q = pl - 0x80;
             *(char **)(d + 0xB0) = *(char **)(q + 0x2080);

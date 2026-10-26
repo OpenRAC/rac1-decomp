@@ -116,7 +116,7 @@ extern char player_camera_matrix_r[] __asm__("D_L00_001670D0");
 extern char D_L00_001670E0_1F3E20[] __asm__("D_L00_001670E0");
 extern char D_L00_001670F0_1F3E20[] __asm__("D_L00_001670F0");
 extern char camera_rotation_r[] __asm__("D_L00_00166ED0");
-extern char D_0013E633_1F3E20[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern void UpdateAllCamerasLvl_r(void) __asm__("func_L00_001EBDA0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
@@ -151,7 +151,7 @@ void update_debug_camera(void) {
     if (((PadState *)g_controller_state_r)->stick_moved != 0) {
         return;
     }
-    k = *(short *)(D_0013E633_1F3E20 + 0x1125) == 2;
+    k = *(short *)(hero_globals_base_r + 0x1125) == 2;
     if ((((PadDwords *)g_controller_state_r)->held_pressed.l & 3) != 3) {
         if (((PadDwords *)g_controller_state_r)->held_pressed.i & 0x1000) {
             if (k) {
@@ -368,7 +368,7 @@ extern void copy_memory_by_alignment(int, void *, unsigned short);
 extern void moby_build_matrix(void *);
 extern char g_debug_menu[];
 extern char player_camera[];
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 /* places the camera-follow vector from the angle and offsets, then copies it into the object */
 void update_hero_from_debug_camera(void) {
@@ -378,7 +378,7 @@ void update_hero_from_debug_camera(void) {
     float t = FastAddRots(*(float *)(g + 0x158), *(float *)(c + 0x88));
     char *m;
     float x = *(float *)(g + 0x140) + FastCos(t) * *(float *)(c + 0x8C);
-    b = D_0013E633 + 0xE1D;
+    b = hero_globals_base + 0xE1D;
     *(float *)(b + 0x80) = x;
     *(float *)(b + 0x84) = *(float *)(g + 0x144) + FastSin(t) * *(float *)(c + 0x8C);
     *(float *)(b + 0x88) = *(float *)(g + 0x148) + *(float *)(c + 0x90);
@@ -428,7 +428,7 @@ extern Context_1F4918 render_view_params;
 typedef struct { char pad[0x80]; float x,y,z,w; char pad90[8]; float angle; } Hero_1F4918;
 extern Hero_1F4918 g_hero;
 extern char menu_item_enabled_115[];
-extern int D_0013E15A[];
+extern int screen_globals_base[];
 extern u8 level_fog_color_red[] MACRO_ADDR;
 extern u8 level_fog_color_green[] MACRO_ADDR;
 extern u8 level_fog_color_blue[] MACRO_ADDR;
@@ -656,12 +656,12 @@ void update_debug_menu(void) {
             if (g_controller_state.keys.word.pressed & 0x20) { if (*value > 0) *value-=1; }
         }
         if (*value > limit) *value = limit;
-        if (g_controller_state.keys.word.pressed & 0x10) ((u8 *)D_0013E15A + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item]]++;
-        if (g_controller_state.keys.word.pressed & 0x80) ((u8 *)D_0013E15A + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item]]--;
+        if (g_controller_state.keys.word.pressed & 0x10) ((u8 *)screen_globals_base + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item]]++;
+        if (g_controller_state.keys.word.pressed & 0x80) ((u8 *)screen_globals_base + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item]]--;
         {
             s32 id=((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item];
             Item_1F4918 *record=item_defs+id;
-            u8 *p=(u8 *)D_0013E15A + 0x4C6 + id;
+            u8 *p=(u8 *)screen_globals_base + 0x4C6 + id;
             if (*p > record->limit.word) *p=record->limit.byte;
         }
         break;
@@ -790,8 +790,8 @@ typedef struct {
  s32 unused48, ammo4C, ammo50, unused54, unused58, ammo5C, ammo60;
 } AmmoDisplay60;
 extern char menu_item_enabled_115[];
-extern int D_0013E15A[];
-extern u8 D_0014171B[];
+extern int screen_globals_base[];
+extern u8 help_stats_base[];
 extern s32 g_current_level_index MACRO_ADDR;
 extern s32 gBolts MACRO_ADDR;
 extern s32 skip_frame MACRO_ADDR;
@@ -950,7 +950,7 @@ void draw_debug_menu(void) {
         print_debug_text(0xB0, 0xD6, 0x8000C0C0, debug_label_segment);
         {
             int mission = debug_menu60.mission;
-            func_00116248(buf, debug_segment_format, mission, (D_0014171B + 0xAA35)[mission + g_current_level_index * stride]);
+            func_00116248(buf, debug_segment_format, mission, (help_stats_base + 0xAA35)[mission + g_current_level_index * stride]);
         }
         print_debug_text(0x108, 0xD6, 0x80F0F0F0, buf);
         if (debug_menu60.group == 1) {
@@ -985,7 +985,7 @@ void draw_debug_menu(void) {
             print_debug_text(9, (debug_menu60.item * 0xF) + 0xB8, 0x800000C0, debug_menu_cursor);
         }
         print_debug_text(0x14, 0xBA, 0x8000C0C0, debug_label_suck_cannon);
-        weapon_order = (u8 *)D_0013E15A + 0x4C6;
+        weapon_order = (u8 *)screen_globals_base + 0x4C6;
         func_00116248(buf, debug_int_format, (s32) weapon_order[0x9]);
         print_debug_text(0x7A, 0xBA, 0x80406080, buf);
         print_debug_text(0x14, 0xC9, 0x8000C0C0, debug_label_morph_o_ray);
@@ -1258,7 +1258,7 @@ void capture_draw_buffer(void *a) {
     func_00122598(0);
     rendered_frame_count = rendered_frame_count + 1;
     VU1_initChain();
-    transfer_draw_buffer_chunks(a, draw_buffer_address, *(int *)((char *)D_0013E15A + 0x4AA) << 11);
+    transfer_draw_buffer_chunks(a, draw_buffer_address, *(int *)((char *)screen_globals_base + 0x4AA) << 11);
 }
 extern int GetEffectTex(int);
 extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);

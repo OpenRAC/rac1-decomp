@@ -485,7 +485,7 @@ extern void FastVecSub(void *, void *, void *);
 extern float IntToFloat(int);
 extern void draw_env_overlay_mesh_r(int, void *, void *, void *, int) __asm__("func_L00_001FDE48");
 extern void draw_world_quad(void *, void *, int);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern char D_L11_0016D4C0[];
 extern int D_L11_0016D200;
 extern char pokitaru_camera_matrix[];
@@ -523,7 +523,7 @@ void draw_pokitaru_ocean(Moby *moby) {
     float x;
     float y;
 
-    if (((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D && D_L11_0016D200 == 0) {
+    if (((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1D && D_L11_0016D200 == 0) {
         ((Fog_30BCD8 *)D_L11_0016D4C0)->f228 = 255.0f;
         ((Fog_30BCD8 *)D_L11_0016D4C0)->f22C = 249.9f;
     }
@@ -591,7 +591,7 @@ void draw_pokitaru_ocean(Moby *moby) {
     q.q88 = 0x8000000044L;
     q.z70 = 0;
     if (d->f14 < ((Cam_30BCD8 *)pokitaru_player_camera)->z - d->f24 &&
-        ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D && D_L11_0016D200 == 0) {
+        ((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1D && D_L11_0016D200 == 0) {
         q.uv[0].u = 0.0f;
         q.uv[0].v = 0.0f;
         q.uv[1].u = 0.0f;
@@ -859,9 +859,9 @@ typedef struct {
     unsigned short uid;     /* 0xB2 */
 } Lock_3102C8;
 
-extern char D_0013E633_3102C8[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern unsigned char gHaveHeliPack_r[] __asm__("D_0013D5CA");
-extern unsigned char D_0014171B_3102C8[] __asm__("D_0014171B");
+extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern LvState_3102C8 pokitaru_checkpoint_level_state_r __asm__("D_L11_001BBF40");
@@ -881,12 +881,12 @@ void thruster_pack_lock_update(Lock_3102C8 *moby)
     switch (moby->state) {
     case 0: {
         int e = g_current_level_index_r;
-        ((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->count = 0;
-        ((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->best = 0;
+        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->count = 0;
+        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best = 0;
         *(unsigned short *)(d + 0x3E) |= 8;
         if (e == 0xB && moby->bB0 != 0xFF) {
             if (pokitaru_checkpoint_level_state_r.collected[(short)moby->uid] != 0 ||
-                ((*(int *)(D_0014171B_3102C8 + 0xAB75 + (((short)moby->uid >> 5) * 4 + (e << 8))) >> (moby->uid & 0x1F)) & 1)) {
+                ((*(int *)(help_stats_base_r + 0xAB75 + (((short)moby->uid >> 5) * 4 + (e << 8))) >> (moby->uid & 0x1F)) & 1)) {
                 moby->state = 2;
                 moby->z = moby->z - 1.5f;
                 Moby_PlaySound_r(0, 0, moby);
@@ -897,8 +897,8 @@ void thruster_pack_lock_update(Lock_3102C8 *moby)
         break;
     }
     case 1:
-        if (((void *)((Hero *)(D_0013E633_3102C8 + 0xE1D))->ground_moby) == moby && gHaveHeliPack_r[1] != 0 &&
-            ((Hero *)(D_0013E633_3102C8 + 0xE1D))->air_frames.s == 0 && ((Hero *)(D_0013E633_3102C8 + 0xE1D))->state.current == 0x22) {
+        if (((void *)((Hero *)(hero_globals_base_r + 0xE1D))->ground_moby) == moby && gHaveHeliPack_r[1] != 0 &&
+            ((Hero *)(hero_globals_base_r + 0xE1D))->air_frames.s == 0 && ((Hero *)(hero_globals_base_r + 0xE1D))->state.current == 0x22) {
             if (g_current_level_index_r == 0xB && moby->bB0 != 0xFF) {
                 int c;
                 int u;
@@ -906,7 +906,7 @@ void thruster_pack_lock_update(Lock_3102C8 *moby)
                 c = moby->bB0;
                 u = c & 0xFF;
                 if (c == 0xFF || (pokitaru_mission_group_state_r[u] != 0xFF &&
-                                  (D_0014171B_3102C8 + 0xAA35)[u + (g_current_level_index_r << 4)] == 0xFF)) {
+                                  (help_stats_base_r + 0xAA35)[u + (g_current_level_index_r << 4)] == 0xFF)) {
                     pokitaru_checkpoint_level_state_r.collected[(short)moby->uid] = c + 2;
                 }
             }
@@ -917,48 +917,48 @@ void thruster_pack_lock_update(Lock_3102C8 *moby)
         if (moby->bB0 == 0xFF) {
             return;
         }
-        if (!(vec_distance_xy_r(moby->pos, D_0013E633_3102C8 + 0xE9D) < 4.0f)) {
+        if (!(vec_distance_xy_r(moby->pos, hero_globals_base_r + 0xE9D) < 4.0f)) {
             return;
         }
-        if (!((unsigned int)*(int *)(D_0013E633_3102C8 + 0xE9D + 0x200C) < 2)) {
+        if (!((unsigned int)*(int *)(hero_globals_base_r + 0xE9D + 0x200C) < 2)) {
             return;
         }
         if (gHaveHeliPack_r[1] == 0) {
-            int r = scale_ticks_r(gameplay_event_frame_count_r) - ((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->best2 * 600;
+            int r = scale_ticks_r(gameplay_event_frame_count_r) - ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 * 600;
             if ((int)((float)scale_ticks_r(0x12) * 60.0f) < r ||
-                ((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->best2 * 600 == 0) {
+                ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 * 600 == 0) {
                 Help_Request_r(0x2B02, 0x71);
                 return;
             }
             {
                 int q = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-                if (((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->best2 < q) {
-                    ((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->best2 = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 < q) {
+                    ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 = scale_ticks_r(gameplay_event_frame_count_r) / 600;
                 }
             }
-        } else if (((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->count != 0) {
-            int r = scale_ticks_r(gameplay_event_frame_count_r) - ((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->best * 600;
+        } else if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->count != 0) {
+            int r = scale_ticks_r(gameplay_event_frame_count_r) - ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best * 600;
             if ((int)((float)scale_ticks_r(0x12) * 60.0f) < r ||
-                ((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->best * 600 == 0) {
+                ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best * 600 == 0) {
                 Help_Request_r(0x2B01, 0x6C);
                 return;
             }
             {
                 int q = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-                if (((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->best < q) {
-                    ((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best < q) {
+                    ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
                 }
             }
         } else {
-            ((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->count += 1;
+            ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->count += 1;
             {
                 int q = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-                if (((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->best < q) {
-                    ((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best < q) {
+                    ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
                 }
             }
-            ((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->levels =
-                ((Stats_3102C8 *)(D_0014171B_3102C8 + 0x34D))->levels | (1 << g_current_level_index_r) | 0x80000000;
+            ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->levels =
+                ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->levels | (1 << g_current_level_index_r) | 0x80000000;
         }
         break;
     }
@@ -1019,7 +1019,7 @@ extern float FastCos_r(float) __asm__("func_001F9F90");
 extern void FastVecAdd(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern unsigned char D_0013E15A[];
+extern unsigned char screen_globals_base[];
 extern int pokitaru_dma_packet_cursor MACRO_ADDR;
 
 /* Builds one GIF packet for a rotated textured sprite and advances the packet pointer. */
@@ -1102,7 +1102,7 @@ void append_rotated_textured_screen_quad(float fa, float fb, float fc, float fd,
     {
         int a = truncate_float_to_s32_r(w[0] * k);
         int b = truncate_float_to_s32_r(w[1] * k);
-        g = (int *)(D_0013E15A + 0x4A6);
+        g = (int *)(screen_globals_base + 0x4A6);
         n[6] = (unsigned long)(a + g[4] - 8) | ((unsigned long)(b + g[5] - 8) << 16) | hi;
         n[7] = u0;
     }
@@ -1147,14 +1147,14 @@ void draw_quarter_turn_textured_quads(unsigned char a, unsigned char b, unsigned
 }
 extern void project_to_screen(float *, void *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern unsigned char D_0013E15A[];
+extern unsigned char screen_globals_base[];
 
 /* Projects a world point to screen and stores its x and y in 1/16 units, y plus an offset. */
 void project_world_point_to_screen_pixels(void *pt, int *outx, int *outy, int yoff) {
     float p[4];
     int *g;
     project_to_screen(p, pt);
-    g = (int *)(D_0013E15A + 0x4A6);
+    g = (int *)(screen_globals_base + 0x4A6);
     *outx = truncate_float_to_s32_r((p[0] - (float)g[4]) * 0.0625f);
     *outy = truncate_float_to_s32_r((p[1] - (float)g[5]) * 0.0625f) + yoff;
 }
@@ -1361,8 +1361,8 @@ void update_moby_trail_points(char *moby) {
         }
     }
 }
-extern char D_0013E633[];
-extern unsigned char D_0014171B[] NOT_SDA;
+extern char hero_globals_base[];
+extern unsigned char help_stats_base[] NOT_SDA;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int skill_point_18_kill_count MACRO_ADDR;
 extern unsigned char gSkillPoints[] NOT_SDA;
@@ -1378,14 +1378,14 @@ void update_moby_hit_stats_and_state(char *m) {
     char *info = MobyGetHitMessage(m, 0x330000, 0);
     char *g;
     ((unsigned char *)m)[0xA4] = 0xFF;
-    g = D_0013E633 + 0xE1D;
+    g = hero_globals_base + 0xE1D;
     if (*(int *)(g + 0x2084) != 0x32) {
         ((Moby *)m)->flags &= 0xEFFF;
     } else {
         ((Moby *)m)->flags |= 0x1000;
     }
     if (info != 0) {
-        char *st = (char *)D_0014171B + 0x34D;
+        char *st = (char *)help_stats_base + 0x34D;
         int st2;
         int cur;
         if (*(unsigned short *)(st + 0x157E8) < 0xFFFF) {
@@ -1416,7 +1416,7 @@ void update_moby_hit_stats_and_state(char *m) {
             }
         }
     } else if (((unsigned char *)m)[0x20] == 5) {
-        char *g2 = D_0013E633 + 0xE1D;
+        char *g2 = hero_globals_base + 0xE1D;
         if (*(int *)(g2 + 0x2084) != 0x32) {
             m[0x20] = 4;
             *(int *)&((Moby *)m)->collision = 0;

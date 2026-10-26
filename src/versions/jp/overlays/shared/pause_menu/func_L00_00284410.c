@@ -1,5 +1,5 @@
 void process_unlock_code_input(void) {
-    char *pad = (char *)D_0013A5E0 + 0x2460;
+    char *pad = (char *)pad_globals_base + 0x2460;
     int lim0, lim;
     int va, vb, vc;
     int pressed, direction, count, j, code, index, matched;
@@ -44,7 +44,7 @@ void process_unlock_code_input(void) {
         } else if ((unsigned)(code - 0x25) < 0x12) {
             unlock_planet(va);
         } else if ((unsigned)vb < 6) {
-            char *p3 = D_0013D355 + 0x13B;
+            char *p3 = special_items_base + 0x13B;
             p3[vb] = 1;
         } else if ((unsigned)vc < 0x1e) {
             unsigned char *q = menu_item_enabled_115 + 1 + vc;

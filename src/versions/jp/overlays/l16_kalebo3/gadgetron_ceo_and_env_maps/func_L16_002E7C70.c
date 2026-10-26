@@ -16,25 +16,25 @@ void gadgetron_ceo_update(Moby *m) {
         DialogRequest_Init(m, activation);
         *(float *)((char *)d + 0x2C) = 3.7f;
         d->initial_yaw = m->rot.z;
-        if (*(int *)(D_0013D605 + 0x71F) == 0) m->rot.z = FastAddRots(m->rot.z, 3.14159265f);
+        if (*(int *)(race_gates_base + 0x71F) == 0) m->rot.z = FastAddRots(m->rot.z, 3.14159265f);
         restore_gadgetron_ceo_non_challenge_environment((char *)m);
         break;
     case 1: {
-        if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->mode != 15)
+        if (((L16ChallengePlayer *)((char *)&hero_globals_base_challenge + 0xE1D))->mode != 15)
             *(float *)kalebo3_hero_fall_state_height_view = 115.0f;
         else
             *(float *)kalebo3_hero_fall_state_height_view = 100.0f;
-        if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->state != 29 && Npc_TryStartDialog(m, (char *)d + 0x20)) {
+        if (((L16ChallengePlayer *)((char *)&hero_globals_base_challenge + 0xE1D))->state != 29 && Npc_TryStartDialog(m, (char *)d + 0x20)) {
             m->rot.z = d->initial_yaw;
             PlaceMarkerAheadOfMoby(3.5f, m);
             m->state = 2;
         }
-        if (!gHaveMorphORay[9] && vec_distance_xy(D_0013E633 + 0xE9D, &m->pos) < 3.5f) {
+        if (!gHaveMorphORay[9] && vec_distance_xy(hero_globals_base + 0xE9D, &m->pos) < 3.5f) {
             int elapsed, period;
             char *statistics;
             elapsed = scale_ticks(gameplay_event_frame_count);
             period = 600;
-            statistics = D_0014171B + 0x34D;
+            statistics = help_stats_base + 0x34D;
             elapsed -= *(unsigned short *)(statistics + 0x43A) * period;
             if (elapsed > (int)((float)scale_ticks(18) * 60.0f) || *(unsigned short *)(statistics + 0x43A) * period == 0) {
                 Help_Request(0x3E83, 0x87);
@@ -53,14 +53,14 @@ void gadgetron_ceo_update(Moby *m) {
             m->command = 0;
             pose = gadgetron_ceo_hero_and_camera_pose;
             Hero_ResetToPosition(pose, pose + 0x10, 0, 1);
-            camera = D_0013E633 + 0x2B1D;
+            camera = hero_globals_base + 0x2B1D;
             qcopy(camera, pose + 0x20);
             qcopy(camera + 0x10, pose + 0x30);
             camera[0x3AC] = 1;
             m->state = 3;
             activate_gadgetron_ceo_challenge_environment((char *)m);
         }
-        if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->mode == 22) {
+        if (((L16ChallengePlayer *)((char *)&hero_globals_base_challenge + 0xE1D))->mode == 22) {
             m->state = 3;
             activate_gadgetron_ceo_challenge_environment((char *)m);
         }
@@ -86,7 +86,7 @@ void gadgetron_ceo_update(Moby *m) {
         break;
     case 3:
     default: {
-        L16ChallengePlayer *player = (L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D);
+        L16ChallengePlayer *player = (L16ChallengePlayer *)((char *)&hero_globals_base_challenge + 0xE1D);
         unsigned char event;
         if (player->points >= 4500) {
             unsigned char *flags = (unsigned char *)menu_item_enabled_115 + 1;
@@ -97,7 +97,7 @@ void gadgetron_ceo_update(Moby *m) {
             }
             if (race_best_records_challenge[1] < 4500) race_best_records_challenge[1] = player->points;
         }
-        if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->mode == 0) {
+        if (((L16ChallengePlayer *)((char *)&hero_globals_base_challenge + 0xE1D))->mode == 0) {
             m->state = 1;
             restore_gadgetron_ceo_non_challenge_environment((char *)m);
         }
@@ -106,7 +106,7 @@ void gadgetron_ceo_update(Moby *m) {
             m->state = event;
             Hero_ResetToPosition(gadgetron_ceo_hero_return_pose, gadgetron_ceo_hero_return_pose + 0x10, 0, 1);
             m->command = 0;
-            if (!D_0013D605[0xA]) {
+            if (!race_gates_base[0xA]) {
                 int pending;
                 unsigned short previous;
                 previous = activation->mode;
@@ -129,7 +129,7 @@ void gadgetron_ceo_update(Moby *m) {
             char *pose = gadgetron_ceo_hero_and_camera_pose;
             m->command = 0;
             Hero_ResetToPosition(pose, pose + 0x10, 0, 1);
-            camera = D_0013E633 + 0x2B1D;
+            camera = hero_globals_base + 0x2B1D;
             qcopy(camera, pose + 0x20);
             qcopy(camera + 0x10, pose + 0x30);
         }
@@ -140,17 +140,17 @@ void gadgetron_ceo_update(Moby *m) {
     head_rate = 0.3f;
     tracking = 0;
     if (m->prev_seq == 0) {
-        char *player = (char *)&D_0013E633_challenge + 0xE9D;
+        char *player = (char *)&hero_globals_base_challenge + 0xE9D;
         tracking = 1;
         if (vec_distance_xy(&m->pos, player) < 8.0f &&
             FastDiffRots(m->rot.z,
-                fast_atan2(((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->aim[0] - m->pos.x,
-                    ((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->aim[1] - m->pos.y)) < 1.5707964f) {
+                fast_atan2(((L16ChallengePlayer *)((char *)&hero_globals_base_challenge + 0xE1D))->aim[0] - m->pos.x,
+                    ((L16ChallengePlayer *)((char *)&hero_globals_base_challenge + 0xE1D))->aim[1] - m->pos.y)) < 1.5707964f) {
             if (FastVecLength(player + 0x80) > 0.01f) d->moving_timer = scale_ticks(120);
             else fast_dec_timer(&d->moving_timer);
         } else if (d->moving_timer) {
             d->moving_timer = 0;
-            qcopy(d->target, (char *)&D_0013E633_challenge + 0xEED);
+            qcopy(d->target, (char *)&hero_globals_base_challenge + 0xEED);
         }
         if (fast_dec_timer(&d->target_timer)) {
             float heading;
@@ -160,7 +160,7 @@ void gadgetron_ceo_update(Moby *m) {
             FastVecAdd(d->target, d->target, &m->pos);
         }
         if (d->moving_timer) {
-            qcopy(scratch.target, (char *)&D_0013E633_challenge + 0xEED);
+            qcopy(scratch.target, (char *)&hero_globals_base_challenge + 0xEED);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {

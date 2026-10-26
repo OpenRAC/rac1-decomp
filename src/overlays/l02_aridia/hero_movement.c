@@ -7,7 +7,7 @@
 #include "hero.h"
 #include "moby.h"
 
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 extern int CollType(void);
@@ -18,7 +18,7 @@ extern void Hero_OnKilled(void);
 
 // Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l02/ui_help_0021b698.c, FUN_L02_0021b698.
 void process_hero_ground_material_effects(void) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     int keep = *(unsigned char *)(g + 0x12ED);
     int st = *(short *)(g + 0x12E0);
     FastMemZero16(g + 0x12E0, 0x10);
@@ -39,11 +39,11 @@ void process_hero_ground_material_effects(void) {
         }
     }
     if (st == 3) {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(q + 0x12E6) = 1;
     }
     if (g_current_level_index == 0xD) {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(q + 0x2084) != 0x7B) {
             if (coll_sphere(*(float *)(q + 0x234) + 0.03f, q + 0xD0, 2, 0) != 0) {
                 if (CollType() == 0xB) {
@@ -53,14 +53,14 @@ void process_hero_ground_material_effects(void) {
             }
         }
     }
-    if (st == 0xB) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EB) = 1; }
-    if (st == 2) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12E7) = 1; }
-    if (st == 0xD) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EC) = 1; }
-    if (st == 8) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EA) = 1; }
-    if (st == 9) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EE) = 1; }
-    if (st == 0xC) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EA) = 1; }
+    if (st == 0xB) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EB) = 1; }
+    if (st == 2) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12E7) = 1; }
+    if (st == 0xD) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EC) = 1; }
+    if (st == 8) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EA) = 1; }
+    if (st == 9) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EE) = 1; }
+    if (st == 0xC) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EA) = 1; }
     {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(q + 0x12EC) != 0 && *(int *)(q + 0x2084) != 0x7F) {
             if (FastAbsF(*(float *)(q + 0x2F0) - (*(float *)(q + 0x88) + 0.25f)) < 1.0f) {
                 if (*(float *)(q + 0x2F0) - *(float *)(q + 0x88) > 0.0f) {
@@ -74,7 +74,7 @@ void process_hero_ground_material_effects(void) {
         }
     }
     {
-        char *h = (char *)D_0013E633 + 0xE1D;
+        char *h = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(h + 0x12E6) != 0 && *(int *)(h + 0x2084) != 0x68 && *(int *)(h + 0x2084) != 0x7B) {
             if (FastAbsF(*(float *)(h + 0x2F4) - (*(float *)(h + 0x88) + 0.25f)) < 1.0f) {
                 if (*(float *)(h + 0x2F4) - *(float *)(h + 0x88) > 0.0f) {
@@ -91,7 +91,7 @@ void process_hero_ground_material_effects(void) {
         }
     }
     {
-        char *h = (char *)D_0013E633 + 0xE1D;
+        char *h = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(h + 0x12EB) != 0 && *(int *)(h + 0x2084) != 0x7B) {
             if (FastAbsF(*(float *)(h + 0x2F4) - (*(float *)(h + 0x88) + 0.25f)) < 1.0f) {
                 if (*(float *)(h + 0x2F4) - *(float *)(h + 0x88) > 0.0f) {
@@ -541,7 +541,7 @@ d1:
         }
     }
 }
-extern unsigned char D_0013E633[] NOT_SDA;
+extern unsigned char hero_globals_base[] NOT_SDA;
 extern float frame_scale MACRO_ADDR;
 extern char D_L02_001744F0[];
 extern void clear_u64_value(void *);
@@ -643,7 +643,7 @@ typedef struct { char p0[0x58]; unsigned short f58; unsigned short f5A; int f5C;
 typedef struct { char p0[0x158]; float f158; char p15C[4]; float f160; char p164[4]; int f168; char p16C[0x1E4]; float f350[4]; } Cam;
 typedef struct { char p0[8]; float f8; float fC; char p10[8]; float f18; } S17BEB8;
 extern PadState g_controller_state;
-extern char D_0013A5E0[];
+extern char pad_globals_base[];
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern S141948 usage_stats;
@@ -1986,7 +1986,7 @@ void update_hero_state_motion(void) {
                     g_hero.ground_speed = 0.0f;
                 }
                 if (g_hero.rail_land_frames != 0) {
-                    if (*(int *)(D_0013A5E0 + 0x2634) != 0) {
+                    if (*(int *)(pad_globals_base + 0x2634) != 0) {
                         if (g_hero.on_flagged_ground_moby != 0) {
                             g_hero.ground_speed = 0.0f;
                         }

@@ -137,7 +137,7 @@ extern unsigned char menu_item_enabled_73 NOT_SDA;
 extern int D_0013DB24 NOT_SDA;
 extern unsigned char menu_item_enabled_85 NOT_SDA;
 extern int D_0013DC34 NOT_SDA;
-extern unsigned char D_0013D605 NOT_SDA;
+extern unsigned char race_gates_base NOT_SDA;
 extern int item_available NOT_SDA;
 extern unsigned char menu_item_enabled_20 NOT_SDA;
 extern unsigned char gemlik_available NOT_SDA;
@@ -222,7 +222,7 @@ extern void music_Pause(int);
 extern int camera_position_publication_suppressed;
 extern int D_0015F754 MACRO_ADDR;
 extern int last_weapon_id;
-extern unsigned char D_0014171B NOT_SDA;
+extern unsigned char help_stats_base NOT_SDA;
 extern int challenge_mode MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
 extern char D_001CE938[];
@@ -257,7 +257,7 @@ void PauseAllSounds(int arg0) {
     }
     {
         char *g = menu_system;
-        *(int *)(g + 0x134) = g_current_level_index == 0xD || D_0014171B != 0;
+        *(int *)(g + 0x134) = g_current_level_index == 0xD || help_stats_base != 0;
     }
     {
         char *g = menu_system;
@@ -7869,7 +7869,7 @@ int saving_data_menu(char *arg0) {
 }
 
 extern void initialize_global_state_entry(int arg0);
-extern short D_0013E15A_43E8[] __asm__("D_0013E15A");
+extern short screen_globals_base_r[] __asm__("D_0013E15A");
 
 /* Load-slot menu handler (func_00224040's sibling): with a load armed it either aborts or starts the sound fade and loads; otherwise pad handling with slot selection. */
 int loading_data_menu(char *arg0) {
@@ -7911,7 +7911,7 @@ int loading_data_menu(char *arg0) {
             *(int *)(s + 0x5C) = t;
             func_0012E380_1DB30(playback_mode_r == 0);
             initialize_global_state_entry(g_current_level_index);
-            *(short *)D_0013E15A_43E8 = 0;
+            *(short *)screen_globals_base_r = 0;
             return 0;
         }
     }
@@ -8067,7 +8067,7 @@ struct MemoryCardState_pv {
 #define controller_state_pv (*(struct PadState *)D_0013CA40)
 extern char save_menu_overwrite_confirm_page[];
 extern char save_menu_load_confirm_page[];
-extern short D_0013E15A[];
+extern short screen_globals_base[];
 extern void load_level_zero_preserving_progress(int);
 extern void start_memory_card_save(int, int);
 extern void initialize_global_state_entry(int);
@@ -8131,7 +8131,7 @@ s32 saving_data_menu2(struct MenuScreen_pv *w) {
         *(SaveWord2 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x30) = save_clock_time_s;
         *(s32 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x28) = D_0015EF20;
         initialize_global_state_entry(0);
-        D_0013E15A[0] = 1;
+        screen_globals_base[0] = 1;
         return 0;
     }
 
@@ -8194,7 +8194,7 @@ s32 saving_data_menu2(struct MenuScreen_pv *w) {
         }
 done:
         initialize_global_state_entry(0);
-        D_0013E15A[0] = 1;
+        screen_globals_base[0] = 1;
         return 0;
 cont:
         memory_card_state_pv.unkFC = 0;

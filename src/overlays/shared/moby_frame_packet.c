@@ -337,8 +337,8 @@ void compute_selected_world_matrices(char *o, int n, int *arg2, char *out) {
         FastVecAdd(out + i * 0x40 + 0x30, out + i * 0x40 + 0x30, o + 0x10);
     }
 }
-extern char D_0013E633[];
-extern unsigned char D_0014171B[] NOT_SDA;
+extern char hero_globals_base[];
+extern unsigned char help_stats_base[] NOT_SDA;
 extern int environment_sample_count MACRO_ADDR;
 extern char *environment_samples MACRO_ADDR;
 extern char no_environment_sample_msg[];
@@ -378,7 +378,7 @@ void apply_nearest_environment_sample(char *o) {
     *(int *)(o + 0x38) = *(int *)((char *)(off + (int)environment_samples) + 0x1C);
     e2 = (char *)(off + (int)environment_samples);
     if (*(unsigned char *)(e2 + 0x27) != 0) {
-        g = D_0013E633 + 0x1D;
+        g = hero_globals_base + 0x1D;
         *(int *)(g + 0x64) = *(int *)(e2 + 0x20);
         g[0x68] = e2[0x24];
         g[0x69] = e2[0x25];
@@ -387,7 +387,7 @@ void apply_nearest_environment_sample(char *o) {
     }
     e3 = (char *)(off + (int)environment_samples);
     if (*(int *)(e3 + 0x28) >= 0) {
-        h = D_0014171B + 0x100B5;
+        h = help_stats_base + 0x100B5;
         if (*(short *)(h + 0x3E) == 0) {
             if ((*(int *)(h + 0x20) & 0xFFFFFF) == 0xFF0000) {
                 *(unsigned short *)(h + 0x38) = *(int *)(e3 + 0x28);

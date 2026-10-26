@@ -4,11 +4,11 @@
 #include "callees.h"
 #include "include_asm.h"
 
-extern char D_0013E633[];
+extern char hero_globals_base[];
 /* Returns 1 if sound slot i belongs to owner a and is starting or playing. */
 int Sound_IsPlaying(int a, int i) {
     if (i >= 0) {
-        char *p = D_0013E633 + 0x1D + i * 0x70;
+        char *p = hero_globals_base + 0x1D + i * 0x70;
         if (*(int *)(p + 0x88) == a) {
             int t = *(unsigned char *)(p + 0x74);
             if (t == 1 || t == 2) return 1;
@@ -21,7 +21,7 @@ int Sound_IsPlaying(int a, int i) {
  * (config/overlays/joined.tsv). */
 void Sound_StopSlot(int i) {
     if (i >= 0) {
-        char *e = D_0013E633 + 0x1D + i * 0x70;
+        char *e = hero_globals_base + 0x1D + i * 0x70;
         int t = *(unsigned char *)(e + 0x74);
         if (t == 7) {
             *(int *)(e + 0x88) = 0;
@@ -33,7 +33,7 @@ void Sound_StopSlot(int i) {
     }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0028EC28);
-extern char D_0013E633[] NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
 extern unsigned char g_class_slot[] NOT_SDA;
 extern char *moby_class_headers[] NOT_SDA;
 
@@ -50,7 +50,7 @@ int Sound_PlayClassSound(int i, int a1, int v, int k) {
     }
     r = allocate_voice_slot(*(char **)(t + 0x28) + i * 32, a1, v, 0, 0x400);
     if (r >= 0) {
-        e = D_0013E633 + 0x1D + r * 0x70;
+        e = hero_globals_base + 0x1D + r * 0x70;
         *(int *)(e + 0x88) = v;
         *(short *)(e + 0x7E) = i;
     }
@@ -64,7 +64,7 @@ int play_voice(int a, int b, int c, int d) {
     if (a >= level_sound_slot_count) return -1;
     r = allocate_voice_slot(level_sound_slots + a * 32, b, 0, c + 0x40, d);
     if (r >= 0) {
-        char *e = D_0013E633 + 0x1D + r * 0x70;
+        char *e = hero_globals_base + 0x1D + r * 0x70;
         *(int *)(e + 0x8C) = c;
         *(short *)(e + 0x7E) = a;
     }
@@ -96,7 +96,7 @@ int request_grouped_voice(int a0, int a1, int a2, int a3, int a4) {
 LINKER_REMNANT("asm/overlays", func_L00_0028F208);
 /* sets the pitch-bend word of sound slot i to v */
 int Sound_SetPitchBend(int i, int v) {
-    char *e = D_0013E633 + 0x1D + i * 0x70;
+    char *e = hero_globals_base + 0x1D + i * 0x70;
     *(int *)(e + 0x84) = v;
     return 1;
 }
@@ -125,8 +125,8 @@ void Sound_SetEntryValue(int value, long long address) {
     }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0028F410);
-extern char D_0013A5E0[] NOT_SDA;
-extern unsigned char D_0013D355[] NOT_SDA;
+extern char pad_globals_base[] NOT_SDA;
+extern unsigned char special_items_base[] NOT_SDA;
 extern unsigned char gHaveMorphORay[] NOT_SDA;
 extern unsigned char D_0013DE4B[] NOT_SDA;
 extern short ship_index[] NOT_SDA;
@@ -176,11 +176,11 @@ void update_moby_proximity_interaction(unsigned char *m) {
         if (*(short *)(d + 0xC) != 0) {
             matrix_mul_vec3(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
             FastVecAdd(tmp, tmp, p);
-            if (FastVecDist(tmp, D_0013E633 + 0xE9D) > 4.1f) {
+            if (FastVecDist(tmp, hero_globals_base + 0xE9D) > 4.1f) {
                 *(short *)(d + 0xC) = 0;
             }
         } else {
-            q = (unsigned char *)D_0013E633 + 0xE9D;
+            q = (unsigned char *)hero_globals_base + 0xE9D;
             if (vec_distance_xy(p, q) < 6.0f) {
                 matrix_mul_vec3(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
                 FastVecAdd(tmp, tmp, p);
@@ -194,8 +194,8 @@ void update_moby_proximity_interaction(unsigned char *m) {
         }
         if (*(short *)(d + 0xC) != 0) {
             int r = try_set_help_message(2, 0x53E9) != 0;
-            if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && r) {
-                if (g_current_level_index_m == 10 && *(unsigned char *)(D_0013E633 + 0x2EC1) == 1) {
+            if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && r) {
+                if (g_current_level_index_m == 10 && *(unsigned char *)(hero_globals_base + 0x2EC1) == 1) {
                     ((Moby *)m)->state = 0x2A;
                     ((Moby *)m)->flags |= 0x41;
                     StartCutscene(9);
@@ -208,17 +208,17 @@ void update_moby_proximity_interaction(unsigned char *m) {
         }
     } else {
         if (cinematic_mode != 2) {
-            q = D_0013D355 + 0x13B;
+            q = special_items_base + 0x13B;
             if (q[0x48] == 0 && gHaveMorphORay[7] != 0) {
                 StartCutscene(4);
                 q[0x48] = 1;
-            } else if ((q = D_0013D355 + 0x13B)[0x49] == 0 && D_0013DE4B[8] != 0) {
+            } else if ((q = special_items_base + 0x13B)[0x49] == 0 && D_0013DE4B[8] != 0) {
                 StartCutscene(5);
                 q[0x49] = 1;
-            } else if ((q = D_0013D355 + 0x13B)[0x4A] == 0 && D_0013DE4B[8] != 0) {
+            } else if ((q = special_items_base + 0x13B)[0x4A] == 0 && D_0013DE4B[8] != 0) {
                 PlayMovieEntryIfIdle(0xB);
                 q[0x4A] = 1;
-            } else if ((q = D_0013D355 + 0x13B)[0x4B] == 0 && D_0013DE4B[8] != 0) {
+            } else if ((q = special_items_base + 0x13B)[0x4B] == 0 && D_0013DE4B[8] != 0) {
                 StartCutscene(6);
                 q[0x4B] = 1;
             } else {

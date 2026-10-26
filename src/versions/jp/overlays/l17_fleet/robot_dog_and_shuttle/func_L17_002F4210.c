@@ -19,14 +19,14 @@ void update_fleet_camera_box_watcher(char *moby) {
     st = *(int *)(d + 0x6C);
     switch (st) {
     case 0:
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x60))) {
-            if (*(int *)(D_0013E633 + 0x2EA9) == 0x11) {
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(d + 0x60))) {
+            if (*(int *)(hero_globals_base + 0x2EA9) == 0x11) {
                 *(int *)(d + 0x6C) = 1;
             }
         }
         break;
     case 1: {
-        char *h = D_0013E633 + 0xE1D;
+        char *h = hero_globals_base + 0xE1D;
         int v = *(int *)(h + 0x2084);
         if (v == 0x76 || v == 0x32) {
             *(int *)(d + 0x6C) = 0;
@@ -83,7 +83,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         found = 0;
         for (i = 0; i < 1; i++) {
             off = i * 4;
-            if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + off))) {
+            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(d + off))) {
                 found = 1;
                 if (*(int *)(d + 0x30) != *(int *)(d + off)) {
                     tgt = *(int *)(d + off);
@@ -108,19 +108,19 @@ void update_fleet_camera_box_watcher(char *moby) {
             if (*(unsigned char *)(m + 0x20) == 3) goto skip1;
         }
         if (*(int *)(d + 0xC) > *(int *)(d + 0x38) && tgt != -1
-            && ((unsigned int)*(int *)(D_0013E633 + 0x2EA9) < 2 || *(int *)(D_0013E633 + 0x2EA9) == 9)
+            && ((unsigned int)*(int *)(hero_globals_base + 0x2EA9) < 2 || *(int *)(hero_globals_base + 0x2EA9) == 9)
             && fleet_help_popup_state[0] == 0 && fleet_help_popup_state[9] == -1 && gHaveHologuise != 0) {
             *(int *)(d + 0x38) = scale_ticks(0x708);
-            if (*(int *)(D_0014171B + 0x739) >= 0) {
+            if (*(int *)(help_stats_base + 0x739) >= 0) {
                 Help_Request(0x3A9A, 0x7D);
             }
             *(int *)(d + 0x30) = tgt;
             *(int *)(d + 0xC) = 0;
         }
     skip1:
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x20)) && fleet_help_popup_state[0] == 0
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(d + 0x20)) && fleet_help_popup_state[0] == 0
             && fleet_help_popup_state[9] == -1 && gHaveHeliPack[2] == 0) {
-            int w = *(int *)(D_0014171B + 0x761);
+            int w = *(int *)(help_stats_base + 0x761);
             mask = 1 << g_current_level_index;
             if (!(w & mask)) {
                 Help_Request(0x3A9D, 0x82);
@@ -131,7 +131,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         for (i = 0; i < 3; i++) {
             off = i * 4;
             q = (int *)(d + 0x20 + off);
-            if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *q)) {
+            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *q)) {
                 found = 1;
                 if (*(int *)(d + 0x30) != *q) {
                     tgt = *q;
@@ -139,7 +139,7 @@ void update_fleet_camera_box_watcher(char *moby) {
                 break;
             }
         }
-        if (!found || (*(int *)(d + 0x2C) += 1, *(int *)(D_0013E633 + 0x2EA1) == 0x35)) {
+        if (!found || (*(int *)(d + 0x2C) += 1, *(int *)(hero_globals_base + 0x2EA1) == 0x35)) {
             *(int *)(d + 0x2C) = 0;
             *(int *)(d + 0x30) = -1;
         }
@@ -150,12 +150,12 @@ void update_fleet_camera_box_watcher(char *moby) {
             *(int *)(d + 0x2C) = 0;
         }
         if (*(int *)(d + 0x58) != 0xFF
-            && (D_0014171B + 0xAA35)[*(int *)(d + 0x58) + (g_current_level_index << 4)] == 0xFF) {
+            && (help_stats_base + 0xAA35)[*(int *)(d + 0x58) + (g_current_level_index << 4)] == 0xFF) {
             *(unsigned char *)(d + 0x4C) = 1;
         }
-        if (*(unsigned char *)(d + 0x4C) == 0 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x3C))) {
+        if (*(unsigned char *)(d + 0x4C) == 0 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(d + 0x3C))) {
             clear_active_help_record();
-            if (*(int *)(D_0014171B + 0x7A9) >= 0) {
+            if (*(int *)(help_stats_base + 0x7A9) >= 0) {
                 Help_Request(0x4268, 0x8B);
             }
             if (fleet_help_popup_state[0] != 0 || fleet_help_popup_state[9] != -1) {

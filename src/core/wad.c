@@ -210,7 +210,7 @@ int func_0012F3F8(void) {
 }
 
 extern int D_0013A548[];
-extern int D_0013A5E0[];
+extern int pad_globals_base[];
 
 /* As func_0012F3F8 but the sector number comes from an 8-byte-stride
    table indexed by arg0 and re-read on every retry, and 0x2434 bytes are
@@ -237,7 +237,7 @@ int func_0012F4A8(int arg0) {
     } while (func_00121930() != 0);
 
     for (i = 0; i < 0x2434; i++) {
-        ((char *)D_0013A5E0)[i] = buf[i];
+        ((char *)pad_globals_base)[i] = buf[i];
     }
     return 1;
 }

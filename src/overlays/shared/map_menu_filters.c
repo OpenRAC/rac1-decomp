@@ -289,14 +289,14 @@ void CardMenu_AdvanceOnStatus(void) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024B8F0);
 INCLUDE_ASM("asm/overlays", func_L00_0024B908);
-extern char D_0013D355[];
+extern char special_items_base[];
 
 // Sets the menu memory card state.
 void CardMenu_AdvanceOnCardStatus(void) {
     /* The card status word at 0x13D3AC, reached the way the assembly names it (D_0013D355 + 0x57). Its
        neighbours in this file read the same word as D_0013D390[7]; that spelling does not give retail's
        bytes here. Accepted as a last resort. */
-    if (*(int *)(D_0013D355 + 0x57) != -2) {
+    if (*(int *)(special_items_base + 0x57) != -2) {
         mode_freeze_state = 3;
         return;
     }
@@ -309,7 +309,7 @@ extern int D_L00_0015F688 MACRO_ADDR;
 /* Advances the card menu state from its ready flags. */
 void card_menu_advance_on_ready_flags(void) {
     int flags;
-    if (*(int *)(D_0013D355 + 0x57) != -2) {
+    if (*(int *)(special_items_base + 0x57) != -2) {
         mode_freeze_state = 3;
         return;
     }
@@ -335,7 +335,7 @@ INCLUDE_ASM("asm/overlays", func_L00_0024B9A8);
 INCLUDE_ASM("asm/overlays", func_L00_0024B9B4);
 /* Sets the menu state from the status of the card record at D_0013D355 + 0x3B. */
 void SetMenuStateFromCardStatus(void) {
-    char *b = D_0013D355 + 0x3B;
+    char *b = special_items_base + 0x3B;
     if (*(int *)(b + 0xDC) == 2 && *(int *)(b + 0xE4) < 0) {
         if (*(int *)(b + 0xEC) != 0) {
             mode_freeze_state = 17;

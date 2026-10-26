@@ -334,9 +334,9 @@ void HovenShotUpdate(struct Moby *moby) {
 }
 extern unsigned char menu_item_enabled_115_e[] __asm__("D_0013D50F");
 extern unsigned char gHaveHeliPack_e[] __asm__("D_0013D5CA") NOT_SDA;
-extern int D_0013A5E0_e[] __asm__("D_0013A5E0") NOT_SDA;
-extern char D_0013E633_e[] __asm__("D_0013E633");
-extern char D_0014171B_e[] __asm__("D_0014171B");
+extern int pad_globals_base_e[] __asm__("D_0013A5E0") NOT_SDA;
+extern char hero_globals_base_e[] __asm__("D_0013E633");
+extern char help_stats_base_e[] __asm__("D_0014171B");
 extern int gameplay_event_frame_count_e __asm__("D_0015EFA4") MACRO_ADDR;
 extern int count_active_moby_group_members(int, int);
 extern void PlayBankSound(int, int, int);
@@ -357,9 +357,9 @@ void update_hoven_help_and_dialogue(char *m) {
         }
     }
     {
-        char *h = D_0014171B_e + 0x34D;
+        char *h = help_stats_base_e + 0x34D;
         if (*(unsigned short *)(h + 0x368) == 0) {
-            char *q = D_0013E633_e + 0xE1D;
+            char *q = hero_globals_base_e + 0xE1D;
             if (*(int *)(q + 0x2084) == 0x81) {
                 *(unsigned short *)(h + 0x368) = *(unsigned short *)(h + 0x368) + 1;
             }
@@ -373,20 +373,20 @@ void update_hoven_help_and_dialogue(char *m) {
         }
     }
     {
-        char *h = D_0014171B_e + 0x34D;
+        char *h = help_stats_base_e + 0x34D;
         if (*(unsigned short *)(h + 0x370) == 0
             || (*(unsigned short *)(h + 0x370) < 2
                 && scale_ticks(gameplay_event_frame_count_e) - *(unsigned short *)(h + 0x372) * 600 > scale_ticks(72000))) {
-            char *q = D_0013E633_e + 0xE1D;
+            char *q = hero_globals_base_e + 0xE1D;
             if (*(int *)(q + 0x2084) == 0x81) {
                 d[1]++;
-                if ((D_0013A5E0_e[0x2600 / 4] & 3) && 0.3f < *(float *)(q + 0x229C)) {
+                if ((pad_globals_base_e[0x2600 / 4] & 3) && 0.3f < *(float *)(q + 0x229C)) {
                     d[2]++;
                 } else {
                     d[2] = 0;
                 }
                 if (scale_ticks(0x28) < d[2]) {
-                    char *g = D_0014171B_e + 0x34D;
+                    char *g = help_stats_base_e + 0x34D;
                     d[1] = 0;
                     if (*(unsigned short *)(g + 0x370) <= 0xFFFE) {
                         *(unsigned short *)(g + 0x370) = *(unsigned short *)(g + 0x370) + 1;
@@ -399,7 +399,7 @@ void update_hoven_help_and_dialogue(char *m) {
                 {
                     int a = scale_ticks(0x1C20);
                     int b = scale_ticks(0x708);
-                    char *k = D_0014171B_e + 0x34D;
+                    char *k = help_stats_base_e + 0x34D;
                     if (*(unsigned short *)(k + 0x370) * a + b < d[1]) {
                         Help_Request(0x2EE4, 0x6E);
                     }
@@ -408,7 +408,7 @@ void update_hoven_help_and_dialogue(char *m) {
         }
     }
     if (gHaveHeliPack_e[2] != 0) {
-        char *k = D_0014171B_e + 0x34D;
+        char *k = help_stats_base_e + 0x34D;
         if (*(unsigned short *)(k + 0x1F0) == 0) {
             Help_Request(0x2EE0, 0x3E);
         }
@@ -851,7 +851,7 @@ typedef struct {
     float f2C;
 } Hit_304920;
 
-extern unsigned char D_0014171B_304920[] __asm__("D_0014171B");
+extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern int vendor_stock_r[] __asm__("D_0015EED0") MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -918,12 +918,12 @@ extern void draw_hoven_turret_destruction_fade();
 void hoven_turret_update(Moby *moby) {
     Data_304920 *d = *(Data_304920 **)&moby->pvars;
 
-    ((Snd_304920 *)(D_0013E633_e + 0x1D))->f6C = moby;
+    ((Snd_304920 *)(hero_globals_base_e + 0x1D))->f6C = moby;
     switch (moby->state) {
     case 0:
         hoven_turret_manned = 0;
         hoven_turret_destroyed = 0;
-        if ((D_0014171B_304920 + 0xAA35)[moby->mission + (g_current_level_index_e << 4)] == 0xFF) {
+        if ((help_stats_base_r + 0xAA35)[moby->mission + (g_current_level_index_e << 4)] == 0xFF) {
             moby->state = 6;
         } else {
             AttachManipulator(moby, 0, d);
@@ -937,7 +937,7 @@ void hoven_turret_update(Moby *moby) {
             d->fA0 = moby->pos.z;
             d->f98 = -1;
             moby->rot.z = 3.1415927f;
-            ((Snd_304920 *)(D_0013E633_e + 0x1D))->f6C = moby;
+            ((Snd_304920 *)(hero_globals_base_e + 0x1D))->f6C = moby;
         }
         break;
     case 3: {
@@ -946,10 +946,10 @@ void hoven_turret_update(Moby *moby) {
 
             Moby_GetJointWorldPos(moby, 3, out);
         }
-        if (vec_distance_xy(((float *)&moby->pos), ((Hero *)(D_0013E633_e + 0xE1D))->motion.pos.f) < 7.0f
-            || ((Hero *)(D_0013E633_e + 0xE1D))->ground_moby == moby) {
+        if (vec_distance_xy(((float *)&moby->pos), ((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f) < 7.0f
+            || ((Hero *)(hero_globals_base_e + 0xE1D))->ground_moby == moby) {
             moby->pos.z = moby->pos.z + ((d->fA0 - 1.2f) - moby->pos.z) * 0.11f;
-            d->fA4 = FastAddRots(d->fA4, FastAddRots(FastSubRots(fast_atan2(((Hero *)(D_0013E633_e + 0xE1D))->motion.pos.f[0] - moby->pos.x, ((Hero *)(D_0013E633_e + 0xE1D))->motion.pos.f[1] - moby->pos.y), moby->rot.z), 1.5707964f) * 0.01f) * 0.9f;
+            d->fA4 = FastAddRots(d->fA4, FastAddRots(FastSubRots(fast_atan2(((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[0] - moby->pos.x, ((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[1] - moby->pos.y), moby->rot.z), 1.5707964f) * 0.01f) * 0.9f;
             moby->rot.z = FastAddRots(moby->rot.z, d->fA4);
         } else {
             if (moby->pos.z < d->fA0) {
@@ -957,12 +957,12 @@ void hoven_turret_update(Moby *moby) {
             } else {
                 moby->pos.z = d->fA0;
             }
-            if (((Hero *)(D_0013E633_e + 0xE1D))->ground_moby != moby && d->f98 != -1) {
+            if (((Hero *)(hero_globals_base_e + 0xE1D))->ground_moby != moby && d->f98 != -1) {
                 Moby_PlaySound(2, 0, (int)moby);
             }
         }
-        if (vec_distance_xy(((float *)&moby->pos), ((float *)&((Hero *)(D_0013E633_e + 0xE1D))->moby->pos)) < 1.3f) {
-            if (scale_ticks(0xF) < ((Hero *)(D_0013E633_e + 0xE1D))->grounded_frames) {
+        if (vec_distance_xy(((float *)&moby->pos), ((float *)&((Hero *)(hero_globals_base_e + 0xE1D))->moby->pos)) < 1.3f) {
+            if (scale_ticks(0xF) < ((Hero *)(hero_globals_base_e + 0xE1D))->grounded_frames) {
                 CameraScript(((float *)&moby->pos), ((float *)&moby->rot), 1, 0, 0);
                 if (moby->prev_seq != 5) {
                     MobySetAnimation(moby, 5, 0);
@@ -979,9 +979,9 @@ void hoven_turret_update(Moby *moby) {
     }
     case 4:
         hoven_turret_manned = 1;
-        ((Hero *)(D_0013E633_e + 0xE1D))->unk20A5 = 1;
-        ((Hero *)(D_0013E633_e + 0xE1D))->collision_off_frames = scale_ticks(0x78);
-        ((Hero *)(D_0013E633_e + 0xE1D))->invulnerable_frames = scale_ticks(0x78);
+        ((Hero *)(hero_globals_base_e + 0xE1D))->unk20A5 = 1;
+        ((Hero *)(hero_globals_base_e + 0xE1D))->collision_off_frames = scale_ticks(0x78);
+        ((Hero *)(hero_globals_base_e + 0xE1D))->invulnerable_frames = scale_ticks(0x78);
         if (hoven_cinematic_mode != 2 && planetbuster_death_cam_active == 0) {
             AddDrawCallback(draw_hoven_turret_hud, moby);
         }
@@ -995,11 +995,11 @@ void hoven_turret_update(Moby *moby) {
             moby->hit_slot = 0xFF;
         }
         if (planetbuster_defeated == 0) {
-            if (((Hero *)(D_0013E633_e + 0xE1D))->ship_flags & 1) {
+            if (((Hero *)(hero_globals_base_e + 0xE1D))->ship_flags & 1) {
                 if (d->f8C > 100.0f) {
                     hoven_turret_attempts--;
                 }
-                ((Hero *)(D_0013E633_e + 0xE1D))->ship_flags = 0;
+                ((Hero *)(hero_globals_base_e + 0xE1D))->ship_flags = 0;
                 Hero_OnKilled();
             }
             if (d->f8C <= 0.0f) {
@@ -1043,8 +1043,8 @@ void hoven_turret_update(Moby *moby) {
             float tgt;
             float tgt2;
 
-            joy[0] = ((Hero *)(D_0013E633_e + 0xE1D))->stick_x;
-            y = ((Hero *)(D_0013E633_e + 0xE1D))->stick_y;
+            joy[0] = ((Hero *)(hero_globals_base_e + 0xE1D))->stick_x;
+            y = ((Hero *)(hero_globals_base_e + 0xE1D))->stick_y;
             if (vendor_stock_r[3] == 0) {
                 y = -y;
             }
@@ -1074,7 +1074,7 @@ void hoven_turret_update(Moby *moby) {
                 MobyBlendAnimation(moby, 5, 0, 1);
             }
             FastDecTimer(&d->f70);
-            if ((D_0013A5E0_e[0x2600 / 4] & 0xA0) && d->f70 == 0) {
+            if ((pad_globals_base_e[0x2600 / 4] & 0xA0) && d->f70 == 0) {
                 Vec_304920 dir;
                 Vec_304920 muz;
                 float yaw;
@@ -1580,8 +1580,8 @@ void update_planetbuster_maximus_guns(char *moby) {
         v1[2] += 1.5f;
         md->f60 = fast_atan2(vec_distance_xy(v1, v0), v0[2] - v1[2]);
         EaseManipulatorOffsets(m, (char *)md, 0, g_frame_scale_sq_f * 0.008f, g_frame_scale_sq_f * 0.3f);
-        yaw = FastSubRots(FastAddRots(fast_atan2(((Hero *)(D_0013E633_e + 0xE1D))->motion.pos.f[0] - ((Moby *)m)->pos.x,
-                                                            ((Hero *)(D_0013E633_e + 0xE1D))->motion.pos.f[1] - ((Moby *)m)->pos.y),
+        yaw = FastSubRots(FastAddRots(fast_atan2(((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[0] - ((Moby *)m)->pos.x,
+                                                            ((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[1] - ((Moby *)m)->pos.y),
                                           -1.5707964f),
                             ((Moby *)moby)->rot.z);
         if (md->h90 == 0) {
@@ -1602,7 +1602,7 @@ void update_planetbuster_maximus_guns(char *moby) {
             }
         }
         flag = 0;
-        hp = (float *)(D_0013E633_e + 0xE1D + 0x80);
+        hp = (float *)(hero_globals_base_e + 0xE1D + 0x80);
         dist = vec_distance_xy(moby + 0x10, hp);
         dz = FastAbsF_r(hp[2] - ((Moby *)moby)->pos.z);
         if (scale_ticks(0x4B0) < planetbuster_aggro_timer) {
@@ -1638,7 +1638,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                             qcopy(v2, hoven_camera_pos_r);
                             v2[2] += random_float_between(-1.5f, 0.3f);
                         } else {
-                            qcopy(v2, &((Hero *)(D_0013E633_e + 0xE1D))->motion.body_center);
+                            qcopy(v2, &((Hero *)(hero_globals_base_e + 0xE1D))->motion.body_center);
                             v2[2] += randf_sym(0.0f, 0.5f);
                         }
                         n = D_L12_00161FA0_s - 3;
@@ -2033,7 +2033,7 @@ void planetbuster_maximus_part_update(char *moby) {
             qcopy(moby + 0x10, path + 1);
             *(float *)(d + 0x618) = ((Moby *)moby)->pos.z;
             ((Moby *)moby)->rot.z = fast_atan2(path[2].v[0] - path[1].v[0], path[2].v[1] - path[1].v[1]);
-            if (*(float *)(D_0013E633_e + 0xEA5) < 52.0f) {
+            if (*(float *)(hero_globals_base_e + 0xEA5) < 52.0f) {
                 ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + 3.0f;
             }
             for (i = 0; i < 5; i++) {
@@ -2068,14 +2068,14 @@ void planetbuster_maximus_part_update(char *moby) {
                 if (s != -1) ((M34_7DB0 *)(base + (s << 8)))->flags &= ~0x41;
             }
         }
-        h = D_0013E633_e + 0xE9D;
+        h = hero_globals_base_e + 0xE9D;
         r = is_point_inside_clip_volume(h, *(int *)(d + 0x628));
         if (*(float *)(h + 8) > 52.0f && r == 0) {
             ApproachValue((float *)(moby + 0x18), *(float *)(d + 0x618), g_frame_time + g_frame_time);
         } else {
             float add = 3.0f;
             if (r) add = 10.0f;
-            if (is_point_inside_clip_volume(D_0013E633_e + 0xE9D, *(int *)(d + 0x61C))) {
+            if (is_point_inside_clip_volume(hero_globals_base_e + 0xE9D, *(int *)(d + 0x61C))) {
                 *(int *)(d + 0x620) = scale_ticks(0x5A);
             }
             if (!fast_dec_timer((int *)(d + 0x620))) add = 19.0f;
@@ -2087,7 +2087,7 @@ void planetbuster_maximus_part_update(char *moby) {
                           *(float *)&planetbuster_sway_rate_a * 0.017453292f * g_frame_time,
                           *(float *)&planetbuster_sway_rate_b * 0.017453292f * g_frame_time);
         apply_linked_moby_relative_transforms(moby, d, 0x11);
-        if (is_point_inside_clip_volume(D_0013E633_e + 0xE9D, *(int *)(d + 0x5EC)) || hoven_turret_manned_m) {
+        if (is_point_inside_clip_volume(hero_globals_base_e + 0xE9D, *(int *)(d + 0x5EC)) || hoven_turret_manned_m) {
             int i;
             planetbuster_engaged = 1;
             for (i = 0; i < 5; i++) {
@@ -2217,7 +2217,7 @@ void planetbuster_maximus_part_update(char *moby) {
     } else {
         int s = *(int *)(d + 0x604);
         if (s != -1) {
-            Voice_7DB0 *e = (Voice_7DB0 *)(D_0013E633_e + 0x1D + s * 0x70);
+            Voice_7DB0 *e = (Voice_7DB0 *)(hero_globals_base_e + 0x1D + s * 0x70);
             if (e->owner == moby && e->active != 0) Sound_StopSlot(s);
         }
         *(int *)(d + 0x604) = -1;
@@ -2334,7 +2334,7 @@ void homing_mine_spawner_update(char *m) {
         break;
     }
 }
-extern char D_0013E633[] NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
 extern float FastAbsF(float);
 extern int FindNearestTargetMoby(char *, char *, float);
 
@@ -2359,7 +2359,7 @@ void update_homing_mine_spawner_target(char *m) {
             }
         }
         if (*(int *)(spawner_data + 0xB0) == 0) {
-            pad = D_0013E633 + 0xE1D;
+            pad = hero_globals_base + 0xE1D;
             *(int *)(spawner_data + 0xB0) = *(int *)(pad + 0x2080);
             qcopy(spawner_data + 0x70, pad + 0x80);
         }
@@ -2424,8 +2424,8 @@ void update_moby_draw_and_monitor_linked_state(struct Moby *m) {
         break;
     }
 }
-extern char D_0013D355[];
-extern char D_0013E633[];
+extern char special_items_base[];
+extern char hero_globals_base[];
 extern int hoven_frame_count MACRO_ADDR;
 extern char D_L12_0016CD70[];
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
@@ -2437,12 +2437,12 @@ void trigger_scene_once_in_clip_volume(char *moby) {
     char *p;
     char *q;
     if (hoven_frame_count != 0 && hoven_cinematic_mode == 0) {
-        base = D_0013D355 + 0x13B;
+        base = special_items_base + 0x13B;
         if (*(unsigned char *)(*(int *)(data + 4) + base + 0x5C) != 0) {
             DeleteMoby(moby);
             return;
         }
-        p = D_0013E633 + 0xE9D;
+        p = hero_globals_base + 0xE9D;
         if (is_point_inside_clip_volume(p, *(int *)data) != 0) {
             *(char *)(*(int *)(data + 4) + base + 0x5C) = 1;
             qcopy(D_L12_0016CD70, p);

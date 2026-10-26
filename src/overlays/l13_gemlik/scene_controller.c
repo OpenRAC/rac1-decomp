@@ -49,8 +49,8 @@ extern float gemlik_fade_level_r __asm__("D_L13_0015F4FC") MACRO_ADDR;
 extern int gemlik_scripted_camera_active_r __asm__("D_L13_0015F504") MACRO_ADDR;
 extern unsigned char gemlik_mission_group_state_r[] __asm__("D_L13_0015FD08") MACRO_ADDR;
 extern unsigned char D_001414F5_30CAE0[] __asm__("D_001414F5") NOT_SDA;
-extern unsigned char D_0013D355_30CAE0[] __asm__("D_0013D355");
-extern unsigned char D_0013E633_30CAE0[] __asm__("D_0013E633");
+extern unsigned char special_items_base_r[] __asm__("D_0013D355");
+extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern char D_0013DE6E_30CAE0[] __asm__("D_0013DE6E");
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 extern int is_point_inside_clip_volume_r(void *arg0, int arg1) __asm__("func_00215570");
@@ -72,8 +72,8 @@ void update_gemlik_scene_controller(Moby *moby)
         if (gemlik_game_mode_r == 0) moby->state = 1;
         break;
     case 1:
-        if (((Flags_30CAE0 *)(D_0013D355_30CAE0 + 0x13B))->f64 == 0) {
-            ((Flags_30CAE0 *)(D_0013D355_30CAE0 + 0x13B))->f64 = 1;
+        if (((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f64 == 0) {
+            ((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f64 = 1;
             moby->state = 2;
             StartCutscene_r(0);
         } else {
@@ -87,10 +87,10 @@ void update_gemlik_scene_controller(Moby *moby)
         moby->state = 4;
         break;
     case 4:
-        if (((Flags_30CAE0 *)(D_0013D355_30CAE0 + 0x13B))->f65 == 0) {
+        if (((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f65 == 0) {
             if (data->f0 != -1) {
-                if (is_point_inside_clip_volume_r(D_0013E633_30CAE0 + 0xE9D, data->f0) != 0) {
-                    ((Flags_30CAE0 *)(D_0013D355_30CAE0 + 0x13B))->f65 = 1;
+                if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, data->f0) != 0) {
+                    ((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f65 = 1;
                     if (data->f14 != -1) {
                         Moby *e = &gemlik_moby_array_start_r[data->f14];
                         e->flags |= 0x41;
@@ -129,7 +129,7 @@ void update_gemlik_scene_controller(Moby *moby)
         moby->state = 7;
         break;
     case 7:
-        if (((Flags_30CAE0 *)(D_0013D355_30CAE0 + 0x13B))->f66 != 0) goto s12;
+        if (((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f66 != 0) goto s12;
         if (data->f14 == -1) goto s13;
         {
             Moby *e = &gemlik_moby_array_start_r[data->f14];
@@ -140,7 +140,7 @@ void update_gemlik_scene_controller(Moby *moby)
             e->flags |= 2;
         }
         Hero_ResetToPosition_r(gemlik_scene_points_r[data->f8].f30, gemlik_scene_points_r[data->f8].f70, 0x72, 1);
-        ((Flags_30CAE0 *)(D_0013D355_30CAE0 + 0x13B))->f66 = 1;
+        ((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f66 = 1;
         if (data->f20 != -1) {
             Moby *e = &gemlik_moby_array_start_r[data->f20];
             e->flags |= 0x41;
@@ -454,7 +454,7 @@ extern short gemlik_spark1_time2;
 extern short gemlik_spark1_time3;
 extern short gemlik_spark1_drift_accel;
 extern short gemlik_spark1_lift_accel;
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float fast_atan2(float, float);
 extern float FastAddRots(float, float);
@@ -566,7 +566,7 @@ void update_moby_motion_and_emit_sparks(char *moby)
     if (FastDecTimer(&data->life) != 0) {
         DeleteMoby(moby);
     } else if (((struct Moby *)moby)->command == 1) {
-        if (coll_line(&old_pos, &((struct Moby *)moby)->pos, 2, *(int *)(D_0013E633 + 0x2E9D), 0)) {
+        if (coll_line(&old_pos, &((struct Moby *)moby)->pos, 2, *(int *)(hero_globals_base + 0x2E9D), 0)) {
             spawn_type_52_particle_near_moby(moby);
             DeleteMoby(moby);
         }

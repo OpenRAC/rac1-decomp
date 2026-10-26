@@ -8,7 +8,7 @@
 
 typedef int Q_2343F8 __attribute__((mode(TI)));
 
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern void update_hero_attachment(int, void *, void *);
 extern float gravity_length_xy(float *v);
@@ -37,7 +37,7 @@ void HeroMovePipeline(void) {
     Hero *contact_player;
     Hero *motion_player;
     Hero *cap_player;
-    float *position = (float *)(D_0013E633 + 0xE9D);
+    float *position = (float *)(hero_globals_base + 0xE9D);
     Hero *player;
     float *vertical;
     float *horizontal;
@@ -62,7 +62,7 @@ void HeroMovePipeline(void) {
             limit = player->capsule_radius - 0.02f;
             if (limit < length) vec_scale_to_length(position, position, limit);
         }
-        position = (float *)(D_0013E633 + 0xEFD);
+        position = (float *)(hero_globals_base + 0xEFD);
         magnitude = gravity_z(position);
         limit = -*(float *)((char *)position + 0x1FC);
         if (magnitude < limit) {
@@ -80,7 +80,7 @@ void HeroMovePipeline(void) {
             if (limit < length) vec_scale_to_length(position, position, limit);
         }
     }
-    position = (float *)(D_0013E633 + 0xE9D);
+    position = (float *)(hero_globals_base + 0xE9D);
     FastVecAdd(position, position, (char *)position + 0x60);
     extra_step = (float *)((char *)position + 0x8A0);
     FastVecAdd(position, position, extra_step);
@@ -96,7 +96,7 @@ void HeroMovePipeline(void) {
     } else {
         HeroGroundProbe();
     }
-    position = (float *)(D_0013E633 + 0xF2D);
+    position = (float *)(hero_globals_base + 0xF2D);
     new_position = (float *)((char *)position - 0x90);
     horizontal = (float *)((char *)position + 0x20);
     FastVecSub(position, new_position, previous.f);
@@ -154,7 +154,7 @@ void HeroMovePipeline(void) {
         if (motion_player->motion.move_slope > 0.5f) motion_player->motion.move_slope = 0.5f;
         else if (motion_player->motion.move_slope < -0.5f) motion_player->motion.move_slope = -0.5f;
     }
-    cap_player = (Hero *)(D_0013E633 + 0xE1D);
+    cap_player = (Hero *)(hero_globals_base + 0xE1D);
     magnitude = g_frame_time * 52.0f;
     if (magnitude < cap_player->motion.speed_xy) {
         FastVecScale(cap_player->motion.displacement.f, cap_player->motion.displacement.f, magnitude / cap_player->motion.speed_xy);
@@ -192,97 +192,97 @@ void update_hero_airborne_planar_motion(void) {
     float arg;
     int state;
 
-    state = ((Hero *)(D_0013E633 + 0xE1D))->state.current;
+    state = ((Hero *)(hero_globals_base + 0xE1D))->state.current;
     if (state == 10) {
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
-        qcopy(&((Hero *)(D_0013E633 + 0xE1D))->motion.momentum, &((Hero *)(D_0013E633 + 0xE1D))->move_impulse);
-        ((Hero *)(D_0013E633 + 0xE1D))->ground_speed = ((Hero *)(D_0013E633 + 0xE1D))->motion.flat_speed;
+        qcopy(&((Hero *)(hero_globals_base + 0xE1D))->motion.momentum, &((Hero *)(hero_globals_base + 0xE1D))->move_impulse);
+        ((Hero *)(hero_globals_base + 0xE1D))->ground_speed = ((Hero *)(hero_globals_base + 0xE1D))->motion.flat_speed;
     } else if (state == 16) {
-        if (scale_ticks(0x36) < ((Hero *)(D_0013E633 + 0xE1D))->state_timer) {
-            ApproachValue(&((Hero *)(D_0013E633 + 0xE1D))->jump_gravity, g_frame_time_sq * 25.0f, g_frame_time_sq * 7.0f);
+        if (scale_ticks(0x36) < ((Hero *)(hero_globals_base + 0xE1D))->state_timer) {
+            ApproachValue(&((Hero *)(hero_globals_base + 0xE1D))->jump_gravity, g_frame_time_sq * 25.0f, g_frame_time_sq * 7.0f);
         }
-        if (((Hero *)(D_0013E633 + 0xE1D))->state_timer < scale_ticks(0x37)) {
-            ((Hero *)(D_0013E633 + 0xE1D))->target_speed = ((Hero *)(D_0013E633 + 0xE1D))->long_jump_speed;
+        if (((Hero *)(hero_globals_base + 0xE1D))->state_timer < scale_ticks(0x37)) {
+            ((Hero *)(hero_globals_base + 0xE1D))->target_speed = ((Hero *)(hero_globals_base + 0xE1D))->long_jump_speed;
         } else {
-            ((Hero *)(D_0013E633 + 0xE1D))->target_speed = g_frame_time * 3.5f;
+            ((Hero *)(hero_globals_base + 0xE1D))->target_speed = g_frame_time * 3.5f;
         }
         speed_step(g_frame_time_sq * 44.0f, g_frame_time_sq * 45.0f);
-        set_gravity_relative_vector_length_xy(((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f, ((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f, 0.0f);
-        add_hero_forward_offset(((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f, ((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f, ((Hero *)(D_0013E633 + 0xE1D))->ground_speed);
+        set_gravity_relative_vector_length_xy(((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f, ((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f, 0.0f);
+        add_hero_forward_offset(((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f, ((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f, ((Hero *)(hero_globals_base + 0xE1D))->ground_speed);
     } else if (state == 0x1C) {
-        if (scale_ticks(0x28) < ((Hero *)(D_0013E633 + 0xE1D))->state_timer) {
+        if (scale_ticks(0x28) < ((Hero *)(hero_globals_base + 0xE1D))->state_timer) {
             turn_to(0, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 15.009831f);
             air_accel(g_frame_time_sq * 20.0f);
         }
-        if (13.0f <= ((Hero *)(D_0013E633 + 0xE1D))->anim_frame && ((Hero *)(D_0013E633 + 0xE1D))->anim_frame <= 30.0f) {
-            if (27.0f < ((Hero *)(D_0013E633 + 0xE1D))->anim_frame) {
-                ApproachValue(&((Hero *)(D_0013E633 + 0xE1D))->ledge_jump_speed, 0.0f, g_frame_time_sq * 8.0f);
+        if (13.0f <= ((Hero *)(hero_globals_base + 0xE1D))->anim_frame && ((Hero *)(hero_globals_base + 0xE1D))->anim_frame <= 30.0f) {
+            if (27.0f < ((Hero *)(hero_globals_base + 0xE1D))->anim_frame) {
+                ApproachValue(&((Hero *)(hero_globals_base + 0xE1D))->ledge_jump_speed, 0.0f, g_frame_time_sq * 8.0f);
             } else {
-                ApproachValue(&((Hero *)(D_0013E633 + 0xE1D))->ledge_jump_speed, g_frame_time * 2.0f, g_frame_time_sq * 8.0f);
+                ApproachValue(&((Hero *)(hero_globals_base + 0xE1D))->ledge_jump_speed, g_frame_time * 2.0f, g_frame_time_sq * 8.0f);
             }
         }
-        ((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f[0] = FastCos(((Hero *)(D_0013E633 + 0xE1D))->motion.rot.f[2]) * ((Hero *)(D_0013E633 + 0xE1D))->ledge_jump_speed;
-        ((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f[1] = FastSin(((Hero *)(D_0013E633 + 0xE1D))->motion.rot.f[2]) * ((Hero *)(D_0013E633 + 0xE1D))->ledge_jump_speed;
+        ((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f[0] = FastCos(((Hero *)(hero_globals_base + 0xE1D))->motion.rot.f[2]) * ((Hero *)(hero_globals_base + 0xE1D))->ledge_jump_speed;
+        ((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f[1] = FastSin(((Hero *)(hero_globals_base + 0xE1D))->motion.rot.f[2]) * ((Hero *)(hero_globals_base + 0xE1D))->ledge_jump_speed;
     } else if (state == 11 || state == 12) {
         if (g_current_level_index != 0xE) {
             if (hero_slot_item_id(3) == 3) {
-                if (((Hero *)(D_0013E633 + 0xE1D))->state_timer == scale_ticks(5)) {
+                if (((Hero *)(hero_globals_base + 0xE1D))->state_timer == scale_ticks(5)) {
                     allocate_hero_voice_for_entry(1, 0);
                 }
             }
         }
-        ((Hero *)(D_0013E633 + 0xE1D))->motion.move_yaw = ((Hero *)(D_0013E633 + 0xE1D))->takeoff_yaw;
+        ((Hero *)(hero_globals_base + 0xE1D))->motion.move_yaw = ((Hero *)(hero_globals_base + 0xE1D))->takeoff_yaw;
         turn_to(0, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 6.981317f);
-        if (((Hero *)(D_0013E633 + 0xE1D))->unk450 != 3) {
-            ((Hero *)(D_0013E633 + 0xE1D))->ground_speed = ((Hero *)(D_0013E633 + 0xE1D))->air_target_speed;
+        if (((Hero *)(hero_globals_base + 0xE1D))->unk450 != 3) {
+            ((Hero *)(hero_globals_base + 0xE1D))->ground_speed = ((Hero *)(hero_globals_base + 0xE1D))->air_target_speed;
         } else {
-            ((Hero *)(D_0013E633 + 0xE1D))->ground_speed = 0.0f;
+            ((Hero *)(hero_globals_base + 0xE1D))->ground_speed = 0.0f;
         }
-        if (((Hero *)(D_0013E633 + 0xE1D))->state.current == 11) {
-            if (((Hero *)(D_0013E633 + 0xE1D))->past_jump_apex != 0 && ((Hero *)(D_0013E633 + 0xE1D))->frames_to_land < scale_ticks(0xC)) {
-                ApproachValue(&((Hero *)(D_0013E633 + 0xE1D))->high_jump_drift_speed, 0.0f, g_frame_time_sq * 8.0f);
+        if (((Hero *)(hero_globals_base + 0xE1D))->state.current == 11) {
+            if (((Hero *)(hero_globals_base + 0xE1D))->past_jump_apex != 0 && ((Hero *)(hero_globals_base + 0xE1D))->frames_to_land < scale_ticks(0xC)) {
+                ApproachValue(&((Hero *)(hero_globals_base + 0xE1D))->high_jump_drift_speed, 0.0f, g_frame_time_sq * 8.0f);
             } else {
-                ApproachValue(&((Hero *)(D_0013E633 + 0xE1D))->high_jump_drift_speed, g_frame_time * 4.2f, g_frame_time_sq * 8.0f);
+                ApproachValue(&((Hero *)(hero_globals_base + 0xE1D))->high_jump_drift_speed, g_frame_time * 4.2f, g_frame_time_sq * 8.0f);
             }
         }
-        ((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f[0] = FastCos(((Hero *)(D_0013E633 + 0xE1D))->high_jump_drift_yaw) * ((Hero *)(D_0013E633 + 0xE1D))->high_jump_drift_speed;
-        ((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f[1] = FastSin(((Hero *)(D_0013E633 + 0xE1D))->high_jump_drift_yaw) * ((Hero *)(D_0013E633 + 0xE1D))->high_jump_drift_speed;
-        a = ((Hero *)(D_0013E633 + 0xE1D))->air_target_speed * FastSin(FastDiffRots(((Hero *)(D_0013E633 + 0xE1D))->takeoff_yaw, ((Hero *)(D_0013E633 + 0xE1D))->high_jump_drift_yaw));
-        ((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f[0] += FastCos(((Hero *)(D_0013E633 + 0xE1D))->takeoff_yaw) * a;
-        ((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f[1] += FastSin(((Hero *)(D_0013E633 + 0xE1D))->takeoff_yaw) * a;
+        ((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f[0] = FastCos(((Hero *)(hero_globals_base + 0xE1D))->high_jump_drift_yaw) * ((Hero *)(hero_globals_base + 0xE1D))->high_jump_drift_speed;
+        ((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f[1] = FastSin(((Hero *)(hero_globals_base + 0xE1D))->high_jump_drift_yaw) * ((Hero *)(hero_globals_base + 0xE1D))->high_jump_drift_speed;
+        a = ((Hero *)(hero_globals_base + 0xE1D))->air_target_speed * FastSin(FastDiffRots(((Hero *)(hero_globals_base + 0xE1D))->takeoff_yaw, ((Hero *)(hero_globals_base + 0xE1D))->high_jump_drift_yaw));
+        ((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f[0] += FastCos(((Hero *)(hero_globals_base + 0xE1D))->takeoff_yaw) * a;
+        ((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f[1] += FastSin(((Hero *)(hero_globals_base + 0xE1D))->takeoff_yaw) * a;
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
-        qcopy(&((Hero *)(D_0013E633 + 0xE1D))->motion.momentum, &((Hero *)(D_0013E633 + 0xE1D))->move_impulse);
+        qcopy(&((Hero *)(hero_globals_base + 0xE1D))->motion.momentum, &((Hero *)(hero_globals_base + 0xE1D))->move_impulse);
     } else if (state == 0x11) {
-        ((Hero *)(D_0013E633 + 0xE1D))->motion.move_yaw = ((Hero *)(D_0013E633 + 0xE1D))->unk470.f[3];
-        qcopy(&((Hero *)(D_0013E633 + 0xE1D))->motion.move_dir, &((Hero *)(D_0013E633 + 0xE1D))->unk470);
-        if (scale_ticks(9) < ((Hero *)(D_0013E633 + 0xE1D))->state_timer) {
+        ((Hero *)(hero_globals_base + 0xE1D))->motion.move_yaw = ((Hero *)(hero_globals_base + 0xE1D))->unk470.f[3];
+        qcopy(&((Hero *)(hero_globals_base + 0xE1D))->motion.move_dir, &((Hero *)(hero_globals_base + 0xE1D))->unk470);
+        if (scale_ticks(9) < ((Hero *)(hero_globals_base + 0xE1D))->state_timer) {
             turn_to(-1, g_frame_scale_sq * 0.042f, g_frame_scale_sq * 0.2f, g_frame_time * 11.868238f);
         }
-        if (scale_ticks(9) <= ((Hero *)(D_0013E633 + 0xE1D))->state_timer) {
-            if (((Hero *)(D_0013E633 + 0xE1D))->unk308 == 0) {
-                ((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f[0] = FastCos(((Hero *)(D_0013E633 + 0xE1D))->motion.move_yaw) * (g_frame_time * 4.9f);
-                ((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f[1] = FastSin(((Hero *)(D_0013E633 + 0xE1D))->motion.move_yaw) * (g_frame_time * 4.9f);
+        if (scale_ticks(9) <= ((Hero *)(hero_globals_base + 0xE1D))->state_timer) {
+            if (((Hero *)(hero_globals_base + 0xE1D))->unk308 == 0) {
+                ((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f[0] = FastCos(((Hero *)(hero_globals_base + 0xE1D))->motion.move_yaw) * (g_frame_time * 4.9f);
+                ((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f[1] = FastSin(((Hero *)(hero_globals_base + 0xE1D))->motion.move_yaw) * (g_frame_time * 4.9f);
             } else {
-                set_gravity_relative_vector_length_xy(((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f, ((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f, 0.0f);
-                vec_scale_to_length(&tmp, &((Hero *)(D_0013E633 + 0xE1D))->motion.move_dir, g_frame_time * 4.9f);
-                FastVecAdd(((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f, ((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f, &tmp);
+                set_gravity_relative_vector_length_xy(((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f, ((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f, 0.0f);
+                vec_scale_to_length(&tmp, &((Hero *)(hero_globals_base + 0xE1D))->motion.move_dir, g_frame_time * 4.9f);
+                FastVecAdd(((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f, ((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f, &tmp);
             }
         }
-        ((Hero *)(D_0013E633 + 0xE1D))->ground_speed = ((Hero *)(D_0013E633 + 0xE1D))->motion.flat_speed;
+        ((Hero *)(hero_globals_base + 0xE1D))->ground_speed = ((Hero *)(hero_globals_base + 0xE1D))->motion.flat_speed;
     } else {
-        turn_to(0, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, ((Hero *)(D_0013E633 + 0xE1D))->air_turn_rate);
+        turn_to(0, g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, ((Hero *)(hero_globals_base + 0xE1D))->air_turn_rate);
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
-        qcopy(&((Hero *)(D_0013E633 + 0xE1D))->motion.momentum, &((Hero *)(D_0013E633 + 0xE1D))->move_impulse);
+        qcopy(&((Hero *)(hero_globals_base + 0xE1D))->motion.momentum, &((Hero *)(hero_globals_base + 0xE1D))->move_impulse);
         arg = g_frame_time_sq * 20.0f;
-        if (((Hero *)(D_0013E633 + 0xE1D))->target_speed < D_L01_0017C2D0[0] * g_frame_time * 0.2f) {
-            if (((Hero *)(D_0013E633 + 0xE1D))->state.control_mode == 2) {
-                d = ((Hero *)(D_0013E633 + 0xE1D))->stickless_decel;
-                speed = vec_length_xy(((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f);
+        if (((Hero *)(hero_globals_base + 0xE1D))->target_speed < D_L01_0017C2D0[0] * g_frame_time * 0.2f) {
+            if (((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 2) {
+                d = ((Hero *)(hero_globals_base + 0xE1D))->stickless_decel;
+                speed = vec_length_xy(((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f);
                 ApproachValue(&speed, 0.0f, d);
-                vec_set_length_xy(((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f, ((Hero *)(D_0013E633 + 0xE1D))->motion.velocity.f, speed);
+                vec_set_length_xy(((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f, ((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f, speed);
                 return;
             }
-            if (((Hero *)(D_0013E633 + 0xE1D))->on_flagged_ground_moby != 0) {
+            if (((Hero *)(hero_globals_base + 0xE1D))->on_flagged_ground_moby != 0) {
                 arg = g_frame_time_sq * 6.0f;
             } else {
                 arg = g_frame_time_sq * 2.0f;
@@ -311,7 +311,7 @@ typedef struct { char p0[0x158]; float f158; char p15C[4]; float f160; char p164
 typedef struct { char p0[8]; float f8; float fC; char p10[8]; float f18; } S17BEB8;
 extern Hero g_hero;
 extern PadState g_controller_state;
-extern char D_0013A5E0[];
+extern char pad_globals_base[];
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern S141948 usage_stats;
@@ -1849,7 +1849,7 @@ void HeroStatePhysics(void) {
                     g_hero.ground_speed = 0.0f;
                 }
                 if (g_hero.rail_land_frames != 0) {
-                    if (*(int *)(D_0013A5E0 + 0x2634) != 0) {
+                    if (*(int *)(pad_globals_base + 0x2634) != 0) {
                         if (g_hero.on_flagged_ground_moby != 0) {
                             g_hero.ground_speed = 0.0f;
                         }

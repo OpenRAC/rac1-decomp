@@ -260,7 +260,7 @@ void load_and_initialize_level_chunk(void) {
 /* Adapted from Lombyte's project (GPL-3.0): src/storage/memory_card/memcard_update_state.c; PAL directory validation reconstructed from assembly. */
 typedef struct { u8 pad0[16]; u32 size; u8 pad14[12]; char name[32]; } McDirEntry_209E68;
 extern McDirEntry_209E68 mc_directory[] __asm__("D_001A0980");
-extern char D_0013D315[], D_0013D335[], D_0013D355[], memcard_slot_file_prefix[], memcard_slot_file_suffix[];
+extern char D_0013D315[], D_0013D335[], special_items_base[], memcard_slot_file_prefix[], memcard_slot_file_suffix[];
 extern void mc_memset(void *, s32, s32) __asm__("func_001153FC");
 extern s32 mc_strcmp(char *, char *) __asm__("func_001165B8");
 extern s32 mc_strncmp(char *, char *, s32) __asm__("func_00116948");
@@ -502,7 +502,7 @@ void memcard_update_state(void) {
                     blocks += (entry->size + 1023U) >> 10;
                     if (mc_strcmp(filename, D_0013D315) == 0) icon0 = 1;
                     if (mc_strcmp(filename, D_0013D335) == 0) icon1 = 1;
-                    if (mc_strcmp(filename, D_0013D355) == 0) icon2 = 1;
+                    if (mc_strcmp(filename, special_items_base) == 0) icon2 = 1;
                     if (mc_strncmp(filename, memcard_slot_file_prefix, 4) == 0 &&
                         mc_strncmp(filename + 5, memcard_slot_file_suffix, 4) == 0) {
                         slot = (u8)entry->name[4] - '0';

@@ -415,9 +415,9 @@ extern int D_L02_00161BAC_2D9F08 SDATA(D_L02_00161BAC);
 extern int D_L02_00161B38_2D9F08 SDATA(D_L02_00161B38);
 extern int D_L02_00161B34_2D9F08 SDATA(D_L02_00161B34);
 extern int D_L02_00161B30_2D9F08 SDATA(D_L02_00161B30);
-extern char D_0013E633_2D9F08[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern Hero g_hero_r __asm__("D_0013F450");
-extern char D_0013A5E0_2D9F08[] __asm__("D_0013A5E0");
+extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 
 /* Trespasser puzzle (level 2): the hero rotates its three rings with the pad; when every ring is aligned the gate
    opens and the puzzle is marked solved. State 0 sets up, 1 waits for the hero, 2 is the puzzle view, 3 opens. */
@@ -450,21 +450,21 @@ void tresspasser_pad_update(Moby *moby) {
         }
         break;
     case 1:
-        if (((Hero *)(D_0013E633_2D9F08 + 0xE1D))->ground_moby == moby && ((Hero *)(D_0013E633_2D9F08 + 0xE1D))->air_frames.s == 0) {
+        if (((Hero *)(hero_globals_base_r + 0xE1D))->ground_moby == moby && ((Hero *)(hero_globals_base_r + 0xE1D))->air_frames.s == 0) {
             int holding_tool;
 
             if (data->h12 == 0) {
                 data->h12 = 1;
                 Moby_PlaySound_r(3, 0, moby);
             }
-            if (((Hero *)(D_0013E633_2D9F08 + 0xE1D))->items[0].moby != 0 && ((Hero *)(D_0013E633_2D9F08 + 0xE1D))->items[0].item_id == 0x1A) {
+            if (((Hero *)(hero_globals_base_r + 0xE1D))->items[0].moby != 0 && ((Hero *)(hero_globals_base_r + 0xE1D))->items[0].item_id == 0x1A) {
                 moby->glow_color = D_L02_00161B30_2D9F08;
                 holding_tool = 1;
             } else {
                 moby->glow_color = D_L02_00161B34_2D9F08;
                 holding_tool = 0;
             }
-            if (holding_tool && ((Hero *)(D_0013E633_2D9F08 + 0xE1D))->items[0].moby->command != 0) {
+            if (holding_tool && ((Hero *)(hero_globals_base_r + 0xE1D))->items[0].moby->command != 0) {
                 data->h10 = scale_ticks_r(0x12C);
                 data->h11C = 0;
                 data->h11E = 0;
@@ -538,15 +538,15 @@ void tresspasser_pad_update(Moby *moby) {
                 if (FastDecTimer_r(&data->h10)) {
                     moby->state = 3;
                 }
-            } else if (((PadDwords *)(D_0013A5E0_2D9F08 + 0x2460))->unmasked.l & 0xA00000000000) {
+            } else if (((PadDwords *)(pad_globals_base_r + 0x2460))->unmasked.l & 0xA00000000000) {
                 data->h11E |= 1;
                 Moby_PlaySound_r(0, 0, moby);
-                if (((PadDwords *)(D_0013A5E0_2D9F08 + 0x2460))->unmasked.w.hi & 0x8000) {
+                if (((PadDwords *)(pad_globals_base_r + 0x2460))->unmasked.w.hi & 0x8000) {
                     data->fE4 = -(g_frame_time_r * 6.2831855f);
                 } else {
                     data->fE4 = g_frame_time_r * 6.2831855f;
                 }
-            } else if (((PadState *)(D_0013A5E0_2D9F08 + 0x2460))->pressed & 0x1000) {
+            } else if (((PadState *)(pad_globals_base_r + 0x2460))->pressed & 0x1000) {
                 data->h11E |= 2;
                 data->iE0 = data->iE0 - 1;
                 if (data->iE0 == 0) {
@@ -554,7 +554,7 @@ void tresspasser_pad_update(Moby *moby) {
                 } else {
                     Moby_PlaySound_r(1, 0, moby);
                 }
-            } else if (((PadState *)(D_0013A5E0_2D9F08 + 0x2460))->pressed & 0x4000) {
+            } else if (((PadState *)(pad_globals_base_r + 0x2460))->pressed & 0x4000) {
                 data->h11E |= 2;
                 data->iE0 = data->iE0 + 1;
                 if (data->iE0 == 4) {
@@ -567,8 +567,8 @@ void tresspasser_pad_update(Moby *moby) {
             set_hero_animation_r(0x58, 0, scale_ticks_r(6));
         }
         if (i != 12) {
-            if (((((PadState *)(D_0013A5E0_2D9F08 + 0x2460))->pressed & 0x10) && aridia_help_popup_state_r.i0 == 0 && aridia_help_popup_state_r.i24 == -1)
-                || ((Hero *)(D_0013E633_2D9F08 + 0xE1D))->state.current != 0x72 || ((Hero *)(D_0013E633_2D9F08 + 0xE1D))->items[0].item_id != 0x1A) {
+            if (((((PadState *)(pad_globals_base_r + 0x2460))->pressed & 0x10) && aridia_help_popup_state_r.i0 == 0 && aridia_help_popup_state_r.i24 == -1)
+                || ((Hero *)(hero_globals_base_r + 0xE1D))->state.current != 0x72 || ((Hero *)(hero_globals_base_r + 0xE1D))->items[0].item_id != 0x1A) {
                 moby->state = 1;
                 CameraScript2_r(1);
                 request_hero_idle_state_for_vehicle_mode_r();
@@ -594,7 +594,7 @@ void tresspasser_pad_update(Moby *moby) {
 extern void ClampVectorLength(void *a, float x);
 extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
@@ -606,7 +606,7 @@ void align_hero_to_tresspasser_pad(char *moby) {
     float lim;
     char *p;
     Moby_GetJointWorldPos(moby, 0, v);
-    g = D_0013E633 + 0xE9D;
+    g = hero_globals_base + 0xE9D;
     FastVecSub(v, v, g);
     ClampVectorLength(v, g_frame_time * 4.0f);
     FastVecAdd(g, g, v);
@@ -618,7 +618,7 @@ void align_hero_to_tresspasser_pad(char *moby) {
     } else if (f < -lim) {
         f = -lim;
     }
-    p = D_0013E633 + 0xE1D;
+    p = hero_globals_base + 0xE1D;
     *(float *)(p + 0x98) = FastAddRots(f, *(float *)(p + 0x98));
 }
 extern void draw_tresspasser_puzzle_ring_arc(int, u32, float, float, float, float);
@@ -1262,7 +1262,7 @@ move:
     update_entity_matrix(data + 0x60, data + 0x40, moby + 0x40, moby + 0x40);
 }
 extern int aridia_mobys_x __asm__("D_L02_00160058") MACRO_ADDR;
-extern unsigned char D_0014171B_x[] __asm__("D_0014171B");
+extern unsigned char help_stats_base_x[] __asm__("D_0014171B");
 extern float g_frame_time_sq MACRO_ADDR;
 extern short versatarget_sparkle_lifetime;
 extern short versatarget_sparkle_color;
@@ -1315,7 +1315,7 @@ void swingshot_versatarget_update(char *m) {
         break;
     case VERSATARGET_STATE_ACTIVE:
         if (((struct Moby *)m)->oclass == 0x323) {
-            struct Hero *hero_ptr = (struct Hero *)(D_0013E633 + 0xE1D);
+            struct Hero *hero_ptr = (struct Hero *)(hero_globals_base + 0xE1D);
             float *rz = &((struct Moby *)m)->rot.z;
             float yaw = fast_atan2(hero_ptr->motion.pos.f[0] - ((struct Moby *)m)->pos.x,
                                           hero_ptr->motion.pos.f[1] - ((struct Moby *)m)->pos.y);
@@ -1340,13 +1340,13 @@ void swingshot_versatarget_update(char *m) {
             }
         }
         {
-            struct Hero *hero_reference = (struct Hero *)(D_0013E633 + 0xE1D);
+            struct Hero *hero_reference = (struct Hero *)(hero_globals_base + 0xE1D);
             if (hero_reference->state.current != HERO_STATE_GRAPPLE_SWING_ENTRY)
                 try_select_camera_offset_effect_moby_c(m);
         }
         break;
     case VERSATARGET_STATE_INACTIVE:
-        if ((D_0014171B_x + 0xAA35)[moby_data->unk30 + (g_current_level_index_r << 4)] != 0 ||
+        if ((help_stats_base_x + 0xAA35)[moby_data->unk30 + (g_current_level_index_r << 4)] != 0 ||
             (moby_data->unk3C != -1 &&
              ((linked_moby = (struct Moby *)(aridia_mobys_x + (moby_data->unk3C << 8))) == 0 ||
               linked_moby->state == 0xFE || linked_moby->state == 0xFD))) {
@@ -1456,7 +1456,7 @@ void tresspasser_update(char *moby) {
         if (frame_counter_ref % 10 != 0) {
             break;
         }
-        g = D_0013E633 + 0xE9D;
+        g = hero_globals_base + 0xE9D;
         if (!(vec_distance_xy(moby + 0x10, g) < 1.0f)) {
             break;
         }
@@ -1480,7 +1480,7 @@ void tresspasser_update(char *moby) {
         if (aridia_cinematic_mode == 2) {
             break;
         }
-        if (*(unsigned char *)(D_0013E633 + 0x2EC1) != 0) {
+        if (*(unsigned char *)(hero_globals_base + 0x2EC1) != 0) {
             if (sel == 0x16) {
                 grant_inventory_item(0x16, 0);
                 D_L02_0015F720 = 0;
@@ -1496,7 +1496,7 @@ void tresspasser_update(char *moby) {
             Help_Request(0x7D9, 0x13);
             aridia_fade_level = 1.0f;
             moby[0x20] = 4;
-            Hero_ResetToPosition(D_0013E633 + 0xE9D, D_0013E633 + 0xE9D + 0x10, 0x72, 1);
+            Hero_ResetToPosition(hero_globals_base + 0xE9D, hero_globals_base + 0xE9D + 0x10, 0x72, 1);
         } else {
             memcard_Save(0, -1);
             DeleteMoby(moby);
@@ -1546,7 +1546,7 @@ void tresspasser_update(char *moby) {
                 ApproachValue(&aridia_fade_level, 0.0f, g_frame_time * 4.0f);
             }
             if (aridia_fade_level == 1.0f) {
-                Hero_ResetToPosition(D_0013E633 + 0xE9D, D_0013E633 + 0xE9D + 0x10, 0, 0);
+                Hero_ResetToPosition(hero_globals_base + 0xE9D, hero_globals_base + 0xE9D + 0x10, 0, 0);
                 CameraScript2(0);
                 moby[0x20] = 5;
             }
@@ -1813,7 +1813,7 @@ void background_ship_1_update(char *moby) {
             }
         }
         if (g_current_level_index_r == 9) {
-            if (*(int *)(D_0013E633 + 0x2EA1) == 0x32) {
+            if (*(int *)(hero_globals_base + 0x2EA1) == 0x32) {
                 gaspar_skill_ship_kills = gaspar_skill_ship_kills + 1;
                 if (gaspar_skill_ship_kills >= 5) {
                     unsigned char *p = menu_item_enabled_115 + 1;
@@ -2017,7 +2017,7 @@ void background_ship_2_update(char *moby) {
         break;
     }
     case 1:
-        if (*(unsigned char *)(D_0013E633 + 0x2EC1) == 1 && g_current_level_index_r == 10) {
+        if (*(unsigned char *)(hero_globals_base + 0x2EC1) == 1 && g_current_level_index_r == 10) {
             DeleteMoby(moby);
             return;
         }
@@ -2072,7 +2072,7 @@ void background_ship_2_update(char *moby) {
             }
         }
         if (g_current_level_index_r == 9) {
-            if (*(int *)(D_0013E633 + 0x2EA1) == 0x32) {
+            if (*(int *)(hero_globals_base + 0x2EA1) == 0x32) {
                 gaspar_skill_ship_kills = gaspar_skill_ship_kills + 1;
                 if (gaspar_skill_ship_kills >= 5) {
                     unsigned char *p = menu_item_enabled_115 + 1;
@@ -2316,7 +2316,7 @@ extern float FastVecLength(void *);
 extern float FastVecDot(void *, void *);
 extern float FastArcSin(float);
 extern char aridia_player_camera[];
-extern char D_0013A5E0[];
+extern char pad_globals_base[];
 
 // Tracks the nearest target in front of the player that lies inside a view cone.
 void try_select_camera_offset_effect_moby(char *m) {
@@ -2328,9 +2328,9 @@ void try_select_camera_offset_effect_moby(char *m) {
     float f;
     float ang;
     if (*(short *)(p + 0x86) == 0) {
-        if (!(0.05f < FastAbsF(*(float *)(D_0013A5E0 + 0x2564)))) {
+        if (!(0.05f < FastAbsF(*(float *)(pad_globals_base + 0x2564)))) {
             h = g + 0x380;
-            FastVecSub(v, m + 0x10, D_0013E633 + 0xE9D);
+            FastVecSub(v, m + 0x10, hero_globals_base + 0xE9D);
             d = FastVecLength(v);
             if (d < 22.0f) {
                 if (0.0f < d) {

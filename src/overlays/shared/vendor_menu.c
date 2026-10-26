@@ -189,7 +189,7 @@ extern Vec4 D_L00_00180360;
 extern s32 skip_frame MACRO_ADDR;
 extern s32 gFadeLvl MACRO_ADDR;
 extern short D_L00_0015F500;
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 extern s32 vendor_auxiliary_moby_active MACRO_ADDR;
 extern s32 vendor_auxiliary_moby_load_pending MACRO_ADDR;
@@ -301,7 +301,7 @@ void open_vendor_menu(VendorMoby_pv *m) {
     *(s32 *)&D_L00_0015F500 = 0;
     HeroEnterMoveState(100, 1);
     {
-        u8 *hp = (u8 *)D_0013E633 + 0xE1D;
+        u8 *hp = (u8 *)hero_globals_base + 0xE1D;
         hp[0x20AC] = 1;
         hp[0x20A5] = 1;
     }
@@ -363,7 +363,7 @@ extern int func_0012DDC0(void);
 extern int skip_frame MACRO_ADDR;
 extern short cinematic_mode;
 extern unsigned char D_001414F5[] NOT_SDA;
-extern unsigned char D_0014171B[] NOT_SDA;
+extern unsigned char help_stats_base[] NOT_SDA;
 extern char vendor_close_hero_local_offset;
 
 /* Leaves the vendor screen: releases two handles, resets state, repositions the hero and restores the game state.
@@ -415,7 +415,7 @@ void close_vendor_menu(int exit_cutscene_completed) {
     }
     {
         VendorMenuState *vendor_state = (VendorMenuState *)vendor_menu;
-        MusicModeBlock *music = (MusicModeBlock *)((char *)D_0014171B + 0x100B5);
+        MusicModeBlock *music = (MusicModeBlock *)((char *)help_stats_base + 0x100B5);
         *((char *)vendor_state->moby + 0x20) = 1;
         if ((unsigned short)(music->mode - 6) >= 2) music->mode = 5;
         if (vendor_state->unk40) DeleteMoby(vendor_state->moby);
@@ -608,7 +608,7 @@ void restore_hero_after_vendor_exit_cutscene(void) {
     euler_rotation.z = FastAddRots(vendor_state_base->actor->yaw, -1.5707964f);
     Hero_ResetToPosition(&world_position, &euler_rotation, 0, 1);
     update_resource_counter();
-    mode_block = (MusicModeBlock *)((char *)D_0014171B + 0x100B5);
+    mode_block = (MusicModeBlock *)((char *)help_stats_base + 0x100B5);
     if (!(mode_block->mode >= 6 && mode_block->mode <= 7)) mode_block->mode = 5;
     func_0012E558(0x1D);
     music_Unpause();
@@ -644,7 +644,7 @@ void handle_vendor_auxiliary_moby_event(int a) {
                     *(int *)(b + 0x3C) = r0;
                     vendor_auxiliary_reaction_started = 1;
                     D_L00_00161254 = 0;
-                    *(int *)(D_0014171B + 0x100D1) = (r0 * 3 + 2) * 6 + *(int *)(b + 0x38) + 10000;
+                    *(int *)(help_stats_base + 0x100D1) = (r0 * 3 + 2) * 6 + *(int *)(b + 0x38) + 10000;
                     m[0x20] = 0xB;
                 }
             }
@@ -655,7 +655,7 @@ void handle_vendor_auxiliary_moby_event(int a) {
         *(int *)(b + 0x3C) = r1;
         vendor_auxiliary_reaction_started = a;
         D_L00_00161254 = 0;
-        *(int *)(D_0014171B + 0x100D1) = r1 * 0x12 + *(int *)(b + 0x38) + 10000;
+        *(int *)(help_stats_base + 0x100D1) = r1 * 0x12 + *(int *)(b + 0x38) + 10000;
         if (m[0x53] != a) MobyBlendAnimation(m, 1, 0, 10);
         m[0x20] = 10;
         break;
@@ -963,7 +963,7 @@ void update_vendor_purchase(void) {
                         grant_inventory_item(vendor_menu_r4.e[vendor_menu_r4.idx].item, 1);
                         vendor_menu_r4.f48 = vendor_menu_r4.e[vendor_menu_r4.idx].item;
                         if (vendor_menu_r4.e[vendor_menu_r4.idx].item == 0x18) {
-                            D_0013E633[0x2E12] = 1;
+                            hero_globals_base[0x2E12] = 1;
                         }
                         gBolts = gBolts - price;
                         build_vendor_menu_rows(vendor_menu_r4.f40 != 0);
@@ -1078,7 +1078,7 @@ extern u8 vendor_profile_mark_after_mobys[] ;
 extern u8 vendor_profile_mark_after_hero[] ;
 extern u8 vendor_profile_mark_after_parts[] ;
 extern unsigned char menu_item_enabled_115[];
-extern unsigned char D_0013A5E0[];
+extern unsigned char pad_globals_base[];
 extern short vendor_auxiliary_moby_local_offset;
 extern short vendor_item_display_local_offset;
 extern short vendor_spin_moby0_local_offset;
@@ -1250,19 +1250,19 @@ void func_L00_0029D988_r(void) {
     case 0:
     case 2:
         if (vendor_menu_r.f40 == 0 || vendor_menu_r.state == 2) {
-            if ((((upd_d.flags & (2)) || ((upd_d.flags & 0x10) && (*(s32 *)(D_0013A5E0 + 0x2604) & 0x200))))) {
+            if ((((upd_d.flags & (2)) || ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
                 d_00299108();
             }
-            if ((((upd_d.flags & (2)) || ((upd_d.flags & 0x10) && (*(s32 *)(D_0013A5E0 + 0x2604) & 0x200))))) {
+            if ((((upd_d.flags & (2)) || ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
                 d_update_visible();
                 d_0022dc50();
             }
             d_timing(t0_d, 3);
-            if ((((upd_d.flags & (1)) || ((upd_d.flags & 0x10) && (*(s32 *)(D_0013A5E0 + 0x2604) & 0x200))))) {
+            if ((((upd_d.flags & (1)) || ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
                 d_002070d0();
             }
             d_timing(t1_d, 7);
-            if ((((upd_d.flags & (4)) || ((upd_d.flags & 0x10) && (*(s32 *)(D_0013A5E0 + 0x2604) & 0x200))))) {
+            if ((((upd_d.flags & (4)) || ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
                 d_00217b88();
             }
             d_timing(t2_d, 5);
@@ -1317,12 +1317,12 @@ void func_L00_0029D988_r(void) {
             d_eaa30(&vendor_menu_r.f70);
         }
         d_00201a28();
-        if ((((upd_d.flags & (2)) || ((upd_d.flags & 0x10) && (*(s32 *)(D_0013A5E0 + 0x2604) & 0x200))))) {
+        if ((((upd_d.flags & (2)) || ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
             d_00297e70();
         }
         break;
     case 1:
-        if (G1248_d == 0 && *(s16 *)(D_0014171B + 0x100BD) == 0 && G124C_d != 0) {
+        if (G1248_d == 0 && *(s16 *)(help_stats_base + 0x100BD) == 0 && G124C_d != 0) {
             d_0029a330();
             vendor_menu_r.f24 = vendor_menu_r.f14;
             d_0020c5f0(vendor_menu_r.f24, 0xC);
@@ -1508,11 +1508,11 @@ void func_L00_0029D988_r(void) {
                 vendor_menu_r.state = 2;
                 vendor_menu_r.f8 = 0;
                 vendor_menu_r.f4 = 0;
-                if (((HeroD *)(D_0013E633 + 0xE1D))->moby != 0) {
-                    d_00204a40(((HeroD *)(D_0013E633 + 0xE1D))->moby->oclass, -1);
-                    ((HeroD *)(D_0013E633 + 0xE1D))->moby->pclass =
-                        cls_d[((HeroD *)(D_0013E633 + 0xE1D))->moby->class_id];
-                    d_0020c880(((HeroD *)(D_0013E633 + 0xE1D))->moby);
+                if (((HeroD *)(hero_globals_base + 0xE1D))->moby != 0) {
+                    d_00204a40(((HeroD *)(hero_globals_base + 0xE1D))->moby->oclass, -1);
+                    ((HeroD *)(hero_globals_base + 0xE1D))->moby->pclass =
+                        cls_d[((HeroD *)(hero_globals_base + 0xE1D))->moby->class_id];
+                    d_0020c880(((HeroD *)(hero_globals_base + 0xE1D))->moby);
                 }
             }
         } else if (G1F34_d != 0) {

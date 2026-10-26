@@ -16,8 +16,8 @@ extern float novalis_fade_level MACRO_ADDR;
 extern int relocated_address_base MACRO_ADDR;
 extern short D_L01_0015F500;
 extern char novalis_vendor_screen_anchor_offset;
-extern char D_0013E633[];
-extern unsigned char D_0014171B[] NOT_SDA;
+extern char hero_globals_base[];
+extern unsigned char help_stats_base[] NOT_SDA;
 extern void func_0012E528(int);
 extern void music_Pause(int);
 extern void func_0012DDC0(void);
@@ -42,7 +42,7 @@ extern int Music_ContinueStreamIfReady(void);
 
 /* Opens the vendor screen for moby m in level lvl: sets up its camera, resets the screen state and runs it until it closes. */
 void initialize_vendor_screen(char *m, int lvl) {
-    char *g = D_0013E633 + 0xE1D;
+    char *g = hero_globals_base + 0xE1D;
     char *s = novalis_vendor_screen_state;
     char *c = fx_cutscene;
     char *sc;
@@ -88,15 +88,15 @@ void initialize_vendor_screen(char *m, int lvl) {
     *(int *)(g + 0x20B8) = lvl;
     select_world_object_resource_tables(novalis_item_defs[lvl].f10, -1);
     load_scene_chunks_with_fade(r);
-    q = (char *)D_0014171B + 0x100B5;
+    q = (char *)help_stats_base + 0x100B5;
     *(int *)(q + 0x1C) = 0x2734;
     parse_space_scene_chunk(0);
-    while (qq = (char *)D_0014171B + 0x100B5, *(short *)(qq + 0x5A) != 3) {
+    while (qq = (char *)help_stats_base + 0x100B5, *(short *)(qq + 0x5A) != 3) {
         sound_update();
         func_00122598(0);
     }
     c2 = fx_cutscene;
-    g2 = D_0013E633 + 0xE1D;
+    g2 = hero_globals_base + 0xE1D;
     update_item_tint_from_hero(*(int *)(c2 + 0x17C), *(int *)(g2 + 0x2080));
     Music_ContinueStreamIfReady();
 }

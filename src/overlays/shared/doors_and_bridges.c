@@ -25,7 +25,7 @@ void AmbientStreamL07Update(unsigned char *moby)
 }
 extern int D_0015EE84_30D370 SDATA(D_0015EE84);
 extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
-extern char D_0013E633_30D370[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern void set_moby_list_state_r(int list, int state) __asm__("func_L01_0026F090");
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
@@ -69,7 +69,7 @@ void timed_activation_pads_update(unsigned char *moby)
     }
 
     if (*(int *)(d + 0x8) == 0) {
-        p = (char *)D_0013E633_30D370 + 0xE1D;
+        p = (char *)hero_globals_base_r + 0xE1D;
         if (*(short *)(p + 0x30E) == 0)
             flag = *(unsigned char **)(p + 0x2FC) == moby;
         if (0.7853982f < FastAbsF_r(((Moby *)moby)->rot.y)) {

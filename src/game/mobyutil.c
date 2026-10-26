@@ -132,7 +132,7 @@ extern unsigned char menu_item_enabled_73 NOT_SDA;
 extern int D_0013DB24 NOT_SDA;
 extern unsigned char menu_item_enabled_85 NOT_SDA;
 extern int D_0013DC34 NOT_SDA;
-extern unsigned char D_0013D605 NOT_SDA;
+extern unsigned char race_gates_base NOT_SDA;
 extern int item_available NOT_SDA;
 extern unsigned char menu_item_enabled_20 NOT_SDA;
 extern unsigned char gemlik_available NOT_SDA;
@@ -514,7 +514,7 @@ LINKER_REMNANT("asm/remnants/text", func_00214770);
 extern short D_001600C8;
 extern unsigned char damage_reaction_code_table[];
 extern char damage_reaction_scale_table[];
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern char g_hero[];
 extern int suck_get_aim_height(char *);
 extern int read_state_field(char *);
@@ -694,7 +694,7 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
             *(short *)(an + 0x1C) = scale_game_frame_count(0x3C);
             break;
         case 7:
-            if (D_0013E633[0] != 0)
+            if (hero_globals_base[0] != 0)
                 *(short *)(an + 0x1C) = scale_game_frame_count(0x2D);
             else
                 *(short *)(an + 0x1C) = scale_game_frame_count(0x3C);

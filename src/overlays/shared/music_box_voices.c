@@ -124,14 +124,14 @@ extern float FastAbsF(float);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void set_requested_state_and_mark_changes(int a, int b, int c, int d, int e);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 /* reverb box sound update: starts or stops the sound as the listener enters or leaves the box */
 void update_requested_state_from_box_position(char *moby) {
     float a[4];
     float b[4];
     unsigned char *data = *(unsigned char **)(moby + 8);
-    FastVecSub(a, D_0013E633 + 0xE9D, moby + 0x40);
+    FastVecSub(a, hero_globals_base + 0xE9D, moby + 0x40);
     a[3] = 0;
     matrix_mul_vec3(b, a, moby + 0x50);
     if (FastAbsF(b[0]) <= 1.0f && FastAbsF(b[1]) <= 1.0f && FastAbsF(b[2]) <= 1.0f) {
@@ -185,7 +185,7 @@ void update_music_box_exit_trigger(int *moby) {
     float v[8];
     int *p = (int *)moby[2];
     if (((unsigned *)p)[3] != 0xFFFFFFFF) {
-        FastVecSub(v, D_0013E633 + 0xE9D, (char *)moby + 0x40);
+        FastVecSub(v, hero_globals_base + 0xE9D, (char *)moby + 0x40);
         v[3] = 0;
         matrix_mul_vec3(v + 4, v, (char *)moby + 0x50);
         if (FastAbsF(v[4]) <= 1.0f && FastAbsF(v[5]) <= 1.0f && FastAbsF(v[6]) <= 1.0f) {

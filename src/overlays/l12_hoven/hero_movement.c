@@ -7,14 +7,14 @@
 #include "hero.h"
 #include "moby.h"
 
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float FastAbsF(float);
 extern void exit_hero_vehicle_mode_if_mode_three(void);
 extern int HeroL12_SetMoveState(int, int);
 
 /* Level 12 pickup/ability state update. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l12/ui_help_0022de30.c, FUN_L12_0022de30. */
 void update_hero_ground_material_flags(void) {
-    struct Hero *hero_for_ground_flags_update = (struct Hero *)(D_0013E633 + 0xE1D);
+    struct Hero *hero_for_ground_flags_update = (struct Hero *)(hero_globals_base + 0xE1D);
     unsigned char saved;
     int state;
     saved = hero_for_ground_flags_update->ground_sound_class;
@@ -36,47 +36,47 @@ void update_hero_ground_material_flags(void) {
         }
     }
     if (state == 0xE) {
-        struct Hero *hero_for_surface_update = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *hero_for_surface_update = (struct Hero *)(hero_globals_base + 0xE1D);
         hero_for_surface_update->base_condition = 1;
         hero_for_surface_update->water_depth = 0.2f;
         hero_for_surface_update->water_surface_z = hero_for_surface_update->ground_z.f + 0.2f;
     }
     if (state == 0) {
-        struct Hero *hero_for_water_height_check = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *hero_for_water_height_check = (struct Hero *)(hero_globals_base + 0xE1D);
         struct Hero *hero_for_base_condition_update;
         float water_surface_ground_z_delta = hero_for_water_height_check->water_surface_z - hero_for_water_height_check->ground_z.f;
         hero_for_water_height_check->water_depth = water_surface_ground_z_delta;
         if (water_surface_ground_z_delta < 0.85f && 0.25f < water_surface_ground_z_delta)
             hero_for_water_height_check->wading = 1;
-        hero_for_base_condition_update = (struct Hero *)(D_0013E633 + 0xE1D);
+        hero_for_base_condition_update = (struct Hero *)(hero_globals_base + 0xE1D);
         hero_for_base_condition_update->base_condition = 1;
     }
     if (state == 2) {
-        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         d->on_magnet_ground = 1;
     }
     if (state == 7) {
-        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         d->on_ice_ground = 1;
     }
     if (state == 0xD) {
-        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         d->selector_13 = 1;
     }
     if (state == 8) {
-        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         d->on_slip_ground = 1;
     }
     if (state == 9) {
-        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         d->unk12EE = 1;
     }
     if (state == 0xC) {
-        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         d->on_slip_ground = 1;
     }
     {
-        struct Hero *hero_for_sink_check = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *hero_for_sink_check = (struct Hero *)(hero_globals_base + 0xE1D);
         if (hero_for_sink_check->selector_13) {
             if (hero_for_sink_check->state.current != 0x7F) {
                 float water_surface_distance = FastAbsF(hero_for_sink_check->water_surface_z - (hero_for_sink_check->motion.pos.f[2] + 0.25f));
@@ -393,7 +393,7 @@ typedef struct { char p0[0x58]; unsigned short f58; unsigned short f5A; int f5C;
 typedef struct { char p0[0x158]; float f158; char p15C[4]; float f160; char p164[4]; int f168; char p16C[0x1E4]; float f350[4]; } Cam;
 typedef struct { char p0[8]; float f8; float fC; char p10[8]; float f18; } S17BEB8;
 extern PadState g_controller_state;
-extern char D_0013A5E0[];
+extern char pad_globals_base[];
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern S141948 usage_stats;
@@ -1627,7 +1627,7 @@ void Hero_UpdateStatePhysicsL12(void) {
 
                     a = FastAddRots(g_hero.motion.rot.f[2], 3.1415927f);
                     s = g_frame_time * 2.5f;
-                    if (*(int *)(D_0013A5E0 + 0x2600) & 0xA) {
+                    if (*(int *)(pad_globals_base + 0x2600) & 0xA) {
                         s = g_frame_time * 3.0f;
                     }
                     g_hero.motion.velocity.f[0] += FastCos(a) * s;
@@ -2346,7 +2346,7 @@ void Hero_UpdateStatePhysicsL12(void) {
                         g_hero.ground_speed = 0.0f;
                     }
                     if (g_hero.rail_land_frames != 0) {
-                        if (*(int *)(D_0013A5E0 + 0x2634) != 0) {
+                        if (*(int *)(pad_globals_base + 0x2634) != 0) {
                             if (g_hero.on_flagged_ground_moby != 0) {
                                 g_hero.ground_speed = 0.0f;
                             }

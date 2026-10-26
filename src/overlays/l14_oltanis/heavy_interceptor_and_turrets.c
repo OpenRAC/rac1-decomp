@@ -7,11 +7,11 @@
 #include "vector.h"
 #include "moby.h"
 
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern int *oltanis_paths[];
 typedef struct { char pad0[0x454]; unsigned char collected[1]; } CapLevelState;
 extern CapLevelState D_L14_001BBCC0;
-extern unsigned char D_0014171B[] NOT_SDA;
+extern unsigned char help_stats_base[] NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int oltanis_moby_killed_bits[];
 extern float g_frame_time MACRO_ADDR;
@@ -209,7 +209,7 @@ void KeyframePlatformUpdate(unsigned char *moby) {
             voice = vars->voice;
             vars->speed = 0.0f;
             if (voice != -1) {
-                VoicePoolWindow *slot = (VoicePoolWindow *)((u8 *)(D_0013E633 + 0x1D) + voice * 0x70);
+                VoicePoolWindow *slot = (VoicePoolWindow *)((u8 *)(hero_globals_base + 0x1D) + voice * 0x70);
 
                 if (slot->voice.owner == m && slot->voice.state != 0) {
                     Sound_StopSlot(voice);
@@ -244,7 +244,7 @@ void KeyframePlatformUpdate(unsigned char *moby) {
                 vars->wait = scale_ticks(15);
                 voice = vars->voice;
                 if (voice != -1) {
-                    VoicePoolWindow *slot = (VoicePoolWindow *)((u8 *)(D_0013E633 + 0x1D) + voice * 0x70);
+                    VoicePoolWindow *slot = (VoicePoolWindow *)((u8 *)(hero_globals_base + 0x1D) + voice * 0x70);
 
                     if (slot->voice.owner == m && slot->voice.state != 0) {
                         Sound_StopSlot(voice);
@@ -2301,7 +2301,7 @@ void minibomber_update(Moby *moby) {
                                  -1, 0);
         i = d->f108;
         if (i != -1) {
-            char *e = D_0013E633 + 0x1D + i * 0x70;
+            char *e = hero_globals_base + 0x1D + i * 0x70;
             if (*(Moby **)(e + 0x88) == moby && *(unsigned char *)(e + 0x74) != 0) {
                 Sound_StopSlot(i);
             }
@@ -2406,7 +2406,7 @@ void update_minibomber_target(char *moby) {
         int *p = oltanis_paths[*(int *)(data + 0xD4)];
         FindNearestEligibleMoby(255.0f, moby, data + 0x70, 0, 0, p + 4, *p);
         if (*(int *)(data + 0xB0) == 0) {
-            *(int *)(data + 0xB0) = *(int *)(D_0013E633 + 0x2E9D);
+            *(int *)(data + 0xB0) = *(int *)(hero_globals_base + 0x2E9D);
         }
     }
 }
@@ -2558,7 +2558,7 @@ void hide_minibomber_and_release_voice(char *moby)
     *(int *)&((Moby *)moby)->collision = 0;
     idx = *(int *)(data + 0x108);
     if (idx != -1) {
-        char *e = D_0013E633 + 0x1D + idx * 0x70;
+        char *e = hero_globals_base + 0x1D + idx * 0x70;
         if (*(char **)(e + 0x88) == moby && *(unsigned char *)(e + 0x74) != 0) {
             Sound_StopSlot(idx);
         }
@@ -2799,7 +2799,7 @@ unsigned char *spawn_flying_debris(char *owner, float angle, char *posp) {
         FastVecSub(v1, v0, owner + 0x10);
         vec[6] = 0.0f;
         vec_scale_to_length(v1, v1, random_float_between(frame_scale * 0.075f, frame_scale * 0.2f));
-        g = D_0013E633 + 0x10AD;
+        g = hero_globals_base + 0x10AD;
         FastVecCross(vec + 8, g, v1);
         build_look_at_matrix(d, v1, g, randf_sym(0.0f, 0.7853982f));
         *(float *)(d + 8) = random_float_between(frame_scale * 0.05f, frame_scale * 0.32f);
@@ -3542,7 +3542,7 @@ extern float FastArcSin(float x);
 // Turns a moby's tail toward its target: a spring on each of its three points, with the axis-angle rotation for the tilt.
 void update_platform_tilt_basis(char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     float v[4];
     float up[4];
     float d[4];
@@ -3558,13 +3558,13 @@ void update_platform_tilt_basis(char *moby) {
 
     if ((*(char **)(g + 0x2FC) == moby && *(short *)(g + 0x30E) == 0) ||
         (*(char **)(g + 0x4F8) == moby && *(int *)(g + 0x208C) == 3)) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         *(char *)&((Moby *)moby)->command = 1;
         if (FastAbsF(*(float *)(p + 0x80) - ((Moby *)moby)->pos.x) < 0.1f &&
             FastAbsF(*(float *)(p + 0x84) - ((Moby *)moby)->pos.y) < 0.1f) {
             qcopy(v, up);
         } else {
-            FastVecSub(d, (char *)D_0013E633 + 0xE9D, moby + 0x10);
+            FastVecSub(d, (char *)hero_globals_base + 0xE9D, moby + 0x10);
             d[2] = d[2] + *(float *)&oltanis_tilting_platform_aim_height;
             len = FastVecLength(d);
             if (len == 0.0f) {
@@ -3643,7 +3643,7 @@ void update_ribbon_effect_moby(char *moby) {
         *(int *)(data + 0x204) = -1;
         break;
     case MOBY_STATE_UPDATE:
-        x = (struct Hero *)(D_0013E633 + 0xE1D);
+        x = (struct Hero *)(hero_globals_base + 0xE1D);
         if (x->state.control_mode != 0xF ||
             (x->rail_spline !=
                  *(int *)((*(int *)(data + 0x1F4) << 5) + race_paths + 0x10) &&
@@ -3675,7 +3675,7 @@ end:
     voice_slot_index = *(int *)(data + 0x204);
     if (voice_slot_index >= 0) {
         if (voice_slot_index != -1) {
-            char *voice_slot_entry = D_0013E633 + 0x1D + voice_slot_index * 0x70;
+            char *voice_slot_entry = hero_globals_base + 0x1D + voice_slot_index * 0x70;
             if (*(char **)(voice_slot_entry + 0x88) == moby && *(unsigned char *)(voice_slot_entry + 0x74) != 0) {
                 Sound_StopSlot(voice_slot_index);
             }

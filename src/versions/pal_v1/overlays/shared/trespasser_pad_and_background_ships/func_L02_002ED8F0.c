@@ -86,7 +86,7 @@ void background_ship_1_update(char *moby) {
             }
         }
         if (g_current_level_index_r == 9) {
-            if (*(int *)(D_0013E633 + 0x2EA1) == 0x32) {
+            if (*(int *)(hero_globals_base + 0x2EA1) == 0x32) {
                 gaspar_skill_ship_kills = gaspar_skill_ship_kills + 1;
                 if (gaspar_skill_ship_kills >= 5) {
                     unsigned char *p = menu_item_enabled_115 + 1;

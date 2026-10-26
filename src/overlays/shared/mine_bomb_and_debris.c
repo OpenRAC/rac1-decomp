@@ -96,7 +96,7 @@ extern Cam910 player_camera;
 extern M910 *g_coll_hit_moby;
 extern float coll_hit_point_z[];
 extern char coll_resolved_pos[];
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
@@ -425,7 +425,7 @@ void mine_update(M910 *m) {
                         m->state = 1;
                         s = v->i68;
                         if (s != -1) {
-                            char *tab = D_0013E633 + 0x1D;
+                            char *tab = hero_globals_base + 0x1D;
                             char *e = tab + s * 0x70;
 
                             if (*(M910 **)(e + 0x88) == m && *(unsigned char *)(e + 0x74) != 0) {
@@ -450,7 +450,7 @@ void mine_update(M910 *m) {
                         m->state = 1;
                         s = v->i68;
                         if (s != -1) {
-                            char *tab = D_0013E633 + 0x1D;
+                            char *tab = hero_globals_base + 0x1D;
                             char *e = tab + s * 0x70;
 
                             if (*(M910 **)(e + 0x88) == m && *(unsigned char *)(e + 0x74) != 0) {
@@ -469,7 +469,7 @@ void mine_update(M910 *m) {
                     m->state = 1;
                     s = v->i68;
                     if (s != -1) {
-                        char *tab = D_0013E633 + 0x1D;
+                        char *tab = hero_globals_base + 0x1D;
                         char *e = tab + s * 0x70;
 
                         if (*(M910 **)(e + 0x88) == m && *(unsigned char *)(e + 0x74) != 0) {
@@ -1029,7 +1029,7 @@ void draw_bomb_landing_marker(char *moby) {
         draw_world_quad(&q, M, 1);
     }
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern char *spawn_79(int) __asm__("func_0020D348");
 
 typedef int u128 __attribute__((mode(TI)));
@@ -1059,7 +1059,7 @@ char *spawn_bomb(int owner, void *pos) {
         *(short *)(v + 0x56) = 0;
         *(short *)(v + 0x6A) = 0;
         *(int *)(v + 0x60) = 0;
-        g = D_0013E633 + 0xE1D;
+        g = hero_globals_base + 0xE1D;
         *(float *)(v + 0x6C) = fast_atan2(*(float *)(g + 0x670), *(float *)(g + 0x674));
         *(int *)(v + 0x64) = 0;
         qcopy(m + 0x10, pos);
@@ -1075,7 +1075,7 @@ char *spawn_bomb(int owner, void *pos) {
     }
     return m;
 }
-extern char D_0013A5E0[];
+extern char pad_globals_base[];
 extern char collision_hit_point[];
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
@@ -1184,7 +1184,7 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
             }
             total = g_frame_time_sq * 11.0f;
             rp = result;
-            if (*(int *)(D_0013A5E0 + 0x2600) & 5) {
+            if (*(int *)(pad_globals_base + 0x2600) & 5) {
                 e = (char *)&D_E910;
                 height = IntToFloat(*(unsigned char *)(e + 0xa)) * 2.5f + 8.5f;
             } else {
@@ -1229,7 +1229,7 @@ typedef struct {
     int hit_count;
 } Land_AE6B0;
 extern void AddDrawCallback(void *, void *);
-extern unsigned char D_0013E15A[];
+extern unsigned char screen_globals_base[];
 extern void draw_bomb_landing_marker(char *moby);
 
 #define v ((Land_AE6B0 *)vp)
@@ -1237,7 +1237,7 @@ extern void draw_bomb_landing_marker(char *moby);
 int predict_throw_landing(void *vp, void *m, int mode) {
     V_AE6B0 position, velocity, previous, hero_position, offset, start;
     int timer, found = 0, object_hit = 0, i;
-    char *hero = D_0013E633 + 0xE1D;
+    char *hero = hero_globals_base + 0xE1D;
         char *last;
     char *cam;
     char *h;
@@ -1269,7 +1269,7 @@ int predict_throw_landing(void *vp, void *m, int mode) {
         if (t50)
             v->holder_flag = 1;
     }
-    h = D_0013E633 + 0xE1D;
+    h = hero_globals_base + 0xE1D;
     cam = *(char **)(h + 0x2080);
     hero_position = *(V_AE6B0 *)(cam + 0x10);
     hero_position.f[2] = position.f[2];
@@ -1304,8 +1304,8 @@ int predict_throw_landing(void *vp, void *m, int mode) {
             found = 1;
         }
     }
-    if (D_0013E15A[0x4D0] != 0) {
-        char *g = D_0013E633 + 0xE1D;
+    if (screen_globals_base[0x4D0] != 0) {
+        char *g = hero_globals_base + 0xE1D;
         if (*(int *)(g + 0x2084) == 1) {
             float z = velocity.f[2];
             FastVecScale(&velocity, &velocity, 1.5f);
@@ -1327,7 +1327,7 @@ int predict_throw_landing(void *vp, void *m, int mode) {
             if (!(position.f[2] - hero_position.f[2] < 2.0f))
                 goto check_surface;
             {
-                char *g = D_0013E633 + 0xE1D;
+                char *g = hero_globals_base + 0xE1D;
                 if (((char *)D_H910.moby == *(char **)(g + 0x2080) || (char *)D_H910.moby == v->holder) &&
                     timer >= scale_ticks(300) - scale_ticks(10))
                     continue;
@@ -2078,7 +2078,7 @@ void nanotech_crate_fragment_update(char *moby) {
 extern unsigned char *GetFlaggedPvarWord(unsigned char *);
 extern int coll_line(void *, void *, int, int, int);
 extern void append_unique_moby_index(int, short *, short);
-extern unsigned char D_0013E633_u[] __asm__("D_0013E633") NOT_SDA;
+extern unsigned char hero_globals_base_u[] __asm__("D_0013E633") NOT_SDA;
 extern char collision_hit_point[];
 extern short active_homing_missiles[];
 
@@ -2135,18 +2135,18 @@ unsigned char *spawn_devastator_missile(unsigned char *a, Vec4 *pos, unsigned ch
             *(float *)(v + 0x1C) = f14;
             *(float *)(v + 8) += f14;
         }
-        x = FastVecLength(D_0013E633_u + 0xF5D);
+        x = FastVecLength(hero_globals_base_u + 0xF5D);
         n = scale_ticks(g_frame_time * 0.1f < x ? 0x3C : 0xF);
         *(short *)(v + 0x3E) = n;
         *(short *)(v + 0x3C) = n;
         if (a != 0 && a[0x20] != 0xFE && a[0x20] != 0xFD) {
             tmp.q = ((Vec4 *)(a + 0x10))->q;
         } else {
-            qcopy(&tmp, D_0013E633_u + 0xE9D);
+            qcopy(&tmp, hero_globals_base_u + 0xE9D);
             tmp.f[2] += 0.6f;
         }
         tmp.f[2] = pos->f[2];
-        if (coll_line(&tmp, pos, 0, *(int *)(D_0013E633_u + 0x2E9D), 0)) {
+        if (coll_line(&tmp, pos, 0, *(int *)(hero_globals_base_u + 0x2E9D), 0)) {
             ((Moby *)m)->command = 1;
             qcopy(m + 0x10, collision_hit_point);
         }

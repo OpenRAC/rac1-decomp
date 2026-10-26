@@ -3,14 +3,14 @@ void update_moby_hit_stats_and_state(char *m) {
     char *info = MobyGetHitMessage(m, 0x330000, 0);
     char *g;
     ((unsigned char *)m)[0xA4] = 0xFF;
-    g = D_0013E633 + 0xE1D;
+    g = hero_globals_base + 0xE1D;
     if (*(int *)(g + 0x2084) != 0x32) {
         *(unsigned short *)(m + 0x34) &= 0xEFFF;
     } else {
         *(unsigned short *)(m + 0x34) |= 0x1000;
     }
     if (info != 0) {
-        char *st = (char *)D_0014171B + 0x34D;
+        char *st = (char *)help_stats_base + 0x34D;
         int st2;
         int cur;
         if (*(unsigned short *)(st + 0x157E8) < 0xFFFF) {
@@ -41,7 +41,7 @@ void update_moby_hit_stats_and_state(char *m) {
             }
         }
     } else if (((unsigned char *)m)[0x20] == 5) {
-        char *g2 = D_0013E633 + 0xE1D;
+        char *g2 = hero_globals_base + 0xE1D;
         if (*(int *)(g2 + 0x2084) != 0x32) {
             m[0x20] = 4;
             *(int *)(m + 0x94) = 0;

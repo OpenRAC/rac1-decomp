@@ -155,7 +155,7 @@ void update_nanotech_ball_grounding_and_fall(D9668Moby *m) {
 }
 typedef struct { float x, y, z, w; } Vx __attribute__((aligned(16)));
 extern char g_debug_camera[] NOT_SDA;
-extern char D_0013E633[] NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
 extern float g_frame_time MACRO_ADDR;
 extern short nanotech_spark_speed_min;
 extern short nanotech_spark_speed_max;
@@ -179,7 +179,7 @@ void spawn_nanotech_ball_collection_effect_pair(char *m) {
     Vx c;
     char *p = m + 0x10;
     FastVecSub(&a, g_debug_camera, p);
-    FastVecScale(&b, D_0013E633 + 0x10AD,
+    FastVecScale(&b, hero_globals_base + 0x10AD,
         random_float_between(*(float *)&nanotech_spark_speed_min * g_frame_time, *(float *)&nanotech_spark_speed_max * g_frame_time));
     build_look_at_matrix(&c, &b, random_angle_radians(), &a);
     spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&nanotech_spark_color_a, nanotech_spark_life, random_integer_below(0xFF) & 0xFF, 1, *(float *)&nanotech_spark_size_a);
@@ -277,7 +277,7 @@ void update_nanotech_ball_slot_offsets(void) {
         vec_scale_to_length(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16, *(float *)&nanotech_slot_orbit_radius);
     }
 }
-extern char D_0013E633[] NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
 extern int coll_line(void *, void *, int, int, int);
 
 // tests a sightline from a moby (raised 0.5) to the player's position (raised 0.5); true if clear
@@ -285,7 +285,7 @@ int is_nanotech_ball_target_line_clear(char *m) {
     Vz a, b;
     qcopy(&a, m + 0x10);
     a.z += 0.5f;
-    qcopy(&b, *(char **)(D_0013E633 + 0x2E9D) + 0x10);
+    qcopy(&b, *(char **)(hero_globals_base + 0x2E9D) + 0x10);
     b.z += 0.5f;
     return coll_line(&a, &b, 0x12, 0, 0) == 0;
 }
@@ -326,7 +326,7 @@ typedef struct D_2D9EA0 {
     char p70[0xC];
     int f7C;
 } D_2D9EA0;
-extern char D_0013E633_2D9EA0[] __asm__("D_0013E633") NOT_SDA;
+extern char hero_globals_base_r[] __asm__("D_0013E633") NOT_SDA;
 extern V_2D9EA0 nanotech_slot_offsets_r[] __asm__("D_L00_001E3FF0") NOT_SDA;
 extern V_2D9EA0 nanotech_slot_spin_axes_r[] __asm__("D_L00_001E4070");
 extern float nanotech_slot_pulse_phase_steps_r[] __asm__("D_L00_001E17F0");
@@ -467,7 +467,7 @@ void nanotech_ball_update(Moby *m) {
             }
         }
         {
-            Hero *g = (Hero *)(D_0013E633_2D9EA0 + 0xE1D);
+            Hero *g = (Hero *)(hero_globals_base_r + 0xE1D);
             int lim = hero_max_health_r;
             if (g->vehicle_mode == 1) lim = 4;
             if (m->state != 1 && primary_nanotech_ball_moby_r != 0 && ((D_2D9EA0 *)primary_nanotech_ball_moby_r->pvars) != 0 && g->health.hp != 0
@@ -559,13 +559,13 @@ void nanotech_ball_update(Moby *m) {
     case 3:
         if (primary_nanotech_ball_moby_r == m) update_nanotech_ball_slot_offsets_r();
         if (d->h56 != 0) {
-            FastVecScale_r(&m->pos, D_0013E633_2D9EA0 + 0x10AD, -D_L00_00161B24_2D9EA0);
-            FastVecAdd_r(&m->pos, D_0013E633_2D9EA0 + 0xE9D, &m->pos);
+            FastVecScale_r(&m->pos, hero_globals_base_r + 0x10AD, -D_L00_00161B24_2D9EA0);
+            FastVecAdd_r(&m->pos, hero_globals_base_r + 0xE9D, &m->pos);
             m->rot.w = 0.52359879f;
             if (update_nanotech_ball_collection_effects_r(m) != 0 && random_integer_below_r(5) == 0) spawn_nanotech_ball_collection_effect_pair_r(m);
         }
         {
-            Hero *g = (Hero *)(D_0013E633_2D9EA0 + 0xE1D);
+            Hero *g = (Hero *)(hero_globals_base_r + 0xE1D);
             int lim = hero_max_health_r;
             if (g->vehicle_mode == 1) lim = 4;
             if (g->health.hp == lim && g->invulnerable_frames != 0 && draw_map51_r[2] != 0) {
@@ -589,8 +589,8 @@ void nanotech_ball_update(Moby *m) {
             else DeleteMoby_r(m);
         } else {
             int i;
-            FastVecScale_r(&v20, D_0013E633_2D9EA0 + 0x10AD, -D_L00_00161B24_2D9EA0);
-            FastVecAdd_r(&v20, D_0013E633_2D9EA0 + 0xE9D, &v20);
+            FastVecScale_r(&v20, hero_globals_base_r + 0x10AD, -D_L00_00161B24_2D9EA0);
+            FastVecAdd_r(&v20, hero_globals_base_r + 0xE9D, &v20);
             for (i = 0; i < 8; i++) {
                 Part_2D9EA0 *e = d->slots[i];
                 Ext_2D9EA0 *x;
@@ -598,7 +598,7 @@ void nanotech_ball_update(Moby *m) {
                 x = (Ext_2D9EA0 *)(e + 1);
                 if (FastDecTimer_r(&x->h1E)) {
                     if (d->h56 == 0) {
-                        Hero *g = (Hero *)(D_0013E633_2D9EA0 + 0xE1D);
+                        Hero *g = (Hero *)(hero_globals_base_r + 0xE1D);
                         int lim = hero_max_health_r;
                         if (g->vehicle_mode == 1) lim = 4;
                         if (g->health.hp != 0) {
@@ -1005,14 +1005,14 @@ int invoke_optional_moby_callback_or_return_one(char *a, void *b) {
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern char player_camera[];
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 /* picks camera yaw/pitch style outputs and a position offset per camera mode */
 void compute_suck_cannon_suction_aim_and_origin(char *m, float *a, float *b, float *c) {
     float v[3];
     char *g;
     Moby_GetJointWorldPos(m, 0, c);
-    g = D_0013E633 + 0xE1D;
+    g = hero_globals_base + 0xE1D;
     if (*(int *)(g + 0x2084) == 1 || *(int *)(g + 0x2084) == 0x1E) {
         char *s = player_camera;
         v[1] = 0;
@@ -1228,7 +1228,7 @@ extern Hero40 hero40 __asm__("D_0013F450");
 typedef struct { u8 pad[9]; u8 gold; } Order40;
 extern Order40 order40 __asm__("D_0013E620");
 extern Input40 input40 __asm__("D_0013CA40");
-extern u8 D_0014171B[];
+extern u8 help_stats_base[];
 extern M40 *moby_head40 __asm__("D_L00_001600A4") MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 extern s32 gameplay_event_frame_count MACRO_ADDR;
@@ -1322,7 +1322,7 @@ void suckcannon_update(M40 *self) {
             start_equipped_item_animation();
             data->sound = Moby_PlaySound(2,4,(int)self);
             data->cooldown = scale_ticks(10);
-            stats = (Stats40 *)(D_0014171B + 0x65);
+            stats = (Stats40 *)(help_stats_base + 0x65);
             if (stats->uses < 65535) stats->uses++;
             if (scale_ticks(gameplay_event_frame_count)/600 > stats->longest)
                 stats->longest = scale_ticks(gameplay_event_frame_count)/600;
@@ -1335,7 +1335,7 @@ void suckcannon_update(M40 *self) {
         if (is_suck_cannon_suction_blocked_by_hero_state()!=0 || hero40.disabled || hero40.locked) {
             sound = data->sound;
             if (sound!=-1) {
-                Sound40 *s=(Sound40 *)(D_0013E633+0x1D)+sound;
+                Sound40 *s=(Sound40 *)(hero_globals_base+0x1D)+sound;
                 if (s[1].owner==self && s[1].active) Sound_StopSlot(sound);
             }
             data->sound=-1;
@@ -1367,7 +1367,7 @@ void suckcannon_update(M40 *self) {
             cancel_hero_item_animation();
             sound=data->sound;
             if(sound!=-1) {
-                Sound40 *s=(Sound40 *)(D_0013E633+0x1D)+sound;
+                Sound40 *s=(Sound40 *)(hero_globals_base+0x1D)+sound;
                 if(s[1].owner==self && s[1].active) Sound_StopSlot(sound);
             }
             data->sound=-1;
@@ -1441,7 +1441,7 @@ void suckcannon_update(M40 *self) {
             MobyBlendAnimation(self,5,0,scale_ticks(2));
             hero40.firing=2;
             data->cooldown=scale_ticks(25);
-            stats=(Stats40 *)(D_0014171B+0x65);
+            stats=(Stats40 *)(help_stats_base+0x65);
             if(stats->uses<65535) stats->uses++;
             if(scale_ticks(gameplay_event_frame_count)/600>stats->longest)
                 stats->longest=scale_ticks(gameplay_event_frame_count)/600;
@@ -1565,7 +1565,7 @@ done:
     if(special) {
         sound=data->sound;
         if(sound!=-1) {
-            Sound40 *s=(Sound40 *)(D_0013E633+0x1D)+sound;
+            Sound40 *s=(Sound40 *)(hero_globals_base+0x1D)+sound;
             if(s[1].owner==self && s[1].active) Sound_StopSlot(sound);
         }
         data->sound=-1;
@@ -1682,7 +1682,7 @@ int store_moby_in_suck_cannon(unsigned char *m, void *v) {
         qcopy(m + 0x10, v);
         compose_moby_rotation_with_euler_offset(*(char **)(o + 0x60), (char *)m, &suck_cannon_stored_rot_offset);
         moby_anim_sphere_lerp(m);
-        g = *(int *)(D_0013E633 + 0x1EAD);
+        g = *(int *)(hero_globals_base + 0x1EAD);
         if (g != 0 && *(short *)(g + 0xA6) == 0x351) {
             Moby_PlaySound(5, 0, g);
         }
@@ -1740,7 +1740,7 @@ int launch_suck_cannon_projectile(char *m, float *pos, char *other, float f) {
             *(float *)(d + 0x90) = f;
             *(float *)(d + 0x48) += f;
         }
-        if (vec_distance_xy(m + 0x10, D_0013E633 + 0xE9D) < 1.0f) {
+        if (vec_distance_xy(m + 0x10, hero_globals_base + 0xE9D) < 1.0f) {
             FastVecAdd(m + 0x10, m + 0x10, d + 0x10);
         }
         s = *(short *)(d + 0x9C);
@@ -1763,7 +1763,7 @@ int cancel_suck_cannon_suction(char *m) {
     case 3: {
         int k = *(short *)(s + 0x6A);
         if (k != -1) {
-            char *g = D_0013E633 + 0xE1D;
+            char *g = hero_globals_base + 0xE1D;
             *(int *)(g + 0x2050 - (-(k * 4))) = 0;
             if (*(int *)(g + 0x207C) > 0) {
                 *(int *)(g + 0x207C) = *(int *)(g + 0x207C) - 1;
@@ -2592,7 +2592,7 @@ void ScatterMobyFromHazards(char *m) {
     if (*(int *)(m + 0x24) == 0 || *(short *)(*(int *)(m + 0x24) + 0x46) != 0x13) {
         if (!is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(m)) return;
     }
-    if (!(FastVecDist(m + 0x10, pos = D_0013E633 + 0xE9D) < 30.0f)) return;
+    if (!(FastVecDist(m + 0x10, pos = hero_globals_base + 0xE9D) < 30.0f)) return;
     for (i = 0; i < 10 && suck_beam_segment_alpha[i] >= 8; i++) {
         lim = i * 0.3f + 0.1f;
         if (lim < 2.0f) lim = 2.0f;
@@ -2772,8 +2772,8 @@ typedef struct {
     char p40[0x30];
     Vec_2E0E50 v70;
 } Node_2E0E50;
-extern char D_0013E633_2E0E50[] __asm__("D_0013E633");
-extern char D_0013A5E0_2E0E50[] __asm__("D_0013A5E0");
+extern char hero_globals_base_r2[] __asm__("D_0013E633");
+extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern int cinematic_mode_r __asm__("D_L00_0015F6A8") MACRO_ADDR;
 extern int scripted_camera_move_active_r __asm__("D_L00_0015F504") MACRO_ADDR;
 extern char *moby_array_start_r __asm__("D_L00_00160098") MACRO_ADDR;
@@ -2811,33 +2811,33 @@ void hydrodisplacer_update(Moby *m) {
     Vec_2E0E50 v0, v10;
     Data_2E0E50 *d = (void *)m->pvars;
 
-    if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->items[0].state == 3) {
+    if (((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].state == 3) {
         end_hydrodisplacer_interaction_r(m);
         return;
     }
-    if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full != 0) {
-        if (cinematic_mode_r == 0 && !((unsigned int)(((Hero *)(D_0013E633_2E0E50 + 0xE1D))->state.current - 0x38) < 2)) {
+    if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full != 0) {
+        if (cinematic_mode_r == 0 && !((unsigned int)(((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current - 0x38) < 2)) {
             emit_hydrodisplacer_effect_r(m);
         }
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full != 0) {
+        if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full != 0) {
             float a = g_frame_scale_sq_r * 0.02f;
             float b = g_frame_scale_sq_r * 0.3f;
 
-            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[0].attach_joint = 1;
-            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[0].scale = 2.3f;
-            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[0].accel = a;
-            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[0].max_speed = b;
-            if (!((unsigned int)(((Hero *)(D_0013E633_2E0E50 + 0xE1D))->state.current - 0x38) < 2)) {
+            ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[0].attach_joint = 1;
+            ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[0].scale = 2.3f;
+            ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[0].accel = a;
+            ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[0].max_speed = b;
+            if (!((unsigned int)(((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current - 0x38) < 2)) {
                 float c = 1024.0f / m->scale * -0.2f;
 
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[1].accel = a;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[1].max_speed = b;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[2].max_speed = b;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[1].attach_joint = 2;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[2].attach_joint = 3;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[2].accel = a;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[1].pos_target.f[1] = c;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->item_eases[2].pos_target.f[1] = c;
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[1].accel = a;
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[1].max_speed = b;
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[2].max_speed = b;
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[1].attach_joint = 2;
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[2].attach_joint = 3;
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[2].accel = a;
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[1].pos_target.f[1] = c;
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[2].pos_target.f[1] = c;
             }
         }
     }
@@ -2852,22 +2852,22 @@ void hydrodisplacer_update(Moby *m) {
         }
         break;
     case 2:
-        if (pad_pressed_within_r(((Hero *)(D_0013E633_2E0E50 + 0xE1D))->items[0].button_mask, scale_ticks_r3(8), 0) == 0) {
+        if (pad_pressed_within_r(((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].button_mask, scale_ticks_r3(8), 0) == 0) {
             break;
         }
-        if ((*(int *)(D_0013A5E0_2E0E50 + 0x2600) & ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->items[0].button_mask) == 0) {
+        if ((*(int *)(pad_globals_base_r + 0x2600) & ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].button_mask) == 0) {
             break;
         }
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->ground_moby == 0 || ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->air_frames.s != 0
-            || ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->ground_moby->oclass != 0x155) {
+        if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby == 0 || ((Hero *)(hero_globals_base_r2 + 0xE1D))->air_frames.s != 0
+            || ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass != 0x155) {
             break;
         }
-        if (test_hydrodisplacer_activation_flag_r(m) == 0 || (unsigned int)((Hero *)(D_0013E633_2E0E50 + 0xE1D))->state.control_mode >= 2) {
+        if (test_hydrodisplacer_activation_flag_r(m) == 0 || (unsigned int)((Hero *)(hero_globals_base_r2 + 0xE1D))->state.control_mode >= 2) {
             break;
         }
         m->state = 3;
         HeroEnterMoveState_r(0x38, 0);
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full != 0) {
+        if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full != 0) {
             set_hero_animation_r(0x83, 0, scale_ticks_r3(6));
         } else {
             set_hero_animation_r(0x46, 0, scale_ticks_r3(6));
@@ -2877,32 +2877,32 @@ void hydrodisplacer_update(Moby *m) {
         PadState *e;
         char *q;
 
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->ground_moby == 0 || ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->ground_moby->oclass != 0x155) {
+        if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby == 0 || ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass != 0x155) {
             end_hydrodisplacer_interaction_r(m);
             return;
         }
-        if (!(((Hero *)(D_0013E633_2E0E50 + 0xE1D))->anim_flags & 2)) {
+        if (!(((Hero *)(hero_globals_base_r2 + 0xE1D))->anim_flags & 2)) {
             break;
         }
-        e = (void *)((Hero *)(D_0013E633_2E0E50 + 0xE1D))->ground_moby->pvars;
+        e = (void *)((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->pvars;
         q = moby_array_start_r + ((*(int *)&e->pad_0) << 8);
         HeroEnterMoveState_r(0x39, 0);
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full != 0) {
+        if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full != 0) {
             set_hero_animation_r(0x84, 0, scale_ticks_r3(6));
         } else {
             set_hero_animation_r(0x47, 0, scale_ticks_r3(6));
         }
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full == 0) {
-            Moby_PlaySound_r2(0x14, 0, ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->moby);
+        if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full == 0) {
+            Moby_PlaySound_r2(0x14, 0, ((Hero *)(hero_globals_base_r2 + 0xE1D))->moby);
         } else {
-            Moby_PlaySound_r2(0x15, 0, ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->moby);
+            Moby_PlaySound_r2(0x15, 0, ((Hero *)(hero_globals_base_r2 + 0xE1D))->moby);
         }
         if ((*(int *)&e->pad_0[4]) != -1 && (*(int *)&e->pad_0[8]) != -1) {
             m->command = 0;
             m->state = 4;
             d->f10 = 0.0f;
             CameraScript_r(g_debug_camera_r3, g_debug_camera_r3 + 0x10, 1, 0, 0);
-            if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full != 0) {
+            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full != 0) {
                 d->i8 = (*(int *)&e->pad_0[4]);
                 d->iC = (*(int *)&e->pad_0[8]);
             } else {
@@ -2913,17 +2913,17 @@ void hydrodisplacer_update(Moby *m) {
         }
         m->state = 5;
         d->i0 = truncate_float_to_s32_r3(multiply_global_factor_r(hydrodisplacer_pad_wait_time_r));
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full == 0) {
+        if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full == 0) {
             ((Moby *)q)->command = 8;
-            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full = 1;
+            ((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full = 1;
         } else {
             ((Moby *)q)->command = 4;
-            ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full = 0;
+            ((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full = 0;
         }
         break;
     }
     case 4:
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->ground_moby == 0 || ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->ground_moby->oclass != 0x155) {
+        if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby == 0 || ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass != 0x155) {
             end_hydrodisplacer_interaction_r(m);
             return;
         }
@@ -2935,17 +2935,17 @@ void hydrodisplacer_update(Moby *m) {
             if (!(1.0f <= gFadeLvl_r)) {
                 break;
             }
-            q = moby_array_start_r + ((*(int *)&((PadState *)((void *)((Hero *)(D_0013E633_2E0E50 + 0xE1D))->ground_moby->pvars))->pad_0) << 8);
+            q = moby_array_start_r + ((*(int *)&((PadState *)((void *)((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->pvars))->pad_0) << 8);
             m->command = 1;
             set_camera_position_r(level_cuboids_r + (d->i8 << 7) + 0x30);
             set_camera_rotation_r(level_cuboids_r + (d->i8 << 7) + 0x70);
             scripted_camera_move_active_r = 1;
-            if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full == 0) {
+            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full == 0) {
                 ((Moby *)q)->command = 8;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full = 1;
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full = 1;
             } else {
                 ((Moby *)q)->command = 4;
-                ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full = 0;
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full = 0;
             }
             break;
         }
@@ -2981,7 +2981,7 @@ void hydrodisplacer_update(Moby *m) {
             }
             m->state = 2;
             HeroEnterMoveState_r(0x3A, 0);
-            if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->hydro_tank_full != 0) {
+            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full != 0) {
                 set_hero_animation_r(0x48, 0, scale_ticks_r3(6));
             } else {
                 set_hero_animation_r(0x85, 0, scale_ticks_r3(6));
@@ -2990,7 +2990,7 @@ void hydrodisplacer_update(Moby *m) {
         }
         break;
     case 5:
-        if (((Hero *)(D_0013E633_2E0E50 + 0xE1D))->ground_moby != 0 && ((Hero *)(D_0013E633_2E0E50 + 0xE1D))->ground_moby->oclass == 0x155
+        if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby != 0 && ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass == 0x155
             && fast_dec_timer_r3(d) == 0) {
             break;
         }

@@ -26,21 +26,21 @@ void MorphorayUpdate(Moby *m) {
     FastDecTimer_r(&p->timer);
     if ((((unsigned int)((Hero *)g_hero_r)->state.control_mode < 2 || ((Hero *)g_hero_r)->state.control_mode == 12
           || ((Hero *)g_hero_r)->state.control_mode == 4 || ((Hero *)g_hero_r)->state.control_mode == 5))
-        && (*(int *)(D_0013A5E0_2BDAF0 + 0x2600) & ((Hero *)g_hero_r)->items[0].button_mask) != 0
+        && (*(int *)(pad_globals_base_r + 0x2600) & ((Hero *)g_hero_r)->items[0].button_mask) != 0
         && !flag && near) {
         if (((Hero *)g_hero_r)->item_anim_active == 0) {
             start_equipped_item_animation_r();
         }
         if (p->seen == 0) {
             p->seen = 1;
-            if (((Stats_2BDAF0 *)(D_0014171B_2BDAF0 + 0x65))->kills <= 0xFFFE) {
-                ((Stats_2BDAF0 *)(D_0014171B_2BDAF0 + 0x65))->kills++;
+            if (((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->kills <= 0xFFFE) {
+                ((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->kills++;
             }
             r = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-            if (((Stats_2BDAF0 *)(D_0014171B_2BDAF0 + 0x65))->best < r) {
-                ((Stats_2BDAF0 *)(D_0014171B_2BDAF0 + 0x65))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+            if (((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->best < r) {
+                ((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
             }
-            ((Stats_2BDAF0 *)(D_0014171B_2BDAF0 + 0x65))->levels = ((Stats_2BDAF0 *)(D_0014171B_2BDAF0 + 0x65))->levels | (1 << g_current_level_index_r) | 0x80000000;
+            ((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->levels = ((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->levels | (1 << g_current_level_index_r) | 0x80000000;
         }
         if (p->timer == 0) {
             p->timer = scale_ticks_r(15);
@@ -92,7 +92,7 @@ void MorphorayUpdate(Moby *m) {
             }
         }
             {
-                float a = IntToFloat_r(D_0013E633_2BDAF0[2]) * 0.33f + 1.0f;
+                float a = IntToFloat_r(hero_globals_base_r[2]) * 0.33f + 1.0f;
                 float d = p->left - D_L00_001617B0_2BDAF0 * g_frame_time_r * a;
                 p->left = d;
                 if (d < 0.0f) {

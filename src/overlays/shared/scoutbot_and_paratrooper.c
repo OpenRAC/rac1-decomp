@@ -279,7 +279,7 @@ void scoutbot_update(Moby *moby) {
         draw_3DF8(body_3DF8, moby);
     }
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern char *batalia_path_table[];
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
@@ -318,7 +318,7 @@ void update_scoutbot_health_and_target(char *m) {
         }
     }
     if (*(int *)(d + 0x1B0) == 0) {
-        *(int *)(d + 0x1B0) = *(int *)(D_0013E633 + 0x2E9D);
+        *(int *)(d + 0x1B0) = *(int *)(hero_globals_base + 0x2E9D);
     }
 }
 /* functional: medium. Draw callback of a Scoutbot's beam: builds a textured quad packet (colour from four sdata words, UVs of a unit square), orients it towards the target moby (data+0x218) with a rotation matrix from two angles, and draws four pairs of quads (lit core and two flaring side strips, each drawn twice with the +-0.25 jitter). Not run against captured calls. */
@@ -1160,7 +1160,7 @@ void blarg_paratrooper_update(char *m) {
     helper302618(m);
     target = d->f160;
     if(d->f1FC!=-1) path=batalia_path_table[d->f1FC];
-    hero=(Hero *)(D_0013E633+0xE1D);
+    hero=(Hero *)(hero_globals_base+0xE1D);
     if(hero->state.current == 61 && hero->state_timer < scale302618(30) &&
        (*(unsigned char *)((char *)(m)+0x20))!=8 && (*(unsigned char *)((char *)(m)+0x20))!=10 && (*(unsigned char *)((char *)(m)+0x20))!=4 && (*(unsigned char *)((char *)(m)+0x20))!=11 &&
        fast_distance302618(m+0x10,hero->motion.pos.f)<25.0f && !hero_anim302618(49)) {
@@ -1447,7 +1447,7 @@ extern short paratrooper_knock_gravity;
 extern short paratrooper_blast_knock_speed;
 extern short paratrooper_hit_knock_speed;
 extern short paratrooper_hit_knock_lift;
-extern char D_0013E633[] NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
 
 /* Shared moby update (class 152, levels 08 and 09): steers the moby by its hero-relative vectors and picks its next state. */
 void update_blarg_paratrooper_damage_and_state(char *m) {
@@ -1618,7 +1618,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
             *(int *)(d + 0x164) = 2;
         }
     }
-    if (*(int *)(d + 0x160) == 0) *(int *)(d + 0x160) = *(int *)(D_0013E633 + 0x2E9D);
+    if (*(int *)(d + 0x160) == 0) *(int *)(d + 0x160) = *(int *)(hero_globals_base + 0x2E9D);
 
     st = ((Moby *)m)->state;
     if (st == 0 || st == 5 || st == 7 || st == 4) {
@@ -2053,15 +2053,15 @@ void update_ground_height_modulated_voice(char *m) {
         *(float *)&batalia_wind_level = 0.0f;
     }
     {
-        char *e = D_0013E633 + 0x1D + *(int *)(d + 8) * 0x70;
+        char *e = hero_globals_base + 0x1D + *(int *)(d + 8) * 0x70;
         if (*(char **)(e + 0x8C) == m && ((unsigned char *)e)[0x74] != 0) {
             Sound_SetPitchBend(*(int *)(d + 8),
                               (int)((*(float *)(d + 4) + *(float *)&batalia_wind_level) / (*(float *)(d + 4) + 1.0f) * 1024.0f));
         }
     }
-    qcopy_nc(D_0013E633 + 0xAD + *(int *)(d + 8) * 0x70, batalia_hero_pos);
+    qcopy_nc(hero_globals_base + 0xAD + *(int *)(d + 8) * 0x70, batalia_hero_pos);
     {
-        char *e = D_0013E633 + 0x1D + *(int *)(d + 8) * 0x70;
+        char *e = hero_globals_base + 0x1D + *(int *)(d + 8) * 0x70;
         if (*(char **)(e + 0x8C) != m || ((unsigned char *)e)[0x74] == 0) {
             *(int *)(d + 8) = play_voice(*(int *)d, 0x15, (int)m, 0x400);
         }

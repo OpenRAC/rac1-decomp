@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern int scale_ticks(int);
 extern void FadeToBlack(int);
 extern void HeroFrameUpdate(void);
@@ -40,11 +40,11 @@ extern void update_hero_moby_probed_height_bounds(void);
 
 /* Per-frame driver: validates the cursor, then runs each update pass in order. */
 void HeroL03_FrameUpdate(void) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     if (*(float *)(g + 0x80) < 2.0f || *(float *)(g + 0x84) < 2.0f || *(float *)(g + 0x80) > 1022.0f || *(float *)(g + 0x84) > 1022.0f) {
         char *q;
         FadeToBlack(scale_ticks(0x10));
-        q = (char *)D_0013E633 + 0xE1D;
+        q = (char *)hero_globals_base + 0xE1D;
         q[0x20B1] = 1;
         return;
     }
@@ -88,7 +88,7 @@ void HeroL03_FrameUpdate(void) {
         reveal_map_around_position(g + 0x80);
     }
     {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         apply_env_zone_lighting(*(void **)(q + 0x2080));
     }
     update_hero_blink_and_gold_weapon_tint();

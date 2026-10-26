@@ -13,8 +13,8 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     Moby *q;
     int v21;
 
-    if (((Hero *)(D_0013E633_2E52B0 + 0xE1D))->items[0].item_id == 0x15) {
-        if (((D_2E52B0 *)((Hero *)(D_0013E633_2E52B0 + 0xE1D))->items[0].moby->pvars)->f10 == m) {
+    if (((Hero *)(hero_globals_base_r + 0xE1D))->items[0].item_id == 0x15) {
+        if (((D_2E52B0 *)((Hero *)(hero_globals_base_r + 0xE1D))->items[0].moby->pvars)->f10 == m) {
             activate_waiting_moby_group_members_r(m);
             if (m->state == 1) m->state = 2;
         }
@@ -42,9 +42,9 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             v21 = 11;
             if (B < 3.0f) B = 0.0f;
         }
-        if (((Hero *)(D_0013E633_2E52B0 + 0xE1D))->state.current == 32
-            || (((Hero *)(D_0013E633_2E52B0 + 0xE1D))->state.prev == 32
-                && ((Hero *)(D_0013E633_2E52B0 + 0xE1D))->state_timer < scale_ticks_r(30))) {
+        if (((Hero *)(hero_globals_base_r + 0xE1D))->state.current == 32
+            || (((Hero *)(hero_globals_base_r + 0xE1D))->state.prev == 32
+                && ((Hero *)(hero_globals_base_r + 0xE1D))->state_timer < scale_ticks_r(30))) {
             if (2.0f < B) B = 2.0f;
         }
         if (r->h2A == m->oclass) {
@@ -52,14 +52,14 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             v21 = 11;
         }
         if ((unsigned int)(m->prev_seq - 6) < 2) {
-            if (((Hero *)(D_0013E633_2E52B0 + 0xE1D))->vehicle_mode == 1
-                && r->f20 == ((Hero *)(D_0013E633_2E52B0 + 0xE1D))->moby) {
+            if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 1
+                && r->f20 == ((Hero *)(hero_globals_base_r + 0xE1D))->moby) {
                 B = 0.0f;
                 v21 = 11;
             }
         }
         if (r->h2A == 0x47) {
-            *(u128_2E52B0 *)&vA = *(u128_2E52B0 *)(D_0013E633_2E52B0 + 0xE9D);
+            *(u128_2E52B0 *)&vA = *(u128_2E52B0 *)(hero_globals_base_r + 0xE9D);
             *(u128_2E52B0 *)&vB = *(u128_2E52B0 *)((V_2E52B0 *)&m->pos);
             vA.z += 1.0f;
             vB.z += 1.0f;
@@ -116,7 +116,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             m->state = 10;
             d->h26 = scale_ticks_r(60);
             d->f80 = D_L10_00161EAC_2E52B0 * g_frame_time_sq_r;
-            s = ((Hero *)(D_0013E633_2E52B0 + 0xE1D))->vehicle_mode == 1 ? 1.0f : 3.0f;
+            s = ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 1 ? 1.0f : 3.0f;
             trooper_set_knockback_r(d->a70, s, 0.5f);
             d->fC0 = 3.5f;
             d->fC4 = 7.0f;
@@ -146,12 +146,12 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     if (d->f1AC != 0) {
         d->f1A0 = D_L10_00161EC0_2E52B0 + 6.0f;
     } else if (m->state == 1) {
-        if (m == ((Moby *)((Hero *)(D_0013E633_2E52B0 + 0xE1D))->unk240) || m == ((Moby *)((Hero *)(D_0013E633_2E52B0 + 0xE1D))->coll_hit_moby)) {
+        if (m == ((Moby *)((Hero *)(hero_globals_base_r + 0xE1D))->unk240) || m == ((Moby *)((Hero *)(hero_globals_base_r + 0xE1D))->coll_hit_moby)) {
             d->f1A0 = 6.0f;
         } else {
             d->f1A0 = 0.0f;
         }
-        if (((Hero *)(D_0013E633_2E52B0 + 0xE1D))->vehicle_mode == 1) activate_waiting_moby_group_members_r(m);
+        if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 1) activate_waiting_moby_group_members_r(m);
     } else {
         d->f1A0 = D_L10_00161EC0_2E52B0;
     }
@@ -173,7 +173,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             if (1.0f < FastVecDist_r(&m->pos, &d->a170)) {
                 m->state = 8;
                 if (m->prev_seq != 4) MobyBlendAnimation_r(m, 4, 0, scale_ticks_r(12));
-            } else if (((Hero *)(D_0013E633_2E52B0 + 0xE1D))->vehicle_mode != 1) {
+            } else if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode != 1) {
                 m->state = 1;
                 if (m->prev_seq != 0) MobyBlendAnimation_r(m, 0, 0, scale_ticks_r(20));
             }
@@ -181,5 +181,5 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     } else {
         d->f1D4 = 0;
     }
-    if (d->f160 == 0) d->f160 = ((Hero *)(D_0013E633_2E52B0 + 0xE1D))->moby;
+    if (d->f160 == 0) d->f160 = ((Hero *)(hero_globals_base_r + 0xE1D))->moby;
 }

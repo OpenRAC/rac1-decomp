@@ -7,7 +7,7 @@
 #include "hero.h"
 #include "moby.h"
 
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern unsigned char gHaveMorphORay[];
 extern int quartu_frame_count MACRO_ADDR;
@@ -49,7 +49,7 @@ void HeroL15_FrameUpdate(void) {
     hero_update();
     Hero_UpdateAimFlags();
     HeroL15_UpdateStateTransitions();
-    b0 = D_0013E633 + 0xE1D;
+    b0 = hero_globals_base + 0xE1D;
     if (b0[0x20A4] == 0)
         return;
     update_hero_delayed_voice_requests();
@@ -76,7 +76,7 @@ void HeroL15_FrameUpdate(void) {
         }
     }
 
-    b1 = D_0013E633 + 0xE1D;
+    b1 = hero_globals_base + 0xE1D;
     if (b1[0x20A4] == 3) {
         if (gCheats[1] != 0)
             D_L15_0017C24C = 1.9f;
@@ -90,7 +90,7 @@ void HeroL15_FrameUpdate(void) {
         red = truncate_float_to_s32(pulse * 20.0f) + 0x32;
         green = truncate_float_to_s32(pulse * 70.0f) + 0xB4;
         blue = truncate_float_to_s32(pulse * 10.0f);
-        b2 = D_0013E633 + 0xE1D;
+        b2 = hero_globals_base + 0xE1D;
         moby = *(unsigned char **)(b2 + 0x2080);
         if (red > 0xFF) red = 0xFF;
         if (green > 0xFF) green = 0xFF;
@@ -100,16 +100,16 @@ void HeroL15_FrameUpdate(void) {
             color = (alpha << 24) | (blue << 16) | ((red / 2) << 8) | green;
         else
             color = (alpha << 24) | (blue << 16) | (green << 8) | red;
-        b3 = D_0013E633 + 0xE1D;
+        b3 = hero_globals_base + 0xE1D;
         *(unsigned int *)(*(unsigned char **)(b3 + 0x2080) + 0x90) =
             FastTweenColor(0.1f, *(unsigned int *)(*(unsigned char **)(b3 + 0x2080) + 0x90), color);
         for (i = 0; i < 3; i++)
         {
-            b4 = D_0013E633 + 0xE1D;
+            b4 = hero_globals_base + 0xE1D;
             Moby_GetJointWorldPos(*(void **)(b4 + 0x2080), i, b4 + 0x1D50 + i * 16);
         }
         alpha = 0x30;
-        b4 = D_0013E633 + 0xE1D;
+        b4 = hero_globals_base + 0xE1D;
         {
             unsigned char *mb = *(unsigned char **)(b4 + 0x2080);
             blue = mb[0x92];
@@ -130,7 +130,7 @@ void HeroL15_FrameUpdate(void) {
                     *(short *)(b4 + 0x22DC) = 1;
                 }
             } else {
-                b5 = D_0013E633 + 0xE1D;
+                b5 = hero_globals_base + 0xE1D;
                 *(int *)(b5 + 0x20B8) = 0;
                 if (b5[0x12E7] != 0 && *(int *)(b5 + 0x300) != 0 && gHaveMorphORay[7] != 0 &&
                     *(short *)(b5 + 0x22DE) == 0) {
@@ -142,18 +142,18 @@ void HeroL15_FrameUpdate(void) {
         }
     }
     update_hero_moby_probed_height_bounds();
-    b6 = D_0013E633 + 0xE1D;
+    b6 = hero_globals_base + 0xE1D;
     apply_env_zone_lighting(*(void **)(b6 + 0x2080));
 }
-extern unsigned char D_0013E633[];
-extern unsigned char D_0013E15A[];
+extern unsigned char hero_globals_base[];
+extern unsigned char screen_globals_base[];
 extern void update_item_tint_from_hero(int, int);
 
 /* Show the indexed help prompt when its flag and message are active. */
 void update_enabled_item_tint_from_hero(void) {
-    unsigned char *base = D_0013E633 + 0xE1D;
+    unsigned char *base = hero_globals_base + 0xE1D;
     int index = *(int *)(base + 0x10B8);
-    if (index >= 0 && *(D_0013E15A + 0x4C6 + index) != 0) {
+    if (index >= 0 && *(screen_globals_base + 0x4C6 + index) != 0) {
         int first = *(int *)(base + 0x1090);
         if (first != 0) {
             update_item_tint_from_hero(first, *(int *)(base + 0x2080));
@@ -172,7 +172,7 @@ typedef int u128 __attribute__((mode(TI)));
 
 // Per-frame update of the camera-attached moby position.
 void update_hero_bobbing_and_target_position(void) {
-    unsigned char *base = D_0013E633 + 0xE1D;
+    unsigned char *base = hero_globals_base + 0xE1D;
     if (*(int *)(base + 0x2084) == 0x6B && *(short *)(base + 0x8BC) == 0) {
         char *m;
         float v[4];
@@ -203,7 +203,7 @@ extern void HeroQuartu_TrySetMoveState(int, int);
 
 /* Reset the help prompt state and show the default message unless the level is in a special phase. */
 void restore_saved_hero_moby_and_clear_vehicle_mode(void) {
-    unsigned char *base = D_0013E633 + 0xE1D;
+    unsigned char *base = hero_globals_base + 0xE1D;
     unsigned char *b;
     int p;
     void *q;
@@ -216,7 +216,7 @@ void restore_saved_hero_moby_and_clear_vehicle_mode(void) {
         }
     }
     reset_hero_easing_records();
-    b = D_0013E633 + 0xE1D;
+    b = hero_globals_base + 0xE1D;
     p = *(int *)(b + 0xA84);
     b[0x20A4] = 0;
     if (p != 0) {
@@ -341,7 +341,7 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
     float c[4] __attribute__((aligned(16)));
     float b[4] __attribute__((aligned(16)));
     float d[4] __attribute__((aligned(16)));
-    char *base = D_0013E633 + 0xE1D;
+    char *base = hero_globals_base + 0xE1D;
     char *b2, *h1;
     float f2, f21, f20;
     int r18, r;
@@ -356,7 +356,7 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
         f2 = 1.5f;
         f21 = 5.0f;
     }
-    base = D_0013E633 + 0xE9D;
+    base = hero_globals_base + 0xE9D;
     qcopy(a, base);
     a[2] = a[2] + f2;
     qcopy(b, base);
@@ -379,12 +379,12 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
     FastVecAdd(c, c, a);
     r18 = -1;
     FastVecAdd(d, d, b);
-    b2 = D_0013E633 + 0xE1D;
+    b2 = hero_globals_base + 0xE1D;
     if (coll_line(b, d, 4, *(int *)(b2 + 0x2080), 0)) {
         if (*(int *)quartu_coll_hit_type > 0) r18 = CollType();
     }
     f20 = 0.0f;
-    b2 = D_0013E633 + 0xE1D;
+    b2 = hero_globals_base + 0xE1D;
     if (coll_line(a, c, 4, *(int *)(b2 + 0x2080), 0)) {
         char *q = quartu_coll_hit;
         if (*(int *)(q + 0x1C) > 0)
@@ -392,7 +392,7 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
     }
     if (f20 >= 0.87266463f || r18 == 8 || r18 == 12) {
         float f;
-        char *b3 = D_0013E633 + 0xE1D;
+        char *b3 = hero_globals_base + 0xE1D;
         char *q2 = quartu_coll_hit;
         *(float *)(q2 + 0x48) = 0.0f;
         *(int *)(b3 + 0x240) = *(int *)(q2 + 0x18);
@@ -851,7 +851,7 @@ skip:
 
 /* Select the message associated with the current help mode. */
 void set_hero_state_for_vehicle_mode(void) {
-    switch (D_0013E633[0x2EC1]) {
+    switch (hero_globals_base[0x2EC1]) {
     case 0: HeroQuartu_TrySetMoveState(0, 1); break;
     case 2: HeroQuartu_TrySetMoveState(0x5A, 1); break;
     case 3: HeroQuartu_TrySetMoveState(0x53, 1); break;

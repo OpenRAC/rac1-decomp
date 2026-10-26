@@ -280,7 +280,7 @@ void SetUpdateModeTiming(int mode) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_00262450);
 typedef int u128 __attribute__((mode(TI)));
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float randf_sym(float lo, float hi);
 extern int rand_range(int, int);
 extern float step_angle_toward_target(float *p, int n, float x, float y);
@@ -323,7 +323,7 @@ void update_object_wander_movement(char *moby, char *d, float a, float b) {
         *(short *)(d + 0x2A) = rand_range(t, scale_ticks(0x5A));
         *(short *)(d + 0x28) = 1;
     } else {
-        char *g = D_0013E633 + 0xE9D;
+        char *g = hero_globals_base + 0xE9D;
         dist = vec_distance_xy(pos, g);
         if (dist < *(float *)(d + 0x20)) {
             char *q = g - 0x80;

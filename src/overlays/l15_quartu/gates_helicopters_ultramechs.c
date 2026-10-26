@@ -40,8 +40,8 @@ extern void FastVecAdd(void *, void *, void *);
 extern int Moby_PlaySound(int, int, int);
 extern int is_point_inside_clip_volume(void *, int);
 extern void Sound_StopSlot(int);
-extern unsigned char D_0013E633[];
-extern unsigned char D_0014171B[] NOT_SDA;
+extern unsigned char hero_globals_base[];
+extern unsigned char help_stats_base[] NOT_SDA;
 #define D_0013F3D0 (D_0013E633 + 0xE9D)
 #define D_0013E550 ((char *)D_0013E633 + 0x1D)
 #define D_0014C190 ((char *)D_0014171B + 0xAB75)
@@ -188,7 +188,7 @@ extern int is_point_inside_clip_volume_r(void *arg0, int arg1) __asm__("func_002
 extern int Moby_PlaySound_r(int, int, GateMoby_2A48B0 *) __asm__("func_0022ED80");
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern unsigned char gemlik_available_r[] __asm__("D_0013DE55");
-extern unsigned char D_0013E633_2A48B0[] __asm__("D_0013E633");
+extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern float D_L15_00161578_2A48B0 SDATA(D_L15_00161578);
 extern OtherMoby_2A48B0 *D_L15_00160058_2A48B0 SDATA(D_L15_00160058);
 extern int quartu_alarm_on_r __asm__("D_L15_00161B48") MACRO_ADDR;
@@ -229,8 +229,8 @@ void update_vertical_gate(GateMoby_2A48B0 *m)
                 }
             }
         } else {
-            if (is_point_inside_clip_volume_r(D_0013E633_2A48B0 + 0xE9D, d->vol_near)) {
-                if (d->key == -1 || (D_0013E633_2A48B0 + 0xE9D)[0x2024] == 2) {
+            if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->vol_near)) {
+                if (d->key == -1 || (hero_globals_base_r + 0xE9D)[0x2024] == 2) {
                     m->state = 2;
                 }
             }
@@ -245,14 +245,14 @@ void update_vertical_gate(GateMoby_2A48B0 *m)
         if (d->key != -1) {
             step = step * 5.0f;
         }
-        if (((SoundSlot_2A48B0 *)(D_0013E633_2A48B0 + 0x1D + d->sound * 0x70))->owner != m ||
-            ((SoundSlot_2A48B0 *)(D_0013E633_2A48B0 + 0x1D + d->sound * 0x70))->active == 0) {
+        if (((SoundSlot_2A48B0 *)(hero_globals_base_r + 0x1D + d->sound * 0x70))->owner != m ||
+            ((SoundSlot_2A48B0 *)(hero_globals_base_r + 0x1D + d->sound * 0x70))->active == 0) {
             d->sound = Moby_PlaySound_r(0, 4, m);
         }
         if (D_L15_00161578_2A48B0 < (d->travel = d->travel + step)) {
             if (d->sound != -1 &&
-                ((SoundSlot_2A48B0 *)(D_0013E633_2A48B0 + 0x1D + d->sound * 0x70))->owner == m &&
-                ((SoundSlot_2A48B0 *)(D_0013E633_2A48B0 + 0x1D + d->sound * 0x70))->active != 0) {
+                ((SoundSlot_2A48B0 *)(hero_globals_base_r + 0x1D + d->sound * 0x70))->owner == m &&
+                ((SoundSlot_2A48B0 *)(hero_globals_base_r + 0x1D + d->sound * 0x70))->active != 0) {
                 Sound_StopSlot_r(d->sound);
             }
             d->sound = -1;
@@ -276,9 +276,9 @@ void update_vertical_gate(GateMoby_2A48B0 *m)
         if (d->key != -1) {
             quartu_keyed_gate_open_r = 1;
         }
-        if (is_point_inside_clip_volume_r(D_0013E633_2A48B0 + 0xE9D, d->vol_trigger) != 0 ||
+        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->vol_trigger) != 0 ||
             is_point_inside_clip_volume_r(quartu_camera_pos_r, d->vol_trigger) != 0) {
-            if (is_point_inside_clip_volume_r(D_0013E633_2A48B0 + 0xE9D, d->key) == 0) {
+            if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->key) == 0) {
                 break;
             }
         }
@@ -291,14 +291,14 @@ void update_vertical_gate(GateMoby_2A48B0 *m)
         if (d->key != -1) {
             step = step * 5.0f;
         }
-        if (((SoundSlot_2A48B0 *)(D_0013E633_2A48B0 + 0x1D + d->sound * 0x70))->owner != m ||
-            ((SoundSlot_2A48B0 *)(D_0013E633_2A48B0 + 0x1D + d->sound * 0x70))->active == 0) {
+        if (((SoundSlot_2A48B0 *)(hero_globals_base_r + 0x1D + d->sound * 0x70))->owner != m ||
+            ((SoundSlot_2A48B0 *)(hero_globals_base_r + 0x1D + d->sound * 0x70))->active == 0) {
             d->sound = Moby_PlaySound_r(0, 4, m);
         }
         if ((d->travel = d->travel - step) < 0.0f) {
             if (d->sound != -1 &&
-                ((SoundSlot_2A48B0 *)(D_0013E633_2A48B0 + 0x1D + d->sound * 0x70))->owner == m &&
-                ((SoundSlot_2A48B0 *)(D_0013E633_2A48B0 + 0x1D + d->sound * 0x70))->active != 0) {
+                ((SoundSlot_2A48B0 *)(hero_globals_base_r + 0x1D + d->sound * 0x70))->owner == m &&
+                ((SoundSlot_2A48B0 *)(hero_globals_base_r + 0x1D + d->sound * 0x70))->active != 0) {
                 Sound_StopSlot_r(d->sound);
             }
             d->travel = 0;
@@ -321,7 +321,7 @@ void update_vertical_gate(GateMoby_2A48B0 *m)
             }
             m->pos.z = z;
         }
-        if (is_point_inside_clip_volume_r(D_0013E633_2A48B0 + 0xE9D, d->vol_near) != 0 ||
+        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->vol_near) != 0 ||
             is_point_inside_clip_volume_r(quartu_camera_pos_r, d->vol_near) != 0) {
             m->state = 2;
         }
@@ -331,7 +331,7 @@ void update_vertical_gate(GateMoby_2A48B0 *m)
             m->pos.z = d->home.z - D_L15_00161578_2A48B0;
             quartu_keyed_gate_open_r = 1;
         } else {
-            if (D_0013E633_2A48B0[0x2EC1] == 2) {
+            if (hero_globals_base_r[0x2EC1] == 2) {
                 break;
             }
             m->pos.z = d->home.z;
@@ -643,9 +643,9 @@ no_hit:
 extern char quartu_moby_hits[];
 extern char quartu_hit_debris_colors[];
 extern u32 quartu_hit_effect_colors[3];
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern unsigned char gemlik_available[];
-extern unsigned char D_0014171B[] NOT_SDA;
+extern unsigned char help_stats_base[] NOT_SDA;
 extern int g_current_level_index MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecScale(void *, void *, float);
@@ -691,7 +691,7 @@ void update_destructible_moby_on_hit(struct Moby *moby)
     float size;
     void *debris;
 
-    if (D_0013E633[0x2EC1] != 2 && moby->state == 1)
+    if (hero_globals_base[0x2EC1] != 2 && moby->state == 1)
         return;
 
     for (hit_record_index = 0; hit_record_index < 64; hit_record_index++) {
@@ -790,7 +790,7 @@ void update_destructible_moby_on_hit(struct Moby *moby)
         moby->state = 1;
         if (gemlik_available[3] != 0) {
             u16 save_id = moby->save_id;
-            if ((*(s32 *)(D_0014171B + 0xAB75 + (((s16)save_id >> 5) * 4) + g_current_level_index * 256) >> (save_id & 31)) & 1)
+            if ((*(s32 *)(help_stats_base + 0xAB75 + (((s16)save_id >> 5) * 4) + g_current_level_index * 256) >> (save_id & 31)) & 1)
                 DeleteMoby(moby);
         }
     }
@@ -1331,7 +1331,7 @@ void helicopter_update(HMoby_6950 *m) {
     if (d->child == 0) {
         d->child = (HMoby_6950 *)create_class_55b_moby_from_source((char *)m);
     }
-    if (m->state != 0 && m->state != 0x40 && d->w1A4 != 0 && D_0013E633[0x2EC1] != 2) {
+    if (m->state != 0 && m->state != 0x40 && d->w1A4 != 0 && hero_globals_base[0x2EC1] != 2) {
         m->w94 = 0;
         m->flags = (m->flags | 0x41) & 0xEFFF;
         d->b58 = 0;
@@ -1356,7 +1356,7 @@ void helicopter_update(HMoby_6950 *m) {
         FindNearestEligibleMoby(d->f19C, m, &goal, 0, 0, path->pt, path->n);
     }
     if (d->f1A0 < FastVecDist(&m->pos, &goal)) goal.mode = 2;
-    if (goal.target == 0) goal.target = *(HMoby_6950 **)(D_0013E633 + 0x2E9D);
+    if (goal.target == 0) goal.target = *(HMoby_6950 **)(hero_globals_base + 0x2E9D);
     tp = goal.target;
     if (m->state != 0 && d->b2E != 1) {
         if (d->child != 0) DeleteMoby(d->child);
@@ -1407,14 +1407,14 @@ void helicopter_update(HMoby_6950 *m) {
         if (d->child != 0) d->child->flags |= 0x41;
         break;
     case 1:
-        if (d->w1A4 != 0 && D_0013E633[0x2EC1] != 2) {
+        if (d->w1A4 != 0 && hero_globals_base[0x2EC1] != 2) {
             m->w94 = 0;
             m->flags = (m->flags | 0x41) & 0xEFFF;
             d->b58 = 0;
             if (d->child != 0) d->child->flags |= 0x41;
             return;
         }
-        if (d->w190 != -1 || (is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->w1B0) && goal.mode != 2)) {
+        if (d->w190 != -1 || (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->w1B0) && goal.mode != 2)) {
             if (d->w190 != -1 && count_active_moby_group_members(d->w190, 0x40)) break;
             m->w94 = *(int *)(m->cls + 0x10);
             m->flags = (m->flags & 0xFFBE) | 0x1000;
@@ -1603,9 +1603,9 @@ void helicopter_update(HMoby_6950 *m) {
         if (d->child != 0) d->child->flags |= 0x41;
         D_L15_001BAEE0.collected[(short)m->id] = 0;
         D_L15_001BBB40.collected[(short)m->id] = 0;
-        *(int *)(D_0014171B + 0xAB75 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &= ~(1 << (m->id & 0x1F));
+        *(int *)(help_stats_base + 0xAB75 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &= ~(1 << (m->id & 0x1F));
         quartu_moby_killed[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
-        if (D_0013E633[0x2EC1] != 2) {
+        if (hero_globals_base[0x2EC1] != 2) {
             m->pos.f[2] = d->f1A8 - 7.5f;
             m->scale *= 2.0f;
             m->state = 0;
@@ -1900,9 +1900,9 @@ extern int rand_range(int, int);
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern unsigned char hero_vehicle_mode[];
-extern unsigned char D_0014171B[] NOT_SDA;
+extern unsigned char help_stats_base[] NOT_SDA;
 extern UPath *quartu_paths[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -1945,7 +1945,7 @@ void ultramech_unlimited_update(UMoby *m) {
         m->flags |= 0x41;
         idx = d->snd;
         if (idx != -1) {
-            char *e = (char *)D_0013E633 + 0x1D + idx * 0x70;
+            char *e = (char *)hero_globals_base + 0x1D + idx * 0x70;
             if (*(UMoby **)(e + 0x88) == m) {
                 if (*(unsigned char *)(e + 0x74) != 0) Sound_StopSlot(idx);
             }
@@ -1982,7 +1982,7 @@ void ultramech_unlimited_update(UMoby *m) {
         if (m->anim != 0) MobyBlendAnimation(m, 0, 0, 5);
         break;
     case 1:
-        if (d->w1CC != -1 || is_point_inside_clip_volume(D_0013E633 + 0xE9D, d->w1DC)) {
+        if (d->w1CC != -1 || is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->w1DC)) {
             if (d->w1CC != -1 && count_active_moby_group_members(d->w1CC, 0x40)) break;
             if (hero_vehicle_mode[0] == 2) {
                 m->w94 = *(int *)(m->cls + 0x10);
@@ -1990,7 +1990,7 @@ void ultramech_unlimited_update(UMoby *m) {
             }
         }
         if (d->w164 != 2 && d->path != -1) {
-            unsigned char *pl = D_0013E633 + 0xE1D;
+            unsigned char *pl = hero_globals_base + 0xE1D;
             if (pl[0x20A4] == 2 && (m->flags & 0x1000)) {
                 if (d->w1D0 != -1 && !IsPointInPolygon(pl + 0x80, quartu_paths[d->w1D0]->pt, quartu_paths[d->w1D0]->n)) {
                     m->w94 = 0;
@@ -2258,7 +2258,7 @@ void ultramech_unlimited_update(UMoby *m) {
         d->b58 = 0;
         D_L15_001BAEE0.collected[(short)m->id] = 0;
         D_L15_001BBB40.collected[(short)m->id] = 0;
-        *(int *)(D_0014171B + 0xAB75 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &= ~(1 << (m->id & 0x1F));
+        *(int *)(help_stats_base + 0xAB75 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &= ~(1 << (m->id & 0x1F));
         quartu_moby_killed[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
         if (hero_vehicle_mode[0] != 2) m->state = 0;
         break;
@@ -2269,7 +2269,7 @@ void ultramech_unlimited_update(UMoby *m) {
     } else {
         idx = d->snd;
         if (idx != -1) {
-            char *e = (char *)D_0013E633 + 0x1D + idx * 0x70;
+            char *e = (char *)hero_globals_base + 0x1D + idx * 0x70;
             if (*(UMoby **)(e + 0x88) == m) {
                 if (*(unsigned char *)(e + 0x74) != 0) Sound_StopSlot(idx);
             }
@@ -2346,7 +2346,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
         fl = *(int *)(e + 0x24);
         if ((fl & 0xA0000) == 0)
             continue;
-        if (*(int *)(e + 0x20) == *(int *)(D_0013E633 + 0x2E9D) && (fl & 0x80000) == 0) {
+        if (*(int *)(e + 0x20) == *(int *)(hero_globals_base + 0x2E9D) && (fl & 0x80000) == 0) {
             *(int *)(e + 0x34) = 0;
             continue;
         }
@@ -2452,7 +2452,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
     if (*(float *)(data + 0x1B8) < FastVecDist(moby + 0x10, data + 0x120))
         *(int *)(data + 0x164) = 2;
     if (*(int *)(data + 0x160) == 0)
-        *(int *)(data + 0x160) = *(int *)(D_0013E633 + 0x2E9D);
+        *(int *)(data + 0x160) = *(int *)(hero_globals_base + 0x2E9D);
 }
 extern float g_frame_time MACRO_ADDR;
 extern short D_L15_00160058_g SDATA(D_L15_00160058);
@@ -2667,7 +2667,7 @@ extern void ShowBanner(int, int);
 extern void grant_inventory_item(int, int);
 extern int memcard_Save(int, int);
 extern short bolt_grabber_scale;
-extern unsigned char D_0013D605[];
+extern unsigned char race_gates_base[];
 extern int quartu_dialogue_message_duration MACRO_ADDR;
 extern int quartu_game_mode MACRO_ADDR;
 
@@ -2691,7 +2691,7 @@ void bolt_grabber_update(unsigned char *m) {
     switch (moby->state) {
     case BOLT_GRABBER_INITIALIZE:
         initialize_moby_particle_effect((char *)moby);
-        if (D_0013D605[0xD] != 0) {
+        if (race_gates_base[0xD] != 0) {
             DeleteMoby(moby);
             return;
         }
@@ -2700,7 +2700,7 @@ void bolt_grabber_update(unsigned char *m) {
         break;
     case BOLT_GRABBER_WAIT_FOR_PROXIMITY:
         emit_moby_sprite_particles((char *)moby);
-        if (vec_distance_xy(&moby->pos, D_0013E633 + 0xE9D) < 3.0f) {
+        if (vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D) < 3.0f) {
             moby->flags |= 0x41;
             StartCutscene(5);
             moby->state = 2;
@@ -2920,7 +2920,7 @@ void update_quartu_cutscene_trigger(unsigned char *moby) {
     case 0:
         if (saved_mission_state[((Moby *)moby)->mission + (g_current_level_index << 4)] != 0xFF
             && *(int *)&quartu_alarm_on == 0
-            && is_point_inside_clip_volume(D_0013E633 + 0xE9D, data[0])) {
+            && is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[0])) {
             if (*(unsigned char *)(*(char **)&D_L15_00160058_g + data[2] * 256 + 0x20) == 3) {
                 StartCutscene(3);
                 ((Moby *)moby)->state = 2;
@@ -3109,7 +3109,7 @@ int count_missing_or_dying_mobys_in_list(int idx) {
 INCLUDE_ASM("asm/overlays", func_L15_002ED3C4);
 extern int gBolts MACRO_ADDR;
 extern int quartu_codebot_slot_done;
-extern unsigned char D_0013D355[];
+extern unsigned char special_items_base[];
 extern void set_moby_list_visibility(int, int);
 extern void activate_descriptor(int);
 extern int can_spawn_codebot_slot_effect(int);
@@ -3149,7 +3149,7 @@ void codebot_slot_update(char *moby) {
             m->state = CODEBOT_SLOT_COMPLETED;
             break;
         }
-        if (((*(int *)(D_0014171B + 0xAB75 + (((short)save_id >> 5) * 4 + (g_current_level_index << 8)))) >> (save_id & 0x1F)) & 1) {
+        if (((*(int *)(help_stats_base + 0xAB75 + (((short)save_id >> 5) * 4 + (g_current_level_index << 8)))) >> (save_id & 0x1F)) & 1) {
             m->state = CODEBOT_SLOT_COMPLETED;
             break;
         }
@@ -3167,8 +3167,8 @@ void codebot_slot_update(char *moby) {
         break;
     }
     case CODEBOT_SLOT_WAIT_FOR_PROXIMITY:
-        if (D_0013D355[0x13D] != 0) {
-            unsigned char *q = D_0013E633 + 0xE9D;
+        if (special_items_base[0x13D] != 0) {
+            unsigned char *q = hero_globals_base + 0xE9D;
             if (vec_distance_xy(q, &m->pos) < 3.0f) {
                 if (q[0x2024] == 0) {
                     activate_descriptor(data[0]);
@@ -3222,7 +3222,7 @@ void codebot_slot_update(char *moby) {
         if (angle < 0.5f) {
             {
                 unsigned short save_id = m->save_id;
-                *(int *)(D_0014171B + 0xAB75 + (((short)save_id >> 5) * 4 + (g_current_level_index << 8))) |= 1 << (save_id & 0x1F);
+                *(int *)(help_stats_base + 0xAB75 + (((short)save_id >> 5) * 4 + (g_current_level_index << 8))) |= 1 << (save_id & 0x1F);
             }
             {
                 unsigned short save_id = m->save_id;
@@ -3260,7 +3260,7 @@ void codebot_slot_update(char *moby) {
             *(OvlQuad *)((char *)data[1] + 0x40) = *(OvlQuad *)tmp;
         }
         {
-            unsigned char *b = D_0013D355 + 0x13B;
+            unsigned char *b = special_items_base + 0x13B;
             if (b[0x6D] == 0) {
                 if (count_missing_or_dying_mobys_in_list(data[8]) >= 10) {
                     b[0x6D] = 1;

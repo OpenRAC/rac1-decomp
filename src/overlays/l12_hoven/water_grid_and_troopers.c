@@ -9,7 +9,7 @@
  * nonmatching/l12_hoven/, with two differences found by tools/equiv.py: the second near-hero test stores the
  * moby's z (+0x18) like the first, not its distance; the 1/sqrt(3) constant is 0x3F13CD36 (0.57735f). */
 typedef struct { char pad[0x1E]; unsigned short visibility; char pad2[0x1170]; } L12Slot;
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern char hoven_water_tile_overflow_message[];
 extern short hoven_water_tile_slot_count;
 extern char hoven_ripple_patch_fixed[];
@@ -157,7 +157,7 @@ void update_level_12_water_tile(char *moby) {
             ApproachWithVelocity(&((struct Moby *)moby)->pos.z, &data->vel, data->target_z, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f);
             Group_CopyZToTableSlots(moby);
         }
-        x = D_0013E633 + 0xE1D;
+        x = hero_globals_base + 0xE1D;
         dist_x = FastAbsF(*(float *)(x + 0x80) - ((struct Moby *)moby)->pos.x);
         if (dist_x <= 8.0f) {
             *(float *)(x + 0x2F0) = ((struct Moby *)moby)->pos.z;
@@ -401,7 +401,7 @@ struct TrollData54_2E2EF0 {
     int path, blocked, return_timer, group_enabled; int *group_count; int group_check;
 };
 typedef struct TargetReport54_2E2EF0 { float v0[4], v10[4], v20[4], v30[4]; Moby *moby; int mode; char pad48[8]; } TargetReport54_2E2EF0;
-extern char D_0013E633_2E2EF0[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float g_frame_scale_sq_r __asm__("D_0015EE64") MACRO_ADDR;
@@ -472,7 +472,7 @@ void update_hoven_anklebiter(Moby *m) {
     Manipulator_SetScale_r(d->collision_data,2.2f);
     select54((char *)m,(char *)&work,d->range);
     target=work.moby;
-    if (!target) target=*(Moby **)(D_0013E633_2E2EF0+0x2E9D);
+    if (!target) target=*(Moby **)(hero_globals_base_r+0x2E9D);
     if (m->pos.z<26.0f) { DeleteMoby_r(m); return; }
     switch(m->state) {
     case 0:
@@ -627,7 +627,7 @@ void update_hoven_anklebiter(Moby *m) {
         break;
     }
     case 5:
-        (*(Moby **)(D_0013E633_2E2EF0+0x2E9D))->anim_speed=1.3f;
+        (*(Moby **)(hero_globals_base_r+0x2E9D))->anim_speed=1.3f;
         angle=fast_atan2_r(target->pos.x-m->pos.x,target->pos.y-m->pos.y);
         MobySpringTurn_r((char *)m,&d->turn_velocity,angle,0.05f,0.3f,0.2f);
         if(m->seq==m->prev_seq && IsFrameWithinWindow_r((char *)m,13.0f) && FastAbsF_r(m->pos.z-target->pos.z)<0.5f && vec_distance_xy_r(&m->pos,&target->pos)<2.0f && FastDiffRots_r(fast_atan2_r(target->pos.x-m->pos.x,target->pos.y-m->pos.y),m->rot.z)<0.2617994f) {
@@ -647,7 +647,7 @@ void update_hoven_anklebiter(Moby *m) {
         return_distance=FastVecDist_r(&target->pos,d->home); d->return_timer++; blocked=0;
         if(d->path!=-1) {
             char *path=hoven_paths_r[d->path];
-            blocked=IsPointInPolygon_r(D_0013E633_2E2EF0+0xE9D,path+0x10,*(int *)path)==0;
+            blocked=IsPointInPolygon_r(hero_globals_base_r+0xE9D,path+0x10,*(int *)path)==0;
         }
         if(!blocked) {
             if(return_distance<d->range) {
@@ -1038,7 +1038,7 @@ void steer_platform_toward_target(char *m, float *ang, void *target, int unused,
            g_frame_time * lim);
     FastVecAdd(m + 0x10, m + 0x10, d + 0x40);
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern short platform_tilt_offset_divisor;
 extern void FastVecSub(void *, void *, void *);
 extern void euler_to_matrix(void *, void *);
@@ -1052,7 +1052,7 @@ void compute_platform_target_tilt(char *moby, float *out, int on) {
     float pad[12];
     float g;
     if (on) {
-        FastVecSub(a, D_0013E633 + 0xE9D, moby + 0x10);
+        FastVecSub(a, hero_globals_base + 0xE9D, moby + 0x10);
         clear_u64_value(m);
         m[2] = -*(float *)(moby + 0x48);
         euler_to_matrix(b, m);
@@ -1395,8 +1395,8 @@ typedef struct {
     float delta[4];
 } Scratch_2E7FC8;
 extern Moby *CreateMoby_r(int) __asm__("func_0020D348");
-extern Player_2E7FC8 D_0013E633_2E7FC8 __asm__("D_0013E633");
-extern Flags_2E7FC8 D_0013D355_2E7FC8 __asm__("D_0013D355");
+extern Player_2E7FC8 hero_globals_base_r2 __asm__("D_0013E633");
+extern Flags_2E7FC8 special_items_base_r __asm__("D_0013D355");
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern short hoven_cinematic_mode_r __asm__("D_L12_0015F6A8");
@@ -1412,7 +1412,7 @@ void miner_update(Moby *m) {
     apply_npc_big_head_cheat((char *)m);
     switch (m->state) {
     case 0:
-        if (((Flags_2E7FC8 *)((char *)&D_0013D355_2E7FC8 + 0x13B))->f1 != 0) {
+        if (((Flags_2E7FC8 *)((char *)&special_items_base_r + 0x13B))->f1 != 0) {
             DeleteMoby(m);
             return;
         }
@@ -1421,7 +1421,7 @@ void miner_update(Moby *m) {
         initialize_moby_grounding(m);
         break;
     case 1:
-        if (((Flags_2E7FC8 *)((char *)&D_0013D355_2E7FC8 + 0x13B))->f1 == 0 && Npc_TryStartDialog(m, d->activation)) {
+        if (((Flags_2E7FC8 *)((char *)&special_items_base_r + 0x13B))->f1 == 0 && Npc_TryStartDialog(m, d->activation)) {
             PlaceMarkerAheadOfMoby(2.5f, m);
             m->anim_speed = 0.0f;
             m->state = 2;
@@ -1429,7 +1429,7 @@ void miner_update(Moby *m) {
         break;
     case 2:
         if (*(int *)&hoven_cinematic_mode_r != 2) {
-            Flags_2E7FC8 *flags = (Flags_2E7FC8 *)((char *)&D_0013D355_2E7FC8 + 0x13B);
+            Flags_2E7FC8 *flags = (Flags_2E7FC8 *)((char *)&special_items_base_r + 0x13B);
             m->anim_speed = 1.0f;
             flags->f1 = 1;
             ShowBanner(0x2EE7, scale_ticks(300));
@@ -1448,17 +1448,17 @@ void miner_update(Moby *m) {
     head_rate = 0.3f;
     tracking = 0;
     if (m->prev_seq == 0) {
-        char *player = (char *)&D_0013E633_2E7FC8 + 0xE9D;
+        char *player = (char *)&hero_globals_base_r2 + 0xE9D;
         tracking = 1;
         if (vec_distance_xy(&m->pos, player) < 8.0f &&
             FastDiffRots(m->rot.z,
-                fast_atan2(((Player_2E7FC8 *)((char *)&D_0013E633_2E7FC8 + 0xE1D))->aim[0] - m->pos.x,
-                    ((Player_2E7FC8 *)((char *)&D_0013E633_2E7FC8 + 0xE1D))->aim[1] - m->pos.y)) < 1.5707964f) {
+                fast_atan2(((Player_2E7FC8 *)((char *)&hero_globals_base_r2 + 0xE1D))->aim[0] - m->pos.x,
+                    ((Player_2E7FC8 *)((char *)&hero_globals_base_r2 + 0xE1D))->aim[1] - m->pos.y)) < 1.5707964f) {
             if (FastVecLength(player + 0x80) > 0.01f) d->moving_timer = scale_ticks(120);
             else fast_dec_timer(&d->moving_timer);
         } else if (d->moving_timer) {
             d->moving_timer = 0;
-            qcopy(d->target, (char *)&D_0013E633_2E7FC8 + 0xEED);
+            qcopy(d->target, (char *)&hero_globals_base_r2 + 0xEED);
         }
         if (fast_dec_timer(&d->target_timer)) {
             float heading;
@@ -1468,7 +1468,7 @@ void miner_update(Moby *m) {
             FastVecAdd(d->target, d->target, &m->pos);
         }
         if (d->moving_timer) {
-            qcopy(scratch.target, (char *)&D_0013E633_2E7FC8 + 0xEED);
+            qcopy(scratch.target, (char *)&hero_globals_base_r2 + 0xEED);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -1624,7 +1624,7 @@ void Moby294Update(char *moby) {
         }
     }
     if (M_U8(data, 0x269) != 0) {
-        char *b0 = ((char *)D_0013E633) + 0xE1D;
+        char *b0 = ((char *)hero_globals_base) + 0xE1D;
         if (M_I(b0, 0x2084) == 0 && M_I(b0, 0x2090) == 0x67) {
             if (((float (*)(void *, void *))vec_distance_xy)(moby + 0x10, b0 + 0x80) < 30.0f) {
                 goto finish;
@@ -1659,7 +1659,7 @@ void Moby294Update(char *moby) {
     ((int (*)(void *, void *, float))FindNearestTargetMoby)(moby, buf, M_F(data, 0x230));
     hero = M_P(buf, 0x40);
     if (hero == 0) {
-        char *B2 = ((char *)D_0013E633) + 0xE1D;
+        char *B2 = ((char *)hero_globals_base) + 0xE1D;
         hero = M_P(B2, 0x2080);
         COPY4(buf + 8, (float *)(B2 + 0xD0));
     }
@@ -1732,7 +1732,7 @@ void Moby294Update(char *moby) {
         break;
 
     case 2:
-        if (((float (*)(void *, void *))FastVecDist)(moby + 0x10, ((char *)D_0013E633) + 0xE9D) > 64.0f) {
+        if (((float (*)(void *, void *))FastVecDist)(moby + 0x10, ((char *)hero_globals_base) + 0xE9D) > 64.0f) {
             return;
         }
         if (M_U8(moby, 0x53) != 0) {
@@ -1820,7 +1820,7 @@ void Moby294Update(char *moby) {
                 COPY4(v60, hoven_zero_vec);
                 if (n > 0) {
                     pp = hoven_nearby_mobys;
-                    B = ((char *)D_0013E633) + 0xE1D;
+                    B = ((char *)hero_globals_base) + 0xE1D;
                     i = n;
                     do {
                         if (is_moby_in_class_range_500_to_540(*pp) != 0) {
@@ -2101,13 +2101,13 @@ void process_blarg_trooper_damage_and_alerts(char *moby) {
                 b = FastAddRots(((struct Moby *)moby)->rot.z, pi);
                 help_direction_or_hit_position.f[1] = FastSin(b);
                 help_direction_or_hit_position.f[2] = 0.0f;
-                PostHitMessage(moby, *(int *)(D_0013E633 + 0x2E9D), 0x10000,
+                PostHitMessage(moby, *(int *)(hero_globals_base + 0x2E9D), 0x10000,
                                &((struct Moby *)moby)->pos, help_direction_or_hit_position.f, 1.0f);
             }
         }
     }
     if (vars->volume != -1) {
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, vars->volume) != 0) {
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, vars->volume) != 0) {
             remove_blarg_trooper_and_attachment(moby);
             return;
         }
@@ -2326,7 +2326,7 @@ extern int hoven_turret_attempts MACRO_ADDR;
 extern int planetbuster_death_cam_active MACRO_ADDR;
 extern char hoven_player_camera[];
 extern unsigned char gHaveHeliPack[];
-extern unsigned char D_0014171B[];
+extern unsigned char help_stats_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern void Manipulator_ApplyScale(float, void *, int, void *);
 extern void process_blarg_helicopter_hits(char *);
@@ -2381,7 +2381,7 @@ void Moby326Update(char *moby) {
     }
     process_blarg_helicopter_hits(moby);
 
-    if ((unsigned char)D_0013E633[0x2EC1] == 2) {
+    if ((unsigned char)hero_globals_base[0x2EC1] == 2) {
         char *e;
         M_F(moby, 0x2C) = M_F(M_P(moby, 0x24), 0x24) * 0.5f;
         e = M_P(data, 0xAC);
@@ -2404,7 +2404,7 @@ void Moby326Update(char *moby) {
     } else {
         int r = M_I(data, 0xB0);
         if (r != -1) {
-            char *ent = D_0013E633 + 0x1D + r * 0x70;
+            char *ent = hero_globals_base + 0x1D + r * 0x70;
             if (M_P(ent, 0x88) == moby && M_U8(ent, 0x74) != 0) {
                 Sound_StopSlot(r);
             }
@@ -2433,7 +2433,7 @@ void Moby326Update(char *moby) {
         }
     }
     if (flagC0 != 0) {
-        if ((D_0014171B + 0xAA35)[M_U8(moby, 0xB0) + (g_current_level_index << 4)] == 0xFF) {
+        if ((help_stats_base + 0xAA35)[M_U8(moby, 0xB0) + (g_current_level_index << 4)] == 0xFF) {
             char *o = M_P(data, 0xAC);
             if (o != 0) {
                 DeleteMoby(o);
@@ -2509,7 +2509,7 @@ void Moby326Update(char *moby) {
             }
         }
         n = M_I(data, 0x80);
-        if (n == -1 || is_point_inside_clip_volume(D_0013E633 + 0xE9D, n) == 0) {
+        if (n == -1 || is_point_inside_clip_volume(hero_globals_base + 0xE9D, n) == 0) {
             if (r == 0) {
                 break;
             }
@@ -2562,10 +2562,10 @@ void Moby326Update(char *moby) {
         char *tgt;
         float f;
         float d;
-        if (g_current_level_index == 12 && gHaveHeliPack[9] == 0 && *(unsigned short *)(D_0014171B + 0x635) == 0) {
+        if (g_current_level_index == 12 && gHaveHeliPack[9] == 0 && *(unsigned short *)(help_stats_base + 0x635) == 0) {
             Help_Request(0x2EE2, 0x5D);
         }
-        tgt = D_0013E633 + 0xE9D;
+        tgt = hero_globals_base + 0xE9D;
         d = vec_distance_xy(moby + 0x10, tgt);
         if (M_I(data, 0xC0) == 0) {
             if (d < 21.0f && M_F(moby, 0x18) - M_F(tgt, 8) > 1.0f) {
@@ -2716,7 +2716,7 @@ void Moby326Update(char *moby) {
         }
         r = M_I(data, 0xB0);
         if (r != -1) {
-            char *ent = D_0013E633 + 0x1D + r * 0x70;
+            char *ent = hero_globals_base + 0x1D + r * 0x70;
             if (M_P(ent, 0x88) == moby && M_U8(ent, 0x74) != 0) {
                 Sound_StopSlot(r);
             }
@@ -2948,7 +2948,7 @@ extern void attach_shared_manipulator_to_matching_class_moby(char *);
 extern void grant_inventory_item(int, int);
 extern Helper_2EC8F0 *CreateMoby_r2(int) __asm__("func_0020D348");
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern unsigned char D_0013D605_2EC8F0[] __asm__("D_0013D605");
+extern unsigned char race_gates_base_r[] __asm__("D_0013D605");
 extern unsigned char gHaveHeliPack[] NOT_SDA;
 extern int hoven_cinematic_mode_r2 __asm__("D_L12_0015F6A8") MACRO_ADDR;
 
@@ -2999,7 +2999,7 @@ void edwina_update(char *m) {
     L12WatchData *moby_data = (L12WatchData *)moby->pvars;
     attach_shared_manipulator_to_matching_class_moby(moby);
     {
-        char *v = (char *)D_0013D605_2EC8F0 + 0xB3;
+        char *v = (char *)race_gates_base_r + 0xB3;
         if (*(int *)(v + 0x46C) == 0) {
             if (moby->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, 2);
         } else if (moby->prev_seq != 0) {
@@ -3048,7 +3048,7 @@ void edwina_update(char *m) {
         float sy = 0.3f;
         int doit = 0;
         if (moby->prev_seq == 0) {
-            char *g = D_0013E633 + 0xE9D;
+            char *g = hero_globals_base + 0xE9D;
             L16WatchPlayer *a_;
             doit = 1;
             if (vec_distance_xy(&moby->pos, g) < 8.0f
@@ -3062,7 +3062,7 @@ void edwina_update(char *m) {
                 }
             } else if (moby_data->moving_timer != 0) {
                 moby_data->moving_timer = 0;
-                qcopy(moby_data->target, D_0013E633 + 0xEED);
+                qcopy(moby_data->target, hero_globals_base + 0xEED);
             }
             if (fast_dec_timer(&moby_data->target_timer) != 0) {
                 float y;
@@ -3075,7 +3075,7 @@ void edwina_update(char *m) {
                 FastVecAdd(moby_data->target, moby_data->target, &moby->pos);
             }
             if (moby_data->moving_timer != 0) {
-                qcopy(b, D_0013E633 + 0xEED);
+                qcopy(b, hero_globals_base + 0xEED);
                 sx = 0.04f;
                 sy = 0.3f;
             } else {
@@ -3083,7 +3083,7 @@ void edwina_update(char *m) {
             }
         }
         {
-            char *v = (char *)D_0013D605_2EC8F0 + 0xB3;
+            char *v = (char *)race_gates_base_r + 0xB3;
             if (*(int *)(v + 0x46C) == 0) {
                 if (moby_data->turret == 0) {
                     moby_data->turret = CreateMoby_r2(0x4C1);
@@ -3176,7 +3176,7 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
     float b[4];
     unsigned char *q;
     if (MobyGetHitMessage(m, 0xA30000, 0) != 0) {
-        if (*(int *)(D_0013E633 + 0x2EA1) != 0x32) {
+        if (*(int *)(hero_globals_base + 0x2EA1) != 0x32) {
             *(int *)&helicopter_hit_count += 1;
             if (*(int *)&helicopter_hit_count >= 5) {
                 q = (unsigned char *)(menu_item_enabled_115 + 1);
@@ -3297,7 +3297,7 @@ extern int fast_subtract_rotations_cf(void *);
 
 /* Idle critter: waits a random time, then plays one of its fidget animations (or reacts when the hero comes close). */
 void crane_arm_update(unsigned char *m) {
-    float dist = vec_distance_xy(m + 0x10, D_0013E633 + 0xE9D);
+    float dist = vec_distance_xy(m + 0x10, hero_globals_base + 0xE9D);
     switch (m[0x20]) {
     case 0:
         if (m[0x53] != 0) MobyBlendAnimation(m, 0, 0, 0);

@@ -300,7 +300,7 @@ extern char kerwan_player_camera_r[] __asm__("D_L03_00166E00");
 extern int D_L03_0015FE7C MACRO_ADDR;
 extern char kerwan_train_no_partner_msg[];
 extern char kerwan_train_no_link_msg[];
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern char voice_pool[];
 extern void update_metropolis_train_idle_motion_r(void *) __asm__("func_L03_00293EB8");
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
@@ -391,12 +391,12 @@ void metropolis_train_locomotive_update(Moby *moby) {
         break;
     case 3:
         update_metropolis_train_idle_motion_r(moby);
-        if (is_point_inside_clip_volume(&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, d->fB4) != 0) {
+        if (is_point_inside_clip_volume(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->fB4) != 0) {
             if (d->f100 == -1) {
                 return;
             }
-            if (((Hero *)(D_0013E633 + 0xE1D))->state.control_mode == 0 || ((Hero *)(D_0013E633 + 0xE1D))->state.control_mode == 1
-                || ((Hero *)(D_0013E633 + 0xE1D))->state.control_mode == 9 || ((Hero *)(D_0013E633 + 0xE1D))->state.control_mode == 0xC) {
+            if (((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 0 || ((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 1
+                || ((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 9 || ((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 0xC) {
                 moby->command = 4;
                 D_L03_0015FE7C = 1;
                 MusicRequestTrack(4, 7);
@@ -404,11 +404,11 @@ void metropolis_train_locomotive_update(Moby *moby) {
                 kerwan_mobys_r[d->f100].command = 1;
                 cd = (*(void **)&kerwan_mobys_r[d->f100].pvars);
                 cd->f18 = fast_atan2(
-                    ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[0] - ((Cam_294040 *)kerwan_player_camera_r)->f140.x,
-                    ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[1] - ((Cam_294040 *)kerwan_player_camera_r)->f140.y);
+                    ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[0] - ((Cam_294040 *)kerwan_player_camera_r)->f140.x,
+                    ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[1] - ((Cam_294040 *)kerwan_player_camera_r)->f140.y);
                 cd->f14 = -fast_atan2(
-                    vec_distance_xy(&((Cam_294040 *)kerwan_player_camera_r)->f140, &((Hero *)(D_0013E633 + 0xE1D))->motion.pos),
-                    ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[2] - ((Cam_294040 *)kerwan_player_camera_r)->f140.z);
+                    vec_distance_xy(&((Cam_294040 *)kerwan_player_camera_r)->f140, &((Hero *)(hero_globals_base + 0xE1D))->motion.pos),
+                    ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] - ((Cam_294040 *)kerwan_player_camera_r)->f140.z);
                 cd->f2C = scale_ticks(0x35C);
                 d->f104 = scale_ticks(0x1E);
                 d->f108 = -1;
@@ -429,10 +429,10 @@ void metropolis_train_locomotive_update(Moby *moby) {
             Moby_PlaySound(0, 0, (int)moby);
             d->f104 = rand_range(scale_ticks(0x384), scale_ticks(0x190));
         }
-        if (((Hero *)(D_0013E633 + 0xE1D))->air_frames.s != 0 && ((Hero *)(D_0013E633 + 0xE1D))->state.control_mode != 3) {
-            find_nearest_path_point_r(od->f70, &((Hero *)(D_0013E633 + 0xE1D))->motion.pos, v, &idx, &t, 0, 999.0f, 5.0f, 0.0f);
+        if (((Hero *)(hero_globals_base + 0xE1D))->air_frames.s != 0 && ((Hero *)(hero_globals_base + 0xE1D))->state.control_mode != 3) {
+            find_nearest_path_point_r(od->f70, &((Hero *)(hero_globals_base + 0xE1D))->motion.pos, v, &idx, &t, 0, 999.0f, 5.0f, 0.0f);
             d->f10C++;
-            if (scale_ticks(0x3C) < d->f10C && ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[2] < v[2] - 10.0f) {
+            if (scale_ticks(0x3C) < d->f10C && ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] < v[2] - 10.0f) {
                 if (d->f108 != -1) {
                     Snd_294040 *e = (Snd_294040 *)(voice_pool + d->f108 * 0x70);
                     if (e->f88 == moby && e->b74 != 0) {
@@ -441,7 +441,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
                 }
                 d->f108 = -1;
                 FadeToBlack(scale_ticks(0x10));
-                ((Hero *)(D_0013E633 + 0xE1D))->fall_fade_pending = 1;
+                ((Hero *)(hero_globals_base + 0xE1D))->fall_fade_pending = 1;
                 break;
             }
         } else {
@@ -450,15 +450,15 @@ void metropolis_train_locomotive_update(Moby *moby) {
         if (kerwan_mobys_r[d->f100].command != 0) {
             cd = (*(void **)&kerwan_mobys_r[d->f100].pvars);
             cd->f18 = fast_atan2(
-                ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[0] - ((Cam_294040 *)kerwan_player_camera_r)->f140.x,
-                ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[1] - ((Cam_294040 *)kerwan_player_camera_r)->f140.y);
+                ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[0] - ((Cam_294040 *)kerwan_player_camera_r)->f140.x,
+                ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[1] - ((Cam_294040 *)kerwan_player_camera_r)->f140.y);
             cd->f14 = -fast_atan2(
-                vec_distance_xy(&((Cam_294040 *)kerwan_player_camera_r)->f140, &((Hero *)(D_0013E633 + 0xE1D))->motion.pos),
-                ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[2] - ((Cam_294040 *)kerwan_player_camera_r)->f140.z);
+                vec_distance_xy(&((Cam_294040 *)kerwan_player_camera_r)->f140, &((Hero *)(hero_globals_base + 0xE1D))->motion.pos),
+                ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] - ((Cam_294040 *)kerwan_player_camera_r)->f140.z);
         }
-        if (((Hero *)(D_0013E633 + 0xE1D))->ground_moby != 0) {
-            if (((Hero *)(D_0013E633 + 0xE1D))->ground_moby->oclass == 0x336 || ((Hero *)(D_0013E633 + 0xE1D))->ground_moby->oclass == 0x4BA) {
-                set_moby_dialogue_record_value(((Hero *)(D_0013E633 + 0xE1D))->ground_moby, 3);
+        if (((Hero *)(hero_globals_base + 0xE1D))->ground_moby != 0) {
+            if (((Hero *)(hero_globals_base + 0xE1D))->ground_moby->oclass == 0x336 || ((Hero *)(hero_globals_base + 0xE1D))->ground_moby->oclass == 0x4BA) {
+                set_moby_dialogue_record_value(((Hero *)(hero_globals_base + 0xE1D))->ground_moby, 3);
             }
         }
         if (is_hero_on_moby(moby) != 0) {
@@ -558,14 +558,14 @@ void metropolis_train_locomotive_update(Moby *moby) {
             }
         }
         cd->f18 = fast_atan2(
-            ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[0] - ((Cam_294040 *)kerwan_player_camera_r)->f140.x,
-            ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[1] - ((Cam_294040 *)kerwan_player_camera_r)->f140.y);
+            ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[0] - ((Cam_294040 *)kerwan_player_camera_r)->f140.x,
+            ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[1] - ((Cam_294040 *)kerwan_player_camera_r)->f140.y);
         cd->f14 = -fast_atan2(
-            vec_distance_xy(&((Cam_294040 *)kerwan_player_camera_r)->f140, &((Hero *)(D_0013E633 + 0xE1D))->motion.pos),
-            ((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f[2] - ((Cam_294040 *)kerwan_player_camera_r)->f140.z);
+            vec_distance_xy(&((Cam_294040 *)kerwan_player_camera_r)->f140, &((Hero *)(hero_globals_base + 0xE1D))->motion.pos),
+            ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] - ((Cam_294040 *)kerwan_player_camera_r)->f140.z);
         break;
     case 6:
-        if (is_point_inside_clip_volume(&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, d->fB0) != 0) {
+        if (is_point_inside_clip_volume(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->fB0) != 0) {
             int i;
             for (i = 0; i < 8; i++) {
                 Moby *m = &kerwan_mobys_r[d->fE0[i]];
@@ -1978,7 +1978,7 @@ extern void RotatePointAboutAxis(void *, void *, float);
 extern void DeleteMoby(void *);
 extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
-extern unsigned char D_0014171B[];
+extern unsigned char help_stats_base[];
 extern char *kerwan_paths[];
 extern char kerwan_coll_hit[];
 extern char kerwan_coll_hit_point[];
@@ -1998,7 +1998,7 @@ void update_kerwan_path_enemy(Moby *m) {
     dist = vec_distance_xy((*(float (*)[4])&m->pos), &tgt);
     Manipulator_SetScale(&d->look0, 2.5f);
     if (d->b262 == 1) {
-        if ((D_0014171B + 0xAA35)[m->mission + (g_current_level_index << 4)] == 0xFF) {
+        if ((help_stats_base + 0xAA35)[m->mission + (g_current_level_index << 4)] == 0xFF) {
             m->flags |= 0x41;
             (*(int *)&m->collision) = 0;
         }
@@ -2040,7 +2040,7 @@ void update_kerwan_path_enemy(Moby *m) {
     }
     switch (m->state) {
     case 0:
-        (*(long *)&m->spawn_frame) = (*(long *)&(*(Moby **)(D_0013E633 + 0x2E9D))->spawn_frame);
+        (*(long *)&m->spawn_frame) = (*(long *)&(*(Moby **)(hero_globals_base + 0x2E9D))->spawn_frame);
         m->shadow_range = 0x1C;
         MoveCtl_Init((char *)&d->mv);
         d->mv.fC = 3.0f;
@@ -2100,7 +2100,7 @@ void update_kerwan_path_enemy(Moby *m) {
             *(u128 *)(*(float (*)[4])&m->pos) = *(u128 *)(np + 0x10);
             (*(float (*)[4])&m->rot)[2] = fast_atan2(*(float *)(np + 0x20) - *(float *)(np + 0x10), *(float *)(np + 0x24) - *(float *)(np + 0x14));
             if (is_point_inside_clip_volume_cf(m->group) || is_point_inside_clip_volume(&tgt, d->i29C)
-                || (D_0014171B + 0xAA35)[m->mission + (g_current_level_index << 4)] == 0xFF
+                || (help_stats_base + 0xAA35)[m->mission + (g_current_level_index << 4)] == 0xFF
                 || (dist < d->f294 && FastAbsF(tgt.pos[2] - (*(float (*)[4])&m->pos)[2]) < 4.0f)) {
                 d->i298 = 0;
                 m->state = 9;
@@ -2663,7 +2663,7 @@ void update_kerwan_path_enemy(Moby *m) {
         break;
     }
     case 15:
-        if ((D_0014171B + 0xAA35)[m->mission + (g_current_level_index << 4)] == 0xFF) {
+        if ((help_stats_base + 0xAA35)[m->mission + (g_current_level_index << 4)] == 0xFF) {
             DeleteMoby(m);
             return;
         }

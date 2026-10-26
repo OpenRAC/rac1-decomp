@@ -328,11 +328,11 @@ int MissionCond_Obj46AndSpecial61(void) {
 }
 
 extern int D_0013DC34 NOT_SDA;
-extern unsigned char D_0013D605 NOT_SDA;
+extern unsigned char race_gates_base NOT_SDA;
 
 /* Predicate: true when D_0013DC34 and the flag byte D_0013D605 are both set. */
 int MissionCond_Obj57AndItem3D(void) {
-    if (D_0013DC34 != 0 && D_0013D605 != 0) return 1;
+    if (D_0013DC34 != 0 && race_gates_base != 0) return 1;
     return 0;
 }
 

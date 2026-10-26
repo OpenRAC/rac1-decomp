@@ -34,7 +34,7 @@ extern int random_integer_below(int);
 extern unsigned char vendor_stock[] MACRO_ADDR;
 extern unsigned char item_available[];
 extern int weapon_ammo_counts[];
-extern char D_0014171B[];
+extern char help_stats_base[];
 
 /* Picks a killed moby's drop, preferring ammo for weapons that run low; item goes to *item. */
 int ChooseDropItem(unsigned char *m, int *item) {
@@ -50,7 +50,7 @@ int ChooseDropItem(unsigned char *m, int *item) {
     unsigned char *entry;
 
     if (*item <= 0 || (m != 0 &&
-        ((*(int *)(D_0014171B + 0xAB75 + ((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + *(int *)&g_current_level_index * 256) >>
+        ((*(int *)(help_stats_base + 0xAB75 + ((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + *(int *)&g_current_level_index * 256) >>
           (*(unsigned short *)(m + 0xB2) & 31)) & 1))) {
         {
             for (scan_index = 0; scan_index < 12 && vendor_stock[scan_index] != 0xFF; scan_index++) {

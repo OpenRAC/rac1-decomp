@@ -34,7 +34,7 @@ extern char *veldin2_arena_nodes MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern short *veldin2_moby_groups[];
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern short veldin2_moby_group_move_enabled;
 extern short veldin2_moby_group_accel;
 extern short veldin2_moby_group_decel;
@@ -123,14 +123,14 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
             v9 = 0;
             for (i = 0; i < d->cnt; i++) {
                 unsigned char *e = veldin2_moby_table + (d->ent[i].idx << 8);
-                if (((VG *)(D_0013E633 + 0xE1D))->p2FC == e) {
+                if (((VG *)(hero_globals_base + 0xE1D))->p2FC == e) {
                     d->f350++;
                     if (scale_ticks(30) < d->f350) d->f348 = 1;
                     v9 = 1;
                     break;
                 }
             }
-            p = ((VG *)(D_0013E633 + 0xE1D))->p2FC;
+            p = ((VG *)(hero_globals_base + 0xE1D))->p2FC;
             if (p != 0) {
                 short s = *(short *)(p + 0xA6);
                 if (s == 0x764) v9 = 1;
@@ -138,7 +138,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                     if (p[0x20] == 4) v9 = 1;
                 }
             }
-            if (d->f348 != 0 && v9 == 0 && ((VG *)(D_0013E633 + 0xE1D))->s30E == 0) {
+            if (d->f348 != 0 && v9 == 0 && ((VG *)(hero_globals_base + 0xE1D))->s30E == 0) {
                 if (fast_dec_timer(&d->f34C)) ((Moby *)moby)->state = 4;
             }
             break;
@@ -176,7 +176,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                     v[0] = FastCos(f20) * z;
                     v[1] = FastSin(f20) * z;
                     v[2] = 15.0f;
-                    FastVecAdd(v, v, D_0013E633 + 0xE9D);
+                    FastVecAdd(v, v, hero_globals_base + 0xE9D);
                     n = scale_ticks(240);
                     spawn_debris_moby(v, veldin2_zero_vec, 0x2B8, n,
                                       *(float *)&veldin2_moby_group_debris_scale, 2.0f, 1.0f, 0.75f, 0);
@@ -298,7 +298,7 @@ void update_glow_moby_state_and_voice(unsigned char *m)
                 if (Sound_IsPlaying(m, moby_vars[1]) != 0) {
                     int i = moby_vars[1];
                     if (i != -1) {
-                        VoiceSlot *voice_slot_entry = (VoiceSlot *)(D_0013E633 + 0x1D + i * 0x70);
+                        VoiceSlot *voice_slot_entry = (VoiceSlot *)(hero_globals_base + 0x1D + i * 0x70);
                         if (voice_slot_entry->owner == (void *)m && voice_slot_entry->playing != 0) {
                             Sound_StopSlot(i);
                         }
@@ -480,7 +480,7 @@ void update_lift_state_and_queue_draw(unsigned char *m)
         synchronize_lift_group_height(m);
         ApproachWithVelocity(d->f0, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f, (float *)(m + 0x18), (float *)((char *)d + 0x18));
         if (FastAbsF(((Moby *)m)->pos.z - d->f0) > 0.1f) {
-            char *b = D_0013E633 + 0xE1D;
+            char *b = hero_globals_base + 0xE1D;
             if ((unsigned)(*(int *)(b + 0x208C) - 0x11) < 2) {
                 float f = ((Moby *)m)->pos.z;
                 if (*(float *)(b + 0x2F0) < f) {
@@ -1912,7 +1912,7 @@ extern short sinking_platform_fall_count;
 void count_drek_boss_platform_event_once(char *moby) {
     char *d = ((char *)((Moby *)moby)->pvars);
     if (*(int *)(d + 0x3E4) == 0) {
-        char *a = D_0013E633 + 0xE1D;
+        char *a = hero_globals_base + 0xE1D;
         if (*(int *)(a + 0x300) != 0) {
             *(int *)(d + 0x3E8) = *(int *)(a + 0x2FC);
         }
@@ -2013,7 +2013,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
                     step = step * 3.0f;
                 }
             }
-            if (*(int *)(D_0013E633 + 0x2EA9) == 0xF) {
+            if (*(int *)(hero_globals_base + 0x2EA9) == 0xF) {
                 boss_data->f390 = boss_data->f390 + step;
             } else {
                 *(float *)boss_data->p394 = *(float *)boss_data->p394 + step;
@@ -2047,7 +2047,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
                     if (Sound_IsPlaying(moby, boss_data->f3B0) != 0) {
                         int i = boss_data->f3B0;
                         if (i != -1) {
-                            char *e = D_0013E633 + 0x1D + i * 0x70;
+                            char *e = hero_globals_base + 0x1D + i * 0x70;
                             if (*(char **)(e + 0x88) == moby && *(unsigned char *)(e + 0x74) != 0) {
                                 Sound_StopSlot(i);
                             }
@@ -2094,7 +2094,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
         FindNearestEligibleMoby(512.0f, moby, (char *)boss_data->f70, 0, 0, e + 4, e[0]);
     }
     if (boss_data->fB0 == 0) {
-        boss_data->fB0 = *(Moby **)(D_0013E633 + 0x2E9D);
+        boss_data->fB0 = *(Moby **)(hero_globals_base + 0x2E9D);
     }
     {
         int type = ((Moby *)moby)->state;
@@ -2180,7 +2180,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
                 if (Sound_IsPlaying(moby, boss_data->f3B0) != 0) {
                     int i = boss_data->f3B0;
                     if (i != -1) {
-                        char *e = D_0013E633 + 0x1D + i * 0x70;
+                        char *e = hero_globals_base + 0x1D + i * 0x70;
                         if (*(char **)(e + 0x88) == moby && *(unsigned char *)(e + 0x74) != 0) {
                             Sound_StopSlot(i);
                         }
@@ -2190,7 +2190,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
                 if (((Moby *)moby)->prev_seq != 0) {
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(0x14));
                 }
-                boss_data->f330 = find_class_247_moby_with_largest_xy_angle_in_list((float *)boss_data->f3C0, (float *)(D_0013E633 + 0xE9D), boss_data->f200);
+                boss_data->f330 = find_class_247_moby_with_largest_xy_angle_in_list((float *)boss_data->f3C0, (float *)(hero_globals_base + 0xE9D), boss_data->f200);
                 *(int *)&boss_data->f390 = 0;
                 *(int *)boss_data->p394 = 0;
             }
@@ -2236,7 +2236,7 @@ extern short drek_boss_follow_distance;
 void update_drek_boss_hero_follow_movement(char *m) {
     float v[4];
     char *d = ((char *)((Moby *)m)->pvars);
-    char *b = D_0013E633 + 0xE9D;
+    char *b = hero_globals_base + 0xE9D;
     float t;
     float lo, hi;
     FastVecSub(v, b, veldin2_arena_nodes + (*(int *)(d + 0x344) << 7) + 0x30);
@@ -2247,7 +2247,7 @@ void update_drek_boss_hero_follow_movement(char *m) {
         ClampVectorLength(v, *(float *)&drek_boss_arena_radius);
     }
     FastVecAdd(v, v, veldin2_arena_nodes + (*(int *)(d + 0x344) << 7) + 0x30);
-    t = *(float *)(D_0013E633 + 0xF7D);
+    t = *(float *)(hero_globals_base + 0xF7D);
     t += (vec_distance_xy(m + 0x10, v) - *(float *)&drek_boss_follow_distance) / *(float *)&drek_boss_follow_distance * (g_frame_time * 4.75f);
     hi = g_frame_time * 20.0f;
     lo = g_frame_time * 4.75f;
@@ -2473,7 +2473,7 @@ int select_drek_boss_next_action(char *moby) {
             if (*(int *)(data + 0x364) != 0) {
                 ok = 0;
             } else {
-                float d = vec_distance_xy(D_0013E633 + 0xE9D, veldin2_arena_nodes + *(int *)(data + 0x25C) * 128 + 0x30);
+                float d = vec_distance_xy(hero_globals_base + 0xE9D, veldin2_arena_nodes + *(int *)(data + 0x25C) * 128 + 0x30);
                 if (*(float *)&drek_boss_arena_radius + 2.0f < d) ok = 0;
             }
         }
@@ -2538,7 +2538,7 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
     unsigned char st;
 
     fast_dec_timer((int *)(d + 0x360));
-    f = vec_distance_xy(D_0013E633 + 0xE9D, d + 0x3C0);
+    f = vec_distance_xy(hero_globals_base + 0xE9D, d + 0x3C0);
     if (f > *(float *)&drek_boss_cam_range_far) {
         f = *(float *)&drek_boss_cam_range_far;
     } else if (f < *(float *)&drek_boss_cam_range_near) {
@@ -2550,7 +2550,7 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
     y = (*(float *)&drek_boss_cam_height_far - *(float *)&drek_boss_cam_height_near) * f + *(float *)&drek_boss_cam_height_near;
     st = ((Moby *)moby)->state;
     if (st == 0x13) {
-        char *g = D_0013E633 + 0xE1D;
+        char *g = hero_globals_base + 0xE1D;
         if ((*(int *)(g + 0x208C) == 0xF || *(int *)(g + 0x2084) == 0x42) && *(int *)(d + 0x364) == 0 &&
             *(float *)(d + 0x390) <= 25.0f && *(int *)(d + 0x360) == 0) {
 x = *(float *)&drek_boss_cam_attack_dist;
@@ -2564,7 +2564,7 @@ x = *(float *)&drek_boss_cam_attack_dist;
             p1 = (float *)(t + 0x38);
             p3 = (float *)(d + 0x37C);
             p2 = (float *)(d + 0x378);
-            if (vec_distance_xy(D_0013E633 + 0xE9D, veldin2_arena_nodes + (*(int *)(d + 0x344) << 7) + 0x30) < 28.0f) {
+            if (vec_distance_xy(hero_globals_base + 0xE9D, veldin2_arena_nodes + (*(int *)(d + 0x344) << 7) + 0x30) < 28.0f) {
                 x = *(float *)&drek_boss_cam_node_dist;
                 y = *(float *)&drek_boss_cam_node_height;
             }
@@ -2586,7 +2586,7 @@ x = *(float *)&drek_boss_cam_attack_dist;
             char *m;
             if (*(int *)(d + 0x3EC) == 0) {
                 char *pl;
-                g = D_0013E633 + 0xE1D;
+                g = hero_globals_base + 0xE1D;
                 pl = *(char **)(g + 0x2FC);
                 if (pl != 0 && *(short *)(pl + 0xA6) == 0x24B) {
                     *(int *)(d + 0x3EC) = 1;

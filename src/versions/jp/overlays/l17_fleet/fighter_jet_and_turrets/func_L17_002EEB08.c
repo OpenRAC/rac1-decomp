@@ -12,7 +12,7 @@ void FighterJetUpdate(Moby1379 *moby) {
         if (st != 7 && st != 1 && st != 2) {
             r = MobyGetHitMessage(moby, 0x30001, 0);
             if (r != 0 && moby->state == 4) {
-                Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+                Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
                 if (*(float *)(r + 0x2C) < g->t) {
                     g->t = g->t - *(float *)(r + 0x2C);
                     if (*(int *)(r + 0x30) & 1) {
@@ -51,7 +51,7 @@ void FighterJetUpdate(Moby1379 *moby) {
         }
         moby->a4 = 0xFF;
         {
-            Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+            Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
             if (g->cur == (int)moby) {
                 g->i1608 = (int)(g->t / fleet_jet_max_health * 200.0f);
             }
@@ -93,12 +93,12 @@ void FighterJetUpdate(Moby1379 *moby) {
             d->i124 = -1;
             break;
         case 1: {
-            Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+            Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
             int ok = 0;
             if (jet_distance(moby, g->p2080) < *(float *)&fleet_jet_board_radius) {
                 int t = g->i2084;
                 if (t != 0x32 && t != 0x1D && g->b20A4 == 0 && try_set_help_message(7, 0x543B) != 0) {
-                    int m = *(int *)(D_0013A5E0 + 0x2604) & 0x10;
+                    int m = *(int *)(pad_globals_base + 0x2604) & 0x10;
                     ok = m != 0;
                 }
             }
@@ -120,7 +120,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             f = d->f130;
             fleet_fade_level = f;
             if (f == 1.0f) {
-                Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+                Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
                 g->cur = (int)moby;
                 g->id = moby->a6;
                 g->n6 = fleet_jet_start_ammo;
@@ -200,7 +200,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 fleet_fade_level = d->f130;
             }
             {
-                Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+                Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
                 if (g->b160F & 1) {
                     moby->state = 5;
                 }
@@ -208,7 +208,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             break;
         }
         case 5: {
-            Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+            Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
             char *e;
             g->b20A5 = 0;
             g->p2080->i98 = 0;
@@ -247,7 +247,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             if (FastDecTimer(&d->t62) != 0) {
                 clear_jet_camera_mode_latch();
                 {
-                    Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+                    Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
                     g->p2080->i98 = 0;
                 }
                 Hero_OnKilled();
@@ -282,7 +282,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 fleet_fade_level = d->f130;
             }
             if (d->f130 >= 1.0f) {
-                Glob1379 *g = (Glob1379 *)(D_0013E633 + 0xE1D);
+                Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
                 int i;
                 g->b20A5 = 0;
                 g->p2080->i98 = 0;

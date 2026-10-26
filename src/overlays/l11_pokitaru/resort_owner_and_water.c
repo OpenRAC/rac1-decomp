@@ -15,7 +15,7 @@ extern int Help_Request(int, int);
 extern float g_frame_time MACRO_ADDR;
 extern unsigned char gHaveHeliPack[];
 extern unsigned char discount_purchase_pricing[];
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 /* Per-frame update of a pickup moby: waits for the player to come near, then grants the item. */
 void update_pokitaru_pickup(char *moby) {
@@ -39,7 +39,7 @@ void update_pokitaru_pickup(char *moby) {
         break;
     case PICKUP_CHECK_PROXIMITY:
         FastAddRots(m->rot.z, g_frame_time * 4.7123890f);
-        if (vec_distance_xy(&m->pos, D_0013E633 + 0xE9D) < 2.0f) {
+        if (vec_distance_xy(&m->pos, hero_globals_base + 0xE9D) < 2.0f) {
             gHaveHeliPack[4] = 1;
             discount_purchase_pricing[0xB] = 1;
             memcard_Save(0, -1);
@@ -174,7 +174,7 @@ void bob_update(char *m) {
         moby_vars->f0C = 3.7f;
         break;
     case 1:
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, moby_vars->region) != 0) {
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, moby_vars->region) != 0) {
             if (Npc_TryStartDialog(m, moby_vars) != 0) {
                 PlaceMarkerAheadOfMoby(2.7f, m);
                 moby->state = 2;
@@ -186,7 +186,7 @@ void bob_update(char *m) {
             moby->state = 1;
             if (moby_vars->h04 == 2) {
                 grant_inventory_item(3, 1);
-                jet_reset_camera_r(D_0013E633 + 0xE9D, D_0013E633 + 0xEAD);
+                jet_reset_camera_r(hero_globals_base + 0xE9D, hero_globals_base + 0xEAD);
                 memcard_Save(0, -1);
                 clear_active_help_record_r();
                 Help_Request(0x2AFB, 0x3D);
@@ -200,7 +200,7 @@ void bob_update(char *m) {
         float head_rate = 0.3f;
         int tracking = 0;
         if (moby->prev_seq == 0) {
-            char *player = D_0013E633 + 0xE9D;
+            char *player = hero_globals_base + 0xE9D;
             char *a_;
             tracking = 1;
             if (vec_distance_xy(&moby->pos, player) < 8.0f
@@ -214,7 +214,7 @@ void bob_update(char *m) {
                 }
             } else if (moby_vars->moving_timer != 0) {
                 moby_vars->moving_timer = 0;
-                qcopy(moby_vars->target, D_0013E633 + 0xEED);
+                qcopy(moby_vars->target, hero_globals_base + 0xEED);
             }
             if (fast_dec_timer_r(&moby_vars->target_timer) != 0) {
                 float y;
@@ -227,7 +227,7 @@ void bob_update(char *m) {
                 FastVecAdd(moby_vars->target, moby_vars->target, &moby->pos);
             }
             if (moby_vars->moving_timer != 0) {
-                qcopy(target, D_0013E633 + 0xEED);
+                qcopy(target, hero_globals_base + 0xEED);
                 rate = 0.04f;
                 head_rate = 0.3f;
             } else {
@@ -510,7 +510,7 @@ void update_resort_owner_state_transitions(void *mp) {
             return;
         }
         if (saved_mission_state[d->f108 + (g_current_level_index << 4)] == 0xFF
-            && FastVecDist(D_0013E633 + 0xE9D, path_points_14b0_r[d->fE0[1]].pos) < 12.0f) {
+            && FastVecDist(hero_globals_base + 0xE9D, path_points_14b0_r[d->fE0[1]].pos) < 12.0f) {
             int ofs;
             int base;
             d->idx = 1;
@@ -531,11 +531,11 @@ void update_resort_owner_state_transitions(void *mp) {
         break;
     case 1:
         if (d->f56 == 0) {
-            if (((Hero *)(D_0013E633 + 0xE1D))->air_frames.s == 0 && Npc_TryStartDialog(moby, d->f20)) {
+            if (((Hero *)(hero_globals_base + 0xE1D))->air_frames.s == 0 && Npc_TryStartDialog(moby, d->f20)) {
                 PlaceMarkerAheadOfMoby(2.5f, moby);
                 set_resort_owner_state_r(moby, 2);
             }
-        } else if (vec_distance_xy(&moby->pos, D_0013E633 + 0xE9D) < 6.0f) {
+        } else if (vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D) < 6.0f) {
             set_resort_owner_state_r(moby, 3);
         }
         break;
@@ -545,21 +545,21 @@ void update_resort_owner_state_transitions(void *mp) {
         }
         break;
     case 3:
-        if (vec_distance_xy(&moby->pos, D_0013E633 + 0xE9D) > 6.0f && try_update_resort_owner_path_target_r(moby, D_0013E633 + 0xE9D) && r == 1) {
+        if (vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D) > 6.0f && try_update_resort_owner_path_target_r(moby, hero_globals_base + 0xE9D) && r == 1) {
             set_resort_owner_state_r(moby, 4);
         }
         break;
     case 4:
-        if (vec_distance_xy(&moby->pos, D_0013E633 + 0xE9D) < 3.0f || !try_update_resort_owner_path_target_r(moby, D_0013E633 + 0xE9D) || r == 2) {
+        if (vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D) < 3.0f || !try_update_resort_owner_path_target_r(moby, hero_globals_base + 0xE9D) || r == 2) {
             set_resort_owner_state_r(moby, 3);
-        } else if (vec_distance_xy(&moby->pos, D_0013E633 + 0xE9D) > 8.0f) {
+        } else if (vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D) > 8.0f) {
             set_resort_owner_state_r(moby, 5);
         }
         break;
     case 5:
-        if (vec_distance_xy(&moby->pos, D_0013E633 + 0xE9D) < 3.0f || !try_update_resort_owner_path_target_r(moby, D_0013E633 + 0xE9D) || r == 2) {
+        if (vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D) < 3.0f || !try_update_resort_owner_path_target_r(moby, hero_globals_base + 0xE9D) || r == 2) {
             set_resort_owner_state_r(moby, 3);
-        } else if (vec_distance_xy(&moby->pos, D_0013E633 + 0xE9D) < 4.0f) {
+        } else if (vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D) < 4.0f) {
             set_resort_owner_state_r(moby, 4);
         }
         break;
@@ -667,7 +667,7 @@ void update_resort_owner_state_transitions(void *mp) {
         break;
     case 14:
         if (saved_mission_state[d->f118 + (g_current_level_index << 4)] == 0xFF
-            && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x32
+            && ((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x32
             && Npc_TryStartDialog(moby, d->f20)) {
             PlaceMarkerAheadOfMoby(2.5f, moby);
             set_resort_owner_state_r(moby, 0xF);
@@ -1001,9 +1001,9 @@ extern void ShowBanner(int, int);
 typedef struct { char pad[0x432]; unsigned short f432; } Stats_2F21B0;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern char *path_points_14b0_r2 __asm__("D_L11_0016016C") MACRO_ADDR;
-extern unsigned char D_0014171B_2F21B0[] __asm__("D_0014171B");
-extern unsigned char D_0013D605_2F21B0[] __asm__("D_0013D605");
-extern unsigned char D_0013D355_2F21B0[] __asm__("D_0013D355");
+extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
+extern unsigned char race_gates_base_r[] __asm__("D_0013D605");
+extern unsigned char special_items_base_r[] __asm__("D_0013D355");
 
 typedef struct PokSentryVars {
     u8 pad_00[0x4];
@@ -1055,7 +1055,7 @@ void fred_pokitaru_update(char *m)
         moby->state = 1;
         if (moby->prev_seq != 1)
             MobyBlendAnimation(m, 1, 0, scale_ticks(0x14));
-        if (D_0013D605_2F21B0[0xE] != 0) {
+        if (race_gates_base_r[0xE] != 0) {
             DeleteMoby(m);
             return;
         }
@@ -1067,13 +1067,13 @@ void fred_pokitaru_update(char *m)
             PlaceMarkerAheadOfMoby(3.0f, m);
             moby->state = 2;
         }
-        if (D_0013D355_2F21B0[0x13C] == 0 && discount_purchase_pricing[0] == 0 &&
-            FastVecDist((char *)&moby->pos, (char *)&D_0013E633 + 0xE9D) < 4.0f) {
+        if (special_items_base_r[0x13C] == 0 && discount_purchase_pricing[0] == 0 &&
+            FastVecDist((char *)&moby->pos, (char *)&hero_globals_base + 0xE9D) < 4.0f) {
             Stats_2F21B0 *stats;
             int elapsed, period;
             elapsed = scale_ticks(gameplay_event_frame_count_r);
             period = 600;
-            stats = (Stats_2F21B0 *)(D_0014171B_2F21B0 + 0x34D);
+            stats = (Stats_2F21B0 *)(help_stats_base_r + 0x34D);
             elapsed -= stats->f432 * period;
             if (elapsed > (int)((float)scale_ticks(18) * 60.0f) || stats->f432 * period == 0) {
                 Help_Request(0x2B03, 0x86);
@@ -1082,7 +1082,7 @@ void fred_pokitaru_update(char *m)
             }
         }
         if (saved_mission_state[moby->mission + (g_current_level_index << 4)] != 0xFF) {
-            char *h = (char *)&D_0013E633 + 0xE9D;
+            char *h = (char *)&hero_globals_base + 0xE9D;
             if (FastVecDist(h, (char *)&moby->pos) < 4.0f &&
                 FastAbsF(((Vec4f *)h)->z - moby->pos.z) < 4.0f) {
                 char *t;
@@ -1096,9 +1096,9 @@ void fred_pokitaru_update(char *m)
         if (pokitaru_cinematic_mode != 2) {
             moby->state = 1;
             if (moby_vars->h04 == 2) {
-                D_0013D355_2F21B0[0x13C] = 0;
+                special_items_base_r[0x13C] = 0;
                 discount_purchase_pricing[0] = 1;
-                D_0013D605_2F21B0[0xE] = 1;
+                race_gates_base_r[0xE] = 1;
                 ShowBanner(0x2B06, scale_ticks(300));
                 memcard_Save(0, -1);
                 Help_Request(0x2AF9, 0x3B);
@@ -1110,7 +1110,7 @@ void fred_pokitaru_update(char *m)
     head_rate = 0.3f;
     tracking = 0;
     if (moby->prev_seq == 1) {
-        p = (char *)&D_0013E633 + 0xE9D;
+        p = (char *)&hero_globals_base + 0xE9D;
         tracking = 1;
         if (vec_distance_xy((char *)&moby->pos, p) < 8.0f &&
             FastDiffRots_r(moby->rot.z,
@@ -1122,7 +1122,7 @@ void fred_pokitaru_update(char *m)
                 fast_dec_timer_r((int *)&moby_vars->moving_timer);
         } else if (moby_vars->moving_timer != 0) {
             moby_vars->moving_timer = 0;
-            qcopy(moby_vars->target, (char *)&D_0013E633 + 0xEED);
+            qcopy(moby_vars->target, (char *)&hero_globals_base + 0xEED);
         }
         if (fast_dec_timer_r((int *)&moby_vars->target_timer)) {
             float heading;
@@ -1134,7 +1134,7 @@ void fred_pokitaru_update(char *m)
             FastVecAdd(moby_vars->target, moby_vars->target, (char *)&moby->pos);
         }
         if (moby_vars->moving_timer != 0) {
-            qcopy(s_target, (char *)&D_0013E633 + 0xEED);
+            qcopy(s_target, (char *)&hero_globals_base + 0xEED);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -1581,7 +1581,7 @@ extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern void update_moby_rotation_oscillation_r(void *, float *, float *, float, float, float) __asm__("func_L00_00263BF8");
 extern void update_entity_matrix_r(void *, void *, void *, void *) __asm__("func_L00_002617B0");
 extern Path_30AE90 *path_table_r[] __asm__("D_L11_001B11B0");
-extern char D_0013E633_30AE90[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char voice_pool_r[] __asm__("D_0013E650");
 extern float D_L11_00161E64_30AE90 SDATA(D_L11_00161E64);
 extern float D_L11_00161E68_30AE90 SDATA(D_L11_00161E68);
@@ -1646,7 +1646,7 @@ void pokitaru_boat_update(Moby *m) {
         Path_30AE90 *b;
         int i;
         qcopy(&W.v.d, &d->fC4->nodes[d->fD4]);
-        if (*(Moby **)(D_0013E633_30AE90 + 0x1119) == m) {
+        if (*(Moby **)(hero_globals_base_r + 0x1119) == m) {
             if (!Sound_IsPlaying_r(m, d->fCC)) d->fCC = Moby_PlaySound_r2(1, 4, m);
             if (Sound_IsPlaying_r(m, d->fC8)) {
                 if (d->fC8 != -1) {
@@ -1733,7 +1733,7 @@ void pokitaru_boat_update(Moby *m) {
     case 5:
         qcopy(&W.v.d, &d->fC4->nodes[d->fD4]);
         if (d->fB0 != 0) {
-            if (*(float *)(D_0013E633_30AE90 + 0xEA5) < m->pos.z) {
+            if (*(float *)(hero_globals_base_r + 0xEA5) < m->pos.z) {
                 ApproachWithVelocity_r(&m->pos.z, &d->fD0, W.v.d.z + 1.0f, g_frame_time_sq_d, g_frame_time_sq_d, g_frame_time_d);
             } else {
                 ApproachWithVelocity_r(&m->pos.z, &d->fD0, W.v.d.z + 8.0f, g_frame_time_sq_d, g_frame_time_sq_d, g_frame_time_d);
@@ -1894,7 +1894,7 @@ extern Moby *D_L11_00161FA0[4] MACRO_ADDR;
 extern char *pokitaru_mobys_r __asm__("D_L11_00160058") MACRO_ADDR;
 extern char *path_points_14b0 MACRO_ADDR;
 extern float pokitaru_fade_level MACRO_ADDR;
-extern unsigned char D_0013A5E0_30DBF8[] __asm__("D_0013A5E0");
+extern unsigned char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern float child_sets_open_progress SDATA(D_L11_00161F54);
 extern float D_L11_00161F58 SDATA(D_L11_00161F58);
 extern float child_sets_right_swing_progress SDATA(D_L11_00161F5C);
@@ -1936,7 +1936,7 @@ void update_child_sets_controller(Moby *moby) {
             child_set0_mobys[i] = (Moby *)CreateMoby(0x480);
             child_set0_mobys[i]->draw_dist = 0x40;
             child_set0_mobys[i]->visible = 1;
-            child_set0_mobys[i]->spawn_frame = (*(long *)&((Hero *)(D_0013E633 + 0xE1D))->moby->spawn_frame);
+            child_set0_mobys[i]->spawn_frame = (*(long *)&((Hero *)(hero_globals_base + 0xE1D))->moby->spawn_frame);
             c = child_set0_mobys[i];
             qcopy(&c->pos, &moby->pos);
             qcopy(&c->rot, &moby->rot);
@@ -1949,7 +1949,7 @@ void update_child_sets_controller(Moby *moby) {
             pokitaru_class_481_mobys[j] = (Moby *)CreateMoby(0x481);
             pokitaru_class_481_mobys[j]->draw_dist = 0x40;
             pokitaru_class_481_mobys[j]->visible = 1;
-            pokitaru_class_481_mobys[j]->spawn_frame = (*(long *)&((Hero *)(D_0013E633 + 0xE1D))->moby->spawn_frame);
+            pokitaru_class_481_mobys[j]->spawn_frame = (*(long *)&((Hero *)(hero_globals_base + 0xE1D))->moby->spawn_frame);
             c = pokitaru_class_481_mobys[j];
             qcopy(&c->pos, &moby->pos);
             qcopy(&c->rot, &moby->rot);
@@ -1962,7 +1962,7 @@ void update_child_sets_controller(Moby *moby) {
             D_L11_00161FC0[k] = (Moby *)CreateMoby(0x482);
             D_L11_00161FC0[k]->draw_dist = 0x40;
             D_L11_00161FC0[k]->visible = 1;
-            D_L11_00161FC0[k]->spawn_frame = (*(long *)&((Hero *)(D_0013E633 + 0xE1D))->moby->spawn_frame);
+            D_L11_00161FC0[k]->spawn_frame = (*(long *)&((Hero *)(hero_globals_base + 0xE1D))->moby->spawn_frame);
             c = D_L11_00161FC0[k];
             qcopy(&c->pos, &moby->pos);
             qcopy(&c->rot, &moby->rot);
@@ -1976,7 +1976,7 @@ void update_child_sets_controller(Moby *moby) {
             D_L11_00161FA0[l] = (Moby *)CreateMoby(0x483);
             D_L11_00161FA0[l]->draw_dist = 0x40;
             D_L11_00161FA0[l]->visible = 1;
-            D_L11_00161FA0[l]->spawn_frame = (*(long *)&((Hero *)(D_0013E633 + 0xE1D))->moby->spawn_frame);
+            D_L11_00161FA0[l]->spawn_frame = (*(long *)&((Hero *)(hero_globals_base + 0xE1D))->moby->spawn_frame);
             c = D_L11_00161FA0[l];
             qcopy(&c->pos, &moby->pos);
             qcopy(&c->rot, &moby->rot);
@@ -2057,7 +2057,7 @@ void update_child_sets_controller(Moby *moby) {
             ApproachWithVelocity_f(&child_sets_slide_progress, &child_sets_slide_velocity, 1.0f, g_frame_time_sq * 2.0f, g_frame_time_sq * 4.0f, g_frame_time * 2.0f);
         }
         update_child_set_poses(moby);
-        if (((Flags_30DBF8 *)(D_0013D355_2F21B0 + 0x13B))->f56 != 0 && *(int *)(D_0013A5E0_30DBF8 + 0x2604) != 0) {
+        if (((Flags_30DBF8 *)(special_items_base_r + 0x13B))->f56 != 0 && *(int *)(pad_globals_base_r + 0x2604) != 0) {
             moby->command = 1;
         }
         if (child_sets_slide_progress < 1.0f && moby->command == 0) {
@@ -2081,8 +2081,8 @@ void update_child_sets_controller(Moby *moby) {
             update_child_set_poses(moby);
             moby->state = 4;
             CameraScript2(3);
-            Hero_ResetToPosition(((Hero *)(D_0013E633 + 0xE1D))->motion.pos.f, ((Hero *)(D_0013E633 + 0xE1D))->motion.rot.f, 0, 1);
-            ((Flags_30DBF8 *)(D_0013D355_2F21B0 + 0x13B))->f56 = 1;
+            Hero_ResetToPosition(((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f, ((Hero *)(hero_globals_base + 0xE1D))->motion.rot.f, 0, 1);
+            ((Flags_30DBF8 *)(special_items_base_r + 0x13B))->f56 = 1;
         }
         break;
     case 4:
@@ -2291,7 +2291,7 @@ void update_child_grid_controller(char *m) {
 
     switch (grid_controller->state) {
     case CHILD_GRID_STATE_CREATE_CHILDREN:
-        g = D_0013E633 + 0xE1D;
+        g = hero_globals_base + 0xE1D;
         for (i = 0; i < 4; i++) {
             struct Moby **pp = (struct Moby **)&d->slot[i][0];
             for (k = 5; k >= 0; k--) {
@@ -2379,8 +2379,8 @@ void update_child_grid_controller(char *m) {
         *(float *)&pokitaru_fade_level = f20;
         if (old < 0.0f) {
             if (0.0f <= d->f78) {
-                Hero_ResetToPosition(&((Hero *)(D_0013E633 + 0xE1D))->motion.pos,
-                                     &((Hero *)(D_0013E633 + 0xE1D))->motion.rot, 0, 1);
+                Hero_ResetToPosition(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos,
+                                     &((Hero *)(hero_globals_base + 0xE1D))->motion.rot, 0, 1);
                 CameraScript2(3);
                 break;
             }
@@ -2748,7 +2748,7 @@ extern float ApproachWithVelocity_f(float *, float *, float, float, float, float
 extern void vec_scale_to_length_u(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_u(void *, void *, void *) __asm__("func_001F9BD8");
 extern unsigned char *pokitaru_mobys_t __asm__("D_L11_00160058") MACRO_ADDR;
-extern char D_0013D355_t[] __asm__("D_0013D355");
+extern char special_items_base_t[] __asm__("D_0013D355");
 typedef struct { char pad[0x57]; char f57; } Rec57;
 
 /* Spawns a mirrored partner, waits for its linked moby to trigger, then moves along its axis. */
@@ -2790,7 +2790,7 @@ void update_link_triggered_moby_motion(unsigned char *m) {
         if (linked_moby->oclass == 0x33E && linked_moby->command != 0) {
         go:
             moving_moby->state = 2;
-            ((Rec57 *)(*(int *)(private_data + 0x14) + (int)(D_0013D355_t + 0x13B)))->f57 = 1;
+            ((Rec57 *)(*(int *)(private_data + 0x14) + (int)(special_items_base_t + 0x13B)))->f57 = 1;
             Moby_PlaySound_u(0, 0, moving_moby);
         }
         break;

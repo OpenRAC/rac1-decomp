@@ -7,13 +7,13 @@
 #include "hero.h"
 #include "moby.h"
 
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern char novalis_item_defs[];
 extern int hero_slot_item_id(int);
 
 /* Looks up the value of the current help record, or 0/0x54 in the special cases. */
 int get_hero_idle_animation_index(int a) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     char *r;
     int n;
     if (*(unsigned char *)(g + 0x20A4) == 3) return 0;
@@ -26,13 +26,13 @@ int get_hero_idle_animation_index(int a) {
     r = novalis_item_defs - (-(n * 0x4C));
     return *(int *)(r + 0x24);
 }
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern int request_grouped_voice(int a0, int a1, int a2, int a3, int a4);
 
 // Plays the hero footstep sound, flagging whether the hero's current moby has type 0xAD.
 void request_hero_voice_if_enabled(int a0, int a1, int a2) {
     if (a2 != 0) {
-        char *g = (char *)D_0013E633 + 0xE1D;
+        char *g = (char *)hero_globals_base + 0xE1D;
         char *m = *(char **)(g + 0x10E0);
         int flag = 0;
         if (m != 0) {
@@ -179,7 +179,7 @@ void HeroFrameUpdate(void) {
     update_hero_moby_probed_height_bounds();
     apply_env_zone_lighting(GG->p2080);
 }
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern int scale_ticks(int);
 extern void FadeToBlack(int);
 extern void HeroFrameUpdate(void);
@@ -216,11 +216,11 @@ extern void update_hero_moby_probed_height_bounds(void);
 
 /* Per-frame update of the help/menu state: validates the cursor, then runs the update chain. */
 void update_hero_frame(void) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     if (*(float *)(g + 0x80) < 2.0f || *(float *)(g + 0x84) < 2.0f || *(float *)(g + 0x80) > 1022.0f || *(float *)(g + 0x84) > 1022.0f) {
         char *q;
         FadeToBlack(scale_ticks(0x10));
-        q = (char *)D_0013E633 + 0xE1D;
+        q = (char *)hero_globals_base + 0xE1D;
         q[0x20B1] = 1;
         return;
     }
@@ -263,7 +263,7 @@ void update_hero_frame(void) {
         reveal_map_around_position(g + 0x80);
     }
     {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         apply_env_zone_lighting(*(void **)(q + 0x2080));
     }
     update_hero_blink_and_gold_weapon_tint();
@@ -319,7 +319,7 @@ extern void exit_hero_vehicle_mode_if_mode_three(void);
 
 // Handles a pending state change (func_L08_0021DFB8 without its state-2 flag): clears the request and sets per-state flags.
 void update_hero_ground_material_effects(void) {
-    char *p = (char *)D_0013E633 + 0xE1D;
+    char *p = (char *)hero_globals_base + 0xE1D;
     int v;
     int x;
     unsigned char saved = *(unsigned char *)(p + 0x12ED);
@@ -340,22 +340,22 @@ void update_hero_ground_material_effects(void) {
         }
     }
     if (v == 0xE) {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(q + 0x12E4) = 1;
         *(float *)(q + 0x22A4) = 0.2f;
         *(float *)(q + 0x2F0) = *(float *)(q + 0x2D8) + 0.2f;
     }
     if (v == 0) {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         *(float *)(q + 0x22A4) = *(float *)(q + 0x2F0) - *(float *)(q + 0x2D8);
         if (*(float *)(q + 0x22A4) < 0.85f) {
             if (*(float *)(q + 0x22A4) > 0.25f) *(unsigned char *)(q + 0x20A9) = 1;
         }
-        q = (char *)D_0013E633 + 0xE1D;
+        q = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(q + 0x12E4) = 1;
     }
     if (g_current_level_index_r == 0xD) {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(q + 0x2084) != 0x7B) {
             if (coll_sphere(*(float *)(q + 0x234) + 0.03f, q + 0xD0, 2, 0)) {
                 if (CollType() == 0xB) {
@@ -365,14 +365,14 @@ void update_hero_ground_material_effects(void) {
             }
         }
     }
-    if (v == 0xB) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EB] = 1; }
-    if (v == 4) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12E3] = 1; }
-    if (v == 0xD) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EC] = 1; }
-    if (v == 8) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EA] = 1; }
-    if (v == 9) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EE] = 1; }
-    if (v == 0xC) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EA] = 1; }
+    if (v == 0xB) { char *q = (char *)hero_globals_base + 0xE1D; q[0x12EB] = 1; }
+    if (v == 4) { char *q = (char *)hero_globals_base + 0xE1D; q[0x12E3] = 1; }
+    if (v == 0xD) { char *q = (char *)hero_globals_base + 0xE1D; q[0x12EC] = 1; }
+    if (v == 8) { char *q = (char *)hero_globals_base + 0xE1D; q[0x12EA] = 1; }
+    if (v == 9) { char *q = (char *)hero_globals_base + 0xE1D; q[0x12EE] = 1; }
+    if (v == 0xC) { char *q = (char *)hero_globals_base + 0xE1D; q[0x12EA] = 1; }
     {
-    char *q = (char *)D_0013E633 + 0xE1D;
+    char *q = (char *)hero_globals_base + 0xE1D;
     if (*(unsigned char *)(q + 0x12E3) != 0 && *(int *)(q + 0x300) != 0) {
         x = *(int *)(q + 0x208C);
         if (x != 0x10 && x != 0x14 && x != 7) {
@@ -381,7 +381,7 @@ void update_hero_ground_material_effects(void) {
         }
     }
     {
-    char *r = (char *)D_0013E633 + 0xE1D;
+    char *r = (char *)hero_globals_base + 0xE1D;
     if (*(unsigned char *)(r + 0x12EC) != 0) {
         if (*(int *)(r + 0x2084) == 0x7F) return;
         if (FastAbsF(*(float *)(r + 0x2F0) - (*(float *)(r + 0x88) + 0.25f)) < 1.0f) {
@@ -688,7 +688,7 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir)
     }
     return 0;
 }
-extern unsigned char D_0013E633[] NOT_SDA;
+extern unsigned char hero_globals_base[] NOT_SDA;
 extern void cancel_hero_item_animation(void);
 extern void hero_update_items();
 extern void clear_moby_transform_history(char *o);
@@ -703,7 +703,7 @@ extern void Hero_SetMoveState(int, int);
 void enter_hero_vehicle_mode_and_set_moby(int a, int b, int c) {
     char *g;
     cancel_hero_item_animation();
-    g = (char *)D_0013E633 + 0xE1D;
+    g = (char *)hero_globals_base + 0xE1D;
     *(char *)(g + 0x20A6) = 1;
     hero_update_items();
     *(int *)(g + 0x2080) = *(int *)(g + 0xA88);
@@ -742,7 +742,7 @@ void exit_hero_vehicle_mode_and_restore_moby(void) {
     char *m;
     char *a;
     reset_hero_easing_records();
-    g = (char *)D_0013E633 + 0xE1D;
+    g = (char *)hero_globals_base + 0xE1D;
     p = *(char **)(g + 0xA84);
     g[0x20A4] = 0;
     if (p != 0) {
@@ -1024,7 +1024,7 @@ void HeroSetCollisionSize(void) {
         Spring(q + 5, q + 6, b->f230, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.0f);
     }
 }
-extern char D_0013E633_328A8[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time MACRO_ADDR;
 extern float novalis_hero_speed_bands[];
 extern void stick_target(int, float);
@@ -1033,7 +1033,7 @@ extern void stick_target(int, float);
 void HeroSpeedFromTable(void) {
     char *x;
     stick_target(0, 1.0f);
-    x = D_0013E633_328A8 + 0xE1D;
+    x = hero_globals_base_r + 0xE1D;
     if (0.0f < *(float *)(x + 0x190)) {
         if (*(float *)(x + 0x190) < novalis_hero_speed_bands[3]) {
             *(float *)(x + 0x190) = novalis_hero_speed_bands[2] * g_frame_time;
@@ -1042,7 +1042,7 @@ void HeroSpeedFromTable(void) {
         }
     }
     {
-        char *y = D_0013E633_328A8 + 0xE1D;
+        char *y = hero_globals_base_r + 0xE1D;
         if (*(int *)(y + 0x2084) == 0x73) {
             float v = *(float *)(y + 0x190) * 0.8f;
             float m = g_frame_time * 2.5f;
@@ -1072,7 +1072,7 @@ void clip_hero_horizontal_velocity(int flag) {
     float p[4];
     float t[4];
     float q[4];
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     float f2, f21, f20;
     int k, x;
     char *h1, *h2, *h3, *w, *w3;
@@ -1112,14 +1112,14 @@ void clip_hero_horizontal_velocity(int flag) {
     FastVecAdd(p, p, s);
     k = -1;
     FastVecAdd(q, q, t);
-    h1 = (char *)D_0013E633 + 0xE1D;
+    h1 = (char *)hero_globals_base + 0xE1D;
     if (coll_line(t, q, 4, *(int *)(h1 + 0x2080), 0) != 0) {
         if (novalis_coll_hit_type > 0) {
             k = CollType();
         }
     }
     f20 = 0.0f;
-    h2 = (char *)D_0013E633 + 0xE1D;
+    h2 = (char *)hero_globals_base + 0xE1D;
     if (coll_line(s, p, 4, *(int *)(h2 + 0x2080), 0) != 0) {
         w = novalis_coll_hit;
         if (*(int *)(w + 0x1C) > 0) {
@@ -1127,7 +1127,7 @@ void clip_hero_horizontal_velocity(int flag) {
         }
     }
     if (f20 >= 0.87266463f || k == 8 || k == 12) {
-        h3 = (char *)D_0013E633 + 0xE1D;
+        h3 = (char *)hero_globals_base + 0xE1D;
         w3 = novalis_coll_hit;
         u = (float *)(w3 + 0x40);
         *(int *)(w3 + 0x48) = 0;
@@ -1404,7 +1404,7 @@ extern void vec_scale_to_length(void *, void *, float);
 
 /* Checks that the hero capsule passes: sweeps the capsule toward the target, and clamps the remaining offset. */
 int resolve_hero_position_with_collision_queries(int a0) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     float A[4], B[4], C[4];
     int i, r;
     float len;
@@ -1428,11 +1428,11 @@ int resolve_hero_position_with_collision_queries(int a0) {
             B[2] = *(float *)(g + 0x224);
         }
     }
-    FastVecAdd((char *)D_0013E633 + 0xE9D, (char *)D_0013E633 + 0xE9D, B);
+    FastVecAdd((char *)hero_globals_base + 0xE9D, (char *)hero_globals_base + 0xE9D, B);
     r = 0x24;
-    if (*(int *)((char *)D_0013E633 + 0xE9D + 0x2004) == 0x7F) r = 0xD24;
+    if (*(int *)((char *)hero_globals_base + 0xE9D + 0x2004) == 0x7F) r = 0xD24;
     for (i = 0; i < 8; i++) {
-        g = (char *)D_0013E633 + 0xE1D;
+        g = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(g + 0x20B3) != 0) {
             if (!coll_sphere(*(float *)&frame_scale * 0.4f, g + 0x80, r, *(void **)(g + 0x2080))) break;
         } else if (*(int *)(g + 0x208C) == 0x11) {
@@ -1446,17 +1446,17 @@ int resolve_hero_position_with_collision_queries(int a0) {
             if (n == 0) break;
         }
         p = D_L01_00174370;
-        qcopy((char *)D_0013E633 + 0xE9D, p);
-        qcopy((char *)D_0013E633 + 0xE9D + 0x180, p + 0x10);
-        qcopy((char *)D_0013E633 + 0xE9D + 0x190, p - 0x10);
-        h = (char *)D_0013E633 + 0xE1D;
+        qcopy((char *)hero_globals_base + 0xE9D, p);
+        qcopy((char *)hero_globals_base + 0xE9D + 0x180, p + 0x10);
+        qcopy((char *)hero_globals_base + 0xE9D + 0x190, p - 0x10);
+        h = (char *)hero_globals_base + 0xE1D;
         *(char *)(h + 0x257) = 1;
         *(int *)(h + 0x23C) = *(int *)(p - 0x18);
     }
-    FastVecSub((char *)D_0013E633 + 0xE9D, (char *)D_0013E633 + 0xE9D, B);
-    FastVecSub(C, (char *)D_0013E633 + 0xE9D, A);
+    FastVecSub((char *)hero_globals_base + 0xE9D, (char *)hero_globals_base + 0xE9D, B);
+    FastVecSub(C, (char *)hero_globals_base + 0xE9D, A);
     len = FastVecLength(C);
-    if (*(float *)((char *)D_0013E633 + 0xE9D + 0x1B4) * 1.5f < len) {
+    if (*(float *)((char *)hero_globals_base + 0xE9D + 0x1B4) * 1.5f < len) {
         if (a0 == 0xF) {
         if (C[0] > 512.0f) C[0] = 512.0f;
         else if (C[0] < -512.0f) C[0] = -512.0f;
@@ -1464,7 +1464,7 @@ int resolve_hero_position_with_collision_queries(int a0) {
         else if (C[1] < -512.0f) C[1] = -512.0f;
         if (C[2] > 512.0f) C[2] = 512.0f;
         else if (C[2] < -512.0f) C[2] = -512.0f;
-        g = (char *)D_0013E633 + 0xE1D;
+        g = (char *)hero_globals_base + 0xE1D;
         vec_scale_to_length(C, C, *(float *)(g + 0x234));
         FastVecAdd(g + 0x80, A, C);
         }
@@ -1483,7 +1483,7 @@ void air_accel(float step) {
     float v[4];
     float w[4];
     float u[4];
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     switch (*(unsigned char *)(g + 0x20B3)) {
     case 0: {
         float ang = *(float *)(g + 0x180);
@@ -1496,17 +1496,17 @@ void air_accel(float step) {
                 spd = g_frame_time * 2.1f;
         }
         {
-            char *g2 = (char *)D_0013E633 + 0xE1D;
+            char *g2 = (char *)hero_globals_base + 0xE1D;
             if (*(short *)(g2 + 0x30A) != 0) {
                 char *g2b;
             heavy:
-                g2b = (char *)D_0013E633 + 0xE1D;
+                g2b = (char *)hero_globals_base + 0xE1D;
                 if (*(int *)(g2b + 0x2084) == 0xE && g_frame_time < spd)
                     spd = g_frame_time;
             }
         }
         {
-            char *g3 = (char *)D_0013E633 + 0xE1D;
+            char *g3 = (char *)hero_globals_base + 0xE1D;
             v[0] = FastCos(ang) * spd;
             v[1] = FastSin(ang) * spd;
             v[2] = *(float *)(g3 + 0xE8);
@@ -1521,7 +1521,7 @@ void air_accel(float step) {
             d /= l2;
         }
         {
-            char *g4 = (char *)D_0013E633 + 0xE1D;
+            char *g4 = (char *)hero_globals_base + 0xE1D;
             d += 1.0f;
             d *= 1.5f;
             if (*(int *)(g4 + 0x2084) == 0x81) {
@@ -1711,7 +1711,7 @@ skip:
 /* Puts the hero into the idle move state that fits the current vehicle mode (0 or 3). */
 void request_hero_idle_state_for_vehicle_mode(void)
 {
-    switch ((unsigned char)D_0013E633[0x2EC1]) {
+    switch ((unsigned char)hero_globals_base[0x2EC1]) {
     case 0:
         Hero_SetMoveState(0, 1);
         break;
@@ -1726,22 +1726,22 @@ extern void HeroQueueSequence(int bank, int seq);
 extern void ClampVectorLength(void *a, float x);
 extern int get_hero_idle_animation_index(int a);
 extern int novalis_hero_run_step1_start_frame MACRO_ADDR;
-extern char D_0013A5E0[];
+extern char pad_globals_base[];
 
 // Chooses the next hero state when landing, with sounds and effects.
 void select_hero_locomotion_state(void) {
     char *b, *c, *d;
     int n;
-    b = D_0013E633 + 0xE1D;
+    b = hero_globals_base + 0xE1D;
     *(int *)(b + 0x2284) = 0;
     stick_target(0, 1.0f);
-    if (*(int *)(D_0013A5E0 + 0x2600) & 0xA) {
+    if (*(int *)(pad_globals_base + 0x2600) & 0xA) {
         hl_next(4, 0);
         set_hero_animation(0xD, 2, -2.0f);
         HeroQueueSequence(3, 0x12);
         return;
     }
-    c = D_0013E633 + 0xE1D;
+    c = hero_globals_base + 0xE1D;
     if (0.3f < *(float *)(c + 0x229C) && *(int *)(c + 0x1C4) == 0) {
         if (*(unsigned char *)(c + 0x12E2) != 0 || *(unsigned char *)(c + 0x20A9) != 0) {
             hl_next(2, 1);
@@ -1756,11 +1756,11 @@ void select_hero_locomotion_state(void) {
         }
         return;
     }
-    d = D_0013E633 + 0xE1D;
+    d = hero_globals_base + 0xE1D;
     if ((*(float *)&g_frame_time * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) || *(int *)(d + 0x2084) == 0x10) {
         if (hl_next(3, 0)) {
             set_hero_animation(5, 0, -1.0f);
-            ClampVectorLength(D_0013E633 + 0xF6D, g_frame_time * 5.0f);
+            ClampVectorLength(hero_globals_base + 0xF6D, g_frame_time * 5.0f);
         }
         return;
     }
@@ -1777,11 +1777,11 @@ void select_hero_locomotion_state(void) {
 }
 // Load global pointer and OR a field with 1
 void set_hero_moby_flag_bit_zero(void) {
-    *(unsigned short *)((char *)(*(char **)(D_0013E633 + 0x2E9D)) + 0x34) |= 1;
+    *(unsigned short *)((char *)(*(char **)(hero_globals_base + 0x2E9D)) + 0x34) |= 1;
 }
-extern unsigned char D_0013E633_490F8b[] __asm__("D_0013E633");
+extern unsigned char hero_globals_base_r2[] __asm__("D_0013E633");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00248900. */
 void clear_hero_moby_flag_bit_zero(void) {
-    *(unsigned short *)((char *)(*(char **)(D_0013E633_490F8b + 0x2E9D)) + 0x34) &= ~1;
+    *(unsigned short *)((char *)(*(char **)(hero_globals_base_r2 + 0x2E9D)) + 0x34) &= ~1;
 }

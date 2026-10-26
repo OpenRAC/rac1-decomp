@@ -77,9 +77,9 @@ extern int cinematic_mode MACRO_ADDR;
 extern char active_scene_trigger[];
 extern char item_price_table[];
 extern int gBolts MACRO_ADDR;
-extern unsigned char D_0013D355[];
-extern char D_0013A5E0[];
-extern char D_0013E633[];
+extern unsigned char special_items_base[];
+extern char pad_globals_base[];
+extern char hero_globals_base[];
 extern short bolt_hud_item;
 extern s32 DialogRequest_Init(void *p, u8 *out_p);
 extern float fast_atan2(float, float);
@@ -97,13 +97,13 @@ extern void draw_hud_text_panel(void);
 extern void initialize_bolt_counter_hud(void);
 extern void update_bolt_counter_hud_animation_and_visibility(void);
 extern void draw_bolt_counter_hud_panel(void);
-extern char D_0013D605[];
+extern char race_gates_base[];
 extern s32 level_frame_counter MACRO_ADDR;
 /* Start an NPC's dialog when the hero is close and facing it; returns nonzero if it started. */
 int Npc_TryStartDialog(char *p, char *q) {
     extern float FastVecDist(void *, void *);
     extern s32 get_dialogue_entry(void *);
-    char *g = D_0013E633 + 0xE1D;
+    char *g = hero_globals_base + 0xE1D;
     char *x; char *e; char *y; char *tb; unsigned char *tb2;
     int h4; float f, f0; int r, i, m; int *ptr;
     if (*(int *)(g + 0x2084) == 0x1D || *(int *)(g + 0x22A8) == 0) return 0;
@@ -127,16 +127,16 @@ int Npc_TryStartDialog(char *p, char *q) {
     process_menu_entry(p, q, 0);
     x = active_scene_trigger;
     if (level_frame_counter < *(int *)(x + 0x10)) return 0;
-    if (*(unsigned char *)(q + 8) != 0 || (*(int *)(D_0013A5E0 + 0x2604) & 0x10) != 0) {
+    if (*(unsigned char *)(q + 8) != 0 || (*(int *)(pad_globals_base + 0x2604) & 0x10) != 0) {
         i = get_dialogue_entry(p);
-        tb = D_0013D605 + 0xB3; tb = tb + 0xC;
+        tb = race_gates_base + 0xB3; tb = tb + 0xC;
         ptr = (int *)(tb + (i << 4));
         if (*ptr == 0) *ptr = 1;
         *(int *)(x + 8) = (int)p; *(int *)(x + 0xC) = (int)q;
         e = (char *)*(int *)(q + 0x3C) + *(short *)(q + 0x36) * 0x1C;
         if (*(unsigned short *)(e + 0x10) & 8) {
             if (*(short *)(e + 8) == 1) gBolts = gBolts - *(int *)(item_price_table + *(short *)(e + 0xA) * 0x18);
-            else if (*(short *)(e + 8) == 4) { tb2 = D_0013D355 + 0x13B; tb2[*(short *)(e + 0xA)] = 0; }
+            else if (*(short *)(e + 8) == 4) { tb2 = special_items_base + 0x13B; tb2[*(short *)(e + 0xA)] = 0; }
         }
         if (*(short *)(e + 4) == -1) { process_menu_entry(p, q, 1); return 1; }
         y = (char *)&active_scene_trigger;
@@ -183,14 +183,14 @@ s32 get_dialogue_entry(s32 p, s32 unused) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_0026763C);
 typedef struct { int a, b, c, d; } E00266858;
-extern char D_0013D605[];
+extern char race_gates_base[];
 extern int get_dialogue_entry(int, int);
 
 /* stores b in the d field of the slot func_L00_00267618 finds, if any. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/audio_streaming_00266298.c, FUN_L00_00266858. */
 void set_moby_dialogue_record_value(int a, int b) {
     int i = get_dialogue_entry(a, b);
     if (i != -1) {
-        E00266858 *s = (E00266858 *)(D_0013D605 + 0xB3);
+        E00266858 *s = (E00266858 *)(race_gates_base + 0xB3);
         ((E00266858 *)((char *)s - (-(i * 16))))->d = b;
     }
 }

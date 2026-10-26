@@ -31,7 +31,7 @@ typedef struct Light_2B33E8 { float x, y, z, b; V_2B33E8 pos; } Light_2B33E8;
 extern Hero hero_2B33E8 __asm__("D_0013F450");
 extern Input_2B33E8 input_2B33E8 __asm__("D_0013CA40");
 extern Order_2B33E8 order_2B33E8 __asm__("D_0013E620");
-extern unsigned char D_0014171B_2B33E8[] __asm__("D_0014171B");
+extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern char player_camera_r[] __asm__("D_L00_00166D80");
 extern char g_debug_camera_r[] __asm__("D_L00_00166EC0");
 extern char coll_hit_result_r[] __asm__("D_L00_00173F40");
@@ -242,7 +242,7 @@ void func_L00_002B33E8_r(Moby *m) {
             Moby_PlaySound_r(0, 0, (int)m);
             data->glow = scale_ticks_r(5) + scale_ticks_r(10);
             if (hero_2B33E8.state.current != 30) emit_object_offset_particle_burst_r(m);
-            stats = (Stats_2B33E8 *)(D_0014171B_2B33E8 + 0x65);
+            stats = (Stats_2B33E8 *)(help_stats_base_r + 0x65);
             if (stats->uses < 65535) stats->uses++;
             if (scale_ticks_r(gameplay_event_frame_count_r) / 600 > stats->longest)
                 stats->longest = scale_ticks_r(gameplay_event_frame_count_r) / 600;
@@ -323,10 +323,10 @@ void func_L00_002B33E8_r(Moby *m) {
         data->glow = 0;
     }
 }
-extern char D_0013E633[];
-extern char D_0013A5E0[];
+extern char hero_globals_base[];
+extern char pad_globals_base[];
 extern char player_camera[];
-extern char D_0014171B[] NOT_SDA;
+extern char help_stats_base[] NOT_SDA;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern int use_ammo(int, int);
@@ -353,8 +353,8 @@ void visibomb_update(char *m) {
     if (m == 0) return;
     p = ((int *)((Moby *)m)->pvars);
     fast_dec_timer(p);
-    g = D_0013E633 + 0xE1D;
-    pad = D_0013A5E0 + 0x2460;
+    g = hero_globals_base + 0xE1D;
+    pad = pad_globals_base + 0x2460;
     if ((*(int *)(pad + 0x1A4) & *(int *)(g + 0x10A0)) != 0 && p[0] == 0 && p[1] == 0
         && *(unsigned char *)(g + 0x20AC) == 0) {
         int st = *(int *)(g + 0x208C);
@@ -381,7 +381,7 @@ void visibomb_update(char *m) {
                                     FastVecAdd(t0, t0, t1);
                                     FastVecAdd(t0, t0, g2 + 0x140);
                                 } else {
-                                    char *q = D_0013E633 + 0xE1D;
+                                    char *q = hero_globals_base + 0xE1D;
                                     if (*(short *)(q + 0x22C8) == 1) {
                                         f21 = fast_atan2(vec_length_xy(m + 0xD0), ((Moby *)m)->rot_row1.z);
                                         BuildSphericalOffset(t0, 0.6f, f20, -f21);
@@ -395,7 +395,7 @@ void visibomb_update(char *m) {
                                 jet_camera_mode();
                                 p[1] = spawn_visibomb_missile(m, t0, f20, f21);
                                 {
-                                    char *h = D_0014171B + 0x65;
+                                    char *h = help_stats_base + 0x65;
                                     if (*(unsigned short *)(h + 0x68) <= 0xFFFE) {
                                         *(unsigned short *)(h + 0x68) = *(unsigned short *)(h + 0x68) + 1;
                                     }
@@ -497,7 +497,7 @@ extern UV_2B4918 joint_beam_ribbon_uvs_r[] __asm__("D_L00_001DA3B0");
 extern float joint_beam_ribbon_model_points_r[][4] __asm__("D_L00_001D9770");
 extern P3_2B4918 joint_beam_ribbon_world_verts_r[] __asm__("D_L00_001DAD80");
 extern int joint_beam_ribbon_colors_r[] __asm__("D_L00_001DA9D0");
-extern char D_0013E633_2B4918[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern void transform_scaled_vertex_batch_r(void *, int, void *, void *) __asm__("func_0020DB98");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
@@ -596,7 +596,7 @@ void draw_joint_aligned_beam_effect(Moby *m) {
     FastVecAdd_r2(&d, &d, &mtx[3]);
     FastVecSub_r(&a, g_debug_camera_r2, &d);
     vec_scale_to_length_r(&a, &a, 1.0f);
-    FastVecCross_r(&b, &a, D_0013E633_2B4918 + 0x10AD);
+    FastVecCross_r(&b, &a, hero_globals_base_r + 0x10AD);
     vec_scale_to_length_r(&b, &b, -1.0f);
     FastVecCross_r(&c, &b, &a);
     pk.col[0] = pk.col[1] = pk.col[2] = pk.col[3] = 0x7F2020FF;
@@ -911,7 +911,7 @@ unsigned char *select_blaster_auto_aim_target(int ign, Vec4 *from, float *yaw, f
         if (bestd < d) {
             continue;
         }
-        g = D_0013E633 + 0xE1D;
+        g = hero_globals_base + 0xE1D;
         BuildSphericalOffset(&w, d, *yaw, *pitch + *(float *)(g + 0x2E4) * 0.5f);
         FastVecAdd(&w, &w, from);
         e = FastArcSin(FastVecDist(&w, &tp) / (d + d));
@@ -1168,7 +1168,7 @@ void func_L00_002B5C98_r(Moby *m) {
                     rand_range_r(scale_ticks_r3(4), scale_ticks_r3(7)), 200000.0f);
             }
             if (m->prev_seq != 4) MobyBlendAnimation_r2(m, 4, 0, scale_ticks_r3(7));
-            stats = (Stats_2B5C98 *)(D_0014171B_2B33E8 + 0x65);
+            stats = (Stats_2B5C98 *)(help_stats_base_r + 0x65);
             if (stats->uses < 65535) stats->uses++;
             if (scale_ticks_r3(gameplay_event_frame_count_r) / 600 > stats->longest)
                 stats->longest = scale_ticks_r3(gameplay_event_frame_count_r) / 600;
@@ -1377,7 +1377,7 @@ int spawn_visibomb_missile(void *a_, void *pos_, float fa, float fb)
     }
     return (int)m;
 }
-extern char D_0013E633[] NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
 extern int D_L00_00167114 NOT_SDA;
 extern void select_camera_mode_by_hero_alignment_and_distance(int);
 extern void HeroEnterMoveState(int, int);
@@ -1388,7 +1388,7 @@ extern void DeleteMoby(int);
 void terminate_visibomb_missile(int a, int *b) {
     int *p = *(int **)(*(char **)b + 0x78);
     if (p != 0) p[1] = 0;
-    *(int *)(D_0013E633 + 0x2DFD) = 0;
+    *(int *)(hero_globals_base + 0x2DFD) = 0;
     select_camera_mode_by_hero_alignment_and_distance(b[5]);
     b[5] = 0;
     HeroEnterMoveState(0, 1);
@@ -1791,7 +1791,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern int rand_range(int, int);
 extern int scale_ticks(int);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern char *active_mobies[];
 extern short thrown_mine_list[];
 extern int moby_array_start MACRO_ADDR;
@@ -1822,7 +1822,7 @@ int func_L00_002B7EC0_r(char *m, float r) {
             if (dist < 12.0f) {
                 unsigned h = *(unsigned short *)(e + 0xA6);
                 if ((h >= 0x1F4 && h <= 0x1F5) || (short)h == 0x1F9 || (short)h == 0x1FF) {
-                    char *g = D_0013E633 + 0xE1D;
+                    char *g = hero_globals_base + 0xE1D;
                     if (FastDiffRots(*(float *)(g + 0x98), fast_atan2(*(float *)(e + 0x10) - *(float *)(g + 0x80), *(float *)(e + 0x14) - *(float *)(g + 0x84))) < 0.9599311f) {
                         if (d[5] == lim) {
                             FastVecSub(&q, e + 0x10, m + 0x10);
@@ -1836,7 +1836,7 @@ int func_L00_002B7EC0_r(char *m, float r) {
             }
             if (dist < r) {
                 float f1;
-                char *gb = D_0013E633 + 0xE1D;
+                char *gb = hero_globals_base + 0xE1D;
                 f1 = fast_atan2(*(float *)(e + 0x10) - *(float *)(gb + 0x80), *(float *)(e + 0x14) - *(float *)(gb + 0x84));
                 if (FastDiffRots(*(float *)(gb + 0x98), f1) < 0.9599311f) {
                     char *h = *(char **)(c + 0x18);
@@ -1857,7 +1857,7 @@ int func_L00_002B7EC0_r(char *m, float r) {
             if (mob[0x20] >= 0) {
                 char *h2 = ((char *)((Moby *)mob)->pvars);
                 if (vec_distance_xy(&pos, mob + 0x10) < r) {
-                    char *g3 = D_0013E633 + 0xE1D;
+                    char *g3 = hero_globals_base + 0xE1D;
                     if (FastDiffRots(*(float *)(g3 + 0x98), fast_atan2(((Moby *)mob)->pos.x - *(float *)(g3 + 0x80), ((Moby *)mob)->pos.y - *(float *)(g3 + 0x84))) < 0.9599311f) {
                         *(char **)(h2 + 0x78) = m;
                         count++;
@@ -2049,7 +2049,7 @@ extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void transform_vector(void *, void *, void *);
 extern void draw_world_quad(void *, void *, int);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 struct E { float f; short s4; short x; short s8; short y; };
 extern struct E taunter_effect_slots[];
 extern float taunter_effect_origin[] MACRO_ADDR;
@@ -2088,7 +2088,7 @@ void draw_taunter_effect_quads(char *m) {
             FastVecScale(g, f, taunter_effect_slots[i].f);
             FastVecAdd(d, taunter_effect_origin, g);
             qcopy(a, f);
-            FastVecScale(c, D_0013E633 + 0x10AD, -1.0f);
+            FastVecScale(c, hero_globals_base + 0x10AD, -1.0f);
             FastVecCross(b, a, c);
             vec_scale_to_length(b, b, 1.0f);
             FastVecCross(c, b, a);
@@ -2170,7 +2170,7 @@ void update_pyrocitor_usage_and_cleanup(unsigned char *m)
     if (g_hero_r5[0x20B4] >= 3)
         Help_Request(0x4E24, 0x4E);
 }
-extern char D_0013E15A[];
+extern char screen_globals_base[];
 extern short pyrocitor_flame_particle_texture;
 extern short pyrocitor_flame_particle_drift;
 extern short pyrocitor_flame_particle_start_w;
@@ -2199,7 +2199,7 @@ void update_pyrocitor_flame_effect_slots(char *m) {
     float v2[4];
     float v3[4];
     char *base = ((char *)((Moby *)m)->pvars) + 4;
-    unsigned char *q = (unsigned char *)D_0013E15A + 0x4C6;
+    unsigned char *q = (unsigned char *)screen_globals_base + 0x4C6;
     int i;
 
     for (i = 0; i < 15; i++) {
@@ -2301,7 +2301,7 @@ typedef struct Aim_2B9AD8 { char pad0[4]; short kind; } Aim_2B9AD8;
 typedef struct Light_2B9AD8 { float x, y, z, b; V_2B9AD8 pos; } Light_2B9AD8;
 
 extern Voice_2B9AD8 voice_pool_r2[] __asm__("D_0013E650");
-extern unsigned char D_0013E633_2B9AD8[] __asm__("D_0013E633");
+extern unsigned char hero_globals_base_r2[] __asm__("D_0013E633");
 extern unsigned short tesla_claw_help_shown_count_r[] __asm__("D_00141E70");
 extern unsigned short usage_stats_entry26_count_r[] __asm__("D_00141A18");
 extern float D_L00_0017AFBC_2B9AD8 __asm__("D_L00_0017AFBC");
@@ -2428,7 +2428,7 @@ void func_L00_002B9AD8_r(Moby *m) {
                 } else {
                     s->hold2 = 0;
                 }
-                s->reach += (IntToFloat_r3(D_0013E633_2B9AD8[0]) * 6.0f + 12.0f - s->reach) * (frame_scale_r * 0.07f);
+                s->reach += (IntToFloat_r3(hero_globals_base_r2[0]) * 6.0f + 12.0f - s->reach) * (frame_scale_r * 0.07f);
                 if (((Hero *)g_hero_r3)->state.current == 1) {
                     t.f.x = 1.2f;
                     t.f.y = 0.0f;
@@ -2508,7 +2508,7 @@ void func_L00_002B9AD8_r(Moby *m) {
         }
         if ((((PadState *)g_controller_state_r)->pressed & (h = (Hero *)g_hero_r3)->items[0].button_mask) && !h->item_use_locked) {
             if (active) {
-                Stats_2B9AD8 *st = (Stats_2B9AD8 *)(D_0014171B_2B33E8 + 0x65);
+                Stats_2B9AD8 *st = (Stats_2B9AD8 *)(help_stats_base_r + 0x65);
                 if (st->uses < 65535) st->uses++;
                 if (scale_ticks_r5(gameplay_event_frame_count_r) / 600 > st->longest)
                     st->longest = scale_ticks_r5(gameplay_event_frame_count_r) / 600;
@@ -2533,11 +2533,11 @@ void func_L00_002B9AD8_r(Moby *m) {
             ((Hero *)g_hero_r3)->item_use_locked) {
             h = (Hero *)g_hero_r3;
             if (scale_ticks_r5(70) < h->item_anim_frames) {
-                if (((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->uses < 65535) ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->uses++;
+                if (((Stats2_2B9AD8 *)(help_stats_base_r + 0x22D))->uses < 65535) ((Stats2_2B9AD8 *)(help_stats_base_r + 0x22D))->uses++;
             }
-            if (scale_ticks_r5(gameplay_event_frame_count_r) / 600 > ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->longest)
-                ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->longest = scale_ticks_r5(gameplay_event_frame_count_r) / 600;
-            ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->levels = (((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->levels | (1 << g_current_level_index_r)) | 0x80000000;
+            if (scale_ticks_r5(gameplay_event_frame_count_r) / 600 > ((Stats2_2B9AD8 *)(help_stats_base_r + 0x22D))->longest)
+                ((Stats2_2B9AD8 *)(help_stats_base_r + 0x22D))->longest = scale_ticks_r5(gameplay_event_frame_count_r) / 600;
+            ((Stats2_2B9AD8 *)(help_stats_base_r + 0x22D))->levels = (((Stats2_2B9AD8 *)(help_stats_base_r + 0x22D))->levels | (1 << g_current_level_index_r)) | 0x80000000;
             if (((Hero *)g_hero_r3)->item_anim_frames < scale_ticks_r5(30))
                 ((Hero *)g_hero_r3)->wrench_combo_step++;
             else

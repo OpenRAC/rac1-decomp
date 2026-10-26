@@ -4,7 +4,7 @@
 #include "include_asm.h"
 #include "vector.h"
 
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 extern int CollType(void);
@@ -15,7 +15,7 @@ extern void Hero_OnKilled(void);
 
 /* Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. */
 void HeroL18_UpdateStateFlags(void) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     int c = *(unsigned char *)(g + 0x12ED);
     int s = *(short *)(g + 0x12E0);
     int t;
@@ -37,27 +37,27 @@ void HeroL18_UpdateStateFlags(void) {
         }
     }
     if (s == 0xE) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(p + 0x12E4) = 1;
         *(float *)(p + 0x22A4) = 0.2f;
         *(float *)(p + 0x2F0) = *(float *)(p + 0x2D8) + 0.2f;
     }
     if (s == 0) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         float d = *(float *)(p + 0x2F0) - *(float *)(p + 0x2D8);
         *(float *)(p + 0x22A4) = d;
         if (d < 0.85f && 0.25f < d) {
             *(unsigned char *)(p + 0x20A9) = 1;
         }
-        p = (char *)D_0013E633 + 0xE1D;
+        p = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(p + 0x12E4) = 1;
     }
     if (s == 3) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(p + 0x12E6) = 1;
     }
     if (g_current_level_index == 0xD) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(p + 0x2084) != 0x7B) {
             if (coll_sphere(*(float *)(p + 0x234) + 0.03f, p + 0xD0, 2, 0) != 0) {
                 if (CollType() == 0xB) {
@@ -67,14 +67,14 @@ void HeroL18_UpdateStateFlags(void) {
             }
         }
     }
-    if (s == 0xB) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EB) = 1; }
-    if (s == 2) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12E7) = 1; }
-    if (s == 4) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12E3) = 1; }
-    if (s == 8) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
-    if (s == 9) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EE) = 1; }
-    if (s == 0xC) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
+    if (s == 0xB) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EB) = 1; }
+    if (s == 2) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12E7) = 1; }
+    if (s == 4) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12E3) = 1; }
+    if (s == 8) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
+    if (s == 9) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EE) = 1; }
+    if (s == 0xC) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
     {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(p + 0x12E3) != 0 && *(int *)(p + 0x300) != 0) {
             t = *(int *)(p + 0x208C);
             if (t != 0x10 && t != 0x14 && t != 7) {
@@ -84,7 +84,7 @@ void HeroL18_UpdateStateFlags(void) {
         }
     }
     {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(p + 0x12E6) != 0) {
             t = *(int *)(p + 0x2084);
             if (t != 0x68 && t != 0x7B) {
@@ -107,7 +107,7 @@ void HeroL18_UpdateStateFlags(void) {
         }
     }
     {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(p + 0x12EB) != 0) {
             if (*(int *)(p + 0x2084) != 0x7B) {
                 if (FastAbsF(*(float *)(p + 0x2F4) - (*(float *)(p + 0x88) + 0.25f)) < 1.0f) {

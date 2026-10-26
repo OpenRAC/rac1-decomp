@@ -7,7 +7,7 @@
 #include "moby.h"
 #include "camera.h"
 
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
@@ -28,7 +28,7 @@ void emit_hydrodisplacer_effect(char *m) {
         Moby_GetJointWorldPos(m, 0, a);
         f = random_float_between(g_frame_time, g_frame_time * 3.0f);
         vec_scale_to_length(b, m + 0xD0, -f);
-        pad = D_0013E633 + 0xE1D;
+        pad = hero_globals_base + 0xE1D;
         b[0] += *(float *)(pad + 0x100) * 0.8f;
         b[1] += *(float *)(pad + 0x104) * 0.8f;
         b[2] += *(float *)(pad + 0x108) + random_float_between(g_frame_time * -0.5f, g_frame_time + g_frame_time);
@@ -351,7 +351,7 @@ extern Q_2E3700 beam_endpoints_r[] __asm__("D_L00_001E7130");
 extern Q_2E3700 beam_tip_positions_r[] __asm__("D_L00_001E7160");
 extern Pt_2E3700 beam_strand_points_r[][20] __asm__("D_L00_001E7190");
 extern Snd_2E3700 level_point_lights_r[] __asm__("D_L00_001803C0");
-extern char D_0013E633_2E3700[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
 extern int beam_slot_states_r[] __asm__("D_L00_00161CC8") MACRO_ADDR;
 extern float beam_strand_wave_phase_r[] __asm__("D_L00_00161CD8") MACRO_ADDR;
@@ -443,7 +443,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
     one = 1.0f;
     FastVecSub_r(d2, &beam_endpoints_r[idx], from);
     vec_scale_to_length_r(dir, d2, one);
-    FastVecCross_r(side, dir, D_0013E633_2E3700 + 0x10AD);
+    FastVecCross_r(side, dir, hero_globals_base_r + 0x10AD);
     vec_scale_to_length_r(side, side, -1.0f);
     FastVecCross_r(up, side, dir);
     transform_vector_r(tip, &beam_strand_points_r[k][18], dir);
@@ -663,7 +663,7 @@ void draw_beam_strand_with_glow(int texture_id, int glow_texture_id, void *point
     qcopy(&transform[3], &D_L00_001E7080[slot].c);
     FastVecSub((float *)&direction, (float *)&beam_endpoints[slot], (float *)&transform[3]);
     vec_scale_to_length(&transform[0], &direction, 1.0f);
-    FastVecCross(&transform[1], &transform[0], D_0013E633 + 0x10AD);
+    FastVecCross(&transform[1], &transform[0], hero_globals_base + 0x10AD);
     vec_scale_to_length(&transform[1], &transform[1], -1.0f);
     FastVecCross(&transform[2], &transform[1], &transform[0]);
 
@@ -902,8 +902,8 @@ extern float FastVecLength(void *);
 
 // Grass moby update: plays an animation when the player is near and leaves.
 void red_plant_update(char *m) {
-    if (FastVecDist(D_0013E633 + 0xE9D, m + 0x10) < 1.0f) {
-        if (FastVecLength(D_0013E633 + 0xE9D + 0x80) > g_frame_time + g_frame_time) {
+    if (FastVecDist(hero_globals_base + 0xE9D, m + 0x10) < 1.0f) {
+        if (FastVecLength(hero_globals_base + 0xE9D + 0x80) > g_frame_time + g_frame_time) {
             if (*(unsigned char *)(m + 0x53) != 1) {
                 MobyBlendAnimation(m, 1, 0, scale_ticks(6));
             }
@@ -1005,10 +1005,10 @@ void robot_arm_update(char *m) {
         }
     }
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 // copies a vector out of the game block into the second argument
 void Cam_GetHeroPosition(char *a, void *out) {
-    qcopy(out, D_0013E633 + 0xE9D);
+    qcopy(out, hero_globals_base + 0xE9D);
 }
 typedef struct { float f[4]; } __attribute__((aligned(16))) VQ;
 extern int find_camera_collision_volume_for_point_q(VQ *, float) __asm__("func_L00_001EE530");
@@ -1061,7 +1061,7 @@ extern int coll_line(void *, void *, int, int, int);
 /* build the two edge vectors of a moving box from the game vector and clip them */
 int compute_follow_camera_ground_aware_target_position(void *out, int flag) {
     VQ_2E5770 a, b, c, d;
-    char *base = D_0013E633 + 0xE1D;
+    char *base = hero_globals_base + 0xE1D;
     float f;
     char *g = camera_view;
 
@@ -1171,22 +1171,22 @@ void apply_follow_camera_translation(char *a) {
     char *m = *(char **)(a + 0x70);
     char *m40 = m + 0x40;
     char *g, *g3;
-    qcopy(&t, D_0013E633 + 0xF5D);
+    qcopy(&t, hero_globals_base + 0xF5D);
     FastVecAdd(a + 0x30, &t, a + 0x30);
     FastVecAdd(m + 0xA0, &t, m + 0xA0);
     FastVecAdd(m40, &t, m40);
     FastVecAdd(m + 0xD0, &t, m + 0xD0);
     FastVecAdd(m, &t, m);
-    g = D_0013E633 + 0xE1D;
+    g = hero_globals_base + 0xE1D;
     if (*(short *)(g + 0x308) == 0) {
         char *p = *(char **)(g + 0x2FC);
         char *q;
         if (p == 0 || *(short *)(p + 0xA6) != 0x22D || ((q = b - 0x190), scale_ticks(0x1E)) < *(int *)(q + 0x398)) {
-            char *g2 = D_0013E633 + 0xE1D;
+            char *g2 = hero_globals_base + 0xE1D;
             *(float *)(*(char **)(a + 0x70) + 0x1C8) = *(float *)(g2 + 0x14C);
         }
     }
-    g3 = D_0013E633 + 0xE1D;
+    g3 = hero_globals_base + 0xE1D;
     if ((unsigned)(*(int *)(g3 + 0x2084) - 0xB) < 2) {
         char *m2 = *(char **)(a + 0x70);
         char *s = b + 0x30;
@@ -1266,14 +1266,14 @@ void follow_cam_update_mode(char *m) {
     int t;
 
     if (e->state == 0) {
-        char *p0 = D_0013E633 + 0xE1D;
+        char *p0 = hero_globals_base + 0xE1D;
         if (*(int *)(p0 + 0x208C) == 2) {
             e->prev = e->state;
             e->state = 1;
             e->timer = follow_cam_mode1_blend_time;
             e->invTimer = 1.0f / IntToFloat(e->timer);
         } else {
-            char *p1 = D_0013E633 + 0xE1D;
+            char *p1 = hero_globals_base + 0xE1D;
             if (*(int *)(p1 + 0x2084) == 0xF && D_L00_00166FEC == 0.0f) {
                 e->prev = e->state;
                 e->state = 3;
@@ -1288,14 +1288,14 @@ void follow_cam_update_mode(char *m) {
                 compute_follow_camera_offset_target_up_projection(e->v30, x);
                 qcopy(e->v20, e->v10);
             } else {
-                char *p2 = D_0013E633 + 0xE1D;
+                char *p2 = hero_globals_base + 0xE1D;
                 if (*(int *)(p2 + 0x2084) == 0xC && D_L00_00166FEC == 0.0f) {
                     e->prev = e->state;
                     e->state = 8;
                     e->timer = follow_cam_double_jump_blend_time;
                     e->invTimer = 1.0f / IntToFloat(e->timer);
                 } else {
-                    char *p3 = D_0013E633 + 0xE1D;
+                    char *p3 = hero_globals_base + 0xE1D;
                     if (*(int *)(p3 + 0x2084) == 0xB && D_L00_00166FEC == 0.0f) {
                         e->prev = e->state;
                         e->state = 6;
@@ -1310,7 +1310,7 @@ void follow_cam_update_mode(char *m) {
                         compute_follow_camera_offset_target_up_projection(e->v30, x);
                         qcopy(e->v20, e->v10);
                     } else {
-                        char *p4 = D_0013E633 + 0xE1D;
+                        char *p4 = hero_globals_base + 0xE1D;
                         if ((*(int *)(p4 + 0x2084) == 0xD || *(int *)(p4 + 0x2084) == 0xE) && D_L00_00166FEC == 0.0f) {
                             e->prev = e->state;
                             e->state = 5;
@@ -1325,7 +1325,7 @@ void follow_cam_update_mode(char *m) {
                             compute_follow_camera_offset_target_up_projection(e->v30, x);
                             qcopy(e->v20, e->v10);
                         } else {
-                            char *p5 = D_0013E633 + 0xE1D;
+                            char *p5 = hero_globals_base + 0xE1D;
                             if (*(int *)(p5 + 0x208C) == 4 && D_L00_00166FEC == 0.0f) {
                                 e->prev = e->state;
                                 e->state = 2;
@@ -1339,7 +1339,7 @@ void follow_cam_update_mode(char *m) {
         }
         return;
     }
-    if (e->state != 9 && e->state != 1 && *(int *)(D_0013E633 + 0x2EA1) == 0x14) {
+    if (e->state != 9 && e->state != 1 && *(int *)(hero_globals_base + 0x2EA1) == 0x14) {
         float r;
         e->prev = e->state;
         e->state = 9;
@@ -1356,14 +1356,14 @@ void follow_cam_update_mode(char *m) {
         qcopy(e->v20, e->v10);
         return;
     }
-    if ((e->state == 1 || e->state == 2) && *(int *)(D_0013E633 + 0x2EA9) != 4 && *(int *)(D_0013E633 + 0x2EA9) != 2) {
+    if ((e->state == 1 || e->state == 2) && *(int *)(hero_globals_base + 0x2EA9) != 4 && *(int *)(hero_globals_base + 0x2EA9) != 2) {
         e->timer = 0;
         e->invTimer = 1.0f;
         e->state = 0;
         return;
     }
     if (e->state == 7) {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         if (*(short *)(p + 0x41E) == 0) {
             e->prev = e->state;
             e->state = 6;
@@ -1387,8 +1387,8 @@ void follow_cam_update_mode(char *m) {
             return;
         }
     }
-    if (e->state == 4 && *(int *)(D_0013E633 + 0x2EA9) != 4) {
-        if (*(int *)(D_0013E633 + 0x2EA9) == 2) {
+    if (e->state == 4 && *(int *)(hero_globals_base + 0x2EA9) != 4) {
+        if (*(int *)(hero_globals_base + 0x2EA9) == 2) {
             e->prev = 4;
             e->state = 1;
             e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
@@ -1401,7 +1401,7 @@ void follow_cam_update_mode(char *m) {
         }
         return;
     }
-    if (e->state == 3 && *(int *)(D_0013E633 + 0x2EA1) == 0xB) {
+    if (e->state == 3 && *(int *)(hero_globals_base + 0x2EA1) == 0xB) {
         e->prev = e->state;
         e->state = 6;
         e->moveTimer = scale_ticks(*(int *)&follow_cam_high_jump_move_time);
@@ -1416,28 +1416,28 @@ void follow_cam_update_mode(char *m) {
         qcopy(e->v20, e->v10);
         return;
     }
-    if (e->state == 5 && *(int *)(D_0013E633 + 0x2EA1) == 0xC) {
+    if (e->state == 5 && *(int *)(hero_globals_base + 0x2EA1) == 0xC) {
         e->prev = e->state;
         e->state = 8;
         e->timer = follow_cam_double_jump_blend_time;
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if (e->state == 8 && *(int *)(D_0013E633 + 0x2EA1) != 0xC) {
+    if (e->state == 8 && *(int *)(hero_globals_base + 0x2EA1) != 0xC) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_double_jump_exit_time);
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if (e->state == 6 && *(int *)(D_0013E633 + 0x2EA1) != 0xB) {
+    if (e->state == 6 && *(int *)(hero_globals_base + 0x2EA1) != 0xB) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if ((e->state == 3 || e->state == 5) && *(int *)(D_0013E633 + 0x2EA9) != 4) {
+    if ((e->state == 3 || e->state == 5) && *(int *)(hero_globals_base + 0x2EA9) != 4) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
@@ -1445,13 +1445,13 @@ void follow_cam_update_mode(char *m) {
         return;
     }
     if (e->state == 9) {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         if (*(int *)(p + 0x208C) == 2 || *(short *)(p + 0x30C) >= scale_ticks(0x37)) {
             goto to_one;
         }
     }
     if (e->state == 0xA) {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         if (*(int *)(p + 0x208C) == 2 || *(short *)(p + 0x30C) >= scale_ticks(0x37)) {
             float r;
         to_one:
@@ -1467,7 +1467,7 @@ void follow_cam_update_mode(char *m) {
             return;
         }
     }
-    if (e->state == 9 && *(int *)(D_0013E633 + 0x2EA1) != 0x14) {
+    if (e->state == 9 && *(int *)(hero_globals_base + 0x2EA1) != 0x14) {
         e->prev = e->state;
         e->state = 0xA;
         e->timer = follow_cam_slam_recover_time;
@@ -1481,7 +1481,7 @@ void follow_cam_update_mode(char *m) {
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if (e->state == 5 && *(int *)(D_0013E633 + 0x2EA1) == 0x10) {
+    if (e->state == 5 && *(int *)(hero_globals_base + 0x2EA1) == 0x10) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_double_jump_exit_time);
@@ -1514,7 +1514,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
     g = camera_view;
     d = *(char **)(m + 0x70);
     Cam_GetHeroPosition(m, cam);
-    pad = D_0013E633 + 0xE1D;
+    pad = hero_globals_base + 0xE1D;
     e = d + 0x40;
     if (*(int *)(pad + 0x2084) == 0x77) {
         x = FastVecDot(e, g + 0x30);
@@ -1533,7 +1533,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
     }
     switch (*(unsigned char *)(e + 0xC4)) {
     case 2:
-        padb = D_0013E633 + 0xE1D;
+        padb = hero_globals_base + 0xE1D;
         if (*(int *)(padb + 0x2084) == 0x11 ||
             (*(short *)(padb + 0x41E) != 0 && *(float *)(padb + 0x2DC) > 0.2f &&
              ((y = compute_follow_camera_signed_target_angle(m, *(float *)(e + 0xB0))) < *(float *)&follow_cam_target_angle_min ||
@@ -1544,7 +1544,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
             *(short *)(e + 0xC6) = v;
             *(float *)(e + 0xC8) = 1.0f / IntToFloat((short)v);
         }
-        padc = D_0013E633 + 0xE1D;
+        padc = hero_globals_base + 0xE1D;
         flag = 0;
         if (*(short *)(padc + 0x30C) != 0 && *(float *)(g + 0xDC) == 0.0f &&
             (*(short *)(padc + 0x41E) == 0 || *(int *)(padc + 0x44C) >= 0x10)) {
@@ -1794,9 +1794,9 @@ void follow_camera_springs(char *m) {
         FastVecAdd_r2(p + 0x80, f, g);
     }
     Cam_UpdateOffsetBlend_r(m, f);
-    if (((Hero *)(D_0013E633_2E3700 + 0xE1D))->vehicle_mode == 2) {
+    if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2) {
         FastVecScale_r2(f, gl + 0x20, 3.0f);
-    } else if (((Hero *)(D_0013E633_2E3700 + 0xE1D))->vehicle_mode == 1) {
+    } else if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 1) {
         FastVecScale_r2(f, gl + 0x20, 0.4f);
     } else {
         FastVecScale_r2(f, gl + 0x20, 0.5f);
@@ -1807,14 +1807,14 @@ void follow_camera_springs(char *m) {
     f20 = D_L00_00161DA8_2E6CE0 + g_current_follow_cam_r->d->f214 * g_current_follow_cam_r->d->f20C * (g_current_follow_cam_r->d->f210 - 1.0f);
     FastVecScale_r2(h, gl + 0x20, 20.0f);
     FastVecAdd_r2(h, g, h);
-    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)(D_0013E633_2E3700 + 0xE1D))->moby, 0)) {
+    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)(hero_globals_base_r + 0xE1D))->moby, 0)) {
         qcopy(w, collision_hit_point_a);
     } else {
         qcopy(w, h);
     }
     FastVecScale_r2(h, gl + 0x20, 20.0f);
     FastVecSub_r2(h, g, h);
-    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)(D_0013E633_2E3700 + 0xE1D))->moby, 0)) {
+    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)(hero_globals_base_r + 0xE1D))->moby, 0)) {
         qcopy(h, collision_hit_point_a);
     }
     FastVecSub_r2(u, h, w);
@@ -1948,7 +1948,7 @@ typedef struct { u8 pad[0x2000]; s32 i2000; } L_y;
 #define hero74 (*(Hero *)D_0013F450)
 extern char player_camera[];
 #define player_camera_y ((A_y *)D_L00_00166D80)
-extern unsigned char D_0013A5E0[];
+extern unsigned char pad_globals_base[];
 #define D_0013C940_y (*(C_y *)(D_0013A5E0 + 0x2460))
 #define D_0013F3D0_y (*(L_y *)(D_0013E633 + 0xE9D))
 extern u8 *coll_sphere_moby_hits[];
@@ -2868,7 +2868,7 @@ extern float FastAbsF(float);
 extern int gCamSphereMaskLvl MACRO_ADDR;
 extern V4 collision_hit_point;
 extern short follow_cam_min_distance_gp;
-extern unsigned char D_0013A5E0[];
+extern unsigned char pad_globals_base[];
 
 // Camera sweep: steps a vector along the path, testing each step against the edge and the wall.
 int resolve_follow_camera_orbit_path_collisions(char *m) {
@@ -2891,7 +2891,7 @@ int resolve_follow_camera_orbit_path_collisions(char *m) {
     i = 0;
     while (i < truncate_float_to_s32_r(*(float *)(s18 + 0x40) - 1.0f)) {
         if (i > 0 && test_follow_camera_point_in_collision_volume((VS *)v1) == 0) {
-            char *base = D_0013E633 + 0xE1D;
+            char *base = hero_globals_base + 0xE1D;
             if (coll_sphere_b(v1, gCamSphereMaskLvl, *(void **)(base + 0x2080), f20) != 0 &&
                 reject_follow_camera_first_step_backward_hit_f(m, i, v1, f20) == 0) {
                 qcopy(t, collision_hit_point);
@@ -2899,7 +2899,7 @@ int resolve_follow_camera_orbit_path_collisions(char *m) {
                 if (adjust_follow_camera_orbit_probe_for_collisions(m, v1, i, f22, f20) != 0) {
                     ret = 1;
                     if (*(unsigned char *)(base + 0x20A4) != 2) {
-                        if (FastAbsF(*(float *)(D_0013A5E0 + 0x2560)) > 0.05f) {
+                        if (FastAbsF(*(float *)(pad_globals_base + 0x2560)) > 0.05f) {
                             FastVecSub(w, t, u);
                             vec_scale_to_length(w, w, 1.0f);
                             if (FastAbsF(FastVecDot(D_L00_00166F40, w)) < 0.75f) {
@@ -3056,10 +3056,10 @@ void follow_camera_avoid_mobies(int mi) {
     if (retraction_timer_or_below_hold_threshold && collision->h34 > 0) {
         goto dec;
     }
-    if (!((*(C940_2e7d20_t *)(D_0013A5E0 + 0x2460)).x < 0.3f)) {
+    if (!((*(C940_2e7d20_t *)(pad_globals_base + 0x2460)).x < 0.3f)) {
         goto slow;
     }
-    if (!((*(C940_2e7d20_t *)(D_0013A5E0 + 0x2460)).y < 0.3f)) {
+    if (!((*(C940_2e7d20_t *)(pad_globals_base + 0x2460)).y < 0.3f)) {
         goto slow;
     }
 dec:
@@ -3602,7 +3602,7 @@ void follow_camera_auto_turn(int m) {
         }
     }
 }
-extern char D_0013E633[] NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
 extern char D_L00_00166F30[] NOT_SDA;
 extern float Camera_SmoothAngle(void *, float, float, float, float, float);
 
@@ -3622,7 +3622,7 @@ void follow_camera_build_view(int a_) {
     q40 = q + 0x40;
     q20 = q + 0x20;
     if (q40[0xC4] == 0xB) {
-        FastVecSub((float *)p, (float *)(D_0013E633 + 0xE9D), (float *)(p + 0x30));
+        FastVecSub((float *)p, (float *)(hero_globals_base + 0xE9D), (float *)(p + 0x30));
         p10 = p + 0x10;
         vec_scale_to_length(p, p, 1.0f);
         p20 = p + 0x20;
@@ -3703,7 +3703,7 @@ void follow_camera_build_view(int a_) {
 }
 extern float FastAbsF(float);
 extern void Cam_SetDistanceGoal(float, float, int);
-extern char D_0013E633[] NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
 extern short follow_cam_distance_stiffness;
 extern short follow_cam_distance_damping;
 extern short follow_cam_pull_back_stiffness;
@@ -3741,13 +3741,13 @@ void follow_camera_pull_back(char *camera_object, float *x, float *y) {
 
     if (pull_back_state->h6 == 0
         && ((pull_back_state->h4 != 0 && *(float *)(g + 0xA4) == 0.0f
-             && FastVecDot(*(char **)(D_0013E633 + 0x2E9D) + 0xC0, camera_object) <= -0.3f)
+             && FastVecDot(*(char **)(hero_globals_base + 0x2E9D) + 0xC0, camera_object) <= -0.3f)
             || (FastAbsF(*(float *)(g + 0xA4)) > 0.0001f
                 && FastVecDot(g + 0x80, camera_object) <= -0.3f))) {
         pull_back_state->h4 = scale_ticks(0x78);
         k = *(float *)(g + 0xA4) * 14.2857f;
         if (k > 1.0f) k = 1.0f;
-        pull_back_target = (*(unsigned char *)(D_0013E633 + 0x2EC1) == 1) ? 4.0f : pull_back_state->fC;
+        pull_back_target = (*(unsigned char *)(hero_globals_base + 0x2EC1) == 1) ? 4.0f : pull_back_state->fC;
         reference_distance = reference_orbit_state->unk58;
         current_distance = pull_back_state->f8;
         interpolated_pull_back_value = reference_distance + (pull_back_target - reference_distance) * k;

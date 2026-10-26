@@ -7,14 +7,14 @@
 #include "hero.h"
 #include "moby.h"
 
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern void exit_hero_vehicle_mode_if_mode_three(void);
 extern void HeroL06_TrySetMoveState(int, int);
 extern float FastAbsF(float);
 
 // Resolves the pending hero action id into input flags, then triggers a state change when its conditions hold.
 void apply_hero_ground_material_response(void) {
-    Hero *hero_state = (Hero *)(D_0013E633 + 0xE1D);
+    Hero *hero_state = (Hero *)(hero_globals_base + 0xE1D);
     Hero *g1;
     Hero *g2;
     Hero *g3;
@@ -37,32 +37,32 @@ void apply_hero_ground_material_response(void) {
         }
     }
     if (previous_ground_type == 0xD) {
-        Hero *gx = (Hero *)(D_0013E633 + 0xE1D);
+        Hero *gx = (Hero *)(hero_globals_base + 0xE1D);
         gx->selector_13 = 1;
     }
     if (previous_ground_type == 1) {
-        Hero *gx = (Hero *)(D_0013E633 + 0xE1D);
+        Hero *gx = (Hero *)(hero_globals_base + 0xE1D);
         gx->selector_1 = 1;
     }
     if (previous_ground_type == 8) {
-        Hero *gx = (Hero *)(D_0013E633 + 0xE1D);
+        Hero *gx = (Hero *)(hero_globals_base + 0xE1D);
         gx->on_slip_ground = 1;
     }
     if (previous_ground_type == 9) {
-        Hero *gx = (Hero *)(D_0013E633 + 0xE1D);
+        Hero *gx = (Hero *)(hero_globals_base + 0xE1D);
         gx->unk12EE = 1;
     }
     if (previous_ground_type == 0xC) {
-        Hero *gx = (Hero *)(D_0013E633 + 0xE1D);
+        Hero *gx = (Hero *)(hero_globals_base + 0xE1D);
         gx->on_slip_ground = 1;
     }
-    g1 = (Hero *)(D_0013E633 + 0xE1D);
+    g1 = (Hero *)(hero_globals_base + 0xE1D);
     if (g1->selector_1 != 0) {
         if (g1->grounded_frames != 0 && g1->vehicle_mode == 1 && g1->state.current != 0x7D) {
             HeroL06_TrySetMoveState(0x7D, 1);
             return;
         }
-        g2 = (Hero *)(D_0013E633 + 0xE1D);
+        g2 = (Hero *)(hero_globals_base + 0xE1D);
         if (g2->selector_1 != 0) {
             if (g2->grounded_frames != 0) {
                 if (g2->state.current != 0x3C || g2->past_jump_apex != 0) {
@@ -77,7 +77,7 @@ void apply_hero_ground_material_response(void) {
             }
         }
     }
-    g3 = (Hero *)(D_0013E633 + 0xE1D);
+    g3 = (Hero *)(hero_globals_base + 0xE1D);
     if (g3->selector_13 == 0) return;
     if (g3->state.current == 0x7F) return;
     if (!(FastAbsF(g3->water_surface_z - (g3->motion.pos.f[2] + 0.25f)) < 1.0f)) return;
@@ -301,7 +301,7 @@ void quantize_hero_input_target_speed(void) {
     char *x;
     float cur;
     stick_target(1.0f, 0);
-    x = D_0013E633 + 0xE1D;
+    x = hero_globals_base + 0xE1D;
     cur = *(float *)(x + 0x190);
     if (0.0f < cur) {
         if (cur < blarg_hero_speed_bands[3]) {
@@ -729,7 +729,7 @@ typedef struct { char p0[0x60]; float f60[4]; char p70[0x30]; float fA0[4]; } Bo
 typedef struct { char p0[0x58]; unsigned short f58; unsigned short f5A; int f5C; char p60[0x30]; unsigned short f90; unsigned short f92; int f94; } S141948;
 typedef struct { char p0[0x158]; float f158; char p15C[4]; float f160; char p164[4]; int f168; char p16C[0x1E4]; float f350[4]; } Cam;
 extern PadState g_controller_state;
-extern char D_0013A5E0[];
+extern char pad_globals_base[];
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern S141948 usage_stats;
@@ -2366,7 +2366,7 @@ void HeroL06_UpdateMovement(void) {
                     ((Hero *)&g_hero)->ground_speed = 0.0f;
                 }
                 if (((Hero *)&g_hero)->rail_land_frames != 0) {
-                    if (*(int *)(D_0013A5E0 + 0x2634) != 0) {
+                    if (*(int *)(pad_globals_base + 0x2634) != 0) {
                         if (((Hero *)&g_hero)->on_flagged_ground_moby != 0) {
                             ((Hero *)&g_hero)->ground_speed = 0.0f;
                         }

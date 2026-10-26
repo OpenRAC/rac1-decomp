@@ -174,7 +174,7 @@ void update_sinking_platform(char *m) {
     FastVecSub(position_delta, &moby->pos, previous_position);
     update_entity_matrix(vars->matrix, position_delta, &moby->rot, &moby->rot);
 }
-extern unsigned char D_0013D605_00299818[] __asm__("D_0013D605");
+extern unsigned char race_gates_base_r[] __asm__("D_0013D605");
 extern char g_hero_r[] __asm__("D_0013F450");
 extern int orxon_cinematic_mode_r __asm__("D_L10_0015F6A8") MACRO_ADDR;
 extern int dialogue_message_duration_r __asm__("D_L10_0015F720") MACRO_ADDR;
@@ -199,7 +199,7 @@ void magnetboots_update(Moby *m) {
     switch (m->state) {
     case 0:
         initialize_moby_particle_effect_r(m);
-        if (*(D_0013D605_00299818 + 7) != 0) {
+        if (*(race_gates_base_r + 7) != 0) {
             remove_00299818(m);
             return;
         }
@@ -238,10 +238,10 @@ void magnetboots_update(Moby *m) {
 }
 typedef struct { char pad0[0x454]; unsigned char collected[1]; } L10State;
 extern L10State D_L10_001BB9C0;
-extern unsigned char D_0014171B[] NOT_SDA;
+extern unsigned char help_stats_base[] NOT_SDA;
 extern int orxon_moby_killed[];
 extern int g_current_level_index MACRO_ADDR;
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern unsigned char saved_mission_state[];
 extern unsigned char gHaveHeliPack[];
 extern int orxon_cinematic_mode MACRO_ADDR;
@@ -260,7 +260,7 @@ void update_hero_relocation_trigger(char *m) {
     unsigned short id;
     ((unsigned char *)m)[0x30] = 0xFF;
     if (*(int *)&D_L10_00161410 == 1) {
-        *(short *)(D_0014171B + 0x32D) = 0;
+        *(short *)(help_stats_base + 0x32D) = 0;
         *(int *)&D_L10_00161410 = 0;
     }
     if (*(int *)(d + 0x18) != -1) {
@@ -282,7 +282,7 @@ void update_hero_relocation_trigger(char *m) {
     }
     id = ((Moby *)m)->save_id;
     if (D_L10_001BB9C0.collected[(short)id] != 0 ||
-        ((*(int *)(D_0014171B + 0xAB75 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) != 0) {
+        ((*(int *)(help_stats_base + 0xAB75 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) != 0) {
         if (gHaveHeliPack[4] != 0) {
             char *bs = orxon_mobys_r;
             *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 1;
@@ -290,7 +290,7 @@ void update_hero_relocation_trigger(char *m) {
             *(int *)((*(int *)d << 8) + (int)bs + 0x94) = 0;
         } else {
             if (*(int *)&orxon_cinematic_mode == 0) {
-                unsigned char *T = D_0014171B + 0x22D;
+                unsigned char *T = help_stats_base + 0x22D;
                 unsigned short t0 = *(unsigned short *)(T + 0x100);
                 int r = scale_ticks(0x12C);
                 if (t0 < r) {
@@ -309,16 +309,16 @@ void update_hero_relocation_trigger(char *m) {
                         *(int *)(T + 0x104) = w;
                     }
                     try_set_help_message(1, 0x53F6);
-                    if (((unsigned char *)D_0013E633)[0x2EC1] == 1) return;
+                    if (((unsigned char *)hero_globals_base)[0x2EC1] == 1) return;
                 } else {
-                    if (((unsigned char *)D_0013E633)[0x2EC1] == 1) return;
+                    if (((unsigned char *)hero_globals_base)[0x2EC1] == 1) return;
                 }
             } else {
-                if (((unsigned char *)D_0013E633)[0x2EC1] == 1) return;
+                if (((unsigned char *)hero_globals_base)[0x2EC1] == 1) return;
             }
         }
     }
-    *(int *)(D_0014171B + 0xAB75 + ((((short)((Moby *)m)->save_id >> 5) * 4) + (g_current_level_index << 8)))
+    *(int *)(help_stats_base + 0xAB75 + ((((short)((Moby *)m)->save_id >> 5) * 4) + (g_current_level_index << 8)))
         |= 1 << (((Moby *)m)->save_id & 0x1F);
     orxon_moby_killed[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
     if (*(int *)(d + 8) == -1 || *(int *)d == -1) return;
@@ -339,7 +339,7 @@ void update_hero_relocation_trigger(char *m) {
         enter_hero_vehicle_mode(1, 0x43, orxon_mobys_r + (*(int *)d << 8));
         MusicRequestTrack(2, 4);
     } else {
-        unsigned char *h = (unsigned char *)D_0013E633 + 0xE1D;
+        unsigned char *h = (unsigned char *)hero_globals_base + 0xE1D;
         if (h[0x20A4] == 1) {
         exit_hero_vehicle_mode();
         {
@@ -544,7 +544,7 @@ INCLUDE_ASM("asm/overlays", func_L10_002C0378);
 INCLUDE_ASM("asm/overlays", func_L10_002C0388);
 INCLUDE_ASM("asm/overlays", func_L10_002C03EC);
 INCLUDE_ASM("asm/overlays", func_L10_002C04C4);
-extern char D_0013E633[];
+extern char hero_globals_base[];
 extern int fast_dec_timer(int *arg0);
 extern void euler_to_matrix(float *, float *);
 extern void clear_u64_value(float *);
@@ -593,7 +593,7 @@ void update_timed_effect_emitter(unsigned char *moby) {
             ((Moby *)moby)->state = 0;
             k = *(int *)(data + 0x10);
             if (k != -1) {
-                unsigned char *e = (unsigned char *)D_0013E633 + 0x1D + k * 0x70;
+                unsigned char *e = (unsigned char *)hero_globals_base + 0x1D + k * 0x70;
                 if (*(unsigned char **)(e + 0x88) == moby && e[0x74] != 0) {
                     Sound_StopSlot(k);
                 }
@@ -1072,7 +1072,7 @@ int resolve_bouncing_projectile_collision(char *m, char *c, float *a2) {
     }
     return 0;
 }
-extern char D_0013E633_2D9988[] __asm__("D_0013E633");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern int resolve_bouncing_projectile_collision_r(char *, char *, float *) __asm__("func_L10_002D9530");
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
@@ -1150,8 +1150,8 @@ void Moby938Update(char *m) {
         if (r16 != 0 && *(char **)(r16 + 0x20) != 0 && *(short *)(*(char **)(r16 + 0x20) + 0xA6) != ((Moby *)m)->oclass) {
             float t;
             if (*(unsigned char *)(r16 + 0x28) == 0) {
-                s50 = fast_atan2_r(((Moby *)m)->pos.x - ((Hero *)(D_0013E633_2D9988 + 0xE1D))->motion.pos.f[0],
-                                               ((Moby *)m)->pos.y - ((Hero *)(D_0013E633_2D9988 + 0xE1D))->motion.pos.f[1]);
+                s50 = fast_atan2_r(((Moby *)m)->pos.x - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[0],
+                                               ((Moby *)m)->pos.y - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[1]);
                 *(u128_2D9988 *)v10 = ((Obj_2D9988 *)r16)->q10;
                 s58 = s54 = g_frame_time_x * 10.0f;
                 HeadingFromVector_r(v10, &s50, &s54, &s58);
@@ -1186,8 +1186,8 @@ void Moby938Update(char *m) {
         if (r16 != 0 && *(char **)(r16 + 0x20) != 0 && *(short *)(*(char **)(r16 + 0x20) + 0xA6) != ((Moby *)m)->oclass) {
             float t;
             if (*(unsigned char *)(r16 + 0x28) == 0) {
-                s68 = fast_atan2_r(((Moby *)m)->pos.x - ((Hero *)(D_0013E633_2D9988 + 0xE1D))->motion.pos.f[0],
-                                               ((Moby *)m)->pos.y - ((Hero *)(D_0013E633_2D9988 + 0xE1D))->motion.pos.f[1]);
+                s68 = fast_atan2_r(((Moby *)m)->pos.x - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[0],
+                                               ((Moby *)m)->pos.y - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[1]);
                 *(u128_2D9988 *)v10 = ((Obj_2D9988 *)r16)->q10;
                 s70 = s6c = g_frame_time_x * 10.0f;
                 HeadingFromVector_r(v10, &s68, &s6c, &s70);
@@ -1314,7 +1314,7 @@ void update_path_spark_emitter(char *m) {
             *(int *)(d + 0xC) = -1;
         }
         if (*(int *)(d + 0x10) != -1) {
-            char *e = D_0013E633 + 0x1D + *(int *)(d + 0x10) * 0x70;
+            char *e = hero_globals_base + 0x1D + *(int *)(d + 0x10) * 0x70;
             if (*(char **)(e + 0x88) == m && ((unsigned char *)e)[0x74] != 0) {
                 Sound_StopSlot(*(int *)(d + 0x10));
             }
@@ -1348,10 +1348,10 @@ void update_path_spark_emitter(char *m) {
             int r = Sound_PlayClassSound_v(0, 0xC, m, 0x442);
             *(int *)(d + 0x10) = r;
             if (r != -1) {
-                *(Q_2da0f0 *)(D_0013E633 + 0xAD + r * 0x70) = *(Q_2da0f0 *)pos;
+                *(Q_2da0f0 *)(hero_globals_base + 0xAD + r * 0x70) = *(Q_2da0f0 *)pos;
             }
         } else {
-            *(Q_2da0f0 *)(D_0013E633 + 0xAD + *(int *)(d + 0x10) * 0x70) = *(Q_2da0f0 *)pos;
+            *(Q_2da0f0 *)(hero_globals_base + 0xAD + *(int *)(d + 0x10) * 0x70) = *(Q_2da0f0 *)pos;
         }
         if (seg == *path - 1) {
             m[0x20] = 0;
@@ -1568,7 +1568,7 @@ void handle_moby_destruction(char *moby) {
     float f20, f21;
 
     if (D_L10_001BB9C0.collected[(short)id] != 0
-        || ((*(int *)(D_0014171B + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_r << 8))) >> (id & 0x1F)) & 1)) {
+        || ((*(int *)(help_stats_base + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_r << 8))) >> (id & 0x1F)) & 1)) {
         spawn_fixed_height_destruction_moby(moby);
         spawn_destruction_replacement_moby(moby);
         DeleteMoby(moby);
@@ -1607,7 +1607,7 @@ void handle_moby_destruction(char *moby) {
         spawn_explosion(moby, &v20, &v30, 0.0f, 0.0f, 5, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, -1, 15.0f, 1, 1, -1, 0);
         spawn_fixed_height_destruction_moby(moby);
         spawn_destruction_replacement_moby(moby);
-        *(int *)(D_0014171B + 0xAB75 + (((short)*(unsigned short *)(moby + 0xB2) >> 5) * 4 + (g_current_level_index_r << 8))) |= 1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
+        *(int *)(help_stats_base + 0xAB75 + (((short)*(unsigned short *)(moby + 0xB2) >> 5) * 4 + (g_current_level_index_r << 8))) |= 1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
         orxon_moby_killed[(short)*(unsigned short *)(moby + 0xB2) >> 5] |= 1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
         DeleteMoby(moby);
     }
@@ -1646,7 +1646,7 @@ void update_data_processor_linked_effect(struct Moby *moby) {
     }
     switch (moby->state) {
     case MOBY_STATE_INITIALIZE:
-        if (g_current_level_index == 10 && ((unsigned char *)D_0013E633)[0x2EC1] == 1) {
+        if (g_current_level_index == 10 && ((unsigned char *)hero_globals_base)[0x2EC1] == 1) {
             DeleteMoby(moby);
             break;
         }
@@ -1698,7 +1698,7 @@ void update_data_processor_linked_effect(struct Moby *moby) {
         fast_dec_timer(&vars->countdown);
         voice = vars->voice;
         if (voice != -1) {
-            unsigned char *entry = (unsigned char *)D_0013E633 + 0x1D + voice * 0x70;
+            unsigned char *entry = (unsigned char *)hero_globals_base + 0x1D + voice * 0x70;
             if (*(struct Moby **)(entry + 0x88) == moby && entry[0x74] != 0)
                 Sound_StopSlot(voice);
         }
@@ -1893,7 +1893,7 @@ extern void f_clear_DE018(void *) __asm__("func_001F9BC0");
 extern void f_jitter_DE018(void *, float, float) __asm__("func_L00_00258DB0");
 extern void f_add_DE018(void *, void *, void *) __asm__("func_001F9BD8");
 extern void f_scale_DE018(void *, void *, float) __asm__("func_001F9C30");
-extern unsigned char D_0013E633_DE018[] __asm__("D_0013E633");
+extern unsigned char hero_globals_base_r2[] __asm__("D_0013E633");
 extern int g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern int data_strand_life_ticks_r __asm__("D_L10_00161DE4") MACRO_ADDR;
@@ -1921,7 +1921,7 @@ void update_jitter_strand_grid_moby(unsigned char *moby) {
 
     switch (((Moby *)moby)->state) {
     case 0:
-        if (g_current_level_index_r2 == 10 && D_0013E633_DE018[0x2EC1] == 1) {
+        if (g_current_level_index_r2 == 10 && hero_globals_base_r2[0x2EC1] == 1) {
             f_delete_DE018(moby);
             break;
         }
@@ -2070,7 +2070,7 @@ void block_cave_update(char *m) {
     struct Moby *moby = (struct Moby *)m;
     unsigned short id = moby->save_id;
     if (D_L10_001BB9C0.collected[(short)id] != 0
-        || (*(int *)(D_0014171B + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_r << 8))) >> (id & 0x1F)) & 1) {
+        || (*(int *)(help_stats_base + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_r << 8))) >> (id & 0x1F)) & 1) {
         DeleteMoby(moby);
         return;
     }
@@ -2085,7 +2085,7 @@ void block_cave_update(char *m) {
                     matrix_from_basis_rows(transposed_rotation_matrix, &moby->rot_row0);
                     transform_vector(relative_position, relative_position, transposed_rotation_matrix);
                     if (relative_position[0] > 0.25f) {
-                        *(int *)(D_0014171B + 0xAB75 + (((short)moby->save_id >> 5) * 4 + (g_current_level_index_r << 8))) |= 1 << (moby->save_id & 0x1F);
+                        *(int *)(help_stats_base + 0xAB75 + (((short)moby->save_id >> 5) * 4 + (g_current_level_index_r << 8))) |= 1 << (moby->save_id & 0x1F);
                         orxon_moby_killed[(short)moby->save_id >> 5] |= 1 << (moby->save_id & 0x1F);
                         DeleteMoby(moby);
                         return;
@@ -2428,7 +2428,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
         r19 = FindNearestTargetMoby(data->f180, moby, data->fC0);
         if (r19 != 2) {
             Anim_2E0FF8 *bp = &((Anim_2E0FF8 *)orxon_scene_points)[data->f194];
-            FastVecSub(v, D_0013E633 + 0xE9D, bp->f30);
+            FastVecSub(v, hero_globals_base + 0xE9D, bp->f30);
             v[3] = 0.0f;
             matrix_mul_vec3(w, v, bp->f40);
             if (w[0] <= -1.0f || 0.0f <= w[0] || w[1] <= -1.0f || 1.0f <= w[1] || w[2] <= -1.0f || 1.0f <= w[2]) data->f104 = 2;
@@ -2444,7 +2444,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
         if (data->f180 < vec_distance_xy(data->f130, data->fC0)) data->f104 = 2;
         else if (moby->visible == 0) data->f104 = 2;
     }
-    if (data->f100 == 0) data->f100 = *(int *)(D_0013E633 + 0x2E9D);
+    if (data->f100 == 0) data->f100 = *(int *)(hero_globals_base + 0x2E9D);
 }
 extern short *orxon_moby_groups[];
 typedef struct { char p0[0x10]; float x; float y; char p1[8]; unsigned char state; char p2[0xDF]; } Ent;
@@ -2677,7 +2677,7 @@ void Moby1199Update(Moby *m) {
         move_moby_with_collision_integer_radius_r(m, &d->v120, 0.5f, 0x200, 0.0f, 0);
         step_angle_toward_target_r(&m->rot.y, 0, -fast_atan2_r2(vec_length_xy(&d->v120), d->v120.z), g_frame_time_x * 6.2831855f);
         if (vec_distance_xy_r(&m->pos, &P->pos) < class1199_attack_range) {
-            if (FastAbsF(m->pos.z - ((Hero *)(D_0013E633_2D9988 + 0xE1D))->motion.pos.f[2]) < 2.0f) {
+            if (FastAbsF(m->pos.z - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[2]) < 2.0f) {
                 Moby_PlaySound_r(0, 0, m);
                 m->state = 8;
                 clear_u64_value_r(&d->v120);
@@ -2823,7 +2823,7 @@ void Moby1199Update(Moby *m) {
         Moby_GetJointWorldPos(m, 0, v);
         coll_sphere_mobys(0.2f, v, 0, m, &v[4]);
         if (FastVecDist_r(&m->pos, &P->pos) < one
-            || *(int *)(D_0013E633_2D9988 + 0x2EA9) == 7
+            || *(int *)(hero_globals_base_r + 0x2EA9) == 7
             || (m->anim_flags & 2)) {
             m->state = 12;
             if (m->prev_seq != 3) MobyBlendAnimation_r(m, 3, 0, scale_ticks_r2(2));
@@ -3023,7 +3023,7 @@ void update_class_1199_hit_reactions_and_targeting(Moby *moby)
         r19 = FindNearestTargetMoby_r(moby, data->fC0, data->f180);
         if (r19 != 2) {
             Anim_2E2B80 *bp = &orxon_scene_points_r2[data->f194];
-            FastVecSub_r3(v, D_0013E633_2D9988 + 0xE9D, bp->f30);
+            FastVecSub_r3(v, hero_globals_base_r + 0xE9D, bp->f30);
             v[3] = 0.0f;
             matrix_mul_vec3_r2(w, v, bp->f40);
             if (w[0] <= -1.0f || 1.0f <= w[0] || w[1] <= -1.0f || 1.0f <= w[1] || w[2] <= -1.0f || 1.0f <= w[2]) {

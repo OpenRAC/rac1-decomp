@@ -133,7 +133,7 @@ extern unsigned char menu_item_enabled_73 NOT_SDA;
 extern int D_0013DB24 NOT_SDA;
 extern unsigned char menu_item_enabled_85 NOT_SDA;
 extern int D_0013DC34 NOT_SDA;
-extern unsigned char D_0013D605 NOT_SDA;
+extern unsigned char race_gates_base NOT_SDA;
 extern int item_available NOT_SDA;
 extern unsigned char menu_item_enabled_20 NOT_SDA;
 extern unsigned char gemlik_available NOT_SDA;

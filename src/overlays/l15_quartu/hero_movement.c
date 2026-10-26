@@ -7,7 +7,7 @@
 #include "hero.h"
 #include "moby.h"
 
-extern unsigned char D_0013E633[];
+extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 extern int CollType(void);
@@ -18,7 +18,7 @@ extern void Hero_OnKilled(void);
 
 /* Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. */
 void Hero_UpdateAimFlags(void) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     int c = *(unsigned char *)(g + 0x12ED);
     int s = *(short *)(g + 0x12E0);
     int t;
@@ -40,27 +40,27 @@ void Hero_UpdateAimFlags(void) {
         }
     }
     if (s == 0xE) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(p + 0x12E4) = 1;
         *(float *)(p + 0x22A4) = 0.2f;
         *(float *)(p + 0x2F0) = *(float *)(p + 0x2D8) + 0.2f;
     }
     if (s == 0) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         float d = *(float *)(p + 0x2F0) - *(float *)(p + 0x2D8);
         *(float *)(p + 0x22A4) = d;
         if (d < 0.85f && 0.25f < d) {
             *(unsigned char *)(p + 0x20A9) = 1;
         }
-        p = (char *)D_0013E633 + 0xE1D;
+        p = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(p + 0x12E4) = 1;
     }
     if (s == 3) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(p + 0x12E6) = 1;
     }
     if (g_current_level_index == 0xD) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(p + 0x2084) != 0x7B) {
             if (coll_sphere(*(float *)(p + 0x234) + 0.03f, p + 0xD0, 2, 0) != 0) {
                 if (CollType() == 0xB) {
@@ -70,13 +70,13 @@ void Hero_UpdateAimFlags(void) {
             }
         }
     }
-    if (s == 0xB) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EB) = 1; }
-    if (s == 4) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12E3) = 1; }
-    if (s == 8) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
-    if (s == 9) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EE) = 1; }
-    if (s == 0xC) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
+    if (s == 0xB) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EB) = 1; }
+    if (s == 4) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12E3) = 1; }
+    if (s == 8) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
+    if (s == 9) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EE) = 1; }
+    if (s == 0xC) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
     {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(p + 0x12E3) != 0 && *(int *)(p + 0x300) != 0) {
             t = *(int *)(p + 0x208C);
             if (t != 0x10 && t != 0x14 && t != 7) {
@@ -86,7 +86,7 @@ void Hero_UpdateAimFlags(void) {
         }
     }
     {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(p + 0x12E6) != 0) {
             t = *(int *)(p + 0x2084);
             if (t != 0x68 && t != 0x7B) {
@@ -109,7 +109,7 @@ void Hero_UpdateAimFlags(void) {
         }
     }
     {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(p + 0x12EB) != 0) {
             if (*(int *)(p + 0x2084) != 0x7B) {
                 if (FastAbsF(*(float *)(p + 0x2F4) - (*(float *)(p + 0x88) + 0.25f)) < 1.0f) {
@@ -328,7 +328,7 @@ typedef struct { char p0[0x58]; unsigned short f58; unsigned short f5A; int f5C;
 typedef struct { char p0[0x158]; float f158; char p15C[4]; float f160; char p164[4]; int f168; char p16C[0x1E4]; float f350[4]; } Cam;
 typedef struct { char p0[8]; float f8; float fC; char p10[8]; float f18; } S17BEB8;
 extern PadState g_controller_state;
-extern char D_0013A5E0[];
+extern char pad_globals_base[];
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern S141948 usage_stats;
@@ -2107,7 +2107,7 @@ void Hero_UpdateStatePhysicsL15(void) {
                     g_hero.ground_speed = 0.0f;
                 }
                 if (g_hero.rail_land_frames != 0) {
-                    if (*(int *)(D_0013A5E0 + 0x2634) != 0) {
+                    if (*(int *)(pad_globals_base + 0x2634) != 0) {
                         if (g_hero.on_flagged_ground_moby != 0) {
                             g_hero.ground_speed = 0.0f;
                         }
