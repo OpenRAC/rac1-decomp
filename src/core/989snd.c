@@ -9,104 +9,104 @@
  */
 
 /* Declarations in scope here before the split. */
-extern long func_00116F68(int arg0, int arg1, int arg2);
+extern long strtol(int arg0, int arg1, int arg2);
 extern int SbrkErrno;
-extern void *D_0012F86C NOT_SDA;
-extern int func_001162B8(void *arg0, void *arg1, void *arg2);
-extern int func_00116320(void *arg0, void *arg1, void *arg2);
-extern long func_001163A0(void *arg0, void *arg1, void *arg2);
-extern void func_00116408(void *arg0);
-extern void func_00113968(void);
-extern void func_00114438(void *, void *);
-extern char D_00152470[];
-extern int func_00119088();
+extern void *_impure_ptr NOT_SDA;
+extern int __sread(void *arg0, void *arg1, void *arg2);
+extern int __swrite(void *arg0, void *arg1, void *arg2);
+extern long __sseek(void *arg0, void *arg1, void *arg2);
+extern void __sclose(void *arg0);
+extern void libc_fflush(void);
+extern void _fwalk(void *, void *);
+extern char locale_lconv[];
+extern int libc_glue_read();
 extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
     __asm__("func_00116108");
 extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
     __asm__("func_001188C8");
 extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
     __asm__("func_00114518");
-extern int func_00112468(int *errOut, int arg1);
-extern int func_00114060(int, void *);
-extern void func_00113AE0(void *);
-extern void func_00117118(void *, void *, int, int);
-extern int func_00119008();
+extern int _close_r(int *errOut, int arg1);
+extern int __sfvwrite(int, void *);
+extern void __sinit(void *);
+extern void _vfprintf_r(void *, void *, int, int);
+extern int libc_glue_write();
 extern int CoreGlobalWord NOT_SDA;
-extern void func_00118E90(int arg0, void *arg1);
+extern void Deci2Call(int arg0, void *arg1);
 extern void *InitBlockData NOT_SDA;
-extern int D_00155080[];
+extern int sif_sregs[];
 extern void disable_dmac_atomic(int);
 extern void remove_dmac_handler(int, int);
-extern int D_00154F54;
-extern int D_0012FD04;
-extern int D_00154F64 NOT_SDA;
-extern int D_00154F6C NOT_SDA;
-extern void func_0011AA90(int, int, int, int, int, int, int);
-extern void func_0011AA00(void);
+extern int sif_cmd_dmac_handler_id;
+extern int sif_cmd_init_done;
+extern int sif_cmd_data_sys_handlers NOT_SDA;
+extern int sif_cmd_data_usr_handlers NOT_SDA;
+extern void sif_send_cmd_common(int, int, int, int, int, int, int);
+extern void sceSifExitCmd(void);
 extern int RpcCommandState NOT_SDA;
 extern int disable_interrupts(void);
 extern void enable_interrupts(void);
 extern int create_semaphore(void *);
-extern int D_0012FDA0;
-extern int D_0012FDA4;
-extern char D_00157E80[];
-extern int D_0012FD9C;
-extern void func_0011BBF0(void);
-extern int D_0012FD9C NOT_SDA;
-extern char D_0012FCEC[];
+extern int fs_iob_sema;
+extern int fs_iob_sema_2;
+extern char fs_iob_table[];
+extern int fs_call_sema;
+extern void fs_call_sema_init(void);
+extern int fs_call_sema NOT_SDA;
+extern char sif_lib_version_string[];
 extern char FsResetBuffer[];
-extern int D_0012FDA8;
+extern int fs_expected_version;
 extern void libc_memset(void *, int, int);
 extern int FsResetState;
-extern int D_0012FDAC;
-extern char D_00158140[];
-extern int D_00158180;
-extern int D_001581C0;
-extern char D_00158528[];
-extern int D_0012FDB4;
-extern int func_0011CE70(int arg0, int arg1, int arg2, void *arg3);
-extern void func_00118EC0(void);
-extern void func_0011D4E0(void);
-extern void func_00118EB0(void);
+extern int iop_heap_bind_state;
+extern char iop_heap_rpc_client[];
+extern int iop_heap_rpc_reply;
+extern int iop_heap_rpc_arg;
+extern char lf_iop_version[];
+extern int lf_expected_version;
+extern int _sceSifLoadModuleBuffer(int arg0, int arg1, int arg2, void *arg3);
+extern void tty_reset_init_flag(void);
+extern void init_tlb_32mb(void);
+extern void kernel_init_tlb(void);
 extern int FirstSemaphore;
 extern int SecondSemaphore;
-extern int D_00130BD0[];
-extern char D_00130428[];
-extern int func_0011DC50(void);
+extern int osd_syscall_patch_table[];
+extern char osd_kernel_patch_code[];
+extern int PatchIsNeeded(void);
 extern void flush_cache(int);
 extern int sce_cd_sync_s(int);
-extern void *D_00159840;
-extern int D_001313E0;
-extern int D_001313E8;
-extern int D_001313EC;
-extern int D_001313F0;
-extern int D_001313E4;
-extern int D_001313FC;
+extern void *cd_user_callback;
+extern int cd_callback_sema;
+extern int cd_ncmd_sema;
+extern int cd_scmd_sema;
+extern int cd_ncmd_busy;
+extern int cd_poweroff_installing;
+extern int cd_poweroff_installed;
 extern int sif_call_rpc();
-extern int func_00120D28(int);
+extern int cd_ncmd_prechk(int);
 extern void signal_semaphore(int);
-extern char D_00132590[];
-extern int D_00131440;
-extern void func_0011A6C8();
+extern char cd_ncmd_rpc_client[];
+extern int cd_ncmd_recv_buffer;
+extern void scePrintf();
 extern int sce_sif_check_stat_rpc(void *);
-extern char D_00153000[];
-extern char D_00132E08[];
-extern int D_001313D0;
-extern int func_00121040(int);
-extern int D_001325C0;
+extern char cd_scmd_wait_msg[];
+extern char cd_scmd_rpc_client[];
+extern int cd_debug_level;
+extern int cd_scmd_prechk(int);
+extern int cd_scmd_recv_buffer;
 extern char CoreDataTable[];
-extern void func_00123650(void *);
-extern char D_001534E0[];
+extern void sceDmaPause(void *);
+extern char dma_sync_timeout_msg[];
 extern int DmaChannels[];
 extern int sce_mc_open(int, int, int, int);
-extern int D_00132EA8;
-extern int *D_00159B28;
-extern int *D_00159B2C;
-extern int *D_00159B30;
+extern int mc_current_command;
+extern int *mc_get_info_type_out;
+extern int *mc_get_info_free_out;
+extern int *mc_get_info_format_out;
 extern char RpcQueueData[];
 extern int RpcReceiveData;
 extern void debug_print_stub(void *);
-extern char D_00153658[];
+extern char str_dbc_set_work_addr_error[];
 extern int sceDbcGetDepNumber(int);
 typedef struct {
     char unk_00[4];
@@ -115,40 +115,40 @@ typedef struct {
     char *unk_0C;
     char unk_10[0x320];
 } Ent330;
-extern Ent330 D_0015B640[];
-extern void func_00119288(void *a, void *b);
-extern void func_001286E8(int, int);
+extern Ent330 pad2_sockets[];
+extern void sync_dcache_range(void *a, void *b);
+extern void ipu_vdec(int, int);
 extern int IpuCommandTable[];
-extern void func_0012BCC8(int);
-extern void func_00128590(void *);
-extern void func_00128968(void *, int);
-extern int func_00128860(void *, int);
-extern int func_00128A58(void *, int);
-extern void func_00129180(void *);
-extern char D_00153A80[];
+extern void dispatch_mpeg_cb_nodata(int);
+extern void wait_ipu_idle(void *);
+extern void _flushBuf(void *, int);
+extern int _peepBit(void *, int);
+extern int _nextBit(void *, int);
+extern void extra_bit_information(void *);
+extern char str_mpeg_buffer_too_small_fmt[];
 extern void sprintf_4(void *, char *, int, int) __asm__("func_00116248");
-extern void func_0012C468_a(void *, void *) __asm__("func_0012C468");
-extern void func_0012AAC8(void *, int);
-extern void func_0012C468(void *, void *);
-extern char D_00153B38[];
-extern void func_0012C0A0(void *);
-extern void func_0012BF40(void *);
-extern void func_0012C278(void *);
-extern void func_00129E30(void *, int, int, int);
-extern char D_00153BB8[];
-extern char D_00153BD8[];
+extern void _Error_a(void *, void *) __asm__("func_0012C468");
+extern void sysbit_flush(void *, int);
+extern void _Error(void *, void *);
+extern char mpeg_work_area_size_too_small_msg[];
+extern void mpeg_decode_or_skip_field(void *);
+extern void mpeg_decode_or_skip_frame(void *);
+extern void mpeg_last_frame(void *);
+extern void _dispRefImage(void *, int, int, int);
+extern char mpeg_second_field_missing_msg[];
+extern char mpeg_error_format[];
 extern void sprintf(void *);
-extern void func_0012C420(void *);
-extern char D_00153C48[];
-extern char D_00153C78[];
-extern char D_00153C90[];
-extern char D_00153CC8[];
-extern int func_0012CE48(void *);
-extern void func_0012D2A0(void);
+extern void mpeg_print_error(void *);
+extern char mpeg_sequence_scalable_ext_msg[];
+extern char mpeg_unknown_extension_msg[];
+extern char mpeg_picture_spatial_scalable_ext_msg[];
+extern char mpeg_picture_temporal_scalable_ext_msg[];
+extern int sce_ipu_restart_dma(void *);
+extern void scf_read_romver(void);
 extern signed char RomNameStateData[];
-extern int func_0012D4E0(int);
-extern int func_0012D4B0(int);
-extern void func_0011DDA0(int);
+extern int scf_bcd_to_bin(int);
+extern int scf_bin_to_bcd(int);
+extern void Exit(int);
 
 /* snd_StartSoundSystem. Ported from Lombyte's project (GPL-3.0); exact for the whole
  * 989snd object with retail ps2eeas and explicit small-data declarations.
@@ -175,7 +175,7 @@ extern struct SifClientDataStartSound sound_command_client_r __asm__("D_0015ECC0
 extern struct SifClientDataStartSound sound_stream_client_r __asm__("D_0015ECE8");
 extern short snd_batch_command_buffers;
 extern short snd_batch_free_bytes;
-extern s32 D_0015EDAC MACRO_ADDR;
+extern s32 snd_batch_free_bytes_1 MACRO_ADDR;
 extern short snd_stream_buffers;
 extern short snd_batch_return_buffers;
 extern short snd_cd_callback_pending;
@@ -239,7 +239,7 @@ s32 snd_StartSoundSystem(void) {
     *(s32 *)snd_command_buffer2 = 0;
     sound_read_work_r.read_error = 0;
     (*(s32 *)&snd_batch_free_bytes) = 0xFFC;
-    D_0015EDAC = 0xFFC;
+    snd_batch_free_bytes_1 = 0xFFC;
     command_arg = (s32)(u32)&sound_read_work_r.read_active;
     return snd_SendIOPCommandAndWait(0, 4, &command_arg);
 }
@@ -400,8 +400,8 @@ extern short snd_cd_callback_pending;
 extern short snd_cd_load_error;
 extern int snd_cd_bank_load_request_a[] __asm__("D_00137C40");
 extern int sound_stream_client;
-extern char D_00153EA8[];
-extern char D_00153ED8[];
+extern char snd_bank_load_by_loc_progress_string[];
+extern char snd_bank_load_by_loc_cd_busy_string[];
 extern char snd_bank_load_by_loc_rpc_error_string[];
 extern char snd_non_idle_error_string[];
 extern int snd_FlushSoundCommands(void);
@@ -412,11 +412,11 @@ extern int snd_FlushSoundCommands(void);
 unsigned int snd_BankLoadByLoc(int arg0, int arg1) {
     *(int *)&snd_cd_load_error = 0;
     if (*(int *)&snd_cd_callback_pending != 0) {
-        func_00116078(D_00153EA8);
+        func_00116078(snd_bank_load_by_loc_progress_string);
         return 0;
     }
     if (snd_StreamSafeCdSync(1) == 1) {
-        func_00116078(D_00153ED8);
+        func_00116078(snd_bank_load_by_loc_cd_busy_string);
         return 0;
     }
     snd_cd_bank_load_request_a[1] = arg1;
@@ -641,7 +641,7 @@ extern short snd_batch_index;
 extern short snd_batch_command_buffers;
 extern short snd_batch_free_bytes;
 extern short snd_stream_buffers;
-extern char D_00154110[];
+extern char snd_send_iop_command_buffer_full_string[];
 extern char snd_no_wait_continuing_string[];
 extern void snd_PostMessage(void);
 extern int func_00116078_p(const char *, ...) __asm__("func_00116078");
@@ -683,7 +683,7 @@ void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_dat
         }
         snd_FlushSoundCommands();
         if (tries == 1) {
-            func_00116078_p(D_00154110, *(int *)&snd_batch_index, *((int **)&snd_batch_command_buffers)[*(int *)&snd_batch_index]);
+            func_00116078_p(snd_send_iop_command_buffer_full_string, *(int *)&snd_batch_index, *((int **)&snd_batch_command_buffers)[*(int *)&snd_batch_index]);
         }
         tries++;
     }
@@ -782,7 +782,7 @@ void snd_reset_state_and_flush_commands(void) {
    (streaming-enabled flag, same as func_0012F030/func_0012F068's) and
    gp 0x166D00 - 0x7F38 = 0x15EDC8 (drain-commands-first flag). */
 extern short snd_cd_stream_active;
-extern short D_0015EDBC;   /* the word at +0xC, SDA ($gp -0x7F38) */
+extern short snd_batch_return_buffers_1;   /* the word at +0xC, SDA ($gp -0x7F38) */
 extern int snd_StreamSafeCdSync(int);              /* snd_StreamSafeCdSync */
 extern int snd_SendIOPCommandAndWait(int, int, void *); /* snd_SendIOPCommandAndWait */
 
@@ -960,14 +960,14 @@ int snd_StreamSafeCdGetError(void) {
    (streaming-enabled flag, same as func_0012F030's) and
    gp 0x166D00 - 0x7F70 = 0x15ED90 (cached callback value). */
 extern short snd_cd_status_callback;
-extern int func_00120978(void);
+extern int sce_cd_callback(void);
 
 /* snd_StreamSafeCdCallback */
 int snd_StreamSafeCdCallback(int arg0) {
     int old;
 
     if (*(int *)&snd_cd_stream_active == 0) {
-        return func_00120978();
+        return sce_cd_callback();
     }
     old = *(int *)&snd_cd_status_callback;
     *(int *)&snd_cd_status_callback = arg0;
