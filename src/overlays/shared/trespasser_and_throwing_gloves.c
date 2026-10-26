@@ -7,7 +7,445 @@
 #include "hero.h"
 #include "moby.h"
 
-INCLUDE_ASM("asm/overlays", func_L00_002C12B0);
+/* NON_MATCHING func_L00_002C12B0 -- src/overlays/shared/vendor_002C12B0.c
+ * Best so far: BYTES 12/5996 (99.8% of the bytes match), checked 2026-10-19.
+ * Not built into anything: the retail assembly stays in the source file
+ * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * What the last attempts found:
+ *   f12,f15,a0,f13,a1,f14: only the a0/a1 swap is left, but then the two arms are not cross-jumped (SIZE 6096/5996
+ *   cross-jump does not run on identical post-reload tails here).
+ *   - No effect (same 12 bytes): temps for k/d/m in all 6 orders (w10-15), reversed prototype order (w5), directio
+ *   (SIZE), a pointer local for &turn_velocity (x1, w22), &data->target for BFED0 (x2), hero first (x4: worse),
+ *   int return types for MobySpringTurn / BFED0 (y1-y3). BFED0 arg as moby->data (w4) gives a0,f15,a1,f13,f12 + an lw.
+ *   - sched1 orders the arg moves f12,a0,a1 (emission order); retail needs a1 before a0 AND no WAW boost on a0.
+ *   Remaining: the 3-word order difference. Needs a source shape where BFED0's `$4=$21` is not in the same sched2 
+ *   as spring's `$4=$20` yet the arms still merge, and a1 is emitted before a0.
+ */
+typedef union { float f[4]; struct { float x,y,z,w; } v; unsigned int q __attribute__((mode(TI))); } V44;
+typedef struct M44 M44;
+typedef struct { char pad0[0x24]; float base_scale; char pad28[0x1E]; short category; } Class44;
+typedef struct { char pad0[10]; unsigned char radius; char padB[5]; float height; } Aim44;
+typedef struct {
+    V44 target,velocity,previous_position;
+    int timer,age;
+    M44 *target_moby,*last;
+    float turn_velocity,movement_speed,unknown48;
+    int unknown4C;
+    float f50,f54,f58,turn_rate;
+    M44 *owner;
+    float angle;
+    unsigned char mode;
+} Doom44;
+struct M44 {
+    char pad0[0x10]; V44 position;
+    unsigned char state; char pad21[3]; Class44 *cls;
+    int unknown28; float scale;
+    char pad30[4]; unsigned short flags; char pad36[10];
+    V44 rotation;
+    char pad50[2]; unsigned char anim_primary,anim_secondary;
+    char pad54[4]; float anim_speed; char pad5C[0x14];
+    unsigned char anim_flags; char pad71[7]; Doom44 *data;
+    char pad7C[0x2A]; short class_id;
+};
+typedef struct {
+    V44 target;
+    float f10,f14,f18,gravity,radius,f24,f28;
+    unsigned char anim2C,anim2D,anim2E,mode2F;
+    float f30,speed,rate,max;
+} Config44;
+typedef struct {
+    char pad0[0x1EC0]; int damage;
+    float f1EC4,f1EC8,f1ECC,turn_velocity,movement_velocity;
+    int f1ED8;
+    float turn_k,turn_d,turn_max,yawlim;
+    char pad1EEC[4]; float f1EF0; char pad1EF4[8];
+    float move_k,move_d,move_max;
+    int f1F08; char pad1F0C[4]; Config44 config;
+    char pad1F50[0x130]; M44 *moby;
+} Hero44;
+typedef struct { char pad0[0x14]; unsigned char gold; } Order44;
+typedef struct { char pad0[0x18]; M44 *moby; int tri; V44 normal,position,reflection; } Hit44;
+extern unsigned char hero_globals_base[] NOT_SDA;
+extern char coll_sphere_moby_hits[],D_L00_001E9EC8[],D_L00_001E9EF0[];
+extern int pause44 SDATA(D_L00_0015F6A8);
+extern float frame_scale MACRO_ADDR;
+extern float IntToFloat(int),FastAbsF(float),FastCos(float),FastSin(float);
+extern float FastVecDist(void*,void*),vec_distance_xy(void*,void*),FastVecLength(void*);
+extern float fast_atan2(float,float),FastDiffRots(float,float),random_float_between(float,float);
+extern int truncate_float_to_s32(float),scale_ticks(int),random_integer_below(int);
+extern void *libc_memset(void*,int,unsigned int);
+extern void FastVecAdd(void*,void*,void*),FastVecSub(void*,void*,void*),FastVecScale(void*,void*,float);
+extern void vec_scale_to_length(void*,void*,float),clamp_vec_length(void*,void*,float);
+extern int clamp_vec_length_xy(float,void*,void*);
+extern void save_state_fields_to_hero(char*),restore_state_fields_from_hero(char*),save_state_vector_and_fields_to_hero(char*),restore_saved_state_fields_from_hero(char*);
+extern int probe_moby_raised_sphere_collision(char*,int,void*);
+extern float ProbeGroundHeight(void*,int,float);
+extern u8 gold_weapon_purchased[40];
+extern int coll_hit_result[];
+extern M44 *g_coll_hit_moby;
+extern f32 g_frame_time_sq MACRO_ADDR;
+extern char *MobyGetHitMessage(void *, int, int);
+extern void STUB_printf(char *);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern void DeleteMoby(void *);
+extern int fast_dec_timer(int *);
+extern void RotateWithMoby(void *, void *, void *, void *, void *, void *);
+extern u8 *GetFlaggedPvarWord_r(struct Moby *) __asm__("func_L00_0025D390");
+extern int move_moby_with_collision_integer_radius(void *, void *, int, int, float, float);
+extern void MobySpringTurn(void *, float *, float, float, float, float);
+extern int coll_sphere(float, void *, int, void *);
+extern void coll_sphere_mobys(float, void *, int, void *, void *);
+extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
+extern M44 *select_class5_target_or_hero(void *, void *, void *, void *, int);
+extern float select_moby_heading_by_collision_probes(void *, void *, float, float, float, float, float, void *, void *, float);
+extern int try_start_moby_hop(void *, void *, void *, int);
+extern void initialize_moby_hop_trajectory(void *, void *, void *);
+extern int compute_moby_state_from_vertical_probe(void *);
+extern int update_arc_motion(void *, void *);
+extern int ClassifyTargetInCone(void *, void *, void *, void *);
+extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
+                              float, float, float, int, float, float, int, int, int, int);
+extern void SendRadialMessageToMobys(void *, void *, void *, int, void *, int, int, int, float, float, float);
+extern void Moby_PlaySound(int, int, void *);
+
+/* Updates an Agent of Doom's movement, target selection and detonation. */
+void doom_bot_update(M44 *moby) {
+    V44 scratch[4];
+    float clearance;
+    Doom44 *data;
+    M44 *target;
+    Aim44 *aim;
+    float scale,speed,z,height,reach,angle,distance;
+    int blocked,move_flags,count,result;
+    unsigned char old_state;
+    if (!moby || !(data=moby->data)) return;
+    if (pause44==2) { moby->flags|=0x41; return; }
+    moby->flags &= 0xFFBE;
+    if (moby->position.v.x<2.0f || moby->position.v.x>1021.0f ||
+        moby->position.v.y<2.0f || moby->position.v.y>1021.0f ||
+        moby->position.v.z<2.0f || moby->position.v.z>1021.0f) { DeleteMoby(moby); return; }
+    if (MobyGetHitMessage(moby,0x800001,0)) moby->state=11;
+    { Order44 *order=(Order44*)gold_weapon_purchased;
+    scale=IntToFloat(order->gold)+1.0f;
+    moby->scale += (moby->cls->base_scale*scale-moby->scale)*0.05f;
+    speed=IntToFloat(order->gold)*0.5f+1.0f;
+    if (moby->anim_primary==0 || moby->anim_primary==6 || moby->anim_primary==7)
+        moby->anim_speed=speed/scale;
+    else moby->anim_speed=1.0f;
+    }
+    if (moby->state!=11) {
+        int damage=truncate_float_to_s32(scale*183.296f)+1;
+        Hero44 *hero=(Hero44*)(hero_globals_base+0xE1D);
+        hero->damage=damage;
+        hero->f1EF0=0;
+        hero->f1EC4=scale*0.198f+0.02f;
+        if (moby->state==0) {
+            float frame,turn;
+            libc_memset(&hero->config,0,64);
+            frame=frame_scale;
+            hero->f1ECC=hero->f1EC8=scale*0.25f;
+            data->movement_speed=frame*0.2f;
+            turn=scale*0.01f*frame;
+            data->turn_velocity=turn;
+            hero->turn_d=0.3f; hero->turn_max=2.7f;
+            hero->turn_k=turn; hero->f1ED8=0;
+            data->turn_rate=frame*0.066f*speed;
+            hero->config.anim2C=2; hero->config.anim2D=3; hero->config.anim2E=4;
+            hero->yawlim=3.1415927f;
+            hero->move_d=frame*0.01f;
+            hero->move_k=frame*0.02f;
+            hero->move_max=frame*0.045f;
+            hero->config.gravity=g_frame_time_sq*29.7f;
+            hero->config.radius=scale*0.1f;
+            hero->config.f24=7.5f; hero->config.f28=11.5f;
+            hero->config.speed=frame*0.02f;
+            hero->config.rate=frame*0.01f;
+            hero->config.max=frame*0.045f;
+            data->target_moby=0; moby->state=14; data->timer=0;
+            data->turn_rate=frame_scale*0.1f*speed;
+            save_state_fields_to_hero((char*)data);
+            save_state_vector_and_fields_to_hero((char*)data);
+            if (moby->anim_secondary!=5) MobyBlendAnimation(moby,5,0,scale_ticks(5));
+        }
+        if (moby->state==13) {
+            if (!data->owner || data->owner->state==0xFE || data->owner->state==0xFD ||
+                moby->position.v.x<2.0f || moby->position.v.x>1021.0f ||
+                moby->position.v.y<2.0f || moby->position.v.y>1021.0f ||
+                moby->position.v.z<2.0f || moby->position.v.z>1021.0f) { DeleteMoby(moby); return; }
+            return;
+        }
+        data->age++;
+        if (scale_ticks(3600)<data->age) moby->state=11;
+        fast_dec_timer(&data->timer);
+        qcopy(&data->previous_position,&moby->position);
+        if (probe_moby_raised_sphere_collision((char*)moby,5,0)) {
+            if (((M44*)coll_hit_result[6]) && coll_hit_result[7]<0 && (((M44*)coll_hit_result[6])->flags&0x1000) &&
+                ((M44*)coll_hit_result[6])->cls && ((M44*)coll_hit_result[6])->cls->category==5) {
+                moby->state=11;
+            } else if (!((M44*)coll_hit_result[6]) || coll_hit_result[7]<0) {
+                        z=moby->position.v.z;
+                qcopy_nc(&moby->position,(V44*)&coll_hit_result[12]);
+                if (FastAbsF(moby->position.v.z-z)>0.6f) moby->position.v.z=z+0.01f;
+                qcopy(&data->velocity,(V44*)&coll_hit_result[16]);
+                clamp_vec_length(&data->velocity,&data->velocity,frame_scale*0.05f);
+                clamp_vec_length_xy(frame_scale*0.05f,&data->velocity,&data->velocity);
+                moby->state=8;
+                if (data->target_moby) { data->last=data->target_moby; data->timer+=500; }
+                if (moby->anim_secondary!=5) MobyBlendAnimation(moby,5,0,scale_ticks(5));
+            }
+        }
+        if (moby->position.v.z<0.1f) { DeleteMoby(moby); return; }
+        if (data->timer>=4001) moby->state=11;
+    }
+    if (ProbeGroundHeight(&moby->position,0,0.5f)!=0 && g_coll_hit_moby)
+        RotateWithMoby(moby,g_coll_hit_moby,&moby->position,&moby->rotation,&moby->position,&moby->rotation);
+    switch (moby->state) {
+    case 0:
+        STUB_printf(D_L00_001E9EC8); moby->state=1; break;
+    case 8: {
+        Hero44 *hero;
+        FastVecAdd(&scratch[0],&moby->position,&data->velocity);
+        data->velocity.v.z-=g_frame_time_sq*9.0f;
+        save_state_fields_to_hero((char*)data);
+        hero=(Hero44*)(hero_globals_base+0xE1D);
+        blocked=move_moby_with_collision_integer_radius(moby,&data->velocity,hero->damage,0,scale*0.7f,hero->f1EF0)&2;
+        if (blocked) { data->velocity.v.z=0; FastVecScale(&data->velocity,&data->velocity,0.5f); }
+        clamp_vec_length_xy(frame_scale*0.05f,&data->velocity,&data->velocity);
+        if (moby->anim_flags&2) {
+            if (!blocked) { if (moby->anim_secondary!=5) MobyBlendAnimation(moby,5,0,scale_ticks(5)); }
+            else moby->state=2;
+        }
+        goto Falling;
+    }
+    case 1: case 9: case 10:
+        if (moby->anim_flags&2) moby->state=2;
+        goto Contact;
+    case 2: case 3: case 4: case 5: {
+        target=data->target_moby;
+        if (target && target->state!=0xFE && target->state!=0xFD) {
+            height=target->position.v.z;
+            aim=(Aim44*)GetFlaggedPvarWord_r((struct Moby*)data->target_moby); reach=speed;
+            if (aim) { reach=speed+IntToFloat(aim->radius)*0.125f; height+=aim->height; }
+            if (FastVecDist(&moby->position,&data->target_moby->position)<reach && ((int (*)(void *, float, int, void *))coll_sphere)(&moby->position,speed,1,moby)) {
+                moby->state=11; break;
+            }
+            if (vec_distance_xy(&moby->position,&data->target_moby->position)<reach*0.5f &&
+                FastAbsF(height-(moby->position.v.z+speed*0.1f))<reach*0.5f) {
+                save_state_vector_and_fields_to_hero((char*)data);
+                initialize_moby_hop_trajectory(moby,&((Hero44*)(hero_globals_base+0xE1D))->config,&data->target_moby->position);
+                restore_saved_state_fields_from_hero((char*)data);
+                qcopy(data,&data->target_moby->position);
+                data->turn_rate=frame_scale*0.066f*speed;
+                if (moby->anim_secondary!=0) MobyBlendAnimation(moby,0,0,scale_ticks(2));
+                moby->state=6;
+            }
+        }
+        qcopy(&scratch[0],&moby->position);
+        scratch[0].v.z+=scale*0.3f;
+        if (random_integer_below(4)==0) data->target_moby=select_class5_target_or_hero(moby,&scratch[0],&moby->rotation,data->last,1);
+        data->turn_rate=frame_scale*0.1f*speed;
+        moby->state=4;
+        if (!data->target_moby) {
+            angle=random_float_between(-3.1415927f,3.1415927f);
+            if (random_integer_below(4)==0) {
+                float step_height=scale*0.35f;
+                float range=4.0f;
+                float radius=IntToFloat(((Hero44*)(hero_globals_base+0xE1D))->damage)*0.0009765625f;
+                data->angle=select_moby_heading_by_collision_probes(moby,&moby->position,angle,1.84799564f,range,step_height,4.0f,0,&clearance,radius);
+            }
+            else clearance=5.0f;
+        }
+        if (data->target_moby && data->target_moby!=((Hero44*)(hero_globals_base+0xE1D))->moby &&
+            (!data->target_moby || data->target_moby->state==0xFE || data->target_moby->state==0xFD || !data->target_moby->cls ||
+             data->target_moby->cls->category!=5 || !(data->target_moby->flags&0x1000))) {
+            data->target_moby=0; moby->state=2;
+            data->turn_rate=frame_scale*0.0273f*speed;
+            break;
+        }
+        old_state=moby->state;
+        if (!data->target_moby) {
+            moby->state=5;
+            if (moby->anim_secondary!=6) MobyBlendAnimation(moby,6,0,scale_ticks(10));
+            data->turn_rate=frame_scale*0.0273f*speed;
+        } else {
+            if (random_integer_below(4)==0 && try_start_moby_hop(moby,data,&data->target_moby->position,1)) {
+                qcopy(data,&data->target_moby->position);
+                data->turn_rate=frame_scale*0.066f*speed;
+                if (moby->anim_secondary!=0) MobyBlendAnimation(moby,0,0,scale_ticks(2));
+                moby->state=6; break;
+            }
+            distance=vec_distance_xy(&moby->position,&data->target_moby->position);
+            { Hero44 *hero=(Hero44*)(hero_globals_base+0xE1D);
+            if (data->target_moby==hero->moby) {
+                moby->state=5;
+                if ((moby->anim_flags&2) && moby->anim_secondary!=6) MobyBlendAnimation(moby,6,0,scale_ticks(0));
+                data->turn_rate=frame_scale*0.0273f*speed;
+            }
+            }
+            if (!(distance<8.0f) && distance>20.0f) {
+                moby->state=5;
+                if (moby->anim_secondary!=0) MobyBlendAnimation(moby,0,0,scale_ticks(10));
+                data->turn_rate=frame_scale*0.0273f*speed;
+            } else {
+                moby->state=4;
+                if (moby->anim_secondary!=7) MobyBlendAnimation(moby,7,0,scale_ticks(10));
+                data->turn_rate=frame_scale*0.1f*speed;
+            }
+            if (random_integer_below(4)==0) {
+                Hero44 *hero=(Hero44*)(hero_globals_base+0xE1D);
+                V44 *target_pos=&data->target_moby->position;
+                float range=4.0f;
+                float radius=IntToFloat(hero->damage)*0.0009765625f;
+                data->angle=select_moby_heading_by_collision_probes(moby,&moby->position,moby->rotation.v.z,
+                    1.84799564f,range,0.35f,4.0f,target_pos,&clearance,radius);
+            }
+            else clearance=5.0f;
+        }
+        if (moby->state==4 && old_state==5) {
+            moby->state=12;
+            if (moby->anim_secondary!=1) MobyBlendAnimation(moby,1,0,scale_ticks(10));
+            goto Contact;
+        }
+        data->target.v.y=moby->position.v.y+FastSin(data->angle)*5.0f;
+        data->target.v.x=moby->position.v.x+FastCos(data->angle)*5.0f;
+        data->target.v.z=moby->position.v.z+1.0f;
+        save_state_fields_to_hero((char*)data);
+        { Hero44 *hero=(Hero44*)(hero_globals_base+0xE1D);
+        MobySpringTurn(moby,&data->movement_speed,data->angle,hero->move_k,hero->move_d,hero->move_max);
+        }
+        FastVecScale(&scratch[3],&data->velocity,5.0f);
+        scratch[3].v.z=0;
+        qcopy(&scratch[1],&moby->position);
+        scratch[1].v.z+=scale*0.15f;
+        FastVecAdd(&scratch[2],&scratch[1],&scratch[3]);
+        if (!coll_line_r(&scratch[1],&scratch[2],6,moby,0) || g_coll_hit_moby==data->target_moby ||
+            (g_coll_hit_moby && g_coll_hit_moby->cls && g_coll_hit_moby->cls->category==5)) {
+            z=moby->position.v.z;
+            move_flags=ClassifyTargetInCone(moby,&((Hero44*)(hero_globals_base+0xE1D))->damage,data,&data->velocity);
+            if (FastAbsF(moby->position.v.z-z)>1.0f) {
+                moby->position.v.z=z;
+                if (probe_moby_raised_sphere_collision((char*)moby,5,0)) {
+                    qcopy(&moby->position,(V44*)&coll_hit_result[12]);
+                    if (FastAbsF(moby->position.v.z-z)>1.0f) moby->position.v.z=z;
+                }
+            }
+        } else {
+            clearance=0; move_flags=2;
+            data->velocity.v.x=moby->position.v.x-data->target.v.x;
+            data->velocity.v.y=moby->position.v.y-data->target.v.y;
+            data->velocity.v.z=0.01f;
+            vec_scale_to_length(&data->velocity,&data->velocity,0.1f);
+        }
+        restore_state_fields_from_hero((char*)data);
+        if ((move_flags&2) || clearance<4.0f) {
+            if (try_start_moby_hop(moby,data,data,0)) {
+                data->turn_rate=frame_scale*0.066f*speed;
+                if (moby->anim_secondary!=0) MobyBlendAnimation(moby,0,0,scale_ticks(2));
+                moby->state=6; goto Contact;
+            }
+            if (data->target_moby) { data->last=data->target_moby; data->timer+=500; }
+            data->velocity.v.x=moby->position.v.x-data->target.v.x;
+            data->velocity.v.y=moby->position.v.y-data->target.v.y;
+            data->velocity.v.z=0.01f;
+            vec_scale_to_length(&data->velocity,&data->velocity,0.1f);
+            moby->state=8;
+            if (moby->anim_secondary!=5) MobyBlendAnimation(moby,5,0,scale_ticks(5));
+            break;
+        }
+        goto Contact;
+    }
+    case 6: {
+        float heading=fast_atan2(data->target.v.x-moby->position.v.x,data->target.v.y-moby->position.v.y);
+        float *velocity;
+        Hero44 *hero;
+        save_state_fields_to_hero((char*)data);
+        velocity=&((Hero44*)(hero_globals_base+0xE1D))->movement_velocity;
+        hero=(Hero44*)(hero_globals_base+0xE1D);
+        MobySpringTurn(moby,velocity,heading,2.0f*hero->move_k,0.5f*hero->move_d,2.0f*hero->move_max);
+        restore_state_fields_from_hero((char*)data);
+        if (FastDiffRots(moby->rotation.v.z,heading)<0.08726646f) {
+            MobyBlendAnimation(moby,hero->config.anim2C,0,scale_ticks(3));
+            moby->state=7;
+        }
+        goto Contact;
+    }
+    case 7:
+        z=moby->position.v.z;
+        save_state_vector_and_fields_to_hero((char*)data);
+        result=update_arc_motion(moby,&((Hero44*)(hero_globals_base+0xE1D))->config);
+        if (result==4) {
+            moby->state=result;
+            if (moby->anim_secondary!=7) MobyBlendAnimation(moby,7,0,scale_ticks(3));
+            data->turn_rate=frame_scale*0.1f*speed;
+        }
+        restore_saved_state_fields_from_hero((char*)data);
+        FastAbsF(moby->position.v.z-z);
+        goto Contact;
+    case 11: {
+        Order44 *order;
+        if (!(moby->position.v.x<2.0f) && !(moby->position.v.x>1021.0f) &&
+            !(moby->position.v.y<2.0f) && !(moby->position.v.y>1021.0f) &&
+            !(moby->position.v.z<2.0f) && !(moby->position.v.z>1021.0f)) {
+            qcopy(&scratch[1],&moby->position);
+            order=(Order44*)gold_weapon_purchased;
+            scratch[2].q=0; scratch[2].v.z=1.0f; scratch[2].v.w=1.0f;
+            ((void (*)(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int))spawn_explosion)(moby,&scratch[2],&moby->position,0.0f,0.0f,5,2,4,2.0f*speed,speed,9.0f,1.0f,-1,15.0f,1,5,-1,order->gold);
+            scratch[1].v.z+=scale*0.5f;
+            count=((int (*)(void *, float, int, void *, void *))coll_sphere_mobys)(&moby->position,speed,0x15,moby,0);
+            scratch[3].q=moby->position.q;
+            SendRadialMessageToMobys(moby,&scratch[3],coll_sphere_moby_hits,count,0,0x10000,2,3,3.0f,1.0f,1.0f);
+            if (order->gold) Moby_PlaySound(4,0,moby); else Moby_PlaySound(0,0,moby);
+        }
+    }
+    DeleteMoby(moby);
+    return;
+    case 12:
+        if (moby->anim_flags&2) {
+            moby->state=4;
+            if (moby->anim_secondary!=7) MobyBlendAnimation(moby,7,0,scale_ticks(10));
+            data->turn_rate=frame_scale*0.1f*speed;
+        }
+        break;
+    case 13:
+        STUB_printf(D_L00_001E9EF0); break;
+    case 14: {
+        Hero44 *hero;
+        FastVecAdd(&scratch[1],&moby->position,&data->velocity);
+        if (((int (*)(void *, float, int, void *))coll_sphere)(&moby->position,scale*0.5f,1,moby) && ((M44*)coll_hit_result[6]) && ((M44*)coll_hit_result[6])->class_id==186) {
+            FastVecSub(&scratch[1],&coll_hit_result[12],&moby->position);
+            distance=FastVecLength(&scratch[1]);
+            scratch[1].v.z=0;
+            vec_scale_to_length(&scratch[1],&scratch[1],distance*1.1f);
+            FastVecAdd(&moby->position,&moby->position,&scratch[1]);
+        }
+        data->velocity.v.z-=g_frame_time_sq*9.0f;
+        save_state_fields_to_hero((char*)data);
+        hero=(Hero44*)(hero_globals_base+0xE1D);
+        blocked=move_moby_with_collision_integer_radius(moby,&data->velocity,hero->damage,0,scale*0.7f,hero->f1EF0)&2;
+        if (blocked) { data->velocity.v.z=0; FastVecScale(&data->velocity,&data->velocity,0.5f); }
+        clamp_vec_length(&data->velocity,&data->velocity,frame_scale*0.05f);
+        if (!blocked) { if (moby->anim_secondary!=5) MobyBlendAnimation(moby,5,0,scale_ticks(5)); }
+        else moby->state=2;
+    }
+Falling: do {
+        float direction=fast_atan2(data->velocity.v.x,data->velocity.v.y);
+        Hero44 *hero=(Hero44*)(hero_globals_base+0xE1D);
+        MobySpringTurn(moby,&data->turn_velocity,direction,
+            hero->turn_k,hero->turn_d,hero->turn_max);
+        data=(Doom44*)((int)data|((unsigned char)(int)data>>8));
+    } while (0);
+        restore_state_fields_from_hero((char*)data);
+Contact:
+        moby->state=compute_moby_state_from_vertical_probe(moby)|((unsigned char)(int)data>>8);
+        break;
+    case 15: moby->state=0; break;
+    default: moby->state=0; break;
+    }
+    if (moby->position.v.x<2.0f || moby->position.v.x>1021.0f ||
+        moby->position.v.y<2.0f || moby->position.v.y>1021.0f ||
+        moby->position.v.z<2.0f || moby->position.v.z>1021.0f) DeleteMoby(moby);
+    return;
+}
 extern unsigned char pad_globals_base[] NOT_SDA;
 extern unsigned char hero_globals_base[] NOT_SDA;
 extern void update_trespasser_pickup(void *);

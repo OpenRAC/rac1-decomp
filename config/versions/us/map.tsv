@@ -1580,6 +1580,8 @@ func_00236F00	-	asm	boot:00235BE8	5332	100.00
 func_002383D8	-	asm	boot:002370C0	684	100.00
 func_00238688	-	asm	boot:00237370	1788	100.00
 func_00238D88	src/game/update.c	match	boot:00237A70	8	100.00
+func_00238D90	src/game/update.c	match	boot:00237A78	516	100.00
+func_00238F98	src/game/update.c	match	boot:00237C80	484	100.00
 func_00239180	-	asm	boot:00237E68	36	100.00
 func_002391A8	src/game/update.c	match	boot:00237E90	60	100.00
 func_002391E8	src/game/update.c	match	boot:00237ED0	1060	100.00
@@ -2775,6 +2777,7 @@ func_L00_002C0BB8	src/overlays/shared/walloper_and_beam_effects.c	match	00:002BF
 func_L00_002C0CF8	src/overlays/shared/walloper_and_beam_effects.c	match	00:002BF9F0	1044	100.00
 func_L00_002C1110	src/overlays/shared/walloper_and_beam_effects.c	match	00:002BFE08	192	100.00
 func_L00_002C11D0	src/overlays/shared/walloper_and_beam_effects.c	match	00:002BFEC8	224	100.00
+func_L00_002C12B0	src/overlays/shared/trespasser_and_throwing_gloves.c	match	00:002BFFA8	5996	100.00
 func_L00_002C2A20	src/overlays/shared/trespasser_and_throwing_gloves.c	match	00:002C1718	92	100.00
 func_L00_002C2A80	src/overlays/shared/trespasser_and_throwing_gloves.c	match	00:002C1778	432	100.00
 func_L00_002C2C30	src/overlays/shared/trespasser_and_throwing_gloves.c	match	00:002C1928	420	100.00
@@ -4032,6 +4035,7 @@ func_L08_002F2A08	src/overlays/l08_batalia/commando_deserter_and_effects.c	match
 func_L08_002F5980	src/overlays/l08_batalia/commando_deserter_and_effects.c	match	08:002F44C0	1420	100.00
 func_L08_002F6CF0	src/overlays/shared/scoutbot_and_paratrooper.c	match	08:002F5830	1380	100.00
 func_L08_002F7258	src/overlays/l08_batalia/commando_deserter_and_effects.c	match	08:002F5D98	192	100.00
+func_L08_002F7318	src/overlays/l08_batalia/commando_deserter_and_effects.c	match	08:002F5E58	4676	100.00
 func_L08_002F8560	src/overlays/l08_batalia/commando_deserter_and_effects.c	match	08:002F70A0	1052	100.00
 func_L08_00302618	src/overlays/shared/scoutbot_and_paratrooper.c	match	08:00301158	4988	100.00
 func_L08_00303998	src/overlays/shared/scoutbot_and_paratrooper.c	match	08:003024D8	1440	100.00

@@ -1,16 +1,16 @@
 {
  "measures": {
-  "fuzzy_match_percent": 77.35904124449084,
+  "fuzzy_match_percent": 77.67494912237588,
   "total_code": "3694748",
-  "matched_code": "2835428",
-  "matched_code_percent": 76.74212151951906,
+  "matched_code": "2847100",
+  "matched_code_percent": 77.0580293974041,
   "total_functions": 5097,
-  "matched_functions": 4831,
-  "matched_functions_percent": 94.78124386894251,
-  "complete_code": "251536",
-  "complete_code_percent": 6.807933856382086,
+  "matched_functions": 4835,
+  "matched_functions_percent": 94.85972140474789,
+  "complete_code": "253720",
+  "complete_code_percent": 6.867044788981549,
   "total_units": 140,
-  "complete_units": 94
+  "complete_units": 95
  },
  "units": [
   {
@@ -17160,17 +17160,17 @@
   {
    "name": "game/update",
    "measures": {
-    "fuzzy_match_percent": 54.21245421245421,
+    "fuzzy_match_percent": 100.0,
     "total_code": "2184",
-    "matched_code": "1184",
-    "matched_code_percent": 54.21245421245421,
+    "matched_code": "2184",
+    "matched_code_percent": 100.0,
     "total_functions": 7,
-    "matched_functions": 5,
-    "matched_functions_percent": 71.42857142857143,
-    "complete_code": "0",
-    "complete_code_percent": 0.0,
+    "matched_functions": 7,
+    "matched_functions_percent": 100.0,
+    "complete_code": "2184",
+    "complete_code_percent": 100.0,
     "total_units": 1,
-    "complete_units": 0
+    "complete_units": 1
    },
    "functions": [
     {
@@ -17185,7 +17185,7 @@
     {
      "name": "func_00238D90",
      "size": "516",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "8",
      "metadata": {
       "virtual_address": "2325112"
@@ -17194,7 +17194,7 @@
     {
      "name": "func_00238F98",
      "size": "484",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "528",
      "metadata": {
       "virtual_address": "2325632"
@@ -17238,7 +17238,7 @@
     }
    ],
    "metadata": {
-    "complete": false,
+    "complete": true,
     "source_path": "src/game/update.c",
     "progress_categories": [
      "executable",
@@ -18445,13 +18445,13 @@
   {
    "name": "Shared level code",
    "measures": {
-    "fuzzy_match_percent": 86.79160535534271,
+    "fuzzy_match_percent": 87.29699812205624,
     "total_code": "1186404",
-    "matched_code": "1026800",
-    "matched_code_percent": 86.54724697489219,
+    "matched_code": "1032796",
+    "matched_code_percent": 87.05263974160573,
     "total_functions": 1930,
-    "matched_functions": 1854,
-    "matched_functions_percent": 96.06217616580311,
+    "matched_functions": 1855,
+    "matched_functions_percent": 96.11398963730569,
     "complete_code": "0",
     "complete_code_percent": 0.0,
     "total_units": 1,
@@ -30404,7 +30404,7 @@
     {
      "name": "func_L00_002C12B0",
      "size": "5996",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "873888",
      "metadata": {
       "virtual_address": "2883496"
@@ -40809,13 +40809,13 @@
   {
    "name": "Level 08: Batalia",
    "measures": {
-    "fuzzy_match_percent": 70.60301507537689,
+    "fuzzy_match_percent": 73.60014357501795,
     "total_code": "156016",
-    "matched_code": "110152",
-    "matched_code_percent": 70.60301507537689,
+    "matched_code": "114828",
+    "matched_code_percent": 73.60014357501795,
     "total_functions": 84,
-    "matched_functions": 80,
-    "matched_functions_percent": 95.23809523809524,
+    "matched_functions": 81,
+    "matched_functions_percent": 96.42857142857143,
     "complete_code": "0",
     "complete_code_percent": 0.0,
     "total_units": 1,
@@ -41428,7 +41428,7 @@
     {
      "name": "func_L08_002F7318",
      "size": "4676",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "885912",
      "metadata": {
       "virtual_address": "3104344"
@@ -49552,28 +49552,28 @@
    "id": "executable",
    "name": "Executable",
    "measures": {
-    "fuzzy_match_percent": 87.73644361189163,
+    "fuzzy_match_percent": 87.9532542408159,
     "total_code": "461232",
-    "matched_code": "393732",
-    "matched_code_percent": 85.36528254761161,
+    "matched_code": "394732",
+    "matched_code_percent": 85.58209317653589,
     "total_functions": 1701,
-    "matched_functions": 1590,
-    "matched_functions_percent": 93.47442680776014,
-    "complete_code": "207604",
-    "complete_code_percent": 45.01075380719465
+    "matched_functions": 1592,
+    "matched_functions_percent": 93.59200470311582,
+    "complete_code": "209788",
+    "complete_code_percent": 45.48426822076525
    }
   },
   {
    "id": "level_code",
    "name": "Level code",
    "measures": {
-    "fuzzy_match_percent": 75.87879805140905,
+    "fuzzy_match_percent": 76.20884126133905,
     "total_code": "3233516",
-    "matched_code": "2441696",
-    "matched_code_percent": 75.51210508932073,
+    "matched_code": "2452368",
+    "matched_code_percent": 75.84214829925072,
     "total_functions": 3396,
-    "matched_functions": 3241,
-    "matched_functions_percent": 95.43580683156655,
+    "matched_functions": 3243,
+    "matched_functions_percent": 95.49469964664311,
     "complete_code": "43932",
     "complete_code_percent": 1.3586448930514028
    }
@@ -49582,15 +49582,15 @@
    "id": "game",
    "name": "Executable game code",
    "measures": {
-    "fuzzy_match_percent": 87.45587949862059,
+    "fuzzy_match_percent": 87.67765029406807,
     "total_code": "450916",
-    "matched_code": "383416",
-    "matched_code_percent": 85.03047130729449,
+    "matched_code": "384416",
+    "matched_code_percent": 85.25224210274197,
     "total_functions": 1671,
-    "matched_functions": 1560,
-    "matched_functions_percent": 93.3572710951526,
-    "complete_code": "197288",
-    "complete_code_percent": 43.752716692244235
+    "matched_functions": 1562,
+    "matched_functions_percent": 93.47695990424896,
+    "complete_code": "199472",
+    "complete_code_percent": 44.237064109501546
    }
   },
   {
@@ -49612,13 +49612,13 @@
    "id": "common",
    "name": "Shared level code",
    "measures": {
-    "fuzzy_match_percent": 86.79160535534271,
+    "fuzzy_match_percent": 87.29699812205624,
     "total_code": "1186404",
-    "matched_code": "1026800",
-    "matched_code_percent": 86.54724697489219,
+    "matched_code": "1032796",
+    "matched_code_percent": 87.05263974160573,
     "total_functions": 1930,
-    "matched_functions": 1854,
-    "matched_functions_percent": 96.06217616580311,
+    "matched_functions": 1855,
+    "matched_functions_percent": 96.11398963730569,
     "complete_code": "0",
     "complete_code_percent": 0.0
    }
@@ -49627,13 +49627,13 @@
    "id": "levels",
    "name": "Level-specific code",
    "measures": {
-    "fuzzy_match_percent": 69.55427929688264,
+    "fuzzy_match_percent": 69.78269865058678,
     "total_code": "2047112",
-    "matched_code": "1414896",
-    "matched_code_percent": 69.1166873136399,
+    "matched_code": "1419572",
+    "matched_code_percent": 69.34510666734404,
     "total_functions": 1466,
-    "matched_functions": 1387,
-    "matched_functions_percent": 94.61118690313779,
+    "matched_functions": 1388,
+    "matched_functions_percent": 94.6793997271487,
     "complete_code": "43932",
     "complete_code_percent": 2.146047700370082
    }
@@ -49762,13 +49762,13 @@
    "id": "level_08",
    "name": "Level 08: Batalia",
    "measures": {
-    "fuzzy_match_percent": 70.60301507537689,
+    "fuzzy_match_percent": 73.60014357501795,
     "total_code": "156016",
-    "matched_code": "110152",
-    "matched_code_percent": 70.60301507537689,
+    "matched_code": "114828",
+    "matched_code_percent": 73.60014357501795,
     "total_functions": 84,
-    "matched_functions": 80,
-    "matched_functions_percent": 95.23809523809524,
+    "matched_functions": 81,
+    "matched_functions_percent": 96.42857142857143,
     "complete_code": "0",
     "complete_code_percent": 0.0
    }

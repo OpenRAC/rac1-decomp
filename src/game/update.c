@@ -300,9 +300,92 @@ extern char tie_light_data2[];
 void DebugProfiler_Hook(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/text", func_00238D90);
+#include "vector.h"
+typedef struct { char unk_000[0x190]; float scale[2]; } ViewCtx;
+typedef struct { int unk_00; int unk_04; int half_w; int half_h; } ScreenExt;
+extern ViewCtx view_context;
+extern ScreenExt g_screen_extent;
+extern char camera_position[];
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern void transform_vector(void *, void *, void *);
 
-INCLUDE_ASM("asm/nonmatchings/text", func_00238F98);
+void project_graphics_bounds(Vec4 *a, Vec4 *b, int *w, int *h, int *x, int *y) {
+    Vec4 p;
+    Vec4 o;
+    Vec4 *q;
+    float sx;
+    float sy;
+    char *cam;
+
+    q = &o;
+    p.q = a->q;
+    q->q = b->q;
+    cam = camera_position;
+    FastVecSub(&p, &p, cam);
+    FastVecSub(q, q, cam);
+    cam = cam + (*(unsigned char *)x >> 8);
+    FastVecScale(&p, &p, 1024.0f);
+    FastVecScale(q, q, 1024.0f);
+    q->f[3] = 1.0f;
+    p.f[3] = 1.0f;
+    transform_vector(&p, &p, cam - 0x40);
+    transform_vector(q, q, cam - 0x40);
+    p.f[0] *= 1.0f / p.f[3];
+    p.f[1] *= 1.0f / p.f[3];
+    q->f[0] *= 1.0f / q->f[3];
+    q->f[1] *= 1.0f / q->f[3];
+    sx = view_context.scale[0];
+    sy = view_context.scale[1];
+    p.f[0] *= sx;
+    p.f[1] *= sy;
+    q->f[0] *= sx;
+    q->f[1] *= sy;
+    q = (Vec4 *)((char *)&o + (*(unsigned char *)x >> 8));
+    *x = ((int (*)(float))truncate_float_to_s32)(p.f[0] * 0.25f + (float)g_screen_extent.half_w);
+    *y = ((int (*)(float))truncate_float_to_s32)(p.f[1] * 0.25f + (float)g_screen_extent.half_h);
+    *w = ((int (*)(float))truncate_float_to_s32)((o.f[0] - p.f[0]) * 0.25f);
+    *h = ((int (*)(float))truncate_float_to_s32)((q->f[1] - p.f[1]) * 0.25f);
+}
+
+void project_graphics_bounds_float(Vec4 *a, Vec4 *b, float *w, float *h, float *x, float *y) {
+    Vec4 p;
+    Vec4 o;
+    Vec4 *q;
+    float sx;
+    float sy;
+    char *cam;
+
+    q = &o;
+    p.q = a->q;
+    q->q = b->q;
+    cam = camera_position;
+    FastVecSub(&p, &p, cam);
+    FastVecSub(q, q, cam);
+    cam = cam + (*(unsigned char *)x >> 8);
+    FastVecScale(&p, &p, 1024.0f);
+    FastVecScale(q, q, 1024.0f);
+    q->f[3] = 1.0f;
+    p.f[3] = 1.0f;
+    transform_vector(&p, &p, cam - 0x40);
+    transform_vector(q, q, cam - 0x40);
+    p.f[0] *= 1.0f / p.f[3];
+    p.f[1] *= 1.0f / p.f[3];
+    q->f[0] *= 1.0f / q->f[3];
+    q->f[1] *= 1.0f / q->f[3];
+    sx = view_context.scale[0];
+    sy = view_context.scale[1];
+    p.f[0] *= sx;
+    p.f[1] *= sy;
+    q->f[0] *= sx;
+    q = (Vec4 *)((char *)&o + (*(unsigned char *)x >> 8));
+    q->f[1] *= sy;
+    *x = p.f[0] * 0.25f + (float)g_screen_extent.half_w;
+    *y = p.f[1] * 0.25f + (float)g_screen_extent.half_h;
+    *w = (o.f[0] - p.f[0]) * 0.25f;
+    q = (Vec4 *)((char *)q + (*(unsigned char *)x >> 8));
+    *h = (q->f[1] - p.f[1]) * 0.25f;
+}
 
 LINKER_REMNANT("asm/remnants/text", func_00239180);
 

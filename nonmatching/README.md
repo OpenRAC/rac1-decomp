@@ -5,9 +5,7 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 
 | Function | Directory | Size | Best so far | Bytes matching |
 |---|---|---|---|---|
-| [`func_L00_002C12B0`](shared/func_L00_002C12B0.c) | shared | 5996 | BYTES 12/5996 | 99.8% |
 | [`func_L00_0026ABC0`](shared/func_L00_0026ABC0.c) | shared | 1780 | BYTES 26/1780 | 98.5% |
-| [`func_L08_002F7318`](l08_batalia/func_L08_002F7318.c) | l08_batalia | 4676 | BYTES 225/4676 | 95.2% |
 | [`func_L00_002A62D0`](shared/func_L00_002A62D0.c) | shared | 1896 | BYTES 721/1896 | 62.0% |
 | [`func_L00_002BA7C8`](shared/func_L00_002BA7C8.c) | shared | 5292 | BYTES 3888/5292 | 26.5% |
 | [`func_001150D4`](functional/func_001150D4.c) | functional | 0 | ? | - |
@@ -189,8 +187,6 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 | [`func_00235EF0`](functional/func_00235EF0.c) | functional | 364 | ? | - |
 | [`func_002362B0`](functional/func_002362B0.c) | functional | 1700 | ? | - |
 | [`func_00238688`](functional/func_00238688.c) | functional | 1788 | ? | - |
-| [`func_00238D90`](game/func_00238D90.c) | game | 516 | ? | - |
-| [`func_00238F98`](functional/func_00238F98.c) | functional | 484 | ? | - |
 | [`func_0023C7A8`](functional/func_0023C7A8.c) | functional | 360 | ? | - |
 | [`func_0023C910`](functional/func_0023C910.c) | functional | 76 | ? | - |
 | [`func_L00_001EFF50`](game/func_L00_001EFF50.c) | game | 152 | ? | - |
