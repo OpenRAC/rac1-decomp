@@ -21,28 +21,28 @@ void reset_shot_tracking(char *moby) {
     }
     *(short *)(moby + 0x1C) = 0;
 }
-extern int D_L02_0015F6B0 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern float D_L02_001744E0[];
-extern short D_L02_00160150;
-extern short D_L02_00160154;
-extern short D_L02_00160158;
-extern short D_L02_0016015C;
-extern short D_L02_00160160;
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern float func_001F9D10(void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_00214D88(float *, float *, float, float, float, float);
-extern void func_L00_00258DB0(float *, float, float);
-extern float func_002140F8(float, float);
-extern float func_001F9878(float);
-extern int func_001FA898(float);
-extern int func_001F9938(void *);
-extern char *func_L00_0026C0D0(void *, void *, unsigned long, float);
-extern void func_L00_0026E438(void *, void *, int);
+extern int frame_counter_ref MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern float aridia_coll_hit_point[];
+extern short aridia_shot_stream_max_speed;
+extern short aridia_shot_stream_lead_count;
+extern short aridia_shot_stream_extra_count;
+extern short aridia_shot_stream_spread_far;
+extern short aridia_shot_stream_spread_near;
+extern int coll_line(void *, void *, int, int, int);
+extern float FastVecDist(void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern void ApproachWithVelocity(float *, float *, float, float, float, float);
+extern void rand_vec(float *, float, float);
+extern float random_float_between(float, float);
+extern float multiply_global_factor(float);
+extern int truncate_float_to_s32(float);
+extern int FastDecTimer(void *);
+extern char *spawn_spinning_and_fading_effect_particle(void *, void *, unsigned long, float);
+extern void spawn_color_decaying_effect_particle(void *, void *, int);
 
 typedef struct { char *p[7]; short timer; } Slots_265E88;
 
@@ -113,7 +113,7 @@ void EffectSlots_Fire(char *slots, float *position, float *direction, float dist
         spawn_color_decaying_effect_particle(position, velocity, 0);
     }
 }
-extern int func_L00_001F2BE8(float, void *, int, int, int);
+extern int coll_sphere_mobys(float, void *, int, int, int);
 
 // Retires up to seven slot entries whose effect finished, spawning a burst for live ones.
 void collect_mobies_around_tracked_objects(char **slots, int a, int b) {

@@ -16,26 +16,26 @@ typedef struct Pkt_03430 {
     long flags;
 } Pkt_03430;
 
-extern void func_001FA218(void *, void *);
-extern void func_001FA4A0(void *, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_001F9BC0(void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern float func_001FA888(int);
-u64 func_001F4868(s32);
-extern void func_L00_001FD1D8(void *, void *, int);
+extern void euler_to_matrix(void *, void *);
+extern void matrix_from_basis_rows(void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void FastVecCross(void *, void *, void *);
+extern void clear_u64_value(void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern float IntToFloat(int);
+u64 GetEffectTex(s32);
+extern void draw_world_quad(void *, void *, int);
 typedef struct { float v[8][4]; } Frame_03430;
-extern char *D_L14_001601AC MACRO_ADDR;
-extern char D_L14_001675C0[];
-extern float D_L14_001E6320[][2];
-extern short D_L14_001621AC;
-extern short D_L14_001621B0;
-extern short D_L14_001621B4;
-extern short D_L14_001621B8;
-extern short D_L14_001621BC;
+extern char *oltanis_clip_volumes MACRO_ADDR;
+extern char oltanis_camera_pos[];
+extern float oltanis_vendor_beam_quad_uvs[][2];
+extern short oltanis_vendor_beam_tex_index;
+extern short oltanis_vendor_beam_alpha_a;
+extern short oltanis_vendor_beam_alpha_b;
+extern short oltanis_vendor_beam_alpha_c;
+extern short oltanis_vendor_beam_alpha_d;
 
 typedef struct {
     int idx;

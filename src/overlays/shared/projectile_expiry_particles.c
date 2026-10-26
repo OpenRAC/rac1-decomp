@@ -2,9 +2,9 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern void *func_00218928(int);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern unsigned char *D_L07_001B24CC;
+extern void *create_part(int);
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern unsigned char *umbris_part_type51_textures;
 
 // Spawns a short-lived particle at a position with a given velocity.
 unsigned char *spawn_projectile_expiry_particle(char *pos, char *vec) {
@@ -15,7 +15,7 @@ unsigned char *spawn_projectile_expiry_particle(char *pos, char *vec) {
         qcopy(a, pos);
         qcopy(b, vec);
         *(int *)(p + 4) = 0x5E806040;
-        p[9] = func_001FA898_r(4.0f) + 0x40;
+        p[9] = truncate_float_to_s32_r(4.0f) + 0x40;
         p[3] = 0x48;
         p[1] = 0;
         p[8] = 0;
@@ -25,17 +25,17 @@ unsigned char *spawn_projectile_expiry_particle(char *pos, char *vec) {
     }
     return p;
 }
-extern int func_001FA898(float);
-extern int func_001F9850(int);
+extern int truncate_float_to_s32(float);
+extern int scale_ticks(int);
 extern int func_001160D8(void);
-extern float func_002140F8(float, float);
-extern void func_L00_00250800(void *, int, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern unsigned char * D_L07_001B24F4;
-extern float D_0015EE60 MACRO_ADDR;
-extern float D_L07_00166EC0[];
+extern float random_float_between(float, float);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecSub(void *, void *, void *);
+extern unsigned char * umbris_part_type61_textures;
+extern float frame_scale MACRO_ADDR;
+extern float debris_far_point[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/0029a2a0.c, FUN_L07_0029b8d8. */
 unsigned char *spawn_moby_point_offset_particle(void *m, short index, float amount, float factor) {

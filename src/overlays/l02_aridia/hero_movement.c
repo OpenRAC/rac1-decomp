@@ -7,18 +7,18 @@
 #include "hero.h"
 #include "moby.h"
 
-extern unsigned char D_0013E633[];
-extern int D_0015EE84 MACRO_ADDR;
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern int func_L00_001F3958(void);
-extern float func_001F9B88(float);
-extern void func_L00_0020BFA8(void);
-extern void func_L02_0022BE40(int, int);
-extern void func_L00_00211908(void);
+extern unsigned char hero_globals_base[];
+extern int g_current_level_index MACRO_ADDR;
+extern int coll_sphere(float, void *, int, void *);
+extern int CollType(void);
+extern float FastAbsF(float);
+extern void exit_hero_vehicle_mode_if_mode_three(void);
+extern void HeroL02_SetMoveState(int, int);
+extern void Hero_OnKilled(void);
 
 // Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l02/ui_help_0021b698.c, FUN_L02_0021b698.
 void process_hero_ground_material_effects(void) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     int keep = *(unsigned char *)(g + 0x12ED);
     int st = *(short *)(g + 0x12E0);
     FastMemZero16(g + 0x12E0, 0x10);
@@ -39,11 +39,11 @@ void process_hero_ground_material_effects(void) {
         }
     }
     if (st == 3) {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(q + 0x12E6) = 1;
     }
     if (g_current_level_index == 0xD) {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(q + 0x2084) != 0x7B) {
             if (coll_sphere(*(float *)(q + 0x234) + 0.03f, q + 0xD0, 2, 0) != 0) {
                 if (CollType() == 0xB) {
@@ -53,14 +53,14 @@ void process_hero_ground_material_effects(void) {
             }
         }
     }
-    if (st == 0xB) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EB) = 1; }
-    if (st == 2) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12E7) = 1; }
-    if (st == 0xD) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EC) = 1; }
-    if (st == 8) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EA) = 1; }
-    if (st == 9) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EE) = 1; }
-    if (st == 0xC) { char *q = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(q + 0x12EA) = 1; }
+    if (st == 0xB) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EB) = 1; }
+    if (st == 2) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12E7) = 1; }
+    if (st == 0xD) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EC) = 1; }
+    if (st == 8) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EA) = 1; }
+    if (st == 9) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EE) = 1; }
+    if (st == 0xC) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EA) = 1; }
     {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(q + 0x12EC) != 0 && *(int *)(q + 0x2084) != 0x7F) {
             if (FastAbsF(*(float *)(q + 0x2F0) - (*(float *)(q + 0x88) + 0.25f)) < 1.0f) {
                 if (*(float *)(q + 0x2F0) - *(float *)(q + 0x88) > 0.0f) {
@@ -74,7 +74,7 @@ void process_hero_ground_material_effects(void) {
         }
     }
     {
-        char *h = (char *)D_0013E633 + 0xE1D;
+        char *h = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(h + 0x12E6) != 0 && *(int *)(h + 0x2084) != 0x68 && *(int *)(h + 0x2084) != 0x7B) {
             if (FastAbsF(*(float *)(h + 0x2F4) - (*(float *)(h + 0x88) + 0.25f)) < 1.0f) {
                 if (*(float *)(h + 0x2F4) - *(float *)(h + 0x88) > 0.0f) {
@@ -91,7 +91,7 @@ void process_hero_ground_material_effects(void) {
         }
     }
     {
-        char *h = (char *)D_0013E633 + 0xE1D;
+        char *h = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(h + 0x12EB) != 0 && *(int *)(h + 0x2084) != 0x7B) {
             if (FastAbsF(*(float *)(h + 0x2F4) - (*(float *)(h + 0x88) + 0.25f)) < 1.0f) {
                 if (*(float *)(h + 0x2F4) - *(float *)(h + 0x88) > 0.0f) {
@@ -144,22 +144,22 @@ typedef struct {
     u8 *p34;
     u8 pad38[8];
 } T_8;
-extern G_8 D_0013F450_205B0 __asm__("D_0013F450");
-extern s32 D_L02_0015F6A8 MACRO_ADDR;
-extern T_8 D_L02_00178780[];
-extern s32 D_0015EE84 MACRO_ADDR;
-extern s32 D_0013E090[];
-extern s32 D_0015EFA8 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
-extern u8 D_0013F530[];
-void func_L00_00207220(void);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001FA748(f32, f32);
-f32 func_001F9F90(f32);
-f32 func_001F9FA8(f32);
-void func_001F9BD8(void *, void *, void *);
-void func_L02_0022BE40(s32, s32);
-void func_L00_00211338(void *, s32, f32, f32);
+extern G_8 g_hero_r __asm__("D_0013F450");
+extern s32 aridia_cinematic_mode MACRO_ADDR;
+extern T_8 aridia_moby_hits[];
+extern s32 g_current_level_index MACRO_ADDR;
+extern s32 level_hero_hit_counts[];
+extern s32 hero_hit_count MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
+extern u8 hero_velocity[];
+void release_and_clear_hero_voice_slots(void);
+void FastVecSub(void *, void *, void *);
+f32 FastAddRots(f32, f32);
+f32 FastCos(f32);
+f32 FastSin(f32);
+void FastVecAdd(void *, void *, void *);
+void HeroL02_SetMoveState(s32, s32);
+void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui_help_0021b698.c, FUN_L02_0021ff70. */
 s32 HeroL02_TryKnockback(s32 arg) {
@@ -171,23 +171,23 @@ s32 HeroL02_TryKnockback(s32 arg) {
     f32 a, b, e;
     Vec4 v;
 
-    if (D_0013F450_205B0.i208C == 0x14) {
+    if (g_hero_r.i208C == 0x14) {
         return 0;
     }
-    if (D_0013F450_205B0.i208C == 7) {
+    if (g_hero_r.i208C == 7) {
         return 0;
     }
-    if (D_0013F450_205B0.i2084 == 0x32) {
+    if (g_hero_r.i2084 == 0x32) {
         return 0;
     }
-    if (D_0013F450_205B0.i1C0 != 0) {
+    if (g_hero_r.i1C0 != 0) {
         return 0;
     }
     if (aridia_cinematic_mode != 0) {
         return 0;
     }
-    D_0013F450_205B0.p2280 = 0;
-    m = D_0013F450_205B0.p2080;
+    g_hero_r.p2280 = 0;
+    m = g_hero_r.p2080;
     if (m[0xA4] == 0xFF) {
         return 0;
     }
@@ -199,7 +199,7 @@ s32 HeroL02_TryKnockback(s32 arg) {
         return 0;
     }
     level_hero_hit_counts[g_current_level_index]++;
-    D_0013F450_205B0.p2280 = tbl->p20;
+    g_hero_r.p2280 = tbl->p20;
     hero_hit_count++;
     if (arg == 0) {
         return 1;
@@ -212,31 +212,31 @@ s32 HeroL02_TryKnockback(s32 arg) {
             flag = 1;
         }
     } else if (tbl->p20 != 0) {
-        FastVecSub(&v, (u8 *)&D_0013F450_205B0 + 0x80, tbl->p20 + 0x10);
+        FastVecSub(&v, (u8 *)&g_hero_r + 0x80, tbl->p20 + 0x10);
     } else {
-        v.f[0] = FastCos(FastAddRots(D_0013F450_205B0.f98, 3.1415927f));
-        v.f[1] = FastSin(FastAddRots(D_0013F450_205B0.f98, 3.1415927f));
+        v.f[0] = FastCos(FastAddRots(g_hero_r.f98, 3.1415927f));
+        v.f[1] = FastSin(FastAddRots(g_hero_r.f98, 3.1415927f));
         v.i[2] = 0;
     }
-    switch (D_0013F450_205B0.b20A4) {
+    switch (g_hero_r.b20A4) {
     case 0:
-        mob = D_0013F450_205B0.p2280;
+        mob = g_hero_r.p2280;
         if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x4EB || *(s16 *)(mob + 0xA6) == 0x558)) {
             id = 0x80;
         call_ret:
             HeroL02_SetMoveState(id, 1);
             return 1;
         }
-        if (D_0013F450_205B0.i208C == 0x16) {
+        if (g_hero_r.i208C == 0x16) {
             HeroL02_SetMoveState(0x6D, 1);
-            D_0013F450_205B0.f128 = g_frame_time * 7.0f;
+            g_hero_r.f128 = g_frame_time * 7.0f;
             return 1;
         }
         HeroL02_SetMoveState(0x16, 1);
         e = g_frame_time;
         a = e * 5.7f;
         b = e * 2.4f;
-        if (D_0013F450_205B0.b12E7 != 0) {
+        if (g_hero_r.b12E7 != 0) {
             a = 0.0f;
             b = e * 1.7f;
         }
@@ -290,40 +290,40 @@ typedef struct {
     u8 pad2098[0xC];
     u8 b20A4;
 } P231ae0;
-extern P231ae0 D_0013F450_20A28 __asm__("D_0013F450");
-extern f32 D_0013F670[];
-extern f32 D_0015EE60 MACRO_ADDR;
-extern f32 D_0015EE64 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
-f32 func_001F9D48(void *, void *);
+extern P231ae0 g_hero_r2 __asm__("D_0013F450");
+extern f32 g_hero_capsule_top[];
+extern f32 frame_scale MACRO_ADDR;
+extern f32 g_frame_scale_sq MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
+f32 vec_distance_xy(void *, void *);
 f32 func_00214D28_20A28(f32, f32, f32 *) __asm__("func_00214D28");
 void func_L00_0025C918_20A28(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_L00_0025C918");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui_help_0021b698.c, FUN_L02_002203e8. */
 void Camera_UpdateFollowOffsets(void) {
-    switch (D_0013F450_20A28.b20A4) {
+    switch (g_hero_r2.b20A4) {
     case 0:
-        D_0013F450_20A28.f228 = 0.8f;
-        D_0013F450_20A28.f22C = 0.7f;
-        D_0013F450_20A28.f230 = 0.45f;
+        g_hero_r2.f228 = 0.8f;
+        g_hero_r2.f22C = 0.7f;
+        g_hero_r2.f230 = 0.45f;
         break;
     case 3:
-        D_0013F450_20A28.f228 = 0.8f;
-        D_0013F450_20A28.f22C = 0.6f;
-        D_0013F450_20A28.f230 = 0.45f;
+        g_hero_r2.f228 = 0.8f;
+        g_hero_r2.f22C = 0.6f;
+        g_hero_r2.f230 = 0.45f;
         break;
     }
-    if (D_0013F450_20A28.i208C == 4) {
-        if (D_0013F450_20A28.i198 > D_0013F450_20A28.i420 && D_0013F450_20A28.s41E == 0) D_0013F450_20A28.f22C = D_0013F450_20A28.f434;
-    } else if (D_0013F450_20A28.i2084 == 6) {
-        D_0013F450_20A28.f22C = 0.5f;
-    } else if (D_0013F450_20A28.i2084 == 4) {
-        D_0013F450_20A28.f228 = 0.35000002f;
-    } else if (D_0013F450_20A28.i2084 == 0x7F) {
-        D_0013F450_20A28.f230 = 0.8f;
+    if (g_hero_r2.i208C == 4) {
+        if (g_hero_r2.i198 > g_hero_r2.i420 && g_hero_r2.s41E == 0) g_hero_r2.f22C = g_hero_r2.f434;
+    } else if (g_hero_r2.i2084 == 6) {
+        g_hero_r2.f22C = 0.5f;
+    } else if (g_hero_r2.i2084 == 4) {
+        g_hero_r2.f228 = 0.35000002f;
+    } else if (g_hero_r2.i2084 == 0x7F) {
+        g_hero_r2.f230 = 0.8f;
     }
-    if (!D_0013F450_20A28.b257 || D_0013F450_20A28.i2094 == 0x12 || D_0013F450_20A28.i208C == 0x11 || D_0013F450_20A28.b12E4 || vec_distance_xy(D_0013F450_20A28.v210, D_0013F450_20A28.v80) > D_0013F450_20A28.f234 * 0.5f) {
-        f32 *q = D_0013F670;
+    if (!g_hero_r2.b257 || g_hero_r2.i2094 == 0x12 || g_hero_r2.i208C == 0x11 || g_hero_r2.b12E4 || vec_distance_xy(g_hero_r2.v210, g_hero_r2.v80) > g_hero_r2.f234 * 0.5f) {
+        f32 *q = g_hero_capsule_top;
         P231ae0 *b = (P231ae0 *)((u8 *)q - 0x220);
         func_00214D28_20A28(b->f228, frame_scale * 0.02f, q);
         func_00214D28_20A28(b->f22C, frame_scale * 0.02f, q + 1);
@@ -331,28 +331,28 @@ void Camera_UpdateFollowOffsets(void) {
     }
 }
 typedef int Q __attribute__((mode(TI)));
-extern u8 D_L02_001744E0[];
-extern s32 D_0015EE84 MACRO_ADDR;
-void func_001F9BC0(void *);
-void func_L00_00212D70(void *, void *, s32, f32, f32);
-s32 func_L00_001EFFF0(void *, void *, s32, s32, s32);
-s32 func_L00_001F3988(void);
-s32 func_L00_001F3958(void);
-f32 func_00214440(void *, void *);
-s32 func_L00_0025F410(s32);
-u8 *func_L00_0025D390(s32);
-f32 func_001F9D10(void *, void *);
-void func_001252C0(void *, void *);
-f32 func_L00_002345B0(void *);
-f32 func_L00_001FF860(f32, f32);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001F9C78(void *, void *);
-void func_001F9C30(void *, void *, f32);
-void func_L00_001FF4B0(void *, void *, f32);
-void func_L00_002167C8(void *, void *);
-void func_L00_00233E48(void *, f32, f32, f32);
-f32 func_001F9B88(f32);
-extern Hero D_0013F450;
+extern u8 aridia_coll_hit_point[];
+extern s32 g_current_level_index MACRO_ADDR;
+void clear_u64_value(void *);
+void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
+s32 coll_line(void *, void *, s32, s32, s32);
+s32 coll_sound_class(void);
+s32 CollType(void);
+f32 resolve_camera_surface_height(void *, void *);
+s32 is_moby_in_class_range_500_to_540(s32);
+u8 *GetFlaggedPvarWord(s32);
+f32 FastVecDist(void *, void *);
+void sceVu0Normalize(void *, void *);
+f32 compute_gravity_relative_vector_inclination(void *);
+f32 fast_atan2(f32, f32);
+void FastVecSub(void *, void *, void *);
+f32 FastVecDot(void *, void *);
+void FastVecScale(void *, void *, f32);
+void vec_scale_to_length(void *, void *, f32);
+void compute_rotated_vector_angles(void *, void *);
+void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
+f32 FastAbsF(f32);
+extern Hero g_hero;
 typedef struct {
     u8 pad0[0x18];
     s32 i18;
@@ -362,7 +362,7 @@ typedef struct {
     f32 f40;
     f32 f44;
 } HS;
-extern HS D_L02_001744C0;
+extern HS aridia_coll_hit;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui_help_0021b698.c, FUN_L02_002216a0. */
 void Hero_UpdateGroundContact(void) {
@@ -452,7 +452,7 @@ void Hero_UpdateGroundContact(void) {
         g_hero.ground_z.f = aridia_coll_hit.v20.f[2];
         g_hero.ground_distance = FastVecDist((u8 *)&g_hero.motion.pos, (u8 *)&g_hero.ground_point);
         g_hero.ground_moby = (struct Moby *)aridia_coll_hit.i18;
-        func_001252C0((u8 *)&g_hero.ground_normal, (u8 *)&aridia_coll_hit.f40);
+        sceVu0Normalize((u8 *)&g_hero.ground_normal, (u8 *)&aridia_coll_hit.f40);
         g_hero.ground_slope.f = compute_gravity_relative_vector_inclination((u8 *)&aridia_coll_hit.f40);
         g_hero.downhill_yaw = fast_atan2(aridia_coll_hit.f40, aridia_coll_hit.f44);
         FastVecSub(&ground_geometry_scratch, (u8 *)&g_hero.ground_point, (u8 *)&g_hero.motion.pos);
@@ -526,7 +526,7 @@ d1:
             if (0.4f < FastAbsF(f)) {
                 g_hero.unk2C0.f[i] = 0.0f;
             }
-            func_001252C0(&normalized_probe_hit_normal, (u8 *)&aridia_coll_hit.f40);
+            sceVu0Normalize(&normalized_probe_hit_normal, (u8 *)&aridia_coll_hit.f40);
             compute_rotated_vector_angles(&normalized_probe_hit_normal, &probe_surface_angles);
             if (-0.78539819f < probe_surface_angles.f[1] && probe_surface_angles.f[1] < 0.78539819f) {
                 g_hero.unk2C8.f[i] = probe_surface_angles.f[1];
@@ -541,19 +541,19 @@ d1:
         }
     }
 }
-extern unsigned char D_0013E633[] NOT_SDA;
-extern float D_0015EE60 MACRO_ADDR;
-extern char D_L02_001744F0[];
-extern void func_001F9BC0(void *);
-extern void func_L00_00235040(void);
-extern void func_L00_00234090(float *dst, float *src, float dz);
-extern void func_L00_00233D50(float *dst, float *src, float h);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_L00_001F1D20(float, float, void *, int, int);
-extern int func_L00_001F34F0(float, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9CB8(void *);
-extern void func_L00_001FF4B0(void *, void *, float);
+extern unsigned char hero_globals_base[] NOT_SDA;
+extern float frame_scale MACRO_ADDR;
+extern char aridia_coll_resolved_pos[];
+extern void clear_u64_value(void *);
+extern void Hero_ConstrainToPath(void);
+extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
+extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
+extern void FastVecAdd(void *, void *, void *);
+extern int coll_capsule(float, float, void *, int, int);
+extern int coll_sphere_hero_groups(float, void *);
+extern void FastVecSub(void *, void *, void *);
+extern float FastVecLength(void *);
+extern void vec_scale_to_length(void *, void *, float);
 // Probes up to eight candidate camera positions and pulls the camera back if the view is blocked.
 extern Hero hero __asm__("D_0013F450");
 
@@ -600,7 +600,7 @@ int Camera_ResolveBlockedView(int arg) {
             n |= coll_sphere_hero_groups(hero.capsule_radius, &hero.motion.pos);
             if (n == 0) break;
         }
-        collision_response_data = (Vec4 *)D_L02_001744F0;
+        collision_response_data = (Vec4 *)aridia_coll_resolved_pos;
         qcopy(&hero.motion.pos, collision_response_data);
         qcopy(&hero.wall_contact_normal, collision_response_data + 1);
         qcopy(&hero.wall_contact_point, collision_response_data - 1);
@@ -642,96 +642,96 @@ typedef struct { char p0[4]; int f4; char p8[0x10]; int f18; int f1C; int f20; c
 typedef struct { char p0[0x58]; unsigned short f58; unsigned short f5A; int f5C; char p60[0x30]; unsigned short f90; unsigned short f92; int f94; } S141948;
 typedef struct { char p0[0x158]; float f158; char p15C[4]; float f160; char p164[4]; int f168; char p16C[0x1E4]; float f350[4]; } Cam;
 typedef struct { char p0[8]; float f8; float fC; char p10[8]; float f18; } S17BEB8;
-extern PadState D_0013CA40;
-extern char D_0013A5E0[];
-extern unsigned char D_0013D5C8[];
-extern char D_0013E650[];
-extern S141948 D_00141948;
-extern float D_0015EE64 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern int D_0015EFA4 MACRO_ADDR;
-extern short D_L02_0015F768;
-extern short D_L02_0015F76C;
-extern Cam D_L02_00167300;
-extern float D_L02_00167458;
-extern Moby *D_L02_00178580[];
-extern Rec2C D_L02_0017C2A8[];
-extern S17BEB8 D_L02_0017C438;
-extern float D_L02_001C4530[];
-extern void func_L00_00213970(float, float);
-extern void func_L00_002178A0(float, float);
-extern void func_L00_00211F80(float, int);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_L00_002124E8(int, float, float, float);
-extern int func_001F9908(int *);
-extern int func_001F9850(int);
-extern int func_L00_0022A268(void);
-extern void func_L00_00212550(void);
-extern void func_L00_00232C10(int, int, float);
-extern int func_L01_002274A8(int);
-extern float func_L00_00209598(float, float, float, float);
-extern void func_L00_00212740(float, float);
-extern void func_L00_00216E98(float);
-extern void func_L01_00232F90(int);
-extern void func_L00_00212878(void);
-extern unsigned char *func_0020D348(int);
-extern void func_L00_00251E30(void *);
-extern int func_0022ED80(int, int, int);
-extern int func_001FA898(float);
-extern float func_001F9CE8(void *);
-extern int func_L00_001FF5B0(float, void *, void *);
-extern void func_L00_00228510(void);
-extern void func_L00_002175D0(int, int, int);
-extern void func_L00_0028EBF0(int);
-extern float func_L00_0025CCF0(void *, float, void *, int, float, float, float);
-extern float func_001FA790(float, float);
-extern float func_001FA748(float, float);
-extern float func_00214D28(float *, float, float);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_L00_002607A8(void *, float);
-extern int func_L00_0025A5D8(float *, float *, float, float, float);
-extern float func_L00_0025CC58(float *, int, float, float);
-extern float func_001F9D48(void *, void *);
-extern float func_001FA850(float, float);
-extern void func_001FA218(void *, void *);
-extern void func_001FA4A0(void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern float func_L00_002342F8(float *);
-extern float func_L00_0025C918(float *, float *, float, float, float, float);
-extern float func_L00_00213A08(void *);
-extern void func_L00_00234420(float *, float *, float);
-extern void func_L00_002343A0(float *, float *, float);
-extern void func_L00_0025A8C0(void *, void *, int, float, void *);
-extern int func_L00_001F2BE8(float, void *, int, void *, void *);
-extern void func_L00_00215628(float, float, float);
-extern void func_L00_00233F68(float *, float *, float);
-extern int func_L00_00211F28(float);
-extern float func_L00_0025CB90(int, float, float);
-extern void func_L00_00212790(float);
-extern void func_L00_00263578(int, void *);
-extern void func_L00_002635A0(void *, int, int);
-extern void func_L00_00263680(void *, int);
-extern void func_L00_00217AF0(int, int);
-extern void func_L00_002125F0(void);
-extern void func_L01_0022D688(void);
-extern void func_L00_001FF500(void *, void *, float);
-extern void func_L00_00209850(float, float, float);
-extern void func_L00_00234150(float *, float *);
-extern int func_L00_0020DB30(int);
-extern void func_L00_00217570(int, int);
-extern void func_L00_00233F88(void *, void *, float);
-extern void func_L00_00233EE0(float *, float, float, float);
-extern void func_L00_0025AC00(void *, int, int, void *, void *, float);
-extern void func_L00_0020BC30(void);
-extern void func_L00_00217DE0(void);
-extern void func_L02_002211C0(void);
-extern void func_L00_00215A90(void);
-extern void func_L00_00216648(void);
-extern void func_L00_002147C0(void);
-extern void func_L01_00234970(float);
-extern void func_L02_00223AE0(void);
+extern PadState g_controller_state;
+extern char pad_globals_base[];
+extern unsigned char item_available[];
+extern char voice_pool[];
+extern S141948 usage_stats;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern int gameplay_event_frame_count MACRO_ADDR;
+extern short aridia_usage_event_timer;
+extern short aridia_usage_event_count;
+extern Cam aridia_player_camera;
+extern float aridia_player_camera_yaw;
+extern Moby *aridia_coll_sphere_moby_hits[];
+extern Rec2C aridia_attack_records[];
+extern S17BEB8 aridia_hero_speed_bands;
+extern float aridia_hero_anim_frame_speeds[];
+extern void build_scaled_hero_move_impulse(float, float);
+extern void stop_hero_motion_without_forward_support(float, float);
+extern void stick_target(float, int);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void turn_to(int, float, float, float);
+extern int fast_dec_timer(int *);
+extern int scale_ticks(int);
+extern int try_start_hero_item_idle_animation(void);
+extern void turn_hero_toward_move_direction_for_item(void);
+extern void set_hero_animation(int, int, float);
+extern int get_hero_idle_animation_index(int);
+extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
+extern void speed_step(float, float);
+extern void reduce_and_apply_hero_planar_velocity_addend(float);
+extern void clip_hero_horizontal_velocity(int);
+extern void correct_hero_airborne_wall_velocity(void);
+extern unsigned char *CreateMoby(int);
+extern void moby_build_matrix(void *);
+extern int Moby_PlaySound(int, int, int);
+extern int truncate_float_to_s32(float);
+extern float vec_length_xy(void *);
+extern int clamp_vec_length_xy(float, void *, void *);
+extern void update_hero_water_height_and_bobbing(void);
+extern void release_voice_slot_cf(int, int, int);
+extern void Sound_StopSlot(int);
+extern float SpringAngle(void *, float, void *, int, float, float, float);
+extern float FastSubRots(float, float);
+extern float FastAddRots(float, float);
+extern float ApproachValue(float *, float, float);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void ClampVectorLength(void *, float);
+extern int solve_quadratic_equation(float *, float *, float, float, float);
+extern float step_angle_toward_target(float *, int, float, float);
+extern float vec_distance_xy(void *, void *);
+extern float FastDiffRots(float, float);
+extern void euler_to_matrix(void *, void *);
+extern void matrix_from_basis_rows(void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern float gravity_z(float *);
+extern float Spring(float *, float *, float, float, float, float);
+extern float forward_component(void *);
+extern void set_gravity_relative_vector_length_xy(float *, float *, float);
+extern void gravity_set_z(float *, float *, float);
+extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+extern int coll_sphere_mobys(float, void *, int, void *, void *);
+extern void update_hero_target_heading(float, float, float);
+extern void offset_hero_position_against_gravity(float *, float *, float);
+extern int test_hero_animation_frame_window(float);
+extern float compute_directed_angle_delta(int, float, float);
+extern void set_planar_vel(float);
+extern void initialize_moby_transform_history(int, void *);
+extern void create_moby_transform_history_entry(void *, int, int);
+extern void update_moby_transform_history(void *, int);
+extern void emit_filtered_entry_sparkles(int, int);
+extern void turn_hero_toward_move_direction_with_stick_scale(void);
+extern void update_hero_ledge_probe(void);
+extern void vec_set_length_xy(void *, void *, float);
+extern void rotate_hero_about_fixed_local_pivot(float, float, float);
+extern void gravity_flatten(float *, float *);
+extern int hero_slot_item_id(int);
+extern void allocate_hero_voice_for_entry(int, int);
+extern void add_hero_forward_offset(void *, void *, float);
+extern void transform_hero_local_offset_to_world(float *, float, float, float);
+extern void PostHitMessage(void *, int, int, void *, void *, float);
+extern void probe_hero_airborne_wall_contact(void);
+extern void launch_hero_wrench(void);
+extern void update_hero_stick_target_magnitude(void);
+extern void adjust_hero_pose_targets_from_motion(void);
+extern void update_hero_lean_and_sway_parameters(void);
+extern void hero_integrate_velocity(void);
+extern void air_accel(float);
+extern void Hero_UpdateHopVelocity(void);
 
 /* Hero state machine: per-frame movement and physics for the current hero state (level 02 build). */
 void update_hero_state_motion(void) {
@@ -1868,7 +1868,7 @@ void update_hero_state_motion(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L02_00167458;
+                g_hero.motion.move_yaw = aridia_player_camera_yaw;
                 turn_to(0, g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 g_hero.motion.move_yaw = keep;
             }
@@ -1986,7 +1986,7 @@ void update_hero_state_motion(void) {
                     g_hero.ground_speed = 0.0f;
                 }
                 if (g_hero.rail_land_frames != 0) {
-                    if (*(int *)(D_0013A5E0 + 0x2634) != 0) {
+                    if (*(int *)(pad_globals_base + 0x2634) != 0) {
                         if (g_hero.on_flagged_ground_moby != 0) {
                             g_hero.ground_speed = 0.0f;
                         }

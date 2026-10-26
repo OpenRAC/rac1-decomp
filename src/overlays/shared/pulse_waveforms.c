@@ -15,8 +15,8 @@
  *   (sp+0x10, sp+0x20) tie, and ours always numbers sp+0x10 first. No declaration order, init order, arm order
  *   or acc[3][4] array changes it.
  */
-extern float func_001FA888(int);
-extern int func_001FA898(float);
+extern float IntToFloat(int);
+extern int truncate_float_to_s32(float);
 extern float FastCos(float);
 
 typedef struct {
@@ -31,7 +31,7 @@ typedef struct {
     unsigned char amp;
     unsigned char base;
 } Pulse;
-extern Pulse D_L00_00166100[8];
+extern Pulse pulse_waveform_slots[8];
 
 int tick_pulse_waveforms(int *out) {
     int aa[3][4];

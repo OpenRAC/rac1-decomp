@@ -2,11 +2,11 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern unsigned char *func_00218928(int);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern int func_002140B0(int);
-extern float func_001FA888(int);
-extern unsigned char *D_L05_001B2940;
+extern unsigned char *create_part(int);
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int random_integer_below(int);
+extern float IntToFloat(int);
+extern unsigned char *rilgar_velocity_particle_texture_ptr;
 
 /* Allocates a 0x30-byte record with func_00218928 and fills it from the arguments (pos and vel copied in,
  * a * 210000.0 and a random byte stored, plus the integer arguments); returns it, or 0 if allocation failed. */
@@ -21,7 +21,7 @@ unsigned char *create_particle_with_velocity_and_lifetime(void *pos, void *vel, 
         m = a4 & 0xFFFFFF;
         two = 2.0f;
         *(int *)(p + 4) = m;
-        p[9] = func_001FA898_r(two) + 0x10;
+        p[9] = truncate_float_to_s32_r(two) + 0x10;
         p[3] = 0x44;
         p[1] = 0;
         p[2] = *rilgar_velocity_particle_texture_ptr;
@@ -36,9 +36,9 @@ unsigned char *create_particle_with_velocity_and_lifetime(void *pos, void *vel, 
     }
     return p;
 }
-extern unsigned char *D_L05_001B2948;
-extern float func_002140F8(float, float);
-extern int func_001F9850(int);
+extern unsigned char *rilgar_random_particle_textures_ptr;
+extern float random_float_between(float, float);
+extern int scale_ticks(int);
 
 /* spawn a particle at a position with a velocity and random parameters */
 unsigned char *create_particle_with_velocity_and_randomized_parameters(void *pos, void *vel, int arg2, int arg3, float a, float b, float c) {
@@ -47,7 +47,7 @@ unsigned char *create_particle_with_velocity_and_randomized_parameters(void *pos
     if (p != 0) {
         q = p + 0x20;
         qcopy(p + 0x10, pos);
-        p[9] = func_001FA898_r(1.0f) + 0x40;
+        p[9] = truncate_float_to_s32_r(1.0f) + 0x40;
         p[3] = 0x44;
         p[1] = 0;
         p[2] = rilgar_random_particle_textures_ptr[arg3];
@@ -57,7 +57,7 @@ unsigned char *create_particle_with_velocity_and_randomized_parameters(void *pos
         *(short *)(p + 0xA) = scale_ticks(0xF);
         qcopy(q, vel);
         *(float *)(q + 0x10) = b;
-        *(int *)(q + 0x14) = func_001FA898_r(random_float_between(-3.0f, 3.0f));
+        *(int *)(q + 0x14) = truncate_float_to_s32_r(random_float_between(-3.0f, 3.0f));
         *(float *)(q + 0x18) = c;
     }
     return p;

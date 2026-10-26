@@ -11,9 +11,9 @@ typedef struct {
     void *mobys[1];
 } Level15State;
 
-extern int D_0015EE84 MACRO_ADDR;
-extern Level15State D_L15_0016CEE0;
-extern void func_L00_0025805C(void *);
+extern int g_current_level_index MACRO_ADDR;
+extern Level15State g_mission;
+extern void apply_env_zone_lighting(void *);
 
 /* Update each moby while the level event is in phase three or four. */
 void update_level15_mission_mobys(void) {

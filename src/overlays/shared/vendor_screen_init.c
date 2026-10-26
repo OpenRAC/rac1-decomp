@@ -4,45 +4,45 @@
 #include "include_asm.h"
 
 typedef struct { char p0[0x10]; int f10; char p14[0x4C - 0x14]; } R_2afd00;
-extern char D_L01_001CABC0[];
-extern char D_L01_0016CD60[];
-extern char D_L01_0017C840[];
-extern int D_L01_00174300[];
-extern int D_L01_001CA720[];
-extern R_2afd00 D_L01_00179FC0[];
-extern int D_L01_0015F6BC MACRO_ADDR;
-extern int D_L01_0015F6A8 MACRO_ADDR;
-extern float D_L01_0015F4FC MACRO_ADDR;
-extern int D_L01_0016124C MACRO_ADDR;
-extern short D_L01_0015F500;
-extern char D_L01_00161180;
-extern char D_0013E633[];
-extern unsigned char D_0014171B[] NOT_SDA;
-extern void func_0012E528(int);
-extern void func_00216EF0(int);
-extern void func_0012DDC0(void);
-extern void func_001F99B0();
-extern void func_L00_0023B890(void);
-extern void func_L00_00203FB8(void);
-extern void func_L01_0023D688(int, int);
-extern void func_L00_00233868(void);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_00214358(void *, int, float);
-extern void func_001F9BC0(void *);
-extern float func_001FA748(float, float);
-extern void func_002348B8(void);
-extern void func_L00_00210340(int, int);
-extern void func_00205270(int, int);
-extern void func_L00_00245E98(int);
-extern void func_00205220(int);
-extern int func_00122598(int);
-extern void func_L00_00207948(int, int);
-extern int func_00216960(void);
+extern char novalis_vendor_screen_state[];
+extern char fx_cutscene[];
+extern char novalis_hero_scale_manipulator[];
+extern int novalis_scene_buffer_offsets[];
+extern int novalis_vendor_scene_chunk_ids[];
+extern R_2afd00 novalis_item_defs[];
+extern int novalis_skip_frame MACRO_ADDR;
+extern int novalis_game_mode MACRO_ADDR;
+extern float novalis_fade_level MACRO_ADDR;
+extern int relocated_address_base MACRO_ADDR;
+extern short novalis_white_fade_level;
+extern char novalis_vendor_screen_anchor_offset;
+extern char hero_globals_base[];
+extern unsigned char help_stats_base[] NOT_SDA;
+extern void snd_PauseAllSoundsInGroup(int);
+extern void music_Pause(int);
+extern void snd_FlushSoundCommands(void);
+extern void FastMemSet();
+extern void reset_hud_and_suspend_weapon_updates(void);
+extern void clear_active_help_record(void);
+extern void Hero_SetMoveState(int, int);
+extern void HeroSetObjectFlags(void);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern float ProbeGroundHeight(void *, int, float);
+extern void clear_u64_value(void *);
+extern float FastAddRots(float, float);
+extern void calculate_dma_transfer_address(void);
+extern void clear_hero_item_slot(int, int);
+extern void select_world_object_resource_tables(int, int);
+extern void load_scene_chunks_with_fade(int);
+extern void parse_space_scene_chunk(int);
+extern int sce_gs_sync_v(int);
+extern void update_item_tint_from_hero(int, int);
+extern int Music_ContinueStreamIfReady(void);
 
 /* Opens the vendor screen for moby m in level lvl: sets up its camera, resets the screen state and runs it until it closes. */
 void initialize_vendor_screen(char *m, int lvl) {
-    char *g = D_0013E633 + 0xE1D;
+    char *g = hero_globals_base + 0xE1D;
     char *s = novalis_vendor_screen_state;
     char *c = fx_cutscene;
     char *sc;
@@ -52,9 +52,9 @@ void initialize_vendor_screen(char *m, int lvl) {
     char *qq;
     int n;
     int r;
-    func_0012E528(0x1D);
+    snd_PauseAllSoundsInGroup(0x1D);
     music_Pause(0);
-    func_0012DDC0();
+    snd_FlushSoundCommands();
     novalis_skip_frame = 1;
     FastMemSet(s, 0, 0x220);
     *(int *)novalis_vendor_screen_state = 3;
@@ -75,7 +75,7 @@ void initialize_vendor_screen(char *m, int lvl) {
     *(float *)(s + 0xB8) = FastAddRots(*(float *)(m + 0x48), -1.5707964f);
     euler_rotation_basis(s + 0x80, s + 0xB0);
     FastMemSet(c, 0, 0x1C0);
-    FastMemSet(D_L01_0017C840, 0, 0x40);
+    FastMemSet(novalis_hero_scale_manipulator, 0, 0x40);
     calculate_dma_transfer_address();
     n = relocated_address_base + (int)0xFFFC0000;
     *(int *)(c + 0x58) = novalis_scene_buffer_offsets[1] + n;
@@ -83,20 +83,20 @@ void initialize_vendor_screen(char *m, int lvl) {
     *(int *)(c + 0x5C) = novalis_scene_buffer_offsets[2] + n;
     novalis_fade_level = 1.0f;
     relocated_address_base = n;
-    *(int *)&D_L01_0015F500 = 0;
+    *(int *)&novalis_white_fade_level = 0;
     clear_hero_item_slot(0, 0);
     *(int *)(g + 0x20B8) = lvl;
     select_world_object_resource_tables(novalis_item_defs[lvl].f10, -1);
     load_scene_chunks_with_fade(r);
-    q = (char *)D_0014171B + 0x100B5;
+    q = (char *)help_stats_base + 0x100B5;
     *(int *)(q + 0x1C) = 0x2734;
     parse_space_scene_chunk(0);
-    while (qq = (char *)D_0014171B + 0x100B5, *(short *)(qq + 0x5A) != 3) {
+    while (qq = (char *)help_stats_base + 0x100B5, *(short *)(qq + 0x5A) != 3) {
         sound_update();
-        func_00122598(0);
+        sce_gs_sync_v(0);
     }
     c2 = fx_cutscene;
-    g2 = D_0013E633 + 0xE1D;
+    g2 = hero_globals_base + 0xE1D;
     update_item_tint_from_hero(*(int *)(c2 + 0x17C), *(int *)(g2 + 0x2080));
     Music_ContinueStreamIfReady();
 }

@@ -4,10 +4,10 @@
 #include "hero.h"
 #include "moby.h"
 
-extern void func_L02_002A5238(void *, int, float);
-extern void func_001F49B0(void *, void *);
-extern char D_L07_001D36C0[];
-extern char func_00216270[];
+extern void prepare_scaled_float_table_with_target_byte(void *, int, float);
+extern void AddDrawCallback(void *, void *);
+extern char umbris_ambient_stream_scaled_table[];
+extern char register_audio_stream_callback[];
 
 /* Umbris ambient stream moby: sets up its table, then queues the audio stream. */
 void AmbientStreamL07Update(unsigned char *moby)
@@ -24,22 +24,22 @@ void AmbientStreamL07Update(unsigned char *moby)
     }
 }
 extern int D_0015EE84_30D370 SDATA(D_0015EE84);
-extern unsigned char D_0014C150_30D370[] __asm__("D_0014C150");
-extern char D_0013E633_30D370[] __asm__("D_0013E633");
-extern void func_L01_0026F090_30D370(int list, int state) __asm__("func_L01_0026F090");
-extern void func_L01_0026F040_30D370(int, int) __asm__("func_L01_0026F040");
-extern float func_001F9B88_30D370(float) __asm__("func_001F9B88");
-extern float func_001F9D48_30D370(void *, void *) __asm__("func_001F9D48");
-extern void func_001F9BF0_30D370(void *dst, void *a, void *b) __asm__("func_001F9BF0");
-extern void func_001FA190_30D370(void *) __asm__("func_001FA190");
-extern void func_001FA4A0_30D370(void *, void *) __asm__("func_001FA4A0");
-extern void func_001F9EE8_30D370(void *, void *, void *) __asm__("func_001F9EE8");
-extern int func_001F9908_30D370(int *arg0) __asm__("func_001F9908");
-extern void func_0022ED80_30D370(int, int, int) __asm__("func_0022ED80");
-extern int func_001F9850_30D370(int) __asm__("func_001F9850");
-extern void func_L00_00251328_30D370(void *, int, int, int) __asm__("func_L00_00251328");
-extern void func_L00_002512D8_30D370(int) __asm__("func_L00_002512D8");
-extern int func_001F9938_30D370(void *) __asm__("func_001F9938");
+extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
+extern void set_moby_list_state_r(int list, int state) __asm__("func_L01_0026F090");
+extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
+extern float FastAbsF_r(float) __asm__("func_001F9B88");
+extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
+extern void FastVecSub_r(void *dst, void *a, void *b) __asm__("func_001F9BF0");
+extern void set_identity_matrix_r(void *) __asm__("func_001FA190");
+extern void matrix_from_basis_rows_r(void *, void *) __asm__("func_001FA4A0");
+extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
+extern int fast_dec_timer_r(int *arg0) __asm__("func_001F9908");
+extern void Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
+extern int scale_ticks_r(int) __asm__("func_001F9850");
+extern void set_moby_color_r(void *, int, int, int) __asm__("func_L00_00251328");
+extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
+extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 
 /* Timed activation pad update: runs the 10-state machine on the data block at moby+0x78.
  * The timer is a MIN() of two expressions with calls in them, so the calls are made twice;
@@ -63,26 +63,26 @@ void timed_activation_pads_update(unsigned char *moby)
     flag = 0;
     if (((Moby *)moby)->state < 6) {
         if (((Moby *)moby)->mission != 0xFF) {
-            if (D_0014C150_30D370[((Moby *)moby)->mission + (D_0015EE84_30D370 << 4)] == 0xFF)
-                func_L01_0026F090_30D370(((Moby *)moby)->group, 6);
+            if (saved_mission_state_r[((Moby *)moby)->mission + (D_0015EE84_30D370 << 4)] == 0xFF)
+                set_moby_list_state_r(((Moby *)moby)->group, 6);
         }
     }
 
     if (*(int *)(d + 0x8) == 0) {
-        p = (char *)D_0013E633_30D370 + 0xE1D;
+        p = (char *)hero_globals_base_r + 0xE1D;
         if (*(short *)(p + 0x30E) == 0)
             flag = *(unsigned char **)(p + 0x2FC) == moby;
-        if (0.7853982f < func_001F9B88_30D370(((Moby *)moby)->rot.y)) {
-            if (func_001F9D48_30D370(moby + 0x10, p + 0x80) < 2.0f) {
+        if (0.7853982f < FastAbsF_r(((Moby *)moby)->rot.y)) {
+            if (vec_distance_xy_r(moby + 0x10, p + 0x80) < 2.0f) {
                 if (*(int *)(p + 0x2084) == 0x11) {
                     if (*(float *)(p + 0xAA8) < 7.0f) {
-                        func_001F9BF0_30D370(o, moby + 0x10, p + 0x80);
-                        func_001FA190_30D370(q);
-                        func_001FA4A0_30D370(q, moby + 0xC0);
-                        func_001F9EE8_30D370(o, o, q);
-                        if (func_001F9B88_30D370(o[0]) < 0.6f) {
-                            if (func_001F9B88_30D370(o[1]) < 0.6f) {
-                                if (func_001F9B88_30D370(o[2]) < 0.957f)
+                        FastVecSub_r(o, moby + 0x10, p + 0x80);
+                        set_identity_matrix_r(q);
+                        matrix_from_basis_rows_r(q, moby + 0xC0);
+                        transform_vector_r(o, o, q);
+                        if (FastAbsF_r(o[0]) < 0.6f) {
+                            if (FastAbsF_r(o[1]) < 0.6f) {
+                                if (FastAbsF_r(o[2]) < 0.957f)
                                     flag = 1;
                             }
                         }
@@ -95,38 +95,38 @@ void timed_activation_pads_update(unsigned char *moby)
     st = ((Moby *)moby)->state;
     if ((unsigned int)(st - 2) < 4) {
         if (((Moby *)moby)->command == 1) {
-            if (func_001F9908_30D370((int *)d)) {
-                func_0022ED80_30D370(2, 0, (int)moby);
-                func_L01_0026F090_30D370(((Moby *)moby)->group, 8);
-            } else if (func_001F9908_30D370((int *)(d + 4))) {
-                func_0022ED80_30D370(0, 0, (int)moby);
-                *(int *)(d + 4) = func_001F9850_30D370(0x2D) < func_001F9850_30D370(5) + *(int *)d / func_001F9850_30D370(0x28)
-                    ? func_001F9850_30D370(0x2D) : func_001F9850_30D370(5) + *(int *)d / func_001F9850_30D370(0x28);
+            if (fast_dec_timer_r((int *)d)) {
+                Moby_PlaySound_r(2, 0, (int)moby);
+                set_moby_list_state_r(((Moby *)moby)->group, 8);
+            } else if (fast_dec_timer_r((int *)(d + 4))) {
+                Moby_PlaySound_r(0, 0, (int)moby);
+                *(int *)(d + 4) = scale_ticks_r(0x2D) < scale_ticks_r(5) + *(int *)d / scale_ticks_r(0x28)
+                    ? scale_ticks_r(0x2D) : scale_ticks_r(5) + *(int *)d / scale_ticks_r(0x28);
             }
         }
     }
 
     switch (((Moby *)moby)->state) {
     case 0:
-        func_L00_00251328_30D370(moby, 0x80, 0x80, 0x80);
-        func_L01_0026F040_30D370(((Moby *)moby)->group, 0);
-        func_L01_0026F090_30D370(((Moby *)moby)->group, 1);
+        set_moby_color_r(moby, 0x80, 0x80, 0x80);
+        MobyGroup_SetByteBC_r(((Moby *)moby)->group, 0);
+        set_moby_list_state_r(((Moby *)moby)->group, 1);
         break;
     case 1:
         *(int *)(d + 0x8) = 0;
-        func_L00_00251328_30D370(moby, 0x80, 0x80, 0x80);
+        set_moby_color_r(moby, 0x80, 0x80, 0x80);
         if (flag) {
             if (*(int *)(d + 0x10) > 0)
-                *(int *)d = func_001F9850_30D370(*(int *)(d + 0x10) * 60);
+                *(int *)d = scale_ticks_r(*(int *)(d + 0x10) * 60);
             else
-                *(int *)d = func_001F9850_30D370(900);
+                *(int *)d = scale_ticks_r(900);
             on = 1;
-            func_L00_00251328_30D370(moby, 0, 0xFF, 0);
+            set_moby_color_r(moby, 0, 0xFF, 0);
             *(int *)(d + 0x8) = on;
-            func_L01_0026F040_30D370(((Moby *)moby)->group, 0);
+            MobyGroup_SetByteBC_r(((Moby *)moby)->group, 0);
             ((Moby *)moby)->command = on;
-            func_0022ED80_30D370(3, 0, (int)moby);
-            func_L01_0026F090_30D370(((Moby *)moby)->group, 2);
+            Moby_PlaySound_r(3, 0, (int)moby);
+            set_moby_list_state_r(((Moby *)moby)->group, 2);
         }
         break;
     case 2:
@@ -135,9 +135,9 @@ void timed_activation_pads_update(unsigned char *moby)
     case 3:
         if (flag) {
             *(int *)(d + 0x8) = 1;
-            func_L00_00251328_30D370(moby, 0, 0xFF, 0);
-            func_0022ED80_30D370(3, 0, (int)moby);
-            func_L01_0026F090_30D370(((Moby *)moby)->group, 4);
+            set_moby_color_r(moby, 0, 0xFF, 0);
+            Moby_PlaySound_r(3, 0, (int)moby);
+            set_moby_list_state_r(((Moby *)moby)->group, 4);
         }
         break;
     case 4:
@@ -146,31 +146,31 @@ void timed_activation_pads_update(unsigned char *moby)
     case 5:
         if (flag) {
             *(int *)(d + 0x8) = 1;
-            func_L00_00251328_30D370(moby, 0, 0xFF, 0);
-            func_L01_0026F090_30D370(((Moby *)moby)->group, 6);
-            func_0022ED80_30D370(1, 0, (int)moby);
+            set_moby_color_r(moby, 0, 0xFF, 0);
+            set_moby_list_state_r(((Moby *)moby)->group, 6);
+            Moby_PlaySound_r(1, 0, (int)moby);
         }
         break;
     case 6:
-        *(short *)(d + 0xC) = func_001F9850_30D370(0x14);
+        *(short *)(d + 0xC) = scale_ticks_r(0x14);
         *(short *)(d + 0xE) = 0;
-        func_L00_00251328_30D370(moby, 0x80, 0xFF, 0x80);
+        set_moby_color_r(moby, 0x80, 0xFF, 0x80);
         ((Moby *)moby)->state = 7;
         break;
     case 7:
         if (((Moby *)moby)->mission != 0xFF) {
-            if (D_0014C150_30D370[((Moby *)moby)->mission + (D_0015EE84_30D370 << 4)] != 0xFF)
-                func_L00_002512D8_30D370(((Moby *)moby)->mission);
+            if (saved_mission_state_r[((Moby *)moby)->mission + (D_0015EE84_30D370 << 4)] != 0xFF)
+                jet_clear_persistent_r(((Moby *)moby)->mission);
         }
-        if (func_001F9938_30D370(d + 0xC)) {
-            *(short *)(d + 0xC) = func_001F9850_30D370(0x14);
+        if (FastDecTimer_r(d + 0xC)) {
+            *(short *)(d + 0xC) = scale_ticks_r(0x14);
             switch (*(short *)(d + 0xE)) {
             case 0:
-                func_L00_00251328_30D370(moby, 0, 0xFF, 0);
+                set_moby_color_r(moby, 0, 0xFF, 0);
                 *(short *)(d + 0xE) = 1;
                 break;
             case 1:
-                func_L00_00251328_30D370(moby, 0xFF, 0xFF, 0xFF);
+                set_moby_color_r(moby, 0xFF, 0xFF, 0xFF);
                 *(short *)(d + 0xE) = 0;
                 break;
             case 2 ... 5:
@@ -180,7 +180,7 @@ void timed_activation_pads_update(unsigned char *moby)
         }
         break;
     case 8:
-        func_L00_00251328_30D370(moby, 0x80, 0x80, 0x80);
+        set_moby_color_r(moby, 0x80, 0x80, 0x80);
         ((Moby *)moby)->command = 0;
         ((Moby *)moby)->state = 1;
         break;
@@ -188,16 +188,16 @@ void timed_activation_pads_update(unsigned char *moby)
         break;
     }
 }
-extern int D_0015EE84 MACRO_ADDR;
-extern unsigned char D_0014C150[];
-extern s32 D_L07_001845A8[];
-extern void func_001F9BD8(void *, void *, void *);
-extern f32 func_001F9CB8(void *);
-extern void func_L00_001FF4B0(f32, void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_0022ED80(s32, s32, void *);
-extern u8 * D_L07_00160058 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern unsigned char saved_mission_state[];
+extern s32 umbris_indicator_states[];
+extern void FastVecAdd(void *, void *, void *);
+extern f32 FastVecLength(void *);
+extern void vec_scale_to_length(f32, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void Moby_PlaySound(s32, s32, void *);
+extern u8 * level_mobys MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
 
 /* Door update: moves between open and closed states, gated by its mission state. */
 void door_update(u8 *moby)
@@ -321,18 +321,18 @@ void door_update(u8 *moby)
         return;
     }
 }
-extern int D_0015EE84 MACRO_ADDR;
-extern unsigned char D_0014C150[];
-extern s32 D_L07_001845A8[];
-extern void func_001F9C30(f32, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern f32 func_001F9CB8(void *);
-extern void func_L00_001FF4B0(f32, void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_0022ED80(s32, s32, void *);
-extern void func_L00_002617B0(void *, void *, void *, void *);
-extern u8 * D_L07_00160058 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern unsigned char saved_mission_state[];
+extern s32 umbris_indicator_states[];
+extern void FastVecScale(f32, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern f32 FastVecLength(void *);
+extern void vec_scale_to_length(f32, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void Moby_PlaySound(s32, s32, void *);
+extern void update_entity_matrix(void *, void *, void *, void *);
+extern u8 * level_mobys MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b1e48.c, FUN_L07_0031aee0. */
 void bridge_update(u8 *moby)

@@ -2,8 +2,8 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern char *D_L13_00160058 MACRO_ADDR;
-extern char *D_L13_00160060 MACRO_ADDR;
+extern char *gemlik_moby_array_start MACRO_ADDR;
+extern char *gemlik_moby_array_last MACRO_ADDR;
 
 /* updates matching objects in the selected object range */
 void jet_group_flag(int id, int state) {

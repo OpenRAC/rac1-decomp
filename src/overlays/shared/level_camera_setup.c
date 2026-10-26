@@ -7,17 +7,17 @@
 #include "include_asm.h"
 #include "camera.h"
 
-extern CameraSystem D_L00_00166D80;
-extern char D_0013E633[];
-extern void func_L00_001FF4B0(void *, void *, float);
-extern Camera D_L00_00167250[];
-extern int D_L00_00169990[];
-extern int D_L00_0015F04C MACRO_ADDR;
-extern int D_L00_0015F054 MACRO_ADDR;
-extern short D_L00_0015F040;
-extern CameraDef *D_L00_0015F050 MACRO_ADDR;
-extern void func_001F9BC0(void *);
-extern void func_L00_001ED600(void);
+extern CameraSystem player_camera;
+extern char hero_globals_base[];
+extern void vec_scale_to_length(void *, void *, float);
+extern Camera gCameraSlotsLvl[];
+extern int gCameraSlotUsedLvl[];
+extern int gCamPostUpdCountLvl MACRO_ADDR;
+extern int gCameraDefCountLvl MACRO_ADDR;
+extern short follow_cam_turn_blend_weight;
+extern CameraDef *camera_descriptors MACRO_ADDR;
+extern void clear_u64_value(void *);
+extern void init_camera_system(void);
 
 /* Initialises the camera slot tables and the camera state from the hero's transform. */
 void setup_level_cameras(void) {
@@ -38,7 +38,7 @@ void setup_level_cameras(void) {
         gCameraSlotUsedLvl[k] = 0;
     }
     g1 = &player_camera;
-    base = D_0013E633 + 0xE1D;
+    base = hero_globals_base + 0xE1D;
     q = &g1->follow;
     p1 = &g1->follow.up;
     g1->previous = 0;

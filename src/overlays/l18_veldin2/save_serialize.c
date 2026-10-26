@@ -7,13 +7,13 @@ typedef struct {
     char *save_data;
 } Level18PauseState;
 
-extern Level18PauseState D_L18_001BA9F0;
-extern void func_0020BA00(char *);
+extern Level18PauseState veldin2_whole_save_buffer_base;
+extern void memcard_MakeWholeSave(char *);
 
 /* Serialize save data once and retain its destination buffer. */
 void serialize_whole_save_once(char *save_data) {
-    if (D_L18_001BA9F0.save_data == 0) {
-        D_L18_001BA9F0.save_data = save_data;
+    if (veldin2_whole_save_buffer_base.save_data == 0) {
+        veldin2_whole_save_buffer_base.save_data = save_data;
         memcard_MakeWholeSave(save_data);
     }
 }

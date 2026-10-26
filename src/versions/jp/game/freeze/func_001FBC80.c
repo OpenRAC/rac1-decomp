@@ -3,7 +3,7 @@ void mode_freeze_init(int arg0, int arg1, int arg2) {
 
     *(int *)(s + 0x30) = arg2;
     if (g_game_mode != 3) {
-        func_0012E528(0x1D);
+        snd_PauseAllSoundsInGroup(0x1D);
         music_Pause(0);
     }
     *(int *)(s + 0x18) = arg1;
@@ -62,7 +62,7 @@ void mode_freeze_init(int arg0, int arg1, int arg2) {
         *(int *)(p + 4) = scale_game_frame_count(0x1E);
         *(int *)(p + 0x20) = -1;
         *(int *)(p + 0x24) = scale_game_frame_count(0x1E);
-        D_0013D440 = 3;
+        memory_card_request = 3;
         *(int *)(p + 0x2C) = scale_game_frame_count(0xA);
         break;
     }

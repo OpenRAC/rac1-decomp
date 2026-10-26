@@ -5,14 +5,14 @@
 #include "vector.h"
 #include "hero.h"
 
-extern int D_L00_0015F6A8 MACRO_ADDR;
-extern char D_0014171B[];
-extern unsigned char D_0013D355[];
-extern int func_L00_002676E8(void *, void *);
-extern int func_L00_00267290(void *, void *);
-extern int func_00215570(void *arg0, int arg1);
-extern void func_0022F4A0(int arg0);
-extern char D_0013E633[];
+extern int cinematic_mode MACRO_ADDR;
+extern char help_stats_base[];
+extern unsigned char special_items_base[];
+extern int DialogRequest_Init(void *, void *);
+extern int Npc_TryStartDialog(void *, void *);
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
+extern void initialize_global_state_entry(int arg0);
+extern char hero_globals_base[];
 
 typedef struct {
     char pad0[0x20];
@@ -50,10 +50,10 @@ void clank_cutscene_trigger_update(M *m) {
     }
     switch (m->state) {
     case 0:
-        *(short *)(D_0014171B + 0xD) = 1;
+        *(short *)(help_stats_base + 0xD) = 1;
         DialogRequest_Init(m, (char *)e + 0x20);
         
-        g = D_0013D355 + 0x13B;
+        g = special_items_base + 0x13B;
         if (g[8]) {
             e->s56 = 1;
             e->f2c = 3.0f;
@@ -61,14 +61,14 @@ void clank_cutscene_trigger_update(M *m) {
         } else {
             e->f2c = 255.0f;
         }
-        h = D_0013D355 + 0x13B;
+        h = special_items_base + 0x13B;
         h[8] = 1;
         m->c30 = 0xFF;
         m->state = 1;
         break;
     case 1:
         if (e->s56) {
-            if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, e->i60))
+            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, e->i60))
                 e->f2c = 16.0f;
             else
                 e->f2c = 3.0f;
@@ -88,10 +88,10 @@ void clank_cutscene_trigger_update(M *m) {
         break;
     }
 }
-extern unsigned char D_0014171B_q[] __asm__("D_0014171B") NOT_SDA;
-extern char *D_L00_00160098 MACRO_ADDR;
-extern int func_L00_00203F20(int a, int b);
-extern int func_00215570(void *, int);
+extern unsigned char help_stats_base_q[] __asm__("D_0014171B") NOT_SDA;
+extern char *moby_array_start MACRO_ADDR;
+extern int Help_Request(int a, int b);
+extern int is_point_inside_clip_volume(void *, int);
 typedef unsigned short Ent[4];
 typedef struct HelpMoby {
     u8 pad_00[0x20];
@@ -129,34 +129,34 @@ void update_level_help_controller(unsigned char *moby) {
         help->state = 1;
         help->alpha = 0xFF;
     }
-    trig = (u16 *)(D_0014171B + 0x34D);
+    trig = (u16 *)(help_stats_base + 0x34D);
     if (trig[0x18 / 2] == 0) Help_Request(3, 3);
     if (trig[0x3A0 / 2] == 0) {
-        if (is_point_inside_clip_volume((void *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, vars[4])) Help_Request(0x4E2A, 0x74);
+        if (is_point_inside_clip_volume((void *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, vars[4])) Help_Request(0x4E2A, 0x74);
     }
     {
-    u16 *trig2 = (u16 *)(D_0014171B + 0x34D);
+    u16 *trig2 = (u16 *)(help_stats_base + 0x34D);
     if (trig2[0x48 / 2] == 0) {
-        if (is_point_inside_clip_volume((void *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, vars[0])) {
-            if (*(unsigned short *)(D_0014171B_q + 0x235) == 0) Help_Request(5, 9);
+        if (is_point_inside_clip_volume((void *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, vars[0])) {
+            if (*(unsigned short *)(help_stats_base_q + 0x235) == 0) Help_Request(5, 9);
         }
     }
     }
     {
-    u16 *trig3 = (u16 *)(D_0014171B + 0x34D);
-    if (trig3[0x40 / 2] == 0 && *(unsigned short *)(D_0014171B_q + 0x22D) == 0) {
-        if (is_point_inside_clip_volume((void *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, vars[1])) Help_Request(4, 8);
+    u16 *trig3 = (u16 *)(help_stats_base + 0x34D);
+    if (trig3[0x40 / 2] == 0 && *(unsigned short *)(help_stats_base_q + 0x22D) == 0) {
+        if (is_point_inside_clip_volume((void *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, vars[1])) Help_Request(4, 8);
     }
     }
-    if (((u16 *)(D_0014171B + 0x34D))[0] == 0) {
-        if (is_point_inside_clip_volume((void *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos, vars[2])) Help_Request(0, 0);
+    if (((u16 *)(help_stats_base + 0x34D))[0] == 0) {
+        if (is_point_inside_clip_volume((void *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, vars[2])) Help_Request(0, 0);
     }
     {
-    u16 *trig4 = (u16 *)(D_0014171B + 0x34D);
+    u16 *trig4 = (u16 *)(help_stats_base + 0x34D);
     if (trig4[0x8 / 2] != 0) return;
     if (trig4[0x10 / 2] != 0) return;
     }
-    hero_ptr = (Hero *)(D_0013E633 + 0xE1D);
+    hero_ptr = (Hero *)(hero_globals_base + 0xE1D);
     target_index_ptr = vars + 5;
     k = -1;
     e = 0xFE;
@@ -220,51 +220,51 @@ typedef struct {
 } VendQuery;
 typedef struct { int moby; int pad; float pos[4]; } VendHit;
 
-extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern short D_0015EE64_s __asm__("D_0015EE64");
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern short D_L00_00161CB4;
-extern short D_L00_00161CB8;
-extern short D_L00_00161CBC;
-extern float D_L00_00166EC0[];
-extern VendHit D_L00_00173F58;
-extern VendPath *D_L00_001B0830[];
-extern float D_L00_0015F660[] MACRO_ADDR;
+extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern short g_frame_scale_sq_s __asm__("D_0015EE64");
+extern float g_frame_time MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern short veldin1_robot_beam_origin_offset;
+extern short veldin1_robot_beam_sweep_cycles;
+extern short veldin1_robot_beam_sweep_angle;
+extern float g_debug_camera[];
+extern VendHit g_coll_hit_moby;
+extern VendPath *level_paths[];
+extern float veldin1_zero_vec[] MACRO_ADDR;
 
-extern void func_L00_002E2B28(void *);
-extern void func_L00_00264BB0(void *, float);
-extern void func_L00_00263950(char *, char *, int, float, float);
-extern float func_001F9D10(void *, void *);
-extern void func_L00_0025B178(void *);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern int func_002140B0(int);
-extern void func_00213DE0(void *, int, int, int);
-extern int func_001F9850(int);
-extern float func_L00_001FF860(float, float);
-extern float func_L00_0025CE58(void *, float, void *, float, float, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_00214D88(float, float, float, float, float *, float *);
-extern float func_001F9CB8(void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001F9D48(void *, void *);
-extern int func_L00_002E33D8(void *, int, int);
-extern float func_001FA748(float, float);
-extern float func_001FA790(float, float);
-extern void func_0020DAF8(char *, int, char *);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern float func_0020D830(void *);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern int func_L00_002E34F0(void *);
-extern int func_L00_002E3640(void *, void *, void *);
-extern int func_L00_0025D6F0(void *, void *);
-extern void func_L00_00260108(void *, void *, int, float, float);
-extern void func_L00_00264EA8(void *, int, int, int, int, int, int);
-extern void *func_L00_00265050(char *, int, float *, void *, int, int, float, float *, float *, float *);
-extern void func_0020D678(void *);
-extern void func_L00_002E2F58(char *);
+extern void update_veldin_robot_damage_and_targeting(void *);
+extern void Manipulator_SetScale(void *, float);
+extern void EaseManipulatorOffsets(char *, char *, int, float, float);
+extern float FastVecDist(void *, void *);
+extern void set_ground_height_band(void *);
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int random_integer_below(int);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern int scale_ticks(int);
+extern float fast_atan2(float, float);
+extern float SteerAngleWithVelocity(void *, float, void *, float, float, float);
+extern void FastVecSub(void *, void *, void *);
+extern float ApproachWithVelocity(float, float, float, float, float *, float *);
+extern float FastVecLength(void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern float vec_distance_xy(void *, void *);
+extern int register_beam_slot(void *, int, int);
+extern float FastAddRots(float, float);
+extern float FastSubRots(float, float);
+extern void MobyTransformScaledVertex(char *, int, char *);
+extern float FastCos(float);
+extern float FastSin(float);
+extern float MobyGetFrameValue(void *);
+extern int coll_line(void *, void *, int, int, int);
+extern int release_beam_slot_by_id(void *);
+extern int set_beam_origin_transform_and_endpoint(void *, void *, void *);
+extern int mine_fall(void *, void *);
+extern void SpawnExplosionFx(void *, void *, int, float, float);
+extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
+extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
+extern void DeleteMoby(void *);
+extern void update_veldin_robot_effects(char *);
 
 /* Vendor (level 0) update: walks a path, turns toward the player, attacks and self-destructs.
    Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e0b88. */
@@ -297,8 +297,8 @@ void veldin_robot_enemy_update(Moby *moby) {
     update_veldin_robot_damage_and_targeting(moby);
     target = vars->target;
     Manipulator_SetScale(vars->unk120, 2.5f);
-    if (D_0015EEB4_m[3] != 0) {
-        EaseManipulatorOffsets((char *)moby, (char *)vars->unk120, 2, *(float *)&D_0015EE64_s * 0.03f, *(float *)&D_0015EE64_s * 0.3f);
+    if (draw_map51_m[3] != 0) {
+        EaseManipulatorOffsets((char *)moby, (char *)vars->unk120, 2, *(float *)&g_frame_scale_sq_s * 0.03f, *(float *)&g_frame_scale_sq_s * 0.3f);
     }
     if (moby->visible != 0 && FastVecDist(&moby->pos, g_debug_camera) < 27.0f) {
         set_ground_height_band(moby);
@@ -311,8 +311,8 @@ void veldin_robot_enemy_update(Moby *moby) {
         vars->unk20 = 2.0f;
         vars->unk28 = 1;
         vars->unk24 = 2;
-        vars->unk58 = func_001FA898_r(14.0f);
-        vars->unk5A = func_001FA898_r(8.0f);
+        vars->unk58 = truncate_float_to_s32_r(14.0f);
+        vars->unk5A = truncate_float_to_s32_r(8.0f);
         vars->pathPt = 1;
         if (random_integer_below(2) != 0) {
             moby->flags |= 0x8000;
@@ -466,22 +466,22 @@ void veldin_robot_enemy_update(Moby *moby) {
     }
     update_veldin_robot_effects((char *)moby);
 }
-extern int func_L00_00258BC8(int, int);
-extern int func_001F9938(void *);
-extern char *func_L00_0025B478(void *, int, int);
-extern int func_L00_0025B4D0(void *, void *, void *, int, int *, float *, int, int);
-extern void func_L00_0025BBA0(void *, float *, void *, void *);
-extern void func_L00_0025D5B0(void *, void *, float, int, int, int);
-extern void func_L00_0025E4B0(void *m, short *p);
-extern void func_L00_002584A8(void *, int, int);
-extern void func_L00_0025E590(void *, void *);
-extern int func_L00_00260FB0(float, char *, void *, int, int, void *, int);
-extern int func_L00_00260D30(void *, float, void *);
-extern float D_L00_00161CA0 SDATA(D_L00_00161CA0);
-extern float D_L00_00161CA4 SDATA(D_L00_00161CA4);
-extern float D_L00_00161CA8 SDATA(D_L00_00161CA8);
-extern float D_L00_00161CAC SDATA(D_L00_00161CAC);
-extern float D_L00_00161CB0 SDATA(D_L00_00161CB0);
+extern int rand_range(int, int);
+extern int FastDecTimer(void *);
+extern char *MobyGetHitMessage(void *, int, int);
+extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
+extern void HeadingFromVector(void *, float *, void *, void *);
+extern void InitKnockback(void *, void *, float, int, int, int);
+extern void RerollEffectCounter(void *m, short *p);
+extern void SetDeathBits(void *, int, int);
+extern void StepColorFade(void *, void *);
+extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
+extern int FindNearestTargetMoby(void *, float, void *);
+extern float veldin1_robot_target_range SDATA(D_L00_00161CA0);
+extern float veldin1_robot_hit_knock_gravity SDATA(D_L00_00161CA4);
+extern float veldin1_robot_hit_knock_drag SDATA(D_L00_00161CA8);
+extern float veldin1_robot_hit_knock_speed SDATA(D_L00_00161CAC);
+extern float veldin1_robot_hit_knock_lift SDATA(D_L00_00161CB0);
 
 typedef unsigned int U128A __attribute__((mode(TI), aligned(16)));
 
@@ -626,7 +626,7 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
         }
     }
     if (vars->targetMoby == 0) {
-        g = D_0013E633 + 0xE1D;
+        g = hero_globals_base + 0xE1D;
         vars->targetMoby = *(TrollMoby **)(g + 0x2080);
         qcopy(&vars->target, g + 0x80);
     }
@@ -644,14 +644,14 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
         }
     }
 }
-extern void func_L00_00250800(void *, int, void *);
-extern void func_002141A8(void *, float, float);
-extern char *func_L00_002757E8(void *, void *, int, void *);
-extern float func_002140F8(float, float);
-extern float func_001FA888(int);
-extern void func_001F49B0(void (*)(void), void *);
-extern void func_L00_002E3128_2E2F58(void) __asm__("func_L00_002E3128");
-extern float D_L00_0015F660[] MACRO_ADDR;
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern void random_spherical_offset(void *, float, float);
+extern char *spawn_mode_controlled_rotating_alpha_fade_particle(void *, void *, int, void *);
+extern float random_float_between(float, float);
+extern float IntToFloat(int);
+extern void AddDrawCallback(void (*)(void), void *);
+extern void draw_veldin_robot_effect_quad_r(void) __asm__("func_L00_002E3128");
+extern float veldin1_zero_vec[] MACRO_ADDR;
 
 // spawns a spark: steps the moby's position and emits one fast particle and three slow tails
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e1aa8.
@@ -689,13 +689,13 @@ void update_veldin_robot_effects(char *m) {
             *(short *)(t + 0x16) = 3;
         }
     }
-    AddDrawCallback(func_L00_002E3128_2E2F58, m);
+    AddDrawCallback(draw_veldin_robot_effect_quad_r, m);
 }
-extern float D_L00_001E6FF0[][4];
-extern void func_001F9CA0(void *, void *, void *);
-extern int func_001F4868(int);
-extern void func_001F9C30(void *, void *, float);
-extern void func_L00_001FD1D8(void *, void *, int);
+extern float veldin1_robot_effect_quad_corners[][4];
+extern void FastVecCross(void *, void *, void *);
+extern int GetEffectTex(int);
+extern void FastVecScale(void *, void *, float);
+extern void draw_world_quad(void *, void *, int);
 typedef float W[4] __attribute__((aligned(16)));
 typedef struct {
     int c[4];
@@ -718,7 +718,7 @@ void draw_veldin_robot_effect_quad(char *m) {
     bb[3] = 1.0f;
     FastVecSub(c, g_debug_camera, bb);
     vec_scale_to_length(c, c, 1.0f);
-    FastVecCross(d, c, D_0013E633 + 0x10AD);
+    FastVecCross(d, c, hero_globals_base + 0x10AD);
     vec_scale_to_length(d, d, -1.0f);
     FastVecCross(e, d, c);
     t.q0 = GetEffectTex(11);
@@ -746,11 +746,11 @@ void draw_veldin_robot_effect_quad(char *m) {
     }
     draw_world_quad(q, c, 0);
 }
-extern int D_L00_00161D58[] MACRO_ADDR;
-extern int D_L00_00161CC8[] MACRO_ADDR;
-extern void func_L00_002E35A8(int);
-extern void func_L00_002E3700(int, int);
-extern void func_L00_002E3FA0(void);
+extern int beam_slot_ids[] MACRO_ADDR;
+extern int beam_slot_states[] MACRO_ADDR;
+extern void release_beam_slot(int);
+extern void update_slot_panes_and_effects(int, int);
+extern void draw_active_beam_slots(void);
 
 /* Slot update: state 0 clears the two slot arrays, state 1 services the pending slots. The arrays are MACRO_ADDR (retail loads their addresses unsplit), as the NTSC decomp declares them. */
 void update_beam_slot_controller(unsigned char *m) {
@@ -787,10 +787,10 @@ void update_beam_slot_controller(unsigned char *m) {
         break;
     }
 }
-extern void func_L00_00264870(int);
-extern void func_L00_00264BE8(void *, void *, void *, float, float);
-extern char *func_L00_0026DEA0(void *, int, void *, int, float, float, float, float);
-extern float D_L00_0015F660_b[] __asm__("D_L00_0015F660") MACRO_ADDR;
+extern void cutscene_set_camera_target(int);
+extern void draw_trail(void *, void *, void *, float, float);
+extern char *PartType23Spawn(void *, int, void *, int, float, float, float, float);
+extern float veldin1_zero_vec_b[] __asm__("D_L00_0015F660") MACRO_ADDR;
 typedef struct {
     char pad[0x30];
     int a;
@@ -798,7 +798,7 @@ typedef struct {
     char pad2[0x178 - 0x38];
     int arr[4];
 } G;
-extern G D_L00_0016C960;
+extern G cutscene_state;
 
 typedef struct { char pad[0x20]; unsigned char state; char pad2[0xF]; unsigned char v; } M2;
 
@@ -832,7 +832,7 @@ void update_phase_effect_controller(M2 *m) {
                         col = (rand_range(0x40, 0x80) << 24) | 0x787878;
                         h = rand_range(0, 4);
                         if (random_integer_below(2)) h = -h;
-                        q = PartType23Spawn(buf, h, D_L00_0015F660_b, col, 0.75f, 1.0f, 1.03f, 120000.0f);
+                        q = PartType23Spawn(buf, h, veldin1_zero_vec_b, col, 0.75f, 1.0f, 1.03f, 120000.0f);
                         if (q) {
                             q[3] = 0x44;
                             r = q + 0x20;

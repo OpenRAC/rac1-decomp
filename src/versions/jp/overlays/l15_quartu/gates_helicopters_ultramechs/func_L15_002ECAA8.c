@@ -10,7 +10,7 @@ void draw_quartu_cutscene_messages(void) {
         if (scale_ticks(0xB5) < *(int *)(s + 0x34)) {
             if (*(int *)(s + 0x34) < scale_ticks(0x104)) {
                 flag = 1;
-                func_00116248(buf, quartu_cutscene_msg_format, msg_string(0x52C1));
+                sprintf(buf, quartu_cutscene_msg_format, msg_string(0x52C1));
                 val = (*(int *)(s + 0x34) - scale_ticks(0xB5)) >> 2;
             }
         }
@@ -18,7 +18,7 @@ void draw_quartu_cutscene_messages(void) {
         if (scale_ticks(0x1C2) < *(int *)(s2 + 0x34)) {
             if (*(int *)(s2 + 0x34) < scale_ticks(0x280)) {
                 flag = 1;
-                func_00116248(buf, quartu_cutscene_msg_format, msg_string(0x52C2));
+                sprintf(buf, quartu_cutscene_msg_format, msg_string(0x52C2));
                 val = (*(int *)(s2 + 0x34) - scale_ticks(0x1C2)) >> 2;
             }
         }
@@ -26,7 +26,7 @@ void draw_quartu_cutscene_messages(void) {
         if (scale_ticks(0x2EE) < *(int *)(s3 + 0x34)) {
             if (*(int *)(s3 + 0x34) < scale_ticks(0x3A2)) {
                 flag = 1;
-                func_00116248(buf, quartu_cutscene_msg_format, msg_string(0x52C3));
+                sprintf(buf, quartu_cutscene_msg_format, msg_string(0x52C3));
                 val = (*(int *)(s3 + 0x34) - scale_ticks(0x2EE)) >> 2;
             }
         }
@@ -34,13 +34,13 @@ void draw_quartu_cutscene_messages(void) {
         if (scale_ticks(0x8FC) < *(int *)(s + 0x34)) {
             if (*(int *)(s + 0x34) < scale_ticks(0x960)) {
                 flag = 1;
-                func_00116248(buf, quartu_cutscene_msg_format, msg_string(0x52C5));
+                sprintf(buf, quartu_cutscene_msg_format, msg_string(0x52C5));
                 val = (*(int *)(s + 0x34) - scale_ticks(0x8FC)) >> 2;
             }
         }
     }
     if (flag == 0) return;
-    n = func_00116810(buf);
+    n = libc_strlen(buf);
     if (val < n) {
         n = val;
     } else if (n < val) {

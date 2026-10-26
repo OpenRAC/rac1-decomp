@@ -21,22 +21,22 @@ typedef struct {
     unsigned char pad4c[0x58];
     unsigned char hit_slot;
 } DebrisMoby;
-extern DebrisColors D_L01_00161CE0;
-extern float D_0015EE6C MACRO_ADDR;
-extern float func_002140F8(float, float);
-extern int func_002140B0(int);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_L00_00258BC8(int, int);
-extern int func_001F9850(int);
-extern void func_L00_0026DD70(void *, void *, int, int, float, int);
-extern void func_L00_002584A8(void *, int, int);
-extern void func_0020D678(void *);
-extern char *func_L00_0025B478(void *, int, int);
-extern int func_0022ED80(int, int, int);
-extern void func_L01_002F9908(void *, void *, u32, s32, f32, f32, f32, f32, s32);
+extern DebrisColors rock_formation_debris_colors;
+extern float g_frame_time MACRO_ADDR;
+extern float random_float_between(float, float);
+extern int random_integer_below(int);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern int rand_range(int, int);
+extern int scale_ticks(int);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
+extern void SetDeathBits(void *, int, int);
+extern void DeleteMoby(void *);
+extern char *MobyGetHitMessage(void *, int, int);
+extern int Moby_PlaySound(int, int, int);
+extern void spawn_debris_moby(void *, void *, u32, s32, f32, f32, f32, f32, s32);
 
 /* Rock formation update: when hit, plays a sound and bursts into 200 debris pieces. */
 void rock_formation_update(DebrisMoby *m) {
@@ -125,15 +125,15 @@ typedef struct {
     SwayVars *pvars;
 } SwayMoby;
 
-extern float D_0015EE6C MACRO_ADDR;
-extern void func_L00_0025E210(void *);
-extern float func_002140F8(float, float);
+extern float g_frame_time MACRO_ADDR;
+extern void copy_hero_moby_field_38(void *);
+extern float random_float_between(float, float);
 extern int func_001160D8(void);
-extern void func_001F9BC0(void *);
-extern void func_L00_001F2BE8(void *, int, void *, void *, float);
-extern int func_001F9908(int *);
-extern int func_001F9850(int);
-extern float func_001FA748(float, float);
+extern void clear_u64_value(void *);
+extern void coll_sphere_mobys(void *, int, void *, void *, float);
+extern int fast_dec_timer(int *);
+extern int scale_ticks(int);
+extern float FastAddRots(float, float);
 
 /* Oscillating spinner: swings its angle between -1 and 1 and turns the moby to match. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002f9bf0. */
 void fan_update(SwayMoby *m) {
@@ -169,8 +169,8 @@ void fan_update(SwayMoby *m) {
     m->rotz = FastAddRots(m->rotz, g_frame_time * -12.566371f * v->sway);
 }
 typedef u32 u128_FB158 __attribute__((mode(TI), aligned(16)));
-extern f32 func_002140F8(f32, f32);
-extern f32 D_0015EE6C MACRO_ADDR;
+extern f32 random_float_between(f32, f32);
+extern f32 g_frame_time MACRO_ADDR;
 typedef struct {
     u32 c[3];
 } BurstColors;
@@ -190,41 +190,41 @@ typedef struct {
     u8 padA5[0xD];
     s16 id;
 } BurstMoby;
-extern s32 D_0015EE84_FB158 __asm__("D_0015EE84") MACRO_ADDR;
-extern s32 D_0014C290[][64];
-extern s32 D_L01_001BAC60[];
+extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
+extern s32 level_moby_killed[][64];
+extern s32 moby_killed[];
 typedef struct {
     u8 pad0[0x454];
     u8 collected[1];
 } BurstLevelState;
-extern BurstLevelState D_L01_001BB9C0;
-extern BurstColors D_L01_00161CF0;
-extern void *func_L00_0025B478_FB158(void *, s32, s32) __asm__("func_L00_0025B478");
-extern void func_0020D678(void *);
-extern f32 func_00214158(void);
-extern s32 func_002140B0(s32);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_L00_001FF4B0(void *, void *, f32);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_L00_00258BC8(int lo, int hi);
-extern void func_L01_002F9908(void *, void *, u32, s32, f32, f32, f32, f32, s32);
-extern f32 func_00214158_FB158b(void) __asm__("func_00214158");
-extern void func_001F9BD8_FB158b(void *, void *, void *) __asm__("func_001F9BD8");
+extern BurstLevelState novalis_checkpoint_level_state;
+extern BurstColors bridge_piece_debris_colors;
+extern void *MobyGetHitMessage_r(void *, s32, s32) __asm__("func_L00_0025B478");
+extern void DeleteMoby(void *);
+extern f32 random_angle_radians(void);
+extern s32 random_integer_below(s32);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void vec_scale_to_length(void *, void *, f32);
+extern void FastVecAdd(void *, void *, void *);
+extern int rand_range(int lo, int hi);
+extern void spawn_debris_moby(void *, void *, u32, s32, f32, f32, f32, f32, s32);
+extern f32 random_angle_radians_r(void) __asm__("func_00214158");
+extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 void func_0020D678_FB158b(void *) __asm__("func_0020D678");
-extern void func_001F9BD8_FB158c(void *, void *, void *) __asm__("func_001F9BD8");
-extern f32 func_001F9F90_FB158b(f32) __asm__("func_001F9F90");
-extern f32 func_001F9FA8_FB158b(f32) __asm__("func_001F9FA8");
+extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
+extern f32 FastCos_r(f32) __asm__("func_001F9F90");
+extern f32 FastSin_r(f32) __asm__("func_001F9FA8");
 void *func_L00_0025B478_FB158b(void *, s32, s32) __asm__("func_L00_0025B478");
 void func_0020D678_FB158c(void *) __asm__("func_0020D678");
-extern float func_001F9F90_FB158c(float) __asm__("func_001F9F90");
-extern float func_001F9FA8_FB158c(float) __asm__("func_001F9FA8");
-extern void func_001F9BD8_FB158d(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_001F9BD8_FB158e(void *, void *, void *) __asm__("func_001F9BD8");
-extern int func_L00_00258BC8_FB158b(int lo, int hi) __asm__("func_L00_00258BC8");
-extern f32 func_00214158_FB158c(void) __asm__("func_00214158");
-extern f32 func_002140F8_FB158b(f32, f32) __asm__("func_002140F8");
-extern f32 D_0015EE6C_FB158b __asm__("D_0015EE6C") MACRO_ADDR;
+extern float FastCos_r2(float) __asm__("func_001F9F90");
+extern float FastSin_r2(float) __asm__("func_001F9FA8");
+extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
+extern void FastVecAdd_r4(void *, void *, void *) __asm__("func_001F9BD8");
+extern int rand_range_r(int lo, int hi) __asm__("func_L00_00258BC8");
+extern f32 random_angle_radians_r2(void) __asm__("func_00214158");
+extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
+extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 void *func_L00_0025B478_FB158c(void *, s32, s32) __asm__("func_L00_0025B478");
 void func_0020D678_FB158d(void *) __asm__("func_0020D678");
 
@@ -239,28 +239,28 @@ void bridge_piece_1_update(BurstMoby *self) {
     s32 i;
 
     t = func_L00_0025B478_FB158c(self, 0x830000, 0);
-    if (D_L01_001BB9C0.collected[self->id] != 0
-        || (level_moby_killed[D_0015EE84_FB158][self->id >> 5] >> (self->id & 0x1F)) & 1) {
+    if (novalis_checkpoint_level_state.collected[self->id] != 0
+        || (level_moby_killed[g_current_level_index_r][self->id >> 5] >> (self->id & 0x1F)) & 1) {
         func_0020D678_FB158d(self);
     }
     if (t != 0 && t->moby->oclass == 0x2AE) {
         for (i = 0; i < 20; i++) {
             colors = bridge_piece_debris_colors;
             pos.q = 0;
-            pos.f[0] = func_002140F8_FB158b(-D_0015EE6C_FB158b, D_0015EE6C_FB158b);
-            pos.f[1] = func_002140F8_FB158b(-D_0015EE6C_FB158b, D_0015EE6C_FB158b);
-            pos.f[2] = func_002140F8_FB158b(-D_0015EE6C_FB158b, D_0015EE6C_FB158b);
+            pos.f[0] = random_float_between_r(-g_frame_time_r, g_frame_time_r);
+            pos.f[1] = random_float_between_r(-g_frame_time_r, g_frame_time_r);
+            pos.f[2] = random_float_between_r(-g_frame_time_r, g_frame_time_r);
             dir.q = pos.q;
-            r = func_002140F8_FB158b(2.0f, 3.0f);
-            ang = func_00214158_FB158c();
-            pos.f[0] = func_001F9F90_FB158c(ang) * r;
-            pos.f[1] = func_001F9FA8_FB158c(ang) * r;
+            r = random_float_between_r(2.0f, 3.0f);
+            ang = random_angle_radians_r2();
+            pos.f[0] = FastCos_r2(ang) * r;
+            pos.f[1] = FastSin_r2(ang) * r;
             pos.f[2] = 0.0f;
-            vec_scale_to_length(&dir, &dir, func_002140F8_FB158b(D_0015EE6C_FB158b * 5.0f, D_0015EE6C_FB158b * 20.0f));
-            func_001F9BD8_FB158e(&pos, &pos, &self->pos);
-            spawn_debris_moby(&pos, &dir, colors.c[random_integer_below(3)], func_L00_00258BC8_FB158b(0xB4, 0x12C), 0.05f, 1.0f, 1.0f, 0.75f, 0);
+            vec_scale_to_length(&dir, &dir, random_float_between_r(g_frame_time_r * 5.0f, g_frame_time_r * 20.0f));
+            FastVecAdd_r4(&pos, &pos, &self->pos);
+            spawn_debris_moby(&pos, &dir, colors.c[random_integer_below(3)], rand_range_r(0xB4, 0x12C), 0.05f, 1.0f, 1.0f, 0.75f, 0);
         }
-        level_moby_killed[D_0015EE84_FB158][self->id >> 5] |= 1 << (self->id & 0x1F);
+        level_moby_killed[g_current_level_index_r][self->id >> 5] |= 1 << (self->id & 0x1F);
         moby_killed[self->id >> 5] |= 1 << (self->id & 0x1F);
         func_0020D678_FB158d(self);
     } else {
@@ -268,11 +268,11 @@ void bridge_piece_1_update(BurstMoby *self) {
     }
 }
 typedef struct { int a[4]; } Vy __attribute__((aligned(16)));
-extern char *func_0020D348(int);
-extern void func_L00_00251328(void *, int, int, int);
-extern float func_00214158(void);
-extern char *func_L00_0026E940(char *, int, int, int, float);
-extern void func_L00_00251E30(void *, int);
+extern char *CreateMoby(int);
+extern void set_moby_color(void *, int, int, int);
+extern float random_angle_radians(void);
+extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
+extern void moby_build_matrix(void *, int);
 
 /* Spawns a beam moby (0x2D2) from owner between two points, colored, with random rotation and two glow sprites.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l01/unclassified_002f9810.c, FUN_L01_002fa068. */
@@ -321,18 +321,18 @@ typedef struct {
     f32 b;
 } BurstLight_2FB588;
 
-extern BurstPalette_2FB588 D_L01_0020B7E0_2FB588 __asm__("D_L01_0020B7E0");
-extern BurstPalette_2FB588 D_L01_0020B7F8_2FB588 __asm__("D_L01_0020B7F8");
-extern char D_L01_001E3720_2FB588[] __asm__("D_L01_001E3720");
-extern void func_001F9BC0_2FB588(void *) __asm__("func_001F9BC0");
-extern int func_L00_00258BC8_2FB588(int lo, int hi) __asm__("func_L00_00258BC8");
-extern void func_L00_0026B890_2FB588(void *, void *, u32, u32, f32, s32, s32, f32, s32, s32) __asm__("func_L00_0026B890");
-extern s32 func_L00_002ADBB0_2FB588(void *, void *, void *, f32, s32, s32, s32, s32, s32) __asm__("func_L00_002ADBB0");
-extern s32 func_0022ED80_2FB588(s32, s32, void *) __asm__("func_0022ED80");
-extern void func_L00_002D4CE8_2FB588(void *, void *, s32, s32) __asm__("func_L00_002D4CE8");
-extern f32 func_002140F8_2FB588(f32, f32) __asm__("func_002140F8");
-extern s32 func_002140B0_2FB588(s32) __asm__("func_002140B0");
-extern s32 func_001F9850_2FB588(s32) __asm__("func_001F9850");
+extern BurstPalette_2FB588 novalis_explosion_inner_colors_r __asm__("D_L01_0020B7E0");
+extern BurstPalette_2FB588 novalis_explosion_outer_colors_r __asm__("D_L01_0020B7F8");
+extern char novalis_explosion_light_r[] __asm__("D_L01_001E3720");
+extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
+extern int rand_range_r2(int lo, int hi) __asm__("func_L00_00258BC8");
+extern void PartType11Spawn_r(void *, void *, u32, u32, f32, s32, s32, f32, s32, s32) __asm__("func_L00_0026B890");
+extern s32 spawn_glow_particle_r(void *, void *, void *, f32, s32, s32, s32, s32, s32) __asm__("func_L00_002ADBB0");
+extern s32 Moby_PlaySound_r(s32, s32, void *) __asm__("func_0022ED80");
+extern void mine_camera_blast_r(void *, void *, s32, s32) __asm__("func_L00_002D4CE8");
+extern f32 random_float_between_r2(f32, f32) __asm__("func_002140F8");
+extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
+extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 
 /* Explosion burst at `where`: three particles in random colours from two six-colour palettes, two
  * func_L00_002ADBB0 effects on `moby`, its sound unless the moby is dying (state 0xFD/0xFE), and a light flash of
@@ -353,42 +353,42 @@ void func_L01_002FB588_r(struct Moby *moby, u128_2FB588 *where, s32 sound, f32 s
     /* pos and inner are used through pointers, as in retail */
     pos_p = &pos;
     pos.q = *where;
-    func_001F9BC0_2FB588(&vel);
+    clear_u64_value_r(&vel);
     inner_p = &inner;
     for (i = 2; i >= 0; i--) {
-        speed = func_002140F8_2FB588(8.0f, 10.0f) * D_0015EE6C_FB158b;
+        speed = random_float_between_r2(8.0f, 10.0f) * g_frame_time_r;
         size = scale * 400000.0f;
-        inner = D_L01_0020B7E0_2FB588;
-        outer = D_L01_0020B7F8_2FB588;
-        func_L00_0026B890_2FB588(pos_p, &vel,
-                         inner_p->c[func_002140B0_2FB588(6)], outer.c[func_002140B0_2FB588(6)],
+        inner = novalis_explosion_inner_colors_r;
+        outer = novalis_explosion_outer_colors_r;
+        PartType11Spawn_r(pos_p, &vel,
+                         inner_p->c[random_integer_below_r(6)], outer.c[random_integer_below_r(6)],
                          size,
-                         func_L00_00258BC8_2FB588(func_001F9850_2FB588(0xF), func_001F9850_2FB588(0x14)),
-                         func_L00_00258BC8_2FB588(func_001F9850_2FB588(0x19), func_001F9850_2FB588(0x1E)),
+                         rand_range_r2(scale_ticks_r(0xF), scale_ticks_r(0x14)),
+                         rand_range_r2(scale_ticks_r(0x19), scale_ticks_r(0x1E)),
                          speed * scale, 0, 0);
     }
 
     if (moby != 0) {
-        func_L00_002ADBB0_2FB588(moby, pos_p, &vel, scale + scale, func_001F9850_2FB588(0x14), 0x7F, 0, 0x40, 0x30);
-        func_L00_002ADBB0_2FB588(moby, pos_p, &vel, scale * 1.5f, func_001F9850_2FB588(0x1D), 0x20, 0, 0x20, 0);
+        spawn_glow_particle_r(moby, pos_p, &vel, scale + scale, scale_ticks_r(0x14), 0x7F, 0, 0x40, 0x30);
+        spawn_glow_particle_r(moby, pos_p, &vel, scale * 1.5f, scale_ticks_r(0x1D), 0x20, 0, 0x20, 0);
         if (moby->state != 0xFE) {
             if (moby->state != 0xFD && sound != -1) {
-                func_0022ED80_2FB588(sound, 0, moby);
+                Moby_PlaySound_r(sound, 0, moby);
             }
         }
     }
 
     if (light != 0.0f) {
         if (light > 0.0f) {
-            ((BurstLight_2FB588 *)D_L01_001E3720_2FB588)->g = light;
-            ((BurstLight_2FB588 *)D_L01_001E3720_2FB588)->b = light;
-            ((BurstLight_2FB588 *)D_L01_001E3720_2FB588)->r = light;
+            ((BurstLight_2FB588 *)novalis_explosion_light_r)->g = light;
+            ((BurstLight_2FB588 *)novalis_explosion_light_r)->b = light;
+            ((BurstLight_2FB588 *)novalis_explosion_light_r)->r = light;
         } else {
-            ((BurstLight_2FB588 *)D_L01_001E3720_2FB588)->g = 13.0f;
-            ((BurstLight_2FB588 *)D_L01_001E3720_2FB588)->b = 13.0f;
-            ((BurstLight_2FB588 *)D_L01_001E3720_2FB588)->r = 13.0f;
+            ((BurstLight_2FB588 *)novalis_explosion_light_r)->g = 13.0f;
+            ((BurstLight_2FB588 *)novalis_explosion_light_r)->b = 13.0f;
+            ((BurstLight_2FB588 *)novalis_explosion_light_r)->r = 13.0f;
         }
-        func_L00_002D4CE8_2FB588(((BurstLight_2FB588 *)D_L01_001E3720_2FB588), pos_p, 0, 0);
+        mine_camera_blast_r(((BurstLight_2FB588 *)novalis_explosion_light_r), pos_p, 0, 0);
     }
 }
 typedef struct {
@@ -415,16 +415,16 @@ typedef struct {
     int count;
 } DropProbe;
 
-extern char D_L01_001672C0[];
-extern char D_L01_00174360[];
-extern float func_001F9878(float);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001F9D48(void *, void *);
-extern int func_001F9908(int *arg0);
-extern int func_L00_001EFFF0(void *, void *, int, void *, void *);
-extern void func_0020D678(void *);
-extern void func_L01_002FB588(void *, void *, int, float, float);
-extern int func_L00_001F2BE8_2FB898(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
+extern char camera_pos[];
+extern char novalis_coll_hit_point[];
+extern float multiply_global_factor(float);
+extern void FastVecAdd(void *, void *, void *);
+extern float vec_distance_xy(void *, void *);
+extern int fast_dec_timer(int *arg0);
+extern int coll_line(void *, void *, int, void *, void *);
+extern void DeleteMoby(void *);
+extern void spawn_explosion_effects(void *, void *, int, float, float);
+extern int coll_sphere_mobys_r(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
 
 /* Per-frame update of a falling drop: integrates its velocity, tests it against the world and spawns its impact effect. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002fa4c0. */
 void update_birdbot_projectile(DropMoby *m) {
@@ -471,13 +471,13 @@ void update_birdbot_projectile(DropMoby *m) {
         spawn_explosion_effects(m, &tmp, 0, 0.5f, zero);
         DeleteMoby(m);
     } else if (coll_line(&prev, pos, 0, v->coll, &probe) != 0) {
-        qcopy(pos, D_L01_00174360);
+        qcopy(pos, novalis_coll_hit_point);
         tmp = m->pos;
         spawn_explosion_effects(m, &tmp, 0, 0.5f, zero);
         DeleteMoby(m);
     } else {
         half = 0.5f;
-        if (func_L00_001F2BE8_2FB898(half, pos, 0x10, v->coll, &probe) != 0) {
+        if (coll_sphere_mobys_r(half, pos, 0x10, v->coll, &probe) != 0) {
             tmp = m->pos;
             spawn_explosion_effects(m, &tmp, 0, half, zero);
             DeleteMoby(m);
@@ -488,26 +488,26 @@ typedef int QW128_2FBBD8 __attribute__((mode(TI)));
 typedef union { QW128_2FBBD8 q; float f[4]; int i[4]; } QuadW_2FBBD8;
 typedef struct { float f[3]; } V3_2FBBD8;
 typedef struct { unsigned char pad0[0x454]; unsigned char collected[1]; } LvState_2FBBD8;
-extern void func_0020D678_2FBBD8(void *) __asm__("func_0020D678");
-extern void *func_L00_0025B478_2FBBD8(void *, int, int) __asm__("func_L00_0025B478");
-extern int func_0022ED80_2FBBD8(int, int, int) __asm__("func_0022ED80");
-extern float func_002140F8_2FBBD8(float, float) __asm__("func_002140F8");
-extern float func_001F9F90_2FBBD8(float) __asm__("func_001F9F90");
-extern float func_001F9FA8_2FBBD8(float) __asm__("func_001F9FA8");
-extern void func_001F9BD8_2FBBD8(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_L00_001FF4B0_2FBBD8(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern int func_L00_00258BC8_2FBBD8(int lo, int hi) __asm__("func_L00_00258BC8");
-extern int func_001F9850_2FBBD8(int) __asm__("func_001F9850");
-extern void func_L00_0026DD70_2FBBD8(void *, void *, int, int, float, int) __asm__("func_L00_0026DD70");
-extern int func_002140B0_2FBBD8(int) __asm__("func_002140B0");
-extern void func_L01_002F9908_2FBBD8(void *, void *, unsigned int, float, int, float, float, float, int) __asm__("func_L01_002F9908");
-extern unsigned char D_0014171B_2FBBD8[] __asm__("D_0014171B");
-extern int D_L01_001BAC60_2FBBD8[] __asm__("D_L01_001BAC60");
-extern int D_0015EE84_2FBBD8 __asm__("D_0015EE84") MACRO_ADDR;
-extern float D_0015EE6C_2FBBD8 __asm__("D_0015EE6C") MACRO_ADDR;
-extern unsigned char D_0013D355_2FBBD8[] __asm__("D_0013D355");
-extern V3_2FBBD8 D_L01_00161D00_2FBBD8 __asm__("D_L01_00161D00");
-extern LvState_2FBBD8 D_L01_001BB9C0_2FBBD8 __asm__("D_L01_001BB9C0");
+extern void DeleteMoby_r(void *) __asm__("func_0020D678");
+extern void *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
+extern int Moby_PlaySound_r2(int, int, int) __asm__("func_0022ED80");
+extern float random_float_between_r3(float, float) __asm__("func_002140F8");
+extern float FastCos_r3(float) __asm__("func_001F9F90");
+extern float FastSin_r3(float) __asm__("func_001F9FA8");
+extern void FastVecAdd_r5(void *, void *, void *) __asm__("func_001F9BD8");
+extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
+extern int rand_range_r3(int lo, int hi) __asm__("func_L00_00258BC8");
+extern int scale_ticks_r2(int) __asm__("func_001F9850");
+extern void spawn_effect_particle_with_target_scalar_r(void *, void *, int, int, float, int) __asm__("func_L00_0026DD70");
+extern int random_integer_below_r2(int) __asm__("func_002140B0");
+extern void spawn_debris_moby_r(void *, void *, unsigned int, float, int, float, float, float, int) __asm__("func_L01_002F9908");
+extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
+extern int moby_killed_r[] __asm__("D_L01_001BAC60");
+extern int g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
+extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
+extern unsigned char special_items_base_r[] __asm__("D_0013D355");
+extern V3_2FBBD8 cave_wall_debris_colors_r __asm__("D_L01_00161D00");
+extern LvState_2FBBD8 novalis_checkpoint_level_state_r __asm__("D_L01_001BB9C0");
 
 /* destroyable_cave_wall_update: update for the cave wall moby (class 729) on level 01; a wall already burst is deleted, else it spawns its debris. */
 void destroyable_cave_wall_update(char *moby) {
@@ -527,73 +527,73 @@ void destroyable_cave_wall_update(char *moby) {
 
     uid = cave_wall_moby->save_id;
     id = uid;
-    if (D_L01_001BB9C0_2FBBD8.collected[id] != 0) {
-        func_0020D678_2FBBD8(cave_wall_moby);
+    if (novalis_checkpoint_level_state_r.collected[id] != 0) {
+        DeleteMoby_r(cave_wall_moby);
         return;
     }
-    if ((*(int *)(D_0014171B_2FBBD8 + 0xAB75 + ((id >> 5) * 4 + (D_0015EE84_2FBBD8 << 8))) >> (uid & 0x1F)) & 1) {
-        func_0020D678_2FBBD8(cave_wall_moby);
+    if ((*(int *)(help_stats_base_r + 0xAB75 + ((id >> 5) * 4 + (g_current_level_index_r2 << 8))) >> (uid & 0x1F)) & 1) {
+        DeleteMoby_r(cave_wall_moby);
         return;
     }
-    if (func_L00_0025B478_2FBBD8(cave_wall_moby, 0x800000, 0) == 0) {
+    if (MobyGetHitMessage_r2(cave_wall_moby, 0x800000, 0) == 0) {
         return;
     }
-    func_0022ED80_2FBBD8(0, 0, (int)cave_wall_moby);
+    Moby_PlaySound_r2(0, 0, (int)cave_wall_moby);
     for (n = 0; n < 500; n++) {
         a.q = 0;
-        a.f[0] = func_002140F8_2FBBD8(-1.0f, 1.0f);
-        a.f[1] = func_002140F8_2FBBD8(-1.0f, 1.0f);
-        a.f[2] = func_002140F8_2FBBD8(-1.0f, 1.0f);
+        a.f[0] = random_float_between_r3(-1.0f, 1.0f);
+        a.f[1] = random_float_between_r3(-1.0f, 1.0f);
+        a.f[2] = random_float_between_r3(-1.0f, 1.0f);
         tab.q = a.q;
         b.q = 0;
-        t = func_002140F8_2FBBD8(-4.0f, 4.0f);
-        t = t * func_001F9F90_2FBBD8(cave_wall_moby->rot.z);
+        t = random_float_between_r3(-4.0f, 4.0f);
+        t = t * FastCos_r3(cave_wall_moby->rot.z);
         b.f[0] = t;
-        u1 = func_002140F8_2FBBD8(-1.0f, 1.0f);
-        u1 = u1 * func_001F9FA8_2FBBD8(cave_wall_moby->rot.z);
+        u1 = random_float_between_r3(-1.0f, 1.0f);
+        u1 = u1 * FastSin_r3(cave_wall_moby->rot.z);
         b.f[1] = u1;
-        b.f[2] = func_002140F8_2FBBD8(0.0f, 8.0f);
+        b.f[2] = random_float_between_r3(0.0f, 8.0f);
         a.q = b.q;
-        func_001F9BD8_2FBBD8(&a, &a, &cave_wall_moby->pos);
-        x = func_002140F8_2FBBD8(1.5f, 3.5f);
-        func_L00_001FF4B0_2FBBD8(&tab, &tab, x * D_0015EE6C_2FBBD8);
-        x = func_002140F8_2FBBD8(1.5f, 3.5f);
+        FastVecAdd_r5(&a, &a, &cave_wall_moby->pos);
+        x = random_float_between_r3(1.5f, 3.5f);
+        vec_scale_to_length_r(&tab, &tab, x * g_frame_time_r2);
+        x = random_float_between_r3(1.5f, 3.5f);
         t = x * 210000.0f;
-        r = func_L00_00258BC8_2FBBD8(0x78, 0xF0);
-        func_L00_0026DD70_2FBBD8(&a, &tab, 0x5F787878, 0x181818, t, func_001F9850_2FBBD8(r));
+        r = rand_range_r3(0x78, 0xF0);
+        spawn_effect_particle_with_target_scalar_r(&a, &tab, 0x5F787878, 0x181818, t, scale_ticks_r2(r));
     }
 
     for (m = 0; m < 100; m++) {
-        *(V3_2FBBD8 *)&tab = D_L01_00161D00_2FBBD8;
+        *(V3_2FBBD8 *)&tab = cave_wall_debris_colors_r;
         b.q = 0;
-        b.f[0] = func_002140F8_2FBBD8(-1.0f, 1.0f);
-        b.f[1] = func_002140F8_2FBBD8(-1.0f, 1.0f);
-        b.f[2] = func_002140F8_2FBBD8(-1.0f, 1.0f);
+        b.f[0] = random_float_between_r3(-1.0f, 1.0f);
+        b.f[1] = random_float_between_r3(-1.0f, 1.0f);
+        b.f[2] = random_float_between_r3(-1.0f, 1.0f);
         c.q = 0;
         a.q = b.q;
-        t = func_002140F8_2FBBD8(-4.0f, 4.0f);
-        t = t * func_001F9F90_2FBBD8(cave_wall_moby->rot.z);
+        t = random_float_between_r3(-4.0f, 4.0f);
+        t = t * FastCos_r3(cave_wall_moby->rot.z);
         c.f[0] = t;
-        u1 = func_002140F8_2FBBD8(-1.0f, 1.0f);
-        u1 = u1 * func_001F9FA8_2FBBD8(cave_wall_moby->rot.z);
+        u1 = random_float_between_r3(-1.0f, 1.0f);
+        u1 = u1 * FastSin_r3(cave_wall_moby->rot.z);
         c.f[1] = u1;
-        c.f[2] = func_002140F8_2FBBD8(1.0f, 8.0f);
+        c.f[2] = random_float_between_r3(1.0f, 8.0f);
         b.q = c.q;
-        func_001F9BD8_2FBBD8(&b, &b, &cave_wall_moby->pos);
-        x = func_002140F8_2FBBD8(1.0f, 5.0f);
-        func_L00_001FF4B0_2FBBD8(&a, &a, x * D_0015EE6C_2FBBD8);
-        r = func_002140B0_2FBBD8(3);
+        FastVecAdd_r5(&b, &b, &cave_wall_moby->pos);
+        x = random_float_between_r3(1.0f, 5.0f);
+        vec_scale_to_length_r(&a, &a, x * g_frame_time_r2);
+        r = random_integer_below_r2(3);
         pi = &tab.i[r];
-        x = func_002140F8_2FBBD8(0.05f, 0.15f);
-        r = func_L00_00258BC8_2FBBD8(0x3C, 0xB4);
-        func_L01_002F9908_2FBBD8(&b, &a, *pi, x, r, 1.0f, 1.0f, 0.75f, 0);
+        x = random_float_between_r3(0.05f, 0.15f);
+        r = rand_range_r3(0x3C, 0xB4);
+        spawn_debris_moby_r(&b, &a, *pi, x, r, 1.0f, 1.0f, 0.75f, 0);
     }
 
-    *(int *)(D_0014171B_2FBBD8 + 0xAB75 + ((((short)cave_wall_moby->save_id) >> 5) * 4 + (D_0015EE84_2FBBD8 << 8))) |= 1 << (cave_wall_moby->save_id & 0x1F);
-    D_L01_001BAC60_2FBBD8[((short)cave_wall_moby->save_id) >> 5] |= 1 << (cave_wall_moby->save_id & 0x1F);
-    p = (unsigned char *)D_0013D355_2FBBD8 + 0x13B;
+    *(int *)(help_stats_base_r + 0xAB75 + ((((short)cave_wall_moby->save_id) >> 5) * 4 + (g_current_level_index_r2 << 8))) |= 1 << (cave_wall_moby->save_id & 0x1F);
+    moby_killed_r[((short)cave_wall_moby->save_id) >> 5] |= 1 << (cave_wall_moby->save_id & 0x1F);
+    p = (unsigned char *)special_items_base_r + 0x13B;
     p[0xE] = 1;
-    func_0020D678_2FBBD8(cave_wall_moby);
+    DeleteMoby_r(cave_wall_moby);
 }
 typedef struct {
     char pad0[0x44];
@@ -601,11 +601,11 @@ typedef struct {
     char pad1[0x132];
     char *m[1];
 } G;
-extern int D_L01_0015F6A8 MACRO_ADDR;
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
-extern G D_L01_0016CD60;
-extern unsigned char D_L01_0017C940[];
-extern void func_0020D960(char *, int, void *);
+extern int novalis_game_mode MACRO_ADDR;
+extern unsigned char gCheats[] MACRO_ADDR;
+extern G fx_cutscene;
+extern unsigned char novalis_big_head_cheat_manipulator[];
+extern void AttachManipulator(char *, int, void *);
 
 /* Arms the 0x32B mobys' marker record once, while the level flag is 2. */
 void apply_cutscene_big_head_cheat(void) {
@@ -654,33 +654,33 @@ typedef struct {
     /* 0x70 */ Vec4f b;
 } Rec_2FC140;
 typedef struct { unsigned char pad0[0x454]; unsigned char collected[1]; } Lv_2FC140;
-extern Moby *D_L01_00160058_2FC140 __asm__("D_L01_00160058") MACRO_ADDR;
-extern Rec_2FC140 *D_L01_0016016C_2FC140 __asm__("D_L01_0016016C") MACRO_ADDR;
-extern int D_L01_0015F6A8_2FC140 __asm__("D_L01_0015F6A8") MACRO_ADDR;
-extern char D_L01_001BAD60_2FC140[] __asm__("D_L01_001BAD60");
-extern Lv_2FC140 D_L01_001BB9C0_2FC140 __asm__("D_L01_001BB9C0");
-extern unsigned char D_L01_0015FD08_2FC140[] __asm__("D_L01_0015FD08") MACRO_ADDR;
-extern char D_L01_001BADB0_2FC140[] __asm__("D_L01_001BADB0");
-extern char D_0013E633_2FC140[] __asm__("D_0013E633");
-extern void func_L01_002FC058_2FC140(void) __asm__("func_L01_002FC058");
-extern int func_001F9938_2FC140(void *) __asm__("func_001F9938");
-extern int func_001F9850_2FC140(int) __asm__("func_001F9850");
-extern void func_00213DE0_2FC140(void *, int, int, int) __asm__("func_00213DE0");
-extern void func_L00_00299B68_2FC140(int) __asm__("func_L00_00299B68");
-extern void func_L00_0028FC68_2FC140(void) __asm__("func_L00_0028FC68");
-extern int func_00215570_2FC140(void *, int) __asm__("func_00215570");
-extern void func_001F9BC0_2FC140(void *) __asm__("func_001F9BC0");
-extern float func_001F9D48_2FC140(void *, void *) __asm__("func_001F9D48");
-extern float func_L00_001FF860_2FC140(float, float) __asm__("func_L00_001FF860");
-extern void func_00213D28_2FC140(void *, int, int) __asm__("func_00213D28");
-extern void func_L00_0029A7D0_2FC140(int) __asm__("func_L00_0029A7D0");
-extern void func_L00_00261848_2FC140(int) __asm__("func_L00_00261848");
-extern void func_L00_00263DB0_2FC140(int) __asm__("func_L00_00263DB0");
-extern void func_L01_0029C2A0_2FC140(void *, int, void *, int, void *) __asm__("func_L01_0029C2A0");
-extern void func_L00_002512D8_2FC140(int) __asm__("func_L00_002512D8");
-extern void func_L00_00286128_2FC140(void *, void *) __asm__("func_L00_00286128");
-extern int func_0020BFC8_2FC140(int, int) __asm__("func_0020BFC8");
-extern void func_L01_002A3680_2FC140(void) __asm__("func_L01_002A3680");
+extern Moby *novalis_mobys_r __asm__("D_L01_00160058") MACRO_ADDR;
+extern Rec_2FC140 *camera_points_r __asm__("D_L01_0016016C") MACRO_ADDR;
+extern int novalis_game_mode_r __asm__("D_L01_0015F6A8") MACRO_ADDR;
+extern char novalis_current_level_state_r[] __asm__("D_L01_001BAD60");
+extern Lv_2FC140 novalis_checkpoint_level_state_r2 __asm__("D_L01_001BB9C0");
+extern unsigned char novalis_mission_group_state_r[] __asm__("D_L01_0015FD08") MACRO_ADDR;
+extern char novalis_saved_moby_bytes_r[] __asm__("D_L01_001BADB0");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
+extern void apply_cutscene_big_head_cheat_r(void) __asm__("func_L01_002FC058");
+extern int FastDecTimer_r(void *) __asm__("func_001F9938");
+extern int scale_ticks_r3(int) __asm__("func_001F9850");
+extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
+extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
+extern void deactivate_recorded_moby_r(void) __asm__("func_L00_0028FC68");
+extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
+extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
+extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
+extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern void MobySetAnimation_r(void *, int, int) __asm__("func_00213D28");
+extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
+extern void unlock_planet_r(int) __asm__("func_L00_00261848");
+extern void queue_planet_unlock_message_r(int) __asm__("func_L00_00263DB0");
+extern void record_moby_context_bytes_r(void *, int, void *, int, void *) __asm__("func_L01_0029C2A0");
+extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
+extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
+extern int memcard_Save_r(int, int) __asm__("func_0020BFC8");
+extern void ShowTrackedMoby_r(void) __asm__("func_L01_002A3680");
 
 /* Agnogg ship update (moby classes 730, 731, 790 on level 01): state machine on moby->state. */
 void agnogg_ship_front_update(Moby *moby) {
@@ -695,8 +695,8 @@ void agnogg_ship_front_update(Moby *moby) {
     float fd;
 
     data = (void *)moby->pvars;
-    func_L01_002FC058_2FC140();
-    func_001F9938_2FC140(&data->timer);
+    apply_cutscene_big_head_cheat_r();
+    FastDecTimer_r(&data->timer);
     switch (moby->state) {
     case 0:
         fz = moby->pos.z - 0.75f;
@@ -710,58 +710,58 @@ void agnogg_ship_front_update(Moby *moby) {
         moby->pos.z = moby->pos.z + fd;
         break;
     case 1:
-        r16 = *(unsigned char *)(moby->mission + (D_0015EE84_2FBBD8 << 4) + (D_0014171B_2FBBD8 + 0xAA35));
+        r16 = *(unsigned char *)(moby->mission + (g_current_level_index_r2 << 4) + (help_stats_base_r + 0xAA35));
         if (r16 == 0xFF) {
             if (moby->prev_seq != 2) {
-                func_00213DE0_2FC140(moby, 2, 0, func_001F9850_2FC140(0x14));
+                MobyBlendAnimation_r(moby, 2, 0, scale_ticks_r3(0x14));
             }
             moby->state = 10;
             moby->flags = moby->flags & 0xFFBE;
             moby->draw_dist = r16;
             moby->collision = ((Class_2FC140 *)moby->pclass)->f10;
         } else {
-            if (D_L01_0015F6A8_2FC140 == 0) {
-                unsigned char *pp = D_0013D355_2FBBD8 + 0x13B;
+            if (novalis_game_mode_r == 0) {
+                unsigned char *pp = special_items_base_r + 0x13B;
                 if (pp[0xF] == 0) {
-                    func_L00_00299B68_2FC140(5);
+                    StartCutscene_r(5);
                     pp[0xF] = 1;
                 }
             }
-            func_L00_0028FC68_2FC140();
-            if (func_00215570_2FC140(D_0013E633_2FC140 + 0xE9D, data->f10) != 0) {
+            deactivate_recorded_moby_r();
+            if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, data->f10) != 0) {
                 moby->flags = moby->flags & 0xFFBE;
                 moby->collision = ((Class_2FC140 *)moby->pclass)->f10;
                 if (data->link != -1) {
-                    q = (void *)D_L01_00160058_2FC140[data->link].pvars;
-                    q->timer = func_001F9850_2FC140(0x1A4);
-                    D_L01_00160058_2FC140[data->link].command = 1;
-                    func_001F9BC0_2FC140(&D_L01_0016016C_2FC140[q->rec].b);
-                    func_001F9BC0_2FC140(&q->v);
-                    D_L01_0016016C_2FC140[q->rec].b.y = -func_L00_001FF860_2FC140(
-                        func_001F9D48_2FC140(&D_L01_0016016C_2FC140[q->rec].a, &moby->pos),
-                        moby->pos.z - D_L01_0016016C_2FC140[q->rec].a.z);
-                    D_L01_0016016C_2FC140[q->rec].b.z = func_L00_001FF860_2FC140(
-                        moby->pos.x - D_L01_0016016C_2FC140[q->rec].a.x,
-                        moby->pos.y - D_L01_0016016C_2FC140[q->rec].a.y);
+                    q = (void *)novalis_mobys_r[data->link].pvars;
+                    q->timer = scale_ticks_r3(0x1A4);
+                    novalis_mobys_r[data->link].command = 1;
+                    clear_u64_value_r2(&camera_points_r[q->rec].b);
+                    clear_u64_value_r2(&q->v);
+                    camera_points_r[q->rec].b.y = -fast_atan2_r(
+                        vec_distance_xy_r(&camera_points_r[q->rec].a, &moby->pos),
+                        moby->pos.z - camera_points_r[q->rec].a.z);
+                    camera_points_r[q->rec].b.z = fast_atan2_r(
+                        moby->pos.x - camera_points_r[q->rec].a.x,
+                        moby->pos.y - camera_points_r[q->rec].a.y);
                 }
                 moby->state = 2;
             }
         }
         break;
     case 2:
-        moby->pos.z = moby->pos.z - D_0015EE6C_2FBBD8 * 5.0f;
+        moby->pos.z = moby->pos.z - g_frame_time_r2 * 5.0f;
         if (data->link != -1) {
-            q = (void *)D_L01_00160058_2FC140[data->link].pvars;
-            q->v.y = -func_L00_001FF860_2FC140(
-                func_001F9D48_2FC140(&D_L01_0016016C_2FC140[q->rec].a, &moby->pos),
-                moby->pos.z - D_L01_0016016C_2FC140[q->rec].a.z);
-            q->v.z = func_L00_001FF860_2FC140(
-                moby->pos.x - D_L01_0016016C_2FC140[q->rec].a.x,
-                moby->pos.y - D_L01_0016016C_2FC140[q->rec].a.y);
+            q = (void *)novalis_mobys_r[data->link].pvars;
+            q->v.y = -fast_atan2_r(
+                vec_distance_xy_r(&camera_points_r[q->rec].a, &moby->pos),
+                moby->pos.z - camera_points_r[q->rec].a.z);
+            q->v.z = fast_atan2_r(
+                moby->pos.x - camera_points_r[q->rec].a.x,
+                moby->pos.y - camera_points_r[q->rec].a.y);
         }
         if (moby->prev_seq == 0) {
             if (moby->pos.z - data->fC <= 0.0f) {
-                func_00213D28_2FC140(moby, 1, 0);
+                MobySetAnimation_r(moby, 1, 0);
             }
         }
         if (moby->pos.z <= data->fC) {
@@ -777,7 +777,7 @@ void agnogg_ship_front_update(Moby *moby) {
             break;
         }
         if (moby->prev_seq != 2) {
-            func_00213DE0_2FC140(moby, 2, 0, func_001F9850_2FC140(0x14));
+            MobyBlendAnimation_r(moby, 2, 0, scale_ticks_r3(0x14));
         }
         if (moby->oclass == 0x2DA) {
             moby->state = 10;
@@ -790,9 +790,9 @@ void agnogg_ship_front_update(Moby *moby) {
         cnt = 0;
         i = 0;
         do {
-            if (data->list[i] != -1 && (char *)D_L01_00160058_2FC140 + (data->list[i] << 8) != 0
-                && ((Moby *)((char *)D_L01_00160058_2FC140 + (data->list[i] << 8)))->state != 0xFE
-                && ((Moby *)((char *)D_L01_00160058_2FC140 + (data->list[i] << 8)))->state != 0xFD) {
+            if (data->list[i] != -1 && (char *)novalis_mobys_r + (data->list[i] << 8) != 0
+                && ((Moby *)((char *)novalis_mobys_r + (data->list[i] << 8)))->state != 0xFE
+                && ((Moby *)((char *)novalis_mobys_r + (data->list[i] << 8)))->state != 0xFD) {
                 flag = 0;
                 break;
             }
@@ -802,14 +802,14 @@ void agnogg_ship_front_update(Moby *moby) {
         if (flag == 0) {
             break;
         }
-        n4 = *(int *)(D_0013E633_2FC140 + 0x2EA9);
+        n4 = *(int *)(hero_globals_base_r + 0x2EA9);
         if (n4 == 7) {
             break;
         }
         if (n4 == 0x14) {
             break;
         }
-        data->timer = func_001F9850_2FC140(0x2D);
+        data->timer = scale_ticks_r3(0x2D);
         moby->state = 5;
         break;
     case 5:
@@ -818,55 +818,55 @@ void agnogg_ship_front_update(Moby *moby) {
         }
         data->fA = (*(unsigned short *)&moby->draw_dist);
         moby->flags = moby->flags | 0x41;
-        func_L00_00299B68_2FC140(3);
+        StartCutscene_r(3);
         moby->state = 6;
         break;
     case 6:
-        if (D_L01_0015F6A8_2FC140 == 2) {
+        if (novalis_game_mode_r == 2) {
             break;
         }
-        func_L00_0029A7D0_2FC140(3);
+        PlayMovieEntryIfIdle_r(3);
         moby->state = 7;
         break;
     case 7:
-        if (D_L01_0015F6A8_2FC140 == 2) {
+        if (novalis_game_mode_r == 2) {
             break;
         }
-        func_L00_00299B68_2FC140(4);
+        StartCutscene_r(4);
         moby->state = 8;
         break;
     case 8:
-        if (D_L01_0015F6A8_2FC140 == 2) {
+        if (novalis_game_mode_r == 2) {
             break;
         }
-        func_L00_00261848_2FC140(3);
-        func_L00_00263DB0_2FC140(3);
+        unlock_planet_r(3);
+        queue_planet_unlock_message_r(3);
         moby->flags = moby->flags & 0xFFBE;
         if (data->link != -1) {
-            ((Lv_2FC140 *)D_L01_001BAD60_2FC140)->collected[(*(short *)&D_L01_00160058_2FC140[data->link].save_id)] = D_L01_00160058_2FC140[data->link].mission + 2;
-            if (D_L01_00160058_2FC140[data->link].mission == 0xFF
-                || (D_L01_0015FD08_2FC140[D_L01_00160058_2FC140[data->link].mission] != 0xFF
-                    && (D_0014171B_2FBBD8 + 0xAA35)[D_L01_00160058_2FC140[data->link].mission + (D_0015EE84_2FBBD8 << 4)] == 0xFF)) {
-                D_L01_001BB9C0_2FC140.collected[(*(short *)&D_L01_00160058_2FC140[data->link].save_id)] = D_L01_00160058_2FC140[data->link].mission + 2;
+            ((Lv_2FC140 *)novalis_current_level_state_r)->collected[(*(short *)&novalis_mobys_r[data->link].save_id)] = novalis_mobys_r[data->link].mission + 2;
+            if (novalis_mobys_r[data->link].mission == 0xFF
+                || (novalis_mission_group_state_r[novalis_mobys_r[data->link].mission] != 0xFF
+                    && (help_stats_base_r + 0xAA35)[novalis_mobys_r[data->link].mission + (g_current_level_index_r2 << 4)] == 0xFF)) {
+                novalis_checkpoint_level_state_r2.collected[(*(short *)&novalis_mobys_r[data->link].save_id)] = novalis_mobys_r[data->link].mission + 2;
             }
         }
         if (data->f3C != -1) {
-            q = (void *)D_L01_00160058_2FC140[data->f3C].pvars;
-            q->timer = func_001F9850_2FC140(0xB4);
-            D_L01_00160058_2FC140[data->f3C].command = 1;
+            q = (void *)novalis_mobys_r[data->f3C].pvars;
+            q->timer = scale_ticks_r3(0xB4);
+            novalis_mobys_r[data->f3C].command = 1;
             if (data->f34 != -1 && data->f38 != -1) {
-                D_L01_00160058_2FC140[data->f34].command = 2;
-                D_L01_00160058_2FC140[data->f38].command = 2;
-                func_L01_0029C2A0_2FC140(&D_L01_00160058_2FC140[data->f34].command, 1, &D_L01_00160058_2FC140[data->f34], 1, D_L01_001BADB0_2FC140);
-                func_L01_0029C2A0_2FC140(&D_L01_00160058_2FC140[data->f38].command, 1, &D_L01_00160058_2FC140[data->f38], 1, D_L01_001BADB0_2FC140);
+                novalis_mobys_r[data->f34].command = 2;
+                novalis_mobys_r[data->f38].command = 2;
+                record_moby_context_bytes_r(&novalis_mobys_r[data->f34].command, 1, &novalis_mobys_r[data->f34], 1, novalis_saved_moby_bytes_r);
+                record_moby_context_bytes_r(&novalis_mobys_r[data->f38].command, 1, &novalis_mobys_r[data->f38], 1, novalis_saved_moby_bytes_r);
             }
         }
-        func_L00_002512D8_2FC140(moby->mission);
+        jet_clear_persistent_r(moby->mission);
         if (data->rec != -1) {
-            func_L00_00286128_2FC140(&D_L01_0016016C_2FC140[data->rec].a, &D_L01_0016016C_2FC140[data->rec].b);
+            jet_reset_camera_r(&camera_points_r[data->rec].a, &camera_points_r[data->rec].b);
         }
-        func_0020BFC8_2FC140(0, -1);
-        func_L01_002A3680_2FC140();
+        memcard_Save_r(0, -1);
+        ShowTrackedMoby_r();
         moby->state = 10;
         break;
     case 10:
@@ -875,14 +875,14 @@ void agnogg_ship_front_update(Moby *moby) {
     }
 }
 typedef int u128_2FCC80 __attribute__((mode(TI)));
-extern void func_L00_0028EBF0(int);
-extern int func_L00_0028EB98(void *, int);
-extern int func_0022ED80(int, int, int);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern short D_0015EE84;
-extern unsigned char D_0014171B[] NOT_SDA;
-extern unsigned char D_0013E633_u[] __asm__("D_0013E633") NOT_SDA;
+extern void Sound_StopSlot(int);
+extern int Sound_IsPlaying(void *, int);
+extern int Moby_PlaySound(int, int, int);
+extern float FastCos(float);
+extern float FastSin(float);
+extern short g_current_level_index;
+extern unsigned char help_stats_base[] NOT_SDA;
+extern unsigned char hero_globals_base_u[] __asm__("D_0013E633") NOT_SDA;
 
 typedef struct PendulumVars {
     u8 pad_00[0x60];
@@ -916,7 +916,7 @@ void bridge_half_update(char *p) {
         pendulum_vars->sound = -1;
         break;
     case BRIDGE_HALF_WAIT_FOR_TRIGGER:
-        if (self->command == 2 || (D_0014171B + 0xAA35)[self->mission + (*(int *)&g_current_level_index << 4)] == 0xFF) {
+        if (self->command == 2 || (help_stats_base + 0xAA35)[self->mission + (*(int *)&g_current_level_index << 4)] == 0xFF) {
             self->state = 2;
             self->command = 0;
         }
@@ -929,7 +929,7 @@ void bridge_half_update(char *p) {
         if (pendulum_vars->swing == 0.0f) {
             voice_slot_index = pendulum_vars->sound;
             if (voice_slot_index != -1) {
-                voice = D_0013E633_u + 0x1D + voice_slot_index * 0x70;
+                voice = hero_globals_base_u + 0x1D + voice_slot_index * 0x70;
                 if (*(void **)(voice + 0x88) == self && voice[0x74] != 0) {
                     Sound_StopSlot(voice_slot_index);
                 }
@@ -962,46 +962,46 @@ typedef struct {
 typedef struct {
     u8 pad0[0x10]; f32 px, py, pz; u8 pad1C[4]; u8 state; u8 pad21[0xF]; u8 update_dist; u8 pad31[0x47]; void *pvars;
 } PMoby;
-extern PoolTile D_L01_001E3780[];
-extern PoolLight D_L01_001CAF80;
-extern f32 D_L01_001803C0[];
-extern u8 D_L01_001FA980[];
-extern s32 D_L01_001FA8A8[];
-extern s32 D_L01_001FA8C8[];
-extern s32 D_L01_001FA8E8[];
-extern u32 D_L01_001FA850[];
-extern u128_pool D_L01_001FA910[];
-extern u8 D_L01_001FA960[];
-extern s32 D_L01_0015F6B0 MACRO_ADDR;
-extern short D_L01_00161D14;
+extern PoolTile pool_tiles[];
+extern PoolLight pool_light;
+extern f32 pool_sun[];
+extern u8 pool_tile_tex[];
+extern s32 pool_first[];
+extern s32 pool_count[];
+extern s32 pool_odds[];
+extern u32 pool_colors[];
+extern u128_pool pool_drips[];
+extern u8 pool_wave[];
+extern s32 novalis_frame_count MACRO_ADDR;
+extern short pool_drip_timer;
 #define pool_drip_timer_r (*(int *)&D_L01_00161D14)
-extern PoolTile *D_L01_00161350 MACRO_ADDR;
-extern u8 *D_L01_00161354 MACRO_ADDR;
-extern s32 D_L01_00161358 MACRO_ADDR;
-extern void func_L01_002B8C00(void *, s32);
-extern void func_L01_002B8E20(void *, void *);
-extern void func_L01_002B90A8(f32);
-extern void func_L01_002B9198(void *, s32);
-extern void func_L01_002B9440(f32, f32, f32, f32, void *, s32);
-extern void func_L00_002A5158(int, int, int, float, float, float, float);
-extern f32 func_L00_001FF860(f32, f32);
-extern int func_00215570(void *, int);
-extern void func_L01_002FE498(void);
-extern void func_001F49B0(void *, void *);
-extern char *func_L01_003010A8(void *position, float scale);
-extern void func_L01_002888C8(void *, void *, f32);
-extern void func_L01_00288A48(void *, void *, f32, f32);
-extern u8 D_L01_00161280[4] MACRO_ADDR;
-extern u8 D_L01_00161281[4] MACRO_ADDR;
-extern u8 D_L01_00161282[4] MACRO_ADDR;
-extern u8 D_L01_00161283[4] MACRO_ADDR;
-extern u8 D_L01_00161284[4] MACRO_ADDR;
-extern u8 D_L01_00161285[4] MACRO_ADDR;
-extern u8 D_L01_00161286[4] MACRO_ADDR;
-extern f32 D_L01_00161288 MACRO_ADDR;
-extern f32 D_L01_0016128C MACRO_ADDR;
-extern f32 D_L01_00161290 MACRO_ADDR;
-extern f32 D_L01_00161294 MACRO_ADDR;
+extern PoolTile *pool_draw_tiles MACRO_ADDR;
+extern u8 *pool_draw_tex MACRO_ADDR;
+extern s32 pool_draw_count MACRO_ADDR;
+extern void RipplePatchesInit(void *, s32);
+extern void RipplePatch_ToFixedPoint(void *, void *);
+extern void RescaleFloatTable(f32);
+extern void RippleSimClock(void *, s32);
+extern void pool_ripple(f32, f32, f32, f32, void *, s32);
+extern void RippleDisturb(int, int, int, float, float, float, float);
+extern f32 fast_atan2(f32, f32);
+extern int is_point_inside_clip_volume(void *, int);
+extern void Moby751Draw(void);
+extern void AddDrawCallback(void *, void *);
+extern char *pool_drip(void *position, float scale);
+extern void pool_bubble(void *, void *, f32);
+extern void pool_bubbles(void *, void *, f32, f32);
+extern u8 novalis_water_tint_r[4] MACRO_ADDR;
+extern u8 novalis_water_tint_g[4] MACRO_ADDR;
+extern u8 novalis_water_tint_b[4] MACRO_ADDR;
+extern u8 water_tint[4] MACRO_ADDR;
+extern u8 novalis_water_tint2_r[4] MACRO_ADDR;
+extern u8 novalis_water_tint2_g[4] MACRO_ADDR;
+extern u8 novalis_water_tint2_b[4] MACRO_ADDR;
+extern f32 novalis_water_ripple_params_0 MACRO_ADDR;
+extern f32 novalis_water_ripple_params_1 MACRO_ADDR;
+extern f32 novalis_water_ripple_params_2 MACRO_ADDR;
+extern f32 novalis_water_ripple_params_3 MACRO_ADDR;
 
 /* Novalis pool update: sets up the ripple tiles and runs the pool's water effects. */
 void update_pool_tiles_and_effects(PMoby *moby) {
@@ -1060,11 +1060,11 @@ void update_pool_tiles_and_effects(PMoby *moby) {
             l->c3D = 0x40;
         }
         pool_draw_count = 21;
-        D_L01_00161288 = zero;
+        novalis_water_ripple_params_0 = zero;
         tex = pool_tile_tex;
-        D_L01_0016128C = 32768.0f;
-        D_L01_00161290 = 255.0f;
-        D_L01_00161294 = 48.0f;
+        novalis_water_ripple_params_1 = 32768.0f;
+        novalis_water_ripple_params_2 = 255.0f;
+        novalis_water_ripple_params_3 = 48.0f;
         pool_draw_tiles = pool_tiles;
         pool_draw_tex = pool_tile_tex;
         for (m = 0; m < 21; m++) {
@@ -1159,13 +1159,13 @@ void update_pool_tiles_and_effects(PMoby *moby) {
     }
 }
 typedef struct { float x, y, z, w; } __attribute__((aligned(16))) SV4;
-extern char *func_L00_0025B478(void *, int, int);
-extern void func_L01_00279790(void *);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void *func_L00_00265050(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11, float scale, float *v12);
-extern void func_L01_00279E10(void *, int);
-extern float D_L01_0015F660[] MACRO_ADDR;
+extern char *MobyGetHitMessage(void *, int, int);
+extern void spawn_proximity_gated_bolts(void *);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11, float scale, float *v12);
+extern void spawn_moby_from_placement(void *, int);
+extern float novalis_zero_vec[] MACRO_ADDR;
 
 typedef struct SparkHit {
     u8 pad_00[0x2C];
@@ -1225,7 +1225,7 @@ void green_mushroom_update(char *m) {
         break;
     }
 }
-extern char D_L01_001FBF40[];
+extern char novalis_four_scroll_layers[];
 /* The moby comes in $a0 and goes on to the delete, untouched. */
 void draw_four_scroll_layers(void *moby) {
     DefaultVtbl_DeleteMoby(moby);
@@ -1239,12 +1239,12 @@ typedef struct {
     u8 pad10[0x4C];
     f32 glow;
 } WaterLayer;
-extern WaterLayer D_L01_001FBF40_FFF30[] __asm__("D_L01_001FBF40");
-extern short D_L01_00161D70;
-extern s32 D_L01_0015F6B0 MACRO_ADDR;
-extern f32 func_001FA888(s32);
-extern void func_L01_002FFF00(void *);
-extern int func_001F49B0_FFF30(void (*)(void), void *) __asm__("func_001F49B0");
+extern WaterLayer novalis_four_scroll_layers_r[] __asm__("D_L01_001FBF40");
+extern short novalis_scroll_layers_ready;
+extern s32 novalis_frame_count MACRO_ADDR;
+extern f32 IntToFloat(s32);
+extern void draw_four_scroll_layers(void *);
+extern int AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
 
 /* On first use, lowers and ripples the layers' vertices; every frame, pulses their glow and queues FUN_L01_002feb28.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l01/gameplay/entities/002f9810.c, FUN_L01_002feb58. */
@@ -1262,8 +1262,8 @@ void update_scroll_layers_and_queue_draw(void *arg) {
     if ((*(s32 *)&novalis_scroll_layers_ready) == 0) {
         (*(s32 *)&novalis_scroll_layers_ready) = 1;
         for (i = 0; i < 4; i++) {
-            v = (D_L01_001FBF40_FFF30 + i)->verts;
-            for (j = 0; j < (D_L01_001FBF40_FFF30 + i)->count; j++) {
+            v = (novalis_four_scroll_layers_r + i)->verts;
+            for (j = 0; j < (novalis_four_scroll_layers_r + i)->count; j++) {
                 v->f[3] = v->f[2] = v->f[2] - 0.45f;
                 v++;
             }
@@ -1271,8 +1271,8 @@ void update_scroll_layers_and_queue_draw(void *arg) {
         k = 1;
         for (n = 0; n < 4; n++) {
             k--;
-            w = (D_L01_001FBF40_FFF30 + n)->verts;
-            for (m = 0; m < (D_L01_001FBF40_FFF30 + n)->count; m += 2) {
+            w = (novalis_four_scroll_layers_r + n)->verts;
+            for (m = 0; m < (novalis_four_scroll_layers_r + n)->count; m += 2) {
                 if (k & 1) {
                     w[0].f[2] += 0.05f;
                     w[0].f[3] -= 0.05f;
@@ -1292,17 +1292,17 @@ void update_scroll_layers_and_queue_draw(void *arg) {
     s = FastSin((IntToFloat(novalis_frame_count & 0x3F) - 32.0f) * 0.09817477f);
     s = s * 0.5f + 0.5f;
     for (g = 3; g >= 0; g--) {
-        D_L01_001FBF40_FFF30[g].glow = s;
+        novalis_four_scroll_layers_r[g].glow = s;
     }
-    func_001F49B0_FFF30(draw_four_scroll_layers, arg);
+    AddDrawCallback_r(draw_four_scroll_layers, arg);
 }
 typedef struct { float f[4]; } V __attribute__((aligned(16)));
 typedef struct { V home; float t; float radius; } HoverVars;
-extern char D_0013E633[];
-extern float func_001F9D48(void *, void *);
-extern float func_001F9B88(float);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
+extern char hero_globals_base[];
+extern float vec_distance_xy(void *, void *);
+extern float FastAbsF(float);
+extern float FastCos(float);
+extern float FastSin(float);
 
 /* Sliding door update: opens when the player is near, closes when far, and offsets the door along its heading by the open amount. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002fed68. */
 void door_left_update(Moby *m) {
@@ -1319,7 +1319,7 @@ void door_left_update(Moby *m) {
         m->state = 1;
         break;
     case 1:
-        player = (V *)(D_0013E633 + 0xE9D);
+        player = (V *)(hero_globals_base + 0xE9D);
         if (vec_distance_xy(v, player) < v->radius && FastAbsF(m->pos.z - player->f[2]) < 2.0f) {
             m->state = 2;
             if (m->oclass == 0x300) {
@@ -1336,7 +1336,7 @@ void door_left_update(Moby *m) {
         break;
     case 3:
         k = 1.1f;
-        if (vec_distance_xy(v, D_0013E633 + 0xE9D) > v->radius * k
+        if (vec_distance_xy(v, hero_globals_base + 0xE9D) > v->radius * k
             && vec_distance_xy(v, camera_pos) > v->radius * k) {
             m->state = 4;
             if (m->oclass == 0x300) {
@@ -1345,7 +1345,7 @@ void door_left_update(Moby *m) {
         }
         break;
     case 4:
-        player = (V *)(D_0013E633 + 0xE9D);
+        player = (V *)(hero_globals_base + 0xE9D);
         if (vec_distance_xy(v, player) < v->radius && FastAbsF(m->pos.z - player->f[2]) < 2.0f) {
             m->state = 2;
         } else {
@@ -1363,12 +1363,12 @@ void door_left_update(Moby *m) {
     m->pos.x = v->home.f[0] + off.f[0];
     m->pos.y = v->home.f[1] + off.f[1];
 }
-extern char *func_L00_0025B478(void *, int, int);
-extern int func_002140B0(int);
-extern int func_0022ED80(int, int, int);
-extern int func_L00_00258BC8(int, int);
-extern void func_L00_0026DD70(void *, void *, int, int, float, int);
-extern char *func_L01_00300E68(char *owner);
+extern char *MobyGetHitMessage(void *, int, int);
+extern int random_integer_below(int);
+extern int Moby_PlaySound(int, int, int);
+extern int rand_range(int, int);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
+extern char *spawn_pipe_replacement_moby(char *owner);
 typedef int u128b __attribute__((mode(TI)));
 
 // Breakable prop update: when hit, spawns a burst of debris sparks then replaces itself.
@@ -1411,7 +1411,7 @@ void Moby778Update(char *m) {
         DeleteMoby(m);
     }
 }
-extern void func_L00_00251E30(void *, int);
+extern void moby_build_matrix(void *, int);
 
 /* Spawns the replacement pipe moby (class 0x30B) at the owner's position and rotation. */
 char *spawn_pipe_replacement_moby(char *owner) {
@@ -1431,11 +1431,11 @@ char *spawn_pipe_replacement_moby(char *owner) {
     }
     return moby;
 }
-extern int func_0022ED80(int, int, int);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_L00_00258BC8(int, int);
-extern void func_L00_0026DD70(void *, void *, int, int, float, int);
+extern int Moby_PlaySound(int, int, int);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern int rand_range(int, int);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 typedef int u128 __attribute__((mode(TI)));
 typedef union {
@@ -1470,9 +1470,9 @@ void update_smoke_emitter(char *self) {
         spawn_effect_particle_with_target_scalar(&pos, &vel, 0x207F7F7F, 0x272727, size, scale_ticks(rand_range(0x2D, 0x3C)));
     }
 }
-extern float func_002140F8(float,float);
-extern void func_L00_00251E30_spawn(void *) __asm__("func_L00_00251E30");
-extern float D_0015EE70_s __asm__("D_0015EE70") MACRO_ADDR;
+extern float random_float_between(float,float);
+extern void moby_build_matrix_spawn(void *) __asm__("func_L00_00251E30");
+extern float g_frame_time_sq_s __asm__("D_0015EE70") MACRO_ADDR;
 /* Spawns a scaled class-0x313 drip with position and randomized motion. */
 char *pool_drip(void *position,float scale) {
  char *m=CreateMoby(0x313);
@@ -1486,22 +1486,22 @@ char *pool_drip(void *position,float scale) {
   ((Moby *)m)->rot.z=random_angle_radians();
   qcopy(m+0x10,position);
   qzero(data);
-  {float gravity=-g_frame_time;float duration=D_0015EE70_s*15.0f;
+  {float gravity=-g_frame_time;float duration=g_frame_time_sq_s*15.0f;
   *(float *)(data+8)=gravity;
   *(float *)(data+0x10)=duration;}
   *(int *)(data+0x14)=120;
   *(float *)(data+0x1C)=random_float_between(0.0031415929552167654f,0.06283185631036758f);
-  func_L00_00251E30_spawn(m);
+  moby_build_matrix_spawn(m);
  }
  return m;
 }
-extern int D_L01_00161350_s __asm__("D_L01_00161350") MACRO_ADDR;
-extern int D_L01_00161358_s __asm__("D_L01_00161358") MACRO_ADDR;
-extern float D_L01_00174368_s __asm__("D_L01_00174368") NOT_SDA;
-extern int func_L00_001F3958(void);
-extern void func_L00_002A5158(int, int, int, float, float, float, float);
-extern char *func_L00_002D9340(void *, float);
-extern void func_L00_002703E8(void *, void *, int, int);
+extern int pool_draw_tiles_s __asm__("D_L01_00161350") MACRO_ADDR;
+extern int pool_draw_count_s __asm__("D_L01_00161358") MACRO_ADDR;
+extern float novalis_coll_hit_point_z_s __asm__("D_L01_00174368") NOT_SDA;
+extern int CollType(void);
+extern void RippleDisturb(int, int, int, float, float, float, float);
+extern char *spawn_burst_moby(void *, float);
+extern void PartType35Spawn(void *, void *, int, int);
 
 /* Falling chunk: drops and spins; on its first landing it splashes (sound, splash and 16 drops) and
  * bounces up smaller, then fades out when its timer ends. Deleted if it lands out of bounds. */
@@ -1520,10 +1520,10 @@ void update_falling_splash_moby(char *m) {
             if (*(int *)(d + 0x18) == 0) {
                 Moby_PlaySound(0, 0, (int)m);
             }
-            RippleDisturb(D_L01_00161350_s, D_L01_00161358_s, 1, ((Moby *)m)->pos.x, ((Moby *)m)->pos.y, 0.5f, -0.35f);
+            RippleDisturb(pool_draw_tiles_s, pool_draw_count_s, 1, ((Moby *)m)->pos.x, ((Moby *)m)->pos.y, 0.5f, -0.35f);
             {
                 float g = g_frame_time;
-                float h = D_0015EE70_s;
+                float h = g_frame_time_sq_s;
                 *(int *)(d + 0x18) = 1;
                 *(int *)(d + 0x14) = 0x78;
                 *(int *)(d + 0x1C) = 0;
@@ -1532,7 +1532,7 @@ void update_falling_splash_moby(char *m) {
             }
             at[0] = ((Moby *)m)->pos.x;
             at[1] = ((Moby *)m)->pos.y;
-            at[2] = D_L01_00174368_s;
+            at[2] = novalis_coll_hit_point_z_s;
             o = spawn_burst_moby(at, 2.0f);
             if (o != 0) {
                 o[0x23] = 0x70;
@@ -1562,20 +1562,20 @@ void update_falling_splash_moby(char *m) {
     }
 }
 typedef unsigned int u128_pt __attribute__((mode(TI)));
-extern f32 func_001FA748_303590(f32, f32) __asm__("func_001FA748") ;
+extern f32 FastAddRots_r(f32, f32) __asm__("func_001FA748") ;
 typedef struct { u8 pad0[0x10]; u128_pt pos; u8 pad20[4]; MobyClass *mclass; u8 pad28[4]; f32 scale; u8 b30; u8 b31; s16 h32; u16 flags; u8 pad36[2]; u64 d38; u128_pt rot; u8 pad50[0x28]; void *pvars; u8 pad7C[0x18]; s32 w94; } ClonedMoby;
 extern s32 truncate_float_to_s32(f32) __asm__("func_001FA898");
 typedef struct { s32 src_id; u8 pad4[4]; s32 count; } SpawnerVars;
 typedef struct { u8 pad0[0x60]; u8 path[0x18]; s32 w78; s32 w7C; s32 w80; s32 w84; f32 f88; u8 pad8C[0x24]; f32 fB0; f32 fB4; u8 padB8[0x198]; f32 f250; } CloneAiVars;
 typedef struct { u8 pad0[0x10]; f32 x; f32 y; u8 pad18[8]; u8 state; u8 pad21[0x57]; void *pvars; } SpawnerMoby;
 typedef struct { u8 pad0[0x80]; f32 x; f32 y; } PlayerPosView;
-extern s32 func_L01_0026EFB8_303590(s32, s32) __asm__("func_L01_0026EFB8") ;
-extern ClonedMoby *func_L01_00303700_303590(ClonedMoby *) __asm__("func_L01_00303700") ;
-extern f32 func_L00_001FF860_303590(f32, f32) __asm__("func_L00_001FF860") ;
-extern f32 func_001FA748_303590(f32, f32) __asm__("func_001FA748") ;
-extern void func_L00_0025D5B0_303590(void *, void *, s32, s32, s32, f32) __asm__("func_L00_0025D5B0") ;
-extern short D_L01_00161F20_303590 __asm__("D_L01_00161F20") ;
-extern PlayerPosView D_0013F450_303590 __asm__("D_0013F450") ;
+extern s32 count_active_moby_group_members_r(s32, s32) __asm__("func_L01_0026EFB8") ;
+extern ClonedMoby *initialize_beehive_spawn_moby_r(ClonedMoby *) __asm__("func_L01_00303700") ;
+extern f32 fast_atan2_r2(f32, f32) __asm__("func_L00_001FF860") ;
+extern f32 FastAddRots_r(f32, f32) __asm__("func_001FA748") ;
+extern void InitKnockback_r(void *, void *, s32, s32, s32, f32) __asm__("func_L00_0025D5B0") ;
+extern short beehive_max_spawns_r __asm__("D_L01_00161F20") ;
+extern PlayerPosView g_hero_r __asm__("D_0013F450") ;
 /* Enemy-spawner update: state 0 arms it, state 1 spawns one child toward the player while under the count limit and aims its AI path. func_L00_0025D5B0 takes the angle as its last argument. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_003021b8. */
 void beehive_update(SpawnerMoby *m) {
     SpawnerVars *v = m->pvars;
@@ -1591,14 +1591,14 @@ void beehive_update(SpawnerMoby *m) {
         if (v->src_id < 0) {
             break;
         }
-        if (func_L01_0026EFB8_303590(v->src_id, 0xC) != 0) {
+        if (count_active_moby_group_members_r(v->src_id, 0xC) != 0) {
             break;
         }
-        if (v->count >= *(int *)&D_L01_00161F20_303590) {
+        if (v->count >= *(int *)&beehive_max_spawns_r) {
             break;
         }
         v->count++;
-        n = (SpawnerMoby *)func_L01_00303700_303590((ClonedMoby *)m);
+        n = (SpawnerMoby *)initialize_beehive_spawn_moby_r((ClonedMoby *)m);
         if (n != 0) {
             nv = n->pvars;
             k = 0.8f;
@@ -1609,16 +1609,16 @@ void beehive_update(SpawnerMoby *m) {
             nv->fB4 = 13.0f;
             nv->w78 = 0;
             nv->w7C = 0;
-            func_L00_0025D5B0_303590(n, nv->path, 5, 8, 0,
-                func_001FA748_303590(func_L00_001FF860_303590(D_0013F450_303590.x - m->x, D_0013F450_303590.y - m->y),
+            InitKnockback_r(n, nv->path, 5, 8, 0,
+                FastAddRots_r(fast_atan2_r2(g_hero_r.x - m->x, g_hero_r.y - m->y),
                              3.1415927f));
             n->state = 9;
         }
         break;
     }
 }
-extern int func_L00_0025A208(int *, int, int, int);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int get_first_moby_in_group(int *, int, int, int);
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 typedef struct ClonedVars {
     u8 pad_00[0x20];
@@ -1654,13 +1654,13 @@ char *initialize_beehive_spawn_moby(char *owner) {
     }
     destination_moby_vars->f20 = 3.0f;
     destination_moby_vars->f250 = 1.0f;
-    destination_moby_vars->w170 = func_001FA898_r(819.2f);
+    destination_moby_vars->w170 = truncate_float_to_s32_r(819.2f);
     destination_moby_vars->f224 = 30.0f;
     ((void (*)(void *))moby_build_matrix)(destination_moby);
     return (char *)destination_moby;
 }
-extern char *func_L00_0025B478(void *, int, int);
-extern void func_0020D678(void *);
+extern char *MobyGetHitMessage(void *, int, int);
+extern void DeleteMoby(void *);
 
 /* Deletes the mushroom underside when it takes a hit. */
 void mushroom_underside_update(void *arg) {
@@ -1669,12 +1669,12 @@ void mushroom_underside_update(void *arg) {
         DeleteMoby(arg);
     }
 }
-extern char D_L01_00203040[];
-extern int D_L01_0015F6B0 MACRO_ADDR;
-extern void func_L00_00237B70(void *);
-extern void func_L01_002BA898(int, void *);
-extern float func_001FA888(int);
-extern float func_001F9FA8(float);
+extern char novalis_pulse_scroll_layers[];
+extern int novalis_frame_count MACRO_ADDR;
+extern void DefaultVtbl_DeleteMoby(void *);
+extern void update_and_draw_scrolling_overlay_layers(int, void *);
+extern float IntToFloat(int);
+extern float FastSin(float);
 
 /* draw callback: pulses three colour entries from a sine of the frame counter */
 void draw_level01_scroll_layers(void *moby) {
@@ -1690,8 +1690,8 @@ void draw_level01_scroll_layers(void *moby) {
         p -= 24;
     }
 }
-extern void func_L01_0030AFD0(void *);
-extern void func_001F49B0(void *, void *);
+extern void draw_level01_scroll_layers(void *);
+extern void AddDrawCallback(void *, void *);
 
 /* Sets the moby's draw distances to 0xFF and queues the scroll layer draw callback. */
 void set_moby_flags_and_queue_draw_callback(unsigned char *moby) {
@@ -1703,27 +1703,27 @@ void set_moby_flags_and_queue_draw_callback(unsigned char *moby) {
 typedef struct { u16 count; u16 unk2; u32 level_mask; } UStat_30C090;
 typedef struct { u16 id; u16 pad; s32 v; } HRec_30C090;
 typedef struct { s32 state; u8 pad4[0x20]; s32 cur; } HState_30C090;
-extern unsigned char D_0013DE48[];
-extern UStat_30C090 D_00141948[];
-extern HRec_30C090 D_00141A68[];
-extern HState_30C090 D_L01_00179910;
-extern int D_L01_0015F768 MACRO_ADDR;
-extern int D_L01_0015F76C MACRO_ADDR;
-extern Moby *D_L01_00160064 MACRO_ADDR;
-extern int D_0015EFA4 MACRO_ADDR;
-extern int D_0015EEA0 MACRO_ADDR;
-extern int func_00215570(void *, int);
-extern float func_001F9D10(void *, void *);
-extern int func_L00_00203F20(int, int);
-extern int func_L00_002D95D8(void *);
-extern int func_L01_00276680(float, void *);
+extern unsigned char level_available[];
+extern UStat_30C090 usage_stats[];
+extern HRec_30C090 help_records[];
+extern HState_30C090 help_state;
+extern int novalis_look_stat_timer MACRO_ADDR;
+extern int novalis_look_stat_count MACRO_ADDR;
+extern Moby *novalis_moby_list MACRO_ADDR;
+extern int gameplay_event_frame_count MACRO_ADDR;
+extern int hero_max_health MACRO_ADDR;
+extern int is_point_inside_clip_volume(void *, int);
+extern float FastVecDist(void *, void *);
+extern int Help_Request(int, int);
+extern int is_moby_in_state_one(void *);
+extern int check_scaled_vector_bsphere(float, void *);
 /* Shows Novalis tutorial help messages based on what the player has used so far. */
 void update_level01_tutorial_hints(Moby *moby) {
     s32 *data;
     Moby *m;
     Moby *m2;
     s32 t;
-    extern Hero D_0013F450;
+    extern Hero g_hero;
 
     data = (s32 *)moby->pvars;
     fast_dec_timer(&data[6]);
@@ -1758,7 +1758,7 @@ void update_level01_tutorial_hints(Moby *moby) {
             ((u32)g_hero.state.control_mode < 2 || g_hero.state.control_mode == 9) && help_state.state == 0 &&
             help_state.cur == -1) {
             t = scale_ticks(gameplay_event_frame_count) - usage_stats[9].unk2 * 600;
-            if (scale_ticks(216000) < t && (u32)(help_records[0x43].v & (1 << D_0015EE84_2FBBD8)) < 1) {
+            if (scale_ticks(216000) < t && (u32)(help_records[0x43].v & (1 << g_current_level_index_r2)) < 1) {
                 Help_Request(0x3EF, 0x43);
             }
         }
@@ -1799,7 +1799,7 @@ void update_level01_tutorial_hints(Moby *moby) {
                 if (usage_stats[22].unk2 < t) {
                     usage_stats[22].unk2 = scale_ticks(gameplay_event_frame_count) / 600;
                 }
-                usage_stats[22].level_mask = usage_stats[22].level_mask | (1 << D_0015EE84_2FBBD8) | 0x80000000;
+                usage_stats[22].level_mask = usage_stats[22].level_mask | (1 << g_current_level_index_r2) | 0x80000000;
             } else if (is_point_inside_clip_volume(&g_hero.motion.pos, data[9]) && scale_ticks(360) < data[11] &&
                        usage_stats[23].count == 0) {
                 Help_Request(0x3F0, 0x44);
@@ -1810,7 +1810,7 @@ void update_level01_tutorial_hints(Moby *moby) {
                 if (usage_stats[23].unk2 < t) {
                     usage_stats[23].unk2 = scale_ticks(gameplay_event_frame_count) / 600;
                 }
-                usage_stats[23].level_mask = usage_stats[23].level_mask | (1 << D_0015EE84_2FBBD8) | 0x80000000;
+                usage_stats[23].level_mask = usage_stats[23].level_mask | (1 << g_current_level_index_r2) | 0x80000000;
             }
         } else if (g_hero.state.control_mode == 0x11) {
             help_records[0x44].id = 0xFFFF;
@@ -1829,7 +1829,7 @@ void update_level01_tutorial_hints(Moby *moby) {
                     if (usage_stats[13].unk2 < t) {
                         usage_stats[13].unk2 = scale_ticks(gameplay_event_frame_count) / 600;
                     }
-                    usage_stats[13].level_mask = usage_stats[13].level_mask | (1 << D_0015EE84_2FBBD8) | 0x80000000;
+                    usage_stats[13].level_mask = usage_stats[13].level_mask | (1 << g_current_level_index_r2) | 0x80000000;
                     Help_Request(1, 1);
                 } else if (check_scaled_vector_bsphere(255.0f, m2) != 0) {
                     Help_Request(2, 2);
@@ -1875,18 +1875,18 @@ typedef struct {
     Vec4f normal;
 } BlobHitInfo;
 
-extern short D_L01_001620E8;
-extern short D_L01_001620EC;
-extern short D_L01_001620F0;
-extern float D_0015EE60 MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern BlobHitInfo D_L01_00174340;
-extern void func_L01_0030D380(void);
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern void func_L00_001FF610(void *, void *, void *);
-extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
-extern void func_L00_0026DA50(void *, void *, int, int, float, int, int);
-extern FxSpark_D568 *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
+extern short explosive_moby_gravity;
+extern short explosive_moby_drag;
+extern short explosive_moby_drag_min_speed;
+extern float frame_scale MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern BlobHitInfo novalis_coll_hit;
+extern void draw_moby_offset_textured_quad(void);
+extern int coll_sphere(float, void *, int, void *);
+extern void vec_reflect(void *, void *, void *);
+extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
+extern void PartType21Spawn(void *, void *, int, int, float, int, int);
+extern FxSpark_D568 *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 
 /* Flying explosive blob: drag, gravity and spin; explodes on hit or timeout, leaves smoke. */
 void update_explosive_moby(struct Moby *m) {
@@ -1961,10 +1961,10 @@ void update_explosive_moby(struct Moby *m) {
         }
     }
 }
-extern float func_002140F8(float, float);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern float func_L00_00258C80(float lo, float hi);
-extern int func_001F9850(int);
+extern float random_float_between(float, float);
+extern void vec_scale_to_length(void *, void *, float);
+extern float randf_sym(float lo, float hi);
+extern int scale_ticks(int);
 
 typedef struct { int w[4]; } __attribute__((aligned(16))) Quad;
 
@@ -1993,17 +1993,17 @@ char *SpawnDebrisMoby(char *src, void *dir, float scale) {
     }
     return m;
 }
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9C30(void *, void *, float);
-extern u128_D568 D_L01_00162100 MACRO_ADDR;
-extern void func_L00_00264870(struct Moby *);
-extern void func_L00_00250800(struct Moby *, int, void *);
-extern int func_001FA898(float);
-extern char *func_L00_00272770(float, float, void *, void *, void *);
-extern FxSpark_D568 *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
-extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
-extern void func_L00_00264BE8(void *, void *, void *, float, float);
-extern void func_00233AB8(void);
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern u128_D568 fx_prev_pos MACRO_ADDR;
+extern void cutscene_set_camera_target(struct Moby *);
+extern void Moby_GetJointWorldPos(struct Moby *, int, void *);
+extern int truncate_float_to_s32(float);
+extern char *spawn_splash(float, float, void *, void *, void *);
+extern FxSpark_D568 *PartType23Spawn(void *, float, float, float, int, void *, float, int);
+extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
+extern void draw_trail(void *, void *, void *, float, float);
+extern void render_environment_mapped_object(void);
 #define fx_cutscene_D568 (*(CutsceneFx_D568 *)&D_L01_0016CD60)
 
 /* Spawns the camera targets, splashes and bursts of the Novalis cutscenes by scene and frame. */
@@ -2185,13 +2185,13 @@ void tall_shroom_update(char *moby) {
         break;
     }
 }
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern float func_001F9C78(void *, void *);
-extern void func_001F9C30(void *, void *, float);
-extern float func_001F9CB8(void *);
-extern float D_L01_001621A0 MACRO_ADDR;
-extern float D_L01_001621A4 MACRO_ADDR;
+extern void FastVecSub(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern float FastVecDot(void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern float FastVecLength(void *);
+extern float novalis_env_map_scroll_u MACRO_ADDR;
+extern float novalis_env_map_scroll_v MACRO_ADDR;
 
 
 /* Projects each of n point/normal pairs onto a 2D texture coordinate. */
@@ -2227,17 +2227,17 @@ void generate_level01_environment_map_uvs(int vertex_count, char *normals, char 
         uv_pairs[i][1] = (refl.y / uv_projection_denominator + 0.5f) * 2.0f + novalis_env_map_scroll_v;
     }
 }
-extern int func_001F4868(int);
-extern void func_00234C98(int, long);
-extern void func_001F7868(void);
-extern void func_L01_003102F0(int n, char *pts, char *nrm, int unused, float *out);
-extern void func_L00_001FDE48(int, int, int, void *, int);
-extern int D_L01_00203160[];
-extern char *D_L01_002083F8[];
-extern char *D_L01_002083C8[];
-extern int D_L01_002083E0[];
-extern float D_L01_00208430[];
-extern int D_L01_00208410[];
+extern int GetEffectTex(int);
+extern void VU1_addGSregister(int, long);
+extern void font_queue_vu_state(void);
+extern void generate_level01_environment_map_uvs(int n, char *pts, char *nrm, int unused, float *out);
+extern void draw_env_overlay_mesh(int, int, int, void *, int);
+extern int novalis_env_mesh_vertex_counts[];
+extern char *novalis_env_mesh_normals[];
+extern char *novalis_env_mesh_verts[];
+extern int novalis_env_mesh_unused_args[];
+extern float novalis_env_mesh_uvs[];
+extern int novalis_env_mesh_colors[];
 
 /* Draw callback: sets up draw state, then draws five shapes from parallel tables. */
 void draw_level01_environment_mapped_meshes(void) {
@@ -2248,18 +2248,18 @@ void draw_level01_environment_mapped_meshes(void) {
     VU1_addGSregister(0x14, 0xFF9000000260L);
     font_queue_vu_state();
     for (i = 4; i >= 0; i--) {
-        generate_level01_environment_map_uvs(novalis_env_mesh_vertex_counts[4 - i], novalis_env_mesh_normals[4 - i], novalis_env_mesh_verts[4 - i], D_L01_002083E0[4 - i], novalis_env_mesh_uvs);
+        generate_level01_environment_map_uvs(novalis_env_mesh_vertex_counts[4 - i], novalis_env_mesh_normals[4 - i], novalis_env_mesh_verts[4 - i], novalis_env_mesh_unused_args[4 - i], novalis_env_mesh_uvs);
         draw_env_overlay_mesh(novalis_env_mesh_vertex_counts[4 - i], (int)novalis_env_mesh_verts[4 - i], novalis_env_mesh_colors[4 - i], novalis_env_mesh_uvs, 1);
     }
 }
-void func_001F49B0(void *fn, void *arg);
-extern f32 D_L01_001621A0_105E0[2] __asm__("D_L01_001621A0") MACRO_ADDR;
-void func_L01_003104B8(void);
+void AddDrawCallback(void *fn, void *arg);
+extern f32 novalis_env_map_scroll_u_r[2] __asm__("D_L01_001621A0") MACRO_ADDR;
+void draw_level01_environment_mapped_meshes(void);
 typedef struct {
     u8 pad0[0x20];
     u8 state;
 } ScrollMoby;
-extern f32 D_0015EE7C MACRO_ADDR;
+extern f32 frame_delta_time MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l01/gameplay/vendor/00309bf8.c, FUN_L01_0030f208. */
 void update_level01_environment_map_uv_scroll(ScrollMoby *m) {
@@ -2267,25 +2267,25 @@ void update_level01_environment_map_uv_scroll(ScrollMoby *m) {
 
     switch (m->state) {
     case 0:
-        D_L01_001621A0_105E0[0] = 0.0f;
-        D_L01_001621A0_105E0[1] = 0.0f;
+        novalis_env_map_scroll_u_r[0] = 0.0f;
+        novalis_env_map_scroll_u_r[1] = 0.0f;
         m->state = 1;
         break;
     case 1:
         d = frame_delta_time * 0.025f;
-        D_L01_001621A0_105E0[0] += d;
-        D_L01_001621A0_105E0[1] += d;
-        if (D_L01_001621A0_105E0[0] > 1.0f) {
-            D_L01_001621A0_105E0[0] -= 1.0f;
+        novalis_env_map_scroll_u_r[0] += d;
+        novalis_env_map_scroll_u_r[1] += d;
+        if (novalis_env_map_scroll_u_r[0] > 1.0f) {
+            novalis_env_map_scroll_u_r[0] -= 1.0f;
         }
-        if (D_L01_001621A0_105E0[0] < -1.0f) {
-            D_L01_001621A0_105E0[0] += 1.0f;
+        if (novalis_env_map_scroll_u_r[0] < -1.0f) {
+            novalis_env_map_scroll_u_r[0] += 1.0f;
         }
-        if (D_L01_001621A0_105E0[1] > 1.0f) {
-            D_L01_001621A0_105E0[1] -= 1.0f;
+        if (novalis_env_map_scroll_u_r[1] > 1.0f) {
+            novalis_env_map_scroll_u_r[1] -= 1.0f;
         }
-        if (D_L01_001621A0_105E0[1] < -1.0f) {
-            D_L01_001621A0_105E0[1] += 1.0f;
+        if (novalis_env_map_scroll_u_r[1] < -1.0f) {
+            novalis_env_map_scroll_u_r[1] += 1.0f;
         }
         AddDrawCallback(draw_level01_environment_mapped_meshes, m);
         break;

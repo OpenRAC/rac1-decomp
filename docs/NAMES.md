@@ -25,9 +25,10 @@ through `tools/srcnames.py`, which maps readable names back.
 `tools/names.py apply-defs` renames definitions, `apply` renames uses in
 bodies. `tools/dossier.py` shows a function's name in its `CONTEXT.md`.
 
-Core/SDK/libc functions (`src/core`) are in the table but not in the
-header: their names (`memcpy`, `sceGsSync`, `rand` ...) are the libraries'
-own, and a macro for them would shadow the real library spelling.
+Core/SDK/libc functions (`src/core`) are in the header too, under their
+libraries' own names (`memcpy`, `sceGsSync`, `rand` ...). A name that is
+already an identifier in src/ (a gcc builtin call, say) is left out, as
+for any other name.
 
 ## Tiers
 

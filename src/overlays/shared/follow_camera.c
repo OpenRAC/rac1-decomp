@@ -7,15 +7,15 @@
 #include "moby.h"
 #include "camera.h"
 
-extern char D_0013E633[];
-extern float D_0015EE6C MACRO_ADDR;
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_L00_00250800(void *, int, void *);
-extern float func_002140F8(float, float);
-extern int func_L00_00258BC8(int, int);
-extern int func_001F9850(int);
-extern int func_001F9908_r(int *) __asm__("func_001F9908");
-extern void func_L00_002703E8(void *, void *, int, int);
+extern char hero_globals_base[];
+extern float g_frame_time MACRO_ADDR;
+extern void vec_scale_to_length(void *, void *, float);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern float random_float_between(float, float);
+extern int rand_range(int, int);
+extern int scale_ticks(int);
+extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
+extern void PartType35Spawn(void *, void *, int, int);
 
 /* while the countdown value is ready, scatter a spawn by the camera's offset and reroll the delay */
 void emit_hydrodisplacer_effect(char *m) {
@@ -24,11 +24,11 @@ void emit_hydrodisplacer_effect(char *m) {
     float b[4];
     char *pad;
     float f;
-    if (func_001F9908_r((int *)(d + 4))) {
+    if (fast_dec_timer_r((int *)(d + 4))) {
         Moby_GetJointWorldPos(m, 0, a);
         f = random_float_between(g_frame_time, g_frame_time * 3.0f);
         vec_scale_to_length(b, m + 0xD0, -f);
-        pad = D_0013E633 + 0xE1D;
+        pad = hero_globals_base + 0xE1D;
         b[0] += *(float *)(pad + 0x100) * 0.8f;
         b[1] += *(float *)(pad + 0x104) * 0.8f;
         b[2] += *(float *)(pad + 0x108) + random_float_between(g_frame_time * -0.5f, g_frame_time + g_frame_time);
@@ -36,8 +36,8 @@ void emit_hydrodisplacer_effect(char *m) {
         *(int *)(d + 4) = rand_range(scale_ticks(5), scale_ticks(0xF));
     }
 }
-extern char D_0013F450[];
-extern u8 * D_L00_00160098_E1790 __asm__("D_L00_00160098") MACRO_ADDR;
+extern char g_hero[];
+extern u8 * moby_array_start_r __asm__("D_L00_00160098") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002df730.c, FUN_L00_002e02e0. */
 s32 test_hydrodisplacer_activation_flag(void) {
@@ -47,7 +47,7 @@ s32 test_hydrodisplacer_activation_flag(void) {
     s32 idx;
     u8 flags;
     base = g_hero;
-    tbl = D_L00_00160098_E1790;
+    tbl = moby_array_start_r;
     v = *(s32 *)(base + 0x2FC);
     flags = (u8)base[0x20B0];
     tbl += *(s32 *)*(s32 *)((u8 *)v + 0x78) << 8;
@@ -61,11 +61,11 @@ s32 test_hydrodisplacer_activation_flag(void) {
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_002E17D4);
-extern char D_0013F450[];
-extern int D_L00_0015F504 MACRO_ADDR;
-extern short D_L00_0015F4FC;
-extern void func_L00_002EC0C8(int);
-extern void func_L00_00222B80(int, int);
+extern char g_hero[];
+extern int scripted_camera_move_active MACRO_ADDR;
+extern short gFadeLvl;
+extern void CameraScript2(int);
+extern void HeroEnterMoveState(int, int);
 /* Level camera hook for moby A: when the moby's state is 4, clears D_L00_0015F504 and the fade level and runs camera
    script 3; then, if the hero's control mode is 0x13, puts the hero back into move state 0. */
 void end_hydrodisplacer_interaction(char *a) {
@@ -81,37 +81,37 @@ void end_hydrodisplacer_interaction(char *a) {
 typedef struct { u8 pad[0xB0]; u8 b0; u8 pad1; s16 h; u8 pad2[0x4C]; } E_2e03a0_2e03a0;
 typedef struct { s32 fa_2e03a0; s32 b; } P_2e03a0_2e03a0;
 typedef struct { u8 pad[0x18]; f32 z; u8 pad1[4]; u8 state; u8 pad2[0x13]; u16 fl; u8 pad3[0x12]; f32 ang; u8 pad4[0x2C]; P_2e03a0_2e03a0 *p; u8 pad5[0x34]; u8 b0; u8 pad6; s16 h; } M_2e03a0_2e03a0;
-extern f32 D_0015EE6C MACRO_ADDR;
-extern u8 D_L00_001EA530[];
-extern u8 D_L00_001EA558[];
-extern u8 D_L00_001EA580[];
-extern u8 D_L00_00161C90[];
-extern char D_0013F4D0[];
-extern s32 D_L00_0015F6A8 MACRO_ADDR;
-extern s32 D_L00_0015F720 MACRO_ADDR;
-extern u16 D_00141C08[];
-extern short D_L00_00160098;
+extern f32 g_frame_time MACRO_ADDR;
+extern u8 pilots_helmet_no_cutscene_msg[];
+extern u8 pilots_helmet_already_owned_msg[];
+extern u8 pilots_helmet_no_moby_msg[];
+extern u8 pilots_helmet_collected_msg[];
+extern char gHeroPos[];
+extern s32 cinematic_mode MACRO_ADDR;
+extern s32 banner_display_ticks MACRO_ADDR;
+extern u16 help_records_52_count[];
+extern short moby_array_start;
 typedef struct { u8 pad[0x454]; u8 arr[1]; } T_2e03a0_2e03a0;
-extern T_2e03a0_2e03a0 D_L00_001BA960;
-extern T_2e03a0_2e03a0 D_L00_001BB5C0;
-extern u8 D_L00_0015FD48[] MACRO_ADDR;
-extern short D_0015EE84 SDATA(D_0015EE84);
-extern u8 D_0014C150[];
-extern s32 D_00141510[];
-extern u8 D_0013D5C8[];
-extern f32 func_001FA748(f32, f32);
-extern void func_L00_002D80A0(void *);
-extern void func_001E9730();
-extern void func_0020D678(void *);
-extern void func_L00_002E1C38_E1850(void *) __asm__("func_L00_002E1C38");
-extern f32 func_001F9D48(void *, void *);
-extern f32 func_001F9B88(f32);
-extern void func_L00_00299B68(s32);
-extern void func_L00_00264DB8(s32, s32);
-extern void func_L00_002618D8(s32, s32);
-extern void func_L00_00203F20(s32, s32);
-extern void func_L00_002512D8(s32);
-extern void func_0020BFC8(s32, s32);
+extern T_2e03a0_2e03a0 current_level_state;
+extern T_2e03a0_2e03a0 checkpoint_level_state;
+extern u8 mission_state[] MACRO_ADDR;
+extern short g_current_level_index SDATA(D_0015EE84);
+extern u8 saved_mission_state[];
+extern s32 g_hero_pending_item_2[];
+extern u8 item_available[];
+extern f32 FastAddRots(f32, f32);
+extern void initialize_moby_particle_effect(void *);
+extern void STUB_printf();
+extern void DeleteMoby(void *);
+extern void emit_moby_color_cycling_particles_r(void *) __asm__("func_L00_002E1C38");
+extern f32 vec_distance_xy(void *, void *);
+extern f32 FastAbsF(f32);
+extern void StartCutscene(s32);
+extern void ShowBanner(s32, s32);
+extern void grant_inventory_item(s32, s32);
+extern void Help_Request(s32, s32);
+extern void jet_clear_persistent(s32);
+extern void memcard_Save(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e03a0. */
 void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
@@ -135,7 +135,7 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
         m->z += 1.0f;
         break;
     case 1:
-        func_L00_002E1C38_E1850(m);
+        emit_moby_color_cycling_particles_r(m);
         g = gHeroPos;
         if (vec_distance_xy((char *)m + 0x10, g) < 3.0f) {
             g -= 0x80;
@@ -153,7 +153,7 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
         ShowBanner(0x232A, -1);
         banner_display_ticks = 0xB4;
         grant_inventory_item(7, 1);
-        if (D_00141C08[0] == 0) Help_Request(0x2328, 0x34);
+        if (help_records_52_count[0] == 0) Help_Request(0x2328, 0x34);
         if (p->b != -1) {
             current_level_state.arr[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].h] = (*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 + 2;
             if ((*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 == 0xFF || (mission_state[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0] != 0xFF && saved_mission_state[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 + (*(s32 *)&g_current_level_index) * 16] == 0xFF)) {
@@ -163,7 +163,7 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
             STUB_printf(pilots_helmet_no_moby_msg, m->h);
         }
         if (m->b0 != 0xFF) jet_clear_persistent(m->b0);
-        D_00141510[0] = 7;
+        g_hero_pending_item_2[0] = 7;
         m->state = 3;
         break;
     case 3:
@@ -172,14 +172,14 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
         break;
     }
 }
-extern float D_L00_00166EC0[];
-extern void func_001F9BF0(float *, float *, float *);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001FA888(int);
-extern float func_001F9B88(float);
-extern int func_001FA8A8(int, int, float);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern unsigned char *func_L00_00273E08(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode);
+extern float g_debug_camera[];
+extern void FastVecSub(float *, float *, float *);
+extern void FastVecAdd(void *, void *, void *);
+extern float IntToFloat(int);
+extern float FastAbsF(float);
+extern int FastTweenColor(int, int, float);
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode);
 
 typedef struct {
     char pad[0x10];
@@ -213,30 +213,30 @@ void emit_moby_color_cycling_particles(char *p) {
         } else if (f <= 0.0f) {
             *a = f + 255.0f;
         }
-        if (func_001F9908_r(t)) {
+        if (fast_dec_timer_r(t)) {
             m->t[j] = scale_ticks(255);
         }
         t++;
         g = IntToFloat(scale_ticks(255) - m->t[j]);
         g = g / (float)scale_ticks(255);
         c = FastTweenColor(0x4040FFFF, 0x1040FFFF, FastAbsF(0.5f - g));
-        k = func_001FA898_r(*a++);
+        k = truncate_float_to_s32_r(*a++);
         PartType59Spawn(m->c[j], v, c, k, 0x35, 1, 2, 0);
         j++;
         FastVecAdd(v, v, &v[4]);
     }
 }
 typedef int s32_2e1f28;
-extern s32_2e1f28 D_L00_00161CC8[] MACRO_ADDR;
-extern s32_2e1f28 D_L00_00161CD8[] MACRO_ADDR;
-extern s32_2e1f28 D_L00_00161CE8[] MACRO_ADDR;
-extern s32_2e1f28 D_L00_00161CF8[] MACRO_ADDR;
-extern s32_2e1f28 D_L00_00161D08[] MACRO_ADDR;
-extern s32_2e1f28 D_L00_00161D18[] MACRO_ADDR;
-extern s32_2e1f28 D_L00_00161D28[] MACRO_ADDR;
-extern s32_2e1f28 D_L00_00161D38[] MACRO_ADDR;
-extern s32_2e1f28 D_L00_00161D48[] MACRO_ADDR;
-extern s32_2e1f28 D_L00_00161D58[] MACRO_ADDR;
+extern s32_2e1f28 beam_slot_states[] MACRO_ADDR;
+extern s32_2e1f28 beam_strand_wave_phase[] MACRO_ADDR;
+extern s32_2e1f28 beam_strand_twist_phase[] MACRO_ADDR;
+extern s32_2e1f28 beam_strand_sway_phase[] MACRO_ADDR;
+extern s32_2e1f28 beam_origin_light_slots[] MACRO_ADDR;
+extern s32_2e1f28 beam_tip_light_slots[] MACRO_ADDR;
+extern s32_2e1f28 beam_light_flags[] MACRO_ADDR;
+extern s32_2e1f28 beam_spark_style[] MACRO_ADDR;
+extern s32_2e1f28 beam_texture_scroll[] MACRO_ADDR;
+extern s32_2e1f28 beam_slot_ids[] MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e1f28. */
 s32_2e1f28 register_beam_slot(s32_2e1f28 id, s32_2e1f28 a, s32_2e1f28 b) {
@@ -261,11 +261,11 @@ s32_2e1f28 register_beam_slot(s32_2e1f28 id, s32_2e1f28 a, s32_2e1f28 b) {
     }
     return 0;
 }
-extern void func_L00_0023F1D0(int);
-extern int D_L00_00161CC8[];
-extern int D_L00_00161D18[];
-extern int D_L00_00161D08[];
-extern int D_L00_00161D58[];
+extern void release_point_light_slot(int);
+extern int beam_slot_states[];
+extern int beam_tip_light_slots[];
+extern int beam_origin_light_slots[];
+extern int beam_slot_ids[];
 
 // releases the slot owning the given id and its two handles; returns 1 if found
 int release_beam_slot_by_id(int id) {
@@ -287,10 +287,10 @@ int release_beam_slot_by_id(int id) {
     }
     return 0;
 }
-extern int D_L00_00161CC8[] MACRO_ADDR;
-extern int D_L00_00161D08[] MACRO_ADDR;
-extern int D_L00_00161D18[] MACRO_ADDR;
-extern int D_L00_00161D58[] MACRO_ADDR;
+extern int beam_slot_states[] MACRO_ADDR;
+extern int beam_origin_light_slots[] MACRO_ADDR;
+extern int beam_tip_light_slots[] MACRO_ADDR;
+extern int beam_slot_ids[] MACRO_ADDR;
 /* Frees one slot: clears its two state words and releases its two handles. MACRO_ADDR arrays, as the NTSC decomp declares them. */
 void release_beam_slot(int i) {
     int v;
@@ -308,9 +308,9 @@ void release_beam_slot(int i) {
 }
 typedef struct { unsigned char b[0x40]; } B002E3640;
 typedef struct { unsigned char b[0x10]; } Q002E3640;
-extern B002E3640 D_L00_001E7070[];
-extern Q002E3640 D_L00_001E7130[];
-extern void func_001F9A98(void *, void *, int);
+extern B002E3640 beam_origin_transforms[];
+extern Q002E3640 beam_endpoints[];
+extern void FastMemCopy(void *, void *, int);
 /* Finds the slot holding handle id, advances its state word and stores the 0x40-byte matrix and the vector for it. */
 int set_beam_origin_transform_and_endpoint(int id, void *src, void *v) {
     int i;
@@ -345,45 +345,45 @@ typedef struct {
     PartSub_2E3700 sub;
 } Part_2E3700;
 typedef struct { char pad0[0x10]; float v10[3]; float f1C; } Snd_2E3700;
-extern Slot_2E3700 D_L00_001E7070_2E3700[] __asm__("D_L00_001E7070");
-extern End_2E3700 D_L00_001E70A0_2E3700[] __asm__("D_L00_001E70A0");
-extern Q_2E3700 D_L00_001E7130_2E3700[] __asm__("D_L00_001E7130");
-extern Q_2E3700 D_L00_001E7160_2E3700[] __asm__("D_L00_001E7160");
-extern Pt_2E3700 D_L00_001E7190_2E3700[][20] __asm__("D_L00_001E7190");
-extern Snd_2E3700 D_L00_001803C0_2E3700[] __asm__("D_L00_001803C0");
-extern char D_0013E633_2E3700[] __asm__("D_0013E633");
-extern char D_L00_0015F660_2E3700[] __asm__("D_L00_0015F660") MACRO_ADDR;
-extern int D_L00_00161CC8_2E3700[] __asm__("D_L00_00161CC8") MACRO_ADDR;
-extern float D_L00_00161CD8_2E3700[] __asm__("D_L00_00161CD8") MACRO_ADDR;
-extern float D_L00_00161CE8_2E3700[] __asm__("D_L00_00161CE8") MACRO_ADDR;
-extern float D_L00_00161CF8_2E3700[] __asm__("D_L00_00161CF8") MACRO_ADDR;
-extern int D_L00_00161D08_2E3700[] __asm__("D_L00_00161D08") MACRO_ADDR;
-extern int D_L00_00161D18_2E3700[] __asm__("D_L00_00161D18") MACRO_ADDR;
-extern int D_L00_00161D28_2E3700[] __asm__("D_L00_00161D28") MACRO_ADDR;
-extern int D_L00_00161D38_2E3700[] __asm__("D_L00_00161D38") MACRO_ADDR;
-extern int D_L00_00161D58_2E3700[] __asm__("D_L00_00161D58") MACRO_ADDR;
+extern Slot_2E3700 beam_origin_transforms_r[] __asm__("D_L00_001E7070");
+extern End_2E3700 beam_origin_transforms_translation_r[] __asm__("D_L00_001E70A0");
+extern Q_2E3700 beam_endpoints_r[] __asm__("D_L00_001E7130");
+extern Q_2E3700 beam_tip_positions_r[] __asm__("D_L00_001E7160");
+extern Pt_2E3700 beam_strand_points_r[][20] __asm__("D_L00_001E7190");
+extern Snd_2E3700 level_point_lights_r[] __asm__("D_L00_001803C0");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
+extern char veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
+extern int beam_slot_states_r[] __asm__("D_L00_00161CC8") MACRO_ADDR;
+extern float beam_strand_wave_phase_r[] __asm__("D_L00_00161CD8") MACRO_ADDR;
+extern float beam_strand_twist_phase_r[] __asm__("D_L00_00161CE8") MACRO_ADDR;
+extern float beam_strand_sway_phase_r[] __asm__("D_L00_00161CF8") MACRO_ADDR;
+extern int beam_origin_light_slots_r[] __asm__("D_L00_00161D08") MACRO_ADDR;
+extern int beam_tip_light_slots_r[] __asm__("D_L00_00161D18") MACRO_ADDR;
+extern int beam_light_flags_r[] __asm__("D_L00_00161D28") MACRO_ADDR;
+extern int beam_spark_style_r[] __asm__("D_L00_00161D38") MACRO_ADDR;
+extern int beam_slot_ids_r[] __asm__("D_L00_00161D58") MACRO_ADDR;
 extern float D_L00_00161CC0_2E3700 SDATA(D_L00_00161CC0);
-extern void func_001F9BF0_2E3700(void *, void *, void *) __asm__("func_001F9BF0");
-extern float func_001F9CB8_2E3700(void *) __asm__("func_001F9CB8");
-extern float func_001FA748_2E3700(float, float) __asm__("func_001FA748");
-extern float func_001FA790_2E3700(float, float) __asm__("func_001FA790");
-extern float func_001FA888_2E3700(int) __asm__("func_001FA888");
-extern float func_L00_0025F368_2E3700(float) __asm__("func_L00_0025F368");
-extern float func_001F9FA8_2E3700(float) __asm__("func_001F9FA8");
-extern float func_001F9F90_2E3700(float) __asm__("func_001F9F90");
-extern void func_L00_001FF4B0_2E3700(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void func_001F9CA0_2E3700(void *, void *, void *) __asm__("func_001F9CA0");
-extern void func_001F9EE8_2E3700(void *, void *, void *) __asm__("func_001F9EE8");
-extern void func_001F9EC0_2E3700(void *, void *, void *) __asm__("func_001F9EC0");
-extern float func_L00_00258C80_2E3700(float, float) __asm__("func_L00_00258C80");
-extern float func_002140F8_2E3700(float, float) __asm__("func_002140F8");
-extern Part_2E3700 *func_L00_002757E8_2E3700(void *, void *, int, int) __asm__("func_L00_002757E8");
-extern int func_002140B0_2E3700(int) __asm__("func_002140B0");
-extern void func_001F9C30_2E3700(void *, void *, float) __asm__("func_001F9C30");
-extern void func_001F9BD8_2E3700(void *, void *, void *) __asm__("func_001F9BD8");
-extern int func_001F9850_2E3700(int) __asm__("func_001F9850");
-extern void func_002141A8_2E3700(void *, float, float) __asm__("func_002141A8");
-extern int func_L00_0023F0D0_2E3700(float *, float, float, float, float, float) __asm__("func_L00_0023F0D0");
+extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
+extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
+extern float FastAddRots_r(float, float) __asm__("func_001FA748");
+extern float FastSubRots_r(float, float) __asm__("func_001FA790");
+extern float IntToFloat_r(int) __asm__("func_001FA888");
+extern float normalize_angle_r(float) __asm__("func_L00_0025F368");
+extern float FastSin_r(float) __asm__("func_001F9FA8");
+extern float FastCos_r(float) __asm__("func_001F9F90");
+extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
+extern void FastVecCross_r(void *, void *, void *) __asm__("func_001F9CA0");
+extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
+extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
+extern float randf_sym_r(float, float) __asm__("func_L00_00258C80");
+extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern Part_2E3700 *spawn_mode_controlled_rotating_alpha_fade_particle_r(void *, void *, int, int) __asm__("func_L00_002757E8");
+extern int random_integer_below_r(int) __asm__("func_002140B0");
+extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
+extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+extern int scale_ticks_r(int) __asm__("func_001F9850");
+extern void random_spherical_offset_r(void *, float, float) __asm__("func_002141A8");
+extern int allocate_colored_effect_slot_r(float *, float, float, float, float, float) __asm__("func_L00_0023F0D0");
 
 /* Per-frame update of one beam slot: lays out the two 20-point strips between the slot's ends
    (a sine wave and a noisy one), spawns sparks at both ends and keeps the two looping sounds
@@ -408,13 +408,13 @@ void update_slot_panes_and_effects(int unused, int idx) {
     int j;
     int n;
 
-    func_001F9BF0_2E3700(d, &D_L00_001E7130_2E3700[idx], &D_L00_001E70A0_2E3700[idx]);
-    step = func_001F9CB8_2E3700(d) / 20.0f;
-    if (D_L00_00161CC8_2E3700[idx] == 2) {
-        D_L00_00161CC8_2E3700[idx] = 3;
+    FastVecSub_r(d, &beam_endpoints_r[idx], &beam_origin_transforms_translation_r[idx]);
+    step = FastVecLength_r(d) / 20.0f;
+    if (beam_slot_states_r[idx] == 2) {
+        beam_slot_states_r[idx] = 3;
         for (i = 0; i < 20; i++) {
-            Pt_2E3700 *a = &D_L00_001E7190_2E3700[k][i];
-            Pt_2E3700 *b = &D_L00_001E7190_2E3700[k1][i];
+            Pt_2E3700 *a = &beam_strand_points_r[k][i];
+            Pt_2E3700 *b = &beam_strand_points_r[k1][i];
 
             a->x = step * (float)i;
             a->y = a->z = 0.0f;
@@ -424,31 +424,31 @@ void update_slot_panes_and_effects(int unused, int idx) {
             b->w = 1.0f;
         }
     }
-    D_L00_00161CD8_2E3700[idx] = func_001FA748_2E3700(D_L00_00161CD8_2E3700[idx], 0.17453292f);
-    D_L00_00161CE8_2E3700[idx] = func_001FA790_2E3700(D_L00_00161CE8_2E3700[idx], 0.80285144f);
-    D_L00_00161CF8_2E3700[idx] = func_001FA748_2E3700(D_L00_00161CF8_2E3700[idx], 0.05236f);
-    ang = 360.0f / (func_001FA888_2E3700(20) * 0.5f) * 0.017453292f;
+    beam_strand_wave_phase_r[idx] = FastAddRots_r(beam_strand_wave_phase_r[idx], 0.17453292f);
+    beam_strand_twist_phase_r[idx] = FastSubRots_r(beam_strand_twist_phase_r[idx], 0.80285144f);
+    beam_strand_sway_phase_r[idx] = FastAddRots_r(beam_strand_sway_phase_r[idx], 0.05236f);
+    ang = 360.0f / (IntToFloat_r(20) * 0.5f) * 0.017453292f;
     for (j = 0; j < 19; j++) {
         float fj = (float)j;
-        float a = func_001FA888_2E3700(j) / func_001FA888_2E3700(20) * 0.3f + 0.1f;
-        Pt_2E3700 *p = &D_L00_001E7190_2E3700[k][j];
+        float a = IntToFloat_r(j) / IntToFloat_r(20) * 0.3f + 0.1f;
+        Pt_2E3700 *p = &beam_strand_points_r[k][j];
 
-        a = a * func_001F9FA8_2E3700(func_L00_0025F368_2E3700(D_L00_00161CD8_2E3700[idx] + fj * ang));
+        a = a * FastSin_r(normalize_angle_r(beam_strand_wave_phase_r[idx] + fj * ang));
         p->y = 0.0f;
         p->w = 1.0f;
         p->z = a;
         p->x = step * fj;
     }
-    qcopy_nc(from, &D_L00_001E70A0_2E3700[idx]);
+    qcopy_nc(from, &beam_origin_transforms_translation_r[idx]);
     one = 1.0f;
-    func_001F9BF0_2E3700(d2, &D_L00_001E7130_2E3700[idx], from);
-    func_L00_001FF4B0_2E3700(dir, d2, one);
-    func_001F9CA0_2E3700(side, dir, D_0013E633_2E3700 + 0x10AD);
-    func_L00_001FF4B0_2E3700(side, side, -1.0f);
-    func_001F9CA0_2E3700(up, side, dir);
-    func_001F9EE8_2E3700(tip, &D_L00_001E7190_2E3700[k][18], dir);
-    qcopy(&D_L00_001E7160_2E3700[idx], tip);
-    p = D_L00_001E7190_2E3700[k1];
+    FastVecSub_r(d2, &beam_endpoints_r[idx], from);
+    vec_scale_to_length_r(dir, d2, one);
+    FastVecCross_r(side, dir, hero_globals_base_r + 0x10AD);
+    vec_scale_to_length_r(side, side, -1.0f);
+    FastVecCross_r(up, side, dir);
+    transform_vector_r(tip, &beam_strand_points_r[k][18], dir);
+    qcopy(&beam_tip_positions_r[idx], tip);
+    p = beam_strand_points_r[k1];
     for (n = 0; n < 19; n++) {
         float fn = (float)n;
         float s;
@@ -458,85 +458,85 @@ void update_slot_panes_and_effects(int unused, int idx) {
         float c;
 
         p->z = 0.0f;
-        s = func_L00_0025F368_2E3700(D_L00_00161CE8_2E3700[idx] + fn * 0.99483764f);
-        t = func_L00_0025F368_2E3700(D_L00_00161CF8_2E3700[idx] + fn * 0.20944f);
-        a = func_001F9FA8_2E3700(t) * 0.5f;
-        b = func_001F9FA8_2E3700(s);
-        c = func_L00_00258C80_2E3700(0.0f, 0.2f);
+        s = normalize_angle_r(beam_strand_twist_phase_r[idx] + fn * 0.99483764f);
+        t = normalize_angle_r(beam_strand_sway_phase_r[idx] + fn * 0.20944f);
+        a = FastSin_r(t) * 0.5f;
+        b = FastSin_r(s);
+        c = randf_sym_r(0.0f, 0.2f);
         p->z += a * b + c;
-        p->y = func_001F9F90_2E3700(s) * 0.3f;
+        p->y = FastCos_r(s) * 0.3f;
         p->w = 1.0f;
         p->x = step * fn;
         p++;
     }
     {
         float one;
-        float r = func_002140F8_2E3700(0.01f, 0.05f);
+        float r = random_float_between_r(0.01f, 0.05f);
         float a;
 
         one = 1.0f;
-        a = func_L00_00258C80_2E3700(0.34906584f, 0.6981317f);
+        a = randf_sym_r(0.34906584f, 0.6981317f);
         vel.q = 0;
         vel.f[0] = one;
         vel.f[3] = one;
-        vel.f[0] = r * func_001F9F90_2E3700(a);
-        vel.f[1] = r * func_001F9FA8_2E3700(a);
-        func_001F9EC0_2E3700(&vel, &vel, &D_L00_001E7070_2E3700[idx]);
-        func_L00_002757E8_2E3700(D_L00_001E7070_2E3700[idx].v30, &vel, 0x7F, D_L00_00161D58_2E3700[idx]);
-        if (func_002140B0_2E3700(3) == 0) {
+        vel.f[0] = r * FastCos_r(a);
+        vel.f[1] = r * FastSin_r(a);
+        matrix_mul_vec3_r(&vel, &vel, &beam_origin_transforms_r[idx]);
+        spawn_mode_controlled_rotating_alpha_fade_particle_r(beam_origin_transforms_r[idx].v30, &vel, 0x7F, beam_slot_ids_r[idx]);
+        if (random_integer_below_r(3) == 0) {
             Part_2E3700 *p;
 
-            func_001F9C30_2E3700(pos, &D_L00_001E7070_2E3700[idx], 0.3f);
-            func_001F9BD8_2E3700(pos, pos, D_L00_001E7070_2E3700[idx].v30);
-            p = func_L00_002757E8_2E3700(pos, D_L00_0015F660_2E3700, 0x7F, D_L00_00161D58_2E3700[idx]);
+            FastVecScale_r(pos, &beam_origin_transforms_r[idx], 0.3f);
+            FastVecAdd_r(pos, pos, beam_origin_transforms_r[idx].v30);
+            p = spawn_mode_controlled_rotating_alpha_fade_particle_r(pos, veldin1_zero_vec_r, 0x7F, beam_slot_ids_r[idx]);
             if (p != 0) {
                 PartSub_2E3700 *q = &p->sub;
 
                 p->fC = 120000.0f;
-                p->fA = func_001F9850_2E3700(4);
-                q->f10 = one / func_001FA888_2E3700(p->fA);
+                p->fA = scale_ticks_r(4);
+                q->f10 = one / IntToFloat_r(p->fA);
                 q->f18 = 0x7F7F7F;
-                if (D_L00_00161D38_2E3700[idx] == 1) q->f16 = 1;
+                if (beam_spark_style_r[idx] == 1) q->f16 = 1;
             }
         }
-        func_002140F8_2E3700(0.01f, 0.05f);
-        func_002141A8_2E3700(&vel, 0.01f, 0.05f);
-        func_L00_002757E8_2E3700(tip, &vel, 0x7F, D_L00_00161D58_2E3700[idx]);
-        if (func_002140B0_2E3700(3) == 0) {
-            Part_2E3700 *p = func_L00_002757E8_2E3700(tip, D_L00_0015F660_2E3700, 0x7F, D_L00_00161D58_2E3700[idx]);
+        random_float_between_r(0.01f, 0.05f);
+        random_spherical_offset_r(&vel, 0.01f, 0.05f);
+        spawn_mode_controlled_rotating_alpha_fade_particle_r(tip, &vel, 0x7F, beam_slot_ids_r[idx]);
+        if (random_integer_below_r(3) == 0) {
+            Part_2E3700 *p = spawn_mode_controlled_rotating_alpha_fade_particle_r(tip, veldin1_zero_vec_r, 0x7F, beam_slot_ids_r[idx]);
 
             if (p != 0) {
                 PartSub_2E3700 *q = &p->sub;
 
                 p->fC = 120000.0f;
-                p->fA = func_001F9850_2E3700(4);
-                q->f10 = 1.0f / func_001FA888_2E3700(p->fA);
+                p->fA = scale_ticks_r(4);
+                q->f10 = 1.0f / IntToFloat_r(p->fA);
                 q->f18 = 0x7F7F7F;
-                if (D_L00_00161D38_2E3700[idx] == 1) q->f16 = 2;
+                if (beam_spark_style_r[idx] == 1) q->f16 = 2;
             }
         }
     }
-    if (D_L00_00161D28_2E3700[idx] != 0) {
-        if (D_L00_00161D28_2E3700[idx] & 1) {
-            qcopy(pos, &D_L00_001E70A0_2E3700[idx]);
+    if (beam_light_flags_r[idx] != 0) {
+        if (beam_light_flags_r[idx] & 1) {
+            qcopy(pos, &beam_origin_transforms_translation_r[idx]);
             pos[2] -= 0.25f;
-            if (D_L00_00161D08_2E3700[idx] == -1) {
-                D_L00_00161D08_2E3700[idx] = func_L00_0023F0D0_2E3700(pos, D_L00_00161CC0_2E3700, 0.0f, 1.0f, 1.0f, 2.0f);
+            if (beam_origin_light_slots_r[idx] == -1) {
+                beam_origin_light_slots_r[idx] = allocate_colored_effect_slot_r(pos, D_L00_00161CC0_2E3700, 0.0f, 1.0f, 1.0f, 2.0f);
             }
-            if (D_L00_00161D08_2E3700[idx] >= 0) {
-                Snd_2E3700 *s = &D_L00_001803C0_2E3700[D_L00_00161D08_2E3700[idx]];
+            if (beam_origin_light_slots_r[idx] >= 0) {
+                Snd_2E3700 *s = &level_point_lights_r[beam_origin_light_slots_r[idx]];
 
                 qcopy(s->v10, pos);
                 s->f1C = D_L00_00161CC0_2E3700;
             }
         }
-        if (D_L00_00161D28_2E3700[idx] & 2) {
+        if (beam_light_flags_r[idx] & 2) {
             tip[2] += 0.5f;
-            if (D_L00_00161D18_2E3700[idx] == -1) {
-                D_L00_00161D18_2E3700[idx] = func_L00_0023F0D0_2E3700(tip, D_L00_00161CC0_2E3700, 0.0f, 1.0f, 1.0f, 2.0f);
+            if (beam_tip_light_slots_r[idx] == -1) {
+                beam_tip_light_slots_r[idx] = allocate_colored_effect_slot_r(tip, D_L00_00161CC0_2E3700, 0.0f, 1.0f, 1.0f, 2.0f);
             }
-            if (D_L00_00161D18_2E3700[idx] >= 0) {
-                Snd_2E3700 *s = &D_L00_001803C0_2E3700[D_L00_00161D18_2E3700[idx]];
+            if (beam_tip_light_slots_r[idx] >= 0) {
+                Snd_2E3700 *s = &level_point_lights_r[beam_tip_light_slots_r[idx]];
 
                 qcopy(s->v10, tip);
                 s->f1C = D_L00_00161CC0_2E3700;
@@ -545,12 +545,12 @@ void update_slot_panes_and_effects(int unused, int idx) {
     }
 }
 typedef struct { char b[0x140]; } Pane_2e3fa0;
-extern float D_L00_00161D48_f[] __asm__("D_L00_00161D48") MACRO_ADDR;
-extern float D_0015EE60 MACRO_ADDR;
-extern Pane_2e3fa0 D_L00_001E7190[];
-extern void func_00234C98(int, long);
-extern void func_L00_002E4838(int, int);
-extern void func_L00_002E4138(int, int, void *, int, int, int);
+extern float beam_texture_scroll_f[] __asm__("D_L00_00161D48") MACRO_ADDR;
+extern float frame_scale MACRO_ADDR;
+extern Pane_2e3fa0 beam_strand_points[];
+extern void VU1_addGSregister(int, long);
+extern void draw_beam_endpoint_quads_with_glow(int, int);
+extern void draw_beam_strand_with_glow(int, int, void *, int, int, int);
 
 /* Scrolls and draws the two panes of each active slot (3 slots). */
 void draw_active_beam_slots(char *m) {
@@ -564,9 +564,9 @@ void draw_active_beam_slots(char *m) {
         if (beam_slot_ids[i] == 0 || beam_slot_states[i] < 2) continue;
         k = i << 1;
         k1 = k + 1;
-        f = D_L00_00161D48_f[i] - frame_scale * 0.2f;
-        D_L00_00161D48_f[i] = f;
-        if (f <= -8.0f) D_L00_00161D48_f[i] = f + 8.0f;
+        f = beam_texture_scroll_f[i] - frame_scale * 0.2f;
+        beam_texture_scroll_f[i] = f;
+        if (f <= -8.0f) beam_texture_scroll_f[i] = f + 8.0f;
         draw_beam_endpoint_quads_with_glow(beam_slot_ids[i], i);
         a = d[1] + 0x28;
         b = d[0] + 0x28;
@@ -582,13 +582,13 @@ typedef struct {
 } Quad_2e4138;
 typedef struct { Vec4 m[4]; } Mat_2e4138;
 typedef struct { Vec4 a, b, c, d; } Tbl_2e4138;
-extern Tbl_2e4138 D_L00_001E7080[];
-extern long func_001F4868(int);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_L00_001FD1D8(void *, int, int);
-extern float func_L00_00258E58(float, float, float, float, float);
+extern Tbl_2e4138 beam_origin_transforms_field_10[];
+extern long GetEffectTex(int);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecCross(void *, void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern void draw_world_quad(void *, int, int);
+extern float CubicInterpolate(float, float, float, float, float);
 
 /* Builds the two blend quads from the slot tables and draws them along the
    19-step trail in a2. */
@@ -653,17 +653,17 @@ void draw_beam_strand_with_glow(int texture_id, int glow_texture_id, void *point
     width.f[2] = half_width;
     glow_width.f[3] = 1.0f;
 
-    qcopy(&basis[0], &D_L00_001E7080[slot].a);
-    FastVecSub((float *)&basis[1], g_debug_camera, (float *)&D_L00_001E7080[slot].c);
+    qcopy(&basis[0], &beam_origin_transforms_field_10[slot].a);
+    FastVecSub((float *)&basis[1], g_debug_camera, (float *)&beam_origin_transforms_field_10[slot].c);
     FastVecScale(&basis[1], &basis[1], 1.0f);
     FastVecCross(&basis[2], &basis[1], &basis[0]);
     vec_scale_to_length(&basis[2], &basis[2], 1.0f);
     FastVecCross(&basis[0], &basis[2], &basis[1]);
-    qcopy(&basis[3], &D_L00_001E7080[slot].c);
-    qcopy(&transform[3], &D_L00_001E7080[slot].c);
+    qcopy(&basis[3], &beam_origin_transforms_field_10[slot].c);
+    qcopy(&transform[3], &beam_origin_transforms_field_10[slot].c);
     FastVecSub((float *)&direction, (float *)&beam_endpoints[slot], (float *)&transform[3]);
     vec_scale_to_length(&transform[0], &direction, 1.0f);
-    FastVecCross(&transform[1], &transform[0], D_0013E633 + 0x10AD);
+    FastVecCross(&transform[1], &transform[0], hero_globals_base + 0x10AD);
     vec_scale_to_length(&transform[1], &transform[1], -1.0f);
     FastVecCross(&transform[2], &transform[1], &transform[0]);
 
@@ -723,7 +723,7 @@ void draw_beam_strand_with_glow(int texture_id, int glow_texture_id, void *point
         qcopy(&quads[1].positions[0], &quads[1].positions[2]);
         qcopy(&quads[1].positions[1], &quads[1].positions[3]);
         taper = CubicInterpolate(-1.0f, zero, 1.0f, zero, IntToFloat(i) / IntToFloat(20));
-        scroll = D_L00_00161D48_f[slot];
+        scroll = beam_texture_scroll_f[slot];
         quads[0].texture_coordinates[0][0] = scroll + zero;
         quads[0].texture_coordinates[0][1] = zero;
         quads[0].texture_coordinates[1][0] = scroll + zero;
@@ -750,21 +750,21 @@ typedef struct {
     f32 v[4];
     u8 pad[0x30];
 } T_e3388;
-extern T_e3388 D_L00_001E70A0[];
-extern f32 D_L00_001E7160[][4];
-extern f32 D_L00_001E7030[4][4];
-extern u8 D_L00_00166EC0_E4838[] __asm__("D_L00_00166EC0");
-extern u8 D_0013F6E0[];
+extern T_e3388 beam_origin_transforms_translation[];
+extern f32 beam_tip_positions[][4];
+extern f32 beam_glow_quad_corners[4][4];
+extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
+extern u8 hero_gravity_dir[];
 void func_001F9BF0_E4838(void *, void *, void *) __asm__("func_001F9BF0");
-void func_L00_001FF4B0(void *, void *, f32);
-void func_001F9CA0(void *, void *, void *);
-s64 func_001F4868(s32);
-f32 func_002140F8(f32, f32);
-f32 func_L00_00258C80(f32, f32);
-void func_001F9C30(void *, void *, f32);
-void func_001F9EE8(void *, void *, void *);
-void func_001F9BD8(void *, void *, void *);
-void func_L00_001FD1D8(void *, s32, s32);
+void vec_scale_to_length(void *, void *, f32);
+void FastVecCross(void *, void *, void *);
+s64 GetEffectTex(s32);
+f32 random_float_between(f32, f32);
+f32 randf_sym(f32, f32);
+void FastVecScale(void *, void *, f32);
+void transform_vector(void *, void *, void *);
+void FastVecAdd(void *, void *, void *);
+void draw_world_quad(void *, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e3388. */
 void draw_beam_endpoint_quads_with_glow(s32 unused, s32 idx) {
@@ -778,9 +778,9 @@ void draw_beam_endpoint_quads_with_glow(s32 unused, s32 idx) {
     s32 i;
     s32 j;
 
-    qcopy(d, &D_L00_001E70A0[idx]);
+    qcopy(d, &beam_origin_transforms_translation[idx]);
     d[3] = 1.0f;
-    func_001F9BF0_E4838(a, D_L00_00166EC0_E4838, d);
+    func_001F9BF0_E4838(a, g_debug_camera_r, d);
     vec_scale_to_length(a, a, 1.0f);
     FastVecCross(b, a, hero_gravity_dir);
     vec_scale_to_length(b, b, -1.0f);
@@ -822,7 +822,7 @@ void draw_beam_endpoint_quads_with_glow(s32 unused, s32 idx) {
     }
     draw_world_quad(&q, 0, 0);
     qcopy(d, beam_tip_positions[idx]);
-    func_001F9BF0_E4838(a, D_L00_00166EC0_E4838, d);
+    func_001F9BF0_E4838(a, g_debug_camera_r, d);
     vec_scale_to_length(a, a, 1.0f);
     FastVecCross(b, a, hero_gravity_dir);
     vec_scale_to_length(b, b, -1.0f);
@@ -851,13 +851,13 @@ void draw_beam_endpoint_quads_with_glow(s32 unused, s32 idx) {
     draw_world_quad(&q, 0, 0);
 }
 typedef struct { char pad0[0x60]; int path; float f64; float f68; float f6C; int i70; float f74; } D_2e;
-extern int *D_L00_001B0830[];
-extern short D_L00_00161D68;
-extern short D_L00_00161D6C;
-extern float func_001F9D10(void *, void *);
-extern void func_00215CA8(int *, float, int, void *, float *, int);
-extern int func_002140B0(int);
-extern void func_00213DE0(void *, int, int, int);
+extern int *level_paths[];
+extern short pterodactyl_path_speed;
+extern short pterodactyl_scale_factor;
+extern float FastVecDist(void *, void *);
+extern void SamplePathAt(int *, float, int, void *, float *, int);
+extern int random_integer_below(int);
+extern void MobyBlendAnimation(void *, int, int, int);
 
 /* Path-following moby update: start a run along its path in state 0, then step along the path each frame and pick an animation when the flag is set. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e3a88. */
 void pterodactyl_update(unsigned char *m) {
@@ -897,13 +897,13 @@ void pterodactyl_update(unsigned char *m) {
         break;
     }
 }
-extern float func_001F9D10(void *, void *);
-extern float func_001F9CB8(void *);
+extern float FastVecDist(void *, void *);
+extern float FastVecLength(void *);
 
 // Grass moby update: plays an animation when the player is near and leaves.
 void red_plant_update(char *m) {
-    if (FastVecDist(D_0013E633 + 0xE9D, m + 0x10) < 1.0f) {
-        if (FastVecLength(D_0013E633 + 0xE9D + 0x80) > g_frame_time + g_frame_time) {
+    if (FastVecDist(hero_globals_base + 0xE9D, m + 0x10) < 1.0f) {
+        if (FastVecLength(hero_globals_base + 0xE9D + 0x80) > g_frame_time + g_frame_time) {
             if (*(unsigned char *)(m + 0x53) != 1) {
                 MobyBlendAnimation(m, 1, 0, scale_ticks(6));
             }
@@ -915,19 +915,19 @@ void red_plant_update(char *m) {
         }
     }
 }
-extern float func_001F9878(float);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_L00_00260460(void *, void *, int, float, float);
-extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, float, int, float, float, int, float, int, float, int, int, int, int);
-extern int func_L00_001F10E0_s(void *, float, int, void *) __asm__("func_L00_001F10E0");
-extern float func_001F9C78(void *, void *);
-extern void func_L00_001FF610(void *, void *, void *);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_00215380(void *arg0, void *axis, float angle);
-extern void func_001FA6C0(void *, void *);
-extern void func_002153E8(void *, void *);
-extern char D_L00_0015F660[] MACRO_ADDR;
-extern float D_L00_00173F80[] NOT_SDA;
+extern float multiply_global_factor(float);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
+extern void spawn_explosion(void *, void *, void *, float, float, int, float, int, float, float, int, float, int, float, int, int, int, int);
+extern int coll_sphere_s(void *, float, int, void *) __asm__("func_L00_001F10E0");
+extern float FastVecDot(void *, void *);
+extern void vec_reflect(void *, void *, void *);
+extern void FastVecCross(void *, void *, void *);
+extern void build_quaternion_from_axis_angle(void *arg0, void *axis, float angle);
+extern void quaternion_to_matrix(void *, void *);
+extern void matrix_to_euler(void *, void *);
+extern char veldin1_zero_vec[] MACRO_ADDR;
+extern float coll_hit_normal[] NOT_SDA;
 
 /* Update of an effect-group moby: state machine over its life, then it steers a sprite along its path and bounces it off surfaces. */
 void robot_arm_update(char *m) {
@@ -949,9 +949,9 @@ void robot_arm_update(char *m) {
         DeleteMoby(m);
         return;
     case 1:
-        if (func_001F9908_r((int *)(d + 0x30))) {
+        if (fast_dec_timer_r((int *)(d + 0x30))) {
             m[0x20] = (*(int *)(d + 0x34) & 1) ? 3 : 2;
-            *(int *)(d + 0x30) = func_001FA898_r(multiply_global_factor(10.0f));
+            *(int *)(d + 0x30) = truncate_float_to_s32_r(multiply_global_factor(10.0f));
             return;
         }
         break;
@@ -967,11 +967,11 @@ void robot_arm_update(char *m) {
         DeleteMoby(m);
         return;
     case 3:
-        if (func_001F9908_r((int *)(d + 0x30))) {
+        if (fast_dec_timer_r((int *)(d + 0x30))) {
             DeleteMoby(m);
             return;
         }
-        m[0x23] = func_001FA898_r((float)*(int *)(d + 0x30) / multiply_global_factor(10.0f) * 128.0f);
+        m[0x23] = truncate_float_to_s32_r((float)*(int *)(d + 0x30) / multiply_global_factor(10.0f) * 128.0f);
         break;
     }
     s23 = d + 0x10;
@@ -986,7 +986,7 @@ void robot_arm_update(char *m) {
     *(float *)(d + 8) = *(float *)(d + 8) - *(float *)(d + 0x38);
     matrix_mul_vec3(a80, d + 0x20, m + 0xC0);
     FastVecAdd(a80, a80, m + 0x10);
-    if (func_L00_001F10E0_s(a80, r, 0, m)) {
+    if (coll_sphere_s(a80, r, 0, m)) {
         float f21, f20;
         q = coll_hit_normal;
         vec_scale_to_length(q, q, 1.0f);
@@ -1005,18 +1005,18 @@ void robot_arm_update(char *m) {
         }
     }
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 // copies a vector out of the game block into the second argument
 void Cam_GetHeroPosition(char *a, void *out) {
-    qcopy(out, D_0013E633 + 0xE9D);
+    qcopy(out, hero_globals_base + 0xE9D);
 }
 typedef struct { float f[4]; } __attribute__((aligned(16))) VQ;
-extern int func_L00_001EE530_q(VQ *, float) __asm__("func_L00_001EE530");
-extern void func_001F9BF0(float *, float *, float *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern int D_L00_001601B4 MACRO_ADDR;
-extern char D_L00_00173F70[];
+extern int find_camera_collision_volume_for_point_q(VQ *, float) __asm__("func_L00_001EE530");
+extern void FastVecSub(float *, float *, float *);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern int level_spheres MACRO_ADDR;
+extern char coll_resolved_pos[];
 
 /* Computes two adjusted points from a moby's lookup entry and its direction vector; returns 1 on success. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e4180. */
 int compute_follow_camera_radial_collision_positions(VQ *p, float r) {
@@ -1028,7 +1028,7 @@ int compute_follow_camera_radial_collision_positions(VQ *p, float r) {
     float l, inv;
     int *q;
     a = *p;
-    q = (int *)func_L00_001EE530_q(&a, r);
+    q = (int *)find_camera_collision_volume_for_point_q(&a, r);
     if (q != 0) {
     e = (char *)level_spheres + (q[5] << 7);
     c = e + 0x30;
@@ -1045,7 +1045,7 @@ int compute_follow_camera_radial_collision_positions(VQ *p, float r) {
     return 0;
 }
 typedef struct { float f[4]; } __attribute__((aligned(16))) VS;
-extern int func_L00_001EE530(VS *, float);
+extern int find_camera_collision_volume_for_point(VS *, float);
 /* True when point A lies inside a camera volume of the level's volume grid (find_camera_collision_volume_for_point with no margin). */
 int test_follow_camera_point_in_collision_volume(VS *a) {
     VS v;
@@ -1053,15 +1053,15 @@ int test_follow_camera_point_in_collision_volume(VS *a) {
     return find_camera_collision_volume_for_point(&v, 0.0f) != 0;
 }
 typedef float VQ_2E5770[4] __attribute__((aligned(16)));
-extern char D_L00_00166F10[];
-extern char D_L00_00173F60_a[] __asm__("D_L00_00173F60");
-extern void func_L00_002E5618(char *, void *);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
+extern char camera_view[];
+extern char collision_hit_point_a[] __asm__("D_L00_00173F60");
+extern void Cam_GetHeroPosition(char *, void *);
+extern int coll_line(void *, void *, int, int, int);
 
 /* build the two edge vectors of a moving box from the game vector and clip them */
 int compute_follow_camera_ground_aware_target_position(void *out, int flag) {
     VQ_2E5770 a, b, c, d;
-    char *base = D_0013E633 + 0xE1D;
+    char *base = hero_globals_base + 0xE1D;
     float f;
     char *g = camera_view;
 
@@ -1077,7 +1077,7 @@ int compute_follow_camera_ground_aware_target_position(void *out, int flag) {
         FastVecScale(d, g + 0x30, -30.0f);
         FastVecAdd(c, a, d);
         if (coll_line(b, c, 0x12, *(int *)(base + 0x2080), 0) != 0) {
-            qcopy(out, D_L00_00173F60_a);
+            qcopy(out, collision_hit_point_a);
             return 0;
         }
         qcopy(out, a);
@@ -1087,13 +1087,13 @@ int compute_follow_camera_ground_aware_target_position(void *out, int flag) {
     FastVecAdd(out, a, b);
     return 1;
 }
-extern int func_L00_002E5770(void *, int);
-extern float func_001F9C78(void *, void *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BF0(float *, float *, float *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9BC0(void *);
-extern char D_L00_00166F10[];
+extern int compute_follow_camera_ground_aware_target_position(void *, int);
+extern float FastVecDot(void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecSub(float *, float *, float *);
+extern void FastVecAdd(void *, void *, void *);
+extern void clear_u64_value(void *);
+extern char camera_view[];
 
 /* initialises a moby's matrix block from the global camera frame */
 void follow_camera_reset(char *m) {
@@ -1129,14 +1129,14 @@ void follow_camera_reset(char *m) {
     FastVecScale(c, g, *(float *)(r + 0x30));
     FastVecAdd(p + 0x90, c, q);
 }
-extern void func_L00_002E5618(char *, void *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9BF0(float *, float *, float *);
-extern float func_001F9C78(void *, void *);
-extern float func_001F9CB8(void *);
-extern float func_001F9FC0(float);
-extern char D_L00_00166F10[];
+extern void Cam_GetHeroPosition(char *, void *);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void FastVecSub(float *, float *, float *);
+extern float FastVecDot(void *, void *);
+extern float FastVecLength(void *);
+extern float FastArcSin(float);
+extern char camera_view[];
 
 /* angle between a direction and an axis, signed */
 float compute_follow_camera_signed_target_angle(char *a, float f) {
@@ -1162,7 +1162,7 @@ float compute_follow_camera_signed_target_angle(char *a, float f) {
     return r;
 }
 typedef struct { int a[4]; } Vq4 __attribute__((aligned(16)));
-extern char D_L00_00166F10[] NOT_SDA;
+extern char camera_view[] NOT_SDA;
 // adds the fixed offset vector into a moby's matrix rows and updates its camera-follow fields
 void apply_follow_camera_translation(char *a) {
     Vq4 t;
@@ -1171,22 +1171,22 @@ void apply_follow_camera_translation(char *a) {
     char *m = *(char **)(a + 0x70);
     char *m40 = m + 0x40;
     char *g, *g3;
-    qcopy(&t, D_0013E633 + 0xF5D);
+    qcopy(&t, hero_globals_base + 0xF5D);
     FastVecAdd(a + 0x30, &t, a + 0x30);
     FastVecAdd(m + 0xA0, &t, m + 0xA0);
     FastVecAdd(m40, &t, m40);
     FastVecAdd(m + 0xD0, &t, m + 0xD0);
     FastVecAdd(m, &t, m);
-    g = D_0013E633 + 0xE1D;
+    g = hero_globals_base + 0xE1D;
     if (*(short *)(g + 0x308) == 0) {
         char *p = *(char **)(g + 0x2FC);
         char *q;
         if (p == 0 || *(short *)(p + 0xA6) != 0x22D || ((q = b - 0x190), scale_ticks(0x1E)) < *(int *)(q + 0x398)) {
-            char *g2 = D_0013E633 + 0xE1D;
+            char *g2 = hero_globals_base + 0xE1D;
             *(float *)(*(char **)(a + 0x70) + 0x1C8) = *(float *)(g2 + 0x14C);
         }
     }
-    g3 = D_0013E633 + 0xE1D;
+    g3 = hero_globals_base + 0xE1D;
     if ((unsigned)(*(int *)(g3 + 0x2084) - 0xB) < 2) {
         char *m2 = *(char **)(a + 0x70);
         char *s = b + 0x30;
@@ -1205,11 +1205,11 @@ void apply_follow_camera_translation(char *a) {
     }
 }
 typedef struct { int a[4]; } Vq __attribute__((aligned(16)));
-extern char *D_L00_00166F00;
-extern void func_001F9C30(void *, void *, float);
-extern void func_L00_002E5618(char *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001F9C78(void *, void *);
+extern char *g_current_follow_cam;
+extern void FastVecScale(void *, void *, float);
+extern void Cam_GetHeroPosition(char *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastVecDot(void *, void *);
 /* OUT = the axis at D_L00_00166F40 scaled by the component along it of (hero position + F * the camera up axis
    D_L00_00166F30): the hero's height-offset point projected onto that axis. */
 void compute_follow_camera_offset_target_up_projection(void *out, float f) {
@@ -1220,25 +1220,25 @@ void compute_follow_camera_offset_target_up_projection(void *out, float f) {
     FastVecAdd(&t0, &t0, &t1);
     FastVecScale(out, b + 0x30, FastVecDot(b + 0x30, &t0));
 }
-extern void func_L00_002E5D50(void *out, float f);
-extern int func_001F9938(void *);
-extern float D_L00_00166FEC;
-extern short D_L00_00161DF4;
-extern short D_L00_00161E08;
-extern short D_L00_00161E0C;
-extern short D_L00_00161E10;
-extern short D_L00_00161E18;
-extern short D_L00_00161E1C;
-extern short D_L00_00161E20;
-extern short D_L00_00161E24;
-extern short D_L00_00161E28;
-extern short D_L00_00161E2C;
-extern short D_L00_00161E30;
-extern short D_L00_00161E34;
-extern short D_L00_00161E38;
-extern short D_L00_00161E3C;
-extern short D_L00_00161E48;
-extern short D_L00_00161E4C;
+extern void compute_follow_camera_offset_target_up_projection(void *out, float f);
+extern int FastDecTimer(void *);
+extern float camera_view_field_dc;
+extern short follow_cam_view_blend_time;
+extern short follow_cam_mode2_blend_time;
+extern short follow_cam_mode1_blend_time;
+extern short follow_cam_high_jump_move_time;
+extern short follow_cam_high_jump_distance;
+extern short follow_cam_mode3_move_time;
+extern short follow_cam_jump_blend_time;
+extern short follow_cam_return_blend_time;
+extern short follow_cam_mode3_distance;
+extern short follow_cam_double_jump_move_time;
+extern short follow_cam_double_jump_blend_time;
+extern short follow_cam_double_jump_exit_time;
+extern short follow_cam_double_jump_distance;
+extern short follow_cam_wrench_slam_move_time;
+extern short follow_cam_slam_recover_time;
+extern short follow_cam_wrench_slam_distance;
 
 typedef struct {
     float v00[4];
@@ -1266,15 +1266,15 @@ void follow_cam_update_mode(char *m) {
     int t;
 
     if (e->state == 0) {
-        char *p0 = D_0013E633 + 0xE1D;
+        char *p0 = hero_globals_base + 0xE1D;
         if (*(int *)(p0 + 0x208C) == 2) {
             e->prev = e->state;
             e->state = 1;
             e->timer = follow_cam_mode1_blend_time;
             e->invTimer = 1.0f / IntToFloat(e->timer);
         } else {
-            char *p1 = D_0013E633 + 0xE1D;
-            if (*(int *)(p1 + 0x2084) == 0xF && D_L00_00166FEC == 0.0f) {
+            char *p1 = hero_globals_base + 0xE1D;
+            if (*(int *)(p1 + 0x2084) == 0xF && camera_view_field_dc == 0.0f) {
                 e->prev = e->state;
                 e->state = 3;
                 e->moveTimer = scale_ticks(*(int *)&follow_cam_mode3_move_time);
@@ -1288,15 +1288,15 @@ void follow_cam_update_mode(char *m) {
                 compute_follow_camera_offset_target_up_projection(e->v30, x);
                 qcopy(e->v20, e->v10);
             } else {
-                char *p2 = D_0013E633 + 0xE1D;
-                if (*(int *)(p2 + 0x2084) == 0xC && D_L00_00166FEC == 0.0f) {
+                char *p2 = hero_globals_base + 0xE1D;
+                if (*(int *)(p2 + 0x2084) == 0xC && camera_view_field_dc == 0.0f) {
                     e->prev = e->state;
                     e->state = 8;
                     e->timer = follow_cam_double_jump_blend_time;
                     e->invTimer = 1.0f / IntToFloat(e->timer);
                 } else {
-                    char *p3 = D_0013E633 + 0xE1D;
-                    if (*(int *)(p3 + 0x2084) == 0xB && D_L00_00166FEC == 0.0f) {
+                    char *p3 = hero_globals_base + 0xE1D;
+                    if (*(int *)(p3 + 0x2084) == 0xB && camera_view_field_dc == 0.0f) {
                         e->prev = e->state;
                         e->state = 6;
                         e->moveTimer = scale_ticks(*(int *)&follow_cam_high_jump_move_time);
@@ -1310,8 +1310,8 @@ void follow_cam_update_mode(char *m) {
                         compute_follow_camera_offset_target_up_projection(e->v30, x);
                         qcopy(e->v20, e->v10);
                     } else {
-                        char *p4 = D_0013E633 + 0xE1D;
-                        if ((*(int *)(p4 + 0x2084) == 0xD || *(int *)(p4 + 0x2084) == 0xE) && D_L00_00166FEC == 0.0f) {
+                        char *p4 = hero_globals_base + 0xE1D;
+                        if ((*(int *)(p4 + 0x2084) == 0xD || *(int *)(p4 + 0x2084) == 0xE) && camera_view_field_dc == 0.0f) {
                             e->prev = e->state;
                             e->state = 5;
                             e->moveTimer = scale_ticks(*(int *)&follow_cam_double_jump_move_time);
@@ -1325,8 +1325,8 @@ void follow_cam_update_mode(char *m) {
                             compute_follow_camera_offset_target_up_projection(e->v30, x);
                             qcopy(e->v20, e->v10);
                         } else {
-                            char *p5 = D_0013E633 + 0xE1D;
-                            if (*(int *)(p5 + 0x208C) == 4 && D_L00_00166FEC == 0.0f) {
+                            char *p5 = hero_globals_base + 0xE1D;
+                            if (*(int *)(p5 + 0x208C) == 4 && camera_view_field_dc == 0.0f) {
                                 e->prev = e->state;
                                 e->state = 2;
                                 e->timer = follow_cam_mode2_blend_time;
@@ -1339,7 +1339,7 @@ void follow_cam_update_mode(char *m) {
         }
         return;
     }
-    if (e->state != 9 && e->state != 1 && *(int *)(D_0013E633 + 0x2EA1) == 0x14) {
+    if (e->state != 9 && e->state != 1 && *(int *)(hero_globals_base + 0x2EA1) == 0x14) {
         float r;
         e->prev = e->state;
         e->state = 9;
@@ -1356,14 +1356,14 @@ void follow_cam_update_mode(char *m) {
         qcopy(e->v20, e->v10);
         return;
     }
-    if ((e->state == 1 || e->state == 2) && *(int *)(D_0013E633 + 0x2EA9) != 4 && *(int *)(D_0013E633 + 0x2EA9) != 2) {
+    if ((e->state == 1 || e->state == 2) && *(int *)(hero_globals_base + 0x2EA9) != 4 && *(int *)(hero_globals_base + 0x2EA9) != 2) {
         e->timer = 0;
         e->invTimer = 1.0f;
         e->state = 0;
         return;
     }
     if (e->state == 7) {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         if (*(short *)(p + 0x41E) == 0) {
             e->prev = e->state;
             e->state = 6;
@@ -1387,8 +1387,8 @@ void follow_cam_update_mode(char *m) {
             return;
         }
     }
-    if (e->state == 4 && *(int *)(D_0013E633 + 0x2EA9) != 4) {
-        if (*(int *)(D_0013E633 + 0x2EA9) == 2) {
+    if (e->state == 4 && *(int *)(hero_globals_base + 0x2EA9) != 4) {
+        if (*(int *)(hero_globals_base + 0x2EA9) == 2) {
             e->prev = 4;
             e->state = 1;
             e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
@@ -1401,7 +1401,7 @@ void follow_cam_update_mode(char *m) {
         }
         return;
     }
-    if (e->state == 3 && *(int *)(D_0013E633 + 0x2EA1) == 0xB) {
+    if (e->state == 3 && *(int *)(hero_globals_base + 0x2EA1) == 0xB) {
         e->prev = e->state;
         e->state = 6;
         e->moveTimer = scale_ticks(*(int *)&follow_cam_high_jump_move_time);
@@ -1416,28 +1416,28 @@ void follow_cam_update_mode(char *m) {
         qcopy(e->v20, e->v10);
         return;
     }
-    if (e->state == 5 && *(int *)(D_0013E633 + 0x2EA1) == 0xC) {
+    if (e->state == 5 && *(int *)(hero_globals_base + 0x2EA1) == 0xC) {
         e->prev = e->state;
         e->state = 8;
         e->timer = follow_cam_double_jump_blend_time;
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if (e->state == 8 && *(int *)(D_0013E633 + 0x2EA1) != 0xC) {
+    if (e->state == 8 && *(int *)(hero_globals_base + 0x2EA1) != 0xC) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_double_jump_exit_time);
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if (e->state == 6 && *(int *)(D_0013E633 + 0x2EA1) != 0xB) {
+    if (e->state == 6 && *(int *)(hero_globals_base + 0x2EA1) != 0xB) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if ((e->state == 3 || e->state == 5) && *(int *)(D_0013E633 + 0x2EA9) != 4) {
+    if ((e->state == 3 || e->state == 5) && *(int *)(hero_globals_base + 0x2EA9) != 4) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
@@ -1445,13 +1445,13 @@ void follow_cam_update_mode(char *m) {
         return;
     }
     if (e->state == 9) {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         if (*(int *)(p + 0x208C) == 2 || *(short *)(p + 0x30C) >= scale_ticks(0x37)) {
             goto to_one;
         }
     }
     if (e->state == 0xA) {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         if (*(int *)(p + 0x208C) == 2 || *(short *)(p + 0x30C) >= scale_ticks(0x37)) {
             float r;
         to_one:
@@ -1467,7 +1467,7 @@ void follow_cam_update_mode(char *m) {
             return;
         }
     }
-    if (e->state == 9 && *(int *)(D_0013E633 + 0x2EA1) != 0x14) {
+    if (e->state == 9 && *(int *)(hero_globals_base + 0x2EA1) != 0x14) {
         e->prev = e->state;
         e->state = 0xA;
         e->timer = follow_cam_slam_recover_time;
@@ -1481,22 +1481,22 @@ void follow_cam_update_mode(char *m) {
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if (e->state == 5 && *(int *)(D_0013E633 + 0x2EA1) == 0x10) {
+    if (e->state == 5 && *(int *)(hero_globals_base + 0x2EA1) == 0x10) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_double_jump_exit_time);
         e->invTimer = 1.0f / IntToFloat(e->timer);
     }
 }
-extern short D_L00_00161DE0;
-extern short D_L00_00161DDC;
-extern short D_L00_00161E50;
-extern void func_001F9C08(float, void *, void *, void *);
-extern float func_001F9B88(float);
-extern float func_001FA888(int);
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern int func_001F9938(void *);
-extern int func_L00_002E5770_r(void *, int) __asm__("func_L00_002E5770");
+extern short follow_cam_target_angle_min;
+extern short follow_cam_target_angle_max;
+extern short follow_cam_slam_target_lerp;
+extern void lerp_vector(float, void *, void *, void *);
+extern float FastAbsF(float);
+extern float IntToFloat(int);
+extern int coll_sphere(float, void *, int, void *);
+extern int FastDecTimer(void *);
+extern int compute_follow_camera_ground_aware_target_position_r(void *, int) __asm__("func_L00_002E5770");
 
 /* per-frame state machine that eases a moby's attach pose toward the camera block's vector */
 void follow_cam_focus_velocity(char *m, float *v2) {
@@ -1514,7 +1514,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
     g = camera_view;
     d = *(char **)(m + 0x70);
     Cam_GetHeroPosition(m, cam);
-    pad = D_0013E633 + 0xE1D;
+    pad = hero_globals_base + 0xE1D;
     e = d + 0x40;
     if (*(int *)(pad + 0x2084) == 0x77) {
         x = FastVecDot(e, g + 0x30);
@@ -1533,7 +1533,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
     }
     switch (*(unsigned char *)(e + 0xC4)) {
     case 2:
-        padb = D_0013E633 + 0xE1D;
+        padb = hero_globals_base + 0xE1D;
         if (*(int *)(padb + 0x2084) == 0x11 ||
             (*(short *)(padb + 0x41E) != 0 && *(float *)(padb + 0x2DC) > 0.2f &&
              ((y = compute_follow_camera_signed_target_angle(m, *(float *)(e + 0xB0))) < *(float *)&follow_cam_target_angle_min ||
@@ -1544,13 +1544,13 @@ void follow_cam_focus_velocity(char *m, float *v2) {
             *(short *)(e + 0xC6) = v;
             *(float *)(e + 0xC8) = 1.0f / IntToFloat((short)v);
         }
-        padc = D_0013E633 + 0xE1D;
+        padc = hero_globals_base + 0xE1D;
         flag = 0;
         if (*(short *)(padc + 0x30C) != 0 && *(float *)(g + 0xDC) == 0.0f &&
             (*(short *)(padc + 0x41E) == 0 || *(int *)(padc + 0x44C) >= 0x10)) {
             flag = 1;
         } else {
-            if (func_L00_002E5770_r(tmp, 1) == 1) {
+            if (compute_follow_camera_ground_aware_target_position_r(tmp, 1) == 1) {
                 x = FastVecDot(tmp, g + 0x30);
                 if (x < FastVecLength(e + 0x10)) flag = 1;
             } else {
@@ -1634,7 +1634,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
         break;
     }
 }
-extern float func_001EC120(void *, float, float, float, float, float);
+extern float Cam_InterpValues(void *, float, float, float, float, float);
 
 /* Eases the three components of OUT toward IN with Cam_InterpValues, one spring state each at +0xE0/+0xE4/+0xE8 of
    camera M's state buffer (M + 0x70), with the rates A, B and C. */
@@ -1681,12 +1681,12 @@ int compute_follow_camera_target_position(char *m, void *a, void *b, int k) {
     }
     return r;
 }
-extern int func_001F9938(void *);
-extern void func_L00_002E6A68(char *m, float *out, float *in, float a, float b, float c);
-extern short D_L00_00161DF8;
-extern short D_L00_00161DFC;
-extern short D_L00_00161E00;
-extern short D_L00_00161E04;
+extern int FastDecTimer(void *);
+extern void interpolate_follow_camera_position(char *m, float *out, float *in, float a, float b, float c);
+extern short follow_cam_position_stiffness;
+extern short follow_cam_position_damping;
+extern short follow_cam_attach_position_stiffness;
+extern short follow_cam_attach_position_damping;
 
 // Camera blend: compute interpolated camera vector from current mode.
 void Cam_UpdateOffsetBlend(char *m, float *in) {
@@ -1731,124 +1731,124 @@ typedef struct Q_2E6CE0 {
 typedef struct R_2E6CE0 { char pad0[0x30]; float f30; } R_2E6CE0;
 typedef struct CamD_2E6CE0 { char pad0[0x20C]; float f20C; float f210; float f214; } CamD_2E6CE0;
 typedef struct Cam_2E6CE0 { char pad0[0x70]; CamD_2E6CE0 *d; } Cam_2E6CE0;
-extern void func_L00_002E5618_2E6CE0(char *, void *) __asm__("func_L00_002E5618");
-extern void func_L00_002E5DE0_2E6CE0(char *) __asm__("func_L00_002E5DE0");
-extern void func_L00_002E6498_2E6CE0(char *, float *) __asm__("func_L00_002E6498");
-extern float func_001F9C78_2E6CE0(void *, void *) __asm__("func_001F9C78");
-extern void func_001F9C30_2E6CE0(void *, void *, float) __asm__("func_001F9C30");
-extern void func_001F9BF0_2E6CE0(void *, void *, void *) __asm__("func_001F9BF0");
-extern float func_001EC120_2E6CE0(void *, float, float, float, float, float) __asm__("func_001EC120");
-extern void func_001F9BD8_2E6CE0(void *, void *, void *) __asm__("func_001F9BD8");
-extern int func_001F9850_2E6CE0(int) __asm__("func_001F9850");
-extern float func_001FA888_2E6CE0(int) __asm__("func_001FA888");
-extern void func_001F9C08_2E6CE0(float, void *, void *, void *) __asm__("func_001F9C08");
-extern int func_001F9938_2E6CE0(void *) __asm__("func_001F9938");
-extern void func_L00_002E6BE0_2E6CE0(char *, float *) __asm__("func_L00_002E6BE0");
-extern int func_L00_001EFFF0_2E6CE0(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-extern float func_001F9CB8_2E6CE0(void *) __asm__("func_001F9CB8");
-extern void func_L00_002E9968_2E6CE0(float, float) __asm__("func_L00_002E9968");
-extern char D_L00_00166F10_2E6CE0[] __asm__("D_L00_00166F10");
-extern Cam_2E6CE0 *D_L00_00166F00_2E6CE0 __asm__("D_L00_00166F00");
-extern int D_L00_0015F058_2E6CE0 __asm__("D_L00_0015F058") MACRO_ADDR;
+extern void Cam_GetHeroPosition_r(char *, void *) __asm__("func_L00_002E5618");
+extern void follow_cam_update_mode_r(char *) __asm__("func_L00_002E5DE0");
+extern void follow_cam_focus_velocity_r(char *, float *) __asm__("func_L00_002E6498");
+extern float FastVecDot_r(void *, void *) __asm__("func_001F9C78");
+extern void FastVecScale_r2(void *, void *, float) __asm__("func_001F9C30");
+extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
+extern float Cam_InterpValues_r(void *, float, float, float, float, float) __asm__("func_001EC120");
+extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
+extern int scale_ticks_r2(int) __asm__("func_001F9850");
+extern float IntToFloat_r2(int) __asm__("func_001FA888");
+extern void lerp_vector_r(float, void *, void *, void *) __asm__("func_001F9C08");
+extern int FastDecTimer_r(void *) __asm__("func_001F9938");
+extern void Cam_UpdateOffsetBlend_r(char *, float *) __asm__("func_L00_002E6BE0");
+extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
+extern float FastVecLength_r2(void *) __asm__("func_001F9CB8");
+extern void follow_camera_set_height_r(float, float) __asm__("func_L00_002E9968");
+extern char camera_view_r[] __asm__("D_L00_00166F10");
+extern Cam_2E6CE0 *g_current_follow_cam_r __asm__("D_L00_00166F00");
+extern int camera_collision_mask_r __asm__("D_L00_0015F058") MACRO_ADDR;
 extern int D_L00_00161DF0_2E6CE0 SDATA(D_L00_00161DF0);
 extern float D_L00_00161DA8_2E6CE0 SDATA(D_L00_00161DA8);
 
 /* Updates the follow camera of a moby: eases its offset vectors, then places the eye, clipped against collision. */
 void follow_camera_springs(char *m) {
     float a[4], b[4], c[4], d[4], e[4], f[4], g[4], h[4], w[4], u[4], v[4];
-    char *gl = D_L00_00166F10_2E6CE0;
+    char *gl = camera_view_r;
     char *p = *(char **)(m + 0x70);
     R_2E6CE0 *r = (R_2E6CE0 *)(p + 0x130);
     Q_2E6CE0 *q = (Q_2E6CE0 *)(p + 0x40);
     float f20, f21;
 
-    func_L00_002E5618_2E6CE0(m, b);
-    func_L00_002E5DE0_2E6CE0(m);
-    func_L00_002E6498_2E6CE0(m, a);
+    Cam_GetHeroPosition_r(m, b);
+    follow_cam_update_mode_r(m);
+    follow_cam_focus_velocity_r(m, a);
     qcopy(p + 0x50, a);
     qcopy(c, q);
-    f20 = func_001F9C78_2E6CE0(gl + 0x30, p + 0xA0);
-    func_001F9C30_2E6CE0(d, gl + 0x30, f20);
-    func_001F9BF0_2E6CE0(e, p + 0xA0, d);
-    d[0] = func_001EC120_2E6CE0(p + 0xC0, d[0], q->v10[0], q->fE4, q->fE8, 0.0f);
-    d[1] = func_001EC120_2E6CE0(p + 0xC4, d[1], q->v10[1], q->fE4, q->fE8, 0.0f);
-    d[2] = func_001EC120_2E6CE0(p + 0xC8, d[2], q->v10[2], q->fE4, q->fE8, 0.0f);
-    e[0] = func_001EC120_2E6CE0(p + 0xB0, e[0], q->v0[0], q->fDC, q->fE0, 0.0f);
-    e[1] = func_001EC120_2E6CE0(p + 0xB4, e[1], q->v0[1], q->fDC, q->fE0, 0.0f);
-    e[2] = func_001EC120_2E6CE0(p + 0xB8, e[2], q->v0[2], q->fDC, q->fE0, 0.0f);
-    func_001F9BD8_2E6CE0(q, q, p + 0x50);
-    func_001F9BD8_2E6CE0(p + 0xA0, e, d);
-    func_001F9C30_2E6CE0(f, gl + 0x20, q->fB0);
+    f20 = FastVecDot_r(gl + 0x30, p + 0xA0);
+    FastVecScale_r2(d, gl + 0x30, f20);
+    FastVecSub_r2(e, p + 0xA0, d);
+    d[0] = Cam_InterpValues_r(p + 0xC0, d[0], q->v10[0], q->fE4, q->fE8, 0.0f);
+    d[1] = Cam_InterpValues_r(p + 0xC4, d[1], q->v10[1], q->fE4, q->fE8, 0.0f);
+    d[2] = Cam_InterpValues_r(p + 0xC8, d[2], q->v10[2], q->fE4, q->fE8, 0.0f);
+    e[0] = Cam_InterpValues_r(p + 0xB0, e[0], q->v0[0], q->fDC, q->fE0, 0.0f);
+    e[1] = Cam_InterpValues_r(p + 0xB4, e[1], q->v0[1], q->fDC, q->fE0, 0.0f);
+    e[2] = Cam_InterpValues_r(p + 0xB8, e[2], q->v0[2], q->fDC, q->fE0, 0.0f);
+    FastVecAdd_r2(q, q, p + 0x50);
+    FastVecAdd_r2(p + 0xA0, e, d);
+    FastVecScale_r2(f, gl + 0x20, q->fB0);
     if (q->bD6) {
-        if (++q->hD8 > func_001F9850_2E6CE0(D_L00_00161DF0_2E6CE0)) {
-            q->hD8 = func_001F9850_2E6CE0(D_L00_00161DF0_2E6CE0);
+        if (++q->hD8 > scale_ticks_r2(D_L00_00161DF0_2E6CE0)) {
+            q->hD8 = scale_ticks_r2(D_L00_00161DF0_2E6CE0);
         }
-        func_001F9C08_2E6CE0((float)q->hD8 / func_001FA888_2E6CE0(func_001F9850_2E6CE0(D_L00_00161DF0_2E6CE0)), g, q, p + 0xA0);
-        func_001F9BD8_2E6CE0(p + 0x80, f, g);
+        lerp_vector_r((float)q->hD8 / IntToFloat_r2(scale_ticks_r2(D_L00_00161DF0_2E6CE0)), g, q, p + 0xA0);
+        FastVecAdd_r2(p + 0x80, f, g);
     } else {
-        func_001F9938_2E6CE0(p + 0x118);
+        FastDecTimer_r(p + 0x118);
         if (q->hD8 < 0) {
             q->hD8 = 0;
         }
-        func_001F9C08_2E6CE0((float)q->hD8 / func_001FA888_2E6CE0(func_001F9850_2E6CE0(D_L00_00161DF0_2E6CE0)), g, q, p + 0xA0);
-        func_001F9BD8_2E6CE0(p + 0x80, f, g);
+        lerp_vector_r((float)q->hD8 / IntToFloat_r2(scale_ticks_r2(D_L00_00161DF0_2E6CE0)), g, q, p + 0xA0);
+        FastVecAdd_r2(p + 0x80, f, g);
     }
-    func_L00_002E6BE0_2E6CE0(m, f);
-    if (((Hero *)(D_0013E633_2E3700 + 0xE1D))->vehicle_mode == 2) {
-        func_001F9C30_2E6CE0(f, gl + 0x20, 3.0f);
-    } else if (((Hero *)(D_0013E633_2E3700 + 0xE1D))->vehicle_mode == 1) {
-        func_001F9C30_2E6CE0(f, gl + 0x20, 0.4f);
+    Cam_UpdateOffsetBlend_r(m, f);
+    if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2) {
+        FastVecScale_r2(f, gl + 0x20, 3.0f);
+    } else if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 1) {
+        FastVecScale_r2(f, gl + 0x20, 0.4f);
     } else {
-        func_001F9C30_2E6CE0(f, gl + 0x20, 0.5f);
+        FastVecScale_r2(f, gl + 0x20, 0.5f);
     }
-    func_001F9BD8_2E6CE0(g, b, f);
-    func_001F9C30_2E6CE0(f, gl + 0x20, r->f30);
-    func_001F9BD8_2E6CE0(q->v50, f, q);
-    f20 = D_L00_00161DA8_2E6CE0 + D_L00_00166F00_2E6CE0->d->f214 * D_L00_00166F00_2E6CE0->d->f20C * (D_L00_00166F00_2E6CE0->d->f210 - 1.0f);
-    func_001F9C30_2E6CE0(h, gl + 0x20, 20.0f);
-    func_001F9BD8_2E6CE0(h, g, h);
-    if (func_L00_001EFFF0_2E6CE0(g, h, D_L00_0015F058_2E6CE0, (int)((Hero *)(D_0013E633_2E3700 + 0xE1D))->moby, 0)) {
-        qcopy(w, D_L00_00173F60_a);
+    FastVecAdd_r2(g, b, f);
+    FastVecScale_r2(f, gl + 0x20, r->f30);
+    FastVecAdd_r2(q->v50, f, q);
+    f20 = D_L00_00161DA8_2E6CE0 + g_current_follow_cam_r->d->f214 * g_current_follow_cam_r->d->f20C * (g_current_follow_cam_r->d->f210 - 1.0f);
+    FastVecScale_r2(h, gl + 0x20, 20.0f);
+    FastVecAdd_r2(h, g, h);
+    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)(hero_globals_base_r + 0xE1D))->moby, 0)) {
+        qcopy(w, collision_hit_point_a);
     } else {
         qcopy(w, h);
     }
-    func_001F9C30_2E6CE0(h, gl + 0x20, 20.0f);
-    func_001F9BF0_2E6CE0(h, g, h);
-    if (func_L00_001EFFF0_2E6CE0(g, h, D_L00_0015F058_2E6CE0, (int)((Hero *)(D_0013E633_2E3700 + 0xE1D))->moby, 0)) {
-        qcopy(h, D_L00_00173F60_a);
+    FastVecScale_r2(h, gl + 0x20, 20.0f);
+    FastVecSub_r2(h, g, h);
+    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)(hero_globals_base_r + 0xE1D))->moby, 0)) {
+        qcopy(h, collision_hit_point_a);
     }
-    func_001F9BF0_2E6CE0(u, h, w);
-    if (func_001F9CB8_2E6CE0(u) < f20 + f20) {
-        func_001F9BD8_2E6CE0(v, w, h);
-        func_001F9C30_2E6CE0(v, v, 0.5f);
+    FastVecSub_r2(u, h, w);
+    if (FastVecLength_r2(u) < f20 + f20) {
+        FastVecAdd_r2(v, w, h);
+        FastVecScale_r2(v, v, 0.5f);
         qcopy(q->v50, v);
-        func_001F9BF0_2E6CE0(u, v, q);
-        func_L00_002E9968_2E6CE0(func_001F9C78_2E6CE0(u, gl + 0x20), 0.003f);
+        FastVecSub_r2(u, v, q);
+        follow_camera_set_height_r(FastVecDot_r(u, gl + 0x20), 0.003f);
     } else {
         float len;
-        func_001F9BF0_2E6CE0(u, w, q);
-        len = func_001F9CB8_2E6CE0(u);
+        FastVecSub_r2(u, w, q);
+        len = FastVecLength_r2(u);
         f21 = r->f30;
         if (len <= f21 + f20) {
-            func_001F9C30_2E6CE0(v, gl + 0x20, f20);
-            func_001F9BF0_2E6CE0(v, w, v);
+            FastVecScale_r2(v, gl + 0x20, f20);
+            FastVecSub_r2(v, w, v);
             qcopy(q->v50, v);
-            func_001F9BF0_2E6CE0(u, v, q);
-            func_L00_002E9968_2E6CE0(func_001F9C78_2E6CE0(u, gl + 0x20), 0.003f);
+            FastVecSub_r2(u, v, q);
+            follow_camera_set_height_r(FastVecDot_r(u, gl + 0x20), 0.003f);
         } else {
-            f20 = func_001F9C78_2E6CE0(q, gl + 0x30);
-            if (func_001F9C78_2E6CE0(h, gl + 0x30) < f20) {
+            f20 = FastVecDot_r(q, gl + 0x30);
+            if (FastVecDot_r(h, gl + 0x30) < f20) {
                 qcopy(h, q);
             }
-            func_001F9C30_2E6CE0(f, gl + 0x20, f21);
-            func_001F9BD8_2E6CE0(q->v50, f, h);
+            FastVecScale_r2(f, gl + 0x20, f21);
+            FastVecAdd_r2(q->v50, f, h);
         }
     }
 }
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay/vendor/002e5e38.c, follow_camera_approach (FUN_L00_002e5e38). */
-extern float D_L00_0015F044_2E72E8 __asm__("D_L00_0015F044") MACRO_ADDR;
-extern unsigned char D_L00_001690C0_2E72E8[] __asm__("D_L00_001690C0") NOT_SDA;
-extern int D_L00_0015F060_2E72E8 __asm__("D_L00_0015F060") MACRO_ADDR;
+extern float follow_cam_setting_value_r __asm__("D_L00_0015F044") MACRO_ADDR;
+extern unsigned char follow_cam_defaults_ptr_r[] __asm__("D_L00_001690C0") NOT_SDA;
+extern int gCamSphereMaskBaseLvl_r __asm__("D_L00_0015F060") MACRO_ADDR;
 extern float D_L00_00161DD4_2E72E8 SDATA(D_L00_00161DD4);
 extern float D_L00_00161DD8_2E72E8 SDATA(D_L00_00161DD8);
 extern float D_L00_00161D70_2E72E8 SDATA(D_L00_00161D70);
@@ -1874,13 +1874,13 @@ void follow_camera_approach(unsigned char *moby)
     unsigned char *init, *cam, *defaults, *orbit, *target, *default_target, *default_orbit, *reset;
     CamSpring_2E72E8 *spring_reset;
     init = ((CamObject_2E72E8 *)moby)->cam + 0x1A8;
-    ((CamInit_2E72E8 *)init)->unk14 = D_L00_0015F044_2E72E8;
+    ((CamInit_2E72E8 *)init)->unk14 = follow_cam_setting_value_r;
     ((CamInit_2E72E8 *)init)->unk1C.bits = 0;
     ((CamInit_2E72E8 *)init)->unk20 = 0;
     ((CamInit_2E72E8 *)init)->unk10 = 0;
     ((CamInit_2E72E8 *)init)->unk24 = 0;
     cam = ((CamObject_2E72E8 *)moby)->cam;
-    defaults = *(unsigned char **)D_L00_001690C0_2E72E8;
+    defaults = *(unsigned char **)follow_cam_defaults_ptr_r;
     orbit = cam + 0x130;
     target = cam + 0x40;
     default_orbit = defaults + 0x130;
@@ -1918,7 +1918,7 @@ void follow_camera_approach(unsigned char *moby)
     spring_reset->unk44 = D_L00_00161DAC_2E72E8;
     spring_reset->unk3C = D_L00_00161DB4_2E72E8;
     spring_reset->unk40 = D_L00_00161DB0_2E72E8;
-    spring_reset->unk48 = D_L00_0015F060_2E72E8;
+    spring_reset->unk48 = gCamSphereMaskBaseLvl_r;
     reset = ((CamObject_2E72E8 *)moby)->cam + 0x220;
     ((CamEnd_2E72E8 *)reset)->unkC = D_L00_00161DEC_2E72E8;
     ((CamEnd_2E72E8 *)reset)->unk6 = 0;
@@ -1946,47 +1946,47 @@ typedef struct {
 typedef struct { u8 pad[0x100]; f32 f100; f32 f104; } C_y;
 typedef struct { u8 pad[0x2000]; s32 i2000; } L_y;
 #define hero74 (*(Hero *)D_0013F450)
-extern char D_L00_00166D80[];
+extern char player_camera[];
 #define player_camera_y ((A_y *)D_L00_00166D80)
-extern unsigned char D_0013A5E0[];
+extern unsigned char pad_globals_base[];
 #define D_0013C940_y (*(C_y *)(D_0013A5E0 + 0x2460))
 #define D_0013F3D0_y (*(L_y *)(D_0013E633 + 0xE9D))
-extern u8 *D_L00_00178000[];
+extern u8 *coll_sphere_moby_hits[];
 #define D_0013CAE0_y ((s32 *)(D_0013A5E0 + 0x2600))
 #define g6F10 ((f32 *)D_L00_00166F10)
-extern float D_L00_0015F040 MACRO_ADDR;
+extern float follow_cam_turn_blend_weight MACRO_ADDR;
 #define g40 D_L00_0015F040
-extern short D_L00_00161E64;
+extern short follow_cam_heading_slide_enabled;
 #define g64 (*(s32 *)&D_L00_00161E64)
-extern short D_L00_00161E54;
+extern short follow_cam_heading_steadiness_min;
 #define g54 (*(f32 *)&D_L00_00161E54)
-extern short D_L00_00161E58;
+extern short follow_cam_slide_lateral_spring_max;
 #define g58 (*(f32 *)&D_L00_00161E58)
-extern short D_L00_00161E68;
+extern short follow_cam_vehicle2_eye_offset;
 #define g68 (*(f32 *)&D_L00_00161E68)
-extern short D_L00_00161E6C;
+extern short follow_cam_vehicle2_distance;
 #define g6C (*(f32 *)&D_L00_00161E6C)
-extern short D_L00_00161E70;
+extern short follow_cam_vehicle2_height;
 #define g70 (*(f32 *)&D_L00_00161E70)
-extern short D_L00_00161E74;
+extern short follow_cam_vehicle2_clearance_extra;
 #define g74 (*(f32 *)&D_L00_00161E74)
-extern short D_L00_00161E78;
+extern short follow_cam_vehicle2_clearance_scale;
 #define g78 (*(f32 *)&D_L00_00161E78)
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern float func_001FA748(float, float);
-extern float func_001FA850(float, float);
-extern unsigned char *func_L00_0025D390(int);
-extern int func_L00_001F2BE8(float, void *, int, void *, void *);
-extern void func_L00_002E9DC8(void *, float, float);
-extern void func_L00_002E9AF8(void);
-extern void func_L00_002E9968(float, float);
-extern void func_L00_002E9900(float, float, int);
-extern void func_L00_002E99A0(int, float, float);
-extern void func_L00_002E9AD0(void);
-extern void func_L00_002E9A18(int);
-extern void func_L00_002E9A40(float, float);
-extern void func_L00_002E9E20(int, float, float);
+extern float FastCos(float);
+extern float FastSin(float);
+extern float FastAddRots(float, float);
+extern float FastDiffRots(float, float);
+extern unsigned char *GetFlaggedPvarWord(int);
+extern int coll_sphere_mobys(float, void *, int, void *, void *);
+extern void set_follow_camera_angle_blend_from_direction(void *, float, float);
+extern void follow_camera_start_slide(void);
+extern void follow_camera_set_height(float, float);
+extern void Cam_SetDistanceGoal(float, float, int);
+extern void Cam_SetEyeOffset(int, float, float);
+extern void set_follow_camera_flag_226(void);
+extern void set_follow_camera_orbit_clamp_mode(int);
+extern void follow_camera_set_lateral_spring(float, float);
+extern void set_follow_camera_angle_blend_from_position(int, float, float);
 
 /* Per-frame hero-driven tweaks of the type-0 follow camera O: swings behind the hero on event 0xD (unk2284), picks
    orbit distance and height for the vehicle and control modes, runs the player-camera hook table (D_L00_00166D80),
@@ -2051,7 +2051,7 @@ void follow_camera_apply_overrides(O_y *o) {
             Cam_SetDistanceGoal(g6C, 0.003f, 1);
             follow_camera_set_height(g70, 0.003f);
         }
-        func_L00_002E9AD0();
+        set_follow_camera_flag_226();
         t = (S1D0_y *)((u8 *)o->m + 0x1D0);
         { f32 u = g78, w = g74;
         t->f3C = u;
@@ -2143,13 +2143,13 @@ void follow_camera_apply_overrides(O_y *o) {
         g40 = 0.75f;
     }
 }
-extern char D_L00_00166D80[];
-extern float D_L00_00166F40[];
-extern short D_L00_00161D98;
-extern void func_001FA480(void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern float func_001F9D48(void *, void *);
-extern void func_001F9CA0(void *, void *, void *);
+extern char player_camera[];
+extern float camera_view_vertical_axis[];
+extern short follow_cam_min_eye_distance;
+extern void matrix_copy_rows(void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern float vec_distance_xy(void *, void *);
+extern void FastVecCross(void *, void *, void *);
 // camera type 0 snap: puts the camera behind the hero, pulls it in along the line of sight, then builds its axes
 void rebuild_follow_camera_pose(int snap) {
     char *cams = player_camera;
@@ -2177,11 +2177,11 @@ void rebuild_follow_camera_pose(int snap) {
         FastVecScale(rise, *(char **)(target + 0xC0) + 0xE0, *(float *)(target + 0xB0));
         FastVecAdd(eye, target, rise);
         if (coll_line(eye, cam + 0x30, mask, *(int *)(hero + 0x2080), 0)) {
-            if (vec_distance_xy(D_L00_00173F60_a, eye) < 0.001f) mask = 0x96;
+            if (vec_distance_xy(collision_hit_point_a, eye) < 0.001f) mask = 0x96;
         }
         hero2 = g_hero;
         if (coll_line(eye, cam + 0x30, mask, *(int *)(hero2 + 0x2080), 0)) {
-            FastVecSub(delta, (float *)D_L00_00173F60_a, eye);
+            FastVecSub(delta, (float *)collision_hit_point_a, eye);
             length = FastVecLength(delta);
             if (length == 0.0f) {
                 qcopy(cam + 0x30, target);
@@ -2210,7 +2210,7 @@ void rebuild_follow_camera_pose(int snap) {
                     FastVecAdd(cam + 0x30, start, delta);
                     hero3 = g_hero;
                     if (coll_line(start, cam + 0x30, mask, *(int *)(hero3 + 0x2080), 0)) {
-                        FastVecSub(delta, (float *)D_L00_00173F60_a, eye);
+                        FastVecSub(delta, (float *)collision_hit_point_a, eye);
                         length = FastVecLength(delta);
                         if (length == 0.0f) {
                             qcopy(cam + 0x30, target);
@@ -2243,7 +2243,7 @@ void rebuild_follow_camera_pose(int snap) {
     to[0] = from[0];
     to[1] = from[1];
     to[2] = from[2];
-    qcopy(up, D_L00_00166F40);
+    qcopy(up, camera_view_vertical_axis);
     vec_scale_to_length(rise, up, *(float *)(target + 0xB0));
     FastVecAdd(eye, rise, target);
     FastVecSub(look, eye, (float *)(cam + 0x30));
@@ -2254,8 +2254,8 @@ void rebuild_follow_camera_pose(int snap) {
     FastVecCross(cam + 0x20, cam + 0x10, cam);
     qcopy(cam + 0x40, cam);
 }
-extern char D_0013F6E0_E80A8[] __asm__("D_0013F6E0");
-extern void func_001F9BF0_E80A8(void *, void *, void *) __asm__("func_001F9BF0");
+extern char hero_gravity_dir_r[] __asm__("D_0013F6E0");
+extern void FastVecSub_r3(void *, void *, void *) __asm__("func_001F9BF0");
 
 /* Resets the camera rig state from the moby position when idle.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002e5e38.c, FUN_L00_002e6bf8. */
@@ -2273,8 +2273,8 @@ void reset_follow_camera_state_from_position(char *m) {
         c = b + 0x130;
         b += 0x40;
         e = b;
-        FastVecScale(dn, D_0013F6E0_E80A8, -1.0f);
-        qcopy(e, D_0013F6E0_E80A8 - 0x210);
+        FastVecScale(dn, hero_gravity_dir_r, -1.0f);
+        qcopy(e, hero_gravity_dir_r - 0x210);
         qcopy(d + 0xA0, b);
         FastVecScale(d + 0x50, dn, FastVecDot(b, dn));
         clear_u64_value(d + 0xB0);
@@ -2285,7 +2285,7 @@ void reset_follow_camera_state_from_position(char *m) {
         FastVecScale(t, dn, *(float *)(b + 0xB0));
         FastVecAdd(d + 0xD0, t, e);
         qcopy(d + 0x80, d + 0xD0);
-        func_001F9BF0_E80A8(c, m + 0x30, d + 0x90);
+        FastVecSub_r3(c, m + 0x30, d + 0x90);
         qcopy(d + 0x140, c);
         qcopy(d, m + 0x30);
         FastVecAdd(d + 0x1F0, d + 0x90, c);
@@ -2420,8 +2420,8 @@ typedef struct Ctl_2E8210 {
     char pad0[0x86];
     short h86;                    /* 0x86 */
 } Ctl_2E8210;
-extern Hero D_0013F450_2E8210 __asm__("D_0013F450");
-extern char D_0013F4D0_2E8210[] __asm__("D_0013F4D0");
+extern Hero g_hero_r __asm__("D_0013F450");
+extern char gHeroPos_r[] __asm__("D_0013F4D0");
 extern int D_L00_00161E5C_2E8210 SDATA(D_L00_00161E5C);
 extern int D_L00_00161E60_2E8210 SDATA(D_L00_00161E60);
 extern float D_L00_00161D70_2E8210 SDATA(D_L00_00161D70);
@@ -2430,19 +2430,19 @@ extern float D_L00_00161DAC_2E8210 SDATA(D_L00_00161DAC);
 extern float D_L00_00161DB0_2E8210 SDATA(D_L00_00161DB0);
 extern float D_L00_00161DB4_2E8210 SDATA(D_L00_00161DB4);
 extern int D_L00_00161DF4_2E8210 SDATA(D_L00_00161DF4);
-extern float D_L00_0015F040_2E8210 __asm__("D_L00_0015F040") MACRO_ADDR;
-extern float D_L00_0015F044_2E8210 __asm__("D_L00_0015F044") MACRO_ADDR;
-extern int D_L00_0015F060_2E8210 __asm__("D_L00_0015F060") MACRO_ADDR;
-extern Ctl_2E8210 *D_L00_00166F04_2E8210 __asm__("D_L00_00166F04");
-extern int func_001F9850_2E8210(int) __asm__("func_001F9850");
-extern void func_001F9BC0_2E8210(void *) __asm__("func_001F9BC0");
-extern void func_001F9BF0_2E8210(void *, void *, void *) __asm__("func_001F9BF0");
-extern float func_001F9C78_2E8210(void *, void *) __asm__("func_001F9C78");
-extern void func_001F9C30_2E8210(void *, void *, float) __asm__("func_001F9C30");
-extern float func_001F9CB8_2E8210(void *) __asm__("func_001F9CB8");
-extern void func_L00_002E80A8_2E8210(Camera *) __asm__("func_L00_002E80A8");
-extern void func_L00_002E58E0_2E8210(Camera *) __asm__("func_L00_002E58E0");
-extern void func_L00_002E7B68_2E8210(int) __asm__("func_L00_002E7B68");
+extern float follow_cam_turn_blend_weight_r __asm__("D_L00_0015F040") MACRO_ADDR;
+extern float follow_cam_setting_value_r2 __asm__("D_L00_0015F044") MACRO_ADDR;
+extern int gCamSphereMaskBaseLvl_r2 __asm__("D_L00_0015F060") MACRO_ADDR;
+extern Ctl_2E8210 *camera_cross_axis_ptr_r __asm__("D_L00_00166F04");
+extern int scale_ticks_r3(int) __asm__("func_001F9850");
+extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
+extern void FastVecSub_r4(void *, void *, void *) __asm__("func_001F9BF0");
+extern float FastVecDot_r2(void *, void *) __asm__("func_001F9C78");
+extern void FastVecScale_r3(void *, void *, float) __asm__("func_001F9C30");
+extern float FastVecLength_r3(void *) __asm__("func_001F9CB8");
+extern void reset_follow_camera_state_from_position_r(Camera *) __asm__("func_L00_002E80A8");
+extern void follow_camera_reset_r(Camera *) __asm__("func_L00_002E58E0");
+extern void rebuild_follow_camera_pose_r(int) __asm__("func_L00_002E7B68");
 
 /* Initialises the type-0 camera: fills its data blocks and seeds the first position. */
 void follow_camera_setup(Camera *m) {
@@ -2465,9 +2465,9 @@ void follow_camera_setup(Camera *m) {
     D_L00_00161E5C_2E8210 = 0;
     D_L00_00161E60_2E8210 = 0;
     a = &((Cam_2E8210 *)m->state_buf)->a;
-    qcopy(a->pos, D_0013F4D0_2E8210);
+    qcopy(a->pos, gHeroPos_r);
     a->fB0 = 1.5f;
-    a->iC0 = (int)D_0013F450_2E8210.moby;
+    a->iC0 = (int)g_hero_r.moby;
     a->bC4 = 0;
     a->bD6 = 0;
     a->fE0 = 0.2f;
@@ -2502,7 +2502,7 @@ void follow_camera_setup(Camera *m) {
     c->h12 = 0;
     c->h14 = 0;
     c->h16 = 0;
-    D_L00_0015F040_2E8210 = 0.75f;
+    follow_cam_turn_blend_weight_r = 0.75f;
 
     e = (Cam_2E8210 *)m->state_buf;
     e->e.h0 = 0;
@@ -2525,7 +2525,7 @@ void follow_camera_setup(Camera *m) {
     q2 = (char *)m->state_buf;
     ((Cam_2E8210 *)q2)->p1A8.flags = 0;
     q2 = (char *)&((Cam_2E8210 *)q2)->p1A8;
-    ((Cam1A8_2E8210 *)q2)->f14 = D_L00_0015F044_2E8210;
+    ((Cam1A8_2E8210 *)q2)->f14 = follow_cam_setting_value_r2;
     ((Cam1A8_2E8210 *)q2)->f18 = 0.5235988f;
     ((Cam1A8_2E8210 *)q2)->i8 = 0;
     ((Cam1A8_2E8210 *)q2)->i4 = 0;
@@ -2545,7 +2545,7 @@ void follow_camera_setup(Camera *m) {
     ((Cam220_2E8210 *)q3)->fC = D_L00_00161DEC_2E8210;
 
     d = (Cam_2E8210 *)m->state_buf;
-    r = func_001F9850_2E8210(0x7D0);
+    r = scale_ticks_r3(0x7D0);
     g = &d->g;
     g->f30 = 0.0f;
     g->h3A = 0;
@@ -2556,34 +2556,34 @@ void follow_camera_setup(Camera *m) {
     g->f44 = D_L00_00161DAC_2E8210;
     g->f3C = D_L00_00161DB4_2E8210;
     g->f40 = D_L00_00161DB0_2E8210;
-    g->i48 = D_L00_0015F060_2E8210;
-    func_001F9BC0_2E8210(d->g.v10);
+    g->i48 = gCamSphereMaskBaseLvl_r2;
+    clear_u64_value_r(d->g.v10);
 
     p240 = &((Cam_2E8210 *)m->state_buf)->p240;
     p240->h28 = 0;
     p240->i24 = 0;
-    qcopy(p240->v0, D_0013F4D0_2E8210);
-    qcopy(p240->v10, D_0013F4D0_2E8210);
+    qcopy(p240->v0, gHeroPos_r);
+    qcopy(p240->v10, gHeroPos_r);
 
     if (m->handoff_state == 2) {
-        func_L00_002E80A8_2E8210(m);
+        reset_follow_camera_state_from_position_r(m);
         qcopy(m->type_data, m->basis);
-        if (D_L00_00166F04_2E8210->h86 == 7 && D_0013F450_2E8210.frames_off_ground.s == 0) {
+        if (camera_cross_axis_ptr_r->h86 == 7 && g_hero_r.frames_off_ground.s == 0) {
             e->e.h0 = 0;
         } else {
-            f->h0 = func_001F9850_2E8210(D_L00_00161DF4_2E8210);
+            f->h0 = scale_ticks_r3(D_L00_00161DF4_2E8210);
         }
     } else {
-        func_L00_002E58E0_2E8210(m);
-        func_L00_002E7B68_2E8210(1);
+        follow_camera_reset_r(m);
+        rebuild_follow_camera_pose_r(1);
     }
-    func_001F9BF0_2E8210(b->v0, &m->pos, a->f50);
+    FastVecSub_r4(b->v0, &m->pos, a->f50);
     qcopy(b->v10, b->v0);
     qcopy(c->pos, &m->pos);
     qcopy(g->v20, &m->pos);
-    func_001F9C30_2E8210(v0, D_0013F6E0_E80A8, func_001F9C78_2E8210(b->v0, D_0013F6E0_E80A8));
-    func_001F9BF0_2E8210(v1, b->v0, v0);
-    t = b->f2C - func_001F9CB8_2E8210(v1);
+    FastVecScale_r3(v0, hero_gravity_dir_r, FastVecDot_r2(b->v0, hero_gravity_dir_r));
+    FastVecSub_r4(v1, b->v0, v0);
+    t = b->f2C - FastVecLength_r3(v1);
     g->f30 = t;
     if (t < -0.1f) {
         g->h3A = 1;
@@ -2593,15 +2593,15 @@ void follow_camera_setup(Camera *m) {
     m->transition_state = 0;
 }
 typedef struct { unsigned char p0[0x208C]; int w208C; unsigned char p1[0x20A4 - 0x2090]; unsigned char b20A4; } G_2e7138;
-extern G_2e7138 D_0013F450_E85E8 __asm__("D_0013F450");
-extern float D_0013CB40;
-extern short D_L00_00161D88;
-float func_001F9CB8(void *);
+extern G_2e7138 g_hero_r2 __asm__("D_0013F450");
+extern float g_controller_state_analog;
+extern short follow_cam_collision_pull_in_speed;
+float FastVecLength(void *);
 void func_001F9BF0_E85E8(void *, void *, void *) __asm__("func_001F9BF0");
-void func_L00_001FF4B0(void *, void *, float);
-float func_001F9B88(float);
+void vec_scale_to_length(void *, void *, float);
+float FastAbsF(float);
 short func_001F9850_E85E8(int) __asm__("func_001F9850");
-void func_001F9C30(void *, void *, float);
+void FastVecScale(void *, void *, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e7138. */
 int update_follow_camera_orbit_after_collision(unsigned char *m, void *b, int c, int d)
@@ -2619,12 +2619,12 @@ int update_follow_camera_orbit_after_collision(unsigned char *m, void *b, int c,
         return d;
     }
     dist = FastVecLength(A);
-    if (D_0013F450_E85E8.b20A4 != 2 && FastAbsF(D_0013CB40) > 0.05f && d) {
+    if (g_hero_r2.b20A4 != 2 && FastAbsF(g_controller_state_analog) > 0.05f && d) {
         dist -= (*(float *)&follow_cam_collision_pull_in_speed) * frame_scale;
         *(short *)(B + 0x34) = func_001F9850_E85E8(0x884);
     }
     k = (*(float *)&follow_cam_min_eye_distance);
-    if (!c && D_0013F450_E85E8.w208C != 2 && len < dist) {
+    if (!c && g_hero_r2.w208C != 2 && len < dist) {
         FastVecScale(A, A, len / dist);
         *(float *)(B + 0x30) = *(float *)(A + 0x2C) - len;
         return d;
@@ -2664,16 +2664,16 @@ typedef struct G002e7318 {
     u8 pad50[0x84];
     s32 i114;
 } G002e7318;
-extern G002e7318 D_L00_00166F10_E87C8 __asm__("D_L00_00166F10");
+extern G002e7318 camera_view_r2 __asm__("D_L00_00166F10");
 extern f32 D_L00_00161DA8_E87C8 SDATA(D_L00_00161DA8);
-extern Vec4 D_L00_00173F60_E87C8 __asm__("D_L00_00173F60");
-extern Vec4 D_L00_00173F70_E87C8 __asm__("D_L00_00173F70");
-extern void func_001F9BF0_E87C8(void *, void *, void *) __asm__("func_001F9BF0");
-extern void func_L00_001FF4B0(void *, void *, f32);
-extern f32 func_001F9C78(void *, void *);
-extern s32 func_L00_002E5630_E87C8(Vec4 *, f32) __asm__("func_L00_002E5630");
-extern s32 func_L00_001F10E0_E87C8(Vec4 *, f32, s32, s32) __asm__("func_L00_001F10E0");
-extern s32 func_L00_002E85E8_E87C8(O002e7318 *, Vec4 *, s32, s32) __asm__("func_L00_002E85E8");
+extern Vec4 collision_hit_point_r __asm__("D_L00_00173F60");
+extern Vec4 coll_resolved_pos_r __asm__("D_L00_00173F70");
+extern void FastVecSub_r5(void *, void *, void *) __asm__("func_001F9BF0");
+extern void vec_scale_to_length(void *, void *, f32);
+extern f32 FastVecDot(void *, void *);
+extern s32 compute_follow_camera_radial_collision_positions_r(Vec4 *, f32) __asm__("func_L00_002E5630");
+extern s32 coll_sphere_r(Vec4 *, f32, s32, s32) __asm__("func_L00_001F10E0");
+extern s32 update_follow_camera_orbit_after_collision_r(O002e7318 *, Vec4 *, s32, s32) __asm__("func_L00_002E85E8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002e5e38.c, FUN_L00_002e7318. */
 s32 resolve_follow_camera_endpoint_collisions(O002e7318 *o) {
@@ -2691,7 +2691,7 @@ s32 resolve_follow_camera_endpoint_collisions(O002e7318 *o) {
     s32 ha = 0;
     s32 hb = 0;
     s32 r;
-    G002e7318 *g = &D_L00_00166F10_E87C8;
+    G002e7318 *g = &camera_view_r2;
 
     FastVecAdd(&pos, b + 0x90, b130);
     x->s38 = 2;
@@ -2700,15 +2700,15 @@ s32 resolve_follow_camera_endpoint_collisions(O002e7318 *o) {
     lim = D_L00_00161DA8_E87C8 + p->c * p->a * (p->b - 1.0f);
     i = 0;
     while (i < 3) {
-        if (func_L00_002E5630_E87C8(&pos, lim)) {
+        if (compute_follow_camera_radial_collision_positions_r(&pos, lim)) {
             ha = 1;
         } else {
-            if (!func_L00_001F10E0_E87C8(&pos, lim, w, g->i114))
+            if (!coll_sphere_r(&pos, lim, w, g->i114))
                 break;
             hb = 1;
         }
         if (x->s38 != 0) {
-            func_001F9BF0_E87C8(&tmp, &D_L00_00173F60_E87C8, &pos);
+            FastVecSub_r5(&tmp, &collision_hit_point_r, &pos);
             vec_scale_to_length(&tmp, &tmp, 1.0f);
             d = FastVecDot(&g->v40, &tmp);
             if (d > 0.75f)
@@ -2718,10 +2718,10 @@ s32 resolve_follow_camera_endpoint_collisions(O002e7318 *o) {
             else
                 x->s38 = 0;
         }
-        qcopy(&pos, &D_L00_00173F70_E87C8);
+        qcopy(&pos, &coll_resolved_pos_r);
         i++;
     }
-    r = func_L00_002E85E8_E87C8(o, &pos, ha, hb);
+    r = update_follow_camera_orbit_after_collision_r(o, &pos, ha, hb);
     FastVecAdd(&x->m, b40 + 0x50, b130);
     if (x->s38 == 2)
         x->s38 = 0;
@@ -2732,8 +2732,8 @@ long return_follow_camera_no_collision(void) {
     char buf[0x50];
     return 0;
 }
-extern void func_001F9BF0(float *, float *, float *);
-extern void func_L00_001FF4B0(void *, void *, float);
+extern void FastVecSub(float *, float *, float *);
+extern void vec_scale_to_length(void *, void *, float);
 
 // combines vectors through the moby's data
 void compute_follow_camera_collision_delta(char *m, float *out, float *b, float *c, float *d, float s0, float s1) {
@@ -2766,18 +2766,18 @@ typedef struct Mdata_2E8AC8 {
     char pad140[0x90];
     V4_2E8AC8 v1D0; /* 0x1D0 */
 } Mdata_2E8AC8;
-extern void func_001F9BC0_2E8AC8(void *) __asm__("func_001F9BC0");
-extern void func_001F9BD8_2E8AC8(void *, void *, void *) __asm__("func_001F9BD8");
-extern float func_L00_0025ED30_2E8AC8(void *, void *, void *, void *, float) __asm__("func_L00_0025ED30");
-extern float func_001F9D10_2E8AC8(void *, void *) __asm__("func_001F9D10");
-extern int func_L00_001F10E0_2E8AC8(void *, int, void *, float) __asm__("func_L00_001F10E0");
+extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
+extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
+extern float resolve_level_path_segment_point_r(void *, void *, void *, void *, float) __asm__("func_L00_0025ED30");
+extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
+extern int coll_sphere_r2(void *, int, void *, float) __asm__("func_L00_001F10E0");
 extern void func_001F9BF0_2E8AC8(void *, void *, void *) __asm__("func_001F9BF0");
-extern void func_L00_002E89E0_2E8AC8(void *, void *, void *, void *, void *, float, float) __asm__("func_L00_002E89E0");
-extern Camera *D_L00_00166F00_2E8AC8 __asm__("D_L00_00166F00");
-extern char D_L00_00173F70_2E8AC8[] __asm__("D_L00_00173F70");
-extern int D_L00_0015F05C_2E8AC8 __asm__("D_L00_0015F05C") MACRO_ADDR;
+extern void compute_follow_camera_collision_delta_r(void *, void *, void *, void *, void *, float, float) __asm__("func_L00_002E89E0");
+extern Camera *g_current_follow_cam_r2 __asm__("D_L00_00166F00");
+extern char coll_resolved_pos_r2[] __asm__("D_L00_00173F70");
+extern int gCamSphereMaskLvl_r __asm__("D_L00_0015F05C") MACRO_ADDR;
 extern float D_L00_00161DA8_2E8AC8 SDATA(D_L00_00161DA8);
-extern char D_0013F450_2E8AC8[] __asm__("D_0013F450");
+extern char g_hero_r3[] __asm__("D_0013F450");
 
 /* Clips a move of pos against up to three planes; returns whether the first pass clipped it. */
 int func_L00_002E8AC8_r(Camera *m, float *pos, int unused, float sa, float sb) __asm__("func_L00_002E8AC8");
@@ -2790,7 +2790,7 @@ int func_L00_002E8AC8_r(Camera *m, float *pos, int unused, float sa, float sb) {
     V4_2E8AC8 e;
     V4_2E8AC8 w;
     V4_2E8AC8 u;
-    Cam_2E8AC8 *g = (Cam_2E8AC8 *)D_L00_00166F00_2E8AC8->state_buf;
+    Cam_2E8AC8 *g = (Cam_2E8AC8 *)g_current_follow_cam_r2->state_buf;
     Mdata_2E8AC8 *d = (Mdata_2E8AC8 *)m->state_buf;
     float *c = d->v130;
     float *q = d->v1D0;
@@ -2800,50 +2800,50 @@ int func_L00_002E8AC8_r(Camera *m, float *pos, int unused, float sa, float sb) {
     float lim;
 
     f21 = D_L00_00161DA8_2E8AC8 + g->f214 * g->f20C * (g->f210 - 1.0f);
-    func_001F9BC0_2E8AC8(r);
+    clear_u64_value_r2(r);
     qcopy(o, pos);
-    qcopy(a, D_L00_00173F60_a);
-    qcopy(b, D_L00_00173F70_2E8AC8);
-    func_001F9BD8_2E8AC8(e, d->v90, c);
-    dist = func_L00_0025ED30_2E8AC8(w, a, d->v90, e, 0.0f);
-    lim = func_001F9D10_2E8AC8(d->v90, w) / (c[11] - q[12]);
+    qcopy(a, collision_hit_point_a);
+    qcopy(b, coll_resolved_pos_r2);
+    FastVecAdd_r3(e, d->v90, c);
+    dist = resolve_level_path_segment_point_r(w, a, d->v90, e, 0.0f);
+    lim = FastVecDist_r(d->v90, w) / (c[11] - q[12]);
     lim = (D_L00_00161DA8_2E8AC8 + (f21 - D_L00_00161DA8_2E8AC8) * lim) * 0.75f;
     if (dist < lim) {
         res = 1;
-        func_L00_002E89E0_2E8AC8(m, r, w, a, o, lim - dist, sa);
+        compute_follow_camera_collision_delta_r(m, r, w, a, o, lim - dist, sa);
         qcopy(pos, b);
-        if (func_L00_001F10E0_2E8AC8(pos, D_L00_0015F05C_2E8AC8, (void *)((Hero *)D_0013F450_2E8AC8)->moby, sb)) {
+        if (coll_sphere_r2(pos, gCamSphereMaskLvl_r, (void *)((Hero *)g_hero_r3)->moby, sb)) {
             func_001F9BF0_2E8AC8(t, o, pos);
-            func_001F9BD8_2E8AC8(a, D_L00_00173F60_a, t);
-            dist = func_L00_0025ED30_2E8AC8(w, a, d->v90, e, 0.0f);
-            lim = func_001F9D10_2E8AC8(d->v90, w) / (c[11] - q[12]);
+            FastVecAdd_r3(a, collision_hit_point_a, t);
+            dist = resolve_level_path_segment_point_r(w, a, d->v90, e, 0.0f);
+            lim = FastVecDist_r(d->v90, w) / (c[11] - q[12]);
             lim = (D_L00_00161DA8_2E8AC8 + (f21 - D_L00_00161DA8_2E8AC8) * lim) * 0.75f;
             if (dist < lim) {
-                func_L00_002E89E0_2E8AC8(m, u, w, a, o, lim - dist, sa);
-                func_001F9BD8_2E8AC8(r, r, u);
-                qcopy(pos, D_L00_00173F70_2E8AC8);
-                if (func_L00_001F10E0_2E8AC8(pos, D_L00_0015F05C_2E8AC8, (void *)((Hero *)D_0013F450_2E8AC8)->moby, sb)) {
+                compute_follow_camera_collision_delta_r(m, u, w, a, o, lim - dist, sa);
+                FastVecAdd_r3(r, r, u);
+                qcopy(pos, coll_resolved_pos_r2);
+                if (coll_sphere_r2(pos, gCamSphereMaskLvl_r, (void *)((Hero *)g_hero_r3)->moby, sb)) {
                     func_001F9BF0_2E8AC8(t, o, pos);
-                    func_001F9BD8_2E8AC8(a, D_L00_00173F60_a, t);
-                    dist = func_L00_0025ED30_2E8AC8(w, a, d->v90, e, 0.0f);
-                    lim = func_001F9D10_2E8AC8(d->v90, w) / (c[11] - q[12]);
+                    FastVecAdd_r3(a, collision_hit_point_a, t);
+                    dist = resolve_level_path_segment_point_r(w, a, d->v90, e, 0.0f);
+                    lim = FastVecDist_r(d->v90, w) / (c[11] - q[12]);
                     lim = (D_L00_00161DA8_2E8AC8 + (f21 - D_L00_00161DA8_2E8AC8) * lim) * 0.75f;
                     if (dist < lim) {
-                        func_L00_002E89E0_2E8AC8(m, u, w, a, o, lim - dist, sa);
-                        func_001F9BD8_2E8AC8(r, r, u);
+                        compute_follow_camera_collision_delta_r(m, u, w, a, o, lim - dist, sa);
+                        FastVecAdd_r3(r, r, u);
                     }
                 }
             }
         }
     }
-    func_001F9BD8_2E8AC8(pos, o, r);
+    FastVecAdd_r3(pos, o, r);
     return res;
 }
 typedef float V[4] __attribute__((aligned(16)));
 
-extern V D_L00_00173F60;
-extern void func_001F9BF0(float *, float *, float *);
-extern float func_001F9C78(void *a, void *b);
+extern V collision_hit_point;
+extern void FastVecSub(float *, float *, float *);
+extern float FastVecDot(void *a, void *b);
 
 /* Only for arg1==1: true when arg2 is past the edge plane
    (D_L00_00173F60 - arg2) . (arg0->+0x70 + 0x130) < 0. */
@@ -2861,14 +2861,14 @@ int reject_follow_camera_first_step_backward_hit(void *arg0, int arg1, float *ar
     return 0;
 }
 typedef float V4[4] __attribute__((aligned(16)));
-extern int func_L00_001F10E0_b(void *, int, void *, float) __asm__("func_L00_001F10E0");
-extern int func_L00_002E8E78_f(void *, int, float *, float) __asm__("func_L00_002E8E78");
-extern int func_L00_002E8AC8(void *, void *, int, float, float);
-extern float func_001F9B88(float);
-extern int D_L00_0015F05C MACRO_ADDR;
-extern V4 D_L00_00173F60;
-extern short D_L00_00161DA8;
-extern unsigned char D_0013A5E0[];
+extern int coll_sphere_b(void *, int, void *, float) __asm__("func_L00_001F10E0");
+extern int reject_follow_camera_first_step_backward_hit_f(void *, int, float *, float) __asm__("func_L00_002E8E78");
+extern int adjust_follow_camera_orbit_probe_for_collisions(void *, void *, int, float, float);
+extern float FastAbsF(float);
+extern int gCamSphereMaskLvl MACRO_ADDR;
+extern V4 collision_hit_point;
+extern short follow_cam_min_distance_gp;
+extern unsigned char pad_globals_base[];
 
 // Camera sweep: steps a vector along the path, testing each step against the edge and the wall.
 int resolve_follow_camera_orbit_path_collisions(char *m) {
@@ -2889,20 +2889,20 @@ int resolve_follow_camera_orbit_path_collisions(char *m) {
     f20 = *(float *)&follow_cam_min_distance_gp;
     vec_scale_to_length(x, v0, 1.0f);
     i = 0;
-    while (i < func_001FA898_r(*(float *)(s18 + 0x40) - 1.0f)) {
+    while (i < truncate_float_to_s32_r(*(float *)(s18 + 0x40) - 1.0f)) {
         if (i > 0 && test_follow_camera_point_in_collision_volume((VS *)v1) == 0) {
-            char *base = D_0013E633 + 0xE1D;
-            if (func_L00_001F10E0_b(v1, gCamSphereMaskLvl, *(void **)(base + 0x2080), f20) != 0 &&
-                func_L00_002E8E78_f(m, i, v1, f20) == 0) {
+            char *base = hero_globals_base + 0xE1D;
+            if (coll_sphere_b(v1, gCamSphereMaskLvl, *(void **)(base + 0x2080), f20) != 0 &&
+                reject_follow_camera_first_step_backward_hit_f(m, i, v1, f20) == 0) {
                 qcopy(t, collision_hit_point);
                 qcopy(u, v1);
                 if (adjust_follow_camera_orbit_probe_for_collisions(m, v1, i, f22, f20) != 0) {
                     ret = 1;
                     if (*(unsigned char *)(base + 0x20A4) != 2) {
-                        if (FastAbsF(*(float *)(D_0013A5E0 + 0x2560)) > 0.05f) {
+                        if (FastAbsF(*(float *)(pad_globals_base + 0x2560)) > 0.05f) {
                             FastVecSub(w, t, u);
                             vec_scale_to_length(w, w, 1.0f);
-                            if (FastAbsF(FastVecDot(D_L00_00166F40, w)) < 0.75f) {
+                            if (FastAbsF(FastVecDot(camera_view_vertical_axis, w)) < 0.75f) {
                                 int snd = scale_ticks(0x884);
                                 float lim = *(float *)&follow_cam_min_eye_distance;
                                 *(float *)(s18 + 0x30) += *(float *)&follow_cam_collision_pull_in_speed * frame_scale;
@@ -2934,11 +2934,11 @@ typedef struct { u8 pad80[0x2080]; u8 *p2080; s32 i2084; u8 pad2088[0x20A4 - 0x2
 #define D_0013F450_x (*(GS_2e7d20 *)D_0013F450)
 #define D_L00_00166F10_x ((u8 *)D_L00_00166F10)
 #define D_L00_00166EC0_x ((u8 *)D_L00_00166EC0)
-extern u8 *D_L00_001E7910[];
-extern short D_L00_00161DA0;
-extern short D_L00_0015F058;
+extern u8 *follow_cam_hidden_collision_mobies[];
+extern short follow_cam_moby_min_distance;
+extern short camera_collision_mask;
 
-extern float D_0015EE64 MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
 #define D_0015EE84_ANCH (*(int *)((char *)&D_0015EE64 + 0x20))
 #define D_0015EE84_x (*(int *)&D_0015EE84)
 typedef struct { u8 pad[0x100]; f32 x; f32 y; } C940_2e7d20_t;
@@ -2946,19 +2946,19 @@ typedef struct { u8 pad[0x18]; s32 p18; s32 p1C; u8 v20[0x10]; } E40_2e7d20_t;
 #define D_L00_00173F60_x (*(E40_2e7d20_t *)((u8 *)&D_L00_00173F60 - 0x20))
 #define CAST_func_001F9C08 ((void (*)(void *, void *, void *, f32))func_001F9C08)
 #define CAST_func_L00_001F2BE8 ((s32 (*)(void *, s32, void *, s32, f32))func_L00_001F2BE8)
-s32 func_L00_0025A868(void *);
+s32 test_moby_linked_record_word8(void *);
 #define CAST_func_001F9BF0 ((void (*)(void *, void *, void *))func_001F9BF0)
 #define CAST_func_L00_002E8EE0 ((s32 (*)(void *))func_L00_002E8EE0)
 #define CAST_func_L00_002E89D0 ((s32 (*)(void *))func_L00_002E89D0)
 #define CAST_func_L00_002E87C8 ((s32 (*)(void *))func_L00_002E87C8)
-f32 func_00214220(f32, f32, f32);
+f32 CosineInterpolate(f32, f32, f32);
 #define CAST_func_L00_001EFFF0 ((s32 (*)(void *, void *, s32, void *, s32))func_L00_001EFFF0)
 #define CAST_func_L00_002E5740 ((s32 (*)(void *))func_L00_002E5740)
-s32 func_L00_0025F410(s32);
-void func_L00_0025A8C0(void *, void *, s32, void *, f32);
-void func_L00_0025AAC0(s32, void *);
-void func_L00_001ED600(void);
-void func_002156E0(void *, void *, void *, f32);
+s32 is_moby_in_class_range_500_to_540(s32);
+void InitDirectionalHitQuery(void *, void *, s32, void *, f32);
+void record_moby_hit(s32, void *);
+void init_camera_system(void);
+void build_look_at_matrix(void *, void *, void *, f32);
 #define AF_2e7d20(o) (*(f32 *)(a + (o)))
 #define BF_2e7d20(o) (*(f32 *)(b + (o)))
 #define BH_2e7d20(o) (*(s16 *)(b + (o)))
@@ -3056,10 +3056,10 @@ void follow_camera_avoid_mobies(int mi) {
     if (retraction_timer_or_below_hold_threshold && collision->h34 > 0) {
         goto dec;
     }
-    if (!((*(C940_2e7d20_t *)(D_0013A5E0 + 0x2460)).x < 0.3f)) {
+    if (!((*(C940_2e7d20_t *)(pad_globals_base + 0x2460)).x < 0.3f)) {
         goto slow;
     }
-    if (!((*(C940_2e7d20_t *)(D_0013A5E0 + 0x2460)).y < 0.3f)) {
+    if (!((*(C940_2e7d20_t *)(pad_globals_base + 0x2460)).y < 0.3f)) {
         goto slow;
     }
 dec:
@@ -3128,10 +3128,10 @@ fin:
 void run_follow_camera_noop(int a) { volatile char buf[0x50]; }
 typedef struct { u8 pad[0x220]; s32 cur; } Owner_2E9838;
 typedef struct { u8 pad[0x70]; Owner_2E9838 *p; u8 pad2[0x86 - 0x74]; s16 f86; } Vendor_2E9838;
-extern Vendor_2E9838 *D_L00_00166F00_2E9838 __asm__("D_L00_00166F00");
+extern Vendor_2E9838 *g_current_follow_cam_r3 __asm__("D_L00_00166F00");
 /* -1 when the vendor's +0x86 is set, else 1 after clearing its owner's +0x220 when that equals id, else 0. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/vendor/002df730.c, FUN_L00_002e8388. */
 s32 clear_follow_camera_volume_if_current(s32 id) {
-    Vendor_2E9838 *t = D_L00_00166F00_2E9838;
+    Vendor_2E9838 *t = g_current_follow_cam_r3;
     if (t->f86 != 0) {
         return -1;
     }
@@ -3142,7 +3142,7 @@ s32 clear_follow_camera_volume_if_current(s32 id) {
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_002E9854);
-extern u32 D_L00_0015F050 MACRO_ADDR;
+extern u32 camera_descriptors MACRO_ADDR;
 typedef struct {
     char pad00[0x86];
     short f86;
@@ -3191,7 +3191,7 @@ int try_select_follow_camera_volume(int arg1) {
 INCLUDE_ASM("asm/overlays", func_L00_002E988C);
 INCLUDE_ASM("asm/overlays", func_L00_002E98A8);
 INCLUDE_ASM("asm/overlays", func_L00_002E98B8);
-extern char *D_L00_00166F00;
+extern char *g_current_follow_cam;
 /* Requests orbit distance X for the hero camera (D_L00_00166F00, only while its id is 0): sets the request flag at
    +0x3C of the orbit block (+0x130), the goal at +0x40, the rate Y at +0x48 and, when FLAG, the default at +0x58. */
 void Cam_SetDistanceGoal(float x, float y, int flag) {
@@ -3207,7 +3207,7 @@ void Cam_SetDistanceGoal(float x, float y, int flag) {
     }
 }
 /* Sets the float at +0x22C of the hero camera's state buffer while the current camera is the hero camera (id 0). */
-void func_L00_002E9940(float value) {
+void set_follow_camera_float_22c(float value) {
     char *moby = g_current_follow_cam;
     if (*(short *)(moby + 0x86) == 0) {
         char *data = *(char **)(moby + 0x70);
@@ -3225,7 +3225,7 @@ void follow_camera_set_height(float x, float y) {
         *(float *)(q + 0x54) = y;
     }
 }
-extern char *D_L00_001690C0;
+extern char *follow_cam_defaults_ptr;
 
 /* Sets the follow camera's offset (relative to its current one if add) and scale, unless the camera is locked.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/vendor/002df730.c, FUN_L00_002e84f0. */
@@ -3243,9 +3243,9 @@ void Cam_SetEyeOffset(int add, float a, float b) {
     }
 }
 /* From Lombyte's project (GPL-3.0), FUN_L00_002e8534 (PR #66), adapted to PAL. */
-void func_L00_002E99E4(void *u, char *p, float a) { *(volatile float *)(p + 0xB4) = a; }
+void cam_set_eye_offset_tail(void *u, char *p, float a) { *(volatile float *)(p + 0xB4) = a; }
 /* Sets the float at +0x1CC of the hero camera's state buffer while the current camera's id is 0. */
-void func_L00_002E99F0(float value) {
+void set_follow_camera_angle_1cc(float value) {
     char *moby = g_current_follow_cam;
     if (*(short *)(moby + 0x86) == 0) {
         char *data = *(char **)(moby + 0x70);
@@ -3271,9 +3271,9 @@ void follow_camera_set_lateral_spring(float a, float b) {
         if (b != 0.0f) *(float *)(q + 0xE0) = b;
     }
 }
-extern char *D_L00_00166F00;
+extern char *g_current_follow_cam;
 /* Sets the short flag at +0x226 of the hero camera's state buffer while the current camera's id is 0. */
-void func_L00_002E9AD0(void) {
+void set_follow_camera_flag_226(void) {
     char *p = g_current_follow_cam;
     if (*(short *)(p + 0x86) == 0) {
         *(short *)(*(char **)(p + 0x70) + 0x226) = 1;
@@ -3294,11 +3294,11 @@ void set_follow_camera_blend_output_flags(void) {
         *(int *)(q + 0x10) |= 3;
     }
 }
-extern float func_001F9FC0(float x);
-extern void func_001F9CA0(void *, void *, void *);
-extern float func_001FA790(float, float);
-extern float func_L00_00258E58(float a, float b, float c, float d, float t);
-extern float func_001F9B88(float);
+extern float FastArcSin(float x);
+extern void FastVecCross(void *, void *, void *);
+extern float FastSubRots(float, float);
+extern float CubicInterpolate(float a, float b, float c, float d, float t);
+extern float FastAbsF(float);
 
 /* Measures the signed angle between two offsets of an object's data relative to an axis, and (within the limit) stores a scaled blend in the object's data. */
 float update_follow_camera_angle_blend_from_direction(char *a0, float *a1, float lim) {
@@ -3350,7 +3350,7 @@ float update_follow_camera_angle_blend_from_direction(char *a0, float *a1, float
     *(float *)(q + 0x1C) = CubicInterpolate(-1.0f, 0.0f, 1.0f, 0.0f, t) * sign;
     return r;
 }
-extern float func_L00_002E9B60(char *, float *, float);
+extern float update_follow_camera_angle_blend_from_direction(char *, float *, float);
 
 /* Asks the hero camera to swing toward direction A: when X is nonzero stores it at +0x1BC of the state buffer and
    measures the swing with update_follow_camera_angle_blend_from_direction(camera, A, Y); only while the current camera's id is 0. */
@@ -3363,7 +3363,7 @@ void set_follow_camera_angle_blend_from_direction(void *a, float x, float y) {
         }
     }
 }
-extern void func_L00_002E9D78(char *, int, float);
+extern void update_follow_camera_angle_blend_from_position(char *, int, float);
 /* Asks the hero camera to swing toward point A: stores X at +0x1BC of the state buffer and measures the swing with
    update_follow_camera_angle_blend_from_position(camera, A, Y); only while the current camera's id is 0. */
 void set_follow_camera_angle_blend_from_position(int a, float x, float y) {
@@ -3373,7 +3373,7 @@ void set_follow_camera_angle_blend_from_position(int a, float x, float y) {
         update_follow_camera_angle_blend_from_position(p, a, y);
     }
 }
-extern s32 D_0015EE84_2E9E60 __asm__("D_0015EE84") MACRO_ADDR;
+extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 typedef struct {
     unsigned char pad0[0x10];
     int flags;
@@ -3389,15 +3389,15 @@ typedef struct {
     unsigned short u42;
     int i44;
 } G_2E9E60;
-extern float D_0013CB40_2E9E60[] __asm__("D_0013CB40");
-extern int D_0015EEE0_2E9E60 __asm__("D_0015EEE0") MACRO_ADDR;
-extern int D_0015EEDC_2E9E60 __asm__("D_0015EEDC") MACRO_ADDR;
-extern int D_0015EFA4_2E9E60 __asm__("D_0015EFA4") MACRO_ADDR;
+extern float g_controller_state_analog_r[] __asm__("D_0013CB40");
+extern int opt_cam_invert_r __asm__("D_0015EEE0") MACRO_ADDR;
+extern int invert52_r __asm__("D_0015EEDC") MACRO_ADDR;
+extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern f32 D_L00_0015F044_2E9E60 SDATA(D_L00_0015F044);
 extern s32 D_L00_00161E5C_2E9E60 SDATA(D_L00_00161E5C);
 extern s32 D_L00_00161E60_2E9E60 SDATA(D_L00_00161E60);
-extern G_2E9E60 D_00141948_2E9E60 __asm__("D_00141948");
-extern int func_001F9850_2E9E60(int) __asm__("func_001F9850");
+extern G_2E9E60 usage_stats_r __asm__("D_00141948");
+extern int scale_ticks_r4(int) __asm__("func_001F9850");
 
 void func_L00_002E9E60_r(char *o, float *a, float *b) __asm__("func_L00_002E9E60");
 
@@ -3409,8 +3409,8 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) {
     if (s->flags & 1) {
         *a = 0.0f;
     } else {
-        *a = D_0013CB40_2E9E60[0];
-        if (D_0015EEE0_2E9E60 == 0) {
+        *a = g_controller_state_analog_r[0];
+        if (opt_cam_invert_r == 0) {
             *a = -*a;
         }
     }
@@ -3422,18 +3422,18 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) {
         }
     } else {
         s->f14 = D_L00_0015F044_2E9E60;
-        g = &D_00141948_2E9E60;
+        g = &usage_stats_r;
         if (g->u40 < 3) {
             D_L00_00161E5C_2E9E60++;
-            if (D_L00_00161E60_2E9E60 == 0 && func_001F9850_2E9E60(0x3C) < D_L00_00161E5C_2E9E60) {
+            if (D_L00_00161E60_2E9E60 == 0 && scale_ticks_r4(0x3C) < D_L00_00161E5C_2E9E60) {
                 if (g->u40 <= 0xFFFE) {
                     g->u40++;
                 }
-                if (func_001F9850_2E9E60(D_0015EFA4_2E9E60) / 600 > g->u42) {
-                    g->u42 = func_001F9850_2E9E60(D_0015EFA4_2E9E60) / 600;
+                if (scale_ticks_r4(gameplay_event_frame_count_r) / 600 > g->u42) {
+                    g->u42 = scale_ticks_r4(gameplay_event_frame_count_r) / 600;
                 }
                 D_L00_00161E60_2E9E60 = 1;
-                g->i44 = g->i44 | (1 << D_0015EE84_2E9E60) | 0x80000000;
+                g->i44 = g->i44 | (1 << g_current_level_index_r) | 0x80000000;
             }
         }
     }
@@ -3441,9 +3441,9 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) {
         *b = 0.0f;
         *b = s->f24 / 0.6981317f;
     } else {
-        float t = D_0013CB40_2E9E60[1];
+        float t = g_controller_state_analog_r[1];
         *b = -t;
-        if (D_0015EEDC_2E9E60 == 0) {
+        if (invert52_r == 0) {
             *b = t;
         }
         if (*b == 0.0f) {
@@ -3451,14 +3451,14 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) {
         }
     }
 }
-extern void func_002156E0(void *dst, void *vec, void *axis, float angle);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA748(float, float);
-extern short D_L00_00161D7C;
-extern short D_L00_00161D80;
-extern short D_L00_00161D90;
-extern short D_L00_00161D8C;
-extern short D_L00_00161D94;
+extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
+extern float fast_atan2(float, float);
+extern float FastAddRots(float, float);
+extern short follow_cam_turn_stiffness;
+extern short follow_cam_turn_damping;
+extern short follow_cam_turn_max_speed;
+extern short follow_cam_turn_reverse_max_speed;
+extern short follow_cam_turn_max_step;
 
 typedef struct TurnPitchVec_2e8bb8 {
     Vec4 vec;                               /* 0x00: vector the look-at matrix is built in */
@@ -3567,10 +3567,10 @@ void follow_camera_turn_and_pitch(int mi, float a, float b) {
     }
     build_look_at_matrix(turn_pitch_vector->vec.f, turn_pitch_vector->vec.f, axis, turn_pitch_vector->step.f);
 }
-extern float D_L00_0015F040 MACRO_ADDR;
-extern void func_001F9C08(float, void *, void *, void *);
-extern float func_001F9CB8(void *);
-extern void func_L00_001FF4B0(void *, void *, float);
+extern float follow_cam_turn_blend_weight MACRO_ADDR;
+extern void lerp_vector(float, void *, void *, void *);
+extern float FastVecLength(void *);
+extern void vec_scale_to_length(void *, void *, float);
 
 /* Keeps the follow camera's orbit vector (+0x130 of M's state buffer) within its maximum length (+0x2C): the
    eye-to-target vector is turned by D_L00_0015F040 into the orbit vector, shortened to the maximum when longer and
@@ -3602,9 +3602,9 @@ void follow_camera_auto_turn(int m) {
         }
     }
 }
-extern char D_0013E633[] NOT_SDA;
-extern char D_L00_00166F30[] NOT_SDA;
-extern float func_L00_001EB6A8(void *, float, float, float, float, float);
+extern char hero_globals_base[] NOT_SDA;
+extern char camera_view_up_axis[] NOT_SDA;
+extern float Camera_SmoothAngle(void *, float, float, float, float, float);
 
 /* Final placement of follow camera A_'s basis for the frame: in target mode 0xB looks along the hero, else builds the
    forward row from the target-to-eye direction with the camera up axis (D_L00_00166F30) projected off, eases the orbit
@@ -3622,14 +3622,14 @@ void follow_camera_build_view(int a_) {
     q40 = q + 0x40;
     q20 = q + 0x20;
     if (q40[0xC4] == 0xB) {
-        FastVecSub((float *)p, (float *)(D_0013E633 + 0xE9D), (float *)(p + 0x30));
+        FastVecSub((float *)p, (float *)(hero_globals_base + 0xE9D), (float *)(p + 0x30));
         p10 = p + 0x10;
         vec_scale_to_length(p, p, 1.0f);
         p20 = p + 0x20;
         FastDecTimer(q20);
-        up = D_L00_00166F30;
+        up = camera_view_up_axis;
     } else {
-        up = D_L00_00166F30;
+        up = camera_view_up_axis;
         tb = base + 0x20;
         g = FastVecDot(q + 0x80, tb);
         FastVecScale(v0, tb, g);
@@ -3701,13 +3701,13 @@ void follow_camera_build_view(int a_) {
     vec_scale_to_length(p10, p10, 1.0f);
     FastVecCross(p20, p10, p);
 }
-extern float func_001F9B88(float);
-extern void func_L00_002E9900(float, float, int);
-extern char D_0013E633[] NOT_SDA;
-extern short D_L00_00161DBC;
-extern short D_L00_00161DC0;
-extern short D_L00_00161DE4;
-extern short D_L00_00161DE8;
+extern float FastAbsF(float);
+extern void Cam_SetDistanceGoal(float, float, int);
+extern char hero_globals_base[] NOT_SDA;
+extern short follow_cam_distance_stiffness;
+extern short follow_cam_distance_damping;
+extern short follow_cam_pull_back_stiffness;
+extern short follow_cam_pull_back_damping;
 typedef struct PullBackBlock {
     s32 unk00;                     /* 0x00 */
     s16 h4;                        /* 0x04: nonzero while pulled back */
@@ -3741,13 +3741,13 @@ void follow_camera_pull_back(char *camera_object, float *x, float *y) {
 
     if (pull_back_state->h6 == 0
         && ((pull_back_state->h4 != 0 && *(float *)(g + 0xA4) == 0.0f
-             && FastVecDot(*(char **)(D_0013E633 + 0x2E9D) + 0xC0, camera_object) <= -0.3f)
+             && FastVecDot(*(char **)(hero_globals_base + 0x2E9D) + 0xC0, camera_object) <= -0.3f)
             || (FastAbsF(*(float *)(g + 0xA4)) > 0.0001f
                 && FastVecDot(g + 0x80, camera_object) <= -0.3f))) {
         pull_back_state->h4 = scale_ticks(0x78);
         k = *(float *)(g + 0xA4) * 14.2857f;
         if (k > 1.0f) k = 1.0f;
-        pull_back_target = (*(unsigned char *)(D_0013E633 + 0x2EC1) == 1) ? 4.0f : pull_back_state->fC;
+        pull_back_target = (*(unsigned char *)(hero_globals_base + 0x2EC1) == 1) ? 4.0f : pull_back_state->fC;
         reference_distance = reference_orbit_state->unk58;
         current_distance = pull_back_state->f8;
         interpolated_pull_back_value = reference_distance + (pull_back_target - reference_distance) * k;
@@ -3765,13 +3765,13 @@ void follow_camera_pull_back(char *camera_object, float *x, float *y) {
         *y = *(float *)&follow_cam_distance_damping;
     }
 }
-extern short D_L00_00161DCC;
-extern short D_L00_00161DD0;
-extern short D_L00_00161DC4;
-extern short D_L00_00161DC8;
-extern void func_L00_002EA9C8(char *, float *, float *);
-extern float func_L00_001EB6A8(void *, float, float, float, float, float);
-extern void func_002156E0(void *, void *, void *, float);
+extern short follow_cam_pitch_stiffness;
+extern short follow_cam_pitch_damping;
+extern short follow_cam_yaw_stiffness;
+extern short follow_cam_yaw_damping;
+extern void follow_camera_pull_back(char *, float *, float *);
+extern float Camera_SmoothAngle(void *, float, float, float, float, float);
+extern void build_look_at_matrix(void *, void *, void *, float);
 
 /* Aims a camera rig at its target: updates yaw/pitch smoothing and clamps roll. */
 void follow_camera_orbit(int arg) {
@@ -3839,8 +3839,8 @@ void follow_camera_orbit(int arg) {
     }
     FastVecAdd(m + 0x30, t7, p130 + 0x10);
 }
-extern void func_001E9768(void *, float);
-extern char *D_L00_0015F080 MACRO_ADDR;
+extern void Profile_Mark(void *, float);
+extern char *camera_collision_grid MACRO_ADDR;
 
 // Walk the 64x64 grid of entries and call the update for each type-5 element.
 void run_type5_grid_record_noop_callbacks(int a) {
@@ -3862,14 +3862,14 @@ void run_type5_grid_record_noop_callbacks(int a) {
         }
     }
 }
-extern void func_L00_002EAF50(int);
-extern void func_L00_002EA3F0(int);
-extern void func_L00_002E9E60(int, float *, float *);
-extern void func_L00_002EA068(int, float, float);
-extern void func_L00_002E91D0(int);
-extern void func_L00_002EABD0(int);
-extern void func_L00_002E9828(int);
-extern void func_L00_002EA4C0(int);
+extern void run_type5_grid_record_noop_callbacks(int);
+extern void follow_camera_auto_turn(int);
+extern void follow_camera_read_stick(int, float *, float *);
+extern void follow_camera_turn_and_pitch(int, float, float);
+extern void follow_camera_avoid_mobies(int);
+extern void follow_camera_orbit(int);
+extern void run_follow_camera_noop(int);
+extern void follow_camera_build_view(int);
 /* Builds follow camera A for this frame: func_L00_002EAF50, clamp the orbit distance, read the stick, steer the heading,
    func_L00_002E91D0, aim at the target, debug dump, then func_L00_002EA4C0's final placement. */
 void update_follow_camera_pose(int a) {

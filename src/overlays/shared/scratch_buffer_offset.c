@@ -2,12 +2,12 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern int D_L00_00173F00[];
-extern int D_L00_0016128C MACRO_ADDR;
+extern int lvl_resource_buffers[];
+extern int lvl_vu_chain_buffer_size MACRO_ADDR;
 
 /* for an offset up to 0x20000, *a and *b become words 1 and 2 of D_L00_00173F00 plus
    D_L00_0016128C less the offset (returns 0); beyond it both are cleared (returns -1) */
-int func_L00_00203970(unsigned int off, int *a, int *b) {
+int get_vu_chain_tail_buffers(unsigned int off, int *a, int *b) {
     if (off > 0x20000) {
         *a = 0;
         *b = 0;
@@ -18,7 +18,7 @@ int func_L00_00203970(unsigned int off, int *a, int *b) {
     return 0;
 }
 // clears two out-parameters and returns -1
-int func_L00_002039C4(int a, int b, int *c, int d, int *e) {
+int vu_chain_tail_buffers_fail_stub(int a, int b, int *c, int d, int *e) {
     *e = 0;
     *c = 0;
     return -1;

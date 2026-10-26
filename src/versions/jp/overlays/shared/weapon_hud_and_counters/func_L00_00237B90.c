@@ -80,7 +80,7 @@ int draw_hud_text_panel(char *e) {
         }
         pt = &point;
         if (FastVecDist(gHeroPos, pt) < 5.0f) {
-            D_L00_0015F728 = y + 100;
+            race_record_panel_end_y = y + 100;
             elapsed = race_best_times[g_current_level_index == 0x10 ? 1 : 0];
             score = race_best_records[g_current_level_index == 0x10 ? 1 : 0];
             if (elapsed != 0) {
@@ -90,10 +90,10 @@ int draw_hud_text_panel(char *e) {
                 rem = elapsed - seconds * interval;
                 minutes = rem / per;
                 rem = (rem - minutes * per) * 100 / per;
-                func_00116248(text, hud_text_panel_time_format, msg_string(0x5372), seconds, minutes, rem);
+                sprintf(text, hud_text_panel_time_format, msg_string(0x5372), seconds, minutes, rem);
                 draw_framed_text(0x100, y + 0x28, color, text);
                 if (score != 0) {
-                    func_00116248(text, hud_text_panel_score_format, msg_string(0x5373), score);
+                    sprintf(text, hud_text_panel_score_format, msg_string(0x5373), score);
                     draw_framed_text(0x100, y + 0x48, color, text);
                 }
             }

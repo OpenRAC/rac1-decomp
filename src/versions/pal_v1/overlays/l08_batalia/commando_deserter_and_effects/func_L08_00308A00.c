@@ -52,7 +52,7 @@ void update_batalia_item_triggers_and_help(char *m) {
         }
     }
     if (ia_p[28] == 0) {
-        if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && D_0013DE4B[7] != 0) {
+        if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && level_available_base[7] != 0) {
             elapsed = scale_ticks(gameplay_event_frame_count) - HR[50].best * 600;
             if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[50].best * 600 == 0) {
                 Help_Request(8002, 0x32);
@@ -65,7 +65,7 @@ void update_batalia_item_triggers_and_help(char *m) {
         }
     }
     if (ia_p[28] != 0) {
-        if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && D_0013DE4B[7] != 0) {
+        if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && level_available_base[7] != 0) {
             if (HR[112].count != 0) {
                 elapsed = scale_ticks(gameplay_event_frame_count) - HR[112].best * 600;
                 if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[112].best * 600 == 0) {

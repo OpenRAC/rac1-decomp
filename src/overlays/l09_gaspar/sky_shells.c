@@ -9,14 +9,14 @@ typedef struct Strip_21E410 {
     unsigned short b; /* 0xA */
     char padC[4];
 } Strip_21E410;
-extern long func_001F4868_21E410(int) __asm__("func_001F4868");
-extern void func_L02_00250C78_21E410_t(void *, void *, void *, void *, void *, int, float) __asm__("func_L02_00250C78");
-extern void func_00234C98_21E410(int, long) __asm__("func_00234C98");
-extern int *D_L09_00161240_21E410 __asm__("D_L09_00161240") MACRO_ADDR;
-extern char D_L09_0016D380_21E410[] __asm__("D_L09_0016D380");
-extern long D_L09_00162040_21E410[] __asm__("D_L09_00162040");
-extern char *D_L09_0015F520_21E410 __asm__("D_L09_0015F520") MACRO_ADDR;
-extern int D_0015EF74_21E410 __asm__("D_0015EF74") MACRO_ADDR;
+extern long GetEffectTex_r(int) __asm__("func_001F4868");
+extern void vu0_lerp_vertex_table_pairs_21E410_t(void *, void *, void *, void *, void *, int, float) __asm__("func_L02_00250C78");
+extern void VU1_addGSregister_r(int, long) __asm__("func_00234C98");
+extern int *l09_packet_r __asm__("D_L09_00161240") MACRO_ADDR;
+extern char gaspar_texture_table_r[] __asm__("D_L09_0016D380");
+extern long gaspar_strip_texture_buffer_r[] __asm__("D_L09_00162040");
+extern char *texture_vertices_r __asm__("D_L09_0015F520") MACRO_ADDR;
+extern int g_gs_texture_allocation_cursor_r __asm__("D_0015EF74") MACRO_ADDR;
 
 /* Queues the GS packet for a draw (a == b), or builds the strip between two table entries and queues it. */
 void func_L09_0021E410_r(int a, int b, float t) __asm__("func_L09_0021E410");
@@ -25,42 +25,42 @@ void func_L09_0021E410_r(int a, int b, float t) {
         int *q;
         long *g;
 
-        D_L09_00161240_21E410[0] = 0x10000002;
-        D_L09_00161240_21E410[1] = 0;
-        D_L09_00161240_21E410[2] = 0;
-        D_L09_00161240_21E410[3] = 0x50000002;
-        q = D_L09_00161240_21E410;
-        D_L09_00161240_21E410 = q + 4;
+        l09_packet_r[0] = 0x10000002;
+        l09_packet_r[1] = 0;
+        l09_packet_r[2] = 0;
+        l09_packet_r[3] = 0x50000002;
+        q = l09_packet_r;
+        l09_packet_r = q + 4;
         g = (long *)(q + 4);
         g[0] = 0x1000000000008001L;
         g[1] = 0xEEEEEEE;
-        g[2] = func_001F4868_21E410(b);
+        g[2] = GetEffectTex_r(b);
         g[3] = 6;
-        D_L09_00161240_21E410 = q + 12;
+        l09_packet_r = q + 12;
     } else {
         int *q;
         long *g;
-        int a1 = ((Strip_21E410 *)D_L09_0016D380_21E410)[a].b;
-        int a0 = ((Strip_21E410 *)D_L09_0016D380_21E410)[a].a;
-        int b1 = ((Strip_21E410 *)D_L09_0016D380_21E410)[b].b;
-        int b0 = ((Strip_21E410 *)D_L09_0016D380_21E410)[b].a;
+        int a1 = ((Strip_21E410 *)gaspar_texture_table_r)[a].b;
+        int a0 = ((Strip_21E410 *)gaspar_texture_table_r)[a].a;
+        int b1 = ((Strip_21E410 *)gaspar_texture_table_r)[b].b;
+        int b0 = ((Strip_21E410 *)gaspar_texture_table_r)[b].a;
 
-        D_L09_00162040_21E410[0] = 0x0800000000000400L;
-        D_L09_00162040_21E410[1] = 0;
-        func_L02_00250C78_21E410_t(&D_L09_00162040_21E410[2], D_L09_0015F520_21E410 + (a0 << 4), D_L09_0015F520_21E410 + (a1 << 4),
-                                 D_L09_0015F520_21E410 + (b0 << 4), D_L09_0015F520_21E410 + (b1 << 4), 0x1000, t);
-        D_L09_00161240_21E410[0] = 0x10000006;
-        D_L09_00161240_21E410[1] = 0;
-        D_L09_00161240_21E410[2] = 0;
-        D_L09_00161240_21E410[3] = 0x50000006;
-        q = D_L09_00161240_21E410;
-        D_L09_00161240_21E410 = q + 4;
+        gaspar_strip_texture_buffer_r[0] = 0x0800000000000400L;
+        gaspar_strip_texture_buffer_r[1] = 0;
+        vu0_lerp_vertex_table_pairs_21E410_t(&gaspar_strip_texture_buffer_r[2], texture_vertices_r + (a0 << 4), texture_vertices_r + (a1 << 4),
+                                 texture_vertices_r + (b0 << 4), texture_vertices_r + (b1 << 4), 0x1000, t);
+        l09_packet_r[0] = 0x10000006;
+        l09_packet_r[1] = 0;
+        l09_packet_r[2] = 0;
+        l09_packet_r[3] = 0x50000006;
+        q = l09_packet_r;
+        l09_packet_r = q + 4;
         g = (long *)(q + 4);
         g[0] = 0x5000000000008001L;
         g[1] = 0xEEEEEEE;
-        g[2] = (long)(D_0015EF74_21E410 >> 8) | 0x18100000 | (0xB000L << 19);
+        g[2] = (long)(g_gs_texture_allocation_cursor_r >> 8) | 0x18100000 | (0xB000L << 19);
         g[3] = 6;
-        g[4] = (long)(D_0015EF74_21E410 >> 8) << 32 | 0x1000000000000L;
+        g[4] = (long)(g_gs_texture_allocation_cursor_r >> 8) << 32 | 0x1000000000000L;
         g[5] = 0x50;
         g[6] = 0;
         g[7] = 0x51;
@@ -68,37 +68,37 @@ void func_L09_0021E410_r(int a, int b, float t) {
         g[9] = 0x52;
         g[10] = 0;
         g[11] = 0x53;
-        D_L09_00161240_21E410 = q + 28;
-        D_L09_00161240_21E410[0] = 0x30000401;
-        D_L09_00161240_21E410[1] = (int)D_L09_00162040_21E410;
-        D_L09_00161240_21E410[2] = 0;
-        D_L09_00161240_21E410[3] = 0x50000401;
-        D_L09_00161240_21E410 += 4;
-        D_L09_00161240_21E410[0] = 0x10000002;
-        D_L09_00161240_21E410[1] = 0;
-        D_L09_00161240_21E410[2] = 0;
-        D_L09_00161240_21E410[3] = 0x50000002;
-        D_L09_00161240_21E410 += 4;
-        q = D_L09_00161240_21E410;
+        l09_packet_r = q + 28;
+        l09_packet_r[0] = 0x30000401;
+        l09_packet_r[1] = (int)gaspar_strip_texture_buffer_r;
+        l09_packet_r[2] = 0;
+        l09_packet_r[3] = 0x50000401;
+        l09_packet_r += 4;
+        l09_packet_r[0] = 0x10000002;
+        l09_packet_r[1] = 0;
+        l09_packet_r[2] = 0;
+        l09_packet_r[3] = 0x50000002;
+        l09_packet_r += 4;
+        q = l09_packet_r;
         g = (long *)q;
         g[0] = 0x1000000000008001L;
         g[1] = 0xE;
         g[2] = 0;
         g[3] = 0x3F;
-        D_L09_00161240_21E410 = q + 8;
-        func_00234C98_21E410(7, (long)(D_0015EF74_21E410 >> 8) | 0x18100000 | (0xB000L << 19));
-        D_0015EF74_21E410 += 0x4000;
+        l09_packet_r = q + 8;
+        VU1_addGSregister_r(7, (long)(g_gs_texture_allocation_cursor_r >> 8) | 0x18100000 | (0xB000L << 19));
+        g_gs_texture_allocation_cursor_r += 0x4000;
     }
 }
-extern void func_L09_0021E410(int, int);
-extern void func_001F7868(void);
-extern int func_L00_00200290(char *, float);
-extern void func_L01_0021F9C8(int, int, int, int, int, int);
-extern int *D_L09_00161240 MACRO_ADDR;
-extern char D_L09_0016EB20[];
-extern int D_L09_0015F6B0 MACRO_ADDR;
+extern void queue_level09_strip_texture_packets(int, int);
+extern void font_queue_vu_state(void);
+extern int FastBSphereCheck(char *, float);
+extern void emit_textured_strip_packet(int, int, int, int, int, int);
+extern int *l09_packet MACRO_ADDR;
+extern char gaspar_strip_gs_setup_packet[];
+extern int gaspar_frame_count MACRO_ADDR;
 
-extern void func_L09_0021E410_t(int, int, float) __asm__("func_L09_0021E410");
+extern void queue_level09_strip_texture_packets_t(int, int, float) __asm__("func_L09_0021E410");
 typedef struct { char pad[0x20]; short idx[16]; } Strip;
 
 /* Draws a list of scrolling-texture strips (water) into the scratchpad. */
@@ -110,7 +110,7 @@ void draw_level09_scrolling_textured_strips(char *list, float t, int count, long
     int idx;
     float s0;
     float s1;
-    func_L09_0021E410_t(tex0, tex1, t);
+    queue_level09_strip_texture_packets_t(tex0, tex1, t);
     l09_packet[0] = 0x30000009;
     l09_packet[1] = (int)gaspar_strip_gs_setup_packet;
     l09_packet[2] = 0;
@@ -145,17 +145,17 @@ void draw_level09_scrolling_textured_strips(char *list, float t, int count, long
         }
     }
 }
-extern void func_0022C7E0(void);
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern void func_L00_0028B680(void);
-extern void func_L00_0028A5A8(void);
-extern void func_0022C870(void);
-extern void func_00234C98(int, long);
-extern int D_0015EF88 MACRO_ADDR;
+extern void SetupSkyGifPaging(void);
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
+extern void draw_sky_shells_with_modulo_25000_rotation(void);
+extern void update_sky_shells_static(void);
+extern void DoSkyGifPaging(void);
+extern void VU1_addGSregister(int, long);
+extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Gaspar sky: rotating shells in level 9, static shells otherwise, then GS setup. */
 void Sky_DrawLevel09(void) {
     SetupSkyGifPaging();
-    if (D_0015EE84_m == 9) {
+    if (g_current_level_index_m == 9) {
         draw_sky_shells_with_modulo_25000_rotation();
     } else {
         update_sky_shells_static();

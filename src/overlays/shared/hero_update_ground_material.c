@@ -7,13 +7,13 @@
 #include "hero.h"
 #include "moby.h"
 
-extern unsigned char D_0013E633[];
-extern char D_L01_00179FC0[];
-extern int func_L00_0020DB30(int);
+extern unsigned char hero_globals_base[];
+extern char novalis_item_defs[];
+extern int hero_slot_item_id(int);
 
 /* Looks up the value of the current help record, or 0/0x54 in the special cases. */
 int get_hero_idle_animation_index(int a) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     char *r;
     int n;
     if (*(unsigned char *)(g + 0x20A4) == 3) return 0;
@@ -26,13 +26,13 @@ int get_hero_idle_animation_index(int a) {
     r = novalis_item_defs - (-(n * 0x4C));
     return *(int *)(r + 0x24);
 }
-extern unsigned char D_0013E633[];
-extern int func_L00_0028F140(int a0, int a1, int a2, int a3, int a4);
+extern unsigned char hero_globals_base[];
+extern int request_grouped_voice(int a0, int a1, int a2, int a3, int a4);
 
 // Plays the hero footstep sound, flagging whether the hero's current moby has type 0xAD.
 void request_hero_voice_if_enabled(int a0, int a1, int a2) {
     if (a2 != 0) {
-        char *g = (char *)D_0013E633 + 0xE1D;
+        char *g = (char *)hero_globals_base + 0xE1D;
         char *m = *(char **)(g + 0x10E0);
         int flag = 0;
         if (m != 0) {
@@ -42,30 +42,30 @@ void request_hero_voice_if_enabled(int a0, int a1, int a2) {
     }
 }
 /* functional: medium. Help-menu frame update (state g[0x20A4] 3 = the panel): runs the update chain, picks a random-based colour from sin/cos of D_L01_0015F6B0 mod rand and applies it to the hero's tint (w+0x90), updates the 3 slots, the fade colour (g+0x22E4) and the sound/timer trigger (22DC/22DE). Float/clamp order hand-traced; not run. */
-extern unsigned char D_0013D5DD[];
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
-extern int D_L01_0015F6B0 MACRO_ADDR;
-extern int func_001F9850(int);
-extern float D_L01_0017C0CC;
-extern float func_001FA888(int);
-extern int func_001FA898(float);
-extern float func_001F9FA8(float);
-extern int func_001FA8A8(int, int, float);
-extern void func_L00_00232EF0(void);
-extern void func_L00_00211D28(void);
-extern void func_L01_0022D340(void);
-extern void func_L01_00243078(void);
-extern void func_L00_00217698(void);
-extern void func_L00_00205B00(void);
-extern void func_L00_00209088(void);
-extern void func_L00_00208260(void);
-extern void func_L00_00208070(void);
-extern void func_L00_00248EF8(void *);
-extern void func_L00_00250800(void *, int, void *);
-extern void func_L00_00208318(void);
-extern void func_L00_00217570(int, int);
-extern void func_L00_002091D8(void);
-extern void func_L00_0025805C(void *);
+extern unsigned char gHaveMorphORay[];
+extern unsigned char gCheats[] MACRO_ADDR;
+extern int novalis_frame_count MACRO_ADDR;
+extern int scale_ticks(int);
+extern float novalis_lean_state_30_scale;
+extern float IntToFloat(int);
+extern int truncate_float_to_s32(float);
+extern float FastSin(float);
+extern int FastTweenColor(int, int, float);
+extern void advance_hero_animation(void);
+extern void hero_update(void);
+extern void update_hero_ground_material_effects(void);
+extern void HeroL01_UpdateStateTransitions(void);
+extern void update_hero_delayed_voice_requests(void);
+extern void update_hero_easing_records(void);
+extern void update_hero_vehicle_moby(void);
+extern void update_hero_scalar_pulse(void);
+extern void apply_hero_and_item_scale_sequence(void);
+extern void reveal_map_around_position(void *);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern void enqueue_hero_glow_draw_callback_once(void);
+extern void allocate_hero_voice_for_entry(int, int);
+extern void update_hero_moby_probed_height_bounds(void);
+extern void apply_env_zone_lighting(void *);
 
 typedef struct {
     char pad0[0x80];
@@ -111,7 +111,7 @@ void HeroFrameUpdate(void) {
     reveal_map_around_position(GG->a80);
     if (GG->b20A4 == 3) {
         if (gCheats[1] != 0) {
-            D_L01_0017C0CC = 1.9f;
+            novalis_lean_state_30_scale = 1.9f;
         }
         c20 = 0x80;
         v = scale_ticks(0xAA);
@@ -179,48 +179,48 @@ void HeroFrameUpdate(void) {
     update_hero_moby_probed_height_bounds();
     apply_env_zone_lighting(GG->p2080);
 }
-extern unsigned char D_0013E633[];
-extern int func_001F9850(int);
-extern void func_001F4E08(int);
-extern void func_L01_00228598(void);
-extern void func_L00_00232EF0(void);
-extern void func_L00_00211D28(void);
-extern void func_L01_0022D340(void);
-extern void func_L01_0022D688(void);
-extern void func_L01_00243078(void);
-extern void func_L00_00217698(void);
-extern void func_L00_0020B850(void);
-extern void func_L00_0020A990(void);
-extern void func_L00_0020ABB8(void);
-extern void func_L00_0020B310(void);
-extern void func_L00_0020B060(void);
-extern void func_L00_00205CC0(void);
-extern void func_L00_00205FF0(void);
-extern void func_L00_00215738(void);
-extern void func_L00_00205B00(void);
-extern void func_L00_00208E98(void);
-extern void func_L00_002098B8(int);
-extern void func_L00_00210FE0(void);
-extern void func_001F7B40(void);
-extern void func_L00_00208260(void);
-extern void func_L00_00208070(void);
-extern void func_L00_00207310(void);
-extern void func_L00_002064C0(void);
-extern void func_L00_00206698(void);
-extern void func_L00_00207418(void);
-extern void func_001E9768(void *);
-extern void func_L00_00248EF8(void *);
-extern void func_L00_0025805C(void *);
-extern void func_L01_002293D0(void);
-extern void func_L00_002091D8(void);
+extern unsigned char hero_globals_base[];
+extern int scale_ticks(int);
+extern void FadeToBlack(int);
+extern void HeroFrameUpdate(void);
+extern void advance_hero_animation(void);
+extern void hero_update(void);
+extern void update_hero_ground_material_effects(void);
+extern void update_hero_ledge_probe(void);
+extern void HeroL01_UpdateStateTransitions(void);
+extern void update_hero_delayed_voice_requests(void);
+extern void update_hero_easing_targets_and_point_effects(void);
+extern void update_hero_collision_ease_target(void);
+extern void update_hero_pitch_and_yaw_easing_targets(void);
+extern void update_hero_target_tracking(void);
+extern void update_hero_idle_random_rotation_targets(void);
+extern void update_hero_rotation_targets_and_random_manipulators(void);
+extern void update_hero_glow_and_extra_manipulators(void);
+extern void update_hero_transformed_negative_z_angle_parameters(void);
+extern void update_hero_easing_records(void);
+extern void update_hero_moby(void);
+extern void update_hero_world_matrices(int);
+extern void update_hero_equipped_items(void);
+extern void begin_draw_frame(void);
+extern void update_hero_scalar_pulse(void);
+extern void apply_hero_and_item_scale_sequence(void);
+extern void check_hero_item_reward_conditions(void);
+extern void update_hero_bolt_exclamation_hud(void);
+extern void dispatch_hero_animation_timed_events(void);
+extern void scan_hero_input_sequences(void);
+extern void Profile_Mark(void *);
+extern void reveal_map_around_position(void *);
+extern void apply_env_zone_lighting(void *);
+extern void update_hero_blink_and_gold_weapon_tint(void);
+extern void update_hero_moby_probed_height_bounds(void);
 
 /* Per-frame update of the help/menu state: validates the cursor, then runs the update chain. */
 void update_hero_frame(void) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     if (*(float *)(g + 0x80) < 2.0f || *(float *)(g + 0x84) < 2.0f || *(float *)(g + 0x80) > 1022.0f || *(float *)(g + 0x84) > 1022.0f) {
         char *q;
         FadeToBlack(scale_ticks(0x10));
-        q = (char *)D_0013E633 + 0xE1D;
+        q = (char *)hero_globals_base + 0xE1D;
         q[0x20B1] = 1;
         return;
     }
@@ -263,20 +263,20 @@ void update_hero_frame(void) {
         reveal_map_around_position(g + 0x80);
     }
     {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         apply_env_zone_lighting(*(void **)(q + 0x2080));
     }
     update_hero_blink_and_gold_weapon_tint();
     update_hero_moby_probed_height_bounds();
 }
-extern struct Hero D_0013F450_293D0 __asm__("D_0013F450");
-extern int func_001F9850_293D0(int) __asm__("func_001F9850");
-extern int D_0015EE84_293D0 __asm__("D_0015EE84") MACRO_ADDR;
-extern unsigned char D_0013E620_293D0[] __asm__("D_0013E620");
-extern void func_L00_00251358_293D0(struct Moby *, int *, int *, int *) __asm__("func_L00_00251358");
-extern void func_L00_00251328_293D0(struct Moby *, int, int, int) __asm__("func_L00_00251328");
-extern void func_L00_002078E0_293D0(void) __asm__("func_L00_002078E0");
-extern void func_L00_00207948_293D0(struct Moby *, struct Moby *) __asm__("func_L00_00207948");
+extern struct Hero g_hero_r __asm__("D_0013F450");
+extern int scale_ticks_r(int) __asm__("func_001F9850");
+extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
+extern unsigned char gold_weapon_purchased_r[] __asm__("D_0013E620");
+extern void get_moby_color_r(struct Moby *, int *, int *, int *) __asm__("func_L00_00251358");
+extern void set_moby_color_r(struct Moby *, int, int, int) __asm__("func_L00_00251328");
+extern void copy_hero_color_to_item_mobys_r(void) __asm__("func_L00_002078E0");
+extern void update_item_tint_from_hero_r(struct Moby *, struct Moby *) __asm__("func_L00_00207948");
 
 /* Blinks the hero's moby colour for the first 30 frames of states 0x80 and 0x82 (and of state 0x76 for 20 frames in levels 15 and 17), then, when the equipped item is a gold weapon, runs FUN_L00_00207330 on its moby.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_00228e38. */
@@ -287,15 +287,15 @@ void update_hero_blink_and_gold_weapon_tint(void)
     int blink;
 
     blink = 0;
-    if (D_0013F450_293D0.state.current == 0x80 || D_0013F450_293D0.state.current == 0x82)
-        blink = D_0013F450_293D0.state_timer < func_001F9850_293D0(30);
-    if (D_0015EE84_293D0 == 0xF || D_0015EE84_293D0 == 0x11) {
-        if (D_0013F450_293D0.state.current == 0x76 && D_0013F450_293D0.state_timer < func_001F9850_293D0(20))
+    if (g_hero_r.state.current == 0x80 || g_hero_r.state.current == 0x82)
+        blink = g_hero_r.state_timer < scale_ticks_r(30);
+    if (g_current_level_index_r == 0xF || g_current_level_index_r == 0x11) {
+        if (g_hero_r.state.current == 0x76 && g_hero_r.state_timer < scale_ticks_r(20))
             blink = 1;
     }
     if (blink) {
-        func_L00_00251358_293D0(D_0013F450_293D0.moby, &r, &g, &b);
-        if (D_0013F450_293D0.state_timer % 4 < 3) {
+        get_moby_color_r(g_hero_r.moby, &r, &g, &b);
+        if (g_hero_r.state_timer % 4 < 3) {
             r = 0;
             g = 0;
             b = 0;
@@ -304,22 +304,22 @@ void update_hero_blink_and_gold_weapon_tint(void)
             g = 0x90;
             b = 0xF0;
         }
-        func_L00_00251328_293D0(D_0013F450_293D0.moby, r, g, b);
-        func_L00_002078E0_293D0();
+        set_moby_color_r(g_hero_r.moby, r, g, b);
+        copy_hero_color_to_item_mobys_r();
     }
-    if (D_0013F450_293D0.items[0].item_id >= 0 && D_0013E620_293D0[D_0013F450_293D0.items[0].item_id] != 0
-        && D_0013F450_293D0.items[0].moby != 0)
-        func_L00_00207948_293D0(D_0013F450_293D0.items[0].moby, D_0013F450_293D0.moby);
+    if (g_hero_r.items[0].item_id >= 0 && gold_weapon_purchased_r[g_hero_r.items[0].item_id] != 0
+        && g_hero_r.items[0].moby != 0)
+        update_item_tint_from_hero_r(g_hero_r.items[0].moby, g_hero_r.moby);
 }
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern int func_L00_001F3958(void);
-extern void func_L01_0023D688(int, int);
-extern float func_001F9B88(float);
-extern void func_L00_0020BFA8(void);
+extern int coll_sphere(float, void *, int, void *);
+extern int CollType(void);
+extern void Hero_SetMoveState(int, int);
+extern float FastAbsF(float);
+extern void exit_hero_vehicle_mode_if_mode_three(void);
 
 // Handles a pending state change (func_L08_0021DFB8 without its state-2 flag): clears the request and sets per-state flags.
 void update_hero_ground_material_effects(void) {
-    char *p = (char *)D_0013E633 + 0xE1D;
+    char *p = (char *)hero_globals_base + 0xE1D;
     int v;
     int x;
     unsigned char saved = *(unsigned char *)(p + 0x12ED);
@@ -340,22 +340,22 @@ void update_hero_ground_material_effects(void) {
         }
     }
     if (v == 0xE) {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(q + 0x12E4) = 1;
         *(float *)(q + 0x22A4) = 0.2f;
         *(float *)(q + 0x2F0) = *(float *)(q + 0x2D8) + 0.2f;
     }
     if (v == 0) {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         *(float *)(q + 0x22A4) = *(float *)(q + 0x2F0) - *(float *)(q + 0x2D8);
         if (*(float *)(q + 0x22A4) < 0.85f) {
             if (*(float *)(q + 0x22A4) > 0.25f) *(unsigned char *)(q + 0x20A9) = 1;
         }
-        q = (char *)D_0013E633 + 0xE1D;
+        q = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(q + 0x12E4) = 1;
     }
-    if (D_0015EE84_293D0 == 0xD) {
-        char *q = (char *)D_0013E633 + 0xE1D;
+    if (g_current_level_index_r == 0xD) {
+        char *q = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(q + 0x2084) != 0x7B) {
             if (coll_sphere(*(float *)(q + 0x234) + 0.03f, q + 0xD0, 2, 0)) {
                 if (CollType() == 0xB) {
@@ -365,14 +365,14 @@ void update_hero_ground_material_effects(void) {
             }
         }
     }
-    if (v == 0xB) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EB] = 1; }
-    if (v == 4) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12E3] = 1; }
-    if (v == 0xD) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EC] = 1; }
-    if (v == 8) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EA] = 1; }
-    if (v == 9) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EE] = 1; }
-    if (v == 0xC) { char *q = (char *)D_0013E633 + 0xE1D; q[0x12EA] = 1; }
+    if (v == 0xB) { char *q = (char *)hero_globals_base + 0xE1D; q[0x12EB] = 1; }
+    if (v == 4) { char *q = (char *)hero_globals_base + 0xE1D; q[0x12E3] = 1; }
+    if (v == 0xD) { char *q = (char *)hero_globals_base + 0xE1D; q[0x12EC] = 1; }
+    if (v == 8) { char *q = (char *)hero_globals_base + 0xE1D; q[0x12EA] = 1; }
+    if (v == 9) { char *q = (char *)hero_globals_base + 0xE1D; q[0x12EE] = 1; }
+    if (v == 0xC) { char *q = (char *)hero_globals_base + 0xE1D; q[0x12EA] = 1; }
     {
-    char *q = (char *)D_0013E633 + 0xE1D;
+    char *q = (char *)hero_globals_base + 0xE1D;
     if (*(unsigned char *)(q + 0x12E3) != 0 && *(int *)(q + 0x300) != 0) {
         x = *(int *)(q + 0x208C);
         if (x != 0x10 && x != 0x14 && x != 7) {
@@ -381,7 +381,7 @@ void update_hero_ground_material_effects(void) {
         }
     }
     {
-    char *r = (char *)D_0013E633 + 0xE1D;
+    char *r = (char *)hero_globals_base + 0xE1D;
     if (*(unsigned char *)(r + 0x12EC) != 0) {
         if (*(int *)(r + 0x2084) == 0x7F) return;
         if (FastAbsF(*(float *)(r + 0x2F0) - (*(float *)(r + 0x88) + 0.25f)) < 1.0f) {
@@ -410,21 +410,21 @@ typedef struct {
     char p20[0x1C];
     int i3C;
 } Obj_D688;
-extern char D_0013F450_D688[] __asm__("D_0013F450");
-extern char D_L01_00174340_D688[] __asm__("D_L01_00174340");
-extern float D_0015EE6C_D688 __asm__("D_0015EE6C") MACRO_ADDR;
-extern int func_001F9850_D688(int) __asm__("func_001F9850");
-extern void func_L00_0025A540_D688(void *a, void *b, void *c, int d, float f) __asm__("func_L00_0025A540");
-extern float func_001F9F90_D688(float) __asm__("func_001F9F90");
-extern float func_001F9FA8_D688(float) __asm__("func_001F9FA8");
-extern int func_L00_001EFFF0_D688(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-extern int func_L00_001F3958_D688(void) __asm__("func_L00_001F3958");
-extern float func_001F9CE8_D688(void *) __asm__("func_001F9CE8");
-extern float func_L00_001FF860_D688(float, float) __asm__("func_L00_001FF860");
-extern Obj_D688 *func_L00_0025D390_D688(char *) __asm__("func_L00_0025D390");
-extern int func_L00_001F1D20_D688(float, float, void *, int, int) __asm__("func_L00_001F1D20");
-extern float func_001FA748_D688(float, float) __asm__("func_001FA748");
-extern float func_001FA850_D688(float, float) __asm__("func_001FA850");
+extern char g_hero_r2[] __asm__("D_0013F450");
+extern char novalis_coll_hit_r[] __asm__("D_L01_00174340");
+extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
+extern int scale_ticks_r2(int) __asm__("func_001F9850");
+extern void predict_position_with_vertical_drop_r(void *a, void *b, void *c, int d, float f) __asm__("func_L00_0025A540");
+extern float FastCos_r(float) __asm__("func_001F9F90");
+extern float FastSin_r(float) __asm__("func_001F9FA8");
+extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
+extern int CollType_r(void) __asm__("func_L00_001F3958");
+extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
+extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern Obj_D688 *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
+extern int coll_capsule_r(float, float, void *, int, int) __asm__("func_L00_001F1D20");
+extern float FastAddRots_r(float, float) __asm__("func_001FA748");
+extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
 
 /* the hero's ledge probe (single-size variant): looks for an edge ahead to grab, and where it finds one stores the grab point and direction */
 void update_hero_ledge_probe(void) {
@@ -435,13 +435,13 @@ void update_hero_ledge_probe(void) {
     Obj_D688 *a;
     Obj_D688 *b;
 
-    if (((Hero *)D_0013F450_D688)->unk308 == 2) return;
-    ((Hero *)D_0013F450_D688)->ledge_found = 0;
-    if (((Hero *)D_0013F450_D688)->ledge_probe_cooldown != 0) return;
+    if (((Hero *)g_hero_r2)->unk308 == 2) return;
+    ((Hero *)g_hero_r2)->ledge_found = 0;
+    if (((Hero *)g_hero_r2)->ledge_probe_cooldown != 0) return;
     go = 0;
-    if (((Hero *)D_0013F450_D688)->vehicle_mode == 0) {
-        if ((((Hero *)D_0013F450_D688)->state.control_mode == 4 && (((Hero *)D_0013F450_D688)->past_jump_apex != 0 || ((Hero *)D_0013F450_D688)->motion.velocity.f[2] < D_0015EE6C_D688 * 3.5f)) || ((Hero *)D_0013F450_D688)->state.control_mode == 2 || ((Hero *)D_0013F450_D688)->state.current == 8 || ((Hero *)D_0013F450_D688)->state.current == 0x1A || ((Hero *)D_0013F450_D688)->state.current == 0x1B) go = 1;
-        if (((Hero *)D_0013F450_D688)->state.current == 0xE && ((Hero *)D_0013F450_D688)->anim_frame < 37.0f) go = 0;
+    if (((Hero *)g_hero_r2)->vehicle_mode == 0) {
+        if ((((Hero *)g_hero_r2)->state.control_mode == 4 && (((Hero *)g_hero_r2)->past_jump_apex != 0 || ((Hero *)g_hero_r2)->motion.velocity.f[2] < g_frame_time_r * 3.5f)) || ((Hero *)g_hero_r2)->state.control_mode == 2 || ((Hero *)g_hero_r2)->state.current == 8 || ((Hero *)g_hero_r2)->state.current == 0x1A || ((Hero *)g_hero_r2)->state.current == 0x1B) go = 1;
+        if (((Hero *)g_hero_r2)->state.current == 0xE && ((Hero *)g_hero_r2)->anim_frame < 37.0f) go = 0;
     }
     if (!go) return;
 
@@ -452,33 +452,33 @@ void update_hero_ledge_probe(void) {
     drop = -1.43f;
     rise = 1.8f;
     back = 0.45f;
-    speed = ((Hero *)D_0013F450_D688)->fall_state_gravity;
-    if (((Hero *)D_0013F450_D688)->state.control_mode == 4) speed = ((Hero *)D_0013F450_D688)->jump_gravity;
-    r = func_001F9850_D688(2);
-    func_L00_0025A540_D688(v0, ((Hero *)D_0013F450_D688)->motion.pos.f, ((Hero *)D_0013F450_D688)->motion.resolved_velocity.f, r, speed);
+    speed = ((Hero *)g_hero_r2)->fall_state_gravity;
+    if (((Hero *)g_hero_r2)->state.control_mode == 4) speed = ((Hero *)g_hero_r2)->jump_gravity;
+    r = scale_ticks_r2(2);
+    predict_position_with_vertical_drop_r(v0, ((Hero *)g_hero_r2)->motion.pos.f, ((Hero *)g_hero_r2)->motion.resolved_velocity.f, r, speed);
     found = 0;
-    v0[0] += func_001F9F90_D688(((Hero *)D_0013F450_D688)->motion.rot.f[2]) * ((Hero *)D_0013F450_D688)->capsule_radius;
-    v0[1] += func_001F9FA8_D688(((Hero *)D_0013F450_D688)->motion.rot.f[2]) * ((Hero *)D_0013F450_D688)->capsule_radius;
+    v0[0] += FastCos_r(((Hero *)g_hero_r2)->motion.rot.f[2]) * ((Hero *)g_hero_r2)->capsule_radius;
+    v0[1] += FastSin_r(((Hero *)g_hero_r2)->motion.rot.f[2]) * ((Hero *)g_hero_r2)->capsule_radius;
     for (i = 0; !found && i < 4; i++) {
-        v0[0] += func_001F9F90_D688(((Hero *)D_0013F450_D688)->motion.rot.f[2]) * fwd * 0.25f;
-        v0[1] += func_001F9FA8_D688(((Hero *)D_0013F450_D688)->motion.rot.f[2]) * fwd * 0.25f;
+        v0[0] += FastCos_r(((Hero *)g_hero_r2)->motion.rot.f[2]) * fwd * 0.25f;
+        v0[1] += FastSin_r(((Hero *)g_hero_r2)->motion.rot.f[2]) * fwd * 0.25f;
         qcopy(v10, v0);
         v10[2] += up + 0.15f;
         qcopy(v20, v0);
         v20[2] += top;
-        if (func_L00_001EFFF0_D688(v10, v20, 4, (int)((Hero *)D_0013F450_D688)->moby, 0)) {
-            hit = func_L00_001F3958_D688();
+        if (coll_line_r(v10, v20, 4, (int)((Hero *)g_hero_r2)->moby, 0)) {
+            hit = CollType_r();
             if (hit != 9 && hit != 12 && hit != 0) {
-                if (func_L00_001FF860_D688(((Hit_D688 *)D_L01_00174340_D688)->v40[2], func_001F9CE8_D688(((Hit_D688 *)D_L01_00174340_D688)->v40)) < 0.3490658402442932f) found = 1;
+                if (fast_atan2_r(((Hit_D688 *)novalis_coll_hit_r)->v40[2], vec_length_xy_r(((Hit_D688 *)novalis_coll_hit_r)->v40)) < 0.3490658402442932f) found = 1;
             }
         }
     }
     if (!found) return;
 
-    if (((Hit_D688 *)D_L01_00174340_D688)->m18 != 0) {
+    if (((Hit_D688 *)novalis_coll_hit_r)->m18 != 0) {
         ok = 0;
-        a = func_L00_0025D390_D688(((Hit_D688 *)D_L01_00174340_D688)->m18);
-        b = func_L00_0025D390_D688(((Hit_D688 *)D_L01_00174340_D688)->m18);
+        a = GetFlaggedPvarWord_r(((Hit_D688 *)novalis_coll_hit_r)->m18);
+        b = GetFlaggedPvarWord_r(((Hit_D688 *)novalis_coll_hit_r)->m18);
         if (a != 0 && (a->h1E & 1)) {
             ok = 1;
         } else if (b != 0) {
@@ -486,44 +486,44 @@ void update_hero_ledge_probe(void) {
         }
         if (!ok) return;
     }
-    ((Hero *)D_0013F450_D688)->ledge_moby = (s32)(((Hit_D688 *)D_L01_00174340_D688)->m18);
-    if (((Hero *)D_0013F450_D688)->motion.pos.f[2] + up < ((Hit_D688 *)D_L01_00174340_D688)->v20[2]) return;
-    qcopy(v10, ((Hit_D688 *)D_L01_00174340_D688)->v20);
-    qcopy(v20, ((Hit_D688 *)D_L01_00174340_D688)->v20);
+    ((Hero *)g_hero_r2)->ledge_moby = (s32)(((Hit_D688 *)novalis_coll_hit_r)->m18);
+    if (((Hero *)g_hero_r2)->motion.pos.f[2] + up < ((Hit_D688 *)novalis_coll_hit_r)->v20[2]) return;
+    qcopy(v10, ((Hit_D688 *)novalis_coll_hit_r)->v20);
+    qcopy(v20, ((Hit_D688 *)novalis_coll_hit_r)->v20);
     v20[2] += 0.05f;
-    qcopy_nc(v30, ((Hero *)D_0013F450_D688)->motion.pos.f);
+    qcopy_nc(v30, ((Hero *)g_hero_r2)->motion.pos.f);
     v30[2] = v20[2];
-    if (func_L00_001EFFF0_D688(v30, v20, 4, (int)((Hero *)D_0013F450_D688)->moby, 0)) return;
-    qcopy(v40, ((Hit_D688 *)D_L01_00174340_D688)->v20);
+    if (coll_line_r(v30, v20, 4, (int)((Hero *)g_hero_r2)->moby, 0)) return;
+    qcopy(v40, ((Hit_D688 *)novalis_coll_hit_r)->v20);
     v40[2] += 0.6f;
-    if (func_L00_001F1D20_D688(0.45f, 0.6f, v40, 4, (int)((Hero *)D_0013F450_D688)->moby)) {
-        ((Hero *)D_0013F450_D688)->ledge_flags |= 1;
+    if (coll_capsule_r(0.45f, 0.6f, v40, 4, (int)((Hero *)g_hero_r2)->moby)) {
+        ((Hero *)g_hero_r2)->ledge_flags |= 1;
     } else {
-        ((Hero *)D_0013F450_D688)->ledge_flags &= 0xFFFFFFFE;
+        ((Hero *)g_hero_r2)->ledge_flags &= 0xFFFFFFFE;
     }
-    ang = func_L00_001FF860_D688(v10[0] - ((Hero *)D_0013F450_D688)->motion.pos.f[0], v10[1] - ((Hero *)D_0013F450_D688)->motion.pos.f[1]);
-    ((Hero *)D_0013F450_D688)->ledge_top_z = v10[2];
-    if (v10[2] - ((Hero *)D_0013F450_D688)->ground_z.f < rise) return;
+    ang = fast_atan2_r(v10[0] - ((Hero *)g_hero_r2)->motion.pos.f[0], v10[1] - ((Hero *)g_hero_r2)->motion.pos.f[1]);
+    ((Hero *)g_hero_r2)->ledge_top_z = v10[2];
+    if (v10[2] - ((Hero *)g_hero_r2)->ground_z.f < rise) return;
 
     edge = 0;
     for (j = 0; j < 5; j++) {
         float len;
 
-        qcopy(v50, ((Hero *)D_0013F450_D688)->motion.pos.f);
+        qcopy(v50, ((Hero *)g_hero_r2)->motion.pos.f);
         qcopy(v60, v10);
-        len = ((Hero *)D_0013F450_D688)->capsule_radius * 2.0f;
-        v60[0] += func_001F9F90_D688(ang) * len;
-        v60[1] += func_001F9FA8_D688(ang) * len;
+        len = ((Hero *)g_hero_r2)->capsule_radius * 2.0f;
+        v60[0] += FastCos_r(ang) * len;
+        v60[1] += FastSin_r(ang) * len;
         v60[2] += down * (1.0f - (float)j / 5.0f);
         v50[2] = v60[2];
-        if (func_L00_001EFFF0_D688(v50, v60, 2, 0, 0)) {
+        if (coll_line_r(v50, v60, 2, 0, 0)) {
             edge = 1;
-            ((Hero *)D_0013F450_D688)->ledge_normal_yaw = func_L00_001FF860_D688(((Hit_D688 *)D_L01_00174340_D688)->v40[0], ((Hit_D688 *)D_L01_00174340_D688)->v40[1]);
+            ((Hero *)g_hero_r2)->ledge_normal_yaw = fast_atan2_r(((Hit_D688 *)novalis_coll_hit_r)->v40[0], ((Hit_D688 *)novalis_coll_hit_r)->v40[1]);
             break;
         }
     }
     if (!edge) return;
-    if (!(func_001FA850_D688(((Hero *)D_0013F450_D688)->motion.rot.f[2], func_001FA748_D688(((Hero *)D_0013F450_D688)->ledge_normal_yaw, 3.1415927f)) < 1.1344640f)) return;
+    if (!(FastDiffRots_r(((Hero *)g_hero_r2)->motion.rot.f[2], FastAddRots_r(((Hero *)g_hero_r2)->ledge_normal_yaw, 3.1415927f)) < 1.1344640f)) return;
     {
         float max = 2.4f;
         float step = 0.03f;
@@ -531,23 +531,23 @@ void update_hero_ledge_probe(void) {
         for (d = 0.0f; d < max; d += step) {
             qcopy(v60, v10);
             v60[2] = v10[2];
-            v60[0] += func_001F9F90_D688(((Hero *)D_0013F450_D688)->ledge_normal_yaw) * d;
-            v60[1] += func_001F9FA8_D688(((Hero *)D_0013F450_D688)->ledge_normal_yaw) * d;
+            v60[0] += FastCos_r(((Hero *)g_hero_r2)->ledge_normal_yaw) * d;
+            v60[1] += FastSin_r(((Hero *)g_hero_r2)->ledge_normal_yaw) * d;
             qcopy(v50, v60);
             v60[2] += 0.5f;
             v50[2] -= 0.5f;
-            if (!func_L00_001EFFF0_D688(v60, v50, 4, (int)((Hero *)D_0013F450_D688)->moby, 0)) {
+            if (!coll_line_r(v60, v50, 4, (int)((Hero *)g_hero_r2)->moby, 0)) {
                 qcopy(v70, v60);
                 d = step * 0.5f;
                 d = -d;
                 v70[2] = v10[2];
-                v70[0] += func_001F9F90_D688(((Hero *)D_0013F450_D688)->ledge_normal_yaw) * d;
-                v70[1] += func_001F9FA8_D688(((Hero *)D_0013F450_D688)->ledge_normal_yaw) * d;
-                qcopy(((Hero *)D_0013F450_D688)->ledge_hang_pos.f, v70);
-                ((Hero *)D_0013F450_D688)->ledge_hang_pos.f[0] += func_001F9F90_D688(((Hero *)D_0013F450_D688)->ledge_normal_yaw) * back;
-                ((Hero *)D_0013F450_D688)->ledge_hang_pos.f[1] += func_001F9FA8_D688(((Hero *)D_0013F450_D688)->ledge_normal_yaw) * back;
-                ((Hero *)D_0013F450_D688)->ledge_found = 1;
-                ((Hero *)D_0013F450_D688)->ledge_hang_pos.f[2] += drop;
+                v70[0] += FastCos_r(((Hero *)g_hero_r2)->ledge_normal_yaw) * d;
+                v70[1] += FastSin_r(((Hero *)g_hero_r2)->ledge_normal_yaw) * d;
+                qcopy(((Hero *)g_hero_r2)->ledge_hang_pos.f, v70);
+                ((Hero *)g_hero_r2)->ledge_hang_pos.f[0] += FastCos_r(((Hero *)g_hero_r2)->ledge_normal_yaw) * back;
+                ((Hero *)g_hero_r2)->ledge_hang_pos.f[1] += FastSin_r(((Hero *)g_hero_r2)->ledge_normal_yaw) * back;
+                ((Hero *)g_hero_r2)->ledge_found = 1;
+                ((Hero *)g_hero_r2)->ledge_hang_pos.f[2] += drop;
                 return;
             }
         }
@@ -576,13 +576,13 @@ static inline void circle_offset_2DE30(Vec4 *v, f32 ang, f32 r)
     v->f[0] += func_001F9F90_2DE30(ang) * r;
     v->f[1] += func_001F9FA8_2DE30(ang) * r;
 }
-extern CollisionHit_2DE30 D_L01_00174340_2DE30 __asm__("D_L01_00174340");
-extern int func_L00_001EFFF0_2DE30(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
-extern int func_L00_001F3958_2DE30(void) __asm__("func_L00_001F3958");
-extern f32 func_001F9CE8_2DE30(void *) __asm__("func_001F9CE8");
-extern f32 func_L00_001FF860_2DE30(f32, f32) __asm__("func_L00_001FF860");
-extern f32 func_001FA748_2DE30(f32, f32) __asm__("func_001FA748");
-extern f32 func_001FA850_2DE30(f32, f32) __asm__("func_001FA850");
+extern CollisionHit_2DE30 novalis_coll_hit_r2 __asm__("D_L01_00174340");
+extern int coll_line_r2(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
+extern int CollType_r2(void) __asm__("func_L00_001F3958");
+extern f32 vec_length_xy_r2(void *) __asm__("func_001F9CE8");
+extern f32 fast_atan2_r2(f32, f32) __asm__("func_L00_001FF860");
+extern f32 FastAddRots_r2(f32, f32) __asm__("func_001FA748");
+extern f32 FastDiffRots_r2(f32, f32) __asm__("func_001FA850");
 
 /* Ledge probe, FUN_L00_0020c758 without its hero.unk20A4 == 1 variant: steps forward from `pos` along the hero's yaw looking for a flat top (normal within 20 degrees of up, not material 9 or 12) at least 1.8 above the floor and not above pos + up, then for the wall under it. Returns 1 when the hero (facing `*dir`) faces that wall within 65 degrees and the ledge edge is found within 2.4 units along it. Constants live in locals because retail loads each one once.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_0022d838. */
@@ -593,7 +593,7 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir)
     f32 ang, wall_yaw, d, step, top_margin, max_slope, one, five, half, inc, limit;
     int found, hit, i, j, material;
 
-    if (D_0013F450_293D0.unk308 == 2)
+    if (g_hero_r.unk308 == 2)
         return 0;
 
     drop = -0.7f;
@@ -607,19 +607,19 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir)
     i = 0;
     top_margin = 0.15f;
     max_slope = 0.34906584f; /* 20 degrees */
-    probe.f[0] += func_001F9F90_2DE30(D_0013F450_293D0.motion.rot.f[2]) * D_0013F450_293D0.capsule_radius;
-    probe.f[1] += func_001F9FA8_2DE30(D_0013F450_293D0.motion.rot.f[2]) * D_0013F450_293D0.capsule_radius;
+    probe.f[0] += func_001F9F90_2DE30(g_hero_r.motion.rot.f[2]) * g_hero_r.capsule_radius;
+    probe.f[1] += func_001F9FA8_2DE30(g_hero_r.motion.rot.f[2]) * g_hero_r.capsule_radius;
     do {
-        probe.f[0] += func_001F9F90_2DE30(D_0013F450_293D0.motion.rot.f[2]) * fwd * step;
-        probe.f[1] += func_001F9FA8_2DE30(D_0013F450_293D0.motion.rot.f[2]) * fwd * step;
+        probe.f[0] += func_001F9F90_2DE30(g_hero_r.motion.rot.f[2]) * fwd * step;
+        probe.f[1] += func_001F9FA8_2DE30(g_hero_r.motion.rot.f[2]) * fwd * step;
         qcopy(&top, &probe);
         top.f[2] += up + top_margin;
         qcopy(&low, &probe);
         low.f[2] += reach;
-        if (func_L00_001EFFF0_2DE30(&top, &low, 4, D_0013F450_293D0.moby, 0)) {
-            material = func_L00_001F3958_2DE30();
+        if (coll_line_r2(&top, &low, 4, g_hero_r.moby, 0)) {
+            material = CollType_r2();
             if (material != 9 && material != 12) {
-                if (func_L00_001FF860_2DE30(D_L01_00174340_2DE30.normal_z, func_001F9CE8_2DE30(&D_L01_00174340_2DE30.normal_x)) < max_slope)
+                if (fast_atan2_r2(novalis_coll_hit_r2.normal_z, vec_length_xy_r2(&novalis_coll_hit_r2.normal_x)) < max_slope)
                     found = 1;
             }
         }
@@ -629,12 +629,12 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir)
     } while (i < 4);
     if (!found)
         return 0;
-    if (pos->f[2] + up < D_L01_00174340_2DE30.point.f[2])
+    if (pos->f[2] + up < novalis_coll_hit_r2.point.f[2])
         return 0;
 
-    qcopy(&top, &D_L01_00174340_2DE30.point);
-    ang = func_L00_001FF860_2DE30(top.f[0] - pos->f[0], top.f[1] - pos->f[1]);
-    if (top.f[2] - D_0013F450_293D0.ground_z.f < 1.8f)
+    qcopy(&top, &novalis_coll_hit_r2.point);
+    ang = fast_atan2_r2(top.f[0] - pos->f[0], top.f[1] - pos->f[1]);
+    if (top.f[2] - g_hero_r.ground_z.f < 1.8f)
         return 0;
 
     /* the wall below the top, tested at five heights */
@@ -644,19 +644,19 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir)
     for (j = 0; j < 5; j++) {
         qcopy(&low, pos);
         qcopy(&wall, &top);
-        circle_offset_2DE30(&wall, ang, D_0013F450_293D0.capsule_radius);
+        circle_offset_2DE30(&wall, ang, g_hero_r.capsule_radius);
         wall.f[2] += drop * (one - j / five);
         low.f[2] = wall.f[2];
-        if (func_L00_001EFFF0_2DE30(&low, &wall, 2, 0, 0)) {
+        if (coll_line_r2(&low, &wall, 2, 0, 0)) {
             hit = 1;
-            wall_yaw = func_L00_001FF860_2DE30(D_L01_00174340_2DE30.normal_x, D_L01_00174340_2DE30.normal_y);
+            wall_yaw = fast_atan2_r2(novalis_coll_hit_r2.normal_x, novalis_coll_hit_r2.normal_y);
             break;
         }
     }
     if (!hit)
         return 0;
 
-    if (func_001FA850_2DE30(*dir, func_001FA748_2DE30(wall_yaw, 3.14159274f)) < 1.13446403f) {
+    if (FastDiffRots_r2(*dir, FastAddRots_r2(wall_yaw, 3.14159274f)) < 1.13446403f) {
         /* walk along the wall normal until the top ends */
         limit = 2.4f;
         inc = 0.07f;
@@ -670,7 +670,7 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir)
             qcopy(&low, &wall);
             wall.f[2] += half;
             low.f[2] -= half;
-            if (func_L00_001EFFF0_2DE30(&wall, &low, 4, D_0013F450_293D0.moby, 0)) {
+            if (coll_line_r2(&wall, &low, 4, g_hero_r.moby, 0)) {
                 d += inc;
                 continue;
             }
@@ -681,29 +681,29 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir)
             edge.f[2] = top.f[2];
             edge.f[0] += func_001F9F90_2DE30(wall_yaw) * d;
             edge.f[1] += func_001F9FA8_2DE30(wall_yaw) * d;
-            if (0.52359879f < func_001FA850_2DE30(func_001FA748_2DE30(wall_yaw, 3.14159274f), *dir))
+            if (0.52359879f < FastDiffRots_r2(FastAddRots_r2(wall_yaw, 3.14159274f), *dir))
                 return 0;
             return 1;
         } while (d < limit);
     }
     return 0;
 }
-extern unsigned char D_0013E633[] NOT_SDA;
-extern void func_L00_0020ED30(void);
-extern void func_L00_00210E00();
-extern void func_L00_002638B8(char *o);
-extern void func_L00_00233868(void);
-extern void func_L00_00207220(void);
-extern void func_L00_00205B50(void);
-extern void func_L01_002320F8(void);
-extern void func_L00_00232EA8(void);
-extern void func_L01_0023D688(int, int);
+extern unsigned char hero_globals_base[] NOT_SDA;
+extern void cancel_hero_item_animation(void);
+extern void hero_update_items();
+extern void clear_moby_transform_history(char *o);
+extern void HeroSetObjectFlags(void);
+extern void release_and_clear_hero_voice_slots(void);
+extern void reset_hero_easing_records(void);
+extern void HeroSetCollisionSize(void);
+extern void clear_hero_queued_animation(void);
+extern void Hero_SetMoveState(int, int);
 
 /* Starts a level scene: resets the player state, takes the new moby and sets up its flags. */
 void enter_hero_vehicle_mode_and_set_moby(int a, int b, int c) {
     char *g;
     cancel_hero_item_animation();
-    g = (char *)D_0013E633 + 0xE1D;
+    g = (char *)hero_globals_base + 0xE1D;
     *(char *)(g + 0x20A6) = 1;
     hero_update_items();
     *(int *)(g + 0x2080) = *(int *)(g + 0xA88);
@@ -731,9 +731,9 @@ void enter_hero_vehicle_mode_and_set_moby(int a, int b, int c) {
     }
     Hero_SetMoveState(b, 1);
 }
-extern void func_0020D678(void *);
-extern void func_L01_0023D688(int, int);
-extern int D_L01_0015F6A8 MACRO_ADDR;
+extern void DeleteMoby(void *);
+extern void Hero_SetMoveState(int, int);
+extern int novalis_game_mode MACRO_ADDR;
 
 /* resets the hero state and default camera fields */
 void exit_hero_vehicle_mode_and_restore_moby(void) {
@@ -742,7 +742,7 @@ void exit_hero_vehicle_mode_and_restore_moby(void) {
     char *m;
     char *a;
     reset_hero_easing_records();
-    g = (char *)D_0013E633 + 0xE1D;
+    g = (char *)hero_globals_base + 0xE1D;
     p = *(char **)(g + 0xA84);
     g[0x20A4] = 0;
     if (p != 0) {
@@ -803,23 +803,23 @@ typedef struct {
     u8 *p34;
     u8 pad38[8];
 } T_8;
-extern G_8 D_0013F450_231B98 __asm__("D_0013F450");
-extern s32 D_L01_0015F6A8 MACRO_ADDR;
-extern T_8 D_L01_00178600[];
-extern s32 D_0015EE84 MACRO_ADDR;
-extern s32 D_0013E090[];
-extern s32 D_0015EFA8 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
-extern u8 D_0013F530[];
-void func_L00_00207220(void);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001FA748(f32, f32);
-f32 func_001F9F90(f32);
-f32 func_001F9FA8(f32);
-void func_001F9BD8(void *, void *, void *);
-void func_L01_0023D688(s32, s32);
-void func_L00_00217570(s32, s32);
-void func_L00_00211338(void *, s32, f32, f32);
+extern G_8 g_hero_r3 __asm__("D_0013F450");
+extern s32 novalis_game_mode MACRO_ADDR;
+extern T_8 novalis_moby_hit_records[];
+extern s32 g_current_level_index MACRO_ADDR;
+extern s32 level_hero_hit_counts[];
+extern s32 hero_hit_count MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
+extern u8 hero_velocity[];
+void release_and_clear_hero_voice_slots(void);
+void FastVecSub(void *, void *, void *);
+f32 FastAddRots(f32, f32);
+f32 FastCos(f32);
+f32 FastSin(f32);
+void FastVecAdd(void *, void *, void *);
+void Hero_SetMoveState(s32, s32);
+void allocate_hero_voice_for_entry(s32, s32);
+void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00231580. */
 s32 HeroL01_TryTakeHit(s32 arg) {
@@ -831,23 +831,23 @@ s32 HeroL01_TryTakeHit(s32 arg) {
     f32 a, b, e;
     Vec4 v;
 
-    if (D_0013F450_231B98.i208C == 0x14) {
+    if (g_hero_r3.i208C == 0x14) {
         return 0;
     }
-    if (D_0013F450_231B98.i208C == 7) {
+    if (g_hero_r3.i208C == 7) {
         return 0;
     }
-    if (D_0013F450_231B98.i2084 == 0x32) {
+    if (g_hero_r3.i2084 == 0x32) {
         return 0;
     }
-    if (D_0013F450_231B98.i1C0 != 0) {
+    if (g_hero_r3.i1C0 != 0) {
         return 0;
     }
     if (novalis_game_mode != 0) {
         return 0;
     }
-    D_0013F450_231B98.p2280 = 0;
-    m = D_0013F450_231B98.p2080;
+    g_hero_r3.p2280 = 0;
+    m = g_hero_r3.p2080;
     if (m[0xA4] == 0xFF) {
         return 0;
     }
@@ -859,7 +859,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
         return 0;
     }
     level_hero_hit_counts[g_current_level_index]++;
-    D_0013F450_231B98.p2280 = tbl->p20;
+    g_hero_r3.p2280 = tbl->p20;
     hero_hit_count++;
     if (arg == 0) {
         return 1;
@@ -872,49 +872,49 @@ s32 HeroL01_TryTakeHit(s32 arg) {
             flag = 1;
         }
     } else if (tbl->p20 != 0) {
-        FastVecSub(&v, (u8 *)&D_0013F450_231B98 + 0x80, tbl->p20 + 0x10);
+        FastVecSub(&v, (u8 *)&g_hero_r3 + 0x80, tbl->p20 + 0x10);
     } else {
-        v.f[0] = FastCos(FastAddRots(D_0013F450_231B98.f98, 3.1415927f));
-        v.f[1] = FastSin(FastAddRots(D_0013F450_231B98.f98, 3.1415927f));
+        v.f[0] = FastCos(FastAddRots(g_hero_r3.f98, 3.1415927f));
+        v.f[1] = FastSin(FastAddRots(g_hero_r3.f98, 3.1415927f));
         v.i[2] = 0;
     }
-    switch (D_0013F450_231B98.b20A4) {
+    switch (g_hero_r3.b20A4) {
     case 0:
-        mob = D_0013F450_231B98.p2280;
+        mob = g_hero_r3.p2280;
         if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x4EB || *(s16 *)(mob + 0xA6) == 0x558)) {
             id = 0x80;
         call_ret:
             Hero_SetMoveState(id, 1);
             return 1;
         }
-        if (D_0013F450_231B98.i208C == 0x16) {
+        if (g_hero_r3.i208C == 0x16) {
             Hero_SetMoveState(0x6D, 1);
-            D_0013F450_231B98.f128 = g_frame_time * 7.0f;
+            g_hero_r3.f128 = g_frame_time * 7.0f;
             return 1;
         }
-        if (D_0013F450_231B98.i208C == 0x12) {
-            mob = D_0013F450_231B98.p2280;
+        if (g_hero_r3.i208C == 0x12) {
+            mob = g_hero_r3.p2280;
             if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
                 id = 0x82;
                 goto call_ret;
             }
             Hero_SetMoveState(0x75, 1);
-        } else if (D_0013F450_231B98.i208C == 0x11) {
-            mob = D_0013F450_231B98.p2280;
+        } else if (g_hero_r3.i208C == 0x11) {
+            mob = g_hero_r3.p2280;
             if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
                 id = 0x82;
                 goto call_ret;
             }
             if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
-                mob = D_0013F450_231B98.p2280;
+                mob = g_hero_r3.p2280;
                 if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B
                                  || *(s16 *)(mob + 0xA6) == 0x29D)) {
                     allocate_hero_voice_for_entry(0x1C, 0);
                 }
             }
             Hero_SetMoveState(0x76, 1);
-        } else if (D_0013F450_231B98.i208C == 3) {
-            mob = D_0013F450_231B98.p2280;
+        } else if (g_hero_r3.i208C == 3) {
+            mob = g_hero_r3.p2280;
             if (mob != 0) {
                 id = 0x82;
                 if (*(s16 *)(mob + 0xA6) == 0x28F) {
@@ -928,7 +928,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
         e = g_frame_time;
         a = e * 5.7f;
         b = e * 2.4f;
-        if (D_0013F450_231B98.b12E7 != 0) {
+        if (g_hero_r3.b12E7 != 0) {
             a = 0.0f;
             b = e * 1.7f;
         }
@@ -982,58 +982,58 @@ typedef struct {
     u8 pad2098[0xC];
     u8 b20A4;
 } P231ae0;
-extern P231ae0 D_0013F450_2320F8 __asm__("D_0013F450");
-extern f32 D_0013F670[];
-extern f32 D_0015EE60_320F8 __asm__("D_0015EE60") MACRO_ADDR;
-extern f32 D_0015EE64 MACRO_ADDR;
-f32 func_001F9D48(void *, void *);
-f32 func_00214D28(f32, f32, f32 *);
-void func_L00_0025C918(f32 *, f32 *, f32, f32, f32, f32);
+extern P231ae0 g_hero_r4 __asm__("D_0013F450");
+extern f32 g_hero_capsule_top[];
+extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
+extern f32 g_frame_scale_sq MACRO_ADDR;
+f32 vec_distance_xy(void *, void *);
+f32 ApproachValue(f32, f32, f32 *);
+void Spring(f32 *, f32 *, f32, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00231ae0. */
 void HeroSetCollisionSize(void) {
-    switch (D_0013F450_2320F8.b20A4) {
+    switch (g_hero_r4.b20A4) {
     case 0:
-        D_0013F450_2320F8.f228 = 0.8f;
-        D_0013F450_2320F8.f22C = 0.7f;
-        D_0013F450_2320F8.f230 = 0.45f;
+        g_hero_r4.f228 = 0.8f;
+        g_hero_r4.f22C = 0.7f;
+        g_hero_r4.f230 = 0.45f;
         break;
     case 3:
-        D_0013F450_2320F8.f228 = 0.8f;
-        D_0013F450_2320F8.f22C = 0.6f;
-        D_0013F450_2320F8.f230 = 0.45f;
+        g_hero_r4.f228 = 0.8f;
+        g_hero_r4.f22C = 0.6f;
+        g_hero_r4.f230 = 0.45f;
         break;
     }
-    if (D_0013F450_2320F8.i208C == 4) {
-        if (D_0013F450_2320F8.i198 > D_0013F450_2320F8.i420 && D_0013F450_2320F8.s41E == 0) D_0013F450_2320F8.f22C = D_0013F450_2320F8.f434;
-    } else if (D_0013F450_2320F8.i2084 == 6) {
-        D_0013F450_2320F8.f22C = 0.5f;
-    } else if (D_0013F450_2320F8.i2084 == 4) {
-        D_0013F450_2320F8.f228 = 0.35000002f;
-    } else if ((u32)(D_0013F450_2320F8.i208C - 0x11) < 2) {
-        D_0013F450_2320F8.f228 = 0.0f;
-        D_0013F450_2320F8.f22C = 0.0f;
-    } else if (D_0013F450_2320F8.i2084 == 0x7F) {
-        D_0013F450_2320F8.f230 = 0.8f;
+    if (g_hero_r4.i208C == 4) {
+        if (g_hero_r4.i198 > g_hero_r4.i420 && g_hero_r4.s41E == 0) g_hero_r4.f22C = g_hero_r4.f434;
+    } else if (g_hero_r4.i2084 == 6) {
+        g_hero_r4.f22C = 0.5f;
+    } else if (g_hero_r4.i2084 == 4) {
+        g_hero_r4.f228 = 0.35000002f;
+    } else if ((u32)(g_hero_r4.i208C - 0x11) < 2) {
+        g_hero_r4.f228 = 0.0f;
+        g_hero_r4.f22C = 0.0f;
+    } else if (g_hero_r4.i2084 == 0x7F) {
+        g_hero_r4.f230 = 0.8f;
     }
-    if (!D_0013F450_2320F8.b257 || D_0013F450_2320F8.i2094 == 0x12 || D_0013F450_2320F8.i208C == 0x11 || D_0013F450_2320F8.b12E4 || vec_distance_xy(D_0013F450_2320F8.v210, D_0013F450_2320F8.v80) > D_0013F450_2320F8.f234 * 0.5f) {
-        f32 *q = D_0013F670;
+    if (!g_hero_r4.b257 || g_hero_r4.i2094 == 0x12 || g_hero_r4.i208C == 0x11 || g_hero_r4.b12E4 || vec_distance_xy(g_hero_r4.v210, g_hero_r4.v80) > g_hero_r4.f234 * 0.5f) {
+        f32 *q = g_hero_capsule_top;
         P231ae0 *b = (P231ae0 *)((u8 *)q - 0x220);
-        ApproachValue(b->f228, D_0015EE60_320F8 * 0.02f, q);
-        ApproachValue(b->f22C, D_0015EE60_320F8 * 0.02f, q + 1);
+        ApproachValue(b->f228, frame_scale_r * 0.02f, q);
+        ApproachValue(b->f22C, frame_scale_r * 0.02f, q + 1);
         Spring(q + 5, q + 6, b->f230, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.0f);
     }
 }
-extern char D_0013E633_328A8[] __asm__("D_0013E633");
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_L01_0017C2B8[];
-extern void func_L00_00211F80(int, float);
+extern char hero_globals_base_r[] __asm__("D_0013E633");
+extern float g_frame_time MACRO_ADDR;
+extern float novalis_hero_speed_bands[];
+extern void stick_target(int, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_00232290. */
 void HeroSpeedFromTable(void) {
     char *x;
     stick_target(0, 1.0f);
-    x = D_0013E633_328A8 + 0xE1D;
+    x = hero_globals_base_r + 0xE1D;
     if (0.0f < *(float *)(x + 0x190)) {
         if (*(float *)(x + 0x190) < novalis_hero_speed_bands[3]) {
             *(float *)(x + 0x190) = novalis_hero_speed_bands[2] * g_frame_time;
@@ -1042,7 +1042,7 @@ void HeroSpeedFromTable(void) {
         }
     }
     {
-        char *y = D_0013E633_328A8 + 0xE1D;
+        char *y = hero_globals_base_r + 0xE1D;
         if (*(int *)(y + 0x2084) == 0x73) {
             float v = *(float *)(y + 0x190) * 0.8f;
             float m = g_frame_time * 2.5f;
@@ -1053,18 +1053,18 @@ void HeroSpeedFromTable(void) {
         }
     }
 }
-extern float func_L00_00234250(float *v);
-extern float func_001F9CE8(void *);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern int func_L00_001F3958(void);
-extern float func_L00_001FF860(float, float);
-extern float D_0015EE6C MACRO_ADDR;
-extern int D_L01_0017435C;
-extern char D_L01_00174340[];
+extern float gravity_length_xy(float *v);
+extern float vec_length_xy(void *);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern int coll_line(void *, void *, int, int, int);
+extern int CollType(void);
+extern float fast_atan2(float, float);
+extern float g_frame_time MACRO_ADDR;
+extern int novalis_coll_hit_type;
+extern char novalis_coll_hit[];
 
 /* Checks the hero's movement against walls ahead and slides the direction along the wall. */
 void clip_hero_horizontal_velocity(int flag) {
@@ -1072,7 +1072,7 @@ void clip_hero_horizontal_velocity(int flag) {
     float p[4];
     float t[4];
     float q[4];
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     float f2, f21, f20;
     int k, x;
     char *h1, *h2, *h3, *w, *w3;
@@ -1112,14 +1112,14 @@ void clip_hero_horizontal_velocity(int flag) {
     FastVecAdd(p, p, s);
     k = -1;
     FastVecAdd(q, q, t);
-    h1 = (char *)D_0013E633 + 0xE1D;
+    h1 = (char *)hero_globals_base + 0xE1D;
     if (coll_line(t, q, 4, *(int *)(h1 + 0x2080), 0) != 0) {
         if (novalis_coll_hit_type > 0) {
             k = CollType();
         }
     }
     f20 = 0.0f;
-    h2 = (char *)D_0013E633 + 0xE1D;
+    h2 = (char *)hero_globals_base + 0xE1D;
     if (coll_line(s, p, 4, *(int *)(h2 + 0x2080), 0) != 0) {
         w = novalis_coll_hit;
         if (*(int *)(w + 0x1C) > 0) {
@@ -1127,12 +1127,12 @@ void clip_hero_horizontal_velocity(int flag) {
         }
     }
     if (f20 >= 0.87266463f || k == 8 || k == 12) {
-        h3 = (char *)D_0013E633 + 0xE1D;
+        h3 = (char *)hero_globals_base + 0xE1D;
         w3 = novalis_coll_hit;
         u = (float *)(w3 + 0x40);
         *(int *)(w3 + 0x48) = 0;
         *(int *)(h3 + 0x240) = *(int *)(w3 + 0x18);
-        func_001252C0(u, u);
+        sceVu0Normalize(u, u);
         {
             float c = -*(float *)(h3 + 0xE0) * *(float *)(w3 + 0x40) - *(float *)(h3 + 0xE4) * *(float *)(w3 + 0x44);
             if (c > 0.0f) {
@@ -1143,27 +1143,27 @@ void clip_hero_horizontal_velocity(int flag) {
     }
 }
 typedef int Q __attribute__((mode(TI)));
-extern u8 D_L01_00174360[];
-extern s32 D_0015EE84 MACRO_ADDR;
+extern u8 novalis_coll_hit_point[];
+extern s32 g_current_level_index MACRO_ADDR;
 void func_001F9BC0_333D8(void *) __asm__("func_001F9BC0");
-void func_L00_00212D70(void *, void *, s32, f32, f32);
-s32 func_L00_001EFFF0(void *, void *, s32, s32, s32);
-s32 func_L00_001F3988(void);
-s32 func_L00_001F3958(void);
-f32 func_00214440(void *, void *);
-s32 func_L00_0025F410(s32);
-u8 *func_L00_0025D390(s32);
-f32 func_001F9D10(void *, void *);
-void func_001252C0(void *, void *);
-f32 func_L00_002345B0(void *);
-f32 func_L00_001FF860(f32, f32);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001F9C78(void *, void *);
-void func_001F9C30(void *, void *, f32);
-void func_L00_001FF4B0(void *, void *, f32);
-void func_L00_002167C8(void *, void *);
-void func_L00_00233E48(void *, f32, f32, f32);
-f32 func_001F9B88(f32);
+void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
+s32 coll_line(void *, void *, s32, s32, s32);
+s32 coll_sound_class(void);
+s32 CollType(void);
+f32 resolve_camera_surface_height(void *, void *);
+s32 is_moby_in_class_range_500_to_540(s32);
+u8 *GetFlaggedPvarWord(s32);
+f32 FastVecDist(void *, void *);
+void sceVu0Normalize(void *, void *);
+f32 compute_gravity_relative_vector_inclination(void *);
+f32 fast_atan2(f32, f32);
+void FastVecSub(void *, void *, void *);
+f32 FastVecDot(void *, void *);
+void FastVecScale(void *, void *, f32);
+void vec_scale_to_length(void *, void *, f32);
+void compute_rotated_vector_angles(void *, void *);
+void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
+f32 FastAbsF(f32);
 typedef struct {
     u8 pad88[0x88];
     f32 xF88;
@@ -1208,7 +1208,7 @@ typedef struct {
     u8 pad20b3[0x23];
     u8 xB20b3;
 } GS;
-extern GS D_0013F450;
+extern GS g_hero;
 typedef struct {
     u8 pad0[0x18];
     s32 i18;
@@ -1218,7 +1218,7 @@ typedef struct {
     f32 f40;
     f32 f44;
 } HS;
-extern HS D_L01_00174340_333D8 __asm__("D_L01_00174340");
+extern HS novalis_coll_hit_r3 __asm__("D_L01_00174340");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00232dc0. */
 void HeroGroundProbe(void) {
@@ -1263,7 +1263,7 @@ void HeroGroundProbe(void) {
     g_hero.xB12ed = r;
     g_hero.xH12e0 = CollType();
     if (g_hero.xH12e0 == 0) {
-        g_hero.xF2f0 = resolve_camera_surface_height(D_L01_00174360, (u8 *)&g_hero + 0x280);
+        g_hero.xF2f0 = resolve_camera_surface_height(novalis_coll_hit_point, (u8 *)&g_hero + 0x280);
         if (g_hero.xF88 < g_hero.xF2f0 && g_hero.xI2f8 <= 0) {
             g_hero.xI2f8 = 1;
         }
@@ -1277,33 +1277,33 @@ void HeroGroundProbe(void) {
         g_hero.xB12ed = r;
     }
     if (g_hero.xH12e0 == 0xD) {
-        g_hero.xF2f0 = D_L01_00174340_333D8.v20.f[2];
-        v10.f[2] = D_L01_00174340_333D8.v20.f[2] - 0.01f;
+        g_hero.xF2f0 = novalis_coll_hit_r3.v20.f[2];
+        v10.f[2] = novalis_coll_hit_r3.v20.f[2] - 0.01f;
         if (coll_line(&v10, &v0, 4, g_hero.xI2080, 0) == 0) {
             goto d1;
         }
     }
     if (g_hero.xH12e0 == 0xB) {
-        g_hero.xF2f4 = D_L01_00174340_333D8.v20.f[2];
+        g_hero.xF2f4 = novalis_coll_hit_r3.v20.f[2];
         goto d1;
     }
-    if (D_L01_00174340_333D8.i18 != 0) {
-        if (is_moby_in_class_range_500_to_540(D_L01_00174340_333D8.i18)) {
+    if (novalis_coll_hit_r3.i18 != 0) {
+        if (is_moby_in_class_range_500_to_540(novalis_coll_hit_r3.i18)) {
             g_hero.xH30a = 1;
         }
-        p = GetFlaggedPvarWord(D_L01_00174340_333D8.i18);
+        p = GetFlaggedPvarWord(novalis_coll_hit_r3.i18);
         if (p != 0 && (*(u16 *)(p + 0x1E) & 8)) {
             g_hero.xH30a = 1;
         }
     }
-    if (D_L01_00174340_333D8.i1C > 0) {
-        qcopy((u8 *)&g_hero + 0x2A0, &D_L01_00174340_333D8.v20);
-        g_hero.u2d8.F = D_L01_00174340_333D8.v20.f[2];
+    if (novalis_coll_hit_r3.i1C > 0) {
+        qcopy((u8 *)&g_hero + 0x2A0, &novalis_coll_hit_r3.v20);
+        g_hero.u2d8.F = novalis_coll_hit_r3.v20.f[2];
         g_hero.xF2dc = FastVecDist((u8 *)&g_hero + 0x80, ((u8 *)&g_hero + 0x2A0));
-        g_hero.xI2fc = D_L01_00174340_333D8.i18;
-        func_001252C0((u8 *)&g_hero + 0x270, (u8 *)&D_L01_00174340_333D8.f40);
-        g_hero.u2e0.F = compute_gravity_relative_vector_inclination((u8 *)&D_L01_00174340_333D8.f40);
-        g_hero.xF2ec = fast_atan2(D_L01_00174340_333D8.f40, D_L01_00174340_333D8.f44);
+        g_hero.xI2fc = novalis_coll_hit_r3.i18;
+        sceVu0Normalize((u8 *)&g_hero + 0x270, (u8 *)&novalis_coll_hit_r3.f40);
+        g_hero.u2e0.F = compute_gravity_relative_vector_inclination((u8 *)&novalis_coll_hit_r3.f40);
+        g_hero.xF2ec = fast_atan2(novalis_coll_hit_r3.f40, novalis_coll_hit_r3.f44);
         FastVecSub(&v20, ((u8 *)&g_hero + 0x2A0), (u8 *)&g_hero + 0x80);
         if (0.0f < FastVecDot(&v20, (u8 *)&g_hero + 0x270)) {
             g_hero.xF2dc = -g_hero.xF2dc;
@@ -1312,7 +1312,7 @@ void HeroGroundProbe(void) {
             g_hero.u30c.H = 0;
             if (g_hero.u2e0.F <= 0.87266463f || g_hero.xB20b3 == 1 || g_hero.xI208c == 0x16) {
                 g_hero.u30e.H = 0;
-                g_hero.xIa80 = D_L01_00174340_333D8.i18;
+                g_hero.xIa80 = novalis_coll_hit_r3.i18;
             }
         }
     }
@@ -1370,12 +1370,12 @@ d1:
         transform_hero_polar_offset_to_world(&v30, 0.2f, a, 0.45f);
         transform_hero_polar_offset_to_world(&v40, 0.2f, a, -0.45f);
         if (coll_line(&v30, &v0, 0x22, g_hero.xI2080, 0)) {
-            f = D_L01_00174340_333D8.v20.f[2] - g_hero.u2d8.F;
+            f = novalis_coll_hit_r3.v20.f[2] - g_hero.u2d8.F;
             g_hero.a2c0.f[i] = f;
             if (0.4f < FastAbsF(f)) {
                 g_hero.a2c0.f[i] = 0.0f;
             }
-            func_001252C0(&v60, (u8 *)&D_L01_00174340_333D8.f40);
+            sceVu0Normalize(&v60, (u8 *)&novalis_coll_hit_r3.f40);
             compute_rotated_vector_angles(&v60, &v50);
             if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
                 g_hero.a2c8.f[i] = v50.f[1];
@@ -1390,21 +1390,21 @@ d1:
         }
     }
 }
-extern char D_L01_00174370[];
-extern short D_0015EE60;
-extern void func_001F9BC0(float *);
-extern void func_L00_00235040(void);
-extern void func_L00_00234090(float *dst, float *src, float dz);
-extern void func_L00_00233D50(float *dst, float *src, float h);
-extern int func_L00_001F1D20(float, float, void *, int, void *);
-extern int func_L00_001F34F0(float, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9CB8(void *);
-extern void func_L00_001FF4B0(void *, void *, float);
+extern char novalis_coll_resolved_pos[];
+extern short frame_scale;
+extern void clear_u64_value(float *);
+extern void Hero_ConstrainToPath(void);
+extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
+extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
+extern int coll_capsule(float, float, void *, int, void *);
+extern int coll_sphere_hero_groups(float, void *);
+extern void FastVecSub(void *, void *, void *);
+extern float FastVecLength(void *);
+extern void vec_scale_to_length(void *, void *, float);
 
 /* Checks that the hero capsule passes: sweeps the capsule toward the target, and clamps the remaining offset. */
 int resolve_hero_position_with_collision_queries(int a0) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     float A[4], B[4], C[4];
     int i, r;
     float len;
@@ -1428,11 +1428,11 @@ int resolve_hero_position_with_collision_queries(int a0) {
             B[2] = *(float *)(g + 0x224);
         }
     }
-    FastVecAdd((char *)D_0013E633 + 0xE9D, (char *)D_0013E633 + 0xE9D, B);
+    FastVecAdd((char *)hero_globals_base + 0xE9D, (char *)hero_globals_base + 0xE9D, B);
     r = 0x24;
-    if (*(int *)((char *)D_0013E633 + 0xE9D + 0x2004) == 0x7F) r = 0xD24;
+    if (*(int *)((char *)hero_globals_base + 0xE9D + 0x2004) == 0x7F) r = 0xD24;
     for (i = 0; i < 8; i++) {
-        g = (char *)D_0013E633 + 0xE1D;
+        g = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(g + 0x20B3) != 0) {
             if (!coll_sphere(*(float *)&frame_scale * 0.4f, g + 0x80, r, *(void **)(g + 0x2080))) break;
         } else if (*(int *)(g + 0x208C) == 0x11) {
@@ -1445,18 +1445,18 @@ int resolve_hero_position_with_collision_queries(int a0) {
             n |= coll_sphere_hero_groups(*(float *)(g + 0x234), g + 0x80);
             if (n == 0) break;
         }
-        p = D_L01_00174370;
-        qcopy((char *)D_0013E633 + 0xE9D, p);
-        qcopy((char *)D_0013E633 + 0xE9D + 0x180, p + 0x10);
-        qcopy((char *)D_0013E633 + 0xE9D + 0x190, p - 0x10);
-        h = (char *)D_0013E633 + 0xE1D;
+        p = novalis_coll_resolved_pos;
+        qcopy((char *)hero_globals_base + 0xE9D, p);
+        qcopy((char *)hero_globals_base + 0xE9D + 0x180, p + 0x10);
+        qcopy((char *)hero_globals_base + 0xE9D + 0x190, p - 0x10);
+        h = (char *)hero_globals_base + 0xE1D;
         *(char *)(h + 0x257) = 1;
         *(int *)(h + 0x23C) = *(int *)(p - 0x18);
     }
-    FastVecSub((char *)D_0013E633 + 0xE9D, (char *)D_0013E633 + 0xE9D, B);
-    FastVecSub(C, (char *)D_0013E633 + 0xE9D, A);
+    FastVecSub((char *)hero_globals_base + 0xE9D, (char *)hero_globals_base + 0xE9D, B);
+    FastVecSub(C, (char *)hero_globals_base + 0xE9D, A);
     len = FastVecLength(C);
-    if (*(float *)((char *)D_0013E633 + 0xE9D + 0x1B4) * 1.5f < len) {
+    if (*(float *)((char *)hero_globals_base + 0xE9D + 0x1B4) * 1.5f < len) {
         if (a0 == 0xF) {
         if (C[0] > 512.0f) C[0] = 512.0f;
         else if (C[0] < -512.0f) C[0] = -512.0f;
@@ -1464,7 +1464,7 @@ int resolve_hero_position_with_collision_queries(int a0) {
         else if (C[1] < -512.0f) C[1] = -512.0f;
         if (C[2] > 512.0f) C[2] = 512.0f;
         else if (C[2] < -512.0f) C[2] = -512.0f;
-        g = (char *)D_0013E633 + 0xE1D;
+        g = (char *)hero_globals_base + 0xE1D;
         vec_scale_to_length(C, C, *(float *)(g + 0x234));
         FastVecAdd(g + 0x80, A, C);
         }
@@ -1473,17 +1473,17 @@ int resolve_hero_position_with_collision_queries(int a0) {
     return 1;
 }
 typedef int u128_34970 __attribute__((mode(TI)));
-extern void func_L00_001FF500(void *, void *, float);
-extern float func_L00_00213A08(void *);
-extern void func_L00_00234420(float *, float *, float);
-extern void func_L00_00233F88(void *, void *, float);
+extern void vec_set_length_xy(void *, void *, float);
+extern float forward_component(void *);
+extern void set_gravity_relative_vector_length_xy(float *, float *, float);
+extern void add_hero_forward_offset(void *, void *, float);
 
 // Accelerates the hero's air velocity toward the stick direction, clamped to the step.
 void air_accel(float step) {
     float v[4];
     float w[4];
     float u[4];
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     switch (*(unsigned char *)(g + 0x20B3)) {
     case 0: {
         float ang = *(float *)(g + 0x180);
@@ -1496,17 +1496,17 @@ void air_accel(float step) {
                 spd = g_frame_time * 2.1f;
         }
         {
-            char *g2 = (char *)D_0013E633 + 0xE1D;
+            char *g2 = (char *)hero_globals_base + 0xE1D;
             if (*(short *)(g2 + 0x30A) != 0) {
                 char *g2b;
             heavy:
-                g2b = (char *)D_0013E633 + 0xE1D;
+                g2b = (char *)hero_globals_base + 0xE1D;
                 if (*(int *)(g2b + 0x2084) == 0xE && g_frame_time < spd)
                     spd = g_frame_time;
             }
         }
         {
-            char *g3 = (char *)D_0013E633 + 0xE1D;
+            char *g3 = (char *)hero_globals_base + 0xE1D;
             v[0] = FastCos(ang) * spd;
             v[1] = FastSin(ang) * spd;
             v[2] = *(float *)(g3 + 0xE8);
@@ -1521,7 +1521,7 @@ void air_accel(float step) {
             d /= l2;
         }
         {
-            char *g4 = (char *)D_0013E633 + 0xE1D;
+            char *g4 = (char *)hero_globals_base + 0xE1D;
             d += 1.0f;
             d *= 1.5f;
             if (*(int *)(g4 + 0x2084) == 0x81) {
@@ -1561,26 +1561,26 @@ typedef struct {
     s32 w0;
     u8 pad4[0x70 - 4];
 } Entry70_23c710;
-extern struct PadState D_0013CA40;
-extern Entry70_23c710 D_L01_00179DF0[];
-extern short D_L01_0015F6A8_3CE00 __asm__("D_L01_0015F6A8");
-extern u8 D_0013D5C8[];
-extern void func_L00_00216D40(void);
-extern s32 func_001F9908(s32 *);
-extern s16 func_001F9938(s16 *);
-extern void func_L01_00231A68(void);
-extern s32 func_001F9850(s32);
-extern s32 func_L00_00267BA8(s32, s32, s32);
-extern struct Moby *func_0020D348(s32);
-extern void func_L00_00251E30(struct Moby *);
-extern void func_L01_00231960_3CE00(s32, s32, struct Moby *) __asm__("func_L01_00231960");
-extern f32 func_L00_002342F8(void *);
-extern void func_001F9BC0_3CE00(void *) __asm__("func_001F9BC0");
-extern void func_001F9C30(void *, void *, f32);
-extern f32 func_001F9CB8(void *);
-extern void func_L00_002222F0(void);
-extern void func_L00_00233EE0(void *, f32, f32, f32);
-extern void func_L00_00211908(void);
+extern struct PadState g_controller_state;
+extern Entry70_23c710 novalis_idle_fidgets_field_60[];
+extern short novalis_game_mode_r __asm__("D_L01_0015F6A8");
+extern u8 item_available[];
+extern void update_hero_tilt(void);
+extern s32 fast_dec_timer(s32 *);
+extern s16 FastDecTimer(s16 *);
+extern void exit_hero_vehicle_mode_and_restore_moby(void);
+extern s32 scale_ticks(s32);
+extern s32 pad_pressed_within(s32, s32, s32);
+extern struct Moby *CreateMoby(s32);
+extern void moby_build_matrix(struct Moby *);
+extern void enter_hero_vehicle_mode_and_set_moby_r(s32, s32, struct Moby *) __asm__("func_L01_00231960");
+extern f32 gravity_z(void *);
+extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
+extern void FastVecScale(void *, void *, f32);
+extern f32 FastVecLength(void *);
+extern void update_hero_planar_distance_spring_motion(void);
+extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
+extern void Hero_OnKilled(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_0023c710. */
 void update_hero_timers_and_vehicle_transitions(void) {
@@ -1591,127 +1591,127 @@ void update_hero_timers_and_vehicle_transitions(void) {
     s32 n;
     s32 n8;
 
-    if (D_0013F450_293D0.tilt_disabled == 0) {
+    if (g_hero_r.tilt_disabled == 0) {
         update_hero_tilt();
     }
-    D_0013F450_293D0.state_timer++;
-    D_0013F450_293D0.control_mode_timer++;
-    D_0013F450_293D0.step_frames++;
-    D_0013F450_293D0.anim_seq_frames++;
-    fast_dec_timer(&D_0013F450_293D0.move_lock_timer);
-    fast_dec_timer(&D_0013F450_293D0.invulnerable_frames);
-    FastDecTimer(&D_0013F450_293D0.unk1B2);
-    fast_dec_timer(&D_0013F450_293D0.long_jump_lockout);
-    FastDecTimer(&D_0013F450_293D0.jump_lockout_timer);
-    FastDecTimer(&D_0013F450_293D0.unk1DE);
-    fast_dec_timer(&D_0013F450_293D0.wall_jump_window);
-    FastDecTimer(&D_0013F450_293D0.unk1F0);
-    FastDecTimer(&D_0013F450_293D0.ledge_probe_cooldown);
-    FastDecTimer(&D_0013F450_293D0.unk1C8);
-    FastDecTimer(&D_0013F450_293D0.rail_catch_grace);
-    FastDecTimer(&D_0013F450_293D0.rail_grab_cooldown);
-    FastDecTimer(&D_0013F450_293D0.grapple_lockout_timer);
-    fast_dec_timer(&D_0013F450_293D0.collision_off_frames);
-    fast_dec_timer(&D_0013F450_293D0.unk1D0);
-    fast_dec_timer(&D_0013F450_293D0.jump_buffer_lockout);
-    FastDecTimer(&D_0013F450_293D0.fidget_cooldown);
-    FastDecTimer(&D_0013F450_293D0.unk1E0);
-    FastDecTimer(&D_0013F450_293D0.unk1EE);
-    FastDecTimer(&D_0013F450_293D0.unk1EA);
-    FastDecTimer(&D_0013F450_293D0.unk1F4);
-    FastDecTimer(&D_0013F450_293D0.jump_lock_timer);
-    FastDecTimer(&D_0013F450_293D0.unk1DC);
-    FastDecTimer(&D_0013F450_293D0.unk1F6);
-    FastDecTimer(&D_0013F450_293D0.unk1DA);
-    FastDecTimer(&D_0013F450_293D0.unk1F8);
+    g_hero_r.state_timer++;
+    g_hero_r.control_mode_timer++;
+    g_hero_r.step_frames++;
+    g_hero_r.anim_seq_frames++;
+    fast_dec_timer(&g_hero_r.move_lock_timer);
+    fast_dec_timer(&g_hero_r.invulnerable_frames);
+    FastDecTimer(&g_hero_r.unk1B2);
+    fast_dec_timer(&g_hero_r.long_jump_lockout);
+    FastDecTimer(&g_hero_r.jump_lockout_timer);
+    FastDecTimer(&g_hero_r.unk1DE);
+    fast_dec_timer(&g_hero_r.wall_jump_window);
+    FastDecTimer(&g_hero_r.unk1F0);
+    FastDecTimer(&g_hero_r.ledge_probe_cooldown);
+    FastDecTimer(&g_hero_r.unk1C8);
+    FastDecTimer(&g_hero_r.rail_catch_grace);
+    FastDecTimer(&g_hero_r.rail_grab_cooldown);
+    FastDecTimer(&g_hero_r.grapple_lockout_timer);
+    fast_dec_timer(&g_hero_r.collision_off_frames);
+    fast_dec_timer(&g_hero_r.unk1D0);
+    fast_dec_timer(&g_hero_r.jump_buffer_lockout);
+    FastDecTimer(&g_hero_r.fidget_cooldown);
+    FastDecTimer(&g_hero_r.unk1E0);
+    FastDecTimer(&g_hero_r.unk1EE);
+    FastDecTimer(&g_hero_r.unk1EA);
+    FastDecTimer(&g_hero_r.unk1F4);
+    FastDecTimer(&g_hero_r.jump_lock_timer);
+    FastDecTimer(&g_hero_r.unk1DC);
+    FastDecTimer(&g_hero_r.unk1F6);
+    FastDecTimer(&g_hero_r.unk1DA);
+    FastDecTimer(&g_hero_r.unk1F8);
     if (!(g_controller_state.held & 5)) {
-        D_0013F450_293D0.unk1EC = 0;
+        g_hero_r.unk1EC = 0;
     }
-    if (D_0013F450_293D0.item_anim_active != 0) {
-        D_0013F450_293D0.item_anim_frames++;
+    if (g_hero_r.item_anim_active != 0) {
+        g_hero_r.item_anim_frames++;
     } else {
-        D_0013F450_293D0.item_anim_frames = 0;
+        g_hero_r.item_anim_frames = 0;
     }
     if (g_controller_state.no_direction != 0) {
-        D_0013F450_293D0.stick_held_frames = 0;
-        D_0013F450_293D0.stick_idle_frames++;
+        g_hero_r.stick_held_frames = 0;
+        g_hero_r.stick_idle_frames++;
     } else {
-        D_0013F450_293D0.stick_idle_frames = 0;
-        D_0013F450_293D0.stick_held_frames++;
+        g_hero_r.stick_idle_frames = 0;
+        g_hero_r.stick_held_frames++;
     }
-    if (D_0013F450_293D0.vehicle_toggle_timer != 0 && FastDecTimer(&D_0013F450_293D0.vehicle_toggle_timer) != 0 &&
-        D_0013F450_293D0.health.hp != 0 && (*(s32 *)&D_L01_0015F6A8_3CE00) == 0) {
-        if (D_0013F450_293D0.vehicle_mode == 3) {
+    if (g_hero_r.vehicle_toggle_timer != 0 && FastDecTimer(&g_hero_r.vehicle_toggle_timer) != 0 &&
+        g_hero_r.health.hp != 0 && (*(s32 *)&novalis_game_mode_r) == 0) {
+        if (g_hero_r.vehicle_mode == 3) {
             exit_hero_vehicle_mode_and_restore_moby();
             if (pad_pressed_within(0x80, scale_ticks(0x12), 0)) {
-                D_0013F450_293D0.force_slot0_item8 = 1;
+                g_hero_r.force_slot0_item8 = 1;
             }
         } else {
             m = CreateMoby(0x27A);
-            D_0013F450_293D0.vehicle_mode3_moby = m;
+            g_hero_r.vehicle_mode3_moby = m;
             if (m != 0) {
-                qcopy(&m->pos, &D_0013F450_293D0.motion.pos);
-                qcopy(&m->rot, &D_0013F450_293D0.motion.rot);
+                qcopy(&m->pos, &g_hero_r.motion.pos);
+                qcopy(&m->rot, &g_hero_r.motion.rot);
                 m->draw_dist = 0x40;
-                ((struct Moby *)D_0013F450_293D0.vehicle_mode3_moby)->visible = 1;
-                ((struct Moby *)D_0013F450_293D0.vehicle_mode3_moby)->glow_color = 0;
-                ((struct Moby *)D_0013F450_293D0.vehicle_mode3_moby)->spawn_frame = D_0013F450_293D0.moby->spawn_frame;
-                moby_build_matrix(D_0013F450_293D0.vehicle_mode3_moby);
-                func_L01_00231960_3CE00(3, 0x53, D_0013F450_293D0.vehicle_mode3_moby);
+                ((struct Moby *)g_hero_r.vehicle_mode3_moby)->visible = 1;
+                ((struct Moby *)g_hero_r.vehicle_mode3_moby)->glow_color = 0;
+                ((struct Moby *)g_hero_r.vehicle_mode3_moby)->spawn_frame = g_hero_r.moby->spawn_frame;
+                moby_build_matrix(g_hero_r.vehicle_mode3_moby);
+                enter_hero_vehicle_mode_and_set_moby_r(3, 0x53, g_hero_r.vehicle_mode3_moby);
             }
         }
     }
     for (i = 0; i < 5; i++) {
-        fast_dec_timer(&D_L01_00179DF0[i].w0);
+        fast_dec_timer(&novalis_idle_fidgets_field_60[i].w0);
     }
-    D_0013F450_293D0.current_path_dist = 9999.0f;
-    if (D_0013F450_293D0.air_frames.s != 0 && gravity_z(&D_0013F450_293D0.motion.velocity) < 0.0f) {
-        if (D_0013F450_293D0.pos_history_count != 0x20) goto skip;
-        func_001F9BC0_3CE00(&sum);
+    g_hero_r.current_path_dist = 9999.0f;
+    if (g_hero_r.air_frames.s != 0 && gravity_z(&g_hero_r.motion.velocity) < 0.0f) {
+        if (g_hero_r.pos_history_count != 0x20) goto skip;
+        clear_u64_value_r(&sum);
         n8 = 8;
         for (i = 0; i < n8; i++) {
-            n = D_0013F450_293D0.pos_history_index - i;
+            n = g_hero_r.pos_history_index - i;
             {
                 s32 a = (n + 0x1F) % 32;
                 s32 b = (n + 0x1E) % 32;
-                FastVecSub(&d, &D_0013F450_293D0.pos_history[a], &D_0013F450_293D0.pos_history[b]);
+                FastVecSub(&d, &g_hero_r.pos_history[a], &g_hero_r.pos_history[b]);
             }
             FastVecAdd(&sum, &sum, &d);
         }
         FastVecScale(&sum, &sum, 1.0f / (f32)n8);
         if (FastVecLength(&sum) < g_frame_time) {
-            D_0013F450_293D0.still_frames++;
+            g_hero_r.still_frames++;
             goto skip;
         }
     }
-    D_0013F450_293D0.still_frames = 0;
+    g_hero_r.still_frames = 0;
 skip:
     update_hero_planar_distance_spring_motion();
-    transform_hero_local_offset_to_world(&D_0013F450_293D0.motion.body_center, 0.0f, 0.0f, 0.7f);
+    transform_hero_local_offset_to_world(&g_hero_r.motion.body_center, 0.0f, 0.0f, 0.7f);
     if (item_available[0x22]) {
-        D_0013F450_293D0.reach_distance = 12.0f;
-        D_0013F450_293D0.reach_height = 4.5f;
+        g_hero_r.reach_distance = 12.0f;
+        g_hero_r.reach_height = 4.5f;
     } else {
-        D_0013F450_293D0.reach_distance = 3.0f;
-        D_0013F450_293D0.reach_height = 1.75f;
+        g_hero_r.reach_distance = 3.0f;
+        g_hero_r.reach_height = 1.75f;
     }
     {
-        f32 z = D_0013F450_293D0.ground_z.f;
-        if (D_0013F450_293D0.motion.pos.f[2] - z < 4.0f) {
-            qcopy(&D_0013F450_293D0.motion.near_ground_point, &D_0013F450_293D0.motion.pos);
-            D_0013F450_293D0.motion.near_ground_point.f[2] = z + 0.5f;
+        f32 z = g_hero_r.ground_z.f;
+        if (g_hero_r.motion.pos.f[2] - z < 4.0f) {
+            qcopy(&g_hero_r.motion.near_ground_point, &g_hero_r.motion.pos);
+            g_hero_r.motion.near_ground_point.f[2] = z + 0.5f;
         } else {
-            qcopy(&D_0013F450_293D0.motion.near_ground_point, &D_0013F450_293D0.motion.body_center);
+            qcopy(&g_hero_r.motion.near_ground_point, &g_hero_r.motion.body_center);
         }
     }
-    if (D_0013F450_293D0.motion.pos.f[2] < 1.0f) {
+    if (g_hero_r.motion.pos.f[2] < 1.0f) {
         Hero_OnKilled();
     }
 }
 /* Puts the hero into the idle move state that fits the current vehicle mode (0 or 3). */
 void request_hero_idle_state_for_vehicle_mode(void)
 {
-    switch ((unsigned char)D_0013E633[0x2EC1]) {
+    switch ((unsigned char)hero_globals_base[0x2EC1]) {
     case 0:
         Hero_SetMoveState(0, 1);
         break;
@@ -1721,27 +1721,27 @@ void request_hero_idle_state_for_vehicle_mode(void)
     }
 }
 extern int hl_next(int, int) __asm__("func_L01_0023D688");
-extern void func_L00_00232C10(int, int, float);
-extern void func_L00_00232E60(int bank, int seq);
-extern void func_L00_002607A8(void *a, float x);
-extern int func_L01_002274A8(int a);
-extern int D_L01_0015F7BC MACRO_ADDR;
-extern char D_0013A5E0[];
+extern void set_hero_animation(int, int, float);
+extern void HeroQueueSequence(int bank, int seq);
+extern void ClampVectorLength(void *a, float x);
+extern int get_hero_idle_animation_index(int a);
+extern int novalis_hero_run_step1_start_frame MACRO_ADDR;
+extern char pad_globals_base[];
 
 // Chooses the next hero state when landing, with sounds and effects.
 void select_hero_locomotion_state(void) {
     char *b, *c, *d;
     int n;
-    b = D_0013E633 + 0xE1D;
+    b = hero_globals_base + 0xE1D;
     *(int *)(b + 0x2284) = 0;
     stick_target(0, 1.0f);
-    if (*(int *)(D_0013A5E0 + 0x2600) & 0xA) {
+    if (*(int *)(pad_globals_base + 0x2600) & 0xA) {
         hl_next(4, 0);
         set_hero_animation(0xD, 2, -2.0f);
         HeroQueueSequence(3, 0x12);
         return;
     }
-    c = D_0013E633 + 0xE1D;
+    c = hero_globals_base + 0xE1D;
     if (0.3f < *(float *)(c + 0x229C) && *(int *)(c + 0x1C4) == 0) {
         if (*(unsigned char *)(c + 0x12E2) != 0 || *(unsigned char *)(c + 0x20A9) != 0) {
             hl_next(2, 1);
@@ -1756,11 +1756,11 @@ void select_hero_locomotion_state(void) {
         }
         return;
     }
-    d = D_0013E633 + 0xE1D;
+    d = hero_globals_base + 0xE1D;
     if ((*(float *)&g_frame_time * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) || *(int *)(d + 0x2084) == 0x10) {
         if (hl_next(3, 0)) {
             set_hero_animation(5, 0, -1.0f);
-            ClampVectorLength(D_0013E633 + 0xF6D, g_frame_time * 5.0f);
+            ClampVectorLength(hero_globals_base + 0xF6D, g_frame_time * 5.0f);
         }
         return;
     }
@@ -1777,11 +1777,11 @@ void select_hero_locomotion_state(void) {
 }
 // Load global pointer and OR a field with 1
 void set_hero_moby_flag_bit_zero(void) {
-    *(unsigned short *)((char *)(*(char **)(D_0013E633 + 0x2E9D)) + 0x34) |= 1;
+    *(unsigned short *)((char *)(*(char **)(hero_globals_base + 0x2E9D)) + 0x34) |= 1;
 }
-extern unsigned char D_0013E633_490F8b[] __asm__("D_0013E633");
+extern unsigned char hero_globals_base_r2[] __asm__("D_0013E633");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00248900. */
 void clear_hero_moby_flag_bit_zero(void) {
-    *(unsigned short *)((char *)(*(char **)(D_0013E633_490F8b + 0x2E9D)) + 0x34) &= ~1;
+    *(unsigned short *)((char *)(*(char **)(hero_globals_base_r2 + 0x2E9D)) + 0x34) &= ~1;
 }

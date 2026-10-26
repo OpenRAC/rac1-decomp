@@ -8,7 +8,7 @@ INCLUDE_ASM("asm/overlays", func_L00_001FD6A8);
 ASM_FUNC("asm/overlays", func_L00_001FDE48);
 ASM_FUNC("asm/overlays", func_L00_001FE688);
 typedef unsigned int u128_pt __attribute__((mode(TI)));
-extern char D_L00_0016EB40_001fe990[] __asm__("D_L00_0016EB40");
+extern char glints_r[] __asm__("D_L00_0016EB40");
 float func_00214158_001fe990() __asm__("func_00214158");
 /* Claims a free slot of the 16-entry effect table: copies the position quadword, stores a scale, a lifetime of 0x18 frames, a type and a random float; returns the slot or -1. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_001fd108.c, FUN_L00_001fe990. */
 int allocate_glint_slot(u128_pt *v, int b, float x) {
@@ -17,7 +17,7 @@ int allocate_glint_slot(u128_pt *v, int b, float x) {
     char *e;
     int i;
     *tp = *v;
-    e = D_L00_0016EB40_001fe990;
+    e = glints_r;
     for (i = 0;
     i < 16;
     i++, e += 0x20) {
@@ -33,10 +33,10 @@ int allocate_glint_slot(u128_pt *v, int b, float x) {
     return -1;
 }
 typedef struct { char pad[0x10]; short life; unsigned short ang; char pad2[4]; float f; char pad3[4]; } P;
-extern P D_L00_0016EB40[16];
-extern float D_0015EE6C MACRO_ADDR;
-extern float func_001FA790(float, float);
-extern void func_001F99B0(void *, int, int);
+extern P glints[16];
+extern float g_frame_time MACRO_ADDR;
+extern float FastSubRots(float, float);
+extern void FastMemSet(void *, int, int);
 
 /* Age the 16 glints: spin them, grow then shrink their angle, and clear dead ones. */
 void update_glints(void) {

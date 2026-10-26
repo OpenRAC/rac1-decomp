@@ -21,10 +21,10 @@ int find_first_positive_polygon_edge_cross_xy(float *p, float *poly, int n) {
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L04_0024D534);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001F9B88(float);
-extern void func_001F9C30(void *, void *, float);
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastAbsF(float);
+extern void FastVecScale(void *, void *, float);
 
 /* closest point on a line to a point: writes the point, returns the parameter */
 float find_closest_point_on_segment_xy(float *dst, float *a, float *b, float *c) {
@@ -55,9 +55,9 @@ float find_closest_point_on_segment_xy(float *dst, float *a, float *b, float *c)
     FastVecAdd(dst, dst, a);
     return t;
 }
-extern int func_L04_0024D4A8(float *, float *, int);
-extern float func_L04_0024D618(float *, float *, float *, float *);
-extern float func_001F9CB8(void *);
+extern int find_first_positive_polygon_edge_cross_xy(float *, float *, int);
+extern float find_closest_point_on_segment_xy(float *, float *, float *, float *);
+extern float FastVecLength(void *);
 
 /* finds the closest point on a polygon's edges to a point, returns whether the first test hit */
 int find_closest_polygon_edge_point(float *out, float *p, float *poly, int n) {

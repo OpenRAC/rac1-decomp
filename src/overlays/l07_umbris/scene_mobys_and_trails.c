@@ -6,8 +6,8 @@
 
 /* functional: high. The NTSC decomp's matched C for the same instructions (FUN_L07_0031a9e8), carried to PAL's
    names by OpenRAC's tools/port.py. Not a PAL match: exact alone, but its file's other functions stop matching with it in place. */
-extern s32 D_0015EE84 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
+extern s32 g_current_level_index MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 struct L07MovingVars {
     Vec4f home;
@@ -21,15 +21,15 @@ struct L07MovingVars {
     int indicator;
     int forceReturn;
 };
-extern u8 D_0014C150[];
-extern u8 D_L07_0015FD08[];
-extern s32 D_L07_001845A8[];
-extern struct Moby *D_L07_00160058 MACRO_ADDR;
-extern float func_001F9CB8(void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9EC0(void *, void *, void *);
-extern int func_0022ED80(int, int, int);
+extern u8 saved_mission_state[];
+extern u8 umbris_mission_group_state[];
+extern s32 umbris_indicator_states[];
+extern struct Moby *level_mobys MACRO_ADDR;
+extern float FastVecLength(void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern int Moby_PlaySound(int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/0030cd20.c, FUN_L07_0031a9e8. */
 void update_moby_offset_motion(struct Moby *moby) {
@@ -162,12 +162,12 @@ void update_moby_offset_motion(struct Moby *moby) {
 typedef union { int i; float f; } EaseWord1C7C0;
 typedef struct { int target; int startState; int endState; float speed; float decay; float limit; EaseWord1C7C0 value; } EaseData1C7C0;
 typedef struct { char pad[0x20]; unsigned char state; char pad1[0x23]; EaseWord1C7C0 angle; char pad2[0x30]; EaseData1C7C0 *data; char pad3[0x84]; } EaseMoby1C7C0;
-extern int func_0022ED80(int, int, int);
-extern float func_001F9F90(float);
-extern float func_001FA748(float, float);
-extern float func_001FA790(float, float);
-extern float D_0015EE6C MACRO_ADDR;
-extern EaseMoby1C7C0 *D_L07_00160058_ease __asm__("D_L07_00160058") MACRO_ADDR;
+extern int Moby_PlaySound(int, int, int);
+extern float FastCos(float);
+extern float FastAddRots(float, float);
+extern float FastSubRots(float, float);
+extern float g_frame_time MACRO_ADDR;
+extern EaseMoby1C7C0 *level_mobys_ease __asm__("D_L07_00160058") MACRO_ADDR;
 
 // UpdateMoby_1133: state machine that eases a value toward targets while the linked moby is alive.
 void update_swing_gate(EaseMoby1C7C0 *moby) {
@@ -182,7 +182,7 @@ void update_swing_gate(EaseMoby1C7C0 *moby) {
             d->value.i = 0;
             break;
         case 1:
-            if (d->target != -1 && (o = D_L07_00160058_ease + d->target) != 0 &&
+            if (d->target != -1 && (o = level_mobys_ease + d->target) != 0 &&
                 o->state != 0xFE && o->state != 0xFD &&
                 o->state != d->startState) {
                 return;
@@ -199,7 +199,7 @@ void update_swing_gate(EaseMoby1C7C0 *moby) {
         case 3:
             d->value.f = FastAddRots(d->value.f, FastCos(moby->angle.f) * (d->speed * g_frame_time));
             moby->angle.f = FastAddRots(moby->angle.f, d->value.f);
-            o = D_L07_00160058_ease + d->target;
+            o = level_mobys_ease + d->target;
             d->value.f = d->value.f * d->decay;
             if (o != 0 && o->state != 0xFE && o->state != 0xFD) {
                 if (o->state != d->endState) {
@@ -209,7 +209,7 @@ void update_swing_gate(EaseMoby1C7C0 *moby) {
             }
             break;
         case 4:
-            if (d->target == -1 || (o = D_L07_00160058_ease + d->target) == 0 ||
+            if (d->target == -1 || (o = level_mobys_ease + d->target) == 0 ||
                 o->state == 0xFE || o->state == 0xFD ||
                 o->state == d->startState) {
                 Moby_PlaySound(0, 0, (int)moby);
@@ -275,28 +275,28 @@ typedef struct {
     char pad10[0x8];
 } Ent_31E6B0;
 
-extern int func_00215570_31E6B0(void *arg0, int arg1) __asm__("func_00215570");
-extern float func_001FA888_31E6B0(int) __asm__("func_001FA888");
-extern int func_001FA898_31E6B0(float) __asm__("func_001FA898");
-extern float func_001F9D10_31E6B0(void *, void *) __asm__("func_001F9D10");
-extern int func_L00_0025E860_31E6B0(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
-extern float func_001F9D48_31E6B0(void *, void *) __asm__("func_001F9D48");
+extern int is_point_inside_clip_volume_r(void *arg0, int arg1) __asm__("func_00215570");
+extern float IntToFloat_r(int) __asm__("func_001FA888");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
+extern int Spline_AdvanceByDistance_r(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
+extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int func_00120778_31E6B0(float) __asm__("func_00120778");
-extern char *func_L00_002C6608_31E6B0(void *, int, int, int) __asm__("func_L00_002C6608");
-extern float func_002140F8_31E6B0(float, float) __asm__("func_002140F8");
-extern void func_001E9730_31E6B0(char *, ...) __asm__("func_001E9730");
-extern void func_0020D678_31E6B0(void *) __asm__("func_0020D678");
-extern char D_L07_00211DE0_31E6B0[] __asm__("D_L07_00211DE0");
-extern char D_L07_00211E20_31E6B0[] __asm__("D_L07_00211E20");
-extern char D_L07_00211E40_31E6B0[] __asm__("D_L07_00211E40");
-extern char D_L07_00211E68_31E6B0[] __asm__("D_L07_00211E68");
-extern char D_L07_00211E98_31E6B0[] __asm__("D_L07_00211E98");
-extern Path_31E6B0 *D_L07_001B0830_31E6B0[] __asm__("D_L07_001B0830");
-extern char D_L07_001C43B0_31E6B0[] __asm__("D_L07_001C43B0");
+extern char *spawn_on_path_r(void *, int, int, int) __asm__("func_L00_002C6608");
+extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern void STUB_printf_r(char *, ...) __asm__("func_001E9730");
+extern void DeleteMoby_r(void *) __asm__("func_0020D678");
+extern char ammo_spawner_missing_link_fmt_r[] __asm__("D_L07_00211DE0");
+extern char ammo_spawner_deleted_fmt_r[] __asm__("D_L07_00211E20");
+extern char ammo_spawner_count_fmt_r[] __asm__("D_L07_00211E40");
+extern char ammo_spawner_place_fmt_r[] __asm__("D_L07_00211E68");
+extern char ammo_spawner_remainder_fmt_r[] __asm__("D_L07_00211E98");
+extern Path_31E6B0 *umbris_paths_r[] __asm__("D_L07_001B0830");
+extern char umbris_item_price_table_r[] __asm__("D_L07_001C43B0");
 extern int D_L07_00161D30_31E6B0 SDATA(D_L07_00161D30);
-extern Moby256_31E6B0 *D_L07_00160058_31E6B0 __asm__("D_L07_00160058") MACRO_ADDR;
-extern unsigned char D_0013E633_31E6B0[] __asm__("D_0013E633");
-extern unsigned char D_0013D50F_31E6B0[] __asm__("D_0013D50F");
+extern Moby256_31E6B0 *level_mobys_r __asm__("D_L07_00160058") MACRO_ADDR;
+extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
+extern unsigned char menu_item_enabled_115_r[] __asm__("D_0013D50F");
 
 // Update for moby class 1142 on level 07: measures its path once, then places sparks for the listed counters.
 void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby)
@@ -319,40 +319,40 @@ void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby)
         }
         bad = 0;
         if (d->vol == -1) {
-            func_001E9730_31E6B0(D_L07_00211DE0_31E6B0);
+            STUB_printf_r(ammo_spawner_missing_link_fmt_r);
             bad = 1;
         }
         if (d->path == -1) {
-            func_001E9730_31E6B0(D_L07_00211DE0_31E6B0);
+            STUB_printf_r(ammo_spawner_missing_link_fmt_r);
             bad = 1;
         }
         if (bad) {
-            func_001E9730_31E6B0(D_L07_00211E20_31E6B0, moby->oclass);
-            func_0020D678_31E6B0(moby);
+            STUB_printf_r(ammo_spawner_deleted_fmt_r, moby->oclass);
+            DeleteMoby_r(moby);
             return;
         }
         d->total = 0.0f;
-        for (j = 0; j < D_L07_001B0830_31E6B0[d->path]->count; j++) {
-            int nj = (j + 1) % D_L07_001B0830_31E6B0[d->path]->count;
-            D_L07_001B0830_31E6B0[d->path]->nodes[j].len =
-                func_001F9D10_31E6B0(&D_L07_001B0830_31E6B0[d->path]->nodes[j],
-                                     &D_L07_001B0830_31E6B0[d->path]->nodes[nj]);
-            d->total = d->total + D_L07_001B0830_31E6B0[d->path]->nodes[j].len;
+        for (j = 0; j < umbris_paths_r[d->path]->count; j++) {
+            int nj = (j + 1) % umbris_paths_r[d->path]->count;
+            umbris_paths_r[d->path]->nodes[j].len =
+                FastVecDist_r(&umbris_paths_r[d->path]->nodes[j],
+                                     &umbris_paths_r[d->path]->nodes[nj]);
+            d->total = d->total + umbris_paths_r[d->path]->nodes[j].len;
         }
         moby->state = 1;
     } else {
         int done;
         int i, k, m, n, rem;
         float have, max, ratio, at, a, b, v, c, near, step;
-        if (func_00215570_31E6B0(D_0013E633_31E6B0 + 0xE9D, d->vol) == 0) {
+        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->vol) == 0) {
             return;
         }
         for (i = 0; (&D_L07_00161D30_31E6B0)[i] != -1; i++) {
             k = (&D_L07_00161D30_31E6B0)[i];
-            have = func_001FA888_31E6B0(((int *)(D_0013D50F_31E6B0 + 0x21))[k]);
-            max = func_001FA888_31E6B0(((Ent_31E6B0 *)D_L07_001C43B0_31E6B0)[k].max);
+            have = IntToFloat_r(((int *)(menu_item_enabled_115_r + 0x21))[k]);
+            max = IntToFloat_r(((Ent_31E6B0 *)umbris_item_price_table_r)[k].max);
             ratio = have / max;
-            at = func_002140F8_31E6B0(0.0f, d->total);
+            at = random_float_between_r(0.0f, d->total);
             if (d->lo / 100.0f <= ratio && ratio < d->hi / 100.0f) {
                 Path_31E6B0 *p;
                 int q;
@@ -360,16 +360,16 @@ void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby)
                 b = max * (d->pb / 100.0f);
                 c = a - have;
                 v = d->mode == 0 ? (c < b ? c : b) : (b < c ? c : b);
-                n = func_001FA898_31E6B0(v + 0.5f);
+                n = truncate_float_to_s32_r(v + 0.5f);
                 q = n / d->div;
                 m = n;
                 fbz = 0;
                 ia = 0;
-                p = D_L07_001B0830_31E6B0[d->path];
+                p = umbris_paths_r[d->path];
                 if (q != 0) {
                     m = q;
                 }
-                func_001E9730_31E6B0(D_L07_00211E40_31E6B0, n, m);
+                STUB_printf_r(ammo_spawner_count_fmt_r, n, m);
                 if (n > 0) {
                     near = 12.0f;
                     step = 10.0f;
@@ -377,24 +377,24 @@ void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby)
                         rem = n - m;
                         done = 0;
                         do {
-                            func_L00_0025E860_31E6B0(p, vec, &ia, (float *)&fbz, at, 1);
+                            Spline_AdvanceByDistance_r(p, vec, &ia, (float *)&fbz, at, 1);
                             if (d->target == -1) {
                                 done = 1;
-                            } else if (near < func_001F9D48_31E6B0(D_L07_00160058_31E6B0[d->target].pos, vec)) {
+                            } else if (near < vec_distance_xy_r(level_mobys_r[d->target].pos, vec)) {
                                 done = 1;
                             } else {
                                 at = at + step;
                             }
                         } while (done == 0);
                         n = rem;
-                        func_001E9730_31E6B0(D_L07_00211E68_31E6B0, k, m,
+                        STUB_printf_r(ammo_spawner_place_fmt_r, k, m,
                                              func_00120778_31E6B0(vec[0]), func_00120778_31E6B0(vec[1]),
                                              func_00120778_31E6B0(vec[2]), func_00120778_31E6B0(at));
-                        func_L00_002C6608_31E6B0(vec, k, m, 0);
-                        at = at + func_002140F8_31E6B0(d->total / step, 2.0f);
+                        spawn_on_path_r(vec, k, m, 0);
+                        at = at + random_float_between_r(d->total / step, 2.0f);
                         if (rem < m) {
                             m = rem;
-                            func_001E9730_31E6B0(D_L07_00211E98_31E6B0, rem);
+                            STUB_printf_r(ammo_spawner_remainder_fmt_r, rem);
                         }
                     } while (rem > 0);
                 }
@@ -404,16 +404,16 @@ void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby)
     }
 }
 typedef struct { char pad[0x178]; int arr[8]; } L07SparkState;
-extern void func_L00_00264870(int);
-extern int func_001F9850(int);
-extern void func_L00_00250800(void *, int, void *);
-extern float func_002140F8(float, float);
-extern int func_L00_00258BC8(int, int);
-extern int func_002140B0(int);
-extern char *func_L00_0026DEA0_c(void *, int, void *, int, float, float, float, float) __asm__("func_L00_0026DEA0");
-extern int D_L07_0015F6A8 MACRO_ADDR;
-extern char D_L07_0016C960_c[] __asm__("D_L07_0016C960");
-extern float D_L07_0015F660[] MACRO_ADDR;
+extern void cutscene_set_camera_target(int);
+extern int scale_ticks(int);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern float random_float_between(float, float);
+extern int rand_range(int, int);
+extern int random_integer_below(int);
+extern char *PartType23Spawn_c(void *, int, void *, int, float, float, float, float) __asm__("func_L00_0026DEA0");
+extern int umbris_scene_state MACRO_ADDR;
+extern char umbris_cutscene_state_c[] __asm__("D_L07_0016C960");
+extern float umbris_zero_vec[] MACRO_ADDR;
 
 // Runs the effect spawner: waits for the level flag, then emits sparks at four joints of a target moby.
 void update_scene_moby_effect_bursts(char *m) {
@@ -434,7 +434,7 @@ void update_scene_moby_effect_bursts(char *m) {
     case 1:
         a = umbris_scene_state;
         if (a != 2) return;
-        S = D_L07_0016C960_c;
+        S = umbris_cutscene_state_c;
         t = *(int *)(S + 0x30) - 3;
         if ((unsigned)t < 2) {
             int idx = (unsigned)t > 1 ? 0 : 2;
@@ -455,7 +455,7 @@ void update_scene_moby_effect_bursts(char *m) {
                     char *p;
                     char *q;
                     if (random_integer_below(2) != 0) v = -v;
-                    p = func_L00_0026DEA0_c(buf, v, umbris_zero_vec, col, 0.6f, 1.0f, 1.01f, d);
+                    p = PartType23Spawn_c(buf, v, umbris_zero_vec, col, 0.6f, 1.0f, 1.01f, d);
                     if (p != 0) {
                         q = p + 0x20;
                         *(short *)(p + 0xA) = scale_ticks(rand_range(0x3C, 0x5A));
@@ -469,12 +469,12 @@ void update_scene_moby_effect_bursts(char *m) {
         break;
     }
 }
-extern char *func_L00_0025B478(void *, int, int);
-extern void func_L01_00279790(void *);
-extern void func_L00_00265050(void *, int, void *, void *, int, int, float, void *, void *, void *);
-extern char *func_0020D348(int);
-extern void func_L00_00251E30(void *);
-extern void func_0020D678(void *);
+extern char *MobyGetHitMessage(void *, int, int);
+extern void spawn_proximity_gated_bolts(void *);
+extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
+extern char *CreateMoby(int);
+extern void moby_build_matrix(void *);
+extern void DeleteMoby(void *);
 /* Level moby state machine: wait, detect proximity, then emit effects, spawn a replacement and delete itself. */
 void mushroom_update(char *m) {
     int hit = 0;
@@ -585,13 +585,13 @@ void seashell_update(unsigned char *m) {
     }
 }
 
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_L00_00264BE8(void *, void *, void *, float, float);
-extern char D_L07_0016C960[];
-extern short D_L07_00161D68;
-extern short D_L07_00161D70;
-extern short D_L07_00161D6C;
+extern void FastVecSub(void *dst, void *a, void *b);
+extern void vec_scale_to_length(void *, void *, float);
+extern void draw_trail(void *, void *, void *, float, float);
+extern char umbris_cutscene_state[];
+extern short umbris_scene_trail_speed;
+extern short umbris_scene_trail_core_size;
+extern short umbris_scene_trail_glow_size;
 
 /* Level moby state machine: UpdateMoby_1789: spawn state then position three points.
  * Matched using lever: g - (-(idx * 4)) + 0x178 fixes addu operand order. */

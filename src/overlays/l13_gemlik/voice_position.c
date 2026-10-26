@@ -7,12 +7,12 @@ typedef struct {
     unsigned char flags;
 } Level13SoundEffectTarget;
 
-extern char D_0013E633[];
+extern char hero_globals_base[];
 
 /* Enable a sound effect and copy its 16-byte parameter vector. */
 int set_voice_position(int index, const void *vector) {
     int offset = index * 0x70;
-    char *base = D_0013E633 + 0x1D;
+    char *base = hero_globals_base + 0x1D;
     char *vector_base = base + 0xA0;
     Level13SoundEffectTarget *effect = (Level13SoundEffectTarget *)(base + offset);
     effect->flags |= 0x40;

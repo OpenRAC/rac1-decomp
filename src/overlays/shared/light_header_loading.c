@@ -2,11 +2,11 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern int D_L00_0015FD58 MACRO_ADDR;
-extern int D_L00_0015FD5C MACRO_ADDR;
-extern float D_L00_0015FD60 MACRO_ADDR;
-extern float D_L00_0015FD64 MACRO_ADDR;
-extern char *D_L00_0015FD68 MACRO_ADDR;
+extern int height_map_width MACRO_ADDR;
+extern int height_map_rows MACRO_ADDR;
+extern float height_map_min_height MACRO_ADDR;
+extern float height_map_max_height MACRO_ADDR;
+extern char *height_map_data MACRO_ADDR;
 /* Reads the height map header (size, height range) and points at its data. */
 void load_two_int_two_float_header(char *p) {
     height_map_width = *(int *)p; p += 4;
@@ -15,9 +15,9 @@ void load_two_int_two_float_header(char *p) {
     height_map_max_height = *(float *)p; p += 4;
     height_map_data = p;
 }
-extern u32 D_L00_0015F53C MACRO_ADDR;
-extern s32 D_L00_0015F538 MACRO_ADDR;
-extern u32 D_L00_0015F540 MACRO_ADDR;
+extern u32 level_textured_spheres MACRO_ADDR;
+extern s32 level_textured_sphere_count MACRO_ADDR;
+extern u32 level_textured_sphere_textures MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_0023f0d8.c, FUN_L00_0023f120. */
 void relocate_counted_pointer_table(s32 *p) {

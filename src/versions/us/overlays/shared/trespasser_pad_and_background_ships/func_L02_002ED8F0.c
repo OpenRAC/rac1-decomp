@@ -44,14 +44,14 @@ void background_ship_1_update(char *moby) {
     case 1:
         qcopy(tv, moby + 0x10);
         if (Sound_IsPlaying(moby, *(int *)(d + 0x6C)) == 0) {
-            *(int *)(d + 0x6C) = func_0022ED80_r(1, 4, (int)moby);
+            *(int *)(d + 0x6C) = Moby_PlaySound_r_r(1, 4, (int)moby);
         }
         p2 = *(float *)&background_ship_1_speed * g_frame_time;
         *(float *)(d + 0x64) = *(float *)(d + 0x64) + p2 / *(float *)(d + 0x70);
         if ((float)*(int *)t < *(float *)(d + 0x64)) {
             *(float *)(d + 0x64) = *(float *)(d + 0x64) - (float)*(int *)t;
         }
-        if (D_0015EE84_2D9F08 == 9) {
+        if (g_current_level_index_r == 9) {
             SamplePathAt((int *)t, 1, moby + 0x10, (float *)(moby + 0x40), 0, *(float *)(d + 0x64));
         } else {
             SamplePathAt((int *)t, 0, moby + 0x10, (float *)(moby + 0x40), 0, *(float *)(d + 0x64));
@@ -74,7 +74,7 @@ void background_ship_1_update(char *moby) {
         }
         break;
     case 2:
-        if (D_0015EE84_2D9F08 == 2) {
+        if (g_current_level_index_r == 2) {
             aridia_skill_ship_kills = aridia_skill_ship_kills + 1;
             if (aridia_skill_ship_kills >= 3) {
                 unsigned char *p = menu_item_enabled_115 + 1;
@@ -85,8 +85,8 @@ void background_ship_1_update(char *moby) {
                 }
             }
         }
-        if (D_0015EE84_2D9F08 == 9) {
-            if (*(int *)(D_0013E633 + 0x2EA1) == 0x32) {
+        if (g_current_level_index_r == 9) {
+            if (*(int *)(hero_globals_base + 0x2EA1) == 0x32) {
                 gaspar_skill_ship_kills = gaspar_skill_ship_kills + 1;
                 if (gaspar_skill_ship_kills >= 5) {
                     unsigned char *p = menu_item_enabled_115 + 1;
@@ -98,7 +98,7 @@ void background_ship_1_update(char *moby) {
                 }
             }
         }
-        func_0022ED80_r(0, 0, (int)moby);
+        Moby_PlaySound_r_r(0, 0, (int)moby);
         FastVecScale(tv, moby + 0xC0, *(float *)&background_ship_1_debris_speed * frame_scale);
         tv[2] = tv[2] + *(float *)&background_ship_1_debris_lift * frame_scale;
         r1 = scale_ticks(90);
@@ -122,7 +122,7 @@ void background_ship_1_update(char *moby) {
         {
             int res;
             float k;
-            res = func_001FA8A8_2ebce8(*(int *)&background_ship_1_light_color_off, *(int *)&background_ship_1_light_color_on, x);
+            res = FastTweenColor_r(*(int *)&background_ship_1_light_color_off, *(int *)&background_ship_1_light_color_on, x);
             k = *(float *)&background_ship_1_light_spin_rate * 0.017453292f * g_frame_time;
             *(int *)(moby + 0x90) = res;
             *(float *)(d + 0x68) = FastAddRots(*(float *)(d + 0x68), k);

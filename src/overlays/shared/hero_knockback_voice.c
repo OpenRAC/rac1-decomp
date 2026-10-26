@@ -39,23 +39,23 @@ typedef struct {
     u8 *p34;
     u8 pad38[8];
 } T_8;
-extern G_8 D_0013F450;
-extern s32 D_L08_0015F6A8 MACRO_ADDR;
-extern T_8 D_L08_00178980[];
-extern s32 D_0015EE84 MACRO_ADDR;
-extern s32 D_0013E090[];
-extern s32 D_0015EFA8 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
-extern u8 D_0013F530[];
-void func_L00_00207220(void);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001FA748(f32, f32);
-f32 func_001F9F90(f32);
-f32 func_001F9FA8(f32);
-void func_001F9BD8(void *, void *, void *);
-void func_L08_00231228(s32, s32);
-void func_L00_00217570(s32, s32);
-void func_L00_00211338(void *, s32, f32, f32);
+extern G_8 g_hero;
+extern s32 batalia_game_mode MACRO_ADDR;
+extern T_8 batalia_moby_hit_records[];
+extern s32 g_current_level_index MACRO_ADDR;
+extern s32 level_hero_hit_counts[];
+extern s32 hero_hit_count MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
+extern u8 hero_velocity[];
+void release_and_clear_hero_voice_slots(void);
+void FastVecSub(void *, void *, void *);
+f32 FastAddRots(f32, f32);
+f32 FastCos(f32);
+f32 FastSin(f32);
+void FastVecAdd(void *, void *, void *);
+void Hero_TryMoveStateL08(s32, s32);
+void allocate_hero_voice_for_entry(s32, s32);
+void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00222800.c, FUN_L08_00222800. */
 s32 handle_hero_hit(s32 arg) {

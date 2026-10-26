@@ -16,21 +16,21 @@ typedef struct VuChainRecord {
     char pad48[8];
     VuChainSlot slots[3];
 } VuChainRecord;
-extern void func_001153FC(void *, int, int);
+extern void libc_memset(void *, int, int);
 /* Clears each record's three buffer groups and resets its scalar parameters. */
 void RipplePatchesInit(VuChainRecord *records, int count) {
     int i;
     for (i = 0; i < count; i++) {
         int j;
         for (j = 0; j < 3; j++) {
-            func_001153FC(records[i].slots[j].data, 0, 0x400);
-            func_001153FC(records[i].slots[j].blocks[0], 0, 0x40);
-            func_001153FC(records[i].slots[j].blocks[1], 0, 0x40);
-            func_001153FC(records[i].slots[j].blocks[2], 0, 0x40);
-            func_001153FC(records[i].slots[j].blocks[4], 0, 0x40);
-            func_001153FC(records[i].slots[j].blocks[3], 0, 0x40);
-            func_001153FC(records[i].slots[j].blocks[5], 0, 0x40);
-            func_001153FC(records[i].slots[j].tail, 0, 0x18);
+            libc_memset(records[i].slots[j].data, 0, 0x400);
+            libc_memset(records[i].slots[j].blocks[0], 0, 0x40);
+            libc_memset(records[i].slots[j].blocks[1], 0, 0x40);
+            libc_memset(records[i].slots[j].blocks[2], 0, 0x40);
+            libc_memset(records[i].slots[j].blocks[4], 0, 0x40);
+            libc_memset(records[i].slots[j].blocks[3], 0, 0x40);
+            libc_memset(records[i].slots[j].blocks[5], 0, 0x40);
+            libc_memset(records[i].slots[j].tail, 0, 0x18);
         }
         records[i].f30 = 1.57079637f;
         records[i].f34 = -1.57079637f;
@@ -44,14 +44,14 @@ void RipplePatchesInit(VuChainRecord *records, int count) {
         records[i].f44 = 0;
     }
 }
-extern float D_L01_001CAF80[];
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern float pool_light[];
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* Converts a float vector to fixed-point ints, relative to the grid origin, plus two scale shorts. */
 void RipplePatch_ToFixedPoint(float *in, int *out) {
-    out[0] = func_001FA898_r((in[0] + pool_light[2]) * 1024.0f);
-    out[1] = func_001FA898_r((in[1] + pool_light[3]) * 1024.0f);
-    out[2] = func_001FA898_r((in[2] - 1.0f) * 1024.0f);
-    ((short *)out)[6] = func_001FA898_r(pool_light[0] * 1024.0f);
-    ((short *)out)[7] = func_001FA898_r(pool_light[0] * 1024.0f);
+    out[0] = truncate_float_to_s32_r((in[0] + pool_light[2]) * 1024.0f);
+    out[1] = truncate_float_to_s32_r((in[1] + pool_light[3]) * 1024.0f);
+    out[2] = truncate_float_to_s32_r((in[2] - 1.0f) * 1024.0f);
+    ((short *)out)[6] = truncate_float_to_s32_r(pool_light[0] * 1024.0f);
+    ((short *)out)[7] = truncate_float_to_s32_r(pool_light[0] * 1024.0f);
 }

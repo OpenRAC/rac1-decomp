@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern void func_L00_001FF040(int, void *, int);
+extern void copy_memory_by_alignment(int, void *, int);
 
 typedef struct {
     int key;

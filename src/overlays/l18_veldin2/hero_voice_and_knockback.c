@@ -4,18 +4,18 @@
 #include "include_asm.h"
 #include "vector.h"
 
-extern unsigned char D_0013E633[];
-extern int D_0015EE84 MACRO_ADDR;
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern int func_L00_001F3958(void);
-extern float func_001F9B88(float);
-extern void func_L00_0020BFA8(void);
-extern void func_L18_002284E0(int, int);
-extern void func_L00_00211908(void);
+extern unsigned char hero_globals_base[];
+extern int g_current_level_index MACRO_ADDR;
+extern int coll_sphere(float, void *, int, void *);
+extern int CollType(void);
+extern float FastAbsF(float);
+extern void exit_hero_vehicle_mode_if_mode_three(void);
+extern void HeroL18_SetMoveState(int, int);
+extern void Hero_OnKilled(void);
 
 /* Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. */
 void HeroL18_UpdateStateFlags(void) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     int c = *(unsigned char *)(g + 0x12ED);
     int s = *(short *)(g + 0x12E0);
     int t;
@@ -37,27 +37,27 @@ void HeroL18_UpdateStateFlags(void) {
         }
     }
     if (s == 0xE) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(p + 0x12E4) = 1;
         *(float *)(p + 0x22A4) = 0.2f;
         *(float *)(p + 0x2F0) = *(float *)(p + 0x2D8) + 0.2f;
     }
     if (s == 0) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         float d = *(float *)(p + 0x2F0) - *(float *)(p + 0x2D8);
         *(float *)(p + 0x22A4) = d;
         if (d < 0.85f && 0.25f < d) {
             *(unsigned char *)(p + 0x20A9) = 1;
         }
-        p = (char *)D_0013E633 + 0xE1D;
+        p = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(p + 0x12E4) = 1;
     }
     if (s == 3) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(p + 0x12E6) = 1;
     }
     if (g_current_level_index == 0xD) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(p + 0x2084) != 0x7B) {
             if (coll_sphere(*(float *)(p + 0x234) + 0.03f, p + 0xD0, 2, 0) != 0) {
                 if (CollType() == 0xB) {
@@ -67,14 +67,14 @@ void HeroL18_UpdateStateFlags(void) {
             }
         }
     }
-    if (s == 0xB) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EB) = 1; }
-    if (s == 2) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12E7) = 1; }
-    if (s == 4) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12E3) = 1; }
-    if (s == 8) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
-    if (s == 9) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EE) = 1; }
-    if (s == 0xC) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
+    if (s == 0xB) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EB) = 1; }
+    if (s == 2) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12E7) = 1; }
+    if (s == 4) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12E3) = 1; }
+    if (s == 8) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
+    if (s == 9) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EE) = 1; }
+    if (s == 0xC) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
     {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(p + 0x12E3) != 0 && *(int *)(p + 0x300) != 0) {
             t = *(int *)(p + 0x208C);
             if (t != 0x10 && t != 0x14 && t != 7) {
@@ -84,7 +84,7 @@ void HeroL18_UpdateStateFlags(void) {
         }
     }
     {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(p + 0x12E6) != 0) {
             t = *(int *)(p + 0x2084);
             if (t != 0x68 && t != 0x7B) {
@@ -107,7 +107,7 @@ void HeroL18_UpdateStateFlags(void) {
         }
     }
     {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(p + 0x12EB) != 0) {
             if (*(int *)(p + 0x2084) != 0x7B) {
                 if (FastAbsF(*(float *)(p + 0x2F4) - (*(float *)(p + 0x88) + 0.25f)) < 1.0f) {
@@ -164,27 +164,27 @@ typedef struct {
     u8 *p34;
     u8 pad38[8];
 } T_210ce8;
-extern G_210ce8 D_0013F450;
-extern s32 D_L18_0015F6A8 MACRO_ADDR;
-extern T_210ce8 D_L18_00178B80[];
-extern s32 D_0015EE84 MACRO_ADDR;
-extern s32 D_0013E090[];
-extern s32 D_0015EFA8 MACRO_ADDR;
-extern u8 D_0013F4D0[];
-extern f32 D_0015EE6C MACRO_ADDR;
-extern u8 D_0013F530[];
-s32 func_001FA898(f32);
-void func_L00_00207220(void);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001FA748(f32, f32);
-f32 func_001F9F90(f32);
-f32 func_001F9FA8(f32);
-void func_001F9BD8(void *, void *, void *);
-void func_L18_002284E0(s32, s32);
-void func_L00_00217570(s32, s32);
-void func_L00_002AAE80(void);
-void func_001F9BC0(void *);
-void func_L00_00211338(void *, s32, f32, f32);
+extern G_210ce8 g_hero;
+extern s32 veldin2_cinematic_mode MACRO_ADDR;
+extern T_210ce8 veldin2_moby_hits[];
+extern s32 g_current_level_index MACRO_ADDR;
+extern s32 level_hero_hit_counts[];
+extern s32 hero_hit_count MACRO_ADDR;
+extern u8 gHeroPos[];
+extern f32 g_frame_time MACRO_ADDR;
+extern u8 hero_velocity[];
+s32 truncate_float_to_s32(f32);
+void release_and_clear_hero_voice_slots(void);
+void FastVecSub(void *, void *, void *);
+f32 FastAddRots(f32, f32);
+f32 FastCos(f32);
+f32 FastSin(f32);
+void FastVecAdd(void *, void *, void *);
+void HeroL18_SetMoveState(s32, s32);
+void allocate_hero_voice_for_entry(s32, s32);
+void remove_tracked_class_5f3_moby(void);
+void clear_u64_value(void *);
+void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/ui_help_00213b40.c, FUN_L18_00218a90. */
 s32 HeroL18_TryTakeHit(s32 arg) {

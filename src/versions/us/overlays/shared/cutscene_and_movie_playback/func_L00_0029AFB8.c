@@ -9,11 +9,11 @@ void update_slideshow(void) {
     if (f < 0.0f) {
         *(float *)&gFadeLvl = 0.0f;
     }
-    s0 = *(unsigned char *)(D_0013A5E0 + 0x2CF2) == 0x41;
+    s0 = *(unsigned char *)(pad_globals_base + 0x2CF2) == 0x41;
     one = 1;
     if (IST == 0) {
         if (ITMR >= D_L00_00173CF0[IIDX] - 0x24) {
-            if (*(short *)(D_0014171B + 0x100BD) != 0) {
+            if (*(short *)(help_stats_base + 0x100BD) != 0) {
                 update_audio_stream_until_idle(1);
             }
             if (!s0 && IIDX == 0x27) {
@@ -67,7 +67,7 @@ void update_slideshow(void) {
     }
     ICNT = ICNT + 1;
     ITMR = ITMR + 1;
-    if (*(int *)(D_0013A5E0 + 0x2604) & 0x800) {
+    if (*(int *)(pad_globals_base + 0x2604) & 0x800) {
         end_slideshow();
     }
     sound_update();

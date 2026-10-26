@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern int func_001F9850(int);
+extern int scale_ticks(int);
 
 // Ticks two small counters up or down depending on a random roll; copies a value.
 void update_hud_counter_transition(char *m) {
@@ -47,27 +47,27 @@ typedef struct {
     int unk7C;
     void *unk80;
 } HudElem;
-extern int func_L00_00236400(HudElem *, int *, int *);
-extern f32 func_001FA888(s32);
-extern s32 func_001FA898(f32);
-extern int func_00116248(char *str, const char *fmt, ...);
-extern s32 func_00200198(s32, s32);
-extern void func_00200468(s32, s32, s32, s32, s32, s32);
-extern void func_00200650(s32, s32, s32, s32, s32, s32);
-extern void func_L00_0023BAB8(void *, int, int, int, int, int);
-extern int func_001FA8A8(int, int, float);
-extern void func_001F6CF8(s32, s32, s32, char *, s32);
-extern s32 D_0013E604[];
-extern s32 D_0015EE80 MACRO_ADDR;
-extern char D_L02_0015F930[];
-extern short D_L02_0015F9F4;
-extern short D_L02_0015F9F8;
-extern short D_L02_0015FA1C;
-extern short D_L02_0015FA20;
-extern short D_L02_0015FA28;
-extern short D_L02_0015FA2C;
-extern short D_L02_0015FA30;
-extern short D_L02_0015FA34;
+extern int hud_screen_position(HudElem *, int *, int *);
+extern f32 IntToFloat(s32);
+extern s32 truncate_float_to_s32(f32);
+extern int sprintf(char *str, const char *fmt, ...);
+extern s32 GetIconFrame(s32, s32);
+extern void HudSprite(s32, s32, s32, s32, s32, s32);
+extern void draw_hud_sprite_flipped(s32, s32, s32, s32, s32, s32);
+extern void HudFrame(void *, int, int, int, int, int);
+extern int FastTweenColor(int, int, float);
+extern void font_print_right(s32, s32, s32, char *, s32);
+extern s32 frame_size[];
+extern s32 pal_mode MACRO_ADDR;
+extern char aridia_hud_counter_format[];
+extern short aridia_hud_counter_open_steps;
+extern short aridia_hud_counter_text_fade_steps;
+extern short aridia_hud_counter_left_x;
+extern short aridia_hud_counter_right_x;
+extern short aridia_hud_counter_color_from;
+extern short aridia_hud_counter_color_to;
+extern short aridia_hud_counter_panel_width;
+extern short aridia_hud_counter_wide_panel_width;
 
 /* Draws the counter: a stretched bar behind the icon and the count, on whichever side of the screen it sits.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui/text/0023ccc8.c, FUN_L02_0023cda8. */
@@ -115,7 +115,7 @@ s32 draw_hud_counter(HudElem *m) {
     } else if (shade < 0.0f) {
         shade = 0.0f;
     }
-    func_00116248(text, aridia_hud_counter_format, m->unk74);
+    sprintf(text, aridia_hud_counter_format, m->unk74);
     alpha = truncate_float_to_s32((f32)truncate_float_to_s32(grow * 128.0f) * 0.7f);
     if (m->unk08 < 10) {
         len = (*(s32 *)&aridia_hud_counter_panel_width);
@@ -157,17 +157,17 @@ s32 draw_hud_counter(HudElem *m) {
     }
     return m->w;
 }
-extern void func_0022C7E0(void);
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern void func_L00_0028A878(void);
-extern void func_L00_0028A5A8(void);
-extern void func_0022C870(void);
-extern void func_00234C98(int, long);
-extern int D_0015EF88 MACRO_ADDR;
+extern void SetupSkyGifPaging(void);
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
+extern void draw_four_sky_shells_with_animated_particles(void);
+extern void update_sky_shells_static(void);
+extern void DoSkyGifPaging(void);
+extern void VU1_addGSregister(int, long);
+extern int depth_buffer_address MACRO_ADDR;
 /* Draws the Aridia sky shells and sets the GS test and depth registers. */
 void Sky_DrawLevel02(void) {
     SetupSkyGifPaging();
-    if (D_0015EE84_m == 2) {
+    if (g_current_level_index_m == 2) {
         draw_four_sky_shells_with_animated_particles();
     } else {
         update_sky_shells_static();

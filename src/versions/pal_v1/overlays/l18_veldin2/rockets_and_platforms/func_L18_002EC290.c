@@ -2,7 +2,7 @@ extern short D_E1_L18_00161FAC;
 void update_electric_bolt_geometry_and_particles(void *moby) {
     V_ec290 s[10];
     V_ec290 d[5];
-    unsigned char flag = *(unsigned char *)D_0013E633;
+    unsigned char flag = *(unsigned char *)hero_globals_base;
     char *data = *(char **)((char *)moby + 0x78);
     float scale;
     int i;
@@ -48,11 +48,11 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
             qcopy(&electric_bolt_points[0][i], &electric_bolt_points[0][i - 1]);
         } else {
             FastVecScale(&s[2], &s[2], scale / len0);
-            FastVecAdd(&electric_bolt_points[0][i], &D_L18_001D9FC0[i], &s[2]);
+            FastVecAdd(&electric_bolt_points[0][i], &electric_bolt_points_base[i], &s[2]);
             qcopy(&s[3], &s[2]);
         }
         electric_bolt_points[0][i].f[2] = electric_bolt_points[0][i].f[2] + f21;
-        FastVecSub(&s[1], &electric_bolt_points[0][i], &D_L18_001D9FC0[i]);
+        FastVecSub(&s[1], &electric_bolt_points[0][i], &electric_bolt_points_base[i]);
         FastVecSub(&s[5], data + 0x10, &electric_bolt_points[0][i]);
         len = FastVecLength(&s[5]);
         if (len != 0.0f) {
@@ -121,23 +121,23 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
             FastVecAdd(&electric_bolt_branch_points[k].p[1], &s[8], &s[5]);
             t = 1.0f;
             for (j = 2; j < 5; j++) {
-                FastVecSub(&s[9], &D_L18_001DA420[k].p[j - 1], veldin2_camera_pos);
+                FastVecSub(&s[9], &electric_bolt_branch_points_base[k].p[j - 1], veldin2_camera_pos);
                 f20 = random_float_between(0.17453292f, 0.959931076f) * t;
                 t = -t;
                 build_look_at_matrix(&s[5], &s[5], &s[9], f20);
-                FastVecAdd((electric_bolt_branch_points[k].p + j), &D_L18_001DA420[k].p[j - 1], &s[5]);
+                FastVecAdd((electric_bolt_branch_points[k].p + j), &electric_bolt_branch_points_base[k].p[j - 1], &s[5]);
             }
         } else {
             int j;
             for (j = 1; j < 5; j++) {
-                FastVecSub(&d[j], (electric_bolt_branch_points[k].p + j), &D_L18_001DA420[k].p[j - 1]);
+                FastVecSub(&d[j], (electric_bolt_branch_points[k].p + j), &electric_bolt_branch_points_base[k].p[j - 1]);
                 d[j].f[0] += randf_sym(0.0f, 0.1f);
                 d[j].f[1] += randf_sym(0.0f, 0.1f);
                 d[j].f[2] += randf_sym(0.0f, 0.1f);
             }
             qcopy(&electric_bolt_branch_points[k].p[0], &s[8]);
             for (j = 1; j < 5; j++) {
-                FastVecAdd((electric_bolt_branch_points[k].p + j), &D_L18_001DA420[k].p[j - 1], &d[j]);
+                FastVecAdd((electric_bolt_branch_points[k].p + j), &electric_bolt_branch_points_base[k].p[j - 1], &d[j]);
             }
             {
                 int x = electric_bolt_branch_peak_ticks[k];
@@ -150,7 +150,7 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
                 }
                 fr = IntToFloat(x);
                 fr = fr / IntToFloat(scale_ticks(15));
-                electric_bolt_branch_alpha[k] = func_001FA898_r((1.0f - fr) * 32.0f);
+                electric_bolt_branch_alpha[k] = truncate_float_to_s32_r((1.0f - fr) * 32.0f);
             }
         }
     }
@@ -168,5 +168,5 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
     r = rand_range(1, 8);
     if (random_integer_below(2)) r = -r;
     f20 = random_float_between(0.15f, 3.0f);
-    spawn_ec290(data + 0x10, scale_ticks(12), f20 * 0.1f, f20, *(int *)&electric_bolt_color | 0x7F000000, 0, r, D_L18_0015F660_2D7310, 0.0f);
+    spawn_ec290(data + 0x10, scale_ticks(12), f20 * 0.1f, f20, *(int *)&electric_bolt_color | 0x7F000000, 0, r, veldin2_zero_vec_r, 0.0f);
 }

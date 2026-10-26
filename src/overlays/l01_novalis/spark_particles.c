@@ -3,11 +3,11 @@
 #include "include_asm.h"
 
 typedef int u128 __attribute__((mode(TI)));
-extern unsigned char *func_00218928(int);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern int func_001F9850(int);
-extern int func_L00_0025D038(float, float, float, float);
-extern unsigned char *D_L01_001B2800[];
+extern unsigned char *create_part(int);
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int scale_ticks(int);
+extern int PackColorRGBA(float, float, float, float);
+extern unsigned char *novalis_part_type_textures[];
 
 /* Spawns a type 6 particle with position, colour, scale and owner. */
 void create_spark_particle(int owner, float *pos, int snd, unsigned char arg, unsigned char idx, unsigned char mode, float x, float y, float z, float scale, float f21, float r, float g, float b, float a) {
@@ -22,7 +22,7 @@ void create_spark_particle(int owner, float *pos, int snd, unsigned char arg, un
             u = p + 0x20;
             qcopy(p + 0x10, tmp);
             if (mode == 0xFF) {
-                p[9] = ((arg >> 5) << 4) + func_001FA898_r(4.0f);
+                p[9] = ((arg >> 5) << 4) + truncate_float_to_s32_r(4.0f);
                 if (arg & 1) p[3] = 0x48;
                 else p[3] = 0x44;
             } else {
@@ -35,9 +35,9 @@ void create_spark_particle(int owner, float *pos, int snd, unsigned char arg, un
             *(float *)(u + 4) = y;
             *(float *)(u + 8) = z;
             *(float *)(u + 0x14) = f21;
-            u[0x18] = func_001FA898_r(r * 65535.0f);
-            u[0x19] = func_001FA898_r(g * 65535.0f);
-            u[0x1A] = func_001FA898_r(b * 65535.0f);
+            u[0x18] = truncate_float_to_s32_r(r * 65535.0f);
+            u[0x19] = truncate_float_to_s32_r(g * 65535.0f);
+            u[0x1A] = truncate_float_to_s32_r(b * 65535.0f);
             *(float *)(u + 0x10) = a;
             *(int *)(u + 0xC) = owner;
             *(float *)(p + 0xC) = scale;
@@ -48,8 +48,8 @@ void create_spark_particle(int owner, float *pos, int snd, unsigned char arg, un
         }
     }
 }
-extern char *D_L01_001B28E0;
-extern int func_002140B0(int);
+extern char *novalis_part_type56_textures;
+extern int random_integer_below(int);
 
 /* Spawns a particle at a, with a random tint, offset b and scale f. */
 unsigned char *pool_bubble(void *a, void *b, float f) {
@@ -60,7 +60,7 @@ unsigned char *pool_bubble(void *a, void *b, float f) {
         c = random_integer_below(0x10) * 2 + 0x60;
         m = (c << 8) | 0x40000000;
         *(int *)(r + 4) = (c << 16) | m | c;
-        r[9] = func_001FA898_r(4.0f) + 0x20;
+        r[9] = truncate_float_to_s32_r(4.0f) + 0x20;
         r[3] = 0x48;
         r[1] = 0;
         r[2] = *(unsigned char *)novalis_part_type56_textures;
@@ -70,8 +70,8 @@ unsigned char *pool_bubble(void *a, void *b, float f) {
     }
     return r;
 }
-extern char *D_L01_001B28E4;
-extern float func_002140F8(float, float);
+extern char *novalis_part_type57_textures;
+extern float random_float_between(float, float);
 
 // Spawns a particle at a with offset b, a random tint and scale f, with extra parameter g at +0x34.
 unsigned char *pool_bubbles(void *a, void *b, float f, float g) {
@@ -83,7 +83,7 @@ unsigned char *pool_bubbles(void *a, void *b, float f, float g) {
         q = (char *)r + 0x20;
         c = random_integer_below(0x10);
         *(int *)(r + 4) = (c << 25) | 0x808080;
-        r[9] = func_001FA898_r(12.0f) + 0x20;
+        r[9] = truncate_float_to_s32_r(12.0f) + 0x20;
         r[3] = 0x48;
         r[1] = 1;
         r[2] = *(unsigned char *)novalis_part_type57_textures;
@@ -91,7 +91,7 @@ unsigned char *pool_bubbles(void *a, void *b, float f, float g) {
         *(float *)(r + 0xC) = f * 210000.0f;
         qcopy(q, b);
         *(float *)(q + 0x10) = random_float_between(0.0f, 256.0f);
-        r[8] = func_001FA898_r(*(float *)(q + 0x10));
+        r[8] = truncate_float_to_s32_r(*(float *)(q + 0x10));
         *(float *)(q + 0x14) = g;
     }
     return r;

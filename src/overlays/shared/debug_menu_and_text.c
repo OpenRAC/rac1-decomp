@@ -5,11 +5,11 @@
 #include "pad.h"
 
 typedef struct { s32 a, b, c, d; } E001f36f8;
-extern short D_L00_0015F0C4;
-extern short D_L00_0015F0C0;
-extern E001f36f8 D_L00_0016A940[];
-extern u8 D_L00_0016A140[];
-void func_L00_001F3AF0(s32, s32, s32, s32);
+extern short debug_text_queue_count;
+extern short debug_text_queue_cursor;
+extern E001f36f8 debug_text_queue[];
+extern u8 debug_text_queue_buffer[];
+void draw_debug_text(s32, s32, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_debug_001f36f8.c, FUN_L00_001f36f8. */
 void flush_debug_text_queue(void) {
@@ -22,12 +22,12 @@ void flush_debug_text_queue(void) {
     (*(s32 *)&debug_text_queue_count) = 0;
     (*(void * *)&debug_text_queue_cursor) = debug_text_queue_buffer;
 }
-extern void func_00234C98(int, long);
-extern int *D_L00_00161280 MACRO_ADDR;
-extern long D_0015EFC8 MACRO_ADDR;
-extern int D_L00_00169A80[];
-extern int D_L00_00169C00[];
-extern int D_0013E600[];
+extern void VU1_addGSregister(int, long);
+extern int *dma_packet_cursor MACRO_ADDR;
+extern long debug_font_pif_header MACRO_ADDR;
+extern int debug_font_glyph_uvs[];
+extern int debug_font_glyph_widths[];
+extern int g_screen_extent[];
 
 /* Appends a line of font glyph quads at (x, y) in COLOR to the packet buffer and patches the packet tags. */
 void draw_debug_text(int x, int y, int color, int s_) {
@@ -109,28 +109,28 @@ typedef struct {
     char pad15C[0x24];
     char *p180;
 } View_1F3E20;
-extern char D_0013CA40_1F3E20[] __asm__("D_0013CA40");
-extern char D_L00_0016C158_1F3E20[] __asm__("D_L00_0016C158");
-extern char D_L00_00166D80_1F3E20[] __asm__("D_L00_00166D80");
-extern char D_L00_001670D0_1F3E20[] __asm__("D_L00_001670D0");
+extern char g_controller_state_r[] __asm__("D_0013CA40");
+extern char g_debug_menu_r[] __asm__("D_L00_0016C158");
+extern char player_camera_r[] __asm__("D_L00_00166D80");
+extern char player_camera_matrix_r[] __asm__("D_L00_001670D0");
 extern char D_L00_001670E0_1F3E20[] __asm__("D_L00_001670E0");
 extern char D_L00_001670F0_1F3E20[] __asm__("D_L00_001670F0");
-extern char D_L00_00166ED0_1F3E20[] __asm__("D_L00_00166ED0");
-extern char D_0013E633_1F3E20[] __asm__("D_0013E633");
-extern void func_L00_001EBDA0_1F3E20(void) __asm__("func_L00_001EBDA0");
-extern void func_L00_001FF4B0_1F3E20(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void func_001F9BD8_1F3E20(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_001F9BF0_1F3E20(void *, void *, void *) __asm__("func_001F9BF0");
-extern float func_001F9F90_1F3E20(float) __asm__("func_001F9F90");
-extern float func_001F9FA8_1F3E20(float) __asm__("func_001F9FA8");
-extern void func_001FA190_1F3E20(void *) __asm__("func_001FA190");
-extern void func_001FA460_1F3E20(void *, void *) __asm__("func_001FA460");
-extern void func_001FA540_1F3E20(void *, void *, void *) __asm__("func_001FA540");
-extern void func_001FA480_1F3E20(void *, void *) __asm__("func_001FA480");
-extern float func_001FA790_1F3E20(float, float) __asm__("func_001FA790");
-extern float func_001F9B88_1F3E20(float) __asm__("func_001F9B88");
-extern void func_001FA218_1F3E20(void *, void *) __asm__("func_001FA218");
-extern void func_L00_002E80A8_1F3E20(void *) __asm__("func_L00_002E80A8");
+extern char camera_rotation_r[] __asm__("D_L00_00166ED0");
+extern char hero_globals_base_r[] __asm__("D_0013E633");
+extern void UpdateAllCamerasLvl_r(void) __asm__("func_L00_001EBDA0");
+extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
+extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
+extern float FastCos_r(float) __asm__("func_001F9F90");
+extern float FastSin_r(float) __asm__("func_001F9FA8");
+extern void set_identity_matrix_r(void *) __asm__("func_001FA190");
+extern void copy_matrix_rotation_r(void *, void *) __asm__("func_001FA460");
+extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
+extern void matrix_copy_rows_r(void *, void *) __asm__("func_001FA480");
+extern float FastSubRots_r(float, float) __asm__("func_001FA790");
+extern float FastAbsF_r(float) __asm__("func_001F9B88");
+extern void euler_to_matrix_r(void *, void *) __asm__("func_001FA218");
+extern void reset_follow_camera_state_from_position_r(void *) __asm__("func_L00_002E80A8");
 
 /* Free-camera controls (debug camera): pad buttons move the camera (in the free-look matrix when the hero's
    camera mode is 2, else on the ground plane), turn it about three axes with eased speeds, and when the camera
@@ -142,233 +142,233 @@ void update_debug_camera(void) {
     float a;
     float b;
 
-    if (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.i & 0x800) {
+    if (((PadDwords *)g_controller_state_r)->held_pressed.i & 0x800) {
         return;
     }
-    if (((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f8 & 8) {
-        func_L00_001EBDA0_1F3E20();
+    if (((Cam_1F3E20 *)g_debug_menu_r)->f8 & 8) {
+        UpdateAllCamerasLvl_r();
     }
-    if (((PadState *)D_0013CA40_1F3E20)->stick_moved != 0) {
+    if (((PadState *)g_controller_state_r)->stick_moved != 0) {
         return;
     }
-    k = *(short *)(D_0013E633_1F3E20 + 0x1125) == 2;
-    if ((((PadDwords *)D_0013CA40_1F3E20)->held_pressed.l & 3) != 3) {
-        if (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.i & 0x1000) {
+    k = *(short *)(hero_globals_base_r + 0x1125) == 2;
+    if ((((PadDwords *)g_controller_state_r)->held_pressed.l & 3) != 3) {
+        if (((PadDwords *)g_controller_state_r)->held_pressed.i & 0x1000) {
             if (k) {
-                func_L00_001FF4B0_1F3E20(s, D_L00_001670D0_1F3E20, ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70);
-                func_001F9BD8_1F3E20(D_L00_001670D0_1F3E20 - 0x210, D_L00_001670D0_1F3E20 - 0x210, s);
+                vec_scale_to_length_r(s, player_camera_matrix_r, ((Cam_1F3E20 *)g_debug_menu_r)->f70);
+                FastVecAdd_r(player_camera_matrix_r - 0x210, player_camera_matrix_r - 0x210, s);
             } else {
-                ((View_1F3E20 *)D_L00_00166D80_1F3E20)->f140 += func_001F9F90_1F3E20(((View_1F3E20 *)D_L00_00166D80_1F3E20)->f158) * ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70;
-                ((View_1F3E20 *)D_L00_00166D80_1F3E20)->f144 += func_001F9FA8_1F3E20(((View_1F3E20 *)D_L00_00166D80_1F3E20)->f158) * ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70;
+                ((View_1F3E20 *)player_camera_r)->f140 += FastCos_r(((View_1F3E20 *)player_camera_r)->f158) * ((Cam_1F3E20 *)g_debug_menu_r)->f70;
+                ((View_1F3E20 *)player_camera_r)->f144 += FastSin_r(((View_1F3E20 *)player_camera_r)->f158) * ((Cam_1F3E20 *)g_debug_menu_r)->f70;
             }
             moved = 1;
         }
-        if (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.i & 0x4000) {
+        if (((PadDwords *)g_controller_state_r)->held_pressed.i & 0x4000) {
             if (k) {
-                func_L00_001FF4B0_1F3E20(s, D_L00_001670D0_1F3E20, ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70);
-                func_001F9BF0_1F3E20(D_L00_001670D0_1F3E20 - 0x210, D_L00_001670D0_1F3E20 - 0x210, s);
+                vec_scale_to_length_r(s, player_camera_matrix_r, ((Cam_1F3E20 *)g_debug_menu_r)->f70);
+                FastVecSub_r(player_camera_matrix_r - 0x210, player_camera_matrix_r - 0x210, s);
             } else {
-                ((View_1F3E20 *)D_L00_00166D80_1F3E20)->f140 -= func_001F9F90_1F3E20(((View_1F3E20 *)D_L00_00166D80_1F3E20)->f158) * ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70;
-                ((View_1F3E20 *)D_L00_00166D80_1F3E20)->f144 -= func_001F9FA8_1F3E20(((View_1F3E20 *)D_L00_00166D80_1F3E20)->f158) * ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70;
+                ((View_1F3E20 *)player_camera_r)->f140 -= FastCos_r(((View_1F3E20 *)player_camera_r)->f158) * ((Cam_1F3E20 *)g_debug_menu_r)->f70;
+                ((View_1F3E20 *)player_camera_r)->f144 -= FastSin_r(((View_1F3E20 *)player_camera_r)->f158) * ((Cam_1F3E20 *)g_debug_menu_r)->f70;
             }
             moved = 1;
         }
-        if (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.i & 1) {
+        if (((PadDwords *)g_controller_state_r)->held_pressed.i & 1) {
             if (k) {
-                func_L00_001FF4B0_1F3E20(s, D_L00_001670E0_1F3E20, ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70);
-                func_001F9BD8_1F3E20(D_L00_001670E0_1F3E20 - 0x220, D_L00_001670E0_1F3E20 - 0x220, s);
+                vec_scale_to_length_r(s, D_L00_001670E0_1F3E20, ((Cam_1F3E20 *)g_debug_menu_r)->f70);
+                FastVecAdd_r(D_L00_001670E0_1F3E20 - 0x220, D_L00_001670E0_1F3E20 - 0x220, s);
             } else {
-                ((View_1F3E20 *)D_L00_00166D80_1F3E20)->f140 -= func_001F9FA8_1F3E20(((View_1F3E20 *)D_L00_00166D80_1F3E20)->f158) * ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70;
-                ((View_1F3E20 *)D_L00_00166D80_1F3E20)->f144 += func_001F9F90_1F3E20(((View_1F3E20 *)D_L00_00166D80_1F3E20)->f158) * ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70;
+                ((View_1F3E20 *)player_camera_r)->f140 -= FastSin_r(((View_1F3E20 *)player_camera_r)->f158) * ((Cam_1F3E20 *)g_debug_menu_r)->f70;
+                ((View_1F3E20 *)player_camera_r)->f144 += FastCos_r(((View_1F3E20 *)player_camera_r)->f158) * ((Cam_1F3E20 *)g_debug_menu_r)->f70;
             }
             moved = 1;
         }
-        if (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.i & 2) {
+        if (((PadDwords *)g_controller_state_r)->held_pressed.i & 2) {
             if (k) {
-                func_L00_001FF4B0_1F3E20(s, D_L00_001670E0_1F3E20, ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70);
-                func_001F9BF0_1F3E20(D_L00_001670E0_1F3E20 - 0x220, D_L00_001670E0_1F3E20 - 0x220, s);
+                vec_scale_to_length_r(s, D_L00_001670E0_1F3E20, ((Cam_1F3E20 *)g_debug_menu_r)->f70);
+                FastVecSub_r(D_L00_001670E0_1F3E20 - 0x220, D_L00_001670E0_1F3E20 - 0x220, s);
             } else {
-                ((View_1F3E20 *)D_L00_00166D80_1F3E20)->f140 += func_001F9FA8_1F3E20(((View_1F3E20 *)D_L00_00166D80_1F3E20)->f158) * ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70;
-                ((View_1F3E20 *)D_L00_00166D80_1F3E20)->f144 -= func_001F9F90_1F3E20(((View_1F3E20 *)D_L00_00166D80_1F3E20)->f158) * ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70;
+                ((View_1F3E20 *)player_camera_r)->f140 += FastSin_r(((View_1F3E20 *)player_camera_r)->f158) * ((Cam_1F3E20 *)g_debug_menu_r)->f70;
+                ((View_1F3E20 *)player_camera_r)->f144 -= FastCos_r(((View_1F3E20 *)player_camera_r)->f158) * ((Cam_1F3E20 *)g_debug_menu_r)->f70;
             }
             moved = 1;
         }
     }
     if (moved) {
-        float t = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70 + 0.004f;
+        float t = ((Cam_1F3E20 *)g_debug_menu_r)->f70 + 0.004f;
 
-        ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70 = t;
+        ((Cam_1F3E20 *)g_debug_menu_r)->f70 = t;
         if (t > 0.3f) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70 = 0.3f;
+            ((Cam_1F3E20 *)g_debug_menu_r)->f70 = 0.3f;
         }
     } else {
-        float t = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70 * 0.5f;
+        float t = ((Cam_1F3E20 *)g_debug_menu_r)->f70 * 0.5f;
 
-        ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70 = t;
+        ((Cam_1F3E20 *)g_debug_menu_r)->f70 = t;
         if (t < 0.004f) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f70 = 0.0f;
+            ((Cam_1F3E20 *)g_debug_menu_r)->f70 = 0.0f;
         }
     }
-    if (!(k && (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.l & 3) == 3) && (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.i & 0xA000)) {
-        if (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.i & 0x8000) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80 = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80 - 0.002f;
+    if (!(k && (((PadDwords *)g_controller_state_r)->held_pressed.l & 3) == 3) && (((PadDwords *)g_controller_state_r)->held_pressed.i & 0xA000)) {
+        if (((PadDwords *)g_controller_state_r)->held_pressed.i & 0x8000) {
+            ((Cam_1F3E20 *)g_debug_menu_r)->f80 = ((Cam_1F3E20 *)g_debug_menu_r)->f80 - 0.002f;
         } else {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80 = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80 + 0.002f;
+            ((Cam_1F3E20 *)g_debug_menu_r)->f80 = ((Cam_1F3E20 *)g_debug_menu_r)->f80 + 0.002f;
         }
-        if (((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80 > 0.04f) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80 = 0.04f;
-        } else if (((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80 < -0.04f) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80 = -0.04f;
+        if (((Cam_1F3E20 *)g_debug_menu_r)->f80 > 0.04f) {
+            ((Cam_1F3E20 *)g_debug_menu_r)->f80 = 0.04f;
+        } else if (((Cam_1F3E20 *)g_debug_menu_r)->f80 < -0.04f) {
+            ((Cam_1F3E20 *)g_debug_menu_r)->f80 = -0.04f;
         }
         if (k) {
-            a = func_001F9FA8_1F3E20(((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80);
-            b = func_001F9F90_1F3E20(((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80);
-            func_001FA190_1F3E20(s + 4);
+            a = FastSin_r(((Cam_1F3E20 *)g_debug_menu_r)->f80);
+            b = FastCos_r(((Cam_1F3E20 *)g_debug_menu_r)->f80);
+            set_identity_matrix_r(s + 4);
             s[5] = -a;
             s[8] = a;
             s[4] = b;
             s[9] = b;
-            func_001FA460_1F3E20(s + 20, D_L00_001670D0_1F3E20);
-            func_001FA540_1F3E20(s + 20, s + 20, s + 4);
-            func_001FA480_1F3E20(D_L00_001670D0_1F3E20, s + 20);
+            copy_matrix_rotation_r(s + 20, player_camera_matrix_r);
+            sce_vu0_mul_matrix_r(s + 20, s + 20, s + 4);
+            matrix_copy_rows_r(player_camera_matrix_r, s + 20);
         } else {
-            ((View_1F3E20 *)D_L00_00166D80_1F3E20)->f158 = func_001FA790_1F3E20(((View_1F3E20 *)D_L00_00166D80_1F3E20)->f158, ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80);
+            ((View_1F3E20 *)player_camera_r)->f158 = FastSubRots_r(((View_1F3E20 *)player_camera_r)->f158, ((Cam_1F3E20 *)g_debug_menu_r)->f80);
         }
     } else {
-        float t = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80 / 1.5f;
+        float t = ((Cam_1F3E20 *)g_debug_menu_r)->f80 / 1.5f;
 
-        ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80 = t;
-        if (func_001F9B88_1F3E20(t) < 0.002f) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f80 = 0.0f;
+        ((Cam_1F3E20 *)g_debug_menu_r)->f80 = t;
+        if (FastAbsF_r(t) < 0.002f) {
+            ((Cam_1F3E20 *)g_debug_menu_r)->f80 = 0.0f;
         }
     }
-    if ((((PadDwords *)D_0013CA40_1F3E20)->held_pressed.l & 3) == 3 && (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.l & 0x5000)) {
-        if (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.i & 0x1000) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C - 0.002f;
+    if ((((PadDwords *)g_controller_state_r)->held_pressed.l & 3) == 3 && (((PadDwords *)g_controller_state_r)->held_pressed.l & 0x5000)) {
+        if (((PadDwords *)g_controller_state_r)->held_pressed.i & 0x1000) {
+            ((Cam_1F3E20 *)g_debug_menu_r)->f7C = ((Cam_1F3E20 *)g_debug_menu_r)->f7C - 0.002f;
         } else {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C + 0.002f;
+            ((Cam_1F3E20 *)g_debug_menu_r)->f7C = ((Cam_1F3E20 *)g_debug_menu_r)->f7C + 0.002f;
         }
-        if (((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C > 0.04f) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C = 0.04f;
-        } else if (((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C < -0.04f) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C = -0.04f;
+        if (((Cam_1F3E20 *)g_debug_menu_r)->f7C > 0.04f) {
+            ((Cam_1F3E20 *)g_debug_menu_r)->f7C = 0.04f;
+        } else if (((Cam_1F3E20 *)g_debug_menu_r)->f7C < -0.04f) {
+            ((Cam_1F3E20 *)g_debug_menu_r)->f7C = -0.04f;
         }
         if (k) {
-            b = func_001F9FA8_1F3E20(((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C);
-            a = func_001F9F90_1F3E20(((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C);
-            func_001FA190_1F3E20(s);
+            b = FastSin_r(((Cam_1F3E20 *)g_debug_menu_r)->f7C);
+            a = FastCos_r(((Cam_1F3E20 *)g_debug_menu_r)->f7C);
+            set_identity_matrix_r(s);
             s[0] = a;
             s[2] = b;
             s[8] = -b;
             s[10] = a;
-            func_001FA460_1F3E20(s + 16, D_L00_001670D0_1F3E20);
-            func_001FA540_1F3E20(s + 16, s + 16, s);
-            func_001FA480_1F3E20(D_L00_001670D0_1F3E20, s + 16);
+            copy_matrix_rotation_r(s + 16, player_camera_matrix_r);
+            sce_vu0_mul_matrix_r(s + 16, s + 16, s);
+            matrix_copy_rows_r(player_camera_matrix_r, s + 16);
         } else {
-            ((View_1F3E20 *)D_L00_00166D80_1F3E20)->f154 = func_001FA790_1F3E20(((View_1F3E20 *)D_L00_00166D80_1F3E20)->f154, ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C);
+            ((View_1F3E20 *)player_camera_r)->f154 = FastSubRots_r(((View_1F3E20 *)player_camera_r)->f154, ((Cam_1F3E20 *)g_debug_menu_r)->f7C);
         }
     } else {
-        float t = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C / 1.5f;
+        float t = ((Cam_1F3E20 *)g_debug_menu_r)->f7C / 1.5f;
 
-        ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C = t;
-        if (func_001F9B88_1F3E20(t) < 0.002f) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f7C = 0.0f;
+        ((Cam_1F3E20 *)g_debug_menu_r)->f7C = t;
+        if (FastAbsF_r(t) < 0.002f) {
+            ((Cam_1F3E20 *)g_debug_menu_r)->f7C = 0.0f;
         }
     }
-    if (k && (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.l & 3) == 3 && (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.l & 0xA000)) {
-        if (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.i & 0x8000) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f78 = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f78 - 0.002f;
+    if (k && (((PadDwords *)g_controller_state_r)->held_pressed.l & 3) == 3 && (((PadDwords *)g_controller_state_r)->held_pressed.l & 0xA000)) {
+        if (((PadDwords *)g_controller_state_r)->held_pressed.i & 0x8000) {
+            ((Cam_1F3E20 *)g_debug_menu_r)->f78 = ((Cam_1F3E20 *)g_debug_menu_r)->f78 - 0.002f;
         } else {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f78 = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f78 + 0.002f;
+            ((Cam_1F3E20 *)g_debug_menu_r)->f78 = ((Cam_1F3E20 *)g_debug_menu_r)->f78 + 0.002f;
         }
-        if (((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f78 > 0.04f) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f78 = 0.04f;
-        } else if (((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f78 < -0.04f) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f78 = -0.04f;
+        if (((Cam_1F3E20 *)g_debug_menu_r)->f78 > 0.04f) {
+            ((Cam_1F3E20 *)g_debug_menu_r)->f78 = 0.04f;
+        } else if (((Cam_1F3E20 *)g_debug_menu_r)->f78 < -0.04f) {
+            ((Cam_1F3E20 *)g_debug_menu_r)->f78 = -0.04f;
         }
-        a = func_001F9FA8_1F3E20(((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f78);
-        b = func_001F9F90_1F3E20(((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f78);
-        func_001FA190_1F3E20(s);
+        a = FastSin_r(((Cam_1F3E20 *)g_debug_menu_r)->f78);
+        b = FastCos_r(((Cam_1F3E20 *)g_debug_menu_r)->f78);
+        set_identity_matrix_r(s);
         s[6] = -a;
         s[9] = a;
         s[5] = b;
         s[10] = b;
-        func_001FA460_1F3E20(s + 16, D_L00_001670D0_1F3E20);
-        func_001FA540_1F3E20(s + 36, s + 16, s);
-        func_001FA480_1F3E20(D_L00_001670D0_1F3E20, s + 36);
+        copy_matrix_rotation_r(s + 16, player_camera_matrix_r);
+        sce_vu0_mul_matrix_r(s + 36, s + 16, s);
+        matrix_copy_rows_r(player_camera_matrix_r, s + 36);
     } else {
-        float t = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f78 / 1.5f;
+        float t = ((Cam_1F3E20 *)g_debug_menu_r)->f78 / 1.5f;
 
-        ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f78 = t;
-        if (func_001F9B88_1F3E20(t) < 0.002f) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f78 = 0.0f;
+        ((Cam_1F3E20 *)g_debug_menu_r)->f78 = t;
+        if (FastAbsF_r(t) < 0.002f) {
+            ((Cam_1F3E20 *)g_debug_menu_r)->f78 = 0.0f;
         }
     }
-    if (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.l & 0xC) {
-        if (((PadDwords *)D_0013CA40_1F3E20)->held_pressed.i & 8) {
-            float t = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f74 + 0.004f;
+    if (((PadDwords *)g_controller_state_r)->held_pressed.l & 0xC) {
+        if (((PadDwords *)g_controller_state_r)->held_pressed.i & 8) {
+            float t = ((Cam_1F3E20 *)g_debug_menu_r)->f74 + 0.004f;
 
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f74 = t;
+            ((Cam_1F3E20 *)g_debug_menu_r)->f74 = t;
             if (t > 0.3f) {
-                ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f74 = 0.3f;
+                ((Cam_1F3E20 *)g_debug_menu_r)->f74 = 0.3f;
             }
         } else {
-            float t = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f74 - 0.004f;
+            float t = ((Cam_1F3E20 *)g_debug_menu_r)->f74 - 0.004f;
 
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f74 = t;
+            ((Cam_1F3E20 *)g_debug_menu_r)->f74 = t;
             if (t < -0.3f) {
-                ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f74 = -0.3f;
+                ((Cam_1F3E20 *)g_debug_menu_r)->f74 = -0.3f;
             }
         }
     } else {
-        float t = ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f74 * 0.5f;
+        float t = ((Cam_1F3E20 *)g_debug_menu_r)->f74 * 0.5f;
 
-        ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f74 = t;
+        ((Cam_1F3E20 *)g_debug_menu_r)->f74 = t;
         if (t < 0.004f) {
-            ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f74 = 0.0f;
+            ((Cam_1F3E20 *)g_debug_menu_r)->f74 = 0.0f;
         }
     }
     if (k) {
-        func_L00_001FF4B0_1F3E20(s, D_L00_001670F0_1F3E20, ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f74);
-        func_001F9BD8_1F3E20(D_L00_001670F0_1F3E20 - 0x230, D_L00_001670F0_1F3E20 - 0x230, s);
+        vec_scale_to_length_r(s, D_L00_001670F0_1F3E20, ((Cam_1F3E20 *)g_debug_menu_r)->f74);
+        FastVecAdd_r(D_L00_001670F0_1F3E20 - 0x230, D_L00_001670F0_1F3E20 - 0x230, s);
     } else {
-        ((View_1F3E20 *)D_L00_00166D80_1F3E20)->f148 += ((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f74;
+        ((View_1F3E20 *)player_camera_r)->f148 += ((Cam_1F3E20 *)g_debug_menu_r)->f74;
     }
     if (!k) {
-        func_001FA218_1F3E20(s, D_L00_00166ED0_1F3E20);
-        func_L00_001FF4B0_1F3E20(s, s, 1.0f);
-        func_L00_001FF4B0_1F3E20(s + 4, s + 4, 1.0f);
-        func_L00_001FF4B0_1F3E20(s + 8, s + 8, 1.0f);
-        func_001FA480_1F3E20(D_L00_00166ED0_1F3E20 + 0x200, s);
+        euler_to_matrix_r(s, camera_rotation_r);
+        vec_scale_to_length_r(s, s, 1.0f);
+        vec_scale_to_length_r(s + 4, s + 4, 1.0f);
+        vec_scale_to_length_r(s + 8, s + 8, 1.0f);
+        matrix_copy_rows_r(camera_rotation_r + 0x200, s);
     }
-    if (((Cam_1F3E20 *)D_L00_0016C158_1F3E20)->f14 == 2) {
-        if (((View_1F3E20 *)D_L00_00166D80_1F3E20)->p180 != 0) {
-            char *m = ((View_1F3E20 *)D_L00_00166D80_1F3E20)->p180;
-            float *src = &((View_1F3E20 *)D_L00_00166D80_1F3E20)->f140;
+    if (((Cam_1F3E20 *)g_debug_menu_r)->f14 == 2) {
+        if (((View_1F3E20 *)player_camera_r)->p180 != 0) {
+            char *m = ((View_1F3E20 *)player_camera_r)->p180;
+            float *src = &((View_1F3E20 *)player_camera_r)->f140;
             float *dst;
 
             qcopy(m + 0x30, src);
-            qcopy(m, D_L00_00166D80_1F3E20 + 0x350);
-            qcopy(m + 0x10, D_L00_00166D80_1F3E20 + 0x360);
-            qcopy(m + 0x20, D_L00_00166D80_1F3E20 + 0x370);
-            qcopy(m + 0x40, D_L00_00166D80_1F3E20 + 0x350);
+            qcopy(m, player_camera_r + 0x350);
+            qcopy(m + 0x10, player_camera_r + 0x360);
+            qcopy(m + 0x20, player_camera_r + 0x370);
+            qcopy(m + 0x40, player_camera_r + 0x350);
             dst = (float *)(m + 0x64);
             dst[0] = src[0];
             dst[1] = src[1];
             dst[2] = src[2];
-            func_L00_002E80A8_1F3E20(((View_1F3E20 *)D_L00_00166D80_1F3E20)->p180);
+            reset_follow_camera_state_from_position_r(((View_1F3E20 *)player_camera_r)->p180);
         }
     }
 }
-extern float func_001FA748(float, float);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001FA218(void *, void *);
-extern void func_L00_001FF040(int, void *, unsigned short);
-extern void func_L00_00251E30(void *);
-extern char D_L00_0016C158[];
-extern char D_L00_00166D80[];
-extern char D_0013E633[];
+extern float FastAddRots(float, float);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void euler_to_matrix(void *, void *);
+extern void copy_memory_by_alignment(int, void *, unsigned short);
+extern void moby_build_matrix(void *);
+extern char g_debug_menu[];
+extern char player_camera[];
+extern char hero_globals_base[];
 
 /* places the camera-follow vector from the angle and offsets, then copies it into the object */
 void update_hero_from_debug_camera(void) {
@@ -378,7 +378,7 @@ void update_hero_from_debug_camera(void) {
     float t = FastAddRots(*(float *)(g + 0x158), *(float *)(c + 0x88));
     char *m;
     float x = *(float *)(g + 0x140) + FastCos(t) * *(float *)(c + 0x8C);
-    b = D_0013E633 + 0xE1D;
+    b = hero_globals_base + 0xE1D;
     *(float *)(b + 0x80) = x;
     *(float *)(b + 0x84) = *(float *)(g + 0x144) + FastSin(t) * *(float *)(c + 0x8C);
     *(float *)(b + 0x88) = *(float *)(g + 0x148) + *(float *)(c + 0x90);
@@ -420,63 +420,63 @@ typedef struct {
 } DebugMenu_1F4918;
 typedef struct { char pad[0x1A0]; union { u64 all; struct { s32 held, pressed; } word; } keys; } Input_1F4918;
 typedef struct { char pad[0x2460]; Input_1F4918 ctl; } InputBase_1F4918;
-extern Input_1F4918 D_0013CA40;
-extern MenuCounts_1F4918 D_L00_001E7C70;
+extern Input_1F4918 g_controller_state;
+extern MenuCounts_1F4918 debug_menu_group_item_counts;
 typedef union { float f; s32 i; } ViewField_1F4918;
 typedef struct { char pad[0x200]; ViewField_1F4918 x,y,x4,y4; char pad210[0x2C]; s32 a,b,c; } Context_1F4918;
-extern Context_1F4918 D_L00_0016CB40;
+extern Context_1F4918 render_view_params;
 typedef struct { char pad[0x80]; float x,y,z,w; char pad90[8]; float angle; } Hero_1F4918;
-extern Hero_1F4918 D_0013F450;
-extern char D_0013D50F[];
-extern int D_0013E15A[];
-extern u8 D_L00_0015F544[] MACRO_ADDR;
-extern u8 D_L00_0015F545[] MACRO_ADDR;
-extern u8 D_L00_0015F546[] MACRO_ADDR;
-extern u8 D_0014C150[][16];
+extern Hero_1F4918 g_hero;
+extern char menu_item_enabled_115[];
+extern int screen_globals_base[];
+extern u8 level_fog_color_red[] MACRO_ADDR;
+extern u8 level_fog_color_green[] MACRO_ADDR;
+extern u8 level_fog_color_blue[] MACRO_ADDR;
+extern u8 saved_mission_state[][16];
 typedef struct { char pad[0x150]; s16 x,y; } Options_1F4918;
-extern Options_1F4918 D_00151880;
+extern Options_1F4918 fs_aa_buffer;
 typedef struct { char pad[14]; u16 limit; char rest[8]; } Weapon_1F4918;
-extern Weapon_1F4918 D_L00_001C43B0[];
+extern Weapon_1F4918 item_price_table[];
 typedef struct { char pad[62]; union { s16 word; u8 byte; } limit; char rest[12]; } Item_1F4918;
-extern Item_1F4918 D_L00_00179BC0[];
-extern short D_L00_0015F0D0;
-extern char D_L00_0015F0F0[];
-extern char D_L00_0015F0F8[];
-extern char D_L00_001E7C88[];
-extern char D_L00_001E7CA8[], D_L00_001E7CC0[], D_L00_001E7CE0[];
-extern u8 D_L00_0015FD48[] MACRO_ADDR;
-extern s32 D_0015EE84 MACRO_ADDR;
-extern s32 D_0015EE98 MACRO_ADDR;
-extern s32 D_L00_0015F6F4 MACRO_ADDR;
-extern float *D_L00_00173F20 NOT_SDA;
-extern float D_L00_00161040 MACRO_ADDR;
-extern float D_L00_001610A0 MACRO_ADDR;
-extern float D_L00_00160564 MACRO_ADDR;
-extern s32 D_L00_001600B0 MACRO_ADDR;
-extern s32 D_L00_0016023C MACRO_ADDR;
-extern float D_L00_0015F548 MACRO_ADDR;
-extern float D_L00_0015F54C MACRO_ADDR;
-extern float D_L00_0015F550 MACRO_ADDR;
-extern float D_L00_0015F554 MACRO_ADDR;
-extern char *D_L00_0015F6E0 MACRO_ADDR;
-extern s32 D_L00_0015F6A8 MACRO_ADDR;
-extern s32 func_0022DD68(void);
-extern void func_001FB448(s32, s32, s32);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9CE8(void *);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA790(float, float);
-extern float func_001FA888(s32);
-extern void func_001F3140(void);
-extern void func_001F2930(void);
-extern s32 func_00116248(char *, const char *, ...);
+extern Item_1F4918 item_defs[];
+extern short debug_menu_item_ids;
+extern char iso_version_suffix[];
+extern char occlusion_samples_file_name[];
+extern char level_directory[];
+extern char occlusion_deltas_file_name[], add_sample_format[], start_point_format[];
+extern u8 mission_state[] MACRO_ADDR;
+extern s32 g_current_level_index MACRO_ADDR;
+extern s32 gBolts MACRO_ADDR;
+extern s32 occlusion_sample_count MACRO_ADDR;
+extern float *g_occlusion_samples NOT_SDA;
+extern float level_tfrag_draw_distance MACRO_ADDR;
+extern float level_tie_draw_distance MACRO_ADDR;
+extern float shrub_draw_distance MACRO_ADDR;
+extern s32 moby_draw_distance MACRO_ADDR;
+extern s32 level_particle_clip_dist MACRO_ADDR;
+extern float level_fog_near_distance MACRO_ADDR;
+extern float level_fog_far_distance MACRO_ADDR;
+extern float level_fog_near_intensity MACRO_ADDR;
+extern float level_fog_far_intensity MACRO_ADDR;
+extern char *occlusion_grid MACRO_ADDR;
+extern s32 cinematic_mode MACRO_ADDR;
+extern s32 sound_update(void);
+extern void SetBackgroundColor(s32, s32, s32);
+extern void FastVecSub(void *, void *, void *);
+extern float vec_length_xy(void *);
+extern float fast_atan2(float, float);
+extern float FastSubRots(float, float);
+extern float IntToFloat(s32);
+extern void UpdateViewContext(void);
+extern void UpdateFog(void);
+extern s32 sprintf(char *, const char *, ...);
 extern double func_00120778(float);
-extern s32 func_0011BF80(char *, s32, ...);
-extern s32 func_0011C388(s32, s32, s32);
-extern s32 func_00116810(char *);
-extern s32 func_0011C820(s32, void *, s32);
-extern s32 func_0011C208(s32);
-extern s32 func_0011C5C0(s32, void *, s32);
+extern s32 sceOpen(char *, s32, ...);
+extern s32 sceLseek(s32, s32, s32);
+extern s32 libc_strlen(char *);
+extern s32 sceWrite(s32, void *, s32);
+extern s32 sceClose(s32);
+extern s32 sceRead(s32, void *, s32);
 
 // Handles rendering debug menu navigation, display settings and point files.
 void update_debug_menu(void) {
@@ -571,9 +571,9 @@ void update_debug_menu(void) {
             if (g_controller_state.keys.word.pressed & 0x50) {
                 ((DebugMenu_1F4918 *)g_debug_menu)->f28 = !((DebugMenu_1F4918 *)g_debug_menu)->f28;
                 if (((DebugMenu_1F4918 *)g_debug_menu)->f28) {
-                    D_L00_00161040=65536.0f; D_L00_001610A0=64.0f; D_L00_00160564=40.0f; D_L00_001600B0=64; D_L00_0016023C=0x40000;
+                    level_tfrag_draw_distance=65536.0f; level_tie_draw_distance=64.0f; shrub_draw_distance=40.0f; moby_draw_distance=64; level_particle_clip_dist=0x40000;
                 } else {
-                    D_L00_00161040=512000.0f; D_L00_001610A0=720.0f; D_L00_00160564=500.0f; D_L00_001600B0=500; D_L00_0016023C=0x1F4000;
+                    level_tfrag_draw_distance=512000.0f; level_tie_draw_distance=720.0f; shrub_draw_distance=500.0f; moby_draw_distance=500; level_particle_clip_dist=0x1F4000;
                 }
             }
             break;
@@ -656,12 +656,12 @@ void update_debug_menu(void) {
             if (g_controller_state.keys.word.pressed & 0x20) { if (*value > 0) *value-=1; }
         }
         if (*value > limit) *value = limit;
-        if (g_controller_state.keys.word.pressed & 0x10) ((u8 *)D_0013E15A + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item]]++;
-        if (g_controller_state.keys.word.pressed & 0x80) ((u8 *)D_0013E15A + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item]]--;
+        if (g_controller_state.keys.word.pressed & 0x10) ((u8 *)screen_globals_base + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item]]++;
+        if (g_controller_state.keys.word.pressed & 0x80) ((u8 *)screen_globals_base + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item]]--;
         {
             s32 id=((u8 *)&debug_menu_item_ids)[((DebugMenu_1F4918 *)g_debug_menu)->item];
             Item_1F4918 *record=item_defs+id;
-            u8 *p=(u8 *)D_0013E15A + 0x4C6 + id;
+            u8 *p=(u8 *)screen_globals_base + 0x4C6 + id;
             if (*p > record->limit.word) *p=record->limit.byte;
         }
         break;
@@ -713,7 +713,7 @@ void update_debug_menu(void) {
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 0 && (g_controller_state.keys.word.pressed&0x50)) ((DebugMenu_1F4918 *)g_debug_menu)->fF0=!((DebugMenu_1F4918 *)g_debug_menu)->fF0;
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 1 && (g_controller_state.keys.word.pressed&0x50)) ((DebugMenu_1F4918 *)g_debug_menu)->fF4=!((DebugMenu_1F4918 *)g_debug_menu)->fF4;
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 2 && (g_controller_state.keys.word.pressed&0xF0)) {
-            extern char D_L00_0015F0E0;
+            extern char level_file_path_format;
             char *fmt=level_directory;
             char *dev=&level_file_path_format;
             s32 i=0, found, fd, size;
@@ -731,45 +731,45 @@ void update_debug_menu(void) {
             }
             }
             if (found) break;
-            func_00116248(buf.points.path,dev,fmt,g_current_level_index,occlusion_deltas_file_name,iso_version_suffix);
-            func_00116248(buf.points.text,add_sample_format,func_00120778(((CameraSystem *)player_camera)->pos.f[0]),func_00120778(((CameraSystem *)player_camera)->pos.f[1]),func_00120778(((CameraSystem *)player_camera)->pos.f[2]));
-            fd=func_0011BF80(buf.points.path,0x303);
+            sprintf(buf.points.path,dev,fmt,g_current_level_index,occlusion_deltas_file_name,iso_version_suffix);
+            sprintf(buf.points.text,add_sample_format,func_00120778(((CameraSystem *)player_camera)->pos.f[0]),func_00120778(((CameraSystem *)player_camera)->pos.f[1]),func_00120778(((CameraSystem *)player_camera)->pos.f[2]));
+            fd=sceOpen(buf.points.path,0x303);
             if (fd >= 0) {
-                func_0011C388(fd,0,2);
-                func_0011C820(fd,buf.points.text,func_00116810(buf.points.text));
-                func_0011C208(fd);
+                sceLseek(fd,0,2);
+                sceWrite(fd,buf.points.text,libc_strlen(buf.points.text));
+                sceClose(fd);
                 ((DebugMenu_1F4918 *)g_debug_menu)->point_timer=121;
             }
             {
             float *p=g_occlusion_samples;
-            func_00116248(buf.points.path,dev,fmt,g_current_level_index,occlusion_samples_file_name,iso_version_suffix);
-            fd=func_0011BF80(buf.points.path,0x303);
+            sprintf(buf.points.path,dev,fmt,g_current_level_index,occlusion_samples_file_name,iso_version_suffix);
+            fd=sceOpen(buf.points.path,0x303);
             if (fd >= 0) {
-                func_0011C388(fd,0,2);
-                func_0011C820(fd,&((CameraSystem *)player_camera)->pos.f[0],4);
-                func_0011C820(fd,&((CameraSystem *)player_camera)->pos.f[1],4);
-                func_0011C820(fd,&((CameraSystem *)player_camera)->pos.f[2],4);
-                func_0011C388(fd,0,0);
-                size=func_0011C388(fd,0,2);
+                sceLseek(fd,0,2);
+                sceWrite(fd,&((CameraSystem *)player_camera)->pos.f[0],4);
+                sceWrite(fd,&((CameraSystem *)player_camera)->pos.f[1],4);
+                sceWrite(fd,&((CameraSystem *)player_camera)->pos.f[2],4);
+                sceLseek(fd,0,0);
+                size=sceLseek(fd,0,2);
                 if (size <= 0x100000) {
-                    func_0011C388(fd,0,0);
-                    func_0011C5C0(fd,p,size);
+                    sceLseek(fd,0,0);
+                    sceRead(fd,p,size);
                     occlusion_sample_count=size/12;
                 } else occlusion_sample_count=0;
-                func_0011C208(fd);
+                sceClose(fd);
             }
         }
         }
         if (((DebugMenu_1F4918 *)g_debug_menu)->item == 3 && (g_controller_state.keys.word.pressed&0xF0)) {
-            extern char D_L00_0015F0E0[];
+            extern char level_file_path_format[];
             s32 fd;
-            func_00116248(buf.saved.path,level_file_path_format,level_directory,g_current_level_index,occlusion_deltas_file_name,iso_version_suffix);
-            func_00116248(buf.saved.text,start_point_format,func_00120778(((CameraSystem *)player_camera)->pos.f[0]),func_00120778(((CameraSystem *)player_camera)->pos.f[1]),func_00120778(((CameraSystem *)player_camera)->pos.f[2]));
-            fd=func_0011BF80(buf.saved.path,0x303);
+            sprintf(buf.saved.path,level_file_path_format,level_directory,g_current_level_index,occlusion_deltas_file_name,iso_version_suffix);
+            sprintf(buf.saved.text,start_point_format,func_00120778(((CameraSystem *)player_camera)->pos.f[0]),func_00120778(((CameraSystem *)player_camera)->pos.f[1]),func_00120778(((CameraSystem *)player_camera)->pos.f[2]));
+            fd=sceOpen(buf.saved.path,0x303);
             if (fd >= 0) {
-                func_0011C388(fd,0,2);
-                func_0011C820(fd,buf.saved.text,func_00116810(buf.saved.text));
-                func_0011C208(fd);
+                sceLseek(fd,0,2);
+                sceWrite(fd,buf.saved.text,libc_strlen(buf.saved.text));
+                sceClose(fd);
                 ((DebugMenu_1F4918 *)g_debug_menu)->saved_timer=121;
             }
         }
@@ -789,100 +789,100 @@ typedef struct {
  s32 ammo28, ammo2C, unused30, ammo34, unused38, ammo3C, ammo40, ammo44;
  s32 unused48, ammo4C, ammo50, unused54, unused58, ammo5C, ammo60;
 } AmmoDisplay60;
-extern char D_0013D50F[];
-extern int D_0013E15A[];
-extern u8 D_0014171B[];
-extern s32 D_0015EE84 MACRO_ADDR;
-extern s32 D_0015EE98 MACRO_ADDR;
-extern s32 D_L00_0015F6BC MACRO_ADDR;
-extern volatile s32 D_L00_00161260 MACRO_ADDR;
-extern void func_001FB530(void);
-extern void func_L00_001F3A78(void);
-extern int func_001F0FF8(int,int,int,char*);
-extern void func_001F0F78(int,int,int,char*);
-extern int func_00116248(char*,const char*,...);
+extern char menu_item_enabled_115[];
+extern int screen_globals_base[];
+extern u8 help_stats_base[];
+extern s32 g_current_level_index MACRO_ADDR;
+extern s32 gBolts MACRO_ADDR;
+extern s32 skip_frame MACRO_ADDR;
+extern volatile s32 debug_text_flush_wait_flag MACRO_ADDR;
+extern void append_gif_transfer_packet(void);
+extern void flush_debug_text_queue(void);
+extern int print_debug_text_centered(int,int,int,char*);
+extern void print_debug_text(int,int,int,char*);
+extern int sprintf(char*,const char*,...);
 extern double promote_float60(float) __asm__("func_00120778");
-extern char D_L00_0015F108[];
-extern char D_L00_0015F110[];
-extern char D_L00_0015F120[];
-extern char D_L00_0015F128[];
-extern char D_L00_0015F130[];
-extern char D_L00_0015F140[];
-extern char D_L00_0015F148[];
-extern char D_L00_0015F150[];
-extern char D_L00_0015F158[];
-extern char D_L00_0015F160[];
-extern char D_L00_0015F168[];
-extern char D_L00_0015F170[];
-extern char D_L00_0015F178[];
-extern char D_L00_0015F180[];
-extern char D_L00_0015F188[];
-extern char D_L00_0015F190[];
-extern char D_L00_0015F1A0[];
-extern char D_L00_0015F1A8[];
-extern char D_L00_0015F1B8[];
-extern char D_L00_0015F1C0[];
-extern char D_L00_0015F1C8[];
-extern char D_L00_0015F1D0[];
-extern char D_L00_0015F1D8[];
-extern char D_L00_0015F1E0[];
-extern char D_L00_0015F1E8[];
-extern char D_L00_0015F1F0[];
-extern char D_L00_0015F1F8[];
-extern char D_L00_0015F200[];
-extern char D_L00_0015F208[];
-extern char D_L00_0015F218[];
-extern char D_L00_0015F228[];
-extern char D_L00_0015F238[];
-extern char D_L00_0015F248[];
-extern char D_L00_0015F250[];
-extern char D_L00_0015F258[];
-extern char D_L00_0015F260[];
-extern char D_L00_0015F268[];
-extern char D_L00_0015F270[];
-extern char D_L00_0015F280[];
-extern char D_L00_0015F290[];
-extern char D_L00_0015F2A0[];
-extern char D_L00_0015F2B0[];
-extern char D_L00_0015F2C0[];
-extern char D_L00_0015F2C8[];
-extern char D_L00_0015F2D8[];
-extern char D_L00_0015F2E8[];
-extern char D_L00_0015F2F0[];
-extern char D_L00_0015F300[];
-extern char D_L00_0015F310[];
-extern char D_L00_0015F320[];
-extern char D_L00_0015F328[];
-extern char D_L00_0015F330[];
-extern char D_L00_0015F338[];
-extern char D_L00_0015F340[];
-extern char D_L00_0015F348[];
-extern char D_L00_0015F350[];
-extern char D_L00_0015F358[];
-extern char D_L00_0015F360[];
-extern char D_L00_0015F368[];
-extern char D_L00_0015F370[];
-extern char D_L00_0015F378[];
-extern char D_L00_0015F380[];
-extern char D_L00_0015F388[];
-extern char D_L00_0015F398[];
-extern char D_L00_0015F3A8[];
-extern char D_L00_0015F3B8[];
-extern char *D_L00_00160CD8[];
-extern char *D_L00_00160D00[];
-extern char *D_L00_00160D68[];
-extern char *D_L00_00160D80[];
-extern char *D_L00_00160DA0[];
-extern char *D_L00_00160DB0[];
-extern char *D_L00_00160DC8[];
-extern char *D_L00_001C4128[];
-extern float D_L00_0015F548 MACRO_ADDR;
-extern float D_L00_0015F54C MACRO_ADDR;
-extern float D_L00_0015F550 MACRO_ADDR;
-extern float D_L00_0015F554 MACRO_ADDR;
-extern u8 D_L00_0015F544[] MACRO_ADDR;
-extern u8 D_L00_0015F545[] MACRO_ADDR;
-extern u8 D_L00_0015F546[] MACRO_ADDR;
+extern char debug_menu_title[];
+extern char debug_menu_title_underline[];
+extern char debug_menu_update_header[];
+extern char debug_menu_update_underline[];
+extern char debug_label_ratchet[];
+extern char debug_label_update_bit1[];
+extern char debug_label_parts[];
+extern char debug_label_camera[];
+extern char debug_label_update_bit4[];
+extern char debug_menu_cursor[];
+extern char debug_menu_group1_header[];
+extern char debug_menu_header_underline[];
+extern char debug_label_control[];
+extern char debug_label_profile[];
+extern char debug_label_occlusion_mode[];
+extern char debug_label_bookmark[];
+extern char debug_label_invincible[];
+extern char debug_label_drawdist[];
+extern char debug_label_group1_item6[];
+extern char debug_label_tv_mode[];
+extern char debug_label_screen[];
+extern char debug_label_scene[];
+extern char debug_int_format[];
+extern char debug_scene_none_text[];
+extern char debug_label_segment[];
+extern char debug_segment_format[];
+extern char debug_menu_group2_header[];
+extern char debug_label_darken[];
+extern char debug_label_env_coll[];
+extern char debug_label_moby_coll[];
+extern char debug_label_hero_coll[];
+extern char debug_label_bspheres[];
+extern char debug_label_cameras[];
+extern char debug_label_cuboids[];
+extern char debug_label_samples[];
+extern char debug_label_group2_bit8[];
+extern char debug_menu_weapon_header[];
+extern char debug_label_suck_cannon[];
+extern char debug_label_morph_o_ray[];
+extern char debug_label_inflato[];
+extern char debug_label_weapon_row3[];
+extern char debug_label_d_droids[];
+extern char debug_label_weapon_row5[];
+extern char debug_label_devastator[];
+extern char debug_label_visibomb[];
+extern char debug_label_agents[];
+extern char debug_label_pyrocitor[];
+extern char debug_label_tesla_claw[];
+extern char debug_label_mine_glove[];
+extern char debug_label_blaster[];
+extern char debug_label_bolts[];
+extern char debug_menu_fog_header[];
+extern char debug_menu_fog_underline[];
+extern char debug_label_near_dist[];
+extern char debug_fog_value_format[];
+extern char debug_label_near_int[];
+extern char debug_label_far_dist[];
+extern char debug_label_far_int[];
+extern char debug_label_color_r[];
+extern char debug_label_color_g[];
+extern char debug_label_color_b[];
+extern char debug_menu_samples_header[];
+extern char debug_label_battle_cam[];
+extern char debug_label_actuator[];
+extern char debug_label_add_sample[];
+extern char debug_label_add_start[];
+extern char *debug_on_off_strings[];
+extern char *debug_camera_mode_names[];
+extern char *debug_drawdist_names[];
+extern char *debug_group1_item6_names[];
+extern char *debug_tv_mode_names[];
+extern char *debug_screen_names[];
+extern char *debug_occlusion_mode_names[];
+extern char *debug_display_mode_names[];
+extern float level_fog_near_distance MACRO_ADDR;
+extern float level_fog_far_distance MACRO_ADDR;
+extern float level_fog_near_intensity MACRO_ADDR;
+extern float level_fog_far_intensity MACRO_ADDR;
+extern u8 level_fog_color_red[] MACRO_ADDR;
+extern u8 level_fog_color_green[] MACRO_ADDR;
+extern u8 level_fog_color_blue[] MACRO_ADDR;
 
 /* Row-stride helper for draw_debug_menu: 0 when FLAGS is clear, else one pointer width (the next string slot). */
 static __inline__ int flag_offset60(int flags) {
@@ -941,7 +941,7 @@ void draw_debug_menu(void) {
         print_debug_text(0x108, 0xB8, 0x80F0F0F0, debug_screen_names[debug_menu60.f34]);
         print_debug_text(0xB0, 0xC7, 0x8000C0C0, debug_label_scene);
         if (debug_menu60.selection >= 0) {
-            func_00116248(buf, debug_int_format, debug_menu60.selection);
+            sprintf(buf, debug_int_format, debug_menu60.selection);
             print_debug_text(0x108, 0xC7, 0x80F0F0F0, buf);
         } else {
             print_debug_text(0x108, 0xC7, 0x80F0F0F0, debug_scene_none_text);
@@ -950,7 +950,7 @@ void draw_debug_menu(void) {
         print_debug_text(0xB0, 0xD6, 0x8000C0C0, debug_label_segment);
         {
             int mission = debug_menu60.mission;
-            func_00116248(buf, debug_segment_format, mission, (D_0014171B + 0xAA35)[mission + g_current_level_index * stride]);
+            sprintf(buf, debug_segment_format, mission, (help_stats_base + 0xAA35)[mission + g_current_level_index * stride]);
         }
         print_debug_text(0x108, 0xD6, 0x80F0F0F0, buf);
         if (debug_menu60.group == 1) {
@@ -985,62 +985,62 @@ void draw_debug_menu(void) {
             print_debug_text(9, (debug_menu60.item * 0xF) + 0xB8, 0x800000C0, debug_menu_cursor);
         }
         print_debug_text(0x14, 0xBA, 0x8000C0C0, debug_label_suck_cannon);
-        weapon_order = (u8 *)D_0013E15A + 0x4C6;
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0x9]);
+        weapon_order = (u8 *)screen_globals_base + 0x4C6;
+        sprintf(buf, debug_int_format, (s32) weapon_order[0x9]);
         print_debug_text(0x7A, 0xBA, 0x80406080, buf);
         print_debug_text(0x14, 0xC9, 0x8000C0C0, debug_label_morph_o_ray);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0x15]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0x15]);
         print_debug_text(0x7A, 0xC9, 0x80406080, buf);
         print_debug_text(0x14, 0xD8, 0x8000C0C0, debug_label_inflato);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0x19]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0x19]);
         print_debug_text(0x7A, 0xD8, 0x80406080, buf);
         print_debug_text(0x14, 0xE7, 0x8000C0C0, debug_label_weapon_row3);
         ammo = (AmmoDisplay60 *)(menu_item_enabled_115 + 0x21);
-        func_00116248(buf, debug_int_format, ammo->ammo5C);
+        sprintf(buf, debug_int_format, ammo->ammo5C);
         print_debug_text(0x8C, 0xE7, 0x80F0F0F0, buf);
         print_debug_text(0x14, 0xF6, 0x8000C0C0, debug_label_d_droids);
-        func_00116248(buf, debug_int_format, ammo->ammo60);
+        sprintf(buf, debug_int_format, ammo->ammo60);
         print_debug_text(0x8C, 0xF6, 0x80F0F0F0, buf);
         print_debug_text(0x14, 0x105, 0x8000C0C0, debug_label_weapon_row5);
-        func_00116248(buf, debug_int_format, ammo->ammo28);
+        sprintf(buf, debug_int_format, ammo->ammo28);
         print_debug_text(0x8C, 0x105, 0x80F0F0F0, buf);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0xA]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0xA]);
         print_debug_text(0x7A, 0x105, 0x80406080, buf);
         print_debug_text(0x14, 0x114, 0x8000C0C0, debug_label_devastator);
-        func_00116248(buf, debug_int_format, ammo->ammo2C);
+        sprintf(buf, debug_int_format, ammo->ammo2C);
         print_debug_text(0x8C, 0x114, 0x80F0F0F0, buf);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0xB]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0xB]);
         print_debug_text(0x7A, 0x114, 0x80406080, buf);
         print_debug_text(0x14, 0x123, 0x8000C0C0, debug_label_visibomb);
-        func_00116248(buf, debug_int_format, ammo->ammo34);
+        sprintf(buf, debug_int_format, ammo->ammo34);
         print_debug_text(0x8C, 0x123, 0x80F0F0F0, buf);
         print_debug_text(0x14, 0x132, 0x8000C0C0, debug_label_agents);
-        func_00116248(buf, debug_int_format, ammo->ammo50);
+        sprintf(buf, debug_int_format, ammo->ammo50);
         print_debug_text(0x8C, 0x132, 0x80F0F0F0, buf);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0x14]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0x14]);
         print_debug_text(0x7A, 0x132, 0x80406080, buf);
         print_debug_text(0x14, 0x141, 0x8000C0C0, debug_label_pyrocitor);
-        func_00116248(buf, debug_int_format, ammo->ammo40);
+        sprintf(buf, debug_int_format, ammo->ammo40);
         print_debug_text(0x8C, 0x141, 0x80F0F0F0, buf);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0x10]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0x10]);
         print_debug_text(0x7A, 0x141, 0x80406080, buf);
         print_debug_text(0x14, 0x150, 0x8000C0C0, debug_label_tesla_claw);
-        func_00116248(buf, debug_int_format, ammo->ammo4C);
+        sprintf(buf, debug_int_format, ammo->ammo4C);
         print_debug_text(0x8C, 0x150, 0x80F0F0F0, buf);
-        func_00116248(buf, debug_int_format, (s32) weapon_order[0x13]);
+        sprintf(buf, debug_int_format, (s32) weapon_order[0x13]);
         print_debug_text(0x7A, 0x150, 0x80406080, buf);
         print_debug_text(0x14, 0x15F, 0x8000C0C0, debug_label_mine_glove);
-        func_00116248(buf, fmt = debug_int_format, ammo->ammo44);
+        sprintf(buf, fmt = debug_int_format, ammo->ammo44);
         print_debug_text(0x8C, 0x15F, 0x80F0F0F0, buf);
-        func_00116248(buf, fmt, (s32) weapon_order[0x11]);
+        sprintf(buf, fmt, (s32) weapon_order[0x11]);
         print_debug_text(0x7A, 0x15F, 0x80406080, buf);
         print_debug_text(0x14, 0x16E, 0x8000C0C0, debug_label_blaster);
-        func_00116248(buf, fmt, ammo->ammo3C);
+        sprintf(buf, fmt, ammo->ammo3C);
         print_debug_text(0x8C, 0x16E, 0x80F0F0F0, buf);
-        func_00116248(buf, fmt, (s32) weapon_order[0xF]);
+        sprintf(buf, fmt, (s32) weapon_order[0xF]);
         print_debug_text(0x7A, 0x16E, 0x80406080, buf);
         print_debug_text(0x14, 0x17D, 0x8000C0C0, debug_label_bolts);
-        func_00116248(buf, fmt, gBolts);
+        sprintf(buf, fmt, gBolts);
         print_debug_text(0x8C, 0x17D, 0x80F0F0F0, buf);
         print_debug_text(0xBC, 0x100, 0x8000C000, debug_menu_fog_header);
         print_debug_text(0xBC, 0x106, 0x8000C000, debug_menu_fog_underline);
@@ -1048,25 +1048,25 @@ void draw_debug_menu(void) {
             print_debug_text(0xB9, (debug_menu60.item * 0xF) + 0x112, 0x800000C0, debug_menu_cursor);
         }
         print_debug_text(0xC4, 0x114, 0x8000C0C0, debug_label_near_dist);
-        func_00116248(buf, debug_fog_value_format, promote_float60(level_fog_near_distance * 0.0009765625f));
+        sprintf(buf, debug_fog_value_format, promote_float60(level_fog_near_distance * 0.0009765625f));
         print_debug_text(0x11C, 0x114, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x123, 0x8000C0C0, debug_label_near_int);
-        func_00116248(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_near_intensity / 2.55f)));
+        sprintf(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_near_intensity / 2.55f)));
         print_debug_text(0x11C, 0x123, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x132, 0x8000C0C0, debug_label_far_dist);
-        func_00116248(buf, debug_fog_value_format, promote_float60(level_fog_far_distance * 0.0009765625f));
+        sprintf(buf, debug_fog_value_format, promote_float60(level_fog_far_distance * 0.0009765625f));
         print_debug_text(0x11C, 0x132, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x141, 0x8000C0C0, debug_label_far_int);
-        func_00116248(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_far_intensity / 2.55f)));
+        sprintf(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_far_intensity / 2.55f)));
         print_debug_text(0x11C, 0x141, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x150, 0x8000C0C0, debug_label_color_r);
-        func_00116248(buf, fmt, (s32) level_fog_color_red[0]);
+        sprintf(buf, fmt, (s32) level_fog_color_red[0]);
         print_debug_text(0x11C, 0x150, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x15F, 0x8000C0C0, debug_label_color_g);
-        func_00116248(buf, fmt, (s32) level_fog_color_green[0]);
+        sprintf(buf, fmt, (s32) level_fog_color_green[0]);
         print_debug_text(0x11C, 0x15F, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x16E, 0x8000C0C0, debug_label_color_b);
-        func_00116248(buf, fmt, (s32) level_fog_color_blue[0]);
+        sprintf(buf, fmt, (s32) level_fog_color_blue[0]);
         print_debug_text(0x11C, 0x16E, 0x80F0F0F0, buf);
         print_debug_text(0x160, 0x100, 0x8000C000, debug_menu_samples_header);
         print_debug_text(0x160, 0x106, 0x8000C000, debug_menu_header_underline);
@@ -1086,13 +1086,13 @@ void draw_debug_menu(void) {
         buf[0] = debug_menu60.saved_timer;
         print_debug_text(0x1CA, 0x141, 0x80F0F0F0, buf);
         flush_debug_text_queue();
-        while (D_L00_00161260 & 1) {}
+        while (debug_text_flush_wait_flag & 1) {}
     }
 }
-extern char D_L00_00169D80[];
+extern char frame_roll_counters_base[];
 // Moves a word to its neighbour slot and clears two fields.
 void Frame_RollCounter(void) {
-    char *p = D_L00_00169D80;
+    char *p = frame_roll_counters_base;
     int t = *(int *)(p + 0x364);
     *(int *)(p + 0x364) = 0;
     *(int *)(p + 0x1B0) = 0;
@@ -1104,7 +1104,7 @@ void Frame_RollCounter(void) {
    start must fall in [0, count). Retail's function is 0xD4 bytes: this stub's
    0x84 bytes, the func_L00_001F767C piece (0x48) and the shared return
    (func_001E97C8, 8 bytes) are one C function (config/overlays/joined.tsv). */
-extern char *D_L00_0015F6E0 MACRO_ADDR;
+extern char *occlusion_grid MACRO_ADDR;
 
 /* Looks cell (X, Y, Z) up in the three-level occlusion grid at D_L00_0015F6E0: 0 when the coordinate falls
    outside a level or the cell is empty, else the address of the cell's 128-byte occlusion record. */
@@ -1131,61 +1131,61 @@ int OcclGrid_Lookup(int x, int y, int z) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_001F767C);
 /* Clears the loader's seventeen state words. */
-extern int D_L00_0015F524 MACRO_ADDR;
-extern int D_L00_0015F52C MACRO_ADDR;
-extern int D_L00_0015F530 MACRO_ADDR;
-extern int D_L00_0015F528 MACRO_ADDR;
-extern int D_L00_0015F534 MACRO_ADDR;
-extern int D_L00_0015F3F0 MACRO_ADDR;
-extern int D_L00_0015F3F4 MACRO_ADDR;
-extern int D_L00_0015F504 MACRO_ADDR;
+extern int level_reset_counter_524 MACRO_ADDR;
+extern int level_reset_counter_52c MACRO_ADDR;
+extern int level_reset_counter_530 MACRO_ADDR;
+extern int level_reset_counter_528 MACRO_ADDR;
+extern int ground_shadow_count MACRO_ADDR;
+extern int level_reset_counter_3f0 MACRO_ADDR;
+extern int level_reset_counter_3f4 MACRO_ADDR;
+extern int scripted_camera_move_active MACRO_ADDR;
 extern int D_L00_0015F508 MACRO_ADDR;
-extern int D_L00_0015F6E8 MACRO_ADDR;
-extern int D_L00_00161390 MACRO_ADDR;
-extern int D_L00_00161394 MACRO_ADDR;
-extern int D_L00_00161398 MACRO_ADDR;
-extern int D_L00_0016139C MACRO_ADDR;
+extern int visibomb_occlusion_skip_flag MACRO_ADDR;
+extern int water_patches MACRO_ADDR;
+extern int water_patches_field_4 MACRO_ADDR;
+extern int water_patch_count MACRO_ADDR;
+extern int water_patches_field_c MACRO_ADDR;
 extern int D_0015F40C_F8750 SDATA(D_L00_0015F40C);
 extern int D_0015F420_F8750 SDATA(D_L00_0015F420);
 extern int D_0015F430_F8750 SDATA(D_L00_0015F430);
 
 /* Clears the seventeen level-gameplay state words (D_L00_0015F3F0 .. D_L00_0016139C) when a level starts or resets. */
 void Level_ResetGameplayGlobals(void) {
-    D_L00_0015F524 = 0;
-    D_L00_0015F52C = 0;
-    D_L00_0015F530 = 0;
-    D_L00_0015F528 = 0;
+    level_reset_counter_524 = 0;
+    level_reset_counter_52c = 0;
+    level_reset_counter_530 = 0;
+    level_reset_counter_528 = 0;
     ground_shadow_count = 0;
-    D_L00_0015F3F0 = 0;
-    D_L00_0015F3F4 = 0;
+    level_reset_counter_3f0 = 0;
+    level_reset_counter_3f4 = 0;
     scripted_camera_move_active = 0;
     D_L00_0015F508 = 0;
     D_0015F40C_F8750 = 0;
     D_0015F420_F8750 = 0;
     D_0015F430_F8750 = 0;
-    D_L00_0015F6E8 = 0;
+    visibomb_occlusion_skip_flag = 0;
     water_patches = 0;
-    D_L00_00161394 = 0;
+    water_patches_field_4 = 0;
     water_patch_count = 0;
-    D_L00_0016139C = 0;
+    water_patches_field_c = 0;
 }
-extern int D_L00_0015F6BC MACRO_ADDR;
-extern int D_L00_0015F6A8 MACRO_ADDR;
-extern int D_L00_0015F4F4 MACRO_ADDR;
-extern unsigned char D_001414F5[] NOT_SDA;
-extern void func_001F3D78(void);
+extern int skip_frame MACRO_ADDR;
+extern int cinematic_mode MACRO_ADDR;
+extern int debug_profiler_color MACRO_ADDR;
+extern unsigned char g_hero_field_20a5[] NOT_SDA;
+extern void DrawDebugProfiler(void);
 /* Gameplay-screen render hook: while nothing is loading (D_L00_0015F6BC) and byte 0xC of D_001414F5 is clear,
    picks the profiler colour word D_L00_0015F4F4 (0x7F in display mode 3, else 0x100FF) and draws the debug profiler. */
 void draw_debug_profiler_if_enabled(void) {
-    if (skip_frame == 0 && D_001414F5[0xC] == 0) {
+    if (skip_frame == 0 && g_hero_field_20a5[0xC] == 0) {
         debug_profiler_color = 0x100FF;
         if (cinematic_mode == 3) debug_profiler_color = 0x7F;
         DrawDebugProfiler();
     }
 }
-extern int func_L00_002016D0(void);
-extern void func_L00_002781D8(int);
-extern void func_001FBE80(void);
+extern int get_global_state_pointer(void);
+extern void draw_pause_menu_pages(int);
+extern void draw_freeze_message_box(void);
 
 /* Debug-overlay render hook: in overlay mode 0 sets up the large font and draws the profiler, in mode 3 draws the
    pause-menu pages; func_001FBE80 runs either way. Nothing while D_L00_0015F6BC (loading) is set. */
@@ -1206,16 +1206,16 @@ typedef struct {
     int key;
     int pad[3];
 } DbgRec_1F92E8;
-extern int D_L00_0015F700[4] MACRO_ADDR;
-extern float D_L00_0015F4FC MACRO_ADDR;
-extern DbgRec_1F92E8 D_L00_00173180[];
-extern void func_001F7680(int);
-extern int func_001FA898(float);
-extern void func_001F55C0(int, int, int, int);
-extern void func_001F3C10(void);
-extern void func_001F4630(int);
-extern void func_L00_001FCC50(void *, int);
-extern void func_001F4748(void);
+extern int slideshow[4] MACRO_ADDR;
+extern float gFadeLvl MACRO_ADDR;
+extern DbgRec_1F92E8 timed_text_records[];
+extern void queue_framebuffer_upload(int);
+extern int truncate_float_to_s32(float);
+extern void emit_rgba_draw_packet(int, int, int, int);
+extern void ResetGsRegisters(void);
+extern void SetupGifPaging(int);
+extern void draw_timed_text(void *, int);
+extern void DoGifPaging(void);
 
 /* Fade and debug-rectangle render hook: uploads the GS state, draws a black full-screen quad with alpha from gFadeLvl
    (clamped to 1.0), then every D_L00_00173180 record with key >= 0 through func_L00_001FCC50 inside a GIF paging run. */
@@ -1245,24 +1245,24 @@ void draw_framebuffer_with_timed_text(void) {
         DoGifPaging();
     }
 }
-extern int D_L00_0015F4F8 MACRO_ADDR;
-extern int D_0015EF84 MACRO_ADDR;
-extern void func_00234AC8(int);
-extern int func_00122598(int);
-extern void func_002348E8(void);
-extern void func_L00_002A21A8(void *, int, int);
+extern int rendered_frame_count MACRO_ADDR;
+extern int draw_buffer_address MACRO_ADDR;
+extern void VU1_syncChain(int);
+extern int sce_gs_sync_v(int);
+extern void VU1_initChain(void);
+extern void transfer_draw_buffer_chunks(void *, int, int);
 /* Grabs the current frame buffer into A: syncs VU1, counts the grab in D_L00_0015F4F8 and downloads frame buffer
    D_0015EF84 (its height from D_0013E15A + 0x4AA, in 2 KB rows). */
 void capture_draw_buffer(void *a) {
     VU1_syncChain(1);
-    func_00122598(0);
+    sce_gs_sync_v(0);
     rendered_frame_count = rendered_frame_count + 1;
     VU1_initChain();
-    transfer_draw_buffer_chunks(a, draw_buffer_address, *(int *)((char *)D_0013E15A + 0x4AA) << 11);
+    transfer_draw_buffer_chunks(a, draw_buffer_address, *(int *)((char *)screen_globals_base + 0x4AA) << 11);
 }
-extern int func_001F4868(int);
-extern void func_001F6668(void *, void *, void *, void *, void *, int, unsigned char *);
-extern unsigned char D_L00_001C3C10[];
+extern int GetEffectTex(int);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
+extern unsigned char effect3_font_metrics[];
 
 // Draws font text with effect texture 3 and the level 0 font table.
 void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e) {
@@ -1270,12 +1270,12 @@ void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e) {
 
     FontPrint(a, b, c, d, e, mode, effect3_font_metrics);
 }
-extern int func_001F6600(unsigned char *, int);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern void func_00201960(int, int, int, int, int);
-extern void func_001F65A8(void);
-extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
-extern void func_001F6598(void);
+extern int measure_text_width_regular(unsigned char *, int);
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern void draw_stretchable_ui_frame(int, int, int, int, int);
+extern void Font_DisableColorCodes(void);
+extern void FontPrintLarge_c(int, int, long, void *, int) __asm__("func_001F68E8");
+extern void Font_EnableColorCodes(void);
 
 /* draw a two-layer shadowed text label at x,y with alignment mode */
 void draw_timed_text_line(int x, int y, int mode, unsigned char *p, float scale, float alpha) {
@@ -1295,16 +1295,16 @@ void draw_timed_text_line(int x, int y, int mode, unsigned char *p, float scale,
         r = x + (off >> 1);
         break;
     }
-    draw_stretchable_ui_frame(l - 0x20, y - 0xE, r - l + 0x40, 0x1C, func_001FA898_r(scale * 112.0f));
+    draw_stretchable_ui_frame(l - 0x20, y - 0xE, r - l + 0x40, 0x1C, truncate_float_to_s32_r(scale * 112.0f));
     Font_DisableColorCodes();
     c = (int)(alpha * 128.0f) << 24;
     d = c + 0xE0E0E0;
-    func_001F68E8_c(l + 1, y - 7, (unsigned int)c, p, -1);
-    func_001F68E8_c(l, y - 8, d, p, -1);
+    FontPrintLarge_c(l + 1, y - 7, (unsigned int)c, p, -1);
+    FontPrintLarge_c(l, y - 8, d, p, -1);
     Font_EnableColorCodes();
 }
 typedef void (*LabelFn)(int, int, int, float, float, unsigned char *);
-extern unsigned char *func_001FE540(int);
+extern unsigned char *msg_string(int);
 
 /* Draws a line-wrapped text entry with fade-in/out at its scroll edges (newline codes become " - " or start a new row). */
 void draw_timed_text(void *rv, int t) {

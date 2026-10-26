@@ -7,18 +7,18 @@
 #include "hero.h"
 #include "moby.h"
 
-extern unsigned char D_0013E633[];
-extern int D_0015EE84 MACRO_ADDR;
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern int func_L00_001F3958(void);
-extern float func_001F9B88(float);
-extern void func_L00_0020BFA8(void);
-extern void func_L15_00217348(int, int);
-extern void func_L00_00211908(void);
+extern unsigned char hero_globals_base[];
+extern int g_current_level_index MACRO_ADDR;
+extern int coll_sphere(float, void *, int, void *);
+extern int CollType(void);
+extern float FastAbsF(float);
+extern void exit_hero_vehicle_mode_if_mode_three(void);
+extern void HeroQuartu_TrySetMoveState(int, int);
+extern void Hero_OnKilled(void);
 
 /* Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. */
 void Hero_UpdateAimFlags(void) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     int c = *(unsigned char *)(g + 0x12ED);
     int s = *(short *)(g + 0x12E0);
     int t;
@@ -40,27 +40,27 @@ void Hero_UpdateAimFlags(void) {
         }
     }
     if (s == 0xE) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(p + 0x12E4) = 1;
         *(float *)(p + 0x22A4) = 0.2f;
         *(float *)(p + 0x2F0) = *(float *)(p + 0x2D8) + 0.2f;
     }
     if (s == 0) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         float d = *(float *)(p + 0x2F0) - *(float *)(p + 0x2D8);
         *(float *)(p + 0x22A4) = d;
         if (d < 0.85f && 0.25f < d) {
             *(unsigned char *)(p + 0x20A9) = 1;
         }
-        p = (char *)D_0013E633 + 0xE1D;
+        p = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(p + 0x12E4) = 1;
     }
     if (s == 3) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         *(unsigned char *)(p + 0x12E6) = 1;
     }
     if (g_current_level_index == 0xD) {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(p + 0x2084) != 0x7B) {
             if (coll_sphere(*(float *)(p + 0x234) + 0.03f, p + 0xD0, 2, 0) != 0) {
                 if (CollType() == 0xB) {
@@ -70,13 +70,13 @@ void Hero_UpdateAimFlags(void) {
             }
         }
     }
-    if (s == 0xB) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EB) = 1; }
-    if (s == 4) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12E3) = 1; }
-    if (s == 8) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
-    if (s == 9) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EE) = 1; }
-    if (s == 0xC) { char *p = (char *)D_0013E633 + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
+    if (s == 0xB) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EB) = 1; }
+    if (s == 4) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12E3) = 1; }
+    if (s == 8) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
+    if (s == 9) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EE) = 1; }
+    if (s == 0xC) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
     {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(p + 0x12E3) != 0 && *(int *)(p + 0x300) != 0) {
             t = *(int *)(p + 0x208C);
             if (t != 0x10 && t != 0x14 && t != 7) {
@@ -86,7 +86,7 @@ void Hero_UpdateAimFlags(void) {
         }
     }
     {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(p + 0x12E6) != 0) {
             t = *(int *)(p + 0x2084);
             if (t != 0x68 && t != 0x7B) {
@@ -109,7 +109,7 @@ void Hero_UpdateAimFlags(void) {
         }
     }
     {
-        char *p = (char *)D_0013E633 + 0xE1D;
+        char *p = (char *)hero_globals_base + 0xE1D;
         if (*(unsigned char *)(p + 0x12EB) != 0) {
             if (*(int *)(p + 0x2084) != 0x7B) {
                 if (FastAbsF(*(float *)(p + 0x2F4) - (*(float *)(p + 0x88) + 0.25f)) < 1.0f) {
@@ -141,27 +141,27 @@ typedef struct {
     u8 *p34;
     u8 pad38[8];
 } T_210ce8;
-extern Hero D_0013F450;
-extern s32 D_L15_0015F6A8 MACRO_ADDR;
-extern T_210ce8 D_L15_00178780[];
-extern s32 D_0015EE84 MACRO_ADDR;
-extern s32 D_0013E090[];
-extern s32 D_0015EFA8 MACRO_ADDR;
-extern u8 D_0013F4D0[];
-extern f32 D_0015EE6C MACRO_ADDR;
-extern u8 D_0013F530[];
-s32 func_001FA898(f32);
-void func_L00_00207220(void);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001FA748(f32, f32);
-f32 func_001F9F90(f32);
-f32 func_001F9FA8(f32);
-void func_001F9BD8(void *, void *, void *);
-void func_L15_00217348(s32, s32);
-void func_L00_00217570(s32, s32);
-void func_L00_002AAE80(void);
-void func_001F9BC0(void *);
-void func_L00_00211338(void *, s32, f32, f32);
+extern Hero g_hero;
+extern s32 quartu_game_mode MACRO_ADDR;
+extern T_210ce8 quartu_moby_hits[];
+extern s32 g_current_level_index MACRO_ADDR;
+extern s32 level_hero_hit_counts[];
+extern s32 hero_hit_count MACRO_ADDR;
+extern u8 gHeroPos[];
+extern f32 g_frame_time MACRO_ADDR;
+extern u8 hero_velocity[];
+s32 truncate_float_to_s32(f32);
+void release_and_clear_hero_voice_slots(void);
+void FastVecSub(void *, void *, void *);
+f32 FastAddRots(f32, f32);
+f32 FastCos(f32);
+f32 FastSin(f32);
+void FastVecAdd(void *, void *, void *);
+void HeroQuartu_TrySetMoveState(s32, s32);
+void allocate_hero_voice_for_entry(s32, s32);
+void remove_tracked_class_5f3_moby(void);
+void clear_u64_value(void *);
+void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/ui_help_002044c8.c, FUN_L15_00208e10. */
 s32 process_hero_incoming_hit(s32 arg) {
@@ -327,127 +327,127 @@ typedef struct { char p0[0x60]; float f60[4]; char p70[0x30]; float fA0[4]; } Bo
 typedef struct { char p0[0x58]; unsigned short f58; unsigned short f5A; int f5C; char p60[0x30]; unsigned short f90; unsigned short f92; int f94; } S141948;
 typedef struct { char p0[0x158]; float f158; char p15C[4]; float f160; char p164[4]; int f168; char p16C[0x1E4]; float f350[4]; } Cam;
 typedef struct { char p0[8]; float f8; float fC; char p10[8]; float f18; } S17BEB8;
-extern PadState D_0013CA40;
-extern char D_0013A5E0[];
-extern unsigned char D_0013D5C8[];
-extern char D_0013E650[];
-extern S141948 D_00141948;
-extern float D_0015EE60 MACRO_ADDR;
-extern float D_0015EE64 MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern int D_0015EFA4 MACRO_ADDR;
-extern int D_L15_0015F6B0 MACRO_ADDR;
-extern short D_L15_0015F768;
-extern short D_L15_0015F76C;
-extern unsigned char *D_L15_00161350 MACRO_ADDR;
-extern int D_L15_00161358 MACRO_ADDR;
-extern Cam D_L15_00167300;
-extern float D_L15_00167458;
-extern Moby *D_L15_00178580[];
-extern Bone D_L15_0017AD00[];
-extern Rec2C D_L15_0017C2A8[];
-extern S17BEB8 D_L15_0017C438;
-extern float D_L15_0017C444;
-extern float D_L15_0017C640[];
-extern float D_L15_001C4530[];
-extern void func_L00_00209BB8(int, int);
-extern void func_L00_00213970(float, float);
-extern void func_L00_002178A0(float, float);
-extern void func_L00_00211F80(float, int);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_L00_002124E8(int, float, float, float);
-extern int func_001F9908(int *);
-extern int func_001F9850(int);
-extern int func_L00_0022A268(void);
-extern void func_L00_00212550(void);
-extern void func_L00_00232C10(int, int, float);
-extern int func_L15_001FED10(int);
-extern float func_L00_00209598(float, float, float, float);
-extern void func_L00_00212740(float, float);
-extern void func_L00_00216E98(float);
-extern void func_L00_00233D50(float *, float *, float);
-extern void func_L15_0020A960(int);
-extern void func_L00_00212878(void);
-extern float func_001F9CE8(void *);
-extern int func_L00_001FF5B0(float, void *, void *);
-extern void func_L00_00228510(void);
-extern void func_L00_002175D0(int, int, int);
-extern void func_L00_0028EBF0(int);
-extern int func_001F9938(void *);
-extern void func_L00_0020A0B8(int, int);
-extern void func_L00_0020A320(int, int, int);
-extern void func_L00_002A5158(void *, int, int, float, float, float, float);
-extern float func_L00_0025CCF0(void *, float, void *, int, float, float, float);
-extern float func_001FA790(float, float);
-extern void func_L00_00250800(void *, int, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern int func_L00_0026FF20(void *, void *, float, float);
-extern int func_002140B0(int);
-extern int func_L00_00258BC8(int, int);
-extern float func_002140F8(float, float);
-extern void func_L00_00263D68(void *, void *, float, float, float);
-extern void func_00215C00(void *, float, float, float);
-extern float func_L00_00209690(float *, int);
-extern float func_001F9CB8(void *);
-extern float func_00214D28(float *, float, float);
-extern void func_L00_0020A858(float, float);
-extern void func_L00_00209EC0(int, int);
-extern void func_L00_00209CB0(int, int);
-extern void func_L00_002607A8(void *, float);
-extern float func_L00_001FF860(float, float);
-extern float func_001F9D10(void *, void *);
-extern int func_L00_0025A5D8(float *, float *, float, float, float);
-extern float func_L00_0025CC58(float *, int, float, float);
-extern float func_001F9D48(void *, void *);
-extern void func_001F9C30(void *, void *, float);
-extern float func_001FA850(float, float);
-extern void func_001FA218(void *, void *);
-extern void func_001FA4A0(void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern float func_L00_002342F8(float *);
-extern float func_L00_0025C918(float *, float *, float, float, float, float);
-extern float func_L00_00213A08(void *);
-extern void func_L00_00234420(float *, float *, float);
-extern void func_L00_002343A0(float *, float *, float);
-extern void func_L00_0025A8C0(void *, void *, int, float, void *);
-extern int func_L00_001F2BE8(float, void *, int, void *, void *);
-extern void func_L00_00215628(float, float, float);
-extern void func_L00_00233F68(float *, float *, float);
-extern int func_L00_00211F28(float);
-extern float func_L00_0025CB90(int, float, float);
-extern void func_L00_00212790(float);
-extern void func_L00_00263578(int, void *);
-extern void func_L00_002635A0(void *, int, int);
-extern void func_L00_00263680(void *, int);
-extern void func_L00_00217AF0(int, int);
-extern void func_L00_002125F0(void);
-extern unsigned char *func_L00_002729B8(void *, void *, float);
-extern void func_L01_0022D688(void);
-extern void func_L00_001FF500(void *, void *, float);
-extern void func_L00_00209850(float, float, float);
-extern void func_L00_00234150(float *, float *);
-extern int func_L00_0020DB30(int);
-extern void func_L00_00233F88(void *, void *, float);
-extern void func_L00_00234090(float *, float *, float);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern void func_L00_00233EE0(float *, float, float, float);
-extern int func_L00_0025F410(int);
-extern void func_L00_0025AC00(void *, int, int, void *, void *, float);
-extern void func_L00_0020BC30(void);
-extern float func_001F9C78(void *, void *);
-extern void func_L00_00217DE0(void);
-extern void func_L01_002328A8(void);
-extern void func_L00_00215A90(void);
-extern void func_L00_00216648(void);
-extern void func_L00_002147C0(void);
-extern void func_L01_00234970(float);
-extern void func_L02_00223AE0(void);
+extern PadState g_controller_state;
+extern char pad_globals_base[];
+extern unsigned char item_available[];
+extern char voice_pool[];
+extern S141948 usage_stats;
+extern float frame_scale MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern int gameplay_event_frame_count MACRO_ADDR;
+extern int quartu_frame_count MACRO_ADDR;
+extern short quartu_usage_event_timer;
+extern short quartu_usage_event_count;
+extern unsigned char *quartu_pool_draw_tiles MACRO_ADDR;
+extern int quartu_pool_draw_count MACRO_ADDR;
+extern Cam quartu_player_camera;
+extern float quartu_camera_yaw;
+extern Moby *quartu_coll_sphere_moby_hits[];
+extern Bone quartu_hero_bones[];
+extern Rec2C quartu_attack_records[];
+extern S17BEB8 quartu_hero_speed_bands;
+extern float quartu_hero_run_turn_stick_threshold;
+extern float quartu_hero_anim_speed_curve[];
+extern float quartu_hero_anim_frame_speeds[];
+extern void emit_hero_periodic_surface_effect(int, int);
+extern void build_scaled_hero_move_impulse(float, float);
+extern void stop_hero_motion_without_forward_support(float, float);
+extern void stick_target(float, int);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void turn_to(int, float, float, float);
+extern int fast_dec_timer(int *);
+extern int scale_ticks(int);
+extern int try_start_hero_item_idle_animation(void);
+extern void turn_hero_toward_move_direction_for_item(void);
+extern void set_hero_animation(int, int, float);
+extern int HelpL15_GetRecordValue(int);
+extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
+extern void speed_step(float, float);
+extern void reduce_and_apply_hero_planar_velocity_addend(float);
+extern void HeroMoveDownAlongNormal(float *, float *, float);
+extern void adjust_hero_planar_velocity_from_probes(int);
+extern void correct_hero_airborne_wall_velocity(void);
+extern float vec_length_xy(void *);
+extern int clamp_vec_length_xy(float, void *, void *);
+extern void update_hero_water_height_and_bobbing(void);
+extern void release_voice_slot_cf(int, int, int);
+extern void Sound_StopSlot(int);
+extern int FastDecTimer(void *);
+extern void emit_hero_randomized_motion_effects(int, int);
+extern void emit_hero_surface_effect_burst(int, int, int);
+extern void RippleDisturb(void *, int, int, float, float, float, float);
+extern float SpringAngle(void *, float, void *, int, float, float, float);
+extern float FastSubRots(float, float);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern int PartType34Spawn(void *, void *, float, float);
+extern int random_integer_below(int);
+extern int rand_range(int, int);
+extern float random_float_between(float, float);
+extern void fast_add_rotations_cf(void *, void *, float, float, float);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern float vector_length_xyz_cf(float *, int);
+extern float FastVecLength(void *);
+extern float ApproachValue(float *, float, float);
+extern void set_first_hero_easing_parameters(float, float);
+extern void emit_hero_periodic_surface_particles(int, int);
+extern void fast_sin_cf(int, int);
+extern void ClampVectorLength(void *, float);
+extern float fast_atan2(float, float);
+extern float FastVecDist(void *, void *);
+extern int solve_quadratic_equation(float *, float *, float, float, float);
+extern float step_angle_toward_target(float *, int, float, float);
+extern float vec_distance_xy(void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern float FastDiffRots(float, float);
+extern void euler_to_matrix(void *, void *);
+extern void matrix_from_basis_rows(void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern float gravity_z(float *);
+extern float Spring(float *, float *, float, float, float, float);
+extern float forward_component(void *);
+extern void set_gravity_relative_vector_length_xy(float *, float *, float);
+extern void gravity_set_z(float *, float *, float);
+extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+extern int coll_sphere_mobys(float, void *, int, void *, void *);
+extern void update_hero_target_heading(float, float, float);
+extern void offset_hero_position_against_gravity(float *, float *, float);
+extern int test_hero_animation_frame_window(float);
+extern float compute_directed_angle_delta(int, float, float);
+extern void set_planar_vel(float);
+extern void initialize_moby_transform_history(int, void *);
+extern void create_moby_transform_history_entry(void *, int, int);
+extern void update_moby_transform_history(void *, int);
+extern void emit_filtered_entry_sparkles(int, int);
+extern void turn_hero_toward_move_direction_with_stick_scale(void);
+extern unsigned char *spawn_random_alpha_rotated_particle(void *, void *, float);
+extern void update_hero_ledge_probe(void);
+extern void vec_set_length_xy(void *, void *, float);
+extern void rotate_hero_about_fixed_local_pivot(float, float, float);
+extern void gravity_flatten(float *, float *);
+extern int hero_slot_item_id(int);
+extern void add_hero_forward_offset(void *, void *, float);
+extern void HeroOffsetAlongViewZ(float *, float *, float);
+extern int coll_line(void *, void *, int, int, int);
+extern void transform_hero_local_offset_to_world(float *, float, float, float);
+extern int is_moby_in_class_range_500_to_540(int);
+extern void PostHitMessage(void *, int, int, void *, void *, float);
+extern void probe_hero_airborne_wall_contact(void);
+extern float FastVecDot(void *, void *);
+extern void launch_hero_wrench(void);
+extern void HeroSpeedFromTable(void);
+extern void adjust_hero_pose_targets_from_motion(void);
+extern void update_hero_lean_and_sway_parameters(void);
+extern void hero_integrate_velocity(void);
+extern void air_accel(float);
+extern void Hero_UpdateHopVelocity(void);
 
-extern void func_L00_001FF240(void *, void *, void *);
-extern void func_L00_00233E48(void *, float, float, float);
-extern int func_L00_0025A8E8(int, float, void *, int, float, float, int, int, int);
-extern int func_L00_002AA998(void *, void *, float, float, float, int, float, float);
-extern void func_L00_002AAE20(int, char *);
+extern void add_vectors(void *, void *, void *);
+extern void transform_hero_polar_offset_to_world(void *, float, float, float);
+extern int MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
+extern int SpawnHomingBolt(void *, void *, float, float, float, int, float, float);
+extern void set_tracked_class_5f3_moby_position(int, char *);
 
 /* Hero state machine: per-frame movement and physics for the current hero state (level 15 build). */
 void Hero_UpdateStatePhysicsL15(void) {
@@ -1978,7 +1978,7 @@ void Hero_UpdateStatePhysicsL15(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L15_00167458;
+                g_hero.motion.move_yaw = quartu_camera_yaw;
                 turn_to(0, g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 g_hero.motion.move_yaw = keep;
             }
@@ -2107,7 +2107,7 @@ void Hero_UpdateStatePhysicsL15(void) {
                     g_hero.ground_speed = 0.0f;
                 }
                 if (g_hero.rail_land_frames != 0) {
-                    if (*(int *)(D_0013A5E0 + 0x2634) != 0) {
+                    if (*(int *)(pad_globals_base + 0x2634) != 0) {
                         if (g_hero.on_flagged_ground_moby != 0) {
                             g_hero.ground_speed = 0.0f;
                         }

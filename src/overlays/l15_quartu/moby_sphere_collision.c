@@ -19,12 +19,12 @@ typedef struct {
     f32 normal_y; /* 0x44: FUN_001f9e90 (atan2) of normal_x, normal_y is stored in the hero */
     f32 normal_z; /* 0x48: ledge probes compare atan2(normal_z, xy length) with 20 degrees */
 } CollisionHit;
-extern CollisionHit D_L15_001744C0;
-extern int func_L00_001F10E0(void *, float, int, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern f32 func_001F9CE8(void *);
-extern f32 func_L00_001FF860(f32, f32);
+extern CollisionHit quartu_coll_hit;
+extern int coll_sphere(void *, float, int, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern f32 vec_length_xy(void *);
+extern f32 fast_atan2(f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/math/interpolation/00247e90.c, FUN_L15_00247e90. */
 int move_moby_with_sphere_collision(struct Moby *obj, u128 *delta, int flags, float step, float radius) {

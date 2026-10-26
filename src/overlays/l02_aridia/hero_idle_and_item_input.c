@@ -7,65 +7,65 @@
 
 typedef struct { int a; int b; int c; char pad[0x20]; } T2C_22BE40;
 typedef struct { char pad[0x694]; float f694; } H694_22BE40;
-extern void func_L00_002638B8(char *o);
-extern void func_L00_0020BFA8(void);
-extern void func_L00_0020E9F8(int a, int b);
-extern int func_001F9850(int);
-extern int func_L00_00258BC8(int, int);
-extern void func_L00_0020AB78(void);
-extern void func_L01_00240CE8(void);
-extern int func_L01_002274A8(int a);
-extern void func_001F9BC0(void *);
-extern void func_L00_00232C10(int, int, float);
-extern void func_00213DE0(void *, int, int, int);
-extern void func_L00_002607A8(void *a, float x);
-extern float func_001F9CE8(void *);
-extern void func_L00_00211F80(float, int);
-extern float func_001FA850(float, float);
-extern void func_L00_0020ED30(void);
-extern int func_L00_0022A268(void);
-extern float func_L00_00234250(float *v);
-extern int func_L00_002056D0(int);
-extern int func_L00_00217570(int, int);
-extern void func_L00_00232E60(int bank, int seq);
-extern float func_L00_001FF860(float, float);
-extern float func_001F9D10(void *, void *);
-extern float func_L00_00258C80(float lo, float hi);
-extern void func_L00_002144A0(float);
-extern void func_L00_0020A320(int, int, int);
-extern void func_L00_00263578(int a, char *b);
-extern void func_L00_002635A0(char *o, int a, int b);
-extern float func_L00_0020DCF0(int back);
-extern int func_L00_00222580(void);
-extern int func_001FA898(float);
-extern void func_L00_00215628(float a, float b, float c);
-extern char *func_L00_0020DAF8(int);
-extern int func_L00_00211A18(char *);
-extern float func_001FA748(float, float);
-extern void *func_L00_0025B478(void *, int, int);
-extern void func_L00_002056D8(int n);
-extern void func_L00_00217BD8(void);
-extern int func_L00_0020DC00(void);
-extern void func_L00_00207220(void);
-extern int D_L02_0015F6A8 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern int D_0015EFA4 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
-extern float D_0015EE64 MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern int D_0015EE80 MACRO_ADDR;
-extern float D_0015EE60 MACRO_ADDR;
-extern char D_0013E633[];
-extern char D_0014171B[];
-extern char D_00141780[];
-extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern short D_L02_0015F768;
-extern short D_L02_0015F7B8;
-extern short D_L02_0015F7C8;
-extern char D_L02_0017C5A0[];
-extern unsigned char D_L02_0017C458[];
-extern T2C_22BE40 D_L02_0017C2A8[];
-extern float D_L02_0017C470[][25];
+extern void clear_moby_transform_history(char *o);
+extern void exit_hero_vehicle_mode_if_mode_three(void);
+extern void create_missing_hero_item_slot_animations(int a, int b);
+extern int scale_ticks(int);
+extern int rand_range(int, int);
+extern void clear_hero_idle_rotation_targets(void);
+extern void request_hero_idle_state_for_vehicle_mode(void);
+extern int get_hero_idle_animation_index(int a);
+extern void clear_u64_value(void *);
+extern void set_hero_animation(int, int, float);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern void ClampVectorLength(void *a, float x);
+extern float vec_length_xy(void *);
+extern void stick_target(float, int);
+extern float FastDiffRots(float, float);
+extern void cancel_hero_item_animation(void);
+extern int try_start_hero_item_idle_animation(void);
+extern float gravity_length_xy(float *v);
+extern int return_hero_animation_id_unchanged(int);
+extern int allocate_hero_voice_for_entry(int, int);
+extern void HeroQueueSequence(int bank, int seq);
+extern float fast_atan2(float, float);
+extern float FastVecDist(void *, void *);
+extern float randf_sym(float lo, float hi);
+extern void scale_hero_motion(float);
+extern void emit_hero_surface_effect_burst(int, int, int);
+extern void initialize_moby_transform_history(int a, char *b);
+extern void create_moby_transform_history_entry(char *o, int a, int b);
+extern float get_hero_yaw_history(int back);
+extern int stick_direction_vs_facing(void);
+extern int truncate_float_to_s32(float);
+extern void update_hero_target_heading(float a, float b, float c);
+extern char *hero_slot_moby(int);
+extern int is_wrench_moby(char *);
+extern float FastAddRots(float, float);
+extern void *MobyGetHitMessage(void *, int, int);
+extern void hero_change_health(int n);
+extern void spawn_hero_radial_particle_burst(void);
+extern int Hero_IsInSpecialState(void);
+extern void release_and_clear_hero_voice_slots(void);
+extern int aridia_cinematic_mode MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern int gameplay_event_frame_count MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern int pal_mode MACRO_ADDR;
+extern float frame_scale MACRO_ADDR;
+extern char hero_globals_base[];
+extern char help_stats_base[];
+extern char item_usage[];
+extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern short aridia_usage_event_timer;
+extern short aridia_hero_run_step_start_frames;
+extern short aridia_hero_state_f_jump_velocity_keys;
+extern char aridia_hero_state_d_jump_velocity_keys[];
+extern unsigned char aridia_hero_run_jump_land_anim_by_frame[];
+extern T2C_22BE40 aridia_attack_records[];
+extern float aridia_hero_anim_time_curves[][25];
 
 /* Puts the hero into move state A (with its animation when B is set); returns 0 when the change is refused. */
 int HeroL02_SetMoveState(int a, int b) {
@@ -73,18 +73,18 @@ int HeroL02_SetMoveState(int a, int b) {
     char *moby;
     int old20A7;
     {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         if (*(int *)(p + 0x208C) == 0x14 && (a != 0x64 || b != 2)) return 0;
     }
     if ((aridia_cinematic_mode == 2 || aridia_cinematic_mode == 6) && b != 2) return 0;
     {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         if (*(int *)(p + 0x22A8) == 0 && (*(int *)(p + 0x208C) == 2 || *(int *)(p + 0x208C) == 7)
             && a != 6 && a != 0x3D && a != 0x47 && a != 0x57 && a != 0x62 && a != 0x77
             && a != 0x7B && a != 0x7C && a != 0x7F && a != 0x6A && a != 0x80 && a != 0x82) return 0;
     }
     {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         old2088 = *(int *)(p + 0x2088);
         moby = *(char **)(p + 0x2080);
         old20A7 = *(unsigned char *)(p + 0x20A7);
@@ -115,13 +115,13 @@ int HeroL02_SetMoveState(int a, int b) {
         }
     }
     {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         create_missing_hero_item_slot_animations(*(int *)(p + 0x2090), *(int *)(p + 0x2084));
         *(int *)(p + 0xFF8) = 0;
     }
     switch (a) {
     case 0: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0;
         *(int *)(p + 0x2284) = 0;
         *(int *)(p + 0x1010) = rand_range(scale_ticks(0x32), scale_ticks(0x64));
@@ -136,7 +136,7 @@ int HeroL02_SetMoveState(int a, int b) {
             return 0;
         }
         {
-            char *q = D_0013E633 + 0xE1D;
+            char *q = hero_globals_base + 0xE1D;
             *(int *)(q + 0xFF8) = 0x68;
         }
         if (b) {
@@ -149,7 +149,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x67: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0;
         *(int *)(p + 0x2284) = 0;
         clear_u64_value(p + 0x150);
@@ -167,7 +167,7 @@ int HeroL02_SetMoveState(int a, int b) {
         int t = scale_ticks(9);
         set_hero_animation(get_hero_idle_animation_index(0), 0, (float)t);
         {
-            char *p = D_0013E633 + 0xE1D;
+            char *p = hero_globals_base + 0xE1D;
             if (*(void **)(p + 0x1614) != 0) {
                 MobyBlendAnimation(*(void **)(p + 0x1614), 0, 0, t);
             }
@@ -175,7 +175,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x3D: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0x14;
         *(int *)(p + 0x2284) = 0;
         qcopy(p + 0x150, p + 0x110);
@@ -183,7 +183,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x80: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0x14;
         *(int *)(p + 0x2284) = 0;
         *(int *)(p + 0x22A8) = 0;
@@ -193,7 +193,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x7F: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0x14;
         *(int *)(p + 0x2284) = 0;
         *(int *)(p + 0x22A8) = 0;
@@ -207,7 +207,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 1: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         int t;
         *(int *)(p + 0x208C) = 0;
         *(int *)(p + 0x2284) = 4;
@@ -221,7 +221,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x17: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 8;
         *(int *)(p + 0x2284) = 0;
         qcopy(p + 0x150, p + 0x100);
@@ -230,7 +230,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x30: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 8;
         *(int *)(p + 0x2284) = 0;
         qcopy(p + 0x150, p + 0x100);
@@ -239,7 +239,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x2E: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 1;
         *(int *)(p + 0x2284) = 0;
         *(float *)(p + 0x194) = vec_length_xy(p + 0x100);
@@ -252,26 +252,26 @@ int HeroL02_SetMoveState(int a, int b) {
     case 2:
     case 0x3F:
     case 0x73: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 1;
         *(int *)(p + 0x2284) = 0;
         if (*(int *)(p + 0x2094) != 4 && *(int *)(p + 0x20A0) != 4) {
             *(float *)(p + 0x194) = vec_length_xy(p + 0x110);
         }
         {
-            char *q = D_0013E633 + 0xE1D;
+            char *q = hero_globals_base + 0xE1D;
             if (g_frame_time * 7.0f < *(float *)(q + 0x194)) *(float *)(q + 0x194) = g_frame_time * 7.0f;
             *(short *)(q + 0x3BE) = 0;
             stick_target(1.0f, 0);
             if (1.5707964f < FastDiffRots(*(float *)(q + 0x98), *(float *)(q + 0x180))) {
                 if (*(int *)(q + 0x2094) == 7 || *(int *)(q + 0x2090) == 3 || *(int *)(q + 0x209C) == 3) {
-                    char *r = D_0013E633 + 0xE1D;
+                    char *r = hero_globals_base + 0xE1D;
                     *(float *)(r + 0x194) = 0.0f;
                 }
             }
         }
         {
-            char *s = D_0013E633 + 0xE1D;
+            char *s = hero_globals_base + 0xE1D;
             *(int *)(s + 0xFF8) = 0x68;
             if (*(unsigned char *)(s + 0x12EA) != 0 && *(short *)(s + 0x30C) == 0) {
                 HeroL02_SetMoveState(0x79, 1);
@@ -279,7 +279,7 @@ int HeroL02_SetMoveState(int a, int b) {
             }
         }
         {
-            char *t = D_0013E633 + 0xE1D;
+            char *t = hero_globals_base + 0xE1D;
             if (*(short *)(t + 0x308) == 1 || *(int *)(t + 0x2084) == 0x3F) {
                 *(int *)(t + 0x2084) = 0x3F;
                 set_hero_animation(0x5B, 0, (float)scale_ticks(8));
@@ -293,19 +293,19 @@ int HeroL02_SetMoveState(int a, int b) {
                 if (*(int *)(t + 0x209C) == 0x23) n = scale_ticks(0xF);
                 if (*(int *)(t + 0x209C) == 6 || *(int *)(t + 0x209C) == 0x2D) n = scale_ticks(0x12);
                 {
-                    char *u = D_0013E633 + 0xE1D;
+                    char *u = hero_globals_base + 0xE1D;
                     if (*(int *)(u + 0x20A0) == 4 && scale_ticks(5) < *(int *)(u + 0x418)) n = scale_ticks(0xD);
                 }
                 if (b) {
-                    char *v = D_0013E633 + 0xE1D;
-                    set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&D_L02_0015F7B8)[*(int *)(v + 0x2088)], (float)n);
+                    char *v = hero_globals_base + 0xE1D;
+                    set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&aridia_hero_run_step_start_frames)[*(int *)(v + 0x2088)], (float)n);
                 }
             }
         }
         break;
     }
     case 0x71: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 1;
         *(int *)(p + 0x2284) = 0;
         if (b) {
@@ -318,7 +318,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x65: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 1;
         *(int *)(p + 0x2284) = 0;
         *(float *)(p + 0x194) = vec_length_xy(p + 0x110);
@@ -330,13 +330,13 @@ int HeroL02_SetMoveState(int a, int b) {
             } else if (*(unsigned char *)(p + 0x20A4) == 1) {
                 set_hero_animation(2, 0, (float)scale_ticks(8));
             } else if (*(unsigned char *)(p + 0x20A4) == 0) {
-                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&D_L02_0015F7B8)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
+                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&aridia_hero_run_step_start_frames)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
             }
         }
         break;
     }
     case 3: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 1;
         *(int *)(p + 0x2284) = 0;
         qcopy(p + 0x150, p + 0x110);
@@ -352,7 +352,7 @@ int HeroL02_SetMoveState(int a, int b) {
             return 0;
         }
         if (b) {
-            char *q = D_0013E633 + 0xE1D;
+            char *q = hero_globals_base + 0xE1D;
             float d = *(float *)(q + 0xAA8);
             int id = 6;
             if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4 && 3.0f < d && d < 16.0f) id = 5;
@@ -361,7 +361,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x66: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         char *v = p + 0x110;
         *(int *)(p + 0x208C) = 1;
         *(int *)(p + 0x2284) = 0;
@@ -376,7 +376,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 4: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0xC;
         *(int *)(p + 0x2284) = 0;
         *(float *)(p + 0x194) = vec_length_xy(p + 0x110);
@@ -386,7 +386,7 @@ int HeroL02_SetMoveState(int a, int b) {
             return 0;
         }
         {
-            char *q = D_0013E633 + 0xE1D;
+            char *q = hero_globals_base + 0xE1D;
             *(int *)(q + 0xFF8) = 0x68;
             qcopy(q + 0x150, q + 0x110);
             ClampVectorLength(q + 0x150, g_frame_time * 7.0f);
@@ -403,11 +403,11 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x24: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0xD;
         *(int *)(p + 0x2284) = 7;
         {
-            char *h = D_0014171B + 0x65;
+            char *h = help_stats_base + 0x65;
             if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
                 *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
             }
@@ -424,7 +424,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x25: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0xD;
         *(int *)(p + 0x2284) = 7;
         *(int *)(p + 0x960) = 0;
@@ -434,7 +434,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x26: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0xD;
         *(int *)(p + 0x2284) = 7;
         *(unsigned char *)(p + 0x20AC) = 1;
@@ -445,12 +445,12 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x2C: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         char *d;
         *(int *)(p + 0x208C) = 0xE;
         *(int *)(p + 0x2284) = 7;
         {
-            char *h = D_0014171B + 0x65;
+            char *h = help_stats_base + 0x65;
             if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
                 *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
             }
@@ -475,7 +475,7 @@ int HeroL02_SetMoveState(int a, int b) {
             *(float *)(d + 0x14) = *(float *)(d + 0x10);
         }
         {
-            char *q = D_0013E633 + 0xE1D;
+            char *q = hero_globals_base + 0xE1D;
             *(float *)(q + 0x9C4) = g_frame_scale_sq * 0.025f;
             *(float *)(q + 0x9C8) = g_frame_scale_sq * 0.33f;
             *(float *)(q + 0x9CC) = g_frame_time * 11.0f;
@@ -495,7 +495,7 @@ int HeroL02_SetMoveState(int a, int b) {
             if (b) {
                 set_hero_animation(0x34, 0, (float)scale_ticks(0xB));
                 {
-                    char *r = D_0013E633 + 0xE1D;
+                    char *r = hero_globals_base + 0xE1D;
                     *(float *)(r + 0xA90) = 0.7f;
                 }
             }
@@ -503,7 +503,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x2D: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 2;
         *(int *)(p + 0x2284) = 7;
         clear_u64_value(p + 0xA0);
@@ -512,7 +512,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x22: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0xB;
         *(float *)(p + 0x4C0) = 39.0f;
         *(int *)(p + 0x2284) = 0x50;
@@ -523,7 +523,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x18: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 3;
         *(int *)(p + 0x2284) = 0xD;
         *(float *)(p + 0x4EC) = g_frame_time_sq * 24.0f;
@@ -543,7 +543,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x19: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 3;
         *(int *)(p + 0x2284) = 0xD;
         *(unsigned char *)(p + 0x20A7) = 1;
@@ -552,7 +552,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x1A: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 3;
         *(int *)(p + 0x2284) = 0xD;
         *(unsigned char *)(p + 0x20A7) = 1;
@@ -560,7 +560,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x1B: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 3;
         *(int *)(p + 0x2284) = 0xD;
         *(unsigned char *)(p + 0x20A7) = 1;
@@ -568,7 +568,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x79: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 2;
         *(int *)(p + 0x2284) = 0;
         qcopy(p + 0xE0, p + 0x110);
@@ -577,7 +577,7 @@ int HeroL02_SetMoveState(int a, int b) {
     }
     case 6:
     case 0x77: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 2;
         *(int *)(p + 0x2284) = 0;
         *(float *)(p + 0x940) = g_frame_time_sq * 24.0f;
@@ -590,7 +590,7 @@ int HeroL02_SetMoveState(int a, int b) {
             *(float *)(p + 0x954) = randf_sym(g_frame_time * 3.1415927f, g_frame_time * 4.3633232f);
         }
         {
-            char *q = D_0013E633 + 0xE1D;
+            char *q = hero_globals_base + 0xE1D;
             *(int *)(q + 0xFF8) = 0x68;
             *(int *)(q + 0x2088) = 0;
             qcopy(q + 0xE0, q + 0x110);
@@ -610,7 +610,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x81: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         int t81 = -2;
         *(int *)(p + 0x208C) = 1;
         *(unsigned char *)(p + 0x22CA) = 1;
@@ -626,7 +626,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 8: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         int t8 = -2;
         *(int *)(p + 0x208C) = 5;
         *(int *)(p + 0xFF8) = 0x68;
@@ -659,7 +659,7 @@ int HeroL02_SetMoveState(int a, int b) {
     case 0x4C:
     case 0x5E:
     case 0x69: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         if (*(short *)(p + 0x1F2) != 0) {
             *(int *)(p + 0x2084) = *(int *)(p + 0x2090);
             *(int *)(p + 0x2088) = old2088;
@@ -673,7 +673,7 @@ int HeroL02_SetMoveState(int a, int b) {
             *(int *)(p + 0x2284) = 0x50;
         }
         {
-            char *v = D_0013E633 + 0xEFD;
+            char *v = hero_globals_base + 0xEFD;
             char *r;
             qcopy(v, v + 0x30);
             r = v - 0xE0;
@@ -684,7 +684,7 @@ int HeroL02_SetMoveState(int a, int b) {
             }
         }
         {
-            char *u = D_0013E633 + 0xE1D;
+            char *u = hero_globals_base + 0xE1D;
             if (*(int *)(u + 0x2084) == 0x69) allocate_hero_voice_for_entry(0xA, 0);
             *(float *)(u + 0x410) = *(float *)(u + 0x88);
             *(float *)(u + 0x4A0) = g_frame_time_sq * 29.7f;
@@ -733,7 +733,7 @@ int HeroL02_SetMoveState(int a, int b) {
                     v = *(float *)(u + 0x3F8);
                 }
                 {
-                    char *w = D_0013E633 + 0xE1D;
+                    char *w = hero_globals_base + 0xE1D;
                     *(float *)(w + 0x430) = v + 1.7f;
                     *(int *)(w + 0x420) = scale_ticks(5);
                     *(float *)(w + 0x434) = 0.6f;
@@ -875,7 +875,7 @@ int HeroL02_SetMoveState(int a, int b) {
                     *(int *)(u + 0x3D0) = scale_ticks(0x23);
                 }
                 {
-                    char *w = D_0013E633 + 0xE1D;
+                    char *w = hero_globals_base + 0xE1D;
                     *(int *)(w + 0x3D4) = scale_ticks(0x24) + *(int *)(w + 0x3D0);
                     *(float *)(w + 0x3D8) = 29.0f;
                     *(float *)(w + 0x3DC) = 50.0f;
@@ -920,7 +920,7 @@ int HeroL02_SetMoveState(int a, int b) {
                     *(float *)(u + 0x454) = 0.0f;
                 }
                 {
-                    char *w = D_0013E633 + 0xE1D;
+                    char *w = hero_globals_base + 0xE1D;
                     *(int *)(w + 0x458) = 0;
                     *(short *)(w + 0x4AC) = 1;
                     *(unsigned char *)(w + 0x4AE) = 1;
@@ -928,7 +928,7 @@ int HeroL02_SetMoveState(int a, int b) {
             }
         }
         {
-            char *q = D_0013E633 + 0xE1D;
+            char *q = hero_globals_base + 0xE1D;
             if (*(float *)(q + 0x490) == 0.0f) *(float *)(q + 0x490) = *(float *)(q + 0x430) * 1.5f;
             if (b) {
                 int s = *(int *)(q + 0x2084);
@@ -965,7 +965,7 @@ int HeroL02_SetMoveState(int a, int b) {
                     int id;
                     if (*(int *)(q + 0x450) == 2) *(int *)(q + 0x450) = 0;
                     id = *(int *)(q + 0x450) + 0x1C;
-                    if (D_0015EEB4_m[1] != 0) {
+                    if (draw_map51_m[1] != 0) {
                         if (id == 0x1C) {
                             id = 0x1D;
                         } else if (id == 0x1D) {
@@ -973,7 +973,7 @@ int HeroL02_SetMoveState(int a, int b) {
                         }
                     }
                     {
-                        char *w = D_0013E633 + 0xE1D;
+                        char *w = hero_globals_base + 0xE1D;
                         if (*(int *)(w + 0x2094) == 4) {
                             set_hero_animation(id, 1, (float)scale_ticks(4));
                             *(int *)(w + 0x420) = scale_ticks(1);
@@ -992,7 +992,7 @@ int HeroL02_SetMoveState(int a, int b) {
     case 0x20:
     case 0x23:
     case 0x51: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 6;
         *(float *)(p + 0xA6C) = 1.0f;
         *(int *)(p + 0x2284) = 0;
@@ -1001,7 +1001,7 @@ int HeroL02_SetMoveState(int a, int b) {
         *(int *)(p + 0xA64) = 0;
         switch (*(int *)(p + 0x2084)) {
         case 0x14: {
-            char *h = D_0014171B + 0x22D;
+            char *h = help_stats_base + 0x22D;
             char *q;
             if (*(unsigned short *)(h + 0) <= 0xFFFE) {
                 *(unsigned short *)(h + 0) = *(unsigned short *)(h + 0) + 1;
@@ -1010,7 +1010,7 @@ int HeroL02_SetMoveState(int a, int b) {
                 *(unsigned short *)(h + 2) = scale_ticks(gameplay_event_frame_count) / 600;
             }
             *(unsigned int *)(h + 4) = *(unsigned int *)(h + 4) | (1 << g_current_level_index) | 0x80000000;
-            q = D_0013E633 + 0xE1D;
+            q = hero_globals_base + 0xE1D;
             *(int *)(q + 0x2284) = 0x50;
             *(int *)(q + 0xA60) = 4;
             *(int *)(q + 0x20F0) = 0;
@@ -1028,7 +1028,7 @@ int HeroL02_SetMoveState(int a, int b) {
             break;
         }
         case 0x15: {
-            char *h = D_0014171B + 0x22D;
+            char *h = help_stats_base + 0x22D;
             char *h2;
             char *q;
             if (*(unsigned short *)(h + 8) <= 0xFFFE) {
@@ -1046,7 +1046,7 @@ int HeroL02_SetMoveState(int a, int b) {
                 *(unsigned short *)(h2 + 0x12A) = scale_ticks(gameplay_event_frame_count) / 600;
             }
             *(unsigned int *)(h2 + 0x12C) = *(unsigned int *)(h2 + 0x12C) | (1 << g_current_level_index) | 0x80000000;
-            q = D_0013E633 + 0xE1D;
+            q = hero_globals_base + 0xE1D;
             *(int *)(q + 0xA60) = 3;
             *(int *)(q + 0x20F0) = 0;
             update_hero_target_heading(14.0f, 0.5235988f, -1.0f);
@@ -1061,7 +1061,7 @@ int HeroL02_SetMoveState(int a, int b) {
             break;
         }
         case 0x20: {
-            char *q = D_0013E633 + 0xE1D;
+            char *q = hero_globals_base + 0xE1D;
             if (*(void **)(q + 0x1090) == 0) break;
             if (b) {
                 set_hero_animation(0x67, 4, -1.0f);
@@ -1071,7 +1071,7 @@ int HeroL02_SetMoveState(int a, int b) {
             break;
         }
         case 0x13: {
-            char *h = D_0014171B + 0x65;
+            char *h = help_stats_base + 0x65;
             char *q;
             T2C_22BE40 *e;
             int k;
@@ -1081,7 +1081,7 @@ int HeroL02_SetMoveState(int a, int b) {
             if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0x42)) {
                 *(unsigned short *)(h + 0x42) = scale_ticks(gameplay_event_frame_count) / 600;
             }
-            q = D_0013E633 + 0xE1D;
+            q = hero_globals_base + 0xE1D;
             *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;
             e = &aridia_attack_records[*(int *)(q + 0xA60)];
             *(int *)(q + 0x20F0) = 0;
@@ -1090,7 +1090,7 @@ int HeroL02_SetMoveState(int a, int b) {
                 k = (e->b + 1) % 3;
             }
             {
-                char *r = D_0013E633 + 0xE1D;
+                char *r = hero_globals_base + 0xE1D;
                 *(int *)(r + 0xA60) = k;
             }
             update_hero_target_heading(5.0f, 0.7853982f, 0.7853982f);
@@ -1108,7 +1108,7 @@ int HeroL02_SetMoveState(int a, int b) {
                     n = scale_ticks(7);
                 }
                 {
-                    char *r = D_0013E633 + 0xE1D;
+                    char *r = hero_globals_base + 0xE1D;
                     if (*(int *)(r + 0xA58) != 0 && k < 2) {
                         n += truncate_float_to_s32(FastDiffRots(*(float *)(r + 0xA5C), *(float *)(r + 0x98)) * 1.5f);
                     }
@@ -1123,7 +1123,7 @@ int HeroL02_SetMoveState(int a, int b) {
         case 0x23: {
             char *q;
             if (b) set_hero_animation(0x2C, 7, (float)scale_ticks(9));
-            q = D_0013E633 + 0xE1D;
+            q = hero_globals_base + 0xE1D;
             if (*(int *)(q + 0x10B8) == 0xA && *(char **)(q + 0xA50) != 0) {
                 *(int *)(q + 0xA58) = 1;
                 *(float *)(q + 0xA5C) = fast_atan2(*(float *)(*(char **)(q + 0xA50) + 0x10) - *(float *)(q + 0x80), *(float *)(*(char **)(q + 0xA50) + 0x14) - *(float *)(q + 0x84));
@@ -1134,7 +1134,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x70: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 6;
         *(int *)(p + 0xA64) = 0;
         if (*(int *)(p + 0x2090) == 0x70) {
@@ -1145,7 +1145,7 @@ int HeroL02_SetMoveState(int a, int b) {
             *(int *)(p + 0xA60) = 5;
         }
         {
-            char *q = D_0013E633 + 0xE1D;
+            char *q = hero_globals_base + 0xE1D;
             int e = aridia_attack_records[*(int *)(q + 0xA60)].b;
             if (b) {
                 char *m;
@@ -1159,7 +1159,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x21: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0xA;
         *(int *)(p + 0x2284) = 0;
         *(float *)(p + 0x194) = g_frame_time * 9.0f;
@@ -1177,7 +1177,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x7A: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0xA;
         *(int *)(p + 0x2284) = 0;
         *(float *)(p + 0xA68) = FastAddRots(*(float *)(p + 0x98), 3.1415927f);
@@ -1186,7 +1186,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x16: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         char *r;
         *(int *)(p + 0x208C) = 7;
         *(int *)(p + 0x2284) = 0;
@@ -1201,7 +1201,7 @@ int HeroL02_SetMoveState(int a, int b) {
             hero_change_health(1);
         }
         {
-            char *q = D_0013E633 + 0xE1D;
+            char *q = hero_globals_base + 0xE1D;
             *(int *)(q + 0x1C0) = scale_ticks(0x4D);
             if (b) {
                 set_hero_animation(0x10, 3, -3.0f);
@@ -1211,15 +1211,15 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x68: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         if (*(int *)(p + 0x2090) == 0x69 || (*(int *)(p + 0x209C) == 0x69 && *(int *)(p + 0x2094) != 0 && *(int *)(p + 0x2090) != 7)) {
             *(int *)(p + 0x1660) = *(int *)(p + 0x1660) + 1;
         } else {
-            char *q = D_0013E633 + 0xE1D;
+            char *q = hero_globals_base + 0xE1D;
             *(int *)(q + 0x1660) = 0;
         }
         {
-            char *r = D_0013E633 + 0xE1D;
+            char *r = hero_globals_base + 0xE1D;
             *(int *)(r + 0x208C) = 0x19;
             *(int *)(r + 0x2284) = 0;
             allocate_hero_voice_for_entry(9, 0);
@@ -1231,7 +1231,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x7B: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0x19;
         *(int *)(p + 0x2284) = 0;
         if (g_current_level_index == 0xF) spawn_hero_radial_particle_burst();
@@ -1242,7 +1242,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x53: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0;
         *(int *)(p + 0x2284) = 0;
         if (*(unsigned char *)(p + 0x12EA) != 0 && *(short *)(p + 0x30C) == 0) {
@@ -1253,7 +1253,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x59: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0;
         *(int *)(p + 0x2284) = 0;
         if (b) {
@@ -1263,7 +1263,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x58: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 2;
         *(int *)(p + 0x2284) = 0;
         qcopy(p + 0xE0, p + 0x110);
@@ -1271,7 +1271,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x55: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 2;
         *(int *)(p + 0x2284) = 0;
         *(float *)(p + 0x940) = g_frame_time_sq * 24.0f;
@@ -1281,7 +1281,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x54: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 1;
         *(int *)(p + 0x2284) = 0;
         if (*(unsigned char *)(p + 0x12EA) != 0 && *(short *)(p + 0x30C) == 0) {
@@ -1289,7 +1289,7 @@ int HeroL02_SetMoveState(int a, int b) {
             return 0;
         }
         {
-            char *v = D_0013E633 + 0xF2D;
+            char *v = hero_globals_base + 0xF2D;
             char *g;
             float r = vec_length_xy(v);
             g = v - 0x110;
@@ -1301,7 +1301,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x57: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0x14;
         *(int *)(p + 0x2284) = 0;
         qcopy(p + 0x150, p + 0x110);
@@ -1309,7 +1309,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x56: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 7;
         *(int *)(p + 0x2284) = 0;
         scale_hero_motion(0.5f);
@@ -1324,7 +1324,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x42: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0xF;
         *(int *)(p + 0x2284) = 0;
         if (*(int *)(p + 0x570) == 0) hero_change_health(1);
@@ -1339,7 +1339,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x1D: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 9;
         *(unsigned char *)(p + 0x20AC) = 1;
         *(int *)(p + 0x2284) = 0;
@@ -1347,7 +1347,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x1E: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x2284) = 0x51;
         *(int *)(p + 0x208C) = 0;
         if (return_hero_animation_id_unchanged(*(unsigned char *)(*(char **)(p + 0x2080) + 0x53)) != get_hero_idle_animation_index(1)) {
@@ -1356,14 +1356,14 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x1F: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 9;
         *(int *)(p + 0x2284) = 0;
         set_hero_animation(get_hero_idle_animation_index(0), 0, (float)scale_ticks(0xA));
         break;
     }
     case 0x72: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 9;
         *(unsigned char *)(p + 0x20AC) = 1;
         *(int *)(p + 0x2284) = 0;
@@ -1372,14 +1372,14 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x27: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 8;
         *(int *)(p + 0x2284) = 0;
         set_hero_animation(get_hero_idle_animation_index(0), 0, (float)scale_ticks(0xA));
         break;
     }
     case 0x32: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 9;
         *(int *)(p + 0x2284) = 0;
         *(unsigned char *)(p + 0x20A7) = 1;
@@ -1389,7 +1389,7 @@ int HeroL02_SetMoveState(int a, int b) {
         break;
     }
     case 0x78: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 9;
         *(int *)(p + 0x2284) = 0;
         *(unsigned char *)(p + 0x20A7) = 1;
@@ -1400,7 +1400,7 @@ int HeroL02_SetMoveState(int a, int b) {
     }
     case 0x63:
     case 0x64: {
-        char *p = D_0013E633 + 0xE1D;
+        char *p = hero_globals_base + 0xE1D;
         *(int *)(p + 0x208C) = 0x18;
         *(unsigned char *)(p + 0x20AC) = 1;
         cancel_hero_item_animation();
@@ -1409,31 +1409,31 @@ int HeroL02_SetMoveState(int a, int b) {
     }
     }
     if (old20A7 != 0) {
-        char *t = D_0013E633 + 0xE1D;
+        char *t = hero_globals_base + 0xE1D;
         if (*(unsigned char *)(t + 0x20A7) == 0) {
             *(int *)(t + 0x210C) = 1;
         }
     }
     {
-        char *t = D_0013E633 + 0xE1D;
+        char *t = hero_globals_base + 0xE1D;
         if (*(short *)(t + 0x308) == 0 && *(int *)(t + 0x1108) == 0x1C && *(int *)(t + 0x20F4) != 0) {
             *(int *)(t + 0x2110) = 1;
         }
     }
     {
-        char *t = D_0013E633 + 0xE1D;
+        char *t = hero_globals_base + 0xE1D;
         if (*(int *)(t + 0x208C) != 0xF && *(int *)(t + 0x1108) == 0x1D && *(int *)(t + 0x20F4) != 0) {
             *(int *)(t + 0x2110) = 1;
         }
     }
     if (Hero_IsInSpecialState() == 0) {
-        char *t = D_0013E633 + 0xE1D;
+        char *t = hero_globals_base + 0xE1D;
         if (*(int *)(t + 0x1108) == 0 && *(int *)(t + 0x20F4) != 0) {
             *(int *)(t + 0x2110) = 1;
         }
     }
     {
-        char *t = D_0013E633 + 0xE1D;
+        char *t = hero_globals_base + 0xE1D;
         if (*(int *)(t + 0x208C) == 0x14) {
             cancel_hero_item_animation();
             *(unsigned char *)(t + 0x20AC) = 1;
@@ -1456,76 +1456,76 @@ typedef struct { char p0[0xC]; int fC; char p1[4]; int f14; int f18; char p2[0x1
 typedef struct { char p0[0x254]; float f254; float f258; } S17AD00;
 typedef struct { char p0[0xC]; float fC; char p1[8]; float f18; } S17C438;
 typedef struct { char p0[0xF8]; unsigned short fF8; unsigned short fFA; int fFC; } S141948;
-extern Hero D_0013F450;
-extern PadState D_0013CA40;
-extern S141948 D_00141948;
-extern int D_00141760;
-extern unsigned char D_0013D5C8[];
-extern int D_0015EE98 MACRO_ADDR;
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int D_0015EE8C MACRO_ADDR;
-extern float D_L02_0015F718 MACRO_ADDR;
-extern int D_L02_0015F674 MACRO_ADDR;
-extern int D_L02_0015F7BC MACRO_ADDR;
-extern short D_L02_0015F758;
-extern float D_L02_00167458;
-extern int D_L02_0016CE00;
-extern S17AD00 D_L02_0017AD00;
-extern Rec70 D_L02_00179F10[];
-extern Rec4C D_L02_0017A140[];
-extern Rec2C D_L02_0017C2A8_rec[] __asm__("D_L02_0017C2A8");
-extern S17C438 D_L02_0017C438;
-extern void func_L00_00238478(void);
-extern void func_L00_00238530(void);
-extern void func_L00_00238C30(void);
-extern void func_L00_0023A658(void);
-extern void func_L00_0023A690(void);
-extern void func_L00_0023A788(void);
-extern int func_L02_002205B0(int);
-extern int func_L02_0022F568(void);
-extern int func_L00_00227E90(void);
-extern int func_001FFB38(int, int, int, int, int, int, int);
-extern int func_L00_00235790_r(void) __asm__("func_L00_00235790");
-extern void func_L00_002367A8(int, int);
-extern int func_001F9938(void *);
-extern void func_L00_00232EA8(void);
-extern int func_L00_0020DB30(int);
-extern int func_L00_002297E0(int *);
-extern float func_001F9878(float);
-extern int func_L02_0022BE40(int a, int b);
-extern void func_001F9908(int *arg0);
-extern int func_001F9908_r(int *) __asm__("func_001F9908");
-extern void func_L00_00232560(void);
-extern int func_L00_00229348(int, int);
-extern int func_L00_00267BA8(int, int, int *);
-extern void func_L01_002283E0(int a0, int a1, int a2);
-extern void func_L02_002211C0(void);
-extern void func_L00_00229778(void);
-extern float func_L02_002368E8(float a, float b, float c);
-extern float func_L00_00209598(float a, float b, float c, float d);
-extern int func_L00_00229E30(void);
-extern void func_L00_00232EC0(int id);
-extern int func_L00_0022A0E0(void);
-extern float func_L00_00267CC8(int);
-extern float func_001F9D48(void *, void *);
-extern void func_L00_002293E8(void);
-extern int func_L01_0022DE30(float *, float *);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_L00_00211908(void);
-extern void func_L00_002343A0(float *dst, float *src, float z);
-extern int func_L00_00267C48(int, int, int, int);
-extern void func_L00_00233B08(float a, float b, short c, unsigned char d, unsigned char e, unsigned char f);
-extern int func_L00_00222520(void);
-extern float func_001F9CB8(void *a);
-extern float func_L00_002344B0(float *pos, float *vel, int *steps, float step);
-extern float func_00214D28(float *p, float target, float maxstep);
-extern void func_001F9C30(void *, void *, float);
-extern void func_L01_002428E0(void);
-extern float func_L00_002342F8(float *v);
-extern float func_001F9B88(float);
-extern float func_002140F8(float a, float b);
-extern void func_L00_00210558(int i);
+extern Hero g_hero;
+extern PadState g_controller_state;
+extern S141948 usage_stats;
+extern int last_weapon_id;
+extern unsigned char item_available[];
+extern int gBolts MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int quick_swap_item MACRO_ADDR;
+extern float aridia_hero_fall_state_height MACRO_ADDR;
+extern int aridia_shown_help_message MACRO_ADDR;
+extern int aridia_hero_run_step1_start_frame MACRO_ADDR;
+extern short aridia_hero_double_tap_timer;
+extern float aridia_player_camera_yaw;
+extern int aridia_hero_state_1e_clear_word;
+extern S17AD00 aridia_lean_state;
+extern Rec70 aridia_idle_fidgets[];
+extern Rec4C aridia_item_defs[];
+extern Rec2C aridia_attack_records_rec[] __asm__("D_L02_0017C2A8");
+extern S17C438 aridia_hero_speed_bands;
+extern void initialize_eight_slot_hud_selector(void);
+extern void update_hud_item_selector_selection_and_visibility(void);
+extern void draw_hud_item_selector_panel(void);
+extern void initialize_bolt_counter_hud(void);
+extern void update_bolt_counter_hud_animation_and_visibility(void);
+extern void draw_bolt_counter_hud_panel(void);
+extern int HeroL02_TryKnockback(int);
+extern int process_hero_item_action_input(void);
+extern int try_start_hero_weapon_fire_state(void);
+extern int queue_animation_update(int, int, int, int, int, int, int);
+extern int show_health_hud_r(void) __asm__("func_L00_00235790");
+extern void hud_keep_visible(int, int);
+extern int FastDecTimer(void *);
+extern void clear_hero_queued_animation(void);
+extern int hero_slot_item_id(int);
+extern int pick_idle_fidget(int *);
+extern float multiply_global_factor(float);
+extern int HeroL02_SetMoveState(int a, int b);
+extern void fast_dec_timer(int *arg0);
+extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
+extern void blend_hero_slot3_animation_pair(void);
+extern int try_start_hero_jump(int, int);
+extern int pad_pressed_within(int, int, int *);
+extern void request_hero_voice_if_enabled(int a0, int a1, int a2);
+extern void update_hero_stick_target_magnitude(void);
+extern void remove_hero_cached_moby_and_clear_slot_three_moby_flags(void);
+extern float resolve_hero_trajectory_parameter(float a, float b, float c);
+extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
+extern int hero_handle_jump_press(void);
+extern void Hero_SetAttackTicks(int id);
+extern int check_hero_forward_collision_height(void);
+extern float read_pad_float_history(int);
+extern float vec_distance_xy(void *, void *);
+extern void update_hero_animation_for_movement_speed(void);
+extern int test_hero_ledge_ahead(float *, float *);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void Hero_OnKilled(void);
+extern void gravity_set_z(float *dst, float *src, float z);
+extern int check_pad_press_separation(int, int, int, int);
+extern void configure_hero_point_effect_emission(float a, float b, short c, unsigned char d, unsigned char e, unsigned char f);
+extern int get_hero_high_jump_input_window_frames(void);
+extern float FastVecLength(void *a);
+extern float predict_hero_trajectory_z(float *pos, float *vel, int *steps, float step);
+extern float ApproachValue(float *p, float target, float maxstep);
+extern void FastVecScale(void *, void *, float);
+extern void select_hero_locomotion_state(void);
+extern float gravity_z(float *v);
+extern float FastAbsF(float);
+extern float random_float_between(float a, float b);
+extern void hero_switch_item(int i);
 
 /* Hero state machine: per-frame transition logic for the current hero state (level 02 build). */
 void HeroL02_UpdateStateTransitions(void) {
@@ -1565,7 +1565,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         g_hero.item_selector_timer = scale_ticks(0xF);
                     }
                     queue_animation_update(3, 0, (int)initialize_eight_slot_hud_selector, (int)update_hud_item_selector_selection_and_visibility, (int)draw_hud_item_selector_panel, 0, 0);
-                    id = func_L00_00235790_r();
+                    id = show_health_hud_r();
                     hud_keep_visible(id, scale_ticks(0xB4));
                     id = queue_animation_update(2, 0x754E, (int)initialize_bolt_counter_hud, (int)update_bolt_counter_hud_animation_and_visibility, (int)draw_bolt_counter_hud_panel, (int)&gBolts, 0x98967F);
                     hud_keep_visible(id, scale_ticks(0xB4));
@@ -1591,7 +1591,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.fFA) {
                             usage_stats.fFA = scale_ticks(gameplay_event_frame_count) / 600;
                         }
-                        usage_stats.fFC = usage_stats.fFC | (1 << D_0015EE84_m) | 0x80000000;
+                        usage_stats.fFC = usage_stats.fFC | (1 << g_current_level_index_m) | 0x80000000;
                         g_hero.pending_item[0] = next;
                         g_hero.quick_swap_tap_timer = 0;
                         g_hero.quick_swap_tap_window = 0;
@@ -1680,7 +1680,7 @@ void HeroL02_UpdateStateTransitions(void) {
                     }
                     if (scale_ticks(0xA) < g_hero.state_timer) {
                         if (((unsigned char *)g_hero.items[3].moby2) != 0 && ((unsigned char *)g_hero.items[3].moby2)[0x53] == 1) {
-                            if (func_001F9908_r(&g_hero.slot3_anim_timer)) {
+                            if (fast_dec_timer_r(&g_hero.slot3_anim_timer)) {
                                 if (0.55850536f > aridia_lean_state.f258 && aridia_lean_state.f254 < 0.34906584f && g_hero.items[3].state == 2) {
                                     g_hero.slot3_anim_timer = rand_range(scale_ticks(0x6E), scale_ticks(0x10E));
                                     blend_hero_slot3_animation_pair();
@@ -1760,13 +1760,13 @@ void HeroL02_UpdateStateTransitions(void) {
                         if (g_hero.state.prev == 1 || g_hero.state.prev == 0x1E) {
                             if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
                                 stick_target(1.0f, 0);
-                                if (FastDiffRots(g_hero.motion.move_yaw, D_L02_00167458) > 1.2217305f) {
+                                if (FastDiffRots(g_hero.motion.move_yaw, aridia_player_camera_yaw) > 1.2217305f) {
                                     ok = 0;
                                 }
                             }
                         }
                         if (ok && 0.22f < g_hero.stick_magnitude) {
-                            if (D_0015EE84_m == 0xC) {
+                            if (g_current_level_index_m == 0xC) {
                                 int slot = g_hero.ground_sound_class;
                                 request_hero_voice_if_enabled(slot, 0, 0);
                                 request_hero_voice_if_enabled(slot, 1, 0);
@@ -1940,7 +1940,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         }
                     }
                     {
-                        Rec2C *rec = &D_L02_0017C2A8_rec[g_hero.attack_record];
+                        Rec2C *rec = &aridia_attack_records_rec[g_hero.attack_record];
                         int t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
                         if ((float)rec->f14 < g_hero.anim_frame && g_hero.anim_changing == 0 && !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {
                             if (pad_pressed_within(0x40, t, 0)) {
@@ -2158,7 +2158,7 @@ void HeroL02_UpdateStateTransitions(void) {
                     }
                     break;
                 case 112:
-                    if (g_hero.anim_frame > (float)D_L02_0017C2A8_rec[g_hero.attack_record].f18) {
+                    if (g_hero.anim_frame > (float)aridia_attack_records_rec[g_hero.attack_record].f18) {
                         HeroL02_SetMoveState(0, 1);
                     }
                     break;
@@ -2536,9 +2536,9 @@ void HeroL02_UpdateStateTransitions(void) {
                     }
                     break;
                 case 119:
-                    if ((D_0015EE84_m == 3 && 5.0f > g_hero.motion.pos.f[2])
-                        || (D_0015EE84_m == 6 && 50.0f > g_hero.motion.pos.f[2])
-                        || (D_0015EE84_m == 0x10 && (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 && g_hero.motion.displacement.f[2] >= 0.0f)))
+                    if ((g_current_level_index_m == 3 && 5.0f > g_hero.motion.pos.f[2])
+                        || (g_current_level_index_m == 6 && 50.0f > g_hero.motion.pos.f[2])
+                        || (g_current_level_index_m == 0x10 && (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 && g_hero.motion.displacement.f[2] >= 0.0f)))
                         || g_hero.state_timer > scale_ticks(0x78)) {
                         Hero_OnKilled();
                         return;
@@ -2552,7 +2552,7 @@ void HeroL02_UpdateStateTransitions(void) {
                     {
                         int both = 0;
 
-                        func_001F9908_r((int *)&aridia_hero_double_tap_timer);
+                        fast_dec_timer_r((int *)&aridia_hero_double_tap_timer);
                         if (*(int *)&aridia_hero_double_tap_timer != 0) {
                             both = 1;
                             if (!((g_controller_state.held & 8) && (g_controller_state.pressed & 8))) {
@@ -2648,7 +2648,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         HeroL02_SetMoveState(2, 0);
                         if (g_hero.state.current == 2) {
                             g_hero.state.step = 1;
-                            set_hero_animation(4, D_L02_0015F7BC, scale_ticks(0xC));
+                            set_hero_animation(4, aridia_hero_run_step1_start_frame, scale_ticks(0xC));
                         }
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                         break;
@@ -3128,7 +3128,7 @@ void HeroL02_UpdateStateTransitions(void) {
                             set_hero_animation(a, 0, scale_ticks(8));
                         }
                     }
-                    D_L02_0016CE00 = 0;
+                    aridia_hero_state_1e_clear_word = 0;
                     break;
                 case 32:
                     if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {
@@ -3176,18 +3176,18 @@ typedef struct {
     char pad280[0x1E33];
     u8 mode;
 } G_32b90;
-extern G_32b90 D_0013F450_368E8 __asm__("D_0013F450");
-extern u8 D_L02_00174500[];
-extern f32 D_L02_001744E0;
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9C30(void *, void *, f32);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, f32);
-extern void func_L00_0025E290(Vec4 *, void *);
-extern s32 func_L00_001EFFF0(void *, void *, s32, s32, s32);
-extern f32 func_L00_002345B0(void *);
-extern f32 func_L00_002342F8_368E8(void *) __asm__("func_L00_002342F8");
-extern s32 func_L00_0025A5D8(f32 *, f32 *, f32, f32, f32);
+extern G_32b90 g_hero_r __asm__("D_0013F450");
+extern u8 aridia_coll_hit_normal[];
+extern f32 aridia_coll_hit_point;
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecScale(void *, void *, f32);
+extern void FastVecAdd(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, f32);
+extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
+extern s32 coll_line(void *, void *, s32, s32, s32);
+extern f32 compute_gravity_relative_vector_inclination(void *);
+extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
+extern s32 solve_quadratic_equation(f32 *, f32 *, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui_help_002360c8.c, FUN_L02_002360c8. */
 f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
@@ -3198,15 +3198,15 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
     f32 o[6];
     f32 x, y, z;
 
-    switch ((&D_0013F450_368E8)->mode) {
+    switch ((&g_hero_r)->mode) {
     case 0:
         if (c < 0.0f) {
-            FastVecScale(t, &(&D_0013F450_368E8)->vE0, a);
+            FastVecScale(t, &(&g_hero_r)->vE0, a);
             t[2] -= ((a * a + a) * 0.5f) * b;
-            FastVecAdd(t, t, &(&D_0013F450_368E8)->v80);
-            v.q = (&D_0013F450_368E8)->v80.q;
+            FastVecAdd(t, t, &(&g_hero_r)->v80);
+            v.q = (&g_hero_r)->v80.q;
             clip_negative_segment_endpoint_xyz(&v, t);
-            qcopy(&v, &(&D_0013F450_368E8)->v80);
+            qcopy(&v, &(&g_hero_r)->v80);
             if (coll_line(&v, t, 0x324, 0, 0) != 0) {
                 if (compute_gravity_relative_vector_inclination((f32 *)aridia_coll_hit_normal) <= 0.87266463f) {
                     c = *(f32 *)(aridia_coll_hit_normal - 0x18);
@@ -3214,29 +3214,29 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
             }
         }
         if (c > 0.0f) {
-            if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&D_0013F450_368E8)->vE0.f[2] - b * -0.5f,
-                                       (&D_0013F450_368E8)->v80.f[2] - c) > 0 &&
+            if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&g_hero_r)->vE0.f[2] - b * -0.5f,
+                                       (&g_hero_r)->v80.f[2] - c) > 0 &&
                 o[0] > 0.0f) {
                 return o[0];
             }
         }
         break;
     case 1:
-        qcopy(&v, &(&D_0013F450_368E8)->v270);
+        qcopy(&v, &(&g_hero_r)->v270);
         vec_scale_to_length(&v, &v, b);
         FastVecScale(&v, &v, -1.0f);
-        FastVecScale(t, &(&D_0013F450_368E8)->vE0, a);
+        FastVecScale(t, &(&g_hero_r)->vE0, a);
         FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
         FastVecAdd(t, &t1, t);
-        FastVecAdd(t, &(&D_0013F450_368E8)->v80, t);
-        v2.q = (&D_0013F450_368E8)->v80.q;
+        FastVecAdd(t, &(&g_hero_r)->v80, t);
+        v2.q = (&g_hero_r)->v80.q;
         clip_negative_segment_endpoint_xyz(&v2, t);
-        if (coll_line(&(&D_0013F450_368E8)->v80, t, 0x324, 0, 0) != 0) {
+        if (coll_line(&(&g_hero_r)->v80, t, 0x324, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
-            z = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->vE0) - nb;
-            x = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->v80);
-            y = func_L00_002342F8_368E8(&aridia_coll_hit_point);
+            z = gravity_z_r(&(&g_hero_r)->vE0) - nb;
+            x = gravity_z_r(&(&g_hero_r)->v80);
+            y = gravity_z_r(&aridia_coll_hit_point);
             if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0 && o[2] > 0.0f) {
                 return o[2];
             }
@@ -3246,21 +3246,21 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
         t1.f[2] = 100.0f;
         t1.f[1] = 100.0f;
         t1.f[0] = 100.0f;
-        FastVecSub(&v, &(&D_0013F450_368E8)->v80, &t1);
+        FastVecSub(&v, &(&g_hero_r)->v80, &t1);
         vec_scale_to_length(&v, &v, b);
         FastVecScale(&v, &v, -1.0f);
-        FastVecScale(t, &(&D_0013F450_368E8)->vE0, a);
+        FastVecScale(t, &(&g_hero_r)->vE0, a);
         FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
         FastVecAdd(t, &t1, t);
-        FastVecAdd(t, &(&D_0013F450_368E8)->v80, t);
-        v2.q = (&D_0013F450_368E8)->v80.q;
+        FastVecAdd(t, &(&g_hero_r)->v80, t);
+        v2.q = (&g_hero_r)->v80.q;
         clip_negative_segment_endpoint_xyz(&v2, t);
-        if (coll_line(&(&D_0013F450_368E8)->v80, t, 0x324, 0, 0) != 0) {
+        if (coll_line(&(&g_hero_r)->v80, t, 0x324, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
-            z = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->vE0) - nb;
-            x = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->v80);
-            y = func_L00_002342F8_368E8(&aridia_coll_hit_point);
+            z = gravity_z_r(&(&g_hero_r)->vE0) - nb;
+            x = gravity_z_r(&(&g_hero_r)->v80);
+            y = gravity_z_r(&aridia_coll_hit_point);
             if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0 && o[4] > 0.0f) {
                 return o[4];
             }
@@ -3273,7 +3273,7 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
 /* Put the hero in idle when nearly stopped, else in the stopping move state. */
 void enter_hero_idle_or_stop(void)
 {
-    if (*(float *)(D_0013E633 + 0xF7D) < g_frame_time * 2.7f) {
+    if (*(float *)(hero_globals_base + 0xF7D) < g_frame_time * 2.7f) {
         HeroL02_SetMoveState(0, 1);
     } else {
         HeroL02_SetMoveState(3, 1);

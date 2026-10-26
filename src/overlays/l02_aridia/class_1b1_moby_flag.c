@@ -16,8 +16,8 @@ typedef struct {
     Level02Moby *mobys[1];
 } Level02MobyList;
 
-extern int D_0015EE84 MACRO_ADDR;
-extern Level02MobyList D_L02_0016CEE0;
+extern int g_current_level_index MACRO_ADDR;
+extern Level02MobyList talk_camera;
 
 /* Mark every moby of class 0x1B1 in the active level. */
 void set_level02_class_1b1_moby_flag_0800(void) {

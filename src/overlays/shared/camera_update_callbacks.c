@@ -3,8 +3,8 @@
 #include "include_asm.h"
 #include "camera.h"
 
-extern int D_L02_0015F04C MACRO_ADDR;
-extern int D_L02_00169670[];
+extern int camera_update_callback_count MACRO_ADDR;
+extern int camera_update_callbacks[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/camera/001fc008.c, FUN_L02_001fc008. */
 /* Adds fn to the post-update queue (D_L02_00169670, count D_L02_0015F04C) unless it is there already; the queue holds 16 at most. */

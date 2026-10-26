@@ -8,19 +8,19 @@
 #include "vector.h"
 #include "moby.h"
 
-extern void func_00234C98(int, u64);
-extern u64 func_001F4868(int);
-extern float func_001FA888(int);
-extern int func_001FA898(float);
-extern void func_L00_00250800(void *, int, void *);
-extern float func_L00_002001D8(void *, float);
-extern float func_L00_0025F368(float);
-extern void func_00215C00(void *, float, float, float);
-extern float func_001FA748(float, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_001FD1D8(void *, int, int);
-extern s32 D_0015EF88;
-extern s32 D_L07_0015F6B0;
+extern void VU1_addGSregister(int, u64);
+extern u64 GetEffectTex(int);
+extern float IntToFloat(int);
+extern int truncate_float_to_s32(float);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern float split_float_fraction(void *, float);
+extern float normalize_angle(float);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern float FastAddRots(float, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void draw_world_quad(void *, int, int);
+extern s32 depth_buffer_address;
+extern s32 umbris_frame_count;
 typedef struct {
     float pos[4][4];
     u32 colors[4];

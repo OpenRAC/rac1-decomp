@@ -2,10 +2,10 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern unsigned char *func_00218928(int);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern void func_L00_00250800(void *, int, void *);
-extern unsigned char *D_L13_001B2790;
+extern unsigned char *create_part(int);
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern unsigned char *gemlik_part_type68_textures;
 
 /* Allocates and fills a particle-process record attached to a moby. */
 unsigned char *create_moby_joint_particle(char *moby, unsigned char a, int b, int c, unsigned char d, float x, float y, float z) {
@@ -18,7 +18,7 @@ unsigned char *create_moby_joint_particle(char *moby, unsigned char a, int b, in
         *(int *)(e + 4) = b;
         *(int *)(e + 0xC) = c;
         p = (char *)e + 0x10;
-        v = func_001FA898_r(0.4f);
+        v = truncate_float_to_s32_r(0.4f);
         e[9] = (((short)*(unsigned short *)(moby + 0x32) >> 5) << 4) + v;
         e[3] = 0x48;
         e[1] = 3;

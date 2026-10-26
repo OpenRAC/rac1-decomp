@@ -35,7 +35,7 @@ void vendor_update(char *moby) {
         if (*(float *)(p + 0x90) > 0.0f) *(float *)(p + 0x90) -= 0.1f;
         if (*(float *)(p + 0x90) <= 0.0f) *(unsigned short *)(*(char **)(p + 0xC) + 0x34) |= 1;
         if ((level_frame_counter & 7) == 0) {
-            char *g = D_0013E633 + 0xE9D;
+            char *g = hero_globals_base + 0xE9D;
             if (vec_distance_xy(moby + 0x10, g) <= 16.0f) {
                 if (FastAbsF(*(float *)(moby + 0x18) - *(float *)(g + 8)) <= 8.0f) {
                     *(unsigned char *)(moby + 0x20) = 2;
@@ -63,7 +63,7 @@ void vendor_update(char *moby) {
         int b;
         int r;
         if (*(float *)(p + 0x90) < 1.0f) *(float *)(p + 0x90) += 0.1f;
-        g = D_0013E633 + 0xE9D;
+        g = hero_globals_base + 0xE9D;
         dist = vec_distance_xy(moby + 0x10, g);
         dz = FastAbsF(*(float *)(moby + 0x18) - *(float *)(g + 8));
         if ((level_frame_counter & 7) == 0) {
@@ -93,7 +93,7 @@ void vendor_update(char *moby) {
         if (FastDiffRots(G_pp.f98, fast_atan2(*(float *)(moby + 0x10) - G_pp.f80, *(float *)(moby + 0x14) - G_pp.f84)) > 1.5707964f) { a = 0; b = 0; }
         r = 0;
         if (b != 0) r = try_set_help_message(1, 0x543A) != 0;
-        if (*(int *)(D_0013A5E0 + 0x2604) & 0x10) {
+        if (*(int *)(pad_globals_base + 0x2604) & 0x10) {
             if (a != 0 && r != 0) {
                 open_vendor_menu(moby);
                 *(unsigned char *)(moby + 0x20) = 3;

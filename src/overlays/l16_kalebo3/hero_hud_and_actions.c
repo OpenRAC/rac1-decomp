@@ -12,124 +12,124 @@ typedef struct { char p0[0xC]; float fC; char p1[8]; float f18; } S17C298;
 typedef struct { char p0[0xF8]; unsigned short fF8; unsigned short fFA; int fFC; } S141948;
 typedef struct { char p0[0x74]; unsigned char f74; char p1[0x13]; unsigned char *f88; } Row13E650;
 typedef int u128 __attribute__((mode(TI)));
-extern Hero D_0013F450;
-extern PadState D_0013CA40;
-extern char D_0013E650[];
-extern S141948 D_00141948;
-extern int D_00141760;
-extern unsigned char D_0013D5C8[];
-extern int D_0015EE98 MACRO_ADDR;
-extern int D_0015EFA4 MACRO_ADDR;
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int D_0015EE8C MACRO_ADDR;
-extern float D_0015EE60 MACRO_ADDR;
-extern float D_0015EE64 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern float D_L16_0015F718 MACRO_ADDR;
-extern int D_L16_0015F674 MACRO_ADDR;
-extern int D_L16_0015F7CC MACRO_ADDR;
-extern short D_L16_0015F758;
-extern float D_L16_00167258;
-extern int D_L16_0016CC00;
-extern S17AB60 D_L16_0017AB60;
-extern Rec70 D_L16_00179D70[];
-extern Rec4C D_L16_00179FA0[];
-extern Rec2C D_L16_0017C108[];
-extern S17C298 D_L16_0017C298;
-extern void func_L00_00238478(void);
-extern void func_L00_00238530(void);
-extern void func_L00_00238C30(void);
-extern void func_L00_0023A658(void);
-extern void func_L00_0023A690(void);
-extern void func_L00_0023A788(void);
-extern int func_L08_00222E18(int);
-extern int func_L05_002523C8(void);
-extern int func_L05_00251DB0(void);
-extern int func_L00_00227F48(void);
-extern int func_L00_00227E90(void);
-extern int func_001F9850(int);
-extern int func_001FFB38(int, int, int, int, int, int, int);
-extern int func_L00_00235790_r(void) __asm__("func_L00_00235790");
-extern void func_L00_002367A8(int, int);
-extern int func_001F9938(void *);
-extern void func_L00_00232EA8(void);
-extern int func_L00_0020DB30(int);
-extern int func_L01_002274A8(int a);
-extern void func_L00_00232C10(int, int, float);
-extern void func_00213DE0(void *, int, int, int);
-extern int func_L00_002056D0(int);
-extern int func_L00_002297E0(int *);
-extern float func_001F9878(float);
-extern int func_L16_0021EA88(int, int);
-extern void func_001F9908(int *arg0);
-extern int func_001F9908_r(int *) __asm__("func_001F9908");
-extern int func_L00_00258BC8(int, int);
-extern void func_L00_00232560(void);
-extern void func_L00_0020ED30(void);
-extern void func_L00_00211F80(int, float);
-extern int func_L00_00229348(int, int);
-extern int func_L00_00267BA8(int, int, int *);
-extern float func_001FA850(float, float);
-extern void func_L01_002283E0(int a0, int a1, int a2);
-extern void func_L00_002122A0(void);
-extern void func_L00_00229778(void);
-extern int func_L00_00211A18(void *);
-extern void func_L01_00240CE8(void);
-extern float func_L00_00233410(float a, float b, float c);
-extern int func_001FA898(float);
-extern float func_L00_00209598(float a, float b, float c, float d);
-extern int func_L00_00229E30(void);
-extern void func_L00_00232EC0(int id);
-extern int func_L00_0022A0E0(void);
-extern float func_L00_00267CC8(int);
-extern int func_L00_0022A268(void);
-extern float func_001F9CE8(void *);
-extern float func_001F9D48(void *, void *);
-extern void func_L00_002293E8(void);
-extern void func_L00_0028EBF0(int);
-extern void func_L00_00217570(int, int);
-extern int func_L01_0022DE30(float *, float *);
-extern float func_001FA748(float, float);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_L00_00211908(void);
-extern void func_L00_002343A0(float *dst, float *src, float z);
-extern void func_L00_002607A8(void *a, float x);
-extern int func_L00_00267C48(int, int, int, int);
-extern void func_L00_00233B08(float a, float b, short c, unsigned char d, unsigned char e, unsigned char f);
-extern int func_L00_00222520(void);
-extern float func_001F9CB8(void *a);
-extern float func_L00_002344B0(float *pos, float *vel, int *steps, float step);
-extern void func_L00_0020A320(int, int, int);
-extern float func_00214D28(float *p, float target, float maxstep);
-extern void func_001F9C30(void *, void *, float);
-extern void func_L01_002428E0(void);
-extern float func_L00_002342F8(float *v);
-extern float func_001F9B88(float);
-extern float func_002140F8(float a, float b);
-extern void func_L05_0023E348(int i);
-extern void func_L00_00207220(void);
-extern void func_001F9BC0(void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001F9D10(void *, void *);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern float func_L00_001FF860(float, float);
-extern float func_L00_00258C80(float lo, float hi);
-extern float func_L00_0025BC48(float *a, float *b, float *out, float speed, float g);
-extern float func_L00_0025A4A0(float *a, float *b, int *out, float f);
-extern int func_L00_0025EFC0(void *, void *, void *, int *, float *, int, float, float, float);
-extern int func_L00_0025E860(int *tab, float *out, int *a, float *b, int c, float d);
-extern int func_L00_0020D3A0(void *, void *, void *, void *, void *, void *, int, int);
-extern int func_L05_002559F0(void);
-extern int func_L05_002559A0(void);
-extern int func_L05_002559B8(void);
-extern void func_L05_00254030(void);
-extern void func_L05_00254328(void);
-extern void func_L05_00254838(void);
-extern int func_L05_00254B38(float *, float *);
-extern void func_L00_00217718(void *, void *, int, int);
-extern void func_001F99B0(void *, int, int);
+extern Hero g_hero;
+extern PadState g_controller_state;
+extern char voice_pool[];
+extern S141948 usage_stats;
+extern int last_weapon_id;
+extern unsigned char item_available[];
+extern int gBolts MACRO_ADDR;
+extern int gameplay_event_frame_count MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int quick_swap_item MACRO_ADDR;
+extern float frame_scale MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern float kalebo3_hero_fall_state_height MACRO_ADDR;
+extern int kalebo3_help_message_selector MACRO_ADDR;
+extern int kalebo3_hero_run_step1_start_frame MACRO_ADDR;
+extern short kalebo3_hero_double_tap_timer;
+extern float kalebo3_camera_yaw;
+extern int kalebo3_look_release_reset_word;
+extern S17AB60 kalebo3_hero_bones;
+extern Rec70 kalebo3_idle_fidgets[];
+extern Rec4C kalebo3_item_defs[];
+extern Rec2C kalebo3_attack_records[];
+extern S17C298 kalebo3_hero_speed_bands;
+extern void initialize_eight_slot_hud_selector(void);
+extern void update_hud_item_selector_selection_and_visibility(void);
+extern void draw_hud_item_selector_panel(void);
+extern void initialize_bolt_counter_hud(void);
+extern void update_bolt_counter_hud_animation_and_visibility(void);
+extern void draw_bolt_counter_hud_panel(void);
+extern int handle_hero_hit(int);
+extern int process_hero_primary_item_input(void);
+extern int try_apply_hero_water_and_ground_transitions(void);
+extern int try_transition_hero_water_state(void);
+extern int try_start_hero_weapon_fire_state(void);
+extern int scale_ticks(int);
+extern int queue_animation_update(int, int, int, int, int, int, int);
+extern int show_health_hud_r(void) __asm__("func_L00_00235790");
+extern void hud_keep_visible(int, int);
+extern int FastDecTimer(void *);
+extern void clear_hero_queued_animation(void);
+extern int hero_slot_item_id(int);
+extern int get_hero_idle_animation_index(int a);
+extern void set_hero_animation(int, int, float);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern int return_hero_animation_id_unchanged(int);
+extern int pick_idle_fidget(int *);
+extern float multiply_global_factor(float);
+extern int Hero_TryMoveState(int, int);
+extern void fast_dec_timer(int *arg0);
+extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
+extern int rand_range(int, int);
+extern void blend_hero_slot3_animation_pair(void);
+extern void cancel_hero_item_animation(void);
+extern void stick_target(int, float);
+extern int try_start_hero_jump(int, int);
+extern int pad_pressed_within(int, int, int *);
+extern float FastDiffRots(float, float);
+extern void request_hero_voice_if_enabled(int a0, int a1, int a2);
+extern void update_hero_target_speed_from_stick(void);
+extern void remove_hero_cached_moby_and_clear_slot_three_moby_flags(void);
+extern int is_wrench_moby(void *);
+extern void request_hero_idle_state_for_vehicle_mode(void);
+extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
+extern int truncate_float_to_s32(float);
+extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
+extern int hero_handle_jump_press(void);
+extern void Hero_SetAttackTicks(int id);
+extern int check_hero_forward_collision_height(void);
+extern float read_pad_float_history(int);
+extern int try_start_hero_item_idle_animation(void);
+extern float vec_length_xy(void *);
+extern float vec_distance_xy(void *, void *);
+extern void update_hero_animation_for_movement_speed(void);
+extern void Sound_StopSlot(int);
+extern void allocate_hero_voice_for_entry(int, int);
+extern int test_hero_ledge_ahead(float *, float *);
+extern float FastAddRots(float, float);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void Hero_OnKilled(void);
+extern void gravity_set_z(float *dst, float *src, float z);
+extern void ClampVectorLength(void *a, float x);
+extern int check_pad_press_separation(int, int, int, int);
+extern void configure_hero_point_effect_emission(float a, float b, short c, unsigned char d, unsigned char e, unsigned char f);
+extern int get_hero_high_jump_input_window_frames(void);
+extern float FastVecLength(void *a);
+extern float predict_hero_trajectory_z(float *pos, float *vel, int *steps, float step);
+extern void emit_hero_surface_effect_burst(int, int, int);
+extern float ApproachValue(float *p, float target, float maxstep);
+extern void FastVecScale(void *, void *, float);
+extern void select_hero_locomotion_state(void);
+extern float gravity_z(float *v);
+extern float FastAbsF(float);
+extern float random_float_between(float a, float b);
+extern void apply_hero_item_slot_selection(int i);
+extern void release_and_clear_hero_voice_slots(void);
+extern void clear_u64_value(void *);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastVecDist(void *, void *);
+extern int coll_line(void *, void *, int, int, int);
+extern float fast_atan2(float, float);
+extern float randf_sym(float lo, float hi);
+extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
+extern float calculate_triangular_corrected_scalar(float *a, float *b, int *out, float f);
+extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
+extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
+extern int nearest_rail_point(void *, void *, void *, void *, void *, void *, int, int);
+extern int Hero_PickHelpMode(void);
+extern int select_hero_hoverboard_animation_variant(void);
+extern int Hero_SelectAnimIdByFlags(void);
+extern void update_hero_hoverboard_trick_animations(void);
+extern void process_hero_race_object_interactions(void);
+extern void update_hero_hoverboard_trick_score(void);
+extern int compute_hero_hoverboard_respawn_transform(float *, float *);
+extern void Hero_ResetToPosition(void *, void *, int, int);
+extern void FastMemSet(void *, int, int);
 
 /* Hero state machine: per-frame transition logic for the current hero state (level 16 build). */
 void Hero_ChooseStateTransition(void) {
@@ -176,7 +176,7 @@ void Hero_ChooseStateTransition(void) {
                         g_hero.item_selector_timer = scale_ticks(0xF);
                     }
                     queue_animation_update(3, 0, (int)initialize_eight_slot_hud_selector, (int)update_hud_item_selector_selection_and_visibility, (int)draw_hud_item_selector_panel, 0, 0);
-                    id = func_L00_00235790_r();
+                    id = show_health_hud_r();
                     hud_keep_visible(id, scale_ticks(0xB4));
                     id = queue_animation_update(2, 0x754E, (int)initialize_bolt_counter_hud, (int)update_bolt_counter_hud_animation_and_visibility, (int)draw_bolt_counter_hud_panel, (int)&gBolts, 0x98967F);
                     hud_keep_visible(id, scale_ticks(0xB4));
@@ -202,7 +202,7 @@ void Hero_ChooseStateTransition(void) {
                         if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.fFA) {
                             usage_stats.fFA = scale_ticks(gameplay_event_frame_count) / 600;
                         }
-                        usage_stats.fFC = usage_stats.fFC | (1 << D_0015EE84_m) | 0x80000000;
+                        usage_stats.fFC = usage_stats.fFC | (1 << g_current_level_index_m) | 0x80000000;
                         g_hero.pending_item[0] = next;
                         g_hero.quick_swap_tap_timer = 0;
                         g_hero.quick_swap_tap_window = 0;
@@ -291,7 +291,7 @@ void Hero_ChooseStateTransition(void) {
                     }
                     if (scale_ticks(0xA) < g_hero.state_timer) {
                         if (((unsigned char *)g_hero.items[3].moby2) != 0 && ((unsigned char *)g_hero.items[3].moby2)[0x53] == 1) {
-                            if (func_001F9908_r(&g_hero.slot3_anim_timer)) {
+                            if (fast_dec_timer_r(&g_hero.slot3_anim_timer)) {
                                 if (0.55850536f > kalebo3_hero_bones.f258 && kalebo3_hero_bones.f254 < 0.34906584f && g_hero.items[3].state == 2) {
                                     g_hero.slot3_anim_timer = rand_range(scale_ticks(0x6E), scale_ticks(0x10E));
                                     blend_hero_slot3_animation_pair();
@@ -375,13 +375,13 @@ void Hero_ChooseStateTransition(void) {
                         if (g_hero.state.prev == 1 || g_hero.state.prev == 0x1E) {
                             if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
                                 stick_target(0, 1.0f);
-                                if (FastDiffRots(g_hero.motion.move_yaw, D_L16_00167258) > 1.2217305f) {
+                                if (FastDiffRots(g_hero.motion.move_yaw, kalebo3_camera_yaw) > 1.2217305f) {
                                     ok = 0;
                                 }
                             }
                         }
                         if (ok && 0.22f < g_hero.stick_magnitude) {
-                            if (D_0015EE84_m == 0xC) {
+                            if (g_current_level_index_m == 0xC) {
                                 int slot = g_hero.ground_sound_class;
                                 request_hero_voice_if_enabled(slot, 0, 0);
                                 request_hero_voice_if_enabled(slot, 1, 0);
@@ -562,7 +562,7 @@ void Hero_ChooseStateTransition(void) {
                     break;
                 case 118:
                     if (g_hero.health.hp <= 0) {
-                        if (D_0015EE84_m == 0xF || D_0015EE84_m == 0x11) {
+                        if (g_current_level_index_m == 0xF || g_current_level_index_m == 0x11) {
                             Hero_TryMoveState(0x82, 1);
                             break;
                         }
@@ -1129,14 +1129,14 @@ void Hero_ChooseStateTransition(void) {
                     } else {
                         int ice = 0;
 
-                        if (D_0015EE84_m == 0x10 && g_hero.wall_hit != 0 && g_hero.coll_hit_moby != 0 && *(short *)(g_hero.coll_hit_moby + 0xA6) == 0x101) {
+                        if (g_current_level_index_m == 0x10 && g_hero.wall_hit != 0 && g_hero.coll_hit_moby != 0 && *(short *)(g_hero.coll_hit_moby + 0xA6) == 0x101) {
                             ice = 1;
                             g_hero.coll_hit_moby[0xBC] = 1;
                         }
                         if (vec_length_xy(g_hero.motion.displacement.f) < vec_length_xy(g_hero.motion.velocity.f) * 0.5f || ice || g_hero.unk5BE != 0) {
                             int ok = 1;
 
-                            if (D_0015EE84_m != 0x10) {
+                            if (g_current_level_index_m != 0x10) {
                                 qcopy(v0, g_hero.rail_point.f);
                                 v0[2] += 2.0f;
                                 v1[0] = FastCos(g_hero.rail_dir_yaw) * 5.0f;
@@ -1181,7 +1181,7 @@ void Hero_ChooseStateTransition(void) {
                     if (g_hero.state.current == 0x28) {
                         int can = 1;
 
-                        if (D_0015EE84_m == 8) {
+                        if (g_current_level_index_m == 8) {
                             *(u128 *)v0 = 0;
                             v0[0] = 342.0f;
                             v0[1] = 111.1f;
@@ -1591,9 +1591,9 @@ void Hero_ChooseStateTransition(void) {
                     }
                     break;
                 case 119:
-                    if ((D_0015EE84_m == 3 && 5.0f > g_hero.motion.pos.f[2])
-                        || (D_0015EE84_m == 6 && 50.0f > g_hero.motion.pos.f[2])
-                        || (D_0015EE84_m == 0x10 && (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 && g_hero.motion.displacement.f[2] >= 0.0f)))
+                    if ((g_current_level_index_m == 3 && 5.0f > g_hero.motion.pos.f[2])
+                        || (g_current_level_index_m == 6 && 50.0f > g_hero.motion.pos.f[2])
+                        || (g_current_level_index_m == 0x10 && (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 && g_hero.motion.displacement.f[2] >= 0.0f)))
                         || g_hero.state_timer > scale_ticks(0x78)) {
                         Hero_OnKilled();
                         return;
@@ -1607,7 +1607,7 @@ void Hero_ChooseStateTransition(void) {
                     {
                         int both = 0;
 
-                        func_001F9908_r((int *)&kalebo3_hero_double_tap_timer);
+                        fast_dec_timer_r((int *)&kalebo3_hero_double_tap_timer);
                         if (*(int *)&kalebo3_hero_double_tap_timer != 0) {
                             both = 1;
                             if (!((g_controller_state.held & 8) && (g_controller_state.pressed & 8))) {
@@ -2018,7 +2018,7 @@ void Hero_ChooseStateTransition(void) {
                         Hero_TryMoveState(6, 1);
                         break;
                     }
-                    if (D_0015EE84_m == 0x10 && g_hero.motion.velocity.f[2] < 0.0f && g_hero.health.hp == 0 && g_hero.state.prev_control_mode == 0xF) {
+                    if (g_current_level_index_m == 0x10 && g_hero.motion.velocity.f[2] < 0.0f && g_hero.health.hp == 0 && g_hero.state.prev_control_mode == 0xF) {
                         Hero_TryMoveState(0x77, 1);
                         break;
                     }
@@ -2181,7 +2181,7 @@ void Hero_ChooseStateTransition(void) {
                     update_hero_hoverboard_trick_score();
                     break;
                 case 109:
-                    if (D_0015EE84_m == 5 && 61.4f > g_hero.motion.pos.f[2]) {
+                    if (g_current_level_index_m == 5 && 61.4f > g_hero.motion.pos.f[2]) {
                         g_hero.board_floor_z = 61.4f;
                         Hero_TryMoveState(0x6E, 1);
                         g_hero.board_respawn_delay = scale_ticks(0x46) - g_hero.state_timer;
@@ -2190,7 +2190,7 @@ void Hero_ChooseStateTransition(void) {
                         }
                         return;
                     }
-                    if (D_0015EE84_m == 0x10 && 76.0f > g_hero.motion.pos.f[2]) {
+                    if (g_current_level_index_m == 0x10 && 76.0f > g_hero.motion.pos.f[2]) {
                         g_hero.board_floor_z = 76.0f;
                         Hero_TryMoveState(0x6E, 1);
                         g_hero.board_respawn_delay = scale_ticks(0x46) - g_hero.state_timer;
@@ -2376,7 +2376,7 @@ void Hero_ChooseStateTransition(void) {
                             set_hero_animation(a, 0, scale_ticks(8));
                         }
                     }
-                    D_L16_0016CC00 = 0;
+                    kalebo3_look_release_reset_word = 0;
                     break;
                 case 32:
                     if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {
@@ -2413,16 +2413,16 @@ void Hero_ChooseStateTransition(void) {
         g_hero.anim_seq_frames = 0;
     }
 }
-extern void func_0022C7E0(void);
-extern void func_L00_0028B8F8(void);
-extern void func_L00_0028A5A8(void);
-extern void func_0022C870(void);
-extern void func_00234C98(int, long);
-extern int D_0015EF88 MACRO_ADDR;
+extern void SetupSkyGifPaging(void);
+extern void draw_sky_shells_with_slow_medium_and_fast_rotation(void);
+extern void update_sky_shells_static(void);
+extern void DoSkyGifPaging(void);
+extern void VU1_addGSregister(int, long);
+extern int depth_buffer_address MACRO_ADDR;
 /* Draw the level 16 sky: shells at three rotation speeds, static shells in other levels. */
 void render_level16_sky_shells(void) {
     SetupSkyGifPaging();
-    if (D_0015EE84_m == 16) {
+    if (g_current_level_index_m == 16) {
         draw_sky_shells_with_slow_medium_and_fast_rotation();
     } else {
         update_sky_shells_static();

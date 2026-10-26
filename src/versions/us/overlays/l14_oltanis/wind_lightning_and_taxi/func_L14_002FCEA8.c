@@ -10,8 +10,8 @@ void qwark_oltanis_update(char *m) {
     switch (*(unsigned char *)(m + 0x20)) {
     case 0: {
         unsigned short id;
-        if (D_L14_001BBCC0_2FCEA8.collected[(short)(id = *(unsigned short *)(m + 0xB2))] != 0
-            || (*(int *)(D_0014171B_2FCEA8 + 0xAB75 + (((short)id >> 5) * 4 + (D_0015EE84_m << 8))) >> (id & 0x1F)) & 1) {
+        if (oltanis_collected_flags_base_r2.collected[(short)(id = *(unsigned short *)(m + 0xB2))] != 0
+            || (*(int *)(help_stats_base_r + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) & 1) {
             DeleteMoby(m);
             return;
         }
@@ -26,14 +26,14 @@ void qwark_oltanis_update(char *m) {
         break;
     }
     case 1:
-        if (*(unsigned char *)(d + 8) == 1 && is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(d + 0x40)) != 0) {
-            if ((D_0014171B_2FCEA8 + 0xAA35)[*(unsigned char *)(m + 0xB0) + (D_0015EE84_m << 4)] != 0xFF) {
+        if (*(unsigned char *)(d + 8) == 1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(d + 0x40)) != 0) {
+            if ((help_stats_base_r + 0xAA35)[*(unsigned char *)(m + 0xB0) + (g_current_level_index_m << 4)] != 0xFF) {
                 char *t;
                 jet_clear_persistent((unsigned char)m[0xB0]);
-                t = D_L14_001601AC_2EC3E8 + (*(int *)(d + 0x48) << 7);
+                t = oltanis_clip_volumes_r + (*(int *)(d + 0x48) << 7);
                 jet_reset_camera(t + 0x30, t + 0x70);
             }
-            func_L14_002F0A00_2FCEA8(D_L14_00160098_2FCEA8 + (*(int *)(d + 0x44) << 8));
+            enable_elevator_alternate_route_r(oltanis_mobys_r + (*(int *)(d + 0x44) << 8));
             *(float *)(d + 0xC) = 255.0f;
         } else {
             *(float *)(d + 0xC) = 1.7f;
@@ -53,8 +53,8 @@ void qwark_oltanis_update(char *m) {
             ShowBanner(0x36B3, -1);
         }
         grant_inventory_item(0x20, 1);
-        mark_elevator_collected(D_L14_00160098_2FCEA8 + (*(int *)(d + 0x44) << 8));
-        *(int *)(D_0014171B_2FCEA8 + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+        mark_elevator_collected(oltanis_mobys_r + (*(int *)(d + 0x44) << 8));
+        *(int *)(help_stats_base_r + 0xAB75 + (((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + (g_current_level_index_m << 8))) |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         oltanis_moby_killed_bits[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         memcard_Save(0, -1);
         DeleteMoby(m);
@@ -69,7 +69,7 @@ void qwark_oltanis_update(char *m) {
         float sy = 0.3f;
         int doit = 0;
         if (*(unsigned char *)(m + 0x53) == 0) {
-            char *g = D_0013E633 + 0xE9D;
+            char *g = hero_globals_base + 0xE9D;
             char *a_;
             doit = 1;
             if (vec_distance_xy(m + 0x10, g) < 8.0f
@@ -83,20 +83,20 @@ void qwark_oltanis_update(char *m) {
                 }
             } else if (*(int *)(d + 0x194) != 0) {
                 *(int *)(d + 0x194) = 0;
-                qcopy(d + 0x180, D_0013E633 + 0xEED);
+                qcopy(d + 0x180, hero_globals_base + 0xEED);
             }
             if (fast_dec_timer((int *)(d + 0x198)) != 0) {
                 float y;
                 float z;
                 float x = random_float_between(180.0f, 300.0f);
-                *(int *)(d + 0x198) = func_001FA898_r(multiply_global_factor(x));
+                *(int *)(d + 0x198) = truncate_float_to_s32_r(multiply_global_factor(x));
                 y = FastAddRots(*(float *)(m + 0x48), random_float_between(-90.0f, 90.0f) * 0.017453292f);
                 z = random_float_between(0.0f, 30.0f) * 0.017453292f;
                 BuildSphericalOffset(d + 0x180, 6.0f, y, z);
                 FastVecAdd(d + 0x180, d + 0x180, m + 0x10);
             }
             if (*(int *)(d + 0x194) != 0) {
-                qcopy(b, D_0013E633 + 0xEED);
+                qcopy(b, hero_globals_base + 0xEED);
                 sx = 0.04f;
                 sy = 0.3f;
             } else {

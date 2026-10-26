@@ -4,15 +4,15 @@
 #include "include_asm.h"
 
 typedef unsigned int Q __attribute__((mode(TI), aligned(16)));
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_L00_001FFCF8(void *, void *, float);
-extern void func_L00_001FFDD0(void *, void *, void *);
-extern void func_001FA190(void *);
-extern void func_002153E8(void *, void *);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void matrix4_scale(void *, void *, float);
+extern void matrix4_add(void *, void *, void *);
+extern void set_identity_matrix(void *);
+extern void matrix_to_euler(void *, void *);
 
 typedef unsigned int Q_50B88 __attribute__((mode(TI), aligned(16)));
-extern void func_001FA540(void *, void *, void *);
+extern void sce_vu0_mul_matrix(void *, void *, void *);
 
 /* Rotates a point (in place) about a unit axis by angle using a Rodrigues-style matrix: skew = cross-product matrix of axis, sin_part = sin*skew, cos_part = (1-cos)*skew^2; cos_part is then reused as the identity matrix.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/math/rotations/rotate_point_about_axis.c, FUN_L03_0024fba8. */

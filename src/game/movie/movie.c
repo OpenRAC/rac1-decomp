@@ -3,22 +3,22 @@
 #include "callees.h"
 #include "structs.h"
 
-extern int D_00161308 MACRO_ADDR;
-extern int D_00161314 MACRO_ADDR;
+extern int decoder_buffer_address MACRO_ADDR;
+extern int movie_play_step MACRO_ADDR;
 extern int movie_clear_gp SDATA(D_00161318);
-extern char *D_0016130C MACRO_ADDR;
+extern char *decoder_state MACRO_ADDR;
 extern char *movie_gp_base SDATA(D_0016130C);
-extern int func_00118BA0(int,int);
-extern int func_0023BB90(int,int,int);
-extern int func_0023B740(char*,char*,int*);
-extern void func_0023BE38(void);
+extern int change_thread_priority(int,int);
+extern int initAll(int,int,int);
+extern int read_mpeg(char*,char*,int*);
+extern void termAll(void);
 /* No recovered name. Sets movie globals, runs initialization and playback, then clears them. */
 int Movie_Play(int a,int b,int c,char *state,int e) {
     decoder_buffer_address=c;
     decoder_state=state;
     movie_play_step=0;
     movie_clear_gp=0;
-    func_00118BA0(func_00118BE0(),1);
+    change_thread_priority(get_thread_id(),1);
     movie_play_step=1;
     if(initAll(a,b,e)) {
         char *base=movie_gp_base;
@@ -30,41 +30,41 @@ int Movie_Play(int a,int b,int c,char *state,int e) {
     decoder_state=0;
     return 0;
 }
-extern int D_00161318 MACRO_ADDR;
-extern int D_0015EFD8 MACRO_ADDR;
-extern int D_0015EFA0 MACRO_ADDR;
+extern int movie_frame_count MACRO_ADDR;
+extern int decode_mode MACRO_ADDR;
+extern int challenge_mode MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
 /* pad state at D_0013CA40: two words read at 0x1A0/0x1A4 */
-extern PadState D_0013CA40;
+extern PadState g_controller_state;
 /* global block at D_0013E650: word at 0x5C */
 typedef struct MvGlobals {
     char pad0[0x5C];
     int f5C;
 } __attribute__((aligned(16))) MvGlobals;
-extern MvGlobals D_0013E650;
-extern void func_00118D80(int);
-extern int func_00122598(int);
-extern void func_00218908(void);
-extern void func_0023E040(char *);
-extern int func_0023CD30(char *, int *);
-extern int func_0023CE30(int *, int, int, int);
-extern int func_0023CD60(char *, int);
-extern void func_0023BF70(void);
-extern void func_0023BB40(void);
-extern int func_0023CDA8(char *, int *);
-extern int func_0012AD10(char *, int, int, char *, int);
-extern int func_0023CDF0(char *, int);
-extern int func_0023E5C8(char *);
-extern void func_0023C960(int);
-extern void func_0023C088(char *);
-extern int func_0023E050(char *);
-extern int func_0023E0D8(char *);
-extern int func_0023E1B0(char *);
-extern void func_0023C9B0(void);
-extern void func_0023C0E0(char *);
-extern void func_0012E348(int, int);
-extern void func_0012DDC0(void);
+extern MvGlobals voice_pool;
+extern void flush_cache(int);
+extern int sce_gs_sync_v(int);
+extern void UpdatePad(void);
+extern void videoDecAbort(char *);
+extern int readBufBeginPut(char *, int *);
+extern int read_cd_stream_sectors(int *, int, int, int);
+extern int readBufEndPut(char *, int);
+extern void proceedAudio(void);
+extern void switchThread(void);
+extern int readBufBeginGet(char *, int *);
+extern int sce_mpeg_demux_pss_ring_buffer(char *, int, int, char *, int);
+extern int readBufEndGet(char *, int);
+extern int voBufIsFull(char *);
+extern void startDisplay(int);
+extern void audioDecStart(char *);
+extern int videoDecGetState(char *);
+extern int videoDecFlush(char *);
+extern int videoDecIsFlushed(char *);
+extern void endDisplay(void);
+extern void audioDecReset(char *);
+extern void snd_SetMasterVolume(int, int);
+extern void snd_FlushSoundCommands(void);
 
 /* No recovered name. Playback loop: feeds file data (*file bytes) through the
  * read buffer at `rb` into the video decoder `vd`, starts audio and display once
@@ -83,10 +83,10 @@ int read_mpeg(char *vd, char *rb, int *file) {
     int get;
 
     movie_play_step = 3;
-    func_00118D80(0);
+    flush_cache(0);
     toread = left;
-    func_00118D80(2);
-    func_00122598(0);
+    flush_cache(2);
+    sce_gs_sync_v(0);
     movie_play_step = 4;
 
     while (left >= 5 && videoDecGetState(vd) != 3) {
@@ -136,7 +136,7 @@ int read_mpeg(char *vd, char *rb, int *file) {
             int size = *(int *)(rb + 0x50008);
 
             movie_play_step = 18;
-            used = func_0012AD10(vd, get, avail, rb, size);
+            used = sce_mpeg_demux_pss_ring_buffer(vd, get, avail, rb, size);
             movie_play_step = 19;
             readBufEndGet(rb, used);
             left -= used;
@@ -165,19 +165,19 @@ int read_mpeg(char *vd, char *rb, int *file) {
     }
     endDisplay();
     audioDecReset(decoder_state + 0xD9100);
-    func_0012E348(5, voice_pool.f5C);
-    func_0012DDC0();
+    snd_SetMasterVolume(5, voice_pool.f5C);
+    snd_FlushSoundCommands();
     movie_play_step = 0;
     movie_frame_count = 0;
     return aborted;
 }
-extern int func_00118BC0(int);
+extern int rotate_thread_ready_queue(int);
 
 /* switchThread -- calls func_00118BC0(1). */
 void switchThread(void) {
-    func_00118BC0(1);
+    rotate_thread_ready_queue(1);
 }
-extern int func_0023C2B0(char *);
+extern int is_state_field_large(char *);
 
 /* isAudioOK -- true when the audio decoder at offset 0xD9100 of the movie state holds 0x1000
  * bytes or more. */
@@ -200,27 +200,27 @@ struct AudioDecoderThreadArgs {
     int gs_tag;
     char pad24[0xC];
 };
-extern int D_00161310 MACRO_ADDR;
-extern char D_001E8E20[];
-extern char D_00166D00[] MACRO_ADDR;
-extern void func_0012B870(void);
-extern int func_0023CD10(char *);
-extern int func_0023DE98(void *, int, int, void *, int, int, void *, int);
-extern int func_0023BFA0(void *, void *, int, int);
-extern int func_0023DFA0(void *, int, int, void *, char *);
-extern void func_0023E560(void *, int, int, int);
-extern int func_00118B50(struct AudioDecoderThreadArgs *);
-extern int func_00118B70(int, void *);
-extern int func_0023CE18(void *, int, int);
-extern int func_00118A90(int, void *, int);
-extern int func_00119390(int);
-extern int func_00118AB0(int, void *, int);
-extern int func_00119460(int);
-extern void func_0023C7A8();
-extern void func_0023C910();
-extern void func_0023E1F8();
-extern int func_0023C9C0();
-extern int func_0023CAF8();
+extern int movie_decoder_thread_id MACRO_ADDR;
+extern char movie_open_error_text[];
+extern char gp_base[] MACRO_ADDR;
+extern void sce_mpeg_init(void);
+extern int readBufCreate(char *);
+extern int videoDecCreate(void *, int, int, void *, int, int, void *, int);
+extern int audioDecCreate(void *, void *, int, int);
+extern int videoDecSetStream(void *, int, int, void *, char *);
+extern void voBufCreate(void *, int, int, int);
+extern int create_thread(struct AudioDecoderThreadArgs *);
+extern int start_thread(int, void *);
+extern int set_state_fields(void *, int, int);
+extern int add_intc_handler(int, void *, int);
+extern int enable_intc_atomic(int);
+extern int add_dmac_handler(int, void *, int);
+extern int enable_dmac_atomic(int);
+extern void vblankHandler();
+extern void handler_endimage();
+extern void videoDecMain();
+extern int videoCallback();
+extern int pcmCallback();
 /* initAll(int, int, int) */
 int initAll(int stream_source, int source_mode, int callback_context) {
     struct AudioDecoderThreadArgs decoder_thread;
@@ -229,7 +229,7 @@ int initAll(int stream_source, int source_mode, int callback_context) {
     *((volatile int *)0x1000E000) |= 3;
     *((volatile int *)0x1000E010) = 4;
     readBufCreate(movie_gp_base);
-    func_0012B870();
+    sce_mpeg_init();
     videoDecCreate(((char *)decoder_state) + 0xD9048, decoder_buffer_address + 0x1C85C0, 0xEB768,
                   ((char *)decoder_state) + 0x52040, decoder_buffer_address + 0x1C7180, 0x100,
                   ((char *)decoder_state) + 0xD6040, 0x200);
@@ -246,60 +246,60 @@ int initAll(int stream_source, int source_mode, int callback_context) {
     decoder_thread.priority = 1;
     decoder_thread.gp = gp_base;
     decoder_thread.gs_tag = 0;
-    thread_id = func_00118B50(&decoder_thread);
+    thread_id = create_thread(&decoder_thread);
     movie_decoder_thread_id = thread_id;
-    func_00118B70(thread_id, ((char *)decoder_state) + 0xD9048);
+    start_thread(thread_id, ((char *)decoder_state) + 0xD9048);
     if (set_state_fields(((char *)decoder_state) + 0xD9040, stream_source, source_mode) == 0) {
         opened = 0;
         STUB_printf(movie_open_error_text);
     } else {
         opened = 1;
     }
-    ((struct AudioDecoderState *)decoder_state)->intc_handler_id = func_00118A90(2, vblankHandler, 0);
-    func_00119390(2);
-    ((struct AudioDecoderState *)decoder_state)->dmac_handler_id = func_00118AB0(2, handler_endimage, 0);
-    func_00119460(2);
+    ((struct AudioDecoderState *)decoder_state)->intc_handler_id = add_intc_handler(2, vblankHandler, 0);
+    enable_intc_atomic(2);
+    ((struct AudioDecoderState *)decoder_state)->dmac_handler_id = add_dmac_handler(2, handler_endimage, 0);
+    enable_dmac_atomic(2);
     return opened;
 }
 extern int movie_thread_gp SDATA(D_00161310);
-extern int func_00120F30(int);
-extern void func_0023CD28(char*);
-extern void func_0023E5B0(char*);
-extern int func_00118B80(int);
-extern int func_00118B60(int);
-extern int func_001193F8(int);
-extern int func_00118AD0(int,int);
-extern int func_00119328(int);
-extern int func_00118AA0(int,int);
-extern int func_0023E008(char*);
-extern int func_0023C060(char*);
-extern int func_0023CE28(char*);
+extern int sce_cd_sync_s(int);
+extern void readBufDelete(char*);
+extern void voBufDelete(char*);
+extern int terminate_thread(int);
+extern int delete_thread(int);
+extern int disable_dmac_atomic(int);
+extern int remove_dmac_handler(int,int);
+extern int disable_intc_atomic(int);
+extern int remove_intc_handler(int,int);
+extern int videoDecDelete(char*);
+extern int audioDecDelete(char*);
+extern int get_state_callback_result(char*);
 /* termAll(void): shuts down workers and decoders, then clears the DMA enable bit. */
 void termAll(void) {
-    func_00120F30(0);
+    sce_cd_sync_s(0);
     readBufDelete(decoder_state);
     voBufDelete(decoder_state+0xD9168);
-    func_00118B80(movie_thread_gp);
-    func_00118B60(movie_thread_gp);
-    func_001193F8(2);
-    func_00118AD0(2,*(int*)(decoder_state+0xD90F8));
-    func_00119328(2);
-    func_00118AA0(2,*(int*)(decoder_state+0xD90FC));
+    terminate_thread(movie_thread_gp);
+    delete_thread(movie_thread_gp);
+    disable_dmac_atomic(2);
+    remove_dmac_handler(2,*(int*)(decoder_state+0xD90F8));
+    disable_intc_atomic(2);
+    remove_intc_handler(2,*(int*)(decoder_state+0xD90FC));
     videoDecDelete(decoder_state+0xD9048);
     audioDecDelete(decoder_state+0xD9100);
     get_state_callback_result(decoder_state+0xD9040);
-    func_00120F30(0);
+    sce_cd_sync_s(0);
     *(volatile unsigned int*)0x1000E000 &= ~2u;
 }
-extern void func_001E9730(char *, ...);
-extern char D_001612F8[];
+extern void STUB_printf(char *, ...);
+extern char movie_error_message[];
 
 /* ErrMessage -- passes the message to func_001E9730 (STUB_printf) with the string at
  * D_001612F8 as its first argument. */
 void ErrMessage(char *fmt) {
     STUB_printf(movie_error_message, fmt);
 }
-extern void func_0023C2C0(char *);
+extern void audioDecSend(char *);
 
 /* proceedAudio(void) -- audioDecSend on the audio decoder at offset 0xD9100 of the movie state. */
 void proceedAudio(void) {

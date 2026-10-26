@@ -4,8 +4,8 @@
 #include "vector.h"
 #include "moby.h"
 
-extern float func_001FA790(float, float);
-extern float func_001FA748(float, float);
+extern float FastSubRots(float, float);
+extern float FastAddRots(float, float);
 
 /* Store in dst the angle scale of the way from a toward b, wrapped. */
 void interpolate_rotation_angle(float *dst, float a, float b, float scale) {
@@ -13,16 +13,16 @@ void interpolate_rotation_angle(float *dst, float a, float b, float scale) {
     *dst = v;
     *dst = FastAddRots(v, a);
 }
-extern char * D_L09_001B0930[];
-extern float D_0015EE6C MACRO_ADDR;
-extern float func_001F9D10(void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9BF0(void *out, void *a, void *b);
+extern char * gaspar_paths[];
+extern float g_frame_time MACRO_ADDR;
+extern float FastVecDist(void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void FastVecSub(void *out, void *a, void *b);
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 struct Manip;
 struct GifEntry;
 struct AnimSeq;
-void func_L09_0030B5E8(float *dst, float a, float b, float scale);
+void interpolate_rotation_angle(float *dst, float a, float b, float scale);
 typedef struct {
     s32 count;
     u8 pad4[0xC];
@@ -41,16 +41,16 @@ typedef struct {
     u8 padC4[8];
     f32 lag; /* 0xCC: eases to 0, slowing the turn while high */
 } PathFlyerVars;
-extern short D_L09_00161E78;
-extern f32 D_0015EE70 MACRO_ADDR;
-extern void func_L00_001FF4B0(void *, void *, f32);
-extern float func_L00_001FF860(float, float);
-extern float func_00214D88(float, float, float, float, float *, float *);
-extern void func_L00_001FFED8(void *, int, float);
-extern float func_001F9D48(void *, void *);
-extern int func_002140B0(int);
-extern void func_L00_00260958(void *, f32);
-extern void func_L00_00272488(void *, int, int, float, float);
+extern short gaspar_shuttle_climb_scale;
+extern f32 g_frame_time_sq MACRO_ADDR;
+extern void vec_scale_to_length(void *, void *, f32);
+extern float fast_atan2(float, float);
+extern float ApproachWithVelocity(float, float, float, float, float *, float *);
+extern void axis_rotation_2d48(void *, int, float);
+extern float vec_distance_xy(void *, void *);
+extern int random_integer_below(int);
+extern void add_random_offset_to_vector_xyz(void *, f32);
+extern void spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
 
 /* Flies the moby along its path toward the current node, turning and banking toward it, steps the node at each arrival and now and then drops a puff. Returns nonzero once it has run off the end of the path.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l09/gameplay/vendor/003033a0.c, FUN_L09_0030a298. */
@@ -111,12 +111,12 @@ int advance_shuttle_along_path(struct Moby *moby) {
     }
     return done;
 }
-extern char *func_L00_0025B478(void *, int, int);
-extern void func_0022ED80(int, int, int);
-extern void func_L01_00279790(void *);
-extern void func_L00_00264EA8(void *, int, int, int, int, int, int);
-extern void func_L01_00279E10(void *, int);
-extern void func_0020D678(void *);
+extern char *MobyGetHitMessage(void *, int, int);
+extern void Moby_PlaySound(int, int, int);
+extern void spawn_proximity_gated_bolts(void *);
+extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
+extern void spawn_moby_from_placement(void *, int);
+extern void DeleteMoby(void *);
 /* Breakable update: on a hit, play its sound, drop bolts, spawn pieces and delete itself. */
 void BreakableL09_Update(char *m) {
     int hit = 0;

@@ -2,10 +2,10 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern int D_L00_0015F674 MACRO_ADDR;
-extern int D_L00_0015F670 MACRO_ADDR;
-extern int D_L00_00161F04 MACRO_ADDR;
-extern int func_001FFCB0(int);
+extern int timed_hud_visible MACRO_ADDR;
+extern int timed_hud_frames_left MACRO_ADDR;
+extern int timed_hud_handle MACRO_ADDR;
+extern int remove_hud_item(int);
 
 /* Removes the timed help message if it belongs to selector a; returns 1 when removed. */
 int remove_help_message_for_selector(int a) {

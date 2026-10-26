@@ -13,11 +13,11 @@ typedef struct {
     u8 pad4[0xC];
     Vec4 point[1];
 } PathPoints;
-extern void func_001F9BF0(Vec4 *out, void *a, void *b);
-extern f32 func_001F9CB8(Vec4 *v);
-extern void func_L00_001FF4B0(Vec4 *out, Vec4 *v, f32 len);
-extern f32 func_001F9C78(Vec4 *a, Vec4 *b);
-extern void func_001F9BD8(Vec4 *out, Vec4 *a, Vec4 *b);
+extern void FastVecSub(Vec4 *out, void *a, void *b);
+extern f32 FastVecLength(Vec4 *v);
+extern void vec_scale_to_length(Vec4 *out, Vec4 *v, f32 len);
+extern f32 FastVecDot(Vec4 *a, Vec4 *b);
+extern void FastVecAdd(Vec4 *out, Vec4 *a, Vec4 *b);
 /* Return the next point index along the path in direction dir, wrapping at both ends. */
 static inline s32 path_next(PathPoints *path, s32 i, s32 dir) {
     if (i == path->count - 1) {

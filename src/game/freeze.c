@@ -11,50 +11,50 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
-extern int D_0018A3B0[];
-extern void func_001F99B0();
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
-extern char D_001940C0[];
-extern long D_00151888[3];
-extern int D_0015F6FC;
-extern short D_0015F534;
-extern void func_001FB530(void);
-extern void func_001F3D78(void);
-extern int D_0015F564;
-extern int D_0018DD40[];
-extern int D_0018DC40[];
-extern short D_0015F59C;
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
-extern void func_001F6668(void *, void *, void *, void *, void *, int,
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
+extern int draw_config[];
+extern void FastMemSet();
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
+extern char occl_visibility[];
+extern long gs_display_settings[3];
+extern int space_load_in_progress;
+extern short draw_enable_mask;
+extern void append_gif_transfer_packet(void);
+extern void DrawDebugProfiler(void);
+extern int draw_callback_count;
+extern int draw_callback_args[];
+extern int draw_callback_funcs[];
+extern short GlobalStateFlag;
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
+extern void FontPrint(void *, void *, void *, void *, void *, int,
                           unsigned char *);
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
-extern int func_001F4868(int);
-extern void func_001FB498(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern int D_0018E840[];
-extern long D_00152178 NOT_SDA;
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
+extern int GetEffectTex(int);
+extern void PutDrawBufferLarge(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern int bit_swap_lut[];
+extern long background_rgbaq NOT_SDA;
 
-extern void func_0012E528(int);
-extern void func_00216EF0(int);
-extern int func_001FE540(int);
-extern void func_001FF560(int);
-extern int func_001F98C0(int);
-extern int D_0015F6E8 MACRO_ADDR;
-extern int D_0013D440;
-extern char D_00193400[];
+extern void snd_PauseAllSoundsInGroup(int);
+extern void music_Pause(int);
+extern int msg_string(int);
+extern void push_help_history(int);
+extern int scale_game_frame_count(int);
+extern int g_game_mode MACRO_ADDR;
+extern int memory_card_request;
+extern char mode_freeze_info[];
 
 /* Enters the freeze screen for reason arg0: pauses the music unless the
    game mode (D_0015F6E8) is already 3, saves arg1/arg2 and the old mode in
@@ -70,7 +70,7 @@ void mode_freeze_init(int arg0, int arg1, int arg2) {
 
     *(int *)(s + 0x30) = arg2;
     if (g_game_mode != 3) {
-        func_0012E528(0x1D);
+        snd_PauseAllSoundsInGroup(0x1D);
         music_Pause(0);
     }
     *(int *)(s + 0x18) = arg1;
@@ -129,7 +129,7 @@ void mode_freeze_init(int arg0, int arg1, int arg2) {
         *(int *)(p + 4) = scale_game_frame_count(0x1E);
         *(int *)(p + 0x20) = -1;
         *(int *)(p + 0x24) = scale_game_frame_count(0x1E);
-        D_0013D440 = 3;
+        memory_card_request = 3;
         *(int *)(p + 0x2C) = scale_game_frame_count(0xA);
         break;
     }
@@ -179,67 +179,67 @@ typedef struct {
     s32 unk30;
 } MessageBoxP;
 typedef struct { s16 pad0; s16 pad2; s32 height; } ScreenP;
-extern short D_0015F620;
-extern short D_0015F5E8;
-extern short D_0015F5EC;
-extern short D_0015F5F0;
-extern short D_0015F5F4;
-extern short D_0015F5F8;
-extern short D_0015F5FC;
-extern short D_0015F600;
-extern short D_0015F604;
-extern short D_0015F608;
-extern short D_0015F60C;
-extern short D_0015F610;
-extern short D_0015F614;
-extern short D_0015F618;
-extern short D_0015F61C;
-extern short D_0015F624;
-extern short D_0015F628;
-extern short D_0015F62C;
-extern short D_0015F630;
-extern short D_0015F634;
-extern short D_0015F638;
-extern short D_0015F63C;
-extern short D_0015F640;
-extern s32 D_0015F6CC MACRO_ADDR;
-extern short D_0015EFB0;
-extern s32 D_0015EE80 MACRO_ADDR;
-extern s32 D_0015EE84 MACRO_ADDR;
-extern s32 D_0015F6C8 MACRO_ADDR;
-extern s32 D_001D60C0;
-extern s32 D_0013D440 MACRO_ADDR;
-extern s32 D_0015F538 MACRO_ADDR;
-extern char D_0015F648[];
-extern char D_0015F650[];
-extern char D_0015F660[];
-extern char D_0015F668[];
-extern char D_0015F670[];
-extern char D_0015F680[];
-extern s32 D_0015EF58[] MACRO_ADDR;
-extern s32 D_0015EF68[] MACRO_ADDR;
-extern struct TextRegionP D_001E7BF8;
-extern struct TextRegionP D_001E7C10;
-extern u8 D_001DF3D0[];
-extern char D_0013F450[];
-extern char D_0013E600[];
-extern void func_001F55C0(s32, s32, s32, s32);
-extern void func_001F62C8(s32, s32, s32, s32, s32);
-extern void func_001F6410(s32, s32, s32, s32, s32);
-extern s32 func_001F6EA8(s32, s32, s64, char *, s32);
-extern void func_001F7560(struct TextRegionP *, long, char *, s32);
-extern f32 func_001F9FA8(f32);
-extern f32 func_001FA888(s32);
-extern s32 func_001FA898(f32);
-extern s32 func_001FA8A8(s32, s32, f32);
-extern s32 func_00200198(s32, s32);
-extern s64 func_00200248(s32);
-extern void func_00200468(s32, s32, s32, s32, s32, s32);
-extern void func_00200E38(f32, f32, f32, f32, f32, s32, s32, s64);
-extern void func_00234C98(s32, s64);
-extern void *func_00116B00(void *, char *, s32);
-extern s32 func_00116248(char *, const char *, ...);
-extern void func_001153FC(void *, s32, s32);
+extern short freeze_box_pulse_period;
+extern short freeze_box_line1_y;
+extern short freeze_box_line2_y;
+extern short freeze_text_fade_color_start;
+extern short freeze_text_fade_color_end;
+extern short freeze_short_box_center_x;
+extern short freeze_short_box_center_y;
+extern short freeze_short_box_half_width;
+extern short freeze_short_box_half_height;
+extern short freeze_short_box_text_y;
+extern short freeze_long_box_center_x;
+extern short freeze_long_box_center_y;
+extern short freeze_long_box_half_width;
+extern short freeze_long_box_half_height;
+extern short freeze_long_box_text_y;
+extern short freeze_box_pulse_color_a;
+extern short freeze_box_pulse_color_b;
+extern short freeze_box_text_color;
+extern short freeze_box_text_flash_color;
+extern short freeze_box_record_color;
+extern short freeze_box_record_flash_color;
+extern short freeze_box_no_record_color;
+extern short freeze_box_no_record_flash_color;
+extern s32 pause_restart_reset_flag MACRO_ADDR;
+extern short mode_freeze_state;
+extern s32 pal_mode MACRO_ADDR;
+extern s32 g_current_level_index MACRO_ADDR;
+extern s32 boot_level_active MACRO_ADDR;
+extern s32 freeze_prompt_override_flag;
+extern s32 memory_card_request MACRO_ADDR;
+extern s32 game_frame_counter MACRO_ADDR;
+extern char freeze_prompt_default_text[];
+extern char freeze_prompt_number_format[];
+extern char freeze_rank_line_format[];
+extern char freeze_text_line_format[];
+extern char freeze_race_time_format[];
+extern char freeze_record_value_format[];
+extern s32 race_best_times[] MACRO_ADDR;
+extern s32 race_best_records[] MACRO_ADDR;
+extern struct TextRegionP freeze_info_text_region;
+extern struct TextRegionP freeze_choice_text_region;
+extern u8 normal_font_metrics[];
+extern char g_hero[];
+extern char g_screen_extent[];
+extern void emit_rgba_draw_packet(s32, s32, s32, s32);
+extern void DrawUIFrame(s32, s32, s32, s32, s32);
+extern void draw_outlined_rect(s32, s32, s32, s32, s32);
+extern s32 FontPrintCenter(s32, s32, s64, char *, s32);
+extern void font_print_window_regular(struct TextRegionP *, long, char *, s32);
+extern f32 FastSin(f32);
+extern f32 IntToFloat(s32);
+extern s32 truncate_float_to_s32(f32);
+extern s32 FastTweenColor(s32, s32, f32);
+extern s32 GetIconFrame(s32, s32);
+extern s64 GetFrameTex(s32);
+extern void HudSprite(s32, s32, s32, s32, s32, s32);
+extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, s64);
+extern void VU1_addGSregister(s32, s64);
+extern void *libc_strncpy(void *, char *, s32);
+extern s32 sprintf(char *, const char *, ...);
+extern void libc_memset(void *, s32, s32);
 /* Draws a freeze-mode message box sized to its text and centred on screen, fading with the box timer. */
 static __inline__ void draw_box_p(char *text, s32 left, s32 mid, s32 right, struct TextRegionP box) {
     s32 tint;
@@ -297,7 +297,7 @@ void draw_freeze_message_box(void) {
             f32 pivot;
 
             color = FastTweenColor(*(s32 *)&freeze_text_fade_color_start, *(s32 *)&freeze_text_fade_color_end, alpha);
-            func_00116B00((void *)0x70000000, msg_string(0x4E2B), 0x400);
+            libc_strncpy((void *)0x70000000, msg_string(0x4E2B), 0x400);
             p = (u8 *)0x70000000;
             while (*p >= 2) {
                 p++;
@@ -336,7 +336,7 @@ void draw_freeze_message_box(void) {
         if (((MessageBoxP *)mode_freeze_info)->unk20 <= 0) {
             break;
         }
-        text = func_00116B00((void *)0x70000000, msg_string(0x4FA6), 0x400);
+        text = libc_strncpy((void *)0x70000000, msg_string(0x4FA6), 0x400);
         p = (u8 *)0x70000000;
         while (*p >= 2) {
             p++;
@@ -367,7 +367,7 @@ void draw_freeze_message_box(void) {
         s32 mid;
         s32 draw = 1;
 
-        if (D_0013D440 != 0) {
+        if (memory_card_request != 0) {
             break;
         }
         if (((MessageBoxP *)mode_freeze_info)->unk20 <= 0) {
@@ -384,7 +384,7 @@ void draw_freeze_message_box(void) {
             text = msg_string(0x4FAF);
             break;
         case 12:
-            if (D_001D60C0 != 0) {
+            if (freeze_prompt_override_flag != 0) {
                 mid = 0x4FA8;
                 text = msg_string(0x4FA7);
                 break;
@@ -418,13 +418,13 @@ void draw_freeze_message_box(void) {
             }
             break;
         case 19:
-            if (D_001D60C0 != 0) {
+            if (freeze_prompt_override_flag != 0) {
                 mid = 0x4FA8;
                 text = msg_string(0x4FA7);
             } else if (boot_level_active != 0) {
                 left = 0x5253;
                 right = 0x5250;
-                func_00116248(buf, freeze_prompt_number_format, msg_string(0x4FA9), 1, 1, msg_string(0x4FAA));
+                sprintf(buf, freeze_prompt_number_format, msg_string(0x4FA9), 1, 1, msg_string(0x4FAA));
                 text = buf;
             } else {
                 mid = 0x4FA8;
@@ -442,7 +442,7 @@ void draw_freeze_message_box(void) {
         case 24:
             left = 0x5253;
             right = 0x5250;
-            func_00116248(buf, freeze_prompt_number_format, msg_string(0x4FAE), 1, 1, msg_string(0x4FAA));
+            sprintf(buf, freeze_prompt_number_format, msg_string(0x4FAE), 1, 1, msg_string(0x4FAA));
             text = buf;
             break;
         case 23:
@@ -452,15 +452,15 @@ void draw_freeze_message_box(void) {
             break;
         case 3:
         case 4:
-            if (boot_level_active != 0 && D_001D60C0 == 0) {
+            if (boot_level_active != 0 && freeze_prompt_override_flag == 0) {
                 left = 0x5253;
                 right = 0x5250;
                 text = msg_string(0x4FAB);
-            } else if (D_0015F6CC != 0) {
+            } else if (pause_restart_reset_flag != 0) {
                 left = 0x5254;
                 right = 0x5250;
                 text = msg_string(0x4FAB);
-            } else if (D_001D60C0 == 0) {
+            } else if (freeze_prompt_override_flag == 0) {
                 mid = 0x4FA8;
                 text = msg_string(0x4FAC);
             } else {
@@ -578,7 +578,7 @@ void draw_freeze_message_box(void) {
             if (!(sel < 5)) {
                 sel = 4;
             }
-            func_00116248(line, freeze_rank_line_format, msg_string(sel + 0x5229), msg_string(0x5245));
+            sprintf(line, freeze_rank_line_format, msg_string(sel + 0x5229), msg_string(0x5245));
             if (((Hero *)g_hero)->race_position == 1) {
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y, c2, line, -1);
             } else {
@@ -592,22 +592,22 @@ void draw_freeze_message_box(void) {
                 rem = best - min * unit;
                 sec = rem / per;
                 hund = (rem - sec * per) * 100 / per;
-                func_00116248(line, freeze_text_line_format, msg_string(0x50A3));
+                sprintf(line, freeze_text_line_format, msg_string(0x50A3));
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x26, c2, line, -1);
-                func_00116248(line, freeze_race_time_format, min, sec, hund);
+                sprintf(line, freeze_race_time_format, min, sec, hund);
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x3A, c2, line, -1);
             } else {
-                func_00116248(line, freeze_text_line_format, msg_string(0x50A2));
+                sprintf(line, freeze_text_line_format, msg_string(0x50A2));
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x30, c3, line, -1);
             }
             record = race_best_records[(g_current_level_index ^ 0x10) ? 0 : 1];
             if (record != 0 && record == ((Hero *)g_hero)->race_score) {
-                func_00116248(line, freeze_text_line_format, msg_string(0x50A5));
+                sprintf(line, freeze_text_line_format, msg_string(0x50A5));
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x56, c2, line, -1);
-                func_00116248(line, freeze_record_value_format, ((Hero *)g_hero)->race_score);
+                sprintf(line, freeze_record_value_format, ((Hero *)g_hero)->race_score);
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x6A, c2, line, -1);
             } else {
-                func_00116248(line, freeze_text_line_format, msg_string(0x50A4));
+                sprintf(line, freeze_text_line_format, msg_string(0x50A4));
                 FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x60, c3, line, -1);
             }
             FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x90, c1, msg_string(0x524E), -1);

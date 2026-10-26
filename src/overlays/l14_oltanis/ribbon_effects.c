@@ -9,16 +9,16 @@
 #include "hero.h"
 #include "moby.h"
 
-extern float func_001FA748(float, float);
-extern float func_001FA790(float, float);
-extern float func_001FA888(int);
-extern float func_L00_0025F368(float);
-extern float func_001F9FA8(float);
-extern float func_L00_00258C80(float, float);
-extern float func_001F9F90(float x);
+extern float FastAddRots(float, float);
+extern float FastSubRots(float, float);
+extern float IntToFloat(int);
+extern float normalize_angle(float);
+extern float FastSin(float);
+extern float randf_sym(float, float);
+extern float FastCos(float x);
 struct Moby;
-extern void func_001F49B0(void (*)(struct Moby *), struct Moby *);
-void func_L14_002E0858(char *m);
+extern void AddDrawCallback(void (*)(struct Moby *), struct Moby *);
+void draw_ribbon_effect(char *m);
 
 typedef struct RibbonPoint {
     f32 x;                              /* 0x00 */

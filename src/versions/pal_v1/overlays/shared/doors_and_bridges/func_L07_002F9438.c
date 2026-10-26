@@ -1,4 +1,4 @@
-extern char D_L07_00208820[];
+extern char umbris_ocean_scaled_table[];
 void AmbientStreamL07Update(unsigned char *moby)
 {
     switch (moby[0x20]) {

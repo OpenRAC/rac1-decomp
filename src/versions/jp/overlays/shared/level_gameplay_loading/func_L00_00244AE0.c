@@ -41,7 +41,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         copy_memory_by_alignment(mission_state, saved_mission_state + g_current_level_index * 16, 0x10);
         upload_texture_images((char *)(src[6] + (s32)src), h->v[0], (char *)h + h->v[1]);
         level_sound_bank_handle = sound_bank_handle;
-        func_00118D80(0);
+        flush_cache(0);
         used = fast_decompress((char *)(src[0x14] + (s32)src), base);
 
         level_texture_data_base = (s32)(base + h->v[0x18]);
@@ -94,7 +94,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         }
         loaded_swap_moby_class_set = -1;
         q = (char *)h + h->v[0x21];
-        D_L00_001600D0 = 0;
+        swap_moby_class_block_field_8 = 0;
         swap_moby_class_count = h->v[0x20];
         for (m = 0; m < h->v[0x20]; m++, q += 0x10) {
             swap_moby_class_ids[m] = *(s32 *)(q + 4);
@@ -108,7 +108,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         Profile_Mark((char *)h + h->v[9], h->v[8]);
         for (i = 0, q2 = (char *)h + h->v[0xB]; i < h->v[0xA]; i++, q2 += 0x30)
             register_shrub_render_class(base + *(s32 *)q2, (char *)h + h->v[0x13], q2 + 0x10, q2 + 0x20, *(s32 *)(q2 + 4));
-        D_L00_0015F520 = base + h->v[0x1A];
+        level_effects_data = base + h->v[0x1A];
         unpack_point_records((char *)h + h->v[0x17], h->v[0x16]);
         if (h->v[0x28]) {
             relocate_counted_pointer_table(base + h->v[0x28]);
@@ -127,9 +127,9 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
             height_map_data = 0;
         }
         if (h->v[0x2A])
-            D_L00_0015F6E4 = base + h->v[0x2A];
+            level_header_section_2a_data = base + h->v[0x2A];
         else
-            D_L00_0015F6E4 = 0;
+            level_header_section_2a_data = 0;
         {
             char *x1 = base + h->v[0x19];
             char *x2 = (char *)h + h->v[0x15];
@@ -207,9 +207,9 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         if (h->v[4])
             ((void (*)())STUB_printf)(mem_report_sky_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)coll_hit_result.f0) - (char *)sky_data)) * (1.0f / 1024.0f)))));
         ((void (*)())STUB_printf)(mem_report_collision_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(level_texture_data_base - (s32)((char *)coll_hit_result.f0))) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(mem_report_texture_data_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((D_L00_001B1E00[1] >> 4) - level_texture_data_base)) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8C90, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((s32)D_L00_0015F520 - (D_L00_001B1E00[1] >> 4))) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8CA8, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((char *)moby_class_headers[0] - D_L00_0015F520)) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(mem_report_texture_data_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((particle_texture_vram_table[1] >> 4) - level_texture_data_base)) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(mem_report_particle_vram_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((s32)level_effects_data - (particle_texture_vram_table[1] >> 4))) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(mem_report_effects_vram_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((char *)moby_class_headers[0] - level_effects_data)) * (1.0f / 1024.0f)))));
         ((void (*)())STUB_printf)(mem_report_moby_classes_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)level_tie_classes[0]) - (char *)moby_class_headers[0])) * (1.0f / 1024.0f)))));
         if (h->v[0xA])
             ((void (*)())STUB_printf)(mem_report_tie_classes_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)shrub_class_table[0]) - ((char *)level_tie_classes[0]))) * (1.0f / 1024.0f)))));

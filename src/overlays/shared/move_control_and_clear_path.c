@@ -20,8 +20,8 @@ void MoveCtl_Init(char *p)
     *(float *)(p + 0x2C) = 0.1f;
 }
 LINKER_REMNANT("asm/overlays", func_L01_0026EFA8);
-extern unsigned short *D_L01_001ABFC0[];
-extern char *D_L01_00160058 MACRO_ADDR;
+extern unsigned short *novalis_moby_groups[];
+extern char *novalis_mobys MACRO_ADDR;
 typedef struct {
     char pad0[0x20];
     signed char state;
@@ -47,8 +47,8 @@ int count_active_moby_group_members(int i, int st) {
     return n;
 }
 INCLUDE_ASM("asm/overlays", func_L01_0026EFDC);
-extern unsigned short *D_L01_001ABFC0[];
-extern char *D_L01_00160058 MACRO_ADDR;
+extern unsigned short *novalis_moby_groups[];
+extern char *novalis_mobys MACRO_ADDR;
 
 // Set byte 0xBC of each entry in a negative-terminated index list.
 void MobyGroup_SetByteBC(int i, int v) {
@@ -61,7 +61,7 @@ void MobyGroup_SetByteBC(int i, int v) {
         } while (*(short *)p++ >= 0);
     }
 }
-extern int D_L01_00160058_m __asm__("D_L01_00160058") MACRO_ADDR;
+extern int novalis_mobys_m __asm__("D_L01_00160058") MACRO_ADDR;
 
 // Walks a list of moby indices and sets the state byte of each one that is non-negative.
 void set_moby_list_state(int list, int state)
@@ -71,15 +71,15 @@ void set_moby_list_state(int list, int state)
     if (q != 0) {
         p = q;
         do {
-            char *m = (char *)(((*p & 0x7FFF) << 8) + D_L01_00160058_m);
+            char *m = (char *)(((*p & 0x7FFF) << 8) + novalis_mobys_m);
             if (m[0x20] >= 0) {
                 m[0x20] = state;
             }
         } while (*(short *)p++ >= 0);
     }
 }
-extern void func_001F9C48(void *, void *, float);
-extern int func_L00_00200290(char *, float);
+extern void scale_vector(void *, void *, float);
+extern int FastBSphereCheck(char *, float);
 
 /* Run a bounding-sphere check of radius scale at vec scaled down by 1/1024. */
 void check_scaled_vector_bsphere(char *vec, float scale)
@@ -88,12 +88,12 @@ void check_scaled_vector_bsphere(char *vec, float scale)
     scale_vector(scratch, vec, 0.0009765625f);
     FastBSphereCheck(scratch, scale);
 }
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_L00_002629E0(int, void *, void *);
-extern char *D_L01_001B0C30[];
+extern void FastVecSub(void *dst, void *a, void *b);
+extern void FastVecCross(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern int test_path_segment_strict_crossing(int, void *, void *);
+extern char *novalis_paths[];
 typedef int u128 __attribute__((mode(TI)));
 
 // Returns a bitmask of the table's spheres that no listed object touches, testing swept offsets.
@@ -159,20 +159,20 @@ int expand_path_mask_to_intersection(int idx, int a, int mask)
     return 0;
 }
 LINKER_REMNANT("asm/overlays", func_L01_00277CA0);
-int func_L01_00277C30(int idx, int a, int mask);
+int expand_path_mask_to_intersection(int idx, int a, int mask);
 typedef int OvlQuad __attribute__((mode(TI)));
 typedef struct {
     s32 count;
     u8 pad04[0xC];
     Vec4 pts[1];
 } Path_276a48;
-extern Path_276a48 * D_L01_001B0C30_77FD8[] __asm__("D_L01_001B0C30");
-extern void func_001F9BF0_77FD8(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
-extern void func_001F9BD8_77FD8(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
-extern void func_L00_001FF4B0_77FD8(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B0");
-extern s32 func_L00_002629E0_77FD8(s32, Vec4 *, Vec4 *) __asm__("func_L00_002629E0");
+extern Path_276a48 * novalis_paths_r[] __asm__("D_L01_001B0C30");
+extern void FastVecSub_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
+extern void FastVecAdd_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
+extern void vec_scale_to_length_r(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B0");
+extern s32 test_path_segment_strict_crossing_r(s32, Vec4 *, Vec4 *) __asm__("func_L00_002629E0");
 s32 func_L01_00277A38_77FD8(s32 *ids, s32 n, f32 radius, s32 path_index, Vec4 *pos) __asm__("func_L01_00277A38");
-extern f32 func_001F9D48_77FD8(Vec4 *, Vec4 *) __asm__("func_001F9D48");
+extern f32 vec_distance_xy_r(Vec4 *, Vec4 *) __asm__("func_001F9D48");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00276a48.c, FUN_L01_00276fe8. */
 s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius,
@@ -192,26 +192,26 @@ s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius,
 
     for (j = 0; j < n; j++) {
         if (radius != 0.0f) {
-            func_001F9BF0_77FD8(&side, pos, target);
-            func_L00_001FF4B0_77FD8(&side, &side, radius);
+            FastVecSub_r(&side, pos, target);
+            vec_scale_to_length_r(&side, &side, radius);
             x = side.f[0];
             side.f[3] = x;
             side.f[0] = side.f[1];
             side.f[1] = -x;
-            func_001F9BF0_77FD8(&left, pos, &side);
-            func_001F9BD8_77FD8(&right, pos, &side);
-            if (func_L00_002629E0_77FD8(ids[j], &left, target)) {
+            FastVecSub_r(&left, pos, &side);
+            FastVecAdd_r(&right, pos, &side);
+            if (test_path_segment_strict_crossing_r(ids[j], &left, target)) {
                 hit = 1;
-            } else if (func_L00_002629E0_77FD8(ids[j], &right, target)) {
+            } else if (test_path_segment_strict_crossing_r(ids[j], &right, target)) {
                 hit = 1;
             }
-        } else if (func_L00_002629E0_77FD8(ids[j], pos, target)) {
+        } else if (test_path_segment_strict_crossing_r(ids[j], pos, target)) {
             hit = 1;
         }
         if (hit) break;
     }
     if (hit) {
-        path = D_L01_001B0C30_77FD8[path_index];
+        path = novalis_paths_r[path_index];
         from_mask = func_L01_00277A38_77FD8(ids, n, radius, path_index, pos);
         to_mask = func_L01_00277A38_77FD8(ids, n, radius, path_index, target);
         mask = expand_path_mask_to_intersection(path_index, from_mask, to_mask);
@@ -220,7 +220,7 @@ s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius,
             best = -1;
             for (i = 0; i < path->count; i++) {
                 if ((mask >> i) & 1) {
-                    f32 distance = func_001F9D48_77FD8(&path->pts[i], target);
+                    f32 distance = vec_distance_xy_r(&path->pts[i], target);
                     if (distance < nearest) {
                         nearest = distance;
                         best = i;
@@ -237,10 +237,10 @@ s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius,
     qcopy(out, target);
     return 1;
 }
-extern char D_0013E633[];
+extern char hero_globals_base[];
 /* Return 1 when the hero is standing on or riding moby m. */
 int is_hero_on_moby(char *m) {
-    char *h = D_0013E633 + 0xE1D;
+    char *h = hero_globals_base + 0xE1D;
 
     if (*(int *)(h + 0x208C) == 3 || *(int *)(h + 0x2084) == 0x1C) {
         if (*(char **)(h + 0x4F8) == m) {
@@ -260,11 +260,11 @@ typedef struct {
     char pad1[0x1E];
     char f;
 } GG;
-extern GG D_L01_0016CD60;
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9BC0(float *);
-extern float func_001FA748(float, float);
+extern GG fx_cutscene;
+extern float FastCos(float);
+extern float FastSin(float);
+extern void clear_u64_value(float *);
+extern float FastAddRots(float, float);
 
 /* Places the marker at a moby's position offset along its heading by scale. */
 void PlaceMarkerAheadOfMoby(float scale, char *moby) {
@@ -275,22 +275,22 @@ void PlaceMarkerAheadOfMoby(float scale, char *moby) {
     clear_u64_value(fx_cutscene.q);
     fx_cutscene.a = FastAddRots(*(float *)(moby + 0x48), 3.14159274101257324f);
 }
-extern float func_001F9D48(void *, void *);
-extern void func_L00_00261B00(void *, int, int, int, int);
-extern char D_0013E633[];
+extern float vec_distance_xy(void *, void *);
+extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
+extern char hero_globals_base[];
 
 // Breaks an object into fragments, with a flag when it is near the origin.
 void spawn_proximity_gated_bolts(char *moby)
 {
     int r = 0;
-    if (vec_distance_xy(moby + 0x10, D_0013E633 + 0xE9D) < 7.0f) {
+    if (vec_distance_xy(moby + 0x10, hero_globals_base + 0xE9D) < 7.0f) {
         r = 2;
     }
     spawn_randomized_bolt_drop(moby, 4, 7, r, -1);
 }
 LINKER_REMNANT("asm/overlays", func_L01_00279AC0);
-extern char *func_0020D348(int);
-extern void func_L00_00251E30(void *);
+extern char *CreateMoby(int);
+extern void moby_build_matrix(void *);
 
 /* spawns a moby of a class copying the source moby's placement, scaled */
 void spawn_moby_from_placement(char *src, int oClass) {

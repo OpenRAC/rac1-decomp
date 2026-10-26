@@ -6,8 +6,8 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern void func_001F9BF0(float *, float *, float *);
-extern float func_L00_002E9B60(char *, float *, float);
+extern void FastVecSub(float *, float *, float *);
+extern float update_follow_camera_angle_blend_from_direction(char *, float *, float);
 
 /* Blend the follow camera angle toward the direction from its target to position arg. */
 void update_follow_camera_angle_blend_from_position(char *moby, int arg, float f)

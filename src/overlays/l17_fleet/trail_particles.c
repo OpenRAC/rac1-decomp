@@ -2,12 +2,12 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern int func_002140B0(int);
-extern int func_001F9850(int);
-extern unsigned char *func_00218928(int);
-extern void func_001F9BF0(void *, void *, void *);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern unsigned char *D_L17_001B2D54;
+extern int random_integer_below(int);
+extern int scale_ticks(int);
+extern unsigned char *create_part(int);
+extern void FastVecSub(void *, void *, void *);
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern unsigned char *fleet_trail_texture_ptr;
 
 // Spawns a class 0x4F particle at a position with a direction, optionally relative to a parent.
 unsigned char *SpawnTrailParticle(char *parent, void *pos, float *vec) {
@@ -29,7 +29,7 @@ unsigned char *SpawnTrailParticle(char *parent, void *pos, float *vec) {
         }
         *(char **)(d + 0x1C) = parent;
         *(int *)(p + 4) = 0x604040FF;
-        p[9] = func_001FA898_r(1.0f) + 0x20;
+        p[9] = truncate_float_to_s32_r(1.0f) + 0x20;
         p[3] = 0x48;
         *(float *)(p + 0xC) = 42000.0f;
         p[8] = b;
@@ -38,8 +38,8 @@ unsigned char *SpawnTrailParticle(char *parent, void *pos, float *vec) {
     }
     return p;
 }
-extern float func_001FA888(int);
-extern int func_001FA8A8(int, int, float);
+extern float IntToFloat(int);
+extern int FastTweenColor(int, int, float);
 
 // Spawns a class 0x50 fading particle at a position, with colours depending on a mode and a fade step.
 unsigned char *create_drone_flight_trail_record(char *pos, int mode, int step) {
@@ -53,7 +53,7 @@ unsigned char *create_drone_flight_trail_record(char *pos, int mode, int step) {
         p = create_part(0x50);
         if (p != 0) {
             qcopy(p + 0x10, pos);
-            p[9] = func_001FA898_r(1.0f) + 0x70;
+            p[9] = truncate_float_to_s32_r(1.0f) + 0x70;
             *(int *)(p + 0x20) = mode;
             if (mode == 0) {
                 int d = 0xF - step;

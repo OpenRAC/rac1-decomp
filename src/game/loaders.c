@@ -11,58 +11,58 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
-extern int D_0018A3B0[];
-extern void func_001F99B0();
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
-extern char D_001940C0[];
-extern long D_00151888[3];
-extern int D_0015F6FC;
-extern short D_0015F534;
-extern void func_001FB530(void);
-extern void func_001F3D78(void);
-extern int D_0015F564;
-extern int D_0018DD40[];
-extern int D_0018DC40[];
-extern short D_0015F59C;
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
-extern void func_001F6668(void *, void *, void *, void *, void *, int,
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
+extern int draw_config[];
+extern void FastMemSet();
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
+extern char occl_visibility[];
+extern long gs_display_settings[3];
+extern int space_load_in_progress;
+extern short draw_enable_mask;
+extern void append_gif_transfer_packet(void);
+extern void DrawDebugProfiler(void);
+extern int draw_callback_count;
+extern int draw_callback_args[];
+extern int draw_callback_funcs[];
+extern short GlobalStateFlag;
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
+extern void FontPrint(void *, void *, void *, void *, void *, int,
                           unsigned char *);
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
-extern int func_001F4868(int);
-extern void func_001FB498(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern int D_0018E840[];
-extern long D_00152178 NOT_SDA;
-extern int func_001FE4D0(void);
-extern char D_00199A68[];
-extern short D_0015F780;
-extern int D_001941CC NOT_SDA;
-extern int D_0019A4E8 NOT_SDA;
-extern int func_001FF668(int);
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
+extern int GetEffectTex(int);
+extern void PutDrawBufferLarge(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern int bit_swap_lut[];
+extern long background_rgbaq NOT_SDA;
+extern int Help_FindIndex(void);
+extern char s_paradox_this_message_does_not[];
+extern short help_msgs;
+extern int hud_heap_base NOT_SDA;
+extern int hud_state NOT_SDA;
+extern int Hud_GetIconIndex(int);
 typedef struct {
     char b[0x13];
 } Cfg13;
-extern Cfg13 D_0019A540 NOT_SDA;
-extern Cfg13 D_001E7DD8 NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
-extern short D_0015F9D0;
-extern void func_00201960(int, int, int, int, int);
-extern void func_002023E0(int);
-extern void func_002027C0(int);
+extern Cfg13 message_text_buffer NOT_SDA;
+extern Cfg13 message_too_long_label NOT_SDA;
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
+extern short ResourceCounter;
+extern void draw_stretchable_ui_frame(int, int, int, int, int);
+extern void CreatePointLight(int);
+extern void DetachPointLight(int);
 
 /*
  * upload_mip_texture: sends a texture (a header, then its palette and mip levels) to the GS at the
@@ -100,13 +100,13 @@ typedef struct {
 
 /* As loaders.c declares them further down (sceGsSetDefLoadImage, sceGsExecLoadImage, FlushCache,
  * sceGsSyncPath). */
-extern int D_0015EF74 MACRO_ADDR; /* gs texture allocation cursor */
-extern void func_001F99B0(void *, s32, s32);
-extern s32 func_001F9968(s32);
-extern void func_00118D80(int);
-extern int func_00122630(void *, short, short, short, short, short, short, short);
-extern int func_00122958(void *, void *);
-extern int func_00120858(int, unsigned short);
+extern int g_gs_texture_allocation_cursor MACRO_ADDR; /* gs texture allocation cursor */
+extern void FastMemSet(void *, s32, s32);
+extern s32 log2dim(s32);
+extern void flush_cache(int);
+extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
+extern int sceGsExecLoadImage(void *, void *);
+extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 
 /* Uploads a texture and its mip levels to GS memory (with the palette for the 4/8-bit formats
    0x14/0x13) and writes the matching GS register words to regs. */
@@ -169,14 +169,14 @@ s32 upload_mip_texture(MipTexture_202AA8 *tex, u64 *regs)
         upload.palette_block = g_gs_texture_allocation_cursor >> 8;
         if (tex->psm == 0x14) {
             g_gs_texture_allocation_cursor += 0x100;
-            func_00122630(&load_image, upload.palette_block, 1, tex->palette_psm, 0, 0, 8, 2);
+            sceGsSetDefLoadImage(&load_image, upload.palette_block, 1, tex->palette_psm, 0, 0, 8, 2);
         } else {
             g_gs_texture_allocation_cursor += upload.palette_size;
-            func_00122630(&load_image, upload.palette_block, 1, tex->palette_psm, 0, 0, 16, 16);
+            sceGsSetDefLoadImage(&load_image, upload.palette_block, 1, tex->palette_psm, 0, 0, 16, 16);
         }
-        func_00118D80(0);
-        func_00122958(&load_image, (void *)upload.palette_address);
-        func_00120858(0, 0);
+        flush_cache(0);
+        sceGsExecLoadImage(&load_image, (void *)upload.palette_address);
+        wait_for_graphics_pipeline_idle(0, 0);
     }
     for (i = 1; i < tex->mip_count; i++) {
         upload.mip_sizes[i] = upload.mip_sizes[i - 1] >> 2;
@@ -188,11 +188,11 @@ s32 upload_mip_texture(MipTexture_202AA8 *tex, u64 *regs)
             upload.buffer_widths[i] = 1;
         }
         upload.blocks[i] = g_gs_texture_allocation_cursor >> 8;
-        func_00122630(&load_image, upload.blocks[i], upload.buffer_widths[i], tex->psm, 0, 0,
+        sceGsSetDefLoadImage(&load_image, upload.blocks[i], upload.buffer_widths[i], tex->psm, 0, 0,
                       tex->width >> i, tex->height >> i);
-        func_00118D80(0);
-        func_00122958(&load_image, (void *)upload.mip_addresses[i]);
-        func_00120858(0, 0);
+        flush_cache(0);
+        sceGsExecLoadImage(&load_image, (void *)upload.mip_addresses[i]);
+        wait_for_graphics_pipeline_idle(0, 0);
         bytes = upload.mip_sizes[0] >> (i * 2);
         if (bytes <= 0xFF) {
             bytes = 0x100;
@@ -224,13 +224,13 @@ s32 upload_mip_texture(MipTexture_202AA8 *tex, u64 *regs)
 
 LINKER_REMNANT("asm/remnants/text", func_00202EF8);
 
-extern int D_001601C0 MACRO_ADDR;
-extern char D_001CE500[];
-extern int D_001CE300[];
+extern int particle_texture_range_count MACRO_ADDR;
+extern char particle_texture_data[];
+extern int particle_texture_ptrs[];
 typedef struct { int a; int b; } Pair_2F00;
-extern Pair_2F00 D_001CDD00[];
-extern void func_001F9A00(void *, void *, int);
-extern int func_001F9968(int);
+extern Pair_2F00 particle_texture_ranges[];
+extern void copy_memory_aligned(void *, void *, int);
+extern int log2dim(int);
 
 /* ParseParticleTexs */
 void ParseParticleTexs(int *hdr, int base, int *list, int count) {
@@ -255,9 +255,9 @@ void ParseParticleTexs(int *hdr, int base, int *list, int count) {
     }
 }
 
-extern int func_001F9968(int);
-extern int D_0015F55C MACRO_ADDR;
-extern char D_0018D540[];
+extern int log2dim(int);
+extern int effect_tex_cnt MACRO_ADDR;
+extern char effect_texture_definitions[];
 
 typedef struct {
     unsigned long flags;
@@ -266,8 +266,8 @@ typedef struct {
     short u;
     short v;
 } LoadPoint;
-extern LoadPoint D_0018D540_p[] __asm__("D_0018D540");
-extern short func_001F9968_s(int) __asm__("func_001F9968");
+extern LoadPoint effect_texture_definitions_p[] __asm__("D_0018D540");
+extern short log2dim_s(int) __asm__("func_001F9968");
 
 /* Unpack count point records (x, y, u, v words, 12.4 fixed point for
    x/y) into D_0018D540. Adapted from Lombyte's project (GPL-3.0) for PAL. */
@@ -282,15 +282,15 @@ void unpack_point_records(int *src, int count) {
         y = *src++;
         u = *src++;
         v = *src++;
-        D_0018D540_p[effect_tex_cnt].x = x >> 4;
-        D_0018D540_p[effect_tex_cnt].y = y >> 4;
-        D_0018D540_p[effect_tex_cnt].u = func_001F9968_s(u);
-        D_0018D540_p[effect_tex_cnt].v = func_001F9968_s(v);
-        D_0018D540_p[effect_tex_cnt].flags = 0;
+        effect_texture_definitions_p[effect_tex_cnt].x = x >> 4;
+        effect_texture_definitions_p[effect_tex_cnt].y = y >> 4;
+        effect_texture_definitions_p[effect_tex_cnt].u = log2dim_s(u);
+        effect_texture_definitions_p[effect_tex_cnt].v = log2dim_s(v);
+        effect_texture_definitions_p[effect_tex_cnt].flags = 0;
     }
 }
 
-extern char *D_0016055C MACRO_ADDR;
+extern char *level_sky_effect_data MACRO_ADDR;
 
 typedef struct {
     long tag;
@@ -322,7 +322,7 @@ typedef struct {
     char *unk1C;
     struct SkyShellL *shells[1]; /* 0x20 */
 } SkyDefL;
-extern SkyDefL *D_0016055C_s __asm__("D_0016055C") MACRO_ADDR;
+extern SkyDefL *level_sky_effect_data_s __asm__("D_0016055C") MACRO_ADDR;
 
 /* Relocates the sky definition s just loaded (its pointers are offsets
    from s) and makes it the current one (D_0016055C): the page table and
@@ -336,7 +336,7 @@ extern SkyDefL *D_0016055C_s __asm__("D_0016055C") MACRO_ADDR;
 void relocate_sky_definition(SkyDefL *s) {
     int i;
 
-    D_0016055C_s = s;
+    level_sky_effect_data_s = s;
     s->unk04 = 1;
     s->pages = (SkyPageL *)((char *)s->pages + (int)s);
     s->unk14 = s->unk14 + (int)s;
@@ -345,30 +345,30 @@ void relocate_sky_definition(SkyDefL *s) {
         s->unk1C = s->unk1C + (int)s;
     }
     {
-        int *src = (int *)D_0016055C_s->pages;
+        int *src = (int *)level_sky_effect_data_s->pages;
 
-        for (i = 0; i < D_0016055C_s->npages; i++) {
+        for (i = 0; i < level_sky_effect_data_s->npages; i++) {
             int a = *src++;
             int b = *src++;
             int c = *src++;
             int d = *src++;
 
-            D_0016055C_s->pages[i].unk0A = a >> 4;
-            D_0016055C_s->pages[i].unk08 = b >> 4;
-            D_0016055C_s->pages[i].unk0C = log2dim(c);
-            D_0016055C_s->pages[i].unk0E = log2dim(d);
-            D_0016055C_s->pages[i].tag = 0;
+            level_sky_effect_data_s->pages[i].unk0A = a >> 4;
+            level_sky_effect_data_s->pages[i].unk08 = b >> 4;
+            level_sky_effect_data_s->pages[i].unk0C = log2dim(c);
+            level_sky_effect_data_s->pages[i].unk0E = log2dim(d);
+            level_sky_effect_data_s->pages[i].tag = 0;
         }
     }
     {
         int j;
 
-        for (j = 0; j < D_0016055C_s->count; j++) {
+        for (j = 0; j < level_sky_effect_data_s->count; j++) {
             SkyShellL *sh;
             int k;
 
-            D_0016055C_s->shells[j] = (SkyShellL *)((char *)D_0016055C_s->shells[j] + (int)s);
-            sh = D_0016055C_s->shells[j];
+            level_sky_effect_data_s->shells[j] = (SkyShellL *)((char *)level_sky_effect_data_s->shells[j] + (int)s);
+            sh = level_sky_effect_data_s->shells[j];
             for (k = 0; k < sh->count; k++) {
                 SkyShellItemL *it = (SkyShellItemL *)sh + k;
 
@@ -417,23 +417,23 @@ typedef struct {
     void *unk28;
 } HudArena;
 
-extern SrcHdr *D_0015EF4C_src __asm__("D_0015EF4C") MACRO_ADDR;
-extern HudArena D_0019A4E8_arena __asm__("D_0019A4E8");
+extern SrcHdr *level_root_src __asm__("D_0015EF4C") MACRO_ADDR;
+extern HudArena hud_state_arena __asm__("D_0019A4E8");
 
-extern char *func_001FFAB8_d(int, int, char *, int) __asm__("func_001FFAB8");
-extern void func_00203548(int idx, int size);
-extern int func_00234158(int arg0, int arg1, int arg2, int arg3);
-extern void func_001FF958(int, void *, int);
-extern void func_00118D80(int);
-extern void func_001FF7F0(int bank, int addr);
+extern char *Hud_HeapAlloc_d(int, int, char *, int) __asm__("func_001FFAB8");
+extern void LoadCompressedHudBank(int idx, int size);
+extern int Stash_SendData(int arg0, int arg1, int arg2, int arg3);
+extern void Hud_SendResidentBank(int, void *, int);
+extern void flush_cache(int);
+extern void LinkHudBank(int bank, int addr);
 
-extern int D_001941C0[];
-extern int D_0019A520[];
-extern char D_0015FC70[];
-extern char D_0015FC80[];
-extern char D_0015FC90[];
-extern char D_0015FCA0[];
-extern char D_0015FCB0[];
+extern int level_resource_buffers[];
+extern int hud_bank_sizes[];
+extern char hud_bank_alloc_file[];
+extern char hud_bank1_stash_comment[];
+extern char hud_bank3_stash_comment[];
+extern char hud_bank4_stash_comment[];
+extern char hud_bank5_stash_comment[];
 
 #define ALIGN64(x) (((x) + 0x3F) & 0xFFFFFFC0)
 
@@ -456,7 +456,7 @@ void LoadHudBanks(void) {
     char *fname;
     int *d941c0;
 
-    base = D_0015EF4C_src;
+    base = level_root_src;
     out = hud_bank_sizes;
     p = &base->bank[1].size;
     for (n = 0; n < 5; n++) {
@@ -467,47 +467,47 @@ void LoadHudBanks(void) {
     fname = hud_bank_alloc_file;
     d941c0 = level_resource_buffers;
     size24 = ALIGN64(base->bank[0].size);
-    header = (HudHdr *) func_001FFAB8_d(size24, 0, fname, 0x23B);
+    header = (HudHdr *) Hud_HeapAlloc_d(size24, 0, fname, 0x23B);
     FastMemCopy(header, (void *) (base->bank[0].off + (int) base), size24);
 
-    D_0019A4E8_arena.header = header;
-    D_0019A4E8_arena.unk1C = (char *) header + header->unk04;
+    hud_state_arena.header = header;
+    hud_state_arena.unk1C = (char *) header + header->unk04;
     bank2 = d941c0[2] + 0x60000;
-    D_0019A4E8_arena.unk20 = (char *) header + header->unk08;
-    D_0019A4E8_arena.unk28 = (char *) header + header->unk0C;
-    D_0019A4E8_arena.unk24 = (char *) header + header->unk10;
+    hud_state_arena.unk20 = (char *) header + header->unk08;
+    hud_state_arena.unk28 = (char *) header + header->unk0C;
+    hud_state_arena.unk24 = (char *) header + header->unk10;
 
     if (header->unk54 != 0) {
         shift54 = (unsigned int) ALIGN64(base->bank[1].size) >> 4;
         LoadCompressedHudBank(0, bank2);
-        D_0019A4E8_arena.header->unk94 = Stash_SendData(
+        hud_state_arena.header->unk94 = Stash_SendData(
             base->bank[1].off + (int) base, shift54, shift54, (int) hud_bank1_stash_comment);
         Hud_SendResidentBank(0, (void *) bank2, 1);
     }
 
-    size58 = D_0019A4E8_arena.header->unk58;
+    size58 = hud_state_arena.header->unk58;
     if (size58 != 0) {
-        bank58 = func_001FFAB8_d(size58, 0, fname, 0x262);
+        bank58 = Hud_HeapAlloc_d(size58, 0, fname, 0x262);
         LoadCompressedHudBank(1, (int) bank58);
-        func_00118D80(0);
+        flush_cache(0);
         LinkHudBank(1, (int) bank58);
     }
 
-    if (D_0019A4E8_arena.header->unk5C != 0) {
+    if (hud_state_arena.header->unk5C != 0) {
         shift5C = (unsigned int) ALIGN64(base->bank[3].size) >> 4;
-        D_0019A4E8_arena.header->unk9C = Stash_SendData(
+        hud_state_arena.header->unk9C = Stash_SendData(
             base->bank[3].off + (int) base, shift5C, shift5C, (int) hud_bank3_stash_comment);
     }
 
-    if (D_0019A4E8_arena.header->unk60 != 0) {
+    if (hud_state_arena.header->unk60 != 0) {
         shift60 = (unsigned int) ALIGN64(base->bank[4].size) >> 4;
-        D_0019A4E8_arena.header->unkA0 = Stash_SendData(
+        hud_state_arena.header->unkA0 = Stash_SendData(
             base->bank[4].off + (int) base, shift60, shift60, (int) hud_bank4_stash_comment);
     }
 
-    if (D_0019A4E8_arena.header->unk64 != 0) {
+    if (hud_state_arena.header->unk64 != 0) {
         shift64 = (unsigned int) ALIGN64(base->bank[5].size) >> 4;
-        D_0019A4E8_arena.header->unkA4 = Stash_SendData(
+        hud_state_arena.header->unkA4 = Stash_SendData(
             base->bank[5].off + (int) base, shift64, shift64, (int) hud_bank5_stash_comment);
     }
 }
@@ -524,9 +524,9 @@ void LoadHudBanks(void) {
  * identical instruction stream, so this is the known
  * operand-order-is-not-source-steerable case.
  */
-extern int *D_0015EF4C MACRO_ADDR;
-extern char *D_0019A500;
-extern void func_0020C468(int, int);
+extern int *level_root MACRO_ADDR;
+extern char *hud_bank_table_ptr;
+extern void fast_decompress(int, int);
 
 /* LoadCompressedHudBank(int, char *). Each scaled index in its own local
    gives retail's base-first addu; written inline, the multiply goes
@@ -539,7 +539,7 @@ void LoadCompressedHudBank(int idx, int size) {
     }
     {
         int off = idx * 4;
-        *(int *)(D_0019A500 + off + 0x74) = 0;
+        *(int *)(hud_bank_table_ptr + off + 0x74) = 0;
     }
 }
 
@@ -552,10 +552,10 @@ typedef struct ResidentRenderTextureDefinition {
     s16 mip_block_offset_0;
     s16 mip_block_offset_1;
 } ResidentRenderTextureDefinition;
-extern s32 D_0015EF8C MACRO_ADDR;
-extern u64 D_0019E7C0_035B0[3] __asm__("D_0019E7C0");
-extern u64 D_0019E7D8_035B0[3] __asm__("D_0019E7D8");
-extern s32 func_001F9968(s32);
+extern s32 g_gs_texture_allocation_base MACRO_ADDR;
+extern u64 special_material_template_r[3] __asm__("D_0019E7C0");
+extern u64 alternate_special_material_template_r[3] __asm__("D_0019E7D8");
+extern s32 log2dim(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/build_indexed_resident_render_packet.c, build_indexed_resident_render_packet. */
 void build_indexed_resident_render_packet(u64 *packet,
@@ -616,9 +616,9 @@ void build_indexed_resident_render_packet(u64 *packet,
         packet[0] = texture_word;
         packet[2] = mip_word;
     } else if (material_index < -1) {
-        fallback_packet = D_0019E7C0_035B0;
+        fallback_packet = special_material_template_r;
         if (material_index == -3) {
-            fallback_packet = D_0019E7D8_035B0;
+            fallback_packet = alternate_special_material_template_r;
         }
         packet[0] = ((u64)draw_shift << 6) | 0x20 | ((u64)draw_high << 32);
         packet += 2;
@@ -636,9 +636,9 @@ void build_indexed_resident_render_packet(u64 *packet,
     }
 }
 
-extern long D_0019E640[];
-extern long D_0019E7C0[];
-extern long D_0019E7D8[];
+extern long resident_material_templates[];
+extern long special_material_template[];
+extern long alternate_special_material_template[];
 
 /* Fills four A+D qwords (low dwords only) at out: a TEX1-style word
    (MXL bits from the second word of row arg5 of the 3-dword table
@@ -693,14 +693,14 @@ void SetUpVisGifViewer(long *out, int arg1, int arg2, int arg3, int arg4, int ar
 }
 __asm__(".section .text\n\tnop\n");
 
-extern int D_0015EF8C MACRO_ADDR;
-extern int D_0015EF78 MACRO_ADDR;
-extern int D_0015EF74 MACRO_ADDR;
+extern int g_gs_texture_allocation_base MACRO_ADDR;
+extern int g_gs_texture_allocation_start MACRO_ADDR;
+extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 /* libgraph: sceGsSetDefLoadImage, sceGsExecLoadImage, sceGsSyncPath;
    func_00118D80 is the kernel's FlushCache. */
-extern int func_00122630(void *, short, short, short, short, short, short, short);
-extern int func_00122958(void *, void *);
-extern int func_00120858(int, unsigned short);
+extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
+extern int sceGsExecLoadImage(void *, void *);
+extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 
 typedef struct {
     int type;   /* GS pixel format: 0x13 PSMT8, 2 PSMCT16, 0 PSMCT32 */
@@ -741,22 +741,22 @@ void upload_texture_images(int base, int count, Chunk *list) {
             if (dbw < 1) {
                 dbw = 1;
             }
-            func_00122630(&li, t >> 8, dbw, 0x13, 0, 0, w, h);
+            sceGsSetDefLoadImage(&li, t >> 8, dbw, 0x13, 0, 0, w, h);
             sz = w * h;
             if (sz < 0x100) {
                 sz = 0x100;
             }
             g_gs_texture_allocation_cursor += sz;
         } else if (list->type == 2) {
-            func_00122630(&li, t >> 8, 1, 2, 0, 0, 0x10, 0x10);
+            sceGsSetDefLoadImage(&li, t >> 8, 1, 2, 0, 0, 0x10, 0x10);
             g_gs_texture_allocation_cursor += 0x200;
         } else if (list->type == 0) {
-            func_00122630(&li, t >> 8, 1, 0, 0, 0, 0x10, 0x10);
+            sceGsSetDefLoadImage(&li, t >> 8, 1, 0, 0, 0, 0x10, 0x10);
             g_gs_texture_allocation_cursor += 0x400;
         }
-        func_00118D80(0);
-        func_00122958(&li, (void *)addr);
-        func_00120858(0, 0);
+        flush_cache(0);
+        sceGsExecLoadImage(&li, (void *)addr);
+        wait_for_graphics_pipeline_idle(0, 0);
     }
     g_gs_texture_allocation_start = g_gs_texture_allocation_cursor;
 }
@@ -835,10 +835,10 @@ typedef struct {
     u8 pad2C[0x1C];
     s32 nested_tables[1];
 } ResidentClassRenderHeader_03B70;
-extern u8 D_001B3E40_03B70[] __asm__("D_001B3E40");
-extern MaterialMap_03B70 D_001B6C00_03B70[] __asm__("D_001B6C00");
-extern void func_002035B0_03B70(ResidentRenderPacket_03B70 *, void *, s32, s32, s32, s32, s32) __asm__("func_002035B0");
-extern void func_00203808_03B70(ResidentRenderPacket_03B70 *packet, s32 draw_high, s32 draw_shift, s32 material_base, s32 material_shift, s32 material_index) __asm__("func_00203808");
+extern u8 resident_class_slot_by_id_r[] __asm__("D_001B3E40");
+extern MaterialMap_03B70 resident_class_material_maps_r[] __asm__("D_001B6C00");
+extern void build_indexed_resident_render_packet_r(ResidentRenderPacket_03B70 *, void *, s32, s32, s32, s32, s32) __asm__("func_002035B0");
+extern void SetUpVisGifViewer_r(ResidentRenderPacket_03B70 *packet, s32 draw_high, s32 draw_shift, s32 material_base, s32 material_shift, s32 material_index) __asm__("func_00203808");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/prepare_resident_class_render_data.c, prepare_resident_class_render_data. */
 void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *material_map, s32 class_id)
@@ -932,8 +932,8 @@ void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *
         }
     }
 
-    class_slot = D_001B3E40_03B70[class_id];
-    slot_materials = &D_001B6C00_03B70[class_slot];
+    class_slot = resident_class_slot_by_id_r[class_id];
+    slot_materials = &resident_class_material_maps_r[class_slot];
     qcopy(slot_materials, material_map);
     group = (ResidentRenderGroup_03B70 *)header->groups;
     for (group_index = 0; group_index < group_count; group_index++, group++) {
@@ -949,11 +949,11 @@ void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *
                 material_index = slot_materials->b[material_index];
             }
             if (textures != 0) {
-                func_002035B0_03B70(
+                build_indexed_resident_render_packet_r(
                     packet, textures + material_index * 16, packet->draw_high, packet->draw_shift,
                     packet->material_base, packet->material_shift, material_index);
             } else {
-                func_00203808_03B70(packet, packet->draw_high, packet->draw_shift,
+                SetUpVisGifViewer_r(packet, packet->draw_high, packet->draw_shift,
                                                       packet->material_base, packet->material_shift,
                                                       material_index);
             }
@@ -962,13 +962,13 @@ void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *
     }
 }
 
-extern int D_00160000 MACRO_ADDR;
-extern unsigned char D_001B3E40[] NOT_SDA;
-extern short D_001B3C80[];
-extern char *D_001B3580[] NOT_SDA;
-extern int D_001B6500[];
-extern void func_00213BB8(int);
-extern void func_00203B70(void *, int, int, int);
+extern int resident_moby_class_count MACRO_ADDR;
+extern unsigned char resident_class_slot_by_id[] NOT_SDA;
+extern short resident_class_id_by_slot[];
+extern char *moby_class_resources[] NOT_SDA;
+extern int resident_class_original_field_2c[];
+extern void assign_moby_class_data(int);
+extern void prepare_resident_class_render_data(void *, int, int, int);
 
 /* Registers class arg3's data arg0 in the next moby-class slot
    (D_00160000): class -> slot in D_001B3E40, slot -> class in
@@ -986,7 +986,7 @@ void register_moby_class(void *arg0, int arg1, int arg2, int arg3) {
         assign_moby_class_data(arg3);
         resident_moby_class_count = resident_moby_class_count + 1;
     } else {
-        D_001B6500[idx] = *(int *)((char *)arg0 + 0x2C);
+        resident_class_original_field_2c[idx] = *(int *)((char *)arg0 + 0x2C);
         assign_moby_class_data(arg3);
         resident_moby_class_count = resident_moby_class_count + 1;
         prepare_resident_class_render_data(arg0, arg1, arg2, arg3);
@@ -1003,13 +1003,13 @@ __asm__(".section .text\n\tnop\n");
  * writes four 64-bit GIF words from the record at a1 (index idx in D_001E3900)
  * or, when a1 is 0, from D_0019E640.
  */
-extern int D_0016104C MACRO_ADDR;
-extern char D_001E1C00[] NOT_SDA;
-extern char D_001E1D00[] NOT_SDA;
-extern char D_001E1A00[] NOT_SDA;
-extern char D_001E3100[] NOT_SDA;
-extern char D_001E3900[] NOT_SDA;
-extern int func_001FA898(float);
+extern int registered_object_render_class_count MACRO_ADDR;
+extern char object_render_class_ids[] NOT_SDA;
+extern char object_render_class_slot_by_id[] NOT_SDA;
+extern char object_render_classes[] NOT_SDA;
+extern char object_render_class_fixed_thresholds[] NOT_SDA;
+extern char object_render_class_material_maps[] NOT_SDA;
+extern int truncate_float_to_s32(float);
 
 /* Registers an object render class: assigns its slot, fixes pointers and sets thresholds. */
 void register_object_render_class(char *self, int a1, char *src, int a3) {
@@ -1219,16 +1219,16 @@ typedef struct {
     u8 pad30[0x10];
     ShrubRenderGroupReference_04340 groups[1];
 } ShrubRenderClass_04340;
-extern ShrubRenderClass_04340 *D_001D82C0[64];
-extern s16 D_001D83C0[64];
-extern u8 D_001D8440[0x400];
-extern s32 D_001D9040[64];
-extern MaterialMap_04340 D_001D9640[64];
-extern s32 D_001604CC MACRO_ADDR;
-extern s32 D_0015EF8C MACRO_ADDR;
-extern u64 D_0019E640_04340[0x30] __asm__("D_0019E640");
-extern s32 func_001FA898(f32);
-extern s32 func_001F9968(s32);
+extern ShrubRenderClass_04340 *shrub_render_classes[64];
+extern s16 shrub_render_class_ids[64];
+extern u8 shrub_render_class_slot_by_id[0x400];
+extern s32 shrub_render_class_fixed_thresholds[64];
+extern MaterialMap_04340 shrub_render_class_material_maps[64];
+extern s32 registered_shrub_render_class_count MACRO_ADDR;
+extern s32 g_gs_texture_allocation_base MACRO_ADDR;
+extern u64 resident_material_templates_r[0x30] __asm__("D_0019E640");
+extern s32 truncate_float_to_s32(f32);
+extern s32 log2dim(s32);
 
 /* Registers a shrub render class in the next free slot: slot and id tables, the class's distance threshold
    (scale * 1024 as an integer), relocates its group and mip-packet pointers, builds the mip packet's TEX0/TEX1/
@@ -1321,12 +1321,12 @@ void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentR
             u64 draw_bits;
             u64 template_draw_word;
 
-            for (template_index = 0; D_0019E640_04340[(template_index + 1) * 3] != 0; template_index++) {
+            for (template_index = 0; resident_material_templates_r[(template_index + 1) * 3] != 0; template_index++) {
             }
-            template_tex0 = D_0019E640_04340[template_index * 3];
+            template_tex0 = resident_material_templates_r[template_index * 3];
             template_slot = template_index * 3;
-            template_tex1 = D_0019E640_04340[template_slot + 1];
-            template_mip = D_0019E640_04340[template_slot + 2];
+            template_tex1 = resident_material_templates_r[template_slot + 1];
+            template_mip = resident_material_templates_r[template_slot + 2];
             draw_bits = ((u64)material_shift << 6) | 0x20;
             template_draw_word = (template_tex1 & 0x1C) | draw_bits | ((u64)material_base << 32);
             mip_packet->tex0.d = template_tex0;
@@ -1401,10 +1401,10 @@ void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentR
                 u64 template_draw_word;
                 u64 template_clamp_word;
 
-                template_tex0 = D_0019E640_04340[material_index * 3];
+                template_tex0 = resident_material_templates_r[material_index * 3];
                 template_index = material_index * 3;
-                template_tex1 = D_0019E640_04340[template_index + 1];
-                template_mip = D_0019E640_04340[template_index + 2];
+                template_tex1 = resident_material_templates_r[template_index + 1];
+                template_mip = resident_material_templates_r[template_index + 2];
                 draw_bits = ((u64)draw_shift << 6) | 0x20;
                 template_draw_word = (template_tex1 & 0x1C) | draw_bits | ((u64)draw_high << 32);
                 template_clamp_word = (u64)material_base | ((u64)material_shift << 2) | ((u64)material_index << 24);
@@ -1440,10 +1440,10 @@ typedef struct {
 } Glyph_04918;
 typedef struct { long lo; long hi; } GifQ_04918;
 typedef struct { short x0; short x2; unsigned short x4; short x6; short x8; short xA; short xC; short xE; } GlyphSrc_04918;
-extern int D_00160F90 MACRO_ADDR;
-extern float D_00160FA0[3];
-extern char *D_00160F8C MACRO_ADDR;
-extern void func_00234380(void);
+extern int tfrag_render_record_count MACRO_ADDR;
+extern float tfrag_render_ranges[3];
+extern char *tfrag_render_records MACRO_ADDR;
+extern void SetTfragDists(void);
 
 /* Sets up the tfrag render records: stores their count and LOD distances from hdr, relocates each
    record, and writes the GS texture words of every entry from the texture table tbl. */
@@ -1520,9 +1520,9 @@ void initialize_tfrag_render_data(FontHdr_04918 *hdr, char *tbl) {
     }
 }
 
-extern int D_00137C80[];
+extern int disc_table[];
 extern char D_1FF7FF0[];
-extern int func_002175C8(int, int, int);
+extern int Stream_SubmitRead(int, int, int);
 
 /* Starts the disc read of the level chunk into the top of memory below D_1FF7FF0, sized from the
    disc table, and returns 1. */
@@ -1558,11 +1558,11 @@ struct LevelArchiveHeader_04C60 {
     s32 sound_bank_offset;
 };
 
-extern struct DiscTable_04C60 D_00137C80_04C60 __asm__("D_00137C80");
-extern s16 D_0013E156_04C60[] __asm__("D_0013E156");
-extern s32 D_0015EE58_04C60 __asm__("D_0015EE58") MACRO_ADDR;
-extern u32 D_0015EE5C_04C60 __asm__("D_0015EE5C") MACRO_ADDR;
-extern s32 D_0015EE80_04C60 __asm__("D_0015EE80") MACRO_ADDR;
+extern struct DiscTable_04C60 disc_table_r __asm__("D_00137C80");
+extern s16 ship_index_r[] __asm__("D_0013E156");
+extern s32 cd_read_spindle_speed_r __asm__("D_0015EE58") MACRO_ADDR;
+extern u32 sound_bank_handle_r __asm__("D_0015EE5C") MACRO_ADDR;
+extern s32 pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
 /* The load's state is one small-data object: the stage at its start is reached in one
    instruction (through $gp in a delay slot), the members behind it never are. */
 struct LevelArchiveLoad_04C60 {
@@ -1572,20 +1572,20 @@ struct LevelArchiveLoad_04C60 {
     u8 *sound;                                /* D_0015EF50 */
     u8 *level;                                /* D_0015EF54 */
 };
-extern struct LevelArchiveLoad_04C60 D_0015EF48_04C60 __asm__("D_0015EF48") MACRO_ADDR;
-extern s32 D_0015EFBC_04C60 __asm__("D_0015EFBC") MACRO_ADDR;
-extern s32 D_0015EFC0_04C60 __asm__("D_0015EFC0") MACRO_ADDR;
+extern struct LevelArchiveLoad_04C60 level_archive_load_state_r __asm__("D_0015EF48") MACRO_ADDR;
+extern s32 cd_read_wait_frames_r __asm__("D_0015EFBC") MACRO_ADDR;
+extern s32 cd_read_slowdown_applied_r __asm__("D_0015EFC0") MACRO_ADDR;
 extern u8 D_1FF8000_04C60[] __asm__("D_1FF8000");
-extern void func_0022F090_04C60() __asm__("func_0022F090");
-extern s32 func_0012DDC0_04C60() __asm__("func_0012DDC0");
-extern void func_0012E1C8_04C60(s32, s32, u64) __asm__("func_0012E1C8");
-extern void func_0012E2E8_04C60() __asm__("func_0012E2E8");
-extern s32 func_0012E318_04C60(s32) __asm__("func_0012E318");
-extern void func_0012E4F8_04C60() __asm__("func_0012E4F8");
-extern s32 func_002175C8_04C60(void *, u32, u32) __asm__("func_002175C8");
-extern s32 func_001219C8_04C60() __asm__("func_001219C8");
-extern s32 func_00121930_04C60() __asm__("func_00121930");
-extern s32 func_00120F30_04C60(s32) __asm__("func_00120F30");
+extern void SoundBank_StoreHandle_r() __asm__("func_0022F090");
+extern s32 snd_FlushSoundCommands_r() __asm__("func_0012DDC0");
+extern void snd_BankLoadFromEE_CB_r(s32, s32, u64) __asm__("func_0012E1C8");
+extern void snd_ResolveBankXREFS_r() __asm__("func_0012E2E8");
+extern s32 snd_UnloadBank_r(s32) __asm__("func_0012E318");
+extern void snd_StopAllSounds_r() __asm__("func_0012E4F8");
+extern s32 Stream_SubmitRead_r(void *, u32, u32) __asm__("func_002175C8");
+extern s32 sce_cd_break_r() __asm__("func_001219C8");
+extern s32 sce_cd_get_error_r() __asm__("func_00121930");
+extern s32 sce_cd_sync_s_r(s32) __asm__("func_00120F30");
 
 /* One step of the level archive load: waits for the disc, steps back a stage on a read
    error or a 720-frame stall, then by stage reads the shared, level and sound archives
@@ -1608,118 +1608,118 @@ s32 service_level_archive_load(void) {
     s32 level_index;
     struct LevelArchiveHeader_04C60 *shared_header;
 
-    level_index = D_0013E156_04C60[0] + 1;
-    if (func_00120F30_04C60(1) != 0) {
-        D_0015EFBC_04C60 = D_0015EFBC_04C60 + 1;
-        if (D_0015EE58_04C60 == 1) {
-            if (D_0015EFBC_04C60 >= 0x2D1) {
-                D_0015EFC0_04C60 = D_0015EE58_04C60;
-                retry_stage = D_0015EF48_04C60.stage - 1;
-                D_0015EE58_04C60 = 0;
+    level_index = ship_index_r[0] + 1;
+    if (sce_cd_sync_s_r(1) != 0) {
+        cd_read_wait_frames_r = cd_read_wait_frames_r + 1;
+        if (cd_read_spindle_speed_r == 1) {
+            if (cd_read_wait_frames_r >= 0x2D1) {
+                cd_read_slowdown_applied_r = cd_read_spindle_speed_r;
+                retry_stage = level_archive_load_state_r.stage - 1;
+                cd_read_spindle_speed_r = 0;
                 if ((u16)retry_stage < 3) {
-                    D_0015EF48_04C60.stage = retry_stage;
+                    level_archive_load_state_r.stage = retry_stage;
                 }
-                func_001219C8_04C60();
+                sce_cd_break_r();
             }
         }
         return 0;
     }
-    if (func_00121930_04C60() != 0) {
-        if (D_0015EFC0_04C60 == 0) {
-            D_0015EFC0_04C60 = 1;
-            retry_stage = D_0015EF48_04C60.stage - 1;
-            D_0015EE58_04C60 = 0;
+    if (sce_cd_get_error_r() != 0) {
+        if (cd_read_slowdown_applied_r == 0) {
+            cd_read_slowdown_applied_r = 1;
+            retry_stage = level_archive_load_state_r.stage - 1;
+            cd_read_spindle_speed_r = 0;
             if ((u16)retry_stage < 3) {
-                D_0015EF48_04C60.stage = retry_stage;
+                level_archive_load_state_r.stage = retry_stage;
             }
         }
     }
-    stage = (s16)D_0015EF48_04C60.stage;
+    stage = (s16)level_archive_load_state_r.stage;
     switch (stage) {
     case 0:
-        if (D_0015EE80_04C60 != 0) {
+        if (pal_mode_r != 0) {
             sound_aligned_bytes =
-                ((D_00137C80_04C60.sound_archive_alt.size << 11) + 0xFFF) & 0xFFFFF000;
+                ((disc_table_r.sound_archive_alt.size << 11) + 0xFFF) & 0xFFFFF000;
         } else {
-            sound_aligned_bytes = ((D_00137C80_04C60.sound_archive.size << 11) + 0xFFF) & 0xFFFFF000;
+            sound_aligned_bytes = ((disc_table_r.sound_archive.size << 11) + 0xFFF) & 0xFFFFF000;
         }
-        disc_entry = (struct LevelArchiveDiscEntry_04C60 *)((u8 *)&D_00137C80_04C60 + level_index * 8);
-        level_archive_sectors = *(s32 *)((u8 *)&D_00137C80_04C60 + level_index * 8 + 0x12CC);
+        disc_entry = (struct LevelArchiveDiscEntry_04C60 *)((u8 *)&disc_table_r + level_index * 8);
+        level_archive_sectors = *(s32 *)((u8 *)&disc_table_r + level_index * 8 + 0x12CC);
         sound_archive_buffer = D_1FF8000_04C60 - sound_aligned_bytes;
         sound_aligned_bytes = ((level_archive_sectors << 11) + 0xFFF) & 0xFFFFF000;
         level_archive_buffer = sound_archive_buffer - sound_aligned_bytes;
-        archive_start_or_sectors = D_00137C80_04C60.shared_archive.size;
+        archive_start_or_sectors = disc_table_r.shared_archive.size;
         sound_aligned_bytes = ((archive_start_or_sectors << 11) + 0xFFF) & 0xFFFFF000;
         shared_archive_buffer = level_archive_buffer - sound_aligned_bytes;
-        archive_start_or_bytes = D_00137C80_04C60.shared_archive.sector;
-        D_0015EF48_04C60.level = level_archive_buffer;
-        D_0015EF48_04C60.sound = sound_archive_buffer;
-        D_0015EF48_04C60.shared = (struct LevelArchiveHeader_04C60 *)shared_archive_buffer;
-        func_002175C8_04C60(shared_archive_buffer, archive_start_or_bytes,
+        archive_start_or_bytes = disc_table_r.shared_archive.sector;
+        level_archive_load_state_r.level = level_archive_buffer;
+        level_archive_load_state_r.sound = sound_archive_buffer;
+        level_archive_load_state_r.shared = (struct LevelArchiveHeader_04C60 *)shared_archive_buffer;
+        Stream_SubmitRead_r(shared_archive_buffer, archive_start_or_bytes,
                             archive_start_or_sectors);
-        D_0015EF48_04C60.stage = D_0015EF48_04C60.stage + 1;
+        level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
         break;
     case 1:
-        next_disc_entry = (struct LevelArchiveDiscEntry_04C60 *)((u8 *)&D_00137C80_04C60 + level_index * 8);
-        func_002175C8_04C60(D_0015EF48_04C60.level, *(s32 *)((s32)&D_00137C80_04C60 + (level_index << 3) + 0x12C8), *(s32 *)((s32)&D_00137C80_04C60 + (level_index << 3) + 0x12CC));
-        D_0015EF48_04C60.stage = D_0015EF48_04C60.stage + 1;
+        next_disc_entry = (struct LevelArchiveDiscEntry_04C60 *)((u8 *)&disc_table_r + level_index * 8);
+        Stream_SubmitRead_r(level_archive_load_state_r.level, *(s32 *)((s32)&disc_table_r + (level_index << 3) + 0x12C8), *(s32 *)((s32)&disc_table_r + (level_index << 3) + 0x12CC));
+        level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
         break;
     case 2:
-        if (D_0015EE80_04C60 != 0) {
-            func_002175C8_04C60(D_0015EF48_04C60.sound, D_00137C80_04C60.sound_archive_alt.sector,
-                                D_00137C80_04C60.sound_archive_alt.size);
+        if (pal_mode_r != 0) {
+            Stream_SubmitRead_r(level_archive_load_state_r.sound, disc_table_r.sound_archive_alt.sector,
+                                disc_table_r.sound_archive_alt.size);
         } else {
-            func_002175C8_04C60(D_0015EF48_04C60.sound, D_00137C80_04C60.sound_archive.sector,
-                                D_00137C80_04C60.sound_archive.size);
+            Stream_SubmitRead_r(level_archive_load_state_r.sound, disc_table_r.sound_archive.sector,
+                                disc_table_r.sound_archive.size);
         }
-        D_0015EF48_04C60.stage = D_0015EF48_04C60.stage + 1;
+        level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
         break;
     case 3:
-        if (D_0015EF48_04C60.busy != 0) {
+        if (level_archive_load_state_r.busy != 0) {
             return 0;
         }
-        func_0012E4F8_04C60();
-        if (D_0015EE5C_04C60 != 0) {
-            next_stage = D_0015EF48_04C60.stage;
-            D_0015EF48_04C60.stage = next_stage + 1;
+        snd_StopAllSounds_r();
+        if (sound_bank_handle_r != 0) {
+            next_stage = level_archive_load_state_r.stage;
+            level_archive_load_state_r.stage = next_stage + 1;
         } else {
-            D_0015EF48_04C60.stage = 6;
+            level_archive_load_state_r.stage = 6;
         }
         break;
     case 4:
-        if (func_0012DDC0_04C60() != 0) {
+        if (snd_FlushSoundCommands_r() != 0) {
             return 0;
         }
-        func_0012E318_04C60(D_0015EE5C_04C60);
-        next_stage = D_0015EF48_04C60.stage;
-        D_0015EE5C_04C60 = 0;
-        D_0015EF48_04C60.stage = next_stage + 1;
+        snd_UnloadBank_r(sound_bank_handle_r);
+        next_stage = level_archive_load_state_r.stage;
+        sound_bank_handle_r = 0;
+        level_archive_load_state_r.stage = next_stage + 1;
         break;
     case 5:
-        if (func_0012DDC0_04C60() != 0) {
+        if (snd_FlushSoundCommands_r() != 0) {
             return 0;
         }
-        func_0012E2E8_04C60();
-        D_0015EF48_04C60.stage = D_0015EF48_04C60.stage + 1;
+        snd_ResolveBankXREFS_r();
+        level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
         break;
     case 6:
-        if (func_0012DDC0_04C60() != 0) {
+        if (snd_FlushSoundCommands_r() != 0) {
             return 0;
         }
-        shared_header = D_0015EF48_04C60.shared;
-        D_0015EE5C_04C60 = 0xFFFFFFFFU;
-        func_0012E1C8_04C60(shared_header->sound_bank_offset + (s32)shared_header,
-                            (s32)func_0022F090_04C60, (u32)&D_0015EE5C_04C60);
-        D_0015EF48_04C60.stage = D_0015EF48_04C60.stage + 1;
+        shared_header = level_archive_load_state_r.shared;
+        sound_bank_handle_r = 0xFFFFFFFFU;
+        snd_BankLoadFromEE_CB_r(shared_header->sound_bank_offset + (s32)shared_header,
+                            (s32)SoundBank_StoreHandle_r, (u32)&sound_bank_handle_r);
+        level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
         break;
     case 7:
-        if (func_0012DDC0_04C60() != 0) {
+        if (snd_FlushSoundCommands_r() != 0) {
             return 0;
         }
-        if ((u32)D_0015EE5C_04C60 == 0xFFFFFFFFU) {
+        if ((u32)sound_bank_handle_r == 0xFFFFFFFFU) {
             return 0;
         }
-        func_0012E2E8_04C60();
+        snd_ResolveBankXREFS_r();
         return 1;
     }
     return 0;
@@ -1780,13 +1780,13 @@ struct TransferState {
     struct Moby *slots[1];    /* 0x178 */
 };
 
-extern struct TransferState D_0018CC20_t __asm__("D_0018CC20") NOT_SDA;
-extern struct GlobalIndex D_0013E130_g __asm__("D_0013E130");
-extern struct RenderGlobals D_0013F450_r __asm__("D_0013F450");
-extern int D_0015F6E8 MACRO_ADDR;
+extern struct TransferState render_sequence_t __asm__("D_0018CC20") NOT_SDA;
+extern struct GlobalIndex level_render_state_g __asm__("D_0013E130");
+extern struct RenderGlobals g_hero_r __asm__("D_0013F450");
+extern int g_game_mode MACRO_ADDR;
 extern int D_00160588[];
-extern int func_0020C468_2(int, int) __asm__("func_0020C468");
-extern struct Moby *func_0020D348_m(int) __asm__("func_0020D348");
+extern int fast_decompress_2(int, int) __asm__("func_0020C468");
+extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 
 /* update_world_object_animation: relocate the model record loaded for the
    current chunk (D_0018CC20+0x58) and hook each of its parts to a moby,
@@ -1806,25 +1806,25 @@ void update_world_object_animation(void *arg0) {
     int endp;
     int pc;
 
-    func_00118D80(0);
-    func_0020C468_2(D_0018CC20_t.unk5C, (int)D_0018CC20_t.rec);
-    func_00118D80(0);
+    flush_cache(0);
+    fast_decompress_2(render_sequence_t.unk5C, (int)render_sequence_t.rec);
+    flush_cache(0);
 
-    rec = D_0018CC20_t.rec;
-    D_0018CC20_t.unk38 = 0;
+    rec = render_sequence_t.rec;
+    render_sequence_t.unk38 = 0;
     cp = rec->part_off;
-    D_0018CC20_t.unk40 = rec->flags;
+    render_sequence_t.unk40 = rec->flags;
     pc = rec->part_count;
-    D_0018CC20_t.unk46 = rec->pad08;
-    D_0018CC20_t.num_parts = rec->num_parts;
-    D_0018CC20_t.unk54 = (int)rec + rec->end_off;
+    render_sequence_t.unk46 = rec->pad08;
+    render_sequence_t.num_parts = rec->num_parts;
+    render_sequence_t.unk54 = (int)rec + rec->end_off;
     if (pc < 0x400) {
-        D_0018CC20_t.unk4C = 0;
+        render_sequence_t.unk4C = 0;
     } else {
-        D_0018CC20_t.unk4C = (int)rec + pc;
+        render_sequence_t.unk4C = (int)rec + pc;
     }
 
-    for (i = 0; i < D_0018CC20_t.num_parts; i++) {
+    for (i = 0; i < render_sequence_t.num_parts; i++) {
         off = *cp++;
         sp = (int *)((unsigned char *)rec + off);
         id = sp[0];
@@ -1832,11 +1832,11 @@ void update_world_object_animation(void *arg0) {
         endp = (int)rec + sp[0];
         sp = (int *)((unsigned char *)sp + 4);
         if (g_game_mode == 6 && i == 0 && id == 0x215) {
-            id = D_00160588[D_0013E130_g.slot];
+            id = D_00160588[level_render_state_g.slot];
         }
-        mob = D_0018CC20_t.slots[i];
+        mob = render_sequence_t.slots[i];
         if (mob == 0) {
-            mob = func_0020D348_m(id);
+            mob = CreateMoby_m(id);
             idx = ((struct PartList *)mob->pclass)->used;
             ((struct PartList *)mob->pclass)->used = idx + 1;
             mob->seq = idx;
@@ -1845,15 +1845,15 @@ void update_world_object_animation(void *arg0) {
             mob->flags |= 6;
             mob->unk72 = 0xFF;
             mob->collision = 0;
-            if (D_0013F450_r.color_src == 0) {
+            if (g_hero_r.color_src == 0) {
                 mob->spawn_frame = 0x38383800000000;
             } else {
-                mob->spawn_frame = D_0013F450_r.color_src->color;
+                mob->spawn_frame = g_hero_r.color_src->color;
             }
             if (((struct PartList *)mob->pclass)->flag) {
                 mob->unk73 = 0x18;
             }
-            D_0018CC20_t.slots[i] = mob;
+            render_sequence_t.slots[i] = mob;
         }
         mob->pvars = (u8 *)endp;
         ((struct PartList *)mob->pclass)->entries[mob->seq] = sp;
@@ -1867,12 +1867,12 @@ void update_world_object_animation(void *arg0) {
 
 LINKER_REMNANT("asm/remnants/text", func_00205218);
 
-extern void func_00204FC0(void *);
-extern int D_0018CC20 NOT_SDA;
-extern int D_001941C8 NOT_SDA;
-extern int D_0016100C;
+extern void update_world_object_animation(void *);
+extern int render_sequence NOT_SDA;
+extern int vu1_chain_buffer_2 NOT_SDA;
+extern int current_vu_chain;
 
-extern int D_0016100C_m __asm__("D_0016100C") MACRO_ADDR;
+extern int current_vu_chain_m __asm__("D_0016100C") MACRO_ADDR;
 
 /* parse_space_scene_chunk(int): run func_00204FC0 on chunk index's slot,
    with the chunk's value as the current one meanwhile. The slot address is
@@ -1883,7 +1883,7 @@ void parse_space_scene_chunk(int arg0) {
     char *p = base - (-(arg0 * 4));
     *(int *)(base + 0x5C) = *(int *)(p + 0x60);
     update_world_object_animation(p);
-    *(int *)(base + 0x5C) = vu1_chain_buffer_2 + D_0016100C_m;
+    *(int *)(base + 0x5C) = vu1_chain_buffer_2 + current_vu_chain_m;
 }
 
 typedef struct { char pad00[0x10]; int class_id; char pad14[0x38]; } GadgetRec_05270;
@@ -1899,19 +1899,19 @@ typedef struct {
     int original_field_2c;
 } ClassResourceHeader_05270;
 
-extern int D_00160044 MACRO_ADDR;
-extern int D_00160048 MACRO_ADDR;
-extern int D_0016004C MACRO_ADDR;
-extern int D_00160050 MACRO_ADDR;
-extern void func_0020C468();
-extern int D_001CBE40[];
-extern int D_001CBEA0[];
-extern short D_001CC0E0[][16];
-extern char D_001CBF60[][16];
-extern unsigned char D_001CAE40[];
-extern GadgetRec_05270 D_001864D0[];
-extern unsigned char D_0013E620[];
-extern long D_0019E7F0[];
+extern int runtime_resource_tag MACRO_ADDR;
+extern int class_resource_count MACRO_ADDR;
+extern int active_class_resource_index MACRO_ADDR;
+extern int active_decode_buffer MACRO_ADDR;
+extern void fast_decompress();
+extern int class_resource_ids[];
+extern int compressed_class_resources[];
+extern short class_runtime_indices[][16];
+extern char class_material_maps[][16];
+extern unsigned char resident_indexed_textures[];
+extern GadgetRec_05270 item_info_table[];
+extern unsigned char gold_weapon_purchased[];
+extern long gold_weapon_texture_state[];
 
 /* Decompresses the resources of moby class class_id into a decode buffer (buffer_index, or the
    free one when -1), prepares its render data and fills its runtime and vendor item tables. */
@@ -1937,13 +1937,13 @@ void select_world_object_resource_tables(int class_id, int buffer_index) {
     }
     active_decode_buffer = buffer_index;
     resource_data = (ClassResourceHeader_05270 *)((char *)level_resource_buffers[4] + buffer_index * 0x18000);
-    func_00118D80(0);
+    flush_cache(0);
     ((void (*)(int, void *))fast_decompress)(compressed_class_resources[active_class_resource_index], resource_data);
-    func_00118D80(0);
+    flush_cache(0);
     class_slot = resident_class_slot_by_id[class_id];
     resource_table = moby_class_resources;
     resource_table[class_slot] = resource_data;
-    D_001B6500[class_slot] = resource_data->original_field_2c;
+    resident_class_original_field_2c[class_slot] = resource_data->original_field_2c;
     ((void (*)(void *, void *, void *, int))prepare_resident_class_render_data)(resource_data, resident_indexed_textures, class_material_maps[active_class_resource_index], class_id);
     resource_table_index = active_class_resource_index;
     resource_tag = runtime_resource_tag;

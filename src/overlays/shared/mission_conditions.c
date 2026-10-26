@@ -11,7 +11,7 @@ typedef struct {
     short status;         /* 0x24 */
     short sel;            /* 0x26 */
 } MissionNode_0024EEF0;
-extern MissionNode_0024EEF0 *D_L00_001870A0;
+extern MissionNode_0024EEF0 *mission_node_list;
 
 // Lists the current objectives: ids (or 0x5243 when done) to out, done bits to *mask, base + sel to nums; returns the count.
 int CollectMissionNodes(int *out, int *mask, int *nums, int arg3) {
@@ -57,12 +57,12 @@ int CollectMissionNodes(int *out, int *mask, int *nums, int arg3) {
     return count;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024EF28);
-extern int D_0013D9B4 NOT_SDA;
-extern unsigned char D_0013D490[];
+extern int race_gates_47_flag NOT_SDA;
+extern unsigned char gSpecialItems[];
 
 /* Mission condition: D_0013D9B4 set, along with gSpecialItems[0x20] (Zoomerator/raritanium) and [0x21]. Joined with func_0020CC88. */
 int mission_cond_obj2f_and_specials(void) {
-    if (D_0013D9B4 != 0) {
+    if (race_gates_47_flag != 0) {
         if (gSpecialItems[0x20] != 0 && gSpecialItems[0x21] != 0) {
             return 1;
         }
@@ -75,41 +75,41 @@ typedef struct {
     f32 z;
     s32 flag;
 } MapPoint_24F170;
-extern MapPoint_24F170 D_0013D6B8_24F170[] __asm__("D_0013D6B8");
-extern unsigned char D_0013D5C8[];
+extern MapPoint_24F170 race_gates_r[] __asm__("D_0013D6B8");
+extern unsigned char item_available[];
 
 /* mission status from the flags of map points 20, 22 and 24 and item flag 2: 1, 2 or 0 */
 int GetMapPointMissionStatus(void) {
-    if (D_0013D6B8_24F170[20].flag && !D_0013D6B8_24F170[24].flag) return 1;
-    if (D_0013D6B8_24F170[24].flag && item_available[2] && !D_0013D6B8_24F170[22].flag) return 2;
+    if (race_gates_r[20].flag && !race_gates_r[24].flag) return 1;
+    if (race_gates_r[24].flag && item_available[2] && !race_gates_r[22].flag) return 2;
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024F198);
-extern int D_0013D9B4 NOT_SDA;
-extern u8 D_0013D4B0 NOT_SDA;
+extern int race_gates_47_flag NOT_SDA;
+extern u8 menu_item_enabled_20 NOT_SDA;
 /* 0 when the word at 0x13D9B4 is 0, else 1 or 2 by whether the byte at 0x13D4B0 is set */
 int mission_cond_obj2f_variant(void) {
-    if (D_0013D9B4 == 0) return 0;
+    if (race_gates_47_flag == 0) return 0;
     if (menu_item_enabled_20 == 0) return 1;
     return 2;
 }
-extern u8 D_0013D5DD NOT_SDA;
-extern int D_0013DC34 NOT_SDA;
+extern u8 gHaveMorphORay NOT_SDA;
+extern int race_gates_87_status NOT_SDA;
 /* 2 when the byte at 0x13D5DD is set, else whether the word at 0x13DC34 is */
 int GetMorphORayStatus(void) {
     if (gHaveMorphORay) return 2;
-    return D_0013DC34 != 0;
+    return race_gates_87_status != 0;
 }
-extern u8 D_0013D5C8[];
+extern u8 item_available[];
 /* 2 when the byte at 0x13D5E7 is set, else whether the byte at 0x13D5E9 is */
 int mission_get_hologuise_or_map_status(void) {
     if (item_available[0x1F]) return 2;
     return item_available[0x21] != 0;
 }
-extern u8 * D_L00_0016009C MACRO_ADDR;
-extern u8 * D_L00_001600A0 MACRO_ADDR;
-extern u32 D_L00_0015F6B0 MACRO_ADDR;
-extern s32 D_L00_0016007C MACRO_ADDR;
+extern u8 * level_mobys_end MACRO_ADDR;
+extern u8 * moby_array_last MACRO_ADDR;
+extern u32 level_frame_counter MACRO_ADDR;
+extern s32 free_moby_slot_count MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_map_0024e7a8.c, FUN_L00_0024e7a8. */
 void CountExpiredMobys(void) {

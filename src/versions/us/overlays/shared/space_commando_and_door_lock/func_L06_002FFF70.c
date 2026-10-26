@@ -1,5 +1,5 @@
 void process_blarg_space_commando_hits(char *m) {
-    extern unsigned char D_0013D510[];
+    extern unsigned char gSkillPoints[];
     char *d;
     char *t;
     char *p;
@@ -138,6 +138,6 @@ void process_blarg_space_commando_hits(char *m) {
     }
     }
     if (*(int *)(d + 0x160) == 0) {
-        *(int *)(d + 0x160) = *(int *)(D_0013E633 + 0x2E9D);
+        *(int *)(d + 0x160) = *(int *)(hero_globals_base + 0x2E9D);
     }
 }

@@ -55,25 +55,25 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
                 d->tint = 0xFA;
                 zero_2D5FA8(d->f120);
                 burst_2D5FA8(m, d->f40, vec, 0.0f, 0.0f, 20, 8, 20, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, one, -1, 0);
-                spawn_2D5FA8(m, 0x6C0, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8);
-                spawn_2D5FA8(m, 0x6C1, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8);
-                spawn_2D5FA8(m, 0x6C2, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8);
-                spawn_2D5FA8(m, 0x6C3, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8);
-                spawn_2D5FA8(m, 0x6C4, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8);
+                spawn_2D5FA8(m, 0x6C0, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, batalia_zero_vec_r2, batalia_zero_vec_r2, batalia_zero_vec_r2);
+                spawn_2D5FA8(m, 0x6C1, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, batalia_zero_vec_r2, batalia_zero_vec_r2, batalia_zero_vec_r2);
+                spawn_2D5FA8(m, 0x6C2, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, batalia_zero_vec_r2, batalia_zero_vec_r2, batalia_zero_vec_r2);
+                spawn_2D5FA8(m, 0x6C3, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, batalia_zero_vec_r2, batalia_zero_vec_r2, batalia_zero_vec_r2);
+                spawn_2D5FA8(m, 0x6C4, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, batalia_zero_vec_r2, batalia_zero_vec_r2, batalia_zero_vec_r2);
                 if (m->prev_seq != one) animate_2D5FA8(m, 1, 0, 3);
                 m->state = dead;
                 d->health = 6.0f;
                 d->flags &= 0xFFFD;
             } else {
-                if (D_0015EE84_2B94B0 == 8) {
+                if (g_current_level_index_r == 8) {
                     int k = d->part_id;
                     if (k != 0 && t != 0 && t->moby != 0 && t->moby->oclass == 0x661) {
-                        if (k == one) D_L08_0015F694_2D5FA8 = one;
-                        if (k == 2) D_L08_0015F698_2D5FA8 = one;
-                        if (k == 3) D_L08_0015F69C_2D5FA8 = one;
-                        if (k == 4) D_L08_0015F6A0_2D5FA8 = one;
-                        if (D_L08_0015F694_2D5FA8 != 0 && D_L08_0015F698_2D5FA8 != 0) {
-                            unsigned char *flags = D_0013D50F_2D5FA8 + 1;
+                        if (k == one) bomber_tank_part1_destroyed_r = one;
+                        if (k == 2) bomber_tank_part2_destroyed_r = one;
+                        if (k == 3) bomber_tank_part3_destroyed_r = one;
+                        if (k == 4) bomber_tank_part4_destroyed_r = one;
+                        if (bomber_tank_part1_destroyed_r != 0 && bomber_tank_part2_destroyed_r != 0) {
+                            unsigned char *flags = menu_item_enabled_115_r + 1;
                             if (flags[0xD] == 0) {
                                 flags[0xD] = one;
                                 sound_2D5FA8(1, 0, 0);
@@ -87,11 +87,11 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
                 explode_2D5FA8(m, 0, -1);
                 event_2D5FA8(2, 0, m);
                 burst_2D5FA8(m, d->f40, vec, 0.0f, 0.0f, 20, 8, 20, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
-                spawn_2D5FA8(m, 0x6FE, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8);
-                spawn_2D5FA8(m, 0x6FE, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8);
-                spawn_2D5FA8(m, 0x6FF, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8);
-                spawn_2D5FA8(m, 0x6FF, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8);
-                spawn_2D5FA8(m, 0x6FF, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8, D_L08_0015F660_2D5FA8);
+                spawn_2D5FA8(m, 0x6FE, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, batalia_zero_vec_r2, batalia_zero_vec_r2, batalia_zero_vec_r2);
+                spawn_2D5FA8(m, 0x6FE, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, batalia_zero_vec_r2, batalia_zero_vec_r2, batalia_zero_vec_r2);
+                spawn_2D5FA8(m, 0x6FF, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, batalia_zero_vec_r2, batalia_zero_vec_r2, batalia_zero_vec_r2);
+                spawn_2D5FA8(m, 0x6FF, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, batalia_zero_vec_r2, batalia_zero_vec_r2, batalia_zero_vec_r2);
+                spawn_2D5FA8(m, 0x6FF, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, batalia_zero_vec_r2, batalia_zero_vec_r2, batalia_zero_vec_r2);
                 if (d->partA != 0) delete_2D5FA8(d->partA);
                 if (d->partB != 0) delete_2D5FA8(d->partB);
                 delete_2D5FA8(m);
@@ -105,8 +105,8 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
     if (d->partA != 0) d->partA->hit_slot = 0xFF;
     if (d->partB != 0) d->partB->hit_slot = 0xFF;
 
-    follow_2D5FA8(100.0f, m, d->target, 0, 0, D_L08_001B0FB0_2D5FA8[d->path]->list, D_L08_001B0FB0_2D5FA8[d->path]->count);
-    if (d->fF0 == 0) d->fF0 = *(int *)(D_0013E633_2D5FA8 + 0x2E9D);
+    follow_2D5FA8(100.0f, m, d->target, 0, 0, batalia_path_table_r[d->path]->list, batalia_path_table_r[d->path]->count);
+    if (d->fF0 == 0) d->fF0 = *(int *)(hero_globals_base_r + 0x2E9D);
     if (d->mode != 2) {
         float yaw, len, pitch;
         subtract_2D5FA8(vec, d->target, (float *)&m->pos);
@@ -120,11 +120,11 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
             pitch = -0.7853982f;
         }
         yaw = angle_delta_2D5FA8(yaw, m->rot.z);
-        approach_2D5FA8(&d->yaw, yaw, &d->yaw_speed, D_0015EE70_2B94B0 * 12.566371f, D_0015EE70_2B94B0 * 12.566371f, D_0015EE6C_2D5FA8 * 9.424778f);
-        approach_2D5FA8(&d->pitch, pitch, &d->pitch_speed, D_0015EE70_2B94B0 * 12.566371f, D_0015EE70_2B94B0 * 12.566371f, D_0015EE6C_2D5FA8 * 9.424778f);
+        approach_2D5FA8(&d->yaw, yaw, &d->yaw_speed, g_frame_time_sq_r * 12.566371f, g_frame_time_sq_r * 12.566371f, g_frame_time_r2 * 9.424778f);
+        approach_2D5FA8(&d->pitch, pitch, &d->pitch_speed, g_frame_time_sq_r * 12.566371f, g_frame_time_sq_r * 12.566371f, g_frame_time_r2 * 9.424778f);
     } else {
-        approach_2D5FA8(&d->yaw, 0.0f, &d->yaw_speed, D_0015EE70_2B94B0 * 12.566371f, D_0015EE70_2B94B0 * 12.566371f, D_0015EE6C_2D5FA8 * 9.424778f);
-        approach_2D5FA8(&d->pitch, 0.0f, &d->pitch_speed, D_0015EE70_2B94B0 * 12.566371f, D_0015EE70_2B94B0 * 12.566371f, D_0015EE6C_2D5FA8 * 9.424778f);
+        approach_2D5FA8(&d->yaw, 0.0f, &d->yaw_speed, g_frame_time_sq_r * 12.566371f, g_frame_time_sq_r * 12.566371f, g_frame_time_r2 * 9.424778f);
+        approach_2D5FA8(&d->pitch, 0.0f, &d->pitch_speed, g_frame_time_sq_r * 12.566371f, g_frame_time_sq_r * 12.566371f, g_frame_time_r2 * 9.424778f);
     }
     rotation_2D5FA8(vec, 1, d->pitch);
     rotation_2D5FA8(d->f110, 2, d->yaw);

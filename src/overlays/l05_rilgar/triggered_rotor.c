@@ -3,17 +3,17 @@
  * while vendor_0030EB68.c also has small-data declarations of that symbol. */
 #include "common.h"
 #include "moby.h"
-extern float func_001FA790(float, float);
-extern float func_001FA748(float, float);
+extern float FastSubRots(float, float);
+extern float FastAddRots(float, float);
 
 typedef struct {
     char pad[0xBC];
     unsigned char flag;
     char pad2[0x43];
 } RotorPoolMoby17B68;
-extern RotorPoolMoby17B68 *D_L05_00160098_pool __asm__("D_L05_00160098") MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
+extern RotorPoolMoby17B68 *moby_pool_4f60_pool __asm__("D_L05_00160098") MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
 
 typedef struct {
     int flag;
@@ -22,7 +22,7 @@ typedef struct {
     float angle;
 } RotorData17B68;
 
-extern int func_0022ED80_i(int, int, void *) __asm__("func_0022ED80");
+extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 extern float ease_rotation_317B68(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 /* Updates a triggered rotor: initialize its angle, wait for the target, then ease its rotation. */
 void update_triggered_moby_yaw(Moby *moby) {
@@ -42,8 +42,8 @@ void update_triggered_moby_yaw(Moby *moby) {
         }
         /* fallthrough */
     case 1:
-        if (D_L05_00160098_pool[p->target].flag != 0) {
-            func_0022ED80_i(0, 0, moby);
+        if (moby_pool_4f60_pool[p->target].flag != 0) {
+            Moby_PlaySound_i(0, 0, moby);
             moby->state = 2;
         }
         break;

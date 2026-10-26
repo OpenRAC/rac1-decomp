@@ -14,11 +14,11 @@ float scale_by_one_minus_random_squared(float scale)
     t = 1.0f - t;
     return t * scale;
 }
-extern float func_00214158(void);
-extern float func_L09_002785C0(float);
-extern void func_001F9BC0(void *);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
+extern float random_angle_radians(void);
+extern float scale_by_one_minus_random_squared(float);
+extern void clear_u64_value(void *);
+extern float FastCos(float);
+extern float FastSin(float);
 
 /* Write a 2D vector at a random angle with length from scale_by_one_minus_random_squared. */
 void generate_random_scaled_vector2(float *out, float scale)

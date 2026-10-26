@@ -4,13 +4,13 @@
 #include "vector.h"
 
 typedef struct { char pad[0x24]; int v; char pad2[0x24]; } Rec;
-extern Rec D_L17_0017A440[];
-extern char D_0013E633[];
-extern int func_L00_0020DB30(int);
+extern Rec fleet_item_defs[];
+extern char hero_globals_base[];
+extern int hero_slot_item_id(int);
 
 /* Returns the current help record's value, 0x54 or 0x6E in two special states, or 0 when no record applies. */
 int select_hero_help_value(int a) {
-    char *g = (char *)D_0013E633 + 0xE1D;
+    char *g = (char *)hero_globals_base + 0xE1D;
     switch (*(unsigned char *)(g + 0x20A4)) {
     case 1:
         return 0;
@@ -18,7 +18,7 @@ int select_hero_help_value(int a) {
         return 0;
     }
     {
-        char *g2 = (char *)D_0013E633 + 0xE1D;
+        char *g2 = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(g2 + 0x22A8) == 1) {
             return 0x54;
         }
@@ -79,23 +79,23 @@ typedef struct {
     u8 *p34;
     u8 pad38[8];
 } T_8;
-extern G_8 D_0013F450;
-extern s32 D_L17_0015F6A8 MACRO_ADDR;
-extern T_8 D_L17_00178A80[];
-extern s32 D_0015EE84 MACRO_ADDR;
-extern s32 D_0013E090[];
-extern s32 D_0015EFA8 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
-extern u8 D_0013F530[];
-void func_L00_00207220(void);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001FA748(f32, f32);
-f32 func_001F9F90(f32);
-f32 func_001F9FA8(f32);
-void func_001F9BD8(void *, void *, void *);
-void func_L17_0021ED38(s32, s32);
-void func_L00_00217570(s32, s32);
-void func_L00_00211338(void *, s32, f32, f32);
+extern G_8 g_hero;
+extern s32 fleet_game_mode MACRO_ADDR;
+extern T_8 fleet_moby_hits[];
+extern s32 g_current_level_index MACRO_ADDR;
+extern s32 level_hero_hit_counts[];
+extern s32 hero_hit_count MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
+extern u8 hero_velocity[];
+void release_and_clear_hero_voice_slots(void);
+void FastVecSub(void *, void *, void *);
+f32 FastAddRots(f32, f32);
+f32 FastCos(f32);
+f32 FastSin(f32);
+void FastVecAdd(void *, void *, void *);
+void HeroL17_SetMoveState(s32, s32);
+void allocate_hero_voice_for_entry(s32, s32);
+void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l17/ui_help_002020a8.c, FUN_L17_0020dbe8. */
 s32 HeroL17_TryTakeHit(s32 arg) {
@@ -230,16 +230,16 @@ s32 HeroL17_TryTakeHit(s32 arg) {
     FastVecAdd(hero_velocity + 0x20, hero_velocity + 0x20, &v);
     return 1;
 }
-extern float func_001F9D48(void *, void *);
-extern float func_00214D28(float *p, float target, float maxstep);
-extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, float eps);
-extern float D_0015EE60 MACRO_ADDR;
-extern float D_0015EE64 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
+extern float vec_distance_xy(void *, void *);
+extern float ApproachValue(float *p, float target, float maxstep);
+extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
+extern float frame_scale MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
 
 /* Per-frame easing of the camera blend parameters at the shared global block, by mode. */
 void update_hero_smoothing(void) {
-    char *a = (char *)D_0013E633 + 0xE1D;
+    char *a = (char *)hero_globals_base + 0xE1D;
     char *b;
     char *c;
     char *g;
@@ -262,7 +262,7 @@ void update_hero_smoothing(void) {
         *(float *)(a + 0x230) = 0.45f;
         break;
     }
-    b = (char *)D_0013E633 + 0xE1D;
+    b = (char *)hero_globals_base + 0xE1D;
     if (*(int *)(b + 0x208C) == 4) {
         if (*(int *)(b + 0x198) > *(int *)(b + 0x420)) {
             if (*(short *)(b + 0x41E) == 0) {
@@ -280,12 +280,12 @@ void update_hero_smoothing(void) {
         *(float *)(b + 0x228) = 0.8f;
         *(float *)(b + 0x22C) = 0.9f;
     } else {
-        char *q = (char *)D_0013E633 + 0xE1D;
+        char *q = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(q + 0x2084) == 0x7F) {
             *(float *)(q + 0x230) = 0.8f;
         }
     }
-    c = (char *)D_0013E633 + 0xE1D;
+    c = (char *)hero_globals_base + 0xE1D;
     if (*(unsigned char *)(c + 0x257) != 0 && *(int *)(c + 0x2094) != 0x12
         && *(int *)(c + 0x208C) != 0x11 && *(unsigned char *)(c + 0x12E4) == 0) {
         float d = vec_distance_xy(c + 0x210, c + 0x80);
@@ -293,7 +293,7 @@ void update_hero_smoothing(void) {
             return;
         }
     }
-    p = (float *)(D_0013E633 + 0x103D);
+    p = (float *)(hero_globals_base + 0x103D);
     g = (char *)p - 0x220;
     ApproachValue(p, *(float *)(g + 0x228), frame_scale * 0.02f);
     ApproachValue(p + 1, *(float *)(g + 0x22C), frame_scale * 0.02f);

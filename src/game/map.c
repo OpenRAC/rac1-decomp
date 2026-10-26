@@ -10,66 +10,66 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
-extern int D_0018A3B0[];
-extern void func_001F99B0();
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
-extern char D_001940C0[];
-extern long D_00151888[3];
-extern int D_0015F6FC;
-extern short D_0015F534;
-extern void func_001FB530(void);
-extern void func_001F3D78(void);
-extern int D_0015F564;
-extern int D_0018DD40[];
-extern int D_0018DC40[];
-extern short D_0015F59C;
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
-extern void func_001F6668(void *, void *, void *, void *, void *, int,
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
+extern int draw_config[];
+extern void FastMemSet();
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
+extern char occl_visibility[];
+extern long gs_display_settings[3];
+extern int space_load_in_progress;
+extern short draw_enable_mask;
+extern void append_gif_transfer_packet(void);
+extern void DrawDebugProfiler(void);
+extern int draw_callback_count;
+extern int draw_callback_args[];
+extern int draw_callback_funcs[];
+extern short GlobalStateFlag;
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
+extern void FontPrint(void *, void *, void *, void *, void *, int,
                           unsigned char *);
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
-extern int func_001F4868(int);
-extern void func_001FB498(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern int D_0018E840[];
-extern long D_00152178 NOT_SDA;
-extern int func_001FE4D0(void);
-extern char D_00199A68[];
-extern short D_0015F780;
-extern int D_001941CC NOT_SDA;
-extern int D_0019A4E8 NOT_SDA;
-extern int func_001FF668(int);
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
+extern int GetEffectTex(int);
+extern void PutDrawBufferLarge(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern int bit_swap_lut[];
+extern long background_rgbaq NOT_SDA;
+extern int Help_FindIndex(void);
+extern char s_paradox_this_message_does_not[];
+extern short help_msgs;
+extern int hud_heap_base NOT_SDA;
+extern int hud_state NOT_SDA;
+extern int Hud_GetIconIndex(int);
 typedef struct {
     char b[0x13];
 } Cfg13;
-extern Cfg13 D_0019A540 NOT_SDA;
-extern Cfg13 D_001E7DD8 NOT_SDA;
-extern int func_00116810(void);
-extern void func_001166FC(Cfg13 *, void *);
-extern short D_0015F9D0;
-extern void func_00201960(int, int, int, int, int);
-extern void func_002023E0(int);
-extern void func_002027C0(int);
-extern void func_00204FC0(void *);
-extern int D_0018CC20 NOT_SDA;
-extern int D_001941C8 NOT_SDA;
-extern int D_0016100C;
+extern Cfg13 message_text_buffer NOT_SDA;
+extern Cfg13 message_too_long_label NOT_SDA;
+extern int libc_strlen(void);
+extern void libc_strcpy(Cfg13 *, void *);
+extern short ResourceCounter;
+extern void draw_stretchable_ui_frame(int, int, int, int, int);
+extern void CreatePointLight(int);
+extern void DetachPointLight(int);
+extern void update_world_object_animation(void *);
+extern int render_sequence NOT_SDA;
+extern int vu1_chain_buffer_2 NOT_SDA;
+extern int current_vu_chain;
 
-extern int func_001F9968(int);
-extern int D_0015EF74 MACRO_ADDR;
-extern int D_0015F558 MACRO_ADDR;
+extern int log2dim(int);
+extern int g_gs_texture_allocation_cursor MACRO_ADDR;
+extern int pending_texture_upload_count MACRO_ADDR;
 typedef struct {
     int addr;            /* +0 */
     short unk4;          /* +4 */
@@ -79,7 +79,7 @@ typedef struct {
     unsigned char th;    /* +D */
     short tbp;           /* +E */
 } TexSlot;
-extern TexSlot D_0018D140[];
+extern TexSlot pending_texture_uploads[];
 typedef struct {
     char *clut;          /* 0x00 */
     char *pix;           /* 0x04 */
@@ -170,7 +170,7 @@ long register_8bit_texture(int tw, int th, int a2, int a3, int clut, int tex) {
 }
 __asm__(".section .text\n\tnop\n");
 
-extern int D_001A0468[];
+extern int map_slot_use[];
 
 /* Returns a used map slot that holds no map (id -1), searched downward unless arg0 is 0. */
 int find_free_map_slot(int arg0) {
@@ -188,14 +188,14 @@ int find_free_map_slot(int arg0) {
     return -1;
 }
 
-extern void func_00205830(int a, int b);
+extern void move_map_entry_slot(int a, int b);
 
 /* D_001A01F0 typed as the object it is, so that the two 5/6-entry int
    arrays at +0x278 and +0x28C are members rather than constants added
    to an index. See the note on func_00205790 -- this is what makes it
    match. Aliased rather than renamed because the rest of this file
    still reaches the same symbol as a flat int array. */
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 
 /*
  * Allocate a slot. func_00205728(1) gets first refusal; if it returns
@@ -256,8 +256,8 @@ int promote_first_available_map_entry(void) {
     }
     i = 1;
     while (i < 5) {
-        if ((D_001A01F0_slots.flags[i] & 0x1000) == 0 &&
-            D_001A01F0_slots.use[i] != 0) {
+        if ((level_map_selection_slots.flags[i] & 0x1000) == 0 &&
+            level_map_selection_slots.use[i] != 0) {
             break;
         }
         i++;
@@ -266,9 +266,9 @@ int promote_first_available_map_entry(void) {
     return i;
 }
 
-extern int D_001A01F0[];
+extern int level_map_selection[];
 
-extern int D_001A01F0[];
+extern int level_map_selection[];
 
 /* Same three parallel arrays func_002054E0 walks: 0x278/4 = 0x9E,
    0x28C/4 = 0xA3 and 0x2A4/4 = 0xA9 into D_001A01F0. Moves entry `b`
@@ -294,7 +294,7 @@ void move_map_entry_slot(int a, int b) {
     flags[b] = -1;
 }
 
-extern int D_001A01F0[];
+extern int level_map_selection[];
 
 /* Returns the used map slot that holds map arg0, or -1. */
 int find_map_entry_slot(int arg0) {
@@ -307,9 +307,9 @@ int find_map_entry_slot(int arg0) {
     return -1;
 }
 
-extern unsigned char D_0013D5E9 NOT_SDA;
+extern unsigned char gHaveMapOMatic NOT_SDA;
 /* The MACRO_ADDR view declared further down, needed here already. */
-extern int *D_001602E0_m __asm__("D_001602E0") MACRO_ADDR;
+extern int *menu_level_indices_m __asm__("D_001602E0") MACRO_ADDR;
 
 /* Picks the map to load next: the current map id (D_001A01F0+0x224,
    +0x100 when D_0013D5E9 is set) unless func_002058D0 finds it already
@@ -331,7 +331,7 @@ int pick_next_map(void) {
     }
     i = 0;
     if (*(int *)(m + 0x224) < 20) {
-        while (D_001602E0_m[i] != *(int *)(m + 0x224)) {
+        while (menu_level_indices_m[i] != *(int *)(m + 0x224)) {
             i++;
         }
     }
@@ -339,8 +339,8 @@ int pick_next_map(void) {
     do {
         int j = i + step;
         if (j >= 0) {
-            if (j < 20 && D_001602E0_m[j] != 0) {
-                key = D_001602E0_m[j] + off;
+            if (j < 20 && menu_level_indices_m[j] != 0) {
+                key = menu_level_indices_m[j] + off;
                 if (find_map_entry_slot(key) == -1) {
                     return key;
                 }
@@ -351,7 +351,7 @@ int pick_next_map(void) {
     return -1;
 }
 
-extern int *D_001602E0;
+extern int *menu_level_indices;
 
 
 /* The global is read at both uses in the loop, giving retail's two
@@ -359,15 +359,15 @@ extern int *D_001602E0;
 int find_id_in_terminated_table(int arg0) {
     int i;
 
-    for (i = 0; D_001602E0_m[i] != 0 && i < 20; i++) {
-        if (D_001602E0_m[i] == arg0) {
+    for (i = 0; menu_level_indices_m[i] != 0 && i < 20; i++) {
+        if (menu_level_indices_m[i] == arg0) {
             return i;
         }
     }
     return -1;
 }
 
-extern int func_001F9B70(int); /* abs */
+extern int subtract_integer_with_clamp(int); /* abs */
 
 /* Picks the map slot to reuse (D_001A01F0's five slots: in use at
    [0x9E + i], map id at [0xA3 + i], active slot [0xA8]). With no current
@@ -445,8 +445,8 @@ void compose_bitmap_from_mask(unsigned char *dst, unsigned char *a, unsigned cha
     }
 }
 
-extern void func_00209040(void);
-extern char D_0013CA40[];
+extern void DebugEnter_Nop(void);
+extern char g_controller_state[];
 
 /* Map screen pan/zoom update: returns 1 while the pad word (D_0013CA40
    +0x1A4) has 0x500 set, 0 when the map object D_001A01F0 has nothing open
@@ -626,23 +626,23 @@ extern f32 map_data_0015FE50 SDATA(D_0015FE50);
 extern f32 map_data_0015FE54 SDATA(D_0015FE54);
 extern u8 map_data_001E8398[] __asm__("D_001E8398");
 
-extern s32 func_001F0FF8(s32, s32, s32, u8 *);
+extern s32 print_debug_text_centered(s32, s32, s32, u8 *);
 extern void setup_gif_paging(s32) __asm__("func_001F4630");
 extern void do_gif_paging(void) __asm__("func_001F4748");
 extern void draw_ui_frame(s32, s32, s32, s32, s32) __asm__("func_001F62C8");
-extern void func_001F75D0(void *, u64, void *, s32);
+extern void font_print_window_small(void *, u64, void *, s32);
 extern f32 fast_add_rotations(f32, f32) __asm__("func_001FA748");
 extern f32 fast_subtract_rotations(f32, f32) __asm__("func_001FA790");
 extern s32 get_icon_frame(s32, s32) __asm__("func_00200198");
 extern u64 get_frame_texture(s32) __asm__("func_00200248");
-extern void func_002008B8(s32, s32, s32, s32, s32, s32);
-extern void func_00200E38(f32, f32, f32, f32, f32, s32, s32, u64);
+extern void draw_hud_sprite_subpixel(s32, s32, s32, s32, s32, s32);
+extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, u64);
 extern void append_screen_rect_packet(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern void format_menu_item_text(s32, void *) __asm__("func_00208AB0");
 extern void world_to_map_coords_r(f32 *, f32 *, s32, f32, f32) __asm__("func_00208C38");
 /* EABI places floating and integer arguments in independent register banks. */
 extern void world_to_map_coords_xy_205E70(f32, f32, f32 *, f32 *, s32) __asm__("func_00208C38");
-extern void func_00208D38(s32, s32, s32, s32);
+extern void draw_map_markers(s32, s32, s32, s32);
 extern void vu1_add_g_sregister(s32, s64) __asm__("func_00234C98");
 extern void *map_memset_205E70(void *, s32, u32) __asm__("func_001153FC");
 
@@ -1065,7 +1065,7 @@ void draw_map_overlay(void) {
     }
 }
 
-extern void func_00207090(unsigned char *dst, int row, unsigned char *src,
+extern void decode_map_rle_row(unsigned char *dst, int row, unsigned char *src,
                           short *offs);
 
 /* Builds the map's 1-bit coverage mask: each of the 256 rows is decoded

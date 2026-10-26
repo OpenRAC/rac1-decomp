@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern char D_001517D0[];
+extern char cd_read_state[];
 // Requests a music track and stinger.
 void MusicRequestTrack(int track, int stinger) {
  char *b = cd_read_state;

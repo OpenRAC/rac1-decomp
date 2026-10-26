@@ -4,10 +4,10 @@
 #include "include_asm.h"
 #include "moby.h"
 
-extern void func_00122818(void *, int, int, int, int, int, int, int);
-extern void func_00118D80(int);
-extern void func_00122AD8(void *, int);
-extern void func_00120858(int, int);
+extern void sceGsSetDefStoreImage(void *, int, int, int, int, int, int, int);
+extern void flush_cache(int);
+extern void sceGsExecStoreImage(void *, int);
+extern void wait_for_graphics_pipeline_idle(int, int);
 
 // Copies the frame buffer out in 0x4000-sized strips.
 void transfer_draw_buffer_chunks(int a, int b, int n) {
@@ -18,15 +18,15 @@ void transfer_draw_buffer_chunks(int a, int b, int n) {
         int t = b + i;
         t <<= 8;
         t >>= 16;
-        func_00122818(buf, t, 1, 0, 0, 0, 0x40, 0x40);
-        func_00118D80(0);
-        func_00122AD8(buf, a + i);
+        sceGsSetDefStoreImage(buf, t, 1, 0, 0, 0, 0x40, 0x40);
+        flush_cache(0);
+        sceGsExecStoreImage(buf, a + i);
         i += 0x4000;
-        func_00120858(0, 0);
+        wait_for_graphics_pipeline_idle(0, 0);
     }
 }
-extern int func_00122630(void *, short, short, short, short, short, short, short);
-extern int *D_L00_00161280 MACRO_ADDR;
+extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
+extern int *dma_packet_cursor MACRO_ADDR;
 
 /* Uploads a 64-wide image strip in 0x4000-sized chunks: each chunk is a DMA tag pair around a GS load image. */
 void append_draw_buffer_upload_packets(int a, int b, int n) {
@@ -39,7 +39,7 @@ void append_draw_buffer_upload_packets(int a, int b, int n) {
         dma_packet_cursor[2] = 0;
         dma_packet_cursor[3] = 0x50000006;
         k -= 0x4000;
-        func_00122630(dma_packet_cursor = dma_packet_cursor + 4, (b + i) >> 8, 1, 0, 0, 0, 0x40, 0x40);
+        sceGsSetDefLoadImage(dma_packet_cursor = dma_packet_cursor + 4, (b + i) >> 8, 1, 0, 0, 0, 0x40, 0x40);
         p = dma_packet_cursor;
         dma_packet_cursor = p + 0x18;
         p[0x18] = 0x30000400;
@@ -80,7 +80,7 @@ int walker_gait_mask(struct WalkAnim *anim, float v) {
     }
     return r;
 }
-extern void func_L00_001FFED8(void *, int, float);
+extern void axis_rotation_2d48(void *, int, float);
 /* Resets the rotation helpers and timers of both walker legs. */
 void reset_walker_gait_helpers(char *a) {
     int i;
@@ -165,26 +165,26 @@ typedef struct WalkData {
     unsigned short uEE;
 } WalkData;
 
-extern int func_L00_0024FD50(char *a, float time);
-extern void func_00213DE0(void *, int, int, int);
-extern float func_001FA850(float, float);
-extern int func_L00_002A2680(WalkAnim *a, float t);
-extern float func_0020D830(void *);
-extern int func_001FA898(float);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_00214358(void *, int, float);
-extern float func_001F9D48(void *, void *);
-extern float func_001F9D10(void *, void *);
-extern void func_001E9730();
-extern float func_L00_0025BC48(float *a, float *b, float *out, float speed, float g);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA888(int);
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE68 MACRO_ADDR;
-extern int D_L00_001CAA60[];
-extern char D_L00_001612A0[];
+extern int find_nearest_animation_sequence_entry(char *a, float time);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern float FastDiffRots(float, float);
+extern int walker_gait_mask(WalkAnim *a, float t);
+extern float MobyGetFrameValue(void *);
+extern int truncate_float_to_s32(float);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void FastVecAdd(void *, void *, void *);
+extern float ProbeGroundHeight(void *, int, float);
+extern float vec_distance_xy(void *, void *);
+extern float FastVecDist(void *, void *);
+extern void STUB_printf();
+extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
+extern float fast_atan2(float, float);
+extern float IntToFloat(int);
+extern float g_frame_time MACRO_ADDR;
+extern float inv_frame_scale MACRO_ADDR;
+extern int walker_state_anim_slots[];
+extern char str_walker_jump_dist_fmt[];
 
 /* Steps the walk cycle state machine: picks the next walk, run, turn, jump or landing sequence from speed, heading and foot height. */
 void WalkCycleStep(Moby *m, WalkData *d, int flags, float speed, float ang, float accel) {

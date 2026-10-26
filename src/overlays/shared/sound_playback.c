@@ -4,11 +4,11 @@
 #include "callees.h"
 #include "include_asm.h"
 
-extern char D_0013E633[];
+extern char hero_globals_base[];
 /* Returns 1 if sound slot i belongs to owner a and is starting or playing. */
 int Sound_IsPlaying(int a, int i) {
     if (i >= 0) {
-        char *p = D_0013E633 + 0x1D + i * 0x70;
+        char *p = hero_globals_base + 0x1D + i * 0x70;
         if (*(int *)(p + 0x88) == a) {
             int t = *(unsigned char *)(p + 0x74);
             if (t == 1 || t == 2) return 1;
@@ -21,7 +21,7 @@ int Sound_IsPlaying(int a, int i) {
  * (config/overlays/joined.tsv). */
 void Sound_StopSlot(int i) {
     if (i >= 0) {
-        char *e = D_0013E633 + 0x1D + i * 0x70;
+        char *e = hero_globals_base + 0x1D + i * 0x70;
         int t = *(unsigned char *)(e + 0x74);
         if (t == 7) {
             *(int *)(e + 0x88) = 0;
@@ -33,9 +33,9 @@ void Sound_StopSlot(int i) {
     }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0028EC28);
-extern char D_0013E633[] NOT_SDA;
-extern unsigned char D_L00_00197F40[] NOT_SDA;
-extern char *D_L00_00197680[] NOT_SDA;
+extern char hero_globals_base[] NOT_SDA;
+extern unsigned char g_class_slot[] NOT_SDA;
+extern char *moby_class_headers[] NOT_SDA;
 
 /* Plays sound i of the class in slot k on owner v; returns the voice slot or -1. */
 int Sound_PlayClassSound(int i, int a1, int v, int k) {
@@ -50,36 +50,36 @@ int Sound_PlayClassSound(int i, int a1, int v, int k) {
     }
     r = allocate_voice_slot(*(char **)(t + 0x28) + i * 32, a1, v, 0, 0x400);
     if (r >= 0) {
-        e = D_0013E633 + 0x1D + r * 0x70;
+        e = hero_globals_base + 0x1D + r * 0x70;
         *(int *)(e + 0x88) = v;
         *(short *)(e + 0x7E) = i;
     }
     return r;
 }
-extern int D_L00_0015F6D0 MACRO_ADDR;
-extern char *D_L00_0015F6D4 MACRO_ADDR;
+extern int level_sound_slot_count MACRO_ADDR;
+extern char *level_sound_slots MACRO_ADDR;
 /* Plays level sound a with the given settings; returns the voice slot or -1. */
 int play_voice(int a, int b, int c, int d) {
     int r;
     if (a >= level_sound_slot_count) return -1;
     r = allocate_voice_slot(level_sound_slots + a * 32, b, 0, c + 0x40, d);
     if (r >= 0) {
-        char *e = D_0013E633 + 0x1D + r * 0x70;
+        char *e = hero_globals_base + 0x1D + r * 0x70;
         *(int *)(e + 0x8C) = c;
         *(short *)(e + 0x7E) = a;
     }
     return r;
 }
-extern char D_0013E650[];
+extern char voice_pool[];
 
-extern unsigned char D_L00_001BDBB0[];
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int D_L00_0015F654 MACRO_ADDR;
+extern unsigned char grouped_voice_level_rows[];
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int grouped_voice_definition_base_index MACRO_ADDR;
 
 /* Starts a sound bank entry chosen by (a0, a1, a2) offset from a
    level-specific table row, the same shape as func_0022EE28. */
 int request_grouped_voice(int a0, int a1, int a2, int a3, int a4) {
-    int idx = grouped_voice_level_rows[D_0015EE84_m] + a0 * 4 + a1 * 2 + a2 + grouped_voice_definition_base_index;
+    int idx = grouped_voice_level_rows[g_current_level_index_m] + a0 * 4 + a1 * 2 + a2 + grouped_voice_definition_base_index;
     int h;
 
     if (idx >= level_sound_slot_count) {
@@ -96,12 +96,12 @@ int request_grouped_voice(int a0, int a1, int a2, int a3, int a4) {
 LINKER_REMNANT("asm/overlays", func_L00_0028F208);
 /* sets the pitch-bend word of sound slot i to v */
 int Sound_SetPitchBend(int i, int v) {
-    char *e = D_0013E633 + 0x1D + i * 0x70;
+    char *e = hero_globals_base + 0x1D + i * 0x70;
     *(int *)(e + 0x84) = v;
     return 1;
 }
 typedef struct { int k; int v; } TE;
-extern TE D_L00_001EAD00[];
+extern TE lookup_record_key_values[];
 
 /* Finds the record's key in the key/value table and stores the index and value in it. */
 void resolve_lookup_record(short *a) {
@@ -125,29 +125,29 @@ void Sound_SetEntryValue(int value, long long address) {
     }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0028F410);
-extern char D_0013A5E0[] NOT_SDA;
-extern unsigned char D_0013D355[] NOT_SDA;
-extern unsigned char D_0013D5DD[] NOT_SDA;
-extern unsigned char D_0013DE4B[] NOT_SDA;
-extern short D_0013E156[] NOT_SDA;
-extern char D_L00_00166EC0[];
-extern char D_L00_001BDC10[] NOT_SDA;
-extern int D_L00_0015F710 MACRO_ADDR;
-extern int D_L00_0015F6A8 MACRO_ADDR;
+extern char pad_globals_base[] NOT_SDA;
+extern unsigned char special_items_base[] NOT_SDA;
+extern unsigned char gHaveMorphORay[] NOT_SDA;
+extern unsigned char level_available_base[] NOT_SDA;
+extern short ship_index[] NOT_SDA;
+extern char g_debug_camera[];
+extern char ship_entry_point_offsets[] NOT_SDA;
+extern int ship_level_exit_requested MACRO_ADDR;
+extern int cinematic_mode MACRO_ADDR;
 
-extern float func_001FA888(int);
-extern float func_001F9F90(float);
-extern void func_001F49B0(void (*)(void), void *);
-extern float func_001F9D48(void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001F9D10(void *, void *);
-extern int func_00215F80(int, int);
-extern void func_L00_00299B68(int);
-extern int func_L00_00265558(int);
-extern void func_L00_0029A7D0(int);
-extern void func_00233AB8(void);
-extern void func_0022F258(void);
+extern float IntToFloat(int);
+extern float FastCos(float);
+extern void AddDrawCallback(void (*)(void), void *);
+extern float vec_distance_xy(void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastVecDist(void *, void *);
+extern int try_set_help_message(int, int);
+extern void StartCutscene(int);
+extern int remove_help_message_for_selector(int);
+extern void PlayMovieEntryIfIdle(int);
+extern void render_environment_mapped_object(void);
+extern void draw_light_flare(void);
 
 /* Per-frame update of a pickup-like moby: pulses its colour, tracks the player's range and collects items. */
 void update_moby_proximity_interaction(unsigned char *m) {
@@ -176,11 +176,11 @@ void update_moby_proximity_interaction(unsigned char *m) {
         if (*(short *)(d + 0xC) != 0) {
             matrix_mul_vec3(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
             FastVecAdd(tmp, tmp, p);
-            if (FastVecDist(tmp, D_0013E633 + 0xE9D) > 4.1f) {
+            if (FastVecDist(tmp, hero_globals_base + 0xE9D) > 4.1f) {
                 *(short *)(d + 0xC) = 0;
             }
         } else {
-            q = (unsigned char *)D_0013E633 + 0xE9D;
+            q = (unsigned char *)hero_globals_base + 0xE9D;
             if (vec_distance_xy(p, q) < 6.0f) {
                 matrix_mul_vec3(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
                 FastVecAdd(tmp, tmp, p);
@@ -194,8 +194,8 @@ void update_moby_proximity_interaction(unsigned char *m) {
         }
         if (*(short *)(d + 0xC) != 0) {
             int r = try_set_help_message(2, 0x53E9) != 0;
-            if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && r) {
-                if (D_0015EE84_m == 10 && *(unsigned char *)(D_0013E633 + 0x2EC1) == 1) {
+            if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && r) {
+                if (g_current_level_index_m == 10 && *(unsigned char *)(hero_globals_base + 0x2EC1) == 1) {
                     ((Moby *)m)->state = 0x2A;
                     ((Moby *)m)->flags |= 0x41;
                     StartCutscene(9);
@@ -208,17 +208,17 @@ void update_moby_proximity_interaction(unsigned char *m) {
         }
     } else {
         if (cinematic_mode != 2) {
-            q = D_0013D355 + 0x13B;
+            q = special_items_base + 0x13B;
             if (q[0x48] == 0 && gHaveMorphORay[7] != 0) {
                 StartCutscene(4);
                 q[0x48] = 1;
-            } else if ((q = D_0013D355 + 0x13B)[0x49] == 0 && D_0013DE4B[8] != 0) {
+            } else if ((q = special_items_base + 0x13B)[0x49] == 0 && level_available_base[8] != 0) {
                 StartCutscene(5);
                 q[0x49] = 1;
-            } else if ((q = D_0013D355 + 0x13B)[0x4A] == 0 && D_0013DE4B[8] != 0) {
+            } else if ((q = special_items_base + 0x13B)[0x4A] == 0 && level_available_base[8] != 0) {
                 PlayMovieEntryIfIdle(0xB);
                 q[0x4A] = 1;
-            } else if ((q = D_0013D355 + 0x13B)[0x4B] == 0 && D_0013DE4B[8] != 0) {
+            } else if ((q = special_items_base + 0x13B)[0x4B] == 0 && level_available_base[8] != 0) {
                 StartCutscene(6);
                 q[0x4B] = 1;
             } else {

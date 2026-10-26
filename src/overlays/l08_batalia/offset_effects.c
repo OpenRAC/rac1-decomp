@@ -2,17 +2,17 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern unsigned char *func_00218928(int);
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *dst, void *a, void *b);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern int func_001F9850(int);
-extern char D_L08_00167640[];
-extern unsigned char *D_L08_001B2C1C;
-extern short D_L08_00160288;
-extern short D_L08_00160284;
-extern short D_L08_00160280;
+extern unsigned char *create_part(int);
+extern void FastVecSub(void *dst, void *a, void *b);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *dst, void *a, void *b);
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int scale_ticks(int);
+extern char batalia_hero_pos[];
+extern unsigned char *batalia_part_type39_textures;
+extern short batalia_offset_effect_push_dist;
+extern short batalia_offset_effect_color;
+extern short batalia_offset_effect_size;
 
 /* Spawns an effect moby at the position of moby a. */
 unsigned char *spawn_moby_offset_effect(char *a)
@@ -28,7 +28,7 @@ unsigned char *spawn_moby_offset_effect(char *a)
         vec_scale_to_length(v, v, *(float *)&batalia_offset_effect_push_dist);
         FastVecAdd(m + 0x10, p, v);
         *(int *)(m + 4) = *(int *)&batalia_offset_effect_color;
-        m[9] = func_001FA898_r(4.0f) + 0x40;
+        m[9] = truncate_float_to_s32_r(4.0f) + 0x40;
         m[3] = 0x48;
         m[1] = 0;
         m[2] = *batalia_part_type39_textures;
@@ -41,7 +41,7 @@ unsigned char *spawn_moby_offset_effect(char *a)
     return m;
 }
 extern int func_001160D8(void);
-extern unsigned char *D_L08_001B2C2C;
+extern unsigned char *batalia_part_type43_textures;
 
 /* Spawns a coloured effect at pos with the given vector, size and lifetime. */
 unsigned char *spawn_colored_effect(int owner, void *pos, void *vec, short ticks,
@@ -59,7 +59,7 @@ unsigned char *spawn_colored_effect(int owner, void *pos, void *vec, short ticks
         q[0x16] = b;
         q[0x17] = a;
         *(int *)(m + 4) = (b << 16) | (g << 8) | r;
-        m[9] = func_001FA898_r(4.0f) + 0x40;
+        m[9] = truncate_float_to_s32_r(4.0f) + 0x40;
         m[3] = 0x48;
         m[1] = 0;
         m[8] = func_001160D8();
@@ -71,8 +71,8 @@ unsigned char *spawn_colored_effect(int owner, void *pos, void *vec, short ticks
     }
     return m;
 }
-extern float func_001FA888(int);
-extern unsigned char *D_L08_001B2CB4;
+extern float IntToFloat(int);
+extern unsigned char *batalia_part_type77_textures;
 extern void qcopy(void *, void *);
 typedef int U128 __attribute__((mode(TI)));
 // Spawns a class 0x4D particle moby at a position.
@@ -84,7 +84,7 @@ void spawn_effect_with_initial_motion(char *a, char *b, int c, float f) {
         qcopy(m + 0x10, a);
         q = (char *)m + 0x20;
         *(int *)(m + 4) = 0x50504040;
-        m[9] = func_001FA898_r(2.0f) + 0x40;
+        m[9] = truncate_float_to_s32_r(2.0f) + 0x40;
         m[3] = 0x48;
         m[1] = 0;
         m[2] = *batalia_part_type77_textures;

@@ -7,14 +7,14 @@
 #include "hero.h"
 #include "moby.h"
 
-extern char D_0013E633[];
-extern float func_001F9B88(float);
-extern void func_L00_0020BFA8(void);
-extern int func_L12_002407C0(int, int);
+extern char hero_globals_base[];
+extern float FastAbsF(float);
+extern void exit_hero_vehicle_mode_if_mode_three(void);
+extern int HeroL12_SetMoveState(int, int);
 
 /* Level 12 pickup/ability state update. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l12/ui_help_0022de30.c, FUN_L12_0022de30. */
 void update_hero_ground_material_flags(void) {
-    struct Hero *hero_for_ground_flags_update = (struct Hero *)(D_0013E633 + 0xE1D);
+    struct Hero *hero_for_ground_flags_update = (struct Hero *)(hero_globals_base + 0xE1D);
     unsigned char saved;
     int state;
     saved = hero_for_ground_flags_update->ground_sound_class;
@@ -36,47 +36,47 @@ void update_hero_ground_material_flags(void) {
         }
     }
     if (state == 0xE) {
-        struct Hero *hero_for_surface_update = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *hero_for_surface_update = (struct Hero *)(hero_globals_base + 0xE1D);
         hero_for_surface_update->base_condition = 1;
         hero_for_surface_update->water_depth = 0.2f;
         hero_for_surface_update->water_surface_z = hero_for_surface_update->ground_z.f + 0.2f;
     }
     if (state == 0) {
-        struct Hero *hero_for_water_height_check = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *hero_for_water_height_check = (struct Hero *)(hero_globals_base + 0xE1D);
         struct Hero *hero_for_base_condition_update;
         float water_surface_ground_z_delta = hero_for_water_height_check->water_surface_z - hero_for_water_height_check->ground_z.f;
         hero_for_water_height_check->water_depth = water_surface_ground_z_delta;
         if (water_surface_ground_z_delta < 0.85f && 0.25f < water_surface_ground_z_delta)
             hero_for_water_height_check->wading = 1;
-        hero_for_base_condition_update = (struct Hero *)(D_0013E633 + 0xE1D);
+        hero_for_base_condition_update = (struct Hero *)(hero_globals_base + 0xE1D);
         hero_for_base_condition_update->base_condition = 1;
     }
     if (state == 2) {
-        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         d->on_magnet_ground = 1;
     }
     if (state == 7) {
-        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         d->on_ice_ground = 1;
     }
     if (state == 0xD) {
-        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         d->selector_13 = 1;
     }
     if (state == 8) {
-        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         d->on_slip_ground = 1;
     }
     if (state == 9) {
-        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         d->unk12EE = 1;
     }
     if (state == 0xC) {
-        struct Hero *d = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         d->on_slip_ground = 1;
     }
     {
-        struct Hero *hero_for_sink_check = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *hero_for_sink_check = (struct Hero *)(hero_globals_base + 0xE1D);
         if (hero_for_sink_check->selector_13) {
             if (hero_for_sink_check->state.current != 0x7F) {
                 float water_surface_distance = FastAbsF(hero_for_sink_check->water_surface_z - (hero_for_sink_check->motion.pos.f[2] + 0.25f));
@@ -128,46 +128,46 @@ typedef struct {
     u8 pad2098[0xC];
     u8 b20A4;
 } P231ae0;
-extern P231ae0 D_0013F450_33130 __asm__("D_0013F450");
-extern f32 D_0013F670[];
-extern f32 D_0015EE60 MACRO_ADDR;
-extern f32 D_0015EE64 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
-f32 func_001F9D48(void *, void *);
+extern P231ae0 g_hero_r __asm__("D_0013F450");
+extern f32 g_hero_capsule_top[];
+extern f32 frame_scale MACRO_ADDR;
+extern f32 g_frame_scale_sq MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
+f32 vec_distance_xy(void *, void *);
 f32 func_00214D28_33130(f32, f32, f32 *) __asm__("func_00214D28");
 void func_L00_0025C918_33130(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_L00_0025C918");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/ui_help_0022de30.c, FUN_L12_00232b18. */
 void update_hero_smoothing_targets_and_values(void) {
-    switch (D_0013F450_33130.b20A4) {
+    switch (g_hero_r.b20A4) {
     case 0:
-        D_0013F450_33130.f228 = 0.8f;
-        D_0013F450_33130.f22C = 0.7f;
-        D_0013F450_33130.f230 = 0.45f;
+        g_hero_r.f228 = 0.8f;
+        g_hero_r.f22C = 0.7f;
+        g_hero_r.f230 = 0.45f;
         break;
     case 3:
-        D_0013F450_33130.f228 = 0.8f;
-        D_0013F450_33130.f22C = 0.6f;
-        D_0013F450_33130.f230 = 0.45f;
+        g_hero_r.f228 = 0.8f;
+        g_hero_r.f22C = 0.6f;
+        g_hero_r.f230 = 0.45f;
         break;
     }
-    if (D_0013F450_33130.i208C == 4) {
-        if (D_0013F450_33130.i198 > D_0013F450_33130.i420 && D_0013F450_33130.s41E == 0) D_0013F450_33130.f22C = D_0013F450_33130.f434;
-    } else if (D_0013F450_33130.i2084 == 6) {
-        D_0013F450_33130.f22C = 0.5f;
-    } else if (D_0013F450_33130.i2084 == 4) {
-        D_0013F450_33130.f228 = 0.35000002f;
-    } else if ((u32)(D_0013F450_33130.i208C - 0x11) < 2) {
-        D_0013F450_33130.f228 = 0.0f;
-        D_0013F450_33130.f22C = 0.0f;
-    } else if (D_0013F450_33130.b12E2 && D_0013F450_33130.i300) {
-        D_0013F450_33130.f228 = 0.8f;
-        D_0013F450_33130.f22C = 0.9f;
-    } else if (D_0013F450_33130.i2084 == 0x7F) {
-        D_0013F450_33130.f230 = 0.8f;
+    if (g_hero_r.i208C == 4) {
+        if (g_hero_r.i198 > g_hero_r.i420 && g_hero_r.s41E == 0) g_hero_r.f22C = g_hero_r.f434;
+    } else if (g_hero_r.i2084 == 6) {
+        g_hero_r.f22C = 0.5f;
+    } else if (g_hero_r.i2084 == 4) {
+        g_hero_r.f228 = 0.35000002f;
+    } else if ((u32)(g_hero_r.i208C - 0x11) < 2) {
+        g_hero_r.f228 = 0.0f;
+        g_hero_r.f22C = 0.0f;
+    } else if (g_hero_r.b12E2 && g_hero_r.i300) {
+        g_hero_r.f228 = 0.8f;
+        g_hero_r.f22C = 0.9f;
+    } else if (g_hero_r.i2084 == 0x7F) {
+        g_hero_r.f230 = 0.8f;
     }
-    if (!D_0013F450_33130.b257 || D_0013F450_33130.i2094 == 0x12 || D_0013F450_33130.i208C == 0x11 || D_0013F450_33130.b12E4 || vec_distance_xy(D_0013F450_33130.v210, D_0013F450_33130.v80) > D_0013F450_33130.f234 * 0.5f) {
-        f32 *q = D_0013F670;
+    if (!g_hero_r.b257 || g_hero_r.i2094 == 0x12 || g_hero_r.i208C == 0x11 || g_hero_r.b12E4 || vec_distance_xy(g_hero_r.v210, g_hero_r.v80) > g_hero_r.f234 * 0.5f) {
+        f32 *q = g_hero_capsule_top;
         P231ae0 *b = (P231ae0 *)((u8 *)q - 0x220);
         func_00214D28_33130(b->f228, frame_scale * 0.02f, q);
         func_00214D28_33130(b->f22C, frame_scale * 0.02f, q + 1);
@@ -175,28 +175,28 @@ void update_hero_smoothing_targets_and_values(void) {
     }
 }
 typedef int Q __attribute__((mode(TI)));
-extern u8 D_L12_00174360[];
-extern s32 D_0015EE84 MACRO_ADDR;
-void func_001F9BC0(void *);
-void func_L00_00212D70(void *, void *, s32, f32, f32);
-s32 func_L00_001EFFF0(void *, void *, s32, s32, s32);
-s32 func_L00_001F3988(void);
-s32 func_L00_001F3958(void);
-f32 func_00214440(void *, void *);
-s32 func_L00_0025F410(s32);
-u8 *func_L00_0025D390(s32);
-f32 func_001F9D10(void *, void *);
-void func_001252C0(void *, void *);
-f32 func_L00_002345B0(void *);
-f32 func_L00_001FF860(f32, f32);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001F9C78(void *, void *);
-void func_001F9C30(void *, void *, f32);
-void func_L00_001FF4B0(void *, void *, f32);
-void func_L00_002167C8(void *, void *);
-void func_L00_00233E48(void *, f32, f32, f32);
-f32 func_001F9B88(f32);
-extern Hero D_0013F450;
+extern u8 hoven_coll_hit_point[];
+extern s32 g_current_level_index MACRO_ADDR;
+void clear_u64_value(void *);
+void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
+s32 coll_line(void *, void *, s32, s32, s32);
+s32 coll_sound_class(void);
+s32 CollType(void);
+f32 resolve_camera_surface_height(void *, void *);
+s32 is_moby_in_class_range_500_to_540(s32);
+u8 *GetFlaggedPvarWord(s32);
+f32 FastVecDist(void *, void *);
+void sceVu0Normalize(void *, void *);
+f32 compute_gravity_relative_vector_inclination(void *);
+f32 fast_atan2(f32, f32);
+void FastVecSub(void *, void *, void *);
+f32 FastVecDot(void *, void *);
+void FastVecScale(void *, void *, f32);
+void vec_scale_to_length(void *, void *, f32);
+void compute_rotated_vector_angles(void *, void *);
+void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
+f32 FastAbsF(f32);
+extern Hero g_hero;
 typedef struct {
     u8 pad0[0x18];
     s32 i18;
@@ -206,7 +206,7 @@ typedef struct {
     f32 f40;
     f32 f44;
 } HS;
-extern HS D_L12_00174340;
+extern HS hoven_coll_hit;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/ui_help_0022de30.c, FUN_L12_00233e80. */
 void Hero_ProbeGround(void) {
@@ -251,7 +251,7 @@ void Hero_ProbeGround(void) {
     g_hero.ground_sound_class = collision_sound_class;
     g_hero.ground_type = CollType();
     if (g_hero.ground_type == 0) {
-        g_hero.water_surface_z = resolve_camera_surface_height(D_L12_00174360, (u8 *)&g_hero.water_surface_normal);
+        g_hero.water_surface_z = resolve_camera_surface_height(hoven_coll_hit_point, (u8 *)&g_hero.water_surface_normal);
         if (g_hero.motion.pos.f[2] < g_hero.water_surface_z && g_hero.in_water_frames <= 0) {
             g_hero.in_water_frames = 1;
         }
@@ -285,7 +285,7 @@ void Hero_ProbeGround(void) {
         g_hero.ground_z.f = hoven_coll_hit.v20.f[2];
         g_hero.ground_distance = FastVecDist((u8 *)&g_hero.motion.pos, (u8 *)&g_hero.ground_point);
         g_hero.ground_moby = (Moby *)hoven_coll_hit.i18;
-        func_001252C0(&g_hero.ground_normal, (u8 *)&hoven_coll_hit.f40);
+        sceVu0Normalize(&g_hero.ground_normal, (u8 *)&hoven_coll_hit.f40);
         g_hero.ground_slope.f = compute_gravity_relative_vector_inclination((u8 *)&hoven_coll_hit.f40);
         g_hero.downhill_yaw = fast_atan2(hoven_coll_hit.f40, hoven_coll_hit.f44);
         FastVecSub(&ground_geometry_scratch, (u8 *)&g_hero.ground_point, (u8 *)&g_hero.motion.pos);
@@ -359,7 +359,7 @@ d1:
             if (0.4f < FastAbsF(f)) {
                 g_hero.unk2C0.f[i] = 0.0f;
             }
-            func_001252C0(&normalized_hit_normal, (u8 *)&hoven_coll_hit.f40);
+            sceVu0Normalize(&normalized_hit_normal, (u8 *)&hoven_coll_hit.f40);
             compute_rotated_vector_angles(&normalized_hit_normal, &hit_surface_angles);
             if (-0.78539819f < hit_surface_angles.f[1] && hit_surface_angles.f[1] < 0.78539819f) {
                 g_hero.unk2C8.f[i] = hit_surface_angles.f[1];
@@ -392,124 +392,124 @@ typedef struct { char p0[0x60]; float f60[4]; char p70[0x30]; float fA0[4]; } Bo
 typedef struct { char p0[0x58]; unsigned short f58; unsigned short f5A; int f5C; char p60[0x30]; unsigned short f90; unsigned short f92; int f94; } S141948;
 typedef struct { char p0[0x158]; float f158; char p15C[4]; float f160; char p164[4]; int f168; char p16C[0x1E4]; float f350[4]; } Cam;
 typedef struct { char p0[8]; float f8; float fC; char p10[8]; float f18; } S17BEB8;
-extern PadState D_0013CA40;
-extern char D_0013A5E0[];
-extern unsigned char D_0013D5C8[];
-extern char D_0013E650[];
-extern S141948 D_00141948;
-extern float D_0015EE60 MACRO_ADDR;
-extern float D_0015EE64 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern int D_0015EFA4 MACRO_ADDR;
-extern int D_L12_0015F6B0 MACRO_ADDR;
-extern short D_L12_0015F768;
-extern short D_L12_0015F76C;
-extern unsigned char *D_L12_00161350 MACRO_ADDR;
-extern int D_L12_00161358 MACRO_ADDR;
-extern Cam D_L12_00167180;
-extern float D_L12_001672D8;
-extern Moby *D_L12_00178400[];
-extern Bone D_L12_0017AB80[];
-extern Rec2C D_L12_0017C128[];
-extern S17BEB8 D_L12_0017C2B8;
-extern float D_L12_0017C4C0[];
-extern float D_L12_001C43B0[];
-extern void func_L00_00209BB8(int, int);
-extern void func_L00_00213970(float, float);
-extern void func_L00_002178A0(float, float);
-extern void func_L00_00211F80(float, int);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_L00_002124E8(int, float, float, float);
-extern int func_001F9908(int *);
-extern int func_001F9850(int);
-extern int func_L00_0022A268(void);
-extern void func_L00_00212550(void);
-extern void func_L00_00232C10(int, int, float);
-extern int func_L12_002284A8(int);
-extern float func_L00_00209598(float, float, float, float);
-extern void func_L00_00212740(float, float);
-extern void func_L00_00216E98(float);
-extern void func_L00_00233D50(float *, float *, float);
-extern void func_L01_00232F90(int);
-extern void func_L00_00212878(void);
-extern unsigned char *func_0020D348(int);
-extern void func_L00_00251E30(void *);
-extern int func_0022ED80(int, int, int);
-extern int func_001FA898(float);
-extern float func_001F9CE8(void *);
-extern int func_L00_001FF5B0(float, void *, void *);
-extern void func_L00_00228510(void);
-extern void func_L00_002175D0(int, int, int);
-extern void func_L00_0028EBF0(int);
-extern int func_001F9938(void *);
-extern void func_L00_0020A0B8(int, int);
-extern void func_L00_0020A320(int, int, int);
-extern void func_L00_002A5158(void *, int, int, float, float, float, float);
-extern float func_L00_0025CCF0(void *, float, void *, int, float, float, float);
-extern float func_001FA790(float, float);
-extern void func_L00_00250800(void *, int, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_L00_0026FF20(void *, void *, float, float);
-extern int func_002140B0(int);
-extern int func_L00_00258BC8(int, int);
-extern float func_002140F8(float, float);
-extern void func_L00_00263D68(void *, void *, float, float, float);
-extern float func_001FA748(float, float);
-extern void func_00215C00(void *, float, float, float);
-extern float func_L00_00209690(float *, int);
-extern float func_001F9CB8(void *);
-extern float func_00214D28(float *, float, float);
-extern float func_001F9F90(float);
-extern void func_L00_0020A858(float, float);
-extern void func_L00_00209EC0(int, int);
-extern void func_L00_00209CB0(int, int);
-extern float func_001F9FA8(float);
-extern void func_L00_002607A8(void *, float);
-extern int func_L00_0025A5D8(float *, float *, float, float, float);
-extern float func_L00_0025CC58(float *, int, float, float);
-extern float func_001F9D48(void *, void *);
-extern float func_001FA850(float, float);
-extern void func_001FA218(void *, void *);
-extern void func_001FA4A0(void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern float func_L00_002342F8(float *);
-extern float func_L00_0025C918(float *, float *, float, float, float, float);
-extern float func_L00_00213A08(void *);
-extern void func_L00_00234420(float *, float *, float);
-extern void func_L00_002343A0(float *, float *, float);
-extern void func_L00_0025A8C0(void *, void *, int, float, void *);
-extern int func_L00_001F2BE8(float, void *, int, void *, void *);
-extern void func_L00_00215628(float, float, float);
-extern void func_L00_00233F68(float *, float *, float);
-extern int func_L00_00211F28(float);
-extern float func_L00_0025CB90(int, float, float);
-extern void func_L00_00212790(float);
-extern void func_L00_00263578(int, void *);
-extern void func_L00_002635A0(void *, int, int);
-extern void func_L00_00263680(void *, int);
-extern void func_L00_00217AF0(int, int);
-extern void func_L00_002125F0(void);
-extern void func_L01_0022D688(void);
-extern void func_L00_001FF500(void *, void *, float);
-extern void func_L00_00209850(float, float, float);
-extern void func_L00_00234150(float *, float *);
-extern int func_L00_0020DB30(int);
-extern void func_L00_00217570(int, int);
-extern void func_L00_00233F88(void *, void *, float);
-extern void func_L00_00234090(float *, float *, float);
-extern void func_L00_00233EE0(float *, float, float, float);
-extern void func_L00_0025AC00(void *, int, int, void *, void *, float);
-extern void func_L00_0020BC30(void);
-extern void func_L00_00217DE0(void);
-extern void func_L00_002122A0(void);
-extern void func_L00_00215A90(void);
-extern void func_L00_00216648(void);
-extern void func_L00_002147C0(void);
-extern void func_L00_00214520(float);
-extern void func_L12_00236270(void);
+extern PadState g_controller_state;
+extern char pad_globals_base[];
+extern unsigned char item_available[];
+extern char voice_pool[];
+extern S141948 usage_stats;
+extern float frame_scale MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern int gameplay_event_frame_count MACRO_ADDR;
+extern int hoven_frame_count MACRO_ADDR;
+extern short hoven_look_stat_timer;
+extern short hoven_look_stat_count;
+extern unsigned char *hoven_water_patches MACRO_ADDR;
+extern int hoven_water_patch_count MACRO_ADDR;
+extern Cam hoven_player_camera;
+extern float hoven_camera_yaw;
+extern Moby *hoven_nearby_mobys[];
+extern Bone hoven_hero_bones[];
+extern Rec2C hoven_attack_records[];
+extern S17BEB8 D_L12_X_f;
+extern float hoven_hero_swim_frame_speeds[];
+extern float hoven_hero_ledge_shimmy_frame_speeds[];
+extern void emit_hero_periodic_surface_effect(int, int);
+extern void build_scaled_hero_move_impulse(float, float);
+extern void stop_hero_motion_without_forward_support(float, float);
+extern void stick_target(float, int);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void turn_to(int, float, float, float);
+extern int fast_dec_timer(int *);
+extern int scale_ticks(int);
+extern int try_start_hero_item_idle_animation(void);
+extern void turn_hero_toward_move_direction_for_item(void);
+extern void set_hero_animation(int, int, float);
+extern int Hero_GetGadgetAnimId(int);
+extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
+extern void speed_step(float, float);
+extern void reduce_and_apply_hero_planar_velocity_addend(float);
+extern void HeroMoveDownAlongNormal(float *, float *, float);
+extern void clip_hero_horizontal_velocity(int);
+extern void correct_hero_airborne_wall_velocity(void);
+extern unsigned char *CreateMoby(int);
+extern void moby_build_matrix(void *);
+extern int Moby_PlaySound(int, int, int);
+extern int truncate_float_to_s32(float);
+extern float vec_length_xy(void *);
+extern int clamp_vec_length_xy(float, void *, void *);
+extern void update_hero_water_height_and_bobbing(void);
+extern void release_voice_slot_cf(int, int, int);
+extern void Sound_StopSlot(int);
+extern int FastDecTimer(void *);
+extern void emit_hero_randomized_motion_effects(int, int);
+extern void emit_hero_surface_effect_burst(int, int, int);
+extern void RippleDisturb(void *, int, int, float, float, float, float);
+extern float SpringAngle(void *, float, void *, int, float, float, float);
+extern float FastSubRots(float, float);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern int PartType34Spawn(void *, void *, float, float);
+extern int random_integer_below(int);
+extern int rand_range(int, int);
+extern float random_float_between(float, float);
+extern void fast_add_rotations_cf(void *, void *, float, float, float);
+extern float FastAddRots(float, float);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern float vector_length_xyz_cf(float *, int);
+extern float FastVecLength(void *);
+extern float ApproachValue(float *, float, float);
+extern float FastCos(float);
+extern void set_first_hero_easing_parameters(float, float);
+extern void emit_hero_periodic_surface_particles(int, int);
+extern void fast_sin_cf(int, int);
+extern float FastSin(float);
+extern void ClampVectorLength(void *, float);
+extern int solve_quadratic_equation(float *, float *, float, float, float);
+extern float step_angle_toward_target(float *, int, float, float);
+extern float vec_distance_xy(void *, void *);
+extern float FastDiffRots(float, float);
+extern void euler_to_matrix(void *, void *);
+extern void matrix_from_basis_rows(void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern float gravity_z(float *);
+extern float Spring(float *, float *, float, float, float, float);
+extern float forward_component(void *);
+extern void set_gravity_relative_vector_length_xy(float *, float *, float);
+extern void gravity_set_z(float *, float *, float);
+extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+extern int coll_sphere_mobys(float, void *, int, void *, void *);
+extern void update_hero_target_heading(float, float, float);
+extern void offset_hero_position_against_gravity(float *, float *, float);
+extern int test_hero_animation_frame_window(float);
+extern float compute_directed_angle_delta(int, float, float);
+extern void set_planar_vel(float);
+extern void initialize_moby_transform_history(int, void *);
+extern void create_moby_transform_history_entry(void *, int, int);
+extern void update_moby_transform_history(void *, int);
+extern void emit_filtered_entry_sparkles(int, int);
+extern void turn_hero_toward_move_direction_with_stick_scale(void);
+extern void update_hero_ledge_probe(void);
+extern void vec_set_length_xy(void *, void *, float);
+extern void rotate_hero_about_fixed_local_pivot(float, float, float);
+extern void gravity_flatten(float *, float *);
+extern int hero_slot_item_id(int);
+extern void allocate_hero_voice_for_entry(int, int);
+extern void add_hero_forward_offset(void *, void *, float);
+extern void HeroOffsetAlongViewZ(float *, float *, float);
+extern void transform_hero_local_offset_to_world(float *, float, float, float);
+extern void PostHitMessage(void *, int, int, void *, void *, float);
+extern void probe_hero_airborne_wall_contact(void);
+extern void launch_hero_wrench(void);
+extern void update_hero_target_speed_from_stick(void);
+extern void adjust_hero_pose_targets_from_motion(void);
+extern void update_hero_lean_and_sway_parameters(void);
+extern void hero_integrate_velocity(void);
+extern void steer_hero_planar_velocity(float);
+extern void Hero_UpdateHopMovement(void);
 
-extern void func_L00_00216F58(void);
+extern void update_hero_planar_movement_velocity(void);
 
 /* Hero state machine: per-frame movement and physics for the current hero state (level 12 build). */
 void Hero_UpdateStatePhysicsL12(void) {
@@ -1627,7 +1627,7 @@ void Hero_UpdateStatePhysicsL12(void) {
 
                     a = FastAddRots(g_hero.motion.rot.f[2], 3.1415927f);
                     s = g_frame_time * 2.5f;
-                    if (*(int *)(D_0013A5E0 + 0x2600) & 0xA) {
+                    if (*(int *)(pad_globals_base + 0x2600) & 0xA) {
                         s = g_frame_time * 3.0f;
                     }
                     g_hero.motion.velocity.f[0] += FastCos(a) * s;
@@ -2199,7 +2199,7 @@ void Hero_UpdateStatePhysicsL12(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L12_001672D8;
+                g_hero.motion.move_yaw = hoven_camera_yaw;
                 turn_to(0, g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 g_hero.motion.move_yaw = keep;
             }
@@ -2346,7 +2346,7 @@ void Hero_UpdateStatePhysicsL12(void) {
                         g_hero.ground_speed = 0.0f;
                     }
                     if (g_hero.rail_land_frames != 0) {
-                        if (*(int *)(D_0013A5E0 + 0x2634) != 0) {
+                        if (*(int *)(pad_globals_base + 0x2634) != 0) {
                             if (g_hero.on_flagged_ground_moby != 0) {
                                 g_hero.ground_speed = 0.0f;
                             }

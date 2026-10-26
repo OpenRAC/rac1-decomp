@@ -5,17 +5,17 @@
 #include "hero.h"
 #include "vector.h"
 
-extern char D_0013E633[];
-extern int D_0015EE84 MACRO_ADDR;
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern int func_L00_001F3958(void);
-extern void func_L16_0021EA88(int, int);
-extern float func_001F9B88(float);
-extern void func_L00_0020BFA8(void);
+extern char hero_globals_base[];
+extern int g_current_level_index MACRO_ADDR;
+extern int coll_sphere(float, void *, int, void *);
+extern int CollType(void);
+extern void Hero_TryMoveState(int, int);
+extern float FastAbsF(float);
+extern void exit_hero_vehicle_mode_if_mode_three(void);
 
 /* Per-frame update of the pickup/hit state flags from the state code. */
 void HeroL16_UpdateStateFlags(void) {
-    struct Hero *hero_data = (struct Hero *)(D_0013E633 + 0xE1D);
+    struct Hero *hero_data = (struct Hero *)(hero_globals_base + 0xE1D);
     int keep = hero_data->ground_sound_class;
     int saved_ground_type = hero_data->ground_type;
     int level_index;
@@ -37,19 +37,19 @@ void HeroL16_UpdateStateFlags(void) {
         }
     }
     if (saved_ground_type == 0xE) {
-        struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
         q->base_condition = 1;
         q->water_depth = 0.2f;
         q->water_surface_z = q->ground_z.f + 0.2f;
     }
     if (saved_ground_type == 0) {
-        struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
         float water_depth = q->water_surface_z - q->ground_z.f;
         q->water_depth = water_depth;
         if (water_depth < 0.85f && 0.25f < water_depth)
             q->wading = 1;
         {
-            struct Hero *flag = (struct Hero *)(D_0013E633 + 0xE1D);
+            struct Hero *flag = (struct Hero *)(hero_globals_base + 0xE1D);
             flag->base_condition = 1;
         }
         level_index = g_current_level_index;
@@ -57,7 +57,7 @@ void HeroL16_UpdateStateFlags(void) {
         level_index = g_current_level_index;
     }
     if (level_index == 0xD) {
-        struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
         if (q->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
             if (coll_sphere(q->capsule_radius + 0.03f, &q->motion.body_center, 2, 0)) {
                 if (CollType() == 0xB) {
@@ -68,43 +68,43 @@ void HeroL16_UpdateStateFlags(void) {
         }
     }
     if (saved_ground_type == 0xB) {
-        struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
         q->selector_11 = 1;
     }
     if (saved_ground_type == 0x5) {
-        struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
         q->selector_5 = 1;
     }
     if (saved_ground_type == 0x6) {
-        struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
         q->unk12E9 = 1;
     }
     if (saved_ground_type == 0x2) {
-        struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
         q->on_magnet_ground = 1;
     }
     if (saved_ground_type == 0x4) {
-        struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
         q->selector_4 = 1;
     }
     if (saved_ground_type == 0xD) {
-        struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
         q->selector_13 = 1;
     }
     if (saved_ground_type == 0x8) {
-        struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
         q->on_slip_ground = 1;
     }
     if (saved_ground_type == 0x9) {
-        struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
         q->unk12EE = 1;
     }
     if (saved_ground_type == 0xC) {
-        struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
         q->on_slip_ground = 1;
     }
     {
-        struct Hero *q = (struct Hero *)(D_0013E633 + 0xE1D);
+        struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
         struct Hero *h;
         if (q->selector_4 != 0 && q->grounded_frames != 0) {
             int k = q->state.control_mode;
@@ -113,7 +113,7 @@ void HeroL16_UpdateStateFlags(void) {
                 return;
             }
         }
-        h = (struct Hero *)(D_0013E633 + 0xE1D);
+        h = (struct Hero *)(hero_globals_base + 0xE1D);
         if (h->selector_13 != 0 && h->state.current != HERO_STATE_SINK) {
             if (FastAbsF(h->water_surface_z - (h->motion.pos.f[2] + 0.25f)) < 1.0f) {
                 if (h->water_surface_z - h->motion.pos.f[2] > 0.0f) {
@@ -126,14 +126,14 @@ void HeroL16_UpdateStateFlags(void) {
         }
     }
 }
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_002607A8(void *a, float x);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void ClampVectorLength(void *a, float x);
 
 // Builds a vector from two global blocks, transforms it, and passes it on with a summed float.
 void compose_and_limit_hero_velocity(void) {
     char tmp[16];
-    char *p = D_0013E633 + 0x158D;
+    char *p = hero_globals_base + 0x158D;
     char *q;
     qcopy(p, p - 0x670);
     q = p - 0x770;
@@ -143,28 +143,28 @@ void compose_and_limit_hero_velocity(void) {
     ClampVectorLength(p - 0x690, *(float *)(q + 0x85C) + *(float *)(q + 0x868));
 }
 typedef int Q __attribute__((mode(TI)));
-extern u8 D_L16_001742E0[];
-extern s32 D_0015EE84 MACRO_ADDR;
-void func_001F9BC0(void *);
-void func_L00_00212D70(void *, void *, s32, f32, f32);
-s32 func_L00_001EFFF0(void *, void *, s32, s32, s32);
-s32 func_L00_001F3988(void);
-s32 func_L00_001F3958(void);
-f32 func_00214440(void *, void *);
-s32 func_L00_0025F410(s32);
-u8 *func_L00_0025D390(s32);
-f32 func_001F9D10(void *, void *);
-void func_001252C0(void *, void *);
-f32 func_L00_002345B0(void *);
-f32 func_L00_001FF860(f32, f32);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001F9C78(void *, void *);
-void func_001F9C30(void *, void *, f32);
-void func_L00_001FF4B0(void *, void *, f32);
-void func_L00_002167C8(void *, void *);
-void func_L00_00233E48(void *, f32, f32, f32);
+extern u8 kalebo3_coll_hit_point[];
+extern s32 g_current_level_index MACRO_ADDR;
+void clear_u64_value(void *);
+void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
+s32 coll_line(void *, void *, s32, s32, s32);
+s32 coll_sound_class(void);
+s32 CollType(void);
+f32 resolve_camera_surface_height(void *, void *);
+s32 is_moby_in_class_range_500_to_540(s32);
+u8 *GetFlaggedPvarWord(s32);
+f32 FastVecDist(void *, void *);
+void sceVu0Normalize(void *, void *);
+f32 compute_gravity_relative_vector_inclination(void *);
+f32 fast_atan2(f32, f32);
+void FastVecSub(void *, void *, void *);
+f32 FastVecDot(void *, void *);
+void FastVecScale(void *, void *, f32);
+void vec_scale_to_length(void *, void *, f32);
+void compute_rotated_vector_angles(void *, void *);
+void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
 void func_L00_00233D50_105C8(void *, void *, f32) __asm__("func_L00_00233D50");
-f32 func_001F9B88(f32);
+f32 FastAbsF(f32);
 typedef struct {
     u8 pad88[0x88];
     f32 xF88;
@@ -209,7 +209,7 @@ typedef struct {
     u8 pad20b3[0x23];
     u8 xB20b3;
 } GS;
-extern GS D_0013F450;
+extern GS g_hero;
 typedef struct {
     u8 pad0[0x18];
     s32 i18;
@@ -219,7 +219,7 @@ typedef struct {
     f32 f40;
     f32 f44;
 } HS;
-extern HS D_L16_001742C0;
+extern HS kalebo3_coll_hit;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l16/ui_help_002097a0.c, FUN_L16_0020ffb0. */
 void HeroL16_UpdateGroundCollision(void) {
@@ -264,7 +264,7 @@ void HeroL16_UpdateGroundCollision(void) {
     g_hero.xB12ed = r;
     g_hero.xH12e0 = CollType();
     if (g_hero.xH12e0 == 0) {
-        g_hero.xF2f0 = resolve_camera_surface_height(D_L16_001742E0, (u8 *)&g_hero + 0x280);
+        g_hero.xF2f0 = resolve_camera_surface_height(kalebo3_coll_hit_point, (u8 *)&g_hero + 0x280);
         if (g_hero.xF88 < g_hero.xF2f0 && g_hero.xI2f8 <= 0) {
             g_hero.xI2f8 = 1;
         }
@@ -305,7 +305,7 @@ void HeroL16_UpdateGroundCollision(void) {
         g_hero.u2d8.F = kalebo3_coll_hit.v20.f[2];
         g_hero.xF2dc = FastVecDist((u8 *)&g_hero + 0x80, ((u8 *)&g_hero + 0x2A0));
         g_hero.xI2fc = kalebo3_coll_hit.i18;
-        func_001252C0((u8 *)&g_hero + 0x270, (u8 *)&kalebo3_coll_hit.f40);
+        sceVu0Normalize((u8 *)&g_hero + 0x270, (u8 *)&kalebo3_coll_hit.f40);
         g_hero.u2e0.F = compute_gravity_relative_vector_inclination((u8 *)&kalebo3_coll_hit.f40);
         g_hero.xF2ec = fast_atan2(kalebo3_coll_hit.f40, kalebo3_coll_hit.f44);
         FastVecSub(&v20, ((u8 *)&g_hero + 0x2A0), (u8 *)&g_hero + 0x80);
@@ -379,7 +379,7 @@ d1:
             if (0.4f < FastAbsF(f)) {
                 g_hero.a2c0.f[i] = 0.0f;
             }
-            func_001252C0(&v60, (u8 *)&kalebo3_coll_hit.f40);
+            sceVu0Normalize(&v60, (u8 *)&kalebo3_coll_hit.f40);
             compute_rotated_vector_angles(&v60, &v50);
             if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
                 g_hero.a2c8.f[i] = v50.f[1];
@@ -394,17 +394,17 @@ d1:
         }
     }
 }
-extern float D_0015EE60 MACRO_ADDR;
-extern char D_L16_001742F0[];
-extern void func_001F9BC0(void *);
-extern void func_L00_00235040(void);
-extern void func_L00_00233EE0(float *, float, float, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_00234090(float *, float *, float);
-extern void func_L00_00233D50(float *, float *, float);
-extern int func_L00_001F1D20(float, float, void *, int, void *);
-extern int func_L00_001F34F0(float, void *);
-extern float func_001F9CB8(void *);
+extern float frame_scale MACRO_ADDR;
+extern char kalebo3_coll_resolved_pos[];
+extern void clear_u64_value(void *);
+extern void Hero_ConstrainToPath(void);
+extern void transform_hero_local_offset_to_world(float *, float, float, float);
+extern void FastVecSub(void *, void *, void *);
+extern void HeroOffsetAlongViewZ(float *, float *, float);
+extern void HeroMoveDownAlongNormal(float *, float *, float);
+extern int coll_capsule(float, float, void *, int, void *);
+extern int coll_sphere_hero_groups(float, void *);
+extern float FastVecLength(void *);
 
 /* Pulls the camera position toward a desired offset from the player; returns 1 when settled, -1 when clamped. */
 extern Hero hero __asm__("D_0013F450");
@@ -476,7 +476,7 @@ int HeroL16_ApplyPositionOffset(int mode) {
                 if (collision_result == 0) break;
             }
         }
-        collision_output = (Vec4 *)D_L16_001742F0;
+        collision_output = (Vec4 *)kalebo3_coll_resolved_pos;
         qcopy(&hero.motion.pos, collision_output);
         qcopy(&hero.wall_contact_normal, collision_output + 1);
         qcopy(&hero.wall_contact_point, collision_output - 1);
@@ -510,19 +510,19 @@ int HeroL16_ApplyPositionOffset(int mode) {
     }
     return 1;
 }
-extern void func_L00_00234800(int, void *, void *);
-extern float func_L00_00234250(float *v);
-extern float func_L00_002342F8(float *);
-extern void func_L00_002343A0(float *, float *, float);
-extern float func_001F9CE8(void *);
-extern void func_L00_001FF500(void *, void *, float);
-extern void func_L00_00213E60(void);
-extern void func_L00_002136A8(void);
-extern void func_L00_00234150(float *, float *);
-extern void func_L00_00234420(float *, float *, float);
-extern float func_L00_00213A08(void *);
-extern float D_0015EE6C MACRO_ADDR;
-extern char *D_L16_001742D8;
+extern void update_hero_attachment(int, void *, void *);
+extern float gravity_length_xy(float *v);
+extern float gravity_z(float *);
+extern void gravity_set_z(float *, float *, float);
+extern float vec_length_xy(void *);
+extern void vec_set_length_xy(void *, void *, float);
+extern void resolve_hero_collisions_with_history(void);
+extern void correct_hero_ground_penetration(void);
+extern void gravity_flatten(float *, float *);
+extern void set_gravity_relative_vector_length_xy(float *, float *, float);
+extern float forward_component(void *);
+extern float g_frame_time MACRO_ADDR;
+extern char *kalebo3_coll_hit_moby;
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void integrate_hero_motion(void) {
@@ -532,7 +532,7 @@ void integrate_hero_motion(void) {
     Hero *contact_player;
     Hero *motion_player;
     Hero *cap_player;
-    float *position = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos;
+    float *position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos;
     Hero *player;
     float *delta;
     float *vertical;
@@ -555,12 +555,12 @@ void integrate_hero_motion(void) {
         if (!player->collision_off_frames) {
             float length;
 
-            position = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity;
+            position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
             length = gravity_length_xy(position);
             limit = player->capsule_radius - 0.02f;
             if (limit < length) vec_scale_to_length(position, position, limit);
         }
-        limited_velocity = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity;
+        limited_velocity = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
         magnitude = gravity_z(limited_velocity);
         limit = -*(float *)((char *)limited_velocity + 0x1FC); /* the player's gravity_limit */
         if (magnitude < limit) {
@@ -573,7 +573,7 @@ void integrate_hero_motion(void) {
             float length;
             float limit;
 
-            position = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity;
+            position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
             length = vec_length_xy(position);
             limit = player->capsule_radius - 0.02f;
             if (limit < length) vec_set_length_xy(position, position, limit);
@@ -582,19 +582,19 @@ void integrate_hero_motion(void) {
         float limit = 0.6f;
 
         if (!player->collision_off_frames) {
-            float *limited_velocity = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity;
+            float *limited_velocity = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
 
             if (FastVecLength(limited_velocity) > limit) vec_scale_to_length(limited_velocity, limited_velocity, limit);
         }
     } else if (player->state.control_mode == 22) {
         qcopy(work.f, position);
         work.f[2] += 0.5f;
-        FastVecAdd(plane.f, work.f, (char *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity);
+        FastVecAdd(plane.f, work.f, (char *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity);
         if (coll_line(position, plane.f, 2, 0, 0)) {
-            char *hit = D_L16_001742D8;
+            char *hit = kalebo3_coll_hit_moby;
 
             if (!hit || *(short *)(hit + 0xA6) == 0x1F6 || *(short *)(hit + 0xA6) == 0x59F) {
-                player = (Hero *)(D_0013E633 + 0xE1D);
+                player = (Hero *)(hero_globals_base + 0xE1D);
                 if (!player->collision_off_frames) {
                     float length;
                     float limit;
@@ -612,37 +612,37 @@ void integrate_hero_motion(void) {
                 float length;
                 float limit;
 
-                position = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity;
+                position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
                 length = FastVecLength(position);
                 limit = player->capsule_radius - 0.02f;
                 if (limit < length) vec_scale_to_length(position, position, limit);
             }
         }
     }
-    position = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos;
-    FastVecAdd(position, position, (char *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity);
-    extra_step = (float *)&((Hero *)(D_0013E633 + 0xE1D))->move_impulse;
+    position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos;
+    FastVecAdd(position, position, (char *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity);
+    extra_step = (float *)&((Hero *)(hero_globals_base + 0xE1D))->move_impulse;
     FastVecAdd(position, position, extra_step);
     clear_u64_value(extra_step);
-    contact_player = (Hero *)(D_0013E633 + 0xE1D);
+    contact_player = (Hero *)(hero_globals_base + 0xE1D);
     contact_player->wall_hit = 0;
     contact_player->coll_hit_moby = 0;
-    if (FastVecLength((char *)&((Hero *)(D_0013E633 + 0xE1D))->motion.platform_delta) <= 0.0001f) {
+    if (FastVecLength((char *)&((Hero *)(hero_globals_base + 0xE1D))->motion.platform_delta) <= 0.0001f) {
         resolve_hero_collisions_with_history();
         HeroL16_UpdateGroundCollision();
-        FastVecSub((char *)&((Hero *)(D_0013E633 + 0xE1D))->motion.displacement, position, previous.f);
+        FastVecSub((char *)&((Hero *)(hero_globals_base + 0xE1D))->motion.displacement, position, previous.f);
         correct_hero_ground_penetration();
     } else {
         HeroL16_UpdateGroundCollision();
     }
-    delta = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.resolved_velocity;
-    new_position = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.pos;
-    horizontal = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.resolved_velocity_xy;
+    delta = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.resolved_velocity;
+    new_position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos;
+    horizontal = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.resolved_velocity_xy;
     FastVecSub(delta, new_position, previous.f);
     qcopy(horizontal, delta);
-    vertical = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.resolved_velocity_z;
+    vertical = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.resolved_velocity_z;
     qcopy(vertical, delta);
-    velocity = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.velocity;
+    velocity = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
     vec_scale_to_length(delta, delta, 1.0f);
     magnitude = FastVecDot(delta, velocity);
     if (magnitude < 0.0f) magnitude = 0.0f;
@@ -661,15 +661,15 @@ void integrate_hero_motion(void) {
     magnitude = FastVecDot(vertical, plane.f);
     if (magnitude < 0.0f) magnitude = 0.0f;
     vec_scale_to_length(vertical, plane.f, magnitude);
-    motion_player = (Hero *)(D_0013E633 + 0xE1D);
+    motion_player = (Hero *)(hero_globals_base + 0xE1D);
     motion_player->motion.speed_xy = FastVecLength(delta);
     motion_player->motion.flat_speed = vec_length_xy(delta);
     work.q = *(Q *)delta;
     motion_player->motion.forward_speed = forward_component(work.f);
     if (motion_player->motion.forward_speed < 0.0f) motion_player->motion.forward_speed = 0.0f;
     qcopy(work.f, new_position);
-    contact = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.platform_delta;
-    external = (float *)&((Hero *)(D_0013E633 + 0xE1D))->motion.displacement;
+    contact = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.platform_delta;
+    external = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.displacement;
     if (FastVecLength(contact) > 0.0001f) {
         float saved;
 
@@ -692,7 +692,7 @@ void integrate_hero_motion(void) {
         if (motion_player->motion.move_slope > 0.5f) motion_player->motion.move_slope = 0.5f;
         else if (motion_player->motion.move_slope < -0.5f) motion_player->motion.move_slope = -0.5f;
     }
-    cap_player = (Hero *)(D_0013E633 + 0xE1D);
+    cap_player = (Hero *)(hero_globals_base + 0xE1D);
     magnitude = g_frame_time * 52.0f;
     if (magnitude < cap_player->motion.speed_xy) {
         FastVecScale(cap_player->motion.displacement.f, cap_player->motion.displacement.f, magnitude / cap_player->motion.speed_xy);
