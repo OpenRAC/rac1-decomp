@@ -3247,6 +3247,7 @@ extern int CollType_r2(void) __asm__("func_L00_001F3958");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern float fast_atan2_r3(float, float) __asm__("func_L00_001FF860");
 extern Obj_20C568 *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
+extern Obj_20C568 *func_L00_00261448(char *);
 extern int coll_capsule_r(float, float, void *, int, int) __asm__("func_L00_001F1D20");
 extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
 extern float FastDiffRots_r2(float, float) __asm__("func_001FA850");
@@ -3315,7 +3316,7 @@ void check_ledge_grab(void) {
     if (((Hit_20C568 *)coll_hit_result_r)->m18 != 0) {
         ok = 0;
         a = GetFlaggedPvarWord_r(((Hit_20C568 *)coll_hit_result_r)->m18);
-        b = GetFlaggedPvarWord_r(((Hit_20C568 *)coll_hit_result_r)->m18);
+        b = func_L00_00261448(((Hit_20C568 *)coll_hit_result_r)->m18);
         if (a != 0 && (a->h1E & 1)) {
             ok = 1;
         } else if (b != 0) {

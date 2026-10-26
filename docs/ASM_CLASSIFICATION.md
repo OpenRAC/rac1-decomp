@@ -133,10 +133,10 @@ two hand-listed ones as "hand-written in retail" for the same reasons. The other
 NTSC-U counterpart: func_L00_0024EC20 and func_L01_00262BB0 are `teq $0, $0, 0`
 trap stubs.
 
-Two marked functions are left out for now: func_L00_002569F8 and func_L00_00257848, which
-together are the level programs' copy of MobyProc (5,152 bytes, as `func_00212658` is). The
-native port replaces the executable's MobyProc with its own code, but not yet this copy (its
-`no_c.tsv` says it needs C), so it stays an `INCLUDE_ASM` stub until the port runs it.
+On 2026-10-26 the two marked functions left out until then were listed too: func_L00_002569F8
+and func_L00_00257848, the level programs' copy of MobyProc (5,152 bytes, as `func_00212658`
+is). They use `$sp` as a data register, save registers to the scratchpad and use trapping
+`addi`, which ee-gcc never emits.
 
 On 2026-10-19, the last five fastfunc.o functions were listed: the VU0 helpers
 func_001F9B50, func_001F9F90, func_001F9FA8 and func_001F9FC0 (`qmtc2`/`vcallms`/`vsqrt` with

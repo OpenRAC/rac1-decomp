@@ -2554,7 +2554,7 @@ extern void KillPart(void *);
 extern void lerp_vector(void *, void *, void *, float);
 extern Particle41 *PartType23Spawn(void *,float,float,float,int,void *,float,int);
 
-void func_L00_002DF410(void *moby,void *position) {
+void suck_beam_update(void *moby,void *position) {
     extern E04_pt3 suck_beam_particles[];
     V41 step,up,orient[3],ray_end,start,end,axis,tmp_a,tmp_b,
         frame[3],tmp_c,motion,tmp_d,tmp_e,interp,cross_c,basis_c,tmp_f,unused_a,unused_b;

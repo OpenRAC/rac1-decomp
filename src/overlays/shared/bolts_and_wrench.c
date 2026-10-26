@@ -570,7 +570,7 @@ extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern void *GetFlaggedPvarWord_r(void *) __asm__("func_L00_0025D390");
+extern void *GetFlaggedPvarWord_r(void *) __asm__("func_L00_00261448");
 extern int convert_pose_to_reference_local_r(void *, void *, void *, void *, void *, void *) __asm__("func_L00_002616E0");
 extern float random_angle_radians_r(void) __asm__("func_00214158");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
@@ -954,6 +954,7 @@ extern int transform_attachment_pose(int x, char *o, float *p, float *q, float *
 extern int coll_sphere(float, void *, int, void *);
 extern void clear_u64_value(void *);
 extern char *GetFlaggedPvarWord(void *);
+extern char *func_L00_00261448(void *);
 extern void vec_scale_to_length(float *, float *, float);
 
 /* Steers a thrown moby along its path: builds its orientation from the data's angles and, when done, releases the held target. */
@@ -1021,7 +1022,7 @@ void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
                 moby[0x20] = 1;
                 clear_u64_value(data + 0x30);
                 *(float *)(data + 0x3C) = 1.0f;
-                x = GetFlaggedPvarWord(*(char **)(data + 0x5C));
+                x = func_L00_00261448(*(char **)(data + 0x5C));
                 if (x != 0) {
                     qcopy(data + 0x20, x + 0x10);
                 } else {
@@ -1368,6 +1369,7 @@ int get_wrench_hit_sound_variant(void) {
     return r;
 }
 extern char *GetFlaggedPvarWord(void *);
+extern char *func_L00_00261448(void *);
 /* Return 1 when the moby the wrench hit is flagged to react to wrench hits. */
 int should_trigger_wrench_hit_reaction(void) {
     char *x = GetFlaggedPvarWord(g_coll_hit_moby);
@@ -2169,7 +2171,7 @@ void initialize_moby_motion_at_position(Vec4 *pos, N2 *self, void *arg) {
     vec_scale_to_length(d.f, d.f, random_float_between(g_frame_time * 0.01f, g_frame_time * 0.1f));
     FastVecAdd(m, &d, arg);
     P = (P2 *)(hero_globals_base + 0xE1D);
-    if (P->p2FC && GetFlaggedPvarWord(P->p2FC)) {
+    if (P->p2FC && func_L00_00261448(P->p2FC)) {
         FastVecAdd(m, m, P->v100);
     }
     m->h34 = scale_ticks(0x78);
@@ -2223,7 +2225,7 @@ int predict_mine_impact(char *a0, char *o, int mode) {
         FastVecAdd(w, w, base + 0x80);
         w[2] = w[2] + 0.49082f;
         qcopy(B, a0);
-        if (*(int *)(base + 0x2FC) != 0 && GetFlaggedPvarWord((void *)*(int *)(base + 0x2FC)) != 0 && mode != 0) {
+        if (*(int *)(base + 0x2FC) != 0 && func_L00_00261448((void *)*(int *)(base + 0x2FC)) != 0 && mode != 0) {
             FastVecAdd(B, B, base + 0x100);
         }
         x = scale_ticks(0x78);
@@ -2266,9 +2268,9 @@ int predict_mine_impact(char *a0, char *o, int mode) {
     if (x != 0) {
         if (mode == 0) {
             if (g_coll_hit_moby == 0) return 0;
-            if (GetFlaggedPvarWord(g_coll_hit_moby) == 0) return 0;
+            if (func_L00_00261448(g_coll_hit_moby) == 0) return 0;
         }
-        if (mode != 2 || g_coll_hit_moby == 0 || GetFlaggedPvarWord(g_coll_hit_moby) == 0) {
+        if (mode != 2 || g_coll_hit_moby == 0 || func_L00_00261448(g_coll_hit_moby) == 0) {
             AddDrawCallback(draw_mine_predicted_impact_marker, o);
         }
         {

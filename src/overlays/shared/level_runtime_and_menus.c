@@ -690,4 +690,227 @@ int FindIdInList(int key) {
     return -1;
 }
 INCLUDE_ASM("asm/overlays", func_L00_002477D0);
-INCLUDE_ASM("asm/overlays", func_L00_00248EF8);
+typedef struct {
+    f32 lower;
+    f32 upper;
+    u32 flags;
+    s32 index;
+} MapFilter;
+
+typedef s32 (*MapFilterCallback)(f32, f32, f32, s32, s32);
+
+typedef struct {
+    u8 pad0[0xC];
+    u8 *mask;
+    u8 pad10[0x28];
+    u8 *packed;
+    u8 pad3C[0x168];
+    u8 exclusion[32][4];
+} MapBitGrid;
+
+extern s32 D_L00_00184318 NOT_SDA;
+extern s32 D_L00_0015FEB8 SDATA(D_L00_0015FEB8);
+extern MapFilter D_L00_00182CA0[19][16] NOT_SDA;
+extern MapFilterCallback D_L00_00184090[19][8] NOT_SDA;
+extern s32 D_L00_001845A8[] NOT_SDA;
+extern void map_world_to_uv(f32, f32, f32 *, f32 *, s32);
+extern s32 ensure_menu_cache_entry(s32);
+
+void reveal_map_around_position(f32 *position) {
+    s32 filters[16];
+    f32 px;
+    f32 py;
+    s32 x;
+    s32 y;
+    s32 state;
+    s32 level;
+    s32 mode15;
+    s32 mode16;
+    s32 i;
+    s32 index;
+    u32 flags;
+    MapFilterCallback callback;
+    s32 y_min;
+    s32 column;
+    s32 row_start;
+    s32 row_end;
+    s32 column_start;
+    s32 column_end;
+    s32 row;
+
+    if (D_L00_00184318 == 0) {
+        return;
+    }
+    if (D_L00_0015FEB8 != 0) {
+        map_world_to_uv(position[0], position[1], &px, &py, g_current_level_index + 100);
+    } else {
+        map_world_to_uv(position[0], position[1], &px, &py, g_current_level_index);
+    }
+    x = (s32)(px * 512.0f) + 1;
+    y = (s32)(py * 512.0f) + 1;
+    if (x < 0 || y < 0 || x >= 512 || y >= 512) {
+        return;
+    }
+
+    level = g_current_level_index;
+    if (level < 0) {
+        level = 0;
+    }
+    if (level >= 19) {
+        level = 0;
+    }
+    state = 0;
+    if (((Hero *)g_hero_r)->state.control_mode == 17 || ((Hero *)g_hero_r)->state.control_mode == 18 || ((Hero *)g_hero_r)->base_condition == 1) {
+        state = 1;
+    }
+    mode16 = ((Hero *)g_hero_r)->state.control_mode == 16;
+    mode15 = ((Hero *)g_hero_r)->state.control_mode == 15;
+    y_min = y - 16;
+
+    for (i = 0; i < 16; i++) {
+        filters[i] = 1;
+        if (i <= 0) {
+            continue;
+        }
+        if (D_L00_00182CA0[level][i].lower != D_L00_00182CA0[level][i].upper) {
+            f32 height = *(f32 *)((u8 *)((Hero *)g_hero_r)->moby + 0x18);
+            if (D_L00_00182CA0[level][i].lower > height || height > D_L00_00182CA0[level][i].upper) {
+                filters[i] = 0;
+                continue;
+            }
+        }
+        index = D_L00_00182CA0[level][i].index;
+        flags = D_L00_00182CA0[level][i].flags;
+        if (flags == 0) {
+            continue;
+        }
+        if ((flags & 1) && !state) {
+            filters[i] = 0;
+            continue;
+        }
+        if ((flags & 2) && state) {
+            filters[i] = 0;
+            continue;
+        }
+        if ((flags & 4) && !mode16) {
+            filters[i] = 0;
+            continue;
+        }
+        if ((flags & 8) && mode16) {
+            filters[i] = 0;
+            continue;
+        }
+        if ((flags & 0x10) && !mode15) {
+            filters[i] = 0;
+            continue;
+        }
+        if ((flags & 0x20) && mode15) {
+            filters[i] = 0;
+            continue;
+        }
+        if ((flags & 0x40) && !((Hero *)g_hero_r)->unk308) {
+            filters[i] = 0;
+            continue;
+        }
+        if ((flags & 0x80) && !D_L00_001845A8[index]) {
+            filters[i] = 0;
+            continue;
+        }
+        if (flags & 0x100) {
+            callback = D_L00_00184090[g_current_level_index][0];
+            if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
+                filters[i] = 0;
+                continue;
+            }
+        }
+        if (flags & 0x200) {
+            callback = D_L00_00184090[g_current_level_index][1];
+            if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
+                filters[i] = 0;
+                continue;
+            }
+        }
+        if (flags & 0x400) {
+            callback = D_L00_00184090[g_current_level_index][2];
+            if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
+                filters[i] = 0;
+                continue;
+            }
+        }
+        if (flags & 0x800) {
+            callback = D_L00_00184090[g_current_level_index][3];
+            if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
+                filters[i] = 0;
+                continue;
+            }
+        }
+        if (flags & 0x1000) {
+            callback = D_L00_00184090[g_current_level_index][4];
+            if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
+                filters[i] = 0;
+                continue;
+            }
+        }
+        if (flags & 0x2000) {
+            callback = D_L00_00184090[g_current_level_index][5];
+            if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
+                filters[i] = 0;
+                continue;
+            }
+        }
+        if (flags & 0x4000) {
+            callback = D_L00_00184090[g_current_level_index][6];
+            if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
+                filters[i] = 0;
+                continue;
+            }
+        }
+        if (flags & 0x8000) {
+            callback = D_L00_00184090[g_current_level_index][7];
+            if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
+                filters[i] = 0;
+                continue;
+            }
+        }
+    }
+
+    row_start = y_min < 0 ? 0 : y_min;
+    row_end = y + 16 > 511 ? 511 : y + 16;
+    column_start = x - 16 < 0 ? 0 : x - 16;
+    column_end = x + 16 > 511 ? 511 : x + 16;
+    for (row = row_start; row < row_end; row++) {
+        s32 exclusion_row = row - y + 16;
+        s32 block_row = (row >> 5) * 16;
+        s32 packed_row = row & 31;
+
+        packed_row *= 16;
+
+        for (column = column_start; column < column_end; column++) {
+            u8 *pixel = ((MapBitGrid *)&map_menu_state)->mask + row * 64 + column / 8;
+            s32 bit;
+            s32 test_column;
+
+            if (*pixel == 0) {
+                continue;
+            }
+            bit = 1 << (column & 7);
+            if (!(*pixel & bit)) {
+                continue;
+            }
+            test_column = column - x + 16;
+            if ((((MapBitGrid *)&map_menu_state)->exclusion[exclusion_row][test_column / 8] >> (test_column % 8)) & 1) {
+                continue;
+            }
+            {
+                u8 packed;
+                u8 selected;
+                ensure_menu_cache_entry((column >> 5) + block_row);
+                packed = *(((MapBitGrid *)&map_menu_state)->packed + ((column & 31) >> 1) + packed_row);
+                selected = (column & 1) ? packed >> 4 : packed & 15;
+                if (filters[selected] != 0) {
+                    *pixel &= ~bit;
+                }
+            }
+        }
+    }
+}

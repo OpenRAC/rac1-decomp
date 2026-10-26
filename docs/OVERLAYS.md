@@ -243,6 +243,15 @@ so removed tails cannot remain variant names or parents.
   the independent eight-byte return-zero function is three additional
   placements of the existing exact `func_001E97C8` in `src/game/stub.c`.
 
+- `func_L00_00261448` (48 bytes, all 19 levels) is one function: the 16-byte
+  `func_L00_0025D390` prefix, `func_L00_00261458` and the return-zero tail
+  (`func_001E97C8`) were cut apart because the prefix equals another function.
+  `func_L10_002C0348` (408 bytes) is the level 10 function that the catalogue
+  cut into the 48 bytes shared with `func_L03_002DDDF8` and
+  `func_L10_002C0378/0388/03EC/04C4`. Both are applied by
+  `tools/overlay_boundary_fixes.py --write`, then `tools/overlays.py names` and
+  `families`, `tools/version_map.py --version <v>` and `tools/overlay_asm.py`.
+
 The unique non-executable-code denominator decreases by 32 bytes: four
 bytes of misplaced alignment, four bytes of fill, and twelve bytes from
 the split L08 entry (four alignment bytes and an eight-byte function

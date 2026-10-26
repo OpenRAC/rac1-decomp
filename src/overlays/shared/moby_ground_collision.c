@@ -3035,14 +3035,18 @@ int FindNearestEligibleMoby(char *a, char *o, float best, int *list, int n, floa
     *(int *)(o + 0x44) = res;
     return res;
 }
-INCLUDE_ASM("asm/overlays", func_L00_00261458);
-extern int GetFlaggedPvarWord(char *);
+/* Returns the third word of the moby private data when flag 0x20 is set, else zero. */
+int func_L00_00261448(char *m) {
+ if (m == 0) return 0;
+ if (!(*(unsigned short *)(m + 0x34) & 0x20)) return 0;
+ return *(int *)(*(char **)(m + 0x78) + 8);
+}
 extern void euler_to_matrix(void *, void *);
 extern void matrix_to_euler(void *, void *);
 
 /* transforms a point into the local space of a moby's matrix and back */
 int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d) {
-    char *r = (char *)GetFlaggedPvarWord(m);
+    char *r = (char *)func_L00_00261448(m);
     float t0[16];
     float t1[16];
     char *p;
@@ -3069,7 +3073,7 @@ int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, floa
     float m0[16] __attribute__((aligned(16)));
     float m1[16] __attribute__((aligned(16)));
     float v[4] __attribute__((aligned(16)));
-    char *e = (char *)GetFlaggedPvarWord(o);
+    char *e = (char *)func_L00_00261448(o);
     if (e == 0) return 0;
     matrix_mul_vec3(r, p, o + 0xC0);
     FastVecAdd(r, r, o + 0x10);
@@ -3091,7 +3095,6 @@ int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, floa
     }
     return 1;
 }
-extern int GetFlaggedPvarWord(char *);
 
 /* Converts a world position and rotation into object o's local frame; 0 when o is not flagged. */
 int convert_pose_to_reference_local(int x, char *o, float *a, float *c, float *b, float *d) {
@@ -3099,7 +3102,7 @@ int convert_pose_to_reference_local(int x, char *o, float *a, float *c, float *b
     float v[4];
     float w[4];
     float pad[12];
-    if (GetFlaggedPvarWord(o) == 0) return 0;
+    if (func_L00_00261448(o) == 0) return 0;
     FastVecSub(v, a, o + 0x10);
     matrix_from_basis_rows(m, o + 0xC0);
     transform_vector(b, v, m);

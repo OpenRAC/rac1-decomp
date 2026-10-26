@@ -3104,4 +3104,432 @@ void apply_gunship_path_position_offsets(char *m, float *out) {
         FastVecAdd(out, out, t30);
     }
 }
-INCLUDE_ASM("asm/overlays", func_L01_002F6540);
+typedef union { u128 q; f32 f[4]; struct { f32 x, y, z, w; } v; } QVec;
+
+typedef struct {
+    s32 count;
+    u8 pad4[0xC];
+    QVec node[1];
+} PathNodes;
+
+typedef struct {
+    s32 idx;
+    s8 dir;
+    u8 state;
+    u8 pad6[2];
+    s32 unk8;
+    f32 dist;
+    PathNodes *nodes;
+    s32 path_id;
+    f32 heading;
+    s32 unk1C;
+} PathCursor;
+
+typedef struct {
+    u8 pad0[0x60];
+    PathCursor path;          /* 0x60 */
+    QVec unk80;               /* 0x80 */
+    QVec unk90;               /* 0x90 */
+    QVec unkA0;               /* 0xA0 */
+    QVec unkB0;               /* 0xB0 */
+    QVec unkC0;               /* 0xC0 */
+    QVec unkD0;               /* 0xD0 */
+    QVec unkE0;               /* 0xE0 */
+    f32 unkF0;
+    f32 unkF4;
+    f32 unkF8;
+    f32 unkFC;
+    f32 unk100;
+    f32 unk104;
+    f32 unk108;
+    f32 unk10C;
+    f32 unk110;
+    f32 unk114;
+    f32 unk118;
+    s16 unk11C;
+    s16 unk11E;
+    u8 unk120;
+    u8 unk121;
+    s16 unk122;
+    f32 unk124;
+    f32 unk128;
+    f32 unk12C;
+    f32 unk130;
+    f32 unk134;
+    s16 unk138;
+    s16 unk13A;
+    s16 unk13C;
+    s16 unk13E;
+    s32 unk140[4];
+} Vars;
+
+typedef struct {
+    u8 pad0[0x70];
+    s32 unk70;
+    u8 pad74[0xC];
+    QVec unk80;
+} ChildVars;
+
+typedef struct {
+    u8 pad0[0x28];
+    u16 kind;
+} HitInfo;
+
+extern s32 D_L01_00161B90 SDATA(D_L01_00161B90);
+extern char *novalis_mobys MACRO_ADDR;
+extern char D_L01_0020B6D0[];
+extern void *D_L01_001607F0 MACRO_ADDR;
+extern char voice_pool[];
+
+extern s32 check_scaled_vector_bsphere(struct Moby *, f32);
+extern s32 get_first_moby_in_group(struct Moby **, s32, s32, s32);
+extern s32 get_next_moby_in_group(struct Moby **, struct Moby *, s32, s32);
+extern void initialize_path_descriptor(PathCursor *);
+extern s32 select_point_index_by_distance(void *, PathNodes *, f32);
+extern void compute_path_node_tangent(QVec *, PathCursor *, s32, f32, f32);
+extern f32 compute_sampled_spline_path_lengths(f32, f32, PathCursor *, s32, struct Moby *);
+extern void Moby_GetJointWorldPos(struct Moby *, s32, QVec *);
+extern s32 advance_path_node_index(PathCursor *);
+extern s32 resolve_path_node_index(PathCursor *, s32);
+extern void evaluate_cubic_hermite_segment(f32, QVec *, QVec *, QVec *, QVec *, QVec *);
+extern f32 WrapAngle(f32);
+extern void spawn_type_10_particle(QVec *, QVec *);
+extern void spawn_explosion(struct Moby *, QVec *, QVec *, f32, f32, s32, s32, s32, f32, f32, f32, f32,
+                            s32, f32, s32, s32, s32, s32);
+
+void gunship_follow_path(struct Moby *moby) {
+    enum {
+        GUNSHIP_PATH_STATE_INITIALIZE = 0,
+        GUNSHIP_PATH_STATE_FOLLOW_PATH = 1,
+        GUNSHIP_PATH_STATE_WAIT_FOR_PATH = 2,
+        GUNSHIP_PATH_STATE_WAIT_FOR_RESUME_TIMER = 3
+    };
+    QVec path_displacement;
+    QVec zero;
+    QVec previous_rotation;
+    QVec previous_position;
+    QVec off[4];
+    QVec dA0;
+    struct Moby *it;
+    Vars *v;
+    PathCursor *path_cursor;
+    s32 frozen;
+    s32 i;
+    s32 never = 0;
+    f32 path_speed;
+    f32 segment_progress_step;
+
+    zero.q = 0;
+    frozen = 0;
+    v = (Vars *)moby->pvars;
+    if (moby->oclass != 0x336) {
+        frozen = check_scaled_vector_bsphere(moby, IntToFloat(moby->draw_dist)) == -1;
+    }
+    if (v == 0 || D_L01_00161B90 != 0) {
+        return;
+    }
+    path_cursor = &v->path;
+    if (moby->group != 0xFF && moby->state != 0 && moby->state != 3) {
+        s32 bad = 0;
+        get_first_moby_in_group(&it, moby->group, 0, 0);
+        if (it == moby) {
+            goto check;
+            do {
+                get_next_moby_in_group(&it, it, 0, 0);
+            check:
+                if (it == 0)
+                    goto done;
+            } while (check_scaled_vector_bsphere(it, IntToFloat(it->draw_dist)) == -1);
+            bad = 1;
+        done:
+            if (bad == 0) {
+                get_first_moby_in_group(&it, moby->group, 0, 0);
+                while (it != 0) {
+                    Vars *iv = (Vars *)it->pvars;
+                    bad = 3;
+                    it->state = bad;
+                    iv->unk11C = scale_ticks(5);
+                    get_next_moby_in_group(&it, it, 0, 0);
+                }
+            }
+        }
+    }
+    if ((moby->oclass == 0x33 || moby->oclass == 0x46A || moby->oclass == 0x473 || moby->oclass == 0x474)
+        && (novalis_frame_count & 7) == (((s32)moby >> 8) & 7) && v->unk13A <= 0 && moby->state != 0
+        && Sound_IsPlaying(moby, v->unk11E) == 0) {
+        v->unk11E = ((int (*)(int, int, void *))Moby_PlaySound)(0, 4, moby);
+    }
+    switch ((s16)(moby->oclass - 0x33)) {
+    case 0:
+    case 9:
+    case 23:
+        if (v->unk138 != -1) {
+            if (!FastDecTimer(&v->unk138))
+                break;
+            if (FastVecDist(&moby->pos, camera_pos) < 30.0f)
+                Moby_PlaySound(1, 0, (char *)moby);
+        }
+        v->unk138 = scale_ticks(rand_range(v->unk13C, v->unk13C + v->unk13E));
+        break;
+    case 13:
+    case 17:
+        /* Fakematch: duplicating the reset preserves retail's voice-call argument scheduling. */
+        if (v->unk138 != -1) {
+            if (!FastDecTimer(&v->unk138))
+                break;
+            Moby_PlaySound((random_integer_below(100) & 1) ? 1 : 2, 0, (char *)moby);
+            v->unk138 = scale_ticks(rand_range(v->unk13C, v->unk13C + v->unk13E));
+        } else {
+            v->unk138 = scale_ticks(rand_range(v->unk13C, v->unk13C + v->unk13E));
+        }
+        break;
+    }
+
+    switch (moby->state) {
+    case GUNSHIP_PATH_STATE_INITIALIZE:
+        if (path_cursor->path_id != -1) {
+            PathNodes *pn = (PathNodes *)novalis_paths[path_cursor->path_id];
+            if (FastVecDist(&pn->node[0], &pn->node[pn->count - 1]) < 0.5f)
+                pn->count--;
+        } else {
+            STUB_printf(D_L01_0020B6D0, moby->oclass, truncate_float_to_s32((f32)(moby - (struct Moby *)novalis_mobys)));
+        }
+        moby->update_dist = 0xFF;
+        v->unk11E = -1;
+        if (500.0f < v->unk130)
+            v->unk130 = random_float_between(-1.0f, 1.0f) * v->unk130 / 1000.0f;
+        if (500.0f < v->unk134)
+            v->unk134 = random_float_between(-1.0f, 1.0f) * v->unk134 / 1000.0f;
+        if (path_cursor->path_id == -1) {
+            moby->state = 2;
+            return;
+        }
+        v->unk121 = (moby - (struct Moby *)novalis_mobys) / 2 % 7;
+        initialize_path_descriptor(path_cursor);
+        if (path_cursor->state == 0) {
+            if (path_cursor->idx <= 0) {
+                s32 selected_node_index = select_point_index_by_distance(&moby->pos, path_cursor->nodes, 0.0f);
+                path_cursor->idx = selected_node_index;
+                if ((path_cursor->dir >= 0 && selected_node_index == path_cursor->nodes->count - 1) || (path_cursor->dir < 0 && selected_node_index == 0))
+                    path_cursor->idx = 0;
+            }
+            path_cursor->dist = FastVecDist(&moby->pos, &path_cursor->nodes->node[path_cursor->idx]);
+            path_cursor->heading = fast_atan2(path_cursor->nodes->node[path_cursor->idx].v.x - moby->pos.x,
+                                      path_cursor->nodes->node[path_cursor->idx].v.y - moby->pos.y);
+            path_cursor->state = 2;
+            path_cursor->unk8 = 0;
+            path_cursor->unk1C = 0;
+        }
+        v->unkE0.q = (path_cursor->nodes->node + path_cursor->idx)->q;
+        v->unkF0 = 1.0f;
+        compute_path_node_tangent(&v->unkA0, path_cursor, 0, v->unkF4, v->unkF8);
+        v->unkB0.q = v->unkC0.q = (path_cursor->nodes->node + path_cursor->idx)->q;
+        *(s32 *)&moby->rot.x = 0;
+        moby->rot.y = -fast_atan2(vec_length_xy(&v->unkA0), v->unkA0.v.z);
+        moby->rot.z = fast_atan2(v->unkA0.v.x - zero.v.x, v->unkA0.v.y - zero.v.y);
+        v->unk104 = 0;
+        v->unk10C = 0;
+        *(u128 *)&moby->pos = v->unkE0.q;
+        apply_gunship_path_position_offsets((char *)moby, (float *)&moby->pos);
+        v->unk121 = 7;
+        if (6.2831855f < v->unk12C) {
+            v->unk12C = v->unk12C * 0.017453292f;
+        } else if (v->unk124 != 0.0f && v->unk12C == -1.0f) {
+            v->unk12C = random_angle_radians();
+        }
+        v->unkD0.q = v->unkC0.q;
+        compute_sampled_spline_path_lengths(v->unkF4, v->unkF8, path_cursor, v->unk120 & 0x20, moby);
+        if ((v->unk120 & 0x1E) && !(v->unk120 & 1)) {
+            s32 i;
+            for (i = 0; i < 4; i++) {
+                struct Moby *c;
+                ChildVars *cv;
+                if (!(v->unk120 & (2 << i)) || v->unk140[i] == -1)
+                    continue;
+                c = (struct Moby *)novalis_mobys + v->unk140[i];
+                if (c == 0 || (cv = (ChildVars *)c->pvars) == 0)
+                    continue;
+                cv->unk70 |= 0x1000;
+                Moby_GetJointWorldPos(moby, i, &off[i]);
+                FastVecSub(&dA0, &off[i], &moby->pos);
+                vec_scale_to_length(&dA0, &dA0, 1.0f);
+                *(u128 *)&c->pos = off[i].q;
+                cv->unk80.q = dA0.q;
+            }
+        }
+        if (v->unk11C > 0) {
+            moby->state = 3;
+            return;
+        }
+        if (g_current_level_index == 3 || g_current_level_index == 9)
+            v->unk13A = 0;
+        moby->state = 1;
+        return;
+
+    case GUNSHIP_PATH_STATE_WAIT_FOR_PATH:
+        if (path_cursor->path_id == -1)
+            return;
+        moby->state = 0;
+        if (v->unk11E != -1) {
+            u8 *e = (u8 *)voice_pool + v->unk11E * 0x70;
+            if (*(struct Moby **)(e + 0x88) == moby && e[0x74] != 0)
+                Sound_StopSlot(v->unk11E);
+        }
+        v->unk11E = -1;
+        return;
+
+    case GUNSHIP_PATH_STATE_WAIT_FOR_RESUME_TIMER:
+        if (FastDecTimer(&v->unk11C)) {
+            v->unk11C = 0;
+            moby->state = 1;
+        }
+        return;
+
+    case GUNSHIP_PATH_STATE_FOLLOW_PATH:
+        break;
+
+    default:
+        return;
+    }
+
+    previous_rotation.q = *(u128 *)&moby->rot;
+    previous_position.q = *(u128 *)&moby->pos;
+    if (1.0f <= v->unkF0) {
+        s32 advanced_node_index;
+        v->unkF0 -= 1.0f;
+        advanced_node_index = advance_path_node_index(path_cursor);
+        v->unk90.q = v->unkA0.q;
+        compute_path_node_tangent(&v->unkA0, path_cursor, 1, v->unkF4, v->unkF8);
+        v->unkB0.q = v->unkC0.q;
+        v->unkC0.q = (path_cursor->nodes->node + resolve_path_node_index(path_cursor, advanced_node_index + 1))->q;
+    }
+    {
+        f32 speed_modulation_sine = FastSin(v->unk12C);
+        path_speed = v->unkFC + v->unk124 * frame_scale * speed_modulation_sine * frame_scale;
+        segment_progress_step = path_speed / v->unkB0.v.w;
+        v->unk12C = FastAddRots(v->unk12C, v->unk128 * frame_scale * 0.017453292f);
+    }
+    v->unkE0.q = v->unkD0.q;
+    evaluate_cubic_hermite_segment(v->unkF0 + segment_progress_step, &v->unkD0, &v->unkB0, &v->unkC0, &v->unk90, &v->unkA0);
+    if (!(v->unk120 & 0x40)) {
+        f32 dd = FastVecDist(&v->unkE0, &v->unkD0);
+        if (dd != 0.0f) {
+            segment_progress_step = segment_progress_step * (path_speed / dd);
+            evaluate_cubic_hermite_segment(v->unkF0 + segment_progress_step, &v->unkD0, &v->unkB0, &v->unkC0, &v->unk90, &v->unkA0);
+        }
+    }
+    if (!frozen) {
+        f32 k = 0.017453292f;
+        f32 steering_angle;
+        f32 turn;
+        f32 yaw_offset_radians = (f32)v->unk122 * k;
+        FastSubRots(moby->rot.z, yaw_offset_radians);
+        steering_angle = fast_atan2(v->unkD0.v.x - v->unkE0.v.x, v->unkD0.v.y - v->unkE0.v.y);
+        steering_angle = FastAddRots(steering_angle, yaw_offset_radians);
+        steering_angle = FastSubRots(steering_angle, moby->rot.z);
+        turn = steering_angle * (1.0f / v->unk110 * frame_scale);
+        moby->rot.z = FastAddRots(turn, moby->rot.z);
+        FastVecSub(&path_displacement, &v->unkD0, &v->unkE0);
+        steering_angle = -fast_atan2(vec_length_xy(&path_displacement), path_displacement.v.z);
+        moby->rot.y = SpringTurn(&v->unk10C, moby->rot.y, steering_angle,
+                                            v->unk108 * 10.0f * k * g_frame_time_sq,
+                                            v->unk108 * 5.0f * k * g_frame_time_sq,
+                                            v->unk108 * k * g_frame_time);
+        steering_angle = WrapAngle(turn * v->unk114);
+        steering_angle = FastSubRots(moby->rot.x, steering_angle);
+        steering_angle = WrapAngle(steering_angle * v->unk118);
+        moby->rot.x = SpringTurn(&v->unk104, moby->rot.x, steering_angle,
+                                            v->unk100 * 10.0f * k * g_frame_time_sq,
+                                            v->unk100 * 5.0f * k * g_frame_time_sq,
+                                            v->unk100 * k * g_frame_time);
+    } else {
+        clear_u64_value(&moby->rot);
+        moby->rot.z = fast_atan2(v->unkD0.v.x - v->unkE0.v.x, v->unkD0.v.y - v->unkE0.v.y);
+    }
+    v->unkF0 += segment_progress_step;
+    *(u128 *)&moby->pos = v->unkE0.q;
+    if (!frozen)
+        apply_gunship_path_position_offsets((char *)moby, (float *)&moby->pos);
+    if (v->unk120 & 0x1F) {
+        s32 attachment_point_index = 0;
+        s32 i;
+        for (i = 0; i < 5; i++) {
+            if (!((v->unk120 >> i) & 1))
+                continue;
+            Moby_GetJointWorldPos(moby, attachment_point_index, &off[0]);
+            attachment_point_index++;
+            FastVecSub(&off[1], &off[0], &moby->pos);
+            if (!(v->unk120 & 1)) {
+                struct Moby *c;
+                ChildVars *cv;
+                if (v->unk140[i - 1] == -1)
+                    continue;
+                c = (struct Moby *)novalis_mobys + v->unk140[i - 1];
+                if (c == 0 || (cv = (ChildVars *)c->pvars) == 0)
+                    continue;
+                vec_scale_to_length(&off[1], &off[1], 1.0f);
+                cv->unk70 |= 0x1000;
+                *(u128 *)&c->pos = off[0].q;
+                cv->unk80.q = off[1].q;
+            } else if (v->unk121 == 0) {
+                vec_scale_to_length(&off[1], &off[1], random_float_between(0.016f, 0.031f) * frame_scale);
+                spawn_type_10_particle(&off[0], &off[1]);
+                vec_scale_to_length(&off[1], &off[1], random_float_between(0.016f, 0.031f) * frame_scale);
+                spawn_type_10_particle(&off[0], &off[1]);
+            }
+        }
+        if (v->unk121 == 0)
+            v->unk121 = scale_ticks(7);
+        v->unk121--;
+    }
+    if (g_current_level_index != 3 && g_current_level_index != 9)
+        return;
+    {
+        HitInfo *hit = (HitInfo *)MobyGetHitMessage(moby, 0x210000, 0);
+        if (hit != 0 && hit->kind != 0x102) {
+            QVec *current_position;
+            s32 k;
+            QVec *dir;
+            clear_u64_value(&off[0]);
+            if (moby->oclass == 0x33) {
+                off[0].v.x = FastCos(moby->rot.z) * -2.7470f;
+                off[0].v.y = FastSin(moby->rot.z) * -2.7470f;
+                *(s32 *)&off[0].v.z = 0;
+            }
+            current_position = (QVec *)&moby->pos;
+            FastVecSub(&off[2], current_position, &previous_position);
+            off[1].q = off[2].q;
+            FastVecScale(&off[1], &off[1], 0.5f);
+            FastVecAdd(&off[0], &off[0], current_position);
+            v->unk13A = scale_ticks(600);
+            dir = &off[1];
+            /* Fakematch: the never-taken call keeps gcse from propagating &off[1] into the call, so dir
+               gets a1 before the class tests and &off[1] gets s0, as in retail. */
+            if (never)
+                dir = (QVec *)scale_ticks(0);
+            k = -1;
+            if (moby->oclass == 0x532 || moby->oclass == 0x53B || moby->oclass == 0x53C)
+                k = 1;
+            spawn_explosion(moby, dir, &off[0], 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, k, 15.0f, 1,
+                             1, -1, 0);
+        }
+    }
+    D_L01_001607F0 = (void *)gunship_follow_path;
+    moby->hit_slot = 0xFF;
+    if (v->unk13A == 0)
+        return;
+    if (FastDecTimer(&v->unk13A) && frozen) {
+        moby->collision = ((u32 *)moby->pclass)[4];
+        moby->flags = (moby->flags & 0xFFBE) | 0x1000;
+        return;
+    }
+    moby->collision = 0;
+    moby->flags |= 0x41;
+    if (v->unk11E != -1) {
+        u8 *e = (u8 *)voice_pool + v->unk11E * 0x70;
+        if (*(struct Moby **)(e + 0x88) == moby && e[0x74] != 0)
+            Sound_StopSlot(v->unk11E);
+    }
+    v->unk11E = -1;
+    moby->flags &= 0xEFFF;
+}
