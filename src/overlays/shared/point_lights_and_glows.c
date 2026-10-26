@@ -5,15 +5,15 @@
 #include "include_asm.h"
 
 extern long GetEffectTex64(int) __asm__("func_001F4868");
-extern void func_0020DAF8(char *arg0, int arg1, char *arg2);
-extern void func_002156E0(void *dst, void *vec, void *axis, float angle);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9BC0(float *);
-extern void func_L00_001FD1D8(void *, void *, int);
-extern float D_L00_0015FBC0;
+extern void MobyTransformScaledVertex(char *arg0, int arg1, char *arg2);
+extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
+extern void FastVecCross(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void clear_u64_value(float *);
+extern void draw_world_quad(void *, void *, int);
+extern float glow_quad_z_offset;
 typedef struct {
     int c[4];
     float f[8];
@@ -196,11 +196,11 @@ void emit_moby_particle_pairs(void *p)
             r[9] = rf_23e008(4.0f) + 0x70;
     }
 }
-extern float func_001FA888(int);
-extern unsigned char D_L00_001805C0[];
-extern unsigned char D_L00_001803C0[];
-extern float D_L00_0015F6B8 MACRO_ADDR;
-extern char D_L00_00180740[];
+extern float IntToFloat(int);
+extern unsigned char level_point_light_data[];
+extern unsigned char level_point_lights[];
+extern float level_draw_frame_load MACRO_ADDR;
+extern char level_point_light_link_buffers[];
 
 /* Allocates a free point-light slot, fills in position, radius, color and intensity, returns its index or -1. */
 int allocate_packed_color_point_light_slot(float *pos, float radius, float intensity, int color) {
@@ -264,9 +264,9 @@ int allocate_colored_effect_slot(u128_pt *v, float a, float b_0023e738, float c,
     t->buf = D_L00_00180740_0023e738 + i * 1024;
     return i;
 }
-extern void func_002027C0(int);
-extern unsigned char D_L00_001803C0[];
-extern unsigned char D_L00_001805C0[];
+extern void DetachPointLight(int);
+extern unsigned char level_point_lights[];
+extern unsigned char level_point_light_data[];
 
 /* release_point_light_slot: detaches point light index and clears its slots. */
 void release_point_light_slot(int index)

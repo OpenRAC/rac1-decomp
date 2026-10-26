@@ -34,8 +34,8 @@ void Sound_StopSlot(int i) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_0028EC28);
 extern char D_0013E633[] NOT_SDA;
-extern unsigned char D_L00_00197F40[] NOT_SDA;
-extern char *D_L00_00197680[] NOT_SDA;
+extern unsigned char g_class_slot[] NOT_SDA;
+extern char *moby_class_headers[] NOT_SDA;
 
 /* Plays sound i of the class in slot k on owner v; returns the voice slot or -1. */
 int Sound_PlayClassSound(int i, int a1, int v, int k) {
@@ -56,8 +56,8 @@ int Sound_PlayClassSound(int i, int a1, int v, int k) {
     }
     return r;
 }
-extern int D_L00_0015F6D0 MACRO_ADDR;
-extern char *D_L00_0015F6D4 MACRO_ADDR;
+extern int level_sound_slot_count MACRO_ADDR;
+extern char *level_sound_slots MACRO_ADDR;
 /* Plays level sound a with the given settings; returns the voice slot or -1. */
 int play_voice(int a, int b, int c, int d) {
     int r;
@@ -70,11 +70,11 @@ int play_voice(int a, int b, int c, int d) {
     }
     return r;
 }
-extern char D_0013E650[];
+extern char voice_pool[];
 
-extern unsigned char D_L00_001BDBB0[];
+extern unsigned char grouped_voice_level_rows[];
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int D_L00_0015F654 MACRO_ADDR;
+extern int grouped_voice_definition_base_index MACRO_ADDR;
 
 /* Starts a sound bank entry chosen by (a0, a1, a2) offset from a
    level-specific table row, the same shape as func_0022EE28. */
@@ -101,7 +101,7 @@ int Sound_SetPitchBend(int i, int v) {
     return 1;
 }
 typedef struct { int k; int v; } TE;
-extern TE D_L00_001EAD00[];
+extern TE lookup_record_key_values[];
 
 /* Finds the record's key in the key/value table and stores the index and value in it. */
 void resolve_lookup_record(short *a) {
@@ -127,27 +127,27 @@ void Sound_SetEntryValue(int value, long long address) {
 INCLUDE_ASM("asm/overlays", func_L00_0028F410);
 extern char D_0013A5E0[] NOT_SDA;
 extern unsigned char D_0013D355[] NOT_SDA;
-extern unsigned char D_0013D5DD[] NOT_SDA;
+extern unsigned char gHaveMorphORay[] NOT_SDA;
 extern unsigned char D_0013DE4B[] NOT_SDA;
-extern short D_0013E156[] NOT_SDA;
-extern char D_L00_00166EC0[];
-extern char D_L00_001BDC10[] NOT_SDA;
-extern int D_L00_0015F710 MACRO_ADDR;
-extern int D_L00_0015F6A8 MACRO_ADDR;
+extern short ship_index[] NOT_SDA;
+extern char g_debug_camera[];
+extern char ship_entry_point_offsets[] NOT_SDA;
+extern int ship_level_exit_requested MACRO_ADDR;
+extern int cinematic_mode MACRO_ADDR;
 
-extern float func_001FA888(int);
-extern float func_001F9F90(float);
-extern void func_001F49B0(void (*)(void), void *);
-extern float func_001F9D48(void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001F9D10(void *, void *);
-extern int func_00215F80(int, int);
-extern void func_L00_00299B68(int);
-extern int func_L00_00265558(int);
-extern void func_L00_0029A7D0(int);
-extern void func_00233AB8(void);
-extern void func_0022F258(void);
+extern float IntToFloat(int);
+extern float FastCos(float);
+extern void AddDrawCallback(void (*)(void), void *);
+extern float vec_distance_xy(void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastVecDist(void *, void *);
+extern int try_set_help_message(int, int);
+extern void StartCutscene(int);
+extern int remove_help_message_for_selector(int);
+extern void PlayMovieEntryIfIdle(int);
+extern void render_environment_mapped_object(void);
+extern void draw_light_flare(void);
 
 /* Per-frame update of a pickup-like moby: pulses its colour, tracks the player's range and collects items. */
 void update_moby_proximity_interaction(unsigned char *m) {

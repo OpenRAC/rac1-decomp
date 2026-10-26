@@ -236,8 +236,8 @@ void update_path_following_moby_swarm(struct Moby *moby) {
 void update_moby_height_from_driver(char *m)
 {
     extern unsigned char D_0013D355[];
-    extern char func_00214D28[];
-    extern unsigned short *D_L08_001AC340[];
+    extern char ApproachValue[];
+    extern unsigned short *batalia_moby_groups[];
     int k;
     char *d = ((char *)((Moby *)m)->pvars);
     char *o;
@@ -278,7 +278,7 @@ void update_moby_height_from_driver(char *m)
         break;
     case 1:
         {
-        extern short D_L08_00160058;
+        extern short batalia_mobys;
         i = *(int *)(d + 8);
         if (i < 0) break;
         o = (char *)((i << 8) + *(int *)&batalia_mobys);
@@ -299,11 +299,11 @@ void update_moby_height_from_driver(char *m)
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern s32 func_L00_0028EB98(struct Moby *, s32);
+extern s32 Sound_IsPlaying(struct Moby *, s32);
 extern s32 func_0022ED80_EB980(s32, s32, struct Moby *) __asm__("func_0022ED80");
-extern f32 func_001FA748(f32, f32);
-extern f32 func_001FA790(f32, f32);
-extern void func_001F9BD8(void *, void *, void *);
+extern f32 FastAddRots(f32, f32);
+extern f32 FastSubRots(f32, f32);
+extern void FastVecAdd(void *, void *, void *);
 typedef struct {
     s32 driver; /* 0x0: moby index whose pvars start with the 0..1 progress */
     f32 open_deg; /* 0x4: yaw at full progress, in degrees */
@@ -312,19 +312,19 @@ typedef struct {
     Vec4 home; /* 0x10: hinge position */
     s32 voice; /* 0x20: creak voice slot, -1 if none */
 } SwingGateVars;
-extern int D_L08_0015F6A8 MACRO_ADDR;
+extern int batalia_game_mode MACRO_ADDR;
 typedef struct {
     u8 pad0[0x80];
     s32 volume; /* 0x80 */
 } VoiceView;
-extern char D_0013E650[];
-extern u8 D_0013D490[];
-extern f32 func_001FA850(f32, f32);
-extern void func_001FA218(void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_L00_0028EBF0(s32);
-extern void func_L00_0028F210(s32, s32);
-extern int func_001F9850(int);
+extern char voice_pool[];
+extern u8 gSpecialItems[];
+extern f32 FastDiffRots(f32, f32);
+extern void euler_to_matrix(void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern void Sound_StopSlot(s32);
+extern void Sound_SetPitchBend(s32, s32);
+extern int scale_ticks(int);
 
 /* Swings the gate to its driver's progress, fading a creak in while it moves and out when it stops, and latches its flag once fully open.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002e9b70.c, FUN_L08_002ea4c0. */
@@ -384,19 +384,19 @@ void update_swing_gate_from_driver(struct Moby *moby) {
             Sound_StopSlot(vars->voice);
     }
 }
-extern void func_00234C98(int, long);
-extern void func_001F7868(void);
-extern int func_001F4868(int);
-extern void func_L08_002F2000(int);
-extern void func_L08_002F20D8(int);
-extern void func_L08_002F21B0(int);
-extern short D_L08_00161E60;
-extern short D_L08_00161E80;
-extern short D_L08_00161E90;
-extern int D_L08_00161E64 MACRO_ADDR;
-extern int D_L08_00161E68 MACRO_ADDR;
-extern int D_L08_00161E84 MACRO_ADDR;
-extern int D_L08_00161E98 MACRO_ADDR;
+extern void VU1_addGSregister(int, long);
+extern void font_queue_vu_state(void);
+extern int GetEffectTex(int);
+extern void draw_scrolled_mesh_batch(int);
+extern void Moby600_DrawQuads11(int);
+extern void emit_pair_offset_render_batch(int);
+extern short scrolled_mesh_unscaled_fixed_alpha;
+extern short offset_mesh_first_pass_fixed_alpha;
+extern short pair_offset_mesh_fixed_alpha;
+extern int scrolled_mesh_subtractive_base_fixed_alpha MACRO_ADDR;
+extern int scrolled_mesh_additive_base_fixed_alpha MACRO_ADDR;
+extern int offset_mesh_second_pass_fixed_alpha MACRO_ADDR;
+extern int layered_mesh_effect_fade_alpha MACRO_ADDR;
 /* Draws three rows of HUD elements with their colours. */
 void draw_layered_mesh_effect(void) {
     VU1_addGSregister(0x42, 0x8000000044L);
@@ -423,35 +423,35 @@ void draw_layered_mesh_effect(void) {
 }
 typedef struct { int a, b; } PairA;
 typedef struct { int a, b; } Pair8;
-extern void func_L08_002F2428(void *, int, void *, float, float, float, float, int);
-extern int func_L00_00200290(char *, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9CB8(void *);
-extern void func_L08_002F2760(int);
-extern void func_L08_002F2618(void *, float, float, float, void *);
+extern void scale_rgba_tables(void *, int, void *, float, float, float, float, int);
+extern int FastBSphereCheck(char *, float);
+extern void FastVecSub(void *, void *, void *);
+extern float FastVecLength(void *);
+extern void AdvanceScrollOffsets(int);
+extern void advance_wrapped_sine_pair(void *, float, float, float, void *);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern void func_L08_002F2838(int);
-extern void func_001F49B0(void (*)(void), void *);
-extern void func_L08_002F2288(void);
-extern int D_L08_001E85D0[];
-extern int D_L08_001E2B18[];
-extern int D_L08_001DE1E0[];
-extern int D_L08_001DB7D8[];
-extern int D_L08_001E2AE8[];
-extern int D_L08_001DE200[];
-extern PairA D_L08_001E8608[];
+extern void AdvanceScrollEntry(int);
+extern void AddDrawCallback(void (*)(void), void *);
+extern void draw_layered_mesh_effect(void);
+extern int batalia_mesh13_colors[];
+extern int batalia_mesh13_counts[];
+extern int batalia_mesh8_colors[];
+extern int batalia_mesh8_counts[];
+extern int batalia_mesh11_colors[];
+extern int batalia_mesh11_counts[];
+extern PairA batalia_uv_scroll[];
 extern PairA D_L08_00161EB8_p[] __asm__("D_L08_00161EB8") MACRO_ADDR;
-extern float D_L08_00161EA4[] MACRO_ADDR;
-extern Pair8 D_L08_00161EA0[] MACRO_ADDR;
+extern float scroll_pos_y[] MACRO_ADDR;
+extern Pair8 scroll_pos_x[] MACRO_ADDR;
 extern float D_L08_00161EB4 MACRO_ADDR;
-extern PairA D_L08_00161EB0[] MACRO_ADDR;
-extern float D_L08_00161E54 MACRO_ADDR;
-extern float D_L08_00161E58 MACRO_ADDR;
-extern float D_L08_00161E5C MACRO_ADDR;
-extern char D_L08_00167640[];
+extern PairA batalia_mesh8_scroll_offset[] MACRO_ADDR;
+extern float layered_mesh_effect_center_y MACRO_ADDR;
+extern float layered_mesh_effect_center_z MACRO_ADDR;
+extern float layered_mesh_effect_culling_radius MACRO_ADDR;
+extern char batalia_hero_pos[];
 extern int D_L08_001E8610[];
-extern short D_L08_00161E94;
-extern short D_L08_00161E50;
+extern short layered_mesh_effect_colors_scaled;
+extern short layered_mesh_effect_center_x;
 
 /* Update function: state 0 sets up some global tables (running func_L08_002F2428 once), state 1 tests a point
  * and its distance to D_L08_00167640 and sets D_L08_00161E98 to a 0 to 255 value that fades between 20.0 and 84.0. */
@@ -517,7 +517,7 @@ void update_layered_mesh_effect(unsigned char *moby) {
         break;
     }
 }
-extern f32 D_0015EE6C MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
 typedef u32 u128_F5980 __attribute__((mode(TI), aligned(16)));
 typedef struct {
     s32 count;
@@ -532,21 +532,21 @@ typedef struct {
     s32 path_id; /* index into D_L08_001B0CB0 */
     u8 pad18[0x18];
 } SwarmPathFollower;
-extern char D_0013F4D0[];
-extern f32 D_L08_0015F660[] MACRO_ADDR;
+extern char gHeroPos[];
+extern f32 batalia_zero_vec[] MACRO_ADDR;
 extern s32 func_L00_0025B478_F5980(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
-extern f32 func_001F9D48(void *, void *);
-extern f32 func_L00_001FF860(f32, f32);
-extern f32 func_001F9D10(void *, void *);
-extern void func_001F9BC0(void *);
-extern void func_L00_001FF4B0(void *, void *, f32);
-extern s32 func_001F9850(s32);
-extern f32 func_00214D28(void *, f32, f32);
+extern f32 vec_distance_xy(void *, void *);
+extern f32 fast_atan2(f32, f32);
+extern f32 FastVecDist(void *, void *);
+extern void clear_u64_value(void *);
+extern void vec_scale_to_length(void *, void *, f32);
+extern s32 scale_ticks(s32);
+extern f32 ApproachValue(void *, f32, f32);
 extern void func_0020D678_F5980(struct Moby *) __asm__("func_0020D678");
 extern void func_0022ED80_F5980(s32, s32, struct Moby *) __asm__("func_0022ED80");
-extern void func_L00_002592B0(struct Moby *, f32, f32 *, f32, f32, f32);
-extern void func_L00_0025F4A8(char *, void *, char *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32, s32, s32, u8);
-extern short D_L08_00162000;
+extern void MobySpringTurn(struct Moby *, f32, f32 *, f32, f32, f32);
+extern void spawn_explosion(char *, void *, char *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32, s32, s32, u8);
+extern short path_follower_y_rotation_rate_degrees;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002e9b70.c, FUN_L08_002f44c0. */
 void update_path_following_moby_with_fade(struct Moby *moby)
@@ -636,7 +636,7 @@ void update_path_following_moby_with_fade(struct Moby *moby)
     }
 }
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern float func_001FA888(int);
+extern float IntToFloat(int);
 
 /* Smooth noise: linearly interpolates between two entries of an 8-float ring at arg+0x90. */
 float interpolate_sample_ring(float x, char *arg) {
@@ -790,40 +790,40 @@ void update_flickering_mesh_effect(struct Moby *m) {
     }
     d->flags |= 2;
 }
-extern void func_L02_002E2110(void *);
-extern float func_001F9D10(void *, void *);
-extern void func_L00_0025B178(void *);
-extern void func_00213DE0(void *, int, int, int);
-extern int func_L00_002676E8(void *, void *);
-extern int func_L00_00267290(void *, void *);
-extern int func_002140B0(int);
-extern void func_L01_00279398(float, void *);
-extern void func_L00_00261848(int);
-extern void func_L00_00263DB0(int);
-extern void func_L00_002512D8(int);
-extern void func_L00_00286128(void *, void *);
-extern int func_0020BFC8(int, int);
-extern void func_0020D678(void *);
-extern float func_001F9D48(void *, void *);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA850(float, float);
-extern int func_001F9908(int *arg0);
-extern float func_002140F8(float, float);
-extern float func_001F9878(float);
-extern float func_001FA748(float, float);
-extern void func_00215C00(void *, float, float, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001FA790(float, float);
-extern float func_001F9CE8(void *);
-extern void func_L00_00263950(char *, char *, int, float, float);
-extern char D_L08_00162270[];
-extern short D_L08_00162268;
-extern char *D_L08_0016016C MACRO_ADDR;
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
-extern float D_0015EE64 MACRO_ADDR;
-extern s32 D_0015EE84 MACRO_ADDR;
+extern void attach_big_head_cheat_manipulator_to_matching_moby(void *);
+extern float FastVecDist(void *, void *);
+extern void set_ground_height_band(void *);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern int DialogRequest_Init(void *, void *);
+extern int Npc_TryStartDialog(void *, void *);
+extern int random_integer_below(int);
+extern void PlaceMarkerAheadOfMoby(float, void *);
+extern void unlock_planet(int);
+extern void queue_planet_unlock_message(int);
+extern void jet_clear_persistent(int);
+extern void jet_reset_camera(void *, void *);
+extern int memcard_Save(int, int);
+extern void DeleteMoby(void *);
+extern float vec_distance_xy(void *, void *);
+extern float fast_atan2(float, float);
+extern float FastDiffRots(float, float);
+extern int fast_dec_timer(int *arg0);
+extern float random_float_between(float, float);
+extern float multiply_global_factor(float);
+extern float FastAddRots(float, float);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastSubRots(float, float);
+extern float vec_length_xy(void *);
+extern void EaseManipulatorOffsets(char *, char *, int, float, float);
+extern char batalia_commando_dialogue_name[];
+extern short commando_height_probe_distance_limit;
+extern char *batalia_scene_points MACRO_ADDR;
+extern unsigned char gCheats[] MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern s32 g_current_level_index MACRO_ADDR;
 extern unsigned char D_0013DE4B[] NOT_SDA;
-extern unsigned char D_0013D4B5[] NOT_SDA;
+extern unsigned char menu_item_enabled_25[] NOT_SDA;
 extern unsigned char D_0014171B_q[] __asm__("D_0014171B") NOT_SDA;
 extern char D_0013E633[] NOT_SDA;
 
@@ -1013,11 +1013,11 @@ struct G {
     char pad2[0x132];
     char *objs[1];
 };
-extern struct G D_L08_0016D0E0;
-extern float D_L08_0015F67C MACRO_ADDR;
-extern float D_L08_0015F680 MACRO_ADDR;
-extern unsigned char D_L08_0017CCC0[];
-extern void func_0020D960(char *, int, void *);
+extern struct G batalia_cutscene_state;
+extern float batalia_big_head_cutscene_fov_scale MACRO_ADDR;
+extern float batalia_big_head_cutscene_camera_pullback MACRO_ADDR;
+extern unsigned char deserter_scale_manipulator[];
+extern void AttachManipulator(char *, int, void *);
 
 /* triggers objects matching the moby's class */
 void attach_batalia_deserter_class_manipulator(char *moby) {
@@ -1038,8 +1038,8 @@ void attach_batalia_deserter_class_manipulator(char *moby) {
         }
     }
 }
-extern void func_L08_003065F8(char *moby);
-extern char D_L08_00162378[];
+extern void attach_batalia_deserter_class_manipulator(char *moby);
+extern char batalia_deserter_dialogue_name[];
 
 /* Deserter (moby class 1144) update: a state machine on the byte at +0x20 (states 0 to 2; state 2 deletes the
  * moby when its path ends), then the commando's aiming tail on the countdowns at data + 0x194 and 0x198. */
@@ -1186,7 +1186,7 @@ void batalia_deserter_update(char *m) {
         EaseManipulatorOffsets(m, deserter_data->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
     }
 }
-extern short D_L08_00162390;
+extern short batalia_deserter_manipulator_scale;
 
 /* triggers objects matching the moby's class, with per-segment settings */
 void attach_batalia_plumber_class_manipulator(char *moby) {
@@ -1219,23 +1219,23 @@ void attach_batalia_plumber_class_manipulator(char *moby) {
         }
     }
 }
-extern void func_L08_003078B0(char *moby);
-extern void func_L08_002E2A10(char *arg);
-extern void func_L00_0029A7D0(int);
-extern void func_L00_00211908(void);
-extern void func_L00_002618D8(int, int);
-extern void func_0020D678(void *);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA850(float, float);
-extern int func_001F9908(int *arg0);
-extern float func_002140F8(float, float);
-extern float func_001F9878(float);
-extern float func_001FA748(float, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001FA790(float, float);
-extern s32 D_0015EE84 MACRO_ADDR;
-extern char D_L08_00162398[];
-extern char *D_L08_00160058 MACRO_ADDR;
+extern void attach_batalia_plumber_class_manipulator(char *moby);
+extern void request_batalia_cannon_mount(char *arg);
+extern void PlayMovieEntryIfIdle(int);
+extern void Hero_OnKilled(void);
+extern void grant_inventory_item(int, int);
+extern void DeleteMoby(void *);
+extern float fast_atan2(float, float);
+extern float FastDiffRots(float, float);
+extern int fast_dec_timer(int *arg0);
+extern float random_float_between(float, float);
+extern float multiply_global_factor(float);
+extern float FastAddRots(float, float);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastSubRots(float, float);
+extern s32 g_current_level_index MACRO_ADDR;
+extern char batalia_plumber_dialogue_name[];
+extern char *batalia_mobys MACRO_ADDR;
 
 /* Update function: calls func_L08_003078B0, then a switch on the state byte at +0x20 (states 0, 1, 2 and 5;
  * state 5 and one state-0 case delete the moby). Then, when the byte at +0x53 is zero, updates the countdowns at
@@ -1401,23 +1401,23 @@ close:
 typedef int u128_p __attribute__((mode(TI)));
 typedef struct { unsigned short count; unsigned short best; unsigned int flags; } VRec;
 typedef struct { int first; int second; int third; int fourth; int state; } VData;
-extern char D_0013F450[] NOT_SDA;
+extern char g_hero[] NOT_SDA;
 #define hero_p (*(struct Hero *)D_0013F450)
-extern unsigned char D_0013D510[] NOT_SDA;
-extern unsigned char D_0013D5C8[] NOT_SDA;
-extern unsigned char D_0013D490[] NOT_SDA;
-extern VRec D_00141A68[] NOT_SDA;
+extern unsigned char gSkillPoints[] NOT_SDA;
+extern unsigned char item_available[] NOT_SDA;
+extern unsigned char gSpecialItems[] NOT_SDA;
+extern VRec help_records[] NOT_SDA;
 #define unl_p D_0013D510
 #define ia_p D_0013D5C8
 #define alt_p D_0013D490
 #define HR D_00141A68
-extern int D_0015EFA4 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
-extern int func_00215570(void *arg0, int arg1);
-extern int func_0022EE28(int, int, int);
-extern void func_L00_00264DB8(int, int);
-extern int func_L00_00203F20(int a, int b);
-extern float func_001F9C78(void *a, void *b);
+extern int gameplay_event_frame_count MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
+extern int PlayBankSound(int, int, int);
+extern void ShowBanner(int, int);
+extern int Help_Request(int a, int b);
+extern float FastVecDot(void *a, void *b);
 /* Moby update for a trigger-volume controller; tracks best times and raises Help_Request. */
 void update_batalia_item_triggers_and_help(char *m) {
     VData *data = ((VData *)((Moby *)m)->pvars);
@@ -1513,7 +1513,7 @@ sample_volume:
     if (alt_p[0x2F] == 0 && hero_p.state.control_mode == 15)
         alt_p[0x2F] = 1;
 }
-extern void func_L00_00264870(int);
+extern void cutscene_set_camera_target(int);
 /* per-frame update of a moby that fires a sound event when the game state allows */
 void update_batalia_selected_moby_effects(char *moby) {
     int k;
@@ -1537,11 +1537,11 @@ void update_batalia_selected_moby_effects(char *moby) {
         break;
     }
 }
-extern float func_002140F8(float, float);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L08_00280BC8(float *, float *, int, float);
-extern float D_0015EE6C MACRO_ADDR;
+extern float random_float_between(float, float);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void spawn_effect_with_initial_motion(float *, float *, int, float);
+extern float g_frame_time MACRO_ADDR;
 
 // Per-frame update: for each entry, builds a rotated vector from the moby's data and spawns an effect.
 void spawn_batalia_moby_effects_with_random_motion(char *moby) {
@@ -1565,13 +1565,13 @@ void spawn_batalia_moby_effects_with_random_motion(char *moby) {
         spawn_effect_with_initial_motion(a, c, *(int *)(data + 0x10), *(float *)(data + 0xC));
     }
 }
-extern void func_L08_00259040(void *, int, int, void *);
-extern void func_L00_001FDE48(int, int, int, void *, int);
+extern void add_uv_scroll_offset(void *, int, int, void *);
+extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int D_L08_001F8820_30A278[] __asm__("D_L08_001F8820");
-extern int D_L08_001F87A8[];
+extern int batalia_textured_mesh8_uv_sources[];
 extern int D_L08_001F4F20_30A278[] __asm__("D_L08_001F4F20");
 extern int D_L08_001F8808_30A278[] __asm__("D_L08_001F8808");
-extern int D_L08_001F8788[];
+extern int batalia_textured_mesh8_positions[];
 extern int D_L08_001F87E8_30A278[] __asm__("D_L08_001F87E8");
 
 // Runs eight setup calls over parallel tables, offset by the argument.
@@ -1582,10 +1582,10 @@ void queue_batalia_eight_textured_batches(int arg) {
         draw_env_overlay_mesh(D_L08_001F4F20_30A278[7 - i], batalia_textured_mesh8_positions[7 - i], D_L08_001F87E8_30A278[7 - i], D_L08_001F8820_30A278, 1);
     }
 }
-extern char D_L08_001F8820[];
-extern int D_L08_001F4ED8[];
+extern char batalia_textured_scrolled_uvs[];
+extern int batalia_textured_mesh6_uv_sources[];
 extern int D_L08_001F0488_30A350[] __asm__("D_L08_001F0488");
-extern int D_L08_001F4EC0[];
+extern int batalia_textured_mesh6_positions[];
 extern int D_L08_001F4F08_30A350[] __asm__("D_L08_001F4F08");
 extern long D_L08_00162488_30A350[] __asm__("D_L08_00162488") MACRO_ADDR;
 
@@ -1599,12 +1599,12 @@ void queue_batalia_six_textured_batches(int x) {
     }
 }
 typedef struct { int a, b; } Pair;
-extern char D_L08_001F8820[];
-extern Pair D_L08_00162498[] MACRO_ADDR;
-extern short D_L08_00162458;
-extern short D_L08_00162460;
-extern short D_L08_00162468;
-extern short D_L08_00162478;
+extern char batalia_textured_scrolled_uvs[];
+extern Pair batalia_textured_mesh2_scroll_offset[] MACRO_ADDR;
+extern short batalia_textured_mesh2_counts;
+extern short batalia_textured_mesh2_positions;
+extern short batalia_textured_mesh2_uv_sources;
+extern short batalia_textured_mesh2_colors;
 
 /* Runs the two-entry setup loop for slot `x`: one call fills from the tables, the second applies them. */
 void queue_batalia_offset_textured_batches(int x) {
@@ -1619,16 +1619,16 @@ void queue_batalia_offset_textured_batches(int x) {
         draw_env_overlay_mesh(a[i], c[i], e[i], batalia_textured_scrolled_uvs, 1);
     }
 }
-extern void func_L08_0030A278(int);
-extern void func_L08_0030A350(int);
-extern void func_L08_0030A428(int);
-extern short D_L08_00162420;
-extern short D_L08_00162440;
-extern short D_L08_00162450;
-extern int D_L08_00162424 MACRO_ADDR;
-extern int D_L08_00162428 MACRO_ADDR;
-extern int D_L08_00162444 MACRO_ADDR;
-extern int D_L08_00162480 MACRO_ADDR;
+extern void queue_batalia_eight_textured_batches(int);
+extern void queue_batalia_six_textured_batches(int);
+extern void queue_batalia_offset_textured_batches(int);
+extern short batalia_texture_3a_blend_factor;
+extern short batalia_texture_3c_pair_zero_blend_factor;
+extern short batalia_texture_3d_blend_factor;
+extern int batalia_texture_3b_pair_one_blend_factor_base MACRO_ADDR;
+extern int batalia_texture_3b_pair_two_blend_factor_base MACRO_ADDR;
+extern int batalia_texture_3c_pair_one_blend_factor MACRO_ADDR;
+extern int batalia_textured_effect_fade_alpha MACRO_ADDR;
 
 // Draws three rows of HUD elements with their colours.
 void queue_batalia_textured_batch_passes(void) {
@@ -1654,25 +1654,25 @@ void queue_batalia_textured_batch_passes(void) {
     VU1_addGSregister(0x42, (long)*(int *)&batalia_texture_3d_blend_factor << 32 | 0x48);
     queue_batalia_offset_textured_batches(0);
 }
-extern int func_L00_00200290(char *, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9CB8(void *);
+extern int FastBSphereCheck(char *, float);
+extern void FastVecSub(void *, void *, void *);
+extern float FastVecLength(void *);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern void func_001F49B0(void (*)(void), void *);
-extern void func_L08_0030A4F0(void);
-extern char D_L08_001F87E8[];
-extern char D_L08_001F4F20[];
-extern char D_L08_001F4F08[];
-extern char D_L08_001F0488[];
-extern Pair D_L08_001F8808[];
+extern void AddDrawCallback(void (*)(void), void *);
+extern void queue_batalia_textured_batch_passes(void);
+extern char batalia_textured_mesh8_colors[];
+extern char batalia_textured_mesh8_counts[];
+extern char batalia_textured_mesh6_colors[];
+extern char batalia_textured_mesh6_counts[];
+extern Pair batalia_textured_mesh8_scroll_offset[];
 extern char D_L08_001F8810[];
-extern Pair D_L08_00162488[] MACRO_ADDR;
-extern short D_L08_00162410;
-extern float D_L08_00162414 MACRO_ADDR;
-extern float D_L08_00162418 MACRO_ADDR;
-extern float D_L08_0016241C MACRO_ADDR;
-extern short D_L08_00162454;
-extern char D_L08_00167640[];
+extern Pair batalia_textured_mesh6_scroll_offset[] MACRO_ADDR;
+extern short batalia_effect_reference_position_x;
+extern float batalia_effect_reference_position_y MACRO_ADDR;
+extern float batalia_effect_reference_position_z MACRO_ADDR;
+extern float batalia_effect_culling_radius MACRO_ADDR;
+extern short batalia_textured_effect_colors_scaled;
+extern char batalia_hero_pos[];
 
 // UpdateMoby for a pulsing light effect: init on state 0, draw when close enough on state 1
 void update_batalia_textured_effect(unsigned char *moby) {
@@ -1737,12 +1737,12 @@ void update_batalia_textured_effect(unsigned char *moby) {
         break;
     }
 }
-extern char *func_L00_0025B478(void *, int, int);
-extern int func_0022ED80(int, int, int);
-extern void func_L01_00279790(void *);
-extern void func_L00_00264EA8(void *, int, int, int, int, int, int);
-extern void func_L01_00279E10(void *, int);
-extern void func_0020D678(void *);
+extern char *MobyGetHitMessage(void *, int, int);
+extern int Moby_PlaySound(int, int, int);
+extern void spawn_proximity_gated_bolts(void *);
+extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
+extern void spawn_moby_from_placement(void *, int);
+extern void DeleteMoby(void *);
 
 // Moby state machine: wait, check hit on first probe, then clean up and delete.
 void update_moby_hit_removal_state(char *m) {

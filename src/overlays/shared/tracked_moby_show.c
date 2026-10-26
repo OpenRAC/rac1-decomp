@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern char D_0013E130[];
+extern char level_render_state[];
 /* clears two moby flags and refreshes its linked value */
 void ShowTrackedMoby(void) {
  char *first=*(char **)level_render_state;

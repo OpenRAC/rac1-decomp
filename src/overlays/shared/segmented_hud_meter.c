@@ -3,19 +3,19 @@
 #include "include_asm.h"
 
 LINKER_REMNANT("asm/overlays", func_L06_0024A080);
-extern float func_001FA888(int);
-extern int func_001FA898(float);
-extern int func_001FA8A8(int, int, float);
-extern int func_00200198(int, int);
-extern void func_00200468(int, int, int, int, int, int);
-extern void func_00200650(int, int, int, int, int, int);
-extern void func_00201640(int, int, int, int, long, int);
-extern int D_0013E604;
-extern int D_0015EE80 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
-extern short D_L06_0015F9BC;
-extern short D_L06_0015F9C4;
-extern short D_L06_0015F9C8;
+extern float IntToFloat(int);
+extern int truncate_float_to_s32(float);
+extern int FastTweenColor(int, int, float);
+extern int GetIconFrame(int, int);
+extern void HudSprite(int, int, int, int, int, int);
+extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
+extern void draw_hud_rect_blended(int, int, int, int, long, int);
+extern int frame_size;
+extern int pal_mode MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern short blarg_hud_meter_center_x;
+extern short blarg_hud_meter_last_segment_fill_scale;
+extern short blarg_hud_meter_first_segment_fill_scale;
 
 /* Draw the segmented HUD meter (3, 6 or 7 segments by level), fading with the element's opacity. */
 int draw_segmented_hud_meter(unsigned char *p) {

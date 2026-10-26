@@ -12,9 +12,9 @@ typedef struct {
     float position[4];
 } Level18Moby;
 
-extern Level18Effect *func_L00_0025D390(Level18Moby *);
-extern float func_001F9D10(void *, void *);
-extern int func_001FA898(float);
+extern Level18Effect *GetFlaggedPvarWord(Level18Moby *);
+extern float FastVecDist(void *, void *);
+extern int truncate_float_to_s32(float);
 extern char D_0013E633[];
 
 /* Set an attached effect's alpha from distance and the supplied scale. */

@@ -40,9 +40,9 @@ ASM_FUNC("asm/overlays", func_L00_002001D8);
 ASM_FUNC("asm/overlays", func_L00_00200210);
 ASM_FUNC("asm/overlays", func_L00_00200290);
 ASM_FUNC("asm/overlays", func_L00_002003C8);
-extern float func_001FA790(float, float);
-extern float func_001FA748(float, float);
-extern float func_001F9B88(float);
+extern float FastSubRots(float, float);
+extern float FastAddRots(float, float);
+extern float FastAbsF(float);
 
 /* Steps angle a toward b by at most c, with wraparound. */
 float step_rotation_toward_target(float a, float b, float c) {
@@ -123,17 +123,17 @@ typedef struct {
     int reserved170;            /* 0x170 */
 } FsAa_FAB40;
 
-extern FsAa_FAB40 D_00151880;
-extern void *D_0015EFB8 MACRO_ADDR;
-extern int D_0015EF80 MACRO_ADDR;
-extern int D_0015EF84 MACRO_ADDR;
-extern int D_0015EF88 MACRO_ADDR;
-extern char D_0013CD90[];
-extern char D_0013CED0[];
-extern char D_00151A00[];
-extern char D_00151C60[];
-extern char D_00151EF0[];
-extern char D_00152140[];
+extern FsAa_FAB40 fs_aa_buffer;
+extern void *active_fs_aa_buffer MACRO_ADDR;
+extern int display_buffer_address MACRO_ADDR;
+extern int draw_buffer_address MACRO_ADDR;
+extern int depth_buffer_address MACRO_ADDR;
+extern char first_clear_packet[];
+extern char second_clear_packet[];
+extern char fs_aa_draw_packet[];
+extern char fs_aa_transfer_packet[];
+extern char fs_aa_resample_packet[];
+extern char fs_aa_clear_packet[];
 extern void func_00121DC8(void *, short, short, short, short, short);
 extern int func_001222C8(void *, short, short, short, short, short);
 

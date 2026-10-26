@@ -340,18 +340,18 @@ void run_level_main_loop(void) {
     }
     func_00233308_2465F8();
 }
-int func_00234158(int arg0, int arg1, int arg2, int arg3);
-extern void func_001F9A98(void *, void *, int);
-extern void func_002083E0(void *arg0, unsigned char *arg1, int arg2);
-extern void func_00206F40(int *dst, unsigned char *src, short *offs);
+int Stash_SendData(int arg0, int arg1, int arg2, int arg3);
+extern void FastMemCopy(void *, void *, int);
+extern void load_map_chunk(void *arg0, unsigned char *arg1, int arg2);
+extern void decode_map_mask(int *dst, unsigned char *src, short *offs);
 extern int D_L00_00183FF0[];
-extern float D_L00_00182910[];
-extern float D_L00_00182B70[];
-extern char D_L00_0015FEC0[];
+extern float map_points[];
+extern float map_coefficients[];
+extern char render_archive_source_file[];
 extern int *D_L00_00173F08;
-extern char D_L00_001E8E80[];
+extern char map_archive_stash_comment[];
 extern unsigned char D_L00_00184494[];
-extern unsigned char D_0013D50F[] NOT_SDA;
+extern unsigned char menu_item_enabled_115[] NOT_SDA;
 extern unsigned char D_0014171B[] NOT_SDA;
 
 /* Sets up the map's tables, loads its data from disc and builds the circular mask. */
@@ -369,8 +369,8 @@ void initialize_level_map_archive(void) {
     int x, y, w;
     float lim;
     unsigned char *pp;
-    extern int D_L00_001842F0[];
-    extern char D_00137C80[];
+    extern int map_menu_state[];
+    extern char disc_table[];
 
     map_menu_state[4] = 1;
     { int i;
@@ -496,8 +496,8 @@ struct GameState {
     s32 unk144;
     s32 stash_handles[20]; /* 0x148: FUN_L00_00276078 */
 };
-extern struct GameState D_L00_001BA070;
-extern s32 D_0015EE84 MACRO_ADDR;
+extern struct GameState level_menu_system;
+extern s32 g_current_level_index MACRO_ADDR;
 struct DiscFile {
     s32 sector;
     s32 size;
@@ -550,7 +550,7 @@ struct DiscTable {
     struct DiscFile music_20000[36]; /* 0x2988, music tracks 20000.. */
     s32 music_tracks[1]; /* 0x2AA8, by track number */
 };
-extern struct DiscTable D_00137C80;
+extern struct DiscTable disc_table;
 typedef struct {
     u8 pad0[0x24];
     s32 active;
@@ -577,14 +577,14 @@ typedef struct {
     u8 pad2a4[4];
     s32 last_transfer_bytes;
 } RenderArchiveState;
-extern RenderArchiveState D_L00_001842F0;
-extern u8 D_0013D5E9 NOT_SDA;
-void func_001E9768(void);
-void func_0020CDE0(s32, s32);
-void func_00217628(s32, s32, s32);
-void func_00217748(s32);
-void func_L00_00295010(s32, s32, s32, s32);
-void func_00234238(s32, s32, s32, s32, s32);
+extern RenderArchiveState map_menu_state;
+extern u8 gHaveMapOMatic NOT_SDA;
+void Profile_Mark(void);
+void update_map_icons(s32, s32);
+void start_audio_stream_read(s32, s32, s32);
+void update_audio_stream_until_idle(s32);
+void send_dma_to_stash_slot(s32, s32, s32, s32);
+void stash_receive_data(s32, s32, s32, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/00245c28.c, FUN_L00_002468b8. */
 void initialize_render_archive_transfer(void) {

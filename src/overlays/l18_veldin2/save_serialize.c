@@ -8,7 +8,7 @@ typedef struct {
 } Level18PauseState;
 
 extern Level18PauseState D_L18_001BA9F0;
-extern void func_0020BA00(char *);
+extern void memcard_MakeWholeSave(char *);
 
 /* Serialize save data once and retain its destination buffer. */
 void serialize_whole_save_once(char *save_data) {

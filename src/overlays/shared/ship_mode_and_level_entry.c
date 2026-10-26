@@ -4,12 +4,12 @@
 #include "callees.h"
 #include "include_asm.h"
 
-extern void func_L00_0028FC68(void);
+extern void deactivate_recorded_moby(void);
 extern short D_L00_00160600;
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
 extern char D_0013E130_a[] __asm__("D_0013E130") NOT_SDA;
-extern void func_L00_0028F458(void);
-extern void func_00213D28(void *, int, int);
+extern void update_moby_proximity_interaction(void);
+extern void MobySetAnimation(void *, int, int);
 
 /* Start the moby's camera-follow state: stash it in the global record, point its update at func_L00_0028F458. */
 void initialize_moby_state_record(char *m) {
@@ -36,7 +36,7 @@ void initialize_moby_state_record(char *m) {
     *(int *)(g + 0x34) = src[1];
     *(int *)(g + 0x38) = src[2];
 }
-extern char *D_0013E130;
+extern char *level_render_state;
 /* Hides and deactivates the recorded moby, if any. */
 void deactivate_recorded_moby(void) {
     char *m = level_render_state;
@@ -52,27 +52,27 @@ typedef struct { char pad[0x58]; int x58; int x5c; } C_28e9c8;
 extern E_28e9c8 D_0013E130_s __asm__("D_0013E130") NOT_SDA;
 extern C_28e9c8 D_L00_0016C960_s __asm__("D_L00_0016C960");
 extern int D_L00_0015F6BC_m __asm__("D_L00_0015F6BC") MACRO_ADDR;
-extern char D_L00_0017C440[];
-extern char D_L00_0017C480[];
+extern char hero_scale_manipulator[];
+extern char cheat_scale_manipulator[];
 extern struct { int x0, x4, x8; } D_L00_00173F00_s __asm__("D_L00_00173F00");
-extern int D_L00_0016128C MACRO_ADDR;
-extern int D_L00_0015F6A8 MACRO_ADDR;
-extern float D_L00_0015F4FC MACRO_ADDR;
+extern int lvl_vu_chain_buffer_size MACRO_ADDR;
+extern int cinematic_mode MACRO_ADDR;
+extern float gFadeLvl MACRO_ADDR;
 extern int D_L00_0015F500 MACRO_ADDR;
 extern unsigned char D_001414F5[] NOT_SDA;
-extern O_28e9c8 *D_L00_0016009C MACRO_ADDR;
-extern unsigned char D_0013D5CA[] NOT_SDA;
+extern O_28e9c8 *level_mobys_end MACRO_ADDR;
+extern unsigned char gHaveHeliPack[] NOT_SDA;
 typedef struct { char pad[0x1C]; int x1c; char pad20[0x3A]; short x5a; } S_171b;
 extern unsigned char D_0014171B[] NOT_SDA;
-extern void func_001F99B0(void *, int, int);
-extern void func_002348B8(void);
-extern int func_L00_00222B80(int, int);
-extern void func_L00_00233868(void);
-extern int func_001F9850(int);
-extern void func_L00_00245FE0(int, int);
-extern void func_00205220(int);
+extern void FastMemSet(void *, int, int);
+extern void calculate_dma_transfer_address(void);
+extern int HeroEnterMoveState(int, int);
+extern void HeroSetObjectFlags(void);
+extern int scale_ticks(int);
+extern void load_chunks_with_optional_fade(int, int);
+extern void parse_space_scene_chunk(int);
 extern int func_00122598(int);
-extern void func_00216960(void);
+extern void Music_ContinueStreamIfReady(void);
 // Puts the hero into ship mode: clears the ship records, flags the matching mobys and picks the ship's start sound and camera set. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028e9c8.
 void initialize_level_transition_with_audio(int a) {
     O_28e9c8 *o;
@@ -141,12 +141,12 @@ void initialize_level_transition_with_audio(int a) {
     }
     Music_ContinueStreamIfReady();
 }
-extern char D_0013F450[] NOT_SDA;
-extern short D_L00_0015F6BC;
+extern char g_hero[] NOT_SDA;
+extern short skip_frame;
 extern unsigned char D_0013E15A[] NOT_SDA;
-extern void func_00216EF0(int);
-extern void func_L00_00203FB8(void);
-extern void func_L00_0028FCA0(int);
+extern void music_Pause(int);
+extern void clear_active_help_record(void);
+extern void initialize_level_transition_with_audio(int);
 /* Pauses music, clears the help message and starts the level transition. */
 void prepare_level_transition_with_help_cleanup(void) {
     char *g = g_hero;
@@ -165,15 +165,15 @@ void prepare_level_transition_with_help_cleanup(void) {
     *(short *)(D_0013E15A + 2) = 0;
 }
 extern char D_0013DE6E[];
-extern int D_L00_0015F6B8[] MACRO_ADDR;
+extern int level_draw_frame_load[] MACRO_ADDR;
 extern int D_L00_00161288[] MACRO_ADDR;
-extern int D_L00_0016128C MACRO_ADDR;
-extern char D_L00_00173F00[];
-extern char D_L00_0016C960[];
-extern int D_0015EE80 MACRO_ADDR;
-extern int D_L00_0015F6A4 MACRO_ADDR;
-extern short D_L00_00160630;
-extern int func_0020BFC8(int, int);
+extern int lvl_vu_chain_buffer_size MACRO_ADDR;
+extern char lvl_resource_buffers[];
+extern char cutscene_state[];
+extern int pal_mode MACRO_ADDR;
+extern int memcard_last_save_slot MACRO_ADDR;
+extern short level_transition_ticks_by_variant;
+extern int memcard_Save(int, int);
 
 /* start a ship-travel transition to the given destination, setting up the flight path and timing Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028ed58. */
 void prepare_target_level_transition(int dest) {
@@ -218,11 +218,11 @@ extern E_eed0 D_0013E130_901A8 __asm__("D_0013E130");
 extern struct { int x0, x4, x8_c; } D_L00_00173F00_901A8 __asm__("D_L00_00173F00");
 extern struct { char p[0x58]; int x58, x5c; } D_L00_0016C960_901A8 __asm__("D_L00_0016C960");
 extern int D_L00_0016128C_901A8 __asm__("D_L00_0016128C") MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
 extern u8 D_0013DE4B NOT_SDA;
-extern u8 D_0013D4F8[];
-void func_002348B8(void);
-void func_L00_0028FCA0(s32);
+extern u8 menu_item_enabled_92[];
+void calculate_dma_transfer_address(void);
+void initialize_level_transition_with_audio(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028eed0. */
 /* Camera-follow update. Exact once the file declares D_L00_0016128C as a 4-byte MACRO_ADDR int: a `short` declaration of the same symbol makes the assembler use $gp for
@@ -260,19 +260,19 @@ typedef struct {
 } Q_28efc8;
 typedef struct { char *p0; char pad[0x22]; short h26; } G_28efc8;
 extern G_28efc8 D_0013E130_902A0 __asm__("D_0013E130");
-extern V_28efc8 D_L00_001BDD40[];
-extern V_28efc8 D_L00_001BDDC0[];
-extern V_28efc8 D_L00_001BDDE0[];
-extern float D_L00_001BDD20[];
-extern V_28efc8 D_L00_001BDE00[];
-extern short D_L00_00160640;
-void func_001F9C30(float, void *, void *);
-void func_001F9BD8(void *, void *, void *);
-void func_001F9EC0(void *, void *, void *);
-long func_001F4868(int);
-int func_002140B0(int);
-float func_001FA888(int);
-void func_L00_001FD1D8(void *, void *, int);
+extern V_28efc8 variant_effect_quad_offsets[];
+extern V_28efc8 variant_effect_quad_offsets_1[];
+extern V_28efc8 variant_effect_quad_offsets_2[];
+extern float variant_effect_quad_uvs[];
+extern V_28efc8 variant_effect_quad_corners[];
+extern short variant_effect_quad_counts;
+void FastVecScale(float, void *, void *);
+void FastVecAdd(void *, void *, void *);
+void matrix_mul_vec3(void *, void *, void *);
+long GetEffectTex(int);
+int random_integer_below(int);
+float IntToFloat(int);
+void draw_world_quad(void *, void *, int);
 
 /* The 0x90-byte quad the effect builds: the NTSC GeometryQuad layout. */
 struct GeometryQuad {

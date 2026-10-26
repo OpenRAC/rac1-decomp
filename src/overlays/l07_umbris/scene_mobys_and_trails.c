@@ -6,8 +6,8 @@
 
 /* functional: high. The NTSC decomp's matched C for the same instructions (FUN_L07_0031a9e8), carried to PAL's
    names by OpenRAC's tools/port.py. Not a PAL match: exact alone, but its file's other functions stop matching with it in place. */
-extern s32 D_0015EE84 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
+extern s32 g_current_level_index MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 struct L07MovingVars {
     Vec4f home;
@@ -21,15 +21,15 @@ struct L07MovingVars {
     int indicator;
     int forceReturn;
 };
-extern u8 D_0014C150[];
-extern u8 D_L07_0015FD08[];
-extern s32 D_L07_001845A8[];
-extern struct Moby *D_L07_00160058 MACRO_ADDR;
-extern float func_001F9CB8(void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9EC0(void *, void *, void *);
-extern int func_0022ED80(int, int, int);
+extern u8 saved_mission_state[];
+extern u8 umbris_mission_group_state[];
+extern s32 umbris_indicator_states[];
+extern struct Moby *level_mobys MACRO_ADDR;
+extern float FastVecLength(void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern int Moby_PlaySound(int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/0030cd20.c, FUN_L07_0031a9e8. */
 void update_moby_offset_motion(struct Moby *moby) {
@@ -162,11 +162,11 @@ void update_moby_offset_motion(struct Moby *moby) {
 typedef union { int i; float f; } EaseWord1C7C0;
 typedef struct { int target; int startState; int endState; float speed; float decay; float limit; EaseWord1C7C0 value; } EaseData1C7C0;
 typedef struct { char pad[0x20]; unsigned char state; char pad1[0x23]; EaseWord1C7C0 angle; char pad2[0x30]; EaseData1C7C0 *data; char pad3[0x84]; } EaseMoby1C7C0;
-extern int func_0022ED80(int, int, int);
-extern float func_001F9F90(float);
-extern float func_001FA748(float, float);
-extern float func_001FA790(float, float);
-extern float D_0015EE6C MACRO_ADDR;
+extern int Moby_PlaySound(int, int, int);
+extern float FastCos(float);
+extern float FastAddRots(float, float);
+extern float FastSubRots(float, float);
+extern float g_frame_time MACRO_ADDR;
 extern EaseMoby1C7C0 *D_L07_00160058_ease __asm__("D_L07_00160058") MACRO_ADDR;
 
 // UpdateMoby_1133: state machine that eases a value toward targets while the linked moby is alive.
@@ -404,16 +404,16 @@ void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby)
     }
 }
 typedef struct { char pad[0x178]; int arr[8]; } L07SparkState;
-extern void func_L00_00264870(int);
-extern int func_001F9850(int);
-extern void func_L00_00250800(void *, int, void *);
-extern float func_002140F8(float, float);
-extern int func_L00_00258BC8(int, int);
-extern int func_002140B0(int);
+extern void cutscene_set_camera_target(int);
+extern int scale_ticks(int);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern float random_float_between(float, float);
+extern int rand_range(int, int);
+extern int random_integer_below(int);
 extern char *func_L00_0026DEA0_c(void *, int, void *, int, float, float, float, float) __asm__("func_L00_0026DEA0");
-extern int D_L07_0015F6A8 MACRO_ADDR;
+extern int umbris_scene_state MACRO_ADDR;
 extern char D_L07_0016C960_c[] __asm__("D_L07_0016C960");
-extern float D_L07_0015F660[] MACRO_ADDR;
+extern float umbris_zero_vec[] MACRO_ADDR;
 
 // Runs the effect spawner: waits for the level flag, then emits sparks at four joints of a target moby.
 void update_scene_moby_effect_bursts(char *m) {
@@ -469,12 +469,12 @@ void update_scene_moby_effect_bursts(char *m) {
         break;
     }
 }
-extern char *func_L00_0025B478(void *, int, int);
-extern void func_L01_00279790(void *);
-extern void func_L00_00265050(void *, int, void *, void *, int, int, float, void *, void *, void *);
-extern char *func_0020D348(int);
-extern void func_L00_00251E30(void *);
-extern void func_0020D678(void *);
+extern char *MobyGetHitMessage(void *, int, int);
+extern void spawn_proximity_gated_bolts(void *);
+extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
+extern char *CreateMoby(int);
+extern void moby_build_matrix(void *);
+extern void DeleteMoby(void *);
 /* Level moby state machine: wait, detect proximity, then emit effects, spawn a replacement and delete itself. */
 void mushroom_update(char *m) {
     int hit = 0;
@@ -585,13 +585,13 @@ void seashell_update(unsigned char *m) {
     }
 }
 
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_L00_00264BE8(void *, void *, void *, float, float);
-extern char D_L07_0016C960[];
-extern short D_L07_00161D68;
-extern short D_L07_00161D70;
-extern short D_L07_00161D6C;
+extern void FastVecSub(void *dst, void *a, void *b);
+extern void vec_scale_to_length(void *, void *, float);
+extern void draw_trail(void *, void *, void *, float, float);
+extern char umbris_cutscene_state[];
+extern short umbris_scene_trail_speed;
+extern short umbris_scene_trail_core_size;
+extern short umbris_scene_trail_glow_size;
 
 /* Level moby state machine: UpdateMoby_1789: spawn state then position three points.
  * Matched using lever: g - (-(idx * 4)) + 0x178 fixes addu operand order. */

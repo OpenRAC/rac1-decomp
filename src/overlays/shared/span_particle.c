@@ -3,12 +3,12 @@
 #include "include_asm.h"
 
 typedef int u128 __attribute__((mode(TI)));
-extern unsigned char *D_L08_001B2B80;
-extern unsigned char *func_00218928(int);
-extern float func_002140F8(float, float);
-extern void func_L00_001FF4B0(void *, void *, float);
+extern unsigned char *batalia_span_particle_textures_ptr;
+extern unsigned char *create_part(int);
+extern float random_float_between(float, float);
+extern void vec_scale_to_length(void *, void *, float);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern void func_001F9BD8(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
 
 // Spawns a particle at a position with a color and scale chosen by kind.
 void spawn_span_particle(float *pos, int kind, float *vec, float scale) {

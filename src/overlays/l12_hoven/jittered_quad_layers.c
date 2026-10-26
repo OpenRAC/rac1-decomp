@@ -15,23 +15,23 @@ typedef struct Pkt {
 } Pkt;
 typedef struct Vq { float x, y, z, w; } __attribute__((aligned(16))) Vq;
 
-extern long func_001F4868(int);
-extern void func_001FA460(void *, void *);
-extern float func_002140F8(float, float);
-extern void func_L00_001FD1D8(void *, void *, int);
-extern float D_L12_001FB990[][2];
-extern Vq D_L12_001FB9B0[];
-extern Vq D_L12_001FB9F0[];
-extern short D_L12_00162010;
-extern short D_L12_00162014;
-extern short D_L12_0016203C;
-extern short D_L12_00162040;
-extern short D_L12_00162044;
-extern short D_L12_00162048;
-extern short D_L12_0016204C;
-extern short D_L12_00162050;
-extern short D_L12_00162054;
-extern short D_L12_00162058;
+extern long GetEffectTex(int);
+extern void copy_matrix_rotation(void *, void *);
+extern float random_float_between(float, float);
+extern void draw_world_quad(void *, void *, int);
+extern float hoven_jitter_quad_uvs[][2];
+extern Vq hoven_jitter_quad_back_corners[];
+extern Vq hoven_jitter_quad_front_corners[];
+extern short hoven_jitter_quad_color;
+extern short hoven_jitter_quad_back_color;
+extern short hoven_jitter_quad_blend_a;
+extern short hoven_jitter_quad_blend_b;
+extern short hoven_jitter_quad_blend_c;
+extern short hoven_jitter_quad_blend_d;
+extern short hoven_jitter_quad_back_blend_a;
+extern short hoven_jitter_quad_back_blend_b;
+extern short hoven_jitter_quad_back_blend_c;
+extern short hoven_jitter_quad_back_blend_d;
 
 /* Draw five layers of randomly jittered textured quads in the moby's frame. */
 void draw_hoven_jittered_quad_layers(char *m) {

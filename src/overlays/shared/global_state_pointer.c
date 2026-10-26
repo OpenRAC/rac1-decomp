@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern int D_L00_00173154;
+extern int debug_overlay_mode;
 
 // Returns the value of a global data pointer
 int get_global_state_pointer(void) {

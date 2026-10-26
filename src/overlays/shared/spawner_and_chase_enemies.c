@@ -1217,12 +1217,12 @@ struct Moby *respawn_spawner_child(struct Moby *owner, Vec4 *pos)
     }
     return result;
 }
-extern char *func_L00_0025B478(void *, int, int);
-extern int func_L00_0025B4D0(void *, void *, void *, int, int *, int, int, int);
-extern void func_L00_0025E4B0(void *m, short *p);
-extern void func_L00_0025E590(void *, void *);
-extern float func_001F9B88(float);
-extern void func_L00_002584A8(void *, int, int);
+extern char *MobyGetHitMessage(void *, int, int);
+extern int ComputeHitResponse(void *, void *, void *, int, int *, int, int, int);
+extern void RerollEffectCounter(void *m, short *p);
+extern void StepColorFade(void *, void *);
+extern float FastAbsF(float);
+extern void SetDeathBits(void *, int, int);
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
 extern char D_0013E633[];
 
@@ -1251,7 +1251,7 @@ void process_spawner_hit_record(char *moby, char *d) {
     ((unsigned char *)moby)[0xA4] = 0xFF;
     StepColorFade(moby, d + 0x60);
 }
-extern int func_L01_0026EFB8(int, int);
+extern int count_active_moby_group_members(int, int);
 
 /* Counts the live level-0x75E mobys among the 20 slots at +0xB0 and returns the last slot not counted. */
 int refresh_spawner_population_and_find_free_slot(int unused, char *m) {
@@ -1457,10 +1457,10 @@ void Moby1885Update(char *moby)
         return;
     }
 }
-extern void *func_0020D348(int);
-extern float func_002140F8(float, float);
-extern int func_001F9850(int);
-extern void func_L00_00251E30(void *);
+extern void *CreateMoby(int);
+extern float random_float_between(float, float);
+extern int scale_ticks(int);
+extern void moby_build_matrix(void *);
 
 /* Spawns a moby of class 0x75E and initialises its data. */
 char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsigned char b) {
@@ -1486,7 +1486,7 @@ char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsign
     }
     return m;
 }
-extern void func_0020D678(void *);
+extern void DeleteMoby(void *);
 
 /* Clear the egg's slot in its live spawner (class 0x75D), then delete the egg moby. */
 void remove_spawner_egg(void *moby, char *data)
@@ -1503,8 +1503,8 @@ void remove_spawner_egg(void *moby, char *data)
 }
 typedef int OvlQuad __attribute__((mode(TI)));
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern f32 func_L00_001FF860(f32, f32);
-void func_L09_0030C790(void *moby, char *data);
+extern f32 fast_atan2(f32, f32);
+void remove_spawner_egg(void *moby, char *data);
 typedef struct {
     u8 pad0[0x18];
     s32 moby; /* 0x18: passed to FUN_002141f8 (reads moby+0x34, moby+0x78); 0 when no moby was hit */
@@ -1531,27 +1531,27 @@ typedef struct {
     u8 pad0[0xB0];
     struct Moby *bubbles[20];
 } BubbleOwnerVars;
-extern f32 D_0015EE60 MACRO_ADDR;
-extern f32 D_0015EE70 MACRO_ADDR;
-extern CollisionHit D_L09_00174040;
-extern s32 func_L00_001EFFF0(void *, void *, s32, struct Moby *, s32);
-extern s32 func_L00_001F3958(void);
-extern s32 func_001F9938(void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9C30(void *, void *, f32);
-extern f32 func_001F9CB8(void *);
-extern f32 func_001F9CE8(void *);
-extern void func_L00_001FF4B0(void *, void *, f32);
-extern f32 func_002140F8(f32, f32);
-extern f32 func_00214358(void *, s32, f32);
-extern s32 func_0022ED80(s32, s32, struct Moby *);
-extern s32 func_L00_001F10E0(f32, void *, s32, struct Moby *);
-extern void func_L00_001FEF78(void *);
-extern void func_L00_001FF610(void *, void *, void *);
-extern void func_L00_0025B040(struct Moby *, f32);
-extern f32 func_L00_0025F368(f32);
-extern struct Moby *func_L09_0030BB28(struct Moby *, Vec4 *);
+extern f32 frame_scale MACRO_ADDR;
+extern f32 g_frame_time_sq MACRO_ADDR;
+extern CollisionHit gaspar_coll_hit;
+extern s32 coll_line(void *, void *, s32, struct Moby *, s32);
+extern s32 CollType(void);
+extern s32 FastDecTimer(void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecScale(void *, void *, f32);
+extern f32 FastVecLength(void *);
+extern f32 vec_length_xy(void *);
+extern void vec_scale_to_length(void *, void *, f32);
+extern f32 random_float_between(f32, f32);
+extern f32 ProbeGroundHeight(void *, s32, f32);
+extern s32 Moby_PlaySound(s32, s32, struct Moby *);
+extern s32 coll_sphere(f32, void *, s32, struct Moby *);
+extern void fast_subtract_rotations_cf(void *);
+extern void vec_reflect(void *, void *, void *);
+extern void jet_animate(struct Moby *, f32);
+extern f32 normalize_angle(f32);
+extern struct Moby *respawn_spawner_child(struct Moby *, Vec4 *);
 /* Bounce a bubble off what it hit: slow on floors until it stops, play its bounce sound. */
 static inline void bubble_bounce(struct Moby *moby, BubbleVars *vars) {
     CollisionHit *hit = &gaspar_coll_hit;

@@ -14,10 +14,10 @@ typedef struct {
     Level07Moby *moby;
 } Level07State;
 
-extern int D_0015EE84 MACRO_ADDR;
-extern Level07State D_L07_0016C960;
-extern void func_00233AB8(void *);
-extern void func_001F49B0(void (*)(void *), void *);
+extern int g_current_level_index MACRO_ADDR;
+extern Level07State umbris_cutscene_state;
+extern void render_environment_mapped_object(void *);
+extern void AddDrawCallback(void (*)(void *), void *);
 
 /* Register the level draw callback for the target moby in state four. */
 void register_level07_moby_draw_callback(void) {

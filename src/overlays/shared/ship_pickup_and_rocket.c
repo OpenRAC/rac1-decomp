@@ -4,15 +4,15 @@
 #include "moby.h"
 
 typedef unsigned int u128_7d50 __attribute__((mode(TI)));
-extern int D_L13_00161240 MACRO_ADDR;
-extern u128_7d50 D_L13_00160960;
-extern u128_7d50 D_L13_00160970;
-extern int D_0013E600[];
-extern float func_001FA888(int);
-extern int func_001FA898(float);
-extern void func_001FA218(void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_001F9C30(void *, void *, float);
+extern int gemlik_dma_packet_cursor MACRO_ADDR;
+extern u128_7d50 gemlik_2d_prim_giftag;
+extern u128_7d50 gemlik_2d_vertex_giftag;
+extern int g_screen_extent[];
+extern float IntToFloat(int);
+extern int truncate_float_to_s32(float);
+extern void euler_to_matrix(void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern void FastVecScale(void *, void *, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b7d50.c, FUN_L13_002b7d50. */
 void emit_transformed_2d_vertex_packet(short *pts, int n, float x0, float y0, unsigned int col, unsigned long prim, float scale, float ang) {
@@ -67,8 +67,8 @@ void emit_transformed_2d_vertex_packet(short *pts, int n, float x0, float y0, un
     }
     gemlik_dma_packet_cursor += ((n + 1) / 2) * 16;
 }
-extern float func_001FA790(float, float);
-extern float func_001FA748(float, float);
+extern float FastSubRots(float, float);
+extern float FastAddRots(float, float);
 
 /* Blends from b to c by the eased fraction of x between lo and hi; flag selects the call path. */
 float interpolate_value_with_repeated_squaring(int flag, int n, float x, float b, float c, float lo, float hi)
@@ -99,9 +99,9 @@ float interpolate_value_with_repeated_squaring(int flag, int n, float x, float b
     }
     return r;
 }
-extern unsigned char *func_0020D348(int);
-extern void func_L00_00251E30(void *);
-extern void func_L00_0025E210(void *);
+extern unsigned char *CreateMoby(int);
+extern void moby_build_matrix(void *);
+extern void copy_hero_moby_field_38(void *);
 
 /* Spawns a ship pickup moby of the given class at position. */
 unsigned char *spawn_ship_pickup(char *position, int moby_class)
@@ -120,21 +120,21 @@ unsigned char *spawn_ship_pickup(char *position, int moby_class)
     return moby;
 }
 #include "hero.h"
-extern Hero D_0013F450;
-extern struct Moby *D_L13_00160058 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
+extern Hero g_hero;
+extern struct Moby *gemlik_moby_array_start MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
 extern int D_L13_001741D8 __attribute__((section(".data")));
-extern int func_001F9908(void *);
-extern void func_L00_00250800(void *, int, void *);
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern float func_001F9D10(void *, void *);
-extern float func_001F9B50(float);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_0022ED80(int, int, void *);
-extern void func_0020D678(void *);
-extern void func_L00_00263B78(float, float, void *, void *, void *);
+extern int fast_dec_timer(void *);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern int coll_sphere(float, void *, int, void *);
+extern float FastVecDist(void *, void *);
+extern float vec_length(float);
+extern void FastVecSub(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void Moby_PlaySound(int, int, void *);
+extern void DeleteMoby(void *);
+extern void update_moby_vertical_oscillation(float, float, void *, void *, void *);
 /* Ship pickup update: waits, homes in on the player ship and gives ammo or health when taken. */
 void ShipPickupUpdate(char *moby) {
     int *vars = ((int *)((Moby *)moby)->pvars);
@@ -267,11 +267,11 @@ frame_tail:
     if (((Moby *)moby)->pos.z < 20.0f) ((Moby *)moby)->pos.z = 20.0f;
     if (1003.0f < ((Moby *)moby)->pos.z) ((Moby *)moby)->pos.z = 1003.0f;
 }
-extern void *func_L00_0025D390(char *);
-extern void func_00215C00(void *, float, float, float);
-extern void func_00213DE0(void *, int, int, int);
-extern void func_001F9BD8(void *, void *, void *);
-extern char *func_L00_0026E940(char *, int, int, int, float);
+extern void *GetFlaggedPvarWord(char *);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern void FastVecAdd(void *, void *, void *);
+extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
 
 // Spawns an effect moby attached to a target and positioned from a source.
 unsigned char *spawn_ship_rocket(char *src, char *pos, char *target, char *vec, int arg, float scale) {
@@ -429,8 +429,8 @@ void update_ship_rocket(Moby *m) {
 typedef struct { char pad0[0x39]; unsigned char field39; } Level13VendorItem;
 typedef struct { char pad0[0x1C]; Level13VendorItem *item; } Level13VendorRecord;
 typedef struct { char pad0[0x86]; short class_id; } Level13VendorCurrentMoby;
-extern Level13VendorCurrentMoby *D_L13_00167180;
-extern Level13VendorRecord *D_L13_0015F050 MACRO_ADDR;
+extern Level13VendorCurrentMoby *gemlik_player_camera;
+extern Level13VendorRecord *gemlik_camera_descriptors MACRO_ADDR;
 /* marks a vendor item for the current moby class */
 void flag_vendor_item(int index) {
  Level13VendorCurrentMoby *m=gemlik_player_camera;

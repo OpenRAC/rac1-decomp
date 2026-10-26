@@ -2,12 +2,12 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern int D_00137C80[];
-extern char D_L00_0018F040[];
-extern int func_002176C8(void *, int, int);
-extern int D_0015EF88 MACRO_ADDR;
-extern void func_001E94E8(void *arg0, void *arg1, int arg2, int arg3);
-extern long D_0015EFC8 MACRO_ADDR;
+extern int disc_table[];
+extern char debug_font_pif_buffer[];
+extern int Load(void *, int, int);
+extern int depth_buffer_address MACRO_ADDR;
+extern void LoadPifAsPSMT8H(void *arg0, void *arg1, int arg2, int arg3);
+extern long debug_font_pif_header MACRO_ADDR;
 
 /* Loads the texture at D_L00_0018F040 into VRAM and caches its TEX0 word. Exact with the two
  * globals declared MACRO_ADDR and func_002176C8 returning int (its result unused); joined to the

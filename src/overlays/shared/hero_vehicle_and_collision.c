@@ -21,17 +21,17 @@ typedef struct {
     f32 normal_y; /* 0x44: FUN_001f9e90 (atan2) of normal_x, normal_y is stored in the hero */
     f32 normal_z; /* 0x48: ledge probes compare atan2(normal_z, xy length) with 20 degrees */
 } CollisionHit;
-extern s32 D_L00_0015F6B0 MACRO_ADDR;
-extern CollisionHit D_L00_00173F40;
-extern void func_L00_00213F38(void);
-extern s32 func_L00_0020A8B8(f32 *, f32, f32);
-extern f32 func_001F9CE8(void *);
-extern f32 func_L00_001FF860(f32, f32);
-extern s32 func_L00_0025F410(s32);
-extern void func_L00_00233EE0(Vec4 *, f32, f32, f32);
+extern s32 level_frame_counter MACRO_ADDR;
+extern CollisionHit coll_hit_result;
+extern void apply_hero_motion_and_resolve_collisions(void);
+extern s32 probe_hero_forward_collision(f32 *, f32, f32);
+extern f32 vec_length_xy(void *);
+extern f32 fast_atan2(f32, f32);
+extern s32 is_moby_in_class_range_500_to_540(s32);
+extern void transform_hero_local_offset_to_world(Vec4 *, f32, f32, f32);
 extern int func_L00_001EFFF0_21A98(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
-extern f32 func_001F9D10(void *, void *);
-extern s32 func_L00_001F10E0(f32, Vec4 *, s32, s32);
+extern f32 FastVecDist(void *, void *);
+extern s32 coll_sphere(f32, Vec4 *, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/00221310.c, FUN_L00_00221310. */
 void update_hero_motion_and_collision_probes(void) {
@@ -276,15 +276,15 @@ skip:
     }
 }
 extern unsigned char D_0013E633[] NOT_SDA;
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE64 MACRO_ADDR;
-extern float func_001F9CB8(void *);
-extern int func_001F9850(int);
-extern float func_001F9D48(void *, void *);
-extern float func_L00_001FF860(float, float);
-extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, float eps);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
+extern float g_frame_time MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern float FastVecLength(void *);
+extern int scale_ticks(int);
+extern float vec_distance_xy(void *, void *);
+extern float fast_atan2(float, float);
+extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
+extern float FastCos(float);
+extern float FastSin(float);
 
 // Steers the player's slide: starts it when a dash ends near a wall, then aims its velocity.
 void update_hero_planar_distance_spring_motion(void) {
@@ -328,8 +328,8 @@ void update_hero_planar_distance_spring_motion(void) {
         *(int *)(p + 0x244) = 0;
     }
 }
-extern int func_001F9850(int);
-extern int func_L00_00222580(void);
+extern int scale_ticks(int);
+extern int stick_direction_vs_facing(void);
 /* Returns a tick count for the stick tilt. */
 int get_hero_high_jump_input_window_frames(void) {
     int r = scale_ticks(12);
@@ -341,9 +341,9 @@ int get_hero_high_jump_input_window_frames(void) {
     }
     return r;
 }
-extern void func_L00_00211F80(int, float);
-extern float func_001FA790(float, float);
-extern float func_001FA850(float, float);
+extern void stick_target(int, float);
+extern float FastSubRots(float, float);
+extern float FastDiffRots(float, float);
 
 // Classifies the stick direction into one of four quadrants (2, 3, 1 or 0).
 int stick_direction_vs_facing(void) {
@@ -362,11 +362,11 @@ int stick_direction_vs_facing(void) {
     }
     return r;
 }
-extern char *D_L00_001600A4 MACRO_ADDR;
-extern float func_001F9D10(void *, void *);
-extern float func_L00_0020DD48(void *, int *, float, float, float, float);
-extern int func_00215570(void *, int);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
+extern char *suck_moby_list MACRO_ADDR;
+extern float FastVecDist(void *, void *);
+extern float score_hero_target_candidate(void *, int *, float, float, float, float);
+extern int is_point_inside_clip_volume(void *, int);
+extern int coll_line(void *, void *, int, int, int);
 
 typedef struct Q_221ee0 {
     s32 i0;                    /* 0x00 nonzero: the target record is live */
@@ -530,71 +530,71 @@ int select_hero_grapple_target(void) {
 typedef struct { int a; int b; int c; char pad[0x20]; } T2C_222B80;
 typedef struct { char pad[0x194]; float f194; } H194_222B80;
 typedef struct { char pad[0x694]; float f694; } H694_222B80;
-extern void func_L00_002638B8(char *o);
-extern void func_L00_0020BFA8(void);
-extern void func_L00_0020E9F8(int a, int b);
-extern int func_L00_00258BC8(int, int);
-extern void func_L00_0020AB78(void);
-extern void func_L00_00227E08(void);
-extern int func_L00_00205618(int a);
-extern void func_001F9BC0(void *);
-extern void func_L00_00232C10(int, int, float);
-extern void func_00213DE0(void *, int, int, int);
-extern void func_L00_002607A8(void *a, float x);
-extern float func_001F9CE8(void *);
-extern void func_L00_0020ED30(void);
-extern int func_L00_0022A268(void);
-extern float func_L00_00234250(float *v);
-extern int func_L00_002056D0(int);
-extern int func_L00_00217570(int, int);
-extern void func_L00_00232E60(int bank, int seq);
-extern float func_L00_00258C80(float lo, float hi);
-extern void func_L00_002144A0(float);
-extern void func_L00_0020A320(int, int, int);
-extern void func_L00_00263578(int a, char *b);
-extern void func_L00_002635A0(char *o, int a, int b);
-extern float func_L00_0020DCF0(int back);
-extern int func_001FA898(float);
-extern void func_L00_00215628(float a, float b, float c);
-extern char *func_L00_0020DAF8(int);
-extern int func_L00_00211A18(char *);
-extern float func_001FA748(float, float);
-extern void *func_L00_0025B478(void *, int, int);
-extern void func_L00_002056D8(int n);
-extern int func_L00_0020DC00(void);
-extern void func_L00_00207220(void);
-extern void func_L00_0025E860(int a, char *pos, char *b, char *c, int d, float f);
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern float func_001F9CB8(void *a);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern float func_001F9C78(void *a, void *b);
-extern void func_L00_00251358(void *, void *, void *, void *);
-extern int func_0022ED80(int, int, int);
-extern void func_L00_002A5158(int, int, int, float, float, float, float);
-extern void func_L00_00217648(int, int, int);
-extern float func_001F9B88(float);
-extern void func_L00_002343A0(float *dst, float *src, float z);
-extern void func_L00_00217BD8(void);
-extern void func_001F99B0(void *, int, int);
-extern int D_L00_0015F6A8 MACRO_ADDR;
-extern int D_L00_00161390 MACRO_ADDR;
-extern int D_L00_00161398 MACRO_ADDR;
-extern int D_0015EFA4 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern int D_0015EE80 MACRO_ADDR;
-extern float D_0015EE60 MACRO_ADDR;
+extern void clear_moby_transform_history(char *o);
+extern void exit_hero_vehicle_mode_if_mode_three(void);
+extern void create_missing_hero_item_slot_animations(int a, int b);
+extern int rand_range(int, int);
+extern void clear_hero_idle_rotation_targets(void);
+extern void set_hero_idle_state_for_vehicle_mode(void);
+extern int hero_idle_sequence(int a);
+extern void clear_u64_value(void *);
+extern void set_hero_animation(int, int, float);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern void ClampVectorLength(void *a, float x);
+extern float vec_length_xy(void *);
+extern void cancel_hero_item_animation(void);
+extern int try_start_hero_item_idle_animation(void);
+extern float gravity_length_xy(float *v);
+extern int return_hero_animation_id_unchanged(int);
+extern int allocate_hero_voice_for_entry(int, int);
+extern void HeroQueueSequence(int bank, int seq);
+extern float randf_sym(float lo, float hi);
+extern void scale_hero_motion(float);
+extern void emit_hero_surface_effect_burst(int, int, int);
+extern void initialize_moby_transform_history(int a, char *b);
+extern void create_moby_transform_history_entry(char *o, int a, int b);
+extern float get_hero_yaw_history(int back);
+extern int truncate_float_to_s32(float);
+extern void update_hero_target_heading(float a, float b, float c);
+extern char *hero_slot_moby(int);
+extern int is_wrench_moby(char *);
+extern float FastAddRots(float, float);
+extern void *MobyGetHitMessage(void *, int, int);
+extern void hero_change_health(int n);
+extern int Hero_IsInSpecialState(void);
+extern void release_and_clear_hero_voice_slots(void);
+extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
+extern void FastVecSub(void *dst, void *a, void *b);
+extern float FastVecLength(void *a);
+extern void vec_scale_to_length(void *, void *, float);
+extern float FastVecDot(void *a, void *b);
+extern void get_moby_color(void *, void *, void *, void *);
+extern int Moby_PlaySound(int, int, int);
+extern void RippleDisturb(int, int, int, float, float, float, float);
+extern void Help_QueueAdd(int, int, int);
+extern float FastAbsF(float);
+extern void gravity_set_z(float *dst, float *src, float z);
+extern void spawn_hero_radial_particle_burst(void);
+extern void FastMemSet(void *, int, int);
+extern int cinematic_mode MACRO_ADDR;
+extern int water_patches MACRO_ADDR;
+extern int water_patch_count MACRO_ADDR;
+extern int gameplay_event_frame_count MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern int pal_mode MACRO_ADDR;
+extern float frame_scale MACRO_ADDR;
 extern char D_0014171B[];
-extern char D_00141780[];
+extern char item_usage[];
 extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern short D_L00_0015F768;
-extern short D_L00_0015F7B8;
-extern short D_L00_0015F7C8;
-extern char D_L00_0017C020[];
-extern char D_L00_0017C060[];
-extern unsigned char D_L00_0017BED8[];
-extern T2C_222B80 D_L00_0017BD28[];
-extern float D_L00_0017BEF0[][25];
+extern short veldin1_look_stat_timer;
+extern short hero_run_step_start_frames;
+extern short hero_state_f_jump_velocity_keys;
+extern char hero_state_d_jump_velocity_keys[];
+extern char hero_state_12_jump_velocity_keys[];
+extern unsigned char hero_run_jump_anim_ids[];
+extern T2C_222B80 attack_records[];
+extern float hero_anim_blend_curves[][25];
 
 /* Puts the hero into move state A (with its animation when B is set); returns 0 when the change is refused (shared build: levels 00, 04, 07, 09, 10, 13). */
 int HeroEnterMoveState(int a, int b) {
@@ -2803,16 +2803,16 @@ int try_start_hero_weapon_fire_state(void) {
 typedef u32 u128_27F48 __attribute__((mode(TI), aligned(16)));
 struct Moby;
 extern struct Hero D_0013F450_27F48 __asm__("D_0013F450");
-extern unsigned char D_0013D5C8[];
-extern unsigned int D_0013CBE0;
+extern unsigned char item_available[];
+extern unsigned int pad_held;
 extern int D_L00_00167114[];
 extern short D_0015EE6C_27F48 __asm__("D_0015EE6C");
-extern void func_001FFB38(int, int, void *, void *, void *, void *, int);
-extern void func_L00_00236BF8(void);
-extern void func_L00_00236DE8(void);
-extern void func_L00_00236F38(void);
+extern void queue_animation_update(int, int, void *, void *, void *, void *, int);
+extern void Hud_InitParticles(void);
+extern void Hud_UpdateParticles(void);
+extern void draw_hud_stars(void);
 extern int func_L00_001EFFF0_27F48(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern int func_L00_00222B80(int, int);
+extern int HeroEnterMoveState(int, int);
 extern void func_L00_00222B80_27F48b(int, int) __asm__("func_L00_00222B80");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/00227778.c, FUN_L00_00227778. */
@@ -2872,12 +2872,12 @@ collision_mode:
     }
     return 0;
 }
-extern void func_L00_00212D70(void *, void *, int, float, float);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern int func_L00_001F3958(void);
-extern int func_L00_00217570(int a, int b);
-extern float D_L00_00173F68;
-extern int D_L00_0015F6B0 MACRO_ADDR;
+extern void hero_get_collision_ray_endpoints(void *, void *, int, float, float);
+extern int coll_line(void *, void *, int, int, int);
+extern int CollType(void);
+extern int allocate_hero_voice_for_entry(int a, int b);
+extern float coll_hit_point_z;
+extern int level_frame_counter MACRO_ADDR;
 
 #define F(o) (*(float *)(p + (o)))
 #define I(o) (*(int *)(p + (o)))
@@ -2963,7 +2963,7 @@ int try_enter_hero_water_state(void) {
     }
     return r;
 }
-extern float func_00214D28(float *p, float target, float maxstep);
+extern float ApproachValue(float *p, float target, float maxstep);
 
 // Integrates and damps the player's camera-offset spring values and stores the resulting height.
 void update_hero_water_height_and_bobbing(void) {
@@ -3027,15 +3027,15 @@ extern PadState D_0013CA40_p228770 __asm__("D_0013CA40");
 extern int D_00141760_228770 __asm__("D_00141760");
 extern unsigned char D_0013D5C8_228770[] __asm__("D_0013D5C8");
 extern Rec2C_228770 D_L00_0017BD28_228770[] __asm__("D_L00_0017BD28");
-extern int D_L00_0015F754 SDATA(D_L00_0015F754);
+extern int hero_r1_double_tap_timer SDATA(D_L00_0015F754);
 extern int func_L00_00267BA8_228770(int, int, int *) __asm__("func_L00_00267BA8");
-extern void func_L00_00217DE0(void);
-extern int func_L00_002104C8(void);
-extern void func_L00_0029BA20(void *);
-extern int func_L00_00234718(int);
-extern void func_L00_0020EB60(void);
-extern int func_L00_0028EB98(void *, int);
-extern int func_L00_0020DB30(int);
+extern void launch_hero_wrench(void);
+extern int Hero_CanUseGadget(void);
+extern void open_vendor_menu(void *);
+extern int get_ammo(int);
+extern void start_equipped_item_animation(void);
+extern int Sound_IsPlaying(void *, int);
+extern int hero_slot_item_id(int);
 extern int func_001F9908_228770(int *) __asm__("func_001F9908");
 
 /* Gadget and weapon input for the current hero state: starts the matching move and returns 1 when the state changed. */
@@ -3337,9 +3337,9 @@ int process_hero_equipped_item_input(void) {
 }
 extern int D_0013A5E0[];
 
-extern int func_L00_00267BA8(int, void *, void *);
-extern int func_L00_00222520(void);
-extern int func_L00_00267C48(int, void *, void *, int);
+extern int pad_pressed_within(int, void *, void *);
+extern int get_hero_high_jump_input_window_frames(void);
+extern int check_pad_press_separation(int, void *, void *, int);
 
 /* Loads a record into A0 (type 0x40). If the flags at D_0013A5E0 + 0x2600
    have 0x2 or 0x8 set, saves it back and signals state 0xB; otherwise
@@ -3378,8 +3378,8 @@ int try_start_hero_jump(void *a0, int a1) {
  *   hq13/n02 (8 runs, p11-p17): p15.c is the best by size (908/912): the gait-step block now matches exactly (j = 
  */
 struct T { float lo, hi, c, d; };
-extern struct T D_L00_0017BEB8[];
-extern short D_L00_0015F7A8;
+extern struct T hero_speed_bands[];
+extern short hero_run_step_switch_frames;
 
 /* updates the hero's walk/run animation speed and gait step */
 void update_hero_animation_for_movement_speed(void) {
@@ -3465,8 +3465,8 @@ void update_hero_animation_for_movement_speed(void) {
         }
     }
 }
-extern char D_0013F450[];
-extern void func_0020D678(void *); /* DeleteMoby */
+extern char g_hero[];
+extern void DeleteMoby(void *); /* DeleteMoby */
 
 /* Deletes and clears any moby cached at D_0013F450+0x1614, then clears
    flag bits 0x41 on the two moby pointers cached at +0x1180 and +0x1184,

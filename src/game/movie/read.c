@@ -1,13 +1,13 @@
 #include "common.h"
 #include "structs.h"
 
-extern char *D_0016130C MACRO_ADDR;
-extern char D_001E8E38[];
-extern void func_0023DFC0(void *, char **, int *, char **, int *);
-extern int func_0023CBE0(char *, int, char *, int, char *, int, char *, int);
-extern int func_0023E068(void *, long, long, void *, int);
-extern void func_0023BF48(void *);
-extern void func_0023DFE0(void *, int);
+extern char *decoder_state MACRO_ADDR;
+extern char str_pts_buffer_overflow[];
+extern void videoDecBeginPut(void *, char **, int *, char **, int *);
+extern int cpy2area(char *, int, char *, int, char *, int, char *, int);
+extern int videoDecPutTs(void *, long, long, void *, int);
+extern void ErrMessage(void *);
+extern void videoDecEndPut(void *, int);
 
 /* Copies wrapped input into free decoder spans, records timestamps, then submits the copied bytes. */
 int videoCallback(void *unused, char *entry, char *buffer) {

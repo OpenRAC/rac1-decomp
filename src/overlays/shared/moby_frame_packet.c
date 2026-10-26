@@ -34,10 +34,10 @@ int find_nearest_animation_sequence_entry(char *a, float time) {
     return -1;
 }
 LINKER_REMNANT("asm/overlays", func_L00_0024FEF8);
-extern void func_001FA4A0(void *, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_001F9C30(void *, void *, float);
+extern void matrix_from_basis_rows(void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern void FastVecScale(void *, void *, float);
 
 /* places a scaled, camera-relative entry in an object's table */
 void set_moby_local_table_entry(char *a, int idx, void *pos, float x, float y) {
@@ -75,8 +75,8 @@ typedef struct Slot {
     void *p1C;
     char pad20[0x20];
 } Slot;
-extern Slot D_L00_0018EEC0[];
-extern char D_L00_001870C0[];
+extern Slot moby_animation_slots[];
+extern char slot_buffers[];
 
 /* Takes the first free of six animation slots for animation id and links it to the moby. */
 Slot *allocate_moby_animation_slot(char *o, int id) {
@@ -107,7 +107,7 @@ typedef struct {
     u8 pad0[0x60];
     ListNode_24f0e8 *head; /* 0x60 */
 } ListOwner_24f0e8;
-extern void func_001F99B0(void *, s32, s32);
+extern void FastMemSet(void *, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/0024eec0.c, FUN_L00_0024f0e8. */
 void release_moby_animation_slot(ListOwner_24f0e8 *owner, ListNode_24f0e8 **slot) {
@@ -127,7 +127,7 @@ void release_moby_animation_slot(ListOwner_24f0e8 *owner, ListNode_24f0e8 **slot
     FastMemSet(*slot, 0, 0x40);
     *slot = 0;
 }
-extern void func_L00_00250478(void *, int, int, int);
+extern void Moby_BuildFramePacket(void *, int, int, int);
 extern void func_L00_002539C8(void *);
 
 /* advances an animation blend timer and steps through its frame table */
@@ -281,7 +281,7 @@ void func_L00_00250478_r(Object_50478p *obj, int i, int j, Packet_50478p *out) {
         *q = 1;
     FUN_00118a80_50478p(0);
 }
-extern char D_L00_00197040[];
+extern char slot_table_values[];
 
 /* stores the value in the first empty or matching slot */
 int SlotTable_Insert(int value) {
@@ -304,8 +304,8 @@ INCLUDE_ASM("asm/overlays", func_L00_00250700);
    vec4 (arg2) rather than a field of a caller-supplied 0x40-byte struct.
    0x3A800000 is exactly 2^-10. */
 
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
 
 /* Writes the world position of joint arg1 of moby arg0 to arg2. */
 void Moby_GetJointWorldPos(char *arg0, int arg1, void *arg2) {
@@ -320,7 +320,7 @@ void Moby_GetJointWorldPos(char *arg0, int arg1, void *arg2) {
     matrix_mul_vec3(arg2, arg2, arg0 + 0xC0);
     FastVecAdd(arg2, arg2, arg0 + 0x10);
 }
-extern void func_001FA460(void *, void *);
+extern void copy_matrix_rotation(void *, void *);
 
 // Builds a matrix from the object's rotation, then rescales and offsets each entry of an attach list.
 void compute_selected_world_matrices(char *o, int n, int *arg2, char *out) {
@@ -339,12 +339,12 @@ void compute_selected_world_matrices(char *o, int n, int *arg2, char *out) {
 }
 extern char D_0013E633[];
 extern unsigned char D_0014171B[] NOT_SDA;
-extern int D_L00_001600D4 MACRO_ADDR;
-extern char *D_L00_00160100 MACRO_ADDR;
-extern char D_L00_001E9258[];
-extern float func_001F9CB8(void *);
-extern void func_001E9730();
-extern void func_0020E340(void *, int, int, int, int);
+extern int environment_sample_count MACRO_ADDR;
+extern char *environment_samples MACRO_ADDR;
+extern char no_environment_sample_msg[];
+extern float FastVecLength(void *);
+extern void STUB_printf();
+extern void pack_render_command_fields(void *, int, int, int, int);
 
 /* Finds the table entry nearest the object's position (within 8 units) and applies its fields to the object and globals. */
 void apply_nearest_environment_sample(char *o) {
@@ -395,8 +395,8 @@ void apply_nearest_environment_sample(char *o) {
         }
     }
 }
-extern int D_0015EE84 MACRO_ADDR;
-extern unsigned char D_0014C150[];
+extern int g_current_level_index MACRO_ADDR;
+extern unsigned char saved_mission_state[];
 /* Clears saved mission state entry idx of the current level, unless idx is 0xFF. */
 void jet_clear_persistent(int idx) {
     if (idx != 0xFF) {

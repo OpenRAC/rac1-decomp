@@ -15,192 +15,192 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
-extern int D_0018A3B0[];
-extern void func_001F99B0();
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
-extern char D_001940C0[];
-extern long D_00151888[3];
-extern int D_0015F6FC;
-extern short D_0015F534;
-extern void func_001FB530(void);
-extern void func_001F3D78(void);
-extern int D_0015F564;
-extern int D_0018DD40[];
-extern int D_0018DC40[];
-extern short D_0015F59C;
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
-extern void func_001F6668(void *, void *, void *, void *, void *, int,
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
+extern int draw_config[];
+extern void FastMemSet();
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
+extern char occl_visibility[];
+extern long gs_display_settings[3];
+extern int space_load_in_progress;
+extern short draw_enable_mask;
+extern void append_gif_transfer_packet(void);
+extern void DrawDebugProfiler(void);
+extern int draw_callback_count;
+extern int draw_callback_args[];
+extern int draw_callback_funcs[];
+extern short GlobalStateFlag;
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
+extern void FontPrint(void *, void *, void *, void *, void *, int,
                           unsigned char *);
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
-extern int func_001F4868(int);
-extern void func_001FB498(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern int D_0018E840[];
-extern long D_00152178 NOT_SDA;
-extern int func_001FE4D0(void);
-extern char D_00199A68[];
-extern short D_0015F780;
-extern int D_001941CC NOT_SDA;
-extern int D_0019A4E8 NOT_SDA;
-extern int func_001FF668(int);
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
+extern int GetEffectTex(int);
+extern void PutDrawBufferLarge(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern int bit_swap_lut[];
+extern long background_rgbaq NOT_SDA;
+extern int Help_FindIndex(void);
+extern char s_paradox_this_message_does_not[];
+extern short help_msgs;
+extern int hud_heap_base NOT_SDA;
+extern int hud_state NOT_SDA;
+extern int Hud_GetIconIndex(int);
 typedef struct {
     char b[0x13];
 } Cfg13;
-extern Cfg13 D_0019A540 NOT_SDA;
-extern Cfg13 D_001E7DD8 NOT_SDA;
+extern Cfg13 message_text_buffer NOT_SDA;
+extern Cfg13 message_too_long_label NOT_SDA;
 extern int func_00116810(void);
 extern void func_001166FC(Cfg13 *, void *);
-extern short D_0015F9D0;
-extern void func_00201960(int, int, int, int, int);
-extern void func_002023E0(int);
-extern void func_002027C0(int);
-extern void func_00204FC0(void *);
-extern int D_0018CC20 NOT_SDA;
-extern int D_001941C8 NOT_SDA;
-extern int D_0016100C;
-extern int D_001A0468[];
-extern void func_00205830(int a, int b);
+extern short ResourceCounter;
+extern void draw_stretchable_ui_frame(int, int, int, int, int);
+extern void CreatePointLight(int);
+extern void DetachPointLight(int);
+extern void update_world_object_animation(void *);
+extern int render_sequence NOT_SDA;
+extern int vu1_chain_buffer_2 NOT_SDA;
+extern int current_vu_chain;
+extern int map_slot_use[];
+extern void move_map_entry_slot(int a, int b);
 extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
-extern int D_001A01F0[];
-extern int *D_001602E0;
-extern unsigned char D_0013D49C NOT_SDA;
-extern unsigned char D_0013D49D NOT_SDA;
-extern unsigned char D_0013D4A5 NOT_SDA;
-extern short D_0015FE24;
-extern unsigned char D_0013D4AC NOT_SDA;
-extern unsigned char D_0013D4AD NOT_SDA;
-extern unsigned char D_0013D4AE NOT_SDA;
-extern unsigned char D_0013D4AF NOT_SDA;
-extern unsigned char D_0013D4B5 NOT_SDA;
+extern int level_map_selection[];
+extern int *menu_level_indices;
+extern unsigned char menu_item_enabled_0 NOT_SDA;
+extern unsigned char g_menu_item_enabled_1 NOT_SDA;
+extern unsigned char menu_item_enabled_9 NOT_SDA;
+extern short menu_selection_count;
+extern unsigned char menu_item_enabled_16 NOT_SDA;
+extern unsigned char menu_item_enabled_17 NOT_SDA;
+extern unsigned char menu_item_enabled_18 NOT_SDA;
+extern unsigned char menu_item_enabled_19 NOT_SDA;
+extern unsigned char menu_item_enabled_25 NOT_SDA;
 extern int D_001A04B4 NOT_SDA;
-extern unsigned char D_0013D4C5 NOT_SDA;
-extern int D_001414DC NOT_SDA;
-extern unsigned char D_0013D4C0 NOT_SDA;
-extern unsigned char D_0013D4C1 NOT_SDA;
-extern unsigned char D_0013D4C2 NOT_SDA;
-extern unsigned char D_0013D4D3 NOT_SDA;
-extern unsigned char D_0013D4D4 NOT_SDA;
-extern unsigned char D_0013D4D5 NOT_SDA;
-extern unsigned char D_0013D4E0;
-extern unsigned char D_0013D4DC NOT_SDA;
-extern unsigned char D_0013D4DD NOT_SDA;
-extern unsigned char D_0013D4DE NOT_SDA;
-extern unsigned char D_0013D4DF NOT_SDA;
-extern unsigned char D_0013D4E1 NOT_SDA;
-extern unsigned char D_0013D4E9 NOT_SDA;
-extern unsigned char D_0013D502 NOT_SDA;
-extern unsigned char D_0013D503 NOT_SDA;
-extern unsigned char D_0013D504 NOT_SDA;
-extern unsigned char D_0013D505 NOT_SDA;
-extern unsigned char D_0013D50F NOT_SDA;
-extern int D_0013D668[];
-extern void func_00209040(void);
-extern int func_001FAA28(void *dst, int size, int a, int b);
-extern void func_00208860(void *dst);
+extern unsigned char menu_item_enabled_41 NOT_SDA;
+extern int hero_control_mode NOT_SDA;
+extern unsigned char menu_item_enabled_36 NOT_SDA;
+extern unsigned char menu_item_enabled_37 NOT_SDA;
+extern unsigned char menu_item_enabled_38 NOT_SDA;
+extern unsigned char menu_item_enabled_55 NOT_SDA;
+extern unsigned char menu_item_enabled_56 NOT_SDA;
+extern unsigned char menu_item_enabled_57 NOT_SDA;
+extern unsigned char menu_item_enabled_68;
+extern unsigned char menu_item_enabled_64 NOT_SDA;
+extern unsigned char menu_item_enabled_65 NOT_SDA;
+extern unsigned char menu_item_enabled_66 NOT_SDA;
+extern unsigned char menu_item_enabled_67 NOT_SDA;
+extern unsigned char menu_item_enabled_69 NOT_SDA;
+extern unsigned char menu_item_enabled_77 NOT_SDA;
+extern unsigned char menu_item_enabled_102 NOT_SDA;
+extern unsigned char menu_item_enabled_103 NOT_SDA;
+extern unsigned char menu_item_enabled_104 NOT_SDA;
+extern unsigned char menu_item_enabled_105 NOT_SDA;
+extern unsigned char menu_item_enabled_115 NOT_SDA;
+extern int max_map_coverage_size[];
+extern void DebugEnter_Nop(void);
+extern int compress_map_coverage(void *dst, int size, int a, int b);
+extern void downsample_map_coverage(void *dst);
 /* MACRO_ADDR: lui/lw where retail has them, $gp-relative in a delay slot
    (func_0021F7D0, func_002229B0). */
-extern int D_0015EE84 MACRO_ADDR;
-extern int D_001A0218[] NOT_SDA;
-extern void func_00208458(void *, unsigned char *, int);
-extern void func_00208688(void *, unsigned char *);
-extern char D_0013D390[];
-extern short D_0015EFB0;
-extern int D_0015EFB4;
-extern int D_001A05C0[];
-extern int D_001A08C0[];
-extern int func_0020BAD8(int *p);
-extern int func_0020BBC8(void *dst, int i, int *table);
+extern int g_current_level_index MACRO_ADDR;
+extern int map_coverage_active[] NOT_SDA;
+extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
+extern void expand_map_coverage(void *, unsigned char *);
+extern char memory_card_state[];
+extern short mode_freeze_state;
+extern int mode_freeze_flags;
+extern int mc_gamedata[];
+extern int mc_leveldata[];
+extern int memcard_GetDataSize(int *p);
+extern int memcard_PrepData(void *dst, int i, int *table);
 extern int func_001236F0(void);
-extern int func_001E9730();
-extern char D_001E8690[];
+extern int STUB_printf();
+extern char memcard_error_message[];
 extern int D_0013D844 NOT_SDA;
-extern unsigned char D_0013D4A8 NOT_SDA;
+extern unsigned char menu_item_enabled_12 NOT_SDA;
 extern int D_0013D9B4 NOT_SDA;
-extern unsigned char D_0013D490[];
-extern unsigned char D_0013D5CA NOT_SDA;
-extern int D_0013D6B8 NOT_SDA;
+extern unsigned char gSpecialItems[];
+extern unsigned char gHaveHeliPack NOT_SDA;
+extern int race_gates NOT_SDA;
 extern int D_0013DAE4 NOT_SDA;
-extern unsigned char D_0013D4E5 NOT_SDA;
+extern unsigned char menu_item_enabled_73 NOT_SDA;
 extern int D_0013DB24 NOT_SDA;
-extern unsigned char D_0013D4F1 NOT_SDA;
+extern unsigned char menu_item_enabled_85 NOT_SDA;
 extern int D_0013DC34 NOT_SDA;
 extern unsigned char D_0013D605 NOT_SDA;
-extern int D_0013D5C8 NOT_SDA;
-extern unsigned char D_0013D4B0 NOT_SDA;
-extern unsigned char D_0013DE55 NOT_SDA;
-extern unsigned char D_0013D5DD NOT_SDA;
-extern unsigned char D_0013D5E7 NOT_SDA;
-extern int D_001B2F40[];
+extern int item_available NOT_SDA;
+extern unsigned char menu_item_enabled_20 NOT_SDA;
+extern unsigned char gemlik_available NOT_SDA;
+extern unsigned char gHaveMorphORay NOT_SDA;
+extern unsigned char gHaveHologuise NOT_SDA;
+extern int moby_render_slots[];
 extern void func_001FA460_2(void *, void *) __asm__("func_001FA460");
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern int D_001414D0 NOT_SDA;
-extern float D_001CAE00[] NOT_SDA;
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern int g_hero_moby NOT_SDA;
+extern float shadow_light_dir[] NOT_SDA;
+extern float FastCos(float);
+extern float FastSin(float);
 extern void func_00118D80(int);
-extern char D_00165600[];
-extern int D_0015F718;
-extern short D_0015F71C;
-extern char D_001B3200[];
+extern char normal_lut[];
+extern int render_packet_end;
+extern short vu1_chain_safe_end;
+extern char moby_backup_buffer[];
 extern int func_001160D8(void);
-extern float func_00214158(void);
-extern float func_002140F8(float, float);
-extern void func_00215C00(void *, float, float, float);
-extern void func_001F9DC0(void *, void *, float);
-extern void func_001FA460(void *);
-extern void func_002150B0(void *, void *);
-extern void func_001FA480(void *, void *);
-extern float func_0020D830(void);
-extern float func_00215A98(int, float);
-extern unsigned char D_0014BFC0[];
-extern unsigned char D_0013E620[];
-extern unsigned char D_0013D510[];
+extern float random_angle_radians(void);
+extern float random_float_between(float, float);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern void fast_vec_normalize(void *, void *, float);
+extern void copy_matrix_rotation(void *);
+extern void MatrixToQuaternion(void *, void *);
+extern void matrix_copy_rows(void *, void *);
+extern float MobyGetFrameValue(void);
+extern float round_float_to_decimal_places(int, float);
+extern unsigned char gold_bolts_collected[];
+extern unsigned char gold_weapon_purchased[];
+extern unsigned char gSkillPoints[];
 extern void func_0012F068(void *);
-extern void func_002177F0(int);
-extern short D_001517D0[];
+extern void finish_audio_stream_read(int);
+extern short cd_read_state[];
 extern void func_0012EDE0(void *);
 extern void func_0012EFE8(void);
-extern char D_001E8980[];
+extern char load_file_start_failed_string[];
 extern int func_0012EE98(int, int, int, void *);
 extern int func_00217628_v(void) __asm__("func_00217628");
 extern void func_00122598(int);
-extern void func_00217130(void);
+extern void music_Update(void);
 extern void func_0012EC40(void);
 extern void func_0012DDC0(void);
 extern void func_0012EC30(void);
 extern int func_0012F030(void);
-extern void func_002167C0(short, short, short);
-extern void func_002169B8(short, short, short);
+extern void music_start_track_by_id(short, short, short);
+extern void music_PreseekTrack(short, short, short);
 extern short D_001517F0 NOT_SDA;
-extern char D_0013CA40[];
-extern int D_001CDAE0 NOT_SDA;
+extern char g_controller_state[];
+extern int pad_socket_param NOT_SDA;
 extern void func_00124650(void);
 extern void func_00124B88(int);
 extern int func_00124BC8(void *, void *);
-extern void func_00217F68(void *);
-extern void func_001F68E8(void *a, void *b, void *c, void *d, void *e);
-extern void *func_001FE540(void);
-extern int func_00205790(void);
-extern void func_0020BA00(char *out);
-extern void func_00217588(void);
+extern void poll_pad_device_state(void *);
+extern void FontPrintLarge(void *a, void *b, void *c, void *d, void *e);
+extern void *msg_string(void);
+extern int promote_first_available_map_entry(void);
+extern void memcard_MakeWholeSave(char *out);
+extern void request_audio_stream_break(void);
 
 extern struct CameraSystem D_00187040_19C08 __asm__("D_00187040");
-extern s32 D_001873A0;
+extern s32 active_camera_basis_column1_x;
 extern s32 D_001873B0;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/fun_00218d10.c, FUN_00218d10. */
@@ -218,23 +218,23 @@ void reset_active_camera_position_and_basis(void) {
 }
 
 extern void func_0012E528(int);
-extern void func_00216EF0(int);
-extern int D_0018C42C;
+extern void music_Pause(int);
+extern int camera_position_publication_suppressed;
 extern int D_0015F754 MACRO_ADDR;
-extern int D_00141760;
+extern int last_weapon_id;
 extern unsigned char D_0014171B NOT_SDA;
-extern int D_0015EFA0 MACRO_ADDR;
+extern int challenge_mode MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
 extern char D_001CE938[];
 extern char D_001CEAC8[];
 extern char D_001CEB18[];
-extern int D_001A0414;
+extern int selected_level_index;
 extern int D_001D0718;
 extern int func_0020C7A0_i(void) __asm__("func_0020C7A0");
 extern int func_0012DDC0_i(void) __asm__("func_0012DDC0");
-extern void func_00228160(void);
-extern char D_001D5F70[] NOT_SDA;
-extern int D_0015F6E8 MACRO_ADDR;
+extern void update_skill_point_and_gold_weapon_menu_entries(void);
+extern char menu_system[] NOT_SDA;
+extern int g_game_mode MACRO_ADDR;
 
 /* PauseAllSounds: pause entry. Unless D_0018C42C is set (then only
    D_0015F754 = 1), it computes the pause object's flags (0x134, 0x138,
@@ -485,9 +485,9 @@ void initialize_menu_preview_scene(void) {
     }
 }
 
-extern int D_0015EF78 MACRO_ADDR;
-extern int func_002267C0(int);
-extern int D_001D6120[];
+extern int g_gs_texture_allocation_start MACRO_ADDR;
+extern int delete_moby(int);
+extern int panel_slots[];
 
 typedef struct { char pad[0x44]; char *items[14]; } ObjList;
 
@@ -826,28 +826,28 @@ void update_menu_system(void) {
 
 typedef struct { u8 pad0[0x50]; s32 screen_x, screen_y, projected_width, projected_height; } ProjectedPanelFrame;
 typedef struct { u8 pad0[0x78]; ProjectedPanelFrame *frame; } PanelRenderSlot;
-extern s64 D_0015EFD0 MACRO_ADDR;
-extern void *D_00160018 MACRO_ADDR;
-extern short D_001602B0;
-extern s32 D_001CE640[];
-extern void func_00234C98();
-extern void func_00201640();
-extern void func_001F5800();
-extern void func_001F4630();
-extern void func_001F4748();
-extern void func_0020E0C8(void);
-extern void func_0020E040(void);
-extern void func_0020E068(void);
-extern void func_0020E180(s32, s32);
-extern void func_00219C08(void);
-extern void func_001F2608(void);
-extern void func_00238D90(Vec4 *, Vec4 *, s32 *, s32 *, s32 *, s32 *);
-extern void func_001F7A50(s32, s32, s32, f32);
-extern void func_002017C8(s32, s32, s32, s32, u64, u32, s32);
-extern void func_001F7B40(void);
-extern void func_0020E098(void);
-extern void func_0020E200(void);
-extern void func_002250B8();
+extern s64 capture_texture_tex0 MACRO_ADDR;
+extern void *resident_object_pool MACRO_ADDR;
+extern short panel_clear_color;
+extern s32 panel_slot_enabled[];
+extern void VU1_addGSregister();
+extern void draw_hud_rect_blended();
+extern void DrawTexturedQuad();
+extern void SetupGifPaging();
+extern void DoGifPaging();
+extern void DrawMobysSetup(void);
+extern void InitMobyClassDists(void);
+extern void StashMobyClassDists(void);
+extern void DrawMobyList(s32, s32);
+extern void reset_active_camera_position_and_basis(void);
+extern void BuildViewMatrices(void);
+extern void project_graphics_bounds(Vec4 *, Vec4 *, s32 *, s32 *, s32 *, s32 *);
+extern void configure_graphics_render_target_and_projection(s32, s32, s32, f32);
+extern void draw_hud_rect_depth(s32, s32, s32, s32, u64, u32, s32);
+extern void begin_draw_frame(void);
+extern void RestoreMobyClassDists(void);
+extern void DrawMobysCleanUp(void);
+extern void draw_menu_flashing_panel();
 typedef struct RenderPanel RenderPanel;
 struct RenderPanel { u8 pad0[4]; s32 (*draw)(RenderPanel *); u8 pad8[8]; s32 flags; u8 pad14[4]; s32 screen_x, screen_y, projected_width, projected_height; };
 typedef struct { u8 pad0[4]; u8 *current; u8 pad8[0xD0]; s32 unkD8; } MenuSys_p;
@@ -1103,7 +1103,7 @@ int Pause_PageInput(int arg0) {
 }
 
 extern int D_001D6094;
-extern void func_0022ED80(int, int, int);
+extern void Moby_PlaySound(int, int, int);
 
 /* Pause list handler (func_0021ACD8's family: one `char *` pad local per
    block). The cursor at arg0+0x3C moves on 0x1000/0x4000 within
@@ -1175,16 +1175,16 @@ int update_menu_icon_list(char *arg0) {
     return 0;
 }
 
-extern short D_001602B0;              /* SDA, gp -0x6A50 */
-extern void func_00201640(int, int, int, int, long, long);
-extern int func_00200198(int, int);
-extern void func_00200468(int, int, int, int, int, int);
-extern void func_00200650(int, int, int, int, int, int);
-extern void func_002008B8(int, int, int, int, int, int);
-extern int D_0015F538 MACRO_ADDR;
-extern int func_001F9B70(int); /* abs */
-extern void func_001F4630(int);
-extern void func_001F4748(void);
+extern short panel_clear_color;              /* SDA, gp -0x6A50 */
+extern void draw_hud_rect_blended(int, int, int, int, long, long);
+extern int GetIconFrame(int, int);
+extern void HudSprite(int, int, int, int, int, int);
+extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
+extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
+extern int game_frame_counter MACRO_ADDR;
+extern int subtract_integer_with_clamp(int); /* abs */
+extern void SetupGifPaging(int);
+extern void DoGifPaging(void);
 
 /* Vertical picture list: each entry (10 bytes at +0x48, count at +0x40)
    is a 0x200-square image at x, stepping 0x252 down from the scroll
@@ -1225,9 +1225,9 @@ int draw_menu_icon_list(char *arg0) {
     return 2;
 }
 
-extern int D_0015EF90;
-extern char D_001D4B90[];
-extern char D_001D4BC0[];
+extern int pause_action_list_mode;
+extern char pause_action_list_pal[];
+extern char pause_action_list_short[];
 
 extern int D_0015EF90_m __asm__("D_0015EF90") MACRO_ADDR;
 
@@ -1244,11 +1244,11 @@ int set_pause_action_list(void *arg0) {
    as an int block (ldl/ldr, then lw/sw for the last word). */
 typedef struct { char b[0x20]; } Blk32;
 typedef struct { int w[7]; } Blk28;
-extern Blk32 D_001E8A58;
-extern Blk28 D_001E8A78;
+extern Blk32 cheat_menu_ids_init;
+extern Blk28 cheat_menu_text_ids_init;
 /* MACRO_ADDR: retail builds each address in one register (la). */
-extern unsigned char D_0015EEC0[] MACRO_ADDR;
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
+extern unsigned char selector_available[] MACRO_ADDR;
+extern unsigned char gCheats[] MACRO_ADDR;
 typedef struct {
     int val;
     void *addr;
@@ -1256,7 +1256,7 @@ typedef struct {
     int c2;
     int zero;
 } Entry14;
-extern Entry14 D_001D3E90[];
+extern Entry14 cheat_toggle_menu_items[];
 
 /* Builds the D_001D3E90 list: for each id in {1, 3, 0, 7, 4, 6, 2} (up
    to the -1) whose D_0015EEC0 flag is set, an entry with its text id
@@ -1302,25 +1302,25 @@ int Menu_ClearSelectedIndex(void *arg0) {
     return 0;
 }
 
-extern char D_00160370[];
-extern char D_00160378[];
-extern char D_00160380[];
-extern char D_00160388[];
-extern int D_0013CBE0[];
-extern short D_001602B4;
-extern short D_001602B8;
-extern short D_001602BC;
-extern short D_00160358;
-extern short D_00160368;
-extern int D_0015EE80 MACRO_ADDR;
-extern char *D_001D5F74 NOT_SDA;
-extern void func_00234C98(int, int);
-extern int func_001F98C0(int);
-extern void func_001FF4F8(int, int, void *);
+extern char str_default[];
+extern char str_empty_menu_label[];
+extern char fmt_two_strings[];
+extern char str_null_text[];
+extern int pad_held[];
+extern short menu_fade_duration;
+extern short text_shadow_x;
+extern short text_shadow_y;
+extern short menu_label_text_inset;
+extern short menu_label_marquee_gap;
+extern int pal_mode MACRO_ADDR;
+extern char *current_menu_page NOT_SDA;
+extern void VU1_addGSregister(int, int);
+extern int scale_game_frame_count(int);
+extern void find_help_entry(int, int, void *);
 extern int func_00116248(char *, const char *, ...);
 extern void func_001153FC(void *, int, int);
-extern int func_001FA8A8(int, int, float);
-extern int func_0021C6C0(int, int, int);
+extern int FastTweenColor(int, int, float);
+extern int fade_menu_color(int, int, int);
 #define TEXT(id) ((char *(*)(int))func_001FE540)(id)
 #define DRAW(c, t) ((void (*)(void *, long, char *, long, long, unsigned char *))func_001F7070)(&win, c, t, -1, tex, glyphs)
 #define ST (*(char **)(D_001D5F74 + 0x40))
@@ -1354,8 +1354,8 @@ static inline void win_unshift(Win *p) {
    text (fixed id, help entry or table entry for the item) and fades it over
    menu_fade_duration when the content changes. */
 int render_configured_text_label(unsigned char *w) {
-    extern void func_001F65A8(void);
-    extern void func_001F6598(void);
+    extern void Font_DisableColorCodes(void);
+    extern void Font_EnableColorCodes(void);
     char buf[0x40];
     int id;
     Win win;
@@ -1901,20 +1901,20 @@ typedef struct {
     MenuDescriptor *focus;
 } MenuPage;
 extern MenuPage * D_001D5F74_1C1B0[] __asm__("D_001D5F74");
-extern u8 D_001DF3D0[];
-extern u8 D_001DF770[];
-extern u8 D_001DFB10[];
-extern short D_001602B8;
-extern short D_001602BC;
+extern u8 normal_font_metrics[];
+extern u8 small_font_metrics[];
+extern u8 large_font_metrics[];
+extern short text_shadow_x;
+extern short text_shadow_y;
 extern void func_00234C98_1C1B0(s32, long) __asm__("func_00234C98");
-extern void func_001F4630(s32);
-extern s32 func_001F4868(s32);
-extern void func_001F6598(void);
-extern void func_001F65A8(void);
+extern void SetupGifPaging(s32);
+extern s32 GetEffectTex(s32);
+extern void Font_EnableColorCodes(void);
+extern void Font_DisableColorCodes(void);
 extern s32 func_001F65B0_1C1B0(char *, s32, u8 *) __asm__("func_001F65B0");
 extern void func_001F6668_1C1B0(s32, s32, long, char *, s32, s32, u8 *) __asm__("func_001F6668");
 extern char *func_001FE540_1C1B0(s32) __asm__("func_001FE540");
-extern s32 func_0021C6C0(s32, s32, s32);
+extern s32 fade_menu_color(s32, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/render_localized_ui_entry_list.c, render_localized_ui_entry_list. */
 s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
@@ -2072,8 +2072,8 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
 
 /* SDA, gp -0x6A4C: declared 2 bytes so the assembler reaches it through
    $gp, and read as the int it is. */
-extern short D_001602B4;
-extern int func_001FA8A8(int, int, float);
+extern short menu_fade_duration;
+extern int FastTweenColor(int, int, float);
 
 /* Fade colour for the pause menus: -1 picks the default colours
    0x80FFA888 / 0x8020FFFF and a negative start becomes 0. While the
@@ -2393,8 +2393,8 @@ int menu_update_noop(void) {
    its own %hi/%lo here and as 0xCB($16) off the D_001D5F70 base a few
    instructions later -- so it really is two names on one address in the
    original source, and splat has the second as its own linker symbol. */
-extern char D_001D603B[];
-extern short D_001517D0[];
+extern char animation_asset_read_active[];
+extern short cd_read_state[];
 
 /*
  * Pause/menu teardown. When the D_001517D0+8 state word is clear, drop
@@ -2824,11 +2824,11 @@ s32 DrawMapScreen(struct MenuScreen_1CE60 *screen) {
     return 0;
 }
 
-extern int D_001A0414;
-extern int D_001CFBF4;
-extern int D_001CFAD8;
-extern void func_0020C7A0(void *);
-extern int func_0020CA50(void *, void *, void *, int);
+extern int selected_level_index;
+extern int selected_mission_id;
+extern int selected_mission_index;
+extern void update_mission_list(void *);
+extern int collect_mission_ids(void *, void *, void *, int);
 
 /* Enter hook for the mission list: rebuilds the list, collects the mission ids into
    scratchpad and loads the selected level's entry into D_001CFBF4 / D_001CFAD8. */
@@ -2875,7 +2875,7 @@ typedef struct {
 extern PauseG D_001D5F70_g __asm__("D_001D5F70") NOT_SDA;
 extern PadState D_0013CA40_g __asm__("D_0013CA40");
 extern LevelG D_001A01F0_lv __asm__("D_001A01F0");
-extern unsigned char D_0013DE48[];
+extern unsigned char level_available[];
 
 /* Pause slot-select tick. Adapted from Lombyte's project (GPL-3.0) for PAL: src/ui/menus/fun_0021c4c0.c, FUN_0021c4c0. */
 /* The menu page (MenuPage): back at 0x38, focus at 0x40. */
@@ -2974,16 +2974,16 @@ int update_menu_mission_list(struct Menu *menu_screen) {
     return 0;
 }
 
-extern char *D_001D5F74 NOT_SDA;
-extern int D_0015EFA4 MACRO_ADDR;
-extern void func_0022ED80(int, int, int);
+extern char *current_menu_page NOT_SDA;
+extern int gameplay_event_frame_count MACRO_ADDR;
+extern void Moby_PlaySound(int, int, int);
 typedef struct {
     char pad[0xA8];
     unsigned short count;  /* 0xA8 */
     unsigned short best;   /* 0xAA */
     unsigned int mask;     /* 0xAC */
 } Stats_0021D7A0;
-extern Stats_0021D7A0 D_00141948;
+extern Stats_0021D7A0 usage_stats;
 typedef struct {
     char pad[0x14];
     int id;      /* 0x14 */
@@ -3041,7 +3041,7 @@ int update_menu_item_slots(SelList_0021D7A0 *arg0) {
     return 0;
 }
 
-extern int D_00141FA0[];
+extern int pause_iop_sprite_lists[];
 
 typedef struct {
     char pad[0x30];
@@ -3069,7 +3069,7 @@ int load_selection_list(SelList_0021D9C8 *arg0) {
     return 0;
 }
 
-extern int D_00141FA0[];
+extern int pause_iop_sprite_lists[];
 
 /* Copies the screen's eight sprite-list words (+0x30) into pause_iop_sprite_lists. */
 int pause_stage_sprite_lists(void *arg0) {
@@ -3082,8 +3082,8 @@ int pause_stage_sprite_lists(void *arg0) {
     return 0;
 }
 
-extern char D_001D0A50[];
-extern char D_001D0A88[];
+extern char heli_pack_menu_table[];
+extern char no_helipack_menu_table[];
 
 /* Points the screen's menu table (+0x34) at the heli-pack or the plain version. */
 int SelectHeliPackMenuTable(void *arg0) {
@@ -3092,7 +3092,7 @@ int SelectHeliPackMenuTable(void *arg0) {
     return 0;
 }
 
-extern int D_001A0418 NOT_SDA;
+extern int pause_memory_card_state NOT_SDA;
 
 /* Marks the pause memory card state as unset (-1). */
 int reset_pause_memory_card_state(void) {
@@ -3107,8 +3107,8 @@ int reset_menu_graphics_buffers(void) {
     return 0;
 }
 
-extern int D_0015EEF0 MACRO_ADDR;
-extern int D_0013E6A0;
+extern int sound_volume MACRO_ADDR;
+extern int pause_sound_volume;
 
 /* Sets the pause sound volume to 80% of D_0015EEF0. */
 int set_pause_sound_volume(void) {
@@ -3382,9 +3382,9 @@ typedef struct {
     short b;
     char pad[8];
 } Rec0C;
-extern int D_0015EF30 MACRO_ADDR;
-extern Rec0C D_001CFFC0[];
-extern unsigned char D_00141F08[];
+extern int active_message_record_count MACRO_ADDR;
+extern Rec0C active_message_menu_items[];
+extern unsigned char active_message_records[];
 extern Half4 D_00199812[];
 
 /* Fills D_001CFFC0 with the active message records in reverse order, each
@@ -3418,7 +3418,7 @@ typedef struct {
 extern PadBind D_001D6448_t[] __asm__("D_001D6448");
 
 extern int D_001D6078;
-extern int D_00137C80[];
+extern int disc_table[];
 extern int func_00217628_3(int, int, int) __asm__("func_00217628");
 
 /* Enter hook for the help text screen: resets the stream buffers, marks the
@@ -3453,7 +3453,7 @@ int enter_menu_help_text(char *arg0) {
 
 /* D_0015F780 is SDA elsewhere; pause.cpp stores it through $at. */
 extern int D_0015F780_m __asm__("D_0015F780") MACRO_ADDR;
-extern int D_001997FC;
+extern int help_msg_count;
 
 struct MenuHelpTextState {
     u8 pad_00[0x38];
@@ -3481,9 +3481,9 @@ int restore_menu_help_text(int arg0) {
     return 0;
 }
 
-extern int D_0015EE88 MACRO_ADDR;
-extern char D_001997D0[];
-extern void func_001F9A00(void *, void *, int);
+extern int g_game_language MACRO_ADDR;
+extern char g_help_state[];
+extern void copy_memory_aligned(void *, void *, int);
 
 /* The slot count at D_001997D0+0x2C, read through its own base pointer:
    retail's loop keeps a separate copy of the D_001997D0 address. */
@@ -3551,9 +3551,9 @@ extern void func_001F7070_a(void *, long, char *, int, int, unsigned char *) __a
 extern void func_00234C98_l(int, long) __asm__("func_00234C98");
 extern void *func_001FE540_id(int) __asm__("func_001FE540");
 extern void func_001153FC(void *, int, int); /* memset */
-extern void func_001F65A8(void);
-extern void func_001F6598(void);
-extern void func_002208F8(int x, int y, int flag);
+extern void Font_DisableColorCodes(void);
+extern void Font_EnableColorCodes(void);
+extern void draw_menu_selection_marker(int x, int y, int flag);
 
 typedef struct {
     short text;
@@ -3744,20 +3744,20 @@ typedef struct {
 } MenuItemGrid;
 extern MenuState D_001D5F70_1E950 __asm__("D_001D5F70");
 extern ItemInfo D_001864D8[];
-extern u8 D_0013D490[];
+extern u8 gSpecialItems[];
 extern u8 D_0013D5C8_1E950[] __asm__("D_0013D5C8");
-extern u8 D_0013E620[];
-extern s32 D_0015F538 MACRO_ADDR;
-extern short D_001602B0;
-extern short D_00160390;
-extern short D_00160394;
-extern s32 func_001F9B70(s32);
-extern void func_001F4630(s32);
-extern s32 func_00200198(s32, s32);
-extern void func_002008B8(s32, s32, s32, s32, s32, s32);
+extern u8 gold_weapon_purchased[];
+extern s32 game_frame_counter MACRO_ADDR;
+extern short panel_clear_color;
+extern short menu_grid_icon_width;
+extern short menu_grid_icon_height;
+extern s32 subtract_integer_with_clamp(s32);
+extern void SetupGifPaging(s32);
+extern s32 GetIconFrame(s32, s32);
+extern void draw_hud_sprite_subpixel(s32, s32, s32, s32, s32, s32);
 extern void func_00201640_1E950(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern s32 func_00234C98_1E950(s32, s64) __asm__("func_00234C98");
-s32 func_0021E950(MenuItemGrid *grid);
+s32 draw_menu_item_grid(MenuItemGrid *grid);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/fun_0021d948.c, draw_menu_item_grid. */
 s32 draw_menu_item_grid(MenuItemGrid *grid) {
@@ -3848,7 +3848,7 @@ s32 draw_menu_item_grid(MenuItemGrid *grid) {
     return 2;
 }
 
-extern unsigned char D_001414F4 NOT_SDA;
+extern unsigned char hero_vehicle_mode NOT_SDA;
 
 /* A short-returning inline keeps retail's branch: the select happens in
    HImode, which has no movcc pattern, so jump.c cannot turn it into the
@@ -3870,7 +3870,7 @@ int Menu_SetPauseFlagState(char *arg0) {
 }
 
 extern int D_001D53A0[];
-extern void func_0020E180(int, int);
+extern void DrawMobyList(int, int);
 
 /* Tears down the 24 handles at arg0+0x44, skipping the ones in use.
    The switch's table is jtbl_001E8AD0; `off` before `slots` and a second
@@ -3945,10 +3945,10 @@ int clear_menu_preview_pair(char *arg0) {
     return 0;
 }
 
-extern char D_001864D0[];
-extern char D_00187040[];
+extern char item_info_table[];
+extern char gCamera[];
 extern void *func_00226720_a(int) __asm__("func_00226720");
-extern void func_0021F200(char *);
+extern void rotate_item_preview_moby(char *);
 
 /* Keeps the item preview moby in step with the highlighted entry: drop it
    when the entry's class (D_001864D0 record +0x3A) is -1, spawn it in
@@ -4027,13 +4027,13 @@ int update_item_preview_moby(char *arg0) {
     return 0;
 }
 
-extern char *D_001D5F74 NOT_SDA;
-extern void func_0020E180(int, int);
-extern void func_001F4630(int);
-extern void func_001F4748(void);
+extern char *current_menu_page NOT_SDA;
+extern void DrawMobyList(int, int);
+extern void SetupGifPaging(int);
+extern void DoGifPaging(void);
 extern void *func_001FE540_id(int) __asm__("func_001FE540");
-extern void func_00227A30(void *, char *);
-extern void func_001F7560(void *, long, void *, int);
+extern void pack_image_descriptor(void *, char *);
+extern void font_print_window_regular(void *, long, void *, int);
 
 /* Draw/teardown callback (func_0021F610's family). The entry address is
    written inline in the index; a `char *e` local leaves an addu swap. */
@@ -4060,7 +4060,7 @@ int draw_item_preview_screen(char *arg0) {
     return 2;
 }
 
-extern float func_001FA748(float, float);
+extern float FastAddRots(float, float);
 
 /* Moby update for the item preview: spins its +0x48 angle by 0.01 a frame. */
 void rotate_item_preview_moby(char *arg0) {
@@ -4272,15 +4272,15 @@ extern struct PreviewItemDefinition D_001864D0_1F238[] __asm__("D_001864D0");
 extern struct CameraSystem D_00187040_1F238 __asm__("D_00187040");
 extern struct ItemPreviewPlacement_1F238 D_001E0708_1F238[] __asm__("D_001E0708");
 extern s32 D_00140508[];
-extern s32 D_00160050 MACRO_ADDR;
-extern u8 D_001B3E40[];
+extern s32 active_decode_buffer MACRO_ADDR;
+extern u8 resident_class_slot_by_id[];
 extern struct PreviewClassResource * D_001B3580_1F238[] __asm__("D_001B3580");
-extern void func_0021F6A0();
-extern void func_001E97F0(s32, s32);
+extern void update_item_preview_transform();
+extern void noop_callback_q(s32, s32);
 extern void func_001E97F8_1F238(struct Moby *, s32) __asm__("func_001E97F8");
-extern f32 func_001FA748(f32, f32);
-extern void func_00205270(s32, s32);
-extern void func_00213D28(struct Moby *, s32, s32);
+extern f32 FastAddRots(f32, f32);
+extern void select_world_object_resource_tables(s32, s32);
+extern void MobySetAnimation(struct Moby *, s32, s32);
 extern struct Moby *func_00226720_1F238(s32) __asm__("func_00226720");
 extern struct Moby *func_002267C0_1F238(struct Moby *) __asm__("func_002267C0");
 
@@ -4426,8 +4426,8 @@ s32 update_item_preview_binding(struct ItemPreviewBinding_1F238 *preview) {
     return 0;
 }
 
-extern char *D_001D5F74 NOT_SDA;
-extern void func_0020E180(int, int);
+extern char *current_menu_page NOT_SDA;
+extern void DrawMobyList(int, int);
 
 /* The entry address is written inline in the index, as in
    func_0021F118; a `char *e` local swapped the addu. */
@@ -4481,9 +4481,9 @@ struct ItemPreviewVars {
     s32 item_index;
 };
 extern struct CameraSystem D_00187040_1F6A0 __asm__("D_00187040");
-extern struct ItemPreviewPlacement D_001E0708[];
-extern f32 func_001F9F90(f32);
-extern f32 func_001F9FA8(f32);
+extern struct ItemPreviewPlacement preview_placements[];
+extern f32 FastCos(f32);
+extern f32 FastSin(f32);
 
 /* Position the selected item relative to the preview camera. Owner flag bit 0 selects alternate_x; otherwise use normal_x. Rotate the side and forward offsets in the X/Y plane after adding the unrotated placement position.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/update_item_preview_transform.c, update_item_preview_transform. */
@@ -4516,9 +4516,9 @@ void update_item_preview_transform(struct Moby *moby) {
 }
 
 extern int D_0013D48C;
-extern int D_0015F6E4 MACRO_ADDR;
+extern int space_load_level MACRO_ADDR;
 extern int D_0015F6FC_m __asm__("D_0015F6FC") MACRO_ADDR;
-extern int D_0015F690 MACRO_ADDR;
+extern int space_load_pending MACRO_ADDR;
 
 /* Pad handler (func_0021ACD8's family). A separate `char *` local for
    each block that reads the pad word gives retail's pattern: the %hi
@@ -4563,7 +4563,7 @@ int Menu_BackInput(char *arg0) {
 
 extern void func_001153FC(void *, int, int); /* memset */
 extern void func_00234C98_l(int, long) __asm__("func_00234C98");
-extern void func_001F6EA8(int, int, long, void *, int);
+extern void FontPrintCenter(int, int, long, void *, int);
 extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
 
 /* DrawQuitGameMenu: a text box (zeroed, then sized from arg0+0x20/0x24)
@@ -4611,8 +4611,8 @@ int DrawQuitGameMenu(char *arg0) {
     return 2;
 }
 
-extern char D_00187040[];
-extern void func_00220128(void *);
+extern char gCamera[];
+extern void rotate_preview_moby_x(void *);
 extern void *func_00226720_a(int) __asm__("func_00226720");
 
 /* Attach marker object 0x46E to arg0, parked just above the camera
@@ -4647,7 +4647,7 @@ int create_rotating_preview_moby(void *owner) {
     return 0;
 }
 
-extern int func_002267C0(int);
+extern int delete_moby(int);
 
 /* Deletes the item preview moby (+0x44) and clears its slot. */
 int release_item_preview_moby(char *arg0) {
@@ -4688,16 +4688,16 @@ typedef struct {
     s32 help_tip;
 } ItemsMenu;
 extern s32 D_0015EE88_1FB28[] __asm__("D_0015EE88") MACRO_ADDR;
-extern char D_001603A0[];
-extern void func_001F6CF8(s32, s32, u64, char *, s32);
-extern void func_001F6E18(s32, s32, u64, char *, s32);
+extern char fmt_decimal[];
+extern void font_print_right(s32, s32, u64, char *, s32);
+extern void font_print_right_large(s32, s32, u64, char *, s32);
 extern void func_001F7560_1FB28(struct TextRegion *, u64, char *, s32) __asm__("func_001F7560");
 extern char *func_001FE540_1FB28(s32) __asm__("func_001FE540");
 extern void func_00201640_1FB28(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
-extern void func_0020E180(s32, s32);
-extern s32 func_00216098(void);
-extern s32 func_002160E0(void);
-extern s32 func_00216150(void);
+extern void DrawMobyList(s32, s32);
+extern s32 compute_clamped_count_difference(void);
+extern s32 count_nonzero_entries_up_to_40(void);
+extern s32 count_nonzero_entries_up_to_10(void);
 extern void *func_001153FC_1FB28(void *, s32, u32) __asm__("func_001153FC");
 extern int func_00116248(char *, const char *, ...);
 extern char *func_00116428(const char *, int);
@@ -4799,15 +4799,15 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
     return 8;
 }
 
-extern char D_00187040[];
+extern char gCamera[];
 /* 1.3f, in small data (gp -0x695C). The const float view is what the
    code reads (read-only, so its load is scheduled above the stores); the
    2-byte view, referenced last, makes the assembler use $gp. */
 extern const float D_001603A4_f __asm__("D_001603A4") MACRO_ADDR;
 extern short D_001603A4_s __asm__("D_001603A4");
-extern char D_001603A8[];
-extern int D_001E0B88[];
-extern int D_0013E600[];
+extern char fmt_gold_bolt_count_line[];
+extern int map_gold_bolt_totals[];
+extern int g_screen_extent[];
 extern int func_00116248(char *, const char *, ...);
 extern void func_001F6CF8_c(int, int, long, char *, int) __asm__("func_001F6CF8");
 
@@ -4855,7 +4855,7 @@ int DrawGBsShipMenu__maybe(char *arg0) {
     return 8;
 }
 
-extern float func_001FA748(float, float);
+extern float FastAddRots(float, float);
 
 /* Moby update for a rotating preview: spins its +0x40 angle by 0.02 a frame. */
 void rotate_preview_moby_x(void *arg0) {
@@ -4868,12 +4868,12 @@ void rotate_preview_moby_x(void *arg0) {
    the functions matched against it. */
 extern void func_00234C98_l(int, long) __asm__("func_00234C98");
 extern int func_00116248(char *, const char *, ...); /* sprintf */
-extern int D_0013D530[];
-extern char D_001E02B0[];
-extern char D_001603A0[]; /* "%d" */
-extern char D_001603B8[]; /* "%d/" */
-extern char D_001603C0[]; /* "%d,%03d/" */
-extern char D_001603D0[]; /* "%d,%03d" */
+extern int weapon_ammo_counts[];
+extern char vendor_item_prices[];
+extern char fmt_decimal[]; /* "%d" */
+extern char fmt_ammo_have[]; /* "%d/" */
+extern char fmt_ammo_have_thousands[]; /* "%d,%03d/" */
+extern char fmt_number_thousands[]; /* "%d,%03d" */
 
 /* Draws the current item's count banner, gated like func_0021F118: the
    item's text id 0x4F52 when its D_001E02B0 record has no counter,
@@ -4921,8 +4921,8 @@ int draw_selected_item_ammo(char *arg0) {
     return 2;
 }
 
-extern void func_00234C98(int, int);
-extern void func_00205E70(void);
+extern void VU1_addGSregister(int, int);
+extern void draw_map_overlay(void);
 
 /* Draws the map screen overlay with the needed GS registers set. Returns 8. */
 int draw_map_screen_overlay(void) {
@@ -4932,8 +4932,8 @@ int draw_map_screen_overlay(void) {
     return 8;
 }
 
-extern void func_001F65A8(void);
-extern void func_001F6598(void);
+extern void Font_DisableColorCodes(void);
+extern void Font_EnableColorCodes(void);
 extern void func_001F6968_c(int, int, long, void *, int) __asm__("func_001F6968");
 
 /* DrawMissionsMenu: the menu's text lines (0x4EEE, 0x4EEF only when
@@ -5000,8 +5000,8 @@ int DrawMissionsMenu(char *arg0) {
 }
 __asm__(".section .text\n\tnop\n");
 
-extern void func_001F4630(int);
-extern void func_001F4748(void);
+extern void SetupGifPaging(int);
+extern void DoGifPaging(void);
 /* func_001F68E8 is defined above with pointer parameters; this site
    passes a packed 64-bit colour in $a2, and func_001FE540 above is
    declared (void) while retail's caller here passes an id in $a0 --
@@ -5025,7 +5025,7 @@ int draw_mission_menu_labels(void) {
 
 /* A pause-style list screen: title, the menu's rows (box size at +0x20/+0x24, rows at +0x30) with the selection highlighted, an optional footer; returns 2. */
 extern void func_001153FC(void *, int, int);
-extern void func_002208F8(int, int, int);
+extern void draw_menu_selection_marker(int, int, int);
 
 #define FP68E8 ((void (*)(int, int, long, void *, int))func_001F68E8)
 #define FP75D0 ((void (*)(unsigned short *, long, void *, int))func_001F75D0)
@@ -5034,7 +5034,7 @@ typedef struct { unsigned short f[12]; } TextBox_p;
 
 /* Draws a pause-style list of text rows with a selection marker and a footer line; returns 2. */
 int MissionMenu_DrawObjectives(char *arg) {
-    extern void func_001F75D0(unsigned short *, long, void *, int);
+    extern void font_print_window_small(unsigned short *, long, void *, int);
     TextBox_p t;
     TextBox_p s;
     int mask;
@@ -5089,10 +5089,10 @@ int MissionMenu_DrawObjectives(char *arg) {
     return 2;
 }
 
-extern short D_001602B0;              /* SDA, gp -0x6A50 */
-extern void func_00201640(int, int, int, int, long, long);
-extern int func_00200198(int, int);
-extern void func_00200468(int, int, int, int, int, int);
+extern short panel_clear_color;              /* SDA, gp -0x6A50 */
+extern void draw_hud_rect_blended(int, int, int, int, long, long);
+extern int GetIconFrame(int, int);
+extern void HudSprite(int, int, int, int, int, int);
 
 /* Draws the map cursor: a 10x10 box with a coloured inner box at (x, y), plus a
    marker icon above it when flag is set. */
@@ -5469,10 +5469,10 @@ s32 update_menu_stream_image(struct MenuScreen_209A0 *stream) {
     return 0;
 }
 
-extern void func_001F5800(int, int, int, int, int, int, int, int, long,
+extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long,
                           long);
-extern short D_00151880[];
-extern long D_001A0448;
+extern short fs_aa_buffer[];
+extern long transition_overlay_tex0;
 
 /* Eight register arguments ($a0-$a3, $t0-$t3) then two 64-bit stack
    slots -- both written with `sd`, so they are `long`, not `long long`
@@ -5487,7 +5487,7 @@ int draw_transition_overlay(void *arg0) {
     return 0x10;
 }
 
-extern int func_00226EA8(int);
+extern int acquire_menu_stream_buffer(int);
 
 /* Sibling of func_00220DA0 below: the same slot set (0x44/0x48/0x4C/
    0x50/0x54/0x5C) on the same object, seeded here instead of torn down.
@@ -5531,7 +5531,7 @@ int enter_menu_stream_image(void *arg0) {
     return 0;
 }
 
-extern int func_00226F68(int);
+extern int release_menu_stream_buffer(int);
 
 typedef struct MenuStreamData_220DA0 {
     u8 pad_00[0x14];           /* 0x00 (MenuScreen 0x30): entries, flags, texture size, language base */
@@ -6050,7 +6050,7 @@ struct Focus_21380 { char pad0[0x40]; struct Grid_21380 *focus; };
 struct Stream_21380 { char pad0[0x20]; int width; int height; char pad28[0xC]; int flags; int tw; int th; char pad40[4]; int state; int buffer[2]; int loaded_entry[2]; };
 struct MS_21380 { char pad0[4]; struct Focus_21380 *current; char pad8[0x120]; int card_op_pending; int card_op_text; char pad130[0x24]; int ticks; };
 struct Card_21380 { char pad0[8]; int type; char padC[0xD0]; int state; char padE0[4]; int pending_state; };
-extern long func_00205520(int);
+extern long load_texture_file(int);
 
 /* Draws the stream image screen: while the card is checked it prints the centred
    status text, otherwise it draws the streamed image full screen. Returns 1 when
@@ -6062,7 +6062,7 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
     char *text;
     int state = menu->state;
     long texture;
-    extern void func_001F75D0(FontWindow_21380 *, long, char *, int);
+    extern void font_print_window_small(FontWindow_21380 *, long, char *, int);
     int first;
     unsigned char *tp;
 
@@ -6134,7 +6134,7 @@ typedef struct {
     Pair8 req2[6]; /* 0x2F8 */
 } Tbl137C80;
 extern Tbl137C80 D_00137C80_t __asm__("D_00137C80");
-extern int D_0015EE88 MACRO_ADDR;
+extern int g_game_language MACRO_ADDR;
 
 /* Pause sub-state machine at arg0+0x44. States 0 and 2 wait for their
    request (arg0+0x48 / +0x4C) and for D_001517D0[4] to clear, then run
@@ -6184,7 +6184,7 @@ int advance_audio_stream_state(char *arg0) {
 /* Returns the packed texture handle the draw call takes as its last
    64-bit argument, so it is `long`: retail stores $v0 straight to the
    stack slot with `sd`, without sign-extending it. */
-extern long func_00205520(int);
+extern long load_texture_file(int);
 
 /* Sibling of func_00220C90 above: same 0x44 guard and the same
    func_001F5800 draw, twice, with the colour held in one local because
@@ -6207,9 +6207,9 @@ int draw_two_texture_panels(void *arg0) {
 
 extern char D_001A01F0_c[] __asm__("D_001A01F0");
 extern char D_00151880_c[] __asm__("D_00151880");
-extern int D_0015F538 MACRO_ADDR;
-extern int D_001DE2E8[];
-extern void func_00200CA0(long, int, int, int, int, int, int, int, int, int);
+extern int game_frame_counter MACRO_ADDR;
+extern int map_screen_layer_insets[];
+extern void append_power_of_two_textured_screen_sprite(long, int, int, int, int, int, int, int, int, int);
 
 /* Draws the three overlay layers (textures at D_001A01F0 +0x258/0x260/
    0x268) over the whole screen (D_00151880's +0x160/+0x162 extent).
@@ -6290,14 +6290,14 @@ int draw_map_screen_layers(void) {
     return 4;
 }
 
-extern float func_001FA7D8(float, int);
-extern int func_001F9B70(int); /* abs */
+extern float FastNormalizeAngle(float, int);
+extern int subtract_integer_with_clamp(int); /* abs */
 
-extern char D_001864D0[];
-extern int D_0015F538 MACRO_ADDR;
-extern char D_001603D8[];
-extern char D_001603E0[];
-extern short D_001602B0; /* SDA, gp -0x6A50 */
+extern char item_info_table[];
+extern int game_frame_counter MACRO_ADDR;
+extern char pause_ring_left_glyph[];
+extern char pause_ring_right_glyph[];
+extern short panel_clear_color; /* SDA, gp -0x6A50 */
 
 /* The icon slots are a real member: written as pointer arithmetic, gcc
    strength-reduces the index into a 7th saved register (retail uses 6). */
@@ -6388,11 +6388,11 @@ int draw_pause_ring(char *arg0) {
     return 2;
 }
 
-extern void func_0022ED80(int, int, int);
-extern void func_001FBC80(int, void *, int);
-extern int func_001F98C0(int);
-extern void func_001F4E08(int);
-extern float D_0015F53C MACRO_ADDR;
+extern void Moby_PlaySound(int, int, int);
+extern void mode_freeze_init(int, void *, int);
+extern int scale_game_frame_count(int);
+extern void FadeToBlack(int);
+extern float gFade MACRO_ADDR;
 extern int D_0016044C_i __asm__("D_0016044C") MACRO_ADDR;
 typedef struct {
     int w0;              /* 0x00 */
@@ -6571,7 +6571,7 @@ s32 DrawCheatsMenu(struct CheatsMenu *menu) {
     return 2;
 }
 
-extern void func_0022ED80(int, int, int);
+extern void Moby_PlaySound(int, int, int);
 typedef struct {
     int w0;              /* 0x00 */
     unsigned char *buf;  /* 0x04 */
@@ -6702,11 +6702,11 @@ typedef struct {
     short id;           /* +6 */
     short idx;          /* +8 */
 } Item0A;
-extern Item0A D_001CF4A0[];
-extern Item0A D_001D6470[];
+extern Item0A pause_weapon_menu_slots[];
+extern Item0A pause_weapon_menu_items[];
 extern int D_001D6508[];
-extern char D_001864D0[];
-extern char D_001D1080[];
+extern char item_info_table[];
+extern char pause_weapon_menu_grid[];
 
 /* Builds the pause-menu item list from the 15 entries of D_001CF4A0
    that D_0013D5C8 enables. The flag needs its own `f = b != 0`:
@@ -6737,15 +6737,15 @@ int build_pause_item_list(void) {
     return 0;
 }
 
-extern Item0A D_001CEFA0[];
-extern Item0A D_001CEFE0[];
-extern Item0A D_001CF000[];
-extern Item0A D_001CF020[];
-extern Item0A D_001D6548[];
+extern Item0A gadget_menu_slots_row0[];
+extern Item0A gadget_menu_slots_row1[];
+extern Item0A gadget_menu_slots_row2[];
+extern Item0A gadget_menu_slots_row3[];
+extern Item0A gadget_menu_items[];
 extern int D_001D65D8[];
 extern int D_001D6610[];
-extern char D_001864D0[];
-extern char D_001D1408[];
+extern char item_info_table[];
+extern char gadget_menu_grid[];
 
 /* One 0x4C-byte record of D_001864D0, indexed by item id: the icon the
    filtered list shows, and the two values it copies out. */
@@ -6818,9 +6818,9 @@ typedef struct {
     short pad6;
     int pad8;
 } Src0C;
-extern int D_0013D618[];
-extern Src0C D_001DE0C0[];
-extern Out0C D_001D6648[];
+extern int gGalaxyList[];
+extern Src0C planet_icon_rows[];
+extern Out0C galaxy_menu_items[];
 extern short D_001602E0_s __asm__("D_001602E0");
 extern int *D_001602E0_m __asm__("D_001602E0") MACRO_ADDR;
 
@@ -6863,9 +6863,9 @@ int BuildGalaxyMenu(MenuObj40 *arg0) {
     return 0;
 }
 
-extern int D_0013CC04 NOT_SDA;
-extern char D_001D2678[];
-extern char *D_001D5F78 NOT_SDA;
+extern int pad0_pressed_unmasked NOT_SDA;
+extern char pause_default_action_list[];
+extern char *pause_current_action_list NOT_SDA;
 
 /* Map screen tick: on pad bit 0x40 switches back to the default action list. */
 int update_level_selection_map_screen(void) {
@@ -6884,7 +6884,7 @@ int draw_level_selection_map_screen(void *arg0) {
     return 2;
 }
 
-extern void func_0022ED80(int, int, int);
+extern void Moby_PlaySound(int, int, int);
 
 /* Pause sub-menu input on the pad word D_0013CC04. One if/else-if chain
    falling to a single `return 0`; early returns in the 0x10 arm give a
@@ -6917,8 +6917,8 @@ int handle_menu_action_buttons(char *arg0) {
     return 0;
 }
 
-extern int func_00226EA8(int);
-extern char *D_001D5F74 NOT_SDA;
+extern int acquire_menu_stream_buffer(int);
+extern char *current_menu_page NOT_SDA;
 
 /* Enter hook for the prompt screen: clears the page's +0x84 word and takes a stream buffer. */
 int enter_menu_prompt(void *arg0) {
@@ -6927,7 +6927,7 @@ int enter_menu_prompt(void *arg0) {
     return 0;
 }
 
-extern int func_00226F68(int);
+extern int release_menu_stream_buffer(int);
 
 /* Leave hook for the prompt screen: frees its stream buffer. */
 int leave_menu_prompt(void *arg0) {
@@ -6952,12 +6952,12 @@ int leave_menu_prompt(void *arg0) {
 /* D_0015EFB0 is SDA elsewhere; pause.cpp reaches it through the
    assembler macro. */
 extern int D_0015EFB0_m __asm__("D_0015EFB0") MACRO_ADDR;
-extern int D_0013CBE4;
+extern int pad0_pressed;
 
 /* variation: separate "g" local per arm (shadowed), not shared across
    the whole function, to see if that lets the allocator pick the
    per-block register retail uses instead of one merged pseudo. */
-extern char D_001D5F70[] NOT_SDA;
+extern char menu_system[] NOT_SDA;
 
 /* Prompt input: outside modes 1 and 0x10 just goes back; otherwise pad bit 0x20
    confirms (page +0x84 = 1) and 0x10 cancels, both going back. */
@@ -6988,13 +6988,13 @@ typedef struct {
     short s[12];
 } TextBox;
 
-extern char D_001603E8[];
+extern char str_error_text[];
 extern int D_001D6044;
 extern void func_00234C98_l(int, long) __asm__("func_00234C98");
-extern void func_001F4630(int);
-extern void func_001F4748(void);
+extern void SetupGifPaging(int);
+extern void DoGifPaging(void);
 extern void *func_001FE540_id(int) __asm__("func_001FE540");
-extern void func_001F75D0(TextBox *, long, char *, int);
+extern void font_print_window_small(TextBox *, long, char *, int);
 
 /* Draws the two-line prompt box (text 0x4FB3 for D_001D6044 in 0..2,
    0x4FB5 for 3, else D_001603E8) sized from arg0's +0x20/+0x24. The box
@@ -7040,7 +7040,7 @@ int draw_prompt_box(char *arg0) {
     return 2;
 }
 
-extern int D_001D48A8[];
+extern int pause_level_sprite_lists[];
 
 /* `D_001D48A8[(unsigned)D_0015EE84 % 19]`; the older near-miss
    predated MACRO_ADDR. */
@@ -7049,7 +7049,7 @@ int assign_pause_level_sprite_list(char *arg0) {
     return 0;
 }
 
-extern void func_0022ED80(int, int, int);
+extern void Moby_PlaySound(int, int, int);
 
 /* Pause sub-menu with a 30-entry wrapping cursor at arg0+0x40, in
    func_0021F7D0's shape. */
@@ -7092,7 +7092,7 @@ int handle_cyclic_menu_selection_input(char *arg0) {
     return 0;
 }
 
-extern void func_0022ED80(int, int, int);
+extern void Moby_PlaySound(int, int, int);
 
 /* func_00222DB0's twin with a 12-entry cursor at arg0+0x54. */
 int update_menu_cycle_selection(char *arg0) {
@@ -7133,9 +7133,9 @@ int update_menu_cycle_selection(char *arg0) {
 }
 
 typedef struct { char c[2]; } Glyph2;
-extern char D_001603F0[];
-extern char D_001603F8[];
-extern int func_00200248(int);
+extern char menu_side_indicator_left_glyph[];
+extern char menu_side_indicator_right_glyph[];
+extern int GetFrameTex(int);
 /* x, y first: arguments are evaluated in order, so the y conversion runs
    before the nested texture calls and is kept in $f20 across them, as in
    retail (and in func_00205E70, the other caller). */
@@ -7171,7 +7171,7 @@ int draw_menu_side_indicator(char *arg0) {
    read here as two word-sized icon ids. */
 typedef struct { int a; int b; int c; } IconRow;
 extern IconRow D_001DE0C0_i[] __asm__("D_001DE0C0");
-extern void func_001F6EA8(int, int, long, void *, int);
+extern void FontPrintCenter(int, int, long, void *, int);
 
 /* Draws the current page's icons: the page record (stride 0xC) gives a
    row of D_001DE0C0, or -1 for the single icon 0x5019 centred in the
@@ -7199,17 +7199,17 @@ int draw_selected_menu_item_text(char *arg0) {
 
 extern int D_0015EFB4_m __asm__("D_0015EFB4") MACRO_ADDR;
 extern int D_0015F6CC MACRO_ADDR;
-extern char D_001D5240[];
-extern void func_001FBC80(int, void *, int);
+extern char restart_confirm_page[];
+extern void mode_freeze_init(int, void *, int);
 extern unsigned char D_0014C008[];
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
-extern unsigned char D_0015EEC0[] MACRO_ADDR;
-extern void func_001F9A00(void *, void *, int);
-extern void func_00209CE8(int);
-extern void func_0020BFC8(int, int);
-extern int func_001F98C0(int);
-extern unsigned char D_0013F450[];
-extern void func_00228268(void);
+extern unsigned char gCheats[] MACRO_ADDR;
+extern unsigned char selector_available[] MACRO_ADDR;
+extern void copy_memory_aligned(void *, void *, int);
+extern void memcard_RestoreGame(int);
+extern void memcard_Save(int, int);
+extern int scale_game_frame_count(int);
+extern unsigned char g_hero[];
+extern void clear_scene_state_buffers(void);
 
 /* Pad handler for the restart option (pad word D_0013CBE4): 0x20 opens
    the confirm popup; 0x40 restarts: the level reload (func_00209CE8)
@@ -7275,12 +7275,12 @@ int enter_timed_menu_sequence(void *arg0) {
     return 0;
 }
 
-extern int D_001D2E74;
-extern char D_001D5418[];
-extern char D_001D54C8[];
-extern char D_001D5588[];
-extern char D_001D5618[];
-extern char D_001D5630[];
+extern int timed_sequence_title_id;
+extern char timed_sequence_page1[];
+extern char timed_sequence_page2[];
+extern char timed_sequence_page3[];
+extern char timed_sequence_page4[];
+extern char timed_sequence_page5[];
 
 /* A timed text sequence (credits-style): arg0+0x50 is the step, +0x40
    a countdown (func_001F98C0-scaled), +0x3C a scroll that advances 10 a
@@ -7695,11 +7695,11 @@ int leave_save_slot_screen(void *arg0) {
     return 0;
 }
 
-extern int D_0015EF34 MACRO_ADDR;
-extern int D_0015FF4C MACRO_ADDR;
-extern int D_0015EE98 MACRO_ADDR;
+extern int memcard_selected_slot MACRO_ADDR;
+extern int memory_card_error_latch MACRO_ADDR;
+extern int gBolts MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
-extern int D_0015EF24 MACRO_ADDR;
+extern int game_clock_ticks MACRO_ADDR;
 extern int D_0015EE84_mm __asm__("D_0015EE84") MACRO_ADDR;
 /* The 8-byte D_0015EF98 pair saved into a slot. As a char block in small
    data, its copy is la + ldl/ldr, as in retail. */
@@ -7707,9 +7707,9 @@ typedef struct {
     char b[8];
 } SaveWord2;
 extern SaveWord2 D_0015EF98_s __asm__("D_0015EF98") MACRO_ADDR;
-extern char D_001D28F8[];
-extern int D_001D29C0;
-extern void func_00227C78(int, int);
+extern char save_overwrite_confirm_page[];
+extern int save_confirm_slot;
+extern void prepare_save_game(int, int);
 
 /* Save-slot menu handler (func_002243E8's sibling): on entry it may arm
    a save (0x4FB5 prompt), then while the prompt is up it either aborts
@@ -7868,7 +7868,7 @@ int saving_data_menu(char *arg0) {
     return 0;
 }
 
-extern void func_0022F4A0(int arg0);
+extern void initialize_global_state_entry(int arg0);
 extern short D_0013E15A_43E8[] __asm__("D_0013E15A");
 
 /* Load-slot menu handler (func_00224040's sibling): with a load armed it either aborts or starts the sound fade and loads; otherwise pad handling with slot selection. */
@@ -8065,13 +8065,13 @@ struct MemoryCardState_pv {
 #define menu_system_pv (*(struct MenuSystem_pv *)D_001D5F70)
 #define memory_card_state_pv (*(struct MemoryCardState_pv *)D_0013D390)
 #define controller_state_pv (*(struct PadState *)D_0013CA40)
-extern char D_001D51B8[];
-extern char D_001D5318[];
+extern char save_menu_overwrite_confirm_page[];
+extern char save_menu_load_confirm_page[];
 extern short D_0013E15A[];
-extern void func_00227DB0(int);
-extern void func_00227D20(int, int);
-extern void func_0022F4A0(int);
-extern void func_00209DC0(void);
+extern void load_level_zero_preserving_progress(int);
+extern void start_memory_card_save(int, int);
+extern void initialize_global_state_entry(int);
+extern void load_and_initialize_level_chunk(void);
 /* Save slot screen tick: when focused, moves the slot cursor and on confirm
    starts the memory card save (or a level load for flag 0x2000). Plays a sound
    when the slot changes. */
@@ -8380,10 +8380,10 @@ struct MenuPanelOwner {
 };
 extern short D_0015EE80_250B8 __asm__("D_0015EE80");
 extern void func_00234C98_250B8(s32, u64) __asm__("func_00234C98");
-extern s32 func_002140B0(s32);
+extern s32 random_integer_below(s32);
 extern s64 func_001F4868_250B8(s32) __asm__("func_001F4868");
 extern void func_001F5800_250B8(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64) __asm__("func_001F5800");
-void func_002250B8(struct MenuPanelOwner *owner);
+void draw_menu_flashing_panel(struct MenuPanelOwner *owner);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/fun_00223e28.c, draw_menu_flashing_panel. */
 void draw_menu_flashing_panel(struct MenuPanelOwner *owner) {
@@ -8454,15 +8454,15 @@ void draw_menu_flashing_panel(struct MenuPanelOwner *owner) {
     func_001F5800_250B8(x + 1, y + 1, width + width_adjustment, height + height_adjustment, 1, 1, 0x3E, 0x3E, 0x80808080, func_001F4868_250B8(0x19));
 }
 
-extern int func_002279D0(void);
-extern int D_0016004C MACRO_ADDR;
-extern char D_001D6160[];
-extern char D_001D61A0[];
-extern char D_001D61E0[];
+extern int clear_preview_animation_queue(void);
+extern int active_class_resource_index MACRO_ADDR;
+extern char class_pose_manipulator[];
+extern char first_attachment_manipulator[];
+extern char second_attachment_manipulator[];
 extern char D_00186410[];
-extern void func_001E9790(void *);
-extern void func_00225DF0(void);
-extern void func_00226250(void *);
+extern void noop_callback_e(void *);
+extern void NullMobyUpdate_Gadget(void);
+extern void update_menu_preview_animation_pose(void *);
 
 /* Menu setup: resets the pad bindings, marks D_001D5F70's selections
    unset, fetches three entries with func_00226EA8, clears the 24 flag
@@ -8558,9 +8558,9 @@ __asm__(".section .text\n\tnop\n");
  * separate loop counters are load-bearing: with one variable reused, both
  * loops take $s2 and q takes $s1.
  */
-extern int func_002267C0(int);
-extern int func_00226F68(int);
-extern void func_00227A70(void);
+extern int delete_moby(int);
+extern int release_menu_stream_buffer(int);
+extern void clear_preview_resource_bindings(void);
 
 typedef struct MenuPreviewObjects_225548 {
     u8 pad_00[0x44];
@@ -8663,29 +8663,29 @@ typedef struct HandGadgetAnimation {
 extern Hero D_0013F450_255F8 __asm__("D_0013F450");
 extern HandGadgetDefinition D_001864D0_255F8[] __asm__("D_001864D0");
 extern u8 * D_001B3580_255F8[] __asm__("D_001B3580");
-extern u8 D_001B3E40[];
-extern HandGadgetAnimation D_001D5668[];
+extern u8 resident_class_slot_by_id[];
+extern HandGadgetAnimation gadget_animations[];
 extern HandGadgetSelection D_001D5F70_255F8 __asm__("D_001D5F70");
 extern HandGadgetManipulator D_001D6160_255F8 __asm__("D_001D6160");
 extern HandGadgetManipulator D_001D61A0_255F8 __asm__("D_001D61A0");
 extern HandGadgetManipulator D_001D61E0_255F8 __asm__("D_001D61E0");
-extern float D_001D6220[];
+extern float ammo_preview_offsets[];
 extern s32 D_001D6238_255F8[] __asm__("D_001D6238");
-extern void func_001E97F8(Moby *, s32);
+extern void noop_callback_r(Moby *, s32);
 extern void func_0020D960_255F8(s32, s32, HandGadgetManipulator *) __asm__("func_0020D960");
 extern void func_0020D9D8_255F8(s32, HandGadgetManipulator *) __asm__("func_0020D9D8");
-extern void func_00213DE0(void *, int, int, int);
+extern void MobyBlendAnimation(void *, int, int, int);
 extern Moby *func_00226720_255F8(s32) __asm__("func_00226720");
 extern Moby *func_002267C0_255F8(Moby *) __asm__("func_002267C0");
-extern void func_00227100(s32, Moby *, Moby *, s32 *, s32 *, s32 *);
-extern s32 func_00227890(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
-extern s32 func_002279D0(void);
-extern void func_00225E00();
-extern void func_00225FB8();
-extern void func_002260A8();
-extern void func_00226250();
-extern void func_00226380();
-extern void func_00226410();
+extern void update_preview_animation_and_attachments(s32, Moby *, Moby *, s32 *, s32 *, s32 *);
+extern s32 queue_preview_animation(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
+extern s32 clear_preview_animation_queue(void);
+extern void update_menu_preview_class_pose();
+extern void update_menu_preview_animation_transform();
+extern void update_menu_preview_pose_and_attachments();
+extern void update_menu_preview_animation_pose();
+extern void update_menu_preview_class_transform();
+extern void update_ammo_preview_transform();
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/gameplay/gadgets/load_hand_gadget.c, load_hand_gadget. */
 s32 LoadHandGadget(HandGadgetState *hand) {
@@ -8939,11 +8939,11 @@ void attachment_update_callback(void) {
 }
 
 extern char D_001864D0_a[] __asm__("D_001864D0");
-extern int func_0020E3D0(void *);
-extern void func_0020DAF8(int, int, void *);
-extern void func_00214F78(void *);
-extern void func_0020EEE8(void *);
-extern void func_001E9800(void *, void *, int, int, int);
+extern int advance_moby_animation(void *);
+extern void MobyTransformScaledVertex(int, int, void *);
+extern void normalize_vector_triplet(void *);
+extern void moby_anim_sphere_lerp(void *);
+extern void noop_callback_s(void *, void *, int, int, int);
 
 /* The pause-screen mobys these updates drive. */
 typedef struct {
@@ -8976,8 +8976,8 @@ typedef struct {
 } PauseClassRec;
 
 extern PauseClassRec D_001864D0_r[] __asm__("D_001864D0");
-extern void func_0020D9D8(int, void *);
-extern void func_0020D960(int, int, void *);
+extern void DetachManipulator(int, void *);
+extern void AttachManipulator(int, int, void *);
 
 /* Moby update with a per-class record: find the class in D_001864D0 (0x4C
    bytes each, 0x25 of them), refresh the matrix from the record's bone,
@@ -9209,19 +9209,19 @@ struct AmmoPreviewMoby {
     u8 padBD[3];
     f32 basis[12];
 };
-extern f32 D_0015EE6C MACRO_ADDR;
-extern short D_0015EE70;
-extern f32 D_001D6220[];
-extern f32 D_001D6238[];
-extern void func_001F9BC0(void *);
-extern f32 func_001F9F90(f32);
-extern f32 func_001F9FA8(f32);
-extern f32 func_001FA748(f32, f32);
+extern f32 g_frame_time MACRO_ADDR;
+extern short g_frame_time_sq;
+extern f32 ammo_preview_offsets[];
+extern f32 ammo_preview_velocities[];
+extern void clear_u64_value(void *);
+extern f32 FastCos(f32);
+extern f32 FastSin(f32);
+extern f32 FastAddRots(f32, f32);
 extern f32 func_001FA7D8_26410(f32) __asm__("func_001FA7D8");
-extern f32 func_001FA888(s32);
+extern f32 IntToFloat(s32);
 extern void func_0020E3D0_26410(void *) __asm__("func_0020E3D0");
-extern f32 func_00214D88(f32 *, f32 *, f32, f32, f32, f32);
-void func_00226410(struct AmmoPreviewMoby *moby);
+extern f32 ApproachWithVelocity(f32 *, f32 *, f32, f32, f32, f32);
+void update_ammo_preview_transform(struct AmmoPreviewMoby *moby);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/item_preview/update_ammo_preview_transform.c, update_ammo_preview_transform. */
 void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
@@ -9281,9 +9281,9 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
 /* Hoisted from the func_00227A70 block below so this earlier caller can
    see it -- a second NOT_SDA extern for the same symbol is a hard
    error. */
-extern unsigned char D_001B3E40[] NOT_SDA;
-extern void *func_0020D348(void);
-extern void func_0020E340(void *, int, int, int, int);
+extern unsigned char resident_class_slot_by_id[] NOT_SDA;
+extern void *CreateMoby(void);
+extern void pack_render_command_fields(void *, int, int, int, int);
 
 extern void *func_0020D348_c(int) __asm__("func_0020D348");
 
@@ -9315,8 +9315,8 @@ void *create_menu_preview_moby(int arg0) {
     return o;
 }
 
-extern int D_0015F6F0 MACRO_ADDR;
-extern void func_0020D678(void *); /* DeleteMoby */
+extern int world_update_time MACRO_ADDR;
+extern void DeleteMoby(void *); /* DeleteMoby */
 
 /* Deletes moby arg0 (if any) and stamps its +0x38 with D_0015F6F0. Always
    returns 0 so callers can clear their handle with it. */
@@ -9331,7 +9331,7 @@ int delete_moby(int arg0) {
 
 LINKER_REMNANT("asm/remnants/text", func_00226808);
 
-void func_00226D48(void);
+void NullMobyUpdate_Helper(void);
 
 /* Sets up the pause-menu helper moby h: spawns class 0x7A5
    (func_00226720), places it at D_00187040's +0x140 position plus
@@ -9454,22 +9454,22 @@ typedef struct {
     s32 read_offset;
     StreamedAnimationMoby_26978 *moby;
 } MobyAnimationStream_26978;
-extern s32 D_001517EC[];
-extern s16 D_0015182A[];
-extern s32 D_0015EE88 MACRO_ADDR;
+extern s32 queued_dialogue_id[];
+extern s16 dialogue_playback_phase[];
+extern s32 g_game_language MACRO_ADDR;
 extern s32 D_0015EF20 MACRO_ADDR;
-extern s32 func_001F98C0(s32);
-extern void func_00203B18(char *, int);
-extern void func_0020C468(int, int);
-extern void func_00213DE0(void *, s32, s32, s32);
-extern s32 func_00216960(void);
-extern int func_00217628(int, int, int);
+extern s32 scale_game_frame_count(s32);
+extern void relocateObjectPointers(char *, int);
+extern void fast_decompress(int, int);
+extern void MobyBlendAnimation(void *, s32, s32, s32);
+extern s32 Music_ContinueStreamIfReady(void);
+extern int start_audio_stream_read(int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/assembly/textbin/fun_002256e8.c, update_streamed_moby_animation. */
 s32 update_streamed_moby_animation(MobyAnimationStream_26978 *stream) {
-    extern s16 D_001517D8[];
-    extern int func_00227068(int);
-    extern char *D_001B3580[];
+    extern s16 cd_read_active[];
+    extern int mark_menu_stream_buffer_read_active(int);
+    extern char *moby_class_resources[];
     StreamedAnimationMoby_26978 *moby;
     AnimationTableHeader_26978 *header;
     StreamedClassResource_26978 **class_resource;
@@ -9590,7 +9590,7 @@ s32 update_streamed_moby_animation(MobyAnimationStream_26978 *stream) {
     return 0;
 }
 
-extern void func_0020E180(int, int);
+extern void DrawMobyList(int, int);
 
 /* Draws the 24 moby lists held at arg0+0x44. Returns 4. */
 int draw_moby_entries_from_object(void *arg0) {
@@ -9610,7 +9610,7 @@ int draw_moby_entries_from_object(void *arg0) {
 void NullMobyUpdate_Helper(void) {
 }
 
-extern int D_001D6448[];
+extern int menu_stream_buffers[];
 
 /* Lays out the five menu stream buffers from the menu system's two memory
    regions: a0 = 0 gives one small (0x11800) buffer, otherwise three small and two
@@ -9660,7 +9660,7 @@ void initialize_menu_stream_buffers(int a0) {
 }
 
 
-extern int func_00227018(int handle);
+extern int get_menu_stream_buffer_size(int handle);
 
 /* Find the first binding that is enabled (bit 0 clear, or set when
    `invert` is given), still has a key and is not already claimed, claim
@@ -9716,7 +9716,7 @@ int release_menu_stream_buffer(int key) {
     return 0;
 }
 
-extern int D_001D6448[];
+extern int menu_stream_buffers[];
 
 /* Returns the size of stream buffer arg0 (0x4F000 large, 0x11800 small), or -1. */
 int get_menu_stream_buffer_size(int arg0) {
@@ -9792,7 +9792,7 @@ typedef struct {
 extern Pv_q D_001D5F70_q[] __asm__("D_001D5F70");
 extern struct Hdr16_1CE60 D_001517D0_q[] __asm__("D_001517D0");
 extern Rec38_q D_001D6410_q[] __asm__("D_001D6410");
-extern int D_00160450 MACRO_ADDR;
+extern int preview_animation_request_count MACRO_ADDR;
 typedef struct {
     u8 pad0[0x48];
     int anim[1];
@@ -9805,15 +9805,15 @@ typedef struct {
     } e[1];
 } Tbl_q;
 extern Tbl_q D_00137C80_q[] __asm__("D_00137C80");
-extern char *D_001B3580[] NOT_SDA;
-extern void func_0020C468(int, int);
-extern int func_00217628(int, int, int);
-extern void func_00203B18(char *, int);
-extern int func_00227928(void);
-extern void func_00227B00(s32, s32);
-extern void func_00213F28(void *, int, int, int, int);
+extern char *moby_class_resources[] NOT_SDA;
+extern void fast_decompress(int, int);
+extern int start_audio_stream_read(int, int, int);
+extern void relocateObjectPointers(char *, int);
+extern int advance_preview_animation_queue(void);
+extern void load_preview_resource_bindings(s32, s32);
+extern void blend_moby_animation_ex(void *, int, int, int, int);
 extern void func_00213D28_q(void *, int, int) __asm__("func_00213D28");
-extern void func_00225DF8(void);
+extern void attachment_update_callback(void);
 
 int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char **o2) __asm__("func_00227100");
 
@@ -9969,12 +9969,12 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
     return 0;
 }
 
-extern int D_00160450 MACRO_ADDR;
+extern int preview_animation_request_count MACRO_ADDR;
 typedef struct {
     int unk00;
     int arg[13];
 } Rec38;
-extern Rec38 D_001D6250[];
+extern Rec38 preview_animation_requests[];
 
 int queue_preview_animation(int a0, int a1, int a2, int a3, int a4, int a5, int a6,
                   int a7, int a8, int a9, int a10, int a11, int a12) {
@@ -10054,8 +10054,8 @@ void pack_image_descriptor(void *arg0, char *src) {
     *(short *)(d + 0xA) = w1;
 }
 
-extern char D_001D5D58[] NOT_SDA;
-extern char *D_001B3580[] NOT_SDA;
+extern char preview_resource_bindings[] NOT_SDA;
+extern char *moby_class_resources[] NOT_SDA;
 
 typedef struct {
     u8 pad0[0x30];
@@ -10077,10 +10077,10 @@ typedef struct {
     s32 animation_index;
 } PreviewResourceBinding;
 extern u8 D_001B3580_27A70[] __asm__("D_001B3580");
-extern u8 D_001B3E40[];
+extern u8 resident_class_slot_by_id[];
 extern u8 D_001D5D58_27A70[] __asm__("D_001D5D58");
 extern PreviewAnimationStreamState D_001D5F70_27A70 __asm__("D_001D5F70");
-void func_00227A70(void);
+void clear_preview_resource_bindings(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/item_preview/clear_preview_resource_bindings.c, clear_preview_resource_bindings. */
 void clear_preview_resource_bindings(void) {
@@ -10187,12 +10187,12 @@ void load_preview_resource_bindings(s32 first_resource, s32 resource_count) {
     }
 }
 
-extern char D_0015EF98[] MACRO_ADDR;
-extern char D_00141FC0[];
+extern char save_clock_time[] MACRO_ADDR;
+extern char level_map_coverage[];
 extern void func_00121A80(void *);
 extern void func_0012D818(void *);
-extern void func_00208FA0(void);
-extern void func_00208338(void *);
+extern void copy_level_object_positions(void);
+extern void save_map_coverage(void *);
 
 /* Gathers the game state into save buffer arg0 (object positions, map coverage)
    and stores arg0 and arg1 in the memory card state; starts state 0x13 when idle. */
@@ -10213,7 +10213,7 @@ void prepare_save_game(int arg0, int arg1) {
 }
 
 /* func_00209DC0 (memcard.c) takes nothing. */
-extern void func_00209DC0(void);
+extern void load_and_initialize_level_chunk(void);
 
 /* func_00227C78's sibling: runs func_00209DC0, the D_0015EF98 pair and
    func_0020BA00(arg0), then records arg0/arg1 in D_0013D390 (+0xF4,
@@ -10358,8 +10358,8 @@ void load_level_zero_preserving_progress(s32 slot) {
     }
 }
 
-extern int D_0015F6D0 MACRO_ADDR;
-extern int D_0015EE80 MACRO_ADDR;
+extern int game_clock_paused MACRO_ADDR;
+extern int pal_mode MACRO_ADDR;
 
 /* Advances the D_0015EF24 frame counter unless D_0015F6D0 is set; with
    D_0015EE80 set it jumps 10 extra every 50th tick. */
@@ -10375,10 +10375,10 @@ void SpaceTransition_Tick(void) {
     }
 }
 
-extern int func_00216198(void);
-extern int func_00216150(void);
-extern char D_001D2B80[];
-extern char D_001D2BF8[];
+extern int count_nonzero_entries_up_to_30(void);
+extern int count_nonzero_entries_up_to_10(void);
+extern char reward_menu_items[];
+extern char reward_menu_page[];
 
 /* Unlock states for the pause menu's reward rows: with at least 15 / 30
    of the D_0013D510 flags (func_00216198) and 10 of the D_0013E620 ones
@@ -10437,18 +10437,18 @@ void clear_scene_state_buffers(void) {
 
 LINKER_REMNANT("asm/remnants/text", func_002282B8);
 
-extern float D_00160470[] MACRO_ADDR;
+extern float direction_unit[] MACRO_ADDR;
 extern float D_00160470_x __asm__("D_00160470");
 extern float D_00160474;
 extern float D_00160478;
-extern float D_00160480[] MACRO_ADDR;
+extern float direction_perpendicular[] MACRO_ADDR;
 extern float D_00160480_x __asm__("D_00160480") MACRO_ADDR;
 extern float D_00160484;
 extern float D_00160488;
-extern float D_00160490;
+extern float direction_scaled;
 extern float D_00160494;
 extern float D_00160498;
-extern void func_001F9CA0(void *, void *, void *);
+extern void FastVecCross(void *, void *, void *);
 
 typedef struct {
     float v[4];
@@ -10459,8 +10459,8 @@ typedef struct {
    vector built from dir's components reordered (the smallest moved), so
    the result is perpendicular, then normalised. */
 typedef u32 u128_282D0 __attribute__((mode(TI), aligned(16)));
-extern f32 D_00160470[] MACRO_ADDR;
-extern f32 D_00160480[] MACRO_ADDR;
+extern f32 direction_unit[] MACRO_ADDR;
+extern f32 direction_perpendicular[] MACRO_ADDR;
 extern f32 D_00160490_282D0[] __asm__("D_00160490") MACRO_ADDR;
 extern void func_001F9DC0_282D0(f32 *, f32 *, f32) __asm__("func_001F9DC0");
 typedef union {
@@ -10533,8 +10533,8 @@ void *parse_typed_resource_record(char *p) {
     return p;
 }
 
-extern int *D_00161000 MACRO_ADDR;
-extern char D_001D8120[];
+extern int *g_render_packet_cursor MACRO_ADDR;
+extern char graphics_setup_dma_packets[];
 extern short D_00160460;              /* SDA, gp -0x68A0 */
 extern void func_002298B0(int, int);
 
@@ -10725,17 +10725,17 @@ struct VideoModeState {
     s32 v;
 };
 extern struct VideoModeState D_0015EE80_28860 __asm__("D_0015EE80") MACRO_ADDR;
-extern u8 D_001D8250[];
-extern u8 D_001D81E0[];
-extern s32 D_001604A0 MACRO_ADDR;
-extern void func_002284E8(void);
+extern u8 pal_graphics_setup_packet[];
+extern u8 ntsc_graphics_setup_packet[];
+extern s32 graphics_setup_word MACRO_ADDR;
+extern void append_fullscreen_setup_strips(void);
 extern void func_002282D0_28860(f32 *, f32) __asm__("func_002282D0");
 extern u8 *func_00228400_28860(u8 *) __asm__("func_00228400");
-extern void func_00229838(f32 *, f32 *);
+extern void stretch_scratchpad_segments_to_depths(f32 *, f32 *);
 extern void func_00228D20(u32, s32, s32);
-extern void func_00228458(s32, s32, s32);
+extern void emit_selected_graphics_dma_packets(s32, s32, s32);
 extern void func_00234C98_28860(s32, s64) __asm__("func_00234C98");
-extern void func_00228690(s64);
+extern void append_fullscreen_clear_strips(s64);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00227548.c, submit_graphics_setup_command_stream. */
 void submit_graphics_setup_command_stream(u8 *command_stream) {

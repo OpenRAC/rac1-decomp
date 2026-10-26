@@ -5,15 +5,15 @@
 #include "camera.h"
 #include "hero.h"
 
-extern int D_0015EED0[] MACRO_ADDR;
-extern short D_L00_00161E80;
-extern short D_L00_0015F044;
-extern void func_L00_002E5B68();
-extern void func_L00_002E74B0(void *);
-extern void func_001E9768();
-extern void func_L00_002E6CE0(void *);
-extern void func_L00_002EB060(void *);
-extern void func_L00_002E72E8(void *);
+extern int vendor_stock[] MACRO_ADDR;
+extern short follow_cam_setting_values;
+extern short follow_cam_setting_value;
+extern void apply_follow_camera_translation();
+extern void follow_camera_apply_overrides(void *);
+extern void Profile_Mark();
+extern void follow_camera_springs(void *);
+extern void update_follow_camera_pose(void *);
+extern void follow_camera_approach(void *);
 /* Update for the camera moby. */
 void follow_camera_update(char *m) {
     char *p = *(char **)(m + 0x70) + 0x1D0;
@@ -29,9 +29,9 @@ void follow_camera_update(char *m) {
 }
 extern char D_0013E633[] NOT_SDA;
 extern int D_0015EEB3 MACRO_ADDR;
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
 /* Builds a view matrix and multiplies it into the camera and projection matrices. The mode flag is read as a byte of a MACRO_ADDR int, which gives retail's one-register lui/lbu. */
 void update_hero_aligned_camera_position(char *p) {
     char a[16] __attribute__((aligned(16)));
@@ -55,9 +55,9 @@ void update_hero_aligned_camera_position(char *p) {
     FastVecAdd(p, D_0013E633 + 0xE9D, b);
     FastVecAdd(p, D_0013E633 + 0xE9D + 0xC0, p);
 }
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9CA0(void *, void *, void *);
-extern char D_0013F450[];
+extern void FastVecScale(void *, void *, float);
+extern void FastVecCross(void *, void *, void *);
+extern char g_hero[];
 extern void *D_L00_00166F04;
 
 /* builds the camera-relative matrix rows of a moby from the camera state */
@@ -88,7 +88,7 @@ void initialize_hero_aligned_camera_pose(char *m) {
     FastVecCross(m, a, p);
     qcopy(m + 0x40, m);
 }
-extern void func_L00_002EB280(char *m);
+extern void initialize_hero_aligned_camera_pose(char *m);
 
 /* clears the 7 words of the state block, calls the helper, clears halfword 0x7E. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002e9ef0. */
 void func_L00_002EB3A0(p)
@@ -106,25 +106,25 @@ typedef struct {
 typedef struct { u8 pad0[0x14C]; float f14C; u8 pad1[0x308 - 0x150]; s16 s308; u8 pad2[0x2080 - 0x30A]; u8 *p2080; u8 pad3[0x2090 - 0x2084]; int i2090; u8 pad4[0x20A5 - 0x2094]; u8 b20A5; } P350;
 typedef struct { u8 pad0[0x100]; float f100, f104, f108, f10C; u8 pad1[0x1A0 - 0x110]; int i1A0; } C940;
 extern P350 D_0013F450_EB3E8 __asm__("D_0013F450");
-extern C940 D_0013CA40;
+extern C940 g_controller_state;
 extern CameraSystem D_L00_00166D80_EB3E8 __asm__("D_L00_00166D80");
-extern int D_0015EEDC MACRO_ADDR;
-extern short D_L00_00161E90;
-extern short D_L00_00161E94;
-extern short D_L00_00161E98;
-extern short D_L00_00161E9C;
-extern short D_L00_00161EA0;
+extern int invert52 MACRO_ADDR;
+extern short hero_aligned_cam_gain_at_rest;
+extern short hero_aligned_cam_gain_at_full;
+extern short hero_aligned_cam_input_stiffness;
+extern short hero_aligned_cam_input_damping;
+extern short hero_aligned_cam_input_max_step;
 void func_L00_002EB170_EB3E8(void *) __asm__("func_L00_002EB170");
-void func_L00_001FF4B0(void *, void *, float);
-void func_001F9CA0(void *, void *, void *);
-void func_001F9BD8(void *, void *, void *);
-float func_001FA888(int);
-float func_001F9B88(float);
+void vec_scale_to_length(void *, void *, float);
+void FastVecCross(void *, void *, void *);
+void FastVecAdd(void *, void *, void *);
+float IntToFloat(int);
+float FastAbsF(float);
 float func_001EC120_EB3E8(float, float, float, float, float, float *) __asm__("func_001EC120");
-void func_002156E0(void *, void *, void *, float);
-float func_001FA748(float, float);
-float func_001FA790(float, float);
-int func_L00_001F10E0(void *, int, void *, float);
+void build_look_at_matrix(void *, void *, void *, float);
+float FastAddRots(float, float);
+float FastSubRots(float, float);
+int coll_sphere(void *, int, void *, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002e9f38. */
 void update_hero_aligned_camera_from_input(u8 *o) {
@@ -286,9 +286,9 @@ tail:
     return 0;
 }
 typedef struct { char pad[0x254]; int p; char pad2[0x18]; short s; char pad3[1]; char c; char pad4[0x14]; float f0; char pad5[8]; float f1; } S;
-extern S D_L00_00166D80;
-extern void func_L00_002EB3A0(char *);
-extern void func_0022ED80(int, int, int);
+extern S player_camera;
+extern void reset_hero_aligned_camera(char *);
+extern void Moby_PlaySound(int, int, int);
 
 /* ActivateCamera_4, the first-person camera's init: the camera it gets is handed on to the
    state reset (func_L00_002EB3A0), which builds the camera's rows. */
@@ -304,10 +304,10 @@ void initialize_hero_aligned_camera_mode(char *cam) {
     if (h->p != 0) Moby_PlaySound(0, 0, h->p);
 }
 extern unsigned char D_0013E633_2EBCC0[] __asm__("D_0013E633");
-extern float func_001F9C78(void *, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9CB8(void *);
-extern float func_001F9FC0(float);
+extern float FastVecDot(void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern float FastVecLength(void *);
+extern float FastArcSin(float);
 
 /* Exit-camera update: reset the camera state, or drop to state 4 when the view lines up within 80 degrees. */
 void select_camera_mode_by_hero_vector_alignment(char *m) {
@@ -351,8 +351,8 @@ void select_camera_mode_by_hero_vector_alignment(char *m) {
     h->f1 = 0.018f;
     h->f0 = 0.018f;
 }
-extern char *D_L00_00166F00;
-extern char *func_L00_001EB578(int);
+extern char *g_current_follow_cam;
+extern char *find_camera_record_by_id(int);
 
 /* Copies a vector into the current object's slot, switching to state 5 first. */
 void set_camera_position(char *src) {
@@ -417,9 +417,9 @@ void CameraScript(V_2ebf50 *pa, V_2ebf50 *pb, s32 mode, s32 w, s32 x) {
     *(s32 *)(e + 4) = w;
     *(s32 *)(n + 0xE0) = w;
 }
-extern void func_L00_001EB7C8(void);
-extern void func_001FA218(void *, void *);
-extern void func_001FA480(void *, void *);
+extern void initialize_camera_record_handoff_defaults(void);
+extern void euler_to_matrix(void *, void *);
+extern void matrix_copy_rows(void *, void *);
 extern char D_0013E633[];
 
 /* camera script command 2: sets the camera object's mode from the command number */
@@ -455,7 +455,7 @@ void CameraScript2(int mode) {
     }
 }
 LINKER_REMNANT("asm/overlays", func_L00_002EC208);
-extern void func_001F9BC0(void *);
+extern void clear_u64_value(void *);
 
 /* Camera-state init: sets the default parameters and builds the moby's matrix. */
 void initialize_camera_pose_springs(char *m) {
@@ -479,20 +479,20 @@ void initialize_camera_pose_springs(char *m) {
     matrix_copy_rows(m, v);
     *(short *)(m + 0x7E) = 0;
 }
-extern int func_001F9908(int *);
-extern float func_001FA888(int);
-extern void func_L00_00258FA8(void *, void *, void *, float);
-extern void func_L00_00259088(float *, float *, float *, float);
-extern void func_L00_001ED9B0(void *, void *, void *);
-extern float func_001FA790(float, float);
-extern float func_00214220(float, float, float);
-extern float func_L00_00258F28(float, float, float);
-extern float func_L00_00258E58(float, float, float, float, float);
-extern void func_L00_001ED900(void *, void *, void *);
-extern float func_001EC120(void *, float, float, float, float, float);
-extern float func_L00_001EB6A8(void *, float, float, float, float, float);
+extern int fast_dec_timer(int *);
+extern float IntToFloat(int);
+extern void interpolate_vector_xyz_cosine_eased(void *, void *, void *, float);
+extern void interpolate_wrapped_rotations_cosine_eased(float *, float *, float *, float);
+extern void compute_spherical_offset_from_positions(void *, void *, void *);
+extern float FastSubRots(float, float);
+extern float CosineInterpolate(float, float, float);
+extern float interpolate_wrapped_angle_cosine_eased(float, float, float);
+extern float CubicInterpolate(float, float, float, float, float);
+extern void compute_position_from_spherical_offset(void *, void *, void *);
+extern float Cam_InterpValues(void *, float, float, float, float, float);
+extern float Camera_SmoothAngle(void *, float, float, float, float, float);
 extern char D_0013E633[] __attribute__((section(".data")));
-extern float D_L00_00166ED8;
+extern float camera_yaw;
 
 #define F(p, o) (*(float *)((char *)(p) + (o)))
 
@@ -557,8 +557,8 @@ void update_camera_pose_from_targets(void *arg) {
     euler_to_matrix(mtx, m + 0x40);
     matrix_copy_rows(m, mtx);
 }
-extern void func_L00_002EC2D0(void *);
-extern void func_L00_001EDA28(void *, float);
+extern void update_camera_pose_from_targets(void *);
+extern void resolve_camera_movement_collisions(void *, float);
 /* Update wrapper: runs the base camera update, then a follow-up call if a flag is set. */
 void update_camera_pose_with_optional_collision(char *a) {
     char *p = *(char **)(a + 0x70) + 0xE0;
@@ -568,7 +568,7 @@ void update_camera_pose_with_optional_collision(char *a) {
         resolve_camera_movement_collisions(a + 0x30, 0.5f);
     }
 }
-extern float func_001FA748(float, float);
+extern float FastAddRots(float, float);
 /* Orients the moby from its position and the stored target. */
 void initialize_orbit_camera_pose(void *arg) {
     char *a = arg;
@@ -584,10 +584,10 @@ void initialize_orbit_camera_pose(void *arg) {
     euler_to_matrix(m, a + 0x40);
     matrix_copy_rows(a, m);
 }
-extern void func_L00_001EB448(void *, void *, float);
-extern void func_L00_001EB430(void *);
-extern void func_L00_001FF200(void *);
-extern void func_L00_002EC728(void *);
+extern void copy_five_floats_with_rotation_offset(void *, void *, float);
+extern void zero_five_words(void *);
+extern void clear_twelve_bytes(void *);
+extern void initialize_orbit_camera_pose(void *);
 /* Sets up a camera moby from the vectors c and b and the value f. */
 void initialize_orbit_camera_from_parameters(char *a, void *b, void *c, float f) {
     char *p = *(char **)(a + 0x70);
@@ -689,13 +689,13 @@ void update_orbit_camera_pose(char *camera_object) {
     matrix_copy_rows(camera_object, rotation_matrix);
 }
 typedef int u128 __attribute__((mode(TI)));
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_L00_002EC7D0(char *, void *, void *, float);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA850(float, float);
-extern float func_001F9D48(void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void initialize_orbit_camera_from_parameters(char *, void *, void *, float);
+extern float fast_atan2(float, float);
+extern float FastDiffRots(float, float);
+extern float vec_distance_xy(void *, void *);
 extern char D_0013E633[] NOT_SDA;
-extern float D_L00_00161EA4;
+extern float orbit_cam_target_offset_x;
 extern char D_L00_00166D80_c[] __asm__("D_L00_00166D80") NOT_SDA;
 
 // steps a follow-camera object toward a target moby, easing its angle and position or snapping to a goal
@@ -765,13 +765,13 @@ pos:
 one:
     return 1;
 }
-extern void func_L00_002EC860(void *);
-extern void func_L00_001EB890(char *);
-extern int func_L00_002ECAF8(char *, char *);
-extern short D_L00_00166FF0[];
-extern char D_L00_001E7B10[];
-extern char D_L00_001E7B28[];
-extern char D_L00_001E7B40[];
+extern void initialize_orbit_camera_state(void *);
+extern void SwitchCamera(char *);
+extern int update_orbit_camera_from_target_moby(char *, char *);
+extern short camera_blend_phase[];
+extern char orbit_cam_mode6_params_a[];
+extern char orbit_cam_mode6_params_b[];
+extern char orbit_cam_mode6_params_c[];
 
 // initialises a moby of type 6 from the given one
 char *initialize_mode6_orbit_camera(char *a) {
@@ -794,7 +794,7 @@ char *initialize_mode6_orbit_camera(char *a) {
     return m;
 }
 extern char D_0013E633[];
-extern float func_001F9D10(void *, void *);
+extern float FastVecDist(void *, void *);
 
 /* Sets the moby's state to 2 (and arms the camera-side fields) when the target is nearly in front and close, else to 4. */
 void select_camera_mode_by_hero_alignment_and_distance(char *m) {
@@ -813,7 +813,7 @@ void select_camera_mode_by_hero_alignment_and_distance(char *m) {
     }
     m[0x7D] = 0;
 }
-extern char D_0013F450[];
+extern char g_hero[];
 /* Camera setup from the global block at D_0013F450+0x80. */
 void initialize_orbit_camera_from_hero(void *arg) {
     char *a = arg;
@@ -831,10 +831,10 @@ void initialize_orbit_camera_from_hero(void *arg) {
     copy_five_floats_with_rotation_offset(a + 0x50, p + 0x14, 0.0f);
     initialize_orbit_camera_state(a);
 }
-extern int D_0015EE84 MACRO_ADDR;
-extern int func_001F9850(int);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
+extern int g_current_level_index MACRO_ADDR;
+extern int scale_ticks(int);
+extern float FastCos(float);
+extern float FastSin(float);
 
 /* Sets up the camera activation moby: tuning floats, then the pose copied from the current camera. */
 void initialize_target_tracking_camera(void *arg) {
@@ -1054,10 +1054,10 @@ void update_target_tracking_camera_position(char *cam) {
         *(int *)(angle + 1) = 0;
     } else qcopy(cam + 0x30, position);
 }
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9C78(void *, void *);
-extern float func_001F9FC0(float);
-extern void func_002156E0(void *, void *, void *, float);
+extern void FastVecSub(void *, void *, void *);
+extern float FastVecDot(void *, void *);
+extern float FastArcSin(float);
+extern void build_look_at_matrix(void *, void *, void *, float);
 extern char D_0013E633[] NOT_SDA;
 extern char D_L00_00166F30[] NOT_SDA;
 /* orients a moby to face the camera, blending by the turn angle */
@@ -1095,9 +1095,9 @@ void turn_camera_view_toward_hero(char *m) {
  * an independent placement of the existing return-zero func_001E97C8. */
 LINKER_REMNANT("asm/overlays", func_L00_002EDB58);
 extern char D_L00_00166D80_c[] __asm__("D_L00_00166D80");
-extern void func_L00_002ED088(void *);
-extern int func_001F9850(int);
-extern void func_00202790(int);
+extern void initialize_target_tracking_camera(void *);
+extern int scale_ticks(int);
+extern void RefreshPointLight(int);
 
 typedef struct CameraTargetState_2EDB70 {
     u8 pad_00[0x8];
@@ -1169,7 +1169,7 @@ done:
     resolve_camera_movement_collisions(camera_position, 0.5f);
     cam->saved_state->unk80 = 0;
 }
-extern char D_0013F450[];
+extern char g_hero[];
 /* Update check that sets state 3 when a global value no longer matches the moby's. */
 void conditionally_set_camera_state_three(char *a) {
     char *g = g_hero;
@@ -1178,7 +1178,7 @@ void conditionally_set_camera_state_three(char *a) {
         *(short *)(a + 0x7E) = 3;
     }
 }
-extern u8 D_0013F4D0[];
+extern u8 gHeroPos[];
 typedef struct {
     char pad84[0x84];
     s16 f84;
@@ -1197,13 +1197,13 @@ typedef struct {
 } O_2ec7e8;
 extern u8 * D_L00_00166F00_EDC98[] __asm__("D_L00_00166F00");
 extern u8 * D_L00_0015F050_EDC98 __asm__("D_L00_0015F050") MACRO_ADDR;
-extern u8 * D_L00_001B0830[];
-extern s32 D_001414DC[];
+extern u8 * level_paths[];
+extern s32 hero_control_mode[];
 extern s32 D_001416D4[];
-extern s32 func_00215570(void *, s32);
-extern s32 func_L00_00260AB0(void *, s32);
+extern s32 is_point_inside_clip_volume(void *, s32);
+extern s32 test_point_in_transformed_unit_cylinder(void *, s32);
 extern s32 func_L00_00260B68_EDC98(void *, s32) __asm__("func_L00_00260B68");
-extern s32 func_L00_0025A778(void *, void *, s32);
+extern s32 IsPointInPolygon(void *, void *, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ec7e8. */
 s32 volume_camera_swing_active(A_2ec7e8 *a) {
@@ -1271,33 +1271,33 @@ typedef struct {
 typedef struct { u8 pad0[0x18]; f32 yaw; SwingCameraParams *params; } CamDesc;
 typedef struct { u8 pad0[0x100]; f32 analog[4]; } PadSt;
 
-extern char *D_L00_0015F050 MACRO_ADDR;
-extern float D_L00_00166ED8 MACRO_ADDR;
+extern char *camera_descriptors MACRO_ADDR;
+extern float camera_yaw MACRO_ADDR;
 extern float D_L00_00166FB4;
 extern unsigned char D_0013A5E0[];
 #define pad_held_r ((s32 *)(D_0013A5E0 + 0x2600))
 #define controller_state (*(PadSt *)(D_0013A5E0 + 0x2460))
 
-extern int func_L00_002E9870(void *);
-extern void func_L00_002E9838(void *);
-extern f32 func_001FA850(f32, f32);
-extern void func_L00_001FF4B0(void *, void *, f32);
-extern void func_001F9C30(void *, void *, f32);
-extern f32 func_001F9CB8(void *);
-extern f32 func_001FA888(int);
-extern f32 func_001F9F90(f32);
-extern f32 func_001F9FA8(f32);
-extern void func_L00_002E9DC8(void *, f32, f32);
-extern void func_L00_002E9B30(void);
+extern int try_select_follow_camera_volume(void *);
+extern void clear_follow_camera_volume_if_current(void *);
+extern f32 FastDiffRots(f32, f32);
+extern void vec_scale_to_length(void *, void *, f32);
+extern void FastVecScale(void *, void *, f32);
+extern f32 FastVecLength(void *);
+extern f32 IntToFloat(int);
+extern f32 FastCos(f32);
+extern f32 FastSin(f32);
+extern void set_follow_camera_angle_blend_from_direction(void *, f32, f32);
+extern void set_follow_camera_blend_output_flags(void);
 extern void func_L00_002E9AD0(void);
-extern void func_L00_002E9AF8(void);
-extern void func_L00_002E9900(s32, f32, f32);
+extern void follow_camera_start_slide(void);
+extern void Cam_SetDistanceGoal(s32, f32, f32);
 extern void func_L00_002E9940(f32);
-extern void func_L00_002E9968(f32, f32);
-extern void func_L00_002E99A0(s32, f32, f32);
+extern void follow_camera_set_height(f32, f32);
+extern void Cam_SetEyeOffset(s32, f32, f32);
 extern void func_L00_002E99F0(f32);
-extern void func_L00_002E9A18(int);
-extern void func_L00_002E9A40(f32, f32);
+extern void set_follow_camera_orbit_clamp_mode(int);
+extern void follow_camera_set_lateral_spring(f32, f32);
 
 /* Camera-swing script update. */
 void volume_camera_swing(char *arg) {
@@ -1490,9 +1490,9 @@ stop:
         follow_camera_set_lateral_spring(0.01f, 0.2f);
     }
 }
-extern void func_L00_002EDE38(char *);
-extern int D_0015EE84 MACRO_ADDR;
-extern char *D_L00_0015F050 MACRO_ADDR;
+extern void volume_camera_swing(char *);
+extern int g_current_level_index MACRO_ADDR;
+extern char *camera_descriptors MACRO_ADDR;
 
 typedef struct CamSwingParams_2EE6E0 {
     u8 pad_00[0x2C];
@@ -1539,10 +1539,10 @@ int volume_camera_swing_check(char *m) {
     }
     return 0;
 }
-extern float func_001F9B88(float);
-extern int func_00215570(void *, int);
-extern int func_L00_00260AB0(void *, int);
-extern int func_L00_00260B68(float *, int);
+extern float FastAbsF(float);
+extern int is_point_inside_clip_volume(void *, int);
+extern int test_point_in_transformed_unit_cylinder(void *, int);
+extern int test_point_in_transformed_unit_sphere(float *, int);
 
 struct VolAimParams {
     u8 pad_00[0x8];
@@ -1629,8 +1629,8 @@ int volume_camera_aim_active(void *arg) {
     params->done = 1;
     return 0;
 }
-extern int D_0013CBE0 NOT_SDA;
-extern int func_L00_002EE7F8(void *);
+extern int pad_held NOT_SDA;
+extern int volume_camera_aim_active(void *);
 typedef float CameraVec_ee[4] __attribute__((aligned(16)));
 typedef struct {
     float focus[4]; float velocity[4]; unsigned char pad60[0x20];
@@ -1791,10 +1791,10 @@ run:
         set_follow_camera_orbit_clamp_mode(0);
     }
 }
-extern char *D_L00_0015F050 MACRO_ADDR;
-extern int D_L00_0015F6A8 MACRO_ADDR;
-extern int func_L00_002EE7F8(void *);
-extern void func_L00_002EE948(void *);
+extern char *camera_descriptors MACRO_ADDR;
+extern int cinematic_mode MACRO_ADDR;
+extern int volume_camera_aim_active(void *);
+extern void volume_camera_aim(void *);
 typedef struct VolCamParams {
     u8 pad_00[0x20];
     s32 timer;                  /* 0x20 */
@@ -1832,14 +1832,14 @@ typedef struct { s32 id; s32 w4; s32 w8; s32 wC; s32 snd; } S_2ed950;
 typedef struct { u8 p[0x74]; u8 b74; u8 p2[0x8C - 0x75]; void *o; } E_2ed950;
 typedef struct { u8 p[0x18]; u8 b18; u8 p2[7]; } T_2ed950;
 extern u8 D_L00_00166EC0_EEE00[] __asm__("D_L00_00166EC0");
-extern E_2ed950 D_0013E650[];
-extern T_2ed950 * D_L00_0015F6D4 MACRO_ADDR;
-f32 func_001F9D10(void *, void *);
-s32 func_001F9908(s32 *);
+extern E_2ed950 voice_pool[];
+extern T_2ed950 * level_sound_slots MACRO_ADDR;
+f32 FastVecDist(void *, void *);
+s32 fast_dec_timer(s32 *);
 s32 func_L00_0028F0B0_EEE00(s32, s32, void *, s32) __asm__("func_L00_0028F0B0");
-s32 func_002140B0(s32);
-s32 func_001F9850(s32);
-void func_L00_0028EBF0(s32);
+s32 random_integer_below(s32);
+s32 scale_ticks(s32);
+void Sound_StopSlot(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ed950. */
 void update_sound_emitter_playback_by_distance(u8 *m) {
@@ -1868,10 +1868,10 @@ void update_sound_emitter_playback_by_distance(u8 *m) {
         s->snd = -1;
     }
 }
-extern float D_L00_00166EC0[];
-extern int func_L00_0028F0B0(int a, int b, int c, int d);
-extern float func_002140F8(float, float);
-extern int func_002140B0(int);
+extern float g_debug_camera[];
+extern int play_voice(int a, int b, int c, int d);
+extern float random_float_between(float, float);
+extern int random_integer_below(int);
 
 typedef struct { f32 f[4]; } V_2edad8;
 

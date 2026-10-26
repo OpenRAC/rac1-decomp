@@ -551,14 +551,16 @@ def check() -> None:
 # ---------------------------------------------------------------- apply
 
 DECL_LINE = re.compile(r"^\s*(extern\b|#|INCLUDE_ASM|ASM_FUNC|LINKER_REMNANT|typedef\b)")
+EXTERN_LINE = re.compile(r"^\s*extern\b")
+PROTO_LINE = re.compile(r"^(?!\s*(#|INCLUDE_ASM|ASM_FUNC|LINKER_REMNANT|typedef\b))[A-Za-z_][^=;{}\n]*\([^;{}\n]*\)\s*;\s*(/\*.*)?$")
 
 
 def apply() -> None:
     """In every src/ C file, write a named symbol by its readable name
-    inside function bodies. Declarations, definitions, preprocessor lines,
-    comments, strings and __asm__ labels keep the address name, so every
-    tool that reads `func_X(` definitions or INCLUDE_ASM stubs is
-    unaffected."""
+    inside function bodies, `extern` lines and prototypes. Definitions,
+    preprocessor lines, comments, strings, __asm__ labels and SDATA()
+    arguments (stringified into the label) keep the address name, so every tool that reads `func_X(` definitions or
+    INCLUDE_ASM stubs is unaffected."""
     keep, _ = header_rows()
     name_of = {r["symbol"]: r["name"] for r in keep}
     token = re.compile(r"\b(" + "|".join(re.escape(s) for s in sorted(name_of, key=len, reverse=True)) + r")\b")
@@ -576,9 +578,9 @@ def apply() -> None:
 
 
 def rewrite_bodies(text: str, token, name_of) -> tuple[str, int]:
-    """Replace TOKEN matches only inside brace depth >= 1 of top-level
-    function bodies, outside comments/strings, on lines that are not
-    declarations or preprocessor lines."""
+    """Replace TOKEN matches outside comments/strings: inside brace depth
+    >= 1 of top-level function bodies on lines that are not declarations
+    or preprocessor lines, and on `extern` lines and prototypes."""
     out, n, i, depth = [], 0, 0, 0
     L = len(text)
     line_start = 0
@@ -607,7 +609,8 @@ def rewrite_bodies(text: str, token, name_of) -> tuple[str, int]:
         if m and (i == 0 or not (text[i - 1].isalnum() or text[i - 1] == "_")):
             line_end = text.find("\n", i)
             line = text[line_start:line_end if line_end >= 0 else L]
-            if depth >= 1 and not DECL_LINE.match(line) and "__asm__" not in line:
+            if "__asm__" not in line and not text.endswith("SDATA(", 0, i) and ((depth >= 1 and not DECL_LINE.match(line))
+                                          or EXTERN_LINE.match(line) or PROTO_LINE.match(line)):
                 out.append(name_of[m.group(1)]); n += 1
             else:
                 out.append(m.group(1))

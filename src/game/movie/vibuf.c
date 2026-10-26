@@ -88,7 +88,7 @@ typedef struct SemaParam {
 } SemaParam;
 
 extern int func_00118C70(SemaParam *);
-extern int func_0023D090();
+extern int viBufReset();
 
 /* viBufCreate: fill the header, make a semaphore (1/1), reset, clear 0x48 */
 int viBufCreate(VB *vb, int data, unsigned int tags, int count, int f50, int f54) {
@@ -107,8 +107,8 @@ int viBufCreate(VB *vb, int data, unsigned int tags, int count, int f50, int f54
     vb->f48 = 0;
     return 1;
 }
-extern void func_0023CFF0(unsigned long *, unsigned int, unsigned int, unsigned int);
-extern void func_0023CF80(unsigned int);
+extern void scTag2(unsigned long *, unsigned int, unsigned int, unsigned int);
+extern void setD4_CHCR(unsigned int);
 
 /* viBufReset(ViBuf *) */
 int viBufReset(ViBuf *vb) {
@@ -177,8 +177,8 @@ void viBufEndPut(ViBuf *vb, int size) {
     *(long *)(vb->pad48) += size;
     func_00118C90(vb->sema);
 }
-extern char D_001E8E50[];
-extern int func_0023CEC8(ViBuf *, unsigned int);
+extern char vibuf_dma_not_active_msg[];
+extern int getFIFOindex(ViBuf *, unsigned int);
 
 /* viBufAddDMA(ViBuf *): under the buffer's semaphore, reads the channel-4 DMA position,
  * advances fC/f10 past the consumed slots, turns whole 0x800-byte units of f14 into
@@ -233,7 +233,7 @@ int viBufAddDMA(ViBuf *vb) {
     func_00118C90(vb->sema);
     return 1;
 }
-extern void func_0023CF10(unsigned int);
+extern void setD3_CHCR(unsigned int);
 
 /* Saved DMA/IPU register words at 0x1C-0x3C of the buffer. */
 typedef struct VbDmaSave {
@@ -276,7 +276,7 @@ int viBufStopDMA(ViBuf *vb) {
     func_00118C90(vb->sema);
     return 1;
 }
-extern int func_0023CEC8(ViBuf *, unsigned int);
+extern int getFIFOindex(ViBuf *, unsigned int);
 
 
 /* (i - start) taken modulo count lies in [0, len) */
@@ -425,7 +425,7 @@ int viBufModifyPts(ViBuf *vb, TimeStamp *ts) {
     }
     return 0;
 }
-extern int func_0023DA88(ViBuf *, TimeStamp *);
+extern int viBufModifyPts(ViBuf *, TimeStamp *);
 
 /* viBufPutTs(ViBuf *, TimeStamp *) */
 int viBufPutTs(ViBuf *vb, TimeStamp *ts) {

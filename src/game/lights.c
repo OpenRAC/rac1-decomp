@@ -10,67 +10,67 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
-extern int D_0018A3B0[];
-extern void func_001F99B0();
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
-extern char D_001940C0[];
-extern long D_00151888[3];
-extern int D_0015F6FC;
-extern short D_0015F534;
-extern void func_001FB530(void);
-extern void func_001F3D78(void);
-extern int D_0015F564;
-extern int D_0018DD40[];
-extern int D_0018DC40[];
-extern short D_0015F59C;
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
-extern void func_001F6668(void *, void *, void *, void *, void *, int,
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
+extern int draw_config[];
+extern void FastMemSet();
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
+extern char occl_visibility[];
+extern long gs_display_settings[3];
+extern int space_load_in_progress;
+extern short draw_enable_mask;
+extern void append_gif_transfer_packet(void);
+extern void DrawDebugProfiler(void);
+extern int draw_callback_count;
+extern int draw_callback_args[];
+extern int draw_callback_funcs[];
+extern short GlobalStateFlag;
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
+extern void FontPrint(void *, void *, void *, void *, void *, int,
                           unsigned char *);
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
-extern int func_001F4868(int);
-extern void func_001FB498(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern int D_0018E840[];
-extern long D_00152178 NOT_SDA;
-extern int func_001FE4D0(void);
-extern char D_00199A68[];
-extern short D_0015F780;
-extern int D_001941CC NOT_SDA;
-extern int D_0019A4E8 NOT_SDA;
-extern int func_001FF668(int);
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
+extern int GetEffectTex(int);
+extern void PutDrawBufferLarge(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern int bit_swap_lut[];
+extern long background_rgbaq NOT_SDA;
+extern int Help_FindIndex(void);
+extern char s_paradox_this_message_does_not[];
+extern short help_msgs;
+extern int hud_heap_base NOT_SDA;
+extern int hud_state NOT_SDA;
+extern int Hud_GetIconIndex(int);
 typedef struct {
     char b[0x13];
 } Cfg13;
-extern Cfg13 D_0019A540 NOT_SDA;
-extern Cfg13 D_001E7DD8 NOT_SDA;
+extern Cfg13 message_text_buffer NOT_SDA;
+extern Cfg13 message_too_long_label NOT_SDA;
 extern int func_00116810(void);
 extern void func_001166FC(Cfg13 *, void *);
-extern short D_0015F9D0;
-extern void func_00201960(int, int, int, int, int);
+extern short ResourceCounter;
+extern void draw_stretchable_ui_frame(int, int, int, int, int);
 
-extern char D_0019BEC0[];
+extern char dir_lights[];
 extern float D_00187198;
-extern char D_0019C2C0[];
-extern char D_0019C4C0[];
-extern float func_001FA748(float, float);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern float func_001F9D10(void *, void *);
-extern void func_002023E0(int);
-extern void func_00202790(int);
+extern char point_lights[];
+extern char point_light_data[];
+extern float FastAddRots(float, float);
+extern float FastCos(float);
+extern float FastSin(float);
+extern float FastVecDist(void *, void *);
+extern void CreatePointLight(int);
+extern void RefreshPointLight(int);
 
 /* Per-frame light update: the ambient colour (0.8 grey, -0.3) and a key
    light 0.8 rad behind the camera heading, tilted down; then every
@@ -141,11 +141,11 @@ typedef struct {
 extern LtObj20 *D_00161050_o __asm__("D_00161050") MACRO_ADDR;
 extern LtObj20 *D_00161054_o __asm__("D_00161054") MACRO_ADDR;
 extern LtObj40 *D_00160F8C_o __asm__("D_00160F8C") MACRO_ADDR;
-extern int D_00160F90 MACRO_ADDR;
+extern int tfrag_render_record_count MACRO_ADDR;
 extern LtObj20 *D_001604D4_o __asm__("D_001604D4") MACRO_ADDR;
 extern LtObj20 *D_001604D8_o __asm__("D_001604D8") MACRO_ADDR;
-extern int func_001F9D78(void *, void *);
-extern void func_001F9C48(void *, void *, float);
+extern int spheres_intersect(void *, void *);
+extern void scale_vector(void *, void *, float);
 
 /* CreatePointLight: lists which objects of the three lists the light's sphere touches and records the light's index in their packed nibble field. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/create_point_light.c, create_point_light. */
 void CreatePointLight(int i) {
@@ -245,7 +245,7 @@ void CreatePointLight(int i) {
     }
 }
 
-extern void func_002027C0(int);
+extern void DetachPointLight(int);
 
 /* RefreshPointLight */
 void RefreshPointLight(int arg0) {
@@ -289,14 +289,14 @@ struct PointLightLinks {
     s32 unkC;
 };
 
-extern u8 *D_001604D4 MACRO_ADDR;
-extern u8 *D_00160F8C MACRO_ADDR;
-extern u8 *D_00161050 MACRO_ADDR;
+extern u8 *shrubs MACRO_ADDR;
+extern u8 *tfrag_render_records MACRO_ADDR;
+extern u8 *ties MACRO_ADDR;
 
-extern u8 D_001E7E80[];
-extern u8 D_001E7EA0[];
-extern u8 D_001E7EC8[];
-extern s32 func_001E9730();
+extern u8 str_bad_point_light_tie[];
+extern u8 str_bad_point_light_tfrag[];
+extern u8 str_bad_point_light_shrub[];
+extern s32 STUB_printf();
 
 /* Remove one point light from three packed attachment lists. Each 16-bit
    reference stores up to four light IDs in nibbles; deleting one shifts

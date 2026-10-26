@@ -21,8 +21,8 @@
  *   Final check against the destination file as of 2026-10-09 15:30 (others had landed into these files): run 3, B
  */
 #define MOBYS ((VehicleMoby_2CB800 *)D_L04_00160058)
-extern char *D_L04_00160058 MACRO_ADDR;
-extern void func_0022ED80(int, int, int);
+extern char *eudora_mobys MACRO_ADDR;
+extern void Moby_PlaySound(int, int, int);
 
 typedef int VehicleWide_2CB800 __attribute__((mode(TI)));
 typedef union { VehicleWide_2CB800 quad; float f[4]; } VehicleVec_2CB800;
@@ -53,51 +53,51 @@ typedef struct {
 } VehicleMoby_2CB800;
 typedef struct { char pad[0x30]; VehicleVec_2CB800 pos; char pad40[0x38]; float angle; char pad7C[4]; } VehiclePath_2CB800;
 typedef struct { VehicleVec_2CB800 vec; VehicleMoby_2CB800 *owner; s32 flags, unused; float strength; s32 result; } VehicleQuery_2CB800;
-extern s32 *D_L04_001B0930[];
-extern VehiclePath_2CB800 *D_L04_0016016C MACRO_ADDR;
-extern char D_L04_001DC110[];
-extern s32 D_0015EEF8 MACRO_ADDR;
+extern s32 *eudora_paths[];
+extern VehiclePath_2CB800 *eudora_scene_points MACRO_ADDR;
+extern char eudora_snow_plow_no_path_msg[];
+extern s32 eudora_skill_snow_plow_hits MACRO_ADDR;
 typedef struct { char pad[6]; u8 flag; } VehicleWeapon_2CB800;
-extern VehicleWeapon_2CB800 D_0013D510;
-extern float D_0015EE70 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE60 MACRO_ADDR;
-extern float D_L04_0015F660[] MACRO_ADDR;
+extern VehicleWeapon_2CB800 gSkillPoints;
+extern float g_frame_time_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern float frame_scale MACRO_ADDR;
+extern float eudora_zero_vector[] MACRO_ADDR;
 typedef struct { char pad[0x140]; float x,y,z; char pad14C[12]; float angle; } VehicleCamera_2CB800;
-extern VehicleCamera_2CB800 D_L04_00166E80;
-extern float func_001F9D10(void *,void *);
-extern s32 func_001FA898(float);
-extern s32 func_001E9730();
-extern void func_L01_002F6540(VehicleMoby_2CB800 *);
-extern void func_001F9938(void *);
-extern s32 func_00215570(void *,s32);
-extern void func_L00_002592B0(void *,void *,float,float,float,float);
-extern float func_001F9D48(void *,void *);
-extern float func_001FA850(float,float);
-extern s32 func_001F9850(s32);
-extern void func_001F9BF0(void *,void *,void *);
-extern void func_L00_001FF4B0(void *,void *,float);
-extern void func_001F9BD8(void *,void *,void *);
-extern float func_001F9CB8(void *);
-extern void func_0020D960(void *,s32,void *);
-extern float func_001FA748(float,float);
-extern void func_L00_001FFED8(void *,s32,float);
-extern void func_001F9EC0(void *,void *,void *);
-extern void func_L00_002514B8(void *);
-extern void func_L00_00251E30(void *);
-extern void func_0020EEE8(void *);
-extern char *func_L00_0025B478(void *,s32,s32);
-extern s32 func_0022EE28(s32,s32,s32);
-extern void func_L00_00264DB8(s32,s32);
-extern void func_001F9BC0(void *);
-extern void func_L00_001F2BE8(void *,float,s32,void *,void *);
-extern void func_L00_0025F4A8(void *,void *,void *,float,float,s32,s32,s32,float,float,float,float,s32,float,s32,s32,s32,s32);
-extern void func_L00_00250800(void *,s32,void *);
-extern void func_L00_00260108(void *,void *,s32,float,float);
-extern void func_001F9C30(void *,void *,float);
-extern void func_L00_00265050(void *,s32,void *,void *,s32,s32,float,void *,void *,void *);
-extern s32 func_001F9908(s32 *);
-extern float func_L00_001FF860(float,float);
+extern VehicleCamera_2CB800 eudora_camera;
+extern float FastVecDist(void *,void *);
+extern s32 truncate_float_to_s32(float);
+extern s32 STUB_printf();
+extern void gunship_follow_path(VehicleMoby_2CB800 *);
+extern void FastDecTimer(void *);
+extern s32 is_point_inside_clip_volume(void *,s32);
+extern void MobySpringTurn(void *,void *,float,float,float,float);
+extern float vec_distance_xy(void *,void *);
+extern float FastDiffRots(float,float);
+extern s32 scale_ticks(s32);
+extern void FastVecSub(void *,void *,void *);
+extern void vec_scale_to_length(void *,void *,float);
+extern void FastVecAdd(void *,void *,void *);
+extern float FastVecLength(void *);
+extern void AttachManipulator(void *,s32,void *);
+extern float FastAddRots(float,float);
+extern void axis_rotation_2d48(void *,s32,float);
+extern void matrix_mul_vec3(void *,void *,void *);
+extern void MobyAnimAdvance(void *);
+extern void moby_build_matrix(void *);
+extern void moby_anim_sphere_lerp(void *);
+extern char *MobyGetHitMessage(void *,s32,s32);
+extern s32 PlayBankSound(s32,s32,s32);
+extern void ShowBanner(s32,s32);
+extern void clear_u64_value(void *);
+extern void coll_sphere_mobys(void *,float,s32,void *,void *);
+extern void spawn_explosion(void *,void *,void *,float,float,s32,s32,s32,float,float,float,float,s32,float,s32,s32,s32,s32);
+extern void Moby_GetJointWorldPos(void *,s32,void *);
+extern void SpawnExplosionFx(void *,void *,s32,float,float);
+extern void FastVecScale(void *,void *,float);
+extern void SpawnBreakFragment(void *,s32,void *,void *,s32,s32,float,void *,void *,void *);
+extern s32 fast_dec_timer(s32 *);
+extern float fast_atan2(float,float);
 
 typedef float VehicleArr_2CB800[4] __attribute__((aligned(16)));
 typedef struct { char pad[0x14]; s32 path_id; } VehicleSub_2CB800;
@@ -348,19 +348,19 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
     }
 }
 extern char *D_L04_00160058_b __asm__("D_L04_00160058") MACRO_ADDR;
-extern short D_L04_001619EC;
+extern short eudora_floating_platform_spin_rate_deg;
 extern float D_0015EE6C_b __asm__("D_0015EE6C") MACRO_ADDR;
 extern float D_0015EE64_b __asm__("D_0015EE64") MACRO_ADDR;
-extern void func_0020D678(void *);
-extern float func_002140F8(float, float);
-extern float func_00214158(void);
-extern float func_0020D830(void *);
-extern float func_001FA7D8(float);
-extern float func_001F9F90(float);
-extern float func_001FA748(float, float);
-extern void func_L00_00263950(char *, char *, int, float, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_002617B0(char *, void *, void *, void *);
+extern void DeleteMoby(void *);
+extern float random_float_between(float, float);
+extern float random_angle_radians(void);
+extern float MobyGetFrameValue(void *);
+extern float FastNormalizeAngle(float);
+extern float FastCos(float);
+extern float FastAddRots(float, float);
+extern void EaseManipulatorOffsets(char *, char *, int, float, float);
+extern void FastVecSub(void *, void *, void *);
+extern void update_entity_matrix(char *, void *, void *, void *);
 
 /* Floating platform: bobs on a slow wave above its start height (or above the moby it rides), and spins
  * its three rings. */
@@ -418,10 +418,10 @@ void transport_ship_update(void *m) {
     char pad[0x50];
     DeleteMoby(m);
 }
-extern f32 D_0015EE6C MACRO_ADDR;
-extern f32 D_0015EE70 MACRO_ADDR;
-extern void func_L04_00293530(void *, char *);
-extern void func_L04_00293578(void *, char *);
+extern f32 g_frame_time MACRO_ADDR;
+extern f32 g_frame_time_sq MACRO_ADDR;
+extern void initialize_leg_rig_angle_defaults(void *, char *);
+extern void initialize_leg_rig(void *, char *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/002ca420.c, FUN_L04_002d1418. */
 void initialize_woodcut_bot_movement_data(void *m) {
@@ -477,8 +477,8 @@ void initialize_woodcut_bot_movement_data(void *m) {
     *(float *)(d + 0x240) = 0.5f;
     initialize_leg_rig(m, p);
 }
-extern void func_001F9BC0(void *);
-extern void func_L00_00250800(void *, int, void *);
+extern void clear_u64_value(void *);
+extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int,
                                   float, float, float, float, int, float, int, int, int, int)
     __asm__("func_L00_0025F4A8");
@@ -564,61 +564,61 @@ typedef struct WBQuery {
     /* 0x24 */ int pad24[3];
 } WBQuery;
 
-extern void func_L00_00260D30(void *, void *, float);
-extern void func_L00_00264B40(float, void *, int, void *);
-extern float func_001F9D10(void *, void *);
-extern void func_L00_0025B178(void *);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA850(float, float);
-extern float func_001F9D48(void *, void *);
-extern void func_001F9938(void *);
-extern char *func_L00_0025B478(void *, int, int);
-extern int func_L00_0025B4D0(void *, void *, void *, int, int *, float *, int, int);
-extern void func_L00_0025BBA0(void *, float *, void *, void *);
-extern void func_L00_0025D5B0(float, void *, void *, int, int, int);
-extern void func_L00_002584A8(void *, int, int);
-extern void func_L00_0025E4B0(void *, void *);
-extern float func_001F9878(float);
-extern int func_001F9850(int);
-extern void func_00213DE0(void *, int, int, int);
-extern void func_L00_002A27C8(void *);
-extern float func_001FA748(float, float);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_0020DB98(void *, int, void *, void *);
-extern void func_L00_001EFFF0(void *, void *, int, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_L00_001F2BE8(void *, float, int, void *, void *);
-extern void func_0020D960(void *, int, void *);
-extern void func_L04_002D27F8(void *);
+extern void FindNearestTargetMoby(void *, void *, float);
+extern void Manipulator_ApplyScale(float, void *, int, void *);
+extern float FastVecDist(void *, void *);
+extern void set_ground_height_band(void *);
+extern float fast_atan2(float, float);
+extern float FastDiffRots(float, float);
+extern float vec_distance_xy(void *, void *);
+extern void FastDecTimer(void *);
+extern char *MobyGetHitMessage(void *, int, int);
+extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
+extern void HeadingFromVector(void *, float *, void *, void *);
+extern void InitKnockback(float, void *, void *, int, int, int);
+extern void SetDeathBits(void *, int, int);
+extern void RerollEffectCounter(void *, void *);
+extern float multiply_global_factor(float);
+extern int scale_ticks(int);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern void reset_walker_gait_helpers(void *);
+extern float FastAddRots(float, float);
+extern void vec_scale_to_length(void *, void *, float);
+extern void transform_scaled_vertex_batch(void *, int, void *, void *);
+extern void coll_line(void *, void *, int, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern void coll_sphere_mobys(void *, float, int, void *, void *);
+extern void AttachManipulator(void *, int, void *);
+extern void initialize_woodcut_bot_movement_data(void *);
 extern void *func_001153FC(void *, int, int);
-extern int func_002140B0(int);
-extern int func_L00_0025A778(void *, void *, int);
-extern int func_00215B18(void *, float);
-extern float func_001F9FA8(float);
-extern void func_L00_001FF240(void *, void *, void *);
-extern void func_L00_002B0B98(void *, void *, void *, void *, int, int, float, float);
-extern void func_L04_00296FA8(void *, void *);
-extern int func_L04_00296938(void *, void *, float, float, float);
-extern void func_00215C00(void *, float, float, float);
-extern float func_L00_00259148(float, float, void *, float, float, float);
-extern int func_L00_0025D6F0(void *, void *);
-extern void func_L00_00265050(void *, int, void *, void *, int, int, float, void *, void *, void *);
-extern void func_0020D678(void *);
-extern void func_L00_0025E590(void *, void *);
-extern void func_L00_002594C8(void *, void *, void *, int, float, float, float, float);
-extern void func_L00_001FFED8(void *, int, float);
-extern float func_00214358(void *, int, float);
+extern int random_integer_below(int);
+extern int IsPointInPolygon(void *, void *, int);
+extern int IsFrameWithinWindow(void *, float);
+extern float FastSin(float);
+extern void add_vectors(void *, void *, void *);
+extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
+extern void reset_leg_rig_from_animation(void *, void *);
+extern int LegWalkerUpdate(void *, void *, float, float, float);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern float SpringTurn(float, float, void *, float, float, float);
+extern int mine_fall(void *, void *);
+extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
+extern void DeleteMoby(void *);
+extern void StepColorFade(void *, void *);
+extern void MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
+extern void axis_rotation_2d48(void *, int, float);
+extern float ProbeGroundHeight(void *, int, float);
 
-extern char D_L04_00166FC0[];
+extern char eudora_camera_pos[];
 extern unsigned char D_0013E633[];
-extern float D_0015EE70 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE60 MACRO_ADDR;
-extern WBJoints D_L04_001DC750;
-extern WBAngles D_L04_001DC768;
-extern int *D_L04_001B0930[];
-extern float D_L04_0015F660[] MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern float frame_scale MACRO_ADDR;
+extern WBJoints eudora_woodcut_bot_joints;
+extern WBAngles eudora_woodcut_bot_angles;
+extern int *eudora_paths[];
+extern float eudora_zero_vector[] MACRO_ADDR;
 
 // Update function of the woodcut bot (moby class 563): damage reaction, saw attack, patrol/chase state machine, recoil and gravity.
 void woodcut_bot_update(Moby *m) {
@@ -1181,7 +1181,7 @@ void woodcut_bot_update(Moby *m) {
 }
 typedef int u128 __attribute__((mode(TI)));
 extern struct Moby *func_0020D348_m(int) __asm__("func_0020D348");
-extern void func_L00_00251E30(void *);
+extern void moby_build_matrix(void *);
 extern void qcopy(void *, void *);
 // Spawns a class 0x23A moby copying fields from another and placing it at a position.
 void *spawn_class_23a_moby(char *src, char *pos) {
@@ -1203,7 +1203,7 @@ void *spawn_class_23a_moby(char *src, char *pos) {
     }
     return m;
 }
-extern void func_L00_0025E210(void *);
+extern void copy_hero_moby_field_38(void *);
 
 /* UpdateMoby_584 */
 void update_moby_translation_delta_matrix(char *m) {
@@ -1221,9 +1221,9 @@ void update_moby_translation_delta_matrix(char *m) {
         m[0x20] = 1;
     }
 }
-extern char *D_L04_00160058 MACRO_ADDR;
-extern float func_001FA888(int);
-extern float func_L00_00200210(float, float);
+extern char *eudora_mobys MACRO_ADDR;
+extern float IntToFloat(int);
+extern float fast_fmod(float, float);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* update: blend two keyframes of a path and write the result to a position */
@@ -1274,15 +1274,15 @@ struct MobyP {
 #define scale_vector_xyz func_001F9C30
 #define rib_p func_002140B0
 #define cif_p func_001FA888
-extern float func_001F9CE8(void *);
+extern float vec_length_xy(void *);
 #define vector_length_xy func_001F9CE8
-extern int func_001F9908(s32 *);
-extern int func_L00_00258BC8(int, int);
+extern int fast_dec_timer(s32 *);
+extern int rand_range(int, int);
 #define random_int_between func_L00_00258BC8
 #define collision_line ((int (*)(void *, void *, int, void *, void *))(func_L00_001EFFF0))
-extern void func_L00_001FF610(void *, void *, void *);
-extern float D_L04_001CBBC0[6];
-extern char D_L04_00174060[];
+extern void vec_reflect(void *, void *, void *);
+extern float eudora_leaf_drift[6];
+extern char eudora_coll_hit_point[];
 
 /* Three-state motion update. The saved position is restored when the timer expires. */
 void leaf_update(struct MobyP *moby) {
@@ -1432,15 +1432,15 @@ INCLUDE_ASM("asm/overlays", func_L04_002E2B90);
 INCLUDE_ASM("asm/overlays", func_L04_002E2BA4);
 typedef struct { int owner; float height; int timer; } CollectData2BB8;
 typedef struct { char pad[0x18]; float height; char pad1[4]; unsigned char state; char pad2[0x57]; CollectData2BB8 *data; char pad3[0x2a]; short oclass; char pad4[0xa]; unsigned short id; char pad5[0x4c]; } CollectMoby2BB8;
-extern int func_L00_0028EF68(int i, int a1, int v, int k);
-extern float func_L04_002E2B48(char *);
+extern int Sound_PlayClassSound(int i, int a1, int v, int k);
+extern float riser_rise_speed(char *);
 extern int func_001F9908_i(int *arg0) __asm__("func_001F9908");
-extern void func_0022ED80(int, int, int);
-extern int D_0015EE84 MACRO_ADDR;
-extern int D_0014C290[][64] NOT_SDA;
+extern void Moby_PlaySound(int, int, int);
+extern int g_current_level_index MACRO_ADDR;
+extern int level_moby_killed[][64] NOT_SDA;
 typedef struct { unsigned char pad[0x454]; unsigned char taken[0]; } CollectFlags2BB8;
 extern CollectFlags2BB8 D_L04_001BB6C0_flags __asm__("D_L04_001BB6C0") NOT_SDA;
-extern int D_L04_001BA960[];
+extern int eudora_moby_killed_bits[];
 extern CollectMoby2BB8 *D_L04_00160058_pickups SDATA(D_L04_00160058);
 
 /* updates a collectable moby: arms, waits for pickup, then marks it taken */
@@ -1574,12 +1574,12 @@ typedef struct {
     int c[4];
     float d[4];
 } L10SpriteData_298940;
-extern int func_001F9908(int *);
-extern int func_001FA8A8(int, int, float);
-extern float func_001F9B88(float);
-extern unsigned char *func_L00_00273E08(void *, int, unsigned char, int, int, int, int, float);
-extern int func_001FA898(float);
-extern int D_L04_0015F6A8 MACRO_ADDR;
+extern int fast_dec_timer(int *);
+extern int FastTweenColor(int, int, float);
+extern float FastAbsF(float);
+extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
+extern int truncate_float_to_s32(float);
+extern int eudora_game_mode MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/unclassified_002ca420.c, FUN_L04_002e1d00. */
 void update_suck_cannon_particles(char *m) {
@@ -1615,16 +1615,16 @@ void update_suck_cannon_particles(char *m) {
     }
 }
 
-extern void func_L02_002E2110(void *);
-extern int func_L00_002676E8(void *, void *);
-extern int func_00215570(void *, int);
-extern int func_L00_00267290(void *, void *);
-extern void func_L00_00261848(int);
-extern void func_L00_002512D8(int);
-extern float func_001FA748(float, float);
-extern int func_0020BFC8(int, int);
-extern char D_L04_0016CA70[];
-extern unsigned char D_0014C150[];
+extern void attach_big_head_cheat_manipulator_to_matching_moby(void *);
+extern int DialogRequest_Init(void *, void *);
+extern int is_point_inside_clip_volume(void *, int);
+extern int Npc_TryStartDialog(void *, void *);
+extern void unlock_planet(int);
+extern void jet_clear_persistent(int);
+extern float FastAddRots(float, float);
+extern int memcard_Save(int, int);
+extern char eudora_lieutenant_respawn_point[];
+extern unsigned char saved_mission_state[];
 
 // UpdateMoby_1190: Updates the gate moby: checks the player's distance, then steps its four states.
 void lieutenant_update(char *m) {
@@ -1716,25 +1716,25 @@ typedef struct {
     unsigned int mask;
 } Help_2E57F8;
 
-extern int func_L00_00203F20(int a, int b);
+extern int Help_Request(int a, int b);
 extern unsigned char D_0014171B[];
-extern unsigned char D_0013D5EB[];
-extern int D_L04_00179610[] NOT_SDA;
-extern int D_0015EFA4 MACRO_ADDR;
-extern int D_0015EFAC MACRO_ADDR;
+extern unsigned char discount_purchase_pricing[];
+extern int eudora_help_popup_state[] NOT_SDA;
+extern int gameplay_event_frame_count MACRO_ADDR;
+extern int hero_death_count MACRO_ADDR;
 extern Moby *D_L04_00160064_2E57F8 __asm__("D_L04_00160064") MACRO_ADDR;
 extern Moby *D_L04_00160058_2E57F8 __asm__("D_L04_00160058") MACRO_ADDR;
 extern unsigned char D_0013D5DC NOT_SDA;
 extern unsigned char D_0013D5E2 NOT_SDA;
-extern unsigned char D_0013D4AC NOT_SDA;
-extern unsigned char D_0013D4AD NOT_SDA;
-extern unsigned char D_0013D4AE NOT_SDA;
-extern unsigned char D_0013D4AF NOT_SDA;
+extern unsigned char menu_item_enabled_16 NOT_SDA;
+extern unsigned char menu_item_enabled_17 NOT_SDA;
+extern unsigned char menu_item_enabled_18 NOT_SDA;
+extern unsigned char menu_item_enabled_19 NOT_SDA;
 extern unsigned short D_00141A08 NOT_SDA;
 extern unsigned short D_001418C2 NOT_SDA;
 extern unsigned short D_00141A40 NOT_SDA;
 extern unsigned short D_001419D0 NOT_SDA;
-extern unsigned short D_00141992 NOT_SDA;
+extern unsigned short g_help_play_time_offset NOT_SDA;
 extern unsigned short D_00141A10 NOT_SDA;
 
 /* UpdateMoby_1343: tutorial hint and statistic triggers around the player on Eudora. */
@@ -1969,14 +1969,14 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
         break;
     }
 }
-extern char D_L04_00174080[];
-extern float D_L04_00161E08 SDATA(D_L04_00161E08);
-extern float D_L04_00161E0C SDATA(D_L04_00161E0C);
+extern char eudora_coll_hit_normal[];
+extern float eudora_debris_spin_min_deg SDATA(D_L04_00161E08);
+extern float eudora_debris_spin_max_deg SDATA(D_L04_00161E0C);
 extern int func_001F9938_bounce(void *) __asm__("func_001F9938");
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern float func_001F9C78(void *a, void *b);
-extern void func_L00_001FF610(void *, void *, void *);
-extern float func_L00_00258C80(float lo, float hi);
+extern int coll_sphere(float, void *, int, void *);
+extern float FastVecDot(void *a, void *b);
+extern void vec_reflect(void *, void *, void *);
+extern float randf_sym(float lo, float hi);
 
 // Updates a bouncing moby: spins it, then in state 0 reflects its direction off a plane and in state 1 fades it out.
 typedef struct BounceData2E6558 {
@@ -2035,15 +2035,15 @@ void update_entity_bounce_and_decay(char *moby) {
     }
     }
 }
-extern s32 D_L04_0015F6A8 MACRO_ADDR;
+extern s32 eudora_game_mode MACRO_ADDR;
 struct L04MissionState {
     char pad0[0x30];
     int mode;
     char pad1[0x178 - 0x34];
     int slot[4];
 };
-extern struct L04MissionState D_L04_0016CA60;
-extern void func_L00_00264870(int);
+extern struct L04MissionState eudora_cutscene_action;
+extern void cutscene_set_camera_target(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/vendor/002e3078.c, FUN_L04_002e53a0. */
 void dispatch_mode_selected_slot(struct Moby *m) {
@@ -2068,10 +2068,10 @@ void dispatch_mode_selected_slot(struct Moby *m) {
         break;
     }
 }
-extern void func_L01_00279790(void *);
-extern void func_L00_00264EA8(void *, int, int, int, int, int, int);
-extern void func_L01_00279E10(void *, int);
-extern void func_0020D678(void *);
+extern void spawn_proximity_gated_bolts(void *);
+extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
+extern void spawn_moby_from_placement(void *, int);
+extern void DeleteMoby(void *);
 /* Breakable update: on a hit, play its sound, drop bolts, spawn pieces and delete itself. */
 void BreakableL04_Update(char *m) {
     int hit = 0;

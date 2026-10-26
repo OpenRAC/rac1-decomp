@@ -5,7 +5,7 @@
 #include "pad.h"
 #include "hero.h"
 
-extern float func_00214D28(float *p, float target, float maxstep);
+extern float ApproachValue(float *p, float target, float maxstep);
 extern unsigned char D_0013E633[] NOT_SDA;
 
 /* Steps two floats of arg toward a target and clamps them to [-1, 1]. */
@@ -48,25 +48,25 @@ int func_L05_0023BA18(int id, float *out) {
 INCLUDE_ASM("asm/overlays", func_L05_0023BA64);
 INCLUDE_ASM("asm/overlays", func_L05_0023BAA0);
 extern char D_0013A5E0[];
-extern unsigned char D_0013D5CA[] NOT_SDA;
-extern int func_L00_0020DC00();
-extern void func_L00_002CF170(void);
-extern int func_L00_002104C8(void);
-extern int func_L00_00217570(int, int);
-extern int func_001F9938(void *);
-extern void func_L00_0020AB78(void);
-extern int func_001F9850(int);
-extern int func_L00_00258BC8(int, int);
-extern void func_L00_00210478(int id);
-extern void func_L00_00210418(int id);
-extern void func_L00_0020ED30(void);
-extern void func_00213DE0(void *, int, int, int);
-extern unsigned char D_0013D5DD NOT_SDA;
+extern unsigned char gHaveHeliPack[] NOT_SDA;
+extern int Hero_IsInSpecialState();
+extern void replenish_hero_drones(void);
+extern int Hero_CanUseGadget(void);
+extern int allocate_hero_voice_for_entry(int, int);
+extern int FastDecTimer(void *);
+extern void clear_hero_idle_rotation_targets(void);
+extern int scale_ticks(int);
+extern int rand_range(int, int);
+extern void set_hero_item_switch_timer_for_item(int id);
+extern void set_hero_condition_animation_timer_for_item(int id);
+extern void cancel_hero_item_animation(void);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern unsigned char gHaveMorphORay NOT_SDA;
 extern char D_0014171B[] NOT_SDA;
 extern int D_0015EE88_m[] __asm__("D_0015EE88") MACRO_ADDR;
 extern int D_0015EE90 MACRO_ADDR;
 typedef struct { char pad[0x20]; int f20; char pad2[0x28]; } Rec20;
-extern Rec20 D_L05_0017A020[];
+extern Rec20 rilgar_item_defs[];
 extern int D_0015EE94 MACRO_ADDR;
 
 typedef struct {
@@ -506,13 +506,13 @@ void update_hero_movement_and_collision_probes(void) {
         func_001FA480_4C558(D_0013F450_4C558.hoverboard_moby + 0xc0, combined);
     }
 }
-extern short D_L05_0015F6B0;
+extern short rilgar_frame_count;
 extern float D_L05_00174368;
-extern float func_001F9B88(float);
-extern void func_L00_00212D70(void *, void *, int, float, float);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern int func_L00_001F3958(void);
-extern void func_L05_0024D680(int, int);
+extern float FastAbsF(float);
+extern void hero_get_collision_ray_endpoints(void *, void *, int, float, float);
+extern int coll_line(void *, void *, int, int, int);
+extern int CollType(void);
+extern void Hero_TryMoveStateL05(int, int);
 
 /* Decides whether the hero's current motion warrants the swing effect, running a probe when the conditions line up. */
 int try_apply_hero_water_and_ground_transitions(void) {
@@ -616,18 +616,18 @@ extern PadState D_0013CA40_p2523C8 __asm__("D_0013CA40");
 extern int D_00141760_2523C8 __asm__("D_00141760");
 extern unsigned char D_0013D5C8_2523C8[] __asm__("D_0013D5C8");
 extern Rec2C_2523C8 D_L05_0017C188_2523C8[] __asm__("D_L05_0017C188");
-extern int D_L05_0015F754 SDATA(D_L05_0015F754);
-extern int func_L00_00267BA8(int, int, int *);
-extern int func_L00_00211A18(void *);
-extern void func_L00_00217DE0(void);
-extern int func_001FA898(float);
-extern void func_L00_00222668(void);
-extern int func_L00_002228E0(void);
-extern void func_L00_0029BA20(void *);
-extern int func_L00_00234718(int);
-extern void func_L00_0020EB60(void);
-extern int func_L00_0028EB98(void *, int);
-extern int func_0022ED80(int, int, int);
+extern int gadget_double_tap_timer SDATA(D_L05_0015F754);
+extern int pad_pressed_within(int, int, int *);
+extern int is_wrench_moby(void *);
+extern void launch_hero_wrench(void);
+extern int truncate_float_to_s32(float);
+extern void select_hero_grapple_swing_target(void);
+extern int select_hero_grapple_target(void);
+extern void open_vendor_menu(void *);
+extern int get_ammo(int);
+extern void start_equipped_item_animation(void);
+extern int Sound_IsPlaying(void *, int);
+extern int Moby_PlaySound(int, int, int);
 extern int func_L05_0024D680_2523C8(int, int) __asm__("func_L05_0024D680");
 extern int func_001F9908_2523C8(int *) __asm__("func_001F9908");
 typedef struct {
@@ -636,16 +636,16 @@ typedef struct {
     unsigned short hDA;
     int fDC;
 } Stats_2523C8;
-extern int func_L00_0020DB30(int);
+extern int hero_slot_item_id(int);
 extern unsigned short D_00141E80[] NOT_SDA;
 extern unsigned short D_00141A20[] NOT_SDA;
-extern int func_L00_001FEF78(void *);
-extern int func_L00_00203F20(int a, int b);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA850(float, float);
-extern float func_001F9D48(void *, void *);
-extern void func_L00_00250800(void *, int, void *);
-extern void func_L05_002D53B0(void *, void *, void *, float, float);
+extern int fast_subtract_rotations_cf(void *);
+extern int Help_Request(int a, int b);
+extern float fast_atan2(float, float);
+extern float FastDiffRots(float, float);
+extern float vec_distance_xy(void *, void *);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern void create_class_5c3_moby(void *, void *, void *, float, float);
 extern Moby *D_L05_00160098_2523C8 __asm__("D_L05_00160098") MACRO_ADDR;
 extern int D_0015EFA4_2523C8 __asm__("D_0015EFA4") MACRO_ADDR;
 extern int D_0015EE84_2523C8 __asm__("D_0015EE84") MACRO_ADDR;
@@ -1027,11 +1027,11 @@ int process_hero_primary_item_input(void) {
     return D_0013F450_h2523C8.state_timer < start;
 }
 typedef struct { int bank; int seq; } SndPair_254030;
-extern SndPair_254030 D_L05_00179CC0[];
-extern float func_L00_00233410(float a, float b, float c);
-extern void func_L00_00232C10(int, int, float);
-extern void func_L00_00232E60(int bank, int seq);
-extern int func_L05_002559A0(void);
+extern SndPair_254030 hoverboard_trick_sounds[];
+extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
+extern void set_hero_animation(int, int, float);
+extern void HeroQueueSequence(int bank, int seq);
+extern int select_hero_hoverboard_animation_variant(void);
 
 /* Hero idle: picks the idle animation from the stick direction, and occasionally plays a fidget or the
  * look-around when standing still. */
@@ -1094,17 +1094,17 @@ void update_hero_hoverboard_trick_animations(void) {
     }
 }
 typedef unsigned char u8_a;
-extern int func_L00_0025A208(void **, int, int, int);
-extern int func_L00_0025A2F0(void **, void *, int, int);
-extern void func_001F9BF0(float *, void *, void *);
-extern void func_001FA190(float *);
-extern void func_001FA4A0(float *, void *);
-extern void func_001F9EE8(float *, float *, float *);
-extern float func_001F9D10(void *, void *);
-extern float func_001F9FA8(float);
-extern float func_001FA888(int);
-extern unsigned char D_0013D50F[] NOT_SDA;
-extern void func_L05_0023E348(int);
+extern int get_first_moby_in_group(void **, int, int, int);
+extern int get_next_moby_in_group(void **, void *, int, int);
+extern void FastVecSub(float *, void *, void *);
+extern void set_identity_matrix(float *);
+extern void matrix_from_basis_rows(float *, void *);
+extern void transform_vector(float *, float *, float *);
+extern float FastVecDist(void *, void *);
+extern float FastSin(float);
+extern float IntToFloat(int);
+extern unsigned char menu_item_enabled_115[] NOT_SDA;
+extern void apply_hero_item_slot_selection(int);
 
 #define HERO ((struct Hero *)((char *)D_0013E633 + 0xE1D))
 
@@ -1207,11 +1207,11 @@ void process_hero_race_object_interactions(void) {
 }
 #define G ((ScoreState_254838 *)(D_0013E633 + 0xE1D))
 extern unsigned char D_0013D355[];
-extern int D_0015EFA4 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
-extern float func_001F9878(float);
+extern int gameplay_event_frame_count MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern float multiply_global_factor(float);
 typedef struct { float value[5]; } ScoreWeights_254838;
-extern ScoreWeights_254838 D_L05_00216D68;
+extern ScoreWeights_254838 hoverboard_trick_multipliers;
 typedef struct {
     char pad0[0x6D0]; float angle[3]; char pad6DC[4];
     int actions[4]; int actionCount; float multiplier;
@@ -1271,8 +1271,8 @@ void update_hero_hoverboard_trick_score(void) {
 }
 typedef int u128_254B38 __attribute__((mode(TI)));
 extern char *D_L05_001B0CB0_254B38[] __asm__("D_L05_001B0CB0");
-extern float func_00214358(void *, int, float);
-extern void func_001F9BC0(void *);
+extern float ProbeGroundHeight(void *, int, float);
+extern void clear_u64_value(void *);
 
 /* Finds the nearest path node ahead of the hero (behind the facing test) and returns its position and heading. */
 void compute_hero_hoverboard_respawn_transform(float *out, float *rot) {
@@ -1368,10 +1368,10 @@ extern int D_0015EE80_254DE8 __asm__("D_0015EE80") MACRO_ADDR;
 extern int D_0015EF58_254DE8[2] __asm__("D_0015EF58") MACRO_ADDR;
 extern int D_0015EE98_254DE8 __asm__("D_0015EE98") MACRO_ADDR;
 extern int D_0015EF68_254DE8[2] __asm__("D_0015EF68") MACRO_ADDR;
-extern int D_L05_0015F760 SDATA(D_L05_0015F760);
-extern int D_L05_0015F764 SDATA(D_L05_0015F764);
-extern float D_L05_0015F75C SDATA(D_L05_0015F75C);
-extern int D_L05_0015F788 SDATA(D_L05_0015F788);
+extern int rilgar_off_course_reset_started SDATA(D_L05_0015F760);
+extern int rilgar_off_course_reset_ready SDATA(D_L05_0015F764);
+extern float rilgar_off_course_reset_rate SDATA(D_L05_0015F75C);
+extern int hoverboard_race_finished SDATA(D_L05_0015F788);
 extern float func_001F9D10_254DE8(void *, void *) __asm__("func_001F9D10");
 extern float func_L00_001FF860_254DE8(float, float) __asm__("func_L00_001FF860");
 extern float func_001FA850_254DE8(float, float) __asm__("func_001FA850");
@@ -1636,13 +1636,13 @@ int Hero_SelectAnimIdByFlag(int arg) {
         r = 0x68;
     return r;
 }
-extern short D_L05_0015F778;
-extern float D_0015EE6C MACRO_ADDR;
-extern void func_L00_00233EE0(float *, float, float, float);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern float func_001FA748(float, float);
-extern int func_L01_0028C2D8(void *, void *, float);
-extern int func_L00_0025E7F8(void *, int, int, int);
+extern short hoverboard_trick_min_frames;
+extern float g_frame_time MACRO_ADDR;
+extern void transform_hero_local_offset_to_world(float *, float, float, float);
+extern void vec_scale_to_length(void *, void *, float);
+extern float FastAddRots(float, float);
+extern int select_point_index_by_distance(void *, void *, float);
+extern int offset_path_index(void *, int, int, int);
 
 typedef struct {
     char pad0[0x80];

@@ -44,7 +44,7 @@ void RipplePatchesInit(VuChainRecord *records, int count) {
         records[i].f44 = 0;
     }
 }
-extern float D_L01_001CAF80[];
+extern float pool_light[];
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* Converts a float vector to fixed-point ints, relative to the grid origin, plus two scale shorts. */

@@ -5,14 +5,14 @@
 LINKER_REMNANT("asm/overlays", func_L01_002649C8);
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 typedef f32 sceVu0FVECTOR[4] __attribute__((aligned(16)));
-void func_001F9BD8(void *out, void *a, void *b);
-void func_001F9BF0(void *out, void *a, void *b);
-void func_001F9C30(void *out, void *a, f32 scale);
-f32 func_001F9CB8(void *a);
-extern void func_001FA218(void *matrix, void *rotation);
-extern void func_001F9EE8(void *out, void *in, void *matrix);
-extern void func_001F9C48(float scale, void *out, void *joint);
-extern void func_L00_00254218(void *moby, short joint, int flags);
+void FastVecAdd(void *out, void *a, void *b);
+void FastVecSub(void *out, void *a, void *b);
+void FastVecScale(void *out, void *a, f32 scale);
+f32 FastVecLength(void *a);
+extern void euler_to_matrix(void *matrix, void *rotation);
+extern void transform_vector(void *out, void *in, void *matrix);
+extern void scale_vector(float scale, void *out, void *joint);
+extern void moby_joints_to_scratchpad(void *moby, short joint, int flags);
 
 /* Joint positions in scratchpad, 16 bytes each.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00263a28.c, FUN_L01_00263a28. */

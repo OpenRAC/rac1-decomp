@@ -11,88 +11,88 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
-extern int D_0018A3B0[];
-extern void func_001F99B0();
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
-extern char D_001940C0[];
-extern long D_00151888[3];
-extern int D_0015F6FC;
-extern short D_0015F534;
-extern void func_001FB530(void);
-extern void func_001F3D78(void);
-extern int D_0015F564;
-extern int D_0018DD40[];
-extern int D_0018DC40[];
-extern short D_0015F59C;
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
-extern void func_001F6668(void *, void *, void *, void *, void *, int,
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
+extern int draw_config[];
+extern void FastMemSet();
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
+extern char occl_visibility[];
+extern long gs_display_settings[3];
+extern int space_load_in_progress;
+extern short draw_enable_mask;
+extern void append_gif_transfer_packet(void);
+extern void DrawDebugProfiler(void);
+extern int draw_callback_count;
+extern int draw_callback_args[];
+extern int draw_callback_funcs[];
+extern short GlobalStateFlag;
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
+extern void FontPrint(void *, void *, void *, void *, void *, int,
                           unsigned char *);
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
-extern int func_001F4868(int);
-extern void func_001FB498(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern int D_0018E840[];
-extern long D_00152178 NOT_SDA;
-extern int func_001FE4D0(void);
-extern char D_00199A68[];
-extern short D_0015F780;
-extern int D_001941CC NOT_SDA;
-extern int D_0019A4E8 NOT_SDA;
-extern int func_001FF668(int);
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
+extern int GetEffectTex(int);
+extern void PutDrawBufferLarge(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern int bit_swap_lut[];
+extern long background_rgbaq NOT_SDA;
+extern int Help_FindIndex(void);
+extern char s_paradox_this_message_does_not[];
+extern short help_msgs;
+extern int hud_heap_base NOT_SDA;
+extern int hud_state NOT_SDA;
+extern int Hud_GetIconIndex(int);
 typedef struct {
     char b[0x13];
 } Cfg13;
-extern Cfg13 D_0019A540 NOT_SDA;
-extern Cfg13 D_001E7DD8 NOT_SDA;
+extern Cfg13 message_text_buffer NOT_SDA;
+extern Cfg13 message_too_long_label NOT_SDA;
 extern int func_00116810(void);
 extern void func_001166FC(Cfg13 *, void *);
-extern short D_0015F9D0;
-extern void func_00201960(int, int, int, int, int);
-extern void func_002023E0(int);
-extern void func_002027C0(int);
-extern void func_00204FC0(void *);
-extern int D_0018CC20 NOT_SDA;
-extern int D_001941C8 NOT_SDA;
-extern int D_0016100C;
-extern int D_001A0468[];
-extern void func_00205830(int a, int b);
+extern short ResourceCounter;
+extern void draw_stretchable_ui_frame(int, int, int, int, int);
+extern void CreatePointLight(int);
+extern void DetachPointLight(int);
+extern void update_world_object_animation(void *);
+extern int render_sequence NOT_SDA;
+extern int vu1_chain_buffer_2 NOT_SDA;
+extern int current_vu_chain;
+extern int map_slot_use[];
+extern void move_map_entry_slot(int a, int b);
 extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
-extern int D_001A01F0[];
-extern int *D_001602E0;
+extern int level_map_selection[];
+extern int *menu_level_indices;
 
 /* Map hit test: point_is_clockwise of (x1, y1) against one fixed map edge. */
 int Menu_IsPointInFixedQuad(int x1, int y1) {
     return point_is_clockwise(x1, y1, 0xD3, 0xDB, 0x129, 0xF9);
 }
 
-extern unsigned char D_0013D49C NOT_SDA;
+extern unsigned char menu_item_enabled_0 NOT_SDA;
 
 /* Map filter: shown once menu item flag 0 is set. */
 int map_filter_l01_1(void) {
     return menu_item_enabled_0 != 0;
 }
 
-extern unsigned char D_0013D49D NOT_SDA;
+extern unsigned char g_menu_item_enabled_1 NOT_SDA;
 
 /* Map filter: shown once menu item flag 1 is set. */
 int map_filter_l01_2(void) {
     return g_menu_item_enabled_1 != 0;
 }
 
-extern unsigned char D_0013D4A5 NOT_SDA;
+extern unsigned char menu_item_enabled_9 NOT_SDA;
 
 /* Map filter: shown once menu item flag 9 is set. */
 int map_filter_l02_0(void) {
@@ -105,7 +105,7 @@ typedef struct {
     char _pad12E5[0x208C - 0x12E5];
     int unk208C;
 } Menu13F450;
-extern Menu13F450 D_0013F450;
+extern Menu13F450 g_hero;
 
 /* Menu hit test: arg3 is the third float ($f14). b (state 16) is
    computed before a, as retail evaluates it; the second if's own
@@ -125,7 +125,7 @@ int map_filter_l01_3(void *unused_input, int reveal_test_selector, float unused1
 }
 
 extern int D_001414DC_early __asm__("D_001414DC") NOT_SDA;
-extern unsigned char D_0013D49E NOT_SDA;
+extern unsigned char menu_item_enabled_2 NOT_SDA;
 
 /* `if (x) return 1;` in both arms with one shared `return 0;` keeps the
    flag test a beqz with the li in its slot; a result variable or a
@@ -153,42 +153,42 @@ int map_filter_l01_5(int reveal_test_selector, float unused1, float unused2, flo
     return (reveal_test_value >= 95.0f) ? 1 : 0;
 }
 
-extern short D_0015FE24;   /* declared small so -G2 puts it in SDA */
+extern short menu_selection_count;   /* declared small so -G2 puts it in SDA */
 
 /* Map filter: shown while the menu selection count is zero. */
 int map_filter_l03_0(void) {
     return *(int *)&menu_selection_count == 0;
 }
 
-extern unsigned char D_0013D4AC NOT_SDA;
+extern unsigned char menu_item_enabled_16 NOT_SDA;
 
 /* Map filter: shown once menu item flag 16 is set. */
 int map_filter_l04_0(void) {
     return menu_item_enabled_16 != 0;
 }
 
-extern unsigned char D_0013D4AD NOT_SDA;
+extern unsigned char menu_item_enabled_17 NOT_SDA;
 
 /* Map filter: shown once menu item flag 17 is set. */
 int map_filter_l04_1(void) {
     return menu_item_enabled_17 != 0;
 }
 
-extern unsigned char D_0013D4AE NOT_SDA;
+extern unsigned char menu_item_enabled_18 NOT_SDA;
 
 /* Map filter: shown once menu item flag 18 is set. */
 int map_filter_l04_2(void) {
     return menu_item_enabled_18 != 0;
 }
 
-extern unsigned char D_0013D4AF NOT_SDA;
+extern unsigned char menu_item_enabled_19 NOT_SDA;
 
 /* Map filter: shown once menu item flag 19 is set. */
 int map_filter_l04_3(void) {
     return menu_item_enabled_19 != 0;
 }
 
-extern unsigned char D_0013D4B5 NOT_SDA;
+extern unsigned char menu_item_enabled_25 NOT_SDA;
 
 /* Map filter: shown once menu item flag 25 is set. */
 int map_filter_l06_0(void) {
@@ -203,14 +203,14 @@ struct RegionPlayerState {
     s32 active_state;
 };
 extern struct RegionPlayerState D_0013F450_07408 __asm__("D_0013F450");
-extern s32 D_001A04B0[];
+extern s32 region_enabled[];
 union RegionVector {
     u128 region_center;
     f32 f[4];
 };
-extern s32 func_00209048(s32, s32, s32, s32, s32, s32);
+extern s32 point_is_clockwise(s32, s32, s32, s32, s32, s32);
 extern f32 func_001F9D48_07408(union RegionVector *, union RegionVector *) __asm__("func_001F9D48");
-s32 func_00207408(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z);
+s32 map_filter_l07_0(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00206bd8.c, passes_projected_region_callback_0. */
 s32 map_filter_l07_0(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z) {
@@ -398,7 +398,7 @@ int map_filter_l07_5(void *arg0, int arg1, float unused1, float unused2, float a
 }
 
 extern int D_001A04AC NOT_SDA;
-extern int func_00209048(int, int, int, int, int, int);
+extern int point_is_clockwise(int, int, int, int, int, int);
 
 /* Menu hit test (func_00207200's family): for arg1 >= 0x105, needs
    D_001A04AC set and arg3 >= 47.7; otherwise returns `a` directly when
@@ -444,8 +444,8 @@ s32 map_filter_l07_7(s32 px, s32 py, f32 fparg0, f32 fparg1, f32 reveal_test_val
     return point_is_clockwise(px, py, 0x190, 0x89, 0xD1, 0xFB) == 0;
 }
 
-extern unsigned char D_0013D4C5 NOT_SDA;
-extern int D_001414DC NOT_SDA;
+extern unsigned char menu_item_enabled_41 NOT_SDA;
+extern int hero_control_mode NOT_SDA;
 
 /* Map filter: above y 0x100 needs hero control mode 15, else menu item flag 41. */
 int map_filter_l08_0(int arg0, int arg1) {
@@ -492,12 +492,12 @@ int map_filter_l08_4(int arg0, float unused1, float unused2, float arg1) {
     return (arg1 <= 38.0f) ? 1 : 0;
 }
 
-extern unsigned char D_0013D4C0 NOT_SDA;
-extern unsigned char D_0013D4C1 NOT_SDA;
-extern unsigned char D_0013D4C2 NOT_SDA;
-extern unsigned char D_0013D4D3 NOT_SDA;
-extern unsigned char D_0013D4D4 NOT_SDA;
-extern unsigned char D_0013D4D5 NOT_SDA;
+extern unsigned char menu_item_enabled_36 NOT_SDA;
+extern unsigned char menu_item_enabled_37 NOT_SDA;
+extern unsigned char menu_item_enabled_38 NOT_SDA;
+extern unsigned char menu_item_enabled_55 NOT_SDA;
+extern unsigned char menu_item_enabled_56 NOT_SDA;
+extern unsigned char menu_item_enabled_57 NOT_SDA;
 
 /* Map filter: shown once menu item flag 36 is set. */
 int map_filter_l08_5(void) {
@@ -529,7 +529,7 @@ int map_filter_l09_2(void) {
     return menu_item_enabled_57 != 0;
 }
 
-extern unsigned char D_0013D4E0;
+extern unsigned char menu_item_enabled_68;
 
 extern unsigned char D_0013D4E0_far __asm__("D_0013D4E0") NOT_SDA;
 /* The recorded C was right; the two ps2eeas nops were the only
@@ -539,11 +539,11 @@ int map_filter_l10_0(int arg0, float unused1, float unused2, float arg1) {
     return (arg1 >= 58.5f) ? 1 : 0;
 }
 
-extern unsigned char D_0013D4DC NOT_SDA;
-extern unsigned char D_0013D4DD NOT_SDA;
-extern unsigned char D_0013D4DE NOT_SDA;
-extern unsigned char D_0013D4DF NOT_SDA;
-extern unsigned char D_0013D4E1 NOT_SDA;
+extern unsigned char menu_item_enabled_64 NOT_SDA;
+extern unsigned char menu_item_enabled_65 NOT_SDA;
+extern unsigned char menu_item_enabled_66 NOT_SDA;
+extern unsigned char menu_item_enabled_67 NOT_SDA;
+extern unsigned char menu_item_enabled_69 NOT_SDA;
 
 /* Map filter: shown once menu item flag 64 is set. */
 int map_filter_l10_1(void) {
@@ -570,7 +570,7 @@ int map_filter_l10_5(void) {
     return menu_item_enabled_69 != 0;
 }
 
-extern unsigned char D_0013D4E6 NOT_SDA;
+extern unsigned char menu_item_enabled_74 NOT_SDA;
 
 /* Map filter: height band 232-235 plus flag 74 below 0xDD, else height at most 180. */
 int map_filter_l11_0(int arg0, float unused1, float unused2, float arg1) {
@@ -580,7 +580,7 @@ int map_filter_l11_0(int arg0, float unused1, float unused2, float arg1) {
     return (arg1 <= 180.0f) ? 1 : 0;
 }
 
-extern unsigned char D_0013D4E7 NOT_SDA;
+extern unsigned char menu_item_enabled_75 NOT_SDA;
 
 /* Map filter: height at least 242 below 0xDD, else height at most 180 plus flag 75. */
 int map_filter_l11_1(int arg0, float unused1, float unused2, float arg1) {
@@ -590,7 +590,7 @@ int map_filter_l11_1(int arg0, float unused1, float unused2, float arg1) {
     return arg1 <= 180.0f && menu_item_enabled_75 != 0;
 }
 
-extern unsigned char D_0013D4E8 NOT_SDA;
+extern unsigned char menu_item_enabled_76 NOT_SDA;
 
 /* Map filter: height band 238-241 below 0xDD, else height at most 180 plus flag 76. */
 int map_filter_l11_2(int arg0, float unused1, float unused2, float arg1) {
@@ -600,7 +600,7 @@ int map_filter_l11_2(int arg0, float unused1, float unused2, float arg1) {
     return arg1 <= 180.0f && menu_item_enabled_76 != 0;
 }
 
-extern unsigned char D_0013D4EA NOT_SDA;
+extern unsigned char menu_item_enabled_78 NOT_SDA;
 
 /* The Menu13F450 state test of func_00207340, computed up front (retail
    evaluates it before the arg0 branch), gates the arg0 < 0x15F arm; the
@@ -615,7 +615,7 @@ int map_filter_l11_3(int reveal_test_selector, float unused1, float unused2, flo
     return reveal_test_value >= 233.0f && reveal_test_value <= 235.0f && menu_item_enabled_78 != 0;
 }
 
-extern unsigned char D_0013D4EB NOT_SDA;
+extern unsigned char menu_item_enabled_79 NOT_SDA;
 
 /* Map filter: height band 228-230 below 0x15F, else band 233-235 plus flag 79. */
 int map_filter_l11_4(int arg0, float unused1, float unused2, float arg1) {
@@ -625,7 +625,7 @@ int map_filter_l11_4(int arg0, float unused1, float unused2, float arg1) {
     return arg1 >= 233.0f && arg1 <= 235.0f && menu_item_enabled_79 != 0;
 }
 
-extern unsigned char D_0013D4E9 NOT_SDA;
+extern unsigned char menu_item_enabled_77 NOT_SDA;
 
 /* Map filter: shown once menu item flag 77 is set. */
 int map_filter_l11_5(void) {
@@ -657,7 +657,7 @@ int map_filter_l12_2(void) {
 }
 
 typedef float FVec4[4] __attribute__((aligned(16)));
-extern float func_001F9D48(float *, float *);
+extern float vec_distance_xy(float *, float *);
 
 /* True when (x, y) is within 35 of the point (161.5, 249), or always
    while D_001A04A8 is set. Both vectors are 16-byte aligned like the
@@ -675,23 +675,23 @@ int map_filter_l15_0(int x, int y) {
     return 1;
 }
 
-extern unsigned char D_0013D502 NOT_SDA;
+extern unsigned char menu_item_enabled_102 NOT_SDA;
 
 /* Map filter: shown once menu item flag 102 is set. */
 int map_filter_l16_0(void) {
     return menu_item_enabled_102 != 0;
 }
 
-extern unsigned char D_0013D503 NOT_SDA;
+extern unsigned char menu_item_enabled_103 NOT_SDA;
 
 /* Map filter: shown once menu item flag 103 is set. */
 int map_filter_l16_1(void) {
     return menu_item_enabled_103 != 0;
 }
 
-extern unsigned char D_0013D504 NOT_SDA;
-extern unsigned char D_0013D505 NOT_SDA;
-extern unsigned char D_0013D50F NOT_SDA;
+extern unsigned char menu_item_enabled_104 NOT_SDA;
+extern unsigned char menu_item_enabled_105 NOT_SDA;
+extern unsigned char menu_item_enabled_115 NOT_SDA;
 
 /* Map filter: shown once menu item flag 104 is set. */
 int map_filter_l16_2(void) {
@@ -708,18 +708,18 @@ int map_filter_l18_0(void) {
     return menu_item_enabled_115 != 0;
 }
 
-extern int D_001A01F0[];
-extern int D_0013D668[];
-extern void func_00209040(void);
-extern int func_001FAA28(void *dst, int size, int a, int b);
-extern void func_00208860(void *dst);
+extern int level_map_selection[];
+extern int max_map_coverage_size[];
+extern void DebugEnter_Nop(void);
+extern int compress_map_coverage(void *dst, int size, int a, int b);
+extern void downsample_map_coverage(void *dst);
 
 /* The same object, twice. gp is 0x00166D00, so the `lw $4,-0x7E7C($28)`
    in retail's delay slot and the `lui/%lo(D_0015EE84)` a few
    instructions later are the SAME address; retail reaches it both ways
    inside one function. Declared small it lands in SDA at -G2, declared
    int it stays out. */
-extern int D_0015EE84 MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
 
 /* Read a sector into arg0 from the open file (D_001A01F0 slot state) or
    clear it when none is open, and track the largest read per slot in
@@ -741,9 +741,9 @@ void save_map_coverage(int arg0) {
     }
 }
 
-extern int D_001A0218[] NOT_SDA;
-extern void func_00208458(void *, unsigned char *, int);
-extern void func_00208688(void *, unsigned char *);
+extern int map_coverage_active[] NOT_SDA;
+extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
+extern void expand_map_coverage(void *, unsigned char *);
 
 /* Load a saved map coverage chunk, decoding it as compressed or plain by its first bit. */
 void load_map_chunk(void *arg0, unsigned char *arg1, int arg2) {
@@ -901,8 +901,8 @@ typedef struct {
     int n[16];
 } NibbleBits;
 
-extern NibbleBits D_001E83B0;
-extern unsigned char *D_001A01FC;
+extern NibbleBits nibble_popcount_table;
+extern unsigned char *map_coverage_buffer;
 
 
 /* Condenses D_001A01FC's 0x200 rows of 64 bytes (two 4-bit samples
@@ -949,9 +949,9 @@ void downsample_map_coverage(void *arg0) {
 }
 
 extern void *func_001FE540_id(int) __asm__("func_001FE540");
-extern char D_0015FE60[]; /* "%d" */
+extern char menu_item_price_fmt[]; /* "%d" */
 extern char D_0015FE68[]; /* "error" */
-extern char D_001E02B0[];
+extern char vendor_item_prices[];
 extern int func_00116248_3(void *, char *, int) __asm__("func_00116248");
 extern int func_00116248_2(void *, char *) __asm__("func_00116248");
 
@@ -1006,7 +1006,7 @@ __asm__(".section .text\n\tnop\n\tnop\n\tnop\n");
 typedef struct {
     float a, b, c, d;
 } OrientEntry;
-extern OrientEntry D_0019EA70[];
+extern OrientEntry level_map_transforms[];
 
 /* arg2 (a table index, offset by 100 when the +100 variant is wanted)
    selects a row of D_0019EA70 (19 rows, 0..0x12); -1 means "use
@@ -1052,12 +1052,12 @@ typedef struct {
     unsigned int sub;   /* the icon's frame, or the square's colour */
 } MapMarker;
 
-extern int D_0015FE70 MACRO_ADDR;
-extern float D_001A02A4[];
+extern int marker_half_size MACRO_ADDR;
+extern float marker_scale_by_level[];
 extern char D_0019A4E8_raw[] __asm__("D_0019A4E8");
-extern void func_00201640(int, int, int, int, long, int);
-extern int func_00200198(int, int);
-extern void func_002008B8(int, int, int, int, int, int);
+extern void draw_hud_rect_blended(int, int, int, int, long, int);
+extern int GetIconFrame(int, int);
+extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
 
 /* Draw the level's map markers inside the given screen rectangle, scaled by map zoom. */
 void draw_map_markers(int left, int top, int right, int bottom) {
@@ -1098,9 +1098,9 @@ void draw_map_markers(int left, int top, int right, int bottom) {
     }
 }
 
-extern int D_001E06B8[];
-extern void *D_00199578[];
-extern char D_0013D6B8[];
+extern int level_object_index_ranges[];
+extern void *menu_action_messages[];
+extern char race_gates[];
 
 /* Copies three floats (+0x10, +0x14, +0x48) of each of level
    D_0015EE84's objects in D_00199578 into the 16-byte slots at
@@ -1184,12 +1184,12 @@ int point_is_clockwise(int x1, int y1, int x0, int y0, int x2, int y2) {
     return 0;
 }
 
-extern char D_0013D390[];
-extern int D_0015EFB0 MACRO_ADDR;
-extern int D_0015EFB4 MACRO_ADDR;
-extern int D_0015FF4C MACRO_ADDR;
-extern int D_00161380 MACRO_ADDR;
-extern void (*D_001A0538[])(void);
+extern char memory_card_state[];
+extern int mode_freeze_state MACRO_ADDR;
+extern int mode_freeze_flags MACRO_ADDR;
+extern int memory_card_error_latch MACRO_ADDR;
+extern int menu_state_frame_count MACRO_ADDR;
+extern void (*menu_state_handlers[])(void);
 
 /* Calls the handler for the state in D_0015EFB0 from the table at
    D_001A0538. Bits 0x80 and 0x100 of D_0015EFB4 request states 0x15 and
@@ -1217,7 +1217,7 @@ void Menu_RunStateHandler(void) {
     }
 }
 
-extern char D_0013D390[];
+extern char memory_card_state[];
 /* menu.cpp's state word and flags. Stored through the assembler's lui
    macro, and $gp-relative where the access sits in a delay slot (see
    tools/check_macro_slots.py). */
@@ -1339,7 +1339,7 @@ void save_card_state_unformatted(void) {
     }
 }
 
-extern int D_0015F6C8 MACRO_ADDR;
+extern int boot_level_active MACRO_ADDR;
 
 /* Card format prompt: flag 0x20 returns to state 5 (0x17 at boot), flag 8 goes to state 7. */
 void save_card_state_prompt_format(void) {
@@ -1409,7 +1409,7 @@ void save_card_state_check_save(void) {
     }
 }
 
-extern char D_0013D390[];
+extern char memory_card_state[];
 
 /* Dispatch-table handler for menu.cpp's D_0013D390 state record. First,
    guarded by unkDC>=3 || unkE4>=0, clears a per-index slot in the

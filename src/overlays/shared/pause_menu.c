@@ -88,51 +88,51 @@ typedef struct {
     int bufs[4];
 } Snd_277208;
 
-extern char D_L00_001BA070[] NOT_SDA;
-extern int D_L00_00173F40[];
+extern char level_menu_system[] NOT_SDA;
+extern int coll_hit_result[];
 extern int D_L00_001B3898[];
 extern int D_L00_001B6408[];
 extern struct Own D_L00_001B7570;
 extern int D_L00_001B6EB8[];
 extern int D_L00_001B8A48[];
-extern int D_L00_001B2908[];
+extern int pause_menu_default_page[];
 extern int D_L00_0015F68C MACRO_ADDR;
-extern int D_0015EFD8 MACRO_ADDR;
-extern char D_L00_001842F0[];
+extern int decode_mode MACRO_ADDR;
+extern char map_menu_state[];
 extern Q_277208 D_L00_00180350[];
 extern short D_L00_00160340;
 extern short D_L00_00160350;
-extern float D_L00_00166EC0[];
-extern char D_L00_0016CB40[];
-extern int D_L00_0015F4F8 MACRO_ADDR;
-extern Vram_277208 D_L00_00173F00;
-extern int D_L00_0016128C MACRO_ADDR;
+extern float g_debug_camera[];
+extern char render_view_params[];
+extern int rendered_frame_count MACRO_ADDR;
+extern Vram_277208 lvl_resource_buffers;
+extern int lvl_vu_chain_buffer_size MACRO_ADDR;
 extern short D_L00_0015F658;
 extern int D_0013E15A[];
-extern int D_0015EF84 MACRO_ADDR;
-extern int D_0015EF78 MACRO_ADDR;
-extern char *D_L00_00197680[] NOT_SDA;
+extern int draw_buffer_address MACRO_ADDR;
+extern int g_gs_texture_allocation_start MACRO_ADDR;
+extern char *moby_class_headers[] NOT_SDA;
 extern unsigned char D_0014171B NOT_SDA;
-extern struct HEnt *D_L00_001BA220[];
-extern char D_L00_00166D80[];
+extern struct HEnt *menu_preview_mobys[];
+extern char player_camera[];
 
-extern void func_0020C7A0(void);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F3140(void);
-extern void func_00219C08(void);
-extern void func_001F2608(void);
-extern void func_00234AC8(int);
+extern void update_mission_list(void);
+extern void FastVecScale(void *, void *, float);
+extern void UpdateViewContext(void);
+extern void reset_active_camera_position_and_basis(void);
+extern void BuildViewMatrices(void);
+extern void VU1_syncChain(int);
 extern int func_00122598(int);
-extern void func_00226D50(int);
-extern void func_002348E8(void);
-extern void func_L00_002472D0(void);
-extern void func_L00_00235CA0(int);
-extern void func_L00_00235960(int);
-extern void func_L00_002A21A8(int, int, int);
-extern void func_L00_00235FF8(int);
-extern Moby_277208 *func_00226720(int);
-extern void func_00213D28(void *, int, int);
-extern void func_L00_002E0AE8(void);
+extern void initialize_menu_stream_buffers(int);
+extern void VU1_initChain(void);
+extern void initialize_render_archive_transfer(void);
+extern void apply_group_entry_adjustment(int);
+extern void decompress_and_relocate_selected_groups(int);
+extern void transfer_draw_buffer_chunks(int, int, int);
+extern void select_moby_context(int);
+extern Moby_277208 *create_menu_preview_moby(int);
+extern void MobySetAnimation(void *, int, int);
+extern void QuadMoby_Update(void);
 
 /* Open the pause menu: pick its page from the menu state, then set up the menu camera and view. */
 void initialize_pause_menu(void) {
@@ -321,29 +321,29 @@ void initialize_pause_menu(void) {
         }
     }
 }
-extern char D_L00_001BA070[] NOT_SDA;
-extern int D_L00_0015F6BC MACRO_ADDR;
+extern char level_menu_system[] NOT_SDA;
+extern int skip_frame MACRO_ADDR;
 extern unsigned char D_0014171B NOT_SDA;
 extern unsigned char D_0013E633 NOT_SDA;
-extern int D_0015EE98 MACRO_ADDR;
-extern int D_0015EF78 MACRO_ADDR;
-extern struct HEnt *D_L00_001BA220[];
-extern char *D_L00_00197680[] NOT_SDA;
-extern unsigned char D_L00_0017E5D8[];
-extern int D_L00_00173F40[];
-extern void func_00234AC8(int);
-extern void func_002348E8(void);
-extern void func_001FF958(int, int, int);
-extern void func_L00_00235CA0(int);
-extern struct HEnt *func_002267C0(struct HEnt *);
-extern int func_L00_00235790(void);
-extern int func_001F9850(int);
-extern int func_L00_002367A8(int, int);
-extern int func_001FFB38(int, int, void *, void *, void *, void *, int);
-extern void func_002349B8(void);
-extern void func_L00_0023A658(void);
-extern void func_L00_0023A690(void);
-extern void func_L00_0023A788(void);
+extern int gBolts MACRO_ADDR;
+extern int g_gs_texture_allocation_start MACRO_ADDR;
+extern struct HEnt *menu_preview_mobys[];
+extern char *moby_class_headers[] NOT_SDA;
+extern unsigned char texture_group_header[];
+extern int coll_hit_result[];
+extern void VU1_syncChain(int);
+extern void VU1_initChain(void);
+extern void Hud_SendResidentBank(int, int, int);
+extern void apply_group_entry_adjustment(int);
+extern struct HEnt *delete_moby(struct HEnt *);
+extern int show_health_hud(void);
+extern int scale_ticks(int);
+extern int hud_keep_visible(int, int);
+extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
+extern void VU1_sendChain(void);
+extern void initialize_bolt_counter_hud(void);
+extern void update_bolt_counter_hud_animation_and_visibility(void);
+extern void draw_bolt_counter_hud_panel(void);
 
 /* PageMenuClose: closes the pause menu. */
 void close_pause_menu(void) {
@@ -505,52 +505,52 @@ struct Ent3 { unsigned char pad0[0x10]; unsigned char unk10; };
 struct HEnt { unsigned char pad0[0x24]; Ent2 *unk24; unsigned char pad28[0x30]; float unk58; };
 
 extern GS_t GS __asm__("D_L00_001BA070");
-extern HEnt *D_L00_001BA220[];
-extern float D_L00_00166EC0[];
+extern HEnt *menu_preview_mobys[];
+extern float g_debug_camera[];
 extern Own D_L00_001B7570;
 extern Own D_L00_001B8150;
 extern Own D_L00_001B8460;
 extern Own D_L00_001B6778;
 extern Own D_L00_001B7C70;
 extern Own D_L00_001B6BA0;
-extern char D_L00_001842F0[];
-extern char D_001517D0[];
-extern char D_0013D390[];
-extern int D_0015EFD8 MACRO_ADDR;
+extern char map_menu_state[];
+extern char cd_read_state[];
+extern char memory_card_state[];
+extern int decode_mode MACRO_ADDR;
 extern int D_0015EFB4_m __asm__("D_0015EFB4") MACRO_ADDR;
 extern int D_L00_0015F690 MACRO_ADDR;
 extern short D_L00_0015F658;
-extern short D_L00_001600CC;
-extern short D_L00_0015F6AC;
-extern int D_L00_0015F6BC MACRO_ADDR;
-extern int D_L00_0015F6A8 MACRO_ADDR;
+extern short loaded_swap_moby_class_set;
+extern short cinematic_mode_frames;
+extern int skip_frame MACRO_ADDR;
+extern int cinematic_mode MACRO_ADDR;
 extern float D_L00_0016CBF0;
-extern unsigned char D_L00_001E9530[];
+extern unsigned char level_transition_target_fmt[];
 
-extern void func_002348B8(void);
-extern void func_L00_00235FF8(int);
-extern void func_00205270(int, int);
-extern void func_001F2930(void);
-extern int func_001E9730();
-extern void func_L00_00290030(int);
-extern int func_001F9850(int);
-extern void func_001F4E08(int);
-extern void func_L00_0029A7D0(int);
-extern void func_L00_0029A8D0(int);
-extern void func_L00_0029A868(int);
-extern void func_L00_00299B68(int);
-extern void func_L00_0029ADD8(void);
+extern void calculate_dma_transfer_address(void);
+extern void select_moby_context(int);
+extern void select_world_object_resource_tables(int, int);
+extern void UpdateFog(void);
+extern int STUB_printf();
+extern void prepare_target_level_transition(int);
+extern int scale_ticks(int);
+extern void FadeToBlack(int);
+extern void PlayMovieEntryIfIdle(int);
+extern void queue_movie_with_game_language(int);
+extern void queue_language_zero_movie(int);
+extern void StartCutscene(int);
+extern void start_slideshow(void);
 extern void func_0012E558(int);
-extern void func_00216F28(void);
+extern void music_Unpause(void);
 extern int func_0012DDC0(void);
-extern int func_0022DD68(void); /* sound update: ends in `return 0`, so it returns a value */
-extern void func_L00_00277208(void);
-extern void func_001FBC80(int, void *, int);
-extern void func_L00_00284410(void);
-extern void func_0022ED80(int, int, void *);
-extern void func_00213D28(void *, int, int);
-extern void func_00213C78(void);
-extern void func_L00_002777C0(void);
+extern int sound_update(void); /* sound update: ends in `return 0`, so it returns a value */
+extern void initialize_pause_menu(void);
+extern void mode_freeze_init(int, void *, int);
+extern void process_unlock_code_input(void);
+extern void Moby_PlaySound(int, int, void *);
+extern void MobySetAnimation(void *, int, int);
+extern void update_visible_resident_objects(void);
+extern void close_pause_menu(void);
 
 // Page-menu (pause/map/planet-select) per-frame update: state machine over the menu pages.
 // Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/audio_voices_00276368.c, FUN_L00_00276bd0.
@@ -757,28 +757,28 @@ L2:
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern void func_001FB530(void);
-extern void func_L00_002A2258(int a, int b, int n);
-extern void func_001F3C10(void);
-extern void func_001F55C0(int, int, int, int);
-extern void func_00234C98(int, long);
-extern void func_0020E0C8(void);
-extern void func_0020E040(void);
-extern void func_0020E068(void);
-extern void func_0020E180(int, int);
-extern void func_00238D90(void *, void *, int *, int *, int *, int *);
-extern void func_00201640(int, int, int, int, long, long);
-extern void func_001F7A50(int a, int b, int flag, float f);
-extern void func_002017C8(int arg0, int arg1, int arg2, int arg3, long arg4, int arg5, int arg6);
-extern void func_001F7B40(void);
-extern void func_001F5800(int, int, int, int, int, int, int, int, long, long);
-extern void func_0020E098(void);
-extern void func_0020E200(void);
-extern void func_00234AC8(int);
-extern void func_0020DD48(void);
-extern void func_001F4630(int);
-extern void func_002250B8(int);
-extern void func_001F4748(void);
+extern void append_gif_transfer_packet(void);
+extern void append_draw_buffer_upload_packets(int a, int b, int n);
+extern void ResetGsRegisters(void);
+extern void emit_rgba_draw_packet(int, int, int, int);
+extern void VU1_addGSregister(int, long);
+extern void DrawMobysSetup(void);
+extern void InitMobyClassDists(void);
+extern void StashMobyClassDists(void);
+extern void DrawMobyList(int, int);
+extern void project_graphics_bounds(void *, void *, int *, int *, int *, int *);
+extern void draw_hud_rect_blended(int, int, int, int, long, long);
+extern void configure_graphics_render_target_and_projection(int a, int b, int flag, float f);
+extern void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg4, int arg5, int arg6);
+extern void begin_draw_frame(void);
+extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
+extern void RestoreMobyClassDists(void);
+extern void DrawMobysCleanUp(void);
+extern void VU1_syncChain(int);
+extern void PatchMobyGifs(void);
+extern void SetupGifPaging(int);
+extern void draw_menu_flashing_panel(int);
+extern void DoGifPaging(void);
 typedef struct PageMenu {
     int state;
     char *owner;
@@ -789,11 +789,11 @@ typedef struct PageMenu {
     int unkD8;
 } PageMenu;
 extern PageMenu PM __asm__("D_L00_001BA070");
-extern int D_0015EF84 MACRO_ADDR;
+extern int draw_buffer_address MACRO_ADDR;
 extern int D_0013E15A[];
-extern int D_L00_001B2740[];
-extern long D_0015EFD0 MACRO_ADDR;
-extern int D_L00_00160330 SDATA(D_L00_00160330);
+extern int pause_menu_panel_enabled[];
+extern long capture_texture_tex0 MACRO_ADDR;
+extern int pause_menu_panel_bg_color SDATA(D_L00_00160330);
 typedef struct PageMobyData {
     u128 row[4];
     char pad40[0x10];
@@ -990,8 +990,8 @@ LINKER_REMNANT("asm/overlays", func_L00_002788C8);
 struct MenuPageP { unsigned char pad0[0x38]; struct MenuPageP *back; unsigned char pad3C[4]; void *focus; };
 struct MenuSystemP { unsigned char pad0[4]; struct MenuPageP *current; struct MenuPageP *next; unsigned char pad0C[0x124 - 0xC]; int close_locked; };
 struct CtrlP { unsigned char pad[0x1C4]; unsigned int pressed_unmasked; };
-extern char D_L00_001BA070[] NOT_SDA;
-extern char D_0013CA40[];
+extern char level_menu_system[] NOT_SDA;
+extern char g_controller_state[];
 #define menu_system_p (*(struct MenuSystemP *)D_L00_001BA070)
 #define controller_state_p (*(struct CtrlP *)D_0013CA40)
 /* Menu input check for the page `screen`. */
@@ -1017,7 +1017,7 @@ int Menu_CheckPageInput(void *screen) {
 INCLUDE_ASM("asm/overlays", func_L00_00278904);
 INCLUDE_ASM("asm/overlays", func_L00_00278930);
 INCLUDE_ASM("asm/overlays", func_L00_0027895C);
-extern char D_L00_001BA070[] NOT_SDA;
+extern char level_menu_system[] NOT_SDA;
 
 // Skips the linked menu entries the two active pause filters exclude and, if it moved, makes the entry it stopped on the current one.
 int Menu_SkipFilteredEntries(char *arg0, int arg1) {
@@ -1060,8 +1060,8 @@ extern struct MenuSystemP D_L00_001BA070_27D3D8 __asm__("D_L00_001BA070");
 extern int D_0013D48C;
 extern int D_L00_00184514;
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int D_L00_0015F6A4 MACRO_ADDR;
-extern int D_L00_0015F650 MACRO_ADDR;
+extern int memcard_last_save_slot MACRO_ADDR;
+extern int level_loop_exit_requested MACRO_ADDR;
 
 /* input of a pause menu entry: accept returns -1, cancel goes back a page or returns -1 when closing is allowed, and 0x20 sets the transition flags */
 int PauseMenu_EntryInput(char *entry) {
@@ -1129,7 +1129,7 @@ int Menu_GoBackWithFlag(void) {
     return 0;
 }
 extern unsigned char D_0013A5E0[] NOT_SDA;
-extern char D_L00_001BA070[] NOT_SDA;
+extern char level_menu_system[] NOT_SDA;
 /* Menu left/right handler; sets the page flag and next page link. Returns 0. */
 int Menu_GoNextWithFlag(void) {
     int f = *(int *)(D_0013A5E0 + 0x2604);
@@ -1148,14 +1148,14 @@ int Menu_GoNextWithFlag(void) {
     }
     return 0;
 }
-extern void func_L00_00261848(int);
-extern int func_0022EE28(int, int, int);
-extern void func_L00_00264DB8(int, int);
-extern short D_L00_001BA838[];
-extern unsigned char D_L00_001B9F20[];
-extern short D_L00_001604B8;
-extern char D_0013D5EB[];
-extern unsigned char D_0013D50F[];
+extern void unlock_planet(int);
+extern int PlayBankSound(int, int, int);
+extern void ShowBanner(int, int);
+extern short unlock_code_input[];
+extern unsigned char unlock_code_key_table[];
+extern short unlock_code_input_count;
+extern char discount_purchase_pricing[];
+extern unsigned char menu_item_enabled_115[];
 extern char D_0013D355[];
 
 /* Cheat-code entry on the pause screen. */
@@ -1220,9 +1220,9 @@ void process_unlock_code_input(void) {
     }
 }
 extern void *func_00226720_a(int) __asm__("func_00226720");
-extern int func_00226EA8(int);
-extern void func_001E9768(void *);
-extern char D_L00_00166D80[];
+extern int acquire_menu_stream_buffer(int);
+extern void Profile_Mark(void *);
+extern char player_camera[];
 
 /* sets up a pause-menu helper moby in front of the camera */
 int enter_streamed_moby_screen(char *h) {
@@ -1254,7 +1254,7 @@ int enter_streamed_moby_screen(char *h) {
     }
     return 0;
 }
-extern int D_L00_001BA548[];
+extern int stream_slots[];
 // Finds one of five entries and returns its flag-selected size.
 int StreamSlot_GetSize(int id) {
     int *p = stream_slots;
@@ -1295,8 +1295,8 @@ int StreamSlot_ClearFlag4(int id) {
     return 1;
 }
 typedef struct { int f[14]; } Rec;
-extern int D_L00_001604D0 MACRO_ADDR;
-extern Rec D_L00_001BA350[];
+extern int queued_record_count MACRO_ADDR;
+extern Rec queued_records[];
 
 /* appends one 13-argument record to the queue of 8 entries; returns 0, or -1 when full */
 int QueueRecord(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int s0, int s1, int s2, int s3, int s4) {
@@ -1324,7 +1324,7 @@ int QueueRecord(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, 
     return 0;
 }
 typedef struct { short uid; short bolts; } BoltSource_286068;
-extern BoltSource_286068 D_0014D690[][64];
+extern BoltSource_286068 bolt_source_stats[][64];
 
 /* the bolt tally slot of moby uid in level lvl: scanning down from slot 63, the first slot that
    holds uid (stored as uid + 1) or is free, which it claims; -1 when there is none or uid < 0 */
@@ -1343,18 +1343,18 @@ int find_or_assign_bolt_source_slot(int lvl, int uid) {
     }
     return k;
 }
-extern void func_L00_001FF040(int, void *, unsigned short);
+extern void copy_memory_by_alignment(int, void *, unsigned short);
 
 /* level data, not declared anywhere else yet */
 typedef struct { unsigned char h[0x404]; unsigned char f[0x7FF]; } B_00284e50;
-extern B_00284e50 D_L00_001BA9B0;
-extern B_00284e50 D_L00_001BB610;
-extern int D_L00_001BA860[];
-extern char D_0013F450[];
-extern char D_0013E650[];
-extern unsigned char D_0014C150[][16] NOT_SDA;
-extern int D_0014C290[][64] NOT_SDA;
-extern unsigned char D_L00_001BB5C0[0xC58];
+extern B_00284e50 current_moby_states;
+extern B_00284e50 checkpoint_moby_states;
+extern int session_moby_killed[];
+extern char g_hero[];
+extern char voice_pool[];
+extern unsigned char saved_mission_state[][16] NOT_SDA;
+extern int level_moby_killed[][64] NOT_SDA;
+extern unsigned char checkpoint_level_state[0xC58];
 
 /* core data, big blobs addressed with lui/addiu, never through $gp */
 extern unsigned char D_0014171B NOT_SDA;
@@ -1407,16 +1407,16 @@ void jet_reset_camera(void *a0, void *a1)
         }
     }
 }
-extern char D_L00_001BA960[] NOT_SDA;
-extern unsigned char *D_L00_00160098 MACRO_ADDR;
-extern unsigned char *D_L00_0016009C MACRO_ADDR;
-extern void func_001F99B0(void *, int, int);
-extern void func_001F9978(void);
-extern void func_L00_002110C0(int, int, char *);
-extern void func_L00_00251E30(void *);
-extern void func_001FA1F8(void *, void *);
-extern void func_L00_001ED600(void);
-extern void func_00216270(void);
+extern char current_level_state[] NOT_SDA;
+extern unsigned char *moby_array_start MACRO_ADDR;
+extern unsigned char *level_mobys_end MACRO_ADDR;
+extern void FastMemSet(void *, int, int);
+extern void raise_kernel_trap(void);
+extern void enter_hero_vehicle_mode(int, int, char *);
+extern void moby_build_matrix(void *);
+extern void euler_rotation_basis(void *, void *);
+extern void init_camera_system(void);
+extern void register_audio_stream_callback(void);
 
 /* loads the saved pause-menu state block into the game globals */
 void restore_or_clear_level_state(void) {
@@ -1472,8 +1472,8 @@ done:
     init_camera_system();
     register_audio_stream_callback();
 }
-extern unsigned char *D_L00_00160098 MACRO_ADDR;
-extern unsigned char *D_L00_0016009C MACRO_ADDR;
+extern unsigned char *moby_array_start MACRO_ADDR;
+extern unsigned char *level_mobys_end MACRO_ADDR;
 /* Finds the 0x100-byte record whose short at +0xB2 equals id, or 0 if none. */
 int find_moby_by_id(int a, int id) {
     unsigned char *p;
@@ -1485,7 +1485,7 @@ int find_moby_by_id(int a, int id) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_002864CC);
 typedef struct { int off; int pad; unsigned short len; short kind; short a; short b; } Ent;
-extern int func_L00_00286498(int, int);
+extern int find_moby_by_id(int, int);
 
 /* Applies a patch table to the matching records. */
 void restore_moby_state_entries(int *h) {

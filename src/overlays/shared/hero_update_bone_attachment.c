@@ -8,33 +8,33 @@
 #include "moby.h"
 
 extern unsigned char D_0013E633[];
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
-extern unsigned char D_0013D5DD[];
-extern int D_L15_0015F6B0 MACRO_ADDR;
+extern unsigned char gCheats[] MACRO_ADDR;
+extern unsigned char gHaveMorphORay[];
+extern int quartu_frame_count MACRO_ADDR;
 extern short D_0015EF18;
 extern float D_L15_0017C0EC, D_L15_0017C24C;
-extern void func_L00_00232EF0(void);
-extern void func_L00_00211D28(void);
-extern void func_L15_00204AC0(void);
-extern void func_L15_0021D7A8(void);
-extern void func_L00_00217698(void);
-extern void func_L00_00205B00(void);
-extern void func_L00_00209088(void);
-extern void func_L00_00208260(void);
-extern void func_L00_00208070(void);
-extern void func_L00_00248EF8(void *);
-extern void func_L00_00205FF0(void);
-extern void func_L00_00206808(void);
-extern void func_L00_00250800(void *, int, void *);
-extern void func_L00_00208318(void);
-extern int func_001F9850(int);
-extern float func_001FA888(int);
-extern float func_001F9FA8(float);
-extern int func_001FA898(float);
-extern unsigned int func_001FA8A8(float, unsigned int, unsigned int);
-extern void func_L00_00217570(int, int);
-extern void func_L00_002091D8(void);
-extern void func_L00_0025805C(void *);
+extern void advance_hero_animation(void);
+extern void hero_update(void);
+extern void Hero_UpdateAimFlags(void);
+extern void HeroL15_UpdateStateTransitions(void);
+extern void update_hero_delayed_voice_requests(void);
+extern void update_hero_easing_records(void);
+extern void update_hero_vehicle_moby(void);
+extern void update_hero_scalar_pulse(void);
+extern void apply_hero_and_item_scale_sequence(void);
+extern void reveal_map_around_position(void *);
+extern void update_hero_glow_and_extra_manipulators(void);
+extern void update_hero_bone_attachment(void);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern void enqueue_hero_glow_draw_callback_once(void);
+extern int scale_ticks(int);
+extern float IntToFloat(int);
+extern float FastSin(float);
+extern int truncate_float_to_s32(float);
+extern unsigned int FastTweenColor(float, unsigned int, unsigned int);
+extern void allocate_hero_voice_for_entry(int, int);
+extern void update_hero_moby_probed_height_bounds(void);
+extern void apply_env_zone_lighting(void *);
 
 /* Per-frame hero update: animation, state, voices, vehicle, scale, glow pulse and attachments. */
 void HeroL15_FrameUpdate(void) {
@@ -147,7 +147,7 @@ void HeroL15_FrameUpdate(void) {
 }
 extern unsigned char D_0013E633[];
 extern unsigned char D_0013E15A[];
-extern void func_L00_00207948(int, int);
+extern void update_item_tint_from_hero(int, int);
 
 /* Show the indexed help prompt when its flag and message are active. */
 void update_enabled_item_tint_from_hero(void) {
@@ -160,12 +160,12 @@ void update_enabled_item_tint_from_hero(void) {
         }
     }
 }
-extern void func_L00_00263B78(float, float, char *, float *, float *);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001FA218(float *, float *);
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern float D_0015EE6C MACRO_ADDR;
+extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void euler_to_matrix(float *, float *);
+extern void transform_vector(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern float g_frame_time MACRO_ADDR;
 extern float D_L15_0017AD40;
 extern void clear_u64_value(void *);
 typedef int u128 __attribute__((mode(TI)));
@@ -193,13 +193,13 @@ void update_hero_bobbing_and_target_position(void) {
         }
     }
 }
-extern int D_L15_0015F6A8 MACRO_ADDR;
-extern void func_001FFDA0(int arg0, int arg1);
-extern void func_L00_00205B50(void);
-extern void func_0020D678(void *);
-extern void func_L00_00207220(void);
-extern void func_L00_00232EA8(void);
-extern void func_L15_00217348(int, int);
+extern int quartu_game_mode MACRO_ADDR;
+extern void Hud_SetBarValueById(int arg0, int arg1);
+extern void reset_hero_easing_records(void);
+extern void DeleteMoby(void *);
+extern void release_and_clear_hero_voice_slots(void);
+extern void clear_hero_queued_animation(void);
+extern void HeroQuartu_TrySetMoveState(int, int);
 
 /* Reset the help prompt state and show the default message unless the level is in a special phase. */
 void restore_saved_hero_moby_and_clear_vehicle_mode(void) {
@@ -275,14 +275,14 @@ typedef struct {
     u8 pad2098[0xC];
     u8 b20A4;
 } P_209450;
-extern P_209450 D_0013F450;
+extern P_209450 g_hero;
 extern f32 D_0013F670[];
-extern f32 D_0015EE60 MACRO_ADDR;
-extern f32 D_0015EE64 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
-f32 func_001F9D48(void *, void *);
-f32 func_00214D28(f32, f32, f32 *);
-void func_L00_0025C918(f32 *, f32 *, f32, f32, f32, f32);
+extern f32 frame_scale MACRO_ADDR;
+extern f32 g_frame_scale_sq MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
+f32 vec_distance_xy(void *, void *);
+f32 ApproachValue(f32, f32, f32 *);
+void Spring(f32 *, f32 *, f32, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_001ff938.c, FUN_L15_00209450. */
 void update_hero_smoothing_parameters(void) {
@@ -323,18 +323,18 @@ void update_hero_smoothing_parameters(void) {
         Spring(q + 5, q + 6, b->f230, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.0f);
     }
 }
-extern char D_0013F4D0[];
+extern char gHeroPos[];
 typedef struct { float x, y, z, w; } Vx __attribute__((aligned(16)));
-extern char D_L15_001744DC[];
-extern char D_L15_001744C0[];
-extern float func_L00_00234250(float *v);
-extern float func_001F9CE8(void *);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9C30(void *, void *, float);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern int func_L00_001F3958(void);
-extern float func_L00_001FF860(float, float);
+extern char quartu_coll_hit_type[];
+extern char quartu_coll_hit[];
+extern float gravity_length_xy(float *v);
+extern float vec_length_xy(void *);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void FastVecScale(void *, void *, float);
+extern int coll_line(void *, void *, int, int, int);
+extern int CollType(void);
+extern float fast_atan2(float, float);
 // Steers the hero's aim vectors toward the current target and snaps momentum to it when close enough.
 void adjust_hero_planar_velocity_from_probes(int arg) {
     float a[4] __attribute__((aligned(16)));
@@ -406,27 +406,27 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
     }
 }
 typedef int Q __attribute__((mode(TI)));
-extern u8 D_L15_001744E0[];
-extern s32 D_0015EE84 MACRO_ADDR;
-void func_001F9BC0(void *);
-void func_L00_00212D70(void *, void *, s32, f32, f32);
-s32 func_L00_001EFFF0(void *, void *, s32, s32, s32);
-s32 func_L00_001F3988(void);
-s32 func_L00_001F3958(void);
-f32 func_00214440(void *, void *);
-s32 func_L00_0025F410(s32);
-u8 *func_L00_0025D390(s32);
-f32 func_001F9D10(void *, void *);
+extern u8 quartu_coll_hit_point[];
+extern s32 g_current_level_index MACRO_ADDR;
+void clear_u64_value(void *);
+void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
+s32 coll_line(void *, void *, s32, s32, s32);
+s32 coll_sound_class(void);
+s32 CollType(void);
+f32 resolve_camera_surface_height(void *, void *);
+s32 is_moby_in_class_range_500_to_540(s32);
+u8 *GetFlaggedPvarWord(s32);
+f32 FastVecDist(void *, void *);
 void func_001252C0(void *, void *);
-f32 func_L00_002345B0(void *);
-f32 func_L00_001FF860(f32, f32);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001F9C78(void *, void *);
-void func_001F9C30(void *, void *, f32);
-void func_L00_001FF4B0(void *, void *, f32);
-void func_L00_002167C8(void *, void *);
-void func_L00_00233E48(void *, f32, f32, f32);
-f32 func_001F9B88(f32);
+f32 compute_gravity_relative_vector_inclination(void *);
+f32 fast_atan2(f32, f32);
+void FastVecSub(void *, void *, void *);
+f32 FastVecDot(void *, void *);
+void FastVecScale(void *, void *, f32);
+void vec_scale_to_length(void *, void *, f32);
+void compute_rotated_vector_angles(void *, void *);
+void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
+f32 FastAbsF(f32);
 typedef struct {
     u8 pad88[0x88];
     f32 xF88;
@@ -690,27 +690,27 @@ typedef struct {
     s32 w0;
     u8 pad4[0x70 - 4];
 } Entry70_215e58;
-extern struct PadState D_0013CA40;
+extern struct PadState g_controller_state;
 extern Entry70_215e58 D_L15_00179F70[];
 extern short D_L15_0015F6A8_16568 __asm__("D_L15_0015F6A8");
-extern u8 D_0013D5EA NOT_SDA;
-extern void func_L00_00216D40(void);
-extern s32 func_001F9908(s32 *);
-extern s16 func_001F9938(s16 *);
-extern void func_L15_002092E0(void);
-extern s32 func_001F9850(s32);
-extern s32 func_L00_00267BA8(s32, s32, s32);
-extern struct Moby *func_0020D348(s32);
-extern void func_L00_00251E30(struct Moby *);
-extern void func_L00_002110C0(s32, s32, struct Moby *);
-extern f32 func_L00_002342F8(void *);
-extern void func_001F9BC0(void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9C30(void *, void *, f32);
-extern f32 func_001F9CB8(void *);
-extern void func_L00_002222F0(void);
-extern void func_L00_00233EE0(void *, f32, f32, f32);
-extern void func_L00_00211908(void);
+extern u8 gHaveBoltGrabber NOT_SDA;
+extern void update_hero_tilt(void);
+extern s32 fast_dec_timer(s32 *);
+extern s16 FastDecTimer(s16 *);
+extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
+extern s32 scale_ticks(s32);
+extern s32 pad_pressed_within(s32, s32, s32);
+extern struct Moby *CreateMoby(s32);
+extern void moby_build_matrix(struct Moby *);
+extern void enter_hero_vehicle_mode(s32, s32, struct Moby *);
+extern f32 gravity_z(void *);
+extern void clear_u64_value(void *);
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecScale(void *, void *, f32);
+extern f32 FastVecLength(void *);
+extern void update_hero_planar_distance_spring_motion(void);
+extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
+extern void Hero_OnKilled(void);
 
 /* Per-frame hero upkeep: tick the hero timers, spawn the respawn marker, track sinking, and set the camera follow target. Clone of FUN_L00_002215c8 without the case-1 camera tuning.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/001ff938.c, FUN_L15_00215e58. */
@@ -827,7 +827,7 @@ skip:
         D_0013F450_16568.reach_height = 3.0f;
     } else {
         transform_hero_local_offset_to_world(&D_0013F450_16568.motion.body_center, 0.0f, 0.0f, 0.7f);
-        if (D_0013D5EA) {
+        if (gHaveBoltGrabber) {
             D_0013F450_16568.reach_distance = 12.0f;
             D_0013F450_16568.reach_height = 4.5f;
         } else {

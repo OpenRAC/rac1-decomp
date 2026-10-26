@@ -12,9 +12,9 @@ typedef struct {
     int v;
     char pad2[0x24];
 } Rec;
-extern Rec D_L06_0017A340[];
+extern Rec blarg_item_defs[];
 extern char D_0013F450_1D6B8[] __asm__("D_0013F450");
-extern int func_L00_0020DB30(int);
+extern int hero_slot_item_id(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0021d0a0.c, FUN_L06_0021d0a0. */
 int get_hero_help_value(int a) {
@@ -48,48 +48,48 @@ int get_hero_help_value(int a) {
         return blarg_item_defs[i].v;
     }
 }
-extern void func_L00_00232EF0(void);
-extern void func_L00_00211D28(void);
-extern void func_L06_00223630(void);
-extern void func_L00_0020C568(void);
-extern void func_L00_002162B8(void);
-extern void func_L06_0023BBE8(void);
-extern void func_L00_00217698(void);
-extern void func_L00_00205B00(void);
-extern void func_L00_00209088(void);
-extern void func_L00_00208260(void);
-extern void func_L00_00208070(void);
-extern void func_L00_00205FF0(void);
-extern struct Moby *func_0020D348(s32);
-extern void func_L00_00251E30(struct Moby *);
-extern void func_L00_00250800(void *, int, void *);
-extern void func_L00_00208318(void);
-extern void func_0020DAF8(void *, int, void *);
-extern void func_001FA480(void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern float func_00214D28(float *, float, float);
-extern float func_001FA748(float, float);
-extern s16 func_001F9938(s16 *);
-extern float func_001F9FA8(float);
-extern int func_001FA8A8(int, int, float);
-extern void func_001F9BC0(void *);
-extern void func_001FA218(void *, void *);
-extern s32 func_001F9850(s32);
-extern void func_00213DE0(void *, int, int, int);
-extern int func_0022ED80(void *, int, void *);
-extern void func_L00_00248EF8(void *);
-extern float func_001FA888(int);
-extern int func_001FA898(float);
-extern void func_L00_00217570(int, int);
-extern void func_L00_002091D8(void);
-extern void func_L00_0025805C(void *);
+extern void advance_hero_animation(void);
+extern void hero_update(void);
+extern void apply_hero_ground_material_response(void);
+extern void check_ledge_grab(void);
+extern void update_hero_motion_response_parameters(void);
+extern void HeroL06_UpdateStateTransitions(void);
+extern void update_hero_delayed_voice_requests(void);
+extern void update_hero_easing_records(void);
+extern void update_hero_vehicle_moby(void);
+extern void update_hero_scalar_pulse(void);
+extern void apply_hero_and_item_scale_sequence(void);
+extern void update_hero_glow_and_extra_manipulators(void);
+extern struct Moby *CreateMoby(s32);
+extern void moby_build_matrix(struct Moby *);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern void enqueue_hero_glow_draw_callback_once(void);
+extern void MobyTransformScaledVertex(void *, int, void *);
+extern void matrix_copy_rows(void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern float ApproachValue(float *, float, float);
+extern float FastAddRots(float, float);
+extern s16 FastDecTimer(s16 *);
+extern float FastSin(float);
+extern int FastTweenColor(int, int, float);
+extern void clear_u64_value(void *);
+extern void euler_to_matrix(void *, void *);
+extern s32 scale_ticks(s32);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern int Moby_PlaySound(void *, int, void *);
+extern void reveal_map_around_position(void *);
+extern float IntToFloat(int);
+extern int truncate_float_to_s32(float);
+extern void allocate_hero_voice_for_entry(int, int);
+extern void update_hero_moby_probed_height_bounds(void);
+extern void apply_env_zone_lighting(void *);
 extern unsigned char D_0013E633[];
-extern unsigned char D_0013D5DD[];
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
-extern float D_0015EEF0[] MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern f32 D_0015EE60 MACRO_ADDR;
-extern int D_L06_0015F6B0 MACRO_ADDR;
+extern unsigned char gHaveMorphORay[];
+extern unsigned char gCheats[] MACRO_ADDR;
+extern float sound_volume[] MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern f32 frame_scale MACRO_ADDR;
+extern int blarg_frame_count MACRO_ADDR;
 extern float D_L06_0017C0DC;
 extern float D_L06_0017C44C;
 
@@ -334,13 +334,13 @@ skip:
     update_hero_moby_probed_height_bounds();
     apply_env_zone_lighting(((GS_E7B8 *)(D_0013E633 + 0xE1D))->p2080);
 }
-extern unsigned char D_0013F450[];
-extern s32 D_L06_0015F6A8 MACRO_ADDR;
-extern void func_0020D678(void *);
-extern void func_L00_00205B50(void);
-extern void func_L00_00207220(void);
-extern void func_L00_00232EA8(void);
-extern void func_L06_00235E08(int, int);
+extern unsigned char g_hero[];
+extern s32 level_game_mode_q MACRO_ADDR;
+extern void DeleteMoby(void *);
+extern void reset_hero_easing_records(void);
+extern void release_and_clear_hero_voice_slots(void);
+extern void clear_hero_queued_animation(void);
+extern void HeroL06_TrySetMoveState(int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0021d0a0.c, FUN_L06_00227cf8. */
 void restore_hero_from_vehicle_mode(void) {
@@ -386,18 +386,18 @@ void restore_hero_from_vehicle_mode(void) {
     }
 }
 extern unsigned char D_0013E633[];
-extern float D_0015EE6C MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
 extern int D_L06_001746DC;
-extern char D_L06_001746C0[];
-extern float func_L00_00234250(float *v);
-extern float func_001F9CE8(void *);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern int func_L00_001F3958(void);
-extern float func_L00_001FF860(float, float);
+extern char blarg_coll_hit[];
+extern float gravity_length_xy(float *v);
+extern float vec_length_xy(void *);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern int coll_line(void *, void *, int, int, int);
+extern int CollType(void);
+extern float fast_atan2(float, float);
 
 typedef struct { char pad[0x98]; float ang; } G98;
 
@@ -507,18 +507,18 @@ typedef struct {
     s16 h22DA;
 } G_22a1d0;
 extern G_22a1d0 D_0013F450_2A868 __asm__("D_0013F450");
-extern f32 D_0015EE60 MACRO_ADDR;
+extern f32 frame_scale MACRO_ADDR;
 extern u128_22a1d0 D_L06_001746F0[];
-extern void func_001F9BC0(void *);
-extern void func_L00_00235040(void);
-extern void func_L00_00234090(void *, void *, f32);
-extern void func_L00_00233D50(void *, void *, f32);
-extern void func_001F9BF0(void *, void *, void *);
-extern f32 func_001F9CB8(void *);
-extern s32 func_L00_001F10E0(void *, s32, s32, f32);
-extern s32 func_L00_001F1D20(void *, s32, f32, s32, f32);
-extern s32 func_L00_001F34F0(void *, f32);
-extern void func_L00_001FF4B0(void *, void *, f32);
+extern void clear_u64_value(void *);
+extern void Hero_ConstrainToPath(void);
+extern void HeroOffsetAlongViewZ(void *, void *, f32);
+extern void HeroMoveDownAlongNormal(void *, void *, f32);
+extern void FastVecSub(void *, void *, void *);
+extern f32 FastVecLength(void *);
+extern s32 coll_sphere(void *, s32, s32, f32);
+extern s32 coll_capsule(void *, s32, f32, s32, f32);
+extern s32 coll_sphere_hero_groups(void *, f32);
+extern void vec_scale_to_length(void *, void *, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0021d0a0.c, FUN_L06_0022a1d0. */
 s32 HeroL06_ResolveCollisionStep(s32 mode) {
@@ -611,25 +611,25 @@ typedef struct {
     s32 w0;
     u8 pad4[0x70 - 4];
 } Entry70_2348d0;
-extern struct PadState D_0013CA40;
+extern struct PadState g_controller_state;
 extern Entry70_2348d0 D_L06_0017A170[];
 extern short D_L06_0015F6A8_35038 __asm__("D_L06_0015F6A8");
-extern u8 D_0013D5EA NOT_SDA;
-extern f32 D_0015EE6C MACRO_ADDR;
-extern void func_L00_00216D40(void);
-extern s32 func_001F9908(s32 *);
-extern s16 func_001F9938(s16 *);
-extern void func_L06_00228390(void);
-extern s32 func_001F9850(s32);
-extern s32 func_L00_00267BA8(s32, s32, s32);
-extern struct Moby *func_0020D348(s32);
-extern void func_L00_00251E30(struct Moby *);
-extern void func_L01_00231960(s32, s32, struct Moby *);
-extern f32 func_L00_002342F8(void *);
-extern void func_001F9C30(void *, void *, f32);
-extern void func_L00_002222F0(void);
-extern void func_L00_00233EE0(void *, f32, f32, f32);
-extern void func_L00_00211908(void);
+extern u8 gHaveBoltGrabber NOT_SDA;
+extern f32 g_frame_time MACRO_ADDR;
+extern void update_hero_tilt(void);
+extern s32 fast_dec_timer(s32 *);
+extern s16 FastDecTimer(s16 *);
+extern void restore_hero_from_vehicle_mode(void);
+extern s32 scale_ticks(s32);
+extern s32 pad_pressed_within(s32, s32, s32);
+extern struct Moby *CreateMoby(s32);
+extern void moby_build_matrix(struct Moby *);
+extern void enter_hero_vehicle_mode_and_set_moby(s32, s32, struct Moby *);
+extern f32 gravity_z(void *);
+extern void FastVecScale(void *, void *, f32);
+extern void update_hero_planar_distance_spring_motion(void);
+extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
+extern void Hero_OnKilled(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0021d0a0.c, FUN_L06_002348d0. */
 void update_hero_timers_and_spatial_state(void) {
@@ -742,7 +742,7 @@ skip:
         D_0013F450_35038.reach_height = 1.25f;
     } else {
         transform_hero_local_offset_to_world(&D_0013F450_35038.motion.body_center, 0.0f, 0.0f, 0.7f);
-        if (D_0013D5EA) {
+        if (gHaveBoltGrabber) {
             D_0013F450_35038.reach_distance = 12.0f;
             D_0013F450_35038.reach_height = 4.5f;
         } else {
@@ -786,11 +786,11 @@ typedef struct {
 extern G_32b90 D_0013F450_431A0 __asm__("D_0013F450");
 extern u8 D_L06_00174700[];
 extern f32 D_L06_001746E0;
-extern void func_001F9C30(void *, void *, f32);
-extern void func_L00_0025E290(Vec4 *, void *);
-extern s32 func_L00_001EFFF0(void *, void *, s32, s32, s32);
-extern f32 func_L00_002345B0(void *);
-extern s32 func_L00_0025A5D8(f32 *, f32 *, f32, f32, f32);
+extern void FastVecScale(void *, void *, f32);
+extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
+extern s32 coll_line(void *, void *, s32, s32, s32);
+extern f32 compute_gravity_relative_vector_inclination(void *);
+extern s32 solve_quadratic_equation(f32 *, f32 *, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00242950.c, FUN_L06_00242950. */
 f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {

@@ -10,32 +10,32 @@
 
 
 extern Hero D_0013F450_s __asm__("D_0013F450");
-extern float D_0015EE64 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
 extern float D_L00_0017BED0[];
-extern int func_001F9850(int);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern float func_001FA850(float, float);
-extern float func_001FA790(float, float);
-extern float func_001F9CE8(void *);
-extern float func_00214D28(float *, float, float);
-extern void func_L00_00213970(float, float);
-extern void func_L00_00212740(float, float);
-extern void func_L00_002124E8(int, float, float, float);
-extern void func_L00_00211F80(int, float);
+extern int scale_ticks(int);
+extern float FastCos(float);
+extern float FastSin(float);
+extern float FastDiffRots(float, float);
+extern float FastSubRots(float, float);
+extern float vec_length_xy(void *);
+extern float ApproachValue(float *, float, float);
+extern void build_scaled_hero_move_impulse(float, float);
+extern void speed_step(float, float);
+extern void turn_to(int, float, float, float);
+extern void stick_target(int, float);
 extern float func_L00_0025CCF0_214d60(void *, float, void *, int, float, float, float) __asm__("func_L00_0025CCF0");
-extern void func_L00_00209850(float, float, float);
-extern void func_L00_00234420(float *, float *, float);
-extern void func_L00_00233F88(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_L00_001FF500(void *, void *, float);
-extern void func_L00_00214520(float);
-extern int func_L00_00217570(int, int);
-extern int func_L00_0020DB30(int);
-extern int D_0015EE84 MACRO_ADDR;
+extern void rotate_hero_about_fixed_local_pivot(float, float, float);
+extern void set_gravity_relative_vector_length_xy(float *, float *, float);
+extern void add_hero_forward_offset(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void vec_set_length_xy(void *, void *, float);
+extern void steer_hero_planar_velocity(float);
+extern int allocate_hero_voice_for_entry(int, int);
+extern int hero_slot_item_id(int);
+extern int g_current_level_index MACRO_ADDR;
 
 /* Per-state horizontal velocity and turn updates for the hero's movement states: func_L12_00236270
  * (help_002284A8.c, adapted from Lombyte's project (GPL-3.0), FUN_L12_00235c08) instruction for instruction, plus the
@@ -173,9 +173,9 @@ void HeroMoveStateVelocity(void) {
         steer_hero_planar_velocity(arg);
     }
 }
-extern void func_L00_00211F80(int, float);
-extern char *func_L00_0020DF90(float, float, float, float);
-extern float func_L00_001FF860(float, float);
+extern void stick_target(int, float);
+extern char *find_best_hero_heading_target(float, float, float, float);
+extern float fast_atan2(float, float);
 extern char D_0013E633[];
 
 /* tracks the nearest target for the camera and stores the heading toward it */
@@ -202,10 +202,10 @@ void update_hero_target_heading(float a, float b, float c) {
 }
 typedef u32 u128_15738 __attribute__((mode(TI), aligned(16)));
 extern struct Hero D_0013F450_15738 __asm__("D_0013F450");
-extern f32 D_0015EE64 MACRO_ADDR;
+extern f32 g_frame_scale_sq MACRO_ADDR;
 extern struct { f32 f[0xB68 / 4]; } D_L00_0017A780_15738 __asm__("D_L00_0017A780");
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_L00_0020A858(f32, f32);
+extern void transform_vector(void *, void *, void *);
+extern void set_first_hero_easing_parameters(f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00214658.c, FUN_L00_00214fe8. */
 void update_hero_transformed_negative_z_angle_parameters(void) {
@@ -261,17 +261,17 @@ typedef u32 u128_15A90 __attribute__((mode(TI), aligned(16)));
 extern struct Hero D_0013F450_15A90 __asm__("D_0013F450");
 typedef struct { f32 f[0x300]; } T_215340;
 extern T_215340 D_L00_0017A780_15A90 __asm__("D_L00_0017A780");
-extern f32 D_0015EE6C MACRO_ADDR;
-extern void func_L00_0020A858(f32, f32);
+extern f32 g_frame_time MACRO_ADDR;
+extern void set_first_hero_easing_parameters(f32, f32);
 extern void func_L00_0020A858_15A90b(f32, f32) __asm__("func_L00_0020A858");
 extern void func_L00_0020A858_15A90c(f32, f32) __asm__("func_L00_0020A858");
 extern void func_L00_0020A858_15A90d(f32, f32) __asm__("func_L00_0020A858");
-extern f32 func_001F9B88(f32);
-extern f32 func_L00_001FF860(f32, f32);
-extern f32 func_001FA790(f32, f32);
-extern f32 func_001F9FA8(f32);
-extern f32 func_001F9F90(f32);
-extern f32 func_001FA748(f32, f32);
+extern f32 FastAbsF(f32);
+extern f32 fast_atan2(f32, f32);
+extern f32 FastSubRots(f32, f32);
+extern f32 FastSin(f32);
+extern f32 FastCos(f32);
+extern f32 FastAddRots(f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00215340.c, FUN_L00_00215340. */
 void adjust_hero_pose_targets_from_motion(void) {
@@ -383,9 +383,9 @@ void adjust_hero_pose_targets_from_motion(void) {
         (D_L00_0017A780_15A90.f[(0xB68) / 4]) = -x * 0.3f;
     }
 }
-extern float func_001F9B88(float);
-extern char D_L00_0017A780[];
-extern float D_0015EE6C MACRO_ADDR;
+extern float FastAbsF(float);
+extern char lean_state[];
+extern float g_frame_time MACRO_ADDR;
 #define PF(o) (*(float *)(g + (o)))
 #define PI(o) (*(int *)(g + (o)))
 #define XF(o) (*(float *)(x + (o)))
@@ -481,7 +481,7 @@ extern LeanState D_L00_0017A780_16648 __asm__("D_L00_0017A780");
 extern f32 D_L00_0017B48C[];
 extern short D_0015EF18;
 extern u8 D_0015EEB0_16648[] __asm__("D_0015EEB0") MACRO_ADDR;
-extern f32 func_001F9B88(f32);
+extern f32 FastAbsF(f32);
 
 /* In hero state 2, sets the lean values from motion.unk188 (clamped to +-1.4); needs the moby in item slot 3.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00214658.c, FUN_L00_00215ef8. */
@@ -522,10 +522,10 @@ void update_hero_lean_and_sway_parameters(void)
 typedef struct { float x, y, z, w; } Vx __attribute__((aligned(16)));
 typedef struct { int a[16]; } Mx __attribute__((aligned(16)));
 extern char D_0013E633[] NOT_SDA;
-extern void func_001FA218(void *, void *);
-extern void func_001FA4A0(void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern float func_L00_001FF860(float, float);
+extern void euler_to_matrix(void *, void *);
+extern void matrix_from_basis_rows(void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern float fast_atan2(float, float);
 
 /* Writes the elevation and -azimuth of the vector in, rotated into the hero moby's frame. */
 void compute_rotated_vector_angles(Vx *in, float *out) {
@@ -540,11 +540,11 @@ void compute_rotated_vector_angles(Vx *in, float *out) {
     out[0] = fast_atan2(vec_length(v0.x * v0.x + v0.z * v0.z), v0.y);
     out[1] = -fast_atan2(v0.z, v0.x);
 }
-extern float func_001F9C78(void *a, void *b);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_L00_001FFA40(void *, void *);
-extern float func_L00_0025CCF0(char *, char *, int, float, float, float, float);
-extern void func_002153E8(void *, void *);
+extern float FastVecDot(void *a, void *b);
+extern void FastVecCross(void *, void *, void *);
+extern void fast_euler_to_matrix(void *, void *);
+extern float SpringAngle(char *, char *, int, float, float, float, float);
+extern void matrix_to_euler(void *, void *);
 
 typedef struct { float f[4]; } __attribute__((aligned(16))) V_c;
 typedef struct { V_c r[4]; } M_c;
@@ -612,9 +612,9 @@ void compute_hero_reference_tilt_rotation(V_c *v, M_c *m, void *p, float a, floa
     else matrix_to_euler(m, D_0013E633 + 0xEAD);
 }
 typedef int U128 __attribute__((mode(TI)));
-extern float D_0015EE64 MACRO_ADDR;
-extern void func_001F9C30(void *, void *, float);
-extern int func_001F9850(int);
+extern float g_frame_scale_sq MACRO_ADDR;
+extern void FastVecScale(void *, void *, float);
+extern int scale_ticks(int);
 
 /* builds the three view vectors and applies the camera offset to the moby. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00214658.c, FUN_L00_002163f0. */
 void apply_hero_reference_tilt(void) {
@@ -653,10 +653,10 @@ void apply_hero_reference_tilt(void) {
     }
     }
 }
-extern float func_L00_0025CCF0(char *, char *, int, float, float, float, float);
-extern void func_L00_00216B40(void);
-extern float D_0015EE64 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
+extern float SpringAngle(char *, char *, int, float, float, float, float);
+extern void apply_hero_reference_tilt(void);
+extern float g_frame_scale_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
 
 /* Applies the two camera-offset adjustments when the game is in a free state. */
 void update_hero_tilt(void) {
@@ -687,10 +687,10 @@ void update_hero_tilt(void) {
         }
     }
 }
-extern float func_L00_00234250(float *v);
-extern void func_L00_002343A0(float *dst, float *src, float z);
-extern void func_L00_00234420(float *dst, float *src, float z);
-extern void func_001F9BC0(void *);
+extern float gravity_length_xy(float *v);
+extern void gravity_set_z(float *dst, float *src, float z);
+extern void set_gravity_relative_vector_length_xy(float *dst, float *src, float z);
+extern void clear_u64_value(void *);
 // Bleeds off the hero's momentum vector by amount a, clearing it when it is tiny.
 void reduce_and_apply_hero_planar_velocity_addend(float a) {
     float *v = (float *)(D_0013E633 + 0xF6D);
@@ -741,27 +741,27 @@ typedef struct {
 } G_167d0;
 typedef struct { char p0[0x270]; f32 f270; f32 f274; char p278[0x2E0 - 0x278]; f32 f2E0; } H;
 extern G_167d0 D_0013F450_16F58 __asm__("D_0013F450");
-extern char D_0013F530[];
+extern char hero_velocity[];
 extern char D_0013F580[];
-extern f32 D_0015EE6C MACRO_ADDR;
-extern f32 D_0015EE64 MACRO_ADDR;
-extern f32 D_0015EE70 MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
+extern f32 g_frame_scale_sq MACRO_ADDR;
+extern f32 g_frame_time_sq MACRO_ADDR;
 extern s32 D_0013CC14[];
-extern void func_L00_00211F80(s32, f32);
-extern void func_L00_002124E8(s32, f32, f32, f32);
-extern f32 func_001F9F90(f32);
-extern f32 func_001F9FA8(f32);
-extern void func_L00_00213970(f32, f32);
-extern f32 func_001F9CE8(void *);
-extern s32 func_001F9850(s32);
-extern f32 func_001F9C78(void *, void *);
-extern f32 func_001F9CB8(void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, f32);
-extern f32 func_L00_001FF860(f32, f32);
-extern void func_001F9C30(void *, void *, f32);
-extern void func_L00_002129D0(s32);
-extern f32 func_001F9B88(f32);
+extern void stick_target(s32, f32);
+extern void turn_to(s32, f32, f32, f32);
+extern f32 FastCos(f32);
+extern f32 FastSin(f32);
+extern void build_scaled_hero_move_impulse(f32, f32);
+extern f32 vec_length_xy(void *);
+extern s32 scale_ticks(s32);
+extern f32 FastVecDot(void *, void *);
+extern f32 FastVecLength(void *);
+extern void FastVecSub(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, f32);
+extern f32 fast_atan2(f32, f32);
+extern void FastVecScale(void *, void *, f32);
+extern void clip_hero_velocity_against_probed_surfaces(s32);
+extern f32 FastAbsF(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_002167d0. */
 void update_hero_planar_movement_velocity(void) {
@@ -883,7 +883,7 @@ void update_hero_planar_movement_velocity(void) {
         D_0013F450_16F58.f88 = D_0013F450_16F58.f2D8;
     }
 }
-extern int func_0022ED80(int, int, int);
+extern int Moby_PlaySound(int, int, int);
 
 /* passes a pointer chosen by a mode byte to func_0022ED80, copying a vector first in mode 3 */
 int allocate_hero_voice_for_entry(int a, int b) {
@@ -901,7 +901,7 @@ int allocate_hero_voice_for_entry(int a, int b) {
     return -1;
 }
 typedef struct { char pad[0x2218]; int a[8]; int b[8]; } G;
-extern G D_0013F450 NOT_SDA;
+extern G g_hero NOT_SDA;
 
 /* Per-slot sound start. */
 void release_voice_slot_cf(int idx, int a, int b) {
@@ -932,7 +932,7 @@ void Help_QueueAdd(int x, int y, int z) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_00217680);
 extern unsigned char D_001414F5[] NOT_SDA;
-extern int func_001F9938(void *);
+extern int FastDecTimer(void *);
 
 /* Ticks eight timer slots and, for each that has run out, clears a field and calls the release helper. */
 void update_hero_delayed_voice_requests(void) {
@@ -948,16 +948,16 @@ void update_hero_delayed_voice_requests(void) {
     }
 }
 extern int D_L00_00167114 NOT_SDA;
-extern void func_L00_00211F68(void);
-extern void func_L00_002638B8(char *o);
-extern void func_00217EC0(void);
-extern void func_L00_0020ED30(void);
-extern void func_L00_00205B50(void);
-extern void func_L00_00222B80(int, int);
-extern void func_L00_00232DF8(int bank, int seq);
-extern void func_L00_00212E70(void);
-extern void func_L00_001ED600(void);
-extern void func_L00_002510F0(int);
+extern void clear_hero_target_and_ground_speeds(void);
+extern void clear_moby_transform_history(char *o);
+extern void pad_resetState(void);
+extern void cancel_hero_item_animation(void);
+extern void reset_hero_easing_records(void);
+extern void HeroEnterMoveState(int, int);
+extern void HeroStartSequenceInBank(int bank, int seq);
+extern void update_hero_ground_contact_and_surface_slopes(void);
+extern void init_camera_system(void);
+extern void apply_nearest_environment_sample(int);
 
 /* resets the level state from two vectors: sets up camera matrices, clears flags, starts sound bank */
 void Hero_ResetToPosition(void *a, void *b, int c, int d) {
@@ -1017,17 +1017,17 @@ typedef struct { char pad[0x2218]; int a[8]; int b[8]; } G_178A0;
 typedef int q_217118 __attribute__((mode(TI)));
 extern unsigned char D_0013F530_178A0[] __asm__("D_0013F530");
 extern unsigned char D_0013F4D0_178A0[] __asm__("D_0013F4D0");
-extern unsigned char D_L00_00173F40[];
+extern unsigned char coll_hit_result[];
 float func_L00_00234250_178A0(void *) __asm__("func_L00_00234250");
 void func_001F9C30_178A0(void *, float, void *) __asm__("func_001F9C30");
 void func_L00_00234420_178A0(void *, void *, float) __asm__("func_L00_00234420");
-void func_L00_00233F88(void *, void *, float);
+void add_hero_forward_offset(void *, void *, float);
 void func_L00_002343A0_178A0(void *, void *, float) __asm__("func_L00_002343A0");
-void func_001F9BD8(void *, void *, void *);
-void func_L00_00234090(void *, void *, float);
-int func_L00_001EFFF0(void *, void *, int, void *, int);
-float func_L00_002345B0(void *);
-void func_L00_002144A0(float);
+void FastVecAdd(void *, void *, void *);
+void HeroOffsetAlongViewZ(void *, void *, float);
+int coll_line(void *, void *, int, void *, int);
+float compute_gravity_relative_vector_inclination(void *);
+void scale_hero_motion(float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_00217118. */
 void stop_hero_motion_without_forward_support(float a, float b)
@@ -1075,9 +1075,9 @@ void stop_hero_motion_without_forward_support(float a, float b)
     if (r != 0.0f)
         scale_hero_motion(0.0f);
 }
-extern void func_L00_00233F68(float *dst, float *src, float h);
-extern void func_L00_002A90C0(void *, int);
-extern int *D_L00_00178000[];
+extern void offset_hero_position_against_gravity(float *dst, float *src, float h);
+extern void emit_randomized_sparkle_pairs(void *, int);
+extern int *coll_sphere_moby_hits[];
 
 /* Initialise the pool once, then for each of the first n entries of type 5 or 9 halve and apply its position. */
 void emit_filtered_entry_sparkles(int a, int n) {
@@ -1100,15 +1100,15 @@ void emit_filtered_entry_sparkles(int a, int n) {
         }
     }
 }
-extern char D_0013F4D0[];
-extern int func_001F9850(int);
-extern float func_002140F8(float, float);
-extern int func_001FA898(float);
-extern float func_00214158(void);
-extern void func_00215C00(void *, float, float, float);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_L00_0026A7F8(void *, void *, int, int, int, int, int, int);
+extern char gHeroPos[];
+extern int scale_ticks(int);
+extern float random_float_between(float, float);
+extern int truncate_float_to_s32(float);
+extern float random_angle_radians(void);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_00217450. */
 void spawn_hero_radial_particle_burst(void) {
@@ -1157,17 +1157,17 @@ typedef struct {
     u8 pad78[6];
     s16 unk7E;
 } ThrowPvars_217658;
-extern f32 D_L00_00166D80[];
+extern f32 player_camera[];
 extern char D_00140C00[];
-extern int func_L00_00211A18(void *);
-extern void func_L00_00233EE0(void *, f32, f32, f32);
-extern float func_001FA748(float, float);
-extern void func_L00_00233F88(void *, void *, f32);
-extern void func_00215C00(void *, f32, f32, f32);
-extern void func_001FA460(void *, void *);
-extern void func_L00_00263578(void *, char *);
-extern void func_L00_002635A0(char *, int, int);
-extern void func_00213DE0(void *, s32, s32, s32);
+extern int is_wrench_moby(void *);
+extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
+extern float FastAddRots(float, float);
+extern void add_hero_forward_offset(void *, void *, f32);
+extern void BuildSphericalOffset(void *, f32, f32, f32);
+extern void copy_matrix_rotation(void *, void *);
+extern void initialize_moby_transform_history(void *, char *);
+extern void create_moby_transform_history_entry(char *, int, int);
+extern void MobyBlendAnimation(void *, s32, s32, s32);
 
 /* Launches the equipped gadget moby: aims it at its target (or along the camera), builds its orientation matrix and starts its animation/sound.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00214658.c, FUN_L00_00217658. */

@@ -3,12 +3,12 @@
 #include "callees.h"
 #include "include_asm.h"
 
-extern unsigned char *func_00218928(int);
-extern int func_L00_0025D038(float, float, float, float);
+extern unsigned char *create_part(int);
+extern int PackColorRGBA(float, float, float, float);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern float func_002140F8(float, float);
-extern int func_001F9850(int);
-extern unsigned char *D_L07_001B2464;
+extern float random_float_between(float, float);
+extern int scale_ticks(int);
+extern unsigned char *umbris_part_type65_textures;
 
 /* Spawn a particle moby at pos with a colour, lifetime and size. */
 void spawn_white_particle_with_payload(void *pos, void *pos2) {
@@ -31,13 +31,13 @@ void spawn_white_particle_with_payload(void *pos, void *pos2) {
         qcopy(f, pos2);
     }
 }
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern float func_001F9C78(void *a, void *b);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001F9D10(void *, void *);
-extern float func_001F9CB8(void *a);
-extern float func_001F9B88(float);
+extern void FastVecSub(void *dst, void *a, void *b);
+extern float FastVecDot(void *a, void *b);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastVecDist(void *, void *);
+extern float FastVecLength(void *a);
+extern float FastAbsF(float);
 
 typedef int u128 __attribute__((mode(TI)));
 

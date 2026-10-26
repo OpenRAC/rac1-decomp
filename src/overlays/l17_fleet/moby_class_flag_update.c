@@ -23,8 +23,8 @@ typedef struct {
     char padA8[0x58];
 } Level17Moby;
 
-extern Level17Moby *D_L17_00160058 MACRO_ADDR;
-extern Level17Moby *D_L17_00160060 MACRO_ADDR;
+extern Level17Moby *fleet_mobys MACRO_ADDR;
+extern Level17Moby *fleet_last_moby MACRO_ADDR;
 
 /* Apply three optional state changes to live mobys of one class. */
 void update_moby_class_flags_and_link(int class_id, int flag2, int flag1, int link_mode) {

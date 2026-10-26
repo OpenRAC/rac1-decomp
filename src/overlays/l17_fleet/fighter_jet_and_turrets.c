@@ -5,36 +5,36 @@
 #include "moby.h"
 
 typedef int v128 __attribute__((mode(TI)));
-extern float func_L04_00242868(int a, unsigned int b);
-extern float func_L04_002428C8(int a, unsigned int b);
-extern float func_001F9D10(void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_L00_001EFFF0(void *, void *, int, void *, void *);
-extern int func_00215570(void *, int);
-extern void func_001F9C08(void *, void *, void *, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern float func_0020D830(void *);
-extern float func_001FA748(float, float);
-extern float func_001F9F90(float);
-extern float func_001F9CB8(void *);
-extern int func_L00_00200290(char *, float);
-extern float func_001F9C78(void *, void *);
+extern float animation_start(int a, unsigned int b);
+extern float animation_end(int a, unsigned int b);
+extern float FastVecDist(void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern int coll_line(void *, void *, int, void *, void *);
+extern int is_point_inside_clip_volume(void *, int);
+extern void lerp_vector(void *, void *, void *, float);
+extern void FastVecSub(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern float MobyGetFrameValue(void *);
+extern float FastAddRots(float, float);
+extern float FastCos(float);
+extern float FastVecLength(void *);
+extern int FastBSphereCheck(char *, float);
+extern float FastVecDot(void *, void *);
 extern void func_L00_0025A8C0_alt(char *arg, int a, int b, float scale, void *src) __asm__("func_L00_0025A8C0");
-extern float func_002140F8(float, float);
-extern void func_001F9C30(void *, void *, float);
-extern void func_L00_001FF240(void *, void *, void *);
-extern unsigned char *func_L17_00270A28(char *parent, void *pos, float *vec);
-extern void func_001F49B0(void *, void *);
-extern void func_L17_002AA880(char *moby);
-extern char *D_L17_0016016C MACRO_ADDR;
-extern char *D_L17_00160058 MACRO_ADDR;
+extern float random_float_between(float, float);
+extern void FastVecScale(void *, void *, float);
+extern void add_vectors(void *, void *, void *);
+extern unsigned char *SpawnTrailParticle(char *parent, void *pos, float *vec);
+extern void AddDrawCallback(void *, void *);
+extern void draw_fleet_beam_quad(char *moby);
+extern char *fleet_camera_points MACRO_ADDR;
+extern char *fleet_mobys MACRO_ADDR;
 extern char (*D_L17_00160058_t)[256] __asm__("D_L17_00160058") MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
 extern unsigned char D_0013E633[];
-extern char D_L17_001747E0[];
-extern short D_L17_00161518;
+extern char fleet_coll_hit_point[];
+extern short fleet_beam_peer_inset;
 
 typedef struct FleetBeamVars {
     u8 pad_00[0x10];
@@ -213,11 +213,11 @@ void update_fleet_beam(char *m) {
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern void func_001F9CA0(void *, void *, void *);
-extern int func_001F4868(int);
-extern void func_L00_001FD1D8(void *, void *, int);
-extern char D_L17_00167740[];
-extern struct { float a, b; } D_L17_001E6620[4];
+extern void FastVecCross(void *, void *, void *);
+extern int GetEffectTex(int);
+extern void draw_world_quad(void *, void *, int);
+extern char fleet_camera_pos[];
+extern struct { float a, b; } fleet_beam_quad_uvs[4];
 
 typedef struct {
     char pad[0x40];
@@ -267,34 +267,34 @@ void draw_fleet_beam_quad(char *moby) {
     *(u128 *)(s.pad + 0x30) = *(u128 *)m0;
     draw_world_quad(&s, 0, 0);
 }
-extern void func_L17_002CD088(char *m);
-extern void func_L17_002CD1B0(char *m);
-extern void func_0020D678(void *);
-extern float func_001F9D48(void *, void *);
-extern void func_0020DB98(char *arg0, int arg1, void *arg2, char *arg3);
-extern float func_L00_001FF860(float, float);
-extern float func_L00_0025CE58(float *p, float *v, float a, float b, float c, float d);
-extern float func_001F9CE8(void *);
-extern void func_L00_00263950(char *, char *, int, float, float);
-extern float func_001FA850(float, float);
-extern int func_001F9850(int);
-extern char *func_L00_0026EBC0(char *pos, char *vel, int c, int d, float f);
+extern void process_dreks_fleet_turret_hits(char *m);
+extern void distribute_class_733_group_mobys_along_path(char *m);
+extern void DeleteMoby(void *);
+extern float vec_distance_xy(void *, void *);
+extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
+extern float fast_atan2(float, float);
+extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
+extern float vec_length_xy(void *);
+extern void EaseManipulatorOffsets(char *, char *, int, float, float);
+extern float FastDiffRots(float, float);
+extern int scale_ticks(int);
+extern char *PartType27Spawn(char *pos, char *vel, int c, int d, float f);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern int func_0022ED80(int, int, int);
-extern char *func_L17_002EAFC8(char *src, char *pos, float *v, float f);
-extern void func_L00_00260D30(void *, void *, float);
-extern int func_001F9908(void *);
-extern int func_002140B0(int);
-extern char *func_L17_002F6AF8(int list);
-extern void *func_L00_00265050(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10, float *v11, float *v12);
-extern void func_L00_00260108(void *, void *, int, float, float);
-extern int D_0015EE84 MACRO_ADDR;
+extern int Moby_PlaySound(int, int, int);
+extern char *spawn_class_558_moby_toward_target(char *src, char *pos, float *v, float f);
+extern void FindNearestTargetMoby(void *, void *, float);
+extern int fast_dec_timer(void *);
+extern int random_integer_below(int);
+extern char *try_activate_blarg_ship_from_list(int list);
+extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10, float *v11, float *v12);
+extern void SpawnExplosionFx(void *, void *, int, float, float);
+extern int g_current_level_index MACRO_ADDR;
 extern unsigned char D_0014171B[] NOT_SDA;
-extern float D_0015EE70 MACRO_ADDR;
-extern float D_0015EE64 MACRO_ADDR;
-extern int D_L17_0015F6B0 MACRO_ADDR;
-extern float D_L17_0015F660[] MACRO_ADDR;
-extern short D_L17_00161A00;
+extern float g_frame_time_sq MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern int fleet_frame_count MACRO_ADDR;
+extern float fleet_zero_vec[] MACRO_ADDR;
+extern short fleet_turret_aim_vertices;
 
 typedef struct {
     char pad0[0x20];
@@ -467,10 +467,10 @@ void dreks_fleet_turret_update(char *m) {
         break;
     }
 }
-extern char *func_L00_0025B478(void *, int, int);
-extern int func_L00_0025B4D0(void *, void *, void *, int, void *, void *, int, int);
-extern void func_L00_0025E4B0(void *m, short *p);
-extern void func_L00_0025E590(void *, void *);
+extern char *MobyGetHitMessage(void *, int, int);
+extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
+extern void RerollEffectCounter(void *m, short *p);
+extern void StepColorFade(void *, void *);
 
 /* Steps a moby's countdown from a helper's output and retires it when it runs out. */
 void process_dreks_fleet_turret_hits(char *m) {
@@ -510,8 +510,8 @@ void process_dreks_fleet_turret_hits(char *m) {
         StepColorFade(m, e);
     }
 }
-extern short *D_L17_001AC440[];
-extern char D_L17_001B10B0[];
+extern short *fleet_moby_groups[];
+extern char fleet_paths[];
 
 /* What a class 0x733 craft (moby 1843) keeps of its path: func_L17_002F5C18 follows it from these. */
 typedef struct {
@@ -570,25 +570,25 @@ void distribute_class_733_group_mobys_along_path(char *moby) {
     }
 }
 typedef int u128_2D8CC8 __attribute__((mode(TI)));
-extern int func_L00_0020DC00(void);
-extern void func_00214F78(void *);
-extern void func_001FA460(void *, void *);
-extern float func_001FA888(int);
-extern float func_001FA7D8(float);
-extern void func_00215C00(void *, float, float, float);
-extern void func_001F9EE8(void *, void *, void *);
+extern int Hero_IsInSpecialState(void);
+extern void normalize_vector_triplet(void *);
+extern void copy_matrix_rotation(void *, void *);
+extern float IntToFloat(int);
+extern float FastNormalizeAngle(float);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern void transform_vector(void *, void *, void *);
 extern int func_001160D8(void);
-extern float func_001F9878(float);
-extern unsigned char *func_L00_00273F80(float *pos, char *vel, int color, unsigned char life, unsigned char b, int mode, float scale);
-extern short D_L17_00161BF8;
-extern short D_L17_00161BFC;
-extern short D_L17_00161C00;
-extern short D_L17_00161C04;
-extern short D_L17_00161C08;
-extern short D_L17_00161C0C;
-extern short D_L17_00161C10;
-extern short D_L17_00161C14;
-extern void func_L17_002D91C8(char *);
+extern float multiply_global_factor(float);
+extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *pos, char *vel, int color, unsigned char life, unsigned char b, int mode, float scale);
+extern short fleet_ring_spin_rate_deg;
+extern short fleet_ring_angle_offset_deg;
+extern short fleet_ring_arc_deg;
+extern short fleet_ring_radius;
+extern short fleet_ring_spark_count;
+extern short fleet_ring_spark_scale;
+extern short fleet_ring_spark_life;
+extern short fleet_ring_spark_color;
+extern void draw_fleet_scrolling_radial_quads(char *);
 
 struct Blk {
     int a0;
@@ -717,17 +717,17 @@ typedef struct {
     long q80;
     long alpha;
 } RingPrim;
-extern float func_L00_00200210(float, float);
-extern void func_001FA218(float *, float *);
-extern struct { float x, y; } D_L17_001D4240[4];
-extern RingStep D_L17_00161C40;
-extern RingStep D_L17_00161C48;
-extern int D_L17_00161C18 SDATA(D_L17_00161C18);
-extern int D_L17_00161C1C SDATA(D_L17_00161C1C);
-extern int D_L17_00161C20 SDATA(D_L17_00161C20);
-extern int D_L17_00161C24 SDATA(D_L17_00161C24);
-extern int D_L17_00161C38 SDATA(D_L17_00161C38);
-extern float D_L17_00161C3C SDATA(D_L17_00161C3C);
+extern float fast_fmod(float, float);
+extern void euler_to_matrix(float *, float *);
+extern struct { float x, y; } fleet_ring_quad_uvs[4];
+extern RingStep fleet_ring_v_scroll_scale;
+extern RingStep fleet_ring_u_scroll_scale;
+extern int fleet_ring_alpha_a SDATA(D_L17_00161C18);
+extern int fleet_ring_alpha_b SDATA(D_L17_00161C1C);
+extern int fleet_ring_alpha_c SDATA(D_L17_00161C20);
+extern int fleet_ring_alpha_d SDATA(D_L17_00161C24);
+extern int fleet_ring_quad_color SDATA(D_L17_00161C38);
+extern float fleet_ring_scroll_rate SDATA(D_L17_00161C3C);
 
 typedef struct FleetMoby {
     u8 pad_00[0x10];
@@ -791,16 +791,16 @@ void draw_fleet_scrolling_radial_quads(char *moby) {
         }
     }
 }
-extern void func_001F9BC0(void *);
+extern void clear_u64_value(void *);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern float func_00214158(void);
-extern void func_L00_00263B78(float, float, char *, float *, float *);
+extern float random_angle_radians(void);
+extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
 extern int func_L00_001F2BE8_alt(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern float func_00214440(float *, void *);
-extern char *func_L00_0026FF20(char *vec, float *pos, float sc, float vy);
-extern short D_L17_00161DAC;
-extern short D_L17_00161DB0;
-extern char *D_L17_001747D8;
+extern float resolve_camera_surface_height(float *, void *);
+extern char *PartType34Spawn(char *vec, float *pos, float sc, float vy);
+extern short fleet_bobber_height;
+extern short fleet_bobber_rate_deg;
+extern char *fleet_coll_hit_moby;
 
 /* Updates moby 835: a timed effect that spawns a spray of particles and deletes itself. */
 void update_fleet_bobbing_moby(char *m) {
@@ -858,13 +858,13 @@ void update_fleet_bobbing_moby(char *m) {
         break;
     }
 }
-extern void func_0020D678(void *); /* DeleteMoby */
-extern int func_L00_0028EB98(void *, int);
-extern float func_001F9FA8(float);
-extern float func_001F9B88(float);
-extern void func_L00_0028EBF0(int);
-extern char *D_L17_00160058 MACRO_ADDR;
-extern int D_L17_0015F6A8 MACRO_ADDR;
+extern void DeleteMoby(void *); /* DeleteMoby */
+extern int Sound_IsPlaying(void *, int);
+extern float FastSin(float);
+extern float FastAbsF(float);
+extern void Sound_StopSlot(int);
+extern char *fleet_mobys MACRO_ADDR;
+extern int fleet_game_mode MACRO_ADDR;
 
 /* Moves a level-17 platform moby between its stops along its heading, with a looping sound. */
 void StopsPlatformUpdate(char *m) {
@@ -1012,11 +1012,11 @@ void StopsPlatformUpdate(char *m) {
         break;
     }
 }
-extern unsigned char *func_L17_00270C98(char *pos, int mode, int step);
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern void func_L00_0025A8E8(int, float, void *, int, float, float, int, int, int);
-extern char D_L17_001747C0[];
-extern int D_0015EFA4 MACRO_ADDR;
+extern unsigned char *create_drone_flight_trail_record(char *pos, int mode, int step);
+extern int coll_sphere(float, void *, int, void *);
+extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
+extern char fleet_coll_hit_result[];
+extern int gameplay_event_frame_count MACRO_ADDR;
 
 /* Updates moby 1368: a drone that drifts toward the hero, tags what it hits and sprays sparks until its timer runs out. */
 void update_drone_flight_and_sparks(char *moby) {
@@ -1137,7 +1137,7 @@ void update_drone_flight_and_sparks(char *moby) {
     }
     }
 }
-extern char *func_0020D348(int);
+extern char *CreateMoby(int);
 
 typedef struct {
     f32 bsphere[4];            /* 0x00 */
@@ -1189,8 +1189,8 @@ char *spawn_class_558_moby_toward_target(char *source_moby, char *spawn_position
     }
     return (char *)spawned_moby;
 }
-extern int func_001F4868(int);
-extern void func_L11_003121C0(float, float, float, float, float, int, int, long, int, int, int, int, int);
+extern int GetEffectTex(int);
+extern void append_rotated_textured_screen_quad(float, float, float, float, float, int, int, long, int, int, int, int, int);
 /* Draws effect texture 0x2E four times at x, y, each copy turned a further 90 degrees. */
 void draw_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x, float y, float s, float ang) {
     int h;
@@ -1205,9 +1205,9 @@ void draw_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsig
     ang = FastAddRots(ang, 1.5707964f);
     append_rotated_textured_screen_quad(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
 }
-extern float func_001FA790(float, float);
-extern void func_001F5800(int, int, int, int, int, int, int, int, long, long);
-extern unsigned char D_0015EEB4[4] MACRO_ADDR;
+extern float FastSubRots(float, float);
+extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
+extern unsigned char draw_map51[4] MACRO_ADDR;
 extern unsigned char D_0013E15A[];
 
 /* One radar icon: its texture (counted from the radar's own), its rectangle in that texture and its hot spot. */
@@ -1221,7 +1221,7 @@ typedef struct {
     short x;
     short y;
 } IconEC5D0;
-extern IconEC5D0 D_L17_001D9E08[];
+extern IconEC5D0 fleet_radar_icon_table[];
 
 /* Draws one moby's icon on the radar: its offset from the viewer turned into the radar's frame, faded near the rim. */
 void draw_fighter_jet_radar_contact_icon(char *rot, char *from, char *moby, int icon, long color, int tex) {
@@ -1264,17 +1264,17 @@ void draw_fighter_jet_radar_contact_icon(char *rot, char *from, char *moby, int 
         DrawTexturedQuad(x - t->x, y - t->y, t->w, t->h, t->u, t->v, t->w, t->h, color, GetEffectTex(tex + 0x28 + t->tex));
     }
 }
-extern void func_L11_003126D8(void *, void *, void *, int);
-extern void func_L17_002EC5D0(char *, char *, char *, int, long, int);
-extern void func_001F2418(float *, void *);
-extern float func_L00_0025F368(float);
-extern void func_L13_002B8FC0(void *, int, int, long, float, float, float, float);
-extern void func_001FA4A0(void *, void *);
-extern char *D_L17_00160064 MACRO_ADDR;
-extern float D_L17_00167960[];
-extern char D_L17_001D9D90[];
-extern char D_L17_00167950[];
-extern short D_L17_00162208;
+extern void project_world_point_to_screen_pixels(void *, void *, void *, int);
+extern void draw_fighter_jet_radar_contact_icon(char *, char *, char *, int, long, int);
+extern void project_to_screen(float *, void *);
+extern float normalize_angle(float);
+extern void emit_transformed_2d_vertex_packet(void *, int, int, long, float, float, float, float);
+extern void matrix_from_basis_rows(void *, void *);
+extern char *fleet_moby_list MACRO_ADDR;
+extern float fleet_camera_matrix_row1[];
+extern char fleet_target_reticle_shape[];
+extern char fleet_camera_matrix[];
+extern short fleet_pickup_arrow_shape;
 
 /* Walks the moby list: picks the on-screen target, marks targetable mobys and points an arrow at the nearest pickup. */
 int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *a3, float f0, float f1, float f2, char *cur, char *g) {
@@ -1477,9 +1477,9 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
     return (int)ret;
 }
 extern unsigned char D_0013A5E0[];
-extern char D_L17_00167750[];
-extern short D_L17_001621EC;
-extern int func_L17_002EC7D8(int, char *, char *, char *, float, float, float, char *, char *);
+extern char fleet_camera_rot[];
+extern short fleet_jet_lock_time;
+extern int select_fighter_jet_target_and_draw_contacts(int, char *, char *, char *, float, float, float, char *, char *);
 #define W(p, o) (*(int *)((char *)(p) + (o)))
 #define P(p, o) (*(char **)((char *)(p) + (o)))
 #define H(p, o) (*(short *)((char *)(p) + (o)))
@@ -1549,19 +1549,19 @@ skip:
         }
     }
 }
-extern void func_00234C98(int, long);
+extern void VU1_addGSregister(int, long);
 extern long func_001F4868_l(int) __asm__("func_001F4868");
-extern void func_L17_002ED258(int a, char *p);
+extern void update_fighter_jet_target_lock(int a, char *p);
 extern void func_L17_002EBF08_f(float, float, float, float, unsigned char, unsigned char, unsigned char, unsigned char) __asm__("func_L17_002EBF08");
-extern void func_L11_00311F98(float, float, float, void *, int, int, long);
-extern void func_001F5E60(float, float, float, float, float, int, int, int, int, int, int, int, float, float);
+extern void append_scaled_screen_triangle_strip(float, float, float, void *, int, int, long);
+extern void append_rotated_sprite_quad(float, float, float, float, float, int, int, int, int, int, int, int, float, float);
 extern void *func_001FE540_id(int) __asm__("func_001FE540");
 extern int func_001F6F40_c(int, int, long, void *, int) __asm__("func_001F6F40");
-extern char D_L17_001D9CB0[];
-extern int D_L17_001D9E38[];
-extern short D_L17_001621F0;
-extern short D_L17_001621F4;
-extern short D_L17_00162200;
+extern char fleet_hud_ammo_pip_shape[];
+extern int fleet_hud_health_clut_backup[];
+extern short fleet_jet_lock_anim_start;
+extern short fleet_jet_lock_anim_frames;
+extern short fleet_hud_health_clut;
 
 /* Draws the fleet HUD: target marker, ammo icons, gauge sprites and warnings, and refreshes the gauge colour table. */
 void DrawFleetHud(char *moby) {
@@ -1670,11 +1670,11 @@ void DrawFleetHud(char *moby) {
     }
     *(int *)(d + 0xF4) = v;
 }
-extern void func_L00_00250800(void *, int, void *);
-extern int func_L11_00309C18(void *, void *, void *, float, float);
-extern short D_L17_001620EC;
-extern short D_L17_001620F0;
-extern short D_L17_00162120;
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern int spawn_class_3f1_moby(void *, void *, void *, float, float);
+extern short fleet_jet_gun_aim_distance;
+extern short fleet_jet_gun_fire_delay;
+extern short fleet_frame_scale;
 
 /* Builds a rotated offset vector from the moby, flips a facing flag on a pad press, and updates the aim. */
 void update_fighter_jet_aim_and_fire_projectile(char *moby, char *obj, float p2, float p3) {
@@ -1697,9 +1697,9 @@ void update_fighter_jet_aim_and_fire_projectile(char *moby, char *obj, float p2,
     FastVecAdd(d, a, moby + 0x10);
     project_world_point_to_screen_pixels(d, obj + 0xE0, obj + 0xE4, 0);
 }
-extern int func_L13_002E7E90(void *, void *, int, void *, float, int);
-extern short D_L17_001620F4;
-extern short D_L17_001620F8;
+extern int spawn_ship_rocket(void *, void *, int, void *, float, int);
+extern short fleet_jet_rocket_speed;
+extern short fleet_jet_rocket_fire_delay;
 
 typedef struct HeroShipAmmo {
     u8 pad_0000[0x15F6];
@@ -1740,85 +1740,85 @@ void try_fire_fighter_jet_rocket(char *moby, char *ship_vars) {
         }
     }
 }
-void func_L17_002EFA20(char *moby, float *a, float *b);
-extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, float eps);
-extern float func_L00_0025CCF0(char *, char *, int, float, float, float, float);
-extern float func_L13_002BB2F8(int, int, float, float, float, float, float);
-extern void func_L00_002EBE88(void *);
-extern void func_L00_002EBEE0(void *);
-extern void func_001F3140(void);
-extern void func_L00_001FF610(void *, void *, void *);
-extern void func_L17_002ED498();
-extern float D_L17_0016D470;
-extern float D_L17_00162078 SDATA(D_L17_00162078);
-extern float D_L17_0016207C SDATA(D_L17_0016207C);
-extern int D_L17_00162080 SDATA(D_L17_00162080);
-extern float D_L17_00162084 SDATA(D_L17_00162084);
-extern float D_L17_00162088 SDATA(D_L17_00162088);
-extern float D_L17_0016208C SDATA(D_L17_0016208C);
-extern float D_L17_00162090 SDATA(D_L17_00162090);
-extern int D_L17_00162094 SDATA(D_L17_00162094);
-extern float D_L17_00162098 SDATA(D_L17_00162098);
-extern float D_L17_0016209C SDATA(D_L17_0016209C);
-extern float D_L17_001620A4 SDATA(D_L17_001620A4);
-extern float D_L17_001620A8 SDATA(D_L17_001620A8);
-extern float D_L17_001620AC SDATA(D_L17_001620AC);
-extern float D_L17_001620B0 SDATA(D_L17_001620B0);
-extern float D_L17_001620B4 SDATA(D_L17_001620B4);
-extern float D_L17_001620B8 SDATA(D_L17_001620B8);
-extern float D_L17_001620BC SDATA(D_L17_001620BC);
-extern float D_L17_001620C0 SDATA(D_L17_001620C0);
-extern float D_L17_001620C4 SDATA(D_L17_001620C4);
-extern float D_L17_001620C8 SDATA(D_L17_001620C8);
-extern float D_L17_001620CC SDATA(D_L17_001620CC);
-extern float D_L17_001620DC SDATA(D_L17_001620DC);
-extern float D_L17_001620E0 SDATA(D_L17_001620E0);
-extern float D_L17_0016210C SDATA(D_L17_0016210C);
-extern float D_L17_00162110 SDATA(D_L17_00162110);
-extern float D_L17_0016211C SDATA(D_L17_0016211C);
-extern float D_L17_0016212C SDATA(D_L17_0016212C);
-extern float D_L17_00162130 SDATA(D_L17_00162130);
-extern float D_L17_00162134 SDATA(D_L17_00162134);
-extern float D_L17_00162138 SDATA(D_L17_00162138);
-extern float D_L17_0016213C SDATA(D_L17_0016213C);
-extern float D_L17_00162140 SDATA(D_L17_00162140);
-extern float D_L17_00162144 SDATA(D_L17_00162144);
-extern float D_L17_00162148 SDATA(D_L17_00162148);
-extern float D_L17_0016214C SDATA(D_L17_0016214C);
-extern float D_L17_00162150 SDATA(D_L17_00162150);
-extern float D_L17_00162154 SDATA(D_L17_00162154);
-extern float D_L17_00162170 SDATA(D_L17_00162170);
-extern float D_L17_00162174 SDATA(D_L17_00162174);
-extern float D_L17_00162178 SDATA(D_L17_00162178);
-extern float D_L17_0016217C SDATA(D_L17_0016217C);
-extern float D_L17_00162180 SDATA(D_L17_00162180);
-extern float D_L17_00162184 SDATA(D_L17_00162184);
-extern float D_L17_00162188 SDATA(D_L17_00162188);
-extern float D_L17_0016218C SDATA(D_L17_0016218C);
-extern float D_L17_00162190 SDATA(D_L17_00162190);
-extern float D_L17_00162194 SDATA(D_L17_00162194);
-extern float D_L17_00162198 SDATA(D_L17_00162198);
-extern float D_L17_0016219C SDATA(D_L17_0016219C);
-extern float D_L17_001621A0 SDATA(D_L17_001621A0);
-extern float D_L17_001621A4 SDATA(D_L17_001621A4);
-extern float D_L17_001621A8 SDATA(D_L17_001621A8);
-extern float D_L17_001621AC SDATA(D_L17_001621AC);
-extern float D_L17_001621B0 SDATA(D_L17_001621B0);
-extern float D_L17_001621B4 SDATA(D_L17_001621B4);
-extern float D_L17_001621B8 SDATA(D_L17_001621B8);
-extern float D_L17_001621BC SDATA(D_L17_001621BC);
-extern float D_L17_001621C0 SDATA(D_L17_001621C0);
-extern float D_L17_001621C4 SDATA(D_L17_001621C4);
-extern float D_L17_001621C8 SDATA(D_L17_001621C8);
-extern float D_L17_001621CC SDATA(D_L17_001621CC);
-extern float D_L17_001621D0 SDATA(D_L17_001621D0);
-extern float D_L17_001621D4 SDATA(D_L17_001621D4);
-extern int D_L17_001621DC SDATA(D_L17_001621DC);
-extern float D_L17_001621E0 SDATA(D_L17_001621E0);
-extern float D_L17_001621E4 SDATA(D_L17_001621E4);
-extern float D_L17_001621E8 SDATA(D_L17_001621E8);
-extern short D_L17_001621FC;
-extern short D_L17_00162270;
+void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *b);
+extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
+extern float SpringAngle(char *, char *, int, float, float, float, float);
+extern float interpolate_value_with_repeated_squaring(int, int, float, float, float, float, float);
+extern void set_camera_position(void *);
+extern void set_camera_rotation(void *);
+extern void UpdateViewContext(void);
+extern void vec_reflect(void *, void *, void *);
+extern void DrawFleetHud();
+extern float fleet_view_tan_half_fov;
+extern float fleet_jet_launch_accel SDATA(D_L17_00162078);
+extern float fleet_jet_cruise_accel SDATA(D_L17_0016207C);
+extern int fleet_jet_launch_frames SDATA(D_L17_00162080);
+extern float fleet_jet_cruise_speed SDATA(D_L17_00162084);
+extern float fleet_jet_max_speed SDATA(D_L17_00162088);
+extern float fleet_jet_boost_accel SDATA(D_L17_0016208C);
+extern float fleet_jet_slowdown_blend SDATA(D_L17_00162090);
+extern int fleet_jet_steer_start_frame SDATA(D_L17_00162094);
+extern float fleet_jet_bounce_yaw_blend SDATA(D_L17_00162098);
+extern float fleet_jet_bounce_pitch_blend SDATA(D_L17_0016209C);
+extern float fleet_jet_pitch_rate SDATA(D_L17_001620A4);
+extern float fleet_jet_yaw_rate SDATA(D_L17_001620A8);
+extern float fleet_jet_sharp_pitch_rate SDATA(D_L17_001620AC);
+extern float fleet_jet_sharp_yaw_rate SDATA(D_L17_001620B0);
+extern float fleet_jet_chase_cam_x SDATA(D_L17_001620B4);
+extern float fleet_jet_chase_cam_z SDATA(D_L17_001620B8);
+extern float fleet_jet_near_cam_x SDATA(D_L17_001620BC);
+extern float fleet_jet_near_cam_z SDATA(D_L17_001620C0);
+extern float fleet_jet_cam_roll_per_yaw_steer SDATA(D_L17_001620C4);
+extern float fleet_jet_cam_roll_follow SDATA(D_L17_001620C8);
+extern float fleet_jet_cam_pitch_offset SDATA(D_L17_001620CC);
+extern float fleet_jet_bounce_speed_scale SDATA(D_L17_001620DC);
+extern float fleet_jet_wall_hit_damage SDATA(D_L17_001620E0);
+extern float fleet_jet_roll_per_yaw_steer SDATA(D_L17_0016210C);
+extern float fleet_jet_cam_y_per_yaw_steer SDATA(D_L17_00162110);
+extern float fighter_jet_scale SDATA(D_L17_0016211C);
+extern float fleet_jet_yaw_steer_stiffness SDATA(D_L17_0016212C);
+extern float fleet_jet_yaw_steer_damping SDATA(D_L17_00162130);
+extern float fleet_jet_yaw_steer_max_rate SDATA(D_L17_00162134);
+extern float fleet_jet_sharp_yaw_steer_max_rate SDATA(D_L17_00162138);
+extern float fleet_jet_pitch_steer_stiffness SDATA(D_L17_0016213C);
+extern float fleet_jet_pitch_steer_damping SDATA(D_L17_00162140);
+extern float fleet_jet_pitch_steer_max_rate SDATA(D_L17_00162144);
+extern float fleet_jet_sharp_pitch_steer_max_rate SDATA(D_L17_00162148);
+extern float fleet_jet_roll_stiffness SDATA(D_L17_0016214C);
+extern float fleet_jet_roll_damping SDATA(D_L17_00162150);
+extern float fleet_jet_roll_max_rate SDATA(D_L17_00162154);
+extern float fleet_jet_cam_roll_stiffness SDATA(D_L17_00162170);
+extern float fleet_jet_cam_roll_damping SDATA(D_L17_00162174);
+extern float fleet_jet_cam_roll_max_rate SDATA(D_L17_00162178);
+extern float fleet_jet_cam_pitch_stiffness SDATA(D_L17_0016217C);
+extern float fleet_jet_cam_pitch_damping SDATA(D_L17_00162180);
+extern float fleet_jet_cam_pitch_max_rate SDATA(D_L17_00162184);
+extern float fleet_jet_cam_yaw_stiffness SDATA(D_L17_00162188);
+extern float fleet_jet_cam_yaw_damping SDATA(D_L17_0016218C);
+extern float fleet_jet_cam_yaw_max_rate SDATA(D_L17_00162190);
+extern float fleet_jet_cam_x_stiffness SDATA(D_L17_00162194);
+extern float fleet_jet_cam_x_damping SDATA(D_L17_00162198);
+extern float fleet_jet_cam_x_max_rate SDATA(D_L17_0016219C);
+extern float fleet_jet_cam_y_stiffness SDATA(D_L17_001621A0);
+extern float fleet_jet_cam_y_damping SDATA(D_L17_001621A4);
+extern float fleet_jet_cam_y_max_rate SDATA(D_L17_001621A8);
+extern float fleet_jet_cam_z_stiffness SDATA(D_L17_001621AC);
+extern float fleet_jet_cam_z_damping SDATA(D_L17_001621B0);
+extern float fleet_jet_cam_z_max_rate SDATA(D_L17_001621B4);
+extern float fleet_jet_cam_x_per_pitch_steer SDATA(D_L17_001621B8);
+extern float fleet_jet_cam_z_per_pitch_steer SDATA(D_L17_001621BC);
+extern float fleet_jet_cam_x_per_speed SDATA(D_L17_001621C0);
+extern float fleet_jet_fov_at_cruise SDATA(D_L17_001621C4);
+extern float fleet_jet_fov_at_max_speed SDATA(D_L17_001621C8);
+extern float fleet_jet_fov_stiffness SDATA(D_L17_001621CC);
+extern float fleet_jet_fov_damping SDATA(D_L17_001621D0);
+extern float fleet_jet_fov_max_rate SDATA(D_L17_001621D4);
+extern int fleet_jet_wall_hit_cooldown SDATA(D_L17_001621DC);
+extern float fleet_jet_model_roll_per_yaw_steer SDATA(D_L17_001621E0);
+extern float fleet_jet_model_pitch_per_pitch_steer SDATA(D_L17_001621E4);
+extern float fleet_jet_model_yaw_per_yaw_steer SDATA(D_L17_001621E8);
+extern short fleet_jet_crash_time;
+extern short fleet_jet_default_heading_target;
 
 typedef float W4[4] __attribute__((aligned(16)));
 
@@ -2084,58 +2084,58 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
     update_fighter_jet_aim_and_fire_projectile((char *)m, (char *)o, FastAddRots(o->f28, -o->f6C / 7.0f),
                       -FastAddRots(o->f24, -(o->f70 / 7.0f) - 0.1f));
 }
-extern void func_L00_001FF548(void *, void *, float);
-extern int func_L17_0021ED38(int, int);
-extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float, int, int, int, int);
-extern void func_L13_00266060(int, int, int, int);
-extern void func_L17_00254B40(int, int, int, int);
-extern float func_L00_00251468(void *, void *);
-extern int func_00215F80(int, int);
-extern int func_L00_00265558(int);
-extern float func_00214D28(float *, float, float);
-extern void func_L00_0025B040(unsigned char *, float);
-extern void func_L00_002664B0(int, int);
-extern void func_L00_00217718(void *, void *, int, int);
-extern int func_00216028(int, int);
-extern void func_L00_002EBF50(void *, void *, int, int, int);
-extern void func_L00_00204130(void);
-extern void func_L00_002EC0C8(int);
-extern void func_001FFDA0(int, int);
-extern void func_0020EEE8(void *);
-extern int func_001F9938(void *);
-extern void func_L00_00204190(void);
-extern void func_L00_00211908(void);
-extern int func_001E9730();
-extern void func_L00_002512D8(int);
-extern void func_L00_00286128(void *, void *);
-extern void func_L11_00312780(void *, void *);
-extern char D_L17_00167600[];
-extern unsigned char D_0014C150[][16] NOT_SDA;
+extern void clamp_vec_length(void *, void *, float);
+extern int HeroL17_SetMoveState(int, int);
+extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float, int, int, int, int);
+extern void jet_group_state(int, int, int, int);
+extern void update_moby_class_flags_and_link(int, int, int, int);
+extern float jet_distance(void *, void *);
+extern int try_set_help_message(int, int);
+extern int remove_help_message_for_selector(int);
+extern float ApproachValue(float *, float, float);
+extern void jet_animate(unsigned char *, float);
+extern void MusicRequestTrack(int, int);
+extern void Hero_ResetToPosition(void *, void *, int, int);
+extern int force_help_message(int, int);
+extern void CameraScript(void *, void *, int, int, int);
+extern void jet_camera_mode(void);
+extern void CameraScript2(int);
+extern void Hud_SetBarValueById(int, int);
+extern void moby_anim_sphere_lerp(void *);
+extern int FastDecTimer(void *);
+extern void clear_jet_camera_mode_latch(void);
+extern void Hero_OnKilled(void);
+extern int STUB_printf();
+extern void jet_clear_persistent(int);
+extern void jet_reset_camera(void *, void *);
+extern void emit_type_74_particles_from_moby_joints(void *, void *);
+extern char fleet_player_camera[];
+extern unsigned char saved_mission_state[][16] NOT_SDA;
 extern float D_L17_0016D470_a[] __asm__("D_L17_0016D470");
-extern char *D_L17_0015F520 MACRO_ADDR;
-extern char D_0013E650[];
-extern char D_0013F4D0[];
-extern float D_L17_0015F4FC MACRO_ADDR;
-extern int D_L17_0015F6E8 MACRO_ADDR;
-extern char D_L17_001E71A0[];
-extern char D_L17_001E71D8[];
+extern char *fleet_palette_data_base MACRO_ADDR;
+extern char voice_pool[];
+extern char gHeroPos[];
+extern float fleet_fade_level MACRO_ADDR;
+extern int fleet_play_mode MACRO_ADDR;
+extern char fleet_jet_err_no_jet_point[];
+extern char fleet_jet_err_no_exit_point[];
 /* Seven of the level's tuning floats are read below as the scalar variables they are in retail: a
  * typed read lets the scheduler and CSE treat them as retail's compile did (a store through a struct
  * pointer does not disturb them), which a cast read through `extern short` cannot (SDATA, common.h). */
-extern float D_L17_00162108 SDATA(D_L17_00162108);
+extern float fleet_jet_hit_deflect_per_damage SDATA(D_L17_00162108);
 extern short D_L17_00162098_s __asm__("D_L17_00162098");
 extern short D_L17_0016209C_s __asm__("D_L17_0016209C");
-extern float D_L17_00162104 SDATA(D_L17_00162104);
-extern short D_L17_00162204;
-extern short D_L17_00162060;
-extern short D_L17_001620D4;
-extern unsigned char D_L17_001620E8;
-extern unsigned char D_L17_001620E4;
-extern float D_L17_001620D8 SDATA(D_L17_001620D8);
-extern float D_L17_00162064 SDATA(D_L17_00162064);
-extern short D_L17_001621F8;
+extern float fleet_jet_max_health SDATA(D_L17_00162104);
+extern short fleet_hud_health_clut_saved;
+extern short fleet_jet_board_radius;
+extern short fleet_jet_idle_anim_speed;
+extern unsigned char fleet_jet_max_ammo;
+extern unsigned char fleet_jet_start_ammo;
+extern float fleet_jet_start_health SDATA(D_L17_001620D8);
+extern float fleet_jet_launch_speed SDATA(D_L17_00162064);
+extern short fleet_jet_exit_fade_delay;
 typedef struct { char pad[0xA]; unsigned short h; char pad2[4]; } E16;
-extern E16 D_L17_0016DB00[];
+extern E16 fleet_texture_table[];
 typedef struct { int w[256]; } Blk400;
 typedef struct { char pad0[0x160]; float f160; char pad164[4]; int i168; } Cam1379;
 typedef struct { char pad0[0x98]; int i98; } Hero1379;
@@ -2598,7 +2598,7 @@ void FighterJetUpdate(Moby1379 *moby) {
         }
     }
 }
-extern char *D_L17_0016016C MACRO_ADDR;
+extern char *fleet_camera_points MACRO_ADDR;
 extern char (*D_L17_0016016C_t)[128] __asm__("D_L17_0016016C") MACRO_ADDR;
 
 // Pushes two float values away from a moby's room volume edges, scaled by distance and angle.
@@ -2656,11 +2656,11 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
         }
     }
 }
-extern float func_00214D88(float *, float *, float, float, float, float);
-extern void func_L17_002F04D0(char *, char *, char *);
-extern void func_L17_002F0580(char *);
-extern int func_001FA8A8(int, int, float);
-extern void func_L00_002617B0(char *, void *, void *, void *);
+extern float ApproachWithVelocity(float *, float *, float, float, float, float);
+extern void build_magnet_elevator_camera_pose(char *, char *, char *);
+extern void rebuild_magnet_elevator_world_path(char *);
+extern int FastTweenColor(int, int, float);
+extern void update_entity_matrix(char *, void *, void *, void *);
 
 /* Updates the class-1380 lift: rises/lowers between two heights, blends the camera and pulses its colour by state. */
 void magnet_elevator_update(char *moby) {
@@ -2832,8 +2832,8 @@ typedef struct {
     char pad3[0x22DA - 0x30A];
     unsigned short index;
 } CameraGlobals;
-extern CameraGlobals D_0013F450;
-extern void func_L00_001FF500(void *, void *, float);
+extern CameraGlobals g_hero;
+extern void vec_set_length_xy(void *, void *, float);
 
 /* Builds the magnet elevator camera spot 2.5 units toward the camera, facing the hero. */
 void build_magnet_elevator_camera_pose(char *moby, char *temp, char *state) {
@@ -2846,7 +2846,7 @@ void build_magnet_elevator_camera_pose(char *moby, char *temp, char *state) {
                                                  g_hero.y - *(float *)(temp + 4));
     *(int *)(state + 4) = 0;
 }
-extern char D_L17_001DA240[];
+extern char fleet_magnet_elevator_path_offsets[];
 
 /* While the hero rides this magnet elevator, rebuilds its 11-point path in world space. */
 void rebuild_magnet_elevator_world_path(char *moby) {
@@ -2904,20 +2904,20 @@ typedef struct {
     int c2B8;
     int c2BC;
 } Vars1382;
-extern void func_L17_002F1558(void *, int);
-extern void func_L17_002F1BB0(void *);
-extern void func_L17_002F1D20(void *);
-extern void func_L00_00264BB0(void *, float);
-extern void func_L00_0025B178(void *);
-extern void func_00213DE0(void *, int, int, int);
-extern int func_L00_002DDEA0(void *, void *);
-extern int func_L00_0025A778(void *, void *, int);
-extern void func_L00_002592B0(char *moby, float *vel, float target, float k, float d, float max);
-extern int func_L17_002F1858(char *moby, float *target, float speed);
-extern void func_L00_0025AC00(int, int, int, void *, void *, float);
-extern int func_L00_0025D6F0(void *, void *);
-extern void func_L00_00264EA8(void *, int, int, int, int, int, int);
-extern void func_L00_002584A8(void *, int, int);
+extern void update_robot_dog_hit_reaction_and_target_detection(void *, int);
+extern void update_robot_dog_aim_joint(void *);
+extern void update_robot_dog_glow_effects(void *);
+extern void Manipulator_SetScale(void *, float);
+extern void set_ground_height_band(void *);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern int CarriedMobyUpdate(void *, void *);
+extern int IsPointInPolygon(void *, void *, int);
+extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
+extern int move_robot_dog_toward_position(char *moby, float *target, float speed);
+extern void PostHitMessage(int, int, int, void *, void *, float);
+extern int mine_fall(void *, void *);
+extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
+extern void SetDeathBits(void *, int, int);
 extern short D_L17_00162280;
 
 /* UpdateMoby for class 1382: hides or shows the moby by its clip volumes, then runs its state machine. */

@@ -19,7 +19,7 @@
 
 /* Declarations in scope here before the split. */
 extern long func_00116F68(int arg0, int arg1, int arg2);
-extern int D_0015ED10;
+extern int SbrkErrno;
 extern void *D_0012F86C NOT_SDA;
 extern int func_001162B8(void *arg0, void *arg1, void *arg2);
 extern int func_00116320(void *arg0, void *arg1, void *arg2);
@@ -40,9 +40,9 @@ extern int func_00114060(int, void *);
 extern void func_00113AE0(void *);
 extern void func_00117118(void *, void *, int, int);
 extern int func_00119008();
-extern int D_0012FCF0 NOT_SDA;
+extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
-extern void *D_00154A40 NOT_SDA;
+extern void *InitBlockData NOT_SDA;
 extern int func_001160D8(void);
 
 /* kputchar (libkernl.a:kprintf.o): wait until the SIO status port
@@ -475,9 +475,9 @@ extern void func_00119460(int);
 extern void func_0011AC48(void);
 extern unsigned char D_00154E80[];
 extern unsigned char D_00154F00[];
-extern CmdData D_00154F58;
-extern Hnd D_00154F80[];
-extern CmdPkt D_00154F40;
+extern CmdData sif_cmd_data;
+extern Hnd sif_system_handlers[];
+extern CmdPkt sif_init_packet;
 
 void func_0011A780(void) {
     int i;
@@ -683,7 +683,7 @@ typedef struct {
     int rdata_table_idx;
 } SifRpcData;
 
-extern int D_0012FD08 NOT_SDA;
+extern int RpcCommandState NOT_SDA;
 extern char D_00155100[];
 extern char D_00155900[];
 extern char D_00156100[];
@@ -1489,8 +1489,8 @@ extern char D_001580C0[];
 extern char D_00158080[];
 extern char D_001575C0[];
 extern char *D_00156940[];
-extern char D_001580A8[];
-extern int D_0012FD94;
+extern char FsResetBuffer[];
+extern int FsResetState;
 extern void func_0011B868();
 extern void func_0011BC80();
 
@@ -1542,7 +1542,7 @@ s32 func_0011BCB0(void) {
 }
 
 extern char D_0012FCEC[];
-extern char D_001580A8[];
+extern char FsResetBuffer[];
 extern int D_0012FDA8;
 
 /* Three-way compare-and-confirm: the slot D_001580A8 has to agree with
@@ -1567,7 +1567,7 @@ int func_0011BEB8(void) {
 }
 
 extern void func_001153FC(void *, int, int);
-extern int D_0012FD94;
+extern int FsResetState;
 
 int func_0011BF48(void) {
     FsResetState = 0;

@@ -5,15 +5,15 @@
 #include "vector.h"
 
 /* The level copies of the camera tables (include/camera.h). */
-extern Camera D_L00_00167250[];
-extern CameraDef *D_L00_0015F050 MACRO_ADDR;
-extern CameraType D_L00_001EAC00[];
-extern DebugFreeCam D_L00_0016C158;
+extern Camera gCameraSlotsLvl[];
+extern CameraDef *camera_descriptors MACRO_ADDR;
+extern CameraType gCameraTypesLvl[];
+extern DebugFreeCam g_debug_menu;
 
 /* Level copy of ExecuteCamPostUpdFuncs: runs the gCamPostUpdCountLvl callbacks queued in
  * gCamPostUpdFuncsLvl (D_L00_001690F0), in order (count re-read after each call), then empties the queue. */
-extern int D_L00_0015F04C MACRO_ADDR;
-extern void (*D_L00_001690F0[])(void);
+extern int gCamPostUpdCountLvl MACRO_ADDR;
+extern void (*gCamPostUpdFuncsLvl[])(void);
 
 /* Run and clear the level's queued camera post-update callbacks. */
 void Camera_RunQueuedCallbacks(void) {
@@ -47,8 +47,8 @@ INCLUDE_ASM("asm/overlays", func_L00_001EB598);
 INCLUDE_ASM("asm/overlays", func_L00_001EB5A8);
 LINKER_REMNANT("asm/overlays", func_L00_001EB5B0);
 extern float func_001FA790_f(float, float) __asm__("func_001FA790");
-extern float func_001F9B88(float);
-extern float func_001FA748(float, float);
+extern float FastAbsF(float);
+extern float FastAddRots(float, float);
 
 /* steers *p toward a target with damping, clamps it, then calls FA748 */
 float func_001FA790_EB6A8(float, float) __asm__("func_001FA790");
@@ -73,7 +73,7 @@ float Camera_SmoothAngle(float *vel, float from, float to, float stiffness, floa
         *vel = -FastAbsF(t);
     return FastAddRots(from, *vel);
 }
-extern CameraSystem D_L00_00166D80;
+extern CameraSystem player_camera;
 
 /* Lets any eligible camera take over from the current one: sets the current camera's
    transition_state to 1 and clears its handoff_state. */
@@ -83,11 +83,11 @@ void initialize_camera_record_handoff_defaults(void) {
     g->current->handoff_state = 0;
 }
 /* Plain declarations SwitchCamera needs before it (the level names are macros in include/names.h). */
-extern u8 D_L00_00169490[];
-extern void func_001EC038(void);
-extern void func_001EC270(void *);
-extern void func_001F9A98(void *, void *, s32);
-extern s32 func_001FA898(f32);
+extern u8 gCamPrevStateLvl[];
+extern void BackupCurrentCam(void);
+extern void Camera_runSetupToNewCam(void *);
+extern void FastMemCopy(void *, void *, s32);
+extern s32 truncate_float_to_s32(f32);
 extern s32 D_0015EE84_EB890 __asm__("D_0015EE84") MACRO_ADDR;
 
 /* Switches the active camera to next_camera: picks the blend from the old camera's transition_state and the new one's info->blend_kind (1 eased, 5 orbit, 3/6 hand-off), then installs it and swaps the state buffers. Level copy of func_001EC2B8. Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/fun_001ebf10.c, switch_active_camera_record. */
@@ -188,12 +188,12 @@ void SwitchCamera(Camera *next_camera) {
     previous_position[2] = position->z;
 }
 
-extern int D_L00_00169990[];
-extern void func_001EC270(void *);
-extern int func_001EC5B8(Camera *, Camera *);
-extern void func_001EC210(Camera *);
-extern void func_L00_001EB890(Camera *);
-extern void func_L00_001EB508(void);
+extern int gCameraSlotUsedLvl[];
+extern void Camera_runSetupToNewCam(void *);
+extern int Camera_ActivationCheckPriority(Camera *, Camera *);
+extern void Camera_handleCollWithHero(Camera *);
+extern void SwitchCamera(Camera *);
+extern void Camera_RunQueuedCallbacks(void);
 
 /* Level copy of UpdateAllCameras: the exit hook of the current camera, a scan of the 48 slots
    for the best eligible camera (switching to it when one is found), the update hook, prev_pos,
@@ -234,8 +234,8 @@ int UpdateAllCamerasLvl(void) {
     return -1;
 }
 extern char D_0013E633[];
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001EC8D8(float *out, void *p0, void *p1, void *dir0, void *dir1, void *axis);
+extern void vec_scale_to_length(void *, void *, float);
+extern void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1, void *axis);
 
 // Samples the hero moby's three axes into blend.orbit.fwd and blend.orbit.up, derives the orbit yaw, pitch and distance to the hero, and copies rot to saved_rot.
 /* Joined to the fragment that follows it (config/overlays/joined.tsv): the catalogue splits the delay slot of the final jr off. */
@@ -258,12 +258,12 @@ void Camera_CaptureHeroRelativeView(void) {
    through D_L00_00166FF0 itself, gcse keeps the entry's %hi alive in a saved
    register across the calls, where retail rebuilds it. */
 extern short D_L00_00166FF0_h __asm__("D_L00_00166FF0") NOT_SDA;
-extern void func_00215328(void *, void *);
-extern void func_L00_001EC090(void);
-extern void func_001ECB98(void);
-extern void func_001ECC10(void);
-extern int func_001F9850(int);
-extern float func_001FA888(int);
+extern void extract_matrix_rotation_quaternion(void *, void *);
+extern void Camera_CaptureHeroRelativeView(void);
+extern void save_camera_vectors(void);
+extern void restore_camera_vectors(void);
+extern int scale_ticks(int);
+extern float IntToFloat(int);
 
 /* Camera mode update: in blend phase 1 the blend's next_kind picks what is captured from the
    previous camera (from), other phases restore the pending transform; then the phase becomes 3
@@ -334,8 +334,8 @@ void Camera_CaptureTransform(Camera *from) {
    function written out; try_func only compares the first 192 bytes, so it reports SIZE
    until config/overlays/joined.tsv joins the pieces. Each block takes its own base
    pointer to the hero state, as retail re-derives it per block. */
-extern int D_L00_0015F058 SDATA(D_L00_0015F058);
-extern int D_L00_0015F060 MACRO_ADDR;
+extern int camera_collision_mask SDATA(D_L00_0015F058);
+extern int gCamSphereMaskBaseLvl MACRO_ADDR;
 extern int D_L00_0015F05C_w __asm__("D_L00_0015F05C") MACRO_ADDR;
 extern int D_L00_0015F05C_g SDATA(D_L00_0015F05C);
 
@@ -398,21 +398,21 @@ void Camera_PickCollisionMasksLvl(void) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_001ED380);
 INCLUDE_ASM("asm/overlays", func_L00_001ED3D4);
-extern int D_L00_0015F6A8 MACRO_ADDR;
+extern int cinematic_mode MACRO_ADDR;
 extern int D_L00_001CA800;
 extern unsigned char D_0015EEB4_ED428[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern void func_001EDE08(void);
-extern void func_L00_001ED2C0(void);
-extern void func_001ED818(void);
-extern int func_L00_001EBDA0(void);
-extern void func_L00_001EC220(Camera *);
-extern void func_001ED658(char *arg0);
-extern void func_001ED708(char *arg0, int arg1);
-extern void func_001EDB98(void);
-extern void func_001FA460(void *, void *);
-extern void func_002153E8(void *, void *);
-extern void func_001EE858(void *);
-extern void func_001F9CA0(void *, void *, void *);
+extern void advance_timed_camera_control(void);
+extern void Camera_PickCollisionMasksLvl(void);
+extern void update_camera_tracking_state(void);
+extern int UpdateAllCamerasLvl(void);
+extern void Camera_CaptureTransform(Camera *);
+extern void update_camera_blend(char *arg0);
+extern void apply_camera_shake(char *arg0, int arg1);
+extern void update_camera_underwater_flag(void);
+extern void copy_matrix_rotation(void *, void *);
+extern void matrix_to_euler(void *, void *);
+extern void update_camera_environment_from_regions(void *);
+extern void FastVecCross(void *, void *, void *);
 
 /* Camera update, once per frame: count the frame, run the camera steps, take the view from the target camera (mode 3 blends it) unless frozen, refresh the angles and the derived vectors. Level copy of func_001EDE50. Joined with func_L00_001ED460 and func_L00_001ED464 (config/overlays/joined.tsv). */
 void Camera_UpdateFrame(void) {
@@ -481,10 +481,10 @@ int find_camera_table_index_by_id(int key) {
     }
     return i;
 }
-extern Camera *func_L00_001EB578(int);
-extern void func_001EC270(void *);
-extern void func_001EC038(void);
-extern char D_L00_00169210[];
+extern Camera *find_camera_record_by_id(int);
+extern void Camera_runSetupToNewCam(void *);
+extern void BackupCurrentCam(void);
+extern char gCamCurStateLvl[];
 
 /* Camera id 0 becomes the current camera with a hard cut: its state buffer is gCamCurStateLvl,
    its activate hook runs, the backup is taken, and the follow position is reset to the hero. */
@@ -517,11 +517,11 @@ void init_camera_system(void) {
     u[1] = t[1];
     u[2] = t[2];
 }
-extern void func_001F9BC0(void *);
+extern void clear_u64_value(void *);
 
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9BD8(void *, void *, void *);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void FastVecAdd(void *, void *, void *);
 
 /* Inverse of Camera_Pos2Polar3d: out = origin + the point at polar (yaw, pitch, distance). */
 void compute_position_from_spherical_offset(float *out, float *polar, void *origin) {
@@ -532,11 +532,11 @@ void compute_position_from_spherical_offset(float *out, float *polar, void *orig
     FastVecAdd(out, out, origin);
 }
 typedef float W[4] __attribute__((aligned(16)));
-extern void func_001F9BF0(float *);
-extern float func_001F9CE8(float *);
-extern float func_L00_001FF860(float, float);
-extern void func_001FA790(float, float);
-extern float func_001F9CB8(float *);
+extern void FastVecSub(float *);
+extern float vec_length_xy(float *);
+extern float fast_atan2(float, float);
+extern void FastSubRots(float, float);
+extern float FastVecLength(float *);
 extern void func_001F9BF0_3(float *, float *, float *) __asm__("func_001F9BF0");
 /* polar = (yaw, pitch, distance) of pos as seen from origin; the FastSubRots result is unused (kept, as retail). */
 int compute_spherical_offset_from_positions(float *polar, float *pos, float *origin) {
@@ -552,10 +552,10 @@ int compute_spherical_offset_from_positions(float *polar, float *pos, float *ori
 }
 extern void func_001F9BF0_3(float *, float *, float *) __asm__("func_001F9BF0");
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern void func_L00_001FF328(float *, float *, float);
+extern void divide_vector_xyz(float *, float *, float);
 extern int func_L00_001F10E0_f(void *, int, void *, float) __asm__("func_L00_001F10E0");
-extern W D_L00_00173F70;
-extern short D_L00_0015F05C;
+extern W coll_resolved_pos;
+extern short gCamSphereMaskLvl;
 
 /* moves the camera position a toward a target in steps, stopping each step on collision. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_camera_001eb188.c, FUN_L00_001ed6a8. */
 void resolve_camera_movement_collisions(float *pos, float r) {

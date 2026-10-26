@@ -12,7 +12,7 @@
 
 /* Declarations in scope here before the split. */
 extern long func_00116F68(int arg0, int arg1, int arg2);
-extern int D_0015ED10;
+extern int SbrkErrno;
 extern void *D_0012F86C NOT_SDA;
 
 /* newlib's stdio types (sys/reent.h, 1999-2000), under local names. */

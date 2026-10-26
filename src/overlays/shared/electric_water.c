@@ -60,59 +60,59 @@ typedef struct {
     unsigned char pad20[0x1C - 0x20 + 0x20];
 } Light_2D7C00;
 
-extern Hero_2D7C00 D_0013F450;
-extern char D_0013F4D0[];
-extern unsigned char D_0013E650[];
-extern unsigned char *D_L15_00160058 MACRO_ADDR;
-extern char *D_L15_0016016C MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
-extern short D_L15_00161C48;
-extern short D_L15_00161C4C;
+extern Hero_2D7C00 g_hero;
+extern char gHeroPos[];
+extern unsigned char voice_pool[];
+extern unsigned char *quartu_moby_array MACRO_ADDR;
+extern char *quartu_cuboids MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern short electric_water_on_duration_seconds;
+extern short electric_water_off_duration_seconds;
 extern short D_L15_00161C50;
 extern unsigned char D_L15_001BB334[];
 extern unsigned char D_L15_001BBF94[];
-extern int D_0014C290[];
-extern int D_L15_001BADE0[];
-extern char D_L15_00180940[];
-extern unsigned char D_L15_0015F544[] MACRO_ADDR;
-extern unsigned char D_L15_0015F545[] MACRO_ADDR;
-extern unsigned char D_L15_0015F546[] MACRO_ADDR;
-extern float D_L15_0015F548 MACRO_ADDR;
-extern float D_L15_0015F54C MACRO_ADDR;
-extern float D_L15_0015F550 MACRO_ADDR;
-extern float D_L15_0015F554 MACRO_ADDR;
-extern int func_00215570(void *, int);
-extern void func_L00_0028EBF0(int);
-extern void func_L00_0023F1D0(int);
-extern void func_L15_002DA990(char *);
-extern float func_001F9878(float);
-extern int func_001FA898(float);
-extern int func_001F9850(int);
-extern int func_L15_002D7B60(void);
-extern int func_001F9938(void *);
-extern void func_L00_00251328(void *, int, int, int);
-extern int func_L00_00258BC8(int, int);
-extern int func_002140B0(int);
-extern float func_001F9D10(void *, void *);
-extern int func_L00_0023F0D0(void *, float, float, float, float, float);
-extern void func_L15_002D8DD8(char *);
-extern void func_L15_002D8FA0(Moby *);
-extern void func_L15_002D9B00(char *);
-extern void func_L15_002D8BB0(char *);
-extern void func_001F49B0(void *, void *);
-extern int func_L00_0028EF68(int, int, void *, int);
-extern float func_002140F8(float, float);
-extern float func_00214158(void);
-extern void func_00215C00(void *, float, float, float);
-extern void func_L00_001FF240(void *, void *, void *);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_L00_001FF500(void *, void *, float);
-extern void func_L00_0025AAC0(void *, void *);
-extern float func_001F9D48(void *, void *);
-extern int func_L00_0028EB98(void *, int);
-extern int func_L11_00310738(void *);
-extern int func_L00_0020DC00(void);
+extern int level_moby_killed[];
+extern int quartu_moby_killed[];
+extern char quartu_lights[];
+extern unsigned char quartu_fog_color_red[] MACRO_ADDR;
+extern unsigned char quartu_fog_color_green[] MACRO_ADDR;
+extern unsigned char quartu_fog_color_blue[] MACRO_ADDR;
+extern float quartu_fog_near_distance MACRO_ADDR;
+extern float quartu_fog_far_distance MACRO_ADDR;
+extern float quartu_fog_near_intensity MACRO_ADDR;
+extern float quartu_fog_far_intensity MACRO_ADDR;
+extern int is_point_inside_clip_volume(void *, int);
+extern void Sound_StopSlot(int);
+extern void release_point_light_slot(int);
+extern void reset_electric_water_switch(char *);
+extern float multiply_global_factor(float);
+extern int truncate_float_to_s32(float);
+extern int scale_ticks(int);
+extern int Hero_IsNearGround(void);
+extern int FastDecTimer(void *);
+extern void set_moby_color(void *, int, int, int);
+extern int rand_range(int, int);
+extern int random_integer_below(int);
+extern float FastVecDist(void *, void *);
+extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
+extern void initialize_electric_water_bolt_effect(char *);
+extern void update_electric_water_bolt_effect(Moby *);
+extern void draw_electric_water_bolt_effect(char *);
+extern void draw_electric_water_countdown(char *);
+extern void AddDrawCallback(void *, void *);
+extern int Sound_PlayClassSound(int, int, void *, int);
+extern float random_float_between(float, float);
+extern float random_angle_radians(void);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern void add_vectors(void *, void *, void *);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void vec_set_length_xy(void *, void *, float);
+extern void record_moby_hit(void *, void *);
+extern float vec_distance_xy(void *, void *);
+extern int Sound_IsPlaying(void *, int);
+extern int test_linked_moby_turn_trigger(void *);
+extern int Hero_IsInSpecialState(void);
 
 #define MOBY_2D7C00(i) ((unsigned char *)(((i) << 8) + (int)D_L15_00160058))
 #define MOBYP_2D7C00(i) (D_L15_00160058 + ((i) << 8))
@@ -166,7 +166,7 @@ void electric_water_update(unsigned char *m) {
         ELECTRIC_WATER_OFF = 2,
         ELECTRIC_WATER_SWITCH_DISABLED = 3
     };
-    extern float D_L15_00167440[];
+    extern float quartu_camera_pos[];
     float unused_vector_argument[4];
     Hit_2D7C00 hit;
     struct Moby *moby = (struct Moby *)m;
@@ -473,24 +473,24 @@ void electric_water_update(unsigned char *m) {
         }
     }
 }
-extern void func_001F62C8(int, int, int, int, int);
-extern float func_001FA888(int);
-extern float func_001F9FA8(float);
-extern int func_001FA8A8(int, int, float);
-extern int func_001F9850(int);
-extern int func_002140B0(int);
+extern void DrawUIFrame(int, int, int, int, int);
+extern float IntToFloat(int);
+extern float FastSin(float);
+extern int FastTweenColor(int, int, float);
+extern int scale_ticks(int);
+extern int random_integer_below(int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern int func_001F6FD8(int a, int b, int c, int d, int e);
-extern int D_L15_0015F6B0 MACRO_ADDR;
-extern short D_L15_00161C54;
-extern short D_L15_00161C58;
-extern short D_L15_00161C5C;
-extern short D_L15_00161C60;
-extern short D_L15_00161C64;
-extern short D_L15_00161C68;
-extern short D_L15_00161C6C;
-extern short D_L15_00161C70;
-extern short D_L15_00161C74;
+extern int FontPrintCenterLarge(int a, int b, int c, int d, int e);
+extern int quartu_frame_count MACRO_ADDR;
+extern short electric_water_timer_x;
+extern short electric_water_timer_y;
+extern short electric_water_timer_color_from;
+extern short electric_water_timer_color_to;
+extern short electric_water_timer_frame_y0;
+extern short electric_water_timer_frame_y1;
+extern short electric_water_timer_frame_x0;
+extern short electric_water_timer_frame_x1;
+extern short electric_water_timer_frame_alpha;
 #define W(x) (*(int *)&(x))
 
 /* Draws the level timer as "H:MM:SS.t" text with a pulsing colour. */
@@ -519,13 +519,13 @@ void draw_electric_water_countdown(char *moby) {
     buf[7] = func_001FA898_r((float)random_integer_below(10)) + 0x30;
     FontPrintCenterLarge(W(electric_water_timer_x), W(electric_water_timer_y), col, (int)buf, 8);
 }
-extern short D_L15_00161C78;
-extern short D_L15_00161C7C;
-extern short D_L15_00161C94;
-extern short D_L15_00161C9C;
-extern short D_L15_00161CB0;
-extern short D_L15_00161CE0;
-extern short D_L15_00161D0C;
+extern short electric_water_bolt_init_requested;
+extern short electric_water_bolt_initial_length_scale;
+extern short electric_water_bolt_wave_phase;
+extern short electric_water_mirror_bolt_phase;
+extern short electric_water_mirror_bolt_height_phase;
+extern short quartu_beam_arc_outer_color;
+extern short electric_water_bolt_initial_frame_count;
 extern short D_L15_00161D50_D8DD8[] __asm__("D_L15_00161D50") MACRO_ADDR;
 extern short D_L15_00161D52[] MACRO_ADDR;
 extern short D_L15_00161D54[] MACRO_ADDR;
@@ -534,18 +534,18 @@ extern short D_L15_00161D58_D8DD8[] __asm__("D_L15_00161D58") MACRO_ADDR;
 extern short D_L15_00161D5A[] MACRO_ADDR;
 extern short D_L15_00161D5C[] MACRO_ADDR;
 extern short D_L15_00161D5E[] MACRO_ADDR;
-extern short D_L15_00161D40[] MACRO_ADDR;
-extern int D_L15_00161D60 MACRO_ADDR;
+extern short electric_water_side_arc_timers[] MACRO_ADDR;
+extern int electric_water_bolt_initial_scaled_frame_count MACRO_ADDR;
 extern short D_L15_00161D64;
 extern float D_L15_001D3A10_D8DD8[][4] __asm__("D_L15_001D3A10");
 extern float D_L15_001D3A20_D8DD8[][4] __asm__("D_L15_001D3A20");
 extern int D_L15_001D3CA0_D8DD8[] __asm__("D_L15_001D3CA0");
 extern float D_L15_001D3CF0_D8DD8[][4] __asm__("D_L15_001D3CF0");
 extern int D_L15_001D3E30_D8DD8[] __asm__("D_L15_001D3E30");
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9BC0(void *);
+extern void FastVecSub(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void clear_u64_value(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d6810.c, FUN_L15_002d79e8. */
 void initialize_electric_water_bolt_effect(char *m) {
@@ -588,55 +588,55 @@ typedef struct { V_2d8fa0 p[5]; } P_2d8fa0;
 typedef struct { V_2d8fa0 hdr; V_2d8fa0 p[4]; } H_2d8fa0;
 typedef struct { char pad[0xF0]; V_2d8fa0 a; V_2d8fa0 b; V_2d8fa0 c; } Data_2d8fa0;
 
-extern float func_001FA748(float, float);
-extern float func_001FA790(float, float);
-extern float func_001F9D10(void *, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_002156E0(void *dst, void *vec, void *axis, float angle);
-extern void func_001F9C30(void *, void *, float);
-extern float func_L00_0025F368(float);
-extern float func_L00_00258C80(float lo, float hi);
-extern float func_00214158(void);
-extern void func_00215C00(void *, float, float, float);
-extern void func_001F9C08(void *, void *, void *, float);
-extern float func_001F9CB8(void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_L00_001FF860(float, float);
-extern float func_001F9F90(float);
-extern int func_001F9938(void *);
-extern float func_002140F8(float, float);
-extern int func_L00_00258BC8(int, int);
+extern float FastAddRots(float, float);
+extern float FastSubRots(float, float);
+extern float FastVecDist(void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecCross(void *, void *, void *);
+extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
+extern void FastVecScale(void *, void *, float);
+extern float normalize_angle(float);
+extern float randf_sym(float lo, float hi);
+extern float random_angle_radians(void);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern void lerp_vector(void *, void *, void *, float);
+extern float FastVecLength(void *);
+extern void FastVecAdd(void *, void *, void *);
+extern float fast_atan2(float, float);
+extern float FastCos(float);
+extern int FastDecTimer(void *);
+extern float random_float_between(float, float);
+extern int rand_range(int, int);
 extern void spawn_2d8fa0(void *, int, float, float, int, int, int, void *, float) __asm__("func_L00_00272F00");
 extern char D_0013E633[];
 extern char D_0013F6E0_2d8fa0[] __asm__("D_0013F6E0");
-extern short D_L15_00161C88;
-extern short D_L15_00161C8C;
-extern short D_L15_00161C90;
-extern short D_L15_00161C98;
-extern short D_L15_00161CA0;
-extern short D_L15_00161CA4;
-extern short D_L15_00161CA8;
-extern short D_L15_00161CAC;
-extern short D_L15_00161CB4;
-extern short D_L15_00161CB8;
-extern short D_L15_00161CCC;
-extern short D_L15_00161CD0;
+extern short electric_water_bolt_wave_point_phase;
+extern short electric_water_bolt_wave_amp_start;
+extern short electric_water_bolt_wave_amp_end;
+extern short electric_water_bolt_wave_speed;
+extern short electric_water_mirror_bolt_phase_speed;
+extern short electric_water_mirror_bolt_point_phase;
+extern short electric_water_mirror_bolt_height_amp;
+extern short electric_water_mirror_bolt_side_amp;
+extern short electric_water_mirror_bolt_height_speed;
+extern short electric_water_mirror_bolt_height_point_phase;
+extern short electric_water_bolt_jitter_center;
+extern short electric_water_bolt_jitter_range;
 extern short D_L15_00161CE0_2d8fa0 __asm__("D_L15_00161CE0");
-extern short D_L15_00161D10;
-extern short D_L15_00161D18;
-extern float D_0015EE60 MACRO_ADDR;
+extern short electric_water_spark_speed;
+extern short electric_water_bolt_wander_blend;
+extern float frame_scale MACRO_ADDR;
 extern V_2d8fa0 D_L15_001D3A10[];
 extern V_2d8fa0 D_L15_001D3A20_2d8fa0[2][20] __asm__("D_L15_001D3A20");
-extern V_2d8fa0 D_L15_001D3CF0[];
-extern float D_L15_001D3CA0[];
-extern float D_L15_001D3E30[];
+extern V_2d8fa0 electric_water_mirror_bolt_side_offsets[];
+extern float electric_water_bolt_wave_offsets[];
+extern float electric_water_mirror_bolt_height_offsets[];
 extern H_2d8fa0 D_L15_001D3E70[];
 extern P_2d8fa0 D_L15_001D3E80_2d8fa0[] __asm__("D_L15_001D3E80");
 extern short D_L15_00161D48_2d8fa0[] __asm__("D_L15_00161D48") MACRO_ADDR;
-extern short D_L15_00161D50[] MACRO_ADDR;
-extern short D_L15_00161D58[] MACRO_ADDR;
+extern short electric_water_side_arc_regrow_delays[] MACRO_ADDR;
+extern short electric_water_side_arc_fade_ticks[] MACRO_ADDR;
 extern float D_L15_00167440_2d8fa0[] __asm__("D_L15_00167440");
 extern float D_L15_0015F660_2d8fa0[] __asm__("D_L15_0015F660") MACRO_ADDR;
 
@@ -812,26 +812,26 @@ void update_electric_water_bolt_effect(Moby *moby) {
     f20 = random_float_between(0.15f, 3.0f);
     spawn_2d8fa0(&data->c, scale_ticks(12), f20 * 0.1f, f20, *(int *)&D_L15_00161CE0_2d8fa0 | 0x7F000000, 0, r, D_L15_0015F660_2d8fa0, 0.0f);
 }
-extern char D_L15_001D3A20[];
-extern char D_L15_001D3E80[];
-extern int D_L15_00161D48 MACRO_ADDR;
-extern int D_L15_00161D4A MACRO_ADDR;
-extern int D_L15_00161D4C MACRO_ADDR;
-extern int D_L15_00161D4E MACRO_ADDR;
-extern short D_L15_00161CD8;
-extern short D_L15_00161CD4;
-extern short D_L15_00161CBC;
-extern short D_L15_00161CC4;
-extern short D_L15_00161CE4;
-extern short D_L15_00161CE8;
-extern short D_L15_00161D1C;
-extern short D_L15_00161CEC;
-extern short D_L15_00161CF0;
-extern short D_L15_00161CF4;
-extern short D_L15_00161CF8;
-extern short D_L15_00161D20;
-extern void func_L00_002BBDE8(char *, int, int, int, float, float, float);
-extern void func_L15_002DA238(char *);
+extern char electric_water_bolt_points[];
+extern char electric_water_side_arc_points[];
+extern int first_side_arc_fade_level MACRO_ADDR;
+extern int second_side_arc_fade_level MACRO_ADDR;
+extern int third_side_arc_fade_level MACRO_ADDR;
+extern int fourth_side_arc_fade_level MACRO_ADDR;
+extern short quartu_beam_arc_tex_scroll_speed;
+extern short quartu_beam_arc_tex_scroll;
+extern short quartu_beam_arc_main_inner_alpha;
+extern short quartu_beam_arc_main_outer_alpha;
+extern short quartu_beam_arc_main_half_width;
+extern short quartu_beam_arc_main_outer_half_width;
+extern short quartu_beam_arc_main_end_extension;
+extern short quartu_beam_arc_second_inner_alpha;
+extern short quartu_beam_arc_second_outer_alpha;
+extern short quartu_beam_arc_bolt_half_width;
+extern short quartu_beam_arc_bolt_outer_half_width;
+extern short quartu_beam_arc_second_end_extension;
+extern void draw_beam_and_arc_two_pass_quads(char *, int, int, int, float, float, float);
+extern void draw_electric_water_bolt_start_quads(char *);
 #define W(x) (*(int *)&(x))
 #define F(x) (*(float *)&(x))
 
@@ -925,7 +925,7 @@ void draw_electric_water_bolt_start_quads(char *mv) {
     }
     draw_2d8e48(&quad, 0, 0);
 }
-extern int func_L11_00310738(void *);
+extern int test_linked_moby_turn_trigger(void *);
 
 /* Electric water switch: when its linked trigger turns, go to state 1 and raise it by 1.5. */
 void reset_electric_water_switch(char *moby)
@@ -935,17 +935,17 @@ void reset_electric_water_switch(char *moby)
         *(float *)(moby + 0x18) += 1.5f;
     }
 }
-extern int D_L15_001744D8[];
-extern float D_0015EE6C MACRO_ADDR;
-extern void func_L00_0025A8C0(void *, void *, int, float, void *);
-extern int func_L00_001EFFF0(void *, void *, int, void *, void *);
-extern int func_L00_001F10E0(void *, int, void *, float);
-extern int func_001F9908(void *);
-extern void func_L00_0025A8E8(void *, float, void *, int, float, float, int, int, int);
-extern void func_L00_00260108(void *, void *, float, float, int);
-extern void func_0022ED80(int, int, void *);
-extern void func_0020D678(void *);
-extern void func_L07_0029C6A8(void *, float, int, float);
+extern int quartu_coll_hit_moby[];
+extern float g_frame_time MACRO_ADDR;
+extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+extern int coll_line(void *, void *, int, void *, void *);
+extern int coll_sphere(void *, int, void *, float);
+extern int fast_dec_timer(void *);
+extern void MobySphereHitDirectional(void *, float, void *, int, float, float, int, int, int);
+extern void SpawnExplosionFx(void *, void *, float, float, int);
+extern void Moby_PlaySound(int, int, void *);
+extern void DeleteMoby(void *);
+extern void spawn_moby_point_offset_particle(void *, float, int, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d6810.c, FUN_L15_002e4380. */
 void update_spinning_projectile(unsigned char *m) {
@@ -978,11 +978,11 @@ void update_spinning_projectile(unsigned char *m) {
     if (quartu_frame_count % 3 == 0)
         spawn_moby_point_offset_particle(m, 30000.0f, 0, 0.1f);
 }
-extern char *func_0020D348(int);
-extern void func_001F9C30(void *, void *, float);
-extern float func_001F9CE8(void *);
-extern void func_L00_00251E30(void *);
-extern char *func_L00_0026E940(char *src, int col, int w, int v, float x);
+extern char *CreateMoby(int);
+extern void FastVecScale(void *, void *, float);
+extern float vec_length_xy(void *);
+extern void moby_build_matrix(void *);
+extern char *spawn_source_attached_fading_effect_particle(char *src, int col, int w, int v, float x);
 
 // Spawns a moby of class 0x3A6 aimed along a direction, copying position and flags from the caller.
 char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
@@ -1017,17 +1017,17 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
  *   Underwater ring update (moby class 1209): an approach test, then a five-state switch on moby[0x20] with a jump
  *   Remaining differences are scheduling and argument placement: a `daddu $a0,$s1` before the func_L00_00251328 ca
  */
-extern float func_001F9CB8(void *a);
-extern void func_001FA4A0(void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_L00_00250800(void *, int, void *);
-extern int func_L00_0025A208(int *, int, int, int);
-extern int func_L00_0025A2F0(int *, int, int, int);
-extern void func_L00_00251328(void *, int, int, int);
-extern void func_L01_0026F090(int list, int state);
+extern float FastVecLength(void *a);
+extern void matrix_from_basis_rows(void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern int get_first_moby_in_group(int *, int, int, int);
+extern int get_next_moby_in_group(int *, int, int, int);
+extern void set_moby_color(void *, int, int, int);
+extern void set_moby_list_state(int list, int state);
 extern char D_L15_001BBB40[];
-extern int D_0015EE84 MACRO_ADDR;
-extern int D_L15_001BADE0[];
+extern int g_current_level_index MACRO_ADDR;
+extern int quartu_moby_killed[];
 extern char D_0014171B[];
 
 typedef struct {
@@ -1180,9 +1180,9 @@ void underwater_ring_update(unsigned char *moby) {
     }
     }
 }
-extern void func_L00_00251328(void *, int, int, int);
-extern void func_001F49B0(void *, void *);
-extern void func_L15_002EC080(void);
+extern void set_moby_color(void *, int, int, int);
+extern void AddDrawCallback(void *, void *);
+extern void draw_moby_radial_ripple_mesh_buffers(void);
 
 // First call sets up and marks the moby; later calls queue a draw callback and set a flag.
 void RippleStripsMobyUpdate(char *moby)
@@ -1196,15 +1196,15 @@ void RippleStripsMobyUpdate(char *moby)
         *(unsigned short *)(moby + 0x34) |= 1;
     }
 }
-extern void func_L02_002EBC08(char *);
-extern void func_L02_002EBCE8(char *);
-extern void func_L00_00299B68(int);
-extern void func_L00_00264DB8(int arg0, int arg1);
-extern int func_0020BFC8(int, int);
-extern int D_0015EE84 MACRO_ADDR;
-extern int D_L15_0015F6A8 MACRO_ADDR;
-extern int D_L15_0015F720 MACRO_ADDR;
-extern short D_L15_00162220;
+extern void initialize_collectible_sprite_state(char *);
+extern void update_collectible_sprite_effect(char *);
+extern void StartCutscene(int);
+extern void ShowBanner(int arg0, int arg1);
+extern int memcard_Save(int, int);
+extern int g_current_level_index MACRO_ADDR;
+extern int quartu_game_mode MACRO_ADDR;
+extern int quartu_dialogue_message_duration MACRO_ADDR;
+extern short quartu_codebot_scale_factor;
 extern unsigned char D_0013D355[];
 
 typedef struct {
@@ -1266,16 +1266,16 @@ void codebot_update(unsigned char *moby) {
 #include "pad.h"
 extern Hero D_0013F450_2EE458 __asm__("D_0013F450");
 extern PadState D_0013CA40_2EE458 __asm__("D_0013CA40");
-extern void func_00215F80(int, int);
-extern void func_L15_002092E0(void);
-extern void func_00213D28(void *, int, int);
-extern float func_00214358(void *, int, float);
-extern void func_L00_00286128(void *, void *);
-extern void func_L00_00217718(void *, void *, int, int);
-extern void func_L00_002110C0(int, int, char *);
-extern void func_L00_002664B0(int, int);
+extern void try_set_help_message(int, int);
+extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
+extern void MobySetAnimation(void *, int, int);
+extern float ProbeGroundHeight(void *, int, float);
+extern void jet_reset_camera(void *, void *);
+extern void Hero_ResetToPosition(void *, void *, int, int);
+extern void enter_hero_vehicle_mode(int, int, char *);
+extern void MusicRequestTrack(int, int);
 extern Moby *D_L15_00160058_m __asm__("D_L15_00160058") MACRO_ADDR;
-extern int D_L15_0015F674 MACRO_ADDR;
+extern int quartu_help_message_selector MACRO_ADDR;
 extern char D_0014171B[] NOT_SDA;
 typedef int u128_2EE458 __attribute__((mode(TI)));
 

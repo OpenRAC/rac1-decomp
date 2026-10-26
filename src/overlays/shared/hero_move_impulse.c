@@ -5,8 +5,8 @@
 #include "vector.h"
 
 extern char D_0013E633[];
-extern char D_L12_00179FC0[];
-extern int func_L00_0020DB30(int);
+extern char hoven_item_defs[];
+extern int hero_slot_item_id(int);
 
 // Returns a value selected by game-state flags, or an entry field of a 0x4C-byte table.
 int Hero_GetGadgetAnimId(int a) {
@@ -43,31 +43,31 @@ typedef int u128 __attribute__((mode(TI)));
 
 
 extern Hero D_0013F450_s __asm__("D_0013F450");
-extern float D_0015EE64 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
 extern float D_L12_0017C2D0[];
-extern int func_001F9850(int);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern float func_001FA850(float, float);
-extern float func_001FA790(float, float);
-extern float func_001F9CE8(void *);
-extern float func_00214D28(float *, float, float);
-extern void func_L00_00213970(float, float);
-extern void func_L00_00212740(float, float);
-extern void func_L00_002124E8(int, float, float, float);
-extern void func_L00_00211F80(int, float);
-extern float func_L00_0025CCF0(void *, float, void *, int, float, float, float);
-extern void func_L00_00209850(float, float, float);
-extern void func_L00_00234420(float *, float *, float);
-extern void func_L00_00233F88(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_L00_001FF500(void *, void *, float);
-extern void func_L00_00214520(float);
-extern void func_L00_00217570(int, int);
-extern int D_0015EE84 MACRO_ADDR;
+extern int scale_ticks(int);
+extern float FastCos(float);
+extern float FastSin(float);
+extern float FastDiffRots(float, float);
+extern float FastSubRots(float, float);
+extern float vec_length_xy(void *);
+extern float ApproachValue(float *, float, float);
+extern void build_scaled_hero_move_impulse(float, float);
+extern void speed_step(float, float);
+extern void turn_to(int, float, float, float);
+extern void stick_target(int, float);
+extern float SpringAngle(void *, float, void *, int, float, float, float);
+extern void rotate_hero_about_fixed_local_pivot(float, float, float);
+extern void set_gravity_relative_vector_length_xy(float *, float *, float);
+extern void add_hero_forward_offset(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void vec_set_length_xy(void *, void *, float);
+extern void steer_hero_planar_velocity(float);
+extern void allocate_hero_voice_for_entry(int, int);
+extern int g_current_level_index MACRO_ADDR;
 
 /* Hopping player movement update by state. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00227f10.c, FUN_L12_00235c08. */
 void Hero_UpdateHopMovement(void) {

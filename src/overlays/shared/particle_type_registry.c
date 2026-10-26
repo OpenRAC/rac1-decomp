@@ -181,15 +181,15 @@ typedef struct {
     Vec4 probe; /* 0x20: point tested against the ground */
     Vec4 vel; /* 0x30: w = ground height + clearance */
 } FallingParticle;
-extern short D_0015EE70;
-extern Vec4 D_L00_00160310 MACRO_ADDR;
+extern short g_frame_time_sq;
+extern Vec4 particle_drift MACRO_ADDR;
 typedef struct {
     f32 value;
 } ParticleClearance;
-extern ParticleClearance D_L00_00160318 MACRO_ADDR;
-extern f32 D_L00_00160320 MACRO_ADDR;
-extern void func_001F9BD8(void *, void *, void *);
-extern f32 func_L00_002644E0(Vec4 *);
+extern ParticleClearance particle_clearance MACRO_ADDR;
+extern f32 particle_min_ground MACRO_ADDR;
+extern void FastVecAdd(void *, void *, void *);
+extern f32 ground_height_at(Vec4 *);
 extern void func_L00_002688A8_69BE8(FallingParticle *) __asm__("func_L00_002688A8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/effects/00268900.c, FUN_L00_00268d48. */
@@ -232,10 +232,10 @@ void update_falling_effect_particle(FallingParticle *p)
     vel->f[2] -= (*(f32 *)&g_frame_time_sq) * 9.8f;
     vel->f[3] = ground + particle_clearance.value;
 }
-extern void *func_00218928(int);
+extern void *create_part(int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern int func_001F9850(int);
-extern unsigned char *D_L00_001B2404;
+extern int scale_ticks(int);
+extern unsigned char *part_type01_textures;
 
 /* spawns a type-1 particle at a position, fading with alpha a1 */
 void spawn_timed_effect_particle(char *pos, int a1) {
@@ -254,8 +254,8 @@ void spawn_timed_effect_particle(char *pos, int a1) {
         *(int *)(p + 0x20) = a1;
     }
 }
-extern int func_001F9938(void *);
-extern void func_L00_002688A8(void *);
+extern int FastDecTimer(void *);
+extern void KillPart(void *);
 
 /* Particle update: fade alpha and step the texture frame over the lifetime; kill at timer end. */
 void update_timed_effect_particle(char *m) {

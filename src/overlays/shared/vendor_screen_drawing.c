@@ -2,28 +2,28 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern void func_001FBAB8(int, int, int, int, int, int, int);
+extern void draw_framebuffer_rect(int, int, int, int, int, int, int);
 extern void *func_001153FC(void *, int, int);
-extern void func_0020E180(int, int);
-extern char *func_001FE540(int);
-extern void func_001F75D0(void *, long, char *, int);
+extern void DrawMobyList(int, int);
+extern char *msg_string(int);
+extern void font_print_window_small(void *, long, char *, int);
 extern int func_00116248(char *str, const char *fmt, ...);
-extern void func_001F6968(int, int, long, char *, int);
-extern void func_001F6D88(int, int, long, char *, int);
+extern void FontPrintSmall(int, int, long, char *, int);
+extern void font_print_right_small(int, int, long, char *, int);
 typedef struct { int i0; int i4; unsigned short h8; unsigned short hA; unsigned short hC; unsigned short hE; int i10; int i14; } Row;
 typedef struct { short unused0, y, unused4, x, half_x, half_y, left, top, width, style; unsigned char rest[4]; } TBox;
 typedef struct { int fD0; int fD4; char pad[12]; } DRow;
 typedef struct { char pad0[0x20]; int f20; char pad24[0x1c]; int f40; char pad44[0x14]; int f58; char pad5c[0x74]; DRow rows[16]; } DMenu;
-extern int D_L00_001CA7C0[];
+extern int vendor_menu[];
 #define MENU (*(DMenu *)D_L00_001CA7C0)
-extern Row D_L00_001C43B0[] NOT_SDA;
-extern int D_0013D530[] NOT_SDA;
-extern unsigned char D_0013D5EB NOT_SDA;
-extern int D_0015EE98 MACRO_ADDR;
-extern char D_L00_00161220[];
-extern int D_L00_00161F30 MACRO_ADDR;
-extern char D_L00_00161228[];
-extern char D_L00_00161230[];
+extern Row item_price_table[] NOT_SDA;
+extern int weapon_ammo_counts[] NOT_SDA;
+extern unsigned char discount_purchase_pricing NOT_SDA;
+extern int gBolts MACRO_ADDR;
+extern char vendor_quantity_format[];
+extern int vendor_buy_quantity MACRO_ADDR;
+extern char vendor_quantity_left_label[];
+extern char vendor_quantity_right_label[];
 
 /* Draws the vendor's item cost and purchase text box at x, y. */
 void draw_vendor_purchase_text(void *m, int x, int y) {
@@ -108,16 +108,16 @@ typedef struct {
     long gs[4];
 } QuadPkt;
 
-extern float D_L00_001CA618[][4];
-extern void func_0020DB98(char *arg0, int arg1, void *arg2, char *arg3);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9CB8(void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_00238F98(void *, void *, float *, float *, float *, float *);
-extern int func_001F4868(int);
-extern void func_00234C98(int, long);
-extern void func_L00_001FD1D8(void *, void *, int);
+extern float vendor_inset_quad_margins[][4];
+extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
+extern void FastVecSub(void *, void *, void *);
+extern float FastVecLength(void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void project_graphics_bounds_float(void *, void *, float *, float *, float *, float *);
+extern int GetEffectTex(int);
+extern void VU1_addGSregister(int, long);
+extern void draw_world_quad(void *, void *, int);
 
 // draws five glass quads around a moby's joints
 void draw_vendor_inset_quads(char *m) {
@@ -182,16 +182,16 @@ void draw_vendor_inset_quads(char *m) {
 }
 typedef int q2A __attribute__((mode(TI)));
 typedef struct { int a, b, c; } I3_2A;
-extern I3_2A D_L00_00161238 __attribute__((section(".data")));
-extern void func_00238D90(void *, void *, int *, int *, int *, int *);
-extern void func_0023A948(int, int, float);
-extern void func_001FB908(int, int);
-extern void func_L00_0029FD68(void *, int, int);
-extern void func_0023A5E0(int, float, float);
-extern void func_001F7B40(void);
-extern void func_0020E180(int, int);
-extern void func_001F5800(int, int, int, int, int, int, int, int, long, long);
-extern long D_0015EFD0 MACRO_ADDR;
+extern I3_2A vendor_purchase_panel_joint_ids __attribute__((section(".data")));
+extern void project_graphics_bounds(void *, void *, int *, int *, int *, int *);
+extern void configure_capture_target(int, int, float);
+extern void draw_centered_capture_background(int, int);
+extern void draw_vendor_purchase_text(void *, int, int);
+extern void render_vendor_capture_texture_overlays_pass(int, float, float);
+extern void begin_draw_frame(void);
+extern void DrawMobyList(int, int);
+extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
+extern long capture_texture_tex0 MACRO_ADDR;
 
 /* Draws a screen-space rectangle from five joints of a moby: builds a box from its joint vectors, projects it and draws the rectangle. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_0029f990.c, FUN_L00_0029fcd0. */
 void draw_vendor_purchase_panel(void *m) {
@@ -237,14 +237,14 @@ void draw_vendor_purchase_panel(void *m) {
     DrawMobyList((int)m, 1);
     DrawTexturedQuad(w, h, x, y, 0, 0, x, y, 0x80808080L, capture_texture_tex0);
 }
-extern void func_001F9EC0(void *, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
 struct Quad { int a, b, c, d; };
-extern struct Quad D_L00_001CA780[];
-extern float D_L00_001CA680[][4];
-extern float D_L00_001CA710[][2];
-extern int D_L00_001CA758[];
-extern int D_L00_001CA7C0[];
-extern short D_L00_00161244;
+extern struct Quad vendor_hologram_cone_quads[];
+extern float vendor_hologram_cone_vertices[][4];
+extern float vendor_hologram_cone_uvs[][2];
+extern int vendor_hologram_cone_colors[];
+extern int vendor_menu[];
+extern short vendor_screen_uv_scroll;
 
 struct HoloPacket {
     float pos[4][4];

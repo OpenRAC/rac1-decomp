@@ -10,44 +10,44 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
-extern int D_0018A3B0[];
-extern void func_001F99B0();
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
-extern char D_001940C0[];
-extern long D_00151888[3];
-extern int D_0015F6FC;
-extern short D_0015F534;
-extern void func_001FB530(void);
-extern void func_001F3D78(void);
-extern int D_0015F564;
-extern int D_0018DD40[];
-extern int D_0018DC40[];
-extern short D_0015F59C;
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
-extern void func_001F6668(void *, void *, void *, void *, void *, int,
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
+extern int draw_config[];
+extern void FastMemSet();
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
+extern char occl_visibility[];
+extern long gs_display_settings[3];
+extern int space_load_in_progress;
+extern short draw_enable_mask;
+extern void append_gif_transfer_packet(void);
+extern void DrawDebugProfiler(void);
+extern int draw_callback_count;
+extern int draw_callback_args[];
+extern int draw_callback_funcs[];
+extern short GlobalStateFlag;
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
+extern void FontPrint(void *, void *, void *, void *, void *, int,
                           unsigned char *);
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
-extern int func_001F4868(int);
-extern void func_001FB498(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern int D_0018E840[];
-extern long D_00152178 NOT_SDA;
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
+extern int GetEffectTex(int);
+extern void PutDrawBufferLarge(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern int bit_swap_lut[];
+extern long background_rgbaq NOT_SDA;
 
-extern int D_001941C0[];
-extern int D_0016100C MACRO_ADDR;
+extern int level_resource_buffers[];
+extern int current_vu_chain MACRO_ADDR;
 
 /* Start of a `size`-byte block at the end of each of the two VU1 chain
    buffers (D_001941C0[1]/[2], D_0016100C bytes long, as VU1_initChain
@@ -77,8 +77,8 @@ typedef struct {
     s32 label_text;
     s32 pad4[2];
 } LevelMapMarkerText_FDF78;
-extern LevelMapMarkerText_FDF78 D_001DE0C4[19];
-extern LevelMapMarker_FDF78 D_001DE1A8[20];
+extern LevelMapMarkerText_FDF78 level_map_labels[19];
+extern LevelMapMarker_FDF78 level_map_markers[20];
 struct MapIcon;
 struct MapMarker;
 struct MapHdr;
@@ -125,25 +125,25 @@ struct MapState_FDF78 {
     s32 sel; /* 0x2A0: slot being filled, -1 none */
     s32 slot_size[5]; /* 0x2A4 */
 };
-extern struct MapState_FDF78 D_001A01F0;
-extern u8 D_0013DE48[20];
-extern u8 D_0013DE60[20];
-extern s32 D_0015EE80 MACRO_ADDR;
-extern s32 D_0015F538 MACRO_ADDR;
-extern short D_0015F770;
-extern void func_001F4630(s32);
-extern void func_001F4748(void);
-extern s32 func_001F6600(u8 *, s32);
-extern void func_001F68E8(s32, s32, u64, u8 *, s32);
-extern s32 func_001F98C0(s32);
-extern f32 func_001F9CE8(f32 *);
-extern void *func_001FE540(s32);
-extern s32 func_00200198(s32, s32);
-extern void func_00200468(s32, s32, s32, s32, s32, s32);
-extern void func_00200A90(s32, s32, s32, s32, s32, s32, s32, s32);
-extern void func_002014B8(s32, s32, s32, s32, u64, s32);
-extern void func_00201640(s32, s32, s32, s32, u64, s32);
-extern void func_00234C98(s32, u64);
+extern struct MapState_FDF78 level_map_selection;
+extern u8 level_available[20];
+extern u8 level_visit_state[20];
+extern s32 pal_mode MACRO_ADDR;
+extern s32 game_frame_counter MACRO_ADDR;
+extern short map_label_text_y_offset;
+extern void SetupGifPaging(s32);
+extern void DoGifPaging(void);
+extern s32 measure_text_width_regular(u8 *, s32);
+extern void FontPrintLarge(s32, s32, u64, u8 *, s32);
+extern s32 scale_game_frame_count(s32);
+extern f32 vec_length_xy(f32 *);
+extern void *msg_string(s32);
+extern s32 GetIconFrame(s32, s32);
+extern void HudSprite(s32, s32, s32, s32, s32, s32);
+extern void draw_hud_sprite_uv(s32, s32, s32, s32, s32, s32, s32, s32);
+extern void draw_hud_rect(s32, s32, s32, s32, u64, s32);
+extern void draw_hud_rect_blended(s32, s32, s32, s32, u64, s32);
+extern void VU1_addGSregister(s32, u64);
 
 /* Map state of a level: 3 when visited, 2 when available, else 0. */
 static inline s32 map_availability_FDF78(s32 level_index) {
@@ -250,7 +250,7 @@ typedef struct {
     int x28;      /* 0x28 */
     int count;    /* 0x2C: entries in the D_0015F780 table */
 } HelpState;
-extern char D_001997D0[];
+extern char g_help_state[];
 
 /* Advances the help screen's state (D_001997D0). Every access goes
    through the global, and cases 6 and 7 are spelled out: the jump table
@@ -291,7 +291,7 @@ typedef struct {
     int unk_08;
     int unk_0C;
 } HelpEntry;
-extern HelpEntry *D_0015F780 MACRO_ADDR;
+extern HelpEntry *help_msgs MACRO_ADDR;
 
 /* Help_FindIndex: the index of the first D_0015F780 entry with this id,
    or -1. `r = -1` and a `break` give retail's peeled first compare and
@@ -310,7 +310,7 @@ int Help_FindIndex(int id) {
     return r;
 }
 
-extern char D_00199A68[];
+extern char s_paradox_this_message_does_not[];
 
 /* msg_string(int). The table load sits in the bgezl slot, where the
    MACRO_ADDR access becomes $gp-relative. */
@@ -328,11 +328,11 @@ extern int D_0015EF1D_i __asm__("D_0015EF1D") MACRO_ADDR;
 extern int D_0015EF1C_i __asm__("D_0015EF1C") MACRO_ADDR;
 #define D_0015EF1D_b (*(unsigned char *)&D_0015EF1D_i)
 #define D_0015EF1C_b (*(unsigned char *)&D_0015EF1C_i)
-extern int func_0022EE28(int, int, int);
-extern void func_001F7648(void *arg0, int a1, int a2, int a3, int a4, int a5,
+extern int PlayBankSound(int, int, int);
+extern void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5,
                           int a6, int a7, int a8);
-extern void func_001F75D0(void *a, long b, void *c, int d);
-extern int D_0013E604;
+extern void font_print_window_small(void *a, long b, void *c, int d);
+extern int frame_size;
 
 /* Opens the help window: state 1 (opening), the open sound unless both
    fade flags are clear, then the current entry's text is measured in a
@@ -381,15 +381,15 @@ void link_localized_display_text(void) {
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
 __asm__(".section .text\n\tnop\n");
 
-extern int func_001F98C0(int);
+extern int scale_game_frame_count(int);
 extern int func_001F9908_r(int *arg0) __asm__("func_001F9908");
-extern int func_00216028(int arg0, int arg1);
-extern int func_00216960(void);
-extern int D_0013CBE0;
-extern int D_0013CBE4;
-extern int D_0015F6E8 MACRO_ADDR;
-extern int D_0015EFA4 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
+extern int force_help_message(int arg0, int arg1);
+extern int Music_ContinueStreamIfReady(void);
+extern int pad_held;
+extern int pad0_pressed;
+extern int g_game_mode MACRO_ADDR;
+extern int gameplay_event_frame_count MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
 
 typedef struct {
     int state;     /* 0x00 */
@@ -422,8 +422,8 @@ typedef struct {
     short unk5A;
 } PlayerHud;
 
-extern HelpRecord D_00141A68[];
-extern PlayerHud D_001517D0;
+extern HelpRecord help_records[];
+extern PlayerHud cd_read_state;
 
 #define HS (*(HelpSt *)D_001997D0)
 #define PLAY_TIME (func_001F98C0(D_0015EFA4) / 600)
@@ -619,8 +619,8 @@ void Help_Update(void) {
     }
 }
 
-extern void func_001F62C8(int, int, int, int, int);
-extern void func_001F5800(int, int, int, int, int, int, int, int, long, long);
+extern void DrawUIFrame(int, int, int, int, int);
+extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern long func_001F4868_l(int) __asm__("func_001F4868");
 
 /* Help_DrawPrompt: sets the prompt box's +0x18/+0x1C sizes to 0x20,
@@ -753,7 +753,7 @@ void draw_help(void) {
     }
 }
 
-extern short D_00199810[];
+extern short message_id_code_table[];
 
 /* Looks `key` up in field `which` (0 or 1) of D_00199810's 150
    {short a, short b} pairs. On a match it stores the OTHER field into
@@ -788,9 +788,9 @@ int find_help_entry(short key, int which, short *out) {
 
 __asm__(".section .text\n\tnop\n");
 
-extern int func_001FF4F8(short, int, short *);
-extern unsigned char D_00141F08[];
-extern int D_0015EF30 MACRO_ADDR;
+extern int find_help_entry(short, int, short *);
+extern unsigned char active_message_records[];
+extern int active_message_record_count MACRO_ADDR;
 
 /* Moves the entry func_001FF4F8 finds for `id` (field a of its table)
    to the end of the byte list D_00141F08, whose length is D_0015EF30:

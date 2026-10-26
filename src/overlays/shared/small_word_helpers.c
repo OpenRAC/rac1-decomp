@@ -15,9 +15,9 @@ INCLUDE_ASM("asm/overlays", func_L00_001EB438);
 void ClearWordIndex3(int *a) {
     a[3] = 0;
 }
-extern float func_001FA748(float, float);
+extern float FastAddRots(float, float);
 
-f32 func_001FA748(f32, f32);
+f32 FastAddRots(f32, f32);
 
 /* Copies the five floats of s to d, adding x to the first as a rotation.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/sdk/debug/001eb0b0.c, FUN_L00_001eb0c8. */

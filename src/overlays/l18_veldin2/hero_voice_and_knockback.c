@@ -5,13 +5,13 @@
 #include "vector.h"
 
 extern unsigned char D_0013E633[];
-extern int D_0015EE84 MACRO_ADDR;
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern int func_L00_001F3958(void);
-extern float func_001F9B88(float);
-extern void func_L00_0020BFA8(void);
-extern void func_L18_002284E0(int, int);
-extern void func_L00_00211908(void);
+extern int g_current_level_index MACRO_ADDR;
+extern int coll_sphere(float, void *, int, void *);
+extern int CollType(void);
+extern float FastAbsF(float);
+extern void exit_hero_vehicle_mode_if_mode_three(void);
+extern void HeroL18_SetMoveState(int, int);
+extern void Hero_OnKilled(void);
 
 /* Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. */
 void HeroL18_UpdateStateFlags(void) {
@@ -164,27 +164,27 @@ typedef struct {
     u8 *p34;
     u8 pad38[8];
 } T_210ce8;
-extern G_210ce8 D_0013F450;
-extern s32 D_L18_0015F6A8 MACRO_ADDR;
-extern T_210ce8 D_L18_00178B80[];
-extern s32 D_0015EE84 MACRO_ADDR;
-extern s32 D_0013E090[];
-extern s32 D_0015EFA8 MACRO_ADDR;
-extern u8 D_0013F4D0[];
-extern f32 D_0015EE6C MACRO_ADDR;
-extern u8 D_0013F530[];
-s32 func_001FA898(f32);
-void func_L00_00207220(void);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001FA748(f32, f32);
-f32 func_001F9F90(f32);
-f32 func_001F9FA8(f32);
-void func_001F9BD8(void *, void *, void *);
-void func_L18_002284E0(s32, s32);
-void func_L00_00217570(s32, s32);
-void func_L00_002AAE80(void);
-void func_001F9BC0(void *);
-void func_L00_00211338(void *, s32, f32, f32);
+extern G_210ce8 g_hero;
+extern s32 veldin2_cinematic_mode MACRO_ADDR;
+extern T_210ce8 veldin2_moby_hits[];
+extern s32 g_current_level_index MACRO_ADDR;
+extern s32 level_hero_hit_counts[];
+extern s32 hero_hit_count MACRO_ADDR;
+extern u8 gHeroPos[];
+extern f32 g_frame_time MACRO_ADDR;
+extern u8 hero_velocity[];
+s32 truncate_float_to_s32(f32);
+void release_and_clear_hero_voice_slots(void);
+void FastVecSub(void *, void *, void *);
+f32 FastAddRots(f32, f32);
+f32 FastCos(f32);
+f32 FastSin(f32);
+void FastVecAdd(void *, void *, void *);
+void HeroL18_SetMoveState(s32, s32);
+void allocate_hero_voice_for_entry(s32, s32);
+void remove_tracked_class_5f3_moby(void);
+void clear_u64_value(void *);
+void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/ui_help_00213b40.c, FUN_L18_00218a90. */
 s32 HeroL18_TryTakeHit(s32 arg) {

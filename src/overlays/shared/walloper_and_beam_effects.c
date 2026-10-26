@@ -6,27 +6,27 @@
 #include "moby.h"
 
 INCLUDE_ASM("asm/overlays", func_L00_002BA7C8);
-extern float D_0015EE60 MACRO_ADDR;
-extern short D_L00_001616BC;
-extern short D_L00_001616C0;
-extern short D_L00_001616A4;
-extern short D_L00_001616AC;
-extern short D_L00_001616CC;
-extern short D_L00_001616D0;
-extern short D_L00_00161700;
-extern short D_L00_001616D4;
-extern short D_L00_001616D8;
-extern short D_L00_001616DC;
-extern short D_L00_001616E0;
-extern short D_L00_00161704;
-extern int D_L00_00161730 MACRO_ADDR;
-extern int D_L00_00161732 MACRO_ADDR;
-extern int D_L00_00161734 MACRO_ADDR;
-extern int D_L00_00161736 MACRO_ADDR;
-extern char D_L00_001DB8C0[];
-extern char D_L00_001DBD20[];
-extern void func_L00_002BBDE8(void *, int, int, int, float, float, float);
-extern void func_L00_002BC3B8(void *);
+extern float frame_scale MACRO_ADDR;
+extern short beam_arc_tex_scroll;
+extern short beam_arc_tex_scroll_speed;
+extern short beam_arc_main_inner_alpha;
+extern short beam_arc_main_outer_alpha;
+extern short beam_arc_main_half_width;
+extern short beam_arc_main_outer_half_width;
+extern short beam_arc_main_end_extension;
+extern short beam_arc_second_inner_alpha;
+extern short beam_arc_second_outer_alpha;
+extern short beam_arc_bolt_half_width;
+extern short beam_arc_bolt_outer_half_width;
+extern short beam_arc_second_end_extension;
+extern int beam_arc_bolt0_alpha MACRO_ADDR;
+extern int beam_arc_second_row_alpha MACRO_ADDR;
+extern int beam_arc_third_row_alpha MACRO_ADDR;
+extern int beam_arc_fourth_row_alpha MACRO_ADDR;
+extern char tesla_beam_points[];
+extern char beam_arc_bolt_points[];
+extern void draw_beam_and_arc_two_pass_quads(void *, int, int, int, float, float, float);
+extern void draw_beam_anchor_camera_facing_quads(void *);
 
 /* Scrolls the texture offset and refreshes the five scrolling-strip records of a moby. */
 void draw_beam_and_arc_effects(char *m) {
@@ -50,19 +50,19 @@ void draw_beam_and_arc_effects(char *m) {
         *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, 0.2f);
     draw_beam_anchor_camera_facing_quads(m);
 }
-extern int func_001F4868(int);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9CA0(void *, void *, void *);
-extern float func_001F9CB8(void *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_001FD1D8(void *, void *, int);
-extern void func_00234C98(int, long);
-extern float D_L00_00166EC0[];
-extern short D_L00_00161708;
-extern short D_L00_001616C4;
-extern short D_L00_0016170C;
-extern short D_L00_001616C8;
+extern int GetEffectTex(int);
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecCross(void *, void *, void *);
+extern float FastVecLength(void *);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void draw_world_quad(void *, void *, int);
+extern void VU1_addGSregister(int, long);
+extern float g_debug_camera[];
+extern short beam_arc_inner_tex;
+extern short beam_arc_inner_color;
+extern short beam_arc_outer_tex;
+extern short beam_arc_outer_color;
 typedef float RW_2BBDE8[4] __attribute__((aligned(16)));
 typedef struct { float v[4]; } P_2BBDE8;
 typedef struct {
@@ -187,19 +187,19 @@ typedef struct {
     UV_2bb0b0 uv[4];
     long unk70, tex, unk80, unk88;
 } Q_2bb0b0;
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9CA0(void *, void *, void *);
-extern float func_L00_00258C80(float lo, float hi);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9EE8(void *, void *, void *);
-extern float D_L00_00166EC0[];
-extern V_2bb0b0 D_L00_001DB860[];
-extern UV_2bb0b0 D_L00_001DB8A0[];
-extern short D_L00_00161710;
-extern short D_L00_00161718;
-extern short D_L00_0016171C;
+extern void FastVecSub(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void FastVecCross(void *, void *, void *);
+extern float randf_sym(float lo, float hi);
+extern void FastVecScale(void *, void *, float);
+extern void transform_vector(void *, void *, void *);
+extern float g_debug_camera[];
+extern V_2bb0b0 beam_anchor_quad_corners[];
+extern UV_2bb0b0 beam_anchor_quad_uvs[];
+extern short beam_anchor_quad_color;
+extern short beam_anchor_quad_size;
+extern short beam_anchor_outer_quad_size;
 extern char D_0013E633[];
 
 // Builds and draws two layered glow quads around a moby. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002b94d0.c, FUN_L00_002bb0b0.
@@ -251,10 +251,10 @@ void draw_beam_anchor_camera_facing_quads(void *mv) {
     draw_world_quad(&quad, 0, 0);
 }
 typedef struct { int a[4]; } Vu __attribute__((aligned(16)));
-extern char *func_0020D348(int);
-extern void func_001F9BC0(void *);
-extern void func_0020EEE8(void *);
-extern void func_L00_00251E30(void *);
+extern char *CreateMoby(int);
+extern void clear_u64_value(void *);
+extern void moby_anim_sphere_lerp(void *);
+extern void moby_build_matrix(void *);
 /* Spawn a class 0xB3 moby linked to src, copying its basis rows; returns the moby or 0. */
 char *spawn_linked_moby_from_basis(char *src) {
     char *m = CreateMoby(0xB3);
@@ -277,12 +277,12 @@ char *spawn_linked_moby_from_basis(char *src) {
     return m;
 }
 extern char D_0013E633[];
-extern void func_0020D678(void *);
-extern int func_001F9850(int);
-extern void func_L00_0024FFE8(unsigned char *, int, int);
-extern float func_002140F8(float, float);
-extern float func_L00_0025F368(float);
-extern float func_001FA748(float, float);
+extern void DeleteMoby(void *);
+extern int scale_ticks(int);
+extern void offset_moby_class_point_pairs(unsigned char *, int, int);
+extern float random_float_between(float, float);
+extern float normalize_angle(float);
+extern float FastAddRots(float, float);
 
 /* Per-frame update of a moby that follows its parent's flag and spins. */
 void update_linked_moby_scale_and_rotation(char *m) {
@@ -320,28 +320,28 @@ void update_linked_moby_scale_and_rotation(char *m) {
     ((Moby *)m)->rot.y = FastAddRots(((Moby *)m)->rot.y, normalize_angle(*(float *)(p + 0xC)));
     moby_anim_sphere_lerp(m);
 }
-extern short D_L00_001DC1C0[];
-extern short D_L00_001DC1D8[];
+extern short walloper_arc_timers[];
+extern short walloper_arc_alpha[];
 extern short D_L00_001DC1F0[];
 extern short D_L00_001DC208[];
-extern char D_L00_001DBEA0[];
+extern char walloper_arc_points[];
 typedef struct { float previous[4]; float point[4][4]; } SparkleRowC860;
 extern SparkleRowC860 D_L00_001DBE90_rows[] __asm__("D_L00_001DBE90");
-extern short D_L00_00161778;
-extern short D_L00_0016177C;
-extern int D_L00_0016179C MACRO_ADDR;
-extern int D_L00_001617A0 MACRO_ADDR;
-extern float D_L00_001617A4 MACRO_ADDR;
-extern short D_L00_00161774;
+extern short walloper_fade_in_ticks;
+extern short walloper_fade_out_ticks;
+extern int walloper_fade_in_timer MACRO_ADDR;
+extern int walloper_fade_out_timer MACRO_ADDR;
+extern float walloper_effect_fade MACRO_ADDR;
+extern short walloper_arc_spread;
 extern float D_L00_0017AFBC;
-extern float func_0020D830(void *);
+extern float MobyGetFrameValue(void *);
 extern int func_001F9908_r(void *) __asm__("func_001F9908");
-extern float func_001FA888(int);
-extern void func_00213DE0(void *, int, int, int);
-extern void func_002141A8(void *, float, float);
-extern void func_002156E0(void *dst, void *vec, void *axis, float angle);
-extern void func_001F49B0(void *, void *);
-extern void func_L00_002BCE08(int);
+extern float IntToFloat(int);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern void random_spherical_offset(void *, float, float);
+extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
+extern void AddDrawCallback(void *, void *);
+extern void draw_walloper_arc_and_quad_effects(int);
 
 // Per-frame update of a moby that scatters ten fading sparkle quads around the hero.
 void walloper_update(char *m) {
@@ -453,13 +453,13 @@ void walloper_update(char *m) {
     }
     AddDrawCallback(draw_walloper_arc_and_quad_effects, m);
 }
-extern float func_001FA888(int);
+extern float IntToFloat(int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 extern float D_L00_001617A4_m __asm__("D_L00_001617A4") MACRO_ADDR;
-extern short D_L00_00161760;
-extern short D_L00_00161764;
-extern void func_L00_002BCED0(char *, int, int, int, float, float, float);
-extern void func_L00_002BD4A8(int);
+extern short walloper_arc_half_width;
+extern short walloper_arc_outer_half_width;
+extern void draw_walloper_arc_two_pass_quads(char *, int, int, int, float, float, float);
+extern void draw_walloper_camera_facing_quad(int);
 
 // Spawns an effect for each active slot of a ten-entry table, then runs the follow-up.
 void draw_walloper_arc_and_quad_effects(int arg) {
@@ -472,16 +472,16 @@ void draw_walloper_arc_and_quad_effects(int arg) {
     }
     draw_walloper_camera_facing_quad(arg);
 }
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9CA0(void *, void *, void *);
-extern float func_001F9CB8(void *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern float D_L00_00166EC0[];
-extern short D_L00_00161780;
-extern short D_L00_00161750;
-extern short D_L00_00161784;
-extern short D_L00_00161754;
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecCross(void *, void *, void *);
+extern float FastVecLength(void *);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern float g_debug_camera[];
+extern short walloper_arc_inner_tex;
+extern short walloper_arc_inner_color;
+extern short walloper_arc_outer_tex;
+extern short walloper_arc_outer_color;
 typedef float RW[4] __attribute__((aligned(16)));
 typedef struct {
     int c[4];
@@ -590,20 +590,20 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
     }
     VU1_addGSregister(0x47, 0x5360B);
 }
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern int func_002140B0(int);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern short D_L00_00161788;
-extern short D_L00_0016178C;
-extern short D_L00_00161790;
-extern short D_L00_00161794;
-extern short D_L00_00161798;
-extern float D_L00_00166EC0[];
-extern float D_L00_001DBE60[][4];
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern int random_integer_below(int);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecCross(void *, void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern short walloper_glow_quad_size;
+extern short walloper_glow_forward_offset;
+extern short walloper_glow_color;
+extern short walloper_glow_flicker_color;
+extern short walloper_glow_tex;
+extern float g_debug_camera[];
+extern float walloper_glow_quad_corners[][4];
 typedef float W[4] __attribute__((aligned(16)));
 typedef struct {
     int c[4];
@@ -667,20 +667,20 @@ void draw_walloper_camera_facing_quad(int arg) {
     }
     draw_world_quad(q, 0, 0);
 }
-extern char *D_L00_001ABD80[];
-extern short D_L00_001617AC;
-extern short D_L00_001617A8;
-extern Vec4 D_L00_00173F60;
-extern int D_L00_00173F40[];
-extern float func_L00_001FF860(float, float);
-extern float func_001F9D48(void *, void *);
-extern float func_001FA850(float, float);
-extern float func_001F9D10(void *, void *);
-extern float func_001F9B88(float);
-extern float func_001F9FC0(float);
-extern int func_L00_0025D390(char *);
-extern void func_00215C00(void *, float, float, float);
-extern int func_L00_001EFFF0(Vec4f *, Vec4f *, int, void *, int);
+extern char *active_mobies[];
+extern short tesla_arc_range;
+extern short aim_assist_cone_degrees;
+extern Vec4 collision_hit_point;
+extern int coll_hit_result[];
+extern float fast_atan2(float, float);
+extern float vec_distance_xy(void *, void *);
+extern float FastDiffRots(float, float);
+extern float FastVecDist(void *, void *);
+extern float FastAbsF(float);
+extern float FastArcSin(float);
+extern int GetFlaggedPvarWord(char *);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
 
 /* Find the Morph-o-Ray target near the aim line and bend heading/pitch toward it; returns it or 0. */
 char *select_morphoray_target_and_adjust_aim(char *self, float *position, float *heading, float *pitch) {
@@ -1051,17 +1051,17 @@ void MorphorayUpdate(Moby *m) {
     }
 }
 typedef struct { float f[4]; } __attribute__((aligned(16))) V_t;
-extern V_t D_L00_001DC260;
-extern int D_L00_0016188C MACRO_ADDR;
-extern float D_L00_0016189C MACRO_ADDR;
-extern short D_L00_001617E8;
-extern short D_L00_001617F0;
-extern short D_L00_001617F4;
-extern int D_L00_001618A0 MACRO_ADDR;
-extern int D_L00_001618E8[] MACRO_ADDR;
-extern int D_L00_001618F4 MACRO_ADDR;
+extern V_t tesla_chain_points;
+extern int tesla_chain_reset_pending MACRO_ADDR;
+extern float tesla_chain_segment_length MACRO_ADDR;
+extern short tesla_ring_tex_v_scroll;
+extern short tesla_ring_tex_u_scroll_a;
+extern short tesla_ring_tex_u_scroll_b;
+extern int tesla_rail_twist_phase MACRO_ADDR;
+extern int tesla_pulse_active[] MACRO_ADDR;
+extern int tesla_pulse_spawn_timer MACRO_ADDR;
 extern char D_L00_001DC250[];
-extern Vec4A D_L00_001DD3D0[];
+extern Vec4A tesla_pulse_dir[];
 
 /* rebuilds the camera tables from a moby's matrix */
 void reset_beam_chain_and_pulse_state(char *m) {
@@ -1385,7 +1385,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
         func_L00_001FF4B0_2BE3A8(&D_L00_001DD3D0_2BE3A8[q], &D_L00_001DD3D0_2BE3A8[q], 1.0f);
     }
 }
-extern f32 D_0015EE60 MACRO_ADDR;
+extern f32 frame_scale MACRO_ADDR;
 typedef int OvlQuad __attribute__((mode(TI)));
 typedef struct {
     OvlQuad corner[4];
@@ -1394,38 +1394,38 @@ typedef struct {
     long unk70, tex, unk80, unk88;
 } Quad;
 extern u8 D_0013E635 NOT_SDA;
-extern short D_L00_001617E0;
-extern short D_L00_001617E4;
-extern short D_L00_001617E8;
-extern short D_L00_001617EC;
-extern short D_L00_001617F0;
-extern short D_L00_001617F4;
-extern short D_L00_001617F8;
-extern short D_L00_0016183C;
-extern short D_L00_00161840;
-extern short D_L00_00161844;
-extern short D_L00_00161848;
-extern short D_L00_0016184C;
-extern short D_L00_00161854;
-extern short D_L00_00161858;
-extern short D_L00_0016185C;
-extern short D_L00_00161860;
-extern short D_L00_00161864;
-extern short D_L00_00161868;
-extern short D_L00_0016186C;
+extern short tesla_ring_tex_v_step;
+extern short tesla_ring_tex_u_step;
+extern short tesla_ring_tex_v_scroll;
+extern short tesla_ring_tex_v_scroll_speed;
+extern short tesla_ring_tex_u_scroll_a;
+extern short tesla_ring_tex_u_scroll_b;
+extern short tesla_ring_tex_u_scroll_speed;
+extern short tesla_rail_inner_alpha;
+extern short tesla_rail_outer_alpha;
+extern short tesla_rail_half_width;
+extern short tesla_rail_outer_half_width;
+extern short tesla_rail_end_extension;
+extern short tesla_rail0_outer_color;
+extern short tesla_rail1_outer_color;
+extern short tesla_rail_tex_scroll;
+extern short tesla_rail_tex_scroll_speed;
+extern short tesla_ring_color;
+extern short tesla_ring_alt_color;
+extern short tesla_ring_tex;
 extern Vec4 D_L00_00166EC0_BEF58 __asm__("D_L00_00166EC0");
-extern Vec4 D_L00_001DC320[];
-extern Vec4 D_L00_001DC3E0[];
+extern Vec4 tesla_rail0_points[];
+extern Vec4 tesla_rail1_points[];
 extern OvlQuad D_L00_001DC360[][20];
-extern OvlQuad D_L00_001DC4A0[][20];
+extern OvlQuad tesla_ring_vertices[][20];
 void func_L00_002BF380_BEF58(void *, int, int, int, float, float, float, int) __asm__("func_L00_002BF380");
-void func_L00_002BF958(void *);
-void func_L00_002BFB98(void *);
+void draw_beam_pulse_quads(void *);
+void draw_beam_origin_camera_facing_quads(void *);
 long func_001F4868_BEF58(int) __asm__("func_001F4868");
-void func_001F9BF0(void *, void *, void *);
-void func_001F9CA0(void *, void *, void *);
-float func_001F9C78(void *, void *);
-void func_L00_001FD1D8(void *, void *, int);
+void FastVecSub(void *, void *, void *);
+void FastVecCross(void *, void *, void *);
+float FastVecDot(void *, void *);
+void draw_world_quad(void *, void *, int);
 
 /* scrolls the two texture-offset accumulators and draws the 10x20 band of textured quads between the D_L00_001DC060/001DC1A0 rings, skipping back-facing ones.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b94d0.c, FUN_L00_002bdc50. */
@@ -1503,9 +1503,9 @@ void draw_beam_ring_and_rail_effects(void *o) {
         y += (*(float *)&tesla_ring_tex_v_step);
     }
 }
-extern short D_L00_00161874;
-extern short D_L00_00161850;
-extern short D_L00_00161878;
+extern short tesla_rail_inner_tex;
+extern short tesla_rail_inner_color;
+extern short tesla_rail_outer_tex;
 typedef float RW_2BF380[4] __attribute__((aligned(16)));
 typedef struct { float v[4]; } P_2BF380;
 typedef struct {
@@ -1622,20 +1622,20 @@ void DrawScrollingRibbonColored(P_2BF380 *m, int a, int b, float sx, float sy, f
     }
     VU1_addGSregister(0x47, 0x5360B);
 }
-extern V_t D_L00_001DC220[];
+extern V_t tesla_quad_corners[];
 typedef struct {
     float v[4][4];
     int rgba[4];
     float uv[4][2];
     long gs[4];
 } QuadPkt;
-extern int D_L00_001618E8[3] MACRO_ADDR;
-extern float D_L00_001618B8[3] MACRO_ADDR;
-extern float D_L00_001618D8[3] MACRO_ADDR;
-extern Vec4A D_L00_001DD3A0[];
-extern Vec4A D_L00_001DD3D0[];
-extern short D_L00_00161834;
-extern short D_L00_00161830;
+extern int tesla_pulse_active[3] MACRO_ADDR;
+extern float tesla_pulse_alpha[3] MACRO_ADDR;
+extern float tesla_pulse_size[3] MACRO_ADDR;
+extern Vec4A tesla_pulse_pos[];
+extern Vec4A tesla_pulse_dir[];
+extern short tesla_pulse_alt_color;
+extern short tesla_pulse_color;
 
 /* Draw each active Tesla pulse as a camera-facing textured quad in the pulse colour. */
 void draw_beam_pulse_quads(void *unused) {
@@ -1680,10 +1680,10 @@ void draw_beam_pulse_quads(void *unused) {
         }
     }
 }
-extern short D_L00_00161888;
-extern short D_L00_00161884;
-extern short D_L00_0016187C;
-extern short D_L00_00161880;
+extern short tesla_origin_quad_color;
+extern short tesla_origin_forward_offset;
+extern short tesla_origin_quad_size;
+extern short tesla_origin_core_quad_size;
 
 typedef struct {
     V_t corner[4];
@@ -1745,8 +1745,8 @@ void draw_beam_origin_camera_facing_quads(void *mv) {
 }
 typedef struct { float x, y, z, w; } Vx __attribute__((aligned(16)));
 extern char D_0013E633[] NOT_SDA;
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern int D_L00_00173F40[];
+extern int coll_sphere(float, void *, int, void *);
+extern int coll_hit_result[];
 
 /* Nudge a position and ask the level helper about it, lowering a global on success. */
 int probe_moby_raised_sphere_collision(char *a, int b, Vx *c) {
@@ -1769,7 +1769,7 @@ int probe_moby_raised_sphere_collision(char *a, int b, Vx *c) {
     }
     return r;
 }
-extern char D_0013F450[];
+extern char g_hero[];
 /* Copy five state fields from a into their hero slots. */
 void save_state_fields_to_hero(char *a) {
     char *g = g_hero;
@@ -1844,13 +1844,13 @@ float probe_moby_landing_height(Vx *a, void *b) {
     }
     return 0.0f;
 }
-extern char * D_L00_001ABD80[];
-extern char D_0013F4D0[];
-extern float func_001F9D10(void *, void *);
-extern float func_001F9D48(void *, void *);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA850(float, float);
-extern float func_001F9B88(float);
+extern char * active_mobies[];
+extern char gHeroPos[];
+extern float FastVecDist(void *, void *);
+extern float vec_distance_xy(void *, void *);
+extern float fast_atan2(float, float);
+extern float FastDiffRots(float, float);
+extern float FastAbsF(float);
 extern int func_L00_001EFFF0_C0098(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b94d0.c, FUN_L00_002bed90. */
@@ -1927,15 +1927,15 @@ typedef struct {
 typedef struct { u8 pad0[0x18]; Hit *unk18; } XD;
 extern Hit * D_L00_00173F58_C0358 __asm__("D_L00_00173F58");
 extern XD D_L00_00173F40_C0358 __asm__("D_L00_00173F40");
-extern Vec4 D_L00_00173F60;
-extern s32 func_001FA898(f32);
-extern f32 func_L00_001FF860(f32, f32);
-extern f32 func_001FA748(f32, f32);
-extern f32 func_001FA790(f32, f32);
-extern f32 func_001FA850(f32, f32);
-extern f32 func_001F9F90(f32);
-extern f32 func_001F9FA8(f32);
-extern f32 func_001F9D10(void *, void *);
+extern Vec4 collision_hit_point;
+extern s32 truncate_float_to_s32(f32);
+extern f32 fast_atan2(f32, f32);
+extern f32 FastAddRots(f32, f32);
+extern f32 FastSubRots(f32, f32);
+extern f32 FastDiffRots(f32, f32);
+extern f32 FastCos(f32);
+extern f32 FastSin(f32);
+extern f32 FastVecDist(void *, void *);
 extern s32 func_L00_001EFFF0_C0358(void *, void *, s32, void *, s32) __asm__("func_L00_001EFFF0");
 extern f32 func_L00_002BFF88_C0358(void *, void *) __asm__("func_L00_002BFF88");
 
@@ -2085,10 +2085,10 @@ f32 select_moby_heading_by_collision_probes(Mob *m, Vec4 *pos, f32 *tgt, f32 *ou
     }
     return best;
 }
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001FA888(int);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern float IntToFloat(int);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
 
 /* Steps a vector by n repeated additions of the normalised difference. */
 void accumulate_local_vector_steps(char *a, char *b, int n) {
@@ -2102,11 +2102,11 @@ void accumulate_local_vector_steps(char *a, char *b, int n) {
         FastVecAdd(t, t, d);
     }
 }
-extern float func_001F9D48(void *, void *);
-extern float func_001F9B88(float);
-extern float func_L00_001FF860(float, float);
-extern float func_L00_0025BC48(void *, void *, int, float, float);
-extern float D_0015EE6C MACRO_ADDR;
+extern float vec_distance_xy(void *, void *);
+extern float FastAbsF(float);
+extern float fast_atan2(float, float);
+extern float jump_speed_4318(void *, void *, int, float, float);
+extern float g_frame_time MACRO_ADDR;
 
 /* Updates a homing state block o from target m: turn rate, heading, and a speed clamped to seven times a global.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_002b94d0.c, FUN_L00_002bf8b0. */
@@ -2259,7 +2259,7 @@ int try_start_moby_hop(Mob_2C0CF8 *m, Blk_2C0CF8 *p, void *q, int flag) {
     m->bBC = 0xD;
     return 1;
 }
-extern void func_L00_0025E210(void *);
+extern void copy_hero_moby_field_38(void *);
 
 /* Spawn a doom bot (class 0xBA) for owner at pos with rot; returns the moby or 0. */
 char *spawn_doom_bot(int owner, void *pos, void *rot) {
@@ -2298,10 +2298,10 @@ typedef struct {
     SubStruct *sub;
 } TopStruct;
 
-extern TopStruct *D_L00_00173F58;
+extern TopStruct *g_coll_hit_moby;
 
-extern int func_L00_001EFFF0(Vec4f *, Vec4f *, int, void *, int);
-extern int func_L00_001F3958(void);
+extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
+extern int CollType(void);
 
 /*
  * Nudges a copy of a0's vector by -0.3/+1.0 on Z, hands both to the

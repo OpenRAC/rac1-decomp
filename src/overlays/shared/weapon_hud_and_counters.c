@@ -77,15 +77,15 @@ void apply_group_entry_adjustment(int n) {
     }
     D_L00_0017E5D8_235ca0.t->c[n] = 0;
 }
-extern volatile s32 D_L00_0016009C MACRO_ADDR;
-extern volatile int D_L00_0015FB28 MACRO_ADDR;
-extern volatile int D_L00_0015FB2C MACRO_ADDR;
-extern volatile int D_L00_0015FB30 MACRO_ADDR;
-extern volatile int D_L00_0015FB34 MACRO_ADDR;
-extern int D_L00_00160098 MACRO_ADDR;
-extern volatile int D_L00_001600A0 MACRO_ADDR;
-extern volatile int D_L00_001600A8 MACRO_ADDR;
-extern short D_L00_0015F808;
+extern volatile s32 level_mobys_end MACRO_ADDR;
+extern volatile int alt_moby_array_start MACRO_ADDR;
+extern volatile int alt_level_mobys_end MACRO_ADDR;
+extern volatile int alt_moby_array_last MACRO_ADDR;
+extern volatile int alt_moby_spawn_pvar_pool MACRO_ADDR;
+extern int moby_array_start MACRO_ADDR;
+extern volatile int moby_array_last MACRO_ADDR;
+extern volatile int moby_spawn_pvar_pool MACRO_ADDR;
+extern short moby_context_index;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/hud/00234fd0.c, FUN_L00_00235668. */
 void select_moby_context(int state) {
@@ -122,9 +122,9 @@ typedef struct {
     char pad80[0x10];
 } HudBank;
 
-extern HudBank D_L00_0017DD50[];
-extern int func_001FFB38(int, int, int, int, int, int, int);
-extern void func_001FFC48(void *);
+extern HudBank hud_elements[];
+extern int queue_animation_update(int, int, int, int, int, int, int);
+extern void apply_pending_animation(void *);
 
 /* The level's HUD bank reset, a shorter func_001FF6B8 (src/game/hud.c):
    for each of the 13 bank records at D_L00_0017DD50, func_001FFB38(i,
@@ -186,10 +186,10 @@ int hud_screen_position(HudElem *rec, int *x, int *y) {
     }
     return 0;
 }
-extern float func_001FA888(int);
-extern int func_001FA898(float);
-extern float D_L00_0017E4A0[];
-extern float D_L00_0017E500[];
+extern float IntToFloat(int);
+extern int truncate_float_to_s32(float);
+extern float hud_slide_ramp_timed[];
+extern float hud_slide_ramp_idle[];
 
 /* Slides a HUD element in or out from its anchored edge: step T moves by
    D (back while the timer +0x7C runs, forward otherwise), clamped to
@@ -251,8 +251,8 @@ void initialize_numeric_hud_values_and_dimensions(HudElem *e) {
  }
 }
 INCLUDE_ASM("asm/overlays", func_L00_002366DC);
-extern int func_001F9850(int);
-extern void func_L00_00236610(HudElem *);
+extern int scale_ticks(int);
+extern void initialize_numeric_hud_values_and_dimensions(HudElem *);
 
 /* Resets a HUD element: a timer of 30 + func_001F9850(180) (+0x7C),
    offsets 0x48 / 0x4A cleared, then func_L00_00236610. */
@@ -356,7 +356,7 @@ void Hud_UpdateCounter(HudElem *e) {
     }
     update_hud_animation_frame((char *)e + 0x40);
 }
-extern int func_L00_0023B440(char *);
+extern int update_hud_animation_frame(char *);
 
 /* A counter whose digits (+0x70, +0x71) drift at random: the target +0x78
    is *(+0x0C) clamped to [0, +0x08]; when it differs from the shown value
@@ -405,12 +405,12 @@ void update_numeric_hud_element_direct_value(HudElem *e) {
     }
     update_hud_animation_frame((char *)e + 0x40);
 }
-extern float func_002140F8(float, float);
-extern float D_L00_0017E760[][4];
-extern short D_L00_0015F830;
-extern short D_L00_0015F834;
-extern short D_L00_0015F838;
-extern short D_L00_0015F83C;
+extern float random_float_between(float, float);
+extern float hud_star_particles[][4];
+extern short star_init_limit0_gp;
+extern short star_init_limit1_gp;
+extern short star_init_limit2_gp;
+extern short hud_star_column_count;
 
 /* fills 100 hud particle records with randomised positions and drift */
 void Hud_InitParticles(HudElem *e) {
@@ -440,11 +440,11 @@ void Hud_InitParticles(HudElem *e) {
     }
 }
 extern void func_L00_00236830_v(HudElem *) __asm__("func_L00_00236830");
-extern int D_L00_0015F4F8 MACRO_ADDR;
-extern float D_L00_0017E760[][4];
-extern short D_L00_0015F830;
-extern short D_L00_0015F834;
-extern short D_L00_0015F838;
+extern int rendered_frame_count MACRO_ADDR;
+extern float hud_star_particles[][4];
+extern short star_init_limit0_gp;
+extern short star_init_limit1_gp;
+extern short star_init_limit2_gp;
 
 /* bounces the drifting particles around a box that depends on their index, after updating its
    HUD element (the element it is the callback of, passed on in $a0) */
@@ -494,22 +494,22 @@ void Hud_UpdateParticles(HudElem *e) {
         p += 8;
     }
 }
-extern int func_L00_00236400(HudElem *rec, int *x, int *y);
-extern void func_L00_00236468(HudElem *, int *, int *, int, int);
-extern void func_00201640(int, int, int, int, long, long);
-extern float func_001F9878(float);
-extern int func_L00_00217570(int, int);
-extern int func_00200198(int, int);
-extern void func_001F9BC0(void *);
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern void func_L00_001FF2F8(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_002008B8(int, int, int, int, int, int);
-extern void func_L00_0023C458(int tex, int x, int y, int w, int h, int alpha);
-extern short D_L00_0015F840;
-extern short D_L00_0015F844;
-extern short D_L00_0015F848;
-extern short D_L00_0015F84C;
+extern int hud_screen_position(HudElem *rec, int *x, int *y);
+extern void apply_hud_slide_offset(HudElem *, int *, int *, int, int);
+extern void draw_hud_rect_blended(int, int, int, int, long, long);
+extern float multiply_global_factor(float);
+extern int allocate_hero_voice_for_entry(int, int);
+extern int GetIconFrame(int, int);
+extern void clear_u64_value(void *);
+extern void FastVecSub(void *dst, void *a, void *b);
+extern void vec_mul_components(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
+extern void draw_rotated_hud_sprite(int tex, int x, int y, int w, int h, int alpha);
+extern short hud_stars_width;
+extern short hud_star_height;
+extern short hud_stars_scale_x;
+extern short hud_stars_scale_y;
 
 // HUD element update: places sprite pairs along a 100-step arc
 int draw_hud_stars(HudElem *rec) {
@@ -652,17 +652,17 @@ int draw_hud_stars(HudElem *rec) {
  * neg/div chain early but its *16 and store late, which gives the
  * scale-Y chain the higher local-alloc priority ($f4) as in retail.
  */
-extern int func_00200198(int, int);
-extern void func_L00_0023C458(int, int, int, int, int, int);
-extern void func_001F9BC0(void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_001FF2F8(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_002008B8(int, int, int, int, int, int);
-extern short D_L00_0015F840;
-extern short D_L00_0015F844;
-extern short D_L00_0015F848;
-extern short D_L00_0015F84C;
+extern int GetIconFrame(int, int);
+extern void draw_rotated_hud_sprite(int, int, int, int, int, int);
+extern void clear_u64_value(void *);
+extern void FastVecSub(void *, void *, void *);
+extern void vec_mul_components(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
+extern short hud_stars_width;
+extern short hud_star_height;
+extern short hud_stars_scale_x;
+extern short hud_stars_scale_y;
 
 /* Draws a HUD element's backdrop and the 100 entries of its particle table that are due */
 int draw_uniform_size_hud_stars(HudElem *e) {
@@ -738,24 +738,24 @@ void DefaultVtbl_DeleteMoby(void *e) {
     Hud_UpdateCounter(e);
 }
 typedef struct { float x, y, z, w; } __attribute__((aligned(16))) HudPoint_237B90;
-extern int func_001F6600(const char *, int);
-extern void func_00200468(int, int, int, int, int, int);
-extern void func_00200650(int, int, int, int, int, int);
-extern int func_001F6EA8(int, int, long, void *, int);
-extern float func_001F9D10(void *, void *);
-extern void *func_001FE540(int);
+extern int measure_text_width_regular(const char *, int);
+extern void HudSprite(int, int, int, int, int, int);
+extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
+extern int FontPrintCenter(int, int, long, void *, int);
+extern float FastVecDist(void *, void *);
+extern void *msg_string(int);
 extern int func_00116248(char *, const char *, ...);
-extern void func_00201A38(int, int, int, char *);
-extern int D_0015EE80 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
+extern void draw_framed_text(int, int, int, char *);
+extern int pal_mode MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
 extern int D_L00_0015F728 MACRO_ADDR;
-extern short D_L00_0015F850;
-extern unsigned char D_L00_0017E630[];
-extern float D_0013F4D0[];
-extern int D_0015EF58[] MACRO_ADDR;
-extern int D_0015EF68[] MACRO_ADDR;
-extern const char D_L00_001E8840[];
-extern const char D_L00_0015F858[];
+extern short hud_text_panel_y;
+extern unsigned char hud_text_panel_string[];
+extern float gHeroPos[];
+extern int race_best_times[] MACRO_ADDR;
+extern int race_best_records[] MACRO_ADDR;
+extern const char hud_text_panel_time_format[];
+extern const char hud_text_panel_score_format[];
 /* Draw the fading HUD text panel, plus the best race time and score near the race start points. */
 int draw_hud_text_panel(char *e) {
     int w1, tex, l1, y, i, width, left, w2, l2, alpha, color, c, level, elapsed, score, interval, per, seconds, minutes, rem, idx;
@@ -860,9 +860,9 @@ int draw_hud_text_panel(char *e) {
     }
     return *(int *)(e + 0x58);
 }
-extern char D_0013F450[];
-extern unsigned char D_0013E629 NOT_SDA;
-extern void func_L00_00236830(HudElem *);
+extern char g_hero[];
+extern unsigned char gGoldSuckCannon NOT_SDA;
+extern void Hud_UpdateCounter(HudElem *);
 
 /* Sets E up with func_L00_00236830, then +0x08 to 10 or, without the
    flag D_0013E629, 5. In mode 9 (D_0013F450 + 0x10B8) with +0x20A4 clear
@@ -889,12 +889,12 @@ void update_hud_counter_cap_and_visibility(HudElem *e) {
  * the D_L00_0015F844 load is a scalar MEM (no anti-dep on the e->w/e->h
  * stores), which moves it later in sched1 and gives it $a3 in local-alloc.
  */
-extern short D_L00_0015F840;
-extern short D_L00_0015F844;
-extern void func_00201640(int, int, int, int, long, long);
-extern int func_00200198(int, int);
-extern void func_L00_00236468(HudElem *, int *, int *, int, int);
-extern void func_L00_0023C458(int, int, int, int, int, int);
+extern short hud_stars_width;
+extern short hud_star_height;
+extern void draw_hud_rect_blended(int, int, int, int, long, long);
+extern int GetIconFrame(int, int);
+extern void apply_hud_slide_offset(HudElem *, int *, int *, int, int);
+extern void draw_rotated_hud_sprite(int, int, int, int, int, int);
 
 /* Draws a HUD gauge frame. */
 int Hud_DrawGaugeFrame(HudElem *e) {
@@ -971,13 +971,13 @@ typedef struct {
     char pad_3A[0x4C - 0x3A];
 } SrcElem;
 
-extern int D_L00_0015FB48 MACRO_ADDR;
-extern void *D_L00_0015FB78 MACRO_ADDR;
-extern DestElem D_L00_0017DBC0[8];
-extern SrcElem D_L00_00179BC0[];
-extern short D_L00_0015F7F8;
-extern short D_L00_0015F7FC;
-extern short D_L00_0015F80C;
+extern int quick_select_slot_count MACRO_ADDR;
+extern void *hud_selector_slot_tables MACRO_ADDR;
+extern DestElem quick_select_slot_entries[8];
+extern SrcElem item_defs[];
+extern short quick_select_width;
+extern short quick_select_height;
+extern short quick_select_page;
 extern int D_0014171B_i[] __asm__("D_0014171B");
 
 // initializes a quick-select object and fills its 8-entry table from the info table
@@ -1007,7 +1007,7 @@ void initialize_eight_slot_hud_selector(Obj238478 *o) {
         d++;
     }
 }
-int func_001F9850(int);
+int scale_ticks(int);
 typedef struct {
     int f0, f4, f8, fC, f10, f14, f18;
 } Ent_38530;
@@ -1036,13 +1036,13 @@ typedef struct {
     int w1D8;
 } G_t_38530;
 extern G_t_38530 D_0013CA40_38530 __asm__("D_0013CA40");
-extern short D_L00_0015F860;
+extern short quick_select_fade_steps;
 extern int D_L00_0015FB54_38530 SDATA(D_L00_0015FB54);
 extern Ent_38530 ** D_L00_0015FB78_38530 __asm__("D_L00_0015FB78") MACRO_ADDR;
-extern int D_L00_0015FB50 MACRO_ADDR;
-extern int D_L00_0015FB4C MACRO_ADDR;
-extern float func_L00_001FF860(float, float);
-extern int func_001FFCB0(int);
+extern int quick_select_last_state MACRO_ADDR;
+extern int quick_select_close_frame MACRO_ADDR;
+extern float fast_atan2(float, float);
+extern int remove_hud_item(int);
 typedef struct {
     u8 p0[0x10B8];
     int w10B8;
@@ -1065,22 +1065,22 @@ typedef struct {
     u8 p10[8];
 } Route;
 extern Progress D_0013F450_38530 __asm__("D_0013F450");
-extern Stats D_00141948;
+extern Stats usage_stats;
 extern Route D_L00_001C43B0_38530[] __asm__("D_L00_001C43B0");
-extern int D_0013D530[];
+extern int weapon_ammo_counts[];
 extern u8 D_00141722[];
-extern short D_L00_0015F868;
-extern short D_L00_0015F864;
-extern int D_L00_0017DD18;
-extern int D_L00_0017DD1C;
-extern int D_L00_0017DD20;
-extern int D_L00_0017DD24;
-extern int D_0015EFA4 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
-extern int func_001F9938(void *);
-extern float func_001FA790(float, float);
-extern float func_001FA850(float, float);
-extern float func_001FA7D8(float);
+extern short quick_select_snap_margin;
+extern short quick_select_slot_angle_offset;
+extern int quick_select_default_left_slot;
+extern int quick_select_default_right_slot;
+extern int quick_select_default_up_slot;
+extern int quick_select_default_down_slot;
+extern int gameplay_event_frame_count MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern int FastDecTimer(void *);
+extern float FastSubRots(float, float);
+extern float FastDiffRots(float, float);
+extern float FastNormalizeAngle(float);
 
 /* Picks slot w74 from the stick angle (or steps it with the 0x1000-0x8000 pad bits), counts hold frames in b71/b70, records the slot's entry when released, and closes when b70 runs out.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/text/002377b8.c, FUN_L00_00237ba0. */
@@ -1178,44 +1178,44 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
 }
 typedef struct { int id; char pad[0x14]; int item; } E_238C30;
 typedef struct { char pad[0x46]; short h46, h48; char pad4A[2]; } TI_238C30;
-extern int func_00200198(int, int);
-extern void func_00200468(int, int, int, int, int, int);
-extern void func_L00_0023BAB8(char *, int, int, int, int, int);
+extern int GetIconFrame(int, int);
+extern void HudSprite(int, int, int, int, int, int);
+extern void HudFrame(char *, int, int, int, int, int);
 extern int func_00116248(char *, const char *, ...);
-extern int func_001FA8A8(int, int, float);
-extern float func_001FA748(float, float);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern int func_001F6EA8(int, int, long, void *, int);
-extern void * func_001FE540(int);
+extern int FastTweenColor(int, int, float);
+extern float FastAddRots(float, float);
+extern float FastCos(float);
+extern float FastSin(float);
+extern int FontPrintCenter(int, int, long, void *, int);
+extern void * msg_string(int);
 extern int func_00116810(char *);
 extern unsigned char D_0013E15A[];
-extern short D_L00_0015F890;
-extern short D_L00_0015F86C;
-extern short D_L00_0015F8A4;
-extern short D_L00_0015F8A0;
-extern short D_L00_0015F800;
-extern short D_L00_0015F804;
-extern short D_L00_0015F870;
-extern short D_L00_0015F874;
-extern short D_L00_0015F878;
-extern short D_L00_0015F87C;
-extern short D_L00_0015F880;
-extern short D_L00_0015F884;
-extern short D_L00_0015F888;
-extern short D_L00_0015F88C;
-extern short D_L00_0015F894;
-extern short D_L00_0015F898;
-extern short D_L00_0015F89C;
-extern int D_L00_0015F6B0 MACRO_ADDR;
-extern char D_L00_0015F8A8[];
-extern char D_0013D50F[];
+extern short quick_select_pulse_period;
+extern short quick_select_ring_radius;
+extern short quick_select_ring_aspect;
+extern short quick_select_unselected_alpha_scale;
+extern short quick_select_center_x;
+extern short quick_select_center_y;
+extern short quick_select_name_color_from;
+extern short quick_select_name_color_to;
+extern short quick_select_text_shadow_from;
+extern short hud_item_selector_text_shadow_color_to;
+extern short quick_select_empty_ammo_color_from;
+extern short quick_select_empty_ammo_color_to;
+extern short quick_select_ammo_color_from;
+extern short hud_item_selector_nonzero_ammo_text_color_to;
+extern short hud_item_selector_title_with_ammo_y_offset;
+extern short hud_item_selector_split_title_without_ammo_y_offset;
+extern short quick_select_name_y_single;
+extern int level_frame_counter MACRO_ADDR;
+extern char hud_ammo_format[];
+extern char menu_item_enabled_115[];
 
 #define GI(x) (*(int *)&(x))
 #define GF(x) (*(float *)&(x))
 /* Draw the quick select panel: opening fade, pulsing marker, item icons and the selected name. */
 int draw_hud_item_selector_panel(HudElem *rec) {
-    extern char D_L00_001C43B0[];
+    extern char item_price_table[];
     char *wr;
     int x, y, half_w, half_h, alpha;
     int marker_alpha;
@@ -1357,10 +1357,10 @@ int draw_hud_item_selector_panel(HudElem *rec) {
     }
     return rec->w;
 }
-extern int D_L00_0015FB48 MACRO_ADDR;
-extern void *D_L00_0015FB78 MACRO_ADDR;
-extern short D_L00_0015F820;
-extern short D_L00_0015F80C;
+extern int quick_select_slot_count MACRO_ADDR;
+extern void *hud_selector_slot_tables MACRO_ADDR;
+extern short radial_select_slot_tables;
+extern short quick_select_page;
 /* Set up the HUD selector for four slots: slot tables, size, timer and first page. */
 void initialize_four_slot_hud_selector(char *a) {
     int x = *(int *)&quick_select_width;
@@ -1381,16 +1381,16 @@ typedef struct {
     u8 p0[0x64]; int w64; u8 p68[4]; int w6C; u8 b70; u8 b71; u8 p72[2]; int w74; int w78; int w7C;
 } Obj;
 typedef struct { u8 p0[0x148]; float f148; float f14C; u8 p150[0x70]; int w1C0; int w1C4; u8 p1C8[4]; int w1CC; } G_t;
-extern G_t D_0013CA40;
+extern G_t g_controller_state;
 extern int D_L00_0017E604;
 extern short D_L00_0015FB48_39510 __asm__("D_L00_0015FB48");
 extern int D_L00_0015FB54_export __asm__("D_L00_0015FB54") MACRO_ADDR;
 extern Ent ** D_L00_0015FB78_39510 __asm__("D_L00_0015FB78") MACRO_ADDR;
-extern int D_L00_0017DD38;
-extern int D_L00_0017DD3C;
-extern int D_L00_0017DD40;
-extern int D_L00_0017DD44;
-extern int D_00141710[];
+extern int radial_select_default_left_slot;
+extern int radial_select_default_right_slot;
+extern int radial_select_default_up_slot;
+extern int radial_select_default_down_slot;
+extern int radial_select_choice[];
 
 /* Updates radial HUD selection and fades, closing it when the display fade reaches zero. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_text_002377b8.c, FUN_L00_00238b80. */
 void update_hud_radial_selector_selection_and_visibility(Obj *o) {
@@ -1601,7 +1601,7 @@ typedef struct {
     short unk6;
 } HudCounter;
 
-extern HudCounter D_L00_0015FB68 MACRO_ADDR;
+extern HudCounter health_hud_wobble_counter MACRO_ADDR;
 
 /* func_L00_00236710 for a 64 x 64 element with offset 0x48 at 32, then
    points +0x80 at the four shorts of D_L00_0015FB68 and sets them to
@@ -1621,7 +1621,7 @@ void initialize_hud_element_with_counters(HudElem *e) {
     health_hud_wobble_counter.unk4 = 0;
     health_hud_wobble_counter.unk6 = 1;
 }
-extern short D_L00_0015F8D0;
+extern short health_hud_fade_steps;
 
 /* Updates the health HUD element: advances the wobble counters in its HudCounter (+0x80), clamps the target (+0x78) to +0x08, and steps the two digits (+0x70, +0x71) up or down. */
 void update_health_hud_animation_and_visibility(HudElem *e) {
@@ -1686,20 +1686,20 @@ void update_health_hud_animation_and_visibility(HudElem *e) {
 }
 extern char D_0013E633[];
 extern int D_0015EE80_m __asm__("D_0015EE80") MACRO_ADDR;
-extern int D_0015EEA0 MACRO_ADDR;
-extern short D_L00_0015F8E8;
-extern short D_L00_0015F900;
-extern short D_L00_0015F8F0;
-extern short D_L00_0015F8FC;
-extern short D_L00_0015F8EC;
-extern short D_L00_0015F8D8;
-extern short D_L00_0017E578[];
-extern short D_L00_0017E560[];
+extern int hero_max_health MACRO_ADDR;
+extern short health_hud_y;
+extern short health_hud_backing_alpha;
+extern short health_hud_backing_y_offset;
+extern short health_hud_cap_size;
+extern short health_hud_second_row_y_offset;
+extern short health_hud_icon_offsets;
+extern short health_hud_icon_offsets_8[];
+extern short health_hud_icon_offsets_5[];
 
-extern int func_00200198(int, int);
-extern void func_00200650(int, int, int, int, int, int);
-extern void func_00200468(int, int, int, int, int, int);
-extern void func_L00_0023BAB8(char *, int, int, int, int, int);
+extern int GetIconFrame(int, int);
+extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
+extern void HudSprite(int, int, int, int, int, int);
+extern void HudFrame(char *, int, int, int, int, int);
 
 /* Draws the health bar (and its nanotech orbs) of a HUD element; returns the element's field 0x58. */
 int draw_health_hud_panel(char *e) {
@@ -1808,8 +1808,8 @@ int draw_health_hud_panel(char *e) {
     }
     return *(int *)&((Moby *)e)->anim_speed;
 }
-extern HudCounter D_L00_0015FB70 MACRO_ADDR;
-extern void func_L00_0023B0F8(HudElem *);
+extern HudCounter bolt_counter_icon_tick MACRO_ADDR;
+extern void initialize_numeric_hud_timer_and_base_dimensions(HudElem *);
 
 /* Sets E up with func_L00_0023B0F8, points +0x80 at the shorts of
    D_L00_0015FB70 (declared like D_L00_0015FB68, out of $gp's reach) and
@@ -1821,9 +1821,9 @@ void initialize_bolt_counter_hud(HudElem *e) {
 }
 /* Words reached through $gp: under -G2 that takes declarations of at
    most two bytes. */
-extern short D_L00_0015F904;
-extern short D_L00_0015F908;
-extern int D_0015EE98 MACRO_ADDR;
+extern short bolt_panel_open_steps_gp;
+extern short bolt_text_fade_steps_gp;
+extern int gBolts MACRO_ADDR;
 
 /* Steps the element's tick (the short at +0x80) modulo 60; when the value
    D_0015EE98 changes, records it (+0x74) and restarts the timer at
@@ -1882,29 +1882,29 @@ typedef struct {
     int unk7C;
     void *unk80;
 } HudElem_3A788;
-extern s32 func_001FA898(f32);
-extern void func_00200650(s32, s32, s32, s32, s32, s32);
-extern s32 D_001414D4;
+extern s32 truncate_float_to_s32(f32);
+extern void draw_hud_sprite_flipped(s32, s32, s32, s32, s32, s32);
+extern s32 hero_current_state;
 extern s32 D_0015EE80_3A788 __asm__("D_0015EE80") MACRO_ADDR;
-extern s32 D_0015EE98 MACRO_ADDR;
-extern s32 D_0015EE88 MACRO_ADDR;
-extern short D_L00_0015F90C;
-extern short D_L00_0015F910;
-extern short D_L00_0015F914;
-extern short D_L00_0015F918;
-extern short D_L00_0015F91C;
-extern short D_L00_0015F920;
-extern short D_L00_0015F924;
-extern short D_L00_0015F928;
-extern short D_L00_0015F92C;
-extern char D_L00_0015F930[];
-extern char D_L00_0015F938[];
-extern char D_L00_0015F940[];
-extern f32 func_001FA888(int);
-extern int func_001FA8A8(int, int, f32);
+extern s32 gBolts MACRO_ADDR;
+extern s32 g_game_language MACRO_ADDR;
+extern short bolt_text_color_clear;
+extern short bolt_text_color_opaque;
+extern short bolt_count_text_x;
+extern short bolt_count_text_y;
+extern short bolt_separator_x;
+extern short bolt_separator_y;
+extern short bolt_separator_alt_x;
+extern short bolt_separator_alt_y;
+extern short digit_width;
+extern char bolt_count_format[];
+extern char bolt_separator_string[];
+extern char bolt_separator_alt_string[];
+extern f32 IntToFloat(int);
+extern int FastTweenColor(int, int, f32);
 extern void func_L00_0023BAB8_3A788(void *, int, int, int, int, int) __asm__("func_L00_0023BAB8");
 extern int func_00116248_3A788() __asm__("func_00116248");
-extern void func_001F6CF8(int, int, int, char *, int);
+extern void font_print_right(int, int, int, char *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/text/002377b8.c, FUN_L00_00239df8. */
 int draw_bolt_counter_hud_panel(HudElem_3A788 *m)
@@ -2015,22 +2015,22 @@ void update_hud_panel_visibility(HudElem *e) {
         }
     }
 }
-extern int D_0013E600[];
-extern int D_0015EE80 MACRO_ADDR;
-extern int D_L00_0015F6B0 MACRO_ADDR;
-extern short D_L00_0015F9CC;
-extern short D_L00_0015F9D0;
-extern short D_L00_0015F9D4;
-extern short D_L00_0015F9D8;
-extern short D_L00_0015F9DC;
-extern short D_L00_0015F9E0;
-extern short D_L00_0015F9E4;
-extern short D_L00_0015F9E8;
-extern char D_L00_0015F9F0[];
+extern int g_screen_extent[];
+extern int pal_mode MACRO_ADDR;
+extern int level_frame_counter MACRO_ADDR;
+extern short bolt_exclamation_panel_alpha;
+extern short bolt_exclamation_panel_width;
+extern short bolt_exclamation_panel_right_x;
+extern short bolt_exclamation_text_x;
+extern short bolt_exclamation_text_y;
+extern short bolt_exclamation_color_from;
+extern short bolt_exclamation_color_to;
+extern short bolt_exclamation_pulse_ticks;
+extern char bolt_exclamation_format[];
 extern int func_00116248(char *str, const char *fmt, ...);
-extern float func_001F9FA8(float);
-extern int func_001FA8A8(int, int, float);
-extern void func_L00_001FB7F8(int, int, int, char *, int);
+extern float FastSin(float);
+extern int FastTweenColor(int, int, float);
+extern void print_text_with_texture_3(int, int, int, char *, int);
 
 /* Draw the bolt counter panel sliding in with its fade; skipped in some hero states. */
 int draw_hud_bolt_exclamation_panel(char *m) {
@@ -2094,10 +2094,10 @@ int draw_hud_bolt_exclamation_panel(char *m) {
     return *(int *)(m + 0x58);
 }
 extern short D_00140A86 NOT_SDA;
-extern int func_00200198(int, int);
-extern void func_L00_00236468(HudElem *, int *, int *, int, int);
-extern void func_L00_0023C058(int, int, int, int, int, int);
-extern void func_00200468(int, int, int, int, int, int);
+extern int GetIconFrame(int, int);
+extern void apply_hud_slide_offset(HudElem *, int *, int *, int, int);
+extern void draw_cropped_hud_sprite(int, int, int, int, int, int);
+extern void HudSprite(int, int, int, int, int, int);
 
 /* Draws a HUD meter: a 256 x 64 element placed from its position (+0x50,
    +0x54) by func_L00_00236400 and func_L00_00236468, then texture 0x7558
@@ -2131,22 +2131,22 @@ void initialize_numeric_hud_timer_and_base_dimensions(HudElem *e) {
     e->h = 0x20;
     initialize_numeric_hud_values_and_dimensions(e);
 }
-extern int D_0015EE80 MACRO_ADDR;
-extern short D_L00_0015F9F4;
-extern short D_L00_0015F9F8;
-extern short D_L00_0015F9FC;
-extern short D_L00_0015FA00;
-extern short D_L00_0015FA04;
-extern short D_L00_0015FA08;
-extern short D_L00_0015FA0C;
-extern short D_L00_0015FA10;
-extern short D_L00_0015FA14;
-extern short D_L00_0015FA18;
-extern char D_L00_0015F8A8[];
-extern void func_00200650(int, int, int, int, int, int);
-extern void func_L00_0023BAB8(char *, int, int, int, int, int);
+extern int pal_mode MACRO_ADDR;
+extern short weapon_hud_open_steps;
+extern short weapon_hud_text_fade_steps;
+extern short weapon_hud_panel_width;
+extern short weapon_hud_wide_panel_width;
+extern short weapon_hud_ammo_color_from;
+extern short weapon_hud_ammo_color_to;
+extern short weapon_hud_empty_color_from;
+extern short weapon_hud_empty_color_to;
+extern short weapon_hud_text_x;
+extern short weapon_hud_text_y;
+extern char hud_ammo_format[];
+extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
+extern void HudFrame(char *, int, int, int, int, int);
 extern int func_00116248(char *, const char *, ...);
-extern int func_001FA8A8(int, int, float);
+extern int FastTweenColor(int, int, float);
 
 /* Draws the weapon HUD tile: three-part frame, weapon icon and ammo text with shadow, faded by the slide-in timers. */
 int draw_weapon_ammo_hud_panel(char *m) {
@@ -2193,9 +2193,9 @@ int draw_weapon_ammo_hud_panel(char *m) {
     return *(int *)(m + 0x58);
 }
 LINKER_REMNANT("asm/overlays", func_L00_0023B430);
-extern int func_002140B0(int);
-extern char *D_L00_0017E5F4;
-extern int D_L00_0015F6B0 MACRO_ADDR;
+extern int random_integer_below(int);
+extern char *hud_anim_sequences;
+extern int level_frame_counter MACRO_ADDR;
 
 /* Evaluates an animated counter: picks a frame index from a table entry by mode (hold, loop, ping-pong, random pause) and stores it at +4. */
 int update_hud_animation_frame(char *p) {
@@ -2290,13 +2290,13 @@ typedef struct {
     char pad10[8];
 } WeaponRec;
 
-extern WeaponRec D_L00_001C43B0[];
-extern char D_0013D50F[];
-extern short D_L00_0015FA40;
+extern WeaponRec item_price_table[];
+extern char menu_item_enabled_115[];
+extern short weapon_hud_suspended;
 extern int D_hud_pair[2] __asm__("D_L00_0015FA44") MACRO_ADDR;
-extern void func_001FFDA0(int, int);
-extern void func_L00_0023D750(void);
-extern int func_L00_0023B140(char *);
+extern void Hud_SetBarValueById(int, int);
+extern void HudWeaponUpdate(void);
+extern int draw_weapon_ammo_hud_panel(char *);
 
 /* Shows or hides the weapon HUD element depending on the current weapon. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_text_002377b8.c, FUN_L00_0023adb8. */
 void update_weapon_hud_state(void) {
@@ -2336,9 +2336,9 @@ void update_weapon_hud_state(void) {
 }
 /* Reached through $gp: under -G2 that takes a declaration of at most two
    bytes, though the variable is a word. */
-extern int D_L00_0015FA44 MACRO_ADDR;
-extern int D_L00_0015FA48 MACRO_ADDR;
-extern void func_L00_00236208(void);
+extern int weapon_hud_item MACRO_ADDR;
+extern int weapon_hud_handle MACRO_ADDR;
+extern void reset_hud_animation_channels(void);
 
 /* Resets the HUD banks (func_L00_00236208), then D_L00_0015FA40 = 1,
    D_L00_0015FA48 = -1 and D_L00_0015FA44 = 0. */
@@ -2348,7 +2348,7 @@ void reset_hud_and_suspend_weapon_updates(void) {
     weapon_hud_handle = -1;
     weapon_hud_item = 0;
 }
-extern char D_L00_0017E5D8[];
+extern char texture_group_header[];
 
 // Places a HUD element: looks up its size, offsets x/y by the anchor flags and draws it.
 void HudFrame(char *e, int id, int x, int y, int flags, int alpha) {
@@ -2384,10 +2384,10 @@ void HudFrame(char *e, int id, int x, int y, int flags, int alpha) {
         HudSprite(id, x, y, w, h, alpha);
     }
 }
-extern char D_L00_0017E5D8[];
-extern int *D_L00_00161280 MACRO_ADDR;
-extern int D_0013E600[];
-extern long func_00200248(int);
+extern char texture_group_header[];
+extern int *dma_packet_cursor MACRO_ADDR;
+extern int g_screen_extent[];
+extern long GetFrameTex(int);
 
 /* The level's func_00200468 (src/game/hud.c) with the UV given: draws
    texture TEX as a sprite at (x, y), w x h, with ALPHA, through the
@@ -2424,7 +2424,7 @@ void draw_cropped_hud_sprite(int tex, int x, int y, int w, int h, int alpha) {
     p[9] = 0;
     dma_packet_cursor = (int *)((char *)dma_packet_cursor + 0x50);
 }
-extern int *D_L00_00161280 __attribute__((section(".sdata")));
+extern int *dma_packet_cursor __attribute__((section(".sdata")));
 
 typedef struct {
     u8 pad_00[0x6];
@@ -2527,31 +2527,31 @@ void func_L00_0023D750_r(O23D750 *p) {
     }
 }
 LINKER_REMNANT("asm/overlays", func_L00_0023D838);
-extern int D_0015EF8C MACRO_ADDR;
-extern int D_0015EF78 MACRO_ADDR;
-extern int D_0015EF74 MACRO_ADDR;
-extern int D_0015EF24 MACRO_ADDR;
+extern int g_gs_texture_allocation_base MACRO_ADDR;
+extern int g_gs_texture_allocation_start MACRO_ADDR;
+extern int g_gs_texture_allocation_cursor MACRO_ADDR;
+extern int game_clock_ticks MACRO_ADDR;
 extern char D_L00_00173FC0[];
-extern char D_L00_00197F40[];
+extern char g_class_slot[];
 extern char D_L00_0019AD00[];
 extern char D_L00_0019A600[];
-extern char D_L00_001C5E00[];
+extern char tie_class_slot_by_id[];
 extern char D_L00_001C7A00[];
 extern char D_L00_001C7200[];
-extern char D_L00_001BC540[];
+extern char shrub_class_slot_by_id[];
 extern char D_L00_001BD740[];
 extern char D_L00_001BD140[];
-extern void func_001F99B0(void *, int, int);
-extern void func_00216270(void);
-extern void func_002348B8(void);
-extern void func_00201E10(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern void func_002348E8(void);
-extern void func_L00_002697A0(void);
-extern void func_00235018(void);
-extern void func_L00_0023DB30(void);
-extern void func_L00_00261848(int);
+extern void FastMemSet(void *, int, int);
+extern void register_audio_stream_callback(void);
+extern void calculate_dma_transfer_address(void);
+extern void InitMemSlots(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern void VU1_initChain(void);
+extern void register_part_types(void);
+extern void DMAC_VIF1_Enable(void);
+extern void init_level_item_inventory(void);
+extern void unlock_planet(int);
 
 /* The level's start-up: runs the resident and level init steps in turn,
    copies D_0015EF8C into D_0015EF74 / D_0015EF78, fills ten level
@@ -2594,13 +2594,13 @@ void init_level_runtime_state(void) {
  *   Best candidate p7.c: schedule identical to retail (source order bytes, then ints 4..0x18, then the 0x1C store 
  *   Would unblock: making the int-constant pseudos rank before the byte-constant pseudos without changing the sche
  */
-extern unsigned char D_0015EED0[] MACRO_ADDR;
-extern int D_L00_001C4198[];
-extern void func_L00_0023DD70(int idx);
-extern unsigned char D_0013D5EB[] NOT_SDA;
-extern unsigned char D_0013D5CA[] NOT_SDA;
+extern unsigned char vendor_stock[] MACRO_ADDR;
+extern int level_item_ids[];
+extern void append_level_item_if_absent(int idx);
+extern unsigned char discount_purchase_pricing[] NOT_SDA;
+extern unsigned char gHaveHeliPack[] NOT_SDA;
 extern unsigned char D_0014171B[] NOT_SDA;
-extern void func_L00_002618D8(int, int);
+extern void grant_inventory_item(int, int);
 
 /* Initialise the vendor stock list: fixed defaults once the level is at least 19, else prune unknown entries. */
 void init_level_item_inventory(void) {
@@ -2652,8 +2652,8 @@ void init_level_item_inventory(void) {
         append_level_item_if_absent(g_current_level_index);
     }
 }
-extern int D_L00_001C4198[];
-extern unsigned char D_0015EED0[] MACRO_ADDR;
+extern int level_item_ids[];
+extern unsigned char vendor_stock[] MACRO_ADDR;
 
 /* Adds the id D_L00_001C4198[IDX] to the 0xFF-terminated byte list at
    D_0015EED0 (ids in the low six bits) unless it is already there. The

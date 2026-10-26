@@ -11,58 +11,58 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
-extern int D_0018A3B0[];
-extern void func_001F99B0();
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
-extern char D_001940C0[];
-extern long D_00151888[3];
-extern int D_0015F6FC;
-extern short D_0015F534;
-extern void func_001FB530(void);
-extern void func_001F3D78(void);
-extern int D_0015F564;
-extern int D_0018DD40[];
-extern int D_0018DC40[];
-extern short D_0015F59C;
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
-extern void func_001F6668(void *, void *, void *, void *, void *, int,
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
+extern int draw_config[];
+extern void FastMemSet();
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
+extern char occl_visibility[];
+extern long gs_display_settings[3];
+extern int space_load_in_progress;
+extern short draw_enable_mask;
+extern void append_gif_transfer_packet(void);
+extern void DrawDebugProfiler(void);
+extern int draw_callback_count;
+extern int draw_callback_args[];
+extern int draw_callback_funcs[];
+extern short GlobalStateFlag;
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
+extern void FontPrint(void *, void *, void *, void *, void *, int,
                           unsigned char *);
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
-extern int func_001F4868(int);
-extern void func_001FB498(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern int D_0018E840[];
-extern long D_00152178 NOT_SDA;
-extern int func_001FE4D0(void);
-extern char D_00199A68[];
-extern short D_0015F780;
-extern int D_001941CC NOT_SDA;
-extern int D_0019A4E8 NOT_SDA;
-extern int func_001FF668(int);
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
+extern int GetEffectTex(int);
+extern void PutDrawBufferLarge(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern int bit_swap_lut[];
+extern long background_rgbaq NOT_SDA;
+extern int Help_FindIndex(void);
+extern char s_paradox_this_message_does_not[];
+extern short help_msgs;
+extern int hud_heap_base NOT_SDA;
+extern int hud_state NOT_SDA;
+extern int Hud_GetIconIndex(int);
 typedef struct {
     char b[0x13];
 } Cfg13;
-extern Cfg13 D_0019A540 NOT_SDA;
-extern Cfg13 D_001E7DD8 NOT_SDA;
+extern Cfg13 message_text_buffer NOT_SDA;
+extern Cfg13 message_too_long_label NOT_SDA;
 extern int func_00116810(void);
 extern void func_001166FC(Cfg13 *, void *);
-extern short D_0015F9D0;
-extern void func_00201960(int, int, int, int, int);
-extern void func_002023E0(int);
-extern void func_002027C0(int);
+extern short ResourceCounter;
+extern void draw_stretchable_ui_frame(int, int, int, int, int);
+extern void CreatePointLight(int);
+extern void DetachPointLight(int);
 
 /*
  * upload_mip_texture: sends a texture (a header, then its palette and mip levels) to the GS at the
@@ -100,9 +100,9 @@ typedef struct {
 
 /* As loaders.c declares them further down (sceGsSetDefLoadImage, sceGsExecLoadImage, FlushCache,
  * sceGsSyncPath). */
-extern int D_0015EF74 MACRO_ADDR; /* gs texture allocation cursor */
-extern void func_001F99B0(void *, s32, s32);
-extern s32 func_001F9968(s32);
+extern int g_gs_texture_allocation_cursor MACRO_ADDR; /* gs texture allocation cursor */
+extern void FastMemSet(void *, s32, s32);
+extern s32 log2dim(s32);
 extern void func_00118D80(int);
 extern int func_00122630(void *, short, short, short, short, short, short, short);
 extern int func_00122958(void *, void *);
@@ -224,13 +224,13 @@ s32 upload_mip_texture(MipTexture_202AA8 *tex, u64 *regs)
 
 LINKER_REMNANT("asm/remnants/text", func_00202EF8);
 
-extern int D_001601C0 MACRO_ADDR;
-extern char D_001CE500[];
-extern int D_001CE300[];
+extern int particle_texture_range_count MACRO_ADDR;
+extern char particle_texture_data[];
+extern int particle_texture_ptrs[];
 typedef struct { int a; int b; } Pair_2F00;
-extern Pair_2F00 D_001CDD00[];
-extern void func_001F9A00(void *, void *, int);
-extern int func_001F9968(int);
+extern Pair_2F00 particle_texture_ranges[];
+extern void copy_memory_aligned(void *, void *, int);
+extern int log2dim(int);
 
 /* ParseParticleTexs */
 void ParseParticleTexs(int *hdr, int base, int *list, int count) {
@@ -255,9 +255,9 @@ void ParseParticleTexs(int *hdr, int base, int *list, int count) {
     }
 }
 
-extern int func_001F9968(int);
-extern int D_0015F55C MACRO_ADDR;
-extern char D_0018D540[];
+extern int log2dim(int);
+extern int effect_tex_cnt MACRO_ADDR;
+extern char effect_texture_definitions[];
 
 typedef struct {
     unsigned long flags;
@@ -290,7 +290,7 @@ void unpack_point_records(int *src, int count) {
     }
 }
 
-extern char *D_0016055C MACRO_ADDR;
+extern char *level_sky_effect_data MACRO_ADDR;
 
 typedef struct {
     long tag;
@@ -421,19 +421,19 @@ extern SrcHdr *D_0015EF4C_src __asm__("D_0015EF4C") MACRO_ADDR;
 extern HudArena D_0019A4E8_arena __asm__("D_0019A4E8");
 
 extern char *func_001FFAB8_d(int, int, char *, int) __asm__("func_001FFAB8");
-extern void func_00203548(int idx, int size);
-extern int func_00234158(int arg0, int arg1, int arg2, int arg3);
-extern void func_001FF958(int, void *, int);
+extern void LoadCompressedHudBank(int idx, int size);
+extern int Stash_SendData(int arg0, int arg1, int arg2, int arg3);
+extern void Hud_SendResidentBank(int, void *, int);
 extern void func_00118D80(int);
-extern void func_001FF7F0(int bank, int addr);
+extern void LinkHudBank(int bank, int addr);
 
-extern int D_001941C0[];
-extern int D_0019A520[];
-extern char D_0015FC70[];
-extern char D_0015FC80[];
-extern char D_0015FC90[];
-extern char D_0015FCA0[];
-extern char D_0015FCB0[];
+extern int level_resource_buffers[];
+extern int hud_bank_sizes[];
+extern char hud_bank_alloc_file[];
+extern char hud_bank1_stash_comment[];
+extern char hud_bank3_stash_comment[];
+extern char hud_bank4_stash_comment[];
+extern char hud_bank5_stash_comment[];
 
 #define ALIGN64(x) (((x) + 0x3F) & 0xFFFFFFC0)
 
@@ -524,9 +524,9 @@ void LoadHudBanks(void) {
  * identical instruction stream, so this is the known
  * operand-order-is-not-source-steerable case.
  */
-extern int *D_0015EF4C MACRO_ADDR;
+extern int *level_root MACRO_ADDR;
 extern char *D_0019A500;
-extern void func_0020C468(int, int);
+extern void fast_decompress(int, int);
 
 /* LoadCompressedHudBank(int, char *). Each scaled index in its own local
    gives retail's base-first addu; written inline, the multiply goes
@@ -552,10 +552,10 @@ typedef struct ResidentRenderTextureDefinition {
     s16 mip_block_offset_0;
     s16 mip_block_offset_1;
 } ResidentRenderTextureDefinition;
-extern s32 D_0015EF8C MACRO_ADDR;
+extern s32 g_gs_texture_allocation_base MACRO_ADDR;
 extern u64 D_0019E7C0_035B0[3] __asm__("D_0019E7C0");
 extern u64 D_0019E7D8_035B0[3] __asm__("D_0019E7D8");
-extern s32 func_001F9968(s32);
+extern s32 log2dim(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/build_indexed_resident_render_packet.c, build_indexed_resident_render_packet. */
 void build_indexed_resident_render_packet(u64 *packet,
@@ -636,9 +636,9 @@ void build_indexed_resident_render_packet(u64 *packet,
     }
 }
 
-extern long D_0019E640[];
-extern long D_0019E7C0[];
-extern long D_0019E7D8[];
+extern long resident_material_templates[];
+extern long special_material_template[];
+extern long alternate_special_material_template[];
 
 /* Fills four A+D qwords (low dwords only) at out: a TEX1-style word
    (MXL bits from the second word of row arg5 of the 3-dword table
@@ -693,9 +693,9 @@ void SetUpVisGifViewer(long *out, int arg1, int arg2, int arg3, int arg4, int ar
 }
 __asm__(".section .text\n\tnop\n");
 
-extern int D_0015EF8C MACRO_ADDR;
-extern int D_0015EF78 MACRO_ADDR;
-extern int D_0015EF74 MACRO_ADDR;
+extern int g_gs_texture_allocation_base MACRO_ADDR;
+extern int g_gs_texture_allocation_start MACRO_ADDR;
+extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 /* libgraph: sceGsSetDefLoadImage, sceGsExecLoadImage, sceGsSyncPath;
    func_00118D80 is the kernel's FlushCache. */
 extern int func_00122630(void *, short, short, short, short, short, short, short);
@@ -962,13 +962,13 @@ void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *
     }
 }
 
-extern int D_00160000 MACRO_ADDR;
-extern unsigned char D_001B3E40[] NOT_SDA;
-extern short D_001B3C80[];
-extern char *D_001B3580[] NOT_SDA;
+extern int resident_moby_class_count MACRO_ADDR;
+extern unsigned char resident_class_slot_by_id[] NOT_SDA;
+extern short resident_class_id_by_slot[];
+extern char *moby_class_resources[] NOT_SDA;
 extern int D_001B6500[];
-extern void func_00213BB8(int);
-extern void func_00203B70(void *, int, int, int);
+extern void assign_moby_class_data(int);
+extern void prepare_resident_class_render_data(void *, int, int, int);
 
 /* Registers class arg3's data arg0 in the next moby-class slot
    (D_00160000): class -> slot in D_001B3E40, slot -> class in
@@ -1003,13 +1003,13 @@ __asm__(".section .text\n\tnop\n");
  * writes four 64-bit GIF words from the record at a1 (index idx in D_001E3900)
  * or, when a1 is 0, from D_0019E640.
  */
-extern int D_0016104C MACRO_ADDR;
-extern char D_001E1C00[] NOT_SDA;
-extern char D_001E1D00[] NOT_SDA;
-extern char D_001E1A00[] NOT_SDA;
-extern char D_001E3100[] NOT_SDA;
-extern char D_001E3900[] NOT_SDA;
-extern int func_001FA898(float);
+extern int registered_object_render_class_count MACRO_ADDR;
+extern char object_render_class_ids[] NOT_SDA;
+extern char object_render_class_slot_by_id[] NOT_SDA;
+extern char object_render_classes[] NOT_SDA;
+extern char object_render_class_fixed_thresholds[] NOT_SDA;
+extern char object_render_class_material_maps[] NOT_SDA;
+extern int truncate_float_to_s32(float);
 
 /* Registers an object render class: assigns its slot, fixes pointers and sets thresholds. */
 void register_object_render_class(char *self, int a1, char *src, int a3) {
@@ -1219,16 +1219,16 @@ typedef struct {
     u8 pad30[0x10];
     ShrubRenderGroupReference_04340 groups[1];
 } ShrubRenderClass_04340;
-extern ShrubRenderClass_04340 *D_001D82C0[64];
-extern s16 D_001D83C0[64];
-extern u8 D_001D8440[0x400];
-extern s32 D_001D9040[64];
-extern MaterialMap_04340 D_001D9640[64];
-extern s32 D_001604CC MACRO_ADDR;
-extern s32 D_0015EF8C MACRO_ADDR;
+extern ShrubRenderClass_04340 *shrub_render_classes[64];
+extern s16 shrub_render_class_ids[64];
+extern u8 shrub_render_class_slot_by_id[0x400];
+extern s32 shrub_render_class_fixed_thresholds[64];
+extern MaterialMap_04340 shrub_render_class_material_maps[64];
+extern s32 registered_shrub_render_class_count MACRO_ADDR;
+extern s32 g_gs_texture_allocation_base MACRO_ADDR;
 extern u64 D_0019E640_04340[0x30] __asm__("D_0019E640");
-extern s32 func_001FA898(f32);
-extern s32 func_001F9968(s32);
+extern s32 truncate_float_to_s32(f32);
+extern s32 log2dim(s32);
 
 /* Registers a shrub render class in the next free slot: slot and id tables, the class's distance threshold
    (scale * 1024 as an integer), relocates its group and mip-packet pointers, builds the mip packet's TEX0/TEX1/
@@ -1440,10 +1440,10 @@ typedef struct {
 } Glyph_04918;
 typedef struct { long lo; long hi; } GifQ_04918;
 typedef struct { short x0; short x2; unsigned short x4; short x6; short x8; short xA; short xC; short xE; } GlyphSrc_04918;
-extern int D_00160F90 MACRO_ADDR;
-extern float D_00160FA0[3];
-extern char *D_00160F8C MACRO_ADDR;
-extern void func_00234380(void);
+extern int tfrag_render_record_count MACRO_ADDR;
+extern float tfrag_render_ranges[3];
+extern char *tfrag_render_records MACRO_ADDR;
+extern void SetTfragDists(void);
 
 /* Sets up the tfrag render records: stores their count and LOD distances from hdr, relocates each
    record, and writes the GS texture words of every entry from the texture table tbl. */
@@ -1520,9 +1520,9 @@ void initialize_tfrag_render_data(FontHdr_04918 *hdr, char *tbl) {
     }
 }
 
-extern int D_00137C80[];
+extern int disc_table[];
 extern char D_1FF7FF0[];
-extern int func_002175C8(int, int, int);
+extern int Stream_SubmitRead(int, int, int);
 
 /* Starts the disc read of the level chunk into the top of memory below D_1FF7FF0, sized from the
    disc table, and returns 1. */
@@ -1783,7 +1783,7 @@ struct TransferState {
 extern struct TransferState D_0018CC20_t __asm__("D_0018CC20") NOT_SDA;
 extern struct GlobalIndex D_0013E130_g __asm__("D_0013E130");
 extern struct RenderGlobals D_0013F450_r __asm__("D_0013F450");
-extern int D_0015F6E8 MACRO_ADDR;
+extern int g_game_mode MACRO_ADDR;
 extern int D_00160588[];
 extern int func_0020C468_2(int, int) __asm__("func_0020C468");
 extern struct Moby *func_0020D348_m(int) __asm__("func_0020D348");
@@ -1867,10 +1867,10 @@ void update_world_object_animation(void *arg0) {
 
 LINKER_REMNANT("asm/remnants/text", func_00205218);
 
-extern void func_00204FC0(void *);
-extern int D_0018CC20 NOT_SDA;
-extern int D_001941C8 NOT_SDA;
-extern int D_0016100C;
+extern void update_world_object_animation(void *);
+extern int render_sequence NOT_SDA;
+extern int vu1_chain_buffer_2 NOT_SDA;
+extern int current_vu_chain;
 
 extern int D_0016100C_m __asm__("D_0016100C") MACRO_ADDR;
 
@@ -1899,19 +1899,19 @@ typedef struct {
     int original_field_2c;
 } ClassResourceHeader_05270;
 
-extern int D_00160044 MACRO_ADDR;
-extern int D_00160048 MACRO_ADDR;
-extern int D_0016004C MACRO_ADDR;
-extern int D_00160050 MACRO_ADDR;
-extern void func_0020C468();
-extern int D_001CBE40[];
-extern int D_001CBEA0[];
-extern short D_001CC0E0[][16];
-extern char D_001CBF60[][16];
-extern unsigned char D_001CAE40[];
-extern GadgetRec_05270 D_001864D0[];
-extern unsigned char D_0013E620[];
-extern long D_0019E7F0[];
+extern int runtime_resource_tag MACRO_ADDR;
+extern int class_resource_count MACRO_ADDR;
+extern int active_class_resource_index MACRO_ADDR;
+extern int active_decode_buffer MACRO_ADDR;
+extern void fast_decompress();
+extern int class_resource_ids[];
+extern int compressed_class_resources[];
+extern short class_runtime_indices[][16];
+extern char class_material_maps[][16];
+extern unsigned char resident_indexed_textures[];
+extern GadgetRec_05270 item_info_table[];
+extern unsigned char gold_weapon_purchased[];
+extern long gold_weapon_texture_state[];
 
 /* Decompresses the resources of moby class class_id into a decode buffer (buffer_index, or the
    free one when -1), prepares its render data and fills its runtime and vendor item tables. */

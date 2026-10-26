@@ -13,15 +13,15 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
 
-extern int D_0018A3B0[];
+extern int draw_config[];
 
 /* Resets the texture DMA state words to 1. */
 void clear_dma_queue_entry(void) {
@@ -42,10 +42,10 @@ typedef struct {
     int color;
     char *str;
 } DrawTextRec;
-extern DrawTextRec D_0018AC00[];
-extern short D_0015F100;
-extern short D_0015F104;
-extern char D_0015F108[];
+extern DrawTextRec font_text_slots[];
+extern short font_text_cursor;
+extern short font_text_slot_index;
+extern char font_text_format[];
 extern int func_00116248();
 
 /* Queues one text item: D_0018AC00[n] = {x, y, colour, pool position},
@@ -66,7 +66,7 @@ void print_debug_text(int x, int y, int color, char *str) {
 
 LINKER_REMNANT("asm/remnants/text", func_001F0FF0);
 
-extern int D_00189EC0[];
+extern int font_char_widths[];
 
 /* Draws `str` centred on x: sums the per-character widths in D_00189EC0
    (indexed by char - 0x20, anything past the table using entry 0x20),
@@ -107,7 +107,7 @@ typedef struct {
     int held;        /* 0x1A0 */
     int pressed;     /* 0x1A4 */
 } __attribute__((aligned(16))) Pad1088;
-extern Pad1088 D_0013CA40;
+extern Pad1088 g_controller_state;
 
 typedef struct {
     int u0;          /* 0x00 */
@@ -124,76 +124,76 @@ typedef struct {
     int aF0, aF4;              /* 0xF0 */
     unsigned char bF8, bF9;    /* 0xF8 */
 } Dbg1088;
-extern Dbg1088 D_0018C418;
+extern Dbg1088 occl_cam_state;
 
 typedef struct {
     char pad0[0x140];
     float pos[4];    /* 0x140 */
     float rot[4];    /* 0x150 */
 } Cam1088;
-extern Cam1088 D_00187040;
+extern Cam1088 gCamera;
 
-extern Hero D_0013F450;
+extern Hero g_hero;
 
-extern FogPreset D_0015F584 MACRO_ADDR;
-extern unsigned char D_0015F585[] MACRO_ADDR;
-extern unsigned char D_0015F586[] MACRO_ADDR;
-extern float D_0015F588 MACRO_ADDR;
-extern float D_0015F58C MACRO_ADDR;
-extern float D_0015F590 MACRO_ADDR;
-extern float D_0015F594 MACRO_ADDR;
+extern FogPreset fog_color_red MACRO_ADDR;
+extern unsigned char fog_color_green[] MACRO_ADDR;
+extern unsigned char fog_color_blue[] MACRO_ADDR;
+extern float fog_near_distance MACRO_ADDR;
+extern float fog_far_distance MACRO_ADDR;
+extern float fog_near_intensity MACRO_ADDR;
+extern float fog_far_intensity MACRO_ADDR;
 
 typedef struct {
     char pad0[0xE];
     unsigned short max;  /* 0x0E */
     char pad10[0x8];
 } Item1088;
-extern Item1088 D_001E02B0[];
+extern Item1088 vendor_item_prices[];
 
 typedef struct {
     char pad0[0x3E];
     short cap;           /* 0x3E */
     char pad40[0xC];
 } Gadget1088;
-extern Gadget1088 D_001864D0[];
+extern Gadget1088 item_info_table[];
 
 typedef struct {
     int v[6];
 } Tbl1088;
-extern Tbl1088 D_001E7AC0;
+extern Tbl1088 render_debug_menu_row_counts;
 
-extern int D_0018CE00[];
-extern int D_0015F6E8 MACRO_ADDR;
-extern int D_001601BC MACRO_ADDR;
-extern char *D_0015F720 MACRO_ADDR;
-extern short D_00151880[];
-extern float D_00160FC0 MACRO_ADDR;
-extern float D_00161070 MACRO_ADDR;
-extern float D_001604E4 MACRO_ADDR;
-extern int D_00160030 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
-extern unsigned char D_0014C150[];
-extern unsigned char D_0015FCC8[] MACRO_ADDR;
-extern short D_0015F110;
-extern int D_0013D530[];
-extern int D_0015EE98 MACRO_ADDR;
-extern unsigned char D_0013E620[];
-extern int D_0015F734 MACRO_ADDR;
-extern float *D_001941E0;
-extern char D_0015F130[];
-extern char D_0015F138[];
-extern char D_001E7AD8[];
-extern char D_001E7AF8[];
-extern char D_001E7B10[];
-extern char D_001E7B30[];
+extern int view_context[];
+extern int g_game_mode MACRO_ADDR;
+extern int part_clip_dist MACRO_ADDR;
+extern char *occl_grid_data MACRO_ADDR;
+extern short fs_aa_buffer[];
+extern float tfrag_draw_distance MACRO_ADDR;
+extern float tie_draw_distance MACRO_ADDR;
+extern float occl_fog_density_set MACRO_ADDR;
+extern int occl_fog_count MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern unsigned char saved_mission_state[];
+extern unsigned char debug_mission_state_mirror[] MACRO_ADDR;
+extern short debug_weapon_item_ids;
+extern int weapon_ammo_counts[];
+extern int gBolts MACRO_ADDR;
+extern unsigned char gold_weapon_purchased[];
+extern int camera_sample_point_count MACRO_ADDR;
+extern float *camera_sample_points;
+extern char camera_sample_path_suffix[];
+extern char camera_sample_bin_name[];
+extern char camera_sample_dir[];
+extern char camera_sample_text_name[];
+extern char camera_sample_line_format[];
+extern char camera_sample_alt_line_format[];
 
-extern void func_001FB448(int, int, int);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9CE8(void *);
-extern float func_001FA790(float, float);
-extern float func_001FA888(int);
-extern void func_001F3140(void);
-extern void func_001F2930(void);
+extern void SetBackgroundColor(int, int, int);
+extern void FastVecSub(void *, void *, void *);
+extern float vec_length_xy(void *);
+extern float FastSubRots(float, float);
+extern float IntToFloat(int);
+extern void UpdateViewContext(void);
+extern void UpdateFog(void);
 extern int func_00116810(char *);
 extern int func_0011BF80(char *, int);
 extern int func_0011C388(int, int, int);
@@ -590,7 +590,7 @@ void update_render_debug_menu(void) {
             occl_cam_state.aF4 = !occl_cam_state.aF4;
         }
         if (occl_cam_state.cursor == 2 && (g_controller_state.pressed & 0xF0)) {
-            extern char D_0015F120;
+            extern char camera_sample_path_format;
             char *fmt = camera_sample_dir;
             char *dev = &camera_sample_path_format;
             int i, found;
@@ -646,7 +646,7 @@ void update_render_debug_menu(void) {
             }
         }
         if (occl_cam_state.cursor == 3 && (g_controller_state.pressed & 0xF0)) {
-            extern char D_0015F120[];
+            extern char camera_sample_path_format[];
             char path[64];
             char line[64];
             int fd;
@@ -668,9 +668,9 @@ void update_render_debug_menu(void) {
 
 LINKER_REMNANT("asm/remnants/text", func_001F2410);
 
-extern void func_001FA190(void *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9EE8(void *, void *, void *);
+extern void set_identity_matrix(void *);
+extern void FastVecScale(void *, void *, float);
+extern void transform_vector(void *, void *, void *);
 extern float D_0018D010;
 
 /* The camera block as a struct: all four accesses then share one base
@@ -717,18 +717,18 @@ void ProfileMarker_Begin(void) {
 }
 
 extern int D_0015F6FC_m __asm__("D_0015F6FC") MACRO_ADDR;
-extern int D_0015EE80 MACRO_ADDR;
-extern int D_0015EF78 MACRO_ADDR;
-extern int *D_00161000 MACRO_ADDR;
+extern int pal_mode MACRO_ADDR;
+extern int g_gs_texture_allocation_start MACRO_ADDR;
+extern int *g_render_packet_cursor MACRO_ADDR;
 
-extern void func_002350A8(void);
+extern void DMAC_VIF1_Disable(void);
 extern int func_00123308(int);
-extern void func_0020C268(void);
+extern void InitDma(void);
 extern void func_00121B78(int, int, int, int);
 extern void func_001207B8(void);
-extern void func_002348E8(void);
-extern void func_001F3890(void);
-extern void func_00235018(void);
+extern void VU1_initChain(void);
+extern void SetPalMode(void);
+extern void DMAC_VIF1_Enable(void);
 extern volatile int D_00160FE0_v __asm__("D_00160FE0") MACRO_ADDR;
 
 /* Render setup: raises D_0015F6FC, clears D_00160FE0, runs the setup calls,
@@ -762,11 +762,11 @@ void reset_graphics(void) {
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
 __asm__(".section .text\n\tnop\n");
 
-extern void func_001F9C48(void *, void *, float);
-extern int D_0018C42C;
-extern char D_00187390[];
+extern void scale_vector(void *, void *, float);
+extern int camera_position_publication_suppressed;
+extern char camera_rows[];
 extern char D_0018CEC0[];
-extern char D_0018D080[];
+extern char sky_view_mtx[];
 
 typedef struct {
     float f[0x50];
@@ -842,13 +842,13 @@ void BuildViewMatrices(void) {
     *(float *)(sky_view_mtx + 0x3C) = 1024.0f;
 }
 
-extern int D_001873D4;
-extern FogPreset D_001611C4 MACRO_ADDR;
-extern FogPreset D_0015F584 MACRO_ADDR;
-extern int D_0018CE00[];
-extern int D_001601BC MACRO_ADDR;
-extern int D_0015F598 MACRO_ADDR;
-extern void func_001F3140(void);
+extern int use_alt_fog;
+extern FogPreset water_fog_color_red MACRO_ADDR;
+extern FogPreset fog_color_red MACRO_ADDR;
+extern int view_context[];
+extern int part_clip_dist MACRO_ADDR;
+extern int level_fog_mode MACRO_ADDR;
+extern void UpdateViewContext(void);
 
 /* UpdateFog(void): copies the fog preset (the fixed D_001611C4 when
    D_001873D4 is set, else the current D_0015F584) into the draw context
@@ -882,7 +882,7 @@ void UpdateFog(void) {
 }
 __asm__(".section .text\n\tnop\n");
 
-extern char *D_0015F720 MACRO_ADDR;
+extern char *occl_grid_data MACRO_ADDR;
 
 /* ParseOcclGrid(x, y, z): walks the three-level occlusion grid at
    D_0015F720. Each level is {u16 start, u16 count, u16 entry[count]};
@@ -918,7 +918,7 @@ int ParseOcclGrid(int x, int y, int z) {
 
 __asm__(".section .text\n\tnop\n");
 
-extern int func_001F2A38(int, int, int);
+extern int ParseOcclGrid(int, int, int);
 
 /* GetOcclGridFromPair(int, int, int, int, int, int, float) */
 int GetOcclGridFromPair(int a0, int a1, int a2, int a3, int a4, int a5, float t) {
@@ -948,16 +948,16 @@ int GetOcclGridFromPair(int a0, int a1, int a2, int a3, int a4, int a5, float t)
 }
 
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern float func_001FA888(int);
-extern int func_001F2B10(int, int, int, int, int, int, float);
-extern void func_001F9AC0(void *, void *, void *, int);
-extern void func_001F99B0();
-extern char D_001940C0[];
-extern char D_00194140[];
-extern int D_0015F72C MACRO_ADDR;
-extern int D_0015F728 MACRO_ADDR;
-extern char *D_0015F730 MACRO_ADDR;
-extern float *D_0015F724 MACRO_ADDR;
+extern float IntToFloat(int);
+extern int GetOcclGridFromPair(int, int, int, int, int, int, float);
+extern void fast_mem_or16(void *, void *, void *, int);
+extern void FastMemSet();
+extern char occl_visibility[];
+extern char occl_visibility_merged[];
+extern int occl_invalid_grid MACRO_ADDR;
+extern int occl_fallback_mode MACRO_ADDR;
+extern char *occl_previous_grid MACRO_ADDR;
+extern float *occl_oct MACRO_ADDR;
 
 /* Build the occlusion visibility bitmap for the camera's grid cell.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/build_occlusion_visibility.c, build_occlusion_visibility. */
@@ -1040,8 +1040,8 @@ void BuildOcclVisibility(void) {
    types (-1 and a pointer) and both callers are byte-exact, so
    neither may be edited. Codegen is identical either way -- int and
    pointer are both 32-bit in the same arg register. */
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
 
 /* UpdateOcclusion(void) */
 void UpdateOcclusion(void) {
@@ -1053,9 +1053,9 @@ void UpdateOcclusion(void) {
     }
 }
 
-extern short D_00151880[];
-extern int D_0013E600[];
-extern float func_001FA888(int);
+extern short fs_aa_buffer[];
+extern int g_screen_extent[];
+extern float IntToFloat(int);
 
 /* InitViewContext: the same set-up as configure_graphics_projection (func_001F3760) for
    the display's size, D_00151880[0xA8]/[0xA9], with fixed extras. The
@@ -1111,7 +1111,7 @@ struct ViewP {
     s32 fog_r, fog_g, fog_b;
 };
 #define view_context_p (*(struct ViewP *)&D_0018CE00)
-extern s32 D_0015EE80 MACRO_ADDR;
+extern s32 pal_mode MACRO_ADDR;
 #define pal_mode_p D_0015EE80
 struct FogRegs2P {
     u8 pad0[0x28];
@@ -1124,12 +1124,12 @@ struct ClipP {
     Vec4 constants[3];
 };
 
-extern Vec4 D_0018D0C0[4];
-extern f32 D_00160820[4];
-extern f32 D_00160C30 MACRO_ADDR;
+extern Vec4 view_clip_constants[4];
+extern f32 view_depth_constants[4];
+extern f32 view_fog_multiplier MACRO_ADDR;
 extern f32 D_001E0250[];
 extern f32 D_001E6E70[];
-extern struct FogRegs2P D_001DED30;
+extern struct FogRegs2P shrub_vu1_constants;
 extern struct FogRegs2P D_001DED80;
 extern Vec4 D_001DEDC0[2];
 extern Vec4 D_001DEA90[3];
@@ -1145,11 +1145,11 @@ extern struct {
     s32 y;
 } D_001DEAC0;
 
-extern f32 func_001FA058(f32, f32);
-extern f32 func_001F9F90(f32);
+extern f32 fast_arc_tan(f32, f32);
+extern f32 FastCos(f32);
 #define fast_cos func_001F9F90
-extern void func_001F9A00(void *, void *, s32);
-extern void func_00234380(void);
+extern void copy_memory_aligned(void *, void *, s32);
+extern void SetTfragDists(void);
 #define set_tfrag_dists func_00234380
 
 /* Rebuilds the view state from the field of view, screen size and fog
@@ -1341,8 +1341,8 @@ void UpdateViewContext(void) {
 #undef fast_cos
 #undef set_tfrag_dists
 
-extern int D_0013E600[];
-extern float func_001FA888(int);
+extern int g_screen_extent[];
+extern float IntToFloat(int);
 
 /* Sets the screen size: the GS viewport record at D_0013E600 gets width,
    height, their halves and the four <<4 edges around the 0x800 centre;
@@ -1432,17 +1432,17 @@ extern GsDrawEnvRegs draw_env_3890 __asm__("D_0013D010");
 extern u64 depth_reg_3890 __asm__("D_0013D200");
 extern u64 masked_depth_reg_3890 __asm__("D_0013D270");
 extern unsigned char clear_buf_3890[] __asm__("D_001942C0");
-extern int D_0015EF74 MACRO_ADDR;
-extern int D_0015EF80 MACRO_ADDR;
-extern int D_0015EF84 MACRO_ADDR;
-extern int D_0015EF88 MACRO_ADDR;
-extern int D_0015EF8C MACRO_ADDR;
+extern int g_gs_texture_allocation_cursor MACRO_ADDR;
+extern int display_buffer_address MACRO_ADDR;
+extern int draw_buffer_address MACRO_ADDR;
+extern int depth_buffer_address MACRO_ADDR;
+extern int g_gs_texture_allocation_base MACRO_ADDR;
 extern void func_00118D80(int);
 extern int func_00120858(int, int);
-extern void func_001FAB40(int, int, int, int, int, int);
-extern void func_001FB498(void);
-extern void func_001FB530(void);
-extern void func_001FB470(void);
+extern void SetupFS_AA_buffer(int, int, int, int, int, int);
+extern void PutDrawBufferLarge(void);
+extern void append_gif_transfer_packet(void);
+extern void PutDispBuffer(void);
 extern int func_00122630(GsLoadImage *, s16, s16, s16, s16, s16, s16, s16);
 extern int func_00122958(GsLoadImage *, unsigned char *);
 
@@ -1520,20 +1520,20 @@ void SetPalMode(void) {
  */
 extern int D_0015F430 MACRO_ADDR;
 extern int D_0015F434 MACRO_ADDR;
-extern short D_0015F44C;              /* SDA, gp -0x78B4 */
+extern short screen_overlay_enabled;              /* SDA, gp -0x78B4 */
 extern short D_0015F460;              /* SDA, gp -0x78A0 */
-extern short D_0015F470;              /* SDA, gp -0x7890 */
-extern int D_0015F544 MACRO_ADDR;
-extern int D_0015F548 MACRO_ADDR;
-extern int D_0015F564 MACRO_ADDR;
-extern int D_0015F568 MACRO_ADDR;
-extern int D_0015F56C MACRO_ADDR;
-extern int D_0015F570 MACRO_ADDR;
-extern int D_0015F574 MACRO_ADDR;
-extern int D_00161290 MACRO_ADDR;
-extern int D_00161294 MACRO_ADDR;
-extern int D_00161298 MACRO_ADDR;
-extern int D_0016129C MACRO_ADDR;
+extern short occl_debug_overlay_enabled;              /* SDA, gp -0x7890 */
+extern int letterbox_enabled MACRO_ADDR;
+extern int letterbox_bar_height MACRO_ADDR;
+extern int draw_callback_count MACRO_ADDR;
+extern int draw_callback2_count MACRO_ADDR;
+extern int draw_callback3_count MACRO_ADDR;
+extern int draw_callback4_count MACRO_ADDR;
+extern int effect_quad_count MACRO_ADDR;
+extern int surface_height_tiles MACRO_ADDR;
+extern int occl_cell_table MACRO_ADDR;
+extern int occl_cell_count MACRO_ADDR;
+extern int local_surface_region_enabled MACRO_ADDR;
 
 /* ResetDrawGlobals: clears the draw-callback counts and related draw counters. */
 void ResetDrawGlobals(void) {
@@ -1556,10 +1556,10 @@ void ResetDrawGlobals(void) {
     local_surface_region_enabled = 0;
 }
 
-extern int *D_00161000 MACRO_ADDR;
-extern void func_00234C98(int, long);
-extern char D_0013D0C0[];
-extern char D_0013D010[];
+extern int *g_render_packet_cursor MACRO_ADDR;
+extern void VU1_addGSregister(int, long);
+extern char reset_gs_regs_fixed[];
+extern char draw_environment[];
 
 /* ResetGsRegisters(void) */
 void ResetGsRegisters(void) {
@@ -1577,7 +1577,7 @@ void ResetGsRegisters(void) {
                         ((long)view_context[0x8E] << 16));
 }
 
-extern long D_00151888[3];
+extern long gs_display_settings[3];
 
 /* GS privileged-register writes (0x1200_00XX = the GS's memory-mapped
    register block): CSR ack, PMODE, then SMODE2/DISPFB1/DISPFB2/DISPLAY1/
@@ -1594,91 +1594,91 @@ void ResetGsRegistersPr(void) {
     *(volatile long *)0x120000D0 = 0;
 }
 
-extern short D_0015F450;             /* SDA, gp -0x78B0: Stripes * */
-extern char *D_0016055C MACRO_ADDR;
+extern short screen_color_effect_now;             /* SDA, gp -0x78B0: Stripes * */
+extern char *level_sky_effect_data MACRO_ADDR;
 extern int D_0018C44C[];
 extern int D_0015F534_f __asm__("D_0015F534") MACRO_ADDR;
-extern int D_0015F704 MACRO_ADDR;
-extern int D_0015F6E8 MACRO_ADDR;
+extern int font_state MACRO_ADDR;
+extern int g_game_mode MACRO_ADDR;
 extern unsigned char D_0015EF40_F3D78[] __asm__("D_0015EF40") MACRO_ADDR;
-extern float D_0015F53C MACRO_ADDR;
-extern float D_0015F540 MACRO_ADDR;
-extern float D_0015F6F8 MACRO_ADDR;
+extern float gFade MACRO_ADDR;
+extern float white_fade_level MACRO_ADDR;
+extern float draw_frame_time_ratio MACRO_ADDR;
 extern unsigned char D_001611C0_F3D78[] __asm__("D_001611C0") MACRO_ADDR;
 extern unsigned char D_001611C1_F3D78[] __asm__("D_001611C1") MACRO_ADDR;
 extern unsigned char D_001611C2_F3D78[] __asm__("D_001611C2") MACRO_ADDR;
 extern unsigned char D_001611C3_F3D78[] __asm__("D_001611C3") MACRO_ADDR;
-extern unsigned short D_0010FA90 NOT_SDA;
-extern char D_0010FAA0[];
-extern char D_0015F480[];
-extern char D_0015F490[];
-extern char D_0015F4A0[];
-extern char D_0015F4B0[];
-extern char D_0015F4C0[];
-extern char D_0015F4D0[];
-extern char D_0015F4E0[];
-extern char D_0015F4F0[];
-extern char D_0015F4F8[];
-extern char D_0015F500[];
-extern char D_0015F510[];
-extern char D_0015F518[];
-extern char D_0015F528[];
-extern char D_001E7BA0[];
-extern char D_001E7BB8[];
-extern char D_00100AE0[];
-extern char D_001E1600[];
-extern char D_001E3500[];
-extern char D_001D9240[];
+extern unsigned short moby_vu1_data_qwc NOT_SDA;
+extern char moby_vu1_data[];
+extern char profile_mark_frame_start[];
+extern char profile_mark_after_sky[];
+extern char profile_mark_after_ties[];
+extern char profile_mark_after_mobys[];
+extern char profile_mark_after_lights[];
+extern char profile_mark_after_particles[];
+extern char profile_mark_after_sprites[];
+extern char profile_mark_after_blur[];
+extern char profile_mark_after_hud[];
+extern char profile_mark_after_fades[];
+extern char profile_mark_vu1_sync[];
+extern char profile_mark_tie_lighting[];
+extern char profile_mark_moby_patch[];
+extern char profile_mark_tfrag_lighting[];
+extern char profile_mark_shrub_lighting[];
+extern char frame_vu0_micro_program[];
+extern char tfrag_dma_block[];
+extern char tie_light_data[];
+extern char shrub_scratchpad_copy[];
 
 extern void func_001F2558_a(void *, int) __asm__("func_001F2558");
 extern void func_001F2560_a(void *, int) __asm__("func_001F2560");
 extern void func_001F2930_v(void) __asm__("func_001F2930");
-extern void func_001FB530(void);
-extern void func_001F2608(void);
-extern void func_0020DAB0(void);
-extern void func_001E9E70(void);
-extern void func_002346C0(void);
-extern void func_00235290(int);
-extern void func_00236CA8(void);
-extern void func_00236BE0(void);
-extern void func_00234F40(void);
-extern void func_001F4630(int);
-extern void func_001F4A78(void);
-extern void func_001F4748(void);
-extern void func_00234EE0(void);
-extern void func_00229E50(void);
-extern void func_001F54E8(char *);
-extern void func_001F7B70(void);
-extern void func_001F4AF0(void);
-extern void func_0020E2B0(void);
-extern void func_00234B48(void *, int);
-extern void func_001F4A00(void);
-extern void func_001EDFF8(void);
-extern void func_001F4C30(void);
+extern void append_gif_transfer_packet(void);
+extern void BuildViewMatrices(void);
+extern void prune_moby_references(void);
+extern void Transition_DrawSky(void);
+extern void DrawTfrag(void);
+extern void append_dma_tag(int);
+extern void DrawTies_2(void);
+extern void DrawTies_1(void);
+extern void vu1_gs_regs_alt(void);
+extern void SetupGifPaging(int);
+extern void dispatch_callback_list_2(void);
+extern void DoGifPaging(void);
+extern void VU1_gsRegsNormal(void);
+extern void DrawShrubs(void);
+extern void draw_fogged_fullscreen_sprite(char *);
+extern void draw_debug_font(void);
+extern void dispatch_callback_list_3(void);
+extern void DrawMobys(void);
+extern void VU1_addDataRef(void *, int);
+extern void dispatch_callback_list_1(void);
+extern void draw_lens_flare(void);
+extern void draw_light_quads(void);
 extern void func_00118D80(int);
-extern void func_00218B10(void);
-extern void func_001F4BB8(void);
-extern void func_001F9478(void);
-extern void func_001EE6E0(void);
-extern void func_001FB848(void);
-extern void func_00238D88(void);
-extern void func_001FFFB8(void);
-extern void func_001FF1B0(void);
-extern void func_001F5148(void);
-extern void func_001F4F90(void);
-extern void func_001F55C0(int, int, int, int);
-extern void func_001F5368(void);
-extern void func_002347F0(void *);
-extern void func_00234AC8(int mask);
-extern void func_002362B0(void *);
-extern void func_00234620(void);
-extern void func_00236BB0(void);
-extern void func_00236B58(void);
-extern void func_00238688(void *);
-extern void func_00236A98(void);
-extern void func_0022B8F8(void *);
-extern void func_00229D48(void);
-extern void func_0020DD48(void);
+extern void PartProc(void);
+extern void dispatch_callback_list_4(void);
+extern void append_billboard_batch(void);
+extern void render_queued_rotated_sprites(void);
+extern void AA_BlurPass(void);
+extern void DebugProfiler_Hook(void);
+extern void update_hud(void);
+extern void draw_help(void);
+extern void draw_letterbox_bars(void);
+extern void draw_subtitles(void);
+extern void emit_rgba_draw_packet(int, int, int, int);
+extern void draw_screen_effect(void);
+extern void VU0_loadMicroProgram(void *);
+extern void VU1_syncChain(int mask);
+extern void LightTfrags(void *);
+extern void PatchTfragGifs(void);
+extern void register_entity_render_resources(void);
+extern void copy_render_buffer_pair(void);
+extern void LightTies(void *);
+extern void PatchTieGifs(void);
+extern void LightShrubs(void *);
+extern void patch_shrub_gifs(void);
+extern void PatchMobyGifs(void);
 
 /* Draws the whole frame: each world layer's DMA chain in order, then the fades and the per-layer profiler bars. Adapted from Lombyte's project (GPL-3.0) for PAL: rendering/draw_debug_profiler.c, draw_debug_profiler. */
 void DrawDebugProfiler(void) {
@@ -1881,9 +1881,9 @@ void DrawDebugProfiler(void) {
     occl_fallback_mode = 0;
 }
 
-extern int D_0015F6FC;
-extern short D_0015F534;              /* SDA, gp -0x77CC */
-extern void func_001F3D78(void);
+extern int space_load_in_progress;
+extern short draw_enable_mask;              /* SDA, gp -0x77CC */
+extern void DrawDebugProfiler(void);
 
 
 /* D_0015F6FC is read through a MACRO_ADDR alias: retail's one-register
@@ -1898,18 +1898,18 @@ void prepare_debug_profiler_render(void) {
 
 LINKER_REMNANT("asm/remnants/text", func_001F4628);
 
-extern int *D_00161000 MACRO_ADDR;
-extern int *D_0015F550 MACRO_ADDR;
-extern int D_0015EF74 MACRO_ADDR;
-extern int D_0015F55C MACRO_ADDR;
-extern int D_0015EF8C MACRO_ADDR;
-extern int D_0015F558 MACRO_ADDR;
+extern int *g_render_packet_cursor MACRO_ADDR;
+extern int *gif_paging_head_tag MACRO_ADDR;
+extern int g_gs_texture_allocation_cursor MACRO_ADDR;
+extern int effect_tex_cnt MACRO_ADDR;
+extern int g_gs_texture_allocation_base MACRO_ADDR;
+extern int pending_texture_upload_count MACRO_ADDR;
 typedef struct {
     long unk0;
     long unk8;
 } PageSlot;
-extern PageSlot D_0018D540[];
-extern char D_0019A4E8[];
+extern PageSlot effect_texture_definitions[];
+extern char hud_state[];
 
 /* Returns the HUD state block that serves as the GIF paging arena. */
 static inline char *PagingArena(void) {
@@ -1967,11 +1967,11 @@ void SetupGifPaging(int arg0) {
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
 __asm__(".section .text\n\tnop\n");
 
-extern int *D_00161000 MACRO_ADDR;
-extern int *D_0015F554 MACRO_ADDR;
+extern int *g_render_packet_cursor MACRO_ADDR;
+extern int *gif_paging_tail_tag MACRO_ADDR;
 extern int D_0018A3DC;
-extern void func_0020C2F8(void);
-extern void func_00234E80(void);
+extern void flush_pending_texture_uploads(void);
+extern void VU1_texFlush(void);
 
 /* DoGifPaging: pushes two 4-word GIF tags (0x20000000 in the first word)
    onto the D_00161000 packet, D_0015F554 marking where it started and
@@ -2111,14 +2111,14 @@ u64 func_001F4868_r(s32 index) {
  * macro form, so they are MACRO_ADDR.
  */
 typedef void (*DrawCallback)(void *);
-extern DrawCallback D_0018DC40[];
-extern void *D_0018DD40[];
-extern DrawCallback D_0018DE40[];
-extern void *D_0018DF40[];
-extern DrawCallback D_0018E040[];
-extern void *D_0018E140[];
-extern DrawCallback D_0018E240[];
-extern void *D_0018E340[];
+extern DrawCallback draw_callback_funcs[];
+extern void *draw_callback_args[];
+extern DrawCallback draw_callback2_funcs[];
+extern void *draw_callback2_args[];
+extern DrawCallback draw_callback3_funcs[];
+extern void *draw_callback3_args[];
+extern DrawCallback draw_callback4_funcs[];
+extern void *draw_callback4_args[];
 
 /* AddDrawCallback: appends fn(arg) to the first draw-callback list. */
 void AddDrawCallback(DrawCallback fn, void *arg) {
@@ -2180,13 +2180,13 @@ typedef struct {
     FRow pos;
     FRow dir;
 } LightRec;
-extern FRow D_0018CBA0[4];
-extern LightRec D_0018E440[];
-extern int func_001F4868(int);
+extern FRow effect_quad_corners[4];
+extern LightRec effect_quad_entries[];
+extern int GetEffectTex(int);
 /* GetEffectTex as it really returns: the 64-bit TEX0 (for the callers that keep it whole). */
 extern long GetEffectTex64(int) __asm__("func_001F4868");
-extern void func_001F9DC0(void *dst, void *src, float len);
-extern void func_001F7EF8(void *, int, int);
+extern void fast_vec_normalize(void *dst, void *src, float len);
+extern void draw_world_quad_packet(void *, int, int);
 
 /* Builds a 4-row matrix per light in D_0018E440 (count D_0015F574):
    each row starts as the light's position and is pushed along the
@@ -2236,13 +2236,13 @@ void draw_light_quads(void) {
 }
 
 extern int func_00122598_i(int) __asm__("func_00122598");
-extern void func_00234948(void);
-extern void func_002349B8(void);
-extern void func_001FB498(void);
-extern void func_001FB598(void);
-extern int *D_00161000 MACRO_ADDR;
-extern int D_0015F538 MACRO_ADDR;
-extern char D_0013CED0[];
+extern void VU1_swapChain(void);
+extern void VU1_sendChain(void);
+extern void PutDrawBufferLarge(void);
+extern void PutDrawBufferSmall(void);
+extern int *g_render_packet_cursor MACRO_ADDR;
+extern int game_frame_counter MACRO_ADDR;
+extern char second_clear_packet[];
 
 /* FadeToBlack(frames): `frames` VU1 chains, each drawing a
    full-screen quad (D_0013CED0's GS packet) with its alpha ramped down
@@ -2307,12 +2307,12 @@ typedef struct {
     char *subs;    /* 0x4C */
 } SubState;
 extern SubState D_0018CC20_s __asm__("D_0018CC20");
-extern int D_0015EE88 MACRO_ADDR;
-extern int D_0013E600[];
-extern void func_001F7648(void *arg0, int a1, int a2, int a3, int a4, int a5,
+extern int g_game_language MACRO_ADDR;
+extern int g_screen_extent[];
+extern void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5,
                           int a6, int a7, int a8);
 extern void func_001F7560_l(void *, long, char *, int) __asm__("func_001F7560");
-extern void func_001F62C8(int, int, int, int, int);
+extern void DrawUIFrame(int, int, int, int, int);
 
 /* Draws the subtitle showing at the current time (D_0018CC20+0x34): the
    list at +0x4C holds 16-byte entries (start, end, and one string offset
@@ -2364,8 +2364,8 @@ void draw_subtitles(void) {
     }
 }
 
-extern char D_00160920[];
-extern char D_00160930[];
+extern char rect_overlay_gif_regs_a[];
+extern char rect_overlay_gif_regs_b[];
 
 /* Letterbox bars: while D_0015F544 is set the bar height D_0015F548
    grows to 24, otherwise it shrinks to 0. While it is non-zero, append
@@ -2443,8 +2443,8 @@ typedef struct {
     int color1;
     long enable1;
 } Stripes;
-extern short D_0015F450;             /* SDA, gp -0x78B0: Stripes * */
-extern void func_001F5650(int, int, int, int, unsigned long);
+extern short screen_color_effect_now;             /* SDA, gp -0x78B0: Stripes * */
+extern void DrawRectOverlay_FiiiiUl(int, int, int, int, unsigned long);
 
 #define STRIPES (*(Stripes **)&D_0015F450)
 
@@ -2502,7 +2502,7 @@ void draw_screen_effect(void) {
 
 #undef STRIPES
 
-extern int D_0015EF88 MACRO_ADDR;
+extern int depth_buffer_address MACRO_ADDR;
 
 /* GS register writes around an overlay: blend register 0x42 from the
    64-bit word at +8 while it is set, and when the colour at +4 has an
@@ -2530,8 +2530,8 @@ void draw_fogged_fullscreen_sprite(char *arg0) {
    restores the default register set. The parameters are int, widened in
    the expression: with long parameters the scheduler hoists the last
    dsll one slot early (it was a 6/144 near-miss that way). */
-extern int *D_00161000 MACRO_ADDR;
-extern char D_0013CD90[];
+extern int *g_render_packet_cursor MACRO_ADDR;
+extern char first_clear_packet[];
 
 /* Appends a GIF packet that sets GS register 1 from the four bytes a, b, c, d. */
 void emit_rgba_draw_packet(int a, int b, int c, int d) {
@@ -2598,7 +2598,7 @@ void DrawRectOverlay_FiiiiUl(int y0, int y1, int x0, int x1, unsigned long rgba)
 
 LINKER_REMNANT("asm/remnants/text", func_001F57F8);
 
-extern char D_00160940[];
+extern char textured_quad_header[];
 
 /* Append a textured sprite as a four-vertex strip (PRIM 0x154): screen
    corners in 12.4 fixed point relative to the viewport origin, UVs from
@@ -2679,7 +2679,7 @@ void append_subpixel_textured_screen_quad(float x, float y, float w, float h, in
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x60);
 }
 
-extern char D_00160960[];
+extern char textured_rect_gif_regs[];
 
 /* func_001F5988, skipped when the rectangle lies outside 0x7000..0x9000
    (12.4), with a CLAMP register (REGION_CLAMP to the texel rectangle)
@@ -2756,12 +2756,12 @@ union PacketCursor {
     s32 addr;
 };
 extern union PacketCursor D_00161000_F5E60 __asm__("D_00161000") MACRO_ADDR;
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9C30(void *, void *, f32);
-extern f32 func_001F9F90(f32);
-extern f32 func_001F9FA8(f32);
-extern s32 func_001FA898(f32);
+extern void FastVecAdd(void *, void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecScale(void *, void *, f32);
+extern f32 FastCos(f32);
+extern f32 FastSin(f32);
+extern s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/append_rotated_sprite_quad.c, append_rotated_sprite_quad. */
 void append_rotated_sprite_quad(f32 center_x, f32 center_y, f32 quad_width, f32 quad_height,
@@ -2921,7 +2921,7 @@ void draw_outlined_rect(int a0, int a1, int a2, int a3, int a4) {
 /* gp-relative: declared as a 2-byte type purely so -G2 places it in the
    small-data area (placement is decided by DECLARED size), then accessed
    as the 4-byte word it really is. gp base 0x166D00 - 0x7764 = 0x15F59C. */
-extern int D_0015F59C MACRO_ADDR;
+extern int GlobalStateFlag MACRO_ADDR;
 
 /* Sets the word flag at D_0015F59C to 1. */
 void Font_EnableColorCodes(void) {
@@ -2962,10 +2962,10 @@ int measure_text_width(unsigned char *str, int count, void *table) {
     return width;
 }
 
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
 
 /* measure_text_width_regular: width of the first arg1 characters of arg0 in the regular font table. */
 int measure_text_width_regular(unsigned char *arg0, int arg1) {
@@ -3073,7 +3073,7 @@ void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64
     } while (*cursor != 0);
 }
 
-extern void func_001F6668(void *, void *, void *, void *, void *, long,
+extern void FontPrint(void *, void *, void *, void *, void *, long,
                           unsigned char *);
 
 /* Same shape as func_001F7560/func_001F75D0 below, one argument wider:
@@ -3101,11 +3101,11 @@ struct Glyph {
     s8 top;
     s8 adv;
 };
-extern s32 D_0015F5A0 MACRO_ADDR;
-extern s32 D_0018CBF8[];
-extern f32 func_001FA888(s32);
+extern s32 font_window_active MACRO_ADDR;
+extern s32 font_palette_colors[];
+extern f32 IntToFloat(s32);
 extern void func_001F5BB8_F69F0(f32, f32, f32, f32, s32, s32, s32, s32, u64, s64) __asm__("func_001F5BB8");
-void func_001F69F0(u64 color, u8 *s, f32 x, s32 n, s64 tex, struct Glyph *g, f32 y, f32 scale);
+void process_bgm_display_text_event(u64 color, u8 *s, f32 x, s32 n, s64 tex, struct Glyph *g, f32 y, f32 scale);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/audio/music/process_bgm_display_text_event.c, process_bgm_display_text_event. */
 void process_bgm_display_text_event(u64 color, u8 *str, f32 x, s32 n, s64 tex, struct Glyph *g, f32 y, f32 scale) {
@@ -3164,8 +3164,8 @@ void process_bgm_display_text_event(u64 color, u8 *str, f32 x, s32 n, s64 tex, s
 
 LINKER_REMNANT("asm/remnants/text", func_001F6CE0);
 
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
 
 /* func_001F6CF8/func_001F6D88/func_001F6E18 are func_001F68E8's family
    with a leading measure call: the same mode/table triple (1, 2, 3 and
@@ -3229,7 +3229,7 @@ int FontPrintCenterLarge(int a, int b, int c, int d, int e) {
     return p;
 }
 
-extern void func_00234D58(int, int, int, int);
+extern void VU1_setScissor(int, int, int, int);
 struct FontWindow {
     short y_min, y_max, x_min, x_max, x_anchor, y_start;
     short out_w, out_h, line_h;
@@ -3362,7 +3362,7 @@ void FontPrintWindow(void *win_p, long a1, void *text_p, int len, long a4, unsig
     VU1_setScissor(0, g_screen_extent[0] - 1, 0, g_screen_extent[1] - 1);
 }
 
-extern int func_001F4868(int);
+extern int GetEffectTex(int);
 
 /* func_001F7560 and func_001F75D0 are the same call with a different
    mode (1 vs 2) and a different table. Six arguments: EABI passes the
@@ -3400,8 +3400,8 @@ void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5, int a6, i
     s[11] = 0;
 }
 
-extern int D_0015EF84 MACRO_ADDR;
-extern int D_0013E604[];
+extern int draw_buffer_address MACRO_ADDR;
+extern int frame_size[];
 #define PK ((unsigned char *)D_00161000)
 
 /* Uploads a block to the GS in DMA packets. */
@@ -3450,12 +3450,12 @@ void queue_framebuffer_upload(unsigned int source) {
     VU1_texFlush();
 }
 
-extern short D_0015F448;              /* SDA, gp -0x78B8 */
-extern unsigned short D_0010E800 NOT_SDA;
-extern char D_0010E810[];
-extern char D_00187180[];
-extern void func_001FA1C0(float *, float);
-extern void func_00234FA8(void);
+extern short font_depth_bias;              /* SDA, gp -0x78B8 */
+extern unsigned short font_vu_program_tag NOT_SDA;
+extern char font_vu_program[];
+extern char camera_position[];
+extern void set_scale_matrix(float *, float);
+extern void vu1_gs_regs_font(void);
 
 /* Build the VU1 setup packet: load microprogram 7 if another is
    resident, then a DIRECT/UNPACK chain with the two camera matrices
@@ -3515,7 +3515,7 @@ void font_queue_vu_state(void) {
     vu1_gs_regs_font();
 }
 
-extern void func_001FB608(int, int, int);
+extern void setup_render_target(int, int, int);
 extern short D_001519EE NOT_SDA;
 
 /* Sets up a (1 << a) x (1 << b) area, as vendor.c's func_0023A948 does:
@@ -3552,7 +3552,7 @@ void configure_graphics_render_target_and_projection(int a, int b, int flag, flo
 
 __asm__(".section .text\n\tnop\n");
 
-extern void func_001F3008(void);
+extern void InitViewContext(void);
 
 /* Frame start for the large draw buffer. */
 void begin_draw_frame(void) {
@@ -3564,10 +3564,10 @@ void begin_draw_frame(void) {
 /* Two prototypes for one symbol: func_001F55C0 passes a 64-bit value
    (retail shifts it with dsll), func_001F7B70 passes plain ints
    (addiu, not daddiu). */
-extern int D_0015F578 MACRO_ADDR;
-extern short D_0015F448;              /* SDA, gp -0x78B8 */
+extern int font_quad_count MACRO_ADDR;
+extern short font_depth_bias;              /* SDA, gp -0x78B8 */
 extern void func_001F91B8(void);
-extern void func_001F7868(void);
+extern void font_queue_vu_state(void);
 extern void func_001F8B6C(void);
 
 /* Optional extra draw pass, enabled by D_0015F578. */
@@ -3586,7 +3586,7 @@ void draw_debug_font(void) {
     }
 }
 
-extern int D_0018E840[];
+extern int bit_swap_lut[];
 
 /* initialize_alpha_lookup_table: fills the alpha lookup table D_0018E840. */
 void initialize_alpha_lookup_table(void) {

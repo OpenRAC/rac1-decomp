@@ -29,16 +29,16 @@ typedef struct {
     unsigned short count;
     unsigned char tail[8];
 } ItemCount_258250;
-extern ItemCount_258250 D_L00_001C43B0[];
-extern int func_002140B0(int);
-extern unsigned char D_0015EED0[] MACRO_ADDR;
-extern unsigned char D_0013D5C8[];
-extern int D_0013D530[];
+extern ItemCount_258250 item_price_table[];
+extern int random_integer_below(int);
+extern unsigned char vendor_stock[] MACRO_ADDR;
+extern unsigned char item_available[];
+extern int weapon_ammo_counts[];
 extern char D_0014171B[];
 
 /* Picks a killed moby's drop, preferring ammo for weapons that run low; item goes to *item. */
 int ChooseDropItem(unsigned char *m, int *item) {
-    extern short D_0015EE84;
+    extern short g_current_level_index;
     int shortfall = 0;
     int available = 0;
     int stocked = 0;
@@ -109,25 +109,25 @@ int ChooseDropItem(unsigned char *m, int *item) {
         return t == 0 ? two : one;
     }
 }
-extern int D_0015EE84 MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
 extern int D_0015EE84_584A8b __asm__("D_0015EE84") MACRO_ADDR;
-extern int D_L00_0016007C MACRO_ADDR;
-extern int D_0014C290[][64];
-extern unsigned char D_0014C150[][16];
-extern short D_0014D690[][64][2];
-extern int D_L00_001BA860[];
+extern int free_moby_slot_count MACRO_ADDR;
+extern int level_moby_killed[][64];
+extern unsigned char saved_mission_state[][16];
+extern short bolt_source_stats[][64][2];
+extern int session_moby_killed[];
 typedef struct { unsigned char p[0x454]; unsigned char a[1]; } S_257470;
-extern S_257470 D_L00_001BA960;
-extern S_257470 D_L00_001BB5C0;
-extern unsigned char D_L00_0015FD48[];
-extern unsigned char D_L00_001E9280[];
-extern unsigned char D_L00_001E92A8[];
+extern S_257470 current_level_state;
+extern S_257470 checkpoint_level_state;
+extern unsigned char mission_state[];
+extern unsigned char death_bits_moby_debug_format[];
+extern unsigned char death_bits_bolt_amount_debug_format[];
 typedef struct { char p0[0x80]; char v80[0x2084 - 0x80]; int i2084; char p1[0x20B2 - 0x2088]; unsigned char b20B2; } P_257470;
-extern P_257470 D_0013F450;
-extern void func_001E9730(void *, ...);
-extern int func_001FA898(float);
-extern float func_001F9D10(void *, void *);
-extern void func_L00_00261B00(void *, int, int, int, int);
+extern P_257470 g_hero;
+extern void STUB_printf(void *, ...);
+extern int truncate_float_to_s32(float);
+extern float FastVecDist(void *, void *);
+extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00250df8.c, FUN_L00_00257470. */
 void SetDeathBits(unsigned char *m, int flags, int arg) {

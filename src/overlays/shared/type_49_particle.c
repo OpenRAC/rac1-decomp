@@ -3,11 +3,11 @@
 #include "include_asm.h"
 
 typedef int u128 __attribute__((mode(TI)));
-extern unsigned char *func_00218928(int);
-extern float func_002140F8(float, float);
-extern int func_001F9850(int);
+extern unsigned char *create_part(int);
+extern float random_float_between(float, float);
+extern int scale_ticks(int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern unsigned char *D_L08_001B2CA4;
+extern unsigned char *batalia_part_type49_textures;
 
 // Spawns a particle of the given kind at pos with velocity vel.
 void create_type_49_particle(void *pos, int kind, void *vel, float f) {

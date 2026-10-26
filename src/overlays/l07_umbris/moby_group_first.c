@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern void func_L00_0025A208(int *, int, int, int);
+extern void get_first_moby_in_group(int *, int, int, int);
 
 /* Test whether the current moby identifier matches the requested one; the lookup arguments pass straight through from the caller. */
 int matches_first_moby_in_group(int id, int idx, int a, int b) {

@@ -25,10 +25,10 @@ float randf_sym(float lo, float hi) {
     }
     return r;
 }
-extern float func_002140F8(float, float);
-extern float func_00214158(void);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
+extern float random_float_between(float, float);
+extern float random_angle_radians(void);
+extern float FastCos(float);
+extern float FastSin(float);
 /* Writes a random direction vector scaled by a random length between lo and hi. */
 void rand_vec(float *o, float lo, float hi) {
     float a = random_float_between(lo, hi);
@@ -46,19 +46,19 @@ float CubicInterpolate(float a, float b, float c, float d, float t) {
     float t3 = t2 * t;
     return p * t3 + q * t2 + (c - a) * t + b;
 }
-extern float func_001FA790(float, float);
-extern float func_001F9F90(float);
-extern float func_001FA748(float, float);
+extern float FastSubRots(float, float);
+extern float FastCos(float);
+extern float FastAddRots(float, float);
 /* Cosine-eased blend from angle x toward angle y at parameter z, with wraparound. */
 float interpolate_wrapped_angle_cosine_eased(float x, float y, float z) {
     float t = FastSubRots(y, x);
     float c = FastCos(z * 3.1415927f);
     return FastAddRots(x, t * ((1.0f - c) * 0.5f));
 }
-extern float func_001F9F90(float x);
-extern void func_001F9BF0(void *dst, void *a, void *b); /* dst = a - b (vector) */
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
+extern float FastCos(float x);
+extern void FastVecSub(void *dst, void *a, void *b); /* dst = a - b (vector) */
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
 
 /* Vector cosine interpolation: dst = a + (b - a) * ((1 - cos(t * pi)) * 0.5).
    Scalar analogue matched at src/game/mobyutil.c:func_00214220. */
@@ -86,7 +86,7 @@ void interpolate_wrapped_rotations_cosine_eased(float *out, float *a, float *b, 
     out[1] = FastAddRots(a[1], FastSubRots(b[1], a[1]) * s);
     out[2] = FastAddRots(a[2], FastSubRots(b[2], a[2]) * s);
 }
-extern float func_001F9B88(float);
+extern float FastAbsF(float);
 
 /* spring-damped turn of a velocity toward a target angle; returns the stepped angle */
 float SpringTurn(float *vel, float cur, float target, float k, float d, float max) {
@@ -140,8 +140,8 @@ void MobySpringTurn(char *moby, float *vel, float target, float k, float d, floa
 }
 LINKER_REMNANT("asm/overlays", func_L00_00259418);
 typedef struct { float a[4]; } Vs __attribute__((aligned(16)));
-extern int D_L00_00173F40[];
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
+extern int coll_hit_result[];
+extern int coll_line(void *, void *, int, int, int);
 /* Casts a vertical collision line around p; returns the hit, or 0 when filtered out. */
 int probe_vertical_ground_collision(Vs *p, int x, int y, float f, float g) {
     Vs t0;
@@ -167,13 +167,13 @@ int probe_vertical_ground_collision(Vs *p, int x, int y, float f, float g) {
 }
 extern unsigned char D_94C8_40[] __asm__("D_L00_00173F40");
 extern Vec4 D_94C8_60 __asm__("D_L00_00173F60");
-extern Vec4 D_L00_00173F70;
+extern Vec4 coll_resolved_pos;
 extern float func_L00_0025A748_f(void *) __asm__("func_L00_0025A748");
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
+extern void FastVecSub(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
 extern int func_L00_001EFFF0_p(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern float func_001F9CE8(void *);
-extern float func_L00_001FF860(float, float);
+extern float vec_length_xy(void *);
+extern float fast_atan2(float, float);
 extern int func_L00_001F10E0_l(void *, float, int, void *) __asm__("func_L00_001F10E0");
 extern float func_001F9D48_f(void *, void *) __asm__("func_001F9D48");
 
@@ -265,7 +265,7 @@ int MoveKeepingOverGround(void *ign, Vec4 *to, Vec4 *pos, int flags, float h, fl
     to->f[1] = pos->f[1];
     return ok;
 }
-extern float func_001F9CB8(void *);
+extern float FastVecLength(void *);
 
 /* Moves a moby position by a vector with ground collision steps; returns hit flags. */
 int move_4318(char *m, char *v, int flags, float a, float b, float c) {
@@ -326,7 +326,7 @@ int move_4318(char *m, char *v, int flags, float a, float b, float c) {
     FastVecSub(v, q, &t0);
     return r;
 }
-extern float func_001FA888(int);
+extern float IntToFloat(int);
 extern void func_L00_00259868_c(int, int, float, float, float, int) __asm__("func_L00_00259868");
 
 /* Forwards its arguments, replacing the middle float with func_001FA888's result scaled by 1/1024. */
@@ -367,15 +367,15 @@ typedef struct {
     f32 f48;
 } Glob;
 extern Glob D_L00_00173F40_59B88 __asm__("D_L00_00173F40");
-extern short D_0015EE70;
-extern int D_0015EE60 MACRO_ADDR;
-extern f32 func_001F9CE8(void *);
-extern f32 func_001F9F90(f32);
-extern f32 func_001F9FA8(f32);
+extern short g_frame_time_sq;
+extern int frame_scale MACRO_ADDR;
+extern f32 vec_length_xy(void *);
+extern f32 FastCos(f32);
+extern f32 FastSin(f32);
 extern s32 func_L00_00259428_59B88(void *, void *, s32, f32, f32) __asm__("func_L00_00259428");
-extern f32 func_L00_001FF860(f32, f32);
-extern void func_L00_001FF4B0(void *, void *, f32);
-extern void func_001F9C30(void *, void *, f32);
+extern f32 fast_atan2(f32, f32);
+extern void vec_scale_to_length(void *, void *, f32);
+extern void FastVecScale(void *, void *, f32);
 extern s32 func_L00_00259B08_59B88(void *, void *, f32, s32, f32, s32) __asm__("func_L00_00259B08");
 extern f32 func_00214358_59B88(void *, s32, f32) __asm__("func_00214358");
 
@@ -472,12 +472,12 @@ done:
     if (len < c->f2C) mask |= 4;
     return mask;
 }
-extern void func_001F9BC0(void *);
+extern void clear_u64_value(void *);
 extern float func_001F9D10_f(void *, void *) __asm__("func_001F9D10");
-extern float func_L00_001FF860(float, float);
-extern float func_001FA850(float, float);
-extern void func_001F9908(int *);
-extern int func_001F9850(int);
+extern float fast_atan2(float, float);
+extern float FastDiffRots(float, float);
+extern void fast_dec_timer(int *);
+extern int scale_ticks(int);
 
 /* classify a target against a moby's cone and range, returning flag bits */
 int ClassifyTargetInCone(char *m, char *p, float *pos, char *v) {
@@ -508,14 +508,14 @@ int ClassifyTargetInCone(char *m, char *p, float *pos, char *v) {
     return flags;
 }
 LINKER_REMNANT("asm/overlays", func_L00_0025A1D8);
-extern int D_L00_001600B4 MACRO_ADDR;
-extern unsigned short * D_L00_001ABBC0[];
-extern char * D_L00_001601D4 MACRO_ADDR;
+extern int moby_group_count MACRO_ADDR;
+extern unsigned short * level_moby_groups[];
+extern char * moby_group_iter_moby MACRO_ADDR;
 extern char * D_L00_001601D4_5A208 __asm__("D_L00_001601D4") MACRO_ADDR;
 extern unsigned short * D_L00_001601CC_5A208 __asm__("D_L00_001601CC") MACRO_ADDR;
 extern short D_L00_001601D0_5A208[] __asm__("D_L00_001601D0") MACRO_ADDR;
 extern char * D_L00_00160098_5A208 __asm__("D_L00_00160098") MACRO_ADDR;
-int func_L00_0025A2F0(char **, char *);
+int get_next_moby_in_group(char **, char *);
 
 /* Looks up table entry idx and makes it current; the flag test reads the current entry back, as the original did.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math/interpolation/00257ef0.c, FUN_L00_002591d0. */
@@ -620,8 +620,8 @@ int decrement_packed_countdown(int *p, int b) {
     *p = (w & 0xFFFFFF) | (v << 24);
     return v == 0;
 }
-extern int func_001FA898(float);
-extern float func_001FA888(int);
+extern int truncate_float_to_s32(float);
+extern float IntToFloat(int);
 /* Height after n gravity steps of size f, n = b.z / f; stores n in *out when given. */
 float calculate_triangular_corrected_scalar(float *a, float *b, int *out, float f) {
     int n = truncate_float_to_s32(b[2] / f);
@@ -632,7 +632,7 @@ float calculate_triangular_corrected_scalar(float *a, float *b, int *out, float 
     }
     return r;
 }
-extern float func_001FA888(int);
+extern float IntToFloat(int);
 /* Predicts the position after d frames of velocity c with per-frame gravity f. */
 void predict_position_with_vertical_drop(void *a, void *b, void *c, int d, float f) {
     float t[4];
@@ -640,7 +640,7 @@ void predict_position_with_vertical_drop(void *a, void *b, void *c, int d, float
     t[2] -= IntToFloat((d * d + d) >> 1) * f;
     FastVecAdd(a, b, t);
 }
-extern float func_001F9B88(float);
+extern float FastAbsF(float);
 
 // solves a*x^2 + b*x + c = 0; returns the number of roots
 int solve_quadratic_equation(float *r0, float *r1, float a, float b, float c) {
@@ -663,7 +663,7 @@ int solve_quadratic_equation(float *r0, float *r1, float a, float b, float c) {
     }
     return 0.0f < d ? 2 : 0;
 }
-extern void func_00214358(void *, int, float);
+extern void ProbeGroundHeight(void *, int, float);
 
 /* Probes the ground height below a point with collision mask 0x20. */
 void probe_ground_height_flag20(void *arg) {
@@ -710,10 +710,10 @@ void InitDirectionalHitQuery(char *arg, int a, int b, void *src, float scale) {
     qcopy(arg, src);
 }
 void func_L00_0025A8C0_5A8E8(char *a, int b, int c, float d, void *q) __asm__("func_L00_0025A8C0");
-void func_001F9C30(void *out, void *a, f32 scale);
-f32 func_001F9F90(f32 radians);
-f32 func_001F9FA8(f32 radians);
-extern int func_L00_001F2BE8(void *, float, int, void *, void *);
+void FastVecScale(void *out, void *a, f32 scale);
+f32 FastCos(f32 radians);
+f32 FastSin(f32 radians);
+extern int coll_sphere_mobys(void *, float, int, void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00259710.c, FUN_L00_002598b0. */
 int MobySphereHitDirectional(void *moby, void *position, int c, float d, float e, float f, int g, int h, int i) {
@@ -735,8 +735,8 @@ int MobySphereHitDirectional(void *moby, void *position, int c, float d, float e
     *(unsigned short *)(descriptor + 0x1a) = *(unsigned short *)((char *)moby + 0xa6);
     return coll_sphere_mobys(position, d, i, moby, descriptor);
 }
-extern void func_L00_00250800(void *, int, void *);
-extern int func_L00_0025A8E8(void *, void *, int, float, float, float, int, int, int);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern int MobySphereHitDirectional(void *, void *, int, float, float, float, int, int, int);
 
 /* Calls FUN_L00_002598b0 at a moby point; the f13 argument is ignored and c is passed again as a float.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00259710.c, FUN_L00_002599e8. */
@@ -780,8 +780,8 @@ void record_moby_hit(unsigned char *m, L_t *src) {
     coll_hit_result[5] = (i + 1) & 0x3F;
 }
 typedef struct { char pos[16]; char vel[16]; int a; int b; int c; float t; int on; char *owner; int z; int pad; } E;
-extern E D_L00_00178200[];
-extern float func_001F9CB8(void *);
+extern E moby_hits[];
+extern float FastVecLength(void *);
 
 /* record a timed effect entry for a moby unless a fresher one is still live */
 void PostHitMessage(char *m, float t, int a, int b, void *pos, void *vel) {
@@ -809,14 +809,14 @@ void PostHitMessage(char *m, float t, int a, int b, void *pos, void *vel) {
     *(unsigned char *)(m + 0xA4) = i;
     coll_hit_result[5] = (i + 1) & 0x3F;
 }
-extern char D_L00_0015F660[] MACRO_ADDR;
+extern char veldin1_zero_vec[] MACRO_ADDR;
 extern void func_L00_0025AC00_5AD38(unsigned char *, int, int, void *, void *, float) __asm__("func_L00_0025AC00");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_entities_0024c7f0.c, FUN_L10_0024c7f0. */
 void spawn_nearby_effect_without_direction(unsigned char *m, int x, int y, void *p, float f) {
     func_L00_0025AC00_5AD38(m, x, y, p, veldin1_zero_vec, f);
 }
-extern void func_001F9BF0(void *, void *, void *);
+extern void FastVecSub(void *, void *, void *);
 
 /* steps two interpolated points from a0/a1 toward a2/a3 and reports whether any step hits */
 int sweep_hit_segment(void *a, void *b, void *c, void *d, int e, int f, int n) {
@@ -845,7 +845,7 @@ int sweep_hit_segment(void *a, void *b, void *c, void *d, int e, int f, int n) {
     return 0;
 }
 typedef struct { int a[4]; } Vk __attribute__((aligned(16)));
-extern void func_L00_001FFED8(void *, int, float);
+extern void axis_rotation_2d48(void *, int, float);
 /* Builds a quaternion from X, Y and Z axis rotations in v. */
 void build_quaternion_from_axis_rotations(void *a, float *v) {
     Vk t0, t1, t2;
@@ -856,11 +856,11 @@ void build_quaternion_from_axis_rotations(void *a, float *v) {
     multiply_quaternions(a, a, &t0);
 }
 extern float func_00214358f(void *, int, float) __asm__("func_00214358");
-extern int func_L00_001F3958(void);
-extern int D_L00_0015F534 MACRO_ADDR;
+extern int CollType(void);
+extern int ground_shadow_count MACRO_ADDR;
 struct Ent { float a[4]; float b[4]; };
-extern struct Ent D_L00_0016E180[];
-extern float D_L00_00173F80[];
+extern struct Ent ground_shadow_entries[];
+extern float coll_hit_normal[];
 
 /* Records a shadow-like entry for the moby at its ground height, scaled by arg. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_entities_00259710.c, FUN_L00_00259fe8. */
 void jet_animate(unsigned char *m, float s) {
@@ -955,13 +955,13 @@ typedef struct { unsigned char pad0[0x10]; float x, y; } O_25a478;
 typedef struct { unsigned char pad0[0x80]; float x, y; } G_25a478;
 extern G_25a478 G_25a478v __asm__("D_0013F450");
 extern unsigned char D_0013E633[];
-extern short D_L00_00160140;
-extern float D_L00_001B0548[][8];
-extern unsigned char D_L00_001B0500[][4];
+extern short hit_damage_by_reaction_class;
+extern float hit_push_scale_table[][8];
+extern unsigned char hit_reaction_table[][4];
 extern Q_25a478 *func_L00_0025D390_q(void *) __asm__("func_L00_0025D390");
 extern Q_25a478 *func_00215078_q(void *) __asm__("func_00215078");
-extern int func_001F9938(void *);
-extern void func_L00_001FF500(float *, float *, float);
+extern int FastDecTimer(void *);
+extern void vec_set_length_xy(float *, float *, float);
 
 /* Picks a moby's animation/reaction index from its state and input flags. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_entities_00259710.c, FUN_L00_0025a478. */
 int ComputeHitResponse(O_25a478 *obj, P_25a478 *p, Q_25a478 *q, unsigned int flags, int *out, float *fp, int *kp, int idx) {
@@ -1168,8 +1168,8 @@ void HeadingFromVector(Q25BBA0 *v, float *ang, float *s1, float *s2) {
     *s2 *= t.f[2];
 }
 typedef struct { float x, y, z, w; } Vc0 __attribute__((aligned(16)));
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9CE8(void *);
+extern void FastVecSub(void *, void *, void *);
+extern float vec_length_xy(void *);
 
 /* Vertical launch speed to reach b from a at the given ground speed and gravity. */
 float jump_speed_4318(float *a, float *b, float *out, float speed, float g) {
@@ -1382,9 +1382,9 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
     return limit;
 }
 LINKER_REMNANT("asm/overlays", func_L00_0025C488);
-extern float func_0020D830(char *);
-extern void func_00213DE0(void *, int, int, int);
-extern float func_001F9878(float);
+extern float MobyGetFrameValue(char *);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern float multiply_global_factor(float);
 extern float func_00214358_f(void *, int, float) __asm__("func_00214358");
 
 typedef struct O_25b440 {
@@ -1501,7 +1501,7 @@ float interpolate_angle(float a, float b, float c) {
     float r = FastSubRots(b, a);
     return FastAddRots(a, r * c);
 }
-extern float func_001F9B88(float arg0);
+extern float FastAbsF(float arg0);
 
 /* Damped velocity step: adds b*rate - c*v, then clamps to limit and to |rate|. */
 void advance_damped_scalar_velocity(float *ptr, float rate, float b, float c, float limit) {
@@ -1521,8 +1521,8 @@ void advance_damped_scalar_velocity(float *ptr, float rate, float b, float c, fl
         *ptr = -FastAbsF(rate);
     }
 }
-extern void func_L00_0025C7F0(float *ptr, float rate, float b, float c, float limit);
-extern float func_001F9B88(float);
+extern void advance_damped_scalar_velocity(float *ptr, float rate, float b, float c, float limit);
+extern float FastAbsF(float);
 
 /* Moves *p toward t with a damped spring; snaps to t when close and returns the gap. */
 float Spring(float *p, float *v, float t, float u1, float u2, float eps) {
@@ -1583,8 +1583,8 @@ float SpringAngle(float *p, float *v, int n, float x, float b, float c, float d)
     }
     return r;
 }
-extern float func_00214D28(float *p, float target, float maxstep);
-extern float func_L00_0025CC58(float *p, int n, float x, float y);
+extern float ApproachValue(float *p, float target, float maxstep);
+extern float step_angle_toward_target(float *p, int n, float x, float y);
 
 /* Steer *p toward target a with velocity *v, braking near the target. */
 float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d) {
@@ -1634,7 +1634,7 @@ void swap_color_channel_words(int *a, int *b, int *c, int mask) {
     if (mask & 2) { x = *c; y = *b; *b = x; *c = y; }
     if (mask & 4) { x = *a; y = *c; *c = x; *a = y; }
 }
-extern void func_L00_0025D0E0(int *, int *, int *, int);
+extern void swap_color_channel_words(int *, int *, int *, int);
 /* Returns the packed color with its RGB channels swapped as the mask selects. */
 unsigned swap_packed_color_channels(unsigned c, int mask) {
     int v[3];
@@ -1647,9 +1647,9 @@ unsigned swap_packed_color_channels(unsigned c, int mask) {
     swap_color_channel_words(&v[0], &v[1], &v[2], mask);
     return (a << 24) | (v[2] << 16) | (v[1] << 8) | v[0];
 }
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001FA4A0(void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern void matrix_from_basis_rows(void *, void *);
+extern void transform_vector(void *, void *, void *);
 /* Returns component d of (c - a) expressed in the basis b. */
 float compute_transformed_delta_component(void *a, void *b, void *c, int d) {
     float v0[4], v1[4], v2[16];
@@ -1660,9 +1660,9 @@ float compute_transformed_delta_component(void *a, void *b, void *c, int d) {
     return w[d];
 }
 typedef struct { int a[4]; } Vq __attribute__((aligned(16)));
-extern void func_L00_001FF4B0(void *, void *, float);
-extern float func_001F9C78(void *, void *);
-extern void func_001F9BF0(void *dst, void *a, void *b);
+extern void vec_scale_to_length(void *, void *, float);
+extern float FastVecDot(void *, void *);
+extern void FastVecSub(void *dst, void *a, void *b);
 /* Removes s times the projection of b onto the direction c from b, into a. */
 void subtract_homogeneous_scaled_vector_xyz(void *a, void *b, void *c, float s) {
     Vq t0, t1;
@@ -1681,11 +1681,11 @@ int GetFlaggedPvarWord(char *m) {
     return *(int *)(((char *)((Moby *)m)->pvars));
 }
 INCLUDE_ASM("asm/overlays", func_L00_0025D3A0);
-extern int func_L00_0025BCF8(void *, int, void *, void *, float);
-extern void func_00215C00(void *, float, float, float);
-extern int func_L00_00258BC8(int, int);
-extern void func_L00_0026A7F8(void *, void *, int, int, int, int, int, int);
-extern float D_0015EE6C MACRO_ADDR;
+extern int generate_random_points_from_shape_entries(void *, int, void *, void *, float);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern int rand_range(int, int);
+extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+extern float g_frame_time MACRO_ADDR;
 extern unsigned char D_0013E15A[];
 
 typedef struct { float v[4]; } V4 __attribute__((aligned(16)));
@@ -1720,9 +1720,9 @@ void spawn_particles_at_shape_points(void *a0, void *a1, void *a2) {
         }
     }
 }
-extern int func_001F9850(int);
-extern int func_L00_0025D390(char *);
-extern void func_00213F28(void *, int, int, int, int);
+extern int scale_ticks(int);
+extern int GetFlaggedPvarWord(char *);
+extern void blend_moby_animation_ex(void *, int, int, int, int);
 
 /* Initialises an effect record S for moby O from angle ANG. */
 void InitKnockback(float ang, char *o, float *s, int a, int b, int c) {
@@ -1749,9 +1749,9 @@ void InitKnockback(float ang, char *o, float *s, int a, int b, int c) {
     }
 }
 extern float D_0015EE60_m __asm__("D_0015EE60") MACRO_ADDR;
-extern int *D_L00_00178000[];
+extern int *coll_sphere_moby_hits[];
 extern int func_L00_001F2BE8_d6f0(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern char *func_L00_002D9340(void *, float);
+extern char *spawn_burst_moby(void *, float);
 
 /* Steps moby MOBY's motion from state ST and returns the flag bits it set. */
 int mine_fall(char *moby, char *st) {
@@ -1944,7 +1944,7 @@ typedef struct {
     u8 pad[0x38];
     s64 v;
 } S;
-extern u8 D_001414D0[];
+extern u8 g_hero_moby[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/0025d1b8.c, FUN_L00_0025d1b8. */
 void copy_hero_moby_field_38(S *p, s64 v) {
@@ -1976,8 +1976,8 @@ void clip_negative_segment_endpoint_xyz(Vec4 *src, Vec4 *v) {
         p0++;
     }
 }
-extern int func_001F9850(int);
-extern void func_L00_00251358(void *, void *, void *, void *);
+extern int scale_ticks(int);
+extern void get_moby_color(void *, void *, void *, void *);
 
 /* Re-rolls a counter from its range (or picks three color bytes) each time the previous one has run out. */
 void RerollEffectCounter(void *m, short *p) {
@@ -1999,7 +1999,7 @@ void RerollEffectCounter(void *m, short *p) {
         *((unsigned char *)p + 6) = (unsigned char)c2;
     }
 }
-extern void func_L00_00251328(void *, int, int, int);
+extern void set_moby_color(void *, int, int, int);
 
 /* Steps a two-phase colour fade record and hands the current colour to the caller's setter. */
 void StepColorFade(void *a, unsigned char *s) {
@@ -2135,9 +2135,9 @@ int Spline_AdvanceByDistance(Spline_0025E860 *s, float *out, int *idx, float *t,
     return ret;
 }
 typedef struct { int a[4]; } V __attribute__((aligned(16)));
-extern float func_001F9B88(float);
-extern void func_001F9D48(V *, V *);
-extern void func_001F9D10(V *, V *);
+extern float FastAbsF(float);
+extern void vec_distance_xy(V *, V *);
+extern void FastVecDist(V *, V *);
 extern float func_001F9D48_r(V *, V *) __asm__("func_001F9D48");
 extern float func_001F9D10_r(V *, V *) __asm__("func_001F9D10");
 /* Distance from a to b; XY only when their heights differ by less than r, else full 3D. */
@@ -2193,7 +2193,7 @@ void project_level_path_point_onto_segment(float *out, float *v, float *a, float
 typedef int u128_ED30 __attribute__((mode(TI)));
 extern float func_L00_0025EB58_f(void *, void *, void *, void *) __asm__("func_L00_0025EB58");
 extern float func_001F9D48_f(void *, void *) __asm__("func_001F9D48");
-extern void func_L00_0025C710(void *, void *, void *, float);
+extern void LerpVec4(void *, void *, void *, float);
 extern float func_L00_0025EAC8_f(void *, void *, float) __asm__("func_L00_0025EAC8");
 
 /* Nearest point on the segment a-b to p (clamped), returned with the distance result. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/math_rotations_0025d238.c, FUN_L00_0025dcd8. */
@@ -2246,9 +2246,9 @@ float resolve_level_path_segment_point(u128_ED30 *out, u128_ED30 *p, u128_ED30 *
     g[0] = *out;
     return func_L00_0025EAC8_f(e, g, 0.0f);
 }
-s32 func_L00_0025E7F8(s32 *tab, s32 i, s32 d, s32 wrap);
+s32 offset_path_index(s32 *tab, s32 i, s32 d, s32 wrap);
 typedef int OvlQuad __attribute__((mode(TI)));
-float func_L00_0025ED30(OvlQuad *out, OvlQuad *p, OvlQuad *a, OvlQuad *b, float r);
+float resolve_level_path_segment_point(OvlQuad *out, OvlQuad *p, OvlQuad *a, OvlQuad *b, float r);
 extern f32 func_L00_0025EAC8_5EFC0(void *, void *, f32) __asm__("func_L00_0025EAC8");
 extern s32 func_L00_0025E860_5EFC0(s32 *, OvlQuad *, s32 *, f32 *, f32, s32) __asm__("func_L00_0025E860");
 
@@ -2346,7 +2346,7 @@ s32 find_nearest_path_point(s32 *path, OvlQuad *point, OvlQuad *nearest,
     return 1;
 }
 LINKER_REMNANT("asm/overlays", func_L00_0025F360);
-extern f32 func_L00_002001D8(void *, f32);
+extern f32 split_float_fraction(void *, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math_rotations_0025d238.c, FUN_L00_0025e310. */
 f32 normalize_angle(f32 a) {
@@ -2361,7 +2361,7 @@ f32 normalize_angle(f32 a) {
     x *= tp;
     return x - pi;
 }
-extern int func_L00_0025F410(void *);
+extern int is_moby_in_class_range_500_to_540(void *);
 /* True for a moby outside classes 500..540 or of class 502; false for null. */
 int is_nonnull_moby_outside_table_or_class_range_500_to_540_or_class_502(char *a) {
     int r;
@@ -2374,8 +2374,8 @@ int is_nonnull_moby_outside_table_or_class_range_500_to_540_or_class_502(char *a
     }
     return r;
 }
-extern int D_L00_00160098 MACRO_ADDR;
-extern int D_L00_001600A0 MACRO_ADDR;
+extern int moby_array_start MACRO_ADDR;
+extern int moby_array_last MACRO_ADDR;
 
 // Checks whether a moby address is in the active range and has the target class.
 int is_moby_in_class_range_500_to_540(void *moby) {
@@ -2639,11 +2639,11 @@ typedef struct { int v[6]; } S6y10_60108;
 extern S6y10_60108 D_L00_001E93B0_60108 __asm__("D_L00_001E93B0");
 extern S6y10_60108 D_L00_001E93C8_60108 __asm__("D_L00_001E93C8");
 extern CameraSystem D_L00_00166D80_60108 __asm__("D_L00_00166D80");
-extern float D_L00_001B0670[] NOT_SDA;
-extern int func_002140B0(int);
-extern void func_L00_0026B890(void *, void *, int, int, float, int, int, int, int, float);
-extern int func_L00_002ADBB0(void *, void *, void *, float, int, int, int, int, int);
-extern void func_L00_002D4CE8(void *, void *, int, int);
+extern float blast_spawn_params[] NOT_SDA;
+extern int random_integer_below(int);
+extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
+extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
+extern void mine_camera_blast(void *, void *, int, int);
 extern int func_L00_00200290_60108(void *, float) __asm__("func_L00_00200290");
 extern int func_0022ED80_60108(int, int, void *) __asm__("func_0022ED80");
 
@@ -2698,13 +2698,13 @@ void SpawnExplosionFx(char *a, char *b, int snd, float sc, float fl) {
 }
 typedef struct { float x, y, z, w; } Vy10 __attribute__((aligned(16)));
 typedef struct { int v[6]; } S6y10;
-extern S6y10 D_L00_001E93B0;
-extern S6y10 D_L00_001E93C8;
-extern int func_002140B0(int);
-extern unsigned func_L00_0025D140(unsigned, int);
-extern void func_L00_0026B890(void *, void *, int, int, float, int, int, int, int, float);
-extern int func_L00_002ADBB0(void *, void *, void *, float, int, int, int, int, int);
-extern void func_L00_002D4CE8(void *, void *, int, int);
+extern S6y10 color_swapped_burst_colors;
+extern S6y10 color_swapped_burst_fade_colors;
+extern int random_integer_below(int);
+extern unsigned swap_packed_color_channels(unsigned, int);
+extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
+extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
+extern void mine_camera_blast(void *, void *, int, int);
 
 // Spawn three bursts of coloured sparks around a point, then optional glow pieces and a flash.
 void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {
@@ -2747,15 +2747,15 @@ void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {
         mine_camera_blast(blast_spawn_params, b, 0, 0);
     }
 }
-extern float func_001F9CB8(void *);
-extern void func_L00_001FF4B0(void *, void *, float);
+extern float FastVecLength(void *);
+extern void vec_scale_to_length(void *, void *, float);
 /* Shortens vector a to length x when it is longer. */
 void ClampVectorLength(void *a, float x) {
     if (x < FastVecLength(a)) {
         vec_scale_to_length(a, a, x);
     }
 }
-extern int D_L00_00160098 MACRO_ADDR;
+extern int moby_array_start MACRO_ADDR;
 
 /* Adds a moby's index to a counted list unless present or the list is full. */
 void append_unique_moby_index(int a, short *list, short max) {
@@ -2769,7 +2769,7 @@ void append_unique_moby_index(int a, short *list, short max) {
         list[list[0]] = k;
     }
 }
-extern s32 D_L00_00160098 MACRO_ADDR;
+extern s32 moby_array_start MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math/rotations/0025d238.c, FUN_L00_0025f800. */
 void moby_index_list_remove(s32 p, s16 *a) {
@@ -2792,7 +2792,7 @@ typedef struct {
     V25f878 *p78;
     u8 pad7c[0x100 - 0x7C];
 } M25f878;
-extern s16 D_L00_001B0AF0[];
+extern s16 active_homing_missiles[];
 extern u8 * D_L00_00160098_608F0 __asm__("D_L00_00160098") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math/rotations/0025d238.c, FUN_L00_0025f878. */
@@ -2806,7 +2806,7 @@ M25f878 *find_listed_moby_by_data_id(s32 id) {
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0026093C);
-extern float func_002140F8(float, float);
+extern float random_float_between(float, float);
 /* Adds a random offset in -s..s to each of the vector's X, Y and Z. */
 void add_random_offset_to_vector_xyz(float *v, float s) {
     v[0] += random_float_between(-s, s);
@@ -2814,8 +2814,8 @@ void add_random_offset_to_vector_xyz(float *v, float s) {
     v[2] += random_float_between(-s, s);
 }
 typedef struct { float x, y, z, w; } Vp __attribute__((aligned(16)));
-extern char *D_L00_001601BC MACRO_ADDR;
-extern void func_001F9EC0(void *, void *, void *);
+extern char *level_cylinders MACRO_ADDR;
+extern void matrix_mul_vec3(void *, void *, void *);
 
 /* True when p lies inside level cylinder i. */
 int test_point_in_transformed_unit_cylinder(void *p, int i) {
@@ -2836,7 +2836,7 @@ int test_point_in_transformed_unit_cylinder(void *p, int i) {
     }
     return 0;
 }
-extern int D_L00_001601B4 MACRO_ADDR;
+extern int level_spheres MACRO_ADDR;
 /* True when p lies inside level sphere idx. */
 int test_point_in_transformed_unit_sphere(float *p, int idx) {
     float a[4] __attribute__((aligned(16)));
@@ -2851,9 +2851,9 @@ int test_point_in_transformed_unit_sphere(float *p, int idx) {
     }
     return 0;
 }
-extern char D_0013F450[];
-extern short D_L00_001B0BB0[];
-extern char * D_L00_001DD450[];
+extern char g_hero[];
+extern short decoy_list[];
+extern char * morphoray_chicken_slots[];
 extern float func_001F9D48_60D30(void *, void *) __asm__("func_001F9D48");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_view_0025fcb8.c, FUN_L00_0025fcb8. */
@@ -3036,9 +3036,9 @@ int FindNearestEligibleMoby(char *a, char *o, float best, int *list, int n, floa
     return res;
 }
 INCLUDE_ASM("asm/overlays", func_L00_00261458);
-extern int func_L00_0025D390(char *);
-extern void func_001FA218(void *, void *);
-extern void func_002153E8(void *, void *);
+extern int GetFlaggedPvarWord(char *);
+extern void euler_to_matrix(void *, void *);
+extern void matrix_to_euler(void *, void *);
 
 /* transforms a point into the local space of a moby's matrix and back */
 int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d) {
@@ -3060,9 +3060,9 @@ int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d) {
     matrix_to_euler(t1, d);
     return 1;
 }
-extern void func_001FA460(void *, void *);
-extern int func_L00_002616E0(int x, char *o, float *a, float *c, float *b, float *d);
-extern void func_L00_002607A8(void *a, float x);
+extern void copy_matrix_rotation(void *, void *);
+extern int convert_pose_to_reference_local(int x, char *o, float *a, float *c, float *b, float *d);
+extern void ClampVectorLength(void *a, float x);
 
 /* Transform a point into a moby's local frame, handling its collision flag. */
 int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, float *s) {
@@ -3091,7 +3091,7 @@ int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, floa
     }
     return 1;
 }
-extern int func_L00_0025D390(char *);
+extern int GetFlaggedPvarWord(char *);
 
 /* Converts a world position and rotation into object o's local frame; 0 when o is not flagged. */
 int convert_pose_to_reference_local(int x, char *o, float *a, float *c, float *b, float *d) {
@@ -3121,10 +3121,10 @@ void update_entity_matrix(char *a, Vx *b, void *c, void *d) {
     qcopy(a + 0x10, b);
 }
 /* From Lombyte's project (GPL-3.0), FUN_L00_002607d0 (PR #66), adapted to PAL. */
-extern unsigned char D_0013DE48[];
-extern int D_0013D618[];
-extern int D_0015EE84 MACRO_ADDR;
-extern void func_L00_00263DB0(int);
+extern unsigned char level_available[];
+extern int gGalaxyList[];
+extern int g_current_level_index MACRO_ADDR;
+extern void queue_planet_unlock_message(int);
 
 /* Unlocks planet id on the galaxy map and queues its unlock message. */
 void unlock_planet(int id) {
@@ -3139,19 +3139,19 @@ void unlock_planet(int id) {
         if (id != g_current_level_index) queue_planet_unlock_message(id);
     }
 }
-extern unsigned char D_0013D5C8[] NOT_SDA;
-extern unsigned char D_0013D5F0[] NOT_SDA;
-extern int D_0013D530[] NOT_SDA;
+extern unsigned char item_available[] NOT_SDA;
+extern unsigned char items_acquired[] NOT_SDA;
+extern int weapon_ammo_counts[] NOT_SDA;
 extern unsigned char D_001414F5[] NOT_SDA;
-extern int D_00141FA0[];
-extern int D_L00_001B06C0[] NOT_SDA;
+extern int pause_iop_sprite_lists[];
+extern int item_pickup_banner_ids[] NOT_SDA;
 typedef struct { char pad[8]; unsigned short a; char pad2[8]; unsigned short b; char pad3[4]; } ItemRec;
-extern ItemRec D_L00_001C43B0[] NOT_SDA;
+extern ItemRec item_price_table[] NOT_SDA;
 typedef struct { char pad[8]; int t; char pad2[0x40]; } ItemDef;
-extern ItemDef D_L00_00179BC0[] NOT_SDA;
-extern int D_L00_001C4198[];
-extern unsigned char D_0015EED0[] MACRO_ADDR;
-extern void func_L00_00264DB8(int arg0, int arg1);
+extern ItemDef item_defs[] NOT_SDA;
+extern int level_item_ids[];
+extern unsigned char vendor_stock[] MACRO_ADDR;
+extern void ShowBanner(int arg0, int arg1);
 
 /* Gives item ID to the player: plays its sound, raises its count and records it in the slot lists. */
 void grant_inventory_item(int id, int flag) {

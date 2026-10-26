@@ -11,7 +11,7 @@ extern int D_L00_0017E604[];
 extern int D_L00_0015F52C MACRO_ADDR;
 extern int D_L00_0015F530 MACRO_ADDR;
 extern int D_L00_0015F528 MACRO_ADDR;
-extern int D_L00_0015F534 MACRO_ADDR;
+extern int ground_shadow_count MACRO_ADDR;
 extern int D_L00_0015F3F0 MACRO_ADDR;
 extern int D_L00_0015F3F4 MACRO_ADDR;
 /* Clears the frame, ground-shadow and timing counters. */
@@ -26,13 +26,13 @@ void ResetFrameCounters(void) {
     D_L00_0015F3F4 = 0;
 }
 struct P { char pad[0x100]; float a, b, c, d; char pad2[0x1A0 - 0x110]; int busy; };
-extern struct P D_0013CA40;
-extern short D_L00_001610B0;
-extern int D_L00_0015F6B0 MACRO_ADDR;
-extern int D_0015EFA4 MACRO_ADDR;
+extern struct P g_controller_state;
+extern short controller_idle_frames;
+extern int level_frame_counter MACRO_ADDR;
+extern int gameplay_event_frame_count MACRO_ADDR;
 extern int D_L00_0015F678 MACRO_ADDR;
-extern int D_0015EF28 MACRO_ADDR;
-int func_001F9850(int);
+extern int active_play_frame_count MACRO_ADDR;
+int scale_ticks(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00295100.c, FUN_L00_00297e70. */
 void update_game_frame_and_idle_counters(void) {
@@ -56,53 +56,53 @@ typedef struct { char pad0[0x86]; short h86; } PtrS;
 typedef struct { char pad0[0xDC]; int wDC; char pad0E0[4]; int wE4; char pad0E8[0xFC - 0xE8]; int wFC; } AreaS;
 typedef struct { char pad0[0x48]; unsigned short h48; unsigned short h4A; unsigned int w4C; } HitS;
 
-extern CfgS D_L00_0016C158;
+extern CfgS g_debug_menu;
 extern char D_0013A5E0[];
 extern char D_0013E633[];
 extern char D_0013D355[];
 extern char D_0013D355_b[] __asm__("D_0013D355");
 extern unsigned char D_0014171B[] NOT_SDA;
-extern int D_L00_0015F6A8 MACRO_ADDR;
+extern int cinematic_mode MACRO_ADDR;
 extern int D_0015EFB4_m __asm__("D_0015EFB4") MACRO_ADDR;
-extern int D_L00_0015F6AC MACRO_ADDR;
+extern int cinematic_mode_frames MACRO_ADDR;
 extern int D_L00_001BA160;
-extern int D_0015EE84 MACRO_ADDR;
-extern PtrS *D_L00_00166F00;
+extern int g_current_level_index MACRO_ADDR;
+extern PtrS *g_current_follow_cam;
 extern int D_0015EF20 MACRO_ADDR;
-extern int D_0015EE98 MACRO_ADDR;
+extern int gBolts MACRO_ADDR;
 extern int D_L00_00184314;
-extern int D_L00_0015F710 MACRO_ADDR;
-extern char D_L00_001610B8[];
-extern char D_L00_001610C8[];
-extern char D_L00_001610D8[];
-extern char D_L00_001610E8[];
-extern char D_L00_001610F8[];
-extern void func_001FBC80(int, void *, int);
-extern void func_00219C70(int);
-extern void func_L00_002653A0(void);
+extern int ship_level_exit_requested MACRO_ADDR;
+extern char level_profile_mark_after_mobys[];
+extern char level_profile_mark_after_hero[];
+extern char level_profile_mark_after_parts[];
+extern char level_profile_mark_after_camera[];
+extern char level_profile_mark_after_sound[];
+extern void mode_freeze_init(int, void *, int);
+extern void PauseAllSounds(int);
+extern void update_timed_hud_visibility(void);
 extern int func_L00_00235790_r(void) __asm__("func_L00_00235790");
-extern void func_L00_002367A8(int, int);
-extern int func_001FFB38(int, int, int, int, int, int, int);
-extern void func_L00_0023A658(void);
-extern void func_L00_0023A690(void);
-extern void func_L00_0023A788(void);
-extern void func_L00_0028FFB0(void);
-extern void func_L00_0024F7E0(void);
-extern void func_00213C78(void);
-extern void func_0022EF68(void);
-extern void func_L00_002A5B20(void);
+extern void hud_keep_visible(int, int);
+extern int queue_animation_update(int, int, int, int, int, int, int);
+extern void initialize_bolt_counter_hud(void);
+extern void update_bolt_counter_hud_animation_and_visibility(void);
+extern void draw_bolt_counter_hud_panel(void);
+extern void prepare_level_transition_with_help_cleanup(void);
+extern void CountExpiredMobys(void);
+extern void update_visible_resident_objects(void);
+extern void enqueue_voice_request(void);
+extern void update_ambience_target_cycle(void);
 extern void func_001E9768_a(void *, int) __asm__("func_001E9768");
 extern void func_001E9768_b(void) __asm__("func_001E9768");
-extern void func_L00_002076E8(void);
-extern void func_00218A80(void);
-extern void func_L00_001FE9C8(void);
-extern void func_L00_001ED428(void);
-extern void func_L00_001F3E20(void);
-extern void func_L00_001F4810(void);
-extern void func_00202260(void);
-extern void func_0020DE20(void);
+extern void coordinate_hero_frame_update(void);
+extern void UpdateParts(void);
+extern void update_glints(void);
+extern void Camera_UpdateFrame(void);
+extern void update_debug_camera(void);
+extern void update_hero_from_debug_camera(void);
+extern void UpdateAllPointLights(void);
+extern void update_resident_packed_direction(void);
 extern int func_L00_0023B610_r(int) __asm__("func_L00_0023B610");
-extern void func_001FE6C0(void);
+extern void Help_Update(void);
 
 /* per-frame update of the in-level game: pause and cutscene triggers, then the subsystem updates. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_00295100.c, FUN_L00_00297f78. */
 void handle_pause_input(void) {
@@ -235,35 +235,35 @@ void handle_pause_input(void) {
     if (g_debug_menu.w18 == 6) func_001E9768_b();
 }
 typedef struct { char p0[0x20]; unsigned char st; char p1[0x13]; unsigned short flags; char p2[0x70]; short type; char p3[0x58]; } Obj;
-extern int D_L00_0015F6BC MACRO_ADDR;
-extern int D_L00_0015F4FC MACRO_ADDR;
-extern Obj *D_L00_0016009C MACRO_ADDR;
+extern int skip_frame MACRO_ADDR;
+extern int gFadeLvl MACRO_ADDR;
+extern Obj *level_mobys_end MACRO_ADDR;
 extern int D_L00_0015F500 MACRO_ADDR;
-extern int D_L00_0016128C MACRO_ADDR;
-extern float D_L00_0015F67C MACRO_ADDR;
-extern char D_L00_0016C960[];
+extern int lvl_vu_chain_buffer_size MACRO_ADDR;
+extern float big_head_cutscene_fov_scale MACRO_ADDR;
+extern char cutscene_state[];
 extern char D_L00_0017C540[];
-extern char D_L00_0017C440[];
-extern char D_L00_0017C480[];
-extern char D_L00_0017C500[];
-extern char D_L00_0017C4C0[];
-extern int D_L00_00173F00[];
-extern unsigned char D_L00_00166D80[];
+extern char hero_scale_manipulator[];
+extern char cheat_scale_manipulator[];
+extern char cheat_scale_manipulator_class_555[];
+extern char cheat_scale_manipulator_class_1a3[];
+extern int lvl_resource_buffers[];
+extern unsigned char player_camera[];
 extern char *D_L00_00179208;
 extern char *D_L00_001BA15C;
-extern void func_L00_00211908(void);
-extern void func_00216EF0(int);
-extern void func_001F99B0(void *, int, int);
-extern void func_L00_00203FB8(void);
-extern void func_L00_00233868(void);
-extern void func_L00_00245B88(int);
-extern int func_001F9850(int);
-extern void func_001F4E08(int);
-extern void func_0022DD68(void);
-extern void func_00216960(void);
-extern int func_00217748(int);
-extern void func_00204FC0(void);
-extern int func_L00_00222B80(int, int);
+extern void Hero_OnKilled(void);
+extern void music_Pause(int);
+extern void FastMemSet(void *, int, int);
+extern void clear_active_help_record(void);
+extern void HeroSetObjectFlags(void);
+extern void start_cutscene_chunk_read(int);
+extern int scale_ticks(int);
+extern void FadeToBlack(int);
+extern void sound_update(void);
+extern void Music_ContinueStreamIfReady(void);
+extern int update_audio_stream_until_idle(int);
+extern void update_world_object_animation(void);
+extern int HeroEnterMoveState(int, int);
 extern int func_00122598(int);
 
 typedef struct { char pad[0x30]; int a30; } Vd;
@@ -339,19 +339,19 @@ void StartCutscene(int arg) {
         func_00122598(0);
     }
 }
-extern void func_002348B8(void);
-extern void func_001F4E08(int);
-extern void func_L00_00299108(void);
-extern void func_001F3140(void);
-extern void func_0020D678(void *);
-extern int func_L00_00222B80(int, int);
-extern float func_00214358(void *, int, float);
-extern float func_001F9B88(float);
-extern void func_L00_00233950(void);
-extern void func_L00_00217718(void *, void *, int, int);
-extern void func_00217AE8(void *, void *, int);
-extern int func_001F9850(int);
-extern void func_L00_002666C8(int v);
+extern void calculate_dma_transfer_address(void);
+extern void FadeToBlack(int);
+extern void ResetFrameCounters(void);
+extern void UpdateViewContext(void);
+extern void DeleteMoby(void *);
+extern int HeroEnterMoveState(int, int);
+extern float ProbeGroundHeight(void *, int, float);
+extern float FastAbsF(float);
+extern void HeroClearObjectFlags(void);
+extern void Hero_ResetToPosition(void *, void *, int, int);
+extern void process_menu_entry(void *, void *, int);
+extern int scale_ticks(int);
+extern void Music_SetActiveTrackValue(int v);
 
 typedef struct { char pad[0x5A]; unsigned short x5a; } O5A;
 typedef struct { unsigned char cnt; } MC;
@@ -367,8 +367,8 @@ extern CT D_L00_0016C960_c __asm__("D_L00_0016C960");
 extern float D_L00_0016CBF0;
 extern int D_L00_00167114 NOT_SDA;
 extern char D_L00_0016C970[];
-extern AB D_L00_00179200;
-extern PP D_L00_001BA070 NOT_SDA;
+extern AB active_scene_trigger;
+extern PP level_menu_system NOT_SDA;
 
 // Level teardown: clears the moby table, flags, camera floats and cached objects.
 void finish_cutscene(void) {
@@ -427,16 +427,16 @@ void finish_cutscene(void) {
     }
     Music_SetActiveTrackValue(scale_ticks(30));
 }
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern char D_L00_0016C960[];
-extern char D_L00_0016CB40[];
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
-extern float D_L00_0015F67C MACRO_ADDR;
-extern char D_L00_00166EC0[];
+extern void FastVecCross(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecSub(void *, void *, void *);
+extern char cutscene_state[];
+extern char render_view_params[];
+extern unsigned char gCheats[] MACRO_ADDR;
+extern float big_head_cutscene_fov_scale MACRO_ADDR;
+extern char g_debug_camera[];
 extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern short D_L00_0015F680;
+extern short big_head_cutscene_camera_pullback;
 
 typedef struct CutsceneCamKey {
     u8 pad_00[0xC];
@@ -511,8 +511,8 @@ unsigned char apply_cutscene_camera_key(void) {
     }
     return r;
 }
-extern s32 D_0015EE84 MACRO_ADDR;
-extern s32 D_0015EE80 MACRO_ADDR;
+extern s32 g_current_level_index MACRO_ADDR;
+extern s32 pal_mode MACRO_ADDR;
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 struct PadStateWords {
     char pad0[0x100];
@@ -595,18 +595,18 @@ typedef struct {
     u8 sample_capture_status;
 } DebugMenuState;
 extern DebugMenuState D_L00_0016C158_9A300 __asm__("D_L00_0016C158");
-void func_L00_00299108(void);
+void ResetFrameCounters(void);
 extern struct PadStateWords D_0013CA40_9A300 __asm__("D_0013CA40");
-int func_001F9850(int);
-void func_L00_00299148(void);
+int scale_ticks(int);
+void update_game_frame_and_idle_counters(void);
 extern s32 D_0015EF20 MACRO_ADDR;
 extern u8 D_L00_001610B8_9A300[] __asm__("D_L00_001610B8");
 extern u8 D_L00_001610C8_9A300[] __asm__("D_L00_001610C8");
 extern u8 D_L00_001610D8_9A300[] __asm__("D_L00_001610D8");
 extern u8 D_L00_001610E8_9A300[] __asm__("D_L00_001610E8");
 extern u8 D_L00_001610F8_9A300[] __asm__("D_L00_001610F8");
-extern void func_001E9768(void *, s32);
-void func_L00_00299E70(void);
+extern void Profile_Mark(void *, s32);
+void finish_cutscene(void);
 int func_L00_0029A158_9A300(void) __asm__("func_L00_0029A158");
 typedef struct {
     u8 pad0[0xC];
@@ -630,24 +630,24 @@ typedef struct {
     char pad58[0x120];
     Moby *f178[1];
 } VendorCutscene;
-extern u32 D_0013CBE4;
+extern u32 pad0_pressed;
 extern f32 D_L00_0015F4FC_9A300 __asm__("D_L00_0015F4FC") MACRO_ADDR;
 extern VendorCutscene D_L00_0016C960_9A300 __asm__("D_L00_0016C960");
-extern short D_0015EFA0;
-extern s32 D_0015EFD8 MACRO_ADDR;
-extern void func_L00_0023EC00(void);
-extern void func_00216960(void);
-extern s32 func_00217748(s32);
-extern void func_00204FC0(void);
-extern void func_L00_00245B88(s32);
-extern void func_0020D6D0(void *);
-extern f32 func_001FA888(s32);
-extern void func_001F9C30(void *, void *, f32);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_00251E30(void *);
-extern void func_00214550(void *);
-extern void func_L00_002353B8(void *);
-extern void func_L00_00207A48(void *);
+extern short challenge_mode;
+extern s32 decode_mode MACRO_ADDR;
+extern void apply_level_specific_cutscene_moby_effects(void);
+extern void Music_ContinueStreamIfReady(void);
+extern s32 update_audio_stream_until_idle(s32);
+extern void update_world_object_animation(void);
+extern void start_cutscene_chunk_read(s32);
+extern void update_moby_animation_state(void *);
+extern f32 IntToFloat(s32);
+extern void FastVecScale(void *, void *, f32);
+extern void FastVecAdd(void *, void *, void *);
+extern void moby_build_matrix(void *);
+extern void update_moby_shadow_range(void *);
+extern void HeroAttachManipulators(void *);
+extern void update_moby_pulsing_glow_effects(void *);
 
 /* Per-frame update while the cutscene in D_L00_0016C860 plays: runs the debug-gated subsystem updates, fades, advances the frame counters and either finishes the cutscene (end frame reached or skipped) or steps each of its mobys between two keyframes.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00295100.c, FUN_L00_00298f90. */
@@ -750,8 +750,8 @@ void update_cutscene_playback(void) {
         update_game_frame_and_idle_counters();
     }
 }
-extern int D_0015EE80 MACRO_ADDR;
-extern int D_0015EE88 MACRO_ADDR;
+extern int pal_mode MACRO_ADDR;
+extern int g_game_language MACRO_ADDR;
 typedef struct {
     int b;
     int a;
@@ -762,8 +762,8 @@ typedef struct {
     LevelLoad alt[19];
 } Globals137C80;
 extern Globals137C80 D_00137C80_g __asm__("D_00137C80");
-extern void func_L00_00211908(void);
-extern void func_L00_0029A940(int, int, int);
+extern void Hero_OnKilled(void);
+extern void prepare_movie_playback(int, int, int);
 
 /* Dialog stream update: pick the entry's pair and start it unless one is already playing. */
 void PlayMovieEntryIfIdle(int idx) {
@@ -822,16 +822,16 @@ void queue_movie_with_game_language(int i) {
     }
     prepare_movie_playback(b, a, g_game_language);
 }
-extern char D_0013E650[];
+extern char voice_pool[];
 extern void func_00118D80(int);
-extern void func_0022EFE8(void);
-extern void func_00216D88(void);
-extern void func_L00_00203FB8(void);
+extern void sound_StopAllSounds(void);
+extern void music_Stop(void);
+extern void clear_active_help_record(void);
 extern int func_00122630(void *, short, short, short, short, short, short, short);
 extern int func_00122958(void *, void *);
 extern int func_00120858(int, unsigned short);
-extern int func_001E9730(char *, int);
-extern void func_001F9978(void);
+extern int STUB_printf(char *, int);
+extern void raise_kernel_trap(void);
 typedef struct {
     int sector;
     int size;
@@ -841,9 +841,9 @@ typedef struct {
 } MovieLoad;
 extern MovieLoad D_L00_00161108_m __asm__("D_L00_00161108") MACRO_ADDR;
 extern int D_0015EF78_29A940[6] __asm__("D_0015EF78") MACRO_ADDR;
-extern int D_L00_0015F50C MACRO_ADDR;
-extern int D_L00_00173F04;
-extern char D_L00_001E9800[];
+extern int level_texture_data_base MACRO_ADDR;
+extern int movie_work_buffer;
+extern char movie_gs_overflow_message[];
 
 /* sets up a movie load, then uploads image data from the level buffer to GS memory in two runs of strips */
 void prepare_movie_playback(int sector, int size, int arg2) {
@@ -897,7 +897,7 @@ extern void func_00123168(void *);
 extern void func_0012F308(void);
 extern void func_00122818(void *, int, int, int, int, int, int, int);
 extern void func_00122AD8(void *, int);
-extern void func_00216A90(int, int, int);
+extern void music_StartTrack(int, int, int);
 
 /* Leaves movie playback: restores the GS and draw buffers and returns to the game. */
 void movie_exit_to_gameplay(void) {
@@ -955,19 +955,19 @@ void movie_exit_to_gameplay(void) {
         q[0x6B] |= 0x10;
     }
 }
-extern char D_0013D390[];
+extern char memory_card_state[];
 extern void func_00118D80(int);
-extern void func_0022EFE8(void);
-extern void func_00216D88(void);
+extern void sound_StopAllSounds(void);
+extern void music_Stop(void);
 extern int func_0012EF48(int);
-extern void func_00209E68(void);
-extern void func_0023B670(int, int, int, int, int);
+extern void memcard_update_state(void);
+extern void Movie_Play(int, int, int, int, int);
 extern int func_00120F30(int);
-extern void func_L00_0029AB38(void);
+extern void movie_exit_to_gameplay(void);
 extern int D_L00_00161118 MACRO_ADDR;
 extern int D_L00_0016110C MACRO_ADDR;
 extern int D_L00_00161110 MACRO_ADDR;
-extern int D_L00_00161108 MACRO_ADDR;
+extern int queued_movie_request MACRO_ADDR;
 extern short D_L00_00161114;
 
 /* Stop sound, wait for the loader to go idle, then start the movie load. */
@@ -989,14 +989,14 @@ void play_queued_movie(void) {
     func_00120F30(0);
     movie_exit_to_gameplay();
 }
-extern void func_001F99B0(void *, int, int);
-extern int func_00217628(int, int, int);
-extern int D_L00_0015F700[4] MACRO_ADDR;
-extern int D_L00_00173F00[];
-extern int D_L00_0016128C MACRO_ADDR;
+extern void FastMemSet(void *, int, int);
+extern int start_audio_stream_read(int, int, int);
+extern int slideshow[4] MACRO_ADDR;
+extern int lvl_resource_buffers[];
+extern int lvl_vu_chain_buffer_size MACRO_ADDR;
 typedef struct { int a; int b; } LL9;
 typedef struct { char pad[0x16A8]; LL9 normal[20]; LL9 alt[20]; } G9;
-extern G9 D_00137C80;
+extern G9 disc_table;
 
 /* starts the slideshow: resets state, rebases the level data pointers, and starts the first two streams */
 void start_slideshow(void) {
@@ -1024,9 +1024,9 @@ void start_slideshow(void) {
         start_audio_stream_read(slideshow[3], disc_table.normal[((short *)slideshow)[1]].a, disc_table.normal[((short *)slideshow)[1]].b);
     }
 }
-extern void func_00234AC8(int);
-extern void func_00217588(void);
-extern int D_L00_0015F4FC MACRO_ADDR;
+extern void VU1_syncChain(int);
+extern void request_audio_stream_break(void);
+extern int gFadeLvl MACRO_ADDR;
 /* Ends the slideshow: syncs VU1, fades to black, stops the audio stream and leaves cinematic mode. */
 void end_slideshow(void) {
     VU1_syncChain(1);
@@ -1037,9 +1037,9 @@ void end_slideshow(void) {
     gFadeLvl = 0;
     calculate_dma_transfer_address();
 }
-extern void func_L00_0029AF70(void);
-extern void func_0022DD68(void);
-extern int D_L00_00173D00[];
+extern void end_slideshow(void);
+extern void sound_update(void);
+extern int slideshow_slide_durations[];
 #define IST (((short *)D_L00_0015F700)[0])
 #define IIDX (((short *)D_L00_0015F700)[1])
 #define ICNT (((short *)D_L00_0015F700)[2])

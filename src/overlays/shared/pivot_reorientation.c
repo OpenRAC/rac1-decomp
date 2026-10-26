@@ -2,11 +2,11 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern void func_001FA218(void *, void *);
-extern void func_001FA4A0(void *, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
+extern void euler_to_matrix(void *, void *);
+extern void matrix_from_basis_rows(void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
 
 // transforms a vector by two matrices built from a3/a4 and adds the result relative to a0
 void reorient_position_about_pivot(void *a0, void *a1, void *a2, void *a3, void *a4) {

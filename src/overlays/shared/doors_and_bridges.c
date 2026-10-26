@@ -4,10 +4,10 @@
 #include "hero.h"
 #include "moby.h"
 
-extern void func_L02_002A5238(void *, int, float);
-extern void func_001F49B0(void *, void *);
-extern char D_L07_001D36C0[];
-extern char func_00216270[];
+extern void prepare_scaled_float_table_with_target_byte(void *, int, float);
+extern void AddDrawCallback(void *, void *);
+extern char umbris_ambient_stream_scaled_table[];
+extern char register_audio_stream_callback[];
 
 /* Umbris ambient stream moby: sets up its table, then queues the audio stream. */
 void AmbientStreamL07Update(unsigned char *moby)
@@ -188,16 +188,16 @@ void timed_activation_pads_update(unsigned char *moby)
         break;
     }
 }
-extern int D_0015EE84 MACRO_ADDR;
-extern unsigned char D_0014C150[];
-extern s32 D_L07_001845A8[];
-extern void func_001F9BD8(void *, void *, void *);
-extern f32 func_001F9CB8(void *);
-extern void func_L00_001FF4B0(f32, void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_0022ED80(s32, s32, void *);
-extern u8 * D_L07_00160058 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern unsigned char saved_mission_state[];
+extern s32 umbris_indicator_states[];
+extern void FastVecAdd(void *, void *, void *);
+extern f32 FastVecLength(void *);
+extern void vec_scale_to_length(f32, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void Moby_PlaySound(s32, s32, void *);
+extern u8 * level_mobys MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
 
 /* Door update: moves between open and closed states, gated by its mission state. */
 void door_update(u8 *moby)
@@ -321,18 +321,18 @@ void door_update(u8 *moby)
         return;
     }
 }
-extern int D_0015EE84 MACRO_ADDR;
-extern unsigned char D_0014C150[];
-extern s32 D_L07_001845A8[];
-extern void func_001F9C30(f32, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern f32 func_001F9CB8(void *);
-extern void func_L00_001FF4B0(f32, void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_0022ED80(s32, s32, void *);
-extern void func_L00_002617B0(void *, void *, void *, void *);
-extern u8 * D_L07_00160058 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern unsigned char saved_mission_state[];
+extern s32 umbris_indicator_states[];
+extern void FastVecScale(f32, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern f32 FastVecLength(void *);
+extern void vec_scale_to_length(f32, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void Moby_PlaySound(s32, s32, void *);
+extern void update_entity_matrix(void *, void *, void *, void *);
+extern u8 * level_mobys MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b1e48.c, FUN_L07_0031aee0. */
 void bridge_update(u8 *moby)

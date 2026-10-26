@@ -4,7 +4,7 @@
 #include "hero.h"
 #include "moby.h"
 
-extern float func_001F9D48(void *, void *);
+extern float vec_distance_xy(void *, void *);
 
 /* index of the nearest of n vectors to a + 0x10 */
 int find_nearest_point_index_xy(char *a, char *b, int n) {
@@ -284,12 +284,12 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer_1F3010 *c, float *f) {
         }
     }
 }
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA748(float, float);
-extern char D_L04_00174070[];
+extern void FastVecAdd(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern int coll_sphere(float, void *, int, void *);
+extern float fast_atan2(float, float);
+extern float FastAddRots(float, float);
+extern char eudora_coll_resolved_pos[];
 
 /* steps a moby's position out of collision and aims it */
 void update_moby_movement_with_sphere_collision(char *a, char *b, char *c, float f) {
@@ -312,13 +312,13 @@ void update_moby_movement_with_sphere_collision(char *a, char *b, char *c, float
     }
     *(float *)(a + 0x48) = FastAddRots(fast_atan2(*(float *)(b + 0x10), *(float *)(b + 0x14)), 3.14159265f);
 }
-extern void func_0022C7E0(void);
+extern void SetupSkyGifPaging(void);
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern void func_L00_0028AD68(void);
-extern void func_L00_0028A5A8(void);
-extern void func_0022C870(void);
-extern void func_00234C98(int, long);
-extern int D_0015EF88 MACRO_ADDR;
+extern void draw_sky_shells_with_fast_and_slow_rotation(void);
+extern void update_sky_shells_static(void);
+extern void DoSkyGifPaging(void);
+extern void VU1_addGSregister(int, long);
+extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Eudora sky shells (rotating in level 4, static elsewhere) and restore GS test and Z. */
 void DrawEudoraSky(void) {
     SetupSkyGifPaging();

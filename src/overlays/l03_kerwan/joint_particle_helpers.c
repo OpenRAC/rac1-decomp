@@ -2,18 +2,18 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern int func_001F9850(int);
-extern void func_001F9BC0(void *);
-extern void func_L00_00250800(void *, int, void *);
-extern float func_00214158(void);
-extern float func_002140F8(float, float);
-extern void func_00215C00(void *, float, float, float);
-extern int func_L00_00258BC8(int, int);
-extern void func_L00_0026DD70(void *, void *, int, int, int, float);
-extern int D_0015EE84 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
+extern int scale_ticks(int);
+extern void clear_u64_value(void *);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern float random_angle_radians(void);
+extern float random_float_between(float, float);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern int rand_range(int, int);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, int, float);
+extern int g_current_level_index MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
 typedef struct { char pad0[0x44]; short n; char pad1[0x132]; char *m[1]; } G_2DC848;
-extern G_2DC848 D_L03_0016C9E0;
+extern G_2DC848 kerwan_cutscene_state;
 // Emits four randomized particles while the active level event is in its trigger range.
 void emit_level3_state5_moby_effects(void) {
  float position[4], direction[4];

@@ -90,13 +90,13 @@ void func_L09_0021E410_r(int a, int b, float t) {
         D_0015EF74_21E410 += 0x4000;
     }
 }
-extern void func_L09_0021E410(int, int);
-extern void func_001F7868(void);
-extern int func_L00_00200290(char *, float);
-extern void func_L01_0021F9C8(int, int, int, int, int, int);
-extern int *D_L09_00161240 MACRO_ADDR;
-extern char D_L09_0016EB20[];
-extern int D_L09_0015F6B0 MACRO_ADDR;
+extern void queue_level09_strip_texture_packets(int, int);
+extern void font_queue_vu_state(void);
+extern int FastBSphereCheck(char *, float);
+extern void emit_textured_strip_packet(int, int, int, int, int, int);
+extern int *l09_packet MACRO_ADDR;
+extern char gaspar_strip_gs_setup_packet[];
+extern int gaspar_frame_count MACRO_ADDR;
 
 extern void func_L09_0021E410_t(int, int, float) __asm__("func_L09_0021E410");
 typedef struct { char pad[0x20]; short idx[16]; } Strip;
@@ -145,13 +145,13 @@ void draw_level09_scrolling_textured_strips(char *list, float t, int count, long
         }
     }
 }
-extern void func_0022C7E0(void);
+extern void SetupSkyGifPaging(void);
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern void func_L00_0028B680(void);
-extern void func_L00_0028A5A8(void);
-extern void func_0022C870(void);
-extern void func_00234C98(int, long);
-extern int D_0015EF88 MACRO_ADDR;
+extern void draw_sky_shells_with_modulo_25000_rotation(void);
+extern void update_sky_shells_static(void);
+extern void DoSkyGifPaging(void);
+extern void VU1_addGSregister(int, long);
+extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Gaspar sky: rotating shells in level 9, static shells otherwise, then GS setup. */
 void Sky_DrawLevel09(void) {
     SetupSkyGifPaging();

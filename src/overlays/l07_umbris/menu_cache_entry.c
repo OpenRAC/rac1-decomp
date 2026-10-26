@@ -2,8 +2,8 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern int func_L00_0024A798(int);
-extern struct { int a, b, c; char *p; } D_L07_001842F0;
+extern int ensure_menu_cache_entry(int);
+extern struct { int a, b, c; char *p; } umbris_map_menu_state;
 
 /* Clears each set bit in a rectangle of a per-row bit grid, notifying for each. */
 void clear_bit_grid_rectangle(int x, int y0, int w, int h) {

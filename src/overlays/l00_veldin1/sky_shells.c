@@ -3,30 +3,30 @@
 #include "include_asm.h"
 #include "moby.h"
 
-extern void func_0022C7E0(void);
-extern void func_0022C870(void);
-extern void func_00234C98(int, long);
+extern void SetupSkyGifPaging(void);
+extern void DoSkyGifPaging(void);
+extern void VU1_addGSregister(int, long);
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int D_0015EF88 MACRO_ADDR;
-extern void func_L00_0028A5A8(void);
-extern void func_L00_0028A608(void);
-extern void func_L00_0028A6F8(void);
-extern void func_L00_0028A878(void);
-extern void func_L00_0028AC80(void);
-extern void func_L00_0028AD68(void);
-extern void func_L00_0028AEB0(void);
-extern void func_L00_0028AF90(void);
-extern void func_L00_0028B4E0(void);
-extern void func_L00_0028B5C8(void);
-extern void func_L00_0028B680(void);
-extern void func_L00_0028B758(void);
-extern void func_L00_0028B8F8(void);
-extern void func_L00_0028BBF8(void);
-extern void func_L00_0028BC70(void);
-extern void func_L00_0028BD70(void);
-extern void func_L00_0028BF60(void);
-extern void func_L00_0028C358(void);
-extern void func_L00_0028C478(void);
+extern int depth_buffer_address MACRO_ADDR;
+extern void update_sky_shells_static(void);
+extern void draw_sky_shells_with_particles_and_rotating_shell(void);
+extern void update_sky_shells_animated(void);
+extern void draw_four_sky_shells_with_animated_particles(void);
+extern void SkyShellsRotateTwo(void);
+extern void draw_sky_shells_with_fast_and_slow_rotation(void);
+extern void draw_sky_shells_with_particles_and_modulo_50000_rotation(void);
+extern void draw_three_sky_shells_with_three_particle_types(void);
+extern void draw_three_sky_shells_with_particles_and_modulo_50000_rotation(void);
+extern void draw_sky_shells_with_modulo_40000_rotation(void);
+extern void draw_sky_shells_with_modulo_25000_rotation(void);
+extern void draw_sky_shells_with_scaled_phase_rotation(void);
+extern void draw_sky_shells_with_slow_medium_and_fast_rotation(void);
+extern void draw_three_sky_shells_with_particles(void);
+extern void SkyShellsRotatePair(void);
+extern void draw_two_sky_shells_with_particles(void);
+extern void render_three_shell_particle_sky(void);
+extern void draw_seven_sky_shells_with_modulo_40000_and_60000_rotation(void);
+extern void SkyShellsEntryUpdate(void);
 extern void b8f8_a(void) __asm__("func_L00_0028B8F8");
 extern void b8f8_b(void) __asm__("func_L00_0028B8F8");
 /* Draws the sky shells for the current level. */
@@ -116,21 +116,21 @@ typedef struct {
     Moby *unk188;
 } VeldinLevelState;
 
-extern void func_001F49B0(void *, void *);
-extern int func_001F9850(int);
-extern void func_001F9BC0(void *);
-extern void func_L00_00250800(void *, int, void *);
-extern float func_00214158(void);
-extern float func_002140F8(float, float);
-extern void func_00215C00(void *, float, float, float);
-extern int func_L00_00258BC8(int, int);
-extern void func_L00_0026DD70(void *, void *, int, int, int, float);
-extern void func_L00_0023E9A0(void *);
-extern void func_L00_0025805C(void *);
-extern void func_00233AB8();
-extern void func_L00_0023E4C8();
-extern float D_0015EE6C MACRO_ADDR;
-extern VeldinLevelState D_L00_0016C960;
+extern void AddDrawCallback(void *, void *);
+extern int scale_ticks(int);
+extern void clear_u64_value(void *);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern float random_angle_radians(void);
+extern float random_float_between(float, float);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern int rand_range(int, int);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, int, float);
+extern void emit_moby_particle_pairs(void *);
+extern void apply_env_zone_lighting(void *);
+extern void render_environment_mapped_object();
+extern void GlowQuadsDraw();
+extern float g_frame_time MACRO_ADDR;
+extern VeldinLevelState cutscene_state;
 
 /* per-frame Veldin hook: queues callbacks and spawns particles by game state. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l00/unclassified_0023d968.c, FUN_L00_0023e268. */
 void apply_level_specific_cutscene_moby_effects(void) {

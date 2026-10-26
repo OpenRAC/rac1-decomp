@@ -5,17 +5,17 @@
 #include "hero.h"
 
 typedef struct { float f[4]; } __attribute__((aligned(16))) V4h;
-extern Hero D_0013F450;
+extern Hero g_hero;
 typedef struct { char pad0[0x44]; int use_state_40; char pad48[8]; int item_id; char pad54[4]; float interval; char pad5c[4]; int duration_frames; char pad64[0xC]; } Ent;
-extern Ent D_L00_00179990[] NOT_SDA;
+extern Ent idle_fidgets[] NOT_SDA;
 extern int D_L00_00179BB0 NOT_SDA;
-extern int D_0015EE84 MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
 extern char D_0013E633[];
-extern int func_L00_0020DB30(int);
-extern float func_002140F8(float, float);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern int func_001F9850(int);
-extern float func_001F9878(float);
+extern int hero_slot_item_id(int);
+extern float random_float_between(float, float);
+extern int coll_line(void *, void *, int, int, int);
+extern int scale_ticks(int);
+extern float multiply_global_factor(float);
 
 /* Hero idle-fidget picker; returns 1 and writes the chosen index if one is picked. */
 int pick_idle_fidget(int *index) {
@@ -88,15 +88,15 @@ int pick_idle_fidget(int *index) {
 }
 extern char D_0013E633[];
 extern char D_0013A5E0_229B78[] __asm__("D_0013A5E0");
-extern int func_L00_00222B80(int, int);
-extern int func_001F9850(int);
-extern void func_L00_00232C10(int, int, float);
-extern void func_L00_00211F80(int, float);
-extern void func_L00_002607A8(void *a, float x);
-extern int func_L00_00205618(int);
-extern void func_L00_00232E60(int bank, int seq);
+extern int HeroEnterMoveState(int, int);
+extern int scale_ticks(int);
+extern void set_hero_animation(int, int, float);
+extern void stick_target(int, float);
+extern void ClampVectorLength(void *a, float x);
+extern int hero_idle_sequence(int);
+extern void HeroQueueSequence(int bank, int seq);
 extern short D_0015EE6C_229B78 __asm__("D_0015EE6C");
-extern float D_0015EE64 MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
 extern int D_L00_0015F7BC MACRO_ADDR;
 
 /* Menu/hint update: picks an action for the player from the game block's timers and flags. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00229010.c, FUN_L00_002293a8. */
@@ -151,14 +151,14 @@ void update_hero_locomotion_state(void) {
     }
 }
 extern unsigned char D_0013A5E0[] NOT_SDA;
-extern unsigned char D_0013D5CA NOT_SDA;
-extern float D_0015EE6C MACRO_ADDR;
-extern int func_L00_00222520(void);
-extern int func_L00_00267C48(int, int, int, int);
-extern int func_L00_00222B80(int, int);
+extern unsigned char gHaveHeliPack NOT_SDA;
+extern float g_frame_time MACRO_ADDR;
+extern int get_hero_high_jump_input_window_frames(void);
+extern int check_pad_press_separation(int, int, int, int);
+extern int HeroEnterMoveState(int, int);
 extern int func_L00_00222B80_b(int, int) __asm__("func_L00_00222B80");
-extern int func_L00_00267BA8(int, int, int);
-extern int func_L00_0020DB30(int);
+extern int pad_pressed_within(int, int, int);
+extern int hero_slot_item_id(int);
 
 // Tries the crouch-jump style moves in priority order and starts the first whose conditions hold. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00229010.c, FUN_L00_00229660.
 int hero_handle_jump_press(void) {
@@ -221,12 +221,12 @@ found:
     }
     return 0;
 }
-extern float func_L00_001FF860(float, float);
-extern float func_001FA850(float, float);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern float D_L00_00173F68;
+extern float fast_atan2(float, float);
+extern float FastDiffRots(float, float);
+extern float FastCos(float);
+extern float FastSin(float);
+extern int coll_line(void *, void *, int, int, int);
+extern float coll_hit_point_z;
 
 /* Test whether the player can reach the point in front of him. */
 int check_hero_forward_collision_height(void) {
@@ -253,9 +253,9 @@ int check_hero_forward_collision_height(void) {
     return 0;
 }
 typedef struct { char pad[0x24]; int v; char pad2[0x24]; } Rec;
-extern Rec D_L00_00179BC0[] __attribute__((section(".data")));
-extern void func_L00_0020ED30(void);
-extern int func_L00_00222B80(int, int);
+extern Rec item_defs[] __attribute__((section(".data")));
+extern void cancel_hero_item_animation(void);
+extern int HeroEnterMoveState(int, int);
 
 /* starts the pending global action if conditions hold; returns 1 on success */
 int try_start_hero_item_idle_animation(void) {

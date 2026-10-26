@@ -11,17 +11,17 @@ typedef struct {
     int c[4];
     float d[4];
 } L10SpriteData_298940;
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
+extern void FastVecSub(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
 extern void func_001F9BD8_99AF0(void *, void *, void *) __asm__("func_001F9BD8");
-extern int func_001F9908(int *);
-extern int func_001F9850(int);
-extern float func_001FA888(int);
-extern int func_001FA8A8(int, int, float);
-extern float func_001F9B88(float);
-extern unsigned char *func_L00_00273E08(void *, int, unsigned char, int, int, int, int, float);
-extern int func_001FA898(float);
-extern char D_L10_001672C0[];
+extern int fast_dec_timer(int *);
+extern int scale_ticks(int);
+extern float IntToFloat(int);
+extern int FastTweenColor(int, int, float);
+extern float FastAbsF(float);
+extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
+extern int truncate_float_to_s32(float);
+extern char orxon_camera_pos[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00298940.c, FUN_L10_00298940. */
 void emit_moby_sprite_particles(char *m) {
@@ -56,10 +56,10 @@ void emit_moby_sprite_particles(char *m) {
     }
 }
 extern struct Moby *func_0020D348_m(int) __asm__("func_0020D348");
-extern float func_001F9D10(void *, void *);
-extern float func_L00_001FF860(float, float);
-extern float func_001F9CE8(void *);
-extern void func_L00_00251E30(void *);
+extern float FastVecDist(void *, void *);
+extern float fast_atan2(float, float);
+extern float vec_length_xy(void *);
+extern void moby_build_matrix(void *);
 extern char D_0013E633[];
 
 /* spawn a moby of class 0x333 with position, velocity vector and aim angles */
@@ -88,7 +88,7 @@ char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
     }
     return m;
 }
-extern s32 D_0015EE84 MACRO_ADDR;
+extern s32 g_current_level_index MACRO_ADDR;
 typedef int Q_cc2e8 __attribute__((mode(TI), aligned(16)));
 typedef struct {
     float vel[4];
@@ -108,29 +108,29 @@ typedef struct {
     float ry;
     float rz;
 } Rot_cc2e8;
-extern unsigned char D_0013F450[];
-extern char D_0013F4D0[];
-extern char D_L10_00174340[];
-extern float D_0015EE70 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern float func_001F9CB8(void *);
-extern float func_L00_001FF3E0(void *);
-extern float func_001FA748(float, float);
-extern float func_00214358(void *, int, float);
+extern unsigned char g_hero[];
+extern char gHeroPos[];
+extern char ground_hit[];
+extern float g_frame_time_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern float FastVecLength(void *);
+extern float lensq_cc2e8(void *);
+extern float FastAddRots(float, float);
+extern float ProbeGroundHeight(void *, int, float);
 extern void func_001F9BD8_CD6A8(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_001F9C30(void *, void *, float);
-extern void func_L00_001FF500(void *, void *, float);
-extern void func_001F9BC0(void *);
-extern float func_L00_00259148(float, float, float, float, float, float *);
-extern void func_00215C00(float, float, float, void *);
-extern int func_L00_00258BC8(int, int);
-extern void func_L00_0026A7F8(void *, void *, int, int, int, int, int, int);
-extern int func_0022ED80(int, int, void *);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern void func_L00_0025AC00(float, int, void *, int, void *, void *);
-extern void func_L00_00260108(void *, void *, int, float, float);
-extern void func_L00_0028EF68(int, int, void *, int);
-extern void func_0020D678(void *);
+extern void FastVecScale(void *, void *, float);
+extern void vec_set_length_xy(void *, void *, float);
+extern void clear_u64_value(void *);
+extern float SpringTurn(float, float, float, float, float, float *);
+extern void BuildSphericalOffset(float, float, float, void *);
+extern int rand_range(int, int);
+extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+extern int Moby_PlaySound(int, int, void *);
+extern int coll_line(void *, void *, int, int, int);
+extern void PostHitMessage(float, int, void *, int, void *, void *);
+extern void SpawnExplosionFx(void *, void *, int, float, float);
+extern void Sound_PlayClassSound(int, int, void *, int);
+extern void DeleteMoby(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00298940.c, FUN_L10_002cc2e8. */
 void Moby819Update(char *m) {
@@ -239,19 +239,19 @@ void Moby819Update(char *m) {
         break;
     }
 }
-extern float func_00214158(void);
-extern float func_002140F8(float, float);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9BD8(float *, float *, float *);
-extern void func_L01_00287F20(float *, float, float, int, int, int);
-extern short D_L10_00161EF0;
-extern short D_L10_00161EE0;
-extern short D_L10_00161EE4;
-extern short D_L10_00161EE8;
-extern short D_L10_00161EEC;
-extern short D_L10_00161ED8;
-extern short D_L10_00161EDC;
+extern float random_angle_radians(void);
+extern float random_float_between(float, float);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void FastVecAdd(float *, float *, float *);
+extern void spawn_type_52_particle(float *, float, float, int, int, int);
+extern short orxon_type52_particle_spawn_radius;
+extern short orxon_type52_particle_start_size_max;
+extern short orxon_type52_particle_end_size_max;
+extern short orxon_type52_particle_life_min;
+extern short orxon_type52_particle_life_max;
+extern short orxon_type52_particle_color_start;
+extern short orxon_type52_particle_color_end;
 
 // spawns an effect at a jittered position around the moby
 void spawn_type_52_particle_near_moby(char *moby) {
@@ -271,10 +271,10 @@ void spawn_type_52_particle_near_moby(char *moby) {
     h = *(int *)&orxon_type52_particle_color_end;
     spawn_type_52_particle(v, c, d, g, h, e);
 }
-extern void func_001FA4A0(void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_001F49B0(void (*)(void), void *);
-extern void func_L10_002EA578(unsigned char *);
+extern void matrix_from_basis_rows(void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern void AddDrawCallback(void (*)(void), void *);
+extern void draw_moby_animated_quad_layers(unsigned char *);
 extern unsigned char D_0014171B_q[] __asm__("D_0014171B") NOT_SDA;
 
 /* UpdateMoby_1378 (names.tsv role). State 0 sets flag bit 0 and goes to state 1. In state 1,
@@ -322,21 +322,21 @@ typedef struct {
     float uv[4][2];
     long unk70, tex, unk80, unk88;
 } Quad_2EA578;
-extern short D_L10_00161FC0;
-extern short D_L10_00161FC8;
-extern short D_L10_00161FD0;
-extern short D_L10_00161FD8;
-extern short D_L10_00161FE0;
-extern int D_L10_0015F4F8 MACRO_ADDR;
-extern int D_L10_001DA520[];
-extern float D_L10_001DA540[][2];
-extern int D_L10_001DA580[][2];
-extern float D_L10_001DA5C0[][2];
-extern V4_2EA578 D_L10_001DA5E0[];
-extern V4_2EA578 D_L10_001DA620[];
-extern void func_001FA460(void *, void *);
-extern long func_001F4868(int);
-extern void func_L00_001FD1D8(void *, void *, int);
+extern short quad_layer_count;
+extern short orxon_quad_layer_alpha_a;
+extern short orxon_quad_layer_alpha_b;
+extern short orxon_quad_layer_alpha_c;
+extern short orxon_quad_layer_alpha_d;
+extern int quad_uv_animation_phase_input MACRO_ADDR;
+extern int orxon_quad_layer_levels[];
+extern float orxon_quad_layer_uv_periods[][2];
+extern int orxon_quad_layer_uv_use_cos[][2];
+extern float orxon_quad_layer_base_uvs[][2];
+extern V4_2EA578 orxon_quad_layer_second_vertices[];
+extern V4_2EA578 orxon_quad_layer_first_vertices[];
+extern void copy_matrix_rotation(void *, void *);
+extern long GetEffectTex(int);
+extern void draw_world_quad(void *, void *, int);
 
 #define ALPHA_2EA578(a, b, c, d, fix) \
     ((unsigned long)(a) | ((unsigned long)(b) << 2) | ((unsigned long)(c) << 4) | \
@@ -431,7 +431,7 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
         }
     }
 }
-extern char * D_L10_0015F050 MACRO_ADDR;
+extern char * orxon_camera_descriptors MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e3de8.c, FUN_L10_002f5a50. */
 void activate_descriptor(int i) {
@@ -440,11 +440,11 @@ void activate_descriptor(int i) {
     q[0x38] = 1;
     q[0x39] = 0;
 }
-extern char * D_L10_001B0C30[];
-extern int func_00215570(void *, int);
-extern int func_L00_00260AB0(void *, int);
-extern int func_L00_00260B68(float *, int);
-extern int func_L00_0025A778(float *, float *, int);
+extern char * orxon_paths[];
+extern int is_point_inside_clip_volume(void *, int);
+extern int test_point_in_transformed_unit_cylinder(void *, int);
+extern int test_point_in_transformed_unit_sphere(float *, int);
+extern int IsPointInPolygon(float *, float *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e3de8.c, FUN_L10_002f5a78. */
 int check_descriptor_hero_trigger(char *moby, char *unused)
@@ -471,11 +471,11 @@ struct CamK_72D8 {
     short ids[8];
     float vals[9];
 };
-extern void func_L00_00222B80(int, int);
-extern char *D_L10_0015F050 MACRO_ADDR;
-extern char *D_L10_001B0C30[];
-extern char D_L10_0016CF40[];
-extern char D_L10_00167180[];
+extern void HeroEnterMoveState(int, int);
+extern char *orxon_camera_descriptors MACRO_ADDR;
+extern char *orxon_paths[];
+extern char orxon_view_params[];
+extern char orxon_player_camera[];
 
 /* The vendor camera record: the table row at D_L10_0015F050 holds a pointer to it at +0x1C. */
 typedef struct CamPathRec {
@@ -643,23 +643,23 @@ void initialize_path_camera(char *cam) {
         HeroEnterMoveState(0x72, 1);
     }
 }
-extern char *D_L10_0015F050 MACRO_ADDR;
-extern float D_L10_0015F4FC MACRO_ADDR;
-extern char *D_L10_00160058 MACRO_ADDR;
-extern char *D_L10_001B0C30[];
-extern int D_L10_0015F504 MACRO_ADDR;
+extern char *orxon_camera_descriptors MACRO_ADDR;
+extern float orxon_fade MACRO_ADDR;
+extern char *orxon_mobys MACRO_ADDR;
+extern char *orxon_paths[];
+extern int orxon_path_camera_active MACRO_ADDR;
 extern float D_L10_0016CFF0;
 extern float D_L10_001673D8;
-extern char D_L10_0016CF40[];
+extern char orxon_view_params[];
 extern float D_L10_001674D0[];
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_001F3140(void);
-extern void func_L00_00222B80(int, int);
-extern int func_L00_0025E860(void *, void *, int *, float *, float, int);
-extern int func_001F9938(void *);
-extern float func_00214220(float, float, float);
-extern void func_001E9768(void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void FastVecCross(void *, void *, void *);
+extern void UpdateViewContext(void);
+extern void HeroEnterMoveState(int, int);
+extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
+extern int FastDecTimer(void *);
+extern float CosineInterpolate(float, float, float);
+extern void Profile_Mark(void *, void *);
 
 
 /* Camera 19 update: advances the blend state and aims the camera each frame. */
@@ -842,7 +842,7 @@ void Camera19_Update(char *moby) {
         FastVecCross(moby + 0x20, moby + 0x10, moby);
     }
 }
-extern char *D_L10_0015F050 MACRO_ADDR;
+extern char *orxon_camera_descriptors MACRO_ADDR;
 
 typedef struct UpdateCam {
     u8 pad00[0x7C];

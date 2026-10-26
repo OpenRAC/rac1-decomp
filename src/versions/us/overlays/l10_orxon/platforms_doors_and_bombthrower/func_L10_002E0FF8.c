@@ -1,15 +1,15 @@
 void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
-    extern unsigned char D_0013D50F[];
-    extern void func_00213DE0(void *, int, int, int);
-    extern int func_L00_0025B4D0(void *, void *, void *, int, int *, float *, int, int);
-    extern void func_L00_0025D5B0(void *, void *, float, int, int, int);
-    extern void func_L00_0025E4B0(void *, void *);
-    extern void func_L00_0025E590(void *, void *);
-    extern void func_L00_00261B00(void *, int, int, int, int);
-    extern int func_L00_00260FB0(float, void *, void *, int, int, void *, int);
-    extern void func_001F9EC0(void *, void *, void *);
-    extern void func_0022EE28(int, int, int);
-    extern void func_L00_00264DB8(int, int);
+    extern unsigned char menu_item_enabled_115[];
+    extern void MobyBlendAnimation(void *, int, int, int);
+    extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
+    extern void InitKnockback(void *, void *, float, int, int, int);
+    extern void RerollEffectCounter(void *, void *);
+    extern void StepColorFade(void *, void *);
+    extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
+    extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
+    extern void matrix_mul_vec3(void *, void *, void *);
+    extern void PlayBankSound(int, int, int);
+    extern void ShowBanner(int, int);
     MobyData_2E0FF8 *data = (MobyData_2E0FF8 *)moby->pvars;
     Hit_2E0FF8 *r;
     float v[4];

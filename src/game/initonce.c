@@ -10,60 +10,60 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
-extern int D_0018A3B0[];
-extern void func_001F99B0();
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
-extern char D_001940C0[];
-extern long D_00151888[3];
-extern int D_0015F6FC;
-extern short D_0015F534;
-extern void func_001FB530(void);
-extern void func_001F3D78(void);
-extern int D_0015F564;
-extern int D_0018DD40[];
-extern int D_0018DC40[];
-extern short D_0015F59C;
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
-extern void func_001F6668(void *, void *, void *, void *, void *, int,
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
+extern int draw_config[];
+extern void FastMemSet();
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
+extern char occl_visibility[];
+extern long gs_display_settings[3];
+extern int space_load_in_progress;
+extern short draw_enable_mask;
+extern void append_gif_transfer_packet(void);
+extern void DrawDebugProfiler(void);
+extern int draw_callback_count;
+extern int draw_callback_args[];
+extern int draw_callback_funcs[];
+extern short GlobalStateFlag;
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
+extern void FontPrint(void *, void *, void *, void *, void *, int,
                           unsigned char *);
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
-extern int func_001F4868(int);
-extern void func_001FB498(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern int D_0018E840[];
-extern long D_00152178 NOT_SDA;
-extern int func_001FE4D0(void);
-extern char D_00199A68[];
-extern short D_0015F780;
-extern int D_001941CC NOT_SDA;
-extern int D_0019A4E8 NOT_SDA;
-extern int func_001FF668(int);
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
+extern int GetEffectTex(int);
+extern void PutDrawBufferLarge(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern int bit_swap_lut[];
+extern long background_rgbaq NOT_SDA;
+extern int Help_FindIndex(void);
+extern char s_paradox_this_message_does_not[];
+extern short help_msgs;
+extern int hud_heap_base NOT_SDA;
+extern int hud_state NOT_SDA;
+extern int Hud_GetIconIndex(int);
 typedef struct {
     char b[0x13];
 } Cfg13;
-extern Cfg13 D_0019A540 NOT_SDA;
-extern Cfg13 D_001E7DD8 NOT_SDA;
+extern Cfg13 message_text_buffer NOT_SDA;
+extern Cfg13 message_too_long_label NOT_SDA;
 extern int func_00116810(void);
 extern void func_001166FC(Cfg13 *, void *);
-extern short D_0015F9D0;
-extern void func_00201960(int, int, int, int, int);
+extern short ResourceCounter;
+extern void draw_stretchable_ui_frame(int, int, int, int, int);
 
-extern char D_0024272F[];
-extern int D_0016100C MACRO_ADDR;
-extern int D_001941C0[];
+extern char image_end_round_16k[];
+extern int current_vu_chain MACRO_ADDR;
+extern int level_resource_buffers[];
 
 /*
  * InitMemSlots(void): the memory slot table D_001941C0, from the
@@ -102,7 +102,7 @@ extern void func_001211B0(int);
 extern void func_00121490(int);
 extern int func_0011D248(void *);
 extern int func_0011D210(void);
-extern int func_001E9730(); /* debug-log stub: void func_001E9730(int, ...) */
+extern int STUB_printf(); /* debug-log stub: void func_001E9730(int, ...) */
 extern void func_00118D60(int);
 extern void func_0011AE20(int);
 extern int func_0011D960(void); /* DIntr */
@@ -112,39 +112,39 @@ extern int func_00121688(int);
 extern int func_0011BF48(void);
 extern int func_0012F348(int lba, int sectors, void *buf);
 extern void func_00118D80(int);
-extern void func_00209A60(void *arg0);
+extern void memcard_get_name(void *arg0);
 extern void func_00121B78(int, int, int, int);
-extern void func_0020C268(void);
-extern void func_001F3890(void);
-extern void func_002347F0(void *);
+extern void InitDma(void);
+extern void SetPalMode(void);
+extern void VU0_loadMicroProgram(void *);
 extern int func_0012F3F8(void);
-extern void func_0020C468(void *, void *);
-extern int func_00201D58(void *arg0, void *arg1);
-extern void func_00217EE8(void);
+extern void fast_decompress(void *, void *);
+extern int LoadIRXModule(void *arg0, void *arg1);
+extern void init_pads(void);
 extern void func_0012F308(void); /* vsync_callback(int) */
 extern int func_00123168(void *arg0);
-extern void func_0020BAA8(void);
-extern void func_002348E8(void);
-extern void func_0022DBE8(void);
+extern void memcard_Init(void);
+extern void VU1_initChain(void);
+extern void initialize_gameplay_sound_system(void);
 extern int func_00122630(void *, short, short, short, short, short, short, short);
 extern int func_00122958(void *src, void *dst);
 extern void func_00120858(int, unsigned short);
-extern void func_001E96B8(void);
-extern void func_00233FF8(void);
-extern void func_001F7BF8(void);
+extern void LoadDebugFont(void);
+extern void initialize_sif_rpc(void);
+extern void initialize_alpha_lookup_table(void);
 extern int func_0012D380(void);
 
-extern char D_001E7E10[]; /* "cdrom0:\\IOPRP243.IMG;1" */
-extern char D_0015FB40[]; /* "Rebooted IOP\n" */
-extern int D_0015EF90 MACRO_ADDR;
-extern int D_0015EE80 MACRO_ADDR;
-extern int D_0010E4C0;
-extern int D_00137C80[];
+extern char iop_reboot_image_path[]; /* "cdrom0:\\IOPRP243.IMG;1" */
+extern char rebooted_iop_message[]; /* "Rebooted IOP\n" */
+extern int pause_action_list_mode MACRO_ADDR;
+extern int pal_mode MACRO_ADDR;
+extern int vu0_micro_program;
+extern int disc_table[];
 extern char D_1FF8000[];
-extern char D_001942C0[];
-extern char D_001E7E28[]; /* "loaded irx modules\n" */
-extern int D_0015EE88 MACRO_ADDR;
-extern char D_001E7E40[]; /* "Unsupported language %d\n" */
+extern char image_clear_buffer[];
+extern char loaded_irx_modules_message[]; /* "loaded irx modules\n" */
+extern int g_game_language MACRO_ADDR;
+extern char unsupported_lang_message[]; /* "Unsupported language %d\n" */
 
 /* InitOnce(void). Boots the IOP with cdrom0:\IOPRP243.IMG, waits for it,
  * reads the boot-info sector (lba 0x121) into a stack buffer, sets the

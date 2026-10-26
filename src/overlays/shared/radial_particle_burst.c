@@ -4,15 +4,15 @@
 #include "include_asm.h"
 
 LINKER_REMNANT("asm/overlays", func_L03_00249488);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern float func_001F9C78(void *, void *);
-extern float func_001F9CB8(void *);
-extern float func_001F9FC0(float);
-extern float func_001F9FA8(float);
-extern void func_001F9C30(void *, void *, float);
-extern float func_001F9F90(float);
-extern void func_00215650(void *arg0, void *arg1, void *arg2);
+extern void FastVecCross(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern float FastVecDot(void *, void *);
+extern float FastVecLength(void *);
+extern float FastArcSin(float);
+extern float FastSin(float);
+extern void FastVecScale(void *, void *, float);
+extern float FastCos(float);
+extern void rotate_vector_by_quaternion(void *arg0, void *arg1, void *arg2);
 
 // Rotates a vector toward another by a fraction of the angle between them using a quaternion.
 void rotate_vector_by_scaled_angle_between_vectors(float t, float *dst, float *a, float *b, int flag)
@@ -47,16 +47,16 @@ void trooper_set_knockback(float *p, float a, float b)
     p[6] = (a + a) / x;
     p[5] = (a + a) / (x * x);
 }
-extern float func_L00_00258C80(float, float);
-extern void func_002156E0(void *, void *, void *, float);
-extern float func_002140F8(float, float);
-extern int func_L00_00258BC8(int, int);
-extern int func_002140B0(int);
-extern int func_001F9850(int);
-extern void func_L00_001FF240(void *, void *, void *);
-extern unsigned char *func_L00_00272158(void *, void *, int, int, int, int, float, float, float, float, float);
-extern int func_001FA898(float);
-extern void func_L00_0026DA50(void *, void *, int, int, int, int, float);
+extern float randf_sym(float, float);
+extern void build_look_at_matrix(void *, void *, void *, float);
+extern float random_float_between(float, float);
+extern int rand_range(int, int);
+extern int random_integer_below(int);
+extern int scale_ticks(int);
+extern void add_vectors(void *, void *, void *);
+extern unsigned char *PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
+extern int truncate_float_to_s32(float);
+extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 typedef int U128 __attribute__((mode(TI)));
 /* Convert a 60 Hz frame count to game ticks. */
 static inline int game_frames(int n)

@@ -15,7 +15,7 @@
 
 /* Declarations in scope here before the split. */
 extern long func_00116F68(int arg0, int arg1, int arg2);
-extern int D_0015ED10;
+extern int SbrkErrno;
 extern void *D_0012F86C NOT_SDA;
 extern int func_001162B8(void *arg0, void *arg1, void *arg2);
 extern int func_00116320(void *arg0, void *arg1, void *arg2);
@@ -36,7 +36,7 @@ extern int func_00114060(int, void *);
 extern void func_00113AE0(void *);
 extern void func_00117118(void *, void *, int, int);
 extern int func_00119008();
-extern int D_0012FCF0 NOT_SDA;
+extern int CoreGlobalWord NOT_SDA;
 
 ASM_FUNC("asm/handwritten/core_text", func_00119328);
 
@@ -57,7 +57,7 @@ typedef struct {
     TopThreadEntry entries[0x200];
 } TopThreadContext;
 
-extern int D_00154600;
+extern int top_thread_semaphore;
 extern char D_001527E8[];
 extern int func_00118CB0(int);
 extern int func_00118C10(int);
@@ -117,10 +117,10 @@ extern int func_00118B50(void *);
 extern int func_00118B70(int, void *);
 extern int func_00118BA0(int, int);
 extern void func_001194C8(void *);
-extern int D_0012FCF8;
+extern int top_thread_id;
 extern char D_00154200[];
-extern char D_00166D00[];
-extern int D_00154608[];
+extern char gp_base[];
+extern int top_thread_queue[];
 
 typedef struct {
     int status;

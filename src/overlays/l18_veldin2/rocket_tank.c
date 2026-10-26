@@ -7,30 +7,30 @@
 /* Declarations this file shares with vendor_002F2AE0.c, which it was part of until the two were found to be
    separate translation units: that file reaches D_L18_00162430 as a 2-byte object through $gp, this one as a
    4-byte one through lui. */
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
 extern char D_0013E633[];
-extern float D_L18_0015F660[] MACRO_ADDR;
-extern int func_001F9850(int);
-extern void func_0020D678(void *);
-extern int func_002140B0(int);
-extern float func_001FA748(float, float);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9BF0(void *, void *, void *);
-extern float D_0015EE6C MACRO_ADDR;
-extern int func_0022ED80(int, int, int);
-extern float func_00214D28(float *p, float target, float maxstep);
-extern int D_L18_0015F6A8 MACRO_ADDR;
-extern void func_0020D960(char *, int, void *);
-extern float func_001F9CB8(void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern float func_001F9D48(void *, void *);
-extern float D_0015EE6C MACRO_ADDR;
-extern float func_L00_001FF860(float, float);
-extern float func_001FA790(float, float);
-extern void func_L00_00250800(void *, int, void *);
-extern int D_L18_0015F6B0 MACRO_ADDR;
+extern float veldin2_zero_vec[] MACRO_ADDR;
+extern int scale_ticks(int);
+extern void DeleteMoby(void *);
+extern int random_integer_below(int);
+extern float FastAddRots(float, float);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void FastVecSub(void *, void *, void *);
+extern float g_frame_time MACRO_ADDR;
+extern int Moby_PlaySound(int, int, int);
+extern float ApproachValue(float *p, float target, float maxstep);
+extern int veldin2_cinematic_mode MACRO_ADDR;
+extern void AttachManipulator(char *, int, void *);
+extern float FastVecLength(void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern float vec_distance_xy(void *, void *);
+extern float g_frame_time MACRO_ADDR;
+extern float fast_atan2(float, float);
+extern float FastSubRots(float, float);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern int veldin2_frame_count MACRO_ADDR;
 
 typedef struct {
     char pad0[0x18];
@@ -55,8 +55,8 @@ typedef struct {
     char pad36[0x0A];
     float f40;
 } L18M2;
-extern int D_L18_0016D310;
-extern int D_L18_00162430 MACRO_ADDR;
+extern int veldin2_cinematic_step;
+extern int drek_boss_camera_reset_done MACRO_ADDR;
 typedef struct {
     char pad0[0x18];
     float f18;
@@ -97,16 +97,16 @@ void update_moby_scene_visibility_and_height_reflection(M *moby) {
         break;
     }
 }
-extern short D_L18_0016250C;
+extern short rocket_tank_shot_speed;
 extern short D_L18_0016250C_b __asm__("D_L18_0016250C");
-extern void func_L18_002F94B0(void *);
+extern void update_rocket_tank_damage_and_aim(void *);
 extern char *func_0020D348_m(int) __asm__("func_0020D348");
-extern void func_00213DE0(void *, int, int, int);
-extern void func_L00_00251E30(void *);
-extern int func_00215B18(char *, float);
-extern float func_0020D830(void *);
-extern void func_L03_00251AC8(void *, void *, int);
-extern char *func_L18_002A87D0(char *owner, float *pos, float *vec, int arg3);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern void moby_build_matrix(void *);
+extern int IsFrameWithinWindow(char *, float);
+extern float MobyGetFrameValue(void *);
+extern void emit_radial_particle_burst(void *, void *, int);
+extern char *create_class_29_moby(char *owner, float *pos, float *vec, int arg3);
 
 typedef struct {
     char pad0[0xC0];
@@ -242,18 +242,18 @@ void rocket_tank_update(M1454 *m) {
         break;
     }
 }
-extern char *func_L00_0025B478(void *, int, int);
-extern int func_L00_0025B4D0(void *, void *, void *, int, void *, void *, int, int);
+extern char *MobyGetHitMessage(void *, int, int);
+extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void *func_L00_00265050(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10, float *v11, float *v12);
-extern void func_L00_002584A8(void *, int, int);
-extern void func_L00_0025E4B0(void *, short *);
-extern int func_L00_00260D30(unsigned char *, char *, float);
-extern void func_L00_001FF500(void *, void *, float);
-extern float func_001F9CE8(void *);
-extern void func_L00_001FFED8(void *, int, float);
-extern void func_L00_0025E590(void *, void *);
-extern float func_L00_0025CE58(float *, float *, float, float, float, float);
+extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10, float *v11, float *v12);
+extern void SetDeathBits(void *, int, int);
+extern void RerollEffectCounter(void *, short *);
+extern int FindNearestTargetMoby(unsigned char *, char *, float);
+extern void vec_set_length_xy(void *, void *, float);
+extern float vec_length_xy(void *);
+extern void axis_rotation_2d48(void *, int, float);
+extern void StepColorFade(void *, void *);
+extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 
 /* Applies hits to the rocket tank and breaks it apart when its health runs out. */
 void update_rocket_tank_damage_and_aim(void *mv) {
@@ -338,13 +338,13 @@ void update_rocket_tank_damage_and_aim(void *mv) {
     multiply_quaternions(d + 0xD0, v, d + 0xD0);
     StepColorFade(m, d + 0x60);
 }
-extern int *D_L18_001B11B0[];
-extern short D_L18_00162508;
-extern short D_L18_00162510;
+extern int *veldin2_paths[];
+extern short rocket_tank_path_speed;
+extern short rocket_tank_child_anim_ref_speed;
 extern float D_0015EE6C_g __asm__("D_0015EE6C") MACRO_ADDR;
-extern float func_001FA850(float, float);
-extern void func_L00_00259868(int, int, float, float, float, int);
-extern float func_001F9D10(void *, void *);
+extern float FastDiffRots(float, float);
+extern void move_4318(int, int, float, float, float, int);
+extern float FastVecDist(void *, void *);
 
 /* Turns and drives the rocket tank toward its next path point, picking a new one on arrival. */
 void update_rocket_tank_path_movement(char *m) {

@@ -5,14 +5,14 @@
 #include "hero.h"
 #include "vector.h"
 
-extern unsigned char D_0013F450[] NOT_SDA;
+extern unsigned char g_hero[] NOT_SDA;
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern int func_L00_001F3958(void);
-extern void func_L00_0020BFA8(void);
-extern float func_001F9B88(float);
-extern void func_L05_0024D680(int, int);
-extern void func_L00_00211908(void);
+extern int coll_sphere(float, void *, int, void *);
+extern int CollType(void);
+extern void exit_hero_vehicle_mode_if_mode_three(void);
+extern float FastAbsF(float);
+extern void Hero_TryMoveStateL05(int, int);
+extern void Hero_OnKilled(void);
 
 #define GB(o) (*(unsigned char *)(g + (o)))
 #define GH(o) (*(short *)(g + (o)))
@@ -182,27 +182,27 @@ void HeroL05_ProcessContactType(void) {
 typedef int Q __attribute__((mode(TI)));
 extern u8 D_L05_00174360[];
 extern f32 D_L05_00174368;
-extern s32 D_0015EE84 MACRO_ADDR;
-void func_001F9BC0(void *);
-void func_L00_00212D70(void *, void *, s32, f32, f32);
-s32 func_L00_001EFFF0(void *, void *, s32, s32, s32);
-s32 func_L00_001F3988(void);
-s32 func_L00_001F3958(void);
-f32 func_00214440(void *, void *);
-s32 func_L00_0025F410(s32);
-u8 *func_L00_0025D390(s32);
-f32 func_001F9D10(void *, void *);
+extern s32 g_current_level_index MACRO_ADDR;
+void clear_u64_value(void *);
+void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
+s32 coll_line(void *, void *, s32, s32, s32);
+s32 coll_sound_class(void);
+s32 CollType(void);
+f32 resolve_camera_surface_height(void *, void *);
+s32 is_moby_in_class_range_500_to_540(s32);
+u8 *GetFlaggedPvarWord(s32);
+f32 FastVecDist(void *, void *);
 void func_001252C0(void *, void *);
-f32 func_L00_002345B0(void *);
-f32 func_L00_001FF860(f32, f32);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001F9C78(void *, void *);
-void func_001F9C30(void *, void *, f32);
-void func_L00_001FF4B0(void *, void *, f32);
-void func_L00_002167C8(void *, void *);
-void func_L00_00233E48(void *, f32, f32, f32);
+f32 compute_gravity_relative_vector_inclination(void *);
+f32 fast_atan2(f32, f32);
+void FastVecSub(void *, void *, void *);
+f32 FastVecDot(void *, void *);
+void FastVecScale(void *, void *, f32);
+void vec_scale_to_length(void *, void *, f32);
+void compute_rotated_vector_angles(void *, void *);
+void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
 void func_L00_00233D50_40968(void *, void *, f32) __asm__("func_L00_00233D50");
-f32 func_001F9B88(f32);
+f32 FastAbsF(f32);
 typedef struct {
     u8 pad88[0x88];
     f32 xF88;
@@ -257,7 +257,7 @@ typedef struct {
     f32 f40;
     f32 f44;
 } HS;
-extern HS D_L05_00174340;
+extern HS rilgar_coll_hit;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/ui_help_00239fc0.c, FUN_L05_002402a8. */
 void HeroL05_GroundProbe(void) {
@@ -446,17 +446,17 @@ extern char D_0013E633[];
 extern float D_0015EE64_m __asm__("D_0015EE64") MACRO_ADDR;
 extern short D_0015EE60_s __asm__("D_0015EE60");
 extern char D_L05_00174370[];
-extern void func_001F9BC0(void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001F9CB8(void *);
-extern void func_L00_00235040(void);
-extern void func_L00_00233EE0(float *, float, float, float);
-extern void func_L00_00234090(float *dst, float *src, float dz);
-extern void func_L00_00233D50(float *dst, float *src, float h);
-extern int func_L00_001F1D20(float, float, void *, int, void *);
-extern int func_L00_001F34F0(float, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
+extern void clear_u64_value(void *);
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastVecLength(void *);
+extern void Hero_ConstrainToPath(void);
+extern void transform_hero_local_offset_to_world(float *, float, float, float);
+extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
+extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
+extern int coll_capsule(float, float, void *, int, void *);
+extern int coll_sphere_hero_groups(float, void *);
+extern void vec_scale_to_length(void *, void *, float);
 
 /* Camera collision step: moves the camera by a delta, probing 8 times, returns -1 if it moved too far. */
 int Camera_MoveWithCollision(int mode) {
@@ -543,22 +543,22 @@ int Camera_MoveWithCollision(int mode) {
     return 1;
 }
 extern char *D_L05_00174358;
-extern float D_0015EE6C MACRO_ADDR;
-extern void func_L00_00234800(int, void *, void *);
-extern float func_L00_00234250(float *v);
-extern float func_L00_002342F8(float *);
-extern void func_L00_002343A0(float *, float *, float);
-extern s32 func_L00_001EFFF0(void *, void *, s32, s32, s32);
-extern float func_001F9CE8(void *);
-extern void func_L00_001FF500(void *, void *, float);
-extern void func_L00_00213E60(void);
-extern void func_L05_00240968(void);
-extern void func_L00_002136A8(void);
-extern f32 func_001F9C78(void *, void *);
-extern void func_L00_00234150(float *, float *);
-extern void func_L00_00234420(float *, float *, float);
-extern float func_L00_00213A08(void *);
-extern void func_001F9C30(void *, void *, f32);
+extern float g_frame_time MACRO_ADDR;
+extern void update_hero_attachment(int, void *, void *);
+extern float gravity_length_xy(float *v);
+extern float gravity_z(float *);
+extern void gravity_set_z(float *, float *, float);
+extern s32 coll_line(void *, void *, s32, s32, s32);
+extern float vec_length_xy(void *);
+extern void vec_set_length_xy(void *, void *, float);
+extern void resolve_hero_collisions_with_history(void);
+extern void HeroL05_GroundProbe(void);
+extern void correct_hero_ground_penetration(void);
+extern f32 FastVecDot(void *, void *);
+extern void gravity_flatten(float *, float *);
+extern void set_gravity_relative_vector_length_xy(float *, float *, float);
+extern float forward_component(void *);
+extern void FastVecScale(void *, void *, f32);
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void integrate_hero_motion_with_collisions(void) {

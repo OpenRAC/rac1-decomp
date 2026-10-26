@@ -5,7 +5,7 @@
 #include "moby.h"
 
 extern float D_L04_00174068;
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
+extern int coll_line(void *, void *, int, int, int);
 
 /* probes a ray from just above a point; returns the ground offset or 0 */
 float probe_leg_rig_ground_height(float *pos) {
@@ -94,17 +94,17 @@ typedef struct {
     short unkEE;
     LegRigLeg_p legs[2];
 } LegRig_p;
-extern char D_L04_001DB660[];
-extern char D_L04_001DB6F0[];
-extern void func_001E9730();
-extern void func_001F9978(void);
-extern float func_L04_00242868(int, int);
-extern float func_L04_002428C8(int, int);
-extern float func_001F9878(float);
-extern void func_0020DB98(struct Moby *m, int count, int *joints, void *out);
-extern void func_0020DAF8(struct Moby *m, int joint, float *mtx);
-extern float func_L00_001FF860(float, float);
-extern void func_0020D960(struct Moby *m, int slot, void *manip);
+extern char invalid_animation_message[];
+extern char rig_size_message[];
+extern void STUB_printf();
+extern void raise_kernel_trap(void);
+extern float animation_start(int, int);
+extern float animation_end(int, int);
+extern float multiply_global_factor(float);
+extern void transform_scaled_vertex_batch(struct Moby *m, int count, int *joints, void *out);
+extern void MobyTransformScaledVertex(struct Moby *m, int joint, float *mtx);
+extern float fast_atan2(float, float);
+extern void AttachManipulator(struct Moby *m, int slot, void *manip);
 /* Sets up a two-legged rig on a moby. */
 void initialize_leg_rig(struct Moby *moby, LegRig_p *rig) {
     int joints[6];
@@ -392,13 +392,13 @@ typedef struct {
     /* 0x0F0 */ LegRigLeg_93F08 legs[2];
 } LegRig_93F08;
 extern void func_0020DAF8_93F08(struct Moby *, int, float *) __asm__("func_0020DAF8");
-extern float func_L00_001FF860(float, float);
-extern float func_001FA748(float, float);
-extern float func_001FA790(float, float);
-extern float func_L00_00259148(float, float, float *, float, float, float);
-extern void func_L00_001FFED8(float *, int, float);
-extern void func_001FA588(float *, float *, float *);
-extern f32 D_0015EE60 MACRO_ADDR;
+extern float fast_atan2(float, float);
+extern float FastAddRots(float, float);
+extern float FastSubRots(float, float);
+extern float SpringTurn(float, float, float *, float, float, float);
+extern void axis_rotation_2d48(float *, int, float);
+extern void multiply_quaternions(float *, float *, float *);
+extern f32 frame_scale MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/runtime/dma/002922d0.c, FUN_L04_00292d48. */
 void rig_animate(struct Moby *moby, LegRig_93F08 *rig, int flags) {
@@ -460,20 +460,20 @@ void rig_animate(struct Moby *moby, LegRig_93F08 *rig, int flags) {
         mask <<= 2;
     }
 }
-extern float func_0020D830(struct Moby *);
-extern float func_001FA888(int);
+extern float MobyGetFrameValue(struct Moby *);
+extern float IntToFloat(int);
 extern int func_L04_00293990_96938(char *, char *, float) __asm__("func_L04_00293990");
 extern void func_L04_00293F08_96938(char *, char *, int, float) __asm__("func_L04_00293F08");
 extern int func_L04_002939E8_96938(char *, char *) __asm__("func_L04_002939E8");
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern void func_L00_001FF328(void *, void *, float);
+extern void FastVecSub(void *dst, void *a, void *b);
+extern void divide_vector_xyz(void *, void *, float);
 extern void func_L00_002A2900_96938(char *, char *, float, float, float, int) __asm__("func_L00_002A2900");
-extern void func_L01_002649D8(void *, int, int *, float *, float *, float *);
-extern int func_L00_001F1D20(float, float, void *, int, void *);
-extern float func_001FA850(float, float);
-extern char D_L04_00174070[];
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE68 MACRO_ADDR;
+extern void rig_probe_setup(void *, int, int *, float *, float *, float *);
+extern int coll_capsule(float, float, void *, int, void *);
+extern float FastDiffRots(float, float);
+extern char eudora_coll_resolved_pos[];
+extern float g_frame_time MACRO_ADDR;
+extern float inv_frame_scale MACRO_ADDR;
 typedef int u128_96938 __attribute__((mode(TI)));
 
 /* Level 04 walker update: blends heading and speed, places the legs, probes the ground and sets the anim rate; returns flags. */
@@ -686,14 +686,14 @@ typedef struct {
     /* 0x0F0 */ LegRigLeg legs[2];
 } LegRig;
 extern u8 D_L04_001CABB8[13][4];
-extern void func_0020DB98(struct Moby *m, int count, int *joints, void *out);
-extern void func_0020DAF8(struct Moby *m, int joint, float *mtx);
-extern void func_0020D960(struct Moby *m, int slot, void *manip);
-extern float func_L00_001FF860(float, float);
-extern float func_0020D830(struct Moby *);
-extern float func_001FA888(int);
-extern float func_L04_00242868(int, int);
-extern float func_001F9B88(float);
+extern void transform_scaled_vertex_batch(struct Moby *m, int count, int *joints, void *out);
+extern void MobyTransformScaledVertex(struct Moby *m, int joint, float *mtx);
+extern void AttachManipulator(struct Moby *m, int slot, void *manip);
+extern float fast_atan2(float, float);
+extern float MobyGetFrameValue(struct Moby *);
+extern float IntToFloat(int);
+extern float animation_start(int, int);
+extern float FastAbsF(float);
 extern int func_L04_00293990_96FA8(struct Moby *m, LegRig *rig, float t) __asm__("func_L04_00293990");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/runtime/dma/002922d0.c, FUN_L04_00295de8. */

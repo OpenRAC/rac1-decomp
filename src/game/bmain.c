@@ -8,10 +8,10 @@
  * sizes -- see docs/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern int D_0015EE80 MACRO_ADDR;
-extern int D_0015EFD8 MACRO_ADDR;
-extern int D_0015F6E8 MACRO_ADDR;
-extern int D_0015EF88 MACRO_ADDR;
+extern int pal_mode MACRO_ADDR;
+extern int decode_mode MACRO_ADDR;
+extern int g_game_mode MACRO_ADDR;
+extern int depth_buffer_address MACRO_ADDR;
 typedef struct {
     int b;
     int a;
@@ -22,23 +22,23 @@ typedef struct {
     LevelLoad alt[4];
 } Globals137C80;
 extern Globals137C80 D_00137C80_g __asm__("D_00137C80");
-extern char D_0013E650[];
-extern char D_0013D390[];
-extern char D_001941C0[];
+extern char voice_pool[];
+extern char memory_card_state[];
+extern char level_resource_buffers[];
 extern void func_00118D80(int);
-extern void func_0022EFE8(void);
-extern void func_00216D88(void);
-extern int func_001F98C0(int);
-extern void func_001F4E08(int);
+extern void sound_StopAllSounds(void);
+extern void music_Stop(void);
+extern int scale_game_frame_count(int);
+extern void FadeToBlack(int);
 extern void func_0012EF48(int);
-extern void func_00209E68(void);
-extern void func_0023B670(int, int, int, int, int);
+extern void memcard_update_state(void);
+extern void Movie_Play(int, int, int, int, int);
 extern void func_00120F30(int);
 extern void func_00122598(int);
 extern void func_00120858(int, int);
 extern void func_0012F308(void);
 extern void func_00123168(void (*)(void));
-extern void func_00201348(int, int, int, int, int, int);
+extern void Hud_sendTexture(int, int, int, int, int, int);
 
 /* Start level `level`: pick its two load parameters from the level
    table in D_00137C80 (the alternate set while D_0015EE80 is set), stop

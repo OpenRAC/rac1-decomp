@@ -3,8 +3,8 @@
 #include "include_asm.h"
 #include "vector.h"
 
-extern int D_L00_0015F6A8 MACRO_ADDR;
-extern int D_L00_00169140[];
+extern int cinematic_mode MACRO_ADDR;
+extern int effect_queue[];
 
 /* append a 0x30-byte entry to the 3-slot queue */
 void EffectQueue_Add(int a0, int a1, float f12, float f13, int *a2, int a3, int t0, float f14) {
@@ -42,12 +42,12 @@ void EffectQueue_Add(int a0, int a1, float f12, float f13, int *a2, int a3, int 
     effect_queue[0xC0 / 4]++;
 }
 typedef int q128 __attribute__((mode(TI)));
-extern void func_001F9BF0(void *, void *, void *);
-extern f32 func_001F9CE8(void *);
-extern s32 func_001FA898(f32);
-extern s32 * D_L00_0015F080 MACRO_ADDR;
-extern void func_001E9730(char *);
-extern char D_L00_001E7C00[];
+extern void FastVecSub(void *, void *, void *);
+extern f32 vec_length_xy(void *);
+extern s32 truncate_float_to_s32(f32);
+extern s32 * camera_collision_grid MACRO_ADDR;
+extern void STUB_printf(char *);
+extern char camera_collision_out_of_grid_msg[];
 extern s32 func_L00_001EE698_EE530(Vec4 *, s32 *, f32) __asm__("func_L00_001EE698");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_001ee1b0.c, FUN_L00_001ee1b0. */
@@ -86,15 +86,15 @@ s32 *find_camera_collision_volume_for_point(q128 *v, f32 rad) {
     }
     return 0;
 }
-extern unsigned char * D_L00_001601AC MACRO_ADDR;
-extern unsigned char * D_L00_001601BC MACRO_ADDR;
-extern unsigned char * D_L00_001601B4 MACRO_ADDR;
-extern unsigned char * D_L00_001601A4 MACRO_ADDR;
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern float func_001F9CE8(void *);
-extern float func_001F9CB8(void *);
-extern float func_001F9D10(void *, void *);
+extern unsigned char * level_cuboids MACRO_ADDR;
+extern unsigned char * level_cylinders MACRO_ADDR;
+extern unsigned char * level_spheres MACRO_ADDR;
+extern unsigned char * level_clip_volumes MACRO_ADDR;
+extern void FastVecAdd(void *, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern float vec_length_xy(void *);
+extern float FastVecLength(void *);
+extern float FastVecDist(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_001ee1b0.c, FUN_L00_001ee318. */
 int test_point_in_camera_collision_volume(Vec4 *pt, int *vol, float rad) {

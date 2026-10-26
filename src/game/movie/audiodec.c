@@ -3,7 +3,7 @@
 #include "structs.h"
 
 extern int func_0012F1A8(int, int, int, int, int, int);
-extern char *D_001613B8 MACRO_ADDR;
+extern char *movie_adpcm_staging_buf MACRO_ADDR;
 /* Clears the header, sets buffer parameters, and acquires the sound transport handle. */
 int audioDecCreate(char *dec, void *buffer, int size, char *staging) {
     FastMemZero16(dec + 8, 0x20);
@@ -133,7 +133,7 @@ void audioDecEndPut(AudioDec *dec, int count) {
 int is_state_field_large(AudioDec *dec) {
     return dec->bytes >= 0x1000;
 }
-extern void func_0023C390(AudioDec *);
+extern void sendADPCM(AudioDec *);
 
 /* audioDecSend -- sendADPCM while data is pending. */
 void audioDecSend(AudioDec *dec) {

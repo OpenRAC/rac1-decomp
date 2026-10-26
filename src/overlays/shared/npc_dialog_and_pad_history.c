@@ -73,36 +73,36 @@ void func_L00_00267188(int value, long arg) {
         s->state = 0;
     }
 }
-extern int D_L00_0015F6A8 MACRO_ADDR;
-extern char D_L00_00179200[];
-extern char D_L00_001C43B0[];
-extern int D_0015EE98 MACRO_ADDR;
+extern int cinematic_mode MACRO_ADDR;
+extern char active_scene_trigger[];
+extern char item_price_table[];
+extern int gBolts MACRO_ADDR;
 extern unsigned char D_0013D355[];
 extern char D_0013A5E0[];
 extern char D_0013E633[];
-extern short D_L00_001601F0;
-extern s32 func_L00_002676E8(void *p, u8 *out_p);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA850(float, float);
-extern void func_00217AE8(void *, void *, int);
-extern void func_L00_0029A7D0(int);
-extern int func_001FFCB0(int);
-extern void func_L00_00299B68(int);
-extern int func_L00_002367A8(int, int);
-extern int func_001FFB38(int, int, void *, void *, void *, void *, int);
-extern int func_001F9850(int);
-extern void func_L00_00237B20(void);
-extern void func_L00_00237B70(void);
-extern void func_L00_00237B90(void);
-extern void func_L00_0023A658(void);
-extern void func_L00_0023A690(void);
-extern void func_L00_0023A788(void);
+extern short bolt_hud_item;
+extern s32 DialogRequest_Init(void *p, u8 *out_p);
+extern float fast_atan2(float, float);
+extern float FastDiffRots(float, float);
+extern void process_menu_entry(void *, void *, int);
+extern void PlayMovieEntryIfIdle(int);
+extern int remove_hud_item(int);
+extern void StartCutscene(int);
+extern int hud_keep_visible(int, int);
+extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
+extern int scale_ticks(int);
+extern void initialize_numeric_hud_element(void);
+extern void DefaultVtbl_DeleteMoby(void);
+extern void draw_hud_text_panel(void);
+extern void initialize_bolt_counter_hud(void);
+extern void update_bolt_counter_hud_animation_and_visibility(void);
+extern void draw_bolt_counter_hud_panel(void);
 extern char D_0013D605[];
-extern s32 D_L00_0015F6B0 MACRO_ADDR;
+extern s32 level_frame_counter MACRO_ADDR;
 /* Start an NPC's dialog when the hero is close and facing it; returns nonzero if it started. */
 int Npc_TryStartDialog(char *p, char *q) {
-    extern float func_001F9D10(void *, void *);
-    extern s32 func_L00_00267618(void *);
+    extern float FastVecDist(void *, void *);
+    extern s32 get_dialogue_entry(void *);
     char *g = D_0013E633 + 0xE1D;
     char *x; char *e; char *y; char *tb; unsigned char *tb2;
     int h4; float f, f0; int r, i, m; int *ptr;
@@ -160,9 +160,9 @@ int Npc_TryStartDialog(char *p, char *q) {
     }
     return 0;
 }
-extern s32 D_0015EE84 MACRO_ADDR;
-extern s32 D_L00_001C47B8[];
-extern s32 D_L00_001792B8[];
+extern s32 g_current_level_index MACRO_ADDR;
+extern s32 dialogue_entry_level_starts[];
+extern s32 dialogue_entry_ids[];
 /* Find the dialogue entry index of p within the current level's range; -1 if not found. */
 s32 get_dialogue_entry(s32 p, s32 unused) {
     s32 n = g_current_level_index;
@@ -184,7 +184,7 @@ s32 get_dialogue_entry(s32 p, s32 unused) {
 INCLUDE_ASM("asm/overlays", func_L00_0026763C);
 typedef struct { int a, b, c, d; } E00266858;
 extern char D_0013D605[];
-extern int func_L00_00267618(int, int);
+extern int get_dialogue_entry(int, int);
 
 /* stores b in the d field of the slot func_L00_00267618 finds, if any. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/audio_streaming_00266298.c, FUN_L00_00266858. */
 void set_moby_dialogue_record_value(int a, int b) {
@@ -216,9 +216,9 @@ typedef struct {
     u16 f06;
     s16 f08;
 } P002668a0;
-extern E002668a0 D_0013D6B8[];
-extern P002668a0 * D_L00_001B19F8[];
-extern s32 D_L00_0015F6B0 MACRO_ADDR;
+extern E002668a0 race_gates[];
+extern P002668a0 * dialogue_entry_scripts[];
+extern s32 level_frame_counter MACRO_ADDR;
 extern s32 func_L00_00267618_676E8(void *) __asm__("func_L00_00267618");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/audio_streaming_00266298.c, FUN_L00_002668a0. */
@@ -244,7 +244,7 @@ s32 DialogRequest_Init(void *p, u8 *out_p)
     return i;
 }
 typedef struct { char pad[0x18E]; s16 head; s32 count; char pad2[0x1E0-0x194]; u32 t[30]; char pad3[0x2D0-0x258]; f32 v[30]; } Hist_266e80;
-extern Hist_266e80 D_0013CA40;
+extern Hist_266e80 g_controller_state;
 /* Search the last n pad history frames for a press in mask; returns the bits, *out gets the age. */
 int pad_pressed_within(int mask, int n, int *out) {
     int lim = g_controller_state.count;
@@ -262,8 +262,8 @@ int pad_pressed_within(int mask, int n, int *out) {
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_00267C34);
-extern int func_L00_00267BA8(int, int, int *);
-extern int func_001F9B70(int);
+extern int pad_pressed_within(int, int, int *);
+extern int subtract_integer_with_clamp(int);
 /* True when both masks a and b were pressed within c frames, less than d frames apart. */
 int check_pad_press_separation(int a, int b, int c, int d) {
     int v[2];
@@ -275,7 +275,7 @@ int check_pad_press_separation(int a, int b, int c, int d) {
     }
     return r;
 }
-extern Hist_266e80 D_0013CA40;
+extern Hist_266e80 g_controller_state;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_menus_00266d60.c, FUN_L00_00266e80. */
 typedef struct {

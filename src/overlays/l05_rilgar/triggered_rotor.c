@@ -3,8 +3,8 @@
  * while vendor_0030EB68.c also has small-data declarations of that symbol. */
 #include "common.h"
 #include "moby.h"
-extern float func_001FA790(float, float);
-extern float func_001FA748(float, float);
+extern float FastSubRots(float, float);
+extern float FastAddRots(float, float);
 
 typedef struct {
     char pad[0xBC];
@@ -12,8 +12,8 @@ typedef struct {
     char pad2[0x43];
 } RotorPoolMoby17B68;
 extern RotorPoolMoby17B68 *D_L05_00160098_pool __asm__("D_L05_00160098") MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
 
 typedef struct {
     int flag;

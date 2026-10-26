@@ -2,8 +2,8 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern int D_L00_00173F00[];
-extern int D_L00_0016128C MACRO_ADDR;
+extern int lvl_resource_buffers[];
+extern int lvl_vu_chain_buffer_size MACRO_ADDR;
 
 /* for an offset up to 0x20000, *a and *b become words 1 and 2 of D_L00_00173F00 plus
    D_L00_0016128C less the offset (returns 0); beyond it both are cleared (returns -1) */

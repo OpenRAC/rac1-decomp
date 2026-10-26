@@ -10,7 +10,7 @@
 
 /* Declarations in scope here before the split. */
 extern long func_00116F68(int arg0, int arg1, int arg2);
-extern int D_0015ED10;
+extern int SbrkErrno;
 extern void *D_0012F86C NOT_SDA;
 extern int func_001162B8(void *arg0, void *arg1, void *arg2);
 extern int func_00116320(void *arg0, void *arg1, void *arg2);
@@ -31,9 +31,9 @@ extern int func_00114060(int, void *);
 extern void func_00113AE0(void *);
 extern void func_00117118(void *, void *, int, int);
 extern int func_00119008();
-extern int D_0012FCF0 NOT_SDA;
+extern int CoreGlobalWord NOT_SDA;
 extern void func_00118E90(int arg0, void *arg1);
-extern void *D_00154A40 NOT_SDA;
+extern void *InitBlockData NOT_SDA;
 extern int D_00155080[];
 extern void func_001193F8(int);
 extern void func_00118AD0(int, int);
@@ -43,7 +43,7 @@ extern int D_00154F64 NOT_SDA;
 extern int D_00154F6C NOT_SDA;
 extern void func_0011AA90(int, int, int, int, int, int, int);
 extern void func_0011AA00(void);
-extern int D_0012FD08 NOT_SDA;
+extern int RpcCommandState NOT_SDA;
 extern int func_0011D960(void);
 extern void func_0011D9A8(void);
 extern int func_00118C70(void *);
@@ -54,10 +54,10 @@ extern int D_0012FD9C;
 extern void func_0011BBF0(void);
 extern int D_0012FD9C NOT_SDA;
 extern char D_0012FCEC[];
-extern char D_001580A8[];
+extern char FsResetBuffer[];
 extern int D_0012FDA8;
 extern void func_001153FC(void *, int, int);
-extern int D_0012FD94;
+extern int FsResetState;
 extern int D_0012FDAC;
 extern char D_00158140[];
 extern int D_00158180;
@@ -68,8 +68,8 @@ extern int func_0011CE70(int arg0, int arg1, int arg2, void *arg3);
 extern void func_00118EC0(void);
 extern void func_0011D4E0(void);
 extern void func_00118EB0(void);
-extern int D_00130420;
-extern int D_00130424;
+extern int FirstSemaphore;
+extern int SecondSemaphore;
 extern int D_00130BD0[];
 extern char D_00130428[];
 extern int func_0011DC50(void);
@@ -94,17 +94,17 @@ extern char D_00132E08[];
 extern int D_001313D0;
 extern int func_00121040(int);
 extern int D_001325C0;
-extern char D_00132E40[];
+extern char CoreDataTable[];
 extern void func_00123650(void *);
 extern char D_001534E0[];
-extern int D_00132E70[];
+extern int DmaChannels[];
 extern int func_001238B0(int, int, int, int);
 extern int D_00132EA8;
 extern int *D_00159B28;
 extern int *D_00159B2C;
 extern int *D_00159B30;
-extern char D_0015B108[];
-extern int D_0015B180;
+extern char RpcQueueData[];
+extern int RpcReceiveData;
 extern void func_00124B60(void *);
 extern char D_00153658[];
 extern int func_00124920(int);
@@ -118,7 +118,7 @@ typedef struct {
 extern Ent330 D_0015B640[];
 extern void func_00119288(void *a, void *b);
 extern void func_001286E8(int, int);
-extern int D_00132F70[];
+extern int IpuCommandTable[];
 extern void func_0012BCC8(int);
 extern void func_00128590(void *);
 extern void func_00128968(void *, int);
@@ -145,7 +145,7 @@ extern char D_00153C90[];
 extern char D_00153CC8[];
 extern int func_0012CE48(void *);
 extern void func_0012D2A0(void);
-extern signed char D_001331D8[];
+extern signed char RomNameStateData[];
 extern int func_0012D4E0(int);
 extern int func_0012D4B0(int);
 extern void func_0011DDA0(int);
@@ -163,24 +163,24 @@ struct SifClientDataStartSound {
     u8 pad_0[0x24];
     void *volatile server;
 };
-extern u8 D_00133380[];
-extern u8 D_00134380[];
-extern u8 D_00135380[];
-extern u8 D_00136380[];
-extern u8 D_00137380[];
-extern u8 D_001377C0[];
-extern u8 D_00153D50[];
-extern u8 D_00153D78[];
+extern u8 snd_command_buffer1[];
+extern u8 snd_command_buffer2[];
+extern u8 snd_stream_buffer1[];
+extern u8 snd_stream_buffer2[];
+extern u8 snd_return_buffer1[];
+extern u8 snd_return_buffer2[];
+extern u8 snd_sif_bind_rpc_error_string[];
+extern u8 snd_989_snd_source_file[];
 extern struct SifClientDataStartSound D_0015ECC0_2DB68 __asm__("D_0015ECC0");
 extern struct SifClientDataStartSound D_0015ECE8_2DB68 __asm__("D_0015ECE8");
-extern short D_0015EDA0;
-extern short D_0015EDA8;
+extern short snd_batch_command_buffers;
+extern short snd_batch_free_bytes;
 extern s32 D_0015EDAC MACRO_ADDR;
-extern short D_0015EDB0;
-extern short D_0015EDB8;
-extern short D_0015EDC8;
-extern short D_0015EDD0;
-extern s64 D_0015EDD8 MACRO_ADDR;
+extern short snd_stream_buffers;
+extern short snd_batch_return_buffers;
+extern short snd_cd_callback_pending;
+extern short snd_cd_callback_fn;
+extern s64 snd_cd_callback_data MACRO_ADDR;
 extern s32 D_0015EE00_2DB68 __asm__("D_0015EE00") MACRO_ADDR;
 extern void func_0011AE20(u32);
 extern s32 func_0011B2F8(struct SifClientDataStartSound *, u32, s32);
@@ -251,25 +251,25 @@ struct SndCommand {
     long arg;
 };
 /* All SDA ($gp); read through casts like the rest of this file. */
-extern short D_0015ED80;   /* pending RPC record */
-extern short D_0015ED90;   /* stop callback */
-extern short D_0015ED94;   /* stop requested */
-extern short D_0015ED98;
-extern short D_0015ED9C;   /* abort */
-extern short D_0015EDA0;   /* int *count[2] */
-extern short D_0015EDB0;   /* struct SndCommand *cmd[2] */
-extern short D_0015EDB8;   /* int *reply[2] */
-extern short D_0015EDC0;   /* current buffer */
-extern short D_0015EDC4;
-extern short D_0015EDC8;   /* CD read pending */
-extern short D_0015EDD0;   /* CD read callback */
-extern short D_0015EDE0;   /* abort callback */
-extern short D_0015EDE8;   /* its argument (64-bit) */
+extern short snd_current_buffer;   /* pending RPC record */
+extern short snd_cd_status_callback;   /* stop callback */
+extern short snd_cd_sync_pending;   /* stop requested */
+extern short snd_cd_stream_end_pending;
+extern short snd_return_callback_pending;   /* abort */
+extern short snd_batch_command_buffers;   /* int *count[2] */
+extern short snd_stream_buffers;   /* struct SndCommand *cmd[2] */
+extern short snd_batch_return_buffers;   /* int *reply[2] */
+extern short snd_batch_index;   /* current buffer */
+extern short GlobalTableStatus;
+extern short snd_cd_callback_pending;   /* CD read pending */
+extern short snd_cd_callback_fn;   /* CD read callback */
+extern short snd_return_callback;   /* abort callback */
+extern short snd_return_callback_data;   /* its argument (64-bit) */
 /* volatile: retail's compiler keeps its 64-bit accesses out of delay
    slots, so they stay lui-based rather than going through $gp. */
 extern volatile long D_0015EDD8_l __asm__("D_0015EDD8") MACRO_ADDR;
-extern unsigned int D_0015EE00 MACRO_ADDR;
-extern int D_00133204[];
+extern unsigned int snd_cd_callback_arg MACRO_ADDR;
+extern int snd_iop_return_word[];
 extern int func_0012DFB0(void);
 extern void func_0012EB18(void);
 extern int func_0012EF48(int);
@@ -347,12 +347,12 @@ int func_0012DDC0(void) {
 LINKER_REMNANT("asm/remnants/core_text", func_0012DFA0);
 
 extern void func_00118D80(int arg0);
-extern int D_0015ECC0;
+extern int sound_command_client;
 extern int func_00116078(void *arg0);
-extern char D_00153D98[];
+extern char snd_no_return_error_string[];
 extern int func_0011B6B8(void *arg0);
-extern short D_0015ED80;
-extern short D_0015ED84;
+extern short snd_current_buffer;
+extern short snd_current_buffer_index;
 
 /* snd_GotReturns: true once the pending IOP reply record's sentinel word
  * and its per-slot echo both read back -1, after taking the returns
@@ -396,14 +396,14 @@ void func_0012E038(void *arg0, int arg1) {
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012E058);
 
-extern short D_0015EDC8;
-extern short D_0015ED88;
+extern short snd_cd_callback_pending;
+extern short snd_cd_load_error;
 extern int D_00137C40_a[] __asm__("D_00137C40");
-extern int D_0015ECE8;
+extern int sound_stream_client;
 extern char D_00153EA8[];
 extern char D_00153ED8[];
-extern char D_00153EF8[];
-extern char D_00153E20[];
+extern char snd_bank_load_by_loc_rpc_error_string[];
+extern char snd_non_idle_error_string[];
 extern int func_0012DDC0(void);
 
 /* IOP command 3 with two words, waiting for the reply word in
@@ -442,11 +442,11 @@ unsigned int func_0012E060(int arg0, int arg1) {
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012E1B8);
 
-extern short D_0015EDD0;
-extern long D_0015EDD8 MACRO_ADDR;
-extern int D_00137C40;
-extern char D_00153FC0[];
-extern char D_00153FF8[];
+extern short snd_cd_callback_fn;
+extern long snd_cd_callback_data MACRO_ADDR;
+extern int snd_cd_bank_load_request;
+extern char snd_bank_load_from_ee_progress_string[];
+extern char snd_bank_load_from_ee_cd_busy_string[];
 
 /* Start an IOP stream (command 0x57) for arg0, unless one is already
    pending (D_0015EDC8) or the CD is busy (func_0012EF48); the reply word
@@ -637,12 +637,12 @@ typedef struct {
     long data;
 } SndCb_2E820;
 
-extern short D_0015EDC0;
-extern short D_0015EDA0;
-extern short D_0015EDA8;
-extern short D_0015EDB0;
+extern short snd_batch_index;
+extern short snd_batch_command_buffers;
+extern short snd_batch_free_bytes;
+extern short snd_stream_buffers;
 extern char D_00154110[];
-extern char D_00154170[];
+extern char snd_no_wait_continuing_string[];
 extern void func_0012EAE0(void);
 extern int func_00116078_p(const char *, ...) __asm__("func_00116078");
 
@@ -781,7 +781,7 @@ void func_0012EC40(void) {
 /* gp-relative, no retail symbol: gp 0x166D00 - 0x7F74 = 0x15ED8C
    (streaming-enabled flag, same as func_0012F030/func_0012F068's) and
    gp 0x166D00 - 0x7F38 = 0x15EDC8 (drain-commands-first flag). */
-extern short D_0015ED8C;
+extern short snd_cd_stream_active;
 extern short D_0015EDBC;   /* the word at +0xC, SDA ($gp -0x7F38) */
 extern int func_0012EF48(int);              /* snd_StreamSafeCdSync */
 extern int func_0012E688(int, int, void *); /* snd_SendIOPCommandAndWait */
@@ -870,14 +870,14 @@ void func_0012EE70(int arg0) {
 
 /* gp-relative, no retail symbol: gp 0x166D00 - 0x7F74 = 0x15ED8C
    (streaming-enabled flag, see func_0012F030/func_0012F068). */
-extern short D_0015ED94;
+extern short snd_cd_sync_pending;
 
 typedef struct {
     volatile unsigned int count;
     int unk04[3];
     volatile int error;
 } CdSafeState;
-extern CdSafeState D_00137C00;
+extern CdSafeState sound_read_work;
 
 extern int func_00121750(int, int, int);
 
@@ -959,7 +959,7 @@ int func_0012F030(void) {
 /* gp-relative, no retail symbol: gp 0x166D00 - 0x7F74 = 0x15ED8C
    (streaming-enabled flag, same as func_0012F030's) and
    gp 0x166D00 - 0x7F70 = 0x15ED90 (cached callback value). */
-extern short D_0015ED90;
+extern short snd_cd_status_callback;
 extern int func_00120978(void);
 
 /* snd_StreamSafeCdCallback */

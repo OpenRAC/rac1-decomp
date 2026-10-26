@@ -10,11 +10,11 @@ typedef struct {
     void *moby;
 } Level14State;
 
-extern int D_0015EE84 MACRO_ADDR;
-extern Level14State D_L14_0016D060;
-extern void func_L00_0023E9A0(void *);
-extern void func_L00_0023E4C8(void *);
-extern void func_001F49B0(void (*)(void *), void *);
+extern int g_current_level_index MACRO_ADDR;
+extern Level14State oltanis_cutscene_state;
+extern void emit_moby_particle_pairs(void *);
+extern void GlowQuadsDraw(void *);
+extern void AddDrawCallback(void (*)(void *), void *);
 
 /* Attach the callback during the six active phases of this level event. */
 void update_level14_event_moby_effects(void) {

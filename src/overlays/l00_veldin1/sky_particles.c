@@ -3,17 +3,17 @@
 #include "include_asm.h"
 #include "vector.h"
 
-void func_00234C98(s32 a0, s64 a1);
+void VU1_addGSregister(s32 a0, s64 a1);
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern char * D_L00_001605DC MACRO_ADDR;
-extern char D_L00_001BDB70[];
-extern int D_L00_0015F6B0 MACRO_ADDR;
-extern void func_001FA190(void *);
-extern void func_0022CEB8(void);
-extern void func_L00_0028A198(int, int);
-extern void func_L00_0028A3E0(void);
-extern void func_L00_001FFA40(void *, void *);
-void func_0022C9A8(s32 arg0);
+extern char * sky_data MACRO_ADDR;
+extern char sky_shell_matrix[];
+extern int level_frame_counter MACRO_ADDR;
+extern void set_identity_matrix(void *);
+extern void SkySpriteProc(void);
+extern void sky_particles_init(int, int);
+extern void sky_particles_update(void);
+extern void fast_euler_to_matrix(void *, void *);
+void SkyDrawShell(s32 arg0);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l00/unclassified_0023d968.c, FUN_L00_00289330. */
 void draw_sky_shells_with_particles_and_rotating_shell(void) {

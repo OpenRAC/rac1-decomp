@@ -15,17 +15,17 @@
 
 /* Declarations in scope here before the split. */
 /* The camera block and the debug free camera (include/camera.h). */
-extern CameraSystem D_00187040;
-extern DebugFreeCam D_0018C418;
-extern char D_0013E650[];
-extern int D_0015F694;
-extern int func_001E97C8(void *arg0);
+extern CameraSystem gCamera;
+extern DebugFreeCam occl_cam_state;
+extern char voice_pool[];
+extern int bank_sound_count;
+extern int noop_callback_l(void *arg0);
 
 /* Same signature as the declaration further down this file; duplicate
    identical declarations are legal and avoid a signature clash. */
-extern void func_001F9A98(void *, void *, int);
-extern Camera D_00189310;
-extern char D_001899D0[];
+extern void FastMemCopy(void *, void *, int);
+extern Camera backup_cam;
+extern char gCamBackupState[];
 
 /* BackupCurrentCam: copies the current camera and its 0x280-byte state buffer
    to backup_cam / gCamBackupState. */
@@ -35,8 +35,8 @@ void BackupCurrentCam(void) {
     backup_cam.state_buf = gCamBackupState;
 }
 
-extern int D_0015F08C MACRO_ADDR;
-extern void (*D_001893B0[])(void);
+extern int cam_post_upd_routine_cnt MACRO_ADDR;
+extern void (*gCamPostUpdFuncs[])(void);
 
 /* ExecuteCamPostUpdFuncs: runs the cam_post_upd_routine_cnt callbacks queued in
    gCamPostUpdFuncs, then empties the queue. */
@@ -57,7 +57,7 @@ void ExecuteCamPostUpdFuncs(void) {
    func_00113AD8 in core_text. */
 LINKER_REMNANT("asm/remnants/text", func_001EC108);
 
-extern float func_001F9B88(float);
+extern float FastAbsF(float);
 
 /* Cam_InterpValues(from, to, vel, stiffness, damping, max): steps *vel
    toward to - from (a damped spring: stiffness * diff - damping * vel),
@@ -89,7 +89,7 @@ float Cam_InterpValues(float from, float to, float *vel, float stiffness, float 
    fallthrough fragment, same category as func_00113AD8 in core_text. */
 LINKER_REMNANT("asm/remnants/text", func_001EC208);
 
-extern void func_0020D678(void *); /* DeleteMoby */
+extern void DeleteMoby(void *); /* DeleteMoby */
 
 /* Camera_handleCollWithHero: spawns (via func_001E97C8) or deletes the
    moby kept at follow.hero_coll_moby, depending on the camera's id: camera
@@ -117,7 +117,7 @@ void Camera_handleCollWithHero(Camera *cam) {
    base) and no amount of reordering the C addition changes it, because
    GCC canonicalises the PLUS before operand order is chosen. Indexing
    a typed array puts the base first. See func_001EC270/func_001EC780. */
-extern CameraType D_001E8F80[];
+extern CameraType camera_types[];
 
 /* Camera_runSetupToNewCam: calls the camera type's activate hook
    (camera_types[cam->type]); the typed-array index is what puts the table
@@ -129,12 +129,12 @@ void Camera_runSetupToNewCam(Camera *cam) {
     }
 }
 
-extern CameraDef *D_0015F090 MACRO_ADDR;
-extern s32 D_0015EE84 MACRO_ADDR;
-extern u8 D_00189750[];
-extern void func_001EC038(void);
-extern void func_001F9A98(void *dst, void *src, s32 size);
-extern s32 func_001FA898(f32 transition_duration);
+extern CameraDef *gCameraDefs MACRO_ADDR;
+extern s32 g_current_level_index MACRO_ADDR;
+extern u8 gCamPrevState[];
+extern void BackupCurrentCam(void);
+extern void FastMemCopy(void *dst, void *src, s32 size);
+extern s32 truncate_float_to_s32(f32 transition_duration);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_001ebf10.c, switch_active_camera_record. */
 /* Switches the active camera to next_camera. The blend comes from the old
@@ -247,11 +247,11 @@ typedef struct {
     char unk14[8];
     int unk1C;
 } CamRec20;
-extern CameraDef *D_0015F090 MACRO_ADDR;
-extern CamRec20 *D_0015F040 MACRO_ADDR;
-extern char D_0013F450[];
-extern char D_0013F4D0[];
-extern int func_00215570(void *arg0, int arg1);
+extern CameraDef *gCameraDefs MACRO_ADDR;
+extern CamRec20 *cam_activation_rule7_table MACRO_ADDR;
+extern char g_hero[];
+extern char gHeroPos[];
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
 /* Camera_ActivationCheckPriority(cur, other): whether camera `cur` should
    take over from `other`. An inactive camera (priority 0) never does; the
@@ -347,10 +347,10 @@ void Camera_Exit(Camera *cam) {
     }
 }
 
-extern int D_00189C50[];
-extern Camera D_00187510[];
-extern int func_001EC5B8(Camera *cur, Camera *other);
-extern void func_001EC2B8(Camera *next_camera);
+extern int gCameraSlotUsed[];
+extern Camera gCameraSlots[];
+extern int Camera_ActivationCheckPriority(Camera *cur, Camera *other);
+extern void switch_active_camera_record(Camera *next_camera);
 
 /* UpdateAllCameras: the per-frame camera pass. Exits the current camera
    (Camera_Exit), scans the 48 camera slots (gCameraSlotUsed[i] != 0 = in
@@ -409,12 +409,12 @@ int UpdateAllCameras(void) {
     return -1;
 }
 
-extern void func_001F9BF0(void *dst, void *a, void *b);      /* dst = a - b (vector) */
-extern float func_001F9C78(void *a, void *b);                 /* dot(a, b) */
-extern float func_001F9CB8(void *a);                           /* |a| */
-extern void func_001F9DC0(void *dst, void *src, float len);    /* dst = normalize(src) * len */
-extern float func_001F9FC0(float x);                            /* approx acos(x) */
-extern void func_002156E0(void *dst, void *vec, void *axis, float angle); /* dst = vec rotated `angle` around axis */
+extern void FastVecSub(void *dst, void *a, void *b);      /* dst = a - b (vector) */
+extern float FastVecDot(void *a, void *b);                 /* dot(a, b) */
+extern float FastVecLength(void *a);                           /* |a| */
+extern void fast_vec_normalize(void *dst, void *src, float len);    /* dst = normalize(src) * len */
+extern float FastArcSin(float x);                            /* approx acos(x) */
+extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle); /* dst = vec rotated `angle` around axis */
 
 /* The camera's angles to a target: out[0] = signed yaw between dir0 and
    (p0 - p1) off the axis, out[1] = signed pitch after rotating dir0 by
@@ -471,7 +471,7 @@ void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1,
     out[2] = FastVecLength(diff);
 }
 
-extern void func_001EC8D8(float *out, void *p0, void *p1, void *dir0, void *dir1,
+extern void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1,
                            void *axis);
 
 /* capture_camera_orientation: the hero moby's axes go into blend.orbit.fwd
@@ -498,7 +498,7 @@ void capture_camera_orientation(void) {
     qcopy(&r->orbit.rot, &r->orbit.saved_rot);
 }
 
-extern void func_001F9BD8(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
 extern char D_0013F590[];
 
 /* save_camera_vectors: with no blend running (kind 0), copies the
@@ -530,9 +530,9 @@ void restore_camera_vectors(void) {
    D_001872B0 itself, gcse keeps the entry's %hi alive in a saved register
    across the calls, where retail rebuilds it. */
 extern short D_001872B0_h __asm__("D_001872B0") NOT_SDA;
-extern void func_00215328(void *, void *);
-extern int func_001F98C0(int);
-extern float func_001FA888(int);
+extern void extract_matrix_rotation_quaternion(void *, void *);
+extern int scale_game_frame_count(int);
+extern float IntToFloat(int);
 
 /* start_camera_blend(from): captures the blend source from the previous
    camera and starts the blend (phase 3). When the phase is 1 or 2, the
@@ -603,11 +603,11 @@ void start_camera_blend(Camera *from) {
     }
 }
 
-extern char D_00187390[];
-extern float D_0015EE60 MACRO_ADDR;
-extern float func_00214220(float, float, float);
-extern void func_001FA6C0(void *, void *);
-extern void func_001FA480(void *, void *);
+extern char camera_rows[];
+extern float frame_scale MACRO_ADDR;
+extern float CosineInterpolate(float, float, float);
+extern void quaternion_to_matrix(void *, void *);
+extern void matrix_copy_rows(void *, void *);
 
 /* step_camera_blend(to, lerp): one step of the eased blend toward the target
    camera. While the position (pos_t) or rotation (rot_t) blend has not
@@ -654,21 +654,21 @@ int step_camera_blend(Camera *to, CamBlendLerp *lerp) {
     return 0;
 }
 
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_001EC8D8(float *out, void *p0, void *p1, void *dir0, void *dir1, void *axis);
-extern void func_001F9DC0(void *dst, void *src, float len);
-extern float func_001FA790(float, float);
-extern float func_001FA748(float, float);
-extern void func_002156E0(void *dst, void *vec, void *axis, float angle);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern float func_001F9C78(void *a, void *b);
-extern float func_001F9CB8(void *a);
-extern float func_001F9FC0(float x);
-extern void func_00215380(void *arg0, void *axis, float angle);
-extern void func_00215650(void *arg0, void *arg1, void *arg2);
-extern void func_001F9908(int *arg0);
-extern char D_0013F6E0[];
+extern void FastVecCross(void *, void *, void *);
+extern void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1, void *axis);
+extern void fast_vec_normalize(void *dst, void *src, float len);
+extern float FastSubRots(float, float);
+extern float FastAddRots(float, float);
+extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecSub(void *dst, void *a, void *b);
+extern float FastVecDot(void *a, void *b);
+extern float FastVecLength(void *a);
+extern float FastArcSin(float x);
+extern void build_quaternion_from_axis_angle(void *arg0, void *axis, float angle);
+extern void rotate_vector_by_quaternion(void *arg0, void *arg1, void *arg2);
+extern void fast_dec_timer(int *arg0);
+extern char hero_gravity_dir[];
 
 typedef struct {
     float v[4];
@@ -787,8 +787,8 @@ int advance_alternate_camera_transition(Camera *cam, CamBlendOrbit *o) {
     return 0;
 }
 
-extern int func_001ECEA0(Camera *, CamBlendLerp *);
-extern int func_001ED080(Camera *, CamBlendOrbit *);
+extern int step_camera_blend(Camera *, CamBlendLerp *);
+extern int advance_alternate_camera_transition(Camera *, CamBlendOrbit *);
 
 /* update_camera_blend(cam): steps the running blend. With kind 0 it is
    step_camera_blend into gCamera.blend.lerp, otherwise advance_alternate_camera_transition
@@ -816,11 +816,11 @@ void update_camera_blend(Camera *cam) {
     }
 }
 
-extern float func_001FA888(int arg0);
-extern float func_001FA7D8(float x);
-extern float func_001F9F90(float x);
-extern void func_001F9DC0(void *dst, void *src, float len);
-extern void func_001F9BD8(void *dst, void *a, void *b);
+extern float IntToFloat(int arg0);
+extern float FastNormalizeAngle(float x);
+extern float FastCos(float x);
+extern void fast_vec_normalize(void *dst, void *src, float len);
+extern void FastVecAdd(void *dst, void *a, void *b);
 
 /* apply_camera_shake(s, along_row0): one shake channel (gCamera.shake[0] or
    [1]). With the active camera (gCamera.current) in state 6 both counters are
@@ -866,12 +866,12 @@ __asm__(".section .text\n\tnop\n");
 
 extern struct Hero D_0013F450_ED818 __asm__("D_0013F450");
 extern f32 func_001EC120_ED818(f32 *vel, f32 from, f32 to, f32 stiffness, f32 damping, f32 max) __asm__("func_001EC120");
-extern float func_001F9B88(float input);
-extern void func_001F9BF0(void *out, void *a, void *b);
-extern void func_001F9C30(void *out, void *a, f32 s);
-extern f32 func_001F9C78(void *a, void *b);
-extern f32 func_001F9CB8(void *a);
-extern void func_001F9DC0(void *out, void *a, f32 len);
+extern float FastAbsF(float input);
+extern void FastVecSub(void *out, void *a, void *b);
+extern void FastVecScale(void *out, void *a, f32 s);
+extern f32 FastVecDot(void *a, void *b);
+extern f32 FastVecLength(void *a);
+extern void fast_vec_normalize(void *out, void *a, f32 len);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/gameplay/camera/fun_001ed470.c, FUN_001ed470. */
 /* update_camera_tracking_state: tracks the hero for gCamera.follow each frame: the
@@ -951,11 +951,11 @@ void update_camera_tracking_state(void) {
     }
 }
 
-extern char D_00194220[];
-extern int D_0015F6E8 MACRO_ADDR;
-extern int func_001EFE10(void *, void *, int, int, int);
-extern int func_001F0F00(void);
-extern float func_00214440(void *, int);
+extern char coll_hit_pos[];
+extern int g_game_mode MACRO_ADDR;
+extern int coll_line_fix(void *, void *, int, int, int);
+extern int coll_hit_material(void);
+extern float resolve_camera_surface_height(void *, int);
 
 /* Camera-inside-water test: cast a ray through the eye position
    (gCamera.pos) from 0.75 above to 0.75 below (up to six hits); on the
@@ -995,9 +995,9 @@ void update_camera_underwater_flag(void) {
     }
 }
 
-extern int D_0015F09C MACRO_ADDR;
-extern int D_0015F0A0 MACRO_ADDR;
-extern int D_0015F098 MACRO_ADDR;
+extern int cam_coll_flag MACRO_ADDR;
+extern int cam_coll_flag_prev MACRO_ADDR;
+extern int cam_coll_mode MACRO_ADDR;
 
 /* refresh_camera_control_flags: the probe masks from the hero's state and ground.
    cam_coll_flag is 0x14, or 0x34 in hero states 0x11/0x12 or mode 0x73 of
@@ -1053,7 +1053,7 @@ void refresh_camera_control_flags(void) {
     }
 }
 
-extern float D_0015F53C MACRO_ADDR;
+extern float gFade MACRO_ADDR;
 
 /* Takes gCamera.follow.fade_rate off gFade each frame; both stop at 0.
    gFade (D_0015F53C) is a MACRO_ADDR float: $gp-relative in the delay
@@ -1072,15 +1072,15 @@ void advance_timed_camera_control(void) {
     }
 }
 
-extern int D_001E6700;
+extern int text_screen_active;
 extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern void func_001EDE08(void);
-extern void func_001EDCE8(void);
-extern void func_001ED818(void);
-extern void func_001ECC48(Camera *);
-extern void func_001FA460(void *, void *);
-extern void func_002153E8(void *, void *);
-extern void func_001EE858(void *);
+extern void advance_timed_camera_control(void);
+extern void refresh_camera_control_flags(void);
+extern void update_camera_tracking_state(void);
+extern void start_camera_blend(Camera *);
+extern void copy_matrix_rotation(void *, void *);
+extern void matrix_to_euler(void *, void *);
+extern void update_camera_environment_from_regions(void *);
 
 /* Camera update, once per frame: count the frame, run the camera
    steps, then (unless the debug free camera is active) take the view

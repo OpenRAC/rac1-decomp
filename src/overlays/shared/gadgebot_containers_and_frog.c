@@ -9,19 +9,19 @@
 
 typedef u32 u128_D9548 __attribute__((mode(TI), aligned(16)));
 extern struct Hero D_0013F450_D9548 __asm__("D_0013F450");
-extern int func_0022ED80(int, int, int);
-extern unsigned char *func_L00_0026C630(void *, int, int, float, float, float, float, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_L00_00258C80(float, float);
-extern float func_002140F8(float, float);
-extern float func_00214158(void);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern float func_L00_001FF860(float, float);
-extern int func_001F9850(int);
-extern char * D_001414D0;
-extern float D_0015EE6C MACRO_ADDR;
-extern unsigned char *func_L06_003020B8(char *, float *, float *);
+extern int Moby_PlaySound(int, int, int);
+extern unsigned char *spawn_spinning_fade_in_out_effect_particle(void *, int, int, float, float, float, float, float);
+extern void FastVecSub(void *, void *, void *);
+extern float randf_sym(float, float);
+extern float random_float_between(float, float);
+extern float random_angle_radians(void);
+extern float FastCos(float);
+extern float FastSin(float);
+extern float fast_atan2(float, float);
+extern int scale_ticks(int);
+extern char * g_hero_moby;
+extern float g_frame_time MACRO_ADDR;
+extern unsigned char *spawn_spinning_moby_fragment(char *, float *, float *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002d8178. */
 void destroy_gadgebot_spawn_container(void *moby_ptr, void *target_ptr) {
@@ -83,7 +83,7 @@ void destroy_gadgebot_spawn_container(void *moby_ptr, void *target_ptr) {
     moby[0xbc] = (unsigned char)scale_ticks(15);
 }
 extern char *func_0020D348_m(int) __asm__("func_0020D348");
-extern void func_L00_00251E30(void *);
+extern void moby_build_matrix(void *);
 
 /* Spawns moby class 0x12E at the owner's position, copying its fields. */
 char *spawn_gadgebot_spawn_container(char *owner) {
@@ -102,15 +102,15 @@ char *spawn_gadgebot_spawn_container(char *owner) {
     }
     return moby;
 }
-extern int D_L06_0015F6B0 MACRO_ADDR;
-extern float func_001F9FA8(float);
-extern int func_001FA8A8(int, int, float);
-extern char *func_L00_0025B478(void *, int, int);
-extern int func_L00_001FEF78(void *);
-extern void func_0020D678(void *);
-extern void func_L06_002D9548(void *, void *);
-extern void func_L06_002D9B08(char *);
-extern void func_001F49B0(int, int);
+extern int blarg_frame_count MACRO_ADDR;
+extern float FastSin(float);
+extern int FastTweenColor(int, int, float);
+extern char *MobyGetHitMessage(void *, int, int);
+extern int fast_subtract_rotations_cf(void *);
+extern void DeleteMoby(void *);
+extern void destroy_gadgebot_spawn_container(void *, void *);
+extern void draw_gadgebot_spawn_container(char *);
+extern void AddDrawCallback(int, int);
 extern float func_001F9FA8_D9970b(float) __asm__("func_001F9FA8");
 extern int func_001FA8A8_D9970b(int, int, float) __asm__("func_001FA8A8");
 extern char *func_L00_0025B478_D9970b(void *, int, int) __asm__("func_L00_0025B478");
@@ -153,32 +153,32 @@ void gadgebot_spawn_container_update(unsigned char *moby) {
 }
 typedef struct { float corner[4][4]; int color[4]; float uv[4][2]; long unk70; long tex; long unk80; long unk88; } L06BackdropQuad;
 extern char D_L06_00167640[];
-extern char D_L06_00167500[];
-extern float D_L06_001D35E0[][4];
-extern float D_L06_001D4080[][4];
-extern float D_L06_001D4880[][4];
-extern float D_L06_001D46B0[][2];
-extern float D_L06_001D4410[][4];
-extern float D_L06_001D3DE0[][4];
-extern short D_L06_001D3970[][8];
-extern float D_L06_001D3C10[][2];
-extern short D_L06_00161900;
-extern short D_L06_00161904;
-extern short D_L06_00161908;
-extern short D_L06_0016190C;
-extern short D_L06_00161910;
-extern short D_L06_00161914;
-extern short D_L06_00161918;
-extern short D_L06_0016191C;
-extern float func_001F9B88(float);
-extern float func_001F9B50(float);
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern float func_001F9C78(void *, void *);
-extern void func_001F9C30(void *, void *, float);
-extern long func_001F4868(int);
-extern void func_L00_001FD1D8(void *, int, int);
+extern char referencePosition[];
+extern float blarg_gadgebot_container_verts[][4];
+extern float blarg_gadgebot_container_vert_normals[][4];
+extern float blarg_gadgebot_container_world_verts[][4];
+extern float blarg_gadgebot_container_env_uvs[][2];
+extern float blarg_gadgebot_container_face_centers[][4];
+extern float blarg_gadgebot_container_face_normals[][4];
+extern short blarg_gadgebot_container_face_indices[][8];
+extern float blarg_gadgebot_container_face_uvs[][2];
+extern short blarg_gadgebot_container_alpha_a;
+extern short blarg_gadgebot_container_alpha_b;
+extern short blarg_gadgebot_container_alpha_c;
+extern short blarg_gadgebot_container_alpha_d;
+extern short blarg_gadgebot_container_alpha_fix;
+extern short blarg_gadgebot_container_texture;
+extern short blarg_gadgebot_container_color;
+extern short blarg_gadgebot_container_normal_scale;
+extern float FastAbsF(float);
+extern float vec_length(float);
+extern void transform_vector(void *, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern float FastVecDot(void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern long GetEffectTex(int);
+extern void draw_world_quad(void *, int, int);
 
 /* Transform src by matrix m into dst. */
 static inline void TransformPoint(float *dst, float *src, float (*m)[4]) {
@@ -287,8 +287,8 @@ char *spawn_gadgebot_pad(char *owner) {
     }
     return moby;
 }
-extern float func_001F9FA8(float);
-extern int func_001FA8A8(int, int, float);
+extern float FastSin(float);
+extern int FastTweenColor(int, int, float);
 extern short D_L06_0015F6B0_s __asm__("D_L06_0015F6B0");
 
 // Pulses the colour of a moby's glow from a global tick counter.
@@ -304,7 +304,7 @@ void gadgebot_spawn_pad_update(char *moby) {
         *(int *)(moby + 0x90) = FastTweenColor(*(int *)(moby + 0x90), 0x80464646, 0.1f);
     }
 }
-extern void func_L00_002D80A0(char *);
+extern void initialize_moby_particle_effect(char *);
 
 /* Sets the moby to state 2 and calls func_L00_002D80A0. */
 void initialize_moby_particle_effect_state(char *moby)
@@ -314,45 +314,45 @@ void initialize_moby_particle_effect_state(char *moby)
     initialize_moby_particle_effect(moby);
 }
 typedef int u128_9AA8 __attribute__((mode(TI)));
-extern short D_L06_00161CA0;
-extern short D_L06_00161CA4;
+extern short blarg_frog_update_disabled;
+extern short blarg_frog_spawn_counter;
 extern short D_L06_00161C80;
-extern int D_L06_0015F6A8 MACRO_ADDR;
-extern int D_L06_0015FE78 MACRO_ADDR;
+extern int level_game_mode_q MACRO_ADDR;
+extern int blarg_shuttle_at_second_stop MACRO_ADDR;
 extern char D_L06_00167640[];
-extern float D_0015EE70 MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
 extern char D_L06_00174700[];
-extern int *D_L06_001B0FB0[];
+extern int *blarg_paths[];
 extern char D_0013E633[];
 
-extern void func_L00_00264B40(float, int, int, unsigned char *);
+extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern void func_L06_002EA920_x(void *) __asm__("func_L06_002EA920");
-extern float func_001F9D10(void *, void *);
-extern void func_L00_0025B178(void *);
-extern int func_001FA898(float);
-extern int func_002140B0(int);
-extern float func_001F9D48(void *, void *);
+extern float FastVecDist(void *, void *);
+extern void set_ground_height_band(void *);
+extern int truncate_float_to_s32(float);
+extern int random_integer_below(int);
+extern float vec_distance_xy(void *, void *);
 extern void func_L06_002EB360_x(void *) __asm__("func_L06_002EB360");
-extern void func_L06_002EAED8(char *);
-extern void func_L06_002EADC8(char *, float *, float *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_L06_002EAF90(void *, void *, int, float, float);
-extern void func_001F9EC0(void *, void *, void *);
-extern float func_001F9CE8(void *);
-extern float func_L00_0025BC48(void *, void *, void *, float, float);
+extern void probe_frog_local_z_collision(char *);
+extern void blend_frog_rotation_to_facing_frame(char *, float *, float *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void move_frog_with_collision_resolution(void *, void *, int, float, float);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern float vec_length_xy(void *);
+extern float jump_speed_4318(void *, void *, void *, float, float);
 extern void func_L00_0025D5B0_x(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
-extern void func_001F9BC8(void *);
-extern int func_L00_0025D6F0(void *, void *);
-extern void func_00213DE0(void *, int, int, int);
-extern float func_00214358(void *, int, float);
-extern void func_L00_002584A8(void *, int, int);
-extern int func_001F9908(int *);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001FA748(float, float);
-extern int func_L00_00262BC0(int, void *, void *, void *);
-extern float func_0020D830(void *);
-extern void func_L00_0025AA20(void *, int, int, float, float, float, int, int, int);
-extern int func_L00_002DDEA0(void *, void *);
+extern void set_vector_unit_z(void *);
+extern int mine_fall(void *, void *);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern float ProbeGroundHeight(void *, int, float);
+extern void SetDeathBits(void *, int, int);
+extern int fast_dec_timer(int *);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastAddRots(float, float);
+extern int SegmentCrossPolyline(int, void *, void *, void *);
+extern float MobyGetFrameValue(void *);
+extern void collect_mobies_in_sphere_at_moby_point(void *, int, int, float, float, float, int, int, int);
+extern int CarriedMobyUpdate(void *, void *);
 
 /* Frog (class 827) update: hops along a path, wanders near home, and chases or flees its target. */
 void frog_update(unsigned char *m) {
@@ -693,27 +693,27 @@ struct RespawnVars {
     u8 pad242[6];
     f32 glow_phase;
 };
-extern f32 D_L06_0015F660[] MACRO_ADDR;
-extern short D_L06_00161C94;
-extern short D_L06_00161C98;
-extern short D_L06_00161C9C;
+extern f32 blarg_zero_vec[] MACRO_ADDR;
+extern short blarg_frog_glow_pulse_speed_deg;
+extern short blarg_frog_glow_color_a;
+extern short blarg_frog_glow_color_b;
 extern short D_L06_00160058_EA920 __asm__("D_L06_00160058");
-extern u8 D_001414F4[];
-extern int * D_L06_001B0FB0[];
-extern int func_L00_0025B4D0(void *, void *, void *, int, int *, float *, int, int);
-extern void func_L00_002584A8(void *, int, int);
+extern u8 hero_vehicle_mode[];
+extern int * blarg_paths[];
+extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
+extern void SetDeathBits(void *, int, int);
 extern void func_L06_002EB5C8_EA920(struct Moby *, Vec4 *) __asm__("func_L06_002EB5C8");
 extern void func_L06_002EB360_EA920(struct Moby *) __asm__("func_L06_002EB360");
-extern void func_L06_002EB8C8(char *);
-extern float func_001FA748(float, float);
-extern float func_001F9878(float);
-extern int func_001FA898(float);
-extern int func_001F9938(s16 *);
-extern void func_L06_002F4908(char *, char **, f32);
-extern int func_L00_0025A778(void *, void *, int);
-extern float func_001F9D48(void *, void *);
-extern int func_L00_00260FB0(void *, void *, float, int, int, void *, int);
-extern float func_001F9B88(float);
+extern void spawn_moby_death_effect_burst(char *);
+extern float FastAddRots(float, float);
+extern float multiply_global_factor(float);
+extern int truncate_float_to_s32(float);
+extern int FastDecTimer(s16 *);
+extern void select_hero_or_gadgebot_target(char *, char **, f32);
+extern int IsPointInPolygon(void *, void *, int);
+extern float vec_distance_xy(void *, void *);
+extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
+extern float FastAbsF(float);
 extern struct MobyHit *func_L00_0025B478_EA920(void *, int, int) __asm__("func_L00_0025B478");
 extern void func_0020D678_EA920(struct Moby *) __asm__("func_0020D678");
 extern struct Moby * D_001414D0_EA920 __asm__("D_001414D0");
@@ -824,11 +824,11 @@ void update_frog_health_respawn_and_target(struct Moby *moby) {
         vars->target = D_001414D0_EA920;
     }
 }
-extern void func_L00_001FF4B0(void *, void *, float);
-extern float func_001F9C78(void *, void *);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_00215328(void *, void *);
-extern short D_L06_00161C90;
+extern void vec_scale_to_length(void *, void *, float);
+extern float FastVecDot(void *, void *);
+extern void FastVecCross(void *, void *, void *);
+extern void extract_matrix_rotation_quaternion(void *, void *);
+extern short blarg_frog_turn_blend;
 
 /* Build an orthogonal frame from two vectors and apply it to the matrix at moby+0xC0. */
 void blend_frog_rotation_to_facing_frame(char *m, float *a1, float *a2) {
@@ -848,8 +848,8 @@ void blend_frog_rotation_to_facing_frame(char *m, float *a1, float *a2) {
     quat_nlerp(A, A, B, *(float *)&blarg_frog_turn_blend);
     quaternion_to_rotation_basis(A, m);
 }
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
+extern void FastVecAdd(void *, void *, void *);
+extern int coll_line(void *, void *, int, int, int);
 
 // builds two offset vectors from the moby position and calls func_L00_001EFFF0 with them
 void probe_frog_local_z_collision(char *moby) {
@@ -864,9 +864,9 @@ void probe_frog_local_z_collision(char *moby) {
     FastVecAdd(a, a, c);
     coll_line(b, a, 2, 0, 0);
 }
-extern float func_001F9CB8(void *);
+extern float FastVecLength(void *);
 extern int coll_sphere_L06(void *, float, int, void *) __asm__("func_L00_001F10E0");
-extern void func_L00_00262DF0(float, int, void *, void *);
+extern void resolve_point_path_segment_xy_clearance(float, int, void *, void *);
 extern char D_L06_001746E0[];
 extern char D_L06_001746F0[];
 
@@ -903,12 +903,12 @@ void move_frog_with_collision_resolution(void *moby, void *out, int use_path, fl
     }
 }
 typedef u32 u128_EB360 __attribute__((mode(TI), aligned(16)));
-extern int func_0022ED80(int, int, int);
-extern float D_0015EE6C MACRO_ADDR;
-extern float func_002140F8(float, float);
-extern int func_002140B0(int);
-extern void func_L00_002B0B98(void *, void *, void *, void *, int, int, float, float);
-extern f32 D_L06_0015F660[] MACRO_ADDR;
+extern int Moby_PlaySound(int, int, int);
+extern float g_frame_time MACRO_ADDR;
+extern float random_float_between(float, float);
+extern int random_integer_below(int);
+extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
+extern f32 blarg_zero_vec[] MACRO_ADDR;
 
 /* Bursts 4 then 8 particles up from the moby, then removes the moby stored at vars+0x20C.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002e9f30. */
@@ -1036,13 +1036,13 @@ void spawn_moby_directional_spark_bursts(struct Moby *moby, Vec4 *dir) {
         }
     }
 }
-extern float func_00214158(void);
-extern void func_00215C00(void *, float, float, float);
-extern void func_L00_00258DB0(float *, float, float);
-extern int func_L00_00258BC8(int, int);
-extern int func_001F9850(int);
-extern void func_L00_0026A7F8(void *, void *, int, int, int, int, int, int);
-extern float D_0015EE6C MACRO_ADDR;
+extern float random_angle_radians(void);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern void rand_vec(float *, float, float);
+extern int rand_range(int, int);
+extern int scale_ticks(int);
+extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+extern float g_frame_time MACRO_ADDR;
 
 /* burst of 20 sparks around a point with random velocity and colour */
 void spawn_moby_death_effect_burst(char *m) {
@@ -1108,9 +1108,9 @@ int update_moby_grab_state(struct Moby *moby, void *position, void *target) {
     }
     return r;
 }
-extern int func_L00_002DCFD0(void *);
-extern int func_001F9850(int);
-extern void func_00213DE0(void *, int, int, int);
+extern int store_moby_in_suck_cannon(void *);
+extern int scale_ticks(int);
+extern void MobyBlendAnimation(void *, int, int, int);
 
 // Switches moby state between 0x10 and 8 depending on a check result.
 extern int func_L00_002DCFD0_EBAD8(void *, void *, void *, float) __asm__("func_L00_002DCFD0");
@@ -1132,7 +1132,7 @@ int CarriedMoby_PlaceState16(unsigned char *moby, void *v, void *t, float h) {
     }
     return r;
 }
-extern s32 func_L00_002DD2D0(void *);
+extern s32 cancel_suck_cannon_suction(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00297d10.c, FUN_L06_002ea7c8. */
 s32 cancel_moby_suction_and_save_state(unsigned char *p) {
@@ -1257,69 +1257,69 @@ typedef struct {
     int f2C;
 } GbStats;
 
-extern Hero D_0013F450;
-extern unsigned char D_001414F4[];
-extern int D_00141710[];
-extern unsigned char D_0014C150[];
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
-extern float D_0015EE60 MACRO_ADDR;
-extern float D_0015EE64 MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
-extern Moby *D_L06_00160058 MACRO_ADDR;
-extern short D_L06_00161D70;
+extern Hero g_hero;
+extern unsigned char hero_vehicle_mode[];
+extern int radial_select_choice[];
+extern unsigned char saved_mission_state[];
+extern unsigned char gCheats[] MACRO_ADDR;
+extern float frame_scale MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern Moby *level_mobys_q MACRO_ADDR;
+extern short blarg_gadgebot_eye_height;
 extern char D_L06_00167640[];
-extern GbHit D_L06_001746C0;
-extern Moby *D_L06_001746D8;
+extern GbHit blarg_coll_hit;
+extern Moby *blarg_coll_hit_moby;
 extern GbStats D_L06_0017ED58;
-extern int *D_L06_001B0FB0[];
+extern int *blarg_paths[];
 
-extern float func_001F9D48(void *, void *);
-extern float func_001F9B88(float);
-extern void func_L06_002F4A70(void *);
-extern void func_0020D960(char *, int, void *);
-extern float func_00214D28(float *p, float target, float maxstep);
-extern void func_0020D9D8(void *, void *);
-extern float func_00214358(void *, int, float);
-extern void func_L05_0028CEE8(int *list, int n, int idx);
-extern int func_L01_00277A38(float, int *, int, int, void *);
-extern void func_L06_002F4CF8(char *);
-extern void func_L00_002626A8(char *moby, char *d, float a, float b);
-extern int func_L00_0025A778(void *, void *, int);
-extern int func_00215570(void *arg0, int arg1);
-extern float func_L00_00258C80(float lo, float hi);
-extern int func_L01_00277FD8(int *, int, int, void *, void *, void *, float);
-extern void func_L00_00262DF0(float, int, void *, void *);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA748(float, float);
-extern void func_L00_002592B0(char *moby, float target, float *vel, float k, float d, float max);
-extern int func_L00_00259B88(void *, void *, void *, void *, float);
-extern void func_L00_0025A8E8(int, float, void *, int, float, float, int, int, int);
-extern void func_L06_002F3680(void);
-extern float func_001F9F90(float);
-extern int func_L00_002629E0(int, void *, void *);
-extern float func_L00_0025CC58(float *, int, float, float);
-extern float func_0020D830(void *);
-extern void func_L00_0025A8C0(void *, void *, int, void *, float);
-extern void func_L00_0025AAC0(void *, void *);
-extern int func_001F9908(int *);
-extern void func_L06_002F3D40(void *);
-extern int func_L00_0028EF68(int i, int a1, int v, int k);
-extern char *func_L00_0026E940(float, char *, int, int, int);
-extern int func_L00_0025D6F0(void *, void *);
-extern void func_L00_00260108(void *, void *, int, float, float);
-extern float func_002140F8(float, float);
-extern void func_L00_001FF240(void *, void *, void *);
-extern void func_L00_00272F00(void *, int, float, float, int, int, int, float, void *);
-extern int func_L06_002F4720(void *, int);
-extern float func_001F9D10(void *, void *);
-extern float func_001F9CB8(void *);
-extern void func_L00_0025C918(float *p, float *v, float t, float u1, float u2, float eps);
-extern float func_001FA888(int);
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern float func_001F9CE8(void *);
-extern int func_L00_0025F410(void *);
-extern void func_L00_0025B178(void *);
+extern float vec_distance_xy(void *, void *);
+extern float FastAbsF(float);
+extern void handle_gadgebot_hit_knockback(void *);
+extern void AttachManipulator(char *, int, void *);
+extern float ApproachValue(float *p, float target, float maxstep);
+extern void DetachManipulator(void *, void *);
+extern float ProbeGroundHeight(void *, int, float);
+extern void build_symmetric_adjacency_masks(int *list, int n, int idx);
+extern int compute_clear_path_point_mask(float, int *, int, int, void *);
+extern void update_gadgebot_glow_effects(char *);
+extern void update_object_wander_movement(char *moby, char *d, float a, float b);
+extern int IsPointInPolygon(void *, void *, int);
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
+extern float randf_sym(float lo, float hi);
+extern int follow_path(int *, int, int, void *, void *, void *, float);
+extern void resolve_point_path_segment_xy_clearance(float, int, void *, void *);
+extern float fast_atan2(float, float);
+extern float FastAddRots(float, float);
+extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
+extern int move_w(void *, void *, void *, void *, float);
+extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
+extern void assign_gadgebot_attack_targets(void);
+extern float FastCos(float);
+extern int test_path_segment_strict_crossing(int, void *, void *);
+extern float step_angle_toward_target(float *, int, float, float);
+extern float MobyGetFrameValue(void *);
+extern void InitDirectionalHitQuery(void *, void *, int, void *, float);
+extern void record_moby_hit(void *, void *);
+extern int fast_dec_timer(int *);
+extern void select_nearest_gadgebot_interaction_target(void *);
+extern int Sound_PlayClassSound(int i, int a1, int v, int k);
+extern char *spawn_source_attached_fading_effect_particle(float, char *, int, int, int);
+extern int mine_fall(void *, void *);
+extern void SpawnExplosionFx(void *, void *, int, float, float);
+extern float random_float_between(float, float);
+extern void add_vectors(void *, void *, void *);
+extern void PartType53Spawn(void *, int, float, float, int, int, int, float, void *);
+extern int process_gadgebot_interactions(void *, int);
+extern float FastVecDist(void *, void *);
+extern float FastVecLength(void *);
+extern void Spring(float *p, float *v, float t, float u1, float u2, float eps);
+extern float IntToFloat(int);
+extern int coll_sphere(float, void *, int, void *);
+extern float vec_length_xy(void *);
+extern int is_moby_in_class_range_500_to_540(void *);
+extern void set_ground_height_band(void *);
 
 /* Update function of the gadgebot (moby class 857): waits by its dispenser, then follows, attacks and returns to the hero along the level's paths. */
 void GadgebotUpdate(Moby *moby) {
@@ -2003,9 +2003,9 @@ void GadgebotUpdate(Moby *moby) {
     d->f2F0.q = d->f2E0.q;
     d->f2E0.q = *(u128 *)(*(float (*)[4])&moby->pos);
 }
-extern float func_L00_001FF860(float, float);
-extern float func_001FA850(float, float);
-extern char D_L06_00167500[];
+extern float fast_atan2(float, float);
+extern float FastDiffRots(float, float);
+extern char referencePosition[];
 /* scores a target moby by distance, heading differences and flags */
 float score_gadgebot_target_candidate(char *a, char *b, int c) {
     float r = vec_distance_xy(a + 0x10, b + 0x10);
@@ -2026,9 +2026,9 @@ float score_gadgebot_target_candidate(char *a, char *b, int c) {
     }
     return r;
 }
-extern char *D_L06_001AC500[];
-extern float func_L06_002F3578(char *a, char *b, int c);
-extern unsigned char *func_L00_0025D390(int);
+extern char *blarg_moby_list[];
+extern float score_gadgebot_target_candidate(char *a, char *b, int c);
+extern unsigned char *GetFlaggedPvarWord(int);
 
 #define V78(p) (*(char **)((p) + 0x78))
 #define S16(p, o) (*(short *)((p) + (o)))
@@ -2417,8 +2417,8 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, char *moby, int 
     }
     return 0;
 }
-extern int func_L00_0025A208(int *, int, int, int);
-extern int func_L00_0025A2F0(int *, int, int, int);
+extern int get_first_moby_in_group(int *, int, int, int);
+extern int get_next_moby_in_group(int *, int, int, int);
 extern int func_L06_002F4058_2F4720(char *, char *, int, int, int *) __asm__("func_L06_002F4058");
 extern int D_L06_001AC500_2F4720[] __asm__("D_L06_001AC500");
 typedef struct {
@@ -2459,7 +2459,7 @@ int func_L06_002F4720_r(char *moby, int flag)
     }
     return iter.out;
 }
-extern float func_L00_001FF860(float, float);
+extern float fast_atan2(float, float);
 
 /* Scores a candidate target and keeps it if it beats the best so far. */
 void consider_moby_target_candidate(char *a, char *b, char *c, int *out, float *best, float thresh) {
@@ -2562,7 +2562,7 @@ void func_L06_002F4A70_r(unsigned char *moby) {
     }
     ((Moby *)moby)->hit_slot = 0xFF;
 }
-extern void func_L00_00264690(void *, int, float, float);
+extern void draw_offset_textured_effect_quad(void *, int, float, float);
 
 /* for each moby in a search list with the owner's id, start three effects on its data */
 void draw_gadgebot_group_glow_effects(char *owner) {
@@ -2587,9 +2587,9 @@ void draw_gadgebot_group_glow_effects(char *owner) {
         get_next_moby_in_group(&list, list, 0, 0);
     }
 }
-extern float func_001FA748(f32, f32);
-extern s32 func_001FA898(f32);
-extern void func_L00_00250800(void *, int, void *);
+extern float FastAddRots(f32, f32);
+extern s32 truncate_float_to_s32(f32);
+extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void func_001F49B0_F4CF8(void *, void *) __asm__("func_001F49B0");
 extern void func_L06_002F4C00_F4CF8(void *) __asm__("func_L06_002F4C00");
 
@@ -2665,16 +2665,16 @@ typedef struct {
 } Vars_2F6330;
 
 extern Moby *D_L06_00160058_2F6330 __asm__("D_L06_00160058") MACRO_ADDR;
-extern float D_L06_00161DC8 SDATA(D_L06_00161DC8);
-extern float D_L06_00161DCC SDATA(D_L06_00161DCC);
-extern float D_L06_00161DD0 SDATA(D_L06_00161DD0);
+extern float blarg_rotation_group_turn_accel_deg SDATA(D_L06_00161DC8);
+extern float blarg_rotation_group_turn_decel_deg SDATA(D_L06_00161DCC);
+extern float blarg_rotation_group_turn_max_speed_deg SDATA(D_L06_00161DD0);
 extern float D_L06_00161DD4 SDATA(D_L06_00161DD4);
-extern float D_L06_00161DD8 SDATA(D_L06_00161DD8);
+extern float blarg_rotation_group_pivot_offset SDATA(D_L06_00161DD8);
 extern char D_0013E633[];
 extern Moby *func_0020D348_2F6330(int) __asm__("func_0020D348");
 extern int func_0022ED80_2F6330(int, int, void *) __asm__("func_0022ED80");
-extern float func_L00_0025CE58(float *, float *, float, float, float, float);
-extern float func_001FA790(float, float);
+extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
+extern float FastSubRots(float, float);
 
 /* Moby class 1021 update (levels 6, 17, 18): a door ring of seven petals; opens when its trigger fires, eases its angle open and shut. */
 void update_moby_rotation_group(Moby *m) {
@@ -2787,10 +2787,10 @@ void update_moby_rotation_group(Moby *m) {
 extern char D_0014171B_86b8[] __asm__("D_0014171B");
 extern char D_0014171B_aa35[] __asm__("D_0014171B");
 extern int D_0015EE84_86b8 __asm__("D_0015EE84") MACRO_ADDR;
-extern int D_L06_001BAFE0[];
-extern void func_L06_002F8978(char *);
-extern void func_L06_002F8A58(char *);
-extern void func_L00_0025AC00(void *, int, int, void *, void *, float);
+extern int blarg_session_moby_bit_flags[];
+extern void initialize_energy_sphere_holder_vars(char *);
+extern void update_energy_sphere_holder_beam_effects(char *);
+extern void PostHitMessage(void *, int, int, void *, void *, float);
 
 /* Collectible spawner: unless already collected (save bit), spawns the pickup moby; marks the bit once it is taken. */
 void energy_sphere_holder_update(char *m) {
@@ -2843,7 +2843,7 @@ void energy_sphere_holder_update(char *m) {
     }
     }
 }
-extern int func_001F9850(int);
+extern int scale_ticks(int);
 
 /* fills random floats and sound handles in the moby's data block */
 void initialize_energy_sphere_holder_vars(char *moby) {
@@ -2871,9 +2871,9 @@ void initialize_energy_sphere_holder_vars(char *moby) {
     holder_vars[15] = 1.75f;
     holder_vars[14] = 2.25f;
 }
-extern short D_L06_00161EE8, D_L06_00161EEC, D_L06_00161EF0, D_L06_00161EF4, D_L06_00161EF8, D_L06_00161EFC;
-extern short D_L06_00161F00;
-extern void func_001F9BC0(void *);
+extern short blarg_holder_beam_color_a, blarg_holder_beam_color_b, blarg_holder_beam_blend_flag, blarg_holder_beam_texture, blarg_holder_spark_color, blarg_holder_spark_scale;
+extern short blarg_holder_spark_life_ticks;
+extern void clear_u64_value(void *);
 extern int func_001FA898_g(float) __asm__("func_001FA898");
 extern unsigned char *func_L00_00273E08_g(void *, int, unsigned char, int, int, int, int, float) __asm__("func_L00_00273E08");
 extern void func_L00_00273F80_g(void *, void *, int, int, int, int, float) __asm__("func_L00_00273F80");
@@ -2929,10 +2929,10 @@ void update_energy_sphere_holder_beam_effects(char *m) {
                           (unsigned char)random_integer_below(0xFF), 0, *(float *)&blarg_holder_spark_scale);
     }
 }
-extern int func_00215570(void *, int);
-extern void func_001F4E08(int);
-extern void func_L00_00211908(void);
-extern void func_L06_00235E08(int, int);
+extern int is_point_inside_clip_volume(void *, int);
+extern void FadeToBlack(int);
+extern void Hero_OnKilled(void);
+extern void HeroL06_TrySetMoveState(int, int);
 
 /* Watches the moby's two 32-entry trigger lists against the hero and fires the matching events. */
 extern struct Hero hero_global __asm__("D_0013F450");
@@ -2989,14 +2989,14 @@ void update_hero_trigger_volume_monitor(char *m) {
         }
     }
 }
-extern char *func_L00_0025B478(void *, int, int);
-extern void func_L06_002F9098(char *m);
-extern int func_0022ED80(int, int, int);
-extern void func_L00_0028EBF0(int);
-extern void func_L00_00251328(void *, int, int, int);
-extern float func_001FA748(float, float);
-extern int func_L00_0028EB98(void *, int);
-extern short D_L06_00161F04, D_L06_00161F08, D_L06_00161F0C, D_L06_00161F10;
+extern char *MobyGetHitMessage(void *, int, int);
+extern void spawn_energy_sphere_destruction_particles(char *m);
+extern int Moby_PlaySound(int, int, int);
+extern void Sound_StopSlot(int);
+extern void set_moby_color(void *, int, int, int);
+extern float FastAddRots(float, float);
+extern int Sound_IsPlaying(void *, int);
+extern short blarg_energy_sphere_spin_x_deg, blarg_energy_sphere_spin_y_deg, blarg_energy_sphere_spin_z_deg, blarg_energy_sphere_scale_factor;
 
 struct EnergySphereVars {
     char *state_data;              /* 0x00: points 0x20 bytes into the vars block */
@@ -3058,18 +3058,18 @@ void energy_sphere_update(char *m) {
         sphere_vars->voice_slot_index = Moby_PlaySound(0, 4, (int)m);
     }
 }
-extern float func_002140F8(float, float);
-extern void func_L00_00273F80(void *, float, void *, int, int, int, int);
-extern float D_0015EE6C MACRO_ADDR;
-extern short D_L06_00161F14;
-extern short D_L06_00161F18;
-extern short D_L06_00161F38;
-extern short D_L06_00161F3C;
-extern short D_L06_00161F28;
-extern short D_L06_00161F2C;
-extern short D_L06_00161F30;
-extern short D_L06_00161F34;
-extern unsigned char D_L06_00161F24;
+extern float random_float_between(float, float);
+extern void spawn_moving_hero_relative_alpha_fade_particle(void *, float, void *, int, int, int, int);
+extern float g_frame_time MACRO_ADDR;
+extern short blarg_energy_sphere_debris_speed_min;
+extern short blarg_energy_sphere_debris_speed_max;
+extern short blarg_energy_sphere_debris_scale_min;
+extern short blarg_energy_sphere_debris_scale_max;
+extern short blarg_energy_sphere_debris_color1_a;
+extern short blarg_energy_sphere_debris_color1_b;
+extern short blarg_energy_sphere_debris_color2_a;
+extern short blarg_energy_sphere_debris_color2_b;
+extern unsigned char blarg_energy_sphere_debris_life;
 
 /* Spawn forty particles at the moby with randomised parameters. */
 void spawn_energy_sphere_destruction_particles(char *m) {

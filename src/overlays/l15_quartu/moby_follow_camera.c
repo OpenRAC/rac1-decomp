@@ -7,9 +7,9 @@
 #include "include_asm.h"
 
 extern char D_0013E633[];
-extern char *D_L15_0015F050 MACRO_ADDR;
-extern char *D_L15_00167480;
-extern void func_L15_002F9D38(void *);
+extern char *quartu_camera_descriptors MACRO_ADDR;
+extern char *quartu_camera_moby;
+extern void update_moby_follow_camera(void *);
 
 /* Runs the moby follow camera when the camera is free and in vehicle mode 2; returns -1. */
 int dispatch_moby_follow_camera_update(char *moby)

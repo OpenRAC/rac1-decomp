@@ -1,5 +1,5 @@
 void process_blarg_space_commando_hits(char *m) {
-    extern unsigned char D_0013D510[];
+    extern unsigned char gSkillPoints[];
     char *d;
     char *t;
     char *p;

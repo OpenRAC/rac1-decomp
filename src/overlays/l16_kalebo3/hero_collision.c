@@ -6,12 +6,12 @@
 #include "vector.h"
 
 extern char D_0013E633[];
-extern int D_0015EE84 MACRO_ADDR;
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern int func_L00_001F3958(void);
-extern void func_L16_0021EA88(int, int);
-extern float func_001F9B88(float);
-extern void func_L00_0020BFA8(void);
+extern int g_current_level_index MACRO_ADDR;
+extern int coll_sphere(float, void *, int, void *);
+extern int CollType(void);
+extern void Hero_TryMoveState(int, int);
+extern float FastAbsF(float);
+extern void exit_hero_vehicle_mode_if_mode_three(void);
 
 /* Per-frame update of the pickup/hit state flags from the state code. */
 void HeroL16_UpdateStateFlags(void) {
@@ -126,9 +126,9 @@ void HeroL16_UpdateStateFlags(void) {
         }
     }
 }
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_002607A8(void *a, float x);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void ClampVectorLength(void *a, float x);
 
 // Builds a vector from two global blocks, transforms it, and passes it on with a summed float.
 void compose_and_limit_hero_velocity(void) {
@@ -144,27 +144,27 @@ void compose_and_limit_hero_velocity(void) {
 }
 typedef int Q __attribute__((mode(TI)));
 extern u8 D_L16_001742E0[];
-extern s32 D_0015EE84 MACRO_ADDR;
-void func_001F9BC0(void *);
-void func_L00_00212D70(void *, void *, s32, f32, f32);
-s32 func_L00_001EFFF0(void *, void *, s32, s32, s32);
-s32 func_L00_001F3988(void);
-s32 func_L00_001F3958(void);
-f32 func_00214440(void *, void *);
-s32 func_L00_0025F410(s32);
-u8 *func_L00_0025D390(s32);
-f32 func_001F9D10(void *, void *);
+extern s32 g_current_level_index MACRO_ADDR;
+void clear_u64_value(void *);
+void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
+s32 coll_line(void *, void *, s32, s32, s32);
+s32 coll_sound_class(void);
+s32 CollType(void);
+f32 resolve_camera_surface_height(void *, void *);
+s32 is_moby_in_class_range_500_to_540(s32);
+u8 *GetFlaggedPvarWord(s32);
+f32 FastVecDist(void *, void *);
 void func_001252C0(void *, void *);
-f32 func_L00_002345B0(void *);
-f32 func_L00_001FF860(f32, f32);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001F9C78(void *, void *);
-void func_001F9C30(void *, void *, f32);
-void func_L00_001FF4B0(void *, void *, f32);
-void func_L00_002167C8(void *, void *);
-void func_L00_00233E48(void *, f32, f32, f32);
+f32 compute_gravity_relative_vector_inclination(void *);
+f32 fast_atan2(f32, f32);
+void FastVecSub(void *, void *, void *);
+f32 FastVecDot(void *, void *);
+void FastVecScale(void *, void *, f32);
+void vec_scale_to_length(void *, void *, f32);
+void compute_rotated_vector_angles(void *, void *);
+void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
 void func_L00_00233D50_105C8(void *, void *, f32) __asm__("func_L00_00233D50");
-f32 func_001F9B88(f32);
+f32 FastAbsF(f32);
 typedef struct {
     u8 pad88[0x88];
     f32 xF88;
@@ -209,7 +209,7 @@ typedef struct {
     u8 pad20b3[0x23];
     u8 xB20b3;
 } GS;
-extern GS D_0013F450;
+extern GS g_hero;
 typedef struct {
     u8 pad0[0x18];
     s32 i18;
@@ -219,7 +219,7 @@ typedef struct {
     f32 f40;
     f32 f44;
 } HS;
-extern HS D_L16_001742C0;
+extern HS kalebo3_coll_hit;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l16/ui_help_002097a0.c, FUN_L16_0020ffb0. */
 void HeroL16_UpdateGroundCollision(void) {
@@ -394,17 +394,17 @@ d1:
         }
     }
 }
-extern float D_0015EE60 MACRO_ADDR;
+extern float frame_scale MACRO_ADDR;
 extern char D_L16_001742F0[];
-extern void func_001F9BC0(void *);
-extern void func_L00_00235040(void);
-extern void func_L00_00233EE0(float *, float, float, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_00234090(float *, float *, float);
-extern void func_L00_00233D50(float *, float *, float);
-extern int func_L00_001F1D20(float, float, void *, int, void *);
-extern int func_L00_001F34F0(float, void *);
-extern float func_001F9CB8(void *);
+extern void clear_u64_value(void *);
+extern void Hero_ConstrainToPath(void);
+extern void transform_hero_local_offset_to_world(float *, float, float, float);
+extern void FastVecSub(void *, void *, void *);
+extern void HeroOffsetAlongViewZ(float *, float *, float);
+extern void HeroMoveDownAlongNormal(float *, float *, float);
+extern int coll_capsule(float, float, void *, int, void *);
+extern int coll_sphere_hero_groups(float, void *);
+extern float FastVecLength(void *);
 
 /* Pulls the camera position toward a desired offset from the player; returns 1 when settled, -1 when clamped. */
 extern Hero hero __asm__("D_0013F450");
@@ -510,18 +510,18 @@ int HeroL16_ApplyPositionOffset(int mode) {
     }
     return 1;
 }
-extern void func_L00_00234800(int, void *, void *);
-extern float func_L00_00234250(float *v);
-extern float func_L00_002342F8(float *);
-extern void func_L00_002343A0(float *, float *, float);
-extern float func_001F9CE8(void *);
-extern void func_L00_001FF500(void *, void *, float);
-extern void func_L00_00213E60(void);
-extern void func_L00_002136A8(void);
-extern void func_L00_00234150(float *, float *);
-extern void func_L00_00234420(float *, float *, float);
-extern float func_L00_00213A08(void *);
-extern float D_0015EE6C MACRO_ADDR;
+extern void update_hero_attachment(int, void *, void *);
+extern float gravity_length_xy(float *v);
+extern float gravity_z(float *);
+extern void gravity_set_z(float *, float *, float);
+extern float vec_length_xy(void *);
+extern void vec_set_length_xy(void *, void *, float);
+extern void resolve_hero_collisions_with_history(void);
+extern void correct_hero_ground_penetration(void);
+extern void gravity_flatten(float *, float *);
+extern void set_gravity_relative_vector_length_xy(float *, float *, float);
+extern float forward_component(void *);
+extern float g_frame_time MACRO_ADDR;
 extern char *D_L16_001742D8;
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */

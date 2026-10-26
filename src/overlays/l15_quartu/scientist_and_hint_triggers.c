@@ -5,50 +5,50 @@
 #include "hero.h"
 #include "moby.h"
 
-extern void func_L12_002E7EE0(char *);
-extern void func_L02_0025D750(char *);
-extern int func_L00_002676E8(void *, void *);
-extern void func_0020D678(void *);
-extern int func_00215570(void *arg0, int arg1);
-extern int func_L00_00267290(void *, void *);
-extern void func_L00_002512D8(int);
-extern void func_L00_00286128(void *, void *);
-extern int func_L01_0026EFB8(int, int);
-extern int func_001F9850(int);
-extern int func_001F9908(void *);
-extern void func_L15_002092E0(void);
-extern void func_00213D28(void *, int, int);
-extern void func_L00_00261848(int);
-extern void func_L00_002664B0(int, int);
-extern void func_L00_00217718(void *, void *, int, int);
-extern void func_L00_00299B68(int);
-extern void func_L00_0029A7D0(int);
-extern void func_L00_00263DB0(int);
-extern int func_0020BFC8(int, int);
-extern float func_001F9D48(float *, float *);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA850(float, float);
-extern float func_001F9CB8(void *a);
-extern float func_002140F8(float, float);
-extern float func_001F9878(float);
-extern int func_001FA898(float);
-extern float func_001FA748(float, float);
-extern void func_00215C00(void *, float, float, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern float func_001FA790(float, float);
-extern float func_001F9CE8(void *);
-extern void func_L00_00263950(char *, char *, int, float, float);
+extern void apply_npc_big_head_cheat(char *);
+extern void initialize_moby_grounding(char *);
+extern int DialogRequest_Init(void *, void *);
+extern void DeleteMoby(void *);
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
+extern int Npc_TryStartDialog(void *, void *);
+extern void jet_clear_persistent(int);
+extern void jet_reset_camera(void *, void *);
+extern int count_active_moby_group_members(int, int);
+extern int scale_ticks(int);
+extern int fast_dec_timer(void *);
+extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
+extern void MobySetAnimation(void *, int, int);
+extern void unlock_planet(int);
+extern void MusicRequestTrack(int, int);
+extern void Hero_ResetToPosition(void *, void *, int, int);
+extern void StartCutscene(int);
+extern void PlayMovieEntryIfIdle(int);
+extern void queue_planet_unlock_message(int);
+extern int memcard_Save(int, int);
+extern float vec_distance_xy(float *, float *);
+extern float fast_atan2(float, float);
+extern float FastDiffRots(float, float);
+extern float FastVecLength(void *a);
+extern float random_float_between(float, float);
+extern float multiply_global_factor(float);
+extern int truncate_float_to_s32(float);
+extern float FastAddRots(float, float);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void FastVecSub(void *dst, void *a, void *b);
+extern float FastSubRots(float, float);
+extern float vec_length_xy(void *);
+extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char D_0013E633[];
 extern char D_0014171B[];
-extern char D_0013DE55[];
-extern int D_L15_00160058 MACRO_ADDR;
-extern int D_L15_0015F6A8 MACRO_ADDR;
-extern char *D_L15_00160064 MACRO_ADDR;
-extern char *D_L15_0016016C MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
-extern float D_0015EE64 MACRO_ADDR;
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
+extern char gemlik_available[];
+extern int quartu_moby_array MACRO_ADDR;
+extern int quartu_game_mode MACRO_ADDR;
+extern char *quartu_moby_list MACRO_ADDR;
+extern char *quartu_cuboids MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern unsigned char gCheats[] MACRO_ADDR;
 
 /* Update function of moby class 1446 (ultramech scientist): state switch, then the head look-at block shaped like func_L11_002D18D0's (doit flag guards the vector part). */
 void ultramech_scientist_update(char *moby) {
@@ -554,15 +554,15 @@ void update_quartu_hint_triggers(Moby *m) {
         break;
     }
 }
-extern int D_L15_0015F6A8 MACRO_ADDR;
+extern int quartu_game_mode MACRO_ADDR;
 struct L15MissionState {
     char pad0[0x30];
     int mode;
     char pad1[0x178 - 0x34];
     int slot[5];
 };
-extern struct L15MissionState D_L15_0016CEE0;
-extern void func_L00_00264870(int);
+extern struct L15MissionState g_mission;
+extern void cutscene_set_camera_target(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/gameplay/vendor/002e73c0.c, FUN_L15_002edb20. */
 void emit_cutscene_mode_moby_effects(struct Moby *m) {
@@ -590,42 +590,42 @@ void emit_cutscene_mode_moby_effects(struct Moby *m) {
         break;
     }
 }
-extern float func_001FA888(int);
-extern int func_001F4868(int);
-extern void func_00234C98(int, long);
-extern float func_001F9878(float);
-extern float func_001FA748(float, float);
-extern float func_001F9FA8(float);
-extern void func_L00_00251358(void *, void *, void *, void *);
-extern float func_L00_00200210(float, float);
-extern float func_001FA7D8(float x);
-extern void func_001F7868(void);
-extern void func_L00_001FDE48(int, int, int, void *, int);
-extern float D_0015EE6C MACRO_ADDR;
-extern int D_L15_0015F6B0 MACRO_ADDR;
-extern float D_L15_001DEF80[][3];
-extern float D_L15_001DEB30[][3];
-extern int D_L15_001DF318[];
-extern float D_L15_001DED58[][2];
-extern float D_L15_001DF1A8[][2];
+extern float IntToFloat(int);
+extern int GetEffectTex(int);
+extern void VU1_addGSregister(int, long);
+extern float multiply_global_factor(float);
+extern float FastAddRots(float, float);
+extern float FastSin(float);
+extern void get_moby_color(void *, void *, void *, void *);
+extern float fast_fmod(float, float);
+extern float FastNormalizeAngle(float x);
+extern void font_queue_vu_state(void);
+extern void draw_env_overlay_mesh(int, int, int, void *, int);
+extern float g_frame_time MACRO_ADDR;
+extern int quartu_frame_count MACRO_ADDR;
+extern float quartu_ripple_world_verts[][3];
+extern float quartu_ripple_mesh_template_verts[][3];
+extern int quartu_ripple_vertex_colors[];
+extern float quartu_ripple_mesh_base_uvs[][2];
+extern float quartu_ripple_scrolled_uvs[][2];
 typedef struct { float f[2][2]; } Quad4_2EF030;
 typedef struct {
     float prev;
     float angle;
 } RingVars_2EF030;
-extern Quad4_2EF030 D_L15_00162288;
-extern int D_L15_00162230[1] SDATA(D_L15_00162230);
-extern int D_L15_00162250[1] SDATA(D_L15_00162250);
-extern int D_L15_00162258[1] SDATA(D_L15_00162258);
-extern int D_L15_00162260[1] SDATA(D_L15_00162260);
-extern int D_L15_00162264 SDATA(D_L15_00162264);
-extern int D_L15_00162268 SDATA(D_L15_00162268);
-extern int D_L15_0016226C SDATA(D_L15_0016226C);
-extern float D_L15_00162270 SDATA(D_L15_00162270);
-extern float D_L15_00162274 SDATA(D_L15_00162274);
-extern float D_L15_00162278 SDATA(D_L15_00162278);
-extern float D_L15_0016227C SDATA(D_L15_0016227C);
-extern float D_L15_00162280 SDATA(D_L15_00162280);
+extern Quad4_2EF030 quartu_ripple_mesh_uv_scroll_factors;
+extern int quartu_ripple_mesh_counts[1] SDATA(D_L15_00162230);
+extern int quartu_ripple_mesh_positions[1] SDATA(D_L15_00162250);
+extern int quartu_ripple_mesh_uvs[1] SDATA(D_L15_00162258);
+extern int quartu_ripple_mesh_colors[1] SDATA(D_L15_00162260);
+extern int quartu_ripple_alpha_blend SDATA(D_L15_00162264);
+extern int quartu_ripple_mesh_texture SDATA(D_L15_00162268);
+extern int quartu_ripple_mesh_alpha SDATA(D_L15_0016226C);
+extern float quartu_ripple_mesh_wavelength SDATA(D_L15_00162270);
+extern float quartu_ripple_spin_period SDATA(D_L15_00162274);
+extern float quartu_ripple_mesh_wave_height SDATA(D_L15_00162278);
+extern float quartu_ripple_mesh_uv_scroll_rate SDATA(D_L15_0016227C);
+extern float quartu_ripple_vertex_scale SDATA(D_L15_00162280);
 
 /* Builds and draws the animated ring of lights around a moby: 46 scaled vertices and colours, then two passes of 46 texture coordinates. */
 void draw_scaled_moby_radial_ripple_mesh(char *moby) {
@@ -674,29 +674,29 @@ void draw_scaled_moby_radial_ripple_mesh(char *moby) {
         }
     }
 }
-extern float D_L15_001DFC10[][3];
-extern float D_L15_001DF3D0[][3];
-extern int D_L15_001E02F0[];
-extern float D_L15_001DF7F0[][2];
-extern float D_L15_001E0030[][2];
+extern float quartu_ripple88_world_verts[][3];
+extern float quartu_ripple88_template_verts[][3];
+extern int quartu_ripple88_vertex_colors[];
+extern float quartu_ripple88_base_uvs[][2];
+extern float quartu_ripple88_scrolled_uvs[][2];
 typedef struct { float f[2][2]; } Quad4_2EF410;
 typedef struct {
     float prev;
     float angle;
 } RingVars_2EF410;
-extern Quad4_2EF410 D_L15_001622F8;
-extern int D_L15_001622A0[1] SDATA(D_L15_001622A0);
-extern int D_L15_001622C0[1] SDATA(D_L15_001622C0);
-extern int D_L15_001622C8[1] SDATA(D_L15_001622C8);
-extern int D_L15_001622D0[1] SDATA(D_L15_001622D0);
-extern int D_L15_001622D4 SDATA(D_L15_001622D4);
-extern int D_L15_001622D8 SDATA(D_L15_001622D8);
-extern int D_L15_001622DC SDATA(D_L15_001622DC);
-extern float D_L15_001622E0 SDATA(D_L15_001622E0);
-extern float D_L15_001622E4 SDATA(D_L15_001622E4);
-extern float D_L15_001622E8 SDATA(D_L15_001622E8);
-extern float D_L15_001622EC SDATA(D_L15_001622EC);
-extern float D_L15_001622F0 SDATA(D_L15_001622F0);
+extern Quad4_2EF410 quartu_ripple88_uv_scroll_factors;
+extern int quartu_ripple88_mesh_counts[1] SDATA(D_L15_001622A0);
+extern int quartu_ripple88_mesh_positions[1] SDATA(D_L15_001622C0);
+extern int quartu_ripple88_mesh_uvs[1] SDATA(D_L15_001622C8);
+extern int quartu_ripple88_mesh_colors[1] SDATA(D_L15_001622D0);
+extern int quartu_ripple88_alpha_blend SDATA(D_L15_001622D4);
+extern int quartu_ripple88_texture SDATA(D_L15_001622D8);
+extern int quartu_ripple88_alpha SDATA(D_L15_001622DC);
+extern float quartu_ripple88_wavelength SDATA(D_L15_001622E0);
+extern float quartu_ripple88_spin_period SDATA(D_L15_001622E4);
+extern float quartu_ripple88_wave_height SDATA(D_L15_001622E8);
+extern float quartu_ripple88_uv_scroll_rate SDATA(D_L15_001622EC);
+extern float quartu_ripple88_vertex_scale SDATA(D_L15_001622F0);
 
 /* Builds and draws the animated ring of lights around a moby: 88 scaled vertices and colours, then two passes of 88 texture coordinates. */
 void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
@@ -744,9 +744,9 @@ void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
         }
     }
 }
-extern char *D_L15_00167480;
-extern float D_L15_0015F4FC MACRO_ADDR;
-extern char *D_L15_0015F050 MACRO_ADDR;
+extern char *quartu_camera_moby;
+extern float codebot_slot_effect_spawn_gate MACRO_ADDR;
+extern char *quartu_camera_descriptors MACRO_ADDR;
 
 typedef struct {
     char pad[0x1C];
@@ -769,13 +769,13 @@ int can_spawn_codebot_slot_effect(int index) {
     return *(short *)(data + 0x14) == 3;
 }
 INCLUDE_ASM("asm/overlays", func_L15_002F8D9C);
-extern int func_L00_00260AB0(void *p, int i);
-extern int func_00215570(void *arg0, int arg1);
-extern int func_L00_00260B68(float *p, int idx);
-extern int func_L00_0025A778(float *p, float *v, int n);
+extern int test_point_in_transformed_unit_cylinder(void *p, int i);
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
+extern int test_point_in_transformed_unit_sphere(float *p, int idx);
+extern int IsPointInPolygon(float *p, float *v, int n);
 extern char D_0013E633[];
-extern char *D_L15_0015F050 MACRO_ADDR;
-extern int *D_L15_001B0DB0[];
+extern char *quartu_camera_descriptors MACRO_ADDR;
+extern int *quartu_paths[];
 /* tests several indexed conditions of a moby's entry in the table */
 int is_hero_in_moby_follow_camera_region(char *moby) {
     int *e = *(int **)(quartu_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1C);
@@ -804,18 +804,18 @@ int is_hero_in_moby_follow_camera_region(char *moby) {
     }
     return 0;
 }
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern float func_001F9C78(void *a, void *b);
-extern void func_001F9C30(void *, void *, float);
-extern float func_001F9CB8(void *a);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA850(float, float);
-extern float func_001F9FC0(float x);
-extern float func_001F9B88(float);
-extern char *D_L15_0015F050 MACRO_ADDR;
-extern char *D_L15_0016016C MACRO_ADDR;
+extern void FastVecSub(void *dst, void *a, void *b);
+extern float FastVecDot(void *a, void *b);
+extern void FastVecScale(void *, void *, float);
+extern float FastVecLength(void *a);
+extern float fast_atan2(float, float);
+extern float FastDiffRots(float, float);
+extern float FastArcSin(float x);
+extern float FastAbsF(float);
+extern char *quartu_camera_descriptors MACRO_ADDR;
+extern char *quartu_cuboids MACRO_ADDR;
 extern char D_L15_00167490[];
-extern char D_L15_00167300[];
+extern char quartu_player_camera[];
 /* tests whether the target lies within a cone of the player's axis */
 int check_moby_target_angular_limits(char *moby, float a, float b) {
     float d[4];
@@ -951,6 +951,6 @@ void func_L15_002F9D38_r(char *m) {
     if (*(float *)(s + 0x44) != 0.0f)
         func_L00_002E99A0_2F9D38(0, *(float *)(s + 0x44), 0.005f);
 }
-extern char *D_L15_00167480;
-extern void func_L15_002F9D38(void *);
+extern char *quartu_camera_moby;
+extern void update_moby_follow_camera(void *);
 

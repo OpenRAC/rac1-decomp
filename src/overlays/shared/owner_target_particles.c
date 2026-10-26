@@ -6,13 +6,13 @@ typedef struct { char pad[0x10]; float pos[4]; } Owner5F0A0;
 typedef union { int bits __attribute__((mode(TI))); float v[4]; } ParticleVector5F0A0;
 typedef struct { unsigned char pad; unsigned char flags; unsigned char pad1; unsigned char type; int color; unsigned char frame; unsigned char alpha; short life; int rgb; ParticleVector5F0A0 pos; ParticleVector5F0A0 velocity; Owner5F0A0 *owner; } Particle5F0A0;
 typedef int u128 __attribute__((mode(TI)));
-extern unsigned char *func_00218928(int);
+extern unsigned char *create_part(int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_001F9850(int);
-extern int D_L15_0016027C SDATA(D_L15_0016027C);
+extern void FastVecSub(void *dst, void *a, void *b);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern int scale_ticks(int);
+extern int quartu_owner_target_particle_life SDATA(D_L15_0016027C);
 
 // spawns a particle at a position offset from a moby
 void spawn_owner_target_particle(int a0, void *a1, char *a2) {
@@ -44,10 +44,10 @@ void spawn_owner_target_particle(int a0, void *a1, char *a2) {
         }
     }
 }
-extern int *D_L15_001B2A70;
-extern int func_002140B0(int);
-extern void func_002158E8(float *, int *);
-extern void func_00215A10(float *, int *);
+extern int *quartu_part_type71_textures;
+extern int random_integer_below(int);
+extern void pack_vector_xyz_with_shared_scale(float *, int *);
+extern void load_display_text_resource_entry(float *, int *);
 
 // spawns a particle moby (class 0x47) at a position and fills in its two sub-records
 unsigned char *create_type_47_particle(void *pos, float *p, float *c, int d, int e, int f, int g, int h, char *owner) {

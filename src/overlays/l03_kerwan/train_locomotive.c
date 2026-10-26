@@ -8,17 +8,17 @@
 
 typedef int Q_293720 __attribute__((mode(TI)));
 extern char *D_L03_00160058_t __asm__("D_L03_00160058") MACRO_ADDR;
-extern short D_L03_001613F0;
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001FA748(float, float);
-extern float func_L00_001FF860(float, float);
-extern void func_L00_002617B0(char *, void *, void *, void *);
-extern void func_L00_002514B8(void *);
-extern void func_L00_00251E30(void *);
-extern void func_L00_00250800(void *, int, void *);
+extern short kerwan_train_car_spacing;
+extern float FastCos(float);
+extern float FastSin(float);
+extern void FastVecAdd(void *, void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern float FastAddRots(float, float);
+extern float fast_atan2(float, float);
+extern void update_entity_matrix(char *, void *, void *, void *);
+extern void MobyAnimAdvance(void *);
+extern void moby_build_matrix(void *);
+extern void Moby_GetJointWorldPos(void *, int, void *);
 
 /* Places a train: puts the engine at `at` facing ang (offset back by its length), then lays each linked
  * car behind the previous one along ang, updating their motion deltas, and enables the coupling moby. */
@@ -83,18 +83,18 @@ void place_metropolis_train(char *moby, float *pos, float heading) {
     ((struct Moby *)coupling)->state = 0;
     ((struct Moby *)coupling)->flags |= 6;
 }
-extern float func_001F9D48(void *, void *);
-extern void func_L01_002F6540(char *);
-extern void func_00215C00(void *, float, float, float);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern float func_L00_00259148(float *vel, float cur, float target, float k, float d, float max);
-extern void func_L00_001FF500(void *, void *, float);
-extern float func_001F9CB8(void *);
-extern int func_001E9730();
-extern void func_0020D678(void *);
-extern float D_0015EE70 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern char D_L03_001E2700[];
+extern float vec_distance_xy(void *, void *);
+extern void gunship_follow_path(char *);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern void vec_scale_to_length(void *, void *, float);
+extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
+extern void vec_set_length_xy(void *, void *, float);
+extern float FastVecLength(void *);
+extern int STUB_printf();
+extern void DeleteMoby(void *);
+extern float g_frame_time_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern char kerwan_train_motion_error_msg[];
 
 typedef struct Train292890 {
     u8 pad_00[0x60];
@@ -298,26 +298,26 @@ extern Path_294040 *D_L03_001B08B0_294040[] __asm__("D_L03_001B08B0");
 extern Mat_294040 *D_L03_0016016C_294040 __asm__("D_L03_0016016C") MACRO_ADDR;
 extern char D_L03_00166E00_294040[] __asm__("D_L03_00166E00");
 extern int D_L03_0015FE7C MACRO_ADDR;
-extern char D_L03_001E2738[];
-extern char D_L03_001E2768[];
+extern char kerwan_train_no_partner_msg[];
+extern char kerwan_train_no_link_msg[];
 extern unsigned char D_0013E633[];
-extern char D_0013E650[];
+extern char voice_pool[];
 extern void func_L03_00293EB8_294040(void *) __asm__("func_L03_00293EB8");
-extern int func_00215570(void *arg0, int arg1);
-extern void func_L00_002664B0(int, int);
-extern void func_L00_002676A0(void *, int);
-extern int func_001F9850(int);
-extern int func_L00_0028EB98(void *, int);
-extern int func_0022ED80(int, int, int);
-extern int func_001F9908(int *);
-extern int func_L00_00258BC8(int, int);
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
+extern void MusicRequestTrack(int, int);
+extern void set_moby_dialogue_record_value(void *, int);
+extern int scale_ticks(int);
+extern int Sound_IsPlaying(void *, int);
+extern int Moby_PlaySound(int, int, int);
+extern int fast_dec_timer(int *);
+extern int rand_range(int, int);
 extern int func_L00_0025EFC0_294040(void *, void *, void *, int *, float *, int, float, float, float) __asm__("func_L00_0025EFC0");
-extern void func_L00_0028EBF0(int);
-extern void func_001F4E08(int);
-extern void func_L03_002C8058(unsigned char *);
-extern int func_L01_00278FA8(void *);
-extern int func_L03_002C8028(char *);
-extern void func_001F9BC0(void *);
+extern void Sound_StopSlot(int);
+extern void FadeToBlack(int);
+extern void set_moby_state_14(unsigned char *);
+extern int is_hero_on_moby(void *);
+extern int is_moby_class_23e_in_state_14(char *);
+extern void clear_u64_value(void *);
 
 /* Update of the Metropolis train locomotive (moby class 822): waits for the hero, rides its path, hands over to the next path. */
 void metropolis_train_locomotive_update(Moby *moby) {
@@ -733,9 +733,9 @@ void moving_platform_small_update(char *moby) {
     func_001F9BD8_295DB0(v0, v0, moby + 0x10);
     func_L00_002617B0_295DB0(d->f60, v0, v1, moby + 0x40);
 }
-extern float func_001F9D10(void *, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_002617B0(char *, void *, void *, void *);
+extern float FastVecDist(void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern void update_entity_matrix(char *, void *, void *, void *);
 
 // Update for a moby that tracks a position and orientation, initialising on state 0 and aiming each frame.
 void metropolis_train_carriage_update(char *moby) {
@@ -773,11 +773,11 @@ void metropolis_train_carriage_update(char *moby) {
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern void func_001FA218(float *, float *);
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
+extern void euler_to_matrix(float *, float *);
+extern void transform_vector(void *, void *, void *);
+extern void FastVecCross(void *, void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
 
 /* Builds two scaled offset vectors from the moby's matrix and adds them to out. */
 void add_moby_rotation_based_offsets(char *moby, float *out) {
@@ -805,8 +805,8 @@ void add_moby_rotation_based_offsets(char *moby, float *out) {
     }
 }
 extern int D_L03_0015F6B0_m __asm__("D_L03_0015F6B0") MACRO_ADDR;
-extern int func_L00_0028EB98(void *, int);
-extern int func_0022ED80(int, int, int);
+extern int Sound_IsPlaying(void *, int);
+extern int Moby_PlaySound(int, int, int);
 
 typedef struct EmitterVoiceData {
     u8 pad_000[0x14A];
@@ -845,12 +845,12 @@ void maintain_emitter_sound_voice(unsigned char *moby) {
         break;
     }
 }
-extern float func_00214158(void);
-extern int func_001F9850(int);
-extern void func_L00_0026DD70(void *, void *, int, int, float, int);
-extern int func_L00_001FEF78(void *);
-extern void func_L03_002BC038(void *, void *, int, int, float, float, int);
-extern char D_L03_00166F40[];
+extern float random_angle_radians(void);
+extern int scale_ticks(int);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
+extern int fast_subtract_rotations_cf(void *);
+extern void spawn_emitter_child_effect(void *, void *, int, int, float, float, int);
+extern char kerwan_camera_pos[];
 
 // Per-class steering update for a level 3 moby: runs its path loops and writes the flag bytes at data+0x12E/0x12F.
 void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
@@ -950,15 +950,15 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
         return;
     }
 }
-extern float func_001FA790(float, float);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA748(float, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9CE8(void *);
-extern float func_L00_0025F368(float);
-extern float D_0015EE60 MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
+extern float FastSubRots(float, float);
+extern float fast_atan2(float, float);
+extern float FastAddRots(float, float);
+extern void FastVecSub(void *, void *, void *);
+extern float vec_length_xy(void *);
+extern float normalize_angle(float);
+extern float frame_scale MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
 // Steers a moby's rotation toward its target using spring-damped angle updates.
 void update_spline_moby_orientation(char *m) {
     struct Moby *moby = (struct Moby *)m;
@@ -987,9 +987,9 @@ void update_spline_moby_orientation(char *m) {
         *(float *)(moby_data + 0x110) * 5.0f * 0.017453292f * g_frame_time_sq,
         *(float *)(moby_data + 0x110) * 0.017453292f * g_frame_time);
 }
-extern int func_001F9938(void *);
-extern float func_001F9D10(void *, void *);
-extern int func_001F9850(int);
+extern int FastDecTimer(void *);
+extern float FastVecDist(void *, void *);
+extern int scale_ticks(int);
 
 // Picks the next animation frame value for a moby in one of several states, storing it at data+0x148.
 void update_emitter_intermittent_sound(char *moby) {
@@ -1027,16 +1027,16 @@ void update_emitter_intermittent_sound(char *moby) {
 typedef int Quad_0029E498 __attribute__((mode(TI)));
 extern char D_0013E650_0029E498[] __asm__("D_0013E650");
 extern unsigned char D_0013D510_0029E498[] __asm__("D_0013D510");
-extern float D_L03_0015F660[] MACRO_ADDR;
-extern void *D_L03_001607F0 MACRO_ADDR;
-extern void *func_L00_0025B478(void *, int, int);
+extern float kerwan_zero_vec[] MACRO_ADDR;
+extern void *kerwan_red_ship_update_slot MACRO_ADDR;
+extern void *MobyGetHitMessage(void *, int, int);
 extern int func_0022EE28_0029E498(int, int, int) __asm__("func_0022EE28");
 extern void func_0022EEB8_0029E498(int, int, void *) __asm__("func_0022EEB8");
 extern void func_L00_00261B00_0029E498(void *, int, int, int, int) __asm__("func_L00_00261B00");
 extern void func_L00_00264DB8_0029E498(int, int) __asm__("func_L00_00264DB8");
-extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float, int, int, int, int);
+extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float, int, int, int, int);
 extern void spawn_debris_0029E498(char *, int, float *, void *, int, int, float, float *, float *, float *) __asm__("func_L00_00265050");
-void func_L03_0029ED60(char *moby);
+void red_ship_1_update(char *moby);
 
 /* Wreck reaction for the Kerwan train and turret classes: when hit by a qualifying attack it bursts into the class debris, starts the shake/smoke effects and arms the respawn countdown (0x14A); once that runs out the moby is hidden again unless the caller keeps it, and switches its update to the car update.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l03/gameplay/entities/00292578.c, FUN_L03_0029d2e0. */
@@ -1139,26 +1139,26 @@ void func_L03_0029E370_9ED60(struct Moby *moby) __asm__("func_L03_0029E370");
 typedef int OvlQuad __attribute__((mode(TI)));
 void func_L03_0029DB88_9ED60(struct Moby *moby) __asm__("func_L03_0029DB88");
 void func_L03_0029DC60_9ED60(char *moby, void *vel_in, int quiet) __asm__("func_L03_0029DC60");
-extern f32 func_001F9CE8(void *);
+extern f32 vec_length_xy(void *);
 void func_L03_0029E1A8_9ED60(struct Moby *m) __asm__("func_L03_0029E1A8");
-void func_L03_0029E498(char *moby, void *vel_in, int flag);
-extern char * D_L03_00160058 MACRO_ADDR;
-extern char * D_L03_001B08B0[];
-extern char D_L03_001E2D18[];
-extern float func_001FA888(int);
-extern float func_002140F8(float, float);
-extern int func_L00_00200290(void *, float);
-extern int func_001FA898(float);
-extern int func_L00_0025A208(int *, int, int, int);
-extern int func_L00_0025A2F0(int *, int, int, int);
-extern int func_L01_00276680(char *, float);
-extern int func_L01_0028C2D8(void *, void *, float);
-extern int func_L01_0028C5F0(void *, int);
-extern int func_L01_0028C640(char *);
-extern void func_L01_0028C1D8(char *);
-extern void func_L01_0028C690(void *out, int *l, int idx, float a, float b);
-extern void func_L01_0028C848(float t, void *out, void *p1, void *p2, void *p3, void *p4);
-extern void func_L01_0028C958(void *, int, void *, float, float);
+void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int flag);
+extern char * kerwan_mobys MACRO_ADDR;
+extern char * kerwan_paths[];
+extern char kerwan_red_ship_no_path_msg[];
+extern float IntToFloat(int);
+extern float random_float_between(float, float);
+extern int FastBSphereCheck(void *, float);
+extern int truncate_float_to_s32(float);
+extern int get_first_moby_in_group(int *, int, int, int);
+extern int get_next_moby_in_group(int *, int, int, int);
+extern int check_scaled_vector_bsphere(char *, float);
+extern int select_point_index_by_distance(void *, void *, float);
+extern int resolve_path_node_index(void *, int);
+extern int advance_path_node_index(char *);
+extern void initialize_path_descriptor(char *);
+extern void compute_path_node_tangent(void *out, int *l, int idx, float a, float b);
+extern void evaluate_cubic_hermite_segment(float t, void *out, void *p1, void *p2, void *p3, void *p4);
+extern void compute_sampled_spline_path_lengths(void *, int, void *, float, float);
 extern void func_L03_0029DA60_9ED60(char *, char *) __asm__("func_L03_0029DA60");
 extern void func_001E9730_9ED60(void *, int, int) __asm__("func_001E9730");
 
@@ -1400,14 +1400,14 @@ int is_moby_class_23d_in_state_5(unsigned char *moby) {
     }
     return 0;
 }
-extern f32 D_0015EE6C MACRO_ADDR;
-extern f32 D_0015EE70 MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
+extern f32 g_frame_time_sq MACRO_ADDR;
 struct AnimSeq;
 int func_L03_002C8068_C6F80(struct Moby *moby) __asm__("func_L03_002C8068");
 typedef int OvlQuad_C6F80 __attribute__((mode(TI)));
 extern int func_001F9908_C6F80(void *) __asm__("func_001F9908");
 extern int func_L00_0025EFC0_C6F80(void *, void *, void *, int *, float *, int, float, float, float) __asm__("func_L00_0025EFC0");
-extern int func_00215570(void *, int);
+extern int is_point_inside_clip_volume(void *, int);
 typedef struct {
     float pos[4];
     float v10[4];
@@ -1472,30 +1472,30 @@ typedef struct {
 } Data2c5bb8;
 extern short D_L03_00160058_C6F80 __asm__("D_L03_00160058");
 extern char D_L03_00161950;
-extern float func_001F9B88(float);
-extern float func_001F9878(float);
-extern float func_00214D28(float *p, float target, float maxstep);
-extern float func_0020D830(void *);
-extern float func_001FA850(float, float);
+extern float FastAbsF(float);
+extern float multiply_global_factor(float);
+extern float ApproachValue(float *p, float target, float maxstep);
+extern float MobyGetFrameValue(void *);
+extern float FastDiffRots(float, float);
 extern int func_001160D8(void);
-extern int func_L00_00259B88(void *, void *, void *, void *, float);
+extern int move_w(void *, void *, void *, void *, float);
 extern int func_L00_0025A060_C6F80(char *m, char *p, char *pos, char *v) __asm__("func_L00_0025A060");
-extern int func_L00_0025D6F0(void *, void *);
-extern int func_L00_002DDEA0(void *, void *);
+extern int mine_fall(void *, void *);
+extern int CarriedMobyUpdate(void *, void *);
 extern int func_L00_00260D30_C6F80(char *, char *, float) __asm__("func_L00_00260D30");
-extern int func_L03_002C8160(int id);
-extern int func_002140B0(int);
-extern void func_L00_002584A8(void *, int, int);
-extern void func_L00_002592B0(char *moby, float *vel, float target, float k, float d, float max);
-extern void func_L00_0025AC00(void *, void *, int, void *, void *, float);
-extern void func_L00_0025B178(void *);
-extern void func_L00_0025E590(void *, void *);
-extern void func_L00_00260108(void *, void *, int, float, float);
-extern void func_L00_00264B40(void *, int, void *, float);
-extern void func_L00_00264EA8(void *, int, int, int, int, int, int);
+extern int is_point_inside_clip_volume_cf(int id);
+extern int random_integer_below(int);
+extern void SetDeathBits(void *, int, int);
+extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
+extern void PostHitMessage(void *, void *, int, void *, void *, float);
+extern void set_ground_height_band(void *);
+extern void StepColorFade(void *, void *);
+extern void SpawnExplosionFx(void *, void *, int, float, float);
+extern void Manipulator_ApplyScale(void *, int, void *, float);
+extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
 extern void func_L01_0026E8E0_C6F80(char *p, void *) __asm__("func_L01_0026E8E0");
 extern void func_L03_002C7DE8_C6F80(struct Moby *moby) __asm__("func_L03_002C7DE8");
-extern void func_00213DE0(void *, int, int, int);
+extern void MobyBlendAnimation(void *, int, int, int);
 extern void func_L00_00265050_C6F80(char *, int, float *, void *, int, int, float, float *, float *, float *) __asm__("func_L00_00265050");
 
 /* Kerwan enemy update: waits at home, walks its path or chases the target picked by FUN_L03_0024e830 (its partner moby data->0x248 is a class 0x23E), attacks in range, returns home, dies (states 8, 9, 21).
@@ -1761,16 +1761,16 @@ void Moby573Update(char *moby) {
     StepColorFade(moby, data->m110);
     ((unsigned char *)moby)[0xBC] = 0;
 }
-extern int func_L03_002C8068(unsigned char *);
-extern int func_001F9908(int *);
-extern void *func_L00_0025B478(void *, int, int);
-extern int func_L00_0025B4D0(void *, void *, void *, int, int *, float *, int, int);
-extern void func_L01_0026F040(int, int);
-extern void func_L03_00251A58(float *, float, float);
-extern void func_L00_0025BBA0(void *, float *, void *, void *);
-extern void func_L00_0025D5B0(float, void *, void *, int, int, int);
-extern void func_L00_0025E4B0(void *, short *);
-extern char *D_L03_00160058 MACRO_ADDR;
+extern int can_release_linked_robot_dog(unsigned char *);
+extern int fast_dec_timer(int *);
+extern void *MobyGetHitMessage(void *, int, int);
+extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
+extern void MobyGroup_SetByteBC(int, int);
+extern void trooper_set_knockback(float *, float, float);
+extern void HeadingFromVector(void *, float *, void *, void *);
+extern void InitKnockback(float, void *, void *, int, int, int);
+extern void RerollEffectCounter(void *, short *);
+extern char *kerwan_mobys MACRO_ADDR;
 typedef int L03Quad __attribute__((mode(TI)));
 typedef struct RobotDogHit {
     u8 pad_00[0x10];
@@ -1839,8 +1839,8 @@ int is_moby_class_23e_in_state_9(unsigned char *moby) {
     }
     return 0;
 }
-extern int func_L03_002C6F40(unsigned char *);
-extern int func_L03_002C8120(unsigned char *);
+extern int is_moby_class_23d_in_state_5(unsigned char *);
+extern int is_moby_class_23e_in_state_9(unsigned char *);
 
 /* scans class instances for either predicate */
 int is_point_inside_clip_volume_cf(int id) {
@@ -1855,8 +1855,8 @@ int is_point_inside_clip_volume_cf(int id) {
 absent:
     return 0;
 }
-extern char *D_L03_00160058 MACRO_ADDR;
-extern void func_00213DE0(void *, int, int, int);
+extern char *kerwan_mobys MACRO_ADDR;
+extern void MobyBlendAnimation(void *, int, int, int);
 
 // Checks whether a moby can start an attack on a target and switches its state.
 int try_start_kerwan_path_enemy_heading_turn(float ang, unsigned char *moby, char *target) {
@@ -1948,44 +1948,44 @@ typedef struct Data2C8398 {
     int i298;
     int i29C;
 } Data2C8398;
-extern void func_L00_00260D30(void *, void *, float);
-extern void func_L00_00264BB0(void *, float);
-extern void func_L03_002CA970(void *);
-extern void func_L00_00263950(char *, char *, int, float, float);
-extern void func_L01_0026E8E0(char *p);
-extern int func_L03_002C8160(int);
-extern int func_00215570(void *arg0, int arg1);
-extern float func_001FA850(float, float);
-extern void func_L03_002CB068(void *);
-extern int func_00215B18(char *, float);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_L00_001FF240(void *, void *, void *);
-extern void func_L03_00251AC8(void *, void *, int);
-extern void func_L03_002D5650(void *, void *, void *, int, float, float, float);
-extern void func_L00_0025AAC0(void *, void *);
-extern int func_L00_0025A060(char *m, char *p, float *pos, char *v);
-extern void func_L00_0025EFC0(void *, void *, void *, int *, float *, int, float, float, float);
-extern void *func_L00_00265050(char *, int, float *, void *, int, int, float, float *, float *, float *);
-extern float func_L00_0025A748(void *);
-extern float func_00214D28(float *p, float target, float maxstep);
-extern int func_L00_001EFFF0(void *, void *, int, void *, void *);
-extern float func_001FA888(int);
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern int func_L00_00261478(int unused, char *m, char *a, void *b, char *c, void *d);
-extern float func_00214358(void *, int, float);
-extern unsigned char *func_L00_0025D390(int);
-extern void func_L03_00250B88(void *, void *, float);
-extern void func_0020D678(void *);
-extern int D_0015EE84 MACRO_ADDR;
-extern float D_0015EE64 MACRO_ADDR;
+extern void FindNearestTargetMoby(void *, void *, float);
+extern void Manipulator_SetScale(void *, float);
+extern void update_kerwan_path_enemy_hit_reaction(void *);
+extern void EaseManipulatorOffsets(char *, char *, int, float, float);
+extern void MoveCtl_Init(char *p);
+extern int is_point_inside_clip_volume_cf(int);
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
+extern float FastDiffRots(float, float);
+extern void is_value_within_interpolated_window_cf(void *);
+extern int IsFrameWithinWindow(char *, float);
+extern void vec_scale_to_length(void *, void *, float);
+extern void add_vectors(void *, void *, void *);
+extern void emit_radial_particle_burst(void *, void *, int);
+extern void compute_interpolated_record_value_cf(void *, void *, void *, int, float, float, float);
+extern void record_moby_hit(void *, void *);
+extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
+extern void find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
+extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
+extern float probe_ground_height_flag20(void *);
+extern float ApproachValue(float *p, float target, float maxstep);
+extern int coll_line(void *, void *, int, void *, void *);
+extern float IntToFloat(int);
+extern int coll_sphere(float, void *, int, void *);
+extern int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d);
+extern float ProbeGroundHeight(void *, int, float);
+extern unsigned char *GetFlaggedPvarWord(int);
+extern void RotatePointAboutAxis(void *, void *, float);
+extern void DeleteMoby(void *);
+extern int g_current_level_index MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char D_0014171B[];
-extern char *D_L03_001B08B0[];
-extern char D_L03_00173FC0[];
-extern char D_L03_00173FE0[];
-extern char D_L03_00173FF0[];
-extern char D_L03_00174000[];
-extern int D_L03_0015F6A8 MACRO_ADDR;
-extern short D_L03_00161974;
+extern char *kerwan_paths[];
+extern char kerwan_coll_hit[];
+extern char kerwan_coll_hit_point[];
+extern char kerwan_coll_sphere_pos[];
+extern char kerwan_coll_hit_normal[];
+extern int kerwan_game_mode MACRO_ADDR;
+extern short kerwan_path_enemy_spawn_counter;
 extern int D_L03_00161974_i __asm__("D_L03_00161974") MACRO_ADDR;
 
 /* Update for moby class 574 on Kerwan: a path-walking enemy that turns to, chases and attacks its target, jumps, falls under gravity and is replaced by debris when it dies. */

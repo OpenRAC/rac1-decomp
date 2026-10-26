@@ -3,11 +3,11 @@
 #include "callees.h"
 #include "include_asm.h"
 
-extern void func_001FA4A0(void *, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_002153E8(void *, void *);
-extern char *D_L12_00160058 MACRO_ADDR;
+extern void matrix_from_basis_rows(void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern void matrix_to_euler(void *, void *);
+extern char *hoven_mobys MACRO_ADDR;
 
 // Transforms an array of n 0x30-byte entries into the space of a moby, skipping empty slots.
 void capture_linked_moby_relative_transforms(char *moby, char *arr, int n) {
@@ -30,9 +30,9 @@ void capture_linked_moby_relative_transforms(char *moby, char *arr, int n) {
         }
     }
 }
-extern void func_001FA218(float *, float *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_00251E30(void *);
+extern void euler_to_matrix(float *, float *);
+extern void FastVecAdd(void *, void *, void *);
+extern void moby_build_matrix(void *);
 
 // updates attached objects' transforms relative to a parent
 void apply_linked_moby_relative_transforms(char *parent, char *list, int n) {

@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern unsigned char *func_00218928(int);
+extern unsigned char *create_part(int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 // Spawns a particle (type 0x31) with given vectors, colour source and flags.

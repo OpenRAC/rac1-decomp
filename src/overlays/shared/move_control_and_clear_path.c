@@ -20,8 +20,8 @@ void MoveCtl_Init(char *p)
     *(float *)(p + 0x2C) = 0.1f;
 }
 LINKER_REMNANT("asm/overlays", func_L01_0026EFA8);
-extern unsigned short *D_L01_001ABFC0[];
-extern char *D_L01_00160058 MACRO_ADDR;
+extern unsigned short *novalis_moby_groups[];
+extern char *novalis_mobys MACRO_ADDR;
 typedef struct {
     char pad0[0x20];
     signed char state;
@@ -47,8 +47,8 @@ int count_active_moby_group_members(int i, int st) {
     return n;
 }
 INCLUDE_ASM("asm/overlays", func_L01_0026EFDC);
-extern unsigned short *D_L01_001ABFC0[];
-extern char *D_L01_00160058 MACRO_ADDR;
+extern unsigned short *novalis_moby_groups[];
+extern char *novalis_mobys MACRO_ADDR;
 
 // Set byte 0xBC of each entry in a negative-terminated index list.
 void MobyGroup_SetByteBC(int i, int v) {
@@ -78,8 +78,8 @@ void set_moby_list_state(int list, int state)
         } while (*(short *)p++ >= 0);
     }
 }
-extern void func_001F9C48(void *, void *, float);
-extern int func_L00_00200290(char *, float);
+extern void scale_vector(void *, void *, float);
+extern int FastBSphereCheck(char *, float);
 
 /* Run a bounding-sphere check of radius scale at vec scaled down by 1/1024. */
 void check_scaled_vector_bsphere(char *vec, float scale)
@@ -88,12 +88,12 @@ void check_scaled_vector_bsphere(char *vec, float scale)
     scale_vector(scratch, vec, 0.0009765625f);
     FastBSphereCheck(scratch, scale);
 }
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_L00_002629E0(int, void *, void *);
-extern char *D_L01_001B0C30[];
+extern void FastVecSub(void *dst, void *a, void *b);
+extern void FastVecCross(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern int test_path_segment_strict_crossing(int, void *, void *);
+extern char *novalis_paths[];
 typedef int u128 __attribute__((mode(TI)));
 
 // Returns a bitmask of the table's spheres that no listed object touches, testing swept offsets.
@@ -159,7 +159,7 @@ int expand_path_mask_to_intersection(int idx, int a, int mask)
     return 0;
 }
 LINKER_REMNANT("asm/overlays", func_L01_00277CA0);
-int func_L01_00277C30(int idx, int a, int mask);
+int expand_path_mask_to_intersection(int idx, int a, int mask);
 typedef int OvlQuad __attribute__((mode(TI)));
 typedef struct {
     s32 count;
@@ -260,11 +260,11 @@ typedef struct {
     char pad1[0x1E];
     char f;
 } GG;
-extern GG D_L01_0016CD60;
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9BC0(float *);
-extern float func_001FA748(float, float);
+extern GG fx_cutscene;
+extern float FastCos(float);
+extern float FastSin(float);
+extern void clear_u64_value(float *);
+extern float FastAddRots(float, float);
 
 /* Places the marker at a moby's position offset along its heading by scale. */
 void PlaceMarkerAheadOfMoby(float scale, char *moby) {
@@ -275,8 +275,8 @@ void PlaceMarkerAheadOfMoby(float scale, char *moby) {
     clear_u64_value(fx_cutscene.q);
     fx_cutscene.a = FastAddRots(*(float *)(moby + 0x48), 3.14159274101257324f);
 }
-extern float func_001F9D48(void *, void *);
-extern void func_L00_00261B00(void *, int, int, int, int);
+extern float vec_distance_xy(void *, void *);
+extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
 extern char D_0013E633[];
 
 // Breaks an object into fragments, with a flag when it is near the origin.
@@ -289,8 +289,8 @@ void spawn_proximity_gated_bolts(char *moby)
     spawn_randomized_bolt_drop(moby, 4, 7, r, -1);
 }
 LINKER_REMNANT("asm/overlays", func_L01_00279AC0);
-extern char *func_0020D348(int);
-extern void func_L00_00251E30(void *);
+extern char *CreateMoby(int);
+extern void moby_build_matrix(void *);
 
 /* spawns a moby of a class copying the source moby's placement, scaled */
 void spawn_moby_from_placement(char *src, int oClass) {

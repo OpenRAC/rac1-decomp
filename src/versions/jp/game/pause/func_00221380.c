@@ -5,7 +5,7 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
     char *text;
     int state = menu->state;
     long texture;
-    extern void func_001F75D0(FontWindow_21380 *, long, char *, int);
+    extern void font_print_window_small(FontWindow_21380 *, long, char *, int);
     int first;
     unsigned char *tp;
 

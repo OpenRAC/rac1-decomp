@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern short *D_L13_001ABE40[];
+extern short *gemlik_moby_groups[];
 extern char *D_L13_00160058_m __asm__("D_L13_00160058") MACRO_ADDR;
 
 // Sets flag/bit fields on every moby in a zero-terminated index list.

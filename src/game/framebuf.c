@@ -10,40 +10,40 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
-extern int D_0018A3B0[];
-extern void func_001F99B0();
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
-extern char D_001940C0[];
-extern long D_00151888[3];
-extern int D_0015F6FC;
-extern short D_0015F534;
-extern void func_001FB530(void);
-extern void func_001F3D78(void);
-extern int D_0015F564;
-extern int D_0018DD40[];
-extern int D_0018DC40[];
-extern short D_0015F59C;
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
-extern void func_001F6668(void *, void *, void *, void *, void *, int,
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
+extern int draw_config[];
+extern void FastMemSet();
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
+extern char occl_visibility[];
+extern long gs_display_settings[3];
+extern int space_load_in_progress;
+extern short draw_enable_mask;
+extern void append_gif_transfer_packet(void);
+extern void DrawDebugProfiler(void);
+extern int draw_callback_count;
+extern int draw_callback_args[];
+extern int draw_callback_funcs[];
+extern short GlobalStateFlag;
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
+extern void FontPrint(void *, void *, void *, void *, void *, int,
                           unsigned char *);
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
-extern int func_001F4868(int);
-extern void func_001FB498(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern int D_0018E840[];
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
+extern int GetEffectTex(int);
+extern void PutDrawBufferLarge(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern int bit_swap_lut[];
 
 ASM_FUNC("asm/handwritten/text", func_001FAA28);
 
@@ -115,17 +115,17 @@ typedef struct {
     int reserved170;            /* 0x170 */
 } FsAa_FAB40;
 
-extern FsAa_FAB40 D_00151880;
-extern void *D_0015EFB8 MACRO_ADDR;
-extern int D_0015EF80 MACRO_ADDR;
-extern int D_0015EF84 MACRO_ADDR;
-extern int D_0015EF88 MACRO_ADDR;
-extern char D_0013CD90[];
-extern char D_0013CED0[];
-extern char D_00151A00[];
-extern char D_00151C60[];
-extern char D_00151EF0[];
-extern char D_00152140[];
+extern FsAa_FAB40 fs_aa_buffer;
+extern void *active_fs_aa_buffer MACRO_ADDR;
+extern int display_buffer_address MACRO_ADDR;
+extern int draw_buffer_address MACRO_ADDR;
+extern int depth_buffer_address MACRO_ADDR;
+extern char first_clear_packet[];
+extern char second_clear_packet[];
+extern char fs_aa_draw_packet[];
+extern char fs_aa_transfer_packet[];
+extern char fs_aa_resample_packet[];
+extern char fs_aa_clear_packet[];
 extern void func_00121DC8(void *, short, short, short, short, short);
 extern int func_001222C8(void *, short, short, short, short, short);
 
@@ -295,14 +295,14 @@ void SetupFS_AA_buffer(int display_width, int display_height, int storage_width,
     }
 }
 
-extern long D_00152178 NOT_SDA;
+extern long background_rgbaq NOT_SDA;
 
 /* Set the background clear colour from 8-bit red, green and blue. */
 void SetBackgroundColor(int arg0, int arg1, int arg2) {
     background_rgbaq = (long)arg0 | ((long)arg1 << 8) | ((long)arg2 << 16) | 0x80000000L;
 }
 
-extern void *D_0015EFB8 MACRO_ADDR;
+extern void *active_fs_aa_buffer MACRO_ADDR;
 extern void func_00122140(void *);
 
 /* PutDispBuffer(void) */
@@ -310,7 +310,7 @@ void PutDispBuffer(void) {
     func_00122140(active_fs_aa_buffer);
 }
 
-extern int *D_00161000 MACRO_ADDR;
+extern int *g_render_packet_cursor MACRO_ADDR;
 extern void func_001224B0(void *);
 
 /* PutDrawBufferLarge: queue the draw environment at D_0015EFB8+0x30 as a
@@ -327,7 +327,7 @@ void PutDrawBufferLarge(void) {
     }
 }
 
-extern char D_00152140[];
+extern char fs_aa_clear_packet[];
 
 /* Appends a DMA tag pair (0x30000015 / &D_00152140 / 0 / 0x50000015) to
    the packet buffer D_00161000 points at, if there is one. */
@@ -361,7 +361,7 @@ typedef struct {
     short zbp;      /* 0x16E */
 } FrameCfg;
 extern FrameCfg D_00151880_f __asm__("D_00151880");
-extern long D_0015EFD0 MACRO_ADDR;
+extern long capture_texture_tex0 MACRO_ADDR;
 /* sceGsSetDefDrawEnv */
 extern int func_001222C8(void *, short, short, short, short, short);
 
@@ -431,7 +431,7 @@ void setup_render_target(int a, int b, int c) {
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
 __asm__(".section .text\n\tnop\n");
 
-extern char D_00151A00[];
+extern char fs_aa_draw_packet[];
 
 /* AA_BlurPass(void) */
 void AA_BlurPass(void) {
@@ -442,7 +442,7 @@ void AA_BlurPass(void) {
     g_render_packet_cursor += 4;
 }
 
-extern char D_00151C60[];
+extern char fs_aa_transfer_packet[];
 
 /* Append a DMA tag that calls the frame AA transfer packet to the render packet. */
 void append_palette_transfer_packet(void) {
@@ -508,8 +508,8 @@ void draw_centered_capture_background(int w, int h) {
     g_render_packet_cursor = g_render_packet_cursor + (n * 4 + 20);
 }
 
-extern void func_00234C50(int);
-extern void func_00234C98(int, long);
+extern void vu1_add_vif_code(int);
+extern void VU1_addGSregister(int, long);
 
 /* Draws an alpha-blended sprite through a GIF packet appended to
    D_00161000 (a DMA/VIF header, TEST_1 0x33003, then PRIM 0x106 with

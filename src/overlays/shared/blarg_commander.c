@@ -4,13 +4,13 @@
 #include "include_asm.h"
 #include "moby.h"
 
-extern void func_00234C98(int, long);
-extern void func_001F7868(void);
-extern int func_L00_00200290(char *, float);
-extern void func_L12_002677B4(int, int, int, int);
-extern void func_L01_0021F9C8(int, int, int, int, int, int);
-extern int *D_L12_00161240 MACRO_ADDR;
-extern char D_L12_001CBA20[];
+extern void VU1_addGSregister(int, long);
+extern void font_queue_vu_state(void);
+extern int FastBSphereCheck(char *, float);
+extern void compute_reflection_env_uvs(int, int, int, int);
+extern void emit_textured_strip_packet(int, int, int, int, int, int);
+extern int *hoven_dma_packet_cursor MACRO_ADDR;
+extern char hoven_effect_list_setup_packet[];
 
 /* draw a list of effect entries into the scratchpad */
 void draw_textured_effect_list(void *list_, int count, int tex0, int tex1) {
@@ -47,11 +47,11 @@ typedef struct {
     char pad46[0x132];
     char *mobys[1];
 } Level12MobyList;
-extern void func_0020D960(char *, int, unsigned char *);
-extern int D_L12_0015F6A8 MACRO_ADDR;
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
-extern Level12MobyList D_L12_0016CD60;
-extern unsigned char D_L12_0017C940[];
+extern void AttachManipulator(char *, int, unsigned char *);
+extern int hoven_cinematic_mode MACRO_ADDR;
+extern unsigned char gCheats[] MACRO_ADDR;
+extern Level12MobyList hoven_cutscene_state;
+extern unsigned char hoven_big_head_cheat_manipulator[];
 
 /* Re-arms the matching entry of the moby list when the level mode is 2 (func_L02_002E2110 with argument 1). */
 void apply_npc_big_head_cheat(char *moby) {
@@ -71,17 +71,17 @@ void apply_npc_big_head_cheat(char *moby) {
         }
     }
 }
-extern int func_001F4868(int);
-extern void func_L12_002BD3D0(void *, int, int, int);
-extern char D_L12_001F5740[];
+extern int GetEffectTex(int);
+extern void draw_textured_effect_list(void *, int, int, int);
+extern char hoven_textured_effect_entries[];
 
 /* calls func_L12_002BD3D0 with two looked-up ids */
 void draw_level_12_effects(void) {
     draw_textured_effect_list(hoven_textured_effect_entries, 0x2F, GetEffectTex(0x2C), GetEffectTex(0x2D));
 }
 typedef int u128_8670 __attribute__((mode(TI)));
-extern char *func_0020D348(int);
-extern void func_L00_00251E30(void *);
+extern char *CreateMoby(int);
+extern void moby_build_matrix(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_00308670.c, FUN_L12_00308670. */
 char *create_class_55b_moby_from_source(char *a0)
@@ -102,17 +102,17 @@ char *create_class_55b_moby_from_source(char *a0)
     }
     return (char *)m;
 }
-extern float D_0015EE70 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern int func_002140B0(int);
-extern void func_0022ED80(int, int, void *);
-extern int func_001FA898(float);
-extern float func_001FA748(float, float);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_L00_0025BBA0(void *, float *, void *, void *);
-extern void func_L00_0025D5B0(float, void *, void *, int, int, int);
-extern void func_00213DE0(void *, int, int, int);
+extern float g_frame_time_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern int random_integer_below(int);
+extern void Moby_PlaySound(int, int, void *);
+extern int truncate_float_to_s32(float);
+extern float FastAddRots(float, float);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void HeadingFromVector(void *, float *, void *, void *);
+extern void InitKnockback(float, void *, void *, int, int, int);
+extern void MobyBlendAnimation(void *, int, int, int);
 typedef struct {
     u8 pad0[0x20];
     Vec4f arc; /* 0x20: filled by FUN_L00_0025c558 */
@@ -172,11 +172,11 @@ void start_blarg_commander_knockback(void *unused, struct Moby *m) {
     MobyBlendAnimation(m, 1, 0, 0);
 }
 typedef struct { char pad[0x40]; float vx, vy; } MO;
-extern int func_L00_0025D6F0(void *, void *);
+extern int mine_fall(void *, void *);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int,
                                   float, float, float, float, int, float, int, int, int, int)
     __asm__("func_L00_0025F4A8");
-extern void func_0020D678(void *);
+extern void DeleteMoby(void *);
 
 // updates a moby's velocity and either spawns an effect and deletes itself or expires by height
 void blarg_commander_update(char *m) {

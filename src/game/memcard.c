@@ -10,116 +10,116 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
-extern int D_0018A3B0[];
-extern void func_001F99B0();
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
-extern char D_001940C0[];
-extern long D_00151888[3];
-extern int D_0015F6FC;
-extern short D_0015F534;
-extern void func_001FB530(void);
-extern void func_001F3D78(void);
-extern int D_0015F564;
-extern int D_0018DD40[];
-extern int D_0018DC40[];
-extern short D_0015F59C;
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
-extern void func_001F6668(void *, void *, void *, void *, void *, int,
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
+extern int draw_config[];
+extern void FastMemSet();
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
+extern char occl_visibility[];
+extern long gs_display_settings[3];
+extern int space_load_in_progress;
+extern short draw_enable_mask;
+extern void append_gif_transfer_packet(void);
+extern void DrawDebugProfiler(void);
+extern int draw_callback_count;
+extern int draw_callback_args[];
+extern int draw_callback_funcs[];
+extern short GlobalStateFlag;
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
+extern void FontPrint(void *, void *, void *, void *, void *, int,
                           unsigned char *);
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
-extern int func_001F4868(int);
-extern void func_001FB498(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern int D_0018E840[];
-extern long D_00152178 NOT_SDA;
-extern int func_001FE4D0(void);
-extern char D_00199A68[];
-extern short D_0015F780;
-extern int D_001941CC NOT_SDA;
-extern int D_0019A4E8 NOT_SDA;
-extern int func_001FF668(int);
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
+extern int GetEffectTex(int);
+extern void PutDrawBufferLarge(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern int bit_swap_lut[];
+extern long background_rgbaq NOT_SDA;
+extern int Help_FindIndex(void);
+extern char s_paradox_this_message_does_not[];
+extern short help_msgs;
+extern int hud_heap_base NOT_SDA;
+extern int hud_state NOT_SDA;
+extern int Hud_GetIconIndex(int);
 typedef struct {
     char b[0x13];
 } Cfg13;
-extern Cfg13 D_0019A540 NOT_SDA;
-extern Cfg13 D_001E7DD8 NOT_SDA;
+extern Cfg13 message_text_buffer NOT_SDA;
+extern Cfg13 message_too_long_label NOT_SDA;
 extern int func_00116810(void);
 extern void func_001166FC(Cfg13 *, void *);
-extern short D_0015F9D0;
-extern void func_00201960(int, int, int, int, int);
-extern void func_002023E0(int);
-extern void func_002027C0(int);
-extern void func_00204FC0(void *);
-extern int D_0018CC20 NOT_SDA;
-extern int D_001941C8 NOT_SDA;
-extern int D_0016100C;
-extern int D_001A0468[];
-extern void func_00205830(int a, int b);
+extern short ResourceCounter;
+extern void draw_stretchable_ui_frame(int, int, int, int, int);
+extern void CreatePointLight(int);
+extern void DetachPointLight(int);
+extern void update_world_object_animation(void *);
+extern int render_sequence NOT_SDA;
+extern int vu1_chain_buffer_2 NOT_SDA;
+extern int current_vu_chain;
+extern int map_slot_use[];
+extern void move_map_entry_slot(int a, int b);
 extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
-extern int D_001A01F0[];
-extern int *D_001602E0;
-extern unsigned char D_0013D49C NOT_SDA;
-extern unsigned char D_0013D49D NOT_SDA;
-extern unsigned char D_0013D4A5 NOT_SDA;
-extern short D_0015FE24;
-extern unsigned char D_0013D4AC NOT_SDA;
-extern unsigned char D_0013D4AD NOT_SDA;
-extern unsigned char D_0013D4AE NOT_SDA;
-extern unsigned char D_0013D4AF NOT_SDA;
-extern unsigned char D_0013D4B5 NOT_SDA;
+extern int level_map_selection[];
+extern int *menu_level_indices;
+extern unsigned char menu_item_enabled_0 NOT_SDA;
+extern unsigned char g_menu_item_enabled_1 NOT_SDA;
+extern unsigned char menu_item_enabled_9 NOT_SDA;
+extern short menu_selection_count;
+extern unsigned char menu_item_enabled_16 NOT_SDA;
+extern unsigned char menu_item_enabled_17 NOT_SDA;
+extern unsigned char menu_item_enabled_18 NOT_SDA;
+extern unsigned char menu_item_enabled_19 NOT_SDA;
+extern unsigned char menu_item_enabled_25 NOT_SDA;
 extern int D_001A04B4 NOT_SDA;
-extern unsigned char D_0013D4C5 NOT_SDA;
-extern int D_001414DC NOT_SDA;
-extern unsigned char D_0013D4C0 NOT_SDA;
-extern unsigned char D_0013D4C1 NOT_SDA;
-extern unsigned char D_0013D4C2 NOT_SDA;
-extern unsigned char D_0013D4D3 NOT_SDA;
-extern unsigned char D_0013D4D4 NOT_SDA;
-extern unsigned char D_0013D4D5 NOT_SDA;
-extern unsigned char D_0013D4E0;
-extern unsigned char D_0013D4DC NOT_SDA;
-extern unsigned char D_0013D4DD NOT_SDA;
-extern unsigned char D_0013D4DE NOT_SDA;
-extern unsigned char D_0013D4DF NOT_SDA;
-extern unsigned char D_0013D4E1 NOT_SDA;
-extern unsigned char D_0013D4E9 NOT_SDA;
-extern unsigned char D_0013D502 NOT_SDA;
-extern unsigned char D_0013D503 NOT_SDA;
-extern unsigned char D_0013D504 NOT_SDA;
-extern unsigned char D_0013D505 NOT_SDA;
-extern unsigned char D_0013D50F NOT_SDA;
-extern int D_0013D668[];
-extern void func_00209040(void);
-extern int func_001FAA28(void *dst, int size, int a, int b);
-extern void func_00208860(void *dst);
-extern short D_0015EE84;
+extern unsigned char menu_item_enabled_41 NOT_SDA;
+extern int hero_control_mode NOT_SDA;
+extern unsigned char menu_item_enabled_36 NOT_SDA;
+extern unsigned char menu_item_enabled_37 NOT_SDA;
+extern unsigned char menu_item_enabled_38 NOT_SDA;
+extern unsigned char menu_item_enabled_55 NOT_SDA;
+extern unsigned char menu_item_enabled_56 NOT_SDA;
+extern unsigned char menu_item_enabled_57 NOT_SDA;
+extern unsigned char menu_item_enabled_68;
+extern unsigned char menu_item_enabled_64 NOT_SDA;
+extern unsigned char menu_item_enabled_65 NOT_SDA;
+extern unsigned char menu_item_enabled_66 NOT_SDA;
+extern unsigned char menu_item_enabled_67 NOT_SDA;
+extern unsigned char menu_item_enabled_69 NOT_SDA;
+extern unsigned char menu_item_enabled_77 NOT_SDA;
+extern unsigned char menu_item_enabled_102 NOT_SDA;
+extern unsigned char menu_item_enabled_103 NOT_SDA;
+extern unsigned char menu_item_enabled_104 NOT_SDA;
+extern unsigned char menu_item_enabled_105 NOT_SDA;
+extern unsigned char menu_item_enabled_115 NOT_SDA;
+extern int max_map_coverage_size[];
+extern void DebugEnter_Nop(void);
+extern int compress_map_coverage(void *dst, int size, int a, int b);
+extern void downsample_map_coverage(void *dst);
+extern short g_current_level_index;
 extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
-extern int D_001A0218[] NOT_SDA;
-extern void func_00208458(void *, unsigned char *, int);
-extern void func_00208688(void *, unsigned char *);
-extern char D_0013D390[];
-extern short D_0015EFB0;
-extern int D_0015EFB4;
+extern int map_coverage_active[] NOT_SDA;
+extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
+extern void expand_map_coverage(void *, unsigned char *);
+extern char memory_card_state[];
+extern short mode_freeze_state;
+extern int mode_freeze_flags;
 
-extern char D_0013D2D0[];
-extern char D_0013D2E8[];
-extern char D_0013D300[];
-extern char D_0013D320[];
-extern char D_0013D340[];
-extern char D_0013D370[];
+extern char memcard_save_dir_name[];
+extern char memcard_dir_search_path[];
+extern char memcard_icon_path_a[];
+extern char memcard_icon_path_b[];
+extern char memcard_icon_path_c[];
+extern char memcard_slot_path_format[];
 extern void func_00116B00(void *, void *, int);
 
 /* Builds a 13-byte name/version stamp in D_0013D2D0 from the record's
@@ -156,7 +156,7 @@ extern int func_00124068(int, int, int *, int *, int *);
 extern int func_00123F30(int, int *, int *);
 extern void func_00122598(int);
 extern int func_001241F0(int, int, char *, int, int, void *);
-extern char D_0013D2D0[];
+extern char memcard_save_dir_name[];
 extern int D_0013D390_i[] __asm__("D_0013D390");
 
 /* The comparison is bound to a local before the shift:
@@ -185,12 +185,12 @@ int check_memory_card(void) {
     return 0;
 }
 
-extern int D_001A05C0[];
-extern int D_001A08C0[];
-extern int func_0020BAD8(int *p);
-extern int func_0020BD70(void *src, int i, int *table);
-extern int func_001E9730();
-extern char D_001E8500[];
+extern int mc_gamedata[];
+extern int mc_leveldata[];
+extern int memcard_GetDataSize(int *p);
+extern int memcard_RestoreData(void *src, int i, int *table);
+extern int STUB_printf();
+extern char memcard_restore_size_mismatch_msg[];
 
 /* The counterpart of func_0020BA00 below: both descriptor sizes are
    recomputed and checked against the ones stored in the blob, then the
@@ -224,14 +224,14 @@ void memcard_RestoreGame(int arg0) {
  * three globals across func_00209CE8 and the $at store of D_0015EE84,
  * is instruction-for-instruction retail.
  */
-extern int D_00137C80[];
-extern void func_001FDF10(int, void *, void *);
-extern void func_00217748(int);
-extern void func_002176C8(int, int, int);
-extern void func_00209CE8(int);
-extern int D_0015EEE8 MACRO_ADDR;
-extern int D_0015EEEC MACRO_ADDR;
-extern int D_0015EEF0 MACRO_ADDR;
+extern int disc_table[];
+extern void calculate_ring_buffer_bounds(int, void *, void *);
+extern void update_audio_stream_until_idle(int);
+extern void Load(int, int, int);
+extern void memcard_RestoreGame(int);
+extern int playback_mode MACRO_ADDR;
+extern int music_volume MACRO_ADDR;
+extern int sound_volume MACRO_ADDR;
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
 
 extern int func_002176C8_i(int, int, int) __asm__("func_002176C8");
@@ -260,7 +260,7 @@ void load_and_initialize_level_chunk(void) {
 /* Adapted from Lombyte's project (GPL-3.0): src/storage/memory_card/memcard_update_state.c; PAL directory validation reconstructed from assembly. */
 typedef struct { u8 pad0[16]; u32 size; u8 pad14[12]; char name[32]; } McDirEntry_209E68;
 extern McDirEntry_209E68 mc_directory[] __asm__("D_001A0980");
-extern char D_0013D315[], D_0013D335[], D_0013D355[], D_0015FF58[], D_0015FF60[];
+extern char D_0013D315[], D_0013D335[], D_0013D355[], memcard_slot_file_prefix[], memcard_slot_file_suffix[];
 extern void mc_memset(void *, s32, s32) __asm__("func_001153FC");
 extern s32 mc_strcmp(char *, char *) __asm__("func_001165B8");
 extern s32 mc_strncmp(char *, char *, s32) __asm__("func_00116948");
@@ -1379,10 +1379,10 @@ void memcard_update_state(void) {
     }
 }
 
-extern int D_001A05C0[];
-extern int D_001A08C0[];
-extern int func_0020BAD8(int *p);
-extern int func_0020BBC8(void *dst, int i, int *table);
+extern int mc_gamedata[];
+extern int mc_leveldata[];
+extern int memcard_GetDataSize(int *p);
+extern int memcard_PrepData(void *dst, int i, int *table);
 
 /* Serialise both descriptor tables into the caller's buffer: the two
    sizes first, then one blob for D_001A05C0 and twenty for D_001A08C0,
@@ -1408,8 +1408,8 @@ extern int func_001236F0(void);
    be edited; an unprototyped declaration satisfies all call sites
    with identical codegen. (Only varargs *definitions* need stdarg.h;
    calling one is fine.) */
-extern int func_001E9730();
-extern char D_001E8690[];
+extern int STUB_printf();
+extern char memcard_error_message[];
 
 /* memcard_Init */
 void memcard_Init(void) {
@@ -1469,8 +1469,8 @@ int memcard_TestChecksum(char *buf) {
     return result;
 }
 
-extern void func_001F9A00(void *dst, void *src, int len);
-extern int func_0020BB10(void *data, int len);
+extern void copy_memory_aligned(void *dst, void *src, int len);
+extern int memcard_Checksum(void *data, int len);
 
 /* Walks a descriptor table (four words per entry: base, element size,
    tag, unused) and writes one { tag, size, data } record per entry into
@@ -1556,7 +1556,7 @@ typedef struct {
     char pad[0x14];
 } McSlot;         /* 0xC0 */
 extern McSlot D_0013D390_s[] __asm__("D_0013D390");
-extern int func_0020BB88(char *); /* memcard_TestChecksum */
+extern int memcard_TestChecksum(char *); /* memcard_TestChecksum */
 
 /* memcard_RestoreInfo(char *, int, int). Advancing the buf parameter
    itself and copying the name with memcpy both matter for retail's
@@ -1597,7 +1597,7 @@ typedef struct {
     int cur;              /* 0xCC */
 } RestoreCardState;
 extern RestoreCardState D_0013D390_c __asm__("D_0013D390");
-extern short D_0015FF50;               /* SDA, gp -0x6DB0: mismatch count */
+extern short memcard_restore_mismatch_count;               /* SDA, gp -0x6DB0: mismatch count */
 extern int func_001151B4(const void *, const void *, int); /* memcmp */
 
 /* memcard_RestoreData: unpack the save blocks after buf's 8-byte header
@@ -1678,17 +1678,17 @@ int memcard_RestoreData(void *src, int slot, int *table) {
 
 extern void func_00121A80(void *);
 extern void func_0012D818(void *);
-extern void func_00208FA0(void);
-extern void func_00208338(void *);
-extern char D_0015EF98[] MACRO_ADDR;
-extern char D_00141FC0[];
-extern unsigned char D_0013DE60[];
-extern int D_0015EE98 MACRO_ADDR;
-extern int D_0015EF24 MACRO_ADDR;
+extern void copy_level_object_positions(void);
+extern void save_map_coverage(void *);
+extern char save_clock_time[] MACRO_ADDR;
+extern char level_map_coverage[];
+extern unsigned char level_visit_state[];
+extern int gBolts MACRO_ADDR;
+extern int game_clock_ticks MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
 extern int D_0015EFB4_m __asm__("D_0015EFB4") MACRO_ADDR;
-extern char D_0014EFD0[];
-extern char D_001507D0[];
+extern char memcard_game_data_buffer[];
+extern char memcard_level_data_buffer[];
 
 /* memcard_Save(slot, flags): starts the save (func_00121A80/func_0012D818
    on D_0015EF98, func_00208FA0, func_00208338 on the D_00141FC0 page for

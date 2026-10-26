@@ -70,8 +70,8 @@ struct Moby *spawn_class_b8_projectile(struct Moby *owner, void *pos, void *dir,
     return m;
 }
 typedef u32 u128_B0290 __attribute__((mode(TI), aligned(16)));
-extern struct Hero D_0013F450;
-extern void func_001F9BD8(void *, void *, void *);
+extern struct Hero g_hero;
+extern void FastVecAdd(void *, void *, void *);
 typedef struct {
     Vec4f dir; /* 0x00: travel direction (also gives the yaw) */
     f32 spin; /* 0x10: random turn rate, +-90 degrees per frame unit */
@@ -83,9 +83,9 @@ typedef struct {
     s32 unk24;
     s32 unk28;
 } ShotVars;
-extern float func_002140F8(float, float);
-extern float func_001F9D10(void *, void *);
-extern float D_0015EE6C MACRO_ADDR;
+extern float random_float_between(float, float);
+extern float FastVecDist(void *, void *);
+extern float g_frame_time MACRO_ADDR;
 typedef struct {
     union {
         u128_B0290 q;
@@ -99,22 +99,22 @@ typedef struct {
     f32 radius; /* 0x1C */
     s32 unk20;
 } CollisionProbe;
-extern short D_0015EE84;
-extern f32 D_L04_00166FC0[];
-extern u128_B0290 D_L04_00174060;
-extern u8 D_L04_00174080[];
-extern f32 func_001F9D48(void *, void *);
-extern s32 func_0022ED80(s32, s32, struct Moby *);
-extern void func_L00_001FF500(void *, void *, f32);
-extern s32 func_001F9938(s16 *);
-extern void func_0020D678(struct Moby *);
-extern s32 func_L00_001EFFF0(void *, void *, s32, struct Moby *, CollisionProbe *);
-extern void func_L00_001FF610(void *, void *, void *);
-extern f32 func_001F9CB8(void *);
-extern void func_L00_001FF4B0(void *, void *, f32);
-extern s32 func_001F9850(s32);
-extern s32 func_L00_00258BC8(s32, s32);
-extern void func_L00_0026EBC0(void *, void *, u32, s32, f32);
+extern short g_current_level_index;
+extern f32 eudora_camera_pos[];
+extern u128_B0290 eudora_coll_hit_point;
+extern u8 eudora_coll_hit_normal[];
+extern f32 vec_distance_xy(void *, void *);
+extern s32 Moby_PlaySound(s32, s32, struct Moby *);
+extern void vec_set_length_xy(void *, void *, f32);
+extern s32 FastDecTimer(s16 *);
+extern void DeleteMoby(struct Moby *);
+extern s32 coll_line(void *, void *, s32, struct Moby *, CollisionProbe *);
+extern void vec_reflect(void *, void *, void *);
+extern f32 FastVecLength(void *);
+extern void vec_scale_to_length(void *, void *, f32);
+extern s32 scale_ticks(s32);
+extern s32 rand_range(s32, s32);
+extern void PartType27Spawn(void *, void *, u32, s32, f32);
 
 /* Update of the class 0xB8 shot (spawned by FUN_L04_002aee30): moves along its direction, plays its sound once it starts moving away from the hero within 3 units, dies off the arena, and on a hit (probing for its owner's targets until the timer runs out) bursts into five sparks and is removed.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002aee30.c, FUN_L04_002af058. */
@@ -198,10 +198,10 @@ void update_class_b8_projectile(struct Moby *m)
     }
     DeleteMoby(m);
 }
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_L04_002C5560(void *, void *, void *, int, float, float);
-extern char D_L04_001D2F60[];
-extern short D_L04_00161940;
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void spawn_smoke_puff_trail_with_endpoint_bursts(void *, void *, void *, int, float, float);
+extern char eudora_puff_segment_points[];
+extern short eudora_segment_puff_size_scale;
 
 /* Builds two direction vectors from a table and relative to a moby, then hands them to the L04 effect spawner. */
 void spawn_moby_table_segment_puffs(char *a, int i, int j, int k) {
@@ -219,15 +219,15 @@ void spawn_moby_table_segment_puffs(char *a, int i, int j, int k) {
     FastVecAdd(v10, v10, a + 0x10);
     spawn_smoke_puff_trail_with_endpoint_bursts(a, v0, v10, k, *(float *)(pi + 0xC) * *(float *)&eudora_segment_puff_size_scale, *(float *)(pj + 0xC) * *(float *)&eudora_segment_puff_size_scale);
 }
-extern short D_L04_00161950;
-extern short D_L04_00161954;
-extern short D_L04_00161958;
-extern short D_L04_0016195C;
-extern short D_L04_00161960;
-extern short D_L04_00161964;
-extern short D_L04_00161968;
-extern short D_L04_0016196C;
-extern void func_L04_002C5938(char *a, int i, int j, int k);
+extern short eudora_puff_count_a;
+extern short eudora_puff_count_b;
+extern short eudora_puff_count_c;
+extern short eudora_puff_count_d;
+extern short eudora_puff_count_e;
+extern short eudora_puff_count_f;
+extern short eudora_puff_count_g;
+extern short eudora_puff_count_h;
+extern void spawn_moby_table_segment_puffs(char *a, int i, int j, int k);
 
 // Calls the pair helper for each edge index pair with a per-pair global value.
 void spawn_moby_table_puff_pattern(char *a)
@@ -250,7 +250,7 @@ void spawn_moby_table_puff_pattern(char *a)
 typedef int u128 __attribute__((mode(TI)));
 
 extern char *func_0020D348_m(int) __asm__("func_0020D348");
-extern void func_L00_00251E30(void *);
+extern void moby_build_matrix(void *);
 
 /* Spawns moby class 0x1F3, copies the 16-byte position from b and a few
    fields from a into it, hands the new moby to func_L00_00251E30. */

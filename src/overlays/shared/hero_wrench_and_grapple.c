@@ -8,9 +8,9 @@
 
 LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
 extern char D_0013E633[];
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_L02_0017C438[];
-extern void func_L00_00211F80(int, float);
+extern float g_frame_time MACRO_ADDR;
+extern float aridia_hero_speed_bands[];
+extern void stick_target(int, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00220b80.c, FUN_L02_00220b80. */
 void update_hero_stick_target_magnitude(void) {
@@ -34,24 +34,24 @@ void update_hero_stick_target_magnitude(void) {
 }
 typedef int Q_222D18 __attribute__((mode(TI)));
 
-extern void func_L00_00234800(int, void *, void *);
-extern float func_L00_00234250(float *v);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern float func_L00_002342F8(float *);
-extern void func_L00_002343A0(float *, float *, float);
-extern float func_001F9CB8(void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9BC0(void *);
-extern void func_L00_00213E60(void);
-extern void func_L02_00221CE0(void);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_002136A8(void);
-extern float func_001F9C78(void *, void *);
-extern void func_L00_00234150(float *, float *);
-extern void func_L00_00234420(float *, float *, float);
-extern float func_001F9CE8(void *);
-extern float func_L00_00213A08(void *);
-extern void func_001F9C30(void *, void *, float);
+extern void update_hero_attachment(int, void *, void *);
+extern float gravity_length_xy(float *v);
+extern void vec_scale_to_length(void *, void *, float);
+extern float gravity_z(float *);
+extern void gravity_set_z(float *, float *, float);
+extern float FastVecLength(void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void clear_u64_value(void *);
+extern void resolve_hero_collisions_with_history(void);
+extern void Hero_UpdateGroundContact(void);
+extern void FastVecSub(void *, void *, void *);
+extern void correct_hero_ground_penetration(void);
+extern float FastVecDot(void *, void *);
+extern void gravity_flatten(float *, float *);
+extern void set_gravity_relative_vector_length_xy(float *, float *, float);
+extern float vec_length_xy(void *);
+extern float forward_component(void *);
+extern void FastVecScale(void *, void *, float);
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void Hero_ApplyMotionCollisionL02(void) {
@@ -186,27 +186,27 @@ void Hero_ApplyMotionCollisionL02(void) {
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern Hero D_0013F450;
-extern float D_0015EE64 MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
+extern Hero g_hero;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
 extern float D_L02_0017C450[];
-extern int func_001F9850(int);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern float func_001FA850(float, float);
-extern float func_001FA790(float, float);
-extern float func_00214D28(float *, float, float);
-extern void func_L00_00213970(float, float);
-extern void func_L00_00212740(float, float);
-extern void func_L00_002124E8(int, float, float, float);
-extern float func_L00_0025CCF0(void *, float, void *, int, float, float, float);
-extern void func_L00_00209850(float, float, float);
-extern void func_L00_00233F88(void *, void *, float);
-extern void func_L00_001FF500(void *, void *, float);
-extern void func_L01_00234970(float);
-extern int func_L00_0020DB30(int);
-extern int func_L00_00217570(int, int);
+extern int scale_ticks(int);
+extern float FastCos(float);
+extern float FastSin(float);
+extern float FastDiffRots(float, float);
+extern float FastSubRots(float, float);
+extern float ApproachValue(float *, float, float);
+extern void build_scaled_hero_move_impulse(float, float);
+extern void speed_step(float, float);
+extern void turn_to(int, float, float, float);
+extern float SpringAngle(void *, float, void *, int, float, float, float);
+extern void rotate_hero_about_fixed_local_pivot(float, float, float);
+extern void add_hero_forward_offset(void *, void *, float);
+extern void vec_set_length_xy(void *, void *, float);
+extern void air_accel(float);
+extern int hero_slot_item_id(int);
+extern int allocate_hero_voice_for_entry(int, int);
 
 // Per-state hop velocity update for the player. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00220b80.c, FUN_L02_00223450.
 void Hero_UpdateHopVelocity(void) {
@@ -340,19 +340,19 @@ extern int D_00141760_22F568 __asm__("D_00141760");
 extern unsigned char D_0013D5C8_22F568[] __asm__("D_0013D5C8");
 extern Rec2C_22F568 D_L02_0017C2A8_22F568[] __asm__("D_L02_0017C2A8");
 extern int D_L02_0015F754 SDATA(D_L02_0015F754);
-extern int func_L00_00267BA8(int, int, int *);
-extern int func_L00_00211A18(void *);
-extern void func_L00_00217DE0(void);
-extern int func_001FA898(float);
-extern void func_L00_00222668(void);
-extern int func_L00_002228E0(void);
-extern int func_L00_002104C8(void);
-extern void func_L00_0029BA20(void *);
-extern int func_L00_00234718(int);
-extern void func_L00_0020EB60(void);
-extern int func_L00_0028EB98(void *, int);
-extern int func_0022ED80(int, int, int);
-extern int func_L02_0022BE40(int, int);
+extern int pad_pressed_within(int, int, int *);
+extern int is_wrench_moby(void *);
+extern void launch_hero_wrench(void);
+extern int truncate_float_to_s32(float);
+extern void select_hero_grapple_swing_target(void);
+extern int select_hero_grapple_target(void);
+extern int Hero_CanUseGadget(void);
+extern void open_vendor_menu(void *);
+extern int get_ammo(int);
+extern void start_equipped_item_animation(void);
+extern int Sound_IsPlaying(void *, int);
+extern int Moby_PlaySound(int, int, int);
+extern int HeroL02_SetMoveState(int, int);
 extern int func_001F9908_22F568(int *) __asm__("func_001F9908");
 
 /* Gadget and weapon input for the current hero state: starts the matching move and returns 1 when the state changed. */

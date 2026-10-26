@@ -7,9 +7,9 @@
 #include "moby.h"
 #include "pad.h"
 
-extern void func_00234C98(int, long);
-extern void func_L14_002E0910(void *, void *, int, int, int);
-extern float D_0015EE60 MACRO_ADDR;
+extern void VU1_addGSregister(int, long);
+extern void draw_ribbon_effect_path(void *, void *, int, int, int);
+extern float frame_scale MACRO_ADDR;
 
 // Scrolls a texture offset and draws two layers.
 void draw_ribbon_effect(char *m) {
@@ -34,19 +34,19 @@ typedef struct {
     long r80;
     long r88;
 } Q_E0910;
-extern int func_001F4868(int);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001FA218(void *, void *);
-extern float func_001FA888(int);
-extern float func_L00_00258E58(float, float, float, float, float);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_L00_001FD1D8(void *, void *, int);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern char D_L14_001675C0[];
+extern int GetEffectTex(int);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void euler_to_matrix(void *, void *);
+extern float IntToFloat(int);
+extern float CubicInterpolate(float, float, float, float, float);
+extern void FastVecCross(void *, void *, void *);
+extern void draw_world_quad(void *, void *, int);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecSub(void *, void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern char oltanis_camera_pos[];
 
 /* Draws a two-layer textured ribbon along the points in path. */
 void draw_ribbon_effect_path(void *m, void *path, int outer_alpha, int inner_alpha, int point_count) {
@@ -201,9 +201,9 @@ void draw_ribbon_effect_path(void *m, void *path, int outer_alpha, int inner_alp
         layer_quads[0].uv[3][1] = 1.0f;
     }
 }
-extern int func_00215570(void *, int);
-extern void func_001F9BC0(void *);
-extern void func_L00_0025AAC0(int, void *);
+extern int is_point_inside_clip_volume(void *, int);
+extern void clear_u64_value(void *);
+extern void record_moby_hit(int, void *);
 extern char D_0013E633[];
 
 typedef struct {
@@ -271,28 +271,28 @@ typedef struct {
     s32 collision;
 } LiftClass;
 
-extern Hero D_0013F450;
-extern char *D_L14_001B0F30[];
-extern char D_L14_001FCBB0[];
-extern struct Moby *D_L14_00160098 MACRO_ADDR;
-extern s32 D_L14_00161C5C MACRO_ADDR;
-extern s32 D_L14_00161C60 MACRO_ADDR;
-extern short D_L14_00161C58;
-extern float D_0015EE6C MACRO_ADDR;
-extern void func_0020D960(void *, int, void *);
-extern void func_001E9730(const char *, short);
-extern void func_0020D678(void *);
-extern void func_L01_002F6540(void *);
-extern void func_L00_00250800(void *, int, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_L00_0028EB98(void *, int);
-extern int func_0022ED80(int, int, void *);
-extern float func_001FA748(float, float);
-extern void func_L00_001FFED8(void *, int, float);
-extern void func_L00_002617B0(char *, void *, void *, void *);
-extern int func_001F9850(int);
-extern int func_001F9938(short *);
-extern float func_001F9CB8(void *);
+extern Hero g_hero;
+extern char *oltanis_paths[];
+extern char path_lift_no_rider_msg[];
+extern struct Moby *oltanis_mobys MACRO_ADDR;
+extern s32 path_lift_board_time MACRO_ADDR;
+extern s32 path_lift_leave_time MACRO_ADDR;
+extern short path_lift_hero_pull_speed;
+extern float g_frame_time MACRO_ADDR;
+extern void AttachManipulator(void *, int, void *);
+extern void STUB_printf(const char *, short);
+extern void DeleteMoby(void *);
+extern void gunship_follow_path(void *);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern int Sound_IsPlaying(void *, int);
+extern int Moby_PlaySound(int, int, void *);
+extern float FastAddRots(float, float);
+extern void axis_rotation_2d48(void *, int, float);
+extern void update_entity_matrix(char *, void *, void *, void *);
+extern int scale_ticks(int);
+extern int FastDecTimer(short *);
+extern float FastVecLength(void *);
 
 #define MB(m) ((u8 *)(m))
 #define COLL(m) (*(s32 *)(MB(m) + 0x94))
@@ -528,19 +528,19 @@ void update_wind_control(Moby *m) {
         func_001F9BD8_2EC3E8(D_0013E633_2EC3E8 + 0xF0D, D_0013E633_2EC3E8 + 0xF0D, sv);
     }
 }
-extern struct { char pad[0x30]; float v[4]; char rest[0x40]; } * D_L14_001601AC MACRO_ADDR;
+extern struct { char pad[0x30]; float v[4]; char rest[0x40]; } * oltanis_clip_volumes MACRO_ADDR;
 extern int D_L14_00161D00_EC7E8 SDATA(D_L14_00161D00);
 extern int D_L14_00161D04_EC7E8 SDATA(D_L14_00161D04);
 extern float D_L14_00161D08_EC7E8 SDATA(D_L14_00161D08);
 extern float D_L14_00161D0C_EC7E8 SDATA(D_L14_00161D0C);
-extern float D_0015EE6C MACRO_ADDR;
-extern void func_001F9CA0(void *, void *, void *);
-extern float func_L00_00258C80(float, float);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_002140F8(float, float);
-extern int func_001FA898(float);
-extern int func_001F9850(int);
+extern float g_frame_time MACRO_ADDR;
+extern void FastVecCross(void *, void *, void *);
+extern float randf_sym(float, float);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern float random_float_between(float, float);
+extern int truncate_float_to_s32(float);
+extern int scale_ticks(int);
 typedef struct {
     char pad0[0x14];
     float f14, f18, f1C;
@@ -606,15 +606,15 @@ typedef struct {
     int pad500;
     int i504;
 } Spk_k_EC9C8;
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern int func_001F9938(short *);
-extern float func_001FA888(int);
-extern float func_001F9B88(float);
-extern float func_001FA850(float, float);
-extern void func_001F49B0(void (*)(struct Moby *), struct Moby *);
-extern short D_L14_00161CE0;
-extern short D_L14_00161CFC;
+extern float FastCos(float);
+extern float FastSin(float);
+extern int FastDecTimer(short *);
+extern float IntToFloat(int);
+extern float FastAbsF(float);
+extern float FastDiffRots(float, float);
+extern void AddDrawCallback(void (*)(struct Moby *), struct Moby *);
+extern short wind_spark_max_alpha;
+extern short wind_spark_fade_ticks;
 struct L14SparkTarget {
     char pad0[0x140];
     float x; /* 0x140 */
@@ -622,7 +622,7 @@ struct L14SparkTarget {
     char pad148[0x10];
     float yaw; /* 0x158 */
 };
-extern struct L14SparkTarget D_L14_00167480;
+extern struct L14SparkTarget oltanis_player_camera;
 void func_L14_002ECC70_EC9C8(struct Moby *m) __asm__("func_L14_002ECC70");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eb568. */
@@ -705,15 +705,15 @@ typedef struct {
     float uv[8];
     unsigned long a, b, c, d;
 } Pk_m;
-extern short D_L14_00161CDC;
-extern char D_L14_001675C0[];
-extern float D_L14_001E0090[4][4];
+extern short wind_spark_color;
+extern char oltanis_camera_pos[];
+extern float wind_spark_quad_corners[4][4];
 extern unsigned long func_001F4868_ECC70(s32) __asm__("func_001F4868");
-extern void func_00234C98(s32, s64);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9EE8(void *, void *, void *);
+extern void VU1_addGSregister(s32, s64);
+extern void FastVecSub(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecScale(void *, void *, float);
+extern void transform_vector(void *, void *, void *);
 extern void func_L00_001FD1D8_ECC70(void *, int, int) __asm__("func_L00_001FD1D8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eb810. */
@@ -764,7 +764,7 @@ void draw_wind_sparks(struct Moby *m) {
     }
 }
 typedef u32 u128_2EDC70 __attribute__((mode(TI), aligned(16)));
-extern struct Hero D_0013F450;
+extern struct Hero g_hero;
 typedef struct {
     u8 pad0[0x20];
     f32 health[0x10]; /* 0x20 */
@@ -789,23 +789,23 @@ typedef struct {
     struct Moby *moby; /* 0x20 */
 } L14MineHit;
 extern L14MinePath * D_L14_001B0F30_EDC70[] __asm__("D_L14_001B0F30");
-extern char D_L14_001FCE08[];
-extern char D_L14_001FCE48[];
-extern short D_L14_00161D14;
-extern short D_L14_00161D18;
-extern f32 D_0015EE6C MACRO_ADDR;
-extern void func_001E9730(const char *, short);
-extern void func_0020D678(void *);
-extern float func_001F9D10(void *, void *);
-extern int func_002140B0(int);
+extern char looping_path_no_path_msg[];
+extern char looping_path_empty_path_msg[];
+extern short looping_path_moby_speed;
+extern short looping_path_moby_pulse_speed;
+extern f32 g_frame_time MACRO_ADDR;
+extern void STUB_printf(const char *, short);
+extern void DeleteMoby(void *);
+extern float FastVecDist(void *, void *);
+extern int random_integer_below(int);
 extern int func_L00_0025E860_EDC70(void *, float *, int *, float *, int, float) __asm__("func_L00_0025E860");
-extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, float eps);
-extern L14MineHit *func_L00_0025B478(void *, int, int);
-extern s32 func_L00_0025B4D0(struct Moby *, void *, f32 *, s32, s32 *, s32, s32, s32);
-extern int func_0022ED80(int, int, void *);
-extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
-extern float func_001FA748(float, float);
-extern float func_001F9FA8(float);
+extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
+extern L14MineHit *MobyGetHitMessage(void *, int, int);
+extern s32 ComputeHitResponse(struct Moby *, void *, f32 *, s32, s32 *, s32, s32, s32);
+extern int Moby_PlaySound(int, int, void *);
+extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
+extern float FastAddRots(float, float);
+extern float FastSin(float);
 
 /* Mine update: drifts along its looped path while spinning and pulsing; blows up on a hit.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ec810. */
@@ -880,11 +880,11 @@ void update_looping_path_moby(struct Moby *m) {
     }
 }
 extern char *func_0020D348_m(int) __asm__("func_0020D348");
-extern float func_001F9CE8(void *);
-extern float func_L00_001FF860(float, float);
-extern int func_001F9850(int);
-extern void func_00213DE0(void *, int, int, int);
-extern void func_L00_00251E30(void *);
+extern float vec_length_xy(void *);
+extern float fast_atan2(float, float);
+extern int scale_ticks(int);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern void moby_build_matrix(void *);
 
 /* Spawn a projectile moby at a, aimed along b, with two parameters. */
 char *spawn_flying_bolt(void *a, float *b, int c, int d) {
@@ -928,20 +928,20 @@ typedef struct {
     u8 flag19;
     u8 pad1A[0x16];
 } L14BoltSweep;
-extern float func_001F9D48(void *, void *);
-extern f32 func_001F9CB8(void *);
-extern void func_L00_001FF4B0(void *, void *, f32);
-extern void func_L00_001FF500(void *, void *, f32);
-extern f32 func_002140F8(f32, f32);
-extern int func_L00_00258BC8(int, int);
-extern s32 func_001F9850(s32);
-extern int func_L00_001EFFF0(void *, void *, int, void *, void *);
-extern void func_L00_0025A8C0(void *, struct Moby *, s32, void *, f32);
-extern void func_L07_0029B070(void *, void *);
-extern void func_L00_001FF610(void *, void *, void *);
-extern char *func_L00_0026EBC0(char *, char *, int c, int d, float f);
-extern struct { u8 pad0[0x18]; struct Moby *moby; u8 pad1C[4]; Vec4 pos; } D_L14_00174640;
-extern char D_L14_00174680[];
+extern float vec_distance_xy(void *, void *);
+extern f32 FastVecLength(void *);
+extern void vec_scale_to_length(void *, void *, f32);
+extern void vec_set_length_xy(void *, void *, f32);
+extern f32 random_float_between(f32, f32);
+extern int rand_range(int, int);
+extern s32 scale_ticks(s32);
+extern int coll_line(void *, void *, int, void *, void *);
+extern void InitDirectionalHitQuery(void *, struct Moby *, s32, void *, f32);
+extern void spawn_projectile_expiry_particle(void *, void *);
+extern void vec_reflect(void *, void *, void *);
+extern char *PartType27Spawn(char *, char *, int c, int d, float f);
+extern struct { u8 pad0[0x18]; struct Moby *moby; u8 pad1C[4]; Vec4 pos; } oltanis_coll_hit;
+extern char oltanis_coll_hit_normal[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ece00. */
 void update_flying_bolt(struct Moby *m) {
@@ -1024,26 +1024,26 @@ void update_flying_bolt(struct Moby *m) {
     }
 }
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int D_L14_0015F6A8 MACRO_ADDR;
+extern int oltanis_game_mode MACRO_ADDR;
 extern char D_0014171B_c[] __asm__("D_0014171B");
 extern char D_0013D355[];
 extern int *D_L14_001B0F30_ee[] __asm__("D_L14_001B0F30");
-extern short D_L14_00161D20;
-extern short D_L14_00161D24;
-extern short D_L14_00161D28;
-extern short D_L14_00161D2C;
-extern short D_L14_00161D30;
-extern short D_L14_00161D34;
-extern int D_L14_00161D84 MACRO_ADDR;
-extern float D_L14_00161D90[] MACRO_ADDR;
-extern float D_L14_00161DA0[] MACRO_ADDR;
-extern void func_L00_00299B68(int);
-extern void func_L00_0028FC68(void);
-extern void func_L01_002A3680(void);
-extern int func_001F9908(void *);
-extern int func_L00_00200290(void *, float);
-extern float func_L00_00258C80(float, float);
-extern void func_L14_002EE990(char *);
+extern short lightning_strike_timer;
+extern short lightning_strike_interval;
+extern short lightning_arc_built;
+extern short lightning_arc_sky_height;
+extern short lightning_spot_view_radius;
+extern short lightning_spot_height_offset;
+extern int lightning_arc_remaining_frames MACRO_ADDR;
+extern float lightning_arc_start_pos[] MACRO_ADDR;
+extern float lightning_arc_end_pos[] MACRO_ADDR;
+extern void StartCutscene(int);
+extern void deactivate_recorded_moby(void);
+extern void ShowTrackedMoby(void);
+extern int fast_dec_timer(void *);
+extern int FastBSphereCheck(void *, float);
+extern float randf_sym(float, float);
+extern void update_branched_lightning_arc(char *);
 
 /* Camera-intro controller: waits for the cutscene flag, then every few seconds moves the focus to a random
  * visible point of its path. */
@@ -1107,33 +1107,33 @@ void update_path_lightning_controller(char *m) {
         *(int *)&lightning_arc_built = 0;
     }
 }
-extern unsigned char D_L14_00161DB0[] MACRO_ADDR;
-extern int D_L14_00161DB2 MACRO_ADDR;
-extern float D_L14_00161DB4 MACRO_ADDR;
-extern char *D_L14_00161DB8 MACRO_ADDR;
-extern int D_L14_00161DBC MACRO_ADDR;
-extern float D_L14_00161DC0 MACRO_ADDR;
-extern int D_L14_00161DC4 MACRO_ADDR;
-extern int D_L14_00161DC8[] MACRO_ADDR;
-extern void func_001F9C08(void *, void *, void *, float);
-extern void func_0022EEB8(int, int, void *);
-void func_L14_002EFB10(float *pos, int n);
-void func_L14_002EF078();
+extern unsigned char lightning_arc_fade_alpha[] MACRO_ADDR;
+extern int lightning_arc_alpha_pulse_offset MACRO_ADDR;
+extern float lightning_arc_alpha_pulse_phase MACRO_ADDR;
+extern char *lightning_arc_owner MACRO_ADDR;
+extern int lightning_arc_initial_lifetime_frames MACRO_ADDR;
+extern float lightning_arc_inverse_fade_duration MACRO_ADDR;
+extern int lightning_arc_sound_pending MACRO_ADDR;
+extern int lightning_branch_starts[] MACRO_ADDR;
+extern void lerp_vector(void *, void *, void *, float);
+extern void allocate_voice_for_group_entry(int, int, void *);
+void spawn_lightning_arc_particle_pairs(float *pos, int n);
+void draw_branched_lightning_arc();
 /* Lightning arc between the camera points: builds the bolt and its branches once, then ages and fades them. DB2 is an int so the assembler reaches it by lui (-G2); gp-only data is block-scope short. */
 void update_branched_lightning_arc(char *moby) {
-    extern short D_L14_00161D38;
-    extern short D_L14_00161D3C;
-    extern short D_L14_00161D40;
-    extern short D_L14_00161D44;
-    extern short D_L14_00161D5C;
-    extern short D_L14_00161D60;
-    extern short D_L14_00161D64;
-    extern short D_L14_00161D68;
-    extern short D_L14_00161D6C;
-    extern float D_L14_001E00D0[40][4];
-    extern unsigned short D_L14_001E0350[40];
-    extern float D_L14_001E03A0[3][16][4];
-    extern unsigned short D_L14_001E06A0[3][16];
+    extern short lightning_arc_pulse_speed;
+    extern short lightning_arc_pulse_progress;
+    extern short lightning_grow_ticks;
+    extern short lightning_arc_segment_length;
+    extern short lightning_arc_step_jitter_min;
+    extern short lightning_arc_step_jitter_max;
+    extern short lightning_arc_max_offset;
+    extern short lightning_arc_life_min;
+    extern short lightning_arc_life_max;
+    extern float lightning_arc_points[40][4];
+    extern unsigned short lightning_arc_point_timers[40];
+    extern float lightning_branch_points[3][16][4];
+    extern unsigned short lightning_branch_point_timers[3][16];
     extern float D_L14_001E0330[];
     Vec4f delta;
     float len;
@@ -1275,26 +1275,26 @@ typedef struct {
     long r80;
     long r88;
 } Q_2EF078;
-extern int func_001F4868(int);
-extern float func_001FA888(int);
+extern int GetEffectTex(int);
+extern float IntToFloat(int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern void func_001F9A98(void *, void *, int);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_L00_001FD1D8(void *, void *, int);
-extern float func_L00_00258E58(float, float, float, float, float);
-extern short D_L14_001E0350[];
-extern unsigned char D_L14_00161DB0[] MACRO_ADDR;
-extern V_2EF078 D_L14_001E00D0[];
-extern short D_L14_001E06A0[];
-extern int D_L14_00161DC8[] MACRO_ADDR;
-extern V_2EF078 D_L14_001E03A0[];
-extern int D_L14_00161D40 SDATA(D_L14_00161D40);
-extern int D_L14_00161D48 SDATA(D_L14_00161D48);
-extern int D_L14_00161D4C SDATA(D_L14_00161D4C);
-extern float D_L14_00161D50 SDATA(D_L14_00161D50);
-extern float D_L14_00161D54 SDATA(D_L14_00161D54);
-extern float D_L14_00161D58 SDATA(D_L14_00161D58);
+extern void FastMemCopy(void *, void *, int);
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern void draw_world_quad(void *, void *, int);
+extern float CubicInterpolate(float, float, float, float, float);
+extern short lightning_arc_point_timers[];
+extern unsigned char lightning_arc_fade_alpha[] MACRO_ADDR;
+extern V_2EF078 lightning_arc_points[];
+extern short lightning_branch_point_timers[];
+extern int lightning_branch_starts[] MACRO_ADDR;
+extern V_2EF078 lightning_branch_points[];
+extern int lightning_grow_ticks SDATA(D_L14_00161D40);
+extern int lightning_arc_core_color SDATA(D_L14_00161D48);
+extern int lightning_arc_glow_color SDATA(D_L14_00161D4C);
+extern float lightning_arc_width_end SDATA(D_L14_00161D50);
+extern float lightning_arc_width_start SDATA(D_L14_00161D54);
+extern float lightning_arc_glow_width_scale SDATA(D_L14_00161D58);
 
 // Draws the lightning bolt between two points as a chain of textured quad pairs, with three side branches.
 void draw_branched_lightning_arc(void) {
@@ -1482,16 +1482,16 @@ void draw_branched_lightning_arc(void) {
         }
     }
 }
-extern float func_00214158(void);
-extern void func_00215C00(void *, float, float, float);
-extern float func_L00_00258C80(float lo, float hi);
-extern unsigned char * func_L00_00272F00(float *pos, int a, float f0, float f1, int col, int mode, int b, float *vel, float f2);
+extern float random_angle_radians(void);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern float randf_sym(float lo, float hi);
+extern unsigned char * PartType53Spawn(float *pos, int a, float f0, float f1, int col, int mode, int b, float *vel, float f2);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern short D_L14_00161D70;
-extern short D_L14_00161D74;
-extern short D_L14_00161D78;
-extern short D_L14_00161D7C;
-extern short D_L14_00161D80;
+extern short lightning_spark_speed_min;
+extern short lightning_spark_speed_max;
+extern short lightning_spark_vel_scale;
+extern short lightning_spark_size_min;
+extern short lightning_spark_size_max;
 
 // Spawns n pairs of particles around a position with random velocity and size.
 void spawn_lightning_arc_particle_pairs(float *pos, int n) {
@@ -1759,7 +1759,7 @@ void Moby685Update(char *moby) {
         }
     }
 }
-extern char * D_L14_001B0F30[];
+extern char * oltanis_paths[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eef60. */
 void initialize_elevator_path_state(struct Moby *m) {
@@ -1808,12 +1808,12 @@ void initialize_elevator_path_state(struct Moby *m) {
     *(int *)(d + 0xA8) = 0;
     *(int *)(d + 0xA4) = 0;
 }
-extern char *D_L14_001B0F30[];
-extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, float eps);
+extern char *oltanis_paths[];
+extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern int func_L00_0025E860_2F05D8(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
-extern float func_L00_0025C7A8(float, float, float);
-extern float D_0015EE6C MACRO_ADDR;
-extern short D_L14_00161DE4;
+extern float interpolate_angle(float, float, float);
+extern float g_frame_time MACRO_ADDR;
+extern short elevator_path_speed;
 
 /* Moves the moby along its current path, easing its rotation; returns 1 when the path end is reached. */
 int advance_elevator_along_path(char *m) {
@@ -1876,8 +1876,8 @@ int advance_elevator_along_path(char *m) {
     }
     return 0;
 }
-extern char *D_L14_001B0F30[];
-extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, float eps);
+extern char *oltanis_paths[];
+extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
 /* Springs the moby's position (and, while moving, its rotation) toward its current path point. */
 void settle_elevator_at_path_endpoint(char *m) {
@@ -1939,7 +1939,7 @@ typedef struct {
     unsigned char state;
 } Level14VendorMoby_F0A30;
 extern s32 D_0014C290_2F0A30[][64] __asm__("D_0014C290");
-extern int D_L14_001BAF60[];
+extern int oltanis_moby_killed_bits[];
 void func_L14_002F0A30_r(Level14VendorMoby_F0A30 *m) __asm__("func_L14_002F0A30");
 
 /* Clears the moby's state byte and its data's field 0x124, then sets its save bit in the per-level table and in the level's own bit table. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ef5a8. */
@@ -1949,10 +1949,10 @@ void func_L14_002F0A30_r(Level14VendorMoby_F0A30 *m) {
     D_0014C290_2F0A30[D_0015EE84_m][(short)*(unsigned short *)((char *)m + 0xB2) >> 5] |= 1 << (*(unsigned short *)((char *)m + 0xB2) & 0x1F);
     oltanis_moby_killed_bits[(short)*(unsigned short *)((char *)m + 0xB2) >> 5] |= 1 << (*(unsigned short *)((char *)m + 0xB2) & 0x1F);
 }
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern char D_L14_001E0700[];
-extern char *D_L14_001B0F30[];
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern char elevator_local_path_points[];
+extern char *oltanis_paths[];
 
 /* Rebuild the 11 vectors of a table entry from the moby's matrix and position. */
 void rebuild_elevator_world_path(char *moby) {
@@ -1974,11 +1974,11 @@ void rebuild_elevator_world_path(char *moby) {
     *(short *)(x + 0x22DA) = *(unsigned short *)(data + 0x114);
 }
 extern short D_0015EE6C_s __asm__("D_0015EE6C");
-extern float func_001F9B88(float);
-extern float func_001FA748(float, float);
-extern float func_001F9FA8(float);
+extern float FastAbsF(float);
+extern float FastAddRots(float, float);
+extern float FastSin(float);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern int func_001FA8A8(int, int, float);
+extern int FastTweenColor(int, int, float);
 
 // pulses the moby's tint while the player is near, else fades it to a dim colour
 void update_elevator_idle_glow(char *moby) {
@@ -2033,30 +2033,30 @@ typedef struct Data_2F19C0 {
     int vol[3];
 } Data_2F19C0;
 
-extern void func_L00_002676A0(void *, int);
-extern void func_L14_002F24C8(char *);
-extern void func_L14_002F25C8(char *);
-extern void func_L14_002F2880(char *);
-extern Moby *func_L14_002F2778(char *, int);
-extern void func_001FA4A0(void *, void *);
-extern void func_L00_002E9900(float x, float y, int flag);
+extern void set_moby_dialogue_record_value(void *, int);
+extern void initialize_taxi_stop_from_position(char *);
+extern void prepare_taxi_route(char *);
+extern void request_taxi_stop_prompt(char *);
+extern Moby *find_group_moby_by_tag(char *, int);
+extern void matrix_from_basis_rows(void *, void *);
+extern void Cam_SetDistanceGoal(float x, float y, int flag);
 extern float func_00214D88_2F19C0(float, float, float, float, float *, float *) __asm__("func_00214D88");
 extern void func_00215CA8_2F19C0(int *, int, void *, float *, int, float) __asm__("func_00215CA8");
 extern void func_00215CA8_f2F19C0(float, int *, int, void *, float *, int) __asm__("func_00215CA8");
-extern void func_001F9C08(void *, void *, void *, float);
-extern float func_001FA790(float, float);
-extern int func_L05_0031AB08(char *);
-extern void func_L05_0031AA20(char *);
-extern void func_L05_0031AC50(char *);
-extern void func_L05_0031ADF8(char *);
-extern int func_L00_0028EB98(void *, int);
+extern void lerp_vector(void *, void *, void *, float);
+extern float FastSubRots(float, float);
+extern int AdvanceMobyPath(char *);
+extern void reset_selected_moby_to_current_placement(char *);
+extern void apply_moby_position_and_rotation_wobble(char *);
+extern void transform_moby_vector_table_to_world_space(char *);
+extern int Sound_IsPlaying(void *, int);
 extern int func_0022ED80_2F19C0(int, int, void *) __asm__("func_0022ED80");
-extern void func_L00_0028EBF0(int);
-extern void func_L00_002617B0(char *, void *, void *, void *);
-extern int D_L14_0015F6B0 MACRO_ADDR;
-extern int D_L14_0015F674 MACRO_ADDR;
+extern void Sound_StopSlot(int);
+extern void update_entity_matrix(char *, void *, void *, void *);
+extern int oltanis_frame_count MACRO_ADDR;
+extern int oltanis_shown_help_message MACRO_ADDR;
 extern Pose_2F19C0 *D_L14_001601AC_2F19C0 __asm__("D_L14_001601AC") MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
 extern char D_0013A5E0_2F19C0[] __asm__("D_0013A5E0");
 
 /* Taxi update: waits at a station, flies the hero between stations along a path, and manages its sound. */
@@ -2384,8 +2384,8 @@ void prepare_taxi_route(char *moby)
     *(float *)(taxi_vars + 0xD4) = travel_step_limit * inv;
     *(float *)(taxi_vars + 0xD8) = travel_acceleration_step * inv;
 }
-extern int D_L14_001600B4 MACRO_ADDR;
-extern unsigned short *D_L14_001AC2C0[];
+extern int moby_group_index_limit MACRO_ADDR;
+extern unsigned short *oltanis_moby_groups[];
 struct TaggedVars {
     u8 pad_00[0xB4];
     s16 tag;                       /* 0xB4 */
@@ -2410,7 +2410,7 @@ Moby *find_group_moby_by_tag(char *moby, int tag) {
 found:
     return &oltanis_mobys[group_moby_index];
 }
-extern void func_00215F80(int, int);
+extern void try_set_help_message(int, int);
 
 /* Vendor text: pick the message from the vendor data state. */
 void request_taxi_stop_prompt(char *moby) {
@@ -2440,31 +2440,31 @@ void request_taxi_stop_prompt(char *moby) {
         break;
     }
 }
-extern void func_L02_002E2110(void *);
-extern void func_L00_0025B178(void *);
-extern int func_L00_002676E8(void *, void *);
-extern void func_L00_002512D8(int);
-extern void func_L00_00286128(void *, void *);
-extern int func_L00_00267290(void *, void *);
-extern void func_L01_00279398(float, void *);
-extern void func_L00_00264DB8(int arg0, int arg1);
-extern void func_L00_002618D8(int, int);
+extern void attach_big_head_cheat_manipulator_to_matching_moby(void *);
+extern void set_ground_height_band(void *);
+extern int DialogRequest_Init(void *, void *);
+extern void jet_clear_persistent(int);
+extern void jet_reset_camera(void *, void *);
+extern int Npc_TryStartDialog(void *, void *);
+extern void PlaceMarkerAheadOfMoby(float, void *);
+extern void ShowBanner(int arg0, int arg1);
+extern void grant_inventory_item(int, int);
 extern void func_L14_002F0A00_2FCEA8(void *) __asm__("func_L14_002F0A00");
-extern void func_L14_002F0A30(void *);
-extern int func_0020BFC8(int, int);
-extern void func_0020D678(void *);
-extern float func_001F9D48(void *, void *);
-extern float func_001FA850(float, float);
-extern float func_001F9CB8(void *);
-extern float func_001F9878(float);
-extern void func_L00_00263950(char *, char *, int, float, float);
+extern void mark_elevator_collected(void *);
+extern int memcard_Save(int, int);
+extern void DeleteMoby(void *);
+extern float vec_distance_xy(void *, void *);
+extern float FastDiffRots(float, float);
+extern float FastVecLength(void *);
+extern float multiply_global_factor(float);
+extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 typedef struct { char pad0[0x454]; unsigned char collected[1]; } CapLevelState_2FCEA8;
 extern CapLevelState_2FCEA8 D_L14_001BBCC0_2FCEA8 __asm__("D_L14_001BBCC0");
-extern char D_L14_00161FF0[];
+extern char qwark_oltanis_dialogue_name[];
 extern char *D_L14_00160098_2FCEA8 __asm__("D_L14_00160098") MACRO_ADDR;
-extern int D_L14_001BAF60[];
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
-extern float D_0015EE64 MACRO_ADDR;
+extern int oltanis_moby_killed_bits[];
+extern unsigned char gCheats[] MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char D_0014171B_2FCEA8[] __asm__("D_0014171B") NOT_SDA;
 
 /* Update function of moby class 851: claims the moby when close to D_L14_001675C0, then a state machine on the
@@ -2730,14 +2730,14 @@ typedef struct {
     u8 padC[0x14];
     L14PuffTail_2FD870 tail; /* 0x20 */
 } L14Puff_2FD870;
-extern short D_L14_00162000;
-extern short D_L14_00162004;
-extern short D_L14_00162008;
-extern short D_L14_0016200C;
-extern short D_L14_00162014;
-extern char D_L14_0015F660[] MACRO_ADDR;
-extern void func_001F9C30(void *, void *, f32);
-extern s32 func_001F9850(s32);
+extern short enemy_fighter_exhaust_forward_offset;
+extern short enemy_fighter_exhaust_side_offset;
+extern short enemy_fighter_exhaust_up_offset;
+extern short enemy_fighter_exhaust_ring_offset;
+extern short enemy_fighter_exhaust_color;
+extern char oltanis_zero_vector[] MACRO_ADDR;
+extern void FastVecScale(void *, void *, f32);
+extern s32 scale_ticks(s32);
 extern L14Puff_2FD870 *func_L00_0026DEA0_2FD870(void *, f32, f32, f32, int, void *, f32, int) __asm__("func_L00_0026DEA0");
 
 /* Engine exhaust: two smoke puffs and three fading rings on each side of the moby.
@@ -2830,7 +2830,7 @@ void spawn_enemy_fighter_exhaust(struct Moby *m) {
         size -= 20000.0f;
     }
 }
-extern float func_L00_001FF860(float, float);
+extern float fast_atan2(float, float);
 
 typedef struct {
     u8 pad0[0x60];
@@ -2857,16 +2857,16 @@ void initialize_flight_path_state(char *moby) {
     ((struct Moby *)moby)->rot.z = fast_atan2(path[8] - path[4], path[9] - path[5]);
     data->spin[0] = data->spin[1] = data->spin[2] = data->vel[0] = data->vel[1] = data->vel[2] = 0.0f;
 }
-extern void func_L00_0025E860(int a, char *pos, char *b, char *c, int d, float f);
-extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, float eps);
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern void func_L00_002592B0(char *moby, float *vel, float target, float k, float d, float max);
-extern float D_0015EE6C MACRO_ADDR;
-extern short D_L14_00162018;
-extern short D_L14_0016201C;
-extern short D_L14_00162020;
-extern short D_L14_00162024;
-extern short D_L14_00162028;
+extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
+extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
+extern void FastVecSub(void *dst, void *a, void *b);
+extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
+extern float g_frame_time MACRO_ADDR;
+extern short enemy_fighter_path_speed;
+extern short enemy_fighter_spring_stiffness;
+extern short enemy_fighter_spring_damping;
+extern short enemy_fighter_max_bank;
+extern short enemy_fighter_bank_yaw_range;
 
 // Steers a moby toward a target position and updates its velocity/rotation springs.
 void advance_enemy_fighter_along_flight_path(char *m) {
@@ -3128,7 +3128,7 @@ void update_enemy_fighter_921(Moby *m) {
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern int func_L00_00258BC8(int, int);
+extern int rand_range(int, int);
 typedef struct {
     u8 pad0[4];
     s32 mode; /* 0x04 */
@@ -3146,15 +3146,15 @@ typedef struct {
     u8 padC[0x14];
     L14PuffTail tail; /* 0x20 */
 } L14Puff;
-extern void func_001F9C30(void *, void *, f32);
-extern s32 func_001F9850(s32);
-extern L14Puff *func_L00_0026DEA0(void *, f32, f32, f32, int, void *, f32, int);
-extern short D_L14_00162030;
-extern short D_L14_00162034;
-extern short D_L14_00162038;
-extern short D_L14_0016203C;
-extern short D_L14_00162040;
-extern short D_L14_00162044;
+extern void FastVecScale(void *, void *, f32);
+extern s32 scale_ticks(s32);
+extern L14Puff *PartType23Spawn(void *, f32, f32, f32, int, void *, f32, int);
+extern short fighter921_exhaust_forward_offset;
+extern short fighter921_exhaust_side_offset;
+extern short fighter921_exhaust_up_offset;
+extern short fighter921_exhaust_ring_offset;
+extern short fighter921_exhaust_smoke_offset;
+extern short fighter921_exhaust_color;
 
 /* Exhaust of the second engine moby: puffs and rings on both sides plus a grey puff in the middle.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fd310. */
@@ -3261,16 +3261,16 @@ void spawn_moby_exhaust_puffs(struct Moby *m) {
         size -= 20000.0f;
     }
 }
-extern char *D_L14_00167600;
-extern short D_L14_00162048;
-extern short D_L14_0016204C;
-extern short D_L14_00162050;
-extern short D_L14_00162054;
-extern short D_L14_00162058;
-extern void func_L13_003184A0(int);
-extern void func_L00_0028EBF0(int);
-extern void func_0020D678(void *);
-extern void func_001F9BF0(void *, void *, void *);
+extern char *race_state;
+extern short fighter921_path_speed;
+extern short fighter921_spring_stiffness;
+extern short fighter921_spring_damping;
+extern short fighter921_max_bank;
+extern short fighter921_bank_yaw_range;
+extern void flag_vendor_item(int);
+extern void Sound_StopSlot(int);
+extern void DeleteMoby(void *);
+extern void FastVecSub(void *, void *, void *);
 
 /* Flies the moby along its path, banking and pitching toward the next point; returns 1 once it is removed at the end. */
 int advance_moby_along_flight_path(char *m) {

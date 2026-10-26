@@ -8,8 +8,8 @@
 #include "moby.h"
 
 extern unsigned char D_0013E633[];
-extern char D_L01_00179FC0[];
-extern int func_L00_0020DB30(int);
+extern char novalis_item_defs[];
+extern int hero_slot_item_id(int);
 
 /* Looks up the value of the current help record, or 0/0x54 in the special cases. */
 int get_hero_idle_animation_index(int a) {
@@ -27,7 +27,7 @@ int get_hero_idle_animation_index(int a) {
     return *(int *)(r + 0x24);
 }
 extern unsigned char D_0013E633[];
-extern int func_L00_0028F140(int a0, int a1, int a2, int a3, int a4);
+extern int request_grouped_voice(int a0, int a1, int a2, int a3, int a4);
 
 // Plays the hero footstep sound, flagging whether the hero's current moby has type 0xAD.
 void request_hero_voice_if_enabled(int a0, int a1, int a2) {
@@ -42,30 +42,30 @@ void request_hero_voice_if_enabled(int a0, int a1, int a2) {
     }
 }
 /* functional: medium. Help-menu frame update (state g[0x20A4] 3 = the panel): runs the update chain, picks a random-based colour from sin/cos of D_L01_0015F6B0 mod rand and applies it to the hero's tint (w+0x90), updates the 3 slots, the fade colour (g+0x22E4) and the sound/timer trigger (22DC/22DE). Float/clamp order hand-traced; not run. */
-extern unsigned char D_0013D5DD[];
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
-extern int D_L01_0015F6B0 MACRO_ADDR;
-extern int func_001F9850(int);
+extern unsigned char gHaveMorphORay[];
+extern unsigned char gCheats[] MACRO_ADDR;
+extern int novalis_frame_count MACRO_ADDR;
+extern int scale_ticks(int);
 extern float D_L01_0017C0CC;
-extern float func_001FA888(int);
-extern int func_001FA898(float);
-extern float func_001F9FA8(float);
-extern int func_001FA8A8(int, int, float);
-extern void func_L00_00232EF0(void);
-extern void func_L00_00211D28(void);
-extern void func_L01_0022D340(void);
-extern void func_L01_00243078(void);
-extern void func_L00_00217698(void);
-extern void func_L00_00205B00(void);
-extern void func_L00_00209088(void);
-extern void func_L00_00208260(void);
-extern void func_L00_00208070(void);
-extern void func_L00_00248EF8(void *);
-extern void func_L00_00250800(void *, int, void *);
-extern void func_L00_00208318(void);
-extern void func_L00_00217570(int, int);
-extern void func_L00_002091D8(void);
-extern void func_L00_0025805C(void *);
+extern float IntToFloat(int);
+extern int truncate_float_to_s32(float);
+extern float FastSin(float);
+extern int FastTweenColor(int, int, float);
+extern void advance_hero_animation(void);
+extern void hero_update(void);
+extern void update_hero_ground_material_effects(void);
+extern void HeroL01_UpdateStateTransitions(void);
+extern void update_hero_delayed_voice_requests(void);
+extern void update_hero_easing_records(void);
+extern void update_hero_vehicle_moby(void);
+extern void update_hero_scalar_pulse(void);
+extern void apply_hero_and_item_scale_sequence(void);
+extern void reveal_map_around_position(void *);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern void enqueue_hero_glow_draw_callback_once(void);
+extern void allocate_hero_voice_for_entry(int, int);
+extern void update_hero_moby_probed_height_bounds(void);
+extern void apply_env_zone_lighting(void *);
 
 typedef struct {
     char pad0[0x80];
@@ -180,39 +180,39 @@ void HeroFrameUpdate(void) {
     apply_env_zone_lighting(GG->p2080);
 }
 extern unsigned char D_0013E633[];
-extern int func_001F9850(int);
-extern void func_001F4E08(int);
-extern void func_L01_00228598(void);
-extern void func_L00_00232EF0(void);
-extern void func_L00_00211D28(void);
-extern void func_L01_0022D340(void);
-extern void func_L01_0022D688(void);
-extern void func_L01_00243078(void);
-extern void func_L00_00217698(void);
-extern void func_L00_0020B850(void);
-extern void func_L00_0020A990(void);
-extern void func_L00_0020ABB8(void);
-extern void func_L00_0020B310(void);
-extern void func_L00_0020B060(void);
-extern void func_L00_00205CC0(void);
-extern void func_L00_00205FF0(void);
-extern void func_L00_00215738(void);
-extern void func_L00_00205B00(void);
-extern void func_L00_00208E98(void);
-extern void func_L00_002098B8(int);
-extern void func_L00_00210FE0(void);
-extern void func_001F7B40(void);
-extern void func_L00_00208260(void);
-extern void func_L00_00208070(void);
-extern void func_L00_00207310(void);
-extern void func_L00_002064C0(void);
-extern void func_L00_00206698(void);
-extern void func_L00_00207418(void);
-extern void func_001E9768(void *);
-extern void func_L00_00248EF8(void *);
-extern void func_L00_0025805C(void *);
-extern void func_L01_002293D0(void);
-extern void func_L00_002091D8(void);
+extern int scale_ticks(int);
+extern void FadeToBlack(int);
+extern void HeroFrameUpdate(void);
+extern void advance_hero_animation(void);
+extern void hero_update(void);
+extern void update_hero_ground_material_effects(void);
+extern void update_hero_ledge_probe(void);
+extern void HeroL01_UpdateStateTransitions(void);
+extern void update_hero_delayed_voice_requests(void);
+extern void update_hero_easing_targets_and_point_effects(void);
+extern void update_hero_collision_ease_target(void);
+extern void update_hero_pitch_and_yaw_easing_targets(void);
+extern void update_hero_target_tracking(void);
+extern void update_hero_idle_random_rotation_targets(void);
+extern void update_hero_rotation_targets_and_random_manipulators(void);
+extern void update_hero_glow_and_extra_manipulators(void);
+extern void update_hero_transformed_negative_z_angle_parameters(void);
+extern void update_hero_easing_records(void);
+extern void update_hero_moby(void);
+extern void update_hero_world_matrices(int);
+extern void update_hero_equipped_items(void);
+extern void begin_draw_frame(void);
+extern void update_hero_scalar_pulse(void);
+extern void apply_hero_and_item_scale_sequence(void);
+extern void check_hero_item_reward_conditions(void);
+extern void update_hero_bolt_exclamation_hud(void);
+extern void dispatch_hero_animation_timed_events(void);
+extern void scan_hero_input_sequences(void);
+extern void Profile_Mark(void *);
+extern void reveal_map_around_position(void *);
+extern void apply_env_zone_lighting(void *);
+extern void update_hero_blink_and_gold_weapon_tint(void);
+extern void update_hero_moby_probed_height_bounds(void);
 
 /* Per-frame update of the help/menu state: validates the cursor, then runs the update chain. */
 void update_hero_frame(void) {
@@ -311,11 +311,11 @@ void update_hero_blink_and_gold_weapon_tint(void)
         && D_0013F450_293D0.items[0].moby != 0)
         func_L00_00207948_293D0(D_0013F450_293D0.items[0].moby, D_0013F450_293D0.moby);
 }
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern int func_L00_001F3958(void);
-extern void func_L01_0023D688(int, int);
-extern float func_001F9B88(float);
-extern void func_L00_0020BFA8(void);
+extern int coll_sphere(float, void *, int, void *);
+extern int CollType(void);
+extern void Hero_SetMoveState(int, int);
+extern float FastAbsF(float);
+extern void exit_hero_vehicle_mode_if_mode_three(void);
 
 // Handles a pending state change (func_L08_0021DFB8 without its state-2 flag): clears the request and sets per-state flags.
 void update_hero_ground_material_effects(void) {
@@ -689,15 +689,15 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir)
     return 0;
 }
 extern unsigned char D_0013E633[] NOT_SDA;
-extern void func_L00_0020ED30(void);
-extern void func_L00_00210E00();
-extern void func_L00_002638B8(char *o);
-extern void func_L00_00233868(void);
-extern void func_L00_00207220(void);
-extern void func_L00_00205B50(void);
-extern void func_L01_002320F8(void);
-extern void func_L00_00232EA8(void);
-extern void func_L01_0023D688(int, int);
+extern void cancel_hero_item_animation(void);
+extern void hero_update_items();
+extern void clear_moby_transform_history(char *o);
+extern void HeroSetObjectFlags(void);
+extern void release_and_clear_hero_voice_slots(void);
+extern void reset_hero_easing_records(void);
+extern void HeroSetCollisionSize(void);
+extern void clear_hero_queued_animation(void);
+extern void Hero_SetMoveState(int, int);
 
 /* Starts a level scene: resets the player state, takes the new moby and sets up its flags. */
 void enter_hero_vehicle_mode_and_set_moby(int a, int b, int c) {
@@ -731,9 +731,9 @@ void enter_hero_vehicle_mode_and_set_moby(int a, int b, int c) {
     }
     Hero_SetMoveState(b, 1);
 }
-extern void func_0020D678(void *);
-extern void func_L01_0023D688(int, int);
-extern int D_L01_0015F6A8 MACRO_ADDR;
+extern void DeleteMoby(void *);
+extern void Hero_SetMoveState(int, int);
+extern int novalis_game_mode MACRO_ADDR;
 
 /* resets the hero state and default camera fields */
 void exit_hero_vehicle_mode_and_restore_moby(void) {
@@ -804,22 +804,22 @@ typedef struct {
     u8 pad38[8];
 } T_8;
 extern G_8 D_0013F450_231B98 __asm__("D_0013F450");
-extern s32 D_L01_0015F6A8 MACRO_ADDR;
-extern T_8 D_L01_00178600[];
-extern s32 D_0015EE84 MACRO_ADDR;
-extern s32 D_0013E090[];
-extern s32 D_0015EFA8 MACRO_ADDR;
-extern f32 D_0015EE6C MACRO_ADDR;
-extern u8 D_0013F530[];
-void func_L00_00207220(void);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001FA748(f32, f32);
-f32 func_001F9F90(f32);
-f32 func_001F9FA8(f32);
-void func_001F9BD8(void *, void *, void *);
-void func_L01_0023D688(s32, s32);
-void func_L00_00217570(s32, s32);
-void func_L00_00211338(void *, s32, f32, f32);
+extern s32 novalis_game_mode MACRO_ADDR;
+extern T_8 novalis_moby_hit_records[];
+extern s32 g_current_level_index MACRO_ADDR;
+extern s32 level_hero_hit_counts[];
+extern s32 hero_hit_count MACRO_ADDR;
+extern f32 g_frame_time MACRO_ADDR;
+extern u8 hero_velocity[];
+void release_and_clear_hero_voice_slots(void);
+void FastVecSub(void *, void *, void *);
+f32 FastAddRots(f32, f32);
+f32 FastCos(f32);
+f32 FastSin(f32);
+void FastVecAdd(void *, void *, void *);
+void Hero_SetMoveState(s32, s32);
+void allocate_hero_voice_for_entry(s32, s32);
+void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00231580. */
 s32 HeroL01_TryTakeHit(s32 arg) {
@@ -985,10 +985,10 @@ typedef struct {
 extern P231ae0 D_0013F450_2320F8 __asm__("D_0013F450");
 extern f32 D_0013F670[];
 extern f32 D_0015EE60_320F8 __asm__("D_0015EE60") MACRO_ADDR;
-extern f32 D_0015EE64 MACRO_ADDR;
-f32 func_001F9D48(void *, void *);
-f32 func_00214D28(f32, f32, f32 *);
-void func_L00_0025C918(f32 *, f32 *, f32, f32, f32, f32);
+extern f32 g_frame_scale_sq MACRO_ADDR;
+f32 vec_distance_xy(void *, void *);
+f32 ApproachValue(f32, f32, f32 *);
+void Spring(f32 *, f32 *, f32, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00231ae0. */
 void HeroSetCollisionSize(void) {
@@ -1025,9 +1025,9 @@ void HeroSetCollisionSize(void) {
     }
 }
 extern char D_0013E633_328A8[] __asm__("D_0013E633");
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_L01_0017C2B8[];
-extern void func_L00_00211F80(int, float);
+extern float g_frame_time MACRO_ADDR;
+extern float novalis_hero_speed_bands[];
+extern void stick_target(int, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_00232290. */
 void HeroSpeedFromTable(void) {
@@ -1053,18 +1053,18 @@ void HeroSpeedFromTable(void) {
         }
     }
 }
-extern float func_L00_00234250(float *v);
-extern float func_001F9CE8(void *);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
-extern int func_L00_001F3958(void);
-extern float func_L00_001FF860(float, float);
-extern float D_0015EE6C MACRO_ADDR;
-extern int D_L01_0017435C;
-extern char D_L01_00174340[];
+extern float gravity_length_xy(float *v);
+extern float vec_length_xy(void *);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern int coll_line(void *, void *, int, int, int);
+extern int CollType(void);
+extern float fast_atan2(float, float);
+extern float g_frame_time MACRO_ADDR;
+extern int novalis_coll_hit_type;
+extern char novalis_coll_hit[];
 
 /* Checks the hero's movement against walls ahead and slides the direction along the wall. */
 void clip_hero_horizontal_velocity(int flag) {
@@ -1144,26 +1144,26 @@ void clip_hero_horizontal_velocity(int flag) {
 }
 typedef int Q __attribute__((mode(TI)));
 extern u8 D_L01_00174360[];
-extern s32 D_0015EE84 MACRO_ADDR;
+extern s32 g_current_level_index MACRO_ADDR;
 void func_001F9BC0_333D8(void *) __asm__("func_001F9BC0");
-void func_L00_00212D70(void *, void *, s32, f32, f32);
-s32 func_L00_001EFFF0(void *, void *, s32, s32, s32);
-s32 func_L00_001F3988(void);
-s32 func_L00_001F3958(void);
-f32 func_00214440(void *, void *);
-s32 func_L00_0025F410(s32);
-u8 *func_L00_0025D390(s32);
-f32 func_001F9D10(void *, void *);
+void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
+s32 coll_line(void *, void *, s32, s32, s32);
+s32 coll_sound_class(void);
+s32 CollType(void);
+f32 resolve_camera_surface_height(void *, void *);
+s32 is_moby_in_class_range_500_to_540(s32);
+u8 *GetFlaggedPvarWord(s32);
+f32 FastVecDist(void *, void *);
 void func_001252C0(void *, void *);
-f32 func_L00_002345B0(void *);
-f32 func_L00_001FF860(f32, f32);
-void func_001F9BF0(void *, void *, void *);
-f32 func_001F9C78(void *, void *);
-void func_001F9C30(void *, void *, f32);
-void func_L00_001FF4B0(void *, void *, f32);
-void func_L00_002167C8(void *, void *);
-void func_L00_00233E48(void *, f32, f32, f32);
-f32 func_001F9B88(f32);
+f32 compute_gravity_relative_vector_inclination(void *);
+f32 fast_atan2(f32, f32);
+void FastVecSub(void *, void *, void *);
+f32 FastVecDot(void *, void *);
+void FastVecScale(void *, void *, f32);
+void vec_scale_to_length(void *, void *, f32);
+void compute_rotated_vector_angles(void *, void *);
+void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
+f32 FastAbsF(f32);
 typedef struct {
     u8 pad88[0x88];
     f32 xF88;
@@ -1208,7 +1208,7 @@ typedef struct {
     u8 pad20b3[0x23];
     u8 xB20b3;
 } GS;
-extern GS D_0013F450;
+extern GS g_hero;
 typedef struct {
     u8 pad0[0x18];
     s32 i18;
@@ -1391,16 +1391,16 @@ d1:
     }
 }
 extern char D_L01_00174370[];
-extern short D_0015EE60;
-extern void func_001F9BC0(float *);
-extern void func_L00_00235040(void);
-extern void func_L00_00234090(float *dst, float *src, float dz);
-extern void func_L00_00233D50(float *dst, float *src, float h);
-extern int func_L00_001F1D20(float, float, void *, int, void *);
-extern int func_L00_001F34F0(float, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9CB8(void *);
-extern void func_L00_001FF4B0(void *, void *, float);
+extern short frame_scale;
+extern void clear_u64_value(float *);
+extern void Hero_ConstrainToPath(void);
+extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
+extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
+extern int coll_capsule(float, float, void *, int, void *);
+extern int coll_sphere_hero_groups(float, void *);
+extern void FastVecSub(void *, void *, void *);
+extern float FastVecLength(void *);
+extern void vec_scale_to_length(void *, void *, float);
 
 /* Checks that the hero capsule passes: sweeps the capsule toward the target, and clamps the remaining offset. */
 int resolve_hero_position_with_collision_queries(int a0) {
@@ -1473,10 +1473,10 @@ int resolve_hero_position_with_collision_queries(int a0) {
     return 1;
 }
 typedef int u128_34970 __attribute__((mode(TI)));
-extern void func_L00_001FF500(void *, void *, float);
-extern float func_L00_00213A08(void *);
-extern void func_L00_00234420(float *, float *, float);
-extern void func_L00_00233F88(void *, void *, float);
+extern void vec_set_length_xy(void *, void *, float);
+extern float forward_component(void *);
+extern void set_gravity_relative_vector_length_xy(float *, float *, float);
+extern void add_hero_forward_offset(void *, void *, float);
 
 // Accelerates the hero's air velocity toward the stick direction, clamped to the step.
 void air_accel(float step) {
@@ -1561,26 +1561,26 @@ typedef struct {
     s32 w0;
     u8 pad4[0x70 - 4];
 } Entry70_23c710;
-extern struct PadState D_0013CA40;
+extern struct PadState g_controller_state;
 extern Entry70_23c710 D_L01_00179DF0[];
 extern short D_L01_0015F6A8_3CE00 __asm__("D_L01_0015F6A8");
-extern u8 D_0013D5C8[];
-extern void func_L00_00216D40(void);
-extern s32 func_001F9908(s32 *);
-extern s16 func_001F9938(s16 *);
-extern void func_L01_00231A68(void);
-extern s32 func_001F9850(s32);
-extern s32 func_L00_00267BA8(s32, s32, s32);
-extern struct Moby *func_0020D348(s32);
-extern void func_L00_00251E30(struct Moby *);
+extern u8 item_available[];
+extern void update_hero_tilt(void);
+extern s32 fast_dec_timer(s32 *);
+extern s16 FastDecTimer(s16 *);
+extern void exit_hero_vehicle_mode_and_restore_moby(void);
+extern s32 scale_ticks(s32);
+extern s32 pad_pressed_within(s32, s32, s32);
+extern struct Moby *CreateMoby(s32);
+extern void moby_build_matrix(struct Moby *);
 extern void func_L01_00231960_3CE00(s32, s32, struct Moby *) __asm__("func_L01_00231960");
-extern f32 func_L00_002342F8(void *);
+extern f32 gravity_z(void *);
 extern void func_001F9BC0_3CE00(void *) __asm__("func_001F9BC0");
-extern void func_001F9C30(void *, void *, f32);
-extern f32 func_001F9CB8(void *);
-extern void func_L00_002222F0(void);
-extern void func_L00_00233EE0(void *, f32, f32, f32);
-extern void func_L00_00211908(void);
+extern void FastVecScale(void *, void *, f32);
+extern f32 FastVecLength(void *);
+extern void update_hero_planar_distance_spring_motion(void);
+extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
+extern void Hero_OnKilled(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_0023c710. */
 void update_hero_timers_and_vehicle_transitions(void) {
@@ -1721,11 +1721,11 @@ void request_hero_idle_state_for_vehicle_mode(void)
     }
 }
 extern int hl_next(int, int) __asm__("func_L01_0023D688");
-extern void func_L00_00232C10(int, int, float);
-extern void func_L00_00232E60(int bank, int seq);
-extern void func_L00_002607A8(void *a, float x);
-extern int func_L01_002274A8(int a);
-extern int D_L01_0015F7BC MACRO_ADDR;
+extern void set_hero_animation(int, int, float);
+extern void HeroQueueSequence(int bank, int seq);
+extern void ClampVectorLength(void *a, float x);
+extern int get_hero_idle_animation_index(int a);
+extern int novalis_hero_run_step1_start_frame MACRO_ADDR;
 extern char D_0013A5E0[];
 
 // Chooses the next hero state when landing, with sounds and effects.

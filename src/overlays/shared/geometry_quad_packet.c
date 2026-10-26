@@ -2,8 +2,8 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern int *D_L02_00161240 MACRO_ADDR;
-extern char D_L02_00160A20[];
+extern int *l02_packet MACRO_ADDR;
+extern char aridia_geometry_quad_giftag[];
 
 /* Appends a display-list entry: a DMA tag, a constant quad and a 0x154 record built from three vectors. */
 void draw_geometry_quad_5188(long *a, int *b, int *c, long d, int on) {

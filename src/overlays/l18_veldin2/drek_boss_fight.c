@@ -29,42 +29,42 @@ typedef struct {
 } VData;
 
 typedef struct { char pad[0x2FC]; unsigned char *p2FC; char pad2[14]; short s30E; } VG;
-extern unsigned char *D_L18_00160058 MACRO_ADDR;
-extern char *D_L18_0016016C MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern short *D_L18_001AC540[];
+extern unsigned char *veldin2_moby_table MACRO_ADDR;
+extern char *veldin2_arena_nodes MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern short *veldin2_moby_groups[];
 extern char D_0013E633[];
-extern short D_L18_00162318;
-extern short D_L18_00162320;
-extern short D_L18_00162324;
-extern short D_L18_00162328;
-extern short D_L18_0016232C;
-extern short D_L18_00162330;
-extern short D_L18_00162334;
-extern short D_L18_00162344;
-extern short D_L18_00162348;
-extern short D_L18_0016234C;
-extern short D_L18_00162350;
+extern short veldin2_moby_group_move_enabled;
+extern short veldin2_moby_group_accel;
+extern short veldin2_moby_group_decel;
+extern short veldin2_moby_group_max_speed;
+extern short veldin2_moby_group_late_accel;
+extern short veldin2_moby_group_late_decel;
+extern short veldin2_moby_group_late_max_speed;
+extern short veldin2_moby_group_fall_progress;
+extern short veldin2_moby_group_debris_progress;
+extern short veldin2_moby_group_debris_start_rate;
+extern short veldin2_moby_group_debris_scale;
 extern float D_L18_00167858;
-extern float D_L18_0015F660[] MACRO_ADDR;
+extern float veldin2_zero_vec[] MACRO_ADDR;
 
-extern int func_001F9850(int);
-extern void func_L12_0027C260(char *, void *, int);
+extern int scale_ticks(int);
+extern void capture_linked_moby_relative_transforms(char *, void *, int);
 extern void func_L12_0027C368_v(char *, void *, int) __asm__("func_L12_0027C368");
-extern float func_00214D88(float, float, float, float, float *, float *);
-extern int func_001F9908(int *);
-extern void func_L18_002FBD40(void *);
-extern void func_0020D678(void *);
-extern void func_001F9C08(void *, void *, void *, float);
+extern float ApproachWithVelocity(float, float, float, float, float *, float *);
+extern int fast_dec_timer(int *);
+extern void mark_class_0630_moby_and_child_for_removal(void *);
+extern void DeleteMoby(void *);
+extern void lerp_vector(void *, void *, void *, float);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern int func_002140B0(int);
-extern float func_002140F8(float, float);
-extern float func_001FA748(float, float);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L01_002F9908(void *, void *, unsigned int, int, float, float, float, float, int);
+extern int random_integer_below(int);
+extern float random_float_between(float, float);
+extern float FastAddRots(float, float);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void FastVecAdd(void *, void *, void *);
+extern void spawn_debris_moby(void *, void *, unsigned int, int, float, float, float, float, int);
 
 /* Moves a linked group of class 0x630 mobys together, then makes it fall once the hero leaves it. */
 void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
@@ -185,8 +185,8 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
         }
     }
 }
-extern void func_L18_002F3108(int, int);
-extern void func_L18_002FBCE8(int, int);
+extern void mark_block_entries_within_transform_xy_bounds(int, int);
+extern void set_group_class_0630_moby_byte_bc(int, int);
 
 /* Activates a class 0x565 moby in state 1: marks block entries in its bounds and wakes its group. */
 void activate_drek_boss_class_0565_moby(unsigned char *moby) {
@@ -213,7 +213,7 @@ typedef struct {
 } Level18VendorData;
 
 
-extern void func_L12_0027C368(Moby *, void *, int);
+extern void apply_linked_moby_relative_transforms(Moby *, void *, int);
 
 /* Reset this vendor moby's counters before its per-frame update. */
 void reset_drek_boss_class_0565_moby(Moby *moby) {
@@ -225,12 +225,12 @@ void reset_drek_boss_class_0565_moby(Moby *moby) {
     }
     apply_linked_moby_relative_transforms(moby, data->update_data, data->field338);
 }
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern float func_001F9B88(float);
-extern char *D_L18_0016016C MACRO_ADDR;
-extern unsigned char D_L18_001C6780[];
-extern char *D_L18_001C6480[];
+extern void FastVecSub(void *, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern float FastAbsF(float);
+extern char *veldin2_arena_nodes MACRO_ADDR;
+extern unsigned char veldin2_tie_class_slot_by_id[];
+extern char *veldin2_tie_classes[];
 
 typedef struct { int pad[3]; int w0c; int pad2; float w14; int pad3[2]; } Ent;
 typedef struct { char pad[0x26]; short n; Ent *e; } Blk;
@@ -255,13 +255,13 @@ void mark_block_entries_within_transform_xy_bounds(int a, int b) {
         }
     } while (++i < ((Blk *)veldin2_tie_classes[veldin2_tie_class_slot_by_id[a]])->n);
 }
-extern float D_0015EE6C MACRO_ADDR;
-extern void func_L18_002F33D8(struct Moby *);
-extern void func_001F49B0(void (*)(void), void *);
-extern int func_L00_0028EB98(void *, int);
-extern int func_0022ED80(int, int, int);
-extern void func_L00_0028EBF0(int);
-extern float func_00214D28(float *p, float target, float maxstep);
+extern float g_frame_time MACRO_ADDR;
+extern void draw_glow_moby_layered_quads(struct Moby *);
+extern void AddDrawCallback(void (*)(void), void *);
+extern int Sound_IsPlaying(void *, int);
+extern int Moby_PlaySound(int, int, int);
+extern void Sound_StopSlot(int);
+extern float ApproachValue(float *p, float target, float maxstep);
 
 typedef struct VoiceSlot {
     u8 pad_00[0x74];
@@ -330,24 +330,24 @@ struct GlowVars_33D8 {
     f32 scroll;
     f32 max_alpha;
 };
-extern short D_L18_00162358;
-extern short D_L18_0016235C;
-extern short D_L18_00162360;
-extern short D_L18_00162364;
-extern short D_L18_00162370;
-extern short D_L18_00162374;
-extern short D_L18_00162378;
-extern short D_L18_0016237C;
-extern short D_L18_00162380;
-extern float D_L18_00167840[];
-extern float D_L18_001DA620[4][2];
+extern short veldin2_glow_color_start;
+extern short veldin2_glow_color_end;
+extern short veldin2_glow_layer_spacing;
+extern short veldin2_glow_height_spread;
+extern short veldin2_glow_scroll_speed;
+extern short veldin2_glow_blend_a;
+extern short veldin2_glow_blend_b;
+extern short veldin2_glow_blend_c;
+extern short veldin2_glow_blend_d;
+extern float veldin2_camera_pos[];
+extern float veldin2_glow_quad_uvs[4][2];
 typedef int Q33D8 __attribute__((mode(TI)));
-extern Q33D8 D_L18_001DA640[4];
-extern void func_001FA460(void *, void *);
-extern float func_001F9D10(void *, void *);
-extern int func_001F4868(int);
-extern int func_001FA8A8(int, int, float);
-extern void func_L00_001FD1D8(void *, void *, int);
+extern Q33D8 veldin2_glow_quad_corners[4];
+extern void copy_matrix_rotation(void *, void *);
+extern float FastVecDist(void *, void *);
+extern int GetEffectTex(int);
+extern int FastTweenColor(int, int, float);
+extern void draw_world_quad(void *, void *, int);
 
 /* Draws the glow moby's scrolling layered quads, faded by distance from the camera. */
 void draw_glow_moby_layered_quads(struct Moby *moby) {
@@ -407,17 +407,17 @@ void draw_glow_moby_layered_quads(struct Moby *moby) {
         draw_world_quad(&quads[3], matrix, 0);
     }
 }
-extern short D_L18_00162388;
-extern short D_L18_0016238C;
-extern short D_L18_00162398;
-extern short D_L18_0016239C;
+extern short veldin2_lift_count;
+extern short veldin2_lift_raised_flag;
+extern short veldin2_lift_uv_scroll;
+extern short veldin2_lift_uv_scroll_speed;
 extern unsigned char D_001414F5[];
-extern unsigned char D_0013D505[];
-extern float func_00214D88(float, float, float, float, float *, float *);
-extern void func_L18_002F39F8(void *);
-extern void func_L18_002F3A80(char *);
-extern void func_L18_002F3C28(char *);
-extern void func_L18_002F3DD0(char *);
+extern unsigned char menu_item_enabled_105[];
+extern float ApproachWithVelocity(float, float, float, float, float *, float *);
+extern void synchronize_lift_group_height(void *);
+extern void draw_lift_25_quad_mesh(char *);
+extern void draw_lift_38_quad_mesh(char *);
+extern void draw_lift_22_quad_mesh(char *);
 
 typedef struct { float f0; float f4; int w8; int wc; int w10; int w14; float f18; } VD;
 
@@ -532,19 +532,19 @@ typedef float FVec4[4] __attribute__((aligned(16)));
 typedef struct {
     FVec4 v;
 } FRow;
-extern short D_L18_001623A0;
-extern short D_L18_001623A4;
-extern short D_L18_001623A8;
-extern short D_L18_001623AC;
-extern short D_L18_001623B0;
-extern short D_L18_001623B4;
-extern short D_L18_001623B8;
-extern float D_L18_001DAA60[][2];
-extern FRow D_L18_001DA680[];
-extern short D_L18_001DA8D0[][4][2];
-extern int func_001F4868(int);
-extern void func_001FA190(void *);
-extern void func_L00_001FD1D8(void *, void *, int);
+extern short veldin2_lift_mesh_blend_a;
+extern short veldin2_lift_mesh_blend_b;
+extern short veldin2_lift_mesh_blend_c;
+extern short veldin2_lift_mesh_blend_d;
+extern short veldin2_lift_mesh_blend_fix;
+extern short veldin2_lift_mesh_tex;
+extern short lift_mesh_color;
+extern float veldin2_lift25_uvs[][2];
+extern FRow veldin2_lift25_vertices[];
+extern short veldin2_lift25_quads[][4][2];
+extern int GetEffectTex(int);
+extern void set_identity_matrix(void *);
+extern void draw_world_quad(void *, void *, int);
 
 /* Draws 25 textured quads from the L18 tables, in the moby's frame. */
 void draw_lift_25_quad_mesh(char *moby) {
@@ -583,9 +583,9 @@ void draw_lift_25_quad_mesh(char *moby) {
         draw_world_quad(quad_positions, height_offset_transform, 0);
     }
 }
-extern float D_L18_001DB140[][2];
-extern FRow D_L18_001DAB90[];
-extern short D_L18_001DAEE0[][4][2];
+extern float veldin2_lift38_uvs[][2];
+extern FRow veldin2_lift38_vertices[];
+extern short veldin2_lift38_quads[][4][2];
 
 /* Draws 38 textured quads from the L18 tables, in the moby's frame. */
 void draw_lift_38_quad_mesh(char *moby) {
@@ -621,9 +621,9 @@ void draw_lift_38_quad_mesh(char *moby) {
         draw_world_quad(quad_positions, height_offset_transform, 0);
     }
 }
-extern float D_L18_001DB660[][2];
-extern FRow D_L18_001DB2F0[];
-extern short D_L18_001DB500[][4][2];
+extern float veldin2_lift22_uvs[][2];
+extern FRow veldin2_lift22_vertices[];
+extern short veldin2_lift22_quads[][4][2];
 
 /* Draws 22 textured quads from the L18 tables, in the moby's frame. */
 void draw_lift_22_quad_mesh(char *moby) {
@@ -665,12 +665,12 @@ typedef struct {
     char pad46[0x132];
     char *mobs[1];
 } MobyList;
-extern int D_L18_0015F6A8 MACRO_ADDR;
-extern unsigned char D_0015EEB0[] MACRO_ADDR;
-extern MobyList D_L18_0016D2E0;
-extern char D_L18_0017CEC0[];
-extern short D_L18_00162434;
-extern void func_0020D960(char *, int, void *);
+extern int veldin2_cinematic_mode MACRO_ADDR;
+extern unsigned char gCheats[] MACRO_ADDR;
+extern MobyList veldin2_cutscene_state;
+extern char veldin2_big_head_manipulator[];
+extern short veldin2_big_head_scale;
+extern void AttachManipulator(char *, int, void *);
 
 /* Re-initialize the class 0x4E1 effect block for each listed moby that has no active effect. */
 void attach_drek_boss_big_head_manipulator(char *moby) {
@@ -789,92 +789,92 @@ typedef struct BossShared {
     unsigned char f4A;
 } BossShared;
 /* The hero record (D_0013E633 + 0xE1D elsewhere in this file) and the sound slot table before it. */
-extern Hero D_0013F450;
-extern char D_0013E650[];
-extern float D_L18_0015F4FC MACRO_ADDR;
-extern float D_0015EE64 MACRO_ADDR;
-extern float D_L18_00167840[];
-extern int *D_L18_001B11B0[];
+extern Hero g_hero;
+extern char voice_pool[];
+extern float veldin2_screen_fade MACRO_ADDR;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern float veldin2_camera_pos[];
+extern int *veldin2_paths[];
 /* A 2-byte declaration, like the other variables of this object: retail reads it through $gp outside a delay
    slot (+0x2D4). */
-extern short D_L18_00162430;
-extern short D_L18_001623F0;
-extern short D_L18_00162408;
-extern short D_L18_00162420;
-extern short D_L18_00162424;
-extern short D_L18_00162428;
-extern short D_L18_0016242C;
-extern void func_L18_002F7278(char *moby);
-extern void func_L18_002F72E0(char *moby);
-extern void func_L18_002F7F00(char *moby);
-extern void func_L18_002F7DC0(char *m);
-extern void func_L18_002F86E8(char *moby);
-extern void func_L18_002F8CE0(char *moby);
-extern void func_L18_002F8408(int unused, int idx);
-extern void func_L18_002F8488(int a0, int idx);
-extern int func_L18_002F8518(char *moby);
-extern int func_L18_002F7CD8(char *moby, float arg, void *x);
-extern unsigned char *func_L18_002F8270(char *self);
-extern void func_L18_002F8B00(char *moby, void *p);
+extern short drek_boss_camera_reset_done;
+extern short drek_boss_intro_started;
+extern short drek_boss_arena_radius;
+extern short drek_boss_camera_move_request;
+extern short drek_boss_camera_move_ticks;
+extern short drek_boss_camera_move_hold_ticks;
+extern short drek_boss_class_3d7_ticks;
+extern void count_drek_boss_platform_event_once(char *moby);
+extern void update_drek_boss_damage_and_phase_transitions(char *moby);
+extern void update_drek_boss_arena_circling_movement(char *moby);
+extern void update_drek_boss_hero_follow_movement(char *m);
+extern void update_drek_boss_state_dependent_scalars(char *moby);
+extern void render_drek_boss_joint_glows(char *moby);
+extern void hide_drek_boss_moby_group(int unused, int idx);
+extern void show_drek_boss_moby_group(int a0, int idx);
+extern int select_drek_boss_next_action(char *moby);
+extern int advance_drek_boss_planar_position_toward_target(char *moby, float arg, void *x);
+extern unsigned char *select_drek_boss_platform_firing_target(char *self);
+extern void spawn_drek_boss_firing_effects(char *moby, void *p);
 /* Defined further down with a typedef the file only declares there: no prototype here. */
-extern void func_L18_002F8680();
-extern void func_L00_00264B40(float, int, int, unsigned char *);
-extern void func_L00_0025B178(void *);
-extern void func_L00_00211908(void);
-extern void func_L00_00299B68(int);
-extern void func_L00_00286128(void *, void *);
-extern void func_L00_00217718(void *, void *, int, int);
-extern void func_L00_002512D8(int);
-extern void func_L00_00250800(void *, int, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_L00_001FF500(void *, void *, float);
-extern void func_L00_002EBF50(void *, void *, int, int, int);
-extern void func_L00_0029ADD8(void);
-extern void func_L00_0029A8D0(int i);
-extern void func_L00_00264BE8(void *, void *, void *, float, float);
-extern void func_L00_00263950(char *, char *, int, float, float);
+extern void set_drek_boss_relative_aim_yaw();
+extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
+extern void set_ground_height_band(void *);
+extern void Hero_OnKilled(void);
+extern void StartCutscene(int);
+extern void jet_reset_camera(void *, void *);
+extern void Hero_ResetToPosition(void *, void *, int, int);
+extern void jet_clear_persistent(int);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void vec_set_length_xy(void *, void *, float);
+extern void CameraScript(void *, void *, int, int, int);
+extern void start_slideshow(void);
+extern void queue_movie_with_game_language(int i);
+extern void draw_trail(void *, void *, void *, float, float);
+extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void func_L15_002092E0(void);
-extern void func_00219C70(int arg0);
-extern void func_00213DE0(void *, int, int, int);
-extern void func_001F9BC0(void *);
-extern int func_00215570(void *arg0, int arg1);
-extern int func_00215B18(char *, float);
-extern int func_L00_0025A778(void *, void *, int);
-extern int func_001FA8A8(int, int, float);
-extern float func_L00_001FF860(float, float);
-extern float func_L00_0025CE58(float *, float *, float, float, float, float);
-extern float func_L00_00258C80(float lo, float hi);
-extern float func_001F9D10(void *, void *);
-extern float func_001F9D48(void *, void *);
-extern float func_001F9CB8(void *);
-extern float func_001F9CE8(void *);
-extern float func_001F9878(float);
-extern float func_001FA888(int);
-extern float func_001FA850(float, float);
-extern float func_00214358(void *, int, float);
-extern float func_00214158(void);
-extern void func_L18_002D8140(int idx);
-extern void func_L18_002D81B0(void *moby);
-extern void func_L18_002D9358(unsigned char *arg, int value);
-extern void func_L18_002D93C0(unsigned char *arg);
-extern void func_L18_002E0E90(char *moby, void *v0, void *v1, void *v2, void *v3, void *v4, int a6, int a7, int a8);
-extern void func_L18_002EB558(unsigned char *arg, void *src, void *position, int active, float speed);
-extern void func_L18_002DD848(char *moby, void *pos, float f);
-extern void func_L18_002DCD28(char *pos, float *vec, int arg, float fa, float fb);
-extern char *func_L18_002D8070(void *pos, int idx);
-extern void *func_L18_002D7F48(float *a, float *b, int idx);
-extern char *func_L18_002DD7D0(void *owner, void *vector, float value);
-extern char *func_L18_002EB4E0(void *owner, void *vector, int value);
-extern float func_L18_002E0F80(void *moby);
-extern int func_L18_002E0F90(void *moby);
-extern int func_L18_002F1420(char *moby, int idx, float *pos);
-extern int func_L18_002FDB28(int idx, float *pos, float *dir, float speed);
-extern int func_L18_002FDCA0(int idx);
+extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
+extern void PauseAllSounds(int arg0);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern void clear_u64_value(void *);
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
+extern int IsFrameWithinWindow(char *, float);
+extern int IsPointInPolygon(void *, void *, int);
+extern int FastTweenColor(int, int, float);
+extern float fast_atan2(float, float);
+extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
+extern float randf_sym(float lo, float hi);
+extern float FastVecDist(void *, void *);
+extern float vec_distance_xy(void *, void *);
+extern float FastVecLength(void *);
+extern float vec_length_xy(void *);
+extern float multiply_global_factor(float);
+extern float IntToFloat(int);
+extern float FastDiffRots(float, float);
+extern float ProbeGroundHeight(void *, int, float);
+extern float random_angle_radians(void);
+extern void Moby583_ActivateGroup(int idx);
+extern void Moby_InitActionMode(void *moby);
+extern void request_thruster_pack_lock_red_wait(unsigned char *arg, int value);
+extern void end_thruster_pack_lock_red_wait(unsigned char *arg);
+extern void start_position_and_rotation_transition(char *moby, void *v0, void *v1, void *v2, void *v3, void *v4, int a6, int a7, int a8);
+extern void refresh_moby_position_and_activate(unsigned char *arg, void *src, void *position, int active, float speed);
+extern void refresh_ring_effect(char *moby, void *pos, float f);
+extern void spawn_class_270_moby(char *pos, float *vec, int arg, float fa, float fb);
+extern char *find_nearest_class_247_moby_in_list(void *pos, int idx);
+extern void *find_class_247_moby_with_largest_xy_angle_in_list(float *a, float *b, int idx);
+extern char *create_class_274_ring_effect(void *owner, void *vector, float value);
+extern char *create_class_3d7_moby(void *owner, void *vector, int value);
+extern float get_position_and_rotation_transition_progress(void *moby);
+extern int classify_moby_state_two_or_three(void *moby);
+extern int activate_drek_fight_missiles_in_group(char *moby, int idx, float *pos);
+extern int launch_first_idle_group_class_0772_moby(int idx, float *pos, float *dir, float speed);
+extern int count_group_class_0772_mobys_not_in_state_8(int idx);
 /* Parameter order as retail sets the arguments up (the floats before the last integers); the definition of
    func_L18_002D70E8 in vendor_002A8400.c lists its float first, with the same registers. */
-extern char *func_L18_002D6738(float *pos, float *dir, float *target, float a, float b, int frames, int kind);
-extern char *func_L18_002D70E8(int owner, int idx, float *from, float *to, float speed, int frames);
+extern char *create_rocket_moby(float *pos, float *dir, float *target, float a, float b, int frames, int kind);
+extern char *launch_class_238_moby_from_list(int owner, int idx, float *from, float *to, float speed, int frames);
 
 /* Update of the final boss robot (class 1422): one step of its state machine, then its bob, aim and tint. */
 void drek_final_boss_robot_update(Moby *moby) {
@@ -1906,7 +1906,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         AddDrawCallback((void (*)(void))render_drek_boss_joint_glows, moby);
     }
 }
-extern short D_L18_00162438;
+extern short sinking_platform_fall_count;
 
 /* Latches the target from the global block once, and counts a class 0x24B hit. */
 void count_drek_boss_platform_event_once(char *moby) {
@@ -1927,10 +1927,10 @@ void count_drek_boss_platform_event_once(char *moby) {
         }
     }
 }
-extern short D_L18_001623C0;
-extern short D_L18_00162414;
-extern short D_L18_00162418;
-extern short D_L18_0016241C;
+extern short drek_boss_scale;
+extern short drek_boss_phase_camera_ticks;
+extern short drek_boss_phase_camera_hold_ticks;
+extern short drek_boss_phase_reset_request;
 
 typedef struct {
     char pad0[0x204];
@@ -1952,17 +1952,17 @@ typedef struct {
 } L18Node;
 
 extern void func_L18_00267000_v(void *, float) __asm__("func_L18_00267000");
-extern char *func_L00_0025B478(void *, int, int);
-extern int func_L00_0025B4D0(void *, void *, void *, int, void *, void *, int, int);
-extern void func_L00_0025E4B0(void *m, short *p);
-extern void func_001FFDA0(int, int);
-extern void func_L00_0025E590(void *, void *);
+extern char *MobyGetHitMessage(void *, int, int);
+extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
+extern void RerollEffectCounter(void *m, short *p);
+extern void Hud_SetBarValueById(int, int);
+extern void StepColorFade(void *, void *);
 extern char *func_0020D348_m(int) __asm__("func_0020D348");
-extern void func_0020DAF8(void *, int, void *);
-extern void func_001FA480(void *, void *);
-extern void func_L00_00251E30(void *);
-extern int func_L00_00260FB0(float a, char *m, char *b, int c, int d, int *e, int f);
-extern int func_L18_002D9440(char *);
+extern void MobyTransformScaledVertex(void *, int, void *);
+extern void matrix_copy_rows(void *, void *);
+extern void moby_build_matrix(void *);
+extern int FindNearestEligibleMoby(float a, char *m, char *b, int c, int d, int *e, int f);
+extern int poll_moby_state_and_rearm(char *);
 extern char *func_L18_002DD7D0_v(void *, void *, float) __asm__("func_L18_002DD7D0");
 extern void func_L18_002F30C8_v(void *) __asm__("func_L18_002F30C8");
 extern void func_L18_002E0E90_v(char *, void *, void *, void *, void *, void *, int, int, int) __asm__("func_L18_002E0E90");
@@ -2197,8 +2197,8 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
         }
     }
 }
-extern float func_00214D88(float, float, float, float, float *, float *);
-extern void func_001F9BD8(void *, void *, void *);
+extern float ApproachWithVelocity(float, float, float, float, float *, float *);
+extern void FastVecAdd(void *, void *, void *);
 
 /* steps a moby's offset vector toward a target, returns whether both settled */
 int advance_drek_boss_planar_position_toward_target(char *moby, float arg, void *x) {
@@ -2225,12 +2225,12 @@ int advance_drek_boss_planar_position_toward_target(char *moby, float arg, void 
     }
     return 0;
 }
-extern void func_L00_002607A8(void *a, float x);
-extern float func_001F9D48(void *, void *);
-extern char *D_L18_0016016C MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern short D_L18_0016240C;
-extern short D_L18_001623DC;
+extern void ClampVectorLength(void *a, float x);
+extern float vec_distance_xy(void *, void *);
+extern char *veldin2_arena_nodes MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern short drek_boss_arena_radius_mode_f;
+extern short drek_boss_follow_distance;
 
 /* Moves a moby's follow distance toward a target, clamped to a range, then applies it. */
 void update_drek_boss_hero_follow_movement(char *m) {
@@ -2361,11 +2361,11 @@ void func_L18_002F7F00_r(Moby *moby) {
     func_L18_002F7CD8_2F7F00((char *)moby, speed * D_0015EE6C_2F7F00, &goal);
     func_00214D28_2F7F00(&v->pos.f[2], ((ArenaNode_2F7F00 *)D_L18_0016016C_2F7F00)[v->node].center.f[2], D_0015EE6C_2F7F00 * 4.0f);
 }
-extern int func_L18_002D9C48(void *obj);
-extern void func_L18_002D9C78(void *, int, int);
-extern float func_001F9C78(void *, void *);
-extern short D_L18_001623C8;
-extern short D_L18_001623CC;
+extern int request_floating_platform_sink(void *obj);
+extern void request_floating_platform_tilt(void *, int, int);
+extern float FastVecDot(void *, void *);
+extern short drek_boss_platform_target_radius;
+extern short drek_boss_platform_tilt_ticks;
 
 /* Returns the nearest sinkable platform (class 0x24B) in range for the Drek boss to fire at. */
 unsigned char *select_drek_boss_platform_firing_target(char *self) {
@@ -2448,7 +2448,7 @@ void show_drek_boss_moby_group(int a0, int idx) {
         } while (*p++ >= 0);
     }
 }
-extern short D_L18_001DFE00[];
+extern short drek_boss_action_allowed[];
 
 /* Picks a new state for the moby at random among the allowed transitions, retrying up to 100 times until one is accepted. */
 int select_drek_boss_next_action(char *moby) {
@@ -2486,8 +2486,8 @@ int select_drek_boss_next_action(char *moby) {
     return state;
 }
 typedef union { long long quad; float f[4]; } L18Vector;
-extern float func_L00_001FF860(float, float);
-extern float func_001FA790(float, float);
+extern float fast_atan2(float, float);
+extern float FastSubRots(float, float);
 
 /* Stores in dest the yaw from one point to another, relative to the source moby's yaw. */
 void set_drek_boss_relative_aim_yaw(char *source, char *dest, L18Vector *from, L18Vector *to) {
@@ -2496,33 +2496,33 @@ void set_drek_boss_relative_aim_yaw(char *source, char *dest, L18Vector *from, L
     to_position.quad = to->quad;
     *(float *)(dest + 0x68) = FastSubRots(fast_atan2(to_position.f[0] - from_position.f[0], to_position.f[1] - from_position.f[1]), ((struct Moby *)source)->rot.z);
 }
-extern void func_L06_00317770(char *moby);
-extern void func_001FFDA0(int arg0, int arg1);
-extern void func_L00_002E9900(float x, float y, int flag);
-extern void func_L00_002E9968(float x, float y);
-extern int func_001FFB38(int, int, int, int, int, int, int);
+extern void SetTableEntryFlagIfKind18(char *moby);
+extern void Hud_SetBarValueById(int arg0, int arg1);
+extern void Cam_SetDistanceGoal(float x, float y, int flag);
+extern void follow_camera_set_height(float x, float y);
+extern int queue_animation_update(int, int, int, int, int, int, int);
 extern float func_00214D88_p(float *, float, float *, float, float, float) __asm__("func_00214D88");
-extern void func_L00_00236710();
-extern void func_L00_00236830();
+extern void reset_numeric_hud_element();
+extern void Hud_UpdateCounter();
 extern void func_L06_0024A080();
-extern char *D_L18_0015F050 MACRO_ADDR;
+extern char *veldin2_camera_descriptors MACRO_ADDR;
 extern int D_L18_0016A310[];
 extern char D_L18_00167BD0[];
-extern char D_L18_00167700[];
-extern short D_L18_00162440;
-extern short D_L18_00162444;
-extern short D_L18_00162448;
-extern short D_L18_0016244C;
-extern short D_L18_00162450;
-extern short D_L18_00162454;
-extern short D_L18_00162458;
-extern short D_L18_0016245C;
-extern short D_L18_00162460;
-extern short D_L18_00162464;
-extern short D_L18_00162468;
-extern short D_L18_0016246C;
-extern short D_L18_00162470;
-extern short D_L18_00162474;
+extern char veldin2_player_camera[];
+extern short drek_boss_cam_max_speed;
+extern short drek_boss_cam_accel;
+extern short drek_boss_cam_range_near;
+extern short drek_boss_cam_range_far;
+extern short drek_boss_cam_dist_far;
+extern short drek_boss_cam_height_far;
+extern short drek_boss_cam_dist_near;
+extern short drek_boss_cam_height_near;
+extern short drek_boss_cam_attack_dist;
+extern short drek_boss_cam_attack_height;
+extern short drek_boss_cam_node_dist;
+extern short drek_boss_cam_node_height;
+extern short drek_boss_cam_state9_dist;
+extern short drek_boss_cam_state9_height;
 
 /* Steers the camera-ish follow targets of a moby from its state and the player distance. */
 void update_drek_boss_state_dependent_scalars(char *moby) {
@@ -2631,29 +2631,29 @@ x = *(float *)&drek_boss_cam_attack_dist;
                     *(float *)&drek_boss_cam_max_speed * g_frame_time);
 }
 typedef struct { float v[4]; } __attribute__((aligned(16))) QVec;
-extern int func_L00_001FEF78(void *);
-extern int func_L00_00258BC8(int, int);
-unsigned char *func_L00_00272158(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z, float w, float pw);
-extern char *func_L00_0026DA50(void *pos, void *dir, int c, int d, int n, int k, float f);
-extern short D_L18_0016247C;
-extern short D_L18_00162480;
-extern short D_L18_00162498;
-extern short D_L18_0016249C;
-extern short D_L18_001624A0;
-extern short D_L18_001624A4;
-extern short D_L18_001624A8;
-extern short D_L18_001624AC;
-extern short D_L18_001624B0;
-extern short D_L18_001624B4;
-extern short D_L18_001624B8;
-extern short D_L18_001624BC;
-extern short D_L18_001624C0;
-extern short D_L18_001624C8;
-extern short D_L18_001624CC;
-extern short D_L18_001624D0;
-extern short D_L18_001624D4;
-extern short D_L18_001624D8;
-extern short D_L18_001624DC;
+extern int fast_subtract_rotations_cf(void *);
+extern int rand_range(int, int);
+unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z, float w, float pw);
+extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
+extern short drek_boss_fire_puff_color;
+extern short drek_boss_fire_puff_end_color;
+extern short drek_boss_fire_spark_count;
+extern short drek_boss_fire_spark_speed_min;
+extern short drek_boss_fire_spark_speed_max;
+extern short drek_boss_fire_spark_size;
+extern short drek_boss_fire_spark_grow_rate;
+extern short drek_boss_fire_spark_gravity;
+extern short drek_boss_fire_spark_spin_min;
+extern short drek_boss_fire_spark_spin_max;
+extern short drek_boss_fire_spark_life_min;
+extern short drek_boss_fire_spark_life_max;
+extern short drek_boss_fire_spark_damping;
+extern short drek_boss_fire_puff_count;
+extern short drek_boss_fire_puff_speed_min;
+extern short drek_boss_fire_puff_speed_max;
+extern short drek_boss_fire_puff_life_min;
+extern short drek_boss_fire_puff_life_max;
+extern short drek_boss_fire_puff_size;
 
 /* Spawns the spark and smoke particles of a Drek boss shot at the muzzle point. */
 void spawn_drek_boss_firing_effects(char *moby, void *p) {
@@ -2687,19 +2687,19 @@ void spawn_drek_boss_firing_effects(char *moby, void *p) {
     }
     }
 }
-extern float func_001F9FA8(float);
-extern void func_L00_00264690(void *, int, float, float);
-extern int D_L18_0015F6B0 MACRO_ADDR;
-extern short D_L18_001624F0;
-extern short D_L18_001624E8;
-extern short D_L18_001624EC;
-extern short D_L18_001624E0;
-extern short D_L18_001624E4;
-extern short D_L18_001624FC;
-extern short D_L18_00162500;
-extern short D_L18_00162504;
-extern short D_L18_001624F4;
-extern short D_L18_001624F8;
+extern float FastSin(float);
+extern void draw_offset_textured_effect_quad(void *, int, float, float);
+extern int veldin2_frame_count MACRO_ADDR;
+extern short drek_boss_rider_glow_period;
+extern short drek_boss_rider_glow_color_a;
+extern short drek_boss_rider_glow_color_b;
+extern short drek_boss_rider_glow_size;
+extern short drek_boss_rider_glow_offset;
+extern short drek_boss_charge_glow_color_a;
+extern short drek_boss_charge_glow_color_b;
+extern short drek_boss_charge_glow_period;
+extern short drek_boss_charge_glow_size;
+extern short drek_boss_charge_glow_offset;
 
 typedef struct {
     char pad0[0x3A0];

@@ -10,51 +10,51 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
-extern int D_0018A3B0[];
-extern void func_001F99B0();
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
-extern char D_001940C0[];
-extern long D_00151888[3];
-extern int D_0015F6FC;
-extern short D_0015F534;
-extern void func_001FB530(void);
-extern void func_001F3D78(void);
-extern int D_0015F564;
-extern int D_0018DD40[];
-extern int D_0018DC40[];
-extern short D_0015F59C;
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
-extern void func_001F6668(void *, void *, void *, void *, void *, int,
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
+extern int draw_config[];
+extern void FastMemSet();
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
+extern char occl_visibility[];
+extern long gs_display_settings[3];
+extern int space_load_in_progress;
+extern short draw_enable_mask;
+extern void append_gif_transfer_packet(void);
+extern void DrawDebugProfiler(void);
+extern int draw_callback_count;
+extern int draw_callback_args[];
+extern int draw_callback_funcs[];
+extern short GlobalStateFlag;
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
+extern void FontPrint(void *, void *, void *, void *, void *, int,
                           unsigned char *);
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
-extern int func_001F4868(int);
-extern void func_001FB498(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern int D_0018E840[];
-extern long D_00152178 NOT_SDA;
-extern int func_001FE4D0(void);
-extern char D_00199A68[];
-extern short D_0015F780;
-extern int func_001F6FD8(int a, int b, int c, int d, int e);
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
+extern int GetEffectTex(int);
+extern void PutDrawBufferLarge(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern int bit_swap_lut[];
+extern long background_rgbaq NOT_SDA;
+extern int Help_FindIndex(void);
+extern char s_paradox_this_message_does_not[];
+extern short help_msgs;
+extern int FontPrintCenterLarge(int a, int b, int c, int d, int e);
 
 typedef struct {
     unsigned short id;
     char pad[6];
 } HudIconRec;
-extern HudIconRec *D_0019A504;
+extern HudIconRec *hud_icon_table;
 
 /* Finds arg0 in the table D_0019A504 points to (ended by id 0xFFFF).
    The older decode read D_0019A504 as the table itself. */
@@ -68,14 +68,14 @@ int Hud_GetIconIndex(int arg0) {
     return i;
 }
 
-extern int D_0019A4E8 NOT_SDA;
-extern int func_001FFB38(int, int, int, int, int, int, int);
+extern int hud_state NOT_SDA;
+extern int queue_animation_update(int, int, int, int, int, int, int);
 extern char *func_001FFAB8_d(int, int, char *, int) __asm__("func_001FFAB8");
-extern char D_0015F7B8[];
-extern unsigned char *D_0015FAB8 MACRO_ADDR;
-extern unsigned char *D_0015FABC MACRO_ADDR;
-extern unsigned char *D_0015FAC0 MACRO_ADDR;
-extern unsigned char *D_0015FAC4 MACRO_ADDR;
+extern char hud_file_str[];
+extern unsigned char *hud_bank_main MACRO_ADDR;
+extern unsigned char *hud_bank_cursor MACRO_ADDR;
+extern unsigned char *hud_bank_end MACRO_ADDR;
+extern unsigned char *hud_bank_aux MACRO_ADDR;
 typedef struct {
     int unk00, unk04;
     char pad08[0x18];
@@ -195,7 +195,7 @@ void LinkHudBank(int bank, int addr) {
 
 LINKER_REMNANT("asm/remnants/text", func_001FF950);
 
-extern s32 D_0015EF88 MACRO_ADDR;
+extern s32 depth_buffer_address MACRO_ADDR;
 struct HudAnimDef {
     u16 id;
     u16 count;
@@ -257,7 +257,7 @@ struct HudState {
     s32 unk30;
 };
 extern struct HudState D_0019A4E8_FF958 __asm__("D_0019A4E8");
-extern void func_001FF7F0(s32 bank, s32 base);
+extern void LinkHudBank(s32 bank, s32 base);
 extern void func_00201348_FF958(u32 data, s32 dbp, s32 psm, s32 wlog, s32 hlog, s32 immediate) __asm__("func_00201348");
 
 /* Uploads the image pages of one HUD bank to GS memory, from the depth buffer address up, and records each page's block offset. Bank 0's pages are linked first when the bank file is not linked yet.
@@ -297,8 +297,8 @@ void Hud_SendResidentBank(s32 bank, s32 base, s32 immediate) {
     }
 }
 
-extern int D_001941CC NOT_SDA;
-extern int D_0019A4E8 NOT_SDA;
+extern int hud_heap_base NOT_SDA;
+extern int hud_state NOT_SDA;
 
 /* Hud_HeapReset(void) */
 void Hud_HeapReset(void) {
@@ -342,8 +342,8 @@ __asm__(".section .text
 ");
 
 extern char D_00199C60_raw[] __asm__("D_00199C60") NOT_SDA;
-extern int D_0015F6E8 MACRO_ADDR;
-extern void func_001FFC48(void *arg0);
+extern int g_game_mode MACRO_ADDR;
+extern void apply_pending_animation(void *arg0);
 
 /* Finds or creates the residency record for arg0's slot (idx = arg0 & 0xF)
    in D_00199C60 (0x90-byte records), matching arg1..arg6 against the
@@ -390,7 +390,7 @@ int queue_animation_update(int arg0, int arg1, int arg2, int arg3, int arg4,
     return *(int *)(p + 0x64);
 }
 
-extern void func_001FFD30(void *, int);
+extern void load_animation_definition(void *, int);
 
 /* Copies the six pending words at +0x24..+0x38 into +0x04..+0x18 after
    func_001FFD30 has seen +0x20, calls the handler now at +0x10 if there
@@ -443,7 +443,7 @@ typedef struct {
     int unk64, unk68;
     char pad6C[0x24];
 } HudRec90;
-extern HudRec90 D_00199C60[] NOT_SDA;
+extern HudRec90 hud_chan_slots[] NOT_SDA;
 /* func_001FFB38 returns the bank id; this caller ignores it, and its
    match was made against a void view. */
 extern void func_001FFB38_v(int, int, int, int, int, int, int) __asm__("func_001FFB38");
@@ -465,7 +465,7 @@ int remove_hud_item(int arg0) {
     return 0;
 }
 
-extern int func_001FF668(int);
+extern int Hud_GetIconIndex(int);
 
 /* tbl[7] is volatile: retail re-loads that pointer field before each of
    the three record accesses rather than caching it, while keeping the
@@ -514,8 +514,8 @@ typedef struct {
     char b[0x13];
 } Cfg13;
 
-extern Cfg13 D_0019A540 NOT_SDA;
-extern Cfg13 D_001E7DD8 NOT_SDA;
+extern Cfg13 message_text_buffer NOT_SDA;
+extern Cfg13 message_too_long_label NOT_SDA;
 extern int func_00116810(void);
 extern void func_001166FC(Cfg13 *, void *);
 
@@ -533,7 +533,7 @@ void copy_text_to_shared_buffer(void *arg0) {
 
 LINKER_REMNANT("asm/remnants/text", func_001FFF08);
 
-extern short D_0015F9D0;   /* SDA (gp -0x7330) */
+extern short ResourceCounter;   /* SDA (gp -0x7330) */
 
 /* Counts the resource counter down by one until it reaches 0. */
 void update_resource_counter(void) {
@@ -553,14 +553,14 @@ typedef struct HudBankCb {
 
 extern char D_0019A4E8_raw[] __asm__("D_0019A4E8");
 extern HudBankCb D_00199C60_cb[] __asm__("D_00199C60") NOT_SDA;
-extern int D_0015F544 MACRO_ADDR;
-extern int D_0015F760 MACRO_ADDR;
-extern int D_0015F764 MACRO_ADDR;
-extern int D_0015F768 MACRO_ADDR;
-extern char D_001994D8[];
-extern unsigned char D_00199528[];
-extern int func_001F98C0(int);
-extern void func_00201A38(int, int, int, int);
+extern int letterbox_enabled MACRO_ADDR;
+extern int hud_msg_count MACRO_ADDR;
+extern int hud_msg_alpha MACRO_ADDR;
+extern int hud_msg_y MACRO_ADDR;
+extern char hud_msg_text1[];
+extern unsigned char hud_msg_text2[];
+extern int scale_game_frame_count(int);
+extern void draw_framed_text(int, int, int, int);
 
 /* Per-frame HUD update: unless the arena's +0x30 skip flag (cleared
    here) or D_0015F544 is set, reset the arena's +0xC colour, run each
@@ -791,9 +791,9 @@ u64 func_00200248_r(s32 frame_id) {
     return tex0_word;
 }
 
-extern int *D_00161000 MACRO_ADDR;
-extern int D_0013E600[];
-extern long func_00200248(int);
+extern int *g_render_packet_cursor MACRO_ADDR;
+extern int g_screen_extent[];
+extern long GetFrameTex(int);
 
 /* Draw HUD texture tex as a sprite at (x, y), w x h, with alpha: a
    1-tag + 5-quadword PACKED GIF packet as func_00200CA0's, with the
@@ -960,7 +960,7 @@ void draw_hud_sprite_uv(int tex, int x, int y, int w, int h, int u, int v, int a
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x50);
 }
 
-extern int *D_00161000 MACRO_ADDR;
+extern int *g_render_packet_cursor MACRO_ADDR;
 
 /* Appends a 1-tag + 5-quadword PACKED GIF packet to D_00161000: a GIFtag
    (0x10000005 / 0 / 0 / 0x50000005), fixed GS register data, arg0
@@ -1024,11 +1024,11 @@ void append_power_of_two_textured_screen_sprite(long texture_register_value, s32
     render_packet_cursor.p = (struct SpritePacket *)((u8 *)render_packet_cursor.p + 0x50);
 }
 
-extern int *D_00161000 MACRO_ADDR;
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9BD8(float *, float *, float *);
-extern void func_001F9BF0(float *, float *, float *);
+extern int *g_render_packet_cursor MACRO_ADDR;
+extern float FastCos(float);
+extern float FastSin(float);
+extern void FastVecAdd(float *, float *, float *);
+extern void FastVecSub(float *, float *, float *);
 
 /* func_00200CA0's rotated sibling: a 1-tag + 6-quadword PACKED GIF
    packet for a w x h sprite at (x, y) turned by rot. The four corners
@@ -1135,7 +1135,7 @@ void draw_hud_sprite_rect(int tex, int x0, int y0, int x1, int y1,
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x50);
 }
 
-extern int *D_00161000 MACRO_ADDR;
+extern int *g_render_packet_cursor MACRO_ADDR;
 extern void func_00122630(void *, int, int, int, int, int, int, int);
 extern void func_00118D80(int);
 extern void func_00122958(void *, void *);
@@ -1200,7 +1200,7 @@ void Hud_sendTexture(char *arg0, int arg1, int arg2, int arg3, int arg4, int arg
     }
 }
 
-extern int *D_00161000 MACRO_ADDR;
+extern int *g_render_packet_cursor MACRO_ADDR;
 
 /* func_002017C8's sibling: same 1-tag + 3-quadword PACKED GIF packet, but
    register-id constant 0x41 (not 0x46) at +0x20, and a FIXED mask
@@ -1247,7 +1247,7 @@ void draw_hud_rect(int x0, int y0, int x1, int y1, long prim, int pixels) {
     g_render_packet_cursor += 12;
 }
 
-extern int *D_00161000 MACRO_ADDR;
+extern int *g_render_packet_cursor MACRO_ADDR;
 
 /* func_002014B8's sibling (register-id constant 0x46, like
    func_002017C8's, instead of 0x41): same 1-tag + 3-quadword PACKED GIF
@@ -1290,7 +1290,7 @@ void draw_hud_rect_blended(int arg0, int arg1, int arg2, int arg3, long arg4,
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x30);
 }
 
-extern int *D_00161000 MACRO_ADDR;
+extern int *g_render_packet_cursor MACRO_ADDR;
 
 /* Appends a 1-tag + 3-quadword PACKED GIF packet to D_00161000: a GIFtag
    (0x10000003 / 0 / 0 / 0x50000003), then TEX-ish GS register data at
@@ -1339,9 +1339,9 @@ void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg4,
 
 LINKER_REMNANT("asm/remnants/text", func_00201948);
 
-extern int func_00200198(int, int);
-extern void func_00200468(int, int, int, int, int, int);
-extern void func_00200650(int, int, int, int, int, int);
+extern int GetIconFrame(int, int);
+extern void HudSprite(int, int, int, int, int, int);
+extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
 
 /* Draw a 3-part stretchable bar: left cap, stretched middle, right cap
  * (mirrored via func_00200650), all using the same GetIconFrame glyph
@@ -1357,8 +1357,8 @@ void draw_stretchable_ui_frame(int a0, int a1, int a2, int a3, int a4) {
 }
 
 extern s32 func_001F6FD8_01A38(s32, s32, u64, s32, s32) __asm__("func_001F6FD8");
-extern void func_00201960(s32, s32, s32, s32, s32);
-void func_00201A38(s32 x, s32 y, s32 color, s32 text);
+extern void draw_stretchable_ui_frame(s32, s32, s32, s32, s32);
+void draw_framed_text(s32 x, s32 y, s32 color, s32 text);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/ui/frames/draw_framed_text.c, draw_framed_text. */
 void draw_framed_text(s32 x, s32 y, s32 color, s32 text) {
@@ -1387,9 +1387,9 @@ struct TagPtr {
     struct DmaTag *p;
 };
 extern struct TagPtr D_00161000_01AF0 __asm__("D_00161000") MACRO_ADDR;
-extern s32 D_0015EE80 MACRO_ADDR;
-extern s32 D_0015EF84 MACRO_ADDR;
-void func_00201AF0(u32 image_address);
+extern s32 pal_mode MACRO_ADDR;
+extern s32 draw_buffer_address MACRO_ADDR;
+void draw_boot_image(u32 image_address);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/draw_boot_image.c, draw_boot_image. */
 void draw_boot_image(u32 image_address) {

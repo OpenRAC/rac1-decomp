@@ -12,256 +12,256 @@
  */
 
 /* Declarations in scope here before the split. */
-extern char D_0013E650[];
-extern int D_0015F694;
-extern void func_001F9A98(void *, void *, int);
-extern char D_00189310[];
-extern char D_001899D0[];
-extern void *D_001871C0 NOT_SDA;
-extern DispatchRec D_001E8F80[];
-extern int D_0018A3B0[];
-extern void func_001F99B0();
-extern void func_001F2BC8(void);
-extern int D_0018C434 NOT_SDA;
-extern char D_001940C0[];
-extern long D_00151888[3];
-extern int D_0015F6FC;
-extern short D_0015F534;
-extern void func_001FB530(void);
-extern void func_001F3D78(void);
-extern int D_0015F564;
-extern int D_0018DD40[];
-extern int D_0018DC40[];
-extern short D_0015F59C;
-extern int func_001F65B0(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char D_001DF3D0[];
-extern unsigned char D_001DF770[];
-extern unsigned char D_001DFB10[];
-extern void func_001F6668(void *, void *, void *, void *, void *, int,
+extern char voice_pool[];
+extern int bank_sound_count;
+extern void FastMemCopy(void *, void *, int);
+extern char backup_cam[];
+extern char gCamBackupState[];
+extern void *cur_cam NOT_SDA;
+extern DispatchRec camera_types[];
+extern int draw_config[];
+extern void FastMemSet();
+extern void BuildOcclVisibility(void);
+extern int occl_update NOT_SDA;
+extern char occl_visibility[];
+extern long gs_display_settings[3];
+extern int space_load_in_progress;
+extern short draw_enable_mask;
+extern void append_gif_transfer_packet(void);
+extern void DrawDebugProfiler(void);
+extern int draw_callback_count;
+extern int draw_callback_args[];
+extern int draw_callback_funcs[];
+extern short GlobalStateFlag;
+extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern unsigned char normal_font_metrics[];
+extern unsigned char small_font_metrics[];
+extern unsigned char large_font_metrics[];
+extern void FontPrint(void *, void *, void *, void *, void *, int,
                           unsigned char *);
-extern int func_001F6600(unsigned char *, int);
-extern int func_001F6620(unsigned char *, int);
-extern int func_001F4868(int);
-extern void func_001FB498(void);
-extern void func_001F3008(void);
-extern void func_001F3140(void);
-extern int D_0018E840[];
-extern long D_00152178 NOT_SDA;
-extern int func_001FE4D0(void);
-extern char D_00199A68[];
-extern short D_0015F780;
-extern int D_001941CC NOT_SDA;
-extern int D_0019A4E8 NOT_SDA;
-extern int func_001FF668(int);
+extern int measure_text_width_regular(unsigned char *, int);
+extern int measure_text_width_small(unsigned char *, int);
+extern int GetEffectTex(int);
+extern void PutDrawBufferLarge(void);
+extern void InitViewContext(void);
+extern void UpdateViewContext(void);
+extern int bit_swap_lut[];
+extern long background_rgbaq NOT_SDA;
+extern int Help_FindIndex(void);
+extern char s_paradox_this_message_does_not[];
+extern short help_msgs;
+extern int hud_heap_base NOT_SDA;
+extern int hud_state NOT_SDA;
+extern int Hud_GetIconIndex(int);
 typedef struct {
     char b[0x13];
 } Cfg13;
-extern Cfg13 D_0019A540 NOT_SDA;
-extern Cfg13 D_001E7DD8 NOT_SDA;
+extern Cfg13 message_text_buffer NOT_SDA;
+extern Cfg13 message_too_long_label NOT_SDA;
 extern int func_00116810(void);
 extern void func_001166FC(Cfg13 *, void *);
-extern short D_0015F9D0;
-extern void func_00201960(int, int, int, int, int);
-extern void func_002023E0(int);
-extern void func_002027C0(int);
-extern void func_00204FC0(void *);
-extern int D_0018CC20 NOT_SDA;
-extern int D_001941C8 NOT_SDA;
-extern int D_0016100C MACRO_ADDR;
-extern int D_001A0468[];
-extern void func_00205830(int a, int b);
+extern short ResourceCounter;
+extern void draw_stretchable_ui_frame(int, int, int, int, int);
+extern void CreatePointLight(int);
+extern void DetachPointLight(int);
+extern void update_world_object_animation(void *);
+extern int render_sequence NOT_SDA;
+extern int vu1_chain_buffer_2 NOT_SDA;
+extern int current_vu_chain MACRO_ADDR;
+extern int map_slot_use[];
+extern void move_map_entry_slot(int a, int b);
 extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
-extern int D_001A01F0[];
-extern int *D_001602E0;
-extern unsigned char D_0013D49C NOT_SDA;
-extern unsigned char D_0013D49D NOT_SDA;
-extern unsigned char D_0013D4A5 NOT_SDA;
-extern short D_0015FE24;
-extern unsigned char D_0013D4AC NOT_SDA;
-extern unsigned char D_0013D4AD NOT_SDA;
-extern unsigned char D_0013D4AE NOT_SDA;
-extern unsigned char D_0013D4AF NOT_SDA;
-extern unsigned char D_0013D4B5 NOT_SDA;
+extern int level_map_selection[];
+extern int *menu_level_indices;
+extern unsigned char menu_item_enabled_0 NOT_SDA;
+extern unsigned char g_menu_item_enabled_1 NOT_SDA;
+extern unsigned char menu_item_enabled_9 NOT_SDA;
+extern short menu_selection_count;
+extern unsigned char menu_item_enabled_16 NOT_SDA;
+extern unsigned char menu_item_enabled_17 NOT_SDA;
+extern unsigned char menu_item_enabled_18 NOT_SDA;
+extern unsigned char menu_item_enabled_19 NOT_SDA;
+extern unsigned char menu_item_enabled_25 NOT_SDA;
 extern int D_001A04B4 NOT_SDA;
-extern unsigned char D_0013D4C5 NOT_SDA;
-extern int D_001414DC NOT_SDA;
-extern unsigned char D_0013D4C0 NOT_SDA;
-extern unsigned char D_0013D4C1 NOT_SDA;
-extern unsigned char D_0013D4C2 NOT_SDA;
-extern unsigned char D_0013D4D3 NOT_SDA;
-extern unsigned char D_0013D4D4 NOT_SDA;
-extern unsigned char D_0013D4D5 NOT_SDA;
-extern unsigned char D_0013D4E0;
-extern unsigned char D_0013D4DC NOT_SDA;
-extern unsigned char D_0013D4DD NOT_SDA;
-extern unsigned char D_0013D4DE NOT_SDA;
-extern unsigned char D_0013D4DF NOT_SDA;
-extern unsigned char D_0013D4E1 NOT_SDA;
-extern unsigned char D_0013D4E9 NOT_SDA;
-extern unsigned char D_0013D502 NOT_SDA;
-extern unsigned char D_0013D503 NOT_SDA;
-extern unsigned char D_0013D504 NOT_SDA;
-extern unsigned char D_0013D505 NOT_SDA;
-extern unsigned char D_0013D50F NOT_SDA;
-extern int D_0013D668[];
-extern void func_00209040(void);
-extern int func_001FAA28(void *dst, int size, int a, int b);
-extern void func_00208860(void *dst);
-extern short D_0015EE84;
+extern unsigned char menu_item_enabled_41 NOT_SDA;
+extern int hero_control_mode NOT_SDA;
+extern unsigned char menu_item_enabled_36 NOT_SDA;
+extern unsigned char menu_item_enabled_37 NOT_SDA;
+extern unsigned char menu_item_enabled_38 NOT_SDA;
+extern unsigned char menu_item_enabled_55 NOT_SDA;
+extern unsigned char menu_item_enabled_56 NOT_SDA;
+extern unsigned char menu_item_enabled_57 NOT_SDA;
+extern unsigned char menu_item_enabled_68;
+extern unsigned char menu_item_enabled_64 NOT_SDA;
+extern unsigned char menu_item_enabled_65 NOT_SDA;
+extern unsigned char menu_item_enabled_66 NOT_SDA;
+extern unsigned char menu_item_enabled_67 NOT_SDA;
+extern unsigned char menu_item_enabled_69 NOT_SDA;
+extern unsigned char menu_item_enabled_77 NOT_SDA;
+extern unsigned char menu_item_enabled_102 NOT_SDA;
+extern unsigned char menu_item_enabled_103 NOT_SDA;
+extern unsigned char menu_item_enabled_104 NOT_SDA;
+extern unsigned char menu_item_enabled_105 NOT_SDA;
+extern unsigned char menu_item_enabled_115 NOT_SDA;
+extern int max_map_coverage_size[];
+extern void DebugEnter_Nop(void);
+extern int compress_map_coverage(void *dst, int size, int a, int b);
+extern void downsample_map_coverage(void *dst);
+extern short g_current_level_index;
 extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
-extern int D_001A0218[] NOT_SDA;
-extern void func_00208458(void *, unsigned char *, int);
-extern void func_00208688(void *, unsigned char *);
-extern char D_0013D390[];
-extern short D_0015EFB0;
-extern int D_0015EFB4;
-extern int D_001A05C0[];
-extern int D_001A08C0[];
-extern int func_0020BAD8(int *p);
-extern int func_0020BBC8(void *dst, int i, int *table);
+extern int map_coverage_active[] NOT_SDA;
+extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
+extern void expand_map_coverage(void *, unsigned char *);
+extern char memory_card_state[];
+extern short mode_freeze_state;
+extern int mode_freeze_flags;
+extern int mc_gamedata[];
+extern int mc_leveldata[];
+extern int memcard_GetDataSize(int *p);
+extern int memcard_PrepData(void *dst, int i, int *table);
 extern int func_001236F0(void);
-extern int func_001E9730();
-extern char D_001E8690[];
+extern int STUB_printf();
+extern char memcard_error_message[];
 extern int D_0013D844 NOT_SDA;
-extern unsigned char D_0013D4A8 NOT_SDA;
+extern unsigned char menu_item_enabled_12 NOT_SDA;
 extern int D_0013D9B4 NOT_SDA;
-extern unsigned char D_0013D490[];
-extern unsigned char D_0013D5CA NOT_SDA;
-extern int D_0013D6B8 NOT_SDA;
+extern unsigned char gSpecialItems[];
+extern unsigned char gHaveHeliPack NOT_SDA;
+extern int race_gates NOT_SDA;
 extern int D_0013DAE4 NOT_SDA;
-extern unsigned char D_0013D4E5 NOT_SDA;
+extern unsigned char menu_item_enabled_73 NOT_SDA;
 extern int D_0013DB24 NOT_SDA;
-extern unsigned char D_0013D4F1 NOT_SDA;
+extern unsigned char menu_item_enabled_85 NOT_SDA;
 extern int D_0013DC34 NOT_SDA;
 extern unsigned char D_0013D605 NOT_SDA;
-extern int D_0013D5C8 NOT_SDA;
-extern unsigned char D_0013D4B0 NOT_SDA;
-extern unsigned char D_0013DE55 NOT_SDA;
-extern unsigned char D_0013D5DD NOT_SDA;
-extern unsigned char D_0013D5E7 NOT_SDA;
-extern int D_001B2F40[];
+extern int item_available NOT_SDA;
+extern unsigned char menu_item_enabled_20 NOT_SDA;
+extern unsigned char gemlik_available NOT_SDA;
+extern unsigned char gHaveMorphORay NOT_SDA;
+extern unsigned char gHaveHologuise NOT_SDA;
+extern int moby_render_slots[];
 extern void func_001FA460_2(void *, void *) __asm__("func_001FA460");
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern int D_001414D0 NOT_SDA;
-extern float D_001CAE00[] NOT_SDA;
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern int g_hero_moby NOT_SDA;
+extern float shadow_light_dir[] NOT_SDA;
+extern float FastCos(float);
+extern float FastSin(float);
 extern void func_00118D80(int);
-extern char D_00165600[];
-extern int D_0015F718;
-extern short D_0015F71C;
-extern char D_001B3200[];
+extern char normal_lut[];
+extern int render_packet_end;
+extern short vu1_chain_safe_end;
+extern char moby_backup_buffer[];
 extern int func_001160D8(void);
-extern float func_00214158(void);
-extern float func_002140F8(float, float);
-extern void func_00215C00(void *, float, float, float);
-extern void func_001F9DC0(void *, void *, float);
-extern void func_001FA460(void *);
-extern void func_002150B0(void *, void *);
-extern void func_001FA480(void *, void *);
-extern float func_0020D830(void);
-extern float func_00215A98(int, float);
-extern unsigned char D_0014BFC0[];
-extern unsigned char D_0013E620[];
-extern unsigned char D_0013D510[];
+extern float random_angle_radians(void);
+extern float random_float_between(float, float);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern void fast_vec_normalize(void *, void *, float);
+extern void copy_matrix_rotation(void *);
+extern void MatrixToQuaternion(void *, void *);
+extern void matrix_copy_rows(void *, void *);
+extern float MobyGetFrameValue(void);
+extern float round_float_to_decimal_places(int, float);
+extern unsigned char gold_bolts_collected[];
+extern unsigned char gold_weapon_purchased[];
+extern unsigned char gSkillPoints[];
 extern void func_0012F068(void *);
-extern void func_002177F0(int);
-extern short D_001517D0[];
+extern void finish_audio_stream_read(int);
+extern short cd_read_state[];
 extern void func_0012EDE0(void *);
 extern void func_0012EFE8(void);
-extern char D_001E8980[];
+extern char load_file_start_failed_string[];
 extern int func_0012EE98(int, int, int, void *);
 extern int func_00217628_v(void) __asm__("func_00217628");
 extern void func_00122598(int);
-extern void func_00217130(void);
+extern void music_Update(void);
 extern void func_0012EC40(void);
 extern void func_0012DDC0(void);
 extern void func_0012EC30(void);
 extern int func_0012F030(void);
-extern void func_002167C0(short, short, short);
-extern void func_002169B8(short, short, short);
+extern void music_start_track_by_id(short, short, short);
+extern void music_PreseekTrack(short, short, short);
 extern short D_001517F0 NOT_SDA;
-extern char D_0013CA40[];
-extern int D_001CDAE0 NOT_SDA;
+extern char g_controller_state[];
+extern int pad_socket_param NOT_SDA;
 extern void func_00124650(void);
 extern void func_00124B88(int);
 extern int func_00124BC8(void *, void *);
-extern void func_00217F68(void *);
-extern int D_0015EF90;
-extern char D_001D4B90[];
-extern char D_001D4BC0[];
-extern char D_001D5F70[] NOT_SDA;
-extern char D_001D603B[];
-extern int D_001A0414;
-extern int D_001CFBF4;
-extern int D_001CFAD8;
-extern void func_0020C7A0(void *);
-extern int func_0020CA50(void *, void *, void *, int);
-extern int D_00141FA0[];
-extern char D_001D0A50[];
-extern char D_001D0A88[];
-extern int D_001A0418 NOT_SDA;
-extern float func_001FA748(float, float);
-extern char *D_001D5F74 NOT_SDA;
-extern void func_0020E180(int, int);
-extern char D_00187040[];
-extern void func_00220128(void *);
+extern void poll_pad_device_state(void *);
+extern int pause_action_list_mode;
+extern char pause_action_list_pal[];
+extern char pause_action_list_short[];
+extern char menu_system[] NOT_SDA;
+extern char animation_asset_read_active[];
+extern int selected_level_index;
+extern int selected_mission_id;
+extern int selected_mission_index;
+extern void update_mission_list(void *);
+extern int collect_mission_ids(void *, void *, void *, int);
+extern int pause_iop_sprite_lists[];
+extern char heli_pack_menu_table[];
+extern char no_helipack_menu_table[];
+extern int pause_memory_card_state NOT_SDA;
+extern float FastAddRots(float, float);
+extern char *current_menu_page NOT_SDA;
+extern void DrawMobyList(int, int);
+extern char gCamera[];
+extern void rotate_preview_moby_x(void *);
 extern void *func_00226720_a(int) __asm__("func_00226720");
-extern int func_002267C0(int);
-extern void func_00234C98(int, int);
-extern void func_00205E70(void);
-extern void func_001F4630(int);
-extern void func_001F4748(void);
+extern int delete_moby(int);
+extern void VU1_addGSregister(int, int);
+extern void draw_map_overlay(void);
+extern void SetupGifPaging(int);
+extern void DoGifPaging(void);
 extern void func_001F68E8_c(int, int, long, void *, int)
     __asm__("func_001F68E8");
 extern void *func_001FE540_id(int) __asm__("func_001FE540");
-extern short D_001602B0;
-extern void func_00201640(int, int, int, int, long, long);
-extern int func_00200198(int, int);
-extern void func_00200468(int, int, int, int, int, int);
-extern void func_001F5800(int, int, int, int, int, int, int, int, long,
+extern short panel_clear_color;
+extern void draw_hud_rect_blended(int, int, int, int, long, long);
+extern int GetIconFrame(int, int);
+extern void HudSprite(int, int, int, int, int, int);
+extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long,
                           long);
-extern short D_00151880[];
-extern long D_001A0448;
-extern int func_00226EA8(int);
-extern int func_00226F68(int);
-extern int D_0013CC04 NOT_SDA;
-extern char D_001D2678[];
-extern char *D_001D5F78 NOT_SDA;
-extern unsigned char D_001B3E40[] NOT_SDA;
-extern void *func_0020D348(void);
-extern void func_0020E340(void *, int, int, int, int);
+extern short fs_aa_buffer[];
+extern long transition_overlay_tex0;
+extern int acquire_menu_stream_buffer(int);
+extern int release_menu_stream_buffer(int);
+extern int pad0_pressed_unmasked NOT_SDA;
+extern char pause_default_action_list[];
+extern char *pause_current_action_list NOT_SDA;
+extern unsigned char resident_class_slot_by_id[] NOT_SDA;
+extern void *CreateMoby(void);
+extern void pack_render_command_fields(void *, int, int, int, int);
 typedef struct {
     int key;
     int flags;
 } PadBind;
 extern PadBind D_001D6448_t[] __asm__("D_001D6448");
-extern int func_00227018(int handle);
-extern int D_001D6448[];
-extern char D_001D5D58[] NOT_SDA;
-extern char *D_001B3580[] NOT_SDA;
+extern int get_menu_stream_buffer_size(int handle);
+extern int menu_stream_buffers[];
+extern char preview_resource_bindings[] NOT_SDA;
+extern char *moby_class_resources[] NOT_SDA;
 extern int D_001D6860[];
 extern int D_001D74C0[];
 extern int D_001D6760[];
 extern char D_00187180_a[] __asm__("D_00187180");
-extern char D_00194220[];
-extern int D_0013E6BC;
-extern void func_002141A8(void *, float, float);
+extern char coll_hit_pos[];
+extern int sound_probe_ignore;
+extern void random_spherical_offset(void *, float, float);
 extern void func_001F9BD8_a(void *, void *, void *) __asm__("func_001F9BD8");
 extern void func_001F9C30_a(void *, void *, float) __asm__("func_001F9C30");
 extern void func_001F9BF0_a(void *, void *, void *) __asm__("func_001F9BF0");
 extern int func_001EFE10_a(void *, void *, int, int, int) __asm__("func_001EFE10");
-extern char D_00187180[];
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001EFE10(void *, void *, int, int, int);
-extern float func_001F9D10(int, void *);
-extern void func_0022DA10(void *, float, float, float);
-extern void func_001F9EE8(void *, void *, void *);
-extern float func_001F9CE8(void *);
+extern char camera_position[];
+extern void FastVecSub(void *, void *, void *);
+extern void coll_line_fix(void *, void *, int, int, int);
+extern float FastVecDist(int, void *);
+extern void calculate_voice_distance_volume(void *, float, float, float);
+extern void transform_vector(void *, void *, void *);
+extern float vec_length_xy(void *);
 extern float func_001FA058_a(float, float) __asm__("func_001FA058");
-extern void func_001FA898(float);
+extern void truncate_float_to_s32(float);
 extern void func_00120F30(int);
 extern int func_0012E060(void *, int);
 extern void func_0012EE70(int);
@@ -269,9 +269,9 @@ extern void func_0012EF48(int);
 extern void func_0012E2E8(void);
 
 extern char D_0018CC20_c[] __asm__("D_0018CC20");
-extern float D_0018CEB0;
+extern float view_tan_half_fov;
 extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern void func_001F9CA0(void *, void *, void *);
+extern void FastVecCross(void *, void *, void *);
 
 /* Movie-camera keyframe step (as func_001EB338): the keyframe's +0x1C
    sets D_0018CEB0, its position and X/Y/Z angles set the camera position
@@ -319,21 +319,21 @@ typedef struct {
     long gs[4];        /* 0x70 */
 } Quad_FBE0;
 
-extern char D_001D9B40[];
-extern void func_001F7EF8(void *, int, int);
-extern int D_0015F6E8 MACRO_ADDR;
-extern int func_001F98C0(int);
-extern void func_001F9C48(void *, void *, float);
-extern int func_001FA9E8(void *, int *, float);
-extern float func_00214358(void *, int, float);
+extern char quad_default_uvs[];
+extern void draw_world_quad_packet(void *, int, int);
+extern int g_game_mode MACRO_ADDR;
+extern int scale_game_frame_count(int);
+extern void scale_vector(void *, void *, float);
+extern int bsphere_check_alpha(void *, int *, float);
+extern float ProbeGroundHeight(void *, int, float);
 typedef struct {
     char pad[0x20];
     int mode;
     short level;
     short set;
 } FlareCfg;
-extern FlareCfg D_0013E130;
-extern float D_001D9B60[][4][4];
+extern FlareCfg level_render_state;
+extern float light_flare_corners[][4][4];
 
 /* Draws a light flare quad at arg0's position (+0x00; the matrix is at
    +0xC0) when func_001FA9E8 finds it on screen, with the alpha it
@@ -389,9 +389,9 @@ __asm__(".section .text\n\tnop\n\tnop\n\tnop\n\tnop\n\tnop\n");
 
 LINKER_REMNANT("asm/remnants/text", func_0022F498);
 
-extern int D_0015F6E4 MACRO_ADDR;
+extern int space_load_level MACRO_ADDR;
 extern int D_0015F6FC_m __asm__("D_0015F6FC") MACRO_ADDR;
-extern short D_0015F690; /* SDA, gp -0x7670 */
+extern short space_load_pending; /* SDA, gp -0x7670 */
 
 /* Requests a switch to level arg0 and flags the load as pending. */
 void initialize_global_state_entry(int arg0) {
@@ -623,10 +623,10 @@ void build_resident_indexed_texture_warp_meshes(int unused) {
 }
 
 extern void func_00234C98_l(int, long) __asm__("func_00234C98");
-extern long D_00160680 MACRO_ADDR;
-extern float D_001D9E20[];
-extern float D_001D9DE0[][4];
-extern short D_001605F0;
+extern long resident_quad_texture MACRO_ADDR;
+extern float resident_quad_level_scales[];
+extern float resident_quad_corners[][4];
+extern short resident_quad_pos;
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
 
 /* Its 0x8000000044 is built as ps2eeas built it (tools/ps2eeas_dli.py). */
@@ -657,8 +657,8 @@ void draw_resident_textured_quad(void) {
    that constant is ps2eeas's expansion of the same `dli`, which
    tools/ps2eeas_dli.py reproduces; GNU as builds it differently. */
 extern void func_00234C98_l(int, long) __asm__("func_00234C98");
-extern int D_0013E604;
-extern long D_00160688 MACRO_ADDR;
+extern int frame_size;
+extern long resident_banner_texture MACRO_ADDR;
 
 /* Draws the 256x32 banner texture near the bottom of the screen with alpha arg0. */
 void draw_resident_textured_banner(int arg0) {
@@ -694,33 +694,33 @@ struct MemoryCardState_305A0 {
 extern struct MemoryCardState_305A0 D_0013D390_305A0 __asm__("D_0013D390");
 extern u8 D_0013DE4B[];
 extern struct LevelRenderState_305A0 D_0013E130_305A0 __asm__("D_0013E130");
-extern s32 D_0015F538 MACRO_ADDR;
-extern f32 D_0015F53C MACRO_ADDR;
+extern s32 game_frame_counter MACRO_ADDR;
+extern f32 gFade MACRO_ADDR;
 extern s32 D_0015F704_305A0 SDATA(D_0015F704);
 extern s32 D_0018CC54[];
 extern s32 D_0018CD98[];
-extern struct LevelProjectionState_305A0 D_0018CE00;
-extern void func_00235290(u32);
-extern void func_001F2608();
-extern void func_001F3140();
-extern void func_001F3C10();
-extern void func_001F4630(s32);
-extern void func_001F4748();
+extern struct LevelProjectionState_305A0 view_context;
+extern void append_dma_tag(u32);
+extern void BuildViewMatrices();
+extern void UpdateViewContext();
+extern void ResetGsRegisters();
+extern void SetupGifPaging(s32);
+extern void DoGifPaging();
 extern s64 func_001F4868_305A0(s32) __asm__("func_001F4868");
-extern void func_001F55C0(s32, s32, s32, s32);
-extern void func_001F5800(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64);
+extern void emit_rgba_draw_packet(s32, s32, s32, s32);
+extern void DrawTexturedQuad(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64);
 extern s32 func_001FA898_305A0(f32) __asm__("func_001FA898");
-extern void func_001FB530();
-extern void func_00200E38(f32, f32, f32, f32, s32, s32, s64, f32);
-extern void func_0020DAB0(void);
-extern void func_0020DD48();
-extern void func_0020E2B0(void);
-extern void func_0022C5A0();
-extern void func_0022F738(s32);
-extern void func_0022FBE0();
-extern void func_0022FD20(s32);
+extern void append_gif_transfer_packet();
+extern void draw_rotated_sprite(f32, f32, f32, f32, s32, s32, s64, f32);
+extern void prune_moby_references(void);
+extern void PatchMobyGifs();
+extern void DrawMobys(void);
+extern void draw_sky_shells();
+extern void build_resident_indexed_texture_warp_meshes(s32);
+extern void draw_resident_textured_quad();
+extern void draw_resident_textured_banner(s32);
 extern void func_00233AB8_305A0(s32) __asm__("func_00233AB8");
-extern void func_00234AC8(s32);
+extern void VU1_syncChain(s32);
 extern void func_00234C98_305A0(s32, s64) __asm__("func_00234C98");
 extern struct LevelDisplayState_305A0 D_0013E600_305A0 __asm__("D_0013E600");
 
@@ -794,10 +794,10 @@ void render_level_frame(void) {
     PatchMobyGifs();
 }
 
-extern float D_001D9EF0[][6][4];
-extern float D_0015EE6C MACRO_ADDR;
-extern int func_002140B0(int);
-extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
+extern float flare_spark_offsets[][6][4];
+extern float g_frame_time MACRO_ADDR;
+extern int random_integer_below(int);
+extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 /* Spawns six particles around a moby: random velocity and a position taken from the flare corner table, transformed by the moby's matrices. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/effects/fun_0022f5b0.c, FUN_0022f5b0. */
 void emit_six_spark_effects(char *m, float z) {
@@ -1666,9 +1666,9 @@ void update_resident_gameplay_state(void) {
     }
 }
 
-extern int D_0013E150;
-extern void func_001F45F0(void);
-extern void func_002305A0(void);
+extern int ship_substate;
+extern void prepare_debug_profiler_render(void);
+extern void render_level_frame(void);
 
 /* A switch on D_0013E150, whose jump table is linked into the data
    segment at retail's jtbl_001E8C90 (see rac1.ld.sh). */
@@ -1691,7 +1691,7 @@ void dispatch_game_state_update(void) {
     }
 }
 
-extern s32 D_0016100C MACRO_ADDR;
+extern s32 current_vu_chain MACRO_ADDR;
 typedef struct { long q[2]; } dummy_q;
 typedef struct {
     s32 tex;         /* 0x00 */
@@ -1772,61 +1772,61 @@ typedef struct {
     s32 scene_mode;
     s32 scene_state;
 } LevelRenderState_q;
-extern s32 D_0015F540 MACRO_ADDR;
-extern s32 D_0015EF8C MACRO_ADDR;
-extern s32 D_0015EF74 MACRO_ADDR;
-extern s32 D_0015EF78 MACRO_ADDR;
-extern s32 D_0015EE88 MACRO_ADDR;
+extern s32 white_fade_level MACRO_ADDR;
+extern s32 g_gs_texture_allocation_base MACRO_ADDR;
+extern s32 g_gs_texture_allocation_cursor MACRO_ADDR;
+extern s32 g_gs_texture_allocation_start MACRO_ADDR;
+extern s32 g_game_language MACRO_ADDR;
 extern u8 D_00194280[];
-extern u8 D_001B6C00[0xE00];
+extern u8 resident_class_material_maps[0xE00];
 extern s32 D_001B6500[];
 struct CommonArchiveMemory;
-extern struct CommonArchiveMemory D_001941C0;
+extern struct CommonArchiveMemory level_resource_buffers;
 struct DiscTable;
-extern struct DiscTable D_00137C80;
-extern u64 D_0019E7C0[3];
-extern s32 D_00160008 MACRO_ADDR;
-extern s32 D_001B5D00[];
-extern s32 D_00160000 MACRO_ADDR;
-extern s32 D_0015F560 MACRO_ADDR;
-extern char D_001CAE40[0x1000];
-extern u8 D_0019C2C0[];
-extern u8 D_0019C4C0[];
-extern char D_0019BEC0[];
-extern u8 D_001D9AD0[];
-extern u8 * D_00160018 MACRO_ADDR;
-extern u8 * D_0016001C MACRO_ADDR;
-extern u8 * D_00160028 MACRO_ADDR;
+extern struct DiscTable disc_table;
+extern u64 special_material_template[3];
+extern s32 resident_indexed_texture_count MACRO_ADDR;
+extern s32 resident_indexed_texture_addrs[];
+extern s32 resident_moby_class_count MACRO_ADDR;
+extern s32 level_texture_payload_address MACRO_ADDR;
+extern char resident_indexed_textures[0x1000];
+extern u8 point_lights[];
+extern u8 point_light_data[];
+extern char dir_lights[];
+extern u8 default_dir_lights[];
+extern u8 * resident_object_pool MACRO_ADDR;
+extern u8 * moby_instance_end MACRO_ADDR;
+extern u8 * g_moby_vars MACRO_ADDR;
 extern u8 * D_001601AC MACRO_ADDR;
 extern s32 D_001601B4 MACRO_ADDR;
-extern u8 * D_00160020 MACRO_ADDR;
+extern u8 * moby_instance_perm_end MACRO_ADDR;
 extern s32 D_001601B0 MACRO_ADDR;
 extern s32 D_001601B8 MACRO_ADDR;
 extern u8 D_001CDB00[];
-extern s32 D_00160030 MACRO_ADDR;
-extern s32 D_001601BC MACRO_ADDR;
+extern s32 occl_fog_count MACRO_ADDR;
+extern s32 part_clip_dist MACRO_ADDR;
 extern short D_001605E0;
-extern u8 D_0013DE48[20] NOT_SDA;
+extern u8 level_available[20] NOT_SDA;
 extern u8 D_00186410[];
 extern u8 D_00186450[];
-extern u32 D_0015EE5C MACRO_ADDR;
-extern void func_00201E10(void);
-extern void func_002348E8(void);
-extern s32 func_002175C8(void *buf, u32 lsn, u32 sectors);
-extern void func_001F4E08(s32 n);
-extern s32 func_0020C468(s32, s32);
-extern void func_00203958(s32 arg0, s32 count, s32 p);
-extern s32 func_001F9968(s32);
-extern void func_00203118(s32 f);
-extern void func_00203E78(s32 moby, s32 arg1, s32 arg2, s32 oclass);
-extern void func_00203038(s32 src, s32 count);
-extern void func_00202F00(s32 hdr, s32 base, s32 src, s32 count);
-extern s32 func_00202AA8(s32, void *);
-extern void func_001F99D8(void *, s32);
-extern void func_001F3B90(void);
-extern void func_00205220(s32 index);
+extern u32 sound_bank_handle MACRO_ADDR;
+extern void InitMemSlots(void);
+extern void VU1_initChain(void);
+extern s32 Stream_SubmitRead(void *buf, u32 lsn, u32 sectors);
+extern void FadeToBlack(s32 n);
+extern s32 fast_decompress(s32, s32);
+extern void upload_texture_images(s32 arg0, s32 count, s32 p);
+extern s32 log2dim(s32);
+extern void relocate_sky_definition(s32 f);
+extern void register_moby_class(s32 moby, s32 arg1, s32 arg2, s32 oclass);
+extern void unpack_point_records(s32 src, s32 count);
+extern void ParseParticleTexs(s32 hdr, s32 base, s32 src, s32 count);
+extern s32 upload_mip_texture(s32, void *);
+extern void FastMemZero16(void *, s32);
+extern void ResetDrawGlobals(void);
+extern void parse_space_scene_chunk(s32 index);
 extern void func_0012E1C8(s32 cmd, void *arg, s64 data);
-extern void func_0022F090();
+extern void SoundBank_StoreHandle();
 #define sequence (*(f32 *)&D_0015F53C)
 #define D_001413D0 ((s32 *)&D_001414D0)
 #define current_vu_chain_r (*(s32 *)((u8 *)&D_00160000 + 0x100C))
@@ -2055,14 +2055,14 @@ typedef struct {
     WadEntry movie2[12]; /* 0x1998 */
 } WadToc;
 extern WadToc D_00137C80_t __asm__("D_00137C80");
-extern int D_0015EE80 MACRO_ADDR;
-extern int D_0015EE88 MACRO_ADDR;
+extern int pal_mode MACRO_ADDR;
+extern int g_game_language MACRO_ADDR;
 extern int D_001941D4;
-extern int func_0023B670(int, int, int, int, int);
+extern int Movie_Play(int, int, int, int, int);
 extern void func_00120858(int, int);
 extern void func_00123168(void *);
 extern void func_0012F308(void);
-extern void func_001F4E08(int);
+extern void FadeToBlack(int);
 
 /* Plays movie id, taking its {sector, size} from the WAD table of
    contents (from the second table when D_0015EE80 is set). */
@@ -2089,9 +2089,9 @@ void play_level_transition_movie(int id) {
     voice_pool[0x6B] |= 0x10;
 }
 
-extern int *D_00161000 MACRO_ADDR;
-extern int D_0013E600[];
-extern char D_00160950[];
+extern int *g_render_packet_cursor MACRO_ADDR;
+extern int g_screen_extent[];
+extern char textured_quad_giftag[];
 
 typedef union {
     struct {
@@ -2146,8 +2146,8 @@ void append_scrolling_textured_quad(int x, int y, int w, int h, unsigned long rg
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x60);
 }
 
-extern s32 D_0015EF74 MACRO_ADDR;
-extern s32 D_0015EF78 MACRO_ADDR;
+extern s32 g_gs_texture_allocation_cursor MACRO_ADDR;
+extern s32 g_gs_texture_allocation_start MACRO_ADDR;
 typedef struct {
     u64 q[12];
 } sceGsLoadImage __attribute__((aligned(16)));
@@ -2203,20 +2203,20 @@ struct DiscTable {
     struct DiscFile music_20000[36]; /* 0x2988, music tracks 20000.. */
     s32 music_tracks[1]; /* 0x2AA8, by track number */
 };
-extern struct DiscTable D_00137C80;
+extern struct DiscTable disc_table;
 struct CommonArchiveMemory {
     u8 pad_0[0x14];
     s32 archive_base;
 };
-extern s32 D_0015EF8C MACRO_ADDR;
-extern struct CommonArchiveMemory D_001941C0;
+extern s32 g_gs_texture_allocation_base MACRO_ADDR;
+extern struct CommonArchiveMemory level_resource_buffers;
 extern void func_00118D80(s32 a0);
 extern s32 func_00120F30_32B90(s32 a0) __asm__("func_00120F30");
 extern s32 func_00122958(sceGsLoadImage *load_image, s32 image_address);
 extern s32 func_00122630(sceGsLoadImage *load_image, s32 block_offset, s32 buffer_width, s32 pixel_storage_format, s32 x, s32 y, s32 width, s32 height);
 extern s32 func_00120858_32B90(s32 a0, s32 a1) __asm__("func_00120858");
-extern s32 func_0020C468(s32 source_address, s32 destination_address);
-extern s32 func_002175C8(void *a0, u32 a1, u32 a2);
+extern s32 fast_decompress(s32 source_address, s32 destination_address);
+extern s32 Stream_SubmitRead(void *a0, u32 a1, u32 a2);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00231878.c, prepare_loading_slide_textures. */
 void prepare_loading_slide_textures(s32 language_index, s32 first_slide, s32 second_slide,
@@ -2316,7 +2316,7 @@ typedef struct {
     u8 pad_0[0xC];
     s32 half_height;
 } ScreenOfs_32EF0;
-extern u8 D_0013CED0[];
+extern u8 second_clear_packet[];
 /* The memory card state: only the two words the loop tests (PAL offsets, 8 further than the US build). */
 struct MemoryCardState_32EF0 {
     u8 pad_0[0xDC];
@@ -2345,21 +2345,21 @@ extern ScreenOfs_32EF0 D_0013E600_32EF0 __asm__("D_0013E600");
 extern s16 D_0015EF48_32EF0[] __asm__("D_0015EF48") MACRO_ADDR;
 extern s16 D_0015EF4A_32EF0[] __asm__("D_0015EF4A") MACRO_ADDR;
 extern void func_0012F4A8_32EF0(s32) __asm__("func_0012F4A8");
-extern void func_001F3C10(void);
-extern void func_001F3D00(void);
-extern void func_001F4E08(s32);
+extern void ResetGsRegisters(void);
+extern void ResetGsRegistersPr(void);
+extern void FadeToBlack(s32);
 extern void func_001F5800_32EF0(s32, s32, s32, s32, s32, s32, s32, s32, u64, u64) __asm__("func_001F5800");
-extern f32 func_001FA888(s32);
-extern void func_001FB598(void);
-extern s32 func_00204C60(void);
-extern void func_00209070(void);
-extern void func_00209E68(void);
+extern f32 IntToFloat(s32);
+extern void PutDrawBufferSmall(void);
+extern s32 service_level_archive_load(void);
+extern void Menu_RunStateHandler(void);
+extern void memcard_update_state(void);
 extern void func_00232A00_32EF0(s32, s32, s32, s32, u64, u64, f32, f32, f32, f32) __asm__("func_00232A00");
-extern void func_00232B90(s32, s32, s32, u64 *, u64 *, u64 *);
-extern void func_002348E8(void);
-extern void func_00234948(void);
-extern void func_002349B8(void);
-extern void func_00234AC8(s32);
+extern void prepare_loading_slide_textures(s32, s32, s32, u64 *, u64 *, u64 *);
+extern void VU1_initChain(void);
+extern void VU1_swapChain(void);
+extern void VU1_sendChain(void);
+extern void VU1_syncChain(s32);
 extern void func_00234C98_32EF0(s32, u64) __asm__("func_00234C98");
 extern void func_00122598(s32);
 
@@ -2463,7 +2463,7 @@ typedef struct {
     unsigned char fF;
 } Blk3E48;
 extern Blk3E48 D_0013DE48_b __asm__("D_0013DE48");
-extern unsigned char D_0013DE60[];
+extern unsigned char level_visit_state[];
 typedef struct {
     char pad0[0xB];
     char fB;
@@ -2489,32 +2489,32 @@ typedef struct {
 } Blk3D390;
 extern Blk3D390 D_0013D390_b __asm__("D_0013D390");
 
-extern char *D_0015F714 MACRO_ADDR;
-extern int D_0015F538 MACRO_ADDR;
+extern char *level_sound_defs MACRO_ADDR;
+extern int game_frame_counter MACRO_ADDR;
 extern int D_0015EE5C_m __asm__("D_0015EE5C") MACRO_ADDR;
 extern short D_0015EF48_m SDATA(D_0015EF48);
 extern int D_0015EF4A_i __asm__("D_0015EF4A") MACRO_ADDR;
-extern char D_001E8CB8[];
+extern char unloaded_sound_bank_format[];
 extern int func_00122598_i(int) __asm__("func_00122598");
 extern int func_0012EF48_i(int) __asm__("func_0012EF48");
 extern int func_00120F30_i(int) __asm__("func_00120F30");
 
 extern void func_0012F0A8(int, int, int, int, int);
-extern void func_0022EFE8(void);
-extern void func_00216D88(void);
+extern void sound_StopAllSounds(void);
+extern void music_Stop(void);
 extern void func_0012E318(int);
-extern void func_001FB448(int, int, int);
-extern int func_00204BE8(void);
-extern void func_002350A8(void);
-extern void func_00232EF0(int, int, int, int, int);
-extern void func_00232278(void);
+extern void SetBackgroundColor(int, int, int);
+extern int load_level_chunk_from_disc(void);
+extern void DMAC_VIF1_Disable(void);
+extern void play_level_loading_slides(int, int, int, int, int);
+extern void initialize_level_runtime(void);
 extern int func_0012F4A8(int);
-extern void func_001FB8A8(void);
-extern void func_00218908(void);
-extern void func_00230A90(void);
-extern void func_00228110(void);
-extern int func_00204C60(void);
-extern void func_00234AC8(int);
+extern void append_palette_transfer_packet(void);
+extern void UpdatePad(void);
+extern void update_resident_gameplay_state(void);
+extern void SpaceTransition_Tick(void);
+extern int service_level_archive_load(void);
+extern void VU1_syncChain(int);
 
 /* DoSpaceTransition: plays the level-to-level transition (dialogue screens, loading loop) and waits for the load. Adapted from Lombyte's project (GPL-3.0) for PAL: src/gameplay/state/do_space_transition.c, do_space_transition. */
 void DoSpaceTransition(void) {
@@ -2692,27 +2692,27 @@ typedef struct {
     s16 class_id;
 } EnvironmentMappedObject;
 extern s32 D_0013E150_33AB8[] __asm__("D_0013E150");
-extern s32 D_0015F6E8 MACRO_ADDR;
-extern short D_001605A4;
-extern short D_001605A8;
-extern short D_001605AC;
-extern short D_00160620;
-extern short D_00160630;
-extern short D_00160640;
-extern short D_00160650;
-extern short D_00160660;
-extern short D_00160670;
+extern s32 g_game_mode MACRO_ADDR;
+extern short env_map_first_frame;
+extern short env_map_was_active;
+extern short env_map_blend_timer;
+extern short environment_mesh_colors;
+extern short environment_mesh_vertex_counts;
+extern short environment_mesh_quad_counts;
+extern short environment_mesh_normals;
+extern short environment_mesh_positions;
+extern short environment_mesh_quads;
 extern CameraSystem D_00187040_33AB8 __asm__("D_00187040");
 extern FloatVector4 D_00187180_33AB8 __asm__("D_00187180");
-extern Vec4 D_001DC870[];
-extern float D_001DCED0[][2];
-extern float D_001DD200[][2];
+extern Vec4 env_map_world_positions[];
+extern float env_map_uvs[][2];
+extern float env_map_saved_uvs[][2];
 extern u64 func_001F4868_33AB8(int) __asm__("func_001F4868");
-extern void func_001F9908(s32 *);
-extern float func_001F9B88(float);
-extern float func_001F9C78(void *, void *);
-extern float func_001FA888(int);
-extern void func_0020DAF8(EnvironmentMappedObject *, int, void *);
+extern void fast_dec_timer(s32 *);
+extern float FastAbsF(float);
+extern float FastVecDot(void *, void *);
+extern float IntToFloat(int);
+extern void MobyTransformScaledVertex(EnvironmentMappedObject *, int, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/render_environment_mapped_object.c, render_environment_mapped_object. */
 void render_environment_mapped_object(EnvironmentMappedObject *object) {

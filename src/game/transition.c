@@ -26,11 +26,11 @@
  * unit, or some other property not yet isolated). See "Open toolchain
  * questions" in docs/DECOMP_PROGRESS.md.
  */
-extern void func_0022C7E0(void);
-extern void func_0022C188(void);
-extern void func_0022C870(void);
-extern void func_00234C98(int, long);
-extern int D_0015EF88 MACRO_ADDR;
+extern void SetupSkyGifPaging(void);
+extern void SkyLevelGeneric___maybe(void);
+extern void DoSkyGifPaging(void);
+extern void VU1_addGSregister(int, long);
+extern int depth_buffer_address MACRO_ADDR;
 
 /* func_00234C98 is (int, long) and D_0015EF88 MACRO_ADDR; the older
    sq/sd note is obsolete. */
@@ -73,86 +73,86 @@ typedef struct { unsigned char pad00[0x23C]; int x23C; int x240; int x244; } Dis
 typedef struct { int x0; unsigned char *x4; unsigned char *x8; int xC; int x10; int x14; } BufE9EC8;
 typedef struct { int x0; unsigned char *x4; } S160E9EC8;
 
-extern int func_001F99B0();
-extern void func_001F99D8(void *, int);
-extern void func_001F9A00(void *, void *, int);
-extern void func_001E9730(char *);
-extern void func_002157C0(int);
-extern int func_001F2930();
-extern void func_001FB448(int, int, int);
-extern int func_002347F0();
-extern int func_002362B0();
-extern int func_0022B8F8();
-extern int func_00238688();
-extern float func_001F9CB8(void *);
-extern float func_001F9B90(float, float);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001F9C48(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern int func_001FA898(float);
-extern float func_001FA888(int);
-extern void func_001F3B90(void);
-extern void func_00217EC0(void);
-extern void func_001F6598(void);
+extern int FastMemSet();
+extern void FastMemZero16(void *, int);
+extern void copy_memory_aligned(void *, void *, int);
+extern void STUB_printf(char *);
+extern void set_video_timing(int);
+extern int UpdateFog();
+extern void SetBackgroundColor(int, int, int);
+extern int VU0_loadMicroProgram();
+extern int LightTfrags();
+extern int LightShrubs();
+extern int LightTies();
+extern float FastVecLength(void *);
+extern float max_float(float, float);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void scale_vector(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern int truncate_float_to_s32(float);
+extern float IntToFloat(int);
+extern void ResetDrawGlobals(void);
+extern void pad_resetState(void);
+extern void Font_EnableColorCodes(void);
 
-extern int D_0015EE80 MACRO_ADDR;
-extern float D_0015EE60 MACRO_ADDR;
-extern int D_0016044C MACRO_ADDR;
+extern int pal_mode MACRO_ADDR;
+extern float frame_scale MACRO_ADDR;
+extern int requested_video_mode MACRO_ADDR;
 extern unsigned char *D_001941D8;
-extern unsigned char D_0013F450[];
-extern unsigned char D_00187040[];
+extern unsigned char g_hero[];
+extern unsigned char gCamera[];
 extern unsigned char D_001AADC0[];
-extern BufE9EC8 D_00194200;
-extern unsigned char D_001942C0[];
+extern BufE9EC8 coll_output;
+extern unsigned char image_clear_buffer[];
 extern unsigned char D_00194280[];
-extern unsigned char D_001B7A60[];
-extern unsigned char D_001C7A60[];
-extern DisplayE9EC8 D_0018CE00;
-extern int D_0015F584 MACRO_ADDR;
-extern int D_0015F585 MACRO_ADDR;
-extern int D_0015F586 MACRO_ADDR;
-extern float D_0015F588 MACRO_ADDR;
-extern float D_0015F58C MACRO_ADDR;
-extern float D_0015F590 MACRO_ADDR;
-extern float D_0015F594 MACRO_ADDR;
-extern float D_00160FC0 MACRO_ADDR;
-extern float D_00161070 MACRO_ADDR;
-extern float D_001604E4 MACRO_ADDR;
-extern int D_00160030 MACRO_ADDR;
-extern int D_001601BC MACRO_ADDR;
-extern unsigned char D_00100AE0[];
-extern unsigned char D_0019C2C0[];
-extern unsigned char D_0019C4C0[];
-extern unsigned char D_0019BEC0[];
-extern char D_001E79D8[];
-extern int D_00160F90 MACRO_ADDR;
-extern Ent40E9EC8 *D_00160F8C MACRO_ADDR;
-extern int D_0016105C MACRO_ADDR;
-extern ShrubE9EC8 *D_00161050 MACRO_ADDR;
-extern ShrubE9EC8 *D_00161054 MACRO_ADDR;
-extern ShrubDataE9EC8 *D_00161058 MACRO_ADDR;
-extern unsigned char D_001E1D00[];
-extern ShrubClassE9EC8 *D_001E1A00[];
-extern unsigned char D_001D8440[];
-extern TieClassE9EC8 *D_001D82C0[];
-extern int D_001604D0 MACRO_ADDR;
-extern TieE9EC8 *D_001604D4 MACRO_ADDR;
-extern TieE9EC8 *D_001604D8 MACRO_ADDR;
-extern TieDataE9EC8 *D_001604DC MACRO_ADDR;
-extern unsigned char *D_001604E0 MACRO_ADDR;
-extern S160E9EC8 D_00160BB0;
-extern Ent100E9EC8 *D_00160018 MACRO_ADDR;
-extern Ent100E9EC8 *D_0016001C MACRO_ADDR;
-extern Ent100E9EC8 *D_00160020 MACRO_ADDR;
-extern unsigned char *D_00160028 MACRO_ADDR;
+extern unsigned char moby_grids[];
+extern unsigned char moby_slot_bitmap[];
+extern DisplayE9EC8 view_context;
+extern int fog_color_red MACRO_ADDR;
+extern int fog_color_green MACRO_ADDR;
+extern int fog_color_blue MACRO_ADDR;
+extern float fog_near_distance MACRO_ADDR;
+extern float fog_far_distance MACRO_ADDR;
+extern float fog_near_intensity MACRO_ADDR;
+extern float fog_far_intensity MACRO_ADDR;
+extern float tfrag_draw_distance MACRO_ADDR;
+extern float tie_draw_distance MACRO_ADDR;
+extern float occl_fog_density_set MACRO_ADDR;
+extern int occl_fog_count MACRO_ADDR;
+extern int part_clip_dist MACRO_ADDR;
+extern unsigned char frame_vu0_micro_program[];
+extern unsigned char point_lights[];
+extern unsigned char point_light_data[];
+extern unsigned char dir_lights[];
+extern char str_too_many_dir_lights[];
+extern int tfrag_render_record_count MACRO_ADDR;
+extern Ent40E9EC8 *tfrag_render_records MACRO_ADDR;
+extern int tie_count MACRO_ADDR;
+extern ShrubE9EC8 *ties MACRO_ADDR;
+extern ShrubE9EC8 *ties_end MACRO_ADDR;
+extern ShrubDataE9EC8 *tie_data_table MACRO_ADDR;
+extern unsigned char object_render_class_slot_by_id[];
+extern ShrubClassE9EC8 *object_render_classes[];
+extern unsigned char shrub_render_class_slot_by_id[];
+extern TieClassE9EC8 *shrub_render_classes[];
+extern int shrub_count MACRO_ADDR;
+extern TieE9EC8 *shrubs MACRO_ADDR;
+extern TieE9EC8 *shrubs_end MACRO_ADDR;
+extern TieDataE9EC8 *shrub_data_table MACRO_ADDR;
+extern unsigned char *shrub_colors MACRO_ADDR;
+extern S160E9EC8 shrub_color_dma_ref_tag;
+extern Ent100E9EC8 *resident_object_pool MACRO_ADDR;
+extern Ent100E9EC8 *moby_instance_end MACRO_ADDR;
+extern Ent100E9EC8 *moby_instance_perm_end MACRO_ADDR;
+extern unsigned char *g_moby_vars MACRO_ADDR;
 extern unsigned char *D_001601AC MACRO_ADDR;
 extern int D_001601B0 MACRO_ADDR;
 extern int D_001601B4 MACRO_ADDR;
 extern int D_001601B8 MACRO_ADDR;
 extern unsigned char D_001CDB00[];
-extern unsigned char D_0018C418[];
-extern int D_0015F6F0 MACRO_ADDR;
-extern float D_0015F53C MACRO_ADDR;
+extern unsigned char occl_cam_state[];
+extern int world_update_time MACRO_ADDR;
+extern float gFade MACRO_ADDR;
 
 /* Level-load parser: builds the runtime object tables from the level header and returns the end pointer. */
 unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
@@ -865,12 +865,12 @@ void transition_load_wad(void)
   }
 }
 
-extern int D_0015F064 MACRO_ADDR;
-extern int D_0015F060 MACRO_ADDR;
-extern int D_001997FC;
+extern int help_offset_table MACRO_ADDR;
+extern int help_msg_data MACRO_ADDR;
+extern int help_msg_count;
 /* gp-relative, no retail symbol: gp 0x166D00 - 0x7580 = 0x15F780
    (cursor into the table walked below). */
-extern short D_0015F780;
+extern short help_msgs;
 
 /* Points the D_0015F780 cursor at entry arg0 of the table D_0015F064
    indexes into D_0015F060, past its 8-byte header, and keeps the
@@ -886,10 +886,10 @@ void queue_dma_transfer(int arg0) {
     *(char **)&help_msgs = p;
 }
 
-extern char D_0018CC20[];
-extern float D_0018CEB0;
-extern char D_00187180[];
-extern void func_001F3140(void);
+extern char render_sequence[];
+extern float view_tan_half_fov;
+extern char camera_position[];
+extern void UpdateViewContext(void);
 
 /* Transition_UpdateMovieCamera: the current keyframe (0x20 bytes: position,
    a flag byte at +0xC, then X/Y/Z angles) sets the camera position and
@@ -1071,59 +1071,59 @@ struct M2c_D_0016045C
   s16 unk4;
   u8 pad_6[0x2];
 };
-extern u8 D_00100AE0[];
-extern s32 D_0013E604[];
-extern short D_0015EE88;
-extern short D_0015F048;
-extern s32 D_0015F050 MACRO_ADDR;
-extern s32 D_0015F054 MACRO_ADDR;
-extern f32 D_0015F53C MACRO_ADDR;
-extern s32 D_0015F564 MACRO_ADDR;
-extern s32 D_0015F6E8 MACRO_ADDR;
-extern s32 D_0015F704 MACRO_ADDR;
-extern struct M2c_D_0016045C * D_0016055C MACRO_ADDR;
-extern s32 D_0018A3E8[];
-extern u8 D_001940C0[];
-extern u8 D_001D9240[];
-extern u8 D_001E1600[];
-extern u8 D_001E3500[];
-extern s32 func_00235290();
-extern s32 func_001F99B0();
+extern u8 frame_vu0_micro_program[];
+extern s32 frame_size[];
+extern short g_game_language;
+extern short intro_overlay_tex0;
+extern s32 intro_overlay_alpha MACRO_ADDR;
+extern s32 language_intro_overlay_alpha MACRO_ADDR;
+extern f32 gFade MACRO_ADDR;
+extern s32 draw_callback_count MACRO_ADDR;
+extern s32 g_game_mode MACRO_ADDR;
+extern s32 font_state MACRO_ADDR;
+extern struct M2c_D_0016045C * level_sky_effect_data MACRO_ADDR;
+extern s32 transition_draw_particles[];
+extern u8 occl_visibility[];
+extern u8 shrub_scratchpad_copy[];
+extern u8 tfrag_dma_block[];
+extern u8 tie_light_data[];
+extern s32 append_dma_tag();
+extern s32 FastMemSet();
 extern s32 func_00118D80();
 extern s32 func_001E9E70_EB7C0() __asm__("func_001E9E70");
 extern s32 func_001EB338_EB7C0() __asm__("func_001EB338");
-extern s32 func_001F2608();
-extern s32 func_001F2930();
-extern void func_001F3C10();
-extern s32 func_001F4630();
-extern s32 func_001F4748();
-extern u64 func_001F4868();
-extern s32 func_001F4A00();
-extern s32 func_001F55C0();
-extern void func_001F5800();
-extern s32 func_001FA898(f32);
-extern s32 func_001FB530();
-extern s32 func_001FB848();
-extern s32 func_001FBE80();
-extern s32 func_0020DAB0();
-extern s32 func_0020DD48();
-extern s32 func_0020E2B0();
-extern void func_00218B10();
-extern void func_0021A610();
-extern s32 func_00229D48();
-extern void func_00229E50();
-extern s32 func_0022B8F8();
-extern s32 func_00234620();
-extern void func_002346C0();
-extern s32 func_002347F0();
-extern s32 func_00234AC8();
+extern s32 BuildViewMatrices();
+extern s32 UpdateFog();
+extern void ResetGsRegisters();
+extern s32 SetupGifPaging();
+extern s32 DoGifPaging();
+extern u64 GetEffectTex();
+extern s32 dispatch_callback_list_1();
+extern s32 emit_rgba_draw_packet();
+extern void DrawTexturedQuad();
+extern s32 truncate_float_to_s32(f32);
+extern s32 append_gif_transfer_packet();
+extern s32 AA_BlurPass();
+extern s32 draw_freeze_message_box();
+extern s32 prune_moby_references();
+extern s32 PatchMobyGifs();
+extern s32 DrawMobys();
+extern void PartProc();
+extern void render_level_effects_and_screen_sprites();
+extern s32 patch_shrub_gifs();
+extern void DrawShrubs();
+extern s32 LightShrubs();
+extern s32 PatchTfragGifs();
+extern void DrawTfrag();
+extern s32 VU0_loadMicroProgram();
+extern s32 VU1_syncChain();
 extern s32 func_00234C98_EB7C0() __asm__("func_00234C98");
-extern void func_00234F40();
-extern s32 func_002362B0();
-extern s32 func_00236A98();
-extern void func_00236BE0();
-extern s32 func_00238688();
-void func_001EB7C0(s32 *arg0);
+extern void vu1_gs_regs_alt();
+extern s32 LightTfrags();
+extern s32 PatchTieGifs();
+extern void DrawTies_1();
+extern s32 LightTies();
+void Transition_DefaultDraw(s32 *arg0);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/gameplay/state/transition_default_draw.c, transition_default_draw. */
 void Transition_DefaultDraw(s32 *arg0)
@@ -1207,8 +1207,8 @@ void Transition_DefaultDraw(s32 *arg0)
     UpdateFog();
 }
 
-extern char D_0013E650[];
-extern int D_0015F694;
+extern char voice_pool[];
+extern int bank_sound_count;
 
 extern int D_0015F694_m __asm__("D_0015F694") MACRO_ADDR;
 

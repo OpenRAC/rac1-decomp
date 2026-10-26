@@ -118,12 +118,12 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
         p->handle = -1;
     }
 }
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern float func_001F9B88(float);
-extern float func_001FA888(int);
+extern void FastVecSub(void *, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern float FastAbsF(float);
+extern float IntToFloat(int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern void func_L01_002A2C90(int a, int b, int c, int d, int e);
+extern void set_requested_state_and_mark_changes(int a, int b, int c, int d, int e);
 extern char D_0013E633[];
 
 /* reverb box sound update: starts or stops the sound as the listener enters or leaves the box */
@@ -150,10 +150,10 @@ void update_requested_state_from_box_position(char *moby) {
         data[3] = 0;
     }
 }
-extern char D_0013E6E0[];
-extern char D_L01_001672C0[];
-extern int func_L00_0028F0B0(int, int, int, int);
-extern void func_L00_0028EBF0(int);
+extern char voice_positions[];
+extern char camera_pos[];
+extern int play_voice(int, int, int, int);
+extern void Sound_StopSlot(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_0030b618.c, FUN_L01_0031a078. */
 void update_listener_following_voice(int a0) {
@@ -175,10 +175,10 @@ void update_listener_following_voice(int a0) {
         }
     }
 }
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern float func_001F9B88(float);
-extern void func_L00_002664B0(int, int);
+extern void FastVecSub(void *, void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern float FastAbsF(float);
+extern void MusicRequestTrack(int, int);
 
 /* sound instance update: fade/stop test against a listener distance */
 void update_music_box_exit_trigger(int *moby) {

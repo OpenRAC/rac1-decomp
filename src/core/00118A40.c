@@ -15,7 +15,7 @@
 
 /* Declarations in scope here before the split. */
 extern long func_00116F68(int arg0, int arg1, int arg2);
-extern int D_0015ED10;
+extern int SbrkErrno;
 extern void *D_0012F86C NOT_SDA;
 extern int func_001162B8(void *arg0, void *arg1, void *arg2);
 extern int func_00116320(void *arg0, void *arg1, void *arg2);
@@ -182,7 +182,7 @@ ASM_FUNC("asm/handwritten/core_text", func_00118EA0);
 
 ASM_FUNC("asm/handwritten/core_text", func_00118EB0);
 
-extern int D_0012FCF0 NOT_SDA;
+extern int CoreGlobalWord NOT_SDA;
 
 void func_00118EC0(void) {
     CoreGlobalWord = 0;

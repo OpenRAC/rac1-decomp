@@ -5,9 +5,9 @@
 #include "moby.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern f32 func_001F9F90(f32);
-extern f32 func_001F9FA8(f32);
-extern s32 func_L00_00259B88(void *, void *, void *, void *, f32);
+extern f32 FastCos(f32);
+extern f32 FastSin(f32);
+extern s32 move_w(void *, void *, void *, void *, f32);
 
 /* steers the moby toward a point 100 units ahead along its heading.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/math/interpolation/00271dd8.c, FUN_L12_00271dd8. */
@@ -20,10 +20,10 @@ s32 move_moby_along_heading(struct Moby *m, void *ctl) {
     ahead.f[1] += FastSin(m->rot.z) * 100.0f;
     return move_w(m, ctl, &ahead, &out, 1.0f);
 }
-extern float func_001F9B88(float);
-extern float func_001F9D10(void *, void *);
-extern float func_L00_001FF860(float, float);
-extern float func_001FA850(float, float);
+extern float FastAbsF(float);
+extern float FastVecDist(void *, void *);
+extern float fast_atan2(float, float);
+extern float FastDiffRots(float, float);
 
 /* tests whether a point lies within height, distance and heading limits of a moby */
 int test_point_within_moby_limits(char *a, float *b, float x, float y, float z) {
@@ -38,12 +38,12 @@ int test_point_within_moby_limits(char *a, float *b, float x, float y, float z) 
     }
     return 1;
 }
-extern void func_0020DAF8(void *, int, void *);
-extern void func_L00_002514B8(void *);
-extern void func_L00_00251E30(void *);
-extern void func_001FA480(void *, void *);
-extern void func_00214F78(void *);
-extern void func_0020EEE8(void *);
+extern void MobyTransformScaledVertex(void *, int, void *);
+extern void MobyAnimAdvance(void *);
+extern void moby_build_matrix(void *);
+extern void matrix_copy_rows(void *, void *);
+extern void normalize_vector_triplet(void *);
+extern void moby_anim_sphere_lerp(void *);
 
 /* Attach child to a bone of parent: copy its position and basis, and mirror the parent's draw flag. */
 void update_moby_bone_attachment(unsigned char *parent, unsigned char *child, int mode) {
@@ -61,7 +61,7 @@ void update_moby_bone_attachment(unsigned char *parent, unsigned char *child, in
         *(unsigned short *)(child + 0x34) &= 0xFFBE;
     *(unsigned short *)(child + 0x34) |= 6;
 }
-extern char *D_L12_001B0C30[];
+extern char *hoven_paths[];
 
 // Fills in the per-segment lengths of path record number idx.
 void cache_consecutive_point_distances(int idx) {

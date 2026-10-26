@@ -8,8 +8,8 @@ typedef struct {
     char pad2[0x24];
 } Rec4C;
 extern unsigned char D_0013E633[];
-extern int func_L00_0020DB30(int);
-extern Rec4C D_L15_0017A140[];
+extern int hero_slot_item_id(int);
+extern Rec4C quartu_item_defs[];
 
 /* Returns 0 or 0x54 in the early-out cases below, otherwise the v field of D_L15_0017A140[func_L00_0020DB30(0)]. */
 int HelpL15_GetRecordValue(int a) {

@@ -3,12 +3,12 @@
 #include "vector.h"
 #include "include_asm.h"
 
-extern unsigned char *func_00218928(int);
-extern int func_L00_0025D038(float, float, float, float);
+extern unsigned char *create_part(int);
+extern int PackColorRGBA(float, float, float, float);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern float func_002140F8(float, float);
-extern int func_001F9850(int);
-extern unsigned char *D_L01_001B280C;
+extern float random_float_between(float, float);
+extern int scale_ticks(int);
+extern unsigned char *novalis_part_type10_textures;
 
 /* Spawns a type-10 particle at a position and sets its colour, size, life and velocity. */
 void spawn_type_10_particle(char *pos, char *vel) {
@@ -31,9 +31,9 @@ void spawn_type_10_particle(char *pos, char *vel) {
         qcopy(q, vel);
     }
 }
-extern float func_L00_00258C80(float, float);
-extern int func_002140B0(int);
-extern unsigned char *D_L01_001B2838;
+extern float randf_sym(float, float);
+extern int random_integer_below(int);
+extern unsigned char *novalis_part_type14_textures;
 
 /* spawns a type 14 particle at the given position with jitter */
 char *spawn_type_14_particle(int a, char *b) {
@@ -67,9 +67,9 @@ char *spawn_type_14_particle(int a, char *b) {
     }
     return p;
 }
-extern char * D_L01_001B28A4[];
+extern char * novalis_part_type41_textures[];
 extern char *func_00218928_86530(int) __asm__("func_00218928");
-extern int func_001FA898(float);
+extern int truncate_float_to_s32(float);
 
 /* Allocates a type 0x29 particle and fills it from the arguments; kind 0xFF derives the frame from flags and picks one of two blend modes.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/0027f660.c, FUN_L01_00285768. */
@@ -100,9 +100,9 @@ char *PartType41Spawn(float scale, void *pos, int a, int idx, int b, unsigned ch
     }
     return r;
 }
-extern int func_001FA898(float);
-extern float func_001FA888(int);
-extern unsigned char *D_L01_001B28D0;
+extern int truncate_float_to_s32(float);
+extern float IntToFloat(int);
+extern unsigned char *novalis_part_type52_textures;
 
 /* spawns a type-0x34 particle at a with colour b, links c, lifetime d, scale f and drag g */
 unsigned char *spawn_type_52_particle(void *a, int b, int c, int d, float f, float g) {
@@ -128,9 +128,9 @@ unsigned char *spawn_type_52_particle(void *a, int b, int c, int d, float f, flo
     return r;
 }
 extern int func_001160D8(void);
-extern void func_001F9BF0(void *,void *,void *);
-extern void func_001FA4A0(void *,void *);
-extern void func_001F9EE8(void *,void *,void *);
+extern void FastVecSub(void *,void *,void *);
+extern void matrix_from_basis_rows(void *,void *);
+extern void transform_vector(void *,void *,void *);
 extern unsigned char D_L01_001B2928_b[] __asm__("D_L01_001B2928");
 /* spawns a type-74 particle with transformed offset and velocity */
 unsigned char *spawn_type_74_particle(char *m,char *pos,float *vel,char *cfg,int flag) {
@@ -158,8 +158,8 @@ unsigned char *spawn_type_74_particle(char *m,char *pos,float *vel,char *cfg,int
  return p;
 }
 LINKER_REMNANT("asm/overlays", func_L01_0028C1D0);
-extern float func_001F9D10(void *, void *);
-extern char *D_L01_001B0C30[];
+extern float FastVecDist(void *, void *);
+extern char *novalis_paths[];
 
 // Resets a path object and computes per-segment lengths of its points.
 void initialize_path_descriptor(char *p)
@@ -184,7 +184,7 @@ typedef struct {
     float e[1][4];
 } List;
 
-extern float func_001F9B88(float);
+extern float FastAbsF(float);
 
 /* Returns the index of the entry whose distance to arg0 is closest to a target value. */
 int select_point_index_by_distance(void *arg0, List *arg1, float target) {
@@ -292,12 +292,12 @@ int advance_path_node_index(char *p)
     return next;
 }
 extern void *func_001153FC_c(void *, int, unsigned int) __asm__("func_001153FC");
-extern void *func_L01_0028C578(void *, int);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001F9CB8(void *);
-extern void func_L00_001FF4B0(void *, void *, float);
+extern void *get_path_node(void *, int);
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastVecLength(void *);
+extern void vec_scale_to_length(void *, void *, float);
 typedef int u128 __attribute__((mode(TI)));
 
 // Blends three neighbouring list entries by (a, b) weights and clamps the result's length.
@@ -349,7 +349,7 @@ void evaluate_cubic_hermite_segment(float t, void *out, void *p1, void *p2, void
     FastVecScale(tmp, p2, b - a);
     FastVecAdd(out, out, tmp);
 }
-char *func_L01_00286530(float scale, void *pos, int a, int idx, int b, unsigned char flags, short h, unsigned char kind);
+char *PartType41Spawn(float scale, void *pos, int a, int idx, int b, unsigned char flags, short h, unsigned char kind);
 typedef int OvlQuad __attribute__((mode(TI)));
 typedef struct {
     char pad0[4];
@@ -358,8 +358,8 @@ typedef struct {
     int *f10;
 } T_28b828;
 int func_L01_0028C5F0_8C958(T_28b828 *a, int b) __asm__("func_L01_0028C5F0");
-void func_L01_0028C690(void *out, int *l, int idx, float a, float b);
-void func_L01_0028C848(float t, void *out, void *p1, void *p2, void *p3, void *p4);
+void compute_path_node_tangent(void *out, int *l, int idx, float a, float b);
+void evaluate_cubic_hermite_segment(float t, void *out, void *p1, void *p2, void *p3, void *p4);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/0027f660.c, FUN_L01_0028bb90. */
 float compute_sampled_spline_path_lengths(float a, float b, T_28b828 *path, int particles, void *moby) {

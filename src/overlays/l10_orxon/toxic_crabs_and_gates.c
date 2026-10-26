@@ -78,67 +78,67 @@ extern unsigned char D_0013E633[];
 extern unsigned char D_0014171B[] NOT_SDA;
 extern unsigned char D_0014171B_t[] __asm__("D_0014171B") NOT_SDA;
 extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
 extern char *D_L10_00160058_c __asm__("D_L10_00160058") MACRO_ADDR;
-extern int D_L10_0015F6B0 MACRO_ADDR;
-extern float D_L10_0015F660[] MACRO_ADDR;
-extern char D_L10_00174340[];
-extern char D_L10_001672C0[];
-extern short D_L10_00161EA4;
-extern short D_L10_00161EA8;
-extern short D_L10_00161EB4;
-extern short D_L10_00161EC0;
-extern short D_L10_00161EC4;
-extern short D_L10_00161ECC;
+extern int orxon_frame_count MACRO_ADDR;
+extern float orxon_zero_vec[] MACRO_ADDR;
+extern char ground_hit[];
+extern char orxon_camera_pos[];
+extern short toxic_crab_scale;
+extern short toxic_crab_fall_gravity;
+extern short toxic_crab_blocked_distance;
+extern short toxic_crab_aggro_radius;
+extern short toxic_crab_backoff_distance;
+extern short toxic_crab_turn_threshold_deg;
 
-extern void func_L10_002E52B0(void *);
-extern void func_L10_002E4E50(void *);
-extern void func_L00_00264B40(float, int, int, unsigned char *);
-extern float func_001F9D10(void *, void *);
-extern int func_L00_001EFFF0(void *, void *, int, void *, void *);
-extern float func_001F9B88(float);
-extern s32 func_L00_0025F410(s32);
-extern s32 func_001FA898(f32);
-extern void func_L01_0026E8E0(char *p);
-extern void func_00213DE0(void *, int, int, int);
-extern void func_L00_002592B0(char *moby, float *vel, float target, float k, float d, float max);
-extern int func_001F9850(int);
-extern void func_L10_002E14F8(unsigned char *m);
-extern float func_002140F8(float, float);
-extern float func_001F9878(float);
-extern int func_001F9908(void *);
-extern float func_001F9D48(void *, void *);
-extern float func_L00_001FF860(float, float);
-extern float func_00214D28(float *p, float target, float maxstep);
-extern float func_001FA850(float, float);
-extern float func_L10_002E5C00(char *self);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9BC0(void *);
-extern int func_L00_00259B88(void *, void *, void *, void *, float);
-extern int func_002140B0(int);
-extern float func_0020D830(void *);
-extern void func_L00_00250800(void *, int, void *);
-extern void func_L00_001F2BE8(void *, float, int, void *, void *);
-extern float func_001FA748(float, float);
-extern int func_L00_0025D6F0(void *, void *);
-extern void func_L00_001FF240(void *, void *, void *);
-extern float func_00214358(void *, int, float);
-extern int func_L00_001F3958(void);
-extern void func_L03_00251A58(float *p, float a, float b);
-extern void func_L00_0025D5B0(float, void *, void *, int, int, int);
+extern void update_toxic_crab_hit_reactions_and_targeting(void *);
+extern void EmitMobyParticles(void *);
+extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
+extern float FastVecDist(void *, void *);
+extern int coll_line(void *, void *, int, void *, void *);
+extern float FastAbsF(float);
+extern s32 is_moby_in_class_range_500_to_540(s32);
+extern s32 truncate_float_to_s32(f32);
+extern void MoveCtl_Init(char *p);
+extern void MobyBlendAnimation(void *, int, int, int);
+extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
+extern int scale_ticks(int);
+extern void activate_waiting_moby_group_members(unsigned char *m);
+extern float random_float_between(float, float);
+extern float multiply_global_factor(float);
+extern int fast_dec_timer(void *);
+extern float vec_distance_xy(void *, void *);
+extern float fast_atan2(float, float);
+extern float ApproachValue(float *p, float target, float maxstep);
+extern float FastDiffRots(float, float);
+extern float compute_toxic_crab_group_approach_angle(char *self);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void FastVecAdd(void *, void *, void *);
+extern void clear_u64_value(void *);
+extern int move_w(void *, void *, void *, void *, float);
+extern int random_integer_below(int);
+extern float MobyGetFrameValue(void *);
+extern void Moby_GetJointWorldPos(void *, int, void *);
+extern void coll_sphere_mobys(void *, float, int, void *, void *);
+extern float FastAddRots(float, float);
+extern int mine_fall(void *, void *);
+extern void add_vectors(void *, void *, void *);
+extern float ProbeGroundHeight(void *, int, float);
+extern int CollType(void);
+extern void trooper_set_knockback(float *p, float a, float b);
+extern void InitKnockback(float, void *, void *, int, int, int);
 extern void func_L00_0025D5B0_b(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 extern void func_L00_002592B0_b(char *moby, float target, float k, float d, float max, float *vel) __asm__("func_L00_002592B0");
-extern void func_L00_0025E4B0(void *m, short *p);
-extern void func_L00_002584A8(void *, int, int);
-extern void func_L10_002E51A8(char *moby);
-extern void func_L00_00260460(void *, void *, int, float, float);
-extern void *func_L00_00265050(char *, int, float *, void *, int, int, float, float *, float *, float *);
-extern float func_L00_00258C80(float lo, float hi);
-extern void func_0020D678(void *);
-extern void func_L00_0025B178(void *);
+extern void RerollEffectCounter(void *m, short *p);
+extern void SetDeathBits(void *, int, int);
+extern void spawn_type_52_particle_near_moby(char *moby);
+extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
+extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
+extern float randf_sym(float lo, float hi);
+extern void DeleteMoby(void *);
+extern void set_ground_height_band(void *);
 
 /* Update for the toxic crab (moby class 1202): line-of-sight test, then a 13-state walk/chase/attack/death machine. */
 void toxic_crab_update(Moby *m) {
@@ -694,30 +694,30 @@ void toxic_crab_update(Moby *m) {
         }
     }
 }
-extern short D_L10_00161EF4;
-extern short D_L10_00161EF8;
-extern short D_L10_00161EFC;
-extern short D_L10_00161F00;
-extern short D_L10_00161F04;
-extern short D_L10_00161F08;
-extern short D_L10_00161F0C;
-extern short D_L10_00161F10;
-extern short D_L10_00161F14;
-extern short D_L10_00161F18;
-extern short D_L10_00161F1C;
-extern short D_L10_00161F20;
-extern short D_L10_00161F24;
-extern short D_L10_00161F28;
-extern short D_L10_00161F2C;
-extern short D_L10_00161F30;
-extern short D_L10_00161F34;
-extern short D_L10_00161F38;
-extern short D_L10_00161F3C;
-extern void func_L00_00260958(float *v, float s);
-extern float func_00214158(void);
-extern void func_001F9C30(void *, void *, float);
-extern int func_001FA8A8(int, int, float);
-extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
+extern short toxic_crab_debris_burst_count;
+extern short toxic_crab_debris_per_burst;
+extern short toxic_crab_debris_origin_jitter;
+extern short toxic_crab_debris_pos_jitter;
+extern short toxic_crab_debris_vel_jitter;
+extern short toxic_crab_debris_xy_speed_min;
+extern short toxic_crab_debris_xy_speed_max;
+extern short toxic_crab_debris_z_speed_min;
+extern short toxic_crab_debris_z_speed_max;
+extern short toxic_crab_debris_gravity;
+extern short toxic_crab_debris_start_size;
+extern short toxic_crab_debris_end_size;
+extern short toxic_crab_debris_start_color_a;
+extern short toxic_crab_debris_end_color_a;
+extern short toxic_crab_debris_start_color_b;
+extern short toxic_crab_debris_end_color_b;
+extern short toxic_crab_debris_time1;
+extern short toxic_crab_debris_time2;
+extern short toxic_crab_debris_time3;
+extern void add_random_offset_to_vector_xyz(float *v, float s);
+extern float random_angle_radians(void);
+extern void FastVecScale(void *, void *, float);
+extern int FastTweenColor(int, int, float);
+extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 // Per-frame update of the moby in arg0: builds two vectors from its position and the trig helpers, then calls the level's helpers for each of its entries.
 void EmitMobyParticles(void *p) {
@@ -1054,17 +1054,17 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     if (d->f160 == 0) d->f160 = ((Hero *)(D_0013E633_2E52B0 + 0xE1D))->moby;
 }
 extern unsigned char D_0013E633[];
-extern short D_L10_00161EC8;
-extern short *D_L10_001ABFC0[];
+extern short toxic_crab_group_spread_deg;
+extern short *orxon_moby_groups[];
 typedef struct { char p0[0x10]; float x; float y; char p1[8]; unsigned char state; char p2[0xDF]; } Ent;
-extern Ent *D_L10_00160058 MACRO_ADDR;
-extern float func_L00_001FF860(float, float);
-extern float func_001F9D10(void *, void *);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001FA790(float, float);
-extern float func_001FA748(float, float);
+extern Ent *orxon_mobys MACRO_ADDR;
+extern float fast_atan2(float, float);
+extern float FastVecDist(void *, void *);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastSubRots(float, float);
+extern float FastAddRots(float, float);
 
 /* Computes the aim angle of a moby relative to its owner, narrowed by nearby table entries. */
 float compute_toxic_crab_group_approach_angle(char *self) {
@@ -1187,26 +1187,26 @@ typedef struct ShipD_5E48 {
     char p1B4[0x1C];
     unsigned char a1D0[4];
 } ShipD_5E48;
-extern char D_L10_001DD690[];
-extern Ship_5E48 *D_L10_00174358;
+extern char blarg_ship_missing_path_format[];
+extern Ship_5E48 *blarg_ship_locked_target;
 extern short D_L10_00161F64;
-extern short D_L10_00161F68;
-extern short D_L10_00161F6C;
-extern float D_0015EE60 MACRO_ADDR;
-extern char D_L10_00179910[];
-extern unsigned char D_0013D5CA[];
-extern void func_001E9730(char *, ...);
-extern void func_L10_002E6D28(char *m);
-extern int func_00215570(void *, int);
-extern int func_L00_00203F20(int a, int b);
-extern float func_L00_00259148(float *vel, float cur, float target, float k, float d, float max);
-extern float func_001F9CB8(void *a);
-extern int func_00215B18(char *, float);
-extern void func_00215C00(void *, float, float, float);
-extern void func_L03_00251AC8(void *, void *, int);
-extern char *func_L10_002CD578(void *vel, void *pos, int a, int b, int c, float scale);
-extern void func_L00_002607A8(void *, float);
-extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
+extern short blarg_ship_rocket_speed;
+extern short blarg_ship_fire_anim_speed;
+extern float frame_scale MACRO_ADDR;
+extern char orxon_help_state[];
+extern unsigned char gHaveHeliPack[];
+extern void STUB_printf(char *, ...);
+extern void update_blarg_ship_hit_reactions_and_targeting(char *m);
+extern int is_point_inside_clip_volume(void *, int);
+extern int Help_Request(int a, int b);
+extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
+extern float FastVecLength(void *a);
+extern int IsFrameWithinWindow(char *, float);
+extern void BuildSphericalOffset(void *, float, float, float);
+extern void emit_radial_particle_burst(void *, void *, int);
+extern char *create_rocket(void *vel, void *pos, int a, int b, int c, float scale);
+extern void ClampVectorLength(void *, float);
+extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
 
 /* Update for the blarg ship (moby class 1229): rise, follow its path, hover and fire at the target, fly off or explode. */
 void BlargShipUpdate(Ship_5E48 *m) {
@@ -1430,15 +1430,15 @@ void BlargShipUpdate(Ship_5E48 *m) {
         }
     }
 }
-extern char *func_L00_0025B478(void *,int,int);
-extern int func_L00_0025B4D0(void *,void *,void *,int,int *,float *,int,int);
-extern void func_L00_0025E4B0(void *,short *);
-extern void func_00213DE0(void *,int,int,int);
-extern void func_L00_0025E590(void *,void *);
-extern void func_L06_002F4908(float,void *,void *);
-extern int func_L00_0025A778(void *,void *,int);
-extern int func_L00_00260FB0(float,char *,void *,int,int,void *,int);
-extern char *D_L10_001B0C30[];
+extern char *MobyGetHitMessage(void *,int,int);
+extern int ComputeHitResponse(void *,void *,void *,int,int *,float *,int,int);
+extern void RerollEffectCounter(void *,short *);
+extern void MobyBlendAnimation(void *,int,int,int);
+extern void StepColorFade(void *,void *);
+extern void select_hero_or_gadgebot_target(float,void *,void *);
+extern int IsPointInPolygon(void *,void *,int);
+extern int FindNearestEligibleMoby(float,char *,void *,int,int,void *,int);
+extern char *orxon_paths[];
 extern unsigned char D_0013E633_e1d[] __asm__("D_0013E633");
 // Updates hit reactions and selects an enemy's movement target.
 void update_blarg_ship_hit_reactions_and_targeting(char *m) {
@@ -1494,11 +1494,11 @@ finaltarget:
  *(char **)(d+0x110)=*(char **)(hero2+0x2080);
  }
 }
-extern short D_L10_00161F70, D_L10_00161F74, D_L10_00161F78, D_L10_00161F7C, D_L10_00161F80, D_L10_00161F84;
-extern void func_00215C00(void *, float, float, float);
-extern void func_001F9C30(void *, void *, float);
-extern int func_001FA8A8(int, int, float);
-extern int func_L00_00274788(void *, void *, int, float, float, float, int, int, int);
+extern short orxon_vent_puff_color_a, orxon_vent_puff_color_b, orxon_vent_puff_speed_max, orxon_vent_puff_speed_min, orxon_vent_puff_gravity, orxon_vent_spark_percent;
+extern void BuildSphericalOffset(void *, float, float, float);
+extern void FastVecScale(void *, void *, float);
+extern int FastTweenColor(int, int, float);
+extern int spawn_gravity_floor_burst_particle(void *, void *, int, float, float, float, int, int, int);
 
 typedef struct {
     f32 size;                  /* 0x00 */
@@ -1548,17 +1548,17 @@ void emit_moby_directional_particles(char *m) {
         spawn_gravity_floor_burst_particle(pos, vel, truncate_float_to_s32(multiply_global_factor(pvars->life * 60.0f)), s, pvars->size, *(float *)&orxon_vent_puff_gravity * g_frame_time_sq, c1, c2, variant);
     }
 }
-extern void func_L00_002676A0(void *, int);
-extern int func_00215F80(int, int);
-extern void func_L00_00299B68(int);
-extern int func_0020BFC8(int, int);
-extern void func_L00_00264DB8(int, int);
+extern void set_moby_dialogue_record_value(void *, int);
+extern int try_set_help_message(int, int);
+extern void StartCutscene(int);
+extern int memcard_Save(int, int);
+extern void ShowBanner(int, int);
 extern unsigned char D_0013D355[];
 extern char D_0013A5E0[];
-extern int D_L10_0015F6A8 MACRO_ADDR;
-extern int D_0015EE98 MACRO_ADDR;
-extern short D_0015EEA0;
-extern short D_L10_0015F720;
+extern int orxon_cinematic_mode MACRO_ADDR;
+extern int gBolts MACRO_ADDR;
+extern short hero_max_health;
+extern short dialogue_message_duration;
 
 /* Pick one of two banner message ids by a game flag. */
 static inline short msgSel(void) {
@@ -1776,16 +1776,16 @@ void update_conditional_help_messages(Moby *m)
         break;
     }
 }
-extern s32 D_0015EE84 MACRO_ADDR;
+extern s32 g_current_level_index MACRO_ADDR;
 typedef struct {
     u8 pad0[0x454];
     u8 collected[1];
 } LevelState_e9648;
 extern LevelState_e9648 D_L10_001BB9C0;
-extern int D_L10_001BAC60[];
+extern int orxon_moby_killed[];
 /* functional: medium. Per-frame update of a pickup/homing moby (states 0 idle, 1 wait, 2 chase one of up to three target mobys, 3 collect: delete the targets and set the saved-collected bits); the meaning of func_L09_00308F58 and of the 0x4/0x8/0xC/0x14 data slots is guessed, the operations follow the assembly. */
-extern float func_L00_00259148(float *, float, float, float, float, float);
-extern int func_L09_00308F58(void *, void *, void *, int);
+extern float SpringTurn(float *, float, float, float, float, float);
+extern int spawn_class_4ea_projectile(void *, void *, void *, int);
 #define FIRST ((char *)D_L10_00160058)
 #define GPT ((char *)D_L10_00160058)
 
@@ -1950,7 +1950,7 @@ remove_candidate:
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern struct Hero D_0013F450;
+extern struct Hero g_hero;
 typedef struct {
     int unk0;
     float home_yaw;
@@ -1958,12 +1958,12 @@ typedef struct {
     int clip_volume;
     int sound;
 } DoorVars_e9648;
-extern int D_0014C290[][64];
-extern unsigned char D_001414F4[];
-extern unsigned char D_0013DE54[];
-extern int func_00215570(void *, int);
-extern void func_L10_002F6E10(int);
-extern int func_001FA898(float);
+extern int level_moby_killed[][64];
+extern unsigned char hero_vehicle_mode[];
+extern unsigned char hoven_available[];
+extern int is_point_inside_clip_volume(void *, int);
+extern void activate_descriptor(int);
+extern int truncate_float_to_s32(float);
 extern int func_001F9908_EAA08(int *) __asm__("func_001F9908");
 
 /* Level 10 door: swings open once the hero enters its clip volume and sets its save bit; starts open when the bit is already set.
@@ -2131,10 +2131,10 @@ void gate_2_update(Moby *m)
         break;
     }
 }
-extern float func_00214358(void *,int,float);
-extern void func_L10_002EB8A8(void *,short *,short *);
+extern float ProbeGroundHeight(void *,int,float);
+extern void emit_burst_spark_particle(void *,short *,short *);
 extern void func_L10_002EBDC8_a01(float,void *,short *,short *) __asm__("func_L10_002EBDC8");
-extern void func_L10_002EBB70(void *,short *);
+extern void emit_timed_spark_particle(void *,short *);
 // Updates a point emitter, optionally applying effects over up to 32 path points.
 void update_configurable_particle_emitter(char *m) {
  char *d=((char *)((Moby *)m)->pvars);
@@ -2184,16 +2184,16 @@ void update_configurable_particle_emitter(char *m) {
   break;
  }
 }
-extern short D_L10_00161FE8, D_L10_00161FEC, D_L10_00161FF0, D_L10_00161FF4, D_L10_00161FF8, D_L10_00161FFC;
-extern short D_L10_00162000, D_L10_00162004, D_L10_00162008, D_L10_0016200C, D_L10_00162010, D_L10_00162014;
-extern short D_L10_00162018, D_L10_0016201C, D_L10_00162020, D_L10_00162024, D_L10_00162028, D_L10_0016202C;
-extern short D_L10_00162030, D_L10_00162034, D_L10_00162038;
-extern int func_L00_00200290(char *, float);
-extern int func_001F9938(void *);
-extern void func_L00_00258DB0(float *, float, float);
+extern short orxon_spark_start_speed_z, orxon_spark_end_speed_z, orxon_spark_jitter, orxon_spark_start_size_min, orxon_spark_start_size_max, orxon_spark_end_size_min;
+extern short orxon_spark_end_size_max, orxon_spark_time1, orxon_spark_time2, orxon_spark_time3, orxon_spark_time_spread, orxon_spark_start_color_a;
+extern short orxon_spark_start_color_b, orxon_spark_end_color_a, orxon_spark_end_color_b, orxon_spark_interval_min, orxon_spark_interval_max, orxon_spark_burst_ticks_min;
+extern short orxon_spark_burst_ticks_max, orxon_spark_pause_ticks_min, orxon_spark_pause_ticks_max;
+extern int FastBSphereCheck(char *, float);
+extern int FastDecTimer(void *);
+extern void rand_vec(float *, float, float);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern int func_001FA8A8(int, int, float);
-extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
+extern int FastTweenColor(int, int, float);
+extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 /* Emits sparks from pos in bursts: the burst timer alternates between a pause (counting up to 0) and an
  * active window, and during the window a particle goes out on each emit-timer tick when the camera is near. */
@@ -2231,12 +2231,12 @@ void emit_burst_spark_particle(void *pos, short *timer, short *burst) {
     PartType02Spawn(pos, vel, acc, c1, FastTweenColor(*(int *)&orxon_spark_end_color_a, *(int *)&orxon_spark_end_color_b, random_float_between(0.0f, 1.0f)), a, b, c, -1);
     *timer = func_001FA898_r(random_float_between((float)*(int *)&orxon_spark_interval_min, (float)*(int *)&orxon_spark_interval_max));
 }
-extern short D_L10_0016203C, D_L10_00162040, D_L10_00162044, D_L10_00162048, D_L10_0016204C;
-extern short D_L10_00162050, D_L10_00162054, D_L10_00162058, D_L10_0016205C, D_L10_00162060;
-extern short D_L10_00162064, D_L10_00162068, D_L10_0016206C, D_L10_00162070, D_L10_00162074;
-extern short D_L10_00162078, D_L10_0016207C;
-extern int func_001F9938(void *);
-extern float func_002140F8(float, float);
+extern short orxon_smoke_start_speed_z, orxon_smoke_end_speed_z, orxon_smoke_jitter, orxon_smoke_start_size_min, orxon_smoke_start_size_max;
+extern short orxon_smoke_end_size_min, orxon_smoke_end_size_max, orxon_smoke_time1, orxon_smoke_time2, orxon_smoke_time3;
+extern short orxon_smoke_time_spread, orxon_smoke_start_color_a, orxon_smoke_start_color_b, orxon_smoke_end_color_a, orxon_smoke_end_color_b;
+extern short orxon_smoke_interval_min, orxon_smoke_interval_max;
+extern int FastDecTimer(void *);
+extern float random_float_between(float, float);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
 
 /* Emits a smoke particle from pos on its timer, when the camera is near and the spot is visible. */
@@ -2266,10 +2266,10 @@ void emit_timed_spark_particle(void *pos, short *timer) {
     PartType02Spawn(pos, vel, acc, c1, FastTweenColor(*(int *)&orxon_smoke_end_color_a, *(int *)&orxon_smoke_end_color_b, random_float_between(0.0f, 1.0f)), a, b, c, -1);
     *timer = func_001FA898_r(random_float_between((float)*(int *)&orxon_smoke_interval_min, (float)*(int *)&orxon_smoke_interval_max));
 }
-extern short D_L10_00162080, D_L10_00162084, D_L10_00162088, D_L10_0016208C, D_L10_00162090, D_L10_00162094;
-extern short D_L10_00162098, D_L10_0016209C, D_L10_001620A0, D_L10_001620A4, D_L10_001620A8, D_L10_001620AC;
-extern short D_L10_001620B0, D_L10_001620B4, D_L10_001620B8, D_L10_001620BC, D_L10_001620C0, D_L10_001620C4;
-extern short D_L10_001620C8, D_L10_001620CC, D_L10_001620D0;
+extern short orxon_drip_gravity, orxon_drip_jitter, orxon_drip_start_size_min, orxon_drip_start_size_max, orxon_drip_end_size_min, orxon_drip_end_size_max;
+extern short orxon_drip_time1, orxon_drip_time3, orxon_drip_time_spread, orxon_drip_start_color_a, orxon_drip_start_color_b, orxon_drip_end_color_a;
+extern short orxon_drip_end_color_b, orxon_drip_interval_min, orxon_drip_interval_max, orxon_drip_burst_ticks_min, orxon_drip_burst_ticks_max, orxon_drip_pause_ticks_min;
+extern short orxon_drip_pause_ticks_max, orxon_drip_texture, orxon_drip_life_scale;
 
 /* Emits falling drips from pos in bursts (burst timer as in func_L10_002EB8A8); each drip lives about as
  * long as it takes to fall the given height. */
@@ -2312,9 +2312,9 @@ struct L10Data {
     char pad1[0x178 - 0x34];
     int slot[4];
 };
-extern int D_L10_0015F6A8 MACRO_ADDR;
-extern struct L10Data D_L10_0016CD60;
-extern void func_L00_00264870(int);
+extern int orxon_cinematic_mode MACRO_ADDR;
+extern struct L10Data orxon_cutscene_state;
+extern void cutscene_set_camera_target(int);
 
 /* update: wait for state 1, then act on the level's current mode */
 void update_level_mode_dispatcher(char *m) {
@@ -2339,10 +2339,10 @@ void update_level_mode_dispatcher(char *m) {
         break;
     }
 }
-extern char *func_L00_0025B478(void *, int, int);
-extern int func_0022ED80(int, int, int);
-extern void func_L01_00279790(void *);
-extern void func_L00_00264EA8(void *, int, int, int, int, int, int);
+extern char *MobyGetHitMessage(void *, int, int);
+extern int Moby_PlaySound(int, int, int);
+extern void spawn_proximity_gated_bolts(void *);
+extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
 
 /* Update for moby class 1855: waits, arms, then fires an effect and deletes itself. */
 void Moby1855Update(char *m) {
@@ -2364,7 +2364,7 @@ void Moby1855Update(char *m) {
         break;
     }
 }
-extern void func_L01_00279E10(void *, int);
+extern void spawn_moby_from_placement(void *, int);
 
 /* per-frame update: wait for a condition, then run, then clean up */
 void update_hit_triggered_moby_spawner(char *moby) {

@@ -13,7 +13,7 @@
 /* Declarations in scope here before the split. */
 extern long func_00116F68(int arg0, int arg1, int arg2);
 
-extern int D_0015ED10;
+extern int SbrkErrno;
 
 int func_00112468(int *errOut, int arg1) {
     int r;

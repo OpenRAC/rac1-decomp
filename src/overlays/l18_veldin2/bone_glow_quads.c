@@ -6,23 +6,23 @@
 #include "common.h"
 #include "include_asm.h"
 
-extern int func_001F9850(int);
-extern float func_001FA888(int);
-extern float func_001F9FA8(float);
-extern int func_001FA8A8(int, int, float);
-extern void func_0020DAF8(void *, int, void *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_L00_00264690(void *, int, float, float);
-extern int D_L18_0015F6B0;
-extern int D_L18_001624F0;
-extern int D_L18_001624E8;
-extern int D_L18_001624EC;
-extern float D_L18_001624E4;
-extern float D_L18_001624E0;
+extern int scale_ticks(int);
+extern float IntToFloat(int);
+extern float FastSin(float);
+extern int FastTweenColor(int, int, float);
+extern void MobyTransformScaledVertex(void *, int, void *);
+extern void FastVecScale(void *, void *, float);
+extern void FastVecSub(void *, void *, void *);
+extern void draw_offset_textured_effect_quad(void *, int, float, float);
+extern int veldin2_frame_count;
+extern int drek_boss_rider_glow_period;
+extern int drek_boss_rider_glow_color_a;
+extern int drek_boss_rider_glow_color_b;
+extern float drek_boss_rider_glow_offset;
+extern float drek_boss_rider_glow_size;
 extern float D_L18_001624E4_b __asm__("D_L18_001624E4");
 extern float D_L18_001624E0_b __asm__("D_L18_001624E0");
-extern short D_L18_00162590;
+extern short veldin2_bone_glow_axis_offset;
 
 /* Draws pulsing glow quads on two bones of the moby, the color cycling over time. */
 void draw_moby_color_cycling_bone_glows(void *moby) {

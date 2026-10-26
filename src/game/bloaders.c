@@ -34,8 +34,8 @@ typedef struct {
     int psm;        /* 0x14 */
 } PifHeader;
 
-extern void func_001F99B0(void *, int, int);
-extern int func_001F9968(int);
+extern void FastMemSet(void *, int, int);
+extern int log2dim(int);
 /* sceGsSetDefLoadImage, FlushCache, sceGsExecLoadImage, sceGsSyncPath */
 extern int func_00122630(GsLoadImage *, short, short, short, short, short, short, short);
 extern void func_00118D80(int);
@@ -91,12 +91,12 @@ void LoadPifAsPSMT8H(void *arg0, void *arg1, int tbp, int cbp) {
     out[2] = 0;
 }
 
-extern int D_00137C80[];
-extern int func_002176C8(void *, int, int);
-extern int D_0015EF88;
-extern void func_001E94E8(void *arg0, void *arg1, int arg2, int arg3);
-extern long D_0015EFC8;
-extern unsigned char D_001AAF40[];
+extern int disc_table[];
+extern int Load(void *, int, int);
+extern int depth_buffer_address;
+extern void LoadPifAsPSMT8H(void *arg0, void *arg1, int arg2, int arg3);
+extern long debug_font_pif_header;
+extern unsigned char debug_font_buffer[];
 
 extern int D_0015EF88_m __asm__("D_0015EF88") MACRO_ADDR;
 extern long D_0015EFC8_m __asm__("D_0015EFC8") MACRO_ADDR;

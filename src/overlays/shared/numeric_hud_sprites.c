@@ -10,9 +10,9 @@ typedef struct {
     u8 pad2[0x7C - 0x4C];
     s32 unk7C;
 } HudElemX;
-extern s32 func_001F9850(s32);
-extern void func_L00_00236610(void *);
-extern s32 D_L05_0015FBB4 MACRO_ADDR;
+extern s32 scale_ticks(s32);
+extern void initialize_numeric_hud_values_and_dimensions(void *);
+extern s32 trick_combo_recent3 MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/text/00262ae8.c, FUN_L05_00262ae8. */
 void initialize_trick_combo_hud(HudElemX *e) {
@@ -28,20 +28,20 @@ void initialize_trick_combo_hud(HudElemX *e) {
     }
     initialize_numeric_hud_values_and_dimensions(e);
 }
-extern float func_00214D28(float *p, float target, float maxstep);
+extern float ApproachValue(float *p, float target, float maxstep);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern int func_001F9850(int);
+extern int scale_ticks(int);
 extern char D_0013E633[];
 extern Hero hero_002670A0 __asm__("D_0013F450");
-extern int D_L05_0015FB8C MACRO_ADDR;
-extern int D_L05_0015FBA4 MACRO_ADDR;
-extern int D_L05_0015FB90 MACRO_ADDR;
-extern int D_L05_0015FB98 MACRO_ADDR;
-extern int D_L05_0015FBB8 MACRO_ADDR;
-extern int D_L05_0015FBB0 MACRO_ADDR;
-extern int D_L05_0015FBAC MACRO_ADDR;
-extern int D_L05_0015FBA8 MACRO_ADDR;
-extern short D_L05_0015F95C;
+extern int trick_combo_spins MACRO_ADDR;
+extern int trick_combo_trick_flag3 MACRO_ADDR;
+extern int trick_combo_trick_count MACRO_ADDR;
+extern int trick_combo_trick_flags MACRO_ADDR;
+extern int trick_combo_score MACRO_ADDR;
+extern int trick_combo_recent2 MACRO_ADDR;
+extern int trick_combo_recent1 MACRO_ADDR;
+extern int trick_combo_recent MACRO_ADDR;
+extern short trick_combo_flash_ticks;
 
 /* HUD element update for the level 5 challenge: eases the shown count toward the target and runs the start / running / result states. */
 void update_trick_combo_hud(char *a) {
@@ -172,38 +172,38 @@ void update_trick_combo_hud(char *a) {
     }
 }
 extern int func_00116248_002670A0(char *, const char *, ...) __asm__("func_00116248");
-extern float func_001FA888(int);
-extern int func_001FA8A8(int, int, float);
+extern float IntToFloat(int);
+extern int FastTweenColor(int, int, float);
 extern int func_001F6FD8_x(int, int, u64, int, int) __asm__("func_001F6FD8");
 extern char *func_001FE540_002670A0(int) __asm__("func_001FE540");
-extern void func_00201A38(int, int, int, int);
-extern int func_L00_00236400(void *rec, int *x, int *y);
-extern int func_00200198(int, int);
-extern void func_L00_0023C058(int, int, int, int, int, int);
-extern void func_00200468(int, int, int, int, int, int);
-extern float func_001F9FA8(float);
-extern char D_L05_0015F940[];
-extern char D_L05_0015F9B0[];
-extern char D_L05_0015F9B8[];
-extern char D_L05_0015F9C0[];
-extern char D_L05_00216FC0[];
-extern int D_L05_0017EA18[];
-extern int D_L05_0015FBA0 MACRO_ADDR;
-extern int D_L05_0015FB9C MACRO_ADDR;
-extern int D_L05_0015F6B0 MACRO_ADDR;
-extern short D_L05_0015F980;
-extern short D_L05_0015F974;
-extern short D_L05_0015F978;
-extern short D_L05_0015F994;
-extern short D_L05_0015F998;
-extern short D_L05_0015F99C;
-extern short D_L05_0015F9A0;
-extern short D_L05_0015F9A4;
-extern short D_L05_0015F9A8;
-extern short D_L05_0015F984;
-extern short D_L05_0015F988;
-extern short D_L05_0015F98C;
-extern short D_L05_0015F990;
+extern void draw_framed_text(int, int, int, int);
+extern int hud_screen_position(void *rec, int *x, int *y);
+extern int GetIconFrame(int, int);
+extern void draw_cropped_hud_sprite(int, int, int, int, int, int);
+extern void HudSprite(int, int, int, int, int, int);
+extern float FastSin(float);
+extern char rilgar_fmt_number[];
+extern char rilgar_fmt_count_and_word[];
+extern char rilgar_fmt_string[];
+extern char rilgar_fmt_single_trick_line[];
+extern char rilgar_fmt_double_trick_line[];
+extern int trick_combo_score_table[];
+extern int trick_combo_trick_flag2 MACRO_ADDR;
+extern int trick_combo_trick_flag1 MACRO_ADDR;
+extern int rilgar_frame_count MACRO_ADDR;
+extern short trick_combo_text_color;
+extern short trick_combo_flash_color_from;
+extern short trick_combo_flash_color_to;
+extern short trick_combo_spin_text_x;
+extern short trick_combo_spin_text_y;
+extern short trick_combo_count_text_x;
+extern short trick_combo_count_text_y;
+extern short trick_combo_result_x;
+extern short trick_combo_result_y;
+extern short trick_combo_banner_x;
+extern short trick_combo_banner_y;
+extern short trick_combo_banner_color_from;
+extern short trick_combo_banner_color_to;
 
 /* HUD element update: draws the level 5 challenge readouts and the progress bar; returns the element's width. */
 int draw_trick_combo_hud(char *a) {
@@ -328,10 +328,10 @@ int draw_trick_combo_hud(char *a) {
     }
     return *(int *)(a + 0x58);
 }
-extern void func_001FFDA0(int arg0, int arg1);
-extern int D_L05_0015FA58 MACRO_ADDR;
-extern int D_L05_0015FA54 MACRO_ADDR;
-extern short D_L05_0015FA50;
+extern void Hud_SetBarValueById(int arg0, int arg1);
+extern int rilgar_hud_held_bar_id MACRO_ADDR;
+extern int rilgar_hud_hold_active MACRO_ADDR;
+extern short rilgar_hud_release_count;
 // Releases the held hud element if any, clears a flag and bumps a counter.
 void Hud_ReleaseHeldElement(void) {
     if (rilgar_hud_held_bar_id != -1) {
@@ -341,7 +341,7 @@ void Hud_ReleaseHeldElement(void) {
     rilgar_hud_hold_active = 0;
     *(int *)&rilgar_hud_release_count = *(int *)&rilgar_hud_release_count + 1;
 }
-extern int func_001F9850(int);
+extern int scale_ticks(int);
 
 typedef struct {
     char pad0[0x48];
@@ -363,7 +363,7 @@ void initialize_hud_element_defaults(HudElem *e) {
     e->unk4A = 0;
 }
 extern char D_0013E633[];
-extern int func_001F9850(int);
+extern int scale_ticks(int);
 
 /* Fades the progress HUD in when the hero is in mode 0x16, else fades it out. */
 void set_progress_hud_fade_from_hero_mode(char *moby)
@@ -375,31 +375,31 @@ void set_progress_hud_fade_from_hero_mode(char *moby)
         *(int *)(moby + 0x6C) = -6;
     }
 }
-extern int D_0015EE80 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
-extern int D_0013E600[];
+extern int pal_mode MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern int g_screen_extent[];
 extern char D_0013D355[];
-extern short D_L05_0015FA5C;
-extern short D_L05_0015FA60;
-extern short D_L05_0015FA64;
-extern short D_L05_0015FA68;
-extern short D_L05_0015FA6C;
-extern short D_L05_0015FA70;
-extern short D_L05_0015FA74;
-extern short D_L05_0015FA78;
-extern short D_L05_0015FA7C;
-extern short D_L05_0015FA88;
-extern short D_L05_0015FA98;
-extern short D_L05_0015FA9C;
-extern short D_L05_0015FAA0;
-extern char D_L05_0015FAB0[];
-extern char D_L05_0015FAB8[];
-extern char D_L05_0015FAC0[];
-extern void func_00201960(int, int, int, int, int);
-extern char *func_001FE540(int);
+extern short rilgar_progress_frame_x;
+extern short rilgar_progress_frame_bottom;
+extern short rilgar_progress_frame_width;
+extern short rilgar_progress_frame_height;
+extern short rilgar_progress_frame_alpha;
+extern short rilgar_progress_label_color;
+extern short rilgar_progress_value_color;
+extern short rilgar_progress_label_x;
+extern short rilgar_progress_text_bottom;
+extern short rilgar_progress_rank_right_x;
+extern short rilgar_counter_box_alt_x;
+extern short rilgar_counter_box_alt_y;
+extern short rilgar_counter_frame_width;
+extern char rilgar_fmt_label[];
+extern char rilgar_fmt_progress_number[];
+extern char rilgar_fmt_rank_label[];
+extern void draw_stretchable_ui_frame(int, int, int, int, int);
+extern char *msg_string(int);
 extern int func_00116248(char *, char *, ...);
-extern void func_L00_001FB7F8(int, int, long, char *, int);
-extern int func_001F6600(char *, int);
+extern void print_text_with_texture_3(int, int, long, char *, int);
+extern int measure_text_width_regular(char *, int);
 
 /* Screen-bottom offset minus a HUD element's Y, using the PAL or NTSC margin. */
 static inline int hud_sub_66D10(int d, int pal, short *p) {

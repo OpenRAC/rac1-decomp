@@ -3,18 +3,18 @@
 #include "moby.h"
 #include "include_asm.h"
 
-extern void func_00234C98(int, long);
-extern void func_001F7868(void);
-extern int func_001F4868(int);
-extern void func_L08_002F20D8(int);
-extern void func_L08_002F21B0(int);
-extern void func_L11_0031ED48(int);
-extern short D_L11_00162588;
-extern short D_L11_001625A8;
-extern short D_L11_001625B8;
-extern int D_L11_0016258C MACRO_ADDR;
-extern int D_L11_001625AC MACRO_ADDR;
-extern int D_L11_00162620 MACRO_ADDR;
+extern void VU1_addGSregister(int, long);
+extern void font_queue_vu_state(void);
+extern int GetEffectTex(int);
+extern void Moby600_DrawQuads11(int);
+extern void emit_pair_offset_render_batch(int);
+extern void emit_level11_layered_effect_batches_with_pair_offset(int);
+extern short layered_effect_texture_2c_fixed_alpha;
+extern short layered_effect_texture_2a_pair_zero_fixed_alpha;
+extern short layered_effect_texture_2b_fixed_alpha;
+extern int layered_effect_texture_29_fixed_alpha_scale MACRO_ADDR;
+extern int layered_effect_texture_2a_pair_one_fixed_alpha MACRO_ADDR;
+extern int pokitaru_layered_fade_alpha MACRO_ADDR;
 
 // Draws the pokitaru HUD elements with their colours.
 void draw_level11_layered_effect_batches(void) {
@@ -45,33 +45,33 @@ void draw_level11_layered_effect_batches(void) {
 }
 typedef struct { int a, b; } PairA_31F760;
 typedef struct { int a, b; } Pair8_31F760;
-extern void func_L08_002F2428(void *, int, void *, float, float, float, float, int);
-extern int func_L00_00200290(char *, float);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9CB8(void *);
-extern void func_L08_002F2760(int);
-extern void func_L08_002F2618(void *, float, float, float, void *);
+extern void scale_rgba_tables(void *, int, void *, float, float, float, float, int);
+extern int FastBSphereCheck(char *, float);
+extern void FastVecSub(void *, void *, void *);
+extern float FastVecLength(void *);
+extern void AdvanceScrollOffsets(int);
+extern void advance_wrapped_sine_pair(void *, float, float, float, void *);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern void func_L08_002F2838(int);
-extern void func_001F49B0(void (*)(void), void *);
-extern short D_L11_00162600;
-extern short D_L11_001625C0;
-extern int D_L11_001F9D08[];
-extern int D_L11_001F4C38[];
-extern int D_L11_001FF9F0[];
-extern int D_L11_001F9D38[];
-extern Pair8_31F760 D_L11_00162628[] MACRO_ADDR;
-extern char D_L11_00167700[];
-extern PairA_31F760 D_L11_001FFA10[];
-extern PairA_31F760 D_L11_00162640[] MACRO_ADDR;
+extern void AdvanceScrollEntry(int);
+extern void AddDrawCallback(void (*)(void), void *);
+extern short pokitaru_layered_mesh_colors;
+extern short pokitaru_layered_mesh_vertex_counts;
+extern int pokitaru_layered_mesh11_colors[];
+extern int pokitaru_layered_mesh11_vertex_counts[];
+extern int pokitaru_layered_mesh8_colors[];
+extern int pokitaru_layered_mesh8_vertex_counts[];
+extern Pair8_31F760 pokitaru_layered_scroll_entries[] MACRO_ADDR;
+extern char pokitaru_player_camera[];
+extern PairA_31F760 pokitaru_layered_uv_scroll[];
+extern PairA_31F760 pokitaru_layered_wobble_phase[] MACRO_ADDR;
 extern float D_L11_0016262C[] MACRO_ADDR;
-extern PairA_31F760 D_L11_00162638[] MACRO_ADDR;
-extern float D_L11_0016257C MACRO_ADDR;
-extern float D_L11_00162580 MACRO_ADDR;
-extern float D_L11_00162584 MACRO_ADDR;
-extern int D_L11_001FFA18[];
-extern short D_L11_001625BC;
-extern short D_L11_00162578;
+extern PairA_31F760 pokitaru_layered_2b_scroll[] MACRO_ADDR;
+extern float layered_effect_pos_y MACRO_ADDR;
+extern float layered_effect_position_z MACRO_ADDR;
+extern float layered_effect_radius MACRO_ADDR;
+extern int pokitaru_layered_uv_wobble[];
+extern short layered_effect_color_tables_initialized;
+extern short layered_effect_position_x;
 
 /* Update function: state 0 sets up some global tables (running func_L08_002F2428 once), state 1 tests a point
  * and its distance to the hero and sets D_L11_00162620 to a 0 to 255 value that fades between 15.0 and 35.0. */
@@ -147,14 +147,14 @@ void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
         break;
     }
 }
-extern void func_L08_00259040(void *, int, int, void *);
-extern void func_L00_001FDE48(int, int, int, void *, int);
-extern char D_L11_00217A30[];
-extern char D_L11_00217A18[];
-extern int D_L11_00215450[];
-extern int D_L11_00207BC0[];
-extern int D_L11_00215408[];
-extern int D_L11_002154E0[];
+extern void add_uv_scroll_offset(void *, int, int, void *);
+extern void draw_env_overlay_mesh(int, int, int, void *, int);
+extern char pokitaru_faded_scrolled_uvs[];
+extern char pokitaru_faded_uv_scroll[];
+extern int pokitaru_faded_mesh_uv_sources[];
+extern int pokitaru_faded_mesh_vertex_counts[];
+extern int pokitaru_faded_mesh_positions[];
+extern int pokitaru_faded_mesh_colors[];
 
 /* Builds 17 entries from parallel tables. */
 void emit_render_batches_with_pair_offset(int arg) {
@@ -165,11 +165,11 @@ void emit_render_batches_with_pair_offset(int arg) {
     }
 }
 typedef struct { int a, b; } Pair8;
-extern int D_L11_00207B48[];
-extern int D_L11_002009E8[];
-extern int D_L11_00207B20[];
-extern int D_L11_00207B98[];
-extern Pair8 D_L11_001626A8[] MACRO_ADDR;
+extern int oil_tanker_mesh_uv_sources[];
+extern int oil_tanker_mesh_vertex_counts[];
+extern int oil_tanker_mesh_positions[];
+extern int oil_tanker_mesh_colors[];
+extern Pair8 pokitaru_faded_scroll_entries[] MACRO_ADDR;
 
 /* Places the level's 9 effect pieces from their tables (a relative of func_L11_0031FCC8). */
 void emit_oil_tanker_render_batches_with_pair_offset(int a) {
@@ -179,16 +179,16 @@ void emit_oil_tanker_render_batches_with_pair_offset(int a) {
         draw_env_overlay_mesh(oil_tanker_mesh_vertex_counts[i], oil_tanker_mesh_positions[i], oil_tanker_mesh_colors[i], pokitaru_faded_scrolled_uvs, 1);
     }
 }
-extern int func_00215570(void *arg0, int arg1);
-extern void func_L11_0031FB18(int arg);
-extern void func_L11_0031FBF0(int);
-extern void func_L11_0031FCC8(int);
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
+extern void emit_render_batches_with_pair_offset(int arg);
+extern void emit_oil_tanker_render_batches_with_pair_offset(int);
+extern void queue_oil_tanker_front_texture_2b_batches(int);
 extern int D_L11_001626A0_w __asm__("D_L11_001626A0") MACRO_ADDR;
-extern int D_L11_0016265C MACRO_ADDR;
-extern int D_L11_0016267C MACRO_ADDR;
-extern short D_L11_00162658;
-extern short D_L11_00162678;
-extern short D_L11_00162688;
+extern int distance_faded_effect_texture_29_fixed_alpha_scale MACRO_ADDR;
+extern int distance_faded_effect_texture_2a_pair_one_fixed_alpha MACRO_ADDR;
+extern short distance_faded_effect_texture_2c_fixed_alpha;
+extern short distance_faded_effect_texture_2a_pair_zero_fixed_alpha;
+extern short distance_faded_effect_texture_2b_fixed_alpha;
 
 // Draws the level 11 HUD gauges: sets up the gfx packets and per-gauge draws.
 void draw_level11_distance_faded_effect_batches(char *m) {
@@ -231,18 +231,18 @@ void draw_level11_distance_faded_effect_batches(char *m) {
     }
 }
 typedef struct { int a, b; } PairA_3205C0;
-extern int D_L11_00217A00[];
-extern int D_L11_00215528[];
+extern int oil_tanker_2b_mesh_colors[];
+extern int oil_tanker_2b_mesh_vertex_counts[];
 extern PairA_3205C0 D_L11_00217A18_p[] __asm__("D_L11_00217A18");
 extern PairA_3205C0 D_L11_001626C0_p[] __asm__("D_L11_001626C0") MACRO_ADDR;
 extern float D_L11_001626AC[] MACRO_ADDR;
-extern PairA_3205C0 D_L11_001626B8[] MACRO_ADDR;
-extern float D_L11_0016264C MACRO_ADDR;
-extern float D_L11_00162650 MACRO_ADDR;
-extern float D_L11_00162654 MACRO_ADDR;
-extern int D_L11_00217A20[];
-extern short D_L11_0016268C;
-extern short D_L11_00162648;
+extern PairA_3205C0 pokitaru_faded_2b_scroll[] MACRO_ADDR;
+extern float distance_faded_effect_position_y MACRO_ADDR;
+extern float distance_faded_effect_position_z MACRO_ADDR;
+extern float distance_faded_effect_radius MACRO_ADDR;
+extern int pokitaru_faded_uv_wobble[];
+extern short distance_faded_effect_color_tables_initialized;
+extern short distance_faded_effect_position_x;
 
 struct Level11Reference {
     u8 pad_000[0x140];

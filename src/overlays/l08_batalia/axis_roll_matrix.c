@@ -3,13 +3,13 @@
 #include "callees.h"
 #include "include_asm.h"
 
-extern void func_001FA190(void *);
-extern float func_L00_001FF860(float, float);
-extern void func_001FA218(void *, void *);
-extern void func_L00_001FFA40(void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_001FA4A0(void *, void *);
-extern void func_001FA480(void *, void *);
+extern void set_identity_matrix(void *);
+extern float fast_atan2(float, float);
+extern void euler_to_matrix(void *, void *);
+extern void fast_euler_to_matrix(void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern void matrix_from_basis_rows(void *, void *);
+extern void matrix_copy_rows(void *, void *);
 
 /* Builds a matrix that rolls by roll around the direction dir and writes it to out. */
 void build_axis_roll_matrix(void *out, void *dir, float roll) {

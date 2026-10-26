@@ -3,11 +3,11 @@
 #include "include_asm.h"
 
 typedef int u128 __attribute__((mode(TI)));
-extern unsigned char *func_00218928(int);
+extern unsigned char *create_part(int);
 extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern int func_001F9850(int);
-extern int func_L00_0025D038(float, float, float, float);
-extern unsigned char *D_L01_001B2800[];
+extern int scale_ticks(int);
+extern int PackColorRGBA(float, float, float, float);
+extern unsigned char *novalis_part_type_textures[];
 
 /* Spawns a type 6 particle with position, colour, scale and owner. */
 void create_spark_particle(int owner, float *pos, int snd, unsigned char arg, unsigned char idx, unsigned char mode, float x, float y, float z, float scale, float f21, float r, float g, float b, float a) {
@@ -48,8 +48,8 @@ void create_spark_particle(int owner, float *pos, int snd, unsigned char arg, un
         }
     }
 }
-extern char *D_L01_001B28E0;
-extern int func_002140B0(int);
+extern char *novalis_part_type56_textures;
+extern int random_integer_below(int);
 
 /* Spawns a particle at a, with a random tint, offset b and scale f. */
 unsigned char *pool_bubble(void *a, void *b, float f) {
@@ -70,8 +70,8 @@ unsigned char *pool_bubble(void *a, void *b, float f) {
     }
     return r;
 }
-extern char *D_L01_001B28E4;
-extern float func_002140F8(float, float);
+extern char *novalis_part_type57_textures;
+extern float random_float_between(float, float);
 
 // Spawns a particle at a with offset b, a random tint and scale f, with extra parameter g at +0x34.
 unsigned char *pool_bubbles(void *a, void *b, float f, float g) {

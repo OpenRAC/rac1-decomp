@@ -36,8 +36,8 @@ none:
     return d;
 }
 INCLUDE_ASM("asm/overlays", func_L05_0028AADC);
-extern char *D_L05_001B0CB0[];
-extern int func_L00_002629E0(int, void *, void *);
+extern char *rilgar_paths[];
+extern int test_path_segment_strict_crossing(int, void *, void *);
 
 /* Build a symmetric adjacency bitmask over a table's entries from pairwise tests. */
 void build_symmetric_adjacency_masks(int *list, int n, int idx) {

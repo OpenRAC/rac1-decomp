@@ -7,75 +7,75 @@
 #include "hero.h"
 
 extern char D_0013E633[];
-extern int *D_L14_001B0F30[];
-extern int D_L14_0015F6A8 MACRO_ADDR;
-extern char D_L14_001FBED0[];
-extern char D_L14_001FBF10[];
-extern char D_L14_001FBF68[];
-extern char D_L14_001FBFA8[];
-extern char D_L14_001FC000[];
-extern float D_0015EE70 MACRO_ADDR;
-extern float D_0015EE6C MACRO_ADDR;
-extern u8 D_L14_00174660[];
-extern short D_L14_001615B8;
-extern short D_L14_001615B4;
-extern short D_L14_001615B0;
-extern short D_L14_001615AC;
-extern short D_L14_001615BC;
+extern int *oltanis_paths[];
+extern int oltanis_game_mode MACRO_ADDR;
+extern char plasmabot_no_path_a_msg[];
+extern char plasmabot_empty_path_a_msg[];
+extern char plasmabot_no_path_b_msg[];
+extern char plasmabot_empty_path_b_msg[];
+extern char plasmabot_no_link_msg[];
+extern float g_frame_time_sq MACRO_ADDR;
+extern float g_frame_time MACRO_ADDR;
+extern u8 oltanis_collision_hit_point[];
+extern short plasmabot_path_traversal_delay_frames;
+extern short plasmabot_beam_sweep_ticks;
+extern short plasmabot_beam_sweep_half_angle;
+extern short plasmabot_beam_length;
+extern short plasmabot_beam_origin_offset;
 
-extern void func_L00_00264B40(float, char *, int, char *);
-extern int func_L00_002E34F0(char *);
-extern void func_L00_002584A8(void *, int, int);
-void func_L14_002B41B0(char *m);
-void func_L14_002B44B8(char *moby);
-void func_L14_002B4128(struct Moby *m);
-extern void func_001E9730(char *, ...);
-extern int func_002140B0(int);
-void func_L14_002B45A8(char *moby);
-extern int func_001FA898(float);
-extern void func_0020D960(char *, int, char *);
-void func_L14_002B4568(char *moby);
-extern float func_00214358(float, void *, int);
-extern int func_001F9938(void *);
-int func_L14_002DAC00(int i);
-extern int func_L14_002B4BF0(unsigned char *);
+extern void Manipulator_ApplyScale(float, char *, int, char *);
+extern int release_beam_slot_by_id(char *);
+extern void SetDeathBits(void *, int, int);
+void process_plasmabot_hit_reaction(char *m);
+void update_plasmabot_target(char *moby);
+void update_plasmabot_target_range(struct Moby *m);
+extern void STUB_printf(char *, ...);
+extern int random_integer_below(int);
+void initialize_plasmabot_path_state(char *moby);
+extern int truncate_float_to_s32(float);
+extern void AttachManipulator(char *, int, char *);
+void deactivate_plasmabot(char *moby);
+extern float ProbeGroundHeight(float, void *, int);
+extern int FastDecTimer(void *);
+int MobyL14_Activate(int i);
+extern int check_listed_plasmabots_not_starting_path_traversal(unsigned char *);
 #define call_4BF0(m) func_L14_002B4BF0((unsigned char *)(m))
-extern int func_001F9850(int);
-void func_L14_002B4580(char *moby);
-extern void func_00213D28(void *, int, int);
-extern float func_L00_001FF860(float, float);
-extern float func_0020D830(char *);
-int func_L14_002B4668(char *moby);
-extern void func_00213DE0(char *, int, int, int);
-extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, float eps);
-extern float func_L00_0025CE58(float *, float *, float, float, float, float);
+extern int scale_ticks(int);
+void activate_plasmabot(char *moby);
+extern void MobySetAnimation(void *, int, int);
+extern float fast_atan2(float, float);
+extern float MobyGetFrameValue(char *);
+int follow_plasmabot_path(char *moby);
+extern void MobyBlendAnimation(char *, int, int, int);
+extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
+extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 #define call_CE58 ((float (*)(float *, float, float *, float, float, float))func_L00_0025CE58)
-void func_L14_002B47C8(char *moby);
-float func_L14_002B4828(char *moby, int flag, float x);
-void func_L14_002B4A00(char *a, float x);
-int func_L14_002B4B70(int index);
-extern int func_L00_002E33D8(void *, int, int);
-extern float func_001FA850(float, float);
-extern int func_L00_002629E0(int, void *, void *);
-void func_L14_002B4AE0(int idx);
-extern float func_001FA790(float, float);
-extern float func_001FA888(int);
-extern void func_0020DAF8(char *, int, void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern int func_L00_001EFFF0(void *, void *, int, void *, void *);
-extern int func_L00_002E3640(void *, void *, void *);
-extern int func_L00_0025D6F0(void *, void *);
-extern void func_L00_00250800(char *, int, void *);
-unsigned char *func_L14_002DFE98(char *owner, char *pos);
-extern void func_L00_0025F4A8(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
+void scale_and_apply_plasmabot_planar_velocity(char *moby);
+float update_plasmabot_aim_quaternion(char *moby, int flag, float x);
+void update_plasmabot_aim_joint_rotation(char *a, float x);
+int count_listed_plasmabots_preparing_or_sweeping_beam(int index);
+extern int register_beam_slot(void *, int, int);
+extern float FastDiffRots(float, float);
+extern int test_path_segment_strict_crossing(int, void *, void *);
+void Group_ResetClass28Timers(int idx);
+extern float FastSubRots(float, float);
+extern float IntToFloat(int);
+extern void MobyTransformScaledVertex(char *, int, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern float FastCos(float);
+extern float FastSin(float);
+extern int coll_line(void *, void *, int, void *, void *);
+extern int set_beam_origin_transform_and_endpoint(void *, void *, void *);
+extern int mine_fall(void *, void *);
+extern void Moby_GetJointWorldPos(char *, int, void *);
+unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos);
+extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
 #define call_F4A8 ((void (*)(char *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int))func_L00_0025F4A8)
-unsigned char *func_L14_002E1570(char *owner, float *scale, int mode);
-extern void func_0020D678(struct Moby *);
+unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mode);
+extern void DeleteMoby(struct Moby *);
 #define call_D678 ((void (*)(char *))func_0020D678)
-void func_L14_002B3850(struct Moby *m);
+void update_plasmabot_visual_effects(struct Moby *m);
 
 typedef int q128 __attribute__((mode(TI)));
 typedef struct {
@@ -555,14 +555,14 @@ void update_plasmabot_visual_effects(struct Moby *m)
     func_001F9BD8_2B3850(&pv->beam_end, &pv->beam_start, &dy);
     func_001F49B0_2B3850(func_L14_002B3B78_2B3850, m);
 }
-extern void func_001F9BF0(void *, void *, void *);
-extern void func_001F9CA0(void *, void *, void *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_001F9EE8(void *, void *, void *);
-extern void func_L00_001FD1D8(void *, void *, s32);
-u64 func_001F4868(s32);
-extern char D_L14_001675C0[];
-extern Vec4 D_L14_001D8B50[];
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecCross(void *, void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern void transform_vector(void *, void *, void *);
+extern void draw_world_quad(void *, void *, s32);
+u64 GetEffectTex(s32);
+extern char oltanis_camera_pos[];
+extern Vec4 plasmabot_effect_quad_corners[];
 extern f32 D_L14_00161574_3B78 SDATA(D_L14_00161574);
 extern f32 D_L14_00161584_3B78 SDATA(D_L14_00161584);
 extern f32 D_L14_00161588_3B78 SDATA(D_L14_00161588);
@@ -695,10 +695,10 @@ typedef struct {
     f32 unk234; /* 0x234 */
     s32 delay; /* 0x238: frames, counted down */
 } DelayVars_2b2ed8;
-extern short D_L14_0016158C;
-extern f32 func_002140F8(f32, f32);
-extern f32 func_001F9878(f32);
-extern s32 func_001FA898(f32);
+extern short plasmabot_target_range;
+extern f32 random_float_between(f32, f32);
+extern f32 multiply_global_factor(f32);
+extern s32 truncate_float_to_s32(f32);
 extern s32 func_001F9908_B4128(s32 *) __asm__("func_001F9908");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002b2ed8. */
@@ -719,17 +719,17 @@ void update_plasmabot_target_range(struct Moby *m) {
 }
 extern char D_0013E633_x[] __asm__("D_0013E633");
 extern float D_0015EE6C_x __asm__("D_0015EE6C") MACRO_ADDR;
-extern short D_L14_00161590;
-extern void func_L00_0025E590(void *, void *);
-extern char *func_L00_0025B478(void *, int, int);
-extern int func_L00_0025B4D0(void *, void *, void *, int, int *, float *, int, int);
-extern int func_L00_002E34F0(char *);
-extern int func_001F9850(int);
-extern float func_L00_001FF860(float, float);
+extern short plasmabot_knockback_lift_factor;
+extern void StepColorFade(void *, void *);
+extern char *MobyGetHitMessage(void *, int, int);
+extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
+extern int release_beam_slot_by_id(char *);
+extern int scale_ticks(int);
+extern float fast_atan2(float, float);
 extern void func_L00_0025D5B0_i(void *, void *, float, int, int, int) __asm__("func_L00_0025D5B0");
-extern int func_001FA898(float);
-extern void func_L00_002584A8(void *, int, int);
-extern void func_L00_0025E4B0(void *m, short *p);
+extern int truncate_float_to_s32(float);
+extern void SetDeathBits(void *, int, int);
+extern void RerollEffectCounter(void *m, short *p);
 
 /* Enemy hit reaction: takes damage from attacks (not from its own kind), staggers or is knocked away and dies. */
 void process_plasmabot_hit_reaction(char *m) {
@@ -814,9 +814,9 @@ void process_plasmabot_hit_reaction(char *m) {
     StepColorFade(m, d + 0xC0);
 }
 extern char D_0013E633[];
-extern int *D_L14_001B0F30[];
-extern int func_L00_00260FB0(char *, char *, float, int, int, int *, int);
-extern float func_001F9D48(void *, void *);
+extern int *oltanis_paths[];
+extern int FindNearestEligibleMoby(char *, char *, float, int, int, int *, int);
+extern float vec_distance_xy(void *, void *);
 
 // Checks the moby's distance against its radius and latches state fields.
 void update_plasmabot_target(char *moby) {
@@ -846,7 +846,7 @@ void activate_plasmabot(char *moby) {
     *field |= 0x1000;
     *(int *)(moby + 0x94) = v;
 }
-extern float func_001F9D10(void *, void *);
+extern float FastVecDist(void *, void *);
 
 // Resets a moby's accumulators and fills per-segment lengths of its path.
 void initialize_plasmabot_path_state(char *moby) {
@@ -865,13 +865,13 @@ void initialize_plasmabot_path_state(char *moby) {
         *(float *)(p + o + 0x1C) = FastVecDist(p + (o + 0x10), p + (((i + 1) % *(int *)p) * 16 + 0x10));
     }
 }
-extern int func_L00_0025E860(void *, void *, void *, void *, int, float);
-extern float func_L00_0025C918(float *p, float *v, float t, float u1, float u2, float eps);
-extern void func_001F9BF0(void *, void *, void *);
+extern int Spline_AdvanceByDistance(void *, void *, void *, void *, int, float);
+extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
+extern void FastVecSub(void *, void *, void *);
 extern float func_L00_0025CE58_2B4668(float *p, float a, float *v, float b, float c, float d) __asm__("func_L00_0025CE58");
-extern float D_0015EE6C MACRO_ADDR;
-extern float D_0015EE70 MACRO_ADDR;
-extern short D_L14_001615A0;
+extern float g_frame_time MACRO_ADDR;
+extern float g_frame_time_sq MACRO_ADDR;
+extern short plasmabot_path_speed;
 
 /* steers the moby toward its target: queries the path, eases x/y, then turns to face the heading */
 int follow_plasmabot_path(char *moby) {
@@ -894,8 +894,8 @@ int follow_plasmabot_path(char *moby) {
     func_L00_0025CE58_2B4668((float *)(moby + 0x48), ang, (float *)(data + 0x23C), k, k, m);
     return r != 0;
 }
-extern float D_0015EE60 MACRO_ADDR;
-extern short D_L14_001615A4;
+extern float frame_scale MACRO_ADDR;
+extern short plasmabot_planar_drag;
 
 // Scales the moby's velocity by a damping factor and advances its x/y position.
 void scale_and_apply_plasmabot_planar_velocity(char *moby) {
@@ -906,12 +906,12 @@ void scale_and_apply_plasmabot_planar_velocity(char *moby) {
     ((Moby *)moby)->pos.x = ((Moby *)moby)->pos.x + *(float *)(d + 0x254);
     ((Moby *)moby)->pos.y = ((Moby *)moby)->pos.y + *(float *)(d + 0x258);
 }
-extern float func_001FA790(float, float);
+extern float FastSubRots(float, float);
 extern float func_L00_0025CE58_2B4828(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
-extern void func_L00_001FFED8(void *, int, float);
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern float func_001F9CE8(void *);
-extern float func_001FA850(float, float);
+extern void axis_rotation_2d48(void *, int, float);
+extern void FastVecSub(void *dst, void *a, void *b);
+extern float vec_length_xy(void *);
+extern float FastDiffRots(float, float);
 
 // steers a moby's pitch toward a target, and its yaw toward its owner when asked
 float update_plasmabot_aim_quaternion(char *moby, int flag, float x) {
@@ -947,9 +947,9 @@ float update_plasmabot_aim_quaternion(char *moby, int flag, float x) {
     }
     return FastDiffRots(s, *(float *)(d + 0x268));
 }
-extern float func_001FA748(float, float);
-extern float func_L00_0025CE58(float *, float *, float, float, float, float);
-extern float D_0015EE6C MACRO_ADDR;
+extern float FastAddRots(float, float);
+extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
+extern float g_frame_time MACRO_ADDR;
 
 /* steers the pitch angle of a moby toward a target and updates the joint */
 void update_plasmabot_aim_joint_rotation(char *a, float x) {
@@ -965,10 +965,10 @@ void update_plasmabot_aim_joint_rotation(char *a, float x) {
     }
     axis_rotation_2d48(d + 0x130, 2, *(float *)(d + 0x270));
 }
-extern short D_L14_001615A8;
-extern short *D_L14_001AC2C0[];
-extern char *D_L14_00160098 MACRO_ADDR;
-extern int func_001F9850(int);
+extern short plasmabot_beam_cooldown_ticks;
+extern short *oltanis_moby_groups[];
+extern char *oltanis_mobys MACRO_ADDR;
+extern int scale_ticks(int);
 
 // For each moby in a list, sets a field in its data for objects of type 0x1C.
 void Group_ResetClass28Timers(int idx) {
@@ -1018,19 +1018,19 @@ typedef struct {
     float uv[8];
     u64 a, b, c, d;
 } Pk_2B4C70;
-extern char D_L14_001675C0[];
-extern float D_L14_001D8B90[4][4];
-extern short D_L14_001615C0;
-extern short D_L14_001615C4;
-extern short D_L14_001615C8;
-extern short D_L14_001615CC;
-u64 func_001F4868(s32);
-extern void func_00234C98(int, long);
-extern float func_001F9CB8(void *);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_001F9C30(void *, void *, float);
-extern void func_L00_001FD1D8(void *, void *, s32);
+extern char oltanis_camera_pos[];
+extern float plasmabot_glow_quad_corners[4][4];
+extern short plasmabot_glow_quad_size;
+extern short plasmabot_glow_camera_pull;
+extern short plasmabot_glow_camera_margin;
+extern short plasmabot_glow_color;
+u64 GetEffectTex(s32);
+extern void VU1_addGSregister(int, long);
+extern float FastVecLength(void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern void draw_world_quad(void *, void *, s32);
 
 /* Draws the moby's glow quad, pulled toward the camera so it is not hidden by the moby. */
 void draw_plasmabot_glow_quad(char *m) {
@@ -1081,11 +1081,11 @@ void draw_plasmabot_glow_quad(char *m) {
     }
     draw_world_quad(&pk, 0, 0);
 }
-extern u8 D_001414F4[];
-extern u8 * D_L14_00167600;
-extern s32 func_001F9850(s32);
-extern s32 func_001F9908(void *);
-extern void func_00213D28(void *, s32, s32);
+extern u8 hero_vehicle_mode[];
+extern u8 * race_state;
+extern s32 scale_ticks(s32);
+extern s32 fast_dec_timer(void *);
+extern void MobySetAnimation(void *, s32, s32);
 
 typedef struct {
     s32 armed;     /* 0x00: nonzero once the hatch may open */
@@ -1159,7 +1159,7 @@ void plasmabot_hatch_update(char *moby) {
         break;
     }
 }
-extern void func_00213D28(void *, int, int);
+extern void MobySetAnimation(void *, int, int);
 
 // Starts a moby in state 5 if idle, then stores a random value and returns whether it was in state 6.
 int MobyL14_Activate(int i)
@@ -1184,24 +1184,24 @@ struct MobyDf {
     char pad50[0x28];
     unsigned char *pvars;
 };
-extern f32 D_0015EE64 MACRO_ADDR;
-extern short D_L14_00161BF0;
-extern short D_L14_00161BEC;
-extern short D_L14_00161BE8;
-extern void func_L14_002E0040(struct MobyDf *);
-extern void func_001F49B0(void (*)(void), void *);
-extern float func_001F9B88(float);
-extern int func_001F9908(void *);
-extern int func_002140B0(int);
-extern int func_L00_00258BC8(int, int);
-extern float func_002140F8(float, float);
-extern int func_L00_001F10E0(float, void *, int, void *);
-extern void func_L00_0025F4A8(struct Moby *, void *, void *, float, float, int, int, int,
+extern f32 g_frame_scale_sq MACRO_ADDR;
+extern short spinning_debris_drag_min_speed;
+extern short spinning_debris_drag;
+extern short spinning_debris_gravity;
+extern void draw_spinning_debris(struct MobyDf *);
+extern void AddDrawCallback(void (*)(void), void *);
+extern float FastAbsF(float);
+extern int fast_dec_timer(void *);
+extern int random_integer_below(int);
+extern int rand_range(int, int);
+extern float random_float_between(float, float);
+extern int coll_sphere(float, void *, int, void *);
+extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, int, int,
                                  float, float, float, float, int, float, int, int, int, int);
-extern void func_L00_0026DA50(void *, void *, int, int, int, int, float);
-extern void *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
-extern void func_0020D678(struct Moby *);
-extern float D_L14_0015F660[] MACRO_ADDR;
+extern void PartType21Spawn(void *, void *, int, int, int, int, float);
+extern void *PartType23Spawn(void *, float, float, float, int, void *, float, int);
+extern void DeleteMoby(struct Moby *);
+extern float oltanis_zero_vector[] MACRO_ADDR;
 
 /* Moby update for a falling debris particle. */
 void update_spinning_moby_with_particle_trail(struct MobyDf *moby) {
@@ -1269,18 +1269,18 @@ void update_spinning_moby_with_particle_trail(struct MobyDf *moby) {
         }
     }
 }
-extern short D_L14_00161BD8;
-extern short D_L14_00161BDC;
-extern short D_L14_00161BE0;
-extern short D_L14_00161BE4;
-extern unsigned char *func_0020D348(int);
-extern float func_002140F8(float, float);
-extern void func_001F9BF0(void *dst, void *a, void *b);
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9CA0(void *, void *, void *);
-extern float func_L00_00258C80(float lo, float hi);
-extern void func_002156E0(void *dst, void *vec, void *axis, float angle);
-extern void func_L00_00251E30(void *);
+extern short plasmabot_debris_min_speed;
+extern short plasmabot_debris_max_speed;
+extern short plasmabot_debris_min_spin;
+extern short plasmabot_debris_max_spin;
+extern unsigned char *CreateMoby(int);
+extern float random_float_between(float, float);
+extern void FastVecSub(void *dst, void *a, void *b);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecCross(void *, void *, void *);
+extern float randf_sym(float lo, float hi);
+extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
+extern void moby_build_matrix(void *);
 
 // Spawns moby 0x145 from an owner and a position, orienting its data vectors and randomising its parameters.
 unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos) {
@@ -1314,25 +1314,25 @@ unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos) {
     return m;
 }
 typedef u32 u128_E1110 __attribute__((mode(TI), aligned(16)));
-extern f32 D_0015EE60 MACRO_ADDR;
-extern f32 D_0015EE64 MACRO_ADDR;
+extern f32 frame_scale MACRO_ADDR;
+extern f32 g_frame_scale_sq MACRO_ADDR;
 extern void func_L14_002E17B8_E1110(struct Moby *) __asm__("func_L14_002E17B8");
-extern s32 D_001414D0;
+extern s32 g_hero_moby;
 extern s32 func_001F9908_E1110(s32 *) __asm__("func_001F9908");
-extern f32 func_001F9B88(f32);
-extern void func_L00_001FF4B0(void *, void *, f32);
-extern f32 func_001FA748(f32, f32);
-extern s32 func_L00_001F10E0(f32, void *, s32, void *);
+extern f32 FastAbsF(f32);
+extern void vec_scale_to_length(void *, void *, f32);
+extern f32 FastAddRots(f32, f32);
+extern s32 coll_sphere(f32, void *, s32, void *);
 extern void func_L00_0025F4A8_E1110(struct Moby *, void *, void *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32, s32, s32, s32) __asm__("func_L00_0025F4A8");
 extern void func_0020D678_E1110(struct Moby *) __asm__("func_0020D678");
-extern int func_002140B0(int);
-extern int func_L00_0028EF68(int, int, struct Moby *, int);
+extern int random_integer_below(int);
+extern int Sound_PlayClassSound(int, int, struct Moby *, int);
 typedef struct {
     u8 pad0[0x10];
     void *points;
     u8 pad14[0xC];
 } RacePath_dfd10;
-extern RacePath_dfd10 * D_L14_0015F7EC MACRO_ADDR;
+extern RacePath_dfd10 * race_paths MACRO_ADDR;
 typedef struct {
     struct Moby *owner;
     s32 timer;
@@ -1348,9 +1348,9 @@ typedef struct {
     u8 pad2C[4];
     f32 velocity[3];
 } Data_dfd10;
-extern short D_L14_00161C10;
-extern short D_L14_00161C14;
-extern short D_L14_00161C18;
+extern short path_debris_gravity;
+extern short path_debris_drag;
+extern short path_debris_drag_min_speed;
 
 /* A piece of debris: follows its race path until its timer runs out, then flies, spins and falls until it hits something or leaves the map.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002dfd10. */
@@ -1413,13 +1413,13 @@ void update_path_or_ballistic_debris(struct Moby *moby) {
     if (random_integer_below(2) != 0)
         func_L14_002E17B8_E1110(moby);
 }
-extern void func_002156E0(void *, void *, void *, float);
-extern float func_L00_00258C80(float, float);
-extern void func_L00_0025EFC0(void *, void *, void *, void *, void *, int, float, float, float);
-extern short D_L14_00161C00;
-extern short D_L14_00161C04;
-extern short D_L14_00161C08;
-extern short D_L14_00161C0C;
+extern void build_look_at_matrix(void *, void *, void *, float);
+extern float randf_sym(float, float);
+extern void find_nearest_path_point(void *, void *, void *, void *, void *, int, float, float, float);
+extern short path_debris_min_speed;
+extern short path_debris_max_speed;
+extern short path_debris_min_spin;
+extern short path_debris_max_spin;
 
 /* Spawns a class 0x193 moby on owner; mode 0 makes a spline mover, other modes a delayed projectile. */
 unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mode) {
@@ -1619,10 +1619,10 @@ void initialize_moby_path_state(char *moby) {
         }
     }
 }
-extern short D_L14_00162094;
-extern short D_L14_00162098;
-extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
+extern short linked_moby_offset_x;
+extern short linked_moby_offset_y;
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
 
 /* rebuilds two vectors from the moby's transform and applies them to its linked object */
 void update_linked_moby_position(char *moby) {
@@ -1652,14 +1652,14 @@ typedef struct {
     unsigned char padC[0x14];
     T_eca8 tail;
 } P_eca8;
-extern int func_002140B0(int);
-extern void *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
-extern float D_L14_0015F660[] MACRO_ADDR;
-extern short D_L14_0016209C;
-extern short D_L14_001620A0;
-extern short D_L14_001620A4;
-extern short D_L14_001620A8;
-extern short D_L14_001620B4;
+extern int random_integer_below(int);
+extern void *PartType23Spawn(void *, float, float, float, int, void *, float, int);
+extern float oltanis_zero_vector[] MACRO_ADDR;
+extern short offset_particles_first_offset_x;
+extern short offset_particles_first_offset_y;
+extern short offset_particles_second_offset_x;
+extern short offset_particles_second_offset_y;
+extern short offset_particles_color;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002feca8. */
 void emit_moby_offset_particles(unsigned char *m) {
@@ -1712,9 +1712,9 @@ void emit_moby_offset_particles(unsigned char *m) {
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern struct Hero D_0013F450;
-extern s32 D_0015EE84 MACRO_ADDR;
-extern f32 D_0015EE64 MACRO_ADDR;
+extern struct Hero g_hero;
+extern s32 g_current_level_index MACRO_ADDR;
+extern f32 g_frame_scale_sq MACRO_ADDR;
 typedef struct {
     struct Moby *link;
     float rest_z;
@@ -1736,19 +1736,19 @@ typedef struct {
     u8 pad0[0x20];
     struct Moby *moby;
 } MobyHit_ff640;
-extern char * D_L14_0016009C MACRO_ADDR;
-extern short D_L14_001620D0;
-extern float func_00214358(float, void *, int);
+extern char * oltanis_mobys_end MACRO_ADDR;
+extern short floating_mine_bob_speed;
+extern float ProbeGroundHeight(float, void *, int);
 extern void func_L00_0025C918_00AC8(float *, float *, float, float, float, float) __asm__("func_L00_0025C918");
 extern MobyHit_ff640 *func_L00_0025B478_00AC8(struct Moby *, int, int) __asm__("func_L00_0025B478");
-extern void func_001F99D8(void *, int);
+extern void FastMemZero16(void *, int);
 extern int func_L00_0025B4D0_00AC8(struct Moby *, MobyHit_ff640 *, HitInfo_ff640 *, int, int *, int, int, int) __asm__("func_L00_0025B4D0");
-extern void func_001F9BC0(void *);
-extern int func_0022ED80(int, int, struct Moby *);
-extern void func_L00_0025F4A8(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
-extern void func_0020D678(struct Moby *);
+extern void clear_u64_value(void *);
+extern int Moby_PlaySound(int, int, struct Moby *);
+extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
+extern void DeleteMoby(struct Moby *);
 extern int func_L00_00200290_00AC8(float *, float) __asm__("func_L00_00200290");
-extern float func_001F9FA8(float);
+extern float FastSin(float);
 
 /* Floating mine: spins and pulses (and bobs in level 16); blows up on a hit and respawns once out of view.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002ff640. */
@@ -1835,7 +1835,7 @@ void update_floating_mine(struct Moby *moby) {
     moby->rot.y = FastAddRots(moby->rot.y, vars->spin[1]);
     moby->rot.z = FastAddRots(moby->rot.z, vars->spin[2]);
 }
-extern float func_002140F8(float, float);
+extern float random_float_between(float, float);
 
 /* Spawns moby class 0x3A5 at the given position, owned by owner, with three randomised angle values. */
 unsigned char *spawn_floating_mine(unsigned char *owner, char *pos) {
@@ -1886,14 +1886,14 @@ extern short D_L14_001621A0_s __asm__("D_L14_001621A0");
 extern short D_L14_00162198_s __asm__("D_L14_00162198");
 extern short D_L14_001621A4_s __asm__("D_L14_001621A4");
 extern char *D_L14_001601AC_t __asm__("D_L14_001601AC") MACRO_ADDR;
-extern int func_L00_00200290(void *, float);
-extern void func_L14_00302C80(char *);
-extern float func_001F9CB8(void *);
-extern int func_001F9938(void *);
-extern void func_L14_003039C0(char *);
-extern void func_L14_00303270(char *);
-extern void func_L14_00303430(char *);
-extern void func_001F49B0(void (*)(void), void *);
+extern int FastBSphereCheck(void *, float);
+extern void start_vendor_beam_pulse(char *);
+extern float FastVecLength(void *);
+extern int FastDecTimer(void *);
+extern void apply_vendor_beam_damage(char *);
+extern void update_vendor_beam_animation(char *);
+extern void draw_vendor_beam(char *);
+extern void AddDrawCallback(void (*)(void), void *);
 
 /* Moby update for a timed effect that triggers when the hero is near. */
 void update_vendor_beam(unsigned char *m) {
@@ -1970,32 +1970,32 @@ void update_vendor_beam(unsigned char *m) {
 /* functional: medium. Builds the arc strand for the electric-arc moby (data block d): 32 jittered points (P) and offsets (Q) along the table entry's span, smoothed with a 3-point average into d+0x20/d+0x220, then 4 branches (byte count at d+0x18+i, 3 segments each at d+0x420..) and, when the entry is at least 4.0 from the camera point, spawns 4+2 bursts of particles (func_00219780). Meanings of the gp-relative tuning values are unknown; the operations follow the assembly. */
 typedef struct Vq_02C80 { float x, y, z, w; } __attribute__((aligned(16))) Vq_02C80;
 
-extern float func_001FA888(int) ;
-extern int func_001F9850(int) ;
-extern int func_L00_00258BC8(int, int) ;
-extern float func_001F9CB8(void *) ;
-extern void func_001F9BC0(void *) ;
-extern void func_L00_00258DB0(void *, float, float) ;
-extern void func_001F9BD8(void *, void *, void *) ;
-extern void func_001F9C30(void *, void *, float) ;
-extern float func_002140F8(float, float) ;
-extern int func_001FA898(float) ;
-extern float func_001F9D48(void *, void *) ;
-extern void func_001FA218(void *, void *) ;
-extern void func_001F9EE8(void *, void *, void *) ;
-extern int func_002140B0(int) ;
-extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int) ;
-extern char *D_L14_001601AC MACRO_ADDR;
-extern float D_0015EE6C ;
-extern short D_L14_0016218C;
-extern short D_L14_00162190;
-extern short D_L14_001621CC;
-extern short D_L14_001621D0;
-extern short D_L14_001621D8;
-extern short D_L14_001621DC;
-extern short D_L14_001621E4;
-extern short D_L14_001621EC;
-extern short D_L14_001621F0;
+extern float IntToFloat(int) ;
+extern int scale_ticks(int) ;
+extern int rand_range(int, int) ;
+extern float FastVecLength(void *) ;
+extern void clear_u64_value(void *) ;
+extern void rand_vec(void *, float, float) ;
+extern void FastVecAdd(void *, void *, void *) ;
+extern void FastVecScale(void *, void *, float) ;
+extern float random_float_between(float, float) ;
+extern int truncate_float_to_s32(float) ;
+extern float vec_distance_xy(void *, void *) ;
+extern void euler_to_matrix(void *, void *) ;
+extern void transform_vector(void *, void *, void *) ;
+extern int random_integer_below(int) ;
+extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int) ;
+extern char *oltanis_clip_volumes MACRO_ADDR;
+extern float g_frame_time ;
+extern short vendor_beam_min_ticks;
+extern short vendor_beam_max_ticks;
+extern short vendor_beam_jitter_radius;
+extern short vendor_beam_jitter_speed;
+extern short vendor_beam_spark_color_start;
+extern short vendor_beam_spark_color_end;
+extern short vendor_beam_spark_w;
+extern short vendor_beam_spark_tex_a;
+extern short vendor_beam_spark_tex_b;
 
 typedef struct {
     int idx;
@@ -2010,7 +2010,7 @@ typedef struct {
     int r620;
 } D_02C80;
 
-void func_L14_00302C80(char *m);
+void start_vendor_beam_pulse(char *m);
 typedef struct {
     Vec4 axis[3];
     Vec4 origin;
@@ -2117,12 +2117,12 @@ void start_vendor_beam_pulse(char *moby) {
         }
     }
 }
-extern int func_001FA8A8(int, int, float);
-extern short D_L14_00162194;
-extern short D_L14_00162198;
-extern short D_L14_001621C4;
-extern short D_L14_001621C0;
-extern short D_L14_001621C8;
+extern int FastTweenColor(int, int, float);
+extern short vendor_beam_fade_mid_ticks;
+extern short vendor_beam_fade_end_ticks;
+extern short vendor_beam_color_mid;
+extern short vendor_beam_color_start;
+extern short vendor_beam_color_end;
 
 // advances a timed chain of vectors and picks an interpolation value
 void update_vendor_beam_animation(char *moby) {
@@ -2278,11 +2278,11 @@ void apply_vendor_beam_damage(char *self) {
     func_001F9BF0_3039C0(&to, &end_b, &off);
     func_L00_001EFFF0_3039C0(&from, &to, 1, m, &req);
 }
-extern int D_L14_001622A8[] MACRO_ADDR;
-extern int D_L14_00162218[] MACRO_ADDR;
-extern void func_L00_002E35A8(int);
-extern void func_L00_002E3700(int, int);
-extern void func_L00_002E3FA0(void);
+extern int oltanis_beam_slot_owners[] MACRO_ADDR;
+extern int oltanis_beam_slot_states[] MACRO_ADDR;
+extern void release_beam_slot(int);
+extern void update_slot_panes_and_effects(int, int);
+extern void draw_active_beam_slots(void);
 
 /* Slot update of moby class 1331: state 0 clears the two slot arrays, state 1 services the pending slots and frees a slot whose moby has died. Level 14 relative of func_L00_002E32A0. */
 void update_beam_slots(unsigned char *m) {
