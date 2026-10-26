@@ -51,7 +51,7 @@ func_0012E688	snd_SendIOPCommandAndWait	recovered	config/symbol_names.txt	core t
 func_0012E820	snd_SendIOPCommandNoWait	recovered	config/symbol_names.txt	core tail: entry-point shift +0x140 onto a PAL function start	snd_send_iop_command_no_wait
 func_0012EAE0	snd_PostMessage	recovered	config/symbol_names.txt	core tail: entry-point shift +0x140 onto a PAL function start	snd_post_message
 func_0012EB18	snd_SendCurrentBatch	recovered	config/symbol_names.txt	core tail: entry-point shift +0x140 onto a PAL function start	snd_send_current_batch
-func_0012EC40	snd_reset_state_and_flush_commands	candidate	Lombyte recovered_names.json	proposal (medium, audio/rpc) at US 0x12EB00; US/PAL size alignment	
+func_0012EC40	snd_reset_state_and_flush_commands	descriptive	config/names_local.tsv	clears the flush flag and calls snd_FlushSoundCommands	
 func_0012EC60	snd_InitVAGStreamingEx	recovered	config/symbol_names.txt	core tail: entry-point shift +0x140 onto a PAL function start	snd_init_vag_streaming_ex
 func_0012ED10	snd_StopAllStreams	recovered	config/symbol_names.txt	core tail: entry-point shift +0x140 onto a PAL function start	snd_stop_all_streams
 func_0012ED48	snd_PlayVAGStreamByLocEx_CB	recovered	NTSC config/symbols.txt	snd_PlayVAGStreamByLocEx_CB at US 0x12EC08 (hand-named); US/PAL size alignment	snd_play_vag_stream_by_loc_ex_cb
@@ -9882,6 +9882,379 @@ D_L06_0015F9C8	blarg_hud_meter_first_segment_fill_scale	descriptive	config/names
 D_L07_001B2464	umbris_part_type65_textures	descriptive	config/names_local.tsv	part texture list read for the type 0x41 particle in white_particles.c	
 D_L13_001B2790	gemlik_part_type68_textures	descriptive	config/names_local.tsv	part texture list read for the type 0x44 particle in create_moby_joint_particle	
 D_L18_00178B80	veldin2_moby_hits	descriptive	config/names_local.tsv	0x40-byte hit records indexed by moby byte 0xA4 (as quartu_moby_hits)	
+D_00139478	intro_movie_disc_entry_ntsc	descriptive	config/names_local.tsv	startlevel: lsn/size pair passed to Movie_Play when pal_mode is 0	
+D_00139480	intro_movie_disc_entry_pal	descriptive	config/names_local.tsv	startlevel: lsn/size pair passed to Movie_Play when pal_mode is set	
+D_0015F05C	startlevel_code_addr	descriptive	config/names_local.tsv	startlevel stores hdr->code + hdr, the movie buffer base, here	
+D_00165530	startlevel_clear_end	descriptive	config/names_local.tsv	startlevel clears bytes from menu_state_frame_count up to this address	
+D_00186200	startlevel_sound_defs	descriptive	config/names_local.tsv	7 sound defs given the loaded bank, then set as level_sound_defs (count 7)	
+D_001862E0	moby_class_472_sound_defs	descriptive	config/names_local.tsv	5 sound defs given the bank; transition.c makes them class 0x472's sound_defs	
+D_001E79C0	str_loading_sound_bank	descriptive	config/names_local.tsv	string "loading sound bank...\n" printed by startlevel	
+D_001611C0	underwater_screen_tint_r	descriptive	config/names_local.tsv	red of the RGBA fill drawn when use_alt_fog (underwater) is set; 0x18	
+D_001611C1	underwater_screen_tint_g	descriptive	config/names_local.tsv	green of the underwater RGBA fill; 0x30	
+D_001611C2	underwater_screen_tint_b	descriptive	config/names_local.tsv	blue of the underwater RGBA fill; 0x90	
+D_001611C3	underwater_screen_tint_a	descriptive	config/names_local.tsv	alpha of the underwater RGBA fill; 0x40	
+func_001207B8	reset_vif1_gif	descriptive	config/names_local.tsv	writes VIF1 FBRST/ERR, resets VU1 via vi28, sends VIF1 init qwords, GIF_CTRL=1	
+func_00112380	libc_atoi	descriptive	config/names_local.tsv	newlib atoi.o: returns strtol(s, 0, 10)	check_state_range
+func_00122140	sce_gs_put_disp_env	descriptive	config/names_local.tsv	stores a disp env into GS PMODE/DISPFB/DISPLAY registers (0x12000000..)	
+func_001222C8	sce_gs_set_def_draw_env	descriptive	config/names_local.tsv	fills a draw env from psm/width/height; calls the zbuf addr helper	
+func_00118E20	sce_sif_set_dma	descriptive	config/names_local.tsv	EE syscall 0x77 (SifSetDma); LoadIRXModule passes a 4-word dma list	
+func_0011CBC8	sce_sif_alloc_iop_heap	descriptive	config/names_local.tsv	IOP heap RPC command 1 with a size, returns the IOP address	
+func_0011CCB0	sce_sif_free_iop_heap	descriptive	config/names_local.tsv	forwards its address to IOP heap RPC command 2; LoadIRXModule frees the buffer	invoke_state_initializer
+func_0011D078	sif_load_iop_module_buffer	descriptive	config/names_local.tsv	LoadIRXModule: starts the module in the IOP buffer via sce_sif_load_module_buffer, returns status	invoke_iop_status
+func_00118D60	enable_cache	descriptive	config/names_local.tsv	EE syscall 0x61 (EnableCache), initonce passes 3	
+func_0011BF48	sce_fs_reset	descriptive	config/names_local.tsv	IOP file stub reset: clears the fd table with memset	sceFsReset
+func_0011CB40	sce_sif_init_iop_heap	descriptive	config/names_local.tsv	binds RPC server 0x80000003 and waits until it answers	
+func_0011D210	sce_sif_sync_iop	descriptive	config/names_local.tsv	initonce polls it until the IOP reboot finishes	
+func_0011D248	sce_sif_reboot_iop	descriptive	config/names_local.tsv	initonce passes iop_reboot_image_path and loops until it succeeds	
+func_001211B0	sce_cd_init	descriptive	config/names_local.tsv	cdvd init RPC, initonce calls it with 0 before and after the IOP reboot	sceCdInit
+func_00121490	sce_cd_disk_ready	descriptive	config/names_local.tsv	cdvd RPC called right after sce_cd_init in initonce	sceCdDiskReady
+func_00121688	sce_cd_mmode	descriptive	config/names_local.tsv	cdvd RPC, initonce passes 2 (media mode)	scecdmmode
+func_0012D380	sce_scf_get_language	descriptive	config/names_local.tsv	initonce reads the system language from it	
+func_00118D80	flush_cache	descriptive	config/names_local.tsv	EE syscall 0x64 (FlushCache), called with 0 around decompression	
+func_00121930	sce_cd_get_error	descriptive	config/names_local.tsv	loaders.c checks it for a nonzero cd error after a break	sceCdGetError
+func_001219C8	sce_cd_break	descriptive	config/names_local.tsv	loaders.c calls it to stop a cd read	scecdbreak
+D_001E8398	str_no_map_available	descriptive	config/names_local.tsv	string "No Map Available" drawn when the map is disabled	
+D_0015FF68	fmt_memcard_path	descriptive	config/names_local.tsv	format "%s/%s" building dir/file names for the card delete	
+D_0015FF70	str_memcard_deleting_file	descriptive	config/names_local.tsv	string "deleting %s\n" printed before a card file delete	
+D_001A0980	memcard_dir_entries	descriptive	config/names_local.tsv	64-byte directory entries filled by sce_mc_get_dir (0x20 = file name)	
+D_001E8518	str_memcard_deleting_folder	descriptive	config/names_local.tsv	string "deleting folder %s\n" printed before deleting the save dir	
+func_001151B4	libc_memcmp	descriptive	config/names_local.tsv	newlib memcmp.o, between memchr and memcpy; callers compare 4 bytes	memcmp
+func_001165B8	libc_strcmp	descriptive	config/names_local.tsv	newlib strcmp.o: word compare with NUL detect, returns byte difference	
+func_00116948	libc_strncmp	descriptive	config/names_local.tsv	newlib strncmp.o: n==0 returns 0, compares up to n bytes	
+func_00116B00	libc_strncpy	descriptive	config/names_local.tsv	newlib strncpy.o: copies with NUL detect and a byte count	strncpy
+func_001236F0	sce_mc_init	descriptive	config/names_local.tsv	card library init: creates semaphores and binds the card RPC	
+func_001238B0	sce_mc_open	descriptive	config/names_local.tsv	card RPC with a copied path name, returns via semaphore	
+func_001239D8	sce_mc_mkdir	descriptive	config/names_local.tsv	wrapper of sce_mc_open (mkdir is an open mode)	
+func_00123A10	sce_mc_close	descriptive	config/names_local.tsv	card RPC on an fd	
+func_00123AC8	sce_mc_seek	descriptive	config/names_local.tsv	card RPC on an fd with offset/mode	
+func_00123C30	sce_mc_read	descriptive	config/names_local.tsv	card RPC reading into a buffer	
+func_00123D48	sce_mc_write_buffer	descriptive	config/names_local.tsv	card RPC writing a buffer, flushes the cache first	sce_mc_write
+func_00123F30	sce_mc_sync	descriptive	config/names_local.tsv	polls the pending card command and returns its result	
+func_00124068	sce_mc_get_info	descriptive	config/names_local.tsv	card RPC returning type/free/format info	
+func_001241F0	sce_mc_get_dir	descriptive	config/names_local.tsv	card RPC with a path, fills dir entries (memcard_dir_entries)	
+func_00124340	sce_mc_format	descriptive	config/names_local.tsv	card RPC on port/slot	
+func_00124410	sce_mc_delete	descriptive	config/names_local.tsv	card RPC with a copied path name	
+func_00124528	sce_mc_unformat	descriptive	config/names_local.tsv	card RPC on port/slot	
+D_001A2F40	map_icon_lists	descriptive	config/names_local.tsv	per-level pointers to map icon lists, update_map_icons picks [level]	
+func_00118E10	sce_sif_dma_stat	descriptive	config/names_local.tsv	EE syscall 0x76 (SifDmaStat), polled until the dma id is done	
+func_0012F1A8	snd_init_movie_sound	descriptive	config/names_local.tsv	sends sound IOP command 0x3B with 6 words; audioDecCreate keeps the handle	
+func_0012F220	snd_close_movie_sound	descriptive	config/names_local.tsv	sends sound IOP command 0x3C; audioDecDelete calls it	
+func_00118A90	add_intc_handler	descriptive	config/names_local.tsv	EE syscall 0x10 (AddIntcHandler)	
+func_00118AA0	remove_intc_handler	descriptive	config/names_local.tsv	EE syscall 0x11 (RemoveIntcHandler)	
+func_00118B50	create_thread	descriptive	config/names_local.tsv	EE syscall 0x20 (CreateThread)	
+func_00118B60	delete_thread	descriptive	config/names_local.tsv	EE syscall 0x21 (DeleteThread)	
+func_00118B70	start_thread	descriptive	config/names_local.tsv	EE syscall 0x22 (StartThread)	
+func_00118B80	terminate_thread	descriptive	config/names_local.tsv	EE syscall 0x25 (TerminateThread)	
+func_00118BA0	change_thread_priority	descriptive	config/names_local.tsv	EE syscall 0x29 (ChangeThreadPriority)	
+func_00118BC0	rotate_thread_ready_queue	descriptive	config/names_local.tsv	EE syscall 0x2B (RotateThreadReadyQueue)	
+func_00118BE0	get_thread_id	descriptive	config/names_local.tsv	EE syscall 0x2F (GetThreadId)	
+func_00119328	disable_intc_atomic	descriptive	config/names_local.tsv	disable_intc syscall wrapped in disable/enable_interrupts when EIE was set	disable_intc
+func_00119390	enable_intc_atomic	descriptive	config/names_local.tsv	enable_intc syscall wrapped in disable/enable_interrupts when EIE was set	enable_intc
+func_001193F8	disable_dmac_atomic	descriptive	config/names_local.tsv	disable_dmac syscall wrapped in disable/enable_interrupts when EIE was set	disable_dmac
+func_00119460	enable_dmac_atomic	descriptive	config/names_local.tsv	enable_dmac syscall wrapped in disable/enable_interrupts when EIE was set	enable_dmac
+func_0012AD10	sce_mpeg_demux_pss_ring_buffer	descriptive	config/names_local.tsv	movie.c feeds it the ring buffer and gets the bytes used	sce_mpeg_demux_pss_ring
+func_0012B870	sce_mpeg_init	descriptive	config/names_local.tsv	libmpeg init, runs with interrupts off	
+func_00115248	libc_memcpy	descriptive	config/names_local.tsv	newlib memcpy.o, between memcmp and memmove	memcpy
+func_00121750	sce_cd_read	descriptive	config/names_local.tsv	callers pass lsn, sector count, buffer, read mode	sceCdRead
+func_00118C70	create_semaphore	descriptive	config/names_local.tsv	EE syscall 0x40 (CreateSema)	
+func_00118C80	delete_semaphore	descriptive	config/names_local.tsv	EE syscall 0x41 (DeleteSema)	
+func_00118C90	signal_semaphore	descriptive	config/names_local.tsv	EE syscall 0x42 (SignalSema)	
+func_00118CB0	wait_semaphore	descriptive	config/names_local.tsv	EE syscall 0x44 (WaitSema)	
+func_0011D960	disable_interrupts	descriptive	config/names_local.tsv	clears Status EIE and waits until it reads back, returns whether it was set	DIntr
+func_0011D9A8	enable_interrupts	descriptive	config/names_local.tsv	sets Status EIE, returns whether it was set	
+func_0012B008	sce_mpeg_add_str_callback	descriptive	config/names_local.tsv	videoDecSetStream hands it the stream type, id, callback and data	
+func_0012B918	sce_mpeg_create	descriptive	config/names_local.tsv	videoDecCreate: clears and builds the decoder in the given work area	
+func_0012BB20	sce_mpeg_delete	descriptive	config/names_local.tsv	videoDecDelete calls it after freeing the buffer; returns 1	
+func_0012BB30	sce_mpeg_get_picture	descriptive	config/names_local.tsv	decodes a picture into the frame buffer (size 0x340), <0 on error	
+func_0012BB88	sce_mpeg_is_end	descriptive	config/names_local.tsv	returns the decoder's end flag; decode loop runs while it is 0	get_nested_object_value
+func_0012BB98	sce_mpeg_is_ref_buff_empty	descriptive	config/names_local.tsv	returns decoder field +4 == 0; videoDecIsFlushed tests it	is_nested_object_field_zero
+func_0012BBA8	sce_mpeg_reset	descriptive	config/names_local.tsv	clears the decoder state (_clearEach)	
+func_0012BC50	sce_mpeg_add_callback	descriptive	config/names_local.tsv	stores callback func/data in slot n; videoDecCreate sets error/nodata/dma callbacks	add_mpeg_callback
+func_0012E4A8	snd_stop_sound	descriptive	config/names_local.tsv	sends sound IOP command 0x15 with the handle; music.c stops a stream voice	
+func_0012E600	snd_set_sound_params_cb	descriptive	config/names_local.tsv	sends sound IOP command 0x21 with params and a callback	
+func_00124DF0	sce_pad2_get_button_profile	descriptive	config/names_local.tsv	pad.c reads the button profile block into +0x180	
+func_00124EE0	sce_pad2_get_state	descriptive	config/names_local.tsv	pad.c reads the port's device state	
+func_00125218	sce_vib_get_profile	descriptive	config/names_local.tsv	pad.c reads the vibration profile into +0x184	
+D_001384A0	map_screen_disc_entries	descriptive	config/names_local.tsv	DrawMapScreen: (lsn, sectors) pair streamed for a map id without 0x100	
+D_00138538	map_screen_disc_entries_alt	descriptive	config/names_local.tsv	DrawMapScreen: (lsn, sectors) pair for map ids with the 0x100 bit	
+D_001602C0	menu_light_direction_init	descriptive	config/names_local.tsv	unit vector scaled into menu_light_direction when the pause menu opens	
+D_001602D0	menu_light_color_init	descriptive	config/names_local.tsv	(0.9, 0.9, 0.6) qword copied 0x10 before menu_light_direction at menu open	
+D_001603A4	gold_bolt_marker_y_offset	descriptive	config/names_local.tsv	1.3f added to the camera y to place the gold bolt menu marker	
+D_00160400	fmt_save_play_time	descriptive	config/names_local.tsv	format "%02d:%02d" for a save slot's hours and minutes	
+D_00160410	fmt_save_bolt_count	descriptive	config/names_local.tsv	format "%d,%03d,%03d" for a save slot's bolts	
+D_00160420	fmt_save_date	descriptive	config/names_local.tsv	format "%02x/%02x/%02x" for a save slot's BCD date	
+D_0019C250	menu_light_direction	descriptive	config/names_local.tsv	pause menu open copies menu_light_direction_init here (colour at -0x10)	
+D_001CF798	map_menu_page	descriptive	config/names_local.tsv	menu page whose screens draw the map; back page of mission_menu_page	
+D_001CF9F8	mission_menu_page	descriptive	config/names_local.tsv	page opened from the map screen; holds the selected mission screens	
+D_001D4948	pause_menu_start_page	descriptive	config/names_local.tsv	initialize_menu_preview_scene makes it the current and next page	
+D_001D5F20	preserved_item_available_indices	descriptive	config/names_local.tsv	-1-terminated byte indices of item_available kept across the progress reset	
+D_001D6410	current_preview_animation_request	descriptive	config/names_local.tsv	copied from the head of preview_animation_requests, then played	
+D_001E8B00	language_resource_offsets	descriptive	config/names_local.tsv	6 per-language offsets added to a stream's resource index by g_game_language	
+func_001153FC	libc_memset	descriptive	config/names_local.tsv	newlib memset.o, last member after memmove	memset
+func_00116428	libc_strchr	descriptive	config/names_local.tsv	newlib strchr.o, first str member after __sclose	strchr
+func_00121A80	sce_cd_read_clock	descriptive	config/names_local.tsv	cdvd RPC filling save_clock_time before a save	scecdreadclock
+func_0012D818	sce_scf_get_local_time_from_rtc	descriptive	config/names_local.tsv	converts save_clock_time with the time zone and summer-time settings	sce_scf_get_local_timefrom_rtc
+D_00160560	sky_shell_translation	descriptive	config/names_local.tsv	sky shell draw copies it into the shell transform's translation row; update_level_gameplay_frame scales a vector into it	
+func_0012E3C0	snd_set_mixer_mode	descriptive	config/names_local.tsv	989snd command 0xD with two ints, called (0,1) in sound init	
+func_0012E448	snd_play_sound_vol_pan_pmpb	descriptive	config/names_local.tsv	989snd command 0x11; sound.c passes bank, sound index, volume, pan, pitch mod, bend, callback	
+D_0015EF4A	level_archive_load_busy	descriptive	config/names_local.tsv	busy s16 of the level archive load state (after stage D_0015EF48)	
+D_001605C0	resident_effect_quad_counts	descriptive	config/names_local.tsv	int per content_variant: number of quad rows DrawResidentEffectQuads draws	
+D_001CC730	space_flight_paths	descriptive	config/names_local.tsv	table of scripted path pointers indexed by the space flight path index	
+D_001D9C20	resident_effect_quad_uvs	descriptive	config/names_local.tsv	4 uv pairs copied into the effect quad	
+D_001D9C40	resident_effect_quad_offsets	descriptive	config/names_local.tsv	default per-row offset/size table of the effect quads	
+D_001D9CC0	resident_effect_quad_offsets_variant1	descriptive	config/names_local.tsv	row table used when content_variant == 1	
+D_001D9CE0	resident_effect_quad_offsets_variant2	descriptive	config/names_local.tsv	row table used when content_variant == 2	
+D_001D9D00	resident_effect_quad_corners	descriptive	config/names_local.tsv	4 corner vectors scaled per row in DrawResidentEffectQuads	
+D_001D9D40	space_ship_trail_emitter_offsets	descriptive	config/names_local.tsv	per-variant pair of local points transformed into trailA/trailB	
+D_001DA010	space_ship_companion_a_offset	descriptive	config/names_local.tsv	per-variant local offset placing companion_a on the ship	
+D_001DA040	space_ship_companion_b_offset	descriptive	config/names_local.tsv	per-variant local offset placing companion_b on the ship	
+func_00120F30	sce_cd_sync_s	descriptive	config/names_local.tsv	marked sceCdSyncS: waits or polls the CD rpc busy state	scecdsync
+func_00122598	sce_gs_sync_v	descriptive	config/names_local.tsv	waits for vsync (v_sync) then returns the interlace field	
+func_0012F0A8	snd_set_reverb_ex	descriptive	config/names_local.tsv	989snd command 0x50 with five ints	
+func_0011B4C8	sif_call_rpc	descriptive	config/names_local.tsv	9 args: client, fno, mode, send, ssize, recv, rsize, end func, end data	sce_sif_call_rpc
+func_0011B6B8	sce_sif_check_stat_rpc	descriptive	config/names_local.tsv	returns 1 while the rpc client's packet is still busy	
+func_00116CC0	find_substring	descriptive	config/names_local.tsv	newlib strstr (strstr itself appears in src comments)	
+func_00124650	sce_dbc_init	descriptive	config/names_local.tsv	binds IOP servers 0x80000900/0x8000091B and checks server version	sceDbcInit
+func_00124B88	sce_pad2_init	descriptive	config/names_local.tsv	pad2 library init next to scePad2CreateSocket	
+func_00124BC8	sce_pad2_create_socket	descriptive	config/names_local.tsv	marked scePad2CreateSocket(param, buf)	
+func_0012EC30	snd_reenable_command_flush	descriptive	config/names_local.tsv	sets the 989snd flush flag (GP -0x7F3C) back to 1 after a manual flush	
+func_00118AB0	add_dmac_handler	descriptive	config/names_local.tsv	EE syscall 0x12; vuchain installs VIF1 DMA handler	
+func_00118AD0	remove_dmac_handler	descriptive	config/names_local.tsv	EE syscall 0x13; removes the VIF1 DMA handler by id	
+func_001232E0	sce_dma_get_chan	descriptive	config/names_local.tsv	returns DMA channel register block for id < 10	
+func_001235C8	sce_dma_send	descriptive	config/names_local.tsv	sets TADR, clears QWC, starts chain CHCR 0x105 on the channel	
+D_0015F058	intro_overlay_timer	descriptive	config/names_local.tsv	frame counter that drives intro_overlay_alpha fade and the language overlay pulse	
+D_001863B0	transition_sound_cues	descriptive	config/names_local.tsv	start/end/sound/voice cue list played against the transfer time in transition_do_transition	
+D_001D8840	shrub_render_texture_addrs	descriptive	config/names_local.tsv	filled from the wad's third texture table, shrub_render_texture_definition_count entries	
+D_001E2900	object_render_texture_addrs	descriptive	config/names_local.tsv	filled from the wad's second texture table, object_render_texture_definition_count entries	
+D_L01_00161C80	water_lily_spring_velocity_adjustment_scale	descriptive	config/names_local.tsv	spring_axis_to_r stiffness, times frame time, toward the home point	
+D_L01_00161C84	water_lily_spring_damping	descriptive	config/names_local.tsv	damping argument of spring_axis_to_r in water_lily_update	
+D_L01_00161C88	water_lily_hero_separation_radius	descriptive	config/names_local.tsv	lily is pushed out to this distance from the hero	
+D_L01_00161C8C	water_lily_max_horizontal_speed	descriptive	config/names_local.tsv	caps the per-frame move (times frame time)	
+D_L01_00161C90	water_lily_collision_radius	descriptive	config/names_local.tsv	radius argument of MoveKeepingOverGround	
+D_L01_0015FD08	novalis_mission_group_state	descriptive	config/names_local.tsv	per-mission byte tested != 0xFF before saving a pickup; same slot as kerwan_mission_group_state	
+D_L01_00161D00	cave_wall_debris_colors	descriptive	config/names_local.tsv	three colour words, one picked at random per debris particle in destroyable_cave_wall_update	
+D_L01_00161F20	beehive_max_spawns	descriptive	config/names_local.tsv	beehive_update stops spawning once count reaches it	
+D_L01_001E3720	novalis_explosion_light	descriptive	config/names_local.tsv	r/g/b light block set from the light argument and passed to mine_camera_blast	
+D_L01_0020B7E0	novalis_explosion_inner_colors	descriptive	config/names_local.tsv	6-colour palette for the inner burst particles of spawn_explosion_effects	
+D_L01_0020B7F8	novalis_explosion_outer_colors	descriptive	config/names_local.tsv	6-colour palette for the outer burst particles of spawn_explosion_effects	
+D_L02_00161FF0	shard_debris_head_color	descriptive	config/names_local.tsv	alpha byte (>>24) of the puff spawned at the shard's position, next to shard_debris_trail_color	
+D_L02_00161D60	aridia_rocks_debris_colors	descriptive	config/names_local.tsv	three colour words, one picked at random per debris particle in rocks_update	
+D_L03_00161B70	taxi_bobbing_amplitude	descriptive	config/names_local.tsv	amplitude of update_moby_vertical_oscillation in update_taxi_bobbing_and_rocking	
+D_L03_00161B74	taxi_bobbing_phase_rate_degrees	descriptive	config/names_local.tsv	degrees per frame, converted to radians, for the vertical bob	
+D_L03_00161B78	taxi_rocking_amplitude	descriptive	config/names_local.tsv	amplitude of update_moby_rotation_oscillation	
+D_L03_00161B7C	taxi_rocking_first_phase_rate_degrees	descriptive	config/names_local.tsv	first rocking phase rate in degrees per frame	
+D_L03_00161B80	taxi_rocking_second_phase_rate_degrees	descriptive	config/names_local.tsv	second rocking phase rate in degrees per frame	
+D_L07_001670D0	beam_cross_axis	descriptive	config/names_local.tsv	vector crossed (FastVecCross) with the beam direction to get the side jitter in draw_collision_clipped_moby_beam	
+D_L04_00198040	eudora_class_slot_by_id	descriptive	config/names_local.tsv	byte table indexed by moby class id giving class_slot, like g_class_slot	
+D_L04_001DCA60	suck_cannon_no_exit_fmt	descriptive	config/names_local.tsv	printf format printed with save_id when the suck cannon has no exit moby	
+D_L05_001613A0	hero_clip_volume_bounds	descriptive	config/names_local.tsv	vec4 copied from the found target, w=48, z bobbed; read with hero_inside_clip_volume	
+D_L06_0017A110	blarg_idle_fidgets	descriptive	config/names_local.tsv	0x70-byte fidget records indexed by pick_idle_fidget, like the other *_idle_fidgets	
+D_L07_001C43B0	umbris_item_price_table	descriptive	config/names_local.tsv	24-byte item records (like item_price_table); max ammo read per item in update_equalizer_ammo_spawner	
+D_L07_00211DE0	ammo_spawner_missing_link_fmt	descriptive	config/names_local.tsv	printed when the spawner's volume or path index is -1	
+D_L07_00211E20	ammo_spawner_deleted_fmt	descriptive	config/names_local.tsv	printed with the moby class before the bad spawner is deleted	
+D_L07_00211E40	ammo_spawner_count_fmt	descriptive	config/names_local.tsv	printed with the ammo count and the per-batch count	
+D_L07_00211E68	ammo_spawner_place_fmt	descriptive	config/names_local.tsv	printed with item, batch count, spawn xyz and path offset per placed batch	
+D_L07_00211E98	ammo_spawner_remainder_fmt	descriptive	config/names_local.tsv	printed with the remaining count when the last batch is smaller	
+D_L07_00161C20	snagglebeast_rope_sway_from	descriptive	config/names_local.tsv	start offset of the rope sway lerp; takes the target value every 60 ticks	
+D_L07_00161C30	snagglebeast_rope_sway_to	descriptive	config/names_local.tsv	target offset of the rope sway lerp, re-picked at a random angle	
+D_L08_0015F694	bomber_tank_part1_destroyed	descriptive	config/names_local.tsv	set when part 1 is killed by class 0x661; with part 2 it fires the voice line	
+D_L08_0015F698	bomber_tank_part2_destroyed	descriptive	config/names_local.tsv	set when part 2 is killed by class 0x661	
+D_L08_0015F69C	bomber_tank_part3_destroyed	descriptive	config/names_local.tsv	set when part 3 is killed by class 0x661	
+D_L08_0015F6A0	bomber_tank_part4_destroyed	descriptive	config/names_local.tsv	set when part 4 is killed by class 0x661	
+D_L08_00174700	batalia_coll_hit_normal	descriptive	config/names_local.tsv	batalia_coll_hit + 0x40, passed to vec_reflect as the bounce normal (same layout as other *_coll_hit_normal)	
+D_L08_001D7320	batalia_water_plane	descriptive	config/names_local.tsv	vec4 whose z is the water height the hero crosses in update_hero_water_entry_effects	
+D_L08_0016D110	batalia_cinematic_step	descriptive	config/names_local.tsv	batalia_cutscene_state + 0x30 (as veldin2_cinematic_step), tested with gGameMode == 2 to skip the gunship path	
+D_L08_00161EB8	layered_mesh_sine_phase	descriptive	config/names_local.tsv	int pair cleared in state 0 and advanced by advance_wrapped_sine_pair in update_layered_mesh_effect	
+D_L08_00180B40	batalia_lights	descriptive	config/names_local.tsv	point light slots indexed by d->light; colour set per frame (like quartu_lights)	
+D_L08_001FC510	flicker_light_period_a_zero_fmt	descriptive	config/names_local.tsv	printed when period_a is 0, before it is forced to 1	
+D_L08_001FC540	flicker_light_period_b_high_fmt	descriptive	config/names_local.tsv	printed with period_b when it exceeds 8	
+D_L08_001FC590	flicker_light_period_b_zero_fmt	descriptive	config/names_local.tsv	printed when period_b is 0, before it is forced to 1	
+D_L08_001FC5C0	flicker_light_period_a_high_fmt	descriptive	config/names_local.tsv	printed with period_a when it exceeds 8	
+D_L09_00209280	refueling_station_hit_fmt	descriptive	config/names_local.tsv	printed with class and damage when handle_refueling_station_damage gets a hit	
+D_L09_002092E0	linked_moby_hit_fmt	descriptive	config/names_local.tsv	printed with class and damage when handle_linked_moby_damage gets a hit	
+D_L09_00209518	floating_ship_piece_no_link_fmt	descriptive	config/names_local.tsv	printed with save_id and class when the piece has no link (-1)	
+D_L09_00162040	gaspar_strip_texture_buffer	descriptive	config/names_local.tsv	blended texture data built from two table entries, sent by a DMA ref tag in queue_level09_strip_texture_packets	
+D_L09_0016D380	gaspar_texture_table	descriptive	config/names_local.tsv	16-byte texture records whose +8/+0xA indices select texture_vertices rows (like gemlik_texture_table)	
+D_L10_00174360	orxon_coll_hit_point	descriptive	config/names_local.tsv	coll hit base D_L10_00174340 + 0x20 (moby at +0x18, normal at +0x40), copied after ProbeGroundHeight	
+D_L10_00160064	orxon_moby_list	descriptive	config/names_local.tsv	head of the moby list walked by ->next (same slot as other *_moby_list)	
+D_L11_001626A0	distance_faded_effect_fade_alpha	descriptive	config/names_local.tsv	0-255 alpha from hero distance (80 to 100), scales the fixed alpha of the effect batches	
+D_L11_001626C0	distance_faded_effect_sine_phase	descriptive	config/names_local.tsv	int pair cleared in state 0 and advanced by advance_wrapped_sine_pair	
+D_L11_0021B820	owner_linked_moby_hit_fmt	descriptive	config/names_local.tsv	printed with class and damage when handle_owner_linked_moby_hits gets a hit	
+D_L11_001620EC	ship_reticle_distance	descriptive	config/names_local.tsv	times ship_speed_scale, radius of build_spherical_offset for the aim point	
+D_L11_001620F0	ship_shot_cooldown_ticks	descriptive	config/names_local.tsv	reloaded into the fire timer after each ship shot	
+D_L11_0016D570	pokitaru_view_cot_half_fov	descriptive	config/names_local.tsv	set to cos/sin of half the ship fov; read back with fast_atan2(1, x)	
+D_L11_001748C0	pokitaru_coll_hit	descriptive	config/names_local.tsv	collision result base (moby +0x18 = pokitaru_coll_hit_moby, normal +0x40)	
+D_L12_0015F4FC	hoven_fade_level	descriptive	config/names_local.tsv	screen fade float at the shared slot (gFadeLvl, pokitaru_fade_level...); reservoir effects run only when 0	
+D_L12_001FB7D0	target_link_strip_uvs	descriptive	config/names_local.tsv	4 uv pairs of the strip quad; u scrolls by count in draw_oscillating_target_link_strips	
+D_L12_001FB7F0	target_link_strip_corners	descriptive	config/names_local.tsv	4 corner offsets added to the ring points to build each strip quad	
+D_L12_001FB870	target_link_strip_rotations	descriptive	config/names_local.tsv	2 euler rotations turned into the two strip matrices	
+D_L13_0015F504	gemlik_scripted_camera_active	descriptive	config/names_local.tsv	cleared when the scene controller hands the camera back; same slot as hoven_cutscene_active	
+D_L13_0015FD08	gemlik_mission_group_state	descriptive	config/names_local.tsv	per-mission byte tested != 0xFF; same slot as kerwan_mission_group_state	
+D_L13_001D3748	gemlik_stage_part_slot	descriptive	config/names_local.tsv	per-command (stage) part index or -1, passed to the part-detach helper	
+D_L13_001D37D8	gemlik_joint_effect_part_slot	descriptive	config/names_local.tsv	6 part indices checked against the on[] flags before a joint effect	
+D_L13_001D37F0	gemlik_joint_effect_bone	descriptive	config/names_local.tsv	6 joint indices passed to the joint position getter for effects	
+D_L14_00174668	oltanis_coll_hit_point_z	descriptive	config/names_local.tsv	z of oltanis_collision_hit_point (+8); pickup pos.z = it + ground offset	
+D_L14_001FD488	flying_car_no_path_msg	descriptive	config/names_local.tsv	printf string in update_flying_car when d->path == -1, then DeleteMoby	
+D_L14_001FD4C0	flying_car_path_unset_msg	descriptive	config/names_local.tsv	printf string in update_flying_car when the path table entry is 0, then DeleteMoby	
+D_L14_001DE840	racer_glow_quad_corners	descriptive	config/names_local.tsv	4 corner vectors scaled into the glow quad in draw_racer_glow_quads	
+D_L14_001FC0C0	machinegun_turret_unset_link_msg	descriptive	config/names_local.tsv	printf string in machinegun_turret_update when pvars+0x80 is -1, then DeleteMoby	
+D_L14_001FC0E8	machinegun_turret_unset_link2_msg	descriptive	config/names_local.tsv	printf string in machinegun_turret_update when the second pvar link is -1, then DeleteMoby	
+D_0015EF08	fighter_skill_hit_count	descriptive	config/names_local.tsv	incremented when an enemy fighter is hit on planet 14; >=3 sets a gSkillPoints flag	
+D_L14_00162300	wind_push_vector	descriptive	config/names_local.tsv	update_wind_control sets x/y from rot.z * wind_drift_speed * g_frame_time, z=0, f10=1	
+D_L14_001FCCF0	wind_control_no_vol0_msg	descriptive	config/names_local.tsv	printf string in update_wind_control when d->vol0 < 0, then DeleteMoby	
+D_L14_001FCD50	wind_control_no_node_msg	descriptive	config/names_local.tsv	printf string in update_wind_control when d->node < 0, then DeleteMoby	
+D_L14_001FCDA8	wind_control_no_vol500_msg	descriptive	config/names_local.tsv	printf string in update_wind_control when d->vol500 < 0, then DeleteMoby	
+D_L14_001FD180	enemy_fighter_no_path_msg	descriptive	config/names_local.tsv	printf string in update_enemy_fighter when path == -1, then DeleteMoby	
+D_L14_001FD1B8	enemy_fighter_path_unset_msg	descriptive	config/names_local.tsv	printf string in update_enemy_fighter when the oltanis_paths entry is 0	
+D_L14_001FD208	enemy_fighter_921_no_path_msg	descriptive	config/names_local.tsv	printf string in update_enemy_fighter_921 when d->f68 == -1, then DeleteMoby	
+D_L14_001FD240	enemy_fighter_921_path_unset_msg	descriptive	config/names_local.tsv	printf string in update_enemy_fighter_921 when the oltanis_paths entry is 0	
+D_L15_00184B28	quartu_keyed_gate_open	descriptive	config/names_local.tsv	update_vertical_gate sets 1 while a keyed gate is open (states 3/5), 0 when it closes	
+D_L15_0015F684	quartu_pending_help_flag	descriptive	config/names_local.tsv	update_quartu_hint_triggers: when set and the help popup is idle, requests help 0x3A9F and clears it	
+D_L15_00179A90	quartu_help_popup_state	descriptive	config/names_local.tsv	busy == 0 and +0x24 == -1 idle test, the L00 help_popup_state layout	
+D_L16_00162040	envmap_b_bound_spheres	descriptive	config/names_local.tsv	per-mesh bounding sphere (center from vertex min/max, radius from max distance) next to envmap_b_vertex_bufs	
+D_L18_001626BC	gadgebot_launch_glow_blend_minuend_selector	descriptive	config/names_local.tsv	GS ALPHA field A (bits 0-1) in draw_gadgebot_launch_glow_quad	
+D_L18_001626C0	gadgebot_launch_glow_blend_subtrahend_selector	descriptive	config/names_local.tsv	GS ALPHA field B (bits 2-3) in draw_gadgebot_launch_glow_quad	
+D_L18_001626C4	gadgebot_launch_glow_blend_alpha_factor_selector	descriptive	config/names_local.tsv	GS ALPHA field C (bits 4-5) in draw_gadgebot_launch_glow_quad	
+D_L18_001626C8	gadgebot_launch_glow_blend_addend_selector	descriptive	config/names_local.tsv	GS ALPHA field D (bits 6-7) in draw_gadgebot_launch_glow_quad	
+D_L18_001626CC	gadgebot_launch_glow_tint_start	descriptive	config/names_local.tsv	FastTweenColor start color, tweened by pvars+0x1F4	
+D_L18_001626D0	gadgebot_launch_glow_tint_end	descriptive	config/names_local.tsv	FastTweenColor end color, tweened by pvars+0x1F4	
+D_L18_001626D4	gadgebot_launch_glow_texture_index	descriptive	config/names_local.tsv	passed to GetEffectTex for the glow quad texture	
+D_L18_001626D8	gadgebot_launch_glow_z_offset	descriptive	config/names_local.tsv	subtracted from the quad origin z	
+D_L18_001626DC	gadgebot_launch_glow_vertical_scale_adjustment	descriptive	config/names_local.tsv	added to 1 + pvars+0x1F4 for the quad height	
+D_L18_001626E0	gadgebot_launch_glow_horizontal_scale_adjustment	descriptive	config/names_local.tsv	added to 1 - pvars+0x1F4 for the quad width	
+D_L18_001EFF90	gadgebot_launch_glow_uvs	descriptive	config/names_local.tsv	4 uv pairs copied into the glow quad packet	
+D_L18_0016207C	electric_bolt_initialization_requested	descriptive	config/names_local.tsv	initialize_electric_bolt_effect_if_requested runs the reset only when set, then clears it	
+D_L18_00162080	electric_bolt_init_span_scale	descriptive	config/names_local.tsv	initial bolt step = (target - pos) * it / 20 over the 20 bolt points	
+D_L18_001D45E0	projectile_ring_quad_uvs	descriptive	config/names_local.tsv	uv pairs copied into each quad in draw_expanding_projectile_ring	
+D_L18_001D4600	class_274_ring_quad_uvs	descriptive	config/names_local.tsv	uv pairs copied into each quad in draw_class_274_ring_effect	
+D_L00_001D76D0	bolt_glint_offsets	descriptive	config/names_local.tsv	per-oclass local offset rotated by the bolt matrix to place its glint (allocate_glint_slot) in bolt_update	
+D_L00_001D63A0	smoke_particle_life_timer	descriptive	config/names_local.tsv	per-particle short timer in draw_smoke_fire_spawner; at zero the particle is reset, cleared by the reset	
+D_L00_001D6D00	smoke_particle_start_delay	descriptive	config/names_local.tsv	per-particle stagger delay (slot+1)*smoke_particle_stagger_ticks; at zero the life timer is started	
+D_L00_001E14B0	metal_detector_manipulator	descriptive	config/names_local.tsv	zeroed and passed to AttachManipulator for joint 3 in metal_detector_update	
+D_L00_001E14C0	metal_detector_manipulator_rot	descriptive	config/names_local.tsv	metal_detector_manipulator + 0x10; quat_nlerp toward the aim rotation by 0.1 each frame	
+func_00120858	wait_for_graphics_pipeline_idle	descriptive	config/names_local.tsv	spins until VIF1/GIF CHCR and STAT busy bits and VU1 (vi29) are clear	
+func_00122818	sceGsSetDefStoreImage	descriptive	config/names_local.tsv	libgraph graph016.o per src/core/00122818.c; fills an SdStoreImage (BITBLTBUF/TRXPOS/TRXREG/TRXDIR)	
+func_00122AD8	sceGsExecStoreImage	descriptive	config/names_local.tsv	libgraph graph018.o per src/core/00122AD8.c; runs a stored image readback into dstaddr	
+func_00123168	sceGsSyncVCallback	descriptive	config/names_local.tsv	libgraph per src/core/00123168.c; swaps the INTC 2 (vblank) handler via disable/remove/add/enable_intc, returns the old one	sce_gs_sync_v_callback
+D_L00_00166ED0	camera_rotation	descriptive	config/names_local.tsv	euler vector fed to euler_to_matrix for the camera; its z is camera_yaw (+8); aim code copies it	
+D_L15_00161D2C	electric_water_glow_core_color	descriptive	config/names_local.tsv	draw_electric_water_bolt_start_quads: color of the first (inner) glow quad	
+D_L15_00161D34	electric_water_glow_core_size	descriptive	config/names_local.tsv	draw_electric_water_bolt_start_quads: base size (+rand 0..0.025) of the first glow quad	
+D_L15_00161D38	electric_water_glow_halo_size	descriptive	config/names_local.tsv	draw_electric_water_bolt_start_quads: base size (+rand 0..0.05) of the second glow quad	
+D_L06_001DB1B0	blarg_gadgebot_target_cache	descriptive	config/names_local.tsv	moby pointers of class 0x359 cached per frame; count in blarg_gadgebot_target_cache_count	
+D_L01_0015F720	novalis_banner_display_ticks	descriptive	config/names_local.tsv	gold_bolt_update sets it to ticks(180) with the banner, the L00 banner_display_ticks slot	
+D_L01_001AC180	novalis_moby_ptr_list	descriptive	config/names_local.tsv	null-ended moby pointer list scanned for the best candidate, like blarg_moby_list	
+D_L01_001BAD60	novalis_current_level_state	descriptive	config/names_local.tsv	live level block (.collected[save_id]) 0xC60 below the checkpoint copy, cleared with it on gold bolt respawn; like L00 current_level_state	
+D_L03_00160064	kerwan_moby_list	descriptive	config/names_local.tsv	head of the moby list walked via ->next (+0x28) by the gunship and spawners; like novalis_moby_list	
+D_0013D5E5	gHaveGrindboots	descriptive	config/names_local.tsv	find_grind_rail returns at once when it is 0; item byte between gHaveMagneboots and gHaveHologuise	
+D_0013D5EA	gHaveBoltGrabber	descriptive	config/names_local.tsv	when set the hero reach_distance/height (bolt pickup range) grow from 3/1.75 to 12/4.5	
+D_L05_0017AC20	rilgar_hero_bob_attach_euler	descriptive	config/names_local.tsv	euler angles rotating the hoverboard attach offset; L00 hero_bob_attach_euler slot (+0x40 of the lean block)	
+func_001252C0	sceVu0Normalize	descriptive	config/names_local.tsv	VU0 macro: xyz scaled by 1/sqrt(dot), w cleared (vsub vf0,vf0), libvu0 sequence	
+D_L11_0015FD08	pokitaru_mission_group_state	descriptive	config/names_local.tsv	u8 per mission group, 0xFF means none; like kerwan_mission_group_state	
+D_L11_00161368	pokitaru_ocean_tide_z	descriptive	config/names_local.tsv	written each frame with the tide height, same value as pokitaru_ocean_height	
+D_L11_00161EAC	pokitaru_ocean_base_height	descriptive	config/names_local.tsv	set from the water moby level at init; tide = it + 0.25 * sin(frame)	
+D_L11_001BB2E0	pokitaru_current_level_state	descriptive	config/names_local.tsv	live level block, .collected[uid] set on reward; like L00 current_level_state	
+D_L11_001BBF40	pokitaru_checkpoint_level_state	descriptive	config/names_local.tsv	0xC60 above the live block, .collected checked at spawn; like kerwan_checkpoint_level_state	
+D_L11_001D9DC0	pokitaru_wave_scroll_speed	descriptive	config/names_local.tsv	per-layer u/v rate times frame time added to wave_offset, wrapped to [-1,1]	
+D_L00_0015FD70	level_bss_unaligned_msg	descriptive	config/names_local.tsv	printf string in run_level_main_loop when the level bss range is not 16-byte aligned (falls back to a byte loop)	
+D_L00_0015FD78	level_main_loop_profile_label	descriptive	config/names_local.tsv	label passed with id 0x10 to the Profile_Mark copies in run_level_main_loop	
+D_L00_00161F00	level_bss_start	descriptive	config/names_local.tsv	start of the range cleared by FastMemZero16 at the top of run_level_main_loop	
+D_L00_001660B0	level_bss_end	descriptive	config/names_local.tsv	end of the range cleared by FastMemZero16 at the top of run_level_main_loop	
+func_L00_001F7110	Profile_MarkL00_a	descriptive	config/names_local.tsv	L00 copy of the empty Profile_Mark (functions.tsv), called with no args in run_level_main_loop	
+func_L00_001F7118	Profile_MarkL00_b	descriptive	config/names_local.tsv	L00 copy of the empty Profile_Mark (functions.tsv), called (label, 0x10) in run_level_main_loop	
+func_L00_001F7120	Profile_MarkL00_c	descriptive	config/names_local.tsv	L00 copy of the empty Profile_Mark (functions.tsv), called (label, 0x10) right after Profile_MarkL00_b	
+func_L00_00268738	UpdatePadL00	descriptive	config/names_local.tsv	L00 copy of UpdatePad (functions.tsv): calls func_00217F68 on g_controller_state	
+D_0013F550	hero_displacement	descriptive	config/names_local.tsv	g_hero+0x100 = HeroMotion.displacement; debris smoke reads it and +0x40 (platform_carry)	
+D_L00_001601CC	moby_group_iter_entry	descriptive	config/names_local.tsv	get_first/next_moby_in_group: pointer to current entry of the group list	
+D_L00_001601D0	moby_group_iter_index	descriptive	config/names_local.tsv	group walk: moby index (entry & 0x7FFF) of moby_group_iter_moby	
+D_L00_001B05D0	beam_explosion_blast_params	descriptive	config/names_local.tsv	beam explosion: block passed to mine_camera_blast, floats 8..10 set to blast size	
+D_L00_001B0620	beam_explosion_alt_color_blast_params	descriptive	config/names_local.tsv	beam explosion: blast block used instead when the colour-swap flag is set	
+func_00125328	sceVu0ScaleVector	descriptive	config/names_local.tsv	libvu0 object: dst.xyzw = src * s (vmulx.xyzw)	
+func_001166FC	libc_strcpy	descriptive	config/names_local.tsv	handwritten libc: 16-byte-aligned copy until the zero byte	strcpy
+func_00116810	libc_strlen	descriptive	config/names_local.tsv	handwritten libc: one string arg, zero-byte scan, returns length	strlen
+func_00125358	sceVu0UnitMatrix	descriptive	config/names_local.tsv	libvu0 object: writes identity rows via vmr32 of (0,0,0,1)	sce_vu0_unit_matrix
+func_001253F8	sceVu0RotMatrixZ	descriptive	config/names_local.tsv	libvu0: calls ecossin, mixes x/y rows; vendor_menu rotation call	
+func_001254A0	sceVu0RotMatrixX	descriptive	config/names_local.tsv	libvu0: calls ecossin, mixes y/z rows	sce_vu0_rot_matrix_x
+func_00125548	sceVu0RotMatrixY	descriptive	config/names_local.tsv	libvu0: calls ecossin, mixes x/z rows	sce_vu0_rot_matrix_y
+D_L01_0015F6D4	novalis_level_sound_slots	descriptive	config/names_local.tsv	L01 copy of level_sound_slots: 32-byte rows by sound class, fC volume, f18 flag; read by the box voice	
+D_0013FA90	hero_basis	descriptive	config/names_local.tsv	g_hero+0x640 = Hero.basis rows; suck cannon builds a matrix from it to steer the sucked moby	
+D_001404FC	hero_gadget_switch_lock	descriptive	config/names_local.tsv	g_hero+0x10AC = items[0].switch_lock; set to 2 when the sucked moby is within 3 units	
+D_L00_00161BC0	nanotech_ball_center_offset	descriptive	config/names_local.tsv	draw_nanotech_ball: vector added to the bobbing centre	
+D_L00_00161BE0	nanotech_ball_glow_alpha_bias	descriptive	config/names_local.tsv	draw_nanotech_ball: added to the pulse value before it becomes the glow quad alpha byte	
+D_L00_00161C84	hydrodisplacer_pad_wait_time	descriptive	config/names_local.tsv	hydrodisplacer_update: scaled into the state-5 timer that waits while the hero stands on the pad	
+D_L00_001E17F0	nanotech_slot_pulse_phase_steps	descriptive	config/names_local.tsv	nanotech_ball_update: per-slot (8) angle step for the sin pulse of the slot scale	
+D_L00_001E1810	nanotech_ball_sphere_model_verts	descriptive	config/names_local.tsv	draw_nanotech_ball: 0x122 16-byte vertices transformed by the camera-facing basis	
+D_L00_001E2A30	nanotech_ball_sphere_uvs	descriptive	config/names_local.tsv	draw_nanotech_ball: uv arg (8 bytes/vertex) of draw_env_overlay_mesh	
+D_L00_001E3340	nanotech_ball_sphere_colors	descriptive	config/names_local.tsv	draw_nanotech_ball: colour arg (4 bytes/vertex) of draw_env_overlay_mesh	
+D_L00_001E37D0	nanotech_ball_glow_ring_points	descriptive	config/names_local.tsv	draw_nanotech_ball: vec4 points scaled into the 32 glow quads	
+D_L00_001E3DD0	nanotech_ball_glow_quad_indices	descriptive	config/names_local.tsv	draw_nanotech_ball: 32 rows of 4 shorts indexing the glow ring points	
+D_L00_001E3ED0	nanotech_ball_env_quad_corners	descriptive	config/names_local.tsv	draw_nanotech_ball: corners transformed by the owner basis for the view-mapped quads (state one)	
+D_L00_001E3FD0	nanotech_ball_env_quad_indices	descriptive	config/names_local.tsv	draw_nanotech_ball: 4 rows of 4 shorts indexing the env quad corners	
+D_L00_001E40F0	nanotech_ball_sphere_world_verts	descriptive	config/names_local.tsv	draw_nanotech_ball: Vec3f output of the transformed sphere vertices, vertex arg of draw_env_overlay_mesh	
+D_L00_001EA368	suck_cannon_cleaned_up_moby_fmt	descriptive	config/names_local.tsv	refresh_suck_cannon_slots: printf format for a dropped slot (moby id, oclass)	
+D_L00_001EA4B0	suckstate_death_obsolete_msg	descriptive	config/names_local.tsv	CarriedMobyUpdate case 7: printf message that the death state is no longer used	
+func_L00_00238128	initialize_suck_cannon_hud_counter	descriptive	config/names_local.tsv	init callback of suckcannon_update queue_animation_update; body only calls reset_numeric_hud_element	
+D_L05_0015F868	rilgar_fmt_race_score_width	descriptive	config/names_local.tsv	draw_hud_timer: label+score format printed only to measure the score line width	
+D_L05_0015FB08	rilgar_fmt_race_score_value	descriptive	config/names_local.tsv	draw_hud_timer: score value format after the label	
+D_L05_0015FB10	rilgar_fmt_race_time_width	descriptive	config/names_local.tsv	draw_hud_timer: label plus zero time, printed only to measure the time line width	
+D_L05_0015FB20	rilgar_fmt_race_time_label	descriptive	config/names_local.tsv	draw_hud_timer: label format of the time line	
+D_L05_0015FB28	rilgar_fmt_race_time_value	descriptive	config/names_local.tsv	draw_hud_timer: min:sec:hundredths of race_time_frames	
+D_L01_001B2928	novalis_part_type74_textures	descriptive	config/names_local.tsv	novalis_part_type_textures + 74*4; spawn_type_74_particle reads its texture byte	
+func_L00_0026B2B8	update_growing_fade_out_particle_type7	descriptive	config/names_local.tsv	part handler slot 7: kills at timer end, size += rate, alpha fades in last 6 ticks (same body as type 5)	
+func_L00_0026D268	update_noop_particle_type17	descriptive	config/names_local.tsv	part handler slot 17: body is only jr ra	
+func_L00_00274750	update_expire_only_particle_type63	descriptive	config/names_local.tsv	part handler slot 63: counts down the short at +0xA and calls KillPart at zero	
+D_L14_00162188	vendor_beam_pulse_budget	descriptive	config/names_local.tsv	update_vendor_beam state 1: while non-zero, a beam with no count decrements it and starts a pulse	
+D_L14_0016219C	vendor_beam_update_disabled	descriptive	config/names_local.tsv	update_vendor_beam returns early while it is set	
+D_L14_001621A0	vendor_beam_anim_disabled	descriptive	config/names_local.tsv	update_vendor_beam: update_vendor_beam_animation runs only while it is zero	
+D_L14_001621A4	vendor_beam_draw_disabled	descriptive	config/names_local.tsv	update_vendor_beam: AddDrawCallback(draw_vendor_beam) skipped while set	
+D_L14_001621A8	vendor_beam_damage_disabled	descriptive	config/names_local.tsv	update_vendor_beam: apply_vendor_beam_damage only when zero (hint confirmed)	
+D_L08_001602D0	batalia_ground_scatter_hero_offset	descriptive	config/names_local.tsv	scatter_ground_particles state 2: stores batalia_hero_pos - obj->v30	
+D_L15_001CE390	quartu_group_effect_quad_verts	descriptive	config/names_local.tsv	draw_group_moby_effect_quads: 4 quads x 4 vec4 corners sent to draw_world_quad	
+D_L15_001CE490	quartu_group_effect_quad_uvs	descriptive	config/names_local.tsv	draw_group_moby_effect_quads: 4 uv pairs copied into the quad	
+D_L13_001741E0	gemlik_coll_hit_point	descriptive	config/names_local.tsv	gemlik_coll_hit_result+0x20; update_ship_rocket explodes there after a collision hit	
+D_L00_00160580	sky_shell_rotation_phase_step	descriptive	config/names_local.tsv	SkyShellsEntryUpdate: scaled per shell and added to its rotation phase (hint confirmed)	
+D_L00_001605E0	sky_shell_origin	descriptive	config/names_local.tsv	SkyShellsEntryUpdate: copied into row 3 (position) of every shell matrix	
+D_L09_0015F660	gaspar_zero_vec	descriptive	config/names_local.tsv	passed for the three vector args of SpawnBreakFragment, like the other levels' zero_vec	
+D_L09_00174060	gaspar_coll_hit_point	descriptive	config/names_local.tsv	gaspar_coll_hit+0x20; class 4ea projectile moves to it after a collision_line hit	
+D_L09_00208610	gaspar_kamikaze_invalid_path_msg	descriptive	config/names_local.tsv	seeker_update: printf of a bad bound path with the moby save_id, then deletes it	
+D_L09_00209570	gaspar_spawner_no_respawn_moby_fmt	descriptive	config/names_local.tsv	spawner: printf when no moby is found to respawn (save_id, time)	
+D_L02_0015F520	aridia_interp_vertex_tables	descriptive	config/names_local.tsv	build_interpolated_dma_packet: base of 16-byte vertex table records picked by the frame indices	
+D_L02_0016D800	aridia_interp_anim_frames	descriptive	config/names_local.tsv	build_interpolated_dma_packet: 16-byte frames holding the two vertex table indices to blend	
+D_L02_0017EB88	aridia_tresspasser_pad_camera_set	descriptive	config/names_local.tsv	tresspasser_pad_update case 2: set to 1 right after it places the camera; only writer	
+D_L02_001BADE0	aridia_moby_killed	descriptive	config/names_local.tsv	tresspasser_pad_update: sets bit save_id in [save_id>>5], like quartu_moby_killed	
+D_L02_001BBB40	aridia_moby_collected	descriptive	config/names_local.tsv	tresspasser_pad_update: .collected[save_id] (+0x454) non-zero sends the pad to state 4; like fleet_moby_collected	
+D_L02_001CBB70	aridia_interp_dma_ref_block	descriptive	config/names_local.tsv	build_interpolated_dma_packet: 3-qword block sent by a DMA ref tag at the packet start	
+D_L05_0015F050	rilgar_camera_descriptors	descriptive	config/names_local.tsv	camera rows by cam->preset with the preset pointer at +0x1C; same slot as the other levels' camera_descriptors	
+D_L05_00174378	rilgar_coll_resolved_pos_z	descriptive	config/names_local.tsv	rilgar_coll_hit+0x38 = z of coll_resolved_pos; camera height springs to it after the probe hits	
+D_L05_001D6B00	rilgar_wobble_quad_uvs	descriptive	config/names_local.tsv	draw_moby_wobble_quads: 4 uv pairs copied into both quads	
+D_L05_001D6B20	rilgar_wobble_quad_a_verts	descriptive	config/names_local.tsv	draw_moby_wobble_quads: 4 base corners of the first quad, offset each pass	
+D_L05_001D6B60	rilgar_wobble_quad_b_verts	descriptive	config/names_local.tsv	draw_moby_wobble_quads: 4 base corners of the second quad, offset each pass	
+D_00141A18	usage_stats_entry26_count	descriptive	config/names_local.tsv	usage_stats+0xD0 (8-byte records): count of entry 26; zero (with the help unseen) lets tesla_claw_update raise help 0x81	
+D_00141E70	tesla_claw_help_shown_count	descriptive	config/names_local.tsv	help_records[0x81].count; tesla_claw_update calls Help_Request(0x4E30, 0x81) only while it is zero	
+D_L00_00161558	joint_beam_alt_joint_ids	descriptive	config/names_local.tsv	draw_joint_aligned_beam_effect: joint id pair read from the child when data->f4 is set	
+D_L00_00161560	joint_beam_joint_ids	descriptive	config/names_local.tsv	draw_joint_aligned_beam_effect: default joint id pair read from the child	
+D_L00_00161580	taunter_effect_spawn_interval_frames	descriptive	config/names_local.tsv	update_taunter_effect_slots: scale_ticks of it reloads the spawn timer (hint confirmed)	
+D_L00_00161584	taunter_effect_travel_distance	descriptive	config/names_local.tsv	update_taunter_effect_slots: divided by speed*frame_time to get the slot lifetime (hint confirmed)	
+D_L00_00161588	taunter_effect_travel_speed	descriptive	config/names_local.tsv	update_taunter_effect_slots: added per frame (x frame_time) to each live slot's distance (hint confirmed)	
+D_L00_0017ADF4	weapon_aim_mode1_launch_pitch	descriptive	config/names_local.tsv	devastator_update/blaster_update: launch pitch used while hero.unk22C8 == 1	
+D_L00_0017E608	visibomb_view_active_flag	descriptive	config/names_local.tsv	set to 1 by spawn_visibomb_missile and each frame of the missile's camera view; no reader in the repo	
+D_L00_001D9770	joint_beam_ribbon_model_points	descriptive	config/names_local.tsv	draw_joint_aligned_beam_effect: 0xC4 vec4 points scaled and transformed into the ribbon	
+D_L00_001DA3B0	joint_beam_ribbon_uvs	descriptive	config/names_local.tsv	draw_joint_aligned_beam_effect: uv per ribbon vertex, v scrolls -0.025 and wraps at -7; uv arg of draw_env_overlay_mesh	
+D_L00_001DA9D0	joint_beam_ribbon_colors	descriptive	config/names_local.tsv	draw_joint_aligned_beam_effect: colour arg of draw_env_overlay_mesh	
+D_L00_001DACE0	joint_beam_quad_a_corners	descriptive	config/names_local.tsv	draw_joint_aligned_beam_effect: 4 corners of the first quad (also the glow quad), scaled by f2C	
+D_L00_001DAD20	joint_beam_quad_b_corners	descriptive	config/names_local.tsv	draw_joint_aligned_beam_effect: 4 corners of the second quad, scaled by f2C	
+D_L00_001DAD60	joint_beam_quad_uvs	descriptive	config/names_local.tsv	draw_joint_aligned_beam_effect: 4 uv pairs of the quads	
+D_L00_001DAD80	joint_beam_ribbon_world_verts	descriptive	config/names_local.tsv	draw_joint_aligned_beam_effect: transformed xyz output, vertex arg of draw_env_overlay_mesh	
+D_L00_0015F8C0	quick_select_label_msg_ids	descriptive	config/names_local.tsv	draw_hud_radial_selector_panel: msg_string id per slot for the selected slot's label	
+D_L00_0017E610	texture_group1_upload_size	descriptive	config/names_local.tsv	decompress_and_relocate_selected_groups: /16 qword count to stash_receive_data for group 1	
+D_L00_0017E618	texture_group3_upload_size	descriptive	config/names_local.tsv	decompress_and_relocate_selected_groups: /16 qword count to stash_receive_data for group 3	
+D_L00_0017E61C	texture_group4_upload_size	descriptive	config/names_local.tsv	decompress_and_relocate_selected_groups: /16 qword count to stash_receive_data for group 4	
+D_L00_0017E620	texture_group5_upload_size	descriptive	config/names_local.tsv	decompress_and_relocate_selected_groups: /16 qword count to stash_receive_data for group 5	
+D_L00_00161890	morphoray_light_slot	descriptive	config/names_local.tsv	MorphorayUpdate: point light slot from allocate_packed_color_point_light_slot, -1 none; freed when the fade ends	
+D_L00_00161894	morphoray_light_fade_timer	descriptive	config/names_local.tsv	MorphorayUpdate: reloaded to 20 while firing, counts down and scales the light colour after	
+D_L00_00161898	morphoray_beam_voice	descriptive	config/names_local.tsv	MorphorayUpdate: voice handle of the beam sound, restarted when not playing, stopped on release	
+D_L00_001618A8	tesla_pulse_timer	descriptive	config/names_local.tsv	update_beam_ring_rail_and_pulse_effects: per-pulse (3) life countdown from tesla_pulse_life_ticks	
+D_L00_001618C8	tesla_pulse_travel	descriptive	config/names_local.tsv	update_beam_ring_rail_and_pulse_effects: per-pulse distance along the chain, += tesla_pulse_speed each frame	
+D_L00_001E9E30	tesla_spark_colors	descriptive	config/names_local.tsv	update_beam_ring_rail_and_pulse_effects: colour table, one picked at random (of 5) per spark burst	
 func_001E9770	noop_callback_a	descriptive	the NTSC decomp	noop_callback_a at US boot 0x001E93F0 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9788	noop_callback_d	descriptive	the NTSC decomp	noop_callback_d at US boot 0x001E9408 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9790	noop_callback_e	descriptive	the NTSC decomp	noop_callback_e at US boot 0x001E9410 (src/gameplay/state/update_gameplay_frame.c); US function table counterpart	
@@ -10743,40 +11116,14 @@ D_L00_0015F760	hero_scalar_pulse_active	candidate	the NTSC decomp	held-alias: he
 D_L00_0015F764	hero_scalar_pulse_phase	candidate	the NTSC decomp	held-alias: hero_scalar_pulse_phase at US level 00 0x0015F684 (include/rnc/overlay/shared/gameplay/hero/hero_idle_sequence_globals.h); US/PAL address translation (code of both refers to it)	hero_scalar_pulse_phase_gp
 D_L00_0015F7D8	hero_extra_manipulator_attachment_indices	candidate	the NTSC decomp	held-alias: hero_extra_manipulator_attachment_indices at US level 00 0x0015F6F8 (include/rnc/overlay/shared/gameplay/hero/hero_idle_sequence_globals.h); US/PAL address translation (code of both refers to it)	hero_extra_manipulator_attachment_indices_gp
 D_L00_0015F818	eight_slot_hud_selector_table_pointer	candidate	the NTSC decomp	held-alias: eight_slot_hud_selector_table_pointer at US level 00 0x0015F738 (include/rnc/overlay/shared/ui/text/002377b8_globals.h); US/PAL address translation (code of both refers to it)	eight_slot_hud_selector_table_pointer_gp
-D_L00_00160580	sky_shell_rotation_phase_step	candidate	the NTSC decomp	held-alias: sky_shell_rotation_phase_step at US level 00 0x001604C0 (include/rnc/overlay/shared/rendering/sky/update_sky_shells_animated_globals.h); US/PAL address translation (code of both refers to it)	sky_shell_rotation_phase_step_gp
-D_L00_00161580	taunter_effect_spawn_interval_frames	candidate	the NTSC decomp	held-alias: taunter_effect_spawn_interval_frames at US level 00 0x001614B0 (include/rnc/overlay/shared/gameplay/entities/devastator_globals.h); US/PAL address translation (code of both refers to it)	taunter_effect_spawn_interval_frames_gp
-D_L00_00161584	taunter_effect_travel_distance	candidate	the NTSC decomp	held-alias: taunter_effect_travel_distance at US level 00 0x001614B4 (include/rnc/overlay/shared/gameplay/entities/devastator_globals.h); US/PAL address translation (code of both refers to it)	taunter_effect_travel_distance_gp
-D_L00_00161588	taunter_effect_travel_speed	candidate	the NTSC decomp	held-alias: taunter_effect_travel_speed at US level 00 0x001614B8 (include/rnc/overlay/shared/gameplay/entities/devastator_globals.h); US/PAL address translation (code of both refers to it)	taunter_effect_travel_speed_gp
 D_L00_00161A68	smoke_fire_particle_steady_alpha	candidate	the NTSC decomp	held-alias: smoke_fire_particle_steady_alpha at US level 00 0x00161998 (include/rnc/overlay/shared/gameplay/entities/veldin_ship_globals.h); US/PAL address translation (code of both refers to it)	smoke_fire_particle_steady_alpha_gp
-D_L01_00161C80	water_lily_spring_velocity_adjustment_scale	candidate	the NTSC decomp	held-alias: water_lily_spring_velocity_adjustment_scale at US level 01 0x00161BF0 (include/rnc/overlay/l01/gameplay/entities/birdbot_globals.h); US/PAL address translation (code of both refers to it)	water_lily_spring_velocity_adjustment_scale_gp
-D_L01_00161C84	water_lily_spring_damping	candidate	the NTSC decomp	held-alias: water_lily_spring_damping at US level 01 0x00161BF4 (include/rnc/overlay/l01/gameplay/entities/birdbot_globals.h); US/PAL address translation (code of both refers to it)	water_lily_spring_damping_gp
-D_L01_00161C88	water_lily_hero_separation_radius	candidate	the NTSC decomp	held-alias: water_lily_hero_separation_radius at US level 01 0x00161BF8 (include/rnc/overlay/l01/gameplay/entities/birdbot_globals.h); US/PAL address translation (code of both refers to it)	water_lily_hero_separation_radius_gp
-D_L01_00161C8C	water_lily_max_horizontal_speed	candidate	the NTSC decomp	held-alias: water_lily_max_horizontal_speed at US level 01 0x00161BFC (include/rnc/overlay/l01/gameplay/entities/birdbot_globals.h); US/PAL address translation (code of both refers to it)	water_lily_max_horizontal_speed_gp
-D_L01_00161C90	water_lily_collision_radius	candidate	the NTSC decomp	held-alias: water_lily_collision_radius at US level 01 0x00161C00 (include/rnc/overlay/l01/gameplay/entities/birdbot_globals.h); US/PAL address translation (code of both refers to it)	water_lily_collision_radius_gp
 D_L01_001620BC	moby_radius_ring_blend_subtrahend_selector	candidate	the NTSC decomp	held-alias: moby_radius_ring_blend_subtrahend_selector at US level 01 0x00161FBC (include/rnc/overlay/shared/gameplay/entities/rock_globals.h); US/PAL address translation (code of both refers to it)	moby_radius_ring_blend_subtrahend_selector_gp
 D_L02_0015F754	hero_button_8_double_press_countdown	candidate	the NTSC decomp	held-alias: hero_button_8_double_press_countdown at US level 02 0x0015F674 (include/rnc/overlay/shared/ui/help/00220b80_globals.h); US/PAL address translation (code of both refers to it)	hero_button_8_double_press_countdown_gp
-D_L03_00161B70	taxi_bobbing_amplitude	candidate	the NTSC decomp	held-alias: taxi_bobbing_amplitude at US level 03 0x00161AF0 (include/rnc/overlay/l03/gameplay/entities/taxi_globals.h); US/PAL address translation (code of both refers to it)	taxi_bobbing_amplitude_gp
-D_L03_00161B74	taxi_bobbing_phase_rate_degrees	candidate	the NTSC decomp	held-alias: taxi_bobbing_phase_rate_degrees at US level 03 0x00161AF4 (include/rnc/overlay/l03/gameplay/entities/taxi_globals.h); US/PAL address translation (code of both refers to it)	taxi_bobbing_phase_rate_degrees_gp
-D_L03_00161B78	taxi_rocking_amplitude	candidate	the NTSC decomp	held-alias: taxi_rocking_amplitude at US level 03 0x00161AF8 (include/rnc/overlay/l03/gameplay/entities/taxi_globals.h); US/PAL address translation (code of both refers to it)	taxi_rocking_amplitude_gp
-D_L03_00161B7C	taxi_rocking_first_phase_rate_degrees	candidate	the NTSC decomp	held-alias: taxi_rocking_first_phase_rate_degrees at US level 03 0x00161AFC (include/rnc/overlay/l03/gameplay/entities/taxi_globals.h); US/PAL address translation (code of both refers to it)	taxi_rocking_first_phase_rate_degrees_gp
-D_L03_00161B80	taxi_rocking_second_phase_rate_degrees	candidate	the NTSC decomp	held-alias: taxi_rocking_second_phase_rate_degrees at US level 03 0x00161B00 (include/rnc/overlay/l03/gameplay/entities/taxi_globals.h); US/PAL address translation (code of both refers to it)	taxi_rocking_second_phase_rate_degrees_gp
 D_L12_001620BC	hoven_jittered_first_packet_blend_minuend_selector	candidate	the NTSC decomp	held-alias: hoven_jittered_first_packet_blend_minuend_selector at US level 12 0x00161FBC (include/rnc/overlay/l12/gameplay/entities/003054b0_globals.h); US/PAL address translation (code of both refers to it)	hoven_jittered_first_packet_blend_minuend_selector_gp
 D_L14_00161AFC	level14_racer_start_interpolation_duration_frames	candidate	the NTSC decomp	held-alias: level14_racer_start_interpolation_duration_frames at US level 14 0x00161A2C (include/rnc/overlay/l14/gameplay/entities/blarg_heavy_interceptor_globals.h); US/PAL address translation (code of both refers to it)	level14_racer_start_interpolation_duration_frames_gp
 D_L14_001620BC	bolt_thief_path_spring_gain	candidate	the NTSC decomp	held-alias: bolt_thief_path_spring_gain at US level 14 0x00161FBC (include/rnc/overlay/l14/gameplay/entities/bolt_thief_globals.h); US/PAL address translation (code of both refers to it)	bolt_thief_path_spring_gain_gp
-D_L14_001621A8	vendor_beam_damage_disabled	candidate	the NTSC decomp	held-alias: vendor_beam_damage_disabled at US level 14 0x001620D8 (include/rnc/overlay/shared/gameplay/vendor/003015d0_globals.h); US/PAL address translation (code of both refers to it)	vendor_beam_damage_disabled_gp
 D_L15_00161548	group_moby_effect_first_quad_color	candidate	the NTSC decomp	held-alias: group_moby_effect_first_quad_color at US level 15 0x001614C8 (include/rnc/overlay/shared/gameplay/entities/sentrybot_globals.h); US/PAL address translation (code of both refers to it)	group_moby_effect_first_quad_color_gp
 D_L15_001620BC	poison_vessel_gravity	candidate	the NTSC decomp	held-alias: poison_vessel_gravity at US level 15 0x00161FBC (include/rnc/overlay/l15/gameplay/entities/conveyor_belt_globals.h); US/PAL address translation (code of both refers to it)	poison_vessel_gravity_gp
-D_L18_0016207C	electric_bolt_initialization_requested	candidate	the NTSC decomp	held-alias: electric_bolt_initialization_requested at US level 18 0x00161FEC (include/rnc/overlay/l18/gameplay/entities/rocket_globals.h); US/PAL address translation (code of both refers to it)	electric_bolt_initialization_requested_gp
-D_L18_001626BC	gadgebot_launch_glow_blend_minuend_selector	candidate	the NTSC decomp	held-alias: gadgebot_launch_glow_blend_minuend_selector at US level 18 0x0016262C (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_launch_glow_blend_minuend_selector_gp
-D_L18_001626C0	gadgebot_launch_glow_blend_subtrahend_selector	candidate	the NTSC decomp	held-alias: gadgebot_launch_glow_blend_subtrahend_selector at US level 18 0x00162630 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_launch_glow_blend_subtrahend_selector_gp
-D_L18_001626C4	gadgebot_launch_glow_blend_alpha_factor_selector	candidate	the NTSC decomp	held-alias: gadgebot_launch_glow_blend_alpha_factor_selector at US level 18 0x00162634 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_launch_glow_blend_alpha_factor_selector_gp
-D_L18_001626C8	gadgebot_launch_glow_blend_addend_selector	candidate	the NTSC decomp	held-alias: gadgebot_launch_glow_blend_addend_selector at US level 18 0x00162638 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_launch_glow_blend_addend_selector_gp
-D_L18_001626CC	gadgebot_launch_glow_tint_start	candidate	the NTSC decomp	held-alias: gadgebot_launch_glow_tint_start at US level 18 0x0016263C (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_launch_glow_tint_start_gp
-D_L18_001626D0	gadgebot_launch_glow_tint_end	candidate	the NTSC decomp	held-alias: gadgebot_launch_glow_tint_end at US level 18 0x00162640 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_launch_glow_tint_end_gp
-D_L18_001626D4	gadgebot_launch_glow_texture_index	candidate	the NTSC decomp	held-alias: gadgebot_launch_glow_texture_index at US level 18 0x00162644 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_launch_glow_texture_index_gp
-D_L18_001626D8	gadgebot_launch_glow_z_offset	candidate	the NTSC decomp	held-alias: gadgebot_launch_glow_z_offset at US level 18 0x00162648 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_launch_glow_z_offset_gp
-D_L18_001626DC	gadgebot_launch_glow_vertical_scale_adjustment	candidate	the NTSC decomp	held-alias: gadgebot_launch_glow_vertical_scale_adjustment at US level 18 0x0016264C (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_launch_glow_vertical_scale_adjustment_gp
-D_L18_001626E0	gadgebot_launch_glow_horizontal_scale_adjustment	candidate	the NTSC decomp	held-alias: gadgebot_launch_glow_horizontal_scale_adjustment at US level 18 0x00162650 (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	gadgebot_launch_glow_horizontal_scale_adjustment_gp
 D_L00_0015F770	large_font_height	candidate	the NTSC decomp	held-several-symbols: large_font_height at US level 00 0x0015F690 (src/overlays/shared/gameplay/hero/hero_check_damage.c); US/PAL address translation (code of both refers to it)	
 D_0012A718	csc_dma_chunk_handler	candidate	the NTSC decomp	held-unreferenced: csc_dma_chunk_handler at US boot 0x0012A5D8 (src/sdk/dma/csc_store_ref_image.c); US/PAL address translation (code of both refers to it)	
 D_00140150	hero_slots	candidate	the NTSC decomp	held-unreferenced: hero_slots at US boot 0x00140050 (src/overlays/shared/gameplay/hero/hero_check_damage.c); US/PAL address translation (code of both refers to it)	
@@ -10804,7 +11151,6 @@ D_L15_00187640	slot_buffers_l15	candidate	the NTSC decomp	held-unreferenced: slo
 D_L16_001874C0	slot_buffers_l16	candidate	the NTSC decomp	held-unreferenced: slot_buffers_l16 at US level 16 0x001871C0 (src/overlays/shared/gameplay/state/0024eec0.c); US/PAL address translation (code of both refers to it)	
 D_L17_00187940	slot_buffers_l17	candidate	the NTSC decomp	held-unreferenced: slot_buffers_l17 at US level 17 0x00187640 (src/overlays/shared/gameplay/state/0024eec0.c); US/PAL address translation (code of both refers to it)	
 D_L18_00187A40	slot_buffers_l18	candidate	the NTSC decomp	held-unreferenced: slot_buffers_l18 at US level 18 0x00187740 (src/overlays/shared/gameplay/state/0024eec0.c); US/PAL address translation (code of both refers to it)	
-func_00112380	check_state_range	candidate	the NTSC decomp	held-library: check_state_range at US boot 0x00112380 (src/runtime/state/check_state_range.c); US function table counterpart	
 func_001123A8	_calloc_r	candidate	the NTSC decomp	held-library: _calloc_r at US boot 0x001123A8 (src/sdk/library/_calloc_r.c); US function table counterpart	
 func_00112468	close_r	candidate	the NTSC decomp	held-library: close_r at US boot 0x00112468 (src/sdk/library/close_r.c); US function table counterpart	
 func_001124C0	quorem	candidate	the NTSC decomp	held-library: quorem at US boot 0x001124C0 (src/sdk/library/quorem.c); US function table counterpart	
@@ -10824,10 +11170,7 @@ func_001146C8	malloc_extend_top	candidate	the NTSC decomp	held-library: malloc_e
 func_00114920	malloc_r	candidate	the NTSC decomp	held-library: malloc_r at US boot 0x00114920 (src/sdk/library/malloc_r.c); US function table counterpart	
 func_00115098	convert_multibyte_character	candidate	the NTSC decomp	held-library: convert_multibyte_character at US boot 0x00115098 (src/runtime/encoding/convert_multibyte_character.c); US function table counterpart	
 func_001150D4	memchr	candidate	the NTSC decomp	held-library: memchr at US boot 0x001150D4 (src/assembly/sdk/library/memchr.c); US function table counterpart	
-func_001151B4	memcmp	candidate	the NTSC decomp	held-library: memcmp at US boot 0x001151B4 (src/assembly/sdk/library/memcmp.c); US function table counterpart	
-func_00115248	memcpy	candidate	the NTSC decomp	held-library: memcpy at US boot 0x00115248 (src/assembly/sdk/library/memcpy.c); US function table counterpart	
 func_001152F8	memmove	candidate	the NTSC decomp	held-library: memmove at US boot 0x001152F8 (src/assembly/sdk/library/memmove.c); US function table counterpart	
-func_001153FC	memset	candidate	the NTSC decomp	held-library: memset at US boot 0x001153FC (src/assembly/sdk/library/memset.c); US function table counterpart	clear_glow_matrix_7920,clear_memory,random_integer_below_cf
 func_001154C8	noop_core_utility_secondary	candidate	the NTSC decomp	held-library: noop_core_utility_secondary at US boot 0x001154C8 (src/runtime/callbacks/noop_core_utility_secondary.c); US function table counterpart	no_op_core_utility_secondary
 func_001154D0	balloc	candidate	the NTSC decomp	held-library: balloc at US boot 0x001154D0 (src/sdk/library/balloc.c); US function table counterpart	
 func_00115578	insert_link_object	candidate	the NTSC decomp	held-library: insert_link_object at US boot 0x00115578 (src/runtime/containers/insert_link_object.c); US function table counterpart	
@@ -10848,11 +11191,6 @@ func_001162B8	sread	candidate	the NTSC decomp	held-library: sread at US boot 0x0
 func_00116320	__swrite	candidate	the NTSC decomp	held-library: __swrite at US boot 0x00116320 (src/sdk/library/__swrite.c); US function table counterpart	
 func_001163A0	sseek	candidate	the NTSC decomp	held-library: sseek at US boot 0x001163A0 (src/sdk/library/sseek.c); US function table counterpart	
 func_00116408	resolve_resource_index	candidate	the NTSC decomp	held-library: resolve_resource_index at US boot 0x00116408 (src/runtime/resources/resolve_resource_index.c); US function table counterpart	
-func_00116428	strchr	candidate	the NTSC decomp	held-library: strchr at US boot 0x00116428 (src/assembly/sdk/library/strchr.c); US function table counterpart	
-func_001166FC	strcpy	candidate	the NTSC decomp	held-library: strcpy at US boot 0x001165B8 (src/assembly/sdk/library/strcpy.c); US function table counterpart	
-func_00116810	strlen	candidate	the NTSC decomp	held-library: strlen at US boot 0x001166CC (src/assembly/sdk/library/strlen.c); US function table counterpart	strlen_alt
-func_00116B00	strncpy	candidate	the NTSC decomp	held-library: strncpy at US boot 0x00116808 (src/assembly/sdk/library/strncpy.c); US function table counterpart	
-func_00116CC0	find_substring	candidate	the NTSC decomp	held-library: find_substring at US boot 0x001169C8 (src/sdk/library/find_substring.c); US function table counterpart	
 func_00116D30	_strtol_r	candidate	the NTSC decomp	held-library: _strtol_r at US boot 0x00116A38 (src/sdk/library/_strtol_r.c); US function table counterpart	state_resource_call
 func_00116F68	call_global_state_resource	candidate	the NTSC decomp	held-library: call_global_state_resource at US boot 0x00116C70 (src/runtime/resources/call_global_state_resource.c); US function table counterpart	
 func_00116FA0	__sprint	candidate	the NTSC decomp	held-library: __sprint at US boot 0x00116CA8 (src/sdk/library/__sprint.c); US function table counterpart	
@@ -10866,11 +11204,7 @@ func_00118A50	set_gs_crt	candidate	the NTSC decomp	held-library: set_gs_crt at U
 func_00118A60	exit	candidate	the NTSC decomp	held-library: exit at US boot 0x00118760 (src/assembly/sdk/system/exit.c); US function table counterpart	
 func_00118A70	invoke_kernel_syscall_0008	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_0008 at US boot 0x00118770 (src/assembly/sdk/syscalls/invoke_kernel_syscall_0008.c); US function table counterpart	
 func_00118A80	invoke_kernel_syscall_000c	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_000c at US boot 0x00118780 (src/assembly/sdk/syscalls/invoke_kernel_syscall_000c.c); US function table counterpart	
-func_00118A90	add_intc_handler	candidate	the NTSC decomp	held-library: add_intc_handler at US boot 0x00118790 (src/assembly/sdk/interrupts/add_intc_handler.c); US function table counterpart	
-func_00118AA0	remove_intc_handler	candidate	the NTSC decomp	held-library: remove_intc_handler at US boot 0x001187A0 (src/assembly/sdk/interrupts/remove_intc_handler.c); US function table counterpart	
-func_00118AB0	add_dmac_handler	candidate	the NTSC decomp	held-library: add_dmac_handler at US boot 0x001187B0 (src/assembly/sdk/interrupts/add_dmac_handler.c); US function table counterpart	
 func_00118AC0	add_dmac_handler_secondary	candidate	the NTSC decomp	held-library: add_dmac_handler_secondary at US boot 0x001187C0 (src/assembly/sdk/interrupts/add_dmac_handler_secondary.c); US function table counterpart	
-func_00118AD0	remove_dmac_handler	candidate	the NTSC decomp	held-library: remove_dmac_handler at US boot 0x001187D0 (src/assembly/sdk/interrupts/remove_dmac_handler.c); US function table counterpart	
 func_00118AE0	enable_intc	candidate	the NTSC decomp	held-library: enable_intc at US boot 0x001187E0 (src/assembly/sdk/interrupts/enable_intc.c); US function table counterpart	
 func_00118AF0	disable_intc	candidate	the NTSC decomp	held-library: disable_intc at US boot 0x001187F0 (src/assembly/sdk/interrupts/disable_intc.c); US function table counterpart	
 func_00118B00	enable_dmac	candidate	the NTSC decomp	held-library: enable_dmac at US boot 0x00118800 (src/assembly/sdk/interrupts/enable_dmac.c); US function table counterpart	
@@ -10878,16 +11212,9 @@ func_00118B10	disable_dmac	candidate	the NTSC decomp	held-library: disable_dmac 
 func_00118B20	set_alarm	candidate	the NTSC decomp	held-library: set_alarm at US boot 0x00118820 (src/assembly/sdk/interrupts/set_alarm.c); US function table counterpart	
 func_00118B30	invoke_kernel_syscall_ffe6	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_ffe6 at US boot 0x00118830 (src/assembly/sdk/syscalls/invoke_kernel_syscall_ffe6.c); US function table counterpart	
 func_00118B40	invoke_kernel_syscall_ff02	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_ff02 at US boot 0x00118840 (src/assembly/sdk/syscalls/invoke_kernel_syscall_ff02.c); US function table counterpart	
-func_00118B50	create_thread	candidate	the NTSC decomp	held-library: create_thread at US boot 0x00118850 (src/assembly/sdk/threads/create_thread.c); US function table counterpart	
-func_00118B60	delete_thread	candidate	the NTSC decomp	held-library: delete_thread at US boot 0x00118860 (src/assembly/sdk/threads/delete_thread.c); US function table counterpart	
-func_00118B70	start_thread	candidate	the NTSC decomp	held-library: start_thread at US boot 0x00118870 (src/assembly/sdk/threads/start_thread.c); US function table counterpart	
-func_00118B80	terminate_thread	candidate	the NTSC decomp	held-library: terminate_thread at US boot 0x00118880 (src/assembly/sdk/threads/terminate_thread.c); US function table counterpart	
 func_00118B90	invoke_kernel_syscall_ffda	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_ffda at US boot 0x00118890 (src/assembly/sdk/syscalls/invoke_kernel_syscall_ffda.c); US function table counterpart	
-func_00118BA0	change_thread_priority	candidate	the NTSC decomp	held-library: change_thread_priority at US boot 0x001188A0 (src/assembly/sdk/threads/change_thread_priority.c); US function table counterpart	
 func_00118BB0	invoke_kernel_syscall_ffd6	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_ffd6 at US boot 0x001188B0 (src/assembly/sdk/syscalls/invoke_kernel_syscall_ffd6.c); US function table counterpart	
-func_00118BC0	rotate_thread_ready_queue	candidate	the NTSC decomp	held-library: rotate_thread_ready_queue at US boot 0x001188C0 (src/assembly/sdk/threads/rotate_thread_ready_queue.c); US function table counterpart	
 func_00118BD0	invoke_kernel_syscall_ffd2	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_ffd2 at US boot 0x001188D0 (src/assembly/sdk/syscalls/invoke_kernel_syscall_ffd2.c); US function table counterpart	
-func_00118BE0	get_thread_id	candidate	the NTSC decomp	held-library: get_thread_id at US boot 0x001188E0 (src/assembly/sdk/threads/get_thread_id.c); US function table counterpart	
 func_00118BF0	refer_thread_status	candidate	the NTSC decomp	held-library: refer_thread_status at US boot 0x001188F0 (src/assembly/sdk/threads/refer_thread_status.c); US function table counterpart	
 func_00118C00	sleep_thread	candidate	the NTSC decomp	held-library: sleep_thread at US boot 0x00118900 (src/assembly/sdk/threads/sleep_thread.c); US function table counterpart	
 func_00118C10	wakeup_thread	candidate	the NTSC decomp	held-library: wakeup_thread at US boot 0x00118910 (src/assembly/sdk/threads/wakeup_thread.c); US function table counterpart	
@@ -10896,11 +11223,7 @@ func_00118C30	invoke_kernel_syscall_ffca	candidate	the NTSC decomp	held-library:
 func_00118C40	suspend_thread	candidate	the NTSC decomp	held-library: suspend_thread at US boot 0x00118940 (src/assembly/sdk/threads/suspend_thread.c); US function table counterpart	
 func_00118C50	invoke_kernel_syscall_ffc6	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_ffc6 at US boot 0x00118950 (src/assembly/sdk/syscalls/invoke_kernel_syscall_ffc6.c); US function table counterpart	
 func_00118C60	end_of_heap	candidate	the NTSC decomp	held-library: end_of_heap at US boot 0x00118960 (src/assembly/sdk/system/end_of_heap.c); US function table counterpart	
-func_00118C70	create_semaphore	candidate	the NTSC decomp	held-library: create_semaphore at US boot 0x00118970 (src/assembly/sdk/threads/create_semaphore.c); US function table counterpart	
-func_00118C80	delete_semaphore	candidate	the NTSC decomp	held-library: delete_semaphore at US boot 0x00118980 (src/assembly/sdk/threads/delete_semaphore.c); US function table counterpart	
-func_00118C90	signal_semaphore	candidate	the NTSC decomp	held-library: signal_semaphore at US boot 0x00118990 (src/assembly/sdk/threads/signal_semaphore.c); US function table counterpart	
 func_00118CA0	i_signal_semaphore	candidate	the NTSC decomp	held-library: i_signal_semaphore at US boot 0x001189A0 (src/assembly/sdk/threads/i_signal_semaphore.c); US function table counterpart	
-func_00118CB0	wait_semaphore	candidate	the NTSC decomp	held-library: wait_semaphore at US boot 0x001189B0 (src/assembly/sdk/threads/wait_semaphore.c); US function table counterpart	
 func_00118CC0	poll_semaphore	candidate	the NTSC decomp	held-library: poll_semaphore at US boot 0x001189C0 (src/assembly/sdk/threads/poll_semaphore.c); US function table counterpart	
 func_00118CD0	invoke_kernel_syscall_ffba	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_ffba at US boot 0x001189D0 (src/assembly/sdk/syscalls/invoke_kernel_syscall_ffba.c); US function table counterpart	
 func_00118CE0	set_osd_config_param	candidate	the NTSC decomp	held-library: set_osd_config_param at US boot 0x001189E0 (src/assembly/sdk/system/set_osd_config_param.c); US function table counterpart	
@@ -10911,9 +11234,7 @@ func_00118D20	invoke_kernel_syscall_0056	candidate	the NTSC decomp	held-library:
 func_00118D30	invoke_kernel_syscall_ffa6	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_ffa6 at US boot 0x00118A30 (src/assembly/sdk/syscalls/invoke_kernel_syscall_ffa6.c); US function table counterpart	
 func_00118D40	invoke_kernel_syscall_005d	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_005d at US boot 0x00118A40 (src/assembly/sdk/syscalls/invoke_kernel_syscall_005d.c); US function table counterpart	
 func_00118D50	invoke_kernel_syscall_005f	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_005f at US boot 0x00118A50 (src/assembly/sdk/syscalls/invoke_kernel_syscall_005f.c); US function table counterpart	
-func_00118D60	enable_cache	candidate	the NTSC decomp	held-library: enable_cache at US boot 0x00118A60 (src/assembly/sdk/memory/cache/enable_cache.c); US function table counterpart	
 func_00118D70	invoke_kernel_syscall_0062	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_0062 at US boot 0x00118A70 (src/assembly/sdk/syscalls/invoke_kernel_syscall_0062.c); US function table counterpart	
-func_00118D80	flush_cache	candidate	the NTSC decomp	held-library: flush_cache at US boot 0x00118A80 (src/assembly/sdk/memory/cache/flush_cache.c); US function table counterpart	
 func_00118D90	invoke_kernel_syscall_ff99	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_ff99 at US boot 0x00118A90 (src/assembly/sdk/syscalls/invoke_kernel_syscall_ff99.c); US function table counterpart	
 func_00118DA0	sce_sif_stop_dma	candidate	the NTSC decomp	held-library: sce_sif_stop_dma at US boot 0x00118AA0 (src/assembly/sdk/dma/sce_sif_stop_dma.c); US function table counterpart	
 func_00118DB0	invoke_kernel_syscall_006c	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_006c at US boot 0x00118AB0 (src/assembly/sdk/syscalls/invoke_kernel_syscall_006c.c); US function table counterpart	
@@ -10922,8 +11243,6 @@ func_00118DD0	gs_get_imr	candidate	the NTSC decomp	held-library: gs_get_imr at U
 func_00118DE0	gs_put_imr	candidate	the NTSC decomp	held-library: gs_put_imr at US boot 0x00118AE0 (src/assembly/sdk/display/gs_put_imr.c); US function table counterpart	
 func_00118DF0	invoke_kernel_syscall_0072	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_0072 at US boot 0x00118AF0 (src/assembly/sdk/syscalls/invoke_kernel_syscall_0072.c); US function table counterpart	
 func_00118E00	set_vsync_flag	candidate	the NTSC decomp	held-library: set_vsync_flag at US boot 0x00118B00 (src/assembly/sdk/interrupts/set_vsync_flag.c); US function table counterpart	
-func_00118E10	sce_sif_dma_stat	candidate	the NTSC decomp	held-library: sce_sif_dma_stat at US boot 0x00118B10 (src/assembly/sdk/dma/sce_sif_dma_stat.c); US function table counterpart	
-func_00118E20	sce_sif_set_dma	candidate	the NTSC decomp	held-library: sce_sif_set_dma at US boot 0x00118B20 (src/assembly/sdk/dma/sce_sif_set_dma.c); US function table counterpart	
 func_00118E30	i_sce_sif_set_dma	candidate	the NTSC decomp	held-library: i_sce_sif_set_dma at US boot 0x00118B30 (src/assembly/sdk/dma/i_sce_sif_set_dma.c); US function table counterpart	
 func_00118E40	sce_sif_set_dchain	candidate	the NTSC decomp	held-library: sce_sif_set_dchain at US boot 0x00118B40 (src/assembly/sdk/dma/sce_sif_set_dchain.c); US function table counterpart	
 func_00118E50	i_sce_sif_set_dchain	candidate	the NTSC decomp	held-library: i_sce_sif_set_dchain at US boot 0x00118B50 (src/assembly/sdk/dma/i_sce_sif_set_dchain.c); US function table counterpart	
@@ -10942,10 +11261,6 @@ func_00119110	sbrk	candidate	the NTSC decomp	held-library: sbrk at US boot 0x001
 func_001191C8	initialize_object	candidate	the NTSC decomp	held-library: initialize_object at US boot 0x00118EC8 (src/rnc1_functions.h); US function table counterpart	
 func_001191E0	scesdc	candidate	the NTSC decomp	held-library: scesdc at US boot 0x00118EE0 (src/assembly/sdk/library/scesdc.c); US function table counterpart	
 func_00119288	synchronize_cache_range	candidate	the NTSC decomp	held-library: synchronize_cache_range at US boot 0x00118F88 (src/runtime/cache/synchronize_cache_range.c); US function table counterpart	
-func_00119328	disable_intc	candidate	the NTSC decomp	held-library: disable_intc at US boot 0x00119028 (src/runtime/interrupts/disable_intc.c); US function table counterpart	
-func_00119390	enable_intc	candidate	the NTSC decomp	held-library: enable_intc at US boot 0x00119090 (src/runtime/interrupts/enable_intc.c); US function table counterpart	
-func_001193F8	disable_dmac	candidate	the NTSC decomp	held-library: disable_dmac at US boot 0x001190F8 (src/rendering/dmac_vif1_disable.c); US function table counterpart	
-func_00119460	enable_dmac	candidate	the NTSC decomp	held-library: enable_dmac at US boot 0x00119160 (src/rendering/dmac_vif1_enable.c); US function table counterpart	
 func_001194C8	topThread	candidate	the NTSC decomp	held-library: topThread at US boot 0x001191C8 (src/sdk/library/topThread.c); US function table counterpart	
 func_001195A0	InitThread	candidate	the NTSC decomp	held-library: InitThread at US boot 0x001192A0 (src/sdk/library/InitThread.c); US function table counterpart	
 func_00119678	i_wakeup_thread	candidate	the NTSC decomp	held-library: i_wakeup_thread at US boot 0x00119378 (src/sdk/library/i_wakeup_thread.c); US function table counterpart	
@@ -10990,8 +11305,6 @@ func_0011B198	request_rdata	candidate	the NTSC decomp	held-library: request_rdat
 func_0011B1F8	search_svdata	candidate	the NTSC decomp	held-library: search_svdata at US boot 0x0011AEF8 (src/sdk/storage/memory_card/search_svdata.c); US function table counterpart	
 func_0011B248	request_bind	candidate	the NTSC decomp	held-library: request_bind at US boot 0x0011AF48 (src/sdk/rpc/request_bind.c); US function table counterpart	
 func_0011B438	handle_sif_rpc_call	candidate	the NTSC decomp	held-library: handle_sif_rpc_call at US boot 0x0011B138 (src/sdk/callbacks/handle_sif_rpc_call.c); US function table counterpart	
-func_0011B4C8	sce_sif_call_rpc	candidate	the NTSC decomp	held-library: sce_sif_call_rpc at US boot 0x0011B1C8 (src/sdk/rpc/sce_sif_call_rpc.c); US function table counterpart	
-func_0011B6B8	sce_sif_check_stat_rpc	candidate	the NTSC decomp	held-library: sce_sif_check_stat_rpc at US boot 0x0011B3B8 (src/sdk/rpc/sce_sif_check_stat_rpc.c); US function table counterpart	
 func_0011B710	sce_fs_iob_sema_mk	candidate	the NTSC decomp	held-library: sce_fs_iob_sema_mk at US boot 0x0011B410 (src/sdk/library/sce_fs_iob_sema_mk.c); US function table counterpart	
 func_0011B770	new_iob	candidate	the NTSC decomp	held-library: new_iob at US boot 0x0011B470 (src/sdk/library/new_iob.c); US function table counterpart	
 func_0011B7F8	get_iob	candidate	the NTSC decomp	held-library: get_iob at US boot 0x0011B4F8 (src/sdk/library/get_iob.c); US function table counterpart	
@@ -11002,17 +11315,10 @@ func_0011BC70	read_queue_status	candidate	the NTSC decomp	held-library: read_que
 func_0011BC80	invoke_sif_file_command_callback	candidate	the NTSC decomp	held-library: invoke_sif_file_command_callback at US boot 0x0011B980 (src/sdk/callbacks/invoke_sif_file_command_callback.c); US function table counterpart	
 func_0011BCB0	sceFsInit	candidate	the NTSC decomp	held-library: sceFsInit at US boot 0x0011B9B0 (src/sdk/library/sceFsInit.c); US function table counterpart	
 func_0011BEB8	sif_file_server_changed	candidate	the NTSC decomp	held-library: sif_file_server_changed at US boot 0x0011BBB8 (src/runtime/sio/sif_file_server_changed.c); US function table counterpart	
-func_0011BF48	sceFsReset	candidate	the NTSC decomp	held-library: sceFsReset at US boot 0x0011BC48 (src/sdk/library/sceFsReset.c); US function table counterpart	
-func_0011CB40	sce_sif_init_iop_heap	candidate	the NTSC decomp	held-library: sce_sif_init_iop_heap at US boot 0x0011C840 (src/sdk/rpc/sce_sif_init_iop_heap.c); US function table counterpart	
-func_0011CBC8	sce_sif_alloc_iop_heap	candidate	the NTSC decomp	held-library: sce_sif_alloc_iop_heap at US boot 0x0011C8C8 (src/sdk/rpc/sce_sif_alloc_iop_heap.c); US function table counterpart	
-func_0011CCB0	invoke_state_initializer	candidate	the NTSC decomp	held-library: invoke_state_initializer at US boot 0x0011C9B0 (src/runtime/state/invoke_state_initializer.c); US function table counterpart	
 func_0011CCE0	lf_bind	candidate	the NTSC decomp	held-library: lf_bind at US boot 0x0011C9E0 (src/sdk/rpc/lf_bind.c); US function table counterpart	
 func_0011CDE0	sif_load_module_server_changed	candidate	the NTSC decomp	held-library: sif_load_module_server_changed at US boot 0x0011CAE0 (src/runtime/sio/sif_load_module_server_changed.c); US function table counterpart	
 func_0011CE70	sce_sif_load_module_buffer	candidate	the NTSC decomp	held-library: sce_sif_load_module_buffer at US boot 0x0011CB70 (src/sdk/rpc/sce_sif_load_module_buffer.c); US function table counterpart	
-func_0011D078	invoke_iop_status	candidate	the NTSC decomp	held-library: invoke_iop_status at US boot 0x0011CD78 (src/runtime/iop/invoke_iop_status.c); US function table counterpart	
 func_0011D0D0	sce_sif_reset_iop	candidate	the NTSC decomp	held-library: sce_sif_reset_iop at US boot 0x0011CDD0 (src/sdk/rpc/sce_sif_reset_iop.c); US function table counterpart	
-func_0011D210	sce_sif_sync_iop	candidate	the NTSC decomp	held-library: sce_sif_sync_iop at US boot 0x0011CF10 (src/sdk/rpc/sce_sif_sync_iop.c); US function table counterpart	
-func_0011D248	sce_sif_reboot_iop	candidate	the NTSC decomp	held-library: sce_sif_reboot_iop at US boot 0x0011CF48 (src/sdk/rpc/sce_sif_reboot_iop.c); US function table counterpart	
 func_0011D360	invoke_kernel_syscall_005a_rfu	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_005a_rfu at US boot 0x0011D060 (src/assembly/sdk/syscalls/invoke_kernel_syscall_005a_rfu.c); US function table counterpart	
 func_0011D3A8	rfu_091_early	candidate	the NTSC decomp	held-library: rfu_091_early at US boot 0x0011D0A8 (src/assembly/sdk/syscalls/rfu_091_early.c); US function table counterpart	
 func_0011D3B8	rfu_116_set_syscall_early	candidate	the NTSC decomp	held-library: rfu_116_set_syscall_early at US boot 0x0011D0B8 (src/assembly/sdk/syscalls/rfu_116_set_syscall_early.c); US function table counterpart	
@@ -11020,8 +11326,6 @@ func_0011D3C8	init_tlb_functions	candidate	the NTSC decomp	held-library: init_tl
 func_0011D490	rfu_086_wait_event_flag	candidate	the NTSC decomp	held-library: rfu_086_wait_event_flag at US boot 0x0011D190 (src/assembly/sdk/syscalls/rfu_086_wait_event_flag.c); US function table counterpart	
 func_0011D4A0	init_tlb	candidate	the NTSC decomp	held-library: init_tlb at US boot 0x0011D1A0 (src/sdk/library/init_tlb.c); US function table counterpart	
 func_0011D4E0	init_tlb32_mb	candidate	the NTSC decomp	held-library: init_tlb32_mb at US boot 0x0011D1E0 (src/assembly/sdk/library/init_tlb32_mb.c); US function table counterpart	
-func_0011D960	DIntr	candidate	the NTSC decomp	held-library: DIntr at US boot 0x0011D660 (src/assembly/sdk/library/DIntr.c); US function table counterpart	
-func_0011D9A8	enable_interrupts	candidate	the NTSC decomp	held-library: enable_interrupts at US boot 0x0011D6A8 (src/sdk/interrupts/enable_interrupts.c); US function table counterpart	
 func_0011D9C0	supplement_crt0	candidate	the NTSC decomp	held-library: supplement_crt0 at US boot 0x0011D6C0 (src/sdk/library/supplement_crt0.c); US function table counterpart	
 func_0011DA08	kernel_copy_rdata	candidate	the NTSC decomp	held-library: kernel_copy_rdata at US boot 0x0011D708 (src/sdk/system/kernel_copy_rdata.c); US function table counterpart	
 func_0011DA40	find_kernel_address	candidate	the NTSC decomp	held-library: find_kernel_address at US boot 0x0011D740 (src/sdk/system/find_kernel_address.c); US function table counterpart	
@@ -11063,8 +11367,6 @@ func_001205D0	dptoul	candidate	the NTSC decomp	held-library: dptoul at US boot 0
 func_00120670	__make_dp	candidate	the NTSC decomp	held-library: __make_dp at US boot 0x00120370 (src/sdk/library/__make_dp.c); US function table counterpart	
 func_001206B0	__unpack_f	candidate	the NTSC decomp	held-library: __unpack_f at US boot 0x001203B0 (src/sdk/library/__unpack_f.c); US function table counterpart	
 func_00120778	fptodp	candidate	the NTSC decomp	held-library: fptodp at US boot 0x00120478 (src/overlays/l09/gameplay/entities/elevator.c); US function table counterpart	fptodp_7b10,ftoi_fe50,promote_float60
-func_001207B8	reset_vif1_gif	candidate	the NTSC decomp	held-library: reset_vif1_gif at US boot 0x001204B8 (src/assembly/textbin/reset_vif1_gif.c); US function table counterpart	
-func_00120858	wait_for_graphics_pipeline_idle	candidate	the NTSC decomp	held-library: wait_for_graphics_pipeline_idle at US boot 0x00120558 (src/gameplay/space/play_level_transition_movie.c); US function table counterpart	
 func_001208E8	signal_native_cd_delay_alarm	candidate	the NTSC decomp	held-library: signal_native_cd_delay_alarm at US boot 0x001205E8 (src/sdk/callbacks/signal_native_cd_delay_alarm.c); US function table counterpart	
 func_001209D8	handle_cd_read_callback	candidate	the NTSC decomp	held-library: handle_cd_read_callback at US boot 0x001206D8 (src/sdk/callbacks/process_native_cd_read_completion.c); US function table counterpart	
 func_00120A88	process_native_cd_read_completion	candidate	the NTSC decomp	held-library: process_native_cd_read_completion at US boot 0x00120788 (src/sdk/callbacks/process_native_cd_read_completion.c); US function table counterpart	
@@ -11073,62 +11375,24 @@ func_00120BC0	cdvd_exit	candidate	the NTSC decomp	held-library: cdvd_exit at US 
 func_00120C60	dispatch_native_cd_power_event	candidate	the NTSC decomp	held-library: dispatch_native_cd_power_event at US boot 0x00120960 (src/sdk/callbacks/dispatch_native_cd_power_event.c); US function table counterpart	
 func_00120CA0	PowerOffCB	candidate	the NTSC decomp	held-library: PowerOffCB at US boot 0x001209A0 (src/sdk/library/PowerOffCB.c); US function table counterpart	
 func_00120E98	sceCdNcmdDiskReady	candidate	the NTSC decomp	held-library: sceCdNcmdDiskReady at US boot 0x00120B98 (src/sdk/library/sceCdNcmdDiskReady.c); US function table counterpart	
-func_00120F30	scecdsync	candidate	the NTSC decomp	held-library: scecdsync at US boot 0x00120C30 (src/sdk/library/scecdsync.c); US function table counterpart	sceCdSync_alt
 func_00120FD0	sceCdSyncS	candidate	the NTSC decomp	held-library: sceCdSyncS at US boot 0x00120CD0 (src/sdk/library/sceCdSyncS.c); US function table counterpart	
-func_001211B0	sceCdInit	candidate	the NTSC decomp	held-library: sceCdInit at US boot 0x00120EB0 (src/assembly/sdk/library/sceCdInit.c); US function table counterpart	
-func_00121490	sceCdDiskReady	candidate	the NTSC decomp	held-library: sceCdDiskReady at US boot 0x00121190 (src/runtime/startup/init_once.c); US function table counterpart	
-func_00121688	scecdmmode	candidate	the NTSC decomp	held-library: scecdmmode at US boot 0x00121388 (src/sdk/library/scecdmmode.c); US function table counterpart	
-func_00121750	sceCdRead	candidate	the NTSC decomp	held-library: sceCdRead at US boot 0x00121450 (src/sdk/library/sceCdRead.c); US function table counterpart	
-func_00121930	sceCdGetError	candidate	the NTSC decomp	held-library: sceCdGetError at US boot 0x00121630 (src/sdk/library/sceCdGetError.c); US function table counterpart	
-func_001219C8	scecdbreak	candidate	the NTSC decomp	held-library: scecdbreak at US boot 0x001216C8 (src/sdk/library/scecdbreak.c); US function table counterpart	
-func_00121A80	scecdreadclock	candidate	the NTSC decomp	held-library: scecdreadclock at US boot 0x00121780 (src/sdk/library/scecdreadclock.c); US function table counterpart	
 func_00121D08	get_core_data_table	candidate	the NTSC decomp	held-library: get_core_data_table at US boot 0x00121A08 (src/runtime/data/get_core_data_table.c); US function table counterpart	
 func_00121D18	checkModelVersion	candidate	the NTSC decomp	held-library: checkModelVersion at US boot 0x00121A18 (src/sdk/library/checkModelVersion.c); US function table counterpart	
 func_00121DB8	invoke_kernel_syscall_0080	candidate	the NTSC decomp	held-library: invoke_kernel_syscall_0080 at US boot 0x00121AB8 (src/assembly/sdk/syscalls/invoke_kernel_syscall_0080.c); US function table counterpart	
-func_00122140	sce_gs_put_disp_env	candidate	the NTSC decomp	held-library: sce_gs_put_disp_env at US boot 0x00121E40 (src/sdk/dma/sce_gs_put_disp_env.c); US function table counterpart	
 func_00122200	sce_gszbufaddr	candidate	the NTSC decomp	held-library: sce_gszbufaddr at US boot 0x00121F00 (src/sdk/dma/sce_gszbufaddr.c); US function table counterpart	
-func_001222C8	sce_gs_set_def_draw_env	candidate	the NTSC decomp	held-library: sce_gs_set_def_draw_env at US boot 0x00121FC8 (src/sdk/dma/sce_gs_set_def_draw_env.c); US function table counterpart	
-func_00122598	sce_gs_sync_v	candidate	the NTSC decomp	held-library: sce_gs_sync_v at US boot 0x00122298 (src/overlays/shared/audio/voices/00276368.c); US function table counterpart	sceGsSyncV_alt
-func_00123168	sce_gs_sync_v_callback	candidate	the NTSC decomp	held-library: sce_gs_sync_v_callback at US boot 0x00122E68 (src/sdk/dma/sce_gs_sync_v_callback.c); US function table counterpart	
 func_00123208	wait_dma	candidate	the NTSC decomp	held-library: wait_dma at US boot 0x00122F08 (src/sdk/dma/wait_dma.c); US function table counterpart	
 func_00123280	check_address	candidate	the NTSC decomp	held-library: check_address at US boot 0x00122F80 (src/sdk/system/check_address.c); US function table counterpart	
 func_001232A8	memclr	candidate	the NTSC decomp	held-library: memclr at US boot 0x00122FA8 (src/sdk/library/memclr.c); US function table counterpart	
-func_001232E0	sce_dma_get_chan	candidate	the NTSC decomp	held-library: sce_dma_get_chan at US boot 0x00122FE0 (src/sdk/dma/sce_dma_get_chan.c); US function table counterpart	
 func_001233E8	sce_dma_put_env	candidate	the NTSC decomp	held-library: sce_dma_put_env at US boot 0x001230E8 (src/sdk/dma/sce_dma_put_env.c); US function table counterpart	
-func_001235C8	sce_dma_send	candidate	the NTSC decomp	held-library: sce_dma_send at US boot 0x001232C8 (src/sdk/dma/sce_dma_send.c); US function table counterpart	
 func_00123650	sce_dma_pause	candidate	the NTSC decomp	held-library: sce_dma_pause at US boot 0x00123350 (src/sdk/dma/sce_dma_pause.c); US function table counterpart	
-func_001236F0	sce_mc_init	candidate	the NTSC decomp	held-library: sce_mc_init at US boot 0x001233F0 (src/sdk/storage/memory_card/sce_mc_init.c); US function table counterpart	
-func_001238B0	sce_mc_open	candidate	the NTSC decomp	held-library: sce_mc_open at US boot 0x001235B0 (src/sdk/storage/memory_card/sce_mc_open.c); US function table counterpart	
-func_001239D8	sce_mc_mkdir	candidate	the NTSC decomp	held-library: sce_mc_mkdir at US boot 0x001236D8 (src/sdk/storage/memory_card/sce_mc_mkdir.c); US function table counterpart	
-func_00123A10	sce_mc_close	candidate	the NTSC decomp	held-library: sce_mc_close at US boot 0x00123710 (src/sdk/storage/memory_card/sce_mc_close.c); US function table counterpart	
-func_00123AC8	sce_mc_seek	candidate	the NTSC decomp	held-library: sce_mc_seek at US boot 0x001237C8 (src/sdk/storage/memory_card/sce_mc_seek.c); US function table counterpart	
-func_00123C30	sce_mc_read	candidate	the NTSC decomp	held-library: sce_mc_read at US boot 0x00123930 (src/sdk/storage/memory_card/sce_mc_read.c); US function table counterpart	
-func_00123D48	sce_mc_write	candidate	the NTSC decomp	held-library: sce_mc_write at US boot 0x00123A48 (src/sdk/storage/memory_card/sce_mc_write.c); US function table counterpart	
 func_00123EC0	wake_thread_alarm	candidate	the NTSC decomp	held-library: wake_thread_alarm at US boot 0x00123BC0 (src/sdk/callbacks/wake_thread_alarm.c); US function table counterpart	
 func_00123EE8	mc_delay_thread	candidate	the NTSC decomp	held-library: mc_delay_thread at US boot 0x00123BE8 (src/sdk/storage/memory_card/mc_delay_thread.c); US function table counterpart	
-func_00123F30	sce_mc_sync	candidate	the NTSC decomp	held-library: sce_mc_sync at US boot 0x00123C30 (src/sdk/storage/memory_card/sce_mc_sync.c); US function table counterpart	
-func_00124068	sce_mc_get_info	candidate	the NTSC decomp	held-library: sce_mc_get_info at US boot 0x00123D68 (src/sdk/storage/memory_card/sce_mc_get_info.c); US function table counterpart	
-func_001241F0	sce_mc_get_dir	candidate	the NTSC decomp	held-library: sce_mc_get_dir at US boot 0x00123EF0 (src/sdk/storage/memory_card/sce_mc_get_dir.c); US function table counterpart	
-func_00124340	sce_mc_format	candidate	the NTSC decomp	held-library: sce_mc_format at US boot 0x00124200 (src/sdk/storage/memory_card/sce_mc_format.c); US function table counterpart	
-func_00124410	sce_mc_delete	candidate	the NTSC decomp	held-library: sce_mc_delete at US boot 0x001242D0 (src/sdk/storage/memory_card/sce_mc_delete.c); US function table counterpart	
-func_00124528	sce_mc_unformat	candidate	the NTSC decomp	held-library: sce_mc_unformat at US boot 0x001243E8 (src/sdk/storage/memory_card/sce_mc_unformat.c); US function table counterpart	
 func_001245F8	sce_dbc_get_mod_version	candidate	the NTSC decomp	held-library: sce_dbc_get_mod_version at US boot 0x001244B8 (src/sdk/library/sce_dbc_get_mod_version.c); US function table counterpart	
-func_00124650	sceDbcInit	candidate	the NTSC decomp	held-library: sceDbcInit at US boot 0x00124510 (src/sdk/library/sceDbcInit.c); US function table counterpart	
-func_00124B88	sce_pad2_init	candidate	the NTSC decomp	held-library: sce_pad2_init at US boot 0x00124A48 (src/sdk/input/sce_pad2_init.c); US function table counterpart	
-func_00124BC8	sce_pad2_create_socket	candidate	the NTSC decomp	held-library: sce_pad2_create_socket at US boot 0x00124A88 (src/sdk/input/sce_pad2_create_socket.c); US function table counterpart	
-func_00124DF0	sce_pad2_get_button_profile	candidate	the NTSC decomp	held-library: sce_pad2_get_button_profile at US boot 0x00124CB0 (src/sdk/input/sce_pad2_get_button_profile.c); US function table counterpart	
-func_00124EE0	sce_pad2_get_state	candidate	the NTSC decomp	held-library: sce_pad2_get_state at US boot 0x00124DA0 (src/sdk/input/sce_pad2_get_state.c); US function table counterpart	
 func_00125020	sce_pad2_link_driver	candidate	the NTSC decomp	held-library: sce_pad2_link_driver at US boot 0x00124EE0 (src/sdk/input/sce_pad2_link_driver.c); US function table counterpart	
 func_00125078	sce_pad2_get_side	candidate	the NTSC decomp	held-library: sce_pad2_get_side at US boot 0x00124F38 (src/sdk/input/sce_pad2_get_side.c); US function table counterpart	
 func_001250E0	sce_pad2_check_dma	candidate	the NTSC decomp	held-library: sce_pad2_check_dma at US boot 0x00124FA0 (src/sdk/input/sce_pad2_check_dma.c); US function table counterpart	
 func_00125160	sce_pad2_set_button_order	candidate	the NTSC decomp	held-library: sce_pad2_set_button_order at US boot 0x00125020 (src/sdk/input/sce_pad2_set_button_order.c); US function table counterpart	
-func_00125218	sce_vib_get_profile	candidate	the NTSC decomp	held-library: sce_vib_get_profile at US boot 0x001250D8 (src/sdk/input/sce_vib_get_profile.c); US function table counterpart	
-func_001252C0	sceVu0Normalize	candidate	the NTSC decomp	held-library: sceVu0Normalize at US boot 0x00125180 (src/assembly/sdk/library/sceVu0Normalize.c); US function table counterpart	
-func_00125358	sce_vu0_unit_matrix	candidate	the NTSC decomp	held-library: sce_vu0_unit_matrix at US boot 0x00125218 (src/assembly/sdk/library/sce_vu0_unit_matrix.c); US function table counterpart	
 func_00125380	scevu0ecossin	candidate	the NTSC decomp	held-library: scevu0ecossin at US boot 0x00125240 (src/assembly/sdk/library/scevu0ecossin.c); US function table counterpart	
-func_001253F8	sceVu0RotMatrixZ	candidate	the NTSC decomp	held-library: sceVu0RotMatrixZ at US boot 0x001252B8 (src/assembly/sdk/library/sceVu0RotMatrixZ.c); US function table counterpart	
-func_001254A0	sce_vu0_rot_matrix_x	candidate	the NTSC decomp	held-library: sce_vu0_rot_matrix_x at US boot 0x00125360 (src/assembly/sdk/math/rotations/sce_vu0_rot_matrix_x.c); US function table counterpart	
-func_00125548	sce_vu0_rot_matrix_y	candidate	the NTSC decomp	held-library: sce_vu0_rot_matrix_y at US boot 0x00125408 (src/assembly/sdk/math/rotations/sce_vu0_rot_matrix_y.c); US function table counterpart	
 func_00125630	_motionComp0	candidate	the NTSC decomp	held-library: _motionComp0 at US boot 0x001254F0 (src/assembly/sdk/library/_motionComp0.c); US function table counterpart	
 func_00125880	_getAllRefs	candidate	the NTSC decomp	held-library: _getAllRefs at US boot 0x00125740 (src/sdk/library/_getAllRefs.c); US function table counterpart	
 func_00125F88	_getRef0	candidate	the NTSC decomp	held-library: _getRef0 at US boot 0x00125E48 (src/assembly/sdk/library/_getRef0.c); US function table counterpart	
@@ -11186,19 +11450,10 @@ func_0012ABB0	sysbit_marker	candidate	the NTSC decomp	held-library: sysbit_marke
 func_0012ABF8	sysbit_jump	candidate	the NTSC decomp	held-library: sysbit_jump at US boot 0x0012AAB8 (src/sdk/system/sysbit_jump.c); US function table counterpart	
 func_0012AC50	get_sysbit_pointer	candidate	the NTSC decomp	held-library: get_sysbit_pointer at US boot 0x0012AB10 (src/sdk/system/get_sysbit_pointer.c); US function table counterpart	
 func_0012AC80	type2id	candidate	the NTSC decomp	held-library: type2id at US boot 0x0012AB40 (src/sdk/library/type2id.c); US function table counterpart	
-func_0012AD10	sce_mpeg_demux_pss_ring	candidate	the NTSC decomp	held-library: sce_mpeg_demux_pss_ring at US boot 0x0012ABD0 (src/sdk/dma/sce_mpeg_demux_pss_ring.c); US function table counterpart	
-func_0012B008	sce_mpeg_add_str_callback	candidate	the NTSC decomp	held-library: sce_mpeg_add_str_callback at US boot 0x0012AEC8 (src/sdk/dma/sce_mpeg_add_str_callback.c); US function table counterpart	
 func_0012B100	_pack_header	candidate	the NTSC decomp	held-library: _pack_header at US boot 0x0012AFC0 (src/sdk/library/_pack_header.c); US function table counterpart	
 func_0012B250	system_header	candidate	the NTSC decomp	held-library: system_header at US boot 0x0012B110 (src/sdk/library/system_header.c); US function table counterpart	
 func_0012B2C0	_PES_packet	candidate	the NTSC decomp	held-library: _PES_packet at US boot 0x0012B180 (src/sdk/library/_PES_packet.c); US function table counterpart	
-func_0012B870	sce_mpeg_init	candidate	the NTSC decomp	held-library: sce_mpeg_init at US boot 0x0012B730 (src/sdk/dma/sce_mpeg_init.c); US function table counterpart	
-func_0012B918	sce_mpeg_create	candidate	the NTSC decomp	held-library: sce_mpeg_create at US boot 0x0012B7D8 (src/sdk/dma/sce_mpeg_create.c); US function table counterpart	
-func_0012BB30	sce_mpeg_get_picture	candidate	the NTSC decomp	held-library: sce_mpeg_get_picture at US boot 0x0012B9F0 (src/sdk/dma/sce_mpeg_get_picture.c); US function table counterpart	
-func_0012BB88	get_nested_object_value	candidate	the NTSC decomp	held-library: get_nested_object_value at US boot 0x0012BA48 (src/runtime/objects/get_nested_object_value.c); US function table counterpart	
-func_0012BB98	is_nested_object_field_zero	candidate	the NTSC decomp	held-library: is_nested_object_field_zero at US boot 0x0012BA58 (src/runtime/objects/is_nested_object_field_zero.c); US function table counterpart	
-func_0012BBA8	sce_mpeg_reset	candidate	the NTSC decomp	held-library: sce_mpeg_reset at US boot 0x0012BA68 (src/sdk/dma/sce_mpeg_reset.c); US function table counterpart	
 func_0012BBF8	clear_mpeg_reference_buffer	candidate	the NTSC decomp	held-library: clear_mpeg_reference_buffer at US boot 0x0012BAB8 (src/sdk/video/ipu/clear_mpeg_reference_buffer.c); US function table counterpart	
-func_0012BC50	add_mpeg_callback	candidate	the NTSC decomp	held-library: add_mpeg_callback at US boot 0x0012BB10 (src/sdk/video/ipu/add_mpeg_callback.c); US function table counterpart	
 func_0012BC78	dispatch_mpeg_callback	candidate	the NTSC decomp	held-library: dispatch_mpeg_callback at US boot 0x0012BB38 (src/sdk/dma/dispatch_mpeg_callback.c); US function table counterpart	
 func_0012BCC8	dispatch_mpeg_cb_nodata	candidate	the NTSC decomp	held-library: dispatch_mpeg_cb_nodata at US boot 0x0012BB88 (src/sdk/dma/dispatch_mpeg_cb_nodata.c); US function table counterpart	
 func_0012BD28	initialize_state_record	candidate	the NTSC decomp	held-library: initialize_state_record at US boot 0x0012BBE8 (src/runtime/state/initialize_state_record.c); US function table counterpart	
@@ -11238,7 +11493,6 @@ func_0012D000	set_d4_chcr_variant	candidate	the NTSC decomp	held-library: set_d4
 func_0012D068	sce_ipu_init	candidate	the NTSC decomp	held-library: sce_ipu_init at US boot 0x0012CF28 (src/sdk/dma/sce_ipu_init.c); US function table counterpart	
 func_0012D2A0	GetRomName	candidate	the NTSC decomp	held-library: GetRomName at US boot 0x0012D160 (src/sdk/library/GetRomName.c); US function table counterpart	
 func_0012D340	is_t10_k	candidate	the NTSC decomp	held-library: is_t10_k at US boot 0x0012D200 (src/sdk/library/is_t10_k.c); US function table counterpart	
-func_0012D380	sce_scf_get_language	candidate	the NTSC decomp	held-library: sce_scf_get_language at US boot 0x0012D240 (src/sdk/debug/sce_scf_get_language.c); US function table counterpart	
 func_0012D3F0	sce_scf_get_time_zone	candidate	the NTSC decomp	held-library: sce_scf_get_time_zone at US boot 0x0012D2B0 (src/sdk/debug/sce_scf_get_time_zone.c); US function table counterpart	
 func_0012D448	sce_scf_get_summer_time	candidate	the NTSC decomp	held-library: sce_scf_get_summer_time at US boot 0x0012D308 (src/sdk/debug/sce_scf_get_summer_time.c); US function table counterpart	
 func_0012D4B0	time_to_bcd	candidate	the NTSC decomp	held-library: time_to_bcd at US boot 0x0012D370 (src/sdk/time/time_to_bcd.c); US function table counterpart	
@@ -11248,11 +11502,3 @@ func_0012D688	subdate	candidate	the NTSC decomp	held-library: subdate at US boot
 func_0012D730	addhour	candidate	the NTSC decomp	held-library: addhour at US boot 0x0012D5F0 (src/sdk/time/addhour.c); US function table counterpart	
 func_0012D760	subhour	candidate	the NTSC decomp	held-library: subhour at US boot 0x0012D620 (src/sdk/time/subhour.c); US function table counterpart	
 func_0012D788	adjust_time	candidate	the NTSC decomp	held-library: adjust_time at US boot 0x0012D648 (src/sdk/debug/adjust_time.c); US function table counterpart	
-func_0012D818	sce_scf_get_local_timefrom_rtc	candidate	the NTSC decomp	held-library: sce_scf_get_local_timefrom_rtc at US boot 0x0012D6D8 (src/sdk/debug/sce_scf_get_local_timefrom_rtc.c); US function table counterpart	
-func_0012E3C0	snd_set_mixer_mode	candidate	the NTSC decomp	held-library: snd_set_mixer_mode at US boot 0x0012E280 (src/audio/initialize_gameplay_sound_system.c); US function table counterpart	
-func_0012E448	snd_play_sound_vol_pan_pmpb	candidate	the NTSC decomp	held-library: snd_play_sound_vol_pan_pmpb at US boot 0x0012E308 (src/audio/voices/snd_play_sound_vol_pan_pmpb.c); US function table counterpart	
-func_0012E4A8	snd_stop_sound	candidate	the NTSC decomp	held-library: snd_stop_sound at US boot 0x0012E368 (src/audio/music/music_update_stream.c); US function table counterpart	
-func_0012E600	snd_set_sound_params_cb	candidate	the NTSC decomp	held-library: snd_set_sound_params_cb at US boot 0x0012E4C0 (src/audio/voices/snd_set_sound_params_cb.c); US function table counterpart	
-func_0012F0A8	snd_set_reverb_ex	candidate	the NTSC decomp	held-library: snd_set_reverb_ex at US boot 0x0012EF68 (src/audio/effects/snd_set_reverb_ex.c); US function table counterpart	
-func_0012F1A8	snd_init_movie_sound	candidate	the NTSC decomp	held-library: snd_init_movie_sound at US boot 0x0012F068 (src/audio/decoder/audio_dec_create.c); US function table counterpart	
-func_0012F220	snd_close_movie_sound	candidate	the NTSC decomp	held-library: snd_close_movie_sound at US boot 0x0012F0E0 (src/audio/decoder/audio_dec_delete.c); US function table counterpart	

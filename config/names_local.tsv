@@ -9376,3 +9376,377 @@ D_L06_0015F9C8	blarg_hud_meter_first_segment_fill_scale	scales the fill inside t
 D_L07_001B2464	umbris_part_type65_textures	part texture list read for the type 0x41 particle in white_particles.c	
 D_L13_001B2790	gemlik_part_type68_textures	part texture list read for the type 0x44 particle in create_moby_joint_particle	
 D_L18_00178B80	veldin2_moby_hits	0x40-byte hit records indexed by moby byte 0xA4 (as quartu_moby_hits)	
+D_00139478	intro_movie_disc_entry_ntsc	startlevel: lsn/size pair passed to Movie_Play when pal_mode is 0	
+D_00139480	intro_movie_disc_entry_pal	startlevel: lsn/size pair passed to Movie_Play when pal_mode is set	
+D_0015F05C	startlevel_code_addr	startlevel stores hdr->code + hdr, the movie buffer base, here	
+D_00165530	startlevel_clear_end	startlevel clears bytes from menu_state_frame_count up to this address	
+D_00186200	startlevel_sound_defs	7 sound defs given the loaded bank, then set as level_sound_defs (count 7)	
+D_001862E0	moby_class_472_sound_defs	5 sound defs given the bank; transition.c makes them class 0x472's sound_defs	
+D_001E79C0	str_loading_sound_bank	string "loading sound bank...\n" printed by startlevel	
+D_001611C0	underwater_screen_tint_r	red of the RGBA fill drawn when use_alt_fog (underwater) is set; 0x18	
+D_001611C1	underwater_screen_tint_g	green of the underwater RGBA fill; 0x30	
+D_001611C2	underwater_screen_tint_b	blue of the underwater RGBA fill; 0x90	
+D_001611C3	underwater_screen_tint_a	alpha of the underwater RGBA fill; 0x40	
+func_001207B8	reset_vif1_gif	writes VIF1 FBRST/ERR, resets VU1 via vi28, sends VIF1 init qwords, GIF_CTRL=1	
+func_00112380	libc_atoi	newlib atoi.o: returns strtol(s, 0, 10)	
+func_00122140	sce_gs_put_disp_env	stores a disp env into GS PMODE/DISPFB/DISPLAY registers (0x12000000..)	
+func_001222C8	sce_gs_set_def_draw_env	fills a draw env from psm/width/height; calls the zbuf addr helper	
+func_00118E20	sce_sif_set_dma	EE syscall 0x77 (SifSetDma); LoadIRXModule passes a 4-word dma list	
+func_0011CBC8	sce_sif_alloc_iop_heap	IOP heap RPC command 1 with a size, returns the IOP address	
+func_0011CCB0	sce_sif_free_iop_heap	forwards its address to IOP heap RPC command 2; LoadIRXModule frees the buffer	
+func_0011D078	sif_load_iop_module_buffer	LoadIRXModule: starts the module in the IOP buffer via sce_sif_load_module_buffer, returns status	
+func_00118D60	enable_cache	EE syscall 0x61 (EnableCache), initonce passes 3	
+func_0011BF48	sce_fs_reset	IOP file stub reset: clears the fd table with memset	
+func_0011CB40	sce_sif_init_iop_heap	binds RPC server 0x80000003 and waits until it answers	
+func_0011D210	sce_sif_sync_iop	initonce polls it until the IOP reboot finishes	
+func_0011D248	sce_sif_reboot_iop	initonce passes iop_reboot_image_path and loops until it succeeds	
+func_001211B0	sce_cd_init	cdvd init RPC, initonce calls it with 0 before and after the IOP reboot	
+func_00121490	sce_cd_disk_ready	cdvd RPC called right after sce_cd_init in initonce	
+func_00121688	sce_cd_mmode	cdvd RPC, initonce passes 2 (media mode)	
+func_0012D380	sce_scf_get_language	initonce reads the system language from it	
+func_00118D80	flush_cache	EE syscall 0x64 (FlushCache), called with 0 around decompression	
+func_00121930	sce_cd_get_error	loaders.c checks it for a nonzero cd error after a break	
+func_001219C8	sce_cd_break	loaders.c calls it to stop a cd read	
+D_001E8398	str_no_map_available	string "No Map Available" drawn when the map is disabled	
+D_0015FF68	fmt_memcard_path	format "%s/%s" building dir/file names for the card delete	
+D_0015FF70	str_memcard_deleting_file	string "deleting %s\n" printed before a card file delete	
+D_001A0980	memcard_dir_entries	64-byte directory entries filled by sce_mc_get_dir (0x20 = file name)	
+D_001E8518	str_memcard_deleting_folder	string "deleting folder %s\n" printed before deleting the save dir	
+func_001151B4	libc_memcmp	newlib memcmp.o, between memchr and memcpy; callers compare 4 bytes	
+func_001165B8	libc_strcmp	newlib strcmp.o: word compare with NUL detect, returns byte difference	
+func_00116948	libc_strncmp	newlib strncmp.o: n==0 returns 0, compares up to n bytes	
+func_00116B00	libc_strncpy	newlib strncpy.o: copies with NUL detect and a byte count	
+func_001236F0	sce_mc_init	card library init: creates semaphores and binds the card RPC	
+func_001238B0	sce_mc_open	card RPC with a copied path name, returns via semaphore	
+func_001239D8	sce_mc_mkdir	wrapper of sce_mc_open (mkdir is an open mode)	
+func_00123A10	sce_mc_close	card RPC on an fd	
+func_00123AC8	sce_mc_seek	card RPC on an fd with offset/mode	
+func_00123C30	sce_mc_read	card RPC reading into a buffer	
+func_00123D48	sce_mc_write_buffer	card RPC writing a buffer, flushes the cache first	
+func_00123F30	sce_mc_sync	polls the pending card command and returns its result	
+func_00124068	sce_mc_get_info	card RPC returning type/free/format info	
+func_001241F0	sce_mc_get_dir	card RPC with a path, fills dir entries (memcard_dir_entries)	
+func_00124340	sce_mc_format	card RPC on port/slot	
+func_00124410	sce_mc_delete	card RPC with a copied path name	
+func_00124528	sce_mc_unformat	card RPC on port/slot	
+D_001A2F40	map_icon_lists	per-level pointers to map icon lists, update_map_icons picks [level]	
+func_00118E10	sce_sif_dma_stat	EE syscall 0x76 (SifDmaStat), polled until the dma id is done	
+func_0012F1A8	snd_init_movie_sound	sends sound IOP command 0x3B with 6 words; audioDecCreate keeps the handle	
+func_0012F220	snd_close_movie_sound	sends sound IOP command 0x3C; audioDecDelete calls it	
+func_00118A90	add_intc_handler	EE syscall 0x10 (AddIntcHandler)	
+func_00118AA0	remove_intc_handler	EE syscall 0x11 (RemoveIntcHandler)	
+func_00118B50	create_thread	EE syscall 0x20 (CreateThread)	
+func_00118B60	delete_thread	EE syscall 0x21 (DeleteThread)	
+func_00118B70	start_thread	EE syscall 0x22 (StartThread)	
+func_00118B80	terminate_thread	EE syscall 0x25 (TerminateThread)	
+func_00118BA0	change_thread_priority	EE syscall 0x29 (ChangeThreadPriority)	
+func_00118BC0	rotate_thread_ready_queue	EE syscall 0x2B (RotateThreadReadyQueue)	
+func_00118BE0	get_thread_id	EE syscall 0x2F (GetThreadId)	
+func_00119328	disable_intc_atomic	disable_intc syscall wrapped in disable/enable_interrupts when EIE was set	
+func_00119390	enable_intc_atomic	enable_intc syscall wrapped in disable/enable_interrupts when EIE was set	
+func_001193F8	disable_dmac_atomic	disable_dmac syscall wrapped in disable/enable_interrupts when EIE was set	
+func_00119460	enable_dmac_atomic	enable_dmac syscall wrapped in disable/enable_interrupts when EIE was set	
+func_0012AD10	sce_mpeg_demux_pss_ring_buffer	movie.c feeds it the ring buffer and gets the bytes used	
+func_0012B870	sce_mpeg_init	libmpeg init, runs with interrupts off	
+func_00115248	libc_memcpy	newlib memcpy.o, between memcmp and memmove	
+func_00121750	sce_cd_read	callers pass lsn, sector count, buffer, read mode	
+func_00118C70	create_semaphore	EE syscall 0x40 (CreateSema)	
+func_00118C80	delete_semaphore	EE syscall 0x41 (DeleteSema)	
+func_00118C90	signal_semaphore	EE syscall 0x42 (SignalSema)	
+func_00118CB0	wait_semaphore	EE syscall 0x44 (WaitSema)	
+func_0011D960	disable_interrupts	clears Status EIE and waits until it reads back, returns whether it was set	
+func_0011D9A8	enable_interrupts	sets Status EIE, returns whether it was set	
+func_0012B008	sce_mpeg_add_str_callback	videoDecSetStream hands it the stream type, id, callback and data	
+func_0012B918	sce_mpeg_create	videoDecCreate: clears and builds the decoder in the given work area	
+func_0012BB20	sce_mpeg_delete	videoDecDelete calls it after freeing the buffer; returns 1	
+func_0012BB30	sce_mpeg_get_picture	decodes a picture into the frame buffer (size 0x340), <0 on error	
+func_0012BB88	sce_mpeg_is_end	returns the decoder's end flag; decode loop runs while it is 0	
+func_0012BB98	sce_mpeg_is_ref_buff_empty	returns decoder field +4 == 0; videoDecIsFlushed tests it	
+func_0012BBA8	sce_mpeg_reset	clears the decoder state (_clearEach)	
+func_0012BC50	sce_mpeg_add_callback	stores callback func/data in slot n; videoDecCreate sets error/nodata/dma callbacks	
+func_0012E4A8	snd_stop_sound	sends sound IOP command 0x15 with the handle; music.c stops a stream voice	
+func_0012E600	snd_set_sound_params_cb	sends sound IOP command 0x21 with params and a callback	
+func_00124DF0	sce_pad2_get_button_profile	pad.c reads the button profile block into +0x180	
+func_00124EE0	sce_pad2_get_state	pad.c reads the port's device state	
+func_00125218	sce_vib_get_profile	pad.c reads the vibration profile into +0x184	
+D_001384A0	map_screen_disc_entries	DrawMapScreen: (lsn, sectors) pair streamed for a map id without 0x100	
+D_00138538	map_screen_disc_entries_alt	DrawMapScreen: (lsn, sectors) pair for map ids with the 0x100 bit	
+D_001602C0	menu_light_direction_init	unit vector scaled into menu_light_direction when the pause menu opens	
+D_001602D0	menu_light_color_init	(0.9, 0.9, 0.6) qword copied 0x10 before menu_light_direction at menu open	
+D_001603A4	gold_bolt_marker_y_offset	1.3f added to the camera y to place the gold bolt menu marker	
+D_00160400	fmt_save_play_time	format "%02d:%02d" for a save slot's hours and minutes	
+D_00160410	fmt_save_bolt_count	format "%d,%03d,%03d" for a save slot's bolts	
+D_00160420	fmt_save_date	format "%02x/%02x/%02x" for a save slot's BCD date	
+D_0019C250	menu_light_direction	pause menu open copies menu_light_direction_init here (colour at -0x10)	
+D_001CF798	map_menu_page	menu page whose screens draw the map; back page of mission_menu_page	
+D_001CF9F8	mission_menu_page	page opened from the map screen; holds the selected mission screens	
+D_001D4948	pause_menu_start_page	initialize_menu_preview_scene makes it the current and next page	
+D_001D5F20	preserved_item_available_indices	-1-terminated byte indices of item_available kept across the progress reset	
+D_001D6410	current_preview_animation_request	copied from the head of preview_animation_requests, then played	
+D_001E8B00	language_resource_offsets	6 per-language offsets added to a stream's resource index by g_game_language	
+func_001153FC	libc_memset	newlib memset.o, last member after memmove	
+func_00116428	libc_strchr	newlib strchr.o, first str member after __sclose	
+func_00121A80	sce_cd_read_clock	cdvd RPC filling save_clock_time before a save	
+func_0012D818	sce_scf_get_local_time_from_rtc	converts save_clock_time with the time zone and summer-time settings	
+D_00160560	sky_shell_translation	sky shell draw copies it into the shell transform's translation row; update_level_gameplay_frame scales a vector into it	
+func_0012E3C0	snd_set_mixer_mode	989snd command 0xD with two ints, called (0,1) in sound init	
+func_0012E448	snd_play_sound_vol_pan_pmpb	989snd command 0x11; sound.c passes bank, sound index, volume, pan, pitch mod, bend, callback	
+D_0015EF4A	level_archive_load_busy	busy s16 of the level archive load state (after stage D_0015EF48)	
+D_001605C0	resident_effect_quad_counts	int per content_variant: number of quad rows DrawResidentEffectQuads draws	
+D_001CC730	space_flight_paths	table of scripted path pointers indexed by the space flight path index	
+D_001D9C20	resident_effect_quad_uvs	4 uv pairs copied into the effect quad	
+D_001D9C40	resident_effect_quad_offsets	default per-row offset/size table of the effect quads	
+D_001D9CC0	resident_effect_quad_offsets_variant1	row table used when content_variant == 1	
+D_001D9CE0	resident_effect_quad_offsets_variant2	row table used when content_variant == 2	
+D_001D9D00	resident_effect_quad_corners	4 corner vectors scaled per row in DrawResidentEffectQuads	
+D_001D9D40	space_ship_trail_emitter_offsets	per-variant pair of local points transformed into trailA/trailB	
+D_001DA010	space_ship_companion_a_offset	per-variant local offset placing companion_a on the ship	
+D_001DA040	space_ship_companion_b_offset	per-variant local offset placing companion_b on the ship	
+func_00120F30	sce_cd_sync_s	marked sceCdSyncS: waits or polls the CD rpc busy state	
+func_00122598	sce_gs_sync_v	waits for vsync (v_sync) then returns the interlace field	
+func_0012F0A8	snd_set_reverb_ex	989snd command 0x50 with five ints	
+func_0011B4C8	sif_call_rpc	9 args: client, fno, mode, send, ssize, recv, rsize, end func, end data	
+func_0011B6B8	sce_sif_check_stat_rpc	returns 1 while the rpc client's packet is still busy	
+func_00116CC0	find_substring	newlib strstr (strstr itself appears in src comments)	
+func_00124650	sce_dbc_init	binds IOP servers 0x80000900/0x8000091B and checks server version	
+func_00124B88	sce_pad2_init	pad2 library init next to scePad2CreateSocket	
+func_00124BC8	sce_pad2_create_socket	marked scePad2CreateSocket(param, buf)	
+func_0012EC30	snd_reenable_command_flush	sets the 989snd flush flag (GP -0x7F3C) back to 1 after a manual flush	
+func_0012EC40	snd_reset_state_and_flush_commands	clears the flush flag and calls snd_FlushSoundCommands	
+func_00118AB0	add_dmac_handler	EE syscall 0x12; vuchain installs VIF1 DMA handler	
+func_00118AD0	remove_dmac_handler	EE syscall 0x13; removes the VIF1 DMA handler by id	
+func_001232E0	sce_dma_get_chan	returns DMA channel register block for id < 10	
+func_001235C8	sce_dma_send	sets TADR, clears QWC, starts chain CHCR 0x105 on the channel	
+D_0015F058	intro_overlay_timer	frame counter that drives intro_overlay_alpha fade and the language overlay pulse	
+D_001863B0	transition_sound_cues	start/end/sound/voice cue list played against the transfer time in transition_do_transition	
+D_001D8840	shrub_render_texture_addrs	filled from the wad's third texture table, shrub_render_texture_definition_count entries	
+D_001E2900	object_render_texture_addrs	filled from the wad's second texture table, object_render_texture_definition_count entries	
+D_L01_00161C80	water_lily_spring_velocity_adjustment_scale	spring_axis_to_r stiffness, times frame time, toward the home point	
+D_L01_00161C84	water_lily_spring_damping	damping argument of spring_axis_to_r in water_lily_update	
+D_L01_00161C88	water_lily_hero_separation_radius	lily is pushed out to this distance from the hero	
+D_L01_00161C8C	water_lily_max_horizontal_speed	caps the per-frame move (times frame time)	
+D_L01_00161C90	water_lily_collision_radius	radius argument of MoveKeepingOverGround	
+D_L01_0015FD08	novalis_mission_group_state	per-mission byte tested != 0xFF before saving a pickup; same slot as kerwan_mission_group_state	
+D_L01_00161D00	cave_wall_debris_colors	three colour words, one picked at random per debris particle in destroyable_cave_wall_update	
+D_L01_00161F20	beehive_max_spawns	beehive_update stops spawning once count reaches it	
+D_L01_001E3720	novalis_explosion_light	r/g/b light block set from the light argument and passed to mine_camera_blast	
+D_L01_0020B7E0	novalis_explosion_inner_colors	6-colour palette for the inner burst particles of spawn_explosion_effects	
+D_L01_0020B7F8	novalis_explosion_outer_colors	6-colour palette for the outer burst particles of spawn_explosion_effects	
+D_L02_00161FF0	shard_debris_head_color	alpha byte (>>24) of the puff spawned at the shard's position, next to shard_debris_trail_color	
+D_L02_00161D60	aridia_rocks_debris_colors	three colour words, one picked at random per debris particle in rocks_update	
+D_L03_00161B70	taxi_bobbing_amplitude	amplitude of update_moby_vertical_oscillation in update_taxi_bobbing_and_rocking	
+D_L03_00161B74	taxi_bobbing_phase_rate_degrees	degrees per frame, converted to radians, for the vertical bob	
+D_L03_00161B78	taxi_rocking_amplitude	amplitude of update_moby_rotation_oscillation	
+D_L03_00161B7C	taxi_rocking_first_phase_rate_degrees	first rocking phase rate in degrees per frame	
+D_L03_00161B80	taxi_rocking_second_phase_rate_degrees	second rocking phase rate in degrees per frame	
+D_L07_001670D0	beam_cross_axis	vector crossed (FastVecCross) with the beam direction to get the side jitter in draw_collision_clipped_moby_beam	
+D_L04_00198040	eudora_class_slot_by_id	byte table indexed by moby class id giving class_slot, like g_class_slot	
+D_L04_001DCA60	suck_cannon_no_exit_fmt	printf format printed with save_id when the suck cannon has no exit moby	
+D_L05_001613A0	hero_clip_volume_bounds	vec4 copied from the found target, w=48, z bobbed; read with hero_inside_clip_volume	
+D_L06_0017A110	blarg_idle_fidgets	0x70-byte fidget records indexed by pick_idle_fidget, like the other *_idle_fidgets	
+D_L07_001C43B0	umbris_item_price_table	24-byte item records (like item_price_table); max ammo read per item in update_equalizer_ammo_spawner	
+D_L07_00211DE0	ammo_spawner_missing_link_fmt	printed when the spawner's volume or path index is -1	
+D_L07_00211E20	ammo_spawner_deleted_fmt	printed with the moby class before the bad spawner is deleted	
+D_L07_00211E40	ammo_spawner_count_fmt	printed with the ammo count and the per-batch count	
+D_L07_00211E68	ammo_spawner_place_fmt	printed with item, batch count, spawn xyz and path offset per placed batch	
+D_L07_00211E98	ammo_spawner_remainder_fmt	printed with the remaining count when the last batch is smaller	
+D_L07_00161C20	snagglebeast_rope_sway_from	start offset of the rope sway lerp; takes the target value every 60 ticks	
+D_L07_00161C30	snagglebeast_rope_sway_to	target offset of the rope sway lerp, re-picked at a random angle	
+D_L08_0015F694	bomber_tank_part1_destroyed	set when part 1 is killed by class 0x661; with part 2 it fires the voice line	
+D_L08_0015F698	bomber_tank_part2_destroyed	set when part 2 is killed by class 0x661	
+D_L08_0015F69C	bomber_tank_part3_destroyed	set when part 3 is killed by class 0x661	
+D_L08_0015F6A0	bomber_tank_part4_destroyed	set when part 4 is killed by class 0x661	
+D_L08_00174700	batalia_coll_hit_normal	batalia_coll_hit + 0x40, passed to vec_reflect as the bounce normal (same layout as other *_coll_hit_normal)	
+D_L08_001D7320	batalia_water_plane	vec4 whose z is the water height the hero crosses in update_hero_water_entry_effects	
+D_L08_0016D110	batalia_cinematic_step	batalia_cutscene_state + 0x30 (as veldin2_cinematic_step), tested with gGameMode == 2 to skip the gunship path	
+D_L08_00161EB8	layered_mesh_sine_phase	int pair cleared in state 0 and advanced by advance_wrapped_sine_pair in update_layered_mesh_effect	
+D_L08_00180B40	batalia_lights	point light slots indexed by d->light; colour set per frame (like quartu_lights)	
+D_L08_001FC510	flicker_light_period_a_zero_fmt	printed when period_a is 0, before it is forced to 1	
+D_L08_001FC540	flicker_light_period_b_high_fmt	printed with period_b when it exceeds 8	
+D_L08_001FC590	flicker_light_period_b_zero_fmt	printed when period_b is 0, before it is forced to 1	
+D_L08_001FC5C0	flicker_light_period_a_high_fmt	printed with period_a when it exceeds 8	
+D_L09_00209280	refueling_station_hit_fmt	printed with class and damage when handle_refueling_station_damage gets a hit	
+D_L09_002092E0	linked_moby_hit_fmt	printed with class and damage when handle_linked_moby_damage gets a hit	
+D_L09_00209518	floating_ship_piece_no_link_fmt	printed with save_id and class when the piece has no link (-1)	
+D_L09_00162040	gaspar_strip_texture_buffer	blended texture data built from two table entries, sent by a DMA ref tag in queue_level09_strip_texture_packets	
+D_L09_0016D380	gaspar_texture_table	16-byte texture records whose +8/+0xA indices select texture_vertices rows (like gemlik_texture_table)	
+D_L10_00174360	orxon_coll_hit_point	coll hit base D_L10_00174340 + 0x20 (moby at +0x18, normal at +0x40), copied after ProbeGroundHeight	
+D_L10_00160064	orxon_moby_list	head of the moby list walked by ->next (same slot as other *_moby_list)	
+D_L11_001626A0	distance_faded_effect_fade_alpha	0-255 alpha from hero distance (80 to 100), scales the fixed alpha of the effect batches	
+D_L11_001626C0	distance_faded_effect_sine_phase	int pair cleared in state 0 and advanced by advance_wrapped_sine_pair	
+D_L11_0021B820	owner_linked_moby_hit_fmt	printed with class and damage when handle_owner_linked_moby_hits gets a hit	
+D_L11_001620EC	ship_reticle_distance	times ship_speed_scale, radius of build_spherical_offset for the aim point	
+D_L11_001620F0	ship_shot_cooldown_ticks	reloaded into the fire timer after each ship shot	
+D_L11_0016D570	pokitaru_view_cot_half_fov	set to cos/sin of half the ship fov; read back with fast_atan2(1, x)	
+D_L11_001748C0	pokitaru_coll_hit	collision result base (moby +0x18 = pokitaru_coll_hit_moby, normal +0x40)	
+D_L12_0015F4FC	hoven_fade_level	screen fade float at the shared slot (gFadeLvl, pokitaru_fade_level...); reservoir effects run only when 0	
+D_L12_001FB7D0	target_link_strip_uvs	4 uv pairs of the strip quad; u scrolls by count in draw_oscillating_target_link_strips	
+D_L12_001FB7F0	target_link_strip_corners	4 corner offsets added to the ring points to build each strip quad	
+D_L12_001FB870	target_link_strip_rotations	2 euler rotations turned into the two strip matrices	
+D_L13_0015F504	gemlik_scripted_camera_active	cleared when the scene controller hands the camera back; same slot as hoven_cutscene_active	
+D_L13_0015FD08	gemlik_mission_group_state	per-mission byte tested != 0xFF; same slot as kerwan_mission_group_state	
+D_L13_001D3748	gemlik_stage_part_slot	per-command (stage) part index or -1, passed to the part-detach helper	
+D_L13_001D37D8	gemlik_joint_effect_part_slot	6 part indices checked against the on[] flags before a joint effect	
+D_L13_001D37F0	gemlik_joint_effect_bone	6 joint indices passed to the joint position getter for effects	
+D_L14_00174668	oltanis_coll_hit_point_z	z of oltanis_collision_hit_point (+8); pickup pos.z = it + ground offset	
+D_L14_001FD488	flying_car_no_path_msg	printf string in update_flying_car when d->path == -1, then DeleteMoby	
+D_L14_001FD4C0	flying_car_path_unset_msg	printf string in update_flying_car when the path table entry is 0, then DeleteMoby	
+D_L14_001DE840	racer_glow_quad_corners	4 corner vectors scaled into the glow quad in draw_racer_glow_quads	
+D_L14_001FC0C0	machinegun_turret_unset_link_msg	printf string in machinegun_turret_update when pvars+0x80 is -1, then DeleteMoby	
+D_L14_001FC0E8	machinegun_turret_unset_link2_msg	printf string in machinegun_turret_update when the second pvar link is -1, then DeleteMoby	
+D_0015EF08	fighter_skill_hit_count	incremented when an enemy fighter is hit on planet 14; >=3 sets a gSkillPoints flag	
+D_L14_00162300	wind_push_vector	update_wind_control sets x/y from rot.z * wind_drift_speed * g_frame_time, z=0, f10=1	
+D_L14_001FCCF0	wind_control_no_vol0_msg	printf string in update_wind_control when d->vol0 < 0, then DeleteMoby	
+D_L14_001FCD50	wind_control_no_node_msg	printf string in update_wind_control when d->node < 0, then DeleteMoby	
+D_L14_001FCDA8	wind_control_no_vol500_msg	printf string in update_wind_control when d->vol500 < 0, then DeleteMoby	
+D_L14_001FD180	enemy_fighter_no_path_msg	printf string in update_enemy_fighter when path == -1, then DeleteMoby	
+D_L14_001FD1B8	enemy_fighter_path_unset_msg	printf string in update_enemy_fighter when the oltanis_paths entry is 0	
+D_L14_001FD208	enemy_fighter_921_no_path_msg	printf string in update_enemy_fighter_921 when d->f68 == -1, then DeleteMoby	
+D_L14_001FD240	enemy_fighter_921_path_unset_msg	printf string in update_enemy_fighter_921 when the oltanis_paths entry is 0	
+D_L15_00184B28	quartu_keyed_gate_open	update_vertical_gate sets 1 while a keyed gate is open (states 3/5), 0 when it closes	
+D_L15_0015F684	quartu_pending_help_flag	update_quartu_hint_triggers: when set and the help popup is idle, requests help 0x3A9F and clears it	
+D_L15_00179A90	quartu_help_popup_state	busy == 0 and +0x24 == -1 idle test, the L00 help_popup_state layout	
+D_L16_00162040	envmap_b_bound_spheres	per-mesh bounding sphere (center from vertex min/max, radius from max distance) next to envmap_b_vertex_bufs	
+D_L18_001626BC	gadgebot_launch_glow_blend_minuend_selector	GS ALPHA field A (bits 0-1) in draw_gadgebot_launch_glow_quad	
+D_L18_001626C0	gadgebot_launch_glow_blend_subtrahend_selector	GS ALPHA field B (bits 2-3) in draw_gadgebot_launch_glow_quad	
+D_L18_001626C4	gadgebot_launch_glow_blend_alpha_factor_selector	GS ALPHA field C (bits 4-5) in draw_gadgebot_launch_glow_quad	
+D_L18_001626C8	gadgebot_launch_glow_blend_addend_selector	GS ALPHA field D (bits 6-7) in draw_gadgebot_launch_glow_quad	
+D_L18_001626CC	gadgebot_launch_glow_tint_start	FastTweenColor start color, tweened by pvars+0x1F4	
+D_L18_001626D0	gadgebot_launch_glow_tint_end	FastTweenColor end color, tweened by pvars+0x1F4	
+D_L18_001626D4	gadgebot_launch_glow_texture_index	passed to GetEffectTex for the glow quad texture	
+D_L18_001626D8	gadgebot_launch_glow_z_offset	subtracted from the quad origin z	
+D_L18_001626DC	gadgebot_launch_glow_vertical_scale_adjustment	added to 1 + pvars+0x1F4 for the quad height	
+D_L18_001626E0	gadgebot_launch_glow_horizontal_scale_adjustment	added to 1 - pvars+0x1F4 for the quad width	
+D_L18_001EFF90	gadgebot_launch_glow_uvs	4 uv pairs copied into the glow quad packet	
+D_L18_0016207C	electric_bolt_initialization_requested	initialize_electric_bolt_effect_if_requested runs the reset only when set, then clears it	
+D_L18_00162080	electric_bolt_init_span_scale	initial bolt step = (target - pos) * it / 20 over the 20 bolt points	
+D_L18_001D45E0	projectile_ring_quad_uvs	uv pairs copied into each quad in draw_expanding_projectile_ring	
+D_L18_001D4600	class_274_ring_quad_uvs	uv pairs copied into each quad in draw_class_274_ring_effect	
+D_L00_001D76D0	bolt_glint_offsets	per-oclass local offset rotated by the bolt matrix to place its glint (allocate_glint_slot) in bolt_update	
+D_L00_001D63A0	smoke_particle_life_timer	per-particle short timer in draw_smoke_fire_spawner; at zero the particle is reset, cleared by the reset	
+D_L00_001D6D00	smoke_particle_start_delay	per-particle stagger delay (slot+1)*smoke_particle_stagger_ticks; at zero the life timer is started	
+D_L00_001E14B0	metal_detector_manipulator	zeroed and passed to AttachManipulator for joint 3 in metal_detector_update	
+D_L00_001E14C0	metal_detector_manipulator_rot	metal_detector_manipulator + 0x10; quat_nlerp toward the aim rotation by 0.1 each frame	
+func_00120858	wait_for_graphics_pipeline_idle	spins until VIF1/GIF CHCR and STAT busy bits and VU1 (vi29) are clear	
+func_00122818	sceGsSetDefStoreImage	libgraph graph016.o per src/core/00122818.c; fills an SdStoreImage (BITBLTBUF/TRXPOS/TRXREG/TRXDIR)	
+func_00122AD8	sceGsExecStoreImage	libgraph graph018.o per src/core/00122AD8.c; runs a stored image readback into dstaddr	
+func_00123168	sceGsSyncVCallback	libgraph per src/core/00123168.c; swaps the INTC 2 (vblank) handler via disable/remove/add/enable_intc, returns the old one	
+D_L00_00166ED0	camera_rotation	euler vector fed to euler_to_matrix for the camera; its z is camera_yaw (+8); aim code copies it	
+D_L15_00161D2C	electric_water_glow_core_color	draw_electric_water_bolt_start_quads: color of the first (inner) glow quad	
+D_L15_00161D34	electric_water_glow_core_size	draw_electric_water_bolt_start_quads: base size (+rand 0..0.025) of the first glow quad	
+D_L15_00161D38	electric_water_glow_halo_size	draw_electric_water_bolt_start_quads: base size (+rand 0..0.05) of the second glow quad	
+D_L06_001DB1B0	blarg_gadgebot_target_cache	moby pointers of class 0x359 cached per frame; count in blarg_gadgebot_target_cache_count	
+D_L01_0015F720	novalis_banner_display_ticks	gold_bolt_update sets it to ticks(180) with the banner, the L00 banner_display_ticks slot	
+D_L01_001AC180	novalis_moby_ptr_list	null-ended moby pointer list scanned for the best candidate, like blarg_moby_list	
+D_L01_001BAD60	novalis_current_level_state	live level block (.collected[save_id]) 0xC60 below the checkpoint copy, cleared with it on gold bolt respawn; like L00 current_level_state	
+D_L03_00160064	kerwan_moby_list	head of the moby list walked via ->next (+0x28) by the gunship and spawners; like novalis_moby_list	
+D_0013D5E5	gHaveGrindboots	find_grind_rail returns at once when it is 0; item byte between gHaveMagneboots and gHaveHologuise	
+D_0013D5EA	gHaveBoltGrabber	when set the hero reach_distance/height (bolt pickup range) grow from 3/1.75 to 12/4.5	
+D_L05_0017AC20	rilgar_hero_bob_attach_euler	euler angles rotating the hoverboard attach offset; L00 hero_bob_attach_euler slot (+0x40 of the lean block)	
+func_001252C0	sceVu0Normalize	VU0 macro: xyz scaled by 1/sqrt(dot), w cleared (vsub vf0,vf0), libvu0 sequence	
+D_L11_0015FD08	pokitaru_mission_group_state	u8 per mission group, 0xFF means none; like kerwan_mission_group_state	
+D_L11_00161368	pokitaru_ocean_tide_z	written each frame with the tide height, same value as pokitaru_ocean_height	
+D_L11_00161EAC	pokitaru_ocean_base_height	set from the water moby level at init; tide = it + 0.25 * sin(frame)	
+D_L11_001BB2E0	pokitaru_current_level_state	live level block, .collected[uid] set on reward; like L00 current_level_state	
+D_L11_001BBF40	pokitaru_checkpoint_level_state	0xC60 above the live block, .collected checked at spawn; like kerwan_checkpoint_level_state	
+D_L11_001D9DC0	pokitaru_wave_scroll_speed	per-layer u/v rate times frame time added to wave_offset, wrapped to [-1,1]	
+D_L00_0015FD70	level_bss_unaligned_msg	printf string in run_level_main_loop when the level bss range is not 16-byte aligned (falls back to a byte loop)	
+D_L00_0015FD78	level_main_loop_profile_label	label passed with id 0x10 to the Profile_Mark copies in run_level_main_loop	
+D_L00_00161F00	level_bss_start	start of the range cleared by FastMemZero16 at the top of run_level_main_loop	
+D_L00_001660B0	level_bss_end	end of the range cleared by FastMemZero16 at the top of run_level_main_loop	
+func_L00_001F7110	Profile_MarkL00_a	L00 copy of the empty Profile_Mark (functions.tsv), called with no args in run_level_main_loop	
+func_L00_001F7118	Profile_MarkL00_b	L00 copy of the empty Profile_Mark (functions.tsv), called (label, 0x10) in run_level_main_loop	
+func_L00_001F7120	Profile_MarkL00_c	L00 copy of the empty Profile_Mark (functions.tsv), called (label, 0x10) right after Profile_MarkL00_b	
+func_L00_00268738	UpdatePadL00	L00 copy of UpdatePad (functions.tsv): calls func_00217F68 on g_controller_state	
+D_0013F550	hero_displacement	g_hero+0x100 = HeroMotion.displacement; debris smoke reads it and +0x40 (platform_carry)	
+D_L00_001601CC	moby_group_iter_entry	get_first/next_moby_in_group: pointer to current entry of the group list	
+D_L00_001601D0	moby_group_iter_index	group walk: moby index (entry & 0x7FFF) of moby_group_iter_moby	
+D_L00_001B05D0	beam_explosion_blast_params	beam explosion: block passed to mine_camera_blast, floats 8..10 set to blast size	
+D_L00_001B0620	beam_explosion_alt_color_blast_params	beam explosion: blast block used instead when the colour-swap flag is set	
+func_00125328	sceVu0ScaleVector	libvu0 object: dst.xyzw = src * s (vmulx.xyzw)	
+func_001166FC	libc_strcpy	handwritten libc: 16-byte-aligned copy until the zero byte	
+func_00116810	libc_strlen	handwritten libc: one string arg, zero-byte scan, returns length	
+func_00125358	sceVu0UnitMatrix	libvu0 object: writes identity rows via vmr32 of (0,0,0,1)	
+func_001253F8	sceVu0RotMatrixZ	libvu0: calls ecossin, mixes x/y rows; vendor_menu rotation call	
+func_001254A0	sceVu0RotMatrixX	libvu0: calls ecossin, mixes y/z rows	
+func_00125548	sceVu0RotMatrixY	libvu0: calls ecossin, mixes x/z rows	
+D_L01_0015F6D4	novalis_level_sound_slots	L01 copy of level_sound_slots: 32-byte rows by sound class, fC volume, f18 flag; read by the box voice	
+D_0013FA90	hero_basis	g_hero+0x640 = Hero.basis rows; suck cannon builds a matrix from it to steer the sucked moby	
+D_001404FC	hero_gadget_switch_lock	g_hero+0x10AC = items[0].switch_lock; set to 2 when the sucked moby is within 3 units	
+D_L00_00161BC0	nanotech_ball_center_offset	draw_nanotech_ball: vector added to the bobbing centre	
+D_L00_00161BE0	nanotech_ball_glow_alpha_bias	draw_nanotech_ball: added to the pulse value before it becomes the glow quad alpha byte	
+D_L00_00161C84	hydrodisplacer_pad_wait_time	hydrodisplacer_update: scaled into the state-5 timer that waits while the hero stands on the pad	
+D_L00_001E17F0	nanotech_slot_pulse_phase_steps	nanotech_ball_update: per-slot (8) angle step for the sin pulse of the slot scale	
+D_L00_001E1810	nanotech_ball_sphere_model_verts	draw_nanotech_ball: 0x122 16-byte vertices transformed by the camera-facing basis	
+D_L00_001E2A30	nanotech_ball_sphere_uvs	draw_nanotech_ball: uv arg (8 bytes/vertex) of draw_env_overlay_mesh	
+D_L00_001E3340	nanotech_ball_sphere_colors	draw_nanotech_ball: colour arg (4 bytes/vertex) of draw_env_overlay_mesh	
+D_L00_001E37D0	nanotech_ball_glow_ring_points	draw_nanotech_ball: vec4 points scaled into the 32 glow quads	
+D_L00_001E3DD0	nanotech_ball_glow_quad_indices	draw_nanotech_ball: 32 rows of 4 shorts indexing the glow ring points	
+D_L00_001E3ED0	nanotech_ball_env_quad_corners	draw_nanotech_ball: corners transformed by the owner basis for the view-mapped quads (state one)	
+D_L00_001E3FD0	nanotech_ball_env_quad_indices	draw_nanotech_ball: 4 rows of 4 shorts indexing the env quad corners	
+D_L00_001E40F0	nanotech_ball_sphere_world_verts	draw_nanotech_ball: Vec3f output of the transformed sphere vertices, vertex arg of draw_env_overlay_mesh	
+D_L00_001EA368	suck_cannon_cleaned_up_moby_fmt	refresh_suck_cannon_slots: printf format for a dropped slot (moby id, oclass)	
+D_L00_001EA4B0	suckstate_death_obsolete_msg	CarriedMobyUpdate case 7: printf message that the death state is no longer used	
+func_L00_00238128	initialize_suck_cannon_hud_counter	init callback of suckcannon_update queue_animation_update; body only calls reset_numeric_hud_element	
+D_L05_0015F868	rilgar_fmt_race_score_width	draw_hud_timer: label+score format printed only to measure the score line width	
+D_L05_0015FB08	rilgar_fmt_race_score_value	draw_hud_timer: score value format after the label	
+D_L05_0015FB10	rilgar_fmt_race_time_width	draw_hud_timer: label plus zero time, printed only to measure the time line width	
+D_L05_0015FB20	rilgar_fmt_race_time_label	draw_hud_timer: label format of the time line	
+D_L05_0015FB28	rilgar_fmt_race_time_value	draw_hud_timer: min:sec:hundredths of race_time_frames	
+D_L01_001B2928	novalis_part_type74_textures	novalis_part_type_textures + 74*4; spawn_type_74_particle reads its texture byte	
+func_L00_0026B2B8	update_growing_fade_out_particle_type7	part handler slot 7: kills at timer end, size += rate, alpha fades in last 6 ticks (same body as type 5)	
+func_L00_0026D268	update_noop_particle_type17	part handler slot 17: body is only jr ra	
+func_L00_00274750	update_expire_only_particle_type63	part handler slot 63: counts down the short at +0xA and calls KillPart at zero	
+D_L14_00162188	vendor_beam_pulse_budget	update_vendor_beam state 1: while non-zero, a beam with no count decrements it and starts a pulse	
+D_L14_0016219C	vendor_beam_update_disabled	update_vendor_beam returns early while it is set	
+D_L14_001621A0	vendor_beam_anim_disabled	update_vendor_beam: update_vendor_beam_animation runs only while it is zero	
+D_L14_001621A4	vendor_beam_draw_disabled	update_vendor_beam: AddDrawCallback(draw_vendor_beam) skipped while set	
+D_L14_001621A8	vendor_beam_damage_disabled	update_vendor_beam: apply_vendor_beam_damage only when zero (hint confirmed)	
+D_L08_001602D0	batalia_ground_scatter_hero_offset	scatter_ground_particles state 2: stores batalia_hero_pos - obj->v30	
+D_L15_001CE390	quartu_group_effect_quad_verts	draw_group_moby_effect_quads: 4 quads x 4 vec4 corners sent to draw_world_quad	
+D_L15_001CE490	quartu_group_effect_quad_uvs	draw_group_moby_effect_quads: 4 uv pairs copied into the quad	
+D_L13_001741E0	gemlik_coll_hit_point	gemlik_coll_hit_result+0x20; update_ship_rocket explodes there after a collision hit	
+D_L00_00160580	sky_shell_rotation_phase_step	SkyShellsEntryUpdate: scaled per shell and added to its rotation phase (hint confirmed)	
+D_L00_001605E0	sky_shell_origin	SkyShellsEntryUpdate: copied into row 3 (position) of every shell matrix	
+D_L09_0015F660	gaspar_zero_vec	passed for the three vector args of SpawnBreakFragment, like the other levels' zero_vec	
+D_L09_00174060	gaspar_coll_hit_point	gaspar_coll_hit+0x20; class 4ea projectile moves to it after a collision_line hit	
+D_L09_00208610	gaspar_kamikaze_invalid_path_msg	seeker_update: printf of a bad bound path with the moby save_id, then deletes it	
+D_L09_00209570	gaspar_spawner_no_respawn_moby_fmt	spawner: printf when no moby is found to respawn (save_id, time)	
+D_L02_0015F520	aridia_interp_vertex_tables	build_interpolated_dma_packet: base of 16-byte vertex table records picked by the frame indices	
+D_L02_0016D800	aridia_interp_anim_frames	build_interpolated_dma_packet: 16-byte frames holding the two vertex table indices to blend	
+D_L02_0017EB88	aridia_tresspasser_pad_camera_set	tresspasser_pad_update case 2: set to 1 right after it places the camera; only writer	
+D_L02_001BADE0	aridia_moby_killed	tresspasser_pad_update: sets bit save_id in [save_id>>5], like quartu_moby_killed	
+D_L02_001BBB40	aridia_moby_collected	tresspasser_pad_update: .collected[save_id] (+0x454) non-zero sends the pad to state 4; like fleet_moby_collected	
+D_L02_001CBB70	aridia_interp_dma_ref_block	build_interpolated_dma_packet: 3-qword block sent by a DMA ref tag at the packet start	
+D_L05_0015F050	rilgar_camera_descriptors	camera rows by cam->preset with the preset pointer at +0x1C; same slot as the other levels' camera_descriptors	
+D_L05_00174378	rilgar_coll_resolved_pos_z	rilgar_coll_hit+0x38 = z of coll_resolved_pos; camera height springs to it after the probe hits	
+D_L05_001D6B00	rilgar_wobble_quad_uvs	draw_moby_wobble_quads: 4 uv pairs copied into both quads	
+D_L05_001D6B20	rilgar_wobble_quad_a_verts	draw_moby_wobble_quads: 4 base corners of the first quad, offset each pass	
+D_L05_001D6B60	rilgar_wobble_quad_b_verts	draw_moby_wobble_quads: 4 base corners of the second quad, offset each pass	
+D_00141A18	usage_stats_entry26_count	usage_stats+0xD0 (8-byte records): count of entry 26; zero (with the help unseen) lets tesla_claw_update raise help 0x81	
+D_00141E70	tesla_claw_help_shown_count	help_records[0x81].count; tesla_claw_update calls Help_Request(0x4E30, 0x81) only while it is zero	
+D_L00_00161558	joint_beam_alt_joint_ids	draw_joint_aligned_beam_effect: joint id pair read from the child when data->f4 is set	
+D_L00_00161560	joint_beam_joint_ids	draw_joint_aligned_beam_effect: default joint id pair read from the child	
+D_L00_00161580	taunter_effect_spawn_interval_frames	update_taunter_effect_slots: scale_ticks of it reloads the spawn timer (hint confirmed)	
+D_L00_00161584	taunter_effect_travel_distance	update_taunter_effect_slots: divided by speed*frame_time to get the slot lifetime (hint confirmed)	
+D_L00_00161588	taunter_effect_travel_speed	update_taunter_effect_slots: added per frame (x frame_time) to each live slot's distance (hint confirmed)	
+D_L00_0017ADF4	weapon_aim_mode1_launch_pitch	devastator_update/blaster_update: launch pitch used while hero.unk22C8 == 1	
+D_L00_0017E608	visibomb_view_active_flag	set to 1 by spawn_visibomb_missile and each frame of the missile's camera view; no reader in the repo	
+D_L00_001D9770	joint_beam_ribbon_model_points	draw_joint_aligned_beam_effect: 0xC4 vec4 points scaled and transformed into the ribbon	
+D_L00_001DA3B0	joint_beam_ribbon_uvs	draw_joint_aligned_beam_effect: uv per ribbon vertex, v scrolls -0.025 and wraps at -7; uv arg of draw_env_overlay_mesh	
+D_L00_001DA9D0	joint_beam_ribbon_colors	draw_joint_aligned_beam_effect: colour arg of draw_env_overlay_mesh	
+D_L00_001DACE0	joint_beam_quad_a_corners	draw_joint_aligned_beam_effect: 4 corners of the first quad (also the glow quad), scaled by f2C	
+D_L00_001DAD20	joint_beam_quad_b_corners	draw_joint_aligned_beam_effect: 4 corners of the second quad, scaled by f2C	
+D_L00_001DAD60	joint_beam_quad_uvs	draw_joint_aligned_beam_effect: 4 uv pairs of the quads	
+D_L00_001DAD80	joint_beam_ribbon_world_verts	draw_joint_aligned_beam_effect: transformed xyz output, vertex arg of draw_env_overlay_mesh	
+D_L00_0015F8C0	quick_select_label_msg_ids	draw_hud_radial_selector_panel: msg_string id per slot for the selected slot's label	
+D_L00_0017E610	texture_group1_upload_size	decompress_and_relocate_selected_groups: /16 qword count to stash_receive_data for group 1	
+D_L00_0017E618	texture_group3_upload_size	decompress_and_relocate_selected_groups: /16 qword count to stash_receive_data for group 3	
+D_L00_0017E61C	texture_group4_upload_size	decompress_and_relocate_selected_groups: /16 qword count to stash_receive_data for group 4	
+D_L00_0017E620	texture_group5_upload_size	decompress_and_relocate_selected_groups: /16 qword count to stash_receive_data for group 5	
+D_L00_00161890	morphoray_light_slot	MorphorayUpdate: point light slot from allocate_packed_color_point_light_slot, -1 none; freed when the fade ends	
+D_L00_00161894	morphoray_light_fade_timer	MorphorayUpdate: reloaded to 20 while firing, counts down and scales the light colour after	
+D_L00_00161898	morphoray_beam_voice	MorphorayUpdate: voice handle of the beam sound, restarted when not playing, stopped on release	
+D_L00_001618A8	tesla_pulse_timer	update_beam_ring_rail_and_pulse_effects: per-pulse (3) life countdown from tesla_pulse_life_ticks	
+D_L00_001618C8	tesla_pulse_travel	update_beam_ring_rail_and_pulse_effects: per-pulse distance along the chain, += tesla_pulse_speed each frame	
+D_L00_001E9E30	tesla_spark_colors	update_beam_ring_rail_and_pulse_effects: colour table, one picked at random (of 5) per spark burst	
