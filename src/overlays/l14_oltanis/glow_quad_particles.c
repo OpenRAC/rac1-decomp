@@ -13,7 +13,7 @@ typedef struct {
 extern int g_current_level_index MACRO_ADDR;
 extern Level14State oltanis_cutscene_state;
 extern void emit_moby_particle_pairs(void *);
-extern void GlowQuadsDraw(void *);
+extern void glow_quads_draw(void *);
 extern void AddDrawCallback(void (*)(void *), void *);
 
 /* Attach the callback during the six active phases of this level event. */
@@ -25,6 +25,6 @@ void update_level14_event_moby_effects(void) {
     moby = oltanis_cutscene_state.moby;
     if (moby != 0 && (unsigned)(oltanis_cutscene_state.phase - 0x1C) < 6) {
         emit_moby_particle_pairs(moby);
-        AddDrawCallback(GlowQuadsDraw, moby);
+        AddDrawCallback(glow_quads_draw, moby);
     }
 }

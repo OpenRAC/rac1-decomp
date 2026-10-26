@@ -731,7 +731,7 @@ extern void adjust_hero_pose_targets_from_motion(void);
 extern void update_hero_lean_and_sway_parameters(void);
 extern void hero_integrate_velocity(void);
 extern void air_accel(float);
-extern void Hero_UpdateHopVelocity(void);
+extern void hero_update_hop_velocity(void);
 
 /* Hero state machine: per-frame movement and physics for the current hero state (level 02 build). */
 void update_hero_state_motion(void) {
@@ -1819,7 +1819,7 @@ void update_hero_state_motion(void) {
         }
         update_hero_stick_target_magnitude();
         if (g_hero.move_lock_timer == 0) {
-            Hero_UpdateHopVelocity();
+            hero_update_hop_velocity();
         }
         adjust_hero_pose_targets_from_motion();
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
@@ -2016,7 +2016,7 @@ void update_hero_state_motion(void) {
                     }
                 }
             } else {
-                Hero_UpdateHopVelocity();
+                hero_update_hop_velocity();
             }
         }
         if (g_hero.ground_z.f > g_hero.smoothed_ground_z) {
@@ -2198,7 +2198,7 @@ void update_hero_state_motion(void) {
     case 0x55:
         stick_target(g_frame_time * 1.5f, 0);
         if (g_hero.move_lock_timer == 0) {
-            Hero_UpdateHopVelocity();
+            hero_update_hop_velocity();
         }
         HeroMoveDownAlongNormal(g_hero.motion.velocity.f, g_hero.motion.velocity.f, g_frame_time_sq * 21.0f);
         if (g_hero.motion.velocity.f[2] < g_frame_time * -15.0f) {

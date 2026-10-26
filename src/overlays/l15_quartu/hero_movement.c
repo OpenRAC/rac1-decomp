@@ -436,17 +436,17 @@ extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern void probe_hero_airborne_wall_contact(void);
 extern float FastVecDot(void *, void *);
 extern void launch_hero_wrench(void);
-extern void HeroSpeedFromTable(void);
+extern void hero_speed_from_table(void);
 extern void adjust_hero_pose_targets_from_motion(void);
 extern void update_hero_lean_and_sway_parameters(void);
 extern void hero_integrate_velocity(void);
 extern void air_accel(float);
-extern void Hero_UpdateHopVelocity(void);
+extern void hero_update_hop_velocity(void);
 
 extern void add_vectors(void *, void *, void *);
 extern void transform_hero_polar_offset_to_world(void *, float, float, float);
 extern int MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
-extern int SpawnHomingBolt(void *, void *, float, float, float, int, float, float);
+extern int spawn_homing_bolt(void *, void *, float, float, float, int, float, float);
 extern void set_tracked_class_5f3_moby_position(int, char *);
 
 /* Hero state machine: per-frame movement and physics for the current hero state (level 15 build). */
@@ -1719,7 +1719,7 @@ void Hero_UpdateStatePhysicsL15(void) {
                     g_hero.unk3BE = 0;
                 }
             }
-            HeroSpeedFromTable();
+            hero_speed_from_table();
             if (g_hero.unk930 > 0.0f) {
 
                 build_scaled_hero_move_impulse(0.7f, 0.0f);
@@ -1927,9 +1927,9 @@ void Hero_UpdateStatePhysicsL15(void) {
                 g_hero.state.step = 1;
             }
         }
-        HeroSpeedFromTable();
+        hero_speed_from_table();
         if (g_hero.move_lock_timer == 0) {
-            Hero_UpdateHopVelocity();
+            hero_update_hop_velocity();
         }
         adjust_hero_pose_targets_from_motion();
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
@@ -2137,7 +2137,7 @@ void Hero_UpdateStatePhysicsL15(void) {
                     }
                 }
             } else {
-                Hero_UpdateHopVelocity();
+                hero_update_hop_velocity();
                 if (g_hero.state.current == 0x12) {
                     float len;
 
@@ -2427,7 +2427,7 @@ void Hero_UpdateStatePhysicsL15(void) {
                     Moby_GetJointWorldPos(g_hero.moby, i + 3, vec[0]);
                     vec[0][0] += FastCos(g_hero.motion.rot.f[2]) * 1.4f;
                     vec[0][1] += FastSin(g_hero.motion.rot.f[2]) * 1.4f;
-                    SpawnHomingBolt(g_hero.moby, vec[0], g_hero.motion.rot.f[2], 0.0f, 0.5f, 0, g_hero.motion.rot.f[2], 0.0f);
+                    spawn_homing_bolt(g_hero.moby, vec[0], g_hero.motion.rot.f[2], 0.0f, 0.5f, 0, g_hero.motion.rot.f[2], 0.0f);
                 }
             }
             if (g_hero.air_frames.s != 0) {
@@ -2446,7 +2446,7 @@ void Hero_UpdateStatePhysicsL15(void) {
             vec[0][2] -= 1.0f;
             MobySphereHitDirectional((int)g_hero.moby, 3.5f, vec[0], 0x30000, 40.0f, 1.0f, 0, 1, 0);
             if (g_hero.move_lock_timer == 0) {
-                Hero_UpdateHopVelocity();
+                hero_update_hop_velocity();
             }
             HeroMoveDownAlongNormal(g_hero.motion.velocity.f, g_hero.motion.velocity.f, g_frame_time_sq * 12.0f);
             if (g_hero.motion.velocity.f[2] < g_frame_time * -10.0f) {
@@ -2550,7 +2550,7 @@ void Hero_UpdateStatePhysicsL15(void) {
     case 0x55:
         stick_target(g_frame_time * 1.5f, 0);
         if (g_hero.move_lock_timer == 0) {
-            Hero_UpdateHopVelocity();
+            hero_update_hop_velocity();
         }
         HeroMoveDownAlongNormal(g_hero.motion.velocity.f, g_hero.motion.velocity.f, g_frame_time_sq * 21.0f);
         if (g_hero.motion.velocity.f[2] < g_frame_time * -15.0f) {

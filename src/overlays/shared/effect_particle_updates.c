@@ -1265,7 +1265,7 @@ extern char *part_type22_textures;
 extern float g_frame_time_sq MACRO_ADDR;
 
 /* spawns a type 22 particle with the given position, velocity, colour and lifetime */
-void spawn_effect_particle_with_target_scalar(void *pos, void *vel, int c, int d, int e, float x) {
+void PartType22Spawn(void *pos, void *vel, int c, int d, int e, float x) {
     char *m = create_part(0x16);
     char *p;
     int r;

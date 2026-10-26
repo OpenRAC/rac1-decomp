@@ -1297,7 +1297,7 @@ int leave_menu_choice_list(void) {
 }
 
 /* Marks no entry selected (+0x44 = -1). */
-int Menu_ClearSelectedIndex(void *arg0) {
+int clear_menu_selected_index(void *arg0) {
     *(int *)((char *)arg0 + 0x44) = -1;
     return 0;
 }
@@ -3863,7 +3863,7 @@ static inline short pauseFlagState(void) {
 /* The select sits in a `static inline short` helper so that it stays a
    branch: jump.c turns an if into movz/movn only when its arm sets a
    full register, and the inline's short return value is a subreg. */
-int Menu_SetPauseFlagState(char *arg0) {
+int set_menu_pause_flag_state(char *arg0) {
     char *p = *(char **)(arg0 + 0x34);
     *(short *)(p + 2) = pauseFlagState();
     return 0;
@@ -8461,7 +8461,7 @@ extern char first_attachment_manipulator[];
 extern char second_attachment_manipulator[];
 extern char level_init_cleared_block[];
 extern void noop_callback_e(void *);
-extern void NullMobyUpdate_Gadget(void);
+extern void gadget_moby_update_noop(void);
 extern void update_menu_preview_animation_pose(void *);
 
 /* Menu setup: resets the pad bindings, marks D_001D5F70's selections
@@ -8530,7 +8530,7 @@ int initialize_menu_preview_objects(char *arg0) {
         object->pos.y = camera->pos.f[1];
         object->pos.z = camera->pos.f[2] - 0.6f;
         object->rot.z = 3.1415927f;
-        object->update = (void (*)(struct Moby *))NullMobyUpdate_Gadget;
+        object->update = (void (*)(struct Moby *))gadget_moby_update_noop;
         object_variables = (int *)object->pvars;
         object_variables[0] = (int)arg0;
         object_variables[1] = 0;
@@ -8931,7 +8931,7 @@ s32 LoadHandGadget(HandGadgetState *hand) {
 }
 
 /* Empty moby update for the gadget preview. */
-void NullMobyUpdate_Gadget(void) {
+void gadget_moby_update_noop(void) {
 }
 
 /* Empty moby update for attachments. */
@@ -9331,7 +9331,7 @@ int delete_moby(int arg0) {
 
 LINKER_REMNANT("asm/remnants/text", func_00226808);
 
-void NullMobyUpdate_Helper(void);
+void helper_moby_update_noop(void);
 
 /* Sets up the pause-menu helper moby h: spawns class 0x7A5
    (func_00226720), places it at D_00187040's +0x140 position plus
@@ -9354,7 +9354,7 @@ int HelperMobyMenu_Init(char *h) {
         ((Moby *)m)->pos.x = gCamera_r.pos.f[0] + 2.2f;
         ((Moby *)m)->pos.y = gCamera_r.pos.f[1] + 0.0f;
         ((Moby *)m)->pos.z = gCamera_r.pos.f[2] + -1.6f;
-        *(void **)(m + 0x74) = (void *)NullMobyUpdate_Helper;
+        *(void **)(m + 0x74) = (void *)helper_moby_update_noop;
         ((Moby *)m)->rot.z = 3.1415927f;
         v[0] = (int)h;
         v[1] = 0;
@@ -9607,7 +9607,7 @@ int draw_moby_entries_from_object(void *arg0) {
 }
 
 /* Empty moby update for the menu helper. */
-void NullMobyUpdate_Helper(void) {
+void helper_moby_update_noop(void) {
 }
 
 extern int menu_stream_buffers[];
@@ -10363,7 +10363,7 @@ extern int pal_mode MACRO_ADDR;
 
 /* Advances the D_0015EF24 frame counter unless D_0015F6D0 is set; with
    D_0015EE80 set it jumps 10 extra every 50th tick. */
-void SpaceTransition_Tick(void) {
+void tick_space_transition(void) {
     int t;
     if (game_clock_paused != 0) {
         return;

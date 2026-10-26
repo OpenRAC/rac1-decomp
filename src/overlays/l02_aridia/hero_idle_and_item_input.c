@@ -27,7 +27,7 @@ extern int try_start_hero_item_idle_animation(void);
 extern float gravity_length_xy(float *v);
 extern int return_hero_animation_id_unchanged(int);
 extern int allocate_hero_voice_for_entry(int, int);
-extern void HeroQueueSequence(int bank, int seq);
+extern void hero_queue_sequence(int bank, int seq);
 extern float fast_atan2(float, float);
 extern float FastVecDist(void *, void *);
 extern float randf_sym(float lo, float hi);
@@ -45,7 +45,7 @@ extern float FastAddRots(float, float);
 extern void *MobyGetHitMessage(void *, int, int);
 extern void hero_change_health(int n);
 extern void spawn_hero_radial_particle_burst(void);
-extern int Hero_IsInSpecialState(void);
+extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern int aridia_cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -397,7 +397,7 @@ int HeroL02_SetMoveState(int a, int b) {
                 } else {
                     set_hero_animation(0xD, 2, (float)scale_ticks(0xE));
                 }
-                HeroQueueSequence(3, 0x12);
+                hero_queue_sequence(3, 0x12);
             }
         }
         break;
@@ -419,7 +419,7 @@ int HeroL02_SetMoveState(int a, int b) {
         *(float *)(p + 0x180) = fast_atan2(*(float *)(*(char **)(p + 0x964) + 0x10) - *(float *)(p + 0x80), *(float *)(*(char **)(p + 0x964) + 0x14) - *(float *)(p + 0x84));
         if (b) {
             set_hero_animation(0x2F, 2, (float)scale_ticks(5));
-            HeroQueueSequence(0xA, 0xE);
+            hero_queue_sequence(0xA, 0xE);
         }
         break;
     }
@@ -1056,7 +1056,7 @@ int HeroL02_SetMoveState(int a, int b) {
                 if (*(unsigned char *)(*(char **)(q + 0x2080) + 0x53) == 0x1A) n = scale_ticks(3);
                 if (*(int *)(q + 0x2090) == 1) n = scale_ticks(0x11);
                 set_hero_animation(0x1A, 0, (float)n);
-                HeroQueueSequence(6, 0x15);
+                hero_queue_sequence(6, 0x15);
             }
             break;
         }
@@ -1258,7 +1258,7 @@ int HeroL02_SetMoveState(int a, int b) {
         *(int *)(p + 0x2284) = 0;
         if (b) {
             set_hero_animation(4, 0, (float)scale_ticks(7));
-            HeroQueueSequence(0xE, 0x22);
+            hero_queue_sequence(0xE, 0x22);
         }
         break;
     }
@@ -1426,7 +1426,7 @@ int HeroL02_SetMoveState(int a, int b) {
             *(int *)(t + 0x2110) = 1;
         }
     }
-    if (Hero_IsInSpecialState() == 0) {
+    if (hero_is_in_special_state() == 0) {
         char *t = hero_globals_base + 0xE1D;
         if (*(int *)(t + 0x1108) == 0 && *(int *)(t + 0x20F4) != 0) {
             *(int *)(t + 0x2110) = 1;
@@ -1504,7 +1504,7 @@ extern void remove_hero_cached_moby_and_clear_slot_three_moby_flags(void);
 extern float resolve_hero_trajectory_parameter(float a, float b, float c);
 extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 extern int hero_handle_jump_press(void);
-extern void Hero_SetAttackTicks(int id);
+extern void hero_set_attack_ticks(int id);
 extern int check_hero_forward_collision_height(void);
 extern float read_pad_float_history(int);
 extern float vec_distance_xy(void *, void *);
@@ -1965,7 +1965,7 @@ void HeroL02_UpdateStateTransitions(void) {
                             break;
                         }
                         if (scale_ticks(0x64) < g_hero.state_timer && g_hero.queued_anim_frame < 0x1A) {
-                            Hero_SetAttackTicks(2);
+                            hero_set_attack_ticks(2);
                             g_hero.queued_anim_frame = 0x1A;
                         }
                     }

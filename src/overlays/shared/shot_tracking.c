@@ -47,7 +47,7 @@ extern void spawn_color_decaying_effect_particle(void *, void *, int);
 typedef struct { char *p[7]; short timer; } Slots_265E88;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00264e40.c, FUN_L02_00264e70. */
-void EffectSlots_Fire(char *slots, float *position, float *direction, float distance) {
+void effect_slots_fire(char *slots, float *position, float *direction, float distance) {
     float origin[4] __attribute__((aligned(16)));
     float end[4] __attribute__((aligned(16)));
     float adjusted[4] __attribute__((aligned(16)));

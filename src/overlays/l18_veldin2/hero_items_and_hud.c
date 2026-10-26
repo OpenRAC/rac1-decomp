@@ -82,7 +82,7 @@ extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
 extern int truncate_float_to_s32(float);
 extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 extern int hero_handle_jump_press(void);
-extern void Hero_SetAttackTicks(int id);
+extern void hero_set_attack_ticks(int id);
 extern int check_hero_forward_collision_height(void);
 extern float read_pad_float_history(int);
 extern int try_start_hero_item_idle_animation(void);
@@ -713,7 +713,7 @@ void HeroStateTransitions(void) {
                             break;
                         }
                         if (scale_ticks(0x64) < g_hero.state_timer && g_hero.queued_anim_frame < 0x1A) {
-                            Hero_SetAttackTicks(2);
+                            hero_set_attack_ticks(2);
                             g_hero.queued_anim_frame = 0x1A;
                         }
                     }

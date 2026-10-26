@@ -1039,7 +1039,7 @@ extern float lightning_arc_start_pos[] MACRO_ADDR;
 extern float lightning_arc_end_pos[] MACRO_ADDR;
 extern void StartCutscene(int);
 extern void deactivate_recorded_moby(void);
-extern void ShowTrackedMoby(void);
+extern void show_tracked_moby(void);
 extern int fast_dec_timer(void *);
 extern int FastBSphereCheck(void *, float);
 extern float randf_sym(float, float);
@@ -1074,7 +1074,7 @@ void update_path_lightning_controller(char *m) {
     if (st == 2) {
         if (oltanis_game_mode == st) return;
         m[0x20] = 3;
-        ShowTrackedMoby();
+        show_tracked_moby();
         return;
     }
     if (fast_dec_timer(&lightning_strike_timer) == 0) return;

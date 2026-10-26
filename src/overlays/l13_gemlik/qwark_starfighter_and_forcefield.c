@@ -447,7 +447,7 @@ extern float vec_distance_xy(void *, void *);
 extern void update_moby_spring_steering_and_banking(void *, void *, float, float);
 extern float FastSubRots(float, float);
 extern float FastAbsF(float);
-extern float normalize_angle(float);
+extern float WrapAngle(float);
 extern float FastAddRots(float, float);
 extern float FastDiffRots(float, float);
 extern void AddDrawCallback(void *, void *);
@@ -785,10 +785,10 @@ void update_qwarks_starfighter(Moby388 *moby) {
                                               *(float *)(ship + 0x34));
                     abs_pitch_error = FastAbsF(pitch_error);
                     if (abs_yaw_error > 0.38397244f) {
-                        *(float *)(ship + 0x38) = FastAddRots(*(float *)(ship + 0x38), normalize_angle((abs_yaw_error - 0.38397244f) / 0.17453292f * yaw_error));
+                        *(float *)(ship + 0x38) = FastAddRots(*(float *)(ship + 0x38), WrapAngle((abs_yaw_error - 0.38397244f) / 0.17453292f * yaw_error));
                     }
                     if (abs_pitch_error > 0.38397244f) {
-                        *(float *)(ship + 0x34) = FastAddRots(*(float *)(ship + 0x34), normalize_angle((abs_pitch_error - 0.38397244f) / 0.17453292f * pitch_error));
+                        *(float *)(ship + 0x34) = FastAddRots(*(float *)(ship + 0x34), WrapAngle((abs_pitch_error - 0.38397244f) / 0.17453292f * pitch_error));
                     }
                 }
             }

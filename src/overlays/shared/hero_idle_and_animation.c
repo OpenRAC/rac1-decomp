@@ -371,13 +371,13 @@ void update_hero_easing_record(char *p) {
     clear_u64_value_r2(m->tgt);
     m->scale = 1.0f;
 }
-extern char lean_state[];
+extern char D_L00_0017A780[];
 extern void update_hero_easing_record(char *p);
 
 /* runs func_L00_00205780 on each 0xB0-byte record of a table */
 void update_hero_easing_records(void) {
-    int p = (int)lean_state;
-    int end = (int)lean_state + 0x1550;
+    int p = (int)D_L00_0017A780;
+    int end = (int)D_L00_0017A780 + 0x1550;
 
     do {
         update_hero_easing_record((char *)p);
@@ -1106,11 +1106,11 @@ typedef struct { unsigned char p[0x280]; unsigned short x280; unsigned char p282
 extern G00207310 help_records;
 extern unsigned short usage_stats_entry21_count NOT_SDA;
 extern unsigned char item_available[] NOT_SDA;
-extern int Hero_IsInSpecialState(void);
+extern int hero_is_in_special_state(void);
 /* Periodic help-message check: tick-based hints for the pack and the unused-slot count. The two message tables sit behind separate symbols (D_00141A68 and D_001419F0) as in retail. */
 void check_hero_item_reward_conditions(void) {
     int i, n;
-    if (help_records.x3c0 == 0 && item_available[4] != 0 && Hero_IsInSpecialState() != 0) {
+    if (help_records.x3c0 == 0 && item_available[4] != 0 && hero_is_in_special_state() != 0) {
         Help_Request(0x4E2E, 0x78);
     }
     if (level_frame_counter <= 0) return;
@@ -1888,7 +1888,7 @@ extern void apply_hero_rotation_oscillation(void);
 extern void copy_memory_by_alignment(int, void *, unsigned short);
 extern void offset_hero_position_against_gravity(float *dst, float *src, float h);
 extern void set_moby_local_table_entry_r(void *, int, float, float, void *) __asm__("func_L00_0024FF10");
-extern int Hero_IsInSpecialState(void);
+extern int hero_is_in_special_state(void);
 // Syncs the hero moby with the hero state: pose, position, and the blend of its animation
 void update_hero_moby(void) {
     char *g0 = (char *)hero_globals_base + 0xE1D;
@@ -1918,7 +1918,7 @@ void update_hero_moby(void) {
         set_moby_local_table_entry_r(*(void **)(g + 0x2080), 0, *(float *)(g + 0x234), f13, &v);
         f20 = *(float *)(g + 0x234) + 0.05f;
         if (*(int *)(g + 0x208C) == 4) f20 += 0.15f;
-        if (Hero_IsInSpecialState() != 0) f20 = *(float *)(g + 0x224);
+        if (hero_is_in_special_state() != 0) f20 = *(float *)(g + 0x224);
         qcopy(&v, g + 0x80);
         offset_hero_position_against_gravity((float *)&v, (float *)&v, f20);
         f13 = *(float *)(g + 0x220) - f20;
@@ -2117,7 +2117,7 @@ f32 adjust_hero_animation_speed_for_target_frame(f32 a, f32 b, f32 c, f32 d)
 }
 extern unsigned char hero_globals_base[] NOT_SDA;
 extern int truncate_float_to_s32(float);
-extern float split_float_fraction(void *, float);
+extern float func_L00_002001D8(void *, float);
 
 /* Interpolates a per-frame table at the hero's current animation position. */
 float vector_length_xyz_cf(float *a, int n) {
@@ -2130,7 +2130,7 @@ float vector_length_xyz_cf(float *a, int n) {
     if (*(int *)(d + 0xA98) & 2) {
         p = m;
     }
-    w = split_float_fraction(buf, *(float *)(d + 0xAA8));
+    w = func_L00_002001D8(buf, *(float *)(d + 0xAA8));
     return w * a[i] + (*(float *)(d + 0xAAC) - w) * a[p];
 }
 typedef unsigned int u128_002090d0 __attribute__((mode(TI), aligned(16)));
@@ -2530,10 +2530,10 @@ void emit_hero_timed_effects(void) {
         *(short *)(b2 + 0x49C) = t;
     }
 }
-extern char lean_state[];
+extern char D_L00_0017A780[];
 // stores two floats into a global block
 void set_first_hero_easing_parameters(float a, float b) {
-    char *p = lean_state;
+    char *p = D_L00_0017A780;
     *(float *)(p + 0xA4) = a;
     *(float *)(p + 0xA8) = b;
 }
@@ -2575,7 +2575,7 @@ void update_hero_collision_ease_target(void) {
     if (*(unsigned char *)(g + 0x20AB) == 0) return;
     if (hero_slot_item_id(0) == 0x1A) return;
     if (*(int *)(g + 0x2084) == 0x81) {
-        p = lean_state;
+        p = D_L00_0017A780;
         s = g_frame_scale_sq;
         *(float *)(p + 0x694) = -0.349065840f;
         *(float *)(p + 0x6D4) = s * 0.05f;
@@ -2592,7 +2592,7 @@ void update_hero_collision_ease_target(void) {
         }
     }
     s2 = g_frame_scale_sq;
-    p2 = lean_state;
+    p2 = D_L00_0017A780;
     *(float *)(p2 + 0x6D4) = s2 * 0.05f;
     *(float *)(p2 + 0x6D8) = s2 * 0.3f;
     h = (char *)hero_globals_base + 0xE9D;
@@ -2650,11 +2650,11 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
     if (gCheats[3] != 0) {
         g1 = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(g1 + 0x1184) != 0) {
-            h1 = lean_state;
+            h1 = D_L00_0017A780;
             *(float *)(h1 + 0xD0C) = *(float *)&sound_volume_10;
         }
     }
-    h2 = lean_state;
+    h2 = D_L00_0017A780;
     *(float *)(h2 + 0xC5C) = sound_volume_f[9];
     if (gCheats[1] != 0) {
         ApproachValue(&sound_volume_p[9], 1.57f, 0.05f);
@@ -2670,7 +2670,7 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
         lim = (1.0f - *(float *)(ga + 0x25C)) * 35.0f * 0.0174532924f;
         if (lim < a) a = lim;
         f1 = g_frame_scale_sq_m;
-        h3 = lean_state;
+        h3 = D_L00_0017A780;
         *(float *)(h3 + 0x274) = a;
         set_first_hero_easing_parameters(f1 * 0.008f, f1 * 0.3f);
         *(float *)(h3 + 0x114) = *(float *)(h3 + 0x274) * 0.7f;
@@ -2706,7 +2706,7 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
     g4 = (char *)hero_globals_base + 0xE1D;
     set_first_hero_easing_parameters(*(float *)(g4 + 0x1014), *(float *)(g4 + 0x1018));
     f2 = g_frame_scale_sq_m;
-    h4 = lean_state;
+    h4 = D_L00_0017A780;
     *(float *)(h4 + 0x278) = *(float *)(g4 + 0x1008);
     *(float *)(h4 + 0x274) = *(float *)(g4 + 0x1004);
     set_first_hero_easing_parameters(f2 * 0.008f, f2 * 0.3f);
@@ -2734,7 +2734,7 @@ void update_hero_idle_random_rotation_targets(void) {
     if (*(unsigned char *)(*(int *)(base + 0x2080) + 0x53) != 0) return;
     q = (int *)(base + 0x1060);
     g = base;
-    tbl = lean_state;
+    tbl = D_L00_0017A780;
     for (i = 0; i < 4; i++) {
         char *f;
         if (fast_dec_timer(&q[i])) {
@@ -2854,7 +2854,7 @@ void update_hero_target_tracking(void) {
         f21 = 0.0f;
     }
     set_first_hero_easing_parameters(g_frame_scale_sq * 0.021f, g_frame_scale_sq * 0.27f);
-    p = lean_state;
+    p = D_L00_0017A780;
     *(float *)(p + 0x274) = f21;
     *(float *)(p + 0x278) = f20 * 0.7f;
     set_first_hero_easing_parameters(g_frame_scale_sq * 0.014f, g_frame_scale_sq * 0.3f);

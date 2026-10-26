@@ -1238,9 +1238,9 @@ extern char fire_tuning40[1] SDATA(D_L00_00161C00);
 /* Retail registers the copy at 0x238128, one of several identical delete callbacks. */
 extern void delete_callback40(void) __asm__("func_L00_00238128");
 extern void update_hud_counter_cap_and_visibility(void);
-extern void Hud_DrawGaugeFrame(void);
+extern void hud_draw_gauge_frame(void);
 extern int queue_animation_update(int,int,int,int,int,int,int);
-extern void SuckBeam_QueueDraw(int);
+extern void suck_beam_queue_draw(int);
 extern void refresh_suck_cannon_slots(void);
 extern s32 scale_ticks(s32);
 extern void MobyBlendAnimation(void *,int,int,int);
@@ -1284,10 +1284,10 @@ void suckcannon_update(M40 *self) {
     M40 *stored;
 
     queue_animation_update(4, 0x753F, (int)delete_callback40, (int)update_hud_counter_cap_and_visibility,
-                 (int)Hud_DrawGaugeFrame, (int)&hero40.count, 5);
+                 (int)hud_draw_gauge_frame, (int)&hero40.count, 5);
     data = self->data;
     special = hero40.weapon_mode == 3;
-    if ((u8)self->state != 3 && (u8)self->state != 0) SuckBeam_QueueDraw((int)self);
+    if ((u8)self->state != 3 && (u8)self->state != 0) suck_beam_queue_draw((int)self);
     refresh_suck_cannon_slots();
     switch ((u8)self->state) {
     case 0:
@@ -2371,7 +2371,7 @@ typedef struct {
 } Pkt;
 
 // Draws a grid of ten rows by twenty strips, stepping the two scroll angles and coloring each strip from a per-row table.
-void SuckBeam_DrawMesh(void) {
+void suck_beam_draw_mesh(void) {
     Pkt s;
     float vc[4];
     float vd[4];
@@ -2469,7 +2469,7 @@ extern short suck_beam_init_zero_0;
 extern short suck_beam_init_zero_1;
 
 // Builds the camera matrices and resets the camera effect state.
-void SuckBeam_Build(char *a, char *b) {
+void suck_beam_build(char *a, char *b) {
     u128_DF168 s[7];
     char *v;
     short *w;
@@ -2525,18 +2525,18 @@ void SuckBeam_Build(char *a, char *b) {
     }
 }
 INCLUDE_ASM("asm/overlays", func_L00_002DF410);
-extern void SuckBeam_DrawMesh(void);
+extern void suck_beam_draw_mesh(void);
 extern void AddDrawCallback(void (*)(void), int);
 
 /* Fades the suck beam segments and queues the beam draw while it is visible. */
-void SuckBeam_QueueDraw(int arg0) {
+void suck_beam_queue_draw(int arg0) {
     int i;
     if (suck_beam_segment_alpha[0] > 0) {
         for (i = 0; i < 10; i++) {
             if (suck_beam_segment_alpha[i] > 0x40) suck_beam_segment_alpha[i] = 0x40;
             suck_beam_segment_alpha[i] = (unsigned short)suck_beam_segment_alpha[i] - 4;
         }
-        AddDrawCallback(SuckBeam_DrawMesh, arg0);
+        AddDrawCallback(suck_beam_draw_mesh, arg0);
     }
 }
 typedef struct { short idx; short pad; float f; int pad2[3]; char *p; } E04;
@@ -2572,7 +2572,7 @@ void stop_suck_cannon_suction_effect(int arg0) {
             *(short *)(p + 0xA) = 0x46;
         }
     }
-    SuckBeam_QueueDraw(arg0);
+    suck_beam_queue_draw(arg0);
 }
 extern int is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(void *);
 extern float FastVecDist(void *, void *);
@@ -2580,7 +2580,7 @@ extern void begin_bolt_attraction(void *, int, float, float);
 extern void try_collect_ammo_pickup(void *);
 
 /* Scatter a moby away from nearby positions in the hazard table. */
-void ScatterMobyFromHazards(char *m) {
+void scatter_moby_from_hazards(char *m) {
     char *base;
     char *pos;
     int i;
@@ -2687,7 +2687,7 @@ void red_orb_update(char *m) {
 }
 extern void update_instance_attachment_points_and_lengths(void *);
 /* Resets the quad moby's blend values when flagged, then updates its attachment points. */
-void QuadMoby_Update(char *a) {
+void quad_moby_update(char *a) {
     if (*(unsigned char *)(a + 0x70) & 2) {
         float o = 1.0f;
         if (0.0f < *(float *)(a + 0x58)) o = 0.0f;

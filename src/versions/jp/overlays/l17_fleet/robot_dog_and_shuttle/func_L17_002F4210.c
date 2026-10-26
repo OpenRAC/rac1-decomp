@@ -143,7 +143,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             *(int *)(d + 0x2C) = 0;
             *(int *)(d + 0x30) = -1;
         }
-        if (scale_ticks(0xE10) < *(int *)(d + 0x2C) && tgt != -1 && Hero_IsInSpecialState()
+        if (scale_ticks(0xE10) < *(int *)(d + 0x2C) && tgt != -1 && hero_is_in_special_state()
             && fleet_help_popup_state[0] == 0 && fleet_help_popup_state[9] == -1 && gHaveHeliPack[2] != 0) {
             Help_Request(0x4E2E, 0x78);
             *(int *)(d + 0x30) = tgt;

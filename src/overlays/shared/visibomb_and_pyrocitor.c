@@ -1228,7 +1228,7 @@ extern int level_particle_clip_dist_m __asm__("D_L00_0016023C") MACRO_ADDR;
 extern int level_draw_globals_live;
 
 // Saves the camera parameters into a moby and switches the globals to a fixed screen setup.
-void Moby_SaveGlobalsState(void *m_) {
+void moby_save_globals_state(void *m_) {
     char *m = (char *)m_;
     char *p;
     float f0, f1, f2, f3;
@@ -1265,7 +1265,7 @@ extern unsigned char level_fog_color_blue;
 extern char render_view_params[];
 
 // Loads the stored camera parameters of a moby into the globals and applies the screen setup.
-void Moby_RestoreGlobalsState(int m_, int flag) {
+void moby_restore_globals_state(int m_, int flag) {
     char *m = (char *)m_;
     char *p;
     float f0, f1, f2, f3;
@@ -1381,7 +1381,7 @@ extern char hero_globals_base[] NOT_SDA;
 extern int hero_control_mode_11_flag NOT_SDA;
 extern void select_camera_mode_by_hero_alignment_and_distance(int);
 extern void HeroEnterMoveState(int, int);
-extern void Moby_RestoreGlobalsState(int, int);
+extern void moby_restore_globals_state(int, int);
 extern void clear_jet_camera_mode_latch(void);
 extern void DeleteMoby(int);
 /* Ends Visibomb control: deletes the missile, restores the camera and the hero's move state. */
@@ -1392,7 +1392,7 @@ void terminate_visibomb_missile(int a, int *b) {
     select_camera_mode_by_hero_alignment_and_distance(b[5]);
     b[5] = 0;
     HeroEnterMoveState(0, 1);
-    Moby_RestoreGlobalsState(a, 1);
+    moby_restore_globals_state(a, 1);
     clear_jet_camera_mode_latch();
     DeleteMoby(a);
     hero_control_mode_11_flag = 0;

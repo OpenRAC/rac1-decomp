@@ -1088,7 +1088,7 @@ extern s32 vendor_intro_frames MACRO_ADDR;
 extern s32 pal_mode MACRO_ADDR;
 extern f32 render_view_tan_half_fov NOT_SDA;
 
-extern void ResetFrameCounters();
+extern void reset_frame_counters();
 extern void update_game_frame_and_idle_counters();
 extern void update_visible_resident_objects();
 extern void enqueue_voice_request();

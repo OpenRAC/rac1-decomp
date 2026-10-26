@@ -658,7 +658,7 @@ char *spawn_racer_child(char *owner) {
     }
     return moby;
 }
-extern void Manipulator_SetScale(void *, float);
+extern void manipulator_set_scale(void *, float);
 extern void set_ground_height_band(void *);
 void handle_extermibot_hits_and_update_targeting(Moby *m);
 void move_extermibot_along_path(struct Moby *m, s32 node, f32 side);
@@ -708,7 +708,7 @@ void extermibot_update(unsigned char *m) {
     unsigned char *pos0;
     extern float FastVecDist(void *, void *);
 
-    Manipulator_SetScale(d + 0x170, 2.5f);
+    manipulator_set_scale(d + 0x170, 2.5f);
     if (rilgar_cinematic_mode == 2 && ((((Moby *)m)->flags ^ 1) & 1)) {
         *(int *)(d + 0x2DC) = 1;
         ((Moby *)m)->flags |= 0x41;
@@ -1332,7 +1332,7 @@ extern f32 FastDiffRots(f32, f32);
 extern f32 ApproachValue(f32 *, f32, f32);
 extern f32 SteerAngleWithVelocity_r(f32 *angle, f32 target, f32 *vel, f32, f32, f32) __asm__("func_L00_0025CE58");
 extern s32 test_extermibot_offset_path_clearance(char *moby, float *goal, float s);
-extern f32 PushPointFromPath(s32, void *, void *, f32);
+extern f32 push_point_from_path(s32, void *, void *, f32);
 
 /* Walks m toward its next path node, steering `side` radians off the direct heading while FUN_L05_00303e50 reports the way blocked; slows near the goal and arms the stuck timer when it drifts off the path.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/002d1688.c, FUN_L05_00303b08. */
@@ -1365,7 +1365,7 @@ void move_extermibot_along_path(struct Moby *m, s32 node, f32 side) {
     dir.z = 0.0f;
     move_w(m, v->move, &dir, &out, 1.0f);
     if (v->stuck_timer == 0) {
-        if (PushPointFromPath(v->path, &m->pos, &m->pos, (*(f32 *)&sharkigator_scale) * 0.4f) > 2.0f)
+        if (push_point_from_path(v->path, &m->pos, &m->pos, (*(f32 *)&sharkigator_scale) * 0.4f) > 2.0f)
             v->stuck_timer = scale_ticks(5);
     }
 }
@@ -1451,7 +1451,7 @@ extern void vec_scale_to_length_r(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B
 /* Pushes a point clear of a path and returns the nearest wall distance.
  * Adapted from the matched func_L00_00262DF0, based on Lombyte's project (GPL-3.0):
  * src/overlays/shared/gameplay/state/00261968.c, FUN_L00_00261d78. */
-f32 PushPointFromPath(s32 path_index, void *input, void *output, f32 distance) {
+f32 push_point_from_path(s32 path_index, void *input, void *output, f32 distance) {
     Vec4 *point = input;
     Vec4 *out = output;
     Vec4 difference;
@@ -2237,7 +2237,7 @@ extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern float ProbeGroundHeight(void *, int, float);
 extern float FastAbsF(float);
 extern int FastDecTimer(void *);
-extern void Manipulator_SetScale(void *, float);
+extern void manipulator_set_scale(void *, float);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char rilgar_camera_pos[];
 extern unsigned char special_items_base[];
@@ -2463,7 +2463,7 @@ void SkidMcMarxUpdate(Moby *moby) {
                 d->pos[2] = ground;
                 d->f26C = 0;
             }
-            Manipulator_SetScale(&d->m[3], 3.0f);
+            manipulator_set_scale(&d->m[3], 3.0f);
             lim = g_frame_time * 2.6179938f;
             turn = d->f248;
             if (lim < turn) {

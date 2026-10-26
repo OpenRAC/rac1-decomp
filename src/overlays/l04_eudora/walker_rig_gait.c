@@ -477,7 +477,7 @@ extern float inv_frame_scale MACRO_ADDR;
 typedef int u128_96938 __attribute__((mode(TI)));
 
 /* Level 04 walker update: blends heading and speed, places the legs, probes the ground and sets the anim rate; returns flags. */
-int LegWalkerUpdate(char *m, char *s, float speed, float ang, float accel) {
+int leg_walker_update(char *m, char *s, float speed, float ang, float accel) {
     float buf[8];
     float v20[24];
     float v80[4];

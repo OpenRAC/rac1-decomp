@@ -31,7 +31,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int rand_range(int, int);
 extern int scale_ticks(int);
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
+extern void PartType22Spawn(void *, void *, int, int, float, int);
 extern void SetDeathBits(void *, int, int);
 extern void DeleteMoby(void *);
 extern char *MobyGetHitMessage(void *, int, int);
@@ -72,7 +72,7 @@ void rock_formation_update(DebrisMoby *m) {
                 FastVecAdd(&pos, &pos, &m->pos);
                 vec_scale_to_length(&vel, &vel, random_float_between(0.5f, 1.5f) * g_frame_time);
                 s = random_float_between(0.5f, 1.0f) * 210000.0f;
-                spawn_effect_particle_with_target_scalar(&pos, &vel, 0x5F787878, 0x181818, s, scale_ticks(rand_range(30, 90)));
+                PartType22Spawn(&pos, &vel, 0x5F787878, 0x181818, s, scale_ticks(rand_range(30, 90)));
             }
         }
         for (j = 0; j < 40; j++) {
@@ -1367,7 +1367,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern int random_integer_below(int);
 extern int Moby_PlaySound(int, int, int);
 extern int rand_range(int, int);
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
+extern void PartType22Spawn(void *, void *, int, int, float, int);
 extern char *spawn_pipe_replacement_moby(char *owner);
 typedef int u128b __attribute__((mode(TI)));
 
@@ -1405,7 +1405,7 @@ void Moby778Update(char *m) {
             w[2] = 0;
             w[2] = random_float_between(w[2], 3.0f) * g_frame_time;
             a = random_float_between(125000.0f, 175000.0f);
-            spawn_effect_particle_with_target_scalar(v, w, 0x207F7F7F, 0x272727, a, scale_ticks(rand_range(0x2D, 0x3C)));
+            PartType22Spawn(v, w, 0x207F7F7F, 0x272727, a, scale_ticks(rand_range(0x2D, 0x3C)));
         }
         spawn_pipe_replacement_moby(m);
         DeleteMoby(m);
@@ -1435,7 +1435,7 @@ extern int Moby_PlaySound(int, int, int);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern int rand_range(int, int);
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
+extern void PartType22Spawn(void *, void *, int, int, float, int);
 
 typedef int u128 __attribute__((mode(TI)));
 typedef union {
@@ -1467,7 +1467,7 @@ void update_smoke_emitter(char *self) {
         matrix_mul_vec3(&vel, &vel, self + 0xC0);
         FastVecAdd(&pos, &pos, self + 0x10);
         size = random_float_between(125000.0f, 175000.0f);
-        spawn_effect_particle_with_target_scalar(&pos, &vel, 0x207F7F7F, 0x272727, size, scale_ticks(rand_range(0x2D, 0x3C)));
+        PartType22Spawn(&pos, &vel, 0x207F7F7F, 0x272727, size, scale_ticks(rand_range(0x2D, 0x3C)));
     }
 }
 extern float random_float_between(float,float);

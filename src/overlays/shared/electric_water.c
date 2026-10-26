@@ -88,7 +88,7 @@ extern void reset_electric_water_switch(char *);
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
 extern int scale_ticks(int);
-extern int Hero_IsNearGround(void);
+extern int hero_is_near_ground(void);
 extern int FastDecTimer(void *);
 extern void set_moby_color(void *, int, int, int);
 extern int rand_range(int, int);
@@ -112,7 +112,7 @@ extern void record_moby_hit(void *, void *);
 extern float vec_distance_xy(void *, void *);
 extern int Sound_IsPlaying(void *, int);
 extern int test_linked_moby_turn_trigger(void *);
-extern int Hero_IsInSpecialState(void);
+extern int hero_is_in_special_state(void);
 
 #define MOBY_2D7C00(i) ((unsigned char *)(((i) << 8) + (int)D_L15_00160058))
 #define MOBYP_2D7C00(i) (D_L15_00160058 + ((i) << 8))
@@ -219,7 +219,7 @@ void electric_water_update(unsigned char *m) {
 
     case ELECTRIC_WATER_ON:
         inside = 0;
-        wet = Hero_IsNearGround();
+        wet = hero_is_near_ground();
         if (FastDecTimer(&vars->on_timer) != 0) {
             vars->off_timer = SECS_2D7C00((*(float *)&electric_water_off_duration_seconds));
             moby->state = ELECTRIC_WATER_OFF;
@@ -467,7 +467,7 @@ void electric_water_update(unsigned char *m) {
         char *pos = gHeroPos;
         Hero_2D7C00 *g = (Hero_2D7C00 *)(pos - 0x80);
         for (level_area = 0; level_area < 4; level_area++) {
-            if (is_point_inside_clip_volume(pos, vars->water_level_areas[level_area]) != 0 && Hero_IsInSpecialState() != 0) {
+            if (is_point_inside_clip_volume(pos, vars->water_level_areas[level_area]) != 0 && hero_is_in_special_state() != 0) {
                 g->waterLevel = *(float *)(CUB_2D7C00(vars->water_level_areas[level_area]) + 0x38);
             }
         }
@@ -596,7 +596,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecCross(void *, void *, void *);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern void FastVecScale(void *, void *, float);
-extern float normalize_angle(float);
+extern float WrapAngle(float);
 extern float randf_sym(float lo, float hi);
 extern float random_angle_radians(void);
 extern void BuildSphericalOffset(void *, float, float, float);
@@ -676,7 +676,7 @@ void update_electric_water_bolt_effect(Moby *moby) {
         float b;
         f21 = *(float *)&electric_water_bolt_wave_amp_start
               + (*(float *)&electric_water_bolt_wave_amp_end - *(float *)&electric_water_bolt_wave_amp_start) * (IntToFloat(i) * 0.05f);
-        f21 = f21 * FastSin(normalize_angle(*(float *)&electric_water_bolt_wave_phase + (float)i * *(float *)&electric_water_bolt_wave_point_phase));
+        f21 = f21 * FastSin(WrapAngle(*(float *)&electric_water_bolt_wave_phase + (float)i * *(float *)&electric_water_bolt_wave_point_phase));
         f21 = f21 + randf_sym(*(float *)&electric_water_bolt_jitter_center, *(float *)&electric_water_bolt_jitter_range);
         electric_water_bolt_points_r2[0][i].f[2] = electric_water_bolt_points_r2[0][i].f[2] - electric_water_bolt_wave_offsets[i];
         electric_water_bolt_wave_offsets[i] = f21;
@@ -716,9 +716,9 @@ void update_electric_water_bolt_effect(Moby *moby) {
             float h;
             float ang;
             float m;
-            g = normalize_angle(*(float *)&electric_water_mirror_bolt_phase + (float)i * *(float *)&electric_water_mirror_bolt_point_phase);
+            g = WrapAngle(*(float *)&electric_water_mirror_bolt_phase + (float)i * *(float *)&electric_water_mirror_bolt_point_phase);
             h = *(float *)&electric_water_mirror_bolt_height_amp
-                * FastSin(normalize_angle(*(float *)&electric_water_mirror_bolt_height_phase + (float)i * *(float *)&electric_water_mirror_bolt_height_point_phase));
+                * FastSin(WrapAngle(*(float *)&electric_water_mirror_bolt_height_phase + (float)i * *(float *)&electric_water_mirror_bolt_height_point_phase));
             qcopy(&electric_water_bolt_points_r2[1][i], &electric_water_bolt_points_r2[0][i]);
             h = h * FastSin(g) + randf_sym(0.0f, 0.1f);
             electric_water_bolt_points_r2[1][i].f[2] = electric_water_bolt_points_r2[1][i].f[2] + h;
@@ -1185,7 +1185,7 @@ extern void AddDrawCallback(void *, void *);
 extern void draw_moby_radial_ripple_mesh_buffers(void);
 
 // First call sets up and marks the moby; later calls queue a draw callback and set a flag.
-void RippleStripsMobyUpdate(char *moby)
+void ripple_strips_moby_update(char *moby)
 {
     if (*(unsigned char *)(moby + 0x20) == 0) {
         set_moby_color(moby, 0x40, 0x40, 0x40);

@@ -21,7 +21,7 @@ typedef struct {
 } Pkt_23e4c8;
 
 /* Builds the object's tilted frame and emits three batches of four quads offset around it. */
-void GlowQuadsDraw(char *moby)
+void glow_quads_draw(char *moby)
 {
     float q[4][4] __attribute__((aligned(16)));
     Pkt_23e4c8 pk;

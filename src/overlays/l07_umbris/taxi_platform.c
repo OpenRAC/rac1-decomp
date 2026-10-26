@@ -1741,7 +1741,7 @@ unsigned char *spawn_moby_class_1046(int a, void *pos, int b, float f0, float f1
 typedef u32 u128_0F0D0 __attribute__((mode(TI), aligned(16)));
 typedef struct { char b[0x90]; } __attribute__((aligned(16))) Pkt_0F0D0;
 extern long GetEffectTex(int);
-extern float split_float_fraction(void *, float);
+extern float func_L00_002001D8(void *, float);
 extern void draw_world_quad(void *, int, int);
 
 /* Draws a ring of fading quad bands around the moby. */
@@ -1776,7 +1776,7 @@ void draw_fading_ring_effect(unsigned char *moby) {
             radius = *(float *)(data + 8) - band * radius_threshold;
         side = (1.0f - band * 0.5f) * *(float *)(data + 0x10);
         ft = IntToFloat(umbris_frame_count);
-        phase = split_float_fraction(phase_work, ft / (band * 40.0f + 40.0f));
+        phase = func_L00_002001D8(phase_work, ft / (band * 40.0f + 40.0f));
         if ((index & 1) == 0)
             phase = -phase;
         *(float *)(packet + 0x50) = phase;
@@ -3166,7 +3166,7 @@ void update_command_triggered_falling_platform(Moby *m) {
 }
 extern void set_moby_color(void *, int, int, int);
 extern float random_float_between(float, float);
-extern float normalize_angle(float);
+extern float WrapAngle(float);
 
 /* Falling leaf: drops off its branch after a random delay, swaying, then falls faster and vanishes near the ground. */
 void update_hero_triggered_falling_platform(char *m) {
@@ -3201,9 +3201,9 @@ void update_hero_triggered_falling_platform(char *m) {
         }
         break;
     case 2:
-        ((Moby *)m)->rot.x = FastSin(normalize_angle(IntToFloat(*(short *)(d + 0xA0)) * 0.75f)) * 0.017453292f;
+        ((Moby *)m)->rot.x = FastSin(WrapAngle(IntToFloat(*(short *)(d + 0xA0)) * 0.75f)) * 0.017453292f;
         {
-            float c = FastCos(normalize_angle(IntToFloat(*(short *)(d + 0xA0)) * 0.89f));
+            float c = FastCos(WrapAngle(IntToFloat(*(short *)(d + 0xA0)) * 0.89f));
             float e = frame_scale;
             ((Moby *)m)->rot.y = c * 0.017453292f;
             ((Moby *)m)->pos.z -= e * 0.002f;
@@ -3313,7 +3313,7 @@ void configure_timed_point_light(float radius, void *moby_, void *obj_, short pa
 }
 
 /* Sets a controller rumble whose strength falls off with distance up to 80 units. */
-void RumbleByDistance(char *moby) {
+void rumble_by_distance(char *moby) {
     float distance = FastVecDist(moby + 0x10, debris_far_point);
     char *state;
     if (distance > 80.0f) distance = 80.0f;

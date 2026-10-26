@@ -1566,7 +1566,7 @@ extern void compose_target_euler_rotation(char*,float,float,float);
 extern int fast_dec_timer(int*);
 extern float ProbeGroundHeight(void*,int,float);
 extern float ApproachValue(float*,float,float);
-extern void Hero_SetAttackTicks(int);
+extern void hero_set_attack_ticks(int);
 extern void Sound_StopSlot(int);
 extern int allocate_hero_voice_for_entry(int,int);
 extern void clear_moby_transform_history(char*);
@@ -1780,7 +1780,7 @@ void wrench_update(Wrench48 *m) {
             vec_scale_to_length(work.v[1],work.v[1],d->speed); FastVecAdd(position,position,work.v[1]);
             if (length/d->speed<(float)scale_ticks(4) && wplayer48()->selected_weapon!=-1) {
                 int sound;
-                Hero_SetAttackTicks(2); wplayer48()->weapon_animation=26;
+                hero_set_attack_ticks(2); wplayer48()->weapon_animation=26;
                 sound=wplayer48()->thrown_sound;
                 if (sound!=-1) { unsigned char *audio=waudio48(sound); if (*(Wrench48**)(audio+0x88)==wplayer48()->moby && audio[0x74]) Sound_StopSlot(sound); }
                 wplayer48()->thrown_sound=-1;
@@ -1830,7 +1830,7 @@ extern int coll_line(void *, void *, int, int, int);
 extern void append_unique_moby_index(void *, short *, int);
 
 /* Spawns a homing bolt (class 0x100) from owner at pos, aimed at tgt or at whatever lies along its heading. */
-char *SpawnHomingBolt(void *owner, void *pos, float a, float b, float c, char *tgt, float rz, float ry) {
+char *spawn_homing_bolt(void *owner, void *pos, float a, float b, float c, char *tgt, float rz, float ry) {
     char *m;
     char *d;
     Vec4 t;

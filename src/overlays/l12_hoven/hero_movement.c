@@ -426,7 +426,7 @@ extern int scale_ticks(int);
 extern int try_start_hero_item_idle_animation(void);
 extern void turn_hero_toward_move_direction_for_item(void);
 extern void set_hero_animation(int, int, float);
-extern int Hero_GetGadgetAnimId(int);
+extern int hero_get_gadget_anim_id(int);
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
 extern void speed_step(float, float);
 extern void reduce_and_apply_hero_planar_velocity_addend(float);
@@ -507,7 +507,7 @@ extern void adjust_hero_pose_targets_from_motion(void);
 extern void update_hero_lean_and_sway_parameters(void);
 extern void hero_integrate_velocity(void);
 extern void steer_hero_planar_velocity(float);
-extern void Hero_UpdateHopMovement(void);
+extern void hero_update_hop_movement(void);
 
 extern void update_hero_planar_movement_velocity(void);
 
@@ -611,7 +611,7 @@ void Hero_UpdateStatePhysicsL12(void) {
 
                         anim = 0xD;
                         if (g_hero.state.current == 0x17) {
-                            anim = Hero_GetGadgetAnimId(0);
+                            anim = hero_get_gadget_anim_id(0);
                         }
                         if (g_hero.moby->prev_seq != anim) {
                             set_hero_animation(anim, 0, scale_ticks(7));
@@ -1179,7 +1179,7 @@ void Hero_UpdateStatePhysicsL12(void) {
             if (anim != -1 && g_hero.moby->seq != 0x36) {
                 set_hero_animation(anim, 0, frames);
             } else if ((g_hero.moby->anim_flags & 2) && g_hero.moby->seq == 0x36) {
-                set_hero_animation(Hero_GetGadgetAnimId(0), 0, scale_ticks(5));
+                set_hero_animation(hero_get_gadget_anim_id(0), 0, scale_ticks(5));
             }
         }
         break;
@@ -2150,7 +2150,7 @@ void Hero_UpdateStatePhysicsL12(void) {
         }
         update_hero_target_speed_from_stick();
         if (g_hero.move_lock_timer == 0) {
-            Hero_UpdateHopMovement();
+            hero_update_hop_movement();
         }
         adjust_hero_pose_targets_from_motion();
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
@@ -2377,7 +2377,7 @@ void Hero_UpdateStatePhysicsL12(void) {
                     }
                 }
             } else {
-                Hero_UpdateHopMovement();
+                hero_update_hop_movement();
                 if (g_hero.state.current == 0x12) {
                     float len;
 
@@ -2558,7 +2558,7 @@ void Hero_UpdateStatePhysicsL12(void) {
     case 0x55:
         stick_target(g_frame_time * 1.5f, 0);
         if (g_hero.move_lock_timer == 0) {
-            Hero_UpdateHopMovement();
+            hero_update_hop_movement();
         }
         HeroMoveDownAlongNormal(g_hero.motion.velocity.f, g_hero.motion.velocity.f, g_frame_time_sq * 21.0f);
         if (g_hero.motion.velocity.f[2] < g_frame_time * -15.0f) {

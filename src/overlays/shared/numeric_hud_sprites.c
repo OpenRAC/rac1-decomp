@@ -333,7 +333,7 @@ extern int rilgar_hud_held_bar_id MACRO_ADDR;
 extern int rilgar_hud_hold_active MACRO_ADDR;
 extern short rilgar_hud_release_count;
 // Releases the held hud element if any, clears a flag and bumps a counter.
-void Hud_ReleaseHeldElement(void) {
+void hud_release_held_element(void) {
     if (rilgar_hud_held_bar_id != -1) {
         Hud_SetBarValueById(rilgar_hud_held_bar_id, 0);
         rilgar_hud_held_bar_id = -1;

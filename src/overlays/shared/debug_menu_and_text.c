@@ -1091,7 +1091,7 @@ void draw_debug_menu(void) {
 }
 extern char frame_roll_counters_base[];
 // Moves a word to its neighbour slot and clears two fields.
-void Frame_RollCounter(void) {
+void frame_roll_counter(void) {
     char *p = frame_roll_counters_base;
     int t = *(int *)(p + 0x364);
     *(int *)(p + 0x364) = 0;

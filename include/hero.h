@@ -50,7 +50,7 @@ struct MobyTrail {
  * A slot change clears +0x1A, sets +0x20 to 3 and blends the moby (2, 0, 2).
  */
 /* A 0xB0-byte record FUN_L00_00205168 eases toward its targets; the
-   lean_state table FUN_L00_002054e8 walks has the same layout. */
+   D_L00_0017A780 table FUN_L00_002054e8 walks has the same layout. */
 /* A manipulator record eased by FUN_L00_00205168: it moves rot and pos toward
    their targets, then rebuilds quat, scale3 and translation (the part
    attach_manipulator, FUN_0020cb10, hands to the moby) from them. */

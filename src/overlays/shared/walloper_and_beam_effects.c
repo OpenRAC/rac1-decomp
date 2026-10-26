@@ -24,7 +24,7 @@ extern int beam_arc_second_row_alpha MACRO_ADDR;
 extern int beam_arc_third_row_alpha MACRO_ADDR;
 extern int beam_arc_fourth_row_alpha MACRO_ADDR;
 extern char tesla_beam_points[];
-extern char beam_arc_bolt_points[];
+extern char arc_points[];
 extern void draw_beam_and_arc_two_pass_quads(void *, int, int, int, float, float, float);
 extern void draw_beam_anchor_camera_facing_quads(void *);
 
@@ -40,13 +40,13 @@ void draw_beam_and_arc_effects(char *m) {
         *(float *)&beam_arc_main_half_width, *(float *)&beam_arc_main_outer_half_width, *(float *)&beam_arc_main_end_extension);
     draw_beam_and_arc_two_pass_quads(tesla_beam_points + 0x140, *(int *)&beam_arc_second_inner_alpha, *(int *)&beam_arc_second_outer_alpha, *(short *)(p + 0x3E),
         *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, *(float *)&beam_arc_second_end_extension);
-    draw_beam_and_arc_two_pass_quads(beam_arc_bolt_points, *(short *)&beam_arc_bolt0_alpha, *(short *)&beam_arc_bolt0_alpha, 5,
+    draw_beam_and_arc_two_pass_quads(arc_points, *(short *)&beam_arc_bolt0_alpha, *(short *)&beam_arc_bolt0_alpha, 5,
         *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, 0.2f);
-    draw_beam_and_arc_two_pass_quads(beam_arc_bolt_points + 0x50, *(short *)&beam_arc_second_row_alpha, *(short *)&beam_arc_second_row_alpha, 5,
+    draw_beam_and_arc_two_pass_quads(arc_points + 0x50, *(short *)&beam_arc_second_row_alpha, *(short *)&beam_arc_second_row_alpha, 5,
         *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, 0.2f);
-    draw_beam_and_arc_two_pass_quads(beam_arc_bolt_points + 0xA0, *(short *)&beam_arc_third_row_alpha, *(short *)&beam_arc_third_row_alpha, 5,
+    draw_beam_and_arc_two_pass_quads(arc_points + 0xA0, *(short *)&beam_arc_third_row_alpha, *(short *)&beam_arc_third_row_alpha, 5,
         *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, 0.2f);
-    draw_beam_and_arc_two_pass_quads(beam_arc_bolt_points + 0xF0, *(short *)&beam_arc_fourth_row_alpha, *(short *)&beam_arc_fourth_row_alpha, 5,
+    draw_beam_and_arc_two_pass_quads(arc_points + 0xF0, *(short *)&beam_arc_fourth_row_alpha, *(short *)&beam_arc_fourth_row_alpha, 5,
         *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, 0.2f);
     draw_beam_anchor_camera_facing_quads(m);
 }
@@ -281,7 +281,7 @@ extern void DeleteMoby(void *);
 extern int scale_ticks(int);
 extern void offset_moby_class_point_pairs(unsigned char *, int, int);
 extern float random_float_between(float, float);
-extern float normalize_angle(float);
+extern float WrapAngle(float);
 extern float FastAddRots(float, float);
 
 /* Per-frame update of a moby that follows its parent's flag and spins. */
@@ -317,7 +317,7 @@ void update_linked_moby_scale_and_rotation(char *m) {
     }
     offset_moby_class_point_pairs(*(unsigned char **)(m + 0x24), 0, d);
     ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)(p + 0xC) * random_float_between(0.5f, 1.0f);
-    ((Moby *)m)->rot.y = FastAddRots(((Moby *)m)->rot.y, normalize_angle(*(float *)(p + 0xC)));
+    ((Moby *)m)->rot.y = FastAddRots(((Moby *)m)->rot.y, WrapAngle(*(float *)(p + 0xC)));
     moby_anim_sphere_lerp(m);
 }
 extern short walloper_arc_timers[];
@@ -1515,7 +1515,7 @@ typedef struct {
 } RT_2BF380;
 
 // Draws a ribbon of quads along a polyline, in two passes with edge colouring and a scrolled texture.
-void DrawScrollingRibbonColored(P_2BF380 *m, int a, int b, float sx, float sy, float sz, int n, int col) {
+void draw_scrolling_ribbon_colored(P_2BF380 *m, int a, int b, float sx, float sy, float sz, int n, int col) {
     RW_2BF380 q[4];
     RT_2BF380 t;
     RW_2BF380 q2[4];

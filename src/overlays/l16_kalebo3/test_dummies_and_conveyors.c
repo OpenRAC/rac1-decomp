@@ -739,7 +739,7 @@ extern void ClampVectorLength(void *, float);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
 extern float FastCos(float);
-extern void EffectSlots_Fire(void *, void *, void *, float);
+extern void effect_slots_fire(void *, void *, void *, float);
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern void collect_mobies_around_tracked_objects(char **, int, int);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
@@ -981,7 +981,7 @@ void test_dummy_update(unsigned char *moby) {
                 position_or_delta.f[0] - ((struct Moby *)moby)->pos.x,
                 position_or_delta.f[1] - ((struct Moby *)moby)->pos.y));
             position_or_direction.f[2] = 0.0f;
-            EffectSlots_Fire(slots, position_or_delta.f, position_or_direction.f, test_dummy_shot_distance);
+            effect_slots_fire(slots, position_or_delta.f, position_or_direction.f, test_dummy_shot_distance);
             position_or_direction.f[3] = 5627.925f;
             position_or_direction.f[2] = 1.0f;
             InitDirectionalHitQuery(&fx, moby, 0x10001, 1.0f, position_or_direction.f);
@@ -1782,7 +1782,7 @@ void update_hoverboard_dummy_jump_animation_and_pitch(Moby *m) {
         }
     }
 }
-extern void Manipulator_SetScale(void *, float);
+extern void manipulator_set_scale(void *, float);
 extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
 extern void advance_hoverboard_dummy_path_node(char *);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
@@ -1812,7 +1812,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
 
     /* No pointer locals: every address is written where it is used. The compiler caches them itself
        (d + 0x1E0 from here on, the others at the top of the active state). */
-    Manipulator_SetScale(d + 0x1E0, 2.5f);
+    manipulator_set_scale(d + 0x1E0, 2.5f);
     switch (((Moby *)m)->state) {
     case 0: {
         float time;
@@ -2370,7 +2370,7 @@ void update_moby_hit_triggered_removal(char *moby) {
 extern short kalebo3_challenge_layout_value;
 
 // Store float to global (gp-relative)
-void Challenge_SetLayoutParam(float f) {
+void challenge_set_layout_param(float f) {
     *(float *)&kalebo3_challenge_layout_value = f;
 }
 extern void Moby_PlaySound(int, int, void *);
@@ -2671,7 +2671,7 @@ extern void InitKnockback(void *, void *, int, int, int, float);
 extern void MobySpringTurn_path54(char*,float,float*,float,float,float) __asm__("func_L00_002592B0");
 extern char *spawn_floating_mine(void *, void *);
 extern void update_linked_moby_position(void *);
-extern void Moby_SetStateOne(void *);
+extern void moby_set_state_one(void *);
 extern void emit_moby_offset_particles(void *);
 extern int advance_bolt_thief_path(char *moby);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
@@ -2799,7 +2799,7 @@ void CratePlatformUpdate(L16CrateMoby *m) {
                 MobySetAnimation(m, 4, 0);
             } else {
                 if (a->child) {
-                    Moby_SetStateOne(a->child);
+                    moby_set_state_one(a->child);
                     a->child = 0;
                 }
                 m->state = 5;

@@ -1521,7 +1521,7 @@ extern float FastDiffRots(float, float);
 extern int fast_subtract_rotations_cf(void *);
 extern void *spawn_class_b8_projectile(void *, void *, void *, int);
 extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
+extern void PartType22Spawn(void *, void *, int, int, float, int);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 void initialize_planetbuster_maximus_detached_part_motion(struct Moby *moby, int slot);
 extern void update_planetbuster_maximus_detached_parts(char *);
@@ -1753,7 +1753,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                         v1[1] = FastSin(ang) * s;
                         v1[2] = 0.0f;
                         v1[2] = random_float_between(g_frame_time, g_frame_time * 5.5f);
-                        spawn_effect_particle_with_target_scalar(v0, v1, 0x500A1414, 0xA0A0A, 420000.0f, c);
+                        PartType22Spawn(v0, v1, 0x500A1414, 0xA0A0A, 420000.0f, c);
                     }
                     *(int *)&((Moby *)m)->collision = 0;
                     ((Moby *)m)->flags |= 0x41;
@@ -1783,7 +1783,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                 v1[2] = 0.0f;
                 v1[2] = random_float_between(g_frame_time * 7.0f, g_frame_time * 17.0f) * IntToFloat_r3(lvl) * 1.5f
                         / IntToFloat_r3(5);
-                spawn_effect_particle_with_target_scalar(v0, v1, (rand_range(0x46, 0xCD) << 8) | 0x460A00AA, 0xA0A46, 420000.0f, c);
+                PartType22Spawn(v0, v1, (rand_range(0x46, 0xCD) << 8) | 0x460A00AA, 0xA0A46, 420000.0f, c);
             }
             for (j = 0; j < 3; j++) {
                 int c;
@@ -1798,7 +1798,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                 v1[1] = FastSin(ang) * s;
                 v1[2] = 0.0f;
                 v1[2] = random_float_between(g_frame_time * 2.4f, g_frame_time * 5.5f);
-                spawn_effect_particle_with_target_scalar(v0, v1, 0x460A1414, 0xA0A0A, 504000.03f, c);
+                PartType22Spawn(v0, v1, 0x460A1414, 0xA0A0A, 504000.03f, c);
             }
         }
         }

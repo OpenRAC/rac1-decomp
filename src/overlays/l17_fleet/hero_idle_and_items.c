@@ -26,7 +26,7 @@ extern int try_start_hero_item_idle_animation(void);
 extern float gravity_length_xy(float *v);
 extern int return_hero_animation_id_unchanged(int);
 extern int allocate_hero_voice_for_entry(int, int);
-extern void HeroQueueSequence(int bank, int seq);
+extern void hero_queue_sequence(int bank, int seq);
 extern float fast_atan2(float, float);
 extern float FastVecDist(void *, void *);
 extern float randf_sym(float lo, float hi);
@@ -43,7 +43,7 @@ extern int is_wrench_moby(char *);
 extern float FastAddRots(float, float);
 extern void *MobyGetHitMessage(void *, int, int);
 extern void hero_change_health(int n);
-extern int Hero_IsInSpecialState(void);
+extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 extern void FastVecSub(void *dst, void *a, void *b);
@@ -53,7 +53,7 @@ extern float FastVecDot(void *a, void *b);
 extern void get_moby_color(void *, void *, void *, void *);
 extern int Moby_PlaySound(int, int, int);
 extern void RippleDisturb(int, int, int, float, float, float, float);
-extern void Help_QueueAdd(int, int, int);
+extern void help_queue_add(int, int, int);
 extern float FastAbsF(float);
 extern void gravity_set_z(float *dst, float *src, float z);
 extern void spawn_hero_radial_particle_burst(void);
@@ -306,17 +306,17 @@ int HeroL17_SetMoveState(int a, int b) {
             *(int *)(q + 0x698) = 0;
             if (*(int *)(q + 0x2094) == 0x11) {
                 if ((float)*(int *)(q + 0x22A0) < 2500.0f) {
-                    Help_QueueAdd(8, scale_ticks(0x1E), 0);
+                    help_queue_add(8, scale_ticks(0x1E), 0);
                 } else if ((float)*(int *)(q + 0x22A0) < 7500.0f) {
-                    Help_QueueAdd(7, scale_ticks(0x1B), 0);
+                    help_queue_add(7, scale_ticks(0x1B), 0);
                 }
                 {
                     char *r = (char *)hero_globals_base + 0xE1D;
                     if (*(int *)(r + 0x2094) == 0x11) {
                         if ((float)*(int *)(r + 0x22A0) < 2500.0f) {
-                            Help_QueueAdd(8, scale_ticks(0x1E), 0);
+                            help_queue_add(8, scale_ticks(0x1E), 0);
                         } else if ((float)*(int *)(r + 0x22A0) < 7500.0f) {
-                            Help_QueueAdd(7, scale_ticks(0x28), 0);
+                            help_queue_add(7, scale_ticks(0x28), 0);
                         }
                     }
                 }
@@ -669,7 +669,7 @@ int HeroL17_SetMoveState(int a, int b) {
                 } else {
                     set_hero_animation(0xD, 2, (float)scale_ticks(0xE));
                 }
-                HeroQueueSequence(3, 0x12);
+                hero_queue_sequence(3, 0x12);
             }
         }
         break;
@@ -691,7 +691,7 @@ int HeroL17_SetMoveState(int a, int b) {
         *(float *)(p + 0x180) = fast_atan2(*(float *)(*(char **)(p + 0x964) + 0x10) - *(float *)(p + 0x80), *(float *)(*(char **)(p + 0x964) + 0x14) - *(float *)(p + 0x84));
         if (b) {
             set_hero_animation(0x2F, 2, (float)scale_ticks(5));
-            HeroQueueSequence(0xA, 0xE);
+            hero_queue_sequence(0xA, 0xE);
         }
         break;
     }
@@ -1547,7 +1547,7 @@ int HeroL17_SetMoveState(int a, int b) {
                 if (*(unsigned char *)(*(char **)(q + 0x2080) + 0x53) == 0x1A) n = scale_ticks(3);
                 if (*(int *)(q + 0x2090) == 1) n = scale_ticks(0x11);
                 set_hero_animation(0x1A, 0, (float)n);
-                HeroQueueSequence(6, 0x15);
+                hero_queue_sequence(6, 0x15);
             }
             break;
         }
@@ -1947,7 +1947,7 @@ int HeroL17_SetMoveState(int a, int b) {
         *(int *)(p + 0x2284) = 0;
         if (b) {
             set_hero_animation(4, 0, (float)scale_ticks(7));
-            HeroQueueSequence(0xE, 0x22);
+            hero_queue_sequence(0xE, 0x22);
         }
         break;
     }
@@ -2128,7 +2128,7 @@ int HeroL17_SetMoveState(int a, int b) {
             *(int *)(t + 0x2110) = 1;
         }
     }
-    if (Hero_IsInSpecialState() == 0) {
+    if (hero_is_in_special_state() == 0) {
         char *t = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(t + 0x1108) == 0 && *(int *)(t + 0x20F4) != 0) {
             *(int *)(t + 0x2110) = 1;

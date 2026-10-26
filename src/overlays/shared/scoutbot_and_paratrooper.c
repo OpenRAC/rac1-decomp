@@ -358,7 +358,7 @@ extern float scoutbot_beam_base_z ;
 #define D_L08_00161924_4B80 D_L08_00161924
 
 /* Draws the moby's targeting beam as a textured quad from the moby toward its target. */
-void DrawTargetBeam(char *m) {
+void draw_target_beam(char *m) {
     char *data = ((char *)((Moby *)m)->pvars);
     Packet_2D4B80 pk;
     Vec_2D4B80 matrix[3], direction, pos, delta, angles;
@@ -935,7 +935,7 @@ typedef struct { float x, y; } V2;
 extern V2 batalia_uv_scroll_speeds[];
 
 /* advances two wrapped scroll offsets by per-entry speeds */
-void AdvanceScrollOffsets(int a) {
+void advance_scroll_offsets(int a) {
     *(float *)&batalia_uv_scroll[a].a = *(float *)&batalia_uv_scroll[a].a + batalia_uv_scroll_speeds[a].x * frame_delta_time;
     if (*(float *)&batalia_uv_scroll[a].a > 1.0f) *(float *)&batalia_uv_scroll[a].a = *(float *)&batalia_uv_scroll[a].a - 1.0f;
     if (*(float *)&batalia_uv_scroll[a].a < -1.0f) *(float *)&batalia_uv_scroll[a].a = *(float *)&batalia_uv_scroll[a].a + 1.0f;
@@ -950,7 +950,7 @@ extern float scroll_pos_y[] MACRO_ADDR;
 
 /* Advances the X and Y scroll offsets of entry `i` by speed * frame step, wrapping them into [-1, 1].
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002937a0.c, FUN_L08_002f1378. */
-void AdvanceScrollEntry(int i) {
+void advance_scroll_entry(int i) {
     float *p;
     p = &scroll_pos_x_r[i * 2];
     *p += (((float *)&scroll_speed_x))[i * 2] * frame_delta_time;

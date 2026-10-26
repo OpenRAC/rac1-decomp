@@ -19,7 +19,7 @@ void MusicRequestTrack(int track, int stinger) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_002664F4);
 /* Sets the value of each active music track slot to v. */
-void Music_SetActiveTrackValue(int v) {
+void music_set_active_track_value(int v) {
     char *b = cd_read_state;
     if (*(short *)(b + 0x40) & 0x8000) *(short *)(b + 0x42) = v;
     if (*(short *)(b + 0x78) & 0x8000) *(short *)(b + 0x7A) = v;

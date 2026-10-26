@@ -373,7 +373,7 @@ int is_hero_slot_item_id_28_or_29(int arg) {
     return 0;
 }
 // Whether the hero is in mode 0x11 or 0x12, or in one of the states 0x6A, 0x82, 0x76 and 0x75.
-int Hero_IsInSpecialState(void) {
+int hero_is_in_special_state(void) {
     char *h = hero_globals_base + 0xE1D;
 
     if ((*(int *)(h + 0x208C) >= 0x11 && *(int *)(h + 0x208C) <= 0x12)
@@ -391,7 +391,7 @@ int resolve_moby_animation_id(char *a, int b) {
     return b;
 }
 /* Looks up a per-id float; returns 1 for the ids it knows, 0 otherwise. */
-int Hero_GetStateAimPitch(int id, float *out) {
+int hero_get_state_aim_pitch(int id, float *out) {
     *out = 0.0f;
     switch (id) {
     case 0x37:
@@ -1300,7 +1300,7 @@ int Hero_CanUseGadget(void) {
     }
     return 0;
 }
-extern int Hero_IsInSpecialState();
+extern int hero_is_in_special_state();
 extern void replenish_hero_drones(void);
 extern int allocate_hero_voice_for_entry(int, int);
 extern int FastDecTimer(void *);
@@ -1414,7 +1414,7 @@ void hero_switch_item(int i) {
     }
     if (i == 1) {
         Sel *g;
-        if (Hero_IsInSpecialState() || ((Sel *)(hero_globals_base + 0xE1D))->f2084 == 0x12) {
+        if (hero_is_in_special_state() || ((Sel *)(hero_globals_base + 0xE1D))->f2084 == 0x12) {
             int v;
             g = (Sel *)(hero_globals_base + 0xE1D);
             v = *(int *)((char *)g + 0x1108);
@@ -1479,7 +1479,7 @@ void hero_switch_item(int i) {
     flag4 = 0;
     if (i == 3) {
         Sel *g;
-        if (Hero_IsInSpecialState() || ((Sel *)(hero_globals_base + 0xE1D))->f2084 == 0x12) {
+        if (hero_is_in_special_state() || ((Sel *)(hero_globals_base + 0xE1D))->f2084 == 0x12) {
             if (*(int *)(help_stats_base + 0x51) != 4) {
                 int v;
                 g = (Sel *)(hero_globals_base + 0xE1D);
@@ -1697,7 +1697,7 @@ void hero_update_items(void) {
 }
 #undef SLOT
 extern void spawn_hero_item_mobies();
-extern void func_L00_0020FC18();
+extern void update_hero_item_mobys();
 extern void animate_hero_slot4_and_slot5_visuals();
 extern void update_hero_and_equipped_item_glows();
 extern void hero_update_items();
@@ -1705,12 +1705,12 @@ extern void hero_update_items();
 // per-frame hero items update: set the item flags, then run the item subsystems
 void update_hero_equipped_items(void) {
     char *g = hero_globals_base + 0xE1D;
-    if (*(short *)(g + 0x308) == 1 || (unsigned)(*(int *)(g + 0x208C) - 0x15) < 2 || Hero_IsInSpecialState()) {
+    if (*(short *)(g + 0x308) == 1 || (unsigned)(*(int *)(g + 0x208C) - 0x15) < 2 || hero_is_in_special_state()) {
         char *q = hero_globals_base + 0xE1D;
         q[0x20A7] = 1;
         q[0x20AC] = 1;
     }
-    if (Hero_IsInSpecialState()) {
+    if (hero_is_in_special_state()) {
         char *q = hero_globals_base + 0xE1D;
         q[0x20AE] = 1;
     } else {
@@ -1724,7 +1724,7 @@ void update_hero_equipped_items(void) {
         }
     }
     spawn_hero_item_mobies();
-    func_L00_0020FC18();
+    update_hero_item_mobys();
     animate_hero_slot4_and_slot5_visuals();
     update_hero_and_equipped_item_glows();
     hero_update_items();

@@ -233,7 +233,7 @@ extern VendPath *level_paths[];
 extern float veldin1_zero_vec[] MACRO_ADDR;
 
 extern void update_veldin_robot_damage_and_targeting(void *);
-extern void Manipulator_SetScale(void *, float);
+extern void manipulator_set_scale(void *, float);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern float FastVecDist(void *, void *);
 extern void set_ground_height_band(void *);
@@ -296,7 +296,7 @@ void veldin_robot_enemy_update(Moby *moby) {
     vars = (VendVars *)moby->pvars;
     update_veldin_robot_damage_and_targeting(moby);
     target = vars->target;
-    Manipulator_SetScale(vars->unk120, 2.5f);
+    manipulator_set_scale(vars->unk120, 2.5f);
     if (draw_map51_m[3] != 0) {
         EaseManipulatorOffsets((char *)moby, (char *)vars->unk120, 2, *(float *)&g_frame_scale_sq_s * 0.03f, *(float *)&g_frame_scale_sq_s * 0.3f);
     }

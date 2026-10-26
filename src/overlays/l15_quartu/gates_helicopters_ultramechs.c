@@ -1897,7 +1897,7 @@ extern float random_float_between(float, float);
 extern int random_integer_below(int);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern int rand_range(int, int);
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
+extern void PartType22Spawn(void *, void *, int, int, float, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 
 extern unsigned char hero_globals_base[];
@@ -2293,7 +2293,7 @@ spawn:
                 k = random_integer_below(100) & 1;
                 Moby_GetJointWorldPos(m, j, &v20);
                 matrix_mul_vec3(&v10, &v10, m->mtx);
-                spawn_effect_particle_with_target_scalar(&v20, &v10, k ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(1.5f, 3.0f) * 210000.0f, scale_ticks(k ? rand_range(0xA, 0xF) : rand_range(0x14, 0x1E)));
+                PartType22Spawn(&v20, &v10, k ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(1.5f, 3.0f) * 210000.0f, scale_ticks(k ? rand_range(0xA, 0xF) : rand_range(0x14, 0x1E)));
             }
         }
     } else if (m->state > 1 && m->state != 0x40) {

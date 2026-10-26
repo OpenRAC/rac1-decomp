@@ -209,7 +209,7 @@ extern int hero_slot_item_id(int);
 extern int allocate_hero_voice_for_entry(int, int);
 
 // Per-state hop velocity update for the player. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00220b80.c, FUN_L02_00223450.
-void Hero_UpdateHopVelocity(void) {
+void hero_update_hop_velocity(void) {
     Vec4 tmp;
     float x;
     float speed;

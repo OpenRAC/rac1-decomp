@@ -49,7 +49,7 @@ INCLUDE_ASM("asm/overlays", func_L05_0023BA64);
 INCLUDE_ASM("asm/overlays", func_L05_0023BAA0);
 extern char pad_globals_base[];
 extern unsigned char gHaveHeliPack[] NOT_SDA;
-extern int Hero_IsInSpecialState();
+extern int hero_is_in_special_state();
 extern void replenish_hero_drones(void);
 extern int Hero_CanUseGadget(void);
 extern int allocate_hero_voice_for_entry(int, int);
@@ -176,7 +176,7 @@ void apply_hero_item_slot_selection(int i) {
     }
     if (i == 1) {
         Sel *g;
-        if (Hero_IsInSpecialState() || ((Sel *)(hero_globals_base + 0xE1D))->f2084 == 0x12) {
+        if (hero_is_in_special_state() || ((Sel *)(hero_globals_base + 0xE1D))->f2084 == 0x12) {
             int v;
             g = (Sel *)(hero_globals_base + 0xE1D);
             v = *(int *)((char *)g + 0x1108);
@@ -241,7 +241,7 @@ void apply_hero_item_slot_selection(int i) {
     flag4 = 0;
     if (i == 3) {
         Sel *g;
-        if (Hero_IsInSpecialState() || ((Sel *)(hero_globals_base + 0xE1D))->f2084 == 0x12) {
+        if (hero_is_in_special_state() || ((Sel *)(hero_globals_base + 0xE1D))->f2084 == 0x12) {
             if (*(int *)(help_stats_base + 0x51) != 4) {
                 int v;
                 g = (Sel *)(hero_globals_base + 0xE1D);
@@ -1030,7 +1030,7 @@ typedef struct { int bank; int seq; } SndPair_254030;
 extern SndPair_254030 hoverboard_trick_sounds[];
 extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
 extern void set_hero_animation(int, int, float);
-extern void HeroQueueSequence(int bank, int seq);
+extern void hero_queue_sequence(int bank, int seq);
 extern int select_hero_hoverboard_animation_variant(void);
 
 /* Hero idle: picks the idle animation from the stick direction, and occasionally plays a fidget or the
@@ -1049,7 +1049,7 @@ void update_hero_hoverboard_trick_animations(void) {
             int a = ((unsigned char *)h)[0x88F] + 0x69;
             if (((unsigned char *)*(char **)(h + 0x2080))[0x53] != a) {
                 set_hero_animation(a, 2, (float)scale_ticks(5));
-                HeroQueueSequence(hoverboard_trick_sounds[((unsigned char *)h)[0x88F]].bank,
+                hero_queue_sequence(hoverboard_trick_sounds[((unsigned char *)h)[0x88F]].bank,
                                   hoverboard_trick_sounds[((unsigned char *)h)[0x88F]].seq);
             } else if ((float)*(int *)(h + 0xAB0) - 2.0f < *(float *)(h + 0xAA8)) {
                 ((Hero *)h)->tricks_landed[((unsigned char *)h)[0x88F]] = 1;
@@ -1618,7 +1618,7 @@ int select_hero_hoverboard_animation_variant(void) {
 }
 extern struct Hero g_hero_r2 __asm__("D_0013F450");
 /* 0x52, 0x7D, 0x68 or 0x7E from the hero's +0x884 and +0x8CE. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui/help/00237488.c, FUN_L05_002551d0. */
-int Hero_SelectAnimIdByFlags(void) {
+int hero_select_anim_id_by_flags(void) {
     struct Hero *p = &g_hero_r2;
     int f = p->race_ammo;
     if (p->board_boost_active == 0) {
@@ -1698,7 +1698,7 @@ typedef struct { char pad0[7]; unsigned char f7; } Flags_9F0;
 
 
 /* Help picker: tests the hero's state, surroundings and path, then sets a help mode or shows a hint. */
-int Hero_PickHelpMode(void)
+int hero_pick_help_mode(void)
 {
     H_9F0 *g;
     char *h;
@@ -1867,7 +1867,7 @@ L_DEC:
 extern char rilgar_hoverboard_link_table[];
 
 // Clears two slots in the game state block and refills them when the flag is set and the mode is 0x15 or 0x16.
-void Hero_UpdateLinkedTarget(void) {
+void hero_update_linked_target(void) {
     char *g = (char *)hero_globals_base + 0xE1D;
     int v = *(int *)(g + 0x86C);
 

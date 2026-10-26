@@ -49,10 +49,10 @@ extern void scale_rgba_tables(void *, int, void *, float, float, float, float, i
 extern int FastBSphereCheck(char *, float);
 extern void FastVecSub(void *, void *, void *);
 extern float FastVecLength(void *);
-extern void AdvanceScrollOffsets(int);
+extern void advance_scroll_offsets(int);
 extern void advance_wrapped_sine_pair(void *, float, float, float, void *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void AdvanceScrollEntry(int);
+extern void advance_scroll_entry(int);
 extern void AddDrawCallback(void (*)(void), void *);
 extern short pokitaru_layered_mesh_colors;
 extern short pokitaru_layered_mesh_vertex_counts;
@@ -129,9 +129,9 @@ void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
         FastVecSub(effect_to_reference_delta, reference_position_base + 0x140, effect_to_reference_delta);
         effect_distance = FastVecLength(effect_to_reference_delta);
         if (effect_distance <= 35.0f) {
-            AdvanceScrollOffsets(0);
+            advance_scroll_offsets(0);
             advance_wrapped_sine_pair(pokitaru_layered_uv_wobble, 0.52f, 0.62f, 0.06f, pokitaru_layered_wobble_phase);
-            AdvanceScrollOffsets(2);
+            advance_scroll_offsets(2);
             if (effect_distance < 15.0f) {
                 *(unsigned char *)&pokitaru_layered_fade_alpha = 0xFF;
             } else if (effect_distance < 35.0f) {
@@ -140,9 +140,9 @@ void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
                 *(char *)&pokitaru_layered_fade_alpha = 0;
             }
         }
-        AdvanceScrollEntry(0);
-        AdvanceScrollEntry(0);
-        AdvanceScrollEntry(1);
+        advance_scroll_entry(0);
+        advance_scroll_entry(0);
+        advance_scroll_entry(1);
         AddDrawCallback(draw_level11_layered_effect_batches, moby);
         break;
     }
@@ -302,9 +302,9 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
                     FastVecSub(effect_to_reference_delta, reference_position_base->pos, effect_to_reference_delta);
                     effect_distance = FastVecLength(effect_to_reference_delta);
                     if (effect_distance <= 100.0f) {
-                        AdvanceScrollOffsets(0);
+                        advance_scroll_offsets(0);
                         advance_wrapped_sine_pair(pokitaru_faded_uv_wobble, 0.52f, 0.62f, 0.06f, distance_faded_effect_sine_phase_p);
-                        AdvanceScrollOffsets(2);
+                        advance_scroll_offsets(2);
                         if (effect_distance < 80.0f) {
                             *(unsigned char *)&distance_faded_effect_fade_alpha_w = 0xFF;
                         } else if (effect_distance < 100.0f) {
@@ -313,9 +313,9 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
                             *(char *)&distance_faded_effect_fade_alpha_w = 0;
                         }
                     }
-                    AdvanceScrollEntry(0);
-                    AdvanceScrollEntry(0);
-                    AdvanceScrollEntry(1);
+                    advance_scroll_entry(0);
+                    advance_scroll_entry(0);
+                    advance_scroll_entry(1);
                     AddDrawCallback((void (*)(void))draw_level11_distance_faded_effect_batches, moby);
                 }
             }

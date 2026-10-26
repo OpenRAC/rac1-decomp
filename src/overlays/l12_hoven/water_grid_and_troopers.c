@@ -272,7 +272,7 @@ extern int store_moby_in_suck_cannon_pos(void *, void *, void *, float) __asm__(
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
-int CarriedMoby_PlaceAndSetState(char *a, void *pos, void *t, float h) {
+int carried_moby_place_and_set_state(char *a, void *pos, void *t, float h) {
     int r = store_moby_in_suck_cannon_pos(a, pos, t, h);
     if (r == 0) {
         if (*(unsigned char *)(a + 0x20) == 8) a[0x20] = 1;
@@ -1548,7 +1548,7 @@ void spawn_blarg_trooper_death_effects(void *a, void *b) {
 extern int hoven_cinematic_mode MACRO_ADDR;
 extern float hoven_zero_vec[] MACRO_ADDR;
 extern char * hoven_nearby_mobys[] ;
-extern void Manipulator_SetScale(void *, float);
+extern void manipulator_set_scale(void *, float);
 extern void process_blarg_trooper_damage_and_alerts(char *moby);
 extern void FindNearestTargetMoby(char *, float *, float);
 extern void MoveCtl_Init(void *);
@@ -1609,7 +1609,7 @@ void Moby294Update(char *moby) {
     char **pp;
 
     data = M_P(moby, 0x78);
-    Manipulator_SetScale(data + 0x120, 3.0f);
+    manipulator_set_scale(data + 0x120, 3.0f);
 
     if (hoven_cinematic_mode == 2) {
         goto hide;

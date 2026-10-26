@@ -353,7 +353,7 @@ int is_item_available(int arg0) {
 
 /* Two flat `&&` returns over race_gates_r[20/24/22].d; retail's reuse of
    the %hi register comes out by itself. */
-int MissionCond_Obj14Obj18Stage(void) {
+int get_map_point_mission_status(void) {
     if (race_gates_r[20].d != 0 && race_gates_r[24].d == 0) {
         return 1;
     }
@@ -384,7 +384,7 @@ int MissionCond_Special61AndFlag0D(void) {
 extern unsigned char gHaveMorphORay NOT_SDA;
 
 /* Returns 2 when the Morph-o-Ray is owned, else whether D_0013DC34 is set. */
-int Mission_GetMorphORayStatus(void) {
+int get_morph_o_ray_status(void) {
     if (gHaveMorphORay != 0) return 2;
     return race_gates_87_status != 0;
 }
@@ -392,7 +392,7 @@ int Mission_GetMorphORayStatus(void) {
 extern unsigned char gHaveHologuise NOT_SDA;
 
 /* Returns whether the Hologuise is owned. */
-int HasHologuise(void) {
+int has_hologuise(void) {
     return gHaveHologuise != 0;
 }
 

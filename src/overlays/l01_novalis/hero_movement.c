@@ -398,7 +398,7 @@ extern int is_moby_in_class_range_500_to_540(int);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern void probe_hero_airborne_wall_contact(void);
 extern void launch_hero_wrench(void);
-extern void HeroSpeedFromTable(void);
+extern void hero_speed_from_table(void);
 extern void adjust_hero_pose_targets_from_motion(void);
 extern void update_hero_lean_and_sway_parameters(void);
 extern void hero_integrate_velocity(void);
@@ -1476,7 +1476,7 @@ void HeroStatePhysics(void) {
                     g_hero.unk3BE = 0;
                 }
             }
-            HeroSpeedFromTable();
+            hero_speed_from_table();
             if (g_hero.unk930 > 0.0f) {
 
                 build_scaled_hero_move_impulse(0.7f, 0.0f);
@@ -1669,7 +1669,7 @@ void HeroStatePhysics(void) {
         break;
     case 0x6:
     case 0x2D:
-        HeroSpeedFromTable();
+        hero_speed_from_table();
         if (g_hero.move_lock_timer == 0) {
             update_hero_airborne_planar_motion();
         }

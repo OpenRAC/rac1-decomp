@@ -44,7 +44,7 @@ extern int func_001160D8(void);
 extern unsigned char *batalia_part_type43_textures;
 
 /* Spawns a coloured effect at pos with the given vector, size and lifetime. */
-unsigned char *spawn_colored_effect(int owner, void *pos, void *vec, short ticks,
+unsigned char *func_L08_0027C218(int owner, void *pos, void *vec, short ticks,
                                  unsigned char r, unsigned char g, unsigned char b, unsigned char a,
                                  float size)
 {

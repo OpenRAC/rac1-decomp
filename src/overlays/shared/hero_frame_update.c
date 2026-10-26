@@ -5,7 +5,7 @@
 extern char hero_globals_base[];
 extern int scale_ticks(int);
 extern void FadeToBlack(int);
-extern void HeroFrameUpdate(void);
+extern void hero_frame_update(void);
 extern void advance_hero_animation(void);
 extern void hero_update(void);
 extern void update_hero_ground_material_effects(void);
@@ -51,7 +51,7 @@ void HeroL03_FrameUpdate(void) {
     *(short *)(g + 0x1EB2) = 0;
     *(short *)(g + 0x1EB0) = 0;
     if (*(unsigned char *)(g + 0x20A4) != 0) {
-        HeroFrameUpdate();
+        hero_frame_update();
         return;
     }
     advance_hero_animation();

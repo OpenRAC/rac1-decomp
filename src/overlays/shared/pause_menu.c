@@ -132,7 +132,7 @@ extern void transfer_draw_buffer_chunks(int, int, int);
 extern void select_moby_context(int);
 extern Moby_277208 *create_menu_preview_moby(int);
 extern void MobySetAnimation(void *, int, int);
-extern void QuadMoby_Update(void);
+extern void quad_moby_update(void);
 
 /* Open the pause menu: pick its page from the menu state, then set up the menu camera and view. */
 void initialize_pause_menu(void) {
@@ -307,7 +307,7 @@ void initialize_pause_menu(void) {
             if (o != 0) {
                 char *mtx;
                 o->flags &= 0xFFFD;
-                ((Moby_277208 **)menu_preview_mobys)[i]->update = (void *)QuadMoby_Update;
+                ((Moby_277208 **)menu_preview_mobys)[i]->update = (void *)quad_moby_update;
                 mtx = player_camera;
                 ((Moby_277208 **)menu_preview_mobys)[i]->x = *(float *)(mtx + 0x140);
                 ((Moby_277208 **)menu_preview_mobys)[i]->y = *(float *)(mtx + 0x144);
@@ -1064,7 +1064,7 @@ extern int memcard_last_save_slot MACRO_ADDR;
 extern int level_loop_exit_requested MACRO_ADDR;
 
 /* input of a pause menu entry: accept returns -1, cancel goes back a page or returns -1 when closing is allowed, and 0x20 sets the transition flags */
-int PauseMenu_EntryInput(char *entry) {
+int pause_menu_entry_input(char *entry) {
  unsigned int pressed = g_controller_state_r.pressed_unmasked;
  if (pressed & 0xD00) {
   if (*(int *)(entry + 0x30) & 0x20) map_menu_state_target_level = g_current_level_index_m;

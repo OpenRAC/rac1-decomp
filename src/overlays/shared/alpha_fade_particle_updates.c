@@ -481,7 +481,7 @@ void update_moving_size_alpha_tween_particle(char *m) {
 }
 typedef struct { int a[4]; } V54 __attribute__((aligned(16)));
 typedef struct { int i0; float f4; float f8; float fc; void *p10; void *p14; } Q54;
-extern void PathSampleAtDistance(int, float *, float *, void *, float, float);
+extern void path_sample_at_distance(int, float *, float *, void *, float, float);
 extern int scale_ticks(int);
 extern int PackColorRGBA(float, float, float, float);
 extern int coll_sphere_mobys(float, void *, int, void *, int);
@@ -498,7 +498,7 @@ void update_timed_sphere_probed_particle(unsigned char *m) {
     int r;
     old = *pos;
     q->f4 += q->f8;
-    PathSampleAtDistance(q->i0, &x, &y, pos, q->f4, q->fc);
+    path_sample_at_distance(q->i0, &x, &y, pos, q->f4, q->fc);
     if (FastDecTimer(m + 0xA)) {
         KillPart(m);
         return;

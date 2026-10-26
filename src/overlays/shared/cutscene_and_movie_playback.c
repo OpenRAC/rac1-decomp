@@ -15,7 +15,7 @@ extern int ground_shadow_count MACRO_ADDR;
 extern int level_reset_counter_3f0 MACRO_ADDR;
 extern int level_reset_counter_3f4 MACRO_ADDR;
 /* Clears the frame, ground-shadow and timing counters. */
-void ResetFrameCounters(void) {
+void reset_frame_counters(void) {
     level_reset_counter_524 = 0;
     radial_select_auto_close_flag[0] = 0;
     level_reset_counter_52c = 0;
@@ -87,7 +87,7 @@ extern void initialize_bolt_counter_hud(void);
 extern void update_bolt_counter_hud_animation_and_visibility(void);
 extern void draw_bolt_counter_hud_panel(void);
 extern void prepare_level_transition_with_help_cleanup(void);
-extern void CountExpiredMobys(void);
+extern void count_expired_mobys(void);
 extern void update_visible_resident_objects(void);
 extern void enqueue_voice_request(void);
 extern void update_ambience_target_cycle(void);
@@ -199,9 +199,9 @@ void handle_pause_input(void) {
             return;
         }
     }
-    if ((g_debug_menu.w8 & 2) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(pad_globals_base + 0x2460))->w1A4 & 0x200))) ResetFrameCounters();
+    if ((g_debug_menu.w8 & 2) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(pad_globals_base + 0x2460))->w1A4 & 0x200))) reset_frame_counters();
     if ((g_debug_menu.w8 & 2) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(pad_globals_base + 0x2460))->w1A4 & 0x200))) {
-        CountExpiredMobys();
+        count_expired_mobys();
         update_visible_resident_objects();
         enqueue_voice_request();
         update_ambience_target_cycle();
@@ -341,7 +341,7 @@ void StartCutscene(int arg) {
 }
 extern void calculate_dma_transfer_address(void);
 extern void FadeToBlack(int);
-extern void ResetFrameCounters(void);
+extern void reset_frame_counters(void);
 extern void UpdateViewContext(void);
 extern void DeleteMoby(void *);
 extern int HeroEnterMoveState(int, int);
@@ -351,7 +351,7 @@ extern void HeroClearObjectFlags(void);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void process_menu_entry(void *, void *, int);
 extern int scale_ticks(int);
-extern void Music_SetActiveTrackValue(int v);
+extern void music_set_active_track_value(int v);
 
 typedef struct { char pad[0x5A]; unsigned short x5a; } O5A;
 typedef struct { unsigned char cnt; } MC;
@@ -381,7 +381,7 @@ void finish_cutscene(void) {
     skip_frame = 1;
     calculate_dma_transfer_address();
     FadeToBlack(12);
-    ResetFrameCounters();
+    reset_frame_counters();
     hero_control_mode_11_flag = cutscene_state_c.x4b;
     render_view_tan_half_fov = 0.63f;
     cinematic_mode = 0;
@@ -425,7 +425,7 @@ void finish_cutscene(void) {
         active_scene_trigger.b = 0;
         process_menu_entry(a, b, 1);
     }
-    Music_SetActiveTrackValue(scale_ticks(30));
+    music_set_active_track_value(scale_ticks(30));
 }
 extern void FastVecCross(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
@@ -595,7 +595,7 @@ typedef struct {
     u8 sample_capture_status;
 } DebugMenuState;
 extern DebugMenuState g_debug_menu_r __asm__("D_L00_0016C158");
-void ResetFrameCounters(void);
+void reset_frame_counters(void);
 extern struct PadStateWords g_controller_state_r __asm__("D_0013CA40");
 int scale_ticks(int);
 void update_game_frame_and_idle_counters(void);
@@ -665,7 +665,7 @@ void update_cutscene_playback(void) {
     f32 b[4] __attribute__((aligned(16)));
 
     if ((g_debug_menu_r.update_flags & 2) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & 0x200))) {
-        ResetFrameCounters();
+        reset_frame_counters();
     }
     if (!(g_debug_menu_r.update_flags & 0x10) || (pad0_pressed & 0x220)) {
         apply_level_specific_cutscene_moby_effects();

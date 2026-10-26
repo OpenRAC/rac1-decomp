@@ -208,7 +208,7 @@ extern char *spawn_floating_mine(void *, void *);
 extern void update_linked_moby_position(void *);
 extern int update_bolt_thief_path_movement(char *);
 extern float Spring(float *, float *, float, float, float, float);
-extern void Moby_SetStateOne(void *);
+extern void moby_set_state_one(void *);
 extern void emit_moby_offset_particles(void *);
 extern int mine_fall(void *, void *);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
@@ -334,7 +334,7 @@ void BoltThiefUpdate(L14Moby *m) {
                 MobySetAnimation(m, 4, 0);
             } else {
                 if (a->child) {
-                    Moby_SetStateOne(a->child);
+                    moby_set_state_one(a->child);
                     a->child = 0;
                 }
                 m->state = 5;
@@ -2672,7 +2672,7 @@ done:
 INCLUDE_ASM("asm/overlays", func_L14_00317C4C);
 extern char hero_globals_base[];
 // Sets the exit camera's state field to 3 unless the global is 0xF.
-void ExitCamera_SetState(char *moby) {
+void exit_camera_set_state(char *moby) {
     if (*(int *)(hero_globals_base + 0x2EA9) != 0xF) {
         *(short *)(moby + 0x7E) = 3;
     }

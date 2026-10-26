@@ -599,7 +599,7 @@ extern float FastSin(float);
 extern void add_vectors(void *, void *, void *);
 extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
 extern void reset_leg_rig_from_animation(void *, void *);
-extern int LegWalkerUpdate(void *, void *, float, float, float);
+extern int leg_walker_update(void *, void *, float, float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern float SpringTurn(float, float, void *, float, float, float);
 extern int mine_fall(void *, void *);
@@ -944,7 +944,7 @@ void woodcut_bot_update(Moby *m) {
             m->command &= ~8;
             reset_leg_rig_from_animation(m, d->f160);
         }
-        LegWalkerUpdate(m, d->f160, g_frame_time * 4.0f, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), g_frame_time_sq * 20.0f);
+        leg_walker_update(m, d->f160, g_frame_time * 4.0f, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), g_frame_time_sq * 20.0f);
         if (dist < 3.0f && adiff < 1.5707964f) {
             MobyBlendAnimation(m, 4, 0, scale_ticks(10));
             reset_walker_gait_helpers(d->f160);
@@ -992,7 +992,7 @@ void woodcut_bot_update(Moby *m) {
             if (vec_distance_xy(pos, d->f3B0) < 2.0f) {
                 m->state = 7;
             } else {
-                LegWalkerUpdate(m, d->f160, g_frame_time * 4.0f, fast_atan2(d->f3B0[0] - m->pos.x, d->f3B0[1] - m->pos.y), g_frame_time_sq * 20.0f);
+                leg_walker_update(m, d->f160, g_frame_time * 4.0f, fast_atan2(d->f3B0[0] - m->pos.x, d->f3B0[1] - m->pos.y), g_frame_time_sq * 20.0f);
                 if (d->f3DC != -1) {
                     float v[4];
 
@@ -1019,7 +1019,7 @@ void woodcut_bot_update(Moby *m) {
             reset_walker_gait_helpers(d->f160);
             m->state = 8;
         } else {
-            LegWalkerUpdate(m, d->f160, g_frame_time * 0.0f, m->rot.z, g_frame_time_sq * 20.0f);
+            leg_walker_update(m, d->f160, g_frame_time * 0.0f, m->rot.z, g_frame_time_sq * 20.0f);
             if (d->f217 == 0) {
                 if (excited) {
                     m->state = 4;

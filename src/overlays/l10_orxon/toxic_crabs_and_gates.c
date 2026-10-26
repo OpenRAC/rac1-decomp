@@ -93,7 +93,7 @@ extern short toxic_crab_backoff_distance;
 extern short toxic_crab_turn_threshold_deg;
 
 extern void update_toxic_crab_hit_reactions_and_targeting(void *);
-extern void EmitMobyParticles(void *);
+extern void emit_moby_particles(void *);
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern float FastVecDist(void *, void *);
 extern int coll_line(void *, void *, int, void *, void *);
@@ -649,8 +649,8 @@ void toxic_crab_update(Moby *m) {
             float p[4];
 
             spawn_type_52_particle_near_moby((char *)m);
-            EmitMobyParticles(m);
-            EmitMobyParticles(m);
+            emit_moby_particles(m);
+            emit_moby_particles(m);
             spawn_color_swapped_explosion_burst(m, &m->pos, -1, 1.25f, 20.0f);
             SpawnBreakFragment((char *)m, 0x775, (float *)&m->pos, (char *)m + 0x40, 0, 2, 0.0f, orxon_zero_vec, orxon_zero_vec, orxon_zero_vec);
             SpawnBreakFragment((char *)m, 0x77A, (float *)&m->pos, (char *)m + 0x40, 0, 2, 0.0f, orxon_zero_vec, orxon_zero_vec, orxon_zero_vec);
@@ -720,7 +720,7 @@ extern int FastTweenColor(int, int, float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 // Per-frame update of the moby in arg0: builds two vectors from its position and the trig helpers, then calls the level's helpers for each of its entries.
-void EmitMobyParticles(void *p) {
+void emit_moby_particles(void *p) {
     char *arg0 = p;
     float v[4];
     float a[4];

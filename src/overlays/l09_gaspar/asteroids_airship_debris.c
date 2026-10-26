@@ -2270,7 +2270,7 @@ extern char chain_link_no_hull_msg[];
 extern char chain_link_no_next_msg[];
 
 /* Airship chain link (class 1181) update: finds the parts it hangs between, swings between them, and on its trigger drops, wakes its neighbours and bursts. */
-void AirshipChainLinkUpdate(Moby *m) {
+void airship_chain_link_update(Moby *m) {
     Data_305710 *d = (*(Data_305710 **)&m->pvars);
     float v20[4];
     float v30[4];

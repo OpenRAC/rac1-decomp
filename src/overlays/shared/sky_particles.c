@@ -243,7 +243,7 @@ void draw_four_sky_shells_with_animated_particles(void) {
 extern int level_frame_counter MACRO_ADDR;
 void fast_euler_to_matrix(void *,void *);
 /* refreshes two rotating shrub transform layers */
-void SkyShellsRotateTwo(void) {
+void sky_shells_rotate_two(void) {
  float v[4] __attribute__((aligned(16)));
  *(short *)(sky_data+4)=0;
  set_identity_matrix(sky_shell_matrix);

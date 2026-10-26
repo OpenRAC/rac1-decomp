@@ -855,7 +855,7 @@ extern float FastDiffRots(float, float);
 extern float ProbeGroundHeight(void *, int, float);
 extern float random_angle_radians(void);
 extern void Moby583_ActivateGroup(int idx);
-extern void Moby_InitActionMode(void *moby);
+extern void moby_init_action_mode(void *moby);
 extern void request_thruster_pack_lock_red_wait(unsigned char *arg, int value);
 extern void end_thruster_pack_lock_red_wait(unsigned char *arg);
 extern void start_position_and_rotation_transition(char *moby, void *v0, void *v1, void *v2, void *v3, void *v4, int a6, int a7, int a8);
@@ -948,7 +948,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         if (((BossShared *)&veldin2_cutscene_state)->f30 == 2) {
             if (scale_ticks(0xA28) <= ((BossShared *)&veldin2_cutscene_state)->f34 &&
                 ((BossShared *)&veldin2_cutscene_state)->f34 <= scale_ticks(0xB36)) {
-                Moby_InitActionMode(d->f330);
+                moby_init_action_mode(d->f330);
             }
         } else if (((BossShared *)&veldin2_cutscene_state)->f30 == 3) {
             if (scale_ticks(0x3B6) < ((BossShared *)&veldin2_cutscene_state)->f34 &&
@@ -1722,7 +1722,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         ang = fast_atan2(d->f330->pos.x - moby->pos.x, d->f330->pos.y - moby->pos.y);
         SteerAngleWithVelocity(aim, &d->f370, ang, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                           g_frame_time * 6.2831855f);
-        Moby_InitActionMode(d->f330);
+        moby_init_action_mode(d->f330);
         if (advance_drek_boss_planar_position_toward_target((char *)moby, g_frame_time * 12.0f, ((f32 *)&d->f330->pos)) != 0) {
             int ticks;
 

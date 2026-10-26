@@ -1550,7 +1550,7 @@ extern s32 coll_sphere(f32, void *, s32, struct Moby *);
 extern void fast_subtract_rotations_cf(void *);
 extern void vec_reflect(void *, void *, void *);
 extern void jet_animate(struct Moby *, f32);
-extern f32 normalize_angle(f32);
+extern f32 WrapAngle(f32);
 extern struct Moby *respawn_spawner_child(struct Moby *, Vec4 *);
 /* Bounce a bubble off what it hit: slow on floors until it stops, play its bounce sound. */
 static inline void bubble_bounce(struct Moby *moby, BubbleVars *vars) {
@@ -1630,8 +1630,8 @@ void spawner_egg_update(struct Moby *moby) {
         if (FastDecTimer(&vars->life) != 0) {
             moby->state = 2;
         }
-        moby->rot.x = normalize_angle(vars->vel.f[0]);
-        moby->rot.y = normalize_angle(vars->vel.f[1]);
+        moby->rot.x = WrapAngle(vars->vel.f[0]);
+        moby->rot.y = WrapAngle(vars->vel.f[1]);
         moby->collision = moby->pclass->collision;
         vars->owner->collision = vars->owner->pclass->collision;
         vars->vel.f[2] -= g_frame_time_sq * 9.8f;

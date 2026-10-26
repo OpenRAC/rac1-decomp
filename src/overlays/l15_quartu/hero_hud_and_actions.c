@@ -73,7 +73,7 @@ extern int try_start_hero_jump(int, int);
 extern int pad_pressed_within(int, int, int *);
 extern float FastDiffRots(float, float);
 extern void request_hero_voice_if_enabled(int a0, int a1, int a2);
-extern void HeroSpeedFromTable(void);
+extern void hero_speed_from_table(void);
 extern void remove_hero_cached_moby_and_clear_slot_three_moby_flags(void);
 extern int is_wrench_moby(void *);
 extern void set_hero_state_for_vehicle_mode(void);
@@ -81,7 +81,7 @@ extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
 extern int truncate_float_to_s32(float);
 extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 extern int hero_handle_jump_press(void);
-extern void Hero_SetAttackTicks(int id);
+extern void hero_set_attack_ticks(int id);
 extern int check_hero_forward_collision_height(void);
 extern float read_pad_float_history(int);
 extern int try_start_hero_item_idle_animation(void);
@@ -380,7 +380,7 @@ void HeroL15_UpdateStateTransitions(void) {
                         HeroQuartu_TrySetMoveState(0x41, 1);
                         break;
                     }
-                    HeroSpeedFromTable();
+                    hero_speed_from_table();
                     if (g_hero.target_speed > 0.0f) {
                         HeroQuartu_TrySetMoveState(0x41, 1);
                         break;
@@ -404,7 +404,7 @@ void HeroL15_UpdateStateTransitions(void) {
                             HeroQuartu_TrySetMoveState(4, 1);
                             break;
                         }
-                        HeroSpeedFromTable();
+                        hero_speed_from_table();
                         if (g_hero.target_speed > 0.0f) {
                             HeroQuartu_TrySetMoveState(2, 1);
                             break;
@@ -678,7 +678,7 @@ void HeroL15_UpdateStateTransitions(void) {
                             break;
                         }
                         if (scale_ticks(0x64) < g_hero.state_timer && g_hero.queued_anim_frame < 0x1A) {
-                            Hero_SetAttackTicks(2);
+                            hero_set_attack_ticks(2);
                             g_hero.queued_anim_frame = 0x1A;
                         }
                     }
