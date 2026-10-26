@@ -1,12 +1,12 @@
 {
  "measures": {
-  "fuzzy_match_percent": 76.71813149909006,
+  "fuzzy_match_percent": 76.95284304098682,
   "total_code": "3694748",
-  "matched_code": "2811748",
-  "matched_code_percent": 76.10121177411828,
+  "matched_code": "2820420",
+  "matched_code_percent": 76.33592331601506,
   "total_functions": 5097,
-  "matched_functions": 4822,
-  "matched_functions_percent": 94.60466941338042,
+  "matched_functions": 4825,
+  "matched_functions_percent": 94.66352756523445,
   "complete_code": "251536",
   "complete_code_percent": 6.807933856382086,
   "total_units": 140,
@@ -10897,7 +10897,7 @@
   {
    "name": "game/loaders",
    "measures": {
-    "fuzzy_match_percent": 99.990642777983,
+    "fuzzy_match_percent": 99.99064277798303,
     "total_code": "10828",
     "matched_code": "10232",
     "matched_code_percent": 94.49575175471001,
@@ -18445,13 +18445,13 @@
   {
    "name": "Shared level code",
    "measures": {
-    "fuzzy_match_percent": 84.96524603760608,
+    "fuzzy_match_percent": 85.69619434863671,
     "total_code": "1186404",
-    "matched_code": "1005132",
-    "matched_code_percent": 84.72088765715557,
+    "matched_code": "1013804",
+    "matched_code_percent": 85.45183596818622,
     "total_functions": 1930,
-    "matched_functions": 1846,
-    "matched_functions_percent": 95.64766839378238,
+    "matched_functions": 1849,
+    "matched_functions_percent": 95.80310880829016,
     "complete_code": "0",
     "complete_code_percent": 0.0,
     "total_units": 1,
@@ -20585,7 +20585,7 @@
     {
      "name": "func_L00_0020FC18",
      "size": "1828",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "150392",
      "metadata": {
       "virtual_address": "2160000"
@@ -29873,7 +29873,7 @@
     {
      "name": "func_L00_002B8AE8",
      "size": "2624",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "839144",
      "metadata": {
       "virtual_address": "2848752"
@@ -32105,7 +32105,7 @@
     {
      "name": "func_L00_002DF410",
      "size": "4220",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "996696",
      "metadata": {
       "virtual_address": "3006304"
@@ -40062,7 +40062,7 @@
   {
    "name": "Level 07: Umbris",
    "measures": {
-    "fuzzy_match_percent": 79.5517104755607,
+    "fuzzy_match_percent": 79.55171047556071,
     "total_code": "72588",
     "matched_code": "57600",
     "matched_code_percent": 79.35195900148786,
@@ -47820,7 +47820,7 @@
   {
    "name": "Level 17: Drek's Fleet",
    "measures": {
-    "fuzzy_match_percent": 59.86298210622294,
+    "fuzzy_match_percent": 59.86298210622292,
     "total_code": "140384",
     "matched_code": "80788",
     "matched_code_percent": 57.547868702986094,
@@ -49567,13 +49567,13 @@
    "id": "level_code",
    "name": "Level code",
    "measures": {
-    "fuzzy_match_percent": 75.20869157907367,
+    "fuzzy_match_percent": 75.47688261322969,
     "total_code": "3233516",
-    "matched_code": "2420028",
-    "matched_code_percent": 74.84199861698535,
+    "matched_code": "2428700",
+    "matched_code_percent": 75.11018965114135,
     "total_functions": 3396,
-    "matched_functions": 3233,
-    "matched_functions_percent": 95.20023557126031,
+    "matched_functions": 3236,
+    "matched_functions_percent": 95.28857479387514,
     "complete_code": "43932",
     "complete_code_percent": 1.3586448930514028
    }
@@ -49612,13 +49612,13 @@
    "id": "common",
    "name": "Shared level code",
    "measures": {
-    "fuzzy_match_percent": 84.96524603760608,
+    "fuzzy_match_percent": 85.69619434863671,
     "total_code": "1186404",
-    "matched_code": "1005132",
-    "matched_code_percent": 84.72088765715557,
+    "matched_code": "1013804",
+    "matched_code_percent": 85.45183596818622,
     "total_functions": 1930,
-    "matched_functions": 1846,
-    "matched_functions_percent": 95.64766839378238,
+    "matched_functions": 1849,
+    "matched_functions_percent": 95.80310880829016,
     "complete_code": "0",
     "complete_code_percent": 0.0
    }
@@ -49747,7 +49747,7 @@
    "id": "level_07",
    "name": "Level 07: Umbris",
    "measures": {
-    "fuzzy_match_percent": 79.5517104755607,
+    "fuzzy_match_percent": 79.55171047556071,
     "total_code": "72588",
     "matched_code": "57600",
     "matched_code_percent": 79.35195900148786,
@@ -49897,7 +49897,7 @@
    "id": "level_17",
    "name": "Level 17: Drek's Fleet",
    "measures": {
-    "fuzzy_match_percent": 59.86298210622294,
+    "fuzzy_match_percent": 59.86298210622292,
     "total_code": "140384",
     "matched_code": "80788",
     "matched_code_percent": 57.547868702986094,
