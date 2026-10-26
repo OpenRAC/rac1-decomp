@@ -12,7 +12,7 @@ extern void update_sky_shells_static(void);
 extern void draw_sky_shells_with_particles_and_rotating_shell(void);
 extern void update_sky_shells_animated(void);
 extern void draw_four_sky_shells_with_animated_particles(void);
-extern void SkyShellsRotateTwo(void);
+extern void sky_shells_rotate_two(void);
 extern void draw_sky_shells_with_fast_and_slow_rotation(void);
 extern void draw_sky_shells_with_particles_and_modulo_50000_rotation(void);
 extern void draw_three_sky_shells_with_three_particle_types(void);
@@ -43,7 +43,7 @@ void draw_level_sky(void) {
         draw_four_sky_shells_with_animated_particles();
         break;
     case 3:
-        SkyShellsRotateTwo();
+        sky_shells_rotate_two();
         break;
     case 4:
         draw_sky_shells_with_fast_and_slow_rotation();
@@ -124,11 +124,11 @@ extern float random_angle_radians(void);
 extern float random_float_between(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern int rand_range(int, int);
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, int, float);
+extern void PartType22Spawn(void *, void *, int, int, int, float);
 extern void emit_moby_particle_pairs(void *);
 extern void apply_env_zone_lighting(void *);
 extern void render_environment_mapped_object();
-extern void GlowQuadsDraw();
+extern void glow_quads_draw();
 extern float g_frame_time MACRO_ADDR;
 extern VeldinLevelState cutscene_state;
 
@@ -173,7 +173,7 @@ void apply_level_specific_cutscene_moby_effects(void) {
                 b = random_angle_radians();
                 BuildSphericalOffset(v, random_float_between(g_frame_time * 0.7f, g_frame_time * 2.2f), a, b);
                 r = scale_ticks(0xC);
-                spawn_effect_particle_with_target_scalar(buf, v, 0x80808080, 0x808080, rand_range(r, scale_ticks(0x23)), 147000.0f);
+                PartType22Spawn(buf, v, 0x80808080, 0x808080, rand_range(r, scale_ticks(0x23)), 147000.0f);
             }
         }
     }
@@ -185,7 +185,7 @@ void apply_level_specific_cutscene_moby_effects(void) {
         m = cutscene_state.unk17C;
         if (m != 0 && (u32)(cutscene_state.timer - 0x1C) < 6) {
             emit_moby_particle_pairs(m);
-            AddDrawCallback((void *)GlowQuadsDraw, (void *)m);
+            AddDrawCallback((void *)glow_quads_draw, (void *)m);
         }
     }
     if (g_current_level_index_m == 15 && (u32)(cutscene_state.state - 3) < 2) {

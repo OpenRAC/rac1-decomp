@@ -392,9 +392,9 @@ extern void spawn_moby_breakup_effect(char *, int);
 extern void AddDrawCallback(int, char *);
 extern void Moby_PlaySound(int, int, void *);
 extern void draw_tube_mesh96_twin(void);
-extern void EffectQuad_DrawSingle(void);
+extern void effect_quad_draw_single(void);
 extern void draw_tube_mesh64_twin(void);
-extern void DrawBackdropMesh(void);
+extern void draw_backdrop_mesh(void);
 
 extern int scripted_camera_sequence_active MACRO_ADDR;
 extern int scripted_camera_sequence_mode MACRO_ADDR;
@@ -659,7 +659,7 @@ extern long GetEffectTex_r4(int) __asm__("func_001F4868");
 
 /* Draws the 64 quads of the backdrop mesh, each corner scaled from the shared vertex table.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_003003f0. */
-void DrawBackdropMesh(void) {
+void draw_backdrop_mesh(void) {
     Q3003f0 quad;
     B3003f0 buf;
     unsigned int c;
@@ -702,7 +702,7 @@ extern float blarg_tube_mesh96_uvs[][2];
 extern short blarg_tube_mesh96_corner_indices[][4][2];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_00300720. */
-void EffectQuad_DrawSingle(void) {
+void effect_quad_draw_single(void) {
     FRow_l06 m[4];
     int colors[4];
     float uv[4][2];

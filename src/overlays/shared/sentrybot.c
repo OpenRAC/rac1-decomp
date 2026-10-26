@@ -10,7 +10,7 @@ typedef struct { char pad0[0x2084]; int f2084; char pad1[0x258]; short f22E0; } 
 typedef struct { char pad0[0x180]; int f180[4]; } Sentry98BB8;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void update_sentrybot_hit_response_and_target_visibility(void *, int);
-extern void Manipulator_SetScale(void *, float);
+extern void manipulator_set_scale(void *, float);
 extern float FastVecDist(void *, void *);
 extern void set_ground_height_band(void *);
 extern int FastDecTimer(void *);
@@ -117,7 +117,7 @@ void sentrybot_update(unsigned char *moby) {
     ((Moby *)moby)->flags = (((Moby *)moby)->flags & 0xFFBE) | 0x1000;
     *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
     target = *(char **)(data + 0x110);
-    Manipulator_SetScale(data + 0x1A0, 2.5f);
+    manipulator_set_scale(data + 0x1A0, 2.5f);
     if (((Moby *)moby)->visible != 0 && FastVecDist(moby + 0x10, quartu_camera_pos) < 28.0f) {
         set_ground_height_band(moby);
         ((Moby *)moby)->shadow_range = 0x16;
@@ -2955,7 +2955,7 @@ extern int activate_first_inactive_group_moby(int idx, void *pos);
 extern void update_sentrybot_alarm_effect(void *arg);
 
 /* Sentrybot alarm update (moby class 408, levels 15 and 17): turn, watch for the hero, raise the alarm. */
-void SentrybotAlarmUpdate(Moby *m) {
+void sentrybot_alarm_update(Moby *m) {
     L15AlarmData *d = (void *)m->pvars;
     float f;
     int r;
@@ -3215,14 +3215,14 @@ void emit_sine_modulated_rgba_draw_packet(void) {
     emit_rgba_draw_packet(k & 0xFF, k >= 9, k >= 17, r);
 }
 typedef int u128 __attribute__((mode(TI)));
-extern int Hero_IsInSpecialState(void);
+extern int hero_is_in_special_state(void);
 
 // Checks whether the pad-state object is in state 0x18/0x19 and a probed height is above a threshold.
-int Hero_IsNearGround(void) {
+int hero_is_near_ground(void) {
     char *p;
     float vec[4];
     float h;
-    if (Hero_IsInSpecialState() != 0) return 1;
+    if (hero_is_in_special_state() != 0) return 1;
     p = hero_globals_base + 0xE1D;
     if ((unsigned)(*(int *)(p + 0x2084) - 0x18) < 2) {
         *(u128 *)vec = *(u128 *)(p + 0x80);

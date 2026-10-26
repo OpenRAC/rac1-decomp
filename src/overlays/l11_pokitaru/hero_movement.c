@@ -237,12 +237,12 @@ extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern void probe_hero_airborne_wall_contact(void);
 extern float FastVecDot(void *, void *);
 extern void launch_hero_wrench(void);
-extern void HeroSpeedFromTable(void);
+extern void hero_speed_from_table(void);
 extern void adjust_hero_pose_targets_from_motion(void);
 extern void update_hero_lean_and_sway_parameters(void);
 extern void hero_integrate_velocity(void);
 extern void air_accel(float);
-extern void Hero_UpdateHopVelocity(void);
+extern void hero_update_hop_velocity(void);
 
 /* Hero state machine: per-frame movement and physics for the current hero state (level 11 build). */
 void HeroL11_UpdateMovement(void) {
@@ -1579,7 +1579,7 @@ void HeroL11_UpdateMovement(void) {
                     g_hero.unk3BE = 0;
                 }
             }
-            HeroSpeedFromTable();
+            hero_speed_from_table();
             if (g_hero.unk930 > 0.0f) {
 
                 build_scaled_hero_move_impulse(0.7f, 0.0f);
@@ -1733,9 +1733,9 @@ void HeroL11_UpdateMovement(void) {
                 g_hero.state.step = 1;
             }
         }
-        HeroSpeedFromTable();
+        hero_speed_from_table();
         if (g_hero.move_lock_timer == 0) {
-            Hero_UpdateHopVelocity();
+            hero_update_hop_velocity();
         }
         adjust_hero_pose_targets_from_motion();
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
@@ -1943,7 +1943,7 @@ void HeroL11_UpdateMovement(void) {
                     }
                 }
             } else {
-                Hero_UpdateHopVelocity();
+                hero_update_hop_velocity();
                 if (g_hero.state.current == 0x12) {
                     float len;
 
@@ -2124,7 +2124,7 @@ void HeroL11_UpdateMovement(void) {
     case 0x55:
         stick_target(g_frame_time * 1.5f, 0);
         if (g_hero.move_lock_timer == 0) {
-            Hero_UpdateHopVelocity();
+            hero_update_hop_velocity();
         }
         HeroMoveDownAlongNormal(g_hero.motion.velocity.f, g_hero.motion.velocity.f, g_frame_time_sq * 21.0f);
         if (g_hero.motion.velocity.f[2] < g_frame_time * -15.0f) {

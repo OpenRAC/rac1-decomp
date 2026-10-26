@@ -40,7 +40,7 @@ extern int g_current_level_index MACRO_ADDR;
 /* Per-state horizontal velocity and turn updates for the hero's movement states: func_L12_00236270
  * (help_002284A8.c, adapted from Lombyte's project (GPL-3.0), FUN_L12_00235c08) instruction for instruction, plus the
  * state 0x4C arm. Lombyte's own version is FUN_L00_00214658. */
-void HeroMoveStateVelocity(void) {
+void hero_move_state_velocity(void) {
     Vec4 tmp;
     f32 x;
     f32 speed;
@@ -384,7 +384,7 @@ void adjust_hero_pose_targets_from_motion(void) {
     }
 }
 extern float FastAbsF(float);
-extern char lean_state[];
+extern char D_L00_0017A780[];
 extern float g_frame_time MACRO_ADDR;
 #define PF(o) (*(float *)(g + (o)))
 #define PI(o) (*(int *)(g + (o)))
@@ -415,7 +415,7 @@ void update_hero_motion_response_parameters(void) {
         t = t * FastAbsF(t) * 1.25f;
         h = hero_globals_base + 0xE1D;
         r = *(float *)(h + 0x164) / (g_frame_time * 3.0f);
-        x = lean_state;
+        x = D_L00_0017A780;
         n = -t;
         XF(0x1240) = n * 0.3f;
         if (1.0f < r) r = 1.0f;
@@ -431,19 +431,19 @@ void update_hero_motion_response_parameters(void) {
         t = PF(0x188) * 1.6f;
         if (1.25f < t) t = 1.25f;
         else if (t < -1.25f) t = -1.25f;
-        x2 = lean_state;
+        x2 = D_L00_0017A780;
         a = -t * 0.52f;
         X2(0x1240) = a;
         if (0.28f < a) X2(0x1240) = 0.28f;
         else if (a < -0.28f) X2(0x1240) = -0.28f;
-        x2b = lean_state;
+        x2b = D_L00_0017A780;
         b = t * 1.7f;
         X2B(0x1198) = b;
         X2B(0x10E8) = t * 0.58f;
         if (0.7f < b) X2B(0x1198) = 0.7f;
         else if (b < -0.7f) X2B(0x1198) = -0.7f;
         d = FastAbsF(t) * 0.2f;
-        x2c = lean_state;
+        x2c = D_L00_0017A780;
         X2C(0x1194) = d;
         c = 0.2f;
         if (c < d) goto st94;
@@ -453,7 +453,7 @@ st94:
             X2C(0x1194) = c;
         }
         d = FastAbsF(t) * 0.16f;
-        x2d = lean_state;
+        x2d = D_L00_0017A780;
         X2D(0x1190) = d;
         return;
     }
@@ -462,7 +462,7 @@ st94:
         u = PF(0x188);
         if (1.4f < u) u = 1.4f;
         else if (u < -1.4f) u = -1.4f;
-        x3 = lean_state;
+        x3 = D_L00_0017A780;
         X3(0x10E8) = u * 0.29f;
         X3(0x1198) = u * 0.87f;
     }
@@ -914,7 +914,7 @@ void release_voice_slot_cf(int idx, int a, int b) {
 extern unsigned char g_hero_r4[] __asm__("D_0013F450");
 
 /* fills the first free record in the help queue */
-void Help_QueueAdd(int x, int y, int z) {
+void help_queue_add(int x, int y, int z) {
     char *base = (char *)g_hero_r4;
     char *p = base + 0x21D8;
     int i = 0;

@@ -67,7 +67,7 @@ extern void raise_kernel_trap(void);
 extern f32 FastVecDist_r(V_2cfcb8 *, V_2cfcb8 *) __asm__("func_001F9D10");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/veldin_ship.c, FUN_L00_002cfcb8. */
-void GroundAttachedUpdate(M_2cfcb8 *moby) {
+void ground_attached_update(M_2cfcb8 *moby) {
     V_2cfcb8 probe_top;
     V_2cfcb8 probe_bottom;
     V_2cfcb8 probe_up;
@@ -959,7 +959,7 @@ extern int coll_line_r2(void *, void *, int, int, int) __asm__("func_L00_001EFFF
 extern void compute_glove_of_doom_launch_velocity_r(float *pos, float *tgt, float *output, float speed, float unused, float range) __asm__("func_L00_002C8680");
 
 /* Same camera step as func_L00_002C88A8, writing the following vector in the target data. */
-void DecoyGlove_AimThrow(int collision_arg, Moby *carrier, float *position)
+void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position)
 {
     Vec_2D3608 anchor;
     Mat3_2D3608 rotation;
@@ -1123,7 +1123,7 @@ L3D10:
     ((Moby *)moby)->state = 3;
 L3D34:
     *(u128_D3B20 *)&loc = *(u128_D3B20 *)(d + 0x40);
-    DecoyGlove_AimThrow((int)moby, (void *)d, (float *)&loc);
+    decoy_glove_aim_throw((int)moby, (void *)d, (float *)&loc);
 
     switch (((Moby *)moby)->state) {
     case 0:
@@ -3176,7 +3176,7 @@ char *spawn_burst_moby(Vy *src, float f) {
 }
 extern void DeleteMoby(void);
 /* Fade-out update: grows the moby, lowers its alpha and deletes it when faded. */
-void GrowAndFadeOutUpdate(char *a) {
+void grow_and_fade_out_update(char *a) {
     *(float *)(a + 0x2C) = *(float *)(a + 0x2C) * 1.025f;
     a[0x23] = a[0x23] - 3;
     if ((unsigned char)a[0x23] < 4) DeleteMoby();

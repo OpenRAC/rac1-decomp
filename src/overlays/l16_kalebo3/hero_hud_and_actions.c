@@ -80,7 +80,7 @@ extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
 extern int truncate_float_to_s32(float);
 extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 extern int hero_handle_jump_press(void);
-extern void Hero_SetAttackTicks(int id);
+extern void hero_set_attack_ticks(int id);
 extern int check_hero_forward_collision_height(void);
 extern float read_pad_float_history(int);
 extern int try_start_hero_item_idle_animation(void);
@@ -121,9 +121,9 @@ extern float calculate_triangular_corrected_scalar(float *a, float *b, int *out,
 extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
 extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
 extern int nearest_rail_point(void *, void *, void *, void *, void *, void *, int, int);
-extern int Hero_PickHelpMode(void);
+extern int hero_pick_help_mode(void);
 extern int select_hero_hoverboard_animation_variant(void);
-extern int Hero_SelectAnimIdByFlags(void);
+extern int hero_select_anim_id_by_flags(void);
 extern void update_hero_hoverboard_trick_animations(void);
 extern void process_hero_race_object_interactions(void);
 extern void update_hero_hoverboard_trick_score(void);
@@ -711,7 +711,7 @@ void Hero_ChooseStateTransition(void) {
                             break;
                         }
                         if (scale_ticks(0x64) < g_hero.state_timer && g_hero.queued_anim_frame < 0x1A) {
-                            Hero_SetAttackTicks(2);
+                            hero_set_attack_ticks(2);
                             g_hero.queued_anim_frame = 0x1A;
                         }
                     }
@@ -2036,7 +2036,7 @@ void Hero_ChooseStateTransition(void) {
                     break;
                 case 107:
                     FastDecTimer(&g_hero.board_jump_cooldown);
-                    if (Hero_PickHelpMode()) {
+                    if (hero_pick_help_mode()) {
                         break;
                     }
                     if (g_hero.board_jump_frames != 0) {
@@ -2143,7 +2143,7 @@ void Hero_ChooseStateTransition(void) {
                         }
                     }
                     {
-                        int next = Hero_SelectAnimIdByFlags();
+                        int next = hero_select_anim_id_by_flags();
 
                         if ((moby[0x53] == 0x52 || moby[0x53] == 0x7D) && (next == 0x68 || next == 0x7E)) {
                             set_hero_animation(next, 0, scale_ticks(7));
@@ -2173,7 +2173,7 @@ void Hero_ChooseStateTransition(void) {
                             g_hero.anim_speed = 2.2f;
                         }
                     }
-                    if (Hero_PickHelpMode()) {
+                    if (hero_pick_help_mode()) {
                         break;
                     }
                     update_hero_hoverboard_trick_animations();

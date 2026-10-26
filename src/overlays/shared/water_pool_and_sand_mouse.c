@@ -1223,7 +1223,7 @@ extern char g_hero[];
 extern float sand_mouse_move_ctl_probe_height;
 
 /* Builds a camera-relative transform for a moby and steps its height. */
-void SandMouse_ComputeTarget(char *a, char *m) {
+void sand_mouse_compute_target(char *a, char *m) {
     Vs t0;
     Vs t1;
     char *g = g_hero;
@@ -1787,7 +1787,7 @@ void sand_mouse_update(Moby *moby) {
             && ((Hero *)(hero_globals_base + 0xE1D))->vehicle_mode == 0
             && !fast_dec_timer(&d->t60)
             && d->count < sand_mouse_max_shots) {
-            SandMouse_ComputeTarget((char *)moby, (char *)d);
+            sand_mouse_compute_target((char *)moby, (char *)d);
             update_hover_moby_steering_r(moby, d);
         } else {
             if (moby->prev_seq != 5) {
@@ -2796,7 +2796,7 @@ extern int store_moby_in_suck_cannon_pt(void *, void *, void *, float) __asm__("
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
-int Moby_HoldStateIfFound(char *a, void *v, void *t, float h) {
+int moby_hold_state_if_found(char *a, void *v, void *t, float h) {
     int r = store_moby_in_suck_cannon_pt(a, v, t, h);
     if (r == 0) {
         if (*(unsigned char *)(a + 0x20) == 14) a[0x20] = 1;
@@ -2841,7 +2841,7 @@ extern int process_moby_suck_cannon_suction_h(void *, void *, void *, float) __a
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
-int Moby_HoldStateIfGrabbed(char *a, void *pos, void *target, float h) {
+int moby_hold_state_if_grabbed(char *a, void *pos, void *target, float h) {
     int r = process_moby_suck_cannon_suction_h(a, pos, target, h);
     if (r == 0) {
         if (*(unsigned char *)(a + 0x20) == 7) a[0x20] = 1;

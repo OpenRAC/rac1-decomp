@@ -211,7 +211,7 @@ extern void init_camera_system_r(void) __asm__("func_L00_001ED600");
 extern void fast_dec_timer_r(void *) __asm__("func_001F9908");
 #define P g_hero_r2
 /* Camera-mode transition update for an InitCamera moby: counts frames while the player and the other camera are in an allowed state, and eases the camera (0.07 / 0.14 rad) toward the target. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ea488. */
-int Camera_TransitionUpdate(u8 *m, char *a1) {
+int camera_transition_update(u8 *m, char *a1) {
     Q_2eb938 *q;
     char *o;
     char *r;

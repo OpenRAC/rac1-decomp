@@ -251,7 +251,7 @@ extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern int rand_range(int, int);
 extern int scale_ticks(int);
-extern void spawn_effect_particle_with_target_scalar(void *, void *, unsigned int, unsigned int, float, int);
+extern void PartType22Spawn(void *, void *, unsigned int, unsigned int, float, int);
 
 /* Spawns three bursts of sparks around a moby with random velocity, colours and size. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002e6518. */
 void spawn_birdbot_movement_particles(SplashMoby *m, u128 *origin) {
@@ -284,7 +284,7 @@ void spawn_birdbot_movement_particles(SplashMoby *m, u128 *origin) {
         c1 = &inner.c[random_integer_below(6)];
         c2 = &outer.c[random_integer_below(6)];
         size = random_float_between(105000.0f, 157500.0f);
-        spawn_effect_particle_with_target_scalar(&tmp, &vel, *c1, *c2, size, scale_ticks(rand_range(5, 0xF)));
+        PartType22Spawn(&tmp, &vel, *c1, *c2, size, scale_ticks(rand_range(5, 0xF)));
     }
 }
 typedef u32 u128_E7B68 __attribute__((mode(TI), aligned(16)));

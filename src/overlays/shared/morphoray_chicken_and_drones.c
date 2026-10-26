@@ -1018,7 +1018,7 @@ extern int process_moby_suck_cannon_suction_r(void *, void *, void *, float) __a
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
-int Moby_SetStateFromCheck(char *a, void *p, void *t, float h) {
+int moby_set_state_from_check(char *a, void *p, void *t, float h) {
     int r = process_moby_suck_cannon_suction_r(a, p, t, h);
     if (r == 0) {
         if (*(unsigned char *)(a + 0x20) == 5) a[0x20] = 1;
@@ -2882,7 +2882,7 @@ extern s32 is_moby_in_class_range_500_to_540(void *);
 extern void update_crate_stack_motion(struct Moby *);
 extern Contact *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, int *, int *, int);
-extern void GroundAttachedUpdate(struct Moby *);
+extern void ground_attached_update(struct Moby *);
 extern void create_linked_class_0326_moby(struct Moby *);
 extern float multiply_global_factor(float);
 extern s32 truncate_float_to_s32(f32);
@@ -2962,7 +2962,7 @@ void crate_update(struct Moby *moby) {
         }
         crate_vars->unkA8 = 0;
         if ((crate_vars->flags ^ 1) & 1) {
-            GroundAttachedUpdate(moby);
+            ground_attached_update(moby);
         }
         crate_vars->flags |= 0x14;
         if (moby->oclass == 0x1FF) {

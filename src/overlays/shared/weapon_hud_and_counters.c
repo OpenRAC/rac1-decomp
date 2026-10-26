@@ -413,7 +413,7 @@ extern short star_init_limit2_gp;
 extern short hud_star_column_count;
 
 /* fills 100 hud particle records with randomised positions and drift */
-void Hud_InitParticles(HudElem *e) {
+void hud_init_particles(HudElem *e) {
     int i;
     float v, lo, span, hi;
     int n;
@@ -448,7 +448,7 @@ extern short star_init_limit2_gp;
 
 /* bounces the drifting particles around a box that depends on their index, after updating its
    HUD element (the element it is the callback of, passed on in $a0) */
-void Hud_UpdateParticles(HudElem *e) {
+void hud_update_particles(HudElem *e) {
     int i;
     int cnt;
     int par;
@@ -646,7 +646,7 @@ int draw_hud_stars(HudElem *rec) {
 }
 /* func_L00_002377E0 -- src/overlays/shared/hud_00235960.c
  * EXACT. The e->h copy goes through __builtin_memcpy (scalar MEM, as in
- * Hud_DrawGaugeFrame) so the D_L00_0015F844 load is not anti-dependent on
+ * hud_draw_gauge_frame) so the D_L00_0015F844 load is not anti-dependent on
  * the e->w store. The offsets are computed first (half-size / 17 and
  * -half-size / 116) and scaled by 16 after the v1 rows: that keeps the
  * neg/div chain early but its *16 and store late, which gives the
@@ -897,7 +897,7 @@ extern void apply_hud_slide_offset(HudElem *, int *, int *, int, int);
 extern void draw_rotated_hud_sprite(int, int, int, int, int, int);
 
 /* Draws a HUD gauge frame. */
-int Hud_DrawGaugeFrame(HudElem *e) {
+int hud_draw_gauge_frame(HudElem *e) {
     int pos[2];
     int left, top, right, bottom, w, h, bh, step, i;
     {
@@ -2295,7 +2295,7 @@ extern char menu_item_enabled_115[];
 extern short weapon_hud_suspended;
 extern int D_hud_pair[2] __asm__("D_L00_0015FA44") MACRO_ADDR;
 extern void Hud_SetBarValueById(int, int);
-extern void HudWeaponUpdate(void);
+extern void hud_weapon_update(void);
 extern int draw_weapon_ammo_hud_panel(char *);
 
 /* Shows or hides the weapon HUD element depending on the current weapon. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_text_002377b8.c, FUN_L00_0023adb8. */
@@ -2316,7 +2316,7 @@ void update_weapon_hud_state(void) {
         }
         if (w != 0) {
             D_hud_pair[0] = w;
-            D_hud_pair[1] = queue_animation_update(0x10, w + 60000, (int)initialize_numeric_hud_timer_and_base_dimensions, (int)HudWeaponUpdate,
+            D_hud_pair[1] = queue_animation_update(0x10, w + 60000, (int)initialize_numeric_hud_timer_and_base_dimensions, (int)hud_weapon_update,
                                            (int)draw_weapon_ammo_hud_panel, (int)(menu_item_enabled_115 + 0x21 + w * 4),
                                            item_price_table[w].unkE);
         } else if (mode == 2) {

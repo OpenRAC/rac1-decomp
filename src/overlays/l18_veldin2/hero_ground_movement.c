@@ -162,8 +162,8 @@ extern void adjust_hero_pose_targets_from_motion(void);
 extern void update_hero_lean_and_sway_parameters(void);
 extern void hero_integrate_velocity(void);
 extern void air_accel(float);
-extern void Hero_UpdateHopVelocity(void);
-extern int SpawnHomingBolt(void *, void *, float, float, float, int, float, float);
+extern void hero_update_hop_velocity(void);
+extern int spawn_homing_bolt(void *, void *, float, float, float, int, float, float);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 
 /* Hero state machine: per-frame movement and physics for the current hero state. */
@@ -2048,7 +2048,7 @@ void HeroL18_UpdateStatePhysics(void) {
         }
         update_hero_target_speed_from_stick();
         if (g_hero.move_lock_timer == 0) {
-            Hero_UpdateHopVelocity();
+            hero_update_hop_velocity();
         }
         adjust_hero_pose_targets_from_motion();
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
@@ -2258,7 +2258,7 @@ void HeroL18_UpdateStatePhysics(void) {
                     }
                 }
             } else {
-                Hero_UpdateHopVelocity();
+                hero_update_hop_velocity();
                 if (g_hero.state.current == 0x12) {
                     float len;
 
@@ -2548,7 +2548,7 @@ void HeroL18_UpdateStatePhysics(void) {
                     Moby_GetJointWorldPos(g_hero.moby, i + 3, vec[0]);
                     vec[0][0] += FastCos(g_hero.motion.rot.f[2]) * 1.4f;
                     vec[0][1] += FastSin(g_hero.motion.rot.f[2]) * 1.4f;
-                    SpawnHomingBolt(g_hero.moby, vec[0], g_hero.motion.rot.f[2], 0.0f, 0.5f, 0, g_hero.motion.rot.f[2], 0.0f);
+                    spawn_homing_bolt(g_hero.moby, vec[0], g_hero.motion.rot.f[2], 0.0f, 0.5f, 0, g_hero.motion.rot.f[2], 0.0f);
                 }
             }
             if (g_hero.air_frames.s != 0) {
@@ -2567,7 +2567,7 @@ void HeroL18_UpdateStatePhysics(void) {
             vec[0][2] -= 1.0f;
             MobySphereHitDirectional((int)g_hero.moby, 3.5f, vec[0], 0x30000, 40.0f, 1.0f, 0, 1, 0);
             if (g_hero.move_lock_timer == 0) {
-                Hero_UpdateHopVelocity();
+                hero_update_hop_velocity();
             }
             HeroMoveDownAlongNormal(g_hero.motion.velocity.f, g_hero.motion.velocity.f, g_frame_time_sq * 12.0f);
             if (g_hero.motion.velocity.f[2] < g_frame_time * -10.0f) {
@@ -2671,7 +2671,7 @@ void HeroL18_UpdateStatePhysics(void) {
     case 0x55:
         stick_target(g_frame_time * 1.5f, 0);
         if (g_hero.move_lock_timer == 0) {
-            Hero_UpdateHopVelocity();
+            hero_update_hop_velocity();
         }
         HeroMoveDownAlongNormal(g_hero.motion.velocity.f, g_hero.motion.velocity.f, g_frame_time_sq * 21.0f);
         if (g_hero.motion.velocity.f[2] < g_frame_time * -15.0f) {

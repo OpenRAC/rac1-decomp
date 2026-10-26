@@ -636,7 +636,7 @@ extern int store_moby_in_suck_cannon_h(Level18VendorMoby *, void *, void *, floa
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
-int Moby_HoldStateWhileActive(Level18VendorMoby *moby, void *arg, void *t, float h) {
+int moby_hold_state_while_active(Level18VendorMoby *moby, void *arg, void *t, float h) {
     int active = store_moby_in_suck_cannon_h(moby, arg, t, h);
     if (active != 0) {
         moby->state = 4;
@@ -990,7 +990,7 @@ typedef struct {
 } Level18VendorActionMoby;
 
 /* Initialize the vendor action mode and scale. */
-void Moby_InitActionMode(Level18VendorActionMoby *moby) {
+void moby_init_action_mode(Level18VendorActionMoby *moby) {
     Level18VendorActionData *data = moby->data;
     data->mode = 5;
     data->scale = 1.5f;
@@ -2332,7 +2332,7 @@ extern short homing_spark_travel_speed;
 extern void spawn_explosion_burst(void *);
 extern void initialize_electric_bolt_effect_if_requested(void *);
 extern void update_electric_bolt_geometry_and_particles(void *);
-extern void HomingSpark_Draw(char *);
+extern void homing_spark_draw(char *);
 extern void MobySphereHitDirectional_r(int, void *, float, int, float, float, int, int, int) __asm__("func_L00_0025A8E8");
 
 /* Moby update for a homing spark (class 0x3D7). */
@@ -2385,7 +2385,7 @@ void update_moby_target_travel_and_electric_effects(char *moby) {
         break;
     }
     }
-    AddDrawCallback(HomingSpark_Draw, moby);
+    AddDrawCallback(homing_spark_draw, moby);
 }
 /* Spawns a class 0x3D7 homing spark at vector with the given owner and value. */
 char *create_class_3d7_moby(void *owner, void *vector, int value) {
@@ -2437,7 +2437,7 @@ typedef struct {
 } Pkt;
 
 /* Draw callback for the homing spark. */
-void HomingSpark_Draw(char *moby) {
+void homing_spark_draw(char *moby) {
     Pkt pkt[4];
     float rot[4];
     float m[4][4][4];
@@ -2713,7 +2713,7 @@ typedef struct { V_ec290 p[5]; } P_ec290;
 
 extern void FastVecCross(void *, void *, void *);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
-extern float normalize_angle(float);
+extern float WrapAngle(float);
 extern float randf_sym(float lo, float hi);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern int rand_range(int, int);
@@ -2788,7 +2788,7 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
         float b;
         f21 = *(float *)&electric_bolt_wave_height_start
               + (*(float *)&electric_bolt_wave_height_end - *(float *)&electric_bolt_wave_height_start) * (IntToFloat(i) * 0.05f);
-        f21 = f21 * FastSin(normalize_angle(*(float *)&electric_bolt_wave_phase + (float)i * *(float *)&electric_bolt_wave_phase_step));
+        f21 = f21 * FastSin(WrapAngle(*(float *)&electric_bolt_wave_phase + (float)i * *(float *)&electric_bolt_wave_phase_step));
         f21 = f21 + randf_sym(*(float *)&electric_bolt_wave_jitter_base, *(float *)&electric_bolt_wave_jitter_range);
         electric_bolt_points[0][i].f[2] = electric_bolt_points[0][i].f[2] - electric_bolt_wave_heights[i];
         electric_bolt_wave_heights[i] = f21;
@@ -2828,9 +2828,9 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
             float h;
             float ang;
             float m;
-            g = normalize_angle(*(float *)&electric_bolt_twist_phase + (float)i * *(float *)&electric_bolt_twist_phase_step);
+            g = WrapAngle(*(float *)&electric_bolt_twist_phase + (float)i * *(float *)&electric_bolt_twist_phase_step);
             h = *(float *)&electric_bolt_twist_height
-                * FastSin(normalize_angle(*(float *)&electric_bolt_swell_phase + (float)i * *(float *)&electric_bolt_swell_phase_step));
+                * FastSin(WrapAngle(*(float *)&electric_bolt_swell_phase + (float)i * *(float *)&electric_bolt_swell_phase_step));
             qcopy(&electric_bolt_points[1][i], &electric_bolt_points[0][i]);
             h = h * FastSin(g) + randf_sym(0.0f, 0.1f);
             electric_bolt_points[1][i].f[2] = electric_bolt_points[1][i].f[2] + h;

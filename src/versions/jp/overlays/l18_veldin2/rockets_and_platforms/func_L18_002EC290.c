@@ -34,7 +34,7 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
         float b;
         f21 = *(float *)&electric_bolt_wave_height_start
               + (*(float *)&electric_bolt_wave_height_end - *(float *)&electric_bolt_wave_height_start) * (IntToFloat(i) * 0.05f);
-        f21 = f21 * FastSin(normalize_angle(*(float *)&electric_bolt_wave_phase + (float)i * *(float *)&electric_bolt_wave_phase_step));
+        f21 = f21 * FastSin(WrapAngle(*(float *)&electric_bolt_wave_phase + (float)i * *(float *)&electric_bolt_wave_phase_step));
         f21 = f21 + randf_sym(*(float *)&electric_bolt_wave_jitter_base, *(float *)&electric_bolt_wave_jitter_range);
         electric_bolt_points[0][i].f[2] = electric_bolt_points[0][i].f[2] - electric_bolt_wave_heights[i];
         electric_bolt_wave_heights[i] = f21;
@@ -74,9 +74,9 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
             float h;
             float ang;
             float m;
-            g = normalize_angle(*(float *)&electric_bolt_twist_phase + (float)i * *(float *)&electric_bolt_twist_phase_step);
+            g = WrapAngle(*(float *)&electric_bolt_twist_phase + (float)i * *(float *)&electric_bolt_twist_phase_step);
             h = *(float *)&electric_bolt_twist_height
-                * FastSin(normalize_angle(*(float *)&electric_bolt_swell_phase + (float)i * *(float *)&D_J_L18_001620AC));
+                * FastSin(WrapAngle(*(float *)&electric_bolt_swell_phase + (float)i * *(float *)&D_J_L18_001620AC));
             qcopy(&electric_bolt_points[1][i], &electric_bolt_points[0][i]);
             h = h * FastSin(g) + randf_sym(0.0f, 0.1f);
             electric_bolt_points[1][i].f[2] = electric_bolt_points[1][i].f[2] + h;

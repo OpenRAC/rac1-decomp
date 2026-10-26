@@ -266,7 +266,7 @@ void gadgetron_ceo_update(Moby *m) {
     EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->head, 1);
 }
 extern void jet_group_state(int, int, int, int);
-extern void Challenge_SetLayoutParam(float f);
+extern void challenge_set_layout_param(float f);
 extern void MusicRequestTrack(int, int);
 extern float kalebo3_hero_fall_state_height MACRO_ADDR;
 
@@ -285,10 +285,10 @@ void activate_gadgetron_ceo_challenge_environment(char *moby) {
         p++;
     }
     *(float *)&kalebo3_hero_fall_state_height = 74.0f;
-    Challenge_SetLayoutParam(76.0f);
+    challenge_set_layout_param(76.0f);
     MusicRequestTrack(2, 6);
 }
-extern void Challenge_SetLayoutParam(float);
+extern void challenge_set_layout_param(float);
 
 // Resets the moby's two arrays of handles, then starts the follow-up effect.
 void restore_gadgetron_ceo_non_challenge_environment(char *moby)
@@ -306,7 +306,7 @@ void restore_gadgetron_ceo_non_challenge_environment(char *moby)
         jet_group_state(p[0], 1, 1, 0);
         p++;
     }
-    Challenge_SetLayoutParam(100.0f);
+    challenge_set_layout_param(100.0f);
     MusicRequestTrack(0, 8);
 }
 extern char hero_globals_base[];
@@ -963,7 +963,7 @@ extern void font_queue_vu_state(void);
 extern void draw_env_overlay_mesh(int, int, int, char *, int);
 
 /* Sets up the draw state, then draws the three entries of the level's table. */
-void EnvMapA_Draw(void) {
+void env_map_a_draw(void) {
     int *a = (int *)&envmap_a_vertex_counts;
     int *b = (int *)&envmap_a_vertex_bufs;
     int *c = (int *)&envmap_a_unused_bufs;
@@ -1232,7 +1232,7 @@ void draw_level16_reflection_mesh_batch(void) {
         draw_env_overlay_mesh(((int *)envmap_d_vertex_counts)[i], ((int *)envmap_d_vertex_bufs)[i], ((int *)envmap_d_color_bufs)[i], envmap_d_uvs, 1);
     }
 }
-void EnvMapA_Draw(void);
+void env_map_a_draw(void);
 typedef struct {float x,y,z,radius;} L16SingleSphere_2ea128;
 void func_001F49B0_EB5A0(int arg0, int arg1) __asm__("func_001F49B0");
 extern short envmap_e_vertex_counts;
@@ -1287,7 +1287,7 @@ void update_level16_three_mesh_bounds_and_callback(unsigned char *m) {
         break;
     }
     case 1:
-        func_001F49B0_EB5A0(EnvMapA_Draw, m);
+        func_001F49B0_EB5A0(env_map_a_draw, m);
         break;
     }
 }

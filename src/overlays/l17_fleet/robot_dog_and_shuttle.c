@@ -158,7 +158,7 @@ extern int process_moby_suck_cannon_suction_pos(void *, void *, void *, float) _
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
-int EnemyStunUpdate(unsigned char *moby, void *pos, void *target, float h) {
+int enemy_stun_update(unsigned char *moby, void *pos, void *target, float h) {
     int result = process_moby_suck_cannon_suction_pos(moby, pos, target, h);
     if (result) {
         moby[0x20] = 12;
@@ -420,7 +420,7 @@ extern float fleet_ripple_ring_uv_scroll_speed SDATA(D_L17_0016234C);
 extern T4 fleet_ripple_ring_uv_scroll_factors;
 
 /* Builds the rippling 89-point ring around the moby (template points moved to its position, z waved by distance from the centre), then draws it twice with scrolled texture coordinates. */
-void DrawRippleRing(char *moby) {
+void draw_ripple_ring(char *moby) {
     RippleData *d = ((RippleData *)((Moby *)moby)->pvars);
     T4 t;
     float scale;
@@ -865,7 +865,7 @@ extern int PlayBankSound(int, int, int);
 extern void ShowBanner(int arg0, int arg1);
 extern void STUB_printf();
 extern int Help_Request(int a, int b);
-extern int Hero_IsInSpecialState(void);
+extern int hero_is_in_special_state(void);
 extern void clear_active_help_record(void);
 extern void HeroL17_SetMoveState(int, int);
 extern void set_follow_camera_blend_output_flags(void);
@@ -1028,7 +1028,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             *(int *)&((Moby *)d)->scale = 0;
             *(int *)(d + 0x30) = -1;
         }
-        if (scale_ticks(0xE10) < *(int *)&((Moby *)d)->scale && tgt != -1 && Hero_IsInSpecialState()
+        if (scale_ticks(0xE10) < *(int *)&((Moby *)d)->scale && tgt != -1 && hero_is_in_special_state()
             && fleet_help_popup_state[0] == 0 && fleet_help_popup_state[9] == -1 && gHaveHeliPack[2] != 0) {
             Help_Request(0x4E2E, 0x78);
             *(int *)(d + 0x30) = tgt;
@@ -1688,7 +1688,7 @@ extern short fleet_reflection_strips_normals;
 extern short fleet_reflection_strips_colors;
 
 // Sets up draw state, then draws two entries from five parallel int tables.
-void DrawReflectionStrips(void) {
+void draw_reflection_strips(void) {
     int i;
     float *p;
     VU1_addGSregister(6, GetEffectTex(0x30));
@@ -1710,7 +1710,7 @@ extern short fleet_reflection_strip_normals;
 extern short fleet_reflection_strip_colors;
 
 // Sets up draw state, then draws one entry from five parallel int tables.
-void DrawReflectionStrip(void) {
+void draw_reflection_strip(void) {
     int i;
     float *p;
     VU1_addGSregister(6, GetEffectTex(0x30));

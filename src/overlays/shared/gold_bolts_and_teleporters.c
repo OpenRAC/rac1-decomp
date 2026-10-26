@@ -475,7 +475,7 @@ extern s32 coll_line(void *, void *, s32, void *, s32);
 extern s32 coll_sphere(f32, void *, s32, void *);
 extern void vec_reflect(void *, void *, void *);
 extern s32 rand_range(s32, s32);
-extern void spawn_effect_particle_with_target_scalar(void *, void *, s32, s32, f32, s32);
+extern void PartType22Spawn(void *, void *, s32, s32, f32, s32);
 
 /* Debris update: falls and spins, bounces off what it hits with a random kick, bursts into 40 sparks once it comes to rest (or its unk10 timer runs out), or fades out over unk28 frames when unk20 is set.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002f6328.c, FUN_L01_002f8718. */
@@ -545,7 +545,7 @@ void rock_update(struct Moby *m) {
             FastVecAdd(&p, &p, &m->pos);
             vec_scale_to_length(&v, &v, random_float_between(0.0f, 0.5f) * g_frame_time);
             FastVecAdd(&v, &v, &d->vel);
-            spawn_effect_particle_with_target_scalar(&p, &v, 0x1F0C1820, 0x81020, random_float_between(70000.0f, 140000.0f),
+            PartType22Spawn(&p, &v, 0x1F0C1820, 0x81020, random_float_between(70000.0f, 140000.0f),
                              scale_ticks(rand_range(20, 60)));
         }
         DeleteMoby(m);

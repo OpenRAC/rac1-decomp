@@ -112,7 +112,7 @@ extern u32 level_frame_counter MACRO_ADDR;
 extern s32 free_moby_slot_count MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_map_0024e7a8.c, FUN_L00_0024e7a8. */
-void CountExpiredMobys(void) {
+void count_expired_mobys(void) {
     u8 *p;
     s32 flag = 0;
     free_moby_slot_count = 0;

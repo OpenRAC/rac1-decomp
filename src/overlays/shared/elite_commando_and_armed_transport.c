@@ -134,7 +134,7 @@ char *spawn_class_32_moby(char *owner, char *vec, void *pos, void *vel, int c) {
     return m;
 }
 extern void update_blarg_elite_commando_damage_and_pursuit(char *);
-extern void Manipulator_SetScale(void *, float);
+extern void manipulator_set_scale(void *, float);
 extern float random_angle_radians(void);
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
@@ -189,7 +189,7 @@ void blarg_elite_commando_update(char *m) {
     } else {
         qcopy(target, owner + 0x10);
     }
-    if (draw_map51_update[3]) Manipulator_SetScale(d + 0x130, 2.5f);
+    if (draw_map51_update[3]) manipulator_set_scale(d + 0x130, 2.5f);
     switch (((unsigned char *)m)[0x20]) {
     case 0:
         *(int *)(d + 0x2EC) = 0;
@@ -1171,7 +1171,7 @@ extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_grindrail_barrier_effect();
 extern int check_grindrail_barrier_release_condition(int);
-extern void Group_TriggerNearest(int);
+extern void group_trigger_nearest(int);
 
 /* Updates a moby effect and advances it when its linked object is ready. */
 void grindrail_barrier_update(unsigned char *m) {
@@ -1210,7 +1210,7 @@ void grindrail_barrier_update(unsigned char *m) {
         if (*(int *)(barrier_data + 0x20) != -1 && check_grindrail_barrier_release_condition(*(int *)(barrier_data + 0x20))) {
             barrier_moby->collision = 0;
             barrier_moby->state = 2;
-            Group_TriggerNearest(*(int *)(barrier_data + 0x20));
+            group_trigger_nearest(*(int *)(barrier_data + 0x20));
         }
         break;
     case GRINDRAIL_BARRIER_STATE_COLLISION_DISABLED:
@@ -1327,7 +1327,7 @@ extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern void Moby_PlaySound(int, int, int);
 
 /* picks the nearest moby in a list (skipping class 0x5A3) and acts on it */
-void Group_TriggerNearest(int idx) {
+void group_trigger_nearest(int idx) {
     short *p = kalebo3_moby_groups[idx];
     char *best = 0;
     float bestd = 50000.0f;
@@ -1349,7 +1349,7 @@ void Group_TriggerNearest(int idx) {
 }
 extern void draw_level16_reflection_mesh_batch(void);
 /* Draw-only moby update: after init, queue the reflection mesh draw every frame. */
-void Moby_UpdateDrawOnly(unsigned char *moby) {
+void moby_update_draw_only(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
         moby[0x20] = 1;

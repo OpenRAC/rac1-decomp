@@ -94,7 +94,7 @@ extern void set_hero_animation(int, int, float);
 extern void stick_target(int, float);
 extern void ClampVectorLength(void *a, float x);
 extern int hero_idle_sequence(int);
-extern void HeroQueueSequence(int bank, int seq);
+extern void hero_queue_sequence(int bank, int seq);
 extern short g_frame_time_r __asm__("D_0015EE6C");
 extern float g_frame_scale_sq MACRO_ADDR;
 extern int hero_run_step_start_frames_1 MACRO_ADDR;
@@ -113,7 +113,7 @@ void update_hero_locomotion_state(void) {
     if (*(int *)(pad_globals_base_r + 0x2600) & 0xA) {
         HeroEnterMoveState(4, 0);
         set_hero_animation(0xD, 2, -2.0f);
-        HeroQueueSequence(3, 0x12);
+        hero_queue_sequence(3, 0x12);
         return;
     }
     c = hero_globals_base + 0xE1D;

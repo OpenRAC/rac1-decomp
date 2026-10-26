@@ -413,7 +413,7 @@ void HeroStartSequenceInBank(int bank, int seq) {
    is valid and SEQ is below the count of the current animation's bank.
    The base pointer is a local inside the test, as retail forms it only
    there. */
-void HeroQueueSequence(int bank, int seq) {
+void hero_queue_sequence(int bank, int seq) {
     if (bank >= 0) {
         char *base = g_hero;
         AnimState *obj = *(AnimState **)(base + 0x2080);
@@ -432,7 +432,7 @@ void clear_hero_queued_animation(void) {
     *(int *)(b + 0xAB8) = 0;
 }
 /* Stores ID at D_0013F450 + 0xAB8, or func_001F9850(5) when ID is -1. */
-void Hero_SetAttackTicks(int id) {
+void hero_set_attack_ticks(int id) {
     if (id == -1) {
         id = scale_ticks(5);
     }
@@ -1531,7 +1531,7 @@ void animate_hero_slot4_and_slot5_visuals(void) {
 }
 extern char cutscene_state[];
 extern void update_hero_world_matrices(int);
-extern void func_L00_0020FC18(void);
+extern void update_hero_item_mobys(void);
 extern void animate_hero_slot4_and_slot5_visuals(void);
 
 /* in state 2 or 6: flag the matching mobys, update, then clear bit 0 of three mobys */
@@ -1550,7 +1550,7 @@ void update_hero_slot4_and_slot5_mobys(int a0) {
             }
         }
         update_hero_world_matrices(a0);
-        func_L00_0020FC18();
+        update_hero_item_mobys();
         animate_hero_slot4_and_slot5_visuals();
         base = g_hero;
         t = *(char **)(base + 0x11D0);

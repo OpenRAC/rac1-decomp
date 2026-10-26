@@ -34,7 +34,7 @@ extern short veldin1_hero_double_tap_timer;
 extern S166D80 player_camera;
 extern float camera_yaw;
 extern int level_render_setup_packet_default;
-extern S17A780 lean_state;
+extern S17A780 D_L00_0017A780;
 extern Rec70 idle_fidgets[];
 extern Rec4C item_defs[];
 extern Rec2C attack_records[];
@@ -85,7 +85,7 @@ extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
 extern int truncate_float_to_s32(float);
 extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 extern int hero_handle_jump_press(void);
-extern void Hero_SetAttackTicks(int id);
+extern void hero_set_attack_ticks(int id);
 extern int check_hero_forward_collision_height(void);
 extern float read_pad_float_history(int);
 extern int try_start_hero_item_idle_animation(void);
@@ -266,7 +266,7 @@ void hero_update_transitions(void) {
                                 MobyBlendAnimation(m, 1, 0, scale_ticks(7));
                             }
                         }
-                        if (0.61086524f < lean_state.f258 || lean_state.f254 > 0.43633232f) {
+                        if (0.61086524f < D_L00_0017A780.f258 || D_L00_0017A780.f254 > 0.43633232f) {
                             m = (unsigned char *)g_hero.items[3].moby;
                             if (m != 0 && m[0x53] != 1) {
                                 MobyBlendAnimation(m, 1, 0, scale_ticks(0xC));
@@ -311,7 +311,7 @@ void hero_update_transitions(void) {
                     if (scale_ticks(0xA) < g_hero.state_timer) {
                         if (((unsigned char *)g_hero.items[3].moby2) != 0 && ((unsigned char *)g_hero.items[3].moby2)[0x53] == 1) {
                             if (fast_dec_timer_r(&g_hero.slot3_anim_timer)) {
-                                if (0.55850536f > lean_state.f258 && lean_state.f254 < 0.34906584f && g_hero.items[3].state == 2) {
+                                if (0.55850536f > D_L00_0017A780.f258 && D_L00_0017A780.f254 < 0.34906584f && g_hero.items[3].state == 2) {
                                     g_hero.slot3_anim_timer = rand_range(scale_ticks(0x6E), scale_ticks(0x10E));
                                     blend_hero_slot3_animation_pair();
                                 }
@@ -745,7 +745,7 @@ void hero_update_transitions(void) {
                             break;
                         }
                         if (scale_ticks(0x64) < g_hero.state_timer && g_hero.queued_anim_frame < 0x1A) {
-                            Hero_SetAttackTicks(2);
+                            hero_set_attack_ticks(2);
                             g_hero.queued_anim_frame = 0x1A;
                         }
                     }

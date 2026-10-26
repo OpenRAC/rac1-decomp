@@ -1259,7 +1259,7 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int rand_range(int, int);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
-extern void EffectSlots_Fire(void *, void *, void *, float);
+extern void effect_slots_fire(void *, void *, void *, float);
 extern void InitDirectionalHitQuery(char *arg, int a, int b, void *src, float scale);
 extern void collect_mobies_around_tracked_objects(char **slots, int a, int b);
 extern int mine_fall(void *, void *);
@@ -1568,7 +1568,7 @@ void update_level02_bot(unsigned char *raw) {
         direction[0] = FastCos(fast_atan2(position[0] - moby->pos.x, position[1] - moby->pos.y));
         direction[1] = FastSin(fast_atan2(position[0] - moby->pos.x, position[1] - moby->pos.y));
         direction[2] = -0.1f;
-        EffectSlots_Fire(data->shots, position, direction, aridia_bot_shot_range);
+        effect_slots_fire(data->shots, position, direction, aridia_bot_shot_range);
         direction[3] = 5627.925f;
         direction[2] = 1.0f;
         InitDirectionalHitQuery(shot, (int)moby, 0x10001, direction, 1.0f);

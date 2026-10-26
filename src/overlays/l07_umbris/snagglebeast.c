@@ -41,7 +41,7 @@ extern int truncate_float_to_s32(float);
 extern int scale_ticks(int);
 extern u64 GetEffectTex(int);
 extern void draw_world_quad(void *, int, int);
-extern float normalize_angle(float);
+extern float WrapAngle(float);
 extern float FastCos(float);
 extern float FastSin(float);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -105,7 +105,7 @@ void draw_snagglebeast_rope_attack_layer(void *mobyp, float radius, int phase, f
     for (angle = -3.1415927f; angle < step + 3.1415927f; angle += step) {
         qcopy(&quad.positions[0], &quad.positions[1]);
         qcopy(&quad.positions[2], &quad.positions[3]);
-        wrapped = normalize_angle(angle + spin * 0.02f);
+        wrapped = WrapAngle(angle + spin * 0.02f);
         offset[1] = radius * FastCos(wrapped);
         offset[2] = radius * FastSin(wrapped);
         offset[0] = 0.0f;
@@ -553,7 +553,7 @@ extern int fast_subtract_rotations_cf(void *);
 extern int FastDecTimer(void *);
 extern float FastAbsF(float);
 extern int truncate_float_to_s32(float);
-extern void SuckBeam_QueueDraw(int);
+extern void suck_beam_queue_draw(int);
 extern int Moby_PlaySound(int, int, int);
 extern void Sound_StopSlot(int);
 extern void AddDrawCallback(void (*)(), void *);
@@ -573,7 +573,7 @@ extern void configure_timed_point_light_f(void *, void *, int, void *, short, un
 extern float random_angle_radians(void);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void spawn_white_particle_with_payload(void *, void *);
-extern void RumbleByDistance(char *);
+extern void rumble_by_distance(char *);
 extern float ProbeGroundHeight(void *, int, float);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -773,7 +773,7 @@ void snagglebeast_update(unsigned char *m) {
         }
     }
     if (((Moby *)m)->command % 3U == 2) *(int *)(d + 0x1B4) += 0xF;
-    if (((Moby *)m)->state != 8 && ((Moby *)m)->state != 0) SuckBeam_QueueDraw((int)m);
+    if (((Moby *)m)->state != 8 && ((Moby *)m)->state != 0) suck_beam_queue_draw((int)m);
     if (d[0x1C5] == 1) {
         if (*(int *)(d + 0x1F8) == -1) *(int *)(d + 0x1F8) = Moby_PlaySound(0xF, 4, (int)m);
         *(float *)(d + 0x1C8) += frame_scale * 0.01f;
@@ -955,7 +955,7 @@ void snagglebeast_update(unsigned char *m) {
                 *(int *)&vb.f[3] = 0;
                 spawn_white_particle_with_payload(&vc, &vb);
             }
-            RumbleByDistance((char *)m);
+            rumble_by_distance((char *)m);
         }
         if (*(int *)(d + 0x164) >= 3 && IsFrameWithinWindow(m, 51.0f)) {
             if (t19A) {
@@ -1156,8 +1156,8 @@ void snagglebeast_update(unsigned char *m) {
             if (((Moby *)m)->seq == 0xC) update_alternating_joint_emission_burst(m, (char *)d, (float *)&tgt);
         }
         if (((Moby *)m)->seq == 0xA || ((Moby *)m)->seq == 0xC) {
-            if (IsFrameWithinWindow(m, 27.5f)) RumbleByDistance((char *)m);
-            if (IsFrameWithinWindow(m, 73.0f)) RumbleByDistance((char *)m);
+            if (IsFrameWithinWindow(m, 27.5f)) rumble_by_distance((char *)m);
+            if (IsFrameWithinWindow(m, 73.0f)) rumble_by_distance((char *)m);
         }
         break;
     }
@@ -1196,11 +1196,11 @@ void snagglebeast_update(unsigned char *m) {
             ((Moby *)m)->state = d[0x1F4];
         }
         if (((Moby *)m)->seq == 3 || ((Moby *)m)->seq == 0xE) {
-            if (IsFrameWithinWindow(m, 16.0f)) RumbleByDistance((char *)m);
-            if (IsFrameWithinWindow(m, 37.0f)) RumbleByDistance((char *)m);
+            if (IsFrameWithinWindow(m, 16.0f)) rumble_by_distance((char *)m);
+            if (IsFrameWithinWindow(m, 37.0f)) rumble_by_distance((char *)m);
         } else if (((Moby *)m)->seq == 0xD) {
-            if (IsFrameWithinWindow(m, 13.0f)) RumbleByDistance((char *)m);
-            if (IsFrameWithinWindow(m, 34.0f)) RumbleByDistance((char *)m);
+            if (IsFrameWithinWindow(m, 13.0f)) rumble_by_distance((char *)m);
+            if (IsFrameWithinWindow(m, 34.0f)) rumble_by_distance((char *)m);
         }
         break;
     }
@@ -1280,7 +1280,7 @@ void snagglebeast_update(unsigned char *m) {
         if (IsFrameWithinWindow(m, 168.5f)) {
             Moby_GetJointWorldPos(m, 6, &va);
             spawn_moby_class_1046((int)m, &va, 0x3A, 1.0f, 25.0f, 2.0f, g_frame_time * 8.0f, 1.0f);
-            RumbleByDistance((char *)m);
+            rumble_by_distance((char *)m);
         }
         if (*(int *)(d + 0x164) > 0) {
             if (fast_dec_timer((int *)(d + 0x160))) {
@@ -2123,7 +2123,7 @@ extern int Moby_PlaySound(int, int, int);
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern void SuckBeam_QueueDraw(int arg0);
+extern void suck_beam_queue_draw(int arg0);
 
 typedef struct {
     short idx;
@@ -2173,7 +2173,7 @@ void detach_snagglebeast_rope_particles(int arg0) {
             *(short *)(m + 0xA) = 0x46;
         }
     }
-    SuckBeam_QueueDraw(arg0);
+    suck_beam_queue_draw(arg0);
 }
 #define D_L07_00166EC0_p (*(Vec4 *)&D_L07_00166EC0)
 extern Vec4 umbris_coll_resolved_pos;

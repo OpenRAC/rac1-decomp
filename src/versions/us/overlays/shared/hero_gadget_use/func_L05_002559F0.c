@@ -1,4 +1,4 @@
-int Hero_PickHelpMode(void)
+int hero_pick_help_mode(void)
 {
     H_9F0 *g;
     char *h;

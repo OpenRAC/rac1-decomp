@@ -168,7 +168,7 @@ extern void adjust_hero_pose_targets_from_motion(void);
 extern void update_hero_lean_and_sway_parameters(void);
 extern void hero_integrate_velocity(void);
 extern void steer_hero_planar_velocity(float);
-extern void HeroMoveStateVelocity(void);
+extern void hero_move_state_velocity(void);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 
 /* Hero state machine: per-frame movement and physics for the current hero state. */
@@ -2272,7 +2272,7 @@ void HeroL17_UpdateStatePhysics(void) {
         }
         update_hero_target_speed_from_stick();
         if (g_hero.move_lock_timer == 0) {
-            HeroMoveStateVelocity();
+            hero_move_state_velocity();
         }
         adjust_hero_pose_targets_from_motion();
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
@@ -2499,7 +2499,7 @@ void HeroL17_UpdateStatePhysics(void) {
                     }
                 }
             } else {
-                HeroMoveStateVelocity();
+                hero_move_state_velocity();
                 if (g_hero.state.current == 0x12) {
                     float len;
 
@@ -2780,7 +2780,7 @@ void HeroL17_UpdateStatePhysics(void) {
     case 0x45:
         stick_target(g_frame_time * 3.0f, 0);
         if (g_hero.move_lock_timer == 0) {
-            HeroMoveStateVelocity();
+            hero_move_state_velocity();
         }
         HeroMoveDownAlongNormal(g_hero.motion.velocity.f, g_hero.motion.velocity.f, g_frame_time_sq * 12.0f);
         if (g_hero.motion.velocity.f[2] < g_frame_time * -10.0f) {
@@ -2914,7 +2914,7 @@ void HeroL17_UpdateStatePhysics(void) {
     case 0x55:
         stick_target(g_frame_time * 1.5f, 0);
         if (g_hero.move_lock_timer == 0) {
-            HeroMoveStateVelocity();
+            hero_move_state_velocity();
         }
         HeroMoveDownAlongNormal(g_hero.motion.velocity.f, g_hero.motion.velocity.f, g_frame_time_sq * 21.0f);
         if (g_hero.motion.velocity.f[2] < g_frame_time * -15.0f) {

@@ -1860,7 +1860,7 @@ unsigned char *spawn_floating_mine(unsigned char *owner, char *pos) {
     return m;
 }
 // Store 1 to byte field
-void Moby_SetStateOne(unsigned char *moby) {
+void moby_set_state_one(unsigned char *moby) {
     moby[0x20] = 1;
 }
 /* UpdateMoby_1224 (names.tsv role). Data block: +0 index (<< 7 into the D_L14_001601AC table),

@@ -2016,7 +2016,7 @@ unsigned char *func_L10_002DE630_r(int a, void *pos, int b, float x, float y, fl
     return o;
 }
 typedef int Effect128 __attribute__((mode(TI)));
-extern void PathSampleAtDistance(int,float *,float *,void *,float,float);
+extern void path_sample_at_distance(int,float *,float *,void *,float,float);
 extern s32 truncate_float_to_s32(f32);
 extern f32 IntToFloat(s32);
 extern int coll_sphere_mobys(float,void *,int,void *,void *);
@@ -2031,7 +2031,7 @@ void update_path_spark_effect(char *m) {
  *(Effect128 *)old=*(Effect128 *)(m+0x10);
  ((EffectData *)d)->phase+=((EffectData *)d)->speed;
  ((EffectData *)d)->speed*=(((EffectData *)d)->growth-1.0f)*frame_scale+1.0f;
- PathSampleAtDistance(((EffectData *)d)->owner,&a,&b,m+0x10,((EffectData *)d)->phase,((EffectData *)d)->size);
+ path_sample_at_distance(((EffectData *)d)->owner,&a,&b,m+0x10,((EffectData *)d)->phase,((EffectData *)d)->size);
  ((Moby *)m)->rot.x=random_angle_radians();
  ((Moby *)m)->rot.y=random_angle_radians();
  ((Moby *)m)->rot.z=random_angle_radians();

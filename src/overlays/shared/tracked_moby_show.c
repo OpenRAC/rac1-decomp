@@ -4,7 +4,7 @@
 
 extern char level_render_state[];
 /* clears two moby flags and refreshes its linked value */
-void ShowTrackedMoby(void) {
+void show_tracked_moby(void) {
  char *first=*(char **)level_render_state;
  if(first!=0) {
  char *moby;

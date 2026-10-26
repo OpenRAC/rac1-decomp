@@ -2512,7 +2512,7 @@ extern int read_file_entry_with_retry(int);
 extern void append_palette_transfer_packet(void);
 extern void UpdatePad(void);
 extern void update_resident_gameplay_state(void);
-extern void SpaceTransition_Tick(void);
+extern void tick_space_transition(void);
 extern int service_level_archive_load(void);
 extern void VU1_syncChain(int);
 
@@ -2648,7 +2648,7 @@ void DoSpaceTransition(void) {
             VU1_syncChain(1);
             sce_gs_sync_v_i(0);
             game_frame_counter++;
-            SpaceTransition_Tick();
+            tick_space_transition();
             if (!done) {
                 done = service_level_archive_load();
             }
@@ -2659,7 +2659,7 @@ void DoSpaceTransition(void) {
                 sce_gs_sync_v_i(0);
                 memcard_update_state();
                 Menu_RunStateHandler();
-                SpaceTransition_Tick();
+                tick_space_transition();
             } while (service_level_archive_load() == 0);
         }
         while (memory_card_state_b.fDC != 2 || memory_card_state_b.fE4 >= 0) {
@@ -2667,7 +2667,7 @@ void DoSpaceTransition(void) {
             sce_gs_sync_v_i(0);
             memcard_update_state();
             Menu_RunStateHandler();
-            SpaceTransition_Tick();
+            tick_space_transition();
         }
     }
     sce_cd_sync_s_i(0);

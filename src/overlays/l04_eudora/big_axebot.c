@@ -459,7 +459,7 @@ extern float FastSin(float);
 extern void FastVecAdd(void *, void *, void *);
 extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
 extern void reset_leg_rig_from_animation(void *, void *);
-extern void LegWalkerUpdate(void *, void *, float, float, float);
+extern void leg_walker_update(void *, void *, float, float, float);
 extern int IsPointInPolygon(void *, void *, int);
 extern float FastAbsF(float);
 extern void PostHitMessage(char *m, float t, int a, int b, void *pos, void *vel);
@@ -802,7 +802,7 @@ void big_axebot_update(M_B7B0 *moby) {
             reset_leg_rig_from_animation(moby, data->f1A0);
         }
         data->f414 = SpringTurn(moby->rot[2], ang, &data->f410, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 125.663704f, g_frame_time * 12.566371f);
-        LegWalkerUpdate(moby, data->f1A0, g_frame_time * 4.0f, data->f414, g_frame_time_sq * 20.0f);
+        leg_walker_update(moby, data->f1A0, g_frame_time * 4.0f, data->f414, g_frame_time_sq * 20.0f);
         if (dist < 4.5f) {
             blend_big_axebot_and_axe_animation((char *)moby, (void *)4, (void *)4, (void *)scale_ticks(0xC));
             moby->state = 7;
@@ -834,7 +834,7 @@ void big_axebot_update(M_B7B0 *moby) {
             }
             a = fast_atan2(data->home[0] - moby->pos[0], data->home[1] - moby->pos[1]);
             data->f414 = SpringTurn(moby->rot[2], a, &data->f410, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 125.663704f, g_frame_time * 12.566371f);
-            LegWalkerUpdate(moby, data->f1A0, g_frame_time * 4.0f, data->f414, g_frame_time_sq * 20.0f);
+            leg_walker_update(moby, data->f1A0, g_frame_time * 4.0f, data->f414, g_frame_time_sq * 20.0f);
             if (vec_distance_xy(moby->pos, data->home) < 2.0f) {
                 moby->state = 1;
             }
@@ -1461,7 +1461,7 @@ extern int truncate_float_to_s32(float);
 extern float random_float_between(float, float);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern int rand_range(int, int);
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
+extern void PartType22Spawn(void *, void *, int, int, float, int);
 
 extern float eudora_camera_pos[4];
 extern float g_frame_time MACRO_ADDR;
@@ -1999,7 +1999,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
         alt = random_integer_below(100) & 1;
         Moby_GetJointWorldPos(moby, 0, a);
         matrix_mul_vec3(b, b, moby->fC0);
-        spawn_effect_particle_with_target_scalar(a, b, alt ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(75000.0f, 100000.0f), scale_ticks(alt ? rand_range(10, 15) : rand_range(20, 30)));
+        PartType22Spawn(a, b, alt ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(75000.0f, 100000.0f), scale_ticks(alt ? rand_range(10, 15) : rand_range(20, 30)));
         }
     }
     StepColorFade(moby, data->fB0);
@@ -2145,7 +2145,7 @@ struct Shot5BD0 {
     float f1C;
     int pad[4];
 };
-extern void Manipulator_SetScale(void *, float);
+extern void manipulator_set_scale(void *, float);
 extern int truncate_float_to_s32(float);
 extern int STUB_printf();
 extern char *MobyGetHitMessage(void *, int, int);
@@ -2212,7 +2212,7 @@ void BlargTrooperUpdate(char *moby) {
         flag = 1;
     }
     pos = (float *)(moby + 0x10);
-    Manipulator_SetScale(data + 0x110, 3.0f);
+    manipulator_set_scale(data + 0x110, 3.0f);
     if (((Moby *)moby)->visible != 0) {
         if (FastVecDist(pos, eudora_camera_pos) < 27.0f) {
             set_ground_height_band(moby);

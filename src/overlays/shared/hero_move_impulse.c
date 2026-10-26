@@ -9,7 +9,7 @@ extern char hoven_item_defs[];
 extern int hero_slot_item_id(int);
 
 // Returns a value selected by game-state flags, or an entry field of a 0x4C-byte table.
-int Hero_GetGadgetAnimId(int a) {
+int hero_get_gadget_anim_id(int a) {
     char *base = hero_globals_base + 0xE1D;
     int i;
     char *p;
@@ -70,7 +70,7 @@ extern void allocate_hero_voice_for_entry(int, int);
 extern int g_current_level_index MACRO_ADDR;
 
 /* Hopping player movement update by state. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00227f10.c, FUN_L12_00235c08. */
-void Hero_UpdateHopMovement(void) {
+void hero_update_hop_movement(void) {
     Vec4 tmp;
     f32 x;
     f32 speed;

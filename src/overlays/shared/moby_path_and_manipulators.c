@@ -616,7 +616,7 @@ extern void FastVecAdd(void *, void *, void *);
 
 /* Samples path at distance dist (points spacing apart): stores the segment, the distance into it and the point.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00261968.c, FUN_L00_00262360. */
-void PathSampleAtDistance(PointPath *path, s32 *seg_out, f32 *along, Vec4 *out, f32 dist, f32 spacing) {
+void path_sample_at_distance(PointPath *path, s32 *seg_out, f32 *along, Vec4 *out, f32 dist, f32 spacing) {
     Vec4 tmp;
     s32 seg;
 
@@ -1143,7 +1143,7 @@ void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m) {
     }
 }
 /* sets the float at p + 0x70 to x when the byte at 0x15EEB7 is set, else to 1. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/002630b8.c, FUN_L00_00263b38. */
-void Manipulator_SetScale(char *p, float x) {
+void manipulator_set_scale(char *p, float x) {
     if (*(unsigned char *)0x15EEB7) {
         *(float *)(p + 0x70) = x;
         return;

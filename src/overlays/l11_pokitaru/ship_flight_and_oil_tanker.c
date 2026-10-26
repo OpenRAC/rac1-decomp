@@ -210,7 +210,7 @@ extern void append_scaled_screen_triangle_strip(float, float, float, void *, int
 extern void append_rotated_sprite_quad(float, float, float, float, float, int, int, int, int, int, int, int, float, float);
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern int FontPrintCenterLarge_c(int, int, long, void *, int) __asm__("func_001F6FD8");
-extern float normalize_angle(float);
+extern float WrapAngle(float);
 extern int scale_ticks(int);
 extern float FastAbsF(float);
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
@@ -319,7 +319,7 @@ void draw_ship_hud(char *moby) {
             k = t * 5.0f + 1.0f;
             if (m > 1.0f) m = 1.0f;
             c = truncate_float_to_s32_r(m * 96.0f);
-            draw_quarter_turn_textured_quads_f(IntToFloat(sp40), IntToFloat(sp44), k, normalize_angle(IntToFloat(level_frame) / 30.0f), 0, 0xFF, 0, c);
+            draw_quarter_turn_textured_quads_f(IntToFloat(sp40), IntToFloat(sp44), k, WrapAngle(IntToFloat(level_frame) / 30.0f), 0, 0xFF, 0, c);
             *(int *)(d + 0xEC) = 0;
         } else {
             a = 0xFF;
@@ -2144,7 +2144,7 @@ extern void *store_moby_in_suck_cannon_pos(void *, void *, void *, float) __asm_
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
-void *Moby_ParkStateOnFind(unsigned char *arg, void *pos, void *t, float h) {
+void *moby_park_state_on_find(unsigned char *arg, void *pos, void *t, float h) {
     void *found = store_moby_in_suck_cannon_pos(arg, pos, t, h);
     if (found != 0) {
         unsigned char state = arg[0x20];

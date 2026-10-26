@@ -1238,9 +1238,9 @@ extern char fire_tuning40[1] SDATA(D_L00_00161C00);
 /* Retail registers the copy at 0x238128, one of several identical delete callbacks. */
 extern void delete_callback40(void) __asm__("func_L00_00238128");
 extern void update_hud_counter_cap_and_visibility(void);
-extern void Hud_DrawGaugeFrame(void);
+extern void hud_draw_gauge_frame(void);
 extern int queue_animation_update(int,int,int,int,int,int,int);
-extern void SuckBeam_QueueDraw(int);
+extern void suck_beam_queue_draw(int);
 extern void refresh_suck_cannon_slots(void);
 extern s32 scale_ticks(s32);
 extern void MobyBlendAnimation(void *,int,int,int);
@@ -1284,10 +1284,10 @@ void suckcannon_update(M40 *self) {
     M40 *stored;
 
     queue_animation_update(4, 0x753F, (int)delete_callback40, (int)update_hud_counter_cap_and_visibility,
-                 (int)Hud_DrawGaugeFrame, (int)&hero40.count, 5);
+                 (int)hud_draw_gauge_frame, (int)&hero40.count, 5);
     data = self->data;
     special = hero40.weapon_mode == 3;
-    if ((u8)self->state != 3 && (u8)self->state != 0) SuckBeam_QueueDraw((int)self);
+    if ((u8)self->state != 3 && (u8)self->state != 0) suck_beam_queue_draw((int)self);
     refresh_suck_cannon_slots();
     switch ((u8)self->state) {
     case 0:
@@ -2371,7 +2371,7 @@ typedef struct {
 } Pkt;
 
 // Draws a grid of ten rows by twenty strips, stepping the two scroll angles and coloring each strip from a per-row table.
-void SuckBeam_DrawMesh(void) {
+void suck_beam_draw_mesh(void) {
     Pkt s;
     float vc[4];
     float vd[4];
@@ -2469,7 +2469,7 @@ extern short suck_beam_init_zero_0;
 extern short suck_beam_init_zero_1;
 
 // Builds the camera matrices and resets the camera effect state.
-void SuckBeam_Build(char *a, char *b) {
+void suck_beam_build(char *a, char *b) {
     u128_DF168 s[7];
     char *v;
     short *w;
@@ -2524,19 +2524,254 @@ void SuckBeam_Build(char *a, char *b) {
         for (j = 199; j >= 0; j--) suck_beam_particles_x[j].f14 = 0;
     }
 }
-INCLUDE_ASM("asm/overlays", func_L00_002DF410);
-extern void SuckBeam_DrawMesh(void);
+typedef unsigned int Q41 __attribute__((mode(TI)));
+typedef union { struct { float x,y,z,w; } f; Q41 q; } V41 __attribute__((aligned(16)));
+typedef struct {
+    u8 pad0[0x34]; u16 flags; u8 pad36[0x8A]; V41 basis[3];
+} M41;
+typedef struct {
+    u8 pad0[0x640]; V41 matrix[3]; u8 pad670[0x1A10];
+    M41 *moby; int camera_mode; u8 pad2088[0x240]; s16 special;
+} Hero41;
+typedef struct {
+    float unknown0; int mode; u8 pad8[2]; u8 r,g; u8 padC[4];
+    V41 velocity; float acceleration;
+} Tail41;
+typedef struct Particle41 {
+    u8 pad0[0xA]; s16 life; float size; V41 pos; Tail41 tail;
+} Particle41;
+typedef struct { short idx; short angle; float f; float phase; float phase_step; float speed; char *p; } E04_pt3;
+
+extern V41 D_L00_001E4E90[];
+extern float D_L00_001E6330[];
+extern char collision_hit_point[];
+extern float Camera_SmoothAngle(void *,float,float,float,float,float);
+extern float FastAddRots(float, float);
+extern float FastSin(float);
+extern float FastSubRots(float, float);
+extern void LerpVec4(void *,void *,void *,float);
+extern void KillPart(void *);
+extern void lerp_vector(void *, void *, void *, float);
+extern Particle41 *PartType23Spawn(void *,float,float,float,int,void *,float,int);
+
+void func_L00_002DF410(void *moby,void *position) {
+    extern E04_pt3 suck_beam_particles[];
+    V41 step,up,orient[3],ray_end,start,end,axis,tmp_a,tmp_b,
+        frame[3],tmp_c,motion,tmp_d,tmp_e,interp,cross_c,basis_c,tmp_f,unused_a,unused_b;
+    V41 *orientation;
+    int i,j,n,segment,next_ring;
+    float t,angle,turn,delta,dot,length,amount,speed;
+    Particle41 *p;
+    V41 *anchor,*previous,*source;
+
+    suck_beam_build(moby,position);
+    if((((Hero41 *)(hero_globals_base+0xE1D))->camera_mode==30 || ((Hero41 *)(hero_globals_base+0xE1D))->camera_mode==1) && (((Hero41 *)(hero_globals_base+0xE1D))->moby->flags&1)) {
+        qcopy(&orient[0],player_camera_matrix);
+        qcopy(&orient[1],player_camera_matrix+16);
+        qcopy(&orient[2],player_camera_matrix+32);
+        orientation=&orient[0];
+    } else if(((Hero41 *)(hero_globals_base+0xE1D))->special==1) {
+        FastVecScale(&orient[0],&((M41 *)moby)->basis[1],-1.0f);
+        { M41 *m=moby;
+        qcopy_nc(&orient[1],&m->basis[0]);
+        qcopy_nc(&orient[2],&m->basis[2]); }
+        orientation=&orient[0];
+    } else {
+        qcopy(&orient[0],&((Hero41 *)(hero_globals_base+0xE1D))->matrix[0]);
+        qcopy(&orient[1],&((Hero41 *)(hero_globals_base+0xE1D))->matrix[1]);
+        qcopy(&orient[2],&((Hero41 *)(hero_globals_base+0xE1D))->matrix[2]);
+        orientation=&orient[0];
+    }
+    vec_scale_to_length(&step,orientation,suck_beam_segment_length);
+    vec_scale_to_length(&up,&orient[2],1.0f);
+    qcopy(suck_beam_points,position);
+    vec_scale_to_length(&ray_end,orientation,suck_beam_segment_length*10.0f);
+    FastVecAdd(&ray_end,&ray_end,position);
+    if(coll_line(position,&ray_end,20,(int)((Hero41 *)(hero_globals_base+0xE1D))->moby,0)) {
+        int n,i,k;
+        n=truncate_float_to_s32(vec_distance_xy(collision_hit_point,position)/suck_beam_segment_length);
+        for(i=n;i<10;i++) {
+            if(suck_beam_segment_alpha[i]>64)suck_beam_segment_alpha[i]=64;
+            suck_beam_segment_alpha[i]=(u16)suck_beam_segment_alpha[i]-4;
+            if(suck_beam_segment_alpha[i]<0)suck_beam_segment_alpha[i]=0;
+        }
+        for(k=n-1;k>=0;k--)suck_beam_segment_alpha[k]=suck_beam_segment_alpha[k+1]+32;
+    } else {
+        int i;
+        suck_beam_segment_alpha[0]=(u16)suck_beam_segment_alpha[0]+4;
+        for(i=1;i<10;i++)suck_beam_segment_alpha[i]=suck_beam_segment_alpha[i-1]-32;
+    }
+    matrix_mul_vec3(&start,&(*(V41 *)suck_beam_wobble_from),orientation);
+    FastVecAdd(&start,&start,&step);
+    matrix_mul_vec3(&end,&(*(V41 *)suck_beam_wobble_to),orientation);
+    FastVecAdd(&end,&end,&step);
+    t=(float)(*(int *)&suck_beam_init_zero_0)/IntToFloat(scale_ticks(60));
+    (*(int *)&suck_beam_init_zero_0)++;
+    step.f.x=start.f.x+(end.f.x-start.f.x)*t;
+    step.f.y=start.f.y+(end.f.y-start.f.y)*t;
+    step.f.z=start.f.z+(end.f.z-start.f.z)*t;
+    if((*(int *)&suck_beam_init_zero_0)>=scale_ticks(60)) {
+        qcopy(&(*(V41 *)suck_beam_wobble_from),&(*(V41 *)suck_beam_wobble_to));
+        vec_scale_to_length(&axis,orientation,suck_beam_segment_length);
+        tmp_a.q=0; tmp_b.q=0;
+        tmp_a.f.z=0.1f; tmp_a.f.w=1.0f;
+        tmp_b.f.x=1.0f; tmp_b.f.w=1.0f;
+        angle=FastAddRots(suck_beam_wobble_angle,random_float_between(45.0f,315.0f)*0.0174532924f);
+        build_look_at_matrix(&(*(V41 *)suck_beam_wobble_to),&tmp_a,angle,&tmp_b);
+        suck_beam_wobble_angle=angle;
+        (*(int *)&suck_beam_init_zero_0)=0;
+    }
+    (*(float *)&suck_beam_init_zero_1)=FastAddRots((*(float *)&suck_beam_init_zero_1),0.1f);
+    qcopy(&axis,&orient[2]);
+    qcopy(&frame[2],&axis);
+    FastVecCross(&frame[1],&step,&frame[2]);
+    vec_scale_to_length(&frame[1],&frame[1],1.0f);
+    FastVecCross(&frame[0],&frame[2],&frame[1]);
+    { int k;
+    for(k=0;k<20;k++) {
+        FastVecScale(&tmp_a,&D_L00_001E4E90[k],0.1f);
+        matrix_mul_vec3(&tmp_a,&tmp_a,frame);
+        FastVecAdd(&((V41 *)suck_beam_ring_vertices)[k],suck_beam_points,&tmp_a);
+    }
+    }
+    { int i;
+    for(i=1;i<10;i++) {
+        anchor=(V41 *)(suck_beam_points+i*16);
+        previous=(V41 *)(suck_beam_points_base+i*16);
+        FastVecSub(&tmp_a,anchor,previous);
+        qcopy(&tmp_b,&step);
+        FastVecCross(&tmp_c,&tmp_b,&tmp_a);
+        dot=FastVecDot(&tmp_a,&tmp_b);
+        { float target=1.5707964f-FastArcSin(dot/(FastVecLength(&tmp_a)*suck_beam_segment_length));
+        turn=Camera_SmoothAngle(&D_L00_001E6330[i],0.0f,target,0.06f,0.2f,0.0f);
+        delta=FastSubRots(target,turn); }
+        if(FastAbsF(delta)>0.31415927f)turn=FastAddRots(turn,FastSubRots(delta,0.31415927f));
+        build_look_at_matrix(&motion,&tmp_a,turn,&tmp_c);
+        vec_scale_to_length(&tmp_d,&motion,suck_beam_segment_length);
+        lerp_vector(&motion,&motion,&tmp_d,1.0f);
+        { float len=FastVecLength(&motion);
+        if(len>2.0f)FastVecScale(&motion,&motion,2.0f/len); }
+        if(i>=6)lerp_vector(&motion,&motion,&tmp_a,(float)i/IntToFloat(10)+0.0f);
+        FastVecAdd(anchor,previous,&motion);
+        qcopy_nc(&tmp_e,&step);
+        qcopy_nc(&basis_c,&axis);
+        vec_scale_to_length(&interp,&tmp_e,1.0f);
+        FastVecCross(&cross_c,&interp,&basis_c);
+        vec_scale_to_length(&cross_c,&cross_c,1.0f);
+        FastVecCross(&basis_c,&cross_c,&interp);
+        qcopy(&axis,&basis_c);
+        { int j;
+        for(j=0;j<20;j++) {
+            angle=(float)i*0.3f+0.1f;
+            angle+=FastSin(FastAddRots((*(float *)&suck_beam_init_zero_1)+(float)i*0.7f,0.0f))*0.1f;
+            FastVecScale(&tmp_f,&D_L00_001E4E90[j],angle);
+            matrix_mul_vec3(&tmp_f,&tmp_f,&interp);
+            FastVecAdd(&((V41 (*)[20])suck_beam_ring_vertices)[i][j],suck_beam_points+i*16,&tmp_f);
+        }
+        }
+        vec_scale_to_length(&step,&motion,suck_beam_segment_length);
+    }
+    }
+    AddDrawCallback(suck_beam_draw_mesh,(int)moby);
+    { int count,sparks;
+    count=0; sparks=0;
+    for(i=0;i<200;i++) {
+        if(!suck_beam_particles[i].p && count<5) {
+            for(segment=9;segment>=0 && suck_beam_segment_alpha[segment]<64;segment--);
+            if(segment>0) {
+                if(segment>=2 && sparks<2) {
+                    { int k=random_integer_below(20);
+                    V41 *ring;
+                    amount=random_float_between(0.2f,1.0f);
+                    ring=(V41 *)suck_beam_ring_vertices+k;
+                    lerp_vector(&tmp_a,ring,ring+segment*20,amount); }
+                    lerp_vector(&tmp_c,suck_beam_points,suck_beam_points+segment*16,amount);
+                    speed=random_float_between(60000.0f,180000.0f);
+                    p=PartType23Spawn(&tmp_a,0.0f,1.0f,1.03f,random_integer_below(5)+1,&tmp_b,speed,0x404040);
+                    if(p) {
+                        Tail41 *tail=&p->tail;
+                        FastVecSub(&motion,&tmp_a,&tmp_c);
+                        sparks++;
+                        vec_scale_to_length(&tail->velocity,&motion,0.01f);
+                        tail->velocity.f.z+=0.02f;
+                    }
+                }
+                qcopy(&tmp_a,suck_beam_points+segment*16);
+                clear_u64_value(&tmp_b);
+                speed=random_float_between(60000.0f,180000.0f);
+                { Particle41 *main=PartType23Spawn(&tmp_a,0.0f,1.0f,1.0f,6,&tmp_b,speed,0x7F404040);
+                suck_beam_particles[i].p=(char *)main;
+                if(main) { Tail41 *tail=&main->tail; main->life=200; tail->mode=2; count++; tail->r=127; tail->g=200; } }
+                suck_beam_particles[i].idx=segment;
+                suck_beam_particles[i].f=0;
+                suck_beam_particles[i].phase=0;
+                suck_beam_particles[i].angle=random_integer_below(20);
+                suck_beam_particles[i].phase_step=random_float_between(0.1f,0.8f);
+                suck_beam_particles[i].speed=random_float_between(0.1f,0.4f);
+            }
+        }
+        if(suck_beam_particles[i].p) {
+
+            FastVecSub(&tmp_a,suck_beam_points_base+suck_beam_particles[i].idx*16,suck_beam_points+suck_beam_particles[i].idx*16);
+            length=FastVecLength(&tmp_a);
+            suck_beam_particles[i].f+=suck_beam_particles[i].speed;
+            ((Particle41 *)suck_beam_particles[i].p)->life=200;
+            if(length<suck_beam_particles[i].f) {
+                suck_beam_particles[i].idx=(u16)suck_beam_particles[i].idx-1;
+                if(suck_beam_particles[i].idx<=0) { KillPart(suck_beam_particles[i].p); suck_beam_particles[i].p=0; }
+                else {
+                    suck_beam_particles[i].f-=length;
+                    FastVecSub(&tmp_a,suck_beam_points_base+suck_beam_particles[i].idx*16,suck_beam_points+suck_beam_particles[i].idx*16);
+                    length=FastVecLength(&tmp_a);
+                }
+            }
+                if(suck_beam_particles[i].p) {
+
+                amount=suck_beam_particles[i].f/length;
+                if(suck_beam_particles[i].idx==2)((Particle41 *)suck_beam_particles[i].p)->life=100;
+                else if(suck_beam_particles[i].idx<2) {
+                    ((Particle41 *)suck_beam_particles[i].p)->life=truncate_float_to_s32((1.0f-amount)*100.0f);
+                    if(((Particle41 *)suck_beam_particles[i].p)->life<61)((Particle41 *)suck_beam_particles[i].p)->life=60;
+                }
+
+                if(suck_beam_particles[i].idx==1) {
+                    FastVecSub(&tmp_b,position,&((Particle41 *)suck_beam_particles[i].p)->pos);
+                    vec_scale_to_length(&tmp_b,&tmp_b,suck_beam_particles[i].speed);
+                    FastVecAdd(&((Particle41 *)suck_beam_particles[i].p)->pos,&((Particle41 *)suck_beam_particles[i].p)->pos,&tmp_b);
+                    ((Particle41 *)suck_beam_particles[i].p)->size*=1.0f+frame_scale*-0.0500000119f;
+                } else {
+                    FastVecScale(&tmp_a,&tmp_a,amount);
+                    FastVecAdd(&((Particle41 *)suck_beam_particles[i].p)->pos,suck_beam_points+suck_beam_particles[i].idx*16,&tmp_a);
+                    j=suck_beam_particles[i].angle;
+                    FastVecSub(&tmp_b,(char *)((V41 *)suck_beam_ring_vertices)+suck_beam_particles[i].idx*320+j*16,suck_beam_points+suck_beam_particles[i].idx*16);
+                    FastVecSub(&tmp_c,(char *)((V41 *)suck_beam_ring_vertices_base)+suck_beam_particles[i].idx*320+j*16,suck_beam_points_base+suck_beam_particles[i].idx*16);
+                    LerpVec4(&motion,&tmp_b,&tmp_c,amount);
+                    j=(j+19)%20;
+                    FastVecSub(&tmp_d,(char *)((V41 *)suck_beam_ring_vertices)+suck_beam_particles[i].idx*320+j*16,suck_beam_points+suck_beam_particles[i].idx*16);
+                    FastVecSub(&tmp_e,(char *)((V41 *)suck_beam_ring_vertices_base)+suck_beam_particles[i].idx*320+j*16,suck_beam_points_base+suck_beam_particles[i].idx*16);
+                    LerpVec4(&interp,&tmp_d,&tmp_e,amount);
+                    LerpVec4(&motion,&motion,&interp,suck_beam_particles[i].phase);
+                    suck_beam_particles[i].phase+=suck_beam_particles[i].phase_step;
+                    if(suck_beam_particles[i].phase>=1.0f) { suck_beam_particles[i].phase-=1.0f; suck_beam_particles[i].angle=j; }
+                    FastVecAdd(&((Particle41 *)suck_beam_particles[i].p)->pos,&((Particle41 *)suck_beam_particles[i].p)->pos,&motion);
+                }
+            }
+        }
+    }
+}
+}
+extern void suck_beam_draw_mesh(void);
 extern void AddDrawCallback(void (*)(void), int);
 
 /* Fades the suck beam segments and queues the beam draw while it is visible. */
-void SuckBeam_QueueDraw(int arg0) {
+void suck_beam_queue_draw(int arg0) {
     int i;
     if (suck_beam_segment_alpha[0] > 0) {
         for (i = 0; i < 10; i++) {
             if (suck_beam_segment_alpha[i] > 0x40) suck_beam_segment_alpha[i] = 0x40;
             suck_beam_segment_alpha[i] = (unsigned short)suck_beam_segment_alpha[i] - 4;
         }
-        AddDrawCallback(SuckBeam_DrawMesh, arg0);
+        AddDrawCallback(suck_beam_draw_mesh, arg0);
     }
 }
 typedef struct { short idx; short pad; float f; int pad2[3]; char *p; } E04;
@@ -2572,7 +2807,7 @@ void stop_suck_cannon_suction_effect(int arg0) {
             *(short *)(p + 0xA) = 0x46;
         }
     }
-    SuckBeam_QueueDraw(arg0);
+    suck_beam_queue_draw(arg0);
 }
 extern int is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(void *);
 extern float FastVecDist(void *, void *);
@@ -2580,7 +2815,7 @@ extern void begin_bolt_attraction(void *, int, float, float);
 extern void try_collect_ammo_pickup(void *);
 
 /* Scatter a moby away from nearby positions in the hazard table. */
-void ScatterMobyFromHazards(char *m) {
+void scatter_moby_from_hazards(char *m) {
     char *base;
     char *pos;
     int i;
@@ -2687,7 +2922,7 @@ void red_orb_update(char *m) {
 }
 extern void update_instance_attachment_points_and_lengths(void *);
 /* Resets the quad moby's blend values when flagged, then updates its attachment points. */
-void QuadMoby_Update(char *a) {
+void quad_moby_update(char *a) {
     if (*(unsigned char *)(a + 0x70) & 2) {
         float o = 1.0f;
         if (0.0f < *(float *)(a + 0x58)) o = 0.0f;

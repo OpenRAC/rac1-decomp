@@ -77,7 +77,7 @@ void robot_qwark_update(unsigned char *m) {
         pos[2] = 0.0f;
         add_vectors(tmp, pos, m + 0x10);
         if (random_integer_below(3) == 0) {
-            spawn_effect_particle_with_target_scalar(pos, vel, 0x20202020, 0x7F7F7F, 157500.0f, scale_ticks(rand_range(0x3C, 0x78)));
+            PartType22Spawn(pos, vel, 0x20202020, 0x7F7F7F, 157500.0f, scale_ticks(rand_range(0x3C, 0x78)));
         }
         break;
     }

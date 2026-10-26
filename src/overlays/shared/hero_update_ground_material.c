@@ -92,7 +92,7 @@ typedef struct {
 #define GG ((GS_28598 *)(D_0013E633 + 0xE1D))
 
 /* Per-frame hero update: animation, movement, ground effects, vehicle, scaling and more. */
-void HeroFrameUpdate(void) {
+void hero_frame_update(void) {
     int h2, v2, t;
     int v, h, i, r16, r17, r18, c20, color;
     float f0, f20, ang;
@@ -182,7 +182,7 @@ void HeroFrameUpdate(void) {
 extern unsigned char hero_globals_base[];
 extern int scale_ticks(int);
 extern void FadeToBlack(int);
-extern void HeroFrameUpdate(void);
+extern void hero_frame_update(void);
 extern void advance_hero_animation(void);
 extern void hero_update(void);
 extern void update_hero_ground_material_effects(void);
@@ -227,7 +227,7 @@ void update_hero_frame(void) {
     *(short *)(g + 0x1EB2) = 0;
     *(short *)(g + 0x1EB0) = 0;
     if (*(unsigned char *)(g + 0x20A4) != 0) {
-        HeroFrameUpdate();
+        hero_frame_update();
         return;
     }
     advance_hero_animation();
@@ -1030,7 +1030,7 @@ extern float novalis_hero_speed_bands[];
 extern void stick_target(int, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_00232290. */
-void HeroSpeedFromTable(void) {
+void hero_speed_from_table(void) {
     char *x;
     stick_target(0, 1.0f);
     x = hero_globals_base_r + 0xE1D;
@@ -1722,7 +1722,7 @@ void request_hero_idle_state_for_vehicle_mode(void)
 }
 extern int hl_next(int, int) __asm__("func_L01_0023D688");
 extern void set_hero_animation(int, int, float);
-extern void HeroQueueSequence(int bank, int seq);
+extern void hero_queue_sequence(int bank, int seq);
 extern void ClampVectorLength(void *a, float x);
 extern int get_hero_idle_animation_index(int a);
 extern int novalis_hero_run_step1_start_frame MACRO_ADDR;
@@ -1738,7 +1738,7 @@ void select_hero_locomotion_state(void) {
     if (*(int *)(pad_globals_base + 0x2600) & 0xA) {
         hl_next(4, 0);
         set_hero_animation(0xD, 2, -2.0f);
-        HeroQueueSequence(3, 0x12);
+        hero_queue_sequence(3, 0x12);
         return;
     }
     c = hero_globals_base + 0xE1D;
