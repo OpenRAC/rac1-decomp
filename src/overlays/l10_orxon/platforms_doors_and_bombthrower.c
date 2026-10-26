@@ -540,7 +540,58 @@ void gadgebot_telepot_pad_update(char *m)
         func_L00_002E9A18_2BFBB8(0);
     }
 }
-INCLUDE_ASM("asm/overlays", func_L10_002C0348);
+typedef unsigned int OrxonSlideQuad0348 __attribute__((mode(TI)));
+extern L10State orxon_checkpoint_0348 __asm__("D_L10_001BB9C0");
+extern L10State orxon_current_state_0348 __asm__("D_L10_001BAD60");
+extern unsigned char orxon_mission_0348[] __asm__("D_L10_0015FD08");
+extern unsigned char orxon_save_base_0348[] __asm__("D_0014171B") NOT_SDA;
+extern unsigned char orxon_menu_flags_0348[] __asm__("D_0013D4DF") NOT_SDA;
+extern int orxon_level_0348 __asm__("D_0015EE84") MACRO_ADDR;
+extern unsigned char orxon_saved_missions_0348[] __asm__("D_0014C150");
+extern float orxon_frame_0348 __asm__("D_0015EE6C") MACRO_ADDR;
+
+void func_L10_002C0348(Moby *moby) {
+    float *saved_position = (float *)moby->pvars;
+    unsigned short save_id_or_unassigned_mission;
+    int mission;
+    unsigned char mission_index;
+    float delta;
+    switch (moby->state) {
+    case 0:
+        *(OrxonSlideQuad0348 *)saved_position = *(OrxonSlideQuad0348 *)&moby->pos;
+        save_id_or_unassigned_mission = moby->save_id;
+        if (orxon_checkpoint_0348.collected[(short)save_id_or_unassigned_mission] != 0 ||
+            ((*(int *)(orxon_save_base_0348 + 0xAB75 +
+                       (((short)save_id_or_unassigned_mission >> 5) * 4 + (orxon_level_0348 << 8))) >>
+              (save_id_or_unassigned_mission & 31)) & 1)) {
+            moby->state = 1;
+        }
+        break;
+    case 1:
+        delta = -orxon_frame_0348;
+        moby->pos.y += delta;
+        if (moby->pos.y <= saved_position[1] + -3.75f) {
+            orxon_current_state_0348.collected[(short)moby->save_id] = moby->mission + 2;
+            save_id_or_unassigned_mission = 255;
+            mission = moby->mission;
+            mission_index = mission;
+            if (mission == save_id_or_unassigned_mission ||
+                (orxon_mission_0348[mission_index] != save_id_or_unassigned_mission &&
+                 orxon_saved_missions_0348[mission_index + (orxon_level_0348 << 4)] ==
+                     save_id_or_unassigned_mission)) {
+                orxon_checkpoint_0348.collected[(short)moby->save_id] = mission + 2;
+            }
+            moby->state = 2;
+            if (orxon_level_0348 == 10) {
+                orxon_menu_flags_0348[1] = 1;
+            }
+        }
+        break;
+    case 2:
+        moby->pos.y = saved_position[1] + -3.75f;
+        break;
+    }
+}
 extern char hero_globals_base[];
 extern int fast_dec_timer(int *arg0);
 extern void euler_to_matrix(float *, float *);
