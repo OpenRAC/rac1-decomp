@@ -29,11 +29,11 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float veldin1_hero_fall_state_height MACRO_ADDR;
 extern int timed_hud_visible MACRO_ADDR;
-extern int D_L00_0015F7BC MACRO_ADDR;
+extern int hero_run_step_start_frames_1 MACRO_ADDR;
 extern short veldin1_hero_double_tap_timer;
 extern S166D80 player_camera;
 extern float camera_yaw;
-extern int D_L00_0016C880;
+extern int level_render_setup_packet_default;
 extern S17A780 lean_state;
 extern Rec70 idle_fidgets[];
 extern Rec4C item_defs[];
@@ -1841,7 +1841,7 @@ void hero_update_transitions(void) {
                         HeroEnterMoveState(2, 0);
                         if (g_hero.state.current == 2) {
                             g_hero.state.step = 1;
-                            set_hero_animation(4, D_L00_0015F7BC, scale_ticks(0xC));
+                            set_hero_animation(4, hero_run_step_start_frames_1, scale_ticks(0xC));
                         }
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                         break;
@@ -2928,7 +2928,7 @@ void hero_update_transitions(void) {
                             set_hero_animation(a, 0, scale_ticks(8));
                         }
                     }
-                    D_L00_0016C880 = 0;
+                    level_render_setup_packet_default = 0;
                     break;
                 case 32:
                     if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {

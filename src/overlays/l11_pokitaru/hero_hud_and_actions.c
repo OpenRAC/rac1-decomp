@@ -25,10 +25,10 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float pokitaru_hero_fall_state_height MACRO_ADDR;
 extern int pokitaru_shown_help_message MACRO_ADDR;
-extern int D_L11_0015F7BC MACRO_ADDR;
+extern int pokitaru_hero_run_step1_start_frame MACRO_ADDR;
 extern short pokitaru_hero_double_tap_timer;
-extern float D_L11_00167858;
-extern int D_L11_0016D200;
+extern float pokitaru_camera_yaw;
+extern int pokitaru_render_setup_packet_default;
 extern S17B100 pokitaru_hero_bones;
 extern Rec70 pokitaru_idle_fidgets[];
 extern Rec4C pokitaru_item_defs[];
@@ -339,7 +339,7 @@ void HeroL11_UpdateStateTransitions(void) {
                         if (g_hero.state.prev == 1 || g_hero.state.prev == 0x1E) {
                             if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
                                 stick_target(0, 1.0f);
-                                if (FastDiffRots(g_hero.motion.move_yaw, D_L11_00167858) > 1.2217305f) {
+                                if (FastDiffRots(g_hero.motion.move_yaw, pokitaru_camera_yaw) > 1.2217305f) {
                                     ok = 0;
                                 }
                             }
@@ -1326,7 +1326,7 @@ void HeroL11_UpdateStateTransitions(void) {
                         Hero_TrySetMoveStateL11(2, 0);
                         if (g_hero.state.current == 2) {
                             g_hero.state.step = 1;
-                            set_hero_animation(4, D_L11_0015F7BC, scale_ticks(0xC));
+                            set_hero_animation(4, pokitaru_hero_run_step1_start_frame, scale_ticks(0xC));
                         }
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                         break;
@@ -1806,7 +1806,7 @@ void HeroL11_UpdateStateTransitions(void) {
                             set_hero_animation(a, 0, scale_ticks(8));
                         }
                     }
-                    D_L11_0016D200 = 0;
+                    pokitaru_render_setup_packet_default = 0;
                     break;
                 case 32:
                     if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {

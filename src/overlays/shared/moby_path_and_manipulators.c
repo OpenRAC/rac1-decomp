@@ -32,7 +32,7 @@ extern void spawn_bolt_by_value(void *, void *, void *, int, int, int);
 struct MobyBound;
 struct MobyBound *GetFlaggedPvarWord(struct Moby *);
 
-extern int D_L00_0015F678 MACRO_ADDR;
+extern int current_moby_mission_complete MACRO_ADDR;
 extern unsigned char mission_state[] MACRO_ADDR;
 extern int challenge_mode MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
@@ -65,11 +65,11 @@ void spawn_randomized_bolt_drop(char *a, int b, int c, int flags, int idx)
     if (!(flags & 0x20)) {
         if (*(unsigned char *)(a + 0xB0) != 0xFF
             && (unsigned)(*(unsigned short *)(a + 0xA6) - 0x1F4) >= 0x29) {
-            D_L00_0015F678 = mission_state[*(unsigned char *)(a + 0xB0)] == 0xFF;
+            current_moby_mission_complete = mission_state[*(unsigned char *)(a + 0xB0)] == 0xFF;
         }
     }
     f84 = 0;
-    if (D_L00_0015F678) {
+    if (current_moby_mission_complete) {
         if (!(flags & 0x20)) {
             f84 = 1;
         }
@@ -267,15 +267,15 @@ extern float inv_frame_scale MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time_cube MACRO_ADDR;
-extern int D_0015EE78 MACRO_ADDR;
+extern int frame_scale_fifths MACRO_ADDR;
 extern float frame_delta_time MACRO_ADDR;
 extern int pal_mode MACRO_ADDR;
 /* selects timing constants for the active update mode */
 void SetUpdateModeTiming(int mode) {
  if(!mode) {
- pal_mode=0; frame_scale=1.0f; g_frame_scale_sq=1.0f; inv_frame_scale=1.0f; g_frame_time_sq=0.00027777778450399637f; g_frame_time_cube=0.0000046296295295178425f; D_0015EE78=5; g_frame_time=0.01666666753590107f; frame_delta_time=0.01666666753590107f;
+ pal_mode=0; frame_scale=1.0f; g_frame_scale_sq=1.0f; inv_frame_scale=1.0f; g_frame_time_sq=0.00027777778450399637f; g_frame_time_cube=0.0000046296295295178425f; frame_scale_fifths=5; g_frame_time=0.01666666753590107f; frame_delta_time=0.01666666753590107f;
  } else {
- pal_mode=1; frame_scale=1.2f; g_frame_scale_sq=1.44f; inv_frame_scale=0.8333333134651184f; g_frame_time=0.020000001415610313f; g_frame_time_sq=0.0004000000189989805f; g_frame_time_cube=0.000007999999979801942f; D_0015EE78=6; frame_delta_time=0.019999999552965164f;
+ pal_mode=1; frame_scale=1.2f; g_frame_scale_sq=1.44f; inv_frame_scale=0.8333333134651184f; g_frame_time=0.020000001415610313f; g_frame_time_sq=0.0004000000189989805f; g_frame_time_cube=0.000007999999979801942f; frame_scale_fifths=6; frame_delta_time=0.019999999552965164f;
  }
 }
 INCLUDE_ASM("asm/overlays", func_L00_00262450);

@@ -1470,7 +1470,7 @@ extern I4_35F0 eudora_circular_saw_walk_anims;
 extern G_35F0 eudora_coll_hit;
 extern P_35F0 *eudora_paths_r2[] __asm__("D_L04_001B0930");
 extern E_35F0 *eudora_scene_points MACRO_ADDR;
-extern short D_L04_00161908;
+extern short eudora_circular_saw_spawn_1f0_record;
 
 /* Update of the circular saw enemy: hit reaction, state machine (idle, chase, patrol, attack), movement and gravity. */
 void circular_saw_enemy_update(M_35F0 *moby) {
@@ -1651,7 +1651,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
         data->f258 = k * 2.9670596f;
         qcopy(data->f120, moby->pos);
         data->f146 = scale_ticks(0x3C);
-        data->f1F0 = &D_L04_00161908;
+        data->f1F0 = &eudora_circular_saw_spawn_1f0_record;
         data->f136 = 0;
         data->f144 = 0;
         if (data->f150 == -1) {

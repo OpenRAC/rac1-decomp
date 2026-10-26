@@ -263,7 +263,7 @@ typedef struct {
 } V_2D19E8;
 extern T_2D19E8 D_L00_001EA1B0_2D19E8 __asm__("D_L00_001EA1B0");
 extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
-extern s32 D_L00_0015F678_2D19E8 __asm__("D_L00_0015F678") MACRO_ADDR;
+extern s32 current_moby_mission_complete_r __asm__("D_L00_0015F678") MACRO_ADDR;
 extern short D_L00_00161998_2D19E8 SDATA(D_L00_00161998);
 extern short D_L00_0016199C_2D19E8 SDATA(D_L00_0016199C);
 extern short D_L00_001619A0_2D19E8 SDATA(D_L00_001619A0);
@@ -316,10 +316,10 @@ void func_L00_002D19E8_r(u8 *a) {
         }
         if (g_current_level_index_r == 0xF && func_001F9B88_2D19E8(((Moby *)a)->pos.x - 166.0f) < 6.0f &&
             func_001F9B88_2D19E8(((Moby *)a)->pos.y - 193.0f) < 6.0f) {
-            s32 save = D_L00_0015F678_2D19E8;
-            D_L00_0015F678_2D19E8 = 0;
+            s32 save = current_moby_mission_complete_r;
+            current_moby_mission_complete_r = 0;
             func_L00_002584A8_2D19E8(a, 0x100, -1);
-            D_L00_0015F678_2D19E8 = save;
+            current_moby_mission_complete_r = save;
             return;
         }
         func_L00_002584A8_2D19E8(a, 0x100, *(s32 *)(b + 0xC0));
@@ -2035,7 +2035,7 @@ typedef struct {
 extern float horny_toad_scale SDATA(D_L00_00161A3C);
 extern float horny_toad_arrive_distance SDATA(D_L00_00161A50);
 extern float horny_toad_attack_anim_start_frame SDATA(D_L00_00161A54);
-extern short D_L00_00161A30;
+extern short horny_toad_move_params;
 extern char g_debug_camera[];
 extern char *moby_array_start MACRO_ADDR;
 extern Path_5AC0 *level_paths_r3[] __asm__("D_L00_001B0830");
@@ -2088,7 +2088,7 @@ void horny_toad_update(Moby *moby) {
         qcopy(data->f1D0, (*(Vec_5AC0 *)&moby->pos));
         if (moby->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, 0);
         data->f29 = 1;
-        data->f140 = &D_L00_00161A30;
+        data->f140 = &horny_toad_move_params;
         qcopy(data->f240, (*(Vec_5AC0 *)&moby->pos));
         k = g_frame_time;
         data->f25C = 1.5f;
@@ -2964,7 +2964,7 @@ typedef struct { u8 pad0[3]; u8 b03; u8 pad4[6]; s16 h0A; u8 pad0C[0x14]; E2 sub
 typedef struct { u8 pad[0x10]; Vec4f pos; u8 state; u8 pad21[0xF]; u8 b30; u8 pad31[0x47]; Q *q; } P;
 extern Vec4f smoke_particle_unit_positions_r[] __asm__("D_L00_001CBAE0");
 extern u8 smoke_particle_matrix_select[];
-extern s16 D_L00_001D5A40[];
+extern s16 smoke_particle_timer[];
 extern short smoke_fire_particle_jitter;
 extern short smoke_fire_particle_max_size;
 extern short smoke_fire_particles_per_frame;
@@ -3020,7 +3020,7 @@ void particle_spawner_smoke_fire_update(P *p) {
             smoke_particle_unit_positions_r[i].w = 1.0f;
             smoke_particle_matrix_select[i] = r;
             reset_smoke_fire_spawner_particle(p, i);
-            D_L00_001D5A40[i] = 0;
+            smoke_particle_timer[i] = 0;
         }
         j = e;
         e = e + q->extra;
@@ -3094,10 +3094,10 @@ typedef struct {
     u8 pad31[0x47];
     Q_2D90A0 *q;
 } P_2D90A0;
-extern s16 D_L00_001D5A40_2D90A0[] __asm__("D_L00_001D5A40");
+extern s16 smoke_particle_timer_r[] __asm__("D_L00_001D5A40");
 float func_L00_00258C80_2D90A0(float, float) __asm__("func_L00_00258C80");
-extern float D_L00_001D05E0_2D90A0[] __asm__("D_L00_001D05E0");
-extern float D_L00_001D18A0_2D90A0[] __asm__("D_L00_001D18A0");
+extern float smoke_particle_speed_a_r[] __asm__("D_L00_001D05E0");
+extern float smoke_particle_speed_b_r[] __asm__("D_L00_001D18A0");
 extern float smoke_particle_scroll_r[] __asm__("D_L00_001D34C0");
 extern float smoke_particle_scroll_speed_r[] __asm__("D_L00_001D4780");
 extern s16 smoke_particle_life_timer_r[] __asm__("D_L00_001D63A0");
@@ -3119,11 +3119,11 @@ void func_L00_002D90A0_r(P_2D90A0 *m, int i) {
     p->x = f;
     p->y = func_L00_00258C80_2D90A0(0.0f, 1.0f);
     p->z = func_L00_00258C80_2D90A0(0.0f, 1.0f);
-    D_L00_001D05E0_2D90A0[i] = random_float_between_r(*(float *)(v + 0x10), *(float *)(v + 0x14));
-    D_L00_001D18A0_2D90A0[i] = random_float_between_r(*(float *)(v + 0x18), *(float *)(v + 0x1C));
+    smoke_particle_speed_a_r[i] = random_float_between_r(*(float *)(v + 0x10), *(float *)(v + 0x14));
+    smoke_particle_speed_b_r[i] = random_float_between_r(*(float *)(v + 0x18), *(float *)(v + 0x1C));
     smoke_particle_scroll_r[i] = 0.0f;
     smoke_particle_scroll_speed_r[i] = random_float_between_r(*(float *)(v + 0x8), *(float *)(v + 0xC));
-    D_L00_001D5A40_2D90A0[i] = *smoke_particle_timer_ticks_r;
+    smoke_particle_timer_r[i] = *smoke_particle_timer_ticks_r;
     smoke_particle_life_timer_r[i] = 0;
     t = i - *(s16 *)v;
     smoke_particle_start_delay_r[i] = (t + 1) * smoke_particle_stagger_ticks_r;
@@ -3132,8 +3132,8 @@ void func_L00_002D90A0_r(P_2D90A0 *m, int i) {
 extern float randf_sym(float, float);
 extern float random_float_between(float, float);
 extern float smoke_particle_unit_positions[][4];
-extern float D_L00_001D05E0[];
-extern float D_L00_001D18A0[];
+extern float smoke_particle_speed_a[];
+extern float smoke_particle_speed_b[];
 extern float smoke_particle_scroll[];
 extern float smoke_particle_scroll_speed[];
 extern char smoke_particle_is_mesh[];
@@ -3150,8 +3150,8 @@ void initialize_smoke_fire_spawner_mesh_particle(char *m, int idx) {
     w[2] = randf_sym(0.0f, 1.0f);
     a = *(float *)(data + 0x44);
     b = *(float *)(data + 0x4C);
-    D_L00_001D05E0[idx] = random_float_between(a, a + 2.0f);
-    D_L00_001D18A0[idx] = random_float_between(b, b + 4.0f);
+    smoke_particle_speed_a[idx] = random_float_between(a, a + 2.0f);
+    smoke_particle_speed_b[idx] = random_float_between(b, b + 4.0f);
     smoke_particle_scroll[idx] = 0.0f;
     smoke_particle_scroll_speed[idx] = random_float_between(0.003f, 0.005f);
     smoke_particle_is_mesh[idx] = 1;

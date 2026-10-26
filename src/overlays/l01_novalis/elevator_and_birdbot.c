@@ -1326,7 +1326,7 @@ extern float novalis_peckbot_hit_knock_lift SDATA(D_L01_00161AF0);
 extern float novalis_peckbot_hit_knock_speed SDATA(D_L01_00161AF4);
 extern float novalis_peckbot_jump_speed SDATA(D_L01_00161AF8);
 extern float novalis_peckbot_jump_gravity SDATA(D_L01_00161AFC);
-extern short D_L01_00161B00;
+extern short novalis_peckbot_spawn_d0_record;
 
 extern void MobyGroup_SetByteBC(int, int);
 extern int func_001160D8(void);
@@ -1459,7 +1459,7 @@ void peckbot_update(Moby *m) {
         if (func_001160D8() & 1) {
             m->flags |= 0x8000;
         }
-        v->pD0 = &D_L01_00161B00;
+        v->pD0 = &novalis_peckbot_spawn_d0_record;
         break;
     case 0xE:
         FastVecSub(&va, &tgt, &m->pos);
@@ -2703,7 +2703,7 @@ extern float novalis_bomber_jet_far_distance SDATA(D_L01_00161C64);
 extern float novalis_bomber_jet_near_distance SDATA(D_L01_00161C68);
 extern Quad_F8B00 novalis_bomber_jet_quad_template;
 extern char novalis_bomber_jet_no_path_msg[];
-extern unsigned char D_L01_001BBE14[];
+extern unsigned char novalis_checkpoint_level_state_killed[];
 extern Hit_F8B00 novalis_coll_hit;
 extern int level_moby_killed[][64];
 extern int moby_killed[];
@@ -2792,7 +2792,7 @@ void bomber_jet_update(Moby *m) {
                 gunship_follow_path((char *)m);
             }
             if (d->timer == -1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->flag170)) {
-                if (D_L01_001BBE14[(short)m->save_id] != 0
+                if (novalis_checkpoint_level_state_killed[(short)m->save_id] != 0
                     || (level_moby_killed[g_current_level_index][(short)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
                     for (j = 0; j < 4; j++) {
                         if (d->turrets[j] != -1) {
@@ -3177,7 +3177,7 @@ typedef struct { unsigned int c[3]; } CapColors;
 extern unsigned char help_stats_base[] NOT_SDA;
 extern CapColors novalis_falling_rock_debris_colors;
 typedef struct { char pad0[0x454]; unsigned char collected[1]; } CapLevelState;
-extern CapLevelState D_L01_001BB9C0;
+extern CapLevelState novalis_checkpoint_level_state;
 typedef struct { char pad0[0x160]; float shake; char pad164[4]; int shake_time; } CapCamera;
 extern CapCamera novalis_player_camera;
 extern float g_frame_time_sq MACRO_ADDR;
@@ -3237,7 +3237,7 @@ void falling_rock_update(Moby *falling_rock) {
         falling_rock_vars->h3E = 5;
         qcopy(&falling_rock_vars->home, &falling_rock->pos);
         falling_rock->state = 1;
-        if (D_L01_001BB9C0.collected[(short)falling_rock->save_id] != 0
+        if (novalis_checkpoint_level_state.collected[(short)falling_rock->save_id] != 0
             || (*(int *)(help_stats_base + 0xAB75 + (((short)falling_rock->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >> (falling_rock->save_id & 0x1F)) & 1) {
             clear_u64_value(&falling_rock_vars->rot);
             falling_rock->state = 4;

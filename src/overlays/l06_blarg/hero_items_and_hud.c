@@ -28,8 +28,8 @@ extern float blarg_hero_fall_state_height MACRO_ADDR;
 extern int blarg_shown_help_message MACRO_ADDR;
 extern int blarg_hero_run_start_anim_mode MACRO_ADDR;
 extern short blarg_hero_double_tap_timer;
-extern float D_L06_00167658;
-extern int D_L06_0016D000;
+extern float blarg_player_camera_yaw;
+extern int blarg_hero_state_1e_clear_word;
 extern S17AF00 blarg_hero_bones;
 extern Rec70 blarg_idle_fidgets[];
 extern Rec4C blarg_item_defs[];
@@ -377,7 +377,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         if (g_hero.state.prev == 1 || g_hero.state.prev == 0x1E) {
                             if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
                                 stick_target(0, 1.0f);
-                                if (FastDiffRots(g_hero.motion.move_yaw, D_L06_00167658) > 1.2217305f) {
+                                if (FastDiffRots(g_hero.motion.move_yaw, blarg_player_camera_yaw) > 1.2217305f) {
                                     ok = 0;
                                 }
                             }
@@ -2356,7 +2356,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             set_hero_animation(a, 0, scale_ticks(8));
                         }
                     }
-                    D_L06_0016D000 = 0;
+                    blarg_hero_state_1e_clear_word = 0;
                     break;
                 case 32:
                     if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {

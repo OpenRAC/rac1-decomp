@@ -67,7 +67,7 @@ extern s32 D_L06_00162050_FF000 SDATA(D_L06_00162050);
 extern f32 D_L06_00162054_FF000 SDATA(D_L06_00162054);
 extern f32 D_L06_00162058_FF000 SDATA(D_L06_00162058);
 extern f32 D_L06_0016205C_FF000 SDATA(D_L06_0016205C);
-extern Vec4f D_L06_00167640;
+extern Vec4f blarg_camera_pos;
 extern s32 * blarg_paths[];
 extern f32 blarg_zero_vec[] MACRO_ADDR;
 extern s32 scale_ticks(s32);
@@ -119,7 +119,7 @@ void blarg_space_commando_update(struct Moby *moby) {
     process_blarg_space_commando_hits(moby);
     target = vars->target;
     Manipulator_ApplyScale(moby, 1, vars->unk420, 2.5f);
-    if (moby->visible != 0 && FastVecDist(&moby->pos, &D_L06_00167640) < 27.0f) {
+    if (moby->visible != 0 && FastVecDist(&moby->pos, &blarg_camera_pos) < 27.0f) {
         set_ground_height_band(moby);
         moby->shadow_range = 0x15;
     }
@@ -591,7 +591,7 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern void FastVecAdd(float *, float *, float *);
 extern int scale_ticks(int);
-extern char D_L06_00174700[];
+extern char blarg_coll_hit_normal[];
 extern short space_commando_beam_fan_degrees;
 extern short space_commando_beam_ticks;
 // Builds the sixteen-segment fan of data vectors for a moby from its yaw.
@@ -600,7 +600,7 @@ void initialize_blarg_space_commando_beam(char *m) {
     float v[4];
     int i;
     ProbeGroundHeight(m + 0x10, 0, 0.5f);
-    vec_scale_to_length(d + 0x220, D_L06_00174700, 1.0f);
+    vec_scale_to_length(d + 0x220, blarg_coll_hit_normal, 1.0f);
     Moby_GetJointWorldPos(m, 0, d + 0x210);
     *(float *)(d + 0x218) = ((Moby *)m)->pos.z;
     for (i = 0; i < 16; i++) {
@@ -1060,11 +1060,11 @@ void bot_door_lock_update(char *moby) {
     case 1:
         *(OvlQuad_p *)pos = *(OvlQuad_p *)(moby + 0x10);
         pos[2] += 2.75f;
-        if (FastVecDist(((float *)&D_L06_00167640), moby + 0x10) < 32.0f) {
+        if (FastVecDist(((float *)&blarg_camera_pos), moby + 0x10) < 32.0f) {
             float lim = (*(float *)&bot_door_lock_fade_max);
             data->f9 += g_frame_time + g_frame_time;
             if (lim < data->f9) data->f9 = lim;
-        } else if (36.0f < FastVecDist(((float *)&D_L06_00167640), moby + 0x10)) {
+        } else if (36.0f < FastVecDist(((float *)&blarg_camera_pos), moby + 0x10)) {
             data->f9 -= g_frame_time + g_frame_time;
             if (data->f9 < 0.0f) data->f9 = 0.0f;
         }
@@ -1291,11 +1291,11 @@ void draw_projected_fading_quad(char *moby) {
     draw_geometry_quad_5188(corners, uvs, colors, texture, 1);
     VU1_addGSregister(0x47, 0x5360B);
 }
-extern char *D_L06_0015F050 MACRO_ADDR;
+extern char *blarg_camera_descriptors MACRO_ADDR;
 
 // If the moby's kind is 0x12, set a flag in the table entry it indexes.
 void SetTableEntryFlagIfKind18(char *moby) {
     if (*(short *)(moby + 0x86) == 0x12) {
-        *(int *)(*(char **)(D_L06_0015F050 + *(short *)(moby + 0x84) * 32 + 0x1C) + 0x50) = 1;
+        *(int *)(*(char **)(blarg_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1C) + 0x50) = 1;
     }
 }

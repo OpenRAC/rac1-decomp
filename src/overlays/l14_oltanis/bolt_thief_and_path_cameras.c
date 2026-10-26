@@ -439,7 +439,7 @@ extern float FastSubRots(float, float);
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 typedef struct { char pad0[0x454]; unsigned char collected[1]; } CapLevelState_300468;
-extern CapLevelState_300468 D_L14_001BBCC0_300468 __asm__("D_L14_001BBCC0");
+extern CapLevelState_300468 oltanis_collected_flags_base_r __asm__("D_L14_001BBCC0");
 extern char oltanis_sam_dialogue_name[];
 extern char *oltanis_clip_volumes_r __asm__("D_L14_001601AC") MACRO_ADDR;
 extern char oltanis_cutscene_state_r[] __asm__("D_L14_0016D060");
@@ -460,7 +460,7 @@ void sam_update(char *m) {
     case 0: {
         unsigned short id;
         if (gemlik_available[2] != 0
-            || D_L14_001BBCC0_300468.collected[(short)(id = ((Moby *)m)->save_id)] != 0
+            || oltanis_collected_flags_base_r.collected[(short)(id = ((Moby *)m)->save_id)] != 0
             || (*(int *)(help_stats_base + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index << 8))) >> (id & 0x1F)) & 1
             || *(int *)(d + 0x44) == -1
             || *(int *)(d + 0x48) == -1) {
@@ -591,7 +591,7 @@ typedef struct {
 typedef struct { float r, g, b; } Rgb_2288;
 typedef unsigned int u128_2288 __attribute__((mode(TI)));
 extern Coll_2288 oltanis_coll_hit;
-extern int D_L14_00174658 __attribute__((section(".data")));
+extern int oltanis_coll_hit_moby __attribute__((section(".data")));
 extern short oltanis_spark_trail_ticks;
 extern short oltanis_spark_contact_radius;
 extern short oltanis_spark_min_speed;
@@ -624,7 +624,7 @@ void update_bouncing_spark(Moby *m)
   float speed;
   float lo;
   float hi;
-  if (((coll_sphere(&m->pos, 0, m, 0.65f) != 0) && (D_L14_00174658 != 0)) && (D_L14_00174658 != d->owner))
+  if (((coll_sphere(&m->pos, 0, m, 0.65f) != 0) && (oltanis_coll_hit_moby != 0)) && (oltanis_coll_hit_moby != d->owner))
   {
     m->state = 3;
   }
@@ -853,7 +853,7 @@ typedef struct {
     u8 collected[1];
 } L14LevelState;
 extern char * oltanis_mobys MACRO_ADDR;
-extern L14LevelState D_L14_001BBCC0;
+extern L14LevelState oltanis_collected_flags_base;
 extern s32 level_moby_killed[][64];
 extern float IntToFloat(int);
 extern int fast_dec_timer(int *);
@@ -874,7 +874,7 @@ void update_unlock_sequence_controller(unsigned char *moby) {
             return;
         }
         id = *(short *)&((Moby *)moby)->save_id;
-        if (D_L14_001BBCC0.collected[id] != 0) {
+        if (oltanis_collected_flags_base.collected[id] != 0) {
             ((Moby *)moby)->state = 3;
             return;
         }
@@ -1304,7 +1304,7 @@ typedef struct {
     u8 pad0[0x454];
     u8 collected[1];
 } L14LevelState_08000;
-extern L14LevelState_08000 D_L14_001BBCC0_08000 __asm__("D_L14_001BBCC0");
+extern L14LevelState_08000 oltanis_collected_flags_base_r2 __asm__("D_L14_001BBCC0");
 extern u8 saved_mission_state[];
 extern f32 FastAddRots(f32, f32);
 extern s32 truncate_float_to_s32(f32);
@@ -1330,7 +1330,7 @@ void StepOnSwitchUpdate(struct Moby *moby) {
         *(f32 *)(d + 3) = random_angle_radians();
         moby->pos.z -= 0.35f;
         id = (s16)moby->save_id;
-        if (D_L14_001BBCC0_08000.collected[id] != 0 ||
+        if (oltanis_collected_flags_base_r2.collected[id] != 0 ||
             (level_moby_killed[g_current_level_index][id >> 5] >> (moby->save_id & 31) & 1) != 0 ||
             (d[2] != 0 && saved_mission_state[moby->mission + g_current_level_index * 16] == 0xFF)) {
             moby->command = 2;
@@ -2023,7 +2023,7 @@ extern char * oltanis_camera_descriptors MACRO_ADDR;
 extern char * oltanis_paths[];
 extern s32 path_camera_active MACRO_ADDR;
 extern char oltanis_camera_matrix[];
-extern float D_L14_001676D8;
+extern float oltanis_player_camera_field_258;
 extern float hero_gravity_dir[];
 typedef struct {
     char pad0[0xB0];
@@ -2099,7 +2099,7 @@ void update_path_camera(struct UpdateCam *cam) {
         char *mb;
         oltanis_view_params.fB0 = FastSin(ang) / FastCos(ang);
         UpdateViewContext();
-        D_L14_001676D8 = 0.25f;
+        oltanis_player_camera_field_258 = 0.25f;
         cam->transition_state = 4;
         path_camera_active = 0;
         mb = oltanis_mobys;

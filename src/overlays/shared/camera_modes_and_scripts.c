@@ -28,7 +28,7 @@ void follow_camera_update(char *m) {
     follow_camera_approach(m);
 }
 extern char hero_globals_base[] NOT_SDA;
-extern int D_0015EEB3 MACRO_ADDR;
+extern int gCheats_3 MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
@@ -43,7 +43,7 @@ void update_hero_aligned_camera_position(char *p) {
     if (m == 2) {
         FastVecScale(b, a, 9.5f);
     } else if (m == 1) {
-        if (*(unsigned char *)&D_0015EEB3) {
+        if (*(unsigned char *)&gCheats_3) {
             FastVecScale(b, a, 1.2f);
         } else {
             FastVecScale(b, a, 0.9f);
@@ -58,7 +58,7 @@ void update_hero_aligned_camera_position(char *p) {
 extern void FastVecScale(void *, void *, float);
 extern void FastVecCross(void *, void *, void *);
 extern char g_hero[];
-extern void *D_L00_00166F04;
+extern void *camera_cross_axis_ptr;
 
 /* builds the camera-relative matrix rows of a moby from the camera state */
 void initialize_hero_aligned_camera_pose(char *m) {
@@ -79,7 +79,7 @@ void initialize_hero_aligned_camera_pose(char *m) {
         FastVecScale(b, a, 1.6f);
     }
     FastVecAdd(m + 0x30, g_hero + 0x80, b);
-    q = D_L00_00166F04;
+    q = camera_cross_axis_ptr;
     d = m + 0x20;
     qcopy(d, a);
     p = m + 0x10;
@@ -1059,7 +1059,7 @@ extern float FastVecDot(void *, void *);
 extern float FastArcSin(float);
 extern void build_look_at_matrix(void *, void *, void *, float);
 extern char hero_globals_base[] NOT_SDA;
-extern char D_L00_00166F30[] NOT_SDA;
+extern char camera_view_up_axis[] NOT_SDA;
 /* orients a moby to face the camera, blending by the turn angle */
 void turn_camera_view_toward_hero(char *m) {
     char *p = *(char **)(m + 0x70);
@@ -1087,7 +1087,7 @@ void turn_camera_view_toward_hero(char *m) {
     build_look_at_matrix(m, m + 0x40, c, ang);
     vec_scale_to_length(m + 0x40, m, 1.0f);
     qcopy(m, m + 0x40);
-    FastVecCross(m + 0x10, m, D_L00_00166F30);
+    FastVecCross(m + 0x10, m, camera_view_up_axis);
     vec_scale_to_length(m + 0x10, m + 0x10, 1.0f);
     FastVecCross(m + 0x20, m + 0x10, m);
 }
@@ -1199,7 +1199,7 @@ extern u8 * g_current_follow_cam_r2[] __asm__("D_L00_00166F00");
 extern u8 * camera_descriptors_r2 __asm__("D_L00_0015F050") MACRO_ADDR;
 extern u8 * level_paths[];
 extern s32 hero_control_mode[];
-extern s32 D_001416D4[];
+extern s32 g_hero_field_2284[];
 extern s32 is_point_inside_clip_volume(void *, s32);
 extern s32 test_point_in_transformed_unit_cylinder(void *, s32);
 extern s32 test_point_in_transformed_unit_sphere_r(void *, s32) __asm__("func_L00_00260B68");
@@ -1218,7 +1218,7 @@ s32 volume_camera_swing_active(A_2ec7e8 *a) {
     w = *(u16 *)&o->f2C;
     if (o->f2C == 2 && hero_control_mode[0] == 0x1A && o->f2E > 0) {
         v17 = 1;
-    } else if ((s16)w == 4 && D_001416D4[0] == 3) {
+    } else if ((s16)w == 4 && g_hero_field_2284[0] == 3) {
         v17 = 0 < o->f2E;
     }
     if (o->f0C >= 0 && (v17 || is_point_inside_clip_volume(&gHeroPos[0], o->f0C))) return 1;
@@ -1273,7 +1273,7 @@ typedef struct { u8 pad0[0x100]; f32 analog[4]; } PadSt;
 
 extern char *camera_descriptors MACRO_ADDR;
 extern float camera_yaw MACRO_ADDR;
-extern float D_L00_00166FB4;
+extern float camera_view_field_a4;
 extern unsigned char pad_globals_base[];
 #define pad_held_r ((s32 *)(D_0013A5E0 + 0x2600))
 #define controller_state (*(PadSt *)(D_0013A5E0 + 0x2460))
@@ -1289,13 +1289,13 @@ extern f32 FastCos(f32);
 extern f32 FastSin(f32);
 extern void set_follow_camera_angle_blend_from_direction(void *, f32, f32);
 extern void set_follow_camera_blend_output_flags(void);
-extern void func_L00_002E9AD0(void);
+extern void set_follow_camera_flag_226(void);
 extern void follow_camera_start_slide(void);
 extern void Cam_SetDistanceGoal(s32, f32, f32);
-extern void func_L00_002E9940(f32);
+extern void set_follow_camera_float_22c(f32);
 extern void follow_camera_set_height(f32, f32);
 extern void Cam_SetEyeOffset(s32, f32, f32);
-extern void func_L00_002E99F0(f32);
+extern void set_follow_camera_angle_1cc(f32);
 extern void set_follow_camera_orbit_clamp_mode(int);
 extern void follow_camera_set_lateral_spring(f32, f32);
 
@@ -1404,7 +1404,7 @@ stop:
             at_end = 1;
             params->timer = scale_ticks(200);
         }
-        func_L00_002E9AD0();
+        set_follow_camera_flag_226();
     } else if (params->type == 1 || params->type == 7 || params->type == 10 || params->type == 9) {
         PadSt *pad = &controller_state;
         if (pad->analog[0] != 0.0f || pad->analog[1] != 0.0f) {
@@ -1412,7 +1412,7 @@ stop:
         }
         if (params->timer >= scale_ticks(200)) {
             at_end = 1;
-            if (D_L00_00166FB4 > 0.0f) {
+            if (camera_view_field_a4 > 0.0f) {
                 params->timer = scale_ticks(200);
             }
         }
@@ -1442,10 +1442,10 @@ stop:
     if (params->distance != 0.0f) {
         if (params->type == 6 || params->type == 8) {
             Cam_SetDistanceGoal(0, params->distance, 0.002f);
-            func_L00_002E9940(params->distance + 1.36f);
+            set_follow_camera_float_22c(params->distance + 1.36f);
         } else {
             Cam_SetDistanceGoal(0, params->distance, 0.003f);
-            func_L00_002E9AD0();
+            set_follow_camera_flag_226();
         }
     }
     if (params->height != 0.0f) {
@@ -1463,7 +1463,7 @@ stop:
         }
     }
     if (params->unk50 != 0.0f) {
-        func_L00_002E99F0(params->unk50 * 0.017453292f);
+        set_follow_camera_angle_1cc(params->unk50 * 0.017453292f);
     }
     if (params->set_flag1 != 0) {
         { FollowCamFlags *ctl = &FOLLOW_CAM_STATE(((struct UpdateCam *)g_current_follow_cam))->tail.ctl; ctl->flags |= 2; }
@@ -1485,7 +1485,7 @@ stop:
         }
     }
     if (params->type == 1 || params->type == 7 || params->type == 10) {
-        func_L00_002E9AD0();
+        set_follow_camera_flag_226();
         follow_camera_start_slide();
         follow_camera_set_lateral_spring(0.01f, 0.2f);
     }
@@ -1776,7 +1776,7 @@ run:
     }
     if (params->distance != 0.0f) {
         Cam_SetDistanceGoal(0, params->distance, 0.003f);
-        func_L00_002E9AD0();
+        set_follow_camera_flag_226();
     }
     if (params->height != 0.0f) {
         follow_camera_set_height(params->height, 0.003f);
@@ -1785,7 +1785,7 @@ run:
         Cam_SetEyeOffset(0, params->offset_scale, 0.005f);
     }
     if (params->unk28 != 0.0f) {
-        func_L00_002E99F0(params->unk28 * 0.017453292f);
+        set_follow_camera_angle_1cc(params->unk28 * 0.017453292f);
     }
     if (params->keep_unk10 == 0) {
         set_follow_camera_orbit_clamp_mode(0);

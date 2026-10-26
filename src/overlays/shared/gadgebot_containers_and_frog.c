@@ -152,7 +152,7 @@ void gadgebot_spawn_container_update(unsigned char *moby) {
     }
 }
 typedef struct { float corner[4][4]; int color[4]; float uv[4][2]; long unk70; long tex; long unk80; long unk88; } L06BackdropQuad;
-extern char D_L06_00167640[];
+extern char blarg_camera_pos[];
 extern char referencePosition[];
 extern float blarg_gadgebot_container_verts[][4];
 extern float blarg_gadgebot_container_vert_normals[][4];
@@ -215,7 +215,7 @@ void draw_gadgebot_spawn_container(char *moby) {
         float *uv = &blarg_gadgebot_container_env_uvs[0][0];
         for (i = 0; i < 57; i++) {
             transform_vector(blarg_gadgebot_container_world_verts[i], blarg_gadgebot_container_verts[i], matrix);
-            FastVecSub(direction, blarg_gadgebot_container_world_verts[i], D_L06_00167640);
+            FastVecSub(direction, blarg_gadgebot_container_world_verts[i], blarg_camera_pos);
             vec_scale_to_length(direction, direction, 1.0f);
             transform_vector(normal, blarg_gadgebot_container_vert_normals[i], matrix);
             vec_scale_to_length(normal, normal, *(float *)&blarg_gadgebot_container_normal_scale);
@@ -248,7 +248,7 @@ void draw_gadgebot_spawn_container(char *moby) {
     do {
         float *center = facePos;
         TransformPoint(center, blarg_gadgebot_container_face_centers[i], matrix);
-        FastVecSub(direction, center, D_L06_00167640);
+        FastVecSub(direction, center, blarg_camera_pos);
         vec_scale_to_length(direction, direction, 1.0f);
         matrix_mul_vec3(center, blarg_gadgebot_container_face_normals[i], matrix);
         if (!(0.0f < FastVecDot(direction, center))) {
@@ -316,12 +316,12 @@ void initialize_moby_particle_effect_state(char *moby)
 typedef int u128_9AA8 __attribute__((mode(TI)));
 extern short blarg_frog_update_disabled;
 extern short blarg_frog_spawn_counter;
-extern short D_L06_00161C80;
+extern short blarg_frog_pvars_d0_table;
 extern int level_game_mode_q MACRO_ADDR;
 extern int blarg_shuttle_at_second_stop MACRO_ADDR;
-extern char D_L06_00167640[];
+extern char blarg_camera_pos[];
 extern float g_frame_time_sq MACRO_ADDR;
-extern char D_L06_00174700[];
+extern char blarg_coll_hit_normal[];
 extern int *blarg_paths[];
 extern char hero_globals_base[];
 
@@ -385,7 +385,7 @@ void frog_update(unsigned char *m) {
     }
     Manipulator_ApplyScale(2.1f, (int)m, 1, (unsigned char *)(d + 0x250));
     update_frog_health_respawn_and_target_x(m);
-    if (((Moby *)m)->visible != 0 && FastVecDist(m + 0x10, D_L06_00167640) < 14.0f) {
+    if (((Moby *)m)->visible != 0 && FastVecDist(m + 0x10, blarg_camera_pos) < 14.0f) {
         set_ground_height_band(m);
         ((Moby *)m)->shadow_range = 0xB;
     }
@@ -414,7 +414,7 @@ void frog_update(unsigned char *m) {
         *(int *)(d + 0x140) = 0x200;
         *(float *)(d + 0x244) = f;
         *(float *)(d + 0x248) = random_angle_radians();
-        *(short **)(d + 0xD0) = &D_L06_00161C80;
+        *(short **)(d + 0xD0) = &blarg_frog_pvars_d0_table;
         d[0x29] = 1;
         if (*(short *)(d + 0x200) != 0) {
             char *o;
@@ -460,7 +460,7 @@ void frog_update(unsigned char *m) {
     case 3:
         FastVecSub(A, t + 0x10, m + 0x10);
         probe_frog_local_z_collision((char *)m);
-        blend_frog_rotation_to_facing_frame((char *)m, (float *)D_L06_00174700, A);
+        blend_frog_rotation_to_facing_frame((char *)m, (float *)blarg_coll_hit_normal, A);
         if (vec_distance_xy(hero_globals_base + 0xE9D, m + 0x10) < *(float *)(d + 0x24C)) {
             ((Moby *)m)->state = 4;
             if (((Moby *)m)->prev_seq != 4) MobyBlendAnimation(m, 4, 0, scale_ticks(5));
@@ -472,7 +472,7 @@ void frog_update(unsigned char *m) {
         qcopy(B, (char *)blarg_paths[*(int *)(d + 0x1F8)] + *(short *)(d + 0x208) * 16 + 0x10);
         FastVecSub(A, B, m + 0x10);
         probe_frog_local_z_collision((char *)m);
-        blend_frog_rotation_to_facing_frame((char *)m, (float *)D_L06_00174700, A);
+        blend_frog_rotation_to_facing_frame((char *)m, (float *)blarg_coll_hit_normal, A);
         vec_scale_to_length(C, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
         move_frog_with_collision_resolution(m, C, 0, 0.3f, 0.3f);
         matrix_mul_vec3(A, A, m + 0xC0);
@@ -542,7 +542,7 @@ void frog_update(unsigned char *m) {
             }
             FastVecSub(C, d + 0x230, m + 0x10);
             probe_frog_local_z_collision((char *)m);
-            blend_frog_rotation_to_facing_frame((char *)m, (float *)D_L06_00174700, C);
+            blend_frog_rotation_to_facing_frame((char *)m, (float *)blarg_coll_hit_normal, C);
             vec_scale_to_length(B, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
             move_frog_with_collision_resolution(m, B, 1, 0.3f, 0.3f);
         }
@@ -562,7 +562,7 @@ void frog_update(unsigned char *m) {
         B[1] = FastSin(a);
         B[2] = 0.0f;
         probe_frog_local_z_collision((char *)m);
-        blend_frog_rotation_to_facing_frame((char *)m, (float *)D_L06_00174700, B);
+        blend_frog_rotation_to_facing_frame((char *)m, (float *)blarg_coll_hit_normal, B);
         vec_scale_to_length(A, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
         move_frog_with_collision_resolution(m, A, 1, 0.3f, 0.3f);
         if (vec_distance_xy(m + 0x10, t + 0x10) < 2.0f) {
@@ -582,7 +582,7 @@ void frog_update(unsigned char *m) {
         B[2] = 0.0f;
         near = 0;
         probe_frog_local_z_collision((char *)m);
-        blend_frog_rotation_to_facing_frame((char *)m, (float *)D_L06_00174700, B);
+        blend_frog_rotation_to_facing_frame((char *)m, (float *)blarg_coll_hit_normal, B);
         vec_scale_to_length(A, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
         move_frog_with_collision_resolution(m, A, 1, 0.3f, 0.3f);
         if (SegmentCrossPolyline(*(int *)(d + 0x1EC), m + 0x10, t + 0x10, D) != 0
@@ -628,7 +628,7 @@ void frog_update(unsigned char *m) {
     case 13:
         FastVecSub(B, d + 0x210, m + 0x10);
         probe_frog_local_z_collision((char *)m);
-        blend_frog_rotation_to_facing_frame((char *)m, (float *)D_L06_00174700, B);
+        blend_frog_rotation_to_facing_frame((char *)m, (float *)blarg_coll_hit_normal, B);
         vec_scale_to_length(A, m + 0xC0, *(float *)(d + 0x1E4) * g_frame_time);
         move_frog_with_collision_resolution(m, A, 1, 0.3f, 0.3f);
         if (vec_distance_xy(m + 0x10, d + 0x210) < 2.0f) {
@@ -867,8 +867,8 @@ void probe_frog_local_z_collision(char *moby) {
 extern float FastVecLength(void *);
 extern int coll_sphere_L06(void *, float, int, void *) __asm__("func_L00_001F10E0");
 extern void resolve_point_path_segment_xy_clearance(float, int, void *, void *);
-extern char D_L06_001746E0[];
-extern char D_L06_001746F0[];
+extern char blarg_collision_hit_point[];
+extern char blarg_coll_resolved_pos[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002e9b60. */
 void move_frog_with_collision_resolution(void *moby, void *out, int use_path, float scale, float threshold) {
@@ -887,12 +887,12 @@ void move_frog_with_collision_resolution(void *moby, void *out, int use_path, fl
     FastVecAdd(end, (char *)moby + 0x10, forward);
 
     if (threshold < FastVecLength(out) && coll_line(start, end, 0, (int)moby, 0) != 0) {
-        qcopy(end, D_L06_001746E0);
+        qcopy(end, blarg_collision_hit_point);
         FastVecSub((char *)moby + 0x10, end, forward);
     }
     for (i = 0; i < 6; i++) {
         if (coll_sphere_L06(end, threshold, 4, moby) != 0) {
-            qcopy(end, D_L06_001746F0);
+            qcopy(end, blarg_coll_resolved_pos);
             FastVecSub((char *)moby + 0x10, end, forward);
         } else {
             break;
@@ -1268,10 +1268,10 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern Moby *level_mobys_q MACRO_ADDR;
 extern short blarg_gadgebot_eye_height;
-extern char D_L06_00167640[];
+extern char blarg_camera_pos[];
 extern GbHit blarg_coll_hit;
 extern Moby *blarg_coll_hit_moby;
-extern GbStats D_L06_0017ED58;
+extern GbStats blarg_gadgebot_command_count_base;
 extern int *blarg_paths[];
 
 extern float vec_distance_xy(void *, void *);
@@ -1354,7 +1354,7 @@ void GadgebotUpdate(Moby *moby) {
                 ok = 1;
             }
             if (ok) {
-                D_L06_0017ED58.f2C++;
+                blarg_gadgebot_command_count_base.f2C++;
                 switch (radial_select_choice[0]) {
                 case 1:
                     if (moby->state != 3) {
@@ -1992,7 +1992,7 @@ void GadgebotUpdate(Moby *moby) {
         *(u128 *)(*(float (*)[4])&moby->pos) = *(u128 *)save0;
     }
     if (moby->visible != 0) {
-        if (FastVecDist((*(float (*)[4])&moby->pos), D_L06_00167640) < 17.0f) {
+        if (FastVecDist((*(float (*)[4])&moby->pos), blarg_camera_pos) < 17.0f) {
             set_ground_height_band(moby);
             moby->shadow_range = 0xD;
         }
@@ -2668,7 +2668,7 @@ extern Moby *level_mobys_q_r3 __asm__("D_L06_00160058") MACRO_ADDR;
 extern float blarg_rotation_group_turn_accel_deg SDATA(D_L06_00161DC8);
 extern float blarg_rotation_group_turn_decel_deg SDATA(D_L06_00161DCC);
 extern float blarg_rotation_group_turn_max_speed_deg SDATA(D_L06_00161DD0);
-extern float D_L06_00161DD4 SDATA(D_L06_00161DD4);
+extern float blarg_rotation_group_proximity_suppress SDATA(D_L06_00161DD4);
 extern float blarg_rotation_group_pivot_offset SDATA(D_L06_00161DD8);
 extern char hero_globals_base[];
 extern Moby *CreateMoby_r(int) __asm__("func_0020D348");
@@ -2725,7 +2725,7 @@ void update_moby_rotation_group(Moby *m) {
                     flag = level_mobys_q_r3[d->idx].state >= 3;
                 }
             } else {
-                if (vec_distance_xy((*(float (*)[4])&m->pos), hero_globals_base + 0xE9D) < 6.0f && D_L06_00161DD4 == 0.0f) {
+                if (vec_distance_xy((*(float (*)[4])&m->pos), hero_globals_base + 0xE9D) < 6.0f && blarg_rotation_group_proximity_suppress == 0.0f) {
                     flag = 1;
                 }
             }
@@ -2895,7 +2895,7 @@ void update_energy_sphere_holder_beam_effects(char *m) {
     float b[4];
     Beam_2f8a58 *d = ((Beam_2f8a58 *)((Moby *)m)->pvars);
     int i;
-    FastVecSub(pos, D_L06_00167640, d->tgt + 0x10);
+    FastVecSub(pos, blarg_camera_pos, d->tgt + 0x10);
     vec_scale_to_length(pos, pos, -0.3f);
     vec_scale_to_length(step, pos, 0.1f);
     FastVecAdd(pos, pos, d->tgt + 0x10);

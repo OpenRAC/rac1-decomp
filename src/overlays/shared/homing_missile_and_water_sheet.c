@@ -8,9 +8,9 @@
 
 LINKER_REMNANT("asm/overlays", func_L11_002C99E0);
 extern char gHeroPos[];
-extern unsigned char D_0013D491[];
-extern char D_L11_00179B98[];
-extern char D_L11_0021ABF0[];
+extern unsigned char gSpecialItems_1[];
+extern char pokitaru_pickup_message_buffer[];
+extern char pokitaru_raritanium_acquired_text[];
 extern int proximity_removal_frame_count MACRO_ADDR;
 extern float FastVecDist(void *, void *);
 extern int scale_ticks(int);
@@ -21,8 +21,8 @@ extern void DeleteMoby(void *);
 void remove_moby_when_near_hero(char *a0)
 {
     if (FastVecDist(a0 + 0x10, gHeroPos) < 2.0f) {
-        D_0013D491[0] = 1;
-        sprintf(D_L11_00179B98, D_L11_0021ABF0);
+        gSpecialItems_1[0] = 1;
+        sprintf(pokitaru_pickup_message_buffer, pokitaru_raritanium_acquired_text);
         proximity_removal_frame_count = scale_ticks(0xB4);
         DeleteMoby(a0);
     }
@@ -373,7 +373,7 @@ extern unsigned char *PartType44Spawn(void *, void *, int, int, int, int, float,
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
-extern char D_L11_001B2D80[];
+extern char pokitaru_particle_textures_ptr_base[];
 extern char pokitaru_collision_hit_point[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -399,7 +399,7 @@ void Moby1034Update(struct PMoby *moby) {
     FastVecAdd(&velocity, &velocity, &offset);
     PartType44Spawn(&moby->pos, &velocity, scale_ticks(6), 0x7f, 0xb0b0b0,
                3, 40000.0f, 1000.0f, 1.0f, -0.0004f, 0.0f);
-    texture = D_L11_001B2D80;
+    texture = pokitaru_particle_textures_ptr_base;
     for (fraction = 0.0f; fraction < 1.0f; fraction += 0.33333334f) {
         unsigned char *p;
         vec_scale_to_length(&offset, &data->step, random_float_between(fraction, fraction + 0.33333334f) * data->speed);
@@ -486,8 +486,8 @@ extern float IntToFloat(int);
 extern void draw_env_overlay_mesh_r(int, void *, void *, void *, int) __asm__("func_L00_001FDE48");
 extern void draw_world_quad(void *, void *, int);
 extern char hero_globals_base[];
-extern char D_L11_0016D4C0[];
-extern int D_L11_0016D200;
+extern char pokitaru_render_view_params[];
+extern int pokitaru_render_setup_packet_default;
 extern char pokitaru_camera_matrix[];
 extern float camera_pos_b358[];
 extern float pokitaru_ocean_height MACRO_ADDR;
@@ -512,8 +512,8 @@ void draw_pokitaru_ocean(Moby *moby) {
     Vec4f d1;
     Quad_30BCD8 q;
     Data_30BCD8 *d = (Data_30BCD8 *)moby->pvars;
-    float s228 = ((Fog_30BCD8 *)D_L11_0016D4C0)->f228;
-    float s22C = ((Fog_30BCD8 *)D_L11_0016D4C0)->f22C;
+    float s228 = ((Fog_30BCD8 *)pokitaru_render_view_params)->f228;
+    float s22C = ((Fog_30BCD8 *)pokitaru_render_view_params)->f22C;
     int i;
     int layer;
     int colA;
@@ -523,9 +523,9 @@ void draw_pokitaru_ocean(Moby *moby) {
     float x;
     float y;
 
-    if (((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1D && D_L11_0016D200 == 0) {
-        ((Fog_30BCD8 *)D_L11_0016D4C0)->f228 = 255.0f;
-        ((Fog_30BCD8 *)D_L11_0016D4C0)->f22C = 249.9f;
+    if (((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1D && pokitaru_render_setup_packet_default == 0) {
+        ((Fog_30BCD8 *)pokitaru_render_view_params)->f228 = 255.0f;
+        ((Fog_30BCD8 *)pokitaru_render_view_params)->f22C = 249.9f;
     }
     VU1_addGSregister(0x42, 0x3200000044L);
     VU1_addGSregister(8, 0);
@@ -591,7 +591,7 @@ void draw_pokitaru_ocean(Moby *moby) {
     q.q88 = 0x8000000044L;
     q.z70 = 0;
     if (d->f14 < ((Cam_30BCD8 *)pokitaru_player_camera)->z - d->f24 &&
-        ((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1D && D_L11_0016D200 == 0) {
+        ((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1D && pokitaru_render_setup_packet_default == 0) {
         q.uv[0].u = 0.0f;
         q.uv[0].v = 0.0f;
         q.uv[1].u = 0.0f;
@@ -674,8 +674,8 @@ void draw_pokitaru_ocean(Moby *moby) {
             }
         }
     }
-    ((Fog_30BCD8 *)D_L11_0016D4C0)->f228 = s228;
-    ((Fog_30BCD8 *)D_L11_0016D4C0)->f22C = s22C;
+    ((Fog_30BCD8 *)pokitaru_render_view_params)->f228 = s228;
+    ((Fog_30BCD8 *)pokitaru_render_view_params)->f22C = s22C;
     VU1_addGSregister(0x47, 0x5360B);
 }
 typedef struct { float u, v; } UV_30C728;

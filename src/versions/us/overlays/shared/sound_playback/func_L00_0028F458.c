@@ -60,13 +60,13 @@ void update_moby_proximity_interaction(unsigned char *m) {
             if (q[0x48] == 0 && gHaveMorphORay[7] != 0) {
                 StartCutscene(4);
                 q[0x48] = 1;
-            } else if ((q = special_items_base + 0x13B)[0x49] == 0 && D_0013DE4B[8] != 0) {
+            } else if ((q = special_items_base + 0x13B)[0x49] == 0 && level_available_base[8] != 0) {
                 StartCutscene(5);
                 q[0x49] = 1;
-            } else if ((q = special_items_base + 0x13B)[0x4A] == 0 && D_0013DE4B[8] != 0) {
+            } else if ((q = special_items_base + 0x13B)[0x4A] == 0 && level_available_base[8] != 0) {
                 PlayMovieEntryIfIdle(0xB);
                 q[0x4A] = 1;
-            } else if ((q = special_items_base + 0x13B)[0x4B] == 0 && D_0013DE4B[8] != 0) {
+            } else if ((q = special_items_base + 0x13B)[0x4B] == 0 && level_available_base[8] != 0) {
                 StartCutscene(6);
                 q[0x4B] = 1;
             } else {

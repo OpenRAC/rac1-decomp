@@ -2,9 +2,9 @@ void update_hero_relocation_trigger(char *m) {
     char *d = *(char **)(m + 0x78);
     unsigned short id;
     ((unsigned char *)m)[0x30] = 0xFF;
-    if (*(int *)&D_L10_00161410 == 1) {
+    if (*(int *)&orxon_relocation_reset_flag == 1) {
         *(short *)(help_stats_base + 0x32D) = 0;
-        *(int *)&D_L10_00161410 = 0;
+        *(int *)&orxon_relocation_reset_flag = 0;
     }
     if (*(int *)(d + 0x18) != -1) {
         int b = *(int *)(d + 0x1C);
@@ -24,7 +24,7 @@ void update_hero_relocation_trigger(char *m) {
         }
     }
     id = *(unsigned short *)(m + 0xB2);
-    if (D_L10_001BB9C0.collected[(short)id] != 0 ||
+    if (orxon_collected_flags_base.collected[(short)id] != 0 ||
         ((*(int *)(help_stats_base + 0xAB75 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) != 0) {
         if (gHaveHeliPack[4] != 0) {
             char *bs = orxon_mobys_r;

@@ -2918,7 +2918,7 @@ extern void PostHitMessage(int, int, int, void *, void *, float);
 extern int mine_fall(void *, void *);
 extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
 extern void SetDeathBits(void *, int, int);
-extern short D_L17_00162280;
+extern short class1382_move_params;
 
 /* UpdateMoby for class 1382: hides or shows the moby by its clip volumes, then runs its state machine. */
 void Moby1382Update(unsigned char *m) {
@@ -2973,7 +2973,7 @@ void Moby1382Update(unsigned char *m) {
         d->b29 = 0;
         d->s24 = 1;
         d->f20 = 1.0f;
-        d->pD0 = &D_L17_00162280;
+        d->pD0 = &class1382_move_params;
         d->f1EC = random_float_between(g_frame_time * 7.2f, g_frame_time * 8.7f);
         ((Moby *)m)->state = 1;
         MobyBlendAnimation(m, 0, random_integer_below(*(unsigned char *)(*(char **)(*(char **)(m + 0x24) + 0x48) + 0x10)), 0);

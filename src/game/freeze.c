@@ -53,7 +53,7 @@ extern int msg_string(int);
 extern void push_help_history(int);
 extern int scale_game_frame_count(int);
 extern int g_game_mode MACRO_ADDR;
-extern int D_0013D440;
+extern int memory_card_request;
 extern char mode_freeze_info[];
 
 /* Enters the freeze screen for reason arg0: pauses the music unless the
@@ -129,7 +129,7 @@ void mode_freeze_init(int arg0, int arg1, int arg2) {
         *(int *)(p + 4) = scale_game_frame_count(0x1E);
         *(int *)(p + 0x20) = -1;
         *(int *)(p + 0x24) = scale_game_frame_count(0x1E);
-        D_0013D440 = 3;
+        memory_card_request = 3;
         *(int *)(p + 0x2C) = scale_game_frame_count(0xA);
         break;
     }
@@ -202,13 +202,13 @@ extern short freeze_box_record_color;
 extern short freeze_box_record_flash_color;
 extern short freeze_box_no_record_color;
 extern short freeze_box_no_record_flash_color;
-extern s32 D_0015F6CC MACRO_ADDR;
+extern s32 pause_restart_reset_flag MACRO_ADDR;
 extern short mode_freeze_state;
 extern s32 pal_mode MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 extern s32 boot_level_active MACRO_ADDR;
-extern s32 D_001D60C0;
-extern s32 D_0013D440 MACRO_ADDR;
+extern s32 freeze_prompt_override_flag;
+extern s32 memory_card_request MACRO_ADDR;
 extern s32 game_frame_counter MACRO_ADDR;
 extern char freeze_prompt_default_text[];
 extern char freeze_prompt_number_format[];
@@ -367,7 +367,7 @@ void draw_freeze_message_box(void) {
         s32 mid;
         s32 draw = 1;
 
-        if (D_0013D440 != 0) {
+        if (memory_card_request != 0) {
             break;
         }
         if (((MessageBoxP *)mode_freeze_info)->unk20 <= 0) {
@@ -384,7 +384,7 @@ void draw_freeze_message_box(void) {
             text = msg_string(0x4FAF);
             break;
         case 12:
-            if (D_001D60C0 != 0) {
+            if (freeze_prompt_override_flag != 0) {
                 mid = 0x4FA8;
                 text = msg_string(0x4FA7);
                 break;
@@ -418,7 +418,7 @@ void draw_freeze_message_box(void) {
             }
             break;
         case 19:
-            if (D_001D60C0 != 0) {
+            if (freeze_prompt_override_flag != 0) {
                 mid = 0x4FA8;
                 text = msg_string(0x4FA7);
             } else if (boot_level_active != 0) {
@@ -452,15 +452,15 @@ void draw_freeze_message_box(void) {
             break;
         case 3:
         case 4:
-            if (boot_level_active != 0 && D_001D60C0 == 0) {
+            if (boot_level_active != 0 && freeze_prompt_override_flag == 0) {
                 left = 0x5253;
                 right = 0x5250;
                 text = msg_string(0x4FAB);
-            } else if (D_0015F6CC != 0) {
+            } else if (pause_restart_reset_flag != 0) {
                 left = 0x5254;
                 right = 0x5250;
                 text = msg_string(0x4FAB);
-            } else if (D_001D60C0 == 0) {
+            } else if (freeze_prompt_override_flag == 0) {
                 mid = 0x4FA8;
                 text = msg_string(0x4FAC);
             } else {

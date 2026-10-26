@@ -48,10 +48,10 @@ extern Anim_30CAE0 *gemlik_scene_points_r __asm__("D_L13_0016016C") MACRO_ADDR;
 extern float gemlik_fade_level_r __asm__("D_L13_0015F4FC") MACRO_ADDR;
 extern int gemlik_scripted_camera_active_r __asm__("D_L13_0015F504") MACRO_ADDR;
 extern unsigned char gemlik_mission_group_state_r[] __asm__("D_L13_0015FD08") MACRO_ADDR;
-extern unsigned char D_001414F5_30CAE0[] __asm__("D_001414F5") NOT_SDA;
+extern unsigned char g_hero_field_20a5_r[] __asm__("D_001414F5") NOT_SDA;
 extern unsigned char special_items_base_r[] __asm__("D_0013D355");
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
-extern char D_0013DE6E_30CAE0[] __asm__("D_0013DE6E");
+extern char level_render_state_base_r[] __asm__("D_0013DE6E");
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 extern int is_point_inside_clip_volume_r(void *arg0, int arg1) __asm__("func_00215570");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
@@ -118,7 +118,7 @@ void update_gemlik_scene_controller(Moby *moby)
             Moby *e = &gemlik_moby_array_start_r[data->f10];
             qcopy_nc(&e->pos, gemlik_scene_points_r[data->f8].f30);
             Hero_ResetToPosition_r(gemlik_scene_points_r[data->f8].f30, gemlik_scene_points_r[data->f8].f70, 0, 1);
-            D_001414F5_30CAE0[0] = 1;
+            g_hero_field_20a5_r[0] = 1;
             ((MobyData_30CAE0 *)e->pvars)->f7C = 0.99f;
             gemlik_fade_level_r = 0.99f;
             e->state = 2;
@@ -172,10 +172,10 @@ void update_gemlik_scene_controller(Moby *moby)
             Moby *e = &gemlik_moby_array_start_r[data->f20];
             e->flags &= 0xFFBE;
             initialize_moby_state_record_r(e);
-            ((Cam_30CAE0 *)(D_0013DE6E_30CAE0 + 0x2C2))->f60 = 464.66f;
-            ((Cam_30CAE0 *)(D_0013DE6E_30CAE0 + 0x2C2))->f64 = 580.68f;
-            ((Cam_30CAE0 *)(D_0013DE6E_30CAE0 + 0x2C2))->f68 = 316.72f;
-            ((Cam_30CAE0 *)(D_0013DE6E_30CAE0 + 0x2C2))->f78 = 2.77f;
+            ((Cam_30CAE0 *)(level_render_state_base_r + 0x2C2))->f60 = 464.66f;
+            ((Cam_30CAE0 *)(level_render_state_base_r + 0x2C2))->f64 = 580.68f;
+            ((Cam_30CAE0 *)(level_render_state_base_r + 0x2C2))->f68 = 316.72f;
+            ((Cam_30CAE0 *)(level_render_state_base_r + 0x2C2))->f78 = 2.77f;
         }
         gemlik_scripted_camera_active_r = 0;
         moby->state = 11;

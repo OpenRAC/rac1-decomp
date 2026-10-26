@@ -10,7 +10,7 @@ void qwark_oltanis_update(char *m) {
     switch (*(unsigned char *)(m + 0x20)) {
     case 0: {
         unsigned short id;
-        if (D_L14_001BBCC0_2FCEA8.collected[(short)(id = *(unsigned short *)(m + 0xB2))] != 0
+        if (oltanis_collected_flags_base_r2.collected[(short)(id = *(unsigned short *)(m + 0xB2))] != 0
             || (*(int *)(help_stats_base_r + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) & 1) {
             DeleteMoby(m);
             return;

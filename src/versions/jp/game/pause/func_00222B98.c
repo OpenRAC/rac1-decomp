@@ -6,7 +6,7 @@ int draw_prompt_box(char *arg0) {
     VU1_addGSregister_l(0x47, 0x2004B);
     SetupGifPaging(0);
     text = str_error_text;
-    v = D_001D6044;
+    v = menu_system_save_prompt_kind;
     switch (v) {
     case 0:
     case 1:

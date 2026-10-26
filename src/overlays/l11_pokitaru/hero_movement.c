@@ -134,7 +134,7 @@ extern short pokitaru_look_stat_count;
 extern unsigned char *pokitaru_pool_draw_tiles MACRO_ADDR;
 extern int pokitaru_pool_draw_count MACRO_ADDR;
 extern Cam pokitaru_player_camera;
-extern float D_L11_00167858;
+extern float pokitaru_camera_yaw;
 extern Moby *pokitaru_coll_sphere_moby_hits[];
 extern Bone pokitaru_hero_bones[];
 extern Rec2C pokitaru_attack_records[];
@@ -1784,7 +1784,7 @@ void HeroL11_UpdateMovement(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L11_00167858;
+                g_hero.motion.move_yaw = pokitaru_camera_yaw;
                 turn_to(0, g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 g_hero.motion.move_yaw = keep;
             }

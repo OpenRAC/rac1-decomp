@@ -167,7 +167,7 @@ typedef int HopQ __attribute__((mode(TI)));
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern float D_L01_0017C2D0[];
+extern float novalis_hero_speed_bands_6[];
 extern void build_scaled_hero_move_impulse(float, float);
 extern int scale_ticks(int);
 extern float ApproachValue(float *, float, float);
@@ -274,7 +274,7 @@ void update_hero_airborne_planar_motion(void) {
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
         qcopy(&((Hero *)(hero_globals_base + 0xE1D))->motion.momentum, &((Hero *)(hero_globals_base + 0xE1D))->move_impulse);
         arg = g_frame_time_sq * 20.0f;
-        if (((Hero *)(hero_globals_base + 0xE1D))->target_speed < D_L01_0017C2D0[0] * g_frame_time * 0.2f) {
+        if (((Hero *)(hero_globals_base + 0xE1D))->target_speed < novalis_hero_speed_bands_6[0] * g_frame_time * 0.2f) {
             if (((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 2) {
                 d = ((Hero *)(hero_globals_base + 0xE1D))->stickless_decel;
                 speed = vec_length_xy(((Hero *)(hero_globals_base + 0xE1D))->motion.velocity.f);
@@ -323,7 +323,7 @@ extern short novalis_look_stat_count;
 extern unsigned char *pool_draw_tiles MACRO_ADDR;
 extern int pool_draw_count MACRO_ADDR;
 extern Cam novalis_player_camera;
-extern float D_L01_001672D8;
+extern float novalis_player_camera_yaw;
 extern Moby *novalis_coll_sphere_moby_hits[];
 extern Bone novalis_lean_state[];
 extern Rec2C novalis_attack_records[];
@@ -1720,7 +1720,7 @@ void HeroStatePhysics(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L01_001672D8;
+                g_hero.motion.move_yaw = novalis_player_camera_yaw;
                 turn_to(0, g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 g_hero.motion.move_yaw = keep;
             }

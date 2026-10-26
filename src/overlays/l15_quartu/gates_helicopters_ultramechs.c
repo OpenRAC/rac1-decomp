@@ -28,7 +28,7 @@ typedef struct {
     unsigned char collected[1];
 } ULevelState;
 
-extern ULevelState D_L15_001BBB40;
+extern ULevelState quartu_collected_flags_base;
 extern int quartu_moby_array MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -79,7 +79,7 @@ void update_sliding_gate(struct Moby *m)
         }
 check_lock:
         if (d->lock != 0) {
-            if (D_L15_001BBB40.collected[(s16)m->save_id] != 0 ||
+            if (quartu_collected_flags_base.collected[(s16)m->save_id] != 0 ||
                 ((*(s32 *)(D_0014C190 + (g_current_level_index * 0x100 + ((s16)m->save_id >> 5) * 4)) >> (m->save_id & 31)) & 1) != 0)
                 trigger_active = 1;
         }
@@ -1307,7 +1307,7 @@ extern short helicopter_bob_period;
 /* Update function of the helicopter (moby class 233): waits, flies its path, hovers near and fires at its target, tilts and bobs, aims its turret, and dies. */
 void helicopter_update(HMoby_6950 *m) {
     extern UPath_6950 *quartu_paths[];
-    extern ULevelState D_L15_001BAEE0;
+    extern ULevelState quartu_moby_state_bytes_base;
     Vec4 oldpos;
     HGoal_6950 goal;
     Vec4 v80;
@@ -1601,8 +1601,8 @@ void helicopter_update(HMoby_6950 *m) {
         m->flags = (m->flags | 0x41) & 0xEFFF;
         d->b58 = 0;
         if (d->child != 0) d->child->flags |= 0x41;
-        D_L15_001BAEE0.collected[(short)m->id] = 0;
-        D_L15_001BBB40.collected[(short)m->id] = 0;
+        quartu_moby_state_bytes_base.collected[(short)m->id] = 0;
+        quartu_collected_flags_base.collected[(short)m->id] = 0;
         *(int *)(help_stats_base + 0xAB75 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &= ~(1 << (m->id & 0x1F));
         quartu_moby_killed[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
         if (hero_globals_base[0x2EC1] != 2) {
@@ -1908,8 +1908,8 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float quartu_zero_vec[] MACRO_ADDR;
-extern ULevelState D_L15_001BAEE0;
-extern ULevelState D_L15_001BBB40;
+extern ULevelState quartu_moby_state_bytes_base;
+extern ULevelState quartu_collected_flags_base;
 extern int quartu_moby_killed[];
 extern short ultramech_jump_speed;
 extern short ultramech_gravity;
@@ -2256,8 +2256,8 @@ void ultramech_unlimited_update(UMoby *m) {
         m->w94 = 0;
         m->flags = (m->flags | 0x41) & 0xEFFF;
         d->b58 = 0;
-        D_L15_001BAEE0.collected[(short)m->id] = 0;
-        D_L15_001BBB40.collected[(short)m->id] = 0;
+        quartu_moby_state_bytes_base.collected[(short)m->id] = 0;
+        quartu_collected_flags_base.collected[(short)m->id] = 0;
         *(int *)(help_stats_base + 0xAB75 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &= ~(1 << (m->id & 0x1F));
         quartu_moby_killed[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
         if (hero_vehicle_mode[0] != 2) m->state = 0;
@@ -3145,7 +3145,7 @@ void codebot_slot_update(char *moby) {
     switch (m->state) {
     case CODEBOT_SLOT_INITIALIZE: {
         unsigned short save_id = m->save_id;
-        if (D_L15_001BBB40.collected[(short)save_id] != 0) {
+        if (quartu_collected_flags_base.collected[(short)save_id] != 0) {
             m->state = CODEBOT_SLOT_COMPLETED;
             break;
         }

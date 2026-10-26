@@ -11,8 +11,8 @@ extern unsigned char hero_globals_base[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern unsigned char gHaveMorphORay[];
 extern int quartu_frame_count MACRO_ADDR;
-extern short D_0015EF18;
-extern float D_L15_0017C0EC, D_L15_0017C24C;
+extern short sound_volume_10;
+extern float quartu_hero_bones_28_scale, quartu_hero_bones_30_scale;
 extern void advance_hero_animation(void);
 extern void hero_update(void);
 extern void Hero_UpdateAimFlags(void);
@@ -63,7 +63,7 @@ void HeroL15_FrameUpdate(void) {
 
     if (b0[0x20A4] == 2) {
         if (gCheats[3] != 0)
-            D_L15_0017C0EC = (*(float *)&D_0015EF18) * 1.4f;
+            quartu_hero_bones_28_scale = (*(float *)&sound_volume_10) * 1.4f;
         update_hero_glow_and_extra_manipulators();
         update_hero_bone_attachment();
         {
@@ -79,7 +79,7 @@ void HeroL15_FrameUpdate(void) {
     b1 = hero_globals_base + 0xE1D;
     if (b1[0x20A4] == 3) {
         if (gCheats[1] != 0)
-            D_L15_0017C24C = 1.9f;
+            quartu_hero_bones_30_scale = 1.9f;
         alpha = 0x80;
         period = scale_ticks(0xAA);
         if (*(short *)(b1 + 0x22E0) == 2)
@@ -166,7 +166,7 @@ extern void euler_to_matrix(float *, float *);
 extern void transform_vector(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern float g_frame_time MACRO_ADDR;
-extern float D_L15_0017AD40;
+extern float quartu_hero_bones_0_rot;
 extern void clear_u64_value(void *);
 typedef int u128 __attribute__((mode(TI)));
 
@@ -187,7 +187,7 @@ void update_hero_bobbing_and_target_position(void) {
             *(u128 *)v = 0;
             v[2] = 0.21f;
             matrix_mul_vec3(v, v, cam + 0xC0);
-            euler_to_matrix(w, &D_L15_0017AD40);
+            euler_to_matrix(w, &quartu_hero_bones_0_rot);
             transform_vector(v, v, w);
             FastVecAdd(*(char **)(base + 0x86C) + 0x10, *(char **)(base + 0x86C) + 0x10, v);
         }
@@ -276,7 +276,7 @@ typedef struct {
     u8 b20A4;
 } P_209450;
 extern P_209450 g_hero;
-extern f32 D_0013F670[];
+extern f32 g_hero_capsule_top[];
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
@@ -316,7 +316,7 @@ void update_hero_smoothing_parameters(void) {
         g_hero.f230 = 0.8f;
     }
     if (!g_hero.b257 || g_hero.i2094 == 0x12 || g_hero.i208C == 0x11 || g_hero.b12E4 || vec_distance_xy(g_hero.v210, g_hero.v80) > g_hero.f234 * 0.5f) {
-        f32 *q = D_0013F670;
+        f32 *q = g_hero_capsule_top;
         P_209450 *b = (P_209450 *)((u8 *)q - 0x220);
         ApproachValue(b->f228, frame_scale * 0.02f, q);
         ApproachValue(b->f22C, frame_scale * 0.02f, q + 1);
@@ -691,7 +691,7 @@ typedef struct {
     u8 pad4[0x70 - 4];
 } Entry70_215e58;
 extern struct PadState g_controller_state;
-extern Entry70_215e58 D_L15_00179F70[];
+extern Entry70_215e58 quartu_idle_fidgets_field_60[];
 extern short quartu_game_mode_r __asm__("D_L15_0015F6A8");
 extern u8 gHaveBoltGrabber NOT_SDA;
 extern void update_hero_tilt(void);
@@ -796,7 +796,7 @@ void update_hero_timers_and_auxiliary_state(void) {
         FastDecTimer(&g_hero_r2.vehicle_triangle_cooldown);
     }
     for (i = 0; i < 5; i++) {
-        fast_dec_timer(&D_L15_00179F70[i].w0);
+        fast_dec_timer(&quartu_idle_fidgets_field_60[i].w0);
     }
     g_hero_r2.current_path_dist = 9999.0f;
     if (g_hero_r2.air_frames.s != 0 && gravity_z(&g_hero_r2.motion.velocity) < 0.0f) {

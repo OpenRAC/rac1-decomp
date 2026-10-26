@@ -98,13 +98,13 @@ extern void Font_EnableColorCodes(void);
 extern int pal_mode MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern int requested_video_mode MACRO_ADDR;
-extern unsigned char *D_001941D8;
+extern unsigned char *level_resource_buffers_data_end;
 extern unsigned char g_hero[];
 extern unsigned char gCamera[];
-extern unsigned char D_001AADC0[];
+extern unsigned char level_start_cleared_state[];
 extern BufE9EC8 coll_output;
 extern unsigned char image_clear_buffer[];
-extern unsigned char D_00194280[];
+extern unsigned char coll_output_aux_buffer[];
 extern unsigned char moby_grids[];
 extern unsigned char moby_slot_bitmap[];
 extern DisplayE9EC8 view_context;
@@ -145,11 +145,11 @@ extern Ent100E9EC8 *resident_object_pool MACRO_ADDR;
 extern Ent100E9EC8 *moby_instance_end MACRO_ADDR;
 extern Ent100E9EC8 *moby_instance_perm_end MACRO_ADDR;
 extern unsigned char *g_moby_vars MACRO_ADDR;
-extern unsigned char *D_001601AC MACRO_ADDR;
-extern int D_001601B0 MACRO_ADDR;
-extern int D_001601B4 MACRO_ADDR;
-extern int D_001601B8 MACRO_ADDR;
-extern unsigned char D_001CDB00[];
+extern unsigned char *part_instance_pool MACRO_ADDR;
+extern int part_slot_search_start MACRO_ADDR;
+extern int part_slot_high_water MACRO_ADDR;
+extern int part_active_count MACRO_ADDR;
+extern unsigned char part_slot_bitmap[];
 extern unsigned char occl_cam_state[];
 extern int world_update_time MACRO_ADDR;
 extern float gFade MACRO_ADDR;
@@ -209,10 +209,10 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     IRowE9EC8 *t2;
     FRowE9EC8 *t3;
 
-    p = D_001941D8;
+    p = level_resource_buffers_data_end;
     ((void (*)(void *, int, int))FastMemSet)(g_hero, 0, 0x2310);
     ((void (*)(void *, int, int))FastMemSet)(gCamera, 0, 0x3A0);
-    ((void (*)(void *, int, int))FastMemSet)(D_001AADC0, 0, 0x180);
+    ((void (*)(void *, int, int))FastMemSet)(level_start_cleared_state, 0, 0x180);
     if (pal_mode != 0) {
         if (frame_scale == 1.0f) {
             set_video_timing(1);
@@ -222,7 +222,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     }
     *(unsigned char *)&requested_video_mode = *(unsigned char *)&pal_mode;
     coll_output.x4 = image_clear_buffer;
-    coll_output.x8 = D_00194280;
+    coll_output.x8 = coll_output_aux_buffer;
     coll_output.xC = 0;
     coll_output.x10 = 0;
     coll_output.x14 = 0;
@@ -480,13 +480,13 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr)
     *((unsigned char *)resident_object_pool + 0x20) = 0xFF;
     g_moby_vars = p;
     p += 0x2000;
-    D_001601AC = p;
+    part_instance_pool = p;
     moby_instance_perm_end = (Ent100E9EC8 *)((unsigned char *)resident_object_pool + 0x3F00);
     p += 0x20000;
-    D_001601B4 = -1;
-    D_001601B0 = 0;
-    D_001601B8 = 0;
-    FastMemZero16(D_001CDB00, 0x200);
+    part_slot_high_water = -1;
+    part_slot_search_start = 0;
+    part_active_count = 0;
+    FastMemZero16(part_slot_bitmap, 0x200);
     for (e = resident_object_pool; e != moby_instance_perm_end; e++) {
         e->x36 = 0x7F80;
     }
@@ -629,16 +629,16 @@ extern s32 current_vu_chain_r __asm__("D_0016100C") MACRO_ADDR;
 extern s32 registered_object_render_class_count_r __asm__("D_0016104C") MACRO_ADDR;
 extern s32 object_render_texture_definition_count_r __asm__("D_00161064") MACRO_ADDR;
 extern u8 moby_class_472_sound_defs_r[] __asm__("D_001862E0");
-extern u8 D_00186410_EABE8[] __asm__("D_00186410");
+extern u8 level_init_cleared_block_r[] __asm__("D_00186410");
 extern SoundBanks_EABE8 render_sequence_r __asm__("D_0018CC20");
 extern LoadState_EABE8 level_resource_buffers_r __asm__("D_001941C0");
-extern u8 D_00194280_EABE8[] __asm__("D_00194280");
+extern u8 coll_output_aux_buffer_r[] __asm__("D_00194280");
 extern HelpState_EABE8 g_help_state_r __asm__("D_001997D0");
 extern u64 special_material_template_r[] __asm__("D_0019E7C0");
 extern MobyClass *moby_class_resources_r[] __asm__("D_001B3580");
 extern u8 resident_class_slot_by_id_r[] __asm__("D_001B3E40");
 extern s32 resident_indexed_texture_addrs_r[] __asm__("D_001B5D00");
-extern s32 D_001B6500_EABE8[] __asm__("D_001B6500");
+extern s32 resident_class_original_field_2c_r[] __asm__("D_001B6500");
 extern u8 resident_class_material_maps_r[] __asm__("D_001B6C00");
 extern s32 shrub_render_texture_addrs_r[] __asm__("D_001D8840");
 extern s32 tfrag_texture_size_table_r[] __asm__("D_001E0C00");
@@ -708,10 +708,10 @@ void transition_load_wad(void)
   g_gs_texture_allocation_base_r = 0x2C0000;
   g_gs_texture_allocation_start_r = 0x2C0000;
   g_gs_texture_allocation_cursor_r = 0x2C0000;
-  FastMemSet_r(D_00194280_EABE8, 0x87654321, 0x10);
+  FastMemSet_r(coll_output_aux_buffer_r, 0x87654321, 0x10);
   FastMemSet_r(resident_class_slot_by_id_r, -1, k_800);
   FastMemSet_r(resident_class_material_maps_r, -1, 0xE00);
-  FastMemSet_r(D_001B6500_EABE8, 0, 0xE0);
+  FastMemSet_r(resident_class_original_field_2c_r, 0, 0xE0);
   InitViewContext_r();
   UpdateViewContext_r();
   VU1_initChain_r();
@@ -814,7 +814,7 @@ void transition_load_wad(void)
   g_gs_texture_allocation_start_r = v + 0x20000;
   level_resource_buffers_r.x1C = initialize_level_render_state_r(data + hdr->x7C);
   FastMemSet_r(&render_sequence_r, 0, 0x1C0);
-  FastMemSet_r(D_00186410_EABE8, 0, 0x40);
+  FastMemSet_r(level_init_cleared_block_r, 0, 0x40);
   render_sequence_r.x58 = level_resource_buffers_r.x1C;
   render_sequence_r.x5C = (level_resource_buffers_r.x1C += 0x40000);
   level_resource_buffers_r.x1C += 0x40000;

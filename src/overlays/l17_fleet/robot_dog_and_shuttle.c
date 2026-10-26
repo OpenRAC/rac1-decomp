@@ -1113,7 +1113,7 @@ typedef int u128_2F4E30 __attribute__((mode(TI)));
 extern void FastVecCross(void *, void *, void *);
 extern void draw_world_quad(void *, void *, int);
 extern char fleet_camera_pos[];
-extern float D_L17_0016D464;
+extern float fleet_view_params_field_a4;
 extern float fleet_backdrop_beam_widths[];
 extern float fleet_backdrop_beam_uvs[];
 extern int fleet_backdrop_beam_textures[];
@@ -1151,7 +1151,7 @@ void draw_fleet_backdrop_quads(char *moby) {
     pos = data + 0x10;
     pu = &pkt.uv[0];
     pv = &pkt.uv[1];
-    D_L17_0016D464 = 8192000.0f;
+    fleet_view_params_field_a4 = 8192000.0f;
     *(float *)(data + 0x14) = -8000.0f;
     for (i = 0; i < 2; i++) {
         FastVecSub(vb, data, pos);
@@ -1683,7 +1683,7 @@ void compute_reflection_sphere_map_uvs(int n, V3 *b, V3 *a, int unused, float *o
 extern char fleet_reflection_strips_uvs[];
 extern short fleet_reflection_strips_vertex_counts;
 extern short fleet_reflection_strips_vertices;
-extern short D_L17_00162480;
+extern short fleet_reflection_strips_unused_bufs;
 extern short fleet_reflection_strips_normals;
 extern short fleet_reflection_strips_colors;
 
@@ -1698,14 +1698,14 @@ void DrawReflectionStrips(void) {
     font_queue_vu_state();
     p = (float *)fleet_reflection_strips_uvs;
     for (i = 0; i < 2; i++) {
-        compute_reflection_sphere_map_uvs(((int *)&fleet_reflection_strips_vertex_counts)[i], ((int *)&fleet_reflection_strips_normals)[i], ((int *)&fleet_reflection_strips_vertices)[i], ((int *)&D_L17_00162480)[i], p);
+        compute_reflection_sphere_map_uvs(((int *)&fleet_reflection_strips_vertex_counts)[i], ((int *)&fleet_reflection_strips_normals)[i], ((int *)&fleet_reflection_strips_vertices)[i], ((int *)&fleet_reflection_strips_unused_bufs)[i], p);
         draw_env_overlay_mesh(((int *)&fleet_reflection_strips_vertex_counts)[i], ((int *)&fleet_reflection_strips_vertices)[i], ((int *)&fleet_reflection_strips_colors)[i], p, 1);
     }
 }
 extern char fleet_reflection_strip_uvs[];
 extern short fleet_reflection_strip_vertex_count;
 extern short fleet_reflection_strip_vertices;
-extern short D_L17_001624C8;
+extern short fleet_reflection_strip_unused_bufs;
 extern short fleet_reflection_strip_normals;
 extern short fleet_reflection_strip_colors;
 
@@ -1720,7 +1720,7 @@ void DrawReflectionStrip(void) {
     font_queue_vu_state();
     p = (float *)fleet_reflection_strip_uvs;
     for (i = 0; i < 1; i++) {
-        compute_reflection_sphere_map_uvs(((int *)&fleet_reflection_strip_vertex_count)[i], (V3 *)((int *)&fleet_reflection_strip_normals)[i], (V3 *)((int *)&fleet_reflection_strip_vertices)[i], ((int *)&D_L17_001624C8)[i], p);
+        compute_reflection_sphere_map_uvs(((int *)&fleet_reflection_strip_vertex_count)[i], (V3 *)((int *)&fleet_reflection_strip_normals)[i], (V3 *)((int *)&fleet_reflection_strip_vertices)[i], ((int *)&fleet_reflection_strip_unused_bufs)[i], p);
         draw_env_overlay_mesh(((int *)&fleet_reflection_strip_vertex_count)[i], ((int *)&fleet_reflection_strip_vertices)[i], ((int *)&fleet_reflection_strip_colors)[i], p, 1);
     }
 }

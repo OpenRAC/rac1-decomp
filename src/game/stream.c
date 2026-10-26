@@ -81,7 +81,7 @@ extern unsigned char menu_item_enabled_17 NOT_SDA;
 extern unsigned char menu_item_enabled_18 NOT_SDA;
 extern unsigned char menu_item_enabled_19 NOT_SDA;
 extern unsigned char menu_item_enabled_25 NOT_SDA;
-extern int D_001A04B4 NOT_SDA;
+extern int map_region_enabled_3 NOT_SDA;
 extern unsigned char menu_item_enabled_41 NOT_SDA;
 extern int hero_control_mode NOT_SDA;
 extern unsigned char menu_item_enabled_36 NOT_SDA;
@@ -121,17 +121,17 @@ extern int memcard_PrepData(void *dst, int i, int *table);
 extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
-extern int D_0013D844 NOT_SDA;
+extern int race_gates_24_status NOT_SDA;
 extern unsigned char menu_item_enabled_12 NOT_SDA;
-extern int D_0013D9B4 NOT_SDA;
+extern int race_gates_47_flag NOT_SDA;
 extern unsigned char gSpecialItems[];
 extern unsigned char gHaveHeliPack NOT_SDA;
 extern int race_gates NOT_SDA;
-extern int D_0013DAE4 NOT_SDA;
+extern int race_gates_66_status NOT_SDA;
 extern unsigned char menu_item_enabled_73 NOT_SDA;
-extern int D_0013DB24 NOT_SDA;
+extern int race_gates_70_status NOT_SDA;
 extern unsigned char menu_item_enabled_85 NOT_SDA;
-extern int D_0013DC34 NOT_SDA;
+extern int race_gates_87_status NOT_SDA;
 extern unsigned char race_gates_base NOT_SDA;
 extern int item_available NOT_SDA;
 extern unsigned char menu_item_enabled_20 NOT_SDA;
@@ -384,7 +384,7 @@ void music_primary_preseek_callback(int arg0, long arg1) {
     }
 }
 
-extern short D_001517F0 NOT_SDA;
+extern short music_flagged_track_started NOT_SDA;
 
 /* Stream callback: store the voice handle and mark the transition track playing, or reset it. */
 void music_transition_start_callback(int arg0, long arg1) {
@@ -396,7 +396,7 @@ void music_transition_start_callback(int arg0, long arg1) {
             if (state == 1) {
                 p[5] = 4;
                 if (p[8] != 0) {
-                    D_001517F0 = state;
+                    music_flagged_track_started = state;
                 }
             }
         } else {
@@ -416,7 +416,7 @@ void music_primary_replace_callback(int arg0, long arg1) {
             if (p[5] == 9) {
                 p[5] = 4;
                 if (p[8] != 0) {
-                    D_001517F0 = 1;
+                    music_flagged_track_started = 1;
                 }
             }
         } else {

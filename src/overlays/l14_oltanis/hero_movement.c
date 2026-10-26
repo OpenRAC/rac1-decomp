@@ -281,7 +281,7 @@ typedef struct {
     u8 b20A4;
 } P231ae0;
 extern P231ae0 g_hero_r2 __asm__("D_0013F450");
-extern f32 D_0013F670[];
+extern f32 g_hero_capsule_top[];
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 f32 vec_distance_xy(void *, void *);
@@ -315,7 +315,7 @@ void HeroL14_UpdateMoveBlendTargets(void) {
         g_hero_r2.f230 = 0.8f;
     }
     if (!g_hero_r2.b257 || g_hero_r2.i2094 == 0x12 || g_hero_r2.i208C == 0x11 || g_hero_r2.b12E4 || vec_distance_xy(g_hero_r2.v210, g_hero_r2.v80) > g_hero_r2.f234 * 0.5f) {
-        f32 *q = D_0013F670;
+        f32 *q = g_hero_capsule_top;
         P231ae0 *b = (P231ae0 *)((u8 *)q - 0x220);
         func_00214D28_235D0(b->f228, frame_scale * 0.02f, q);
         func_00214D28_235D0(b->f22C, frame_scale * 0.02f, q + 1);
@@ -355,7 +355,7 @@ extern int gameplay_event_frame_count MACRO_ADDR;
 extern short oltanis_look_stat_timer;
 extern short oltanis_look_stat_count;
 extern Cam oltanis_player_camera;
-extern float D_L14_001675D8;
+extern float oltanis_camera_yaw;
 extern int *oltanis_coll_sphere_moby_hits[];
 extern Rec4C oltanis_item_defs[];
 extern Bone oltanis_lean_state[];
@@ -2029,7 +2029,7 @@ void HeroL14_UpdateStatePhysics(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L14_001675D8;
+                g_hero.motion.move_yaw = oltanis_camera_yaw;
                 turn_to(0, g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 g_hero.motion.move_yaw = keep;
             }

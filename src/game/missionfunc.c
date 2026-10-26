@@ -81,7 +81,7 @@ extern unsigned char menu_item_enabled_17 NOT_SDA;
 extern unsigned char menu_item_enabled_18 NOT_SDA;
 extern unsigned char menu_item_enabled_19 NOT_SDA;
 extern unsigned char menu_item_enabled_25 NOT_SDA;
-extern int D_001A04B4 NOT_SDA;
+extern int map_region_enabled_3 NOT_SDA;
 extern unsigned char menu_item_enabled_41 NOT_SDA;
 extern int hero_control_mode NOT_SDA;
 extern unsigned char menu_item_enabled_36 NOT_SDA;
@@ -228,7 +228,7 @@ typedef struct {
     short status;         /* 0x24 */
     short sel;            /* 0x26 */
 } MissionNode;
-extern MissionNode *D_001A2FA0;
+extern MissionNode *current_mission_nodes;
 
 /* Lists the current objectives (the 0x28-byte node list at D_001A2FA0,
    ended by id 0): each node not hidden (flags & 2), with a status, and
@@ -239,7 +239,7 @@ extern MissionNode *D_001A2FA0;
    out is indexed by count: loop strength reduction then gives retail's
    pointer and its copy for the second store. */
 int collect_mission_ids(int *out, int *mask, int *nums, int arg3) {
-    MissionNode *p = D_001A2FA0;
+    MissionNode *p = current_mission_nodes;
     int count = 0;
     int all = 1;
 
@@ -282,20 +282,20 @@ int collect_mission_ids(int *out, int *mask, int *nums, int arg3) {
 }
 __asm__(".section .text\n\tnop\n");
 
-extern int D_0013D844 NOT_SDA;
+extern int race_gates_24_status NOT_SDA;
 extern unsigned char menu_item_enabled_12 NOT_SDA;
 
 /* Predicate: true when D_0013D844 and the flag byte D_0013D4A8 are both set. */
 int MissionCond_Obj18AndSpecial18(void) {
-    if (D_0013D844 != 0 && menu_item_enabled_12 != 0) return 1;
+    if (race_gates_24_status != 0 && menu_item_enabled_12 != 0) return 1;
     return 0;
 }
 
-extern int D_0013D9B4 NOT_SDA;
+extern int race_gates_47_flag NOT_SDA;
 
 /* Predicate: true when D_0013D9B4 and special items 0x20 and 0x21 are all set. */
 int MissionCond_Obj2FAndSpecials(void) {
-    if (D_0013D9B4 != 0 && gSpecialItems[0x20] != 0 && gSpecialItems[0x21] != 0) return 1;
+    if (race_gates_47_flag != 0 && gSpecialItems[0x20] != 0 && gSpecialItems[0x21] != 0) return 1;
     return 0;
 }
 
@@ -309,30 +309,30 @@ int MissionCond_Obj3FAnd40(void) {
     return 0;
 }
 
-extern int D_0013DAE4 NOT_SDA;
+extern int race_gates_66_status NOT_SDA;
 extern unsigned char menu_item_enabled_73 NOT_SDA;
 
 /* Predicate: true when D_0013DAE4 and the flag byte D_0013D4E5 are both set. */
 int MissionCond_Obj42AndSpecial55(void) {
-    if (D_0013DAE4 != 0 && menu_item_enabled_73 != 0) return 1;
+    if (race_gates_66_status != 0 && menu_item_enabled_73 != 0) return 1;
     return 0;
 }
 
-extern int D_0013DB24 NOT_SDA;
+extern int race_gates_70_status NOT_SDA;
 extern unsigned char menu_item_enabled_85 NOT_SDA;
 
 /* Predicate: true when D_0013DB24 and the flag byte D_0013D4F1 are both set. */
 int MissionCond_Obj46AndSpecial61(void) {
-    if (D_0013DB24 != 0 && menu_item_enabled_85 != 0) return 1;
+    if (race_gates_70_status != 0 && menu_item_enabled_85 != 0) return 1;
     return 0;
 }
 
-extern int D_0013DC34 NOT_SDA;
+extern int race_gates_87_status NOT_SDA;
 extern unsigned char race_gates_base NOT_SDA;
 
 /* Predicate: true when D_0013DC34 and the flag byte D_0013D605 are both set. */
 int MissionCond_Obj57AndItem3D(void) {
-    if (D_0013DC34 != 0 && race_gates_base != 0) return 1;
+    if (race_gates_87_status != 0 && race_gates_base != 0) return 1;
     return 0;
 }
 
@@ -367,7 +367,7 @@ extern unsigned char menu_item_enabled_20 NOT_SDA;
 
 /* Returns 0 when D_0013D9B4 is clear, else 2 or 1 depending on D_0013D4B0. */
 int MissionCond_Obj2FVariant(void) {
-    if (D_0013D9B4 != 0) {
+    if (race_gates_47_flag != 0) {
         return menu_item_enabled_20 ? 2 : 1;
     }
     return 0;
@@ -386,7 +386,7 @@ extern unsigned char gHaveMorphORay NOT_SDA;
 /* Returns 2 when the Morph-o-Ray is owned, else whether D_0013DC34 is set. */
 int Mission_GetMorphORayStatus(void) {
     if (gHaveMorphORay != 0) return 2;
-    return D_0013DC34 != 0;
+    return race_gates_87_status != 0;
 }
 
 extern unsigned char gHaveHologuise NOT_SDA;

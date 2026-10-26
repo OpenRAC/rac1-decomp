@@ -29,7 +29,7 @@ typedef struct Q_240398 {
     int w[4];
 } Q_240398;
 extern G137C80_240398 disc_table_r __asm__("D_00137C80");
-extern char D_0013DE6E_240398[] __asm__("D_0013DE6E");
+extern char level_render_state_base_r[] __asm__("D_0013DE6E");
 extern char *level_archive_base_r __asm__("D_0015EF54") MACRO_ADDR;
 extern int depth_buffer_address_r[2] __asm__("D_0015EF88") MACRO_ADDR;
 extern Q_240398 moby_texture_records_r[] __asm__("D_L00_001AEF40");
@@ -68,7 +68,7 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     int idx;
     int idx2;
 
-    FastMemCopy_r(buf, level_archive_base_r, disc_table_r.e[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26 + 1].a << 11);
+    FastMemCopy_r(buf, level_archive_base_r, disc_table_r.e[((Lvl_240398 *)(level_render_state_base_r + 0x2C2))->f26 + 1].a << 11);
     a = ((Hdr_240398 *)buf)->a;
     off = ((Hdr_240398 *)buf)->off;
     p = buf + off;
@@ -108,9 +108,9 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     FastMemCopy_r(buf, base + off + 0x430, 0x14000);
     buf += 0x14000;
     D_L00_0015FCE0_240398 = moby_texture_count_r;
-    if (g_class_slot_r[first_class_ids_r[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26]] == 0xFF) {
+    if (g_class_slot_r[first_class_ids_r[((Lvl_240398 *)(level_render_state_base_r + 0x2C2))->f26]] == 0xFF) {
         register_moby_class_r(base + a, &D_L00_0015FCC0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
-                             first_class_ids_r[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26]);
+                             first_class_ids_r[((Lvl_240398 *)(level_render_state_base_r + 0x2C2))->f26]);
     }
     idx2 = moby_texture_count_r + 1;
     second_record_m240398.h[5] = tbl[0x2E] >> 8;
@@ -120,9 +120,9 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     FastMemCopy_r(buf, base + c + 0x430, 0x4000);
     buf += 0x4000;
     D_L00_0015FCE0_240398 = moby_texture_count_r;
-    if (g_class_slot_r[second_class_ids_r[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26]] == 0xFF) {
+    if (g_class_slot_r[second_class_ids_r[((Lvl_240398 *)(level_render_state_base_r + 0x2C2))->f26]] == 0xFF) {
         register_moby_class_r(base + b, &D_L00_0015FCD0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
-                             second_class_ids_r[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26]);
+                             second_class_ids_r[((Lvl_240398 *)(level_render_state_base_r + 0x2C2))->f26]);
     }
     D_L00_00160624_240398 = 1;
     D_L00_00160628_240398 = 1;
@@ -167,7 +167,7 @@ void SetupVisGifViewer(char *out,int a,int b,u64 c,int d,int idx) {
 INCLUDE_ASM("asm/overlays", func_L00_00240D80);
 INCLUDE_ASM("asm/overlays", func_L00_00240DE0);
 extern int coll_hit_result_a[] __asm__("D_L00_00173F40");
-extern const int *D_L00_0015F6F8 SDATA(D_L00_0015F6F8);
+extern const int *collision_header_entry_table SDATA(D_L00_0015F6F8);
 
 // Relocates the collision header's offsets into pointers.
 void resolve_level_asset_block_pointers(char *p) {
@@ -182,7 +182,7 @@ void resolve_level_asset_block_pointers(char *p) {
     if (*(int *)(p + 4) != 0) {
         q = (const int *)(p + *(int *)(p + 4));
         cnt = q[0];
-        D_L00_0015F6F8 = q;
+        collision_header_entry_table = q;
         i = 0;
         if (cnt > 0) {
             e = (int *)q + 7;
@@ -480,10 +480,10 @@ extern char player_camera[];
 extern char moby_animation_slots[];
 extern float frame_scale MACRO_ADDR;
 extern Lvl173F40_422D8 coll_hit_result;
-extern char D_L00_00173FC0[];
-extern char D_L00_00174000[];
+extern char coll_hit_moby_record[];
+extern char coll_hit_vector_buffer[];
 extern char coll_cell_grid[];
-extern char D_L00_001ABB60[];
+extern char coll_cell_slot_bitmap[];
 extern Lvl16CB40_422D8 render_view_params;
 extern int level_fog_color_red MACRO_ADDR;
 extern int level_fog_color_green MACRO_ADDR;
@@ -494,11 +494,11 @@ extern float level_fog_near_intensity MACRO_ADDR;
 extern float level_fog_far_intensity MACRO_ADDR;
 extern float veldin1_hero_fall_state_height MACRO_ADDR;
 extern Ship_422D8 level_render_state;
-extern float D_L00_00161040 MACRO_ADDR;
-extern float D_L00_001610A0 MACRO_ADDR;
-extern float D_L00_00160564 MACRO_ADDR;
-extern int D_L00_001600B0 MACRO_ADDR;
-extern int D_L00_0016023C MACRO_ADDR;
+extern float level_tfrag_draw_distance MACRO_ADDR;
+extern float level_tie_draw_distance MACRO_ADDR;
+extern float shrub_draw_distance MACRO_ADDR;
+extern int moby_draw_distance MACRO_ADDR;
+extern int level_particle_clip_dist MACRO_ADDR;
 extern u8 frame_vu0_micro_program[];
 extern unsigned char level_point_lights[];
 extern unsigned char level_point_light_data[];
@@ -523,7 +523,7 @@ extern ShrubInst_422D8 *shrub_instances_end MACRO_ADDR;
 extern ShrubMtx_422D8 *shrub_matrices MACRO_ADDR;
 extern unsigned char *shrub_vertex_colors MACRO_ADDR;
 extern int level_shrub_count MACRO_ADDR;
-extern int D_L00_00160C30[];
+extern int shrub_vertex_color_dma_ref_tag[];
 extern unsigned char shrub_class_slot_by_id[];
 extern ShrubClass_422D8 *shrub_class_table[];
 extern Cuboid_422D8 *camera_descriptors MACRO_ADDR;
@@ -534,7 +534,7 @@ extern Moby *level_mobys_end MACRO_ADDR;
 extern Moby *moby_array_last MACRO_ADDR;
 extern char *moby_spawn_pvar_pool MACRO_ADDR;
 extern short moby_index_by_file_order[];
-extern unsigned char D_L00_001BBA14[];
+extern unsigned char checkpoint_level_state_moby_flags[];
 extern unsigned char mission_state[] MACRO_ADDR;
 extern int session_moby_killed[];
 extern int level_moby_killed[][64];
@@ -562,10 +562,10 @@ extern char *environment_samples MACRO_ADDR;
 extern int environment_sample_count MACRO_ADDR;
 extern char *particle_pool MACRO_ADDR;
 extern char particle_slot_bitmap[];
-extern int D_L00_00160234 MACRO_ADDR;
-extern int D_L00_00160230 MACRO_ADDR;
-extern int D_L00_00160238 MACRO_ADDR;
-extern int D_L00_00160600 MACRO_ADDR;
+extern int particle_pool_field_8 MACRO_ADDR;
+extern int particle_pool_field_4 MACRO_ADDR;
+extern int particle_pool_field_c MACRO_ADDR;
+extern int ship_level_entry_active MACRO_ADDR;
 extern int first_class_ids[];
 extern int occlusion_grid MACRO_ADDR;
 extern char occlusion_moby_mismatch_fmt[];
@@ -580,10 +580,10 @@ extern short decoy_list[];
 extern int level_frame_counter MACRO_ADDR;
 extern int primary_nanotech_ball_moby MACRO_ADDR;
 extern int glove_of_doom_ring_index MACRO_ADDR;
-extern char D_L00_0016C880[];
-extern char D_L00_0016C8B0[];
-extern char *D_L00_0015F418 MACRO_ADDR;
-extern char *D_L00_0015F410 MACRO_ADDR;
+extern char level_render_setup_packet_default[];
+extern char level_render_setup_packet_alt[];
+extern char *level_render_setup_packet MACRO_ADDR;
+extern char *level_render_setup_packet_copy MACRO_ADDR;
 
 /* Loads a level's gameplay file into the level heap: settings, lights, ties, shrubs, mobys, paths and the occlusion tables; returns the heap cursor. */
 char *load_level_gameplay(int arg0) {
@@ -619,13 +619,13 @@ char *load_level_gameplay(int arg0) {
             SetUpdateModeTiming(0);
         }
     }
-    coll_hit_result.f4 = D_L00_00174000;
-    coll_hit_result.f8 = D_L00_00173FC0;
+    coll_hit_result.f4 = coll_hit_vector_buffer;
+    coll_hit_result.f8 = coll_hit_moby_record;
     coll_hit_result.fC = 0;
     coll_hit_result.f10 = 0;
     coll_hit_result.f14 = 0;
     FastMemZero16(coll_cell_grid, 0x10000);
-    FastMemZero16(D_L00_001ABB60, 0x60);
+    FastMemZero16(coll_cell_slot_bitmap, 0x60);
     {
         int *p = (int *)((char *)hdr + hdr->f0);
         int *c;
@@ -649,11 +649,11 @@ char *load_level_gameplay(int arg0) {
         level_render_state.f38 = c[2];
     }
     UpdateFog();
-    D_L00_00161040 = 512000.0f;
-    D_L00_001610A0 = 720.0f;
-    D_L00_00160564 = 500.0f;
-    D_L00_001600B0 = 500;
-    D_L00_0016023C = 0x1F4000;
+    level_tfrag_draw_distance = 512000.0f;
+    level_tie_draw_distance = 720.0f;
+    shrub_draw_distance = 500.0f;
+    moby_draw_distance = 500;
+    level_particle_clip_dist = 0x1F4000;
     SetBackgroundColor(render_view_params.f23C, render_view_params.f240, render_view_params.f244);
     VU0_loadMicroProgram(frame_vu0_micro_program);
     FastMemZero16(level_point_lights, 0x100);
@@ -839,7 +839,7 @@ char *load_level_gameplay(int arg0) {
             FastMemSet(shrub_vertex_colors, 0, level_shrub_count * 0x60);
         }
         last = -1;
-        D_L00_00160C30[1] = (int)shrub_vertex_colors;
+        shrub_vertex_color_dma_ref_tag[1] = (int)shrub_vertex_colors;
         shrub_instances_end = shrub_instances + level_shrub_count;
         for (i = 0; i < level_shrub_count; i++) {
             ShrubInst_422D8 *inst = shrub_instances + i;
@@ -1046,7 +1046,7 @@ char *load_level_gameplay(int arg0) {
                 } else {
                     vis = 0xFF;
                 }
-                if (D_L00_001BBA14[uid] != 0) {
+                if (checkpoint_level_state_moby_flags[uid] != 0) {
                     skip = 1;
                 } else if (flags & 3) {
                     if (mission_state[mission] == 0xFF) {
@@ -1526,16 +1526,16 @@ char *load_level_gameplay(int arg0) {
     }
     particle_pool = mem;
     mem += 0x20000;
-    D_L00_00160234 = -1;
-    D_L00_00160230 = 0;
-    D_L00_00160238 = 0;
+    particle_pool_field_8 = -1;
+    particle_pool_field_4 = 0;
+    particle_pool_field_c = 0;
     FastMemZero16(particle_slot_bitmap, 0x200);
     level_render_state.f0 = 0;
     if (0.0f < ship[0]) {
         Moby *m;
 
         if (g_current_level_index == 13 && level_render_state.f26 == 2) {
-            if (D_L00_00160600 != 0) {
+            if (ship_level_entry_active != 0) {
                 for (m = moby_array_start; m->state != 0xFF; m++) {
                     if (m->oclass == first_class_ids[level_render_state.f26]) {
                         initialize_moby_state_record((char *)m);
@@ -1742,13 +1742,13 @@ char *load_level_gameplay(int arg0) {
     case 7:
     case 8:
     case 10:
-        D_L00_0015F418 = D_L00_0016C8B0;
+        level_render_setup_packet = level_render_setup_packet_alt;
         break;
     default:
-        D_L00_0015F418 = D_L00_0016C880;
+        level_render_setup_packet = level_render_setup_packet_default;
         break;
     }
-    D_L00_0015F410 = D_L00_0015F418;
+    level_render_setup_packet_copy = level_render_setup_packet;
     return mem;
 }
 typedef struct {
@@ -1779,13 +1779,13 @@ typedef struct { s32 f0; char pad4[4]; s32 f8, fC; s32 f10; } __attribute__((pac
 extern u8 saved_mission_state[];
 extern s32 mission_death_counts[16];
 extern s32 level_texture_data_base MACRO_ADDR;
-extern char *D_L00_0015F520 MACRO_ADDR;
+extern char *level_effects_data MACRO_ADDR;
 extern s32 level_textured_sphere_count MACRO_ADDR;
 extern u32 level_textured_spheres MACRO_ADDR;
 extern u32 level_textured_sphere_textures MACRO_ADDR;
 extern s32 level_sound_slot_count MACRO_ADDR;
 extern Slot244110 *level_sound_slots MACRO_ADDR;
-extern char *D_L00_0015F6E4 MACRO_ADDR;
+extern char *level_header_section_2a_data MACRO_ADDR;
 extern char mem_report_separator_msg[];
 extern s32 height_map_width MACRO_ADDR;
 extern s32 height_map_rows MACRO_ADDR;
@@ -1796,7 +1796,7 @@ extern s32 moby_class_count MACRO_ADDR;
 extern s32 level_sound_bank_handle MACRO_ADDR;
 extern s32 swap_moby_class_count MACRO_ADDR;
 extern s32 loaded_swap_moby_class_set MACRO_ADDR;
-extern s32 D_L00_001600D0 MACRO_ADDR;
+extern s32 swap_moby_class_block_field_8 MACRO_ADDR;
 extern s32 shrub_texture_count MACRO_ADDR;
 extern s32 sky_data MACRO_ADDR;
 extern s32 tfrag_texture_count MACRO_ADDR;
@@ -1811,10 +1811,10 @@ extern u32 moby_texture_addrs[];
 extern u8 moby_texture_records[];
 extern s32 swap_moby_class_ids[];
 extern char *swap_moby_class_data[];
-extern s32 D_L00_001B0000[];
+extern s32 swap_moby_class_params[];
 extern Q244110 swap_moby_class_headers[];
 extern u16 swap_moby_class_sounds[][16];
-extern s32 D_L00_001B1E00[];
+extern s32 particle_texture_vram_table[];
 extern s32 shrub_texture_addrs[];
 extern s32 tfrag_texture_addrs[];
 extern s32 tie_texture_addrs[];
@@ -1834,8 +1834,8 @@ extern char mem_report_occlusion_fmt[];
 extern char mem_report_sky_fmt[];
 extern char mem_report_collision_fmt[];
 extern char mem_report_texture_data_fmt[];
-extern char D_L00_001E8C90[];
-extern char D_L00_001E8CA8[];
+extern char mem_report_particle_vram_fmt[];
+extern char mem_report_effects_vram_fmt[];
 extern char mem_report_moby_classes_fmt[];
 extern char mem_report_tie_classes_fmt[];
 extern char mem_report_shrub_classes_fmt[];
@@ -1979,12 +1979,12 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         }
         loaded_swap_moby_class_set = -1;
         q = (char *)h + h->v[0x21];
-        D_L00_001600D0 = 0;
+        swap_moby_class_block_field_8 = 0;
         swap_moby_class_count = h->v[0x20];
         for (m = 0; m < h->v[0x20]; m++, q += 0x10) {
             swap_moby_class_ids[m] = *(s32 *)(q + 4);
             swap_moby_class_data[m] = base + *(s32 *)q;
-            D_L00_001B0000[m] = *(s32 *)(q + 8);
+            swap_moby_class_params[m] = *(s32 *)(q + 8);
             { s32 o = g_class_slot[*(s32 *)(q + 4)] * 32 + 0x10;
             qcopy(&swap_moby_class_headers[m], (char *)h + h->v[7] + o); }
         }
@@ -1993,7 +1993,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         Profile_Mark((char *)h + h->v[9], h->v[8]);
         for (i = 0, q2 = (char *)h + h->v[0xB]; i < h->v[0xA]; i++, q2 += 0x30)
             register_shrub_render_class(base + *(s32 *)q2, (char *)h + h->v[0x13], q2 + 0x10, q2 + 0x20, *(s32 *)(q2 + 4));
-        D_L00_0015F520 = base + h->v[0x1A];
+        level_effects_data = base + h->v[0x1A];
         unpack_point_records((char *)h + h->v[0x17], h->v[0x16]);
         if (h->v[0x28]) {
             relocate_counted_pointer_table(base + h->v[0x28]);
@@ -2012,9 +2012,9 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
             height_map_data = 0;
         }
         if (h->v[0x2A])
-            D_L00_0015F6E4 = base + h->v[0x2A];
+            level_header_section_2a_data = base + h->v[0x2A];
         else
-            D_L00_0015F6E4 = 0;
+            level_header_section_2a_data = 0;
         {
             char *x1 = base + h->v[0x19];
             char *x2 = (char *)h + h->v[0x15];
@@ -2092,9 +2092,9 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         if (h->v[4])
             ((void (*)())STUB_printf)(mem_report_sky_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)coll_hit_result.f0) - (char *)sky_data)) * (1.0f / 1024.0f)))));
         ((void (*)())STUB_printf)(mem_report_collision_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(level_texture_data_base - (s32)((char *)coll_hit_result.f0))) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(mem_report_texture_data_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((D_L00_001B1E00[1] >> 4) - level_texture_data_base)) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8C90, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((s32)D_L00_0015F520 - (D_L00_001B1E00[1] >> 4))) * (1.0f / 1024.0f)))));
-        ((void (*)())STUB_printf)(D_L00_001E8CA8, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((char *)moby_class_headers[0] - D_L00_0015F520)) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(mem_report_texture_data_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((particle_texture_vram_table[1] >> 4) - level_texture_data_base)) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(mem_report_particle_vram_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((s32)level_effects_data - (particle_texture_vram_table[1] >> 4))) * (1.0f / 1024.0f)))));
+        ((void (*)())STUB_printf)(mem_report_effects_vram_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)((char *)moby_class_headers[0] - level_effects_data)) * (1.0f / 1024.0f)))));
         ((void (*)())STUB_printf)(mem_report_moby_classes_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)level_tie_classes[0]) - (char *)moby_class_headers[0])) * (1.0f / 1024.0f)))));
         if (h->v[0xA])
             ((void (*)())STUB_printf)(mem_report_tie_classes_fmt, (((*(f64 (*)(f32))func_00120778)(IntToFloat((s32)(((char *)shrub_class_table[0]) - ((char *)level_tie_classes[0]))) * (1.0f / 1024.0f)))));

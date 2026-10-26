@@ -30,8 +30,8 @@ extern float kalebo3_hero_fall_state_height MACRO_ADDR;
 extern int kalebo3_help_message_selector MACRO_ADDR;
 extern int kalebo3_hero_run_step1_start_frame MACRO_ADDR;
 extern short kalebo3_hero_double_tap_timer;
-extern float D_L16_00167258;
-extern int D_L16_0016CC00;
+extern float kalebo3_camera_yaw;
+extern int kalebo3_look_release_reset_word;
 extern S17AB60 kalebo3_hero_bones;
 extern Rec70 kalebo3_idle_fidgets[];
 extern Rec4C kalebo3_item_defs[];
@@ -375,7 +375,7 @@ void Hero_ChooseStateTransition(void) {
                         if (g_hero.state.prev == 1 || g_hero.state.prev == 0x1E) {
                             if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
                                 stick_target(0, 1.0f);
-                                if (FastDiffRots(g_hero.motion.move_yaw, D_L16_00167258) > 1.2217305f) {
+                                if (FastDiffRots(g_hero.motion.move_yaw, kalebo3_camera_yaw) > 1.2217305f) {
                                     ok = 0;
                                 }
                             }
@@ -2376,7 +2376,7 @@ void Hero_ChooseStateTransition(void) {
                             set_hero_animation(a, 0, scale_ticks(8));
                         }
                     }
-                    D_L16_0016CC00 = 0;
+                    kalebo3_look_release_reset_word = 0;
                     break;
                 case 32:
                     if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {

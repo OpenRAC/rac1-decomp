@@ -52,16 +52,16 @@ int ovl_map_filter_l01_5(int item, float a, float b, float x) {
     return x >= 95.0f;
 }
 int ovl_map_filter_l01_5_tail(float a, float b, float x) { return x >= 95.0f; }
-extern int D_L00_001845C0;
-extern int D_L00_001845B8;
+extern int map_menu_state_field_2d0;
+extern int map_menu_state_field_2c8;
 
 /* Level 7 map filter: true when x is in the range for b's side and that side's flag is set. */
 int ovl_map_filter_l07_5(float c, float d, float x, int a, int b) {
     if (b < 0x9D) {
-        if (x < 73.5f || 80.0f < x || D_L00_001845C0 == 0) return 0;
+        if (x < 73.5f || 80.0f < x || map_menu_state_field_2d0 == 0) return 0;
         return 1;
     }
-    if (x < 51.5f || 54.0f < x || D_L00_001845B8 == 0) return 0;
+    if (x < 51.5f || 54.0f < x || map_menu_state_field_2c8 == 0) return 0;
     return 1;
 }
 INCLUDE_ASM("asm/overlays", func_L00_00249F40);
@@ -305,7 +305,7 @@ void CardMenu_AdvanceOnCardStatus(void) {
     }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024B940);
-extern int D_L00_0015F688 MACRO_ADDR;
+extern int memcard_menu_alt_route MACRO_ADDR;
 /* Advances the card menu state from its ready flags. */
 void card_menu_advance_on_ready_flags(void) {
     int flags;
@@ -316,7 +316,7 @@ void card_menu_advance_on_ready_flags(void) {
     flags = mode_freeze_flags;
     if (flags & 0x20) {
         mode_freeze_flags = flags ^ 0x20;
-        if (D_L00_0015F688 != 0) {
+        if (memcard_menu_alt_route != 0) {
             mode_freeze_state = 0x17;
             return;
         }
@@ -371,7 +371,7 @@ void MarkSelectedCardSlot(void) {
 INCLUDE_ASM("asm/overlays", func_L00_0024BB5C);
 INCLUDE_ASM("asm/overlays", func_L00_0024BB90);
 INCLUDE_ASM("asm/overlays", func_L00_0024BB98);
-extern int D_L00_0015F688 MACRO_ADDR;
+extern int memcard_menu_alt_route MACRO_ADDR;
 /* while D_0013D390[7] is set the menu state is 3; else flag 0x20 is taken down with state 24
    (D_L00_0015F688 set) or 12, or flag 0x10 with state 14 */
 void CardMenu_AdvanceOnFlags(void) {
@@ -384,7 +384,7 @@ void CardMenu_AdvanceOnFlags(void) {
     flags = mode_freeze_flags;
     if (flags & 0x20) {
         mode_freeze_flags = flags ^ 0x20;
-        if (D_L00_0015F688 != 0) {
+        if (memcard_menu_alt_route != 0) {
             mode_freeze_state = 24;
             return;
         }

@@ -5,7 +5,7 @@ s32 sound_options_menu(struct SoundMenu_1DB30 *menu) {
     s32 previous_sound_volume;
     s32 scaled_sound_volume;
 
-    if ((((s32)g_controller_state_r2.pressed_unmasked) & 0xD00) && (D_001D6094_1DB30 == 0)) {
+    if ((((s32)g_controller_state_r2.pressed_unmasked) & 0xD00) && (menu_system_close_locked_r == 0)) {
         return 1;
     }
     if (((s32)g_controller_state_r2.pressed_unmasked) & 0x10) {

@@ -71,7 +71,7 @@ extern void set_scale_matrix_r(float *, float) __asm__("func_001FA1C0");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern void VU1_addDataRef_r(void *, int) __asm__("func_00234B48");
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern void func_L02_00250C78_2A52D0(void *, void *, void *, void *, void *, int, float) __asm__("func_L02_00250C78");
+extern void vu0_lerp_vertex_table_pairs_r(void *, void *, void *, void *, void *, int, float) __asm__("func_L02_00250C78");
 extern char aridia_view_params_r[] __asm__("D_L02_0016D0C0");
 extern int textured_grid_fog_source_mode_r __asm__("D_L02_0015F558") MACRO_ADDR;
 extern float textured_grid_saved_fog_near_distance_r __asm__("D_L02_00161378") MACRO_ADDR;
@@ -178,7 +178,7 @@ void build_interpolated_dma_packet(Arg_2A52D0 *arg) {
         dst = arg->dst;
         *(long *)dst = 0x0800000000000400;
         *(long *)(arg->dst + 8) = 0;
-        func_L02_00250C78_2A52D0(arg->dst + 0x10, pa, pb, pc, pd, 0x1000, frac);
+        vu0_lerp_vertex_table_pairs_r(arg->dst + 0x10, pa, pb, pc, pd, 0x1000, frac);
     }
     quad_texture_state_r = (g_gs_texture_allocation_cursor_r >> 8) | 0x18100000 | 0x580000000;
     w = arg->c30 | arg->c31 << 8 | arg->c32 << 16;
@@ -641,7 +641,7 @@ extern short trespasser_marker_arc_rx;
 extern short trespasser_beam_end_radius;
 extern short trespasser_active_ring_color;
 extern short trespasser_ring_color;
-extern short D_L02_00161C38;
+extern short trespasser_arrow_unused_color;
 extern short trespasser_beam_color;
 extern short trespasser_beam_hit_color;
 extern short trespasser_beam_return_color;
@@ -818,12 +818,12 @@ void draw_tresspasser_puzzle(char *moby) {
         draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&trespasser_inner_arc_rx), (float)(*(int *)&trespasser_inner_arc_ry), color);
         if (first->v[(i + *(int *)(data + 0x14)) % 12] != 0) {
             if (first->v[(i + *(int *)(data + 0x14)) % 12] >= 3) {
-                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&trespasser_arrow_unused_color), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
                 first->v[(i + *(int *)(data + 0x14)) % 12] = 2;
             } else if (first->v[(i + *(int *)(data + 0x14)) % 12] == 2) {
-                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&trespasser_arrow_unused_color), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
             } else {
-                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&trespasser_arrow_unused_color), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_inner_ring_radius));
             }
         }
     }
@@ -843,12 +843,12 @@ void draw_tresspasser_puzzle(char *moby) {
         draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&trespasser_middle_arc_rx), (float)(*(int *)&trespasser_middle_arc_ry), color);
         if (second->v[(i + *(int *)(data + 0x18)) % 12] != 0) {
             if (second->v[(i + *(int *)(data + 0x18)) % 12] >= 3) {
-                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&trespasser_arrow_unused_color), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
                 second->v[(i + *(int *)(data + 0x18)) % 12] = 2;
             } else if (second->v[(i + *(int *)(data + 0x18)) % 12] == 2) {
-                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&trespasser_arrow_unused_color), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
             } else {
-                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&trespasser_arrow_unused_color), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_middle_ring_radius));
             }
         }
     }
@@ -868,12 +868,12 @@ void draw_tresspasser_puzzle(char *moby) {
         draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&trespasser_third_arc_rx), (float)(*(int *)&trespasser_third_arc_ry), color);
         if (third->v[(i + *(int *)(data + 0x1c)) % 12] != 0) {
             if (third->v[(i + *(int *)(data + 0x1c)) % 12] >= 3) {
-                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&trespasser_arrow_unused_color), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
                 third->v[(i + *(int *)(data + 0x1c)) % 12] = 2;
             } else if (third->v[(i + *(int *)(data + 0x1c)) % 12] == 2) {
-                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&trespasser_arrow_unused_color), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
             } else {
-                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&D_L02_00161C38), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
+                draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&trespasser_arrow_unused_color), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&trespasser_third_ring_radius));
             }
         }
     }
@@ -1390,7 +1390,7 @@ extern char discount_purchase_pricing[];
 extern float aridia_coll_hit_z;
 extern float aridia_fade_level MACRO_ADDR;
 extern int frame_counter_ref MACRO_ADDR;
-extern int D_L02_0015F720 MACRO_ADDR;
+extern int aridia_banner_display_ticks MACRO_ADDR;
 extern int aridia_help_popup_state;
 extern char *aridia_camera_moby;
 extern void initialize_collectible_sprite_state(char *moby);
@@ -1483,7 +1483,7 @@ void tresspasser_update(char *moby) {
         if (*(unsigned char *)(hero_globals_base + 0x2EC1) != 0) {
             if (sel == 0x16) {
                 grant_inventory_item(0x16, 0);
-                D_L02_0015F720 = 0;
+                aridia_banner_display_ticks = 0;
             } else {
                 grant_inventory_item(sel, 0);
             }
@@ -2367,7 +2367,7 @@ struct Moby;
 extern struct Hero g_hero;
 extern char * aridia_paths[];
 extern char * aridia_camera_descriptors MACRO_ADDR;
-extern char * D_L02_0016755C;
+extern char * aridia_camera_follow_override_moby;
 extern int is_point_inside_clip_volume(void *, int);
 extern int test_point_in_transformed_unit_cylinder(void *, int);
 extern int test_point_in_transformed_unit_sphere(void *, int);
@@ -2375,7 +2375,7 @@ extern int IsPointInPolygon(void *, void *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002ec308.c, FUN_L02_002fb648. */
 int test_moby_camera_control_activation(char *moby) {
-    char *special = D_L02_0016755C;
+    char *special = aridia_camera_follow_override_moby;
     char *data = *(char **)(aridia_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1c);
     char *target = *(char **)(data + 0x48);
     int *entry;
@@ -2424,7 +2424,7 @@ rejected:
     return 0;
 }
 extern char *aridia_camera_descriptors MACRO_ADDR;
-extern char D_L02_00167490[];
+extern char aridia_player_camera_follow[];
 extern char aridia_player_camera[];
 extern float FastDiffRots(float, float);
 
@@ -2435,7 +2435,7 @@ int test_moby_camera_target_angle_limits(char *moby, float a, float b) {
     float q[4];
     float r[4];
     char *data;
-    char *vec = D_L02_00167490;
+    char *vec = aridia_player_camera_follow;
     char *g;
     float dot1;
     float dot2;

@@ -607,7 +607,7 @@ extern void draw_collision_clipped_moby_beam();
 extern void draw_and_probe_snagglebeast_rope_attack();
 extern void reset_numeric_hud_element();
 extern void Hud_UpdateCounter();
-extern void func_L06_0024A080();
+extern void draw_segmented_hud_meter_base();
 extern char debris_far_point[];
 extern float frame_scale MACRO_ADDR;
 extern char voice_pool[];
@@ -617,7 +617,7 @@ typedef struct { char pad[0x3C]; short s3C; char pad2[0xE]; } SbRec4C;
 extern SbRec4C umbris_item_defs[];
 extern int snagglebeast_stage_item_slots[][4];
 extern char menu_item_enabled_115[];
-extern short D_L07_00161BF4;
+extern short snagglebeast_start_cleared_word;
 
 typedef struct { float f[4]; } SbVec __attribute__((aligned(16)));
 typedef float SbPVec[4] __attribute__((aligned(16)));
@@ -799,12 +799,12 @@ void snagglebeast_update(unsigned char *m) {
     update_snagglebeast_target_joint_animation((char *)m, (char *)d, (float *)(g_hero + 0x80));
     if (((Moby *)m)->state != 0 && ((Moby *)m)->state != 0xA && ((Moby *)m)->state != 0x10) {
         *(int *)(d + 0x1B0) = queue_animation_update(0x16, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
-                                            (int)((char *)func_L06_0024A080 + 0x20), (int)(d + 0x1B4),
+                                            (int)((char *)draw_segmented_hud_meter_base + 0x20), (int)(d + 0x1B4),
                                             (*(short *)(d + 0x24) << 4) | 0xF);
     }
     switch (((Moby *)m)->state) {
     case 0:
-        *(int *)&D_L07_00161BF4 = 0;
+        *(int *)&snagglebeast_start_cleared_word = 0;
         ((Moby *)m)->state = 1;
         ((Moby *)m)->command = 0;
         *(short *)(d + 0x280) = -1;
@@ -1830,8 +1830,8 @@ extern float select_segment_point_near_sphere_surface(void *, void *, void *, vo
 extern RopePuff_319230 *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 extern void KillPart(void *);
 extern void LerpVec4(void *, void *, void *, float);
-extern RopeVec_319080 D_L07_0020DDA0[];
-extern RopeVec_319080 D_L07_0020DD60[][20];
+extern RopeVec_319080 rope_previous_points_prev_base[];
+extern RopeVec_319080 rope_grid_prev_row_base[][20];
 extern RopeVec_319080 snagglebeast_rope_ring_offsets[];
 extern float snagglebeast_rope_bend_angles[];
 extern char gHeroPos[];
@@ -1965,7 +1965,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
         if (FastAbsF(v10[2]) > 2.1f) {
             qcopy(v110, v50);
             FastVecCross(v120, v110, v10);
-            FastVecSub(v140, D_L07_0020DDA0[i], rope_previous_points_r[i]);
+            FastVecSub(v140, rope_previous_points_prev_base[i], rope_previous_points_r[i]);
             FastVecCross(v130, v110, v140);
             {
                 float d = FastVecDot(v120, v130);
@@ -2096,13 +2096,13 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
                     idx2 = rope_particles[k].idx2;
                     FastVecSub(v70, rope_grid[rope_particles[k].idx][idx2],
                                   snagglebeast_rope_centers_r[rope_particles[k].idx]);
-                    FastVecSub(vB0, D_L07_0020DD60[rope_particles[k].idx][idx2],
+                    FastVecSub(vB0, rope_grid_prev_row_base[rope_particles[k].idx][idx2],
                                   rope_previous_points_r[rope_particles[k].idx]);
                     LerpVec4(vC0, v70, vB0, t);
                     idx2 = (idx2 + 19) % 20;
                     FastVecSub(vD0, rope_grid[rope_particles[k].idx][idx2],
                                   snagglebeast_rope_centers_r[rope_particles[k].idx]);
-                    FastVecSub(vE0, D_L07_0020DD60[rope_particles[k].idx][idx2],
+                    FastVecSub(vE0, rope_grid_prev_row_base[rope_particles[k].idx][idx2],
                                   rope_previous_points_r[rope_particles[k].idx]);
                     LerpVec4(vF0, vD0, vE0, t);
                     LerpVec4(vC0, vC0, vF0, rope_particles[k].f8);

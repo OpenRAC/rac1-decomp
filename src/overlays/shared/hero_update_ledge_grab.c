@@ -90,8 +90,8 @@ extern float sound_volume[] MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern f32 frame_scale MACRO_ADDR;
 extern int blarg_frame_count MACRO_ADDR;
-extern float D_L06_0017C0DC;
-extern float D_L06_0017C44C;
+extern float blarg_hero_bones_25_scale;
+extern float blarg_hero_bones_30_scale;
 
 typedef int u128_E7B8 __attribute__((mode(TI)));
 typedef struct {
@@ -157,7 +157,7 @@ void update_hero_vehicle_attachments_and_effects(void) {
     update_hero_scalar_pulse();
     apply_hero_and_item_scale_sequence();
     if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->b20A4 == 1) {
-        D_L06_0017C0DC = sound_volume[10];
+        blarg_hero_bones_25_scale = sound_volume[10];
         update_hero_glow_and_extra_manipulators();
         if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 == 0) {
             ((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 = (char *)CreateMoby(0x4B4);
@@ -266,7 +266,7 @@ skip:
     reveal_map_around_position(((GS_E7B8 *)(hero_globals_base + 0xE1D))->a80);
     if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->b20A4 == 3) {
         if (gCheats[1] != 0) {
-            D_L06_0017C44C = 1.9f;
+            blarg_hero_bones_30_scale = 1.9f;
         }
         c20 = 0x80;
         v = scale_ticks(0xAA);
@@ -387,7 +387,7 @@ void restore_hero_from_vehicle_mode(void) {
 }
 extern unsigned char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
-extern int D_L06_001746DC;
+extern int blarg_coll_hit_type;
 extern char blarg_coll_hit[];
 extern float gravity_length_xy(float *v);
 extern float vec_length_xy(void *);
@@ -449,7 +449,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     FastVecAdd(&w, &w, &a1);
     {
         char *g1 = (char *)hero_globals_base + 0xE1D;
-        if (coll_line(&a1, &w, 4, *(int *)(g1 + 0x2080), 0) != 0 && D_L06_001746DC > 0) {
+        if (coll_line(&a1, &w, 4, *(int *)(g1 + 0x2080), 0) != 0 && blarg_coll_hit_type > 0) {
             s = CollType();
         }
     }
@@ -508,7 +508,7 @@ typedef struct {
 } G_22a1d0;
 extern G_22a1d0 g_hero_r2 __asm__("D_0013F450");
 extern f32 frame_scale MACRO_ADDR;
-extern u128_22a1d0 D_L06_001746F0[];
+extern u128_22a1d0 blarg_coll_resolved_pos[];
 extern void clear_u64_value(void *);
 extern void Hero_ConstrainToPath(void);
 extern void HeroOffsetAlongViewZ(void *, void *, f32);
@@ -570,7 +570,7 @@ s32 HeroL06_ResolveCollisionStep(s32 mode) {
             if (!(a | coll_sphere_hero_groups(&g_hero_r2.pos, g_hero_r2.f234)))
                 break;
         }
-        c = D_L06_001746F0;
+        c = blarg_coll_resolved_pos;
         qcopy(&g_hero_r2.pos, c);
         qcopy(&g_hero_r2.q200, c + 1);
         qcopy(&g_hero_r2.q210, c - 1);
@@ -612,7 +612,7 @@ typedef struct {
     u8 pad4[0x70 - 4];
 } Entry70_2348d0;
 extern struct PadState g_controller_state;
-extern Entry70_2348d0 D_L06_0017A170[];
+extern Entry70_2348d0 blarg_idle_fidgets_field_60[];
 extern short level_game_mode_q_r __asm__("D_L06_0015F6A8");
 extern u8 gHaveBoltGrabber NOT_SDA;
 extern f32 g_frame_time MACRO_ADDR;
@@ -711,7 +711,7 @@ void update_hero_timers_and_spatial_state(void) {
         }
     }
     for (i = 0; i < 5; i++) {
-        fast_dec_timer(&D_L06_0017A170[i].w0);
+        fast_dec_timer(&blarg_idle_fidgets_field_60[i].w0);
     }
     g_hero_r3.current_path_dist = 9999.0f;
     if (g_hero_r3.air_frames.s != 0 && gravity_z(&g_hero_r3.motion.velocity) < 0.0f) {
@@ -784,8 +784,8 @@ typedef struct {
     u8 mode;
 } G_32b90;
 extern G_32b90 g_hero_r4 __asm__("D_0013F450");
-extern u8 D_L06_00174700[];
-extern f32 D_L06_001746E0;
+extern u8 blarg_coll_hit_normal[];
+extern f32 blarg_collision_hit_point;
 extern void FastVecScale(void *, void *, f32);
 extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
 extern s32 coll_line(void *, void *, s32, s32, s32);
@@ -811,8 +811,8 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
             clip_negative_segment_endpoint_xyz(&v, t);
             qcopy(&v, &(&g_hero_r4)->v80);
             if (coll_line(&v, t, 0xd24, 0, 0) != 0) {
-                if (compute_gravity_relative_vector_inclination((f32 *)D_L06_00174700) <= 0.87266463f) {
-                    c = *(f32 *)(D_L06_00174700 - 0x18);
+                if (compute_gravity_relative_vector_inclination((f32 *)blarg_coll_hit_normal) <= 0.87266463f) {
+                    c = *(f32 *)(blarg_coll_hit_normal - 0x18);
                 }
             }
         }
@@ -839,7 +839,7 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
             nb = b * -0.5f;
             z = gravity_z(&(&g_hero_r4)->vE0) - nb;
             x = gravity_z(&(&g_hero_r4)->v80);
-            y = gravity_z(&D_L06_001746E0);
+            y = gravity_z(&blarg_collision_hit_point);
             if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0 && o[2] > 0.0f) {
                 return o[2];
             }
@@ -863,7 +863,7 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
             nb = b * -0.5f;
             z = gravity_z(&(&g_hero_r4)->vE0) - nb;
             x = gravity_z(&(&g_hero_r4)->v80);
-            y = gravity_z(&D_L06_001746E0);
+            y = gravity_z(&blarg_collision_hit_point);
             if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0 && o[4] > 0.0f) {
                 return o[4];
             }

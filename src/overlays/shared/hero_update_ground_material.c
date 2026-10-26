@@ -46,7 +46,7 @@ extern unsigned char gHaveMorphORay[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern int novalis_frame_count MACRO_ADDR;
 extern int scale_ticks(int);
-extern float D_L01_0017C0CC;
+extern float novalis_lean_state_30_scale;
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 extern float FastSin(float);
@@ -111,7 +111,7 @@ void HeroFrameUpdate(void) {
     reveal_map_around_position(GG->a80);
     if (GG->b20A4 == 3) {
         if (gCheats[1] != 0) {
-            D_L01_0017C0CC = 1.9f;
+            novalis_lean_state_30_scale = 1.9f;
         }
         c20 = 0x80;
         v = scale_ticks(0xAA);
@@ -983,7 +983,7 @@ typedef struct {
     u8 b20A4;
 } P231ae0;
 extern P231ae0 g_hero_r4 __asm__("D_0013F450");
-extern f32 D_0013F670[];
+extern f32 g_hero_capsule_top[];
 extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 f32 vec_distance_xy(void *, void *);
@@ -1017,7 +1017,7 @@ void HeroSetCollisionSize(void) {
         g_hero_r4.f230 = 0.8f;
     }
     if (!g_hero_r4.b257 || g_hero_r4.i2094 == 0x12 || g_hero_r4.i208C == 0x11 || g_hero_r4.b12E4 || vec_distance_xy(g_hero_r4.v210, g_hero_r4.v80) > g_hero_r4.f234 * 0.5f) {
-        f32 *q = D_0013F670;
+        f32 *q = g_hero_capsule_top;
         P231ae0 *b = (P231ae0 *)((u8 *)q - 0x220);
         ApproachValue(b->f228, frame_scale_r * 0.02f, q);
         ApproachValue(b->f22C, frame_scale_r * 0.02f, q + 1);
@@ -1143,7 +1143,7 @@ void clip_hero_horizontal_velocity(int flag) {
     }
 }
 typedef int Q __attribute__((mode(TI)));
-extern u8 D_L01_00174360[];
+extern u8 novalis_coll_hit_point[];
 extern s32 g_current_level_index MACRO_ADDR;
 void func_001F9BC0_333D8(void *) __asm__("func_001F9BC0");
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
@@ -1263,7 +1263,7 @@ void HeroGroundProbe(void) {
     g_hero.xB12ed = r;
     g_hero.xH12e0 = CollType();
     if (g_hero.xH12e0 == 0) {
-        g_hero.xF2f0 = resolve_camera_surface_height(D_L01_00174360, (u8 *)&g_hero + 0x280);
+        g_hero.xF2f0 = resolve_camera_surface_height(novalis_coll_hit_point, (u8 *)&g_hero + 0x280);
         if (g_hero.xF88 < g_hero.xF2f0 && g_hero.xI2f8 <= 0) {
             g_hero.xI2f8 = 1;
         }
@@ -1390,7 +1390,7 @@ d1:
         }
     }
 }
-extern char D_L01_00174370[];
+extern char novalis_coll_resolved_pos[];
 extern short frame_scale;
 extern void clear_u64_value(float *);
 extern void Hero_ConstrainToPath(void);
@@ -1445,7 +1445,7 @@ int resolve_hero_position_with_collision_queries(int a0) {
             n |= coll_sphere_hero_groups(*(float *)(g + 0x234), g + 0x80);
             if (n == 0) break;
         }
-        p = D_L01_00174370;
+        p = novalis_coll_resolved_pos;
         qcopy((char *)hero_globals_base + 0xE9D, p);
         qcopy((char *)hero_globals_base + 0xE9D + 0x180, p + 0x10);
         qcopy((char *)hero_globals_base + 0xE9D + 0x190, p - 0x10);
@@ -1562,7 +1562,7 @@ typedef struct {
     u8 pad4[0x70 - 4];
 } Entry70_23c710;
 extern struct PadState g_controller_state;
-extern Entry70_23c710 D_L01_00179DF0[];
+extern Entry70_23c710 novalis_idle_fidgets_field_60[];
 extern short novalis_game_mode_r __asm__("D_L01_0015F6A8");
 extern u8 item_available[];
 extern void update_hero_tilt(void);
@@ -1662,7 +1662,7 @@ void update_hero_timers_and_vehicle_transitions(void) {
         }
     }
     for (i = 0; i < 5; i++) {
-        fast_dec_timer(&D_L01_00179DF0[i].w0);
+        fast_dec_timer(&novalis_idle_fidgets_field_60[i].w0);
     }
     g_hero_r.current_path_dist = 9999.0f;
     if (g_hero_r.air_frames.s != 0 && gravity_z(&g_hero_r.motion.velocity) < 0.0f) {

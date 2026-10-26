@@ -1436,7 +1436,7 @@ typedef struct M_29E8A0 {
 extern Tbl_29E8A0 quartu_missile_camera_blast_params;
 extern Cols_29E8A0 quartu_missile_blast_start_colors;
 extern Cols_29E8A0 quartu_missile_blast_end_colors;
-extern int D_L15_0015F40C MACRO_ADDR;
+extern int quartu_level_globals_saved MACRO_ADDR;
 extern float quartu_cpu_frame_load MACRO_ADDR;
 extern unsigned char *quartu_missile_smoke_texture_ptr;
 extern char quartu_missile_index_list[];
@@ -1513,7 +1513,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
         float dv[4];
         float tp[4];
         float ip[4];
-        if (D_L15_0015F40C != 0 && t != 0) {
+        if (quartu_level_globals_saved != 0 && t != 0) {
             float f = FastVecDist(quartu_camera_pos, t->pos) / 50.0f;
             qcopy(delta, t->pos);
             delta[2] = delta[2] + d->zoff;
@@ -1889,7 +1889,7 @@ typedef struct {
     } col;
     long reg;
 } Fade29FF90;
-extern Fade29FF90 D_L15_0015F420 MACRO_ADDR;
+extern Fade29FF90 quartu_secondary_screen_overlay MACRO_ADDR;
 extern Fade29FF90 quartu_screen_overlay MACRO_ADDR;
 extern Light29FF90 quartu_lights[];
 extern float frame_scale MACRO_ADDR;
@@ -1970,7 +1970,7 @@ void update_charged_blast(Moby29FF90 *moby) {
                 d->light = allocate_packed_color_point_light_slot(moby->pos, 0.0f, 0.0f, 0);
             }
         } else {
-            D_L15_0015F420.on = 0;
+            quartu_secondary_screen_overlay.on = 0;
             quartu_screen_overlay.on = 0;
             d->f10 = 0;
             d->vel[0] = FastCos(((Hero *)(hero_globals_base + 0xE1D))->motion.rot.f[2]) * (g_frame_time * 40.0f);
@@ -2288,7 +2288,7 @@ void draw_group_moby_effect_quads(char *moby) {
 }
 typedef struct { unsigned char pad[0x454]; unsigned char killed[1]; } KillFlags_2A3DD0;
 typedef struct { unsigned char pad0[0x74]; unsigned char active; unsigned char pad75[0x13]; char *owner; } Voice_2A3DD0;
-extern KillFlags_2A3DD0 D_L15_001BBB40_2A3DD0 __asm__("D_L15_001BBB40");
+extern KillFlags_2A3DD0 quartu_collected_flags_base_r __asm__("D_L15_001BBB40");
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
 extern int level_moby_killed_r[][64] __asm__("D_0014C290");
 extern unsigned char voice_pool_r[] __asm__("D_0013E650");
@@ -2334,7 +2334,7 @@ void update_spark_emitter_moby(unsigned char *moby) {
         ((Moby *)moby)->flags |= 1;
         ((Moby *)moby)->visible = 0;
         id = ((Moby *)moby)->save_id;
-        if (D_L15_001BBB40_2A3DD0.killed[(short)id] == 0 && save_flag_clear_2A3DD0(id)) {
+        if (quartu_collected_flags_base_r.killed[(short)id] == 0 && save_flag_clear_2A3DD0(id)) {
             ((Moby *)moby)->state = 1;
         } else {
             ((Moby *)moby)->command = 0xFF;
@@ -2556,9 +2556,9 @@ typedef struct {
     u8 pad75[0x13];
     struct Moby *owner;
 } VoiceSlot;
-extern KillFlags D_L15_001BAEE0;
-extern KillFlags D_L15_001BBB40;
-extern u8 D_L15_0015FD08[] MACRO_ADDR;
+extern KillFlags quartu_moby_state_bytes_base;
+extern KillFlags quartu_collected_flags_base;
+extern u8 quartu_mission_group_state[] MACRO_ADDR;
 extern u8 saved_mission_state[][16];
 extern u8 voice_pool[];
 extern void Sound_StopSlot(s32);
@@ -2569,9 +2569,9 @@ void mark_moby_killed_and_release_owned_voice(int addr) {
     struct Moby *m = (struct Moby *)addr;
     s32 slot;
     m->collision = 0;
-    D_L15_001BAEE0.killed[(s16)m->save_id] = m->mission + 2;
-    if (m->mission == 0xFF || (D_L15_0015FD08[m->mission] != 0xFF && saved_mission_state[(*(s32 *)&g_current_level_index)][m->mission] == 0xFF)) {
-        D_L15_001BBB40.killed[(s16)m->save_id] = m->mission + 2;
+    quartu_moby_state_bytes_base.killed[(s16)m->save_id] = m->mission + 2;
+    if (m->mission == 0xFF || (quartu_mission_group_state[m->mission] != 0xFF && saved_mission_state[(*(s32 *)&g_current_level_index)][m->mission] == 0xFF)) {
+        quartu_collected_flags_base.killed[(s16)m->save_id] = m->mission + 2;
     }
     if (m->command != 0xFF) {
         VoiceSlot *e;
@@ -3196,7 +3196,7 @@ void update_sentrybot_alarm_effect(void *moby) {
 }
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void emit_rgba_draw_packet(int, int, int, int);
-extern signed char D_L15_00161B57[] MACRO_ADDR;
+extern signed char quartu_alarm_flash_color_alpha[] MACRO_ADDR;
 extern short quartu_alarm_flash_period_ticks;
 extern short quartu_alarm_flash_amplitude;
 extern short quartu_alarm_flash_color;
@@ -3210,7 +3210,7 @@ void emit_sine_modulated_rgba_draw_packet(void) {
     int r;
     int k;
     if (v < 0.0f) v = 0.0f;
-    r = truncate_float_to_s32_r((float)D_L15_00161B57[0] * v);
+    r = truncate_float_to_s32_r((float)quartu_alarm_flash_color_alpha[0] * v);
     k = *(int *)&quartu_alarm_flash_color;
     emit_rgba_draw_packet(k & 0xFF, k >= 9, k >= 17, r);
 }

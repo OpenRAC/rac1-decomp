@@ -5,7 +5,7 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
     if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[0x17]) != 0
         && *(unsigned int *)(hero_globals_base + 0xE9D + 0x200C) < 2) {
         char *b = help_stats_base + 0x34D;
-        if (*(unsigned short *)(b + 0x278) == 0 && D_001419E8 == 0) {
+        if (*(unsigned short *)(b + 0x278) == 0 && usage_stats_entry20_count == 0) {
             int count = 0;
             int i;
             for (i = 0; i < 37; i++) {
@@ -53,7 +53,7 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
                 if (saved_mission_state[g_current_level_index][lvl] != 0xFF) {
                     unsigned char *f = menu_item_enabled_115 + 0xB9;
                     if (f[0x10] != 0 && ((int *)(help_stats_base + 0xD875))[lvl] >= 6) {
-                        int t = scale_ticks(gameplay_event_frame_count) - D_001418A2 * 600;
+                        int t = scale_ticks(gameplay_event_frame_count) - item_usage_entry36_last_time * 600;
                         if (scale_ticks(0x4650) < t) {
                             Help_Request(0x7D2, 0xC);
                         }
@@ -67,7 +67,7 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
         data[0x16] = 1;
     }
     if (data[0x16] != 0) {
-        if (D_00141988 < 3) {
+        if (usage_stats_entry8_count < 3) {
             char *b = help_stats_base + 0x34D;
             if (!(*(unsigned int *)(b + 0x264) & (1 << g_current_level_index))) {
                 Help_Request(0x4E22, 0x4C);

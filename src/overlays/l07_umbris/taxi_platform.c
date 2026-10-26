@@ -558,7 +558,7 @@ struct AnimTimer_30C320 {
     f32 frames;
     s16 length;
 };
-extern void func_L00_00251B58_30C320(struct Moby *, u32) __asm__("func_L00_00251B58");
+extern void moby_set_coll_cell_range_r(struct Moby *, u32) __asm__("func_L00_00251B58");
 extern void copy_hero_moby_field_38_r(struct Moby *) __asm__("func_L00_0025E210");
 extern struct AnimTimer_30C320 *GetFlaggedPvarWord_r(struct Moby *) __asm__("func_L00_0025D390");
 
@@ -576,7 +576,7 @@ void reset_moby_from_class_defaults(struct Moby *m) {
     m->update_dist = 0xFF;
     m->draw_dist = 0xFF;
     m->visible = 1;
-    func_L00_00251B58_30C320(m, 0x80807F7F);
+    moby_set_coll_cell_range_r(m, 0x80807F7F);
     ((struct SpawnMobyView_30C320 *)m)->unk36 = 0x7F80;
     m->unk72 = 0xFF;
     m->hit_slot = 0xFF;
@@ -1066,13 +1066,13 @@ extern Cab_30D8E8 umbris_water_ripple_params;
 extern int umbris_water_patch_coords[][4];
 extern unsigned short umbris_water_grid_saved_states[];
 extern int umbris_pool_draw_count MACRO_ADDR;
-extern float D_L07_0016128C MACRO_ADDR;
-extern float D_L07_00161290 MACRO_ADDR;
-extern float D_L07_00161294 MACRO_ADDR;
+extern float umbris_water_ripple_params_1 MACRO_ADDR;
+extern float umbris_water_ripple_params_2 MACRO_ADDR;
+extern float umbris_water_ripple_params_3 MACRO_ADDR;
 extern Rec_30D8E8 *umbris_pool_draw_tiles MACRO_ADDR;
 extern int (*umbris_pool_draw_tex)[4] MACRO_ADDR;
-extern int D_L07_00161288 MACRO_ADDR;
-extern int D_L07_00161BC8 SDATA(D_L07_00161BC8);
+extern int umbris_water_ripple_params_0 MACRO_ADDR;
+extern int umbris_item_revoke_flag SDATA(D_L07_00161BC8);
 extern int water_grid_override_index SDATA(D_L07_00161BC0);
 extern unsigned short umbris_water_grid_override_value SDATA(D_L07_00161BC4);
 extern char gHaveHeliPack[];
@@ -1109,7 +1109,7 @@ void WaterPlateUpdate(Moby *m) {
     if (d == 0) {
         return;
     }
-    if (D_L07_00161BC8 != 0) {
+    if (umbris_item_revoke_flag != 0) {
         gHaveHeliPack[2] = 0;
         discount_purchase_pricing[9] = 0;
     }
@@ -1140,14 +1140,14 @@ void WaterPlateUpdate(Moby *m) {
             cab->i2C = 0x29;
             p = umbris_water_patch_coords;
             umbris_pool_draw_count = 0x24;
-            D_L07_0016128C = 32768.0f;
-            D_L07_00161290 = 255.0f;
-            D_L07_00161294 = 48.0f;
+            umbris_water_ripple_params_1 = 32768.0f;
+            umbris_water_ripple_params_2 = 255.0f;
+            umbris_water_ripple_params_3 = 48.0f;
             cab->b3C = 0x40;
             cab->b3D = 0x40;
             umbris_pool_draw_tiles = umbris_water_grids_r;
             umbris_pool_draw_tex = umbris_water_patch_coords;
-            D_L07_00161288 = 0;
+            umbris_water_ripple_params_0 = 0;
             for (i = 0; i < 0x24; i++) {
                 RipplePatch_ToFixedPoint_r(&umbris_water_grids_r[i], p[i]);
                 umbris_water_grids_r[d->idx].h1E = umbris_water_grid_saved_states[d->idx];

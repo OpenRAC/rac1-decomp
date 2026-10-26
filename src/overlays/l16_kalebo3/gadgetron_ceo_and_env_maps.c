@@ -569,7 +569,7 @@ void initialize_path_walker_group(unsigned char *m) {
     }
 }
 extern int kalebo3_game_mode;
-extern char D_L16_0016CCE0[];
+extern char kalebo3_cutscene_state[];
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void draw_trail(void *, void *, void *, float, float);
 typedef float W[4] __attribute__((aligned(16)));
@@ -586,7 +586,7 @@ void update_paired_joint_particle_trails(char *moby) {
         break;
     case 1:
         if (kalebo3_game_mode == 2) {
-        char *g = D_L16_0016CCE0;
+        char *g = kalebo3_cutscene_state;
         if (*(int *)(g + 0x30) == 0) {
             char *p = *(char **)(g + 0x184);
             Moby_GetJointWorldPos(p, 6, a);
@@ -952,7 +952,7 @@ void compute_level16_reflection_map_coordinates(int n, Vec3f *p1, Vec3f *p2, int
 }
 extern short envmap_a_vertex_counts;
 extern short envmap_a_vertex_bufs;
-extern short D_L16_00161FD0;
+extern short envmap_a_unused_bufs;
 extern short envmap_a_normal_bufs;
 extern short envmap_a_color_bufs;
 extern char envmap_a_bounding_spheres[][16];
@@ -966,7 +966,7 @@ extern void draw_env_overlay_mesh(int, int, int, char *, int);
 void EnvMapA_Draw(void) {
     int *a = (int *)&envmap_a_vertex_counts;
     int *b = (int *)&envmap_a_vertex_bufs;
-    int *c = (int *)&D_L16_00161FD0;
+    int *c = (int *)&envmap_a_unused_bufs;
     int *d = (int *)&envmap_a_normal_bufs;
     int *e = (int *)&envmap_a_color_bufs;
     int i;
@@ -1041,7 +1041,7 @@ void update_level16_three_mesh_render_state(unsigned char *m) {
 }
 extern short envmap_b_vertex_counts;
 extern short envmap_b_vertex_bufs;
-extern short D_L16_00162028;
+extern short envmap_b_unused_bufs;
 extern short envmap_b_normal_bufs;
 extern short envmap_b_color_bufs;
 extern char envmap_b_bound_spheres_draw[][16] __asm__("D_L16_00162040") MACRO_ADDR;
@@ -1051,7 +1051,7 @@ extern char envmap_b_uvs[];
 void draw_level16_visible_single_reflection_mesh(void) {
     int *a = (int *)&envmap_b_vertex_counts;
     int *b = (int *)&envmap_b_vertex_bufs;
-    int *c = (int *)&D_L16_00162028;
+    int *c = (int *)&envmap_b_unused_bufs;
     int *d = (int *)&envmap_b_normal_bufs;
     int *e = (int *)&envmap_b_color_bufs;
     int i;
@@ -1131,7 +1131,7 @@ extern char envmap_c_bounding_spheres[][16];
 extern char envmap_c_uvs[];
 extern short envmap_c_vertex_counts;
 extern short envmap_c_vertex_bufs;
-extern short D_L16_00162060;
+extern short envmap_c_unused_bufs;
 extern short envmap_c_normal_bufs;
 extern short envmap_c_color_bufs;
 
@@ -1139,7 +1139,7 @@ extern short envmap_c_color_bufs;
 void draw_level16_visible_textured_batches(void) {
     int *a = (int *)&envmap_c_vertex_counts;
     int *b = (int *)&envmap_c_vertex_bufs;
-    int *c = (int *)&D_L16_00162060;
+    int *c = (int *)&envmap_c_unused_bufs;
     int *d = (int *)&envmap_c_normal_bufs;
     int *e = (int *)&envmap_c_color_bufs;
     int i;
@@ -1215,7 +1215,7 @@ void update_level16_two_mesh_render_state(unsigned char *m) {
 }
 extern short envmap_d_vertex_counts[1];
 extern short envmap_d_vertex_bufs[1];
-extern short D_L16_00162098[1];
+extern short envmap_d_unused_bufs[1];
 extern short envmap_d_normal_bufs[1];
 extern short envmap_d_color_bufs[1];
 extern char envmap_d_uvs[];
@@ -1228,7 +1228,7 @@ void draw_level16_reflection_mesh_batch(void) {
     VU1_addGSregister(0x14, 0xFF9000000260L);
     font_queue_vu_state();
     for (i = 0; i < 3; i++) {
-        compute_level16_reflection_map_coordinates(((int *)envmap_d_vertex_counts)[i], ((int *)envmap_d_normal_bufs)[i], ((int *)envmap_d_vertex_bufs)[i], ((int *)D_L16_00162098)[i], envmap_d_uvs);
+        compute_level16_reflection_map_coordinates(((int *)envmap_d_vertex_counts)[i], ((int *)envmap_d_normal_bufs)[i], ((int *)envmap_d_vertex_bufs)[i], ((int *)envmap_d_unused_bufs)[i], envmap_d_uvs);
         draw_env_overlay_mesh(((int *)envmap_d_vertex_counts)[i], ((int *)envmap_d_vertex_bufs)[i], ((int *)envmap_d_color_bufs)[i], envmap_d_uvs, 1);
     }
 }

@@ -26,11 +26,11 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float novalis_hero_fall_state_height MACRO_ADDR;
-extern int D_L01_0015F674 MACRO_ADDR;
+extern int novalis_help_message_selector MACRO_ADDR;
 extern int novalis_hero_run_step1_start_frame MACRO_ADDR;
 extern short novalis_hero_double_tap_timer;
-extern float D_L01_001672D8;
-extern int D_L01_0016CC80;
+extern float novalis_player_camera_yaw;
+extern int novalis_hero_state_1e_clear_word;
 extern S17AB80 novalis_lean_state;
 extern Rec70 novalis_idle_fidgets[];
 extern Rec4C novalis_item_defs[];
@@ -135,7 +135,7 @@ void HeroL01_UpdateStateTransitions(void) {
             Hero_SetMoveState(0x3D, 1);
         } else if (handle_hero_gadget_button() == 0 && try_enter_hero_water_state() == 0 && try_transition_hero_water_state() == 0 && try_start_hero_weapon_fire_state() == 0) {
             if ((g_controller_state.pressed & 0x10) || (((int)g_controller_state.pressed_unmasked) & 0x10)) {
-                if (g_hero.items[0].switch_lock != 2 && D_L01_0015F674 == 0
+                if (g_hero.items[0].switch_lock != 2 && novalis_help_message_selector == 0
                     && (g_hero.item_use_locked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.item_select_blocked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.vehicle_mode == 0 || g_hero.vehicle_mode == 3)) {
@@ -342,7 +342,7 @@ void HeroL01_UpdateStateTransitions(void) {
                         if (g_hero.state.prev == 1 || g_hero.state.prev == 0x1E) {
                             if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
                                 stick_target(0, 1.0f);
-                                if (FastDiffRots(g_hero.motion.move_yaw, D_L01_001672D8) > 1.2217305f) {
+                                if (FastDiffRots(g_hero.motion.move_yaw, novalis_player_camera_yaw) > 1.2217305f) {
                                     ok = 0;
                                 }
                             }
@@ -1746,7 +1746,7 @@ void HeroL01_UpdateStateTransitions(void) {
                             set_hero_animation(a, 0, scale_ticks(8));
                         }
                     }
-                    D_L01_0016CC80 = 0;
+                    novalis_hero_state_1e_clear_word = 0;
                     break;
                 case 32:
                     if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {

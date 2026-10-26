@@ -32,8 +32,8 @@ extern int veldin2_help_message_selector MACRO_ADDR;
 extern int veldin2_hero_run_step1_start_frame MACRO_ADDR;
 extern short veldin2_hero_double_tap_timer;
 extern S167700 veldin2_player_camera;
-extern float D_L18_00167858;
-extern int D_L18_0016D200;
+extern float veldin2_camera_yaw;
+extern int veldin2_look_release_reset_word;
 extern S17B100 veldin2_hero_bones;
 extern Rec70 veldin2_idle_fidgets[];
 extern Rec4C veldin2_item_defs[];
@@ -372,7 +372,7 @@ void HeroStateTransitions(void) {
                         if (g_hero.state.prev == 1 || g_hero.state.prev == 0x1E) {
                             if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
                                 stick_target(0, 1.0f);
-                                if (FastDiffRots(g_hero.motion.move_yaw, D_L18_00167858) > 1.2217305f) {
+                                if (FastDiffRots(g_hero.motion.move_yaw, veldin2_camera_yaw) > 1.2217305f) {
                                     ok = 0;
                                 }
                             }
@@ -2434,7 +2434,7 @@ void HeroStateTransitions(void) {
                             set_hero_animation(a, 0, scale_ticks(8));
                         }
                     }
-                    D_L18_0016D200 = 0;
+                    veldin2_look_release_reset_word = 0;
                     break;
                 case 32:
                     if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {

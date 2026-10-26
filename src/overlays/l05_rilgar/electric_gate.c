@@ -1079,7 +1079,7 @@ typedef struct {
     LiftVoice voice;
 } LiftVoiceWindow;
 extern LiftVoicePool voice_pool;
-extern u16 D_0014172A NOT_SDA;
+extern u16 active_marker_id NOT_SDA;
 extern f32 elevator_camera_transition_fade MACRO_ADDR;
 extern LiftPose * rilgar_level_cuboids_r2 __asm__("D_L05_001601AC") MACRO_ADDR;
 extern void FastVecScale(void *, void *, f32);
@@ -1120,7 +1120,7 @@ void elevator_with_button_update(struct Moby *moby) {
         moby->state = 3;
         break;
     case 1:
-        D_0014172A = vars->marker;
+        active_marker_id = vars->marker;
         ApproachValue(&vars->fade, 1.0f, 0.133f);
         elevator_camera_transition_fade = vars->fade;
         if (vars->fade == 1.0f) {
@@ -1136,7 +1136,7 @@ void elevator_with_button_update(struct Moby *moby) {
             vars->sound = Moby_PlaySound(0, 4, moby);
         }
         if (moby->command) {
-            D_0014172A = vars->marker;
+            active_marker_id = vars->marker;
             ApproachValue(&vars->fade, 0.0f, 0.133f);
             elevator_camera_transition_fade = vars->fade;
             lift_camera_view_r(moby, &eye, &look);
@@ -1908,7 +1908,7 @@ extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char qwarks_bouncer_dialogue_name[];
 extern float g_frame_scale_sq MACRO_ADDR;
-extern unsigned char D_0013DE4B[];
+extern unsigned char level_available_base[];
 
 enum QwarksBouncerState {
     QWARKS_BOUNCER_INITIALIZE = 0,
@@ -1973,7 +1973,7 @@ void qwarks_bouncer_update(char *m)
     if (!bouncer_data) return;
     switch (bouncer_moby->state) {
     case QWARKS_BOUNCER_INITIALIZE:
-        if (D_0013DE4B[4] != 0) {
+        if (level_available_base[4] != 0) {
             DeleteMoby(m);
             return;
         }
@@ -2649,12 +2649,12 @@ extern char gHeroPos[];
 #define hero_a (&D_0013F450)
 extern int hero_control_mode[];
 #define D_001413DC_a D_001414DC
-extern int D_0013D56C[];
+extern int weapon_ammo_counts_15[];
 #define D_0013D464_a D_0013D56C
 #define D_0014C050 ((unsigned char *)D_0014C150)
 extern int mission_death_counts[];
 #define D_0014EE90 D_0014EF90
-extern int D_0013F74C[];
+extern int g_hero_ground_moby[];
 #define D_0013F64C_a D_0013F74C
 #define frame_number (*(int *)&D_L05_0015F6B0)
 #define D_L05_0015FFD8_a ((int *)&D_L05_00160098)
@@ -2664,7 +2664,7 @@ extern VendorEventRecord help_records[];
 #define D_00141968 D_00141A68
 extern L05Fields_00141848 usage_stats[];
 #define l05_00141848_a D_00141948
-extern L05Fields_00141720 D_00141820[];
+extern L05Fields_00141720 item_usage_entry20_base[];
 #define l05_00141720_a D_00141820
 extern L05Fields_0013D388 gSpecialItems[];
 #define l05_0013D388_a D_0013D490

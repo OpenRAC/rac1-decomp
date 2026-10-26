@@ -1189,7 +1189,7 @@ typedef struct ShipD_5E48 {
 } ShipD_5E48;
 extern char blarg_ship_missing_path_format[];
 extern Ship_5E48 *blarg_ship_locked_target;
-extern short D_L10_00161F64;
+extern short orxon_blarg_ship_start_timer_ticks;
 extern short blarg_ship_rocket_speed;
 extern short blarg_ship_fire_anim_speed;
 extern float frame_scale MACRO_ADDR;
@@ -1237,7 +1237,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
         d->f19C = 0.0f;
         m->s32 = 0x7F;
         qcopy(&m->pos, &orxon_paths_r[d->i140]->nodes[0]);
-        d->s196 = scale_ticks(*(int *)&D_L10_00161F64);
+        d->s196 = scale_ticks(*(int *)&orxon_blarg_ship_start_timer_ticks);
         m->i94 = 0;
         m->s34 |= 0x41;
         if (m->b53 != 0) MobyBlendAnimation(m, 0, 0, 0);
@@ -1781,7 +1781,7 @@ typedef struct {
     u8 pad0[0x454];
     u8 collected[1];
 } LevelState_e9648;
-extern LevelState_e9648 D_L10_001BB9C0;
+extern LevelState_e9648 orxon_collected_flags_base;
 extern int orxon_moby_killed[];
 /* functional: medium. Per-frame update of a pickup/homing moby (states 0 idle, 1 wait, 2 chase one of up to three target mobys, 3 collect: delete the targets and set the saved-collected bits); the meaning of func_L09_00308F58 and of the 0x4/0x8/0xC/0x14 data slots is guessed, the operations follow the assembly. */
 extern float SpringTurn(float *, float, float, float, float, float);
@@ -1823,7 +1823,7 @@ state_zero:
         int signed_save_id;
         save_id = moby->save_id;
         signed_save_id = (short)save_id;
-        if (D_L10_001BB9C0.collected[(short)save_id] != 0 ||
+        if (orxon_collected_flags_base.collected[(short)save_id] != 0 ||
             ((*(int *)(help_stats_base + 0xAB75 + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >> (save_id & 31)) & 1) != 0) {
             moby->state = 3;
             return;
@@ -1846,7 +1846,7 @@ state_two:
         struct Moby *candidate;
         save_id = moby->save_id;
         signed_save_id = (short)save_id;
-        if (D_L10_001BB9C0.collected[(short)save_id] != 0 ||
+        if (orxon_collected_flags_base.collected[(short)save_id] != 0 ||
             ((*(int *)(help_stats_base + 0xAB75 + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >> (save_id & 31)) & 1) != 0) {
             moby->state = 3;
             return;
@@ -1977,7 +1977,7 @@ void gate_1_update(struct Moby *moby) {
         moby->update_dist = 0xFF;
         if (hero_vehicle_mode[0] == 0) {
             save_id = moby->save_id;
-            if (D_L10_001BB9C0.collected[(short)save_id] == 0 &&
+            if (orxon_collected_flags_base.collected[(short)save_id] == 0 &&
                 ((level_moby_killed[g_current_level_index][(short)save_id >> 5] >> (save_id & 31)) & 1) == 0) {
                 vars->home_yaw = moby->rot.y;
                 moby->state = 1;
@@ -1991,7 +1991,7 @@ void gate_1_update(struct Moby *moby) {
         if (g_hero.vehicle_mode != 0)
             goto open;
         save_id = moby->save_id;
-        if (D_L10_001BB9C0.collected[(short)save_id] != 0 ||
+        if (orxon_collected_flags_base.collected[(short)save_id] != 0 ||
             ((level_moby_killed[g_current_level_index][(short)save_id >> 5] >> (save_id & 31)) & 1) != 0) {
         open:
             moby->rot.y = FastAddRots(moby->rot.y, -1.3962634f);
@@ -2020,7 +2020,7 @@ void gate_1_update(struct Moby *moby) {
         if (hero_vehicle_mode[0] != 0)
             return;
         save_id = moby->save_id;
-        if (D_L10_001BB9C0.collected[(short)save_id] != 0)
+        if (orxon_collected_flags_base.collected[(short)save_id] != 0)
             return;
         if ((((level_moby_killed[g_current_level_index][(short)save_id >> 5] >> (save_id & 31)) ^ 1) & 1) == 0)
             return;
@@ -2041,10 +2041,10 @@ typedef struct {
 
 typedef struct { char pad0[0x454]; unsigned char collected[1]; } L10State_2EAD50;
 
-extern unsigned char D_0013DE4B_2EAD50[] __asm__("D_0013DE4B");
+extern unsigned char level_available_base_r[] __asm__("D_0013DE4B");
 extern Moby *orxon_mobys_r2 __asm__("D_L10_00160058") MACRO_ADDR;
 extern int orxon_moby_killed_r[] __asm__("D_L10_001BAC60");
-extern L10State_2EAD50 D_L10_001BB9C0_2EAD50 __asm__("D_L10_001BB9C0");
+extern L10State_2EAD50 orxon_collected_flags_base_r __asm__("D_L10_001BB9C0");
 extern void activate_descriptor_r(int) __asm__("func_L10_002F6E10");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern float FastCos_r(float) __asm__("func_001F9F90");
@@ -2068,7 +2068,7 @@ void gate_2_update(Moby *m)
         m->update_dist = 0xFF;
         d->home = (*(Vec4A *)&m->pos);
         if (hero_globals_base_e1d[0x2EC1] != 0 ||
-            D_L10_001BB9C0_2EAD50.collected[(short)m->save_id] != 0 ||
+            orxon_collected_flags_base_r.collected[(short)m->save_id] != 0 ||
             ((*(int *)(help_stats_base_r + 0xAB75 + ((((short)m->save_id >> 5) * 4) + (g_current_level_index_m << 8))) >> (m->save_id & 0x1F)) & 1) != 0) {
             v[0] = FastCos_r(FastAddRots_r(m->rot.z, 3.14159265f)) * 1.5f;
             v[1] = FastSin_r(FastAddRots_r(m->rot.z, 3.14159265f)) * 1.5f;
@@ -2086,14 +2086,14 @@ void gate_2_update(Moby *m)
     case 1: {
         unsigned char *bits;
         if (hero_globals_base_e1d[0x2EC1] != 0 ||
-            D_L10_001BB9C0_2EAD50.collected[(short)m->save_id] != 0 ||
+            orxon_collected_flags_base_r.collected[(short)m->save_id] != 0 ||
             ((*(int *)((bits = help_stats_base_r + 0xAB75) + ((((short)m->save_id >> 5) * 4) + (g_current_level_index_m << 8))) >> (m->save_id & 0x1F)) & 1) != 0) {
             (*(Vec4A *)&m->pos) = d->home;
             m->state = 3;
             if (d->door > 0) {
                 orxon_mobys_r2[d->door].flags &= 0xFFFD;
             }
-        } else if (D_0013DE4B_2EAD50[9] != 0) {
+        } else if (level_available_base_r[9] != 0) {
             if (d->door > 0) {
                 orxon_mobys_r2[d->door].flags &= 0xFFFD;
             }
@@ -2123,7 +2123,7 @@ void gate_2_update(Moby *m)
         break;
     case 3:
         if (hero_globals_base_e1d[0x2EC1] == 0 &&
-            D_L10_001BB9C0_2EAD50.collected[(short)m->save_id] == 0 &&
+            orxon_collected_flags_base_r.collected[(short)m->save_id] == 0 &&
             (((*(int *)(help_stats_base_r + 0xAB75 + ((((short)m->save_id >> 5) * 4) + (g_current_level_index_m << 8))) >> (m->save_id & 0x1F)) ^ 1) & 1)) {
             (*(Vec4A *)&m->pos) = d->home;
             m->state = 0;

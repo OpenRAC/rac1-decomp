@@ -1134,7 +1134,7 @@ void update_branched_lightning_arc(char *moby) {
     extern unsigned short lightning_arc_point_timers[40];
     extern float lightning_branch_points[3][16][4];
     extern unsigned short lightning_branch_point_timers[3][16];
-    extern float D_L14_001E0330[];
+    extern float lightning_arc_points_38[];
     Vec4f delta;
     float len;
     float t;
@@ -1176,7 +1176,7 @@ void update_branched_lightning_arc(char *moby) {
             t = IntToFloat(i) / IntToFloat(40);
             *e = truncate_float_to_s32((float)-scale_ticks((*(int *)&lightning_grow_ticks)) * t + 0.0f);
         }
-        lerp_vector(D_L14_001E0330, D_L14_001E0330 - 4, D_L14_001E0330 + 4, 0.5f);
+        lerp_vector(lightning_arc_points_38, lightning_arc_points_38 - 4, lightning_arc_points_38 + 4, 0.5f);
         sign = -1.0f;
         lightning_arc_remaining_frames = lightning_arc_initial_lifetime_frames = scale_ticks(rand_range((*(int *)&lightning_arc_life_min), (*(int *)&lightning_arc_life_max)));
         lightning_arc_inverse_fade_duration = 1.0f / IntToFloat(lightning_arc_remaining_frames - scale_ticks((*(int *)&lightning_grow_ticks)));
@@ -1546,14 +1546,14 @@ extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern void settle_elevator_at_path_endpoint_r(char *) __asm__("func_L14_002F0868");
 extern char *oltanis_paths_r2[] __asm__("D_L14_001B0F30");
-extern unsigned char D_L14_001BBCC0_2EFD38[] __asm__("D_L14_001BBCC0");
+extern unsigned char oltanis_collected_flags_base_r[] __asm__("D_L14_001BBCC0");
 extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
 extern unsigned char level_moby_killed_r[] __asm__("D_0014C290");
 extern char g_hero_r2[] __asm__("D_0013F450");
 extern char gHeroPos_r[] __asm__("D_0013F4D0");
 extern int D_0013E740_2EFD38 __asm__("D_0013E740");
 extern int D_0013E6D0_2EFD38 __asm__("D_0013E6D0");
-extern char *D_0013F74C_2EFD38 __asm__("D_0013F74C");
+extern char *g_hero_ground_moby_r __asm__("D_0013F74C");
 typedef struct {
     char b[0x70];
 } Voice_2EFD38;
@@ -1616,7 +1616,7 @@ void Moby685Update(char *moby) {
         {
             unsigned short hw = ((Moby *)moby)->save_id;
             int sh = (short)hw;
-            if (((Tab_2EFD38 *)D_L14_001BBCC0_2EFD38)->b[sh]) {
+            if (((Tab_2EFD38 *)oltanis_collected_flags_base_r)->b[sh]) {
                 *(short *)(data + 0x124) = 0;
             } else if (((*(int *)(level_moby_killed_r + ((sh >> 5) * 4 + (g_current_level_index_m << 8))) >> (hw & 0x1F)) ^ 1) & 1) {
                 if (saved_mission_state_r[*(int *)(data + 0x110) + (g_current_level_index_m << 4)] != 0xFF) {
@@ -1734,14 +1734,14 @@ void Moby685Update(char *moby) {
                 Sound_SetPitchBend_r(s, *(int *)(data + 0x134) / 3);
             }
             ((unsigned char *)moby)[0x20] = 4;
-            if (D_0013F74C_2EFD38 != moby) {
+            if (g_hero_ground_moby_r != moby) {
                 ((unsigned char *)moby)[0x20] = 1;
             }
         }
         break;
     case 4:
         update_elevator_idle_glow_r(moby);
-        if (D_0013F74C_2EFD38 != moby) {
+        if (g_hero_ground_moby_r != moby) {
             ((unsigned char *)moby)[0x20] = 1;
         }
         break;
@@ -1752,7 +1752,7 @@ void Moby685Update(char *moby) {
     if (((unsigned char *)moby)[0x20] != 2) {
         if (((unsigned char *)moby)[0x20] != 0) {
             settle_elevator_at_path_endpoint_r(moby);
-            if (D_0013F74C_2EFD38 == moby) {
+            if (g_hero_ground_moby_r == moby) {
                 FastVecSub_r(v20, moby + 0x10, v0);
                 update_entity_matrix_r(data + 0x60, v20, v10, moby + 0x40);
             }
@@ -2459,7 +2459,7 @@ extern float FastVecLength(void *);
 extern float multiply_global_factor(float);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 typedef struct { char pad0[0x454]; unsigned char collected[1]; } CapLevelState_2FCEA8;
-extern CapLevelState_2FCEA8 D_L14_001BBCC0_2FCEA8 __asm__("D_L14_001BBCC0");
+extern CapLevelState_2FCEA8 oltanis_collected_flags_base_r2 __asm__("D_L14_001BBCC0");
 extern char qwark_oltanis_dialogue_name[];
 extern char *oltanis_mobys_r __asm__("D_L14_00160098") MACRO_ADDR;
 extern int oltanis_moby_killed_bits[];
@@ -2482,7 +2482,7 @@ void qwark_oltanis_update(char *m) {
     switch (((Moby *)m)->state) {
     case 0: {
         unsigned short id;
-        if (D_L14_001BBCC0_2FCEA8.collected[(short)(id = ((Moby *)m)->save_id)] != 0
+        if (oltanis_collected_flags_base_r2.collected[(short)(id = ((Moby *)m)->save_id)] != 0
             || (*(int *)(help_stats_base_r + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) & 1) {
             DeleteMoby(m);
             return;
@@ -2964,7 +2964,7 @@ extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
 extern void spawn_moby_exhaust_puffs_r(Moby *) __asm__("func_L14_002FE798");
 extern int Sound_IsPlaying_r3(void *, int) __asm__("func_L00_0028EB98");
 extern int Moby_PlaySound_r4(int, int, void *) __asm__("func_0022ED80");
-extern Lvl_2FE038 D_L14_001BBCC0_2FE038 __asm__("D_L14_001BBCC0");
+extern Lvl_2FE038 oltanis_collected_flags_base_r3 __asm__("D_L14_001BBCC0");
 extern char level_moby_killed_r3[] __asm__("D_0014C290");
 extern Moby *oltanis_paths_r4[] __asm__("D_L14_001B0F30");
 extern int fighter_skill_hit_count_r2 __asm__("D_0015EF08") MACRO_ADDR;
@@ -2985,7 +2985,7 @@ void update_enemy_fighter_921(Moby *m) {
     unsigned short id;
 
     if (m->state == 0
-        && (D_L14_001BBCC0_2FE038.collected[(short)(id = m->save_id)] != 0
+        && (oltanis_collected_flags_base_r3.collected[(short)(id = m->save_id)] != 0
             || (*(int *)(level_moby_killed_r3 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) & 1)) {
         mark_moby_and_linked_moby_for_removal_r((Moby *)(oltanis_mobys_r + (d->f8C << 8)));
         DeleteMoby_r3(m);

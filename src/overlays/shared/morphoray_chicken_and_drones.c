@@ -209,7 +209,7 @@ ret0:
     return 0;
 }
 /* Bomb (class 230) update: steers the bomb's position toward its target and runs its state machine (idle, arm, flight, detonate). Written from the assembly. */
-extern unsigned char D_0013E634 NOT_SDA;
+extern unsigned char gold_weapon_purchased_20 NOT_SDA;
 extern char coll_resolved_pos[];
 extern int coll_hit_result[];
 extern void *g_coll_hit_moby;
@@ -311,7 +311,7 @@ void update_doom_bot_spawner(char *m) {
     case 2: {
         char *P;
         f22 = 0.5f;
-        f21 = IntToFloat(D_0013E634) + 1.0f;
+        f21 = IntToFloat(gold_weapon_purchased_20) + 1.0f;
         {
             char *p = *(char **)(m + 0x24);
             if (((Moby *)m)->scale < *(float *)(p + 0x24) * f22 * f21) {
@@ -503,7 +503,7 @@ extern int morphoray_chicken_slots[];
 extern char morphoray_chicken_slot_state_blocks[];
 extern char morphoray_chicken_slot_aux_blocks[];
 extern short morphoray_chicken_next_slot;
-extern char D_L00_00161910;
+extern char morphoray_chicken_ai_params;
 extern unsigned char screen_globals_base[];
 
 // spawns a moby of class 0x10E from a source moby and records it in a 20-entry ring
@@ -584,7 +584,7 @@ char *spawn_morphoray_chicken(char *src) {
                 *(char **)(d + 0x14) = a;
                 *(char **)(d + 0x10) = b;
                 ((Moby *)m)->flags |= 0x1020;
-                *(char **)(*(char **)(d + 0x14) + 0x70) = &D_L00_00161910;
+                *(char **)(*(char **)(d + 0x14) + 0x70) = &morphoray_chicken_ai_params;
             }
             *(int *)(*(char **)(morphoray_chicken_slots[*(int *)&morphoray_chicken_next_slot] + 0x78) + 0x70) = 1;
         } else if (((DD9 *)d)->f74 == 0) {
@@ -593,7 +593,7 @@ char *spawn_morphoray_chicken(char *src) {
             *(char **)(d + 0x14) = a2;
             *(char **)(d + 0x10) = b2;
             ((Moby *)m)->flags |= 0x1020;
-            *(char **)(*(char **)(d + 0x14) + 0x70) = &D_L00_00161910;
+            *(char **)(*(char **)(d + 0x14) + 0x70) = &morphoray_chicken_ai_params;
         }
         reset_morphoray_chicken_slot_defaults(*(char **)(d + 0x14));
         morphoray_chicken_slots[*(int *)&morphoray_chicken_next_slot] = (int)m;
@@ -1234,7 +1234,7 @@ extern char collision_hit_point_r[] __asm__("D_L00_00173F60");
 extern char g_debug_camera_r2[] __asm__("D_L00_00166EC0");
 extern char D_L00_001670F0_2CC868[] __asm__("D_L00_001670F0");
 extern char gHeroPos_r[] __asm__("D_0013F4D0");
-extern Moby *D_001404E0_2CC868 __asm__("D_001404E0");
+extern Moby *g_hero_item_slot0_moby_r __asm__("D_001404E0");
 extern unsigned char gold_weapon_purchased_r[] __asm__("D_0013E620");
 extern float homing_shot_rotation_params_r[2] __asm__("D_L00_00161960") MACRO_ADDR;
 extern float D_L00_0016194C_2CC868 SDATA(D_L00_0016194C);
@@ -1382,9 +1382,9 @@ void update_homing_shot(Moby *m) {
             d->f14 = 0.0f;
             vec_scale_to_length_r(&b, collision_hit_point_r + 0x20, 0.05f);
             FastVecAdd_r2(&*(Vec4A *)&m->pos, collision_hit_point_r, &b);
-            if (D_001404E0_2CC868 != 0 && D_001404E0_2CC868->oclass == 0xA8
-                && D_001404E0_2CC868->state != 0xFE && D_001404E0_2CC868->state != 0xFD) {
-                Moby_PlaySound_r(4, 0, D_001404E0_2CC868);
+            if (g_hero_item_slot0_moby_r != 0 && g_hero_item_slot0_moby_r->oclass == 0xA8
+                && g_hero_item_slot0_moby_r->state != 0xFE && g_hero_item_slot0_moby_r->state != 0xFD) {
+                Moby_PlaySound_r(4, 0, g_hero_item_slot0_moby_r);
             }
         }
     }

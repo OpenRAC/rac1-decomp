@@ -65,7 +65,7 @@ extern char hero_globals_base[];
 extern char help_stats_base[];
 extern char item_usage[];
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern short D_L03_0015F768;
+extern short kerwan_usage_event_timer;
 extern short kerwan_hero_idle_anim_modes;
 extern short kerwan_hero_state_f_jump_velocity_keys;
 extern char kerwan_hero_state_d_jump_velocity_keys[];
@@ -427,7 +427,7 @@ int HeroL03_SetMoveState(int a, int b) {
         int t;
         *(int *)(p + 0x208C) = 0;
         *(int *)(p + 0x2284) = 4;
-        *(int *)&D_L03_0015F768 = scale_ticks(0x3C);
+        *(int *)&kerwan_usage_event_timer = scale_ticks(0x3C);
         if (*(unsigned char *)(p + 0x20AA) == 0) {
             t = get_hero_idle_animation_index(1);
             if (*(unsigned char *)(*(char **)(p + 0x2080) + 0x53) != t && b) {

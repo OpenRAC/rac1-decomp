@@ -5,7 +5,7 @@
 #include "include_asm.h"
 
 extern void deactivate_recorded_moby(void);
-extern short D_L00_00160600;
+extern short ship_level_entry_active;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern char level_render_state_a[] __asm__("D_0013E130") NOT_SDA;
 extern void update_moby_proximity_interaction(void);
@@ -15,7 +15,7 @@ extern void MobySetAnimation(void *, int, int);
 void initialize_moby_state_record(char *m) {
     char *g;
     int *src;
-    *(int *)&D_L00_00160600 = 1;
+    *(int *)&ship_level_entry_active = 1;
     deactivate_recorded_moby();
     if (g_current_level_index_m == 0xD) {
         char *q = level_render_state_a;
@@ -58,8 +58,8 @@ extern struct { int x0, x4, x8; } D_L00_00173F00_s __asm__("D_L00_00173F00");
 extern int lvl_vu_chain_buffer_size MACRO_ADDR;
 extern int cinematic_mode MACRO_ADDR;
 extern float gFadeLvl MACRO_ADDR;
-extern int D_L00_0015F500 MACRO_ADDR;
-extern unsigned char D_001414F5[] NOT_SDA;
+extern int level_white_fade_level MACRO_ADDR;
+extern unsigned char g_hero_field_20a5[] NOT_SDA;
 extern O_28e9c8 *level_mobys_end MACRO_ADDR;
 extern unsigned char gHaveHeliPack[] NOT_SDA;
 typedef struct { char pad[0x1C]; int x1c; char pad20[0x3A]; short x5a; } S_171b;
@@ -92,9 +92,9 @@ void initialize_level_transition_with_audio(int a) {
     gFadeLvl = 1.0f;
     cinematic_mode = 6;
     lvl_vu_chain_buffer_size = u;
-    D_L00_0015F500 = 0;
+    level_white_fade_level = 0;
     HeroEnterMoveState(100, 2);
-    D_001414F5[0] = 1;
+    g_hero_field_20a5[0] = 1;
     HeroSetObjectFlags();
     level_render_state_s.x0->flags |= 1;
     for (o = level_mobys_end; o->st != 0xFF; o++) {
@@ -164,9 +164,9 @@ void prepare_level_transition_with_help_cleanup(void) {
     initialize_level_transition_with_audio(0);
     *(short *)(screen_globals_base + 2) = 0;
 }
-extern char D_0013DE6E[];
+extern char level_render_state_base[];
 extern int level_draw_frame_load[] MACRO_ADDR;
-extern int D_L00_00161288[] MACRO_ADDR;
+extern int lvl_vu_chain_buffer_size_base[] MACRO_ADDR;
 extern int lvl_vu_chain_buffer_size MACRO_ADDR;
 extern char lvl_resource_buffers[];
 extern char cutscene_state[];
@@ -177,18 +177,18 @@ extern int memcard_Save(int, int);
 
 /* start a ship-travel transition to the given destination, setting up the flight path and timing Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028ed58. */
 void prepare_target_level_transition(int dest) {
-    char *g = D_0013DE6E + 0x2C2;
+    char *g = level_render_state_base + 0x2C2;
     char *h;
     int base;
     int *q;
     level_draw_frame_load[1] = 1;
     cinematic_mode = 6;
     gFadeLvl = 1.0f;
-    D_L00_0015F500 = 0;
+    level_white_fade_level = 0;
     *(int *)(g + 0x20) = 0;
     *(short *)(g + 0x24) = -1;
     calculate_dma_transfer_address();
-    base = D_L00_00161288[1] - 0x60000;
+    base = lvl_vu_chain_buffer_size_base[1] - 0x60000;
     q = (int *)lvl_resource_buffers;
     h = cutscene_state;
     *(int *)(h + 0x58) = q[1] + base;
@@ -219,7 +219,7 @@ extern struct { int x0, x4, x8_c; } D_L00_00173F00_901A8 __asm__("D_L00_00173F00
 extern struct { char p[0x58]; int x58, x5c; } D_L00_0016C960_901A8 __asm__("D_L00_0016C960");
 extern int lvl_vu_chain_buffer_size_r __asm__("D_L00_0016128C") MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern u8 D_0013DE4B NOT_SDA;
+extern u8 level_available_base NOT_SDA;
 extern u8 menu_item_enabled_92[];
 void calculate_dma_transfer_address(void);
 void initialize_level_transition_with_audio(s32);
@@ -232,7 +232,7 @@ void prepare_level_entry_transition(void) {
     level_render_state_r.x2c = 1;
     if (level_render_state_r.x2a != 0) level_render_state_r.x2a = 0;
     m = g_current_level_index;
-    if (m == 1 && D_0013DE4B == 0) { cinematic_mode = 0; return; }
+    if (m == 1 && level_available_base == 0) { cinematic_mode = 0; return; }
     if (m != 0) {
         if (m == 0xE) { if (menu_item_enabled_92[0] == 0) goto out; }
         if (m < 0x14) goto in;

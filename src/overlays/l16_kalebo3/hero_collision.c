@@ -143,7 +143,7 @@ void compose_and_limit_hero_velocity(void) {
     ClampVectorLength(p - 0x690, *(float *)(q + 0x85C) + *(float *)(q + 0x868));
 }
 typedef int Q __attribute__((mode(TI)));
-extern u8 D_L16_001742E0[];
+extern u8 kalebo3_coll_hit_point[];
 extern s32 g_current_level_index MACRO_ADDR;
 void clear_u64_value(void *);
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
@@ -264,7 +264,7 @@ void HeroL16_UpdateGroundCollision(void) {
     g_hero.xB12ed = r;
     g_hero.xH12e0 = CollType();
     if (g_hero.xH12e0 == 0) {
-        g_hero.xF2f0 = resolve_camera_surface_height(D_L16_001742E0, (u8 *)&g_hero + 0x280);
+        g_hero.xF2f0 = resolve_camera_surface_height(kalebo3_coll_hit_point, (u8 *)&g_hero + 0x280);
         if (g_hero.xF88 < g_hero.xF2f0 && g_hero.xI2f8 <= 0) {
             g_hero.xI2f8 = 1;
         }
@@ -395,7 +395,7 @@ d1:
     }
 }
 extern float frame_scale MACRO_ADDR;
-extern char D_L16_001742F0[];
+extern char kalebo3_coll_resolved_pos[];
 extern void clear_u64_value(void *);
 extern void Hero_ConstrainToPath(void);
 extern void transform_hero_local_offset_to_world(float *, float, float, float);
@@ -476,7 +476,7 @@ int HeroL16_ApplyPositionOffset(int mode) {
                 if (collision_result == 0) break;
             }
         }
-        collision_output = (Vec4 *)D_L16_001742F0;
+        collision_output = (Vec4 *)kalebo3_coll_resolved_pos;
         qcopy(&hero.motion.pos, collision_output);
         qcopy(&hero.wall_contact_normal, collision_output + 1);
         qcopy(&hero.wall_contact_point, collision_output - 1);
@@ -522,7 +522,7 @@ extern void gravity_flatten(float *, float *);
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern float forward_component(void *);
 extern float g_frame_time MACRO_ADDR;
-extern char *D_L16_001742D8;
+extern char *kalebo3_coll_hit_moby;
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void integrate_hero_motion(void) {
@@ -591,7 +591,7 @@ void integrate_hero_motion(void) {
         work.f[2] += 0.5f;
         FastVecAdd(plane.f, work.f, (char *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity);
         if (coll_line(position, plane.f, 2, 0, 0)) {
-            char *hit = D_L16_001742D8;
+            char *hit = kalebo3_coll_hit_moby;
 
             if (!hit || *(short *)(hit + 0xA6) == 0x1F6 || *(short *)(hit + 0xA6) == 0x59F) {
                 player = (Hero *)(hero_globals_base + 0xE1D);

@@ -140,7 +140,7 @@ extern Vec4 hero_spawn_pose[2];
 extern s32 last_weapon_id;
 extern struct Moby * moby_array_start MACRO_ADDR;
 extern struct Moby * level_mobys_end MACRO_ADDR;
-extern s32 D_L00_00160600 MACRO_ADDR;
+extern s32 ship_level_entry_active MACRO_ADDR;
 extern s32 hero_max_health MACRO_ADDR;
 extern struct HeroEase lean_state_r[] __asm__("D_L00_0017A780");
 extern void FastMemSet(void *, s32, s32);
@@ -178,7 +178,7 @@ void initialize_hero(void) {
             qcopy(&g_hero_r.motion.pos, &g_hero_r.moby->pos);
             update_hero_ground_contact_and_surface_slopes();
             update_hero_moby();
-            if (D_L00_00160600 == 0) {
+            if (ship_level_entry_active == 0) {
                 qcopy(&hero_spawn_pose[0], &g_hero_r.motion.pos);
                 qcopy(&hero_spawn_pose[1], &g_hero_r.motion.rot);
             }
@@ -285,13 +285,13 @@ void hero_change_health(s32 n) {
     }
 }
 extern int g_hero_moby;
-extern int D_001405D4;
-extern int D_001404E0;
+extern int g_hero_item_slot3_moby2;
+extern int g_hero_item_slot0_moby;
 // Selects a help status by mode.
 int get_hero_easing_moby_by_kind(int mode) {
  if (mode == 0 || mode == 2 || mode == 3 || mode == 4) return g_hero_moby;
- if (mode == 1) return D_001405D4;
- if (mode == 5) { return D_001404E0; } else { return 0; }
+ if (mode == 1) return g_hero_item_slot3_moby2;
+ if (mode == 5) { return g_hero_item_slot0_moby; } else { return 0; }
 }
 INCLUDE_ASM("asm/overlays", func_L00_00205754);
 INCLUDE_ASM("asm/overlays", func_L00_00205768);
@@ -791,10 +791,10 @@ extern unsigned char gCheats[] MACRO_ADDR;
 extern float sound_volume_r[] __asm__("D_0015EEF0") MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-extern short D_0015EF18;
-extern float D_L00_0017B95C;
-extern float D_L00_0017BB6C;
-extern float D_L00_0017BCCC;
+extern short sound_volume_10;
+extern float lean_state_25_scale;
+extern float lean_state_28_scale;
+extern float lean_state_30_scale;
 
 typedef int u128_68C8 __attribute__((mode(TI)));
 typedef struct {
@@ -860,7 +860,7 @@ void update_hero_in_vehicle_mode(void) {
     update_hero_scalar_pulse();
     apply_hero_and_item_scale_sequence();
     if (((GS_68C8 *)(hero_globals_base + 0xE1D))->b20A4 == 1) {
-        D_L00_0017B95C = sound_volume_r[10];
+        lean_state_25_scale = sound_volume_r[10];
         update_hero_glow_and_extra_manipulators();
         if (((GS_68C8 *)(hero_globals_base + 0xE1D))->m1624 == 0) {
             ((GS_68C8 *)(hero_globals_base + 0xE1D))->m1624 = (char *)CreateMoby_r(0x4B4);
@@ -969,7 +969,7 @@ skip:
     reveal_map_around_position(((GS_68C8 *)(hero_globals_base + 0xE1D))->a80);
     if (((GS_68C8 *)(hero_globals_base + 0xE1D))->b20A4 == 2) {
         if (gCheats[3] != 0) {
-            D_L00_0017BB6C = *(float *)&D_0015EF18 * 1.4f;
+            lean_state_28_scale = *(float *)&sound_volume_10 * 1.4f;
         }
         update_hero_glow_and_extra_manipulators();
         update_hero_bone_attachment();
@@ -981,7 +981,7 @@ skip:
     }
     if (((GS_68C8 *)(hero_globals_base + 0xE1D))->b20A4 == 3) {
         if (gCheats[1] != 0) {
-            D_L00_0017BCCC = 1.9f;
+            lean_state_30_scale = 1.9f;
         }
         c20 = 0x80;
         v = scale_ticks(0xAA);
@@ -1104,7 +1104,7 @@ void release_and_clear_hero_voice_slots(void) {
 typedef struct { unsigned char p[8]; int x8; unsigned char pc[0x40]; } E00207310;
 typedef struct { unsigned char p[0x280]; unsigned short x280; unsigned char p282[0x13E]; unsigned short x3c0; } G00207310;
 extern G00207310 help_records;
-extern unsigned short D_001419F0 NOT_SDA;
+extern unsigned short usage_stats_entry21_count NOT_SDA;
 extern unsigned char item_available[] NOT_SDA;
 extern int Hero_IsInSpecialState(void);
 /* Periodic help-message check: tick-based hints for the pack and the unused-slot count. The two message tables sit behind separate symbols (D_00141A68 and D_001419F0) as in retail. */
@@ -1116,7 +1116,7 @@ void check_hero_item_reward_conditions(void) {
     if (level_frame_counter <= 0) return;
     if (level_frame_counter & 0x7F) return;
     if (help_records.x280 != 0) return;
-    if (D_001419F0 != 0) return;
+    if (usage_stats_entry21_count != 0) return;
     n = 0;
     for (i = 0; i < 0x25; i++) {
         if (((E00207310 *)item_defs)[i].x8 == 0 && i != 8 && i != 0x18 && item_available[i] != 0) n++;
@@ -1334,7 +1334,7 @@ void copy_hero_color_to_item_mobys(void) {
     }
 }
 typedef struct { float x, y, z, w; } Vx __attribute__((aligned(16)));
-extern char D_L00_001802D0[] NOT_SDA;
+extern char level_moby_lights_field_310[] NOT_SDA;
 extern void pack_render_command_fields(void *, int, int, int, int);
 extern void func_L00_00251388(void *, void *);
 extern void get_moby_light_color(void *, void *);
@@ -1347,9 +1347,9 @@ void update_item_tint_from_hero(void *a, char *m) {
     unsigned char *q = m + 0x38;
     int c = q[4] + q[5] + q[6];
     pack_render_command_fields(a, c * 4 / 10 + ((c * 3 / 10) << 8), 12, 12, 0);
-    func_L00_00251388(m, D_L00_001802D0);
+    func_L00_00251388(m, level_moby_lights_field_310);
     get_moby_light_color(m, &v);
-    f = (float *)(D_L00_001802D0 - 0x310);
+    f = (float *)(level_moby_lights_field_310 - 0x310);
     s = v.x + v.y + v.z;
     f[0xC0] = s * 0.5f;
     f[0xC1] = s * 0.4f;
@@ -1358,7 +1358,7 @@ void update_item_tint_from_hero(void *a, char *m) {
 }
 extern unsigned char gCheats[] MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
-extern short D_0015EF18;
+extern short sound_volume_10;
 extern char cheat_scale_manipulator[];
 extern char cheat_scale_manipulator_class_1a3[];
 extern char cheat_scale_manipulator_class_555[];
@@ -1414,7 +1414,7 @@ void update_moby_pulsing_glow_effects(char *m) {
         if (*(unsigned char *)(p + 1) == 0) {
             if (*(short *)(m + 0xA6) == 0x1A3) {
                 AttachManipulator(m, 1, p);
-                f = *(float *)&D_0015EF18;
+                f = *(float *)&sound_volume_10;
             } else {
                 AttachManipulator(m, 2, p);
                 f = *(float *)((char *)&sound_volume + 0x28);
@@ -2651,7 +2651,7 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
         g1 = (char *)hero_globals_base + 0xE1D;
         if (*(int *)(g1 + 0x1184) != 0) {
             h1 = lean_state;
-            *(float *)(h1 + 0xD0C) = *(float *)&D_0015EF18;
+            *(float *)(h1 + 0xD0C) = *(float *)&sound_volume_10;
         }
     }
     h2 = lean_state;

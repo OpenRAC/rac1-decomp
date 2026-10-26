@@ -90,24 +90,24 @@ typedef struct {
 
 extern char level_menu_system[] NOT_SDA;
 extern int coll_hit_result[];
-extern int D_L00_001B3898[];
-extern int D_L00_001B6408[];
-extern struct Own D_L00_001B7570;
-extern int D_L00_001B6EB8[];
-extern int D_L00_001B8A48[];
+extern int pause_menu_state_0a_page[];
+extern int pause_menu_state_0e_page[];
+extern struct Own pause_menu_state_21_page;
+extern int pause_menu_state_23_page[];
+extern int pause_menu_state_2d_page[];
 extern int pause_menu_default_page[];
-extern int D_L00_0015F68C MACRO_ADDR;
+extern int pause_menu_state_21_opened MACRO_ADDR;
 extern int decode_mode MACRO_ADDR;
 extern char map_menu_state[];
-extern Q_277208 D_L00_00180350[];
-extern short D_L00_00160340;
-extern short D_L00_00160350;
+extern Q_277208 level_moby_lights_14_direction[];
+extern short pause_menu_light_direction;
+extern short pause_menu_light_color;
 extern float g_debug_camera[];
 extern char render_view_params[];
 extern int rendered_frame_count MACRO_ADDR;
 extern Vram_277208 lvl_resource_buffers;
 extern int lvl_vu_chain_buffer_size MACRO_ADDR;
-extern short D_L00_0015F658;
+extern short level_vu1_chain_reserved_bytes;
 extern int screen_globals_base[];
 extern int draw_buffer_address MACRO_ADDR;
 extern int g_gs_texture_allocation_start MACRO_ADDR;
@@ -148,29 +148,29 @@ void initialize_pause_menu(void) {
     m->unkD0 = 0;
     if (s == 10) {
         (*(Menu_277208 *)level_menu_system).state = 11;
-        page = D_L00_001B3898;
+        page = pause_menu_state_0a_page;
         m->page = page;
         m->next = page;
         queued = 1;
     } else if (s == 14) {
         (*(Menu_277208 *)level_menu_system).state = 15;
-        page = D_L00_001B6408;
+        page = pause_menu_state_0e_page;
         m->page = page;
         m->next = page;
         queued = 1;
     } else if (s == 0x21) {
         (*(Menu_277208 *)level_menu_system).state = 0x22;
-        page = (int *)&D_L00_001B7570;
+        page = (int *)&pause_menu_state_21_page;
         m->page = page;
         m->next = page;
         m->unk124 = 1;
-        D_L00_0015F68C = 1;
+        pause_menu_state_21_opened = 1;
     } else if (s == 0x23) {
-        page = D_L00_001B6EB8;
+        page = pause_menu_state_23_page;
         m->page = page;
         m->next = page;
     } else if (s == 0x2D) {
-        page = D_L00_001B8A48;
+        page = pause_menu_state_2d_page;
         (*(Menu_277208 *)level_menu_system).state = 2;
         m->page = page;
         m->next = page;
@@ -198,13 +198,13 @@ void initialize_pause_menu(void) {
     }
 
     {
-        char *r = (char *)D_L00_00180350;
-        FastVecScale(r, &D_L00_00160340, 1.0f);
-        qcopy(r - 0x10, &D_L00_00160350);
+        char *r = (char *)level_moby_lights_14_direction;
+        FastVecScale(r, &pause_menu_light_direction, 1.0f);
+        qcopy(r - 0x10, &pause_menu_light_color);
         r += 0x20;
         qzero(r);
     }
-    qzero((char *)D_L00_00180350 + 0x10);
+    qzero((char *)level_moby_lights_14_direction + 0x10);
     qcopy(&(*(Menu_277208 *)level_menu_system).v40, &g_debug_camera[0]);
     qcopy(&(*(Menu_277208 *)level_menu_system).v50, &g_debug_camera[4]);
     {
@@ -258,7 +258,7 @@ void initialize_pause_menu(void) {
         (*(Menu_277208 *)level_menu_system).unk100 = f;
         initialize_menu_stream_buffers(1);
     }
-    *(int *)&D_L00_0015F658 = 0x2000;
+    *(int *)&level_vu1_chain_reserved_bytes = 0x2000;
     VU1_initChain();
 
     if ((*(Menu_277208 *)level_menu_system).state == 11 || (*(Menu_277208 *)level_menu_system).state == 15) {
@@ -507,24 +507,24 @@ struct HEnt { unsigned char pad0[0x24]; Ent2 *unk24; unsigned char pad28[0x30]; 
 extern GS_t GS __asm__("D_L00_001BA070");
 extern HEnt *menu_preview_mobys[];
 extern float g_debug_camera[];
-extern Own D_L00_001B7570;
-extern Own D_L00_001B8150;
-extern Own D_L00_001B8460;
-extern Own D_L00_001B6778;
-extern Own D_L00_001B7C70;
-extern Own D_L00_001B6BA0;
+extern Own pause_menu_state_21_page;
+extern Own pause_menu_no_toggle_page_4;
+extern Own pause_menu_no_toggle_page_5;
+extern Own pause_menu_no_toggle_page_1;
+extern Own pause_menu_no_toggle_page_3;
+extern Own pause_menu_no_toggle_page_2;
 extern char map_menu_state[];
 extern char cd_read_state[];
 extern char memory_card_state[];
 extern int decode_mode MACRO_ADDR;
 extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
-extern int D_L00_0015F690 MACRO_ADDR;
-extern short D_L00_0015F658;
+extern int level_game_clock_paused MACRO_ADDR;
+extern short level_vu1_chain_reserved_bytes;
 extern short loaded_swap_moby_class_set;
 extern short cinematic_mode_frames;
 extern int skip_frame MACRO_ADDR;
 extern int cinematic_mode MACRO_ADDR;
-extern float D_L00_0016CBF0;
+extern float render_view_tan_half_fov;
 extern unsigned char level_transition_target_fmt[];
 
 extern void calculate_dma_transfer_address(void);
@@ -584,7 +584,7 @@ void update_pause_menu(void) {
     case 0x1A:
     case 0x1E:
     case 0x1F:
-        D_L00_0015F690 = 1;
+        level_game_clock_paused = 1;
         break;
     }
     if (GS.state == 0x14) {
@@ -597,11 +597,11 @@ void update_pause_menu(void) {
         if (*(short *)(cd_read_state + 8) != 0) {
             return;
         }
-        *(int *)&D_L00_0015F658 = 0x1E000;
+        *(int *)&level_vu1_chain_reserved_bytes = 0x1E000;
         calculate_dma_transfer_address();
         qcopy(g_debug_camera, &GS.v40);
         qcopy(g_debug_camera + 4, &GS.v50);
-        D_L00_0016CBF0 = GS.unkE8;
+        render_view_tan_half_fov = GS.unkE8;
         select_moby_context(0);
         if (GS.unk140 != 0) {
             *(int *)&loaded_swap_moby_class_set = -1;
@@ -700,10 +700,10 @@ void update_pause_menu(void) {
             }
         }
         flag = (GS.unk8 == GS.owner->unk38);
-        if (GS.owner == GS.unk8 && GS.owner != &D_L00_001B7570 &&
-            GS.owner != &D_L00_001B8150 && GS.owner != &D_L00_001B8460 &&
-            GS.owner != &D_L00_001B6778 && GS.owner != &D_L00_001B7C70 &&
-            GS.owner != &D_L00_001B6BA0) {
+        if (GS.owner == GS.unk8 && GS.owner != &pause_menu_state_21_page &&
+            GS.owner != &pause_menu_no_toggle_page_4 && GS.owner != &pause_menu_no_toggle_page_5 &&
+            GS.owner != &pause_menu_no_toggle_page_1 && GS.owner != &pause_menu_no_toggle_page_3 &&
+            GS.owner != &pause_menu_no_toggle_page_2) {
             if (GS.state != 0x23) {
                 flag = flag ^ 1;
             }
@@ -1057,8 +1057,8 @@ int Menu_SkipFilteredEntries(char *arg0, int arg1) {
 INCLUDE_ASM("asm/overlays", func_L00_0027A3AC);
 extern struct CtrlP g_controller_state_r __asm__("D_0013CA40");
 extern struct MenuSystemP level_menu_system_r __asm__("D_L00_001BA070");
-extern int D_0013D48C;
-extern int D_L00_00184514;
+extern int memory_card_state_field_fc;
+extern int map_menu_state_target_level;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int memcard_last_save_slot MACRO_ADDR;
 extern int level_loop_exit_requested MACRO_ADDR;
@@ -1067,12 +1067,12 @@ extern int level_loop_exit_requested MACRO_ADDR;
 int PauseMenu_EntryInput(char *entry) {
  unsigned int pressed = g_controller_state_r.pressed_unmasked;
  if (pressed & 0xD00) {
-  if (*(int *)(entry + 0x30) & 0x20) D_L00_00184514 = g_current_level_index_m;
+  if (*(int *)(entry + 0x30) & 0x20) map_menu_state_target_level = g_current_level_index_m;
   return -1;
  }
  if (pressed & 0x10) {
   struct MenuPageP *back;
-  if (*(int *)(entry + 0x30) & 0x20) D_L00_00184514 = g_current_level_index_m;
+  if (*(int *)(entry + 0x30) & 0x20) map_menu_state_target_level = g_current_level_index_m;
   back = level_menu_system_r.current->back;
   if (back) {
    level_menu_system_r.next = back;
@@ -1081,7 +1081,7 @@ int PauseMenu_EntryInput(char *entry) {
   if (!level_menu_system_r.close_locked) return -1;
  }
  if (g_controller_state_r.pressed_unmasked & 0x20) {
-  D_0013D48C = 0;
+  memory_card_state_field_fc = 0;
   memcard_last_save_slot = -1;
   level_loop_exit_requested = 1;
   skip_frame = 1;

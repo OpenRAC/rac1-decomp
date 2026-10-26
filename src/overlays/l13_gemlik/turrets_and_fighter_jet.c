@@ -829,7 +829,7 @@ extern float robosquawker_knockback_lift SDATA(D_L13_00161418);
 extern float robosquawker_knockback_speed SDATA(D_L13_0016141C);
 extern float robosquawker_jump_speed SDATA(D_L13_00161420);
 extern float robosquawker_jump_gravity SDATA(D_L13_00161424);
-extern short D_L13_00161428;
+extern short robosquawker_move_params;
 /* D_0015EE70 is a 4-byte float read through lui/lwc1 here (the file's `extern short D_0015EE70;` at the
    top makes the assembler emit the $gp form); for the try harness read it as the word after D_0015EE6C. */
 extern float g_frame_time_v[] __asm__("D_0015EE6C") MACRO_ADDR;
@@ -1075,7 +1075,7 @@ void robosquawker_update(Moby *m) {
         if (func_001160D8() & 1) {
             m->flags |= 0x8000;
         }
-        v->pD0 = &D_L13_00161428;
+        v->pD0 = &robosquawker_move_params;
         if (v->w220 != -1) {
             v->w224 = select_point_index_by_distance(&m->pos, walker_paths[v->w220], 0.0f);
         }

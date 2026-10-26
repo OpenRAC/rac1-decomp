@@ -1521,8 +1521,8 @@ extern float step_angle_toward_target(float *, int, float, float);
 extern void axis_rotation_2d48(void *, int, float);
 extern char rilgar_camera_pos[];
 extern short extermitank_move_speed;
-extern short D_L05_00161C38;
-extern short D_L05_00161C3C;
+extern short extermitank_vars_b58_init;
+extern short extermitank_vars_b5a_init;
 extern short extermitank_spray_start_w;
 extern short extermitank_spray_end_w;
 extern short extermitank_spray_speed;
@@ -1639,11 +1639,11 @@ void extermitank_update(unsigned char *m) {
         *(int *)(d + 0x180) = scale_ticks(0x3C);
         *(int *)(d + 0x198) = 0;
         {
-            float t = *(volatile float *)&D_L05_00161C38;
+            float t = *(volatile float *)&extermitank_vars_b58_init;
             *(float *)(d + 0x194) = *(volatile float *)(m + 0x48);
             d[0x58] = truncate_float_to_s32(t);
         }
-        d[0x5A] = truncate_float_to_s32(*(float *)&D_L05_00161C3C * 8.0f);
+        d[0x5A] = truncate_float_to_s32(*(float *)&extermitank_vars_b5a_init * 8.0f);
         break;
     }
     case 1: {
@@ -2639,7 +2639,7 @@ extern int rilgar_cinematic_mode MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern Rec_0030DED8 water_records_r[] __asm__("D_L05_001D6BC0");
-extern Cam_0030DED8 D_L05_00180440;
+extern Cam_0030DED8 rilgar_light_heading_block;
 extern Light_0030DED8 g_light;
 extern int rilgar_water_patch_positions[][4];
 extern unsigned short rilgar_water_patch_h1e[];
@@ -2650,13 +2650,13 @@ extern float rilgar_flood_stage_base_speeds[];
 extern int rilgar_water_patch_count MACRO_ADDR;
 extern void *rilgar_water_patches MACRO_ADDR;
 extern void *rilgar_water_patch_position_table MACRO_ADDR;
-extern unsigned char D_L05_001612C4[] MACRO_ADDR;
-extern unsigned char D_L05_001612C5[] MACRO_ADDR;
-extern unsigned char D_L05_001612C6[] MACRO_ADDR;
-extern int D_L05_001612C8 MACRO_ADDR;
-extern float D_L05_001612CC MACRO_ADDR;
-extern float D_L05_001612D0 MACRO_ADDR;
-extern float D_L05_001612D4 MACRO_ADDR;
+extern unsigned char rilgar_zone_tint2_red[] MACRO_ADDR;
+extern unsigned char rilgar_zone_tint2_green[] MACRO_ADDR;
+extern unsigned char rilgar_zone_tint2_blue[] MACRO_ADDR;
+extern int rilgar_water_ripple_params_0 MACRO_ADDR;
+extern float rilgar_water_ripple_params_1 MACRO_ADDR;
+extern float rilgar_water_ripple_params_2 MACRO_ADDR;
+extern float rilgar_water_ripple_params_3 MACRO_ADDR;
 extern int rilgar_water_override_patch SDATA(D_L05_00161DD0);
 extern unsigned short rilgar_water_override_value SDATA(D_L05_00161DD4);
 extern int rilgar_flood_slowdown_count SDATA(D_L05_00161DDC);
@@ -2705,7 +2705,7 @@ void WaterSurfaceUpdate(Moby *moby) {
             g_light.f14 = 1.0f;
             g_light.f18 = 0.9f;
             g_light.f20 = 0.1f;
-            a = fast_atan2(D_L05_00180440.f10, D_L05_00180440.f14);
+            a = fast_atan2(rilgar_light_heading_block.f10, rilgar_light_heading_block.f14);
             g_light.f30 = FastCos(a) * 0.57735002f;
             g_light.f34 = FastSin(a) * 0.57735002f;
             g_light.f38 = -0.57735002f;
@@ -2716,13 +2716,13 @@ void WaterSurfaceUpdate(Moby *moby) {
             rilgar_water_patches = water_records_r;
             rilgar_water_patch_position_table = rilgar_water_patch_positions;
             rilgar_water_patch_count = 0x30;
-            D_L05_001612C4[0] = 0;
-            D_L05_001612C5[0] = 0xB;
-            D_L05_001612C6[0] = 0x3E;
-            D_L05_001612C8 = 0;
-            D_L05_001612CC = 20480.0f;
-            D_L05_001612D0 = 255.0f;
-            D_L05_001612D4 = 26.0f;
+            rilgar_zone_tint2_red[0] = 0;
+            rilgar_zone_tint2_green[0] = 0xB;
+            rilgar_zone_tint2_blue[0] = 0x3E;
+            rilgar_water_ripple_params_0 = 0;
+            rilgar_water_ripple_params_1 = 20480.0f;
+            rilgar_water_ripple_params_2 = 255.0f;
+            rilgar_water_ripple_params_3 = 26.0f;
             for (i = 0; i < 0x30; i++) {
                 RipplePatch_ToFixedPoint(&water_records_r[i].x, rilgar_water_patch_positions[i]);
                 water_records_r[d->f14].h1E = rilgar_water_patch_h1e[d->f14];

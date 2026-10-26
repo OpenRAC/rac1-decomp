@@ -93,8 +93,8 @@ extern int fast_dec_timer(void *);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char hero_globals_base[];
-extern Moby *D_L13_001741D8;
-extern Tex_2C27B0 D_L13_001B2680;
+extern Moby *gemlik_coll_hit_moby;
+extern Tex_2C27B0 gemlik_part_type_textures;
 
 /* Update for the homing rocket (class 82): smoke trail, steering toward its target, collision and expiry. */
 void update_level_13_homing_rocket(Moby *m) {
@@ -132,7 +132,7 @@ void update_level_13_homing_rocket(Moby *m) {
         FastVecAdd(&tmp, &tmp, &m->pos);
         p = PartType44Spawn(&tmp, (float *)&vel, scale_ticks(0x3C), 0x7F, 0x606060, 3, 80000.0f, 1000.0f, 1.0f, -0.0002f, 0.0f);
         if (p != 0) {
-            Tex_2C27B0 *tex = &D_L13_001B2680;
+            Tex_2C27B0 *tex = &gemlik_part_type_textures;
             p[2] = *tex->p5C;
             p[3] = 0x44;
         }
@@ -190,7 +190,7 @@ void update_level_13_homing_rocket(Moby *m) {
     }
     Moby_GetJointWorldPos(m, 1, &hitpos);
     if (coll_line(&old, &hitpos, 0, m, 0) != 0) {
-        Moby *o = D_L13_001741D8;
+        Moby *o = gemlik_coll_hit_moby;
         if (o == 0 || (o != d->owner && o->oclass != 0x504 && o->oclass != 0x534 && o->oclass != 0x535
                        && o->oclass != 0x536 && o->oclass != 0x537 && o->oclass != 0x538 && o->oclass != 0x539
                        && o->oclass != 0x53A && o->oclass != 0x52 && o->oclass != 0x53 && o->oclass != 0x191
@@ -202,7 +202,7 @@ void update_level_13_homing_rocket(Moby *m) {
             return;
         }
     } else if (coll_sphere(1.5f, &m->pos, 0, m) != 0) {
-        Moby *o = D_L13_001741D8;
+        Moby *o = gemlik_coll_hit_moby;
         if (o == 0 || (o != d->owner && o->oclass != 0x504 && o->oclass != 0x534 && o->oclass != 0x535
                        && o->oclass != 0x536 && o->oclass != 0x537 && o->oclass != 0x538 && o->oclass != 0x539
                        && o->oclass != 0x53A && o->oclass != 0x52 && o->oclass != 0x53 && o->oclass != 0x191
@@ -2032,7 +2032,7 @@ char *spawn_asteroid_fragment(char *owner, char *pos, char *vec, int a3, float f
     }
     return moby;
 }
-extern char D_L13_00160700[] MACRO_ADDR;
+extern char gemlik_reference_axis[] MACRO_ADDR;
 extern int Moby_PlaySound_s(int, int, int) __asm__("func_0022ED80");
 extern int truncate_float_to_s32_s(float) __asm__("func_001FA898");
 extern void spawn_explosion_s(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -2053,7 +2053,7 @@ void process_asteroid_hit(char *m, char *d, float s) {
     }
     Moby_PlaySound_s(0, 0, (int)m);
     if (*(short *)(d + 0x4C) == 0) {
-        spawn_explosion_s(m, D_L13_00160700, 0, a, b, truncate_float_to_s32_s(s * 10.0f), truncate_float_to_s32_s(s * 3.0f),
+        spawn_explosion_s(m, gemlik_reference_axis, 0, a, b, truncate_float_to_s32_s(s * 10.0f), truncate_float_to_s32_s(s * 3.0f),
                             truncate_float_to_s32_s(s * 16.0f), s * 4.0f, s + s, 9.0f, 1.0f, -1, s * 15.0f, 0, 1, -1, 0);
     }
     m[0x72] = 0;

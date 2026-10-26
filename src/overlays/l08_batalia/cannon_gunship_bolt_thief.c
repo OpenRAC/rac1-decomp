@@ -365,7 +365,7 @@ extern void MobyBlendAnimation_r(void *,int,int,int) __asm__("func_00213DE0");
 extern void create_moby_with_particles_r(void *,void *,void *,int) __asm__("func_L08_002E9288");
 extern int sound52(int,int,void *) __asm__("func_0022ED80");
 extern char *PartType27Spawn_r(char *,char *,int,int,float) __asm__("func_L00_0026EBC0");
-extern void func_L08_00315068_2E16A0(void) __asm__("func_L08_00315068");
+extern void set_level_state_flag_88_r(void) __asm__("func_L08_00315068");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
 extern void AddDrawCallback_r(void *,void *) __asm__("func_001F49B0");
@@ -567,7 +567,7 @@ void update_batalia_cannon(Moby *moby) {
             }
         }
         if (tick52(&data->camera_timer)) {
-            func_L08_00315068_2E16A0();
+            set_level_state_flag_88_r();
             matrix_mul_vec3_r(direction, &D_L08_00161BE0_2E16A0, &moby->rot_row0);
             FastVecAdd_r(direction, direction, &moby->pos);
             set_camera_position_r(direction); set_camera_rotation_r(&moby->rot);
@@ -1704,9 +1704,9 @@ extern float batalia_bolt_bounce_ticks SDATA(D_L08_00161D60);
 extern Coll_4BE8 batalia_coll_hit;
 extern s32 gBolts MACRO_ADDR;
 extern Moby *batalia_mobys_last MACRO_ADDR;
-extern KillFlags_4BE8 D_L08_001BB0E0;
-extern KillFlags_4BE8 D_L08_001BBD40;
-extern unsigned char D_L08_0015FD08[] MACRO_ADDR;
+extern KillFlags_4BE8 batalia_current_level_state;
+extern KillFlags_4BE8 batalia_checkpoint_level_state;
+extern unsigned char batalia_mission_group_state[] MACRO_ADDR;
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
 extern BoltSourceStats_4BE8 bolt_source_stats[][64];
 extern s32 level_bolts[];
@@ -1980,9 +1980,9 @@ void update_batalia_bolt_pickup(Moby *m) {
                 level_bolts[g_current_level_index] += value;
                 queue_animation_update(2, 0x754E, initialize_bolt_counter_hud_r, update_bolt_counter_hud_animation_and_visibility_r, draw_bolt_counter_hud_panel_r, &gBolts, 9999999);
                 if (m < batalia_mobys_last) {
-                    D_L08_001BB0E0.killed[(short)m->save_id] = m->mission + 2;
-                    if (m->mission == 0xFF || (D_L08_0015FD08[m->mission] != 0xFF && saved_mission_state_r[g_current_level_index][m->mission] == 0xFF)) {
-                        D_L08_001BBD40.killed[(short)m->save_id] = m->mission + 2;
+                    batalia_current_level_state.killed[(short)m->save_id] = m->mission + 2;
+                    if (m->mission == 0xFF || (batalia_mission_group_state[m->mission] != 0xFF && saved_mission_state_r[g_current_level_index][m->mission] == 0xFF)) {
+                        batalia_checkpoint_level_state.killed[(short)m->save_id] = m->mission + 2;
                     }
                 }
                 DeleteMoby(m);
@@ -2239,7 +2239,7 @@ extern float FastAddRots(float, float);
 extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
 extern void draw_geometry_quad_5188(void *, void *, void *, s32, s32);
-extern char D_L08_0016D2C0[];
+extern char batalia_screen_projection_base[];
 extern short batalia_bolt_glint_up_offset;
 extern short batalia_bolt_glint_side_offset;
 
@@ -2268,7 +2268,7 @@ void draw_batalia_bolt_pickup_rotating_quad(char *m) {
         a[3] = 1.0f;
         FastVecScale(a, a, 1024.0f);
         transform_vector(a, a, batalia_hero_pos - 0x100);
-        g = D_L08_0016D2C0;
+        g = batalia_screen_projection_base;
         FastVecScale(a, a, *(float *)(g + 0x210) / a[3]);
         r19 = truncate_float_to_s32(a[0] * 16.0f) + 0x8000;
         r18 = (truncate_float_to_s32(a[1] * 16.0f) + 0x8000) << 16;

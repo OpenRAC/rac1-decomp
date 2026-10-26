@@ -9,7 +9,7 @@
 extern void prepare_scaled_table_with_byte_128(void *);
 
 /* Prepares the scaled table on a scratch buffer. */
-void func_L02_002A59D8(void) {
+void prepare_scaled_table_on_stack(void) {
     char scratch[0x40];
     prepare_scaled_table_with_byte_128(scratch);
 }
@@ -183,8 +183,8 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int frame_counter_ref MACRO_ADDR;
 extern int aridia_mobys_m __asm__("D_L02_00160058") MACRO_ADDR;
 extern short sand_shark_updates_disabled;
-extern short D_L02_00161A40;
-extern unsigned char D_L02_00161990;
+extern short sand_shark_spawn_d0_record;
+extern unsigned char sand_shark_vars_b58_init;
 extern float sand_shark_sink_depth SDATA(D_L02_001619AC);
 extern short sand_shark_puff_start_color;
 extern short sand_shark_puff_end_color;
@@ -297,7 +297,7 @@ void sand_shark_update(unsigned char *moby) {
         qcopy(d->start, moby + 0x10);
         d->s24 = 1;
         d->f20 = 1.0f;
-        d->b58 = D_L02_00161990;
+        d->b58 = sand_shark_vars_b58_init;
         d->b5C = 1;
         d->b2E = 1;
         d->b29 = 1;
@@ -310,7 +310,7 @@ void sand_shark_update(unsigned char *moby) {
         if (func_001160D8() & 1) {
             ((Moby *)moby)->flags |= 0x8000;
         }
-        d->pD0 = &D_L02_00161A40;
+        d->pD0 = &sand_shark_spawn_d0_record;
         if (d->i26C >= 0) {
             if (d->i28C == -1) {
                 DeleteMoby(moby);
@@ -910,7 +910,7 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern float g_frame_time MACRO_ADDR;
-extern int D_L02_001601F8 MACRO_ADDR;
+extern int aridia_burst_throttle_count MACRO_ADDR;
 extern short sand_shark_burst_rise_min, sand_shark_burst_rise_max, sand_shark_burst_end_rise_min, sand_shark_burst_end_rise_max;
 extern short sand_shark_burst_spread_min, sand_shark_burst_spread_max, sand_shark_burst_start_scale, sand_shark_burst_end_scale;
 extern short sand_shark_burst_life_min, sand_shark_burst_life_max, sand_shark_burst_stage2_min, sand_shark_burst_stage2_max;
@@ -928,9 +928,9 @@ void emit_sand_shark_radial_particles(void *pos, int n) {
     int a, b, c;
     float *pv = v;
     *(u128b *)v = *(u128b *)pos;
-    if (D_L02_001601F8 >= 0x5DD) {
+    if (aridia_burst_throttle_count >= 0x5DD) {
         n = n / 4;
-    } else if (D_L02_001601F8 > 0x400) {
+    } else if (aridia_burst_throttle_count > 0x400) {
         n = n / 2;
     }
     for (i = 0; i < n; i++) {
@@ -969,7 +969,7 @@ void emit_sand_shark_single_particle(void *pos) {
     int a, b, c;
     float *pv = v;
     *(u128b *)v = *(u128b *)pos;
-    if (D_L02_001601F8 < 0x6A5) {
+    if (aridia_burst_throttle_count < 0x6A5) {
         r = random_angle_radians();
         qcopy(w, pv);
         w[2] = w[2] + random_float_between(0.125f, 0.0f);
@@ -1766,7 +1766,7 @@ typedef struct {
     int particle;
 } Data_2DD170;
 extern Hero g_hero;
-extern unsigned char D_0013D5E2 NOT_SDA;
+extern unsigned char item_available_26 NOT_SDA;
 extern char *aridia_elevator_volumes_r __asm__("D_L02_0016017C") MACRO_ADDR;
 extern float aridia_elevator_stop_offset SDATA(D_L02_00161C60);
 extern float aridia_elevator_accel SDATA(D_L02_00161C70);
@@ -1843,7 +1843,7 @@ void ElevatorUpdate(Moby *m) {
             }
             break;
         case 1:
-            if ((g_hero.ground_moby == m && g_hero.air_frames.s == 0) || D_0013D5E2 != 0) {
+            if ((g_hero.ground_moby == m && g_hero.air_frames.s == 0) || item_available_26 != 0) {
                 clear_u64_value(motion.v);
                 if (m->command) {
                     motion.v[2] = -1.0f;

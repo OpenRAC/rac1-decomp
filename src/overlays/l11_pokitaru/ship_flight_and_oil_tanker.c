@@ -112,7 +112,7 @@ void *select_ship_lock_on_target(void *a0, char *a1, int a2, int a3, void *a4) {
 extern void project_world_point_to_screen_pixels(void *, void *, void *, int);
 extern void FastVecAdd(void *, void *, void *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern char D_L11_00167A60[];
+extern char pokitaru_camera_matrix_row1[];
 
 /* squared distance from a point to a projected target, or a large value when out of range */
 float compute_ship_target_reticle_distance_squared(void *moby_v, void *o_v) {
@@ -128,8 +128,8 @@ float compute_ship_target_reticle_distance_squared(void *moby_v, void *o_v) {
         dy = ay - *(int *)(data + 0xE4);
         if (dx < 0) dx = -dx;
         if (dy < 0) dy = -dy;
-        qcopy(v, D_L11_00167A60);
-        FastVecScale(v, D_L11_00167A60, *(float *)(o + 0xC) / 1280.0f);
+        qcopy(v, pokitaru_camera_matrix_row1);
+        FastVecScale(v, pokitaru_camera_matrix_row1, *(float *)(o + 0xC) / 1280.0f);
         FastVecAdd(v, v, o + 0x10);
         project_world_point_to_screen_pixels(v, &cx, &cy, 0);
         cx = cx - ax;
@@ -810,7 +810,7 @@ extern float g_frame_time MACRO_ADDR;
 extern char *path_points_14b0 MACRO_ADDR;
 extern float camera_pos_b358[];
 extern float pokitaru_view_cot_half_fov_a[] __asm__("D_L11_0016D570");
-extern char *D_L11_0015F520 MACRO_ADDR;
+extern char *pokitaru_palette_data_base MACRO_ADDR;
 extern float pokitaru_fade_level MACRO_ADDR;
 extern int pokitaru_play_mode MACRO_ADDR;
 extern char jet_fighter_missing_park_point_format[];
@@ -830,7 +830,7 @@ extern float ship_camera_back_offset SDATA(D_L11_001620B4);
 extern float ship_camera_up_offset SDATA(D_L11_001620B8);
 extern short ship_mission_end_ticks;
 typedef struct { char pad[0xA]; unsigned short h; char pad2[4]; } E16_3146E0;
-extern E16_3146E0 D_L11_0016DC00[];
+extern E16_3146E0 pokitaru_texture_table[];
 typedef struct { int w[256]; } Blk400_3146E0;
 typedef struct {
     char pad0[0x20];
@@ -973,7 +973,7 @@ void jet_fighter_update(Moby *moby) {
             qcopy(d->v30, ((float *)&moby->rot));
             qcopy(d->v50, ((float *)&moby->rot));
             qcopy(d->v40, ((float *)&moby->pos));
-            *(char **)&ship_hud_clut = D_L11_0015F520 + (D_L11_0016DC00 + 0x3C)->h * 16;
+            *(char **)&ship_hud_clut = pokitaru_palette_data_base + (pokitaru_texture_table + 0x3C)->h * 16;
             if (*(int *)&ship_hud_clut_saved == 0) {
                 *(Blk400_3146E0 *)ship_hud_clut_backup = **(Blk400_3146E0 **)&ship_hud_clut;
             }
@@ -1345,7 +1345,7 @@ typedef struct {
 } CreatureVars_4318;
 extern char path_table[];
 extern char * pokitaru_mobys MACRO_ADDR;
-extern short D_L11_00162350;
+extern short puffoid_move_params;
 extern short puffoid_scale;
 extern short puffoid_attack_range;
 extern short puffoid_heading_jitter_deg;
@@ -1413,7 +1413,7 @@ void puffoid_update(struct Moby *moby) {
         d->unk58 = truncate_float_to_s32(8.0f);
         d->unk5A = truncate_float_to_s32(2.0f);
         d->unk29 = 1;
-        d->unkD0 = &(*(float *)&D_L11_00162350);
+        d->unkD0 = &(*(float *)&puffoid_move_params);
         MoveCtl_Init(&d->unk180);
         d->unk18C = 0.5f;
         d->unk188 = 0.5f;
@@ -2737,7 +2737,7 @@ extern short oil_tanker_link_bubble_scale_min;
 extern short oil_tanker_link_bubble_scale_max;
 extern short oil_tanker_link_bubble_jitter;
 extern short oil_tanker_link_debris_speed;
-extern short D_L11_0016003C;
+extern short pokitaru_available_moby_slot_count;
 extern char pokitaru_ocean_height[] MACRO_ADDR;
 extern float pokitaru_zero_vec[] MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -2761,7 +2761,7 @@ void update_oil_tanker_link_effects_and_destruction(char *m) {
     switch (((unsigned char *)m)[0x20]) {
     case 0:
         if (fast_dec_timer_i(d + 0x28) == 0 && random_integer_below(*(int *)&oil_tanker_link_bubble_chance) == 0
-            && ((unsigned char *)m)[0x31] != 0 && *(int *)&D_L11_0016003C >= 0x47) {
+            && ((unsigned char *)m)[0x31] != 0 && *(int *)&pokitaru_available_moby_slot_count >= 0x47) {
             matrix_mul_vec3(v, &oil_tanker_link_bubble_offset, m + 0xC0);
             FastVecAdd(v, v, m + 0x10);
             rand_vec(r, 0.0f, *(float *)&oil_tanker_link_bubble_jitter * g_frame_time);
@@ -3486,14 +3486,14 @@ extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int pokitaru_layered_scrolled_uvs[];
 extern int pokitaru_layered_uv_scroll[];
 extern short pokitaru_layered_mesh_vertex_counts;
-extern short D_L11_001625D0;
+extern short pokitaru_layered_mesh_positions;
 extern short pokitaru_layered_uv_sources;
 extern short pokitaru_layered_mesh_colors;
 
 // Runs four setup calls over parallel tables, offset by the argument.
 void emit_level11_layered_effect_batches_with_pair_offset(int arg) {
     int *a = (int *)&pokitaru_layered_mesh_vertex_counts;
-    int *b = (int *)&D_L11_001625D0;
+    int *b = (int *)&pokitaru_layered_mesh_positions;
     int *c = (int *)&pokitaru_layered_uv_sources;
     int *d = (int *)&pokitaru_layered_mesh_colors;
     int i;

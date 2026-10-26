@@ -82,7 +82,7 @@ extern unsigned char menu_item_enabled_17 NOT_SDA;
 extern unsigned char menu_item_enabled_18 NOT_SDA;
 extern unsigned char menu_item_enabled_19 NOT_SDA;
 extern unsigned char menu_item_enabled_25 NOT_SDA;
-extern int D_001A04B4 NOT_SDA;
+extern int map_region_enabled_3 NOT_SDA;
 extern unsigned char menu_item_enabled_41 NOT_SDA;
 extern int hero_control_mode NOT_SDA;
 extern unsigned char menu_item_enabled_36 NOT_SDA;
@@ -122,17 +122,17 @@ extern int memcard_PrepData(void *dst, int i, int *table);
 extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
-extern int D_0013D844 NOT_SDA;
+extern int race_gates_24_status NOT_SDA;
 extern unsigned char menu_item_enabled_12 NOT_SDA;
-extern int D_0013D9B4 NOT_SDA;
+extern int race_gates_47_flag NOT_SDA;
 extern unsigned char gSpecialItems[];
 extern unsigned char gHaveHeliPack NOT_SDA;
 extern int race_gates NOT_SDA;
-extern int D_0013DAE4 NOT_SDA;
+extern int race_gates_66_status NOT_SDA;
 extern unsigned char menu_item_enabled_73 NOT_SDA;
-extern int D_0013DB24 NOT_SDA;
+extern int race_gates_70_status NOT_SDA;
 extern unsigned char menu_item_enabled_85 NOT_SDA;
-extern int D_0013DC34 NOT_SDA;
+extern int race_gates_87_status NOT_SDA;
 extern unsigned char race_gates_base NOT_SDA;
 extern int item_available NOT_SDA;
 extern unsigned char menu_item_enabled_20 NOT_SDA;
@@ -182,7 +182,7 @@ extern void snd_reenable_command_flush(void);
 extern int snd_StreamSafeCdGetError(void);
 extern void music_start_track_by_id(short, short, short);
 extern void music_PreseekTrack(short, short, short);
-extern short D_001517F0 NOT_SDA;
+extern short music_flagged_track_started NOT_SDA;
 extern char g_controller_state[];
 extern int pad_socket_param NOT_SDA;
 extern void sce_dbc_init(void);
@@ -242,9 +242,9 @@ extern int get_menu_stream_buffer_size(int handle);
 extern int menu_stream_buffers[];
 extern char preview_resource_bindings[] NOT_SDA;
 extern char *moby_class_resources[] NOT_SDA;
-extern int D_001D6860[];
-extern int D_001D74C0[];
-extern int D_001D6760[];
+extern int scene_state_buffer_0[];
+extern int scene_state_buffer_1[];
+extern int scene_state_buffer_2[];
 extern char camera_position_a[] __asm__("D_00187180");
 extern char coll_hit_pos[];
 extern int sound_probe_ignore;
@@ -692,13 +692,13 @@ struct MemoryCardState_305A0 {
     s32 pending_state; /* 0xE4 */
 };
 extern struct MemoryCardState_305A0 memory_card_state_r __asm__("D_0013D390");
-extern u8 D_0013DE4B[];
+extern u8 level_available_base[];
 extern struct LevelRenderState_305A0 level_render_state_r2 __asm__("D_0013E130");
 extern s32 game_frame_counter MACRO_ADDR;
 extern f32 gFade MACRO_ADDR;
 extern s32 D_0015F704_305A0 SDATA(D_0015F704);
-extern s32 D_0018CC54[];
-extern s32 D_0018CD98[];
+extern s32 render_sequence_time[];
+extern s32 render_sequence_slots[];
 extern struct LevelProjectionState_305A0 view_context;
 extern void append_dma_tag(u32);
 extern void BuildViewMatrices();
@@ -756,18 +756,18 @@ void render_level_frame(void) {
     DrawMobys();
     append_dma_tag(0x02080000);
     SetupGifPaging(1);
-    if ((g_current_level_index_r != 0) && ((g_current_level_index_r != 1) || (D_0013DE4B[0] != 0))) {
-        build_resident_indexed_texture_warp_meshes(D_0018CD98[0]);
+    if ((g_current_level_index_r != 0) && ((g_current_level_index_r != 1) || (level_available_base[0] != 0))) {
+        build_resident_indexed_texture_warp_meshes(render_sequence_slots[0]);
     }
-    if ((level_render_state_r2.mode == 4) && (D_0018CC54[0] >= 0x3D)) {
-        overlay_alpha = (D_0018CC54[0] - 0x3C) * 2;
+    if ((level_render_state_r2.mode == 4) && (render_sequence_time[0] >= 0x3D)) {
+        overlay_alpha = (render_sequence_time[0] - 0x3C) * 2;
         if (overlay_alpha >= 0x81) {
             overlay_alpha = 0x80;
         }
         draw_resident_textured_banner(overlay_alpha);
     }
-    if ((g_current_level_index_r != 0) && ((g_current_level_index_r != 1) || (D_0013DE4B[0] != 0))) {
-        render_environment_mapped_object_r(D_0018CD98[0]);
+    if ((g_current_level_index_r != 0) && ((g_current_level_index_r != 1) || (level_available_base[0] != 0))) {
+        render_environment_mapped_object_r(render_sequence_slots[0]);
     }
     if ((memory_card_state_r.state >= 3) || (memory_card_state_r.pending_state >= 0)) {
         VU1_addGSregister_r(0x47, 0x3004B);
@@ -1777,9 +1777,9 @@ extern s32 g_gs_texture_allocation_base MACRO_ADDR;
 extern s32 g_gs_texture_allocation_cursor MACRO_ADDR;
 extern s32 g_gs_texture_allocation_start MACRO_ADDR;
 extern s32 g_game_language MACRO_ADDR;
-extern u8 D_00194280[];
+extern u8 coll_output_aux_buffer[];
 extern u8 resident_class_material_maps[0xE00];
-extern s32 D_001B6500[];
+extern s32 resident_class_original_field_2c[];
 struct CommonArchiveMemory;
 extern struct CommonArchiveMemory level_resource_buffers;
 struct DiscTable;
@@ -1797,18 +1797,18 @@ extern u8 default_dir_lights[];
 extern u8 * resident_object_pool MACRO_ADDR;
 extern u8 * moby_instance_end MACRO_ADDR;
 extern u8 * g_moby_vars MACRO_ADDR;
-extern u8 * D_001601AC MACRO_ADDR;
-extern s32 D_001601B4 MACRO_ADDR;
+extern u8 * part_instance_pool MACRO_ADDR;
+extern s32 part_slot_high_water MACRO_ADDR;
 extern u8 * moby_instance_perm_end MACRO_ADDR;
-extern s32 D_001601B0 MACRO_ADDR;
-extern s32 D_001601B8 MACRO_ADDR;
-extern u8 D_001CDB00[];
+extern s32 part_slot_search_start MACRO_ADDR;
+extern s32 part_active_count MACRO_ADDR;
+extern u8 part_slot_bitmap[];
 extern s32 occl_fog_count MACRO_ADDR;
 extern s32 part_clip_dist MACRO_ADDR;
 extern short D_001605E0;
 extern u8 level_available[20] NOT_SDA;
-extern u8 D_00186410[];
-extern u8 D_00186450[];
+extern u8 level_init_cleared_block[];
+extern u8 level_init_cleared_block2[];
 extern u32 sound_bank_handle MACRO_ADDR;
 extern void InitMemSlots(void);
 extern void VU1_initChain(void);
@@ -2057,7 +2057,7 @@ typedef struct {
 extern WadToc disc_table_t __asm__("D_00137C80");
 extern int pal_mode MACRO_ADDR;
 extern int g_game_language MACRO_ADDR;
-extern int D_001941D4;
+extern int level_resource_buffer_base;
 extern int Movie_Play(int, int, int, int, int);
 extern void wait_for_graphics_pipeline_idle(int, int);
 extern void sceGsSyncVCallback(void *);
@@ -2079,7 +2079,7 @@ void play_level_transition_movie(int id) {
         size = disc_table_t.movie[id].size;
     }
     voice_pool[0x6B] |= 8;
-    buf = D_001941D4;
+    buf = level_resource_buffer_base;
     Movie_Play(sector, size, (buf + 0x3F) & ~0x3F,
                   (buf + 0x300000 + 0x3F) & ~0x3F, g_game_language);
     sce_gs_sync_v(0);

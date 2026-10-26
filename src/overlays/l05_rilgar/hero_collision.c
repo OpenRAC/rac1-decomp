@@ -180,8 +180,8 @@ void HeroL05_ProcessContactType(void) {
     return;
 }
 typedef int Q __attribute__((mode(TI)));
-extern u8 D_L05_00174360[];
-extern f32 D_L05_00174368;
+extern u8 rilgar_coll_hit_point[];
+extern f32 rilgar_coll_hit_z;
 extern s32 g_current_level_index MACRO_ADDR;
 void clear_u64_value(void *);
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
@@ -302,7 +302,7 @@ void HeroL05_GroundProbe(void) {
     g_hero_r.xB12ed = r;
     g_hero_r.xH12e0 = CollType();
     if (g_hero_r.xH12e0 == 0) {
-        g_hero_r.xF2f0 = resolve_camera_surface_height(D_L05_00174360, (u8 *)&g_hero_r + 0x280);
+        g_hero_r.xF2f0 = resolve_camera_surface_height(rilgar_coll_hit_point, (u8 *)&g_hero_r + 0x280);
         if (g_hero_r.xF88 < g_hero_r.xF2f0 && g_hero_r.xI2f8 <= 0) {
             g_hero_r.xI2f8 = 1;
         }
@@ -316,21 +316,21 @@ void HeroL05_GroundProbe(void) {
         g_hero_r.xB12ed = r;
     }
     if (g_hero_r.xH12e0 == 0xD) {
-        g_hero_r.xF2f0 = D_L05_00174368;
-        v10.f[2] = D_L05_00174368 - 0.01f;
+        g_hero_r.xF2f0 = rilgar_coll_hit_z;
+        v10.f[2] = rilgar_coll_hit_z - 0.01f;
         if (coll_line(&v10, &v0, 4, g_hero_r.xI2080, 0) == 0) {
             goto d1;
         }
     }
     if (g_hero_r.xH12e0 == 3) {
-        g_hero_r.xF2f4 = D_L05_00174368;
-        v10.f[2] = D_L05_00174368 - 0.01f;
+        g_hero_r.xF2f4 = rilgar_coll_hit_z;
+        v10.f[2] = rilgar_coll_hit_z - 0.01f;
         if (coll_line(&v10, &v0, 4, g_hero_r.xI2080, 0) == 0) {
             goto d1;
         }
     }
     if (g_hero_r.xH12e0 == 0xB) {
-        g_hero_r.xF2f4 = D_L05_00174368;
+        g_hero_r.xF2f4 = rilgar_coll_hit_z;
         goto d1;
     }
     if (g_hero_r.xH12e0 == 1 && (u32)(g_hero_r.xI2084 - 0x7C) < 2) {
@@ -445,7 +445,7 @@ d1:
 extern char hero_globals_base[];
 extern float g_frame_scale_sq_m __asm__("D_0015EE64") MACRO_ADDR;
 extern short frame_scale_s __asm__("D_0015EE60");
-extern char D_L05_00174370[];
+extern char rilgar_coll_resolved_pos[];
 extern void clear_u64_value(void *);
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
@@ -518,12 +518,12 @@ int Camera_MoveWithCollision(int mode) {
             }
         }
         p = hero_globals_base + 0xE9D;
-        qcopy(p, D_L05_00174370);
-        qcopy(p + 0x180, D_L05_00174370 + 0x10);
-        qcopy(p + 0x190, D_L05_00174370 - 0x10);
+        qcopy(p, rilgar_coll_resolved_pos);
+        qcopy(p + 0x180, rilgar_coll_resolved_pos + 0x10);
+        qcopy(p + 0x190, rilgar_coll_resolved_pos - 0x10);
         p -= 0x80;
         *(unsigned char *)(p + 0x257) = 1;
-        *(int *)(p + 0x23C) = *(int *)(D_L05_00174370 - 0x18);
+        *(int *)(p + 0x23C) = *(int *)(rilgar_coll_resolved_pos - 0x18);
     }
     b = hero_globals_base + 0xE9D;
     FastVecSub(b, b, tmp);
@@ -542,7 +542,7 @@ int Camera_MoveWithCollision(int mode) {
     }
     return 1;
 }
-extern char *D_L05_00174358;
+extern char *rilgar_coll_hit_moby;
 extern float g_frame_time MACRO_ADDR;
 extern void update_hero_attachment(int, void *, void *);
 extern float gravity_length_xy(float *v);
@@ -607,7 +607,7 @@ void integrate_hero_motion_with_collisions(void) {
         work.f[2] += 0.5f;
         FastVecAdd(plane.f, work.f, (char *)position + 0x60);
         if (coll_line(position, plane.f, 2, 0, 0)) {
-            char *hit = D_L05_00174358;
+            char *hit = rilgar_coll_hit_moby;
 
             if (!hit || *(short *)(hit + 0xA6) == 0x1F6 || *(short *)(hit + 0xA6) == 0x59F) {
                 player = (Hero *)(hero_globals_base + 0xE1D);

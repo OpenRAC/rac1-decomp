@@ -399,7 +399,7 @@ void Camera_PickCollisionMasksLvl(void) {
 INCLUDE_ASM("asm/overlays", func_L00_001ED380);
 INCLUDE_ASM("asm/overlays", func_L00_001ED3D4);
 extern int cinematic_mode MACRO_ADDR;
-extern int D_L00_001CA800;
+extern int vendor_menu_field_40;
 extern unsigned char draw_map51_r[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern void advance_timed_camera_control(void);
 extern void Camera_PickCollisionMasksLvl(void);
@@ -422,7 +422,7 @@ void Camera_UpdateFrame(void) {
     float m[16];
 
     if (cinematic_mode == 5) {
-        if (D_L00_001CA800 != 0) {
+        if (vendor_menu_field_40 != 0) {
             return;
         }
         {

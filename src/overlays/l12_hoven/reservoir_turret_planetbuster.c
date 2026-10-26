@@ -715,7 +715,7 @@ void update_oscillating_target_link(Moby *moby) {
         break;
     }
 }
-extern void func_L08_00315068(void *);
+extern void set_level_state_flag_88(void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void set_camera_position(void *);
@@ -727,7 +727,7 @@ extern char hoven_turret_camera_offset;
 void update_hoven_turret_camera(char *moby) {
     float m[8];
     char *data = ((char *)((Moby *)moby)->pvars);
-    func_L08_00315068(moby);
+    set_level_state_flag_88(moby);
     matrix_mul_vec3(m, &hoven_turret_camera_offset, moby + 0xC0);
     FastVecAdd(m, m, moby + 0x10);
     set_camera_position(m);
@@ -2427,7 +2427,7 @@ void update_moby_draw_and_monitor_linked_state(struct Moby *m) {
 extern char special_items_base[];
 extern char hero_globals_base[];
 extern int hoven_frame_count MACRO_ADDR;
-extern char D_L12_0016CD70[];
+extern char hoven_cutscene_hero_pos[];
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
 /* Vendor-counter moby update: once the shared block is ready, latch its data and copy two vectors. */
@@ -2445,10 +2445,10 @@ void trigger_scene_once_in_clip_volume(char *moby) {
         p = hero_globals_base + 0xE9D;
         if (is_point_inside_clip_volume(p, *(int *)data) != 0) {
             *(char *)(*(int *)(data + 4) + base + 0x5C) = 1;
-            qcopy(D_L12_0016CD70, p);
-            q = D_L12_0016CD70 - 0x10;
+            qcopy(hoven_cutscene_hero_pos, p);
+            q = hoven_cutscene_hero_pos - 0x10;
             *(float *)(q + 0x18) = *(float *)(p + 0x258);
-            qcopy(D_L12_0016CD70 + 0x10, p + 0x10);
+            qcopy(hoven_cutscene_hero_pos + 0x10, p + 0x10);
             q[0x4A] = 1;
             StartCutscene(*(int *)(data + 8));
         }
@@ -2559,7 +2559,7 @@ extern float hoven_overlay_uv_scroll_r[2] __asm__("D_L12_00162188") MACRO_ADDR;
 void func_L12_0030D248_0D3D0(struct Moby *m) __asm__("func_L12_0030D248");
 extern int D_L12_00162170_0D3D0 SDATA(D_L12_00162170);
 extern float hoven_layer_uv_scroll[] MACRO_ADDR;
-extern float D_L12_0016217C[] MACRO_ADDR;
+extern float hoven_layer_uv_scroll_v[] MACRO_ADDR;
 extern float D_L12_00162160_0D3D0[1] SDATA(D_L12_00162160);
 extern float hoven_layer_uv_scroll_speed_v0D3D0[] __asm__("D_L12_00162160") MACRO_ADDR;
 extern float D_L12_00162158_0D3D0[2] SDATA(D_L12_00162158);
@@ -2592,7 +2592,7 @@ void update_hoven_scrolling_texture_layers(M_bff0 *m) {
         m->h32 = 0xFF;
         for (i = 0; i < 2; i++) {
             hoven_layer_uv_scroll[i * 2] = 0.0f;
-            D_L12_0016217C[i * 2] = 0.0f;
+            hoven_layer_uv_scroll_v[i * 2] = 0.0f;
         }
         break;
     case 1:
@@ -2604,12 +2604,12 @@ void update_hoven_scrolling_texture_layers(M_bff0 *m) {
             if (hoven_layer_uv_scroll[i * 2] < -1.0f) {
                 hoven_layer_uv_scroll[i * 2] += 1.0f;
             }
-            D_L12_0016217C[i * 2] += hoven_layer_uv_scroll_speed_v0D3D0[i * 2 + 1] * frame_delta_time;
-            if (D_L12_0016217C[i * 2] > 1.0f) {
-                D_L12_0016217C[i * 2] -= 1.0f;
+            hoven_layer_uv_scroll_v[i * 2] += hoven_layer_uv_scroll_speed_v0D3D0[i * 2 + 1] * frame_delta_time;
+            if (hoven_layer_uv_scroll_v[i * 2] > 1.0f) {
+                hoven_layer_uv_scroll_v[i * 2] -= 1.0f;
             }
-            if (D_L12_0016217C[i * 2] < -1.0f) {
-                D_L12_0016217C[i * 2] += 1.0f;
+            if (hoven_layer_uv_scroll_v[i * 2] < -1.0f) {
+                hoven_layer_uv_scroll_v[i * 2] += 1.0f;
             }
         }
         hoven_overlay_uv_scroll_r[0] += D_L12_00162158_0D3D0[0] * frame_delta_time;

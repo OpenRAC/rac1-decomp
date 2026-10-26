@@ -257,14 +257,14 @@ extern int scale_ticks(int);
 extern float frame_scale MACRO_ADDR;
 extern short smoke_particle_stagger_ticks_base;
 extern short smoke_particle_timer_ticks_base;
-extern short D_L00_00161438;
+extern short smoke_particle_aux_ticks_base;
 extern short smoke_scroll_offset;
 extern short smoke_scroll_speed;
 extern short smoke_particle_stagger_ticks;
 extern short smoke_particle_timer_ticks;
 extern short smoke_particle_timer_ticks_inv;
-extern int D_L00_00161450 MACRO_ADDR;
-extern short D_L00_00161454;
+extern int smoke_particle_aux_ticks MACRO_ADDR;
+extern short smoke_particle_aux_ticks_inv;
 extern int smoke_particle_pool_next MACRO_ADDR;
 
 // Texture scroll moby update: init the scroll constants, then scroll and wrap.
@@ -279,8 +279,8 @@ void update_frame_timing_and_wrapped_value(char *m) {
         *(int *)&smoke_particle_stagger_ticks = scale_ticks(*(int *)&smoke_particle_stagger_ticks_base);
         *(int *)&smoke_particle_timer_ticks = scale_ticks(*(int *)&smoke_particle_timer_ticks_base);
         *(float *)&smoke_particle_timer_ticks_inv = one / IntToFloat(*(int *)&smoke_particle_timer_ticks);
-        D_L00_00161450 = scale_ticks(*(int *)&D_L00_00161438);
-        *(float *)&D_L00_00161454 = one / (float)D_L00_00161450;
+        smoke_particle_aux_ticks = scale_ticks(*(int *)&smoke_particle_aux_ticks_base);
+        *(float *)&smoke_particle_aux_ticks_inv = one / (float)smoke_particle_aux_ticks;
         break;
     }
     case 1: {
@@ -881,12 +881,12 @@ typedef struct {
     u16 bolts;
 } BoltSourceStats_A7E10;
 extern s32 gBolts MACRO_ADDR;
-extern s32 D_0015EF2C MACRO_ADDR;
+extern s32 counted_bolts_total MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 extern s32 g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
 extern BoltSourceStats_A7E10 bolt_source_stats[][64];
 extern s32 level_bolts[];
-extern s32 D_L00_0015F678 MACRO_ADDR;
+extern s32 current_moby_mission_complete MACRO_ADDR;
 extern short level_mobys_end;
 extern void initialize_bolt_counter_hud(void);
 extern void update_bolt_counter_hud_animation_and_visibility(void);
@@ -930,8 +930,8 @@ void collect_bolt(struct Moby *bolt)
     if (src && !(src->id & 0x80))
         bolt_source_stats[g_current_level_index][src->id].bolts += value;
     gBolts += value;
-    if (bolt->pvars[0x40] || (D_L00_0015F678 && (void *)bolt < (*(void * *)&level_mobys_end)))
-        D_0015EF2C += value;
+    if (bolt->pvars[0x40] || (current_moby_mission_complete && (void *)bolt < (*(void * *)&level_mobys_end)))
+        counted_bolts_total += value;
     level_bolts[g_current_level_index_r2] += value;
 
     k = 0.7f;
@@ -1926,13 +1926,13 @@ void *spawn_class_593_moby(int unused, void *pos, int c, float scale, float a, f
 LINKER_REMNANT("asm/overlays", func_L00_002AAD28);
 typedef int u128 __attribute__((mode(TI)));
 extern int allocate_packed_color_point_light_slot(float *pos, float radius, float intensity, int color);
-extern int D_L00_0015F420 MACRO_ADDR;
-extern int D_L00_0015F430 MACRO_ADDR;
+extern int level_screen_fade_on MACRO_ADDR;
+extern int level_screen_overlay_on MACRO_ADDR;
 extern short tracked_class_5f3_moby;
-extern int D_L00_0015F424 MACRO_ADDR;
-extern int D_L00_0015F434 MACRO_ADDR;
-extern long D_L00_0015F438 MACRO_ADDR;
-extern long D_L00_0015F428 MACRO_ADDR;
+extern int level_screen_fade_rgba MACRO_ADDR;
+extern int level_screen_overlay_rgba MACRO_ADDR;
+extern long level_screen_overlay_gs_reg MACRO_ADDR;
+extern long level_screen_fade_gs_reg MACRO_ADDR;
 
 // Creates the singleton light moby and resets its globals.
 void *spawn_tracked_class_5f3_moby(int unused, float *pos) {
@@ -1945,13 +1945,13 @@ void *spawn_tracked_class_5f3_moby(int unused, float *pos) {
         m[0x31] = 1;
         d = ((char *)((Moby *)m)->pvars);
         *(u128 *)(m + 0x10) = *(u128 *)pos;
-        D_L00_0015F424 = 0xFF;
-        D_L00_0015F434 = 0xFFFFFF;
-        D_L00_0015F438 = 0x1F00000042L;
+        level_screen_fade_rgba = 0xFF;
+        level_screen_overlay_rgba = 0xFFFFFF;
+        level_screen_overlay_gs_reg = 0x1F00000042L;
         *(int *)&tracked_class_5f3_moby = (int)m;
-        D_L00_0015F428 = 0;
-        D_L00_0015F420 = 0;
-        D_L00_0015F430 = 0;
+        level_screen_fade_gs_reg = 0;
+        level_screen_fade_on = 0;
+        level_screen_overlay_on = 0;
         *(int *)(d + 0x10) = 0;
         *(short *)(d + 0x2C) = allocate_packed_color_point_light_slot(pos, 0.0f, 0.0f, 0);
     }
@@ -1988,8 +1988,8 @@ void remove_tracked_class_5f3_moby(void) {
             int idx;
             if (((Moby *)m)->state != 0) return;
             data = ((char *)((Moby *)m)->pvars);
-            D_L00_0015F420 = 0;
-            D_L00_0015F430 = 0;
+            level_screen_fade_on = 0;
+            level_screen_overlay_on = 0;
             idx = *(short *)(data + 0x2C);
             if (idx != -1) release_point_light_slot(idx);
             DeleteMoby(*(char **)&tracked_class_5f3_moby);

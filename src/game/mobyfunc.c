@@ -81,7 +81,7 @@ extern unsigned char menu_item_enabled_17 NOT_SDA;
 extern unsigned char menu_item_enabled_18 NOT_SDA;
 extern unsigned char menu_item_enabled_19 NOT_SDA;
 extern unsigned char menu_item_enabled_25 NOT_SDA;
-extern int D_001A04B4 NOT_SDA;
+extern int map_region_enabled_3 NOT_SDA;
 extern unsigned char menu_item_enabled_41 NOT_SDA;
 extern int hero_control_mode NOT_SDA;
 extern unsigned char menu_item_enabled_36 NOT_SDA;
@@ -121,17 +121,17 @@ extern int memcard_PrepData(void *dst, int i, int *table);
 extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
-extern int D_0013D844 NOT_SDA;
+extern int race_gates_24_status NOT_SDA;
 extern unsigned char menu_item_enabled_12 NOT_SDA;
-extern int D_0013D9B4 NOT_SDA;
+extern int race_gates_47_flag NOT_SDA;
 extern unsigned char gSpecialItems[];
 extern unsigned char gHaveHeliPack NOT_SDA;
 extern int race_gates NOT_SDA;
-extern int D_0013DAE4 NOT_SDA;
+extern int race_gates_66_status NOT_SDA;
 extern unsigned char menu_item_enabled_73 NOT_SDA;
-extern int D_0013DB24 NOT_SDA;
+extern int race_gates_70_status NOT_SDA;
 extern unsigned char menu_item_enabled_85 NOT_SDA;
-extern int D_0013DC34 NOT_SDA;
+extern int race_gates_87_status NOT_SDA;
 extern unsigned char race_gates_base NOT_SDA;
 extern int item_available NOT_SDA;
 extern unsigned char menu_item_enabled_20 NOT_SDA;
@@ -583,7 +583,7 @@ LINKER_REMNANT("asm/remnants/text", func_0020DC38);
 extern int moby_texture_tag_slot MACRO_ADDR;
 extern int g_render_packet_cursor MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
-extern void func_00212258(int);
+extern void upload_used_moby_textures(int);
 extern void VU1_texFlush(void);
 
 /* DmaMobyTextures: splices the texture uploads into the DMA chain with
@@ -599,7 +599,7 @@ void DmaMobyTextures(void) {
     ((int *)moby_texture_tag_slot)[2] = 0;
     ((int *)moby_texture_tag_slot)[3] = 0;
     if (draw_config[10] != 0 && draw_config[9] != 0) {
-        func_00212258(g_gs_texture_allocation_cursor);
+        upload_used_moby_textures(g_gs_texture_allocation_cursor);
         VU1_texFlush();
     }
     ((int *)g_render_packet_cursor)[0] = 0x20000000;
@@ -702,7 +702,7 @@ extern int graphics_setup_dma_chain_enabled MACRO_ADDR;
 extern int graphics_setup_tag_slot MACRO_ADDR;
 extern char graphics_setup_profile_label[];
 extern char graphics_setup_command_stream[];
-extern void func_00228A58(void);
+extern void build_shadow_command_stream(void);
 extern void submit_graphics_setup_command_stream(void *);
 extern void ProfileMarker_End(void *, int);
 
@@ -731,7 +731,7 @@ void configure_graphics_setup_dma_chain(void) {
     ((int *)graphics_setup_tag_slot)[1] = g_render_packet_cursor;
     ((int *)graphics_setup_tag_slot)[2] = 0;
     ((int *)graphics_setup_tag_slot)[3] = 0;
-    func_00228A58();
+    build_shadow_command_stream();
     submit_graphics_setup_command_stream(graphics_setup_command_stream);
     ((int *)g_render_packet_cursor)[0] = 0x20000000;
     ((int *)g_render_packet_cursor)[1] = graphics_setup_tag_slot + 0x10;
@@ -827,7 +827,7 @@ void DrawMobyList(int arg0, int arg1) {
 
 extern void DmaMobyTextures(void);
 extern void ProcessMobyAnimData(void);
-extern void func_00212508(void);
+extern void apply_moby_word_fill_table(void);
 extern char moby_texture_dma_profile_label[];
 extern char draw_mobys_cleanup_profile_label[];
 extern int moby_word_fill_table_bytes MACRO_ADDR;
@@ -842,7 +842,7 @@ void DrawMobysCleanUp(void) {
     if (draw_config[10] != 0) {
         ProcessMobyAnimData();
         if (moby_word_fill_table_bytes != 0) {
-            func_00212508();
+            apply_moby_word_fill_table();
         }
     }
     ProfileMarker_End(draw_mobys_cleanup_profile_label, 3);
@@ -851,7 +851,7 @@ void DrawMobysCleanUp(void) {
     }
 }
 
-extern int D_0018A3D8;
+extern int moby_draw_enabled;
 extern char vu_chain_overflow_message[];
 extern void DrawMobysSetup(void);
 extern void DrawMobysCleanUp(void);
@@ -859,7 +859,7 @@ extern void DrawMobysCleanUp(void);
 /* DrawMobys */
 void DrawMobys(void) {
     DrawMobysSetup();
-    if (D_0018A3D8 != 0) {
+    if (moby_draw_enabled != 0) {
         InitMobyClassDists();
         moby_anim_head = moby_proc(resident_object_pool, moby_anim_head, -1, 1);
         if (g_render_packet_cursor > vu1_chain_limit) {

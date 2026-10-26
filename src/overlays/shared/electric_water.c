@@ -68,9 +68,9 @@ extern char *quartu_cuboids MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern short electric_water_on_duration_seconds;
 extern short electric_water_off_duration_seconds;
-extern short D_L15_00161C50;
-extern unsigned char D_L15_001BB334[];
-extern unsigned char D_L15_001BBF94[];
+extern short electric_water_bolt_suppress;
+extern unsigned char quartu_current_level_state_moby_flags[];
+extern unsigned char quartu_checkpoint_level_state_moby_flags[];
 extern int level_moby_killed[];
 extern int quartu_moby_killed[];
 extern char quartu_lights[];
@@ -198,8 +198,8 @@ void electric_water_update(unsigned char *m) {
                 continue;
             }
             if (((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->oclass == 0x33E) {
-                D_L15_001BB334[*(short *)&((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id] = 0;
-                D_L15_001BBF94[*(short *)&((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id] = 0;
+                quartu_current_level_state_moby_flags[*(short *)&((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id] = 0;
+                quartu_checkpoint_level_state_moby_flags[*(short *)&((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id] = 0;
                 save_id = ((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id;
                 *(int *)((((short)save_id >> 5) << 2) + (g_current_level_index << 8) + (int)level_moby_killed) &= ~(1 << (save_id & 0x1F));
                 save_id = ((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id;
@@ -249,7 +249,7 @@ void electric_water_update(unsigned char *m) {
             }
         }
 
-        if ((!inside || !wet) && random_integer_below(1) == 0 && (*(float *)&D_L15_00161C50) == 0.0f) {
+        if ((!inside || !wet) && random_integer_below(1) == 0 && (*(float *)&electric_water_bolt_suppress) == 0.0f) {
             best = 0;
             for (line_offset = 0; line_offset < 24; line_offset += 8) {
                 line = &vars->lines[line_offset];
@@ -527,17 +527,17 @@ extern short electric_water_mirror_bolt_height_phase;
 extern short quartu_beam_arc_outer_color;
 extern short electric_water_bolt_initial_frame_count;
 extern short electric_water_side_arc_regrow_delays_r[] __asm__("D_L15_00161D50") MACRO_ADDR;
-extern short D_L15_00161D52[] MACRO_ADDR;
-extern short D_L15_00161D54[] MACRO_ADDR;
-extern short D_L15_00161D56[] MACRO_ADDR;
+extern short electric_water_side_arc_regrow_delays_1[] MACRO_ADDR;
+extern short electric_water_side_arc_regrow_delays_2[] MACRO_ADDR;
+extern short electric_water_side_arc_regrow_delays_3[] MACRO_ADDR;
 extern short electric_water_side_arc_fade_ticks_r[] __asm__("D_L15_00161D58") MACRO_ADDR;
-extern short D_L15_00161D5A[] MACRO_ADDR;
-extern short D_L15_00161D5C[] MACRO_ADDR;
-extern short D_L15_00161D5E[] MACRO_ADDR;
+extern short electric_water_side_arc_fade_ticks_1[] MACRO_ADDR;
+extern short electric_water_side_arc_fade_ticks_2[] MACRO_ADDR;
+extern short electric_water_side_arc_fade_ticks_3[] MACRO_ADDR;
 extern short electric_water_side_arc_timers[] MACRO_ADDR;
 extern int electric_water_bolt_initial_scaled_frame_count MACRO_ADDR;
-extern short D_L15_00161D64;
-extern float D_L15_001D3A10_D8DD8[][4] __asm__("D_L15_001D3A10");
+extern short electric_water_bolt_reset_word;
+extern float electric_water_bolt_points_base_r[][4] __asm__("D_L15_001D3A10");
 extern float electric_water_bolt_points_r[][4] __asm__("D_L15_001D3A20");
 extern int electric_water_bolt_wave_offsets_r[] __asm__("D_L15_001D3CA0");
 extern float electric_water_mirror_bolt_side_offsets_r[][4] __asm__("D_L15_001D3CF0");
@@ -556,14 +556,14 @@ void initialize_electric_water_bolt_effect(char *m) {
     int j;
     if ((*(int *)&electric_water_bolt_init_requested) != 0) {
         (*(int *)&electric_water_bolt_init_requested) = 0;
-        (*(int *)&D_L15_00161D64) = 0;
+        (*(int *)&electric_water_bolt_reset_word) = 0;
         electric_water_bolt_initial_scaled_frame_count = scale_ticks((*(int *)&electric_water_bolt_initial_frame_count));
         (*(int *)&quartu_beam_arc_outer_color) = 0x7F2020;
         FastVecSub(v, d + 0x100, d + 0xF0);
         vec_scale_to_length(step, v, (*(float *)&electric_water_bolt_initial_length_scale) / 20.0f);
         qcopy(electric_water_bolt_points_r, d + 0xF0);
         for (i = 1; i < 20; i++) {
-            FastVecAdd(electric_water_bolt_points_r[i], D_L15_001D3A10_D8DD8[i], step);
+            FastVecAdd(electric_water_bolt_points_r[i], electric_water_bolt_points_base_r[i], step);
             electric_water_bolt_wave_offsets_r[i] = 0;
             clear_u64_value(electric_water_mirror_bolt_side_offsets_r[i]);
             electric_water_mirror_bolt_height_offsets_r[i] = 0;
@@ -572,12 +572,12 @@ void initialize_electric_water_bolt_effect(char *m) {
             electric_water_side_arc_timers[j] = -1;
         electric_water_side_arc_regrow_delays_r[0] = 8;
         electric_water_side_arc_fade_ticks_r[0] = 4;
-        D_L15_00161D52[0] = 4;
-        D_L15_00161D5A[0] = 2;
-        D_L15_00161D5C[0] = 4;
-        D_L15_00161D54[0] = 8;
-        D_L15_00161D56[0] = 4;
-        D_L15_00161D5E[0] = 2;
+        electric_water_side_arc_regrow_delays_1[0] = 4;
+        electric_water_side_arc_fade_ticks_1[0] = 2;
+        electric_water_side_arc_fade_ticks_2[0] = 4;
+        electric_water_side_arc_regrow_delays_2[0] = 8;
+        electric_water_side_arc_regrow_delays_3[0] = 4;
+        electric_water_side_arc_fade_ticks_3[0] = 2;
         (*(int *)&electric_water_bolt_wave_phase) = 0;
         (*(int *)&electric_water_mirror_bolt_phase) = 0;
         (*(int *)&electric_water_mirror_bolt_height_phase) = 0;
@@ -627,12 +627,12 @@ extern short quartu_beam_arc_outer_color_r __asm__("D_L15_00161CE0");
 extern short electric_water_spark_speed;
 extern short electric_water_bolt_wander_blend;
 extern float frame_scale MACRO_ADDR;
-extern V_2d8fa0 D_L15_001D3A10[];
+extern V_2d8fa0 electric_water_bolt_points_base[];
 extern V_2d8fa0 electric_water_bolt_points_r2[2][20] __asm__("D_L15_001D3A20");
 extern V_2d8fa0 electric_water_mirror_bolt_side_offsets[];
 extern float electric_water_bolt_wave_offsets[];
 extern float electric_water_mirror_bolt_height_offsets[];
-extern H_2d8fa0 D_L15_001D3E70[];
+extern H_2d8fa0 electric_water_side_arc_points_base[];
 extern P_2d8fa0 electric_water_side_arc_points_r[] __asm__("D_L15_001D3E80");
 extern short first_side_arc_fade_level_r[] __asm__("D_L15_00161D48") MACRO_ADDR;
 extern short electric_water_side_arc_regrow_delays[] MACRO_ADDR;
@@ -690,11 +690,11 @@ void update_electric_water_bolt_effect(Moby *moby) {
             qcopy(&electric_water_bolt_points_r2[0][i], &electric_water_bolt_points_r2[0][i - 1]);
         } else {
             FastVecScale(&s[2], &s[2], scale / len0);
-            FastVecAdd(&electric_water_bolt_points_r2[0][i], &D_L15_001D3A10[i], &s[2]);
+            FastVecAdd(&electric_water_bolt_points_r2[0][i], &electric_water_bolt_points_base[i], &s[2]);
             qcopy(&s[3], &s[2]);
         }
         electric_water_bolt_points_r2[0][i].f[2] = electric_water_bolt_points_r2[0][i].f[2] + f21;
-        FastVecSub(&s[1], &electric_water_bolt_points_r2[0][i], &D_L15_001D3A10[i]);
+        FastVecSub(&s[1], &electric_water_bolt_points_r2[0][i], &electric_water_bolt_points_base[i]);
         FastVecSub(&s[5], &data->c, &electric_water_bolt_points_r2[0][i]);
         len = FastVecLength(&s[5]);
         if (len != 0.0f) {
@@ -763,23 +763,23 @@ void update_electric_water_bolt_effect(Moby *moby) {
             FastVecAdd(&electric_water_side_arc_points_r[k].p[1], &s[8], &s[5]);
             t = 1.0f;
             for (j = 2; j < 5; j++) {
-                FastVecSub(&s[9], &D_L15_001D3E70[k].p[j - 1], quartu_camera_pos_r);
+                FastVecSub(&s[9], &electric_water_side_arc_points_base[k].p[j - 1], quartu_camera_pos_r);
                 f20 = random_float_between(0.17453292f, 0.959931076f) * t;
                 t = -t;
                 build_look_at_matrix(&s[5], &s[5], &s[9], f20);
-                FastVecAdd((electric_water_side_arc_points_r[k].p + j), &D_L15_001D3E70[k].p[j - 1], &s[5]);
+                FastVecAdd((electric_water_side_arc_points_r[k].p + j), &electric_water_side_arc_points_base[k].p[j - 1], &s[5]);
             }
         } else {
             int j;
             for (j = 1; j < 5; j++) {
-                FastVecSub(&d[j], (electric_water_side_arc_points_r[k].p + j), &D_L15_001D3E70[k].p[j - 1]);
+                FastVecSub(&d[j], (electric_water_side_arc_points_r[k].p + j), &electric_water_side_arc_points_base[k].p[j - 1]);
                 d[j].f[0] += randf_sym(0.0f, 0.1f);
                 d[j].f[1] += randf_sym(0.0f, 0.1f);
                 d[j].f[2] += randf_sym(0.0f, 0.1f);
             }
             qcopy(&electric_water_side_arc_points_r[k].p[0], &s[8]);
             for (j = 1; j < 5; j++) {
-                FastVecAdd((electric_water_side_arc_points_r[k].p + j), &D_L15_001D3E70[k].p[j - 1], &d[j]);
+                FastVecAdd((electric_water_side_arc_points_r[k].p + j), &electric_water_side_arc_points_base[k].p[j - 1], &d[j]);
             }
             {
                 int x = electric_water_side_arc_fade_ticks[k];
@@ -1025,7 +1025,7 @@ extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
 extern void set_moby_color(void *, int, int, int);
 extern void set_moby_list_state(int list, int state);
-extern char D_L15_001BBB40[];
+extern char quartu_collected_flags_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern int quartu_moby_killed[];
 extern char help_stats_base[];
@@ -1098,7 +1098,7 @@ void underwater_ring_update(unsigned char *moby) {
     case 1:
     case 2:
         save_id = ((Moby *)moby)->save_id;
-        save_byte = (unsigned char *)D_L15_001BBB40;
+        save_byte = (unsigned char *)quartu_collected_flags_base;
         save_byte -= -(short)save_id;
         if (save_byte[0x454] != 0 ||
             ((((int)*(unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) + (unsigned char *)(help_stats_base + 0xAB75))) >> (save_id & 31)) & 1) != 0) {

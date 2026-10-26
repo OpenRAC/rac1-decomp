@@ -123,7 +123,7 @@ unsigned char *spawn_ship_pickup(char *position, int moby_class)
 extern Hero g_hero;
 extern struct Moby *gemlik_moby_array_start MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-extern int D_L13_001741D8 __attribute__((section(".data")));
+extern int gemlik_coll_hit_moby __attribute__((section(".data")));
 extern int fast_dec_timer(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int coll_sphere(float, void *, int, void *);
@@ -199,8 +199,8 @@ void ShipPickupUpdate(char *moby) {
         if (1003.0f < ((Moby *)moby)->pos.z) ((Moby *)moby)->pos.z = 1003.0f;
         Moby_GetJointWorldPos(moby, 0, position);
         ((Moby *)moby)->scale += (*(float *)(*(char **)(moby + 0x24) + 0x24) - ((Moby *)moby)->scale) * 0.1f;
-        if (coll_sphere(2.0f, position, 1, moby) && D_L13_001741D8 != 0) {
-            short cls = *(short *)(D_L13_001741D8 + 0xa6);
+        if (coll_sphere(2.0f, position, 1, moby) && gemlik_coll_hit_moby != 0) {
+            short cls = *(short *)(gemlik_coll_hit_moby + 0xa6);
             if (cls == 0x4da || cls == 0x45 || cls == 0x563) hit = 1;
         }
         if (g_hero.state.current == 0x32 && hero_moby != 0 &&
@@ -350,7 +350,7 @@ extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
-extern Tex_2E8040 D_L13_001B2680_2E8040 __asm__("D_L13_001B2680");
+extern Tex_2E8040 gemlik_part_type_textures_r __asm__("D_L13_001B2680");
 extern Vec4A gemlik_coll_hit_point_r __asm__("D_L13_001741E0");
 
 /* Update for the rocket (class 295): smoke trail, steering toward its target, collision and expiry. */
@@ -383,7 +383,7 @@ void update_ship_rocket(Moby *m) {
         FastVecAdd_r(&tmp, &tmp, &*(Vec4A *)&m->pos);
         p = PartType44Spawn_r(&tmp, (float *)&vel, scale_ticks_r(0x3C), 0x7F, 0x606060, 3, 40000.0f, 1000.0f, 1.0f, -0.0002f, 0.0f);
         if (p != 0) {
-            Tex_2E8040 *tex = &D_L13_001B2680_2E8040;
+            Tex_2E8040 *tex = &gemlik_part_type_textures_r;
             p[2] = *tex->p5C;
             p[3] = 0x48;
         }

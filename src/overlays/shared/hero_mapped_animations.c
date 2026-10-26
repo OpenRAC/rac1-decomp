@@ -317,7 +317,7 @@ extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern char hero_anim_slot_positions[];
 extern short hero_anim_blend_presets;
 extern int SlotTable_Insert(void *);
-extern void func_L00_00252D20(void *, int);
+extern void moby_blend_anim_frames_to_spr_slot(void *, int);
 extern void flush_cache(int);
 extern void update_moby_animation_state(void *);
 extern int truncate_float_to_s32(float);
@@ -348,7 +348,7 @@ void set_hero_animation(int a0, int a1, float t) {
     }
     slot = SlotTable_Insert(obj);
     if (slot >= 0) {
-        func_L00_00252D20(obj, slot | 0x300);
+        moby_blend_anim_frames_to_spr_slot(obj, slot | 0x300);
         flush_cache(0);
         e = hero_anim_slot_positions + slot * 16;
         qcopy(e, obj);
@@ -1195,13 +1195,13 @@ float compute_gravity_relative_vector_inclination(float *v) {
 }
 typedef struct { u8 pad[0xE]; u16 max; u8 pad2[8]; } AmmoInfo;
 extern AmmoInfo item_price_table[];
-extern int D_00140508;
+extern int g_hero_equipped_item_id;
 extern int weapon_ammo_counts[];
 extern int weapon_ammo_used[];
 /* takes amount from the weapon's ammo (the current weapon for -1): 1 when taken or the weapon has no ammo limit, 0 when there is too little */
 int use_ammo(int id, int amount) {
     AmmoInfo *e;
-    if (id == -1) id = D_00140508;
+    if (id == -1) id = g_hero_equipped_item_id;
     e = &item_price_table[id];
     if (e->max == 0) return 1;
     if (weapon_ammo_counts[id] < amount) return 0;
@@ -1231,7 +1231,7 @@ int add_ammo(int a, int b) {
 /* the weapon's ammo (the current weapon for -1), or 1 when it has no ammo limit */
 int get_ammo(int id) {
     AmmoInfo *e;
-    if (id == -1) id = D_00140508;
+    if (id == -1) id = g_hero_equipped_item_id;
     e = &item_price_table[id];
     if (e->max == 0) return 1;
     return weapon_ammo_counts[id];
@@ -1269,7 +1269,7 @@ int get_hero_target_pose_status(void) {
     return 0;
 }
 // Returns the constant 2.
-int func_L00_002347F0(void) {
+int shared_return_two(void) {
     return 2;
 }
 typedef struct {

@@ -6,14 +6,14 @@ void alien_queen_update(unsigned char *moby)
 
     update_alien_queen_hit_response_and_recovery(moby);
     target = *(char **)(data + 0xB0);
-    Manipulator_ApplyScale_q(moby, *(int *)&D_L06_00161F80, 1.9f, data + 0x130);
-    if ((unsigned char)moby[0x31] != 0 && FastVecDist_q(moby + 0x10, D_L06_00167640_q) < 45.0f) {
+    Manipulator_ApplyScale_q(moby, *(int *)&alien_queen_scale_manip_flag, 1.9f, data + 0x130);
+    if ((unsigned char)moby[0x31] != 0 && FastVecDist_q(moby + 0x10, blarg_camera_pos_q) < 45.0f) {
         set_ground_height_band_q(moby);
         moby[0x7F] = 0x24;
     }
     if ((unsigned char)moby[0x20] >= 3 && (unsigned char)moby[0x20] <= 13) {
         *(int *)(data + 0x10C) = queue_animation_update_q(0x16, 0xFFFF, reset_numeric_hud_element_q, Hud_UpdateCounter_q,
-                                                 func_L06_0024A080_q + 0x20, data + 0x110, 0x1EF);
+                                                 draw_segmented_hud_meter_base_q + 0x20, data + 0x110, 0x1EF);
     }
     switch ((unsigned char)moby[0x20]) {
     case 0: {
@@ -323,8 +323,8 @@ void alien_queen_update(unsigned char *moby)
         int i;
         char *m = 0;
         for (i = 0; i < 0x30; i++) {
-            if (D_L06_0016A110[i] != 0) {
-                m = D_L06_001679D0 + i * 0xA0;
+            if (blarg_camera_slot_used[i] != 0) {
+                m = blarg_camera_slots + i * 0xA0;
                 if (*(short *)(m + 0x86) == 0x12) {
                     SetTableEntryFlagIfKind18_q(m);
                     break;

@@ -8,7 +8,7 @@ typedef struct { float f[4]; } __attribute__((aligned(16))) V4h;
 extern Hero g_hero;
 typedef struct { char pad0[0x44]; int use_state_40; char pad48[8]; int item_id; char pad54[4]; float interval; char pad5c[4]; int duration_frames; char pad64[0xC]; } Ent;
 extern Ent idle_fidgets[] NOT_SDA;
-extern int D_L00_00179BB0 NOT_SDA;
+extern int idle_fidgets_field_220 NOT_SDA;
 extern int g_current_level_index MACRO_ADDR;
 extern char hero_globals_base[];
 extern int hero_slot_item_id(int);
@@ -33,7 +33,7 @@ int pick_idle_fidget(int *index) {
     if (g_hero.fidget_cooldown != 0) return 0;
     if (g_hero.health.hp == 1) {
         *index = 4;
-        if (D_L00_00179BB0 != 0) return 0;
+        if (idle_fidgets_field_220 != 0) return 0;
         if (!(g_hero.anim_flags & 2)) return 0;
         return random_float_between(0.0f, 1.0f) < 0.33f;
     }
@@ -97,7 +97,7 @@ extern int hero_idle_sequence(int);
 extern void HeroQueueSequence(int bank, int seq);
 extern short g_frame_time_r __asm__("D_0015EE6C");
 extern float g_frame_scale_sq MACRO_ADDR;
-extern int D_L00_0015F7BC MACRO_ADDR;
+extern int hero_run_step_start_frames_1 MACRO_ADDR;
 
 /* Menu/hint update: picks an action for the player from the game block's timers and flags. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00229010.c, FUN_L00_002293a8. */
 void update_hero_locomotion_state(void) {
@@ -126,7 +126,7 @@ void update_hero_locomotion_state(void) {
             *(int *)(c + 0x2088) = 1;
             n = scale_ticks(8);
             if (scale_ticks(5) < *(int *)(c + 0x418)) n = scale_ticks(14);
-            set_hero_animation(4, D_L00_0015F7BC, (float)n);
+            set_hero_animation(4, hero_run_step_start_frames_1, (float)n);
             *(short *)(c + 0x3BC) = 1;
         }
         return;

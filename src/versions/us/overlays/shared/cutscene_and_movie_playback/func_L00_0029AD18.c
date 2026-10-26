@@ -10,9 +10,9 @@ void play_queued_movie(void) {
         }
         memcard_update_state();
     }
-    Movie_Play(queued_movie_request, D_L00_0016110C,
-                  (*(int *)&D_L00_00161114 + 0x3F) & ~0x3F,
-                  (D_L00_00161118 + 0x3F) & ~0x3F, D_L00_00161110);
+    Movie_Play(queued_movie_request, movie_request_source_mode,
+                  (*(int *)&movie_request_decoder_buffer + 0x3F) & ~0x3F,
+                  (movie_request_decoder_state + 0x3F) & ~0x3F, movie_request_audio_context);
     sce_cd_sync_s(0);
     movie_exit_to_gameplay();
 }

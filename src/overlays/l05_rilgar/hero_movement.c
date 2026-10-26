@@ -39,20 +39,20 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int rilgar_frame_count MACRO_ADDR;
-extern short D_L05_0015F768;
-extern short D_L05_0015F76C;
+extern short rilgar_usage_event_timer;
+extern short rilgar_usage_event_count;
 extern unsigned char *rilgar_water_patches MACRO_ADDR;
 extern int rilgar_water_patch_count MACRO_ADDR;
 extern Cam rilgar_player_camera;
-extern float D_L05_001672D8;
+extern float rilgar_player_camera_yaw;
 extern Moby *rilgar_nearby_mobys[];
-extern FVec4 D_L05_00179CE0[];
+extern FVec4 rilgar_hero_air_pose_vectors[];
 extern Bone rilgar_lean_state[];
 extern Rec2C rilgar_attack_records[];
 extern S17BEB8 rilgar_hero_speed_bands;
-extern float D_L05_0017C324;
+extern float rilgar_hero_speed_bands_3;
 extern float rilgar_swim_stroke_curve[];
-extern float D_L05_001C4430[];
+extern float rilgar_hero_ledge_shimmy_frame_speeds[];
 extern void emit_hero_periodic_surface_effect(int, int);
 extern void build_scaled_hero_move_impulse(float, float);
 extern void stop_hero_motion_without_forward_support(float, float);
@@ -211,8 +211,8 @@ void Hero_UpdateMovement(void) {
                     matrix_mul_vec3(g_hero.motion.move_dir.f, vec[0], rilgar_player_camera.f350);
                     g_hero.motion.move_yaw = rilgar_player_camera.f158;
                     turn_to(g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f, 0);
-                    if (*(int *)&D_L05_0015F768 > 0) {
-                        if (fast_dec_timer((int *)&D_L05_0015F768)) {
+                    if (*(int *)&rilgar_usage_event_timer > 0) {
+                        if (fast_dec_timer((int *)&rilgar_usage_event_timer)) {
                             if (usage_stats.f90 < 0xFFFF) {
                                 usage_stats.f90++;
                             }
@@ -220,8 +220,8 @@ void Hero_UpdateMovement(void) {
                                 usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.f94 = usage_stats.f94 | (1 << g_current_level_index) | 0x80000000;
-                            *(int *)&D_L05_0015F768 = -1;
-                            (*(int *)&D_L05_0015F76C)++;
+                            *(int *)&rilgar_usage_event_timer = -1;
+                            (*(int *)&rilgar_usage_event_count)++;
                         }
                     }
                 }
@@ -950,7 +950,7 @@ void Hero_UpdateMovement(void) {
                 float y;
 
                 g_hero.motion.yaw_rate = 0.0f;
-                qcopy(vec[0], D_L05_00179CE0[g_hero.air_pose_index]);
+                qcopy(vec[0], rilgar_hero_air_pose_vectors[g_hero.air_pose_index]);
                 smooth_and_clamp_value_pair(vec[1], g_hero.smoothed_spin_stick.f, g_frame_scale_sq * 0.2f);
                 x = -vec[1][0] * (g_frame_time * 12.217304f);
                 y = -vec[1][1] * (g_frame_time * 12.217304f);
@@ -1806,7 +1806,7 @@ void Hero_UpdateMovement(void) {
                         k = 0.0f;
                     }
                 }
-                if (sp > D_L05_0017C324) {
+                if (sp > rilgar_hero_speed_bands_3) {
                     turn_hero_toward_move_direction_with_stick_scale();
                 } else {
                     float t;
@@ -1955,7 +1955,7 @@ void Hero_UpdateMovement(void) {
                         spd = g_hero.motion.flat_speed;
                         ApproachValue(&spd, g_hero.target_speed * g_frame_time, g_frame_time_sq * 5.0f);
                         FastVecSub(g_hero.motion.velocity.f, vec[5], g_hero.motion.pos.f);
-                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, D_L05_001C4430[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
+                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, rilgar_hero_ledge_shimmy_frame_speeds[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
                     }
                 }
             }
@@ -2035,7 +2035,7 @@ void Hero_UpdateMovement(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L05_001672D8;
+                g_hero.motion.move_yaw = rilgar_player_camera_yaw;
                 turn_to(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f, 0);
                 g_hero.motion.move_yaw = keep;
             }

@@ -10,7 +10,7 @@
 extern char hero_globals_base[];
 extern int *oltanis_paths[];
 typedef struct { char pad0[0x454]; unsigned char collected[1]; } CapLevelState;
-extern CapLevelState D_L14_001BBCC0;
+extern CapLevelState oltanis_collected_flags_base;
 extern unsigned char help_stats_base[] NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int oltanis_moby_killed_bits[];
@@ -129,7 +129,7 @@ void KeyframePlatformUpdate(unsigned char *moby) {
         u16 id;
 
         if (vars->trigger == -1 || is_point_inside_clip_volume(&hero.motion.pos, vars->trigger) ||
-            D_L14_001BBCC0.collected[(s16)(id = m->save_id)] != 0 ||
+            oltanis_collected_flags_base.collected[(s16)(id = m->save_id)] != 0 ||
             (level_moby_killed[g_current_level_index_m][(s16)id >> 5] >> (id & 0x1F)) & 1) {
             if (vars->trigger != -1) {
                 level_moby_killed[g_current_level_index_m][(s16)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
@@ -2882,7 +2882,7 @@ struct L14RaceState {
 extern short race_paths_r __asm__("D_L14_0015F7EC");
 extern struct L14RaceState * race_state;
 extern s32 D_L14_00161AFC_D7250 SDATA(D_L14_00161AFC);
-extern short D_L14_00161B04;
+extern short oltanis_racer_state5_delay_ticks;
 extern short oltanis_racer_death_debris_params;
 extern void AttachManipulator(void *arg0, s32 arg1, void *arg2);
 extern int fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
@@ -2954,7 +2954,7 @@ void update_level14_racer(struct Moby *m) {
     case 4:
         if (func_L14_002D77E0_D7250(m)) {
             m->state = 5;
-            d->timer = scale_ticks((*(s32 *)&D_L14_00161B04));
+            d->timer = scale_ticks((*(s32 *)&oltanis_racer_state5_delay_ticks));
         }
         break;
     case 5:
@@ -3508,7 +3508,7 @@ void update_moby_joint_visual_effects(char *m) {
     AddDrawCallback(draw_racer_glow_quads, m);
 }
 extern void update_platform_tilt_basis_m(Moby *, f32, f32) __asm__("func_L14_002DF6B8");
-extern float D_L14_00161BCC SDATA(D_L14_00161BCC);
+extern float oltanis_tilting_platform_tilt_arg SDATA(D_L14_00161BCC);
 
 /* Adapted from Lombyte's project (the US decompilation): FUN_L14_002de1f8. */
 void update_tilting_platform(Moby *moby) {
@@ -3530,7 +3530,7 @@ void update_tilting_platform(Moby *moby) {
     } else {
         rotation = &moby->rot;
     }
-    update_platform_tilt_basis_m(moby, D_L14_00161BCC, 8.0f);
+    update_platform_tilt_basis_m(moby, oltanis_tilting_platform_tilt_arg, 8.0f);
     update_entity_matrix(data + 0x20, oltanis_zero_vector, &old_rotation, rotation);
 }
 typedef int u128_s07 __attribute__((mode(TI)));

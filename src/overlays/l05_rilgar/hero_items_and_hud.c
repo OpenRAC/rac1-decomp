@@ -27,10 +27,10 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float rilgar_hero_fall_state_height MACRO_ADDR;
 extern int rilgar_shown_help_message MACRO_ADDR;
-extern int D_L05_0015F7CC MACRO_ADDR;
+extern int rilgar_hero_run_step1_start_frame MACRO_ADDR;
 extern short rilgar_hero_double_tap_timer;
-extern float D_L05_001672D8;
-extern int D_L05_0016CC80;
+extern float rilgar_player_camera_yaw;
+extern int rilgar_hero_state_1e_clear_word;
 extern S17ABE0 rilgar_lean_state;
 extern Rec70 rilgar_idle_fidgets[];
 extern Rec4C rilgar_item_defs[];
@@ -352,7 +352,7 @@ void HeroL05_UpdateStateTransitions(void) {
                         if (g_hero.state.prev == 1 || g_hero.state.prev == 0x1E) {
                             if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
                                 stick_target(0, 1.0f);
-                                if (FastDiffRots(g_hero.motion.move_yaw, D_L05_001672D8) > 1.2217305f) {
+                                if (FastDiffRots(g_hero.motion.move_yaw, rilgar_player_camera_yaw) > 1.2217305f) {
                                     ok = 0;
                                 }
                             }
@@ -1384,7 +1384,7 @@ void HeroL05_UpdateStateTransitions(void) {
                         Hero_TryMoveStateL05(2, 0);
                         if (g_hero.state.current == 2) {
                             g_hero.state.step = 1;
-                            set_hero_animation(4, D_L05_0015F7CC, scale_ticks(0xC));
+                            set_hero_animation(4, rilgar_hero_run_step1_start_frame, scale_ticks(0xC));
                         }
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                         break;
@@ -2053,7 +2053,7 @@ void HeroL05_UpdateStateTransitions(void) {
                             set_hero_animation(a, 0, scale_ticks(8));
                         }
                     }
-                    D_L05_0016CC80 = 0;
+                    rilgar_hero_state_1e_clear_word = 0;
                     break;
                 case 32:
                     if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {

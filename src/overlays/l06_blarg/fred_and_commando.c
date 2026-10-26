@@ -24,7 +24,7 @@ extern short blarg_quad_mesh_second_color;
 extern short dual_texture_mesh_scale;
 extern short dual_texture_mesh_u_scroll_scale;
 extern short dual_texture_mesh_v_scroll_scale;
-extern float D_L06_00167640_FE5D0[] __asm__("D_L06_00167640");
+extern float blarg_camera_pos_r[] __asm__("D_L06_00167640");
 extern float dual_mesh50_uvs[][2];
 extern short dual_mesh50_corner_indices[][4][2];
 extern float dual_mesh50_verts[][4];
@@ -74,7 +74,7 @@ void draw_dual_texture_50_quad_mesh(void) {
     do {
         FastVecScale(vec1, dual_mesh50_centers[i], (*(float *)&dual_texture_mesh_scale));
         transform_vector(vec1, vec1, matrix);
-        FastVecSub(vec2, vec1, D_L06_00167640_FE5D0);
+        FastVecSub(vec2, vec1, blarg_camera_pos_r);
         vec_scale_to_length(vec2, vec2, 1.0f);
         matrix_mul_vec3(vec1, dual_mesh50_normals[i], matrix_ptr);
         FastVecDot(vec2, vec1);
@@ -117,7 +117,7 @@ extern short blarg_quad_mesh_second_color;
 extern short dual_texture_mesh_scale;
 extern short dual_texture_mesh_u_scroll_scale;
 extern short dual_texture_mesh_v_scroll_scale;
-extern float D_L06_00167640_FE890[] __asm__("D_L06_00167640");
+extern float blarg_camera_pos_r2[] __asm__("D_L06_00167640");
 extern short dual_mesh58_corner_indices[][4][2];
 extern float dual_mesh58_uvs[][2];
 extern float dual_mesh58_verts[][4];
@@ -171,7 +171,7 @@ void draw_dual_texture_58_quad_mesh(void) {
     do {
         FastVecScale(vec1, dual_mesh58_centers[i], (*(float *)&dual_texture_mesh_scale));
         transform_vector(vec1, vec1, matrix);
-        FastVecSub(vec2, vec1, D_L06_00167640_FE890);
+        FastVecSub(vec2, vec1, blarg_camera_pos_r2);
         vec_scale_to_length(vec2, vec2, 1.0f);
         matrix_mul_vec3(vec1, dual_mesh58_normals[i], matrix_ptr);
         facing = FastVecDot(vec2, vec1);
@@ -218,7 +218,7 @@ extern short blarg_quad_mesh_second_color;
 extern short dual_texture_mesh_scale;
 extern short dual_texture_mesh_u_scroll_scale;
 extern short dual_texture_mesh_v_scroll_scale;
-extern float D_L06_00167640_FEB78[] __asm__("D_L06_00167640");
+extern float blarg_camera_pos_r3[] __asm__("D_L06_00167640");
 extern short dual_mesh864_corner_indices[][4][2];
 extern float dual_mesh864_uvs[][2];
 extern float dual_mesh864_verts[][4];
@@ -272,7 +272,7 @@ void draw_dual_texture_864_quad_mesh(void) {
     do {
         FastVecScale(vec1, dual_mesh864_centers[i], (*(float *)&dual_texture_mesh_scale));
         transform_vector(vec1, vec1, matrix);
-        FastVecSub(vec2, vec1, D_L06_00167640_FEB78);
+        FastVecSub(vec2, vec1, blarg_camera_pos_r3);
         vec_scale_to_length(vec2, vec2, 1.0f);
         matrix_mul_vec3(vec1, dual_mesh864_normals[i], matrix_ptr);
         facing = FastVecDot(vec2, vec1);
@@ -397,7 +397,7 @@ extern void draw_tube_mesh64_twin(void);
 extern void DrawBackdropMesh(void);
 
 extern int scripted_camera_sequence_active MACRO_ADDR;
-extern int D_L06_0015F508 MACRO_ADDR;
+extern int scripted_camera_sequence_mode MACRO_ADDR;
 extern short blarg_tube_scale;
 extern short blarg_tube_fade_ticks;
 extern short blarg_tube_camera_pitch_deg;
@@ -731,7 +731,7 @@ void EffectQuad_DrawSingle(void) {
     for (i = 0; i < 96; i++) {
         FastVecScale(center, &blarg_tube_mesh96_centers[i], (*(float *)&blarg_tube_mesh_scale));
         transform_vector(center, center, mat);
-        FastVecSub(dir, center, D_L06_00167640_FEB78);
+        FastVecSub(dir, center, blarg_camera_pos_r3);
         vec_scale_to_length(dir, dir, 1.0f);
         matrix_mul_vec3(center, &blarg_tube_mesh96_normals[i], mp);
         if (FastVecDot(dir, center) > 0.0f)
@@ -868,7 +868,7 @@ extern void BuildSphericalOffset(void *, float, float, float);
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r(float, float, void *, void *, int) __asm__("func_L00_00263950");
 
-extern char D_L06_00167640[];
+extern char blarg_camera_pos[];
 extern char fred_dialogue_name[];
 extern int level_game_mode_q MACRO_ADDR;
 extern float blarg_fade_level MACRO_ADDR;
@@ -878,7 +878,7 @@ extern Obj_3024C8 *blarg_camera_moby;
 extern char blarg_help_popup_state[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern unsigned char race_gates_base[];
-extern int D_0013D9B4;
+extern int race_gates_47_flag;
 extern Hero hero_globals_base_r __asm__("D_0013E633");
 
 /* Update of moby class 1105 (fred): steps the conversation and camera states, then turns the head toward the hero. */
@@ -897,14 +897,14 @@ void fred_update(Moby *moby) {
     float rate, head_rate;
     int tracking;
     attach_shared_manipulator_to_matching_class_moby((char *)moby);
-    if (moby->visible != 0 && FastVecDist(((float *)&moby->pos), D_L06_00167640) < 24.0f) {
+    if (moby->visible != 0 && FastVecDist(((float *)&moby->pos), blarg_camera_pos) < 24.0f) {
         set_ground_height_band(moby);
         moby->shadow_range = 0x13;
     }
     switch (moby->state) {
     case INITIALIZE_FRED_DIALOGUE:
         if (*(race_gates_base + 8) != 0) goto del;
-        if (D_0013D9B4 == 0) {
+        if (race_gates_47_flag == 0) {
             if (moby->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
@@ -1423,7 +1423,7 @@ extern char blarg_paths_r2[] __asm__("D_L06_001B0FB0");
 extern char *blarg_scene_points MACRO_ADDR;
 extern int blarg_shown_help_message MACRO_ADDR;
 extern int blarg_shuttle_at_second_stop MACRO_ADDR;
-extern float D_L06_00162184 SDATA(D_L06_00162184);
+extern float shuttle_alt_scale SDATA(D_L06_00162184);
 extern float shuttle_scale SDATA(D_L06_00162188);
 extern int shuttle_forced_departure SDATA(D_L06_00162190);
 extern int blarg_explosion_flash_pending SDATA(D_L06_00162194);
@@ -1492,20 +1492,20 @@ void ShuttleUpdate(Moby *moby) {
                 case 0:
                     d->sel = 1;
                     d->fC4 = shuttle_scale;
-                    d->fC8 = D_L06_00162184;
+                    d->fC8 = shuttle_alt_scale;
                     d->side = 0;
                     MusicRequestTrack(4, 8);
                     break;
                 case 1:
                     d->side = 1;
-                    d->fC4 = D_L06_00162184;
+                    d->fC4 = shuttle_alt_scale;
                     d->fC8 = shuttle_scale;
                     d->sel = 0;
                     MusicRequestTrack(0, 10);
                     break;
                 case 2:
                     d->side = 2;
-                    d->fC4 = D_L06_00162184;
+                    d->fC4 = shuttle_alt_scale;
                     d->fC8 = shuttle_scale;
                     d->sel = 0;
                     break;
@@ -1631,7 +1631,7 @@ void ShuttleUpdate(Moby *moby) {
     case 2:
         if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->fF0) != 0) {
             d->side = 2;
-            d->fC4 = D_L06_00162184;
+            d->fC4 = shuttle_alt_scale;
             d->fC8 = shuttle_scale;
             d->sel = 0;
             d->go = 1;
@@ -1675,7 +1675,7 @@ void ShuttleUpdate(Moby *moby) {
     FastVecSub(delta, ((float *)&moby->pos), old_pos);
     update_entity_matrix(d->area, delta, old_rot, ((float *)&moby->rot));
 }
-extern unsigned short D_00141D00 NOT_SDA;
+extern unsigned short help_records_83_count NOT_SDA;
 extern unsigned char saved_mission_state[];
 extern void try_set_help_message(int, int);
 
@@ -1705,7 +1705,7 @@ void update_shuttle_route_selection_and_prompt(char *m) {
         *(int *)(d + 0x9C) = 4;
         break;
     }
-    if (D_00141D00 == 0 && *(int *)(d + 0x9C) == 0 && (*(unsigned char *)&gHelpDeskText_i != 0 || *(unsigned char *)&gHelpDeskVoice_i != 0)) {
+    if (help_records_83_count == 0 && *(int *)(d + 0x9C) == 0 && (*(unsigned char *)&gHelpDeskText_i != 0 || *(unsigned char *)&gHelpDeskVoice_i != 0)) {
         Help_Request(0x177A, 0x53);
         *(int *)(d + 0x9C) = -1;
         return;
@@ -2408,7 +2408,7 @@ void update_moby_vector_streams_and_particle_burst(char *moby)
                 d->timer[i]--;
             }
         }
-        if (FastVecDist(moby + 0x10, D_L06_00167640) < 48.0f) {
+        if (FastVecDist(moby + 0x10, blarg_camera_pos) < 48.0f) {
             AddDrawCallback((int)draw_moby_vector_streams, moby);
         }
         if (d->f14 >= 0 && *(unsigned char *)(level_mobys_q + 0xBC + (d->f14 << 8)) != 0) {
@@ -2577,7 +2577,7 @@ struct UsageStat {
 };
 extern struct UsageStat help_records[];
 extern s32 gameplay_event_frame_count MACRO_ADDR;
-extern u8 D_0013D5D6[];
+extern u8 item_available_14[];
 extern u8 gSpecialItems[];
 extern int Help_Request(int, int);
 extern int count_active_moby_group_members(int, int);
@@ -2603,7 +2603,7 @@ void update_level06_help_hints(struct Moby *moby) {
     if (help_records[0x2E].count == 0 || help_records[0x2F].count == 0) {
         struct Moby *target = (struct Moby *)(level_mobys_q + (vars[10] << 8));
         if (target == 0 || target->state == 0xFE || target->state == 0xFD) {
-            if (D_0013D5D6[0]) {
+            if (item_available_14[0]) {
                 Help_Request(0x1777, 0x2E);
                 if (help_records[0x2F].count <= 0xFFFE) {
                     help_records[0x2F].count++;

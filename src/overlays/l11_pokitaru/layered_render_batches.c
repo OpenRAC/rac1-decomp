@@ -64,7 +64,7 @@ extern Pair8_31F760 pokitaru_layered_scroll_entries[] MACRO_ADDR;
 extern char pokitaru_player_camera[];
 extern PairA_31F760 pokitaru_layered_uv_scroll[];
 extern PairA_31F760 pokitaru_layered_wobble_phase[] MACRO_ADDR;
-extern float D_L11_0016262C[] MACRO_ADDR;
+extern float pokitaru_layered_scroll_entries_b[] MACRO_ADDR;
 extern PairA_31F760 pokitaru_layered_2b_scroll[] MACRO_ADDR;
 extern float layered_effect_pos_y MACRO_ADDR;
 extern float layered_effect_position_z MACRO_ADDR;
@@ -103,7 +103,7 @@ void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
         }
         for (i = 0; i < 2; i++) {
             pokitaru_layered_scroll_entries[i].a = 0;
-            D_L11_0016262C[i * 2] = i * 0.4f;
+            pokitaru_layered_scroll_entries_b[i * 2] = i * 0.4f;
         }
         for (i = 0; i < 1; i++) {
             pokitaru_layered_2b_scroll[i].a = 0;
@@ -235,7 +235,7 @@ extern int oil_tanker_2b_mesh_colors[];
 extern int oil_tanker_2b_mesh_vertex_counts[];
 extern PairA_3205C0 pokitaru_faded_uv_scroll_p[] __asm__("D_L11_00217A18");
 extern PairA_3205C0 distance_faded_effect_sine_phase_p[] __asm__("D_L11_001626C0") MACRO_ADDR;
-extern float D_L11_001626AC[] MACRO_ADDR;
+extern float pokitaru_faded_scroll_entries_b[] MACRO_ADDR;
 extern PairA_3205C0 pokitaru_faded_2b_scroll[] MACRO_ADDR;
 extern float distance_faded_effect_position_y MACRO_ADDR;
 extern float distance_faded_effect_position_z MACRO_ADDR;
@@ -279,7 +279,7 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
         }
         for (i = 0; i < 2; i++) {
             pokitaru_faded_scroll_entries[i].a = 0;
-            D_L11_001626AC[i * 2] = i * 0.4f;
+            pokitaru_faded_scroll_entries_b[i * 2] = i * 0.4f;
         }
         for (i = 0; i < 1; i++) {
             pokitaru_faded_2b_scroll[i].a = 0;

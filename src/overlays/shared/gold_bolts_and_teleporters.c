@@ -589,7 +589,7 @@ void attach_cutscene_fixed_scale_manipulator(void) {
 extern void attach_cutscene_fixed_scale_manipulator_m(char *) __asm__("func_L01_002FC890");
 extern char cutscene_trigger_error_fmt[];
 typedef struct { char pad0[0x454]; unsigned char collected[1]; } TpLevelState_fc988;
-extern TpLevelState_fc988 D_L01_001BB9C0_s __asm__("D_L01_001BB9C0");
+extern TpLevelState_fc988 novalis_checkpoint_level_state_s __asm__("D_L01_001BB9C0");
 extern char camera_pos_c[] __asm__("D_L01_001672C0");
 extern char *camera_points_c __asm__("D_L01_0016016C") MACRO_ADDR;
 extern int cutscene_active MACRO_ADDR;
@@ -630,7 +630,7 @@ void update_cutscene_trigger(char *m) {
         break;
     case 1: {
         char *g;
-        if (D_L01_001BB9C0_s.collected[(short)((Moby *)m)->save_id] != 0) {
+        if (novalis_checkpoint_level_state_s.collected[(short)((Moby *)m)->save_id] != 0) {
             m[0x20] = 1;
             break;
         }
@@ -940,7 +940,7 @@ typedef struct {
     u8 pad0[0x454];
     u8 collected[1];
 } L01LevelState_015F8;
-extern L01LevelState_015F8 D_L01_001BB9C0_015F8 __asm__("D_L01_001BB9C0");
+extern L01LevelState_015F8 novalis_checkpoint_level_state_r __asm__("D_L01_001BB9C0");
 extern L01LevelState_015F8 novalis_current_level_state_r __asm__("D_L01_001BAD60");
 extern s32 moby_killed_r[] __asm__("D_L01_001BAC60");
 extern u8 saved_mission_state_r[] __asm__("D_0014C150");
@@ -988,7 +988,7 @@ void spawn_point_update(struct Moby *moby) {
     } else {
         vars->in_volume = 0;
     }
-    if (armed || D_L01_001BB9C0_015F8.collected[(s16)moby->save_id] != 0 ||
+    if (armed || novalis_checkpoint_level_state_r.collected[(s16)moby->save_id] != 0 ||
         ((level_moby_killed_r[g_current_level_index_r][(s16)moby->save_id >> 5] >> (moby->save_id & 0x1F)) & 1)) {
         if (vars->armed == 0 || vars->rearm != 0) {
             armed = 1;
@@ -1001,7 +1001,7 @@ void spawn_point_update(struct Moby *moby) {
             }
             jet_reset_camera_r(&pos, &moby->rot);
             novalis_current_level_state_r.collected[(s16)moby->save_id] = 0;
-            D_L01_001BB9C0_015F8.collected[(s16)moby->save_id] = 0;
+            novalis_checkpoint_level_state_r.collected[(s16)moby->save_id] = 0;
             level_moby_killed_r[g_current_level_index_r][(s16)moby->save_id >> 5] &=
                 ~(armed << (moby->save_id & 0x1F));
             moby_killed_r[(s16)moby->save_id >> 5] &= ~(armed << (moby->save_id & 0x1F));
@@ -1573,16 +1573,16 @@ void activate_teleporter_and_record_state(char *moby) {
     else moby[0x20] = 1;
 }
 typedef struct { char pad0[0x454]; unsigned char collected[1]; } TpLevelState;
-extern TpLevelState D_L01_001BB9C0;
+extern TpLevelState novalis_checkpoint_level_state;
 extern char hero_globals_base[];
 extern char pad_globals_base[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
-extern unsigned char D_001414F5[] NOT_SDA;
+extern unsigned char g_hero_field_20a5[] NOT_SDA;
 extern short teleporter_pad_open_accel;
 extern short teleporter_pad_open_brake;
 extern short teleporter_pad_open_max_speed;
-extern short D_L01_0015F674;
+extern short novalis_help_message_selector;
 struct L01Moby;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void show_teleporter_and_children(char *);
@@ -1604,7 +1604,7 @@ extern void MusicRequestTrack(int, int);
 void TeleporterPadUpdate(char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
     int active = 0;
-    if (D_L01_001BB9C0.collected[(short)((Moby *)moby)->save_id] != 0
+    if (novalis_checkpoint_level_state.collected[(short)((Moby *)moby)->save_id] != 0
         || (*(int *)(help_stats_base + 0xAB75 + (((short)((Moby *)moby)->save_id >> 5) * 4 + (g_current_level_index_c << 8))) >> (((Moby *)moby)->save_id & 0x1F)) & 1) {
         active = 1;
     }
@@ -1703,7 +1703,7 @@ void TeleporterPadUpdate(char *moby) {
             ApproachWithVelocity((float *)(data + 0x24), (float *)(data + 0x2C), 1.0f,
                           *(float *)&teleporter_pad_open_accel * g_frame_time_sq, *(float *)&teleporter_pad_open_brake * g_frame_time_sq,
                           *(float *)&teleporter_pad_open_max_speed * g_frame_time);
-        } else if (*(int *)&D_L01_0015F674 != 4 || !(*(float *)(data + 0x20) > 0.25f)) {
+        } else if (*(int *)&novalis_help_message_selector != 4 || !(*(float *)(data + 0x20) > 0.25f)) {
             if (r == 2) {
                 *(float *)(data + 0x34) = 1.95f;
                 moby[0x20] = 3;
@@ -1725,7 +1725,7 @@ void TeleporterPadUpdate(char *moby) {
             qcopy(v, t + 0x10);
             v[2] += 0.2f;
             Hero_ResetToPosition(v, t + 0x40, 0, 1);
-            D_001414F5[0] = 1;
+            g_hero_field_20a5[0] = 1;
             if (*(int *)(data + 0x40) != -1 && *(int *)(data + 0x44) != -1) {
                 MusicRequestTrack(*(int *)(data + 0x40), *(int *)(data + 0x44));
             }
@@ -1837,7 +1837,7 @@ typedef struct {
 extern short teleporter_ring_alpha_a, teleporter_ring_alpha_b, teleporter_ring_alpha_c, teleporter_ring_alpha_d, teleporter_ring_texture, teleporter_ring_color;
 extern short teleporter_ring_height;
 extern float teleporter_ring_uvs[];
-extern unsigned char D_001414F5_q __asm__("D_001414F5") NOT_SDA;
+extern unsigned char g_hero_field_20a5_q __asm__("D_001414F5") NOT_SDA;
 extern void copy_matrix_rotation(void *, void *);
 extern long GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
@@ -1874,9 +1874,9 @@ void draw_moby_radius_ring(char *moby) {
         h = t + 0.1f;
         if (((unsigned char *)moby)[0x20] != 7 && ((unsigned char *)moby)[0x20] != 8) {
             if (*(float *)(d + 0x34) < 0.65f) {
-                D_001414F5_q = 1;
+                g_hero_field_20a5_q = 1;
             } else {
-                D_001414F5_q = 0;
+                g_hero_field_20a5_q = 0;
             }
         }
     }
@@ -2215,7 +2215,7 @@ extern s32 FastDecTimer(void *);
 extern s32 coll_line_r(void *, void *, s32, void *, void *) __asm__("func_L00_001EFFF0");
 extern s32 CollType(void);
 extern f32 camera_pos_r[] __asm__("D_L01_001672C0");
-extern OvlQuad_0DD80 D_L01_00174360;
+extern OvlQuad_0DD80 novalis_coll_hit_point;
 extern OvlQuad_0DD80 gHeroPos_r2 __asm__("D_0013F4D0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030b618.c, FUN_L01_0030c9a8. */
@@ -2289,7 +2289,7 @@ void update_sandmouse_projectile(char *m) {
                 *(s16 *)(e + 0x14) = scale_ticks(3);
             return;
         }
-        qcopy(pos, &D_L01_00174360);
+        qcopy(pos, &novalis_coll_hit_point);
     }
     DeleteMoby(m);
 }
@@ -2454,7 +2454,7 @@ struct HoverTuning_0EC58 {
     f32 unk30;
 };
 extern struct HoverTuning_0EC58 sand_mouse_move_ctl_r __asm__("D_L01_001DEE08");
-extern f32 D_L01_001DEE1C_0EC58 __asm__("D_L01_001DEE1C");
+extern f32 sand_mouse_move_ctl_turn_vel_r __asm__("D_L01_001DEE1C");
 extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern short D_L01_00162154_0EC58 SDATA(D_L01_00162154);
 extern short D_L01_00162158_0EC58 SDATA(D_L01_00162158);
@@ -2493,7 +2493,7 @@ void update_sandmouse_hover_movement(struct Moby *m, struct HoverVars_0EC58 *p) 
     switch (m->command) {
     case 0:
         ang = fast_atan2_r2(p->goal.f[0] - m->pos.x, p->goal.f[1] - m->pos.y);
-        MobySpringTurn_r(m, &D_L01_001DEE1C_0EC58, ang, g_frame_time_sq_r * 6.2831855f, g_frame_time_sq_r * 3.1415927f,
+        MobySpringTurn_r(m, &sand_mouse_move_ctl_turn_vel_r, ang, g_frame_time_sq_r * 6.2831855f, g_frame_time_sq_r * 3.1415927f,
                          g_frame_time_r * 11.519173f);
         if (1.3f < d) {
             m->command = 2;
@@ -2502,11 +2502,11 @@ void update_sandmouse_hover_movement(struct Moby *m, struct HoverVars_0EC58 *p) 
     case 2:
         if (p->target == 0) {
             ang = fast_atan2_r2(p->goal.f[0] - m->pos.x, p->goal.f[1] - m->pos.y);
-            MobySpringTurn_r(m, &D_L01_001DEE1C_0EC58, ang, g_frame_time_sq_r * 6.2831855f, g_frame_time_sq_r * 3.1415927f,
+            MobySpringTurn_r(m, &sand_mouse_move_ctl_turn_vel_r, ang, g_frame_time_sq_r * 6.2831855f, g_frame_time_sq_r * 3.1415927f,
                              g_frame_time_r * 11.519173f);
         } else {
             ang = fast_atan2_r2(p->target->pos.x - m->pos.x, p->target->pos.y - m->pos.y);
-            MobySpringTurn_r(m, &D_L01_001DEE1C_0EC58, ang,
+            MobySpringTurn_r(m, &sand_mouse_move_ctl_turn_vel_r, ang,
                              (*(f32 *)&D_L01_00162154_0EC58) * 0.017453292f * g_frame_time_sq_r, (*(f32 *)&D_L01_00162158_0EC58) * 0.017453292f * g_frame_time_sq_r,
                              (*(f32 *)&D_L01_0016215C_0EC58) * 0.017453292f * g_frame_time_r);
         }
@@ -2624,7 +2624,7 @@ typedef struct {
     s32 slot;       /* 0x64 */
 } Pv_30F318;
 extern Tune_30F318 sand_mouse_move_ctl;
-extern f32 D_L01_001DEE1C;
+extern f32 sand_mouse_move_ctl_turn_vel;
 extern char sandmouse_collected_msg[];
 extern char sandmouse_no_link_msg[];
 extern unsigned char gHaveHeliPack[];
@@ -2706,7 +2706,7 @@ void sandmouse_update(Moby *m) {
         if (p->link != -1) {
             qcopy(&m->pos, &LNK(p->link)->pos);
             m->pos.z += 0.02f;
-            if (D_L01_001BB9C0.collected[(short)m->save_id] != 0
+            if (novalis_checkpoint_level_state.collected[(short)m->save_id] != 0
                 || (*(int *)(help_stats_base + 0xAB75 + (((short)m->save_id >> 5) * 4 + (g_current_level_index << 8))) >> (m->save_id & 0x1F)) & 1) {
                 STUB_printf(sandmouse_collected_msg);
                 DeleteMoby(m);
@@ -2766,7 +2766,7 @@ void sandmouse_update(Moby *m) {
                 f32 a1;
                 if (*(int *)(h + 0x1158) != 5) break;
                 a1 = fast_atan2(*(f32 *)(h + 0x80) - m->pos.x, *(f32 *)(h + 0x84) - m->pos.y);
-                MobySpringTurn(m, a1, &D_L01_001DEE1C,
+                MobySpringTurn(m, a1, &sand_mouse_move_ctl_turn_vel,
                     g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 11.519173f);
                 qcopy(&a, &LNK(p->link)->pos);
                 a.f[2] += 0.5f;

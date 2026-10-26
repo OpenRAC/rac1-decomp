@@ -1024,7 +1024,7 @@ void spawn_effect_particle_with_transformed_random_offset(void *pos, u128_6D270 
     }
 }
 extern float frame_scale_far __asm__("D_0015EE60") MACRO_ADDR;
-extern short D_L00_0015EE60;
+extern short frame_scale_alias;
 
 typedef struct {
     f32 f0;
@@ -1059,7 +1059,7 @@ void update_descending_fade_in_out_effect_particle(char *m) {
     }
     if (q->f4 >= 0.22f) {
         t = -q->fC;
-        q->f4 += *(float *)&D_L00_0015EE60 * 0.013f * t;
+        q->f4 += *(float *)&frame_scale_alias * 0.013f * t;
         q->fC = t;
     }
     particle->fC += frame_scale_far * 8190.0f;

@@ -1132,7 +1132,7 @@ extern void InitDirectionalHitQuery_r(void *, void *, int, float, void *) __asm_
 extern void record_moby_hit_r(void *, void *) __asm__("func_L00_0025AAC0");
 extern void SpawnExplosionFx_r(void *, void *, int, float, float) __asm__("func_L00_00260108");
 extern void DeleteMoby_r4(void *) __asm__("func_0020D678");
-extern Vec4 D_0013F590_D5790 __asm__("D_0013F590");
+extern Vec4 g_hero_platform_carry_r __asm__("D_0013F590");
 extern short D_L03_00161BA8_D5790 SDATA(D_L03_00161BA8);
 extern char kerwan_coll_hit_r[] __asm__("D_L03_00173FC0");
 extern int fast_dec_timer_r3(s32 *) __asm__("func_001F9908");
@@ -1161,7 +1161,7 @@ void update_homing_rocket(struct Moby *m) {
         FindNearestTargetMoby_r(m, &target, range);
         qcopy(&old, pos);
         FastVecAdd_r(pos, pos, v);
-        cam.q = D_0013F590_D5790.q;
+        cam.q = g_hero_platform_carry_r.q;
         cam.f[2] *= (*(float *)&D_L03_00161BA8_D5790);
         add_vectors_r(&trail, pos, &cam);
         m->rot.z = v->heading;
@@ -2247,10 +2247,10 @@ extern unsigned char gHaveHeliPack[];
 extern unsigned char discount_purchase_pricing[];
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern int D_L03_00179590[] NOT_SDA;
+extern int kerwan_help_popup_state[] NOT_SDA;
 extern Node_2E08E8 *kerwan_moby_list_r __asm__("D_L03_00160064") MACRO_ADDR;
-extern int D_L03_0015F76C MACRO_ADDR;
-extern int D_L03_0015F768 MACRO_ADDR;
+extern int kerwan_usage_event_count MACRO_ADDR;
+extern int kerwan_usage_event_timer MACRO_ADDR;
 extern int kerwan_game_mode MACRO_ADDR;
 extern Entry_2E08E8 kerwan_item_defs[];
 
@@ -2278,7 +2278,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             if (g[0x1A] == 0) {
                 if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f0) != 0
                     && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
-                    && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
+                    && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
                     Help_2E08E8 *b = help_records_r;
                     if (!(b[0x14].mask & 0x80000000)) {
                         Help_Request(0xBB8, 0x14);
@@ -2286,7 +2286,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 }
                 if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->fC) != 0
                     && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
-                    && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
+                    && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
                     Help_2E08E8 *b = help_records_r;
                     if (!(b[0x15].mask & 0x80000000)) {
                         Help_Request(0xBB9, 0x15);
@@ -2294,7 +2294,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 }
                 if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f18) != 0
                     && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
-                    && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
+                    && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
                     Help_2E08E8 *b = help_records_r;
                     if (!(b[0x17].mask & 0x80000000)) {
                         Help_Request(0xBBB, 0x17);
@@ -2331,7 +2331,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
         if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f24) != 0 && usage_stats_r[3].count == 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
             && data->f50 % 6 == 0 && data->f50 != 0
-            && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
+            && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
             Help_2E08E8 *b = help_records_r;
             if (b[0x16].count == 0) {
                 Help_Request(0xBBA, 0x16);
@@ -2340,7 +2340,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
 
         if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f28) != 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
-            && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
+            && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
             Help_2E08E8 *b = help_records_r;
             if (b[0x18].count == 0) {
                 int t = scale_ticks(gameplay_event_frame_count) - usage_stats_r[9].time * 600;
@@ -2365,7 +2365,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 && ((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1E
                 && (gHaveHeliPack + 0xD)[0] != 0
                 && get_ammo(0xF) >= 0x15
-                && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1
+                && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1
                 && (help_records_r)[0x4A].count == 0
                 && usage_stats_r[0x13].count == 0) {
                 Help_Request(0x4E20, 0x4A);
@@ -2384,8 +2384,8 @@ void update_kerwan_tutorial_hints(Moby *moby) {
 
         if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f38) != 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
-            && D_L03_0015F76C < 3
-            && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
+            && kerwan_usage_event_count < 3
+            && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
             Help_2E08E8 *b = help_records_r;
             if (b[0x40].count == 0) {
                 Help_Request(0x3EC, 0x40);
@@ -2395,8 +2395,8 @@ void update_kerwan_tutorial_hints(Moby *moby) {
         if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f38) != 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
             && ((Hero *)(hero_globals_base + 0xE1D))->state.current == 1
-            && D_L03_0015F768 == -1
-            && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
+            && kerwan_usage_event_timer == -1
+            && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
             Help_2E08E8 *b = help_records_r;
             if (b[0x40].count != 0 && b[0x41].count == 0) {
                 Help_Request(0x3ED, 0x41);
@@ -2405,7 +2405,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
 
         if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f40) != 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
-            && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
+            && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
             Help_2E08E8 *b = help_records_r;
             if (b[0x54].count == 0) {
                 Help_Request(0xBC0, 0x54);
@@ -2413,7 +2413,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
         }
 
         if (kerwan_game_mode == 0 && (discount_purchase_pricing + 0x11)[0] != 0
-            && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
+            && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
             Help_2E08E8 *b = help_records_r;
             if (b[0x19].count == 0) {
                 Help_Request(0xBBD, 0x19);
@@ -2441,7 +2441,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
         if (usage_stats_r[0xF].count == 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
             && data->f54 >= 3
-            && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
+            && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
             Help_2E08E8 *b = help_records_r;
             if (b[0x1A].count == 0) {
                 Help_Request(0xBBE, 0x1A);
@@ -2463,7 +2463,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
 
         if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f2C) != 0 && usage_stats_r[0x10].count == 0
             && ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 6 && ((Hero *)(hero_globals_base + 0xE1D))->items[0].item_id == 8
-            && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
+            && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
             Help_2E08E8 *b = help_records_r;
             if (b[0x1B].count == 0) {
                 Help_Request(0xBBF, 0x1B);
@@ -2472,7 +2472,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
 
         if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f44) != 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
-            && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
+            && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
             Help_2E08E8 *b = help_records_r;
             if (b[0x79].count == 0) {
                 Help_Request(0x4E2F, 0x79);
@@ -2666,7 +2666,7 @@ typedef struct CameraEntryECD40 {
 } CameraEntryECD40;
 extern CameraEntryECD40 *kerwan_camera_descriptors_camera __asm__("D_L03_0015F050") MACRO_ADDR;
 
-extern int D_L03_001670F4;
+extern int kerwan_player_camera_field_2f4;
 extern void clear_u64_value(void *);
 extern void rebuild_hero_relative_camera_transform(void *);
 extern int scale_ticks(int);
@@ -2724,7 +2724,7 @@ void initialize_hero_relative_camera(char *m) {
     qcopy(c, buf);
     rebuild_hero_relative_camera_transform(m);
     mob->resetFlag = 0;
-    D_L03_001670F4 = 0x78;
+    kerwan_player_camera_field_2f4 = 0x78;
 }
 extern void vec_scale_to_length(void *, void *, float);
 extern float Cam_InterpValues(void *, float, float, float, float, float);
@@ -2762,7 +2762,7 @@ extern void FastVecSub(void *, void *, void *);
 extern void FastVecCross(void *, void *, void *);
 extern short kerwan_hero_cam_blend_stiffness;
 extern short kerwan_hero_cam_blend_damping;
-extern char D_L03_00166FC0[];
+extern char kerwan_player_camera_target_offset_dir[];
 
 /* smooths the moby's data floats and rebuilds its orientation axes */
 void rebuild_camera_orientation_axes(void *arg) {
@@ -2774,17 +2774,17 @@ void rebuild_camera_orientation_axes(void *arg) {
     float c[4];
     qcopy(b, d);
     p[2] = Cam_InterpValues(d + 0xBC, p[2], *(float *)(hero_globals_base + 0xEA5), *(float *)&kerwan_hero_cam_blend_stiffness, *(float *)&kerwan_hero_cam_blend_damping, 0.0f);
-    vec_scale_to_length(c, D_L03_00166FC0, p[5]);
+    vec_scale_to_length(c, kerwan_player_camera_target_offset_dir, p[5]);
     FastVecAdd(b, c, b);
     FastVecSub(a, b, m + 0x30);
     vec_scale_to_length(m, a, 1.0f);
     qcopy(m + 0x40, m);
-    FastVecCross(m + 0x10, m, D_L03_00166FC0 - 0x10);
+    FastVecCross(m + 0x10, m, kerwan_player_camera_target_offset_dir - 0x10);
     vec_scale_to_length(m + 0x10, m + 0x10, 1.0f);
     FastVecCross(m + 0x20, m + 0x10, m);
 }
 /* Returns -1 if hero state is 6, or hero mode is 0x50 and state is not 0x11; else 0. */
-int func_L03_002ED138(void) {
+int hero_in_state_6_or_mode_50(void) {
     char *g = hero_globals_base + 0xE1D;
 
     if (*(int *)(g + 0x2284) != 0x50 || *(int *)(g + 0x2084) == 0x11) {

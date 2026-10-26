@@ -1310,10 +1310,10 @@ extern void MobyBlendAnimation(void *, int, int, int);
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern char help_stats_base[] NOT_SDA;
 extern int g_game_language_m[] __asm__("D_0015EE88") MACRO_ADDR;
-extern int D_0015EE90 MACRO_ADDR;
+extern int hero_slot0_item_8_selected MACRO_ADDR;
 typedef struct { char pad[0x20]; int f20; char pad2[0x28]; } Rec20;
 extern Rec20 item_defs_r_r[] __asm__("D_L00_00179BC0") __attribute__((section(".data")));
-extern int D_0015EE94 MACRO_ADDR;
+extern int hero_slot3_mode_3_selected MACRO_ADDR;
 
 typedef struct {
     char pad0[0x10B8];
@@ -1611,16 +1611,16 @@ void hero_switch_item(int i) {
         }
         if (i == 0) {
             if (*(int *)(hero_globals_base + 0xE1D + 0x20D4) == 8) {
-                D_0015EE90 = 1;
+                hero_slot0_item_8_selected = 1;
             } else {
-                D_0015EE90 = 0;
+                hero_slot0_item_8_selected = 0;
             }
         }
         if (i == 3) {
             if (((Sel *)(hero_globals_base + 0xE1D))->f11A8 == 3) {
-                D_0015EE94 = 1;
+                hero_slot3_mode_3_selected = 1;
             } else {
-                D_0015EE94 = 0;
+                hero_slot3_mode_3_selected = 0;
             }
         }
         {
@@ -2549,7 +2549,7 @@ void correct_hero_airborne_wall_velocity(void) {
         }
     }
 }
-extern int D_L00_00173F5C;
+extern int coll_hit_type;
 extern int coll_hit_result[];
 extern float gravity_length_xy(float *v);
 extern int coll_line(void *, void *, int, int, int);
@@ -2610,7 +2610,7 @@ void clip_hero_velocity_against_probed_surfaces(int arg) {
         FastVecAdd(secondary_probe_offset_or_end.f, secondary_probe_offset_or_end.f, b.f);
         h2 = (struct Hero *)(hero_globals_base + 0xE1D);
         if (coll_line(b.f, secondary_probe_offset_or_end.f, 4, (int)h2->moby, 0)) {
-            if (D_L00_00173F5C > 0) {
+            if (coll_hit_type > 0) {
                 r = CollType();
             }
         }

@@ -124,7 +124,7 @@ typedef struct {
 } T_8;
 extern G_8 g_hero_r __asm__("D_0013F450");
 extern s32 level_game_mode_q MACRO_ADDR;
-extern T_8 D_L06_00178980[];
+extern T_8 blarg_moby_hit_records[];
 extern s32 g_current_level_index MACRO_ADDR;
 extern s32 level_hero_hit_counts[];
 extern s32 hero_hit_count MACRO_ADDR;
@@ -169,7 +169,7 @@ s32 HeroL06_TryApplyHitKnockback(s32 arg) {
     if (m[0xA4] == 0xFF) {
         return 0;
     }
-    tbl = &D_L06_00178980[m[0xA4]];
+    tbl = &blarg_moby_hit_records[m[0xA4]];
     if (tbl->p34 != m) {
         return 0;
     }
@@ -312,7 +312,7 @@ void quantize_hero_input_target_speed(void) {
     }
 }
 typedef int Q __attribute__((mode(TI)));
-extern u8 D_L06_001746E0[];
+extern u8 blarg_collision_hit_point[];
 extern f32 blarg_coll_hit_z;
 extern s32 g_current_level_index MACRO_ADDR;
 void clear_u64_value(void *);
@@ -433,7 +433,7 @@ void HeroL06_ResetMotionState(void) {
     g_hero.xB12ed = r;
     g_hero.xH12e0 = CollType();
     if (g_hero.xH12e0 == 0) {
-        g_hero.xF2f0 = resolve_camera_surface_height(D_L06_001746E0, (u8 *)&g_hero + 0x280);
+        g_hero.xF2f0 = resolve_camera_surface_height(blarg_collision_hit_point, (u8 *)&g_hero + 0x280);
         if (g_hero.xF88 < g_hero.xF2f0 && g_hero.xI2f8 <= 0) {
             g_hero.xI2f8 = 1;
         }
@@ -565,7 +565,7 @@ typedef int HopQ __attribute__((mode(TI)));
 
 extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_time_sq MACRO_ADDR;
-extern float D_L06_0017C650[];
+extern float blarg_hero_speed_bands_6[];
 extern int scale_ticks(int);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -693,7 +693,7 @@ void update_hero_airborne_planar_velocity(void) {
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
         qcopy(&g_hero_s.motion.momentum, &g_hero_s.move_impulse);
         arg = g_frame_time_sq * 20.0f;
-        if (g_hero_s.target_speed < D_L06_0017C650[0] * g_frame_time * 0.2f) {
+        if (g_hero_s.target_speed < blarg_hero_speed_bands_6[0] * g_frame_time * 0.2f) {
             if (g_hero_s.state.control_mode == 2) {
                 d = g_hero_s.stickless_decel;
                 speed = vec_length_xy(&g_hero_s.motion.velocity);
@@ -737,13 +737,13 @@ extern int gameplay_event_frame_count MACRO_ADDR;
 extern short blarg_usage_event_timer;
 extern short blarg_usage_event_count;
 extern Cam referencePosition;
-extern float D_L06_00167658;
+extern float blarg_player_camera_yaw;
 extern int *blarg_moby_hits[];
 extern Rec4C blarg_item_defs[];
 extern Bone blarg_hero_bones[];
 extern float blarg_hero_lean_angles[];
 extern Rec2C blarg_attack_records[];
-extern float D_L06_0017C644;
+extern float blarg_hero_speed_bands_3;
 extern float blarg_hero_anim_frame_speeds_a[];
 extern float blarg_hero_anim_frame_speeds_b[];
 extern void stop_hero_motion_without_forward_support(float, float);
@@ -1733,7 +1733,7 @@ void HeroL06_UpdateMovement(void) {
                         k = 0.0f;
                     }
                 }
-                if (sp > D_L06_0017C644) {
+                if (sp > blarg_hero_speed_bands_3) {
                     turn_hero_toward_move_direction_with_stick_scale();
                 } else {
                     float t;
@@ -2248,7 +2248,7 @@ void HeroL06_UpdateMovement(void) {
                 float keep;
 
                 keep = ((Hero *)&g_hero)->motion.move_yaw;
-                ((Hero *)&g_hero)->motion.move_yaw = D_L06_00167658;
+                ((Hero *)&g_hero)->motion.move_yaw = blarg_player_camera_yaw;
                 turn_to(0, g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 ((Hero *)&g_hero)->motion.move_yaw = keep;
             }

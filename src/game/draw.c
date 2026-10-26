@@ -671,7 +671,7 @@ LINKER_REMNANT("asm/remnants/text", func_001F2410);
 extern void set_identity_matrix(void *);
 extern void FastVecScale(void *, void *, float);
 extern void transform_vector(void *, void *, void *);
-extern float D_0018D010;
+extern float screen_projection_focal;
 
 /* The camera block as a struct: all four accesses then share one base
    register with field offsets, as in retail. */
@@ -698,7 +698,7 @@ void project_to_screen(Vec3f *a0, float *a1) {
     v[3] = 1.0f;
     transform_vector(out, v, m2);
 
-    invw = D_0018D010 / out[3];
+    invw = screen_projection_focal / out[3];
     a0->z = out[2] * 0.0009765625f;
     out[0] = out[0] * invw + 2048.0f;
     a0->x = out[0] * 16.0f;
@@ -765,7 +765,7 @@ __asm__(".section .text\n\tnop\n");
 extern void scale_vector(void *, void *, float);
 extern int camera_position_publication_suppressed;
 extern char camera_rows[];
-extern char D_0018CEC0[];
+extern char view_context_field_c0[];
 extern char sky_view_mtx[];
 
 typedef struct {
@@ -794,7 +794,7 @@ void BuildViewMatrices(void) {
         sceVu0RotMatrixZ(m[0], m[0], gCamera_g.f[0x158 / 4]);
     }
     g = &gCamera_g;
-    x = D_0018CEC0;
+    x = view_context_field_c0;
     xf = (float *)(x - 0xC0);
     g->f[0] = -m[1][0];
     g->f[0x3C / 4] = 1.0f;
@@ -1127,12 +1127,12 @@ struct ClipP {
 extern Vec4 view_clip_constants[4];
 extern f32 view_depth_constants[4];
 extern f32 view_fog_multiplier MACRO_ADDR;
-extern f32 D_001E0250[];
-extern f32 D_001E6E70[];
+extern f32 view_fog_multiplier_copy[];
+extern f32 view_fog_multiplier_copy2[];
 extern struct FogRegs2P shrub_vu1_constants;
-extern struct FogRegs2P D_001DED80;
-extern Vec4 D_001DEDC0[2];
-extern Vec4 D_001DEA90[3];
+extern struct FogRegs2P shrub_vu1_constants_alt;
+extern Vec4 shrub_vu1_constants_alt_screen[2];
+extern Vec4 vu1_view_screen_consts[3];
 extern struct {
     u8 pad0[0x10];
     s32 mul;
@@ -1224,20 +1224,20 @@ void UpdateViewContext(void) {
     view->fog_base = view->fog_near_int - view->fog_near_dist / 1024.0f * fog_distance_slope;
     view->fog_mul = fog_multiplier;
     view_fog_multiplier = fog_multiplier;
-    D_001E0250[0] = fog_multiplier;
-    D_001E6E70[0] = fog_multiplier;
+    view_fog_multiplier_copy[0] = fog_multiplier;
+    view_fog_multiplier_copy2[0] = fog_multiplier;
     mul_bits = *(s32 *)&view->fog_mul;
     tfrag_vu_const_block.mul = mul_bits;
     tfrag_vu_const_block.far_int = far_bits;
     tfrag_vu_const_block.near_int = near_bits;
     shrub_vu1_constants.mul = mul_bits;
-    D_001DED80.mul = mul_bits;
+    shrub_vu1_constants_alt.mul = mul_bits;
     shrub_vu1_constants.far_int = far_bits;
     shrub_vu1_constants.near_int = near_bits;
-    D_001DED80.far_int = far_bits;
-    D_001DED80.near_int = near_bits;
+    shrub_vu1_constants_alt.far_int = far_bits;
+    shrub_vu1_constants_alt.near_int = near_bits;
     shrub_vu1_constants.max = 0x437EFFFF;
-    D_001DED80.max = 0x437EFFFF;
+    shrub_vu1_constants_alt.max = 0x437EFFFF;
     set_tfrag_dists();
 
     projection_near_clip = view->near_clip;
@@ -1324,16 +1324,16 @@ void UpdateViewContext(void) {
     qcopy(&packet_view->regs[2], &packet_view->inverse_screen_scale);
     qcopy(&packet_view->regs[3], &packet_view->screen_scale);
     qcopy(&packet_view->regs[4], &packet_view->screen_bias);
-    qcopy(&D_001DEA90[0], &packet_view->screen_bias);
-    qcopy(&D_001DEA90[1], &packet_view->screen_scale);
-    qcopy(&D_001DEA90[2], &packet_view->viewport_aspect);
+    qcopy(&vu1_view_screen_consts[0], &packet_view->screen_bias);
+    qcopy(&vu1_view_screen_consts[1], &packet_view->screen_scale);
+    qcopy(&vu1_view_screen_consts[2], &packet_view->viewport_aspect);
     qcopy(&tfrag_vu_const_block.constants[0], &packet_view->screen_bias);
     qcopy(&tfrag_vu_const_block.constants[1], &packet_view->inverse_screen_scale);
     qcopy(&tfrag_vu_const_block.constants[2], &packet_view->screen_scale);
     tfrag_vu_const_block.x = packet_view->viewport_aspect.i[0];
     tfrag_vu_const_block.y = packet_view->viewport_aspect.i[1];
-    qcopy(&D_001DEDC0[0], &packet_view->screen_scale);
-    qcopy(&D_001DEDC0[1], &packet_view->screen_bias);
+    qcopy(&shrub_vu1_constants_alt_screen[0], &packet_view->screen_scale);
+    qcopy(&shrub_vu1_constants_alt_screen[1], &packet_view->screen_bias);
 }
 
 #undef view_context_p
@@ -1518,10 +1518,10 @@ void SetPalMode(void) {
  * one because it lands in the jr delay slot where a two-instruction
  * expansion will not fit.
  */
-extern int D_0015F430 MACRO_ADDR;
-extern int D_0015F434 MACRO_ADDR;
+extern int screen_tint_quad_enabled MACRO_ADDR;
+extern int screen_tint_quad_rgba MACRO_ADDR;
 extern short screen_overlay_enabled;              /* SDA, gp -0x78B4 */
-extern short D_0015F460;              /* SDA, gp -0x78A0 */
+extern short draw_unused_reset_flag;              /* SDA, gp -0x78A0 */
 extern short occl_debug_overlay_enabled;              /* SDA, gp -0x7890 */
 extern int letterbox_enabled MACRO_ADDR;
 extern int letterbox_bar_height MACRO_ADDR;
@@ -1542,12 +1542,12 @@ void ResetDrawGlobals(void) {
     draw_callback4_count = 0;
     draw_callback2_count = 0;
     effect_quad_count = 0;
-    D_0015F430 = 0;
-    D_0015F434 = 0;
+    screen_tint_quad_enabled = 0;
+    screen_tint_quad_rgba = 0;
     letterbox_enabled = 0;
     letterbox_bar_height = 0;
     *(int *)&screen_overlay_enabled = 0;
-    *(int *)&D_0015F460 = 0;
+    *(int *)&draw_unused_reset_flag = 0;
     *(int *)&occl_debug_overlay_enabled = 0;
     occl_fallback_mode = 0;
     surface_height_tiles = 0;
@@ -1596,7 +1596,7 @@ void ResetGsRegistersPr(void) {
 
 extern short screen_color_effect_now;             /* SDA, gp -0x78B0: Stripes * */
 extern char *level_sky_effect_data MACRO_ADDR;
-extern int D_0018C44C[];
+extern int draw_force_gif_transfer[];
 extern int draw_enable_mask_f __asm__("D_0015F534") MACRO_ADDR;
 extern int font_state MACRO_ADDR;
 extern int g_game_mode MACRO_ADDR;
@@ -1686,7 +1686,7 @@ void DrawDebugProfiler(void) {
     float div;
 
     if (level_sky_effect_data == 0 || *(short *)(level_sky_effect_data + 4) != 0 || ((draw_enable_mask_f ^ 1) & 1) || draw_config[2] == 0 ||
-        D_0018C44C[0] != 0) {
+        draw_force_gif_transfer[0] != 0) {
         append_gif_transfer_packet();
     }
     BuildViewMatrices();
@@ -1969,7 +1969,7 @@ __asm__(".section .text\n\tnop\n");
 
 extern int *g_render_packet_cursor MACRO_ADDR;
 extern int *gif_paging_tail_tag MACRO_ADDR;
-extern int D_0018A3DC;
+extern int gif_paging_texture_flush_enabled;
 extern void flush_pending_texture_uploads(void);
 extern void VU1_texFlush(void);
 
@@ -1989,7 +1989,7 @@ void DoGifPaging(void) {
     gif_paging_head_tag[1] = (int)g_render_packet_cursor;
     gif_paging_head_tag[2] = 0;
     gif_paging_head_tag[3] = 0;
-    if (D_0018A3DC != 0) {
+    if (gif_paging_texture_flush_enabled != 0) {
         flush_pending_texture_uploads();
         VU1_texFlush();
     }
@@ -3516,7 +3516,7 @@ void font_queue_vu_state(void) {
 }
 
 extern void setup_render_target(int, int, int);
-extern short D_001519EE NOT_SDA;
+extern short render_target_base_page NOT_SDA;
 
 /* Sets up a (1 << a) x (1 << b) area, as vendor.c's func_0023A948 does:
    func_001FB608 gets the sizes and a base address, which is D_001519EE
@@ -3530,7 +3530,7 @@ void configure_graphics_render_target_and_projection(int a, int b, int flag, flo
     int base;
 
     if (flag != 0) {
-        base = D_001519EE << 13;
+        base = render_target_base_page << 13;
     } else {
         int t = a + b;
 
@@ -3566,9 +3566,9 @@ void begin_draw_frame(void) {
    (addiu, not daddiu). */
 extern int font_quad_count MACRO_ADDR;
 extern short font_depth_bias;              /* SDA, gp -0x78B8 */
-extern void func_001F91B8(void);
+extern void prepare_font_quads(void);
 extern void font_queue_vu_state(void);
-extern void func_001F8B6C(void);
+extern void draw_font_quad_packets(void);
 
 /* Optional extra draw pass, enabled by D_0015F578. */
 void draw_debug_font(void) {
@@ -3577,10 +3577,10 @@ void draw_debug_font(void) {
         VU1_addGSregister(0x14, 0x61);
         VU1_addGSregister(0x47, 0x513F1);
         VU1_addGSregister(0x4A, 1);
-        func_001F91B8();
+        prepare_font_quads();
         *(float *)&font_depth_bias = -0.04f;
         font_queue_vu_state();
-        func_001F8B6C();
+        draw_font_quad_packets();
         *(int *)&font_depth_bias = 0;
         VU1_addGSregister(0x4A, 0);
     }

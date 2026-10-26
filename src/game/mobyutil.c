@@ -81,7 +81,7 @@ extern unsigned char menu_item_enabled_17 NOT_SDA;
 extern unsigned char menu_item_enabled_18 NOT_SDA;
 extern unsigned char menu_item_enabled_19 NOT_SDA;
 extern unsigned char menu_item_enabled_25 NOT_SDA;
-extern int D_001A04B4 NOT_SDA;
+extern int map_region_enabled_3 NOT_SDA;
 extern unsigned char menu_item_enabled_41 NOT_SDA;
 extern int hero_control_mode NOT_SDA;
 extern unsigned char menu_item_enabled_36 NOT_SDA;
@@ -121,17 +121,17 @@ extern int memcard_PrepData(void *dst, int i, int *table);
 extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
-extern int D_0013D844 NOT_SDA;
+extern int race_gates_24_status NOT_SDA;
 extern unsigned char menu_item_enabled_12 NOT_SDA;
-extern int D_0013D9B4 NOT_SDA;
+extern int race_gates_47_flag NOT_SDA;
 extern unsigned char gSpecialItems[];
 extern unsigned char gHaveHeliPack NOT_SDA;
 extern int race_gates NOT_SDA;
-extern int D_0013DAE4 NOT_SDA;
+extern int race_gates_66_status NOT_SDA;
 extern unsigned char menu_item_enabled_73 NOT_SDA;
-extern int D_0013DB24 NOT_SDA;
+extern int race_gates_70_status NOT_SDA;
 extern unsigned char menu_item_enabled_85 NOT_SDA;
-extern int D_0013DC34 NOT_SDA;
+extern int race_gates_87_status NOT_SDA;
 extern unsigned char race_gates_base NOT_SDA;
 extern int item_available NOT_SDA;
 extern unsigned char menu_item_enabled_20 NOT_SDA;
@@ -511,7 +511,7 @@ void update_moby_shadow_range(char *m) {
 
 LINKER_REMNANT("asm/remnants/text", func_00214770);
 
-extern short D_001600C8;
+extern short damage_class_131_a8_float_table;
 extern unsigned char damage_reaction_code_table[];
 extern char damage_reaction_scale_table[];
 extern unsigned char hero_globals_base[];
@@ -540,7 +540,7 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
     if (B != 0 && *(char **)(B + 0x20) != 0) {
         int cls = *(short *)(*(char **)(B + 0x20) + 0xA6);
         if ((cls == 0x131 || cls == 0xA8) && an != 0)
-            *(float *)(B + 0x2C) = ((float *)&D_001600C8)[(unsigned char)an[8]];
+            *(float *)(B + 0x2C) = ((float *)&damage_class_131_a8_float_table)[(unsigned char)an[8]];
     }
 
     if (a == 0) {
@@ -1121,7 +1121,7 @@ extern float inv_frame_scale MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time_cube MACRO_ADDR;
-extern int D_0015EE78 MACRO_ADDR;
+extern int frame_scale_fifths MACRO_ADDR;
 extern float frame_delta_time MACRO_ADDR;
 extern int pal_mode MACRO_ADDR;
 
@@ -1136,7 +1136,7 @@ void set_video_timing(int pal) {
         g_frame_time = 0.01666666753590106964111328125f;
         g_frame_time_sq = 0.000277777784503996372222900390625f;
         g_frame_time_cube = 0.00000462962952951784245669841766357421875f;
-        D_0015EE78 = 5;
+        frame_scale_fifths = 5;
         frame_delta_time = 0.01666666753590106964111328125f;
     } else {
         pal_mode = 1;
@@ -1146,7 +1146,7 @@ void set_video_timing(int pal) {
         g_frame_time = 0.02000000141561031341552734375f;
         g_frame_time_sq = 0.00040000001899898052215576171875f;
         g_frame_time_cube = 0.0000079999999798019416630268096923828125f;
-        D_0015EE78 = 6;
+        frame_scale_fifths = 6;
         frame_delta_time = 0.0199999995529651641845703125f;
     }
 }

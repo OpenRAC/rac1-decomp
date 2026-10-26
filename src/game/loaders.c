@@ -525,7 +525,7 @@ void LoadHudBanks(void) {
  * operand-order-is-not-source-steerable case.
  */
 extern int *level_root MACRO_ADDR;
-extern char *D_0019A500;
+extern char *hud_bank_table_ptr;
 extern void fast_decompress(int, int);
 
 /* LoadCompressedHudBank(int, char *). Each scaled index in its own local
@@ -539,7 +539,7 @@ void LoadCompressedHudBank(int idx, int size) {
     }
     {
         int off = idx * 4;
-        *(int *)(D_0019A500 + off + 0x74) = 0;
+        *(int *)(hud_bank_table_ptr + off + 0x74) = 0;
     }
 }
 
@@ -966,7 +966,7 @@ extern int resident_moby_class_count MACRO_ADDR;
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 extern short resident_class_id_by_slot[];
 extern char *moby_class_resources[] NOT_SDA;
-extern int D_001B6500[];
+extern int resident_class_original_field_2c[];
 extern void assign_moby_class_data(int);
 extern void prepare_resident_class_render_data(void *, int, int, int);
 
@@ -986,7 +986,7 @@ void register_moby_class(void *arg0, int arg1, int arg2, int arg3) {
         assign_moby_class_data(arg3);
         resident_moby_class_count = resident_moby_class_count + 1;
     } else {
-        D_001B6500[idx] = *(int *)((char *)arg0 + 0x2C);
+        resident_class_original_field_2c[idx] = *(int *)((char *)arg0 + 0x2C);
         assign_moby_class_data(arg3);
         resident_moby_class_count = resident_moby_class_count + 1;
         prepare_resident_class_render_data(arg0, arg1, arg2, arg3);
@@ -1943,7 +1943,7 @@ void select_world_object_resource_tables(int class_id, int buffer_index) {
     class_slot = resident_class_slot_by_id[class_id];
     resource_table = moby_class_resources;
     resource_table[class_slot] = resource_data;
-    D_001B6500[class_slot] = resource_data->original_field_2c;
+    resident_class_original_field_2c[class_slot] = resource_data->original_field_2c;
     ((void (*)(void *, void *, void *, int))prepare_resident_class_render_data)(resource_data, resident_indexed_textures, class_material_maps[active_class_resource_index], class_id);
     resource_table_index = active_class_resource_index;
     resource_tag = runtime_resource_tag;

@@ -269,7 +269,7 @@ extern void FastVecScale(void *, void *, float);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern short rilgar_frame_count;
 extern int hoverboard_race_finished MACRO_ADDR;
-extern short D_L05_001619E8;
+extern short rilgar_hoverboard_trail_velocity_w;
 extern short rilgar_hoverboard_trail_start_color;
 extern short rilgar_hoverboard_trail_end_color;
 extern unsigned char special_items_base[];
@@ -332,8 +332,8 @@ void hoverboard_update(unsigned char *moby) {
                         struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
                         int ret = scale_ticks(0x4B0);
                         if (ret < h->control_mode_timer) {
-                            extern unsigned short D_00141D60[];
-                            if (D_00141D60[0] == 0) {
+                            extern unsigned short hoverboard_race_help_shown_count[];
+                            if (hoverboard_race_help_shown_count[0] == 0) {
                                 Help_Request(0x138F, 0x5F);
                             }
                         }
@@ -373,7 +373,7 @@ void hoverboard_update(unsigned char *moby) {
         FastVecAdd(effect_position, effect_position, delta);
         FastVecAdd(effect_position, effect_position, offset);
         qcopy(effect_position, delta);
-        effect_position[3] = (float)*(int *)&D_L05_001619E8;
+        effect_position[3] = (float)*(int *)&rilgar_hoverboard_trail_velocity_w;
         if (((struct Moby *)moby)->command == 0) {
             int a;
             int b;
@@ -632,8 +632,8 @@ typedef struct {
     unsigned char pad0[0x454];
     unsigned char done[1];
 } LvlDone_DA08;
-extern LvlDone_DA08 D_L05_001BBA40;
-extern LvlDone_DA08 D_L05_001BADE0;
+extern LvlDone_DA08 rilgar_checkpoint_level_state;
+extern LvlDone_DA08 rilgar_current_level_state;
 extern unsigned char rilgar_mission_state[] MACRO_ADDR;
 extern char *rilgar_paths[];
 extern int g_current_level_index MACRO_ADDR;
@@ -661,7 +661,7 @@ void floor_button_update(struct Moby *moby) {
         *(float *)(d + 3) = random_angle_radians();
         moby->pos.z -= 0.35f;
         id = (short)moby->save_id;
-        if (D_L05_001BBA40.done[id] != 0 ||
+        if (rilgar_checkpoint_level_state.done[id] != 0 ||
             (level_moby_killed[g_current_level_index][id >> 5] >> (moby->save_id & 31) & 1) != 0 ||
             (d[2] != 0 && saved_mission_state[moby->mission + (g_current_level_index << 4)] == 0xFF)) {
             moby->command = 2;
@@ -695,9 +695,9 @@ void floor_button_update(struct Moby *moby) {
         moby->glow_color = high | shade | color;
         if (((void *)((Hero *)(hero_globals_base + 0xE1D))->ground_moby) == moby &&
             ((Hero *)(hero_globals_base + 0xE1D))->air_frames.s == 0) {
-            D_L05_001BADE0.done[(short)moby->save_id] = moby->mission + 2;
+            rilgar_current_level_state.done[(short)moby->save_id] = moby->mission + 2;
             if (moby->mission == 0xFF || (rilgar_mission_state[(unsigned char)moby->mission] != 0xFF && saved_mission_state[(unsigned char)moby->mission + (g_current_level_index << 4)] == 0xFF)) {
-                D_L05_001BBA40.done[(short)moby->save_id] = moby->mission + 2;
+                rilgar_checkpoint_level_state.done[(short)moby->save_id] = moby->mission + 2;
             }
             moby->state = 2;
             moby->command = 1;

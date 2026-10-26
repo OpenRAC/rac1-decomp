@@ -165,7 +165,7 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern int kalebo3_game_mode MACRO_ADDR;
-extern int D_L16_0016CD10;
+extern int kalebo3_cutscene_scene_id;
 extern char *kalebo3_path_table[];
 extern char kalebo3_camera_pos[];
 extern short blarg_elite_commando_hover_enabled;
@@ -380,7 +380,7 @@ animate_idle:
     }
     if (*(int *)&blarg_elite_commando_joint_aim_enabled) update_blarg_elite_commando_joint_aim(m);
     if (*(int *)&blarg_elite_commando_joint_sparks_enabled && *(int *)(hero_globals_base + 0x2EA9) != 22) emit_blarg_elite_commando_joint_sparks(m);
-    if (g_current_level_index == 18 && kalebo3_game_mode == 2 && (unsigned int)(D_L16_0016CD10 - 3) < 3U) DeleteMoby(m);
+    if (g_current_level_index == 18 && kalebo3_game_mode == 2 && (unsigned int)(kalebo3_cutscene_scene_id - 3) < 3U) DeleteMoby(m);
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);

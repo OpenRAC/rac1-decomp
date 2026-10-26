@@ -128,7 +128,7 @@ void release_moby_animation_slot(ListOwner_24f0e8 *owner, ListNode_24f0e8 **slot
     *slot = 0;
 }
 extern void Moby_BuildFramePacket(void *, int, int, int);
-extern void func_L00_002539C8(void *);
+extern void moby_blend_anim_frames_to_spr(void *);
 
 /* advances an animation blend timer and steps through its frame table */
 void advance_moby_animation_blend(void *unused, unsigned char *a) {
@@ -186,7 +186,7 @@ void advance_moby_animation_blend(void *unused, unsigned char *a) {
         int p = a[0x21] * 4;
         *(int *)(a + 0x3C) = *(int *)(*(int *)(*(unsigned char **)(a + 0x14) + o + 0x48) + p + 0x1C);
     }
-    func_L00_002539C8(a);
+    moby_blend_anim_frames_to_spr(a);
 }
 typedef struct { u8 pad[0x20]; u8 b20, b21, b22, b23; s32 i24; f32 f28; f32 f2c; } S;
 typedef struct { u8 pad[0x51]; u8 b51, b52, b53; } A;

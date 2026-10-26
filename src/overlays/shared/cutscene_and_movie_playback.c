@@ -6,31 +6,31 @@
 #include "hero.h"
 #include "vector.h"
 
-extern int D_L00_0015F524 MACRO_ADDR;
-extern int D_L00_0017E604[];
-extern int D_L00_0015F52C MACRO_ADDR;
-extern int D_L00_0015F530 MACRO_ADDR;
-extern int D_L00_0015F528 MACRO_ADDR;
+extern int level_reset_counter_524 MACRO_ADDR;
+extern int radial_select_auto_close_flag[];
+extern int level_reset_counter_52c MACRO_ADDR;
+extern int level_reset_counter_530 MACRO_ADDR;
+extern int level_reset_counter_528 MACRO_ADDR;
 extern int ground_shadow_count MACRO_ADDR;
-extern int D_L00_0015F3F0 MACRO_ADDR;
-extern int D_L00_0015F3F4 MACRO_ADDR;
+extern int level_reset_counter_3f0 MACRO_ADDR;
+extern int level_reset_counter_3f4 MACRO_ADDR;
 /* Clears the frame, ground-shadow and timing counters. */
 void ResetFrameCounters(void) {
-    D_L00_0015F524 = 0;
-    D_L00_0017E604[0] = 0;
-    D_L00_0015F52C = 0;
-    D_L00_0015F530 = 0;
-    D_L00_0015F528 = 0;
+    level_reset_counter_524 = 0;
+    radial_select_auto_close_flag[0] = 0;
+    level_reset_counter_52c = 0;
+    level_reset_counter_530 = 0;
+    level_reset_counter_528 = 0;
     ground_shadow_count = 0;
-    D_L00_0015F3F0 = 0;
-    D_L00_0015F3F4 = 0;
+    level_reset_counter_3f0 = 0;
+    level_reset_counter_3f4 = 0;
 }
 struct P { char pad[0x100]; float a, b, c, d; char pad2[0x1A0 - 0x110]; int busy; };
 extern struct P g_controller_state;
 extern short controller_idle_frames;
 extern int level_frame_counter MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
-extern int D_L00_0015F678 MACRO_ADDR;
+extern int current_moby_mission_complete MACRO_ADDR;
 extern int active_play_frame_count MACRO_ADDR;
 int scale_ticks(int);
 
@@ -43,7 +43,7 @@ void update_game_frame_and_idle_counters(void) {
     }
     level_frame_counter++;
     gameplay_event_frame_count++;
-    if (D_L00_0015F678) {
+    if (current_moby_mission_complete) {
         if ((*(int *)&controller_idle_frames) < (int)((float)scale_ticks(15) * 60.0f)) {
             active_play_frame_count++;
         }
@@ -65,12 +65,12 @@ extern unsigned char help_stats_base[] NOT_SDA;
 extern int cinematic_mode MACRO_ADDR;
 extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
 extern int cinematic_mode_frames MACRO_ADDR;
-extern int D_L00_001BA160;
+extern int level_menu_system_field_f0;
 extern int g_current_level_index MACRO_ADDR;
 extern PtrS *g_current_follow_cam;
 extern int D_0015EF20 MACRO_ADDR;
 extern int gBolts MACRO_ADDR;
-extern int D_L00_00184314;
+extern int map_menu_state_field_24;
 extern int ship_level_exit_requested MACRO_ADDR;
 extern char level_profile_mark_after_mobys[];
 extern char level_profile_mark_after_hero[];
@@ -122,7 +122,7 @@ void handle_pause_input(void) {
         return;
     }
     noctl = ((PadS *)(pad_globals_base + 0x2460))->w19C == 0;
-    if (D_L00_001BA160 && lvl == 0) {
+    if (level_menu_system_field_f0 && lvl == 0) {
         PauseAllSounds(0);
         return;
     }
@@ -186,7 +186,7 @@ void handle_pause_input(void) {
         x = queue_animation_update(2, 0x754E, (int)initialize_bolt_counter_hud, (int)update_bolt_counter_hud_animation_and_visibility, (int)draw_bolt_counter_hud_panel, (int)&gBolts, 9999999);
         hud_keep_visible(x, scale_ticks(0xB4));
     }
-    if (D_L00_00184314) {
+    if (map_menu_state_field_24) {
         HitS *h = (HitS *)(help_stats_base + 0x22D);
         if (h->h48 < 0xFFFF) h->h48++;
         if (scale_ticks(gameplay_event_frame_count) / 600 > h->h4A) h->h4A = scale_ticks(gameplay_event_frame_count) / 600;
@@ -238,19 +238,19 @@ typedef struct { char p0[0x20]; unsigned char st; char p1[0x13]; unsigned short 
 extern int skip_frame MACRO_ADDR;
 extern int gFadeLvl MACRO_ADDR;
 extern Obj *level_mobys_end MACRO_ADDR;
-extern int D_L00_0015F500 MACRO_ADDR;
+extern int level_white_fade_level MACRO_ADDR;
 extern int lvl_vu_chain_buffer_size MACRO_ADDR;
 extern float big_head_cutscene_fov_scale MACRO_ADDR;
 extern char cutscene_state[];
-extern char D_L00_0017C540[];
+extern char extra_scale_manipulator[];
 extern char hero_scale_manipulator[];
 extern char cheat_scale_manipulator[];
 extern char cheat_scale_manipulator_class_555[];
 extern char cheat_scale_manipulator_class_1a3[];
 extern int lvl_resource_buffers[];
 extern unsigned char player_camera[];
-extern char *D_L00_00179208;
-extern char *D_L00_001BA15C;
+extern char *active_scene_trigger_target;
+extern char *level_menu_system_target;
 extern void Hero_OnKilled(void);
 extern void music_Pause(int);
 extern void FastMemSet(void *, int, int);
@@ -289,7 +289,7 @@ void StartCutscene(int arg) {
     update_audio_stream_until_idle(0);
     skip_frame = 1;
     FastMemSet(cutscene_state, 0, 0x1C0);
-    FastMemSet(D_L00_0017C540, 0, 0x40);
+    FastMemSet(extra_scale_manipulator, 0, 0x40);
     FastMemSet(hero_scale_manipulator, 0, 0x40);
     FastMemSet(cheat_scale_manipulator, 0, 0x40);
     FastMemSet(cheat_scale_manipulator_class_555, 0, 0x40);
@@ -309,12 +309,12 @@ void StartCutscene(int arg) {
     cinematic_mode = 2;
     cutscene_state[0x4B] = player_camera[0x394];
     *(int *)(player_camera + 0x394) = 0;
-    D_L00_0015F500 = 0;
+    level_white_fade_level = 0;
     HeroEnterMoveState(0x64, 2);
     d[0x20A5] = 1;
     HeroSetObjectFlags();
-    if (D_L00_00179208 != 0) *(unsigned short *)(D_L00_00179208 + 0x34) |= 1;
-    if (D_L00_001BA15C != 0) *(unsigned short *)(D_L00_001BA15C + 0x34) |= 1;
+    if (active_scene_trigger_target != 0) *(unsigned short *)(active_scene_trigger_target + 0x34) |= 1;
+    if (level_menu_system_target != 0) *(unsigned short *)(level_menu_system_target + 0x34) |= 1;
     start_cutscene_chunk_read(0);
     FadeToBlack(scale_ticks(6));
     update_audio_stream_until_idle(1);
@@ -364,9 +364,9 @@ typedef struct { char pad[0xEC]; Fl *p; } PP;
 typedef struct { char pad[0x20A5]; char x20a5; } Hd;
 
 extern CT cutscene_state_c __asm__("D_L00_0016C960");
-extern float D_L00_0016CBF0;
-extern int D_L00_00167114 NOT_SDA;
-extern char D_L00_0016C970[];
+extern float render_view_tan_half_fov;
+extern int hero_control_mode_11_flag NOT_SDA;
+extern char cutscene_hero_pos[];
 extern AB active_scene_trigger;
 extern PP level_menu_system NOT_SDA;
 
@@ -382,8 +382,8 @@ void finish_cutscene(void) {
     calculate_dma_transfer_address();
     FadeToBlack(12);
     ResetFrameCounters();
-    D_L00_00167114 = cutscene_state_c.x4b;
-    D_L00_0016CBF0 = 0.63f;
+    hero_control_mode_11_flag = cutscene_state_c.x4b;
+    render_view_tan_half_fov = 0.63f;
     cinematic_mode = 0;
     gFadeLvl = 0;
     UpdateViewContext();
@@ -411,7 +411,7 @@ void finish_cutscene(void) {
     if (cutscene_state_c.x4a) {
         f = ProbeGroundHeight(cutscene_state_c.v, 0, 0.5f);
         if (2.0f < f && FastAbsF(cutscene_state_c.v[2] - f) < 2.0f) cutscene_state_c.v[2] = f;
-        Hero_ResetToPosition(D_L00_0016C970, D_L00_0016C970 + 0x10, 0, 1);
+        Hero_ResetToPosition(cutscene_hero_pos, cutscene_hero_pos + 0x10, 0, 1);
     }
     if (active_scene_trigger.a) active_scene_trigger.a->flags &= ~1;
     if (level_menu_system.p) {
@@ -892,7 +892,7 @@ void prepare_movie_playback(int sector, int size, int arg2) {
         raise_kernel_trap();
     }
 }
-extern int D_L00_00161118 MACRO_ADDR;
+extern int movie_request_decoder_state MACRO_ADDR;
 extern void sceGsSyncVCallback(void *);
 extern void vsync_callback(void);
 extern void sceGsSetDefStoreImage(void *, int, int, int, int, int, int, int);
@@ -909,7 +909,7 @@ void movie_exit_to_gameplay(void) {
     sce_gs_sync_v(0);
     ((void (*)(int, int))wait_for_graphics_pipeline_idle)(0, 0);
     sceGsSyncVCallback(vsync_callback);
-    destination = D_L00_00161118;
+    destination = movie_request_decoder_state;
     source = g_gs_texture_allocation_start_r[4];
     big = pal_mode != 0 ? 0xE : 0xD;
     small = pal_mode != 0 ? 0xE : 0x11;
@@ -964,11 +964,11 @@ extern void memcard_update_state(void);
 extern void Movie_Play(int, int, int, int, int);
 extern int sce_cd_sync_s(int);
 extern void movie_exit_to_gameplay(void);
-extern int D_L00_00161118 MACRO_ADDR;
-extern int D_L00_0016110C MACRO_ADDR;
-extern int D_L00_00161110 MACRO_ADDR;
+extern int movie_request_decoder_state MACRO_ADDR;
+extern int movie_request_source_mode MACRO_ADDR;
+extern int movie_request_audio_context MACRO_ADDR;
 extern int queued_movie_request MACRO_ADDR;
-extern short D_L00_00161114;
+extern short movie_request_decoder_buffer;
 
 /* Stop sound, wait for the loader to go idle, then start the movie load. */
 void play_queued_movie(void) {
@@ -983,9 +983,9 @@ void play_queued_movie(void) {
         }
         memcard_update_state();
     }
-    Movie_Play(queued_movie_request, D_L00_0016110C,
-                  (*(int *)&D_L00_00161114 + 0x3F) & ~0x3F,
-                  (D_L00_00161118 + 0x3F) & ~0x3F, D_L00_00161110);
+    Movie_Play(queued_movie_request, movie_request_source_mode,
+                  (*(int *)&movie_request_decoder_buffer + 0x3F) & ~0x3F,
+                  (movie_request_decoder_state + 0x3F) & ~0x3F, movie_request_audio_context);
     sce_cd_sync_s(0);
     movie_exit_to_gameplay();
 }

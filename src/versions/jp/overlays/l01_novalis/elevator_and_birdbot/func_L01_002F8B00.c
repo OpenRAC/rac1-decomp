@@ -79,7 +79,7 @@ void bomber_jet_update(Moby *m) {
                 gunship_follow_path((char *)m);
             }
             if (d->timer == -1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->flag170)) {
-                if (D_L01_001BBE14[(short)m->save_id] != 0
+                if (novalis_checkpoint_level_state_killed[(short)m->save_id] != 0
                     || (level_moby_killed[g_current_level_index][(short)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
                     for (j = 0; j < 4; j++) {
                         if (d->turrets[j] != -1) {

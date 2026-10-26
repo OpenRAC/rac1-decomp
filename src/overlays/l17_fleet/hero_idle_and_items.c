@@ -72,8 +72,8 @@ extern unsigned char hero_globals_base[] NOT_SDA;
 extern char help_stats_base[];
 extern char item_usage[];
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern short D_L17_0015F768;
-extern short D_L17_0015F7B8;
+extern short fleet_look_stat_timer;
+extern short fleet_hero_run_step_start_frames;
 extern short fleet_hero_state_f_jump_velocity_keys;
 extern char fleet_hero_state_d_jump_velocity_keys[];
 extern char fleet_hero_state_12_jump_velocity_keys[];
@@ -458,7 +458,7 @@ int HeroL17_SetMoveState(int a, int b) {
         int t;
         *(int *)(p + 0x208C) = 0;
         *(int *)(p + 0x2284) = 4;
-        *(int *)&D_L17_0015F768 = scale_ticks(0x3C);
+        *(int *)&fleet_look_stat_timer = scale_ticks(0x3C);
         if (*(unsigned char *)(p + 0x20AA) == 0) {
             t = select_hero_help_value(1);
             if (*(unsigned char *)(*(char **)(p + 0x2080) + 0x53) != t && b) {
@@ -556,7 +556,7 @@ int HeroL17_SetMoveState(int a, int b) {
                 }
                 if (b) {
                     char *v = (char *)hero_globals_base + 0xE1D;
-                    set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&D_L17_0015F7B8)[*(int *)(v + 0x2088)], (float)n);
+                    set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&fleet_hero_run_step_start_frames)[*(int *)(v + 0x2088)], (float)n);
                 }
             }
         }
@@ -588,7 +588,7 @@ int HeroL17_SetMoveState(int a, int b) {
             } else if (*(unsigned char *)(p + 0x20A4) == 1) {
                 set_hero_animation(2, 0, (float)scale_ticks(8));
             } else if (*(unsigned char *)(p + 0x20A4) == 0) {
-                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&D_L17_0015F7B8)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
+                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&fleet_hero_run_step_start_frames)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
             }
         }
         break;

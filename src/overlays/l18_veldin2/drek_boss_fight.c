@@ -46,7 +46,7 @@ extern short veldin2_moby_group_fall_progress;
 extern short veldin2_moby_group_debris_progress;
 extern short veldin2_moby_group_debris_start_rate;
 extern short veldin2_moby_group_debris_scale;
-extern float D_L18_00167858;
+extern float veldin2_camera_yaw;
 extern float veldin2_zero_vec[] MACRO_ADDR;
 
 extern int scale_ticks(int);
@@ -171,7 +171,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                 d->f344 = d->f344 + 0.25f;
                 if (random_integer_below(truncate_float_to_s32_r(d->f344)) == 0) {
                     s = random_float_between(-1.0471976f, 1.0471976f);
-                    f20 = FastAddRots(s, D_L18_00167858);
+                    f20 = FastAddRots(s, veldin2_camera_yaw);
                     z = random_float_between(0.0f, 20.0f);
                     v[0] = FastCos(f20) * z;
                     v[1] = FastSin(f20) * z;
@@ -411,7 +411,7 @@ extern short veldin2_lift_count;
 extern short veldin2_lift_raised_flag;
 extern short veldin2_lift_uv_scroll;
 extern short veldin2_lift_uv_scroll_speed;
-extern unsigned char D_001414F5[];
+extern unsigned char g_hero_field_20a5[];
 extern unsigned char menu_item_enabled_105[];
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern void synchronize_lift_group_height(void *);
@@ -428,7 +428,7 @@ void update_lift_state_and_queue_draw(unsigned char *m)
     switch (((Moby *)m)->state) {
     case 0:
         if (*(int *)&veldin2_lift_raised_flag != 0) {
-            D_001414F5[0xB] = *(unsigned char *)&veldin2_lift_raised_flag;
+            g_hero_field_20a5[0xB] = *(unsigned char *)&veldin2_lift_raised_flag;
         }
         {
             int c = *(int *)&veldin2_lift_count;
@@ -450,7 +450,7 @@ void update_lift_state_and_queue_draw(unsigned char *m)
         {
             int w = d->w8;
             *(int *)&veldin2_lift_count = 0;
-            if (w != 0 && D_001414F5[0xB] == 0) {
+            if (w != 0 && g_hero_field_20a5[0xB] == 0) {
                 ((Moby *)m)->state = 2;
                 ((Moby *)m)->pos.z = d->f0;
             } else {
@@ -511,7 +511,7 @@ void update_lift_state_and_queue_draw(unsigned char *m)
 typedef struct { int pad[7]; int idx; } Lx;
 typedef struct { char pad[0x18]; float f; char pad1[0x78 - 0x1C]; Lx *l; char pad2[0xA6 - 0x7C]; short kind; char pad3[0x100 - 0xA8]; } Mx;
 typedef struct { int pad[2]; float f; char pad2[0x1190 - 12]; } E;
-extern E D_L18_001DB7C0[];
+extern E veldin2_lift_link_entries[];
 typedef struct { char pad[0x18]; float f; char pad2[0x5]; unsigned char idx; } S;
 
 /* Copies the lift's height to every moby in its group and to their linked table entries. */
@@ -519,7 +519,7 @@ void synchronize_lift_group_height(void *a)
 {
     unsigned char *s = a;
     short *p = veldin2_moby_groups[s[0x21]];
-    E *e = D_L18_001DB7C0;
+    E *e = veldin2_lift_link_entries;
     do {
         Mx *m = (Mx *)(((*(unsigned short *)p & 0x7FFF) << 8) + (int)veldin2_moby_table);
         m->f = *(float *)(s + 0x18);
@@ -2118,7 +2118,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
         }
     }
     if (crossed != 0 || *(int *)&drek_boss_phase_reset_request != 0) {
-        if (*(int *)(D_001414F5 + 0x203) != 0) {
+        if (*(int *)(g_hero_field_20a5 + 0x203) != 0) {
             if (*(int *)&drek_boss_phase_reset_request != 0) {
                 int i;
                 boss_data->f34C = 0;
@@ -2504,10 +2504,10 @@ extern int queue_animation_update(int, int, int, int, int, int, int);
 extern float ApproachWithVelocity_p(float *, float, float *, float, float, float) __asm__("func_00214D88");
 extern void reset_numeric_hud_element();
 extern void Hud_UpdateCounter();
-extern void func_L06_0024A080();
+extern void draw_segmented_hud_meter_base();
 extern char *veldin2_camera_descriptors MACRO_ADDR;
-extern int D_L18_0016A310[];
-extern char D_L18_00167BD0[];
+extern int veldin2_camera_trigger_used[];
+extern char veldin2_camera_trigger_records[];
 extern char veldin2_player_camera[];
 extern short drek_boss_cam_max_speed;
 extern short drek_boss_cam_accel;
@@ -2592,8 +2592,8 @@ x = *(float *)&drek_boss_cam_attack_dist;
                     *(int *)(d + 0x3EC) = 1;
                 }
             }
-            if (D_L18_0016A310[i] != 0) {
-                m = D_L18_00167BD0 + i * 0xA0;
+            if (veldin2_camera_trigger_used[i] != 0) {
+                m = veldin2_camera_trigger_records + i * 0xA0;
                 if (*(short *)(m + 0x86) == 0x12) {
                     SetTableEntryFlagIfKind18(m);
                     if (*(int *)(d + 0x368) != -1) {
@@ -2622,7 +2622,7 @@ x = *(float *)&drek_boss_cam_attack_dist;
             p3 = (float *)(d + 0x37C);
         if (*(float *)(d + 0x38C) > 0.0f) {
             *(int *)(d + 0x368) = queue_animation_update(0x16, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
-                                                (int)func_L06_0024A080 + 0x20, (int)(d + 0x36C), 0x15E);
+                                                (int)draw_segmented_hud_meter_base + 0x20, (int)(d + 0x36C), 0x15E);
         }
     }
     ApproachWithVelocity_p(p0, x, p2, *(float *)&drek_boss_cam_accel * g_frame_time_sq, *(float *)&drek_boss_cam_accel * g_frame_time_sq,

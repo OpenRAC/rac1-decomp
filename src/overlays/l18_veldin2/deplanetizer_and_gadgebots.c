@@ -858,9 +858,9 @@ extern void AddDrawCallback(void *, void *);
 extern void draw_gadgebot_launch_glow_quad(void);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-extern char D_L18_00162680;
+extern char gadgebot_params_block;
 extern short gadgebot_close_anim_start_frame;
-extern char D_L18_00162698;
+extern char gadgebot_start_moby_byte73;
 
 /* Moby update for the class 0x772 enemy. */
 void Moby1906Update(unsigned char *m) {
@@ -875,8 +875,8 @@ void Moby1906Update(unsigned char *m) {
         if (random_integer_below(2)) ((Moby *)m)->flags |= 0x8000;
         else ((Moby *)m)->flags &= 0x7FFF;
         ((Moby *)m)->flags |= 0x100;
-        ((Moby *)m)->unk73 = D_L18_00162698;
-        *(void **)(e + 0x140) = &D_L18_00162680;
+        ((Moby *)m)->unk73 = gadgebot_start_moby_byte73;
+        *(void **)(e + 0x140) = &gadgebot_params_block;
         *(float *)(e + 0x20) = 1.0f;
         e[0x58] = 8;
         *(short *)(e + 0x24) = 1;

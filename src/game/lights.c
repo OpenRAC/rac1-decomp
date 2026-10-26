@@ -62,7 +62,7 @@ extern short ResourceCounter;
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
 
 extern char dir_lights[];
-extern float D_00187198;
+extern float gCamera_yaw;
 extern char point_lights[];
 extern char point_light_data[];
 extern float FastAddRots(float, float);
@@ -86,7 +86,7 @@ void UpdateAllPointLights(void) {
     *(float *)(l + 0x340) = 0.8f;
     *(float *)(l + 0x344) = 0.8f;
     *(float *)(l + 0x348) = 0.8f;
-    ang = FastAddRots(D_00187198, -0.8f);
+    ang = FastAddRots(gCamera_yaw, -0.8f);
     *(float *)(l + 0x350) = FastCos(ang) * 0.866f;
     *(float *)(l + 0x354) = FastSin(ang) * 0.866f;
     *(float *)(l + 0x358) = -0.5f;

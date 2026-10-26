@@ -449,11 +449,11 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern s32 gBolts MACRO_ADDR;
 extern s32 occlusion_sample_count MACRO_ADDR;
 extern float *g_occlusion_samples NOT_SDA;
-extern float D_L00_00161040 MACRO_ADDR;
-extern float D_L00_001610A0 MACRO_ADDR;
-extern float D_L00_00160564 MACRO_ADDR;
-extern s32 D_L00_001600B0 MACRO_ADDR;
-extern s32 D_L00_0016023C MACRO_ADDR;
+extern float level_tfrag_draw_distance MACRO_ADDR;
+extern float level_tie_draw_distance MACRO_ADDR;
+extern float shrub_draw_distance MACRO_ADDR;
+extern s32 moby_draw_distance MACRO_ADDR;
+extern s32 level_particle_clip_dist MACRO_ADDR;
 extern float level_fog_near_distance MACRO_ADDR;
 extern float level_fog_far_distance MACRO_ADDR;
 extern float level_fog_near_intensity MACRO_ADDR;
@@ -571,9 +571,9 @@ void update_debug_menu(void) {
             if (g_controller_state.keys.word.pressed & 0x50) {
                 ((DebugMenu_1F4918 *)g_debug_menu)->f28 = !((DebugMenu_1F4918 *)g_debug_menu)->f28;
                 if (((DebugMenu_1F4918 *)g_debug_menu)->f28) {
-                    D_L00_00161040=65536.0f; D_L00_001610A0=64.0f; D_L00_00160564=40.0f; D_L00_001600B0=64; D_L00_0016023C=0x40000;
+                    level_tfrag_draw_distance=65536.0f; level_tie_draw_distance=64.0f; shrub_draw_distance=40.0f; moby_draw_distance=64; level_particle_clip_dist=0x40000;
                 } else {
-                    D_L00_00161040=512000.0f; D_L00_001610A0=720.0f; D_L00_00160564=500.0f; D_L00_001600B0=500; D_L00_0016023C=0x1F4000;
+                    level_tfrag_draw_distance=512000.0f; level_tie_draw_distance=720.0f; shrub_draw_distance=500.0f; moby_draw_distance=500; level_particle_clip_dist=0x1F4000;
                 }
             }
             break;
@@ -795,7 +795,7 @@ extern u8 help_stats_base[];
 extern s32 g_current_level_index MACRO_ADDR;
 extern s32 gBolts MACRO_ADDR;
 extern s32 skip_frame MACRO_ADDR;
-extern volatile s32 D_L00_00161260 MACRO_ADDR;
+extern volatile s32 debug_text_flush_wait_flag MACRO_ADDR;
 extern void append_gif_transfer_packet(void);
 extern void flush_debug_text_queue(void);
 extern int print_debug_text_centered(int,int,int,char*);
@@ -1086,13 +1086,13 @@ void draw_debug_menu(void) {
         buf[0] = debug_menu60.saved_timer;
         print_debug_text(0x1CA, 0x141, 0x80F0F0F0, buf);
         flush_debug_text_queue();
-        while (D_L00_00161260 & 1) {}
+        while (debug_text_flush_wait_flag & 1) {}
     }
 }
-extern char D_L00_00169D80[];
+extern char frame_roll_counters_base[];
 // Moves a word to its neighbour slot and clears two fields.
 void Frame_RollCounter(void) {
-    char *p = D_L00_00169D80;
+    char *p = frame_roll_counters_base;
     int t = *(int *)(p + 0x364);
     *(int *)(p + 0x364) = 0;
     *(int *)(p + 0x1B0) = 0;
@@ -1131,53 +1131,53 @@ int OcclGrid_Lookup(int x, int y, int z) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_001F767C);
 /* Clears the loader's seventeen state words. */
-extern int D_L00_0015F524 MACRO_ADDR;
-extern int D_L00_0015F52C MACRO_ADDR;
-extern int D_L00_0015F530 MACRO_ADDR;
-extern int D_L00_0015F528 MACRO_ADDR;
+extern int level_reset_counter_524 MACRO_ADDR;
+extern int level_reset_counter_52c MACRO_ADDR;
+extern int level_reset_counter_530 MACRO_ADDR;
+extern int level_reset_counter_528 MACRO_ADDR;
 extern int ground_shadow_count MACRO_ADDR;
-extern int D_L00_0015F3F0 MACRO_ADDR;
-extern int D_L00_0015F3F4 MACRO_ADDR;
+extern int level_reset_counter_3f0 MACRO_ADDR;
+extern int level_reset_counter_3f4 MACRO_ADDR;
 extern int scripted_camera_move_active MACRO_ADDR;
 extern int D_L00_0015F508 MACRO_ADDR;
-extern int D_L00_0015F6E8 MACRO_ADDR;
+extern int visibomb_occlusion_skip_flag MACRO_ADDR;
 extern int water_patches MACRO_ADDR;
-extern int D_L00_00161394 MACRO_ADDR;
+extern int water_patches_field_4 MACRO_ADDR;
 extern int water_patch_count MACRO_ADDR;
-extern int D_L00_0016139C MACRO_ADDR;
+extern int water_patches_field_c MACRO_ADDR;
 extern int D_0015F40C_F8750 SDATA(D_L00_0015F40C);
 extern int D_0015F420_F8750 SDATA(D_L00_0015F420);
 extern int D_0015F430_F8750 SDATA(D_L00_0015F430);
 
 /* Clears the seventeen level-gameplay state words (D_L00_0015F3F0 .. D_L00_0016139C) when a level starts or resets. */
 void Level_ResetGameplayGlobals(void) {
-    D_L00_0015F524 = 0;
-    D_L00_0015F52C = 0;
-    D_L00_0015F530 = 0;
-    D_L00_0015F528 = 0;
+    level_reset_counter_524 = 0;
+    level_reset_counter_52c = 0;
+    level_reset_counter_530 = 0;
+    level_reset_counter_528 = 0;
     ground_shadow_count = 0;
-    D_L00_0015F3F0 = 0;
-    D_L00_0015F3F4 = 0;
+    level_reset_counter_3f0 = 0;
+    level_reset_counter_3f4 = 0;
     scripted_camera_move_active = 0;
     D_L00_0015F508 = 0;
     D_0015F40C_F8750 = 0;
     D_0015F420_F8750 = 0;
     D_0015F430_F8750 = 0;
-    D_L00_0015F6E8 = 0;
+    visibomb_occlusion_skip_flag = 0;
     water_patches = 0;
-    D_L00_00161394 = 0;
+    water_patches_field_4 = 0;
     water_patch_count = 0;
-    D_L00_0016139C = 0;
+    water_patches_field_c = 0;
 }
 extern int skip_frame MACRO_ADDR;
 extern int cinematic_mode MACRO_ADDR;
 extern int debug_profiler_color MACRO_ADDR;
-extern unsigned char D_001414F5[] NOT_SDA;
+extern unsigned char g_hero_field_20a5[] NOT_SDA;
 extern void DrawDebugProfiler(void);
 /* Gameplay-screen render hook: while nothing is loading (D_L00_0015F6BC) and byte 0xC of D_001414F5 is clear,
    picks the profiler colour word D_L00_0015F4F4 (0x7F in display mode 3, else 0x100FF) and draws the debug profiler. */
 void draw_debug_profiler_if_enabled(void) {
-    if (skip_frame == 0 && D_001414F5[0xC] == 0) {
+    if (skip_frame == 0 && g_hero_field_20a5[0xC] == 0) {
         debug_profiler_color = 0x100FF;
         if (cinematic_mode == 3) debug_profiler_color = 0x7F;
         DrawDebugProfiler();

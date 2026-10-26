@@ -38,7 +38,7 @@ extern char cd_read_state_r[] __asm__("D_001517D0");
 extern char g_debug_menu_r[] __asm__("D_L00_0016C158");
 extern char level_menu_system_r[] __asm__("D_L00_001BA070");
 extern char g_hero_r[] __asm__("D_0013F450");
-extern unsigned char D_0013DE4B_2465F8[] __asm__("D_0013DE4B");
+extern unsigned char level_available_base_r[] __asm__("D_0013DE4B");
 extern unsigned char D_0013D498_2465F8[] __asm__("D_0013D498");
 extern unsigned char level_visit_state_r[] __asm__("D_0013DE60");
 extern Planet_2465F8 item_usage_r[] __asm__("D_00141780");
@@ -50,8 +50,8 @@ extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern long frm_clock_time_r __asm__("D_0015EE40") MACRO_ADDR;
 extern int rendered_frame_count_r __asm__("D_L00_0015F4F8") MACRO_ADDR;
 extern int level_loop_exit_requested_r __asm__("D_L00_0015F650") MACRO_ADDR;
-extern int D_L00_0015F690_2465F8 __asm__("D_L00_0015F690") MACRO_ADDR;
-extern float D_L00_0015F690_f_2465F8 __asm__("D_L00_0015F690") MACRO_ADDR;
+extern int level_game_clock_paused_r __asm__("D_L00_0015F690") MACRO_ADDR;
+extern float level_game_clock_paused_f_2465F8 __asm__("D_L00_0015F690") MACRO_ADDR;
 extern int cinematic_mode_r __asm__("D_L00_0015F6A8") MACRO_ADDR;
 extern int cinematic_mode_frames_r __asm__("D_L00_0015F6AC") MACRO_ADDR;
 extern float cpu_frame_load_r __asm__("D_L00_0015F6B4") MACRO_ADDR;
@@ -166,7 +166,7 @@ void run_level_main_loop(void) {
     sce_gs_sync_v_r(0);
     PutDispBuffer_r();
     music_StartTrack_r(((Music_2465F8 *)cd_read_state_r)->track, 1, 0x400);
-    if ((g_current_level_index_r == one && D_0013DE4B_2465F8[0] == 0) ||
+    if ((g_current_level_index_r == one && level_available_base_r[0] == 0) ||
         (g_current_level_index_r == 0 && D_0013D498_2465F8[0] != 0)) {
         music_Unpause_r();
     } else {
@@ -309,12 +309,12 @@ void run_level_main_loop(void) {
                 sce_gs_sync_v_r(0);
                 rendered_frame_count_r = rendered_frame_count_r + 1;
                 SpaceTransition_Tick_r();
-                D_L00_0015F690_2465F8 = 0;
+                level_game_clock_paused_r = 0;
             } else {
                 sce_gs_sync_v_r(0);
                 rendered_frame_count_r = rendered_frame_count_r + 1;
                 SpaceTransition_Tick_r();
-                D_L00_0015F690_f_2465F8 = 0.0f;
+                level_game_clock_paused_f_2465F8 = 0.0f;
             }
         }
         ResetGsRegistersPr_r();
@@ -344,13 +344,13 @@ int Stash_SendData(int arg0, int arg1, int arg2, int arg3);
 extern void FastMemCopy(void *, void *, int);
 extern void load_map_chunk(void *arg0, unsigned char *arg1, int arg2);
 extern void decode_map_mask(int *dst, unsigned char *src, short *offs);
-extern int D_L00_00183FF0[];
+extern int map_menu_initial_value_pairs[];
 extern float map_points[];
 extern float map_coefficients[];
 extern char render_archive_source_file[];
-extern int *D_L00_00173F08;
+extern int *lvl_load_scratch_buffer;
 extern char map_archive_stash_comment[];
-extern unsigned char D_L00_00184494[];
+extern unsigned char map_menu_state_circle_mask[];
 extern unsigned char menu_item_enabled_115[] NOT_SDA;
 extern unsigned char help_stats_base[] NOT_SDA;
 
@@ -375,9 +375,9 @@ void initialize_level_map_archive(void) {
     map_menu_state[4] = 1;
     { int i;
     for (i = 0; i < 20; i++) {
-        map_menu_state[0x41 + i] = D_L00_00183FF0[i * 2];
+        map_menu_state[0x41 + i] = map_menu_initial_value_pairs[i * 2];
         ((float *)map_menu_state)[0x2D + i] = 0.65f;
-        map_menu_state[0x55 + i] = D_L00_00183FF0[i * 2 + 1];
+        map_menu_state[0x55 + i] = map_menu_initial_value_pairs[i * 2 + 1];
     } }
     v = g_current_level_index_r;
     map_menu_state[0x8B] = -1;
@@ -405,7 +405,7 @@ void initialize_level_map_archive(void) {
         gl = map_menu_state;
         gl[10] = 1;
         heap_tag = (int)render_archive_source_file;
-        archive_base = D_L00_00173F08;
+        archive_base = lvl_load_scratch_buffer;
         archive = (int *)((int)archive_base + 0x9A800);
         scratch = e[1] << 7;
         Load(archive, e[0], e[1]);
@@ -440,7 +440,7 @@ void initialize_level_map_archive(void) {
             for (x = 0; x < 32; x++) {
                 if ((15.5f - (float)x) * (15.5f - (float)x) +
                     (15.5f - (float)y) * (15.5f - (float)y) > lim) {
-                    D_L00_00184494[x / 8 + y * 4] |= 1 << (x - (x / 8) * 8);
+                    map_menu_state_circle_mask[x / 8 + y * 4] |= 1 << (x - (x / 8) * 8);
                 }
             }
         }
@@ -641,12 +641,12 @@ void initialize_render_archive_transfer(void) {
     }
     map_menu_state.active = 0;
 }
-extern int D_L00_00184568[];
+extern int map_menu_state_key_slots[];
 
 /* finds an occupied slot with an unset key in the requested order (joined with func_L00_002474C4) */
 int Map_FindUnsetKeySlot(int reverse) {
     int i = 0;
-    int *base = D_L00_00184568;
+    int *base = map_menu_state_key_slots;
     int *keys = base + 5;
     do {
         int slot = reverse ? 4 - i : i;
@@ -674,11 +674,11 @@ int FindMapSlotById(int id) {
     return -1;
 }
 INCLUDE_ASM("asm/overlays", func_L00_00247650);
-extern int *D_L00_00160360 MACRO_ADDR;
+extern int *find_id_list MACRO_ADDR;
 
 /* Returns the index of key in the zero-terminated id list (at most 20 entries), or -1. */
 int FindIdInList(int key) {
-    int *list = D_L00_00160360;
+    int *list = find_id_list;
     int *p = list;
     int i;
 

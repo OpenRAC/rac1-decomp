@@ -1220,12 +1220,12 @@ extern float level_fog_far_intensity_m __asm__("D_L00_0015F554") MACRO_ADDR;
 extern int level_fog_color_red_m __asm__("D_L00_0015F544") MACRO_ADDR;
 extern int level_fog_color_green_m __asm__("D_L00_0015F545") MACRO_ADDR;
 extern int level_fog_color_blue_m __asm__("D_L00_0015F546") MACRO_ADDR;
-extern float D_L00_00161040_m __asm__("D_L00_00161040") MACRO_ADDR;
-extern float D_L00_001610A0_m __asm__("D_L00_001610A0") MACRO_ADDR;
-extern float D_L00_00160564_m __asm__("D_L00_00160564") MACRO_ADDR;
-extern int D_L00_001600B0_m __asm__("D_L00_001600B0") MACRO_ADDR;
-extern int D_L00_0016023C_m __asm__("D_L00_0016023C") MACRO_ADDR;
-extern int D_L00_0016A0F8;
+extern float level_tfrag_draw_distance_m __asm__("D_L00_00161040") MACRO_ADDR;
+extern float level_tie_draw_distance_m __asm__("D_L00_001610A0") MACRO_ADDR;
+extern float shrub_draw_distance_m __asm__("D_L00_00160564") MACRO_ADDR;
+extern int moby_draw_distance_m __asm__("D_L00_001600B0") MACRO_ADDR;
+extern int level_particle_clip_dist_m __asm__("D_L00_0016023C") MACRO_ADDR;
+extern int level_draw_globals_live;
 
 // Saves the camera parameters into a moby and switches the globals to a fixed screen setup.
 void Moby_SaveGlobalsState(void *m_) {
@@ -1251,12 +1251,12 @@ void Moby_SaveGlobalsState(void *m_) {
     *(unsigned char *)&level_fog_color_blue_m = 0x40;
     level_fog_far_distance_m = 131072.0f;
     level_fog_near_intensity_m = 255.0f;
-    D_L00_0016A0F8 = 0;
-    D_L00_001610A0_m = 144.0f;
-    D_L00_00161040_m = 147456.0f;
-    D_L00_00160564_m = 144.0f;
-    D_L00_001600B0_m = 0x90;
-    D_L00_0016023C_m = 0x50000;
+    level_draw_globals_live = 0;
+    level_tie_draw_distance_m = 144.0f;
+    level_tfrag_draw_distance_m = 147456.0f;
+    shrub_draw_distance_m = 144.0f;
+    moby_draw_distance_m = 0x90;
+    level_particle_clip_dist_m = 0x50000;
     *(int *)&level_fog_near_distance_m = 0;
     *(int *)&level_fog_far_intensity_m = 0;
     SetBackgroundColor(0x40, 0x60, 0x40);
@@ -1284,13 +1284,13 @@ void Moby_RestoreGlobalsState(int m_, int flag) {
     *(unsigned char *)&level_fog_color_red_m = p[0x40];
     *(unsigned char *)&level_fog_color_green_m = p[0x41];
     level_fog_color_blue = p[0x42];
-    D_L00_0016A0F8 = 1;
+    level_draw_globals_live = 1;
     if (flag != 0) {
-        D_L00_00161040_m = 512000.0f;
-        D_L00_001610A0_m = 720.0f;
-        D_L00_00160564_m = 500.0f;
-        D_L00_001600B0_m = 500;
-        D_L00_0016023C_m = 0x1F4000;
+        level_tfrag_draw_distance_m = 512000.0f;
+        level_tie_draw_distance_m = 720.0f;
+        shrub_draw_distance_m = 500.0f;
+        moby_draw_distance_m = 500;
+        level_particle_clip_dist_m = 0x1F4000;
     }
     d = render_view_params;
     SetBackgroundColor(*(int *)(d + 0x23C), *(int *)(d + 0x240), *(int *)(d + 0x244));
@@ -1300,7 +1300,7 @@ typedef int q_2b58d8 __attribute__((mode(TI)));
 typedef struct { unsigned char p[0x2080]; void *w2080; } G_2b58d8;
 extern G_2b58d8 g_hero_r2 __asm__("D_0013F450");
 extern int visibomb_view_active_flag_r __asm__("D_L00_0017E608") __attribute__((section(".data")));
-extern int D_L00_0015F6E8_2b58d8 __asm__("D_L00_0015F6E8") __attribute__((section(".sdata")));
+extern int visibomb_occlusion_skip_flag_r __asm__("D_L00_0015F6E8") __attribute__((section(".sdata")));
 extern short visibomb_missile_cruise_speed_r __asm__("D_L00_0016156C");
 extern float g_frame_time_r2 __asm__("D_0015EE6C") __attribute__((section(".sdata")));
 extern q_2b58d8 collision_hit_point_r __asm__("D_L00_00173F60") __attribute__((section(".data")));
@@ -1372,13 +1372,13 @@ int spawn_visibomb_missile(void *a_, void *pos_, float fa, float fb)
             ((Moby *)m)->command = 1;
             qcopy(m + 0x10, &collision_hit_point_r);
         }
-        D_L00_0015F6E8_2b58d8 = 1;
+        visibomb_occlusion_skip_flag_r = 1;
         func_00216028_2b58d8(6, 0);
     }
     return (int)m;
 }
 extern char hero_globals_base[] NOT_SDA;
-extern int D_L00_00167114 NOT_SDA;
+extern int hero_control_mode_11_flag NOT_SDA;
 extern void select_camera_mode_by_hero_alignment_and_distance(int);
 extern void HeroEnterMoveState(int, int);
 extern void Moby_RestoreGlobalsState(int, int);
@@ -1395,7 +1395,7 @@ void terminate_visibomb_missile(int a, int *b) {
     Moby_RestoreGlobalsState(a, 1);
     clear_jet_camera_mode_latch();
     DeleteMoby(a);
-    D_L00_00167114 = 0;
+    hero_control_mode_11_flag = 0;
 }
 extern void euler_to_matrix(void *, void *);
 extern void copy_matrix_rotation(void *, void *);
@@ -1546,7 +1546,7 @@ extern char voice_pool_r[] __asm__("D_0013E650");
 extern Hit2_2B7430 *g_coll_hit_moby_r2 __asm__("D_L00_00173F58");
 extern char coll_sphere_moby_hits_r[] __asm__("D_L00_00178000");
 extern float frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
-extern int D_L00_0015F6E8_2B7430 __asm__("D_L00_0015F6E8") MACRO_ADDR;
+extern int visibomb_occlusion_skip_flag_r2 __asm__("D_L00_0015F6E8") MACRO_ADDR;
 extern int D_L00_0015F558_2B7430 SDATA(D_L00_0015F558);
 extern int visibomb_view_active_flag_r2 __asm__("D_L00_0017E608");
 extern float D_L00_00161568_2B7430 SDATA(D_L00_00161568);
@@ -1601,7 +1601,7 @@ void visibomb_missile_update(Moby *m) {
     *(u128_2B7430 *)&k30 = *(u128_2B7430 *)&k40;
     *(u128_2B7430 *)&k40 = 0;
     k40.z = 1.0f;
-    D_L00_0015F6E8_2B7430 = 1;
+    visibomb_occlusion_skip_flag_r2 = 1;
     D_L00_0015F558_2B7430 = 1;
     jet_camera_mode_r();
     visibomb_view_active_flag_r2 = 1;
@@ -2112,7 +2112,7 @@ void draw_taunter_effect_quads(char *m) {
 INCLUDE_ASM("asm/overlays", func_L00_002B8AE8);
 extern unsigned char voice_pool[];
 extern unsigned char g_hero_r5[] __asm__("D_0013F450");
-extern unsigned short D_00141CD8 NOT_SDA;
+extern unsigned short pyrocitor_help_shown_count NOT_SDA;
 extern unsigned char usage_stats[];
 void func_0020D678_B9528(void *) __asm__("func_0020D678");
 void release_point_light_slot(int);
@@ -2144,7 +2144,7 @@ void update_pyrocitor_usage_and_cleanup(unsigned char *m)
         *(short *)(v + 0x4A) = -1;
         return;
     }
-    if (D_00141CD8)
+    if (pyrocitor_help_shown_count)
         return;
     P = usage_stats;
     if (*(unsigned short *)(P + 0x50))
@@ -2304,7 +2304,7 @@ extern Voice_2B9AD8 voice_pool_r2[] __asm__("D_0013E650");
 extern unsigned char hero_globals_base_r2[] __asm__("D_0013E633");
 extern unsigned short tesla_claw_help_shown_count_r[] __asm__("D_00141E70");
 extern unsigned short usage_stats_entry26_count_r[] __asm__("D_00141A18");
-extern float D_L00_0017AFBC_2B9AD8 __asm__("D_L00_0017AFBC");
+extern float held_weapon_tesla_walloper_factor_r __asm__("D_L00_0017AFBC");
 extern int D_L00_00161660_2B9AD8 SDATA(D_L00_00161660);
 extern char player_camera_matrix_r[] __asm__("D_L00_001670D0");
 extern Light_2B9AD8 level_point_lights_r3[] __asm__("D_L00_001803C0");
@@ -2351,7 +2351,7 @@ void func_L00_002B9AD8_r(Moby *m) {
         !((Hero *)g_hero_r3)->item_use_locked) {
         s->reach = 0.8f;
     }
-    D_L00_0017AFBC_2B9AD8 = 0.9f;
+    held_weapon_tesla_walloper_factor_r = 0.9f;
     active = 0;
     ready = get_ammo_r3(-1);
     if (tesla_claw_help_shown_count_r[0] == 0 && usage_stats_entry26_count_r[0] == 0 &&
@@ -2582,28 +2582,28 @@ typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V2b9310;
 extern short tesla_beam_start_pending;
-extern short D_L00_0016174C;
+extern short tesla_beam_reset_word;
 extern short tesla_beam_initial_frames;
 extern int tesla_beam_scaled_initial_frame_count MACRO_ADDR;
 extern short beam_arc_outer_color;
 extern short tesla_beam_length;
-extern short D_L00_0016167C;
-extern short D_L00_00161684;
-extern short D_L00_00161698;
-extern short D_L00_00161728[] MACRO_ADDR;
-extern short D_L00_00161738[] MACRO_ADDR;
-extern short D_L00_0016173A[] MACRO_ADDR;
-extern short D_L00_0016173C[] MACRO_ADDR;
-extern short D_L00_0016173E[] MACRO_ADDR;
-extern short D_L00_00161740[] MACRO_ADDR;
-extern short D_L00_00161742[] MACRO_ADDR;
-extern short D_L00_00161744[] MACRO_ADDR;
-extern short D_L00_00161746[] MACRO_ADDR;
-extern V2b9310 D_L00_001DB8B0[];
+extern short tesla_beam_reset_short_a;
+extern short tesla_beam_reset_short_b;
+extern short tesla_beam_reset_short_c;
+extern short beam_arc_bolt_slots[] MACRO_ADDR;
+extern short beam_arc_bolt_params[] MACRO_ADDR;
+extern short beam_arc_bolt_params_1[] MACRO_ADDR;
+extern short beam_arc_bolt_params_2[] MACRO_ADDR;
+extern short beam_arc_bolt_params_3[] MACRO_ADDR;
+extern short beam_arc_bolt_params_4[] MACRO_ADDR;
+extern short beam_arc_bolt_params_5[] MACRO_ADDR;
+extern short beam_arc_bolt_params_6[] MACRO_ADDR;
+extern short beam_arc_bolt_params_7[] MACRO_ADDR;
+extern V2b9310 tesla_beam_points_base[];
 extern V2b9310 tesla_beam_points[];
-extern int D_L00_001DBB40[];
-extern V2b9310 D_L00_001DBB90[];
-extern int D_L00_001DBCD0[];
+extern int tesla_beam_point_state_a[];
+extern V2b9310 tesla_beam_point_vectors[];
+extern int tesla_beam_point_state_b[];
 
 /* Starts the beam when one is pending: lays 19 points from the moby toward its target and resets the segment state.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b2100.c, FUN_L00_002b9310. */
@@ -2619,30 +2619,30 @@ void initialize_tesla_claw_beam(char *moby) {
         return;
     }
     (*(int *)&tesla_beam_start_pending) = 0;
-    (*(int *)&D_L00_0016174C) = 0;
+    (*(int *)&tesla_beam_reset_word) = 0;
     tesla_beam_scaled_initial_frame_count = scale_ticks((*(int *)&tesla_beam_initial_frames));
     (*(int *)&beam_arc_outer_color) = 0x7F2020;
     FastVecSub(&d, data + 0x10, data);
     vec_scale_to_length(&step, &d, (*(float *)&tesla_beam_length) / 20.0f);
     qcopy(tesla_beam_points, data);
     for (i = 1; i < 20; i++) {
-        FastVecAdd(&tesla_beam_points[i], &D_L00_001DB8B0[i], &step);
-        D_L00_001DBB40[i] = 0;
-        clear_u64_value(&D_L00_001DBB90[i]);
-        D_L00_001DBCD0[i] = 0;
+        FastVecAdd(&tesla_beam_points[i], &tesla_beam_points_base[i], &step);
+        tesla_beam_point_state_a[i] = 0;
+        clear_u64_value(&tesla_beam_point_vectors[i]);
+        tesla_beam_point_state_b[i] = 0;
     }
     for (j = 0; j < 4; j++) {
-        D_L00_00161728[j] = -1;
+        beam_arc_bolt_slots[j] = -1;
     }
-    D_L00_00161738[0] = 8;
-    D_L00_0016173C[0] = 8;
-    D_L00_00161740[0] = 4;
-    D_L00_0016173A[0] = 4;
-    D_L00_00161742[0] = 2;
-    D_L00_00161744[0] = 4;
-    D_L00_0016173E[0] = 4;
-    D_L00_00161746[0] = 2;
-    (*(int *)&D_L00_0016167C) = 0;
-    (*(int *)&D_L00_00161684) = 0;
-    (*(int *)&D_L00_00161698) = 0;
+    beam_arc_bolt_params[0] = 8;
+    beam_arc_bolt_params_2[0] = 8;
+    beam_arc_bolt_params_4[0] = 4;
+    beam_arc_bolt_params_1[0] = 4;
+    beam_arc_bolt_params_5[0] = 2;
+    beam_arc_bolt_params_6[0] = 4;
+    beam_arc_bolt_params_3[0] = 4;
+    beam_arc_bolt_params_7[0] = 2;
+    (*(int *)&tesla_beam_reset_short_a) = 0;
+    (*(int *)&tesla_beam_reset_short_b) = 0;
+    (*(int *)&tesla_beam_reset_short_c) = 0;
 }

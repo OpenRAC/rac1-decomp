@@ -64,7 +64,7 @@ extern char help_stats_base[];
 extern char item_usage[];
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern short blarg_usage_event_timer;
-extern short D_L06_0015F7B8;
+extern short blarg_hero_run_step_start_frames;
 extern short blarg_hero_state_f_jump_velocity_keys;
 extern char blarg_hero_state_d_jump_velocity_keys[];
 extern unsigned char blarg_hero_run_jump_land_anim_by_frame[];
@@ -299,7 +299,7 @@ int HeroL06_TrySetMoveState(int a, int b) {
             }
             if (b) {
                 char *v = hero_globals_base + 0xE1D;
-                set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&D_L06_0015F7B8)[*(int *)(v + 0x2088)], (float)n);
+                set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&blarg_hero_run_step_start_frames)[*(int *)(v + 0x2088)], (float)n);
             }
         }
         break;
@@ -317,7 +317,7 @@ int HeroL06_TrySetMoveState(int a, int b) {
             } else if (*(unsigned char *)(p + 0x20A4) == 1) {
                 set_hero_animation(2, 0, (float)scale_ticks(8));
             } else if (*(unsigned char *)(p + 0x20A4) == 0) {
-                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&D_L06_0015F7B8)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
+                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&blarg_hero_run_step_start_frames)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
             }
         }
         break;

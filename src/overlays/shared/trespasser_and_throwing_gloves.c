@@ -370,7 +370,7 @@ typedef struct {
     f32 normal_z; /* 0x48: ledge probes compare atan2(normal_z, xy length) with 20 degrees */
 } CollisionHit_C39D0;
 int scale_ticks(int);
-extern u8 D_0013E62A[];
+extern u8 gGoldBombGlove[];
 extern f32 FastDiffRots(f32, f32);
 extern f32 vec_distance_xy(void *, void *);
 extern f32 IntToFloat(s32);
@@ -483,7 +483,7 @@ void bomb_glove_update(struct Moby *moby) {
         pos.f[2] += 0.490819991f;
         angle = fast_atan2(launch.f[0], launch.f[1]);
         {
-            f32 speed = (g_controller_state.held & 5) ? IntToFloat(D_0013E62A[0]) * 2.5f + 8.5f : 8.5f;
+            f32 speed = (g_controller_state.held & 5) ? IntToFloat(gGoldBombGlove[0]) * 2.5f + 8.5f : 8.5f;
             FastVecScale(&target, &launch, speed);
         }
         FastVecAdd(&target, &target, &pos);
@@ -498,7 +498,7 @@ void bomb_glove_update(struct Moby *moby) {
             if (0.593411922f < slope) slope = 0.593411922f;
             if (slope < -1.39626336f) slope = -1.39626336f;
             {
-                f32 speed = (g_controller_state.held & 5) ? IntToFloat(D_0013E62A[0]) * 2.5f + 8.5f : 8.5f;
+                f32 speed = (g_controller_state.held & 5) ? IntToFloat(gGoldBombGlove[0]) * 2.5f + 8.5f : 8.5f;
                 BuildSphericalOffset(&temporary.arc, speed, angle, slope);
             }
             qcopy(&direction, &g_debug_camera_r2);
@@ -509,7 +509,7 @@ void bomb_glove_update(struct Moby *moby) {
                 else horizontal = z / 0.01f;
             }
             gravity = g_frame_time_sq * 11.0f;
-            root = vec_length(gravity * ((g_controller_state.held & 5) ? IntToFloat(D_0013E62A[0]) * 2.5f + 8.5f : 8.5f) * 0.5f);
+            root = vec_length(gravity * ((g_controller_state.held & 5) ? IntToFloat(gGoldBombGlove[0]) * 2.5f + 8.5f : 8.5f) * 0.5f);
             radius = (root + root) * root * (1.0f - horizontal) / (g_frame_time_sq * 11.0f);
             vertical = horizontal * radius;
             if (0.0f < radius) {
@@ -554,7 +554,7 @@ void bomb_glove_update(struct Moby *moby) {
             }
         }
         gravity = g_frame_time_sq * 11.0f;
-        speed = (g_controller_state.held & 5) ? IntToFloat(D_0013E62A[0]) * 2.5f + 8.5f : 8.5f;
+        speed = (g_controller_state.held & 5) ? IntToFloat(gGoldBombGlove[0]) * 2.5f + 8.5f : 8.5f;
         func_L00_002C3790_C39D0((Vec4 *)&pos, (Vec4 *)&target, out, gravity, 0.00000999999975f, speed);
     }
     switch (moby->state) {
@@ -1450,7 +1450,7 @@ typedef struct {
     char pad2[8];
 } FxWeaponInfo;
 extern char menu_item_enabled_115[];
-extern char D_0013DE6E[];
+extern char level_render_state_base[];
 extern char item_defs_r[] __asm__("D_L00_00179BC0");
 extern FxVec coll_resolved_pos;
 extern FxVec collision_hit_point;
@@ -1585,7 +1585,7 @@ void devestator_ammo_update(Moby *m) {
                 queue_formatted_dialogue_message(sound, difference, -1);
             }
             account_idx = p->weapon;
-            ((int *)(D_0013DE6E + 0xA2))[account_idx] += ((int *)(menu_item_enabled_115 + 0x21))[account_idx] - before;
+            ((int *)(level_render_state_base + 0xA2))[account_idx] += ((int *)(menu_item_enabled_115 + 0x21))[account_idx] - before;
             m->state = 2;
             m->scale *= frame_scale * 0.20000005f + 1.0f;
             clear_u64_value(&p->velocity);
@@ -1693,7 +1693,7 @@ extern int subtract_integer_with_clamp(int);
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 typedef struct { char pad[0x34]; short a; short b; char pad2[0x14]; } Rec_2C6F48;
 extern char menu_item_enabled_115[];
-extern char D_0013DE6E[];
+extern char level_render_state_base[];
 extern Rec_2C6F48 item_defs_r2[] __asm__("D_L00_00179BC0");
 extern float frame_scale MACRO_ADDR;
 extern int ammo_pickup_sound_frame MACRO_ADDR;
@@ -1718,7 +1718,7 @@ int try_collect_ammo_pickup(char *m) {
         r = ((Rec_2C6F48 *)((char *)item_defs_r2 + *(int *)(p + 8) * 0x4C))->a;
     queue_formatted_dialogue_message(r, b - a, -1);
     if (f < (float)*(int *)p) {
-        *(int *)(D_0013DE6E + 0xA2 + *(int *)(p + 8) * 4) += *(int *)(menu_item_enabled_115 + 0x21 + *(int *)(p + 8) * 4) - a;
+        *(int *)(level_render_state_base + 0xA2 + *(int *)(p + 8) * 4) += *(int *)(menu_item_enabled_115 + 0x21 + *(int *)(p + 8) * 4) - a;
         m[0x20] = 2;
         ((Moby *)m)->scale *= frame_scale * 0.20000005f + 1.0f;
         clear_u64_value(p + 0x10);
@@ -2108,7 +2108,7 @@ unsigned char *spawn_swingshot_hook(unsigned char *src, float f) {
     }
     return m;
 }
-extern unsigned char D_001414F5[] NOT_SDA;
+extern unsigned char g_hero_field_20a5[] NOT_SDA;
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void DeleteMoby(void *);
 extern void moby_anim_sphere_lerp(void *);
@@ -2127,7 +2127,7 @@ void swingshot_hook_update(unsigned char *m) {
         DeleteMoby(m);
         return;
     }
-    if ((((Moby *)o)->flags & 1) || D_001414F5[0xA] != 0) {
+    if ((((Moby *)o)->flags & 1) || g_hero_field_20a5[0xA] != 0) {
         ((Moby *)m)->flags |= 0x41;
     } else {
         ((Moby *)m)->flags &= 0xFFBE;

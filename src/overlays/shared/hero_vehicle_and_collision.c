@@ -2805,7 +2805,7 @@ struct Moby;
 extern struct Hero g_hero_r2 __asm__("D_0013F450");
 extern unsigned char item_available[];
 extern unsigned int pad_held;
-extern int D_L00_00167114[];
+extern int hero_control_mode_11_flag[];
 extern short g_frame_time_r2 __asm__("D_0015EE6C");
 extern void queue_animation_update(int, int, void *, void *, void *, void *, int);
 extern void Hud_InitParticles(void);
@@ -2839,7 +2839,7 @@ int try_transition_hero_water_state(void) {
              !((*(f32 *)&g_frame_time_r2) < g_hero_r2.motion.displacement.f[2]))) {
             state = 0x6A;
         } else if (g_hero_r2.water_surface_z + 0.4f < g_hero_r2.motion.pos.f[2]) {
-            D_L00_00167114[0] = 0;
+            hero_control_mode_11_flag[0] = 0;
             state = 6;
         } else {
             goto collision_mode;

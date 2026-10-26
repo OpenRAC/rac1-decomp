@@ -81,7 +81,7 @@ extern unsigned char menu_item_enabled_17 NOT_SDA;
 extern unsigned char menu_item_enabled_18 NOT_SDA;
 extern unsigned char menu_item_enabled_19 NOT_SDA;
 extern unsigned char menu_item_enabled_25 NOT_SDA;
-extern int D_001A04B4 NOT_SDA;
+extern int map_region_enabled_3 NOT_SDA;
 extern unsigned char menu_item_enabled_41 NOT_SDA;
 extern int hero_control_mode NOT_SDA;
 extern unsigned char menu_item_enabled_36 NOT_SDA;
@@ -121,17 +121,17 @@ extern int memcard_PrepData(void *dst, int i, int *table);
 extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
-extern int D_0013D844 NOT_SDA;
+extern int race_gates_24_status NOT_SDA;
 extern unsigned char menu_item_enabled_12 NOT_SDA;
-extern int D_0013D9B4 NOT_SDA;
+extern int race_gates_47_flag NOT_SDA;
 extern unsigned char gSpecialItems[];
 extern unsigned char gHaveHeliPack NOT_SDA;
 extern int race_gates NOT_SDA;
-extern int D_0013DAE4 NOT_SDA;
+extern int race_gates_66_status NOT_SDA;
 extern unsigned char menu_item_enabled_73 NOT_SDA;
-extern int D_0013DB24 NOT_SDA;
+extern int race_gates_70_status NOT_SDA;
 extern unsigned char menu_item_enabled_85 NOT_SDA;
-extern int D_0013DC34 NOT_SDA;
+extern int race_gates_87_status NOT_SDA;
 extern unsigned char race_gates_base NOT_SDA;
 extern int item_available NOT_SDA;
 extern unsigned char menu_item_enabled_20 NOT_SDA;
@@ -181,7 +181,7 @@ extern void snd_reenable_command_flush(void);
 extern int snd_StreamSafeCdGetError(void);
 extern void music_start_track_by_id(short, short, short);
 extern void music_PreseekTrack(short, short, short);
-extern short D_001517F0 NOT_SDA;
+extern short music_flagged_track_started NOT_SDA;
 extern char g_controller_state[];
 extern int pad_socket_param NOT_SDA;
 extern void sce_dbc_init(void);
@@ -241,9 +241,9 @@ extern int get_menu_stream_buffer_size(int handle);
 extern int menu_stream_buffers[];
 extern char preview_resource_bindings[] NOT_SDA;
 extern char *moby_class_resources[] NOT_SDA;
-extern int D_001D6860[];
-extern int D_001D74C0[];
-extern int D_001D6760[];
+extern int scene_state_buffer_0[];
+extern int scene_state_buffer_1[];
+extern int scene_state_buffer_2[];
 extern char camera_position_a[] __asm__("D_00187180");
 extern char coll_hit_pos[];
 extern int sound_probe_ignore;
@@ -339,7 +339,7 @@ extern short resident_stream_resume_frames_s6;
 extern s32 resident_dialogue_started MACRO_ADDR;
 extern s32 resident_stream_pending MACRO_ADDR;
 extern BossVars_391E8 vendor_state_r __asm__("D_001E66C0");
-extern s32 D_001E66FC;
+extern s32 vendor_state_dialogue_pick;
 extern Cam_391E8 resident_cheat_scale_manip;
 extern s32 scale_game_frame_count(s32);
 extern void AttachManipulator(Moby *, s32, Cam_391E8 *);
@@ -448,7 +448,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
             resident_stream_pending = 1;
         }
         if (m->anim_flags & 2) {
-            a = D_001E66FC * 3 + 4;
+            a = vendor_state_dialogue_pick * 3 + 4;
             if (m->prev_seq != a) {
                 MobyBlendAnimation(m, a, 0, scale_game_frame_count(0xC));
             }
@@ -459,7 +459,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
         if (dialogue_playback_phase == 3 && resident_dialogue_started != 0) {
             resident_stream_pending = 1;
             resident_dialogue_started = 0;
-            a = D_001E66FC * 3 + 5;
+            a = vendor_state_dialogue_pick * 3 + 5;
             if (m->prev_seq != a) {
                 MobyBlendAnimation(m, a, 0, scale_game_frame_count(0x12));
             }
@@ -470,7 +470,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
         if (dialogue_playback_phase == 3 && resident_dialogue_started != 0) {
             resident_stream_pending = 1;
             resident_dialogue_started = 0;
-            a = D_001E66FC * 3 + 6;
+            a = vendor_state_dialogue_pick * 3 + 6;
             if (m->prev_seq != a) {
                 MobyBlendAnimation(m, a, 0, scale_game_frame_count(0x12));
             }

@@ -256,7 +256,7 @@ s32 map_filter_l07_0(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z) {
     return 0;
 }
 
-extern int D_001A04A8 NOT_SDA;
+extern int map_region_enabled_0 NOT_SDA;
 
 /* Menu hit test (func_00207200's family: `a` is the Menu13F450 state test
    shared with func_00207340/func_00207930). Two independent ways to hit:
@@ -269,7 +269,7 @@ int map_filter_l07_1(int arg0, int arg1, float unused1, float unused2,
     int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
 
     if (point_is_clockwise(arg0, arg1, 0x93, 0x168, 0x182, 0x168) != 0
-        && arg1 >= 0x135 && D_001A04A8 != 0 && arg3 >= 47.7f) {
+        && arg1 >= 0x135 && map_region_enabled_0 != 0 && arg3 >= 47.7f) {
         return 1;
     }
     if (!a) {
@@ -328,7 +328,7 @@ int map_filter_l07_2(int arg0, int arg1) {
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
 __asm__(".section .text\n\tnop\n");
 
-extern int D_001A04BC NOT_SDA;
+extern int map_region_enabled_5 NOT_SDA;
 
 /* Menu hit test in two layouts (func_00207200's family). The first arm
    needs its own `return 0`: jump.c then sets v0 = 1 before the test
@@ -339,7 +339,7 @@ int map_filter_l07_3(int px, int py, float unused1, float unused2, float reveal_
         Hero *hero_ptr = (Hero *)&g_hero;
         int hero_state_blocks_low_y_reveal = hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
 
-        if (!hero_state_blocks_low_y_reveal && D_001A04BC != 0) {
+        if (!hero_state_blocks_low_y_reveal && map_region_enabled_5 != 0) {
             return 1;
         }
         return 0;
@@ -351,7 +351,7 @@ int map_filter_l07_3(int px, int py, float unused1, float unused2, float reveal_
     return 0;
 }
 
-extern int D_001A04B4 NOT_SDA;
+extern int map_region_enabled_3 NOT_SDA;
 
 /* Same hit test as func_002071A8, run against two boxes: nonzero when
    D_001A04B4 is set and either box is hit. Retail sets the result before
@@ -364,7 +364,7 @@ int map_filter_l07_4(int x1, int y1) {
     int b = point_is_clockwise(x1, y1, 0x10E, 0xF7, 0x13D, 0x119);
     int r = 0;
 
-    if (D_001A04B4 != 0) {
+    if (map_region_enabled_3 != 0) {
         r = 1;
         if (a == 0) {
             r = 0;
@@ -376,8 +376,8 @@ int map_filter_l07_4(int x1, int y1) {
     return r;
 }
 
-extern int D_001A04C0 NOT_SDA;
-extern int D_001A04B8 NOT_SDA;
+extern int map_region_enabled_6 NOT_SDA;
+extern int map_region_enabled_4 NOT_SDA;
 
 /* Hit test in two layouts: arg3 (the third float, $f14) must lie in
    [73.5, 80] with D_001A04C0 set, or for arg1 >= 0x9D in [51.5, 54] with
@@ -385,19 +385,19 @@ extern int D_001A04B8 NOT_SDA;
    c.lt/bc1t; the second arm's `return 0` cross-jumps into the first's. */
 int map_filter_l07_5(void *arg0, int arg1, float unused1, float unused2, float arg3) {
     if (arg1 < 0x9D) {
-        if (arg3 < 73.5f || arg3 > 80.0f || D_001A04C0 == 0) {
+        if (arg3 < 73.5f || arg3 > 80.0f || map_region_enabled_6 == 0) {
             return 0;
         }
         return 1;
     } else {
-        if (arg3 < 51.5f || arg3 > 54.0f || D_001A04B8 == 0) {
+        if (arg3 < 51.5f || arg3 > 54.0f || map_region_enabled_4 == 0) {
             return 0;
         }
         return 1;
     }
 }
 
-extern int D_001A04AC NOT_SDA;
+extern int map_region_enabled_1 NOT_SDA;
 extern int point_is_clockwise(int, int, int, int, int, int);
 
 /* Menu hit test (func_00207200's family): for arg1 >= 0x105, needs
@@ -410,7 +410,7 @@ int map_filter_l07_6(int px, int py, float fparg0, float fparg1, float reveal_te
     int result;
 
     if (py >= 0x105) {
-        if (D_001A04AC == 0) {
+        if (map_region_enabled_1 == 0) {
             return 0;
         }
         return (reveal_test_value >= 47.7f) ? 1 : 0;
@@ -664,7 +664,7 @@ extern float vec_distance_xy(float *, float *);
    SDK's sceVu0FVECTOR; a partial initializer then clears the whole
    quadword with one por/sq (a plain float[4] gets a memset call). */
 int map_filter_l15_0(int x, int y) {
-    if (D_001A04A8 == 0) {
+    if (map_region_enabled_0 == 0) {
         FVec4 p = { (float)x, (float)y };
         FVec4 c = { 0 };
 
@@ -950,7 +950,7 @@ void downsample_map_coverage(void *arg0) {
 
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern char menu_item_price_fmt[]; /* "%d" */
-extern char D_0015FE68[]; /* "error" */
+extern char menu_token_error_text[]; /* "error" */
 extern char vendor_item_prices[];
 extern int sprintf_3(void *, char *, int) __asm__("func_00116248");
 extern int sprintf_2(void *, char *) __asm__("func_00116248");
@@ -988,7 +988,7 @@ void FormatMenuItemText(int bank, unsigned char *dst) {
         sprintf_3(buf, menu_item_price_fmt,
                         *(int *)(vendor_item_prices + *(short *)(*(char **)(t2 + 0x20) + bank * 0x28 + 0xC) * 0x18));
     } else {
-        sprintf_2(buf, D_0015FE68);
+        sprintf_2(buf, menu_token_error_text);
     }
     src++;
     while (*p != 0) {
@@ -1221,7 +1221,7 @@ extern char memory_card_state[];
 /* menu.cpp's state word and flags. Stored through the assembler's lui
    macro, and $gp-relative where the access sits in a delay slot (see
    tools/check_macro_slots.py). */
-extern int D_0013D3AC;
+extern int memory_card_status;
 
 /* Word view of the D_0013D390 record: indexing an int array here, rather
    than casting byte offsets off a char pointer, is what lets GCC keep the
@@ -1330,7 +1330,7 @@ void CardMenu_State04AdvanceOnStatus(void) {
 
 /* Card unformatted state: back to state 3 if the card changed, to state 6 on confirm. */
 void save_card_state_unformatted(void) {
-    if (D_0013D3AC != -2) {
+    if (memory_card_status != -2) {
         mode_freeze_state = 3;
         return;
     }
@@ -1344,7 +1344,7 @@ extern int boot_level_active MACRO_ADDR;
 /* Card format prompt: flag 0x20 returns to state 5 (0x17 at boot), flag 8 goes to state 7. */
 void save_card_state_prompt_format(void) {
     int flags;
-    if (D_0013D3AC != -2) {
+    if (memory_card_status != -2) {
         mode_freeze_state = 3;
         return;
     }
@@ -1390,7 +1390,7 @@ void save_card_state_formatting(void) {
 
 /* Card formatted state: back to state 3 if the card changed, to state 0xA on confirm. */
 void save_card_state_formatted(void) {
-    if (D_0013D3AC != 0) {
+    if (memory_card_status != 0) {
         mode_freeze_state = 3;
         return;
     }
@@ -1452,7 +1452,7 @@ void CardMenu_State11MarkSlotChoose(void) {
 
 /* Card no-save state: back to state 3 if the card changed, to state 0xD on confirm. */
 void save_card_state_no_save(void) {
-    if (D_0013D3AC != 0) {
+    if (memory_card_status != 0) {
         mode_freeze_state = 3;
         return;
     }
@@ -1464,7 +1464,7 @@ void save_card_state_no_save(void) {
 /* Create-save prompt: flag 0x20 returns to state 0xC (0x18 at boot), flag 0x10 goes to 0xE. */
 void save_card_state_prompt_create_save(void) {
     int flags;
-    if (D_0013D3AC != 0) {
+    if (memory_card_status != 0) {
         mode_freeze_state = 3;
         return;
     }
@@ -1575,7 +1575,7 @@ void save_card_state_create_failed(void) {
 
 /* Card no-room state: go back to state 3 when the card status changes. */
 void save_card_state_no_room(void) {
-    if (D_0013D3AC != 0) {
+    if (memory_card_status != 0) {
         mode_freeze_state = 3;
     }
 }
@@ -1625,7 +1625,7 @@ void CardMenu_State22StartOrFinish(void) {
 /* Begin prompt on an unformatted card: state 3 if the card changed, state 5 on flag 0x20. */
 void save_card_state_prompt_begin_unformatted(void) {
     int flags;
-    if (D_0013D3AC != -2) {
+    if (memory_card_status != -2) {
         mode_freeze_state = 3;
         return;
     }
@@ -1639,7 +1639,7 @@ void save_card_state_prompt_begin_unformatted(void) {
 /* Begin prompt on a card with no save: state 3 if the card changed, state 0xC on flag 0x20. */
 void save_card_state_prompt_begin_no_save(void) {
     int flags;
-    if (D_0013D3AC != 0) {
+    if (memory_card_status != 0) {
         mode_freeze_state = 3;
         return;
     }

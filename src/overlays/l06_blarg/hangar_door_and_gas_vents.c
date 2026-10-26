@@ -8,7 +8,7 @@
 
 extern int level_game_mode_q MACRO_ADDR;
 extern char *blarg_scene_points MACRO_ADDR;
-extern char D_0013DE6E[];
+extern char level_render_state_base[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
@@ -30,7 +30,7 @@ void hangar_door_update(char *m) {
         if (*(int *)(d + 0x10) == 0) {
             int x;
             *(int *)(d + 0x10) = 0;
-            x = *(int *)(D_0013DE6E + 0x2E2);
+            x = *(int *)(level_render_state_base + 0x2E2);
             if (x == 8) {
                 *(int *)(d + 0x10) = 1;
                 *(float *)(d + 0x18) = 0.3490658402442932f;
@@ -223,8 +223,8 @@ int check_all_listed_class_33b_states_fe_fd_or_10(int index) {
 INCLUDE_ASM("asm/overlays", func_L06_002EB2F8);
 INCLUDE_ASM("asm/overlays", func_L06_002EB348);
 extern char hero_globals_base[];
-extern short D_L06_00161DB4;
-extern short D_L06_00161DB8;
+extern short toxic_gas_vent_near_d50_value;
+extern short toxic_gas_vent_near_anim_time;
 extern int is_point_inside_clip_volume(void *, int);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
@@ -244,8 +244,8 @@ void toxic_gas_vent_update(char *m) {
     float s;
     if (((Moby *)d)->glow_color >= 0) {
         if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, ((Moby *)d)->glow_color) != 0) {
-            float x = *(float *)&D_L06_00161DB4;
-            float y = *(float *)&D_L06_00161DB8;
+            float x = *(float *)&toxic_gas_vent_near_d50_value;
+            float y = *(float *)&toxic_gas_vent_near_anim_time;
             *(float *)(d + 0x50) = x;
             ((Moby *)d)->anim_time = y;
         } else {
@@ -949,7 +949,7 @@ extern short beam_barrier_spark_ticks_min;
 extern short beam_barrier_spark_ticks_max;
 extern short beam_barrier_spark_speed_min;
 extern short beam_barrier_spark_speed_max;
-extern char D_L06_00167640[];
+extern char blarg_camera_pos[];
 extern char *blarg_coll_hit_moby;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
@@ -1002,7 +1002,7 @@ void update_beam_barrier(char *m) {
         {
             p = (float *)(m + 0x10);
             animate_beam_barrier_strands((struct Moby *)m);
-            v = FastVecDist(p, D_L06_00167640);
+            v = FastVecDist(p, blarg_camera_pos);
             pos = p;
         }
         if (v < 48.0f) {
@@ -1432,7 +1432,7 @@ extern void spawn_color_swapped_explosion_burst_r(Moby *, void *, int, float, fl
 extern void spawn_moby_break_fragments_r(Moby *, int, int, int, int, int, int) __asm__("func_L00_00264EA8");
 extern float SteerAngleWithVelocity_r(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 extern void DeleteMoby_r(Moby *) __asm__("func_0020D678");
-extern char D_L06_00167640_91A8[] __asm__("D_L06_00167640");
+extern char blarg_camera_pos_r[] __asm__("D_L06_00167640");
 extern int *blarg_paths_r[] __asm__("D_L06_001B0FB0");
 extern float D_L06_00161F40_91A8 SDATA(D_L06_00161F40);
 extern float D_L06_00161F44_91A8 SDATA(D_L06_00161F44);
@@ -1465,7 +1465,7 @@ void alien_snapper_update(Moby *moby)
 
     update_alien_snapper_hit_response_and_targeting_r(moby);
     Manipulator_ApplyScale_r(2.3f, moby, 1, v->f1E0);
-    if (moby->visible != 0 && FastVecDist(&moby->pos, D_L06_00167640_91A8) < 27.0f) {
+    if (moby->visible != 0 && FastVecDist(&moby->pos, blarg_camera_pos_r) < 27.0f) {
         set_ground_height_band_r(moby);
         moby->shadow_range = 0x15;
     }
@@ -2137,7 +2137,7 @@ extern void set_ground_height_band_q(void *) __asm__("func_L00_0025B178");
 extern int queue_animation_update_q(int, int, void *, void *, void *, void *, int) __asm__("func_001FFB38");
 extern void reset_numeric_hud_element_q(void) __asm__("func_L00_00236710");
 extern void Hud_UpdateCounter_q(void) __asm__("func_L00_00236830");
-extern char func_L06_0024A080_q[] __asm__("func_L06_0024A080");
+extern char draw_segmented_hud_meter_base_q[] __asm__("func_L06_0024A080");
 extern int truncate_float_to_s32_q(float) __asm__("func_001FA898");
 extern int scale_ticks_q(int) __asm__("func_001F9850");
 extern void lerp_vector_q(void *, void *, void *, float) __asm__("func_001F9C08");
@@ -2182,15 +2182,15 @@ extern void spawn_moby_break_fragments_q(void *, int, int, int, int, int, int) _
 extern int PlayBankSound_q(int, int, int) __asm__("func_0022EE28");
 extern void ShowBanner_q(int, int) __asm__("func_L00_00264DB8");
 extern void SetTableEntryFlagIfKind18_q(char *) __asm__("func_L06_00317770");
-extern char D_L06_00167640_q[] __asm__("D_L06_00167640");
+extern char blarg_camera_pos_q[] __asm__("D_L06_00167640");
 extern int *blarg_paths_q[] __asm__("D_L06_001B0FB0");
 extern char *level_mobys_q_q __asm__("D_L06_00160058") MACRO_ADDR;
 extern float g_frame_time_sq_q __asm__("D_0015EE70") MACRO_ADDR;
 extern float g_frame_time_q __asm__("D_0015EE6C") MACRO_ADDR;
-extern int D_L06_0016A110[];
-extern char D_L06_001679D0[];
+extern int blarg_camera_slot_used[];
+extern char blarg_camera_slots[];
 extern int level_game_mode_q_q __asm__("D_L06_0015F6A8") MACRO_ADDR;
-extern short D_L06_00161F80;
+extern short alien_queen_scale_manip_flag;
 extern short alien_queen_walk_speed;
 extern short alien_queen_walk_accel;
 extern short alien_queen_attack_range;
@@ -2218,14 +2218,14 @@ void alien_queen_update(unsigned char *moby)
 
     update_alien_queen_hit_response_and_recovery(moby);
     target = *(char **)(data + 0xB0);
-    Manipulator_ApplyScale_q(moby, *(int *)&D_L06_00161F80, 1.9f, data + 0x130);
-    if ((unsigned char)((Moby *)moby)->visible != 0 && FastVecDist_q(moby + 0x10, D_L06_00167640_q) < 45.0f) {
+    Manipulator_ApplyScale_q(moby, *(int *)&alien_queen_scale_manip_flag, 1.9f, data + 0x130);
+    if ((unsigned char)((Moby *)moby)->visible != 0 && FastVecDist_q(moby + 0x10, blarg_camera_pos_q) < 45.0f) {
         set_ground_height_band_q(moby);
         ((Moby *)moby)->shadow_range = 0x24;
     }
     if ((unsigned char)((Moby *)moby)->state >= 3 && (unsigned char)((Moby *)moby)->state <= 13) {
         *(int *)(data + 0x10C) = queue_animation_update_q(0x16, 0xFFFF, reset_numeric_hud_element_q, Hud_UpdateCounter_q,
-                                                 func_L06_0024A080_q + 0x20, data + 0x110, 0x1EF);
+                                                 draw_segmented_hud_meter_base_q + 0x20, data + 0x110, 0x1EF);
     }
     switch ((unsigned char)((Moby *)moby)->state) {
     case 0: {
@@ -2535,8 +2535,8 @@ void alien_queen_update(unsigned char *moby)
         int i;
         char *m = 0;
         for (i = 0; i < 0x30; i++) {
-            if (D_L06_0016A110[i] != 0) {
-                m = D_L06_001679D0 + i * 0xA0;
+            if (blarg_camera_slot_used[i] != 0) {
+                m = blarg_camera_slots + i * 0xA0;
                 if (*(short *)(m + 0x86) == 0x12) {
                     SetTableEntryFlagIfKind18_q(m);
                     break;
@@ -2553,7 +2553,7 @@ void alien_queen_update(unsigned char *moby)
 }
 extern Hero g_hero;
 extern unsigned char pad_globals_base[];
-extern short D_0014172A NOT_SDA;
+extern short active_marker_id NOT_SDA;
 extern int *blarg_paths[];
 extern short alien_queen_glow_pulse_speed;
 extern short alien_queen_glow_color_a;
@@ -2588,7 +2588,7 @@ void update_alien_queen_hit_response_and_recovery(void *moby_) {
     data = ((char *)((Moby *)moby)->pvars);
     if (((Moby *)moby)->state == 0) return;
     if ((unsigned int)(((Moby *)moby)->state - 4) < 10 && *(int *)(data + 0x108) != -1)
-        D_0014172A = *(short *)(data + 0x108);
+        active_marker_id = *(short *)(data + 0x108);
     *(int *)(data + 0x110) = truncate_float_to_s32(*(float *)(data + 0x20) * 16.0f);
     dmg = 0.0f;
     hit = MobyGetHitMessage(moby, 0x330000, 0);
@@ -2769,7 +2769,7 @@ extern float fast_atan2(float, float);
 extern float vec_distance_xy(void *, void *);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern char D_L06_00167640[];
+extern char blarg_camera_pos[];
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern short g_frame_time_sq_s __asm__("D_0015EE70");
@@ -2783,7 +2783,7 @@ int update_alien_queen_intro_camera(char *moby) {
     data = ((char *)((Moby *)moby)->pvars);
     clear_u64_value(m);
     if (((Moby *)moby)->prev_seq == 8) {
-        qcopy(v0, D_L06_00167640);
+        qcopy(v0, blarg_camera_pos);
         pos = moby + 0x10;
     } else {
         t = *(float *)&g_frame_time_sq_s * 3.0f;
@@ -2827,7 +2827,7 @@ int update_alien_queen_first_recovery_camera(char *moby) {
     data = ((char *)((Moby *)moby)->pvars);
     clear_u64_value(m);
     if (((Moby *)moby)->prev_seq == 6) {
-        qcopy(v0, D_L06_00167640);
+        qcopy(v0, blarg_camera_pos);
         pos = moby + 0x10;
     } else {
         t = *(float *)&g_frame_time_sq_s * 0.5f;
@@ -3389,7 +3389,7 @@ void enqueue_moby_draw_callbacks_by_clip_volume(char *moby) {
     p = data;
     for (i = 0; i < 4; p++, i++) {
         if (*p < 0) continue;
-        if (is_point_inside_clip_volume(D_L06_00167640, *p)) {
+        if (is_point_inside_clip_volume(blarg_camera_pos, *p)) {
             AddDrawCallback((void *)draw_dual_texture_50_quad_mesh, moby);
             break;
         }
@@ -3397,7 +3397,7 @@ void enqueue_moby_draw_callbacks_by_clip_volume(char *moby) {
     p = data + 0x10;
     for (i = 0; i < 4; p++, i++) {
         char *g = (char *)hero_globals_base + 0xE1D;
-        if (*(int *)(g + 0x208C) == 15 || (*p >= 0 && is_point_inside_clip_volume(D_L06_00167640, *p))) {
+        if (*(int *)(g + 0x208C) == 15 || (*p >= 0 && is_point_inside_clip_volume(blarg_camera_pos, *p))) {
             AddDrawCallback((void *)draw_dual_texture_864_quad_mesh, moby);
             return;
         }

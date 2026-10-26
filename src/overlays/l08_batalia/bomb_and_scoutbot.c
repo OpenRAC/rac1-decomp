@@ -82,7 +82,7 @@ extern float D_L08_001614EC_2B94B0 SDATA(D_L08_001614EC);
 extern int D_L08_001614F0_2B94B0 SDATA(D_L08_001614F0);
 extern float D_L08_001614F4_2B94B0 SDATA(D_L08_001614F4);
 extern char g_hero_r[] __asm__("D_0013F450");
-extern char D_0013DE6E_2B94B0[] __asm__("D_0013DE6E");
+extern char level_render_state_base_r[] __asm__("D_0013DE6E");
 
 /* Level 8 moby update (class 152): state machine that steers the moby toward the hero and fires its event. */
 void update_bolt_pickup(Moby *m)
@@ -157,7 +157,7 @@ void update_bolt_pickup(Moby *m)
         if (hit == 0) break;
         if (d->target != 0) d->target->fA = 0;
         gBolts_r = gBolts_r + d->f20;
-        ((int *)(D_0013DE6E_2B94B0 + 0x1D2))[g_current_level_index_r] = ((int *)(D_0013DE6E_2B94B0 + 0x1D2))[g_current_level_index_r] + d->f20;
+        ((int *)(level_render_state_base_r + 0x1D2))[g_current_level_index_r] = ((int *)(level_render_state_base_r + 0x1D2))[g_current_level_index_r] + d->f20;
         Moby_PlaySound_r(0, 0, m);
         queue_animation_update_r(2, 0x754E, initialize_bolt_counter_hud_r, update_bolt_counter_hud_animation_and_visibility_r,
                              draw_bolt_counter_hud_panel_r, &gBolts_r, 0x98967F);
@@ -231,7 +231,7 @@ extern void jet_animate(void *, float);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern char batalia_coll_hit_r[] __asm__("D_L08_001746C0");
 extern float batalia_zero_vec_r[] __asm__("D_L08_0015F660") MACRO_ADDR;
-extern char D_L08_001746E0_36F8[] __asm__("D_L08_001746E0");
+extern char batalia_coll_hit_point_r[] __asm__("D_L08_001746E0");
 extern blk16 batalia_bomb_spark_colors;
 extern short batalia_bomb_gravity;
 
@@ -252,8 +252,8 @@ void update_bomb(char *moby) {
             int g = batalia_coll_hit_moby_2B94B0i;
             if (g != 0 && (g != *(int *)(d + 0x30) || *(int *)(d + 0x24) != 0)) {
                 if (!(((Moby *)moby)->command & 2)) ((Moby *)moby)->state = 0x62; else ((Moby *)moby)->state = 0x63;
-                qcopy((moby + 0x10), D_L08_001746E0_36F8);
-                vec_reflect(d + 0x10, d + 0x10, D_L08_001746E0_36F8 + 0x20);
+                qcopy((moby + 0x10), batalia_coll_hit_point_r);
+                vec_reflect(d + 0x10, d + 0x10, batalia_coll_hit_point_r + 0x20);
                 vec_scale_to_length_r(d + 0x10, d + 0x10, g_frame_time_r + g_frame_time_r);
             }
         }
@@ -298,10 +298,10 @@ void update_bomb(char *moby) {
             if (v != 0) {
                 if (v != *(int *)(d + 0x30) || *(int *)(d + 0x24) != 0) {
                     if (!(((Moby *)moby)->command & 2)) ((Moby *)moby)->state = 0x62; else ((Moby *)moby)->state = 0x63;
-                    qcopy((moby + 0x10), D_L08_001746E0_36F8);
+                    qcopy((moby + 0x10), batalia_coll_hit_point_r);
                     {
                         char *v = d + 0x10;
-                        vec_reflect(v, v, D_L08_001746E0_36F8 + 0x20);
+                        vec_reflect(v, v, batalia_coll_hit_point_r + 0x20);
                         vec_scale_to_length_r(v, v, g_frame_time_r + g_frame_time_r);
                     }
                 }
@@ -388,8 +388,8 @@ extern unsigned char menu_item_enabled_25[] NOT_SDA;
 extern unsigned char gHaveHeliPack[] NOT_SDA;
 extern char help_stats_base_r[] __asm__("D_0014171B") NOT_SDA;
 extern int batalia_path_table[];
-extern const float D_L08_0016195C SDATA(D_L08_0016195C);
-extern float D_L08_00161960 SDATA(D_L08_00161960);
+extern const float bomber_tank_vars_b58_init SDATA(D_L08_0016195C);
+extern float bomber_tank_vars_b5a_init SDATA(D_L08_00161960);
 extern float batalia_bomber_tank_shot_speed SDATA(D_L08_00161938);
 extern void AttachManipulator(void *, int, void *);
 extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
@@ -503,8 +503,8 @@ void update_bomber_tank(Moby *moby) {
         clear_u64_value(d + 0x40);
         *(float *)(d + 0x178) = 0.0f;
         *(float *)(d + 0x170) = moby->rot.z;
-        d[0x58] = truncate_float_to_s32_r(D_L08_0016195C);
-        d[0x5A] = truncate_float_to_s32_r(D_L08_00161960 * 8.0f);
+        d[0x58] = truncate_float_to_s32_r(bomber_tank_vars_b58_init);
+        d[0x5A] = truncate_float_to_s32_r(bomber_tank_vars_b5a_init * 8.0f);
         break;
     case 6:
         advance_bomber_tank_along_path_r(moby, *(int *)(d + 0x150));
@@ -1715,7 +1715,7 @@ void blarg_bombthrower_update(Moby *moby) {
 }
 typedef int Q_2dd128 __attribute__((mode(TI)));
 extern int batalia_game_mode MACRO_ADDR;
-extern int D_L08_00179C90[];
+extern int batalia_help_popup_state[];
 extern int batalia_help_message_selector MACRO_ADDR;
 extern int pad_globals_base_d[] __asm__("D_0013A5E0") NOT_SDA;
 extern void AttachManipulator(void *, int, void *);
@@ -1798,7 +1798,7 @@ void RoutePlatformUpdate(char *m) {
     case 2: {
         Hero *q = (Hero *)(hero_globals_base + 0xE1D);
         if (q->ground_moby == moby) {
-            if (D_L08_00179C90[0] == 0 && D_L08_00179C90[9] == -1) {
+            if (batalia_help_popup_state[0] == 0 && batalia_help_popup_state[9] == -1) {
                 qcopy(hero_position_probe, &q->motion.pos);
                 resolve_point_path_segment_xy_clearance_i(vars->stop.i, hero_position_probe, 0.5f, hero_position_probe);
                 if (FastVecDist(&q->motion.pos, hero_position_probe) < 0.001f) {

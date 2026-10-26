@@ -10,7 +10,7 @@ typedef union { L16SparkQuad quad; float f[4]; } L16SparkVector;
 typedef struct {float direction[4]; void *owner;int flags;unsigned char kind,enabled;unsigned short cls;float scale;int active;} L16SparkQuery;
 typedef struct {char pad[0x18];char *moby;int count;float position[4];float unk30[4];float normal[4];} L16SparkHit;
 extern L16SparkHit kalebo3_coll_hit_hit __asm__("D_L16_001742C0");
-extern char *D_L16_001B285C;
+extern char *kalebo3_part_type23_textures;
 extern char hero_globals_base[];
 extern char kalebo3_zero_vec_spark[] __asm__("D_L16_0015F660") MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR,g_frame_time_sq MACRO_ADDR;
@@ -72,7 +72,7 @@ void HomingSparkUpdate(unsigned char *m) {
         FastVecAdd(previous.f,previous.f,position);
         particle=PartType44Spawn(previous.f,velocity.f,scale_ticks(60),127,0x606060,3,40000.0f,1000.0f,1.0f,-0.0002f,0.0f);
         if(particle) {
-            unsigned char cls=*(unsigned char*)D_L16_001B285C;
+            unsigned char cls=*(unsigned char*)kalebo3_part_type23_textures;
             particle[3]=0x44;
             particle[2]=cls;
         }
@@ -721,7 +721,7 @@ typedef struct {
     char slots[0x20];
     char block140[1];
 } L16DummyData;
-extern char *D_L16_001742D8;
+extern char *kalebo3_coll_hit_moby;
 extern int test_dummy_hold_joint SDATA(D_L16_00161A88);
 extern float test_dummy_bomb_horizontal_launch_speed SDATA(D_L16_00161A8C);
 extern float test_dummy_move_step_limit SDATA(D_L16_00161A90);
@@ -912,7 +912,7 @@ void test_dummy_update(unsigned char *moby) {
             Moby_GetJointWorldPos(moby, test_dummy_hold_joint, position_or_direction.f);
             MobySphereHitDirectional_r((int)moby, 0.333f, position_or_direction.f, 1, 1.0f, 1.0f, 0, 1, 0);
             g = hero_globals_base + 0xE1D;
-            if (D_L16_001742D8 == *(char **)(g + 0x2080) && *(int *)(g + 0x1C0) == 0) {
+            if (kalebo3_coll_hit_moby == *(char **)(g + 0x2080) && *(int *)(g + 0x1C0) == 0) {
                 Moby_PlaySound_i(6, 0, moby);
             }
             if (FastVecLength(position_or_delta.f) < 0.0001f) {
@@ -3383,7 +3383,7 @@ extern int IsFrameWithinWindow(char *,float);
 extern void collect_mobies_in_sphere_at_moby_point(void *,int,int,float,float,float,int,int,int);
 extern int CarriedMobyUpdate(void *,void *);
 extern void SpawnExplosionFx(void *,void *,int,float,float);
-extern short D_L16_00161F08;
+extern short chomper_move_params;
 /* Update the wandering helper's motion, animations, interaction and damage states. */
 void chomper_update(char *m) {
     enum {
@@ -3411,7 +3411,7 @@ void chomper_update(char *m) {
         *(unsigned short *)(chomper_data + 0x24) = 1;
         *(unsigned char *)(chomper_data + 0x28) = 0;
         *(float *)(chomper_data + 0x20) = 1.0f;
-        *(int *)(chomper_data + 0xD0) = (int)&D_L16_00161F08;
+        *(int *)(chomper_data + 0xD0) = (int)&chomper_move_params;
         if (func_001160D8() & 1)
             chomper_moby->flags |= 0x8000;
         qcopy(chomper_data + 0x1D0, &chomper_moby->pos);

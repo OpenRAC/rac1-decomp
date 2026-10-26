@@ -60,7 +60,7 @@ extern char help_stats_base[];
 extern char item_usage[];
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern short aridia_usage_event_timer;
-extern short D_L02_0015F7B8;
+extern short aridia_hero_run_step_start_frames;
 extern short aridia_hero_state_f_jump_velocity_keys;
 extern char aridia_hero_state_d_jump_velocity_keys[];
 extern unsigned char aridia_hero_run_jump_land_anim_by_frame[];
@@ -298,7 +298,7 @@ int HeroL02_SetMoveState(int a, int b) {
                 }
                 if (b) {
                     char *v = hero_globals_base + 0xE1D;
-                    set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&D_L02_0015F7B8)[*(int *)(v + 0x2088)], (float)n);
+                    set_hero_animation(*(int *)(v + 0x2088) + 3, ((int *)&aridia_hero_run_step_start_frames)[*(int *)(v + 0x2088)], (float)n);
                 }
             }
         }
@@ -330,7 +330,7 @@ int HeroL02_SetMoveState(int a, int b) {
             } else if (*(unsigned char *)(p + 0x20A4) == 1) {
                 set_hero_animation(2, 0, (float)scale_ticks(8));
             } else if (*(unsigned char *)(p + 0x20A4) == 0) {
-                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&D_L02_0015F7B8)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
+                set_hero_animation(*(int *)(p + 0x2088) + 3, ((int *)&aridia_hero_run_step_start_frames)[*(int *)(p + 0x2088)], (float)scale_ticks(8));
             }
         }
         break;
@@ -1466,10 +1466,10 @@ extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int quick_swap_item MACRO_ADDR;
 extern float aridia_hero_fall_state_height MACRO_ADDR;
 extern int aridia_shown_help_message MACRO_ADDR;
-extern int D_L02_0015F7BC MACRO_ADDR;
+extern int aridia_hero_run_step1_start_frame MACRO_ADDR;
 extern short aridia_hero_double_tap_timer;
-extern float D_L02_00167458;
-extern int D_L02_0016CE00;
+extern float aridia_player_camera_yaw;
+extern int aridia_hero_state_1e_clear_word;
 extern S17AD00 aridia_lean_state;
 extern Rec70 aridia_idle_fidgets[];
 extern Rec4C aridia_item_defs[];
@@ -1760,7 +1760,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         if (g_hero.state.prev == 1 || g_hero.state.prev == 0x1E) {
                             if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
                                 stick_target(1.0f, 0);
-                                if (FastDiffRots(g_hero.motion.move_yaw, D_L02_00167458) > 1.2217305f) {
+                                if (FastDiffRots(g_hero.motion.move_yaw, aridia_player_camera_yaw) > 1.2217305f) {
                                     ok = 0;
                                 }
                             }
@@ -2648,7 +2648,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         HeroL02_SetMoveState(2, 0);
                         if (g_hero.state.current == 2) {
                             g_hero.state.step = 1;
-                            set_hero_animation(4, D_L02_0015F7BC, scale_ticks(0xC));
+                            set_hero_animation(4, aridia_hero_run_step1_start_frame, scale_ticks(0xC));
                         }
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                         break;
@@ -3128,7 +3128,7 @@ void HeroL02_UpdateStateTransitions(void) {
                             set_hero_animation(a, 0, scale_ticks(8));
                         }
                     }
-                    D_L02_0016CE00 = 0;
+                    aridia_hero_state_1e_clear_word = 0;
                     break;
                 case 32:
                     if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {

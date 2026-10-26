@@ -9756,3 +9756,586 @@ D_0013A5E0	pad_globals_base	fake base: +0x2460 is g_controller_state, +0x2604 pa
 D_0013D355	special_items_base	fake base: +0x13B is gSpecialItems, +0x3B memory_card_state	
 D_0013E15A	screen_globals_base	fake base: +0x4A6 is g_screen_extent, +0x4C6 gold_weapon_purchased, +0x4AA frame_size	
 D_0013D605	race_gates_base	fake base: +0xB3 is race_gates	
+D_0013F590	g_hero_platform_carry	g_hero+0x140 is platform_carry (hero.h)	
+D_0015F430	screen_tint_quad_enabled	L15 sets 1 with rgba 0xFFFF00 at +4 and GS ALPHA at +8; ResetDrawGlobals clears	
+D_0015F434	screen_tint_quad_rgba	L15/L00 write 0xFFFF00/0xFFFFFF, alpha byte +3 faded	
+D_0015F460	draw_unused_reset_flag	write-only, only zeroed by ResetDrawGlobals	
+D_001519EE	render_target_base_page	set_render_area uses it << 13 as the 8 KB-page base when flag is set	
+D_0018A3D8	moby_draw_enabled	draw_config[10]; DrawMobys runs moby_proc only when set, like shrub_draw_enabled	
+D_0018A3DC	gif_paging_texture_flush_enabled	draw_config[11]; DoGifPaging flushes texture uploads only when set	
+D_0018C44C	draw_force_gif_transfer	nonzero makes DrawDebugProfiler append the gif transfer packet; never written	
+D_0018CEC0	view_context_field_c0	view_context+0xC0 matrix multiplied into gCamera_g	
+D_0018D010	screen_projection_focal	project_to_screen divides it by w to get screen units	
+D_001DEA90	vu1_view_screen_consts	UpdateViewContext writes screen bias/scale/aspect there	
+D_001DED80	shrub_vu1_constants_alt	second FogRegs2P block next to shrub_vu1_constants; ShrubProc lq's 8 qwords	
+D_001DEDC0	shrub_vu1_constants_alt_screen	+0x40 of shrub_vu1_constants_alt; gets screen scale/bias	
+D_001E0250	view_fog_multiplier_copy	UpdateViewContext writes fog_multiplier; write-only	
+D_001E6E70	view_fog_multiplier_copy2	UpdateViewContext writes fog_multiplier; write-only	
+func_001F91B8	prepare_font_quads	handwritten: bsphere-culls and projects each font quad, queues its texture upload	
+func_001F8B6C	draw_font_quad_packets	handwritten: runs after prepare_font_quads and font_queue_vu_state in draw_debug_font	
+D_0013D440	memory_card_request	memory_card_state+0xB0 is card[0].request (memcard.c McCard)	
+D_001D60C0	freeze_prompt_override_flag	never written; nonzero switches freeze prompts 3/4/12/19 to message 0x4FA7	
+D_00187198	gCamera_yaw	gCamera+0x158 is rot.z, the yaw (camera.h)	
+D_0019A500	hud_bank_table_ptr	LoadCompressedHudBank clears word idx at +0x74 of the block it points to	
+D_001B6500	resident_class_original_field_2c	per class slot, keeps the class resource's +0x2C word (register_moby_class)	
+D_0013D315	memcard_icon_path_a_filename	memcard_icon_path_a+0x15, compared with directory file names	
+D_0013D335	memcard_icon_path_b_filename	memcard_icon_path_b+0x15, compared with directory file names	
+D_0013D3AC	memory_card_status	memory_card_state+0x1C is card[0].x1C, the last card result (-2 unformatted, 0 formatted)	
+D_0015FE68	menu_token_error_text	"error" string printed for an unknown menu text token	
+D_001A04A8	map_region_enabled_0	region flag 2 words before region_enabled; gates map_filter_l07_1 and its partner	
+D_001A04AC	map_region_enabled_1	region flag before region_enabled; gates map_filter_l07_6	
+D_001A04B4	map_region_enabled_3	region flag after region_enabled; gates a map_filter_l07 hit test	
+D_001A04B8	map_region_enabled_4	region flag; gates the [51.5,54] arm of a map_filter_l07 test	
+D_001A04BC	map_region_enabled_5	region flag; gates map_filter_l07_3	
+D_001A04C0	map_region_enabled_6	region flag; gates the [73.5,80] arm of a map_filter_l07 test	
+D_0013D844	race_gates_24_status	race_gates[0x18].d (0x10-byte records, d = mission status)	
+D_0013DAE4	race_gates_66_status	race_gates[0x42].d mission status	
+D_0013DB24	race_gates_70_status	race_gates[0x46].d mission status	
+D_0013DC34	race_gates_87_status	race_gates[0x57].d mission status, read by Mission_GetMorphORayStatus	
+D_001A2FA0	current_mission_nodes	pointer to the 0x28-byte objective node list collect_mission_ids walks	
+func_00212258	upload_used_moby_textures	handwritten: DmaMobyTextures calls it with the GS texture cursor; marks used class textures and builds upload packets	
+func_00212508	apply_moby_word_fill_table	handwritten: DrawMobysCleanUp calls it when moby_word_fill_table_bytes != 0; stores words from table records	
+func_00228A58	build_shadow_command_stream	handwritten: configure_graphics_setup_dma_chain calls it; reads shadow_light_dir, fills the setup stream per object	
+func_0020EF30	evaluate_moby_anim_pose	handwritten: MobyAnimProc's main call with the blend floats	
+func_002108E0	compute_moby_joint_matrices	handwritten: called with (moby, class+8, -1) by the shadow builder and coll_line_fix	
+func_00228D20	project_setup_strips_to_screen	handwritten: submit_graphics_setup_command_stream passes it the scratchpad strips; reads gCamera and view_context	
+func_002298B0	emit_setup_strips_of_kind	handwritten: copies scratchpad strips whose kind matches arg0 into the render packet as GIF data	
+D_0013D48C	memory_card_state_field_fc	memory_card_state+0xFC (unkFC), passed to mode_freeze_init and zeroed	
+D_00140508	g_hero_equipped_item_id	g_hero+0x10B8 is items[0].item_id; use_ammo/get_ammo take it for id -1	
+D_0014C008	gold_bolts_collected_18	gold_bolts_collected[18] (4 bytes per level), kept across a restart	
+D_0015F6CC	pause_restart_reset_flag	cleared on restart; when set, freeze 3/4 uses left 0x5254 and card errors open freeze 8	
+D_0015F754	pause_blocked_by_camera	PauseAllSounds sets it to 1 and returns when camera publication is suppressed	
+D_00160460	setup_strip_pass_words	word idx is handed to emit_setup_strips_of_kind by emit_selected_graphics_dma_packets	
+D_00160474	direction_unit_y	direction_unit[1]	
+D_00160478	direction_unit_z	direction_unit[2]	
+D_00160484	direction_perpendicular_y	direction_perpendicular[1]	
+D_00160488	direction_perpendicular_z	direction_perpendicular[2]	
+D_00160494	direction_scaled_y	direction_scaled[1]	
+D_00160498	direction_scaled_z	direction_scaled[2]	
+D_00186410	level_init_cleared_block	0x40-byte block only ever zeroed (level init, transition, menu preview)	
+D_00186450	level_init_cleared_block2	0x40-byte block next to level_init_cleared_block, only ever zeroed	
+D_001864D8	item_info_table_slot	item_info_table+8, the slot field of each 0x4C-byte entry	
+D_001873B0	active_camera_basis_column2_x	after active_camera_basis_column1_x; zeroed with it on camera reset	
+D_00199812	message_id_code_table_b	message_id_code_table+2, the b field of its {a,b} pairs	
+D_001CE938	pause_menu_screen_a	PauseAllSounds links its +0x38 to pause_menu_screen_optional or _b	
+D_001CEAC8	pause_menu_screen_b	PauseAllSounds links its +0x3C to pause_menu_screen_optional or _a	
+D_001CEB18	pause_menu_screen_optional	linked between screens a and b only when menu flag 0xD8 is set	
+D_001D0718	pause_entry_cleared_word	write-only; PauseAllSounds zeroes it	
+D_001D53A0	menu_preview_slot_enabled	per preview slot; draw_menu_preview_objects skips slots where it is 0	
+D_001D6044	menu_system_save_prompt_kind	menu_system+0xD4 (menu.h unkD4: 0 saving_data_menu, 1/2 saving_data_menu2)	
+D_001D6078	menu_system_help_text_buffer	menu_system+0x108 is help_text_buffer (menu.h)	
+D_001D6094	menu_system_close_locked	menu_system+0x124 is close_locked (menu.h)	
+D_001D641C	current_preview_animation_request_field_c	current_preview_animation_request+0xC, cleared with the request count	
+D_001D6508	pause_weapon_menu_item_field40	per pause weapon item: item_info +0x40, or +0x42 when the gold weapon is bought	
+D_001D65D8	gadget_menu_item_field40	per gadget menu item: item_info +0x40 (build_pause_item_list)	
+D_001D6610	gadget_menu_item_field44	per gadget menu item: item_info +0x44 (build_pause_item_list)	
+D_001D6860	scene_state_buffer_0	first 0xC60-byte buffer zeroed by clear_scene_state_buffers	
+D_001D74C0	scene_state_buffer_1	second 0xC60-byte buffer zeroed by clear_scene_state_buffers	
+D_001D6760	scene_state_buffer_2	0x100-byte buffer zeroed by clear_scene_state_buffers	
+D_0015EE78	frame_scale_fifths	set_video_timing stores 5 (NTSC) or 6 (PAL), frame_scale * 5	
+D_001600C8	damage_class_131_a8_float_table	floats indexed by the damage byte +8, stored to +0x2C for classes 0x131/0xA8	
+D_001CE35C	particle_texture_ptrs_23	particle_texture_ptrs[0x17], the default texture of PartType02Spawn	
+func_0022D6B4	sky_queue_texture_upload	handwritten: sky_build_gif_textured jumps to it; builds a TEX0 word and adds a pending_texture_uploads entry	
+D_0018CC54	render_sequence_time	render_sequence+0x34 is time (space.c ResidentPlaybackState)	
+D_0018CD98	render_sequence_slots	render_sequence+0x178 is slots[] (loaders.c TransferState)	
+D_001941D4	level_resource_buffer_base	level_resource_buffers+0x14 is MemInfo.buffer; movie playback buffers come from it	
+D_0018A3C8	tie_proc_enabled	gates the func_00118D80/TieProc/tie light upload step in the tie draw; sits before shrub_draw_enabled	
+D_001601AC	part_instance_pool	gp-0x6B54 base of the 0x20000 particle slot pool alloc_part_slot and UpdateParts index by slot*0x40	
+D_001601B0	part_slot_search_start	gp-0x6B50 index alloc_part_slot starts its free-bit scan from and writes back	
+D_001601B4	part_slot_high_water	gp-0x6B4C highest used slot, max()ed by alloc_part_slot, UpdateParts loops to it, reset to -1	
+D_001601B8	part_active_count	gp-0x6B48 count alloc_part_slot increments, reset to 0 at level start	
+D_001941D8	level_resource_buffers_data_end	level_resource_buffers+0x18, set to hdr+decompressed size; start of the level heap carve	
+D_00194280	coll_output_aux_buffer	coll_output+0x80, stored in coll_output.x8 and filled with 0x87654321 words	
+D_001AADC0	level_start_cleared_state	0x180 bytes zeroed at level start next to g_hero and gCamera; no other use	
+D_001CDB00	part_slot_bitmap	free-slot bitmap alloc_part_slot sets bits in; cleared 0x200 bytes at level start	
+D_001E66FC	vendor_state_dialogue_pick	vendor_state+0x3C, the .pick field: random dialogue line that picks anim r*3+4..6	
+func_0023B578	settle_attachment_weight_and_update	if +0x70 bit 2: +0x54 = (+0x58 > 0 ? 0 : 1), +0x58 = 0; then update_instance_attachment_points_and_lengths	
+D_L01_00161B00	novalis_peckbot_spawn_d0_record	short whose address peckbot spawn stores in vars+0xD0; sits after the peckbot constants	
+D_L01_001BBE14	novalis_checkpoint_level_state_killed	D_L01_001BB9C0 (checkpoint level state, 0xC60 above novalis_current_level_state) +0x454 .killed[save_id]	
+D_L01_0016CC80	novalis_hero_state_1e_clear_word	int the hero state 0x1E handler zeroes each pass; same in rilgar/hoven	
+D_L01_0017C2D0	novalis_hero_speed_bands_6	novalis_hero_speed_bands+0x18, element 6 (also read as [6] in hero_update_ground_material)	
+D_L01_00161288	novalis_water_ripple_params_0	first of four floats the pool update writes before drawing tiles (0)	
+D_L01_0016128C	novalis_water_ripple_params_1	second pool draw float, set to 32768.0	
+D_L01_00161290	novalis_water_ripple_params_2	third pool draw float, set to 255.0	
+D_L01_00161294	novalis_water_ripple_params_3	fourth pool draw float, set to 48.0	
+D_L01_002083E0	novalis_env_mesh_unused_args	5-entry table between env_mesh_verts and env_mesh_normals, passed as the unused arg of generate_level01_environment_map_uvs	
+D_001418A2	item_usage_entry36_last_time	item_usage+0x122 = 8-byte record 36 +2, the last-use time in 600-frame units (x600 off play time)	
+D_00141988	usage_stats_entry8_count	usage_stats+0x40, count of 8-byte record 8 (help shown while < 3)	
+D_001419E8	usage_stats_entry20_count	usage_stats+0xA0, count of 8-byte record 20 (help check needs it 0)	
+func_L02_002A59D8	prepare_scaled_table_on_stack	calls prepare_scaled_table_with_byte_128 on a 0x40-byte stack buffer; ocean init calls it	
+D_L02_0015F7B8	aridia_hero_run_step_start_frames	int table indexed by hero+0x2088 for set_hero_animation start frame; like hero_run_step_start_frames	
+D_L02_0015F7BC	aridia_hero_run_step1_start_frame	[1] of the run step start-frame table, used with anim 4; like batalia_hero_run_step1_start_frame	
+D_L02_00167458	aridia_player_camera_yaw	aridia_player_camera+0x158 (the f158 yaw field) compared with move_yaw	
+D_L02_0016CE00	aridia_hero_state_1e_clear_word	int the hero state 0x1E handler zeroes each pass; same as novalis/rilgar	
+D_L02_001744F0	aridia_coll_resolved_pos	coll hit block +0x30, between aridia_coll_hit_point and aridia_coll_hit_normal; same slot as eudora_coll_resolved_pos	
+D_0013D5E2	item_available_26	item_available+0x1A, owned flag of item 0x1A	
+D_L02_001601F8	aridia_burst_throttle_count	count the sand shark bursts throttle against (n/4 at >=0x5DD, n/2 above 0x400, none at >=0x6A5)	
+D_L02_00161990	sand_shark_vars_b58_init	byte sand shark spawn copies into vars+0x58	
+D_L02_00161A40	sand_shark_spawn_d0_record	short whose address sand shark spawn stores in vars+0xD0	
+D_L03_0015F7BC	kerwan_hero_run_step1_start_frame	start frame for anim 4 when a run starts at step 1; like batalia_hero_run_step1_start_frame	
+D_L03_0016C900	kerwan_hero_state_1e_clear_word	int the hero state 0x1E handler zeroes each pass; same as novalis/aridia	
+D_L03_0015F768	kerwan_usage_event_timer	timer fast_dec_timer counts down before bumping usage_stats record 18; like aridia_usage_event_timer at the same address	
+D_L03_0015F76C	kerwan_usage_event_count	count bumped when the usage timer fires; like aridia_usage_event_count at the same address	
+D_L03_00166FC0	kerwan_player_camera_target_offset_dir	kerwan_player_camera+0x1C0, scaled to p[5] and added to the camera target; -0x10 is the up axis	
+D_L03_001670F4	kerwan_player_camera_field_2f4	kerwan_player_camera+0x2F4, set to 0x78 when the hero-relative camera is reset	
+D_L03_00179590	kerwan_help_popup_state	kerwan_idle_fidgets-0x480, same slot as help_popup_state in other levels; help needs [0]==0 and [9]==-1	
+func_L03_002ED138	hero_in_state_6_or_mode_50	returns -1 if hero state is 6, or mode is 0x50 and state is not 0x11; else 0	
+D_L03_0015FE7C	kerwan_train_in_motion	cleared each train update, set to 1 in the boarding and moving states	
+D_L03_00161950	kerwan_moby573_spawn_d0_record	short whose address Moby573Update spawn stores in vars+0xD0	
+D_L04_00161908	eudora_circular_saw_spawn_1f0_record	short whose address circular_saw_enemy_update spawn stores in vars+0x1F0	
+D_0013D5DC	item_available_20	item_available+0x14, owned flag of item 0x14	
+D_001418C2	item_usage_entry40_last_time	item_usage+0x142 = 8-byte record 40 +2, last-use time in 600-frame units	
+D_001419D0	usage_stats_entry17_count	usage_stats+0x88, count of 8-byte record 17	
+D_00141A08	usage_stats_entry24_count	usage_stats+0xC0, count of 8-byte record 24	
+D_00141A10	usage_stats_entry25_count	usage_stats+0xC8, count of 8-byte record 25	
+D_00141A40	usage_stats_entry31_count	usage_stats+0xF8, count of 8-byte record 31	
+D_L04_00174068	eudora_coll_hit_z	eudora_coll_hit_point+8; returned as the ground offset when the probe ray hits; like aridia_coll_hit_z	
+D_L04_001CABB8	eudora_leg_rig_anim_b7_values	13x4 byte table; [anim index][0] goes to the leg rig's unkB7 for the matching animation	
+D_0013D56C	weapon_ammo_counts_15	weapon_ammo_counts+0x3C, element 15; help fires when it is >= 20	
+D_0013F74C	g_hero_ground_moby	g_hero+0x2FC, the ground_moby field (hero.h)	
+D_0014172A	active_marker_id	short written with vars->marker by the rilgar lift camera and the blarg boss (data+0x108)	
+D_00141820	item_usage_entry20_base	item_usage+0xA0 (record 20); the L05 field view adds US offsets to it	
+D_L05_00174358	rilgar_coll_hit_moby	rilgar_coll_hit+0x18, the hit moby (class 0x1F6/0x59F checked); like novalis_coll_hit_moby	
+D_L05_00174360	rilgar_coll_hit_point	rilgar_coll_hit+0x20; like eudora_coll_hit_point	
+D_L05_00174368	rilgar_coll_hit_z	rilgar_coll_hit+0x28 = hit point z, used as the surface height; like aridia_coll_hit_z	
+D_L05_00174370	rilgar_coll_resolved_pos	rilgar_coll_hit+0x30, just below rilgar_coll_resolved_pos_z; copied to the hero position	
+D_L05_0015F7CC	rilgar_hero_run_step1_start_frame	rilgar_hero_run_step_start_frames+4 ([1]), used with anim 4	
+D_L05_001672D8	rilgar_player_camera_yaw	rilgar_player_camera+0x158 (f158 yaw) compared with move_yaw	
+D_L05_0016CC80	rilgar_hero_state_1e_clear_word	int the hero state 0x1E handler zeroes each pass; same as novalis/aridia	
+D_L05_0015F768	rilgar_usage_event_timer	timer fast_dec_timer counts down before bumping usage_stats record 18; like aridia_usage_event_timer	
+D_L05_0015F76C	rilgar_usage_event_count	count bumped when the usage timer fires; like aridia_usage_event_count	
+D_L05_00179CE0	rilgar_hero_air_pose_vectors	Vec4 table indexed by g_hero.air_pose_index, copied in the air-spin state	
+D_L05_0017C324	rilgar_hero_speed_bands_3	rilgar_hero_speed_bands+0xC, element 3	
+D_L05_001C4430	rilgar_hero_ledge_shimmy_frame_speeds	per-frame speed table in the ledge shimmy states; like novalis_hero_ledge_shimmy_frame_speeds	
+D_L05_001612C4	rilgar_zone_tint2_red	byte after rilgar_zone_tint_alpha, set with the water patches; like novalis_water_tint2_r	
+D_L05_001612C5	rilgar_zone_tint2_green	second tint green byte, set to 0xB with the water patches	
+D_L05_001612C6	rilgar_zone_tint2_blue	second tint blue byte, set to 0x3E with the water patches	
+D_L05_001612C8	rilgar_water_ripple_params_0	first of four ripple values set with the water patches (0); same slots as novalis_water_ripple_params	
+D_L05_001612CC	rilgar_water_ripple_params_1	second ripple value, set to 20480.0	
+D_L05_001612D0	rilgar_water_ripple_params_2	third ripple value, set to 255.0	
+D_L05_001612D4	rilgar_water_ripple_params_3	fourth ripple value, set to 26.0	
+D_L05_00161C38	extermitank_vars_b58_init	constant after extermitank_death_ticks; truncated into vars+0x58 at spawn	
+D_L05_00161C3C	extermitank_vars_b5a_init	constant x8 truncated into vars+0x5A at spawn	
+D_L05_00180440	rilgar_light_heading_block	block whose +0x10/+0x14 pair gives the atan2 angle for g_light's direction	
+D_0013D5D6	item_available_14	item_available+0xE, owned flag of item 14	
+D_00141D00	help_records_83_count	help_records+0x298, count of 8-byte record 83	
+D_L06_0015F508	scripted_camera_sequence_mode	set to 0x12 right after scripted_camera_sequence_active (its neighbour) is set to 1	
+D_L06_00162184	shuttle_alt_scale	float the shuttle blends to/from opposite shuttle_scale in fC4/fC8 when it switches side	
+D_L06_00161DB4	toxic_gas_vent_near_d50_value	float toxic_gas_vent_update stores in vars+0x50 while the hero is in its volume	
+D_L06_00161DB8	toxic_gas_vent_near_anim_time	float toxic_gas_vent_update stores in anim_time while the hero is in its volume	
+D_L06_00161F80	alien_queen_scale_manip_flag	int flag passed to Manipulator_ApplyScale with scale 1.9 in the alien queen update	
+D_L06_001679D0	blarg_camera_slots	48 0xA0-byte records whose +0x86 kind 0x12 goes to SetTableEntryFlagIfKind18; like gCameraSlots	
+D_L06_0016A110	blarg_camera_slot_used	48 ints, nonzero for each used blarg_camera_slots entry	
+D_L06_0015F7B8	blarg_hero_run_step_start_frames	int table indexed by hero+0x2088 for the run start frame; like hero_run_step_start_frames	
+D_L06_00167658	blarg_player_camera_yaw	referencePosition (blarg player camera at 0x167500)+0x158 yaw compared with move_yaw	
+D_L06_0016D000	blarg_hero_state_1e_clear_word	int the hero state 0x1E handler zeroes each pass; same as novalis/aridia	
+D_L06_00178980	blarg_moby_hit_records	0x40-byte records indexed by moby byte 0xA4 (p34 owner check); like novalis_moby_hit_records	
+D_L06_0017C644	blarg_hero_speed_bands_3	blarg_hero_speed_bands+0xC, element 3	
+D_L06_0017C650	blarg_hero_speed_bands_6	blarg_hero_speed_bands+0x18, element 6	
+D_L07_00161BF4	snagglebeast_start_cleared_word	int the snagglebeast's state 0 zeroes; sits before snagglebeast_rope_reset_pending	
+D_L07_0020DD60	rope_grid_prev_row_base	rope_grid-0x140, so [idx][j] reads rope_grid[idx-1][j] (20 Vec4 per row)	
+D_L07_0020DDA0	rope_previous_points_prev_base	rope_previous_points-0x10, so [i] reads rope_previous_points[i-1]	
+D_L07_00161288	umbris_water_ripple_params_0	first of four ripple values set with the water grids (0); same slots as novalis_water_ripple_params	
+D_L07_0016128C	umbris_water_ripple_params_1	second ripple value, set to 32768.0	
+D_L07_00161290	umbris_water_ripple_params_2	third ripple value, set to 255.0	
+D_L07_00161294	umbris_water_ripple_params_3	fourth ripple value, set to 48.0	
+D_L07_00161BC8	umbris_item_revoke_flag	when nonzero the taxi platform update clears gHaveHeliPack[2] and discount_purchase_pricing[9]	
+D_L08_0016195C	bomber_tank_vars_b58_init	constant truncated into vars+0x58 at update_bomber_tank init	
+D_L08_00161960	bomber_tank_vars_b5a_init	constant x8 truncated into vars+0x5A at update_bomber_tank init	
+D_L08_00179C90	batalia_help_popup_state	batalia_idle_fidgets-0x480, same slot as help_popup_state; help needs [0]==0 and [9]==-1	
+D_L08_0015FD08	batalia_mission_group_state	byte per mission checked != 0xFF; same address as novalis/kerwan_mission_group_state	
+D_L08_0016D2C0	batalia_screen_projection_base	block whose +0x210 float scales the projected bolt glint point	
+D_L08_001BB0E0	batalia_current_level_state	live level block, .killed[save_id] = mission+2; 0xC60 below the checkpoint copy like current_level_state	
+D_L08_001BBD40	batalia_checkpoint_level_state	checkpoint level block, written when the mission is done; like kerwan_checkpoint_level_state	
+D_0013DE4B	level_available_base	+7/+8 index level_available[10]/[11]	
+D_L08_001E8610	batalia_uv_scroll_1	batalia_uv_scroll+8, sine pair output	
+D_L08_001F8810	batalia_textured_mesh8_scroll_offset_1	batalia_textured_mesh8_scroll_offset+8, sine pair output	
+D_L08_00167658	batalia_camera_yaw	move_yaw set to it while strafing, like camera_yaw	
+D_L08_0016D000	batalia_look_release_reset_word	zeroed when leaving look-release-wait state	
+D_L09_00174068	gaspar_coll_hit_point_z	gaspar_coll_hit+0x28, z of hit point like coll_hit_point_z	
+D_L09_00174080	gaspar_coll_hit_normal	gaspar_coll_hit+0x40, reflect vector like oltanis_coll_hit_normal	
+D_L09_001BB6C0	gaspar_collected_flags_base	+0x454 is a byte table indexed by save_id	
+func_L08_00315068	set_level_state_flag_88	sets byte 0x88 of the state block at D_L08_00167680 before camera sets	
+D_L10_00161410	orxon_relocation_reset_flag	when 1, relocation trigger zeroes help_stats+0x32D and clears it	
+D_L10_00161E9C	class1199_start_b58	class1199 tunable truncated into pvars b58 at state 0	
+D_L10_00161EA0	class1199_start_b5a	class1199 tunable times 8 into pvars b5A at state 0	
+D_L10_00161F64	orxon_blarg_ship_start_timer_ticks	scale_ticks of it seeds blarg ship s196 at state 0	
+D_L10_001BB9C0	orxon_collected_flags_base	+0x454 is a byte table indexed by save_id	
+D_L11_0015F7BC	pokitaru_hero_run_step1_start_frame	set_hero_animation(4, it) like novalis_hero_run_step1_start_frame	
+D_L11_00167858	pokitaru_camera_yaw	pokitaru_camera_rot+8; move_yaw set to it while strafing	
+D_L11_0016262C	pokitaru_layered_scroll_entries_b	pokitaru_layered_scroll_entries+4, the b field set to i*0.4	
+D_L11_001626AC	pokitaru_faded_scroll_entries_b	pokitaru_faded_scroll_entries+4, the b field set to i*0.4	
+D_0013F4D8	g_hero_pos_z	g_hero+0x88, gHeroPos+8	
+D_L11_00161288	pokitaru_pool_draw_cleared_word	zeroed with pool draw setup	
+D_L11_0016128C	pokitaru_pool_draw_fixed_scale	32768.0 written with pool draw setup	
+D_L11_00161290	pokitaru_pool_draw_max_255	255.0 written with pool draw setup	
+D_L11_00161294	pokitaru_pool_draw_param_48	48.0 written with pool draw setup	
+D_L11_00161F58	child_sets_left_swing_progress	approached with child_sets_left_swing_velocity	
+D_L11_00161FA0	pokitaru_class_483_mobys	4 mobys made by CreateMoby(0x483)	
+D_L11_00161FC0	pokitaru_class_482_mobys	4 mobys made by CreateMoby(0x482)	
+D_L11_00161FE4	child_grid_fade_start_word	zeroed when link command 1 starts the point-pose fade	
+D_L11_00167848	pokitaru_camera_pos_z	camera_pos_b358+8; water tint picks on <=180	
+D_L11_0015F520	pokitaru_palette_data_base	ship_hud_clut = it + palette index*16, like gemlik_palette_data_base	
+D_L11_0016003C	pokitaru_available_moby_slot_count	same slot as available_moby_slot_count in batalia	
+D_L11_00162350	puffoid_move_params	puffoid pvars unkD0 points here, next to puffoid_scale	
+D_L11_001625D0	pokitaru_layered_mesh_positions	second draw_env_overlay_mesh table, like oil_tanker_2b_mesh_positions	
+D_L11_00167A60	pokitaru_camera_matrix_row1	pokitaru_camera_matrix+0x10	
+D_L11_0016DC00	pokitaru_texture_table	16-byte records, palette index at +0xA; like fleet_texture_table	
+D_L12_001672D8	hoven_camera_yaw	hoven_camera_pos+0x18; strafe compares move_yaw to it	
+D_L12_0016CC80	hoven_look_release_reset_word	zeroed when leaving look-release-wait state	
+D_L12_00174360	hoven_coll_hit_point	hoven_coll_hit+0x20, passed to resolve_camera_surface_height	
+D_L12_0016217C	hoven_layer_uv_scroll_v	hoven_layer_uv_scroll+4, second scroll component	
+D_L12_0016CD70	hoven_cutscene_hero_pos	hoven_cutscene_state+0x10, hero pos copied before StartCutscene	
+D_L12_00161288	hoven_pool_draw_cleared_word	zeroed with water render setup	
+D_L12_0016128C	hoven_pool_draw_fixed_scale	32768.0 written with water render setup	
+D_L12_00161290	hoven_pool_draw_max_255	255.0 written with water render setup	
+D_L12_00161294	hoven_pool_draw_param_48	48.0 written with water render setup	
+D_L12_001803C0	hoven_lights	light block; +0x10 direction read; like level_point_lights	
+D_L13_00160700	gemlik_reference_axis	cross-product axis for beam sides and explosion vector	
+D_L13_00161288	gemlik_pool_draw_cleared_word	zeroed with pool draw setup	
+D_L13_0016128C	gemlik_pool_draw_fixed_scale	32768.0 written with pool draw setup	
+D_L13_00161290	gemlik_pool_draw_max_255	255.0 written with pool draw setup	
+D_L13_00161294	gemlik_pool_draw_param_48	48.0 written with pool draw setup	
+func_L06_0024A080	draw_segmented_hud_meter_base	+0x20 is draw_segmented_hud_meter	
+D_L13_001B2680	gemlik_part_type_textures	4 bytes per part type; +0x110 is gemlik_part_type68_textures	
+D_L13_00161428	robosquawker_move_params	robosquawker pvars pD0 points here, after robosquawker_jump_gravity	
+D_L14_001676D8	oltanis_player_camera_field_258	oltanis_player_camera+0x258, set to 0.25 when a path camera ends	
+D_L14_00174658	oltanis_coll_hit_moby	oltanis_coll_hit+0x18, compared to the shot owner	
+D_L14_001BBCC0	oltanis_collected_flags_base	+0x454 is a byte table indexed by save_id	
+func_L14_00317C4C	camera21_init_tail_piece	28-byte tail joined to Camera21Init in retail	
+D_L14_00161B04	oltanis_racer_state5_delay_ticks	scale_ticks of it seeds the racer timer on entering state 5	
+D_L14_00161BCC	oltanis_tilting_platform_tilt_arg	first float passed to update_platform_tilt_basis_m, before max_tilt_deg	
+D_L14_0015F7BC	oltanis_hero_run_step1_start_frame	set_hero_animation(4, it) like novalis_hero_run_step1_start_frame	
+D_L14_001675D8	oltanis_camera_yaw	oltanis_camera_pos+0x18; strafe compares move_yaw to it	
+D_L14_0016CF80	oltanis_look_release_reset_word	zeroed when leaving look-release-wait state	
+D_L14_001E0330	lightning_arc_points_38	lightning_arc_points+0x260, lerped between points 37 and 39	
+D_L15_001BAEE0	quartu_moby_state_bytes_base	+0x454 is a per-id byte table cleared on respawn, quartu_moby_killed+0x554	
+D_L15_001BBB40	quartu_collected_flags_base	+0x454 is the byte table indexed by save_id	
+D_L15_0015F7BC	quartu_hero_run_step1_start_frame	set_hero_animation(4, it) like novalis_hero_run_step1_start_frame	
+D_L15_00167458	quartu_camera_yaw	quartu_camera_pos+0x18; strafe compares move_yaw to it	
+D_L15_0016CE00	quartu_look_release_reset_word	zeroed when leaving look-release-wait state	
+D_L15_00167490	quartu_player_camera_field_190	quartu_player_camera+0x190; its +0x30 axis is projected on	
+D_L16_00161FD0	envmap_a_unused_bufs	envmap_a table passed as the unused arg of compute_level16_reflection_map_coordinates	
+D_L16_00162028	envmap_b_unused_bufs	envmap_b table passed as the unused arg of compute_level16_reflection_map_coordinates	
+D_L16_00162060	envmap_c_unused_bufs	envmap_c table passed as the unused arg of compute_level16_reflection_map_coordinates	
+D_L16_00162098	envmap_d_unused_bufs	envmap_d table passed as the unused arg of compute_level16_reflection_map_coordinates	
+D_L16_0016CCE0	kalebo3_cutscene_state	look-release word+0xE0 like hoven/batalia cutscene_state; +0x184 moby	
+D_L16_001742D8	kalebo3_coll_hit_moby	kalebo3_coll_hit+0x18	
+D_L16_001742E0	kalebo3_coll_hit_point	kalebo3_coll_hit+0x20, passed to resolve_camera_surface_height	
+D_L16_001742F0	kalebo3_coll_resolved_pos	kalebo3_coll_hit+0x30 like coll_resolved_pos; hero pos copied from it	
+D_L16_00167258	kalebo3_camera_yaw	kalebo3_camera_pos+0x18; strafe compares move_yaw to it	
+D_L16_0016CC00	kalebo3_look_release_reset_word	zeroed when leaving look-release-wait state	
+D_L16_00179C60	kalebo3_hero_air_pose_vectors	indexed by g_hero.air_pose_index in air tricks	
+D_L16_0017ABC0	kalebo3_hero_lean_angles	kalebo3_hero_bones+0x60; [1]=rail tilt like batalia_hero_lean_angles	
+D_L16_00161F08	chomper_move_params	chomper pvars +0xD0 points here, before chomper_knockback_gravity	
+D_L16_001B285C	kalebo3_part_type23_textures	part type table +0x5C like part_type23_textures	
+D_L17_00162280	class1382_move_params	Moby1382Update sets pvars pD0 to it	
+D_L17_0015F768	fleet_look_stat_timer	same slot as kalebo3_look_stat_timer; bumps usage_stats.f90	
+D_L17_0015F76C	fleet_look_stat_count	same slot as kalebo3_look_stat_count	
+D_L17_0017C744	fleet_hero_run_turn_stick_threshold	fleet_hero_speed_bands+0xC; stick magnitude above it turns hero	
+D_L17_0015F7B8	fleet_hero_run_step_start_frames	indexed by step like hero_run_step_start_frames	
+D_L17_0016D100	fleet_look_release_reset_word	zeroed when leaving look-release-wait state	
+D_L17_00162480	fleet_reflection_strips_unused_bufs	passed as the unused arg of compute_reflection_sphere_map_uvs	
+D_L17_001624C8	fleet_reflection_strip_unused_bufs	passed as the unused arg of compute_reflection_sphere_map_uvs	
+D_L17_0016D464	fleet_view_params_field_a4	fleet_view_tan_half_fov-0xC; set to 8192000 in backdrop beam draw	
+D_L18_00162680	gadgebot_params_block	Moby1906Update stores its address in pvars+0x140	
+D_L18_00162698	gadgebot_start_moby_byte73	byte copied to the moby's unk73 at state 0	
+D_001414F5	g_hero_field_20a5	g_hero+0x20A5 (unk20A5), also a base for later hero bytes	
+D_L18_00167858	veldin2_camera_yaw	veldin2_camera_pos+0x18, player_camera+0x158	
+D_L18_00167BD0	veldin2_camera_trigger_records	0x30 records of 0xA0; +0x84 indexes camera descriptors, +0x86 kind 0x12	
+D_L18_0016A310	veldin2_camera_trigger_used	0x30 ints gating veldin2_camera_trigger_records	
+D_L18_001DB7C0	veldin2_lift_link_entries	lift group height copied into entries picked by idx	
+D_L18_0017B160	veldin2_hero_lean_angles	veldin2_hero_bones+0x60; [1]=rail tilt like batalia_hero_lean_angles	
+D_L18_0016D200	veldin2_look_release_reset_word	zeroed when leaving look-release-wait state	
+D_L18_00160000	veldin2_moby_table_base	+0x58 is veldin2_moby_table	
+D_L18_00161A18	class238_move_params	update_class_238_moby stores its address in pvars+0xD0	
+D_L18_0017EF88	veldin2_position_transition_flag	set to 1 in states 2 and 3 of the position/rotation transition	
+D_L18_001D9FC0	electric_bolt_points_base	+0x10 is electric_bolt_points; [i] is point i-1	
+D_L18_001DA420	electric_bolt_branch_points_base	+0x10 is electric_bolt_branch_points	
+D_L18_001BA9F0	veldin2_whole_save_buffer_base	+0xE0 holds the whole-save buffer pointer, set once	
+D_L00_00173F08	lvl_load_scratch_buffer	Load() target for misc animations and the map archive, before Stash_SendData	
+D_0015EF2C	counted_bolts_total	collect_bolt adds the value when the bolt is counted	
+D_L00_0015F420	level_screen_fade_on	on word of a Fade29FF90 block like D_L15_0015F420; cleared at level reset	
+D_L00_0015F424	level_screen_fade_rgba	rgba of the 0x15F420 fade block	
+D_L00_0015F428	level_screen_fade_gs_reg	GS register word of the 0x15F420 fade block	
+D_L00_0015F430	level_screen_overlay_on	on word of the block quartu_screen_overlay matches	
+D_L00_0015F434	level_screen_overlay_rgba	rgba of the 0x15F430 overlay block	
+D_L00_0015F438	level_screen_overlay_gs_reg	GS register word (0x1F00000042) of the 0x15F430 overlay block	
+D_L00_00161438	smoke_particle_aux_ticks_base	scale_ticks of it gives the next timer, next to the smoke tick bases	
+D_L00_00161450	smoke_particle_aux_ticks	scale_ticks(smoke_particle_aux_ticks_base)	
+D_L00_00161454	smoke_particle_aux_ticks_inv	1 / smoke_particle_aux_ticks	
+D_001416D4	g_hero_field_2284	g_hero+0x2284 (unk2284), compared to 3 for camera type 4	
+D_0015EEB3	gCheats_3	gCheats+3, picks the camera scale in vehicle mode 1	
+D_L00_00166F04	camera_cross_axis_ptr	pointer to the axis crossed with the view direction to build the basis	
+D_L00_00166FB4	camera_view_field_a4	camera_view+0xA4, float tested > 0 by script camera timing	
+func_L00_002E9940	set_follow_camera_float_22c	sets hero camera state +0x22C while camera id is 0	
+func_L00_002E99F0	set_follow_camera_angle_1cc	sets hero camera state +0x1CC (radians) while camera id is 0	
+func_L00_002E9AD0	set_follow_camera_flag_226	sets short flag +0x226 of hero camera state while camera id is 0	
+D_L00_001CA800	vendor_menu_field_40	vendor_menu+0x40; nonzero stops Camera_UpdateFrame in cinematic mode 5	
+func_L00_001ED380	camera_update_frame_part2	middle piece of Camera_UpdateFrame (head func_L00_001ED2C0) in retail	
+func_L00_001ED3D4	camera_update_frame_part3	8-byte last piece of Camera_UpdateFrame in retail	
+func_L00_001F3980	coll_return_minus_one	two instructions: return -1; CollType and others branch to it	
+D_L00_00161A30	horny_toad_move_params	horny_toad_update stores its address in pvars f140	
+D_L00_001D05E0	smoke_particle_speed_a	per-particle random value from emitter range +0x10..+0x14 on reset	
+D_L00_001D18A0	smoke_particle_speed_b	per-particle random value from emitter range +0x18..+0x1C on reset	
+D_L00_001D5A40	smoke_particle_timer	per-particle short set to smoke_particle_timer_ticks, counted down	
+D_L00_0015F3F0	level_reset_counter_3f0	zeroed by ResetFrameCounters and Level_ResetGameplayGlobals; no reads in C	
+D_L00_0015F3F4	level_reset_counter_3f4	zeroed by ResetFrameCounters and Level_ResetGameplayGlobals; no reads in C	
+D_L00_0015F524	level_reset_counter_524	zeroed by ResetFrameCounters and Level_ResetGameplayGlobals; no reads in C	
+D_L00_0015F528	level_reset_counter_528	zeroed by ResetFrameCounters and Level_ResetGameplayGlobals; no reads in C	
+D_L00_0015F52C	level_reset_counter_52c	zeroed by ResetFrameCounters and Level_ResetGameplayGlobals; no reads in C	
+D_L00_0015F530	level_reset_counter_530	zeroed by ResetFrameCounters and Level_ResetGameplayGlobals; no reads in C	
+D_L00_0016110C	movie_request_source_mode	second Movie_Play arg, initAll source_mode	
+D_L00_00161110	movie_request_audio_context	fifth Movie_Play arg, initAll callback_context	
+D_L00_00161114	movie_request_decoder_buffer	third Movie_Play arg (64-aligned), decoder_buffer_address	
+D_L00_00161118	movie_request_decoder_state	fourth Movie_Play arg (64-aligned), decoder_state	
+D_L00_0016C970	cutscene_hero_pos	cutscene_state+0x10; hero reset to it (+0x10 rot) at cutscene end	
+D_L00_0016CBF0	render_view_tan_half_fov	render_view_params+0xB0 like oltanis_view_params.fB0; set to 0.63	
+D_L00_00179208	active_scene_trigger_target	active_scene_trigger.a (+8); flags bit 1 set at cutscene start	
+D_L00_0017C540	extra_scale_manipulator	0x40 manipulator cleared next to cheat_scale_manipulator_class_555	
+D_L00_0017E604	radial_select_auto_close_flag	nonzero lets stick release close the radial HUD selector	
+D_L00_00184314	map_menu_state_field_24	map_menu_state+0x24; nonzero bumps a help_stats usage counter	
+D_L00_001BA15C	level_menu_system_target	level_menu_system.p (+0xEC); flags bit 1 set at cutscene start	
+D_L00_001BA160	level_menu_system_field_f0	level_menu_system+0xF0; nonzero pauses all sounds and returns	
+D_L00_0015F6E8	visibomb_occlusion_skip_flag	set 1 each visibomb missile frame, cleared on level reset; sits after occlusion_grid	
+D_L00_001600B0	moby_draw_distance	int draw distance 500 (64 in debug short-draw, 0x90 in visibomb view); next to moby_group_count	
+D_L00_0016023C	level_particle_clip_dist	fixed-point 500*4096 draw distance set with the others; next to particle_pool; level copy of core part_clip_dist	
+D_L00_00160564	shrub_draw_distance	float draw distance 500 set with the others; next to shrub_matrices	
+D_L00_00161040	level_tfrag_draw_distance	float 500*1024 draw distance set with the others; in the tfrag block after tfrag_count; level copy of core tfrag_draw_distance	
+D_L00_001610A0	level_tie_draw_distance	float draw distance 720 set with the others; in the tie block after tie_instance_count; level copy of core tie_draw_distance	
+D_L00_00161260	debug_text_flush_wait_flag	draw_debug_menu spins while bit 0 is set after flush_debug_text_queue	
+D_L00_00161394	water_patches_field_4	word between water_patches and water_patch_count, cleared on level reset	
+D_L00_0016139C	water_patches_field_c	word after water_patch_count, cleared on level reset	
+D_L00_00169D80	frame_roll_counters_base	Frame_RollCounter moves +0x364 to +0x368 and clears +0x1B0 each frame	
+func_L00_001F767C	occl_grid_lookup_tail	x-level tail of OcclGrid_Lookup (joined.tsv)	
+D_L00_0015F410	level_render_setup_packet_copy	load_level_gameplay copies level_render_setup_packet into it	
+D_L00_0015F418	level_render_setup_packet	load_level_gameplay picks D_L00_0016C8B0 or D_L00_0016C880 by level index	
+D_L00_0015F520	level_effects_data	base + header slot 0x1A; mem report prints it as the effects vram start	
+D_L00_0015F6E4	level_header_section_2a_data	base + header slot 0x2A, or 0 when the slot is empty	
+D_L00_0015F6F8	collision_header_entry_table	count + 16-byte entries relocated from the collision header offset +4	
+D_L00_001600D0	swap_moby_class_block_field_8	zeroed with the swap moby class setup; swap_moby_class_count + 8	
+D_L00_00160230	particle_pool_field_4	zeroed right after particle_pool is carved; particle_pool + 4	
+D_L00_00160234	particle_pool_field_8	set -1 right after particle_pool is carved; particle_pool + 8	
+D_L00_00160238	particle_pool_field_c	zeroed right after particle_pool is carved; particle_pool + 0xC	
+D_L00_00160C30	shrub_vertex_color_dma_ref_tag	DMA ref tag (0x30000006) whose address word gets shrub_vertex_colors	
+D_L00_0016C8B0	level_render_setup_packet_alt	render setup packet used for levels 2,5,6,7,8,10	
+D_L00_00173FC0	coll_hit_moby_record	coll_hit_result.f8 buffer; +0x18 holds the hit moby; filled with 0x87654321 at level start	
+D_L00_00174000	coll_hit_vector_buffer	coll_hit_result.f4 buffer; its first qword is read as a vector	
+D_L00_001ABB60	coll_cell_slot_bitmap	0x60-byte bitmap zeroed after coll_cell_grid; coll_cell_slots_free clears its bits	
+D_L00_001B0000	swap_moby_class_params	word +8 of each swap moby class entry, beside swap_moby_class_ids/data	
+D_L00_001B1E00	particle_texture_vram_table	[1]>>4 is the particle vram start in the load memory report	
+D_L00_001BBA14	checkpoint_level_state_moby_flags	checkpoint_level_state + 0x454 is collected[]; nonzero skips the moby spawn	
+D_L00_001E8C90	mem_report_particle_vram_fmt	printf format for the particle vram size in KB	
+D_L00_001E8CA8	mem_report_effects_vram_fmt	printf format for the effects vram size in KB	
+D_L15_00161C50	electric_water_bolt_suppress	float (0.0 in data) that must be 0 for electric_water_update to start a new bolt	
+D_L15_00161D52	electric_water_side_arc_regrow_delays_1	electric_water_side_arc_regrow_delays + 2, set 4 at bolt init	
+D_L15_00161D54	electric_water_side_arc_regrow_delays_2	electric_water_side_arc_regrow_delays + 4, set 8 at bolt init	
+D_L15_00161D56	electric_water_side_arc_regrow_delays_3	electric_water_side_arc_regrow_delays + 6, set 4 at bolt init	
+D_L15_00161D5A	electric_water_side_arc_fade_ticks_1	electric_water_side_arc_fade_ticks + 2, set 2 at bolt init	
+D_L15_00161D5C	electric_water_side_arc_fade_ticks_2	electric_water_side_arc_fade_ticks + 4, set 4 at bolt init	
+D_L15_00161D5E	electric_water_side_arc_fade_ticks_3	electric_water_side_arc_fade_ticks + 6, set 2 at bolt init	
+D_L15_00161D64	electric_water_bolt_reset_word	only zeroed at bolt init, after electric_water_bolt_initial_scaled_frame_count	
+D_L15_001BB334	quartu_current_level_state_moby_flags	current level state + 0x454 (per save_id byte; L00 pattern), cleared on switch reset	
+D_L15_001BBF94	quartu_checkpoint_level_state_moby_flags	checkpoint level state + 0x454, 0xC60 after the current copy as in L00	
+D_L15_001D3A10	electric_water_bolt_points_base	+0x10 is electric_water_bolt_points; indexed [i] for point i-1	
+D_L15_001D3E70	electric_water_side_arc_points_base	+0x10 is electric_water_side_arc_points; read as [k].p[j-1]	
+D_001404E0	g_hero_item_slot0_moby	g_hero + 0x1090 is items[0].moby (hero.h); mode 5 of get_hero_easing_moby_by_kind	
+D_001405D4	g_hero_item_slot3_moby2	g_hero + 0x1184 is items[3].moby2 (hero.h); mode 1 of get_hero_easing_moby_by_kind	
+D_001419F0	usage_stats_entry21_count	usage_stats + 0xA8 is entry 21 .count (8-byte UStat entries); gates the item help hint	
+D_0015EF18	sound_volume_10	sound_volume + 0x28, read as sound_volume_r[10]	
+D_L00_00160600	ship_level_entry_active	initialize_moby_state_record sets it 1; when set the hero spawn pose is not recorded	
+D_L00_0017B95C	lean_state_25_scale	lean_state + 25*0xB0 + 0xAC is entry 25 .scale (HeroEase, 31 entries)	
+D_L00_0017BB6C	lean_state_28_scale	lean_state + 28*0xB0 + 0xAC is entry 28 .scale; big-head cheat sets it	
+D_L00_0017BCCC	lean_state_30_scale	lean_state + 30*0xB0 + 0xAC is entry 30 .scale; cheat 1 sets 1.9	
+D_L00_001802D0	level_moby_lights_field_310	level_moby_lights + 0x310 (entry 12 + 0x10); code backs up 0x310 to the entry	
+D_0013CB40	g_controller_state_analog	g_controller_state + 0x100 is analog[] (pad.h); read as [0] and [1]	
+D_00141510	g_hero_pending_item_2	g_hero + 0x20C0 is pending_item[2] (hero.h); helmet pickup sets 7	
+D_00141C08	help_records_52_count	help_records + 0x1A0 is entry 52 .count; gates Help_Request(0x2328, 0x34)	
+D_L00_00166F30	camera_view_up_axis	camera_view + 0x20, the camera up axis projected off the forward row	
+D_L00_00166F40	camera_view_vertical_axis	camera_view + 0x30, the axis the ground probe scales by -30	
+D_L00_00166FEC	camera_view_field_dc	camera_view + 0xDC float; follow cam mode switches need it 0	
+D_L00_001E7080	beam_origin_transforms_field_10	beam_origin_transforms + 0x10; [slot].a/.c read as rows 1 and 3	
+D_L00_001E70A0	beam_origin_transforms_translation	beam_origin_transforms + 0x30, row 3 of each 0x40-byte entry: beam start point	
+func_L00_002E99E4	cam_set_eye_offset_tail	non-add branch of Cam_SetEyeOffset: stores the offset at +0xB4	
+D_0013D491	gSpecialItems_1	gSpecialItems + 1; set when the raritanium pickup is collected	
+D_L11_0016D200	pokitaru_render_setup_packet_default	L00 level_render_setup_packet_default + 0x980 as cutscene_state; ocean override needs word 0 == 0, hero state 31 zeroes it	
+D_L11_0016D4C0	pokitaru_render_view_params	cutscene_state + 0x1E0 as L00 render_view_params; ocean saves/restores fog at +0x228/+0x22C	
+D_L11_00179B98	pokitaru_pickup_message_buffer	sprintf target for the raritanium acquired text	
+D_L11_001B2D80	pokitaru_particle_textures_ptr_base	+0x5C holds the particle texture ids pointer Moby1034Update reads	
+D_L11_0021ABF0	pokitaru_raritanium_acquired_text	string printed into the pickup message buffer when raritanium is taken	
+D_L01_0015F674	novalis_help_message_selector	same slot as kerwan/batalia_help_message_selector; ==0 gates item select, ==4 holds the teleporter pad	
+D_L00_0015F678	current_moby_mission_complete	set from mission_state[moby mission] == 0xFF; gates play-time frames and bolt totals	
+D_0013CC14	g_controller_state_no_direction	g_controller_state + 0x1D4 is no_direction (pad.h)	
+D_0013F580	g_hero_resolved_velocity_xy	g_hero + 0x130 is motion.resolved_velocity_xy (hero.h); -0x50 is velocity	
+D_00140C00	g_hero_transform_history	g_hero + 0x17B0 is the unk17B0 buffer (hero.h) passed to the transform history calls	
+D_L00_00167114	hero_control_mode_11_flag	1 when hero control_mode is 0x11, else 0; leaving water clears it	
+D_L00_0017B48C	lean_state_18_scale	lean_state + 18*0xB0 + 0xAC is entry 18 .scale; big-head cheat sets it	
+D_L00_0017BED0	hero_speed_bands_field_18	hero_speed_bands + 0x18, read elsewhere as hero_speed_bands.f18 (5.7)	
+D_L06_00161C80	blarg_frog_pvars_d0_table	byte table frog_update stores into pvars +0xD0 at spawn	
+D_L06_00161DD4	blarg_rotation_group_proximity_suppress	float (0.0 in data) that must be 0 for the hero-proximity trigger of update_moby_rotation_group	
+D_L06_00167640	blarg_camera_pos	same slot as the other levels' *_camera_pos; distance and direction checks from it	
+D_L06_001746F0	blarg_coll_resolved_pos	blarg_coll_hit_moby + 0x18, same layout as L00 coll_resolved_pos	
+D_L06_00174700	blarg_coll_hit_normal	blarg_coll_hit_moby + 0x28, same layout as L00 coll_hit_normal; -0x18 is blarg_coll_hit_z	
+D_L06_0017ED58	blarg_gadgebot_command_count_base	+0x2C counts frames the hero is near a gadgebot in a command state	
+D_L06_001746DC	blarg_coll_hit_type	blarg_coll_hit + 0x1C, the surface word CollType masks with 0x1F	
+D_L06_001746E0	blarg_collision_hit_point	blarg_coll_hit + 0x20, same slot as L00 collision_hit_point; z is blarg_coll_hit_z	
+D_L06_0017A170	blarg_idle_fidgets_field_60	blarg_idle_fidgets + 0x60; five 0x70-byte entries whose timer word is counted down each frame	
+D_L06_0017C0DC	blarg_hero_bones_25_scale	blarg_hero_bones + 25*0xB0 + 0xAC, entry 25 .scale as L00 lean_state	
+D_L06_0017C44C	blarg_hero_bones_30_scale	blarg_hero_bones + 30*0xB0 + 0xAC, entry 30 .scale; cheat 1 sets 1.9	
+D_0013F670	g_hero_capsule_top	g_hero + 0x220 is capsule_top (hero.h); eased toward +0x228	
+D_L15_00179F70	quartu_idle_fidgets_field_60	quartu_idle_fidgets + 0x60; five 0x70-byte entries whose timer word is counted down each frame	
+D_L15_0017AD40	quartu_hero_bones_0_rot	quartu_hero_bones + 0x40 is entry 0 .rot (HeroEase); fed to euler_to_matrix	
+D_L15_0017C0EC	quartu_hero_bones_28_scale	quartu_hero_bones + 28*0xB0 + 0xAC, entry 28 .scale; big-head cheat sets it	
+D_L15_0017C24C	quartu_hero_bones_30_scale	quartu_hero_bones + 30*0xB0 + 0xAC, entry 30 .scale; cheat 1 sets 1.9	
+D_0013FD1E	g_hero_race_ammo	g_hero + 0x8CE is race_ammo (hero.h); picks hoverboard anim 0x55 or 0x7F	
+D_00141A20	usage_stats_entry27_count	usage_stats + 0xD8 is entry 27 .count; gates the hoverboard race help hint	
+D_00141E80	help_records_131_count	help_records + 0x418 is entry 131 .count; Help_Request(0x3E81, 0x83) uses entry 0x83	
+D_L05_0017C168	rilgar_hoverboard_link_table	{anim id, value} short pairs stored in hero +0x227C while control mode is 0x15/0x16	
+func_L05_0023BA18	hero_anim_tilt_lookup	sets *out to a tilt for some anim ids and returns 1 for the ids that apply	
+D_L03_00166FB0	kerwan_camera_view_up_axis	L00 camera_view + 0x20 shifted +0x80 as kerwan_player_camera; crossed to rebuild the right axis	
+D_L03_001DC460	kerwan_ambient_stream_scaled_table	prepare_scaled_float_table_with_target_byte table, as umbris_ambient_stream_scaled_table	
+func_L02_00250720	textured_grid_transform_cells	handwritten VU0: loads the camera matrices and transforms the grid moby cells in scratchpad	
+func_L02_00250A58	textured_grid_build_gif_packet	handwritten VU0: writes the 8x8 cell words and copies the GIF header at 0x70002800	
+D_L00_00161C24	suck_beam_init_zero_0	only zeroed when the suck beam is set up, after suck_beam_scroll_speed	
+D_L00_00161C28	suck_beam_init_zero_1	only zeroed when the suck beam is set up, before suck_beam_wobble_from	
+D_L00_001E6230	suck_beam_ring_vertices_base	+0x140 is suck_beam_ring_vertices; indexed with ring i for ring i-1	
+D_L00_001E6280	suck_beam_points_base	+0x10 is suck_beam_points; indexed with i for point i-1	
+func_L00_00251A78	coll_cell_slots_free	handwritten: clears n bits from index a in coll_cell_slot_bitmap, errors on an already-free bit	
+func_L00_00251B58	moby_set_coll_cell_range	handwritten: moves the moby between coll_cell_grid cells; moby_build_matrix tail-calls it, 0x80807F7F unlinks	
+func_L00_002535C8	moby_anim_blend_quat_nlerp	handwritten VU0 tail of func_L00_00252D20: blends packed s16 quaternions with sign fix and rsqrt	
+func_L00_00254A70	moby_joints_quat_nlerp	handwritten VU0 tail of moby_joints_to_scratchpad: same packed quaternion blend	
+D_L00_00160360	find_id_list	zero-terminated id list (max 20) FindIdInList searches	
+D_L00_00183FF0	map_menu_initial_value_pairs	20 int pairs copied into map_menu_state[0x41+i] and [0x55+i] when the map opens	
+D_L00_00184494	map_menu_state_circle_mask	map_menu_state + 0x1A4: 32x32 bit mask, bits set for cells outside the round map	
+D_L00_00184568	map_menu_state_key_slots	map_menu_state + 0x278: five slots then five keys Map_FindUnsetKeySlot scans	
+D_0013E634	gold_weapon_purchased_20	gold_weapon_purchased + 0x14; +1 scales the morphed chicken	
+D_L00_00161910	morphoray_chicken_ai_params	params block whose address goes in the chicken state block +0x70	
+D_0013FAB0	hero_basis_2	hero_basis + 0x20 is g_hero.basis[2] (hero.h 0x640 rows)	
+D_L00_00160830	bomb_hit_skip_update_fn	bomb_update skips a hit moby whose update pointer (+0x74) equals it, unless class 0x336	
+D_L00_001614A0	mine_force_detonate	nonzero makes mine_update explode and delete every thrown mine	
+D_L00_0015F688	memcard_menu_alt_route	when set, clearing flag 0x20 moves mode_freeze_state to 0x17/24 instead of 12	
+D_L00_001845B8	map_menu_state_field_2c8	map_menu_state + 0x2C8; level 7 map filter side flag for b >= 0x9D	
+D_L00_001845C0	map_menu_state_field_2d0	map_menu_state + 0x2D0; level 7 map filter side flag for b < 0x9D	
+D_L01_00174370	novalis_coll_resolved_pos	novalis_coll_hit + 0x30, same slot as L00 coll_resolved_pos; -0x10 hit point, +0x10 normal	
+D_L01_00179DF0	novalis_idle_fidgets_field_60	novalis_idle_fidgets + 0x60; five 0x70-byte entries whose timer word is counted down each frame	
+D_L01_0017C0CC	novalis_lean_state_30_scale	novalis_lean_state + 30*0xB0 + 0xAC, entry 30 .scale; cheat 1 sets 1.9	
+D_0015EE90	hero_slot0_item_8_selected	set 1 when slot 0 selected_item (hero +0x20D4) is 8, else 0	
+D_0015EE94	hero_slot3_mode_3_selected	set 1 when hero +0x11A8 (items[3] +0x28) is 3, else 0	
+D_L00_00173F5C	coll_hit_type	coll_hit_result + 0x1C, the word CollType masks with 0x1F; as novalis/quartu_coll_hit_type	
+func_L00_002539C8	moby_blend_anim_frames_to_spr	handwritten: DMAs the two frame packets to scratchpad (toSPR) and blends them; ends advance_moby_animation_blend	
+func_L00_00252D20	moby_blend_anim_frames_to_spr_slot	handwritten: same toSPR frame blend into a given scratchpad slot; hero anim slots pass slot | 0x300	
+D_L02_0017C450	aridia_hero_speed_bands_field_18	aridia_hero_speed_bands + 0x18, read like hero_speed_bands.f18	
+func_L00_002347F0	shared_return_two	returns 2; branch target of the anim id switch above and of two other functions	
+D_L00_0015F7BC	hero_run_step_start_frames_1	hero_run_step_start_frames + 4; set_hero_animation(4, [1]) as the step code does 3+step	
+D_L00_00179BB0	idle_fidgets_field_220	idle_fidgets + 0x220; nonzero blocks the low-health fidget	
+func_L00_001FEFE0	countdown_loop_tail	handwritten tail: loops back to 0x1FEFC8 while a0 > 0, subtracting 2	
+func_L00_002003C8	bitmap_run_length_encode	handwritten: scans a bitmap and writes run lengths (max 0xFF) to out, returns bytes written	
+func_L00_0024E798	flush_queued_texture_uploads	handwritten: level copy of flush_pending_texture_uploads; builds BITBLT/TRX + ref DMA packets per queued texture	
+func_L00_0024E8FC	miscproc_empty_function	empty function (two nops) in the miscproc block	
+D_0013D9B4	race_gates_47_flag	race_gates + 0x2FC is entry 47 .flag (16-byte {x,y,z,flag}); the Obj2F mission conditions test it	
+D_L12_0017C2D0	hoven_hero_speed_bands_field_18	hoven speed bands (D_L12_X_f) + 0x18, read like hero_speed_bands.f18	
+D_L00_0016C880	level_render_setup_packet_default	load_level_gameplay picks it for most levels; hero state 31 zeroes its first word	
+D_L16_0016CD10	kalebo3_cutscene_scene_id	cutscene_state + 0x30 (scene id) with the L16 +0x380 shift; scenes 3..5 delete the moby	
+D_L00_0015EE60	frame_scale_alias	same address as core frame_scale (0x15EE60, below the level lit block); scales the glint step	
+D_001517F0	music_flagged_track_started	set to 1 when a flagged music channel moves to state 4 (stream.c callbacks)	
+func_L00_00267130	stream_slot_wake_waiting	overlay copy of music_primary_replace_callback: state 9 to 4	
+D_L00_0015F658	level_vu1_chain_reserved_bytes	set 0x2000/0x1E000 after lvl_vu_chain_buffer_size, as boot pause.c sets vu1_chain_reserved_bytes	
+D_L00_0015F68C	pause_menu_state_21_opened	set 1 when initialize_pause_menu opens the state 0x21 page	
+D_L00_0015F690	level_game_clock_paused	set 1 in pause states 2/0x1A/0x1E/0x1F; boot game_clock_paused 0x15F6D0 is the same +0x40 shift as gFade/gFadeLvl	
+D_L00_00160340	pause_menu_light_direction	scaled to unit length into moby light 14 direction on pause open	
+D_L00_00160350	pause_menu_light_color	copied into moby light 14 color on pause open (next to pause_menu_panel_bg_color)	
+D_L00_00180350	level_moby_lights_14_direction	level_moby_lights + 14*0x40 + 0x10; color at -0x10, zeros at +0x10/+0x20	
+D_L00_00184514	map_menu_state_target_level	map_menu_state + 0x224, passed to prepare_target_level_transition	
+D_L00_001B3898	pause_menu_state_0a_page	page opened when the menu state is 10 (moves to 11, map/mission setup)	
+D_L00_001B6408	pause_menu_state_0e_page	page opened when the menu state is 14 (moves to 15, map/mission setup)	
+D_L00_001B7570	pause_menu_state_21_page	page opened when the menu state is 0x21 (moves to 0x22)	
+D_L00_001B6EB8	pause_menu_state_23_page	page opened when the menu state is 0x23	
+D_L00_001B8A48	pause_menu_state_2d_page	page opened when the menu state is 0x2D	
+D_L00_001B6778	pause_menu_no_toggle_page_1	one of the pages whose reopen keeps the preview-anim flag untoggled	
+D_L00_001B6BA0	pause_menu_no_toggle_page_2	one of the pages whose reopen keeps the preview-anim flag untoggled	
+D_L00_001B7C70	pause_menu_no_toggle_page_3	one of the pages whose reopen keeps the preview-anim flag untoggled	
+D_L00_001B8150	pause_menu_no_toggle_page_4	one of the pages whose reopen keeps the preview-anim flag untoggled	
+D_L00_001B8460	pause_menu_no_toggle_page_5	one of the pages whose reopen keeps the preview-anim flag untoggled	
+D_L10_001673D8	orxon_player_camera_fade_rate	orxon_player_camera + 0x258 = follow.fade_rate (camera.h), set 0.05 when the path camera ends	
+D_L10_001674D0	orxon_player_camera_matrix	orxon_player_camera + 0x350 = view rotation rows (camera.h)	
+D_L10_0016CFF0	orxon_view_params_fov_tan	orxon_view_params + 0xB0, set to tan(fov/2) before UpdateViewContext	
+D_L08_0015F6B8	batalia_draw_frame_load	compared with 0.8-0.9 beside batalia_frame_cpu_load, like L00 level_draw_frame_load	
+D_L08_00161918	scoutbot_pvar_d0_data	short data whose address scoutbot init stores in pvars +0xD0, next to scoutbot_beam_colors	
+D_L08_00167680	batalia_player_camera_current	batalia_player_camera + 0x180 = CameraSystem.current (camera.h); its byte 0x88 is set	
+D_L08_001746E0	batalia_coll_hit_point	batalia_coll_hit + 0x20, the hit point (as kerwan_coll_hit_point)	
+D_L08_001746F0	batalia_coll_resolved_pos	batalia_coll_hit + 0x30, same slot as L00 coll_resolved_pos	
+func_L00_00203970	get_vu_chain_tail_buffers	sets two pointers to resource buffers 1/2 + chain size - off, -1 past 0x20000	
+func_L00_002039C4	vu_chain_tail_buffers_fail_stub	clears two out-parameters and returns -1	
+D_L15_0015F40C	quartu_level_globals_saved	same slot as L00 level_globals_saved; gates the sentrybot target effect	
+D_L15_0015F420	quartu_secondary_screen_overlay	screen overlay block like quartu_screen_overlay; sentrybot clears its on flag	
+D_L15_0015FD08	quartu_mission_group_state	u8 per mission tested != 0xFF, like kerwan_mission_group_state	
+D_L15_00161B57	quartu_alarm_flash_color_alpha	quartu_alarm_flash_color + 3, alpha byte scaled by the flash intensity	
+D_L00_0015F500	level_white_fade_level	zeroed with gFadeLvl = 1.0 at cinematic start; boot white_fade_level sits next to gFade at the same +0x40 shift	
+D_L00_00161288	lvl_vu_chain_buffer_size_base	only used as [1] = 0x16128C, lvl_vu_chain_buffer_size	
+D_L13_001741D8	gemlik_coll_hit_moby	gemlik_coll_hit_result + 0x18, the hit moby read after coll_sphere (like batalia_coll_hit_moby)	
+D_L06_0015F050	blarg_camera_descriptors	32-byte camera records by moby +0x84 with +0x1C block, same slot as the other levels' camera_descriptors	
+D_0013DE6E	level_render_state_base	fake base: +0x2C2 is level_render_state, +0x2E2 ship_substate, +0xA/+0xA2 per-item stat arrays	
+D_0013E62A	gGoldBombGlove	gold_weapon_purchased + 10 (bomb glove id, after gGoldSuckCannon at +9); raises the throw speed	
+D_L02_0015F720	aridia_banner_display_ticks	cleared after granting item 0x16; same slot as L00 banner_display_ticks	
+D_L02_00161C38	trespasser_arrow_unused_color	color word among the trespasser ring/beam colors, passed as the arrow draw's unused second arg	
+D_L02_00167490	aridia_player_camera_follow	aridia_player_camera + 0x190 = CameraFollow block (camera.h); its +0x30 up_target is read	
+D_L02_0016755C	aridia_camera_follow_override_moby	aridia_player_camera + 0x25C (follow +0xCC); camera control activates when it equals the descriptor target	
+D_00141D60	hoverboard_race_help_shown_count	help_records + 0x5F*8 = help_records[0x5F].count; Help_Request(0x138F, 0x5F) only while zero	
+D_L05_001619E8	rilgar_hoverboard_trail_velocity_w	int converted into the w of the hoverboard trail particle velocity, next to the trail colors	
+D_L05_001BADE0	rilgar_current_level_state	live level block, .done[save_id] set; 0xC60 below the checkpoint copy like L00 current_level_state	
+D_L05_001BBA40	rilgar_checkpoint_level_state	current block + 0xC60, .done[save_id] checked at spawn; like kerwan_checkpoint_level_state	
+D_L00_00161128	vendor_camera_eye_local_offset_z	vendor_camera_eye_local_offset + 8; taken off player_camera.z for the vendor camera moby	
+D_L00_00161190	vendor_light_local_direction	rotated by the vendor moby matrix into moby light 14 direction	
+D_L00_001611A0	vendor_light_color	copied into moby light 14 color on vendor open	
+D_L00_00161254	vendor_auxiliary_reaction_reset_flag	zeroed beside vendor_auxiliary_reaction_started each time a reaction starts, never read	
+D_L00_00180360	level_moby_lights_14_field_20	level_moby_lights + 14*0x40 + 0x20, zeroed by the vendor and pause light setup	
+D_L00_00197F4C	g_class_slot_12	g_class_slot + 0xC (u8), the class slot whose header takes the vendor's decompressed pointers	
+D_L00_001C8C20	vendor_item_slot1_placement_offset	vendor_item_slot1_placement + 0x20, the offset field of the 0x30-byte records (.c is the +0x2C height)	
+D_L01_0015F500	novalis_white_fade_level	zeroed after novalis_fade_level at vendor screen start, same slot as L00 level_white_fade_level	
+D_L01_0017C840	novalis_hero_scale_manipulator	0x40-byte block cleared after the 0x1C0 cutscene block, as ship mode clears L00 hero_scale_manipulator	
+D_00141CD8	pyrocitor_help_shown_count	help_records + 0x4E*8 = help_records[0x4E].count; update_pyrocitor_usage_and_cleanup requests help 0x4E only while zero	
+D_L00_0016167C	tesla_beam_reset_short_a	short zeroed when initialize_tesla_claw_beam starts a beam, next to tesla_beam_length	
+D_L00_00161684	tesla_beam_reset_short_b	short zeroed when initialize_tesla_claw_beam starts a beam	
+D_L00_00161698	tesla_beam_reset_short_c	short zeroed when initialize_tesla_claw_beam starts a beam	
+D_L00_00161728	beam_arc_bolt_slots	short[4], one per arc bolt, set -1 at beam start and read by build_beam_and_arc_points	
+D_L00_00161738	beam_arc_bolt_params	short array reset to 8,4,8,4,4,2,4,2 at beam start, read by build_beam_and_arc_points	
+D_L00_0016173A	beam_arc_bolt_params_1	beam_arc_bolt_params + 2, reset to 4	
+D_L00_0016173C	beam_arc_bolt_params_2	beam_arc_bolt_params + 4, reset to 8	
+D_L00_0016173E	beam_arc_bolt_params_3	beam_arc_bolt_params + 6, reset to 4	
+D_L00_00161740	beam_arc_bolt_params_4	beam_arc_bolt_params + 8, reset to 4	
+D_L00_00161742	beam_arc_bolt_params_5	beam_arc_bolt_params + 0xA, reset to 2	
+D_L00_00161744	beam_arc_bolt_params_6	beam_arc_bolt_params + 0xC, reset to 4	
+D_L00_00161746	beam_arc_bolt_params_7	beam_arc_bolt_params + 0xE, reset to 2	
+D_L00_0016174C	tesla_beam_reset_word	zeroed first when a tesla beam starts, after tesla_beam_scaled_initial_frame_count	
+D_L00_0016A0F8	level_draw_globals_live	0 in Moby_SaveGlobalsState's fixed screen setup, 1 again in Moby_RestoreGlobalsState	
+D_L00_001DB8B0	tesla_beam_points_base	[i] is tesla_beam_points[i-1] (tesla_beam_points - 0x10)	
+D_L00_001DBB40	tesla_beam_point_state_a	20 words per beam point zeroed at beam start, read by build_beam_and_arc_points	
+D_L00_001DBB90	tesla_beam_point_vectors	20 vectors per beam point cleared at beam start, used by build_beam_and_arc_points	
+D_L00_001DBCD0	tesla_beam_point_state_b	20 floats per beam point zeroed at beam start, written per frame by build_beam_and_arc_points	
+func_L02_00250C78	vu0_lerp_vertex_table_pairs	VU0 routine (handwritten): blends two pairs of 16-byte vertex tables by the float frac into a packet; callers pass frame a/b tables	
+D_0013E635	gGoldMorphORay	gold_weapon_purchased + 21 (morph-o-ray id; gHaveMorphORay is item_available + 0x15); picks tesla_ring_alt_color	
+D_L00_0017AFBC	held_weapon_tesla_walloper_factor	float set 0.9 each tesla claw update and 0.1 by walloper_update unless the hero anim is 0x82	
+D_L00_001DC1F0	walloper_arc_state_a	10 shorts after walloper_arc_alpha, set to 2 when walloper_update starts	
+D_L00_001DC208	walloper_arc_state_b	10 shorts after walloper_arc_state_a, set to 1 when walloper_update starts	
+D_L00_001DC250	tesla_chain_points_base	tesla_chain_points - 0x10: [k] is tesla_chain_points[k-1]	
+D_L00_001DC360	tesla_ring_vertices_base	tesla_ring_vertices - 0x140: [i] is ring i-1 of tesla_ring_vertices	
+D_0013D5CD	item_available_5	item_available + 5; sandmouse_house_update turns only while it is set	
+D_0013F520	g_hero_body_center	g_hero + 0xD0 = body_center (hero.h); tested against the clip volume	
+D_001405A8	g_hero_items_2_item_id	g_hero + 0x1158 = items[2].item_id (hero.h, 0x1090 + 2*0x50 + 0x28); sandmouse house checks == 5	
+D_L01_00161AD0	amoeboid_pvar130_data	address put in amoeboid pvars +0x130 for every class but 0x362, after the amoeboid_spark values	
+D_L01_00161AE0	small_amoeboid_pvar130_data	address put in amoeboid pvars +0x130 for class 0x362 (the smaller, 0.49-scale one)	
+D_L01_001672D8	novalis_player_camera_yaw	novalis_player_camera + 0x158 = rot.z, the yaw (camera.h); copied to move_yaw	
+D_L01_00174360	novalis_coll_hit_point	novalis_coll_hit + 0x20, the hit point (as kerwan_coll_hit_point)	
+D_L01_00174368	novalis_coll_hit_point_z	novalis_coll_hit + 0x28, z of the hit point used as ground height	
+D_L01_001BB9C0	novalis_checkpoint_level_state	novalis_current_level_state + 0xC60, .collected checked at spawn; like kerwan_checkpoint_level_state	
+D_L01_001DEE10	sand_mouse_move_ctl_probe_height	sand_mouse_move_ctl + 8, passed as the up offset of probe_vertical_ground_collision	
+D_L01_001DEE1C	sand_mouse_move_ctl_turn_vel	sand_mouse_move_ctl + 0x14, the velocity pointer given to MobySpringTurn	
+D_00140A86	g_hero_vehicle_triangle_cooldown	g_hero + 0x1636 = vehicle_triangle_cooldown (hero.h); gauge icon shows while nonzero	
+D_L00_0015F728	race_record_panel_end_y	set to the HUD text panel y + 100 when the race best time panel shows	
+D_L00_0019AD00	moby_class_slot_records	0xE00 bytes set -1 at level init after g_class_slot: 16 bytes for each of 0xE0 slots	
+D_L00_0019A600	moby_class_slot_flags	0xE0 bytes zeroed at level init, one per moby class slot	
+D_L00_001C7A00	tie_class_slot_records	0x800 bytes set -1 at level init after tie_class_slot_by_id: 16 bytes for each of 0x80 slots	
+D_L00_001C7200	tie_class_slot_flags	0x80 bytes zeroed at level init, one per tie class slot	
+D_L00_001BD740	shrub_class_slot_records	0x400 bytes set -1 at level init after shrub_class_slot_by_id: 16 bytes for each of 0x40 slots	
+D_L00_001BD140	shrub_class_slot_flags	0x40 bytes zeroed at level init, one per shrub class slot	
+D_00141722	hud_item_selector_close_timer	counted down by FastDecTimer in update_hud_item_selector_selection_and_visibility; at zero sets w1CC = 2	

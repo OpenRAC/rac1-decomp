@@ -190,7 +190,7 @@ extern Hero g_hero;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern float D_L02_0017C450[];
+extern float aridia_hero_speed_bands_field_18[];
 extern int scale_ticks(int);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -307,7 +307,7 @@ void Hero_UpdateHopVelocity(void) {
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
         qcopy(&g_hero.motion.momentum, &g_hero.move_impulse);
         arg = g_frame_time_sq * 20.0f;
-        if (g_hero.target_speed < D_L02_0017C450[0] * g_frame_time * 0.2f) {
+        if (g_hero.target_speed < aridia_hero_speed_bands_field_18[0] * g_frame_time * 0.2f) {
             if (g_hero.state.control_mode == 2) {
                 d = g_hero.stickless_decel;
                 speed = vec_length_xy(&g_hero.motion.velocity);

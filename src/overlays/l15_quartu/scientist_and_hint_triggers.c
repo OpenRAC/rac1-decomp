@@ -814,7 +814,7 @@ extern float FastArcSin(float x);
 extern float FastAbsF(float);
 extern char *quartu_camera_descriptors MACRO_ADDR;
 extern char *quartu_cuboids MACRO_ADDR;
-extern char D_L15_00167490[];
+extern char quartu_player_camera_field_190[];
 extern char quartu_player_camera[];
 /* tests whether the target lies within a cone of the player's axis */
 int check_moby_target_angular_limits(char *moby, float a, float b) {
@@ -823,7 +823,7 @@ int check_moby_target_angular_limits(char *moby, float a, float b) {
     float q[4];
     float r[4];
     char *data;
-    char *vec = D_L15_00167490;
+    char *vec = quartu_player_camera_field_190;
     char *g;
     float dot1;
     float dot2;
@@ -884,7 +884,7 @@ extern void set_nonzero_follow_camera_parameters_r(float, float, float) __asm__(
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern void set_follow_camera_angle_blend_from_position_r(void *, float, float) __asm__("func_L00_002E9E20");
 extern void Cam_SetDistanceGoal_r(int, float, float) __asm__("func_L00_002E9900");
-extern void func_L00_002E9AD0_2F9D38(void) __asm__("func_L00_002E9AD0");
+extern void set_follow_camera_flag_226_r(void) __asm__("func_L00_002E9AD0");
 extern void follow_camera_set_height_r(float, float) __asm__("func_L00_002E9968");
 extern void Cam_SetEyeOffset_r(int, float, float) __asm__("func_L00_002E99A0");
 
@@ -944,7 +944,7 @@ void func_L15_002F9D38_r(char *m) {
         set_follow_camera_angle_blend_from_position_r(o + 0x30, a, 0.0f);
     if (*(float *)(s + 0x34) != 0.0f) {
         Cam_SetDistanceGoal_r(0, *(float *)(s + 0x34), 0.003f);
-        func_L00_002E9AD0_2F9D38();
+        set_follow_camera_flag_226_r();
     }
     if (*(float *)(s + 0x38) != 0.0f)
         follow_camera_set_height_r(*(float *)(s + 0x38), 0.003f);

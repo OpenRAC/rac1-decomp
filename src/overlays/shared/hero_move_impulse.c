@@ -46,7 +46,7 @@ extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern float D_L12_0017C2D0[];
+extern float hoven_hero_speed_bands_field_18[];
 extern int scale_ticks(int);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -164,7 +164,7 @@ void Hero_UpdateHopMovement(void) {
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
         qcopy(&g_hero_s.motion.momentum, &g_hero_s.move_impulse);
         arg = g_frame_time_sq * 20.0f;
-        if (g_hero_s.target_speed < D_L12_0017C2D0[0] * g_frame_time * 0.2f) {
+        if (g_hero_s.target_speed < hoven_hero_speed_bands_field_18[0] * g_frame_time * 0.2f) {
             if (g_hero_s.state.control_mode == 2) {
                 d = g_hero_s.stickless_decel;
                 if (g_hero_s.on_ice_ground) d = g_frame_time_sq * 0.17f;

@@ -43,12 +43,12 @@ extern short kalebo3_look_stat_count;
 extern unsigned char *kalebo3_water_patches MACRO_ADDR;
 extern int kalebo3_water_patch_count MACRO_ADDR;
 extern Cam kalebo3_player_camera;
-extern float D_L16_00167258;
+extern float kalebo3_camera_yaw;
 extern int *kalebo3_coll_sphere_moby_hits[];
-extern FVec4 D_L16_00179C60[];
+extern FVec4 kalebo3_hero_air_pose_vectors[];
 extern Rec4C kalebo3_item_defs[];
 extern Bone kalebo3_hero_bones[];
-extern float D_L16_0017ABC0[];
+extern float kalebo3_hero_lean_angles[];
 extern Rec2C kalebo3_attack_records[];
 extern S17BEB8 kalebo3_hero_speed_bands;
 extern float kalebo3_hero_swim_frame_speeds[];
@@ -1125,7 +1125,7 @@ void Hero_UpdateStatePhysics(void) {
                 float y;
 
                 g_hero.motion.yaw_rate = 0.0f;
-                qcopy(vec[0], D_L16_00179C60[g_hero.air_pose_index]);
+                qcopy(vec[0], kalebo3_hero_air_pose_vectors[g_hero.air_pose_index]);
                 smooth_and_clamp_value_pair(vec[1], g_hero.smoothed_spin_stick.f, g_frame_scale_sq * 0.2f);
                 x = -vec[1][0] * (g_frame_time * 12.217304f);
                 y = -vec[1][1] * (g_frame_time * 12.217304f);
@@ -2206,14 +2206,14 @@ void Hero_UpdateStatePhysics(void) {
                         }
                         set_first_hero_easing_parameters(0.03f, 0.2f);
                         if (g_hero.grind_anim_variant != 0) {
-                            D_L16_0017ABC0[1] = -tilt;
+                            kalebo3_hero_lean_angles[1] = -tilt;
                         } else {
-                            D_L16_0017ABC0[1] = tilt;
+                            kalebo3_hero_lean_angles[1] = tilt;
                         }
                     }
                 }
                 if (g_hero.state.current != 0x29 && g_hero.state.current != 0x42 && g_hero.state.current != 0x2A) {
-                    D_L16_0017ABC0[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
+                    kalebo3_hero_lean_angles[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
                 }
                 if (hasW) {
                     set_first_hero_easing_parameters(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
@@ -2564,7 +2564,7 @@ void Hero_UpdateStatePhysics(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L16_00167258;
+                g_hero.motion.move_yaw = kalebo3_camera_yaw;
                 turn_to(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f, 0);
                 g_hero.motion.move_yaw = keep;
             }

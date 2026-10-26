@@ -17,7 +17,7 @@ struct GeometryQuad_EBD00 {
 };
 
 extern int gemlik_frame_count_r __asm__("D_L13_0015F6B0") MACRO_ADDR;
-extern char D_L13_00160700_EBD00[] __asm__("D_L13_00160700") MACRO_ADDR;
+extern char gemlik_reference_axis_r[] __asm__("D_L13_00160700") MACRO_ADDR;
 extern u64 GetEffectTex_r(int) __asm__("func_001F4868");
 extern void Moby_GetJointWorldPos_r(struct Moby *, int, void *) __asm__("func_L00_00250800");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
@@ -83,7 +83,7 @@ void draw_starfighter_tractor_beam(struct Moby *moby) {
     FastVecSub_r(position, position, offset);
     while (distance < length) {
         width = (distance * 0.0f) / (length + length) + 0.5f;
-        FastVecCross_r(side, direction, D_L13_00160700_EBD00);
+        FastVecCross_r(side, direction, gemlik_reference_axis_r);
         vec_scale_to_length_r(side, side, width);
         FastVecCross_r(up, direction, side);
         vec_scale_to_length_r(up, up, width);
@@ -429,7 +429,7 @@ extern int STUB_printf();
 extern int queue_animation_update(int, int, int, int, int, int, int);
 extern void reset_numeric_hud_element();
 extern void Hud_UpdateCounter();
-extern void func_L06_0024A080();
+extern void draw_segmented_hud_meter_base();
 extern int advance_moby_along_selected_path(void *, void *, int, int);
 extern int select_point_index_by_distance(void *, void *, float);
 extern void update_qwarks_starfighter_attack_commands(void *, void *);
@@ -487,7 +487,7 @@ extern char starfighter_timer_start_fmt[];
 extern char starfighter_slow_speed_msg[];
 extern char starfighter_mid_speed_msg[];
 extern int qwark_starfighter_path_by_state[];
-extern Moby388 *D_L13_001741D8;
+extern Moby388 *gemlik_coll_hit_moby;
 extern char starfighter_target_not_visible_msg[];
 extern char starfighter_target_too_far_msg[];
 extern char jet_camera47[];
@@ -627,7 +627,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
             }
         }
         data->hud104 = queue_animation_update(0x11, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
-                                  (int)((char *)func_L06_0024A080 + 0x20), (int)&data->i108,
+                                  (int)((char *)draw_segmented_hud_meter_base + 0x20), (int)&data->i108,
                                   (data->s24 << 4) | 0xF);
         data->fAC += (g_frame_time * 42.0f - data->fAC) * 0.1f;
         if (advance_moby_along_selected_path(moby, data, 0, 1) != 0) {
@@ -655,7 +655,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
     case STARFIGHTER_STATE_FOLLOW_COMMAND_PATH:
     case STARFIGHTER_STATE_FOLLOW_COMMAND_PATH_WITH_TIMED_VOLLEY:
         data->hud104 = queue_animation_update(0x11, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
-                                  (int)((char *)func_L06_0024A080 + 0x20), (int)&data->i108,
+                                  (int)((char *)draw_segmented_hud_meter_base + 0x20), (int)&data->i108,
                                   (data->s24 << 4) | 0xF);
         {
             Hero *hero = (Hero *)(hero_globals_base + 0xE1D);
@@ -685,7 +685,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
     case STARFIGHTER_STATE_TRACTOR_BEAM: {
         float hero_distance;
         data->hud104 = queue_animation_update(0x11, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
-                                  (int)((char *)func_L06_0024A080 + 0x20), (int)&data->i108,
+                                  (int)((char *)draw_segmented_hud_meter_base + 0x20), (int)&data->i108,
                                   (data->s24 << 4) | 0xF);
         update_qwarks_starfighter_attack_commands(moby, data);
         Moby_GetJointWorldPos(moby, 0x13, joint);
@@ -735,7 +735,7 @@ void update_qwarks_starfighter(Moby388 *moby) {
             vec_scale_to_length(ray_start, ray_start, 8.0f);
             FastVecAdd(ray_start, ray_start, joint);
             if (coll_line(ray_start, data->v80, 0, moby, 0) != 0) {
-                if (D_L13_001741D8 == 0 || D_L13_001741D8->cls_id == 0xD4) {
+                if (gemlik_coll_hit_moby == 0 || gemlik_coll_hit_moby->cls_id == 0xD4) {
                     data->i100 = 0;
                 }
             }
@@ -1361,11 +1361,11 @@ typedef struct {
     int field94;
 } Level13VendorMoby;
 
-extern char D_0013DE6E[];
+extern char level_render_state_base[];
 
 /* Clear a vendor moby's field and set its flags unless it is the current target. */
 void Moby_ClearUnlessTargeted(Level13VendorMoby *moby) {
-    if (*(void **)(D_0013DE6E + 0x2C2) != moby) {
+    if (*(void **)(level_render_state_base + 0x2C2) != moby) {
         moby->field94 = 0;
         moby->flags |= 3;
     }
@@ -2718,7 +2718,7 @@ extern void InitKnockback(void *, void *, float, int, int, int);
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
 extern float ProbeGroundHeight(void *, int, float);
 extern int CollType(void);
-extern char D_L13_00160700[] MACRO_ADDR;
+extern char gemlik_reference_axis[] MACRO_ADDR;
 extern char gemlik_coll_hit_result[] MACRO_ADDR;
 extern short blarg_commando_scale;
 extern short blarg_commando_stun_knock_up;
@@ -2877,7 +2877,7 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby)
         case 13:
             moby->flags &= ~0x1000;
             SetDeathBits(moby, 0, -1);
-            spawn_explosion(moby, D_L13_00160700, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(moby, gemlik_reference_axis, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
             DeleteMoby(moby);
             return;
         default:
@@ -3140,10 +3140,10 @@ extern Light_9e88 gemlik_pool_light;
 extern float gemlik_pool_sun[];
 extern unsigned short gemlik_pool_tile_colors[];
 extern char gemlik_pool_tile_tex[];
-extern int D_L13_00161288 MACRO_ADDR;
-extern float D_L13_0016128C MACRO_ADDR;
-extern float D_L13_00161290 MACRO_ADDR;
-extern float D_L13_00161294 MACRO_ADDR;
+extern int gemlik_pool_draw_cleared_word MACRO_ADDR;
+extern float gemlik_pool_draw_fixed_scale MACRO_ADDR;
+extern float gemlik_pool_draw_max_255 MACRO_ADDR;
+extern float gemlik_pool_draw_param_48 MACRO_ADDR;
 extern void * gemlik_pool_draw_tiles MACRO_ADDR;
 extern void * gemlik_pool_draw_tex MACRO_ADDR;
 extern int gemlik_pool_tile_count MACRO_ADDR;
@@ -3211,12 +3211,12 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
             tile_lighting->c3D = 0x40;
             tb = gemlik_pool_tile_tex;
             gemlik_pool_tile_count = 22;
-            D_L13_0016128C = 32768.0f;
-            D_L13_00161290 = 255.0f;
-            D_L13_00161294 = 48.0f;
+            gemlik_pool_draw_fixed_scale = 32768.0f;
+            gemlik_pool_draw_max_255 = 255.0f;
+            gemlik_pool_draw_param_48 = 48.0f;
             gemlik_pool_draw_tiles = Tiles_9e88_r;
             gemlik_pool_draw_tex = tb;
-            D_L13_00161288 = 0;
+            gemlik_pool_draw_cleared_word = 0;
             for (i = 0; i < 22; i++) {
                 RipplePatch_ToFixedPoint(&Tiles_9e88_r[i], tb + i * 16);
                 Tiles_9e88_r[bobbing_platform_vars->idx].c1E = gemlik_pool_tile_colors[bobbing_platform_vars->idx];

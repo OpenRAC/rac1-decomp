@@ -103,7 +103,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int level_frame_counter MACRO_ADDR;
 extern short water_patches;
 extern short water_patch_count;
-extern short D_L00_001614A0;
+extern short mine_force_detonate;
 extern short mine_bob_ramp_ticks;
 extern s32 g_debug_camera[];
 extern int *coll_sphere_moby_hits[];
@@ -650,7 +650,7 @@ void mine_update(M910 *m) {
                 }
             }
             v->i78 = 0;
-            if (v->i5C < 0 || *(int *)&D_L00_001614A0 != 0) {
+            if (v->i5C < 0 || *(int *)&mine_force_detonate != 0) {
                 SpawnExplosionFx(m, &m->pos, -1, 0.33f, 13.0f);
                 moby_index_list_remove(m, thrown_mine_list);
                 DeleteMoby(m);
@@ -1433,7 +1433,7 @@ typedef struct {
 extern B910 bomb_blast_fx;
 extern C6_2aedd0 bomb_blast_colors;
 extern C6_2aedd0 bomb_blast_fade_colors;
-extern int D_L00_00160830 MACRO_ADDR;
+extern int bomb_hit_skip_update_fn MACRO_ADDR;
 extern int free_moby_slot_count MACRO_ADDR;
 extern short bomb_trail_spark_gravity;
 extern short bomb_trail_spark_speed_scale;
@@ -1616,7 +1616,7 @@ void bomb_update(M_2aedd0 *m) {
                 } else if (d->h68 != 0 || CollType() != 0) {
                     if (D_H910.moby != 0) {
                         if ((D_H910.moby != ((M910 *)D_G910.moby) && D_H910.moby != d->owner) || d->h54 < scale_ticks(0x12C) - scale_ticks(0xA)) {
-                            if (((M_2aedd0 *)D_H910.moby)->f74 != D_L00_00160830 || D_H910.moby->cls == 0x336) {
+                            if (((M_2aedd0 *)D_H910.moby)->f74 != bomb_hit_skip_update_fn || D_H910.moby->cls == 0x336) {
                                 H910 *h = &D_H910;
 
                                 m->bBC = 1;
@@ -2764,7 +2764,7 @@ int scale_ticks(int);
 int rand_range(int, int);
 void PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 void PartType21Spawn(void *, void *, int, int, int, int, float);
-extern V_2b1af0_B30C8 D_0013FAB0;
+extern V_2b1af0_B30C8 hero_basis_2;
 void build_look_at_matrix(void *, void *, void *, float);
 int truncate_float_to_s32(float);
 int random_integer_below(int);
@@ -2788,14 +2788,14 @@ void emit_object_offset_particle_burst(unsigned char *o) {
     FastVecAdd(&b, o + 0x10, &a);
     for (i = 0; i < truncate_float_to_s32(24.0f); i++) {
         angle = randf_sym(0.0f, 0.1308997f);
-        build_look_at_matrix(&c, &D_0013FAB0, (char *)&D_0013FAB0 - 0x20,
+        build_look_at_matrix(&c, &hero_basis_2, (char *)&hero_basis_2 - 0x20,
                          (float)i * 0.2617994f + angle);
         vec_scale_to_length(&c, &c, random_float_between(0.05f, 0.1f));
         t = rand_range(0, 3);
         if (random_integer_below(2) != 0)
             t = -t;
-        if (*(int *)((char *)&D_0013FAB0 - 0x360) != 0) {
-            FastVecScale(&d, (char *)&D_0013FAB0 - 0x560, 1.7f);
+        if (*(int *)((char *)&hero_basis_2 - 0x360) != 0) {
+            FastVecScale(&d, (char *)&hero_basis_2 - 0x560, 1.7f);
             FastVecAdd(&c, &c, &d);
         }
         {
@@ -2807,7 +2807,7 @@ void emit_object_offset_particle_burst(unsigned char *o) {
     }
     for (j = 0; j < truncate_float_to_s32(6.0f); j++) {
         angle = random_float_between(0.0f, 0.7853982f);
-        build_look_at_matrix(&c, &D_0013FAB0, (char *)&D_0013FAB0 - 0x20,
+        build_look_at_matrix(&c, &hero_basis_2, (char *)&hero_basis_2 - 0x20,
                          (float)j * 1.0471976f + angle);
         vec_scale_to_length(&c, &c, random_float_between(0.05f, 0.1f));
         {

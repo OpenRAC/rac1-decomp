@@ -31,7 +31,7 @@ extern int fleet_shown_help_message MACRO_ADDR;
 extern int fleet_hero_run_start_anim_mode MACRO_ADDR;
 extern short fleet_hero_double_tap_timer;
 extern float fleet_camera_yaw;
-extern int D_L17_0016D100;
+extern int fleet_look_release_reset_word;
 extern S17B000 fleet_lean_state;
 extern Rec70 fleet_idle_fidgets[];
 extern Rec4C fleet_item_defs[];
@@ -2703,7 +2703,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             set_hero_animation(a, 0, scale_ticks(8));
                         }
                     }
-                    D_L17_0016D100 = 0;
+                    fleet_look_release_reset_word = 0;
                     break;
                 case 32:
                     if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {

@@ -680,7 +680,7 @@ extern char aridia_ocean_zone1_part3[];
 extern char aridia_ocean_zone1_part4[];
 extern char aridia_ocean_frame_state[];
 extern void begin_animated_frame_rendering_r(float, float, float, float, int, int, int, int, int, int, void *) __asm__("func_L02_002A59F8");
-extern void func_L02_002A59D8_2EB480(void) __asm__("func_L02_002A59D8");
+extern void prepare_scaled_table_on_stack_r(void) __asm__("func_L02_002A59D8");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern void RefreshPointLight_r(void *) __asm__("func_00202790");
 void func_L02_002EB480_r(Moby *m) __asm__("func_L02_002EB480");
@@ -704,9 +704,9 @@ void func_L02_002EB480_r(Moby *m) {
     if (aridia_ocean_clip_culling_override_r != 0 || (d[2] != -1 && is_point_inside_clip_volume_r(aridia_camera_pos, d[2]))) {
         RefreshPointLight_r(aridia_ocean_zone2_part);
     }
-    func_L02_002A59D8_2EB480();
+    prepare_scaled_table_on_stack_r();
 }
-extern void func_L02_002A59D8(float);
+extern void prepare_scaled_table_on_stack(float);
 extern void draw_aridia_ocean_parts(void);
 extern void AddDrawCallback(void (*)(void), void *);
 
@@ -714,7 +714,7 @@ extern void AddDrawCallback(void (*)(void), void *);
 void ocean_aridia_update(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
-        func_L02_002A59D8(0.16666667f);
+        prepare_scaled_table_on_stack(0.16666667f);
         moby[0x20] = 1;
         moby[0x30] = 0xFF;
         break;
@@ -845,9 +845,9 @@ extern Entry_L02_0017A140 aridia_item_defs[];
 extern unsigned char special_items_base[];
 extern unsigned char menu_item_enabled_115[];
 extern unsigned char hero_globals_base[];
-extern unsigned short D_001419E8 NOT_SDA;
-extern unsigned short D_001418A2 NOT_SDA;
-extern unsigned short D_00141988 NOT_SDA;
+extern unsigned short usage_stats_entry20_count NOT_SDA;
+extern unsigned short item_usage_entry36_last_time NOT_SDA;
+extern unsigned short usage_stats_entry8_count NOT_SDA;
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char invert52[4] MACRO_ADDR;
 extern unsigned char opt_cam_invert[4] MACRO_ADDR;
@@ -860,7 +860,7 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
     if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[0x17]) != 0
         && *(unsigned int *)(hero_globals_base + 0xE9D + 0x200C) < 2) {
         char *b = help_stats_base + 0x34D;
-        if (*(unsigned short *)(b + 0x278) == 0 && D_001419E8 == 0) {
+        if (*(unsigned short *)(b + 0x278) == 0 && usage_stats_entry20_count == 0) {
             int count = 0;
             int i;
             for (i = 0; i < 37; i++) {
@@ -908,7 +908,7 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
                 if (saved_mission_state[g_current_level_index][lvl] != 0xFF) {
                     unsigned char *f = menu_item_enabled_115 + 0xB9;
                     if (f[0x10] != 0 && ((int *)(help_stats_base + 0xD875))[lvl] >= 6) {
-                        int t = scale_ticks(gameplay_event_frame_count) - D_001418A2 * 600;
+                        int t = scale_ticks(gameplay_event_frame_count) - item_usage_entry36_last_time * 600;
                         if (scale_ticks(0x4650) < t) {
                             Help_Request(0x7D2, 0xC);
                         }
@@ -922,7 +922,7 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
         data[0x16] = 1;
     }
     if (data[0x16] != 0) {
-        if (D_00141988 < 3) {
+        if (usage_stats_entry8_count < 3) {
             char *b = help_stats_base + 0x34D;
             if (!(*(unsigned int *)(b + 0x264) & (1 << g_current_level_index))) {
                 Help_Request(0x4E22, 0x4C);

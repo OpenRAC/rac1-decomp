@@ -38,8 +38,8 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int fleet_frame_count MACRO_ADDR;
-extern short D_L17_0015F768;
-extern short D_L17_0015F76C;
+extern short fleet_look_stat_timer;
+extern short fleet_look_stat_count;
 extern unsigned char *fleet_water_patches MACRO_ADDR;
 extern int fleet_water_patch_count MACRO_ADDR;
 extern Cam fleet_player_camera;
@@ -50,7 +50,7 @@ extern Bone fleet_lean_state[];
 extern float fleet_hero_lean_angles[];
 extern Rec2C fleet_attack_records[];
 extern S17BEB8 fleet_hero_speed_bands;
-extern float D_L17_0017C744;
+extern float fleet_hero_run_turn_stick_threshold;
 extern float fleet_hero_stride_speeds[];
 extern float fleet_hero_anim_step_lengths[];
 extern float fleet_hero_state4e_step_lengths[];
@@ -220,8 +220,8 @@ void HeroL17_UpdateStatePhysics(void) {
                     matrix_mul_vec3(g_hero.motion.move_dir.f, vec[0], fleet_player_camera.f350);
                     g_hero.motion.move_yaw = fleet_player_camera.f158;
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
-                    if (*(int *)&D_L17_0015F768 > 0) {
-                        if (fast_dec_timer((int *)&D_L17_0015F768)) {
+                    if (*(int *)&fleet_look_stat_timer > 0) {
+                        if (fast_dec_timer((int *)&fleet_look_stat_timer)) {
                             if (usage_stats.f90 < 0xFFFF) {
                                 usage_stats.f90++;
                             }
@@ -229,8 +229,8 @@ void HeroL17_UpdateStatePhysics(void) {
                                 usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.f94 = usage_stats.f94 | (1 << g_current_level_index) | 0x80000000;
-                            *(int *)&D_L17_0015F768 = -1;
-                            (*(int *)&D_L17_0015F76C)++;
+                            *(int *)&fleet_look_stat_timer = -1;
+                            (*(int *)&fleet_look_stat_count)++;
                         }
                     }
                 }
@@ -1643,7 +1643,7 @@ void HeroL17_UpdateStatePhysics(void) {
                         k = 0.0f;
                     }
                 }
-                if (sp > D_L17_0017C744) {
+                if (sp > fleet_hero_run_turn_stick_threshold) {
                     turn_hero_toward_move_direction_with_stick_scale();
                 } else {
                     float t;

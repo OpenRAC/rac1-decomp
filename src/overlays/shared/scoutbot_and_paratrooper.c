@@ -73,7 +73,7 @@ extern void body_3DF8() __asm__("func_L08_002D5410");
 extern char batalia_hero_pos[];
 extern float frame_3DF8 __asm__("D_0015EE6C") MACRO_ADDR;
 extern float dt_3DF8 __asm__("D_0015EE70") MACRO_ADDR;
-extern short D_L08_00161918;
+extern short scoutbot_pvar_d0_data;
 void update_scoutbot_health_and_target(char *m);
 void update_scoutbot_movement(char *m);
 
@@ -107,7 +107,7 @@ void scoutbot_update(Moby *moby) {
         d->f20C = frame_3DF8 * 2.0943952f;
         d->b58 = randomf_3DF8(15.0f);
         d->b5A = randomf_3DF8(9.6f);
-        d->pD0 = &D_L08_00161918;
+        d->pD0 = &scoutbot_pvar_d0_data;
         if (moby->prev_seq != 0) {
             animate_3DF8(moby, 0, 0, 0);
         }
@@ -474,7 +474,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern void FastVecSub(void *dst, void *a, void *b);
 extern float g_frame_time_sq MACRO_ADDR;
 extern int coll_point_query_stub(void *, int, int, void *, int);
-extern float D_L08_001746F0[];
+extern float batalia_coll_resolved_pos[];
 
 /* Steers a moby along its path state and lifts it clear of the ground. */
 void update_scoutbot_movement(char *m) {
@@ -511,7 +511,7 @@ void update_scoutbot_movement(char *m) {
     tmp[2] += 0.5f;
     if (coll_point_query_stub(tmp, 0x190, 0, m, 0)) {
         float z;
-        FastVecSub(tmp, D_L08_001746F0, (float *)(m + 0x10));
+        FastVecSub(tmp, batalia_coll_resolved_pos, (float *)(m + 0x10));
         z = g_frame_time * 3.0f;
         if (z < tmp[2]) {
             tmp[2] = z;
@@ -735,7 +735,7 @@ extern short homing_shot_spark_time_b;
 extern short homing_shot_spark_time_c;
 extern short homing_shot_trail_start_w;
 extern short homing_shot_trail_end_w;
-extern float D_L08_001746E0[4];
+extern float batalia_coll_hit_point[4];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002937a0.c, FUN_L08_002e8210. */
 void Moby458Update(char *moby) {
@@ -821,7 +821,7 @@ remove:
 collision:
     if (coll_line_r(position_copy, moby + 0x10, 0, moby, position) == 0)
         return;
-    qcopy(moby + 0x10, D_L08_001746E0);
+    qcopy(moby + 0x10, batalia_coll_hit_point);
     if (15.0f < ((Moby *)moby)->pos.x && 15.0f < ((Moby *)moby)->pos.y &&
         15.0f < ((Moby *)moby)->pos.z) {
         radius = 24.0f;
@@ -1043,7 +1043,7 @@ extern int level_mode302618 __asm__("D_L08_0015F6A8") MACRO_ADDR;
 extern char paratrooper_no_path1_msg[], paratrooper_no_path2_msg[];
 extern char *target302618 __asm__("D_L08_001746D8") NOT_SDA;
 extern float batalia_frame_cpu_load MACRO_ADDR;
-extern float D_L08_0015F6B8 MACRO_ADDR;
+extern float batalia_draw_frame_load MACRO_ADDR;
 extern float delay_random302618 SDATA(D_L08_0015F6B8);
 extern float speed302618 SDATA(D_L08_00162254);
 extern float accel302618 SDATA(D_L08_00162250);
@@ -1319,7 +1319,7 @@ void blarg_paratrooper_update(char *m) {
         } else if(timer302618((char *)d+0x1EC)) {
             d->f1EC=scale302618(delay302618+randomf302618(delay_random302618*1.3f+batalia_frame_cpu_load));
             d->f1E8+=accel302618;
-            if((D_L08_0015F6B8<0.8f && batalia_frame_cpu_load<0.8f)||!((*(unsigned short *)&d->f20E)&1)) {
+            if((batalia_draw_frame_load<0.8f && batalia_frame_cpu_load<0.8f)||!((*(unsigned short *)&d->f20E)&1)) {
                 char *shot;
                 joint302618(d->f1F8,0,pos);
                 dir[0]=sine302618((*(float *)((char *)(m)+0x48)))*(speed302618*g_frame_time);
@@ -1681,7 +1681,7 @@ void update_fire_bolt(char *m) {
         if (o == 0 || ((unsigned char *)o)[0x20] == 0xFE || ((unsigned char *)o)[0x20] == 0xFD) {
             m[0x20] = 2;
         }
-        if (D_L08_0015F6B8 < 0.9f && batalia_frame_cpu_load < 0.9f) {
+        if (batalia_draw_frame_load < 0.9f && batalia_frame_cpu_load < 0.9f) {
             int a;
             float f = random_float_between(0.95f, 0.985f);
             FastVecScale(sc, d, f);
@@ -1703,7 +1703,7 @@ void update_fire_bolt(char *m) {
         if (fast_dec_timer_i(d + 0x18) != 0) m[0x20] = 2;
         break;
     case 2:
-        if ((D_L08_0015F6B8 < 0.85f && batalia_frame_cpu_load < 0.85f) || *(int *)(d + 0x2C) == 1) {
+        if ((batalia_draw_frame_load < 0.85f && batalia_frame_cpu_load < 0.85f) || *(int *)(d + 0x2C) == 1) {
             SpawnExplosionFx(m, m + 0x10, -1, 0.25f, 13.0f);
         } else {
             SpawnExplosionFx(m, m + 0x10, -1, 0.25f, 0.0f);
@@ -2010,11 +2010,11 @@ void spawn_moby_radial_particles(char *moby) {
         }
     }
 }
-extern char *D_L08_00167680;
+extern char *batalia_player_camera_current;
 
 /* Sets byte 0x88 of the Batalia state block at D_L08_00167680. */
-void func_L08_00315068(void) {
-    D_L08_00167680[0x88] = 1;
+void set_level_state_flag_88(void) {
+    batalia_player_camera_current[0x88] = 1;
 }
 extern short batalia_wind_level;
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);

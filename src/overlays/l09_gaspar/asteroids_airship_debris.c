@@ -742,7 +742,7 @@ typedef struct {
 } Data_2EC188;
 typedef struct { char pad0[0x140]; float pos[4]; char pad150[0x10]; float f160; int f164; int f168; } Cam_2EC188;
 extern unsigned char hero_globals_base[];
-extern float D_L09_00174068;
+extern float gaspar_coll_hit_point_z;
 extern V6_2EC188 asteroid_impact_start_colors;
 extern V6_2EC188 asteroid_impact_end_colors;
 extern int coll_line(void *, void *, int, int, int);
@@ -786,7 +786,7 @@ void update_falling_asteroid(Moby *m) {
             v2[2] = random_float_between(-5.0f, 5.0f);
             FastVecAdd(v2, v2, d->pos);
             FastVecAdd(v3, v2, v1);
-            if (coll_line(v2, v3, 4, (int)m, 0) != 0 && D_L09_00174068 > 26.5f) {
+            if (coll_line(v2, v3, 4, (int)m, 0) != 0 && gaspar_coll_hit_point_z > 26.5f) {
                 float v4[4];
                 V6_2EC188 A;
                 V6_2EC188 B;
@@ -1321,7 +1321,7 @@ struct Manip_F0780;
 struct GifEntry_F0780;
 struct AnimSeq_F0780;
 typedef int OvlQuad_F0780 __attribute__((mode(TI)));
-extern char D_L09_00174080_F0780[] __asm__("D_L09_00174080");
+extern char gaspar_coll_hit_normal_r[] __asm__("D_L09_00174080");
 extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern f32 random_float_between_r2(f32, f32) __asm__("func_002140F8");
@@ -1378,13 +1378,13 @@ void update_tumbling_debris(Moby *moby) {
         return;
     }
     if (coll_line_r(old, pos, 2, moby, 0)) {
-        vec_reflect_r(vel, vel, D_L09_00174080_F0780);
+        vec_reflect_r(vel, vel, gaspar_coll_hit_normal_r);
         FastVecScale_r2(vel, vel, random_float_between_r2(0.45f, 0.75f));
         if (FastVecLength_r(vel) < g_frame_time_sq_r * 10.0f) {
             clear_u64_value_r(vel);
         }
-        vec_scale_to_length_r2(D_L09_00174080_F0780, D_L09_00174080_F0780, 0.05f);
-        FastVecAdd_r2(pos, D_L09_00174080_F0780 - 0x20, D_L09_00174080_F0780);
+        vec_scale_to_length_r2(gaspar_coll_hit_normal_r, gaspar_coll_hit_normal_r, 0.05f);
+        FastVecAdd_r2(pos, gaspar_coll_hit_normal_r - 0x20, gaspar_coll_hit_normal_r);
     }
 }
 extern void draw_level09_scrolling_textured_strips(void *, float, int, int, int);
@@ -1446,7 +1446,7 @@ char *spawn_tumbling_debris(char *owner, void *pos, void *vec, int base, float f
     return (char *)m;
 }
 typedef int OvlQuad __attribute__((mode(TI)));
-extern char D_L09_00174080[];
+extern char gaspar_coll_hit_normal[];
 extern f32 random_float_between(f32, f32);
 extern f32 FastVecLength(void *);
 extern f32 vec_distance_xy(void *, void *);
@@ -1505,15 +1505,15 @@ void update_shrinking_tumbling_debris(struct Moby *moby) {
             vel[5] *= 0.25f;
         } else {
             moby->scale *= 0.8f;
-            vec_reflect(vel, vel, D_L09_00174080);
+            vec_reflect(vel, vel, gaspar_coll_hit_normal);
             FastVecScale(vel, vel, random_float_between(0.3f, 0.1f));
             if (FastVecLength(vel) < g_frame_time * 5.0f) {
                 *(int *)(vel + 7) = 0;
             }
             vel[4] = random_float_between(0.0f, -vel[4]);
             vel[5] = random_float_between(0.0f, -vel[5]);
-            vec_scale_to_length(D_L09_00174080, D_L09_00174080, 0.05f);
-            FastVecAdd(pos, D_L09_00174080 - 0x20, D_L09_00174080);
+            vec_scale_to_length(gaspar_coll_hit_normal, gaspar_coll_hit_normal, 0.05f);
+            FastVecAdd(pos, gaspar_coll_hit_normal - 0x20, gaspar_coll_hit_normal);
         }
     }
 }
@@ -1786,7 +1786,7 @@ void update_level09_item_unlock_and_frame_record(char *moby) {
 }
 extern char *gaspar_paths[];
 typedef struct { unsigned char pad0[0x454]; unsigned char collected[1]; } L09LevelState;
-extern L09LevelState D_L09_001BB6C0;
+extern L09LevelState gaspar_collected_flags_base;
 extern int gaspar_moby_killed[];
 extern int g_current_level_index MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *, int);
@@ -1839,7 +1839,7 @@ void PathPlatformL09_Update(unsigned char *moby) {
     if (data->clip_volume != -1) {
         unsigned short id;
         if (is_point_inside_clip_volume(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, data->clip_volume)
-            || D_L09_001BB6C0.collected[(short)(id = m->save_id)] != 0
+            || gaspar_collected_flags_base.collected[(short)(id = m->save_id)] != 0
             || ((*(int *)(help_stats_base + 0xAB75 + (g_current_level_index << 8) + (((short)id >> 5) << 2))) >> (id & 0x1F)) & 1) {
             if (data->clip_volume != -1) {
                 (*(int *)(help_stats_base + 0xAB75 + (g_current_level_index << 8) + (((short)m->save_id >> 5) << 2))) |= 1 << (m->save_id & 0x1F);
@@ -2466,7 +2466,7 @@ typedef struct {
 extern TurretShake gaspar_camera;
 extern TurretBeam gaspar_colored_effect_slots[];
 extern struct Moby *spawn_class_4ea_projectile(void *, void *, void *, int);
-extern void func_L08_00315068(void);
+extern void set_level_state_flag_88(void);
 extern void FastMemZero16(void *, int);
 extern void CameraScript2(int);
 extern void MobyBlendAnimation(void *, int, int, int);
@@ -2700,7 +2700,7 @@ void turret_update(struct Moby *moby) {
         if (FastDecTimer(&vars->dismount_delay) != 0) {
             moby_build_matrix(moby);
             moby->flags |= 4;
-            func_L08_00315068();
+            set_level_state_flag_88();
             Moby_GetJointWorldPos(moby, 0, &tmp);
             BuildSphericalOffset(&shot, D_L09_00161D30_f, FastAddRots(1.5707964f, moby->rot.z), vars->pitch);
             shot.f[2] += D_L09_00161D34_f;

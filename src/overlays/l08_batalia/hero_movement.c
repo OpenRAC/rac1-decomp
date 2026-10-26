@@ -155,7 +155,7 @@ extern short batalia_usage_event_count;
 extern unsigned char *batalia_pool_draw_tiles MACRO_ADDR;
 extern int batalia_pool_draw_count MACRO_ADDR;
 extern Cam batalia_player_camera;
-extern float D_L08_00167658;
+extern float batalia_camera_yaw;
 extern int *batalia_coll_sphere_moby_hits[];
 extern Rec4C batalia_item_info[];
 extern Bone batalia_lean_state[];
@@ -2222,7 +2222,7 @@ void HeroL08_UpdateStatePhysics(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L08_00167658;
+                g_hero.motion.move_yaw = batalia_camera_yaw;
                 turn_to(0, g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 g_hero.motion.move_yaw = keep;
             }

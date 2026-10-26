@@ -6,7 +6,7 @@
 #include "include_asm.h"
 
 extern int vendor_menu[];
-extern unsigned char D_L00_00197F4C NOT_SDA;
+extern unsigned char g_class_slot_12 NOT_SDA;
 extern char *moby_class_headers[] NOT_SDA;
 extern void flush_cache(int);
 extern int fast_decompress(int, int);
@@ -23,7 +23,7 @@ void decompress_and_relocate_vendor_moby_assets(void) {
     fast_decompress(v, vendor_menu[6]);
     flush_cache(0);
     p = (int *)vendor_menu[6];
-    base = moby_class_headers[D_L00_00197F4C];
+    base = moby_class_headers[g_class_slot_12];
     for (i = 0; i < 16; i++) {
         int e = *p++;
         if (e) {
@@ -185,10 +185,10 @@ extern f32 vendor_item_spin_angle MACRO_ADDR;
 extern s32 vendor_buy_quantity MACRO_ADDR;
 extern s32 gBolts MACRO_ADDR;
 extern s32 weapon_ammo_counts[];
-extern Vec4 D_L00_00180360;
+extern Vec4 level_moby_lights_14_field_20;
 extern s32 skip_frame MACRO_ADDR;
 extern s32 gFadeLvl MACRO_ADDR;
-extern short D_L00_0015F500;
+extern short level_white_fade_level;
 extern char hero_globals_base[];
 
 extern s32 vendor_auxiliary_moby_active MACRO_ADDR;
@@ -224,10 +224,10 @@ extern void set_camera_rotation(void *);
 extern void AttachManipulator(char *, s32, void *);
 
 extern short vendor_camera_eye_local_offset;
-extern f32 D_L00_00161128 MACRO_ADDR;
-extern Vec4 D_L00_00180350;
-extern short D_L00_00161190;
-extern short D_L00_001611A0;
+extern f32 vendor_camera_eye_local_offset_z MACRO_ADDR;
+extern Vec4 level_moby_lights_14_direction;
+extern short vendor_light_local_direction;
+extern short vendor_light_color;
 extern u8 vendor_extra[];
 extern s32 g_game_language MACRO_ADDR;
 extern f32 frame_scale MACRO_ADDR;
@@ -248,7 +248,7 @@ void open_vendor_menu(VendorMoby_pv *m) {
         *(s16 *)((char *)m + 0x32) = 0x40;
         *(f32 *)((char *)m + 0x10) = player_camera.x + *(f32 *)&vendor_camera_eye_local_offset;
         *(f32 *)((char *)m + 0x14) = player_camera.y;
-        *(f32 *)((char *)m + 0x18) = player_camera.z - D_L00_00161128;
+        *(f32 *)((char *)m + 0x18) = player_camera.z - vendor_camera_eye_local_offset_z;
         clear_u64_value(&m->rot);
         m->rot.f[2] = 3.1415927f;
         moby_build_matrix(m);
@@ -298,7 +298,7 @@ void open_vendor_menu(VendorMoby_pv *m) {
     clear_active_help_record();
     *(f32 *)&gFadeLvl = 1.0f;
     *(s32 *)((char *)&skip_frame - 0x14) = 5;
-    *(s32 *)&D_L00_0015F500 = 0;
+    *(s32 *)&level_white_fade_level = 0;
     HeroEnterMoveState(100, 1);
     {
         u8 *hp = (u8 *)hero_globals_base + 0xE1D;
@@ -320,12 +320,12 @@ void open_vendor_menu(VendorMoby_pv *m) {
         set_camera_position(&VP.eye);
         set_camera_rotation(&VP.look);
     }
-    v = &D_L00_00180350;
-    matrix_mul_vec3(v, &D_L00_00161190, VP.moby + 0xC0);
-    qcopy(v - 1, &D_L00_001611A0);
+    v = &level_moby_lights_14_direction;
+    matrix_mul_vec3(v, &vendor_light_local_direction, VP.moby + 0xC0);
+    qcopy(v - 1, &vendor_light_color);
     v += 2;
     qzero(v);
-    qzero(&D_L00_00180360);
+    qzero(&level_moby_lights_14_field_20);
     for (i = 0; i < 4; i++) {
         slot = &vendor_slot_manipulators[i];
         if (slot->hidden == 0) {
@@ -362,7 +362,7 @@ extern void music_Unpause(void);
 extern int snd_FlushSoundCommands(void);
 extern int skip_frame MACRO_ADDR;
 extern short cinematic_mode;
-extern unsigned char D_001414F5[] NOT_SDA;
+extern unsigned char g_hero_field_20a5[] NOT_SDA;
 extern unsigned char help_stats_base[] NOT_SDA;
 extern char vendor_close_hero_local_offset;
 
@@ -398,7 +398,7 @@ void close_vendor_menu(int exit_cutscene_completed) {
     skip_frame = 1;
     *(int *)&cinematic_mode = 0;
     HeroEnterMoveState(0, 1);
-    D_001414F5[0] = 0;
+    g_hero_field_20a5[0] = 0;
     HeroClearObjectFlags();
     if (vendor_state_base->unk40 == 0) {
         matrix_mul_vec3(&world_position, &vendor_close_hero_local_offset, (char *)vendor_state_base->moby + 0xC0);
@@ -496,7 +496,7 @@ typedef struct {
 } VendorMoby_29a6b0;
 extern s32 vendor_item_cutscene_index[];
 extern Vendor_29a6b0 vendor_menu_r3 __asm__("D_L00_001CA7C0");
-extern short D_L00_0015F500;
+extern short level_white_fade_level;
 extern short vendor_exit_cutscene_local_offset;
 struct S16_29ad08 { char pad[0x5A]; s16 mode; };
 extern struct S16_29ad08 cd_read_state;
@@ -553,7 +553,7 @@ void start_vendor_exit_cutscene(void) {
     cutscene_state.x5c = lvl_resource_buffers.x8 + offset;
     item = vendor_item_cutscene_index[index];
     gFadeLvl = 0;
-    (*(s32 *)&D_L00_0015F500) = 0;
+    (*(s32 *)&level_white_fade_level) = 0;
     if (g_hero.items[0].item_id != 0 && index != g_hero.items[0].item_id)
         clear_hero_item_slot(0, 0);
     g_hero.pending_item[0] = vendor_menu_r3.f48;
@@ -598,7 +598,7 @@ void restore_hero_after_vendor_exit_cutscene(void) {
     skip_frame = 1;
     *(int *)&cinematic_mode = 0;
     HeroEnterMoveState(0, 1);
-    D_001414F5[0] = 0;
+    g_hero_field_20a5[0] = 0;
     HeroClearObjectFlags();
     vendor_state_base = (VendorExitState *)vendor_menu;
     matrix_mul_vec3(&world_position, &vendor_exit_hero_local_offset, vendor_state_base->actor->basis);
@@ -620,7 +620,7 @@ extern void MobyBlendAnimation(void *, int, int, int);
 extern int vendor_auxiliary_moby_active MACRO_ADDR;
 extern int rendered_frame_count MACRO_ADDR;
 extern int vendor_auxiliary_reaction_started MACRO_ADDR;
-extern int D_L00_00161254 MACRO_ADDR;
+extern int vendor_auxiliary_reaction_reset_flag MACRO_ADDR;
 
 /* steps the pickup-spawn state machine for the given mode */
 void handle_vendor_auxiliary_moby_event(int a) {
@@ -643,7 +643,7 @@ void handle_vendor_auxiliary_moby_event(int a) {
                     r0 = random_integer_below(2);
                     *(int *)(b + 0x3C) = r0;
                     vendor_auxiliary_reaction_started = 1;
-                    D_L00_00161254 = 0;
+                    vendor_auxiliary_reaction_reset_flag = 0;
                     *(int *)(help_stats_base + 0x100D1) = (r0 * 3 + 2) * 6 + *(int *)(b + 0x38) + 10000;
                     m[0x20] = 0xB;
                 }
@@ -654,7 +654,7 @@ void handle_vendor_auxiliary_moby_event(int a) {
         r1 = random_integer_below(2);
         *(int *)(b + 0x3C) = r1;
         vendor_auxiliary_reaction_started = a;
-        D_L00_00161254 = 0;
+        vendor_auxiliary_reaction_reset_flag = 0;
         *(int *)(help_stats_base + 0x100D1) = r1 * 0x12 + *(int *)(b + 0x38) + 10000;
         if (m[0x53] != a) MobyBlendAnimation(m, 1, 0, 10);
         m[0x20] = 10;
@@ -675,7 +675,7 @@ typedef struct { char p0[0x30]; int v; char pad[0xC]; } B;
 typedef struct { int a; int b; int c; int d; int e; } Ent;
 typedef struct { char pad[0x1C]; char *cam; char *obj; char pad2[0x58 - 0x24]; int idx; char pad3[0xD0 - 0x5C]; Ent tbl[4]; } S;
 extern Rec item_defs[] __attribute__((section(".data")));
-extern A D_L00_001C8C20[];
+extern A vendor_item_slot1_placement_offset[];
 extern A vendor_item_slot1_placement[];
 extern B vendor_item_slot2_placement[];
 extern short vendor_selected_item_local_offset;
@@ -717,11 +717,11 @@ void initialize_vendor_selected_item_mobys(void) {
     InitMobyInstance(P + 0x100, cls);
     *(short *)(P + 0x132) = 0x40;
     *(int *)(P + 0x194) = 0;
-    FastVecAdd(v, &vendor_selected_item_local_offset, &D_L00_001C8C20[TA]);
+    FastVecAdd(v, &vendor_selected_item_local_offset, &vendor_item_slot1_placement_offset[TA]);
     if (TB == 0) {
-        v[2] += D_L00_001C8C20[TA].c;
+        v[2] += vendor_item_slot1_placement_offset[TA].c;
         if (discount_purchase_pricing[0]) {
-            v[2] += D_L00_001C8C20[TA].c;
+            v[2] += vendor_item_slot1_placement_offset[TA].c;
         }
     }
     g2 = (S *)vendor_menu;
@@ -801,7 +801,7 @@ extern int vendor_purchase_confirmed SDATA(D_L00_00161F0C);
 extern int vendor_quantity_adjustable SDATA(D_L00_00161F10);
 extern s32 vendor_quantity_decrease_hold_frames MACRO_ADDR;
 extern s32 vendor_quantity_increase_hold_frames MACRO_ADDR;
-extern char D_0013DE6E[];
+extern char level_render_state_base[];
 extern void MobyAnimAdvance();
 extern s32 msg_string();
 extern void set_scrolling_status_message();
@@ -942,7 +942,7 @@ void update_vendor_purchase(void) {
                             n -= add_ammo(vendor_menu_r4.e[vendor_menu_r4.idx].item, n);
                             price = (vendor_menu_r4.f40 ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA
                                                               : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8) * n;
-                            ((int *)(D_0013DE6E + 0xA))[vendor_menu_r4.e[vendor_menu_r4.idx].item] += n;
+                            ((int *)(level_render_state_base + 0xA))[vendor_menu_r4.e[vendor_menu_r4.idx].item] += n;
                             handle_vendor_auxiliary_moby_event(3);
                             gBolts = gBolts - price;
                             build_vendor_menu_rows(vendor_menu_r4.f40 != 0);
@@ -1086,7 +1086,7 @@ extern short vendor_spin_moby5_local_offset;
 extern s32 vendor_exit_delay_frames MACRO_ADDR;
 extern s32 vendor_intro_frames MACRO_ADDR;
 extern s32 pal_mode MACRO_ADDR;
-extern f32 D_L00_0016CBF0 NOT_SDA;
+extern f32 render_view_tan_half_fov NOT_SDA;
 
 extern void ResetFrameCounters();
 extern void update_game_frame_and_idle_counters();

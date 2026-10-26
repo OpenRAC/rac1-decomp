@@ -128,7 +128,7 @@ INCLUDE_ASM("asm/overlays", func_L00_0028F410);
 extern char pad_globals_base[] NOT_SDA;
 extern unsigned char special_items_base[] NOT_SDA;
 extern unsigned char gHaveMorphORay[] NOT_SDA;
-extern unsigned char D_0013DE4B[] NOT_SDA;
+extern unsigned char level_available_base[] NOT_SDA;
 extern short ship_index[] NOT_SDA;
 extern char g_debug_camera[];
 extern char ship_entry_point_offsets[] NOT_SDA;
@@ -212,13 +212,13 @@ void update_moby_proximity_interaction(unsigned char *m) {
             if (q[0x48] == 0 && gHaveMorphORay[7] != 0) {
                 StartCutscene(4);
                 q[0x48] = 1;
-            } else if ((q = special_items_base + 0x13B)[0x49] == 0 && D_0013DE4B[8] != 0) {
+            } else if ((q = special_items_base + 0x13B)[0x49] == 0 && level_available_base[8] != 0) {
                 StartCutscene(5);
                 q[0x49] = 1;
-            } else if ((q = special_items_base + 0x13B)[0x4A] == 0 && D_0013DE4B[8] != 0) {
+            } else if ((q = special_items_base + 0x13B)[0x4A] == 0 && level_available_base[8] != 0) {
                 PlayMovieEntryIfIdle(0xB);
                 q[0x4A] = 1;
-            } else if ((q = special_items_base + 0x13B)[0x4B] == 0 && D_0013DE4B[8] != 0) {
+            } else if ((q = special_items_base + 0x13B)[0x4B] == 0 && level_available_base[8] != 0) {
                 StartCutscene(6);
                 q[0x4B] = 1;
             } else {

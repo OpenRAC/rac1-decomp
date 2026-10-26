@@ -62,7 +62,7 @@ void mode_freeze_init(int arg0, int arg1, int arg2) {
         *(int *)(p + 4) = scale_game_frame_count(0x1E);
         *(int *)(p + 0x20) = -1;
         *(int *)(p + 0x24) = scale_game_frame_count(0x1E);
-        D_0013D440 = 3;
+        memory_card_request = 3;
         *(int *)(p + 0x2C) = scale_game_frame_count(0xA);
         break;
     }

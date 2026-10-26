@@ -499,7 +499,7 @@ void capture_camera_orientation(void) {
 }
 
 extern void FastVecAdd(void *, void *, void *);
-extern char D_0013F590[];
+extern char g_hero_platform_carry[];
 
 /* save_camera_vectors: with no blend running (kind 0), copies the
    lerp position into orbit.pos and the lerp rotation into orbit.saved_rot;
@@ -510,7 +510,7 @@ void save_camera_vectors(void) {
     if (b->kind == 0) {
         qcopy(&b->orbit.pos, &b->lerp.pos);
         if (b->next_kind == 2) {
-            FastVecAdd(&b->orbit.pos, D_0013F590, &b->orbit.pos);
+            FastVecAdd(&b->orbit.pos, g_hero_platform_carry, &b->orbit.pos);
         }
         qcopy(&b->orbit.saved_rot, &b->lerp.rot);
     }
@@ -627,7 +627,7 @@ int step_camera_blend(Camera *to, CamBlendLerp *lerp) {
         return 1;
     }
     t = CosineInterpolate(0.0f, 1.0f, lerp->pos_t);
-    FastVecAdd(&lerp->from_pos, D_0013F590, &lerp->from_pos);
+    FastVecAdd(&lerp->from_pos, g_hero_platform_carry, &lerp->from_pos);
     st = &occl_cam_state;
     lerp->pos.f[0] = lerp->from_pos.f[0] + (to->pos.x - lerp->from_pos.f[0]) * t;
     lerp->pos.f[1] = lerp->from_pos.f[1] + (to->pos.y - lerp->from_pos.f[1]) * t;

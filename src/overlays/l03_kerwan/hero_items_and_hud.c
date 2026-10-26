@@ -27,10 +27,10 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float kerwan_hero_fall_state_height MACRO_ADDR;
 extern int kerwan_help_message_selector MACRO_ADDR;
-extern int D_L03_0015F7BC MACRO_ADDR;
+extern int kerwan_hero_run_step1_start_frame MACRO_ADDR;
 extern short kerwan_hero_double_tap_timer;
 extern float kerwan_camera_yaw;
-extern int D_L03_0016C900;
+extern int kerwan_hero_state_1e_clear_word;
 extern S17A800 kerwan_hero_bones;
 extern Rec70 kerwan_idle_fidgets[];
 extern Rec4C kerwan_item_defs[];
@@ -1359,7 +1359,7 @@ void HeroL03_UpdateStateTransitions(void) {
                         HeroL03_SetMoveState(2, 0);
                         if (g_hero.state.current == 2) {
                             g_hero.state.step = 1;
-                            set_hero_animation(4, D_L03_0015F7BC, scale_ticks(0xC));
+                            set_hero_animation(4, kerwan_hero_run_step1_start_frame, scale_ticks(0xC));
                         }
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                         break;
@@ -1843,7 +1843,7 @@ void HeroL03_UpdateStateTransitions(void) {
                             set_hero_animation(a, 0, scale_ticks(8));
                         }
                     }
-                    D_L03_0016C900 = 0;
+                    kerwan_hero_state_1e_clear_word = 0;
                     break;
                 case 32:
                     if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {

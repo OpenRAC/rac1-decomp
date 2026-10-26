@@ -297,7 +297,7 @@ extern Moby *kerwan_mobys_r __asm__("D_L03_00160058") MACRO_ADDR;
 extern Path_294040 *kerwan_paths_r[] __asm__("D_L03_001B08B0");
 extern Mat_294040 *kerwan_camera_points_r __asm__("D_L03_0016016C") MACRO_ADDR;
 extern char kerwan_player_camera_r[] __asm__("D_L03_00166E00");
-extern int D_L03_0015FE7C MACRO_ADDR;
+extern int kerwan_train_in_motion MACRO_ADDR;
 extern char kerwan_train_no_partner_msg[];
 extern char kerwan_train_no_link_msg[];
 extern unsigned char hero_globals_base[];
@@ -343,7 +343,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
     }
     other = &kerwan_mobys_r[d->fC4];
     od = (*(void **)&other->pvars);
-    D_L03_0015FE7C = 0;
+    kerwan_train_in_motion = 0;
     switch (moby->command) {
     case 0:
         d->f20 = 0;
@@ -398,7 +398,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
             if (((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 0 || ((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 1
                 || ((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 9 || ((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 0xC) {
                 moby->command = 4;
-                D_L03_0015FE7C = 1;
+                kerwan_train_in_motion = 1;
                 MusicRequestTrack(4, 7);
                 set_moby_dialogue_record_value(moby, 1);
                 kerwan_mobys_r[d->f100].command = 1;
@@ -420,7 +420,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
         if (d->fC0 < d->fC8) {
             d->fC8 = d->fC0;
         }
-        D_L03_0015FE7C = 1;
+        kerwan_train_in_motion = 1;
         update_metropolis_train_motion((char *)moby);
         if (Sound_IsPlaying(moby, d->f108) == 0) {
             d->f108 = Moby_PlaySound(1, 4, (int)moby);
@@ -528,7 +528,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
     case 5:
         cd = (*(void **)&kerwan_mobys_r[d->fD8].pvars);
         update_metropolis_train_motion((char *)moby);
-        D_L03_0015FE7C = 1;
+        kerwan_train_in_motion = 1;
         if (Sound_IsPlaying(moby, d->f108) == 0) {
             d->f108 = Moby_PlaySound(1, 4, (int)moby);
         }
@@ -1471,7 +1471,7 @@ typedef struct {
     char m280[0x10];
 } Data2c5bb8;
 extern short kerwan_mobys_r2 __asm__("D_L03_00160058");
-extern char D_L03_00161950;
+extern char kerwan_moby573_spawn_d0_record;
 extern float FastAbsF(float);
 extern float multiply_global_factor(float);
 extern float ApproachValue(float *p, float target, float maxstep);
@@ -1550,7 +1550,7 @@ void Moby573Update(char *moby) {
         if (func_001160D8() & 1) {
             ((Moby *)moby)->flags |= 0x8000;
         }
-        data->pD0 = &D_L03_00161950;
+        data->pD0 = &kerwan_moby573_spawn_d0_record;
         if (data->i248 != -1 && data->i270 == -1) {
             if (((unsigned char *)moby)[0x53] != 0) {
                 MobyBlendAnimation(moby, 0, 0, 0);

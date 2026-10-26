@@ -748,7 +748,7 @@ extern int sprintf(char *, const char *, ...);
 extern void draw_framed_text(int, int, int, char *);
 extern int pal_mode MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern int D_L00_0015F728 MACRO_ADDR;
+extern int race_record_panel_end_y MACRO_ADDR;
 extern short hud_text_panel_y;
 extern unsigned char hud_text_panel_string[];
 extern float gHeroPos[];
@@ -839,7 +839,7 @@ int draw_hud_text_panel(char *e) {
         }
         pt = &point;
         if (FastVecDist(gHeroPos, pt) < 5.0f) {
-            D_L00_0015F728 = y + 100;
+            race_record_panel_end_y = y + 100;
             elapsed = race_best_times[g_current_level_index == 0x10 ? 1 : 0];
             score = race_best_records[g_current_level_index == 0x10 ? 1 : 0];
             if (elapsed != 0) {
@@ -1068,7 +1068,7 @@ extern Progress g_hero_r __asm__("D_0013F450");
 extern Stats usage_stats;
 extern Route item_price_table_r[] __asm__("D_L00_001C43B0");
 extern int weapon_ammo_counts[];
-extern u8 D_00141722[];
+extern u8 hud_item_selector_close_timer[];
 extern short quick_select_snap_margin;
 extern short quick_select_slot_angle_offset;
 extern int quick_select_default_left_slot;
@@ -1091,7 +1091,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
 
     p->w7C = scale_ticks(0xB4);
     p->w6C = 0x18;
-    if (FastDecTimer(D_00141722)) g_controller_state_r.w1CC = 2;
+    if (FastDecTimer(hud_item_selector_close_timer)) g_controller_state_r.w1CC = 2;
     x = g_controller_state_r.f148;
     y = g_controller_state_r.f14C;
     mag = vec_length(x * x + y * y);
@@ -1382,7 +1382,7 @@ typedef struct {
 } Obj;
 typedef struct { u8 p0[0x148]; float f148; float f14C; u8 p150[0x70]; int w1C0; int w1C4; u8 p1C8[4]; int w1CC; } G_t;
 extern G_t g_controller_state;
-extern int D_L00_0017E604;
+extern int radial_select_auto_close_flag;
 extern short quick_select_slot_count_r __asm__("D_L00_0015FB48");
 extern int quick_select_last_slot_export __asm__("D_L00_0015FB54") MACRO_ADDR;
 extern Ent ** hud_selector_slot_tables_r2 __asm__("D_L00_0015FB78") MACRO_ADDR;
@@ -1409,7 +1409,7 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
         y /= len;
     }
     ang = fast_atan2(x, y);
-    if ((o->w78 >> 24) == 0 && D_L00_0017E604 != 0) {
+    if ((o->w78 >> 24) == 0 && radial_select_auto_close_flag != 0) {
         if ((g_controller_state.w1C4 & 0xF000) || len < 0.5f || --o->w78 == -1) {
             o->w74 = -1;
             o->w78 = 0x10000FF;
@@ -2093,7 +2093,7 @@ int draw_hud_bolt_exclamation_panel(char *m) {
     print_text_with_texture_3(text_x, text_y, color, buf, -1);
     return *(int *)(m + 0x58);
 }
-extern short D_00140A86 NOT_SDA;
+extern short g_hero_vehicle_triangle_cooldown NOT_SDA;
 extern int GetIconFrame(int, int);
 extern void apply_hud_slide_offset(HudElem *, int *, int *, int, int);
 extern void draw_cropped_hud_sprite(int, int, int, int, int, int);
@@ -2120,7 +2120,7 @@ int draw_hud_cropped_gauge_panel(HudElem *e) {
     len = e->unk74 * 0xDD / e->unk08 + 0x1B;
     draw_cropped_hud_sprite(GetIconFrame(0x7558, 1), x, y, len, 0x40, 0x80);
     HudSprite(GetIconFrame(0x7558, 0), x, y, 0x100, 0x40, 0x80);
-    HudSprite(GetIconFrame(0x7558, 2), x, y, 0x20, 0x20, D_00140A86 != 0 ? 0x80 : 0);
+    HudSprite(GetIconFrame(0x7558, 2), x, y, 0x20, 0x20, g_hero_vehicle_triangle_cooldown != 0 ? 0x80 : 0);
     return e->w;
 }
 /* func_L00_00236750 without the offsets: a 32 x 32 element with a timer
@@ -2531,16 +2531,16 @@ extern int g_gs_texture_allocation_base MACRO_ADDR;
 extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern int game_clock_ticks MACRO_ADDR;
-extern char D_L00_00173FC0[];
+extern char coll_hit_moby_record[];
 extern char g_class_slot[];
-extern char D_L00_0019AD00[];
-extern char D_L00_0019A600[];
+extern char moby_class_slot_records[];
+extern char moby_class_slot_flags[];
 extern char tie_class_slot_by_id[];
-extern char D_L00_001C7A00[];
-extern char D_L00_001C7200[];
+extern char tie_class_slot_records[];
+extern char tie_class_slot_flags[];
 extern char shrub_class_slot_by_id[];
-extern char D_L00_001BD740[];
-extern char D_L00_001BD140[];
+extern char shrub_class_slot_records[];
+extern char shrub_class_slot_flags[];
 extern void FastMemSet(void *, int, int);
 extern void register_audio_stream_callback(void);
 extern void calculate_dma_transfer_address(void);
@@ -2564,16 +2564,16 @@ void init_level_runtime_state(void) {
     InitMemSlots();
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;
     g_gs_texture_allocation_start = g_gs_texture_allocation_base;
-    FastMemSet(D_L00_00173FC0, 0x87654321, 0x10);
+    FastMemSet(coll_hit_moby_record, 0x87654321, 0x10);
     FastMemSet(g_class_slot, -1, 0x800);
-    FastMemSet(D_L00_0019AD00, -1, 0xE00);
-    FastMemSet(D_L00_0019A600, 0, 0xE0);
+    FastMemSet(moby_class_slot_records, -1, 0xE00);
+    FastMemSet(moby_class_slot_flags, 0, 0xE0);
     FastMemSet(tie_class_slot_by_id, -1, 0xC00);
-    FastMemSet(D_L00_001C7A00, -1, 0x800);
-    FastMemSet(D_L00_001C7200, 0, 0x80);
+    FastMemSet(tie_class_slot_records, -1, 0x800);
+    FastMemSet(tie_class_slot_flags, 0, 0x80);
     FastMemSet(shrub_class_slot_by_id, -1, 0x400);
-    FastMemSet(D_L00_001BD740, -1, 0x400);
-    FastMemSet(D_L00_001BD140, 0, 0x40);
+    FastMemSet(shrub_class_slot_records, -1, 0x400);
+    FastMemSet(shrub_class_slot_flags, 0, 0x40);
     InitViewContext();
     UpdateViewContext();
     VU1_initChain();

@@ -237,7 +237,7 @@ void magnetboots_update(Moby *m) {
     }
 }
 typedef struct { char pad0[0x454]; unsigned char collected[1]; } L10State;
-extern L10State D_L10_001BB9C0;
+extern L10State orxon_collected_flags_base;
 extern unsigned char help_stats_base[] NOT_SDA;
 extern int orxon_moby_killed[];
 extern int g_current_level_index MACRO_ADDR;
@@ -247,7 +247,7 @@ extern unsigned char gHaveHeliPack[];
 extern int orxon_cinematic_mode MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern char *orxon_scene_points MACRO_ADDR;
-extern short D_L10_00161410;
+extern short orxon_relocation_reset_flag;
 extern int try_set_help_message(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void enter_hero_vehicle_mode(int, int, char *);
@@ -259,9 +259,9 @@ void update_hero_relocation_trigger(char *m) {
     char *d = ((char *)((Moby *)m)->pvars);
     unsigned short id;
     ((unsigned char *)m)[0x30] = 0xFF;
-    if (*(int *)&D_L10_00161410 == 1) {
+    if (*(int *)&orxon_relocation_reset_flag == 1) {
         *(short *)(help_stats_base + 0x32D) = 0;
-        *(int *)&D_L10_00161410 = 0;
+        *(int *)&orxon_relocation_reset_flag = 0;
     }
     if (*(int *)(d + 0x18) != -1) {
         int b = *(int *)(d + 0x1C);
@@ -281,7 +281,7 @@ void update_hero_relocation_trigger(char *m) {
         }
     }
     id = ((Moby *)m)->save_id;
-    if (D_L10_001BB9C0.collected[(short)id] != 0 ||
+    if (orxon_collected_flags_base.collected[(short)id] != 0 ||
         ((*(int *)(help_stats_base + 0xAB75 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) != 0) {
         if (gHaveHeliPack[4] != 0) {
             char *bs = orxon_mobys_r;
@@ -1567,7 +1567,7 @@ void handle_moby_destruction(char *moby) {
     int r2;
     float f20, f21;
 
-    if (D_L10_001BB9C0.collected[(short)id] != 0
+    if (orxon_collected_flags_base.collected[(short)id] != 0
         || ((*(int *)(help_stats_base + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_r << 8))) >> (id & 0x1F)) & 1)) {
         spawn_fixed_height_destruction_moby(moby);
         spawn_destruction_replacement_moby(moby);
@@ -2069,7 +2069,7 @@ void block_cave_update(char *m) {
     float relative_position[4];
     struct Moby *moby = (struct Moby *)m;
     unsigned short id = moby->save_id;
-    if (D_L10_001BB9C0.collected[(short)id] != 0
+    if (orxon_collected_flags_base.collected[(short)id] != 0
         || (*(int *)(help_stats_base + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_r << 8))) >> (id & 0x1F)) & 1) {
         DeleteMoby(moby);
         return;
@@ -2513,8 +2513,8 @@ extern float class1199_bob_height SDATA(D_L10_00161E8C);
 extern float class1199_bob_period_seconds SDATA(D_L10_00161E90);
 extern float class1199_height_jitter_max SDATA(D_L10_00161E94);
 extern float class1199_height_jitter_seconds SDATA(D_L10_00161E98);
-extern float D_L10_00161E9C SDATA(D_L10_00161E9C);
-extern float D_L10_00161EA0 SDATA(D_L10_00161EA0);
+extern float class1199_start_b58 SDATA(D_L10_00161E9C);
+extern float class1199_start_b5a SDATA(D_L10_00161EA0);
 void update_class_1199_hit_reactions_and_targeting(Moby *moby);
 void set_moby_group_command_frames(unsigned char *moby);
 extern float vec_length_xy(void *);
@@ -2553,8 +2553,8 @@ void Moby1199Update(Moby *m) {
         qcopy(&d->v140, &d->v130);
         d->f19C = random_angle_radians_r();
         d->f170 = 0.0f;
-        d->b58 = truncate_float_to_s32_r2(D_L10_00161E9C);
-        d->b5A = truncate_float_to_s32_r2(D_L10_00161EA0 * 8.0f);
+        d->b58 = truncate_float_to_s32_r2(class1199_start_b58);
+        d->b5A = truncate_float_to_s32_r2(class1199_start_b5a * 8.0f);
         switch (d->f174) {
         case 0:
             m->state = 3;

@@ -85,7 +85,7 @@ extern unsigned char menu_item_enabled_17 NOT_SDA;
 extern unsigned char menu_item_enabled_18 NOT_SDA;
 extern unsigned char menu_item_enabled_19 NOT_SDA;
 extern unsigned char menu_item_enabled_25 NOT_SDA;
-extern int D_001A04B4 NOT_SDA;
+extern int map_region_enabled_3 NOT_SDA;
 extern unsigned char menu_item_enabled_41 NOT_SDA;
 extern int hero_control_mode NOT_SDA;
 extern unsigned char menu_item_enabled_36 NOT_SDA;
@@ -126,17 +126,17 @@ extern int memcard_PrepData(void *dst, int i, int *table);
 extern int sce_mc_init(void);
 extern int STUB_printf();
 extern char memcard_error_message[];
-extern int D_0013D844 NOT_SDA;
+extern int race_gates_24_status NOT_SDA;
 extern unsigned char menu_item_enabled_12 NOT_SDA;
-extern int D_0013D9B4 NOT_SDA;
+extern int race_gates_47_flag NOT_SDA;
 extern unsigned char gSpecialItems[];
 extern unsigned char gHaveHeliPack NOT_SDA;
 extern int race_gates NOT_SDA;
-extern int D_0013DAE4 NOT_SDA;
+extern int race_gates_66_status NOT_SDA;
 extern unsigned char menu_item_enabled_73 NOT_SDA;
-extern int D_0013DB24 NOT_SDA;
+extern int race_gates_70_status NOT_SDA;
 extern unsigned char menu_item_enabled_85 NOT_SDA;
-extern int D_0013DC34 NOT_SDA;
+extern int race_gates_87_status NOT_SDA;
 extern unsigned char race_gates_base NOT_SDA;
 extern int item_available NOT_SDA;
 extern unsigned char menu_item_enabled_20 NOT_SDA;
@@ -186,7 +186,7 @@ extern void snd_reenable_command_flush(void);
 extern int snd_StreamSafeCdGetError(void);
 extern void music_start_track_by_id(short, short, short);
 extern void music_PreseekTrack(short, short, short);
-extern short D_001517F0 NOT_SDA;
+extern short music_flagged_track_started NOT_SDA;
 extern char g_controller_state[];
 extern int pad_socket_param NOT_SDA;
 extern void sce_dbc_init(void);
@@ -201,7 +201,7 @@ extern void request_audio_stream_break(void);
 
 extern struct CameraSystem gCamera_r __asm__("D_00187040");
 extern s32 active_camera_basis_column1_x;
-extern s32 D_001873B0;
+extern s32 active_camera_basis_column2_x;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/fun_00218d10.c, FUN_00218d10. */
 void reset_active_camera_position_and_basis(void) {
@@ -210,7 +210,7 @@ void reset_active_camera_position_and_basis(void) {
     gCamera_r.pos.f[1] = 256.0f;
     qzero(&gCamera_r.matrix[0].f[0]);
     qzero(&active_camera_basis_column1_x);
-    qzero(&D_001873B0);
+    qzero(&active_camera_basis_column2_x);
     gCamera_r.matrix[0].f[0] = 1.0f;
     gCamera_r.matrix[1].f[1] = 1.0f;
     gCamera_r.matrix[2].f[2] = 1.0f;
@@ -220,16 +220,16 @@ void reset_active_camera_position_and_basis(void) {
 extern void snd_PauseAllSoundsInGroup(int);
 extern void music_Pause(int);
 extern int camera_position_publication_suppressed;
-extern int D_0015F754 MACRO_ADDR;
+extern int pause_blocked_by_camera MACRO_ADDR;
 extern int last_weapon_id;
 extern unsigned char help_stats_base NOT_SDA;
 extern int challenge_mode MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
-extern char D_001CE938[];
-extern char D_001CEAC8[];
-extern char D_001CEB18[];
+extern char pause_menu_screen_a[];
+extern char pause_menu_screen_b[];
+extern char pause_menu_screen_optional[];
 extern int selected_level_index;
-extern int D_001D0718;
+extern int pause_entry_cleared_word;
 extern int update_mission_list_i(void) __asm__("func_0020C7A0");
 extern int snd_FlushSoundCommands_i(void) __asm__("func_0012DDC0");
 extern void update_skill_point_and_gold_weapon_menu_entries(void);
@@ -249,7 +249,7 @@ void PauseAllSounds(int arg0) {
     music_Pause(0);
     snd_FlushSoundCommands_i();
     if (camera_position_publication_suppressed != 0) {
-        D_0015F754 = 1;
+        pause_blocked_by_camera = 1;
         return;
     }
     if (last_weapon_id == 0x24) {
@@ -270,14 +270,14 @@ void PauseAllSounds(int arg0) {
     }
     {
         char *g = menu_system;
-        char *a = D_001CE938;
+        char *a = pause_menu_screen_a;
         *(int *)(g + 0xDC) = arg0 == 0x23;
-        *(char **)(a + 0x38) = *(int *)(g + 0xD8) ? D_001CEB18 : D_001CEAC8;
+        *(char **)(a + 0x38) = *(int *)(g + 0xD8) ? pause_menu_screen_optional : pause_menu_screen_b;
     }
     {
         char *g = menu_system;
-        char *b = D_001CEAC8;
-        *(char **)(b + 0x3C) = *(int *)(g + 0xD8) ? D_001CEB18 : D_001CE938;
+        char *b = pause_menu_screen_b;
+        *(char **)(b + 0x3C) = *(int *)(g + 0xD8) ? pause_menu_screen_optional : pause_menu_screen_a;
     }
     {
         char *g = menu_system;
@@ -293,7 +293,7 @@ void PauseAllSounds(int arg0) {
         selected_level_index = 0;
     }
     update_mission_list_i();
-    D_001D0718 = 0;
+    pause_entry_cleared_word = 0;
     update_skill_point_and_gold_weapon_menu_entries();
     {
         char *g = menu_system;
@@ -1102,7 +1102,7 @@ int Pause_PageInput(int arg0) {
     return 0;
 }
 
-extern int D_001D6094;
+extern int menu_system_close_locked;
 extern void Moby_PlaySound(int, int, int);
 
 /* Pause list handler (func_0021ACD8's family: one `char *` pad local per
@@ -1116,7 +1116,7 @@ int update_menu_icon_list(char *arg0) {
     {
         char *pad = g_controller_state;
         if (*(int *)(pad + 0x1C4) & 0xD00) {
-            if (D_001D6094 == 0) {
+            if (menu_system_close_locked == 0) {
                 return 1;
             }
         }
@@ -3215,7 +3215,7 @@ struct SoundMenu_1DB30 {
 
 extern struct PadState g_controller_state_r2 __asm__("D_0013CA40");
 extern struct SoundMenuMixer_1DB30 voice_pool_r __asm__("D_0013E650");
-extern s32 D_001D6094_1DB30 __asm__("D_001D6094") NOT_SDA;
+extern s32 menu_system_close_locked_r __asm__("D_001D6094") NOT_SDA;
 extern s32 music_volume_r __asm__("D_0015EEEC") MACRO_ADDR;
 extern s32 sound_volume_r __asm__("D_0015EEF0") MACRO_ADDR;
 extern s32 playback_mode_r __asm__("D_0015EEE8") MACRO_ADDR;
@@ -3235,7 +3235,7 @@ s32 sound_options_menu(struct SoundMenu_1DB30 *menu) {
     s32 previous_sound_volume;
     s32 scaled_sound_volume;
 
-    if ((((s32)g_controller_state_r2.pressed_unmasked) & 0xD00) && (D_001D6094_1DB30 == 0)) {
+    if ((((s32)g_controller_state_r2.pressed_unmasked) & 0xD00) && (menu_system_close_locked_r == 0)) {
         return 1;
     }
     if (((s32)g_controller_state_r2.pressed_unmasked) & 0x10) {
@@ -3385,7 +3385,7 @@ typedef struct {
 extern int active_message_record_count MACRO_ADDR;
 extern Rec0C active_message_menu_items[];
 extern unsigned char active_message_records[];
-extern Half4 D_00199812[];
+extern Half4 message_id_code_table_b[];
 
 /* Fills D_001CFFC0 with the active message records in reverse order, each
    flagged 1, and ends the list with a 0 entry. */
@@ -3396,7 +3396,7 @@ int build_reversed_active_message_list(void) {
         unsigned char k;
         active_message_menu_items[i].b = 1;
         k = active_message_records[active_message_record_count - j];
-        active_message_menu_items[i].a = D_00199812[k].v;
+        active_message_menu_items[i].a = message_id_code_table_b[k].v;
         i = j;
     }
     active_message_menu_items[active_message_record_count].a = 0;
@@ -3417,7 +3417,7 @@ typedef struct {
    the same table as a flat int array. */
 extern PadBind menu_stream_buffers_t[] __asm__("D_001D6448");
 
-extern int D_001D6078;
+extern int menu_system_help_text_buffer;
 extern int disc_table[];
 extern int start_audio_stream_read_3(int, int, int) __asm__("func_00217628");
 
@@ -3440,7 +3440,7 @@ int enter_menu_help_text(char *arg0) {
     }
     *(int *)(arg0 + 0x50) = 0;
     if (cd_read_state[4] == 0) {
-        if (start_audio_stream_read_3(D_001D6078, disc_table[0x1528 / 4],
+        if (start_audio_stream_read_3(menu_system_help_text_buffer, disc_table[0x1528 / 4],
                             disc_table[0x152C / 4]) != 0) {
             *(int *)(arg0 + 0x50) = 1;
         } else {
@@ -3506,7 +3506,7 @@ int update_menu_help_text_load(char *arg0) {
     switch (*(int *)(arg0 + 0x50)) {
     case 0:
         if (cd_read_state[4] == 0) {
-            if (start_audio_stream_read_3(D_001D6078, disc_table[0x1528 / 4],
+            if (start_audio_stream_read_3(menu_system_help_text_buffer, disc_table[0x1528 / 4],
                                 disc_table[0x152C / 4]) != 0) {
                 *(int *)(arg0 + 0x50) = 1;
             } else {
@@ -3743,7 +3743,7 @@ typedef struct {
     MenuGridCell *cells;
 } MenuItemGrid;
 extern MenuState D_001D5F70_1E950 __asm__("D_001D5F70");
-extern ItemInfo D_001864D8[];
+extern ItemInfo item_info_table_slot[];
 extern u8 gSpecialItems[];
 extern u8 item_available_r[] __asm__("D_0013D5C8");
 extern u8 gold_weapon_purchased[];
@@ -3824,7 +3824,7 @@ s32 draw_menu_item_grid(MenuItemGrid *grid) {
                 frame_offset = 0;
                 if ((u16)cell->kind == 0) {
                     id = cell->id;
-                    if (D_001D5F70_1E950.slot[D_001864D8[id].slot] == id && !(grid->flags & 0x20)) {
+                    if (D_001D5F70_1E950.slot[item_info_table_slot[id].slot] == id && !(grid->flags & 0x20)) {
                         frame_offset = 1;
                     }
                     if (frame_offset == 0) {
@@ -3869,7 +3869,7 @@ int Menu_SetPauseFlagState(char *arg0) {
     return 0;
 }
 
-extern int D_001D53A0[];
+extern int menu_preview_slot_enabled[];
 extern void DrawMobyList(int, int);
 
 /* Tears down the 24 handles at arg0+0x44, skipping the ones in use.
@@ -3887,7 +3887,7 @@ int draw_menu_preview_objects(char *arg0) {
         if (*(unsigned char *)(arg0 + i + 0xA4) != 0) {
             continue;
         }
-        if (D_001D53A0[i] == 0) {
+        if (menu_preview_slot_enabled[i] == 0) {
             continue;
         }
         if (i == 7 && *(short *)(*(char **)(arg0 + 0x60) + 0xA6) == 0x4A) {
@@ -4271,7 +4271,7 @@ struct PreviewClassResource {
 extern struct PreviewItemDefinition item_info_table_r[] __asm__("D_001864D0");
 extern struct CameraSystem gCamera_r3 __asm__("D_00187040");
 extern struct ItemPreviewPlacement_1F238 preview_placements_r[] __asm__("D_001E0708");
-extern s32 D_00140508[];
+extern s32 g_hero_equipped_item_id[];
 extern s32 active_decode_buffer MACRO_ADDR;
 extern u8 resident_class_slot_by_id[];
 extern struct PreviewClassResource * moby_class_resources_r[] __asm__("D_001B3580");
@@ -4347,8 +4347,8 @@ s32 update_item_preview_binding(struct ItemPreviewBinding_1F238 *preview) {
             break;
         }
         if (load_class) {
-            if (D_00140508[0] != 0 &&
-                oclass != D_00140508[0]) {
+            if (g_hero_equipped_item_id[0] != 0 &&
+                oclass != g_hero_equipped_item_id[0]) {
                 noop_callback_q(0, 0);
             }
             if (oclass != D_001D5F70_1F238.unk11C) {
@@ -4515,7 +4515,7 @@ void update_item_preview_transform(struct Moby *moby) {
     moby->pos.y += forward_offset * cosine + side_offset * sine;
 }
 
-extern int D_0013D48C;
+extern int memory_card_state_field_fc;
 extern int space_load_level MACRO_ADDR;
 extern int space_load_in_progress_m __asm__("D_0015F6FC") MACRO_ADDR;
 extern int space_load_pending MACRO_ADDR;
@@ -4552,7 +4552,7 @@ int Menu_BackInput(char *arg0) {
     {
         char *pad2 = g_controller_state;
         if (*(int *)(pad2 + 0x1C4) & 0x20) {
-            D_0013D48C = 0;
+            memory_card_state_field_fc = 0;
             space_load_level = -1;
             space_load_pending = 1;
             space_load_in_progress_m = 1;
@@ -6704,7 +6704,7 @@ typedef struct {
 } Item0A;
 extern Item0A pause_weapon_menu_slots[];
 extern Item0A pause_weapon_menu_items[];
-extern int D_001D6508[];
+extern int pause_weapon_menu_item_field40[];
 extern char item_info_table[];
 extern char pause_weapon_menu_grid[];
 
@@ -6728,7 +6728,7 @@ int build_pause_item_list(void) {
             out->c = 0;
             out->id = id;
             out->idx = i;
-            D_001D6508[n] = b ? *(short *)(rec + 0x42) : *(short *)(rec + 0x40);
+            pause_weapon_menu_item_field40[n] = b ? *(short *)(rec + 0x42) : *(short *)(rec + 0x40);
             n++;
         }
     }
@@ -6742,8 +6742,8 @@ extern Item0A gadget_menu_slots_row1[];
 extern Item0A gadget_menu_slots_row2[];
 extern Item0A gadget_menu_slots_row3[];
 extern Item0A gadget_menu_items[];
-extern int D_001D65D8[];
-extern int D_001D6610[];
+extern int gadget_menu_item_field40[];
+extern int gadget_menu_item_field44[];
 extern char item_info_table[];
 extern char gadget_menu_grid[];
 
@@ -6790,8 +6790,8 @@ int build_filtered_menu_item_list(void) {
             gadget_menu_items[filtered_item_count].c = 0;
             gadget_menu_items[filtered_item_count].id = id;
             gadget_menu_items[filtered_item_count].idx = i;
-            D_001D65D8[filtered_item_count] = item_info->a;
-            D_001D6610[filtered_item_count] = item_info->b;
+            gadget_menu_item_field40[filtered_item_count] = item_info->a;
+            gadget_menu_item_field44[filtered_item_count] = item_info->b;
             filtered_item_count++;
         }
     }
@@ -6989,7 +6989,7 @@ typedef struct {
 } TextBox;
 
 extern char str_error_text[];
-extern int D_001D6044;
+extern int menu_system_save_prompt_kind;
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
@@ -7009,7 +7009,7 @@ int draw_prompt_box(char *arg0) {
     VU1_addGSregister_l(0x47, 0x2004B);
     SetupGifPaging(0);
     text = str_error_text;
-    v = D_001D6044;
+    v = menu_system_save_prompt_kind;
     switch (v) {
     case 0:
     case 1:
@@ -7198,10 +7198,10 @@ int draw_selected_menu_item_text(char *arg0) {
 }
 
 extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
-extern int D_0015F6CC MACRO_ADDR;
+extern int pause_restart_reset_flag MACRO_ADDR;
 extern char restart_confirm_page[];
 extern void mode_freeze_init(int, void *, int);
-extern unsigned char D_0014C008[];
+extern unsigned char gold_bolts_collected_18[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern unsigned char selector_available[] MACRO_ADDR;
 extern void copy_memory_aligned(void *, void *, int);
@@ -7239,7 +7239,7 @@ int process_global_state_flags(void) {
             tag = m[0x1D];
         }
         for (i = 0; i < 4; i++) {
-            save[i] = D_0014C008[i];
+            save[i] = gold_bolts_collected_18[i];
         }
         copy_memory_aligned(tbl0, gCheats, 0xC);
         copy_memory_aligned(tbl1, selector_available, 0xC);
@@ -7252,12 +7252,12 @@ int process_global_state_flags(void) {
             m2[0x1D] = tag;
         }
         for (i = 0; i < 4; i++) {
-            D_0014C008[i] = save[i];
+            gold_bolts_collected_18[i] = save[i];
         }
         copy_memory_aligned(gCheats, tbl0, 0xC);
         copy_memory_aligned(selector_available, tbl1, 0xC);
         challenge_mode = 1;
-        D_0015F6CC = 0;
+        pause_restart_reset_flag = 0;
         memcard_Save(0, -1);
         clear_scene_state_buffers();
         FadeToBlack(scale_game_frame_count(0x10));
@@ -8112,7 +8112,7 @@ s32 saving_data_menu2(struct MenuScreen_pv *w) {
         }
         menu_system_pv.card_op_pending = 0;
         if (memory_card_state_pv.err != 0 || memory_card_state_pv.sync_result != 0 || memory_card_error_latch != 0) {
-            if (D_0015F6CC != 0) {
+            if (pause_restart_reset_flag != 0) {
                 mode_freeze_flags_m |= 0x80;
                 mode_freeze_init(8, menu_system_pv.current, memory_card_state_pv.unkFC);
                 memory_card_state_pv.unkFC = 0;
@@ -8459,7 +8459,7 @@ extern int active_class_resource_index MACRO_ADDR;
 extern char class_pose_manipulator[];
 extern char first_attachment_manipulator[];
 extern char second_attachment_manipulator[];
-extern char D_00186410[];
+extern char level_init_cleared_block[];
 extern void noop_callback_e(void *);
 extern void NullMobyUpdate_Gadget(void);
 extern void update_menu_preview_animation_pose(void *);
@@ -8537,7 +8537,7 @@ int initialize_menu_preview_objects(char *arg0) {
         object_variables[2] = 0;
         g = (struct MenuSystem *)menu_system;
         g->unkC0 = -1;
-        FastMemSet(D_00186410, 0, 0x40);
+        FastMemSet(level_init_cleared_block, 0, 0x40);
         noop_callback_e(object);
     }
     object = create_menu_preview_moby_a(0x259);
@@ -10015,7 +10015,7 @@ int advance_preview_animation_queue(void) {
     return 0;
 }
 
-extern int D_001D641C;
+extern int current_preview_animation_request_field_c;
 
 /* Breaks a pending preview audio stream and clears the preview animation queue. */
 int clear_preview_animation_queue(void) {
@@ -10026,7 +10026,7 @@ int clear_preview_animation_queue(void) {
             g[0xCB] = 0;
         }
     }
-    D_001D641C = 0;
+    current_preview_animation_request_field_c = 0;
     preview_animation_request_count = 0;
     return 0;
 }
@@ -10424,30 +10424,30 @@ void update_skill_point_and_gold_weapon_menu_entries(void) {
 }
 __asm__(".section .text\n\tnop\n\tnop\n");
 
-extern int D_001D6860[];
-extern int D_001D74C0[];
-extern int D_001D6760[];
+extern int scene_state_buffer_0[];
+extern int scene_state_buffer_1[];
+extern int scene_state_buffer_2[];
 
 /* Clears the three scene state buffers. */
 void clear_scene_state_buffers(void) {
-    FastMemSet(D_001D6860, 0, 0xC60);
-    FastMemSet(D_001D74C0, 0, 0xC60);
-    FastMemSet(D_001D6760, 0, 0x100);
+    FastMemSet(scene_state_buffer_0, 0, 0xC60);
+    FastMemSet(scene_state_buffer_1, 0, 0xC60);
+    FastMemSet(scene_state_buffer_2, 0, 0x100);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_002282B8);
 
 extern float direction_unit[] MACRO_ADDR;
 extern float direction_unit_x __asm__("D_00160470");
-extern float D_00160474;
-extern float D_00160478;
+extern float direction_unit_y;
+extern float direction_unit_z;
 extern float direction_perpendicular[] MACRO_ADDR;
 extern float direction_perpendicular_x __asm__("D_00160480") MACRO_ADDR;
-extern float D_00160484;
-extern float D_00160488;
+extern float direction_perpendicular_y;
+extern float direction_perpendicular_z;
 extern float direction_scaled;
-extern float D_00160494;
-extern float D_00160498;
+extern float direction_scaled_y;
+extern float direction_scaled_z;
 extern void FastVecCross(void *, void *, void *);
 
 typedef struct {
@@ -10535,8 +10535,8 @@ void *parse_typed_resource_record(char *p) {
 
 extern int *g_render_packet_cursor MACRO_ADDR;
 extern char graphics_setup_dma_packets[];
-extern short D_00160460;              /* SDA, gp -0x68A0 */
-extern void func_002298B0(int, int);
+extern short setup_strip_pass_words;              /* SDA, gp -0x68A0 */
+extern void emit_setup_strips_of_kind(int, int);
 
 /* Emits a DMA tag pair for packet n of D_001D8120, then sends graphics entry idx
    of D_00160460 through func_002298B0. */
@@ -10546,7 +10546,7 @@ void emit_selected_graphics_dma_packets(int arg0, int idx, int n) {
     g_render_packet_cursor[2] = 0x13000000;
     g_render_packet_cursor[3] = 0x50000003;
     g_render_packet_cursor += 4;
-    func_002298B0(arg0, ((int *)&D_00160460)[idx]);
+    emit_setup_strips_of_kind(arg0, ((int *)&setup_strip_pass_words)[idx]);
 }
 
 struct DisplayDims_284E8 {
@@ -10732,7 +10732,7 @@ extern void append_fullscreen_setup_strips(void);
 extern void prepare_scaled_direction_and_perpendicular_r(f32 *, f32) __asm__("func_002282D0");
 extern u8 *parse_typed_resource_record_r(u8 *) __asm__("func_00228400");
 extern void stretch_scratchpad_segments_to_depths(f32 *, f32 *);
-extern void func_00228D20(u32, s32, s32);
+extern void project_setup_strips_to_screen(u32, s32, s32);
 extern void emit_selected_graphics_dma_packets(s32, s32, s32);
 extern void func_00234C98_28860(s32, s64) __asm__("func_00234C98");
 extern void append_fullscreen_clear_strips(s64);
@@ -10764,7 +10764,7 @@ void submit_graphics_setup_command_stream(u8 *command_stream) {
         for (command_index = 0; command_index < record->command_count; command_index++) {
             command_stream = parse_typed_resource_record_r(command_stream);
             stretch_scratchpad_segments_to_depths(first_vector, second_vector);
-            func_00228D20(0x70000000, graphics_setup_word, record->command_flags);
+            project_setup_strips_to_screen(0x70000000, graphics_setup_word, record->command_flags);
             emit_selected_graphics_dma_packets(2, 1, 2);
             emit_selected_graphics_dma_packets(1, 0, 2);
         }

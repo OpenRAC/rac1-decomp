@@ -370,7 +370,7 @@ extern int CarriedMobyUpdate(void *, void *);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time_sq_b __asm__("D_0015EE70") MACRO_ADDR;
 extern short class238_landing_roll_distance;
-extern short D_L18_00161A18;
+extern short class238_move_params;
 extern int g_hero_moby NOT_SDA;
 
 /* Moby update for a launchable object (class 0x238) fired by func_L18_002D70E8. */
@@ -383,7 +383,7 @@ void update_class_238_moby(unsigned char *raw) {
     case 0:
         moby->collision = 0;
         moby->flags = (moby->flags | 0x41) & 0xEFFF;
-        *(void **)(data + 0xD0) = &D_L18_00161A18;
+        *(void **)(data + 0xD0) = &class238_move_params;
         *(float *)(data + 0x30) = 0.05f;
         moby->state = 5;
         break;
@@ -913,7 +913,7 @@ void thruster_pack_lock_green_update(char *moby) {
     }
 }
 typedef struct { char pad[0x58]; char *base; char pad2[0x100]; } L18Glob;
-extern L18Glob D_L18_00160000 MACRO_ADDR;
+extern L18Glob veldin2_moby_table_base MACRO_ADDR;
 extern float FastDiffRots(float, float);
 
 typedef struct { char pad0[0x10]; float x; float y; } L18Pos;
@@ -926,9 +926,9 @@ void *find_class_247_moby_with_largest_xy_angle_in_list(float *a, float *b, int 
     if (p == 0) return 0;
     while (1) {
         int off = (*p & 0x7FFF) << 8;
-        if (*(short *)(off + (int)D_L18_00160000.base + 0xA6) == 0x247) {
+        if (*(short *)(off + (int)veldin2_moby_table_base.base + 0xA6) == 0x247) {
             float ang = fast_atan2(a[0] - b[0], a[1] - b[1]);
-            L18Pos *m = (L18Pos *)(off + (int)D_L18_00160000.base);
+            L18Pos *m = (L18Pos *)(off + (int)veldin2_moby_table_base.base);
             float d = FastDiffRots(ang, fast_atan2(a[0] - m->x, a[1] - m->y));
             if (bestd < d) {
                 bestd = d;
@@ -2016,7 +2016,7 @@ extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern void CameraScript2(int);
 extern float FastSubRots(float, float);
-extern int D_L18_0017EF88;
+extern int veldin2_position_transition_flag;
 extern float veldin2_screen_fade MACRO_ADDR;
 extern int position_and_rotation_transition_active MACRO_ADDR;
 extern int veldin2_help_popup_state[];
@@ -2031,7 +2031,7 @@ void update_position_and_rotation_transition(char *moby) {
         ((unsigned char *)moby)[0x30] = 0xFF;
         break;
     case 2:
-        D_L18_0017EF88 = 1;
+        veldin2_position_transition_flag = 1;
         ApproachValue((float *)(data + 0x6C), 1.0f, g_frame_time * 4.0f);
         {
         float t = *(float *)(data + 0x6C);
@@ -2054,7 +2054,7 @@ void update_position_and_rotation_transition(char *moby) {
         }
         break;
     case 3:
-        D_L18_0017EF88 = 1;
+        veldin2_position_transition_flag = 1;
         if (fast_dec_timer((int *)(data + 0x74))) {
             ApproachWithVelocity((float *)(data + 0x60), (float *)(data + 0x64), 1.0f, *(float *)(data + 0x68), *(float *)(data + 0x68), *(float *)(data + 0x70));
         }
@@ -2659,7 +2659,7 @@ extern short D_L18_00162166_2EC0C8[] __asm__("D_L18_00162166") MACRO_ADDR;
 extern short electric_bolt_branch_timers_r[4] __asm__("D_L18_00162148") MACRO_ADDR;
 extern int D_L18_00162168_2EC0C8 __asm__("D_L18_00162168") MACRO_ADDR;
 extern short D_L18_0016216C_2EC0C8 __asm__("D_L18_0016216C");
-extern float D_L18_001D9FC0_2EC0C8[][4] __asm__("D_L18_001D9FC0");
+extern float electric_bolt_points_base_r[][4] __asm__("D_L18_001D9FC0");
 extern float electric_bolt_points_r[][4] __asm__("D_L18_001D9FD0");
 extern int electric_bolt_wave_heights_r[] __asm__("D_L18_001DA250");
 extern float electric_bolt_twist_offsets_r[][4] __asm__("D_L18_001DA2A0");
@@ -2688,7 +2688,7 @@ void func_L18_002EC0C8_r(struct Moby *m) {
         vec_scale_to_length_r(step, v, (*(float *)&electric_bolt_init_span_scale_r) / 20.0f);
         qcopy(electric_bolt_points_r, &m->pos);
         for (i = 1; i < 20; i++) {
-            FastVecAdd_r(electric_bolt_points_r[i], D_L18_001D9FC0_2EC0C8[i], step);
+            FastVecAdd_r(electric_bolt_points_r[i], electric_bolt_points_base_r[i], step);
             electric_bolt_wave_heights_r[i] = 0;
             clear_u64_value_r3(electric_bolt_twist_offsets_r[i]);
             electric_bolt_twist_heights_r[i] = 0;
@@ -2738,13 +2738,13 @@ extern short electric_bolt_color;
 extern short electric_bolt_spark_reach;
 extern short electric_bolt_wander_blend;
 extern float frame_scale MACRO_ADDR;
-extern V_ec290 D_L18_001D9FC0[];
+extern V_ec290 electric_bolt_points_base[];
 extern V_ec290 electric_bolt_points[2][20];
 extern V_ec290 electric_bolt_twist_offsets[];
 extern float electric_bolt_wave_heights[];
 extern float electric_bolt_twist_heights[];
 typedef struct { V_ec290 hdr; V_ec290 p[4]; } H_ec290;
-extern H_ec290 D_L18_001DA420[];
+extern H_ec290 electric_bolt_branch_points_base[];
 extern P_ec290 electric_bolt_branch_points[];
 extern short electric_bolt_branch_timers[] MACRO_ADDR;
 extern short electric_bolt_branch_alpha[] MACRO_ADDR;
@@ -2802,11 +2802,11 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
             qcopy(&electric_bolt_points[0][i], &electric_bolt_points[0][i - 1]);
         } else {
             FastVecScale(&s[2], &s[2], scale / len0);
-            FastVecAdd(&electric_bolt_points[0][i], &D_L18_001D9FC0[i], &s[2]);
+            FastVecAdd(&electric_bolt_points[0][i], &electric_bolt_points_base[i], &s[2]);
             qcopy(&s[3], &s[2]);
         }
         electric_bolt_points[0][i].f[2] = electric_bolt_points[0][i].f[2] + f21;
-        FastVecSub(&s[1], &electric_bolt_points[0][i], &D_L18_001D9FC0[i]);
+        FastVecSub(&s[1], &electric_bolt_points[0][i], &electric_bolt_points_base[i]);
         FastVecSub(&s[5], data + 0x10, &electric_bolt_points[0][i]);
         len = FastVecLength(&s[5]);
         if (len != 0.0f) {
@@ -2875,23 +2875,23 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
             FastVecAdd(&electric_bolt_branch_points[k].p[1], &s[8], &s[5]);
             t = 1.0f;
             for (j = 2; j < 5; j++) {
-                FastVecSub(&s[9], &D_L18_001DA420[k].p[j - 1], veldin2_camera_pos);
+                FastVecSub(&s[9], &electric_bolt_branch_points_base[k].p[j - 1], veldin2_camera_pos);
                 f20 = random_float_between(0.17453292f, 0.959931076f) * t;
                 t = -t;
                 build_look_at_matrix(&s[5], &s[5], &s[9], f20);
-                FastVecAdd((electric_bolt_branch_points[k].p + j), &D_L18_001DA420[k].p[j - 1], &s[5]);
+                FastVecAdd((electric_bolt_branch_points[k].p + j), &electric_bolt_branch_points_base[k].p[j - 1], &s[5]);
             }
         } else {
             int j;
             for (j = 1; j < 5; j++) {
-                FastVecSub(&d[j], (electric_bolt_branch_points[k].p + j), &D_L18_001DA420[k].p[j - 1]);
+                FastVecSub(&d[j], (electric_bolt_branch_points[k].p + j), &electric_bolt_branch_points_base[k].p[j - 1]);
                 d[j].f[0] += randf_sym(0.0f, 0.1f);
                 d[j].f[1] += randf_sym(0.0f, 0.1f);
                 d[j].f[2] += randf_sym(0.0f, 0.1f);
             }
             qcopy(&electric_bolt_branch_points[k].p[0], &s[8]);
             for (j = 1; j < 5; j++) {
-                FastVecAdd((electric_bolt_branch_points[k].p + j), &D_L18_001DA420[k].p[j - 1], &d[j]);
+                FastVecAdd((electric_bolt_branch_points[k].p + j), &electric_bolt_branch_points_base[k].p[j - 1], &d[j]);
             }
             {
                 int x = electric_bolt_branch_peak_ticks[k];

@@ -322,8 +322,8 @@ void update_linked_moby_scale_and_rotation(char *m) {
 }
 extern short walloper_arc_timers[];
 extern short walloper_arc_alpha[];
-extern short D_L00_001DC1F0[];
-extern short D_L00_001DC208[];
+extern short walloper_arc_state_a[];
+extern short walloper_arc_state_b[];
 extern char walloper_arc_points[];
 typedef struct { float previous[4]; float point[4][4]; } SparkleRowC860;
 extern SparkleRowC860 D_L00_001DBE90_rows[] __asm__("D_L00_001DBE90");
@@ -333,7 +333,7 @@ extern int walloper_fade_in_timer MACRO_ADDR;
 extern int walloper_fade_out_timer MACRO_ADDR;
 extern float walloper_effect_fade MACRO_ADDR;
 extern short walloper_arc_spread;
-extern float D_L00_0017AFBC;
+extern float held_weapon_tesla_walloper_factor;
 extern float MobyGetFrameValue(void *);
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern float IntToFloat(int);
@@ -358,15 +358,15 @@ void walloper_update(char *m) {
     int any;
 
     if (*(unsigned char *)(*(char **)(g + 0x2080) + 0x53) != 0x82) {
-        D_L00_0017AFBC = 0.1f;
+        held_weapon_tesla_walloper_factor = 0.1f;
     }
     switch (*(unsigned char *)(m + 0x20)) {
     case 0:
         m[0x20] = 2;
         for (q = 0; q < 10; q++) {
             walloper_arc_timers[q] = 0;
-            D_L00_001DC1F0[q] = 2;
-            D_L00_001DC208[q] = 1;
+            walloper_arc_state_a[q] = 2;
+            walloper_arc_state_b[q] = 1;
         }
         walloper_fade_in_timer = scale_ticks(*(int *)&walloper_fade_in_ticks);
         walloper_fade_out_timer = scale_ticks(*(int *)&walloper_fade_out_ticks);
@@ -1060,7 +1060,7 @@ extern short tesla_ring_tex_u_scroll_b;
 extern int tesla_rail_twist_phase MACRO_ADDR;
 extern int tesla_pulse_active[] MACRO_ADDR;
 extern int tesla_pulse_spawn_timer MACRO_ADDR;
-extern char D_L00_001DC250[];
+extern char tesla_chain_points_base[];
 extern Vec4A tesla_pulse_dir[];
 
 /* rebuilds the camera tables from a moby's matrix */
@@ -1076,7 +1076,7 @@ void reset_beam_chain_and_pulse_state(char *m) {
         FastVecScale(v, m + 0xD0, -f);
         qcopy(&tesla_chain_points, p);
         for (i = 10; i >= 0; i--) {
-            FastVecAdd((char *)&tesla_chain_points + 16 * (11 - i), D_L00_001DC250 + 16 * (11 - i), v);
+            FastVecAdd((char *)&tesla_chain_points + 16 * (11 - i), tesla_chain_points_base + 16 * (11 - i), v);
         }
         *(int *)&tesla_ring_tex_v_scroll = 0;
         *(int *)&tesla_ring_tex_u_scroll_a = 0;
@@ -1132,7 +1132,7 @@ extern float tesla_pulse_alpha_r[3] __asm__("D_L00_001618B8") MACRO_ADDR;
 extern float tesla_pulse_travel_r[3] __asm__("D_L00_001618C8") MACRO_ADDR;
 extern float tesla_pulse_size_r[3] __asm__("D_L00_001618D8") MACRO_ADDR;
 extern int tesla_pulse_active_r[3] __asm__("D_L00_001618E8") MACRO_ADDR;
-extern Vec4A D_L00_001DC250_2BE3A8[12] __asm__("D_L00_001DC250");
+extern Vec4A tesla_chain_points_base_r[12] __asm__("D_L00_001DC250");
 extern Vec4A tesla_chain_points_r[12] __asm__("D_L00_001DC260");
 extern Vec4A tesla_rail0_points_r[12] __asm__("D_L00_001DC320");
 extern Vec4A tesla_rail1_points_r[12] __asm__("D_L00_001DC3E0");
@@ -1369,7 +1369,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
         rem = tesla_pulse_travel_r[q] - IntToFloat_r2(n) * tesla_chain_segment_length_r;
         qcopy(&tesla_pulse_pos_r[q], &tesla_chain_points_r[n]);
         if (n == 11) {
-            FastVecSub_r(&side, &tesla_chain_points_r[n], &D_L00_001DC250_2BE3A8[n]);
+            FastVecSub_r(&side, &tesla_chain_points_r[n], &tesla_chain_points_base_r[n]);
         } else {
             FastVecSub_r(&side, &tesla_chain_points_r[n + 1], &tesla_chain_points_r[n]);
         }
@@ -1393,7 +1393,7 @@ typedef struct {
     float uv[8];
     long unk70, tex, unk80, unk88;
 } Quad;
-extern u8 D_0013E635 NOT_SDA;
+extern u8 gGoldMorphORay NOT_SDA;
 extern short tesla_ring_tex_v_step;
 extern short tesla_ring_tex_u_step;
 extern short tesla_ring_tex_v_scroll;
@@ -1416,7 +1416,7 @@ extern short tesla_ring_tex;
 extern Vec4 g_debug_camera_r __asm__("D_L00_00166EC0");
 extern Vec4 tesla_rail0_points[];
 extern Vec4 tesla_rail1_points[];
-extern OvlQuad D_L00_001DC360[][20];
+extern OvlQuad tesla_ring_vertices_base[][20];
 extern OvlQuad tesla_ring_vertices[][20];
 void func_L00_002BF380_BEF58(void *, int, int, int, float, float, float, int) __asm__("func_L00_002BF380");
 void draw_beam_pulse_quads(void *);
@@ -1441,7 +1441,7 @@ void draw_beam_ring_and_rail_effects(void *o) {
     func_L00_002BF380_BEF58(tesla_rail1_points, (*(int *)&tesla_rail_inner_alpha), (*(int *)&tesla_rail_outer_alpha), 12, (*(float *)&tesla_rail_half_width), (*(float *)&tesla_rail_outer_half_width), (*(float *)&tesla_rail_end_extension), (*(int *)&tesla_rail1_outer_color));
     draw_beam_pulse_quads(o);
     draw_beam_origin_camera_facing_quads(o);
-    k = D_0013E635;
+    k = gGoldMorphORay;
     c = k ? (*(int *)&tesla_ring_alt_color) : (*(int *)&tesla_ring_color);
     quad.tex = func_001F4868_BEF58((*(int *)&tesla_ring_tex));
     quad.unk80 = 0xFF9000000260L;
@@ -1465,8 +1465,8 @@ void draw_beam_ring_and_rail_effects(void *o) {
         for (j = 0; j < 20; j++) {
             qcopy(&quad.corner[0], &tesla_ring_vertices[i][j]);
             qcopy(&quad.corner[1], &tesla_ring_vertices[i][(j + 1) % 20]);
-            qcopy(&quad.corner[2], &D_L00_001DC360[i][j]);
-            qcopy(&quad.corner[3], &D_L00_001DC360[i][(j + 1) % 20]);
+            qcopy(&quad.corner[2], &tesla_ring_vertices_base[i][j]);
+            qcopy(&quad.corner[3], &tesla_ring_vertices_base[i][(j + 1) % 20]);
             FastVecSub(&d1, &quad.corner[0], &quad.corner[1]);
             FastVecSub(&d2, &quad.corner[2], &quad.corner[1]);
             FastVecCross(&n, &d2, &d1);

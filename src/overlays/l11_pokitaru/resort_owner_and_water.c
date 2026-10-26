@@ -1167,11 +1167,11 @@ void fred_pokitaru_update(char *m)
     EaseManipulatorOffsets_r(m, (char *)moby_vars->head, 1, rate * g_frame_scale_sq_r, head_rate * g_frame_scale_sq_r);
 }
 extern char g_hero_r[] __asm__("D_0013F450");
-extern float D_0013F4D8;
+extern float g_hero_pos_z;
 extern int pad0_pressed;
 extern int pokitaru_shown_help_message MACRO_ADDR;
 extern char * pokitaru_mobys MACRO_ADDR;
-extern unsigned char D_001414F5 NOT_SDA;
+extern unsigned char g_hero_field_20a5 NOT_SDA;
 extern unsigned char menu_item_enabled_73 NOT_SDA;
 extern short pokitaru_teleporter_accel;
 extern short pokitaru_teleporter_decel;
@@ -1291,7 +1291,7 @@ void Moby318Update(struct Moby *moby) {
             qcopy(v, t + 0x10);
             v[2] += 0.2f;
             Hero_ResetToPosition(v, t + 0x40, 0, 1);
-            D_001414F5 = 1;
+            g_hero_field_20a5 = 1;
             if (*(int *)(data + 0x30) != -1 && *(int *)(data + 0x34) != -1) {
                 MusicRequestTrack(*(int *)(data + 0x30), *(int *)(data + 0x34));
             }
@@ -1313,7 +1313,7 @@ void Moby318Update(struct Moby *moby) {
         }
         break;
     case 4:
-        if (D_0013F4D8 < 138.0f)
+        if (g_hero_pos_z < 138.0f)
             menu_item_enabled_73 = 1;
         if (*(float *)(data + 0x3C) < 1.95f) {
             AddDrawCallback(draw_teleporter_ring, moby);
@@ -1366,7 +1366,7 @@ typedef struct {
 extern short pokitaru_teleporter_ring_alpha_a, pokitaru_teleporter_ring_alpha_b, pokitaru_teleporter_ring_alpha_c, pokitaru_teleporter_ring_alpha_d, pokitaru_teleporter_ring_texture, pokitaru_teleporter_ring_color;
 extern short pokitaru_teleporter_ring_height;
 extern float pokitaru_teleporter_ring_uvs[];
-extern unsigned char D_001414F5_r __asm__("D_001414F5") NOT_SDA;
+extern unsigned char g_hero_field_20a5_r __asm__("D_001414F5") NOT_SDA;
 extern void copy_matrix_rotation(void *, void *);
 extern long GetEffectTex(int);
 extern float FastSin(float);
@@ -1403,9 +1403,9 @@ void draw_teleporter_ring(char *moby) {
         }
         h = t + 0.1f;
         if (*(float *)(d + 0x3C) < 0.65f) {
-            D_001414F5_r = 1;
+            g_hero_field_20a5_r = 1;
         } else {
-            D_001414F5_r = 0;
+            g_hero_field_20a5_r = 0;
         }
     }
     for (j = 0; j < 32; j = nj) {
@@ -1889,14 +1889,14 @@ extern void CameraScript2(int);
 
 extern Moby *child_set0_mobys[6];
 extern Moby *pokitaru_class_481_mobys[4] MACRO_ADDR;
-extern Moby *D_L11_00161FC0[4] MACRO_ADDR;
-extern Moby *D_L11_00161FA0[4] MACRO_ADDR;
+extern Moby *pokitaru_class_482_mobys[4] MACRO_ADDR;
+extern Moby *pokitaru_class_483_mobys[4] MACRO_ADDR;
 extern char *pokitaru_mobys_r __asm__("D_L11_00160058") MACRO_ADDR;
 extern char *path_points_14b0 MACRO_ADDR;
 extern float pokitaru_fade_level MACRO_ADDR;
 extern unsigned char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern float child_sets_open_progress SDATA(D_L11_00161F54);
-extern float D_L11_00161F58 SDATA(D_L11_00161F58);
+extern float child_sets_left_swing_progress SDATA(D_L11_00161F58);
 extern float child_sets_right_swing_progress SDATA(D_L11_00161F5C);
 extern float child_sets_odd_turn_progress SDATA(D_L11_00161F60);
 extern float child_sets_even_turn_progress SDATA(D_L11_00161F64);
@@ -1924,7 +1924,7 @@ void update_child_sets_controller(Moby *moby) {
         moby->visible = 0;
         moby->collision = 0;
         child_sets_open_progress = 0.0f;
-        D_L11_00161F58 = 0.0f;
+        child_sets_left_swing_progress = 0.0f;
         child_sets_right_swing_progress = 0.0f;
         child_sets_odd_turn_progress = 0.0f;
         child_sets_even_turn_progress = 0.0f;
@@ -1959,34 +1959,34 @@ void update_child_sets_controller(Moby *moby) {
         }
         for (k = 0; k < 4; k++) {
             Moby *c;
-            D_L11_00161FC0[k] = (Moby *)CreateMoby(0x482);
-            D_L11_00161FC0[k]->draw_dist = 0x40;
-            D_L11_00161FC0[k]->visible = 1;
-            D_L11_00161FC0[k]->spawn_frame = (*(long *)&((Hero *)(hero_globals_base + 0xE1D))->moby->spawn_frame);
-            c = D_L11_00161FC0[k];
+            pokitaru_class_482_mobys[k] = (Moby *)CreateMoby(0x482);
+            pokitaru_class_482_mobys[k]->draw_dist = 0x40;
+            pokitaru_class_482_mobys[k]->visible = 1;
+            pokitaru_class_482_mobys[k]->spawn_frame = (*(long *)&((Hero *)(hero_globals_base + 0xE1D))->moby->spawn_frame);
+            c = pokitaru_class_482_mobys[k];
             qcopy(&c->pos, &moby->pos);
             qcopy(&c->rot, &moby->rot);
             c->flags |= 1;
-            D_L11_00161FC0[k]->visible = 0;
-            D_L11_00161FC0[k]->collision = 0;
+            pokitaru_class_482_mobys[k]->visible = 0;
+            pokitaru_class_482_mobys[k]->collision = 0;
         }
         for (l = 0; l < 4; l++) {
             Moby *c;
             Sub_30DBF8 *s;
-            D_L11_00161FA0[l] = (Moby *)CreateMoby(0x483);
-            D_L11_00161FA0[l]->draw_dist = 0x40;
-            D_L11_00161FA0[l]->visible = 1;
-            D_L11_00161FA0[l]->spawn_frame = (*(long *)&((Hero *)(hero_globals_base + 0xE1D))->moby->spawn_frame);
-            c = D_L11_00161FA0[l];
+            pokitaru_class_483_mobys[l] = (Moby *)CreateMoby(0x483);
+            pokitaru_class_483_mobys[l]->draw_dist = 0x40;
+            pokitaru_class_483_mobys[l]->visible = 1;
+            pokitaru_class_483_mobys[l]->spawn_frame = (*(long *)&((Hero *)(hero_globals_base + 0xE1D))->moby->spawn_frame);
+            c = pokitaru_class_483_mobys[l];
             qcopy(&c->pos, &moby->pos);
             qcopy(&c->rot, &moby->rot);
             c->flags |= 0x20;
-            s = (void *)D_L11_00161FA0[l]->pvars;
+            s = (void *)pokitaru_class_483_mobys[l]->pvars;
             s->f8 = s->f20;
             s->f5C |= 1;
-            D_L11_00161FA0[l]->flags |= 1;
-            D_L11_00161FA0[l]->visible = 0;
-            D_L11_00161FA0[l]->collision = 0;
+            pokitaru_class_483_mobys[l]->flags |= 1;
+            pokitaru_class_483_mobys[l]->visible = 0;
+            pokitaru_class_483_mobys[l]->collision = 0;
         }
         update_child_set_poses(moby);
         moby->state = 1;
@@ -2019,14 +2019,14 @@ void update_child_sets_controller(Moby *moby) {
                 pokitaru_class_481_mobys[n]->collision = ((Anim_30DBF8 *)pokitaru_class_481_mobys[n]->pclass)->f10;
             }
             for (o = 0; o < 4; o++) {
-                D_L11_00161FC0[o]->flags &= ~1;
-                D_L11_00161FC0[o]->visible = 1;
-                D_L11_00161FC0[o]->collision = ((Anim_30DBF8 *)D_L11_00161FC0[o]->pclass)->f10;
+                pokitaru_class_482_mobys[o]->flags &= ~1;
+                pokitaru_class_482_mobys[o]->visible = 1;
+                pokitaru_class_482_mobys[o]->collision = ((Anim_30DBF8 *)pokitaru_class_482_mobys[o]->pclass)->f10;
             }
             for (p = 0; p < 4; p++) {
-                D_L11_00161FA0[p]->flags &= ~1;
-                D_L11_00161FA0[p]->visible = 1;
-                D_L11_00161FA0[p]->collision = ((Anim_30DBF8 *)D_L11_00161FA0[p]->pclass)->f10;
+                pokitaru_class_483_mobys[p]->flags &= ~1;
+                pokitaru_class_483_mobys[p]->visible = 1;
+                pokitaru_class_483_mobys[p]->collision = ((Anim_30DBF8 *)pokitaru_class_483_mobys[p]->pclass)->f10;
             }
             Moby_PlaySound_u(0, 0, moby);
         }
@@ -2035,19 +2035,19 @@ void update_child_sets_controller(Moby *moby) {
         if (child_sets_open_progress < 1.0f) {
             ApproachWithVelocity_f(&child_sets_open_progress, &child_sets_open_velocity, 1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time);
         }
-        if (child_sets_open_progress > 0.9f && D_L11_00161F58 == 0.0f) {
+        if (child_sets_open_progress > 0.9f && child_sets_left_swing_progress == 0.0f) {
             Moby_PlaySound_u(1, 0, moby);
         }
-        if (child_sets_open_progress > 0.9f && D_L11_00161F58 < 1.0f) {
-            ApproachWithVelocity_f(&D_L11_00161F58, &child_sets_left_swing_velocity, 1.0f, g_frame_time_sq * 2.0f, g_frame_time_sq * 2.0f, g_frame_time * 2.0f);
+        if (child_sets_open_progress > 0.9f && child_sets_left_swing_progress < 1.0f) {
+            ApproachWithVelocity_f(&child_sets_left_swing_progress, &child_sets_left_swing_velocity, 1.0f, g_frame_time_sq * 2.0f, g_frame_time_sq * 2.0f, g_frame_time * 2.0f);
         }
-        if (D_L11_00161F58 > 0.5f && child_sets_right_swing_progress == 0.0f) {
+        if (child_sets_left_swing_progress > 0.5f && child_sets_right_swing_progress == 0.0f) {
             Moby_PlaySound_u(1, 0, moby);
         }
-        if (D_L11_00161F58 > 0.5f && child_sets_right_swing_progress < 1.0f) {
+        if (child_sets_left_swing_progress > 0.5f && child_sets_right_swing_progress < 1.0f) {
             ApproachWithVelocity_f(&child_sets_right_swing_progress, &child_sets_right_swing_velocity, 1.0f, g_frame_time_sq * 2.0f, g_frame_time_sq * 2.0f, g_frame_time * 2.0f);
         }
-        if (D_L11_00161F58 >= 1.0f && child_sets_odd_turn_progress < 1.0f) {
+        if (child_sets_left_swing_progress >= 1.0f && child_sets_odd_turn_progress < 1.0f) {
             ApproachWithVelocity_f(&child_sets_odd_turn_progress, &child_sets_odd_turn_velocity, 1.0f, g_frame_time_sq * 2.0f, g_frame_time_sq * 2.0f, g_frame_time * 2.0f);
         }
         if (child_sets_right_swing_progress >= 1.0f && child_sets_even_turn_progress < 1.0f) {
@@ -2073,7 +2073,7 @@ void update_child_sets_controller(Moby *moby) {
         set_camera_rotation(b);
         if (data->fC >= 1.0f) {
             child_sets_open_progress = 1.0f;
-            D_L11_00161F58 = 1.0f;
+            child_sets_left_swing_progress = 1.0f;
             child_sets_right_swing_progress = 1.0f;
             child_sets_odd_turn_progress = 1.0f;
             child_sets_even_turn_progress = 1.0f;
@@ -2251,7 +2251,7 @@ void update_child_set_poses(void *mv) {
 #undef refresh_p
 extern void Moby_PlaySound(int, int, int);
 extern void update_child_grid_poses(struct Moby *);
-extern short D_L11_00161FE4;
+extern short child_grid_fade_start_word;
 extern short child_grid_camera_accel;
 extern short child_grid_camera_decel;
 extern short child_grid_camera_max_speed;
@@ -2315,7 +2315,7 @@ void update_child_grid_controller(char *m) {
         if (o->command == 1) {
             grid_controller->state = CHILD_GRID_STATE_FADE_TO_POINT_POSE;
             d->f78 = -1.0f;
-            *(int *)&D_L11_00161FE4 = 0;
+            *(int *)&child_grid_fade_start_word = 0;
             Moby_PlaySound(0, 0, (int)m);
         } else if (o->command == 2) {
             d->f6C = 1.0f;
@@ -2520,10 +2520,10 @@ extern float pokitaru_pool_sun[];
 extern void *pokitaru_pool_draw_tiles MACRO_ADDR;
 extern void *pokitaru_pool_draw_tex MACRO_ADDR;
 extern int pokitaru_pool_draw_count MACRO_ADDR;
-extern float D_L11_0016128C MACRO_ADDR;
-extern float D_L11_00161290 MACRO_ADDR;
-extern float D_L11_00161294 MACRO_ADDR;
-extern int D_L11_00161288 MACRO_ADDR;
+extern float pokitaru_pool_draw_fixed_scale MACRO_ADDR;
+extern float pokitaru_pool_draw_max_255 MACRO_ADDR;
+extern float pokitaru_pool_draw_param_48 MACRO_ADDR;
+extern int pokitaru_pool_draw_cleared_word MACRO_ADDR;
 extern int pokitaru_water_tint_r MACRO_ADDR;
 extern int pokitaru_water_tint_g MACRO_ADDR;
 extern int pokitaru_water_tint_b MACRO_ADDR;
@@ -2531,7 +2531,7 @@ extern int pokitaru_water_tint_a MACRO_ADDR;
 extern int pokitaru_water_tint2_r MACRO_ADDR;
 extern int pokitaru_water_tint2_g MACRO_ADDR;
 extern int pokitaru_water_tint2_b MACRO_ADDR;
-extern float D_L11_00167848;
+extern float pokitaru_camera_pos_z;
 extern void STUB_printf(char *);
 extern void RipplePatchesInit(void *, int);
 extern void RescaleFloatTable(float);
@@ -2558,7 +2558,7 @@ void update_water_tile(struct Moby *m) {
     int n;
     float f;
 
-    if (D_L11_00167848 <= 180.0f) {
+    if (pokitaru_camera_pos_z <= 180.0f) {
         *(unsigned char *)&pokitaru_water_tint_r = 0;
         *(unsigned char *)&pokitaru_water_tint_g = 0x28;
         *(unsigned char *)&pokitaru_water_tint_b = 0x30;
@@ -2609,10 +2609,10 @@ void update_water_tile(struct Moby *m) {
             pokitaru_pool_draw_tiles = D_L11_001DA880_pv;
             pokitaru_pool_draw_tex = D_L11_001DA740_pv;
             pokitaru_pool_draw_count = 20;
-            D_L11_0016128C = 32768.0f;
-            D_L11_00161290 = 255.0f;
-            D_L11_00161294 = 48.0f;
-            D_L11_00161288 = 0;
+            pokitaru_pool_draw_fixed_scale = 32768.0f;
+            pokitaru_pool_draw_max_255 = 255.0f;
+            pokitaru_pool_draw_param_48 = 48.0f;
+            pokitaru_pool_draw_cleared_word = 0;
         }
         D_L11_001DA880_pv[pv[1]].x = m->pos.x;
         D_L11_001DA880_pv[pv[1]].y = m->pos.y;

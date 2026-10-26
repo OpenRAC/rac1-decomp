@@ -24,7 +24,7 @@ void smooth_and_clamp_value_pair(float *out, float *p, float step) {
     out[1] = p[1];
 }
 /* Pose/tilt lookup for an animation id: *out = 0, returns 1 for the ids that apply. */
-int func_L05_0023BA18(int id, float *out) {
+int hero_anim_tilt_lookup(int id, float *out) {
     char *g;
     *out = 0.0f;
     g = (char *)hero_globals_base + 0xE1D;
@@ -64,10 +64,10 @@ extern void MobyBlendAnimation(void *, int, int, int);
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern char help_stats_base[] NOT_SDA;
 extern int g_game_language_m[] __asm__("D_0015EE88") MACRO_ADDR;
-extern int D_0015EE90 MACRO_ADDR;
+extern int hero_slot0_item_8_selected MACRO_ADDR;
 typedef struct { char pad[0x20]; int f20; char pad2[0x28]; } Rec20;
 extern Rec20 rilgar_item_defs[];
-extern int D_0015EE94 MACRO_ADDR;
+extern int hero_slot3_mode_3_selected MACRO_ADDR;
 
 typedef struct {
     char pad0[0x10B8];
@@ -373,16 +373,16 @@ void apply_hero_item_slot_selection(int i) {
         }
         if (i == 0) {
             if (*(int *)(hero_globals_base + 0xE1D + 0x20D4) == 8) {
-                D_0015EE90 = 1;
+                hero_slot0_item_8_selected = 1;
             } else {
-                D_0015EE90 = 0;
+                hero_slot0_item_8_selected = 0;
             }
         }
         if (i == 3) {
             if (((Sel *)(hero_globals_base + 0xE1D))->f11A8 == 3) {
-                D_0015EE94 = 1;
+                hero_slot3_mode_3_selected = 1;
             } else {
-                D_0015EE94 = 0;
+                hero_slot3_mode_3_selected = 0;
             }
         }
         {
@@ -424,7 +424,7 @@ typedef struct {
 extern struct Hero g_hero_r __asm__("D_0013F450");
 extern int rilgar_frame_count_r __asm__("D_L05_0015F6B0") MACRO_ADDR;
 extern CollisionHit_4C558 rilgar_coll_hit_r __asm__("D_L05_00174340") NOT_SDA;
-extern u8 D_L05_00174360_4C558[] __asm__("D_L05_00174360") NOT_SDA;
+extern u8 rilgar_coll_hit_point_r[] __asm__("D_L05_00174360") NOT_SDA;
 extern u8 rilgar_hero_bob_attach_euler_r[] __asm__("D_L05_0017AC20") NOT_SDA;
 extern void integrate_hero_motion_with_collisions_r(void) __asm__("func_L05_00241AA0");
 extern int probe_hero_forward_collision_r(float, float, float *) __asm__("func_L00_0020A8B8");
@@ -477,7 +477,7 @@ void update_hero_movement_and_collision_probes(void) {
             distance = 20.0f;
             hit = coll_line_r(start, end, 2, g_hero_r.moby, 0);
             if (hit)
-                distance = FastVecDist_r(start, D_L05_00174360_4C558);
+                distance = FastVecDist_r(start, rilgar_coll_hit_point_r);
             if (!hit || distance > 3.0f) {
                 for (offset = -0.4f; offset < 0.5f; offset += 0.1f) {
                     transform_hero_local_offset_to_world_r(probe, 1.1f + offset, 0.0f, 0.0f);
@@ -507,7 +507,7 @@ void update_hero_movement_and_collision_probes(void) {
     }
 }
 extern short rilgar_frame_count;
-extern float D_L05_00174368;
+extern float rilgar_coll_hit_z;
 extern float FastAbsF(float);
 extern void hero_get_collision_ray_endpoints(void *, void *, int, float, float);
 extern int coll_line(void *, void *, int, int, int);
@@ -587,7 +587,7 @@ int try_apply_hero_water_and_ground_transitions(void) {
         s2 = CollType();
         *(short *)(p + 0x12E0) = s2;
         if ((s2 << 16) != 0) goto done;
-        a[2] = D_L05_00174368 - 0.01f;
+        a[2] = rilgar_coll_hit_z - 0.01f;
         if (coll_line(a, b, 2, *(int *)(p + 0x2080), 0) != 0) goto done;
         Hero_TryMoveStateL05(0x34, 1);
         return 1;
@@ -637,8 +637,8 @@ typedef struct {
     int fDC;
 } Stats_2523C8;
 extern int hero_slot_item_id(int);
-extern unsigned short D_00141E80[] NOT_SDA;
-extern unsigned short D_00141A20[] NOT_SDA;
+extern unsigned short help_records_131_count[] NOT_SDA;
+extern unsigned short usage_stats_entry27_count[] NOT_SDA;
 extern int fast_subtract_rotations_cf(void *);
 extern int Help_Request(int a, int b);
 extern float fast_atan2(float, float);
@@ -931,7 +931,7 @@ int process_hero_primary_item_input(void) {
             int now, per;
 
             if (g_hero_h2523C8.race_ammo != 0) {
-                if (D_00141E80[0] == 0 && D_00141A20[0] == 0) {
+                if (help_records_131_count[0] == 0 && usage_stats_entry27_count[0] == 0) {
                     if (++g_hero_h2523C8.help_hint_frames > (int)((float)scale_ticks(0x14) * 60.0f)) {
                         Help_Request(0x3E81, 0x83);
                     }
@@ -1607,10 +1607,10 @@ void update_hero_hoverboard_race_progress(void) {
         update_resource_counter_r();
     }
 }
-extern unsigned char D_0013FD1E NOT_SDA;
+extern unsigned char g_hero_race_ammo NOT_SDA;
 // Load byte and return conditional value (swapped condition)
 int select_hero_hoverboard_animation_variant(void) {
-    unsigned char b = D_0013FD1E;  // selected help mode
+    unsigned char b = g_hero_race_ammo;  // selected help mode
     int r = 0x7F;
     if (b == 0)
         r = 0x55;
@@ -1864,7 +1864,7 @@ L_DEC:
     }
     return 0;
 }
-extern char D_L05_0017C168[];
+extern char rilgar_hoverboard_link_table[];
 
 // Clears two slots in the game state block and refills them when the flag is set and the mode is 0x15 or 0x16.
 void Hero_UpdateLinkedTarget(void) {
@@ -1876,7 +1876,7 @@ void Hero_UpdateLinkedTarget(void) {
     if (v != 0) {
         if ((unsigned)(*(int *)(g + 0x208C) - 0x15) < 2) {
             *(int *)(g + 0x2278) = v;
-            *(int *)(g + 0x227C) = (int)D_L05_0017C168;
+            *(int *)(g + 0x227C) = (int)rilgar_hoverboard_link_table;
         }
     }
 }

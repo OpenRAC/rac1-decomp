@@ -5,7 +5,7 @@ void update_enemy_fighter_921(Moby *m) {
     unsigned short id;
 
     if (m->state == 0
-        && (D_L14_001BBCC0_2FE038.collected[(short)(id = m->save_id)] != 0
+        && (oltanis_collected_flags_base_r3.collected[(short)(id = m->save_id)] != 0
             || (*(int *)(level_moby_killed_r3 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) & 1)) {
         mark_moby_and_linked_moby_for_removal_r((Moby *)(oltanis_mobys_r + (d->f8C << 8)));
         DeleteMoby_r3(m);

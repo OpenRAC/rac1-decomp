@@ -291,7 +291,7 @@ typedef struct {
     u8 b20A4;
 } P231ae0;
 extern P231ae0 g_hero_r2 __asm__("D_0013F450");
-extern f32 D_0013F670[];
+extern f32 g_hero_capsule_top[];
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
@@ -323,7 +323,7 @@ void Camera_UpdateFollowOffsets(void) {
         g_hero_r2.f230 = 0.8f;
     }
     if (!g_hero_r2.b257 || g_hero_r2.i2094 == 0x12 || g_hero_r2.i208C == 0x11 || g_hero_r2.b12E4 || vec_distance_xy(g_hero_r2.v210, g_hero_r2.v80) > g_hero_r2.f234 * 0.5f) {
-        f32 *q = D_0013F670;
+        f32 *q = g_hero_capsule_top;
         P231ae0 *b = (P231ae0 *)((u8 *)q - 0x220);
         func_00214D28_20A28(b->f228, frame_scale * 0.02f, q);
         func_00214D28_20A28(b->f22C, frame_scale * 0.02f, q + 1);
@@ -543,7 +543,7 @@ d1:
 }
 extern unsigned char hero_globals_base[] NOT_SDA;
 extern float frame_scale MACRO_ADDR;
-extern char D_L02_001744F0[];
+extern char aridia_coll_resolved_pos[];
 extern void clear_u64_value(void *);
 extern void Hero_ConstrainToPath(void);
 extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
@@ -600,7 +600,7 @@ int Camera_ResolveBlockedView(int arg) {
             n |= coll_sphere_hero_groups(hero.capsule_radius, &hero.motion.pos);
             if (n == 0) break;
         }
-        collision_response_data = (Vec4 *)D_L02_001744F0;
+        collision_response_data = (Vec4 *)aridia_coll_resolved_pos;
         qcopy(&hero.motion.pos, collision_response_data);
         qcopy(&hero.wall_contact_normal, collision_response_data + 1);
         qcopy(&hero.wall_contact_point, collision_response_data - 1);
@@ -654,7 +654,7 @@ extern int gameplay_event_frame_count MACRO_ADDR;
 extern short aridia_usage_event_timer;
 extern short aridia_usage_event_count;
 extern Cam aridia_player_camera;
-extern float D_L02_00167458;
+extern float aridia_player_camera_yaw;
 extern Moby *aridia_coll_sphere_moby_hits[];
 extern Rec2C aridia_attack_records[];
 extern S17BEB8 aridia_hero_speed_bands;
@@ -1868,7 +1868,7 @@ void update_hero_state_motion(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L02_00167458;
+                g_hero.motion.move_yaw = aridia_player_camera_yaw;
                 turn_to(0, g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 g_hero.motion.move_yaw = keep;
             }

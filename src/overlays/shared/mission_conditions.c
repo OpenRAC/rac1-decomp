@@ -57,12 +57,12 @@ int CollectMissionNodes(int *out, int *mask, int *nums, int arg3) {
     return count;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024EF28);
-extern int D_0013D9B4 NOT_SDA;
+extern int race_gates_47_flag NOT_SDA;
 extern unsigned char gSpecialItems[];
 
 /* Mission condition: D_0013D9B4 set, along with gSpecialItems[0x20] (Zoomerator/raritanium) and [0x21]. Joined with func_0020CC88. */
 int mission_cond_obj2f_and_specials(void) {
-    if (D_0013D9B4 != 0) {
+    if (race_gates_47_flag != 0) {
         if (gSpecialItems[0x20] != 0 && gSpecialItems[0x21] != 0) {
             return 1;
         }
@@ -85,20 +85,20 @@ int GetMapPointMissionStatus(void) {
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024F198);
-extern int D_0013D9B4 NOT_SDA;
+extern int race_gates_47_flag NOT_SDA;
 extern u8 menu_item_enabled_20 NOT_SDA;
 /* 0 when the word at 0x13D9B4 is 0, else 1 or 2 by whether the byte at 0x13D4B0 is set */
 int mission_cond_obj2f_variant(void) {
-    if (D_0013D9B4 == 0) return 0;
+    if (race_gates_47_flag == 0) return 0;
     if (menu_item_enabled_20 == 0) return 1;
     return 2;
 }
 extern u8 gHaveMorphORay NOT_SDA;
-extern int D_0013DC34 NOT_SDA;
+extern int race_gates_87_status NOT_SDA;
 /* 2 when the byte at 0x13D5DD is set, else whether the word at 0x13DC34 is */
 int GetMorphORayStatus(void) {
     if (gHaveMorphORay) return 2;
-    return D_0013DC34 != 0;
+    return race_gates_87_status != 0;
 }
 extern u8 item_available[];
 /* 2 when the byte at 0x13D5E7 is set, else whether the byte at 0x13D5E9 is */

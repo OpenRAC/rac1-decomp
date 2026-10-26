@@ -6,8 +6,8 @@
 
 extern void build_interpolated_dma_packet(char *);
 extern void write_spr_dma_channel(void *, int, int);
-extern void func_L02_00250720(char *);
-extern void func_L02_00250A58(char *);
+extern void textured_grid_transform_cells(char *);
+extern void textured_grid_build_gif_packet(char *);
 extern void restore_view_after_textured_grid(char *);
 extern char kerwan_spr_upload_block[];
 
@@ -16,8 +16,8 @@ void draw_textured_grid(char *moby)
 {
     build_interpolated_dma_packet(moby);
     write_spr_dma_channel(kerwan_spr_upload_block, 0x70002800, 0xF8);
-    func_L02_00250720(moby);
-    func_L02_00250A58(moby);
+    textured_grid_transform_cells(moby);
+    textured_grid_build_gif_packet(moby);
     restore_view_after_textured_grid(moby);
 }
 LINKER_REMNANT("asm/overlays", func_L03_00292B18);
@@ -1734,13 +1734,13 @@ void qwark_rilgar_update(char *m)
 extern void prepare_scaled_float_table_with_target_byte(char *, float, int);
 extern void AddDrawCallback(void (*)(void), void *);
 extern void register_audio_stream_callback(void);
-extern char D_L03_001DC460[];
+extern char kerwan_ambient_stream_scaled_table[];
 
 /* moby update: state 0 plays a sound and arms state 1, state 1 registers a draw callback */
 void update_moby_draw_callback(unsigned char *moby) {
     switch (moby[0x20]) {
     case 0:
-        prepare_scaled_float_table_with_target_byte(D_L03_001DC460, 0.6666667f, 0x20);
+        prepare_scaled_float_table_with_target_byte(kerwan_ambient_stream_scaled_table, 0.6666667f, 0x20);
         moby[0x20] = 1;
         moby[0x30] = 0xFF;
         break;
@@ -1853,7 +1853,7 @@ void initialize_transform_state_from_level_table(char *cam) {
     *(short *)(cam + 0x7E) = 0;
 }
 extern float gHeroPos[];
-extern float D_L03_00166FB0[];
+extern float kerwan_camera_view_up_axis[];
 extern void FastVecSub(void *,void *,void *);
 extern void vec_scale_to_length(void *,void *,float);
 extern float FastVecDot(void *,void *);
@@ -1871,7 +1871,7 @@ void smooth_transform_orientation_toward_hero(char *m) {
  t=Camera_SmoothAngle(data,0.0f,1.57079637f-angle,*(float *)(data+4),*(float *)(data+8),*(float *)(data+12));
  rotate_vector_by_scaled_angle_between_vectors(t,(float *)m,(float *)result,direction,1); vec_scale_to_length(result,m,1.0f);
  qcopy(m,result);
- FastVecCross(m+0x10,m,D_L03_00166FB0); vec_scale_to_length(m+0x10,m+0x10,1.0f); FastVecCross(m+0x20,m+0x10,m);
+ FastVecCross(m+0x10,m,kerwan_camera_view_up_axis); vec_scale_to_length(m+0x10,m+0x10,1.0f); FastVecCross(m+0x20,m+0x10,m);
 }
 extern char hero_globals_base[];
 extern int kerwan_camera_descriptors MACRO_ADDR;

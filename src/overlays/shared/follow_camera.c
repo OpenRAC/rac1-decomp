@@ -89,7 +89,7 @@ extern u8 pilots_helmet_collected_msg[];
 extern char gHeroPos[];
 extern s32 cinematic_mode MACRO_ADDR;
 extern s32 banner_display_ticks MACRO_ADDR;
-extern u16 D_00141C08[];
+extern u16 help_records_52_count[];
 extern short moby_array_start;
 typedef struct { u8 pad[0x454]; u8 arr[1]; } T_2e03a0_2e03a0;
 extern T_2e03a0_2e03a0 current_level_state;
@@ -97,7 +97,7 @@ extern T_2e03a0_2e03a0 checkpoint_level_state;
 extern u8 mission_state[] MACRO_ADDR;
 extern short g_current_level_index SDATA(D_0015EE84);
 extern u8 saved_mission_state[];
-extern s32 D_00141510[];
+extern s32 g_hero_pending_item_2[];
 extern u8 item_available[];
 extern f32 FastAddRots(f32, f32);
 extern void initialize_moby_particle_effect(void *);
@@ -153,7 +153,7 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
         ShowBanner(0x232A, -1);
         banner_display_ticks = 0xB4;
         grant_inventory_item(7, 1);
-        if (D_00141C08[0] == 0) Help_Request(0x2328, 0x34);
+        if (help_records_52_count[0] == 0) Help_Request(0x2328, 0x34);
         if (p->b != -1) {
             current_level_state.arr[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].h] = (*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 + 2;
             if ((*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 == 0xFF || (mission_state[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0] != 0xFF && saved_mission_state[(*(E_2e03a0_2e03a0 * *)&moby_array_start)[p->b].b0 + (*(s32 *)&g_current_level_index) * 16] == 0xFF)) {
@@ -163,7 +163,7 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
             STUB_printf(pilots_helmet_no_moby_msg, m->h);
         }
         if (m->b0 != 0xFF) jet_clear_persistent(m->b0);
-        D_00141510[0] = 7;
+        g_hero_pending_item_2[0] = 7;
         m->state = 3;
         break;
     case 3:
@@ -346,7 +346,7 @@ typedef struct {
 } Part_2E3700;
 typedef struct { char pad0[0x10]; float v10[3]; float f1C; } Snd_2E3700;
 extern Slot_2E3700 beam_origin_transforms_r[] __asm__("D_L00_001E7070");
-extern End_2E3700 D_L00_001E70A0_2E3700[] __asm__("D_L00_001E70A0");
+extern End_2E3700 beam_origin_transforms_translation_r[] __asm__("D_L00_001E70A0");
 extern Q_2E3700 beam_endpoints_r[] __asm__("D_L00_001E7130");
 extern Q_2E3700 beam_tip_positions_r[] __asm__("D_L00_001E7160");
 extern Pt_2E3700 beam_strand_points_r[][20] __asm__("D_L00_001E7190");
@@ -408,7 +408,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
     int j;
     int n;
 
-    FastVecSub_r(d, &beam_endpoints_r[idx], &D_L00_001E70A0_2E3700[idx]);
+    FastVecSub_r(d, &beam_endpoints_r[idx], &beam_origin_transforms_translation_r[idx]);
     step = FastVecLength_r(d) / 20.0f;
     if (beam_slot_states_r[idx] == 2) {
         beam_slot_states_r[idx] = 3;
@@ -439,7 +439,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
         p->z = a;
         p->x = step * fj;
     }
-    qcopy_nc(from, &D_L00_001E70A0_2E3700[idx]);
+    qcopy_nc(from, &beam_origin_transforms_translation_r[idx]);
     one = 1.0f;
     FastVecSub_r(d2, &beam_endpoints_r[idx], from);
     vec_scale_to_length_r(dir, d2, one);
@@ -518,7 +518,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
     }
     if (beam_light_flags_r[idx] != 0) {
         if (beam_light_flags_r[idx] & 1) {
-            qcopy(pos, &D_L00_001E70A0_2E3700[idx]);
+            qcopy(pos, &beam_origin_transforms_translation_r[idx]);
             pos[2] -= 0.25f;
             if (beam_origin_light_slots_r[idx] == -1) {
                 beam_origin_light_slots_r[idx] = allocate_colored_effect_slot_r(pos, D_L00_00161CC0_2E3700, 0.0f, 1.0f, 1.0f, 2.0f);
@@ -582,7 +582,7 @@ typedef struct {
 } Quad_2e4138;
 typedef struct { Vec4 m[4]; } Mat_2e4138;
 typedef struct { Vec4 a, b, c, d; } Tbl_2e4138;
-extern Tbl_2e4138 D_L00_001E7080[];
+extern Tbl_2e4138 beam_origin_transforms_field_10[];
 extern long GetEffectTex(int);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecCross(void *, void *, void *);
@@ -653,14 +653,14 @@ void draw_beam_strand_with_glow(int texture_id, int glow_texture_id, void *point
     width.f[2] = half_width;
     glow_width.f[3] = 1.0f;
 
-    qcopy(&basis[0], &D_L00_001E7080[slot].a);
-    FastVecSub((float *)&basis[1], g_debug_camera, (float *)&D_L00_001E7080[slot].c);
+    qcopy(&basis[0], &beam_origin_transforms_field_10[slot].a);
+    FastVecSub((float *)&basis[1], g_debug_camera, (float *)&beam_origin_transforms_field_10[slot].c);
     FastVecScale(&basis[1], &basis[1], 1.0f);
     FastVecCross(&basis[2], &basis[1], &basis[0]);
     vec_scale_to_length(&basis[2], &basis[2], 1.0f);
     FastVecCross(&basis[0], &basis[2], &basis[1]);
-    qcopy(&basis[3], &D_L00_001E7080[slot].c);
-    qcopy(&transform[3], &D_L00_001E7080[slot].c);
+    qcopy(&basis[3], &beam_origin_transforms_field_10[slot].c);
+    qcopy(&transform[3], &beam_origin_transforms_field_10[slot].c);
     FastVecSub((float *)&direction, (float *)&beam_endpoints[slot], (float *)&transform[3]);
     vec_scale_to_length(&transform[0], &direction, 1.0f);
     FastVecCross(&transform[1], &transform[0], hero_globals_base + 0x10AD);
@@ -750,7 +750,7 @@ typedef struct {
     f32 v[4];
     u8 pad[0x30];
 } T_e3388;
-extern T_e3388 D_L00_001E70A0[];
+extern T_e3388 beam_origin_transforms_translation[];
 extern f32 beam_tip_positions[][4];
 extern f32 beam_glow_quad_corners[4][4];
 extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
@@ -778,7 +778,7 @@ void draw_beam_endpoint_quads_with_glow(s32 unused, s32 idx) {
     s32 i;
     s32 j;
 
-    qcopy(d, &D_L00_001E70A0[idx]);
+    qcopy(d, &beam_origin_transforms_translation[idx]);
     d[3] = 1.0f;
     func_001F9BF0_E4838(a, g_debug_camera_r, d);
     vec_scale_to_length(a, a, 1.0f);
@@ -1222,7 +1222,7 @@ void compute_follow_camera_offset_target_up_projection(void *out, float f) {
 }
 extern void compute_follow_camera_offset_target_up_projection(void *out, float f);
 extern int FastDecTimer(void *);
-extern float D_L00_00166FEC;
+extern float camera_view_field_dc;
 extern short follow_cam_view_blend_time;
 extern short follow_cam_mode2_blend_time;
 extern short follow_cam_mode1_blend_time;
@@ -1274,7 +1274,7 @@ void follow_cam_update_mode(char *m) {
             e->invTimer = 1.0f / IntToFloat(e->timer);
         } else {
             char *p1 = hero_globals_base + 0xE1D;
-            if (*(int *)(p1 + 0x2084) == 0xF && D_L00_00166FEC == 0.0f) {
+            if (*(int *)(p1 + 0x2084) == 0xF && camera_view_field_dc == 0.0f) {
                 e->prev = e->state;
                 e->state = 3;
                 e->moveTimer = scale_ticks(*(int *)&follow_cam_mode3_move_time);
@@ -1289,14 +1289,14 @@ void follow_cam_update_mode(char *m) {
                 qcopy(e->v20, e->v10);
             } else {
                 char *p2 = hero_globals_base + 0xE1D;
-                if (*(int *)(p2 + 0x2084) == 0xC && D_L00_00166FEC == 0.0f) {
+                if (*(int *)(p2 + 0x2084) == 0xC && camera_view_field_dc == 0.0f) {
                     e->prev = e->state;
                     e->state = 8;
                     e->timer = follow_cam_double_jump_blend_time;
                     e->invTimer = 1.0f / IntToFloat(e->timer);
                 } else {
                     char *p3 = hero_globals_base + 0xE1D;
-                    if (*(int *)(p3 + 0x2084) == 0xB && D_L00_00166FEC == 0.0f) {
+                    if (*(int *)(p3 + 0x2084) == 0xB && camera_view_field_dc == 0.0f) {
                         e->prev = e->state;
                         e->state = 6;
                         e->moveTimer = scale_ticks(*(int *)&follow_cam_high_jump_move_time);
@@ -1311,7 +1311,7 @@ void follow_cam_update_mode(char *m) {
                         qcopy(e->v20, e->v10);
                     } else {
                         char *p4 = hero_globals_base + 0xE1D;
-                        if ((*(int *)(p4 + 0x2084) == 0xD || *(int *)(p4 + 0x2084) == 0xE) && D_L00_00166FEC == 0.0f) {
+                        if ((*(int *)(p4 + 0x2084) == 0xD || *(int *)(p4 + 0x2084) == 0xE) && camera_view_field_dc == 0.0f) {
                             e->prev = e->state;
                             e->state = 5;
                             e->moveTimer = scale_ticks(*(int *)&follow_cam_double_jump_move_time);
@@ -1326,7 +1326,7 @@ void follow_cam_update_mode(char *m) {
                             qcopy(e->v20, e->v10);
                         } else {
                             char *p5 = hero_globals_base + 0xE1D;
-                            if (*(int *)(p5 + 0x208C) == 4 && D_L00_00166FEC == 0.0f) {
+                            if (*(int *)(p5 + 0x208C) == 4 && camera_view_field_dc == 0.0f) {
                                 e->prev = e->state;
                                 e->state = 2;
                                 e->timer = follow_cam_mode2_blend_time;
@@ -1983,7 +1983,7 @@ extern void follow_camera_start_slide(void);
 extern void follow_camera_set_height(float, float);
 extern void Cam_SetDistanceGoal(float, float, int);
 extern void Cam_SetEyeOffset(int, float, float);
-extern void func_L00_002E9AD0(void);
+extern void set_follow_camera_flag_226(void);
 extern void set_follow_camera_orbit_clamp_mode(int);
 extern void follow_camera_set_lateral_spring(float, float);
 extern void set_follow_camera_angle_blend_from_position(int, float, float);
@@ -2051,7 +2051,7 @@ void follow_camera_apply_overrides(O_y *o) {
             Cam_SetDistanceGoal(g6C, 0.003f, 1);
             follow_camera_set_height(g70, 0.003f);
         }
-        func_L00_002E9AD0();
+        set_follow_camera_flag_226();
         t = (S1D0_y *)((u8 *)o->m + 0x1D0);
         { f32 u = g78, w = g74;
         t->f3C = u;
@@ -2144,7 +2144,7 @@ void follow_camera_apply_overrides(O_y *o) {
     }
 }
 extern char player_camera[];
-extern float D_L00_00166F40[];
+extern float camera_view_vertical_axis[];
 extern short follow_cam_min_eye_distance;
 extern void matrix_copy_rows(void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -2243,7 +2243,7 @@ void rebuild_follow_camera_pose(int snap) {
     to[0] = from[0];
     to[1] = from[1];
     to[2] = from[2];
-    qcopy(up, D_L00_00166F40);
+    qcopy(up, camera_view_vertical_axis);
     vec_scale_to_length(rise, up, *(float *)(target + 0xB0));
     FastVecAdd(eye, rise, target);
     FastVecSub(look, eye, (float *)(cam + 0x30));
@@ -2433,7 +2433,7 @@ extern int D_L00_00161DF4_2E8210 SDATA(D_L00_00161DF4);
 extern float follow_cam_turn_blend_weight_r __asm__("D_L00_0015F040") MACRO_ADDR;
 extern float follow_cam_setting_value_r2 __asm__("D_L00_0015F044") MACRO_ADDR;
 extern int gCamSphereMaskBaseLvl_r2 __asm__("D_L00_0015F060") MACRO_ADDR;
-extern Ctl_2E8210 *D_L00_00166F04_2E8210 __asm__("D_L00_00166F04");
+extern Ctl_2E8210 *camera_cross_axis_ptr_r __asm__("D_L00_00166F04");
 extern int scale_ticks_r3(int) __asm__("func_001F9850");
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void FastVecSub_r4(void *, void *, void *) __asm__("func_001F9BF0");
@@ -2568,7 +2568,7 @@ void follow_camera_setup(Camera *m) {
     if (m->handoff_state == 2) {
         reset_follow_camera_state_from_position_r(m);
         qcopy(m->type_data, m->basis);
-        if (D_L00_00166F04_2E8210->h86 == 7 && g_hero_r.frames_off_ground.s == 0) {
+        if (camera_cross_axis_ptr_r->h86 == 7 && g_hero_r.frames_off_ground.s == 0) {
             e->e.h0 = 0;
         } else {
             f->h0 = scale_ticks_r3(D_L00_00161DF4_2E8210);
@@ -2594,7 +2594,7 @@ void follow_camera_setup(Camera *m) {
 }
 typedef struct { unsigned char p0[0x208C]; int w208C; unsigned char p1[0x20A4 - 0x2090]; unsigned char b20A4; } G_2e7138;
 extern G_2e7138 g_hero_r2 __asm__("D_0013F450");
-extern float D_0013CB40;
+extern float g_controller_state_analog;
 extern short follow_cam_collision_pull_in_speed;
 float FastVecLength(void *);
 void func_001F9BF0_E85E8(void *, void *, void *) __asm__("func_001F9BF0");
@@ -2619,7 +2619,7 @@ int update_follow_camera_orbit_after_collision(unsigned char *m, void *b, int c,
         return d;
     }
     dist = FastVecLength(A);
-    if (g_hero_r2.b20A4 != 2 && FastAbsF(D_0013CB40) > 0.05f && d) {
+    if (g_hero_r2.b20A4 != 2 && FastAbsF(g_controller_state_analog) > 0.05f && d) {
         dist -= (*(float *)&follow_cam_collision_pull_in_speed) * frame_scale;
         *(short *)(B + 0x34) = func_001F9850_E85E8(0x884);
     }
@@ -2902,7 +2902,7 @@ int resolve_follow_camera_orbit_path_collisions(char *m) {
                         if (FastAbsF(*(float *)(pad_globals_base + 0x2560)) > 0.05f) {
                             FastVecSub(w, t, u);
                             vec_scale_to_length(w, w, 1.0f);
-                            if (FastAbsF(FastVecDot(D_L00_00166F40, w)) < 0.75f) {
+                            if (FastAbsF(FastVecDot(camera_view_vertical_axis, w)) < 0.75f) {
                                 int snd = scale_ticks(0x884);
                                 float lim = *(float *)&follow_cam_min_eye_distance;
                                 *(float *)(s18 + 0x30) += *(float *)&follow_cam_collision_pull_in_speed * frame_scale;
@@ -3207,7 +3207,7 @@ void Cam_SetDistanceGoal(float x, float y, int flag) {
     }
 }
 /* Sets the float at +0x22C of the hero camera's state buffer while the current camera is the hero camera (id 0). */
-void func_L00_002E9940(float value) {
+void set_follow_camera_float_22c(float value) {
     char *moby = g_current_follow_cam;
     if (*(short *)(moby + 0x86) == 0) {
         char *data = *(char **)(moby + 0x70);
@@ -3243,9 +3243,9 @@ void Cam_SetEyeOffset(int add, float a, float b) {
     }
 }
 /* From Lombyte's project (GPL-3.0), FUN_L00_002e8534 (PR #66), adapted to PAL. */
-void func_L00_002E99E4(void *u, char *p, float a) { *(volatile float *)(p + 0xB4) = a; }
+void cam_set_eye_offset_tail(void *u, char *p, float a) { *(volatile float *)(p + 0xB4) = a; }
 /* Sets the float at +0x1CC of the hero camera's state buffer while the current camera's id is 0. */
-void func_L00_002E99F0(float value) {
+void set_follow_camera_angle_1cc(float value) {
     char *moby = g_current_follow_cam;
     if (*(short *)(moby + 0x86) == 0) {
         char *data = *(char **)(moby + 0x70);
@@ -3273,7 +3273,7 @@ void follow_camera_set_lateral_spring(float a, float b) {
 }
 extern char *g_current_follow_cam;
 /* Sets the short flag at +0x226 of the hero camera's state buffer while the current camera's id is 0. */
-void func_L00_002E9AD0(void) {
+void set_follow_camera_flag_226(void) {
     char *p = g_current_follow_cam;
     if (*(short *)(p + 0x86) == 0) {
         *(short *)(*(char **)(p + 0x70) + 0x226) = 1;
@@ -3389,7 +3389,7 @@ typedef struct {
     unsigned short u42;
     int i44;
 } G_2E9E60;
-extern float D_0013CB40_2E9E60[] __asm__("D_0013CB40");
+extern float g_controller_state_analog_r[] __asm__("D_0013CB40");
 extern int opt_cam_invert_r __asm__("D_0015EEE0") MACRO_ADDR;
 extern int invert52_r __asm__("D_0015EEDC") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
@@ -3409,7 +3409,7 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) {
     if (s->flags & 1) {
         *a = 0.0f;
     } else {
-        *a = D_0013CB40_2E9E60[0];
+        *a = g_controller_state_analog_r[0];
         if (opt_cam_invert_r == 0) {
             *a = -*a;
         }
@@ -3441,7 +3441,7 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) {
         *b = 0.0f;
         *b = s->f24 / 0.6981317f;
     } else {
-        float t = D_0013CB40_2E9E60[1];
+        float t = g_controller_state_analog_r[1];
         *b = -t;
         if (invert52_r == 0) {
             *b = t;
@@ -3603,7 +3603,7 @@ void follow_camera_auto_turn(int m) {
     }
 }
 extern char hero_globals_base[] NOT_SDA;
-extern char D_L00_00166F30[] NOT_SDA;
+extern char camera_view_up_axis[] NOT_SDA;
 extern float Camera_SmoothAngle(void *, float, float, float, float, float);
 
 /* Final placement of follow camera A_'s basis for the frame: in target mode 0xB looks along the hero, else builds the
@@ -3627,9 +3627,9 @@ void follow_camera_build_view(int a_) {
         vec_scale_to_length(p, p, 1.0f);
         p20 = p + 0x20;
         FastDecTimer(q20);
-        up = D_L00_00166F30;
+        up = camera_view_up_axis;
     } else {
-        up = D_L00_00166F30;
+        up = camera_view_up_axis;
         tb = base + 0x20;
         g = FastVecDot(q + 0x80, tb);
         FastVecScale(v0, tb, g);

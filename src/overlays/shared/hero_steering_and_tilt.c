@@ -13,7 +13,7 @@ extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern float D_L00_0017BED0[];
+extern float hero_speed_bands_field_18[];
 extern int scale_ticks(int);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -144,7 +144,7 @@ void HeroMoveStateVelocity(void) {
         build_scaled_hero_move_impulse(0.7f, g_frame_time * 0.0f);
         qcopy(&g_hero_s.motion.momentum, &g_hero_s.move_impulse);
         arg = g_frame_time_sq * 20.0f;
-        if (g_hero_s.target_speed < D_L00_0017BED0[0] * g_frame_time * 0.2f) {
+        if (g_hero_s.target_speed < hero_speed_bands_field_18[0] * g_frame_time * 0.2f) {
             if (g_hero_s.state.control_mode == 2) {
                 d = g_hero_s.stickless_decel;
                 if (g_hero_s.on_ice_ground) d = g_frame_time_sq * 0.17f;
@@ -478,8 +478,8 @@ typedef struct {
     f32 fD08;
 } LeanState;
 extern LeanState lean_state_r2 __asm__("D_L00_0017A780");
-extern f32 D_L00_0017B48C[];
-extern short D_0015EF18;
+extern f32 lean_state_18_scale[];
+extern short sound_volume_10;
 extern u8 gCheats_r[] __asm__("D_0015EEB0") MACRO_ADDR;
 extern f32 FastAbsF(f32);
 
@@ -496,7 +496,7 @@ void update_hero_lean_and_sway_parameters(void)
     if (h->items[3].moby2 == 0)
         return;
     if (gCheats_r[3] != 0)
-        D_L00_0017B48C[0] = (*(f32 *)&D_0015EF18);
+        lean_state_18_scale[0] = (*(f32 *)&sound_volume_10);
     scale = 1024.0f / h->items[3].moby2->scale;
     if (h->state.current == 2) {
         a = h->motion.yaw_error;
@@ -742,11 +742,11 @@ typedef struct {
 typedef struct { char p0[0x270]; f32 f270; f32 f274; char p278[0x2E0 - 0x278]; f32 f2E0; } H;
 extern G_167d0 g_hero_r3 __asm__("D_0013F450");
 extern char hero_velocity[];
-extern char D_0013F580[];
+extern char g_hero_resolved_velocity_xy[];
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
-extern s32 D_0013CC14[];
+extern s32 g_controller_state_no_direction[];
 extern void stick_target(s32, f32);
 extern void turn_to(s32, f32, f32, f32);
 extern f32 FastCos(f32);
@@ -811,7 +811,7 @@ void update_hero_planar_movement_velocity(void) {
     }
     f21 = g_frame_time_sq * 2.45f * g_hero_r3.f190;
     f21 = f21 + (g_frame_time_sq + g_frame_time_sq) * f20;
-    if (D_0013CC14[0]) {
+    if (g_controller_state_no_direction[0]) {
         f21 = g_frame_time_sq * 1.1f;
     }
     if (g_hero_r3.i2084 == 0x13 && g_hero_r3.i198 < scale_ticks(0xF) && g_hero_r3.f160 < g_frame_time * 3.0f) {
@@ -841,14 +841,14 @@ void update_hero_planar_movement_velocity(void) {
             f21 = b;
         }
     }
-    FastVecSub(&v3, &v0, D_0013F580);
+    FastVecSub(&v3, &v0, g_hero_resolved_velocity_xy);
     v3.f[2] = 0.0f;
     if (f21 < FastVecLength(&v3)) {
         vec_scale_to_length(&v3, &v3, f21);
     }
-    r = (V4 *)(D_0013F580 - 0x50);
-    FastVecAdd(r, D_0013F580, &v3);
-    q = (H *)(D_0013F580 - 0x130);
+    r = (V4 *)(g_hero_resolved_velocity_xy - 0x50);
+    FastVecAdd(r, g_hero_resolved_velocity_xy, &v3);
+    q = (H *)(g_hero_resolved_velocity_xy - 0x130);
     if (0.0872664601f < q->f2E0) {
         f21 = fast_atan2(q->f270, q->f274);
         f20 = g_frame_time;
@@ -931,13 +931,13 @@ void Help_QueueAdd(int x, int y, int z) {
     } while (i < 8);
 }
 INCLUDE_ASM("asm/overlays", func_L00_00217680);
-extern unsigned char D_001414F5[] NOT_SDA;
+extern unsigned char g_hero_field_20a5[] NOT_SDA;
 extern int FastDecTimer(void *);
 
 /* Ticks eight timer slots and, for each that has run out, clears a field and calls the release helper. */
 void update_hero_delayed_voice_requests(void) {
-    char *p = (char *)D_001414F5 + 0x137;
-    short *q = (short *)(D_001414F5 + 0x139);
+    char *p = (char *)g_hero_field_20a5 + 0x137;
+    short *q = (short *)(g_hero_field_20a5 + 0x139);
     int i;
 
     for (i = 0; i < 8; i++) {
@@ -947,7 +947,7 @@ void update_hero_delayed_voice_requests(void) {
         }
     }
 }
-extern int D_L00_00167114 NOT_SDA;
+extern int hero_control_mode_11_flag NOT_SDA;
 extern void clear_hero_target_and_ground_speeds(void);
 extern void clear_moby_transform_history(char *o);
 extern void pad_resetState(void);
@@ -990,8 +990,8 @@ void Hero_ResetToPosition(void *a, void *b, int c, int d) {
     reset_hero_easing_records();
     if (c != -1) HeroEnterMoveState(c, 1);
     HeroStartSequenceInBank(*(unsigned char *)(*(char **)(q + 0x2080) + 0x53), *(unsigned char *)(*(char **)(q + 0x2080) + 0x51));
-    if (*(int *)(q + 0x208C) == 0x11) D_L00_00167114 = 1;
-    else D_L00_00167114 = 0;
+    if (*(int *)(q + 0x208C) == 0x11) hero_control_mode_11_flag = 1;
+    else hero_control_mode_11_flag = 0;
     update_hero_ground_contact_and_surface_slopes();
     if (d) init_camera_system();
     apply_nearest_environment_sample(*(int *)(hero_globals_base + 0x2E9D));
@@ -1158,7 +1158,7 @@ typedef struct {
     s16 unk7E;
 } ThrowPvars_217658;
 extern f32 player_camera[];
-extern char D_00140C00[];
+extern char g_hero_transform_history[];
 extern int is_wrench_moby(void *);
 extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
 extern float FastAddRots(float, float);
@@ -1239,8 +1239,8 @@ void launch_hero_wrench(void) {
     matrix_to_euler(out_mat, &item->rot);
     pv->unk64 = 0;
     pv->unk60 = g_frame_time * 23.0f;
-    initialize_moby_transform_history(item, D_00140C00);
-    create_moby_transform_history_entry(D_00140C00, 0x30, 3);
-    create_moby_transform_history_entry(D_00140C00, 0x17, 5);
+    initialize_moby_transform_history(item, g_hero_transform_history);
+    create_moby_transform_history_entry(g_hero_transform_history, 0x30, 3);
+    create_moby_transform_history_entry(g_hero_transform_history, 0x17, 5);
     MobyBlendAnimation(item, 6, 0, scale_ticks(5));
 }

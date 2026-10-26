@@ -1040,7 +1040,7 @@ typedef struct {
 } CollisionProbe_307d68_09118;
 extern Vec4 gaspar_camera_pos_r3 __asm__("D_L09_00166FC0");
 extern Vec4 gaspar_coll_hit_point_r __asm__("D_L09_00174060");
-extern u8 D_L09_00174080_09118[] __asm__("D_L09_00174080");
+extern u8 gaspar_coll_hit_normal_r[] __asm__("D_L09_00174080");
 extern f32 FastVecDist_r3(void *, void *) __asm__("func_001F9D10");
 extern f32 vec_distance_xy_r3(void *, void *) __asm__("func_001F9D48");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
@@ -1124,7 +1124,7 @@ void update_class_4ea_projectile(struct Moby *m)
             r.f[1] = random_float_between_r4(-1.0f, 1.0f);
             r.f[2] = random_float_between_r4(-1.0f, 1.0f);
             push.q = r.q;
-            vec_reflect_r(&r, v, D_L09_00174080_09118);
+            vec_reflect_r(&r, v, gaspar_coll_hit_normal_r);
             vec_scale_to_length_r(&push, &push, FastVecLength_r2(&r) * 0.5f);
             FastVecAdd_r(&push, &r, &push);
             vec_scale_to_length_r(&push, &push, random_float_between_r4(g_frame_time_r * 3.0f, g_frame_time_r * 6.0f));

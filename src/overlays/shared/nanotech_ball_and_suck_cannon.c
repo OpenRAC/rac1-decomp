@@ -2356,7 +2356,7 @@ extern short suck_beam_scroll_phase;
 extern short suck_beam_ring_scroll_phase;
 extern short suck_beam_scroll_speed;
 extern char suck_beam_ring_vertices[];
-extern char D_L00_001E6230[];
+extern char suck_beam_ring_vertices_base[];
 extern int GetEffectTex(int);
 extern void FastVecCross(void *, void *, void *);
 extern float FastVecDot(void *, void *);
@@ -2399,8 +2399,8 @@ void SuckBeam_DrawMesh(void) {
         for (j = 0; j < 20; j++) {
             qcopy(s.q[0], suck_beam_ring_vertices + (j * 16 + i * 0x140));
             qcopy(s.q[1], suck_beam_ring_vertices + ((j + 1) % 20 * 16 + i * 0x140));
-            qcopy(s.q[2], D_L00_001E6230 + (j * 16 + i * 0x140));
-            qcopy(s.q[3], D_L00_001E6230 + ((j + 1) % 20 * 16 + i * 0x140));
+            qcopy(s.q[2], suck_beam_ring_vertices_base + (j * 16 + i * 0x140));
+            qcopy(s.q[3], suck_beam_ring_vertices_base + ((j + 1) % 20 * 16 + i * 0x140));
             FastVecSub(vc, s.q[0], s.q[1]);
             FastVecSub(vd, s.q[2], s.q[1]);
             FastVecCross(ve, vd, vc);
@@ -2459,14 +2459,14 @@ typedef int u128_DF168 __attribute__((mode(TI)));
 extern float suck_beam_segment_length MACRO_ADDR;
 extern char player_camera_matrix[];
 extern char suck_beam_points[];
-extern char D_L00_001E6280[];
+extern char suck_beam_points_base[];
 extern char suck_beam_wobble_from[] MACRO_ADDR;
 extern char suck_beam_wobble_to[] MACRO_ADDR;
 extern float suck_beam_wobble_angle MACRO_ADDR;
 typedef struct { int pad[5]; int f14; } E04_DF168;
 extern E04_DF168 suck_beam_particles_x[] __asm__("D_L00_001E4FD0");
-extern short D_L00_00161C24;
-extern short D_L00_00161C28;
+extern short suck_beam_init_zero_0;
+extern short suck_beam_init_zero_1;
 
 // Builds the camera matrices and resets the camera effect state.
 void SuckBeam_Build(char *a, char *b) {
@@ -2501,7 +2501,7 @@ void SuckBeam_Build(char *a, char *b) {
     qcopy(suck_beam_points, b);
     suck_beam_segment_alpha[0] = 0;
     for (i = 1; i < 10; i++) {
-        FastVecAdd(suck_beam_points + i * 0x10, D_L00_001E6280 + i * 0x10, (char *)s + 0x30);
+        FastVecAdd(suck_beam_points + i * 0x10, suck_beam_points_base + i * 0x10, (char *)s + 0x30);
         suck_beam_segment_alpha[i] = 0;
     }
     clear_u64_value(suck_beam_wobble_from);
@@ -2517,8 +2517,8 @@ void SuckBeam_Build(char *a, char *b) {
         suck_beam_wobble_angle = f;
     }
     *(float *)&suck_beam_scroll_speed = 0.006f;
-    *(int *)&D_L00_00161C24 = 0;
-    *(int *)&D_L00_00161C28 = 0;
+    *(int *)&suck_beam_init_zero_0 = 0;
+    *(int *)&suck_beam_init_zero_1 = 0;
     if (*(int *)&suck_beam_clear_particles != 0) {
         *(int *)&suck_beam_clear_particles = 0;
         for (j = 199; j >= 0; j--) suck_beam_particles_x[j].f14 = 0;
@@ -2542,7 +2542,7 @@ void SuckBeam_QueueDraw(int arg0) {
 typedef struct { short idx; short pad; float f; int pad2[3]; char *p; } E04;
 extern E04 suck_beam_particles[];
 extern char suck_beam_points[];
-extern char D_L00_001E6280[];
+extern char suck_beam_points_base[];
 extern short suck_beam_scroll_speed;
 extern float FastVecLength(void *);
 typedef float VQ[4] __attribute__((aligned(16)));
@@ -2561,7 +2561,7 @@ void stop_suck_cannon_suction_effect(int arg0) {
         p = suck_beam_particles[i].p;
         if (p != 0) {
             suck_beam_particles[i].p = 0;
-            FastVecSub(a, D_L00_001E6280 + suck_beam_particles[i].idx * 16, suck_beam_points + suck_beam_particles[i].idx * 16);
+            FastVecSub(a, suck_beam_points_base + suck_beam_particles[i].idx * 16, suck_beam_points + suck_beam_particles[i].idx * 16);
             len = FastVecLength(a);
             FastVecScale(a, a, suck_beam_particles[i].f / len);
             FastVecAdd(b, suck_beam_points + suck_beam_particles[i].idx * 16, a);

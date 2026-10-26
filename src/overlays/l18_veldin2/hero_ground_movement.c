@@ -43,11 +43,11 @@ extern short veldin2_look_stat_count;
 extern unsigned char *veldin2_water_patches MACRO_ADDR;
 extern int veldin2_water_patch_count MACRO_ADDR;
 extern Cam veldin2_player_camera;
-extern float D_L18_00167858;
+extern float veldin2_camera_yaw;
 extern int *veldin2_coll_sphere_moby_hits[];
 extern Rec4C veldin2_item_defs[];
 extern Bone veldin2_hero_bones[];
-extern float D_L18_0017B160[];
+extern float veldin2_hero_lean_angles[];
 extern Rec2C veldin2_attack_records[];
 extern S17BEB8 veldin2_hero_speed_bands;
 extern float veldin2_hero_run_turn_stick_threshold;
@@ -1739,14 +1739,14 @@ void HeroL18_UpdateStatePhysics(void) {
                         }
                         set_first_hero_easing_parameters(0.03f, 0.2f);
                         if (g_hero.grind_anim_variant != 0) {
-                            D_L18_0017B160[1] = -tilt;
+                            veldin2_hero_lean_angles[1] = -tilt;
                         } else {
-                            D_L18_0017B160[1] = tilt;
+                            veldin2_hero_lean_angles[1] = tilt;
                         }
                     }
                 }
                 if (g_hero.state.current != 0x29 && g_hero.state.current != 0x42 && g_hero.state.current != 0x2A) {
-                    D_L18_0017B160[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
+                    veldin2_hero_lean_angles[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
                 }
                 if (hasW) {
                     set_first_hero_easing_parameters(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
@@ -2097,7 +2097,7 @@ void HeroL18_UpdateStatePhysics(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L18_00167858;
+                g_hero.motion.move_yaw = veldin2_camera_yaw;
                 turn_to(0, g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 g_hero.motion.move_yaw = keep;
             }

@@ -30,8 +30,8 @@ extern float batalia_hero_fall_state_height MACRO_ADDR;
 extern int batalia_help_message_selector MACRO_ADDR;
 extern int batalia_hero_run_step1_start_frame MACRO_ADDR;
 extern short batalia_hero_double_tap_timer;
-extern float D_L08_00167658;
-extern int D_L08_0016D000;
+extern float batalia_camera_yaw;
+extern int batalia_look_release_reset_word;
 extern S17AF00 batalia_lean_state;
 extern Rec70 batalia_idle_fidgets[];
 extern Rec4C batalia_item_info[];
@@ -366,7 +366,7 @@ void HeroL08_UpdateStateTransitions(void) {
                         if (g_hero.state.prev == 1 || g_hero.state.prev == 0x1E) {
                             if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
                                 stick_target(0, 1.0f);
-                                if (FastDiffRots(g_hero.motion.move_yaw, D_L08_00167658) > 1.2217305f) {
+                                if (FastDiffRots(g_hero.motion.move_yaw, batalia_camera_yaw) > 1.2217305f) {
                                     ok = 0;
                                 }
                             }
@@ -2182,7 +2182,7 @@ void HeroL08_UpdateStateTransitions(void) {
                             set_hero_animation(a, 0, scale_ticks(8));
                         }
                     }
-                    D_L08_0016D000 = 0;
+                    batalia_look_release_reset_word = 0;
                     break;
                 case 32:
                     if (((unsigned char *)g_hero.items[0].moby) != 0 && g_hero.anim_changing == 0 && g_hero.anim_frame > 20.0f) {

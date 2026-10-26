@@ -129,7 +129,7 @@ typedef struct {
     u8 b20A4;
 } P231ae0;
 extern P231ae0 g_hero_r __asm__("D_0013F450");
-extern f32 D_0013F670[];
+extern f32 g_hero_capsule_top[];
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
@@ -167,7 +167,7 @@ void update_hero_smoothing_targets_and_values(void) {
         g_hero_r.f230 = 0.8f;
     }
     if (!g_hero_r.b257 || g_hero_r.i2094 == 0x12 || g_hero_r.i208C == 0x11 || g_hero_r.b12E4 || vec_distance_xy(g_hero_r.v210, g_hero_r.v80) > g_hero_r.f234 * 0.5f) {
-        f32 *q = D_0013F670;
+        f32 *q = g_hero_capsule_top;
         P231ae0 *b = (P231ae0 *)((u8 *)q - 0x220);
         func_00214D28_33130(b->f228, frame_scale * 0.02f, q);
         func_00214D28_33130(b->f22C, frame_scale * 0.02f, q + 1);
@@ -175,7 +175,7 @@ void update_hero_smoothing_targets_and_values(void) {
     }
 }
 typedef int Q __attribute__((mode(TI)));
-extern u8 D_L12_00174360[];
+extern u8 hoven_coll_hit_point[];
 extern s32 g_current_level_index MACRO_ADDR;
 void clear_u64_value(void *);
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
@@ -251,7 +251,7 @@ void Hero_ProbeGround(void) {
     g_hero.ground_sound_class = collision_sound_class;
     g_hero.ground_type = CollType();
     if (g_hero.ground_type == 0) {
-        g_hero.water_surface_z = resolve_camera_surface_height(D_L12_00174360, (u8 *)&g_hero.water_surface_normal);
+        g_hero.water_surface_z = resolve_camera_surface_height(hoven_coll_hit_point, (u8 *)&g_hero.water_surface_normal);
         if (g_hero.motion.pos.f[2] < g_hero.water_surface_z && g_hero.in_water_frames <= 0) {
             g_hero.in_water_frames = 1;
         }
@@ -408,7 +408,7 @@ extern short hoven_look_stat_count;
 extern unsigned char *hoven_water_patches MACRO_ADDR;
 extern int hoven_water_patch_count MACRO_ADDR;
 extern Cam hoven_player_camera;
-extern float D_L12_001672D8;
+extern float hoven_camera_yaw;
 extern Moby *hoven_nearby_mobys[];
 extern Bone hoven_hero_bones[];
 extern Rec2C hoven_attack_records[];
@@ -2199,7 +2199,7 @@ void Hero_UpdateStatePhysicsL12(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L12_001672D8;
+                g_hero.motion.move_yaw = hoven_camera_yaw;
                 turn_to(0, g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 g_hero.motion.move_yaw = keep;
             }

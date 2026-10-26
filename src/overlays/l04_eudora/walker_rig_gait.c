@@ -4,7 +4,7 @@
 #include "vector.h"
 #include "moby.h"
 
-extern float D_L04_00174068;
+extern float eudora_coll_hit_z;
 extern int coll_line(void *, void *, int, int, int);
 
 /* probes a ray from just above a point; returns the ground offset or 0 */
@@ -16,7 +16,7 @@ float probe_leg_rig_ground_height(float *pos) {
     if (a[2] < 0.1f) a[2] = 0.1f;
     qcopy(b, pos);
     b[2] = b[2] + 0.75f;
-    if (coll_line(b, a, 2, 0, 0) != 0) return D_L04_00174068;
+    if (coll_line(b, a, 2, 0, 0) != 0) return eudora_coll_hit_z;
     return 0.0f;
 }
 /* Writes the four joint angle limits of a leg-rig block. */
@@ -685,7 +685,7 @@ typedef struct {
     /* 0x0EE */ s16 unkEE;
     /* 0x0F0 */ LegRigLeg legs[2];
 } LegRig;
-extern u8 D_L04_001CABB8[13][4];
+extern u8 eudora_leg_rig_anim_b7_values[13][4];
 extern void transform_scaled_vertex_batch(struct Moby *m, int count, int *joints, void *out);
 extern void MobyTransformScaledVertex(struct Moby *m, int joint, float *mtx);
 extern void AttachManipulator(struct Moby *m, int slot, void *manip);
@@ -735,7 +735,7 @@ void reset_leg_rig_from_animation(struct Moby *m, LegRig *rig) {
     for (j = 12; j >= 0; j--, e++) {
         if ((*e)->id == m->prev_seq) {
             rig->speed = FastAbsF(m->anim_speed * (*e)->rate);
-            rig->unkB7 = D_L04_001CABB8[12 - j][0];
+            rig->unkB7 = eudora_leg_rig_anim_b7_values[12 - j][0];
         }
     }
     rig->mode = rig_pick_mode_r2(m, rig, t);

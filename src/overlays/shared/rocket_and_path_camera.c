@@ -648,10 +648,10 @@ extern float orxon_fade MACRO_ADDR;
 extern char *orxon_mobys MACRO_ADDR;
 extern char *orxon_paths[];
 extern int orxon_path_camera_active MACRO_ADDR;
-extern float D_L10_0016CFF0;
-extern float D_L10_001673D8;
+extern float orxon_view_params_fov_tan;
+extern float orxon_player_camera_fade_rate;
 extern char orxon_view_params[];
-extern float D_L10_001674D0[];
+extern float orxon_player_camera_matrix[];
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecCross(void *, void *, void *);
 extern void UpdateViewContext(void);
@@ -707,7 +707,7 @@ void Camera19_Update(char *moby) {
                 v1[1] = c3[1];
                 v1[2] = c3[2];
                 v1[3] = 0.0f;
-                matrix_mul_vec3(v1, v1, D_L10_001674D0);
+                matrix_mul_vec3(v1, v1, orxon_player_camera_matrix);
                 FastVecAdd_r(v2, gb + 0x10, v1);
                 FastVecSub(va, v2, pm);
             } else {
@@ -732,10 +732,10 @@ void Camera19_Update(char *moby) {
             x = k->vals[8] * 0.5f;
             aa = FastSin(x);
             bb = FastCos(x);
-            D_L10_0016CFF0 = aa / bb;
+            orxon_view_params_fov_tan = aa / bb;
             UpdateViewContext();
             *(unsigned char *)(e + 0x39) = 1;
-            D_L10_001673D8 = 0.05f;
+            orxon_player_camera_fade_rate = 0.05f;
             *(short *)(moby + 0x7E) = 4;
             orxon_path_camera_active = 0;
             if (*(int *)(e + 0x4C) == 0) {
@@ -821,7 +821,7 @@ void Camera19_Update(char *moby) {
             v2[1] = c3[1];
             v2[2] = c3[2];
             v2[3] = 0.0f;
-            matrix_mul_vec3(v2, v2, D_L10_001674D0);
+            matrix_mul_vec3(v2, v2, orxon_player_camera_matrix);
             FastVecAdd_r(v3, b17 + 0x10, v2);
             FastVecSub(v1, v3, (moby + 0x30));
         } else {

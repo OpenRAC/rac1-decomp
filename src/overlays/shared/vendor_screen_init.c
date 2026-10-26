@@ -6,7 +6,7 @@
 typedef struct { char p0[0x10]; int f10; char p14[0x4C - 0x14]; } R_2afd00;
 extern char novalis_vendor_screen_state[];
 extern char fx_cutscene[];
-extern char D_L01_0017C840[];
+extern char novalis_hero_scale_manipulator[];
 extern int novalis_scene_buffer_offsets[];
 extern int novalis_vendor_scene_chunk_ids[];
 extern R_2afd00 novalis_item_defs[];
@@ -14,7 +14,7 @@ extern int novalis_skip_frame MACRO_ADDR;
 extern int novalis_game_mode MACRO_ADDR;
 extern float novalis_fade_level MACRO_ADDR;
 extern int relocated_address_base MACRO_ADDR;
-extern short D_L01_0015F500;
+extern short novalis_white_fade_level;
 extern char novalis_vendor_screen_anchor_offset;
 extern char hero_globals_base[];
 extern unsigned char help_stats_base[] NOT_SDA;
@@ -75,7 +75,7 @@ void initialize_vendor_screen(char *m, int lvl) {
     *(float *)(s + 0xB8) = FastAddRots(*(float *)(m + 0x48), -1.5707964f);
     euler_rotation_basis(s + 0x80, s + 0xB0);
     FastMemSet(c, 0, 0x1C0);
-    FastMemSet(D_L01_0017C840, 0, 0x40);
+    FastMemSet(novalis_hero_scale_manipulator, 0, 0x40);
     calculate_dma_transfer_address();
     n = relocated_address_base + (int)0xFFFC0000;
     *(int *)(c + 0x58) = novalis_scene_buffer_offsets[1] + n;
@@ -83,7 +83,7 @@ void initialize_vendor_screen(char *m, int lvl) {
     *(int *)(c + 0x5C) = novalis_scene_buffer_offsets[2] + n;
     novalis_fade_level = 1.0f;
     relocated_address_base = n;
-    *(int *)&D_L01_0015F500 = 0;
+    *(int *)&novalis_white_fade_level = 0;
     clear_hero_item_slot(0, 0);
     *(int *)(g + 0x20B8) = lvl;
     select_world_object_resource_tables(novalis_item_defs[lvl].f10, -1);

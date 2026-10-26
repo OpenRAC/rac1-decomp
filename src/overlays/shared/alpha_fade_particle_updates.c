@@ -1961,14 +1961,14 @@ typedef struct { char pad[0x158]; int o[20]; } Out;
 extern Tab disc_table;
 extern Out level_menu_system;
 extern int misc_animations_stash_comment;
-extern int D_L00_00173F08;
+extern int lvl_load_scratch_buffer;
 extern int Load(int, int, int);
 extern int Stash_SendData(int arg0, int arg1, int arg2, int arg3);
 
 // loads the 20 table entries from the resident table into the level's slots
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_00276078.
 void load_misc_animations_into_stash(void) {
-    int h = D_L00_00173F08;
+    int h = lvl_load_scratch_buffer;
     int i;
     for (i = 0; i < 20; i++) {
         int sz = disc_table.e[i].n << 7;

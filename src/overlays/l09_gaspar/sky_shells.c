@@ -10,7 +10,7 @@ typedef struct Strip_21E410 {
     char padC[4];
 } Strip_21E410;
 extern long GetEffectTex_r(int) __asm__("func_001F4868");
-extern void func_L02_00250C78_21E410_t(void *, void *, void *, void *, void *, int, float) __asm__("func_L02_00250C78");
+extern void vu0_lerp_vertex_table_pairs_21E410_t(void *, void *, void *, void *, void *, int, float) __asm__("func_L02_00250C78");
 extern void VU1_addGSregister_r(int, long) __asm__("func_00234C98");
 extern int *l09_packet_r __asm__("D_L09_00161240") MACRO_ADDR;
 extern char gaspar_texture_table_r[] __asm__("D_L09_0016D380");
@@ -47,7 +47,7 @@ void func_L09_0021E410_r(int a, int b, float t) {
 
         gaspar_strip_texture_buffer_r[0] = 0x0800000000000400L;
         gaspar_strip_texture_buffer_r[1] = 0;
-        func_L02_00250C78_21E410_t(&gaspar_strip_texture_buffer_r[2], texture_vertices_r + (a0 << 4), texture_vertices_r + (a1 << 4),
+        vu0_lerp_vertex_table_pairs_21E410_t(&gaspar_strip_texture_buffer_r[2], texture_vertices_r + (a0 << 4), texture_vertices_r + (a1 << 4),
                                  texture_vertices_r + (b0 << 4), texture_vertices_r + (b1 << 4), 0x1000, t);
         l09_packet_r[0] = 0x10000006;
         l09_packet_r[1] = 0;

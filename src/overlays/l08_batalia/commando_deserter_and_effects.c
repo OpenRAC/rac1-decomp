@@ -449,7 +449,7 @@ extern float layered_mesh_effect_center_y MACRO_ADDR;
 extern float layered_mesh_effect_center_z MACRO_ADDR;
 extern float layered_mesh_effect_culling_radius MACRO_ADDR;
 extern char batalia_hero_pos[];
-extern int D_L08_001E8610[];
+extern int batalia_uv_scroll_1[];
 extern short layered_mesh_effect_colors_scaled;
 extern short layered_mesh_effect_center_x;
 
@@ -499,7 +499,7 @@ void update_layered_mesh_effect(unsigned char *moby) {
             d = FastVecLength(w);
             if (d <= 84.0f) {
                 AdvanceScrollOffsets(0);
-                advance_wrapped_sine_pair(D_L08_001E8610, 0.52f, 0.62f, 0.06f, layered_mesh_sine_phase_p);
+                advance_wrapped_sine_pair(batalia_uv_scroll_1, 0.52f, 0.62f, 0.06f, layered_mesh_sine_phase_p);
                 AdvanceScrollOffsets(2);
                 if (d < 20.0f) {
                     *(unsigned char *)&layered_mesh_effect_fade_alpha = 0xFF;
@@ -822,7 +822,7 @@ extern char *batalia_scene_points MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
-extern unsigned char D_0013DE4B[] NOT_SDA;
+extern unsigned char level_available_base[] NOT_SDA;
 extern unsigned char menu_item_enabled_25[] NOT_SDA;
 extern unsigned char help_stats_base_q[] __asm__("D_0014171B") NOT_SDA;
 extern char hero_globals_base[] NOT_SDA;
@@ -885,7 +885,7 @@ void commando_update(char *m) {
         moby->update_dist = 0xFF;
         if (moby->prev_seq != 1)
             MobyBlendAnimation(m, 1, 0, scale_ticks(10));
-        if (D_0013DE4B[7] != 0 && (help_stats_base_q + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
+        if (level_available_base[7] != 0 && (help_stats_base_q + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
             DeleteMoby(m);
             return;
         }
@@ -1084,7 +1084,7 @@ void batalia_deserter_update(char *m) {
     switch (moby->state) {
     case 0:
         if (moby->prev_seq != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(20));
-        if (D_0013DE4B[6] != 0 && (help_stats_base_q + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
+        if (level_available_base[6] != 0 && (help_stats_base_q + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
             DeleteMoby(m);
             return;
         }
@@ -1473,7 +1473,7 @@ void update_batalia_item_triggers_and_help(char *m) {
         }
     }
     if (ia_p[28] == 0) {
-        if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && D_0013DE4B[7] != 0) {
+        if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && level_available_base[7] != 0) {
             elapsed = scale_ticks(gameplay_event_frame_count) - HR[50].best * 600;
             if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[50].best * 600 == 0) {
                 Help_Request(8002, 0x32);
@@ -1486,7 +1486,7 @@ void update_batalia_item_triggers_and_help(char *m) {
         }
     }
     if (ia_p[28] != 0) {
-        if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && D_0013DE4B[7] != 0) {
+        if (is_point_inside_clip_volume(&hero_p.motion.pos, data->second) && level_available_base[7] != 0) {
             if (HR[112].count != 0) {
                 elapsed = scale_ticks(gameplay_event_frame_count) - HR[112].best * 600;
                 if ((int)((float)scale_ticks(18) * 60.0f) < elapsed || HR[112].best * 600 == 0) {
@@ -1665,7 +1665,7 @@ extern char batalia_textured_mesh8_counts[];
 extern char batalia_textured_mesh6_colors[];
 extern char batalia_textured_mesh6_counts[];
 extern Pair batalia_textured_mesh8_scroll_offset[];
-extern char D_L08_001F8810[];
+extern char batalia_textured_mesh8_scroll_offset_1[];
 extern Pair batalia_textured_mesh6_scroll_offset[] MACRO_ADDR;
 extern short batalia_effect_reference_position_x;
 extern float batalia_effect_reference_position_y MACRO_ADDR;
@@ -1719,7 +1719,7 @@ void update_batalia_textured_effect(unsigned char *moby) {
             d = FastVecLength(w);
             if (d <= 84.0f) {
                 AdvanceScrollOffsets(0);
-                advance_wrapped_sine_pair(D_L08_001F8810, 0.52f, 0.62f, 0.06f, &batalia_textured_mesh2_scroll_offset[1]);
+                advance_wrapped_sine_pair(batalia_textured_mesh8_scroll_offset_1, 0.52f, 0.62f, 0.06f, &batalia_textured_mesh2_scroll_offset[1]);
                 AdvanceScrollOffsets(2);
                 if (d < 20.0f) {
                     *(unsigned char *)&batalia_textured_effect_fade_alpha = 0xFF;

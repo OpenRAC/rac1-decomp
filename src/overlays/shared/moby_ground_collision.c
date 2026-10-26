@@ -3142,7 +3142,7 @@ void unlock_planet(int id) {
 extern unsigned char item_available[] NOT_SDA;
 extern unsigned char items_acquired[] NOT_SDA;
 extern int weapon_ammo_counts[] NOT_SDA;
-extern unsigned char D_001414F5[] NOT_SDA;
+extern unsigned char g_hero_field_20a5[] NOT_SDA;
 extern int pause_iop_sprite_lists[];
 extern int item_pickup_banner_ids[] NOT_SDA;
 typedef struct { char pad[8]; unsigned short a; char pad2[8]; unsigned short b; char pad3[4]; } ItemRec;
@@ -3198,11 +3198,11 @@ void grant_inventory_item(int id, int flag) {
         if (flag != 0) {
             int t = item_defs[id].t;
             if (t == 0) {
-                *(int *)(D_001414F5 + 0x13) = id;
+                *(int *)(g_hero_field_20a5 + 0x13) = id;
             } else if (t == 3) {
-                *(int *)(D_001414F5 + 0x1F) = id;
+                *(int *)(g_hero_field_20a5 + 0x1F) = id;
             } else if (t == 2) {
-                *(int *)(D_001414F5 + 0x1B) = id;
+                *(int *)(g_hero_field_20a5 + 0x1B) = id;
             }
         }
         if (item_defs[id].t == 0) {

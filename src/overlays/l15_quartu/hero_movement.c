@@ -342,7 +342,7 @@ extern short quartu_usage_event_count;
 extern unsigned char *quartu_pool_draw_tiles MACRO_ADDR;
 extern int quartu_pool_draw_count MACRO_ADDR;
 extern Cam quartu_player_camera;
-extern float D_L15_00167458;
+extern float quartu_camera_yaw;
 extern Moby *quartu_coll_sphere_moby_hits[];
 extern Bone quartu_hero_bones[];
 extern Rec2C quartu_attack_records[];
@@ -1978,7 +1978,7 @@ void Hero_UpdateStatePhysicsL15(void) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;
-                g_hero.motion.move_yaw = D_L15_00167458;
+                g_hero.motion.move_yaw = quartu_camera_yaw;
                 turn_to(0, g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
                 g_hero.motion.move_yaw = keep;
             }

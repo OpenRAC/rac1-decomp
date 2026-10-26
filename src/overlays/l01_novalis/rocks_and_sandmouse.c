@@ -197,7 +197,7 @@ typedef struct {
     u8 pad0[0x454];
     u8 collected[1];
 } BurstLevelState;
-extern BurstLevelState D_L01_001BB9C0;
+extern BurstLevelState novalis_checkpoint_level_state;
 extern BurstColors bridge_piece_debris_colors;
 extern void *MobyGetHitMessage_r(void *, s32, s32) __asm__("func_L00_0025B478");
 extern void DeleteMoby(void *);
@@ -239,7 +239,7 @@ void bridge_piece_1_update(BurstMoby *self) {
     s32 i;
 
     t = func_L00_0025B478_FB158c(self, 0x830000, 0);
-    if (D_L01_001BB9C0.collected[self->id] != 0
+    if (novalis_checkpoint_level_state.collected[self->id] != 0
         || (level_moby_killed[g_current_level_index_r][self->id >> 5] >> (self->id & 0x1F)) & 1) {
         func_0020D678_FB158d(self);
     }
@@ -416,7 +416,7 @@ typedef struct {
 } DropProbe;
 
 extern char camera_pos[];
-extern char D_L01_00174360[];
+extern char novalis_coll_hit_point[];
 extern float multiply_global_factor(float);
 extern void FastVecAdd(void *, void *, void *);
 extern float vec_distance_xy(void *, void *);
@@ -471,7 +471,7 @@ void update_birdbot_projectile(DropMoby *m) {
         spawn_explosion_effects(m, &tmp, 0, 0.5f, zero);
         DeleteMoby(m);
     } else if (coll_line(&prev, pos, 0, v->coll, &probe) != 0) {
-        qcopy(pos, D_L01_00174360);
+        qcopy(pos, novalis_coll_hit_point);
         tmp = m->pos;
         spawn_explosion_effects(m, &tmp, 0, 0.5f, zero);
         DeleteMoby(m);
@@ -507,7 +507,7 @@ extern int g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
 extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
 extern unsigned char special_items_base_r[] __asm__("D_0013D355");
 extern V3_2FBBD8 cave_wall_debris_colors_r __asm__("D_L01_00161D00");
-extern LvState_2FBBD8 D_L01_001BB9C0_2FBBD8 __asm__("D_L01_001BB9C0");
+extern LvState_2FBBD8 novalis_checkpoint_level_state_r __asm__("D_L01_001BB9C0");
 
 /* destroyable_cave_wall_update: update for the cave wall moby (class 729) on level 01; a wall already burst is deleted, else it spawns its debris. */
 void destroyable_cave_wall_update(char *moby) {
@@ -527,7 +527,7 @@ void destroyable_cave_wall_update(char *moby) {
 
     uid = cave_wall_moby->save_id;
     id = uid;
-    if (D_L01_001BB9C0_2FBBD8.collected[id] != 0) {
+    if (novalis_checkpoint_level_state_r.collected[id] != 0) {
         DeleteMoby_r(cave_wall_moby);
         return;
     }
@@ -658,7 +658,7 @@ extern Moby *novalis_mobys_r __asm__("D_L01_00160058") MACRO_ADDR;
 extern Rec_2FC140 *camera_points_r __asm__("D_L01_0016016C") MACRO_ADDR;
 extern int novalis_game_mode_r __asm__("D_L01_0015F6A8") MACRO_ADDR;
 extern char novalis_current_level_state_r[] __asm__("D_L01_001BAD60");
-extern Lv_2FC140 D_L01_001BB9C0_2FC140 __asm__("D_L01_001BB9C0");
+extern Lv_2FC140 novalis_checkpoint_level_state_r2 __asm__("D_L01_001BB9C0");
 extern unsigned char novalis_mission_group_state_r[] __asm__("D_L01_0015FD08") MACRO_ADDR;
 extern char novalis_saved_moby_bytes_r[] __asm__("D_L01_001BADB0");
 extern char hero_globals_base_r[] __asm__("D_0013E633");
@@ -847,7 +847,7 @@ void agnogg_ship_front_update(Moby *moby) {
             if (novalis_mobys_r[data->link].mission == 0xFF
                 || (novalis_mission_group_state_r[novalis_mobys_r[data->link].mission] != 0xFF
                     && (help_stats_base_r + 0xAA35)[novalis_mobys_r[data->link].mission + (g_current_level_index_r2 << 4)] == 0xFF)) {
-                D_L01_001BB9C0_2FC140.collected[(*(short *)&novalis_mobys_r[data->link].save_id)] = novalis_mobys_r[data->link].mission + 2;
+                novalis_checkpoint_level_state_r2.collected[(*(short *)&novalis_mobys_r[data->link].save_id)] = novalis_mobys_r[data->link].mission + 2;
             }
         }
         if (data->f3C != -1) {
@@ -998,10 +998,10 @@ extern u8 water_tint[4] MACRO_ADDR;
 extern u8 novalis_water_tint2_r[4] MACRO_ADDR;
 extern u8 novalis_water_tint2_g[4] MACRO_ADDR;
 extern u8 novalis_water_tint2_b[4] MACRO_ADDR;
-extern f32 D_L01_00161288 MACRO_ADDR;
-extern f32 D_L01_0016128C MACRO_ADDR;
-extern f32 D_L01_00161290 MACRO_ADDR;
-extern f32 D_L01_00161294 MACRO_ADDR;
+extern f32 novalis_water_ripple_params_0 MACRO_ADDR;
+extern f32 novalis_water_ripple_params_1 MACRO_ADDR;
+extern f32 novalis_water_ripple_params_2 MACRO_ADDR;
+extern f32 novalis_water_ripple_params_3 MACRO_ADDR;
 
 /* Novalis pool update: sets up the ripple tiles and runs the pool's water effects. */
 void update_pool_tiles_and_effects(PMoby *moby) {
@@ -1060,11 +1060,11 @@ void update_pool_tiles_and_effects(PMoby *moby) {
             l->c3D = 0x40;
         }
         pool_draw_count = 21;
-        D_L01_00161288 = zero;
+        novalis_water_ripple_params_0 = zero;
         tex = pool_tile_tex;
-        D_L01_0016128C = 32768.0f;
-        D_L01_00161290 = 255.0f;
-        D_L01_00161294 = 48.0f;
+        novalis_water_ripple_params_1 = 32768.0f;
+        novalis_water_ripple_params_2 = 255.0f;
+        novalis_water_ripple_params_3 = 48.0f;
         pool_draw_tiles = pool_tiles;
         pool_draw_tex = pool_tile_tex;
         for (m = 0; m < 21; m++) {
@@ -1497,7 +1497,7 @@ char *pool_drip(void *position,float scale) {
 }
 extern int pool_draw_tiles_s __asm__("D_L01_00161350") MACRO_ADDR;
 extern int pool_draw_count_s __asm__("D_L01_00161358") MACRO_ADDR;
-extern float D_L01_00174368_s __asm__("D_L01_00174368") NOT_SDA;
+extern float novalis_coll_hit_point_z_s __asm__("D_L01_00174368") NOT_SDA;
 extern int CollType(void);
 extern void RippleDisturb(int, int, int, float, float, float, float);
 extern char *spawn_burst_moby(void *, float);
@@ -1532,7 +1532,7 @@ void update_falling_splash_moby(char *m) {
             }
             at[0] = ((Moby *)m)->pos.x;
             at[1] = ((Moby *)m)->pos.y;
-            at[2] = D_L01_00174368_s;
+            at[2] = novalis_coll_hit_point_z_s;
             o = spawn_burst_moby(at, 2.0f);
             if (o != 0) {
                 o[0x23] = 0x70;
@@ -2235,7 +2235,7 @@ extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int novalis_env_mesh_vertex_counts[];
 extern char *novalis_env_mesh_normals[];
 extern char *novalis_env_mesh_verts[];
-extern int D_L01_002083E0[];
+extern int novalis_env_mesh_unused_args[];
 extern float novalis_env_mesh_uvs[];
 extern int novalis_env_mesh_colors[];
 
@@ -2248,7 +2248,7 @@ void draw_level01_environment_mapped_meshes(void) {
     VU1_addGSregister(0x14, 0xFF9000000260L);
     font_queue_vu_state();
     for (i = 4; i >= 0; i--) {
-        generate_level01_environment_map_uvs(novalis_env_mesh_vertex_counts[4 - i], novalis_env_mesh_normals[4 - i], novalis_env_mesh_verts[4 - i], D_L01_002083E0[4 - i], novalis_env_mesh_uvs);
+        generate_level01_environment_map_uvs(novalis_env_mesh_vertex_counts[4 - i], novalis_env_mesh_normals[4 - i], novalis_env_mesh_verts[4 - i], novalis_env_mesh_unused_args[4 - i], novalis_env_mesh_uvs);
         draw_env_overlay_mesh(novalis_env_mesh_vertex_counts[4 - i], (int)novalis_env_mesh_verts[4 - i], novalis_env_mesh_colors[4 - i], novalis_env_mesh_uvs, 1);
     }
 }
