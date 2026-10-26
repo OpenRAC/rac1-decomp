@@ -4129,6 +4129,7 @@ func_L10_00299818	src/versions/us/overlays/l10_orxon/platforms_doors_and_bombthr
 func_L10_00299AF0	src/overlays/shared/rocket_and_path_camera.c	match	10:00298940	548	100.00
 func_L10_00299D18	src/versions/us/overlays/l10_orxon/platforms_doors_and_bombthrower/func_L10_00299D18.c	match	10:00298B68	1232	100.00
 func_L10_002BFBB8	src/overlays/l10_orxon/platforms_doors_and_bombthrower.c	match	10:002BE858	1936	100.00
+func_L10_002C0348	src/overlays/l10_orxon/platforms_doors_and_bombthrower.c	match	10:002BEFE8	408	100.00
 func_L10_002C8DE0	src/overlays/l10_orxon/platforms_doors_and_bombthrower.c	match	10:002C7A20	480	100.00
 func_L10_002CAD18	src/overlays/l10_orxon/platforms_doors_and_bombthrower.c	match	10:002C9958	788	100.00
 func_L10_002CB030	src/overlays/l10_orxon/platforms_doors_and_bombthrower.c	match	10:002C9C70	1036	100.00

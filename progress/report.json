@@ -1,16 +1,16 @@
 {
  "measures": {
-  "fuzzy_match_percent": 99.54385016997497,
+  "fuzzy_match_percent": 99.55483714502377,
   "total_code": "3713488",
-  "matched_code": "3692216",
-  "matched_code_percent": 99.42716928127949,
+  "matched_code": "3692624",
+  "matched_code_percent": 99.43815625632828,
   "total_functions": 5117,
-  "matched_functions": 5103,
-  "matched_functions_percent": 99.72640218878249,
-  "complete_code": "2272208",
-  "complete_code_percent": 61.18797206292305,
+  "matched_functions": 5104,
+  "matched_functions_percent": 99.74594488958374,
+  "complete_code": "2328612",
+  "complete_code_percent": 62.70686750569815,
   "total_units": 141,
-  "complete_units": 133,
+  "complete_units": 134,
   "total_data": "699072",
   "matched_data": "3852",
   "matched_data_percent": 0.5510162043394672,
@@ -42253,17 +42253,17 @@
   {
    "name": "Level 10: Orxon",
    "measures": {
-    "fuzzy_match_percent": 99.27664704630877,
+    "fuzzy_match_percent": 100.0,
     "total_code": "56404",
-    "matched_code": "55996",
-    "matched_code_percent": 99.27664704630877,
+    "matched_code": "56404",
+    "matched_code_percent": 100.0,
     "total_functions": 57,
-    "matched_functions": 56,
-    "matched_functions_percent": 98.24561403508773,
-    "complete_code": "0",
-    "complete_code_percent": 0.0,
+    "matched_functions": 57,
+    "matched_functions_percent": 100.0,
+    "complete_code": "56404",
+    "complete_code_percent": 100.0,
     "total_units": 1,
-    "complete_units": 0
+    "complete_units": 1
    },
    "functions": [
     {
@@ -42323,7 +42323,7 @@
     {
      "name": "func_L10_002C0348",
      "size": "408",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "584288",
      "metadata": {
       "virtual_address": "2884424"
@@ -42781,7 +42781,7 @@
     }
    ],
    "metadata": {
-    "complete": false,
+    "complete": true,
     "source_path": "src/overlays/l10_orxon",
     "progress_categories": [
      "level_code",
@@ -49783,15 +49783,15 @@
    "id": "level_code",
    "name": "Level code",
    "measures": {
-    "fuzzy_match_percent": 99.64693288224434,
+    "fuzzy_match_percent": 99.65949506195494,
     "total_code": "3247844",
-    "matched_code": "3232044",
-    "matched_code_percent": 99.51352343277571,
+    "matched_code": "3232452",
+    "matched_code_percent": 99.52608561248631,
     "total_functions": 3425,
-    "matched_functions": 3416,
-    "matched_functions_percent": 99.73722627737226,
-    "complete_code": "1856440",
-    "complete_code_percent": 57.159149269484615
+    "matched_functions": 3417,
+    "matched_functions_percent": 99.76642335766424,
+    "complete_code": "1912844",
+    "complete_code_percent": 58.89580903516302
    }
   },
   {
@@ -49843,15 +49843,15 @@
    "id": "levels",
    "name": "Level-specific code",
    "measures": {
-    "fuzzy_match_percent": 99.88433750004884,
+    "fuzzy_match_percent": 99.90426583618908,
     "total_code": "2047336",
-    "matched_code": "2044968",
-    "matched_code_percent": 99.88433750004884,
+    "matched_code": "2045376",
+    "matched_code_percent": 99.90426583618908,
     "total_functions": 1448,
-    "matched_functions": 1446,
-    "matched_functions_percent": 99.86187845303867,
-    "complete_code": "1856440",
-    "complete_code_percent": 90.67588319650511
+    "matched_functions": 1447,
+    "matched_functions_percent": 99.93093922651934,
+    "complete_code": "1912844",
+    "complete_code_percent": 93.43087797997006
    }
   },
   {
@@ -50008,15 +50008,15 @@
    "id": "level_10",
    "name": "Level 10: Orxon",
    "measures": {
-    "fuzzy_match_percent": 99.27664704630877,
+    "fuzzy_match_percent": 100.0,
     "total_code": "56404",
-    "matched_code": "55996",
-    "matched_code_percent": 99.27664704630877,
+    "matched_code": "56404",
+    "matched_code_percent": 100.0,
     "total_functions": 57,
-    "matched_functions": 56,
-    "matched_functions_percent": 98.24561403508773,
-    "complete_code": "0",
-    "complete_code_percent": 0.0
+    "matched_functions": 57,
+    "matched_functions_percent": 100.0,
+    "complete_code": "56404",
+    "complete_code_percent": 100.0
    }
   },
   {
