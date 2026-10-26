@@ -10870,7 +10870,7 @@
   {
    "name": "game/loaders",
    "measures": {
-    "fuzzy_match_percent": 99.99064277798303,
+    "fuzzy_match_percent": 99.990642777983,
     "total_code": "10828",
     "matched_code": "10232",
     "matched_code_percent": 94.49575175471001,
