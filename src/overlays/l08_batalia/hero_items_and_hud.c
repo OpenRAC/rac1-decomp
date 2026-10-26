@@ -20,7 +20,7 @@ extern int last_weapon_id;
 extern unsigned char item_available[];
 extern int gBolts MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int quick_swap_item MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -50,7 +50,7 @@ extern int try_transition_hero_water_state(void);
 extern int try_start_hero_weapon_fire_state(void);
 extern int scale_ticks(int);
 extern int queue_animation_update(int, int, int, int, int, int, int);
-extern int func_L00_00235790_r(void) __asm__("func_L00_00235790");
+extern int show_health_hud_r(void) __asm__("func_L00_00235790");
 extern void hud_keep_visible(int, int);
 extern int FastDecTimer(void *);
 extern void clear_hero_queued_animation(void);
@@ -63,7 +63,7 @@ extern int pick_idle_fidget(int *);
 extern float multiply_global_factor(float);
 extern int Hero_TryMoveStateL08(int, int);
 extern void fast_dec_timer(int *arg0);
-extern int func_001F9908_r(int *) __asm__("func_001F9908");
+extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern int rand_range(int, int);
 extern void blend_hero_slot3_animation_pair(void);
 extern void cancel_hero_item_animation(void);
@@ -167,7 +167,7 @@ void HeroL08_UpdateStateTransitions(void) {
                         g_hero.item_selector_timer = scale_ticks(0xF);
                     }
                     queue_animation_update(3, 0, (int)initialize_eight_slot_hud_selector, (int)update_hud_item_selector_selection_and_visibility, (int)draw_hud_item_selector_panel, 0, 0);
-                    id = func_L00_00235790_r();
+                    id = show_health_hud_r();
                     hud_keep_visible(id, scale_ticks(0xB4));
                     id = queue_animation_update(2, 0x754E, (int)initialize_bolt_counter_hud, (int)update_bolt_counter_hud_animation_and_visibility, (int)draw_bolt_counter_hud_panel, (int)&gBolts, 0x98967F);
                     hud_keep_visible(id, scale_ticks(0xB4));
@@ -193,7 +193,7 @@ void HeroL08_UpdateStateTransitions(void) {
                         if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.fFA) {
                             usage_stats.fFA = scale_ticks(gameplay_event_frame_count) / 600;
                         }
-                        usage_stats.fFC = usage_stats.fFC | (1 << D_0015EE84_m) | 0x80000000;
+                        usage_stats.fFC = usage_stats.fFC | (1 << g_current_level_index_m) | 0x80000000;
                         g_hero.pending_item[0] = next;
                         g_hero.quick_swap_tap_timer = 0;
                         g_hero.quick_swap_tap_window = 0;
@@ -282,7 +282,7 @@ void HeroL08_UpdateStateTransitions(void) {
                     }
                     if (scale_ticks(0xA) < g_hero.state_timer) {
                         if (((unsigned char *)g_hero.items[3].moby2) != 0 && ((unsigned char *)g_hero.items[3].moby2)[0x53] == 1) {
-                            if (func_001F9908_r(&g_hero.slot3_anim_timer)) {
+                            if (fast_dec_timer_r(&g_hero.slot3_anim_timer)) {
                                 if (0.55850536f > batalia_lean_state.f258 && batalia_lean_state.f254 < 0.34906584f && g_hero.items[3].state == 2) {
                                     g_hero.slot3_anim_timer = rand_range(scale_ticks(0x6E), scale_ticks(0x10E));
                                     blend_hero_slot3_animation_pair();
@@ -372,7 +372,7 @@ void HeroL08_UpdateStateTransitions(void) {
                             }
                         }
                         if (ok && 0.22f < g_hero.stick_magnitude) {
-                            if (D_0015EE84_m == 0xC) {
+                            if (g_current_level_index_m == 0xC) {
                                 int slot = g_hero.ground_sound_class;
                                 request_hero_voice_if_enabled(slot, 0, 0);
                                 request_hero_voice_if_enabled(slot, 1, 0);
@@ -553,7 +553,7 @@ void HeroL08_UpdateStateTransitions(void) {
                     break;
                 case 118:
                     if (g_hero.health.hp <= 0) {
-                        if (D_0015EE84_m == 0xF || D_0015EE84_m == 0x11) {
+                        if (g_current_level_index_m == 0xF || g_current_level_index_m == 0x11) {
                             Hero_TryMoveStateL08(0x82, 1);
                             break;
                         }
@@ -1120,14 +1120,14 @@ void HeroL08_UpdateStateTransitions(void) {
                     } else {
                         int ice = 0;
 
-                        if (D_0015EE84_m == 0x10 && g_hero.wall_hit != 0 && g_hero.coll_hit_moby != 0 && *(short *)(g_hero.coll_hit_moby + 0xA6) == 0x101) {
+                        if (g_current_level_index_m == 0x10 && g_hero.wall_hit != 0 && g_hero.coll_hit_moby != 0 && *(short *)(g_hero.coll_hit_moby + 0xA6) == 0x101) {
                             ice = 1;
                             g_hero.coll_hit_moby[0xBC] = 1;
                         }
                         if (vec_length_xy(g_hero.motion.displacement.f) < vec_length_xy(g_hero.motion.velocity.f) * 0.5f || ice || g_hero.unk5BE != 0) {
                             int ok = 1;
 
-                            if (D_0015EE84_m != 0x10) {
+                            if (g_current_level_index_m != 0x10) {
                                 qcopy(v0, g_hero.rail_point.f);
                                 v0[2] += 2.0f;
                                 v1[0] = FastCos(g_hero.rail_dir_yaw) * 5.0f;
@@ -1172,7 +1172,7 @@ void HeroL08_UpdateStateTransitions(void) {
                     if (g_hero.state.current == 0x28) {
                         int can = 1;
 
-                        if (D_0015EE84_m == 8) {
+                        if (g_current_level_index_m == 8) {
                             *(u128 *)v0 = 0;
                             v0[0] = 342.0f;
                             v0[1] = 111.1f;
@@ -1582,9 +1582,9 @@ void HeroL08_UpdateStateTransitions(void) {
                     }
                     break;
                 case 119:
-                    if ((D_0015EE84_m == 3 && 5.0f > g_hero.motion.pos.f[2])
-                        || (D_0015EE84_m == 6 && 50.0f > g_hero.motion.pos.f[2])
-                        || (D_0015EE84_m == 0x10 && (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 && g_hero.motion.displacement.f[2] >= 0.0f)))
+                    if ((g_current_level_index_m == 3 && 5.0f > g_hero.motion.pos.f[2])
+                        || (g_current_level_index_m == 6 && 50.0f > g_hero.motion.pos.f[2])
+                        || (g_current_level_index_m == 0x10 && (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 && g_hero.motion.displacement.f[2] >= 0.0f)))
                         || g_hero.state_timer > scale_ticks(0x78)) {
                         Hero_OnKilled();
                         return;
@@ -1598,7 +1598,7 @@ void HeroL08_UpdateStateTransitions(void) {
                     {
                         int both = 0;
 
-                        func_001F9908_r((int *)&batalia_hero_double_tap_timer);
+                        fast_dec_timer_r((int *)&batalia_hero_double_tap_timer);
                         if (*(int *)&batalia_hero_double_tap_timer != 0) {
                             both = 1;
                             if (!((g_controller_state.held & 8) && (g_controller_state.pressed & 8))) {
@@ -2009,7 +2009,7 @@ void HeroL08_UpdateStateTransitions(void) {
                         Hero_TryMoveStateL08(6, 1);
                         break;
                     }
-                    if (D_0015EE84_m == 0x10 && g_hero.motion.velocity.f[2] < 0.0f && g_hero.health.hp == 0 && g_hero.state.prev_control_mode == 0xF) {
+                    if (g_current_level_index_m == 0x10 && g_hero.motion.velocity.f[2] < 0.0f && g_hero.health.hp == 0 && g_hero.state.prev_control_mode == 0xF) {
                         Hero_TryMoveStateL08(0x77, 1);
                         break;
                     }
@@ -2228,7 +2228,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draws the Batalia sky shells (rotating on level 8), then restores the GS draw registers. */
 void Sky_DrawLevel08(void) {
     SetupSkyGifPaging();
-    if (D_0015EE84_m == 8) {
+    if (g_current_level_index_m == 8) {
         draw_sky_shells_with_modulo_40000_rotation();
     } else {
         update_sky_shells_static();

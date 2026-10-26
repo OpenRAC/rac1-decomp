@@ -27,8 +27,8 @@ void FighterJetUpdate(Moby1379 *moby) {
                         clamp_vec_length(p, p, g_frame_time * 3.0f);
                         FastVecAdd(moby->pos, moby->pos, p);
                         vec_reflect(v, v, p);
-                        d->v30[2] = FastAddRots(d->v30[2], FastSubRots(fast_atan2(v[0], v[1]), d->v30[2]) * *(float *)&D_L17_00162098_s * f);
-                        d->v30[1] = FastAddRots(d->v30[1], FastSubRots(fast_atan2(vec_length_xy(v), v[2]), d->v30[1]) * *(float *)&D_L17_0016209C_s * f);
+                        d->v30[2] = FastAddRots(d->v30[2], FastSubRots(fast_atan2(v[0], v[1]), d->v30[2]) * *(float *)&fleet_jet_bounce_yaw_blend_s * f);
+                        d->v30[1] = FastAddRots(d->v30[1], FastSubRots(fast_atan2(vec_length_xy(v), v[2]), d->v30[1]) * *(float *)&fleet_jet_bounce_pitch_blend_s * f);
                     }
                 } else {
                     Cam1379 *q;
@@ -64,7 +64,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             d->v20[0] = d->v30[0];
             d->v20[1] = d->v30[1];
             {
-                float t = fast_atan2(1.0f, D_L17_0016D470_a[0]);
+                float t = fast_atan2(1.0f, fleet_view_tan_half_fov_a[0]);
                 t = t + t;
                 d->iC0 = 0;
                 d->fAC = t;

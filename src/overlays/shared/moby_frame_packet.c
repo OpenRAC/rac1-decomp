@@ -3,7 +3,7 @@
 #include "callees.h"
 #include "include_asm.h"
 
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 typedef struct O0024ed18Key {
     u8 pad_00[4];
@@ -20,7 +20,7 @@ typedef struct O0024ed18 {
 /* Finds the index of the keyframe nearest to the given time, or -1. */
 int find_nearest_animation_sequence_entry(char *a, float time) {
     O0024ed18 *animation_sequence = (O0024ed18 *)a;
-    s16 scaled_target_position = func_001FA898_r(time * 16.0f);
+    s16 scaled_target_position = truncate_float_to_s32_r(time * 16.0f);
     s32 i;
     for (i = 0; i < animation_sequence->n; i++) {
         if (scaled_target_position < animation_sequence->k[i]->h) {
@@ -190,7 +190,7 @@ void advance_moby_animation_blend(void *unused, unsigned char *a) {
 }
 typedef struct { u8 pad[0x20]; u8 b20, b21, b22, b23; s32 i24; f32 f28; f32 f2c; } S;
 typedef struct { u8 pad[0x51]; u8 b51, b52, b53; } A;
-extern void func_L00_002501C8_50418(void *, void *) __asm__("func_L00_002501C8");
+extern void advance_moby_animation_blend_r(void *, void *) __asm__("func_L00_002501C8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_state_0024eec0.c, FUN_L00_0024f3e0. */
 void initialize_moby_animation_blend(A *a0, S *a1, s32 a2, s32 a3, s32 a4, s32 a5) {
@@ -201,7 +201,7 @@ void initialize_moby_animation_blend(A *a0, S *a1, s32 a2, s32 a3, s32 a4, s32 a
     a1->i24 = 0;
     a1->f28 = 1.0f;
     a1->f2c = 1.0f / (f32)a4;
-    if (a5) func_L00_002501C8_50418(a0, a1);
+    if (a5) advance_moby_animation_blend_r(a0, a1);
 }
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay/state/0024eec0.c, FUN_L00_0024f440. */
 typedef unsigned long u64_50478p;

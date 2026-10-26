@@ -69,7 +69,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 extern unsigned char menu_item_enabled_0 NOT_SDA;
@@ -107,7 +107,7 @@ extern void DebugEnter_Nop(void);
 extern int compress_map_coverage(void *dst, int size, int a, int b);
 extern void downsample_map_coverage(void *dst);
 extern short g_current_level_index;
-extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
+extern int g_current_level_index_far __asm__("D_0015EE84") NOT_SDA;
 extern int map_coverage_active[] NOT_SDA;
 extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
 extern void expand_map_coverage(void *, unsigned char *);
@@ -139,7 +139,7 @@ extern unsigned char gemlik_available NOT_SDA;
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern unsigned char gHaveHologuise NOT_SDA;
 extern int moby_render_slots[];
-extern void func_001FA460_2(void *, void *) __asm__("func_001FA460");
+extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -221,7 +221,7 @@ typedef struct {
     char _pad6C[4];
     unsigned char unk70;     /* 0x70 */
 } MobyAnim;
-extern void func_0020D6D0_a(void *) __asm__("func_0020D6D0");
+extern void update_moby_animation_state_a(void *) __asm__("func_0020D6D0");
 
 /* Sets moby m's animation to sequence seq at frame (clamped to the
    sequence's last frame), the next frame to frame + 1 (clamped the same
@@ -245,7 +245,7 @@ void MobySetAnimation(MobyAnim *m, int seq, int frame) {
     if (m->nextFrame >= m->pClass->seqs[seq]->nframes) {
         m->nextFrame = 0;
     }
-    func_0020D6D0_a(m);
+    update_moby_animation_state_a(m);
     m->unk5C = *m->frameData;
     m->unk70 &= ~2;
 }
@@ -284,7 +284,7 @@ void MobyBlendAnimation(MobyAnim *arg0, int arg1, int arg2, int arg3) {
     }
     arg0->nextFrame = arg2;
     arg0->prevSeq = arg1;
-    func_0020D6D0_a(arg0);
+    update_moby_animation_state_a(arg0);
     *(float *)((char *)arg0 + 0x58) = 1.0f;
     scale = 1.0f / IntToFloat(arg3);
     *(float *)((char *)arg0 + 0x54) = 0.0f;
@@ -329,7 +329,7 @@ void blend_moby_animation_ex(MobyAnim *arg0, int arg1, int arg2, int arg3, int a
     }
     arg0->nextFrame = arg2;
     arg0->prevSeq = arg1;
-    func_0020D6D0_a(arg0);
+    update_moby_animation_state_a(arg0);
     *(float *)((char *)arg0 + 0x58) = 1.0f;
     scale = 1.0f / IntToFloat(arg3);
     *(float *)((char *)arg0 + 0x54) = 0.0f;
@@ -391,7 +391,7 @@ float CosineInterpolate(float a, float b, float t) {
 
 LINKER_REMNANT("asm/remnants/text", func_002142B8);
 
-extern int func_001EFE10_a(void *, void *, int, int, int) __asm__("func_001EFE10");
+extern int coll_line_fix_a(void *, void *, int, int, int) __asm__("func_001EFE10");
 extern char coll_hit_pos[];
 
 /* Builds two 16-byte copies of *arg0: one with byte offset 8 (a float)
@@ -407,7 +407,7 @@ f32 ProbeGroundHeight(void *arg0, s32 arg1, f32 arg2) {
     *(f32 *)(sp0 + 8) = 0.01f;
     qcopy(sp1, arg0);
     *(f32 *)(sp1 + 8) = *(f32 *)(sp1 + 8) + arg2;
-    if (func_001EFE10_a(sp1, sp0, arg1 | 2, 0, 0) != 0) {
+    if (coll_line_fix_a(sp1, sp0, arg1 | 2, 0, 0) != 0) {
         return *(f32 *)(coll_hit_pos + 8);
     }
     return 0.0f;
@@ -484,7 +484,7 @@ void update_moby_shadow_range(char *m) {
     a[1] -= dir[1] * *(float *)(m + 0xC) * 0.000732421875f;
     qcopy(b, a);
     b[2] -= 8.0f;
-    if (func_001EFE10_a(a, b, 0x22, 0, 0) != 0) {
+    if (coll_line_fix_a(a, b, 0x22, 0, 0) != 0) {
         qcopy(a, p);
         hit = coll_output;
         h1 = *(float *)(hit + 0x28);
@@ -494,7 +494,7 @@ void update_moby_shadow_range(char *m) {
         fast_vec_normalize(dir, dir, (a[2] - h1) / -dir[2]);
         FastVecAdd(b, a, dir);
         h2 = h1;
-        if (func_001EFE10_a(a, b, 0x22, 0, 0) != 0) {
+        if (coll_line_fix_a(a, b, 0x22, 0, 0) != 0) {
             h2 = *(float *)(hit + 0x28);
         }
         *(float *)(m + 0x84) = min_float(h1, h2) - 0.25f;
@@ -834,7 +834,7 @@ struct M2c_temp3 {
     f32 values[3];
     s32 pad;
 };
-extern void func_001F9DC0_14F78(f32 *, f32 *, f32) __asm__("func_001F9DC0");
+extern void fast_vec_normalize_r(f32 *, f32 *, f32) __asm__("func_001F9DC0");
 void normalize_vector_triplet(f32 *arg0);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/math/vectors/normalize_vector_triplet.c, normalize_vector_triplet. */
@@ -865,7 +865,7 @@ void normalize_vector_triplet(f32 *arg0) {
             *dst = value;
             dst++;
         } while (count >= 0);
-        func_001F9DC0_14F78(scratch.values, scratch.values, 1.0f);
+        fast_vec_normalize_r(scratch.values, scratch.values, 1.0f);
         dst = (f32 *)((u8 *)base + offset);
         src = scratch.values;
         count = 2;
@@ -974,7 +974,7 @@ extern void matrix_copy_rows(void *, void *);
    which gives arg1 three references and retail's $s0. */
 void extract_matrix_rotation_quaternion(void *arg0, void *arg1) {
     char buf[0x40];
-    func_001FA460_2(buf, arg1);
+    copy_matrix_rotation_2(buf, arg1);
     MatrixToQuaternion(arg0, buf);
     matrix_copy_rows(arg1, buf);
 }
@@ -1154,7 +1154,7 @@ void set_video_timing(int pal) {
 LINKER_REMNANT("asm/remnants/text", func_002158E0);
 
 extern int FastVectorToPackedChars(float *);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* Packs vector v into one RGBA word at *out (func_001F9F30 converts a
    float4 to bytes): its largest absolute component sets a scale n,
@@ -1173,7 +1173,7 @@ void pack_vector_xyz_with_shared_scale(float *v, int *out) {
         b = a;
     }
     m = (c < b) ? b : c;
-    n = func_001FA898_r(m * 10000.0f / 63.0f);
+    n = truncate_float_to_s32_r(m * 10000.0f / 63.0f);
     n = (n < 0x100) ? n : 0xFF;
     if (n <= 0) {
         n = 1;
@@ -1225,7 +1225,7 @@ float round_float_to_decimal_places(int arg0, float arg1) {
     scale = (float)p;
     arg1 += 1.0f / (scale + scale);
     arg1 *= scale;
-    arg1 = (float)func_001FA898_r(arg1);
+    arg1 = (float)truncate_float_to_s32_r(arg1);
     return arg1 / scale;
 }
 
@@ -1294,7 +1294,7 @@ void SamplePathAt(Path *path, int wrap, void *pos, float *rot, int flags, float 
     float roll;
     float roll2;
 
-    i = func_001FA898_r(t);
+    i = truncate_float_to_s32_r(t);
     if (!wrap && i >= path->count - 2) {
         i = path->count - 2;
         clamp = 1;

@@ -21,17 +21,17 @@ int DrawQuitGameMenu(char *arg0) {
     box[9] = 1;
     box[1] = h;
     SetupGifPaging(0);
-    func_00234C98_l(0x47, 0x2004B);
-    font_print_window_regular(box, 0x80FFA888L, func_001FE540_id(0x4F6E), -1);
-    FontPrintCenter(cx, y1, 0x80FFA888L, func_001FE540_id(0x4F40), -1);
-    a = measure_text_width_regular(func_001FE540_id(0x52A2), -1);
-    b = measure_text_width_regular(func_001FE540_id(0x52A6), -1);
+    VU1_addGSregister_l(0x47, 0x2004B);
+    font_print_window_regular(box, 0x80FFA888L, msg_string_id(0x4F6E), -1);
+    FontPrintCenter(cx, y1, 0x80FFA888L, msg_string_id(0x4F40), -1);
+    a = measure_text_width_regular(msg_string_id(0x52A2), -1);
+    b = measure_text_width_regular(msg_string_id(0x52A6), -1);
     if (b >= a) {
         a = b;
     }
     x = (*(int *)(arg0 + 0x20) - a) >> 1;
-    func_001F68E8_c(x, y2, 0x80FFA888L, func_001FE540_id(0x52A2), -1);
-    func_001F68E8_c(x, y3, 0x80FFA888L, func_001FE540_id(0x52A6), -1);
+    func_001F68E8_c(x, y2, 0x80FFA888L, msg_string_id(0x52A2), -1);
+    func_001F68E8_c(x, y3, 0x80FFA888L, msg_string_id(0x52A6), -1);
     DoGifPaging();
     return 2;
 }

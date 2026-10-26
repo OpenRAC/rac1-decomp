@@ -9,10 +9,10 @@ void update_hero_relocation_trigger(char *m) {
     if (*(int *)(d + 0x18) != -1) {
         int b = *(int *)(d + 0x1C);
         if (b != -1) {
-            if (*(short *)((*(int *)(d + 0x18) << 8) + (int)D_L10_00160058_00299818 + 0xA6) == 0x325 &&
-                *(short *)((b << 8) + (int)D_L10_00160058_00299818 + 0xA6) == 0x325) {
-                char *f1 = *(char **)((*(int *)(d + 0x18) << 8) + (int)D_L10_00160058_00299818 + 0x78);
-                char *f2 = *(char **)((b << 8) + (int)D_L10_00160058_00299818 + 0x78);
+            if (*(short *)((*(int *)(d + 0x18) << 8) + (int)orxon_mobys_r + 0xA6) == 0x325 &&
+                *(short *)((b << 8) + (int)orxon_mobys_r + 0xA6) == 0x325) {
+                char *f1 = *(char **)((*(int *)(d + 0x18) << 8) + (int)orxon_mobys_r + 0x78);
+                char *f2 = *(char **)((b << 8) + (int)orxon_mobys_r + 0x78);
                 if (saved_mission_state[((unsigned char *)m)[0xB0] + (g_current_level_index << 4)] == 0xFF) {
                     *(int *)(f1 + 8) |= 8;
                     *(int *)(f2 + 8) &= ~8;
@@ -27,7 +27,7 @@ void update_hero_relocation_trigger(char *m) {
     if (D_L10_001BB9C0.collected[(short)id] != 0 ||
         ((*(int *)(D_0014171B + 0xAB75 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) != 0) {
         if (gHaveHeliPack[4] != 0) {
-            char *bs = D_L10_00160058_00299818;
+            char *bs = orxon_mobys_r;
             *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 1;
             *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 2;
             *(int *)((*(int *)d << 8) + (int)bs + 0x94) = 0;
@@ -66,7 +66,7 @@ void update_hero_relocation_trigger(char *m) {
     orxon_moby_killed[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     if (*(int *)(d + 8) == -1 || *(int *)d == -1) return;
     if (gHaveHeliPack[4] == 0) {
-        char *e = (char *)((*(int *)d << 8) + (int)D_L10_00160058_00299818);
+        char *e = (char *)((*(int *)d << 8) + (int)orxon_mobys_r);
         int eo = g_current_level_index << 4;
         unsigned char byte;
         int k;
@@ -79,7 +79,7 @@ void update_hero_relocation_trigger(char *m) {
             k = *(int *)(d + 8);
             Hero_ResetToPosition(orxon_scene_points + (k << 7) + 0x30, orxon_scene_points + (k << 7) + 0x70, 0, 1);
         }
-        enter_hero_vehicle_mode(1, 0x43, D_L10_00160058_00299818 + (*(int *)d << 8));
+        enter_hero_vehicle_mode(1, 0x43, orxon_mobys_r + (*(int *)d << 8));
         MusicRequestTrack(2, 4);
     } else {
         unsigned char *h = (unsigned char *)D_0013E633 + 0xE1D;
@@ -90,7 +90,7 @@ void update_hero_relocation_trigger(char *m) {
         }
         MusicRequestTrack(0, 5);
         {
-            char *bs = D_L10_00160058_00299818;
+            char *bs = orxon_mobys_r;
             *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 1;
             *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 2;
             *(int *)((*(int *)d << 8) + (int)bs + 0x94) = 0;

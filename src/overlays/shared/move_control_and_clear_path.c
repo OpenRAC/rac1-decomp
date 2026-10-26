@@ -61,7 +61,7 @@ void MobyGroup_SetByteBC(int i, int v) {
         } while (*(short *)p++ >= 0);
     }
 }
-extern int D_L01_00160058_m __asm__("D_L01_00160058") MACRO_ADDR;
+extern int novalis_mobys_m __asm__("D_L01_00160058") MACRO_ADDR;
 
 // Walks a list of moby indices and sets the state byte of each one that is non-negative.
 void set_moby_list_state(int list, int state)
@@ -71,7 +71,7 @@ void set_moby_list_state(int list, int state)
     if (q != 0) {
         p = q;
         do {
-            char *m = (char *)(((*p & 0x7FFF) << 8) + D_L01_00160058_m);
+            char *m = (char *)(((*p & 0x7FFF) << 8) + novalis_mobys_m);
             if (m[0x20] >= 0) {
                 m[0x20] = state;
             }
@@ -166,13 +166,13 @@ typedef struct {
     u8 pad04[0xC];
     Vec4 pts[1];
 } Path_276a48;
-extern Path_276a48 * D_L01_001B0C30_77FD8[] __asm__("D_L01_001B0C30");
-extern void func_001F9BF0_77FD8(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
-extern void func_001F9BD8_77FD8(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
-extern void func_L00_001FF4B0_77FD8(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B0");
-extern s32 func_L00_002629E0_77FD8(s32, Vec4 *, Vec4 *) __asm__("func_L00_002629E0");
+extern Path_276a48 * novalis_paths_r[] __asm__("D_L01_001B0C30");
+extern void FastVecSub_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
+extern void FastVecAdd_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
+extern void vec_scale_to_length_r(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B0");
+extern s32 test_path_segment_strict_crossing_r(s32, Vec4 *, Vec4 *) __asm__("func_L00_002629E0");
 s32 func_L01_00277A38_77FD8(s32 *ids, s32 n, f32 radius, s32 path_index, Vec4 *pos) __asm__("func_L01_00277A38");
-extern f32 func_001F9D48_77FD8(Vec4 *, Vec4 *) __asm__("func_001F9D48");
+extern f32 vec_distance_xy_r(Vec4 *, Vec4 *) __asm__("func_001F9D48");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00276a48.c, FUN_L01_00276fe8. */
 s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius,
@@ -192,26 +192,26 @@ s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius,
 
     for (j = 0; j < n; j++) {
         if (radius != 0.0f) {
-            func_001F9BF0_77FD8(&side, pos, target);
-            func_L00_001FF4B0_77FD8(&side, &side, radius);
+            FastVecSub_r(&side, pos, target);
+            vec_scale_to_length_r(&side, &side, radius);
             x = side.f[0];
             side.f[3] = x;
             side.f[0] = side.f[1];
             side.f[1] = -x;
-            func_001F9BF0_77FD8(&left, pos, &side);
-            func_001F9BD8_77FD8(&right, pos, &side);
-            if (func_L00_002629E0_77FD8(ids[j], &left, target)) {
+            FastVecSub_r(&left, pos, &side);
+            FastVecAdd_r(&right, pos, &side);
+            if (test_path_segment_strict_crossing_r(ids[j], &left, target)) {
                 hit = 1;
-            } else if (func_L00_002629E0_77FD8(ids[j], &right, target)) {
+            } else if (test_path_segment_strict_crossing_r(ids[j], &right, target)) {
                 hit = 1;
             }
-        } else if (func_L00_002629E0_77FD8(ids[j], pos, target)) {
+        } else if (test_path_segment_strict_crossing_r(ids[j], pos, target)) {
             hit = 1;
         }
         if (hit) break;
     }
     if (hit) {
-        path = D_L01_001B0C30_77FD8[path_index];
+        path = novalis_paths_r[path_index];
         from_mask = func_L01_00277A38_77FD8(ids, n, radius, path_index, pos);
         to_mask = func_L01_00277A38_77FD8(ids, n, radius, path_index, target);
         mask = expand_path_mask_to_intersection(path_index, from_mask, to_mask);
@@ -220,7 +220,7 @@ s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius,
             best = -1;
             for (i = 0; i < path->count; i++) {
                 if ((mask >> i) & 1) {
-                    f32 distance = func_001F9D48_77FD8(&path->pts[i], target);
+                    f32 distance = vec_distance_xy_r(&path->pts[i], target);
                     if (distance < nearest) {
                         nearest = distance;
                         best = i;

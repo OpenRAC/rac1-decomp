@@ -49,27 +49,27 @@ typedef struct {
     Vec4A normal;
 } Coll_1F3010;
 
-extern PathEl_1F3010 *D_L04_001B0930_1F3010[] __asm__("D_L04_001B0930");
-extern Coll_1F3010 D_L04_00174040_1F3010 __asm__("D_L04_00174040");
-extern char D_L04_00174070_1F3010[] __asm__("D_L04_00174070");
-extern char D_0013F450_1F3010[] __asm__("D_0013F450");
-extern void func_001F9BC0_1F3010(void *) __asm__("func_001F9BC0");
-extern float func_001F9D10_1F3010(void *, void *) __asm__("func_001F9D10");
-extern void func_001F9BF0_1F3010(void *, void *, void *) __asm__("func_001F9BF0");
-extern float func_001F9CB8_1F3010(void *) __asm__("func_001F9CB8");
-extern void func_L00_001FF4B0_1F3010(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void func_001F9BD8_1F3010(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_001F9C30_1F3010(void *, void *, float) __asm__("func_001F9C30");
-extern int func_L00_001EFFF0_1F3010(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern float func_001F9CE8_1F3010(void *) __asm__("func_001F9CE8");
-extern float func_L00_001FF860_1F3010(float, float) __asm__("func_L00_001FF860");
-extern void func_L00_001FF500_1F3010(void *, void *, float) __asm__("func_L00_001FF500");
-extern int func_L00_001F10E0_1F3010(float, void *, int, void *) __asm__("func_L00_001F10E0");
-extern int func_001F9938_1F3010(void *) __asm__("func_001F9938");
-extern float func_002140F8_1F3010(float, float) __asm__("func_002140F8");
-extern int func_001FA898_1F3010(float) __asm__("func_001FA898");
-extern int func_L04_001F2F68_1F3010(Moby *, void *, int) __asm__("func_L04_001F2F68");
-extern int func_L04_0024D790_1F3010(void *, void *, void *, int) __asm__("func_L04_0024D790");
+extern PathEl_1F3010 *eudora_paths_r[] __asm__("D_L04_001B0930");
+extern Coll_1F3010 eudora_coll_hit_r __asm__("D_L04_00174040");
+extern char eudora_coll_resolved_pos_r[] __asm__("D_L04_00174070");
+extern char g_hero_r[] __asm__("D_0013F450");
+extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
+extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
+extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
+extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
+extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
+extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
+extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
+extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
+extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern void vec_set_length_xy_r(void *, void *, float) __asm__("func_L00_001FF500");
+extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0");
+extern int FastDecTimer_r(void *) __asm__("func_001F9938");
+extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int find_nearest_point_index_xy_r(Moby *, void *, int) __asm__("func_L04_001F2F68");
+extern int find_closest_polygon_edge_point_r(void *, void *, void *, int) __asm__("func_L04_0024D790");
 
 /* Steering for a moby: pulls it along its path (c->path) and toward its target, pushes it away from the
  * listed mobys (and the hero's), and keeps it off the ground; f holds the gains. */
@@ -96,53 +96,53 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer_1F3010 *c, float *f) {
     float s2;
     float g;
 
-    func_001F9BC0_1F3010(c);
-    d = func_001F9D10_1F3010(&m->pos, &t);
+    clear_u64_value_r(c);
+    d = FastVecDist_r(&m->pos, &t);
     r = 0;
     path = 0;
     flag = 0;
     mob = 0;
     if (c->path != -1) {
-        path = D_L04_001B0930_1F3010[c->path];
-        r = func_L04_001F2F68_1F3010(m, &path[1], path[0].n);
-        flag = func_L04_0024D790_1F3010(&o, &m->pos, &path[1], path[0].n);
+        path = eudora_paths_r[c->path];
+        r = find_nearest_point_index_xy_r(m, &path[1], path[0].n);
+        flag = find_closest_polygon_edge_point_r(&o, &m->pos, &path[1], path[0].n);
         if (flag == 0) {
-            func_001F9BF0_1F3010(&w, &o, &m->pos);
-            s = func_001F9CB8_1F3010(&w);
+            FastVecSub_r(&w, &o, &m->pos);
+            s = FastVecLength_r(&w);
             if (s != 0.0f) {
                 s = -f[2] / (s * s);
             } else {
                 s = -1000.0f;
             }
         } else {
-            func_001F9BF0_1F3010(&w, &o, &m->pos);
-            s = func_001F9CB8_1F3010(&w) + 3.0f;
+            FastVecSub_r(&w, &o, &m->pos);
+            s = FastVecLength_r(&w) + 3.0f;
             if (d < s) {
                 s = s * (f[2] * s);
             } else {
                 s = 10000.0f;
             }
         }
-        func_L00_001FF4B0_1F3010(&w, &w, s);
-        func_001F9BD8_1F3010(c, c, &w);
+        vec_scale_to_length_r(&w, &w, s);
+        FastVecAdd_r(c, c, &w);
     }
     if (f[0] != 0.0f) {
-        func_L00_001FF4B0_1F3010(&w, &c->dir, f[0]);
-        func_001F9BD8_1F3010(c, c, &w);
+        vec_scale_to_length_r(&w, &c->dir, f[0]);
+        FastVecAdd_r(c, c, &w);
     }
     if (c->target == m) {
         qcopy(&w, &c->pos);
-        func_L00_001FF4B0_1F3010(&w, &w, f[1]);
-        func_001F9BD8_1F3010(c, c, &w);
+        vec_scale_to_length_r(&w, &w, f[1]);
+        FastVecAdd_r(c, c, &w);
     } else {
         if (c->path != -1) {
             k = r;
-            s = func_001F9D10_1F3010(&path[r + 1], &t);
+            s = FastVecDist_r(&path[r + 1], &t);
             j = 0;
             if (r + 1 < path[0].n) {
                 j = r + 1;
             }
-            s2 = func_001F9D10_1F3010(&path[j + 1], &t);
+            s2 = FastVecDist_r(&path[j + 1], &t);
             if (s < s2) {
                 k = j;
                 s = s2;
@@ -151,7 +151,7 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer_1F3010 *c, float *f) {
             if (j < 0) {
                 j = path[0].n - 1;
             }
-            if (s < func_001F9D10_1F3010(&path[j + 1], &t)) {
+            if (s < FastVecDist_r(&path[j + 1], &t)) {
                 k = j;
             }
             j = 0;
@@ -162,45 +162,45 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer_1F3010 *c, float *f) {
             if (lo <= -1) {
                 lo = path[0].n - 1;
             }
-            func_001F9BD8_1F3010(&w, &path[j + 1], &path[lo + 1]);
-            func_001F9BD8_1F3010(&w, &w, &path[k + 1]);
-            func_001F9C30_1F3010(&w, &w, 0.33333334f);
+            FastVecAdd_r(&w, &path[j + 1], &path[lo + 1]);
+            FastVecAdd_r(&w, &w, &path[k + 1]);
+            FastVecScale_r(&w, &w, 0.33333334f);
             if (flag == 0) {
-                func_001F9BF0_1F3010(&w, &w, &m->pos);
-                s = func_001F9CB8_1F3010(&w);
-                func_L00_001FF4B0_1F3010(&w, &w, s * (s * s * f[2]));
-                func_001F9BD8_1F3010(c, c, &w);
+                FastVecSub_r(&w, &w, &m->pos);
+                s = FastVecLength_r(&w);
+                vec_scale_to_length_r(&w, &w, s * (s * s * f[2]));
+                FastVecAdd_r(c, c, &w);
             }
         }
         if (c->target != 0) {
-            func_001F9BF0_1F3010(&w, &c->target->pos, &m->pos);
-            if (func_001F9CB8_1F3010(&w) < d) {
-                s = func_001F9CB8_1F3010(&w);
-                func_L00_001FF4B0_1F3010(&w, &w, s * (s * s * f[1]));
-                func_001F9BD8_1F3010(c, c, &w);
+            FastVecSub_r(&w, &c->target->pos, &m->pos);
+            if (FastVecLength_r(&w) < d) {
+                s = FastVecLength_r(&w);
+                vec_scale_to_length_r(&w, &w, s * (s * s * f[1]));
+                FastVecAdd_r(c, c, &w);
             }
         }
         if (c->point != 0) {
             w.x = c->point->x - m->pos.x;
             w.y = c->point->y - m->pos.y;
             w.z = c->point->z - m->pos.z;
-            if (func_001F9CB8_1F3010(&w) < d) {
-                s = func_001F9CB8_1F3010(&w);
-                func_L00_001FF4B0_1F3010(&w, &w, s * (s * s * f[1]));
-                func_001F9BD8_1F3010(c, c, &w);
+            if (FastVecLength_r(&w) < d) {
+                s = FastVecLength_r(&w);
+                vec_scale_to_length_r(&w, &w, s * (s * s * f[1]));
+                FastVecAdd_r(c, c, &w);
             }
         }
         for (i = 0; i < n + 1; i++) {
             if (i < n) {
                 obj = list[i];
             } else {
-                obj = ((Hero *)D_0013F450_1F3010)->moby;
+                obj = ((Hero *)g_hero_r)->moby;
             }
             ci = 0;
             if ((*(signed char *)&obj->state) < 0 || m == obj) {
                 continue;
             }
-            s = func_001F9D10_1F3010(&m->pos, &obj->pos);
+            s = FastVecDist_r(&m->pos, &obj->pos);
             if (c->near < s) {
                 continue;
             }
@@ -221,66 +221,66 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer_1F3010 *c, float *f) {
                 } else {
                     g = 1000.0f;
                 }
-                func_001F9BF0_1F3010(&w, &m->pos, &obj->pos);
-                func_L00_001FF4B0_1F3010(&w, &w, g);
-                func_001F9BD8_1F3010(c, c, &w);
+                FastVecSub_r(&w, &m->pos, &obj->pos);
+                vec_scale_to_length_r(&w, &w, g);
+                FastVecAdd_r(c, c, &w);
             }
         }
     }
     if (c->f48 == 0.0f) {
-        func_001F9BD8_1F3010(&a, &m->pos, &c->pos);
-        func_001F9BD8_1F3010(&e, &m->pos, &c->pos);
+        FastVecAdd_r(&a, &m->pos, &c->pos);
+        FastVecAdd_r(&e, &m->pos, &c->pos);
         a.z = a.z + 1.5f;
         e.z = 0.01f;
-        if (func_L00_001EFFF0_1F3010(&a, &e, 2, m, 0) != 0) {
-            if (D_L04_00174040_1F3010.hit > 0 && D_L04_00174040_1F3010.z > m->pos.z) {
-                qcopy(&x, &D_L04_00174040_1F3010.normal);
-                s = func_L00_001FF860_1F3010(D_L04_00174040_1F3010.normal.z, func_001F9CE8_1F3010(&D_L04_00174040_1F3010.normal));
-                func_L00_001FF500_1F3010(&x, &x, 1.0f);
-                func_001F9C30_1F3010(&x, &x, f[3]);
-                func_001F9BD8_1F3010(c, c, &x);
+        if (coll_line_r(&a, &e, 2, m, 0) != 0) {
+            if (eudora_coll_hit_r.hit > 0 && eudora_coll_hit_r.z > m->pos.z) {
+                qcopy(&x, &eudora_coll_hit_r.normal);
+                s = fast_atan2_r(eudora_coll_hit_r.normal.z, vec_length_xy_r(&eudora_coll_hit_r.normal));
+                vec_set_length_xy_r(&x, &x, 1.0f);
+                FastVecScale_r(&x, &x, f[3]);
+                FastVecAdd_r(c, c, &x);
                 if (0.4f < s) {
-                    func_001F9C30_1F3010(&x, &x, f[3] * (s * 10000.0f));
-                    func_001F9BD8_1F3010(c, c, &x);
+                    FastVecScale_r(&x, &x, f[3] * (s * 10000.0f));
+                    FastVecAdd_r(c, c, &x);
                 }
-                if (0.2f < m->pos.z - D_L04_00174040_1F3010.z) {
-                    func_L00_001FF500_1F3010(&x, &c->pos, -(f[3] * 1000.0f));
-                    func_001F9BD8_1F3010(c, c, &x);
+                if (0.2f < m->pos.z - eudora_coll_hit_r.z) {
+                    vec_set_length_xy_r(&x, &c->pos, -(f[3] * 1000.0f));
+                    FastVecAdd_r(c, c, &x);
                 }
             }
         }
     } else {
-        if (func_L00_001F10E0_1F3010(f[4], &m->pos, 4, m) != 0) {
-            func_001F9BF0_1F3010(&w, D_L04_00174070_1F3010, &m->pos);
+        if (coll_sphere_r(f[4], &m->pos, 4, m) != 0) {
+            FastVecSub_r(&w, eudora_coll_resolved_pos_r, &m->pos);
             w.z = w.z + f[3];
-            func_L00_001FF4B0_1F3010(&w, &w, f[3]);
-            func_001F9BD8_1F3010(c, c, &w);
+            vec_scale_to_length_r(&w, &w, f[3]);
+            FastVecAdd_r(c, c, &w);
         }
     }
     if (c->f48 == 0.0f) {
-        func_L00_001FF500_1F3010(c, c, f[6]);
+        vec_set_length_xy_r(c, c, f[6]);
         c->vel.z = 0.0f;
     } else {
-        func_L00_001FF4B0_1F3010(c, c, f[6]);
+        vec_scale_to_length_r(c, c, f[6]);
         c->vel.z = c->vel.z / c->f48;
     }
-    if (func_001F9938_1F3010(&c->timer) != 0) {
-        c->timer = func_001FA898_1F3010(func_002140F8_1F3010(45.0f, 90.0f));
-        c->drift.x = func_002140F8_1F3010(0.0f, c->range) - c->range * 0.5f;
-        c->drift.y = func_002140F8_1F3010(0.0f, c->range) - c->range * 0.5f;
+    if (FastDecTimer_r(&c->timer) != 0) {
+        c->timer = truncate_float_to_s32_r(random_float_between_r(45.0f, 90.0f));
+        c->drift.x = random_float_between_r(0.0f, c->range) - c->range * 0.5f;
+        c->drift.y = random_float_between_r(0.0f, c->range) - c->range * 0.5f;
         if (c->f48 != 0.0f) {
-            c->drift.z = func_002140F8_1F3010(0.0f, c->range) - c->range * 0.5f;
+            c->drift.z = random_float_between_r(0.0f, c->range) - c->range * 0.5f;
         } else {
             c->drift.z = 0.0f;
         }
     }
-    func_001F9BD8_1F3010(c, c, &c->drift);
+    FastVecAdd_r(c, c, &c->drift);
     if (mob != 0) {
-        func_001F9BF0_1F3010(&w, &m->pos, &mob->pos);
+        FastVecSub_r(&w, &m->pos, &mob->pos);
         if (c->f48 != 0.0f) {
-            func_L00_001FF4B0_1F3010(c, &w, f[6]);
+            vec_scale_to_length_r(c, &w, f[6]);
         } else {
-            func_L00_001FF500_1F3010(c, &w, f[6]);
+            vec_set_length_xy_r(c, &w, f[6]);
         }
     }
 }
@@ -313,7 +313,7 @@ void update_moby_movement_with_sphere_collision(char *a, char *b, char *c, float
     *(float *)(a + 0x48) = FastAddRots(fast_atan2(*(float *)(b + 0x10), *(float *)(b + 0x14)), 3.14159265f);
 }
 extern void SetupSkyGifPaging(void);
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern void draw_sky_shells_with_fast_and_slow_rotation(void);
 extern void update_sky_shells_static(void);
 extern void DoSkyGifPaging(void);
@@ -322,7 +322,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Eudora sky shells (rotating in level 4, static elsewhere) and restore GS test and Z. */
 void DrawEudoraSky(void) {
     SetupSkyGifPaging();
-    if (D_0015EE84_m == 4) {
+    if (g_current_level_index_m == 4) {
         draw_sky_shells_with_fast_and_slow_rotation();
     } else {
         update_sky_shells_static();

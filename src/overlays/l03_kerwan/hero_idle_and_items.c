@@ -64,7 +64,7 @@ extern float frame_scale MACRO_ADDR;
 extern char D_0013E633[];
 extern char D_0014171B[];
 extern char item_usage[];
-extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern short D_L03_0015F768;
 extern short kerwan_hero_idle_anim_modes;
 extern short kerwan_hero_state_f_jump_velocity_keys;
@@ -1211,7 +1211,7 @@ int HeroL03_SetMoveState(int a, int b) {
                     int id;
                     if (*(int *)(q + 0x450) == 2) *(int *)(q + 0x450) = 0;
                     id = *(int *)(q + 0x450) + 0x1C;
-                    if (D_0015EEB4_m[1] != 0) {
+                    if (draw_map51_m[1] != 0) {
                         if (id == 0x1C) {
                             id = 0x1D;
                         } else if (id == 0x1D) {

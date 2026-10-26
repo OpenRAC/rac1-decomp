@@ -73,7 +73,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 extern unsigned char menu_item_enabled_0 NOT_SDA;
@@ -144,7 +144,7 @@ extern unsigned char gemlik_available NOT_SDA;
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern unsigned char gHaveHologuise NOT_SDA;
 extern int moby_render_slots[];
-extern void func_001FA460_2(void *, void *) __asm__("func_001FA460");
+extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -177,7 +177,7 @@ extern void func_0012EDE0(void *);
 extern void func_0012EFE8(void);
 extern char load_file_start_failed_string[];
 extern int func_0012EE98(int, int, int, void *);
-extern int func_00217628_v(void) __asm__("func_00217628");
+extern int start_audio_stream_read_v(void) __asm__("func_00217628");
 extern void func_00122598(int);
 extern void music_Update(void);
 extern void func_0012EC40(void);
@@ -199,22 +199,22 @@ extern int promote_first_available_map_entry(void);
 extern void memcard_MakeWholeSave(char *out);
 extern void request_audio_stream_break(void);
 
-extern struct CameraSystem D_00187040_19C08 __asm__("D_00187040");
+extern struct CameraSystem gCamera_r __asm__("D_00187040");
 extern s32 active_camera_basis_column1_x;
 extern s32 D_001873B0;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/fun_00218d10.c, FUN_00218d10. */
 void reset_active_camera_position_and_basis(void) {
-    D_00187040_19C08.pos.f[0] = 256.0f;
-    D_00187040_19C08.pos.f[2] = 64.0f;
-    D_00187040_19C08.pos.f[1] = 256.0f;
-    qzero(&D_00187040_19C08.matrix[0].f[0]);
+    gCamera_r.pos.f[0] = 256.0f;
+    gCamera_r.pos.f[2] = 64.0f;
+    gCamera_r.pos.f[1] = 256.0f;
+    qzero(&gCamera_r.matrix[0].f[0]);
     qzero(&active_camera_basis_column1_x);
     qzero(&D_001873B0);
-    D_00187040_19C08.matrix[0].f[0] = 1.0f;
-    D_00187040_19C08.matrix[1].f[1] = 1.0f;
-    D_00187040_19C08.matrix[2].f[2] = 1.0f;
-    D_00187040_19C08.matrix[2].f[3] = 1.0f;
+    gCamera_r.matrix[0].f[0] = 1.0f;
+    gCamera_r.matrix[1].f[1] = 1.0f;
+    gCamera_r.matrix[2].f[2] = 1.0f;
+    gCamera_r.matrix[2].f[3] = 1.0f;
 }
 
 extern void func_0012E528(int);
@@ -230,7 +230,7 @@ extern char D_001CEAC8[];
 extern char D_001CEB18[];
 extern int selected_level_index;
 extern int D_001D0718;
-extern int func_0020C7A0_i(void) __asm__("func_0020C7A0");
+extern int update_mission_list_i(void) __asm__("func_0020C7A0");
 extern int func_0012DDC0_i(void) __asm__("func_0012DDC0");
 extern void update_skill_point_and_gold_weapon_menu_entries(void);
 extern char menu_system[] NOT_SDA;
@@ -292,7 +292,7 @@ void PauseAllSounds(int arg0) {
     } else {
         selected_level_index = 0;
     }
-    func_0020C7A0_i();
+    update_mission_list_i();
     D_001D0718 = 0;
     update_skill_point_and_gold_weapon_menu_entries();
     {
@@ -314,7 +314,7 @@ void initialize_transfer_command(void) {
     *(int *)(p + 0x110) = 0;
 }
 
-extern s32 D_0015EF78_19E90 __asm__("D_0015EF78") MACRO_ADDR;
+extern s32 g_gs_texture_allocation_start_r __asm__("D_0015EF78") MACRO_ADDR;
 
 struct MenuScreen_19E90;
 
@@ -391,7 +391,7 @@ struct MenuSystem_19E90 {
     s32 last_resource_table_toggle;
 };
 
-extern struct MenuSystem_19E90 D_001D5F70_19E90 __asm__("D_001D5F70");
+extern struct MenuSystem_19E90 menu_system_r __asm__("D_001D5F70");
 
 struct P_19E90 {
     u8 pad_0[0x10];
@@ -413,23 +413,23 @@ struct O2_19E90 {
     u8 pad_4C[0x28];
     s32 *f74;
 };
-extern struct MenuPage_19E90 D_001D4948_19E90 __asm__("D_001D4948"); /* page made current and next at init */
-extern u8 D_0019C250_19E90[] __asm__("D_0019C250");
+extern struct MenuPage_19E90 pause_menu_start_page_r __asm__("D_001D4948"); /* page made current and next at init */
+extern u8 menu_light_direction_r[] __asm__("D_0019C250");
 extern u8 D_0019C260_19E90[] __asm__("D_0019C260");
-extern s32 D_001941C0_19E90[] __asm__("D_001941C0");
-extern s32 D_0015F538_19E90 __asm__("D_0015F538") MACRO_ADDR;
-extern s32 D_0016100C_19E90 __asm__("D_0016100C") MACRO_ADDR;
+extern s32 level_resource_buffers_r[] __asm__("D_001941C0");
+extern s32 game_frame_counter_r __asm__("D_0015F538") MACRO_ADDR;
+extern s32 current_vu_chain_r __asm__("D_0016100C") MACRO_ADDR;
 extern void D_0023B578_19E90() __asm__("D_0023B578");
-extern struct CameraSystem D_00187040_19E90 __asm__("D_00187040");
-extern struct O2_19E90 *D_001D6120_19E90[] __asm__("D_001D6120");
-extern u8 D_001602C0_19E90 __asm__("D_001602C0") MACRO_ADDR;
-extern u8 D_001602D0_19E90 __asm__("D_001602D0") MACRO_ADDR;
-extern s32 func_001F9C30_19E90(s32, s32, f32) __asm__("func_001F9C30");
-extern void func_00234AC8_19E90(s32) __asm__("func_00234AC8");
+extern struct CameraSystem gCamera_r2 __asm__("D_00187040");
+extern struct O2_19E90 *panel_slots_r[] __asm__("D_001D6120");
+extern u8 menu_light_direction_init_r __asm__("D_001602C0") MACRO_ADDR;
+extern u8 menu_light_color_init_r __asm__("D_001602D0") MACRO_ADDR;
+extern s32 FastVecScale_r(s32, s32, f32) __asm__("func_001F9C30");
+extern void VU1_syncChain_r(s32) __asm__("func_00234AC8");
 extern s32 func_00122598_19E90(s32) __asm__("func_00122598");
-extern void func_002348E8_19E90(void) __asm__("func_002348E8");
-extern struct O2_19E90 *func_00226720_19E90() __asm__("func_00226720");
-extern s32 func_00213D28_19E90() __asm__("func_00213D28");
+extern void VU1_initChain_r(void) __asm__("func_002348E8");
+extern struct O2_19E90 *create_menu_preview_moby_r() __asm__("func_00226720");
+extern s32 MobySetAnimation_r() __asm__("func_00213D28");
 
 void func_00226D50_19E90() __asm__("func_00226D50");
 /* Opens the pause menu: makes the start page current, sets up the menu camera vectors and the
@@ -439,47 +439,47 @@ void func_00226D50_19E90() __asm__("func_00226D50");
 void initialize_menu_preview_scene(void) {
     s32 i;
     s32 a, b, c, d;
-    D_001D5F70_19E90.state = 2;
-    D_001D5F70_19E90.current = &D_001D4948_19E90;
-    D_001D5F70_19E90.next = &D_001D4948_19E90;
-    D_001D5F70_19E90.close_locked = 0;
-    func_001F9C30_19E90((s32)D_0019C250_19E90, (s32)&D_001602C0_19E90, 1.0f);
-    qcopy(D_0019C250_19E90 - 0x10, &D_001602D0_19E90);
-    qzero(D_0019C250_19E90 + 0x20);
+    menu_system_r.state = 2;
+    menu_system_r.current = &pause_menu_start_page_r;
+    menu_system_r.next = &pause_menu_start_page_r;
+    menu_system_r.close_locked = 0;
+    FastVecScale_r((s32)menu_light_direction_r, (s32)&menu_light_direction_init_r, 1.0f);
+    qcopy(menu_light_direction_r - 0x10, &menu_light_color_init_r);
+    qzero(menu_light_direction_r + 0x20);
     qzero(D_0019C260_19E90);
-    func_00234AC8_19E90(1);
+    VU1_syncChain_r(1);
     func_00122598_19E90(0);
-    a = D_001941C0_19E90[1] + 0xA0000;
-    b = D_001941C0_19E90[2] + 0xA0000;
+    a = level_resource_buffers_r[1] + 0xA0000;
+    b = level_resource_buffers_r[2] + 0xA0000;
     c = a + 0x30000;
     d = b + 0xE0000;
-    D_001D5F70_19E90.unkFC = c + 0xC1000;
-    D_0015F538_19E90++;
-    D_001D5F70_19E90.unk100 = d + 0x11800;
-    D_0016100C_19E90 = 0xA0000;
-    D_001D5F70_19E90.unk104 = a;
-    D_001D5F70_19E90.unk10 = b;
-    D_001D5F70_19E90.help_text_buffer = c;
-    D_001D5F70_19E90.unk10C = d;
+    menu_system_r.unkFC = c + 0xC1000;
+    game_frame_counter_r++;
+    menu_system_r.unk100 = d + 0x11800;
+    current_vu_chain_r = 0xA0000;
+    menu_system_r.unk104 = a;
+    menu_system_r.unk10 = b;
+    menu_system_r.help_text_buffer = c;
+    menu_system_r.unk10C = d;
     func_00226D50_19E90(1);
-    func_002348E8_19E90();
-    D_001D5F70_19E90.saved_texture_start = D_0015EF78_19E90;
-    if (D_001D5F70_19E90.current != 0) {
+    VU1_initChain_r();
+    menu_system_r.saved_texture_start = g_gs_texture_allocation_start_r;
+    if (menu_system_r.current != 0) {
         for (i = 0; i < 14; i++) {
-            struct O2_19E90 *o = (struct O2_19E90 *)func_00226720_19E90(0x472);
-            D_001D6120_19E90[i] = o;
+            struct O2_19E90 *o = (struct O2_19E90 *)create_menu_preview_moby_r(0x472);
+            panel_slots_r[i] = o;
             if (o != 0) {
                 s32 k;
                 o->f34 &= 0xFFFD;
-                D_001D6120_19E90[i]->f74 = D_0023B578_19E90;
-                D_001D6120_19E90[i]->f10 = D_00187040_19E90.pos.f[0];
-                D_001D6120_19E90[i]->f14 = D_00187040_19E90.pos.f[1];
-                D_001D6120_19E90[i]->f18 = D_00187040_19E90.pos.f[2];
-                D_001D6120_19E90[i]->f40 = 0;
-                D_001D6120_19E90[i]->f44 = 0;
-                D_001D6120_19E90[i]->f48 = 0;
-                k = D_001D5F70_19E90.current->moby_anims[i];
-                func_00213D28_19E90(D_001D6120_19E90[i], k, D_001D6120_19E90[i]->f24->tbl[k]->f10 - 1);
+                panel_slots_r[i]->f74 = D_0023B578_19E90;
+                panel_slots_r[i]->f10 = gCamera_r2.pos.f[0];
+                panel_slots_r[i]->f14 = gCamera_r2.pos.f[1];
+                panel_slots_r[i]->f18 = gCamera_r2.pos.f[2];
+                panel_slots_r[i]->f40 = 0;
+                panel_slots_r[i]->f44 = 0;
+                panel_slots_r[i]->f48 = 0;
+                k = menu_system_r.current->moby_anims[i];
+                MobySetAnimation_r(panel_slots_r[i], k, panel_slots_r[i]->f24->tbl[k]->f10 - 1);
             }
         }
     }
@@ -541,9 +541,9 @@ void close_menu_system(void) {
     }
 }
 
-extern s32 D_0015F6E8_1A1A0 __asm__("D_0015F6E8") MACRO_ADDR;
+extern s32 g_game_mode_r __asm__("D_0015F6E8") MACRO_ADDR;
 
-extern s32 D_0015EFB4_1A1A0 __asm__("D_0015EFB4") MACRO_ADDR;
+extern s32 mode_freeze_flags_r __asm__("D_0015EFB4") MACRO_ADDR;
 
 struct MenuScreen_1A1A0;
 
@@ -630,9 +630,9 @@ struct MemoryCardState_1A1A0 {
     s32 sub;
     s32 pending_state;        /* 0xE4 */
 };
-extern struct MemoryCardState_1A1A0 D_0013D390_1A1A0 __asm__("D_0013D390");
+extern struct MemoryCardState_1A1A0 memory_card_state_r __asm__("D_0013D390");
 
-extern struct MenuSystem_1A1A0 D_001D5F70_1A1A0 __asm__("D_001D5F70");
+extern struct MenuSystem_1A1A0 menu_system_r2 __asm__("D_001D5F70");
 
 struct MenuScreenWords_1A1A0 {
     u8 pad_30[0x4];
@@ -679,20 +679,20 @@ struct Ent_1A1A0 {
     f32 unk58;
 };
 
-extern s16 D_001517D8_1A1A0[] __asm__("D_001517D8");
-extern s32 D_0015F698_1A1A0 __asm__("D_0015F698") MACRO_ADDR;
-extern s32 D_0015F6FC_1A1A0 __asm__("D_0015F6FC") MACRO_ADDR;
-extern struct Ent_1A1A0 *D_001D6120_1A1A0[] __asm__("D_001D6120");
+extern s16 cd_read_active_r[] __asm__("D_001517D8");
+extern s32 vu1_chain_reserved_bytes_r __asm__("D_0015F698") MACRO_ADDR;
+extern s32 space_load_in_progress_r __asm__("D_0015F6FC") MACRO_ADDR;
+extern struct Ent_1A1A0 *panel_slots_r2[] __asm__("D_001D6120");
 
-extern void func_00219C08_1A1A0(void) __asm__("func_00219C08");
-extern void func_00219E90_1A1A0(void) __asm__("func_00219E90");
-extern void func_00213C78_1A1A0() __asm__("func_00213C78");
-extern s32 func_0022ED80_1A1A0(s32, s32, struct Ent_1A1A0 *) __asm__("func_0022ED80");
-extern void func_001FBC80_1A1A0(s32, struct MenuPage_1A1A0 *, s32) __asm__("func_001FBC80");
-extern void func_002348B8_1A1A0(void) __asm__("func_002348B8");
-extern void func_001F2930_1A1A0(void) __asm__("func_001F2930");
-extern void func_00213D28_1A1A0(struct Ent_1A1A0 *, s32, s32) __asm__("func_00213D28");
-extern void func_0021A0B0_1A1A0(void) __asm__("func_0021A0B0");
+extern void reset_active_camera_position_and_basis_r(void) __asm__("func_00219C08");
+extern void initialize_menu_preview_scene_r(void) __asm__("func_00219E90");
+extern void update_visible_resident_objects_r() __asm__("func_00213C78");
+extern s32 Moby_PlaySound_r(s32, s32, struct Ent_1A1A0 *) __asm__("func_0022ED80");
+extern void mode_freeze_init_r(s32, struct MenuPage_1A1A0 *, s32) __asm__("func_001FBC80");
+extern void calculate_dma_transfer_address_r(void) __asm__("func_002348B8");
+extern void UpdateFog_r(void) __asm__("func_001F2930");
+extern void MobySetAnimation_r2(struct Ent_1A1A0 *, s32, s32) __asm__("func_00213D28");
+extern void close_menu_system_r(void) __asm__("func_0021A0B0");
 
 /* Pause menu update: counts the update, closes down in state 0x14, opens the menu in
    states 0 and 0x2D, then runs the page switch (leave handlers, the mobys' page animations,
@@ -707,120 +707,120 @@ void update_menu_system(void) {
     struct MenuScreen_1A1A0 **objs;
     struct MenuScreen_1A1A0 *m;
 
-    D_001D5F70_1A1A0.update_count = D_001D5F70_1A1A0.update_count + 1;
-    if (D_001D5F70_1A1A0.update_count > 0x7D00) {
-        D_001D5F70_1A1A0.update_count = 0x7D00;
+    menu_system_r2.update_count = menu_system_r2.update_count + 1;
+    if (menu_system_r2.update_count > 0x7D00) {
+        menu_system_r2.update_count = 0x7D00;
     }
-    func_00219C08_1A1A0();
-    if (D_001D5F70_1A1A0.unk148 != 0) {
-        D_001D5F70_1A1A0.unk148 = D_001D5F70_1A1A0.unk148 - 1;
+    reset_active_camera_position_and_basis_r();
+    if (menu_system_r2.unk148 != 0) {
+        menu_system_r2.unk148 = menu_system_r2.unk148 - 1;
     }
-    if (D_0013D390_1A1A0.state < 3 && D_0013D390_1A1A0.pending_state < 0) {
-        D_001D5F70_1A1A0.unk154 = D_001D5F70_1A1A0.unk154 + 1;
+    if (memory_card_state_r.state < 3 && memory_card_state_r.pending_state < 0) {
+        menu_system_r2.unk154 = menu_system_r2.unk154 + 1;
     } else {
-        D_001D5F70_1A1A0.unk154 = 0;
+        menu_system_r2.unk154 = 0;
     }
-    if (D_001D5F70_1A1A0.state == 0x14) {
-        if (D_001D5F70_1A1A0.timer != 0) {
-            D_001D5F70_1A1A0.timer = D_001D5F70_1A1A0.timer - 1;
-            if (D_001D5F70_1A1A0.timer != 0) {
+    if (menu_system_r2.state == 0x14) {
+        if (menu_system_r2.timer != 0) {
+            menu_system_r2.timer = menu_system_r2.timer - 1;
+            if (menu_system_r2.timer != 0) {
                 return;
             }
         }
-        if (D_001517D8_1A1A0[0] != 0) {
+        if (cd_read_active_r[0] != 0) {
             return;
         }
-        D_0015F698_1A1A0 = 0x1E000;
-        func_002348B8_1A1A0();
-        func_001F2930_1A1A0();
-        D_0015F6FC_1A1A0 = 1;
-        D_001D5F70_1A1A0.help_text_buffer = 0;
-        D_001D5F70_1A1A0.unk10C = 0;
-        D_001D5F70_1A1A0.unk104 = 0;
-        D_001D5F70_1A1A0.unk10 = 0;
-        D_0015F6E8_1A1A0 = 0;
+        vu1_chain_reserved_bytes_r = 0x1E000;
+        calculate_dma_transfer_address_r();
+        UpdateFog_r();
+        space_load_in_progress_r = 1;
+        menu_system_r2.help_text_buffer = 0;
+        menu_system_r2.unk10C = 0;
+        menu_system_r2.unk104 = 0;
+        menu_system_r2.unk10 = 0;
+        g_game_mode_r = 0;
         return;
     }
-    if (D_001D5F70_1A1A0.state == 0 || D_001D5F70_1A1A0.state == 0x2D) {
-        func_00219E90_1A1A0();
+    if (menu_system_r2.state == 0 || menu_system_r2.state == 0x2D) {
+        initialize_menu_preview_scene_r();
     }
-    if (D_0015EFB4_1A1A0 & 1) {
-        func_001FBC80_1A1A0(3, D_001D5F70_1A1A0.current, 0);
+    if (mode_freeze_flags_r & 1) {
+        mode_freeze_init_r(3, menu_system_r2.current, 0);
         return;
     }
-    if (D_001D5F70_1A1A0.state == 1) {
-        D_001D5F70_1A1A0.timer = (D_001D5F70_1A1A0.timer < 1) ? 0 : D_001D5F70_1A1A0.timer - 1;
-        if (D_001D5F70_1A1A0.timer == 0) {
-            struct MenuPage_1A1A0 *o8 = D_001D5F70_1A1A0.next;
-            D_001D5F70_1A1A0.next = 0;
-            D_001D5F70_1A1A0.current = o8;
-            D_001D5F70_1A1A0.state = o8->state;
+    if (menu_system_r2.state == 1) {
+        menu_system_r2.timer = (menu_system_r2.timer < 1) ? 0 : menu_system_r2.timer - 1;
+        if (menu_system_r2.timer == 0) {
+            struct MenuPage_1A1A0 *o8 = menu_system_r2.next;
+            menu_system_r2.next = 0;
+            menu_system_r2.current = o8;
+            menu_system_r2.state = o8->state;
             for (i = 0; i < 14; i++) {
-                obj = D_001D5F70_1A1A0.current->screens[i];
+                obj = menu_system_r2.current->screens[i];
                 if (obj != 0 && obj->enter != 0) {
                     obj->enter(obj, 0);
                 }
             }
         }
-    } else if (D_001D5F70_1A1A0.next != 0) {
-        if (D_001D5F70_1A1A0.current == D_001D5F70_1A1A0.next) {
-            func_0022ED80_1A1A0(3, 0x11, D_001D6120_1A1A0[0]);
+    } else if (menu_system_r2.next != 0) {
+        if (menu_system_r2.current == menu_system_r2.next) {
+            Moby_PlaySound_r(3, 0x11, panel_slots_r2[0]);
         } else {
-            func_0022ED80_1A1A0(4, 0x11, D_001D6120_1A1A0[0]);
+            Moby_PlaySound_r(4, 0x11, panel_slots_r2[0]);
         }
         for (i = 0; i < 14; i++) {
-            obj = D_001D5F70_1A1A0.current->screens[i];
+            obj = menu_system_r2.current->screens[i];
             if (obj != 0 && obj->leave != 0) {
                 obj->leave(obj, 0);
             }
         }
-        flag = (D_001D5F70_1A1A0.next == D_001D5F70_1A1A0.current->back);
-        if (D_001D5F70_1A1A0.current == D_001D5F70_1A1A0.next) {
+        flag = (menu_system_r2.next == menu_system_r2.current->back);
+        if (menu_system_r2.current == menu_system_r2.next) {
             flag = flag ^ 1;
         }
         for (j = 0; j < 14; j++) {
-            if (D_001D5F70_1A1A0.next->screens[j] != 0) {
-                D_001D5F70_1A1A0.next->screens[j]->moby = (s32)D_001D6120_1A1A0[j];
+            if (menu_system_r2.next->screens[j] != 0) {
+                menu_system_r2.next->screens[j]->moby = (s32)panel_slots_r2[j];
             }
             if (flag) {
-                s32 n = D_001D5F70_1A1A0.current->moby_anims[j];
-                func_00213D28_1A1A0(D_001D6120_1A1A0[j], n, D_001D6120_1A1A0[j]->unk24->unk48[n]->unk10 - 1);
-                D_001D6120_1A1A0[j]->unk58 = -1.0f;
+                s32 n = menu_system_r2.current->moby_anims[j];
+                MobySetAnimation_r2(panel_slots_r2[j], n, panel_slots_r2[j]->unk24->unk48[n]->unk10 - 1);
+                panel_slots_r2[j]->unk58 = -1.0f;
             } else {
-                func_00213D28_1A1A0(D_001D6120_1A1A0[j], D_001D5F70_1A1A0.next->moby_anims[j], 0);
-                D_001D6120_1A1A0[j]->unk58 = 1.0f;
+                MobySetAnimation_r2(panel_slots_r2[j], menu_system_r2.next->moby_anims[j], 0);
+                panel_slots_r2[j]->unk58 = 1.0f;
             }
         }
-        D_001D5F70_1A1A0.state = 1;
-        D_001D5F70_1A1A0.timer = 12;
-        D_001D5F70_1A1A0.previous = D_001D5F70_1A1A0.current;
-        D_001D5F70_1A1A0.current = 0;
+        menu_system_r2.state = 1;
+        menu_system_r2.timer = 12;
+        menu_system_r2.previous = menu_system_r2.current;
+        menu_system_r2.current = 0;
     }
-    if (D_001D5F70_1A1A0.current != 0) {
-        objs = D_001D5F70_1A1A0.current->screens;
+    if (menu_system_r2.current != 0) {
+        objs = menu_system_r2.current->screens;
         for (k = 0; k < 14; k++) {
             if (objs != 0 && objs[k] != 0 && objs[k]->update != 0) {
                 if (objs[k]->update(objs[k]) != 0) {
-                    D_001D5F70_1A1A0.close_request = 1;
+                    menu_system_r2.close_request = 1;
                 }
             }
         }
-        if (D_001D5F70_1A1A0.current != 0 && D_001D5F70_1A1A0.current->pending_focus != 0) {
-            m = D_001D5F70_1A1A0.current->focus;
+        if (menu_system_r2.current != 0 && menu_system_r2.current->pending_focus != 0) {
+            m = menu_system_r2.current->focus;
             if (m->leave != 0) {
                 m->leave(m, 1);
             }
-            D_001D5F70_1A1A0.current->focus = D_001D5F70_1A1A0.current->pending_focus;
-            D_001D5F70_1A1A0.current->pending_focus = 0;
-            m = D_001D5F70_1A1A0.current->focus;
+            menu_system_r2.current->focus = menu_system_r2.current->pending_focus;
+            menu_system_r2.current->pending_focus = 0;
+            m = menu_system_r2.current->focus;
             if (m->enter != 0) {
                 m->enter(m, 1);
             }
         }
     }
-    func_00213C78_1A1A0();
-    if (D_001D5F70_1A1A0.close_request != 0) {
-        func_0021A0B0_1A1A0();
+    update_visible_resident_objects_r();
+    if (menu_system_r2.close_request != 0) {
+        close_menu_system_r();
     }
 }
 
@@ -1229,13 +1229,13 @@ extern int pause_action_list_mode;
 extern char pause_action_list_pal[];
 extern char pause_action_list_short[];
 
-extern int D_0015EF90_m __asm__("D_0015EF90") MACRO_ADDR;
+extern int pause_action_list_mode_m __asm__("D_0015EF90") MACRO_ADDR;
 
 /* D_0015EF90 is read through a MACRO_ADDR alias: retail's one-register
    load. */
 int set_pause_action_list(void *arg0) {
     *(char **)((char *)arg0 + 0x34) =
-        (D_0015EF90_m != 0) ? pause_action_list_pal : pause_action_list_short;
+        (pause_action_list_mode_m != 0) ? pause_action_list_pal : pause_action_list_short;
     return 0;
 }
 
@@ -1694,20 +1694,20 @@ struct MenuSystem_1BB90 {
     s32 unk154;               /* 0x154: PAL only */
 };
 
-extern struct MenuSystem_1BB90 D_001D5F70_1BB90 __asm__("D_001D5F70");
+extern struct MenuSystem_1BB90 menu_system_r3 __asm__("D_001D5F70");
 
-extern struct PadState D_0013CA40_1BB90 __asm__("D_0013CA40");
+extern struct PadState g_controller_state_r __asm__("D_0013CA40");
 /* gp-relative here, so not the plain rnc/globals.h spellings. */
-extern s32 D_0015EE84_1BB90 __asm__("D_0015EE84") MACRO_ADDR;
-extern s32 D_0015EE88_1BB90 __asm__("D_0015EE88") MACRO_ADDR;
+extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
+extern s32 g_game_language_r __asm__("D_0015EE88") MACRO_ADDR;
 extern s32 D_001602B4_1BB90 SDATA(D_001602B4);
 extern s32 *D_001602E0_1BB90 SDATA(D_001602E0);
-extern s32 D_00199578_1BB90[] __asm__("D_00199578");
-extern s32 D_001A0414_1BB90[] __asm__("D_001A0414");
+extern s32 menu_action_messages_r[] __asm__("D_00199578");
+extern s32 selected_level_index_r[] __asm__("D_001A0414");
 
-extern s32 func_001F98C0_1BB90(s32) __asm__("func_001F98C0");
-extern void func_001FBC80_1BB90(s32, s32, s32) __asm__("func_001FBC80");
-extern s32 func_0022ED80_1BB90(s32, s32, s32) __asm__("func_0022ED80");
+extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
+extern void mode_freeze_init_r2(s32, s32, s32) __asm__("func_001FBC80");
+extern s32 Moby_PlaySound_r2(s32, s32, s32) __asm__("func_0022ED80");
 
 /*
  * Per-frame update of a menu list: fades the entry highlights, handles
@@ -1729,7 +1729,7 @@ s32 update_menu_entry_actions(struct MenuScreen_1BB90 *menu) {
     s16 fade_timer;
     s16 message_index;
 
-    focused = D_001D5F70_1BB90.current->focus == menu;
+    focused = menu_system_r3.current->focus == menu;
     for (entry_index = 0; menu->data.list.items[entry_index].text != 0; entry_index++) {
         if (focused && menu->data.list.selected == entry_index) {
             menu->data.list.items[entry_index].fade_timer =
@@ -1739,9 +1739,9 @@ s32 update_menu_entry_actions(struct MenuScreen_1BB90 *menu) {
             }
         } else {
             fade_timer = menu->data.list.items[entry_index].fade_timer;
-            if (func_001F98C0_1BB90(D_001602B4_1BB90) < fade_timer) {
+            if (scale_game_frame_count_r(D_001602B4_1BB90) < fade_timer) {
                 menu->data.list.items[entry_index].fade_timer =
-                    func_001F98C0_1BB90(D_001602B4_1BB90);
+                    scale_game_frame_count_r(D_001602B4_1BB90);
             }
             menu->data.list.items[entry_index].fade_timer =
                 menu->data.list.items[entry_index].fade_timer > 0
@@ -1752,24 +1752,24 @@ s32 update_menu_entry_actions(struct MenuScreen_1BB90 *menu) {
     if (!focused) {
         return 0;
     }
-    if (D_0013CA40_1BB90.pressed_unmasked & 0xD00) {
+    if (g_controller_state_r.pressed_unmasked & 0xD00) {
         if (menu->data.list.flags & 0x20) {
-            D_001A0414_1BB90[0] = D_0015EE84_1BB90;
+            selected_level_index_r[0] = g_current_level_index_r;
         }
         return -1;
     }
-    if (D_0013CA40_1BB90.pressed_unmasked & 0x10) {
+    if (g_controller_state_r.pressed_unmasked & 0x10) {
         if (menu->data.list.flags & 0x20) {
-            D_001A0414_1BB90[0] = D_0015EE84_1BB90;
+            selected_level_index_r[0] = g_current_level_index_r;
         }
-        if (D_001D5F70_1BB90.current->back != 0) {
-            D_001D5F70_1BB90.next = D_001D5F70_1BB90.current->back;
+        if (menu_system_r3.current->back != 0) {
+            menu_system_r3.next = menu_system_r3.current->back;
             return 0;
-        } else if (D_001D5F70_1BB90.close_locked == 0) {
+        } else if (menu_system_r3.close_locked == 0) {
             return -1;
         }
     }
-    if ((D_0013CA40_1BB90.pressed_unmasked & 0x40) && ((D_0015EFB4_1A1A0 ^ 1) & 1)) {
+    if ((g_controller_state_r.pressed_unmasked & 0x40) && ((mode_freeze_flags_r ^ 1) & 1)) {
         /* Index through menu-> directly: locals for items/selected change
            which register keeps the copy of selected that actions 6 and 9 reuse. */
         switch (menu->data.list.items[menu->data.list.selected].action) {
@@ -1777,66 +1777,66 @@ s32 update_menu_entry_actions(struct MenuScreen_1BB90 *menu) {
             break;
         /* No case 1 in PAL: retail's table sends action 1 to the default. */
         case 3:
-            D_001D5F70_1BB90.next =
+            menu_system_r3.next =
                 (struct MenuPage_1BB90 *)menu->data.list.items[menu->data.list.selected].param.value;
             break;
         case 4:
-            func_0022ED80_1BB90(0, 0x11, menu->moby);
-            D_001D5F70_1BB90.unk150 = 0;
-            D_0015EFB4_1A1A0 = (D_0015EFB4_1A1A0 | 2) & ~4;
-            func_001FBC80_1BB90(3, menu->data.list.items[menu->data.list.selected].param.value, 0);
+            Moby_PlaySound_r2(0, 0x11, menu->moby);
+            menu_system_r3.unk150 = 0;
+            mode_freeze_flags_r = (mode_freeze_flags_r | 2) & ~4;
+            mode_freeze_init_r2(3, menu->data.list.items[menu->data.list.selected].param.value, 0);
             break;
         case 5:
-            func_0022ED80_1BB90(0, 0x11, menu->moby);
-            D_0015EFB4_1A1A0 = (D_0015EFB4_1A1A0 | 4) & ~2;
-            func_001FBC80_1BB90(3, menu->data.list.items[menu->data.list.selected].param.value, 0);
-            D_001D5F70_1BB90.unk150 = 1;
+            Moby_PlaySound_r2(0, 0x11, menu->moby);
+            mode_freeze_flags_r = (mode_freeze_flags_r | 4) & ~2;
+            mode_freeze_init_r2(3, menu->data.list.items[menu->data.list.selected].param.value, 0);
+            menu_system_r3.unk150 = 1;
             break;
         case 6:
             /* This action passes the low halfword; the other indexed actions pass the full word. */
             message_index = menu->data.list.items[menu->data.list.selected].param.half.hi;
             if (message_index != 0) {
-                D_001D5F70_1BB90.unkEC = D_00199578_1BB90[message_index];
+                menu_system_r3.unkEC = menu_action_messages_r[message_index];
             }
-            D_001D5F70_1BB90.close_request = 5;
-            D_001D5F70_1BB90.unkF0 = D_001D5F70_1BB90.current;
-            D_001D5F70_1BB90.unkF4 = 0;
-            D_001D5F70_1BB90.unkE4 =
+            menu_system_r3.close_request = 5;
+            menu_system_r3.unkF0 = menu_system_r3.current;
+            menu_system_r3.unkF4 = 0;
+            menu_system_r3.unkE4 =
                 menu->data.list.items[menu->data.list.selected].param.half.lo;
-            func_0022ED80_1BB90(0, 0x11, menu->moby);
+            Moby_PlaySound_r2(0, 0x11, menu->moby);
             return 0;
         case 7:
-            D_001D5F70_1BB90.unkF4 = 2;
-            D_001D5F70_1BB90.unkF0 = D_001D5F70_1BB90.current;
-            D_001D5F70_1BB90.close_request = 3;
-            D_001D5F70_1BB90.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
-            func_0022ED80_1BB90(0, 0x11, menu->moby);
+            menu_system_r3.unkF4 = 2;
+            menu_system_r3.unkF0 = menu_system_r3.current;
+            menu_system_r3.close_request = 3;
+            menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
+            Moby_PlaySound_r2(0, 0x11, menu->moby);
             return 0;
         case 8:
-            D_001D5F70_1BB90.unkF4 = 2;
-            D_001D5F70_1BB90.unkF0 = D_001D5F70_1BB90.current;
-            D_001D5F70_1BB90.close_request = 4;
-            D_001D5F70_1BB90.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
-            func_0022ED80_1BB90(0, 0x11, menu->moby);
+            menu_system_r3.unkF4 = 2;
+            menu_system_r3.unkF0 = menu_system_r3.current;
+            menu_system_r3.close_request = 4;
+            menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
+            Moby_PlaySound_r2(0, 0x11, menu->moby);
             return 0;
         case 10:
-            D_001D5F70_1BB90.unkF4 = 2;
-            D_001D5F70_1BB90.unkF0 = D_001D5F70_1BB90.current;
-            D_001D5F70_1BB90.close_request = 6;
-            D_001D5F70_1BB90.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
-            func_0022ED80_1BB90(0, 0x11, menu->moby);
+            menu_system_r3.unkF4 = 2;
+            menu_system_r3.unkF0 = menu_system_r3.current;
+            menu_system_r3.close_request = 6;
+            menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
+            Moby_PlaySound_r2(0, 0x11, menu->moby);
             return 0;
         case 11:
-            D_001D5F70_1BB90.unkF0 = D_001D5F70_1BB90.current;
-            D_001D5F70_1BB90.unkF4 = 2;
-            D_001D5F70_1BB90.close_request = 7;
-            func_0022ED80_1BB90(0, 0x11, menu->moby);
+            menu_system_r3.unkF0 = menu_system_r3.current;
+            menu_system_r3.unkF4 = 2;
+            menu_system_r3.close_request = 7;
+            Moby_PlaySound_r2(0, 0x11, menu->moby);
             return 0;
         case 9:
-            D_0015EE88_1BB90 = menu->data.list.items[menu->data.list.selected].param.value;
+            g_game_language_r = menu->data.list.items[menu->data.list.selected].param.value;
             return 0;
         case 2:
-            func_0022ED80_1BB90(2, 0x11, menu->moby);
+            Moby_PlaySound_r2(2, 0x11, menu->moby);
             break;
         }
     }
@@ -1847,9 +1847,9 @@ s32 update_menu_entry_actions(struct MenuScreen_1BB90 *menu) {
     previous_selection = menu->data.list.selected;
     flags = menu->data.list.flags;
     if (flags & 1) {
-        buttons = D_0013CA40_1BB90.raw_pressed;
+        buttons = g_controller_state_r.raw_pressed;
     } else {
-        buttons = D_0013CA40_1BB90.pressed_unmasked;
+        buttons = g_controller_state_r.pressed_unmasked;
     }
     if ((buttons & 0x1000) || ((flags & 0x100) && (buttons & 4))) {
         if (menu->data.list.selected != 0) {
@@ -1857,7 +1857,7 @@ s32 update_menu_entry_actions(struct MenuScreen_1BB90 *menu) {
         } else if (flags & 0x1000) {
             menu->data.list.selected = entry_count - 1;
         } else {
-            D_001D5F70_1BB90.current->pending_focus = menu->data.list.up;
+            menu_system_r3.current->pending_focus = menu->data.list.up;
         }
     }
     if ((buttons & 0x4000) || ((menu->data.list.flags & 0x100) && (buttons & 8))) {
@@ -1867,13 +1867,13 @@ s32 update_menu_entry_actions(struct MenuScreen_1BB90 *menu) {
         } else if (menu->data.list.flags & 0x1000) {
             menu->data.list.selected = 0;
         } else {
-            D_001D5F70_1BB90.current->pending_focus = menu->data.list.down;
+            menu_system_r3.current->pending_focus = menu->data.list.down;
         }
     }
-    if (menu->data.list.selected != previous_selection || D_001D5F70_1BB90.current->pending_focus != 0) {
-        func_0022ED80_1BB90(1, 0x11, menu->moby);
+    if (menu->data.list.selected != previous_selection || menu_system_r3.current->pending_focus != 0) {
+        Moby_PlaySound_r2(1, 0x11, menu->moby);
         if (menu->data.list.flags & 0x20) {
-            D_001A0414_1BB90[0] = D_001602E0_1BB90[menu->data.list.selected];
+            selected_level_index_r[0] = D_001602E0_1BB90[menu->data.list.selected];
         }
     }
     return 0;
@@ -1900,20 +1900,20 @@ typedef struct {
     u8 pad0[0x40];
     MenuDescriptor *focus;
 } MenuPage;
-extern MenuPage * D_001D5F74_1C1B0[] __asm__("D_001D5F74");
+extern MenuPage * current_menu_page_r[] __asm__("D_001D5F74");
 extern u8 normal_font_metrics[];
 extern u8 small_font_metrics[];
 extern u8 large_font_metrics[];
 extern short text_shadow_x;
 extern short text_shadow_y;
-extern void func_00234C98_1C1B0(s32, long) __asm__("func_00234C98");
+extern void VU1_addGSregister_r(s32, long) __asm__("func_00234C98");
 extern void SetupGifPaging(s32);
 extern s32 GetEffectTex(s32);
 extern void Font_EnableColorCodes(void);
 extern void Font_DisableColorCodes(void);
-extern s32 func_001F65B0_1C1B0(char *, s32, u8 *) __asm__("func_001F65B0");
-extern void func_001F6668_1C1B0(s32, s32, long, char *, s32, s32, u8 *) __asm__("func_001F6668");
-extern char *func_001FE540_1C1B0(s32) __asm__("func_001FE540");
+extern s32 measure_text_width_r(char *, s32, u8 *) __asm__("func_001F65B0");
+extern void FontPrint_r(s32, s32, long, char *, s32, s32, u8 *) __asm__("func_001F6668");
+extern char *msg_string_r(s32) __asm__("func_001FE540");
 extern s32 fade_menu_color(s32, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/render_localized_ui_entry_list.c, render_localized_ui_entry_list. */
@@ -1946,7 +1946,7 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
     font_height = 12;
     font_texture_index = 1;
     glyphs = normal_font_metrics;
-    focused = D_001D5F74_1C1B0[0]->focus == menu;
+    focused = current_menu_page_r[0]->focus == menu;
     if (menu->flags & 4) {
         font_height = 14;
         font_texture_index = 3;
@@ -1957,8 +1957,8 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
         font_texture_index = 2;
         glyphs = small_font_metrics;
     }
-    func_00234C98_1C1B0(0x42, 0x44);
-    func_00234C98_1C1B0(0x47, 0x2004B);
+    VU1_addGSregister_r(0x42, 0x44);
+    VU1_addGSregister_r(0x47, 0x2004B);
     SetupGifPaging(0);
     entry_count = 0;
     entry = menu->items;
@@ -1981,8 +1981,8 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
             entry_index = 0;
             selection_index = 0;
             do {
-                text_width = func_001F65B0_1C1B0(
-                    func_001FE540_1C1B0(scan_entry[entry_index].text_id), -1, glyphs);
+                text_width = measure_text_width_r(
+                    msg_string_r(scan_entry[entry_index].text_id), -1, glyphs);
                 entry_index++;
                 selection_index++;
                 maximum_text_width =
@@ -2025,37 +2025,37 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
             } else {
                 color = 0x80303030;
             }
-            text_id = func_001FE540_1C1B0(menu->items[entry_index].text_id);
+            text_id = msg_string_r(menu->items[entry_index].text_id);
             if (menu->items[entry_index].enabled == 2) {
-                text_id = func_001FE540_1C1B0(0x4F54);
+                text_id = msg_string_r(0x4F54);
             }
-            x = half_width - (func_001F65B0_1C1B0(text_id, -1, glyphs) >> 1);
+            x = half_width - (measure_text_width_r(text_id, -1, glyphs) >> 1);
             if (menu->flags & 0x40) {
                 x = 4;
             } else if (menu->flags & 0x4000) {
                 x = half_width - (maximum_text_width >> 1);
             }
             Font_DisableColorCodes();
-            func_001F6668_1C1B0(x + (*(s32 *)&text_shadow_x), y + (*(s32 *)&text_shadow_y), 0x80000000L, text_id, -1,
+            FontPrint_r(x + (*(s32 *)&text_shadow_x), y + (*(s32 *)&text_shadow_y), 0x80000000L, text_id, -1,
                        GetEffectTex(font_texture_index), glyphs);
             Font_EnableColorCodes();
             if (menu->flags & 0x80) {
                 Font_DisableColorCodes();
             }
-            func_001F6668_1C1B0(x, y, color, text_id, -1, GetEffectTex(font_texture_index), glyphs);
+            FontPrint_r(x, y, color, text_id, -1, GetEffectTex(font_texture_index), glyphs);
             y += row_height;
             if (menu->items[entry_index].secondary_text_id != 0) {
                 Font_DisableColorCodes();
                 shadow_x = x + (*(s32 *)&text_shadow_x);
                 shadow_y = y + (*(s32 *)&text_shadow_y);
-                secondary_text = func_001FE540_1C1B0(menu->items[entry_index].secondary_text_id);
-                func_001F6668_1C1B0(shadow_x, shadow_y, 0x80000000L, secondary_text, -1,
+                secondary_text = msg_string_r(menu->items[entry_index].secondary_text_id);
+                FontPrint_r(shadow_x, shadow_y, 0x80000000L, secondary_text, -1,
                            GetEffectTex(font_texture_index), glyphs);
                 if (!(menu->flags & 0x80)) {
                     Font_EnableColorCodes();
                 }
-                func_001F6668_1C1B0(x, y, color,
-                           func_001FE540_1C1B0(menu->items[entry_index].secondary_text_id), -1,
+                FontPrint_r(x, y, color,
+                           msg_string_r(menu->items[entry_index].secondary_text_id), -1,
                            GetEffectTex(font_texture_index), glyphs);
                 y += row_height;
             }
@@ -2424,11 +2424,11 @@ int leave_map_screen(void) {
     int cur;
 
     if (cd_read_state[4] == 0) {
-        cur = D_001A01F0_slots.sel;
+        cur = level_map_selection_slots.sel;
         if (cur != -1) {
             animation_asset_read_active[0] = 0;
-            D_001A01F0_slots.flags[cur] ^= 0x1000;
-            D_001A01F0_slots.sel = -1;
+            level_map_selection_slots.flags[cur] ^= 0x1000;
+            level_map_selection_slots.sel = -1;
         }
     }
     if (cd_read_state[4] != 0) {
@@ -2436,8 +2436,8 @@ int leave_map_screen(void) {
         if (*(unsigned char *)(g + 0xCB) != 0) {
             request_audio_stream_break();
             g[0xCB] = 0;
-            D_001A01F0_slots.flags[D_001A01F0_slots.sel] = -1;
-            D_001A01F0_slots.sel = -1;
+            level_map_selection_slots.flags[level_map_selection_slots.sel] = -1;
+            level_map_selection_slots.sel = -1;
         }
     }
     return 0;
@@ -2491,7 +2491,7 @@ struct MapState_1CE60 {
     s32 slot_size[5];
 };
 
-extern struct MapState_1CE60 D_001A01F0_1CE60 __asm__("D_001A01F0");
+extern struct MapState_1CE60 level_map_selection_r __asm__("D_001A01F0");
 
 
 struct MenuScreen_1CE60;
@@ -2569,7 +2569,7 @@ struct MenuSystem_1CE60 {
     s32 last_resource_table_toggle;
 };
 
-extern struct MenuSystem_1CE60 D_001D5F70_1CE60 __asm__("D_001D5F70");
+extern struct MenuSystem_1CE60 menu_system_r4 __asm__("D_001D5F70");
 
 struct MenuScreenWords_1CE60 {
     u8 pad_30[0x4];
@@ -2620,36 +2620,36 @@ struct Hdr16_1CE60 {
     s16 unk8;
 };
 
-extern struct Hdr16_1CE60 D_001517D0_1CE60 __asm__("D_001517D0");
-extern u8 D_001CF9F8_1CE60[] __asm__("D_001CF9F8");
-extern u8 D_001CF798_1CE60[] __asm__("D_001CF798");
-extern s32 *D_001602E0_1CE60 __asm__("D_001602E0") MACRO_ADDR;
-extern u8 D_0013D5E9_1CE60[] __asm__("D_0013D5E9");
-extern u8 D_0013DE60_1CE60[] __asm__("D_0013DE60");
-extern u8 D_00141FC0_1CE60[] __asm__("D_00141FC0");
-extern struct MapEntry_1CE60 D_001384A0_1CE60[] __asm__("D_001384A0");
-extern struct MapEntry_1CE60 D_00138538_1CE60[] __asm__("D_00138538");
+extern struct Hdr16_1CE60 cd_read_state_r __asm__("D_001517D0");
+extern u8 mission_menu_page_r[] __asm__("D_001CF9F8");
+extern u8 map_menu_page_r[] __asm__("D_001CF798");
+extern s32 *menu_level_indices_r __asm__("D_001602E0") MACRO_ADDR;
+extern u8 gHaveMapOMatic_r[] __asm__("D_0013D5E9");
+extern u8 level_visit_state_r[] __asm__("D_0013DE60");
+extern u8 level_map_coverage_r[] __asm__("D_00141FC0");
+extern struct MapEntry_1CE60 map_screen_disc_entries_r[] __asm__("D_001384A0");
+extern struct MapEntry_1CE60 map_screen_disc_entries_alt_r[] __asm__("D_00138538");
 
-extern s32 func_00205C70_1CE60() __asm__("func_00205C70");
-extern s32 func_00205A50_1CE60(s32 id) __asm__("func_00205A50");
-extern s32 func_002058D0_1CE60() __asm__("func_002058D0");
-extern s32 func_00205AA8_1CE60() __asm__("func_00205AA8");
-extern void func_00205830_1CE60() __asm__("func_00205830");
-extern s32 func_00205790_1CE60() __asm__("func_00205790");
-extern s32 func_00205918_1CE60() __asm__("func_00205918");
-extern void func_00205C08_1CE60() __asm__("func_00205C08");
-extern void func_00206F40_1CE60() __asm__("func_00206F40");
-extern s32 func_0020C7A0_1CE60() __asm__("func_0020C7A0");
-extern s32 func_00226EA8_1CE60() __asm__("func_00226EA8");
-extern s32 func_00226F68_1CE60() __asm__("func_00226F68");
-extern s32 func_00217628_1CE60() __asm__("func_00217628");
-extern s32 func_00234238_1CE60() __asm__("func_00234238");
-extern s32 func_0020C468_1CE60() __asm__("func_0020C468");
-extern s64 func_00205660_1CE60() __asm__("func_00205660");
-extern void func_002083E0_1CE60() __asm__("func_002083E0");
-extern void func_0020C2F8_1CE60() __asm__("func_0020C2F8");
-extern void func_0020CDE0_1CE60() __asm__("func_0020CDE0");
-extern void func_0022ED80_1CE60() __asm__("func_0022ED80");
+extern s32 update_map_zoom_and_pan_r() __asm__("func_00205C70");
+extern s32 find_id_in_terminated_table_r(s32 id) __asm__("func_00205A50");
+extern s32 find_map_entry_slot_r() __asm__("func_002058D0");
+extern s32 pick_map_slot_to_evict_r() __asm__("func_00205AA8");
+extern void move_map_entry_slot_r() __asm__("func_00205830");
+extern s32 promote_first_available_map_entry_r() __asm__("func_00205790");
+extern s32 pick_next_map_r() __asm__("func_00205918");
+extern void compose_bitmap_from_mask_r() __asm__("func_00205C08");
+extern void decode_map_mask_r() __asm__("func_00206F40");
+extern s32 update_mission_list_r() __asm__("func_0020C7A0");
+extern s32 acquire_menu_stream_buffer_r() __asm__("func_00226EA8");
+extern s32 release_menu_stream_buffer_r() __asm__("func_00226F68");
+extern s32 start_audio_stream_read_r() __asm__("func_00217628");
+extern s32 stash_receive_data_r() __asm__("func_00234238");
+extern s32 fast_decompress_r() __asm__("func_0020C468");
+extern s64 register_8bit_texture_r() __asm__("func_00205660");
+extern void load_map_chunk_r() __asm__("func_002083E0");
+extern void flush_pending_texture_uploads_r() __asm__("func_0020C2F8");
+extern void update_map_icons_r() __asm__("func_0020CDE0");
+extern void Moby_PlaySound_r3() __asm__("func_0022ED80");
 
 /* Map screen of the pause menu: pad input (close, back, the mission page, warp to the shown
    level, previous/next visited level), then decodes the shown level's map into its textures
@@ -2677,148 +2677,148 @@ s32 DrawMapScreen(struct MenuScreen_1CE60 *screen) {
     s32 k;
     struct MapEntry_1CE60 *e;
 
-    func_00205C70_1CE60();
+    update_map_zoom_and_pan_r();
     if (!(screen->data_1CE60.raw.unk34 & 0x40)) {
-        prev = D_001A01F0_1CE60.level;
-        if (D_0013CA40_1BB90.pressed_unmasked & 0xD00) {
-            if (D_001D5F70_1CE60.close_locked == 0) {
+        prev = level_map_selection_r.level;
+        if (g_controller_state_r.pressed_unmasked & 0xD00) {
+            if (menu_system_r4.close_locked == 0) {
                 return 1;
             }
         }
-        if (D_0013CA40_1BB90.pressed_unmasked & 0x10) {
-            if (D_001D5F70_1CE60.current->back != 0) {
-                D_001D5F70_1CE60.next = D_001D5F70_1CE60.current->back;
+        if (g_controller_state_r.pressed_unmasked & 0x10) {
+            if (menu_system_r4.current->back != 0) {
+                menu_system_r4.next = menu_system_r4.current->back;
                 return 0;
-            } else if (D_001D5F70_1CE60.close_locked == 0) {
+            } else if (menu_system_r4.close_locked == 0) {
                 return -1;
             }
         }
-        if (D_0013CA40_1BB90.pressed_unmasked & 0x40) {
-            D_001D5F70_1CE60.next = (struct MenuPage_1CE60 *)D_001CF9F8_1CE60;
+        if (g_controller_state_r.pressed_unmasked & 0x40) {
+            menu_system_r4.next = (struct MenuPage_1CE60 *)mission_menu_page_r;
         }
-        if ((D_0013CA40_1BB90.pressed_unmasked & 0x20) && D_001A01F0_1CE60.level != 0) {
-            D_001D5F70_1CE60.unkF0 = (struct MenuPage_1CE60 *)D_001CF798_1CE60;
-            D_001D5F70_1CE60.unkF4 = 0xB;
-            D_001D5F70_1CE60.close_request = 3;
-            D_001D5F70_1CE60.unkE4 = D_001A01F0_1CE60.level;
-            func_0022ED80_1CE60(0, 0x11, screen->moby);
+        if ((g_controller_state_r.pressed_unmasked & 0x20) && level_map_selection_r.level != 0) {
+            menu_system_r4.unkF0 = (struct MenuPage_1CE60 *)map_menu_page_r;
+            menu_system_r4.unkF4 = 0xB;
+            menu_system_r4.close_request = 3;
+            menu_system_r4.unkE4 = level_map_selection_r.level;
+            Moby_PlaySound_r3(0, 0x11, screen->moby);
             return 0;
         }
-        idx = func_00205A50_1CE60(D_001A01F0_1CE60.level);
+        idx = find_id_in_terminated_table_r(level_map_selection_r.level);
         if (idx >= 0) {
-            if (D_0013CA40_1BB90.pressed_unmasked & 8) {
+            if (g_controller_state_r.pressed_unmasked & 8) {
                 if (idx < 0x13) {
-                    t = D_001602E0_1CE60[idx + 1];
+                    t = menu_level_indices_r[idx + 1];
                     if (t != 0) {
-                        D_001A01F0_1CE60.level = t;
+                        level_map_selection_r.level = t;
                     }
                 }
             }
-            if ((D_0013CA40_1BB90.pressed_unmasked & 4) && idx != 0) {
-                if (D_001602E0_1CE60[idx - 1] != 0) {
-                    D_001A01F0_1CE60.level = D_001602E0_1CE60[idx - 1];
+            if ((g_controller_state_r.pressed_unmasked & 4) && idx != 0) {
+                if (menu_level_indices_r[idx - 1] != 0) {
+                    level_map_selection_r.level = menu_level_indices_r[idx - 1];
                 }
             }
         }
-        if (D_001A01F0_1CE60.level != prev) {
-            func_0022ED80_1CE60(1, 0x11, screen->moby);
-            func_0020C7A0_1CE60();
+        if (level_map_selection_r.level != prev) {
+            Moby_PlaySound_r3(1, 0x11, screen->moby);
+            update_mission_list_r();
         }
     }
 
-    id = D_001A01F0_1CE60.level;
-    if (D_0013D5E9_1CE60[0] != 0) {
+    id = level_map_selection_r.level;
+    if (gHaveMapOMatic_r[0] != 0) {
         id += 0x100;
     }
-    slot = func_002058D0_1CE60(id);
-    if (D_001A01F0_1CE60.level != D_001A01F0_1CE60.loaded && slot != -1) {
-        n = func_00205AA8_1CE60();
-        if (D_001A01F0_1CE60.slot[0] != 0 && n > 0) {
-            func_00205830_1CE60(n, 0);
+    slot = find_map_entry_slot_r(id);
+    if (level_map_selection_r.level != level_map_selection_r.loaded && slot != -1) {
+        n = pick_map_slot_to_evict_r();
+        if (level_map_selection_r.slot[0] != 0 && n > 0) {
+            move_map_entry_slot_r(n, 0);
             if (slot == 0) {
                 slot = n;
             }
         }
-        func_0020C468_1CE60(D_001A01F0_1CE60.slot[slot], D_001A01F0_1CE60.hdr);
-        hdr = D_001A01F0_1CE60.hdr;
+        fast_decompress_r(level_map_selection_r.slot[slot], level_map_selection_r.hdr);
+        hdr = level_map_selection_r.hdr;
         pix = (u8 *)hdr + hdr->unk8;
         pal = (u8 *)hdr + hdr->unkC;
-        buf = func_00226EA8_1CE60(0);
+        buf = acquire_menu_stream_buffer_r(0);
         if (buf != 0) {
-            base = (u8 *)D_001A01F0_1CE60.hdr;
+            base = (u8 *)level_map_selection_r.hdr;
             a = base + hdr->unk0 + 8;
-            if (D_001A01F0_1CE60.level == D_0015EE84_1BB90) {
-                func_00205C08_1CE60(pal, pix, pal, D_001A01F0_1CE60.mask);
+            if (level_map_selection_r.level == g_current_level_index_r) {
+                compose_bitmap_from_mask_r(pal, pix, pal, level_map_selection_r.mask);
             } else {
-                if (D_0013DE60_1CE60[D_001A01F0_1CE60.level] != 0) {
-                    func_002083E0_1CE60(buf, D_00141FC0_1CE60 + (D_001A01F0_1CE60.level << 11), base + hdr->unk4);
+                if (level_visit_state_r[level_map_selection_r.level] != 0) {
+                    load_map_chunk_r(buf, level_map_coverage_r + (level_map_selection_r.level << 11), base + hdr->unk4);
                 } else {
-                    func_00206F40_1CE60(buf, a, a, base);
+                    decode_map_mask_r(buf, a, a, base);
                 }
-                func_00205C08_1CE60(pal, pix, pal, buf);
+                compose_bitmap_from_mask_r(pal, pix, pal, buf);
             }
         }
         if (!(screen->data_1CE60.raw.unk34 & 0x80)) {
-            tbase = (u8 *)D_001A01F0_1CE60.hdr;
+            tbase = (u8 *)level_map_selection_r.hdr;
             tex = tbase + hdr->unk10;
             b = tbase + hdr->unk14 + 0x420;
             c = tbase + hdr->unk18 + 0x420;
-            D_001A01F0_1CE60.tex0 =
-                func_00205660_1CE60(7, 7, tex + 0x20, tex + 0x420, D_001A01F0_1CE60.tex_clut_vram, D_001A01F0_1CE60.tex0_vram);
-            D_001A01F0_1CE60.tex1 =
-                func_00205660_1CE60(7, 7, tex + 0x20, b, D_001A01F0_1CE60.tex_clut_vram, D_001A01F0_1CE60.tex1_vram);
-            D_001A01F0_1CE60.tex2 =
-                func_00205660_1CE60(7, 7, tex + 0x20, c, D_001A01F0_1CE60.tex_clut_vram, D_001A01F0_1CE60.tex2_vram);
+            level_map_selection_r.tex0 =
+                register_8bit_texture_r(7, 7, tex + 0x20, tex + 0x420, level_map_selection_r.tex_clut_vram, level_map_selection_r.tex0_vram);
+            level_map_selection_r.tex1 =
+                register_8bit_texture_r(7, 7, tex + 0x20, b, level_map_selection_r.tex_clut_vram, level_map_selection_r.tex1_vram);
+            level_map_selection_r.tex2 =
+                register_8bit_texture_r(7, 7, tex + 0x20, c, level_map_selection_r.tex_clut_vram, level_map_selection_r.tex2_vram);
             if (buf != 0) {
-                func_00205660_1CE60(9, 9, pal, pal, 0x3FF000, D_001A01F0_1CE60.map_image_vram);
+                register_8bit_texture_r(9, 9, pal, pal, 0x3FF000, level_map_selection_r.map_image_vram);
             }
-            func_0020C2F8_1CE60();
+            flush_pending_texture_uploads_r();
         }
         if (buf != 0) {
-            func_00226F68_1CE60(buf);
+            release_menu_stream_buffer_r(buf);
         }
-        D_001A01F0_1CE60.slot[0] = (s32)pix;
-        D_001A01F0_1CE60.loaded = D_001A01F0_1CE60.level;
-        func_0020CDE0_1CE60(D_001A01F0_1CE60.level, 0);
+        level_map_selection_r.slot[0] = (s32)pix;
+        level_map_selection_r.loaded = level_map_selection_r.level;
+        update_map_icons_r(level_map_selection_r.level, 0);
     }
 
-    if (D_001517D0_1CE60.unk8 == 0) {
-        if (D_001A01F0_1CE60.sel != -1) {
-            D_001D5F70_1CE60.pending_buffer = 0;
-            D_001A01F0_1CE60.slot_id[D_001A01F0_1CE60.sel] ^= 0x1000;
-            D_001A01F0_1CE60.sel = -1;
+    if (cd_read_state_r.unk8 == 0) {
+        if (level_map_selection_r.sel != -1) {
+            menu_system_r4.pending_buffer = 0;
+            level_map_selection_r.slot_id[level_map_selection_r.sel] ^= 0x1000;
+            level_map_selection_r.sel = -1;
         }
     }
     pick = -1;
-    if (D_001517D0_1CE60.unk8 == 0) {
-        pick = func_00205790_1CE60();
+    if (cd_read_state_r.unk8 == 0) {
+        pick = promote_first_available_map_entry_r();
         if (pick != -1) {
-            next = func_00205918_1CE60();
+            next = pick_next_map_r();
             if (next != -1) {
-                k = (D_0015EE84_1BB90 + D_001A01F0_1CE60.unk230 == 0) ? 0 : 0x100;
+                k = (g_current_level_index_r + level_map_selection_r.unk230 == 0) ? 0 : 0x100;
                 if (k == next) {
-                    func_00234238_1CE60(D_001A01F0_1CE60.slot[pick], D_001A01F0_1CE60.unk22C, 0,
-                                       D_001A01F0_1CE60.unk234, 0);
-                    D_001A01F0_1CE60.slot_size[pick] = D_001A01F0_1CE60.unk234;
+                    stash_receive_data_r(level_map_selection_r.slot[pick], level_map_selection_r.unk22C, 0,
+                                       level_map_selection_r.unk234, 0);
+                    level_map_selection_r.slot_size[pick] = level_map_selection_r.unk234;
                 } else {
                     if (next & 0x100) {
-                        e = &D_00138538_1CE60[next ^ 0x100];
+                        e = &map_screen_disc_entries_alt_r[next ^ 0x100];
                     } else {
-                        e = &D_001384A0_1CE60[next];
+                        e = &map_screen_disc_entries_r[next];
                     }
-                    func_00217628_1CE60(D_001A01F0_1CE60.slot[pick], e->a, e->b);
-                    D_001D5F70_1CE60.pending_buffer = 1;
-                    D_001A01F0_1CE60.slot_size[pick] = (e->b << 11) >> 4;
+                    start_audio_stream_read_r(level_map_selection_r.slot[pick], e->a, e->b);
+                    menu_system_r4.pending_buffer = 1;
+                    level_map_selection_r.slot_size[pick] = (e->b << 11) >> 4;
                 }
-                D_001A01F0_1CE60.slot_id[pick] = next | 0x1000;
-                D_001A01F0_1CE60.sel = pick;
+                level_map_selection_r.slot_id[pick] = next | 0x1000;
+                level_map_selection_r.sel = pick;
             }
         }
     }
-    slot = func_002058D0_1CE60(id);
-    if (D_001A01F0_1CE60.level != D_001A01F0_1CE60.loaded) {
-        if (D_001517D0_1CE60.unk8 == 0 && slot == -1 && pick == slot) {
-            func_00205AA8_1CE60(D_001A01F0_1CE60.loaded);
+    slot = find_map_entry_slot_r(id);
+    if (level_map_selection_r.level != level_map_selection_r.loaded) {
+        if (cd_read_state_r.unk8 == 0 && slot == -1 && pick == slot) {
+            pick_map_slot_to_evict_r(level_map_selection_r.loaded);
         }
     }
     return 0;
@@ -2872,9 +2872,9 @@ typedef struct {
     char pad0[0x224];
     int level;
 } LevelG;
-extern PauseG D_001D5F70_g __asm__("D_001D5F70") NOT_SDA;
-extern PadState D_0013CA40_g __asm__("D_0013CA40");
-extern LevelG D_001A01F0_lv __asm__("D_001A01F0");
+extern PauseG menu_system_g __asm__("D_001D5F70") NOT_SDA;
+extern PadState g_controller_state_g __asm__("D_0013CA40");
+extern LevelG level_map_selection_lv __asm__("D_001A01F0");
 extern unsigned char level_available[];
 
 /* Pause slot-select tick. Adapted from Lombyte's project (GPL-3.0) for PAL: src/ui/menus/fun_0021c4c0.c, FUN_0021c4c0. */
@@ -2911,8 +2911,8 @@ int update_menu_mission_list(struct Menu *menu_screen) {
     int *ch;
 
     {
-        struct Menu *owner = ((struct MenuSystem_21D4C0 *)&D_001D5F70_g)->current->focus;
-        old = ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level;
+        struct Menu *owner = ((struct MenuSystem_21D4C0 *)&menu_system_g)->current->focus;
+        old = ((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level;
         if (owner != menu_screen) {
             if (old < 20) {
                 menu_screen->choice[old] = -1;
@@ -2920,54 +2920,54 @@ int update_menu_mission_list(struct Menu *menu_screen) {
             return 0;
         }
     }
-    if ((((struct PadState *)&D_0013CA40_g)->pressed_unmasked & (PAD_SELECT | PAD_R3 | PAD_START))
-        && ((struct MenuSystem_21D4C0 *)&D_001D5F70_g)->close_locked == 0) {
+    if ((((struct PadState *)&g_controller_state_g)->pressed_unmasked & (PAD_SELECT | PAD_R3 | PAD_START))
+        && ((struct MenuSystem_21D4C0 *)&menu_system_g)->close_locked == 0) {
         return 1;
     }
-    if (((struct PadState *)&D_0013CA40_g)->pressed_unmasked & PAD_R1) {
-        for (i = ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level + 1; i < 20; i++) {
+    if (((struct PadState *)&g_controller_state_g)->pressed_unmasked & PAD_R1) {
+        for (i = ((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level + 1; i < 20; i++) {
             if (level_available[i] != 0 || g_current_level_index == i) {
-                ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level = i;
+                ((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level = i;
                 break;
             }
         }
     }
-    if (((struct PadState *)&D_0013CA40_g)->pressed_unmasked & PAD_L1) {
-        for (i = ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level - 1; i >= 0; i--) {
+    if (((struct PadState *)&g_controller_state_g)->pressed_unmasked & PAD_L1) {
+        for (i = ((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level - 1; i >= 0; i--) {
             if (level_available[i] != 0 || g_current_level_index == i) {
-                ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level = i;
+                ((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level = i;
                 break;
             }
         }
     }
-    if (((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level != old) {
+    if (((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level != old) {
         Moby_PlaySound(1, 0x11, menu_screen->unk14);
-        func_0020C7A0_i();
+        update_mission_list_i();
     }
     if (menu_screen->count != 0) {
-        pad = ((struct PadState *)&D_0013CA40_g)->pressed_unmasked;
+        pad = ((struct PadState *)&g_controller_state_g)->pressed_unmasked;
         ch = menu_screen->choice;
-        previous_mission_choice_index = menu_screen->choice[((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level];
+        previous_mission_choice_index = menu_screen->choice[((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level];
         if (pad & PAD_UP) {
-            menu_screen->choice[((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level] = (previous_mission_choice_index + menu_screen->count - 1) % menu_screen->count;
+            menu_screen->choice[((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level] = (previous_mission_choice_index + menu_screen->count - 1) % menu_screen->count;
         }
         if (pad & PAD_DOWN) {
-            menu_screen->choice[((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level] = (menu_screen->choice[((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level] + 1) % menu_screen->count;
+            menu_screen->choice[((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level] = (menu_screen->choice[((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level] + 1) % menu_screen->count;
         }
-        if (menu_screen->choice[((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level] != previous_mission_choice_index) {
+        if (menu_screen->choice[((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level] != previous_mission_choice_index) {
             Moby_PlaySound(1, 0x11, menu_screen->unk14);
         }
-        if ((pad & (PAD_UP | PAD_DOWN)) || ((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level != old) {
+        if ((pad & (PAD_UP | PAD_DOWN)) || ((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level != old) {
             menu_screen->count = collect_mission_ids((void *)(7 << 28), (void *)0, (void *)((7 << 28) + 0x100), 1);
-            mission_choice_ptr = &ch[((struct MapSelection_21D4C0 *)&D_001A01F0_lv)->level];
+            mission_choice_ptr = &ch[((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level];
             selected_mission_id = ((unsigned int *)(7 << 28))[*mission_choice_ptr];
             selected_mission_index = ((unsigned int *)((7 << 28) + 0x100))[*mission_choice_ptr];
         }
     }
-    if (((struct PadState *)&D_0013CA40_g)->pressed_unmasked & PAD_TRIANGLE) {
-        if (((struct MenuSystem_21D4C0 *)&D_001D5F70_g)->current->back != 0) {
-            ((struct MenuSystem_21D4C0 *)&D_001D5F70_g)->next = ((struct MenuSystem_21D4C0 *)&D_001D5F70_g)->current->back;
-        } else if (((struct MenuSystem_21D4C0 *)&D_001D5F70_g)->close_locked == 0) {
+    if (((struct PadState *)&g_controller_state_g)->pressed_unmasked & PAD_TRIANGLE) {
+        if (((struct MenuSystem_21D4C0 *)&menu_system_g)->current->back != 0) {
+            ((struct MenuSystem_21D4C0 *)&menu_system_g)->next = ((struct MenuSystem_21D4C0 *)&menu_system_g)->current->back;
+        } else if (((struct MenuSystem_21D4C0 *)&menu_system_g)->close_locked == 0) {
             return -1;
         }
     }
@@ -3191,7 +3191,7 @@ struct MenuSystem_1DB30 {
     s32 last_resource_table_toggle;
 };
 
-extern struct MenuSystem_1DB30 D_001D5F70_1DB30 __asm__("D_001D5F70");
+extern struct MenuSystem_1DB30 menu_system_r5 __asm__("D_001D5F70");
 
 
 struct SoundMenuMixer_1DB30 {
@@ -3213,13 +3213,13 @@ struct SoundMenu_1DB30 {
     s32 selected_option;
 };
 
-extern struct PadState D_0013CA40_1DB30 __asm__("D_0013CA40");
-extern struct SoundMenuMixer_1DB30 D_0013E650_1DB30 __asm__("D_0013E650");
+extern struct PadState g_controller_state_r2 __asm__("D_0013CA40");
+extern struct SoundMenuMixer_1DB30 voice_pool_r __asm__("D_0013E650");
 extern s32 D_001D6094_1DB30 __asm__("D_001D6094") NOT_SDA;
-extern s32 D_0015EEEC_1DB30 __asm__("D_0015EEEC") MACRO_ADDR;
-extern s32 D_0015EEF0_1DB30 __asm__("D_0015EEF0") MACRO_ADDR;
-extern s32 D_0015EEE8_1DB30 __asm__("D_0015EEE8") MACRO_ADDR;
-extern s32 D_001A0414_1DB30 __asm__("D_001A0414") NOT_SDA;
+extern s32 music_volume_r __asm__("D_0015EEEC") MACRO_ADDR;
+extern s32 sound_volume_r __asm__("D_0015EEF0") MACRO_ADDR;
+extern s32 playback_mode_r __asm__("D_0015EEE8") MACRO_ADDR;
+extern s32 selected_level_index_r2 __asm__("D_001A0414") NOT_SDA;
 extern s32 func_0022ED80_1DB30(s32 flags, s32 sound_index,
                                            s32 sound_owner) __asm__("func_0022ED80");
 void func_0012E380_1DB30(s32 menu) __asm__("func_0012E380");
@@ -3235,64 +3235,64 @@ s32 sound_options_menu(struct SoundMenu_1DB30 *menu) {
     s32 previous_sound_volume;
     s32 scaled_sound_volume;
 
-    if ((((s32)D_0013CA40_1DB30.pressed_unmasked) & 0xD00) && (D_001D6094_1DB30 == 0)) {
+    if ((((s32)g_controller_state_r2.pressed_unmasked) & 0xD00) && (D_001D6094_1DB30 == 0)) {
         return 1;
     }
-    if (((s32)D_0013CA40_1DB30.pressed_unmasked) & 0x10) {
-        struct MenuPage_1DB30 *back_page = D_001D5F70_1DB30.current->back;
+    if (((s32)g_controller_state_r2.pressed_unmasked) & 0x10) {
+        struct MenuPage_1DB30 *back_page = menu_system_r5.current->back;
 
         if (back_page != 0) {
-            D_001D5F70_1DB30.next = back_page;
+            menu_system_r5.next = back_page;
             return 0;
-        } else if (D_001D5F70_1DB30.close_locked == 0) {
+        } else if (menu_system_r5.close_locked == 0) {
             return -1;
         }
     }
     previous_selection = menu->selected_option;
-    if (((s32)D_0013CA40_1DB30.pressed_unmasked) & 0x1000) {
+    if (((s32)g_controller_state_r2.pressed_unmasked) & 0x1000) {
         menu->selected_option = (previous_selection + 2) % 3;
     }
-    if (((s32)D_0013CA40_1DB30.pressed_unmasked) & 0x4000) {
+    if (((s32)g_controller_state_r2.pressed_unmasked) & 0x4000) {
         menu->selected_option = (menu->selected_option + 1) % 3;
     }
-    if ((menu->selected_option != previous_selection) || (D_001D5F70_1DB30.current->pending_focus != 0)) {
+    if ((menu->selected_option != previous_selection) || (menu_system_r5.current->pending_focus != 0)) {
         func_0022ED80_1DB30(1, 0x11, menu->sound_owner);
         if (menu->flags & 0x20) {
-            D_001A0414_1DB30 = D_001602E0_1CE60[menu->selected_option];
+            selected_level_index_r2 = menu_level_indices_r[menu->selected_option];
         }
     }
-    previous_music_volume = D_0015EEEC_1DB30;
-    previous_sound_volume = D_0015EEF0_1DB30;
-    sound_volume_ptr = &D_0015EEF0_1DB30;
-    if (((s32)D_0013CA40_1DB30.held_unmasked) & 0x2000) {
+    previous_music_volume = music_volume_r;
+    previous_sound_volume = sound_volume_r;
+    sound_volume_ptr = &sound_volume_r;
+    if (((s32)g_controller_state_r2.held_unmasked) & 0x2000) {
         if (menu->selected_option == 0) {
-            D_0015EEF0_1DB30 = (previous_sound_volume + 3 < 0x401) ? previous_sound_volume + 3 : 0x400;
+            sound_volume_r = (previous_sound_volume + 3 < 0x401) ? previous_sound_volume + 3 : 0x400;
         }
         if (menu->selected_option == 1) {
-            D_0015EEEC_1DB30 = (previous_music_volume + 3 < 0x401) ? previous_music_volume + 3 : 0x400;
+            music_volume_r = (previous_music_volume + 3 < 0x401) ? previous_music_volume + 3 : 0x400;
         }
     }
-    if (((s32)D_0013CA40_1DB30.held_unmasked) & 0x8000) {
+    if (((s32)g_controller_state_r2.held_unmasked) & 0x8000) {
         if (menu->selected_option == 0) {
-            D_0015EEF0_1DB30 = (D_0015EEF0_1DB30 - 3 <= 0) ? 0 : D_0015EEF0_1DB30 - 3;
+            sound_volume_r = (sound_volume_r - 3 <= 0) ? 0 : sound_volume_r - 3;
         }
         if (menu->selected_option == 1) {
-            D_0015EEEC_1DB30 = (D_0015EEEC_1DB30 - 3 <= 0) ? 0 : D_0015EEEC_1DB30 - 3;
+            music_volume_r = (music_volume_r - 3 <= 0) ? 0 : music_volume_r - 3;
         }
     }
-    if ((previous_music_volume != D_0015EEEC_1DB30) || (previous_sound_volume != *sound_volume_ptr)) {
-        D_0013E650_1DB30.group_0_volume = *sound_volume_ptr * 8 / 10;
-        D_0013E650_1DB30.group_2_volume = D_0013E650_1DB30.group_1_volume = D_0015EEEC_1DB30;
-        D_0013E650_1DB30.group_3_volume = *sound_volume_ptr * 7 / 10;
+    if ((previous_music_volume != music_volume_r) || (previous_sound_volume != *sound_volume_ptr)) {
+        voice_pool_r.group_0_volume = *sound_volume_ptr * 8 / 10;
+        voice_pool_r.group_2_volume = voice_pool_r.group_1_volume = music_volume_r;
+        voice_pool_r.group_3_volume = *sound_volume_ptr * 7 / 10;
         scaled_sound_volume = *sound_volume_ptr * 7 / 10;
-        D_0013E650_1DB30.group_4_volume = scaled_sound_volume;
-        D_0013E650_1DB30.group_5_volume = *sound_volume_ptr;
+        voice_pool_r.group_4_volume = scaled_sound_volume;
+        voice_pool_r.group_5_volume = *sound_volume_ptr;
     }
-    if (((s32)D_0013CA40_1DB30.pressed_unmasked) & 0x40) {
+    if (((s32)g_controller_state_r2.pressed_unmasked) & 0x40) {
         if (menu->selected_option == 2) {
-            D_0015EEE8_1DB30 = !D_0015EEE8_1DB30;
+            playback_mode_r = !playback_mode_r;
         }
-        func_0012E380_1DB30(!D_0015EEE8_1DB30);
+        func_0012E380_1DB30(!playback_mode_r);
         func_0022ED80_1DB30(0, 0x11, menu->sound_owner);
     }
     return 0;
@@ -3307,15 +3307,15 @@ typedef struct {
 } SoundMenu_1DE08;
 
 
-extern void func_001F4630_1DE08(s32) __asm__("func_001F4630");
-extern void func_001F4748_1DE08(void) __asm__("func_001F4748");
-extern void *func_001FE540_1DE08(s32) __asm__("func_001FE540");
-extern void func_001F6CF8_1DE08(s32, s32, u64, void *, s32) __asm__("func_001F6CF8");
-extern void func_001F68E8_1DE08(s32, s32, u64, void *, s32) __asm__("func_001F68E8");
-extern s32 func_00200198_1DE08(s32, s32) __asm__("func_00200198");
+extern void SetupGifPaging_r(s32) __asm__("func_001F4630");
+extern void DoGifPaging_r(void) __asm__("func_001F4748");
+extern void *msg_string_r2(s32) __asm__("func_001FE540");
+extern void font_print_right_r(s32, s32, u64, void *, s32) __asm__("func_001F6CF8");
+extern void FontPrintLarge_r(s32, s32, u64, void *, s32) __asm__("func_001F68E8");
+extern s32 GetIconFrame_r(s32, s32) __asm__("func_00200198");
 extern void func_00201190_1DE08(s32, s32, s32, s32, s32, s32, s32, s32, s32,
                                 s32) __asm__("func_00201190");
-extern void func_00201640_1DE08(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
+extern void draw_hud_rect_blended_r(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 
 /* Draws the sound options page: the sound and music volume rows, each a right-aligned label
    and a slider bar, then the playback mode row; the selected row's label is yellow.
@@ -3332,44 +3332,44 @@ s32 DrawSoundMenu(SoundMenu_1DE08 *menu) {
 
     row_height = menu->height >> 2;
     center_x = menu->width >> 1;
-    func_001F4630_1DE08(0);
+    SetupGifPaging_r(0);
     label_right = center_x - 8;
     border_left = center_x + 7;
     slider_left = center_x + 9;
     slider_padding = center_x + 0x4A;
 
-    func_001F6CF8_1DE08(label_right, row_height - 8,
+    font_print_right_r(label_right, row_height - 8,
                         menu->selected_option == 0 ? 0x8020FFFF : 0x80FFA888,
-                        func_001FE540_1DE08(0x5217), -1);
-    func_00201640_1DE08(border_left, row_height - 8, menu->width - 0x3F, row_height + 8,
+                        msg_string_r2(0x5217), -1);
+    draw_hud_rect_blended_r(border_left, row_height - 8, menu->width - 0x3F, row_height + 8,
                         0x80696969, 0);
-    func_00201640_1DE08(slider_left, row_height - 6, menu->width - 0x41, row_height + 6,
+    draw_hud_rect_blended_r(slider_left, row_height - 6, menu->width - 0x41, row_height + 6,
                         0x80383838, 0);
-    slider_length = (menu->width - slider_padding) * D_0015EEF0_1DB30 / 1024;
-    func_00201190_1DE08(func_00200198_1DE08(0xE99E, 8), slider_left << 4,
+    slider_length = (menu->width - slider_padding) * sound_volume_r / 1024;
+    func_00201190_1DE08(GetIconFrame_r(0xE99E, 8), slider_left << 4,
                         (row_height - 6) << 4, (center_x + 8 + slider_length) << 4,
                         (row_height + 5) << 4, 0, 0xA0, 0x1F0, 0x150, 0x80);
 
     second_row = row_height + row_height;
-    func_001F6CF8_1DE08(label_right, second_row - 8,
+    font_print_right_r(label_right, second_row - 8,
                         menu->selected_option == 1 ? 0x8020FFFF : 0x80FFA888,
-                        func_001FE540_1DE08(0x5218), -1);
-    func_00201640_1DE08(border_left, second_row - 8, menu->width - 0x3F, second_row + 8,
+                        msg_string_r2(0x5218), -1);
+    draw_hud_rect_blended_r(border_left, second_row - 8, menu->width - 0x3F, second_row + 8,
                         0x80696969, 0);
-    func_00201640_1DE08(slider_left, second_row - 6, menu->width - 0x41, second_row + 6,
+    draw_hud_rect_blended_r(slider_left, second_row - 6, menu->width - 0x41, second_row + 6,
                         0x80383838, 0);
-    slider_length = (menu->width - slider_padding) * D_0015EEEC_1DB30 / 1024;
-    func_00201190_1DE08(func_00200198_1DE08(0xE99E, 9), slider_left << 4,
+    slider_length = (menu->width - slider_padding) * music_volume_r / 1024;
+    func_00201190_1DE08(GetIconFrame_r(0xE99E, 9), slider_left << 4,
                         (second_row - 6) << 4, (center_x + 8 + slider_length) << 4,
                         (second_row + 5) << 4, 0, 0xA0, 0x1F0, 0x150, 0x80);
 
     second_row += row_height;
-    func_001F6CF8_1DE08(label_right, second_row - 8,
+    font_print_right_r(label_right, second_row - 8,
                         menu->selected_option == 2 ? 0x8020FFFF : 0x80FFA888,
-                        func_001FE540_1DE08(0x5219), -1);
-    func_001F68E8_1DE08(center_x + 8, second_row - 8, 0x80FFA888,
-                        func_001FE540_1DE08(D_0015EEE8_1DB30 != 0 ? 0x521B : 0x521A), -1);
-    func_001F4748_1DE08();
+                        msg_string_r2(0x5219), -1);
+    FontPrintLarge_r(center_x + 8, second_row - 8, 0x80FFA888,
+                        msg_string_r2(playback_mode_r != 0 ? 0x521B : 0x521A), -1);
+    DoGifPaging_r();
     return 2;
 }
 
@@ -3415,11 +3415,11 @@ typedef struct {
 
 /* Aliased rather than renamed: func_00227018 further down still walks
    the same table as a flat int array. */
-extern PadBind D_001D6448_t[] __asm__("D_001D6448");
+extern PadBind menu_stream_buffers_t[] __asm__("D_001D6448");
 
 extern int D_001D6078;
 extern int disc_table[];
-extern int func_00217628_3(int, int, int) __asm__("func_00217628");
+extern int start_audio_stream_read_3(int, int, int) __asm__("func_00217628");
 
 /* Enter hook for the help text screen: resets the stream buffers, marks the
    bindings above the buffer limit as taken and starts the help audio stream
@@ -3432,15 +3432,15 @@ int enter_menu_help_text(char *arg0) {
     *(int *)(arg0 + 0x38) = 0;
     g = menu_system;
     for (i = 0; i < 5; i++) {
-        if (D_001D6448_t[i].key != 0
-            && (unsigned int)D_001D6448_t[i].key
+        if (menu_stream_buffers_t[i].key != 0
+            && (unsigned int)menu_stream_buffers_t[i].key
                    < *(unsigned int *)(g + 0x10C)) {
-            D_001D6448_t[i].flags |= 2;
+            menu_stream_buffers_t[i].flags |= 2;
         }
     }
     *(int *)(arg0 + 0x50) = 0;
     if (cd_read_state[4] == 0) {
-        if (func_00217628_3(D_001D6078, disc_table[0x1528 / 4],
+        if (start_audio_stream_read_3(D_001D6078, disc_table[0x1528 / 4],
                             disc_table[0x152C / 4]) != 0) {
             *(int *)(arg0 + 0x50) = 1;
         } else {
@@ -3452,7 +3452,7 @@ int enter_menu_help_text(char *arg0) {
 }
 
 /* D_0015F780 is SDA elsewhere; pause.cpp stores it through $at. */
-extern int D_0015F780_m __asm__("D_0015F780") MACRO_ADDR;
+extern int help_msgs_m __asm__("D_0015F780") MACRO_ADDR;
 extern int help_msg_count;
 
 struct MenuHelpTextState {
@@ -3474,7 +3474,7 @@ int restore_menu_help_text(int arg0) {
         int v = ((struct MenuHelpTextState *)arg0)->saved_text_table;
         if (v != 0) {
             int w = ((struct MenuHelpTextState *)arg0)->saved_text_count;
-            D_0015F780_m = v;
+            help_msgs_m = v;
             help_msg_count = w;
         }
     }
@@ -3506,7 +3506,7 @@ int update_menu_help_text_load(char *arg0) {
     switch (*(int *)(arg0 + 0x50)) {
     case 0:
         if (cd_read_state[4] == 0) {
-            if (func_00217628_3(D_001D6078, disc_table[0x1528 / 4],
+            if (start_audio_stream_read_3(D_001D6078, disc_table[0x1528 / 4],
                                 disc_table[0x152C / 4]) != 0) {
                 *(int *)(arg0 + 0x50) = 1;
             } else {
@@ -3527,11 +3527,11 @@ int update_menu_help_text_load(char *arg0) {
 
             copy_memory_aligned(tbl, p, ((sz + 3) & ~3) - 8);
             b = g_help_state;
-            *(int *)(arg0 + 0x54) = D_0015F780_m;
+            *(int *)(arg0 + 0x54) = help_msgs_m;
             *(int *)(arg0 + 0x38) = *(int *)(b + 0x2C);
             *(int *)(b + 0x2C) = n;
             t = *(int **)(g + 0x108);
-            D_0015F780_m = (int)t;
+            help_msgs_m = (int)t;
             for (i = 0; i < pauseSlotCount(); i++) {
                 int d = (int)t - 8;
                 *(int *)((char *)t + i * 0x10) += d;
@@ -3547,9 +3547,9 @@ int update_menu_help_text_load(char *arg0) {
     return 0;
 }
 
-extern void func_001F7070_a(void *, long, char *, int, int, unsigned char *) __asm__("func_001F7070");
-extern void func_00234C98_l(int, long) __asm__("func_00234C98");
-extern void *func_001FE540_id(int) __asm__("func_001FE540");
+extern void FontPrintWindow_a(void *, long, char *, int, int, unsigned char *) __asm__("func_001F7070");
+extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
+extern void *msg_string_id(int) __asm__("func_001FE540");
 extern void func_001153FC(void *, int, int); /* memset */
 extern void Font_DisableColorCodes(void);
 extern void Font_EnableColorCodes(void);
@@ -3611,8 +3611,8 @@ int draw_menu_text_list(Menu *menu) {
         kind = 2;
         font = small_font_metrics;
     }
-    func_00234C98_l(0x42, 0x44);
-    func_00234C98_l(0x47, 0x2004B);
+    VU1_addGSregister_l(0x42, 0x44);
+    VU1_addGSregister_l(0x47, 0x2004B);
     SetupGifPaging(0);
 
     n = 0;
@@ -3648,7 +3648,7 @@ int draw_menu_text_list(Menu *menu) {
             if (!(menu->flags & 0x10000) && sel && box.s[5] < 4) {
                 menu->scroll -= 4;
             }
-            text = func_001FE540_id(menu->items[i].text);
+            text = msg_string_id(menu->items[i].text);
             box.s[4] = (menu->flags & 0xA00) ? 0x20 : 4;
             if (menu->flags & 0x400) {
                 box.s[9] = 1;
@@ -3657,7 +3657,7 @@ int draw_menu_text_list(Menu *menu) {
             if (sel) {
                 Font_DisableColorCodes();
             }
-            func_001F7070_a(&box, color, text, -1, glyphs, font);
+            FontPrintWindow_a(&box, color, text, -1, glyphs, font);
             if (sel) {
                 Font_EnableColorCodes();
             }
@@ -3669,9 +3669,9 @@ int draw_menu_text_list(Menu *menu) {
             }
             box.s[5] += box.s[7];
             if (menu->items[i].subtext != 0) {
-                text = func_001FE540_id(menu->items[i].subtext);
+                text = msg_string_id(menu->items[i].subtext);
                 box.s[4] = 0x14;
-                func_001F7070_a(&box, color, text, -1, glyphs, font);
+                FontPrintWindow_a(&box, color, text, -1, glyphs, font);
                 box.s[5] += rowh;
             }
             box.s[5] += 8;
@@ -3745,7 +3745,7 @@ typedef struct {
 extern MenuState D_001D5F70_1E950 __asm__("D_001D5F70");
 extern ItemInfo D_001864D8[];
 extern u8 gSpecialItems[];
-extern u8 D_0013D5C8_1E950[] __asm__("D_0013D5C8");
+extern u8 item_available_r[] __asm__("D_0013D5C8");
 extern u8 gold_weapon_purchased[];
 extern s32 game_frame_counter MACRO_ADDR;
 extern short panel_clear_color;
@@ -3755,8 +3755,8 @@ extern s32 subtract_integer_with_clamp(s32);
 extern void SetupGifPaging(s32);
 extern s32 GetIconFrame(s32, s32);
 extern void draw_hud_sprite_subpixel(s32, s32, s32, s32, s32, s32);
-extern void func_00201640_1E950(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
-extern s32 func_00234C98_1E950(s32, s64) __asm__("func_00234C98");
+extern void draw_hud_rect_blended_r2(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
+extern s32 VU1_addGSregister_r2(s32, s64) __asm__("func_00234C98");
 s32 draw_menu_item_grid(MenuItemGrid *grid);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/fun_0021d948.c, draw_menu_item_grid. */
@@ -3776,8 +3776,8 @@ s32 draw_menu_item_grid(MenuItemGrid *grid) {
     font = grid->holder->font;
     focused = D_001D5F70_1E950.focus->owner == grid;
     cell = grid->cells;
-    func_00234C98_1E950(0x42, 0x8000000044L);
-    func_00234C98_1E950(0x47, 0xB);
+    VU1_addGSregister_r2(0x42, 0x8000000044L);
+    VU1_addGSregister_r2(0x47, 0xB);
     SetupGifPaging(0);
 
     if (grid->cols >= 2) {
@@ -3817,10 +3817,10 @@ s32 draw_menu_item_grid(MenuItemGrid *grid) {
             right = left + icon_width;
             if (focused && grid->selected_cell == cell - grid->cells) {
                 color = ((subtract_integer_with_clamp((game_frame_counter & 0x3F) - 0x20) + 0x40) * 0x10202) | 0x80000000;
-                func_00201640_1E950(left - 0x30, top - 0x30, right + 0x30, bottom + 0x30, color, 1);
-                func_00201640_1E950(left - 0x10, top - 0x10, right + 0x10, bottom + 0x10, (*(s32 *)&panel_clear_color), 1);
+                draw_hud_rect_blended_r2(left - 0x30, top - 0x30, right + 0x30, bottom + 0x30, color, 1);
+                draw_hud_rect_blended_r2(left - 0x10, top - 0x10, right + 0x10, bottom + 0x10, (*(s32 *)&panel_clear_color), 1);
             }
-            if (cell->kind == 0 ? D_0013D5C8_1E950[cell->id] : gSpecialItems[cell->id]) {
+            if (cell->kind == 0 ? item_available_r[cell->id] : gSpecialItems[cell->id]) {
                 frame_offset = 0;
                 if ((u16)cell->kind == 0) {
                     id = cell->id;
@@ -3947,7 +3947,7 @@ int clear_menu_preview_pair(char *arg0) {
 
 extern char item_info_table[];
 extern char gCamera[];
-extern void *func_00226720_a(int) __asm__("func_00226720");
+extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");
 extern void rotate_item_preview_moby(char *);
 
 /* Keeps the item preview moby in step with the highlighted entry: drop it
@@ -3992,7 +3992,7 @@ int update_item_preview_moby(char *arg0) {
     rec = (ItemPreviewInfo *)item_info_table + item;
     want = rec->preview_class;
     if (want != -1 && current_preview_class == -1) {
-        struct Moby *spawned_moby = func_00226720_a(want);
+        struct Moby *spawned_moby = create_menu_preview_moby_a(want);
 
         if (spawned_moby != 0) {
             ItemPreviewCamera *preview_camera_base = (ItemPreviewCamera *)gCamera;
@@ -4009,7 +4009,7 @@ int update_item_preview_moby(char *arg0) {
     } else if (want == -1) {
         menu->moby = (struct Moby *)delete_moby((int)menu->moby);
     } else if (current_preview_class != want) {
-        struct Moby *replacement_moby = func_00226720_a(want);
+        struct Moby *replacement_moby = create_menu_preview_moby_a(want);
 
         if (replacement_moby != 0) {
             struct Moby *old;
@@ -4031,7 +4031,7 @@ extern char *current_menu_page NOT_SDA;
 extern void DrawMobyList(int, int);
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
-extern void *func_001FE540_id(int) __asm__("func_001FE540");
+extern void *msg_string_id(int) __asm__("func_001FE540");
 extern void pack_image_descriptor(void *, char *);
 extern void font_print_window_regular(void *, long, void *, int);
 
@@ -4055,7 +4055,7 @@ int draw_item_preview_screen(char *arg0) {
     pack_image_descriptor(buf, arg0);
     buf[8] = 0x10;
     buf[9] = 3;
-    font_print_window_regular(buf, 0x80FFA888L, func_001FE540_id(0x4F4D), -1);
+    font_print_window_regular(buf, 0x80FFA888L, msg_string_id(0x4F4D), -1);
     DoGifPaging();
     return 2;
 }
@@ -4268,21 +4268,21 @@ struct PreviewClassResource {
     u8 pad0[0xD];
     u8 state_0d;
 };
-extern struct PreviewItemDefinition D_001864D0_1F238[] __asm__("D_001864D0");
-extern struct CameraSystem D_00187040_1F238 __asm__("D_00187040");
-extern struct ItemPreviewPlacement_1F238 D_001E0708_1F238[] __asm__("D_001E0708");
+extern struct PreviewItemDefinition item_info_table_r[] __asm__("D_001864D0");
+extern struct CameraSystem gCamera_r3 __asm__("D_00187040");
+extern struct ItemPreviewPlacement_1F238 preview_placements_r[] __asm__("D_001E0708");
 extern s32 D_00140508[];
 extern s32 active_decode_buffer MACRO_ADDR;
 extern u8 resident_class_slot_by_id[];
-extern struct PreviewClassResource * D_001B3580_1F238[] __asm__("D_001B3580");
+extern struct PreviewClassResource * moby_class_resources_r[] __asm__("D_001B3580");
 extern void update_item_preview_transform();
 extern void noop_callback_q(s32, s32);
-extern void func_001E97F8_1F238(struct Moby *, s32) __asm__("func_001E97F8");
+extern void noop_callback_r_r(struct Moby *, s32) __asm__("func_001E97F8");
 extern f32 FastAddRots(f32, f32);
 extern void select_world_object_resource_tables(s32, s32);
 extern void MobySetAnimation(struct Moby *, s32, s32);
-extern struct Moby *func_00226720_1F238(s32) __asm__("func_00226720");
-extern struct Moby *func_002267C0_1F238(struct Moby *) __asm__("func_002267C0");
+extern struct Moby *create_menu_preview_moby_r2(s32) __asm__("func_00226720");
+extern struct Moby *delete_moby_r(struct Moby *) __asm__("func_002267C0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_0021e230.c, update_item_preview_binding. */
 s32 update_item_preview_binding(struct ItemPreviewBinding_1F238 *preview) {
@@ -4316,12 +4316,12 @@ s32 update_item_preview_binding(struct ItemPreviewBinding_1F238 *preview) {
         previous_class = -1;
     }
     load_class = 0;
-    oclass = D_001864D0_1F238[item_index].oclass;
+    oclass = item_info_table_r[item_index].oclass;
     if (item_index == 0x18) {
         oclass = 0x1DF;
     }
     preview->rotation_angle = FastAddRots(preview->rotation_angle, 0.01f);
-    item_type = D_001864D0_1F238[item_index].item_type;
+    item_type = item_info_table_r[item_index].item_type;
     is_type2 = item_type == 2;
     has_secondary_moby = item_type == 3;
     is_type1 = item_type == 1;
@@ -4356,10 +4356,10 @@ s32 update_item_preview_binding(struct ItemPreviewBinding_1F238 *preview) {
                 D_001D5F70_1F238.last_resource_table_toggle = active_decode_buffer;
                 D_001D5F70_1F238.unk140 = oclass;
                 D_001D5F70_1F238.unk120 = oclass;
-                D_001B3580_1F238[resident_class_slot_by_id[oclass]]->state_0d = 0;
+                moby_class_resources_r[resident_class_slot_by_id[oclass]]->state_0d = 0;
             }
         }
-        moby = func_00226720_1F238(oclass);
+        moby = create_menu_preview_moby_r2(oclass);
         item_two_difference = item_index ^ 2;
         if (item_two_difference == 0) {
             animation_index = 6;
@@ -4368,21 +4368,21 @@ s32 update_item_preview_binding(struct ItemPreviewBinding_1F238 *preview) {
         }
         if (moby != 0) {
             if (load_class && gold_weapon_purchased[item_index] != 0) {
-                func_001E97F8_1F238(moby, preview->variant);
+                noop_callback_r_r(moby, preview->variant);
             }
             preview->primary_moby = moby;
             moby->flags = 0;
-            camera_x = D_00187040_1F238.pos.f[0];
+            camera_x = gCamera_r3.pos.f[0];
             if (use_alternate_x) {
-                position_x = camera_x + D_001E0708_1F238[item_index].alternate_x;
+                position_x = camera_x + preview_placements_r[item_index].alternate_x;
             } else {
-                position_x = camera_x + D_001E0708_1F238[item_index].normal_x;
+                position_x = camera_x + preview_placements_r[item_index].normal_x;
             }
             moby->pos.x = position_x;
-            moby->pos.y = D_00187040_1F238.pos.f[1] + D_001E0708_1F238[item_index].y;
-            moby->pos.z = D_00187040_1F238.pos.f[2] + D_001E0708_1F238[item_index].z;
-            moby->rot.x = D_001E0708_1F238[item_index].rotation_x;
-            moby->rot.y = D_001E0708_1F238[item_index].rotation_y;
+            moby->pos.y = gCamera_r3.pos.f[1] + preview_placements_r[item_index].y;
+            moby->pos.z = gCamera_r3.pos.f[2] + preview_placements_r[item_index].z;
+            moby->rot.x = preview_placements_r[item_index].rotation_x;
+            moby->rot.y = preview_placements_r[item_index].rotation_y;
             moby->rot.z = 3.1415927f;
             moby->update = update_item_preview_transform;
             preview_vars = (struct ItemPreviewVars_1F238 *)moby->pvars;
@@ -4395,7 +4395,7 @@ s32 update_item_preview_binding(struct ItemPreviewBinding_1F238 *preview) {
             MobySetAnimation(moby, last_animation, 0);
         }
         if (has_secondary_moby && moby != 0) {
-            moby = func_00226720_1F238(D_001864D0_1F238[1].oclass);
+            moby = create_menu_preview_moby_r2(item_info_table_r[1].oclass);
             if (moby != 0) {
                 moby->flags = 0;
                 source_moby = preview->primary_moby;
@@ -4417,8 +4417,8 @@ s32 update_item_preview_binding(struct ItemPreviewBinding_1F238 *preview) {
         break;
     case 3:
         if (previous_class != oclass) {
-            preview->primary_moby = func_002267C0_1F238(preview->primary_moby);
-            preview->secondary_moby = func_002267C0_1F238(preview->secondary_moby);
+            preview->primary_moby = delete_moby_r(preview->primary_moby);
+            preview->secondary_moby = delete_moby_r(preview->secondary_moby);
             preview->state = 2;
         }
         break;
@@ -4480,7 +4480,7 @@ struct ItemPreviewVars {
     u8 pad4[8];
     s32 item_index;
 };
-extern struct CameraSystem D_00187040_1F6A0 __asm__("D_00187040");
+extern struct CameraSystem gCamera_r4 __asm__("D_00187040");
 extern struct ItemPreviewPlacement preview_placements[];
 extern f32 FastCos(f32);
 extern f32 FastSin(f32);
@@ -4500,9 +4500,9 @@ void update_item_preview_transform(struct Moby *moby) {
     struct CameraSystem *camera;
 
     moby->rot.z = preview->rotation_angle;
-    (*(volatile f32 *)&moby->pos.x) = D_00187040_1F6A0.pos.f[0] + ((flags & 1) ? preview_placements[item_index].alternate_x
+    (*(volatile f32 *)&moby->pos.x) = gCamera_r4.pos.f[0] + ((flags & 1) ? preview_placements[item_index].alternate_x
                                               : preview_placements[item_index].normal_x);
-    camera = &D_00187040_1F6A0;
+    camera = &gCamera_r4;
     y_offset = preview_placements[item_index].y;
     moby->pos.y = camera->pos.f[1] + y_offset;
     moby->pos.z = camera->pos.f[2] + preview_placements[item_index].z;
@@ -4517,7 +4517,7 @@ void update_item_preview_transform(struct Moby *moby) {
 
 extern int D_0013D48C;
 extern int space_load_level MACRO_ADDR;
-extern int D_0015F6FC_m __asm__("D_0015F6FC") MACRO_ADDR;
+extern int space_load_in_progress_m __asm__("D_0015F6FC") MACRO_ADDR;
 extern int space_load_pending MACRO_ADDR;
 
 /* Pad handler (func_0021ACD8's family). A separate `char *` local for
@@ -4555,14 +4555,14 @@ int Menu_BackInput(char *arg0) {
             D_0013D48C = 0;
             space_load_level = -1;
             space_load_pending = 1;
-            D_0015F6FC_m = 1;
+            space_load_in_progress_m = 1;
         }
     }
     return 0;
 }
 
 extern void func_001153FC(void *, int, int); /* memset */
-extern void func_00234C98_l(int, long) __asm__("func_00234C98");
+extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 extern void FontPrintCenter(int, int, long, void *, int);
 extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
 
@@ -4596,24 +4596,24 @@ int DrawQuitGameMenu(char *arg0) {
     box[9] = 1;
     box[1] = h;
     SetupGifPaging(0);
-    func_00234C98_l(0x47, 0x2004B);
-    font_print_window_regular(box, 0x80FFA888L, func_001FE540_id(0x4F6D), -1);
-    FontPrintCenter(cx, y1, 0x80FFA888L, func_001FE540_id(0x4F3F), -1);
-    a = measure_text_width_regular(func_001FE540_id(0x5250), -1);
-    b = measure_text_width_regular(func_001FE540_id(0x5254), -1);
+    VU1_addGSregister_l(0x47, 0x2004B);
+    font_print_window_regular(box, 0x80FFA888L, msg_string_id(0x4F6D), -1);
+    FontPrintCenter(cx, y1, 0x80FFA888L, msg_string_id(0x4F3F), -1);
+    a = measure_text_width_regular(msg_string_id(0x5250), -1);
+    b = measure_text_width_regular(msg_string_id(0x5254), -1);
     if (b >= a) {
         a = b;
     }
     x = (*(int *)(arg0 + 0x20) - a) >> 1;
-    func_001F68E8_c(x, y2, 0x80FFA888L, func_001FE540_id(0x5250), -1);
-    func_001F68E8_c(x, y3, 0x80FFA888L, func_001FE540_id(0x5254), -1);
+    func_001F68E8_c(x, y2, 0x80FFA888L, msg_string_id(0x5250), -1);
+    func_001F68E8_c(x, y3, 0x80FFA888L, msg_string_id(0x5254), -1);
     DoGifPaging();
     return 2;
 }
 
 extern char gCamera[];
 extern void rotate_preview_moby_x(void *);
-extern void *func_00226720_a(int) __asm__("func_00226720");
+extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");
 
 /* Attach marker object 0x46E to arg0, parked just above the camera
    focus in D_00187040's 0x140 block, and point it back at its owner
@@ -4630,7 +4630,7 @@ struct RotatingPreviewOwner {
 
 /* Spawns the rotating preview moby (class 0x46E) in front of the menu camera. */
 int create_rotating_preview_moby(void *owner) {
-    struct Moby *moby = (struct Moby *)func_00226720_a(0x46E);
+    struct Moby *moby = (struct Moby *)create_menu_preview_moby_a(0x46E);
     struct RotatingPreviewCamera *preview_camera;
 
     if (moby != 0) {
@@ -4665,7 +4665,7 @@ struct Screen {
     s32 right; /* 0x18: (0x800 + half_width) << 4 */
     s32 bottom; /* 0x1C: (0x800 + half_height) << 4 */
 };
-extern struct Screen D_0013E600_1FB28 __asm__("D_0013E600");
+extern struct Screen g_screen_extent_r __asm__("D_0013E600");
 struct TextRegion {
     s16 top;
     s16 bottom;
@@ -4687,13 +4687,13 @@ typedef struct {
     u8 pad26[0x1E];
     s32 help_tip;
 } ItemsMenu;
-extern s32 D_0015EE88_1FB28[] __asm__("D_0015EE88") MACRO_ADDR;
+extern s32 g_game_language_r2[] __asm__("D_0015EE88") MACRO_ADDR;
 extern char fmt_decimal[];
 extern void font_print_right(s32, s32, u64, char *, s32);
 extern void font_print_right_large(s32, s32, u64, char *, s32);
-extern void func_001F7560_1FB28(struct TextRegion *, u64, char *, s32) __asm__("func_001F7560");
-extern char *func_001FE540_1FB28(s32) __asm__("func_001FE540");
-extern void func_00201640_1FB28(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
+extern void font_print_window_regular_r(struct TextRegion *, u64, char *, s32) __asm__("func_001F7560");
+extern char *msg_string_r3(s32) __asm__("func_001FE540");
+extern void draw_hud_rect_blended_r3(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern void DrawMobyList(s32, s32);
 extern s32 compute_clamped_count_difference(void);
 extern s32 count_nonzero_entries_up_to_40(void);
@@ -4743,8 +4743,8 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
         window_fields.flags = 5;
         text_window = window_fields;
         text_window.anchor_x = add_offset(text_window.left, text_window.right) >> 1;
-        func_001166FC_1FB28(text_buffer, func_001FE540_1FB28(0x4F4E));
-        if (D_0015EE88_1FB28[0] == column_divisor) {
+        func_001166FC_1FB28(text_buffer, msg_string_r3(0x4F4E));
+        if (g_game_language_r2[0] == column_divisor) {
             hyphen = func_00116428(text_buffer, 0x2D);
             if (hyphen != 0) {
                 text_length = func_00116810_1FB28(text_buffer);
@@ -4761,23 +4761,23 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
                 text_buffer[add_offset(text_length, 1)] = 0x20;
             }
         }
-        func_001F7560_1FB28(&text_window, 0x8000C0C0L, text_buffer, -1);
+        font_print_window_regular_r(&text_window, 0x8000C0C0L, text_buffer, -1);
         text_window.flags ^= 4;
-        text_window.anchor_y = (D_0013E600_1FB28.height - text_window.rendered_height) >> 1;
-        func_001F7560_1FB28(&text_window, 0x8000C0C0L, text_buffer, -1);
+        text_window.anchor_y = (g_screen_extent_r.height - text_window.rendered_height) >> 1;
+        font_print_window_regular_r(&text_window, 0x8000C0C0L, text_buffer, -1);
     }
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x1D);
-    font_print_right(x, y, 0x80000000L, func_001FE540_1FB28(0x4F4F), -1);
+    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F4F), -1);
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x36);
-    font_print_right(x, y, 0x80000000L, func_001FE540_1FB28(0x4F50), -1);
+    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F50), -1);
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x54);
-    font_print_right(x, y, 0x80000000L, func_001FE540_1FB28(0x4F51), -1);
-    font_print_right(0xC8, 0x1D, 0x80FFA888L, func_001FE540_1FB28(0x4F4F), -1);
-    font_print_right(0xC8, 0x36, 0x80FFA888L, func_001FE540_1FB28(0x4F50), -1);
-    font_print_right(0xC8, 0x54, 0x80FFA888L, func_001FE540_1FB28(0x4F51), -1);
+    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F51), -1);
+    font_print_right(0xC8, 0x1D, 0x80FFA888L, msg_string_r3(0x4F4F), -1);
+    font_print_right(0xC8, 0x36, 0x80FFA888L, msg_string_r3(0x4F50), -1);
+    font_print_right(0xC8, 0x54, 0x80FFA888L, msg_string_r3(0x4F51), -1);
     collected_count = count_nonzero_entries_up_to_40();
     func_00116248(text_buffer, fmt_decimal, collected_count);
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x1D), 0x80000000L,
@@ -4791,10 +4791,10 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x54), 0x80000000L,
                     text_buffer, -1);
     font_print_right_large(0xF0, 0x54, 0x80FFA888L, text_buffer, -1);
-    func_00201640_1FB28(add_offset((*(s32 *)&text_shadow_x), 0xD0), add_offset((*(s32 *)&text_shadow_y), 0x4D),
+    draw_hud_rect_blended_r3(add_offset((*(s32 *)&text_shadow_x), 0xD0), add_offset((*(s32 *)&text_shadow_y), 0x4D),
                               add_offset((*(s32 *)&text_shadow_x), 0xF2), add_offset((*(s32 *)&text_shadow_y), 0x50),
                               0x80000000L, 0);
-    func_00201640_1FB28(0xD0, 0x4D, 0xF2, 0x50, 0x80FFA888L, 0);
+    draw_hud_rect_blended_r3(0xD0, 0x4D, 0xF2, 0x50, 0x80FFA888L, 0);
     DoGifPaging();
     return 8;
 }
@@ -4803,13 +4803,13 @@ extern char gCamera[];
 /* 1.3f, in small data (gp -0x695C). The const float view is what the
    code reads (read-only, so its load is scheduled above the stores); the
    2-byte view, referenced last, makes the assembler use $gp. */
-extern const float D_001603A4_f __asm__("D_001603A4") MACRO_ADDR;
-extern short D_001603A4_s __asm__("D_001603A4");
+extern const float gold_bolt_marker_y_offset_f __asm__("D_001603A4") MACRO_ADDR;
+extern short gold_bolt_marker_y_offset_s __asm__("D_001603A4");
 extern char fmt_gold_bolt_count_line[];
 extern int map_gold_bolt_totals[];
 extern int g_screen_extent[];
 extern int func_00116248(char *, const char *, ...);
-extern void func_001F6CF8_c(int, int, long, char *, int) __asm__("func_001F6CF8");
+extern void font_print_right_c(int, int, long, char *, int) __asm__("func_001F6CF8");
 
 /* DrawGBsShipMenu (maybe): parks the marker object at arg0+0x44 by the
    camera focus in D_00187040, draws it, then prints "%s %d %s %d" (texts
@@ -4826,7 +4826,7 @@ int DrawGBsShipMenu__maybe(char *arg0) {
     int count;
 
     *(float *)(o + 0x10) = *(float *)(t + 0x140) + 8.0f;
-    *(float *)(o + 0x14) = *(float *)(t + 0x144) + D_001603A4_f;
+    *(float *)(o + 0x14) = *(float *)(t + 0x144) + gold_bolt_marker_y_offset_f;
     *(float *)(o + 0x18) = *(float *)(t + 0x148) - 0.1f;
     if (*(int *)(arg0 + 0x44) != 0) {
         DrawMobyList(*(int *)(arg0 + 0x44), 1);
@@ -4841,16 +4841,16 @@ int DrawGBsShipMenu__maybe(char *arg0) {
             }
         }
     }
-    func_00116248(buf, fmt_gold_bolt_count_line, func_001FE540_id(0x4F4F), count,
-                  func_001FE540_id(0x4F53), map_gold_bolt_totals[level_map_selection[0x89]]);
-    func_001F6CF8_c(*(int *)(arg0 + 0x20) - 0x10, (g_screen_extent[1] >> 1) - 8,
+    func_00116248(buf, fmt_gold_bolt_count_line, msg_string_id(0x4F4F), count,
+                  msg_string_id(0x4F53), map_gold_bolt_totals[level_map_selection[0x89]]);
+    font_print_right_c(*(int *)(arg0 + 0x20) - 0x10, (g_screen_extent[1] >> 1) - 8,
                     0x80000000L, buf, -1);
-    func_001F6CF8_c(*(int *)(arg0 + 0x20) - 0x11, (g_screen_extent[1] >> 1) - 9,
+    font_print_right_c(*(int *)(arg0 + 0x20) - 0x11, (g_screen_extent[1] >> 1) - 9,
                     0x80FFA888L, buf, -1);
     DoGifPaging();
     if (0) {
         /* no code: registers the 2-byte view last (see above) */
-        (void)D_001603A4_s;
+        (void)gold_bolt_marker_y_offset_s;
     }
     return 8;
 }
@@ -4866,7 +4866,7 @@ void rotate_preview_moby_x(void *arg0) {
 /* func_00234C98's second parameter is 64-bit (as in draw.c and
    mobyfunc.c); the (int, int) declaration below this point is kept for
    the functions matched against it. */
-extern void func_00234C98_l(int, long) __asm__("func_00234C98");
+extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 extern int func_00116248(char *, const char *, ...); /* sprintf */
 extern int weapon_ammo_counts[];
 extern char vendor_item_prices[];
@@ -4895,10 +4895,10 @@ int draw_selected_item_ammo(char *arg0) {
     have = weapon_ammo_counts[id];
     rec = vendor_item_prices + id * 0x18;
     total = *(unsigned short *)(rec + 0xE);
-    func_00234C98_l(0x42, 0x44);
-    func_00234C98_l(0x47, 0xB);
+    VU1_addGSregister_l(0x42, 0x44);
+    VU1_addGSregister_l(0x47, 0xB);
     if (*(unsigned short *)(rec + 8) == 0) {
-        func_00116248(text, func_001FE540_id(0x4F52));
+        func_00116248(text, msg_string_id(0x4F52));
     } else {
         char *q;
         if (have < 1000) {
@@ -4934,7 +4934,7 @@ int draw_map_screen_overlay(void) {
 
 extern void Font_DisableColorCodes(void);
 extern void Font_EnableColorCodes(void);
-extern void func_001F6968_c(int, int, long, void *, int) __asm__("func_001F6968");
+extern void FontPrintSmall_c(int, int, long, void *, int) __asm__("func_001F6968");
 
 /* DrawMissionsMenu: the menu's text lines (0x4EEE, 0x4EEF only when
    D_0015EE84 is set, then 0x4EFA, 0x4EFB, 0x4EFC, 0x4EE0) in one column,
@@ -4951,26 +4951,26 @@ int DrawMissionsMenu(char *arg0) {
     VU1_addGSregister(0x42, 0x44);
     VU1_addGSregister(0x47, 0xB);
     SetupGifPaging(0);
-    w = measure_text_width_small(func_001FE540_id(0x4EEE), -1);
-    text_width = measure_text_width_small(func_001FE540_id(0x4EFA), -1);
+    w = measure_text_width_small(msg_string_id(0x4EEE), -1);
+    text_width = measure_text_width_small(msg_string_id(0x4EFA), -1);
     if (text_width >= w) {
         w = text_width;
     }
     if (g_current_level_index != 0) {
-        text_width = measure_text_width_small(func_001FE540_id(0x4EEF), -1);
+        text_width = measure_text_width_small(msg_string_id(0x4EEF), -1);
         if (text_width >= w) {
             w = text_width;
         }
     }
-    text_width = measure_text_width_small(func_001FE540_id(0x4EFB), -1);
+    text_width = measure_text_width_small(msg_string_id(0x4EFB), -1);
     if (text_width >= w) {
         w = text_width;
     }
-    text_width = measure_text_width_small(func_001FE540_id(0x4EFC), -1);
+    text_width = measure_text_width_small(msg_string_id(0x4EFC), -1);
     if (text_width >= w) {
         w = text_width;
     }
-    text_width = measure_text_width_small(func_001FE540_id(0x4EE0), -1);
+    text_width = measure_text_width_small(msg_string_id(0x4EE0), -1);
     if (text_width >= w) {
         w = text_width;
     }
@@ -4981,19 +4981,19 @@ int DrawMissionsMenu(char *arg0) {
     step = ((Menu *)arg0)->height / (g_current_level_index != 0 ? 7 : 6);
     Font_DisableColorCodes();
     y = step - 6;
-    func_001F6968_c(x, y, 0x80FFA888L, func_001FE540_id(0x4EEE), -1);
+    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EEE), -1);
     if (g_current_level_index != 0) {
         y += step;
-        func_001F6968_c(x, y, 0x80FFA888L, func_001FE540_id(0x4EEF), -1);
+        FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EEF), -1);
     }
     y += step;
-    func_001F6968_c(x, y, 0x80FFA888L, func_001FE540_id(0x4EFA), -1);
+    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EFA), -1);
     y += step;
-    func_001F6968_c(x, y, 0x80FFA888L, func_001FE540_id(0x4EFB), -1);
+    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EFB), -1);
     y += step;
-    func_001F6968_c(x, y, 0x80FFA888L, func_001FE540_id(0x4EFC), -1);
+    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EFC), -1);
     y += step;
-    func_001F6968_c(x, y, 0x80FFA888L, func_001FE540_id(0x4EE0), -1);
+    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EE0), -1);
     Font_EnableColorCodes();
     DoGifPaging();
     return 2;
@@ -5008,7 +5008,7 @@ extern void DoGifPaging(void);
    reach both through aliases rather than redeclaring them. */
 extern void func_001F68E8_c(int, int, long, void *, int)
     __asm__("func_001F68E8");
-extern void *func_001FE540_id(int) __asm__("func_001FE540");
+extern void *msg_string_id(int) __asm__("func_001FE540");
 
 /* Sibling of func_00220338 above: the same two func_00234C98 setup
    calls, then two banner draws. 0x80FFA888 is spelled `long` (64-bit)
@@ -5017,8 +5017,8 @@ int draw_mission_menu_labels(void) {
     VU1_addGSregister(0x42, 0x44);
     VU1_addGSregister(0x47, 0xB);
     SetupGifPaging(0);
-    func_001F68E8_c(4, 7, 0x80FFA888L, func_001FE540_id(0x4EE0), -1);
-    func_001F68E8_c(4, 0x17, 0x80FFA888L, func_001FE540_id(0x4F05), -1);
+    func_001F68E8_c(4, 7, 0x80FFA888L, msg_string_id(0x4EE0), -1);
+    func_001F68E8_c(4, 0x17, 0x80FFA888L, msg_string_id(0x4F05), -1);
     DoGifPaging();
     return 2;
 }
@@ -5325,7 +5325,7 @@ struct MapState_209A0 {
     s32 slot_size[5];
 };
 
-extern struct MapState_209A0 D_001A01F0_209A0 __asm__("D_001A01F0");
+extern struct MapState_209A0 level_map_selection_r2 __asm__("D_001A01F0");
 
 struct ClutImage_209A0 {
     u8 pad0[0x8];
@@ -5349,17 +5349,17 @@ struct MemoryCardState_209A0 {
     s32 pending_state;        /* 0xE4 */
 };
 
-extern struct MemoryCardState_209A0 D_0013D390_209A0 __asm__("D_0013D390");
+extern struct MemoryCardState_209A0 memory_card_state_r2 __asm__("D_0013D390");
 
 
-extern s32 func_001F9968_209A0(s32) __asm__("func_001F9968");
-extern s64 func_00205660_209A0(s32, s32, u8 *, u8 *, s32, s32) __asm__("func_00205660");
-extern void func_0020C2F8_209A0(void) __asm__("func_0020C2F8");
-extern void func_0020C468_209A0(u8 *, s32) __asm__("func_0020C468");
-extern s32 func_00217628_209A0(u8 *, s32, s32) __asm__("func_00217628");
-extern s32 func_00227018_209A0(s32) __asm__("func_00227018");
-extern s32 func_00227068_209A0(s32) __asm__("func_00227068");
-extern s32 func_002270B0_209A0(s32) __asm__("func_002270B0");
+extern s32 log2dim_r(s32) __asm__("func_001F9968");
+extern s64 register_8bit_texture_r2(s32, s32, u8 *, u8 *, s32, s32) __asm__("func_00205660");
+extern void flush_pending_texture_uploads_r2(void) __asm__("func_0020C2F8");
+extern void fast_decompress_r2(u8 *, s32) __asm__("func_0020C468");
+extern s32 start_audio_stream_read_r2(u8 *, s32, s32) __asm__("func_00217628");
+extern s32 get_menu_stream_buffer_size_r(s32) __asm__("func_00227018");
+extern s32 mark_menu_stream_buffer_read_active_r(s32) __asm__("func_00227068");
+extern s32 clear_menu_stream_buffer_read_active_r(s32) __asm__("func_002270B0");
 
 /* Resource stream screen update for a single buffer: picks the entry from the screen's flags,
    streams it in, unpacks it and binds the image it holds as the map screen's first texture.
@@ -5382,7 +5382,7 @@ s32 update_menu_stream_image(struct MenuScreen_209A0 *stream) {
             return 0;
         }
     } else if (flags & 2) {
-        idx = D_001A0414_1BB90[0];
+        idx = selected_level_index_r[0];
     } else if (flags & 4) {
         idx = D_001D5F70_209A0.current->focus->data.grid.selected_cell;
     } else if (flags & 0x100) {
@@ -5393,11 +5393,11 @@ s32 update_menu_stream_image(struct MenuScreen_209A0 *stream) {
         if (idx >= 5) {
             idx = 4;
         }
-        if (D_0013D390_209A0.state < 3 && D_0013D390_209A0.pending_state < 0 && D_001D5F70_209A0.unk154 >= 0xB) {
+        if (memory_card_state_r2.state < 3 && memory_card_state_r2.pending_state < 0 && D_001D5F70_209A0.unk154 >= 0xB) {
             if (stream->data.stream.state == -1) {
                 stream->data.stream.state = 0;
             }
-            idx = D_0013D390_209A0.entries[idx].unk0;
+            idx = memory_card_state_r2.entries[idx].unk0;
         } else {
             stream->data.stream.state = -1;
         }
@@ -5417,7 +5417,7 @@ s32 update_menu_stream_image(struct MenuScreen_209A0 *stream) {
         if (stream->data.stream.buffer[0] == 0) {
             break;
         }
-        if (D_001517D8_1A1A0[0] != 0) {
+        if (cd_read_active_r[0] != 0) {
             break;
         }
         if (stream->data.stream.entries[idx].sector_count == 0) {
@@ -5425,20 +5425,20 @@ s32 update_menu_stream_image(struct MenuScreen_209A0 *stream) {
         }
         p = (u8 *)stream->data.stream.buffer[0];
         if (stream->data.stream.flags & 0x20) {
-            r = func_00227018_209A0(stream->data.stream.buffer[0]) -
+            r = get_menu_stream_buffer_size_r(stream->data.stream.buffer[0]) -
                 (stream->data.stream.entries[idx].sector_count << 11);
             stream->data.stream.read_offset = r;
             p += r;
         }
         if (stream->data.stream.flags & 0x10) {
-            r = func_00217628_209A0(p, stream->data.stream.entries[idx].sector,
+            r = start_audio_stream_read_r2(p, stream->data.stream.entries[idx].sector,
                                         stream->data.stream.entries[idx].sector_count);
         } else {
-            r = func_00217628_209A0(p, stream->data.stream.entries[idx].sector,
+            r = start_audio_stream_read_r2(p, stream->data.stream.entries[idx].sector,
                                         stream->data.stream.entries[idx].sector_count);
         }
         if (r != 0) {
-            func_00227068_209A0(stream->data.stream.buffer[0]);
+            mark_menu_stream_buffer_read_active_r(stream->data.stream.buffer[0]);
             stream->data.stream.loaded_entry[0] = idx;
             stream->data.stream.state++;
         } else {
@@ -5447,22 +5447,22 @@ s32 update_menu_stream_image(struct MenuScreen_209A0 *stream) {
         break;
     case 1:
     case 3:
-        if (D_001517D8_1A1A0[0] != 0) {
+        if (cd_read_active_r[0] != 0) {
             break;
         }
-        func_002270B0_209A0(stream->data.stream.buffer[0]);
+        clear_menu_stream_buffer_read_active_r(stream->data.stream.buffer[0]);
         if (stream->data.stream.flags & 0x20) {
-            func_0020C468_209A0((u8 *)stream->data.stream.buffer[0] + stream->data.stream.read_offset,
+            fast_decompress_r2((u8 *)stream->data.stream.buffer[0] + stream->data.stream.read_offset,
                          stream->data.stream.buffer[0]);
             stream->data.stream.read_offset = 0;
         }
         b = (struct ClutImage_209A0 *)stream->data.stream.buffer[0];
         p20 = b->clut;
         p420 = b->pixels;
-        x = func_001F9968_209A0(b->width);
-        y = func_001F9968_209A0(b->height);
-        D_001A01F0_209A0.tex0 = func_00205660_209A0(x, y, p20, p420, D_001A01F0_209A0.tex_clut_vram, D_001A01F0_209A0.tex0_vram);
-        func_0020C2F8_209A0();
+        x = log2dim_r(b->width);
+        y = log2dim_r(b->height);
+        level_map_selection_r2.tex0 = register_8bit_texture_r2(x, y, p20, p420, level_map_selection_r2.tex_clut_vram, level_map_selection_r2.tex0_vram);
+        flush_pending_texture_uploads_r2();
         stream->data.stream.state = 2;
         break;
     }
@@ -5746,23 +5746,23 @@ struct MemoryCardState_20DF0 {
     s32 pending_state;        /* 0xE4 */
 };
 
-extern struct MemoryCardState_20DF0 D_0013D390_20DF0 __asm__("D_0013D390");
+extern struct MemoryCardState_20DF0 memory_card_state_r3 __asm__("D_0013D390");
 
 typedef struct {
     s32 values[6];
 } LanguageResourceOffsets_20DF0;
-extern LanguageResourceOffsets_20DF0 D_001E8B00_20DF0 __asm__("D_001E8B00");
+extern LanguageResourceOffsets_20DF0 language_resource_offsets_r __asm__("D_001E8B00");
 
-extern u8 D_0013D510_20DF0[] __asm__("D_0013D510");
-extern s32 func_001F98C0_20DF0() __asm__("func_001F98C0");
-extern s32 func_0020C468_20DF0() __asm__("func_0020C468");
-extern s32 func_00217628_20DF0() __asm__("func_00217628");
+extern u8 gSkillPoints_r[] __asm__("D_0013D510");
+extern s32 scale_game_frame_count_r2() __asm__("func_001F98C0");
+extern s32 fast_decompress_r3() __asm__("func_0020C468");
+extern s32 start_audio_stream_read_r3() __asm__("func_00217628");
 /* Retail keeps both flag-selected call sites of this read helper; a second C name for
    the same function keeps the two calls from being cross-jumped. */
-extern s32 func_00217628_20DF0b() __asm__("func_00217628");
-extern s32 func_00227018_20DF0() __asm__("func_00227018");
-extern s32 func_00227068_20DF0() __asm__("func_00227068");
-extern s32 func_002270B0_20DF0() __asm__("func_002270B0");
+extern s32 start_audio_stream_read_r4() __asm__("func_00217628");
+extern s32 get_menu_stream_buffer_size_r2() __asm__("func_00227018");
+extern s32 mark_menu_stream_buffer_read_active_r2() __asm__("func_00227068");
+extern s32 clear_menu_stream_buffer_read_active_r2() __asm__("func_002270B0");
 
 /* Resource stream screen update: picks the entry to show from the screen's flags (fixed, the
    focus list or grid selection, the save slot's level, a timed cycle, the language), then runs
@@ -5812,7 +5812,7 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
         goto process_stream_state;
     } else {
         if (selection_flags & 2) {
-            resource_index = D_001A0414_1BB90[0];
+            resource_index = selected_level_index_r[0];
         } else if (selection_flags & 4) {
             resource_index = D_001D5F70_20DF0.current->focus->data.grid.selected_cell;
         } else if (selection_flags & 0x100) {
@@ -5823,17 +5823,17 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
             if (resource_index >= 5) {
                 resource_index = 4;
             }
-            if (D_0013D390_20DF0.state < 3) {
-                if (D_0013D390_20DF0.pending_state < 0 && D_001D5F70_20DF0.unk154 >= 0xB) {
+            if (memory_card_state_r3.state < 3) {
+                if (memory_card_state_r3.pending_state < 0 && D_001D5F70_20DF0.unk154 >= 0xB) {
                     if (stream->data.stream.state == -1) {
                         stream->data.stream.state = 0;
                     }
                     resource_index =
-                        *(s32 *)((u8 *)&D_0013D390_20DF0 + resource_index * 0x1C + 0x20);
+                        *(s32 *)((u8 *)&memory_card_state_r3 + resource_index * 0x1C + 0x20);
                     if (resource_index == -1) {
                         stream->data.stream.state = resource_index;
                     }
-                    if (D_0013D390_20DF0.type != 2) {
+                    if (memory_card_state_r3.type != 2) {
                         stream->data.stream.state = -1;
                     }
                 } else {
@@ -5852,11 +5852,11 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
                 stream->data.stream.state = -1;
             }
         } else if (selection_flags & 0x400) {
-            resource_index = (s32)((s32)stream->data.stream.elapsed_frames / func_001F98C0_20DF0(0x12C)) % 19;
+            resource_index = (s32)((s32)stream->data.stream.elapsed_frames / scale_game_frame_count_r2(0x12C)) % 19;
         } else if (selection_flags & 0x1000) {
-            language_offsets = D_001E8B00_20DF0;
+            language_offsets = language_resource_offsets_r;
             resource_index = *stream->data.stream.language_base +
-                             language_offsets.values[D_0015EE88_1BB90];
+                             language_offsets.values[g_game_language_r];
         } else {
             item_selection = D_001D5F70_20DF0.current->focus;
             resource_index = item_selection->data.list.selected;
@@ -5871,20 +5871,20 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
         }
     process_stream_state:
         if (stream->data.stream.flags & 0x2000) {
-            resource_index = (D_0013D510_20DF0[resource_index] == 0) ? 0x1E : resource_index;
+            resource_index = (gSkillPoints_r[resource_index] == 0) ? 0x1E : resource_index;
         }
         stream_state = stream->data.stream.state;
         switch (stream_state) {
         case 0:
             primary_buffer = stream->data.stream.buffer[0];
-            if (primary_buffer != 0 && D_001517D8_1A1A0[0] == 0) {
+            if (primary_buffer != 0 && cd_read_active_r[0] == 0) {
                 primary_entry_offset = resource_index * 8;
                 if (*(s32 *)((u8 *)(primary_entry_offset + (s32)stream->data.stream.entries) + 0x4) !=
                     0) {
                     primary_read_address = primary_buffer;
                     if (stream->data.stream.flags & 0x20) {
                         primary_read_offset =
-                            func_00227018_20DF0(primary_buffer) -
+                            get_menu_stream_buffer_size_r2(primary_buffer) -
                             (*(s32 *)((u8 *)(primary_entry_offset + (s32)stream->data.stream.entries) +
                                       0x4)
                              << 0xB);
@@ -5894,18 +5894,18 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
                     if (stream->data.stream.flags & 0x10) {
                         primary_entry = (struct MenuStreamEntry_20DF0 *)(primary_entry_offset +
                                                                      (s32)stream->data.stream.entries);
-                        primary_read_started = func_00217628_20DF0(
+                        primary_read_started = start_audio_stream_read_r3(
                             primary_read_address, primary_entry->sector, primary_entry->sector_count);
                     } else {
                         primary_entry_alternate =
                             (struct MenuStreamEntry_20DF0 *)(primary_entry_offset +
                                                          (s32)stream->data.stream.entries);
-                        primary_read_started = func_00217628_20DF0b(
+                        primary_read_started = start_audio_stream_read_r4(
                             primary_read_address, primary_entry_alternate->sector,
                             primary_entry_alternate->sector_count);
                     }
                     if (primary_read_started != 0) {
-                        func_00227068_20DF0(stream->data.stream.buffer[0]);
+                        mark_menu_stream_buffer_read_active_r2(stream->data.stream.buffer[0]);
                         stream->data.stream.loaded_entry[0] = resource_index;
                         stream->data.stream.state = stream->data.stream.state + 1;
                     } else {
@@ -5917,15 +5917,15 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
         case 1:
         case 3:
         case 5:
-            if (D_001517D8_1A1A0[0] == 0) {
+            if (cd_read_active_r[0] == 0) {
                 stream_flags = stream->data.stream.flags;
                 if (stream_flags & 0x20) {
                     completed_buffer_slot = &stream->data.stream.buffer[0];
                     slot_index = stream->data.stream.state == 3;
                     completed_buffer_slot += slot_index;
-                    func_002270B0_20DF0(*completed_buffer_slot);
+                    clear_menu_stream_buffer_read_active_r2(*completed_buffer_slot);
                     completed_buffer = *completed_buffer_slot;
-                    func_0020C468_20DF0(completed_buffer + stream->data.stream.read_offset, completed_buffer);
+                    fast_decompress_r3(completed_buffer + stream->data.stream.read_offset, completed_buffer);
                     stream->data.stream.read_offset = 0;
                 }
                 stream->data.stream.state = stream->data.stream.state + 1;
@@ -5942,14 +5942,14 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
                     secondary_buffer = stream->data.stream.buffer[1];
                     if (secondary_buffer == 0) {
                         stream->data.stream.state = 0;
-                    } else if (D_001517D8_1A1A0[0] == 0) {
+                    } else if (cd_read_active_r[0] == 0) {
                         secondary_entry_offset = resource_index * 8;
                         if (*(s32 *)((u8 *)(secondary_entry_offset + (s32)stream->data.stream.entries) +
                                      0x4) != 0) {
                             secondary_read_address = secondary_buffer;
                             if (stream->data.stream.flags & 0x20) {
                                 secondary_read_offset =
-                                    func_00227018_20DF0(secondary_buffer) -
+                                    get_menu_stream_buffer_size_r2(secondary_buffer) -
                                     (*(s32 *)((u8 *)(secondary_entry_offset +
                                                      (s32)stream->data.stream.entries) +
                                               0x4)
@@ -5961,19 +5961,19 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
                                 secondary_entry =
                                     (struct MenuStreamEntry_20DF0 *)(secondary_entry_offset +
                                                                  (s32)stream->data.stream.entries);
-                                secondary_read_started = func_00217628_20DF0(
+                                secondary_read_started = start_audio_stream_read_r3(
                                     secondary_read_address, secondary_entry->sector,
                                     secondary_entry->sector_count);
                             } else {
                                 secondary_entry_alternate =
                                     (struct MenuStreamEntry_20DF0 *)(secondary_entry_offset +
                                                                  (s32)stream->data.stream.entries);
-                                secondary_read_started = func_00217628_20DF0b(
+                                secondary_read_started = start_audio_stream_read_r4(
                                     secondary_read_address, secondary_entry_alternate->sector,
                                     secondary_entry_alternate->sector_count);
                             }
                             if (secondary_read_started != 0) {
-                                func_00227068_20DF0(stream->data.stream.buffer[1]);
+                                mark_menu_stream_buffer_read_active_r2(stream->data.stream.buffer[1]);
                                 stream->data.stream.loaded_entry[1] = resource_index;
                                 stream->data.stream.state = stream->data.stream.state + 1;
                             } else {
@@ -5992,7 +5992,7 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
                     replacement_buffer = stream->data.stream.buffer[0];
                     if (replacement_buffer == 0) {
                         stream->data.stream.state = -1;
-                    } else if (D_001517D8_1A1A0[0] == 0) {
+                    } else if (cd_read_active_r[0] == 0) {
                         replacement_entry_offset = resource_index * 8;
                         if (*(s32 *)((u8 *)(replacement_entry_offset +
                                             (s32)stream->data.stream.entries) +
@@ -6000,7 +6000,7 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
                             replacement_read_address = replacement_buffer;
                             if (stream->data.stream.flags & 0x20) {
                                 replacement_read_offset =
-                                    func_00227018_20DF0(replacement_buffer) -
+                                    get_menu_stream_buffer_size_r2(replacement_buffer) -
                                     (*(s32 *)((u8 *)(replacement_entry_offset +
                                                      (s32)stream->data.stream.entries) +
                                               0x4)
@@ -6012,20 +6012,20 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
                                 replacement_entry =
                                     (struct MenuStreamEntry_20DF0 *)(replacement_entry_offset +
                                                                  (s32)stream->data.stream.entries);
-                                replacement_read_started = func_00217628_20DF0(
+                                replacement_read_started = start_audio_stream_read_r3(
                                     replacement_read_address, replacement_entry->sector,
                                     replacement_entry->sector_count);
                             } else {
                                 replacement_entry_alternate =
                                     (struct MenuStreamEntry_20DF0 *)(replacement_entry_offset +
                                                                  (s32)stream->data.stream.entries);
-                                replacement_read_started = func_00217628_20DF0b(
+                                replacement_read_started = start_audio_stream_read_r4(
                                     replacement_read_address,
                                     replacement_entry_alternate->sector,
                                     replacement_entry_alternate->sector_count);
                             }
                             if (replacement_read_started != 0) {
-                                func_00227068_20DF0(stream->data.stream.buffer[0]);
+                                mark_menu_stream_buffer_read_active_r2(stream->data.stream.buffer[0]);
                                 stream->data.stream.loaded_entry[0] = resource_index;
                                 stream->data.stream.state = stream->data.stream.state + 1;
                             } else {
@@ -6133,7 +6133,7 @@ typedef struct {
     Pair8 req0[6]; /* 0x2C8 */
     Pair8 req2[6]; /* 0x2F8 */
 } Tbl137C80;
-extern Tbl137C80 D_00137C80_t __asm__("D_00137C80");
+extern Tbl137C80 disc_table_t __asm__("D_00137C80");
 extern int g_game_language MACRO_ADDR;
 
 /* Pause sub-state machine at arg0+0x44. States 0 and 2 wait for their
@@ -6147,9 +6147,9 @@ int advance_audio_stream_state(char *arg0) {
     switch (*(int *)(arg0 + 0x44)) {
     case 0:
         if (*(int *)(arg0 + 0x48) != 0 && cd_read_state[4] == 0) {
-            if (func_00217628_3(*(int *)(arg0 + 0x48),
-                                D_00137C80_t.req0[g_game_language].a,
-                                D_00137C80_t.req0[g_game_language].b) != 0) {
+            if (start_audio_stream_read_3(*(int *)(arg0 + 0x48),
+                                disc_table_t.req0[g_game_language].a,
+                                disc_table_t.req0[g_game_language].b) != 0) {
                 *(int *)(arg0 + 0x44) += 1;
             } else {
                 *(int *)(arg0 + 0x44) = -1;
@@ -6163,9 +6163,9 @@ int advance_audio_stream_state(char *arg0) {
         break;
     case 2:
         if (*(int *)(arg0 + 0x4C) != 0 && cd_read_state[4] == 0) {
-            if (func_00217628_3(*(int *)(arg0 + 0x4C),
-                                D_00137C80_t.req2[g_game_language].a,
-                                D_00137C80_t.req2[g_game_language].b) != 0) {
+            if (start_audio_stream_read_3(*(int *)(arg0 + 0x4C),
+                                disc_table_t.req2[g_game_language].a,
+                                disc_table_t.req2[g_game_language].b) != 0) {
                 *(int *)(arg0 + 0x44) += 1;
             } else {
                 *(int *)(arg0 + 0x44) = -1;
@@ -6205,8 +6205,8 @@ int draw_two_texture_panels(void *arg0) {
     return 8;
 }
 
-extern char D_001A01F0_c[] __asm__("D_001A01F0");
-extern char D_00151880_c[] __asm__("D_00151880");
+extern char level_map_selection_c[] __asm__("D_001A01F0");
+extern char fs_aa_buffer_c[] __asm__("D_00151880");
 extern int game_frame_counter MACRO_ADDR;
 extern int map_screen_layer_insets[];
 extern void append_power_of_two_textured_screen_sprite(long, int, int, int, int, int, int, int, int, int);
@@ -6236,7 +6236,7 @@ typedef struct FsAaBuffer {
 
 /* Draws the loaded level map's background and overlay layers on the map screen. */
 int draw_map_screen_layers(void) {
-    LevelMapSelection *g = (LevelMapSelection *)D_001A01F0_c;
+    LevelMapSelection *g = (LevelMapSelection *)level_map_selection_c;
     s32 loaded_map_index = g->loaded;
     s32 size;
     s32 screen_extent_reduction;
@@ -6250,13 +6250,13 @@ int draw_map_screen_layers(void) {
         LevelMapSelection *g2;
         FsAaBuffer *fb;
 
-        func_00234C98_l(0x47, 0);
-        func_00234C98_l(8, 5);
-        g2 = (LevelMapSelection *)D_001A01F0_c;
-        fb = (FsAaBuffer *)D_00151880_c;
+        VU1_addGSregister_l(0x47, 0);
+        VU1_addGSregister_l(8, 5);
+        g2 = (LevelMapSelection *)level_map_selection_c;
+        fb = (FsAaBuffer *)fs_aa_buffer_c;
         append_power_of_two_textured_screen_sprite(g2->tex0, 0, 0, 7, 7,
                       fb->target_width << 4, fb->target_height << 4, 0, 0, 0x80);
-        func_00234C98_l(0x47, 0x360B);
+        VU1_addGSregister_l(0x47, 0x360B);
         if (game_frame_counter % 60 < 40) {
             append_power_of_two_textured_screen_sprite(g2->tex1, 0, 0, 7, 7,
                           fb->target_width << 4, fb->target_height << 4, 0, 0, 0x80);
@@ -6272,14 +6272,14 @@ int draw_map_screen_layers(void) {
         size = map_screen_layer_insets[loaded_map_index];
         screen_extent_reduction = size * 2;
         ph = map_adjusted_frame_count % 0x800;
-        func_00234C98_l(0x47, 0);
-        func_00234C98_l(8, 0);
-        fb = (FsAaBuffer *)D_00151880_c;
+        VU1_addGSregister_l(0x47, 0);
+        VU1_addGSregister_l(8, 0);
+        fb = (FsAaBuffer *)fs_aa_buffer_c;
         append_power_of_two_textured_screen_sprite(g->tex0, size, size, 7, 7,
                       (fb->target_width << 4) - screen_extent_reduction,
                       (fb->target_height << 4) - screen_extent_reduction, ph, 0, 0x80);
-        func_00234C98_l(0x47, 0x360B);
-        func_00234C98_l(8, 5);
+        VU1_addGSregister_l(0x47, 0x360B);
+        VU1_addGSregister_l(8, 5);
         append_power_of_two_textured_screen_sprite(g->tex1, size, size, 7, 7,
                       (fb->target_width << 4) - screen_extent_reduction,
                       (fb->target_height << 4) - screen_extent_reduction, 0, 0, 0x80);
@@ -6393,7 +6393,7 @@ extern void mode_freeze_init(int, void *, int);
 extern int scale_game_frame_count(int);
 extern void FadeToBlack(int);
 extern float gFade MACRO_ADDR;
-extern int D_0016044C_i __asm__("D_0016044C") MACRO_ADDR;
+extern int requested_video_mode_i __asm__("D_0016044C") MACRO_ADDR;
 typedef struct {
     int w0;              /* 0x00 */
     unsigned char *buf;  /* 0x04 */
@@ -6464,13 +6464,13 @@ int update_menu_option_list(char *arg0) {
             if (*(int *)(pad5 + 0x1C4) & 0x40) {
                 Moby_PlaySound(0, 0x11, *(int *)(arg0 + 0x14));
                 if ((*(Row14 **)(arg0 + 0x34))[*(int *)(arg0 + 0x38)].flags & 1) {
-                    if (*(unsigned char *)&D_0016044C_i) {
+                    if (*(unsigned char *)&requested_video_mode_i) {
                         char *g3 = menu_system;
                         mode_freeze_init(6, *(void **)(g3 + 4), 0);
                     } else {
                         FadeToBlack(4);
                         *(int *)(arg0 + 0x3C) = scale_game_frame_count(0x10);
-                        *(unsigned char *)&D_0016044C_i = !*(unsigned char *)&D_0016044C_i;
+                        *(unsigned char *)&requested_video_mode_i = !*(unsigned char *)&requested_video_mode_i;
                     }
                 } else {
                     unsigned char *buf = (*(Row14 **)(arg0 + 0x34))[*(int *)(arg0 + 0x38)].buf;
@@ -6505,11 +6505,11 @@ struct CheatsMenu {
     struct CheatMenuEntry *entries;
     s32 selected_entry;
 };
-extern void func_00234C98_22070(s32, u64) __asm__("func_00234C98");
+extern void VU1_addGSregister_r3(s32, u64) __asm__("func_00234C98");
 extern void func_001153FC_22070(void *, s32, u32) __asm__("func_001153FC");
-extern char *func_001FE540_22070(s32) __asm__("func_001FE540");
-extern void func_001F7560_22070(FontWindow *, u64, char *, s32) __asm__("func_001F7560");
-extern void func_001F68E8_22070(s32, s32, u64, char *, s32) __asm__("func_001F68E8");
+extern char *msg_string_r4(s32) __asm__("func_001FE540");
+extern void font_print_window_regular_r2(FontWindow *, u64, char *, s32) __asm__("func_001F7560");
+extern void FontPrintLarge_r2(s32, s32, u64, char *, s32) __asm__("func_001F68E8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/ui/menus/draw_cheats_menu.c, draw_cheats_menu. */
 s32 DrawCheatsMenu(struct CheatsMenu *menu) {
@@ -6524,7 +6524,7 @@ s32 DrawCheatsMenu(struct CheatsMenu *menu) {
     s32 color;
     s32 enabled;
 
-    func_00234C98_22070(0x47, 0x2004B);
+    VU1_addGSregister_r3(0x47, 0x2004B);
     SetupGifPaging(0);
     if ((menu->flags & 1) && menu->entries->text_id == 0) {
         func_001153FC_22070(window_fields, 0, sizeof(window_fields));
@@ -6538,7 +6538,7 @@ s32 DrawCheatsMenu(struct CheatsMenu *menu) {
         window_fields[9] = 1;
 
         text_window = *(FontWindow *)window_fields;
-        func_001F7560_22070(&text_window, 0x80FFA888, func_001FE540_22070(0x4FC0), -1);
+        font_print_window_regular_r2(&text_window, 0x80FFA888, msg_string_r4(0x4FC0), -1);
     }
     /* Entries end at a zero text ID; each retail entry occupies 0x14 bytes. */
     entry_count = 0;
@@ -6557,10 +6557,10 @@ s32 DrawCheatsMenu(struct CheatsMenu *menu) {
             if (entry->enabled_flag != 0) {
                 enabled = *entry->enabled_flag;
             }
-            func_001F68E8_22070(0xC, draw_y, color, func_001FE540_22070(entry->text_id), -1);
+            FontPrintLarge_r2(0xC, draw_y, color, msg_string_r4(entry->text_id), -1);
             font_print_right(
                 menu->width - 0xC, draw_y, 0x80FFA888,
-                func_001FE540_22070(enabled ? entry->enabled_text_id : entry->disabled_text_id),
+                msg_string_r4(enabled ? entry->enabled_text_id : entry->disabled_text_id),
                 -1);
             draw_y += line_spacing;
             draw_index++;
@@ -6671,7 +6671,7 @@ int draw_menu_choice_list(struct OptMenu *m) {
     int y;
     int color;
 
-    func_00234C98_l(0x47, 0x2004B);
+    VU1_addGSregister_l(0x47, 0x2004B);
     SetupGifPaging(0);
     n = 0;
     for (p = m->items; p->text != 0; p++) {
@@ -6687,8 +6687,8 @@ int draw_menu_choice_list(struct OptMenu *m) {
         } else {
             color = 0x80FFA888;
         }
-        func_001F68E8_c(0xC, y, color, func_001FE540_id(it->text), -1);
-        func_001F6CF8_c(m->x - 0xC, y, 0x80FFA888, func_001FE540_id(it->names[*it->value]), -1);
+        func_001F68E8_c(0xC, y, color, msg_string_id(it->text), -1);
+        font_print_right_c(m->x - 0xC, y, 0x80FFA888, msg_string_id(it->names[*it->value]), -1);
         y += step;
     }
     DoGifPaging();
@@ -6821,8 +6821,8 @@ typedef struct {
 extern int gGalaxyList[];
 extern Src0C planet_icon_rows[];
 extern Out0C galaxy_menu_items[];
-extern short D_001602E0_s __asm__("D_001602E0");
-extern int *D_001602E0_m __asm__("D_001602E0") MACRO_ADDR;
+extern short menu_level_indices_s __asm__("D_001602E0");
+extern int *menu_level_indices_m __asm__("D_001602E0") MACRO_ADDR;
 
 typedef struct {
     char pad00[0x30];
@@ -6848,9 +6848,9 @@ int BuildGalaxyMenu(MenuObj40 *arg0) {
     galaxy_menu_items[i].a = 0;
     arg0->sel = 0;
     arg0->flags |= 0x8000;
-    for (i = 0; D_001602E0_m[i] != 0; i++) {
+    for (i = 0; menu_level_indices_m[i] != 0; i++) {
         char *slots = (char *)level_map_selection;
-        if (*(int *)(slots + 0x224) == D_001602E0_m[i]) {
+        if (*(int *)(slots + 0x224) == menu_level_indices_m[i]) {
             arg0->sel = i;
             break;
         }
@@ -6858,7 +6858,7 @@ int BuildGalaxyMenu(MenuObj40 *arg0) {
     if (0) {
         /* no code: registers the 2-byte view last, so the file ends with
            `.extern D_001602E0, 2` and the assembler uses $gp */
-        (void)D_001602E0_s;
+        (void)menu_level_indices_s;
     }
     return 0;
 }
@@ -6951,7 +6951,7 @@ int leave_menu_prompt(void *arg0) {
  */
 /* D_0015EFB0 is SDA elsewhere; pause.cpp reaches it through the
    assembler macro. */
-extern int D_0015EFB0_m __asm__("D_0015EFB0") MACRO_ADDR;
+extern int mode_freeze_state_m __asm__("D_0015EFB0") MACRO_ADDR;
 extern int pad0_pressed;
 
 /* variation: separate "g" local per arm (shadowed), not shared across
@@ -6962,7 +6962,7 @@ extern char menu_system[] NOT_SDA;
 /* Prompt input: outside modes 1 and 0x10 just goes back; otherwise pad bit 0x20
    confirms (page +0x84 = 1) and 0x10 cancels, both going back. */
 int Menu_ConfirmPromptInput(void) {
-    if (D_0015EFB0_m != 0x10 && D_0015EFB0_m != 1) {
+    if (mode_freeze_state_m != 0x10 && mode_freeze_state_m != 1) {
         char *g = menu_system;
         int val = *(int *)(*(char **)(g + 4) + 0x38);
         *(int *)(g + 8) = val;
@@ -6990,10 +6990,10 @@ typedef struct {
 
 extern char str_error_text[];
 extern int D_001D6044;
-extern void func_00234C98_l(int, long) __asm__("func_00234C98");
+extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
-extern void *func_001FE540_id(int) __asm__("func_001FE540");
+extern void *msg_string_id(int) __asm__("func_001FE540");
 extern void font_print_window_small(TextBox *, long, char *, int);
 
 /* Draws the two-line prompt box (text 0x4FB3 for D_001D6044 in 0..2,
@@ -7005,8 +7005,8 @@ int draw_prompt_box(char *arg0) {
     char *text;
     int v;
 
-    func_00234C98_l(0x42, 0x44);
-    func_00234C98_l(0x47, 0x2004B);
+    VU1_addGSregister_l(0x42, 0x44);
+    VU1_addGSregister_l(0x47, 0x2004B);
     SetupGifPaging(0);
     text = str_error_text;
     v = D_001D6044;
@@ -7014,10 +7014,10 @@ int draw_prompt_box(char *arg0) {
     case 0:
     case 1:
     case 2:
-        text = func_001FE540_id(0x4FB3);
+        text = msg_string_id(0x4FB3);
         break;
     case 3:
-        text = func_001FE540_id(0x4FB5);
+        text = msg_string_id(0x4FB5);
         break;
     }
     {
@@ -7170,7 +7170,7 @@ int draw_menu_side_indicator(char *arg0) {
 /* D_001DE0C0 is declared above as Src0C (halfword view); these rows are
    read here as two word-sized icon ids. */
 typedef struct { int a; int b; int c; } IconRow;
-extern IconRow D_001DE0C0_i[] __asm__("D_001DE0C0");
+extern IconRow planet_icon_rows_i[] __asm__("D_001DE0C0");
 extern void FontPrintCenter(int, int, long, void *, int);
 
 /* Draws the current page's icons: the page record (stride 0xC) gives a
@@ -7186,18 +7186,18 @@ int draw_selected_menu_item_text(char *arg0) {
     SetupGifPaging(0);
     if (row == -1) {
         FontPrintCenter(*(int *)(arg0 + 0x20) / 2, *(int *)(arg0 + 0x24) / 2 - 8,
-                      0x80FFA888L, func_001FE540_id(0x5019), -1);
+                      0x80FFA888L, msg_string_id(0x5019), -1);
     } else {
         FontPrintCenter(*(int *)(arg0 + 0x20) / 2, *(int *)(arg0 + 0x24) / 3 - 8,
-                      0x80FFA888L, func_001FE540_id(D_001DE0C0_i[row].a), -1);
+                      0x80FFA888L, msg_string_id(planet_icon_rows_i[row].a), -1);
         FontPrintCenter(*(int *)(arg0 + 0x20) / 2, *(int *)(arg0 + 0x24) * 2 / 3 - 8,
-                      0x80FFA888L, func_001FE540_id(D_001DE0C0_i[row].b), -1);
+                      0x80FFA888L, msg_string_id(planet_icon_rows_i[row].b), -1);
     }
     DoGifPaging();
     return 2;
 }
 
-extern int D_0015EFB4_m __asm__("D_0015EFB4") MACRO_ADDR;
+extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
 extern int D_0015F6CC MACRO_ADDR;
 extern char restart_confirm_page[];
 extern void mode_freeze_init(int, void *, int);
@@ -7223,7 +7223,7 @@ int process_global_state_flags(void) {
     int v = pad0_pressed;
 
     if (v & 0x20) {
-        D_0015EFB4_m |= 2;
+        mode_freeze_flags_m |= 2;
         mode_freeze_init(3, restart_confirm_page, 0);
         return 0;
     }
@@ -7469,8 +7469,8 @@ int draw_menu_text_box(char *arg0) {
     int n;
     int i;
 
-    func_00234C98_l(0x47, 0x30000);
-    func_00234C98_l(0x42, 0x8000000044L);
+    VU1_addGSregister_l(0x47, 0x30000);
+    VU1_addGSregister_l(0x42, 0x8000000044L);
     SetupGifPaging(0);
     pack_image_descriptor(box, arg0);
     box[9] = 9;
@@ -7503,7 +7503,7 @@ int draw_menu_text_box(char *arg0) {
             box[5] = ypos;
             box[11] = (*(int *)(arg0 + 0x3C) >> 4) & 0xF;
             font_print_window_regular(box, 0x80FFA888L,
-                          func_001FE540_id((*(int **)(arg0 + 0x34))[i]), -1);
+                          msg_string_id((*(int **)(arg0 + 0x34))[i]), -1);
             ypos += box[7];
             ypos += 10;
         }
@@ -7516,7 +7516,7 @@ int draw_menu_text_box(char *arg0) {
     case 15:
     case 19:
         box[5] = *(int *)(arg0 + 0x1C) + 0x20;
-        font_print_window_regular(box, 0x80FFA888L, func_001FE540_id(*(int *)(arg0 + 0x34)), -1);
+        font_print_window_regular(box, 0x80FFA888L, msg_string_id(*(int *)(arg0 + 0x34)), -1);
         break;
     case 0:
         break;
@@ -7556,11 +7556,11 @@ int ObtainAllGoldWeaponsMenu(char *arg0) {
     HudSprite(GetIconFrame(0xE99A, 6), 4, y + 8, 0x10, 0x10, 0x80);
     buf.x = x;
     buf.y = y;
-    font_print_window_regular(&buf, 0x80FFA888L, func_001FE540_id(0x5187), -1);
+    font_print_window_regular(&buf, 0x80FFA888L, msg_string_id(0x5187), -1);
     y = (short)buf.fE + 0x10;
     buf.y = y;
     HudSprite(GetIconFrame(0xE99A, 6), 4, y + 8, 0x10, 0x10, 0x80);
-    font_print_window_regular(&buf, 0x80FFA888L, func_001FE540_id(0x5188), -1);
+    font_print_window_regular(&buf, 0x80FFA888L, msg_string_id(0x5188), -1);
     DoGifPaging();
     return 2;
 }
@@ -7572,22 +7572,22 @@ struct ThreeOptionMenu_23B40 {
     s32 spacing_divisor;
 };
 
-extern u8 D_001DF3D0_23B40[] __asm__("D_001DF3D0");
-extern u8 D_001DF770_23B40[] __asm__("D_001DF770");
-extern void func_001F4630_23B40(s32) __asm__("func_001F4630");
-extern void func_001F4748_23B40(void) __asm__("func_001F4748");
-extern char *func_001FE540_23B40(s32) __asm__("func_001FE540");
-extern s32 func_002160E0_23B40(void) __asm__("func_002160E0");
-extern s32 func_00216150_23B40(void) __asm__("func_00216150");
-extern s32 func_00216198_23B40(void) __asm__("func_00216198");
+extern u8 normal_font_metrics_r[] __asm__("D_001DF3D0");
+extern u8 small_font_metrics_r[] __asm__("D_001DF770");
+extern void SetupGifPaging_r2(s32) __asm__("func_001F4630");
+extern void DoGifPaging_r2(void) __asm__("func_001F4748");
+extern char *msg_string_r5(s32) __asm__("func_001FE540");
+extern s32 count_nonzero_entries_up_to_40_r(void) __asm__("func_002160E0");
+extern s32 count_nonzero_entries_up_to_10_r(void) __asm__("func_00216150");
+extern s32 count_nonzero_entries_up_to_30_r(void) __asm__("func_00216198");
 extern s32 func_00116248_23B40(char *, const char *, ...) __asm__("func_00116248");
-extern s32 func_001F6600_23B40(char *, s32) __asm__("func_001F6600");
-extern void func_001F65A8_23B40(void) __asm__("func_001F65A8");
-extern void func_001F6598_23B40(void) __asm__("func_001F6598");
-extern void func_001F6EA8_23B40(s32, s32, u64, char *, s32) __asm__("func_001F6EA8");
-extern void func_002208F8_23B40(s32, s32, s32) __asm__("func_002208F8");
-extern u64 func_001F4868_23B40(s32) __asm__("func_001F4868");
-extern void func_001F6668_23B40(s32, s32, u64, char *, s32, s64, u8 *) __asm__("func_001F6668");
+extern s32 measure_text_width_regular_r(char *, s32) __asm__("func_001F6600");
+extern void Font_DisableColorCodes_r(void) __asm__("func_001F65A8");
+extern void Font_EnableColorCodes_r(void) __asm__("func_001F6598");
+extern void FontPrintCenter_r(s32, s32, u64, char *, s32) __asm__("func_001F6EA8");
+extern void draw_menu_selection_marker_r(s32, s32, s32) __asm__("func_002208F8");
+extern u64 GetEffectTex_r(s32) __asm__("func_001F4868");
+extern void FontPrint_r2(s32, s32, u64, char *, s32, s64, u8 *) __asm__("func_001F6668");
 
 /* Draws the three completion counters page (n of 40, n of 10, n of 30): measures the three
    lines to pick the regular or the narrow font, then a centred title and each line with its
@@ -7603,49 +7603,49 @@ s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu_23B40 *menu) {
     s32 draw_y;
 
     font_texture_index = 1;
-    func_001F4630_23B40(0);
+    SetupGifPaging_r2(0);
     line_spacing = menu->height / 5;
     draw_y = menu->height / 5 - 8;
     maximum_text_width = 0;
-    func_00116248_23B40(text_buffer, func_001FE540_23B40(0x5234), func_002160E0_23B40(), 0x28);
-    measured_width = func_001F6600_23B40(text_buffer, -1);
+    func_00116248_23B40(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40_r(), 0x28);
+    measured_width = measure_text_width_regular_r(text_buffer, -1);
     if (maximum_text_width < measured_width) {
         maximum_text_width = measured_width;
     }
-    func_00116248_23B40(text_buffer, func_001FE540_23B40(0x5235), func_00216150_23B40(), 10);
-    measured_width = func_001F6600_23B40(text_buffer, -1);
+    func_00116248_23B40(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10_r(), 10);
+    measured_width = measure_text_width_regular_r(text_buffer, -1);
     if (maximum_text_width < measured_width) {
         maximum_text_width = measured_width;
     }
-    func_00116248_23B40(text_buffer, func_001FE540_23B40(0x5236), func_00216198_23B40(), 0x1E);
-    measured_width = func_001F6600_23B40(text_buffer, -1);
+    func_00116248_23B40(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30_r(), 0x1E);
+    measured_width = measure_text_width_regular_r(text_buffer, -1);
     if (maximum_text_width < measured_width) {
         maximum_text_width = measured_width;
     }
-    glyphs = D_001DF3D0_23B40;
+    glyphs = normal_font_metrics_r;
     if (menu->menu_width < maximum_text_width + 0x18) {
         font_texture_index = 2;
-        glyphs = D_001DF770_23B40;
+        glyphs = small_font_metrics_r;
     }
-    func_001F65A8_23B40();
-    func_001F6EA8_23B40(menu->menu_width >> 1, draw_y, 0x80FFA888, func_001FE540_23B40(0x5233), -1);
+    Font_DisableColorCodes_r();
+    FontPrintCenter_r(menu->menu_width >> 1, draw_y, 0x80FFA888, msg_string_r5(0x5233), -1);
     draw_y += line_spacing;
-    func_002208F8_23B40(0xB, draw_y + 9, func_002160E0_23B40() == 0x28);
-    func_00116248_23B40(text_buffer, func_001FE540_23B40(0x5234), func_002160E0_23B40(), 0x28);
-    func_001F6668_23B40(0x14, draw_y, 0x80FFA888, text_buffer, -1, func_001F4868_23B40(font_texture_index),
+    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_40_r() == 0x28);
+    func_00116248_23B40(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40_r(), 0x28);
+    FontPrint_r2(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(font_texture_index),
                         glyphs);
     draw_y += line_spacing;
-    func_002208F8_23B40(0xB, draw_y + 9, func_00216150_23B40() == 10);
-    func_00116248_23B40(text_buffer, func_001FE540_23B40(0x5235), func_00216150_23B40(), 10);
-    func_001F6668_23B40(0x14, draw_y, 0x80FFA888, text_buffer, -1, func_001F4868_23B40(font_texture_index),
+    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_10_r() == 10);
+    func_00116248_23B40(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10_r(), 10);
+    FontPrint_r2(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(font_texture_index),
                         glyphs);
     draw_y += line_spacing;
-    func_002208F8_23B40(0xB, draw_y + 9, func_00216198_23B40() == 0x1E);
-    func_00116248_23B40(text_buffer, func_001FE540_23B40(0x5236), func_00216198_23B40(), 0x1E);
-    func_001F6668_23B40(0x14, draw_y, 0x80FFA888, text_buffer, -1, func_001F4868_23B40(font_texture_index),
+    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_30_r() == 0x1E);
+    func_00116248_23B40(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30_r(), 0x1E);
+    FontPrint_r2(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(font_texture_index),
                         glyphs);
-    func_001F6598_23B40();
-    func_001F4748_23B40();
+    Font_EnableColorCodes_r();
+    DoGifPaging_r2();
     return 2;
 }
 
@@ -7668,12 +7668,12 @@ int draw_menu_selection_text(char *arg0) {
         && *(int *)(g + 0x154) >= 0xB && *(int *)(b + 8) == 2) {
         if (row == -1) {
             FontPrintCenter(*(int *)(arg0 + 0x20) / 2, *(int *)(arg0 + 0x24) / 2 - 8,
-                          0x80FFA888L, func_001FE540_id(0x521C), -1);
+                          0x80FFA888L, msg_string_id(0x521C), -1);
         } else {
             FontPrintCenter(*(int *)(arg0 + 0x20) / 2, 4, 0x80FFA888L,
-                          func_001FE540_id(D_001DE0C0_i[row].a), -1);
+                          msg_string_id(planet_icon_rows_i[row].a), -1);
             FontPrintCenter(*(int *)(arg0 + 0x20) / 2, 0x14, 0x80FFA888L,
-                          func_001FE540_id(D_001DE0C0_i[row].b), -1);
+                          msg_string_id(planet_icon_rows_i[row].b), -1);
         }
     }
     DoGifPaging();
@@ -7700,13 +7700,13 @@ extern int memory_card_error_latch MACRO_ADDR;
 extern int gBolts MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
 extern int game_clock_ticks MACRO_ADDR;
-extern int D_0015EE84_mm __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_mm __asm__("D_0015EE84") MACRO_ADDR;
 /* The 8-byte D_0015EF98 pair saved into a slot. As a char block in small
    data, its copy is la + ldl/ldr, as in retail. */
 typedef struct {
     char b[8];
 } SaveWord2;
-extern SaveWord2 D_0015EF98_s __asm__("D_0015EF98") MACRO_ADDR;
+extern SaveWord2 save_clock_time_s __asm__("D_0015EF98") MACRO_ADDR;
 extern char save_overwrite_confirm_page[];
 extern int save_confirm_slot;
 extern void prepare_save_game(int, int);
@@ -7768,7 +7768,7 @@ int saving_data_menu(char *arg0) {
                 char *d2 = memory_card_state;
                 char *g4 = menu_system;
 
-                D_0015EFB4_m |= 0x80;
+                mode_freeze_flags_m |= 0x80;
                 *(int *)(d2 + 0xFC) = 0;
                 mode_freeze_init(3, *(void **)(g4 + 4), 0);
                 return 0;
@@ -7776,9 +7776,9 @@ int saving_data_menu(char *arg0) {
             e = d + 0x30;
             *(int *)(d + 0xFC) = 1;
             *(int *)(d + 0x24 + *(int *)(d + 0x14) * 0x1C) = gBolts;
-            *(int *)(d + 0x20 + *(int *)(d + 0x14) * 0x1C) = D_0015EE84_mm;
+            *(int *)(d + 0x20 + *(int *)(d + 0x14) * 0x1C) = g_current_level_index_mm;
             *(int *)(d + 0x2C + *(int *)(d + 0x14) * 0x1C) = game_clock_ticks;
-            *(SaveWord2 *)(e + *(int *)(d + 0x14) * 0x1C) = D_0015EF98_s;
+            *(SaveWord2 *)(e + *(int *)(d + 0x14) * 0x1C) = save_clock_time_s;
             *(int *)(d + 0x28 + *(int *)(d + 0x14) * 0x1C) = D_0015EF20;
         }
     }
@@ -7805,7 +7805,7 @@ int saving_data_menu(char *arg0) {
             }
         }
     }
-    if (D_0015EFB0_m != 0x10 && D_0015EFB0_m != 1) {
+    if (mode_freeze_state_m != 0x10 && mode_freeze_state_m != 1) {
         char *g2 = menu_system;
         *(int *)(g2 + 8) = *(int *)(*(char **)(g2 + 4) + 0x38);
         return 0;
@@ -7893,7 +7893,7 @@ int loading_data_menu(char *arg0) {
             char *d2 = memory_card_state;
             char *g4 = menu_system;
 
-            D_0015EFB4_m |= 0x100;
+            mode_freeze_flags_m |= 0x100;
             *(int *)(d2 + 0xFC) = 0;
             mode_freeze_init(3, *(void **)(g4 + 4), 0);
             return 0;
@@ -7904,12 +7904,12 @@ int loading_data_menu(char *arg0) {
 
             *(int *)(d + 0xFC) = 1;
             *(int *)(s + 0x48) = t * 8 / 10;
-            *(int *)(s + 0x4C) = D_0015EEEC_1DB30;
+            *(int *)(s + 0x4C) = music_volume_r;
             *(int *)(s + 0x50) = t * 8 / 10;
             *(int *)(s + 0x54) = t * 7 / 10;
             *(int *)(s + 0x58) = t * 7 / 10;
             *(int *)(s + 0x5C) = t;
-            func_0012E380_1DB30(D_0015EEE8_1DB30 == 0);
+            func_0012E380_1DB30(playback_mode_r == 0);
             initialize_global_state_entry(g_current_level_index);
             *(short *)D_0013E15A_43E8 = 0;
             return 0;
@@ -7937,7 +7937,7 @@ int loading_data_menu(char *arg0) {
             }
         }
     }
-    if (D_0015EFB0_m != 0x10 && D_0015EFB0_m != 1) {
+    if (mode_freeze_state_m != 0x10 && mode_freeze_state_m != 1) {
         char *g2 = menu_system;
         *(int *)(g2 + 8) = *(int *)(*(char **)(g2 + 4) + 0x38);
         return 0;
@@ -8113,12 +8113,12 @@ s32 saving_data_menu2(struct MenuScreen_pv *w) {
         menu_system_pv.card_op_pending = 0;
         if (memory_card_state_pv.err != 0 || memory_card_state_pv.sync_result != 0 || memory_card_error_latch != 0) {
             if (D_0015F6CC != 0) {
-                D_0015EFB4_m |= 0x80;
+                mode_freeze_flags_m |= 0x80;
                 mode_freeze_init(8, menu_system_pv.current, memory_card_state_pv.unkFC);
                 memory_card_state_pv.unkFC = 0;
                 return 0;
             } else {
-                D_0015EFB4_m |= 0x80;
+                mode_freeze_flags_m |= 0x80;
                 memory_card_state_pv.unkFC = 0;
                 mode_freeze_init(3, menu_system_pv.current, 0);
                 return 0;
@@ -8126,9 +8126,9 @@ s32 saving_data_menu2(struct MenuScreen_pv *w) {
         }
         memory_card_state_pv.unkFC = 1;
         *(s32 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x24) = gBolts;
-        *(s32 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x20) = D_0015EE84_mm;
+        *(s32 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x20) = g_current_level_index_mm;
         *(s32 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x2C) = game_clock_ticks;
-        *(SaveWord2 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x30) = D_0015EF98_s;
+        *(SaveWord2 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x30) = save_clock_time_s;
         *(s32 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x28) = D_0015EF20;
         initialize_global_state_entry(0);
         D_0013E15A[0] = 1;
@@ -8147,7 +8147,7 @@ s32 saving_data_menu2(struct MenuScreen_pv *w) {
             return -1;
         }
     }
-    if (D_0015EFB0_m != 0x10 && D_0015EFB0_m != 1) {
+    if (mode_freeze_state_m != 0x10 && mode_freeze_state_m != 1) {
         menu_system_pv.next = menu_system_pv.current->back;
         return 0;
     }
@@ -8198,8 +8198,8 @@ done:
         return 0;
 cont:
         memory_card_state_pv.unkFC = 0;
-        f2 = D_0015EFB4_m & ~2;
-        D_0015EFB4_m = f2 & ~4;
+        f2 = mode_freeze_flags_m & ~2;
+        mode_freeze_flags_m = f2 & ~4;
         load_and_initialize_level_chunk();
         goto done;
     }
@@ -8248,23 +8248,23 @@ struct MenuSystem_24C30 {
 };
 extern struct MenuSystem_24C30 D_001D5F70_24C30 __asm__("D_001D5F70");
 
-extern SaveInfo_24C30 D_0013D390_24C30 __asm__("D_0013D390");
-extern s32 D_0015EE80_24C30 __asm__("D_0015EE80") MACRO_ADDR;
-extern s32 D_001602B0_24C30 __asm__("D_001602B0") MACRO_ADDR;
-extern char D_001603A0_24C30[] __asm__("D_001603A0");
-extern char D_001603D0_24C30[] __asm__("D_001603D0");
-extern char D_00160400_24C30[] __asm__("D_00160400");
-extern char D_00160410_24C30[] __asm__("D_00160410");
-extern char D_00160420_24C30[] __asm__("D_00160420");
+extern SaveInfo_24C30 memory_card_state_r4 __asm__("D_0013D390");
+extern s32 pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
+extern s32 panel_clear_color_r __asm__("D_001602B0") MACRO_ADDR;
+extern char fmt_decimal_r[] __asm__("D_001603A0");
+extern char fmt_number_thousands_r[] __asm__("D_001603D0");
+extern char fmt_save_play_time_r[] __asm__("D_00160400");
+extern char fmt_save_bolt_count_r[] __asm__("D_00160410");
+extern char fmt_save_date_r[] __asm__("D_00160420");
 
-extern void func_001F4630_24C30(s32) __asm__("func_001F4630");
-extern void func_001F4748_24C30(void) __asm__("func_001F4748");
-extern void func_001F6968_24C30(s32, s32, u64, char *, s32) __asm__("func_001F6968");
-extern void func_001F6F40_24C30(s32, s32, u64, char *, s32) __asm__("func_001F6F40");
+extern void SetupGifPaging_r3(s32) __asm__("func_001F4630");
+extern void DoGifPaging_r3(void) __asm__("func_001F4748");
+extern void FontPrintSmall_r(s32, s32, u64, char *, s32) __asm__("func_001F6968");
+extern void FontPrintCenterSmall_r(s32, s32, u64, char *, s32) __asm__("func_001F6F40");
 extern char *func_001FE540_24C30(s32) __asm__("func_001FE540");
-extern s32 func_00200198_24C30(s32, s32) __asm__("func_00200198");
-extern void func_00200468_24C30(s32, s32, s32, s32, s32, s32) __asm__("func_00200468");
-extern void func_00201640_24C30(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
+extern s32 GetIconFrame_r2(s32, s32) __asm__("func_00200198");
+extern void HudSprite_r(s32, s32, s32, s32, s32, s32) __asm__("func_00200468");
+extern void draw_hud_rect_blended_r4(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern s32 func_00116248_24C30(char *, const char *, ...) __asm__("func_00116248");
 
 /* Draws the five save slots of the memory card page: the cursor frame around the selected
@@ -8288,7 +8288,7 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
     s32 minutes;
 
     y = 4;
-    func_001F4630_24C30(0);
+    SetupGifPaging_r3(0);
     for (i = 0; i < 5; i++) {
         width = menu->width;
         highlight_top = y - 4;
@@ -8296,20 +8296,20 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
         inner_right = width - 3;
         inner_top = y - 1;
         inner_bottom = y + 0x31;
-        if (D_0013D390_24C30.xDC < 3 && D_0013D390_24C30.xE4 < 0 && D_001D5F70_24C30.unk154 >= 0xB &&
+        if (memory_card_state_r4.xDC < 3 && memory_card_state_r4.xE4 < 0 && D_001D5F70_24C30.unk154 >= 0xB &&
             menu->selected_slot == i) {
-            func_00201640_24C30(0, highlight_top, width, highlight_bottom, 0x8020FFFF, 0);
-            func_00201640_24C30(3, inner_top, inner_right, inner_bottom, D_001602B0_24C30, 0);
+            draw_hud_rect_blended_r4(0, highlight_top, width, highlight_bottom, 0x8020FFFF, 0);
+            draw_hud_rect_blended_r4(3, inner_top, inner_right, inner_bottom, panel_clear_color_r, 0);
         }
-        func_00201640_24C30(3, inner_top, inner_right, inner_bottom, 0x80303030, 0);
-        slot = &D_0013D390_24C30.slots[i];
-        if (D_0013D390_24C30.xDC >= 3 || D_0013D390_24C30.xE4 >= 0 || D_001D5F70_24C30.unk154 < 0xB ||
-            D_0013D390_24C30.state != 2) {
+        draw_hud_rect_blended_r4(3, inner_top, inner_right, inner_bottom, 0x80303030, 0);
+        slot = &memory_card_state_r4.slots[i];
+        if (memory_card_state_r4.xDC >= 3 || memory_card_state_r4.xE4 >= 0 || D_001D5F70_24C30.unk154 < 0xB ||
+            memory_card_state_r4.state != 2) {
             y += 0x30;
         } else {
             if (slot->id == -1) {
                 y += 0x10;
-                func_001F6F40_24C30(menu->width / 2, y, 0x80FFA888,
+                FontPrintCenterSmall_r(menu->width / 2, y, 0x80FFA888,
                                         func_001FE540_24C30(0x521C), -1);
                 y += 0x20;
             } else {
@@ -8321,15 +8321,15 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
                     hours = 99;
                     minutes = 59;
                 }
-                func_00116248_24C30(text, D_00160400_24C30, hours, minutes);
-                func_00200468_24C30(func_00200198_24C30(0xE99E, 3), 4, y, 0x10, 0x10,
+                func_00116248_24C30(text, fmt_save_play_time_r, hours, minutes);
+                HudSprite_r(GetIconFrame_r2(0xE99E, 3), 4, y, 0x10, 0x10,
                                 0x80);
-                func_001F6968_24C30(0x16, y, color, text, -1);
+                FontPrintSmall_r(0x16, y, color, text, -1);
                 if (slot->count != 0) {
-                    func_00200468_24C30(func_00200198_24C30(0xE99E, 4), 0x4E, y, 0x10,
+                    HudSprite_r(GetIconFrame_r2(0xE99E, 4), 0x4E, y, 0x10,
                                     0x10, 0x80);
-                    func_00116248_24C30(text, D_001603A0_24C30, slot->count < 100 ? slot->count : 99);
-                    func_001F6968_24C30(0x60, y, color, text, -1);
+                    func_00116248_24C30(text, fmt_decimal_r, slot->count < 100 ? slot->count : 99);
+                    FontPrintSmall_r(0x60, y, color, text, -1);
                 }
                 bolts = slot->bolts;
                 if (bolts > 9999999) {
@@ -8337,31 +8337,31 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
                 }
                 y += 0x10;
                 if (bolts < 1000) {
-                    func_00116248_24C30(text, D_001603A0_24C30, bolts);
+                    func_00116248_24C30(text, fmt_decimal_r, bolts);
                 } else if (bolts < 1000000) {
-                    func_00116248_24C30(text, D_001603D0_24C30, bolts / 1000, bolts % 1000);
+                    func_00116248_24C30(text, fmt_number_thousands_r, bolts / 1000, bolts % 1000);
                 } else {
-                    func_00116248_24C30(text, D_00160410_24C30, bolts / 1000000, bolts % 1000000 / 1000,
+                    func_00116248_24C30(text, fmt_save_bolt_count_r, bolts / 1000000, bolts % 1000000 / 1000,
                             bolts % 1000);
                 }
-                func_00200468_24C30(func_00200198_24C30(0x754F, 0xF), 4, y, 0x10, 0x10,
+                HudSprite_r(GetIconFrame_r2(0x754F, 0xF), 4, y, 0x10, 0x10,
                                 0x80);
-                func_001F6968_24C30(0x16, y, color, text, -1);
+                FontPrintSmall_r(0x16, y, color, text, -1);
                 y += 0x10;
-                func_00116248_24C30(text, D_00160420_24C30, slot->b16, slot->b15, slot->b17);
-                func_00200468_24C30(func_00200198_24C30(0xE99E, 2), 4, y, 0x10, 0x10,
+                func_00116248_24C30(text, fmt_save_date_r, slot->b16, slot->b15, slot->b17);
+                HudSprite_r(GetIconFrame_r2(0xE99E, 2), 4, y, 0x10, 0x10,
                                 0x80);
-                func_001F6968_24C30(0x16, y, color, text, -1);
+                FontPrintSmall_r(0x16, y, color, text, -1);
                 y += 0x10;
             }
         }
-        if (D_0015EE80_24C30 != 0) {
+        if (pal_mode_r != 0) {
             y += 0x24;
         } else {
             y += 0x1B;
         }
     }
-    func_001F4748_24C30();
+    DoGifPaging_r3();
     return 2;
 }
 
@@ -8378,11 +8378,11 @@ struct MenuPanelOwner {
     u8 pad0[0x78];
     struct MenuFlashingPanel *flash;
 };
-extern short D_0015EE80_250B8 __asm__("D_0015EE80");
-extern void func_00234C98_250B8(s32, u64) __asm__("func_00234C98");
+extern short pal_mode_r2 __asm__("D_0015EE80");
+extern void VU1_addGSregister_r4(s32, u64) __asm__("func_00234C98");
 extern s32 random_integer_below(s32);
-extern s64 func_001F4868_250B8(s32) __asm__("func_001F4868");
-extern void func_001F5800_250B8(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64) __asm__("func_001F5800");
+extern s64 GetEffectTex_r2(s32) __asm__("func_001F4868");
+extern void DrawTexturedQuad_r(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64) __asm__("func_001F5800");
 void draw_menu_flashing_panel(struct MenuPanelOwner *owner);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/fun_00223e28.c, draw_menu_flashing_panel. */
@@ -8412,21 +8412,21 @@ void draw_menu_flashing_panel(struct MenuPanelOwner *owner) {
     if (x >= 0x200 || x + width < 0) {
         return;
     }
-    if (!((*(s32 *)&D_0015EE80_250B8) != 0 ? y < 0x1C1 : y < 0x1A1) || y + height < 0) {
+    if (!((*(s32 *)&pal_mode_r2) != 0 ? y < 0x1C1 : y < 0x1A1) || y + height < 0) {
         return;
     }
-    func_00234C98_250B8(8, 0);
-    func_00234C98_250B8(0x42, 0x8000000044ULL);
+    VU1_addGSregister_r4(8, 0);
+    VU1_addGSregister_r4(0x42, 0x8000000044ULL);
     draw_hud_sprite_subpixel(GetIconFrame(0xE99E, 7), x << 4, y << 4, width << 4, height << 4, 0x80);
     if (panel->active) {
         panel->time += 2;
         u = random_integer_below(200);
         v = random_integer_below(200);
         alpha = 0x80 - subtract_integer_with_clamp(panel->time - 0x80);
-        func_00234C98_250B8(8, 0);
+        VU1_addGSregister_r4(8, 0);
         alpha = alpha * 2;
-        func_00234C98_250B8(0x42, ((u64)(alpha > 0x80 ? 0x80 : alpha) << 32) | 0x68);
-        func_001F5800_250B8(x, y, width, height, u, v, width, height, 0x808080, func_001F4868_250B8(0x1A));
+        VU1_addGSregister_r4(0x42, ((u64)(alpha > 0x80 ? 0x80 : alpha) << 32) | 0x68);
+        DrawTexturedQuad_r(x, y, width, height, u, v, width, height, 0x808080, GetEffectTex_r2(0x1A));
         if (panel->time >= 0x100) {
             panel->active = 0;
         }
@@ -8434,11 +8434,11 @@ void draw_menu_flashing_panel(struct MenuPanelOwner *owner) {
         panel->time = 0;
         panel->active = 1;
     }
-    func_00234C98_250B8(8, 0);
-    func_00234C98_250B8(0x42, 0x8000000044ULL);
+    VU1_addGSregister_r4(8, 0);
+    VU1_addGSregister_r4(0x42, 0x8000000044ULL);
     width_adjustment = -2;
     height_adjustment = -2;
-    func_001F5800_250B8(x, y, width, height, 0, 0, width, (height * 3) >> 1, 0x50606060, func_001F4868_250B8(0x1C));
+    DrawTexturedQuad_r(x, y, width, height, 0, 0, width, (height * 3) >> 1, 0x50606060, GetEffectTex_r2(0x1C));
     if (width >= 0x4C) {
         width_adjustment = -1;
     }
@@ -8451,7 +8451,7 @@ void draw_menu_flashing_panel(struct MenuPanelOwner *owner) {
     if (height >= 0x97) {
         height_adjustment = 0;
     }
-    func_001F5800_250B8(x + 1, y + 1, width + width_adjustment, height + height_adjustment, 1, 1, 0x3E, 0x3E, 0x80808080, func_001F4868_250B8(0x19));
+    DrawTexturedQuad_r(x + 1, y + 1, width + width_adjustment, height + height_adjustment, 1, 1, 0x3E, 0x3E, 0x80808080, GetEffectTex_r2(0x19));
 }
 
 extern int clear_preview_animation_queue(void);
@@ -8473,8 +8473,8 @@ extern void update_menu_preview_animation_pose(void *);
    order that gives retail's schedule. */
 struct MenuPreviewScreen_225358 {
     u8 pad_00[0x44];
-    struct Moby *gadget_moby;    /* 0x44: gadget preview moby (func_00226720_a(0)) */
-    struct Moby *pose_moby;      /* 0x48: pose moby (func_00226720_a(0x259)) */
+    struct Moby *gadget_moby;    /* 0x44: gadget preview moby (create_menu_preview_moby_a(0)) */
+    struct Moby *pose_moby;      /* 0x48: pose moby (create_menu_preview_moby_a(0x259)) */
     u8 pad_4C[0x58];
     char flags[0x18];            /* 0xA4: 24 flag bytes cleared on setup, ending at 0xBB */
 };
@@ -8514,7 +8514,7 @@ int initialize_menu_preview_objects(char *arg0) {
         first_attachment_manipulator[1] = 0;
         second_attachment_manipulator[1] = 0;
     }
-    object = func_00226720_a(0);
+    object = create_menu_preview_moby_a(0);
     held_flag = ((struct MenuPreviewScreen_225358 *)arg0)->flags + 23;
     for (j = 23; j >= 0; j--) {
         *held_flag = 0;
@@ -8540,7 +8540,7 @@ int initialize_menu_preview_objects(char *arg0) {
         FastMemSet(D_00186410, 0, 0x40);
         noop_callback_e(object);
     }
-    object = func_00226720_a(0x259);
+    object = create_menu_preview_moby_a(0x259);
     if (object != 0) {
         *(int *)object->pvars = (int)arg0;
         object->update = (void (*)(struct Moby *))update_menu_preview_animation_pose;
@@ -8660,23 +8660,23 @@ typedef struct HandGadgetAnimation {
     s32 attachment2_class;
     s32 attachment2_animation;
 } HandGadgetAnimation;
-extern Hero D_0013F450_255F8 __asm__("D_0013F450");
-extern HandGadgetDefinition D_001864D0_255F8[] __asm__("D_001864D0");
-extern u8 * D_001B3580_255F8[] __asm__("D_001B3580");
+extern Hero g_hero_r __asm__("D_0013F450");
+extern HandGadgetDefinition item_info_table_r2[] __asm__("D_001864D0");
+extern u8 * moby_class_resources_r2[] __asm__("D_001B3580");
 extern u8 resident_class_slot_by_id[];
 extern HandGadgetAnimation gadget_animations[];
 extern HandGadgetSelection D_001D5F70_255F8 __asm__("D_001D5F70");
-extern HandGadgetManipulator D_001D6160_255F8 __asm__("D_001D6160");
-extern HandGadgetManipulator D_001D61A0_255F8 __asm__("D_001D61A0");
-extern HandGadgetManipulator D_001D61E0_255F8 __asm__("D_001D61E0");
+extern HandGadgetManipulator class_pose_manipulator_r __asm__("D_001D6160");
+extern HandGadgetManipulator first_attachment_manipulator_r __asm__("D_001D61A0");
+extern HandGadgetManipulator second_attachment_manipulator_r __asm__("D_001D61E0");
 extern float ammo_preview_offsets[];
-extern s32 D_001D6238_255F8[] __asm__("D_001D6238");
+extern s32 ammo_preview_velocities_r[] __asm__("D_001D6238");
 extern void noop_callback_r(Moby *, s32);
-extern void func_0020D960_255F8(s32, s32, HandGadgetManipulator *) __asm__("func_0020D960");
-extern void func_0020D9D8_255F8(s32, HandGadgetManipulator *) __asm__("func_0020D9D8");
+extern void AttachManipulator_r(s32, s32, HandGadgetManipulator *) __asm__("func_0020D960");
+extern void DetachManipulator_r(s32, HandGadgetManipulator *) __asm__("func_0020D9D8");
 extern void MobyBlendAnimation(void *, int, int, int);
-extern Moby *func_00226720_255F8(s32) __asm__("func_00226720");
-extern Moby *func_002267C0_255F8(Moby *) __asm__("func_002267C0");
+extern Moby *create_menu_preview_moby_r3(s32) __asm__("func_00226720");
+extern Moby *delete_moby_r2(Moby *) __asm__("func_002267C0");
 extern void update_preview_animation_and_attachments(s32, Moby *, Moby *, s32 *, s32 *, s32 *);
 extern s32 queue_preview_animation(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
 extern s32 clear_preview_animation_queue(void);
@@ -8711,15 +8711,15 @@ s32 LoadHandGadget(HandGadgetState *hand) {
     moby = hand->class_pose_moby;
     previous_selected_class = (moby != 0) ? (moby->oclass) : (-1);
     selected_gadget = D_001D5F70_255F8.selected_gadget;
-    selected_class = D_001864D0_255F8[selected_gadget].oclass;
+    selected_class = item_info_table_r2[selected_gadget].oclass;
     selected_class_ready = selected_class == D_001D5F70_255F8.requested_resource_class;
     if ((previous_selected_class != selected_class) && selected_class_ready) {
-        func_002267C0_255F8(moby);
-        if (D_001D6160_255F8.active) {
-            func_0020D9D8_255F8(hand->source_moby_address, &D_001D6160_255F8);
+        delete_moby_r2(moby);
+        if (class_pose_manipulator_r.active) {
+            DetachManipulator_r(hand->source_moby_address, &class_pose_manipulator_r);
         }
-        if ((D_0013F450_255F8.items[0].item_id != 0) &&
-            (selected_gadget != D_0013F450_255F8.items[0].item_id)) {
+        if ((g_hero_r.items[0].item_id != 0) &&
+            (selected_gadget != g_hero_r.items[0].item_id)) {
             noop_callback_q(0, 0);
         }
         active_decode_buffer = D_001D5F70_255F8.active_decode_buffer == 0;
@@ -8728,8 +8728,8 @@ s32 LoadHandGadget(HandGadgetState *hand) {
         D_001D5F70_255F8.active_decode_buffer = active_decode_buffer;
         D_001D5F70_255F8.last_requested_resource_class = selected_class;
         D_001D5F70_255F8.last_resource_request_state = active_decode_buffer;
-        D_001B3580_255F8[resident_class_slot_by_id[selected_class]][0xD] = 0;
-        moby = func_00226720_255F8(selected_class);
+        moby_class_resources_r2[resident_class_slot_by_id[selected_class]][0xD] = 0;
+        moby = create_menu_preview_moby_r3(selected_class);
         if (moby != 0) {
             loaded_gadget = selected_gadget;
             if (gold_weapon_purchased[loaded_gadget]) {
@@ -8739,21 +8739,21 @@ s32 LoadHandGadget(HandGadgetState *hand) {
             (*(void **)&moby->update) = update_menu_preview_class_pose;
             moby->flags = 4;
             if (loaded_gadget == 0x12) {
-                func_0020D960_255F8(hand->source_moby_address, 0, &D_001D6160_255F8);
-                D_001D6160_255F8.rotation_x = 0;
-                D_001D6160_255F8.rotation_y = 0;
-                D_001D6160_255F8.rotation_z = 0;
+                AttachManipulator_r(hand->source_moby_address, 0, &class_pose_manipulator_r);
+                class_pose_manipulator_r.rotation_x = 0;
+                class_pose_manipulator_r.rotation_y = 0;
+                class_pose_manipulator_r.rotation_z = 0;
             }
         }
         hand->class_pose_moby = moby;
     }
     moby = hand->animation_moby;
     previous_animation_class = (moby != 0) ? (moby->oclass) : (-1);
-    requested_class = D_001864D0_255F8[D_001D5F70_255F8.animation_gadget].oclass;
+    requested_class = item_info_table_r2[D_001D5F70_255F8.animation_gadget].oclass;
     if (previous_animation_class != requested_class) {
-        moby = func_002267C0_255F8(moby);
+        moby = delete_moby_r2(moby);
         if (requested_class != (-1)) {
-            moby = func_00226720_255F8(requested_class);
+            moby = create_menu_preview_moby_r3(requested_class);
             if (moby != 0) {
                 loaded_gadget = D_001D5F70_255F8.animation_gadget;
                 *((void **)moby->pvars) = hand;
@@ -8765,36 +8765,36 @@ s32 LoadHandGadget(HandGadgetState *hand) {
     }
     moby = hand->first_attachment_moby;
     previous_attachment_class = (moby != 0) ? (moby->oclass) : (-1);
-    requested_class = D_001864D0_255F8[D_001D5F70_255F8.attachment_gadget].oclass;
+    requested_class = item_info_table_r2[D_001D5F70_255F8.attachment_gadget].oclass;
     if (previous_attachment_class != requested_class) {
-        moby = func_002267C0_255F8(moby);
-        if (D_001D61A0_255F8.active) {
-            func_0020D9D8_255F8(hand->source_moby_address, &D_001D61A0_255F8);
+        moby = delete_moby_r2(moby);
+        if (first_attachment_manipulator_r.active) {
+            DetachManipulator_r(hand->source_moby_address, &first_attachment_manipulator_r);
         }
-        if (D_001D61E0_255F8.active) {
-            func_0020D9D8_255F8(hand->source_moby_address, &D_001D61E0_255F8);
+        if (second_attachment_manipulator_r.active) {
+            DetachManipulator_r(hand->source_moby_address, &second_attachment_manipulator_r);
         }
         if (requested_class != (-1)) {
-            moby = func_00226720_255F8(requested_class);
+            moby = create_menu_preview_moby_r3(requested_class);
             if (moby != 0) {
                 loaded_gadget = D_001D5F70_255F8.attachment_gadget;
                 *((void **)moby->pvars) = hand;
                 (*(void **)&moby->update) = update_menu_preview_pose_and_attachments;
                 moby->flags = 4;
-                func_0020D960_255F8(hand->source_moby_address, 0x16, &D_001D61A0_255F8);
-                func_0020D960_255F8(hand->source_moby_address, 0x17, &D_001D61E0_255F8);
-                D_001D61E0_255F8.rotation_z =
-                    (D_001D61A0_255F8.rotation_z =
-                         (D_001D61E0_255F8.rotation_y =
-                              (D_001D61E0_255F8.rotation_x =
-                                   (D_001D61A0_255F8.rotation_y =
-                                        (D_001D61A0_255F8.rotation_x = 0.01f)))));
+                AttachManipulator_r(hand->source_moby_address, 0x16, &first_attachment_manipulator_r);
+                AttachManipulator_r(hand->source_moby_address, 0x17, &second_attachment_manipulator_r);
+                second_attachment_manipulator_r.rotation_z =
+                    (first_attachment_manipulator_r.rotation_z =
+                         (second_attachment_manipulator_r.rotation_y =
+                              (second_attachment_manipulator_r.rotation_x =
+                                   (first_attachment_manipulator_r.rotation_y =
+                                        (first_attachment_manipulator_r.rotation_x = 0.01f)))));
             }
         }
         hand->first_attachment_moby = moby;
-        moby = func_002267C0_255F8(hand->second_attachment_moby);
+        moby = delete_moby_r2(hand->second_attachment_moby);
         if (requested_class != (-1)) {
-            moby = func_00226720_255F8(requested_class);
+            moby = create_menu_preview_moby_r3(requested_class);
             if (moby != 0) {
                 *((void **)moby->pvars) = hand;
                 (*(void **)&moby->update) = update_menu_preview_pose_and_attachments;
@@ -8805,11 +8805,11 @@ s32 LoadHandGadget(HandGadgetState *hand) {
     }
     moby = hand->pose_moby;
     previous_pose_class = (moby != 0) ? (moby->oclass) : (-1);
-    requested_class = D_001864D0_255F8[D_001D5F70_255F8.pose_gadget].oclass;
+    requested_class = item_info_table_r2[D_001D5F70_255F8.pose_gadget].oclass;
     if (previous_pose_class != requested_class) {
-        moby = func_002267C0_255F8(moby);
+        moby = delete_moby_r2(moby);
         if (requested_class != (-1)) {
-            moby = func_00226720_255F8(requested_class);
+            moby = create_menu_preview_moby_r3(requested_class);
             if (moby != 0) {
                 *((void **)moby->pvars) = hand;
                 (*(void **)&moby->update) = update_menu_preview_animation_pose;
@@ -8826,11 +8826,11 @@ s32 LoadHandGadget(HandGadgetState *hand) {
     }
     moby = hand->class_0197_moby;
     previous_class_0197 = (moby != 0) ? (moby->oclass) : (-1);
-    requested_class = (D_0013D5C8_1E950[0x23]) ? (0x197) : (-1);
+    requested_class = (item_available_r[0x23]) ? (0x197) : (-1);
     if (previous_class_0197 != requested_class) {
-        moby = func_002267C0_255F8(moby);
+        moby = delete_moby_r2(moby);
         if (requested_class != (-1)) {
-            moby = func_00226720_255F8(requested_class);
+            moby = create_menu_preview_moby_r3(requested_class);
             if (moby != 0) {
                 *((void **)moby->pvars) = hand;
                 (*(void **)&moby->update) = update_menu_preview_class_transform;
@@ -8841,11 +8841,11 @@ s32 LoadHandGadget(HandGadgetState *hand) {
     }
     moby = hand->class_0266_moby;
     previous_class_0266 = (moby != 0) ? (moby->oclass) : (-1);
-    requested_class = (D_0013D5C8_1E950[0x21]) ? (0x266) : (-1);
+    requested_class = (item_available_r[0x21]) ? (0x266) : (-1);
     if (previous_class_0266 != requested_class) {
-        moby = func_002267C0_255F8(moby);
+        moby = delete_moby_r2(moby);
         if (requested_class != (-1)) {
-            moby = func_00226720_255F8(requested_class);
+            moby = create_menu_preview_moby_r3(requested_class);
             if (moby != 0) {
                 *((void **)moby->pvars) = hand;
                 (*(void **)&moby->update) = update_menu_preview_class_transform;
@@ -8856,11 +8856,11 @@ s32 LoadHandGadget(HandGadgetState *hand) {
     }
     moby = hand->class_026a_moby;
     previous_class = (moby != 0) ? (moby->oclass) : (-1);
-    requested_class = (D_0013D5C8_1E950[0x22]) ? (0x26A) : (-1);
+    requested_class = (item_available_r[0x22]) ? (0x26A) : (-1);
     if (previous_class != requested_class) {
-        moby = func_002267C0_255F8(moby);
+        moby = delete_moby_r2(moby);
         if (requested_class != (-1)) {
-            moby = func_00226720_255F8(requested_class);
+            moby = create_menu_preview_moby_r3(requested_class);
             if (moby != 0) {
                 *((void **)moby->pvars) = hand;
                 (*(void **)&moby->update) = update_menu_preview_class_transform;
@@ -8875,14 +8875,14 @@ s32 LoadHandGadget(HandGadgetState *hand) {
     do {
         moby = *ammo_moby_slot;
         previous_class = (moby != 0) ? (moby->oclass) : (-1);
-        requested_class = (slot_index < D_0013F450_255F8.ammo_capacity) ? (0x1DF) : (-1);
+        requested_class = (slot_index < g_hero_r.ammo_capacity) ? (0x1DF) : (-1);
         if (previous_class != requested_class) {
-            moby = func_002267C0_255F8(moby);
+            moby = delete_moby_r2(moby);
             if (requested_class != (-1)) {
-                moby = func_00226720_255F8(requested_class);
+                moby = create_menu_preview_moby_r3(requested_class);
                 velocity_offset = slot_index * 4;
-                *ammo_offset = (slot_index < D_0013F450_255F8.ammo_used) ? (0.0f) : (3.0f);
-                *(s32 *)((u8 *)D_001D6238_255F8 + velocity_offset) = 0;
+                *ammo_offset = (slot_index < g_hero_r.ammo_used) ? (0.0f) : (3.0f);
+                *(s32 *)((u8 *)ammo_preview_velocities_r + velocity_offset) = 0;
                 if (moby != 0) {
                     *((void **)moby->pvars) = hand;
                     (*(void **)&moby->update) = update_ammo_preview_transform;
@@ -8938,7 +8938,7 @@ void NullMobyUpdate_Gadget(void) {
 void attachment_update_callback(void) {
 }
 
-extern char D_001864D0_a[] __asm__("D_001864D0");
+extern char item_info_table_a[] __asm__("D_001864D0");
 extern int advance_moby_animation(void *);
 extern void MobyTransformScaledVertex(int, int, void *);
 extern void normalize_vector_triplet(void *);
@@ -8975,7 +8975,7 @@ typedef struct {
     char pad1C[0x30];
 } PauseClassRec;
 
-extern PauseClassRec D_001864D0_r[] __asm__("D_001864D0");
+extern PauseClassRec item_info_table_r_r[] __asm__("D_001864D0");
 extern void DetachManipulator(int, void *);
 extern void AttachManipulator(int, int, void *);
 
@@ -8998,14 +8998,14 @@ void update_menu_preview_class_pose(void *arg0) {
         MobyBlendAnimation(m, 1, 0, 0);
     }
     for (i = 0; i < 0x25; i++) {
-        if (D_001864D0_r[i].cls == m->oclass) {
+        if (item_info_table_r_r[i].cls == m->oclass) {
             break;
         }
     }
-    MobyTransformScaledVertex(id, D_001864D0_r[i].bone, mtx);
+    MobyTransformScaledVertex(id, item_info_table_r_r[i].bone, mtx);
     qcopy(m->pos, &mtx[12]);
     refresh_moby_spatial_bounds(m);
-    still = D_001864D0_r[i].still == 0;
+    still = item_info_table_r_r[i].still == 0;
     matrix_copy_rows(m->mtx, mtx);
     if (!still) {
         normalize_vector_triplet(m->mtx);
@@ -9018,7 +9018,7 @@ void update_menu_preview_class_pose(void *arg0) {
         DetachManipulator(id, s);
     }
     if (still) {
-        noop_callback_s(D_001864D0_a, item_info_table, m->sound, 0, id);
+        noop_callback_s(item_info_table_a, item_info_table, m->sound, 0, id);
         m->x68 = item_info_table;
         m->x54 = 0;
         m->x6C = item_info_table;
@@ -9049,9 +9049,9 @@ void update_menu_preview_animation_transform(PauseMoby *m) {
     normalize_vector_triplet(m->mtx);
     moby_anim_sphere_lerp(m);
     if (m->oclass == 0x1B1) {
-        noop_callback_s(D_001864D0_a, item_info_table, m->sound, 6, id);
+        noop_callback_s(item_info_table_a, item_info_table, m->sound, 6, id);
     } else {
-        noop_callback_s(D_001864D0_a, item_info_table, m->sound, 0, id);
+        noop_callback_s(item_info_table_a, item_info_table, m->sound, 0, id);
     }
     m->x50 = 0;
     m->x68 = item_info_table;
@@ -9108,15 +9108,15 @@ void update_menu_preview_pose_and_attachments(void *preview) {
         DetachManipulator(source_moby_address, first_attachment_manipulator);
     }
     if (!is_second_preview_moby) {
-        noop_callback_s(D_001864D0_a, item_info_table,
+        noop_callback_s(item_info_table_a, item_info_table,
                         moby->resource_address, 0, source_moby_address);
         moby->primary_binding = item_info_table;
         moby->secondary_binding = item_info_table;
     } else {
-        noop_callback_s(item_info_table, D_001864D0_a,
+        noop_callback_s(item_info_table, item_info_table_a,
                         moby->resource_address, 0, source_moby_address);
-        moby->primary_binding = D_001864D0_a;
-        moby->secondary_binding = D_001864D0_a;
+        moby->primary_binding = item_info_table_a;
+        moby->secondary_binding = item_info_table_a;
     }
     if (first_attachment_active) {
         AttachManipulator(source_moby_address, 0x17, second_attachment_manipulator);
@@ -9217,9 +9217,9 @@ extern void clear_u64_value(void *);
 extern f32 FastCos(f32);
 extern f32 FastSin(f32);
 extern f32 FastAddRots(f32, f32);
-extern f32 func_001FA7D8_26410(f32) __asm__("func_001FA7D8");
+extern f32 FastNormalizeAngle_r(f32) __asm__("func_001FA7D8");
 extern f32 IntToFloat(s32);
-extern void func_0020E3D0_26410(void *) __asm__("func_0020E3D0");
+extern void advance_moby_animation_r(void *) __asm__("func_0020E3D0");
 extern f32 ApproachWithVelocity(f32 *, f32 *, f32, f32, f32, f32);
 void update_ammo_preview_transform(struct AmmoPreviewMoby *moby);
 
@@ -9239,7 +9239,7 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
     f32 zero;
 
     source_moby = moby->preview_vars->owner->source_moby;
-    func_0020E3D0_26410(moby);
+    advance_moby_animation_r(moby);
     refresh_moby_spatial_bounds(moby);
     qcopy(moby->position, source_moby->position);
     basis = moby->basis;
@@ -9256,7 +9256,7 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
     phase_angle = ((phase * 6.28318f) / IntToFloat(6)) - 3.14159f;
     bob_angle = (((f32)(game_frame_counter % 170) / IntToFloat(170)) * 6.28318f) - 3.14159f;
     double_phase = (phase * 12.56636f) / IntToFloat(6);
-    func_001FA7D8_26410(double_phase);
+    FastNormalizeAngle_r(double_phase);
     zero = 0.0f;
     orbit_angle = FastAddRots(orbit_angle, phase_angle);
     bob_angle = FastAddRots(bob_angle, double_phase);
@@ -9285,7 +9285,7 @@ extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 extern void *CreateMoby(void);
 extern void pack_render_command_fields(void *, int, int, int, int);
 
-extern void *func_0020D348_c(int) __asm__("func_0020D348");
+extern void *CreateMoby_c(int) __asm__("func_0020D348");
 
 /* Spawns the pickup/marker object for slot arg0, unless the slot is
    disabled (0xFF in D_001B3E40). A fresh object gets 0xFF/0xFF/1 in the
@@ -9300,7 +9300,7 @@ void *create_menu_preview_moby(int arg0) {
     if (resident_class_slot_by_id[arg0] == 0xFF) {
         return 0;
     }
-    o = (char *)func_0020D348_c(arg0);
+    o = (char *)CreateMoby_c(arg0);
     if (o != 0) {
         *(unsigned char *)(o + 0x30) = 0xFF;
         *(short *)(o + 0x32) = 0xFF;
@@ -9351,9 +9351,9 @@ int HelperMobyMenu_Init(char *h) {
         *(char **)(h + 0x44) = m;
         *(short *)&((Moby *)m)->flags = 0;
         v = ((int *)((Moby *)m)->pvars);
-        ((Moby *)m)->pos.x = D_00187040_19C08.pos.f[0] + 2.2f;
-        ((Moby *)m)->pos.y = D_00187040_19C08.pos.f[1] + 0.0f;
-        ((Moby *)m)->pos.z = D_00187040_19C08.pos.f[2] + -1.6f;
+        ((Moby *)m)->pos.x = gCamera_r.pos.f[0] + 2.2f;
+        ((Moby *)m)->pos.y = gCamera_r.pos.f[1] + 0.0f;
+        ((Moby *)m)->pos.z = gCamera_r.pos.f[2] + -1.6f;
         *(void **)(m + 0x74) = (void *)NullMobyUpdate_Helper;
         ((Moby *)m)->rot.z = 3.1415927f;
         v[0] = (int)h;
@@ -9673,16 +9673,16 @@ int acquire_menu_stream_buffer(int invert) {
 
     for (i = 0; i < 5; i++) {
         if (invert != 0) {
-            f = D_001D6448_t[i].flags ^ 1;
+            f = menu_stream_buffers_t[i].flags ^ 1;
         } else {
-            f = D_001D6448_t[i].flags;
+            f = menu_stream_buffers_t[i].flags;
         }
-        if ((f & 1) == 0 && D_001D6448_t[i].key != 0 &&
-            (D_001D6448_t[i].flags & 2) == 0) {
-            D_001D6448_t[i].flags |= 2;
-            n = get_menu_stream_buffer_size(D_001D6448_t[i].key);
-            FastMemSet(D_001D6448_t[i].key, 0xDEADBEEF, n);
-            return D_001D6448_t[i].key;
+        if ((f & 1) == 0 && menu_stream_buffers_t[i].key != 0 &&
+            (menu_stream_buffers_t[i].flags & 2) == 0) {
+            menu_stream_buffers_t[i].flags |= 2;
+            n = get_menu_stream_buffer_size(menu_stream_buffers_t[i].key);
+            FastMemSet(menu_stream_buffers_t[i].key, 0xDEADBEEF, n);
+            return menu_stream_buffers_t[i].key;
         }
     }
     return 0;
@@ -9698,17 +9698,17 @@ int release_menu_stream_buffer(int key) {
     char *g;
 
     for (i = 0; i < 5; i++) {
-        if (D_001D6448_t[i].key == key) {
-            if ((D_001D6448_t[i].flags & 2) != 0) {
-                if ((D_001D6448_t[i].flags & 4) != 0) {
+        if (menu_stream_buffers_t[i].key == key) {
+            if ((menu_stream_buffers_t[i].flags & 2) != 0) {
+                if ((menu_stream_buffers_t[i].flags & 4) != 0) {
                     g = menu_system;
-                    D_001D6448_t[i].flags ^= 4;
+                    menu_stream_buffers_t[i].flags ^= 4;
                     if (*(unsigned char *)(g + 0xCB) != 0) {
                         request_audio_stream_break();
                         g[0xCB] = 0;
                     }
                 }
-                D_001D6448_t[i].flags &= ~2;
+                menu_stream_buffers_t[i].flags &= ~2;
                 return 0;
             }
         }
@@ -9773,7 +9773,7 @@ typedef struct {
     int unk00;
     int arg[13];
 } Rec38_q;
-extern Rec38_q D_001D6250_q[] __asm__("D_001D6250");
+extern Rec38_q preview_animation_requests_q[] __asm__("D_001D6250");
 typedef struct {
     u8 pad0[0x30];
     s32 items[3];
@@ -9789,9 +9789,9 @@ typedef struct {
     u8 padD0[0x7C];
     s32 streamed;
 } Pv_q;
-extern Pv_q D_001D5F70_q[] __asm__("D_001D5F70");
-extern struct Hdr16_1CE60 D_001517D0_q[] __asm__("D_001517D0");
-extern Rec38_q D_001D6410_q[] __asm__("D_001D6410");
+extern Pv_q menu_system_q[] __asm__("D_001D5F70");
+extern struct Hdr16_1CE60 cd_read_state_q[] __asm__("D_001517D0");
+extern Rec38_q current_preview_animation_request_q[] __asm__("D_001D6410");
 extern int preview_animation_request_count MACRO_ADDR;
 typedef struct {
     u8 pad0[0x48];
@@ -9804,7 +9804,7 @@ typedef struct {
         int b;
     } e[1];
 } Tbl_q;
-extern Tbl_q D_00137C80_q[] __asm__("D_00137C80");
+extern Tbl_q disc_table_q[] __asm__("D_00137C80");
 extern char *moby_class_resources[] NOT_SDA;
 extern void fast_decompress(int, int);
 extern int start_audio_stream_read(int, int, int);
@@ -9812,7 +9812,7 @@ extern void relocateObjectPointers(char *, int);
 extern int advance_preview_animation_queue(void);
 extern void load_preview_resource_bindings(s32, s32);
 extern void blend_moby_animation_ex(void *, int, int, int, int);
-extern void func_00213D28_q(void *, int, int) __asm__("func_00213D28");
+extern void MobySetAnimation_q(void *, int, int) __asm__("func_00213D28");
 extern void attachment_update_callback(void);
 
 int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char **o2) __asm__("func_00227100");
@@ -9830,99 +9830,99 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
     {
         if (*(unsigned char *)(moby + 0x70) & 2) {
             flagA = 1;
-            if (D_001D6410_q[0].arg[2] == 0 || --D_001D6410_q[0].arg[2] == 0) {
+            if (current_preview_animation_request_q[0].arg[2] == 0 || --current_preview_animation_request_q[0].arg[2] == 0) {
                 flagB = 1;
             }
         }
         {
-            if (D_001D5F70_q[0].pending != 0) {
-                if (D_001517D0_q[0].unk8 == 0) {
-                    int n = D_001D5F70_q[0].pending - 1;
-                    int *slot = D_001D5F70_q[0].buf + n;
+            if (menu_system_q[0].pending != 0) {
+                if (cd_read_state_q[0].unk8 == 0) {
+                    int n = menu_system_q[0].pending - 1;
+                    int *slot = menu_system_q[0].buf + n;
                     int buf = *slot;
-                    fast_decompress(buf + D_001D5F70_q[0].readOff, buf);
-                    D_001D5F70_q[0].readOff = 0;
+                    fast_decompress(buf + menu_system_q[0].readOff, buf);
+                    menu_system_q[0].readOff = 0;
                     clear_menu_stream_buffer_read_active(buf);
-                    D_001D5F70_q[0].loaded[n] = D_001D5F70_q[0].streamed;
-                    if (D_001D6250_q[0].arg[0] == D_001D5F70_q[0].streamed) {
-                        D_001D6250_q[0].unk00 = 2;
+                    menu_system_q[0].loaded[n] = menu_system_q[0].streamed;
+                    if (preview_animation_requests_q[0].arg[0] == menu_system_q[0].streamed) {
+                        preview_animation_requests_q[0].unk00 = 2;
                     }
-                    ((Cls_q *)moby_class_resources[0])->anim[D_001D5F70_q[0].streamed] = *slot;
-                    relocateObjectPointers(moby_class_resources[0], D_001D5F70_q[0].streamed);
-                    D_001D5F70_q[0].pending = 0;
+                    ((Cls_q *)moby_class_resources[0])->anim[menu_system_q[0].streamed] = *slot;
+                    relocateObjectPointers(moby_class_resources[0], menu_system_q[0].streamed);
+                    menu_system_q[0].pending = 0;
                 }
             }
         }
-        if (D_001D5F70_q[0].pending == 0 && D_001517D0_q[0].unk8 == 0 &&
-            preview_animation_request_count > 0 && D_001D6250_q[0].unk00 == 0) {
-            int idx = D_001D5F70_q[0].idx;
-            unsigned char *ld = D_001D5F70_q[0].loaded;
-            unsigned int want = D_001D6250_q[0].arg[0];
+        if (menu_system_q[0].pending == 0 && cd_read_state_q[0].unk8 == 0 &&
+            preview_animation_request_count > 0 && preview_animation_requests_q[0].unk00 == 0) {
+            int idx = menu_system_q[0].idx;
+            unsigned char *ld = menu_system_q[0].loaded;
+            unsigned int want = preview_animation_requests_q[0].arg[0];
             if (ld[idx] == want || ld[idx == 0] == want) {
-                D_001D6250_q[0].unk00 = 2;
-            } else if (want < D_001D5F70_q[0].base) {
-                D_001D6250_q[0].unk00 = 3;
+                preview_animation_requests_q[0].unk00 = 2;
+            } else if (want < menu_system_q[0].base) {
+                preview_animation_requests_q[0].unk00 = 3;
             } else {
-                int k = want - D_001D5F70_q[0].base;
-                int buf = D_001D5F70_q[0].buf[idx];
-                int sz = D_00137C80_q[0].e[k].b << 11;
+                int k = want - menu_system_q[0].base;
+                int buf = menu_system_q[0].buf[idx];
+                int sz = disc_table_q[0].e[k].b << 11;
                 int addr = buf + get_menu_stream_buffer_size(buf) - sz;
-                D_001D5F70_q[0].readOff = addr - buf;
-                if (start_audio_stream_read(addr, D_00137C80_q[0].e[k].a, D_00137C80_q[0].e[k].b) == 0) {
+                menu_system_q[0].readOff = addr - buf;
+                if (start_audio_stream_read(addr, disc_table_q[0].e[k].a, disc_table_q[0].e[k].b) == 0) {
                     raise_kernel_trap();
                 }
                 mark_menu_stream_buffer_read_active(buf);
-                D_001D5F70_q[0].pending = D_001D5F70_q[0].idx + 1;
-                ld[D_001D5F70_q[0].idx] = 0xFF;
-                D_001D6250_q[0].unk00 = 1;
-                D_001D5F70_q[0].streamed = D_001D6250_q[0].arg[0];
+                menu_system_q[0].pending = menu_system_q[0].idx + 1;
+                ld[menu_system_q[0].idx] = 0xFF;
+                preview_animation_requests_q[0].unk00 = 1;
+                menu_system_q[0].streamed = preview_animation_requests_q[0].arg[0];
             }
         }
-        if (preview_animation_request_count > 0 && (unsigned int)(D_001D6250_q[0].unk00 - 2) < 2) {
-            int item = D_001D6250_q[0].arg[3];
-            if (item != 0 && D_001D5F70_q[0].items[0] != item &&
-                D_001D5F70_q[0].items[2] != item && D_001D5F70_q[0].items[1] != item) {
+        if (preview_animation_request_count > 0 && (unsigned int)(preview_animation_requests_q[0].unk00 - 2) < 2) {
+            int item = preview_animation_requests_q[0].arg[3];
+            if (item != 0 && menu_system_q[0].items[0] != item &&
+                menu_system_q[0].items[2] != item && menu_system_q[0].items[1] != item) {
                 result = 0;
                 advance_preview_animation_queue();
-            } else if (D_001D6250_q[0].arg[1] == 0) {
+            } else if (preview_animation_requests_q[0].arg[1] == 0) {
                 result = 1;
-            } else if (D_001D6250_q[0].arg[1] == 1 && flagA != 0) {
+            } else if (preview_animation_requests_q[0].arg[1] == 1 && flagA != 0) {
                 result = 1;
-            } else if (D_001D6250_q[0].arg[1] == 2 && flagB != 0) {
+            } else if (preview_animation_requests_q[0].arg[1] == 2 && flagB != 0) {
                 result = 1;
-            } else if (D_001D6250_q[0].arg[1] == 3) {
+            } else if (preview_animation_requests_q[0].arg[1] == 3) {
                 result = 0;
                 advance_preview_animation_queue();
             }
         }
         if (result != 0) {
-            D_001D6410_q[0] = D_001D6250_q[0];
+            current_preview_animation_request_q[0] = preview_animation_requests_q[0];
             advance_preview_animation_queue();
             clear_preview_resource_bindings();
-            load_preview_resource_bindings(D_001D6410_q[0].arg[11], D_001D6410_q[0].arg[12]);
-            blend_moby_animation_ex(moby, D_001D6410_q[0].arg[0], 0, 10, 5);
-            if (D_001D6410_q[0].arg[0] == D_001D5F70_q[0].loaded[0]) {
-                D_001D5F70_q[0].idx = 1;
-            } else if (D_001D6410_q[0].arg[0] == D_001D5F70_q[0].loaded[1]) {
-                D_001D5F70_q[0].idx = 0;
+            load_preview_resource_bindings(current_preview_animation_request_q[0].arg[11], current_preview_animation_request_q[0].arg[12]);
+            blend_moby_animation_ex(moby, current_preview_animation_request_q[0].arg[0], 0, 10, 5);
+            if (current_preview_animation_request_q[0].arg[0] == menu_system_q[0].loaded[0]) {
+                menu_system_q[0].idx = 1;
+            } else if (current_preview_animation_request_q[0].arg[0] == menu_system_q[0].loaded[1]) {
+                menu_system_q[0].idx = 0;
             }
-            if (D_001864D0_1F238[D_001D6410_q[0].arg[3]].item_type == 2) {
+            if (item_info_table_r[current_preview_animation_request_q[0].arg[3]].item_type == 2) {
                 if (m2 != 0) {
-                    blend_moby_animation_ex(m2, D_001D6410_q[0].arg[4], 0, 10, 5);
+                    blend_moby_animation_ex(m2, current_preview_animation_request_q[0].arg[4], 0, 10, 5);
                 }
                 if (m1 != 0) {
-                    func_00213D28_q(m1, 1, 0);
+                    MobySetAnimation_q(m1, 1, 0);
                 }
             } else if (m1 != 0) {
-                blend_moby_animation_ex(m1, D_001D6410_q[0].arg[4], 0, 10, 5);
+                blend_moby_animation_ex(m1, current_preview_animation_request_q[0].arg[4], 0, 10, 5);
             }
             *o0 = (char *)delete_moby((int)*o0);
             *o1 = (char *)delete_moby((int)*o1);
             *o2 = (char *)delete_moby((int)*o2);
-            if (D_001D6410_q[0].arg[5] != -1) {
-                if ((*o0 = create_menu_preview_moby(D_001D6410_q[0].arg[5])) != 0) {
-                    func_00213D28_q(*o0, D_001D6410_q[0].arg[6], 0);
-                    MobyBlendAnimation(*o0, D_001D6410_q[0].arg[6], 0, 10);
+            if (current_preview_animation_request_q[0].arg[5] != -1) {
+                if ((*o0 = create_menu_preview_moby(current_preview_animation_request_q[0].arg[5])) != 0) {
+                    MobySetAnimation_q(*o0, current_preview_animation_request_q[0].arg[6], 0);
+                    MobyBlendAnimation(*o0, current_preview_animation_request_q[0].arg[6], 0, 10);
                     *(short *)(*o0 + 0x34) = 0;
                     p = *o0;
                     qcopy(p + 0x10, moby + 0x10);
@@ -9934,10 +9934,10 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
                     *(void **)(*o0 + 0x74) = attachment_update_callback;
                 }
             }
-            if (D_001D6410_q[0].arg[7] != -1) {
-                if ((*o1 = create_menu_preview_moby(D_001D6410_q[0].arg[7])) != 0) {
-                    func_00213D28_q(*o1, D_001D6410_q[0].arg[8], 0);
-                    MobyBlendAnimation(*o1, D_001D6410_q[0].arg[8], 0, 10);
+            if (current_preview_animation_request_q[0].arg[7] != -1) {
+                if ((*o1 = create_menu_preview_moby(current_preview_animation_request_q[0].arg[7])) != 0) {
+                    MobySetAnimation_q(*o1, current_preview_animation_request_q[0].arg[8], 0);
+                    MobyBlendAnimation(*o1, current_preview_animation_request_q[0].arg[8], 0, 10);
                     *(short *)(*o1 + 0x34) = 0;
                     p = *o1;
                     qcopy(p + 0x10, moby + 0x10);
@@ -9949,10 +9949,10 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
                     *(void **)(*o1 + 0x74) = attachment_update_callback;
                 }
             }
-            if (D_001D6410_q[0].arg[9] != -1) {
-                if ((*o2 = create_menu_preview_moby(D_001D6410_q[0].arg[9])) != 0) {
-                    func_00213D28_q(*o2, D_001D6410_q[0].arg[10], 0);
-                    MobyBlendAnimation(*o2, D_001D6410_q[0].arg[10], 0, 10);
+            if (current_preview_animation_request_q[0].arg[9] != -1) {
+                if ((*o2 = create_menu_preview_moby(current_preview_animation_request_q[0].arg[9])) != 0) {
+                    MobySetAnimation_q(*o2, current_preview_animation_request_q[0].arg[10], 0);
+                    MobyBlendAnimation(*o2, current_preview_animation_request_q[0].arg[10], 0, 10);
                     *(short *)(*o2 + 0x34) = 0;
                     p = *o2;
                     qcopy(p + 0x10, moby + 0x10);
@@ -10076,9 +10076,9 @@ typedef struct {
     s32 class_id;
     s32 animation_index;
 } PreviewResourceBinding;
-extern u8 D_001B3580_27A70[] __asm__("D_001B3580");
+extern u8 moby_class_resources_r3[] __asm__("D_001B3580");
 extern u8 resident_class_slot_by_id[];
-extern u8 D_001D5D58_27A70[] __asm__("D_001D5D58");
+extern u8 preview_resource_bindings_r[] __asm__("D_001D5D58");
 extern PreviewAnimationStreamState D_001D5F70_27A70 __asm__("D_001D5F70");
 void clear_preview_resource_bindings(void);
 
@@ -10097,8 +10097,8 @@ void clear_preview_resource_bindings(void) {
     resource_index = D_001D5F70_27A70.resource_first;
     if (resource_index < (resource_index + D_001D5F70_27A70.resource_count)) {
         u8 *class_slots = resident_class_slot_by_id;
-        u8 *class_resources = D_001B3580_27A70;
-        u8 *bindings = D_001D5D58_27A70;
+        u8 *class_resources = moby_class_resources_r3;
+        u8 *bindings = preview_resource_bindings_r;
 
         binding_base = bindings;
         binding = (PreviewResourceBinding *) ((resource_index * 8) + binding_base);
@@ -10117,13 +10117,13 @@ void clear_preview_resource_bindings(void) {
     D_001D5F70_27A70.resource_count = 0;
 }
 
-extern u8 D_001D60C8_27B00[] __asm__("D_001D60C8");
-extern u8 D_001B3E40_27B00[] __asm__("D_001B3E40") MACRO_ADDR;
-extern s32 func_00234350_27B00() __asm__("func_00234350");
-extern void func_00203B18_27B00() __asm__("func_00203B18");
-extern s32 func_0020C468_27B00() __asm__("func_0020C468");
-extern s32 func_00227018_27B00() __asm__("func_00227018");
-extern s32 func_00234238_27B00() __asm__("func_00234238");
+extern u8 preview_resource_ids_r[] __asm__("D_001D60C8");
+extern u8 resident_class_slot_by_id_r[] __asm__("D_001B3E40") MACRO_ADDR;
+extern s32 stash_get_reserved_qwords_r() __asm__("func_00234350");
+extern void relocateObjectPointers_r() __asm__("func_00203B18");
+extern s32 fast_decompress_r4() __asm__("func_0020C468");
+extern s32 get_menu_stream_buffer_size_r3() __asm__("func_00227018");
+extern s32 stash_receive_data_r2() __asm__("func_00234238");
 
 /* Streams each resource of the preview's bindings into its buffer (with two bindings the
    second goes to buffer 2), unpacks it and points the class's animation slot at it.
@@ -10152,10 +10152,10 @@ void load_preview_resource_bindings(s32 first_resource, s32 resource_count) {
     D_001D5F70_27A70.resource_count = count;
     if (resource_index < count) {
         resource_offset = first_resource * 4;
-        binding = ((PreviewResourceBinding *)D_001D5D58_27A70) + first_resource;
+        binding = ((PreviewResourceBinding *)preview_resource_bindings_r) + first_resource;
         do {
             buffer_skip = 0;
-            class_slot = D_001B3E40_27B00[binding->class_id];
+            class_slot = resident_class_slot_by_id_r[binding->class_id];
             animation_index = binding->animation_index;
             if (count == 2) {
                 if (resource_index == 1) {
@@ -10165,24 +10165,24 @@ void load_preview_resource_bindings(s32 first_resource, s32 resource_count) {
                 }
             }
             binding += 1;
-            resource_id = *((s32 *)(D_001D60C8_27B00 + resource_offset));
+            resource_id = *((s32 *)(preview_resource_ids_r + resource_offset));
             resource_offset += 4;
-            compressed_size = func_00234350_27B00(resource_id) * 0x10;
+            compressed_size = stash_get_reserved_qwords_r(resource_id) * 0x10;
             buffer_offset = (resource_index + buffer_skip) * 4;
             resource_index += 1;
             buffer_address = *((s32 *)((u8 *)D_001D5F70_27A70.resource_buffer_address +
                                        buffer_offset));
             read_address =
-                (buffer_address + func_00227018_27B00(buffer_address)) - compressed_size;
-            func_00234238_27B00(read_address, resource_id, 0, -1, 0);
-            func_0020C468_27B00(read_address, buffer_address);
+                (buffer_address + get_menu_stream_buffer_size_r3(buffer_address)) - compressed_size;
+            stash_receive_data_r2(read_address, resource_id, 0, -1, 0);
+            fast_decompress_r4(read_address, buffer_address);
             {
                 s32 animation_offset = animation_index * 4;
-                class_resource_slot = (s32 *)((class_slot * 4) + D_001B3580_27A70);
+                class_resource_slot = (s32 *)((class_slot * 4) + moby_class_resources_r3);
                 *((s32 *)(((u8 *)((*class_resource_slot) + animation_offset)) + 0x48)) =
                     buffer_address;
             }
-            func_00203B18_27B00(*class_resource_slot, animation_index);
+            relocateObjectPointers_r(*class_resource_slot, animation_index);
         } while (resource_index < count);
     }
 }
@@ -10263,26 +10263,26 @@ typedef struct {
     s32 unkF4;
 } Checkpoints_27DB0;
 
-extern Checkpoints_27DB0 D_0013D390_27DB0 __asm__("D_0013D390");
-extern u8 D_0013D490_27DB0[] __asm__("D_0013D490");
-extern s32 D_0013D530_27DB0[] __asm__("D_0013D530");
-extern u8 D_0013E620_27DB0[] __asm__("D_0013E620");
-extern u8 D_0014BFC0_27DB0[] __asm__("D_0014BFC0");
-extern s32 D_00141FA0_27DB0[] __asm__("D_00141FA0");
-extern u8 D_0015EED0_27DB0[] __asm__("D_0015EED0") MACRO_ADDR;
-extern s32 D_0015EEA0_27DB0 __asm__("D_0015EEA0") MACRO_ADDR;
-extern u8 D_0015EEB0_27DB0[] __asm__("D_0015EEB0") MACRO_ADDR;
-extern u8 D_0015EEC0_27DB0[] __asm__("D_0015EEC0") MACRO_ADDR;
-extern s32 D_0015EE98_27DB0 __asm__("D_0015EE98") MACRO_ADDR;
-extern u8 D_0015EF1C_27DB0[] __asm__("D_0015EF1C") MACRO_ADDR;
-extern u8 D_0015EF1D_27DB0[] __asm__("D_0015EF1D") MACRO_ADDR;
+extern Checkpoints_27DB0 memory_card_state_r5 __asm__("D_0013D390");
+extern u8 gSpecialItems_r[] __asm__("D_0013D490");
+extern s32 weapon_ammo_counts_r[] __asm__("D_0013D530");
+extern u8 gold_weapon_purchased_r[] __asm__("D_0013E620");
+extern u8 gold_bolts_collected_r[] __asm__("D_0014BFC0");
+extern s32 pause_iop_sprite_lists_r[] __asm__("D_00141FA0");
+extern u8 vendor_stock_r[] __asm__("D_0015EED0") MACRO_ADDR;
+extern s32 hero_max_health_r __asm__("D_0015EEA0") MACRO_ADDR;
+extern u8 gCheats_r[] __asm__("D_0015EEB0") MACRO_ADDR;
+extern u8 selector_available_r[] __asm__("D_0015EEC0") MACRO_ADDR;
+extern s32 gBolts_r __asm__("D_0015EE98") MACRO_ADDR;
+extern u8 gHelpDeskVoice_r[] __asm__("D_0015EF1C") MACRO_ADDR;
+extern u8 gHelpDeskText_r[] __asm__("D_0015EF1D") MACRO_ADDR;
 extern s32 D_0015EF20_27DB0 __asm__("D_0015EF20") MACRO_ADDR;
-extern u8 D_0015EF98_27DB0[] __asm__("D_0015EF98") MACRO_ADDR;
-extern s32 D_001D5F20_27DB0[] __asm__("D_001D5F20");
+extern u8 save_clock_time_r[] __asm__("D_0015EF98") MACRO_ADDR;
+extern s32 preserved_item_available_indices_r[] __asm__("D_001D5F20");
 
-extern void func_001F9A00_27DB0(void *dst, void *src, s32 size) __asm__("func_001F9A00");
-extern void func_00209DC0_27DB0(void) __asm__("func_00209DC0");
-extern void func_0020BA00_27DB0(s32) __asm__("func_0020BA00");
+extern void copy_memory_aligned_r(void *dst, void *src, s32 size) __asm__("func_001F9A00");
+extern void load_and_initialize_level_chunk_r(void) __asm__("func_00209DC0");
+extern void memcard_MakeWholeSave_r(s32) __asm__("func_0020BA00");
 extern s32 func_00121A80_27DB0(u8 *clock) __asm__("func_00121A80");
 extern void func_0012D818_27DB0(u8 *clock) __asm__("func_0012D818");
 
@@ -10302,58 +10302,58 @@ void load_level_zero_preserving_progress(s32 slot) {
     s32 i;
     s32 j;
 
-    func_001F9A00_27DB0((void *)0x70000000, D_0013E620_27DB0, 0x28);
-    func_001F9A00_27DB0((void *)0x70000030, D_0013D5C8_1E950, 0x25);
-    func_001F9A00_27DB0((void *)0x70000060, D_0013D530_27DB0, 0x94);
-    func_001F9A00_27DB0((void *)0x70000100, D_0014BFC0_27DB0, 0x50);
-    func_001F9A00_27DB0((void *)0x70000150, D_00141FA0_27DB0, 0x20);
-    func_001F9A00_27DB0((void *)0x70000170, D_0015EED0_27DB0, 0xC);
-    func_001F9A00_27DB0((void *)0x70000180, D_0013D510_20DF0, 0x20);
-    func_001F9A00_27DB0((void *)0x700001A0, D_0015EEB0_27DB0, 0xC);
-    func_001F9A00_27DB0((void *)0x700001B0, D_0015EEC0_27DB0, 0xC);
-    saved = D_0015EE98_27DB0;
+    copy_memory_aligned_r((void *)0x70000000, gold_weapon_purchased_r, 0x28);
+    copy_memory_aligned_r((void *)0x70000030, item_available_r, 0x25);
+    copy_memory_aligned_r((void *)0x70000060, weapon_ammo_counts_r, 0x94);
+    copy_memory_aligned_r((void *)0x70000100, gold_bolts_collected_r, 0x50);
+    copy_memory_aligned_r((void *)0x70000150, pause_iop_sprite_lists_r, 0x20);
+    copy_memory_aligned_r((void *)0x70000170, vendor_stock_r, 0xC);
+    copy_memory_aligned_r((void *)0x70000180, gSkillPoints_r, 0x20);
+    copy_memory_aligned_r((void *)0x700001A0, gCheats_r, 0xC);
+    copy_memory_aligned_r((void *)0x700001B0, selector_available_r, 0xC);
+    saved = gBolts_r;
     count = D_0015EF20_27DB0;
-    flag4 = D_0013D490_27DB0[4] != 0;
-    flag5 = D_0013D490_27DB0[5] != 0;
+    flag4 = gSpecialItems_r[4] != 0;
+    flag5 = gSpecialItems_r[5] != 0;
     bytes = (u8 *)0x70000030;
-    func_00209DC0_27DB0();
-    func_001F9A00_27DB0(D_0013E620_27DB0, (void *)0x70000000, 0x28);
-    for (j = 0; D_001D5F20_27DB0[j] != -1; j++) {
-        D_0013D5C8_1E950[D_001D5F20_27DB0[j]] = bytes[D_001D5F20_27DB0[j]];
+    load_and_initialize_level_chunk_r();
+    copy_memory_aligned_r(gold_weapon_purchased_r, (void *)0x70000000, 0x28);
+    for (j = 0; preserved_item_available_indices_r[j] != -1; j++) {
+        item_available_r[preserved_item_available_indices_r[j]] = bytes[preserved_item_available_indices_r[j]];
     }
-    func_001F9A00_27DB0(D_0013D530_27DB0, (void *)0x70000060, 0x94);
-    func_001F9A00_27DB0(D_0014BFC0_27DB0, (void *)0x70000100, 0x50);
+    copy_memory_aligned_r(weapon_ammo_counts_r, (void *)0x70000060, 0x94);
+    copy_memory_aligned_r(gold_bolts_collected_r, (void *)0x70000100, 0x50);
     for (i = 0; i < 8; i++) {
         s32 item = items[i];
-        D_00141FA0_27DB0[i] = D_0013D5C8_1E950[item] ? item : 0;
+        pause_iop_sprite_lists_r[i] = item_available_r[item] ? item : 0;
     }
-    func_001F9A00_27DB0(D_0015EED0_27DB0, (void *)0x70000170, 0xC);
-    func_001F9A00_27DB0(D_0013D510_20DF0, (void *)0x70000180, 0x20);
-    func_001F9A00_27DB0(D_0015EEB0_27DB0, (void *)0x700001A0, 0xC);
-    func_001F9A00_27DB0(D_0015EEC0_27DB0, (void *)0x700001B0, 0xC);
-    D_0015EE98_27DB0 = saved;
+    copy_memory_aligned_r(vendor_stock_r, (void *)0x70000170, 0xC);
+    copy_memory_aligned_r(gSkillPoints_r, (void *)0x70000180, 0x20);
+    copy_memory_aligned_r(gCheats_r, (void *)0x700001A0, 0xC);
+    copy_memory_aligned_r(selector_available_r, (void *)0x700001B0, 0xC);
+    gBolts_r = saved;
     if (flag4) {
-        D_0013D490_27DB0[4] = 1;
-        D_0015EEA0_27DB0 = 5;
+        gSpecialItems_r[4] = 1;
+        hero_max_health_r = 5;
     }
     if (flag5) {
-        D_0013D490_27DB0[5] = 1;
-        D_0015EEA0_27DB0 = 8;
+        gSpecialItems_r[5] = 1;
+        hero_max_health_r = 8;
     }
     D_0015EF20_27DB0 = count + 1;
-    D_0015EF1C_27DB0[0] = 0;
-    D_0015EF1D_27DB0[0] = 0;
-    func_00121A80_27DB0(D_0015EF98_27DB0);
-    func_0012D818_27DB0(D_0015EF98_27DB0);
+    gHelpDeskVoice_r[0] = 0;
+    gHelpDeskText_r[0] = 0;
+    func_00121A80_27DB0(save_clock_time_r);
+    func_0012D818_27DB0(save_clock_time_r);
     if (slot >= 0) {
-        D_0013D390_27DB0.slot = slot;
-        D_0013D390_27DB0.entries[slot].unk0 = 0;
-        func_0020BA00_27DB0(D_001D5F70_27DB0.unkE0);
-        D_0013D390_27DB0.unkF4 = D_001D5F70_27DB0.unkE0;
-        D_0013D390_27DB0.unkC8 = 0;
-        if (D_0013D390_27DB0.unkE4 < 0) {
-            D_0013D390_27DB0.unkE8 = 0;
-            D_0013D390_27DB0.unkE4 = 0x13;
+        memory_card_state_r5.slot = slot;
+        memory_card_state_r5.entries[slot].unk0 = 0;
+        memcard_MakeWholeSave_r(D_001D5F70_27DB0.unkE0);
+        memory_card_state_r5.unkF4 = D_001D5F70_27DB0.unkE0;
+        memory_card_state_r5.unkC8 = 0;
+        if (memory_card_state_r5.unkE4 < 0) {
+            memory_card_state_r5.unkE8 = 0;
+            memory_card_state_r5.unkE4 = 0x13;
         }
     }
 }
@@ -10417,7 +10417,7 @@ void update_skill_point_and_gold_weapon_menu_entries(void) {
         *(int *)(h + 0x1C) = c ? 0x4FD7 : 0x4FDB;
         *(int *)(h + 0x20) = c ? 0x4FD8 : 0x4FDB;
     }
-    if (D_0015EF90_m != 0) {
+    if (pause_action_list_mode_m != 0) {
         char *g = reward_menu_items;
         *(short *)(g + 0x60) = 0;
     }
@@ -10438,11 +10438,11 @@ void clear_scene_state_buffers(void) {
 LINKER_REMNANT("asm/remnants/text", func_002282B8);
 
 extern float direction_unit[] MACRO_ADDR;
-extern float D_00160470_x __asm__("D_00160470");
+extern float direction_unit_x __asm__("D_00160470");
 extern float D_00160474;
 extern float D_00160478;
 extern float direction_perpendicular[] MACRO_ADDR;
-extern float D_00160480_x __asm__("D_00160480") MACRO_ADDR;
+extern float direction_perpendicular_x __asm__("D_00160480") MACRO_ADDR;
 extern float D_00160484;
 extern float D_00160488;
 extern float direction_scaled;
@@ -10461,8 +10461,8 @@ typedef struct {
 typedef u32 u128_282D0 __attribute__((mode(TI), aligned(16)));
 extern f32 direction_unit[] MACRO_ADDR;
 extern f32 direction_perpendicular[] MACRO_ADDR;
-extern f32 D_00160490_282D0[] __asm__("D_00160490") MACRO_ADDR;
-extern void func_001F9DC0_282D0(f32 *, f32 *, f32) __asm__("func_001F9DC0");
+extern f32 direction_scaled_r[] __asm__("D_00160490") MACRO_ADDR;
+extern void fast_vec_normalize_r(f32 *, f32 *, f32) __asm__("func_001F9DC0");
 typedef union {
     u128_282D0 q;
     f32 v[4];
@@ -10474,10 +10474,10 @@ void prepare_scaled_direction_and_perpendicular(PauseVec_282D0 *dir, f32 scale) 
     f32 *v = d.v;
 
     d.q = dir->q;
-    func_001F9DC0_282D0(direction_unit, v, 1.0f);
-    D_00160490_282D0[0] = direction_unit[0] * scale;
-    D_00160490_282D0[1] = direction_unit[1] * scale;
-    D_00160490_282D0[2] = direction_unit[2] * scale;
+    fast_vec_normalize_r(direction_unit, v, 1.0f);
+    direction_scaled_r[0] = direction_unit[0] * scale;
+    direction_scaled_r[1] = direction_unit[1] * scale;
+    direction_scaled_r[2] = direction_unit[2] * scale;
     if (v[0] < v[1]) {
         if (v[0] < v[2]) {
             direction_perpendicular[0] = v[0];
@@ -10498,7 +10498,7 @@ void prepare_scaled_direction_and_perpendicular(PauseVec_282D0 *dir, f32 scale) 
         direction_perpendicular[2] = v[2];
     }
     FastVecCross(direction_perpendicular, direction_perpendicular, direction_unit);
-    func_001F9DC0_282D0(direction_perpendicular, direction_perpendicular, 1.0f);
+    fast_vec_normalize_r(direction_perpendicular, direction_perpendicular, 1.0f);
 }
 
 /*
@@ -10554,9 +10554,9 @@ struct DisplayDims_284E8 {
     s16 display_width; /* 0x150 */
     s16 display_height; /* 0x152 */
 };
-extern struct DisplayDims_284E8 D_00151880_284E8 __asm__("D_00151880");
-extern s32 *D_00161000_284E8 __asm__("D_00161000") MACRO_ADDR;
-extern void func_00234C98_284E8(s32, s64) __asm__("func_00234C98");
+extern struct DisplayDims_284E8 fs_aa_buffer_r __asm__("D_00151880");
+extern s32 *g_render_packet_cursor_r __asm__("D_00161000") MACRO_ADDR;
+extern void VU1_addGSregister_r5(s32, s64) __asm__("func_00234C98");
 
 /* Appends a DMA packet drawing 32-pixel-wide sprite strips over the screen in a fixed grey (0x7F808080). */
 void append_fullscreen_setup_strips(void) {
@@ -10579,20 +10579,20 @@ void append_fullscreen_setup_strips(void) {
     s64 first;
     s64 second;
 
-    dimensions = &D_00151880_284E8;
+    dimensions = &fs_aa_buffer_r;
     display_width = dimensions->display_width;
     display_height = dimensions->display_height;
     dividend = (display_width > -1) ? display_width : (display_width + 0x1F);
     strip_count = dividend >> 5;
-    func_00234C98_284E8(0x42, 0x64);
+    VU1_addGSregister_r5(0x42, 0x64);
     strip_index = 0;
-    D_00161000_284E8[0] = (strip_count + 5) | 0x10000000;
-    D_00161000_284E8[1] = 0;
-    D_00161000_284E8[2] = 0;
-    D_00161000_284E8[3] = (strip_count + 5) | 0x50000000;
-    base = D_00161000_284E8;
+    g_render_packet_cursor_r[0] = (strip_count + 5) | 0x10000000;
+    g_render_packet_cursor_r[1] = 0;
+    g_render_packet_cursor_r[2] = 0;
+    g_render_packet_cursor_r[3] = (strip_count + 5) | 0x50000000;
+    base = g_render_packet_cursor_r;
     commands = (s64 *)(base + 4);
-    D_00161000_284E8 = (s32 *)commands;
+    g_render_packet_cursor_r = (s32 *)commands;
     ((s64 *)base)[2] = 0x1000000000000001;
     commands[1] = 0xE;
     commands[2] = 0x31001;
@@ -10624,7 +10624,7 @@ void append_fullscreen_setup_strips(void) {
             vertices++;
         } while (strip_index < strip_count);
     }
-    D_00161000_284E8 = (s32 *)((u8 *)D_00161000_284E8 + (strip_count * 0x10 + 0x50));
+    g_render_packet_cursor_r = (s32 *)((u8 *)g_render_packet_cursor_r + (strip_count * 0x10 + 0x50));
 }
 
 /* The display mode block: only the two sizes this function reads. */
@@ -10633,8 +10633,8 @@ struct DisplayDims_28690 {
     s16 display_width; /* 0x150 */
     s16 display_height; /* 0x152 */
 };
-extern struct DisplayDims_28690 D_00151880_28690 __asm__("D_00151880");
-extern s32 *D_00161000_28690 __asm__("D_00161000") MACRO_ADDR;
+extern struct DisplayDims_28690 fs_aa_buffer_r2 __asm__("D_00151880");
+extern s32 *g_render_packet_cursor_r2 __asm__("D_00161000") MACRO_ADDR;
 
 /* Appends a DMA packet that clears the screen in 32-pixel-wide sprite strips of the given colour.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00227378.c, append_fullscreen_clear_strips. */
@@ -10658,20 +10658,20 @@ void append_fullscreen_clear_strips(s64 color) {
     s64 first;
     s64 second;
 
-    dimensions = &D_00151880_28690;
+    dimensions = &fs_aa_buffer_r2;
     display_width = dimensions->display_width;
     display_height = dimensions->display_height;
     /* Retail truncates signed display width toward zero before packing strips. */
     dividend = (display_width > -1) ? display_width : (display_width + 0x1F);
     strip_count = dividend >> 5;
     strip_index = 0;
-    D_00161000_28690[0] = (strip_count + 5) | 0x10000000;
-    D_00161000_28690[1] = 0;
-    D_00161000_28690[2] = 0;
-    D_00161000_28690[3] = (strip_count + 5) | 0x50000000;
-    base = D_00161000_28690;
+    g_render_packet_cursor_r2[0] = (strip_count + 5) | 0x10000000;
+    g_render_packet_cursor_r2[1] = 0;
+    g_render_packet_cursor_r2[2] = 0;
+    g_render_packet_cursor_r2[3] = (strip_count + 5) | 0x50000000;
+    base = g_render_packet_cursor_r2;
     commands = (s64 *)(base + 4);
-    D_00161000_28690 = (s32 *)commands;
+    g_render_packet_cursor_r2 = (s32 *)commands;
     ((s64 *)base)[2] = 0x1000000000000001;
     commands[1] = 0xE;
     commands[2] = 0x3D801;
@@ -10703,12 +10703,12 @@ void append_fullscreen_clear_strips(s64 color) {
             vertices++;
         } while (strip_index < strip_count);
     }
-    D_00161000_28690 = (s32 *)((u8 *)D_00161000_28690 + (strip_count * 0x10 + 0x50));
-    D_00161000_28690[0] = 0x10000000;
-    D_00161000_28690[1] = 0;
-    D_00161000_28690[2] = 0x13000000;
-    D_00161000_28690[3] = 0;
-    D_00161000_28690 += 4;
+    g_render_packet_cursor_r2 = (s32 *)((u8 *)g_render_packet_cursor_r2 + (strip_count * 0x10 + 0x50));
+    g_render_packet_cursor_r2[0] = 0x10000000;
+    g_render_packet_cursor_r2[1] = 0;
+    g_render_packet_cursor_r2[2] = 0x13000000;
+    g_render_packet_cursor_r2[3] = 0;
+    g_render_packet_cursor_r2 += 4;
 }
 __asm__(".section .text\n\tnop\n");
 
@@ -10720,17 +10720,17 @@ struct GraphicsSetupRecord {
     f32 first_depth;
     u128 direction;
 };
-extern u8 * D_00161000_28860 __asm__("D_00161000") MACRO_ADDR;
+extern u8 * g_render_packet_cursor_r3 __asm__("D_00161000") MACRO_ADDR;
 struct VideoModeState {
     s32 v;
 };
-extern struct VideoModeState D_0015EE80_28860 __asm__("D_0015EE80") MACRO_ADDR;
+extern struct VideoModeState pal_mode_r3 __asm__("D_0015EE80") MACRO_ADDR;
 extern u8 pal_graphics_setup_packet[];
 extern u8 ntsc_graphics_setup_packet[];
 extern s32 graphics_setup_word MACRO_ADDR;
 extern void append_fullscreen_setup_strips(void);
-extern void func_002282D0_28860(f32 *, f32) __asm__("func_002282D0");
-extern u8 *func_00228400_28860(u8 *) __asm__("func_00228400");
+extern void prepare_scaled_direction_and_perpendicular_r(f32 *, f32) __asm__("func_002282D0");
+extern u8 *parse_typed_resource_record_r(u8 *) __asm__("func_00228400");
 extern void stretch_scratchpad_segments_to_depths(f32 *, f32 *);
 extern void func_00228D20(u32, s32, s32);
 extern void emit_selected_graphics_dma_packets(s32, s32, s32);
@@ -10747,22 +10747,22 @@ void submit_graphics_setup_command_stream(u8 *command_stream) {
 
     append_fullscreen_setup_strips();
     record = (struct GraphicsSetupRecord *)command_stream;
-    *(u32 *)(D_00161000_28860 + 0) = 0x30000007;
-    *(u32 *)(D_00161000_28860 + 4) =
-        (u32)(D_0015EE80_28860.v != 0 ? pal_graphics_setup_packet : ntsc_graphics_setup_packet);
-    *(u32 *)(D_00161000_28860 + 8) = 0x13000000;
-    *(u32 *)(D_00161000_28860 + 12) = 0x50000007;
+    *(u32 *)(g_render_packet_cursor_r3 + 0) = 0x30000007;
+    *(u32 *)(g_render_packet_cursor_r3 + 4) =
+        (u32)(pal_mode_r3.v != 0 ? pal_graphics_setup_packet : ntsc_graphics_setup_packet);
+    *(u32 *)(g_render_packet_cursor_r3 + 8) = 0x13000000;
+    *(u32 *)(g_render_packet_cursor_r3 + 12) = 0x50000007;
     /* Remaining vector components are filled from each setup record. */
     second_vector[1] = first_vector[1] = second_vector[0] = first_vector[0] = 0.0f;
-    D_00161000_28860 += 16;
+    g_render_packet_cursor_r3 += 16;
     while (record->command_count != 0) {
         command_stream += 0x20;
         *(u128 *)direction = record->direction;
-        func_002282D0_28860(direction, 1000.0f);
+        prepare_scaled_direction_and_perpendicular_r(direction, 1000.0f);
         first_vector[2] = record->first_depth;
         second_vector[2] = record->second_depth;
         for (command_index = 0; command_index < record->command_count; command_index++) {
-            command_stream = func_00228400_28860(command_stream);
+            command_stream = parse_typed_resource_record_r(command_stream);
             stretch_scratchpad_segments_to_depths(first_vector, second_vector);
             func_00228D20(0x70000000, graphics_setup_word, record->command_flags);
             emit_selected_graphics_dma_packets(2, 1, 2);
@@ -10770,7 +10770,7 @@ void submit_graphics_setup_command_stream(u8 *command_stream) {
         }
         record = (struct GraphicsSetupRecord *)command_stream;
     }
-    if (D_0015EE80_28860.v) {
+    if (pal_mode_r3.v) {
         func_00234C98_28860(0x4C, 0x80080);
     } else {
         func_00234C98_28860(0x4C, 0x80070);

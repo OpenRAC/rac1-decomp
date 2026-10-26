@@ -73,13 +73,13 @@ int play_voice(int a, int b, int c, int d) {
 extern char voice_pool[];
 
 extern unsigned char grouped_voice_level_rows[];
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int grouped_voice_definition_base_index MACRO_ADDR;
 
 /* Starts a sound bank entry chosen by (a0, a1, a2) offset from a
    level-specific table row, the same shape as func_0022EE28. */
 int request_grouped_voice(int a0, int a1, int a2, int a3, int a4) {
-    int idx = grouped_voice_level_rows[D_0015EE84_m] + a0 * 4 + a1 * 2 + a2 + grouped_voice_definition_base_index;
+    int idx = grouped_voice_level_rows[g_current_level_index_m] + a0 * 4 + a1 * 2 + a2 + grouped_voice_definition_base_index;
     int h;
 
     if (idx >= level_sound_slot_count) {
@@ -195,7 +195,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
         if (*(short *)(d + 0xC) != 0) {
             int r = try_set_help_message(2, 0x53E9) != 0;
             if ((*(int *)(D_0013A5E0 + 0x2604) & 0x10) && r) {
-                if (D_0015EE84_m == 10 && *(unsigned char *)(D_0013E633 + 0x2EC1) == 1) {
+                if (g_current_level_index_m == 10 && *(unsigned char *)(D_0013E633 + 0x2EC1) == 1) {
                     ((Moby *)m)->state = 0x2A;
                     ((Moby *)m)->flags |= 0x41;
                     StartCutscene(9);

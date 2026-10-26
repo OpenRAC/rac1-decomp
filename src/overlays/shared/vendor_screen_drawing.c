@@ -344,57 +344,57 @@ typedef struct {
     s32 size;
 } A02b0_disc_2A1540;
 
-extern s32 D_L00_0015F6BC_2A1540 __asm__("D_L00_0015F6BC") MACRO_ADDR;
-extern char D_L00_001CA7C0_2A1540[] __asm__("D_L00_001CA7C0");
-extern s32 D_L00_0015F4F4_2A1540 __asm__("D_L00_0015F4F4") MACRO_ADDR;
-extern s32 D_L00_0015F4F8_2A1540 __asm__("D_L00_0015F4F8") MACRO_ADDR;
-extern s32 D_L00_0016128C_2A1540 __asm__("D_L00_0016128C") MACRO_ADDR;
-extern s32 D_L00_0016124C_2A1540 __asm__("D_L00_0016124C") MACRO_ADDR;
-extern s32 D_L00_00161F34_2A1540 __asm__("D_L00_00161F34") MACRO_ADDR;
-extern s16 D_001517D8_2A1540[] __asm__("D_001517D8");
-extern u32 D_0013E604_2A1540[] __asm__("D_0013E604");
-extern u32 D_0015EF84_2A1540 __asm__("D_0015EF84") MACRO_ADDR;
-extern char D_00137C80_2A1540[] __asm__("D_00137C80");
-extern u128_2A1540 D_L00_00166ED0_2A1540[] __asm__("D_L00_00166ED0");
-extern u128_2A1540 D_L00_00166080_2A1540[] __asm__("D_L00_00166080");
+extern s32 skip_frame_r __asm__("D_L00_0015F6BC") MACRO_ADDR;
+extern char vendor_menu_r[] __asm__("D_L00_001CA7C0");
+extern s32 debug_profiler_color_r __asm__("D_L00_0015F4F4") MACRO_ADDR;
+extern s32 rendered_frame_count_r __asm__("D_L00_0015F4F8") MACRO_ADDR;
+extern s32 lvl_vu_chain_buffer_size_r __asm__("D_L00_0016128C") MACRO_ADDR;
+extern s32 vendor_auxiliary_moby_load_pending_r __asm__("D_L00_0016124C") MACRO_ADDR;
+extern s32 vendor_selection_changed_r __asm__("D_L00_00161F34") MACRO_ADDR;
+extern s16 cd_read_active_r[] __asm__("D_001517D8");
+extern u32 frame_size_r[] __asm__("D_0013E604");
+extern u32 draw_buffer_address_r __asm__("D_0015EF84") MACRO_ADDR;
+extern char disc_table_r[] __asm__("D_00137C80");
+extern u128_2A1540 camera_rotation_r[] __asm__("D_L00_00166ED0");
+extern u128_2A1540 vendor_saved_camera_basis_r[] __asm__("D_L00_00166080");
 extern u128_2A1540 D_L00_001670E0_2A1540[] __asm__("D_L00_001670E0");
 extern u128_2A1540 D_L00_001670F0_2A1540[] __asm__("D_L00_001670F0");
-extern u128_2A1540 D_L00_001670D0_2A1540[] __asm__("D_L00_001670D0");
-extern char D_L00_00166D80_2A1540[] __asm__("D_L00_00166D80");
-extern A02b0_tab_2A1540 D_L00_001C92F0_2A1540[] __asm__("D_L00_001C92F0");
+extern u128_2A1540 player_camera_matrix_r[] __asm__("D_L00_001670D0");
+extern char player_camera_r[] __asm__("D_L00_00166D80");
+extern A02b0_tab_2A1540 vendor_item_slot2_placement_r[] __asm__("D_L00_001C92F0");
 
-extern void func_001FB530_2A1540(void) __asm__("func_001FB530");
-extern void func_001F3D78_2A1540(void) __asm__("func_001F3D78");
-extern void func_00234AC8_2A1540(s32) __asm__("func_00234AC8");
+extern void append_gif_transfer_packet_r(void) __asm__("func_001FB530");
+extern void DrawDebugProfiler_r(void) __asm__("func_001F3D78");
+extern void VU1_syncChain_r(s32) __asm__("func_00234AC8");
 extern s32 func_00122598_2A1540(s32) __asm__("func_00122598");
-extern void func_002349B8_2A1540(void) __asm__("func_002349B8");
-extern void func_00234948_2A1540(void) __asm__("func_00234948");
-extern void func_L00_001F9D40_2A1540(s32) __asm__("func_L00_001F9D40");
-extern void func_001F2608_2A1540(void) __asm__("func_001F2608");
-extern void func_001F9CA0_2A1540(void *, void *, void *) __asm__("func_001F9CA0");
-extern void func_0020D440_2A1540(void *, s32) __asm__("func_0020D440");
-extern void func_L00_00251E30_2A1540(void *) __asm__("func_L00_00251E30");
-extern void func_0020E340_2A1540(void *, s32, s32, s32, s32) __asm__("func_0020E340");
-extern void func_L00_0029C9E8_2A1540(void) __asm__("func_L00_0029C9E8");
-extern void func_001F99D8_2A1540(void *, s32) __asm__("func_001F99D8");
-extern s32 func_00217628_2A1540(void *, s32, s32) __asm__("func_00217628");
-extern void func_L00_002A2258_2A1540(s32, u32, u32) __asm__("func_L00_002A2258");
-extern void func_001F4630_2A1540(s32) __asm__("func_001F4630");
-extern void func_001F3C10_2A1540(void) __asm__("func_001F3C10");
-extern void func_0020E0C8_2A1540(void) __asm__("func_0020E0C8");
-extern void func_0020E040_2A1540(void) __asm__("func_0020E040");
-extern void func_0020E068_2A1540(void) __asm__("func_0020E068");
-extern void func_0020E180_2A1540(void *, s32) __asm__("func_0020E180");
-extern void func_L00_002A11E8_2A1540(void) __asm__("func_L00_002A11E8");
-extern void func_0023AA38_2A1540(s32) __asm__("func_0023AA38");
-extern void func_L00_002A0F60_2A1540(void *) __asm__("func_L00_002A0F60");
-extern void func_L00_002A0C20_2A1540(char *) __asm__("func_L00_002A0C20");
-extern void func_00234C98_2A1540(s32, s64) __asm__("func_00234C98");
-extern void func_001FFFB8_2A1540(void) __asm__("func_001FFFB8");
-extern void func_001F4748_2A1540(void) __asm__("func_001F4748");
-extern void func_0020E098_2A1540(void) __asm__("func_0020E098");
-extern void func_0020E200_2A1540(void) __asm__("func_0020E200");
-extern void func_0020DD48_2A1540(void) __asm__("func_0020DD48");
+extern void VU1_sendChain_r(void) __asm__("func_002349B8");
+extern void VU1_swapChain_r(void) __asm__("func_00234948");
+extern void capture_draw_buffer_r(s32) __asm__("func_L00_001F9D40");
+extern void BuildViewMatrices_r(void) __asm__("func_001F2608");
+extern void FastVecCross_r(void *, void *, void *) __asm__("func_001F9CA0");
+extern void InitMobyInstance_r(void *, s32) __asm__("func_0020D440");
+extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
+extern void pack_render_command_fields_r(void *, s32, s32, s32, s32) __asm__("func_0020E340");
+extern void initialize_vendor_selected_item_mobys_r(void) __asm__("func_L00_0029C9E8");
+extern void FastMemZero16_r(void *, s32) __asm__("func_001F99D8");
+extern s32 start_audio_stream_read_r(void *, s32, s32) __asm__("func_00217628");
+extern void append_draw_buffer_upload_packets_r(s32, u32, u32) __asm__("func_L00_002A2258");
+extern void SetupGifPaging_r(s32) __asm__("func_001F4630");
+extern void ResetGsRegisters_r(void) __asm__("func_001F3C10");
+extern void DrawMobysSetup_r(void) __asm__("func_0020E0C8");
+extern void InitMobyClassDists_r(void) __asm__("func_0020E040");
+extern void StashMobyClassDists_r(void) __asm__("func_0020E068");
+extern void DrawMobyList_r(void *, s32) __asm__("func_0020E180");
+extern void draw_vendor_hologram_cone_r(void) __asm__("func_L00_002A11E8");
+extern void render_vendor_capture_pass_sequence_r(s32) __asm__("func_0023AA38");
+extern void draw_vendor_purchase_panel_r(void *) __asm__("func_L00_002A0F60");
+extern void draw_vendor_inset_quads_r(char *) __asm__("func_L00_002A0C20");
+extern void VU1_addGSregister_r(s32, s64) __asm__("func_00234C98");
+extern void update_hud_r(void) __asm__("func_001FFFB8");
+extern void DoGifPaging_r(void) __asm__("func_001F4748");
+extern void RestoreMobyClassDists_r(void) __asm__("func_0020E098");
+extern void DrawMobysCleanUp_r(void) __asm__("func_0020E200");
+extern void PatchMobyGifs_r(void) __asm__("func_0020DD48");
 
 /* Vendor screen frame: on the first frame sets up the camera rows, the two preview mobys and the stream read; then
  * draws the vendor mobys, the capture pass and the HUD.
@@ -403,78 +403,78 @@ void draw_vendor_screen(void) {
     A02b0_obj_2A1540 *e;
     A02b0_tab_2A1540 *g;
 
-    if (D_L00_0015F6BC_2A1540 != 0) {
+    if (skip_frame_r != 0) {
         return;
     }
-    func_001FB530_2A1540();
-    switch (((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f8) {
+    append_gif_transfer_packet_r();
+    switch (((A02b0_obj_2A1540 *)vendor_menu_r)->f8) {
     case 0:
-        if (((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->fC != 0) {
-            *(u16 *)(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f1C + 0x34) |= 1;
+        if (((A02b0_obj_2A1540 *)vendor_menu_r)->fC != 0) {
+            *(u16 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f1C + 0x34) |= 1;
         }
-        D_L00_0015F4F4_2A1540 = 0x100FF;
-        if (((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->fC != 0 || *(s32 *)D_L00_001CA7C0_2A1540 == 3) {
-            D_L00_0015F4F4_2A1540 = 0x7F;
+        debug_profiler_color_r = 0x100FF;
+        if (((A02b0_obj_2A1540 *)vendor_menu_r)->fC != 0 || *(s32 *)vendor_menu_r == 3) {
+            debug_profiler_color_r = 0x7F;
         }
-        func_001F3D78_2A1540();
-        if (((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->fC == 0) {
+        DrawDebugProfiler_r();
+        if (((A02b0_obj_2A1540 *)vendor_menu_r)->fC == 0) {
             return;
         }
-        ((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f8 = 1;
-        ((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->fC = 0;
-        func_00234AC8_2A1540(1);
+        ((A02b0_obj_2A1540 *)vendor_menu_r)->f8 = 1;
+        ((A02b0_obj_2A1540 *)vendor_menu_r)->fC = 0;
+        VU1_syncChain_r(1);
         func_00122598_2A1540(0);
-        D_L00_0015F4F8_2A1540 = D_L00_0015F4F8_2A1540 + 1;
-        func_002349B8_2A1540();
-        func_00234948_2A1540();
-        D_L00_0016128C_2A1540 = 0x60000;
-        func_L00_001F9D40_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f10);
-        *(u16 *)(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f1C + 0x34) &= 0xFFFE;
-        *(f32 *)(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f1C + 0x2C) = 0.14190800487995148f;
-        if (((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f40 != 0) {
-            qcopy(&((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f70, &D_L00_00166ED0_2A1540[0]);
+        rendered_frame_count_r = rendered_frame_count_r + 1;
+        VU1_sendChain_r();
+        VU1_swapChain_r();
+        lvl_vu_chain_buffer_size_r = 0x60000;
+        capture_draw_buffer_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f10);
+        *(u16 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f1C + 0x34) &= 0xFFFE;
+        *(f32 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f1C + 0x2C) = 0.14190800487995148f;
+        if (((A02b0_obj_2A1540 *)vendor_menu_r)->f40 != 0) {
+            qcopy(&((A02b0_obj_2A1540 *)vendor_menu_r)->f70, &camera_rotation_r[0]);
             {
-                u128_2A1540 *s = &D_L00_00166ED0_2A1540[32];
-                D_L00_00166080_2A1540[0] = s[0];
-                D_L00_00166080_2A1540[1] = s[1];
-                D_L00_00166080_2A1540[2] = s[2];
+                u128_2A1540 *s = &camera_rotation_r[32];
+                vendor_saved_camera_basis_r[0] = s[0];
+                vendor_saved_camera_basis_r[1] = s[1];
+                vendor_saved_camera_basis_r[2] = s[2];
                 qzero(s);
             }
             qzero(D_L00_001670E0_2A1540);
             qzero(D_L00_001670F0_2A1540);
-            ((A02b0_mtx_2A1540 *)D_L00_00166D80_2A1540)->f350 = 1.0f;
-            ((A02b0_mtx_2A1540 *)D_L00_00166D80_2A1540)->f364 = 1.0f;
-            ((A02b0_mtx_2A1540 *)D_L00_00166D80_2A1540)->f378 = 1.0f;
-            ((A02b0_mtx_2A1540 *)D_L00_00166D80_2A1540)->f37C = 1.0f;
-            func_001F2608_2A1540();
+            ((A02b0_mtx_2A1540 *)player_camera_r)->f350 = 1.0f;
+            ((A02b0_mtx_2A1540 *)player_camera_r)->f364 = 1.0f;
+            ((A02b0_mtx_2A1540 *)player_camera_r)->f378 = 1.0f;
+            ((A02b0_mtx_2A1540 *)player_camera_r)->f37C = 1.0f;
+            BuildViewMatrices_r();
         } else {
-            D_L00_00166080_2A1540[0] = D_L00_001670D0_2A1540[0];
-            D_L00_00166080_2A1540[1] = D_L00_001670D0_2A1540[1];
-            D_L00_00166080_2A1540[2] = D_L00_001670D0_2A1540[2];
-            func_001F9CA0_2A1540(&D_L00_001670D0_2A1540[1], &D_L00_001670D0_2A1540[0], &D_L00_001670D0_2A1540[2]);
+            vendor_saved_camera_basis_r[0] = player_camera_matrix_r[0];
+            vendor_saved_camera_basis_r[1] = player_camera_matrix_r[1];
+            vendor_saved_camera_basis_r[2] = player_camera_matrix_r[2];
+            FastVecCross_r(&player_camera_matrix_r[1], &player_camera_matrix_r[0], &player_camera_matrix_r[2]);
         }
-        ((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f20 = ((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f14 + 0x100;
-        func_0020D440_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f20, 0xD);
-        *(u16 *)(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f20 + 0x32) = 0x40;
-        func_L00_00251E30_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f20);
-        func_0020E340_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f20, 0x202020, 0xE, 0xE, 0);
-        func_0020D440_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f20 + 0x500, 0xD);
-        *(u16 *)(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f20 + 0x532) = 0x40;
-        func_L00_00251E30_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f20 + 0x500);
-        func_0020E340_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f20 + 0x500, 0x202020, 0xE, 0xE, 0);
-        func_L00_0029C9E8_2A1540();
-        ((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f2C = ((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f14 + 0x1400;
-        func_001F99D8_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f2C, 0x400);
-        ((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f18 = ((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f2C + 0x400;
-        if (D_001517D8_2A1540[0] == 0) {
-            if (func_00217628_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f18 + 0x80000, ((A02b0_disc_2A1540 *)D_00137C80_2A1540)->sector,
-                                        ((A02b0_disc_2A1540 *)D_00137C80_2A1540)->size) != 0) {
-                D_L00_0016124C_2A1540 = 1;
+        ((A02b0_obj_2A1540 *)vendor_menu_r)->f20 = ((A02b0_obj_2A1540 *)vendor_menu_r)->f14 + 0x100;
+        InitMobyInstance_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20, 0xD);
+        *(u16 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x32) = 0x40;
+        moby_build_matrix_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20);
+        pack_render_command_fields_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20, 0x202020, 0xE, 0xE, 0);
+        InitMobyInstance_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x500, 0xD);
+        *(u16 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x532) = 0x40;
+        moby_build_matrix_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x500);
+        pack_render_command_fields_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x500, 0x202020, 0xE, 0xE, 0);
+        initialize_vendor_selected_item_mobys_r();
+        ((A02b0_obj_2A1540 *)vendor_menu_r)->f2C = ((A02b0_obj_2A1540 *)vendor_menu_r)->f14 + 0x1400;
+        FastMemZero16_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f2C, 0x400);
+        ((A02b0_obj_2A1540 *)vendor_menu_r)->f18 = ((A02b0_obj_2A1540 *)vendor_menu_r)->f2C + 0x400;
+        if (cd_read_active_r[0] == 0) {
+            if (start_audio_stream_read_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f18 + 0x80000, ((A02b0_disc_2A1540 *)disc_table_r)->sector,
+                                        ((A02b0_disc_2A1540 *)disc_table_r)->size) != 0) {
+                vendor_auxiliary_moby_load_pending_r = 1;
             } else {
-                D_L00_0016124C_2A1540 = 0;
+                vendor_auxiliary_moby_load_pending_r = 0;
             }
         } else {
-            D_L00_0016124C_2A1540 = 0;
+            vendor_auxiliary_moby_load_pending_r = 0;
         }
         break;
     case 1:
@@ -482,37 +482,37 @@ void draw_vendor_screen(void) {
     default:
         return;
     }
-    func_L00_002A2258_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f10, D_0015EF84_2A1540, D_0013E604_2A1540[0] << 11);
-    func_001F4630_2A1540(0);
-    func_001F2608_2A1540();
-    func_001F3C10_2A1540();
-    func_0020E0C8_2A1540();
-    func_0020E040_2A1540();
-    func_0020E068_2A1540();
-    if (D_L00_00161F34_2A1540 == 0 && ((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f40 == 0) {
-        if (((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->arr[((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f58].b == 1) {
-            g = &D_L00_001C92F0_2A1540[((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->arr[((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f58].a];
+    append_draw_buffer_upload_packets_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f10, draw_buffer_address_r, frame_size_r[0] << 11);
+    SetupGifPaging_r(0);
+    BuildViewMatrices_r();
+    ResetGsRegisters_r();
+    DrawMobysSetup_r();
+    InitMobyClassDists_r();
+    StashMobyClassDists_r();
+    if (vendor_selection_changed_r == 0 && ((A02b0_obj_2A1540 *)vendor_menu_r)->f40 == 0) {
+        if (((A02b0_obj_2A1540 *)vendor_menu_r)->arr[((A02b0_obj_2A1540 *)vendor_menu_r)->f58].b == 1) {
+            g = &vendor_item_slot2_placement_r[((A02b0_obj_2A1540 *)vendor_menu_r)->arr[((A02b0_obj_2A1540 *)vendor_menu_r)->f58].a];
             if (g->f30 != 0) {
-                func_0020E180_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f20 + 0x200, 1);
+                DrawMobyList_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x200, 1);
             }
         } else {
-            func_0020E180_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f20 + 0x300, 1);
+            DrawMobyList_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x300, 1);
         }
     }
-    func_0020E180_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f1C, 1);
-    if (((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f40 == 0) {
-        func_L00_002A11E8_2A1540();
+    DrawMobyList_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f1C, 1);
+    if (((A02b0_obj_2A1540 *)vendor_menu_r)->f40 == 0) {
+        draw_vendor_hologram_cone_r();
     }
-    func_0023AA38_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f1C);
-    if (((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f5C != 0) {
-        func_L00_002A0F60_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f20 + 0x400);
+    render_vendor_capture_pass_sequence_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f1C);
+    if (((A02b0_obj_2A1540 *)vendor_menu_r)->f5C != 0) {
+        draw_vendor_purchase_panel_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x400);
     }
-    func_L00_002A0C20_2A1540(((A02b0_obj_2A1540 *)D_L00_001CA7C0_2A1540)->f1C);
-    func_00234C98_2A1540(0x42, 0x8000000044LL);
-    func_001FFFB8_2A1540();
-    func_001F4748_2A1540();
-    func_0020E098_2A1540();
-    func_0020E200_2A1540();
-    func_00234AC8_2A1540(0x10);
-    func_0020DD48_2A1540();
+    draw_vendor_inset_quads_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f1C);
+    VU1_addGSregister_r(0x42, 0x8000000044LL);
+    update_hud_r();
+    DoGifPaging_r();
+    RestoreMobyClassDists_r();
+    DrawMobysCleanUp_r();
+    VU1_syncChain_r(0x10);
+    PatchMobyGifs_r();
 }

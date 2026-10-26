@@ -68,7 +68,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 extern unsigned char menu_item_enabled_0 NOT_SDA;
@@ -106,7 +106,7 @@ extern void DebugEnter_Nop(void);
 extern int compress_map_coverage(void *dst, int size, int a, int b);
 extern void downsample_map_coverage(void *dst);
 extern short g_current_level_index;
-extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
+extern int g_current_level_index_far __asm__("D_0015EE84") NOT_SDA;
 extern int map_coverage_active[] NOT_SDA;
 extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
 extern void expand_map_coverage(void *, unsigned char *);
@@ -138,7 +138,7 @@ extern unsigned char gemlik_available NOT_SDA;
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern unsigned char gHaveHologuise NOT_SDA;
 extern int moby_render_slots[];
-extern void func_001FA460_2(void *, void *) __asm__("func_001FA460");
+extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -169,7 +169,7 @@ extern void func_0012EDE0(void *);
 extern void func_0012EFE8(void);
 extern char load_file_start_failed_string[];
 extern int func_0012EE98(int, int, int, void *);
-extern int func_00217628_v(void) __asm__("func_00217628");
+extern int start_audio_stream_read_v(void) __asm__("func_00217628");
 extern void func_00122598(int);
 extern void music_Update(void);
 extern void func_0012EC40(void);
@@ -204,7 +204,7 @@ extern char *current_menu_page NOT_SDA;
 extern void DrawMobyList(int, int);
 extern char gCamera[];
 extern void rotate_preview_moby_x(void *);
-extern void *func_00226720_a(int) __asm__("func_00226720");
+extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");
 extern int delete_moby(int);
 extern void VU1_addGSregister(int, long);
 extern void draw_map_overlay(void);
@@ -212,7 +212,7 @@ extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
 extern void func_001F68E8_c(int, int, long, void *, int)
     __asm__("func_001F68E8");
-extern void *func_001FE540_id(int) __asm__("func_001FE540");
+extern void *msg_string_id(int) __asm__("func_001FE540");
 extern short panel_clear_color;
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern int GetIconFrame(int, int);
@@ -233,7 +233,7 @@ typedef struct {
     int key;
     int flags;
 } PadBind;
-extern PadBind D_001D6448_t[] __asm__("D_001D6448");
+extern PadBind menu_stream_buffers_t[] __asm__("D_001D6448");
 extern int get_menu_stream_buffer_size(int handle);
 extern int menu_stream_buffers[];
 extern char preview_resource_bindings[] NOT_SDA;
@@ -241,14 +241,14 @@ extern char *moby_class_resources[] NOT_SDA;
 extern int D_001D6860[];
 extern int D_001D74C0[];
 extern int D_001D6760[];
-extern char D_00187180_a[] __asm__("D_00187180");
+extern char camera_position_a[] __asm__("D_00187180");
 extern char coll_hit_pos[];
 extern int sound_probe_ignore;
 extern void random_spherical_offset(void *, float, float);
-extern void func_001F9BD8_a(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_001F9C30_a(void *, void *, float) __asm__("func_001F9C30");
-extern void func_001F9BF0_a(void *, void *, void *) __asm__("func_001F9BF0");
-extern int func_001EFE10_a(void *, void *, int, int, int) __asm__("func_001EFE10");
+extern void FastVecAdd_a(void *, void *, void *) __asm__("func_001F9BD8");
+extern void FastVecScale_a(void *, void *, float) __asm__("func_001F9C30");
+extern void FastVecSub_a(void *, void *, void *) __asm__("func_001F9BF0");
+extern int coll_line_fix_a(void *, void *, int, int, int) __asm__("func_001EFE10");
 extern char camera_position[];
 extern void FastVecSub(void *, void *, void *);
 extern void coll_line_fix(void *, void *, int, int, int);
@@ -256,7 +256,7 @@ extern float FastVecDist(int, void *);
 extern void calculate_voice_distance_volume(void *, float, float, float);
 extern void transform_vector(void *, void *, void *);
 extern float vec_length_xy(void *);
-extern float func_001FA058_a(float, float) __asm__("func_001FA058");
+extern float fast_arc_tan_a(float, float) __asm__("func_001FA058");
 extern void truncate_float_to_s32(float);
 extern void func_00120F30(int);
 extern int func_0012E060(void *, int);
@@ -303,8 +303,8 @@ void VU0_loadMicroProgram(long *prog) {
     }
 }
 
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int D_0016100C_m __asm__("D_0016100C") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int current_vu_chain_m __asm__("D_0016100C") MACRO_ADDR;
 extern int vu_chain_table[];
 
 /* Advances the index at D_0016100C, wrapping at 0x13. The old note had
@@ -312,11 +312,11 @@ extern int vu_chain_table[];
    idx = 0`. Both globals are MACRO_ADDR, which gives the one-register
    load and the $gp store in the jr slot. */
 void calculate_dma_transfer_address(void) {
-    int idx = D_0015EE84_m;
+    int idx = g_current_level_index_m;
     if (idx >= 0x13) {
         idx = 0;
     }
-    D_0016100C_m = vu_chain_table[idx];
+    current_vu_chain_m = vu_chain_table[idx];
 }
 
 /*
@@ -336,7 +336,7 @@ extern int vu1_chain_safe_end MACRO_ADDR;
 extern int vu1_chain_buffers[2];
 extern int level_resource_buffers[];
 
-extern int D_0015F698_m __asm__("D_0015F698") MACRO_ADDR;
+extern int vu1_chain_reserved_bytes_m __asm__("D_0015F698") MACRO_ADDR;
 
 /* `end` reads D_00161000 back right after storing it (CSE folds the
    load away), which changes how the stores are scheduled: that, not
@@ -349,7 +349,7 @@ void VU1_initChain(void) {
     vu1_chain_buffers[1] = level_resource_buffers[2];
     vu1_chain_buffer_index = 0;
     g_render_packet_cursor = (int *)base;
-    end = (int)g_render_packet_cursor + D_0016100C_m - D_0015F698_m;
+    end = (int)g_render_packet_cursor + current_vu_chain_m - vu1_chain_reserved_bytes_m;
     render_packet_end = end;
     vu1_chain_safe_end = end - 0x2000;
 }
@@ -363,7 +363,7 @@ void VU1_swapChain(void) {
     previous_render_packet_cursor = (int)g_render_packet_cursor;
     vu1_chain_buffer_index = idx;
     g_render_packet_cursor = (int *)base;
-    end = (int)g_render_packet_cursor + D_0016100C_m - D_0015F698_m;
+    end = (int)g_render_packet_cursor + current_vu_chain_m - vu1_chain_reserved_bytes_m;
     render_packet_end = end;
     vu1_chain_safe_end = end - 0x2000;
 }
@@ -386,7 +386,7 @@ void VU1_sendChain(void) {
     err = 0;
     if (vu1_chain_peak_bytes < size) {
         vu1_chain_peak_bytes = size;
-        if (D_0016100C_m < size) {
+        if (current_vu_chain_m < size) {
             STUB_printf(vu1_chain_overflow_msg);
             err = 1;
         }
@@ -646,11 +646,11 @@ void print_register_values_and_halt(void) {
 typedef struct {
     int w[4];
 } Qword;
-extern Qword *D_00161000_q __asm__("D_00161000") MACRO_ADDR;
+extern Qword *g_render_packet_cursor_q __asm__("D_00161000") MACRO_ADDR;
 
 /* Append an interrupting DMA tag with qword count arg0 to the second packet list. */
 void append_dma_tag(int arg0) {
-    Qword *p = D_00161000_q++;
+    Qword *p = g_render_packet_cursor_q++;
     p->w[0] = arg0 + 0x90000000;
     p->w[1] = 0;
     p->w[2] = 0;

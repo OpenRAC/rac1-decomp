@@ -28,8 +28,8 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
         window_fields.flags = 5;
         text_window = window_fields;
         text_window.anchor_x = add_offset(text_window.left, text_window.right) >> 1;
-        func_001166FC_1FB28(text_buffer, func_001FE540_1FB28(0x4F4F));
-        if (D_0015EE88_1FB28[0] == column_divisor) {
+        func_001166FC_1FB28(text_buffer, msg_string_r3(0x4F4F));
+        if (g_game_language_r2[0] == column_divisor) {
             hyphen = func_00116428(text_buffer, 0x2D);
             if (hyphen != 0) {
                 text_length = func_00116810_1FB28(text_buffer);
@@ -46,23 +46,23 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
                 text_buffer[add_offset(text_length, 1)] = 0x20;
             }
         }
-        func_001F7560_1FB28(&text_window, 0x8000C0C0L, text_buffer, -1);
+        font_print_window_regular_r(&text_window, 0x8000C0C0L, text_buffer, -1);
         text_window.flags ^= 4;
-        text_window.anchor_y = (D_0013E600_1FB28.height - text_window.rendered_height) >> 1;
-        func_001F7560_1FB28(&text_window, 0x8000C0C0L, text_buffer, -1);
+        text_window.anchor_y = (g_screen_extent_r.height - text_window.rendered_height) >> 1;
+        font_print_window_regular_r(&text_window, 0x8000C0C0L, text_buffer, -1);
     }
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x1D);
-    font_print_right(x, y, 0x80000000L, func_001FE540_1FB28(0x4F50), -1);
+    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F50), -1);
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x36);
-    font_print_right(x, y, 0x80000000L, func_001FE540_1FB28(0x4F51), -1);
+    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F51), -1);
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x54);
-    font_print_right(x, y, 0x80000000L, func_001FE540_1FB28(0x4F52), -1);
-    font_print_right(0xC8, 0x1D, 0x80FFA888L, func_001FE540_1FB28(0x4F50), -1);
-    font_print_right(0xC8, 0x36, 0x80FFA888L, func_001FE540_1FB28(0x4F51), -1);
-    font_print_right(0xC8, 0x54, 0x80FFA888L, func_001FE540_1FB28(0x4F52), -1);
+    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F52), -1);
+    font_print_right(0xC8, 0x1D, 0x80FFA888L, msg_string_r3(0x4F50), -1);
+    font_print_right(0xC8, 0x36, 0x80FFA888L, msg_string_r3(0x4F51), -1);
+    font_print_right(0xC8, 0x54, 0x80FFA888L, msg_string_r3(0x4F52), -1);
     collected_count = count_nonzero_entries_up_to_40();
     func_00116248(text_buffer, fmt_decimal, collected_count);
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x1D), 0x80000000L,
@@ -76,10 +76,10 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x54), 0x80000000L,
                     text_buffer, -1);
     font_print_right_large(0xF0, 0x54, 0x80FFA888L, text_buffer, -1);
-    func_00201640_1FB28(add_offset((*(s32 *)&text_shadow_x), 0xD0), add_offset((*(s32 *)&text_shadow_y), 0x4D),
+    draw_hud_rect_blended_r3(add_offset((*(s32 *)&text_shadow_x), 0xD0), add_offset((*(s32 *)&text_shadow_y), 0x4D),
                               add_offset((*(s32 *)&text_shadow_x), 0xF2), add_offset((*(s32 *)&text_shadow_y), 0x50),
                               0x80000000L, 0);
-    func_00201640_1FB28(0xD0, 0x4D, 0xF2, 0x50, 0x80FFA888L, 0);
+    draw_hud_rect_blended_r3(0xD0, 0x4D, 0xF2, 0x50, 0x80FFA888L, 0);
     DoGifPaging();
     return 8;
 }

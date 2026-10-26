@@ -8,7 +8,7 @@ INCLUDE_ASM("asm/overlays", func_L00_001FD6A8);
 ASM_FUNC("asm/overlays", func_L00_001FDE48);
 ASM_FUNC("asm/overlays", func_L00_001FE688);
 typedef unsigned int u128_pt __attribute__((mode(TI)));
-extern char D_L00_0016EB40_001fe990[] __asm__("D_L00_0016EB40");
+extern char glints_r[] __asm__("D_L00_0016EB40");
 float func_00214158_001fe990() __asm__("func_00214158");
 /* Claims a free slot of the 16-entry effect table: copies the position quadword, stores a scale, a lifetime of 0x18 frames, a type and a random float; returns the slot or -1. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_001fd108.c, FUN_L00_001fe990. */
 int allocate_glint_slot(u128_pt *v, int b, float x) {
@@ -17,7 +17,7 @@ int allocate_glint_slot(u128_pt *v, int b, float x) {
     char *e;
     int i;
     *tp = *v;
-    e = D_L00_0016EB40_001fe990;
+    e = glints_r;
     for (i = 0;
     i < 16;
     i++, e += 0x20) {

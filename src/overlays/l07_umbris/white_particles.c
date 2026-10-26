@@ -5,7 +5,7 @@
 
 extern unsigned char *create_part(int);
 extern int PackColorRGBA(float, float, float, float);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float random_float_between(float, float);
 extern int scale_ticks(int);
 extern unsigned char *umbris_part_type65_textures;
@@ -17,7 +17,7 @@ void spawn_white_particle_with_payload(void *pos, void *pos2) {
         float *f = (float *)(p + 0x20);
         qcopy(p + 0x10, pos);
         *(int *)(p + 4) = PackColorRGBA(1.0f, 1.0f, 1.0f, 0.6f);
-        p[9] = func_001FA898_r(4.0f) + 0x40;
+        p[9] = truncate_float_to_s32_r(4.0f) + 0x40;
         p[1] = 0;
         p[3] = 0x48;
         *(float *)(p + 0xC) = random_float_between(20000.0f, 120000.0f);

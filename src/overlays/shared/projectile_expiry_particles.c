@@ -3,7 +3,7 @@
 #include "include_asm.h"
 
 extern void *create_part(int);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern unsigned char *umbris_part_type51_textures;
 
 // Spawns a short-lived particle at a position with a given velocity.
@@ -15,7 +15,7 @@ unsigned char *spawn_projectile_expiry_particle(char *pos, char *vec) {
         qcopy(a, pos);
         qcopy(b, vec);
         *(int *)(p + 4) = 0x5E806040;
-        p[9] = func_001FA898_r(4.0f) + 0x40;
+        p[9] = truncate_float_to_s32_r(4.0f) + 0x40;
         p[3] = 0x48;
         p[1] = 0;
         p[8] = 0;

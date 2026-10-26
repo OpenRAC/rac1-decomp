@@ -181,7 +181,7 @@ void update_fleet_camera_box_watcher(char *moby) {
     }
     case 3:
         set_follow_camera_blend_output_flags();
-        if (func_001F9908_i((int *)(d + 0x5C))) {
+        if (fast_dec_timer_i((int *)(d + 0x5C))) {
             char *cam;
             set_follow_camera_angle_blend_from_position((int)(fleet_camera_points + (*(int *)(d + 0x40) << 7) + 0x30), 0.02617994f, 0.0f);
             cam = fleet_player_camera;

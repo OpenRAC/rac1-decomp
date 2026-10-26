@@ -98,9 +98,9 @@ void update_moby_scene_visibility_and_height_reflection(M *moby) {
     }
 }
 extern short rocket_tank_shot_speed;
-extern short D_L18_0016250C_b __asm__("D_L18_0016250C");
+extern short rocket_tank_shot_speed_b __asm__("D_L18_0016250C");
 extern void update_rocket_tank_damage_and_aim(void *);
-extern char *func_0020D348_m(int) __asm__("func_0020D348");
+extern char *CreateMoby_m(int) __asm__("func_0020D348");
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void moby_build_matrix(void *);
 extern int IsFrameWithinWindow(char *, float);
@@ -135,7 +135,7 @@ typedef struct {
 
 /* func_L18_002F9AB8 takes a char * in its own definition; this call site was matched
    with the pointer typed void *, hence the alias. */
-extern void func_L18_002F9AB8_v(void *) __asm__("func_L18_002F9AB8");
+extern void update_rocket_tank_path_movement_v(void *) __asm__("func_L18_002F9AB8");
 
 /* Rocket tank state machine: setup, path movement, firing and destruction. */
 void rocket_tank_update(M1454 *m) {
@@ -150,7 +150,7 @@ void rocket_tank_update(M1454 *m) {
         d->w124 = scale_ticks(240);
         d->w120 = 0;
         if (d->c138 == 0) {
-            char *c = func_0020D348_m(0x14B);
+            char *c = CreateMoby_m(0x14B);
             d->c138 = c;
             c[0x30] = 0x40;
             *(short *)(d->c138 + 0x32) = 0x40;
@@ -170,7 +170,7 @@ void rocket_tank_update(M1454 *m) {
             moby_build_matrix(d->c138);
         }
         if (d->c13c == 0) {
-            char *c = func_0020D348_m(0x14B);
+            char *c = CreateMoby_m(0x14B);
             d->c13c = c;
             c[0x30] = 0x40;
             *(short *)(d->c13c + 0x32) = 0x40;
@@ -195,7 +195,7 @@ void rocket_tank_update(M1454 *m) {
         m->state = 1;
         break;
     case 1:
-        func_L18_002F9AB8_v(m);
+        update_rocket_tank_path_movement_v(m);
         if (*(int *)((char *)d + 0xB4) != 2) {
             d->f134 = 0;
             d->f130 = 10.0f;
@@ -206,7 +206,7 @@ void rocket_tank_update(M1454 *m) {
         }
         break;
     case 2:
-        func_L18_002F9AB8_v(m);
+        update_rocket_tank_path_movement_v(m);
         ApproachValue(&d->f130, 30.0f, g_frame_time * 6.0f);
         d->f134 = FastAddRots(d->f134, g_frame_time * 6.2831855f);
         if (IsFrameWithinWindow((char *)m, 4.0f) || IsFrameWithinWindow((char *)m, 10.0f)) {
@@ -218,7 +218,7 @@ void rocket_tank_update(M1454 *m) {
                 s = *(float *)&rocket_tank_shot_speed;
             } else {
                 Moby_GetJointWorldPos(m, 2, w);
-                s = *(float *)&D_L18_0016250C_b;
+                s = *(float *)&rocket_tank_shot_speed_b;
             }
             s *= g_frame_time;
             v[0] = FastCos(d->f110) * (FastCos(d->f118) * s);
@@ -244,7 +244,7 @@ void rocket_tank_update(M1454 *m) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
-extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
+extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10, float *v11, float *v12);
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, short *);
@@ -275,7 +275,7 @@ void update_rocket_tank_damage_and_aim(void *mv) {
             qcopy(v, m + 0x10);
             v[2] = v[2] + 1.0f;
             pa = (float *)(m + 0x10);
-            func_L00_0025F4A8_alt(m, d + 0x40, v, 0.0f, 0.0f, 20, 8, 20, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+            spawn_explosion_alt(m, d + 0x40, v, 0.0f, 0.0f, 20, 8, 20, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             dv = veldin2_zero_vec;
             SpawnBreakFragment(m, 0x700, pa, m + 0x40, 0, 0, 0.0f, dv, dv, dv);
             SpawnBreakFragment(m, 0x701, pa, m + 0x40, 0, 0, 0.0f, dv, dv, dv);
@@ -341,7 +341,7 @@ void update_rocket_tank_damage_and_aim(void *mv) {
 extern int *veldin2_paths[];
 extern short rocket_tank_path_speed;
 extern short rocket_tank_child_anim_ref_speed;
-extern float D_0015EE6C_g __asm__("D_0015EE6C") MACRO_ADDR;
+extern float g_frame_time_g __asm__("D_0015EE6C") MACRO_ADDR;
 extern float FastDiffRots(float, float);
 extern void move_4318(int, int, float, float, float, int);
 extern float FastVecDist(void *, void *);
@@ -358,7 +358,7 @@ void update_rocket_tank_path_movement(char *m) {
     SteerAngleWithVelocity((float *)(m + 0x48), (float *)(d + 0x128), ang, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
     f = *(float *)&rocket_tank_path_speed * g_frame_time;
     if (FastDiffRots(ang, ((Moby *)m)->rot.z) > 0.2617994f) {
-        f = D_0015EE6C_g;
+        f = g_frame_time_g;
     }
     ApproachValue((float *)(d + 0x12C), f, g_frame_time_sq);
     z = 0.0f;

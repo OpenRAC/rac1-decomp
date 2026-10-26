@@ -68,7 +68,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 extern unsigned char menu_item_enabled_0 NOT_SDA;
@@ -106,7 +106,7 @@ extern void DebugEnter_Nop(void);
 extern int compress_map_coverage(void *dst, int size, int a, int b);
 extern void downsample_map_coverage(void *dst);
 extern short g_current_level_index;
-extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
+extern int g_current_level_index_far __asm__("D_0015EE84") NOT_SDA;
 extern int map_coverage_active[] NOT_SDA;
 extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
 extern void expand_map_coverage(void *, unsigned char *);
@@ -157,7 +157,7 @@ extern int func_00123F30(int, int *, int *);
 extern void func_00122598(int);
 extern int func_001241F0(int, int, char *, int, int, void *);
 extern char memcard_save_dir_name[];
-extern int D_0013D390_i[] __asm__("D_0013D390");
+extern int memory_card_state_i[] __asm__("D_0013D390");
 
 /* The comparison is bound to a local before the shift:
    `(a < b) << 1` folds into `a < b ? 2 : 0` (li/slt/movn), not retail's
@@ -165,15 +165,15 @@ extern int D_0013D390_i[] __asm__("D_0013D390");
 int check_memory_card(void) {
     int type, free, format, cmd, result;
 
-    result = func_00124068(D_0013D390_i[0], D_0013D390_i[1], &type, &free, &format);
-    while (func_00123F30(1, &D_0013D390_i[0x30], &D_0013D390_i[0x31]) == 0) {
+    result = func_00124068(memory_card_state_i[0], memory_card_state_i[1], &type, &free, &format);
+    while (func_00123F30(1, &memory_card_state_i[0x30], &memory_card_state_i[0x31]) == 0) {
         func_00122598(0);
     }
-    if (D_0013D390_i[0x31] == -5 || D_0013D390_i[0x31] < -9 || type != 2) {
+    if (memory_card_state_i[0x31] == -5 || memory_card_state_i[0x31] < -9 || type != 2) {
         return 1;
     }
-    if (D_0013D390_i[0x31] != -2 && format != 0) {
-        result = func_001241F0(D_0013D390_i[0], D_0013D390_i[1], memcard_save_dir_name, 0, -1, 0);
+    if (memory_card_state_i[0x31] != -2 && format != 0) {
+        result = func_001241F0(memory_card_state_i[0], memory_card_state_i[1], memcard_save_dir_name, 0, -1, 0);
         while (func_00123F30(1, &cmd, &result) == 0) {
             func_00122598(0);
         }
@@ -232,9 +232,9 @@ extern void memcard_RestoreGame(int);
 extern int playback_mode MACRO_ADDR;
 extern int music_volume MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
-extern int func_002176C8_i(int, int, int) __asm__("func_002176C8");
+extern int Load_i(int, int, int) __asm__("func_002176C8");
 
 /* func_002176C8 returns int and takes three arguments (stream.c). */
 void load_and_initialize_level_chunk(void) {
@@ -246,7 +246,7 @@ void load_and_initialize_level_chunk(void) {
 
     calculate_ring_buffer_bounds(disc_table[5] << 11, &a, &b);
     update_audio_stream_until_idle(1);
-    func_002176C8_i(a, disc_table[4], disc_table[5]);
+    Load_i(a, disc_table[4], disc_table[5]);
     s2 = sound_volume;
     s1 = music_volume;
     s0 = playback_mode;
@@ -254,7 +254,7 @@ void load_and_initialize_level_chunk(void) {
     sound_volume = s2;
     music_volume = s1;
     playback_mode = s0;
-    D_0015EE84_m = 0;
+    g_current_level_index_m = 0;
 }
 
 /* Adapted from Lombyte's project (GPL-3.0): src/storage/memory_card/memcard_update_state.c; PAL directory validation reconstructed from assembly. */
@@ -1555,24 +1555,24 @@ typedef struct {
     McEntry e[5];
     char pad[0x14];
 } McSlot;         /* 0xC0 */
-extern McSlot D_0013D390_s[] __asm__("D_0013D390");
+extern McSlot memory_card_state_s[] __asm__("D_0013D390");
 extern int memcard_TestChecksum(char *); /* memcard_TestChecksum */
 
 /* memcard_RestoreInfo(char *, int, int). Advancing the buf parameter
    itself and copying the name with memcpy both matter for retail's
    registers; re-indexing the entry per store keeps its daddu copies. */
 void memcard_RestoreInfo(char *buf, int slot, int idx) {
-    D_0013D390_s[slot].e[idx].valid = memcard_TestChecksum(buf) == 0;
+    memory_card_state_s[slot].e[idx].valid = memcard_TestChecksum(buf) == 0;
     buf += 0x10;
-    D_0013D390_s[slot].e[idx].a = *(int *)buf;
+    memory_card_state_s[slot].e[idx].a = *(int *)buf;
     buf += 0xC;
-    D_0013D390_s[slot].e[idx].b = *(int *)buf;
+    memory_card_state_s[slot].e[idx].b = *(int *)buf;
     buf += 0xC;
-    D_0013D390_s[slot].e[idx].c = *(int *)buf;
+    memory_card_state_s[slot].e[idx].c = *(int *)buf;
     buf += 0xC;
-    D_0013D390_s[slot].e[idx].d = *(int *)buf;
+    memory_card_state_s[slot].e[idx].d = *(int *)buf;
     buf += 0xC;
-    memcpy(D_0013D390_s[slot].e[idx].name, buf, 8);
+    memcpy(memory_card_state_s[slot].e[idx].name, buf, 8);
 }
 
 struct RestoreEntry {
@@ -1596,7 +1596,7 @@ typedef struct {
     char padC0[0xC];
     int cur;              /* 0xCC */
 } RestoreCardState;
-extern RestoreCardState D_0013D390_c __asm__("D_0013D390");
+extern RestoreCardState memory_card_state_c __asm__("D_0013D390");
 extern short memcard_restore_mismatch_count;               /* SDA, gp -0x6DB0: mismatch count */
 extern int func_001151B4(const void *, const void *, int); /* memcmp */
 
@@ -1672,7 +1672,7 @@ int memcard_RestoreData(void *src, int slot, int *table) {
             errors++;
         }
     }
-    D_0013D390_c.slot[D_0013D390_c.cur].errors = errors;
+    memory_card_state_c.slot[memory_card_state_c.cur].errors = errors;
     return errors;
 }
 
@@ -1686,7 +1686,7 @@ extern unsigned char level_visit_state[];
 extern int gBolts MACRO_ADDR;
 extern int game_clock_ticks MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
-extern int D_0015EFB4_m __asm__("D_0015EFB4") MACRO_ADDR;
+extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
 extern char memcard_game_data_buffer[];
 extern char memcard_level_data_buffer[];
 
@@ -1709,7 +1709,7 @@ int memcard_Save(int slot, int flags) {
     func_00121A80(save_clock_time);
     func_0012D818(save_clock_time);
     copy_level_object_positions();
-    save_map_coverage(level_map_coverage + (D_0015EE84_m << 11));
+    save_map_coverage(level_map_coverage + (g_current_level_index_m << 11));
     {
         char *p = memory_card_state;
         int active = *(int *)(p + 0xC8);
@@ -1724,7 +1724,7 @@ int memcard_Save(int slot, int flags) {
             goto done;
         }
         if (slot == 0) {
-            D_0015EFB4_m |= 0x200;
+            mode_freeze_flags_m |= 0x200;
         }
         if (*(int *)(p + 0xDC) >= 3) {
             goto done;
@@ -1732,10 +1732,10 @@ int memcard_Save(int slot, int flags) {
         if (*(int *)(p + 0xE4) >= 0) {
             goto done;
         }
-        *(int *)(p + 0xD0) = D_0015EE84_m;
+        *(int *)(p + 0xD0) = g_current_level_index_m;
         saved = 0;
         if (flags >= 0) {
-            D_0015EE84_m = flags;
+            g_current_level_index_m = flags;
             saved = level_visit_state[flags];
             if (saved == 0) {
                 level_visit_state[flags] = 1;
@@ -1747,15 +1747,15 @@ int memcard_Save(int slot, int flags) {
         char *names = q + 0x30;
 
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x24) = gBolts;
-        *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x20) = D_0015EE84_m;
+        *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x20) = g_current_level_index_m;
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x2C) = game_clock_ticks;
         memcpy(names + *(int *)(q + 0x14) * 0x1C, save_clock_time, 8);
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x28) = D_0015EF20;
         memcard_PrepData(memcard_game_data_buffer, 0, mc_gamedata);
         memcard_PrepData(memcard_level_data_buffer, *(int *)(q + 0xD0), mc_leveldata);
         if (flags >= 0) {
-            level_visit_state[D_0015EE84_m] = saved;
-            D_0015EE84_m = *(int *)(q + 0xD0);
+            level_visit_state[g_current_level_index_m] = saved;
+            g_current_level_index_m = *(int *)(q + 0xD0);
         }
         if (*(int *)(q + 0xE4) < 0) {
             *(int *)(q + 0xE4) = 0xF;

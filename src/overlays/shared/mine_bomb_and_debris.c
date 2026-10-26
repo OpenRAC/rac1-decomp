@@ -1889,11 +1889,11 @@ void bomb_update(M_2aedd0 *m) {
     }
 }
 struct Dd { char pad[0x10]; float x; float y; short s0; short s1; float z; };
-extern struct Moby *func_0020D348_m(int) __asm__("func_0020D348");
+extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 
 /* spawns a type-0x7A moby with randomised velocity */
 char *SpawnFallingSpark(char *pos, char *vel, int a, int b, int c) {
-    char *m = (char *)func_0020D348_m(0x7A);
+    char *m = (char *)CreateMoby_m(0x7A);
     struct Dd *d;
     if (m) {
         ((Moby *)m)->update_dist = 0xFF;
@@ -2201,8 +2201,8 @@ extern f32 fast_atan2(f32, f32);
 extern f32 FastDiffRots(f32, f32);
 extern f32 FastArcSin(f32);
 extern f32 IntToFloat(s32);
-extern s32 func_L00_001EFFF0_B1290(void *, void *, s32, char *, void *) __asm__("func_L00_001EFFF0");
-extern s32 func_L00_0025D390_B1290(char *) __asm__("func_L00_0025D390");
+extern s32 coll_line_r(void *, void *, s32, char *, void *) __asm__("func_L00_001EFFF0");
+extern s32 GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
 extern s32 find_listed_moby_by_data_id(char *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002aa670.c, FUN_L00_002affa8. */
@@ -2232,7 +2232,7 @@ void select_gold_devastator_missile_target(char *self, O *out, char *skip) {
         spos = self + 0x10;
         opos = o + 0x10;
         if (40.0f < FastVecDist(&v, spos)) goto next;
-        p = func_L00_0025D390_B1290(o);
+        p = GetFlaggedPvarWord_r(o);
         if (p == 0) goto np;
         if (p <= 0x100000) goto np;
         if (0x3FFFFF < p) goto np;
@@ -2267,7 +2267,7 @@ void select_gold_devastator_missile_target(char *self, O *out, char *skip) {
             FastArcSin(ang / dist);
         }
         flag = 1;
-        if (func_L00_001EFFF0_B1290(g_debug_camera, &v, 6, self, 0) != 0) {
+        if (coll_line_r(g_debug_camera, &v, 6, self, 0) != 0) {
             s32 hit = coll_hit_result[6];
             if (hit == 0 || hit != (s32)o) flag = 0;
         } else {
@@ -2694,7 +2694,7 @@ void gold_devastator_missile_update(M910 *m) {
 typedef struct { float f[4]; } __attribute__((aligned(16))) V_2b1af0;
 typedef int Q_2b1af0 __attribute__((mode(TI)));
 typedef struct { V_2b1af0 a; char pad[0x30]; V_2b1af0 b; } P_2b1af0;
-extern P_2b1af0 D_0013F550_2b1af0 __asm__("D_0013F550");
+extern P_2b1af0 hero_displacement_r __asm__("D_0013F550");
 void fefc8_2b1af0(void *) __asm__("func_L00_001FEF78");
 void rot_2b1af0(void *, void *, void *) __asm__("func_001F9EC0");
 void add_2b1af0(void *, void *, void *) __asm__("func_001F9BD8");
@@ -2729,10 +2729,10 @@ void emit_object_offset_particles(unsigned char *o) {
     rot_2b1af0(&b, &b, o + 0xC0);
     for (i = 1; i >= 0; i--) {
         ff500_2b1af0(&d, &b, rndf_2b1af0(0.01f, 0.06f));
-        scale_2b1af0(&b, &D_0013F550_2b1af0.a, 0.7f);
+        scale_2b1af0(&b, &hero_displacement_r.a, 0.7f);
         b.f[2] = 0.0f;
         add_2b1af0(&d, &d, &b);
-        scale_2b1af0(&b, &D_0013F550_2b1af0.b, 0.7f);
+        scale_2b1af0(&b, &hero_displacement_r.b, 0.7f);
         b.f[2] = 0.0f;
         add_2b1af0(&d, &d, &b);
         t = trunc_2b1af0(rnd_2b1af0(0.0f, 6.0f));
@@ -2740,10 +2740,10 @@ void emit_object_offset_particles(unsigned char *o) {
     }
     for (j = 0; j >= 0; j--) {
         ff500_2b1af0(&d, &b, rndf_2b1af0(0.01f, 0.06f));
-        scale_2b1af0(&b, &D_0013F550_2b1af0.a, 0.55f);
+        scale_2b1af0(&b, &hero_displacement_r.a, 0.55f);
         b.f[2] = 0.0f;
         add_2b1af0(&d, &d, &b);
-        scale_2b1af0(&b, &D_0013F550_2b1af0.b, 0.55f);
+        scale_2b1af0(&b, &hero_displacement_r.b, 0.55f);
         b.f[2] = 0.0f;
         add_2b1af0(&d, &d, &b);
         t = fr_2b1af0(0x14);

@@ -13,7 +13,7 @@ typedef struct {
 } L10SpriteData_298940;
 extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern void func_001F9BD8_99AF0(void *, void *, void *) __asm__("func_001F9BD8");
+extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int fast_dec_timer(int *);
 extern int scale_ticks(int);
 extern float IntToFloat(int);
@@ -35,7 +35,7 @@ void emit_moby_sprite_particles(char *m) {
     FastVecSub(d, orxon_camera_pos, m + 0x10);
     vec_scale_to_length(d, d, -0.3f);
     vec_scale_to_length(e, d, 0.1f);
-    func_001F9BD8_99AF0(d, d, m + 0x10);
+    FastVecAdd_r(d, d, m + 0x10);
     ((Moby *)m)->pos.z -= 0.5f;
     for (i = 0; i < 4; i++) {
         float h = p->a[i] + p->b[i];
@@ -52,10 +52,10 @@ void emit_moby_sprite_particles(char *m) {
         f = f / (float)scale_ticks(0xFF);
         col = FastTweenColor(0x4040FFFF, 0x1040FFFF, FastAbsF(0.5f - f));
         PartType59Spawn(d, col, truncate_float_to_s32(p->a[i]) & 0xFF, 0x35, 1, 2, 0, p->d[i]);
-        func_001F9BD8_99AF0(d, d, e);
+        FastVecAdd_r(d, d, e);
     }
 }
-extern struct Moby *func_0020D348_m(int) __asm__("func_0020D348");
+extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 extern float FastVecDist(void *, void *);
 extern float fast_atan2(float, float);
 extern float vec_length_xy(void *);
@@ -64,7 +64,7 @@ extern char D_0013E633[];
 
 /* spawn a moby of class 0x333 with position, velocity vector and aim angles */
 char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
-    char *m = (char *)func_0020D348_m(0x333);
+    char *m = (char *)CreateMoby_m(0x333);
     char *d;
     if (m) {
         ((Moby *)m)->scale = ((Moby *)m)->scale * scale;
@@ -117,7 +117,7 @@ extern float FastVecLength(void *);
 extern float lensq_cc2e8(void *);
 extern float FastAddRots(float, float);
 extern float ProbeGroundHeight(void *, int, float);
-extern void func_001F9BD8_CD6A8(void *, void *, void *) __asm__("func_001F9BD8");
+extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecScale(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);
 extern void clear_u64_value(void *);
@@ -185,7 +185,7 @@ void Moby819Update(char *m) {
             }
             if (t > 0.0f) {
                 FastVecScale(aim, hv, t);
-                func_001F9BD8_CD6A8(aim, aim, diff);
+                FastVecAdd_r2(aim, aim, diff);
                 yaw = fast_atan2(aim[0], aim[1]);
                 pitch = -fast_atan2(vec_length_xy(aim), aim[2]);
             } else {
@@ -207,7 +207,7 @@ void Moby819Update(char *m) {
         PartType04Spawn(p, c, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(30, 60)), 0x28,
                     rand_range(50, 75), 0);
         dist = FastVecDist(p, gHeroPos);
-        func_001F9BD8_CD6A8(p, p, d);
+        FastVecAdd_r2(p, p, d);
         if (d->warned == 0 && d->passed != 0 && d->dist < dist && dist < 5.0f) {
             Moby_PlaySound(0, 0, m);
             d->warned = 1;
@@ -708,7 +708,7 @@ void Camera19_Update(char *moby) {
                 v1[2] = c3[2];
                 v1[3] = 0.0f;
                 matrix_mul_vec3(v1, v1, D_L10_001674D0);
-                func_001F9BD8_99AF0(v2, gb + 0x10, v1);
+                FastVecAdd_r(v2, gb + 0x10, v1);
                 FastVecSub(va, v2, pm);
             } else {
                 FastVecSub(va, b + 0x10, pm);
@@ -822,7 +822,7 @@ void Camera19_Update(char *moby) {
             v2[2] = c3[2];
             v2[3] = 0.0f;
             matrix_mul_vec3(v2, v2, D_L10_001674D0);
-            func_001F9BD8_99AF0(v3, b17 + 0x10, v2);
+            FastVecAdd_r(v3, b17 + 0x10, v2);
             FastVecSub(v1, v3, (moby + 0x30));
         } else {
             char *h;

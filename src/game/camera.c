@@ -529,7 +529,7 @@ void restore_camera_vectors(void) {
 /* The final mode store goes through this alias: written through
    D_001872B0 itself, gcse keeps the entry's %hi alive in a saved register
    across the calls, where retail rebuilds it. */
-extern short D_001872B0_h __asm__("D_001872B0") NOT_SDA;
+extern short cam_trans_state_h __asm__("D_001872B0") NOT_SDA;
 extern void extract_matrix_rotation_quaternion(void *, void *);
 extern int scale_game_frame_count(int);
 extern float IntToFloat(int);
@@ -583,7 +583,7 @@ void start_camera_blend(Camera *from) {
             restore_camera_vectors();
         }
     }
-    D_001872B0_h = 3; /* blend.phase */
+    cam_trans_state_h = 3; /* blend.phase */
     r->kind = r->next_kind;
     if (r->kind == 0) {
         CamBlendLerp *a = &r->lerp;
@@ -864,8 +864,8 @@ void apply_camera_shake(CameraShake *s, int along_row0) {
 }
 __asm__(".section .text\n\tnop\n");
 
-extern struct Hero D_0013F450_ED818 __asm__("D_0013F450");
-extern f32 func_001EC120_ED818(f32 *vel, f32 from, f32 to, f32 stiffness, f32 damping, f32 max) __asm__("func_001EC120");
+extern struct Hero g_hero_r __asm__("D_0013F450");
+extern f32 Cam_InterpValues_r(f32 *vel, f32 from, f32 to, f32 stiffness, f32 damping, f32 max) __asm__("func_001EC120");
 extern float FastAbsF(float input);
 extern void FastVecSub(void *out, void *a, void *b);
 extern void FastVecScale(void *out, void *a, f32 s);
@@ -888,7 +888,7 @@ void update_camera_tracking_state(void) {
     struct Moby *m;
 
     f = &gCamera.follow;
-    fast_vec_normalize(&dir, &D_0013F450_ED818.gravity_dir, -1.0f);
+    fast_vec_normalize(&dir, &g_hero_r.gravity_dir, -1.0f);
     qcopy(&f->up_target_prev, &f->up_target);
     qcopy(&f->up_target, &dir);
     if (FastVecDot(&f->up, &dir) < -0.98f) {
@@ -897,14 +897,14 @@ void update_camera_tracking_state(void) {
         dir.f[2] += 0.2f;
     }
     f->up.f[0] =
-        func_001EC120_ED818(&f->up_vel[0], f->up.f[0], dir.f[0], 0.015f, 0.2f, 0.0f);
+        Cam_InterpValues_r(&f->up_vel[0], f->up.f[0], dir.f[0], 0.015f, 0.2f, 0.0f);
     f->up.f[1] =
-        func_001EC120_ED818(&f->up_vel[1], f->up.f[1], dir.f[1], 0.015f, 0.2f, 0.0f);
+        Cam_InterpValues_r(&f->up_vel[1], f->up.f[1], dir.f[1], 0.015f, 0.2f, 0.0f);
     f->up.f[2] =
-        func_001EC120_ED818(&f->up_vel[2], f->up.f[2], dir.f[2], 0.015f, 0.2f, 0.0f);
+        Cam_InterpValues_r(&f->up_vel[2], f->up.f[2], dir.f[2], 0.015f, 0.2f, 0.0f);
     fast_vec_normalize(&f->up, &f->up, 1.0f);
 
-    FastVecSub(&f->hero_delta, &D_0013F450_ED818.motion.pos, &f->hero_prev);
+    FastVecSub(&f->hero_delta, &g_hero_r.motion.pos, &f->hero_prev);
     f->hero_dist = FastVecLength(&f->hero_delta);
     d = FastVecDot(&f->hero_delta, &dir);
     f->up_dist = d;
@@ -913,25 +913,25 @@ void update_camera_tracking_state(void) {
     FastVecSub(&f->hero_delta_side, &f->hero_delta, &proj);
     f->side_dist = FastVecLength(&f->hero_delta_side);
     FastVecScale(&f->hero_delta_side, &f->hero_delta_side, 1.0f / f->side_dist);
-    qcopy(&f->hero_prev, &D_0013F450_ED818.motion.pos);
+    qcopy(&f->hero_prev, &g_hero_r.motion.pos);
 
-    if (D_0013F450_ED818.unk2284 != 0x50 || D_0013F450_ED818.state.current == 0x11) {
-        f->pos.f[0] = D_0013F450_ED818.motion.pos.f[0];
-        f->pos.f[1] = D_0013F450_ED818.motion.pos.f[1];
+    if (g_hero_r.unk2284 != 0x50 || g_hero_r.state.current == 0x11) {
+        f->pos.f[0] = g_hero_r.motion.pos.f[0];
+        f->pos.f[1] = g_hero_r.motion.pos.f[1];
         f->pos.f[2] =
-            func_001EC120_ED818(&f->z_vel, f->pos.f[2], D_0013F450_ED818.motion.pos.f[2], 0.0075f, 0.175f, 0.0f);
-        f->pos.f[3] = D_0013F450_ED818.motion.pos.f[2];
+            Cam_InterpValues_r(&f->z_vel, f->pos.f[2], g_hero_r.motion.pos.f[2], 0.0075f, 0.175f, 0.0f);
+        f->pos.f[3] = g_hero_r.motion.pos.f[2];
     } else {
-        f->pos.f[0] = D_0013F450_ED818.motion.pos.f[0];
-        f->pos.f[1] = D_0013F450_ED818.motion.pos.f[1];
+        f->pos.f[0] = g_hero_r.motion.pos.f[0];
+        f->pos.f[1] = g_hero_r.motion.pos.f[1];
     }
 
     for (i = 0; i < 4; i++) {
         f->yaw_hist[i] = f->yaw_hist[i + 1];
     }
-    f->yaw_hist[i] = D_0013F450_ED818.motion.rot.f[2];
+    f->yaw_hist[i] = g_hero_r.motion.rot.f[2];
 
-    m = D_0013F450_ED818.ground_moby;
+    m = g_hero_r.ground_moby;
     if (m != 0 && m->oclass != 0x4BA && m->oclass != 0x336) {
         if (m == f->ground_moby) {
             f->ground_dz = m->pos.z - f->ground_z;
@@ -947,7 +947,7 @@ void update_camera_tracking_state(void) {
     } else {
         f->ground_dz = 0.0f;
         f->ground_moby = 0;
-        f->ground_z = D_0013F450_ED818.motion.pos.f[2];
+        f->ground_z = g_hero_r.motion.pos.f[2];
     }
 }
 
@@ -1008,11 +1008,11 @@ extern int cam_coll_mode MACRO_ADDR;
    arm ORs the new mode in itself (the constants fold per arm, as in retail),
    and each block reads D_0013F450 through its own local (%hi kept, %lo
    rebuilt). */
-extern Hero D_0013F450_HERO __asm__("D_0013F450");
+extern Hero g_hero_HERO __asm__("D_0013F450");
 
 void refresh_camera_control_flags(void) {
     CameraFollow *f = &gCamera.follow;
-    Hero *g = &D_0013F450_HERO;
+    Hero *g = &g_hero_HERO;
     int st;
 
     cam_coll_flag = 0x14;
@@ -1021,14 +1021,14 @@ void refresh_camera_control_flags(void) {
         cam_coll_flag = 0x34;
     }
     {
-        Hero *g2 = &D_0013F450_HERO;
+        Hero *g2 = &g_hero_HERO;
         if (g2->state.control_mode != 0x11
             && g2->water_surface_z < gCamera.pos.f[2]) {
             cam_coll_flag = 0x14;
         }
     }
     {
-        Hero *g3 = &D_0013F450_HERO;
+        Hero *g3 = &g_hero_HERO;
         cam_coll_flag_prev = cam_coll_flag;
         cam_coll_flag |= 0x80;
         cam_coll_mode = 0xB4;
@@ -1073,7 +1073,7 @@ void advance_timed_camera_control(void) {
 }
 
 extern int text_screen_active;
-extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern void advance_timed_camera_control(void);
 extern void refresh_camera_control_flags(void);
 extern void update_camera_tracking_state(void);
@@ -1141,7 +1141,7 @@ frozen:
     apply_camera_shake(&v[1], 1);
     update_camera_underwater_flag();
     update_camera_environment_from_regions((char *)v - 0x20);       /* &gCamera.pos */
-    if (D_0015EEB4_m[0] != 0) {
+    if (draw_map51_m[0] != 0) {
         FastVecCross((char *)v + 0x200, (char *)v + 0x210, (char *)v + 0x1F0); /* matrix[1] = matrix[2] x matrix[0] */
     }
 }

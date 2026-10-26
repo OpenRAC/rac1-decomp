@@ -53,13 +53,13 @@ int update_menu_option_list(char *arg0) {
             if (*(int *)(pad5 + 0x1C4) & 0x60) {
                 Moby_PlaySound(0, 0x11, *(int *)(arg0 + 0x14));
                 if ((*(Row14 **)(arg0 + 0x34))[*(int *)(arg0 + 0x38)].flags & 1) {
-                    if (*(unsigned char *)&D_0016044C_i) {
+                    if (*(unsigned char *)&requested_video_mode_i) {
                         char *g3 = menu_system;
                         mode_freeze_init(6, *(void **)(g3 + 4), 0);
                     } else {
                         FadeToBlack(4);
                         *(int *)(arg0 + 0x3C) = scale_game_frame_count(0x10);
-                        *(unsigned char *)&D_0016044C_i = !*(unsigned char *)&D_0016044C_i;
+                        *(unsigned char *)&requested_video_mode_i = !*(unsigned char *)&requested_video_mode_i;
                     }
                 } else {
                     unsigned char *buf = (*(Row14 **)(arg0 + 0x34))[*(int *)(arg0 + 0x38)].buf;

@@ -69,7 +69,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 
@@ -124,14 +124,14 @@ int map_filter_l01_3(void *unused_input, int reveal_test_selector, float unused1
     return 0;
 }
 
-extern int D_001414DC_early __asm__("D_001414DC") NOT_SDA;
+extern int hero_control_mode_early __asm__("D_001414DC") NOT_SDA;
 extern unsigned char menu_item_enabled_2 NOT_SDA;
 
 /* `if (x) return 1;` in both arms with one shared `return 0;` keeps the
    flag test a beqz with the li in its slot; a result variable or a
    return 0 per arm becomes sltu. */
 int map_filter_l01_4(int arg0, float unused1, float unused2, float arg1) {
-    int is16 = D_001414DC_early == 0x10;
+    int is16 = hero_control_mode_early == 0x10;
 
     if (arg0 < 0x100) {
         if (menu_item_enabled_2 != 0) {
@@ -202,14 +202,14 @@ struct RegionPlayerState {
     u8 pad12E5[0x208C - 0x12E5];
     s32 active_state;
 };
-extern struct RegionPlayerState D_0013F450_07408 __asm__("D_0013F450");
+extern struct RegionPlayerState g_hero_r __asm__("D_0013F450");
 extern s32 region_enabled[];
 union RegionVector {
     u128 region_center;
     f32 f[4];
 };
 extern s32 point_is_clockwise(s32, s32, s32, s32, s32, s32);
-extern f32 func_001F9D48_07408(union RegionVector *, union RegionVector *) __asm__("func_001F9D48");
+extern f32 vec_distance_xy_r(union RegionVector *, union RegionVector *) __asm__("func_001F9D48");
 s32 map_filter_l07_0(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00206bd8.c, passes_projected_region_callback_0. */
@@ -234,7 +234,7 @@ s32 map_filter_l07_0(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z) {
         position.f[1] = y;
         region_center.f[0] = 337.5f;
         region_center.f[1] = 250.0f;
-        if (func_001F9D48_07408(&position, &region_center) <= 7.0f) {
+        if (vec_distance_xy_r(&position, &region_center) <= 7.0f) {
             return 1;
         }
         if (point_is_clockwise(projected_x, projected_y, 0x142, 0x12A, 0x173, 0xFC) && region_enabled[0]) {
@@ -243,7 +243,7 @@ s32 map_filter_l07_0(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z) {
         return 0;
     } else {
         special_state = 0;
-        if ((u32)(D_0013F450_07408.active_state - 0x11) < 2 || D_0013F450_07408.region_mode == 1) {
+        if ((u32)(g_hero_r.active_state - 0x11) < 2 || g_hero_r.region_mode == 1) {
             special_state = 1;
         }
         if (special_state && point_is_clockwise(projected_x, projected_y, 0x12B, 0xB8, 0x13A, 0xF2) &&
@@ -531,11 +531,11 @@ int map_filter_l09_2(void) {
 
 extern unsigned char menu_item_enabled_68;
 
-extern unsigned char D_0013D4E0_far __asm__("D_0013D4E0") NOT_SDA;
+extern unsigned char menu_item_enabled_68_far __asm__("D_0013D4E0") NOT_SDA;
 /* The recorded C was right; the two ps2eeas nops were the only
    residual. */
 int map_filter_l10_0(int arg0, float unused1, float unused2, float arg1) {
-    if (arg0 >= 0xBE) return D_0013D4E0_far != 0;
+    if (arg0 >= 0xBE) return menu_item_enabled_68_far != 0;
     return (arg1 >= 58.5f) ? 1 : 0;
 }
 
@@ -948,7 +948,7 @@ void downsample_map_coverage(void *arg0) {
     dst[0] = (dst[0] & 0xFE) | 2;
 }
 
-extern void *func_001FE540_id(int) __asm__("func_001FE540");
+extern void *msg_string_id(int) __asm__("func_001FE540");
 extern char menu_item_price_fmt[]; /* "%d" */
 extern char D_0015FE68[]; /* "error" */
 extern char vendor_item_prices[];
@@ -970,7 +970,7 @@ void FormatMenuItemText(int bank, unsigned char *dst) {
     char *t;
 
     t = (char *)level_map_selection;
-    src = func_001FE540_id(*(short *)(*(char **)(t + 0x20) + bank * 0x28 + 0xA));
+    src = msg_string_id(*(short *)(*(char **)(t + 0x20) + bank * 0x28 + 0xA));
     p = buf;
     if (src == 0) {
         return;
@@ -1054,7 +1054,7 @@ typedef struct {
 
 extern int marker_half_size MACRO_ADDR;
 extern float marker_scale_by_level[];
-extern char D_0019A4E8_raw[] __asm__("D_0019A4E8");
+extern char hud_state_raw[] __asm__("D_0019A4E8");
 extern void draw_hud_rect_blended(int, int, int, int, long, int);
 extern int GetIconFrame(int, int);
 extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
@@ -1084,7 +1084,7 @@ void draw_map_markers(int left, int top, int right, int bottom) {
             int tex = GetIconFrame(m->icon, m->sub);
             int *st = level_map_selection;
             float *sc = (float *)(st + 0x2D);   /* the zoom scale table, at 0xB4 of the same block (the assembly's D_001A02A4) */
-            char *arena = D_0019A4E8_raw;
+            char *arena = hud_state_raw;
             unsigned char *e = (unsigned char *)(*(char **)(arena + 0x24)
                 + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
             float scale = (2.0f * sc[st[0x89]] + 5.0f) / 13.0f;
@@ -1226,14 +1226,14 @@ extern int D_0013D3AC;
 /* Word view of the D_0013D390 record: indexing an int array here, rather
    than casting byte offsets off a char pointer, is what lets GCC keep the
    record address's lui/addiu pair together before the D_0015EFB0 store. */
-extern int D_0013D390_i[] __asm__("D_0013D390");
+extern int memory_card_state_i[] __asm__("D_0013D390");
 
 /* Sets menu state 3, clears the record's word at +0xFC and copies +0xC4
    into +0x1C. */
 void save_card_state_init(void) {
     mode_freeze_state = 3;
-    D_0013D390_i[0x3F] = 0;
-    D_0013D390_i[0x07] = D_0013D390_i[0x31];
+    memory_card_state_i[0x3F] = 0;
+    memory_card_state_i[0x07] = memory_card_state_i[0x31];
 }
 
 /* Clears the 4 and 2 flag bits of D_0015EFB4, then picks the next

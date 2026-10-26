@@ -12,10 +12,10 @@ int draw_selected_item_ammo(char *arg0) {
     have = weapon_ammo_counts[id];
     rec = vendor_item_prices + id * 0x18;
     total = *(unsigned short *)(rec + 0xE);
-    func_00234C98_l(0x42, 0x44);
-    func_00234C98_l(0x47, 0xB);
+    VU1_addGSregister_l(0x42, 0x44);
+    VU1_addGSregister_l(0x47, 0xB);
     if (*(unsigned short *)(rec + 8) == 0) {
-        func_00116248(text, func_001FE540_id(0x4F53));
+        func_00116248(text, msg_string_id(0x4F53));
     } else {
         char *q;
         if (have < 1000) {

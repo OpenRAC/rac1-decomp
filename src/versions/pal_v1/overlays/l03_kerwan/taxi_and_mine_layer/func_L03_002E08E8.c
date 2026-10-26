@@ -22,7 +22,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f0) != 0
                     && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
                     && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
-                    Help_2E08E8 *b = D_00141A68_2E08E8;
+                    Help_2E08E8 *b = help_records_r;
                     if (!(b[0x14].mask & 0x80000000)) {
                         Help_Request(0xBB8, 0x14);
                     }
@@ -30,7 +30,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->fC) != 0
                     && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
                     && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
-                    Help_2E08E8 *b = D_00141A68_2E08E8;
+                    Help_2E08E8 *b = help_records_r;
                     if (!(b[0x15].mask & 0x80000000)) {
                         Help_Request(0xBB9, 0x15);
                     }
@@ -38,7 +38,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f18) != 0
                     && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
                     && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
-                    Help_2E08E8 *b = D_00141A68_2E08E8;
+                    Help_2E08E8 *b = help_records_r;
                     if (!(b[0x17].mask & 0x80000000)) {
                         Help_Request(0xBBB, 0x17);
                     }
@@ -47,7 +47,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
         }
 
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f30) != 0) {
-            Help_2E08E8 *h = D_00141948_2E08E8;
+            Help_2E08E8 *h = usage_stats_r;
             if (h[3].count == 0
                 && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)) {
                 int n;
@@ -60,7 +60,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f24) != 0 && D_00141948_2E08E8[3].count == 0
+        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f24) != 0 && usage_stats_r[3].count == 0
             && ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) >= 2 && ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) != 9
             && data->f58 == 0) {
             data->f50++;
@@ -71,11 +71,11 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f24) != 0 && D_00141948_2E08E8[3].count == 0
+        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f24) != 0 && usage_stats_r[3].count == 0
             && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
             && data->f50 % 6 == 0 && data->f50 != 0
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
-            Help_2E08E8 *b = D_00141A68_2E08E8;
+            Help_2E08E8 *b = help_records_r;
             if (b[0x16].count == 0) {
                 Help_Request(0xBBA, 0x16);
             }
@@ -84,9 +84,9 @@ void update_kerwan_tutorial_hints(Moby *moby) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f28) != 0
             && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
-            Help_2E08E8 *b = D_00141A68_2E08E8;
+            Help_2E08E8 *b = help_records_r;
             if (b[0x18].count == 0) {
-                int t = scale_ticks(gameplay_event_frame_count) - D_00141948_2E08E8[9].time * 600;
+                int t = scale_ticks(gameplay_event_frame_count) - usage_stats_r[9].time * 600;
                 if (scale_ticks(0x34BC0) < t) {
                     Help_Request(0xBBC, 0x18);
                 }
@@ -96,7 +96,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
         {
             Node_2E08E8 *m;
             int count = 0;
-            for (m = D_L03_00160064_2E08E8; m != 0; m = m->next) {
+            for (m = kerwan_moby_list_r; m != 0; m = m->next) {
                 if (m->f24 != 0 && m->f24->f46 == 5
                     && vec_distance_xy(m->pos, D_0013E633 + 0xE9D) < 8.0f) {
                     count++;
@@ -109,11 +109,11 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 && (gHaveHeliPack + 0xD)[0] != 0
                 && get_ammo(0xF) >= 0x15
                 && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1
-                && (D_00141A68_2E08E8)[0x4A].count == 0
-                && D_00141948_2E08E8[0x13].count == 0) {
+                && (help_records_r)[0x4A].count == 0
+                && usage_stats_r[0x13].count == 0) {
                 Help_Request(0x4E20, 0x4A);
             } else if (((Hero *)(D_0013E633 + 0xE1D))->state.current == 0x1E) {
-                Help_2E08E8 *h = D_00141948_2E08E8;
+                Help_2E08E8 *h = usage_stats_r;
                 unsigned int c = h[0x13].count;
                 if (c <= 0xFFFE) {
                     h[0x13].count = c + 1;
@@ -129,7 +129,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
             && D_L03_0015F76C < 3
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
-            Help_2E08E8 *b = D_00141A68_2E08E8;
+            Help_2E08E8 *b = help_records_r;
             if (b[0x40].count == 0) {
                 Help_Request(0x3EC, 0x40);
             }
@@ -140,7 +140,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             && ((Hero *)(D_0013E633 + 0xE1D))->state.current == 1
             && D_L03_0015F768 == -1
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
-            Help_2E08E8 *b = D_00141A68_2E08E8;
+            Help_2E08E8 *b = help_records_r;
             if (b[0x40].count != 0 && b[0x41].count == 0) {
                 Help_Request(0x3ED, 0x41);
             }
@@ -149,7 +149,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f40) != 0
             && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
-            Help_2E08E8 *b = D_00141A68_2E08E8;
+            Help_2E08E8 *b = help_records_r;
             if (b[0x54].count == 0) {
                 Help_Request(0xBC0, 0x54);
             }
@@ -157,14 +157,14 @@ void update_kerwan_tutorial_hints(Moby *moby) {
 
         if (kerwan_game_mode == 0 && (discount_purchase_pricing + 0x11)[0] != 0
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
-            Help_2E08E8 *b = D_00141A68_2E08E8;
+            Help_2E08E8 *b = help_records_r;
             if (b[0x19].count == 0) {
                 Help_Request(0xBBD, 0x19);
             }
         }
 
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f34) != 0) {
-            Help_2E08E8 *h = D_00141948_2E08E8;
+            Help_2E08E8 *h = usage_stats_r;
             if (h[0xF].count == 0
                 && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)) {
                 int n;
@@ -177,22 +177,22 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (((Hero *)(D_0013E633 + 0xE1D))->unk988 != 0 && D_00141948_2E08E8[0xF].count == 0) {
+        if (((Hero *)(D_0013E633 + 0xE1D))->unk988 != 0 && usage_stats_r[0xF].count == 0) {
             ((Hero *)(D_0013E633 + 0xE1D))->unk988 = 0;
             data->f54++;
         }
-        if (D_00141948_2E08E8[0xF].count == 0
+        if (usage_stats_r[0xF].count == 0
             && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
             && data->f54 >= 3
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
-            Help_2E08E8 *b = D_00141A68_2E08E8;
+            Help_2E08E8 *b = help_records_r;
             if (b[0x1A].count == 0) {
                 Help_Request(0xBBE, 0x1A);
             }
         }
 
         if (((Hero *)(D_0013E633 + 0xE1D))->state.current == 0x74) {
-            Help_2E08E8 *h = D_00141948_2E08E8;
+            Help_2E08E8 *h = usage_stats_r;
             if (h[0x10].count == 0) {
                 int n;
                 h[0x10].count++;
@@ -204,10 +204,10 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f2C) != 0 && D_00141948_2E08E8[0x10].count == 0
+        if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f2C) != 0 && usage_stats_r[0x10].count == 0
             && ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 6 && ((Hero *)(D_0013E633 + 0xE1D))->items[0].item_id == 8
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
-            Help_2E08E8 *b = D_00141A68_2E08E8;
+            Help_2E08E8 *b = help_records_r;
             if (b[0x1B].count == 0) {
                 Help_Request(0xBBF, 0x1B);
             }
@@ -216,7 +216,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f44) != 0
             && (((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) == 9)
             && D_L03_00179590[0] == 0 && D_L03_00179590[9] == -1) {
-            Help_2E08E8 *b = D_00141A68_2E08E8;
+            Help_2E08E8 *b = help_records_r;
             if (b[0x79].count == 0) {
                 Help_Request(0x4E2F, 0x79);
             }
@@ -224,8 +224,8 @@ void update_kerwan_tutorial_hints(Moby *moby) {
 
         if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, data->f7C) != 0
             && ((unsigned int)((Hero *)(D_0013E633 + 0xE1D))->state.control_mode) < 2) {
-            Help_2E08E8 *b = D_00141A68_2E08E8;
-            if (b[0x4F].count == 0 && D_00141948_2E08E8[0x14].count == 0) {
+            Help_2E08E8 *b = help_records_r;
+            if (b[0x4F].count == 0 && usage_stats_r[0x14].count == 0) {
                 int count = 0;
                 int i;
                 for (i = 0; i < 37; i++) {

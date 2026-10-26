@@ -29,14 +29,14 @@ void draw_ship_hud(char *moby) {
     float q;
 
     VU1_addGSregister(0x42, 0x8000000044L);
-    DrawTexturedQuad(0x170, (s = (char *)D_0013E15A + 0x4A6, *(int *)(s + 4)) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, func_001F4868_l(0x3C));
-    DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, func_001F4868_l(0x3D));
+    DrawTexturedQuad(0x170, (s = (char *)D_0013E15A + 0x4A6, *(int *)(s + 4)) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(0x3C));
+    DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(0x3D));
     VU1_addGSregister(0x42, 0x8000000048L);
     GetEffectTex(0x3E);
     p = pokitaru_moby_groups[*(short *)(d + 0x108)];
     if (p != 0) {
         do {
-            char *o = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + D_L11_00160058_m);
+            char *o = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + pokitaru_mobys_m);
             if (o[0x20] >= 0) {
                 int cnt = collect_oil_tanker_chain_mobys(o, list);
                 int w;
@@ -84,13 +84,13 @@ void draw_ship_hud(char *moby) {
             m = 2.0f * (1.0f - t);
             k = t * 5.0f + 1.0f;
             if (m > 1.0f) m = 1.0f;
-            c = func_001FA898_r(m * 96.0f);
-            func_L11_00312510_f(IntToFloat(sp40), IntToFloat(sp44), k, normalize_angle(IntToFloat(level_frame) / 30.0f), 0, 0xFF, 0, c);
+            c = truncate_float_to_s32_r(m * 96.0f);
+            draw_quarter_turn_textured_quads_f(IntToFloat(sp40), IntToFloat(sp44), k, normalize_angle(IntToFloat(level_frame) / 30.0f), 0, 0xFF, 0, c);
             *(int *)(d + 0xEC) = 0;
         } else {
             a = 0xFF;
             if ((*(int *)(d + 0x8C) / scale_ticks(0x14)) & 1) a = 0;
-            func_L11_00312510_f(IntToFloat(sp40), IntToFloat(sp44), 1.0f, 0.0f, 0xFF, a, 0, 0x60);
+            draw_quarter_turn_textured_quads_f(IntToFloat(sp40), IntToFloat(sp44), 1.0f, 0.0f, 0xFF, a, 0, 0x60);
             *(int *)(d + 0xEC) = *(int *)(d + 0x88);
         }
     }
@@ -118,7 +118,7 @@ void draw_ship_hud(char *moby) {
         *(int *)(d + 0x11C) = 0;
     }
     }
-    func_001F9908_i(d + 0x120);
+    fast_dec_timer_i(d + 0x120);
     {
     unsigned char *g2 = (unsigned char *)D_0013E633 + 0xE1D;
     if ((g2[0x15F6] < 5 && ((HelpTab_313218 *)(D_0014171B + 0x34D))->r[0x57].count == 0)
@@ -133,7 +133,7 @@ void draw_ship_hud(char *moby) {
         }
     }
     if (*(unsigned char *)(moby + 0x20) == 8) {
-        func_001F6FD8_c(0x100, 0xC8, 0x80005080L, func_001FE540_id(0x523E), 0x11);
+        FontPrintCenterLarge_c(0x100, 0xC8, 0x80005080L, msg_string_id(0x523E), 0x11);
     }
     {
     unsigned char *h = (unsigned char *)D_0013E633 + 0xE1D;
@@ -142,7 +142,7 @@ void draw_ship_hud(char *moby) {
     q = FastAbsF(f);
     if (q > 1.0f) f /= q;
     *(float *)(d + 0xF0) += f;
-    v = func_001FA898_r(*(float *)(d + 0xF0) * 251.0f / *(float *)(h + 0x1600)) + 2;
+    v = truncate_float_to_s32_r(*(float *)(d + 0xF0) * 251.0f / *(float *)(h + 0x1600)) + 2;
     if (v > 0xFD) v = 0xFD;
     if (v < 2) v = 2;
     lo = *(int *)(d + 0xF4) <= v ? *(int *)(d + 0xF4) : v;

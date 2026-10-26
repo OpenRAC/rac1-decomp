@@ -32,59 +32,59 @@ extern Hero hero_2B33E8 __asm__("D_0013F450");
 extern Input_2B33E8 input_2B33E8 __asm__("D_0013CA40");
 extern Order_2B33E8 order_2B33E8 __asm__("D_0013E620");
 extern unsigned char D_0014171B_2B33E8[] __asm__("D_0014171B");
-extern char D_L00_00166D80_2B33E8[] __asm__("D_L00_00166D80");
-extern char D_L00_00166EC0_2B33E8[] __asm__("D_L00_00166EC0");
-extern char D_L00_00173F40_2B33E8[] __asm__("D_L00_00173F40");
-extern float D_L00_00173F68_2B33E8 __asm__("D_L00_00173F68");
-extern float D_L00_0017ADF4_2B33E8 __asm__("D_L00_0017ADF4");
-extern Moby *D_L00_001ABD80_2B33E8[] __asm__("D_L00_001ABD80");
-extern Light_2B33E8 D_L00_001803C0_2B33E8[] __asm__("D_L00_001803C0");
-extern int D_L00_0015F6A8_2B33E8 __asm__("D_L00_0015F6A8") MACRO_ADDR;
-extern int D_L00_0015F6B0_2B33E8 __asm__("D_L00_0015F6B0") MACRO_ADDR;
-extern float D_0015EE6C_2B33E8 __asm__("D_0015EE6C") MACRO_ADDR;
-extern int D_0015EFA4_2B33E8 __asm__("D_0015EFA4") MACRO_ADDR;
-extern int D_0015EE84_2B33E8 __asm__("D_0015EE84") MACRO_ADDR;
+extern char player_camera_r[] __asm__("D_L00_00166D80");
+extern char g_debug_camera_r[] __asm__("D_L00_00166EC0");
+extern char coll_hit_result_r[] __asm__("D_L00_00173F40");
+extern float coll_hit_point_z_r __asm__("D_L00_00173F68");
+extern float weapon_aim_mode1_launch_pitch_r __asm__("D_L00_0017ADF4");
+extern Moby *active_mobies_r[] __asm__("D_L00_001ABD80");
+extern Light_2B33E8 level_point_lights_r[] __asm__("D_L00_001803C0");
+extern int cinematic_mode_r __asm__("D_L00_0015F6A8") MACRO_ADDR;
+extern int level_frame_counter_r __asm__("D_L00_0015F6B0") MACRO_ADDR;
+extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
+extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
+extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 
-extern void func_L00_002B2DD8_2B33E8(Moby *) __asm__("func_L00_002B2DD8");
-extern void func_001FA480_2B33E8(void *, void *) __asm__("func_001FA480");
-extern void func_001FA4A0_2B33E8(void *, void *) __asm__("func_001FA4A0");
-extern int func_001F9908_2B33E8(int *) __asm__("func_001F9908");
-extern void func_L00_00222B80_2B33E8(int, int) __asm__("func_L00_00222B80");
-extern void func_001F9EE8_2B33E8(void *, void *, void *) __asm__("func_001F9EE8");
-extern void func_001F9EC0_2B33E8(void *, void *, void *) __asm__("func_001F9EC0");
-extern void func_001F9BD8_2B33E8(void *, void *, void *) __asm__("func_001F9BD8");
-extern int func_L00_001EFFF0_2B33E8(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-extern int func_001F9850_2B33E8(int) __asm__("func_001F9850");
-extern float func_001FA888_2B33E8(int) __asm__("func_001FA888");
-extern float func_001F9878_2B33E8(float) __asm__("func_001F9878");
-extern float func_001FA7D8_2B33E8(float) __asm__("func_001FA7D8");
-extern void func_L00_001EE2E0_2B33E8(int, int, float, void *, float, int, int, float, int) __asm__("func_L00_001EE2E0");
-extern int func_L00_00234718_2B33E8(int) __asm__("func_L00_00234718");
-extern float func_001F9D10_2B33E8(void *, void *) __asm__("func_001F9D10");
-extern float func_001F9B88_2B33E8(float) __asm__("func_001F9B88");
-extern void func_00213DE0_2B33E8(void *, int, int, int) __asm__("func_00213DE0");
-extern int func_L00_00234638_2B33E8(int, int) __asm__("func_L00_00234638");
-extern float func_L00_001FF860_2B33E8(float, float) __asm__("func_L00_001FF860");
-extern float func_001F9CE8_2B33E8(void *) __asm__("func_001F9CE8");
-extern void func_001F9BC0_2B33E8(void *) __asm__("func_001F9BC0");
-extern void func_L00_00250800_2B33E8(void *, int, void *) __asm__("func_L00_00250800");
-extern Aim_2B33E8 *func_L00_0025D390_2B33E8(void *) __asm__("func_L00_0025D390");
-extern float func_001F9D48_2B33E8(void *, void *) __asm__("func_001F9D48");
-extern float func_001FA850_2B33E8(float, float) __asm__("func_001FA850");
-extern void func_00215C00_2B33E8(void *, float, float, float) __asm__("func_00215C00");
-extern float func_001F9FC0_2B33E8(float) __asm__("func_001F9FC0");
-extern int func_L00_002608F0_2B33E8(void *) __asm__("func_L00_002608F0");
-extern int func_0022ED80_2B33E8(int, int, int) __asm__("func_0022ED80");
-extern void func_L00_002B30C8_2B33E8(void *) __asm__("func_L00_002B30C8");
-extern void *func_L00_002B0F58_2B33E8(void *, void *, void *, float, float, float, float, float) __asm__("func_L00_002B0F58");
-extern float func_L00_002B1238_2B33E8(int) __asm__("func_L00_002B1238");
-extern void func_L00_00232C10_2B33E8(int, int, float) __asm__("func_L00_00232C10");
-extern void func_L00_0020EB60_2B33E8(void) __asm__("func_L00_0020EB60");
-extern float func_001F9F90_2B33E8(float) __asm__("func_001F9F90");
-extern float func_001F9FA8_2B33E8(float) __asm__("func_001F9FA8");
-extern int func_L00_0023F0D0_2B33E8(void *, float, float, float, float, float) __asm__("func_L00_0023F0D0");
-extern void func_L00_0023F1D0_2B33E8(int) __asm__("func_L00_0023F1D0");
-extern int func_001F9938_2B33E8(short *) __asm__("func_001F9938");
+extern void emit_object_offset_particles_r(Moby *) __asm__("func_L00_002B2DD8");
+extern void matrix_copy_rows_r(void *, void *) __asm__("func_001FA480");
+extern void matrix_from_basis_rows_r(void *, void *) __asm__("func_001FA4A0");
+extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
+extern void HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
+extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
+extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
+extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
+extern int scale_ticks_r(int) __asm__("func_001F9850");
+extern float IntToFloat_r(int) __asm__("func_001FA888");
+extern float multiply_global_factor_r(float) __asm__("func_001F9878");
+extern float FastNormalizeAngle_r(float) __asm__("func_001FA7D8");
+extern void EffectQueue_Add_r(int, int, float, void *, float, int, int, float, int) __asm__("func_L00_001EE2E0");
+extern int get_ammo_r(int) __asm__("func_L00_00234718");
+extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
+extern float FastAbsF_r(float) __asm__("func_001F9B88");
+extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
+extern int use_ammo_r(int, int) __asm__("func_L00_00234638");
+extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
+extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
+extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
+extern Aim_2B33E8 *GetFlaggedPvarWord_r(void *) __asm__("func_L00_0025D390");
+extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
+extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
+extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
+extern float FastArcSin_r(float) __asm__("func_001F9FC0");
+extern int find_listed_moby_by_data_id_r(void *) __asm__("func_L00_002608F0");
+extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
+extern void emit_object_offset_particle_burst_r(void *) __asm__("func_L00_002B30C8");
+extern void *spawn_devastator_missile_r(void *, void *, void *, float, float, float, float, float) __asm__("func_L00_002B0F58");
+extern float calculate_eased_step_sum_r(int) __asm__("func_L00_002B1238");
+extern void set_hero_animation_r(int, int, float) __asm__("func_L00_00232C10");
+extern void start_equipped_item_animation_r(void) __asm__("func_L00_0020EB60");
+extern float FastCos_r(float) __asm__("func_001F9F90");
+extern float FastSin_r(float) __asm__("func_001F9FA8");
+extern int allocate_colored_effect_slot_r(void *, float, float, float, float, float) __asm__("func_L00_0023F0D0");
+extern void release_point_light_slot_r(int) __asm__("func_L00_0023F1D0");
+extern int FastDecTimer_r(short *) __asm__("func_001F9938");
 
 /* Devastator (class 157) update: tracks the aimed target, draws the reticle, picks a target and fires,
    keeps its usage statistics and moves the muzzle light. */
@@ -107,7 +107,7 @@ void func_L00_002B33E8_r(Moby *m) {
     float a, b, c;
     int i;
 
-    func_L00_002B2DD8_2B33E8(m);
+    emit_object_offset_particles_r(m);
     height = 0.75f;
     limit = 10000.0f;
     if ((unsigned char)m->state == 0) {
@@ -115,88 +115,88 @@ void func_L00_002B33E8_r(Moby *m) {
         data->light = -1;
         data->glow = 0;
     }
-    func_001FA480_2B33E8(&rotation, D_L00_00166D80_2B33E8);
-    func_001FA4A0_2B33E8(&inverse, &rotation);
-    func_001F9908_2B33E8(&data->cooldown);
-    if (func_001F9908_2B33E8(&data->target_timer) ||
+    matrix_copy_rows_r(&rotation, player_camera_r);
+    matrix_from_basis_rows_r(&inverse, &rotation);
+    fast_dec_timer_r(&data->cooldown);
+    if (fast_dec_timer_r(&data->target_timer) ||
         (data->target && ((unsigned char)data->target->state & 0x80))) data->target = 0;
-    if (hero_2B33E8.state.current == 1) func_L00_00222B80_2B33E8(30, 1);
+    if (hero_2B33E8.state.current == 1) HeroEnterMoveState_r(30, 1);
     if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1) && !hero_2B33E8.item_use_locked) {
         velocity.q = 0;
         velocity.f.z = 70.0f;
-        func_001F9EE8_2B33E8(&velocity, &velocity, &inverse);
-        func_001F9BD8_2B33E8(&launch, D_L00_00166EC0_2B33E8, &velocity);
-        if (func_L00_001EFFF0_2B33E8(D_L00_00166EC0_2B33E8, &launch, 0, (int)m, 0)) {
-            hit = (Hit_2B33E8 *)D_L00_00173F40_2B33E8;
+        transform_vector_r(&velocity, &velocity, &inverse);
+        FastVecAdd_r(&launch, g_debug_camera_r, &velocity);
+        if (coll_line_r(g_debug_camera_r, &launch, 0, (int)m, 0)) {
+            hit = (Hit_2B33E8 *)coll_hit_result_r;
             if (hit->moby && (hit->moby->flags & 0x1000)) {
                 data->target = hit->moby;
-                data->target_timer = func_001F9850_2B33E8(20);
+                data->target_timer = scale_ticks_r(20);
                 data->target_height = hit->pos.f.z - data->target->pos.z;
             }
         }
-        func_L00_001EE2E0_2B33E8((int)m, 0xFF180A65, 1.0f,
-            0, func_001FA7D8_2B33E8(func_001FA888_2B33E8(D_L00_0015F6B0_2B33E8 % func_001F9850_2B33E8(240)) * 360.0f / func_001F9878_2B33E8(240.0f) * 0.017453292f),
+        EffectQueue_Add_r((int)m, 0xFF180A65, 1.0f,
+            0, FastNormalizeAngle_r(IntToFloat_r(level_frame_counter_r % scale_ticks_r(240)) * 360.0f / multiply_global_factor_r(240.0f) * 0.017453292f),
             0x27, -1, 90.0f, 4);
-        if (data->target && !data->cooldown && func_L00_00234718_2B33E8(-1)) {
-            float d = func_001F9D10_2B33E8(D_L00_00166EC0_2B33E8, &data->target->pos) / 100.0f;
+        if (data->target && !data->cooldown && get_ammo_r(-1)) {
+            float d = FastVecDist_r(g_debug_camera_r, &data->target->pos) / 100.0f;
             qcopy(&point, &data->target->pos);
             point.f.z += data->target_height;
-            size = func_001F9B88_2B33E8(0.9f - d * 0.57f);
-            func_L00_001EE2E0_2B33E8((int)m, 0xFF0FFF0F, size,
-                &point, func_001FA7D8_2B33E8(func_001FA888_2B33E8(D_L00_0015F6B0_2B33E8 % func_001F9850_2B33E8(240)) * -360.0f / func_001F9878_2B33E8(240.0f) * 0.017453292f),
+            size = FastAbsF_r(0.9f - d * 0.57f);
+            EffectQueue_Add_r((int)m, 0xFF0FFF0F, size,
+                &point, FastNormalizeAngle_r(IntToFloat_r(level_frame_counter_r % scale_ticks_r(240)) * -360.0f / multiply_global_factor_r(240.0f) * 0.017453292f),
                 0x27, -1, 90.0f, 4);
         }
     }
     if (hero_2B33E8.items[6].locked_on) {
         data->target = hero_2B33E8.items[6].lock_target;
-        data->target_timer = func_001F9850_2B33E8(20);
-        data->target_height = D_L00_00173F68_2B33E8 - data->target->pos.z;
+        data->target_timer = scale_ticks_r(20);
+        data->target_height = coll_hit_point_z_r - data->target->pos.z;
     }
-    if (D_L00_0015F6A8_2B33E8 != 2 && !data->cooldown && !hero_2B33E8.item_use_locked && m->seq < 2 &&
-        (input_2B33E8.held & hero_2B33E8.items[0].button_mask) && func_001F9850_2B33E8(22) < hero_2B33E8.items[0].ready_frames) {
+    if (cinematic_mode_r != 2 && !data->cooldown && !hero_2B33E8.item_use_locked && m->seq < 2 &&
+        (input_2B33E8.held & hero_2B33E8.items[0].button_mask) && scale_ticks_r(22) < hero_2B33E8.items[0].ready_frames) {
         velocity.q = 0;
-        if (m->prev_seq == 0) func_00213DE0_2B33E8(m, 1, 0, func_001F9850_2B33E8(4));
+        if (m->prev_seq == 0) MobyBlendAnimation_r(m, 1, 0, scale_ticks_r(4));
         if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1)) {
-            velocity.f.z = D_0015EE6C_2B33E8 * 10.0f;
-            func_001F9EE8_2B33E8(&velocity, &velocity, &inverse);
+            velocity.f.z = g_frame_time_r * 10.0f;
+            transform_vector_r(&velocity, &velocity, &inverse);
         } else {
-            velocity.f.x = D_0015EE6C_2B33E8 * 10.0f;
-            func_001F9EC0_2B33E8(&velocity, &velocity, &hero_2B33E8.basis);
+            velocity.f.x = g_frame_time_r * 10.0f;
+            matrix_mul_vec3_r(&velocity, &velocity, &hero_2B33E8.basis);
         }
-        if (func_L00_00234638_2B33E8(-1, 1)) {
+        if (use_ammo_r(-1, 1)) {
             best = 0;
             if (hero_2B33E8.items[6].locked_on) yaw = hero_2B33E8.items[6].lock_yaw;
-            else yaw = func_L00_001FF860_2B33E8(velocity.f.x, velocity.f.y);
-            pitch = -func_L00_001FF860_2B33E8(func_001F9CE8_2B33E8(&velocity), velocity.f.z);
+            else yaw = fast_atan2_r(velocity.f.x, velocity.f.y);
+            pitch = -fast_atan2_r(vec_length_xy_r(&velocity), velocity.f.z);
             yaw0 = yaw;
             pitch0 = pitch;
             if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1)) {
-                func_001F9BC0_2B33E8(&launch);
+                clear_u64_value_r(&launch);
                 launch.f.x += 0.15f;
                 launch.f.z += 0.75f;
                 launch.f.y += 0.3f;
-                func_001F9EE8_2B33E8(&launch, &launch, &inverse);
-                func_001F9BD8_2B33E8(&launch, &launch, D_L00_00166EC0_2B33E8);
+                transform_vector_r(&launch, &launch, &inverse);
+                FastVecAdd_r(&launch, &launch, g_debug_camera_r);
                 if (data->target) height = data->target_height;
             } else {
-                func_L00_00250800_2B33E8(m, 0, &launch);
+                Moby_GetJointWorldPos_r(m, 0, &launch);
                 i = 0;
-                o = D_L00_001ABD80_2B33E8[i];
+                o = active_mobies_r[i];
                 while (o) {
                     if ((*(signed char *)&o->state) >= 0) {
                         qcopy(&point, &o->pos);
-                        r = func_L00_0025D390_2B33E8(o);
+                        r = GetFlaggedPvarWord_r(o);
                         if (r) point.f.z += r->height;
                         else point.f.z += 0.5f;
                         if ((o->flags & 0x1000) && o && ((Class_2B33E8 *)o->pclass) && ((Class_2B33E8 *)o->pclass)->category == 5) {
                             float tyaw, tpitch, distance, spread, off;
-                            tyaw = func_L00_001FF860_2B33E8(point.f.x - launch.f.x, point.f.y - launch.f.y);
-                            tpitch = func_L00_001FF860_2B33E8(func_001F9D48_2B33E8(&launch, &point), point.f.z - launch.f.z);
-                            distance = func_001F9D10_2B33E8(&launch, &point);
+                            tyaw = fast_atan2_r(point.f.x - launch.f.x, point.f.y - launch.f.y);
+                            tpitch = fast_atan2_r(vec_distance_xy_r(&launch, &point), point.f.z - launch.f.z);
+                            distance = FastVecDist_r(&launch, &point);
                             if (distance < 2.5f) {
                                 Moby *cam = hero_2B33E8.moby;
-                                if (func_001FA850_2B33E8(cam->rot.z, func_L00_001FF860_2B33E8(o->pos.x - hero_2B33E8.motion.pos.f[0], o->pos.y - hero_2B33E8.motion.pos.f[1])) < 1.0471976f &&
-                                    func_001F9B88_2B33E8(tpitch) < 0.7853982f) {
+                                if (FastDiffRots_r(cam->rot.z, fast_atan2_r(o->pos.x - hero_2B33E8.motion.pos.f[0], o->pos.y - hero_2B33E8.motion.pos.f[1])) < 1.0471976f &&
+                                    FastAbsF_r(tpitch) < 0.7853982f) {
                                     limit = distance;
                                     pitch = -tpitch;
                                     best = o;
@@ -205,27 +205,27 @@ void func_L00_002B33E8_r(Moby *m) {
                                 }
                             }
                             if (!(limit < distance)) {
-                                spread = func_001FA888_2B33E8(order_2B33E8.level) * 0.6981317f;
-                                func_00215C00_2B33E8(&tmp, distance, yaw, pitch + hero_2B33E8.ground_pitch.f * 0.5f);
-                                func_001F9BD8_2B33E8(&tmp, &tmp, &launch);
-                                off = func_001F9FC0_2B33E8(func_001F9D10_2B33E8(&tmp, &point) / (distance + distance));
+                                spread = IntToFloat_r(order_2B33E8.level) * 0.6981317f;
+                                BuildSphericalOffset_r(&tmp, distance, yaw, pitch + hero_2B33E8.ground_pitch.f * 0.5f);
+                                FastVecAdd_r(&tmp, &tmp, &launch);
+                                off = FastArcSin_r(FastVecDist_r(&tmp, &point) / (distance + distance));
                                 off = off + off;
                                 if (spread + 0.17453292f < off) {
                                     if (r) {
-                                        float radius = func_001FA888_2B33E8(r->radius) * 0.125f;
+                                        float radius = IntToFloat_r(r->radius) * 0.125f;
                                         if (radius < distance) {
-                                            off -= func_001F9FC0_2B33E8(radius / distance);
+                                            off -= FastArcSin_r(radius / distance);
                                             if (off < 0.0f) off = 0.0f;
                                         }
                                     }
                                 }
                                 if (off < spread + 0.17453292f) {
-                                    if (!func_L00_001EFFF0_2B33E8(D_L00_00166EC0_2B33E8, &point, 6, (int)m, 0)) {
+                                    if (!coll_line_r(g_debug_camera_r, &point, 6, (int)m, 0)) {
                                         best = o;
                                         limit = distance;
                                         pitch = -tpitch;
                                         yaw = tyaw;
-                                        if (!func_L00_002608F0_2B33E8(best)) {
+                                        if (!find_listed_moby_by_data_id_r(best)) {
                                             height = 0.5f;
                                             data->target = best;
                                             if (r) height = r->height;
@@ -236,89 +236,89 @@ void func_L00_002B33E8_r(Moby *m) {
                         }
                     }
                     i++;
-                    o = D_L00_001ABD80_2B33E8[i];
+                    o = active_mobies_r[i];
                 }
             }
-            func_0022ED80_2B33E8(0, 0, (int)m);
-            data->glow = func_001F9850_2B33E8(5) + func_001F9850_2B33E8(10);
-            if (hero_2B33E8.state.current != 30) func_L00_002B30C8_2B33E8(m);
+            Moby_PlaySound_r(0, 0, (int)m);
+            data->glow = scale_ticks_r(5) + scale_ticks_r(10);
+            if (hero_2B33E8.state.current != 30) emit_object_offset_particle_burst_r(m);
             stats = (Stats_2B33E8 *)(D_0014171B_2B33E8 + 0x65);
             if (stats->uses < 65535) stats->uses++;
-            if (func_001F9850_2B33E8(D_0015EFA4_2B33E8) / 600 > stats->longest)
-                stats->longest = func_001F9850_2B33E8(D_0015EFA4_2B33E8) / 600;
-            stats->levels = (stats->levels | (1 << D_0015EE84_2B33E8)) | 0x80000000;
+            if (scale_ticks_r(gameplay_event_frame_count_r) / 600 > stats->longest)
+                stats->longest = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+            stats->levels = (stats->levels | (1 << g_current_level_index_r)) | 0x80000000;
             if (hero_2B33E8.unk22C8 == 1 && hero_2B33E8.state.current != 30) {
-                pitch = D_L00_0017ADF4_2B33E8;
+                pitch = weapon_aim_mode1_launch_pitch_r;
                 yaw = m->rot.z;
-                r = func_L00_0025D390_2B33E8(data->target);
+                r = GetFlaggedPvarWord_r(data->target);
                 if (r) height = r->height;
-                func_L00_002B0F58_2B33E8(m, &launch, data->target, yaw, pitch, height, yaw, pitch);
+                spawn_devastator_missile_r(m, &launch, data->target, yaw, pitch, height, yaw, pitch);
             } else if (limit < 2.0f) {
-                r = func_L00_0025D390_2B33E8(data->target);
+                r = GetFlaggedPvarWord_r(data->target);
                 if (r) height = r->height;
-                func_L00_002B0F58_2B33E8(m, &launch, data->target, yaw, pitch, height, yaw, pitch);
+                spawn_devastator_missile_r(m, &launch, data->target, yaw, pitch, height, yaw, pitch);
             } else {
                 if (!data->target) {
                     if (best) {
-                        limit = func_L00_002B1238_2B33E8(6);
+                        limit = calculate_eased_step_sum_r(6);
                         qcopy(&point, &best->pos);
-                        r = func_L00_0025D390_2B33E8(best);
+                        r = GetFlaggedPvarWord_r(best);
                         if (r) point.f.z += r->height;
                         else point.f.z += 0.5f;
                         pitch0 -= hero_2B33E8.ground_pitch.f * 0.5f;
-                        func_00215C00_2B33E8(&tmp, limit, yaw0, pitch0);
-                        func_001F9BD8_2B33E8(&tmp, &tmp, &launch);
-                        yaw = func_L00_001FF860_2B33E8(point.f.x - tmp.f.x, point.f.y - tmp.f.y);
-                        pitch = -func_L00_001FF860_2B33E8(func_001F9D48_2B33E8(&tmp, &point), point.f.z - tmp.f.z);
+                        BuildSphericalOffset_r(&tmp, limit, yaw0, pitch0);
+                        FastVecAdd_r(&tmp, &tmp, &launch);
+                        yaw = fast_atan2_r(point.f.x - tmp.f.x, point.f.y - tmp.f.y);
+                        pitch = -fast_atan2_r(vec_distance_xy_r(&tmp, &point), point.f.z - tmp.f.z);
                     } else if (hero_2B33E8.state.current != 30) {
                         pitch -= hero_2B33E8.ground_pitch.f * 0.5f;
                         pitch0 -= hero_2B33E8.ground_pitch.f * 0.5f;
                     }
                 }
-                func_L00_002B0F58_2B33E8(m, &launch, data->target, yaw, pitch, height, yaw0, pitch0);
+                spawn_devastator_missile_r(m, &launch, data->target, yaw, pitch, height, yaw0, pitch0);
             }
             if (hero_2B33E8.state.control_mode == 0 || (hero_2B33E8.state.current == 2 && hero_2B33E8.stick_magnitude < 0.7f)) {
-                func_L00_00232C10_2B33E8(0x36, 1, (float)func_001F9850_2B33E8(10));
+                set_hero_animation_r(0x36, 1, (float)scale_ticks_r(10));
             } else {
-                func_L00_0020EB60_2B33E8();
+                start_equipped_item_animation_r();
             }
         } else {
-            func_0022ED80_2B33E8(1, 0, (int)m);
+            Moby_PlaySound_r(1, 0, (int)m);
         }
-        data->cooldown = func_001F9850_2B33E8(35);
+        data->cooldown = scale_ticks_r(35);
     }
     if (m->seq != 2 && data->glow > 0) {
-        if (data->glow > func_001F9850_2B33E8(10)) {
-            a = func_001FA888_2B33E8(func_001F9850_2B33E8(5) + func_001F9850_2B33E8(10) - data->glow) / (float)func_001F9850_2B33E8(5);
-            b = func_001FA888_2B33E8(func_001F9850_2B33E8(5) + func_001F9850_2B33E8(10) - data->glow) * 0.8f / (float)func_001F9850_2B33E8(5);
-            c = func_001FA888_2B33E8(func_001F9850_2B33E8(5) + func_001F9850_2B33E8(10) - data->glow) * 0.5f / (float)func_001F9850_2B33E8(5);
+        if (data->glow > scale_ticks_r(10)) {
+            a = IntToFloat_r(scale_ticks_r(5) + scale_ticks_r(10) - data->glow) / (float)scale_ticks_r(5);
+            b = IntToFloat_r(scale_ticks_r(5) + scale_ticks_r(10) - data->glow) * 0.8f / (float)scale_ticks_r(5);
+            c = IntToFloat_r(scale_ticks_r(5) + scale_ticks_r(10) - data->glow) * 0.5f / (float)scale_ticks_r(5);
         } else {
-            a = func_001FA888_2B33E8(data->glow) / (float)func_001F9850_2B33E8(10);
-            b = func_001FA888_2B33E8(data->glow) * 0.8f / (float)func_001F9850_2B33E8(10);
-            c = func_001FA888_2B33E8(data->glow) * 0.5f / (float)func_001F9850_2B33E8(10);
+            a = IntToFloat_r(data->glow) / (float)scale_ticks_r(10);
+            b = IntToFloat_r(data->glow) * 0.8f / (float)scale_ticks_r(10);
+            c = IntToFloat_r(data->glow) * 0.5f / (float)scale_ticks_r(10);
         }
-        func_L00_00250800_2B33E8(m, 0, &velocity);
-        velocity.f.x += func_001F9F90_2B33E8(func_L00_001FF860_2B33E8(hero_2B33E8.facing_x, hero_2B33E8.facing_y));
-        velocity.f.y += func_001F9FA8_2B33E8(func_L00_001FF860_2B33E8(hero_2B33E8.facing_x, hero_2B33E8.facing_y));
+        Moby_GetJointWorldPos_r(m, 0, &velocity);
+        velocity.f.x += FastCos_r(fast_atan2_r(hero_2B33E8.facing_x, hero_2B33E8.facing_y));
+        velocity.f.y += FastSin_r(fast_atan2_r(hero_2B33E8.facing_x, hero_2B33E8.facing_y));
         velocity.f.z += 0.3f;
         if (data->light == -1) {
-            data->light = func_L00_0023F0D0_2B33E8(&velocity, 7.0f, 0.0f, a, b, c);
+            data->light = allocate_colored_effect_slot_r(&velocity, 7.0f, 0.0f, a, b, c);
         } else {
-            Light_2B33E8 *e = &D_L00_001803C0_2B33E8[data->light];
+            Light_2B33E8 *e = &level_point_lights_r[data->light];
             qcopy(&e->pos, &velocity);
             e->pos.f.w = 7.0f;
             e->x = a;
             e->y = b;
             e->z = c;
         }
-        func_001F9938_2B33E8(&data->glow);
+        FastDecTimer_r(&data->glow);
     } else if (data->light != -1) {
-        func_L00_0023F1D0_2B33E8(data->light);
+        release_point_light_slot_r(data->light);
         data->light = -1;
         data->glow = 0;
     }
     if (m->prev_seq == 2) {
-        func_L00_0023F1D0_2B33E8(data->light);
+        release_point_light_slot_r(data->light);
         data->light = -1;
         data->glow = 0;
     }
@@ -487,32 +487,32 @@ typedef struct { float u, v; } UV_2B4918;
 typedef struct Child_2B4918 { char pad0[0xA6]; short cls; } Child_2B4918;
 typedef struct Data_2B4918 { int f0; int f4; Child_2B4918 *child; char padC[0x14]; float f20; char pad24[8]; float f2C; } Data_2B4918;
 
-extern Ids_2B4918 D_L00_00161558_2B4918 __asm__("D_L00_00161558");
-extern Ids_2B4918 D_L00_00161560_2B4918 __asm__("D_L00_00161560");
-extern float D_L00_001DACE0_2B4918[][4] __asm__("D_L00_001DACE0");
-extern float D_L00_001DAD60_2B4918[][2] __asm__("D_L00_001DAD60");
-extern float D_L00_001DAD20_2B4918[][4] __asm__("D_L00_001DAD20");
-extern float D_L00_00166EC0_2B4918[] __asm__("D_L00_00166EC0");
-extern UV_2B4918 D_L00_001DA3B0_2B4918[] __asm__("D_L00_001DA3B0");
-extern float D_L00_001D9770_2B4918[][4] __asm__("D_L00_001D9770");
-extern P3_2B4918 D_L00_001DAD80_2B4918[] __asm__("D_L00_001DAD80");
-extern int D_L00_001DA9D0_2B4918[] __asm__("D_L00_001DA9D0");
+extern Ids_2B4918 joint_beam_alt_joint_ids_r __asm__("D_L00_00161558");
+extern Ids_2B4918 joint_beam_joint_ids_r __asm__("D_L00_00161560");
+extern float joint_beam_quad_a_corners_r[][4] __asm__("D_L00_001DACE0");
+extern float joint_beam_quad_uvs_r[][2] __asm__("D_L00_001DAD60");
+extern float joint_beam_quad_b_corners_r[][4] __asm__("D_L00_001DAD20");
+extern float g_debug_camera_r2[] __asm__("D_L00_00166EC0");
+extern UV_2B4918 joint_beam_ribbon_uvs_r[] __asm__("D_L00_001DA3B0");
+extern float joint_beam_ribbon_model_points_r[][4] __asm__("D_L00_001D9770");
+extern P3_2B4918 joint_beam_ribbon_world_verts_r[] __asm__("D_L00_001DAD80");
+extern int joint_beam_ribbon_colors_r[] __asm__("D_L00_001DA9D0");
 extern char D_0013E633_2B4918[] __asm__("D_0013E633");
-extern void func_0020DB98_2B4918(void *, int, void *, void *) __asm__("func_0020DB98");
-extern void func_001F9BF0_2B4918(void *, void *, void *) __asm__("func_001F9BF0");
-extern void func_L00_001FF4B0_2B4918(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void func_001F9CA0_2B4918(void *, void *, void *) __asm__("func_001F9CA0");
-extern void func_001FA190_2B4918(void *) __asm__("func_001FA190");
-extern void func_001FA540_2B4918(void *, void *, void *) __asm__("func_001FA540");
-extern long func_001F4868_2B4918(int) __asm__("func_001F4868");
-extern void func_001F9C30_2B4918(void *, void *, float) __asm__("func_001F9C30");
-extern float func_002140F8_2B4918(float, float) __asm__("func_002140F8");
-extern void func_L00_001FD1D8_2B4918(void *, void *, int) __asm__("func_L00_001FD1D8");
-extern void func_001F9BD8_2B4918(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_001F9EE8_2B4918(void *, void *, void *) __asm__("func_001F9EE8");
-extern void func_00234C98_2B4918(int, long) __asm__("func_00234C98");
-extern void func_001F7868_2B4918(void) __asm__("func_001F7868");
-extern void func_L00_001FDE48_2B4918(int, void *, void *, void *, int) __asm__("func_L00_001FDE48");
+extern void transform_scaled_vertex_batch_r(void *, int, void *, void *) __asm__("func_0020DB98");
+extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
+extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
+extern void FastVecCross_r(void *, void *, void *) __asm__("func_001F9CA0");
+extern void set_identity_matrix_r(void *) __asm__("func_001FA190");
+extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
+extern long GetEffectTex_r(int) __asm__("func_001F4868");
+extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
+extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern void draw_world_quad_r(void *, void *, int) __asm__("func_L00_001FD1D8");
+extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
+extern void transform_vector_r2(void *, void *, void *) __asm__("func_001F9EE8");
+extern void VU1_addGSregister_r(int, long) __asm__("func_00234C98");
+extern void font_queue_vu_state_r(void) __asm__("func_001F7868");
+extern void draw_env_overlay_mesh_r(int, void *, void *, void *, int) __asm__("func_L00_001FDE48");
 
 /* Draws the moby's beam: orients the moby along its child's two joints, draws three quads and a ribbon of 196 points. */
 void draw_joint_aligned_beam_effect(Moby *m) {
@@ -539,21 +539,21 @@ void draw_joint_aligned_beam_effect(Moby *m) {
     pk.tag[3] = 0x8000000048;
     pk.tag[0] = 0;
     if (data->f4 != 0) {
-        ids = D_L00_00161558_2B4918;
-        func_0020DB98_2B4918(child, 2, &ids, out);
+        ids = joint_beam_alt_joint_ids_r;
+        transform_scaled_vertex_batch_r(child, 2, &ids, out);
     } else {
-        ids = D_L00_00161560_2B4918;
-        func_0020DB98_2B4918(child, 2, &ids, out);
+        ids = joint_beam_joint_ids_r;
+        transform_scaled_vertex_batch_r(child, 2, &ids, out);
     }
     *(Q_2B4918 *)&up = 0;
     up.y = 1.0f;
-    func_001F9BF0_2B4918(&mtx[2], &out[0], &out[1]);
-    func_L00_001FF4B0_2B4918(&mtx[2], &mtx[2], 1.0f);
+    FastVecSub_r(&mtx[2], &out[0], &out[1]);
+    vec_scale_to_length_r(&mtx[2], &mtx[2], 1.0f);
     mtx[2].w = 0.0f;
-    func_001F9CA0_2B4918(&mtx[0], &up, &mtx[2]);
-    func_L00_001FF4B0_2B4918(&mtx[0], &mtx[0], 1.0f);
+    FastVecCross_r(&mtx[0], &up, &mtx[2]);
+    vec_scale_to_length_r(&mtx[0], &mtx[0], 1.0f);
     mtx[0].w = 0.0f;
-    func_001F9CA0_2B4918(&mtx[1], &mtx[2], &mtx[0]);
+    FastVecCross_r(&mtx[1], &mtx[2], &mtx[0]);
     mtx[1].w = 0.0f;
     qcopy(&mtx[3], &out[1]);
     mtx[3].w = 1.0f;
@@ -561,69 +561,69 @@ void draw_joint_aligned_beam_effect(Moby *m) {
     qcopy(&m->rot_row1, &mtx[1]);
     qcopy(&m->rot_row2, &mtx[2]);
     qcopy(&m->pos, &mtx[3]);
-    func_001FA190_2B4918(idm);
+    set_identity_matrix_r(idm);
     idm[3].w = 1.0f;
     idm[3].z = -0.075f;
     idm[3].x = 0.0f;
     idm[3].y = 0.0f;
-    func_001FA540_2B4918(res, mtx, idm);
-    pk.tag[1] = func_001F4868_2B4918(0xC);
+    sce_vu0_mul_matrix_r(res, mtx, idm);
+    pk.tag[1] = GetEffectTex_r(0xC);
     for (i = 0; i < 4; i++) {
         pk.col[i] = 0x80808080;
         if (i == 0 || i == 2) {
-            func_001F9C30_2B4918(pk.pos[i], D_L00_001DACE0_2B4918[i], data->f2C);
+            FastVecScale_r(pk.pos[i], joint_beam_quad_a_corners_r[i], data->f2C);
         } else {
             float *v = pk.pos[i];
-            func_001F9C30_2B4918(v, D_L00_001DACE0_2B4918[i], data->f2C);
-            v[2] -= func_002140F8_2B4918(0.0f, 0.1f);
+            FastVecScale_r(v, joint_beam_quad_a_corners_r[i], data->f2C);
+            v[2] -= random_float_between_r(0.0f, 0.1f);
         }
-        pk.uv[i][0] = D_L00_001DAD60_2B4918[i][0];
-        pk.uv[i][1] = D_L00_001DAD60_2B4918[i][1];
+        pk.uv[i][0] = joint_beam_quad_uvs_r[i][0];
+        pk.uv[i][1] = joint_beam_quad_uvs_r[i][1];
     }
-    func_L00_001FD1D8_2B4918(&pk, res, 0);
+    draw_world_quad_r(&pk, res, 0);
     for (i = 0; i < 4; i++) {
         if (i == 0 || i == 2) {
-            func_001F9C30_2B4918(pk.pos[i], D_L00_001DAD20_2B4918[i], data->f2C);
+            FastVecScale_r(pk.pos[i], joint_beam_quad_b_corners_r[i], data->f2C);
         } else {
             float *v = pk.pos[i];
-            func_001F9C30_2B4918(v, D_L00_001DAD20_2B4918[i], data->f2C);
-            v[2] -= func_002140F8_2B4918(0.0f, 0.1f);
+            FastVecScale_r(v, joint_beam_quad_b_corners_r[i], data->f2C);
+            v[2] -= random_float_between_r(0.0f, 0.1f);
         }
     }
-    func_L00_001FD1D8_2B4918(&pk, res, 0);
-    pk.tag[1] = func_001F4868_2B4918(0xB);
-    func_001F9C30_2B4918(&d, &mtx[2], -0.13f);
-    func_001F9BD8_2B4918(&d, &d, &mtx[3]);
-    func_001F9BF0_2B4918(&a, D_L00_00166EC0_2B4918, &d);
-    func_L00_001FF4B0_2B4918(&a, &a, 1.0f);
-    func_001F9CA0_2B4918(&b, &a, D_0013E633_2B4918 + 0x10AD);
-    func_L00_001FF4B0_2B4918(&b, &b, -1.0f);
-    func_001F9CA0_2B4918(&c, &b, &a);
+    draw_world_quad_r(&pk, res, 0);
+    pk.tag[1] = GetEffectTex_r(0xB);
+    FastVecScale_r(&d, &mtx[2], -0.13f);
+    FastVecAdd_r2(&d, &d, &mtx[3]);
+    FastVecSub_r(&a, g_debug_camera_r2, &d);
+    vec_scale_to_length_r(&a, &a, 1.0f);
+    FastVecCross_r(&b, &a, D_0013E633_2B4918 + 0x10AD);
+    vec_scale_to_length_r(&b, &b, -1.0f);
+    FastVecCross_r(&c, &b, &a);
     pk.col[0] = pk.col[1] = pk.col[2] = pk.col[3] = 0x7F2020FF;
     for (i = 0; i < 4; i++) {
-        func_001F9C30_2B4918(pk.pos[i], D_L00_001DACE0_2B4918[i], 0.1f);
-        func_001F9EE8_2B4918(pk.pos[i], pk.pos[i], &a);
+        FastVecScale_r(pk.pos[i], joint_beam_quad_a_corners_r[i], 0.1f);
+        transform_vector_r2(pk.pos[i], pk.pos[i], &a);
     }
-    func_L00_001FD1D8_2B4918(&pk, 0, 0);
-    func_00234C98_2B4918(6, func_001F4868_2B4918(0xA));
-    func_00234C98_2B4918(0x42, pk.tag[3]);
-    func_00234C98_2B4918(8, 0);
-    func_00234C98_2B4918(0x14, 0xFF9000000260);
-    func_00234C98_2B4918(0x4A, 0);
-    func_001F7868_2B4918();
+    draw_world_quad_r(&pk, 0, 0);
+    VU1_addGSregister_r(6, GetEffectTex_r(0xA));
+    VU1_addGSregister_r(0x42, pk.tag[3]);
+    VU1_addGSregister_r(8, 0);
+    VU1_addGSregister_r(0x14, 0xFF9000000260);
+    VU1_addGSregister_r(0x4A, 0);
+    font_queue_vu_state_r();
     for (i = 0; i < 0xC4; i++) {
-        func_001F9C30_2B4918(&e, D_L00_001D9770_2B4918[i], data->f20);
-        func_001F9EE8_2B4918(&e, &e, mtx);
-        D_L00_001DAD80_2B4918[i].x = e.x;
-        D_L00_001DAD80_2B4918[i].y = e.y;
-        D_L00_001DAD80_2B4918[i].z = e.z;
-        D_L00_001DA3B0_2B4918[i].v -= 0.025f;
-        if (D_L00_001DA3B0_2B4918[i].v < -7.0f) {
-            D_L00_001DA3B0_2B4918[i].v += 7.0f;
+        FastVecScale_r(&e, joint_beam_ribbon_model_points_r[i], data->f20);
+        transform_vector_r2(&e, &e, mtx);
+        joint_beam_ribbon_world_verts_r[i].x = e.x;
+        joint_beam_ribbon_world_verts_r[i].y = e.y;
+        joint_beam_ribbon_world_verts_r[i].z = e.z;
+        joint_beam_ribbon_uvs_r[i].v -= 0.025f;
+        if (joint_beam_ribbon_uvs_r[i].v < -7.0f) {
+            joint_beam_ribbon_uvs_r[i].v += 7.0f;
         }
     }
-    func_L00_001FDE48_2B4918(0x94, D_L00_001DAD80_2B4918, D_L00_001DA9D0_2B4918, D_L00_001DA3B0_2B4918, 1);
-    func_L00_001FDE48_2B4918(0x32, &D_L00_001DAD80_2B4918[0x92], &D_L00_001DA9D0_2B4918[0x92], &D_L00_001DA3B0_2B4918[0x92], 1);
+    draw_env_overlay_mesh_r(0x94, joint_beam_ribbon_world_verts_r, joint_beam_ribbon_colors_r, joint_beam_ribbon_uvs_r, 1);
+    draw_env_overlay_mesh_r(0x32, &joint_beam_ribbon_world_verts_r[0x92], &joint_beam_ribbon_colors_r[0x92], &joint_beam_ribbon_uvs_r[0x92], 1);
 }
 typedef struct { f32 f[4]; } __attribute__((aligned(16))) V4;
 typedef struct N { s32 f00; u8 p04[8]; s32 f0C; V4 v10; } N;
@@ -639,10 +639,10 @@ extern f32 random_float_between(f32, f32);
 extern void matrix_mul_vec3(V4 *, V4 *, V4 *);
 extern s32 scale_ticks(s32);
 extern u8 *PartType21Spawn(V4 *, V4 *, s32, s32, s32, s32, f32);
-extern f32 func_001F9D10_B4F40(V4 *, V4 *) __asm__("func_001F9D10");
-extern void func_001F9BF0_B4F40(V4 *, V4 *, V4 *) __asm__("func_001F9BF0");
-extern void func_L00_001FF4B0_B4F40(V4 *, V4 *, f32) __asm__("func_L00_001FF4B0");
-extern void func_001F9BD8_B4F40(V4 *, V4 *, V4 *) __asm__("func_001F9BD8");
+extern f32 FastVecDist_r2(V4 *, V4 *) __asm__("func_001F9D10");
+extern void FastVecSub_r2(V4 *, V4 *, V4 *) __asm__("func_001F9BF0");
+extern void vec_scale_to_length_r2(V4 *, V4 *, f32) __asm__("func_L00_001FF4B0");
+extern void FastVecAdd_r3(V4 *, V4 *, V4 *) __asm__("func_001F9BD8");
 extern s32 random_integer_below(s32);
 extern u8 *PartType23Spawn(V4 *, f32, f32, f32, f32, s32, V4 *, u32);
 extern short D_L00_0015F6B0_B4F40b SDATA(D_L00_0015F6B0);
@@ -677,11 +677,11 @@ void emit_beam_trail_particles(X *x) {
         PartType21Spawn(&a, &l0, 0x4F007FFF, 0x1FFFFFFF, scale_ticks(10), 1, 10000.0f);
     }
     if (g->f0C) {
-        s = func_001F9D10_B4F40(&g->v10, &a) * 0.5f;
-        func_001F9BF0_B4F40(&d, &g->v10, &a);
+        s = FastVecDist_r2(&g->v10, &a) * 0.5f;
+        FastVecSub_r2(&d, &g->v10, &a);
         for (i = 1; i < 2; i++) {
-            func_L00_001FF4B0_B4F40(&t, &d, s * (f32)i);
-            func_001F9BD8_B4F40(&t, &a, &t);
+            vec_scale_to_length_r2(&t, &d, s * (f32)i);
+            FastVecAdd_r3(&t, &a, &t);
             PartType21Spawn(&t, &l0, 0x4F007FFF, 0x1FFFFFFF, scale_ticks(10), 1, 10000.0f);
         }
     }
@@ -693,7 +693,7 @@ void emit_beam_trail_particles(X *x) {
     l0.f[2] = -0.3f;
     l0.f[3] = 1.0f;
     matrix_mul_vec3(&l0, &l0, &x->vC0);
-    func_001F9BD8_B4F40(&a, &x->v10, &l0);
+    FastVecAdd_r3(&a, &x->v10, &l0);
     l0.f[3] = 1.0f;
     l0.f[2] = -0.075f;
     l0.f[0] = 0.0f;
@@ -713,15 +713,15 @@ void emit_beam_trail_particles(X *x) {
     p = PartType23Spawn(&a, 0.05f, 1.01f, q, 30000.0f, 6, &l0, col);
     if (p) p[3] = 0x44;
     if (g->f0C) {
-        s = func_001F9D10_B4F40(&g->v10, &a) * 0.16667f;
-        func_001F9BF0_B4F40(&d, &g->v10, &a);
+        s = FastVecDist_r2(&g->v10, &a) * 0.16667f;
+        FastVecSub_r2(&d, &g->v10, &a);
         m = g_hero.i2084;
         n = 4;
         if (m == 8) n = 2;
         if (m == 0x81) n = 1;
         for (i = 1; i < n; i++) {
-            func_L00_001FF4B0_B4F40(&t, &d, s * (f32)i);
-            func_001F9BD8_B4F40(&t, &a, &t);
+            vec_scale_to_length_r2(&t, &d, s * (f32)i);
+            FastVecAdd_r3(&t, &a, &t);
             p = PartType23Spawn(&t, 0.05f, 1.01f, q, 30000.0f, 6, &l0, col);
             if (p) p[3] = 0x44;
         }
@@ -749,14 +749,14 @@ char *spawn_indexed_class_a7_moby(int a) {
 typedef struct { char pad000[0x198]; s32 i198; char pad19C[0x30E - 0x19C]; s16 i30E; char pad310[0x41E - 0x310]; s16 i41E; char pad420[0xAA8 - 0x420]; f32 fAA8; char padAAC[0x1180 - 0xAAC]; s32 i1180; char pad1184[0x11A8 - 0x1184]; s32 i11A8; char pad11AC[0x2080 - 0x11AC]; void *p2080; s32 i2084; } G_4198;
 typedef struct { s32 i0; char pad4[4]; s32 i8; s32 iC; char pad10[0x10]; f32 f20; f32 f24; f32 f28; f32 f2C; f32 f30; f32 f34; f32 f38; f32 f3C; } V_4198;
 typedef struct { char pad00[0x18]; f32 f18; char pad1C[4]; u8 state; char pad21[0xF]; u8 u30; char pad31[3]; u16 u34; char pad36[0x42]; V_4198 *v; } O_4198;
-extern G_4198 D_0013F450_4198 __asm__("D_0013F450");
-extern s32 func_001F9850_4198(s32) __asm__("func_001F9850");
-extern s32 func_001F9908_4198(void *) __asm__("func_001F9908");
-extern void func_001F49B0_4198(void *, void *) __asm__("func_001F49B0");
-extern void func_L00_002B4918_4198(void) __asm__("func_L00_002B4918");
-extern s32 func_L00_0020DB30_4198(s32) __asm__("func_L00_0020DB30");
-extern void func_0020D678_4198(void *) __asm__("func_0020D678");
-extern void func_L00_002B4F40_4198(void *) __asm__("func_L00_002B4F40");
+extern G_4198 g_hero_r __asm__("D_0013F450");
+extern s32 scale_ticks_r2(s32) __asm__("func_001F9850");
+extern s32 fast_dec_timer_r2(void *) __asm__("func_001F9908");
+extern void AddDrawCallback_r(void *, void *) __asm__("func_001F49B0");
+extern void draw_joint_aligned_beam_effect_r(void) __asm__("func_L00_002B4918");
+extern s32 hero_slot_item_id_r(s32) __asm__("func_L00_0020DB30");
+extern void DeleteMoby_r(void *) __asm__("func_0020D678");
+extern void emit_beam_trail_particles_r(void *) __asm__("func_L00_002B4F40");
 /* Multi-state update for a timed object: random delays from func_001F9850 pace the stages, which adjust the step and scale fields of its private block and call the shared callback. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002b2100.c, FUN_L00_002b4198. */
 void update_beam_effect_lifecycle(void *p) {
     O_4198 *o = (O_4198 *)p;
@@ -765,26 +765,26 @@ void update_beam_effect_lifecycle(void *p) {
     s32 st;
     s32 lim;
 
-    if ((&D_0013F450_4198)->i11A8 == 3) {
+    if ((&g_hero_r)->i11A8 == 3) {
         if (o->state == 1 || o->state == 3) {
-            st = (&D_0013F450_4198)->i2084;
+            st = (&g_hero_r)->i2084;
             if ((u32)(st - 0xB) < 4
-                || (st == 0x1C && ((u8 *)(&D_0013F450_4198)->p2080)[0x52] == ((u8 *)(&D_0013F450_4198)->p2080)[0x53]
-                    && (&D_0013F450_4198)->fAA8 >= 6.0f && (&D_0013F450_4198)->fAA8 <= 16.0f)) {
-                if (!(&D_0013F450_4198)->i41E) flag = 1;
+                || (st == 0x1C && ((u8 *)(&g_hero_r)->p2080)[0x52] == ((u8 *)(&g_hero_r)->p2080)[0x53]
+                    && (&g_hero_r)->fAA8 >= 6.0f && (&g_hero_r)->fAA8 <= 16.0f)) {
+                if (!(&g_hero_r)->i41E) flag = 1;
             }
-            if ((&D_0013F450_4198)->i2084 == 0x10) {
-                if ((&D_0013F450_4198)->i198 < func_001F9850_4198(0x2C)) {
+            if ((&g_hero_r)->i2084 == 0x10) {
+                if ((&g_hero_r)->i198 < scale_ticks_r2(0x2C)) {
                     flag = 1;
                 }
             }
-            if ((&D_0013F450_4198)->i2084 == 0x22) {
-                if ((&D_0013F450_4198)->i198 < func_001F9850_4198(0xF)
-                    || (func_001F9850_4198(0x21) < (&D_0013F450_4198)->i198 && (&D_0013F450_4198)->i30E != 0)) {
+            if ((&g_hero_r)->i2084 == 0x22) {
+                if ((&g_hero_r)->i198 < scale_ticks_r2(0xF)
+                    || (scale_ticks_r2(0x21) < (&g_hero_r)->i198 && (&g_hero_r)->i30E != 0)) {
                     flag = 1;
                 }
             }
-            if ((&D_0013F450_4198)->i2084 == 8 || (&D_0013F450_4198)->i2084 == 0x81) {
+            if ((&g_hero_r)->i2084 == 8 || (&g_hero_r)->i2084 == 0x81) {
                 flag = 1;
             }
         }
@@ -797,15 +797,15 @@ void update_beam_effect_lifecycle(void *p) {
         o->u34 |= 1;
         break;
     case 1:
-        if (func_L00_0020DB30_4198(3) != 3) {
-            func_0020D678_4198(o);
+        if (hero_slot_item_id_r(3) != 3) {
+            DeleteMoby_r(o);
         } else if (flag != 0) {
             o->state = 2;
-            v->i0 = func_001F9850_4198(2);
-            v->f30 = 0.0125f / func_001F9850_4198(2);
-            v->f34 = 0.2f / func_001F9850_4198(2);
-            v->f38 = 0.05f / func_001F9850_4198(2);
-            v->f3C = 0.025f / func_001F9850_4198(2);
+            v->i0 = scale_ticks_r2(2);
+            v->f30 = 0.0125f / scale_ticks_r2(2);
+            v->f34 = 0.2f / scale_ticks_r2(2);
+            v->f38 = 0.05f / scale_ticks_r2(2);
+            v->f3C = 0.025f / scale_ticks_r2(2);
             v->f20 = 0.0f;
             v->f24 = 0.0f;
             v->f28 = 0.0f;
@@ -817,9 +817,9 @@ void update_beam_effect_lifecycle(void *p) {
         v->f24 += v->f34;
         v->f28 += v->f38;
         v->f2C += v->f3C;
-        v->i8 = (&D_0013F450_4198)->i1180;
-        func_001F49B0_4198(func_L00_002B4918_4198, o);
-        if (func_001F9908_4198(v) != 0) {
+        v->i8 = (&g_hero_r)->i1180;
+        AddDrawCallback_r(draw_joint_aligned_beam_effect_r, o);
+        if (fast_dec_timer_r2(v) != 0) {
             o->state = 3;
             v->f20 = 0.0125f;
             v->f24 = 0.2f;
@@ -829,30 +829,30 @@ void update_beam_effect_lifecycle(void *p) {
         }
         break;
     case 3:
-        v->i8 = (&D_0013F450_4198)->i1180;
-        func_001F49B0_4198(func_L00_002B4918_4198, o);
+        v->i8 = (&g_hero_r)->i1180;
+        AddDrawCallback_r(draw_joint_aligned_beam_effect_r, o);
         if (flag == 0) {
             o->state = 4;
-            v->i0 = func_001F9850_4198(8);
-            v->f30 = 0.0125f / func_001F9850_4198(8);
-            v->f34 = 0.2f / func_001F9850_4198(8);
-            v->f38 = 0.05f / func_001F9850_4198(8);
-            v->f3C = 0.025f / func_001F9850_4198(8);
+            v->i0 = scale_ticks_r2(8);
+            v->f30 = 0.0125f / scale_ticks_r2(8);
+            v->f34 = 0.2f / scale_ticks_r2(8);
+            v->f38 = 0.05f / scale_ticks_r2(8);
+            v->f3C = 0.025f / scale_ticks_r2(8);
         } else {
             v->f20 = 0.0125f;
-            func_L00_002B4F40_4198(o);
+            emit_beam_trail_particles_r(o);
         }
         break;
     case 4:
-        if (func_001F9908_4198(v) != 0) {
+        if (fast_dec_timer_r2(v) != 0) {
             o->state = 1;
         } else {
             v->f20 -= v->f30;
             v->f24 -= v->f34;
             v->f28 -= v->f38;
             v->f2C -= v->f3C;
-            v->i8 = (&D_0013F450_4198)->i1180;
-            func_001F49B0_4198(func_L00_002B4918_4198, o);
+            v->i8 = (&g_hero_r)->i1180;
+            AddDrawCallback_r(draw_joint_aligned_beam_effect_r, o);
         }
         break;
     }
@@ -976,53 +976,53 @@ typedef union Work_2B5C98 {
     struct { V_2B5C98 v; V_2B5C98 rnd; } spray;
 } Work_2B5C98;
 
-extern char D_0013CA40_2B5C98[] __asm__("D_0013CA40");
+extern char g_controller_state_r[] __asm__("D_0013CA40");
 extern Order_2B5C98 order_2B5C98 __asm__("D_0013E620");
-extern Moby *D_L00_00173F58_2B5C98 __asm__("D_L00_00173F58");
-extern Light_2B5C98 D_L00_001803C0_2B5C98[] __asm__("D_L00_001803C0");
+extern Moby *g_coll_hit_moby_r __asm__("D_L00_00173F58");
+extern Light_2B5C98 level_point_lights_r2[] __asm__("D_L00_001803C0");
 
-extern int func_001F9938_2B5C98(short *) __asm__("func_001F9938");
-extern int func_001F9908_2B5C98(int *) __asm__("func_001F9908");
-extern void func_L00_00222B80_2B5C98(int, int) __asm__("func_L00_00222B80");
-extern int func_001F9850_2B5C98(int) __asm__("func_001F9850");
-extern void func_001FA480_2B5C98(void *, void *) __asm__("func_001FA480");
-extern void func_001FA4A0_2B5C98(void *, void *) __asm__("func_001FA4A0");
-extern void func_001F9EE8_2B5C98(void *, void *, void *) __asm__("func_001F9EE8");
-extern void func_001F9EC0_2B5C98(void *, void *, void *) __asm__("func_001F9EC0");
-extern void func_001F9BC0_2B5C98(void *) __asm__("func_001F9BC0");
-extern void func_001F9BD8_2B5C98(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_L00_001EE2E0_2B5C98(int, int, float, void *, float, int, int, float, int) __asm__("func_L00_001EE2E0");
-extern void func_L00_001FF4B0_2B5C98(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern int func_L00_001EFFF0_2B5C98(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-extern void func_L00_00250800_2B5C98(void *, int, void *) __asm__("func_L00_00250800");
-extern float func_L00_001FF860_2B5C98(float, float) __asm__("func_L00_001FF860");
-extern float func_001F9CE8_2B5C98(void *) __asm__("func_001F9CE8");
-extern Moby *func_L00_002B5998_2B5C98(Moby *, void *, float *, float *) __asm__("func_L00_002B5998");
-extern int func_L00_00234718_2B5C98(int) __asm__("func_L00_00234718");
-extern Aim_2B5C98 *func_L00_0025D390_2B5C98(void *) __asm__("func_L00_0025D390");
-extern float func_001F9D10_2B5C98(void *, void *) __asm__("func_001F9D10");
-extern float func_001F9B88_2B5C98(float) __asm__("func_001F9B88");
-extern int func_L00_00234638_2B5C98(int, int) __asm__("func_L00_00234638");
-extern float func_001F9D48_2B5C98(void *, void *) __asm__("func_001F9D48");
-extern float func_001FA850_2B5C98(float, float) __asm__("func_001FA850");
-extern float func_001FA748_2B5C98(float, float) __asm__("func_001FA748");
-extern void func_00215C00_2B5C98(void *, float, float, float) __asm__("func_00215C00");
-extern float func_001F9F90_2B5C98(float) __asm__("func_001F9F90");
-extern float func_001F9FA8_2B5C98(float) __asm__("func_001F9FA8");
-extern void func_L00_00233EE0_2B5C98(void *, float, float, float) __asm__("func_L00_00233EE0");
-extern void func_L00_001F2BE8_2B5C98(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern void func_L00_002CC3C0_2B5C98(void *, float, float, float, float, void *, void *) __asm__("func_L00_002CC3C0");
-extern float func_002140F8_2B5C98(float, float) __asm__("func_002140F8");
-extern float func_001F9CB8_2B5C98(void *) __asm__("func_001F9CB8");
-extern int func_L00_00258BC8_2B5C98(int, int) __asm__("func_L00_00258BC8");
-extern void func_L00_0026EBC0_2B5C98(void *, void *, int, int, float) __asm__("func_L00_0026EBC0");
-extern void func_00213DE0_2B5C98(void *, int, int, int) __asm__("func_00213DE0");
-extern void func_00213D28_2B5C98(void *, int, int) __asm__("func_00213D28");
-extern void func_L00_002514B8_2B5C98(void *) __asm__("func_L00_002514B8");
-extern void func_L00_0020ED30_2B5C98(void) __asm__("func_L00_0020ED30");
-extern float func_001FA888_2B5C98(int) __asm__("func_001FA888");
-extern int func_L00_0023F0D0_2B5C98(void *, float, float, float, float, float) __asm__("func_L00_0023F0D0");
-extern void func_L00_0023F1D0_2B5C98(int) __asm__("func_L00_0023F1D0");
+extern int FastDecTimer_r2(short *) __asm__("func_001F9938");
+extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
+extern void HeroEnterMoveState_r2(int, int) __asm__("func_L00_00222B80");
+extern int scale_ticks_r3(int) __asm__("func_001F9850");
+extern void matrix_copy_rows_r2(void *, void *) __asm__("func_001FA480");
+extern void matrix_from_basis_rows_r2(void *, void *) __asm__("func_001FA4A0");
+extern void transform_vector_r3(void *, void *, void *) __asm__("func_001F9EE8");
+extern void matrix_mul_vec3_r2(void *, void *, void *) __asm__("func_001F9EC0");
+extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
+extern void FastVecAdd_r4(void *, void *, void *) __asm__("func_001F9BD8");
+extern void EffectQueue_Add_r2(int, int, float, void *, float, int, int, float, int) __asm__("func_L00_001EE2E0");
+extern void vec_scale_to_length_r3(void *, void *, float) __asm__("func_L00_001FF4B0");
+extern int coll_line_r2(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
+extern void Moby_GetJointWorldPos_r2(void *, int, void *) __asm__("func_L00_00250800");
+extern float fast_atan2_r2(float, float) __asm__("func_L00_001FF860");
+extern float vec_length_xy_r2(void *) __asm__("func_001F9CE8");
+extern Moby *select_blaster_auto_aim_target_r(Moby *, void *, float *, float *) __asm__("func_L00_002B5998");
+extern int get_ammo_r2(int) __asm__("func_L00_00234718");
+extern Aim_2B5C98 *GetFlaggedPvarWord_r2(void *) __asm__("func_L00_0025D390");
+extern float FastVecDist_r3(void *, void *) __asm__("func_001F9D10");
+extern float FastAbsF_r2(float) __asm__("func_001F9B88");
+extern int use_ammo_r2(int, int) __asm__("func_L00_00234638");
+extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
+extern float FastDiffRots_r2(float, float) __asm__("func_001FA850");
+extern float FastAddRots_r(float, float) __asm__("func_001FA748");
+extern void BuildSphericalOffset_r2(void *, float, float, float) __asm__("func_00215C00");
+extern float FastCos_r2(float) __asm__("func_001F9F90");
+extern float FastSin_r2(float) __asm__("func_001F9FA8");
+extern void transform_hero_local_offset_to_world_r(void *, float, float, float) __asm__("func_L00_00233EE0");
+extern void coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
+extern void spawn_homing_shot_r(void *, float, float, float, float, void *, void *) __asm__("func_L00_002CC3C0");
+extern float random_float_between_r2(float, float) __asm__("func_002140F8");
+extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
+extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
+extern void PartType27Spawn_r(void *, void *, int, int, float) __asm__("func_L00_0026EBC0");
+extern void MobyBlendAnimation_r2(void *, int, int, int) __asm__("func_00213DE0");
+extern void MobySetAnimation_r(void *, int, int) __asm__("func_00213D28");
+extern void MobyAnimAdvance_r(void *) __asm__("func_L00_002514B8");
+extern void cancel_hero_item_animation_r(void) __asm__("func_L00_0020ED30");
+extern float IntToFloat_r2(int) __asm__("func_001FA888");
+extern int allocate_colored_effect_slot_r2(void *, float, float, float, float, float) __asm__("func_L00_0023F0D0");
+extern void release_point_light_slot_r2(int) __asm__("func_L00_0023F1D0");
 
 /* Blaster (class 168) update: aims (reticle in first person, auto-aim otherwise), fires a shot with its sparks,
    keeps the usage statistics, returns to idle and moves the muzzle light. */
@@ -1053,85 +1053,85 @@ void func_L00_002B5C98_r(Moby *m) {
         data->light = -1;
         data->glow = 0;
     }
-    func_001F9938_2B5C98(&data->lock);
-    func_001F9908_2B5C98(&data->cooldown);
-    if (hero_2B33E8.state.current == 1) func_L00_00222B80_2B5C98(30, 1);
-    if (m->prev_seq == 0 && m->prev_frame < 3) data->cooldown = func_001F9850_2B5C98(7);
+    FastDecTimer_r2(&data->lock);
+    fast_dec_timer_r3(&data->cooldown);
+    if (hero_2B33E8.state.current == 1) HeroEnterMoveState_r2(30, 1);
+    if (m->prev_seq == 0 && m->prev_frame < 3) data->cooldown = scale_ticks_r3(7);
     if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1)) {
-        func_001FA480_2B5C98(&w.rotation, D_L00_00166D80_2B33E8);
-        func_001FA4A0_2B5C98(&inverse, &w.rotation);
-        velocity.f.z = D_0015EE6C_2B33E8 * 40.0f;
-        func_001F9EE8_2B5C98(&velocity, &velocity, &inverse);
-        func_001F9BC0_2B5C98(&launch);
+        matrix_copy_rows_r2(&w.rotation, player_camera_r);
+        matrix_from_basis_rows_r2(&inverse, &w.rotation);
+        velocity.f.z = g_frame_time_r * 40.0f;
+        transform_vector_r3(&velocity, &velocity, &inverse);
+        clear_u64_value_r2(&launch);
         launch.f.x += 0.15f;
         launch.f.z += 0.75f;
         launch.f.y += 0.15f;
-        func_001F9EE8_2B5C98(&launch, &launch, &inverse);
-        func_001F9BD8_2B5C98(&launch, &launch, D_L00_00166D80_2B33E8 + 0x140);
+        transform_vector_r3(&launch, &launch, &inverse);
+        FastVecAdd_r4(&launch, &launch, player_camera_r + 0x140);
         if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1) && !hero_2B33E8.item_use_locked) {
-            func_L00_001EE2E0_2B5C98((int)m, 0xFF0F0FFF, 1.0f, 0, 0.0f, 0x26, -1, 90.0f, 4);
-            func_L00_001FF4B0_2B5C98(&reach, &velocity, 20.0f);
-            func_001F9BD8_2B5C98(&end, &reach, &launch);
+            EffectQueue_Add_r2((int)m, 0xFF0F0FFF, 1.0f, 0, 0.0f, 0x26, -1, 90.0f, 4);
+            vec_scale_to_length_r3(&reach, &velocity, 20.0f);
+            FastVecAdd_r4(&end, &reach, &launch);
             reach = end;
-            if (func_L00_001EFFF0_2B5C98(D_L00_00166D80_2B33E8 + 0x140, &reach, 0, (int)m, 0)) {
-                if (D_L00_00173F58_2B5C98 && (D_L00_00173F58_2B5C98->flags & 0x1000)) target = D_L00_00173F58_2B5C98;
+            if (coll_line_r2(player_camera_r + 0x140, &reach, 0, (int)m, 0)) {
+                if (g_coll_hit_moby_r && (g_coll_hit_moby_r->flags & 0x1000)) target = g_coll_hit_moby_r;
             }
         }
     } else {
-        velocity.f.x = D_0015EE6C_2B33E8 * 40.0f;
-        func_001F9EC0_2B5C98(&velocity, &velocity, &hero_2B33E8.basis);
-        func_L00_00250800_2B5C98(m, 0, &launch);
+        velocity.f.x = g_frame_time_r * 40.0f;
+        matrix_mul_vec3_r2(&velocity, &velocity, &hero_2B33E8.basis);
+        Moby_GetJointWorldPos_r2(m, 0, &launch);
     }
     if (hero_2B33E8.items[6].locked_on) yaw = hero_2B33E8.items[6].lock_yaw;
-    else yaw = func_L00_001FF860_2B5C98(velocity.f.x, velocity.f.y);
-    pitch = -func_L00_001FF860_2B5C98(func_001F9CE8_2B5C98(&velocity), velocity.f.z);
+    else yaw = fast_atan2_r2(velocity.f.x, velocity.f.y);
+    pitch = -fast_atan2_r2(vec_length_xy_r2(&velocity), velocity.f.z);
     yaw0 = yaw;
     pitch0 = pitch;
     if (hero_2B33E8.state.current != 30) {
         if (hero_2B33E8.unk22C8 == 1) {
             yaw = m->rot.z;
             yaw0 = yaw;
-            pitch = D_L00_0017ADF4_2B33E8;
+            pitch = weapon_aim_mode1_launch_pitch_r;
             pitch0 = pitch;
         }
-        target = func_L00_002B5998_2B5C98(m, &launch, &yaw, &pitch);
+        target = select_blaster_auto_aim_target_r(m, &launch, &yaw, &pitch);
     }
     if (target && data->lock == 0) {
-        if (func_L00_00234718_2B5C98(-1)) {
-            Aim_2B5C98 *r = func_L00_0025D390_2B5C98(target);
-            float d = func_001F9D10_2B5C98(D_L00_00166EC0_2B33E8, &target->pos) / 50.0f;
+        if (get_ammo_r2(-1)) {
+            Aim_2B5C98 *r = GetFlaggedPvarWord_r2(target);
+            float d = FastVecDist_r3(g_debug_camera_r, &target->pos) / 50.0f;
             float h;
             qcopy(&w.point, &target->pos);
             h = 0.5f;
             if (r) h = r->height;
             w.point.f.z += h;
-            func_L00_001EE2E0_2B5C98((int)m, 0xFF0FFF0F, func_001F9B88_2B5C98(0.9f - d * 0.65f), &w.point, 0.0f, 0x26, -1, 90.0f, 4);
+            EffectQueue_Add_r2((int)m, 0xFF0FFF0F, FastAbsF_r2(0.9f - d * 0.65f), &w.point, 0.0f, 0x26, -1, 90.0f, 4);
         }
     }
-    if (hero_2B33E8.item_anim_active && hero_2B33E8.state.current != 0x72 && D_L00_0015F6A8_2B33E8 != 2) {
-        if (func_001F9850_2B5C98(5 - order_2B5C98.level) < hero_2B33E8.item_anim_frames && data->cooldown == 0) {
-            if (func_L00_00234638_2B5C98(-1, 1) && !hero_2B33E8.item_use_locked) {
-                data->cooldown = func_001F9850_2B5C98(6);
+    if (hero_2B33E8.item_anim_active && hero_2B33E8.state.current != 0x72 && cinematic_mode_r != 2) {
+        if (scale_ticks_r3(5 - order_2B5C98.level) < hero_2B33E8.item_anim_frames && data->cooldown == 0) {
+            if (use_ammo_r2(-1, 1) && !hero_2B33E8.item_use_locked) {
+                data->cooldown = scale_ticks_r3(6);
                 if (target) {
-                    float speed = D_0015EE6C_2B33E8 * 40.0f;
+                    float speed = g_frame_time_r * 40.0f;
                     Aim_2B5C98 *r;
                     qcopy(&tpoint, &target->pos);
-                    r = func_L00_0025D390_2B5C98(target);
+                    r = GetFlaggedPvarWord_r2(target);
                     if (r) tpoint.f.z += r->height;
                     else tpoint.f.z += 0.5f;
-                    pitch = -func_L00_001FF860_2B5C98(func_001F9D48_2B5C98(&launch, &tpoint), tpoint.f.z - launch.f.z);
+                    pitch = -fast_atan2_r2(vec_distance_xy_r2(&launch, &tpoint), tpoint.f.z - launch.f.z);
                     pitch0 -= hero_2B33E8.ground_pitch.f * 0.5f;
-                    if (func_001FA850_2B5C98(pitch0, pitch) < 0.17453292f) {
+                    if (FastDiffRots_r2(pitch0, pitch) < 0.17453292f) {
                         pitch0 = pitch;
-                    } else if (func_001FA748_2B5C98(pitch0, 0.17453292f) < pitch) {
-                        pitch0 = func_001FA748_2B5C98(pitch0, 0.17453292f);
-                    } else if (pitch < func_001FA748_2B5C98(pitch0, -0.17453292f)) {
-                        pitch0 = func_001FA748_2B5C98(pitch0, -0.17453292f);
+                    } else if (FastAddRots_r(pitch0, 0.17453292f) < pitch) {
+                        pitch0 = FastAddRots_r(pitch0, 0.17453292f);
+                    } else if (pitch < FastAddRots_r(pitch0, -0.17453292f)) {
+                        pitch0 = FastAddRots_r(pitch0, -0.17453292f);
                     }
-                    func_00215C00_2B5C98(&w.point, speed, yaw0, -pitch0);
-                    func_001F9BD8_2B5C98(&w.point, &w.point, &launch);
-                    yaw = func_L00_001FF860_2B5C98(tpoint.f.x - w.point.f.x, tpoint.f.y - w.point.f.y);
-                    pitch = -func_L00_001FF860_2B5C98(func_001F9D48_2B5C98(&w.point, &tpoint), tpoint.f.z - w.point.f.z);
+                    BuildSphericalOffset_r2(&w.point, speed, yaw0, -pitch0);
+                    FastVecAdd_r4(&w.point, &w.point, &launch);
+                    yaw = fast_atan2_r2(tpoint.f.x - w.point.f.x, tpoint.f.y - w.point.f.y);
+                    pitch = -fast_atan2_r2(vec_distance_xy_r2(&w.point, &tpoint), tpoint.f.z - w.point.f.z);
                 } else if (hero_2B33E8.state.current != 30) {
                     pitch -= hero_2B33E8.ground_pitch.f * 0.5f;
                     pitch0 -= hero_2B33E8.ground_pitch.f * 0.5f;
@@ -1140,86 +1140,86 @@ void func_L00_002B5C98_r(Moby *m) {
                 w.spawn.owner = m;
                 w.spawn.f1C = 0.25f;
                 w.spawn.i20 = 1;
-                w.spawn.pos.f.x = func_001F9F90_2B5C98(func_L00_001FF860_2B5C98(hero_2B33E8.facing_x, hero_2B33E8.facing_y));
-                w.spawn.pos.f.y = func_001F9FA8_2B5C98(func_L00_001FF860_2B5C98(hero_2B33E8.facing_x, hero_2B33E8.facing_y));
+                w.spawn.pos.f.x = FastCos_r2(fast_atan2_r2(hero_2B33E8.facing_x, hero_2B33E8.facing_y));
+                w.spawn.pos.f.y = FastSin_r2(fast_atan2_r2(hero_2B33E8.facing_x, hero_2B33E8.facing_y));
                 w.spawn.pos.f.z = 1.0f;
                 w.spawn.pos.f.w = 5627.9248f;
                 w.spawn.b18 = 1;
                 w.spawn.b19 = 1;
                 w.spawn.cls = (*(unsigned short *)&m->oclass);
-                func_L00_00233EE0_2B5C98(&inverse, 0.7f, -0.15f, 0.5f);
-                func_L00_001F2BE8_2B5C98(&inverse, 0.42f, 5, hero_2B33E8.moby, &w.spawn);
-                func_L00_002CC3C0_2B5C98(hero_2B33E8.moby, yaw, pitch, yaw0, pitch0, &launch, target);
-                data->glow = func_001F9850_2B5C98(15);
+                transform_hero_local_offset_to_world_r(&inverse, 0.7f, -0.15f, 0.5f);
+                coll_sphere_mobys_r(&inverse, 0.42f, 5, hero_2B33E8.moby, &w.spawn);
+                spawn_homing_shot_r(hero_2B33E8.moby, yaw, pitch, yaw0, pitch0, &launch, target);
+                data->glow = scale_ticks_r3(15);
                 for (i = 0; i < 5; i++) {
                     w.spray.rnd.q = 0;
-                    w.spray.rnd.f.x = func_002140F8_2B5C98(-1.0f, 1.0f);
-                    w.spray.rnd.f.y = func_002140F8_2B5C98(-1.0f, 1.0f);
-                    w.spray.rnd.f.z = func_002140F8_2B5C98(-1.0f, 1.0f);
+                    w.spray.rnd.f.x = random_float_between_r2(-1.0f, 1.0f);
+                    w.spray.rnd.f.y = random_float_between_r2(-1.0f, 1.0f);
+                    w.spray.rnd.f.z = random_float_between_r2(-1.0f, 1.0f);
                     w.spray.v = w.spray.rnd;
-                    func_L00_001FF4B0_2B5C98(&w.spray.v, &w.spray.v, func_001F9CB8_2B5C98(&velocity) * 0.65f);
-                    func_001F9BD8_2B5C98(&w.spray.v, &velocity, &w.spray.v);
-                    func_L00_001FF4B0_2B5C98(&w.spray.v, &w.spray.v, func_002140F8_2B5C98(D_0015EE6C_2B33E8 * 3.0f, D_0015EE6C_2B33E8 * 6.0f));
-                    func_L00_0026EBC0_2B5C98(&launch, &w.spray.v, 0x5F2F4F6F,
-                        func_L00_00258BC8_2B5C98(func_001F9850_2B5C98(5), func_001F9850_2B5C98(10)), 10000.0f);
+                    vec_scale_to_length_r3(&w.spray.v, &w.spray.v, FastVecLength_r(&velocity) * 0.65f);
+                    FastVecAdd_r4(&w.spray.v, &velocity, &w.spray.v);
+                    vec_scale_to_length_r3(&w.spray.v, &w.spray.v, random_float_between_r2(g_frame_time_r * 3.0f, g_frame_time_r * 6.0f));
+                    PartType27Spawn_r(&launch, &w.spray.v, 0x5F2F4F6F,
+                        rand_range_r(scale_ticks_r3(5), scale_ticks_r3(10)), 10000.0f);
                 }
-                func_L00_001FF4B0_2B5C98(&velocity, &velocity, D_0015EE6C_2B33E8 * 0.5f);
-                func_L00_0026EBC0_2B5C98(&launch, &velocity, 0x2F4F7F7F,
-                    func_L00_00258BC8_2B5C98(func_001F9850_2B5C98(4), func_001F9850_2B5C98(7)), 200000.0f);
+                vec_scale_to_length_r3(&velocity, &velocity, g_frame_time_r * 0.5f);
+                PartType27Spawn_r(&launch, &velocity, 0x2F4F7F7F,
+                    rand_range_r(scale_ticks_r3(4), scale_ticks_r3(7)), 200000.0f);
             }
-            if (m->prev_seq != 4) func_00213DE0_2B5C98(m, 4, 0, func_001F9850_2B5C98(7));
+            if (m->prev_seq != 4) MobyBlendAnimation_r2(m, 4, 0, scale_ticks_r3(7));
             stats = (Stats_2B5C98 *)(D_0014171B_2B33E8 + 0x65);
             if (stats->uses < 65535) stats->uses++;
-            if (func_001F9850_2B5C98(D_0015EFA4_2B33E8) / 600 > stats->longest)
-                stats->longest = func_001F9850_2B5C98(D_0015EFA4_2B33E8) / 600;
-            stats->levels = (stats->levels | (1 << D_0015EE84_2B33E8)) | 0x80000000;
+            if (scale_ticks_r3(gameplay_event_frame_count_r) / 600 > stats->longest)
+                stats->longest = scale_ticks_r3(gameplay_event_frame_count_r) / 600;
+            stats->levels = (stats->levels | (1 << g_current_level_index_r)) | 0x80000000;
         }
     }
-    if (!(((((Input_2B5C98 *)D_0013CA40_2B5C98)->held & hero_2B33E8.items[0].button_mask) && func_L00_00234718_2B5C98(-1)) ||
-          (!(func_001F9850_2B5C98(9) < hero_2B33E8.item_anim_frames) && hero_2B33E8.item_anim_active)) ||
-        hero_2B33E8.state.current == 0x72 || D_L00_0015F6A8_2B33E8 == 2) {
-        if ((m->prev_seq != 0 || (m->anim_flags & 2)) && hero_2B33E8.state.current != 0x72 && D_L00_0015F6A8_2B33E8 != 2) {
-            if (m->prev_seq != 1) func_00213DE0_2B5C98(m, 1, 0, func_001F9850_2B5C98(7));
-        } else if (hero_2B33E8.state.current == 0x72 || D_L00_0015F6A8_2B33E8 == 2) {
-            func_00213D28_2B5C98(m, 1, 0);
-            func_L00_002514B8_2B5C98(m);
+    if (!(((((Input_2B5C98 *)g_controller_state_r)->held & hero_2B33E8.items[0].button_mask) && get_ammo_r2(-1)) ||
+          (!(scale_ticks_r3(9) < hero_2B33E8.item_anim_frames) && hero_2B33E8.item_anim_active)) ||
+        hero_2B33E8.state.current == 0x72 || cinematic_mode_r == 2) {
+        if ((m->prev_seq != 0 || (m->anim_flags & 2)) && hero_2B33E8.state.current != 0x72 && cinematic_mode_r != 2) {
+            if (m->prev_seq != 1) MobyBlendAnimation_r2(m, 1, 0, scale_ticks_r3(7));
+        } else if (hero_2B33E8.state.current == 0x72 || cinematic_mode_r == 2) {
+            MobySetAnimation_r(m, 1, 0);
+            MobyAnimAdvance_r(m);
         }
-        func_L00_0020ED30_2B5C98();
+        cancel_hero_item_animation_r();
         data->cooldown = 0;
     }
     if (m->seq != 2 && data->glow > 0) {
-        a = func_001FA888_2B5C98(data->glow < func_001F9850_2B5C98(9) ? data->glow : func_001F9850_2B5C98(9)) * 0.7f / (float)func_001F9850_2B5C98(9);
-        b = func_001FA888_2B5C98(data->glow < func_001F9850_2B5C98(9) ? data->glow : func_001F9850_2B5C98(9)) * 0.7f / (float)func_001F9850_2B5C98(9);
-        c = func_001FA888_2B5C98(data->glow < func_001F9850_2B5C98(9) ? data->glow : func_001F9850_2B5C98(9)) * 0.7f / (float)func_001F9850_2B5C98(9);
-        w.point.f.x = hero_2B33E8.motion.pos.f[0] + func_001F9F90_2B5C98(func_L00_001FF860_2B5C98(hero_2B33E8.facing_x, hero_2B33E8.facing_y)) * 2.0f;
-        w.point.f.y = hero_2B33E8.motion.pos.f[1] + func_001F9FA8_2B5C98(func_L00_001FF860_2B5C98(hero_2B33E8.facing_x, hero_2B33E8.facing_y)) * 2.0f;
+        a = IntToFloat_r2(data->glow < scale_ticks_r3(9) ? data->glow : scale_ticks_r3(9)) * 0.7f / (float)scale_ticks_r3(9);
+        b = IntToFloat_r2(data->glow < scale_ticks_r3(9) ? data->glow : scale_ticks_r3(9)) * 0.7f / (float)scale_ticks_r3(9);
+        c = IntToFloat_r2(data->glow < scale_ticks_r3(9) ? data->glow : scale_ticks_r3(9)) * 0.7f / (float)scale_ticks_r3(9);
+        w.point.f.x = hero_2B33E8.motion.pos.f[0] + FastCos_r2(fast_atan2_r2(hero_2B33E8.facing_x, hero_2B33E8.facing_y)) * 2.0f;
+        w.point.f.y = hero_2B33E8.motion.pos.f[1] + FastSin_r2(fast_atan2_r2(hero_2B33E8.facing_x, hero_2B33E8.facing_y)) * 2.0f;
         w.point.f.z = hero_2B33E8.motion.pos.f[2] + 1.0f;
         if (data->light == -1) {
-            data->light = func_L00_0023F0D0_2B5C98(&w.point, 6.0f, 0.0f, a, b, c);
+            data->light = allocate_colored_effect_slot_r2(&w.point, 6.0f, 0.0f, a, b, c);
         } else {
-            Light_2B5C98 *e = &D_L00_001803C0_2B5C98[data->light];
+            Light_2B5C98 *e = &level_point_lights_r2[data->light];
             qcopy(&e->pos, &w.point);
             e->pos.f.w = 6.0f;
             e->x = a;
             e->y = b;
             e->z = c;
         }
-        func_001F9908_2B5C98(&data->glow);
+        fast_dec_timer_r3(&data->glow);
     } else if (data->light != -1) {
-        func_L00_0023F1D0_2B5C98(data->light);
+        release_point_light_slot_r2(data->light);
         data->light = -1;
         data->glow = 0;
     }
 }
 extern void SetBackgroundColor(int, int, int);
-extern int D_L00_0015F40C_m __asm__("D_L00_0015F40C") MACRO_ADDR;
-extern float D_L00_0015F548_m __asm__("D_L00_0015F548") MACRO_ADDR;
-extern float D_L00_0015F54C_m __asm__("D_L00_0015F54C") MACRO_ADDR;
-extern float D_L00_0015F550_m __asm__("D_L00_0015F550") MACRO_ADDR;
-extern float D_L00_0015F554_m __asm__("D_L00_0015F554") MACRO_ADDR;
-extern int D_L00_0015F544_m __asm__("D_L00_0015F544") MACRO_ADDR;
-extern int D_L00_0015F545_m __asm__("D_L00_0015F545") MACRO_ADDR;
-extern int D_L00_0015F546_m __asm__("D_L00_0015F546") MACRO_ADDR;
+extern int level_globals_saved_m __asm__("D_L00_0015F40C") MACRO_ADDR;
+extern float level_fog_near_distance_m __asm__("D_L00_0015F548") MACRO_ADDR;
+extern float level_fog_far_distance_m __asm__("D_L00_0015F54C") MACRO_ADDR;
+extern float level_fog_near_intensity_m __asm__("D_L00_0015F550") MACRO_ADDR;
+extern float level_fog_far_intensity_m __asm__("D_L00_0015F554") MACRO_ADDR;
+extern int level_fog_color_red_m __asm__("D_L00_0015F544") MACRO_ADDR;
+extern int level_fog_color_green_m __asm__("D_L00_0015F545") MACRO_ADDR;
+extern int level_fog_color_blue_m __asm__("D_L00_0015F546") MACRO_ADDR;
 extern float D_L00_00161040_m __asm__("D_L00_00161040") MACRO_ADDR;
 extern float D_L00_001610A0_m __asm__("D_L00_001610A0") MACRO_ADDR;
 extern float D_L00_00160564_m __asm__("D_L00_00160564") MACRO_ADDR;
@@ -1234,31 +1234,31 @@ void Moby_SaveGlobalsState(void *m_) {
     float f0, f1, f2, f3;
 
     p = ((char *)((Moby *)m)->pvars);
-    f0 = D_L00_0015F548_m;
-    f1 = D_L00_0015F54C_m;
-    f2 = D_L00_0015F550_m;
-    f3 = D_L00_0015F554_m;
-    D_L00_0015F40C_m = 1;
+    f0 = level_fog_near_distance_m;
+    f1 = level_fog_far_distance_m;
+    f2 = level_fog_near_intensity_m;
+    f3 = level_fog_far_intensity_m;
+    level_globals_saved_m = 1;
     *(float *)(p + 0x30) = f0;
     *(float *)(p + 0x34) = f1;
     *(float *)(p + 0x38) = f2;
     *(float *)(p + 0x3C) = f3;
-    p[0x40] = *(unsigned char *)&D_L00_0015F544_m;
-    p[0x41] = *(unsigned char *)&D_L00_0015F545_m;
-    p[0x42] = *(unsigned char *)&D_L00_0015F546_m;
-    *(unsigned char *)&D_L00_0015F544_m = 0x40;
-    *(unsigned char *)&D_L00_0015F545_m = 0x60;
-    *(unsigned char *)&D_L00_0015F546_m = 0x40;
-    D_L00_0015F54C_m = 131072.0f;
-    D_L00_0015F550_m = 255.0f;
+    p[0x40] = *(unsigned char *)&level_fog_color_red_m;
+    p[0x41] = *(unsigned char *)&level_fog_color_green_m;
+    p[0x42] = *(unsigned char *)&level_fog_color_blue_m;
+    *(unsigned char *)&level_fog_color_red_m = 0x40;
+    *(unsigned char *)&level_fog_color_green_m = 0x60;
+    *(unsigned char *)&level_fog_color_blue_m = 0x40;
+    level_fog_far_distance_m = 131072.0f;
+    level_fog_near_intensity_m = 255.0f;
     D_L00_0016A0F8 = 0;
     D_L00_001610A0_m = 144.0f;
     D_L00_00161040_m = 147456.0f;
     D_L00_00160564_m = 144.0f;
     D_L00_001600B0_m = 0x90;
     D_L00_0016023C_m = 0x50000;
-    *(int *)&D_L00_0015F548_m = 0;
-    *(int *)&D_L00_0015F554_m = 0;
+    *(int *)&level_fog_near_distance_m = 0;
+    *(int *)&level_fog_far_intensity_m = 0;
     SetBackgroundColor(0x40, 0x60, 0x40);
 }
 extern unsigned char level_fog_color_blue;
@@ -1272,17 +1272,17 @@ void Moby_RestoreGlobalsState(int m_, int flag) {
     char *d;
 
     p = ((char *)((Moby *)m)->pvars);
-    D_L00_0015F40C_m = 0;
+    level_globals_saved_m = 0;
     f0 = *(float *)(p + 0x30);
     f1 = *(float *)(p + 0x34);
     f2 = *(float *)(p + 0x38);
     f3 = *(float *)(p + 0x3C);
-    D_L00_0015F548_m = f0;
-    D_L00_0015F54C_m = f1;
-    D_L00_0015F550_m = f2;
-    D_L00_0015F554_m = f3;
-    *(unsigned char *)&D_L00_0015F544_m = p[0x40];
-    *(unsigned char *)&D_L00_0015F545_m = p[0x41];
+    level_fog_near_distance_m = f0;
+    level_fog_far_distance_m = f1;
+    level_fog_near_intensity_m = f2;
+    level_fog_far_intensity_m = f3;
+    *(unsigned char *)&level_fog_color_red_m = p[0x40];
+    *(unsigned char *)&level_fog_color_green_m = p[0x41];
     level_fog_color_blue = p[0x42];
     D_L00_0016A0F8 = 1;
     if (flag != 0) {
@@ -1298,12 +1298,12 @@ void Moby_RestoreGlobalsState(int m_, int flag) {
 typedef struct { u8 p0[0x2084]; s32 i2084; } G;
 typedef int q_2b58d8 __attribute__((mode(TI)));
 typedef struct { unsigned char p[0x2080]; void *w2080; } G_2b58d8;
-extern G_2b58d8 D_0013F450_2b58d8 __asm__("D_0013F450");
-extern int D_L00_0017E608_2b58d8 __asm__("D_L00_0017E608") __attribute__((section(".data")));
+extern G_2b58d8 g_hero_r2 __asm__("D_0013F450");
+extern int visibomb_view_active_flag_r __asm__("D_L00_0017E608") __attribute__((section(".data")));
 extern int D_L00_0015F6E8_2b58d8 __asm__("D_L00_0015F6E8") __attribute__((section(".sdata")));
-extern short D_L00_0016156C_2b58d8 __asm__("D_L00_0016156C");
-extern float D_0015EE6C_2b58d8 __asm__("D_0015EE6C") __attribute__((section(".sdata")));
-extern q_2b58d8 D_L00_00173F60_2b58d8 __asm__("D_L00_00173F60") __attribute__((section(".data")));
+extern short visibomb_missile_cruise_speed_r __asm__("D_L00_0016156C");
+extern float g_frame_time_r2 __asm__("D_0015EE6C") __attribute__((section(".sdata")));
+extern q_2b58d8 collision_hit_point_r __asm__("D_L00_00173F60") __attribute__((section(".data")));
 unsigned char *func_0020D348_2b58d8(int) __asm__("func_0020D348");
 int func_L00_0025D390_2b58d8(void *) __asm__("func_L00_0025D390");
 float func_001F9CB8_2b58d8(void *) __asm__("func_001F9CB8");
@@ -1325,10 +1325,10 @@ int spawn_visibomb_missile(void *a_, void *pos_, float fa, float fb)
     unsigned char *m = func_0020D348_2b58d8(0xAC);
     if (m) {
         unsigned char *v = ((unsigned char *)((Moby *)m)->pvars);
-        unsigned char *G = (unsigned char *)&D_0013F450_2b58d8;
+        unsigned char *G = (unsigned char *)&g_hero_r2;
         Vec4 t;
         *(unsigned char **)(G + 0x1FE0) = m;
-        D_L00_0017E608_2b58d8 = 1;
+        visibomb_view_active_flag_r = 1;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0xFF;
         ((Moby *)m)->visible = 1;
@@ -1360,7 +1360,7 @@ int spawn_visibomb_missile(void *a_, void *pos_, float fa, float fb)
         func_0020D960_2b58d8(m, 1, *(void **)(v + 0x28));
         {
             int r = func_L00_002BC668_2b58d8(m);
-            float k = *(float *)&D_L00_0016156C_2b58d8 * D_0015EE6C_2b58d8;
+            float k = *(float *)&visibomb_missile_cruise_speed_r * g_frame_time_r2;
             *(int *)(v + 0x20) = r;
             *(float *)(v + 0x48) = k;
         }
@@ -1368,9 +1368,9 @@ int spawn_visibomb_missile(void *a_, void *pos_, float fa, float fb)
         *(int *)(v + 0x2C) = func_0022ED80_2b58d8(0, 4, m);
         t.q = *(q_2b58d8 *)((unsigned char *)a_ + 0x10);
         t.f[2] = ((Vec4 *)pos_)->f[2];
-        if (func_L00_001EFFF0_2b58d8(&t, (Vec4 *)pos_, 0, ({ G_2b58d8 *g2 = &D_0013F450_2b58d8; g2->w2080; }), 0)) {
+        if (func_L00_001EFFF0_2b58d8(&t, (Vec4 *)pos_, 0, ({ G_2b58d8 *g2 = &g_hero_r2; g2->w2080; }), 0)) {
             ((Moby *)m)->command = 1;
-            qcopy(m + 0x10, &D_L00_00173F60_2b58d8);
+            qcopy(m + 0x10, &collision_hit_point_r);
         }
         D_L00_0015F6E8_2b58d8 = 1;
         func_00216028_2b58d8(6, 0);
@@ -1435,7 +1435,7 @@ extern unsigned char *spawn_spinning_fade_in_out_effect_particle(void *pos, int 
 extern void FastVecSub(void *, void *, void *);
 extern void clear_u64_value(void *);
 extern float FastVecLength(void *);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float random_float_between(float, float);
 extern int random_integer_below(int);
 extern int rand_range(int, int);
@@ -1469,7 +1469,7 @@ void spawn_moby_particle_and_glow_burst(char *m, int flag) {
         clear_u64_value(n);
         len = FastVecLength(d);
         if (len < 8.0f) {
-            count = func_001FA898_r(len) + 2;
+            count = truncate_float_to_s32_r(len) + 2;
         } else {
             count = 10;
         }
@@ -1541,48 +1541,48 @@ typedef struct Hit_2B7430 {
 } Hit_2B7430;
 typedef struct Hit2_2B7430 { char p0[0x24]; Tgt_2B7430 *f24; } Hit2_2B7430;
 typedef struct Row_2B7430 { char p0[0x74]; unsigned char f74; char p1[0x13]; Moby *f88; } Row_2B7430;
-extern char D_0013F450_2B7430[] __asm__("D_0013F450");
-extern char D_0013E650_2B7430[] __asm__("D_0013E650");
-extern Hit2_2B7430 *D_L00_00173F58_2B7430 __asm__("D_L00_00173F58");
-extern char D_L00_00178000_2B7430[] __asm__("D_L00_00178000");
-extern float D_0015EE60_2B7430 __asm__("D_0015EE60") MACRO_ADDR;
+extern char g_hero_r3[] __asm__("D_0013F450");
+extern char voice_pool_r[] __asm__("D_0013E650");
+extern Hit2_2B7430 *g_coll_hit_moby_r2 __asm__("D_L00_00173F58");
+extern char coll_sphere_moby_hits_r[] __asm__("D_L00_00178000");
+extern float frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern int D_L00_0015F6E8_2B7430 __asm__("D_L00_0015F6E8") MACRO_ADDR;
 extern int D_L00_0015F558_2B7430 SDATA(D_L00_0015F558);
-extern int D_L00_0017E608_2B7430 __asm__("D_L00_0017E608");
+extern int visibomb_view_active_flag_r2 __asm__("D_L00_0017E608");
 extern float D_L00_00161568_2B7430 SDATA(D_L00_00161568);
 extern float D_L00_0016156C_2B7430 SDATA(D_L00_0016156C);
 extern float D_L00_00161570_2B7430 SDATA(D_L00_00161570);
 extern float D_L00_00161574_2B7430 SDATA(D_L00_00161574);
 extern float D_L00_00161578_2B7430 SDATA(D_L00_00161578);
-extern void func_L00_00204130_2B7430(void) __asm__("func_L00_00204130");
-extern int func_00216028_2B7430(int, int) __asm__("func_00216028");
-extern int func_001F9850_2B7430(int) __asm__("func_001F9850");
-extern int func_L00_002ECAF8_2B7430(void *, void *) __asm__("func_L00_002ECAF8");
-extern void func_L00_002B6AE0_2B7430(void *, int) __asm__("func_L00_002B6AE0");
-extern void func_L00_002B6E90_2B7430(void *, void *) __asm__("func_L00_002B6E90");
-extern void func_L00_002B6E10_2B7430(void *, void *) __asm__("func_L00_002B6E10");
-extern void func_L00_002B6FF0_2B7430(void *, int) __asm__("func_L00_002B6FF0");
-extern int func_001FA898_2B7430(float) __asm__("func_001FA898");
-extern int func_L00_0028F210_2B7430(int, int) __asm__("func_L00_0028F210");
-extern float func_001FA790_2B7430(float, float) __asm__("func_001FA790");
-extern void func_L00_0025B040_2B7430(void *, float) __asm__("func_L00_0025B040");
-extern void func_00215C00_2B7430(void *, float, float, float) __asm__("func_00215C00");
-extern void func_001F9BD8_2B7430(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_001F9BF0_2B7430(void *, void *, void *) __asm__("func_001F9BF0");
-extern float func_00214358_2B7430(void *, int, float) __asm__("func_00214358");
-extern float func_00214D28_2B7430(float *, float, float) __asm__("func_00214D28");
-extern float func_L00_001FF860_2B7430(float, float) __asm__("func_L00_001FF860");
-extern float func_001F9B88_2B7430(float) __asm__("func_001F9B88");
-extern void func_L00_001FFED8_2B7430(void *, int, float) __asm__("func_L00_001FFED8");
-extern void func_L00_001FF500_2B7430(void *, void *, float) __asm__("func_L00_001FF500");
-extern int func_L00_001EFFF0_2B7430(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
-extern void func_L00_001FF4B0_2B7430(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void func_L00_001FF610_2B7430(void *, void *, void *) __asm__("func_L00_001FF610");
-extern void func_L00_0028EBF0_2B7430(int) __asm__("func_L00_0028EBF0");
-extern void func_L00_0025F4A8_2B7430(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern int func_L00_001F2BE8_2B7430(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern void func_L00_0025BA50_2B7430(void *, void *, void *, int, int, int, int, int, float, float, float) __asm__("func_L00_0025BA50");
-extern void func_L00_00260958_2B7430(void *, float) __asm__("func_L00_00260958");
+extern void jet_camera_mode_r(void) __asm__("func_L00_00204130");
+extern int force_help_message_r(int, int) __asm__("func_00216028");
+extern int scale_ticks_r4(int) __asm__("func_001F9850");
+extern int update_orbit_camera_from_target_moby_r(void *, void *) __asm__("func_L00_002ECAF8");
+extern void Moby_RestoreGlobalsState_r(void *, int) __asm__("func_L00_002B6AE0");
+extern void update_attached_moby_transform_r(void *, void *) __asm__("func_L00_002B6E90");
+extern void terminate_visibomb_missile_r(void *, void *) __asm__("func_L00_002B6E10");
+extern void spawn_moby_particle_and_glow_burst_r(void *, int) __asm__("func_L00_002B6FF0");
+extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
+extern int Sound_SetPitchBend_r(int, int) __asm__("func_L00_0028F210");
+extern float FastSubRots_r(float, float) __asm__("func_001FA790");
+extern void jet_animate_r(void *, float) __asm__("func_L00_0025B040");
+extern void BuildSphericalOffset_r3(void *, float, float, float) __asm__("func_00215C00");
+extern void FastVecAdd_r5(void *, void *, void *) __asm__("func_001F9BD8");
+extern void FastVecSub_r3(void *, void *, void *) __asm__("func_001F9BF0");
+extern float ProbeGroundHeight_r(void *, int, float) __asm__("func_00214358");
+extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
+extern float fast_atan2_r3(float, float) __asm__("func_L00_001FF860");
+extern float FastAbsF_r3(float) __asm__("func_001F9B88");
+extern void axis_rotation_2d48_r(void *, int, float) __asm__("func_L00_001FFED8");
+extern void vec_set_length_xy_r(void *, void *, float) __asm__("func_L00_001FF500");
+extern int coll_line_r3(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
+extern void vec_scale_to_length_r4(void *, void *, float) __asm__("func_L00_001FF4B0");
+extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");
+extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
+extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
+extern int coll_sphere_mobys_r2(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
+extern void SendRadialMessageToMobys_r(void *, void *, void *, int, int, int, int, int, float, float, float) __asm__("func_L00_0025BA50");
+extern void add_random_offset_to_vector_xyz_r(void *, float) __asm__("func_L00_00260958");
 
 /* visibomb_missile update (moby class 172): drift, homing toward the target, arming countdown. */
 void visibomb_missile_update(Moby *m) {
@@ -1597,156 +1597,156 @@ void visibomb_missile_update(Moby *m) {
     int direct = 0;
 
     *(u128_2B7430 *)&k40 = 0;
-    k40.z = D_0015EE6C_2B33E8 * 8.0f;
+    k40.z = g_frame_time_r * 8.0f;
     *(u128_2B7430 *)&k30 = *(u128_2B7430 *)&k40;
     *(u128_2B7430 *)&k40 = 0;
     k40.z = 1.0f;
     D_L00_0015F6E8_2B7430 = 1;
     D_L00_0015F558_2B7430 = 1;
-    func_L00_00204130_2B7430();
-    D_L00_0017E608_2B7430 = 1;
-    func_00216028_2B7430(6, 0);
+    jet_camera_mode_r();
+    visibomb_view_active_flag_r2 = 1;
+    force_help_message_r(6, 0);
     d->f10--;
-    if (!(-func_001F9850_2B7430(100) < d->f10)
-        || ((Hero *)D_0013F450_2B7430)->state.current == 0x16
-        || ((Hero *)D_0013F450_2B7430)->state.current == 0x3D
-        || ((Hero *)D_0013F450_2B7430)->state.current == 0x72
-        || ((Hero *)D_0013F450_2B7430)->state.control_mode == 2
-        || ((Hero *)D_0013F450_2B7430)->state.control_mode == 4
-        || ((Hero *)D_0013F450_2B7430)->state.control_mode == 3
-        || ((Hero *)D_0013F450_2B7430)->state.control_mode > 12
-        || ((Hero *)D_0013F450_2B7430)->state.control_mode == 7
-        || ((Hero *)D_0013F450_2B7430)->state.control_mode == 10
-        || ((Hero *)D_0013F450_2B7430)->state.control_mode == 16
-        || ((Hero *)D_0013F450_2B7430)->state.control_mode == 5
-        || ((Hero *)D_0013F450_2B7430)->state.current == 0x65
-        || ((Hero *)D_0013F450_2B7430)->state.current == 0x32
-        || ((Hero *)D_0013F450_2B7430)->grounded_frames == 0
-        || (((Tgt_2B7430 *)((Hero *)D_0013F450_2B7430)->ground_moby) != 0
-            && (((Tgt_2B7430 *)((Hero *)D_0013F450_2B7430)->ground_moby)->hA6 == 0x13E || ((Tgt_2B7430 *)((Hero *)D_0013F450_2B7430)->ground_moby)->hA6 == 0x46F))) {
-        func_L00_002B6E10_2B7430(m, d);
+    if (!(-scale_ticks_r4(100) < d->f10)
+        || ((Hero *)g_hero_r3)->state.current == 0x16
+        || ((Hero *)g_hero_r3)->state.current == 0x3D
+        || ((Hero *)g_hero_r3)->state.current == 0x72
+        || ((Hero *)g_hero_r3)->state.control_mode == 2
+        || ((Hero *)g_hero_r3)->state.control_mode == 4
+        || ((Hero *)g_hero_r3)->state.control_mode == 3
+        || ((Hero *)g_hero_r3)->state.control_mode > 12
+        || ((Hero *)g_hero_r3)->state.control_mode == 7
+        || ((Hero *)g_hero_r3)->state.control_mode == 10
+        || ((Hero *)g_hero_r3)->state.control_mode == 16
+        || ((Hero *)g_hero_r3)->state.control_mode == 5
+        || ((Hero *)g_hero_r3)->state.current == 0x65
+        || ((Hero *)g_hero_r3)->state.current == 0x32
+        || ((Hero *)g_hero_r3)->grounded_frames == 0
+        || (((Tgt_2B7430 *)((Hero *)g_hero_r3)->ground_moby) != 0
+            && (((Tgt_2B7430 *)((Hero *)g_hero_r3)->ground_moby)->hA6 == 0x13E || ((Tgt_2B7430 *)((Hero *)g_hero_r3)->ground_moby)->hA6 == 0x46F))) {
+        terminate_visibomb_missile_r(m, d);
         return;
     }
     if (d->f10 < 0) {
-        if (d->f14 != 0) func_L00_002ECAF8_2B7430(d->f14, m);
-        func_L00_002B6AE0_2B7430(m, 0);
-        func_L00_002B6E90_2B7430(m, d);
+        if (d->f14 != 0) update_orbit_camera_from_target_moby_r(d->f14, m);
+        Moby_RestoreGlobalsState_r(m, 0);
+        update_attached_moby_transform_r(m, d);
         return;
     }
     {
-        float t = D_L00_0016156C_2B7430 * D_0015EE6C_2B33E8;
-        if (((PadState *)D_0013CA40_2B5C98)->held & 0x40) t = D_L00_00161570_2B7430 * D_0015EE6C_2B33E8;
+        float t = D_L00_0016156C_2B7430 * g_frame_time_r;
+        if (((PadState *)g_controller_state_r)->held & 0x40) t = D_L00_00161570_2B7430 * g_frame_time_r;
         d->f48 += (t - d->f48) * D_L00_00161574_2B7430;
         d->f4 += (d->f48 - d->f4) * D_L00_00161578_2B7430;
-        if (D_L00_00161570_2B7430 * D_0015EE6C_2B33E8 < d->f4) d->f4 = D_L00_00161570_2B7430 * D_0015EE6C_2B33E8;
+        if (D_L00_00161570_2B7430 * g_frame_time_r < d->f4) d->f4 = D_L00_00161570_2B7430 * g_frame_time_r;
     }
-    func_L00_0028F210_2B7430(d->f2C, func_001FA898_2B7430((d->f48 - D_L00_0016156C_2B7430 * D_0015EE6C_2B33E8
-        / (D_L00_00161570_2B7430 * D_0015EE6C_2B33E8 - D_L00_0016156C_2B7430 * D_0015EE6C_2B33E8)) * D_L00_00161568_2B7430));
+    Sound_SetPitchBend_r(d->f2C, truncate_float_to_s32_r2((d->f48 - D_L00_0016156C_2B7430 * g_frame_time_r
+        / (D_L00_00161570_2B7430 * g_frame_time_r - D_L00_0016156C_2B7430 * g_frame_time_r)) * D_L00_00161568_2B7430));
     if (d->f10 > 0) {
-        if (d->f10 < func_001F9850_2B7430(0xBB8) - func_001F9850_2B7430(5)) {
+        if (d->f10 < scale_ticks_r4(0xBB8) - scale_ticks_r4(5)) {
             float ang;
-            float dx = ((Hero *)D_0013F450_2B7430)->stick_x - d->f18;
-            float dy = ((Hero *)D_0013F450_2B7430)->stick_y - d->f1C;
-            float ka = D_0015EE60_2B7430 * 0.1f;
-            float kb = D_0015EE60_2B7430 * 0.06f;
-            float kc = D_0015EE60_2B7430 * 0.0122718466f;
+            float dx = ((Hero *)g_hero_r3)->stick_x - d->f18;
+            float dy = ((Hero *)g_hero_r3)->stick_y - d->f1C;
+            float ka = frame_scale_r * 0.1f;
+            float kb = frame_scale_r * 0.06f;
+            float kc = frame_scale_r * 0.0122718466f;
             d->f18 += dx * ka;
             d->f1C += dy * ka;
             m->rot.x += (d->f18 - m->rot.x) * kb;
-            ang = func_001FA790_2B7430(m->rot.y, d->f1C * kc);
+            ang = FastSubRots_r(m->rot.y, d->f1C * kc);
             m->rot.y = ang;
             if (1.57079637f <= ang) {
                 m->rot.y = 1.56979632f;
             } else if (ang <= -1.57079637f) {
                 m->rot.y = -1.56979632f;
             }
-            m->rot.z = func_001FA790_2B7430(m->rot.z, d->f18 * (D_0015EE60_2B7430 * 0.0122718466f));
-            func_L00_0025B040_2B7430(m, 0.2f);
+            m->rot.z = FastSubRots_r(m->rot.z, d->f18 * (frame_scale_r * 0.0122718466f));
+            jet_animate_r(m, 0.2f);
         }
     }
-    func_00215C00_2B7430(&v50, d->f4, m->rot.z, -m->rot.y);
+    BuildSphericalOffset_r3(&v50, d->f4, m->rot.z, -m->rot.y);
     qcopy(&v20, &m->pos);
-    func_001F9BD8_2B7430(&m->pos, &m->pos, &v50);
-    if (func_001F9850_2B7430(0xBB8) - func_001F9850_2B7430(0x3C) < d->f10) {
-        float t = func_00214358_2B7430(&m->pos, 0, 0.5f) + d->f44;
+    FastVecAdd_r5(&m->pos, &m->pos, &v50);
+    if (scale_ticks_r4(0xBB8) - scale_ticks_r4(0x3C) < d->f10) {
+        float t = ProbeGroundHeight_r(&m->pos, 0, 0.5f) + d->f44;
         if (m->pos.z < t) {
-            if (D_L00_00173F58_2B7430 == 0 || (D_L00_00173F58_2B7430->f24 != 0 && D_L00_00173F58_2B7430->f24->h46 == 5)) {
-                float s = func_L00_001FF860_2B7430(d->f4, func_00214D28_2B7430(&m->pos.z, t, D_0015EE6C_2B33E8 * 6.0f));
-                if (D_0015EE6C_2B33E8 * 1.57079637f < s) s = D_0015EE6C_2B33E8 * 1.57079637f;
+            if (g_coll_hit_moby_r2 == 0 || (g_coll_hit_moby_r2->f24 != 0 && g_coll_hit_moby_r2->f24->h46 == 5)) {
+                float s = fast_atan2_r3(d->f4, ApproachValue_r(&m->pos.z, t, g_frame_time_r * 6.0f));
+                if (g_frame_time_r * 1.57079637f < s) s = g_frame_time_r * 1.57079637f;
                 m->rot.y -= s;
             }
         }
     }
     if (m->pos.x < 4.5f || 1018.5f < m->pos.x || m->pos.y < 4.5f || 1018.5f < m->pos.y
         || m->pos.z < 4.5f || 1018.5f < m->pos.z) {
-        func_L00_002B6E10_2B7430(m, d);
+        terminate_visibomb_missile_r(m, d);
         return;
     }
-    func_L00_002B6E90_2B7430(m, d);
+    update_attached_moby_transform_r(m, d);
     {
         Moby *skip = m;
-        func_L00_001FFED8_2B7430(&d->f24->pos, 1,
-            -(d->f1C * 0.5f + func_001F9B88_2B7430(d->f18 / 3.0f) + (d->f18 - m->rot.x) * 1.1f) * 0.7f);
-        func_L00_001FFED8_2B7430(&d->f28->pos, 1,
-            -(d->f1C * 0.5f + func_001F9B88_2B7430(d->f18 / 3.0f) - (d->f18 - m->rot.x) * 1.1f) * 0.7f);
+        axis_rotation_2d48_r(&d->f24->pos, 1,
+            -(d->f1C * 0.5f + FastAbsF_r3(d->f18 / 3.0f) + (d->f18 - m->rot.x) * 1.1f) * 0.7f);
+        axis_rotation_2d48_r(&d->f28->pos, 1,
+            -(d->f1C * 0.5f + FastAbsF_r3(d->f18 / 3.0f) - (d->f18 - m->rot.x) * 1.1f) * 0.7f);
         ev.moby = m;
         ev.flags = 0x830000;
         ev.f1C = 6.0f;
         ev.f20 = 1;
         *(u128_2B7430 *)&ev.pos = *(u128_2B7430 *)&v50;
-        func_L00_001FF500_2B7430(&ev, &ev, 1.0f);
+        vec_set_length_xy_r(&ev, &ev, 1.0f);
         ev.b18 = 3;
         ev.pos.w = 5627.9248f;
         ev.pos.z = 1.0f;
         ev.b19 = 2;
         ev.h1A = (*(unsigned short *)&m->oclass);
-        if (func_001F9850_2B7430(0xBB8) - 40 < d->f10) skip = ((Hero *)D_0013F450_2B7430)->moby;
-        if (func_L00_001EFFF0_2B7430(&v20, &m->pos, 0, skip, &ev)) {
-            if (((Hit_2B7430 *)D_L00_00173F40_2B33E8)->f18 != 0) {
+        if (scale_ticks_r4(0xBB8) - 40 < d->f10) skip = ((Hero *)g_hero_r3)->moby;
+        if (coll_line_r3(&v20, &m->pos, 0, skip, &ev)) {
+            if (((Hit_2B7430 *)coll_hit_result_r)->f18 != 0) {
                 direct = 0;
-                if (((Hit_2B7430 *)D_L00_00173F40_2B33E8)->f18 == ((Hero *)D_0013F450_2B7430)->moby) direct = 1;
+                if (((Hit_2B7430 *)coll_hit_result_r)->f18 == ((Hero *)g_hero_r3)->moby) direct = 1;
                 m->command = 2;
-                qcopy(&m->pos, &((Hit_2B7430 *)D_L00_00173F40_2B33E8)->v20);
-                func_001F9BF0_2B7430(&v60, &((Hit_2B7430 *)D_L00_00173F40_2B33E8)->v50, &((Hit_2B7430 *)D_L00_00173F40_2B33E8)->v60);
-                func_L00_001FF4B0_2B7430(&v60, &v60, 1.0f);
-                func_L00_001FF610_2B7430(&k30, &v50, &((Hit_2B7430 *)D_L00_00173F40_2B33E8)->v40);
-                func_L00_001FF4B0_2B7430(&k30, &k30, D_0015EE6C_2B33E8 + D_0015EE6C_2B33E8);
-                func_L00_001FF4B0_2B7430(&k40, &((Hit_2B7430 *)D_L00_00173F40_2B33E8)->v40, 1.0f);
+                qcopy(&m->pos, &((Hit_2B7430 *)coll_hit_result_r)->v20);
+                FastVecSub_r3(&v60, &((Hit_2B7430 *)coll_hit_result_r)->v50, &((Hit_2B7430 *)coll_hit_result_r)->v60);
+                vec_scale_to_length_r4(&v60, &v60, 1.0f);
+                vec_reflect_r(&k30, &v50, &((Hit_2B7430 *)coll_hit_result_r)->v40);
+                vec_scale_to_length_r4(&k30, &k30, g_frame_time_r + g_frame_time_r);
+                vec_scale_to_length_r4(&k40, &((Hit_2B7430 *)coll_hit_result_r)->v40, 1.0f);
                 if (d->f2C != -1) {
-                    Row_2B7430 *e = (Row_2B7430 *)(D_0013E650_2B7430 + d->f2C * 0x70);
+                    Row_2B7430 *e = (Row_2B7430 *)(voice_pool_r + d->f2C * 0x70);
                     if (e->f88 == m) {
-                        if (e->f74 != 0) func_L00_0028EBF0_2B7430(d->f2C);
+                        if (e->f74 != 0) Sound_StopSlot_r(d->f2C);
                     }
                 }
                 d->f2C = -1;
-            } else if (((Hit_2B7430 *)D_L00_00173F40_2B33E8)->f1C > 0) {
+            } else if (((Hit_2B7430 *)coll_hit_result_r)->f1C > 0) {
                 m->command = 1;
-                qcopy(&m->pos, &((Hit_2B7430 *)D_L00_00173F40_2B33E8)->v20);
-                func_001F9BF0_2B7430(&v60, &((Hit_2B7430 *)D_L00_00173F40_2B33E8)->v50, &((Hit_2B7430 *)D_L00_00173F40_2B33E8)->v60);
-                func_L00_001FF4B0_2B7430(&v60, &v60, 1.0f);
-                func_L00_001FF610_2B7430(&k30, &v50, &((Hit_2B7430 *)D_L00_00173F40_2B33E8)->v40);
-                func_L00_001FF4B0_2B7430(&k30, &k30, D_0015EE6C_2B33E8 + D_0015EE6C_2B33E8);
-                func_L00_001FF4B0_2B7430(&k40, &((Hit_2B7430 *)D_L00_00173F40_2B33E8)->v40, 1.0f);
+                qcopy(&m->pos, &((Hit_2B7430 *)coll_hit_result_r)->v20);
+                FastVecSub_r3(&v60, &((Hit_2B7430 *)coll_hit_result_r)->v50, &((Hit_2B7430 *)coll_hit_result_r)->v60);
+                vec_scale_to_length_r4(&v60, &v60, 1.0f);
+                vec_reflect_r(&k30, &v50, &((Hit_2B7430 *)coll_hit_result_r)->v40);
+                vec_scale_to_length_r4(&k30, &k30, g_frame_time_r + g_frame_time_r);
+                vec_scale_to_length_r4(&k40, &((Hit_2B7430 *)coll_hit_result_r)->v40, 1.0f);
                 if (d->f2C != -1) {
-                    Row_2B7430 *e = (Row_2B7430 *)(D_0013E650_2B7430 + d->f2C * 0x70);
+                    Row_2B7430 *e = (Row_2B7430 *)(voice_pool_r + d->f2C * 0x70);
                     if (e->f88 == m) {
-                        if (e->f74 != 0) func_L00_0028EBF0_2B7430(d->f2C);
+                        if (e->f74 != 0) Sound_StopSlot_r(d->f2C);
                     }
                 }
                 d->f2C = -1;
             }
         } else if (d->f10 == 0) {
-            func_L00_002B6E10_2B7430(m, d);
+            terminate_visibomb_missile_r(m, d);
             return;
         }
     }
-    if (d->f10 < func_001F9850_2B7430(0xBB8) - func_001F9850_2B7430(0x3C)) {
-        if (((PadState *)D_0013CA40_2B5C98)->pressed & 0x20) {
+    if (d->f10 < scale_ticks_r4(0xBB8) - scale_ticks_r4(0x3C)) {
+        if (((PadState *)g_controller_state_r)->pressed & 0x20) {
             m->command = 1;
             if (d->f2C != -1) {
-                Row_2B7430 *e = (Row_2B7430 *)(D_0013E650_2B7430 + d->f2C * 0x70);
+                Row_2B7430 *e = (Row_2B7430 *)(voice_pool_r + d->f2C * 0x70);
                 if (e->f88 == m) {
-                    if (e->f74 != 0) func_L00_0028EBF0_2B7430(d->f2C);
+                    if (e->f74 != 0) Sound_StopSlot_r(d->f2C);
                 }
             }
             d->f2C = -1;
@@ -1756,30 +1756,30 @@ void visibomb_missile_update(Moby *m) {
         int k;
         int rr;
         if (direct == 0) {
-            func_L00_0025F4A8_2B7430(m, &k30, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 0.0f, 1.0f, 1, 20.0f, 1, 1, -1, 0);
-            rr = func_L00_001F2BE8_2B7430(&m->pos, 4.0f, 16, m, 0);
+            spawn_explosion_r(m, &k30, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 0.0f, 1.0f, 1, 20.0f, 1, 1, -1, 0);
+            rr = coll_sphere_mobys_r2(&m->pos, 4.0f, 16, m, 0);
             *(u128_2B7430 *)&vA0 = *(u128_2B7430 *)((V_2B7430 *)&m->pos);
-            func_L00_0025BA50_2B7430(m, &vA0, D_L00_00178000_2B7430, rr, 0, 0x830000, 3, 2, 6.0f, 1.0f, 1.0f);
+            SendRadialMessageToMobys_r(m, &vA0, coll_sphere_moby_hits_r, rr, 0, 0x830000, 3, 2, 6.0f, 1.0f, 1.0f);
         }
         m->flags |= 1;
-        d->f4 = D_0015EE60_2B7430 * 0.0199999996f;
+        d->f4 = frame_scale_r * 0.0199999996f;
         d->f18 = d->f18 * 0.00999999978f;
-        if (func_001F9850_2B7430(0xBB8) - func_001F9850_2B7430(0x1E) < d->f10) {
-            d->f10 = -func_001F9850_2B7430(100);
+        if (scale_ticks_r4(0xBB8) - scale_ticks_r4(0x1E) < d->f10) {
+            d->f10 = -scale_ticks_r4(100);
         } else {
             d->f10 = -1;
         }
         qcopy(&vA0, &m->pos);
         for (k = 4; k >= 0; k--) {
             qcopy(&m->pos, &vA0);
-            func_L00_00260958_2B7430(&m->pos, 1.5f);
-            func_L00_002B6FF0_2B7430(m, 1);
+            add_random_offset_to_vector_xyz_r(&m->pos, 1.5f);
+            spawn_moby_particle_and_glow_burst_r(m, 1);
             qcopy(&m->pos, &vA0);
         }
         v50.x = 0.0f;
         m->command = 0;
     }
-    if (d->f14 != 0) func_L00_002ECAF8_2B7430(d->f14, m);
+    if (d->f14 != 0) update_orbit_camera_from_target_moby_r(d->f14, m);
 }
 extern int random_integer_below(int);
 extern unsigned char *GetFlaggedPvarWord(void *);
@@ -1874,14 +1874,14 @@ typedef struct { s32 idx; s32 anim; f32 radius; s32 retry; s32 frame; s32 pad14;
 typedef struct { u8 pad0[0x70]; u16 cnt; u16 last; u32 flags; } Ring;
 extern s32 Sound_IsPlaying(Moby *, s32);
 extern s32 rand_range(s32, s32);
-extern void func_00213DE0_B8208(Moby *, s32, s32, s32) __asm__("func_00213DE0");
-extern s32 func_0022ED80_B8208(s32, s32, Moby *) __asm__("func_0022ED80");
+extern void MobyBlendAnimation_r3(Moby *, s32, s32, s32) __asm__("func_00213DE0");
+extern s32 Moby_PlaySound_r2(s32, s32, Moby *) __asm__("func_0022ED80");
 extern s32 truncate_float_to_s32(f32);
 extern void apply_taunter_to_nearby_mobies(Moby *, f32);
 extern void Sound_StopSlot(s32);
 extern void update_taunter_effect_slots(Moby *);
 typedef struct { u8 p0[0x10A0]; u32 w10A0; u8 p10A4[0x10]; u32 w10B4; u8 p10B8[0x20AC-0x10B8]; u8 b20AC; } GS;
-extern GS D_0013F450_2B8208 __asm__("D_0013F450");
+extern GS g_hero_r4 __asm__("D_0013F450");
 extern u32 g_controller_state[];
 extern u32 pad_held[];
 extern u8 voice_pool[];
@@ -1925,15 +1925,15 @@ void taunter_update(Moby *m)
         goto end;
     }
     if ((u8)v != 2) goto end;
-    if (m->prev_seq == 3 && D_0013F450_2B8208.b20AC == 0) {
+    if (m->prev_seq == 3 && g_hero_r4.b20AC == 0) {
         taunter_effect_emission_disabled = 0;
         o->cnt18++;
     } else {
         o->cnt18 = 0;
     }
     if (Sound_IsPlaying(m, o->anim) == 0) {
-        b = g_controller_state[0x1A4 / 4] & D_0013F450_2B8208.w10A0;
-        if ((b != 0 || ((g_controller_state[0x1A0 / 4] & D_0013F450_2B8208.w10A0) != 0 && o->retry >= 0x11)) && D_0013F450_2B8208.b20AC == 0) {
+        b = g_controller_state[0x1A4 / 4] & g_hero_r4.w10A0;
+        if ((b != 0 || ((g_controller_state[0x1A0 / 4] & g_hero_r4.w10A0) != 0 && o->retry >= 0x11)) && g_hero_r4.b20AC == 0) {
             if (b != 0) {
                 o->frame = scale_ticks(rand_range(0xF, 0x2D));
             }
@@ -1944,8 +1944,8 @@ void taunter_update(Moby *m)
             }
             item_usage.flags |= 1 << g_current_level_index;
             item_usage.flags |= 0x80000000;
-            if (m->prev_seq != 3) func_00213DE0_B8208(m, 3, 0, scale_ticks(3));
-            o->anim = func_0022ED80_B8208(o->idx, 1, m);
+            if (m->prev_seq != 3) MobyBlendAnimation_r3(m, 3, 0, scale_ticks(3));
+            o->anim = Moby_PlaySound_r2(o->idx, 1, m);
             i = o->idx + 1;
             o->idx = i;
             r1 = truncate_float_to_s32(((Cfg *)m->pclass)->tab[i].x * 10.0f);
@@ -1956,18 +1956,18 @@ void taunter_update(Moby *m)
             goto end;
         }
         if (o->anim < 0) {
-            if ((g_controller_state[0x1A0 / 4] & D_0013F450_2B8208.w10A0) != 0 && D_0013F450_2B8208.b20AC == 0) o->retry++;
+            if ((g_controller_state[0x1A0 / 4] & g_hero_r4.w10A0) != 0 && g_hero_r4.b20AC == 0) o->retry++;
             else o->retry = 0;
-            if (m->prev_seq != 1) func_00213DE0_B8208(m, 1, 0, scale_ticks(5));
+            if (m->prev_seq != 1) MobyBlendAnimation_r3(m, 1, 0, scale_ticks(5));
             goto end;
         }
     } else {
         o->retry++;
-        if ((pad_held[0] & D_0013F450_2B8208.w10A0) != 0 || scale_ticks(0x1E) >= o->cnt18) {
-            if (D_0013F450_2B8208.b20AC == 0) goto L7340;
+        if ((pad_held[0] & g_hero_r4.w10A0) != 0 || scale_ticks(0x1E) >= o->cnt18) {
+            if (g_hero_r4.b20AC == 0) goto L7340;
         }
     }
-    if (m->prev_seq != 1) func_00213DE0_B8208(m, 1, 0, scale_ticks(5));
+    if (m->prev_seq != 1) MobyBlendAnimation_r3(m, 1, 0, scale_ticks(5));
     a = o->anim;
     if (a != -1) {
         e = voice_pool + a * 0x70;
@@ -1979,25 +1979,25 @@ void taunter_update(Moby *m)
 L7340:
     if (!((*(s32 *)&D_L00_0015F6B0_B8208b) & 3)) apply_taunter_to_nearby_mobies(m, o->radius);
 end:
-    if ((s32)(D_0013F450_2B8208.w10B4 ^ 3) != 0) update_taunter_effect_slots(m);
+    if ((s32)(g_hero_r4.w10B4 ^ 3) != 0) update_taunter_effect_slots(m);
 }
 typedef struct { float f; short a; short b; short c; short pad; } E8690;
-extern E8690 D_L00_001DB740_b[10] __asm__("D_L00_001DB740") NOT_SDA;
+extern E8690 taunter_effect_slots_b[10] __asm__("D_L00_001DB740") NOT_SDA;
 extern int taunter_effect_reset_pending MACRO_ADDR;
 extern int taunter_effect_spawn_timer MACRO_ADDR;
 extern int taunter_effect_emission_disabled MACRO_ADDR;
 extern float taunter_effect_inv_lifetime MACRO_ADDR;
-extern char D_L00_001615B0_b[] __asm__("D_L00_001615B0") MACRO_ADDR;
-extern short D_L00_00161580_g __asm__("D_L00_00161580");
-extern short D_L00_00161584_g __asm__("D_L00_00161584");
-extern short D_L00_00161588_g __asm__("D_L00_00161588");
-extern short D_L00_0016158C_g __asm__("D_L00_0016158C");
-extern short D_L00_001615A8_g __asm__("D_L00_001615A8");
+extern char taunter_effect_origin_b[] __asm__("D_L00_001615B0") MACRO_ADDR;
+extern short taunter_effect_spawn_interval_frames_g __asm__("D_L00_00161580");
+extern short taunter_effect_travel_distance_g __asm__("D_L00_00161584");
+extern short taunter_effect_travel_speed_g __asm__("D_L00_00161588");
+extern short taunter_effect_alpha_g __asm__("D_L00_0016158C");
+extern short taunter_effect_lifetime_frames_g __asm__("D_L00_001615A8");
 extern int fast_dec_timer(int *);
 extern int FastDecTimer(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void AddDrawCallback(void (*)(void), void *);
-extern void func_L00_002B8860_b(void) __asm__("func_L00_002B8860");
+extern void draw_taunter_effect_quads_b(void) __asm__("func_L00_002B8860");
 /* per-frame update of the ten slot table: spawn one, age the rest, then draw */
 void update_taunter_effect_slots(Moby *arg) {
     E8690 *p;
@@ -2006,22 +2006,22 @@ void update_taunter_effect_slots(Moby *arg) {
     int i;
     int r;
     if (taunter_effect_reset_pending != 0) {
-        for (i = 9; i >= 0; i--) D_L00_001DB740_b[i].c = 0;
+        for (i = 9; i >= 0; i--) taunter_effect_slots_b[i].c = 0;
         taunter_effect_reset_pending = 0;
         taunter_effect_spawn_timer = 0;
-        r = func_001FA898_r(*(float *)&D_L00_00161584_g / (*(float *)&D_L00_00161588_g * g_frame_time));
-        *(int *)&D_L00_001615A8_g = r;
+        r = truncate_float_to_s32_r(*(float *)&taunter_effect_travel_distance_g / (*(float *)&taunter_effect_travel_speed_g * g_frame_time));
+        *(int *)&taunter_effect_lifetime_frames_g = r;
         taunter_effect_inv_lifetime = 1.0f / IntToFloat(r);
     }
     if (taunter_effect_emission_disabled == 0) {
         if (fast_dec_timer(&taunter_effect_spawn_timer) != 0) {
             i = 0;
             do {
-                p = &D_L00_001DB740_b[i];
+                p = &taunter_effect_slots_b[i];
                 if (p->c == 0) {
-                    taunter_effect_spawn_timer = scale_ticks(*(int *)&D_L00_00161580_g);
+                    taunter_effect_spawn_timer = scale_ticks(*(int *)&taunter_effect_spawn_interval_frames_g);
                     av = *(unsigned short *)(&taunter_effect_spawn_timer + 2);
-                    p->b = *(unsigned short *)&D_L00_0016158C_g;
+                    p->b = *(unsigned short *)&taunter_effect_alpha_g;
                     p->c = 1;
                     p->a = av;
                     p->f = 0;
@@ -2031,14 +2031,14 @@ void update_taunter_effect_slots(Moby *arg) {
         }
     }
     for (i = 0; i < 10; i++) {
-        p = &D_L00_001DB740_b[i];
+        p = &taunter_effect_slots_b[i];
         if (p->c != 0) {
             if (FastDecTimer(&p->a) != 0) p->c = 0;
-            else p->f += *(float *)&D_L00_00161588_g * g_frame_time;
+            else p->f += *(float *)&taunter_effect_travel_speed_g * g_frame_time;
         }
     }
-    Moby_GetJointWorldPos(arg, 0, D_L00_001615B0_b);
-    AddDrawCallback(func_L00_002B8860_b, arg);
+    Moby_GetJointWorldPos(arg, 0, taunter_effect_origin_b);
+    AddDrawCallback(draw_taunter_effect_quads_b, arg);
 }
 extern int GetEffectTex(int);
 extern void vec_scale_to_length(void *, void *, float);
@@ -2046,7 +2046,7 @@ extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void FastVecCross(void *, void *, void *);
 extern float IntToFloat(int);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void transform_vector(void *, void *, void *);
 extern void draw_world_quad(void *, void *, int);
 extern char D_0013E633[];
@@ -2096,7 +2096,7 @@ void draw_taunter_effect_quads(char *m) {
             if (t > 1.0f) t = 1.0f;
             s = *(float *)&taunter_effect_start_size + (*(float *)&taunter_effect_end_size - *(float *)&taunter_effect_start_size) * t;
             u = (IntToFloat(*(int *)&taunter_effect_alpha) - 0.0f) * t + 0.0f;
-            j = func_001FA898_r(u);
+            j = truncate_float_to_s32_r(u);
             pk.col[3] = (*(int *)&taunter_effect_color & 0xFFFFFF) | (j << 24);
             pk.col[2] = pk.col[3];
             pk.col[1] = pk.col[3];
@@ -2111,7 +2111,7 @@ void draw_taunter_effect_quads(char *m) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_002B8AE8);
 extern unsigned char voice_pool[];
-extern unsigned char D_0013F450_2B9528[] __asm__("D_0013F450");
+extern unsigned char g_hero_r5[] __asm__("D_0013F450");
 extern unsigned short D_00141CD8 NOT_SDA;
 extern unsigned char usage_stats[];
 void func_0020D678_B9528(void *) __asm__("func_0020D678");
@@ -2164,10 +2164,10 @@ void update_pyrocitor_usage_and_cleanup(unsigned char *m)
             *(unsigned short *)(P + 0x52) = scale_ticks(gameplay_event_frame_count) / 600;
         *(int *)(P + 0x54) = *(int *)(P + 0x54) | (1 << g_current_level_index) | 0x80000000;
     } else if (*(short *)(v + 0x50) < scale_ticks(0x1E)) {
-        D_0013F450_2B9528[0x20B4]++;
+        g_hero_r5[0x20B4]++;
     }
     *(short *)(v + 0x50) = 0;
-    if (D_0013F450_2B9528[0x20B4] >= 3)
+    if (g_hero_r5[0x20B4] >= 3)
         Help_Request(0x4E24, 0x4E);
 }
 extern char D_0013E15A[];
@@ -2236,8 +2236,8 @@ void update_pyrocitor_flame_effect_slots(char *m) {
                     swap_packed_color_channels(c1, q[0x10]);
                     c2 = FastTweenColor(*(int *)&pyrocitor_flame_particle_end_color_a, *(int *)&pyrocitor_flame_particle_end_color_b, random_float_between(0.0f, 1.0f));
                     swap_packed_color_channels(c2, q[0x10]);
-                    c3 = func_001FA898_r(multiply_global_factor(random_float_between((float)*(int *)&pyrocitor_flame_particle_time_min, (float)*(int *)&pyrocitor_flame_particle_time_max)));
-                    c4 = func_001FA898_r(multiply_global_factor(random_float_between((float)*(int *)&pyrocitor_flame_particle_time_min, (float)*(int *)&pyrocitor_flame_particle_time_max)));
+                    c3 = truncate_float_to_s32_r(multiply_global_factor(random_float_between((float)*(int *)&pyrocitor_flame_particle_time_min, (float)*(int *)&pyrocitor_flame_particle_time_max)));
+                    c4 = truncate_float_to_s32_r(multiply_global_factor(random_float_between((float)*(int *)&pyrocitor_flame_particle_time_min, (float)*(int *)&pyrocitor_flame_particle_time_max)));
                     rand_vec(v3, 0.0f, f20 + f20);
                     FastVecAdd(v3, v3, (o + 0x10));
                     PartType02Spawn(v3, qv, v2, c1, c2, 0xA, c3, c4, *(int *)&pyrocitor_flame_particle_texture);
@@ -2300,41 +2300,41 @@ typedef struct Voice_2B9AD8 { char pad0[4]; unsigned char active; char pad5[0x13
 typedef struct Aim_2B9AD8 { char pad0[4]; short kind; } Aim_2B9AD8;
 typedef struct Light_2B9AD8 { float x, y, z, b; V_2B9AD8 pos; } Light_2B9AD8;
 
-extern Voice_2B9AD8 D_0013E650_2B9AD8[] __asm__("D_0013E650");
+extern Voice_2B9AD8 voice_pool_r2[] __asm__("D_0013E650");
 extern unsigned char D_0013E633_2B9AD8[] __asm__("D_0013E633");
-extern unsigned short D_00141E70_2B9AD8[] __asm__("D_00141E70");
-extern unsigned short D_00141A18_2B9AD8[] __asm__("D_00141A18");
+extern unsigned short tesla_claw_help_shown_count_r[] __asm__("D_00141E70");
+extern unsigned short usage_stats_entry26_count_r[] __asm__("D_00141A18");
 extern float D_L00_0017AFBC_2B9AD8 __asm__("D_L00_0017AFBC");
 extern int D_L00_00161660_2B9AD8 SDATA(D_L00_00161660);
-extern char D_L00_001670D0_2B9AD8[] __asm__("D_L00_001670D0");
-extern Light_2B9AD8 D_L00_001803C0_2B9AD8[] __asm__("D_L00_001803C0");
+extern char player_camera_matrix_r[] __asm__("D_L00_001670D0");
+extern Light_2B9AD8 level_point_lights_r3[] __asm__("D_L00_001803C0");
 
-extern int func_L00_00234718_2B9AD8(int) __asm__("func_L00_00234718");
-extern void func_L00_00203F20_2B9AD8(int, int) __asm__("func_L00_00203F20");
-extern int func_001F9938_2B9AD8(short *) __asm__("func_001F9938");
-extern int func_001F9908_2B9AD8(int *) __asm__("func_001F9908");
-extern int func_L00_00234638_2B9AD8(int, int) __asm__("func_L00_00234638");
-extern int func_001F9850_2B9AD8(int) __asm__("func_001F9850");
-extern int func_L00_0023EF78_2B9AD8(void *, float, float, int) __asm__("func_L00_0023EF78");
-extern float func_L00_001FF860_2B9AD8(float, float) __asm__("func_L00_001FF860");
-extern float func_001FA850_2B9AD8(float, float) __asm__("func_001FA850");
-extern float func_001F9D10_2B9AD8(void *, void *) __asm__("func_001F9D10");
-extern Aim_2B9AD8 *func_L00_0025D390_2B9AD8(void *) __asm__("func_L00_0025D390");
-extern float func_001FA888_2B9AD8(int) __asm__("func_001FA888");
-extern void func_001F9EC0_2B9AD8(void *, void *, void *) __asm__("func_001F9EC0");
+extern int get_ammo_r3(int) __asm__("func_L00_00234718");
+extern void Help_Request_r(int, int) __asm__("func_L00_00203F20");
+extern int FastDecTimer_r3(short *) __asm__("func_001F9938");
+extern int fast_dec_timer_r4(int *) __asm__("func_001F9908");
+extern int use_ammo_r3(int, int) __asm__("func_L00_00234638");
+extern int scale_ticks_r5(int) __asm__("func_001F9850");
+extern int allocate_packed_color_point_light_slot_r(void *, float, float, int) __asm__("func_L00_0023EF78");
+extern float fast_atan2_r4(float, float) __asm__("func_L00_001FF860");
+extern float FastDiffRots_r3(float, float) __asm__("func_001FA850");
+extern float FastVecDist_r4(void *, void *) __asm__("func_001F9D10");
+extern Aim_2B9AD8 *GetFlaggedPvarWord_r3(void *) __asm__("func_L00_0025D390");
+extern float IntToFloat_r3(int) __asm__("func_001FA888");
+extern void matrix_mul_vec3_r3(void *, void *, void *) __asm__("func_001F9EC0");
 extern void func_001F9BD8_2B9AD8(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_L00_00250800_2B9AD8(void *, int, void *) __asm__("func_L00_00250800");
-extern void func_L00_001FF4B0_2B9AD8(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void func_L00_002BA608_2B9AD8(void *) __asm__("func_L00_002BA608");
-extern void func_L00_002BA7C8_2B9AD8(void *) __asm__("func_L00_002BA7C8");
-extern void func_L00_002BBC78_2B9AD8(void) __asm__("func_L00_002BBC78");
-extern void func_001F49B0_2B9AD8(void (*)(void), void *) __asm__("func_001F49B0");
-extern void func_L00_0028EBF0_2B9AD8(int) __asm__("func_L00_0028EBF0");
-extern int func_L00_0028EB98_2B9AD8(void *, int) __asm__("func_L00_0028EB98");
-extern int func_0022ED80_2B9AD8(int, int, void *) __asm__("func_0022ED80");
-extern void func_L00_0020EB60_2B9AD8(void) __asm__("func_L00_0020EB60");
-extern void func_L00_0020ED30_2B9AD8(void) __asm__("func_L00_0020ED30");
-extern void func_L00_0023F1D0_2B9AD8(int) __asm__("func_L00_0023F1D0");
+extern void Moby_GetJointWorldPos_r3(void *, int, void *) __asm__("func_L00_00250800");
+extern void vec_scale_to_length_r5(void *, void *, float) __asm__("func_L00_001FF4B0");
+extern void initialize_tesla_claw_beam_r(void *) __asm__("func_L00_002BA608");
+extern void build_beam_and_arc_points_r(void *) __asm__("func_L00_002BA7C8");
+extern void draw_beam_and_arc_effects_r(void) __asm__("func_L00_002BBC78");
+extern void AddDrawCallback_r2(void (*)(void), void *) __asm__("func_001F49B0");
+extern void Sound_StopSlot_r2(int) __asm__("func_L00_0028EBF0");
+extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
+extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
+extern void start_equipped_item_animation_r2(void) __asm__("func_L00_0020EB60");
+extern void cancel_hero_item_animation_r2(void) __asm__("func_L00_0020ED30");
+extern void release_point_light_slot_r3(int) __asm__("func_L00_0023F1D0");
 
 /* Tesla claw (class 177) update: tracks up to two targets while fire is held, extends the claw tip, runs its
    firing states and statistics, and moves its light. */
@@ -2343,54 +2343,54 @@ void func_L00_002B9AD8_r(Moby *m) {
     V_2B9AD8 t;
     Data_2B9AD8 *s = (Data_2B9AD8 *)m->pvars;
     int active;
-    int done = ((Hero *)D_0013F450_2B7430)->items[0].state == 3;
+    int done = ((Hero *)g_hero_r3)->items[0].state == 3;
     int ready;
     Hero *h;
 
-    if ((((PadState *)D_0013CA40_2B5C98)->pressed & ((Hero *)D_0013F450_2B7430)->items[0].button_mask) &&
-        !((Hero *)D_0013F450_2B7430)->item_use_locked) {
+    if ((((PadState *)g_controller_state_r)->pressed & ((Hero *)g_hero_r3)->items[0].button_mask) &&
+        !((Hero *)g_hero_r3)->item_use_locked) {
         s->reach = 0.8f;
     }
     D_L00_0017AFBC_2B9AD8 = 0.9f;
     active = 0;
-    ready = func_L00_00234718_2B9AD8(-1);
-    if (D_00141E70_2B9AD8[0] == 0 && D_00141A18_2B9AD8[0] == 0 &&
-        ((Hero *)D_0013F450_2B7430)->wrench_combo_step >= 3) {
-        if ((unsigned int)((Hero *)D_0013F450_2B7430)->state.control_mode < 2 || ((Hero *)D_0013F450_2B7430)->state.control_mode == 9)
-            func_L00_00203F20_2B9AD8(0x4E30, 0x81);
+    ready = get_ammo_r3(-1);
+    if (tesla_claw_help_shown_count_r[0] == 0 && usage_stats_entry26_count_r[0] == 0 &&
+        ((Hero *)g_hero_r3)->wrench_combo_step >= 3) {
+        if ((unsigned int)((Hero *)g_hero_r3)->state.control_mode < 2 || ((Hero *)g_hero_r3)->state.control_mode == 9)
+            Help_Request_r(0x4E30, 0x81);
     }
-    if ((((PadState *)D_0013CA40_2B5C98)->held & ((Hero *)D_0013F450_2B7430)->items[0].button_mask) && m->state != 4 &&
-        m->state != 0 && !((Hero *)D_0013F450_2B7430)->item_use_locked && ((Hero *)D_0013F450_2B7430)->state.current != 0x72) {
+    if ((((PadState *)g_controller_state_r)->held & ((Hero *)g_hero_r3)->items[0].button_mask) && m->state != 4 &&
+        m->state != 0 && !((Hero *)g_hero_r3)->item_use_locked && ((Hero *)g_hero_r3)->state.current != 0x72) {
         if (s->timer == 0) {
             if (ready > 0) {
-                if (func_001F9938_2B9AD8(&s->tick)) {
-                    func_001F9938_2B9AD8(&s->f44);
-                    func_001F9938_2B9AD8(&s->f46);
-                    func_L00_00234638_2B9AD8(-1, 1);
-                    s->tick = func_001F9850_2B9AD8(10);
+                if (FastDecTimer_r3(&s->tick)) {
+                    FastDecTimer_r3(&s->f44);
+                    FastDecTimer_r3(&s->f46);
+                    use_ammo_r3(-1, 1);
+                    s->tick = scale_ticks_r5(10);
                 }
                 if (s->light == -1) {
-                    s->light = func_L00_0023EF78_2B9AD8(&m->pos, 7.5f, 0.0f, 0);
-                } else if (s->glow < func_001F9850_2B9AD8(10)) {
+                    s->light = allocate_packed_color_point_light_slot_r(&m->pos, 7.5f, 0.0f, 0);
+                } else if (s->glow < scale_ticks_r5(10)) {
                     s->glow++;
                 }
                 active = 1;
                 if (s->target) {
-                    if (2.0943f < func_001FA850_2B9AD8(((Hero *)D_0013F450_2B7430)->motion.rot.f[2],
-                            func_L00_001FF860_2B9AD8(s->target->pos.x - ((Hero *)D_0013F450_2B7430)->motion.pos.f[0],
-                                                     s->target->pos.y - ((Hero *)D_0013F450_2B7430)->motion.pos.f[1])) ||
+                    if (2.0943f < FastDiffRots_r3(((Hero *)g_hero_r3)->motion.rot.f[2],
+                            fast_atan2_r4(s->target->pos.x - ((Hero *)g_hero_r3)->motion.pos.f[0],
+                                                     s->target->pos.y - ((Hero *)g_hero_r3)->motion.pos.f[1])) ||
                         !s->target->visible ||
-                        20.0f < func_001F9D10_2B9AD8(&s->target->pos, &((Hero *)D_0013F450_2B7430)->motion.pos)) {
+                        20.0f < FastVecDist_r4(&s->target->pos, &((Hero *)g_hero_r3)->motion.pos)) {
                         s->target = 0;
                         s->lock = 0;
                     }
                 }
                 if (s->target2) {
-                    if (2.0943f < func_001FA850_2B9AD8(((Hero *)D_0013F450_2B7430)->motion.rot.f[2],
-                            func_L00_001FF860_2B9AD8(s->target2->pos.x - ((Hero *)D_0013F450_2B7430)->motion.pos.f[0],
-                                                     s->target2->pos.y - ((Hero *)D_0013F450_2B7430)->motion.pos.f[1])) ||
+                    if (2.0943f < FastDiffRots_r3(((Hero *)g_hero_r3)->motion.rot.f[2],
+                            fast_atan2_r4(s->target2->pos.x - ((Hero *)g_hero_r3)->motion.pos.f[0],
+                                                     s->target2->pos.y - ((Hero *)g_hero_r3)->motion.pos.f[1])) ||
                         !s->target2->visible ||
-                        20.0f < func_001F9D10_2B9AD8(&s->target2->pos, &((Hero *)D_0013F450_2B7430)->motion.pos)) {
+                        20.0f < FastVecDist_r4(&s->target2->pos, &((Hero *)g_hero_r3)->motion.pos)) {
                         s->target2 = 0;
                         s->lock2 = 0;
                     }
@@ -2403,10 +2403,10 @@ void func_L00_002B9AD8_r(Moby *m) {
                     Aim_2B9AD8 *a;
                     short n;
                     s->hold++;
-                    a = func_L00_0025D390_2B9AD8(s->target);
+                    a = GetFlaggedPvarWord_r3(s->target);
                     if (a && a->kind == 1) lim = 5;
                     n = s->hold;
-                    if (!(n < func_001F9850_2B9AD8(lim))) {
+                    if (!(n < scale_ticks_r5(lim))) {
                         s->target = 0;
                         s->lock = 0;
                     }
@@ -2418,45 +2418,45 @@ void func_L00_002B9AD8_r(Moby *m) {
                     Aim_2B9AD8 *a;
                     short n;
                     s->hold2++;
-                    a = func_L00_0025D390_2B9AD8(s->target2);
+                    a = GetFlaggedPvarWord_r3(s->target2);
                     if (a && a->kind == 1) lim = 5;
                     n = s->hold2;
-                    if (!(n < func_001F9850_2B9AD8(lim))) {
+                    if (!(n < scale_ticks_r5(lim))) {
                         s->target2 = 0;
                         s->lock2 = 0;
                     }
                 } else {
                     s->hold2 = 0;
                 }
-                s->reach += (func_001FA888_2B9AD8(D_0013E633_2B9AD8[0]) * 6.0f + 12.0f - s->reach) * (D_0015EE60_2B7430 * 0.07f);
-                if (((Hero *)D_0013F450_2B7430)->state.current == 1) {
+                s->reach += (IntToFloat_r3(D_0013E633_2B9AD8[0]) * 6.0f + 12.0f - s->reach) * (frame_scale_r * 0.07f);
+                if (((Hero *)g_hero_r3)->state.current == 1) {
                     t.f.x = 1.2f;
                     t.f.y = 0.0f;
                     t.f.z = 0.0f;
-                    func_001F9EC0_2B9AD8(&t, &t, D_L00_001670D0_2B9AD8);
+                    matrix_mul_vec3_r3(&t, &t, player_camera_matrix_r);
                     s->pos.f.z = t.f.z + m->pos.z;
-                    s->pos.f.x = t.f.x + ((Hero *)D_0013F450_2B7430)->motion.pos.f[0];
-                    s->pos.f.y = t.f.y + ((Hero *)D_0013F450_2B7430)->motion.pos.f[1];
+                    s->pos.f.x = t.f.x + ((Hero *)g_hero_r3)->motion.pos.f[0];
+                    s->pos.f.y = t.f.y + ((Hero *)g_hero_r3)->motion.pos.f[1];
                     t.f.x = s->reach;
                     t.f.y = 0.0f;
                     t.f.z = 0.0f;
-                    func_001F9EC0_2B9AD8(&t, &t, D_L00_001670D0_2B9AD8);
+                    matrix_mul_vec3_r3(&t, &t, player_camera_matrix_r);
                     func_001F9BD8_2B9AD8(&s->tip, &s->pos, &t);
-                } else if (((Hero *)D_0013F450_2B7430)->unk22C8 == 1) {
-                    func_L00_00250800_2B9AD8(m, 0, &s->pos);
+                } else if (((Hero *)g_hero_r3)->unk22C8 == 1) {
+                    Moby_GetJointWorldPos_r3(m, 0, &s->pos);
                     t.f.x = 0.0f;
                     t.f.y = -s->reach;
                     t.f.z = 0.0f;
-                    func_001F9EC0_2B9AD8(&t, &t, &m->rot_row0);
+                    matrix_mul_vec3_r3(&t, &t, &m->rot_row0);
                     func_001F9BD8_2B9AD8(&s->tip, &s->pos, &t);
                 } else {
-                    func_L00_00250800_2B9AD8(m, 0, &s->pos);
-                    func_L00_001FF4B0_2B9AD8(&s->tip, D_0013F450_2B7430 + 0x640, s->reach);
+                    Moby_GetJointWorldPos_r3(m, 0, &s->pos);
+                    vec_scale_to_length_r5(&s->tip, g_hero_r3 + 0x640, s->reach);
                     func_001F9BD8_2B9AD8(&s->tip, &s->pos, &s->tip);
                 }
-                func_L00_002BA608_2B9AD8(m);
-                func_L00_002BA7C8_2B9AD8(m);
-                func_001F49B0_2B9AD8(func_L00_002BBC78_2B9AD8, m);
+                initialize_tesla_claw_beam_r(m);
+                build_beam_and_arc_points_r(m);
+                AddDrawCallback_r2(draw_beam_and_arc_effects_r, m);
             } else {
                 s->target = 0;
                 s->target2 = 0;
@@ -2476,19 +2476,19 @@ void func_L00_002B9AD8_r(Moby *m) {
         D_L00_00161660_2B9AD8 = 1;
         if (s->glow > 0) s->glow--;
         if (s->sound != -1) {
-            Voice_2B9AD8 *v = &D_0013E650_2B9AD8[s->sound];
-            if (v[1].owner == m && v[1].active) func_L00_0028EBF0_2B9AD8(s->sound);
+            Voice_2B9AD8 *v = &voice_pool_r2[s->sound];
+            if (v[1].owner == m && v[1].active) Sound_StopSlot_r2(s->sound);
         }
         s->sound = -1;
-    } else if (!func_L00_0028EB98_2B9AD8(m, s->sound)) {
-        s->sound = func_0022ED80_2B9AD8(4, 4, m);
+    } else if (!Sound_IsPlaying_r(m, s->sound)) {
+        s->sound = Moby_PlaySound_r3(4, 4, m);
     }
     if (!s->target || s->target->state == 0xFE || s->target->state == 0xFD || !(s->target->flags & 0x1000)) s->lock = 1;
     if (!s->target2 || s->target2->state == 0xFE || s->target2->state == 0xFD || !(s->target2->flags & 0x1000)) s->lock2 = 1;
     switch (m->state) {
     case 0:
-        s->timer = func_001F9850_2B9AD8(16);
-        s->light = func_L00_0023EF78_2B9AD8(&s->pos, 0.0f, 0.0f, 0);
+        s->timer = scale_ticks_r5(16);
+        s->light = allocate_packed_color_point_light_slot_r(&s->pos, 0.0f, 0.0f, 0);
         D_L00_00161660_2B9AD8 = 1;
         m->state = 1;
         s->f3E = 20;
@@ -2501,19 +2501,19 @@ void func_L00_002B9AD8_r(Moby *m) {
         s->f44 = 0;
         break;
     case 1:
-        func_001F9908_2B9AD8(&s->timer);
+        fast_dec_timer_r4(&s->timer);
         if (active) {
-            func_L00_0020EB60_2B9AD8();
+            start_equipped_item_animation_r2();
             m->state = 3;
         }
-        if ((((PadState *)D_0013CA40_2B5C98)->pressed & (h = (Hero *)D_0013F450_2B7430)->items[0].button_mask) && !h->item_use_locked) {
+        if ((((PadState *)g_controller_state_r)->pressed & (h = (Hero *)g_hero_r3)->items[0].button_mask) && !h->item_use_locked) {
             if (active) {
                 Stats_2B9AD8 *st = (Stats_2B9AD8 *)(D_0014171B_2B33E8 + 0x65);
                 if (st->uses < 65535) st->uses++;
-                if (func_001F9850_2B9AD8(D_0015EFA4_2B33E8) / 600 > st->longest)
-                    st->longest = func_001F9850_2B9AD8(D_0015EFA4_2B33E8) / 600;
-                st->levels = (st->levels | (1 << D_0015EE84_2B33E8)) | 0x80000000;
-                func_L00_0020EB60_2B9AD8();
+                if (scale_ticks_r5(gameplay_event_frame_count_r) / 600 > st->longest)
+                    st->longest = scale_ticks_r5(gameplay_event_frame_count_r) / 600;
+                st->levels = (st->levels | (1 << g_current_level_index_r)) | 0x80000000;
+                start_equipped_item_animation_r2();
                 m->state = 3;
             } else {
                 s->target = 0;
@@ -2521,33 +2521,33 @@ void func_L00_002B9AD8_r(Moby *m) {
                 s->lock = 0;
                 s->lock2 = 0;
                 m->state = 1;
-                func_0022ED80_2B9AD8(0, 0, m);
-                func_L00_0020ED30_2B9AD8();
+                Moby_PlaySound_r3(0, 0, m);
+                cancel_hero_item_animation_r2();
             }
         }
         break;
     case 2:
         break;
     case 3:
-        if ((((PadState *)D_0013CA40_2B5C98)->released & ((Hero *)D_0013F450_2B7430)->items[0].button_mask) || !active ||
-            ((Hero *)D_0013F450_2B7430)->item_use_locked) {
-            h = (Hero *)D_0013F450_2B7430;
-            if (func_001F9850_2B9AD8(70) < h->item_anim_frames) {
+        if ((((PadState *)g_controller_state_r)->released & ((Hero *)g_hero_r3)->items[0].button_mask) || !active ||
+            ((Hero *)g_hero_r3)->item_use_locked) {
+            h = (Hero *)g_hero_r3;
+            if (scale_ticks_r5(70) < h->item_anim_frames) {
                 if (((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->uses < 65535) ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->uses++;
             }
-            if (func_001F9850_2B9AD8(D_0015EFA4_2B33E8) / 600 > ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->longest)
-                ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->longest = func_001F9850_2B9AD8(D_0015EFA4_2B33E8) / 600;
-            ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->levels = (((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->levels | (1 << D_0015EE84_2B33E8)) | 0x80000000;
-            if (((Hero *)D_0013F450_2B7430)->item_anim_frames < func_001F9850_2B9AD8(30))
-                ((Hero *)D_0013F450_2B7430)->wrench_combo_step++;
+            if (scale_ticks_r5(gameplay_event_frame_count_r) / 600 > ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->longest)
+                ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->longest = scale_ticks_r5(gameplay_event_frame_count_r) / 600;
+            ((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->levels = (((Stats2_2B9AD8 *)(D_0014171B_2B33E8 + 0x22D))->levels | (1 << g_current_level_index_r)) | 0x80000000;
+            if (((Hero *)g_hero_r3)->item_anim_frames < scale_ticks_r5(30))
+                ((Hero *)g_hero_r3)->wrench_combo_step++;
             else
-                ((Hero *)D_0013F450_2B7430)->wrench_combo_step = 0;
+                ((Hero *)g_hero_r3)->wrench_combo_step = 0;
             s->target = 0;
             s->target2 = 0;
             s->lock = 0;
             s->lock2 = 0;
             s->reach = 0.0f;
-            func_L00_0020ED30_2B9AD8();
+            cancel_hero_item_animation_r2();
             m->state = 1;
         }
         break;
@@ -2561,18 +2561,18 @@ void func_L00_002B9AD8_r(Moby *m) {
         qzero(&t);
         t.f.x = 2.0f;
         t.f.z = 2.0f;
-        func_001F9EC0_2B9AD8(&t, &t, D_0013F450_2B7430 + 0x640);
-        D_L00_001803C0_2B9AD8[s->light].pos.f.x = ((Hero *)D_0013F450_2B7430)->motion.pos.f[0] + t.f.x;
-        D_L00_001803C0_2B9AD8[s->light].pos.f.y = ((Hero *)D_0013F450_2B7430)->motion.pos.f[1] + t.f.y;
-        D_L00_001803C0_2B9AD8[s->light].pos.f.z = ((Hero *)D_0013F450_2B7430)->motion.pos.f[2] + t.f.z;
-        D_L00_001803C0_2B9AD8[s->light].pos.f.w = 7.5f;
-        k = func_001FA888_2B9AD8(s->glow) / (float)func_001F9850_2B9AD8(10);
-        D_L00_001803C0_2B9AD8[s->light].z = k;
+        matrix_mul_vec3_r3(&t, &t, g_hero_r3 + 0x640);
+        level_point_lights_r3[s->light].pos.f.x = ((Hero *)g_hero_r3)->motion.pos.f[0] + t.f.x;
+        level_point_lights_r3[s->light].pos.f.y = ((Hero *)g_hero_r3)->motion.pos.f[1] + t.f.y;
+        level_point_lights_r3[s->light].pos.f.z = ((Hero *)g_hero_r3)->motion.pos.f[2] + t.f.z;
+        level_point_lights_r3[s->light].pos.f.w = 7.5f;
+        k = IntToFloat_r3(s->glow) / (float)scale_ticks_r5(10);
+        level_point_lights_r3[s->light].z = k;
         k = k * 0.7f;
-        D_L00_001803C0_2B9AD8[s->light].y = k;
-        D_L00_001803C0_2B9AD8[s->light].x = D_L00_001803C0_2B9AD8[s->light].y;
+        level_point_lights_r3[s->light].y = k;
+        level_point_lights_r3[s->light].x = level_point_lights_r3[s->light].y;
         if (done && s->light != -1) {
-            func_L00_0023F1D0_2B9AD8(s->light);
+            release_point_light_slot_r3(s->light);
             s->light = -1;
         }
     }

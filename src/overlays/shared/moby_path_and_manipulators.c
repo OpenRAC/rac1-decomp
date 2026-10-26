@@ -338,12 +338,12 @@ typedef struct {
     Vec4 points[1];
 } SegmentPath_2629E0;
 
-extern SegmentPath_2629E0 *D_L00_001B0830_2629E0[] __asm__("D_L00_001B0830");
-extern void func_001F9BF0_2629E0(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
-extern f32 func_001F9CB8_2629E0(Vec4 *) __asm__("func_001F9CB8");
-extern void func_L00_001FF4B0_2629E0(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B0");
-extern void func_001F9BC0_2629E0(Vec4 *) __asm__("func_001F9BC0");
-extern void func_001F9EC0_2629E0(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9EC0");
+extern SegmentPath_2629E0 *level_paths_r[] __asm__("D_L00_001B0830");
+extern void FastVecSub_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
+extern f32 FastVecLength_r(Vec4 *) __asm__("func_001F9CB8");
+extern void vec_scale_to_length_r(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B0");
+extern void clear_u64_value_r(Vec4 *) __asm__("func_001F9BC0");
+extern void matrix_mul_vec3_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9EC0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/state/00261968.c, FUN_L00_00261968. */
 s32 test_path_segment_strict_crossing(s32 path_index, Vec4 *start, Vec4 *end) {
@@ -361,25 +361,25 @@ s32 test_path_segment_strict_crossing(s32 path_index, Vec4 *start, Vec4 *end) {
     f32 zero;
 
     i = 1;
-    func_001F9BF0_2629E0(&direction, end, start);
+    FastVecSub_r(&direction, end, start);
     direction.i[2] = 0;
-    func_L00_001FF4B0_2629E0(&direction, &direction, 1.0f / func_001F9CB8_2629E0(&direction));
-    func_001F9BC0_2629E0(&axis);
+    vec_scale_to_length_r(&direction, &direction, 1.0f / FastVecLength_r(&direction));
+    clear_u64_value_r(&axis);
     axis.f[0] = direction.f[1];
     axis.f[1] = -direction.f[0];
-    func_001F9BC0_2629E0(&origin);
-    entry = &D_L00_001B0830_2629E0[path_index];
+    clear_u64_value_r(&origin);
+    entry = &level_paths_r[path_index];
     origin.f[2] = 1.0f;
-    func_001F9BF0_2629E0(&first, &(*entry)->points[0], start);
-    func_001F9EC0_2629E0(&first, &first, &direction);
+    FastVecSub_r(&first, &(*entry)->points[0], start);
+    matrix_mul_vec3_r(&first, &first, &direction);
     previous = &first;
     current = &next;
     if (i < (*entry)->count) {
         offset = 0x20;
         zero = 0.0f;
         do {
-            func_001F9BF0_2629E0(current, (Vec4 *)((u8 *)*entry + offset), start);
-            func_001F9EC0_2629E0(current, current, &direction);
+            FastVecSub_r(current, (Vec4 *)((u8 *)*entry + offset), start);
+            matrix_mul_vec3_r(current, current, &direction);
             if (first.f[3] != zero || next.f[3] != zero) {
                 if (next.f[1] * first.f[1] < 0.0f) {
                     crossing = (first.f[0] - next.f[0]) / (first.f[1] - next.f[1]) * -next.f[1] + next.f[0];
@@ -420,15 +420,15 @@ int SegmentCrossPolyline(int idx, void *a, void *b, void *c) {
     clear_u64_value(z);
     z[2] = 1.0f;
     best = 1.0f;
-    FastVecSub(t, (char *)D_L00_001B0830_2629E0[idx] + 0x10, a);
+    FastVecSub(t, (char *)level_paths_r[idx] + 0x10, a);
     matrix_mul_vec3(t, t, v);
     prev = t;
     cur = u;
-    if (i < D_L00_001B0830_2629E0[idx]->count) {
+    if (i < level_paths_r[idx]->count) {
         offset = 0x20;
         zero = 0.0f;
         do {
-            FastVecSub(cur, (char *)D_L00_001B0830_2629E0[idx] + offset, a);
+            FastVecSub(cur, (char *)level_paths_r[idx] + offset, a);
             matrix_mul_vec3(cur, cur, v);
             if (t[3] != zero || u[3] != zero) {
                 if (u[1] * t[1] < 0.0f) {
@@ -445,19 +445,19 @@ int SegmentCrossPolyline(int idx, void *a, void *b, void *c) {
         next:
             i++;
             offset += 0x10;
-        } while (i < D_L00_001B0830_2629E0[idx]->count);
+        } while (i < level_paths_r[idx]->count);
     }
     lerp_vector(c, a, b, best);
     return found;
 }
 LINKER_REMNANT("asm/overlays", func_L00_00262DE8);
 extern f32 FastAbsF(f32);
-extern void func_001F9BD8_62DF0(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
-extern void func_001F9BF0_62DF0(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
+extern void FastVecAdd_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
+extern void FastVecSub_r2(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
 extern f32 FastVecDot(Vec4 *, Vec4 *);
-extern void func_001F9CA0_62DF0(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9CA0");
-extern f32 func_001F9CB8_62DF0(Vec4 *) __asm__("func_001F9CB8");
-extern void func_L00_001FF4B0_62DF0(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B0");
+extern void FastVecCross_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9CA0");
+extern f32 FastVecLength_r2(Vec4 *) __asm__("func_001F9CB8");
+extern void vec_scale_to_length_r2(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00261968.c, FUN_L00_00261d78. */
 s32 resolve_point_path_segment_xy_clearance(f32 distance, s32 path_index, Vec4 *point, Vec4 *out) {
@@ -478,31 +478,31 @@ s32 resolve_point_path_segment_xy_clearance(f32 distance, s32 path_index, Vec4 *
         entry = &level_paths[path_index];
         if ((*entry)->points[i].f[3] == 0.0f && (*entry)->points[i + 1].f[3] == 0.0f)
             continue;
-        func_001F9BF0_62DF0(&difference, &working, &(*entry)->points[i]);
+        FastVecSub_r2(&difference, &working, &(*entry)->points[i]);
         difference.i[2] = 0;
-        func_001F9BF0_62DF0(&segment, &(*entry)->points[i + 1], &(*entry)->points[i]);
+        FastVecSub_r2(&segment, &(*entry)->points[i + 1], &(*entry)->points[i]);
         segment.i[2] = 0;
-        func_L00_001FF4B0_62DF0(&scaled_segment, &segment, 1.0f);
-        func_001F9CA0_62DF0(&cross, &difference, &scaled_segment);
+        vec_scale_to_length_r2(&scaled_segment, &segment, 1.0f);
+        FastVecCross_r(&cross, &difference, &scaled_segment);
         if (distance < FastAbsF(cross.f[2]))
             continue;
         {
-            f32 segment_length = func_001F9CB8_62DF0(&segment);
+            f32 segment_length = FastVecLength_r2(&segment);
             f32 projection = FastVecDot(&difference, &scaled_segment);
             if (segment_length < projection || projection < 0.0f) {
-                if (!(func_001F9CB8_62DF0(&difference) < distance))
+                if (!(FastVecLength_r2(&difference) < distance))
                     continue;
                 found = 1;
-                func_L00_001FF4B0_62DF0(&scaled_difference, &difference, distance);
-                func_001F9BD8_62DF0(&working, &scaled_difference, &(*entry)->points[i]);
+                vec_scale_to_length_r2(&scaled_difference, &difference, distance);
+                FastVecAdd_r(&working, &scaled_difference, &(*entry)->points[i]);
                 working.f[2] = point->f[2];
             } else {
                 found = 1;
-                func_L00_001FF4B0_62DF0(&scaled_cross, &scaled_segment, projection);
-                func_001F9BF0_62DF0(&scaled_difference, &difference, &scaled_cross);
-                func_L00_001FF4B0_62DF0(&scaled_difference, &scaled_difference, distance);
-                func_001F9BD8_62DF0(&scaled_difference, &scaled_difference, &scaled_cross);
-                func_001F9BD8_62DF0(&working, &scaled_difference, &(*entry)->points[i]);
+                vec_scale_to_length_r2(&scaled_cross, &scaled_segment, projection);
+                FastVecSub_r2(&scaled_difference, &difference, &scaled_cross);
+                vec_scale_to_length_r2(&scaled_difference, &scaled_difference, distance);
+                FastVecAdd_r(&scaled_difference, &scaled_difference, &scaled_cross);
+                FastVecAdd_r(&working, &scaled_difference, &(*entry)->points[i]);
                 working.f[2] = point->f[2];
             }
         }
@@ -517,14 +517,14 @@ typedef struct {
     u8 pad[12];
     Vec4 points[1];
 } SegmentPath_262030;
-extern SegmentPath_262030 * D_L00_001B0830_630A8[] __asm__("D_L00_001B0830");
+extern SegmentPath_262030 * level_paths_r2[] __asm__("D_L00_001B0830");
 extern Vec4 hero_gravity_dir;
-extern void func_001F9BD8_630A8(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
-extern void func_001F9BF0_630A8(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
-extern f32 func_001F9C78_630A8(Vec4 *, Vec4 *) __asm__("func_001F9C78");
-extern void func_001F9CA0_630A8(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9CA0");
-extern f32 func_001F9CB8_630A8(Vec4 *) __asm__("func_001F9CB8");
-extern void func_L00_001FF4B0_630A8(f32, Vec4 *, Vec4 *) __asm__("func_L00_001FF4B0");
+extern void FastVecAdd_r2(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
+extern void FastVecSub_r3(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
+extern f32 FastVecDot_r(Vec4 *, Vec4 *) __asm__("func_001F9C78");
+extern void FastVecCross_r2(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9CA0");
+extern f32 FastVecLength_r3(Vec4 *) __asm__("func_001F9CB8");
+extern void vec_scale_to_length_r3(f32, Vec4 *, Vec4 *) __asm__("func_L00_001FF4B0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00261968.c, FUN_L00_00262030. */
 s32 resolve_point_path_segment_clearance(f32 distance, s32 path_index, Vec4 *point, Vec4 *out) {
@@ -550,9 +550,9 @@ s32 resolve_point_path_segment_clearance(f32 distance, s32 path_index, Vec4 *poi
     found = 0;
     saved_out = out;
     qcopy(&working, point);
-    entry = D_L00_001B0830_630A8[path_index];
+    entry = level_paths_r2[path_index];
     offset = (s32)&hero_gravity_dir;
-    original_height = func_001F9C78_630A8(&working, (Vec4 *)offset);
+    original_height = FastVecDot_r(&working, (Vec4 *)offset);
     i = 0;
     if (entry->count - 1 > found) {
         height_axis = (Vec4 *)offset;
@@ -561,35 +561,35 @@ s32 resolve_point_path_segment_clearance(f32 distance, s32 path_index, Vec4 *poi
             next = i + 1;
             if (((Vec4 *)((u8 *)entry + offset + 0x10))->f[3] != 0.0f || entry->points[next].f[3] != 0.0f) {
                 current = (Vec4 *)((u8 *)entry + (offset + 0x10));
-                func_001F9BF0_630A8(&difference, &working, current);
-                func_001F9BF0_630A8(&segment, (Vec4 *)((u8 *)entry + (offset + 0x20)), current);
-                projection = func_001F9C78_630A8(&difference, height_axis);
-                func_L00_001FF4B0_630A8(projection, &scaled_cross, height_axis);
-                func_001F9BF0_630A8(&difference, &difference, &scaled_cross);
-                projection = func_001F9C78_630A8(&segment, height_axis);
-                func_L00_001FF4B0_630A8(projection, &scaled_cross, height_axis);
-                func_001F9BF0_630A8(&segment, &segment, &scaled_cross);
-                func_L00_001FF4B0_630A8(1.0f, &scaled_segment, &segment);
-                func_001F9CA0_630A8(&cross, &difference, &scaled_segment);
-                segment_length = FastAbsF(func_001F9C78_630A8(&cross, height_axis));
+                FastVecSub_r3(&difference, &working, current);
+                FastVecSub_r3(&segment, (Vec4 *)((u8 *)entry + (offset + 0x20)), current);
+                projection = FastVecDot_r(&difference, height_axis);
+                vec_scale_to_length_r3(projection, &scaled_cross, height_axis);
+                FastVecSub_r3(&difference, &difference, &scaled_cross);
+                projection = FastVecDot_r(&segment, height_axis);
+                vec_scale_to_length_r3(projection, &scaled_cross, height_axis);
+                FastVecSub_r3(&segment, &segment, &scaled_cross);
+                vec_scale_to_length_r3(1.0f, &scaled_segment, &segment);
+                FastVecCross_r2(&cross, &difference, &scaled_segment);
+                segment_length = FastAbsF(FastVecDot_r(&cross, height_axis));
                 if (distance < segment_length)
                     goto next_segment_262030;
-                segment_length = func_001F9CB8_630A8(&segment);
-                projection = func_001F9C78_630A8(&difference, &scaled_segment);
+                segment_length = FastVecLength_r3(&segment);
+                projection = FastVecDot_r(&difference, &scaled_segment);
                 if (segment_length < projection || projection < 0.0f) {
-                    segment_length = func_001F9CB8_630A8(&difference);
+                    segment_length = FastVecLength_r3(&difference);
                     if (!(segment_length < distance))
                         goto next_segment_262030;
-                    func_L00_001FF4B0_630A8(distance, &scaled_difference, &difference);
-                    func_001F9BD8_630A8(&working, &scaled_difference, current);
+                    vec_scale_to_length_r3(distance, &scaled_difference, &difference);
+                    FastVecAdd_r2(&working, &scaled_difference, current);
                     found = 1;
                 } else {
                     found = 1;
-                    func_L00_001FF4B0_630A8(projection, &scaled_cross, &scaled_segment);
-                    func_001F9BF0_630A8(&scaled_difference, &difference, &scaled_cross);
-                    func_L00_001FF4B0_630A8(distance, &scaled_difference, &scaled_difference);
-                    func_001F9BD8_630A8(&scaled_difference, &scaled_difference, &scaled_cross);
-                    func_001F9BD8_630A8(&working, &scaled_difference, current);
+                    vec_scale_to_length_r3(projection, &scaled_cross, &scaled_segment);
+                    FastVecSub_r3(&scaled_difference, &difference, &scaled_cross);
+                    vec_scale_to_length_r3(distance, &scaled_difference, &scaled_difference);
+                    FastVecAdd_r2(&scaled_difference, &scaled_difference, &scaled_cross);
+                    FastVecAdd_r2(&working, &scaled_difference, current);
                 }
             }
 next_segment_262030:
@@ -597,9 +597,9 @@ next_segment_262030:
         } while (i < entry->count - 1);
     }
     if ((i = found)) {
-        projection = func_001F9C78_630A8(&working, &hero_gravity_dir);
-        func_L00_001FF4B0_630A8(original_height - projection, &segment, &hero_gravity_dir);
-        func_001F9BD8_630A8(saved_out, &working, &segment);
+        projection = FastVecDot_r(&working, &hero_gravity_dir);
+        vec_scale_to_length_r3(original_height - projection, &segment, &hero_gravity_dir);
+        FastVecAdd_r2(saved_out, &working, &segment);
     }
     return found;
 }
@@ -665,13 +665,13 @@ void initialize_moby_transform_history(int a, char *b) {
         *(short *)(b + 0x130) = 0;
     }
 }
-extern struct Moby *func_0020D348_m(int) __asm__("func_0020D348");
+extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 
 /* adds a spawned copy of an object to the owner's list (up to 4) */
 void create_moby_transform_history_entry(char *o, int a, int b) {
     if (*(int *)(o + 0x138) != 4) {
         if (b < 9) {
-            char *m = (char *)func_0020D348_m(*(short *)(*(char **)(o + 0x134) + 0xA6));
+            char *m = (char *)CreateMoby_m(*(short *)(*(char **)(o + 0x134) + 0xA6));
             if (m != 0) {
                 *(short *)(m + 0x32) = *(unsigned short *)(*(char **)(o + 0x134) + 0x32);
                 *(long *)(m + 0x38) = *(long *)(*(char **)(o + 0x134) + 0x38);
@@ -702,7 +702,7 @@ typedef struct {
     int active;
 } S_263680;
 extern void clear_moby_transform_history(char *o);
-extern void func_0020D6D0_a(void *) __asm__("func_0020D6D0");
+extern void update_moby_animation_state_a(void *) __asm__("func_0020D6D0");
 extern void moby_build_matrix(void *);
 
 /* Pushes the source object's transforms into an 8-entry ring and replays them into the trailing objects, ending them when all faded.
@@ -734,7 +734,7 @@ void update_moby_transform_history(S_263680 *s, int dec) {
             o[0x50] = s->src[0x50];
             o[0x51] = s->src[0x51];
             *(float *)(o + 0x54) = *(float *)(s->src + 0x54);
-            func_0020D6D0_a(o);
+            update_moby_animation_state_a(o);
             qcopy(o + 0x10, &s->a[k]);
             qcopy(o + 0x40, &s->b[k]);
             moby_build_matrix(o);
@@ -836,12 +836,12 @@ void update_moby_rotation_oscillation(float *o, float *a, float *b, float r, flo
     *a = FastAddRots(*a, l1);
     *b = FastAddRots(*b, l2);
 }
-extern void func_00215C00_x(void *, float, float, float) __asm__("func_00215C00");
+extern void BuildSphericalOffset_x(void *, float, float, float) __asm__("func_00215C00");
 /* Set a to b plus the spherical offset built from r, y and z. */
 void fast_add_rotations_cf(void *a, void *b, float r, float y, float z) {
     typedef float W[4] __attribute__((aligned(16)));
     W v;
-    func_00215C00_x(v, r, y, z);
+    BuildSphericalOffset_x(v, r, y, z);
     FastVecAdd(a, v, b);
 }
 extern void ShowBanner(int arg0, int arg1);
@@ -864,7 +864,7 @@ typedef struct MobyBound {
     f32 height; /* 0x10: aim height above the moby position */
 } MobyBound;
 extern struct Moby * suck_moby_list MACRO_ADDR;
-extern u8 D_L00_00166EC0_64140[] __asm__("D_L00_00166EC0");
+extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
 float fast_atan2(float, float);
 float vec_length_xy(void *);
 float vec_distance_xy(void *, void *);
@@ -937,7 +937,7 @@ struct Moby *select_auto_aim_target_moby(void *ignore, Vec4 *pos_in, Vec4 *dir_i
             if (radius < dist)
                 ang -= shrink;
         }
-        if (ang < max_angle && !func_L00_001EFFF0_64140(D_L00_00166EC0_64140, &target, 6, ignore, 0)) {
+        if (ang < max_angle && !func_L00_001EFFF0_64140(g_debug_camera_r, &target, 6, ignore, 0)) {
             best = m;
             best_dist = dist;
             *pitch = -t_pitch;
@@ -1058,7 +1058,7 @@ extern f32 FastVecLength(void *);
 extern s32 random_integer_below(s32);
 extern s32 scale_ticks(s32);
 extern Effect_2637f8 *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, u32);
-extern u8 D_L00_0015F660_64870[] __asm__("D_L00_0015F660") MACRO_ADDR;
+extern u8 veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002630b8.c, FUN_L00_002637f8. */
 void cutscene_set_camera_target(u8 *m) {
@@ -1090,7 +1090,7 @@ void cutscene_set_camera_target(u8 *m) {
                 if (random_integer_below(2) != 0)
                     n = -n;
                 effect = PartType23Spawn(&pos, size, 1.0f, 0.75f, n,
-                                                   D_L00_0015F660_64870, lifetime, 0x503030ff);
+                                                   veldin1_zero_vec_r, lifetime, 0x503030ff);
                 if (effect) {
                     EffectTail_2637f8 *tail = &effect->tail;
                     effect->hA = scale_ticks(6);
@@ -1113,7 +1113,7 @@ void cutscene_set_camera_target(u8 *m) {
             count = 4;
             do {
                 effect = PartType23Spawn(&pos, size, 1.0f, 1.0f, 0x10,
-                                                   D_L00_0015F660_64870, lifetime, 0x7fffffff);
+                                                   veldin1_zero_vec_r, lifetime, 0x7fffffff);
                 if (effect) {
                     EffectTail_2637f8 *tail = &effect->tail;
                     effect->hA = scale_ticks(2);
@@ -1127,11 +1127,11 @@ void cutscene_set_camera_target(u8 *m) {
         }
     }
 }
-extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 
 /* Sets a moby's three float fields to x, running its setup call first when it has a flag byte; without the global flag only runs func_0020D9D8 on a flagged moby. */
 void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m) {
-    if (D_0015EEB4_m[3] != 0) {
+    if (draw_map51_m[3] != 0) {
         if (m[1] == 0) {
             AttachManipulator(a, b, m);
         }
@@ -1172,8 +1172,8 @@ typedef struct {
 } Part;
 
 extern int random_integer_below(int);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
-extern void *func_L00_0026DEA0_c(void *, int, void *, float, float, float, float, int) __asm__("func_L00_0026DEA0");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern void *PartType23Spawn_c(void *, int, void *, float, float, float, float, int) __asm__("func_L00_0026DEA0");
 
 /* Bursts two rings of sparks (and then three more) from two points with the given velocity. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_entities_002630b8.c, FUN_L00_00263b70. */
 void draw_trail(void *p0, void *p1, void *vel, float a, float b) {
@@ -1182,11 +1182,11 @@ void draw_trail(void *p0, void *p1, void *vel, float a, float b) {
     int i, j, m;
     for (i = 0; i < 2; i++) {
         int n = random_integer_below(0x10);
-        part = func_L00_0026DEA0_c(p0, random_integer_below(2) == 0 ? n : -n, vel, 0.1f, 1.0f, 0.9f, a, 0x7F204080);
+        part = PartType23Spawn_c(p0, random_integer_below(2) == 0 ? n : -n, vel, 0.1f, 1.0f, 0.9f, a, 0x7F204080);
         if (part) {
             tail = &part->tail;
             part->hA = scale_ticks(0x1E);
-            part->b9 = func_001FA898_r(4.0f) + 0x40;
+            part->b9 = truncate_float_to_s32_r(4.0f) + 0x40;
             tail->w4 = 2;
             tail->bA = 0x7F;
             tail->bB = part->hA;
@@ -1194,11 +1194,11 @@ void draw_trail(void *p0, void *p1, void *vel, float a, float b) {
     }
     m = 0x10;
     for (j = 0; j < 3; j++) {
-        part = func_L00_0026DEA0_c(p1, m, vel, 0.05f, 1.0f, 0.97f, b, 0x7FFFFFFF);
+        part = PartType23Spawn_c(p1, m, vel, 0.05f, 1.0f, 0.97f, b, 0x7FFFFFFF);
         m = -m;
         if (part) {
             tail = &part->tail;
-            part->b9 = func_001FA898_r(4.0f) + 0x40;
+            part->b9 = truncate_float_to_s32_r(4.0f) + 0x40;
             part->hA = scale_ticks(6);
             part->b8 = random_integer_below(0xFF);
             tail->w4 = 2;
@@ -1262,13 +1262,13 @@ void spawn_moby_break_fragments(char *m, int n, int cnt, int base, int range, in
 }
 extern float random_float_between(float, float);
 extern float multiply_global_factor(float);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float FastVecLength(void *a);
 extern void rand_vec(float *, float, float);
 
 /* Spawns a break-effect fragment moby of class cls from src, and initialises its motion data. */
 void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11, float scale, float *v12) {
-    char *m = (char *)func_0020D348_m(cls);
+    char *m = (char *)CreateMoby_m(cls);
     char *d;
     float t[4];
     float r, f21, k, k2;
@@ -1287,7 +1287,7 @@ void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int 
         ((Moby *)m)->draw_dist = 0x80;
         *(int *)&((Moby *)m)->collision = 0;
         if (a8 == 0)
-            *(int *)(d + 0x30) = func_001FA898_r(multiply_global_factor(random_float_between(60.0f, 120.0f)));
+            *(int *)(d + 0x30) = truncate_float_to_s32_r(multiply_global_factor(random_float_between(60.0f, 120.0f)));
         else
             *(int *)(d + 0x30) = a8;
         *(int *)(d + 0x34) = a9;
@@ -1329,8 +1329,8 @@ void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int 
 }
 extern int timed_hud_frames_left MACRO_ADDR;
 extern int timed_hud_visible MACRO_ADDR;
-extern short D_L00_00161F04_g __asm__("D_L00_00161F04");
-extern short D_L00_00161F08_g __asm__("D_L00_00161F08");
+extern short timed_hud_handle_g __asm__("D_L00_00161F04");
+extern short timed_hud_visibility_gate_g __asm__("D_L00_00161F08");
 extern int queue_animation_update(int, int, void *, void *, void *, int, int);
 extern void draw_uniform_size_hud_stars(void);
 extern void DefaultVtbl_DeleteMoby(void);
@@ -1344,11 +1344,11 @@ void update_timed_hud_visibility(void) {
             timed_hud_visible = 0;
         }
     }
-    if (timed_hud_visible == 0 || (*(int *)&D_L00_00161F08_g) == 0) {
-        (*(int *)&D_L00_00161F04_g) = -1;
-    } else if ((*(int *)&D_L00_00161F04_g) == -1) {
-        (*(int *)&D_L00_00161F04_g) = queue_animation_update(0xC, 0, (void *)((char *)draw_uniform_size_hud_stars + 0x340), DefaultVtbl_DeleteMoby, draw_hud_text_panel, 0, 0);
+    if (timed_hud_visible == 0 || (*(int *)&timed_hud_visibility_gate_g) == 0) {
+        (*(int *)&timed_hud_handle_g) = -1;
+    } else if ((*(int *)&timed_hud_handle_g) == -1) {
+        (*(int *)&timed_hud_handle_g) = queue_animation_update(0xC, 0, (void *)((char *)draw_uniform_size_hud_stars + 0x340), DefaultVtbl_DeleteMoby, draw_hud_text_panel, 0, 0);
     } else {
-        hud_keep_visible((*(int *)&D_L00_00161F04_g), 0xA);
+        hud_keep_visible((*(int *)&timed_hud_handle_g), 0xA);
     }
 }

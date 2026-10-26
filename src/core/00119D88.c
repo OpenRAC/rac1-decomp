@@ -1599,7 +1599,7 @@ struct SifFileSlot {
     s32 reserved8;
     s32 reservedC;
 };
-extern s32 D_0012FD94_1BF80[] __asm__("D_0012FD94");
+extern s32 FsResetState_r[] __asm__("D_0012FD94");
 extern s32 D_0012FDA0_1BF80[] __asm__("D_0012FDA0");
 extern struct FsOpenRequest D_00156980_1BF80 __asm__("D_00156980");
 extern u8 D_001575C0_1BF80[] __asm__("D_001575C0");
@@ -1635,7 +1635,7 @@ s32 func_0011BF80(const u8 *path, s32 flags, ...)
     /* The six remaining EE argument registers occupy eight bytes each. */
     arguments = __builtin_next_arg(flags) - 0x30;
     func_0011BC40_1BF80(0);
-    if (D_0012FD94_1BF80[0] == 0) {
+    if (FsResetState_r[0] == 0) {
         func_0011BCB0();
     }
     if (func_0011BEB8() != 0) {
@@ -1820,7 +1820,7 @@ s32 func_0011C388(s32 fd, s32 offset, s32 origin)
     request = &D_00156980_1C388;
     file_slot = func_0011B7F8_1C388(fd);
     func_0011BC40_1C388(4);
-    if (D_0012FD94_1BF80[0] == 0) {
+    if (FsResetState_r[0] == 0) {
         func_0011BC70_1C388();
         return -1;
     }
@@ -1907,7 +1907,7 @@ s32 func_0011C5C0(s32 fd, void *buffer, s32 length)
     request = &D_00156980_1C5C0;
     file_slot = func_0011B7F8_1C5C0(fd);
     func_0011BC40_1C5C0(2);
-    if (D_0012FD94_1BF80[0] == 0) {
+    if (FsResetState_r[0] == 0) {
         func_0011BC70_1C5C0();
         return -1;
     }
@@ -2004,7 +2004,7 @@ s32 func_0011C820(s32 fd, u8 *buffer, s32 length)
     request = &D_00156980_1C820;
     file_slot = func_0011B7F8_1C820(fd);
     func_0011BC40_1C820(3);
-    if (D_0012FD94_1BF80[0] == 0) {
+    if (FsResetState_r[0] == 0) {
         func_0011BC70_1C820();
         return -1;
     }

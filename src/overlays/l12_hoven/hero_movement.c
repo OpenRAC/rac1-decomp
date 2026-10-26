@@ -128,7 +128,7 @@ typedef struct {
     u8 pad2098[0xC];
     u8 b20A4;
 } P231ae0;
-extern P231ae0 D_0013F450_33130 __asm__("D_0013F450");
+extern P231ae0 g_hero_r __asm__("D_0013F450");
 extern f32 D_0013F670[];
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
@@ -139,34 +139,34 @@ void func_L00_0025C918_33130(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_L00
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/ui_help_0022de30.c, FUN_L12_00232b18. */
 void update_hero_smoothing_targets_and_values(void) {
-    switch (D_0013F450_33130.b20A4) {
+    switch (g_hero_r.b20A4) {
     case 0:
-        D_0013F450_33130.f228 = 0.8f;
-        D_0013F450_33130.f22C = 0.7f;
-        D_0013F450_33130.f230 = 0.45f;
+        g_hero_r.f228 = 0.8f;
+        g_hero_r.f22C = 0.7f;
+        g_hero_r.f230 = 0.45f;
         break;
     case 3:
-        D_0013F450_33130.f228 = 0.8f;
-        D_0013F450_33130.f22C = 0.6f;
-        D_0013F450_33130.f230 = 0.45f;
+        g_hero_r.f228 = 0.8f;
+        g_hero_r.f22C = 0.6f;
+        g_hero_r.f230 = 0.45f;
         break;
     }
-    if (D_0013F450_33130.i208C == 4) {
-        if (D_0013F450_33130.i198 > D_0013F450_33130.i420 && D_0013F450_33130.s41E == 0) D_0013F450_33130.f22C = D_0013F450_33130.f434;
-    } else if (D_0013F450_33130.i2084 == 6) {
-        D_0013F450_33130.f22C = 0.5f;
-    } else if (D_0013F450_33130.i2084 == 4) {
-        D_0013F450_33130.f228 = 0.35000002f;
-    } else if ((u32)(D_0013F450_33130.i208C - 0x11) < 2) {
-        D_0013F450_33130.f228 = 0.0f;
-        D_0013F450_33130.f22C = 0.0f;
-    } else if (D_0013F450_33130.b12E2 && D_0013F450_33130.i300) {
-        D_0013F450_33130.f228 = 0.8f;
-        D_0013F450_33130.f22C = 0.9f;
-    } else if (D_0013F450_33130.i2084 == 0x7F) {
-        D_0013F450_33130.f230 = 0.8f;
+    if (g_hero_r.i208C == 4) {
+        if (g_hero_r.i198 > g_hero_r.i420 && g_hero_r.s41E == 0) g_hero_r.f22C = g_hero_r.f434;
+    } else if (g_hero_r.i2084 == 6) {
+        g_hero_r.f22C = 0.5f;
+    } else if (g_hero_r.i2084 == 4) {
+        g_hero_r.f228 = 0.35000002f;
+    } else if ((u32)(g_hero_r.i208C - 0x11) < 2) {
+        g_hero_r.f228 = 0.0f;
+        g_hero_r.f22C = 0.0f;
+    } else if (g_hero_r.b12E2 && g_hero_r.i300) {
+        g_hero_r.f228 = 0.8f;
+        g_hero_r.f22C = 0.9f;
+    } else if (g_hero_r.i2084 == 0x7F) {
+        g_hero_r.f230 = 0.8f;
     }
-    if (!D_0013F450_33130.b257 || D_0013F450_33130.i2094 == 0x12 || D_0013F450_33130.i208C == 0x11 || D_0013F450_33130.b12E4 || vec_distance_xy(D_0013F450_33130.v210, D_0013F450_33130.v80) > D_0013F450_33130.f234 * 0.5f) {
+    if (!g_hero_r.b257 || g_hero_r.i2094 == 0x12 || g_hero_r.i208C == 0x11 || g_hero_r.b12E4 || vec_distance_xy(g_hero_r.v210, g_hero_r.v80) > g_hero_r.f234 * 0.5f) {
         f32 *q = D_0013F670;
         P231ae0 *b = (P231ae0 *)((u8 *)q - 0x220);
         func_00214D28_33130(b->f228, frame_scale * 0.02f, q);

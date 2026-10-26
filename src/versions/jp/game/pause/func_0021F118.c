@@ -16,7 +16,7 @@ int draw_item_preview_screen(char *arg0) {
     pack_image_descriptor(buf, arg0);
     buf[8] = 0x10;
     buf[9] = 3;
-    font_print_window_regular(buf, 0x80FFA888L, func_001FE540_id(0x4F4E), -1);
+    font_print_window_regular(buf, 0x80FFA888L, msg_string_id(0x4F4E), -1);
     DoGifPaging();
     return 2;
 }

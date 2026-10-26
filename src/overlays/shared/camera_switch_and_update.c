@@ -46,7 +46,7 @@ Camera *find_camera_record_by_id(int id) {
 INCLUDE_ASM("asm/overlays", func_L00_001EB598);
 INCLUDE_ASM("asm/overlays", func_L00_001EB5A8);
 LINKER_REMNANT("asm/overlays", func_L00_001EB5B0);
-extern float func_001FA790_f(float, float) __asm__("func_001FA790");
+extern float FastSubRots_f(float, float) __asm__("func_001FA790");
 extern float FastAbsF(float);
 extern float FastAddRots(float, float);
 
@@ -88,7 +88,7 @@ extern void BackupCurrentCam(void);
 extern void Camera_runSetupToNewCam(void *);
 extern void FastMemCopy(void *, void *, s32);
 extern s32 truncate_float_to_s32(f32);
-extern s32 D_0015EE84_EB890 __asm__("D_0015EE84") MACRO_ADDR;
+extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 
 /* Switches the active camera to next_camera: picks the blend from the old camera's transition_state and the new one's info->blend_kind (1 eased, 5 orbit, 3/6 hand-off), then installs it and swaps the state buffers. Level copy of func_001EC2B8. Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/fun_001ebf10.c, switch_active_camera_record. */
 void SwitchCamera(Camera *next_camera) {
@@ -151,7 +151,7 @@ void SwitchCamera(Camera *next_camera) {
             } else {
                 player_camera.blend.lerp.pos_rate_cfg = 0.018f;
                 player_camera.blend.lerp.rot_rate_cfg = 0.018f;
-                if (D_0015EE84_EB890 == 1) {
+                if (g_current_level_index_r == 1) {
                     player_camera.blend.lerp.pos_rate_cfg = 0.01f;
                     player_camera.blend.lerp.rot_rate_cfg = 0.01f;
                 }
@@ -257,7 +257,7 @@ void Camera_CaptureHeroRelativeView(void) {
 /* The final mode store goes through this alias, as in func_001ECC48: written
    through D_L00_00166FF0 itself, gcse keeps the entry's %hi alive in a saved
    register across the calls, where retail rebuilds it. */
-extern short D_L00_00166FF0_h __asm__("D_L00_00166FF0") NOT_SDA;
+extern short camera_blend_phase_h __asm__("D_L00_00166FF0") NOT_SDA;
 extern void extract_matrix_rotation_quaternion(void *, void *);
 extern void Camera_CaptureHeroRelativeView(void);
 extern void save_camera_vectors(void);
@@ -309,7 +309,7 @@ void Camera_CaptureTransform(Camera *from) {
             restore_camera_vectors();
         }
     }
-    D_L00_00166FF0_h = 3; /* blend.phase */
+    camera_blend_phase_h = 3; /* blend.phase */
     r->kind = r->next_kind;
     if (r->kind == 0) {
         CamBlendLerp *a = &r->lerp;
@@ -336,7 +336,7 @@ void Camera_CaptureTransform(Camera *from) {
    pointer to the hero state, as retail re-derives it per block. */
 extern int camera_collision_mask SDATA(D_L00_0015F058);
 extern int gCamSphereMaskBaseLvl MACRO_ADDR;
-extern int D_L00_0015F05C_w __asm__("D_L00_0015F05C") MACRO_ADDR;
+extern int gCamSphereMaskLvl_w __asm__("D_L00_0015F05C") MACRO_ADDR;
 extern int D_L00_0015F05C_g SDATA(D_L00_0015F05C);
 
 /* Level copy of refresh_camera_control_flags: the sphere mask is 0x14 (0x34 in hero states 0x11/0x12
@@ -349,21 +349,21 @@ void Camera_PickCollisionMasksLvl(void) {
     {
         unsigned char *g = (unsigned char *)(D_0013E633 + 0xE1D);
         if ((unsigned int)(*(int *)(g + 0x208C) - 0x11) < 2 || *(int *)(g + 0x2084) == 0x73) {
-            D_L00_0015F05C_w = 0x34;
+            gCamSphereMaskLvl_w = 0x34;
         }
     }
     {
         unsigned char *g = (unsigned char *)(D_0013E633 + 0xE1D);
         if (*(int *)(g + 0x208C) != 0x11) {
             if (*(float *)(g + 0x2F0) < player_camera.pos.f[2]) {
-                D_L00_0015F05C_w = 0x14;
+                gCamSphereMaskLvl_w = 0x14;
             }
         }
     }
     {
-        int v = D_L00_0015F05C_w;
+        int v = gCamSphereMaskLvl_w;
         gCamSphereMaskBaseLvl = v;
-        D_L00_0015F05C_w = v | 0x80;
+        gCamSphereMaskLvl_w = v | 0x80;
     }
     camera_collision_mask = 0xB4;
     {
@@ -400,7 +400,7 @@ INCLUDE_ASM("asm/overlays", func_L00_001ED380);
 INCLUDE_ASM("asm/overlays", func_L00_001ED3D4);
 extern int cinematic_mode MACRO_ADDR;
 extern int D_L00_001CA800;
-extern unsigned char D_0015EEB4_ED428[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char draw_map51_r[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern void advance_timed_camera_control(void);
 extern void Camera_PickCollisionMasksLvl(void);
 extern void update_camera_tracking_state(void);
@@ -466,7 +466,7 @@ frozen:
     apply_camera_shake((char *)&v[1], 1);
     update_camera_underwater_flag();
     update_camera_environment_from_regions((char *)v - 0x20);       /* &player_camera.pos */
-    if (D_0015EEB4_ED428[0] != 0) {
+    if (draw_map51_r[0] != 0) {
         FastVecCross((char *)v + 0x200, (char *)v + 0x210, (char *)v + 0x1F0); /* matrix[1] = matrix[2] x matrix[0] */
     }
 }
@@ -537,12 +537,12 @@ extern float vec_length_xy(float *);
 extern float fast_atan2(float, float);
 extern void FastSubRots(float, float);
 extern float FastVecLength(float *);
-extern void func_001F9BF0_3(float *, float *, float *) __asm__("func_001F9BF0");
+extern void FastVecSub_3(float *, float *, float *) __asm__("func_001F9BF0");
 /* polar = (yaw, pitch, distance) of pos as seen from origin; the FastSubRots result is unused (kept, as retail). */
 int compute_spherical_offset_from_positions(float *polar, float *pos, float *origin) {
     W v;
     float t;
-    func_001F9BF0_3(v, pos, origin);
+    FastVecSub_3(v, pos, origin);
     polar[1] = fast_atan2(vec_length_xy(v), v[2]);
     t = fast_atan2(v[0], v[1]);
     FastSubRots(t, polar[0]);
@@ -550,10 +550,10 @@ int compute_spherical_offset_from_positions(float *polar, float *pos, float *ori
     polar[2] = FastVecLength(v);
     return 0;
 }
-extern void func_001F9BF0_3(float *, float *, float *) __asm__("func_001F9BF0");
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern void FastVecSub_3(float *, float *, float *) __asm__("func_001F9BF0");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void divide_vector_xyz(float *, float *, float);
-extern int func_L00_001F10E0_f(void *, int, void *, float) __asm__("func_L00_001F10E0");
+extern int coll_sphere_f(void *, int, void *, float) __asm__("func_L00_001F10E0");
 extern W coll_resolved_pos;
 extern short gCamSphereMaskLvl;
 
@@ -578,15 +578,15 @@ void resolve_camera_movement_collisions(float *pos, float r) {
         o->snap = 0;
         return;
     }
-    func_001F9BF0_3(d, pos, v);
-    n = func_001FA898_r(FastVecLength(d) / (r * 0.9f)) + 1;
+    FastVecSub_3(d, pos, v);
+    n = truncate_float_to_s32_r(FastVecLength(d) / (r * 0.9f)) + 1;
     divide_vector_xyz(d, d, IntToFloat(n));
     qcopy(pos, v);
     for (i = 0; i < n; i++) {
         q = coll_resolved_pos;
         FastVecAdd(pos, pos, d);
         base = D_0013E633 + 0xE1D;
-        for (j = 0; j < 6 && func_L00_001F10E0_f(pos, *(int *)&gCamSphereMaskLvl, *(void **)(base + 0x2080), r); j++) {
+        for (j = 0; j < 6 && coll_sphere_f(pos, *(int *)&gCamSphereMaskLvl, *(void **)(base + 0x2080), r); j++) {
             qcopy(pos, q);
             {
                 Camera *t = player_camera.current;

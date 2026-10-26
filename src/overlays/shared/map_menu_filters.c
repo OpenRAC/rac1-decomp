@@ -34,7 +34,7 @@ int ovl_map_filter_l01_4_tail(float a, float b, float x) {
     }
     return 0;
 }
-extern Hero D_0013F450_2497A0 __asm__("D_0013F450");
+extern Hero g_hero_r __asm__("D_0013F450");
 
 /* item < 256: whether the hero is in control mode 0x11 or 0x12 or has base condition 1;
    else x >= 95.0f (the joined tail) */
@@ -43,8 +43,8 @@ int ovl_map_filter_l01_5(int item, float a, float b, float x) {
 
     if (item < 256) {
         r = 0;
-        if (D_0013F450_2497A0.state.control_mode == 0x11 || D_0013F450_2497A0.state.control_mode == 0x12 ||
-            D_0013F450_2497A0.base_condition == 1) {
+        if (g_hero_r.state.control_mode == 0x11 || g_hero_r.state.control_mode == 0x12 ||
+            g_hero_r.base_condition == 1) {
             r = 1;
         }
         return r;
@@ -129,8 +129,8 @@ extern unsigned char menu_item_enabled_78[];
 int ovl_map_filter_l11_3(int item, float a, float b, float x) {
     int r = 0;
 
-    if (D_0013F450_2497A0.state.control_mode == 0x11 || D_0013F450_2497A0.state.control_mode == 0x12 ||
-        D_0013F450_2497A0.base_condition == 1) {
+    if (g_hero_r.state.control_mode == 0x11 || g_hero_r.state.control_mode == 0x12 ||
+        g_hero_r.base_condition == 1) {
         r = 1;
     }
     if (item < 351) {
@@ -212,13 +212,13 @@ int ensure_menu_cache_entry(int key) {
     map_menu_state.e[0].stamp = rendered_frame_count;
     return miss;
 }
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int dialogue_entry_level_starts[];
 extern int dialogue_entry_ids[];
 
 /* stores a value into a table slot chosen by the current index */
 void store_current_level_table_value(int a, int b) {
-    int i = D_0015EE84_m;
+    int i = g_current_level_index_m;
     if (i < 19) {
         b += dialogue_entry_level_starts[i];
         dialogue_entry_ids[b] = a;
@@ -241,7 +241,7 @@ void map_world_to_uv(float *p1, float *p2, int k, float t, float u) {
         seven = 1;
     }
     if (k == -1) {
-        k = D_0015EE84_m;
+        k = g_current_level_index_m;
     }
     if (k < 0) {
         k = 0;
@@ -403,12 +403,12 @@ void CardMenu_SetStateTwelve(void) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024BC38);
 typedef struct { int v[60]; } MenuState;
-extern int D_0015EFB4_m __asm__("D_0015EFB4") MACRO_ADDR;
+extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
 /* advances the active menu state or requests its alternate action */
 void CardMenu_AdvanceOrAlternate(void) {
  MenuState *p = &memory_card_state;
  if (p->v[55]==2 && p->v[57]<0) {
- if (p->v[59]) { mode_freeze_state=18; D_0015EFB4_m |= 64; }
+ if (p->v[59]) { mode_freeze_state=18; mode_freeze_flags_m |= 64; }
  else { p->v[50]=0; p->v[57]=7; p->v[5]=0; p->v[58]=0; mode_freeze_state=16; }
  }
 }

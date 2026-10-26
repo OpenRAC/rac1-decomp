@@ -68,7 +68,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 extern unsigned char menu_item_enabled_0 NOT_SDA;
@@ -106,7 +106,7 @@ extern void DebugEnter_Nop(void);
 extern int compress_map_coverage(void *dst, int size, int a, int b);
 extern void downsample_map_coverage(void *dst);
 extern short g_current_level_index;
-extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
+extern int g_current_level_index_far __asm__("D_0015EE84") NOT_SDA;
 extern int map_coverage_active[] NOT_SDA;
 extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
 extern void expand_map_coverage(void *, unsigned char *);
@@ -138,7 +138,7 @@ extern unsigned char gemlik_available NOT_SDA;
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern unsigned char gHaveHologuise NOT_SDA;
 extern int moby_render_slots[];
-extern void func_001FA460_2(void *, void *) __asm__("func_001FA460");
+extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -171,7 +171,7 @@ extern void func_0012EDE0(void *);
 extern void func_0012EFE8(void);
 extern char load_file_start_failed_string[];
 extern int func_0012EE98(int, int, int, void *);
-extern int func_00217628_v(void) __asm__("func_00217628");
+extern int start_audio_stream_read_v(void) __asm__("func_00217628");
 extern void func_00122598(int);
 extern void music_Update(void);
 extern void func_0012EC40(void);
@@ -206,7 +206,7 @@ extern char *current_menu_page NOT_SDA;
 extern void DrawMobyList(int, int);
 extern char gCamera[];
 extern void rotate_preview_moby_x(void *);
-extern void *func_00226720_a(int) __asm__("func_00226720");
+extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");
 extern int delete_moby(int);
 extern void VU1_addGSregister(int, int);
 extern void draw_map_overlay(void);
@@ -214,7 +214,7 @@ extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
 extern void func_001F68E8_c(int, int, long, void *, int)
     __asm__("func_001F68E8");
-extern void *func_001FE540_id(int) __asm__("func_001FE540");
+extern void *msg_string_id(int) __asm__("func_001FE540");
 extern short panel_clear_color;
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern int GetIconFrame(int, int);
@@ -235,7 +235,7 @@ typedef struct {
     int key;
     int flags;
 } PadBind;
-extern PadBind D_001D6448_t[] __asm__("D_001D6448");
+extern PadBind menu_stream_buffers_t[] __asm__("D_001D6448");
 extern int get_menu_stream_buffer_size(int handle);
 extern int menu_stream_buffers[];
 extern char preview_resource_bindings[] NOT_SDA;
@@ -253,15 +253,15 @@ LINKER_REMNANT("asm/remnants/text", func_0022BEB0);
    translation, and every shell is drawn by func_0022C9A8. Each case does
    its own add and store, and the shell table is indexed through its own
    pointer, which gives retail's base-first address add. */
-extern char *D_0016055C_2BEB0 __asm__("D_0016055C") MACRO_ADDR;
+extern char *level_sky_effect_data_r __asm__("D_0016055C") MACRO_ADDR;
 extern f32 D_00160500_2BEB0 SDATA(D_00160500);
-extern u8 D_001D9A70_2BEB0[] __asm__("D_001D9A70");
-extern u8 D_00160560_2BEB0[] __asm__("D_00160560") MACRO_ADDR;
-extern void func_001FA190_2BEB0(void *) __asm__("func_001FA190");
-extern void func_001F9BC0_2BEB0(void *) __asm__("func_001F9BC0");
-extern void func_001FA238_2BEB0(void *, void *) __asm__("func_001FA238");
-extern void func_001F9C48_2BEB0(void *, void *, f32) __asm__("func_001F9C48");
-extern void func_0022C9A8_2BEB0(s32) __asm__("func_0022C9A8");
+extern u8 sky_matrix_r[] __asm__("D_001D9A70");
+extern u8 sky_shell_translation_r[] __asm__("D_00160560") MACRO_ADDR;
+extern void set_identity_matrix_r(void *) __asm__("func_001FA190");
+extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
+extern void euler_to_matrix_ee_r(void *, void *) __asm__("func_001FA238");
+extern void scale_vector_r(void *, void *, f32) __asm__("func_001F9C48");
+extern void SkyDrawShell_r(s32) __asm__("func_0022C9A8");
 
 /* Draw the sky shells, each layer scrolling and rotating at its own rate. */
 void DrawSkyShellsScrolling(void) {
@@ -273,11 +273,11 @@ void DrawSkyShellsScrolling(void) {
     u8 **tab;
     s32 i;
 
-    *(s16 *)(D_0016055C_2BEB0 + 4) = 0;
-    func_001FA190_2BEB0(D_001D9A70_2BEB0);
-    func_001F9BC0_2BEB0(rot);
-    for (i = 0; i < *(s16 *)(D_0016055C_2BEB0 + 6); i++) {
-        tab = (u8 **)(D_0016055C_2BEB0 + 0x20);
+    *(s16 *)(level_sky_effect_data_r + 4) = 0;
+    set_identity_matrix_r(sky_matrix_r);
+    clear_u64_value_r(rot);
+    for (i = 0; i < *(s16 *)(level_sky_effect_data_r + 6); i++) {
+        tab = (u8 **)(level_sky_effect_data_r + 0x20);
         p = (f32 *)(tab[i] + 8);
         scale = 1.0f;
         switch (i) {
@@ -306,21 +306,21 @@ void DrawSkyShellsScrolling(void) {
             *p += D_00160500_2BEB0 * 0.8f;
             break;
         default:
-            func_001FA190_2BEB0(D_001D9A70_2BEB0);
+            set_identity_matrix_r(sky_matrix_r);
             break;
         }
         if (i > 0) {
             f32 v = (f32)i * 2000.0f;
             s32 n = (s32)(*p + v);
             rot[2] = (f32)(n % 10000) * 0.00062831853f - 3.1415927f;
-            func_001FA238_2BEB0(D_001D9A70_2BEB0, rot);
-            t = D_001D9A70_2BEB0;
-            func_001F9C48_2BEB0(t, t, scale);
-            func_001F9C48_2BEB0(t + 0x10, t + 0x10, scale);
-            func_001F9C48_2BEB0(t + 0x20, t + 0x20, scale);
-            qcopy(t + 0x30, D_00160560_2BEB0);
+            euler_to_matrix_ee_r(sky_matrix_r, rot);
+            t = sky_matrix_r;
+            scale_vector_r(t, t, scale);
+            scale_vector_r(t + 0x10, t + 0x10, scale);
+            scale_vector_r(t + 0x20, t + 0x20, scale);
+            qcopy(t + 0x30, sky_shell_translation_r);
         }
-        func_0022C9A8_2BEB0(i);
+        SkyDrawShell_r(i);
     }
 }
 
@@ -352,7 +352,7 @@ struct SkyEffect {
     f32 position_z;
     f32 size;
 };
-extern struct LevelSkyEffectData * D_0016055C_2C188 __asm__("D_0016055C") MACRO_ADDR;
+extern struct LevelSkyEffectData * level_sky_effect_data_r2 __asm__("D_0016055C") MACRO_ADDR;
 extern u8 sky_matrix[];
 extern void func_001160C8(s32);
 extern f32 FastAbsF(f32);
@@ -365,7 +365,7 @@ extern s32 random_integer_below(s32);
 extern f32 random_angle_radians();
 extern void SkyDrawShell(s32);
 extern void SkySpriteProc();
-extern void func_00234C98_2C188(s32, u64) __asm__("func_00234C98");
+extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
 extern s32 func_001160D8();
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/update_sky_effects.c, update_sky_effects. */
@@ -386,20 +386,20 @@ void SkyLevelGeneric___maybe(void) {
     struct SkyAngles *orbit;
     s16 *angles;
 
-    D_0016055C_2C188->relocation_state = 0;
+    level_sky_effect_data_r2->relocation_state = 0;
     set_identity_matrix(sky_matrix);
     SkyDrawShell(0);
     SkyDrawShell(1);
-    if (D_0016055C_2C188->effect_count == 0) {
-        D_0016055C_2C188->effect_count = 0x100;
+    if (level_sky_effect_data_r2->effect_count == 0) {
+        level_sky_effect_data_r2->effect_count = 0x100;
         func_001160C8(0x3039);
-        for (initialization_index = 0; initialization_index < D_0016055C_2C188->effect_count;
+        for (initialization_index = 0; initialization_index < level_sky_effect_data_r2->effect_count;
              initialization_index++) {
             radius = 50.0f;
             random_color_enabled = 1;
             effect_flags = 0x48;
             base_color = 0x30505050;
-            effect = &D_0016055C_2C188->effects[initialization_index];
+            effect = &level_sky_effect_data_r2->effects[initialization_index];
             if (initialization_index >= 0xF6) {
                 effect->randomize_color = 0;
                 angles = &effect->state.angles.azimuth;
@@ -442,8 +442,8 @@ void SkyLevelGeneric___maybe(void) {
             }
         }
     }
-    for (effect_index = 0; effect_index < D_0016055C_2C188->effect_count; effect_index++) {
-        effect = &D_0016055C_2C188->effects[effect_index];
+    for (effect_index = 0; effect_index < level_sky_effect_data_r2->effect_count; effect_index++) {
+        effect = &level_sky_effect_data_r2->effects[effect_index];
         if (effect->randomize_color == 0) {
             orbit = &effect->state.angles;
             angles = &effect->state.angles.azimuth;
@@ -477,7 +477,7 @@ void SkyLevelGeneric___maybe(void) {
         }
     }
     SkySpriteProc();
-    func_00234C98_2C188(0x42, (0x8000ULL << 0x18) | 0x44);
+    VU1_addGSregister_r(0x42, (0x8000ULL << 0x18) | 0x44);
     SkyDrawShell(2);
     SkyDrawShell(3);
 }
@@ -492,17 +492,17 @@ struct SkyTransform_2C5A0 {
     u64 translation;
 };
 extern f32 D_00160504_2C5A0 SDATA(D_00160504);
-extern struct SkyShellSet_2C5A0 * D_0016055C_2C5A0 __asm__("D_0016055C") MACRO_ADDR;
-extern u8 D_00160560_2C5A0[] __asm__("D_00160560") MACRO_ADDR;
-extern struct SkyTransform_2C5A0 D_001D9A70_2C5A0 __asm__("D_001D9A70");
-extern s32 D_0015EF88_2C5A0 __asm__("D_0015EF88") MACRO_ADDR;
+extern struct SkyShellSet_2C5A0 * level_sky_effect_data_r3 __asm__("D_0016055C") MACRO_ADDR;
+extern u8 sky_shell_translation_r2[] __asm__("D_00160560") MACRO_ADDR;
+extern struct SkyTransform_2C5A0 sky_matrix_r2 __asm__("D_001D9A70");
+extern s32 depth_buffer_address_r __asm__("D_0015EF88") MACRO_ADDR;
 extern void clear_u64_value(f32 *);
 extern void scale_vector(void *, void *, f32);
-extern void func_001FA190_2C5A0(void *) __asm__("func_001FA190");
+extern void set_identity_matrix_r2(void *) __asm__("func_001FA190");
 extern void euler_to_matrix_ee(void *, f32 *);
 extern void SetupSkyGifPaging(void);
 extern void DoSkyGifPaging(void);
-extern void func_00234C98_2C5A0(s32, s64) __asm__("func_00234C98");
+extern void VU1_addGSregister_r2(s32, s64) __asm__("func_00234C98");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/draw_sky_shells.c, draw_sky_shells. */
 void draw_sky_shells(void) {
@@ -513,10 +513,10 @@ void draw_sky_shells(void) {
 
     shell_index = 0;
     SetupSkyGifPaging();
-    D_0016055C_2C5A0->relocation_state = 0;
-    func_001FA190_2C5A0(&D_001D9A70_2C5A0);
+    level_sky_effect_data_r3->relocation_state = 0;
+    set_identity_matrix_r2(&sky_matrix_r2);
     clear_u64_value(rotation_angles);
-    if (D_0016055C_2C5A0->shell_count > 0) {
+    if (level_sky_effect_data_r3->shell_count > 0) {
         do {
             shell_scale = 1.0f;
             switch (shell_index) {
@@ -549,20 +549,20 @@ void draw_sky_shells(void) {
                 shell_scale = 2.0f;
                 break;
             }
-            euler_to_matrix_ee(&D_001D9A70_2C5A0, rotation_angles);
-            transform_row = (u8 *)&D_001D9A70_2C5A0;
+            euler_to_matrix_ee(&sky_matrix_r2, rotation_angles);
+            transform_row = (u8 *)&sky_matrix_r2;
             scale_vector(transform_row, transform_row, shell_scale);
             scale_vector(transform_row + 0x10, transform_row + 0x10, shell_scale);
             scale_vector(transform_row + 0x20, transform_row + 0x20, shell_scale);
             transform_row += 0x30;
-            qcopy(transform_row, D_00160560_2C5A0);
+            qcopy(transform_row, sky_shell_translation_r2);
             SkyDrawShell(shell_index);
             shell_index++;
-        } while (shell_index < D_0016055C_2C5A0->shell_count);
+        } while (shell_index < level_sky_effect_data_r3->shell_count);
     }
     DoSkyGifPaging();
-    func_00234C98_2C5A0(0x47, 0x5360B);
-    func_00234C98_2C5A0(0x4E, 0x1000000 | (D_0015EF88_2C5A0 >> 13));
+    VU1_addGSregister_r2(0x47, 0x5360B);
+    VU1_addGSregister_r2(0x4E, 0x1000000 | (depth_buffer_address_r >> 13));
 }
 
 extern int g_render_packet_cursor MACRO_ADDR;
@@ -614,8 +614,8 @@ void SetupSkyGifPaging(void) {
     }
 }
 
-extern int *D_00161000_p __asm__("D_00161000") MACRO_ADDR;
-extern int *D_00160570_p __asm__("D_00160570") MACRO_ADDR;
+extern int *g_render_packet_cursor_p __asm__("D_00161000") MACRO_ADDR;
+extern int *sky_gif_paging_tag_p __asm__("D_00160570") MACRO_ADDR;
 extern int *sky_gif_paging_start MACRO_ADDR;
 extern void flush_pending_texture_uploads(void);
 extern void VU1_texFlush(void);
@@ -629,26 +629,26 @@ extern void VU1_texFlush(void);
    advanced in place, which keeps the old and new pointer in one register
    as retail does. */
 void DoSkyGifPaging(void) {
-    int *p = D_00161000_p;
+    int *p = g_render_packet_cursor_p;
 
     sky_gif_paging_start = p;
     p += 4;
-    D_00161000_p = p;
-    D_00160570_p[0] = 0x20000000;
-    D_00160570_p[1] = (int)D_00161000_p;
-    D_00160570_p[2] = 0;
-    D_00160570_p[3] = 0;
+    g_render_packet_cursor_p = p;
+    sky_gif_paging_tag_p[0] = 0x20000000;
+    sky_gif_paging_tag_p[1] = (int)g_render_packet_cursor_p;
+    sky_gif_paging_tag_p[2] = 0;
+    sky_gif_paging_tag_p[3] = 0;
     if (draw_config[1] != 0) {
         flush_pending_texture_uploads();
         VU1_texFlush();
     }
-    D_00161000_p[0] = 0x20000000;
-    D_00161000_p[1] = (int)(D_00160570_p + 4);
-    D_00161000_p[2] = 0;
-    D_00161000_p[3] = 0;
-    D_00161000_p += 4;
+    g_render_packet_cursor_p[0] = 0x20000000;
+    g_render_packet_cursor_p[1] = (int)(sky_gif_paging_tag_p + 4);
+    g_render_packet_cursor_p[2] = 0;
+    g_render_packet_cursor_p[3] = 0;
+    g_render_packet_cursor_p += 4;
     sky_gif_paging_start[0] = 0x20000000;
-    sky_gif_paging_start[1] = (int)D_00161000_p;
+    sky_gif_paging_start[1] = (int)g_render_packet_cursor_p;
     sky_gif_paging_start[2] = 0;
     sky_gif_paging_start[3] = 0;
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
@@ -697,7 +697,7 @@ union PacketCursor_2CA00 {
     u8 *bytes;
     s32 addr;
 };
-extern union PacketCursor_2CA00 D_00161000_2CA00 __asm__("D_00161000") MACRO_ADDR;
+extern union PacketCursor_2CA00 g_render_packet_cursor_r __asm__("D_00161000") MACRO_ADDR;
 struct SkyTile_2CA00 {
     u128_2CA00 bounds; /* 16-byte aligned: tile fields are addressed from the tile base */
     s32 address;
@@ -716,11 +716,11 @@ struct Shell_2CA00 {
 extern short sky_tile_spr_buffers;
 extern s32 D_00160510_2CA00 SDATA(D_00160510);
 extern u8 sky_textured_gs_block[];
-extern void func_0022D7E0_2CA00(struct SkyTile_2CA00 *tiles, s32 count, u8 *visibility) __asm__("func_0022D7E0");
-extern void func_0020C210_2CA00(s32 address, s32 qwc, s32 destination) __asm__("func_0020C210");
-extern void func_0020C230_2CA00(void) __asm__("func_0020C230");
-extern s32 func_0022D2AC_2CA00(s32, s32, s32, s32) __asm__("func_0022D2AC");
-extern void func_0022D520_2CA00(s32, s32, s32, s32) __asm__("func_0022D520");
+extern void sky_bsphere_check_r(struct SkyTile_2CA00 *tiles, s32 count, u8 *visibility) __asm__("func_0022D7E0");
+extern void DmaToSpr_r(s32 address, s32 qwc, s32 destination) __asm__("func_0020C210");
+extern void DmaToSprSync_r(void) __asm__("func_0020C230");
+extern s32 sky_transform_vertices_r(s32, s32, s32, s32) __asm__("func_0022D2AC");
+extern void sky_build_gif_textured_r(s32, s32, s32, s32) __asm__("func_0022D520");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/sky_draw_shell_textured.c, sky_draw_shell_textured. */
 void func_0022CA00_r(struct Shell_2CA00 *shell) __asm__("func_0022CA00");
@@ -737,29 +737,29 @@ void func_0022CA00_r(struct Shell_2CA00 *shell) {
         return;
     }
 
-    func_0022D7E0_2CA00(shell->tiles, shell->count, visibility);
+    sky_bsphere_check_r(shell->tiles, shell->count, visibility);
 
-    D_00161000_2CA00.words[0] = 0x30000007;
-    *(s32 *)((u32)D_00161000_2CA00.words + 4) = (s32)sky_textured_gs_block;
-    *(s32 *)((u32)D_00161000_2CA00.words + 8) = 0;
-    *(s32 *)((u32)D_00161000_2CA00.words + 12) = 0x50000007;
-    D_00161000_2CA00.words += 4;
+    g_render_packet_cursor_r.words[0] = 0x30000007;
+    *(s32 *)((u32)g_render_packet_cursor_r.words + 4) = (s32)sky_textured_gs_block;
+    *(s32 *)((u32)g_render_packet_cursor_r.words + 8) = 0;
+    *(s32 *)((u32)g_render_packet_cursor_r.words + 12) = 0x50000007;
+    g_render_packet_cursor_r.words += 4;
 
     D_00160510_2CA00 = 1 - D_00160510_2CA00;
     if (visibility[0] == 1) {
-        func_0020C210_2CA00(shell->tiles[0].address, shell->tiles[0].unkE >> 4,
+        DmaToSpr_r(shell->tiles[0].address, shell->tiles[0].unkE >> 4,
                                  (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CA00]);
     }
 
     for (i = 0; i < shell->count; i++) {
         if (visibility[i] == 1) {
-            func_0020C230_2CA00();
+            DmaToSprSync_r();
         }
 
         next = i + 1;
         D_00160510_2CA00 = 1 - D_00160510_2CA00;
         if (next < shell->count && visibility[next] == 1) {
-            func_0020C210_2CA00(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
+            DmaToSpr_r(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
                                      (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CA00]);
         }
 
@@ -767,9 +767,9 @@ void func_0022CA00_r(struct Shell_2CA00 *shell) {
             dest = (((s32 *)&sky_tile_spr_buffers))[1 - D_00160510_2CA00];
             c_dest = dest + shell->tiles[i].unkC;
             a_dest = dest + shell->tiles[i].unkA;
-            if (func_0022D2AC_2CA00(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,
+            if (sky_transform_vertices_r(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,
                              (&shell->tiles[i])->unkC) == 0) {
-                func_0022D520_2CA00(shell->tiles[i].unk6, c_dest, a_dest, 0x70002000);
+                sky_build_gif_textured_r(shell->tiles[i].unk6, c_dest, a_dest, 0x70002000);
             }
         }
     }
@@ -790,7 +790,7 @@ union PacketCursor_2CC40 {
     u8 *bytes;
     s32 addr;
 };
-extern union PacketCursor_2CC40 D_00161000_2CC40 __asm__("D_00161000") MACRO_ADDR;
+extern union PacketCursor_2CC40 g_render_packet_cursor_r2 __asm__("D_00161000") MACRO_ADDR;
 struct SkyTile_2CC40 {
     u128_2CC40 bounds; /* 16-byte aligned: tile fields are addressed from the tile base */
     s32 address;
@@ -808,12 +808,12 @@ struct Shell_2CC40 {
 };
 extern s32 D_00160510_2CC40 SDATA(D_00160510);
 extern u8 sky_gouraud_gs_block[];
-extern void func_0022D7E0_2CC40(struct SkyTile_2CC40 *tiles, s32 count, u8 *visibility) __asm__("func_0022D7E0");
-extern void func_0020C210_2CC40(s32 address, s32 qwc, s32 destination) __asm__("func_0020C210");
-extern void func_0020C230_2CC40(void) __asm__("func_0020C230");
-extern s32 func_0022D2AC_2CC40(s32, s32, s32, s32) __asm__("func_0022D2AC");
-extern void func_0022D3F8_2CC40(s32, s32, s32, s32) __asm__("func_0022D3F8");
-extern s32 func_00234C98_2CC40(s32, s64) __asm__("func_00234C98");
+extern void sky_bsphere_check_r2(struct SkyTile_2CC40 *tiles, s32 count, u8 *visibility) __asm__("func_0022D7E0");
+extern void DmaToSpr_r2(s32 address, s32 qwc, s32 destination) __asm__("func_0020C210");
+extern void DmaToSprSync_r2(void) __asm__("func_0020C230");
+extern s32 sky_transform_vertices_r2(s32, s32, s32, s32) __asm__("func_0022D2AC");
+extern void sky_build_gif_gouraud_r(s32, s32, s32, s32) __asm__("func_0022D3F8");
+extern s32 VU1_addGSregister_r3(s32, s64) __asm__("func_00234C98");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/sky_draw_shell_gouraud.c, sky_draw_shell_gouraud. */
 void func_0022CC40_r(struct Shell_2CC40 *shell) __asm__("func_0022CC40");
@@ -830,29 +830,29 @@ void func_0022CC40_r(struct Shell_2CC40 *shell) {
         return;
     }
 
-    func_0022D7E0_2CC40(shell->tiles, shell->count, visibility);
+    sky_bsphere_check_r2(shell->tiles, shell->count, visibility);
 
-    D_00161000_2CC40.words[0] = 0x30000007;
-    *(s32 *)((u32)D_00161000_2CC40.words + 4) = (s32)sky_gouraud_gs_block;
-    *(s32 *)((u32)D_00161000_2CC40.words + 8) = 0;
-    *(s32 *)((u32)D_00161000_2CC40.words + 12) = 0x50000007;
-    D_00161000_2CC40.words += 4;
+    g_render_packet_cursor_r2.words[0] = 0x30000007;
+    *(s32 *)((u32)g_render_packet_cursor_r2.words + 4) = (s32)sky_gouraud_gs_block;
+    *(s32 *)((u32)g_render_packet_cursor_r2.words + 8) = 0;
+    *(s32 *)((u32)g_render_packet_cursor_r2.words + 12) = 0x50000007;
+    g_render_packet_cursor_r2.words += 4;
 
     D_00160510_2CC40 = 1 - D_00160510_2CC40;
     if (visibility[0] == 1) {
-        func_0020C210_2CC40(shell->tiles[0].address, shell->tiles[0].unkE >> 4,
+        DmaToSpr_r2(shell->tiles[0].address, shell->tiles[0].unkE >> 4,
                                  (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CC40]);
     }
 
     for (i = 0; i < shell->count; i++) {
         if (visibility[i] == 1) {
-            func_0020C230_2CC40();
+            DmaToSprSync_r2();
         }
 
         next = i + 1;
         D_00160510_2CC40 = 1 - D_00160510_2CC40;
         if (next < shell->count && visibility[next] == 1) {
-            func_0020C210_2CC40(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
+            DmaToSpr_r2(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
                                      (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CC40]);
         }
 
@@ -860,13 +860,13 @@ void func_0022CC40_r(struct Shell_2CC40 *shell) {
             dest = (((s32 *)&sky_tile_spr_buffers))[1 - D_00160510_2CC40];
             c_dest = dest + shell->tiles[i].unkC;
             a_dest = dest + shell->tiles[i].unkA;
-            if (func_0022D2AC_2CC40(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,
+            if (sky_transform_vertices_r2(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,
                              (&shell->tiles[i])->unkC) == 0) {
-                func_0022D3F8_2CC40(shell->tiles[i].unk6, c_dest, a_dest, 0x70002000);
+                sky_build_gif_gouraud_r(shell->tiles[i].unk6, c_dest, a_dest, 0x70002000);
             }
         }
     }
 
-    func_00234C98_2CC40(0x47, 0x3180B);
-    func_00234C98_2CC40(0x4E, (D_0015EF88_2C5A0 >> 13) | 0x1000000 | ((s64)1 << 32));
+    VU1_addGSregister_r3(0x47, 0x3180B);
+    VU1_addGSregister_r3(0x4E, (depth_buffer_address_r >> 13) | 0x1000000 | ((s64)1 << 32));
 }

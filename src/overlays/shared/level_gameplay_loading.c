@@ -28,30 +28,30 @@ typedef struct Rec_240398 {
 typedef struct Q_240398 {
     int w[4];
 } Q_240398;
-extern G137C80_240398 D_00137C80_240398 __asm__("D_00137C80");
+extern G137C80_240398 disc_table_r __asm__("D_00137C80");
 extern char D_0013DE6E_240398[] __asm__("D_0013DE6E");
-extern char *D_0015EF54_240398 __asm__("D_0015EF54") MACRO_ADDR;
-extern int D_0015EF88_240398[2] __asm__("D_0015EF88") MACRO_ADDR;
-extern Q_240398 D_L00_001AEF40_240398[] __asm__("D_L00_001AEF40");
-extern int D_L00_00160088_240398 __asm__("D_L00_00160088") MACRO_ADDR;
+extern char *level_archive_base_r __asm__("D_0015EF54") MACRO_ADDR;
+extern int depth_buffer_address_r[2] __asm__("D_0015EF88") MACRO_ADDR;
+extern Q_240398 moby_texture_records_r[] __asm__("D_L00_001AEF40");
+extern int moby_texture_count_r __asm__("D_L00_00160088") MACRO_ADDR;
 extern Rec_240398 D_L00_0015FCC0_240398 SDATA(D_L00_0015FCC0);
 extern Rec_240398 D_L00_0015FCD0_240398 SDATA(D_L00_0015FCD0);
-extern Rec_240398 D_L00_0015FCC0_m240398 __asm__("D_L00_0015FCC0") MACRO_ADDR;
-extern Rec_240398 D_L00_0015FCD0_m240398 __asm__("D_L00_0015FCD0") MACRO_ADDR;
+extern Rec_240398 first_record_m240398 __asm__("D_L00_0015FCC0") MACRO_ADDR;
+extern Rec_240398 second_record_m240398 __asm__("D_L00_0015FCD0") MACRO_ADDR;
 extern unsigned char D_L00_0015FCE0_240398 SDATA(D_L00_0015FCE0);
-extern unsigned char D_L00_00197F40_240398[] __asm__("D_L00_00197F40");
-extern unsigned int D_L00_00199E00_240398[] __asm__("D_L00_00199E00");
-extern int D_L00_00160608_240398[] __asm__("D_L00_00160608");
-extern int D_L00_00160618_240398[] __asm__("D_L00_00160618");
+extern unsigned char g_class_slot_r[] __asm__("D_L00_00197F40");
+extern unsigned int moby_texture_addrs_r[] __asm__("D_L00_00199E00");
+extern int first_class_ids_r[] __asm__("D_L00_00160608");
+extern int second_class_ids_r[] __asm__("D_L00_00160618");
 extern int D_L00_00160628_240398 __asm__("D_L00_00160628") MACRO_ADDR;
 extern int D_L00_00160624_240398 __asm__("D_L00_00160624") MACRO_ADDR;
 extern int D_L00_0016062C_240398 __asm__("D_L00_0016062C") MACRO_ADDR;
-extern void func_001F9A98_240398(void *, void *, int) __asm__("func_001F9A98");
+extern void FastMemCopy_r(void *, void *, int) __asm__("func_001F9A98");
 extern int func_00122630_240398(void *, short, short, short, short, short, short, short) __asm__("func_00122630");
 extern void func_00118D80_240398(int) __asm__("func_00118D80");
 extern int func_00122958_240398(void *, void *) __asm__("func_00122958");
 extern int func_00120858_240398(int, unsigned short) __asm__("func_00120858");
-extern void func_00203E78_240398(void *, void *, void *, int) __asm__("func_00203E78");
+extern void register_moby_class_r(void *, void *, void *, int) __asm__("func_00203E78");
 
 /* Loads a level's four packed images through the GS loader and registers the image records and their data blocks. */
 char *load_level_texture_bank(char *buf, int *tbl) {
@@ -68,7 +68,7 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     int idx;
     int idx2;
 
-    func_001F9A98_240398(buf, D_0015EF54_240398, D_00137C80_240398.e[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26 + 1].a << 11);
+    FastMemCopy_r(buf, level_archive_base_r, disc_table_r.e[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26 + 1].a << 11);
     a = ((Hdr_240398 *)buf)->a;
     off = ((Hdr_240398 *)buf)->off;
     p = buf + off;
@@ -76,19 +76,19 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     c = ((Hdr_240398 *)buf)->c;
     do {
         if (i == 0) {
-            func_00122630_240398(img, (D_0015EF88_240398[1] + tbl[0x2B]) >> 8, 1, 0x13, 0, 0, 0x40, 0x40);
+            func_00122630_240398(img, (depth_buffer_address_r[1] + tbl[0x2B]) >> 8, 1, 0x13, 0, 0, 0x40, 0x40);
             src = buf + off;
             dst = p + 0x14430;
         } else if (i == 1) {
-            func_00122630_240398(img, (D_0015EF88_240398[1] + tbl[0x2C]) >> 8, 1, 0x13, 0, 0, 0x20, 0x20);
+            func_00122630_240398(img, (depth_buffer_address_r[1] + tbl[0x2C]) >> 8, 1, 0x13, 0, 0, 0x20, 0x20);
             src = buf + off;
             dst = p + 0x15430;
         } else if (i == 2) {
-            func_00122630_240398(img, (D_0015EF88_240398[1] + tbl[0x2D]) >> 8, 1, 0, 0, 0, 0x10, 0x10);
+            func_00122630_240398(img, (depth_buffer_address_r[1] + tbl[0x2D]) >> 8, 1, 0, 0, 0, 0x10, 0x10);
             dst = p + 0x30;
             src = buf + off;
         } else {
-            func_00122630_240398(img, (D_0015EF88_240398[1] + tbl[0x2E]) >> 8, 1, 0, 0, 0, 0x10, 0x10);
+            func_00122630_240398(img, (depth_buffer_address_r[1] + tbl[0x2E]) >> 8, 1, 0, 0, 0, 0x10, 0x10);
             src = buf + off;
             dst = buf + c + 0x30;
         }
@@ -99,34 +99,34 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     } while (i < 4);
     base = buf;
     buf = src;
-    D_L00_0015FCC0_m240398.h[5] = tbl[0x2D] >> 8;
-    idx = D_L00_00160088_240398;
-    D_L00_0015FCC0_m240398.h[6] = tbl[0x2B] >> 8;
-    D_L00_0015FCC0_m240398.h[7] = tbl[0x2C] >> 8;
-    qcopy(&D_L00_001AEF40_240398[idx], &D_L00_0015FCC0_240398);
-    D_L00_00199E00_240398[idx] = (unsigned int)buf - 0x80000000U;
-    func_001F9A98_240398(buf, base + off + 0x430, 0x14000);
+    first_record_m240398.h[5] = tbl[0x2D] >> 8;
+    idx = moby_texture_count_r;
+    first_record_m240398.h[6] = tbl[0x2B] >> 8;
+    first_record_m240398.h[7] = tbl[0x2C] >> 8;
+    qcopy(&moby_texture_records_r[idx], &D_L00_0015FCC0_240398);
+    moby_texture_addrs_r[idx] = (unsigned int)buf - 0x80000000U;
+    FastMemCopy_r(buf, base + off + 0x430, 0x14000);
     buf += 0x14000;
-    D_L00_0015FCE0_240398 = D_L00_00160088_240398;
-    if (D_L00_00197F40_240398[D_L00_00160608_240398[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26]] == 0xFF) {
-        func_00203E78_240398(base + a, &D_L00_0015FCC0_240398 - D_L00_00160088_240398, &D_L00_0015FCE0_240398,
-                             D_L00_00160608_240398[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26]);
+    D_L00_0015FCE0_240398 = moby_texture_count_r;
+    if (g_class_slot_r[first_class_ids_r[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26]] == 0xFF) {
+        register_moby_class_r(base + a, &D_L00_0015FCC0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
+                             first_class_ids_r[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26]);
     }
-    idx2 = D_L00_00160088_240398 + 1;
-    D_L00_0015FCD0_m240398.h[5] = tbl[0x2E] >> 8;
-    D_L00_00160088_240398 = idx2;
-    qcopy(&D_L00_001AEF40_240398[idx2], &D_L00_0015FCD0_240398);
-    D_L00_00199E00_240398[idx2] = (unsigned int)buf + 0x70000000U;
-    func_001F9A98_240398(buf, base + c + 0x430, 0x4000);
+    idx2 = moby_texture_count_r + 1;
+    second_record_m240398.h[5] = tbl[0x2E] >> 8;
+    moby_texture_count_r = idx2;
+    qcopy(&moby_texture_records_r[idx2], &D_L00_0015FCD0_240398);
+    moby_texture_addrs_r[idx2] = (unsigned int)buf + 0x70000000U;
+    FastMemCopy_r(buf, base + c + 0x430, 0x4000);
     buf += 0x4000;
-    D_L00_0015FCE0_240398 = D_L00_00160088_240398;
-    if (D_L00_00197F40_240398[D_L00_00160618_240398[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26]] == 0xFF) {
-        func_00203E78_240398(base + b, &D_L00_0015FCD0_240398 - D_L00_00160088_240398, &D_L00_0015FCE0_240398,
-                             D_L00_00160618_240398[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26]);
+    D_L00_0015FCE0_240398 = moby_texture_count_r;
+    if (g_class_slot_r[second_class_ids_r[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26]] == 0xFF) {
+        register_moby_class_r(base + b, &D_L00_0015FCD0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
+                             second_class_ids_r[((Lvl_240398 *)(D_0013DE6E_240398 + 0x2C2))->f26]);
     }
     D_L00_00160624_240398 = 1;
     D_L00_00160628_240398 = 1;
-    D_L00_00160088_240398 = D_L00_00160088_240398 + 1;
+    moby_texture_count_r = moby_texture_count_r + 1;
     D_L00_0016062C_240398 = 0;
     return buf;
 }
@@ -166,7 +166,7 @@ void SetupVisGifViewer(char *out,int a,int b,u64 c,int d,int idx) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_00240D80);
 INCLUDE_ASM("asm/overlays", func_L00_00240DE0);
-extern int D_L00_00173F40_a[] __asm__("D_L00_00173F40");
+extern int coll_hit_result_a[] __asm__("D_L00_00173F40");
 extern const int *D_L00_0015F6F8 SDATA(D_L00_0015F6F8);
 
 // Relocates the collision header's offsets into pointers.
@@ -177,7 +177,7 @@ void resolve_level_asset_block_pointers(char *p) {
     int cnt;
 
     if (*(int *)p != 0) {
-        *D_L00_00173F40_a = (int)(p + *(int *)p);
+        *coll_hit_result_a = (int)(p + *(int *)p);
     }
     if (*(int *)(p + 4) != 0) {
         q = (const int *)(p + *(int *)(p + 4));
@@ -427,7 +427,7 @@ typedef struct {
     int f38;
 } Ship_422D8;
 
-extern void func_002176C8_422D8(void *, int, int) __asm__("func_002176C8");
+extern void Load_r(void *, int, int) __asm__("func_002176C8");
 extern void func_00118D80(int);
 extern int fast_decompress(void *, void *);
 extern void FastMemSet(void *, int, int);
@@ -470,11 +470,11 @@ extern void update_moby_proximity_interaction();
 
 extern Lvl173F00_422D8 lvl_resource_buffers;
 extern int pal_mode MACRO_ADDR;
-extern G137C80_422D8 D_00137C80_422D8 __asm__("D_00137C80");
+extern G137C80_422D8 disc_table_r2 __asm__("D_00137C80");
 /* The two pointers at 0x15EF4C and 0x15EF50, as one object. The assembly names the second D_0015EF50; under a
    name of its own its store lands in a branch delay slot where retail has a nop (8 bytes short), so it is
    reached as element 1 of the pair. Nothing else in the project names D_0015EF50. */
-extern char *D_0015EF4C_422D8[2] __asm__("D_0015EF4C") MACRO_ADDR;
+extern char *level_root_r[2] __asm__("D_0015EF4C") MACRO_ADDR;
 extern Hero g_hero;
 extern char player_camera[];
 extern char moby_animation_slots[];
@@ -597,14 +597,14 @@ char *load_level_gameplay(int arg0) {
     mem = lvl_resource_buffers.f18;
     if (arg0 == 0) {
         if (pal_mode != 0) {
-            func_002176C8_422D8(mem, D_00137C80_422D8.f2978, D_00137C80_422D8.f297C);
+            Load_r(mem, disc_table_r2.f2978, disc_table_r2.f297C);
         } else {
-            func_002176C8_422D8(mem, D_00137C80_422D8.f2970, D_00137C80_422D8.f2974);
+            Load_r(mem, disc_table_r2.f2970, disc_table_r2.f2974);
         }
-        D_0015EF4C_422D8[1] = mem; /* D_0015EF50 */
+        level_root_r[1] = mem; /* D_0015EF50 */
     }
     func_00118D80(0);
-    fast_decompress(D_0015EF4C_422D8[1], hdr);
+    fast_decompress(level_root_r[1], hdr);
     func_00118D80(0);
     FastMemSet(&g_hero, 0, 0x2310);
     FastMemSet(player_camera, 0, 0x3A0);
@@ -2147,27 +2147,27 @@ struct StreamLoader {
     u8 *buf; /* 0x5C */
 };
 extern s32 pal_mode MACRO_ADDR;
-extern struct SectorListTable D_00137C80_45B88 __asm__("D_00137C80");
-extern struct StreamLoader D_L00_0016C960_45B88 __asm__("D_L00_0016C960");
-extern s32 func_00217628_45B88(void *, s32, s32) __asm__("func_00217628");
+extern struct SectorListTable disc_table_r3 __asm__("D_00137C80");
+extern struct StreamLoader cutscene_state_r __asm__("D_L00_0016C960");
+extern s32 start_audio_stream_read_r(void *, s32, s32) __asm__("func_00217628");
 extern void update_audio_stream_until_idle(s32);
 
 /* streams entry i of the current sector list into the loader buffer.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/world/loaders/00240348.c, FUN_L00_002451b8. */
 s32 start_cutscene_chunk_read(s32 i) {
-    u8 *buf = D_L00_0016C960_45B88.buf;
+    u8 *buf = cutscene_state_r.buf;
     s32 start;
     s32 size;
 
     if (pal_mode != 0) {
-        size = D_00137C80_45B88.lists[D_L00_0016C960_45B88.list].y[i + 1] - D_00137C80_45B88.lists[D_L00_0016C960_45B88.list].y[i];
-        start = D_00137C80_45B88.lists[D_L00_0016C960_45B88.list].y[i];
+        size = disc_table_r3.lists[cutscene_state_r.list].y[i + 1] - disc_table_r3.lists[cutscene_state_r.list].y[i];
+        start = disc_table_r3.lists[cutscene_state_r.list].y[i];
     } else {
-        size = D_00137C80_45B88.lists[D_L00_0016C960_45B88.list].x[i + 1] - D_00137C80_45B88.lists[D_L00_0016C960_45B88.list].x[i];
-        start = D_00137C80_45B88.lists[D_L00_0016C960_45B88.list].x[i];
+        size = disc_table_r3.lists[cutscene_state_r.list].x[i + 1] - disc_table_r3.lists[cutscene_state_r.list].x[i];
+        start = disc_table_r3.lists[cutscene_state_r.list].x[i];
     }
     if (size > 0) {
-        func_00217628_45B88(buf, start, size);
+        start_audio_stream_read_r(buf, start, size);
         update_audio_stream_until_idle(0);
     }
     return 1;
@@ -2182,7 +2182,7 @@ typedef struct {
     LevelLoad alt[14];
 } Globals137C80;
 extern int pal_mode MACRO_ADDR;
-extern Globals137C80 D_00137C80_g __asm__("D_00137C80");
+extern Globals137C80 disc_table_g __asm__("D_00137C80");
 typedef struct {
     char pad0[0x5C];
     char *base;
@@ -2198,9 +2198,9 @@ void load_scene_chunks_with_fade(int arg) {
     int *q;
     int i;
     if (pal_mode == 0) {
-        start_audio_stream_read((int)cutscene_state.base, D_00137C80_g.normal[arg].a, D_00137C80_g.normal[arg].b);
+        start_audio_stream_read((int)cutscene_state.base, disc_table_g.normal[arg].a, disc_table_g.normal[arg].b);
     } else {
-        start_audio_stream_read((int)cutscene_state.base, D_00137C80_g.alt[arg].a, D_00137C80_g.alt[arg].b);
+        start_audio_stream_read((int)cutscene_state.base, disc_table_g.alt[arg].a, disc_table_g.alt[arg].b);
     }
     update_audio_stream_until_idle(0);
     FadeToBlack(4);
@@ -2224,7 +2224,7 @@ typedef struct { s32 a, b; } P2_245610;
 typedef struct { u8 pad[0x12E8]; P2_245610 x[10]; P2_245610 y[1]; } Tab_245610;
 typedef struct { u8 pad[0x5C]; u8 *buf; s32 ptr[70]; } H_245610;
 extern Tab_245610 disc_table;
-extern H_245610 D_L00_0016C960_45FE0 __asm__("D_L00_0016C960");
+extern H_245610 cutscene_state_r2 __asm__("D_L00_0016C960");
 void func_00217628_45FE0b(void *, s32, s32) __asm__("func_00217628");
 void func_00217748_45FE0b(s32) __asm__("func_00217748");
 void func_001F4E08_45FE0b(s32) __asm__("func_001F4E08");
@@ -2234,20 +2234,20 @@ void load_chunks_with_optional_fade(s32 i, s32 p) {
     s32 n;
     s32 *e;
     if (pal_mode == 0) {
-        func_00217628_45FE0b(D_L00_0016C960_45FE0.buf, disc_table.x[i].a, disc_table.x[i].b);
+        func_00217628_45FE0b(cutscene_state_r2.buf, disc_table.x[i].a, disc_table.x[i].b);
     } else {
-        func_00217628_45FE0b(D_L00_0016C960_45FE0.buf, disc_table.y[i].a, disc_table.y[i].b);
+        func_00217628_45FE0b(cutscene_state_r2.buf, disc_table.y[i].a, disc_table.y[i].b);
     }
     if (p != 0) {
         func_00217748_45FE0b(0);
         func_001F4E08_45FE0b(p);
     }
     func_00217748_45FE0b(1);
-    e = (s32 *)D_L00_0016C960_45FE0.buf;
+    e = (s32 *)cutscene_state_r2.buf;
     n = 0;
     if (e[1] != 0) {
         do {
-            D_L00_0016C960_45FE0.ptr[n] = (s32)(D_L00_0016C960_45FE0.buf + (e[0] + 0x800));
+            cutscene_state_r2.ptr[n] = (s32)(cutscene_state_r2.buf + (e[0] + 0x800));
             n++;
             e += 2;
         } while (n < 70 && e[1] != 0);

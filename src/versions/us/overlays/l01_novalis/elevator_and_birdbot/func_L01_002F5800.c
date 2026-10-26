@@ -24,8 +24,8 @@ void TetheredMineUpdate(char *m) {
         int i;
         int *t;
         if (((unsigned char *)m)[0x20] == 0x65) return;
-        if ((&D_0013D50F_k)[1] == 0) {
-            (&D_0013D50F_k)[1] = 1;
+        if ((&menu_item_enabled_115_k)[1] == 0) {
+            (&menu_item_enabled_115_k)[1] = 1;
             PlayBankSound(1, 0, 0);
             ShowBanner(0x53D6, -1);
         }
@@ -51,7 +51,7 @@ void TetheredMineUpdate(char *m) {
     if (175.0f <= *(float *)(m + 0x18)) {
         m[0x23] = 0;
     } else if (125.0f < *(float *)(m + 0x18) && *(float *)(m + 0x18) < 175.0f) {
-        m[0x23] = func_001FA898_r((175.0f - *(float *)(m + 0x18)) * 128.0f / 50.0f);
+        m[0x23] = truncate_float_to_s32_r((175.0f - *(float *)(m + 0x18)) * 128.0f / 50.0f);
     } else if (*(float *)(m + 0x18) <= 125.0f) {
         ((unsigned char *)m)[0x23] = 0x80;
     }

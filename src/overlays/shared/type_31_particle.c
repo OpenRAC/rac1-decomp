@@ -3,7 +3,7 @@
 #include "include_asm.h"
 
 extern unsigned char *create_part(int);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 // Spawns a particle (type 0x31) with given vectors, colour source and flags.
 void create_type_31_part(int a, int *b, int *c, float *d, int e) {
@@ -12,7 +12,7 @@ void create_type_31_part(int a, int *b, int *c, float *d, int e) {
         float *q;
         *(int *)(p + 0x4) = 0x7FFFFFFF;
         *(int *)(p + 0xC) = 0xFFFFFFF;
-        p[0x9] = func_001FA898_r(2.0f) + 0x70;
+        p[0x9] = truncate_float_to_s32_r(2.0f) + 0x70;
         p[0x3] = 0x44;
         q = (float *)(p + 0x30);
         p[0x1] = 2;

@@ -110,7 +110,7 @@ int ChooseDropItem(unsigned char *m, int *item) {
     }
 }
 extern int g_current_level_index MACRO_ADDR;
-extern int D_0015EE84_584A8b __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern int free_moby_slot_count MACRO_ADDR;
 extern int level_moby_killed[][64];
 extern unsigned char saved_mission_state[][16];
@@ -160,7 +160,7 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
     }}
     if ((signed char)m[0xB1] >= 0) {
         int n1 = *(short *)(m + 0xB6);
-        d = n1 - bolt_source_stats[D_0015EE84_584A8b][m[0xB1]][1];
+        d = n1 - bolt_source_stats[g_current_level_index_r][m[0xB1]][1];
         {
             int x = (n1 + 1) / 2 < d ? d : 0;
             if (x) {

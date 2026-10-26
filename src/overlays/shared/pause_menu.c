@@ -517,7 +517,7 @@ extern char map_menu_state[];
 extern char cd_read_state[];
 extern char memory_card_state[];
 extern int decode_mode MACRO_ADDR;
-extern int D_0015EFB4_m __asm__("D_0015EFB4") MACRO_ADDR;
+extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
 extern int D_L00_0015F690 MACRO_ADDR;
 extern short D_L00_0015F658;
 extern short loaded_swap_moby_class_set;
@@ -667,7 +667,7 @@ void update_pause_menu(void) {
         v == 0x23) {
         initialize_pause_menu();
     }
-    if ((D_0015EFB4_m & 1) && !(*(int *)&cinematic_mode_frames < 8)) {
+    if ((mode_freeze_flags_m & 1) && !(*(int *)&cinematic_mode_frames < 8)) {
         mode_freeze_init(3, GS.owner, 0);
         return;
     }
@@ -1055,32 +1055,32 @@ int Menu_SkipFilteredEntries(char *arg0, int arg1) {
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0027A3AC);
-extern struct CtrlP D_0013CA40_27D3D8 __asm__("D_0013CA40");
-extern struct MenuSystemP D_L00_001BA070_27D3D8 __asm__("D_L00_001BA070");
+extern struct CtrlP g_controller_state_r __asm__("D_0013CA40");
+extern struct MenuSystemP level_menu_system_r __asm__("D_L00_001BA070");
 extern int D_0013D48C;
 extern int D_L00_00184514;
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int memcard_last_save_slot MACRO_ADDR;
 extern int level_loop_exit_requested MACRO_ADDR;
 
 /* input of a pause menu entry: accept returns -1, cancel goes back a page or returns -1 when closing is allowed, and 0x20 sets the transition flags */
 int PauseMenu_EntryInput(char *entry) {
- unsigned int pressed = D_0013CA40_27D3D8.pressed_unmasked;
+ unsigned int pressed = g_controller_state_r.pressed_unmasked;
  if (pressed & 0xD00) {
-  if (*(int *)(entry + 0x30) & 0x20) D_L00_00184514 = D_0015EE84_m;
+  if (*(int *)(entry + 0x30) & 0x20) D_L00_00184514 = g_current_level_index_m;
   return -1;
  }
  if (pressed & 0x10) {
   struct MenuPageP *back;
-  if (*(int *)(entry + 0x30) & 0x20) D_L00_00184514 = D_0015EE84_m;
-  back = D_L00_001BA070_27D3D8.current->back;
+  if (*(int *)(entry + 0x30) & 0x20) D_L00_00184514 = g_current_level_index_m;
+  back = level_menu_system_r.current->back;
   if (back) {
-   D_L00_001BA070_27D3D8.next = back;
+   level_menu_system_r.next = back;
    return 0;
   }
-  if (!D_L00_001BA070_27D3D8.close_locked) return -1;
+  if (!level_menu_system_r.close_locked) return -1;
  }
- if (D_0013CA40_27D3D8.pressed_unmasked & 0x20) {
+ if (g_controller_state_r.pressed_unmasked & 0x20) {
   D_0013D48C = 0;
   memcard_last_save_slot = -1;
   level_loop_exit_requested = 1;
@@ -1103,28 +1103,28 @@ struct MenuSystem_280708 {
     unsigned char pad0C[0xD4 - 0xC];
     int unkD4;
 };
-extern struct MenuSystem_280708 D_L00_001BA070_280708 __asm__("D_L00_001BA070");
-extern struct PadState D_0013CA40_280708 __asm__("D_0013CA40");
-extern int D_0015EFB0_280708 __asm__("D_0015EFB0") MACRO_ADDR;
+extern struct MenuSystem_280708 level_menu_system_r2 __asm__("D_L00_001BA070");
+extern struct PadState g_controller_state_r2 __asm__("D_0013CA40");
+extern int mode_freeze_state_r __asm__("D_0015EFB0") MACRO_ADDR;
 
 /* goes back a page, but in menu state 0x10 or 1 only on button 0x20 (setting the page flag at
    +0x84 and clearing +0xD4) or 0x10 (clearing the page flag) */
 int Menu_GoBackWithFlag(void) {
-    int state = D_0015EFB0_280708;
+    int state = mode_freeze_state_r;
     unsigned int pressed;
 
     if (state != 0x10 && state != 1) {
-        D_L00_001BA070_280708.next = D_L00_001BA070_280708.current->back;
+        level_menu_system_r2.next = level_menu_system_r2.current->back;
         return 0;
     }
-    pressed = (unsigned int)D_0013CA40_280708.pressed;
+    pressed = (unsigned int)g_controller_state_r2.pressed;
     if (pressed & 0x20) {
-        D_L00_001BA070_280708.unkD4 = 0;
-        D_L00_001BA070_280708.next = D_L00_001BA070_280708.current->back;
-        D_L00_001BA070_280708.current->unk84 = 1;
+        level_menu_system_r2.unkD4 = 0;
+        level_menu_system_r2.next = level_menu_system_r2.current->back;
+        level_menu_system_r2.current->unk84 = 1;
     } else if (pressed & 0x10) {
-        D_L00_001BA070_280708.next = D_L00_001BA070_280708.current->back;
-        D_L00_001BA070_280708.current->unk84 = 0;
+        level_menu_system_r2.next = level_menu_system_r2.current->back;
+        level_menu_system_r2.current->unk84 = 0;
     }
     return 0;
 }
@@ -1219,7 +1219,7 @@ void process_unlock_code_input(void) {
         *(int *)&unlock_code_input_count = 0;
     }
 }
-extern void *func_00226720_a(int) __asm__("func_00226720");
+extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");
 extern int acquire_menu_stream_buffer(int);
 extern void Profile_Mark(void *);
 extern char player_camera[];
@@ -1228,7 +1228,7 @@ extern char player_camera[];
 int enter_streamed_moby_screen(char *h) {
     char *m;
     int r;
-    m = func_00226720_a(0x7A5);
+    m = create_menu_preview_moby_a(0x7A5);
     *(int *)(h + 0x34) = 0;
     if (m != 0) {
         char *d;
@@ -1270,13 +1270,13 @@ int StreamSlot_GetSize(int id) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_00284E5C);
 /* Looks for id in the five {id, flags} pairs at D_L00_001BA548; if found sets flags |= 4 and returns 0, else returns 1. Joined with func_L00_00284EA0 loop tail. */
-extern int D_L00_001BA548_84E70[] __asm__("D_L00_001BA548");
+extern int stream_slots_r[] __asm__("D_L00_001BA548");
 /* Sets flag 4 on the entry with the given id; returns 0, or 1 if not found. */
 int StreamSlot_SetFlag4(int id) {
     int i;
     for (i = 0; i < 5; i++) {
-        if (D_L00_001BA548_84E70[i * 2] == id) {
-            D_L00_001BA548_84E70[i * 2 + 1] |= 4;
+        if (stream_slots_r[i * 2] == id) {
+            stream_slots_r[i * 2 + 1] |= 4;
             return 0;
         }
     }
@@ -1287,8 +1287,8 @@ INCLUDE_ASM("asm/overlays", func_L00_00284EA0);
 int StreamSlot_ClearFlag4(int id) {
     int i;
     for (i = 0; i < 5; i++) {
-        if (D_L00_001BA548_84E70[i * 2] == id) {
-            D_L00_001BA548_84E70[i * 2 + 1] &= ~4;
+        if (stream_slots_r[i * 2] == id) {
+            stream_slots_r[i * 2 + 1] &= ~4;
             return 0;
         }
     }
@@ -1359,7 +1359,7 @@ extern unsigned char checkpoint_level_state[0xC58];
 /* core data, big blobs addressed with lui/addiu, never through $gp */
 extern unsigned char D_0014171B NOT_SDA;
 extern unsigned char D_0013E633 NOT_SDA;
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
 /* Seeds the pause-menu snapshot: copies the header, marks valid entries in the bitmasks, fills the state record. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_state_00284e50.c, FUN_L00_00284e50. */
 void jet_reset_camera(void *a0, void *a1)
@@ -1370,7 +1370,7 @@ void jet_reset_camera(void *a0, void *a1)
     char *g;
 
     copy_memory_by_alignment((int)&checkpoint_moby_states, &current_moby_states, 0x404);
-    lvl = D_0015EE84_m;
+    lvl = g_current_level_index_m;
     for (src = current_moby_states.f, i = 0; i < 0x7FF; i++, src++) {
         int v = *src;
         if ((unsigned char)v == 0) continue;

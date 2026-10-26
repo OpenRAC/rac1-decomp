@@ -63,7 +63,7 @@ extern char D_0013D355[];
 extern char D_0013D355_b[] __asm__("D_0013D355");
 extern unsigned char D_0014171B[] NOT_SDA;
 extern int cinematic_mode MACRO_ADDR;
-extern int D_0015EFB4_m __asm__("D_0015EFB4") MACRO_ADDR;
+extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
 extern int cinematic_mode_frames MACRO_ADDR;
 extern int D_L00_001BA160;
 extern int g_current_level_index MACRO_ADDR;
@@ -80,7 +80,7 @@ extern char level_profile_mark_after_sound[];
 extern void mode_freeze_init(int, void *, int);
 extern void PauseAllSounds(int);
 extern void update_timed_hud_visibility(void);
-extern int func_L00_00235790_r(void) __asm__("func_L00_00235790");
+extern int show_health_hud_r(void) __asm__("func_L00_00235790");
 extern void hud_keep_visible(int, int);
 extern int queue_animation_update(int, int, int, int, int, int, int);
 extern void initialize_bolt_counter_hud(void);
@@ -91,8 +91,8 @@ extern void CountExpiredMobys(void);
 extern void update_visible_resident_objects(void);
 extern void enqueue_voice_request(void);
 extern void update_ambience_target_cycle(void);
-extern void func_001E9768_a(void *, int) __asm__("func_001E9768");
-extern void func_001E9768_b(void) __asm__("func_001E9768");
+extern void Profile_Mark_a(void *, int) __asm__("func_001E9768");
+extern void Profile_Mark_b(void) __asm__("func_001E9768");
 extern void coordinate_hero_frame_update(void);
 extern void UpdateParts(void);
 extern void update_glints(void);
@@ -101,7 +101,7 @@ extern void update_debug_camera(void);
 extern void update_hero_from_debug_camera(void);
 extern void UpdateAllPointLights(void);
 extern void update_resident_packed_direction(void);
-extern int func_L00_0023B610_r(int) __asm__("func_L00_0023B610");
+extern int update_hud_elements_r(int) __asm__("func_L00_0023B610");
 extern void Help_Update(void);
 
 /* per-frame update of the in-level game: pause and cutscene triggers, then the subsystem updates. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_00295100.c, FUN_L00_00297f78. */
@@ -117,7 +117,7 @@ void handle_pause_input(void) {
         g_debug_menu.wA0 = ((PadS *)(D_0013A5E0 + 0x2460))->w1A0 & ~0x200;
     }
     lvl = cinematic_mode;
-    if (lvl == 0 && (D_0015EFB4_m & 0x401) && cinematic_mode_frames >= 8 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D) {
+    if (lvl == 0 && (mode_freeze_flags_m & 0x401) && cinematic_mode_frames >= 8 && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D) {
         mode_freeze_init(3, 0, 0);
         return;
     }
@@ -181,7 +181,7 @@ void handle_pause_input(void) {
     if ((((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200) && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x1D
         && ((Hero *)(D_0013E633 + 0xE1D))->state.current != 0x32) {
         int x;
-        x = func_L00_00235790_r();
+        x = show_health_hud_r();
         hud_keep_visible(x, scale_ticks(0xB4));
         x = queue_animation_update(2, 0x754E, (int)initialize_bolt_counter_hud, (int)update_bolt_counter_hud_animation_and_visibility, (int)draw_bolt_counter_hud_panel, (int)&gBolts, 9999999);
         hud_keep_visible(x, scale_ticks(0xB4));
@@ -206,33 +206,33 @@ void handle_pause_input(void) {
         enqueue_voice_request();
         update_ambience_target_cycle();
     }
-    func_001E9768_a(level_profile_mark_after_mobys, 3);
+    Profile_Mark_a(level_profile_mark_after_mobys, 3);
     if ((g_debug_menu.w8 & 1) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200))) coordinate_hero_frame_update();
-    func_001E9768_a(level_profile_mark_after_hero, 7);
+    Profile_Mark_a(level_profile_mark_after_hero, 7);
     if ((g_debug_menu.w8 & 4) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200))) {
         UpdateParts();
         update_glints();
     }
-    func_001E9768_a(level_profile_mark_after_parts, 5);
+    Profile_Mark_a(level_profile_mark_after_parts, 5);
     if ((g_debug_menu.w8 & 8) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200))) {
         Camera_UpdateFrame();
     } else if (g_debug_menu.w14) {
         update_debug_camera();
         if (g_debug_menu.w14 == 2) update_hero_from_debug_camera();
     }
-    func_001E9768_a(level_profile_mark_after_camera, 8);
+    Profile_Mark_a(level_profile_mark_after_camera, 8);
     sound_update();
-    func_001E9768_a(level_profile_mark_after_sound, 6);
+    Profile_Mark_a(level_profile_mark_after_sound, 6);
     UpdateAllPointLights();
     update_resident_packed_direction();
-    func_L00_0023B610_r(1);
+    update_hud_elements_r(1);
     Help_Update();
     if ((g_debug_menu.w8 & 2) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(D_0013A5E0 + 0x2460))->w1A4 & 0x200))) update_game_frame_and_idle_counters();
-    if (g_debug_menu.w18 == 2) func_001E9768_b();
-    if (g_debug_menu.w18 == 3) func_001E9768_b();
-    if (g_debug_menu.w18 == 4) func_001E9768_b();
-    if (g_debug_menu.w18 == 5) func_001E9768_b();
-    if (g_debug_menu.w18 == 6) func_001E9768_b();
+    if (g_debug_menu.w18 == 2) Profile_Mark_b();
+    if (g_debug_menu.w18 == 3) Profile_Mark_b();
+    if (g_debug_menu.w18 == 4) Profile_Mark_b();
+    if (g_debug_menu.w18 == 5) Profile_Mark_b();
+    if (g_debug_menu.w18 == 6) Profile_Mark_b();
 }
 typedef struct { char p0[0x20]; unsigned char st; char p1[0x13]; unsigned short flags; char p2[0x70]; short type; char p3[0x58]; } Obj;
 extern int skip_frame MACRO_ADDR;
@@ -363,7 +363,7 @@ typedef struct { char pad[8]; Fl *a; void *b; } AB;
 typedef struct { char pad[0xEC]; Fl *p; } PP;
 typedef struct { char pad[0x20A5]; char x20a5; } Hd;
 
-extern CT D_L00_0016C960_c __asm__("D_L00_0016C960");
+extern CT cutscene_state_c __asm__("D_L00_0016C960");
 extern float D_L00_0016CBF0;
 extern int D_L00_00167114 NOT_SDA;
 extern char D_L00_0016C970[];
@@ -382,13 +382,13 @@ void finish_cutscene(void) {
     calculate_dma_transfer_address();
     FadeToBlack(12);
     ResetFrameCounters();
-    D_L00_00167114 = D_L00_0016C960_c.x4b;
+    D_L00_00167114 = cutscene_state_c.x4b;
     D_L00_0016CBF0 = 0.63f;
     cinematic_mode = 0;
     gFadeLvl = 0;
     UpdateViewContext();
-    for (i = 0; i < D_L00_0016C960_c.n; i++) {
-        Mob *m = D_L00_0016C960_c.m[i];
+    for (i = 0; i < cutscene_state_c.n; i++) {
+        Mob *m = cutscene_state_c.m[i];
         if (m) {
             m->cls->n--;
             m->cls->x48[m->cls->n] = 0;
@@ -408,9 +408,9 @@ void finish_cutscene(void) {
     b = D_0013E633 + 0xE1D;
     b[0x20A5] = 0;
     HeroClearObjectFlags();
-    if (D_L00_0016C960_c.x4a) {
-        f = ProbeGroundHeight(D_L00_0016C960_c.v, 0, 0.5f);
-        if (2.0f < f && FastAbsF(D_L00_0016C960_c.v[2] - f) < 2.0f) D_L00_0016C960_c.v[2] = f;
+    if (cutscene_state_c.x4a) {
+        f = ProbeGroundHeight(cutscene_state_c.v, 0, 0.5f);
+        if (2.0f < f && FastAbsF(cutscene_state_c.v[2] - f) < 2.0f) cutscene_state_c.v[2] = f;
         Hero_ResetToPosition(D_L00_0016C970, D_L00_0016C970 + 0x10, 0, 1);
     }
     if (active_scene_trigger.a) active_scene_trigger.a->flags &= ~1;
@@ -435,7 +435,7 @@ extern char render_view_params[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float big_head_cutscene_fov_scale MACRO_ADDR;
 extern char g_debug_camera[];
-extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern short big_head_cutscene_camera_pullback;
 
 typedef struct CutsceneCamKey {
@@ -498,7 +498,7 @@ unsigned char apply_cutscene_camera_key(void) {
     cc->matrix[0].z = -m[10];
     cc->matrix[1].z = -m[2];
     cc->matrix[2].z = m[6];
-    if (D_0015EEB4_m[0] != 0) {
+    if (draw_map51_m[0] != 0) {
         FastVecCross(c + 0x220, c + 0x230, c + 0x210);
     }
     if (gCheats[0] != 0) {
@@ -594,17 +594,17 @@ typedef struct {
     u8 start_capture_status;
     u8 sample_capture_status;
 } DebugMenuState;
-extern DebugMenuState D_L00_0016C158_9A300 __asm__("D_L00_0016C158");
+extern DebugMenuState g_debug_menu_r __asm__("D_L00_0016C158");
 void ResetFrameCounters(void);
-extern struct PadStateWords D_0013CA40_9A300 __asm__("D_0013CA40");
+extern struct PadStateWords g_controller_state_r __asm__("D_0013CA40");
 int scale_ticks(int);
 void update_game_frame_and_idle_counters(void);
 extern s32 D_0015EF20 MACRO_ADDR;
-extern u8 D_L00_001610B8_9A300[] __asm__("D_L00_001610B8");
-extern u8 D_L00_001610C8_9A300[] __asm__("D_L00_001610C8");
-extern u8 D_L00_001610D8_9A300[] __asm__("D_L00_001610D8");
-extern u8 D_L00_001610E8_9A300[] __asm__("D_L00_001610E8");
-extern u8 D_L00_001610F8_9A300[] __asm__("D_L00_001610F8");
+extern u8 level_profile_mark_after_mobys_r[] __asm__("D_L00_001610B8");
+extern u8 level_profile_mark_after_hero_r[] __asm__("D_L00_001610C8");
+extern u8 level_profile_mark_after_parts_r[] __asm__("D_L00_001610D8");
+extern u8 level_profile_mark_after_camera_r[] __asm__("D_L00_001610E8");
+extern u8 level_profile_mark_after_sound_r[] __asm__("D_L00_001610F8");
 extern void Profile_Mark(void *, s32);
 void finish_cutscene(void);
 int func_L00_0029A158_9A300(void) __asm__("func_L00_0029A158");
@@ -631,8 +631,8 @@ typedef struct {
     Moby *f178[1];
 } VendorCutscene;
 extern u32 pad0_pressed;
-extern f32 D_L00_0015F4FC_9A300 __asm__("D_L00_0015F4FC") MACRO_ADDR;
-extern VendorCutscene D_L00_0016C960_9A300 __asm__("D_L00_0016C960");
+extern f32 gFadeLvl_r __asm__("D_L00_0015F4FC") MACRO_ADDR;
+extern VendorCutscene cutscene_state_r __asm__("D_L00_0016C960");
 extern short challenge_mode;
 extern s32 decode_mode MACRO_ADDR;
 extern void apply_level_specific_cutscene_moby_effects(void);
@@ -664,42 +664,42 @@ void update_cutscene_playback(void) {
     f32 a[4] __attribute__((aligned(16)));
     f32 b[4] __attribute__((aligned(16)));
 
-    if ((D_L00_0016C158_9A300.update_flags & 2) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (pad0_pressed & 0x200))) {
+    if ((g_debug_menu_r.update_flags & 2) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & 0x200))) {
         ResetFrameCounters();
     }
-    if (!(D_L00_0016C158_9A300.update_flags & 0x10) || (pad0_pressed & 0x220)) {
+    if (!(g_debug_menu_r.update_flags & 0x10) || (pad0_pressed & 0x220)) {
         apply_level_specific_cutscene_moby_effects();
     }
-    if ((D_L00_0016C158_9A300.update_flags & 2) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (pad0_pressed & 0x200))) {
+    if ((g_debug_menu_r.update_flags & 2) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & 0x200))) {
         update_visible_resident_objects();
         enqueue_voice_request();
     }
-    Profile_Mark(D_L00_001610B8_9A300, 3);
-    if ((D_L00_0016C158_9A300.update_flags & 1) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (pad0_pressed & 0x200))) {
+    Profile_Mark(level_profile_mark_after_mobys_r, 3);
+    if ((g_debug_menu_r.update_flags & 1) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & 0x200))) {
         coordinate_hero_frame_update();
     }
-    Profile_Mark(D_L00_001610C8_9A300, 7);
-    if ((D_L00_0016C158_9A300.update_flags & 4) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (pad0_pressed & 0x200))) {
+    Profile_Mark(level_profile_mark_after_hero_r, 7);
+    if ((g_debug_menu_r.update_flags & 4) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & 0x200))) {
         UpdateParts();
     }
-    Profile_Mark(D_L00_001610D8_9A300, 5);
-    cs = &D_L00_0016C960_9A300;
-    fade = D_L00_0015F4FC_9A300 - 0.34f;
+    Profile_Mark(level_profile_mark_after_parts_r, 5);
+    cs = &cutscene_state_r;
+    fade = gFadeLvl_r - 0.34f;
     cs->f34++;
     cs->f38++;
-    D_L00_0015F4FC_9A300 = fade;
-    if (D_L00_0015F4FC_9A300 < 0.0f) {
-        D_L00_0015F4FC_9A300 = 0.0f;
+    gFadeLvl_r = fade;
+    if (gFadeLvl_r < 0.0f) {
+        gFadeLvl_r = 0.0f;
     }
     if (cs->f34 >= cs->h46) {
         Music_ContinueStreamIfReady();
     }
     done = cs->f34 >= cs->h40;
-    if (cs->f34 >= scale_ticks(0x12) && D_L00_0015F4FC_9A300 == 0.0f) {
+    if (cs->f34 >= scale_ticks(0x12) && gFadeLvl_r == 0.0f) {
 
-        if (((*(s32 *)&challenge_mode) || D_0015EF20 || decode_mode || g_current_level_index <= 0) && (D_0013CA40_9A300.buttons.w.pressed & 0x800)) {
+        if (((*(s32 *)&challenge_mode) || D_0015EF20 || decode_mode || g_current_level_index <= 0) && (g_controller_state_r.buttons.w.pressed & 0x800)) {
             done = 1;
-        } else if ((D_0013CA40_9A300.buttons.held_pressed & 0x8000000000FUL) == 0x8000000000FUL) {
+        } else if ((g_controller_state_r.buttons.held_pressed & 0x8000000000FUL) == 0x8000000000FUL) {
             done = 1;
         }
     }
@@ -707,21 +707,21 @@ void update_cutscene_playback(void) {
         finish_cutscene();
     } else {
         lim = pal_mode ? 0x50 : 0x60;
-        if (D_L00_0016C960_9A300.f38 >= lim) {
+        if (cutscene_state_r.f38 >= lim) {
             update_audio_stream_until_idle(1);
-            D_L00_0016C960_9A300.f3C++;
+            cutscene_state_r.f3C++;
             update_world_object_animation();
-            start_cutscene_chunk_read(D_L00_0016C960_9A300.f3C + 1);
+            start_cutscene_chunk_read(cutscene_state_r.f3C + 1);
         }
         last = func_L00_0029A158_9A300();
-        for (i = 0; i < D_L00_0016C960_9A300.h44; i++) {
-            m = D_L00_0016C960_9A300.f178[i];
-            id = D_L00_0016C960_9A300.f38 >> 1;
+        for (i = 0; i < cutscene_state_r.h44; i++) {
+            m = cutscene_state_r.f178[i];
+            id = cutscene_state_r.f38 >> 1;
             m->frame = id;
             m->prev_frame = id + 1;
             update_moby_animation_state(m);
-            m->anim_time = IntToFloat(D_L00_0016C960_9A300.f38 & 1) * 0.5f;
-            if (last && (D_L00_0016C960_9A300.f38 & 1)) {
+            m->anim_time = IntToFloat(cutscene_state_r.f38 & 1) * 0.5f;
+            if (last && (cutscene_state_r.f38 & 1)) {
                 m->anim_time = 1.0f;
             }
             keys = (Vec4 *)m->pvars;
@@ -741,12 +741,12 @@ void update_cutscene_playback(void) {
             }
         }
     }
-    Profile_Mark(D_L00_001610E8_9A300, 8);
+    Profile_Mark(level_profile_mark_after_camera_r, 8);
     sound_update();
-    Profile_Mark(D_L00_001610F8_9A300, 6);
+    Profile_Mark(level_profile_mark_after_sound_r, 6);
     UpdateAllPointLights();
     update_resident_packed_direction();
-    if ((D_L00_0016C158_9A300.update_flags & 2) || ((D_L00_0016C158_9A300.update_flags & 0x10) && (pad0_pressed & 0x200))) {
+    if ((g_debug_menu_r.update_flags & 2) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & 0x200))) {
         update_game_frame_and_idle_counters();
     }
 }
@@ -761,7 +761,7 @@ typedef struct {
     LevelLoad normal[19];
     LevelLoad alt[19];
 } Globals137C80;
-extern Globals137C80 D_00137C80_g __asm__("D_00137C80");
+extern Globals137C80 disc_table_g __asm__("D_00137C80");
 extern void Hero_OnKilled(void);
 extern void prepare_movie_playback(int, int, int);
 
@@ -771,11 +771,11 @@ void PlayMovieEntryIfIdle(int idx) {
     char *base;
     if (idx < 0) return;
     if (pal_mode != 0) {
-        b = D_00137C80_g.alt[idx].b;
-        a = D_00137C80_g.alt[idx].a;
+        b = disc_table_g.alt[idx].b;
+        a = disc_table_g.alt[idx].a;
     } else {
-        b = D_00137C80_g.normal[idx].b;
-        a = D_00137C80_g.normal[idx].a;
+        b = disc_table_g.normal[idx].b;
+        a = disc_table_g.normal[idx].a;
     }
     base = D_0013E633 + 0xE1D;
     if (*(int *)(base + 0x22A8) == 0) {
@@ -790,16 +790,16 @@ typedef struct {
     LL7 x[5];
     LL7 y[19];
 } G7;
-extern G7 D_00137C80_q __asm__("D_00137C80");
+extern G7 disc_table_q __asm__("D_00137C80");
 
 /* Plays the movie of table entry i (set chosen by a flag). Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00295100.c, FUN_L00_002994f8. */
 void queue_language_zero_movie(int i) {
     int a, b;
     if (i < 0) return;
     if (pal_mode) {
-        b = D_00137C80_q.y[i].b; a = D_00137C80_q.y[i].a;
+        b = disc_table_q.y[i].b; a = disc_table_q.y[i].a;
     } else {
-        b = D_00137C80_q.x[i].b; a = D_00137C80_q.x[i].a;
+        b = disc_table_q.x[i].b; a = disc_table_q.x[i].a;
     }
     prepare_movie_playback(b, a, 0);
 }
@@ -809,16 +809,16 @@ typedef struct {
     LL7_29A8D0 x[12];
     LL7_29A8D0 y[19];
 } G7_29A8D0;
-extern G7_29A8D0 D_00137C80_q_29A8D0 __asm__("D_00137C80");
+extern G7_29A8D0 disc_table_q_29A8D0 __asm__("D_00137C80");
 
 /* Plays the movie of table entry i (set chosen by a flag). Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00295100.c, FUN_L00_00299560. */
 void queue_movie_with_game_language(int i) {
     int a, b;
     if (i < 0) return;
     if (pal_mode) {
-        b = D_00137C80_q_29A8D0.y[i].b; a = D_00137C80_q_29A8D0.y[i].a;
+        b = disc_table_q_29A8D0.y[i].b; a = disc_table_q_29A8D0.y[i].a;
     } else {
-        b = D_00137C80_q_29A8D0.x[i].b; a = D_00137C80_q_29A8D0.x[i].a;
+        b = disc_table_q_29A8D0.x[i].b; a = disc_table_q_29A8D0.x[i].a;
     }
     prepare_movie_playback(b, a, g_game_language);
 }
@@ -839,8 +839,8 @@ typedef struct {
     int buf0;
     int buf1;
 } MovieLoad;
-extern MovieLoad D_L00_00161108_m __asm__("D_L00_00161108") MACRO_ADDR;
-extern int D_0015EF78_29A940[6] __asm__("D_0015EF78") MACRO_ADDR;
+extern MovieLoad queued_movie_request_m __asm__("D_L00_00161108") MACRO_ADDR;
+extern int g_gs_texture_allocation_start_r[6] __asm__("D_0015EF78") MACRO_ADDR;
 extern int level_texture_data_base MACRO_ADDR;
 extern int movie_work_buffer;
 extern char movie_gs_overflow_message[];
@@ -853,19 +853,19 @@ void prepare_movie_playback(int sector, int size, int arg2) {
     func_00118D80(0);
     sound_StopAllSounds();
     music_Stop();
-    D_L00_00161108_m.sector = sector;
-    D_L00_00161108_m.size = size;
-    D_L00_00161108_m.unk8 = arg2;
+    queued_movie_request_m.sector = sector;
+    queued_movie_request_m.size = size;
+    queued_movie_request_m.unk8 = arg2;
     skip_frame = 1;
     FadeToBlack(4);
     clear_active_help_record();
     cinematic_mode = 1;
-    D_L00_00161108_m.buf0 = movie_work_buffer;
-    D_L00_00161108_m.buf1 = level_texture_data_base;
+    queued_movie_request_m.buf0 = movie_work_buffer;
+    queued_movie_request_m.buf1 = level_texture_data_base;
     big = pal_mode != 0 ? 0xE : 0xD;
     small = pal_mode != 0 ? 0xE : 0x11;
-    src = D_L00_00161108_m.buf1;
-    gs_addr = D_0015EF78_29A940[4];
+    src = queued_movie_request_m.buf1;
+    gs_addr = g_gs_texture_allocation_start_r[4];
     i = 0;
     while (i < big) {
         func_00122630(image, gs_addr >> 8, 2, 1, 0, 0, 0x80, 0x80);
@@ -876,7 +876,7 @@ void prepare_movie_playback(int sector, int size, int arg2) {
         src += 0xC000;
         func_00120858(0, 0);
     }
-    gs_addr = D_0015EF78_29A940[0];
+    gs_addr = g_gs_texture_allocation_start_r[0];
     j = 0;
     while (j < small) {
         func_00122630(image, gs_addr >> 8, 1, 0, 0, 0, 0x40, 0x40);
@@ -910,7 +910,7 @@ void movie_exit_to_gameplay(void) {
     ((void (*)(int, int))func_00120858)(0, 0);
     func_00123168(func_0012F308);
     destination = D_L00_00161118;
-    source = D_0015EF78_29A940[4];
+    source = g_gs_texture_allocation_start_r[4];
     big = pal_mode != 0 ? 0xE : 0xD;
     small = pal_mode != 0 ? 0xE : 0x11;
     i = 0;
@@ -923,7 +923,7 @@ void movie_exit_to_gameplay(void) {
         destination += 0xc000;
         ((void (*)(int, int))func_00120858)(0, 0);
     }
-    source = D_0015EF78_29A940[0];
+    source = g_gs_texture_allocation_start_r[0];
     j = 0;
     while (j < small) {
         func_00122818(sp, (source << 8) >> 16, 1, 0, 0, 0, 0x40, 0x40);

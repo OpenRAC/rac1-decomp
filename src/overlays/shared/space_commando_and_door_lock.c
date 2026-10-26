@@ -79,11 +79,11 @@ extern f32 FastSin(f32);
 extern f32 fast_atan2(f32, f32);
 extern f32 FastDiffRots(f32, f32);
 extern s32 truncate_float_to_s32(f32);
-extern void func_0020D678_FF000(struct Moby *) __asm__("func_0020D678");
+extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern f32 MobyGetFrameValue(struct Moby *);
 extern void MobyBlendAnimation(struct Moby *, s32, s32, s32);
 extern s32 is_point_inside_clip_volume(void *, s32);
-extern void func_L00_00250800_FF000(struct Moby *, s32, void *) __asm__("func_L00_00250800");
+extern void Moby_GetJointWorldPos_r(struct Moby *, s32, void *) __asm__("func_L00_00250800");
 extern void MobySpringTurn(struct Moby *, f32, f32 *, f32, f32, f32);
 extern s32 move_w(struct Moby *, MoveCtl *, void *, void *, f32);
 extern void InitDirectionalHitQuery(ShotInfo *, struct Moby *, s32, void *, f32);
@@ -95,10 +95,10 @@ extern void spawn_explosion(struct Moby *, Vec4 *, void *, f32, f32, s32, s32, s
 extern s32 SegmentCrossPolyline(s32, void *, void *, void *);
 extern void resolve_point_path_segment_xy_clearance(s32, void *, void *, f32);
 extern void Manipulator_ApplyScale(struct Moby *, s32, void *, f32);
-extern void func_L00_00265050_FF000(struct Moby *, s32, void *, void *, s32, s32, f32, f32 *, f32 *, f32 *) __asm__("func_L00_00265050");
+extern void SpawnBreakFragment_r(struct Moby *, s32, void *, void *, s32, s32, f32, f32 *, f32 *, f32 *) __asm__("func_L00_00265050");
 extern void MoveCtl_Init(MoveCtl *);
 extern void process_blarg_space_commando_hits();
-extern void func_L06_00300530_FF000(struct Moby *) __asm__("func_L06_00300530");
+extern void initialize_blarg_space_commando_beam_r(struct Moby *) __asm__("func_L06_00300530");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002fdbd0.c, FUN_L06_002fdbd0. */
 void blarg_space_commando_update(struct Moby *moby) {
@@ -214,7 +214,7 @@ void blarg_space_commando_update(struct Moby *moby) {
                          &vars->turn_speed, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                          g_frame_time * 3.1415927f);
         if (moby->anim_flags & 2) {
-            func_L06_00300530_FF000(moby);
+            initialize_blarg_space_commando_beam_r(moby);
             moby->state = 3;
             if (moby->prev_seq != 5) {
                 MobyBlendAnimation(moby, 5, 0, scale_ticks(10));
@@ -242,7 +242,7 @@ void blarg_space_commando_update(struct Moby *moby) {
                          &vars->turn_speed, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                          g_frame_time * 3.1415927f);
         if (fast_dec_timer(&vars->timer) != 0) {
-            func_L06_00300530_FF000(moby);
+            initialize_blarg_space_commando_beam_r(moby);
             moby->state = 3;
             if (moby->prev_seq != 5) {
                 MobyBlendAnimation(moby, 5, 0, scale_ticks(5));
@@ -263,7 +263,7 @@ void blarg_space_commando_update(struct Moby *moby) {
         SteerAngleWithVelocity(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
                          &vars->turn_speed, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                          g_frame_time * 3.1415927f);
-        func_L00_00250800_FF000(moby, 0, &a);
+        Moby_GetJointWorldPos_r(moby, 0, &a);
         qcopy(&b, &moby->pos);
         b.f[2] += 0.3f;
         cur_frame = MobyGetFrameValue(moby);
@@ -326,7 +326,7 @@ void blarg_space_commando_update(struct Moby *moby) {
         }
         break;
     case 12:
-        func_L00_00250800_FF000(moby, 0, &a);
+        Moby_GetJointWorldPos_r(moby, 0, &a);
         qcopy(&b, &moby->pos);
         b.f[2] += 1.5f;
         frame = MobyGetFrameValue(moby);
@@ -376,7 +376,7 @@ void blarg_space_commando_update(struct Moby *moby) {
                 MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             }
         } else if (hit & 0x120) {
-            func_0020D678_FF000(moby);
+            DeleteMoby_r(moby);
         }
         break;
     case 16:
@@ -387,13 +387,13 @@ void blarg_space_commando_update(struct Moby *moby) {
             a.f[2] += 1.0f;
             none = -1;
             spawn_explosion(moby, &vars->unk40, &a, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, none, 0);
-            func_L00_00265050_FF000(moby, 0x6A6, &moby->pos, &moby->rot, 0, 0, 0.0f, blarg_zero_vec, blarg_zero_vec,
+            SpawnBreakFragment_r(moby, 0x6A6, &moby->pos, &moby->rot, 0, 0, 0.0f, blarg_zero_vec, blarg_zero_vec,
                              blarg_zero_vec);
-            func_L00_00265050_FF000(moby, 0x6A7, &moby->pos, &moby->rot, 0, 0, 0.0f, blarg_zero_vec, blarg_zero_vec,
+            SpawnBreakFragment_r(moby, 0x6A7, &moby->pos, &moby->rot, 0, 0, 0.0f, blarg_zero_vec, blarg_zero_vec,
                              blarg_zero_vec);
-            func_L00_00265050_FF000(moby, 0x6A8, &moby->pos, &moby->rot, 0, 0, 0.0f, blarg_zero_vec, blarg_zero_vec,
+            SpawnBreakFragment_r(moby, 0x6A8, &moby->pos, &moby->rot, 0, 0, 0.0f, blarg_zero_vec, blarg_zero_vec,
                              blarg_zero_vec);
-            func_0020D678_FF000(moby);
+            DeleteMoby_r(moby);
         }
         break;
     }
@@ -401,7 +401,7 @@ void blarg_space_commando_update(struct Moby *moby) {
 extern void update_blarg_space_commando_beam(void *);
 extern float random_float_between(float, float);
 extern float multiply_global_factor(float);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern int scale_ticks(int);
@@ -744,7 +744,7 @@ extern void set_identity_matrix(void *);
 extern float random_float_between(float, float);
 extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, f32);
-extern u32 func_001FA8A8_00AB0(f32, s32, s32) __asm__("func_001FA8A8");
+extern u32 FastTweenColor_r(f32, s32, s32) __asm__("func_001FA8A8");
 extern void draw_world_quad(void *, void *, s32);
 
 /* Draws the beam as 15 textured quads between consecutive points of the moby's point list (data + 0x230), each twice: once with the odd corners pulled toward the centre (data + 0x210) and once raised by 0.25.
@@ -792,10 +792,10 @@ void DrawBeam(char *moby) {
                 vec_scale_to_length(tmp, tmp, 0.5f);
                 FastVecSub(v, v, tmp);
                 v[2] -= 0.125f;
-                pk[0].col[j] = func_001FA8A8_00AB0(*(f32 *)(data + off + 0x23C), (*(s32 *)&space_commando_beam_inner_color_a),
+                pk[0].col[j] = FastTweenColor_r(*(f32 *)(data + off + 0x23C), (*(s32 *)&space_commando_beam_inner_color_a),
                                                 (*(s32 *)&space_commando_beam_inner_color_b));
             } else {
-                pk[0].col[j] = func_001FA8A8_00AB0(*(f32 *)(data + off + 0x23C), (*(s32 *)&space_commando_beam_outer_color_a),
+                pk[0].col[j] = FastTweenColor_r(*(f32 *)(data + off + 0x23C), (*(s32 *)&space_commando_beam_outer_color_a),
                                                 (*(s32 *)&space_commando_beam_outer_color_b));
             }
             pk[0].uv[j][0] = space_commando_beam_uvs[j][0];
@@ -819,7 +819,7 @@ extern float random_angle_radians(void);
 extern float FastCos(float);
 extern float FastSin(float);
 extern float multiply_global_factor(float);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void FastVecScale(void *, void *, float);
 extern void lerp_vector(void *, void *, void *, float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
@@ -851,9 +851,9 @@ void spawn_blarg_space_commando_beam_sparks(char *moby) {
         w[2] = 0;
         v[2] = random_float_between(*(float *)&space_commando_beam_spark_lift_min, *(float *)&space_commando_beam_spark_lift_max);
         w[2] = random_float_between(*(float *)&space_commando_beam_spark_lift_min, *(float *)&space_commando_beam_spark_lift_max);
-        s18 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&space_commando_beam_spark_time_a_min, *(float *)&space_commando_beam_spark_time_a_max)));
-        s19 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&space_commando_beam_spark_time_b_min, *(float *)&space_commando_beam_spark_time_b_max)));
-        s17 = func_001FA898_r(multiply_global_factor(random_float_between(*(float *)&space_commando_beam_spark_time_c_min, *(float *)&space_commando_beam_spark_time_c_max)));
+        s18 = truncate_float_to_s32_r(multiply_global_factor(random_float_between(*(float *)&space_commando_beam_spark_time_a_min, *(float *)&space_commando_beam_spark_time_a_max)));
+        s19 = truncate_float_to_s32_r(multiply_global_factor(random_float_between(*(float *)&space_commando_beam_spark_time_b_min, *(float *)&space_commando_beam_spark_time_b_max)));
+        s17 = truncate_float_to_s32_r(multiply_global_factor(random_float_between(*(float *)&space_commando_beam_spark_time_c_min, *(float *)&space_commando_beam_spark_time_c_max)));
         FastVecScale(v, v, 1.0f / (float)s18);
         v[3] = *(float *)&space_commando_beam_spark_start_w;
         FastVecScale(w, w, 1.0f / (float)s17);
@@ -938,7 +938,7 @@ extern float FastSin(float);
 extern int FastTweenColor(int, int, float);
 extern int scale_ticks(int);
 extern int random_integer_below(int);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int FontPrintCenterLarge(int a, int b, int c, int d, int e);
 
 #define W(x) (*(int *)&(x))
@@ -966,7 +966,7 @@ void draw_pulsing_timer_display(char *moby) {
     buf[4] = *(int *)(data + 0xB4) % scale_ticks(0x258) / scale_ticks(0x3C) + 0x30;
     buf[5] = 0x3A;
     buf[6] = *(int *)(data + 0xB4) % scale_ticks(0x3C) / scale_ticks(6) + 0x30;
-    buf[7] = func_001FA898_r((float)random_integer_below(10)) + 0x30;
+    buf[7] = truncate_float_to_s32_r((float)random_integer_below(10)) + 0x30;
     FontPrintCenterLarge(W(blarg_timer_display_x), W(blarg_timer_display_y), col, (int)buf, 8);
 }
 // Sets offset 0x20 to 2
@@ -1269,7 +1269,7 @@ void draw_projected_fading_quad(char *moby) {
     uvs[1] = D_L06_001624B0_FF000;
     uvs[2] = D_L06_001624B4_FF000;
     uvs[3] = D_L06_001624B8_FF000;
-    color = func_001FA8A8_00AB0(fade, *(s32 *)&d[2], *(s32 *)&d[3]);
+    color = FastTweenColor_r(fade, *(s32 *)&d[2], *(s32 *)&d[3]);
     colors[3] = color;
     colors[2] = color;
     colors[1] = color;

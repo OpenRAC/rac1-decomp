@@ -70,7 +70,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 extern unsigned char menu_item_enabled_0 NOT_SDA;
@@ -108,7 +108,7 @@ extern void DebugEnter_Nop(void);
 extern int compress_map_coverage(void *dst, int size, int a, int b);
 extern void downsample_map_coverage(void *dst);
 extern short g_current_level_index;
-extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
+extern int g_current_level_index_far __asm__("D_0015EE84") NOT_SDA;
 extern int map_coverage_active[] NOT_SDA;
 extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
 extern void expand_map_coverage(void *, unsigned char *);
@@ -140,7 +140,7 @@ extern unsigned char gemlik_available NOT_SDA;
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern unsigned char gHaveHologuise NOT_SDA;
 extern int moby_render_slots[];
-extern void func_001FA460_2(void *, void *) __asm__("func_001FA460");
+extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -173,7 +173,7 @@ extern void func_0012EDE0(void *);
 extern void func_0012EFE8(void);
 extern char load_file_start_failed_string[];
 extern int func_0012EE98(int, int, int, void *);
-extern int func_00217628_v(void) __asm__("func_00217628");
+extern int start_audio_stream_read_v(void) __asm__("func_00217628");
 extern void func_00122598(int);
 extern void music_Update(void);
 extern void func_0012EC40(void);
@@ -208,7 +208,7 @@ extern char *current_menu_page NOT_SDA;
 extern void DrawMobyList(int, int);
 extern char gCamera[];
 extern void rotate_preview_moby_x(void *);
-extern void *func_00226720_a(int) __asm__("func_00226720");
+extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");
 extern int delete_moby(int);
 extern void VU1_addGSregister(int, int);
 extern void draw_map_overlay(void);
@@ -216,7 +216,7 @@ extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
 extern void func_001F68E8_c(int, int, long, void *, int)
     __asm__("func_001F68E8");
-extern void *func_001FE540_id(int) __asm__("func_001FE540");
+extern void *msg_string_id(int) __asm__("func_001FE540");
 extern short panel_clear_color;
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern int GetIconFrame(int, int);
@@ -237,7 +237,7 @@ typedef struct {
     int key;
     int flags;
 } PadBind;
-extern PadBind D_001D6448_t[] __asm__("D_001D6448");
+extern PadBind menu_stream_buffers_t[] __asm__("D_001D6448");
 extern int get_menu_stream_buffer_size(int handle);
 extern int menu_stream_buffers[];
 extern char preview_resource_bindings[] NOT_SDA;
@@ -246,25 +246,25 @@ extern int D_001D6860[];
 extern int D_001D74C0[];
 extern int D_001D6760[];
 
-extern char D_00187180_a[] __asm__("D_00187180");
+extern char camera_position_a[] __asm__("D_00187180");
 extern char coll_hit_pos[];
 extern int sound_probe_ignore;
 extern void random_spherical_offset(void *, float, float);
-extern void func_001F9BD8_a(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_001F9C30_a(void *, void *, float) __asm__("func_001F9C30");
-extern void func_001F9BF0_a(void *, void *, void *) __asm__("func_001F9BF0");
-extern int func_001EFE10_a(void *, void *, int, int, int) __asm__("func_001EFE10");
+extern void FastVecAdd_a(void *, void *, void *) __asm__("func_001F9BD8");
+extern void FastVecScale_a(void *, void *, float) __asm__("func_001F9C30");
+extern void FastVecSub_a(void *, void *, void *) __asm__("func_001F9BF0");
+extern int coll_line_fix_a(void *, void *, int, int, int) __asm__("func_001EFE10");
 
 /* Jitter the vector at arg0 between 0.5 and 6.0, fold in the reference
    frame at D_00187180, and if the emitter accepts it, re-derive it from
    D_00194220, damp to 3/4 and fold the frame in again. */
 void clamp_voice_position_to_collision(void *arg0) {
     random_spherical_offset(arg0, 0.5f, 6.0f);
-    func_001F9BD8_a(arg0, arg0, D_00187180_a);
-    if (func_001EFE10_a(D_00187180_a, arg0, 0x82, sound_probe_ignore, 0) != 0) {
-        func_001F9BF0_a(arg0, coll_hit_pos, D_00187180_a);
-        func_001F9C30_a(arg0, arg0, 0.75f);
-        func_001F9BD8_a(arg0, arg0, D_00187180_a);
+    FastVecAdd_a(arg0, arg0, camera_position_a);
+    if (coll_line_fix_a(camera_position_a, arg0, 0x82, sound_probe_ignore, 0) != 0) {
+        FastVecSub_a(arg0, coll_hit_pos, camera_position_a);
+        FastVecScale_a(arg0, arg0, 0.75f);
+        FastVecAdd_a(arg0, arg0, camera_position_a);
     }
 }
 
@@ -283,11 +283,11 @@ int test_voice_occlusion(void *arg0, void *arg1) {
     FastVecScale(v, v, 0.75f);
     clamp_vector_length(v, v, 64.0f);
     FastVecAdd(v, v, camera_position);
-    return func_001EFE10_a(arg1, v, 0x82, *(int *)((char *)arg0 + 0x18), 0);
+    return coll_line_fix_a(arg1, v, 0x82, *(int *)((char *)arg0 + 0x18), 0);
 }
 
 extern float IntToFloat(int);
-extern int func_001FA898_i(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_i(float) __asm__("func_001FA898");
 
 /* Interpolates between the ints at +0x8 and +0xC as x runs from lo to
    hi, squared when bit 0 of +0x19 is set. Each arm is an if/else-if
@@ -309,11 +309,11 @@ int calculate_voice_distance_volume(void *arg0, float x, float lo, float hi) {
     if (definition->attenuation_flags & 1) {
         if (x <= lo) r = definition->near_volume;
         else if (hi <= x) r = definition->far_volume;
-        else r = definition->far_volume + func_001FA898_i((hi - x) * (hi - x) * IntToFloat(definition->near_volume - definition->far_volume) / ((hi - lo) * (hi - lo)));
+        else r = definition->far_volume + truncate_float_to_s32_i((hi - x) * (hi - x) * IntToFloat(definition->near_volume - definition->far_volume) / ((hi - lo) * (hi - lo)));
     } else {
         if (x <= lo) r = definition->near_volume;
         else if (hi <= x) r = definition->far_volume;
-        else r = definition->far_volume + func_001FA898_i((hi - x) * IntToFloat(definition->near_volume - definition->far_volume) / (hi - lo));
+        else r = definition->far_volume + truncate_float_to_s32_i((hi - x) * IntToFloat(definition->near_volume - definition->far_volume) / (hi - lo));
     }
     return r;
 }
@@ -322,19 +322,19 @@ extern char camera_position[];
 extern float FastVecDist(int, void *);
 /* This caller's view of func_0022DA10 above: it ignores the result, and
    declaring it int would move its next temporary to $v1. */
-extern void func_0022DA10_v(void *, float, float, float) __asm__("func_0022DA10");
+extern void calculate_voice_distance_volume_v(void *, float, float, float) __asm__("func_0022DA10");
 
 /* Set a voice's volume from its distance to the camera using its near/far range. */
 void calculate_voice_volume(void *arg0, int arg1) {
     char *s = (char *)arg0;
     float v = FastVecDist(arg1, camera_position);
     float *p = *(float **)(s + 0x8);
-    func_0022DA10_v(p, v, p[0], p[1]);
+    calculate_voice_distance_volume_v(p, v, p[0], p[1]);
 }
 
 extern void transform_vector(void *, void *, void *);
 extern float vec_length_xy(void *);
-extern float func_001FA058_a(float, float) __asm__("func_001FA058");
+extern float fast_arc_tan_a(float, float) __asm__("func_001FA058");
 extern void truncate_float_to_s32(float);
 
 /* Build the vector at arg1 in the D_00187180 frame, project it against
@@ -345,10 +345,10 @@ void calculate_voice_pan(void *arg0, void *arg1, void *arg2) {
     float v[4];
     float t;
 
-    func_001F9BF0_a(v, arg1, D_00187180_a);
+    FastVecSub_a(v, arg1, camera_position_a);
     transform_vector(v, v, arg2);
     t = clamp_float(vec_length_xy(v) - 1.0f, 0.0f, 1.0f);
-    truncate_float_to_s32(-func_001FA058_a(v[0], v[1]) * 180.0f * t * 0.31830987f);
+    truncate_float_to_s32(-fast_arc_tan_a(v[0], v[1]) * 180.0f * t * 0.31830987f);
 }
 
 typedef u32 u128_2DBE8 __attribute__((mode(TI), aligned(16)));
@@ -976,13 +976,13 @@ typedef struct {
     Vec4 value;
     u8 pad10[0x60];
 } VoicePositionRecord_2EB08;
-extern VoicePool_2EB08 D_0013E650_2EB08 __asm__("D_0013E650");
-extern Hero D_0013F450_2EB08 __asm__("D_0013F450");
-extern VoicePositionRecord_2EB08 D_0013E6E0_2EB08[] __asm__("D_0013E6E0");
+extern VoicePool_2EB08 voice_pool_r __asm__("D_0013E650");
+extern Hero g_hero_r __asm__("D_0013F450");
+extern VoicePositionRecord_2EB08 voice_positions_r[] __asm__("D_0013E6E0");
 extern u8 D_0013E6C0_2EB08[] __asm__("D_0013E6C0");
-extern void func_001F9BC0_2EB08(Vec4 *) __asm__("func_001F9BC0");
-extern s32 func_002140B0_2EB08(s32) __asm__("func_002140B0");
-extern s32 func_0022DB00_2EB08(VoiceSlot_2EB08 *, Vec4 *) __asm__("func_0022DB00");
+extern void clear_u64_value_r(Vec4 *) __asm__("func_001F9BC0");
+extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
+extern s32 calculate_voice_volume_r(VoiceSlot_2EB08 *, Vec4 *) __asm__("func_0022DB00");
 
 s32 func_0022EB08_r(VoiceDefinition_2EB08 *, u32, VoiceMoby_2EB08 *, Vec4 *,
                     s32) __asm__("func_0022EB08");
@@ -1025,10 +1025,10 @@ check_moby:
     if (moby == 0) {
         goto find_free_slot;
     }
-    if (((VoiceMoby_2EB08 *)D_0013F450_2EB08.moby) == moby) {
+    if (((VoiceMoby_2EB08 *)g_hero_r.moby) == moby) {
         goto use_extended_pool;
     }
-    if (((VoiceMoby_2EB08 *)D_0013F450_2EB08.items[0].moby) == moby) {
+    if (((VoiceMoby_2EB08 *)g_hero_r.items[0].moby) == moby) {
         goto use_extended_pool;
     }
     if (moby->class_id != 0x472) {
@@ -1038,21 +1038,21 @@ use_extended_pool:
     slot_limit = 0x1E;
 find_free_slot:
     for (slot_index = 0; slot_index < slot_limit; slot_index++) {
-        if (D_0013E650_2EB08.voices[slot_index].state == 0) {
+        if (voice_pool_r.voices[slot_index].state == 0) {
             break;
         }
     }
     if (slot_index >= slot_limit) {
         goto allocation_failed;
     }
-    slot = (VoicePoolWindow_2EB08 *)((u8 *)&D_0013E650_2EB08 + slot_index * 0x70);
+    slot = (VoicePoolWindow_2EB08 *)((u8 *)&voice_pool_r + slot_index * 0x70);
     slot->voice.definition = definition;
     slot->voice.source_value = (u16)definition->source_value;
     slot->voice.linked_index = -1;
     slot->voice.volume = volume;
     slot->voice.owner = 0;
     slot->voice.reserved1C = 0;
-    qzero(&D_0013E650_2EB08.voices[slot_index].position_offset);
+    qzero(&voice_pool_r.voices[slot_index].position_offset);
     if (position != 0) {
         goto set_position;
     }
@@ -1063,22 +1063,22 @@ set_position:
     if (moby == 0) {
         goto copy_explicit_position;
     }
-    qcopy(&D_0013E6E0_2EB08[slot_index].value, &moby->position);
-    position_slot = (VoicePoolWindow_2EB08 *)((u8 *)D_0013E6E0_2EB08 + slot_index * 0x70 - 0x90);
+    qcopy(&voice_positions_r[slot_index].value, &moby->position);
+    position_slot = (VoicePoolWindow_2EB08 *)((u8 *)voice_positions_r + slot_index * 0x70 - 0x90);
     position_slot->voice.position.f[2] += 1.0f;
     goto calculate_volume;
 copy_explicit_position:
-    qcopy(&D_0013E6E0_2EB08[slot_index].value, position);
+    qcopy(&voice_positions_r[slot_index].value, position);
     goto calculate_volume;
 clear_position:
     flags |= 0x11;
-    func_001F9BC0_2EB08(&D_0013E6E0_2EB08[slot_index].value);
+    clear_u64_value_r(&voice_positions_r[slot_index].value);
 calculate_volume:
     if (flags & 0x10) {
         goto commit_if_audible;
     }
     volume_offset = slot_index * 0x70;
-    result = func_0022DB00_2EB08((VoiceSlot_2EB08 *)(D_0013E6C0_2EB08 + volume_offset),
+    result = calculate_voice_volume_r((VoiceSlot_2EB08 *)(D_0013E6C0_2EB08 + volume_offset),
                                  (Vec4 *)(D_0013E6C0_2EB08 + volume_offset + 0x20));
     goto check_calculated_volume;
 commit_if_audible:
@@ -1088,7 +1088,7 @@ check_calculated_volume:
         result = -1;
         goto return_result;
     }
-    committed_slot = (VoicePoolWindow_2EB08 *)((u8 *)&D_0013E650_2EB08 + slot_index * 0x70);
+    committed_slot = (VoicePoolWindow_2EB08 *)((u8 *)&voice_pool_r + slot_index * 0x70);
     committed_slot->voice.flags = flags;
     committed_slot->voice.state = 7;
     committed_slot->voice.history_position = 0;
@@ -1096,11 +1096,11 @@ check_calculated_volume:
     pitch_bend_min = definition->pitch_bend_min;
     if (pitch_bend_max != pitch_bend_min) {
         pitch_bend =
-            func_002140B0_2EB08(pitch_bend_max - pitch_bend_min) + definition->pitch_bend_min;
+            random_integer_below_r(pitch_bend_max - pitch_bend_min) + definition->pitch_bend_min;
     } else {
         pitch_bend = pitch_bend_max;
     }
-    pitch_slot = (VoicePoolWindow_2EB08 *)((u8 *)&D_0013E650_2EB08 + slot_index * 0x70);
+    pitch_slot = (VoicePoolWindow_2EB08 *)((u8 *)&voice_pool_r + slot_index * 0x70);
     pitch_slot->voice.pitch_bend = pitch_bend;
     pitch_slot->voice.handle = 0xFFFFFFFF;
     goto return_index;
@@ -1244,7 +1244,7 @@ typedef struct {
     u8 pad44[0x2C];
     SndVoice voices[30];
 } SndState;
-extern SndState D_0013E650_2EFE8 __asm__("D_0013E650");
+extern SndState voice_pool_r2 __asm__("D_0013E650");
 extern s32 func_0012DDC0_2EFE8() __asm__("func_0012DDC0");
 extern s32 func_0012E4F8();
 extern s32 func_0012EC40_2EFE8() __asm__("func_0012EC40");
@@ -1263,9 +1263,9 @@ void sound_StopAllSounds(void) {
     while (func_0012DDC0_2EFE8() != 0) {
     }
     for (i = 0; i < 4; i++) {
-        qzero(&D_0013E650_2EFE8.q[i]);
+        qzero(&voice_pool_r2.q[i]);
     }
-    s = &D_0013E650_2EFE8;
+    s = &voice_pool_r2;
     s->x40 = 0;
     p = (s32)s;
     end = p + 0xD20;

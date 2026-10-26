@@ -220,8 +220,8 @@ typedef struct {
 } VendQuery;
 typedef struct { int moby; int pad; float pos[4]; } VendHit;
 
-extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern short D_0015EE64_s __asm__("D_0015EE64");
+extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern short g_frame_scale_sq_s __asm__("D_0015EE64");
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern short veldin1_robot_beam_origin_offset;
@@ -237,7 +237,7 @@ extern void Manipulator_SetScale(void *, float);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern float FastVecDist(void *, void *);
 extern void set_ground_height_band(void *);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int random_integer_below(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern int scale_ticks(int);
@@ -297,8 +297,8 @@ void veldin_robot_enemy_update(Moby *moby) {
     update_veldin_robot_damage_and_targeting(moby);
     target = vars->target;
     Manipulator_SetScale(vars->unk120, 2.5f);
-    if (D_0015EEB4_m[3] != 0) {
-        EaseManipulatorOffsets((char *)moby, (char *)vars->unk120, 2, *(float *)&D_0015EE64_s * 0.03f, *(float *)&D_0015EE64_s * 0.3f);
+    if (draw_map51_m[3] != 0) {
+        EaseManipulatorOffsets((char *)moby, (char *)vars->unk120, 2, *(float *)&g_frame_scale_sq_s * 0.03f, *(float *)&g_frame_scale_sq_s * 0.3f);
     }
     if (moby->visible != 0 && FastVecDist(&moby->pos, g_debug_camera) < 27.0f) {
         set_ground_height_band(moby);
@@ -311,8 +311,8 @@ void veldin_robot_enemy_update(Moby *moby) {
         vars->unk20 = 2.0f;
         vars->unk28 = 1;
         vars->unk24 = 2;
-        vars->unk58 = func_001FA898_r(14.0f);
-        vars->unk5A = func_001FA898_r(8.0f);
+        vars->unk58 = truncate_float_to_s32_r(14.0f);
+        vars->unk5A = truncate_float_to_s32_r(8.0f);
         vars->pathPt = 1;
         if (random_integer_below(2) != 0) {
             moby->flags |= 0x8000;
@@ -650,7 +650,7 @@ extern char *spawn_mode_controlled_rotating_alpha_fade_particle(void *, void *, 
 extern float random_float_between(float, float);
 extern float IntToFloat(int);
 extern void AddDrawCallback(void (*)(void), void *);
-extern void func_L00_002E3128_2E2F58(void) __asm__("func_L00_002E3128");
+extern void draw_veldin_robot_effect_quad_r(void) __asm__("func_L00_002E3128");
 extern float veldin1_zero_vec[] MACRO_ADDR;
 
 // spawns a spark: steps the moby's position and emits one fast particle and three slow tails
@@ -689,7 +689,7 @@ void update_veldin_robot_effects(char *m) {
             *(short *)(t + 0x16) = 3;
         }
     }
-    AddDrawCallback(func_L00_002E3128_2E2F58, m);
+    AddDrawCallback(draw_veldin_robot_effect_quad_r, m);
 }
 extern float veldin1_robot_effect_quad_corners[][4];
 extern void FastVecCross(void *, void *, void *);
@@ -790,7 +790,7 @@ void update_beam_slot_controller(unsigned char *m) {
 extern void cutscene_set_camera_target(int);
 extern void draw_trail(void *, void *, void *, float, float);
 extern char *PartType23Spawn(void *, int, void *, int, float, float, float, float);
-extern float D_L00_0015F660_b[] __asm__("D_L00_0015F660") MACRO_ADDR;
+extern float veldin1_zero_vec_b[] __asm__("D_L00_0015F660") MACRO_ADDR;
 typedef struct {
     char pad[0x30];
     int a;
@@ -832,7 +832,7 @@ void update_phase_effect_controller(M2 *m) {
                         col = (rand_range(0x40, 0x80) << 24) | 0x787878;
                         h = rand_range(0, 4);
                         if (random_integer_below(2)) h = -h;
-                        q = PartType23Spawn(buf, h, D_L00_0015F660_b, col, 0.75f, 1.0f, 1.03f, 120000.0f);
+                        q = PartType23Spawn(buf, h, veldin1_zero_vec_b, col, 0.75f, 1.0f, 1.03f, 120000.0f);
                         if (q) {
                             q[3] = 0x44;
                             r = q + 0x20;

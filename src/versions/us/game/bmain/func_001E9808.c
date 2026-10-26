@@ -7,11 +7,11 @@ void start_level(int level) {
         return;
     }
     if (pal_mode != 0) {
-        b = D_00137C80_g.alt[level].b;
-        a = D_00137C80_g.alt[level].a;
+        b = disc_table_g.alt[level].b;
+        a = disc_table_g.alt[level].a;
     } else {
-        b = D_00137C80_g.normal[level].b;
-        a = D_00137C80_g.normal[level].a;
+        b = disc_table_g.normal[level].b;
+        a = disc_table_g.normal[level].a;
     }
     decode_mode = 2;
     voice_pool[0x6B] |= 8;

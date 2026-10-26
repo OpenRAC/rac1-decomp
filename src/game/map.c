@@ -195,7 +195,7 @@ extern void move_map_entry_slot(int a, int b);
    to an index. See the note on func_00205790 -- this is what makes it
    match. Aliased rather than renamed because the rest of this file
    still reaches the same symbol as a flat int array. */
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 
 /*
  * Allocate a slot. func_00205728(1) gets first refusal; if it returns
@@ -256,8 +256,8 @@ int promote_first_available_map_entry(void) {
     }
     i = 1;
     while (i < 5) {
-        if ((D_001A01F0_slots.flags[i] & 0x1000) == 0 &&
-            D_001A01F0_slots.use[i] != 0) {
+        if ((level_map_selection_slots.flags[i] & 0x1000) == 0 &&
+            level_map_selection_slots.use[i] != 0) {
             break;
         }
         i++;
@@ -309,7 +309,7 @@ int find_map_entry_slot(int arg0) {
 
 extern unsigned char gHaveMapOMatic NOT_SDA;
 /* The MACRO_ADDR view declared further down, needed here already. */
-extern int *D_001602E0_m __asm__("D_001602E0") MACRO_ADDR;
+extern int *menu_level_indices_m __asm__("D_001602E0") MACRO_ADDR;
 
 /* Picks the map to load next: the current map id (D_001A01F0+0x224,
    +0x100 when D_0013D5E9 is set) unless func_002058D0 finds it already
@@ -331,7 +331,7 @@ int pick_next_map(void) {
     }
     i = 0;
     if (*(int *)(m + 0x224) < 20) {
-        while (D_001602E0_m[i] != *(int *)(m + 0x224)) {
+        while (menu_level_indices_m[i] != *(int *)(m + 0x224)) {
             i++;
         }
     }
@@ -339,8 +339,8 @@ int pick_next_map(void) {
     do {
         int j = i + step;
         if (j >= 0) {
-            if (j < 20 && D_001602E0_m[j] != 0) {
-                key = D_001602E0_m[j] + off;
+            if (j < 20 && menu_level_indices_m[j] != 0) {
+                key = menu_level_indices_m[j] + off;
                 if (find_map_entry_slot(key) == -1) {
                     return key;
                 }
@@ -359,8 +359,8 @@ extern int *menu_level_indices;
 int find_id_in_terminated_table(int arg0) {
     int i;
 
-    for (i = 0; D_001602E0_m[i] != 0 && i < 20; i++) {
-        if (D_001602E0_m[i] == arg0) {
+    for (i = 0; menu_level_indices_m[i] != 0 && i < 20; i++) {
+        if (menu_level_indices_m[i] == arg0) {
             return i;
         }
     }

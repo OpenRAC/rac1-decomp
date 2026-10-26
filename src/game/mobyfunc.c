@@ -69,7 +69,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 extern unsigned char menu_item_enabled_0 NOT_SDA;
@@ -107,7 +107,7 @@ extern void DebugEnter_Nop(void);
 extern int compress_map_coverage(void *dst, int size, int a, int b);
 extern void downsample_map_coverage(void *dst);
 extern short g_current_level_index;
-extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
+extern int g_current_level_index_far __asm__("D_0015EE84") NOT_SDA;
 extern int map_coverage_active[] NOT_SDA;
 extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
 extern void expand_map_coverage(void *, unsigned char *);
@@ -185,7 +185,7 @@ extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 extern int resident_moby_class_data[];
 extern void *moby_class_resources[];
 extern int resident_object_pool MACRO_ADDR;
-extern void func_0020D6D0_p(void *) __asm__("func_0020D6D0");
+extern void update_moby_animation_state_p(void *) __asm__("func_0020D6D0");
 
 typedef struct {
     char _pad00[0x10];
@@ -326,7 +326,7 @@ void InitMobyInstance(void *arg0, int oClass) {
         if (m->pClass->seq == 0) {
             return;
         }
-        func_0020D6D0_p(m);
+        update_moby_animation_state_p(m);
         if (m->pClass->seq->nframes >= 2) {
             m->flags &= 0xFFFD;
         }
@@ -534,7 +534,7 @@ void prune_moby_references(void) {
 
 /* func_001FA460 is declared above with a single argument, for the
    func_00215328 site; this one passes a source as well. */
-extern void func_001FA460_2(void *, void *) __asm__("func_001FA460");
+extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -553,7 +553,7 @@ void MobyTransformScaledVertex(char *arg0, int arg1, char *arg2) {
     get_moby_joint_matrices(arg0, 1, &n, arg2);
     v = arg2 + 0x30;
     FastVecScale(v, v, s);
-    func_001FA460_2(buf, arg0 + 0xC0);
+    copy_matrix_rotation_2(buf, arg0 + 0xC0);
     sce_vu0_mul_matrix(arg2, buf, arg2);
     FastVecAdd(v, v, arg0 + 0x10);
 }

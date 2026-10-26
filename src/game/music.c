@@ -69,7 +69,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 extern unsigned char menu_item_enabled_0 NOT_SDA;
@@ -107,7 +107,7 @@ extern void DebugEnter_Nop(void);
 extern int compress_map_coverage(void *dst, int size, int a, int b);
 extern void downsample_map_coverage(void *dst);
 extern short g_current_level_index;
-extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
+extern int g_current_level_index_far __asm__("D_0015EE84") NOT_SDA;
 extern int map_coverage_active[] NOT_SDA;
 extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
 extern void expand_map_coverage(void *, unsigned char *);
@@ -139,7 +139,7 @@ extern unsigned char gemlik_available NOT_SDA;
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern unsigned char gHaveHologuise NOT_SDA;
 extern int moby_render_slots[];
-extern void func_001FA460_2(void *, void *) __asm__("func_001FA460");
+extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -368,7 +368,7 @@ void music_start_track_40000(int track, int track_flags, int volume) {
 }
 
 /* A byte flag; declared int-sized so MACRO_ADDR keeps it off $gp (-G2). */
-extern int D_0015EF1C_w __asm__("D_0015EF1C") MACRO_ADDR;
+extern int gHelpDeskVoice_w __asm__("D_0015EF1C") MACRO_ADDR;
 extern char dialogue_track_table_by_lang[];
 extern char music_player_dialogue[];
 
@@ -393,7 +393,7 @@ void music_start_track_30000(int arg0, int arg1, int arg2) {
     *(int *)(s + 0x68) = 0xBB80;
     *(short *)(s + 0x56) = arg2;
     *(short *)(s + 0x60) = 0;
-    func_0012ED48(*p, 0, 0, 0, *(unsigned char *)&D_0015EF1C_w ? arg2 : 0,
+    func_0012ED48(*p, 0, 0, 0, *(unsigned char *)&gHelpDeskVoice_w ? arg2 : 0,
                   0, 2, 0, 0x21, music_secondary_start_callback, (long)(unsigned int)music_player_dialogue);
 }
 
@@ -1001,9 +1001,9 @@ struct MusicStreamState {
     struct MusicStreamChannel secondary; /* 0x50 */
     struct MusicStreamChannel transition; /* 0x6C */
 };
-extern struct MusicStreamState D_001517D0_17130 __asm__("D_001517D0");
+extern struct MusicStreamState cd_read_state_r __asm__("D_001517D0");
 extern void func_0012E600(s32, s32, s32, s32, s32, s32, void (*)(u32, s64), s64);
-extern void func_00217A08_17130(u32, s64) __asm__("func_00217A08");
+extern void set_sound_handle_id_r(u32, s64) __asm__("func_00217A08");
 extern void func_0012EDE0_17130(s32) __asm__("func_0012EDE0");
 extern s32 func_0012EF48(s32);
 extern s32 scale_game_frame_count(s32);
@@ -1013,7 +1013,7 @@ extern void music_PreseekTrack(s32, s32, s32);
 extern void music_StartTrack(s32, s32, s32);
 extern void music_StartTrackBody(s32, s32, s32);
 extern s32 music_Transition(s32, s32, s32, s32);
-extern void func_00216F48_17130(void *) __asm__("func_00216F48");
+extern void music_UpdateStream_r(void *) __asm__("func_00216F48");
 extern s32 start_audio_stream_read(s32, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/audio/music/music_update.c, music_update. */
@@ -1023,115 +1023,115 @@ void music_Update(void) {
     s32 handle;
     s16 pending_state;
 
-    if (D_001517D0_17130.updates_suspended != 0) {
+    if (cd_read_state_r.updates_suspended != 0) {
         return;
     }
-    if (!(D_001517D0_17130.primary.fade_flags & 0x8000) && !(D_001517D0_17130.primary.state & 0x8000)) {
-        if (D_001517D0_17130.primary.handle == 0 && (D_001517D0_17130.primary.flags & 1) &&
-            D_001517D0_17130.requested_track == -1) {
-            music_StartTrack(D_001517D0_17130.primary.track, (s16)D_001517D0_17130.primary.flags,
-                              D_001517D0_17130.primary.volume);
-        } else if (D_001517D0_17130.primary.state != 9 && D_001517D0_17130.primary.handle != 0) {
-            if (D_001517D0_17130.primary.handle != 0xFFFFFFFF && D_001517D0_17130.primary.state == 8) {
-                music_StartTrackBody(D_001517D0_17130.primary.track, D_001517D0_17130.primary.flags,
-                                       D_001517D0_17130.primary.volume);
+    if (!(cd_read_state_r.primary.fade_flags & 0x8000) && !(cd_read_state_r.primary.state & 0x8000)) {
+        if (cd_read_state_r.primary.handle == 0 && (cd_read_state_r.primary.flags & 1) &&
+            cd_read_state_r.requested_track == -1) {
+            music_StartTrack(cd_read_state_r.primary.track, (s16)cd_read_state_r.primary.flags,
+                              cd_read_state_r.primary.volume);
+        } else if (cd_read_state_r.primary.state != 9 && cd_read_state_r.primary.handle != 0) {
+            if (cd_read_state_r.primary.handle != 0xFFFFFFFF && cd_read_state_r.primary.state == 8) {
+                music_StartTrackBody(cd_read_state_r.primary.track, cd_read_state_r.primary.flags,
+                                       cd_read_state_r.primary.volume);
             }
         }
     }
-    if (fast_dec_timer(&D_001517D0_17130.retry_timer) != 0) {
-        requested_track = D_001517D0_17130.requested_track;
-        if (requested_track != -1 && D_001517D0_17130.crossfade_state == 0) {
-            if (D_001517D0_17130.primary.track != requested_track) {
-                if (D_001517D0_17130.requested_transition_track == -1 ||
-                    music_Transition(requested_track, D_001517D0_17130.requested_transition_track,
-                                     D_001517D0_17130.primary.flags, D_001517D0_17130.primary.volume) != 0) {
-                    D_001517D0_17130.retry_timer = scale_game_frame_count(7) * 60.0f;
+    if (fast_dec_timer(&cd_read_state_r.retry_timer) != 0) {
+        requested_track = cd_read_state_r.requested_track;
+        if (requested_track != -1 && cd_read_state_r.crossfade_state == 0) {
+            if (cd_read_state_r.primary.track != requested_track) {
+                if (cd_read_state_r.requested_transition_track == -1 ||
+                    music_Transition(requested_track, cd_read_state_r.requested_transition_track,
+                                     cd_read_state_r.primary.flags, cd_read_state_r.primary.volume) != 0) {
+                    cd_read_state_r.retry_timer = scale_game_frame_count(7) * 60.0f;
                 }
             } else {
-                D_001517D0_17130.requested_track = -1;
+                cd_read_state_r.requested_track = -1;
             }
         }
     }
-    if (D_001517D0_17130.queued_secondary_track >= 0) {
-        if (D_001517D0_17130.secondary.handle != 0) {
-            if ((u16)D_001517D0_17130.secondary.state - 6 >= 2U) {
-                D_001517D0_17130.secondary.state = 5;
+    if (cd_read_state_r.queued_secondary_track >= 0) {
+        if (cd_read_state_r.secondary.handle != 0) {
+            if ((u16)cd_read_state_r.secondary.state - 6 >= 2U) {
+                cd_read_state_r.secondary.state = 5;
             }
         } else {
-            music_start_track_by_id(D_001517D0_17130.queued_secondary_track, 0, 0x400);
-            D_001517D0_17130.queued_secondary_track = -1;
+            music_start_track_by_id(cd_read_state_r.queued_secondary_track, 0, 0x400);
+            cd_read_state_r.queued_secondary_track = -1;
         }
     }
-    if (D_001517D0_17130.primary.state != 9 && D_001517D0_17130.primary.handle != 0xFFFFFFFF &&
-        !(D_001517D0_17130.primary.fade_flags & 0x8000) && !(D_001517D0_17130.primary.state & 0x8000) &&
-        !(D_001517D0_17130.transition.fade_flags & 0x8000) && !(D_001517D0_17130.transition.state & 0x8000)) {
-        switch (D_001517D0_17130.crossfade_state) {
+    if (cd_read_state_r.primary.state != 9 && cd_read_state_r.primary.handle != 0xFFFFFFFF &&
+        !(cd_read_state_r.primary.fade_flags & 0x8000) && !(cd_read_state_r.primary.state & 0x8000) &&
+        !(cd_read_state_r.transition.fade_flags & 0x8000) && !(cd_read_state_r.transition.state & 0x8000)) {
+        switch (cd_read_state_r.crossfade_state) {
         case 2:
             /* Fade the primary stream against the transition's remaining time. */
             fade_volume =
-                D_001517D0_17130.primary.volume *
-                (D_001517D0_17130.crossfade_interval -
-                 (D_001517D0_17130.crossfade_remaining_time - D_001517D0_17130.transition.remaining_time)) /
-                D_001517D0_17130.crossfade_interval;
+                cd_read_state_r.primary.volume *
+                (cd_read_state_r.crossfade_interval -
+                 (cd_read_state_r.crossfade_remaining_time - cd_read_state_r.transition.remaining_time)) /
+                cd_read_state_r.crossfade_interval;
             if (fade_volume <= 0 ||
-                ((D_001517D0_17130.transition.state != 4 ||
-                  D_001517D0_17130.transition.crossfade_enabled == 0) &&
-                 D_001517D0_17130.transition.handle == 0) ||
-                (handle = D_001517D0_17130.primary.handle) == 0) {
-                D_001517D0_17130.crossfade_state = 3;
-                D_001517D0_17130.primary.state = 5;
-            } else if (D_001517D0_17130.primary.state != 9) {
+                ((cd_read_state_r.transition.state != 4 ||
+                  cd_read_state_r.transition.crossfade_enabled == 0) &&
+                 cd_read_state_r.transition.handle == 0) ||
+                (handle = cd_read_state_r.primary.handle) == 0) {
+                cd_read_state_r.crossfade_state = 3;
+                cd_read_state_r.primary.state = 5;
+            } else if (cd_read_state_r.primary.state != 9) {
                 /* The callback receives the old handle; mark its slot pending before submission. */
-                *(u32 *)&D_001517D0_17130.primary.handle = 0xFFFFFFFF;
-                func_0012E600(handle, 5, fade_volume, 0, 0, 0, func_00217A08_17130,
-                                        (s64)&D_001517D0_17130.primary.handle);
+                *(u32 *)&cd_read_state_r.primary.handle = 0xFFFFFFFF;
+                func_0012E600(handle, 5, fade_volume, 0, 0, 0, set_sound_handle_id_r,
+                                        (s64)&cd_read_state_r.primary.handle);
             }
             break;
         case 3:
-            if (D_001517D0_17130.primary.state == 0 && (D_001517D0_17130.transition.crossfade_enabled != 0 ||
-                                                   D_001517D0_17130.transition.handle == 0)) {
-                music_PreseekTrack(D_001517D0_17130.requested_track, D_001517D0_17130.primary.flags,
-                                    D_001517D0_17130.primary.volume);
-                D_001517D0_17130.requested_track = -1;
-                D_001517D0_17130.crossfade_state = 4;
+            if (cd_read_state_r.primary.state == 0 && (cd_read_state_r.transition.crossfade_enabled != 0 ||
+                                                   cd_read_state_r.transition.handle == 0)) {
+                music_PreseekTrack(cd_read_state_r.requested_track, cd_read_state_r.primary.flags,
+                                    cd_read_state_r.primary.volume);
+                cd_read_state_r.requested_track = -1;
+                cd_read_state_r.crossfade_state = 4;
             }
             break;
         case 4:
-            if (D_001517D0_17130.primary.state == 3) {
-                if (D_001517D0_17130.transition.remaining_time < D_001517D0_17130.crossfade_interval ||
-                    D_001517D0_17130.transition.state != 4 ||
-                    (D_001517D0_17130.transition.crossfade_enabled == 0 &&
-                     D_001517D0_17130.transition.handle == 0)) {
-                    func_0012EDE0_17130(D_001517D0_17130.primary.handle);
-                    D_001517D0_17130.primary.state = 8;
-                    D_001517D0_17130.crossfade_state = 5;
+            if (cd_read_state_r.primary.state == 3) {
+                if (cd_read_state_r.transition.remaining_time < cd_read_state_r.crossfade_interval ||
+                    cd_read_state_r.transition.state != 4 ||
+                    (cd_read_state_r.transition.crossfade_enabled == 0 &&
+                     cd_read_state_r.transition.handle == 0)) {
+                    func_0012EDE0_17130(cd_read_state_r.primary.handle);
+                    cd_read_state_r.primary.state = 8;
+                    cd_read_state_r.crossfade_state = 5;
                 }
             }
             break;
         case 5:
-            if (D_001517D0_17130.transition.state != 4 ||
-                D_001517D0_17130.transition.crossfade_enabled == 0) {
-                D_001517D0_17130.crossfade_state = 0;
+            if (cd_read_state_r.transition.state != 4 ||
+                cd_read_state_r.transition.crossfade_enabled == 0) {
+                cd_read_state_r.crossfade_state = 0;
             }
             break;
         }
     }
-    func_00216F48_17130(&D_001517D0_17130.primary.handle);
-    func_00216F48_17130(&D_001517D0_17130.transition.handle);
-    func_00216F48_17130(&D_001517D0_17130.secondary.handle);
-    if (D_001517D0_17130.break_requested != 0) {
+    music_UpdateStream_r(&cd_read_state_r.primary.handle);
+    music_UpdateStream_r(&cd_read_state_r.transition.handle);
+    music_UpdateStream_r(&cd_read_state_r.secondary.handle);
+    if (cd_read_state_r.break_requested != 0) {
         if (func_0012EF48(1) == 0) {
-            D_001517D0_17130.read_state = 0;
-            D_001517D0_17130.break_requested = 0;
+            cd_read_state_r.read_state = 0;
+            cd_read_state_r.break_requested = 0;
         }
     } else {
-        pending_state = D_001517D0_17130.read_state;
+        pending_state = cd_read_state_r.read_state;
         if (pending_state == 2) {
-            D_001517D0_17130.read_state = 0;
-            start_audio_stream_read(D_001517D0_17130.read_dst, D_001517D0_17130.read_sector,
-                                    D_001517D0_17130.read_sector_count);
-            if (D_001517D0_17130.read_state == 0) {
-                D_001517D0_17130.read_state = pending_state;
+            cd_read_state_r.read_state = 0;
+            start_audio_stream_read(cd_read_state_r.read_dst, cd_read_state_r.read_sector,
+                                    cd_read_state_r.read_sector_count);
+            if (cd_read_state_r.read_state == 0) {
+                cd_read_state_r.read_state = pending_state;
             }
         }
     }

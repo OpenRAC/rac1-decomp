@@ -95,7 +95,7 @@ extern void stick_target(int, float);
 extern void ClampVectorLength(void *a, float x);
 extern int hero_idle_sequence(int);
 extern void HeroQueueSequence(int bank, int seq);
-extern short D_0015EE6C_229B78 __asm__("D_0015EE6C");
+extern short g_frame_time_r __asm__("D_0015EE6C");
 extern float g_frame_scale_sq MACRO_ADDR;
 extern int D_L00_0015F7BC MACRO_ADDR;
 
@@ -105,7 +105,7 @@ void update_hero_locomotion_state(void) {
     int n;
     b = D_0013E633 + 0xE1D;
     *(int *)(b + 0x2284) = 0;
-    if (*(unsigned char *)(b + 0x12E2) != 0 && *(float *)&D_0015EE6C_229B78 * 0.5f < *(float *)(b + 0x164)) {
+    if (*(unsigned char *)(b + 0x12E2) != 0 && *(float *)&g_frame_time_r * 0.5f < *(float *)(b + 0x164)) {
         HeroEnterMoveState(0x2F, 1);
         return;
     }
@@ -132,7 +132,7 @@ void update_hero_locomotion_state(void) {
         return;
     }
     d = D_0013E633 + 0xE1D;
-    if ((*(float *)&D_0015EE6C_229B78 * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) || *(int *)(d + 0x2084) == 0x10) {
+    if ((*(float *)&g_frame_time_r * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) || *(int *)(d + 0x2084) == 0x10) {
         if (HeroEnterMoveState(3, 0)) {
             set_hero_animation(5, 0, -1.0f);
             ClampVectorLength(D_0013E633 + 0xF6D, *(float *)((char *)&g_frame_scale_sq + 8) * 5.0f);
@@ -156,7 +156,7 @@ extern float g_frame_time MACRO_ADDR;
 extern int get_hero_high_jump_input_window_frames(void);
 extern int check_pad_press_separation(int, int, int, int);
 extern int HeroEnterMoveState(int, int);
-extern int func_L00_00222B80_b(int, int) __asm__("func_L00_00222B80");
+extern int HeroEnterMoveState_b(int, int) __asm__("func_L00_00222B80");
 extern int pad_pressed_within(int, int, int);
 extern int hero_slot_item_id(int);
 
@@ -216,7 +216,7 @@ found:
                 goto found;
             }
         }
-        func_L00_00222B80_b(7, 1);
+        HeroEnterMoveState_b(7, 1);
         return 1;
     }
     return 0;

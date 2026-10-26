@@ -3,7 +3,7 @@
 #include "include_asm.h"
 
 extern void SetupSkyGifPaging(void);
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern void draw_three_sky_shells_with_particles_and_modulo_50000_rotation(void);
 extern void update_sky_shells_static(void);
 extern void DoSkyGifPaging(void);
@@ -12,7 +12,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Umbris sky shells (animated in level 7, static elsewhere) and restore GS test and Z. */
 void DrawSkyUmbris(void) {
     SetupSkyGifPaging();
-    if (D_0015EE84_m == 7) {
+    if (g_current_level_index_m == 7) {
         draw_three_sky_shells_with_particles_and_modulo_50000_rotation();
     } else {
         update_sky_shells_static();

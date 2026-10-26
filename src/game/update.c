@@ -69,7 +69,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 extern unsigned char menu_item_enabled_0 NOT_SDA;
@@ -107,7 +107,7 @@ extern void DebugEnter_Nop(void);
 extern int compress_map_coverage(void *dst, int size, int a, int b);
 extern void downsample_map_coverage(void *dst);
 extern short g_current_level_index;
-extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
+extern int g_current_level_index_far __asm__("D_0015EE84") NOT_SDA;
 extern int map_coverage_active[] NOT_SDA;
 extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
 extern void expand_map_coverage(void *, unsigned char *);
@@ -139,7 +139,7 @@ extern unsigned char gemlik_available NOT_SDA;
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern unsigned char gHaveHologuise NOT_SDA;
 extern int moby_render_slots[];
-extern void func_001FA460_2(void *, void *) __asm__("func_001FA460");
+extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -172,7 +172,7 @@ extern void func_0012EDE0(void *);
 extern void func_0012EFE8(void);
 extern char load_file_start_failed_string[];
 extern int func_0012EE98(int, int, int, void *);
-extern int func_00217628_v(void) __asm__("func_00217628");
+extern int start_audio_stream_read_v(void) __asm__("func_00217628");
 extern void func_00122598(int);
 extern void music_Update(void);
 extern void func_0012EC40(void);
@@ -207,7 +207,7 @@ extern char *current_menu_page NOT_SDA;
 extern void DrawMobyList(int, int);
 extern char gCamera[];
 extern void rotate_preview_moby_x(void *);
-extern void *func_00226720_a(int) __asm__("func_00226720");
+extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");
 extern int delete_moby(int);
 extern void VU1_addGSregister(int, int);
 extern void draw_map_overlay(void);
@@ -215,7 +215,7 @@ extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
 extern void func_001F68E8_c(int, int, long, void *, int)
     __asm__("func_001F68E8");
-extern void *func_001FE540_id(int) __asm__("func_001FE540");
+extern void *msg_string_id(int) __asm__("func_001FE540");
 extern short panel_clear_color;
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern int GetIconFrame(int, int);
@@ -236,7 +236,7 @@ typedef struct {
     int key;
     int flags;
 } PadBind;
-extern PadBind D_001D6448_t[] __asm__("D_001D6448");
+extern PadBind menu_stream_buffers_t[] __asm__("D_001D6448");
 extern int get_menu_stream_buffer_size(int handle);
 extern int menu_stream_buffers[];
 extern char preview_resource_bindings[] NOT_SDA;
@@ -244,14 +244,14 @@ extern char *moby_class_resources[] NOT_SDA;
 extern int D_001D6860[];
 extern int D_001D74C0[];
 extern int D_001D6760[];
-extern char D_00187180_a[] __asm__("D_00187180");
+extern char camera_position_a[] __asm__("D_00187180");
 extern char coll_hit_pos[];
 extern int sound_probe_ignore;
 extern void random_spherical_offset(void *, float, float);
-extern void func_001F9BD8_a(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_001F9C30_a(void *, void *, float) __asm__("func_001F9C30");
-extern void func_001F9BF0_a(void *, void *, void *) __asm__("func_001F9BF0");
-extern int func_001EFE10_a(void *, void *, int, int, int) __asm__("func_001EFE10");
+extern void FastVecAdd_a(void *, void *, void *) __asm__("func_001F9BD8");
+extern void FastVecScale_a(void *, void *, float) __asm__("func_001F9C30");
+extern void FastVecSub_a(void *, void *, void *) __asm__("func_001F9BF0");
+extern int coll_line_fix_a(void *, void *, int, int, int) __asm__("func_001EFE10");
 extern char camera_position[];
 extern void FastVecSub(void *, void *, void *);
 extern void coll_line_fix(void *, void *, int, int, int);
@@ -259,7 +259,7 @@ extern float FastVecDist(int, void *);
 extern void calculate_voice_distance_volume(void *, float, float, float);
 extern void transform_vector(void *, void *, void *);
 extern float vec_length_xy(void *);
-extern float func_001FA058_a(float, float) __asm__("func_001FA058");
+extern float fast_arc_tan_a(float, float) __asm__("func_001FA058");
 extern void truncate_float_to_s32(float);
 extern void func_00120F30(int);
 extern int func_0012E060(void *, int);
@@ -332,13 +332,13 @@ typedef struct {
 } Cam_391E8;
 extern s32 queued_dialogue_id;
 extern s16 dialogue_playback_phase NOT_SDA;
-extern u8 D_0015EEB0_391E8[] __asm__("D_0015EEB0") MACRO_ADDR;
+extern u8 gCheats_r[] __asm__("D_0015EEB0") MACRO_ADDR;
 extern short resident_stream_resume_frames_s4;
 extern short resident_stream_resume_frames_s5;
 extern short resident_stream_resume_frames_s6;
 extern s32 resident_dialogue_started MACRO_ADDR;
 extern s32 resident_stream_pending MACRO_ADDR;
-extern BossVars_391E8 D_001E66C0_391E8 __asm__("D_001E66C0");
+extern BossVars_391E8 vendor_state_r __asm__("D_001E66C0");
 extern s32 D_001E66FC;
 extern Cam_391E8 resident_cheat_scale_manip;
 extern s32 scale_game_frame_count(s32);
@@ -356,7 +356,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
     s32 r;
     s32 a;
 
-    if (D_0015EEB0_391E8[0] != 0) {
+    if (gCheats_r[0] != 0) {
         if (resident_cheat_scale_manip.active == 0) {
             AttachManipulator(m, 0, &resident_cheat_scale_manip);
         }
@@ -368,29 +368,29 @@ void update_resident_dialogue_animation_state(Moby *m) {
     }
     switch (m->state) {
     case 0:
-        if (D_001E66C0_391E8.timer > scale_game_frame_count(600)) {
+        if (vendor_state_r.timer > scale_game_frame_count(600)) {
             r = random_integer_below(2);
-            D_001E66C0_391E8.pick = r;
-            queued_dialogue_id = (r * 3 + 1) * 6 + D_001E66C0_391E8.base + 10000;
+            vendor_state_r.pick = r;
+            queued_dialogue_id = (r * 3 + 1) * 6 + vendor_state_r.base + 10000;
             resident_dialogue_started = 1;
             resident_stream_pending = 0;
             if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_game_frame_count(0x12));
             }
             m->state = 12;
-            D_001E66C0_391E8.timer = 0;
+            vendor_state_r.timer = 0;
         }
-        D_001E66C0_391E8.timer++;
+        vendor_state_r.timer++;
         break;
     case 2:
-        if (D_001E66C0_391E8.timer > scale_game_frame_count(600)) {
+        if (vendor_state_r.timer > scale_game_frame_count(600)) {
             if (m->prev_seq != 3) {
                 MobyBlendAnimation(m, 3, 0, scale_game_frame_count(0x12));
             }
             m->state = 3;
-            D_001E66C0_391E8.timer = 0;
+            vendor_state_r.timer = 0;
         }
-        D_001E66C0_391E8.timer++;
+        vendor_state_r.timer++;
         break;
     case 3:
         if (m->anim_flags & 2) {
@@ -401,7 +401,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
         }
         break;
     case 4:
-        if (IsFrameWithinWindow(m, (((s32 *)&resident_stream_resume_frames_s4))[D_001E66C0_391E8.pick]) != 0 &&
+        if (IsFrameWithinWindow(m, (((s32 *)&resident_stream_resume_frames_s4))[vendor_state_r.pick]) != 0 &&
             resident_stream_pending != 0) {
             resident_stream_pending = 0;
             Music_ContinueStreamIfReady();
@@ -411,11 +411,11 @@ void update_resident_dialogue_animation_state(Moby *m) {
                 MobyBlendAnimation(m, 2, 0, scale_game_frame_count(0x12));
             }
             m->state = 2;
-            D_001E66C0_391E8.timer = 0;
+            vendor_state_r.timer = 0;
         }
         break;
     case 5:
-        if (IsFrameWithinWindow(m, (((s32 *)&resident_stream_resume_frames_s5))[D_001E66C0_391E8.pick]) != 0 &&
+        if (IsFrameWithinWindow(m, (((s32 *)&resident_stream_resume_frames_s5))[vendor_state_r.pick]) != 0 &&
             resident_stream_pending != 0) {
             resident_stream_pending = 0;
             Music_ContinueStreamIfReady();
@@ -425,11 +425,11 @@ void update_resident_dialogue_animation_state(Moby *m) {
                 MobyBlendAnimation(m, 2, 0, scale_game_frame_count(0x12));
             }
             m->state = 2;
-            D_001E66C0_391E8.timer = 0;
+            vendor_state_r.timer = 0;
         }
         break;
     case 6:
-        if (IsFrameWithinWindow(m, (((s32 *)&resident_stream_resume_frames_s6))[D_001E66C0_391E8.pick]) != 0 &&
+        if (IsFrameWithinWindow(m, (((s32 *)&resident_stream_resume_frames_s6))[vendor_state_r.pick]) != 0 &&
             resident_stream_pending != 0) {
             resident_stream_pending = 0;
             Music_ContinueStreamIfReady();
@@ -439,7 +439,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
                 MobyBlendAnimation(m, 2, 0, scale_game_frame_count(0x12));
             }
             m->state = 2;
-            D_001E66C0_391E8.timer = 0;
+            vendor_state_r.timer = 0;
         }
         break;
     case 10:

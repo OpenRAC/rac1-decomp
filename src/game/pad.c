@@ -69,7 +69,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 extern unsigned char menu_item_enabled_0 NOT_SDA;
@@ -107,7 +107,7 @@ extern void DebugEnter_Nop(void);
 extern int compress_map_coverage(void *dst, int size, int a, int b);
 extern void downsample_map_coverage(void *dst);
 extern short g_current_level_index;
-extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
+extern int g_current_level_index_far __asm__("D_0015EE84") NOT_SDA;
 extern int map_coverage_active[] NOT_SDA;
 extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
 extern void expand_map_coverage(void *, unsigned char *);
@@ -139,7 +139,7 @@ extern unsigned char gemlik_available NOT_SDA;
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern unsigned char gHaveHologuise NOT_SDA;
 extern int moby_render_slots[];
-extern void func_001FA460_2(void *, void *) __asm__("func_001FA460");
+extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -172,7 +172,7 @@ extern void func_0012EDE0(void *);
 extern void func_0012EFE8(void);
 extern char load_file_start_failed_string[];
 extern int func_0012EE98(int, int, int, void *);
-extern int func_00217628_v(void) __asm__("func_00217628");
+extern int start_audio_stream_read_v(void) __asm__("func_00217628");
 extern void func_00122598(int);
 extern void music_Update(void);
 extern void func_0012EC40(void);
@@ -318,13 +318,13 @@ struct PadOptions_181F0 {
     u8 mirror;                /* D_0015EEB4 */
     u8 pad5[7];
 };
-extern struct PadOptions_181F0 D_0015EEB0_181F0 __asm__("D_0015EEB0") MACRO_ADDR;
-extern PadState D_0013CA40_181F0 __asm__("D_0013CA40");
-extern s32 func_001F98C0_181F0(s32) __asm__("func_001F98C0");
-extern float func_001F9CE8_181F0(float *) __asm__("func_001F9CE8");
-extern float func_001FA058_181F0(float, float) __asm__("func_001FA058");
-extern float func_001FA850_181F0(float, float) __asm__("func_001FA850");
-extern float func_001FA888_181F0(s32) __asm__("func_001FA888");
+extern struct PadOptions_181F0 gCheats_r __asm__("D_0015EEB0") MACRO_ADDR;
+extern PadState g_controller_state_r __asm__("D_0013CA40");
+extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
+extern float vec_length_xy_r(float *) __asm__("func_001F9CE8");
+extern float fast_arc_tan_r(float, float) __asm__("func_001FA058");
+extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
+extern float IntToFloat_r(s32) __asm__("func_001FA888");
 
 void func_002181F0_r(PadState *p, u8 *buf, s32 len) __asm__("func_002181F0");
 
@@ -349,7 +349,7 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
             if (d < 0)
                 d = -d;
             if (d >= 0x30) {
-                float f = func_001FA888_181F0(d - 0x30) / func_001FA888_181F0(0x4C);
+                float f = IntToFloat_r(d - 0x30) / IntToFloat_r(0x4C);
                 p->analog[i] = f;
                 if (f > 1.0f) {
                     p->analog[i] = 1.0f;
@@ -362,10 +362,10 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
     }
     if (len >= 0x12) {
         for (i = 4; i < 16; i++) {
-            p->analog[i] = func_001FA888_181F0(buf[i + 2]) * 0.003921569f;
+            p->analog[i] = IntToFloat_r(buf[i + 2]) * 0.003921569f;
         }
     }
-    if (D_0015EEB0_181F0.mirror) {
+    if (gCheats_r.mirror) {
         p->analog[2] = -p->analog[2];
         p->analog[0] = -p->analog[0];
         if (p->held & 0x8000) {
@@ -394,7 +394,7 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
         p->held |= 0x1000;
     if (p->analog[3] > 0.0f)
         p->held |= 0x4000;
-    if (D_0013CA40_181F0.unk18C != 0) {
+    if (g_controller_state_r.unk18C != 0) {
         p->pressed = 0;
         p->released = 0;
     } else {
@@ -409,7 +409,7 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
     p->released_unmasked = p->released;
     p->held_unmasked = p->held;
     p->unk348 = p->held;
-    if (D_0015EEB0_181F0.mirror) {
+    if (gCheats_r.mirror) {
         p->analog_prev[2] = -p->analog_prev[2];
         p->analog_prev[0] = -p->analog_prev[0];
         if (((s32)p->held_unmasked) & 0x8000) {
@@ -448,12 +448,12 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
     }
     v[0] = p->analog[2];
     v[1] = p->analog[3];
-    mag = func_001F9CE8_181F0(v);
-    ang = func_001FA058_181F0(v[0], v[1]);
+    mag = vec_length_xy_r(v);
+    ang = fast_arc_tan_r(v[0], v[1]);
     p->hist_mag[p->hist_idx] = mag;
     p->hist_ang[p->hist_idx] = ang;
     if (mag > 0.9f) {
-        for (j = 1; j < func_001F98C0_181F0(4); j++) {
+        for (j = 1; j < scale_game_frame_count_r(4); j++) {
             float m = p->hist_mag[(p->hist_idx - j + 30) % 30];
             if (m > 0.9f)
                 break;
@@ -463,8 +463,8 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
             }
         }
         if (!(p->pressed & 0x10000)) {
-            for (k = 1; k < func_001F98C0_181F0(5); k++) {
-                if (func_001FA850_181F0(p->hist_ang[(p->hist_idx - k + 30) % 30], ang) >
+            for (k = 1; k < scale_game_frame_count_r(5); k++) {
+                if (FastDiffRots_r(p->hist_ang[(p->hist_idx - k + 30) % 30], ang) >
                     0.9599311f) {
                     p->pressed |= 0x10000;
                     break;

@@ -13,12 +13,12 @@ typedef struct {
     char pad2[0x24];
 } Rec;
 extern Rec blarg_item_defs[];
-extern char D_0013F450_1D6B8[] __asm__("D_0013F450");
+extern char g_hero_r[] __asm__("D_0013F450");
 extern int hero_slot_item_id(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0021d0a0.c, FUN_L06_0021d0a0. */
 int get_hero_help_value(int a) {
-    char *g = (char *)D_0013F450_1D6B8;
+    char *g = (char *)g_hero_r;
     switch (*(unsigned char *)(g + 0x20A4)) {
     case 1:
         return 0;
@@ -26,7 +26,7 @@ int get_hero_help_value(int a) {
         return 0;
     }
     {
-        char *g2 = (char *)D_0013F450_1D6B8;
+        char *g2 = (char *)g_hero_r;
         if (*(int *)(g2 + 0x22A8) == 1) {
             return 0x54;
         }
@@ -506,7 +506,7 @@ typedef struct {
     u8 pad20B4[0x22DA - 0x20B4];
     s16 h22DA;
 } G_22a1d0;
-extern G_22a1d0 D_0013F450_2A868 __asm__("D_0013F450");
+extern G_22a1d0 g_hero_r2 __asm__("D_0013F450");
 extern f32 frame_scale MACRO_ADDR;
 extern u128_22a1d0 D_L06_001746F0[];
 extern void clear_u64_value(void *);
@@ -529,58 +529,58 @@ s32 HeroL06_ResolveCollisionStep(s32 mode) {
     s32 i;
     u128_22a1d0 *c;
     f32 h;
-    if (D_0013F450_2A868.w1CC != 0) {
+    if (g_hero_r2.w1CC != 0) {
         return 1;
     }
-    qcopy(&old, &D_0013F450_2A868.pos);
+    qcopy(&old, &g_hero_r2.pos);
     clear_u64_value(&v);
-    if (D_0013F450_2A868.h22DA != 0) {
+    if (g_hero_r2.h22DA != 0) {
         Hero_ConstrainToPath();
-        D_0013F450_2A868.h22DA = 0;
+        g_hero_r2.h22DA = 0;
     }
-    if (D_0013F450_2A868.w208C != 0x11) {
-        if (D_0013F450_2A868.b20B3 != 0 || D_0013F450_2A868.h1F8 != 0) {
-            if (D_0013F450_2A868.b20B3 == 1 || D_0013F450_2A868.h1F8 != 0) {
+    if (g_hero_r2.w208C != 0x11) {
+        if (g_hero_r2.b20B3 != 0 || g_hero_r2.h1F8 != 0) {
+            if (g_hero_r2.b20B3 == 1 || g_hero_r2.h1F8 != 0) {
                 HeroOffsetAlongViewZ(&v, &v, 0.6f);
             } else {
-                HeroMoveDownAlongNormal(&v, &v, -D_0013F450_2A868.f224);
+                HeroMoveDownAlongNormal(&v, &v, -g_hero_r2.f224);
             }
         } else {
-            v.f[2] = D_0013F450_2A868.f224;
+            v.f[2] = g_hero_r2.f224;
         }
     }
-    FastVecAdd(&D_0013F450_2A868.pos, &D_0013F450_2A868.pos, &v);
+    FastVecAdd(&g_hero_r2.pos, &g_hero_r2.pos, &v);
     mask = 0xD24;
-    if (D_0013F450_2A868.w2084 == 0x7F)
+    if (g_hero_r2.w2084 == 0x7F)
         mask = 0xD24;
     for (i = 0; i < 8; i++) {
-        if (D_0013F450_2A868.b20B3 != 0) {
-            if (!coll_sphere(&D_0013F450_2A868.pos, mask, D_0013F450_2A868.w2080, frame_scale * 0.4f))
+        if (g_hero_r2.b20B3 != 0) {
+            if (!coll_sphere(&g_hero_r2.pos, mask, g_hero_r2.w2080, frame_scale * 0.4f))
                 break;
-        } else if (D_0013F450_2A868.w208C == 0xF) {
-            if (!coll_sphere(&D_0013F450_2A868.pos, mask, D_0013F450_2A868.w2080, frame_scale * 0.45f))
+        } else if (g_hero_r2.w208C == 0xF) {
+            if (!coll_sphere(&g_hero_r2.pos, mask, g_hero_r2.w2080, frame_scale * 0.45f))
                 break;
         } else {
             s32 a;
-            h = D_0013F450_2A868.f220 - D_0013F450_2A868.f224;
+            h = g_hero_r2.f220 - g_hero_r2.f224;
             if (h < 0.05f) {
                 h = 0.05f;
             }
-            a = coll_capsule(&D_0013F450_2A868.pos, mask, D_0013F450_2A868.f234, D_0013F450_2A868.w2080, h);
-            if (!(a | coll_sphere_hero_groups(&D_0013F450_2A868.pos, D_0013F450_2A868.f234)))
+            a = coll_capsule(&g_hero_r2.pos, mask, g_hero_r2.f234, g_hero_r2.w2080, h);
+            if (!(a | coll_sphere_hero_groups(&g_hero_r2.pos, g_hero_r2.f234)))
                 break;
         }
         c = D_L06_001746F0;
-        qcopy(&D_0013F450_2A868.pos, c);
-        qcopy(&D_0013F450_2A868.q200, c + 1);
-        qcopy(&D_0013F450_2A868.q210, c - 1);
-        D_0013F450_2A868.b257 = 1;
-        D_0013F450_2A868.w23C = ((s32 *)c)[-6];
+        qcopy(&g_hero_r2.pos, c);
+        qcopy(&g_hero_r2.q200, c + 1);
+        qcopy(&g_hero_r2.q210, c - 1);
+        g_hero_r2.b257 = 1;
+        g_hero_r2.w23C = ((s32 *)c)[-6];
     }
-    FastVecSub(&D_0013F450_2A868.pos, &D_0013F450_2A868.pos, &v);
-    FastVecSub(&w, &D_0013F450_2A868.pos, &old);
+    FastVecSub(&g_hero_r2.pos, &g_hero_r2.pos, &v);
+    FastVecSub(&w, &g_hero_r2.pos, &old);
     h = FastVecLength(&w);
-    if (D_0013F450_2A868.f234 * 1.5f < h) {
+    if (g_hero_r2.f234 * 1.5f < h) {
         if (mode == 0xF) {
             if (512.0f < w.f[0])
                 w.f[0] = 512.0f;
@@ -594,8 +594,8 @@ s32 HeroL06_ResolveCollisionStep(s32 mode) {
                 w.f[2] = 512.0f;
             else if (w.f[2] < -512.0f)
                 w.f[2] = -512.0f;
-            vec_scale_to_length(&w, &w, D_0013F450_2A868.f234);
-            FastVecAdd(&D_0013F450_2A868.pos, &old, &w);
+            vec_scale_to_length(&w, &w, g_hero_r2.f234);
+            FastVecAdd(&g_hero_r2.pos, &old, &w);
         }
         return -1;
     }
@@ -603,7 +603,7 @@ s32 HeroL06_ResolveCollisionStep(s32 mode) {
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 struct Moby;
-extern struct Hero D_0013F450_35038 __asm__("D_0013F450");
+extern struct Hero g_hero_r3 __asm__("D_0013F450");
 struct Manip;
 struct GifEntry;
 struct AnimSeq;
@@ -613,7 +613,7 @@ typedef struct {
 } Entry70_2348d0;
 extern struct PadState g_controller_state;
 extern Entry70_2348d0 D_L06_0017A170[];
-extern short D_L06_0015F6A8_35038 __asm__("D_L06_0015F6A8");
+extern short level_game_mode_q_r __asm__("D_L06_0015F6A8");
 extern u8 gHaveBoltGrabber NOT_SDA;
 extern f32 g_frame_time MACRO_ADDR;
 extern void update_hero_tilt(void);
@@ -640,126 +640,126 @@ void update_hero_timers_and_spatial_state(void) {
     s32 n;
     s32 n8;
 
-    if (D_0013F450_35038.tilt_disabled == 0) {
+    if (g_hero_r3.tilt_disabled == 0) {
         update_hero_tilt();
     }
-    D_0013F450_35038.state_timer++;
-    D_0013F450_35038.control_mode_timer++;
-    D_0013F450_35038.step_frames++;
-    D_0013F450_35038.anim_seq_frames++;
-    fast_dec_timer(&D_0013F450_35038.move_lock_timer);
-    fast_dec_timer(&D_0013F450_35038.invulnerable_frames);
-    FastDecTimer(&D_0013F450_35038.unk1B2);
-    fast_dec_timer(&D_0013F450_35038.long_jump_lockout);
-    FastDecTimer(&D_0013F450_35038.jump_lockout_timer);
-    FastDecTimer(&D_0013F450_35038.unk1DE);
-    fast_dec_timer(&D_0013F450_35038.wall_jump_window);
-    FastDecTimer(&D_0013F450_35038.unk1F0);
-    FastDecTimer(&D_0013F450_35038.ledge_probe_cooldown);
-    FastDecTimer(&D_0013F450_35038.unk1C8);
-    FastDecTimer(&D_0013F450_35038.rail_catch_grace);
-    FastDecTimer(&D_0013F450_35038.rail_grab_cooldown);
-    FastDecTimer(&D_0013F450_35038.grapple_lockout_timer);
-    fast_dec_timer(&D_0013F450_35038.collision_off_frames);
-    fast_dec_timer(&D_0013F450_35038.unk1D0);
-    fast_dec_timer(&D_0013F450_35038.jump_buffer_lockout);
-    FastDecTimer(&D_0013F450_35038.fidget_cooldown);
-    FastDecTimer(&D_0013F450_35038.unk1E0);
-    FastDecTimer(&D_0013F450_35038.unk1EE);
-    FastDecTimer(&D_0013F450_35038.unk1EA);
-    FastDecTimer(&D_0013F450_35038.unk1F4);
-    FastDecTimer(&D_0013F450_35038.jump_lock_timer);
-    FastDecTimer(&D_0013F450_35038.unk1DC);
-    FastDecTimer(&D_0013F450_35038.unk1F6);
-    FastDecTimer(&D_0013F450_35038.unk1DA);
-    FastDecTimer(&D_0013F450_35038.unk1F8);
+    g_hero_r3.state_timer++;
+    g_hero_r3.control_mode_timer++;
+    g_hero_r3.step_frames++;
+    g_hero_r3.anim_seq_frames++;
+    fast_dec_timer(&g_hero_r3.move_lock_timer);
+    fast_dec_timer(&g_hero_r3.invulnerable_frames);
+    FastDecTimer(&g_hero_r3.unk1B2);
+    fast_dec_timer(&g_hero_r3.long_jump_lockout);
+    FastDecTimer(&g_hero_r3.jump_lockout_timer);
+    FastDecTimer(&g_hero_r3.unk1DE);
+    fast_dec_timer(&g_hero_r3.wall_jump_window);
+    FastDecTimer(&g_hero_r3.unk1F0);
+    FastDecTimer(&g_hero_r3.ledge_probe_cooldown);
+    FastDecTimer(&g_hero_r3.unk1C8);
+    FastDecTimer(&g_hero_r3.rail_catch_grace);
+    FastDecTimer(&g_hero_r3.rail_grab_cooldown);
+    FastDecTimer(&g_hero_r3.grapple_lockout_timer);
+    fast_dec_timer(&g_hero_r3.collision_off_frames);
+    fast_dec_timer(&g_hero_r3.unk1D0);
+    fast_dec_timer(&g_hero_r3.jump_buffer_lockout);
+    FastDecTimer(&g_hero_r3.fidget_cooldown);
+    FastDecTimer(&g_hero_r3.unk1E0);
+    FastDecTimer(&g_hero_r3.unk1EE);
+    FastDecTimer(&g_hero_r3.unk1EA);
+    FastDecTimer(&g_hero_r3.unk1F4);
+    FastDecTimer(&g_hero_r3.jump_lock_timer);
+    FastDecTimer(&g_hero_r3.unk1DC);
+    FastDecTimer(&g_hero_r3.unk1F6);
+    FastDecTimer(&g_hero_r3.unk1DA);
+    FastDecTimer(&g_hero_r3.unk1F8);
     if (!(g_controller_state.held & 5)) {
-        D_0013F450_35038.unk1EC = 0;
+        g_hero_r3.unk1EC = 0;
     }
-    if (D_0013F450_35038.item_anim_active != 0) {
-        D_0013F450_35038.item_anim_frames++;
+    if (g_hero_r3.item_anim_active != 0) {
+        g_hero_r3.item_anim_frames++;
     } else {
-        D_0013F450_35038.item_anim_frames = 0;
+        g_hero_r3.item_anim_frames = 0;
     }
     if (g_controller_state.no_direction != 0) {
-        D_0013F450_35038.stick_held_frames = 0;
-        D_0013F450_35038.stick_idle_frames++;
+        g_hero_r3.stick_held_frames = 0;
+        g_hero_r3.stick_idle_frames++;
     } else {
-        D_0013F450_35038.stick_idle_frames = 0;
-        D_0013F450_35038.stick_held_frames++;
+        g_hero_r3.stick_idle_frames = 0;
+        g_hero_r3.stick_held_frames++;
     }
-    if (D_0013F450_35038.vehicle_toggle_timer != 0 && FastDecTimer(&D_0013F450_35038.vehicle_toggle_timer) != 0 &&
-        D_0013F450_35038.health.hp != 0 && (*(s32 *)&D_L06_0015F6A8_35038) == 0) {
-        if (D_0013F450_35038.vehicle_mode == 3) {
+    if (g_hero_r3.vehicle_toggle_timer != 0 && FastDecTimer(&g_hero_r3.vehicle_toggle_timer) != 0 &&
+        g_hero_r3.health.hp != 0 && (*(s32 *)&level_game_mode_q_r) == 0) {
+        if (g_hero_r3.vehicle_mode == 3) {
             restore_hero_from_vehicle_mode();
             if (pad_pressed_within(0x80, scale_ticks(0x12), 0)) {
-                D_0013F450_35038.force_slot0_item8 = 1;
+                g_hero_r3.force_slot0_item8 = 1;
             }
         } else {
             m = CreateMoby(0x27A);
-            D_0013F450_35038.vehicle_mode3_moby = m;
+            g_hero_r3.vehicle_mode3_moby = m;
             if (m != 0) {
-                qcopy(&m->pos, &D_0013F450_35038.motion.pos);
-                qcopy(&m->rot, &D_0013F450_35038.motion.rot);
+                qcopy(&m->pos, &g_hero_r3.motion.pos);
+                qcopy(&m->rot, &g_hero_r3.motion.rot);
                 m->draw_dist = 0x40;
-                ((struct Moby *)D_0013F450_35038.vehicle_mode3_moby)->visible = 1;
-                ((struct Moby *)D_0013F450_35038.vehicle_mode3_moby)->glow_color = 0;
-                ((struct Moby *)D_0013F450_35038.vehicle_mode3_moby)->spawn_frame = D_0013F450_35038.moby->spawn_frame;
-                moby_build_matrix(D_0013F450_35038.vehicle_mode3_moby);
-                enter_hero_vehicle_mode_and_set_moby(3, 0x53, D_0013F450_35038.vehicle_mode3_moby);
+                ((struct Moby *)g_hero_r3.vehicle_mode3_moby)->visible = 1;
+                ((struct Moby *)g_hero_r3.vehicle_mode3_moby)->glow_color = 0;
+                ((struct Moby *)g_hero_r3.vehicle_mode3_moby)->spawn_frame = g_hero_r3.moby->spawn_frame;
+                moby_build_matrix(g_hero_r3.vehicle_mode3_moby);
+                enter_hero_vehicle_mode_and_set_moby(3, 0x53, g_hero_r3.vehicle_mode3_moby);
             }
         }
     }
     for (i = 0; i < 5; i++) {
         fast_dec_timer(&D_L06_0017A170[i].w0);
     }
-    D_0013F450_35038.current_path_dist = 9999.0f;
-    if (D_0013F450_35038.air_frames.s != 0 && gravity_z(&D_0013F450_35038.motion.velocity) < 0.0f) {
-        if (D_0013F450_35038.pos_history_count != 0x20) goto skip;
+    g_hero_r3.current_path_dist = 9999.0f;
+    if (g_hero_r3.air_frames.s != 0 && gravity_z(&g_hero_r3.motion.velocity) < 0.0f) {
+        if (g_hero_r3.pos_history_count != 0x20) goto skip;
         clear_u64_value(&sum);
         n8 = 8;
         for (i = 0; i < n8; i++) {
-            n = D_0013F450_35038.pos_history_index - i;
+            n = g_hero_r3.pos_history_index - i;
             {
                 s32 a = (n + 0x1F) % 32;
                 s32 b = (n + 0x1E) % 32;
-                FastVecSub(&d, &D_0013F450_35038.pos_history[a], &D_0013F450_35038.pos_history[b]);
+                FastVecSub(&d, &g_hero_r3.pos_history[a], &g_hero_r3.pos_history[b]);
             }
             FastVecAdd(&sum, &sum, &d);
         }
         FastVecScale(&sum, &sum, 1.0f / (f32)n8);
         if (FastVecLength(&sum) < g_frame_time) {
-            D_0013F450_35038.still_frames++;
+            g_hero_r3.still_frames++;
             goto skip;
         }
     }
-    D_0013F450_35038.still_frames = 0;
+    g_hero_r3.still_frames = 0;
 skip:
     update_hero_planar_distance_spring_motion();
-    if (D_0013F450_35038.vehicle_mode == 1) {
-        transform_hero_local_offset_to_world(&D_0013F450_35038.motion.body_center, 0.0f, 0.0f, 0.4f);
-        D_0013F450_35038.reach_distance = 2.125f;
-        D_0013F450_35038.reach_height = 1.25f;
+    if (g_hero_r3.vehicle_mode == 1) {
+        transform_hero_local_offset_to_world(&g_hero_r3.motion.body_center, 0.0f, 0.0f, 0.4f);
+        g_hero_r3.reach_distance = 2.125f;
+        g_hero_r3.reach_height = 1.25f;
     } else {
-        transform_hero_local_offset_to_world(&D_0013F450_35038.motion.body_center, 0.0f, 0.0f, 0.7f);
+        transform_hero_local_offset_to_world(&g_hero_r3.motion.body_center, 0.0f, 0.0f, 0.7f);
         if (gHaveBoltGrabber) {
-            D_0013F450_35038.reach_distance = 12.0f;
-            D_0013F450_35038.reach_height = 4.5f;
+            g_hero_r3.reach_distance = 12.0f;
+            g_hero_r3.reach_height = 4.5f;
         } else {
-            D_0013F450_35038.reach_distance = 3.0f;
-            D_0013F450_35038.reach_height = 1.75f;
+            g_hero_r3.reach_distance = 3.0f;
+            g_hero_r3.reach_height = 1.75f;
         }
     }
     {
-        f32 z = D_0013F450_35038.ground_z.f;
-        if (D_0013F450_35038.motion.pos.f[2] - z < 4.0f) {
-            qcopy(&D_0013F450_35038.motion.near_ground_point, &D_0013F450_35038.motion.pos);
-            D_0013F450_35038.motion.near_ground_point.f[2] = z + 0.5f;
+        f32 z = g_hero_r3.ground_z.f;
+        if (g_hero_r3.motion.pos.f[2] - z < 4.0f) {
+            qcopy(&g_hero_r3.motion.near_ground_point, &g_hero_r3.motion.pos);
+            g_hero_r3.motion.near_ground_point.f[2] = z + 0.5f;
         } else {
-            qcopy(&D_0013F450_35038.motion.near_ground_point, &D_0013F450_35038.motion.body_center);
+            qcopy(&g_hero_r3.motion.near_ground_point, &g_hero_r3.motion.body_center);
         }
     }
-    if (D_0013F450_35038.motion.pos.f[2] < 1.0f) {
+    if (g_hero_r3.motion.pos.f[2] < 1.0f) {
         Hero_OnKilled();
     }
 }
@@ -783,7 +783,7 @@ typedef struct {
     char pad280[0x1E33];
     u8 mode;
 } G_32b90;
-extern G_32b90 D_0013F450_431A0 __asm__("D_0013F450");
+extern G_32b90 g_hero_r4 __asm__("D_0013F450");
 extern u8 D_L06_00174700[];
 extern f32 D_L06_001746E0;
 extern void FastVecScale(void *, void *, f32);
@@ -801,15 +801,15 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
     f32 o[6];
     f32 x, y, z;
 
-    switch ((&D_0013F450_431A0)->mode) {
+    switch ((&g_hero_r4)->mode) {
     case 0:
         if (c < 0.0f) {
-            FastVecScale(t, &(&D_0013F450_431A0)->vE0, a);
+            FastVecScale(t, &(&g_hero_r4)->vE0, a);
             t[2] -= ((a * a + a) * 0.5f) * b;
-            FastVecAdd(t, t, &(&D_0013F450_431A0)->v80);
-            v.q = (&D_0013F450_431A0)->v80.q;
+            FastVecAdd(t, t, &(&g_hero_r4)->v80);
+            v.q = (&g_hero_r4)->v80.q;
             clip_negative_segment_endpoint_xyz(&v, t);
-            qcopy(&v, &(&D_0013F450_431A0)->v80);
+            qcopy(&v, &(&g_hero_r4)->v80);
             if (coll_line(&v, t, 0xd24, 0, 0) != 0) {
                 if (compute_gravity_relative_vector_inclination((f32 *)D_L06_00174700) <= 0.87266463f) {
                     c = *(f32 *)(D_L06_00174700 - 0x18);
@@ -817,28 +817,28 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
             }
         }
         if (c > 0.0f) {
-            if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&D_0013F450_431A0)->vE0.f[2] - b * -0.5f,
-                                       (&D_0013F450_431A0)->v80.f[2] - c) > 0 &&
+            if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&g_hero_r4)->vE0.f[2] - b * -0.5f,
+                                       (&g_hero_r4)->v80.f[2] - c) > 0 &&
                 o[0] > 0.0f) {
                 return o[0];
             }
         }
         break;
     case 1:
-        qcopy(&v, &(&D_0013F450_431A0)->v270);
+        qcopy(&v, &(&g_hero_r4)->v270);
         vec_scale_to_length(&v, &v, b);
         FastVecScale(&v, &v, -1.0f);
-        FastVecScale(t, &(&D_0013F450_431A0)->vE0, a);
+        FastVecScale(t, &(&g_hero_r4)->vE0, a);
         FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
         FastVecAdd(t, &t1, t);
-        FastVecAdd(t, &(&D_0013F450_431A0)->v80, t);
-        v2.q = (&D_0013F450_431A0)->v80.q;
+        FastVecAdd(t, &(&g_hero_r4)->v80, t);
+        v2.q = (&g_hero_r4)->v80.q;
         clip_negative_segment_endpoint_xyz(&v2, t);
-        if (coll_line(&(&D_0013F450_431A0)->v80, t, 0xd24, 0, 0) != 0) {
+        if (coll_line(&(&g_hero_r4)->v80, t, 0xd24, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
-            z = gravity_z(&(&D_0013F450_431A0)->vE0) - nb;
-            x = gravity_z(&(&D_0013F450_431A0)->v80);
+            z = gravity_z(&(&g_hero_r4)->vE0) - nb;
+            x = gravity_z(&(&g_hero_r4)->v80);
             y = gravity_z(&D_L06_001746E0);
             if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0 && o[2] > 0.0f) {
                 return o[2];
@@ -849,20 +849,20 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
         t1.f[2] = 100.0f;
         t1.f[1] = 100.0f;
         t1.f[0] = 100.0f;
-        FastVecSub(&v, &(&D_0013F450_431A0)->v80, &t1);
+        FastVecSub(&v, &(&g_hero_r4)->v80, &t1);
         vec_scale_to_length(&v, &v, b);
         FastVecScale(&v, &v, -1.0f);
-        FastVecScale(t, &(&D_0013F450_431A0)->vE0, a);
+        FastVecScale(t, &(&g_hero_r4)->vE0, a);
         FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
         FastVecAdd(t, &t1, t);
-        FastVecAdd(t, &(&D_0013F450_431A0)->v80, t);
-        v2.q = (&D_0013F450_431A0)->v80.q;
+        FastVecAdd(t, &(&g_hero_r4)->v80, t);
+        v2.q = (&g_hero_r4)->v80.q;
         clip_negative_segment_endpoint_xyz(&v2, t);
-        if (coll_line(&(&D_0013F450_431A0)->v80, t, 0xd24, 0, 0) != 0) {
+        if (coll_line(&(&g_hero_r4)->v80, t, 0xd24, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
-            z = gravity_z(&(&D_0013F450_431A0)->vE0) - nb;
-            x = gravity_z(&(&D_0013F450_431A0)->v80);
+            z = gravity_z(&(&g_hero_r4)->vE0) - nb;
+            x = gravity_z(&(&g_hero_r4)->v80);
             y = gravity_z(&D_L06_001746E0);
             if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0 && o[4] > 0.0f) {
                 return o[4];

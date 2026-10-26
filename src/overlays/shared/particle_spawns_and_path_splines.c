@@ -5,7 +5,7 @@
 
 extern unsigned char *create_part(int);
 extern int PackColorRGBA(float, float, float, float);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float random_float_between(float, float);
 extern int scale_ticks(int);
 extern unsigned char *novalis_part_type10_textures;
@@ -17,7 +17,7 @@ void spawn_type_10_particle(char *pos, char *vel) {
         char *q = (char *)p + 0x20;
         qcopy(p + 0x10, pos);
         *(int *)(p + 4) = PackColorRGBA(0.425f, 0.425f, 0.225f, 1.0f);
-        p[9] = func_001FA898_r(8.0f) - 0x60;
+        p[9] = truncate_float_to_s32_r(8.0f) - 0x60;
         p[1] = 0;
         p[3] = 0x48;
         *(float *)(p + 0xC) = random_float_between(60900.0f, 90300.0f);
@@ -46,7 +46,7 @@ char *spawn_type_14_particle(int a, char *b) {
         *(float *)(p + 0x14) += randf_sym(0.0f, 0.03f);
         *(float *)(p + 0x18) += randf_sym(0.0f, 0.03f);
         *(int *)(p + 4) = -1;
-        r = func_001FA898_r(4.0f);
+        r = truncate_float_to_s32_r(4.0f);
         p[9] = r - 0x60;
         p[1] = 0;
         p[3] = 0x48;
@@ -68,13 +68,13 @@ char *spawn_type_14_particle(int a, char *b) {
     return p;
 }
 extern char * novalis_part_type41_textures[];
-extern char *func_00218928_86530(int) __asm__("func_00218928");
+extern char *create_part_r(int) __asm__("func_00218928");
 extern int truncate_float_to_s32(float);
 
 /* Allocates a type 0x29 particle and fills it from the arguments; kind 0xFF derives the frame from flags and picks one of two blend modes.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/0027f660.c, FUN_L01_00285768. */
 char *PartType41Spawn(float scale, void *pos, int a, int idx, int b, unsigned char flags, short h, unsigned char kind) {
-    char *r = func_00218928_86530(0x29);
+    char *r = create_part_r(0x29);
     if (r != 0) {
         int *tail = (int *)(r + 0x20);
         qcopy(r + 0x10, pos);
@@ -131,18 +131,18 @@ extern int func_001160D8(void);
 extern void FastVecSub(void *,void *,void *);
 extern void matrix_from_basis_rows(void *,void *);
 extern void transform_vector(void *,void *,void *);
-extern unsigned char D_L01_001B2928_b[] __asm__("D_L01_001B2928");
+extern unsigned char novalis_part_type74_textures_b[] __asm__("D_L01_001B2928");
 /* spawns a type-74 particle with transformed offset and velocity */
 unsigned char *spawn_type_74_particle(char *m,char *pos,float *vel,char *cfg,int flag) {
  float v[4]; float mat[16];
  unsigned char *p=create_part(74);
  if(p) {
  char *q;
- p[9]=func_001FA898_r(4.0f)-0x60;
+ p[9]=truncate_float_to_s32_r(4.0f)-0x60;
  if(flag) p[3]=0x48; else p[3]=0x44;
  p[1]=0;
  q=(char *)p+0x20;
- p[2]=**(unsigned char **)D_L01_001B2928_b;
+ p[2]=**(unsigned char **)novalis_part_type74_textures_b;
  p[8]=func_001160D8(); *(int *)(p+0xc)=0;
  qcopy(p+0x10,pos);
  *(float *)q=vel[0]; *(float *)(q+4)=vel[1]; *(float *)(q+8)=vel[2];

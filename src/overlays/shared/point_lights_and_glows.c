@@ -156,7 +156,7 @@ void GlowQuadsDraw(char *moby)
     draw_world_quad(q, m, 1);
 }
 typedef int ti_23e008 __attribute__((mode(TI)));
-extern float D_0015EE60_23e008 __asm__("D_0015EE60") MACRO_ADDR;
+extern float frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern void getpos_23e008(void *, int, void *) __asm__("func_L00_00250800");
 extern float rndf_23e008(float, float) __asm__("func_002140F8");
 extern int rndi_23e008(int) __asm__("func_002140B0");
@@ -182,7 +182,7 @@ void emit_moby_particle_pairs(void *p)
         if (k == 0) k--;
         a = rnda_23e008();
         b = rndf_23e008(0.34906584f, 1.53588974f);
-        dir_23e008(dir, rndf_23e008(0.05f, 0.2f) * D_0015EE60_23e008, a, b);
+        dir_23e008(dir, rndf_23e008(0.05f, 0.2f) * frame_scale_r, a, b);
         qcopy(old, pos);
         pos[0] += rnd_23e008(0.0f, 0.15f);
         pos[1] += rnd_23e008(0.0f, 0.15f);
@@ -236,23 +236,23 @@ int allocate_packed_color_point_light_slot(float *pos, float radius, float inten
 typedef unsigned int u128_pt __attribute__((mode(TI)));
 typedef struct { float x, y, z, b_0023e738; Vec4 pos; } P_0023e738;
 typedef struct { char pad[0xc]; char *buf; int used; char pad2[0x30 - 0x14]; } T_0023e738;
-extern float D_L00_0015F6B8_0023e738 __asm__("D_L00_0015F6B8") MACRO_ADDR;
-extern T_0023e738 D_L00_001805C0_0023e738[] __asm__("D_L00_001805C0");
-extern P_0023e738 D_L00_001803C0_0023e738[] __asm__("D_L00_001803C0");
-extern char D_L00_00180740_0023e738[] __asm__("D_L00_00180740");
+extern float level_draw_frame_load_r __asm__("D_L00_0015F6B8") MACRO_ADDR;
+extern T_0023e738 level_point_light_data_r[] __asm__("D_L00_001805C0");
+extern P_0023e738 level_point_lights_r[] __asm__("D_L00_001803C0");
+extern char level_point_light_link_buffers_r[] __asm__("D_L00_00180740");
 void func_001F99D8_0023e738(void *, int) __asm__("func_001F99D8");
 /* Update (reads the frame-time float D_L00_0015F6B8). Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_0023db30.c, FUN_L00_0023e738. */
 int allocate_colored_effect_slot(u128_pt *v, float a, float b_0023e738, float c, float d, float e) {
     int i;
     T_0023e738 *t;
     P_0023e738 *p;
-    if (0.8f < D_L00_0015F6B8_0023e738) return -1;
+    if (0.8f < level_draw_frame_load_r) return -1;
     for (i = 0;
     i < 8;
-    i++) if (D_L00_001805C0_0023e738[i].used == 0) break;
+    i++) if (level_point_light_data_r[i].used == 0) break;
     if (i == 8) return -1;
-    t = &D_L00_001805C0_0023e738[i];
-    p = &D_L00_001803C0_0023e738[i];
+    t = &level_point_light_data_r[i];
+    p = &level_point_lights_r[i];
     qcopy(&p->pos, v);
     p->pos.f[3] = a;
     p->x = c;
@@ -261,7 +261,7 @@ int allocate_colored_effect_slot(u128_pt *v, float a, float b_0023e738, float c,
     p->b_0023e738 = b_0023e738;
     func_001F99D8_0023e738(t, 0x30);
     t->used = 1;
-    t->buf = D_L00_00180740_0023e738 + i * 1024;
+    t->buf = level_point_light_link_buffers_r + i * 1024;
     return i;
 }
 extern void DetachPointLight(int);

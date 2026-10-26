@@ -21,9 +21,9 @@ void gadgetron_ceo_update(Moby *m) {
         break;
     case 1: {
         if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->mode != 15)
-            *(float *)D_L16_0015F718_view = 115.0f;
+            *(float *)kalebo3_hero_fall_state_height_view = 115.0f;
         else
-            *(float *)D_L16_0015F718_view = 100.0f;
+            *(float *)kalebo3_hero_fall_state_height_view = 100.0f;
         if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->state != 29 && Npc_TryStartDialog(m, (char *)d + 0x20)) {
             m->rot.z = d->initial_yaw;
             PlaceMarkerAheadOfMoby(3.5f, m);
@@ -95,7 +95,7 @@ void gadgetron_ceo_update(Moby *m) {
                 PlayBankSound(1, 0, 0);
                 ShowBanner(0x542D, -1);
             }
-            if (D_0015EF68_challenge[1] < 4500) D_0015EF68_challenge[1] = player->points;
+            if (race_best_records_challenge[1] < 4500) race_best_records_challenge[1] = player->points;
         }
         if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->mode == 0) {
             m->state = 1;
@@ -183,7 +183,7 @@ void gadgetron_ceo_update(Moby *m) {
         d->yaw = yaw * 0.7f;
         d->head_yaw = yaw * 0.3f;
     }
-    if (*(unsigned char *)&D_0015EEB0_challenge) *(float *)((char *)d + 0x150) = 2.75f;
+    if (*(unsigned char *)&gCheats_challenge) *(float *)((char *)d + 0x150) = 2.75f;
     EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->body, 0);
     EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->head, 1);
 }

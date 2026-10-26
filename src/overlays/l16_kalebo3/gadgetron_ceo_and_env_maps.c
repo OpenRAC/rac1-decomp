@@ -39,15 +39,15 @@ extern void EaseManipulatorOffsets(float, float, void *, void *, int);
 extern char kalebo3_camera_pos[];
 extern unsigned char D_0013D605[], gHaveMorphORay[];
 extern char menu_item_enabled_115[], D_0014171B[];
-extern int D_0015EF68_challenge[2] __asm__("D_0015EF68") MACRO_ADDR;
+extern int race_best_records_challenge[2] __asm__("D_0015EF68") MACRO_ADDR;
 extern char D_0013E633[];
 extern char gadgetron_ceo_hero_and_camera_pose[], gadgetron_ceo_hero_return_pose[];
 extern int kalebo3_game_mode MACRO_ADDR;
 extern int kalebo3_frame_count MACRO_ADDR;
-extern char D_L16_0015F718_view[4] __asm__("D_L16_0015F718") MACRO_ADDR;
+extern char kalebo3_hero_fall_state_height_view[4] __asm__("D_L16_0015F718") MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
-extern int D_0015EEB0_challenge __asm__("D_0015EEB0") MACRO_ADDR;
+extern int gCheats_challenge __asm__("D_0015EEB0") MACRO_ADDR;
 typedef struct {
     char pad0[4];
     short previous;
@@ -99,9 +99,9 @@ void gadgetron_ceo_update(Moby *m) {
         break;
     case 1: {
         if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->mode != 15)
-            *(float *)D_L16_0015F718_view = 115.0f;
+            *(float *)kalebo3_hero_fall_state_height_view = 115.0f;
         else
-            *(float *)D_L16_0015F718_view = 100.0f;
+            *(float *)kalebo3_hero_fall_state_height_view = 100.0f;
         if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->state != 29 && Npc_TryStartDialog(m, (char *)d + 0x20)) {
             m->rot.z = d->initial_yaw;
             PlaceMarkerAheadOfMoby(3.5f, m);
@@ -173,7 +173,7 @@ void gadgetron_ceo_update(Moby *m) {
                 PlayBankSound(1, 0, 0);
                 ShowBanner(0x53DB, -1);
             }
-            if (D_0015EF68_challenge[1] < 4500) D_0015EF68_challenge[1] = player->points;
+            if (race_best_records_challenge[1] < 4500) race_best_records_challenge[1] = player->points;
         }
         if (((L16ChallengePlayer *)((char *)&D_0013E633_challenge + 0xE1D))->mode == 0) {
             m->state = 1;
@@ -261,7 +261,7 @@ void gadgetron_ceo_update(Moby *m) {
         d->yaw = yaw * 0.7f;
         d->head_yaw = yaw * 0.3f;
     }
-    if (*(unsigned char *)&D_0015EEB0_challenge) *(float *)((char *)d + 0x150) = 2.75f;
+    if (*(unsigned char *)&gCheats_challenge) *(float *)((char *)d + 0x150) = 2.75f;
     EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->body, 0);
     EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->head, 1);
 }
@@ -476,7 +476,7 @@ extern short path_walker_particle_target_scalar_scale;
 extern void FastVecScale(void *, void *, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern float random_angle_radians(void);
-extern void func_L00_0026DD70_emit(void *, void *, int, int, float, int) __asm__("func_L00_0026DD70");
+extern void spawn_effect_particle_with_target_scalar_emit(void *, void *, int, int, float, int) __asm__("func_L00_0026DD70");
 
 /* Emits a particle near an active moby when the target is close. */
 void emit_path_walker_particle(unsigned char *m, void *v) {
@@ -501,7 +501,7 @@ void emit_path_walker_particle(unsigned char *m, void *v) {
     FastVecAdd(velocity, velocity, out);
     final_size = *(float *)&path_walker_particle_target_scalar_scale;
     final_size *= 210000.0f;
-    func_L00_0026DD70_emit(offset, velocity, *(int *)&path_walker_particle_color_start,
+    spawn_effect_particle_with_target_scalar_emit(offset, velocity, *(int *)&path_walker_particle_color_start,
                         *(int *)&path_walker_particle_color_end, final_size, scale_ticks(0x23));
 }
 extern int random_integer_below(int);
@@ -985,8 +985,8 @@ void EnvMapA_Draw(void) {
 }
 typedef struct {float x,y,z,radius;} L16SingleSphere_2e8e80;
 void func_001F49B0_EA2F8(int arg0, int arg1) __asm__("func_001F49B0");
-extern L16SingleSphere_2e8e80 D_L16_001DC8D0_EA2F8[] __asm__("D_L16_001DC8D0");
-extern void func_L16_002EA1B8_EA2F8(void *) __asm__("func_L16_002EA1B8");
+extern L16SingleSphere_2e8e80 envmap_a_bounding_spheres_r[] __asm__("D_L16_001DC8D0");
+extern void EnvMapA_Draw_r(void *) __asm__("func_L16_002EA1B8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l16/gameplay_vendor_002e3190.c, FUN_L16_002e8e80. */
 void update_level16_three_mesh_render_state(unsigned char *m) {
@@ -1016,14 +1016,14 @@ void update_level16_three_mesh_render_state(unsigned char *m) {
                 if (z < minz) minz = z;
             }
             }
-            {L16SingleSphere_2e8e80 *base = D_L16_001DC8D0_EA2F8; L16SingleSphere_2e8e80 *sphere = base + i;
+            {L16SingleSphere_2e8e80 *base = envmap_a_bounding_spheres_r; L16SingleSphere_2e8e80 *sphere = base + i;
             sphere->radius=0.0f;
             sphere->x=(maxx+minx)*0.5f;
             sphere->y=(maxy+miny)*0.5f;
             sphere->z=(maxz+minz)*0.5f;}
             for (j = 0; j < ((int*)&envmap_a_vertex_counts)[i]; j++) {
                 float dist;
-                out = (float*)(D_L16_001DC8D0_EA2F8 + i);
+                out = (float*)(envmap_a_bounding_spheres_r + i);
                 p[0] = ((float**)&envmap_a_vertex_bufs)[i][j * 3 + 0];
                 p[1] = ((float**)&envmap_a_vertex_bufs)[i][j * 3 + 1];
                 p[2] = ((float**)&envmap_a_vertex_bufs)[i][j * 3 + 2];
@@ -1035,7 +1035,7 @@ void update_level16_three_mesh_render_state(unsigned char *m) {
         break;
     }
     case 1:
-        func_001F49B0_EA2F8(func_L16_002EA1B8_EA2F8, m);
+        func_001F49B0_EA2F8(EnvMapA_Draw_r, m);
         break;
     }
 }
@@ -1044,7 +1044,7 @@ extern short envmap_b_vertex_bufs;
 extern short D_L16_00162028;
 extern short envmap_b_normal_bufs;
 extern short envmap_b_color_bufs;
-extern char D_L16_00162040_draw[][16] __asm__("D_L16_00162040") MACRO_ADDR;
+extern char envmap_b_bound_spheres_draw[][16] __asm__("D_L16_00162040") MACRO_ADDR;
 extern char envmap_b_uvs[];
 
 /* Sets up the draw state, then draws the one entry of the level's table. */
@@ -1055,7 +1055,7 @@ void draw_level16_visible_single_reflection_mesh(void) {
     int *d = (int *)&envmap_b_normal_bufs;
     int *e = (int *)&envmap_b_color_bufs;
     int i;
-    char (*p)[16] = D_L16_00162040_draw;
+    char (*p)[16] = envmap_b_bound_spheres_draw;
 
     VU1_addGSregister(6, GetEffectTex(0x29));
     VU1_addGSregister(0x42, 0x4000000064);
@@ -1069,10 +1069,10 @@ void draw_level16_visible_single_reflection_mesh(void) {
         }
     }
 }
-extern short D_L16_00162000_bounds __asm__("D_L16_00162000");
-extern short D_L16_00162020_bounds __asm__("D_L16_00162020");
+extern short envmap_b_vertex_counts_bounds __asm__("D_L16_00162000");
+extern short envmap_b_vertex_bufs_bounds __asm__("D_L16_00162020");
 typedef struct {float x,y,z,radius;} L16SingleSphere;
-extern L16SingleSphere D_L16_00162040_bounds[] __asm__("D_L16_00162040") MACRO_ADDR;
+extern L16SingleSphere envmap_b_bound_spheres_bounds[] __asm__("D_L16_00162040") MACRO_ADDR;
 extern void draw_level16_visible_single_reflection_mesh(void);
 
 /* Compute bounding spheres for one mesh and register their renderer. */
@@ -1089,9 +1089,9 @@ void update_level16_single_mesh_render_state(unsigned char *m) {
             maxx = maxy = maxz = -1024.0f;
             minx = miny = minz = 1024.0f;
             {int k;
-            for (k=0;k<((int*)&D_L16_00162000_bounds)[i];k++) {
+            for (k=0;k<((int*)&envmap_b_vertex_counts_bounds)[i];k++) {
                 float x,y,z;
-                verts=((float**)&D_L16_00162020_bounds)[i]+k*3;
+                verts=((float**)&envmap_b_vertex_bufs_bounds)[i]+k*3;
                 x = verts[0];
                 if (x > maxx) maxx = x;
                 y = verts[1];
@@ -1103,17 +1103,17 @@ void update_level16_single_mesh_render_state(unsigned char *m) {
                 if (z < minz) minz = z;
             }
             }
-            {L16SingleSphere *sphere = D_L16_00162040_bounds + i;
+            {L16SingleSphere *sphere = envmap_b_bound_spheres_bounds + i;
             sphere->radius=0.0f;
             sphere->x=(maxx+minx)*0.5f;
             sphere->y=(maxy+miny)*0.5f;
             sphere->z=(maxz+minz)*0.5f;}
-            for (j = 0; j < ((int*)&D_L16_00162000_bounds)[i]; j++) {
+            for (j = 0; j < ((int*)&envmap_b_vertex_counts_bounds)[i]; j++) {
                 float dist;
-                out = (float*)(D_L16_00162040_bounds + i);
-                p[0] = ((float**)&D_L16_00162020_bounds)[i][j * 3 + 0];
-                p[1] = ((float**)&D_L16_00162020_bounds)[i][j * 3 + 1];
-                p[2] = ((float**)&D_L16_00162020_bounds)[i][j * 3 + 2];
+                out = (float*)(envmap_b_bound_spheres_bounds + i);
+                p[0] = ((float**)&envmap_b_vertex_bufs_bounds)[i][j * 3 + 0];
+                p[1] = ((float**)&envmap_b_vertex_bufs_bounds)[i][j * 3 + 1];
+                p[2] = ((float**)&envmap_b_vertex_bufs_bounds)[i][j * 3 + 2];
                 dist = FastVecDist(p, out);
                 if (dist > out[3]) out[3] = dist;
             }
@@ -1159,7 +1159,7 @@ void draw_level16_visible_textured_batches(void) {
 void draw_level16_visible_textured_batches(void);
 typedef struct {float x,y,z,radius;} L16SingleSphere_2e98e0;
 void func_001F49B0_EAD58(int arg0, int arg1) __asm__("func_001F49B0");
-extern L16SingleSphere_2e98e0 D_L16_001DF580_EAD58[] __asm__("D_L16_001DF580");
+extern L16SingleSphere_2e98e0 envmap_c_bounding_spheres_r[] __asm__("D_L16_001DF580");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l16/gameplay_vendor_002e3190.c, FUN_L16_002e98e0. */
 void update_level16_two_mesh_render_state(unsigned char *m) {
@@ -1189,14 +1189,14 @@ void update_level16_two_mesh_render_state(unsigned char *m) {
                 if (z < minz) minz = z;
             }
             }
-            {L16SingleSphere_2e98e0 *base = D_L16_001DF580_EAD58; L16SingleSphere_2e98e0 *sphere = base + i;
+            {L16SingleSphere_2e98e0 *base = envmap_c_bounding_spheres_r; L16SingleSphere_2e98e0 *sphere = base + i;
             sphere->radius=0.0f;
             sphere->x=(maxx+minx)*0.5f;
             sphere->y=(maxy+miny)*0.5f;
             sphere->z=(maxz+minz)*0.5f;}
             for (j = 0; j < ((int*)&envmap_c_vertex_counts)[i]; j++) {
                 float dist;
-                out = (float*)(D_L16_001DF580_EAD58 + i);
+                out = (float*)(envmap_c_bounding_spheres_r + i);
                 p[0] = ((float**)&envmap_c_vertex_bufs)[i][j * 3 + 0];
                 p[1] = ((float**)&envmap_c_vertex_bufs)[i][j * 3 + 1];
                 p[2] = ((float**)&envmap_c_vertex_bufs)[i][j * 3 + 2];

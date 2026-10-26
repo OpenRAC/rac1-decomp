@@ -324,10 +324,10 @@ void *msg_string(int id) {
 
 LINKER_REMNANT("asm/remnants/text", func_001FE580);
 
-extern int D_0015EF1D_i __asm__("D_0015EF1D") MACRO_ADDR;
-extern int D_0015EF1C_i __asm__("D_0015EF1C") MACRO_ADDR;
-#define D_0015EF1D_b (*(unsigned char *)&D_0015EF1D_i)
-#define D_0015EF1C_b (*(unsigned char *)&D_0015EF1C_i)
+extern int gHelpDeskText_i __asm__("D_0015EF1D") MACRO_ADDR;
+extern int gHelpDeskVoice_i __asm__("D_0015EF1C") MACRO_ADDR;
+#define D_0015EF1D_b (*(unsigned char *)&gHelpDeskText_i)
+#define D_0015EF1C_b (*(unsigned char *)&gHelpDeskVoice_i)
 extern int PlayBankSound(int, int, int);
 extern void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5,
                           int a6, int a7, int a8);
@@ -382,7 +382,7 @@ void link_localized_display_text(void) {
 __asm__(".section .text\n\tnop\n");
 
 extern int scale_game_frame_count(int);
-extern int func_001F9908_r(int *arg0) __asm__("func_001F9908");
+extern int fast_dec_timer_r(int *arg0) __asm__("func_001F9908");
 extern int force_help_message(int arg0, int arg1);
 extern int Music_ContinueStreamIfReady(void);
 extern int pad_held;
@@ -469,7 +469,7 @@ void Help_Update(void) {
         }
         if (HS.msg >= 0) {
             if (HS.shown == 0) {
-                if (func_001F9908_r(HS.wait) != 0) {
+                if (fast_dec_timer_r(HS.wait) != 0) {
                     link_localized_display_text();
                     HS.shown++;
                 }
@@ -621,7 +621,7 @@ void Help_Update(void) {
 
 extern void DrawUIFrame(int, int, int, int, int);
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
-extern long func_001F4868_l(int) __asm__("func_001F4868");
+extern long GetEffectTex_l(int) __asm__("func_001F4868");
 
 /* Help_DrawPrompt: sets the prompt box's +0x18/+0x1C sizes to 0x20,
    draws its frame (func_001F62C8, a 0x40 box around +0x14/+0x10, 0x60
@@ -650,7 +650,7 @@ void Help_DrawPrompt(void) {
     }
     DrawTexturedQuad(((HelpState *)g_help_state)->pad[2] - 0x20,
                   ((HelpState *)g_help_state)->pad[3] - 0x20, 0x40, 0x40, 0, 0, 0x40, 0x40,
-                  (alpha << 24) | 0x808080, func_001F4868_l(4));
+                  (alpha << 24) | 0x808080, GetEffectTex_l(4));
 }
 
 __asm__(".section .text\n\tnop\n");
@@ -708,7 +708,7 @@ void draw_help(void) {
             }
             DrawTexturedQuad(((HelpState *)g_help_state)->pad[2] - 0x20,
                           ((HelpState *)g_help_state)->pad[3] - 0x20, 0x40, 0x40, 0, 0, 0x40, 0x40,
-                          (alpha << 24) | 0x808080, func_001F4868_l(4));
+                          (alpha << 24) | 0x808080, GetEffectTex_l(4));
         }
         break;
     case 4:

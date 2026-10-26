@@ -285,20 +285,20 @@ void update_color_tween_particle(char *m) {
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern void func_001F9BD8_72BC0b(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_L00_002688A8_72BC0b(void *) __asm__("func_L00_002688A8");
-extern void func_001F9BD8_72BC0c(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_L00_002688A8_72BC0c(void *) __asm__("func_L00_002688A8");
+extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+extern void KillPart_r(void *) __asm__("func_L00_002688A8");
+extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
+extern void KillPart_r2(void *) __asm__("func_L00_002688A8");
 typedef struct { u8 pad[0xA]; s16 xa; u8 pc[4]; Vec4 pos; Vec4 vel; Vec4 acc; } O00271d20;
-extern Vec4 D_L00_00173F60_72BC0 __asm__("D_L00_00173F60");
+extern Vec4 collision_hit_point_r __asm__("D_L00_00173F60");
 void func_001F9BD8_72BC0d(void *, void *, void *) __asm__("func_001F9BD8");
 s32 func_001F9938_72BC0b(void *) __asm__("func_001F9938");
 void func_L00_002688A8_72BC0d(void *) __asm__("func_L00_002688A8");
 s32 func_L00_001EFFF0_72BC0(void *, void *, s32, s32, s32) __asm__("func_L00_001EFFF0");
 s32 func_001F9938_72BC0c(void *) __asm__("func_001F9938");
 void func_L00_002688A8_72BC0e(void *) __asm__("func_L00_002688A8");
-extern int func_001F9938_72BC0d(void *) __asm__("func_001F9938");
-extern void func_L00_002688A8_72BC0f(void *) __asm__("func_L00_002688A8");
+extern int FastDecTimer_r(void *) __asm__("func_001F9938");
+extern void KillPart_r3(void *) __asm__("func_L00_002688A8");
 void func_L00_002688A8_72BC0g(void *) __asm__("func_L00_002688A8");
 void func_001F9BD8_72BC0e(void *, void *, void *) __asm__("func_001F9BD8");
 void func_001F9BD8_72BC0f(void *, void *, void *) __asm__("func_001F9BD8");
@@ -306,11 +306,11 @@ void func_L00_002688A8_72BC0h(void *) __asm__("func_L00_002688A8");
 void func_001F9BD8_72BC0g(void *, void *, void *) __asm__("func_001F9BD8");
 s32 func_001F9938_72BC0e(void *) __asm__("func_001F9938");
 void func_L00_002688A8_72BC0i(void *) __asm__("func_L00_002688A8");
-extern void func_L00_002688A8_72BC0j(void *) __asm__("func_L00_002688A8");
-extern void func_001F9BD8_72BC0h(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_L00_002688A8_72BC0k(void *) __asm__("func_L00_002688A8");
-extern void func_L00_002688A8_72BC0l(void *) __asm__("func_L00_002688A8");
-extern void func_L00_002688A8_72BC0m(void *) __asm__("func_L00_002688A8");
+extern void KillPart_72BC0j(void *) __asm__("func_L00_002688A8");
+extern void FastVecAdd_72BC0h(void *, void *, void *) __asm__("func_001F9BD8");
+extern void KillPart_72BC0k(void *) __asm__("func_L00_002688A8");
+extern void KillPart_72BC0l(void *) __asm__("func_L00_002688A8");
+extern void KillPart_72BC0m(void *) __asm__("func_L00_002688A8");
 int func_001F9938_72BC0f(void *) __asm__("func_001F9938");
 void func_L00_002688A8_72BC0n() __asm__("func_L00_002688A8");
 void func_001F9BD8_72BC0i(void *, void *, void *) __asm__("func_001F9BD8");
@@ -332,7 +332,7 @@ void update_timed_line_collision_particle(O00271d20 *o) {
     if (func_001F9938_72BC0g(&o->xa)) {
         func_L00_002688A8_72BC0o(o);
     } else if (func_L00_001EFFF0_72BC0(vel, pos, 0x10, acc->i[3], 0)) {
-        o->pos.q = D_L00_00173F60_72BC0.q;
+        o->pos.q = collision_hit_point_r.q;
         o->xa = 0;
     }
 }
@@ -560,38 +560,38 @@ P_2725d8 *spawn_moby_point_attached_particle(u8 *a0, u8 *a1, s32 a2, s32 a3, f32
     }
     return p;
 }
-extern void func_001F9BD8_273578(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_L00_002688A8_273578(void *) __asm__("func_L00_002688A8");
+extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
+extern void KillPart_r4(void *) __asm__("func_L00_002688A8");
 typedef unsigned int u128_2726d8 __attribute__((mode(TI), aligned(16)));
 typedef struct { u8 *owner; s32 x4; s32 x8; f32 xC; } Q_2726d8;
 typedef struct { u8 pad0[0x10]; u128_2726d8 pos; u8 pad20[0xC]; f32 f2C; Q_2726d8 q; } P_2726d8;
-extern f32 func_002140F8_273578(f32, f32) __asm__("func_002140F8");
-extern void func_L00_00250800_273578(void *, s32, void *) __asm__("func_L00_00250800");
-extern void func_001F9BF0_273578(void *, void *, void *) __asm__("func_001F9BF0");
-extern f32 func_001F9CB8_273578(void *) __asm__("func_001F9CB8");
-extern void func_L00_001FF4B0_273578(void *, void *, f32) __asm__("func_L00_001FF4B0");
+extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
+extern void Moby_GetJointWorldPos_r(void *, s32, void *) __asm__("func_L00_00250800");
+extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
+extern f32 FastVecLength_r(void *) __asm__("func_001F9CB8");
+extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 /* Particle update. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_002726d8. */
 void update_moby_point_attached_particle(P_2726d8 *p) {
     Q_2726d8 *q = &p->q;
     u128_2726d8 t;
     f32 save, sc, r2, f;
     if (p->q.owner == 0 || *(s16 *)(p->q.owner + 0xA6) != q->x8 || p->q.owner[0x20] == 0xFE || p->q.owner[0x20] == 0xFD) {
-        func_L00_002688A8_273578(p);
+        KillPart_r4(p);
         return;
     }
-    sc = q->xC * func_002140F8_273578(0.5f, 1.0f);
+    sc = q->xC * random_float_between_r(0.5f, 1.0f);
     save = p->f2C;
     qcopy(&t, &p->pos);
-    func_L00_00250800_273578(p->q.owner, q->x4, &p->pos);
-    func_001F9BF0_273578(&t, &t, &p->pos);
-    r2 = func_002140F8_273578(-0.021f, 0.021f);
-    if (func_001F9CB8_273578(&t) < 0.0625f) {
+    Moby_GetJointWorldPos_r(p->q.owner, q->x4, &p->pos);
+    FastVecSub_r(&t, &t, &p->pos);
+    r2 = random_float_between_r(-0.021f, 0.021f);
+    if (FastVecLength_r(&t) < 0.0625f) {
         f = r2 + 0.0625f;
     } else {
-        f = func_001F9CB8_273578(&t) + r2;
+        f = FastVecLength_r(&t) + r2;
     }
-    func_L00_001FF4B0_273578(&t, &t, f);
-    func_001F9BD8_273578((u8 *)p + 0x20, &p->pos, &t);
+    vec_scale_to_length_r(&t, &t, f);
+    FastVecAdd_r3((u8 *)p + 0x20, &p->pos, &t);
     *(f32 *)((u8 *)p + 0x1C) = sc;
     p->f2C = save;
 }
@@ -820,8 +820,8 @@ void update_timed_hero_relative_particle(char *m) {
     }
 }
 typedef struct { char p0[0x80]; float x, y, z; } G_2730e0;
-extern unsigned char *D_L00_001B24D4_p __asm__("D_L00_001B24D4") NOT_SDA;
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern unsigned char *part_type53_textures_p __asm__("D_L00_001B24D4") NOT_SDA;
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* Spawns an effect record at a position inside the level bounds; Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_002730e0. */
 unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *pos, char *vel, int color, unsigned char life, unsigned char b, int mode, float scale)
@@ -843,12 +843,12 @@ unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *pos, char *
             v[6] = *(float *)(m + 0x18) - g->z;
         }
         *(int *)(m + 4) = color;
-        m[9] = func_001FA898_r(1.0f) + 0x20;
+        m[9] = truncate_float_to_s32_r(1.0f) + 0x20;
         m[3] = 0x48;
         m[8] = b;
         m[1] = 0;
         *(float *)(m + 0xC) = scale * 210000.0f;
-        m[2] = *D_L00_001B24D4_p;
+        m[2] = *part_type53_textures_p;
         *(short *)(m + 0xA) = life;
     }
     return m;
@@ -1067,7 +1067,7 @@ extern s32 rand_range(s32, s32);
 extern s32 scale_ticks(s32);
 extern unsigned char *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *a, void *b, int c, int d, float f, int n, int e, int g, int h);
 extern unsigned char *mine_debris(void *a, void *b, int c, int d, float f, int n, int k);
-extern int func_L00_00237B70_74908(int, int, float) __asm__("func_L00_00237B70");
+extern int DefaultVtbl_DeleteMoby_r(int, int, float) __asm__("func_L00_00237B70");
 extern short floor_burst_bounce_chance;
 extern f32 g_frame_time MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
@@ -1116,9 +1116,9 @@ void update_gravity_floor_burst_particle(struct EmberParticle *p) {
                              0.05f, 10500.0f);
         }
         if (!random_integer_below(9)) {
-            c1 = func_L00_00237B70_74908(0x7F000000, 0x7F000000 | (cb << 16) | (cg << 8) | cr,
+            c1 = DefaultVtbl_DeleteMoby_r(0x7F000000, 0x7F000000 | (cb << 16) | (cg << 8) | cr,
                                   random_float_between(0.25f, 1.0f));
-            c2 = func_L00_00237B70_74908(0, 0x5F00, random_float_between(0.5f, 1.0f));
+            c2 = DefaultVtbl_DeleteMoby_r(0, 0x5F00, random_float_between(0.5f, 1.0f));
             m->vel.f[0] = random_float_between(-1.0f, 1.0f);
             m->vel.f[1] = random_float_between(-1.0f, 1.0f);
             m->vel.f[2] = 0.0f;
@@ -1268,8 +1268,8 @@ unsigned char *spawn_mode_controlled_orbiting_trail_particle(float f0, float f1,
     }
     return r;
 }
-extern int func_L00_0025A468_q(void *, int) __asm__("func_L00_0025A468");
-extern char *func_L00_00275248_2753B8(float, void *, void *, float, int, int, int, void *) __asm__("func_L00_00275248");
+extern int decrement_packed_countdown_q(void *, int) __asm__("func_L00_0025A468");
+extern char *spawn_mode_controlled_orbiting_trail_particle_r(float, void *, void *, float, int, int, int, void *) __asm__("func_L00_00275248");
 extern void euler_to_matrix(void *, void *);
 extern void transform_vector(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -1313,7 +1313,7 @@ void update_mode_controlled_orbiting_trail_particle(char *m) {
     float z;
     float t, u, e;
     if (r->h1C == 0) {
-        if (func_L00_0025A468_q(particle->b4, r->h1A)) {
+        if (decrement_packed_countdown_q(particle->b4, r->h1A)) {
             KillPart(m);
             return;
         }
@@ -1326,20 +1326,20 @@ void update_mode_controlled_orbiting_trail_particle(char *m) {
         return;
     }
     if (FastDecTimer(&particle->hA) ||
-        (particle->hA < scale_ticks(10) && func_L00_0025A468_q(particle->b4, 0x10))) {
+        (particle->hA < scale_ticks(10) && decrement_packed_countdown_q(particle->b4, 0x10))) {
         KillPart(m);
         return;
     }
     if (r->h1C == 1) {
         z = 0.0f;
-        func_L00_00275248_2753B8(z, 0, particle->v10, z, scale_ticks(10), 0, particle->b7, 0);
+        spawn_mode_controlled_orbiting_trail_particle_r(z, 0, particle->v10, z, scale_ticks(10), 0, particle->b7, 0);
         q = particle->v10;
     } else {
         vv[0] = r->unk0;
         vv[1] = r->unk4;
         vv[2] = r->unk8;
         z = 0.0f;
-        o = func_L00_00275248_2753B8(z, r->iC, particle->v10, z, scale_ticks(10), 0, particle->b7, vv);
+        o = spawn_mode_controlled_orbiting_trail_particle_r(z, r->iC, particle->v10, z, scale_ticks(10), 0, particle->b7, vv);
         q = particle->v10;
         if (o != 0) *(s16 *)(o + 0x38) = *(u16 *)&r->h18;
     }
@@ -1725,7 +1725,7 @@ void update_damped_moby_relative_color_size_tween_particle(char *m) {
     }
 }
 extern float vec_length_xy(void *);
-extern int func_L00_0025A468_r(void *, void *) __asm__("func_L00_0025A468");
+extern int decrement_packed_countdown_r(void *, void *) __asm__("func_L00_0025A468");
 
 /* particle type 75 update: move, damp, then fade or die */
 void update_gravity_damped_resizing_particle(char *m) {
@@ -1745,7 +1745,7 @@ void update_gravity_damped_resizing_particle(char *m) {
             *(float *)(m + 0xC) = 15000.0f;
         }
     } else {
-        if (func_L00_0025A468_r(m + 4, *(void **)(v + 0x1C)) != 0) {
+        if (decrement_packed_countdown_r(m + 4, *(void **)(v + 0x1C)) != 0) {
             *(int *)(m + 0xC) = 0;
             KillPart(m);
         }

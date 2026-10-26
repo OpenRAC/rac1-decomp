@@ -7,7 +7,7 @@ void jet_reset_camera(void *a0, void *a1)
     char *g;
 
     copy_memory_by_alignment((int)&D_J_L00_001BB410, &current_moby_states, 0x404);
-    lvl = D_0015EE84_m;
+    lvl = g_current_level_index_m;
     for (src = current_moby_states.f, i = 0; i < 0x7FF; i++, src++) {
         int v = *src;
         if ((unsigned char)v == 0) continue;

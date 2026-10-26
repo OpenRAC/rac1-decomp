@@ -122,7 +122,7 @@ extern u8 camera_position[];
 extern BillboardViewContext view_context;
 extern BillboardRecord billboard_records[];
 extern void FastMemSet(void *, s32, s32);
-extern s64 func_001F4868_F9478(s32) __asm__("func_001F4868");
+extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
 extern s32 is_vector_outside_clip(Vec4f *);
 extern void FastVecSub(Vec4f *, void *, void *);
 extern void FastVecScale(Vec4f *, Vec4f *, f32);
@@ -199,7 +199,7 @@ void append_billboard_batch(void) {
         packet_words = (s64 *)(tag + 2);
         g_render_packet_cursor.p = tag + 2;
         packet_words[0] = 5;
-        packet_words[1] = func_001F4868_F9478(0x13);
+        packet_words[1] = GetEffectTex_r(0x13);
         packet_words[2] = 0x154;
         packet_words[3] = color;
         packet_words[4] = 0;

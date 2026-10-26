@@ -20,9 +20,9 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
         FastVecScale(vel, vel, 0.5f);
         FastVecAdd(spot, spot, moby + 0x10);
         if (*(int *)(hit + 0x24) & 0x800000) {
-            func_L00_00261B00_0029E498(moby, 10, 20, 2, -1);
+            spawn_randomized_bolt_drop_r(moby, 10, 20, 2, -1);
         } else {
-            func_L00_00261B00_0029E498(moby, 3, 5, 2, -1);
+            spawn_randomized_bolt_drop_r(moby, 3, 5, 2, -1);
         }
         *(short *)(data + 0x14A) = scale_ticks(600);
         spawn_explosion(moby, vel, spot, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
@@ -65,12 +65,12 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
             spawn_debris_0029E498(moby, 0x6BF, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
             break;
         }
-        if (*(short *)(moby + 0xA6) == 0x31B && D_0013D510_0029E498[4] == 0) {
-            D_0013D510_0029E498[4] = 1;
-            func_0022EE28_0029E498(1, 0, 0);
-            func_L00_00264DB8_0029E498(0x542D, -1);
+        if (*(short *)(moby + 0xA6) == 0x31B && gSkillPoints_r[4] == 0) {
+            gSkillPoints_r[4] = 1;
+            PlayBankSound_r(1, 0, 0);
+            ShowBanner_r(0x542D, -1);
         }
-        func_0022EEB8_0029E498(0, 0, moby);
+        allocate_voice_for_group_entry_r(0, 0, moby);
     }
     kerwan_red_ship_update_slot = (void *)red_ship_1_update;
     ((unsigned char *)moby)[0xA4] = 0xFF;
@@ -83,7 +83,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
             *(unsigned short *)(moby + 0x34) |= 0x41;
             idx = *(int *)(data + 0x150);
             if (idx != -1) {
-                e = (unsigned char *)D_0013E650_0029E498 + idx * 0x70;
+                e = (unsigned char *)voice_pool_r2 + idx * 0x70;
                 if (*(char **)(e + 0x88) == moby && e[0x74]) {
                     Sound_StopSlot(idx);
                 }

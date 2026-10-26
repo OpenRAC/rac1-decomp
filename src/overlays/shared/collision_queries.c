@@ -48,7 +48,7 @@ extern s32 truncate_float_to_s32(f32);
 extern s32 * camera_collision_grid MACRO_ADDR;
 extern void STUB_printf(char *);
 extern char camera_collision_out_of_grid_msg[];
-extern s32 func_L00_001EE698_EE530(Vec4 *, s32 *, f32) __asm__("func_L00_001EE698");
+extern s32 test_point_in_camera_collision_volume_r(Vec4 *, s32 *, f32) __asm__("func_L00_001EE698");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_001ee1b0.c, FUN_L00_001ee1b0. */
 s32 *find_camera_collision_volume_for_point(q128 *v, f32 rad) {
@@ -79,7 +79,7 @@ s32 *find_camera_collision_volume_for_point(q128 *v, f32 rad) {
         f = *(f32 *)(e + 0xC);
         d.f[3] = 1.0f;
         if (vec_length_xy(&d) < f + rad) {
-            if (func_L00_001EE698_EE530(tp, (s32 *)e, rad) != 0) {
+            if (test_point_in_camera_collision_volume_r(tp, (s32 *)e, rad) != 0) {
                 return (s32 *)e;
             }
         }

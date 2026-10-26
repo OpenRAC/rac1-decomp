@@ -150,7 +150,7 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
                 }
                 fr = IntToFloat(x);
                 fr = fr / IntToFloat(scale_ticks(15));
-                electric_bolt_branch_alpha[k] = func_001FA898_r((1.0f - fr) * 32.0f);
+                electric_bolt_branch_alpha[k] = truncate_float_to_s32_r((1.0f - fr) * 32.0f);
             }
         }
     }
@@ -168,5 +168,5 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
     r = rand_range(1, 8);
     if (random_integer_below(2)) r = -r;
     f20 = random_float_between(0.15f, 3.0f);
-    spawn_ec290(data + 0x10, scale_ticks(12), f20 * 0.1f, f20, *(int *)&electric_bolt_color | 0x7F000000, 0, r, D_L18_0015F660_2D7310, 0.0f);
+    spawn_ec290(data + 0x10, scale_ticks(12), f20 * 0.1f, f20, *(int *)&electric_bolt_color | 0x7F000000, 0, r, veldin2_zero_vec_r, 0.0f);
 }

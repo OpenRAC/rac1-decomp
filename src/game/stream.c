@@ -69,7 +69,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 extern unsigned char menu_item_enabled_0 NOT_SDA;
@@ -107,7 +107,7 @@ extern void DebugEnter_Nop(void);
 extern int compress_map_coverage(void *dst, int size, int a, int b);
 extern void downsample_map_coverage(void *dst);
 extern short g_current_level_index;
-extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
+extern int g_current_level_index_far __asm__("D_0015EE84") NOT_SDA;
 extern int map_coverage_active[] NOT_SDA;
 extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
 extern void expand_map_coverage(void *, unsigned char *);
@@ -139,7 +139,7 @@ extern unsigned char gemlik_available NOT_SDA;
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern unsigned char gHaveHologuise NOT_SDA;
 extern int moby_render_slots[];
-extern void func_001FA460_2(void *, void *) __asm__("func_001FA460");
+extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -238,7 +238,7 @@ int start_audio_stream_read(int arg0, int arg1, int arg2) {
 /* This caller sets up no arguments at all; func_00217628 is defined
    just above with three. Reach it through an alias rather than
    redeclaring it. */
-extern int func_00217628_v(void) __asm__("func_00217628");
+extern int start_audio_stream_read_v(void) __asm__("func_00217628");
 extern void func_00122598(int);
 extern void music_Update(void);
 extern void func_0012EC40(void);
@@ -520,7 +520,7 @@ typedef struct {
 
 extern s32 menu_help_hud_item SDATA(D_00160170);
 extern s32 world_update_time SDATA(D_0015F6F0);
-extern s32 D_0015F6F0_far __asm__("D_0015F6F0") MACRO_ADDR;
+extern s32 world_update_time_far __asm__("D_0015F6F0") MACRO_ADDR;
 extern s32 menu_entry_trigger_state[];
 extern Suffixes menu_time_suffixes;
 extern char menu_entry_find_token[];
@@ -646,7 +646,7 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
     }
     if (next != menu->unk36) {
         menu->unk36 = next;
-        menu->unk38 = D_0015F6F0_far;
+        menu->unk38 = world_update_time_far;
         e = (MenuItem *)(menu->unk3C + next * 0x1C);
         menu->unk8 = *(u8 *)&e->unk10 & 1;
         process_menu_entry(arg0, menu, 0);

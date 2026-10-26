@@ -7,7 +7,7 @@
 #include "moby.h"
 
 extern char D_0013E633[];
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 extern int CollType(void);
 extern void Hero_TrySetMoveStateL11(int, int);
@@ -51,7 +51,7 @@ void update_hero_surface_condition_flags(void) {
         base_condition_hero_ptr = (struct Hero *)((char *)D_0013E633 + 0xE1D);
         base_condition_hero_ptr->base_condition = 1;
     }
-    if (D_0015EE84_m == 0xD) {
+    if (g_current_level_index_m == 0xD) {
         struct Hero *collision_hero_ptr = (struct Hero *)((char *)D_0013E633 + 0xE1D);
         if (collision_hero_ptr->state.current != 0x7B) {
             if (coll_sphere(collision_hero_ptr->capsule_radius + 0.03f, &collision_hero_ptr->motion.body_center, 2, 0)) {
@@ -295,7 +295,7 @@ void HeroL11_UpdateMovement(void) {
                             if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.f92) {
                                 usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
-                            usage_stats.f94 = usage_stats.f94 | (1 << D_0015EE84_m) | 0x80000000;
+                            usage_stats.f94 = usage_stats.f94 | (1 << g_current_level_index_m) | 0x80000000;
                             *(int *)&pokitaru_look_stat_timer = -1;
                             (*(int *)&pokitaru_look_stat_count)++;
                         }
@@ -565,7 +565,7 @@ void HeroL11_UpdateMovement(void) {
                     if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.f5A) {
                         usage_stats.f5A = scale_ticks(gameplay_event_frame_count) / 600;
                     }
-                    usage_stats.f5C = usage_stats.f5C | (1 << D_0015EE84_m) | 0x80000000;
+                    usage_stats.f5C = usage_stats.f5C | (1 << g_current_level_index_m) | 0x80000000;
                 } else {
                     g_hero.swim_hard_press_frames = 0;
                 }

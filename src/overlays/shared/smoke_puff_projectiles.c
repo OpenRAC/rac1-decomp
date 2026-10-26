@@ -4,7 +4,7 @@
 #include "hero.h"
 #include "moby.h"
 
-extern struct Hero D_0013F450_B0068 __asm__("D_0013F450");
+extern struct Hero g_hero_r __asm__("D_0013F450");
 typedef int OvlQuad_B0068 __attribute__((mode(TI)));
 typedef struct {
     Vec4f dir; /* 0x00: travel direction (also gives the yaw) */
@@ -17,13 +17,13 @@ typedef struct {
     s32 unk24;
     s32 unk28;
 } ShotVars_B0068;
-extern struct Moby *func_0020D348_B0068(int oclass) __asm__("func_0020D348");
-extern float func_L00_001FF860_B0068(float, float) __asm__("func_L00_001FF860");
-extern float func_002140F8_B0068(float, float) __asm__("func_002140F8");
-extern float func_001F9D10_B0068(void *, void *) __asm__("func_001F9D10");
-extern void func_L00_0026E940_B0068(struct Moby *, int color, int life, int, float size) __asm__("func_L00_0026E940");
-extern void func_L00_00251E30_B0068(void *) __asm__("func_L00_00251E30");
-extern float D_0015EE6C_B0068 __asm__("D_0015EE6C") MACRO_ADDR;
+extern struct Moby *CreateMoby_r(int oclass) __asm__("func_0020D348");
+extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
+extern void spawn_source_attached_fading_effect_particle_r(struct Moby *, int color, int life, int, float size) __asm__("func_L00_0026E940");
+extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
+extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002aee30.c, FUN_L04_002aee30. */
 struct Moby *spawn_class_b8_projectile(struct Moby *owner, void *pos, void *dir, int life)
@@ -37,7 +37,7 @@ struct Moby *spawn_class_b8_projectile(struct Moby *owner, void *pos, void *dir,
 
     pos_q = *(OvlQuad_B0068 *)pos;
     dir_q = *(OvlQuad_B0068 *)dir;
-    m = func_0020D348_B0068(0xB8);
+    m = CreateMoby_r(0xB8);
     if (m != 0) {
         vars = (ShotVars_B0068 *)m->pvars;
         vars->owner = owner;
@@ -48,24 +48,24 @@ struct Moby *spawn_class_b8_projectile(struct Moby *owner, void *pos, void *dir,
             m->scale = m->scale * 0.5f;
         m->rot.x = 0.0f;
         m->rot.y = 0.0f;
-        m->rot.z = func_L00_001FF860_B0068(d->x, d->y);
+        m->rot.z = fast_atan2_r(d->x, d->y);
         qcopy(&m->pos, p);
         qcopy(&vars->dir, d);
-        vars->spin = func_002140F8_B0068(-(D_0015EE6C_B0068 * 1.5707964f), D_0015EE6C_B0068 * 1.5707964f);
+        vars->spin = random_float_between_r(-(g_frame_time_r * 1.5707964f), g_frame_time_r * 1.5707964f);
         vars->unk14 = 0;
         vars->time = life;
         vars->time_max = life;
-        vars->hero_dist = func_001F9D10_B0068(&m->pos, &D_0013F450_B0068.motion.pos);
+        vars->hero_dist = FastVecDist_r(&m->pos, &g_hero_r.motion.pos);
         vars->unk24 = 0;
         vars->unk28 = 0;
         if (owner->oclass == 0xFF) {
-            func_L00_0026E940_B0068(m, 0x2F7F4F4F, life * 5 / 4, -1, 100000.0f);
-            func_L00_0026E940_B0068(m, 0x4F7F7F7F, life * 5 / 4, -1, 40000.0f);
+            spawn_source_attached_fading_effect_particle_r(m, 0x2F7F4F4F, life * 5 / 4, -1, 100000.0f);
+            spawn_source_attached_fading_effect_particle_r(m, 0x4F7F7F7F, life * 5 / 4, -1, 40000.0f);
         } else {
-            func_L00_0026E940_B0068(m, 0x2F4F7F7F, life * 5 / 4, -1, 100000.0f);
-            func_L00_0026E940_B0068(m, 0x4F6F7F7F, life * 5 / 4, -1, 40000.0f);
+            spawn_source_attached_fading_effect_particle_r(m, 0x2F4F7F7F, life * 5 / 4, -1, 100000.0f);
+            spawn_source_attached_fading_effect_particle_r(m, 0x4F6F7F7F, life * 5 / 4, -1, 40000.0f);
         }
-        func_L00_00251E30_B0068(m);
+        moby_build_matrix_r(m);
     }
     return m;
 }
@@ -249,7 +249,7 @@ void spawn_moby_table_puff_pattern(char *a)
 }
 typedef int u128 __attribute__((mode(TI)));
 
-extern char *func_0020D348_m(int) __asm__("func_0020D348");
+extern char *CreateMoby_m(int) __asm__("func_0020D348");
 extern void moby_build_matrix(void *);
 
 /* Spawns moby class 0x1F3, copies the 16-byte position from b and a few
@@ -258,7 +258,7 @@ char *spawn_moby_attachment(char *a, char *b)
 {
     u128 v = *(u128 *)b;
     u128 *p = &v;
-    char *moby = (char *)func_0020D348_m(0x1F3);
+    char *moby = (char *)CreateMoby_m(0x1F3);
 
     if (moby != 0) {
         ((unsigned char *)moby)[0x30] = 0xFF;

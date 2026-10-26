@@ -158,7 +158,7 @@ struct StartSoundWork {
     u8 pad_4[0xC];
     volatile s32 read_error;
 };
-extern struct StartSoundWork D_00137C00_2DB68 __asm__("D_00137C00");
+extern struct StartSoundWork sound_read_work_r __asm__("D_00137C00");
 struct SifClientDataStartSound {
     u8 pad_0[0x24];
     void *volatile server;
@@ -171,8 +171,8 @@ extern u8 snd_return_buffer1[];
 extern u8 snd_return_buffer2[];
 extern u8 snd_sif_bind_rpc_error_string[];
 extern u8 snd_989_snd_source_file[];
-extern struct SifClientDataStartSound D_0015ECC0_2DB68 __asm__("D_0015ECC0");
-extern struct SifClientDataStartSound D_0015ECE8_2DB68 __asm__("D_0015ECE8");
+extern struct SifClientDataStartSound sound_command_client_r __asm__("D_0015ECC0");
+extern struct SifClientDataStartSound sound_stream_client_r __asm__("D_0015ECE8");
 extern short snd_batch_command_buffers;
 extern short snd_batch_free_bytes;
 extern s32 D_0015EDAC MACRO_ADDR;
@@ -181,7 +181,7 @@ extern short snd_batch_return_buffers;
 extern short snd_cd_callback_pending;
 extern short snd_cd_callback_fn;
 extern s64 snd_cd_callback_data MACRO_ADDR;
-extern s32 D_0015EE00_2DB68 __asm__("D_0015EE00") MACRO_ADDR;
+extern s32 snd_cd_callback_arg_r __asm__("D_0015EE00") MACRO_ADDR;
 extern void func_0011AE20(u32);
 extern s32 func_0011B2F8(struct SifClientDataStartSound *, u32, s32);
 extern s32 func_00116078_2DB68(const char *, ...) __asm__("func_00116078");
@@ -203,7 +203,7 @@ s32 func_0012DB68(void) {
     func_0011AE20(0);
 
     for (;;) {
-        bind_result = func_0011B2F8(&D_0015ECC0_2DB68, 0x123456, 0);
+        bind_result = func_0011B2F8(&sound_command_client_r, 0x123456, 0);
         if (bind_result < 0) {
             func_00116078_2DB68((const char *)snd_sif_bind_rpc_error_string, snd_989_snd_source_file, 0x73);
             for (;;) {
@@ -212,7 +212,7 @@ s32 func_0012DB68(void) {
         command_arg = 10000;
         for (command_arg--; command_arg != -1; command_arg--) {
         }
-        if (D_0015ECC0_2DB68.server != 0) {
+        if (sound_command_client_r.server != 0) {
             break;
         }
     }
@@ -220,10 +220,10 @@ s32 func_0012DB68(void) {
     (*(s32 *)&snd_cd_callback_pending) = 0;
     (*(s32 *)&snd_cd_callback_fn) = 0;
     snd_cd_callback_data = 0;
-    D_0015EE00_2DB68 = 0;
+    snd_cd_callback_arg_r = 0;
 
     do {
-        bind_result = func_0011B2F8(&D_0015ECE8_2DB68, 0x123457, 0);
+        bind_result = func_0011B2F8(&sound_stream_client_r, 0x123457, 0);
         if (bind_result < 0) {
             func_00116078_2DB68((const char *)snd_sif_bind_rpc_error_string, snd_989_snd_source_file, 0x88);
             for (;;) {
@@ -232,15 +232,15 @@ s32 func_0012DB68(void) {
         command_arg = 10000;
         for (command_arg--; command_arg != -1; command_arg--) {
         }
-    } while (D_0015ECE8_2DB68.server == 0);
+    } while (sound_stream_client_r.server == 0);
 
     *(s32 *)snd_command_buffer1 = 0;
-    D_00137C00_2DB68.read_active = 0;
+    sound_read_work_r.read_active = 0;
     *(s32 *)snd_command_buffer2 = 0;
-    D_00137C00_2DB68.read_error = 0;
+    sound_read_work_r.read_error = 0;
     (*(s32 *)&snd_batch_free_bytes) = 0xFFC;
     D_0015EDAC = 0xFFC;
-    command_arg = (s32)(u32)&D_00137C00_2DB68.read_active;
+    command_arg = (s32)(u32)&sound_read_work_r.read_active;
     return func_0012E688(0, 4, &command_arg);
 }
 
@@ -267,7 +267,7 @@ extern short snd_return_callback;   /* abort callback */
 extern short snd_return_callback_data;   /* its argument (64-bit) */
 /* volatile: retail's compiler keeps its 64-bit accesses out of delay
    slots, so they stay lui-based rather than going through $gp. */
-extern volatile long D_0015EDD8_l __asm__("D_0015EDD8") MACRO_ADDR;
+extern volatile long snd_cd_callback_data_l __asm__("D_0015EDD8") MACRO_ADDR;
 extern unsigned int snd_cd_callback_arg MACRO_ADDR;
 extern int snd_iop_return_word[];
 extern int func_0012DFB0(void);
@@ -311,10 +311,10 @@ int func_0012DDC0(void) {
         func_00118D80(0);
         if (snd_cd_callback_arg != 0xFFFFFFFF) {
             if ((SndCallback)SDA_I(snd_cd_callback_fn) != 0) {
-                arg = D_0015EDD8_l;
+                arg = snd_cd_callback_data_l;
                 fn = (SndCallback)SDA_I(snd_cd_callback_fn);
                 SDA_I(snd_cd_callback_fn) = 0;
-                D_0015EDD8_l = 0;
+                snd_cd_callback_data_l = 0;
                 fn(snd_cd_callback_arg, arg);
             }
             snd_cd_callback_arg = 0;
@@ -398,7 +398,7 @@ LINKER_REMNANT("asm/remnants/core_text", func_0012E058);
 
 extern short snd_cd_callback_pending;
 extern short snd_cd_load_error;
-extern int D_00137C40_a[] __asm__("D_00137C40");
+extern int snd_cd_bank_load_request_a[] __asm__("D_00137C40");
 extern int sound_stream_client;
 extern char D_00153EA8[];
 extern char D_00153ED8[];
@@ -419,15 +419,15 @@ unsigned int func_0012E060(int arg0, int arg1) {
         func_00116078(D_00153ED8);
         return 0;
     }
-    D_00137C40_a[1] = arg1;
+    snd_cd_bank_load_request_a[1] = arg1;
     snd_cd_callback_arg = 0xFFFFFFFF;
-    D_00137C40_a[0] = arg0;
+    snd_cd_bank_load_request_a[0] = arg0;
     while (func_0011B6B8(&sound_stream_client) != 0) {
         func_00116078(snd_non_idle_error_string);
         func_0012DDC0();
         func_00118D80(0);
     }
-    if (func_0011B4C8(&sound_stream_client, 3, 1, D_00137C40_a, 8, &snd_cd_callback_arg, 4, 0, 0) < 0) {
+    if (func_0011B4C8(&sound_stream_client, 3, 1, snd_cd_bank_load_request_a, 8, &snd_cd_callback_arg, 4, 0, 0) < 0) {
         func_00116078(snd_bank_load_by_loc_rpc_error_string);
         *(int *)&snd_cd_load_error = 0x106;
         return 0;
@@ -589,8 +589,8 @@ void func_0012E600(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5,
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012E648);
 
-extern unsigned char D_00133240_c[] __asm__("D_00133240");
-extern int D_00133200_w[] __asm__("D_00133200");
+extern unsigned char snd_sync_send_buffer_c[] __asm__("D_00133240");
+extern int snd_sync_buffer_w[] __asm__("D_00133200");
 extern int func_0012E038_s(int *, int) __asm__("func_0012E038");
 
 /* snd_SendIOPCommandAndWait: copy the command data into the send buffer,
@@ -603,7 +603,7 @@ int func_0012E688(int cmd, int size, void *arg) {
     int result;
 
     for (i = 0; i < size; i++) {
-        D_00133240_c[i] = data[i];
+        snd_sync_send_buffer_c[i] = data[i];
     }
     goto check;
     do {
@@ -611,20 +611,20 @@ int func_0012E688(int cmd, int size, void *arg) {
         func_00118D80(0);
 check:;
     } while (*(int *)&snd_current_buffer != 0);
-    func_0012E038_s(D_00133200_w, 1);
+    func_0012E038_s(snd_sync_buffer_w, 1);
     while (func_0011B6B8(&sound_command_client) != 0) {
         func_00116078(snd_non_idle_error_string);
         func_0012DDC0();
         func_00118D80(0);
     }
     if (size != 0) {
-        func_0011B4C8(&sound_command_client, cmd, 1, D_00133240_c, size, D_00133200_w, 0xC, 0, 0);
+        func_0011B4C8(&sound_command_client, cmd, 1, snd_sync_send_buffer_c, size, snd_sync_buffer_w, 0xC, 0, 0);
     } else {
-        func_0011B4C8(&sound_command_client, cmd, 1, 0, 0, D_00133200_w, 0xC, 0, 0);
+        func_0011B4C8(&sound_command_client, cmd, 1, 0, 0, snd_sync_buffer_w, 0xC, 0, 0);
     }
     while (func_0012DFB0() == 0) {
     }
-    result = D_00133200_w[1];
+    result = snd_sync_buffer_w[1];
     if (*((int **)&snd_batch_command_buffers)[*(int *)&snd_batch_index] != 0 && *(int *)&GlobalTableStatus == 0) {
         func_0012EB18();
     }
@@ -661,13 +661,13 @@ void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_dat
 
     held = 0;
     if (*(int *)&GlobalTableStatus == 0 && *(int *)&snd_current_buffer == 0 && size == 0 && cb == 0) {
-        func_0012E038_s(D_00133200_w, 1);
+        func_0012E038_s(snd_sync_buffer_w, 1);
         while (func_0011B6B8(&sound_command_client) != 0) {
             func_00116078_p(snd_non_idle_error_string);
             func_0012DDC0();
             func_00118D80(0);
         }
-        func_0011B4C8(&sound_command_client, cmd, 1, 0, 0, D_00133200_w, 0xC, 0, 0);
+        func_0011B4C8(&sound_command_client, cmd, 1, 0, 0, snd_sync_buffer_w, 0xC, 0, 0);
         return;
     }
     need = size + 4;

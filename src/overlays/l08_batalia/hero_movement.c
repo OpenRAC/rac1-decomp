@@ -7,7 +7,7 @@
 #include "moby.h"
 
 extern unsigned char D_0013E633[];
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 extern int CollType(void);
 extern void Hero_TryMoveStateL08(int, int);
@@ -54,7 +54,7 @@ void HeroL08_ResetActionState(void) {
         q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
         q->base_condition = 1;
     }
-    if (D_0015EE84_m == 0xD) {
+    if (g_current_level_index_m == 0xD) {
         struct Hero *q = (struct Hero *)((char *)D_0013E633 + 0xE1D);
         if (q->state.current != 0x7B) {
             if (coll_sphere(q->capsule_radius + 0.03f, &q->motion.body_center, 2, 0)) {
@@ -327,7 +327,7 @@ void HeroL08_UpdateStatePhysics(void) {
                             if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.f92) {
                                 usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
-                            usage_stats.f94 = usage_stats.f94 | (1 << D_0015EE84_m) | 0x80000000;
+                            usage_stats.f94 = usage_stats.f94 | (1 << g_current_level_index_m) | 0x80000000;
                             *(int *)&batalia_usage_event_timer = -1;
                             (*(int *)&batalia_usage_event_count)++;
                         }
@@ -597,7 +597,7 @@ void HeroL08_UpdateStatePhysics(void) {
                     if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.f5A) {
                         usage_stats.f5A = scale_ticks(gameplay_event_frame_count) / 600;
                     }
-                    usage_stats.f5C = usage_stats.f5C | (1 << D_0015EE84_m) | 0x80000000;
+                    usage_stats.f5C = usage_stats.f5C | (1 << g_current_level_index_m) | 0x80000000;
                 } else {
                     g_hero.swim_hard_press_frames = 0;
                 }
@@ -1706,12 +1706,12 @@ void HeroL08_UpdateStatePhysics(void) {
         }
         break;
     case 0x31:
-        if (D_0015EE84_m == 0xF) {
+        if (g_current_level_index_m == 0xF) {
             release_voice_slot_cf(2, (int)g_hero.moby, 0x1D);
         } else {
             release_voice_slot_cf(2, (int)g_hero.moby, 6);
         }
-        if (D_0015EE84_m != 0xF) {
+        if (g_current_level_index_m != 0xF) {
 
             emit_hero_randomized_motion_effects(4, 2);
             vec[0][0] = g_hero.motion.pos.f[0] + random_float_between(-0.25f, 0.25f);

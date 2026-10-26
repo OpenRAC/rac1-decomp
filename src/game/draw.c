@@ -675,7 +675,7 @@ extern float D_0018D010;
 
 /* The camera block as a struct: all four accesses then share one base
    register with field offsets, as in retail. */
-extern CameraSystem D_00187040_cam __asm__("D_00187040");
+extern CameraSystem gCamera_cam __asm__("D_00187040");
 
 
 /* Projects camera-space point a1 through the camera matrix, divides by
@@ -689,10 +689,10 @@ void project_to_screen(Vec3f *a0, float *a1) {
     float invw;
 
     set_identity_matrix(m);
-    m[3][0] = -D_00187040_cam.pos.f[0] * 1024.0f;
-    m[3][1] = -D_00187040_cam.pos.f[1] * 1024.0f;
-    m[3][2] = -D_00187040_cam.pos.f[2] * 1024.0f;
-    sce_vu0_mul_matrix(m2, D_00187040_cam.view_matrix, m);
+    m[3][0] = -gCamera_cam.pos.f[0] * 1024.0f;
+    m[3][1] = -gCamera_cam.pos.f[1] * 1024.0f;
+    m[3][2] = -gCamera_cam.pos.f[2] * 1024.0f;
+    sce_vu0_mul_matrix(m2, gCamera_cam.view_matrix, m);
 
     FastVecScale(v, a1, 1024.0f);
     v[3] = 1.0f;
@@ -716,7 +716,7 @@ void ProfileMarker_End(void) {
 void ProfileMarker_Begin(void) {
 }
 
-extern int D_0015F6FC_m __asm__("D_0015F6FC") MACRO_ADDR;
+extern int space_load_in_progress_m __asm__("D_0015F6FC") MACRO_ADDR;
 extern int pal_mode MACRO_ADDR;
 extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern int *g_render_packet_cursor MACRO_ADDR;
@@ -729,7 +729,7 @@ extern void func_001207B8(void);
 extern void VU1_initChain(void);
 extern void SetPalMode(void);
 extern void DMAC_VIF1_Enable(void);
-extern volatile int D_00160FE0_v __asm__("D_00160FE0") MACRO_ADDR;
+extern volatile int vif_chain_flags_v __asm__("D_00160FE0") MACRO_ADDR;
 
 /* Render setup: raises D_0015F6FC, clears D_00160FE0, runs the setup calls,
    picks func_00121B78's mode from D_0015EE80 (retail's movz), then runs
@@ -742,8 +742,8 @@ void reset_graphics(void) {
     int flag;
     int pal;
 
-    D_0015F6FC_m = 1;
-    D_00160FE0_v = 0;
+    space_load_in_progress_m = 1;
+    vif_chain_flags_v = 0;
     DMAC_VIF1_Disable();
     func_00123308(1);
     InitDma();
@@ -771,7 +771,7 @@ extern char sky_view_mtx[];
 typedef struct {
     float f[0x50];
 } SceneG;
-extern SceneG D_00187040_g __asm__("D_00187040");
+extern SceneG gCamera_g __asm__("D_00187040");
 
 /* Builds the view matrices in the camera block from the rotation set up in D_00187390 or the three rotation angles, then copies the result to D_0018D080. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/view/fun_001f2260.c, FUN_001f2260. */
 void BuildViewMatrices(void) {
@@ -789,11 +789,11 @@ void BuildViewMatrices(void) {
         qcopy(m[2], camera_rows + 0x20);
     } else {
         func_00125358(m[0]);
-        func_001254A0(m[0], m[0], D_00187040_g.f[0x150 / 4]);
-        func_00125548(m[0], m[0], D_00187040_g.f[0x154 / 4]);
-        func_001253F8(m[0], m[0], D_00187040_g.f[0x158 / 4]);
+        func_001254A0(m[0], m[0], gCamera_g.f[0x150 / 4]);
+        func_00125548(m[0], m[0], gCamera_g.f[0x154 / 4]);
+        func_001253F8(m[0], m[0], gCamera_g.f[0x158 / 4]);
     }
-    g = &D_00187040_g;
+    g = &gCamera_g;
     x = D_0018CEC0;
     xf = (float *)(x - 0xC0);
     g->f[0] = -m[1][0];
@@ -947,7 +947,7 @@ int GetOcclGridFromPair(int a0, int a1, int a2, int a3, int a4, int a5, float t)
     return ParseOcclGrid(b0, b1, b2);
 }
 
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float IntToFloat(int);
 extern int GetOcclGridFromPair(int, int, int, int, int, int, float);
 extern void fast_mem_or16(void *, void *, void *, int);
@@ -969,9 +969,9 @@ void BuildOcclVisibility(void) {
     float *p;
     int bx, by, bz;
 
-    x = func_001FA898_r(D_00187040_cam.pos.f[0] * scale);
-    y = func_001FA898_r(D_00187040_cam.pos.f[1] * scale);
-    z = func_001FA898_r(D_00187040_cam.pos.f[2] * scale);
+    x = truncate_float_to_s32_r(gCamera_cam.pos.f[0] * scale);
+    y = truncate_float_to_s32_r(gCamera_cam.pos.f[1] * scale);
+    z = truncate_float_to_s32_r(gCamera_cam.pos.f[2] * scale);
     vis = (char *)ParseOcclGrid(x, y, z);
     if (vis != 0) {
         occl_invalid_grid = 0;
@@ -981,11 +981,11 @@ void BuildOcclVisibility(void) {
         occl_invalid_grid = 1;
         if (occl_fallback_mode == 0) {
             gx = (char *)GetOcclGridFromPair(x - 1, y, z, x + 1, y, z,
-                                       D_00187040_cam.pos.f[0] * scale - IntToFloat(x));
+                                       gCamera_cam.pos.f[0] * scale - IntToFloat(x));
             gy = (char *)GetOcclGridFromPair(x, y - 1, z, x, y + 1, z,
-                                       D_00187040_cam.pos.f[1] * scale - IntToFloat(y));
+                                       gCamera_cam.pos.f[1] * scale - IntToFloat(y));
             gz = (char *)GetOcclGridFromPair(x, y, z - 1, x, y, z + 1,
-                                       D_00187040_cam.pos.f[2] * scale - IntToFloat(z));
+                                       gCamera_cam.pos.f[2] * scale - IntToFloat(z));
             if (gx != 0 || gy != 0 || gz != 0) {
                 FastMemZero16(occl_visibility_merged, 0x80);
                 if (gx != 0) {
@@ -1017,9 +1017,9 @@ void BuildOcclVisibility(void) {
             case 2:
                 p = occl_oct;
                 if (p != 0) {
-                    bx = 0.0f < D_00187040_cam.pos.f[0] - p[0];
-                    by = 0.0f < D_00187040_cam.pos.f[1] - p[1];
-                    bz = 0.0f < D_00187040_cam.pos.f[2] - p[2];
+                    bx = 0.0f < gCamera_cam.pos.f[0] - p[0];
+                    by = 0.0f < gCamera_cam.pos.f[1] - p[1];
+                    bz = 0.0f < gCamera_cam.pos.f[2] - p[2];
                     FastMemCopy(occl_visibility, (char *)p + ((bz + by * 2 + bx * 4) * 0x80 + 0x10), 0x80);
                 } else if (camera_position_publication_suppressed == 0 && occl_previous_grid != 0) {
                     FastMemCopy(occl_visibility, occl_previous_grid, 0x80);
@@ -1597,17 +1597,17 @@ void ResetGsRegistersPr(void) {
 extern short screen_color_effect_now;             /* SDA, gp -0x78B0: Stripes * */
 extern char *level_sky_effect_data MACRO_ADDR;
 extern int D_0018C44C[];
-extern int D_0015F534_f __asm__("D_0015F534") MACRO_ADDR;
+extern int draw_enable_mask_f __asm__("D_0015F534") MACRO_ADDR;
 extern int font_state MACRO_ADDR;
 extern int g_game_mode MACRO_ADDR;
-extern unsigned char D_0015EF40_F3D78[] __asm__("D_0015EF40") MACRO_ADDR;
+extern unsigned char subtitles_enabled_r[] __asm__("D_0015EF40") MACRO_ADDR;
 extern float gFade MACRO_ADDR;
 extern float white_fade_level MACRO_ADDR;
 extern float draw_frame_time_ratio MACRO_ADDR;
-extern unsigned char D_001611C0_F3D78[] __asm__("D_001611C0") MACRO_ADDR;
-extern unsigned char D_001611C1_F3D78[] __asm__("D_001611C1") MACRO_ADDR;
-extern unsigned char D_001611C2_F3D78[] __asm__("D_001611C2") MACRO_ADDR;
-extern unsigned char D_001611C3_F3D78[] __asm__("D_001611C3") MACRO_ADDR;
+extern unsigned char underwater_screen_tint_r_r[] __asm__("D_001611C0") MACRO_ADDR;
+extern unsigned char underwater_screen_tint_g_r[] __asm__("D_001611C1") MACRO_ADDR;
+extern unsigned char underwater_screen_tint_b_r[] __asm__("D_001611C2") MACRO_ADDR;
+extern unsigned char underwater_screen_tint_a_r[] __asm__("D_001611C3") MACRO_ADDR;
 extern unsigned short moby_vu1_data_qwc NOT_SDA;
 extern char moby_vu1_data[];
 extern char profile_mark_frame_start[];
@@ -1630,9 +1630,9 @@ extern char tfrag_dma_block[];
 extern char tie_light_data[];
 extern char shrub_scratchpad_copy[];
 
-extern void func_001F2558_a(void *, int) __asm__("func_001F2558");
-extern void func_001F2560_a(void *, int) __asm__("func_001F2560");
-extern void func_001F2930_v(void) __asm__("func_001F2930");
+extern void ProfileMarker_End_a(void *, int) __asm__("func_001F2558");
+extern void ProfileMarker_Begin_a(void *, int) __asm__("func_001F2560");
+extern void UpdateFog_v(void) __asm__("func_001F2930");
 extern void append_gif_transfer_packet(void);
 extern void BuildViewMatrices(void);
 extern void prune_moby_references(void);
@@ -1685,7 +1685,7 @@ void DrawDebugProfiler(void) {
     float t;
     float div;
 
-    if (level_sky_effect_data == 0 || *(short *)(level_sky_effect_data + 4) != 0 || ((D_0015F534_f ^ 1) & 1) || draw_config[2] == 0 ||
+    if (level_sky_effect_data == 0 || *(short *)(level_sky_effect_data + 4) != 0 || ((draw_enable_mask_f ^ 1) & 1) || draw_config[2] == 0 ||
         D_0018C44C[0] != 0) {
         append_gif_transfer_packet();
     }
@@ -1694,20 +1694,20 @@ void DrawDebugProfiler(void) {
     UpdateOcclusion();
     ResetGsRegisters();
     font_state = -1;
-    func_001F2558_a(profile_mark_frame_start, 0xF);
-    func_001F2560_a(profile_mark_frame_start, 0xF);
-    if (level_sky_effect_data != 0 && (D_0015F534_f & 1)) {
+    ProfileMarker_End_a(profile_mark_frame_start, 0xF);
+    ProfileMarker_Begin_a(profile_mark_frame_start, 0xF);
+    if (level_sky_effect_data != 0 && (draw_enable_mask_f & 1)) {
         if (draw_config[2] != 0) {
             Transition_DrawSky();
         }
-        func_001F2560_a(profile_mark_after_sky, 0xE);
-        func_001F2558_a(profile_mark_after_sky, 0xE);
+        ProfileMarker_Begin_a(profile_mark_after_sky, 0xE);
+        ProfileMarker_End_a(profile_mark_after_sky, 0xE);
     }
-    if (D_0015F534_f & 2) {
+    if (draw_enable_mask_f & 2) {
         DrawTfrag();
     }
     append_dma_tag(0x02010000);
-    if (D_0015F534_f & 4) {
+    if (draw_enable_mask_f & 4) {
         if (pal_mode != 0) {
             DrawTies_2();
         } else {
@@ -1722,16 +1722,16 @@ void DrawDebugProfiler(void) {
         DoGifPaging();
         VU1_gsRegsNormal();
     }
-    func_001F2558_a(profile_mark_after_ties, 6);
-    func_001F2560_a(profile_mark_after_ties, 6);
-    if (D_0015F534_f & 8) {
+    ProfileMarker_End_a(profile_mark_after_ties, 6);
+    ProfileMarker_Begin_a(profile_mark_after_ties, 6);
+    if (draw_enable_mask_f & 8) {
         DrawShrubs();
     }
     append_dma_tag(0x02040000);
     if (draw_config[0x44 / 4] != 0 && *(int *)&occl_debug_overlay_enabled != 0) {
         draw_fogged_fullscreen_sprite((char *)&occl_debug_overlay_enabled);
     }
-    if (D_0015F534_f & 0x20) {
+    if (draw_enable_mask_f & 0x20) {
         SetupGifPaging(1);
         draw_debug_font();
         DoGifPaging();
@@ -1743,18 +1743,18 @@ void DrawDebugProfiler(void) {
         DoGifPaging();
         VU1_gsRegsNormal();
     }
-    if (D_0015F534_f & 0x10) {
+    if (draw_enable_mask_f & 0x10) {
         DrawMobys();
     }
     append_dma_tag(0x02080000);
     SetupGifPaging(0);
-    if ((D_0015F534_f & 0x20) && draw_config[0x30 / 4] != 0 && font_state != 6) {
+    if ((draw_enable_mask_f & 0x20) && draw_config[0x30 / 4] != 0 && font_state != 6) {
         VU1_addDataRef(moby_vu1_data, moby_vu1_data_qwc);
         font_state = 6;
     }
-    func_001F2560_a(profile_mark_after_mobys, 4);
-    func_001F2558_a(profile_mark_after_mobys, 4);
-    if (D_0015F534_f & 0x20) {
+    ProfileMarker_Begin_a(profile_mark_after_mobys, 4);
+    ProfileMarker_End_a(profile_mark_after_mobys, 4);
+    if (draw_enable_mask_f & 0x20) {
         vu1_gs_regs_alt();
         if (draw_config[0x34 / 4] != 0) {
             if (draw_callback_count != 0) {
@@ -1765,8 +1765,8 @@ void DrawDebugProfiler(void) {
             vu1_gs_regs_alt();
             draw_light_quads();
         }
-        func_001F2558_a(profile_mark_after_lights, 6);
-        func_001F2560_a(profile_mark_after_lights, 6);
+        ProfileMarker_End_a(profile_mark_after_lights, 6);
+        ProfileMarker_Begin_a(profile_mark_after_lights, 6);
         if (draw_config[0x38 / 4] != 0) {
             VU1_addGSregister(8, 5);
             vu1_gs_regs_alt();
@@ -1774,8 +1774,8 @@ void DrawDebugProfiler(void) {
             PartProc();
             font_state = 8;
         }
-        func_001F2558_a(profile_mark_after_particles, 8);
-        func_001F2560_a(profile_mark_after_particles, 8);
+        ProfileMarker_End_a(profile_mark_after_particles, 8);
+        ProfileMarker_Begin_a(profile_mark_after_particles, 8);
         if (draw_config[0x3C / 4] != 0) {
             if (draw_callback2_count != 0) {
                 vu1_gs_regs_alt();
@@ -1787,68 +1787,68 @@ void DrawDebugProfiler(void) {
             VU1_addGSregister(0x42, 0x8000000044L);
             render_queued_rotated_sprites();
         }
-        func_001F2558_a(profile_mark_after_sprites, 6);
-        func_001F2560_a(profile_mark_after_sprites, 6);
+        ProfileMarker_End_a(profile_mark_after_sprites, 6);
+        ProfileMarker_Begin_a(profile_mark_after_sprites, 6);
     }
     if (draw_config[0x48 / 4] != 0) {
         AA_BlurPass();
     }
-    func_001F2560_a(profile_mark_after_blur, 0xF);
+    ProfileMarker_Begin_a(profile_mark_after_blur, 0xF);
     vu1_gs_regs_alt();
-    if (D_0015F534_f & 0x10000) {
+    if (draw_enable_mask_f & 0x10000) {
         DebugProfiler_Hook();
     }
-    if ((D_0015F534_f & 0x80) && draw_config[0x40 / 4] != 0) {
+    if ((draw_enable_mask_f & 0x80) && draw_config[0x40 / 4] != 0) {
         update_hud();
         draw_help();
         draw_letterbox_bars();
     }
-    if (g_game_mode == 2 && D_0015EF40_F3D78[0] != 0) {
+    if (g_game_mode == 2 && subtitles_enabled_r[0] != 0) {
         draw_subtitles();
     }
-    func_001F2560_a(profile_mark_after_hud, 0xE);
-    func_001F2558_a(profile_mark_after_hud, 0xE);
+    ProfileMarker_Begin_a(profile_mark_after_hud, 0xE);
+    ProfileMarker_End_a(profile_mark_after_hud, 0xE);
     DoGifPaging();
-    if (D_0015F534_f & 0x40) {
+    if (draw_enable_mask_f & 0x40) {
         if (draw_config[0x44 / 4] != 0) {
             VU1_addGSregister(0x42, 0x8000000044L);
             if (use_alt_fog != 0) {
-                emit_rgba_draw_packet(D_001611C0_F3D78[0], D_001611C1_F3D78[0], D_001611C2_F3D78[0], D_001611C3_F3D78[0]);
+                emit_rgba_draw_packet(underwater_screen_tint_r_r[0], underwater_screen_tint_g_r[0], underwater_screen_tint_b_r[0], underwater_screen_tint_a_r[0]);
             }
             if (gFade > 0.0f) {
                 if (gFade > 1.0f) {
                     gFade = 1.0f;
                 }
-                emit_rgba_draw_packet(0, 0, 0, func_001FA898_r(gFade * 128.0f));
+                emit_rgba_draw_packet(0, 0, 0, truncate_float_to_s32_r(gFade * 128.0f));
             }
             if (white_fade_level > 0.0f) {
                 if (white_fade_level > 1.0f) {
                     white_fade_level = 1.0f;
                 }
-                emit_rgba_draw_packet(0xFF, 0xFF, 0xFF, func_001FA898_r(white_fade_level * 128.0f));
+                emit_rgba_draw_packet(0xFF, 0xFF, 0xFF, truncate_float_to_s32_r(white_fade_level * 128.0f));
             }
             if (*(int *)&screen_overlay_enabled != 0 && *(int *)&screen_color_effect_now != 0) {
                 draw_screen_effect();
             }
         }
-        func_001F2560_a(profile_mark_after_fades, 0xA);
+        ProfileMarker_Begin_a(profile_mark_after_fades, 0xA);
     }
     VU0_loadMicroProgram(frame_vu0_micro_program);
     func_00118D80(0);
     t = IntToFloat(*(volatile int *)0x10000800);
     draw_frame_time_ratio = t / (pal_mode != 0 ? 11520.0f : 9600.0f);
     VU1_syncChain(2);
-    func_001F2558_a(profile_mark_vu1_sync, 0x11);
-    if (D_0015F534_f & 2) {
+    ProfileMarker_End_a(profile_mark_vu1_sync, 0x11);
+    if (draw_enable_mask_f & 2) {
         if (draw_config[0x10 / 4] != 0) {
             LightTfrags(tfrag_dma_block);
             PatchTfragGifs();
         }
-        func_001F2558_a(profile_mark_tfrag_lighting, 2);
+        ProfileMarker_End_a(profile_mark_tfrag_lighting, 2);
     }
     VU1_syncChain(4);
-    func_001F2558_a(profile_mark_vu1_sync, 0x11);
-    if (D_0015F534_f & 4) {
+    ProfileMarker_End_a(profile_mark_vu1_sync, 0x11);
+    if (draw_enable_mask_f & 4) {
         if (draw_config[0x18 / 4] != 0) {
             if (pal_mode != 0) {
                 register_entity_render_resources();
@@ -1858,26 +1858,26 @@ void DrawDebugProfiler(void) {
                 PatchTieGifs();
             }
         }
-        func_001F2558_a(profile_mark_tie_lighting, 5);
+        ProfileMarker_End_a(profile_mark_tie_lighting, 5);
     }
     VU1_syncChain(8);
-    func_001F2558_a(profile_mark_vu1_sync, 0x11);
-    if (D_0015F534_f & 8) {
+    ProfileMarker_End_a(profile_mark_vu1_sync, 0x11);
+    if (draw_enable_mask_f & 8) {
         if (draw_config[0x20 / 4] != 0) {
             LightShrubs(shrub_scratchpad_copy);
             patch_shrub_gifs();
         }
-        func_001F2558_a(profile_mark_shrub_lighting, 7);
+        ProfileMarker_End_a(profile_mark_shrub_lighting, 7);
     }
     VU1_syncChain(0x10);
-    func_001F2558_a(profile_mark_vu1_sync, 0x11);
-    if (D_0015F534_f & 0x10) {
+    ProfileMarker_End_a(profile_mark_vu1_sync, 0x11);
+    if (draw_enable_mask_f & 0x10) {
         if (draw_config[0x28 / 4] != 0) {
             PatchMobyGifs();
         }
-        func_001F2558_a(profile_mark_moby_patch, 3);
+        ProfileMarker_End_a(profile_mark_moby_patch, 3);
     }
-    func_001F2930_v();
+    UpdateFog_v();
     occl_fallback_mode = 0;
 }
 
@@ -1889,7 +1889,7 @@ extern void DrawDebugProfiler(void);
 /* D_0015F6FC is read through a MACRO_ADDR alias: retail's one-register
    lui $2 / lw $2 (an older note filed it as an allocator question). */
 void prepare_debug_profiler_render(void) {
-    if (D_0015F6FC_m == 0) {
+    if (space_load_in_progress_m == 0) {
         append_gif_transfer_packet();
         *(int *)&draw_enable_mask = 0x7F;
         DrawDebugProfiler();
@@ -2306,12 +2306,12 @@ typedef struct {
     char pad38[0x14];
     char *subs;    /* 0x4C */
 } SubState;
-extern SubState D_0018CC20_s __asm__("D_0018CC20");
+extern SubState render_sequence_s __asm__("D_0018CC20");
 extern int g_game_language MACRO_ADDR;
 extern int g_screen_extent[];
 extern void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5,
                           int a6, int a7, int a8);
-extern void func_001F7560_l(void *, long, char *, int) __asm__("func_001F7560");
+extern void font_print_window_regular_l(void *, long, char *, int) __asm__("func_001F7560");
 extern void DrawUIFrame(int, int, int, int, int);
 
 /* Draws the subtitle showing at the current time (D_0018CC20+0x34): the
@@ -2329,16 +2329,16 @@ void draw_subtitles(void) {
     int lang;
     int idx;
 
-    if (D_0018CC20_s.subs == 0) {
+    if (render_sequence_s.subs == 0) {
         return;
     }
     lang = g_game_language;
     idx = (lang >= 2 && lang <= 5) ? lang - 1 : 0;
-    for (p = (Subtitle *)D_0018CC20_s.subs; p->start >= 0; p++) {
-        if (D_0018CC20_s.time < p->start) {
+    for (p = (Subtitle *)render_sequence_s.subs; p->start >= 0; p++) {
+        if (render_sequence_s.time < p->start) {
             continue;
         }
-        if (p->end < D_0018CC20_s.time) {
+        if (p->end < render_sequence_s.time) {
             continue;
         }
         {
@@ -2347,7 +2347,7 @@ void draw_subtitles(void) {
             int hw, hh;
 
             FontSetWindow(win, 0xC8, 0x208, 0x28, 0x1D8, 0x100, g_screen_extent[1] - 0x38, 0x12, 7);
-            func_001F7560_l(win, 0x80B0B0B0, D_0018CC20_s.subs + p->text[idx], -1);
+            font_print_window_regular_l(win, 0x80B0B0B0, render_sequence_s.subs + p->text[idx], -1);
             win[5] = g_screen_extent[1] - 0x3C;
             w = win[6];
             h = win[7];
@@ -2358,7 +2358,7 @@ void draw_subtitles(void) {
             }
             DrawUIFrame(win[5] - hh, win[5] + hh, 0x100 - hw, 0x100 + hw, 0x60);
             win[9] &= ~4;
-            func_001F7560_l(win, 0x80B0B0B0, D_0018CC20_s.subs + p->text[idx], -1);
+            font_print_window_regular_l(win, 0x80B0B0B0, render_sequence_s.subs + p->text[idx], -1);
             return;
         }
     }
@@ -2639,16 +2639,16 @@ void DrawTexturedQuad(int x, int y, int w, int h, int u, int v, int uw, int vh,
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x60);
 }
 
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* func_001F5800 with a float screen rectangle: each corner is rounded
    (func_001FA898) from 16ths before the viewport offset. */
 void append_subpixel_textured_screen_quad(float x, float y, float w, float h, int u, int v, int uw, int vh,
                    unsigned long rgba, unsigned long tex) {
-    int x0 = func_001FA898_r(x * 16.0f) + g_screen_extent[4] - 8;
-    int x1 = func_001FA898_r((x + w) * 16.0f) + g_screen_extent[4] - 8;
-    int y0 = func_001FA898_r(y * 16.0f) + g_screen_extent[5] - 8;
-    int y1 = func_001FA898_r((y + h) * 16.0f) + g_screen_extent[5] - 8;
+    int x0 = truncate_float_to_s32_r(x * 16.0f) + g_screen_extent[4] - 8;
+    int x1 = truncate_float_to_s32_r((x + w) * 16.0f) + g_screen_extent[4] - 8;
+    int y0 = truncate_float_to_s32_r(y * 16.0f) + g_screen_extent[5] - 8;
+    int y1 = truncate_float_to_s32_r((y + h) * 16.0f) + g_screen_extent[5] - 8;
     int s1 = (u + uw) * 16;
     int s0 = u * 16;
     int vb = v + vh;
@@ -2686,10 +2686,10 @@ extern char textured_rect_gif_regs[];
    after the PRIM and a closing (5, 0) pair. */
 void emit_textured_rectangle(float x, float y, float w, float h, int u, int v, int uw, int vh,
                    unsigned long rgba, unsigned long tex) {
-    int x0 = func_001FA898_r(x * 16.0f) + g_screen_extent[4] - 8;
-    int x1 = func_001FA898_r((x + w) * 16.0f) + g_screen_extent[4] - 8;
-    int y0 = func_001FA898_r(y * 16.0f) + g_screen_extent[5] - 8;
-    int y1 = func_001FA898_r((y + h) * 16.0f) + g_screen_extent[5] - 8;
+    int x0 = truncate_float_to_s32_r(x * 16.0f) + g_screen_extent[4] - 8;
+    int x1 = truncate_float_to_s32_r((x + w) * 16.0f) + g_screen_extent[4] - 8;
+    int y0 = truncate_float_to_s32_r(y * 16.0f) + g_screen_extent[5] - 8;
+    int y1 = truncate_float_to_s32_r((y + h) * 16.0f) + g_screen_extent[5] - 8;
     int s1;
     int s0;
     int vb;
@@ -2740,7 +2740,7 @@ struct Screen {
     s32 right; /* 0x18: (0x800 + half_width) << 4 */
     s32 bottom; /* 0x1C: (0x800 + half_height) << 4 */
 };
-extern struct Screen D_0013E600_F5E60 __asm__("D_0013E600");
+extern struct Screen g_screen_extent_r __asm__("D_0013E600");
 struct DmaTag {
     u32 tag;
     u32 addr;
@@ -2755,7 +2755,7 @@ union PacketCursor {
     u8 *bytes;
     s32 addr;
 };
-extern union PacketCursor D_00161000_F5E60 __asm__("D_00161000") MACRO_ADDR;
+extern union PacketCursor g_render_packet_cursor_r __asm__("D_00161000") MACRO_ADDR;
 extern void FastVecAdd(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, f32);
@@ -2823,13 +2823,13 @@ void append_rotated_sprite_quad(f32 center_x, f32 center_y, f32 quad_width, f32 
     FastVecSub(&bottom_right, &center, &temporary);
     FastVecScale(&temporary, &horizontal_edge, pivot_u);
     FastVecAdd(&bottom_right, &bottom_right, &temporary);
-    D_00161000_F5E60.tag->tag = 0x10000007;
-    D_00161000_F5E60.tag->addr = 0;
-    D_00161000_F5E60.tag->vif0 = 0;
-    D_00161000_F5E60.tag->vif1 = 0x50000007;
-    tag = D_00161000_F5E60.tag;
+    g_render_packet_cursor_r.tag->tag = 0x10000007;
+    g_render_packet_cursor_r.tag->addr = 0;
+    g_render_packet_cursor_r.tag->vif0 = 0;
+    g_render_packet_cursor_r.tag->vif1 = 0x50000007;
+    tag = g_render_packet_cursor_r.tag;
     packet_words = (u64 *)(tag + 1);
-    D_00161000_F5E60.tag = tag + 1;
+    g_render_packet_cursor_r.tag = tag + 1;
     packet_words[0] = 0xB400000000008001;
     packet_words[1] = 0x53535353106;
     packet_words[2] = texture_tex0;
@@ -2837,26 +2837,26 @@ void append_rotated_sprite_quad(f32 center_x, f32 center_y, f32 quad_width, f32 
     packet_words[4] = color;
     packet_words[5] = texture_left | texture_top;
     packet_words[6] =
-        (truncate_float_to_s32(top_left.x * 16.0f) + D_0013E600_F5E60.left - 8) |
-        ((u64)(truncate_float_to_s32(top_left.y * 16.0f) + D_0013E600_F5E60.top - 8) << 16) |
+        (truncate_float_to_s32(top_left.x * 16.0f) + g_screen_extent_r.left - 8) |
+        ((u64)(truncate_float_to_s32(top_left.y * 16.0f) + g_screen_extent_r.top - 8) << 16) |
         ((u64)z_and_fog << 32);
     packet_words[7] = texture_right | texture_top;
     packet_words[8] =
-        (truncate_float_to_s32(top_right.x * 16.0f) + D_0013E600_F5E60.left - 8) |
-        ((u64)(truncate_float_to_s32(top_right.y * 16.0f) + D_0013E600_F5E60.top - 8) << 16) |
+        (truncate_float_to_s32(top_right.x * 16.0f) + g_screen_extent_r.left - 8) |
+        ((u64)(truncate_float_to_s32(top_right.y * 16.0f) + g_screen_extent_r.top - 8) << 16) |
         ((u64)z_and_fog << 32);
     packet_words[9] = texture_left | texture_bottom;
     packet_words[10] =
-        (truncate_float_to_s32(bottom_left.x * 16.0f) + D_0013E600_F5E60.left - 8) |
-        ((u64)(truncate_float_to_s32(bottom_left.y * 16.0f) + D_0013E600_F5E60.top - 8) << 16) |
+        (truncate_float_to_s32(bottom_left.x * 16.0f) + g_screen_extent_r.left - 8) |
+        ((u64)(truncate_float_to_s32(bottom_left.y * 16.0f) + g_screen_extent_r.top - 8) << 16) |
         ((u64)z_and_fog << 32);
     packet_words[11] = texture_right | texture_bottom;
     packet_words[12] =
-        (truncate_float_to_s32(bottom_right.x * 16.0f) + D_0013E600_F5E60.left - 8) |
-        ((u64)(truncate_float_to_s32(bottom_right.y * 16.0f) + D_0013E600_F5E60.top - 8) << 16) |
+        (truncate_float_to_s32(bottom_right.x * 16.0f) + g_screen_extent_r.left - 8) |
+        ((u64)(truncate_float_to_s32(bottom_right.y * 16.0f) + g_screen_extent_r.top - 8) << 16) |
         ((u64)z_and_fog << 32);
     packet_words[13] = 0;
-    D_00161000_F5E60.tag = (struct DmaTag *)((u8 *)D_00161000_F5E60.tag + 0x70);
+    g_render_packet_cursor_r.tag = (struct DmaTag *)((u8 *)g_render_packet_cursor_r.tag + 0x70);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001F62C0);
@@ -3005,10 +3005,10 @@ struct Glyph_F6668 {
     s8 top;
     s8 adv;
 };
-extern s32 D_0015F5A0_F6668 __asm__("D_0015F5A0") MACRO_ADDR;
+extern s32 font_window_active_r __asm__("D_0015F5A0") MACRO_ADDR;
 extern s32 D_0015F59C_F6668 SDATA(D_0015F59C);
-extern s32 D_0018CBF8_F6668[] __asm__("D_0018CBF8");
-extern void func_001F5800_F6668(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64) __asm__("func_001F5800");
+extern s32 font_palette_colors_r[] __asm__("D_0018CBF8");
+extern void DrawTexturedQuad_r(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64) __asm__("func_001F5800");
 
 /* FontPrint: draws a string glyph by glyph; bytes 8..15 switch the colour, 0x80..0xA7 add an accent glyph,
    bytes below 0x20 are 24-pixel grey button glyphs.
@@ -3024,8 +3024,8 @@ void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64
     s32 gray_value;
     s32 gray_color;
 
-    if (D_0015F5A0_F6668 == 0) {
-        D_0018CBF8_F6668[0] = color;
+    if (font_window_active_r == 0) {
+        font_palette_colors_r[0] = color;
     }
     character_count = 0;
     if (character_limit == 0 || *text == 0) {
@@ -3037,7 +3037,7 @@ void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64
         if ((u8)(*cursor - 8) < 8) {
             if (D_0015F59C_F6668 != 0) {
                 color &= 0xFF000000;
-                color |= D_0018CBF8_F6668[*cursor - 8] & 0xFFFFFF;
+                color |= font_palette_colors_r[*cursor - 8] & 0xFFFFFF;
             }
         } else {
             character = *cursor;
@@ -3045,7 +3045,7 @@ void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64
                 /* Characters 0x80..0xa7 also draw the glyph 0x40 entries later. */
                 if ((u8)(character + 0x80) < 0x28) {
                     overlay_glyph = (struct Glyph_F6668 *)(((character + 0x40) << 2) + (s32)glyphs);
-                    func_001F5800_F6668(x + overlay_glyph->adv, y + overlay_glyph->top, 16, 16,
+                    DrawTexturedQuad_r(x + overlay_glyph->adv, y + overlay_glyph->top, 16, 16,
                                        overlay_glyph->u, overlay_glyph->v, 16, 16, color, texture);
                 }
                 /* Control glyphs use 24-pixel grayscale sprites. */
@@ -3056,10 +3056,10 @@ void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64
                     gray_color += gray_value << 16;
                     gray_color += gray_value << 8;
                     gray_value += gray_color;
-                    func_001F5800_F6668(x, y + glyphs[*cursor].top, 24, 16, glyphs[*cursor].u,
+                    DrawTexturedQuad_r(x, y + glyphs[*cursor].top, 24, 16, glyphs[*cursor].u,
                                        glyphs[*cursor].v, 24, 16, gray_value, texture);
                 } else if (*cursor > 0x20) {
-                    func_001F5800_F6668(x, y + glyphs[*cursor].top, 16, 16, glyphs[*cursor].u,
+                    DrawTexturedQuad_r(x, y + glyphs[*cursor].top, 16, 16, glyphs[*cursor].u,
                                        glyphs[*cursor].v, 16, 16, color, texture);
                 }
                 x += glyphs[*cursor].adv;
@@ -3104,7 +3104,7 @@ struct Glyph {
 extern s32 font_window_active MACRO_ADDR;
 extern s32 font_palette_colors[];
 extern f32 IntToFloat(s32);
-extern void func_001F5BB8_F69F0(f32, f32, f32, f32, s32, s32, s32, s32, u64, s64) __asm__("func_001F5BB8");
+extern void emit_textured_rectangle_r(f32, f32, f32, f32, s32, s32, s32, s32, u64, s64) __asm__("func_001F5BB8");
 void process_bgm_display_text_event(u64 color, u8 *s, f32 x, s32 n, s64 tex, struct Glyph *g, f32 y, f32 scale);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/audio/music/process_bgm_display_text_event.c, process_bgm_display_text_event. */
@@ -3140,7 +3140,7 @@ void process_bgm_display_text_event(u64 color, u8 *str, f32 x, s32 n, s64 tex, s
                 e = (struct Glyph *)(((*s + 0x40) << 2) + (s32)g);
                 dx = IntToFloat(e->adv) * scale;
                 dy = IntToFloat(e->top) * scale;
-                func_001F5BB8_F69F0(x + dx, y + dy, size, size, e->u, e->v, 16, 16, color, tex);
+                emit_textured_rectangle_r(x + dx, y + dy, size, size, e->u, e->v, 16, 16, color, tex);
             }
             if (*s < 0x20) {
                 avg = (s32)((color & 0xFF) + ((color >> 8) & 0xFF) + ((color >> 16) & 0xFF)) / 3;
@@ -3148,9 +3148,9 @@ void process_bgm_display_text_event(u64 color, u8 *str, f32 x, s32 n, s64 tex, s
                 mk += avg << 16;
                 mk += avg << 8;
                 avg += mk;
-                func_001F5BB8_F69F0(x, y + top, scale * 24.0f, scale * 16.0f, g[*s].u, g[*s].v, 24, 16, avg, tex);
+                emit_textured_rectangle_r(x, y + top, scale * 24.0f, scale * 16.0f, g[*s].u, g[*s].v, 24, 16, avg, tex);
             } else if (*s > 0x20) {
-                func_001F5BB8_F69F0(x, y + top, size, size, g[*s].u, g[*s].v, 16, 16, color, tex);
+                emit_textured_rectangle_r(x, y + top, size, size, g[*s].u, g[*s].v, 16, 16, color, tex);
             }
             x += IntToFloat(g[*s].adv) * scale;
         }

@@ -360,7 +360,7 @@ typedef struct {
     short zpsm;     /* 0x16C */
     short zbp;      /* 0x16E */
 } FrameCfg;
-extern FrameCfg D_00151880_f __asm__("D_00151880");
+extern FrameCfg fs_aa_buffer_f __asm__("D_00151880");
 extern long capture_texture_tex0 MACRO_ADDR;
 /* sceGsSetDefDrawEnv */
 extern int func_001222C8(void *, short, short, short, short, short);
@@ -393,9 +393,9 @@ void setup_render_target(int a, int b, int c) {
     if (x <= 0) {
         x = 1;
     }
-    D_00151880_f.fbp = c >> 13;
-    D_00151880_f.w = 1 << a;
-    D_00151880_f.h = 1 << b;
+    fs_aa_buffer_f.fbp = c >> 13;
+    fs_aa_buffer_f.w = 1 << a;
+    fs_aa_buffer_f.h = 1 << b;
     capture_texture_tex0 = (unsigned long)(c >> 8) | ((unsigned long)(1 << x) << 14)
                | ((unsigned long)0 << 20) | ((unsigned long)a << 26)
                | ((unsigned long)b << 30) | ((unsigned long)1 << 34);
@@ -410,9 +410,9 @@ void setup_render_target(int a, int b, int c) {
     q[1] = 0xE;
     g_render_packet_cursor += 4;
     d = (unsigned long *)g_render_packet_cursor;
-    func_001222C8(d, D_00151880_f.psm, D_00151880_f.w, D_00151880_f.h, 3, 0);
-    ((GsFrame *)d)->FBP = D_00151880_f.fbp;
-    d[2] = D_00151880_f.zbp | ((unsigned long)(D_00151880_f.zpsm & 0xF) << 24);
+    func_001222C8(d, fs_aa_buffer_f.psm, fs_aa_buffer_f.w, fs_aa_buffer_f.h, 3, 0);
+    ((GsFrame *)d)->FBP = fs_aa_buffer_f.fbp;
+    d[2] = fs_aa_buffer_f.zbp | ((unsigned long)(fs_aa_buffer_f.zpsm & 0xF) << 24);
     g_render_packet_cursor += 0x20;
     r = (long *)g_render_packet_cursor;
     r[0] = 0x1000000000000001L;
@@ -423,8 +423,8 @@ void setup_render_target(int a, int b, int c) {
     r[5] = 0x4410;
     r[6] = 0x106;
     r[7] = 0;
-    r[8] = (long)(0x8000 - D_00151880_f.w * 8) | ((long)(0x8000 - D_00151880_f.h * 8) << 16);
-    r[9] = (long)(D_00151880_f.w * 8 + 0x8000) | ((long)(D_00151880_f.h * 8 + 0x7FF0) << 16);
+    r[8] = (long)(0x8000 - fs_aa_buffer_f.w * 8) | ((long)(0x8000 - fs_aa_buffer_f.h * 8) << 16);
+    r[9] = (long)(fs_aa_buffer_f.w * 8 + 0x8000) | ((long)(fs_aa_buffer_f.h * 8 + 0x7FF0) << 16);
     g_render_packet_cursor += 0x14;
 }
 
@@ -453,7 +453,7 @@ void append_palette_transfer_packet(void) {
     g_render_packet_cursor += 4;
 }
 
-extern void func_00234C98_l(int, long) __asm__("func_00234C98");
+extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 
 /* Clears the screen through a GIF packet appended to D_00161000: a fixed header then n = w / 32 pairs of sprite corner registers stepping 0x200 per column across a w x h area centred on 0x8000. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/fun_001fb740.c, FUN_001fb740. */
 void draw_centered_capture_background(int w, int h) {
@@ -470,7 +470,7 @@ void draw_centered_capture_background(int w, int h) {
     long hi;
 
     n = w / 32;
-    func_00234C98_l(0x42, 0x800000004AL);
+    VU1_addGSregister_l(0x42, 0x800000004AL);
     g_render_packet_cursor[0] = (n + 5) | 0x10000000;
     g_render_packet_cursor[1] = 0;
     g_render_packet_cursor[2] = 0;

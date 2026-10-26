@@ -45,13 +45,13 @@ void RipplePatchesInit(VuChainRecord *records, int count) {
     }
 }
 extern float pool_light[];
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* Converts a float vector to fixed-point ints, relative to the grid origin, plus two scale shorts. */
 void RipplePatch_ToFixedPoint(float *in, int *out) {
-    out[0] = func_001FA898_r((in[0] + pool_light[2]) * 1024.0f);
-    out[1] = func_001FA898_r((in[1] + pool_light[3]) * 1024.0f);
-    out[2] = func_001FA898_r((in[2] - 1.0f) * 1024.0f);
-    ((short *)out)[6] = func_001FA898_r(pool_light[0] * 1024.0f);
-    ((short *)out)[7] = func_001FA898_r(pool_light[0] * 1024.0f);
+    out[0] = truncate_float_to_s32_r((in[0] + pool_light[2]) * 1024.0f);
+    out[1] = truncate_float_to_s32_r((in[1] + pool_light[3]) * 1024.0f);
+    out[2] = truncate_float_to_s32_r((in[2] - 1.0f) * 1024.0f);
+    ((short *)out)[6] = truncate_float_to_s32_r(pool_light[0] * 1024.0f);
+    ((short *)out)[7] = truncate_float_to_s32_r(pool_light[0] * 1024.0f);
 }

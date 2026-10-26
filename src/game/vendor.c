@@ -69,7 +69,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 extern unsigned char menu_item_enabled_0 NOT_SDA;
@@ -107,7 +107,7 @@ extern void DebugEnter_Nop(void);
 extern int compress_map_coverage(void *dst, int size, int a, int b);
 extern void downsample_map_coverage(void *dst);
 extern short g_current_level_index;
-extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
+extern int g_current_level_index_far __asm__("D_0015EE84") NOT_SDA;
 extern int map_coverage_active[] NOT_SDA;
 extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
 extern void expand_map_coverage(void *, unsigned char *);
@@ -139,7 +139,7 @@ extern unsigned char gemlik_available NOT_SDA;
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern unsigned char gHaveHologuise NOT_SDA;
 extern int moby_render_slots[];
-extern void func_001FA460_2(void *, void *) __asm__("func_001FA460");
+extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -172,7 +172,7 @@ extern void func_0012EDE0(void *);
 extern void func_0012EFE8(void);
 extern char load_file_start_failed_string[];
 extern int func_0012EE98(int, int, int, void *);
-extern int func_00217628_v(void) __asm__("func_00217628");
+extern int start_audio_stream_read_v(void) __asm__("func_00217628");
 extern void func_00122598(int);
 extern void music_Update(void);
 extern void func_0012EC40(void);
@@ -207,7 +207,7 @@ extern char *current_menu_page NOT_SDA;
 extern void DrawMobyList(int, int);
 extern char gCamera[];
 extern void rotate_preview_moby_x(void *);
-extern void *func_00226720_a(int) __asm__("func_00226720");
+extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");
 extern int delete_moby(int);
 extern void VU1_addGSregister(int, int);
 extern void draw_map_overlay(void);
@@ -215,7 +215,7 @@ extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
 extern void func_001F68E8_c(int, int, long, void *, int)
     __asm__("func_001F68E8");
-extern void *func_001FE540_id(int) __asm__("func_001FE540");
+extern void *msg_string_id(int) __asm__("func_001FE540");
 extern short panel_clear_color;
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern int GetIconFrame(int, int);
@@ -236,7 +236,7 @@ typedef struct {
     int key;
     int flags;
 } PadBind;
-extern PadBind D_001D6448_t[] __asm__("D_001D6448");
+extern PadBind menu_stream_buffers_t[] __asm__("D_001D6448");
 extern int get_menu_stream_buffer_size(int handle);
 extern int menu_stream_buffers[];
 extern char preview_resource_bindings[] NOT_SDA;
@@ -244,14 +244,14 @@ extern char *moby_class_resources[] NOT_SDA;
 extern int D_001D6860[];
 extern int D_001D74C0[];
 extern int D_001D6760[];
-extern char D_00187180_a[] __asm__("D_00187180");
+extern char camera_position_a[] __asm__("D_00187180");
 extern char coll_hit_pos[];
 extern int sound_probe_ignore;
 extern void random_spherical_offset(void *, float, float);
-extern void func_001F9BD8_a(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_001F9C30_a(void *, void *, float) __asm__("func_001F9C30");
-extern void func_001F9BF0_a(void *, void *, void *) __asm__("func_001F9BF0");
-extern int func_001EFE10_a(void *, void *, int, int, int) __asm__("func_001EFE10");
+extern void FastVecAdd_a(void *, void *, void *) __asm__("func_001F9BD8");
+extern void FastVecScale_a(void *, void *, float) __asm__("func_001F9C30");
+extern void FastVecSub_a(void *, void *, void *) __asm__("func_001F9BF0");
+extern int coll_line_fix_a(void *, void *, int, int, int) __asm__("func_001EFE10");
 extern char camera_position[];
 extern void FastVecSub(void *, void *, void *);
 extern void coll_line_fix(void *, void *, int, int, int);
@@ -259,7 +259,7 @@ extern float FastVecDist(int, void *);
 extern void calculate_voice_distance_volume(void *, float, float, float);
 extern void transform_vector(void *, void *, void *);
 extern float vec_length_xy(void *);
-extern float func_001FA058_a(float, float) __asm__("func_001FA058");
+extern float fast_arc_tan_a(float, float) __asm__("func_001FA058");
 extern void truncate_float_to_s32(float);
 extern void func_00120F30(int);
 extern int func_0012E060(void *, int);
@@ -416,7 +416,7 @@ void update_scrolling_status_message(void) {
     if (func_00116810_s(*(char **)(v + 0x2C)) - *(int *)(v + 0x44) / 20 > 0) {
         *(int *)(v + 0x44) += 2;
     } else {
-        set_scrolling_status_message(func_001FE540_id(status_message_text_ids[random_integer_below(0x18)]));
+        set_scrolling_status_message(msg_string_id(status_message_text_ids[random_integer_below(0x18)]));
     }
     w = vendor_state;
     render_capture_scrolling_text(*(char **)(w + 0x2C), -*(int *)(w + 0x44), 8, 2.0f);
@@ -466,7 +466,7 @@ struct VendorItemResource {
 };
 
 extern u8 item_info_table[];
-extern struct VendorMenuState D_001E66C0_ui __asm__("D_001E66C0");
+extern struct VendorMenuState vendor_state_ui __asm__("D_001E66C0");
 extern s32 subtract_integer_with_clamp();
 extern void func_001FBAB8_u(int, int, int, int, int, int, unsigned int)
     __asm__("func_001FBAB8");
@@ -489,16 +489,16 @@ void render_vendor_item_icon_strip_pass(void) {
     s32 pulseColor;
 
     draw_framebuffer_rect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
-    if (D_001E66C0_ui.slotCount < 8) {
+    if (vendor_state_ui.slotCount < 8) {
         itemX = 0xC;
         itemIndex = 0;
-        selectedOffset = D_001E66C0_ui.selectedIndex * 0x38;
-        pulseColor = ((subtract_integer_with_clamp(((D_001E66C0_ui.pulseTick * 4) & 0x3F) - 0x20) + 0x40) * 0x10202) | 0x80000000;
+        selectedOffset = vendor_state_ui.selectedIndex * 0x38;
+        pulseColor = ((subtract_integer_with_clamp(((vendor_state_ui.pulseTick * 4) & 0x3F) - 0x20) + 0x40) * 0x10202) | 0x80000000;
         draw_framebuffer_rect(selectedOffset + 8, 2, selectedOffset + 0x40, 0x3A, 0x200, 0x80, pulseColor);
         func_001FBAB8_u(selectedOffset + 0xA, 4, selectedOffset + 0x3E, 0x38, 0x200, 0x80, 0x80000000);
-        if (D_001E66C0_ui.slotCount > 0) {
+        if (vendor_state_ui.slotCount > 0) {
             do {
-                slotKind = (s32 *) (void *) ((u8 *)&D_001E66C0_ui + 0xD4 + itemIndex * 0x14);
+                slotKind = (s32 *) (void *) ((u8 *)&vendor_state_ui + 0xD4 + itemIndex * 0x14);
                 itemIconId = ((struct VendorItemResource *) (void *) ((u8 *)item_info_table + slotKind[-1] * 0x4C))->iconId;
                 if (slotKind[0] == 1) {
                     itemIcon = GetIconFrame(itemIconId, 2);
@@ -508,24 +508,24 @@ void render_vendor_item_icon_strip_pass(void) {
                 HudSprite(itemIcon, itemX, 6, 0x30, 0x30, 0x80);
                 itemX += 0x38;
                 itemIndex += 1;
-            } while (itemIndex < D_001E66C0_ui.slotCount);
+            } while (itemIndex < vendor_state_ui.slotCount);
         }
     } else {
-        if (D_001E66C0_ui.scrollOffset < 0) {
-            D_001E66C0_ui.scrollOffset = (s32) (D_001E66C0_ui.scrollOffset + 4);
-        } else if (D_001E66C0_ui.scrollOffset > 0) {
-            D_001E66C0_ui.scrollOffset = (s32) (D_001E66C0_ui.scrollOffset - 4);
+        if (vendor_state_ui.scrollOffset < 0) {
+            vendor_state_ui.scrollOffset = (s32) (vendor_state_ui.scrollOffset + 4);
+        } else if (vendor_state_ui.scrollOffset > 0) {
+            vendor_state_ui.scrollOffset = (s32) (vendor_state_ui.scrollOffset - 4);
         } else {
-            draw_framebuffer_rect(0xB0, 2, 0xE8, 0x3A, 0x200, 0x80, ((subtract_integer_with_clamp(((D_001E66C0_ui.pulseTick * 4) & 0x3F) - 0x20) + 0x40) * 0x10202) - (s32) 0x80000000);
+            draw_framebuffer_rect(0xB0, 2, 0xE8, 0x3A, 0x200, 0x80, ((subtract_integer_with_clamp(((vendor_state_ui.pulseTick * 4) & 0x3F) - 0x20) + 0x40) * 0x10202) - (s32) 0x80000000);
             func_001FBAB8_u(0xB2, 4, 0xE6, 0x38, 0x200, 0x80, 0x80000000);
         }
-        x = D_001E66C0_ui.scrollOffset - 0x64;
+        x = vendor_state_ui.scrollOffset - 0x64;
         i = -2;
         do {
-            selectedMinusThree = D_001E66C0_ui.selectedIndex - 3;
-            slotOffset = ((s32) ((D_001E66C0_ui.slotCount * 2) + i + selectedMinusThree) % (s32) D_001E66C0_ui.slotCount) * 0x14;
-            displayIconId = ((struct VendorItemResource *) (void *) ((u8 *)item_info_table + *(s32 *)(void *)(slotOffset + ((u8 *)&D_001E66C0_ui + 0xD0)) * 0x4C))->iconId;
-            if (*(s32 *)(void *)(slotOffset + ((u8 *)&D_001E66C0_ui + 0xD4)) == 1) {
+            selectedMinusThree = vendor_state_ui.selectedIndex - 3;
+            slotOffset = ((s32) ((vendor_state_ui.slotCount * 2) + i + selectedMinusThree) % (s32) vendor_state_ui.slotCount) * 0x14;
+            displayIconId = ((struct VendorItemResource *) (void *) ((u8 *)item_info_table + *(s32 *)(void *)(slotOffset + ((u8 *)&vendor_state_ui + 0xD0)) * 0x4C))->iconId;
+            if (*(s32 *)(void *)(slotOffset + ((u8 *)&vendor_state_ui + 0xD4)) == 1) {
                 displayIcon = GetIconFrame(displayIconId, 2);
             } else {
                 displayIcon = GetIconFrame(displayIconId, 0);
@@ -550,13 +550,13 @@ struct VM239 {
 struct T239 { int text; char pad[0x48]; };
 struct P239 { int a; int b; unsigned short c; unsigned short d; int pad[3]; };
 
-extern void func_001F6968_c(int, int, long, void *, int) __asm__("func_001F6968");
+extern void FontPrintSmall_c(int, int, long, void *, int) __asm__("func_001F6968");
 extern void format_scaled_display_value(void *arg0, int arg1);
-extern void func_001F6D88_c(int, int, long, void *, int) __asm__("func_001F6D88");
-extern struct VM239 D_001E66C0_m __asm__("D_001E66C0");
-extern struct T239 D_001864D0_t[] __asm__("D_001864D0");
-extern struct P239 D_001E02B0_p[] __asm__("D_001E02B0");
-extern unsigned char D_0013D5C8_b[] __asm__("D_0013D5C8") NOT_SDA;
+extern void font_print_right_small_c(int, int, long, void *, int) __asm__("func_001F6D88");
+extern struct VM239 vendor_state_m __asm__("D_001E66C0");
+extern struct T239 item_info_table_t[] __asm__("D_001864D0");
+extern struct P239 vendor_item_prices_p[] __asm__("D_001E02B0");
+extern unsigned char item_available_b[] __asm__("D_0013D5C8") NOT_SDA;
 
 /* Vendor item panel: draws the selected item's name and description, and for the ammo/alt slots a pulsing price shadow. Adapted from Lombyte's project (GPL-3.0) for PAL: src/ui/menus/fun_002389e0.c, fun_002389e0. */
 void render_vendor_item_details_pass(void) {
@@ -564,14 +564,14 @@ void render_vendor_item_details_pass(void) {
     int w;
 
     draw_framebuffer_rect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
-    DrawMobyList(D_001E66C0_m.f20 + 0x100, 1);
-    DrawMobyList(D_001E66C0_m.f20, 1);
-    if (D_001E66C0_m.slots[D_001E66C0_m.idx].kind == 1) {
-        func_001F6968_c(6, 8, 0x80F0F0F0L, func_001FE540_id(D_001864D0_t[D_001E66C0_m.slots[D_001E66C0_m.idx].id].text), -1);
-        func_001F6968_c(0x18, 0x18, 0x80F0F0F0L, func_001FE540_id(0x4F5D), -1);
-        format_scaled_display_value(buf, D_001E02B0_p[D_001E66C0_m.slots[D_001E66C0_m.idx].id].c);
-        func_001F6D88_c(0x76, 0x65, 0x80F0F0F0L, buf, -1);
-        if (D_001E66C0_m.f40 != 0) {
+    DrawMobyList(vendor_state_m.f20 + 0x100, 1);
+    DrawMobyList(vendor_state_m.f20, 1);
+    if (vendor_state_m.slots[vendor_state_m.idx].kind == 1) {
+        FontPrintSmall_c(6, 8, 0x80F0F0F0L, msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
+        FontPrintSmall_c(0x18, 0x18, 0x80F0F0F0L, msg_string_id(0x4F5D), -1);
+        format_scaled_display_value(buf, vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].c);
+        font_print_right_small_c(0x76, 0x65, 0x80F0F0F0L, buf, -1);
+        if (vendor_state_m.f40 != 0) {
             w = measure_text_width_regular((unsigned char *)buf, -1);
             draw_hud_rect_blended(0x75 - w, 0x6D, 0x7B, 0x70, 0x20959544L, 0);
             draw_hud_rect_blended(0x76 - w, 0x6D, 0x7A, 0x70, 0x30959544L, 0);
@@ -580,15 +580,15 @@ void render_vendor_item_details_pass(void) {
             draw_hud_rect_blended(0x79 - w, 0x6D, 0x77, 0x70, 0x60959544L, 0);
             draw_hud_rect_blended(0x7A - w, 0x6D, 0x76, 0x70, 0x70959544L, 0);
             draw_hud_rect_blended(0x7B - w, 0x6D, 0x75, 0x70, 0x80959544L, 0);
-            format_scaled_display_value(buf, D_001E66C0_m.f40 ? D_001E02B0_p[D_001E66C0_m.slots[D_001E66C0_m.idx].id].d
-                                                 : D_001E02B0_p[D_001E66C0_m.slots[D_001E66C0_m.idx].id].c);
-            func_001F6D88_c(0x76, 0x55, 0x80F0F0F0L, buf, -1);
+            format_scaled_display_value(buf, vendor_state_m.f40 ? vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].d
+                                                 : vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].c);
+            font_print_right_small_c(0x76, 0x55, 0x80F0F0F0L, buf, -1);
         }
     } else {
-        func_001F6968_c(6, 8, 0x80F0F0F0L, func_001FE540_id(D_001864D0_t[D_001E66C0_m.slots[D_001E66C0_m.idx].id].text), -1);
-        format_scaled_display_value(buf, D_001E02B0_p[D_001E66C0_m.slots[D_001E66C0_m.idx].id].a);
-        func_001F6D88_c(0x76, 0x65, D_0013D5C8_b[0x23] ? 0x80808080L : 0x80F0F0F0L, buf, -1);
-        if (D_0013D5C8_b[0x23] != 0) {
+        FontPrintSmall_c(6, 8, 0x80F0F0F0L, msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
+        format_scaled_display_value(buf, vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].a);
+        font_print_right_small_c(0x76, 0x65, item_available_b[0x23] ? 0x80808080L : 0x80F0F0F0L, buf, -1);
+        if (item_available_b[0x23] != 0) {
             w = measure_text_width_regular((unsigned char *)buf, -1);
             draw_hud_rect_blended(0x75 - w, 0x6D, 0x7B, 0x70, 0x20959544L, 0);
             draw_hud_rect_blended(0x76 - w, 0x6D, 0x7A, 0x70, 0x30959544L, 0);
@@ -597,9 +597,9 @@ void render_vendor_item_details_pass(void) {
             draw_hud_rect_blended(0x79 - w, 0x6D, 0x77, 0x70, 0x60959544L, 0);
             draw_hud_rect_blended(0x7A - w, 0x6D, 0x76, 0x70, 0x70959544L, 0);
             draw_hud_rect_blended(0x7B - w, 0x6D, 0x75, 0x70, 0x80959544L, 0);
-            format_scaled_display_value(buf, D_0013D5C8_b[0x23] ? D_001E02B0_p[D_001E66C0_m.slots[D_001E66C0_m.idx].id].b
-                                                 : D_001E02B0_p[D_001E66C0_m.slots[D_001E66C0_m.idx].id].a);
-            func_001F6D88_c(0x76, 0x55, 0x80F0F0F0L, buf, -1);
+            format_scaled_display_value(buf, item_available_b[0x23] ? vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].b
+                                                 : vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].a);
+            font_print_right_small_c(0x76, 0x55, 0x80F0F0F0L, buf, -1);
         }
     }
 }
@@ -678,17 +678,17 @@ void render_vendor_buy_label_pass(char *unused, int x, int y) {
     }
     if (m != 0) {
         *(unsigned short *)(sp + 0x12) |= 4;
-        font_print_window_small(sp, 0x80F0F0F0L, func_001FE540_id(m), -1);
+        font_print_window_small(sp, 0x80F0F0F0L, msg_string_id(m), -1);
         *(unsigned short *)(sp + 0x12) ^= 4;
         *(short *)(sp + 0xA) = (y - *(short *)(sp + 0xE)) >> 1;
-        font_print_window_small(sp, 0x80F0F0F0L, func_001FE540_id(m), -1);
+        font_print_window_small(sp, 0x80F0F0F0L, msg_string_id(m), -1);
     }
 }
 
 extern int weapon_ammo_counts[];
 extern int gBolts MACRO_ADDR;
 extern char vendor_item_prices[];
-extern int func_001F6F40_c(int, int, long, void *, int) __asm__("func_001F6F40");
+extern int FontPrintCenterSmall_c(int, int, long, void *, int) __asm__("func_001F6F40");
 
 typedef struct {
     int type; /* +0x0 */
@@ -705,7 +705,7 @@ typedef struct {
     char pad2[0x70];
     VendorSlot slots[1]; /* +0xD0 */
 } Vendor;
-extern Vendor D_001E66C0_v __asm__("D_001E66C0");
+extern Vendor vendor_state_v __asm__("D_001E66C0");
 
 typedef struct {
     char pad0[8];
@@ -731,7 +731,7 @@ void VendorDrawAmmoPrompt(void) {
     int price;
 
     draw_framebuffer_rect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
-    v = &D_001E66C0_v;
+    v = &vendor_state_v;
     if (v->sel != 0) {
         idx = v->idx;
         if (v->slots[idx].kind == 1 &&
@@ -746,11 +746,11 @@ void VendorDrawAmmoPrompt(void) {
                 price = ((WeaponInfo *)(vendor_item_prices + v->slots[idx].type * 0x18))->price;
             }
             if (gBolts >= price) {
-                func_001F6F40_c(0x28, 0x14, 0x80F0F0F0L, func_001FE540_id(0x4EE0), -1);
+                FontPrintCenterSmall_c(0x28, 0x14, 0x80F0F0F0L, msg_string_id(0x4EE0), -1);
             }
         }
     } else {
-        func_001F6F40_c(0x28, 0x14, 0x80F0F0F0L, func_001FE540_id(0x4EE0), -1);
+        FontPrintCenterSmall_c(0x28, 0x14, 0x80F0F0F0L, msg_string_id(0x4EE0), -1);
     }
 }
 
@@ -761,10 +761,10 @@ LINKER_REMNANT("asm/remnants/text", func_0023A5D8);
 
 extern s32 vendor_flash_timers[];
 extern s32 vendor_scroll_timers[];
-extern void func_00234C98_3A5E0(s32, u64) __asm__("func_00234C98");
+extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
 extern s32 random_integer_below(s32);
 extern s32 subtract_integer_with_clamp(s32);
-extern s64 func_001F4868_3A5E0(s32) __asm__("func_001F4868");
+extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
 extern f32 IntToFloat(s32);
 extern void append_subpixel_textured_screen_quad(f32, f32, f32, f32, s32, s32, s32, s32, u64, s64);
 
@@ -781,7 +781,7 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
     f32 overlay_height;
     s32 overlay_width;
 
-    func_00234C98_3A5E0(0x47, 0x32003);
+    VU1_addGSregister_r(0x47, 0x32003);
     if (vendor_flash_timers[pass_index] != 0 || pass_index == 0) {
         if (vendor_flash_timers[pass_index] != 0) {
             vendor_flash_timers[pass_index] += 2;
@@ -797,15 +797,15 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
         random_v = random_integer_below(200);
         zero_offset = 0.0f;
         flash_opacity = 0x80 - subtract_integer_with_clamp(flash_timer - 0x80);
-        func_00234C98_3A5E0(8, 0);
+        VU1_addGSregister_r(8, 0);
         flash_opacity *= 2;
         if (flash_opacity > 0x80)
             flash_opacity = 0x80;
-        func_00234C98_3A5E0(0x42, ((u64)flash_opacity << 32) | 0x68);
+        VU1_addGSregister_r(0x42, ((u64)flash_opacity << 32) | 0x68);
         append_subpixel_textured_screen_quad(0.0f, 0.0f, capture_width, capture_height,
                                              random_u + zero_offset, random_v + zero_offset,
                                              capture_width + random_u, capture_height + random_v,
-                                             0x808080, func_001F4868_3A5E0(0x1A));
+                                             0x808080, GetEffectTex_r(0x1A));
         if (vendor_flash_timers[pass_index] >= 0x100) {
             vendor_flash_timers[pass_index] = 0;
         }
@@ -813,8 +813,8 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
     if (vendor_flash_timers[pass_index] == 0 && random_integer_below(700) == 0) {
         vendor_flash_timers[pass_index] = 2;
     }
-    func_00234C98_3A5E0(8, 0);
-    func_00234C98_3A5E0(0x42, 0x8000000044ULL);
+    VU1_addGSregister_r(8, 0);
+    VU1_addGSregister_r(0x42, 0x8000000044ULL);
     if (pass_index > 0) {
         if (vendor_scroll_timers[pass_index] != 0) {
             vendor_scroll_timers[pass_index] += 2;
@@ -830,7 +830,7 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
             append_subpixel_textured_screen_quad(0.0f, scroll_offset, capture_width, overlay_height,
                                                  0, 0, overlay_width, (s32)(overlay_height * 1.5f),
                                                  (scroll_opacity << 24) | 0x505050,
-                                                 func_001F4868_3A5E0(0x1C));
+                                                 GetEffectTex_r(0x1C));
             if (vendor_scroll_timers[pass_index] >= 0x200) {
                 vendor_scroll_timers[pass_index] = 0;
             }
@@ -841,13 +841,13 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
     if (pass_index == 6) {
         /* The known capture coordinator supplies only passes zero through five. */
         append_subpixel_textured_screen_quad(0.0f, 0.0f, capture_width, capture_height, 0, 0, 0x40,
-                                             0x40, 0x80808080, func_001F4868_3A5E0(0x19));
+                                             0x40, 0x80808080, GetEffectTex_r(0x19));
     }
 }
 
 extern void setup_render_target(int, int, int);
 extern void configure_graphics_projection(int, int, float, float, float, float, float);
-extern void func_00234C98_l(int, long) __asm__("func_00234C98");
+extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 
 /* Sets up a (1 << a) x (1 << b) area: func_001FB608 gets the sizes and a
    base below 0x3FF000 by 4 << min(a + b, 16) bytes, rounded down to 8 KB
@@ -863,8 +863,8 @@ void configure_capture_target(int a, int b, float f) {
     }
     setup_render_target(a, b, ((0x3FF000 - (4 << t)) >> 13) << 13);
     configure_graphics_projection(1 << a, 1 << b, f, 0.0f, 524288.0f, 255.0f, 0.0f);
-    func_00234C98_l(0x47, 0x30000);
-    func_00234C98_l(0x42, 0x8000000044L);
+    VU1_addGSregister_l(0x47, 0x30000);
+    VU1_addGSregister_l(0x42, 0x8000000044L);
 }
 
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
@@ -890,13 +890,13 @@ extern float FastVecLength(void *);
 extern void project_graphics_bounds_float(void *, void *, float *, float *, float *, float *);
 extern void draw_centered_capture_background(int, int);
 extern void VU1_texFlush(void);
-extern int func_001FA898_3AA38(float) __asm__("func_001FA898");
-extern void func_00239838_3AA38(char *) __asm__("func_00239838");
-extern void func_00239CF8_3AA38(char *) __asm__("func_00239CF8");
-extern void func_00239948_3AA38(char *) __asm__("func_00239948");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern void update_scrolling_status_message_r(char *) __asm__("func_00239838");
+extern void render_vendor_item_details_pass_r(char *) __asm__("func_00239CF8");
+extern void render_capture_effect_pass_r(char *) __asm__("func_00239948");
 extern void render_vendor_buy_label_pass(char *, int, int);
-extern void func_0023A478_3AA38(char *) __asm__("func_0023A478");
-extern void func_00239A00_3AA38(char *) __asm__("func_00239A00");
+extern void VendorDrawAmmoPrompt_r(char *) __asm__("func_0023A478");
+extern void render_vendor_item_icon_strip_pass_r(char *) __asm__("func_00239A00");
 
 /* Renders the six vendor monitor screens: projects each screen's joint box, renders its view off-screen and draws it back. */
 void render_vendor_capture_pass_sequence(char *m) {
@@ -961,43 +961,43 @@ void render_vendor_capture_pass_sequence(char *m) {
         project_graphics_bounds_float(a, b, &x, &y, &w, &h);
         configure_capture_target(9, 7, 1.0f);
         draw_centered_capture_background(0x200, 0x200);
-        func_00234C98_l(0x42, 0x8000000064L);
+        VU1_addGSregister_l(0x42, 0x8000000064L);
         switch (i) {
         case 0:
-            func_00239838_3AA38(m);
+            update_scrolling_status_message_r(m);
             break;
         case 1:
-            func_00239CF8_3AA38(m);
+            render_vendor_item_details_pass_r(m);
             break;
         case 2:
-            func_00239948_3AA38(m);
+            render_capture_effect_pass_r(m);
             break;
         case 3:
             render_vendor_buy_label_pass(m, (int)x, (int)y);
             break;
         case 4:
-            func_0023A478_3AA38(m);
+            VendorDrawAmmoPrompt_r(m);
             break;
         case 5:
-            func_00239A00_3AA38(m);
+            render_vendor_item_icon_strip_pass_r(m);
             break;
         }
         render_vendor_capture_texture_overlays_pass(i, x, y);
         setup_view_context();
         draw_centered_capture_background(0x200, 0x200);
-        func_00234C98_l(0x42, 0x8000000064L);
-        func_00234C98_l(8, 5);
+        VU1_addGSregister_l(0x42, 0x8000000064L);
+        VU1_addGSregister_l(8, 5);
         VU1_texFlush();
         tex = capture_texture_tex0;
         if (pal_mode != 0) {
             append_subpixel_textured_screen_quad(w, h, x, y, 0, 0, (int)(sx - 1.0f),
-                          func_001FA898_3AA38(sy * 0.92857146f - 1.0f),
+                          truncate_float_to_s32_r(sy * 0.92857146f - 1.0f),
                           0x80808080, tex);
         } else {
             append_subpixel_textured_screen_quad(w, h, x, y, 0, 0, (int)(sx - 1.0f), (int)(sy - 1.0f),
                           0x80808080, tex);
         }
-        func_00234C98_l(8, 0);
+        VU1_addGSregister_l(8, 0);
     }
 }
 
@@ -1014,15 +1014,15 @@ extern ZoneBox *occl_cell_table MACRO_ADDR;
 extern char *surface_height_tiles MACRO_ADDR;
 extern int occl_cell_count MACRO_ADDR;
 extern float surface_height_grid[];
-extern int func_001FA898_i(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_i(float) __asm__("func_001FA898");
 
 /* Index of the zone whose box (in 1/1024 units, 0x800 deep) holds the
    point and whose 4x4 cell mask at +0x1E has the point's cell set, or
    -1. Cells are sized and offset by the grid in D_001E69E0. */
 int FindZoneAtPoint(float x, float y, float z) {
-    int ix = func_001FA898_i(x * 1024.0f);
-    int iy = func_001FA898_i(y * 1024.0f);
-    int iz = func_001FA898_i(z * 1024.0f);
+    int ix = truncate_float_to_s32_i(x * 1024.0f);
+    int iy = truncate_float_to_s32_i(y * 1024.0f);
+    int iz = truncate_float_to_s32_i(z * 1024.0f);
     ZoneBox *b = occl_cell_table;
     int i;
 
@@ -1039,8 +1039,8 @@ int FindZoneAtPoint(float x, float y, float z) {
             continue;
         }
         zn = surface_height_tiles + i * 0x1190;
-        cx = func_001FA898_i((x - (*(float *)(zn + 0) + surface_height_grid[2])) / surface_height_grid[4]);
-        cy = func_001FA898_i((y - (*(float *)(zn + 4) + surface_height_grid[3])) / surface_height_grid[5]);
+        cx = truncate_float_to_s32_i((x - (*(float *)(zn + 0) + surface_height_grid[2])) / surface_height_grid[4]);
+        cy = truncate_float_to_s32_i((y - (*(float *)(zn + 4) + surface_height_grid[3])) / surface_height_grid[5]);
         bit = 1 << (((cx >> 2) & 3) | (cy & 0xC));
         if (*(unsigned short *)(zn + 0x1E) & bit) {
             return i;
@@ -1077,13 +1077,13 @@ typedef struct {
     f32 cell_width;
     f32 cell_height;
 } SurfaceHeightGrid;
-extern SurfaceHeightTile * D_00161290_3B210 __asm__("D_00161290") MACRO_ADDR;
-extern SurfaceHeightGrid D_001E69E0_3B210 __asm__("D_001E69E0");
+extern SurfaceHeightTile * surface_height_tiles_r __asm__("D_00161290") MACRO_ADDR;
+extern SurfaceHeightGrid surface_height_grid_r __asm__("D_001E69E0");
 extern short surface_height_layer;
 extern s32 FindZoneAtPoint(f32, f32, f32);
-extern s32 func_001FA898_3B210(f32) __asm__("func_001FA898");
+extern s32 truncate_float_to_s32_r2(f32) __asm__("func_001FA898");
 extern void FastVecCross(f32 *, f32 *, f32 *);
-extern void func_001F9DC0_3B210(f32 *, f32 *, f32) __asm__("func_001F9DC0");
+extern void fast_vec_normalize_r(f32 *, f32 *, f32) __asm__("func_001F9DC0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00239f58.c, sample_surface_height_map. */
 s32 sample_surface_height_map(f32 *height, f32 *normal, f32 x, f32 y, f32 z) {
@@ -1107,20 +1107,20 @@ s32 sample_surface_height_map(f32 *height, f32 *normal, f32 x, f32 y, f32 z) {
     if (tile_index < 0) {
         return 0;
     }
-    tile = &D_00161290_3B210[tile_index];
+    tile = &surface_height_tiles_r[tile_index];
     fraction_x = tile->x;
     fraction_y = tile->y;
-    fraction_x += D_001E69E0_3B210.origin_x;
-    fraction_y += D_001E69E0_3B210.origin_y;
+    fraction_x += surface_height_grid_r.origin_x;
+    fraction_y += surface_height_grid_r.origin_y;
     fraction_x = x - fraction_x;
     fraction_y = y - fraction_y;
-    column = func_001FA898_3B210(fraction_x / D_001E69E0_3B210.cell_width);
-    row = func_001FA898_3B210(*&fraction_y / D_001E69E0_3B210.cell_height);
-    fraction_x -= IntToFloat(column) * D_001E69E0_3B210.cell_width;
-    weight_x = fraction_x / D_001E69E0_3B210.cell_width;
-    fraction_y -= IntToFloat(row) * D_001E69E0_3B210.cell_height;
+    column = truncate_float_to_s32_r2(fraction_x / surface_height_grid_r.cell_width);
+    row = truncate_float_to_s32_r2(*&fraction_y / surface_height_grid_r.cell_height);
+    fraction_x -= IntToFloat(column) * surface_height_grid_r.cell_width;
+    weight_x = fraction_x / surface_height_grid_r.cell_width;
+    fraction_y -= IntToFloat(row) * surface_height_grid_r.cell_height;
     /* Divide the signed remainder after rounding the row, before choosing the sample bank. */
-    weight_y = fraction_y / D_001E69E0_3B210.cell_height;
+    weight_y = fraction_y / surface_height_grid_r.cell_height;
     h00 = tile->layers[(*(s32 *)&surface_height_layer)].samples[row][column];
     if (column == 15) {
         h10 = tile->layers[(*(s32 *)&surface_height_layer)].right_edge[row];
@@ -1149,16 +1149,16 @@ s32 sample_surface_height_map(f32 *height, f32 *normal, f32 x, f32 y, f32 z) {
                   ((h01 + (h11 - h01) * weight_x) - first_row_height) * weight_y + tile->z;
     }
     if (normal != 0) {
-        x_tangent[0] = D_001E69E0_3B210.cell_width;
+        x_tangent[0] = surface_height_grid_r.cell_width;
         x_tangent[1] = 0.0f;
         x_tangent[2] = h10 - h00;
         x_tangent[3] = 1.0f;
         y_tangent[0] = 0.0f;
-        y_tangent[1] = D_001E69E0_3B210.cell_height;
+        y_tangent[1] = surface_height_grid_r.cell_height;
         y_tangent[2] = h01 - h00;
         y_tangent[3] = 1.0f;
         FastVecCross(normal, x_tangent, y_tangent);
-        func_001F9DC0_3B210(normal, normal, 1.0f);
+        fast_vec_normalize_r(normal, normal, 1.0f);
     }
     return 1;
 }
@@ -1191,7 +1191,7 @@ typedef struct {
 
 extern Cfg16 attachment_vertex_indices NOT_SDA;
 extern float FastVecLength(void *);
-extern void func_001F9BF0_b(void *, void *, void *) __asm__("func_001F9BF0");
+extern void FastVecSub_b(void *, void *, void *) __asm__("func_001F9BF0");
 
 /* Run the four-vertex transform over the block hanging off arg0+0x78
    with a fresh copy of the D_00160FD0 parameters (a plain struct
@@ -1207,8 +1207,8 @@ void update_instance_attachment_points_and_lengths(char *arg0) {
 
     cfg = attachment_vertex_indices;
     transform_scaled_vertex_batch(arg0, 4, &cfg, p);
-    func_001F9BF0_b(a, p + 0x10, p);
-    func_001F9BF0_b(b, p + 0x20, p);
+    FastVecSub_b(a, p + 0x10, p);
+    FastVecSub_b(b, p + 0x20, p);
     *(float *)(p + 0x40) = FastVecLength(a);
     *(float *)(p + 0x44) = FastVecLength(b);
 }

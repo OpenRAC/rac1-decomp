@@ -58,7 +58,7 @@ extern float frame_scale MACRO_ADDR;
 extern char D_0013E633[];
 extern char D_0014171B[];
 extern char item_usage[];
-extern unsigned char D_0015EEB4_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern short aridia_usage_event_timer;
 extern short D_L02_0015F7B8;
 extern short aridia_hero_state_f_jump_velocity_keys;
@@ -965,7 +965,7 @@ int HeroL02_SetMoveState(int a, int b) {
                     int id;
                     if (*(int *)(q + 0x450) == 2) *(int *)(q + 0x450) = 0;
                     id = *(int *)(q + 0x450) + 0x1C;
-                    if (D_0015EEB4_m[1] != 0) {
+                    if (draw_map51_m[1] != 0) {
                         if (id == 0x1C) {
                             id = 0x1D;
                         } else if (id == 0x1D) {
@@ -1462,7 +1462,7 @@ extern S141948 usage_stats;
 extern int last_weapon_id;
 extern unsigned char item_available[];
 extern int gBolts MACRO_ADDR;
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int quick_swap_item MACRO_ADDR;
 extern float aridia_hero_fall_state_height MACRO_ADDR;
 extern int aridia_shown_help_message MACRO_ADDR;
@@ -1473,7 +1473,7 @@ extern int D_L02_0016CE00;
 extern S17AD00 aridia_lean_state;
 extern Rec70 aridia_idle_fidgets[];
 extern Rec4C aridia_item_defs[];
-extern Rec2C D_L02_0017C2A8_rec[] __asm__("D_L02_0017C2A8");
+extern Rec2C aridia_attack_records_rec[] __asm__("D_L02_0017C2A8");
 extern S17C438 aridia_hero_speed_bands;
 extern void initialize_eight_slot_hud_selector(void);
 extern void update_hud_item_selector_selection_and_visibility(void);
@@ -1485,7 +1485,7 @@ extern int HeroL02_TryKnockback(int);
 extern int process_hero_item_action_input(void);
 extern int try_start_hero_weapon_fire_state(void);
 extern int queue_animation_update(int, int, int, int, int, int, int);
-extern int func_L00_00235790_r(void) __asm__("func_L00_00235790");
+extern int show_health_hud_r(void) __asm__("func_L00_00235790");
 extern void hud_keep_visible(int, int);
 extern int FastDecTimer(void *);
 extern void clear_hero_queued_animation(void);
@@ -1494,7 +1494,7 @@ extern int pick_idle_fidget(int *);
 extern float multiply_global_factor(float);
 extern int HeroL02_SetMoveState(int a, int b);
 extern void fast_dec_timer(int *arg0);
-extern int func_001F9908_r(int *) __asm__("func_001F9908");
+extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern void blend_hero_slot3_animation_pair(void);
 extern int try_start_hero_jump(int, int);
 extern int pad_pressed_within(int, int, int *);
@@ -1565,7 +1565,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         g_hero.item_selector_timer = scale_ticks(0xF);
                     }
                     queue_animation_update(3, 0, (int)initialize_eight_slot_hud_selector, (int)update_hud_item_selector_selection_and_visibility, (int)draw_hud_item_selector_panel, 0, 0);
-                    id = func_L00_00235790_r();
+                    id = show_health_hud_r();
                     hud_keep_visible(id, scale_ticks(0xB4));
                     id = queue_animation_update(2, 0x754E, (int)initialize_bolt_counter_hud, (int)update_bolt_counter_hud_animation_and_visibility, (int)draw_bolt_counter_hud_panel, (int)&gBolts, 0x98967F);
                     hud_keep_visible(id, scale_ticks(0xB4));
@@ -1591,7 +1591,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.fFA) {
                             usage_stats.fFA = scale_ticks(gameplay_event_frame_count) / 600;
                         }
-                        usage_stats.fFC = usage_stats.fFC | (1 << D_0015EE84_m) | 0x80000000;
+                        usage_stats.fFC = usage_stats.fFC | (1 << g_current_level_index_m) | 0x80000000;
                         g_hero.pending_item[0] = next;
                         g_hero.quick_swap_tap_timer = 0;
                         g_hero.quick_swap_tap_window = 0;
@@ -1680,7 +1680,7 @@ void HeroL02_UpdateStateTransitions(void) {
                     }
                     if (scale_ticks(0xA) < g_hero.state_timer) {
                         if (((unsigned char *)g_hero.items[3].moby2) != 0 && ((unsigned char *)g_hero.items[3].moby2)[0x53] == 1) {
-                            if (func_001F9908_r(&g_hero.slot3_anim_timer)) {
+                            if (fast_dec_timer_r(&g_hero.slot3_anim_timer)) {
                                 if (0.55850536f > aridia_lean_state.f258 && aridia_lean_state.f254 < 0.34906584f && g_hero.items[3].state == 2) {
                                     g_hero.slot3_anim_timer = rand_range(scale_ticks(0x6E), scale_ticks(0x10E));
                                     blend_hero_slot3_animation_pair();
@@ -1766,7 +1766,7 @@ void HeroL02_UpdateStateTransitions(void) {
                             }
                         }
                         if (ok && 0.22f < g_hero.stick_magnitude) {
-                            if (D_0015EE84_m == 0xC) {
+                            if (g_current_level_index_m == 0xC) {
                                 int slot = g_hero.ground_sound_class;
                                 request_hero_voice_if_enabled(slot, 0, 0);
                                 request_hero_voice_if_enabled(slot, 1, 0);
@@ -1940,7 +1940,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         }
                     }
                     {
-                        Rec2C *rec = &D_L02_0017C2A8_rec[g_hero.attack_record];
+                        Rec2C *rec = &aridia_attack_records_rec[g_hero.attack_record];
                         int t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
                         if ((float)rec->f14 < g_hero.anim_frame && g_hero.anim_changing == 0 && !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {
                             if (pad_pressed_within(0x40, t, 0)) {
@@ -2158,7 +2158,7 @@ void HeroL02_UpdateStateTransitions(void) {
                     }
                     break;
                 case 112:
-                    if (g_hero.anim_frame > (float)D_L02_0017C2A8_rec[g_hero.attack_record].f18) {
+                    if (g_hero.anim_frame > (float)aridia_attack_records_rec[g_hero.attack_record].f18) {
                         HeroL02_SetMoveState(0, 1);
                     }
                     break;
@@ -2536,9 +2536,9 @@ void HeroL02_UpdateStateTransitions(void) {
                     }
                     break;
                 case 119:
-                    if ((D_0015EE84_m == 3 && 5.0f > g_hero.motion.pos.f[2])
-                        || (D_0015EE84_m == 6 && 50.0f > g_hero.motion.pos.f[2])
-                        || (D_0015EE84_m == 0x10 && (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 && g_hero.motion.displacement.f[2] >= 0.0f)))
+                    if ((g_current_level_index_m == 3 && 5.0f > g_hero.motion.pos.f[2])
+                        || (g_current_level_index_m == 6 && 50.0f > g_hero.motion.pos.f[2])
+                        || (g_current_level_index_m == 0x10 && (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 && g_hero.motion.displacement.f[2] >= 0.0f)))
                         || g_hero.state_timer > scale_ticks(0x78)) {
                         Hero_OnKilled();
                         return;
@@ -2552,7 +2552,7 @@ void HeroL02_UpdateStateTransitions(void) {
                     {
                         int both = 0;
 
-                        func_001F9908_r((int *)&aridia_hero_double_tap_timer);
+                        fast_dec_timer_r((int *)&aridia_hero_double_tap_timer);
                         if (*(int *)&aridia_hero_double_tap_timer != 0) {
                             both = 1;
                             if (!((g_controller_state.held & 8) && (g_controller_state.pressed & 8))) {
@@ -3176,7 +3176,7 @@ typedef struct {
     char pad280[0x1E33];
     u8 mode;
 } G_32b90;
-extern G_32b90 D_0013F450_368E8 __asm__("D_0013F450");
+extern G_32b90 g_hero_r __asm__("D_0013F450");
 extern u8 aridia_coll_hit_normal[];
 extern f32 aridia_coll_hit_point;
 extern void FastVecSub(void *, void *, void *);
@@ -3186,7 +3186,7 @@ extern void vec_scale_to_length(void *, void *, f32);
 extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
 extern s32 coll_line(void *, void *, s32, s32, s32);
 extern f32 compute_gravity_relative_vector_inclination(void *);
-extern f32 func_L00_002342F8_368E8(void *) __asm__("func_L00_002342F8");
+extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
 extern s32 solve_quadratic_equation(f32 *, f32 *, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui_help_002360c8.c, FUN_L02_002360c8. */
@@ -3198,15 +3198,15 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
     f32 o[6];
     f32 x, y, z;
 
-    switch ((&D_0013F450_368E8)->mode) {
+    switch ((&g_hero_r)->mode) {
     case 0:
         if (c < 0.0f) {
-            FastVecScale(t, &(&D_0013F450_368E8)->vE0, a);
+            FastVecScale(t, &(&g_hero_r)->vE0, a);
             t[2] -= ((a * a + a) * 0.5f) * b;
-            FastVecAdd(t, t, &(&D_0013F450_368E8)->v80);
-            v.q = (&D_0013F450_368E8)->v80.q;
+            FastVecAdd(t, t, &(&g_hero_r)->v80);
+            v.q = (&g_hero_r)->v80.q;
             clip_negative_segment_endpoint_xyz(&v, t);
-            qcopy(&v, &(&D_0013F450_368E8)->v80);
+            qcopy(&v, &(&g_hero_r)->v80);
             if (coll_line(&v, t, 0x324, 0, 0) != 0) {
                 if (compute_gravity_relative_vector_inclination((f32 *)aridia_coll_hit_normal) <= 0.87266463f) {
                     c = *(f32 *)(aridia_coll_hit_normal - 0x18);
@@ -3214,29 +3214,29 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
             }
         }
         if (c > 0.0f) {
-            if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&D_0013F450_368E8)->vE0.f[2] - b * -0.5f,
-                                       (&D_0013F450_368E8)->v80.f[2] - c) > 0 &&
+            if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&g_hero_r)->vE0.f[2] - b * -0.5f,
+                                       (&g_hero_r)->v80.f[2] - c) > 0 &&
                 o[0] > 0.0f) {
                 return o[0];
             }
         }
         break;
     case 1:
-        qcopy(&v, &(&D_0013F450_368E8)->v270);
+        qcopy(&v, &(&g_hero_r)->v270);
         vec_scale_to_length(&v, &v, b);
         FastVecScale(&v, &v, -1.0f);
-        FastVecScale(t, &(&D_0013F450_368E8)->vE0, a);
+        FastVecScale(t, &(&g_hero_r)->vE0, a);
         FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
         FastVecAdd(t, &t1, t);
-        FastVecAdd(t, &(&D_0013F450_368E8)->v80, t);
-        v2.q = (&D_0013F450_368E8)->v80.q;
+        FastVecAdd(t, &(&g_hero_r)->v80, t);
+        v2.q = (&g_hero_r)->v80.q;
         clip_negative_segment_endpoint_xyz(&v2, t);
-        if (coll_line(&(&D_0013F450_368E8)->v80, t, 0x324, 0, 0) != 0) {
+        if (coll_line(&(&g_hero_r)->v80, t, 0x324, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
-            z = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->vE0) - nb;
-            x = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->v80);
-            y = func_L00_002342F8_368E8(&aridia_coll_hit_point);
+            z = gravity_z_r(&(&g_hero_r)->vE0) - nb;
+            x = gravity_z_r(&(&g_hero_r)->v80);
+            y = gravity_z_r(&aridia_coll_hit_point);
             if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0 && o[2] > 0.0f) {
                 return o[2];
             }
@@ -3246,21 +3246,21 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
         t1.f[2] = 100.0f;
         t1.f[1] = 100.0f;
         t1.f[0] = 100.0f;
-        FastVecSub(&v, &(&D_0013F450_368E8)->v80, &t1);
+        FastVecSub(&v, &(&g_hero_r)->v80, &t1);
         vec_scale_to_length(&v, &v, b);
         FastVecScale(&v, &v, -1.0f);
-        FastVecScale(t, &(&D_0013F450_368E8)->vE0, a);
+        FastVecScale(t, &(&g_hero_r)->vE0, a);
         FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
         FastVecAdd(t, &t1, t);
-        FastVecAdd(t, &(&D_0013F450_368E8)->v80, t);
-        v2.q = (&D_0013F450_368E8)->v80.q;
+        FastVecAdd(t, &(&g_hero_r)->v80, t);
+        v2.q = (&g_hero_r)->v80.q;
         clip_negative_segment_endpoint_xyz(&v2, t);
-        if (coll_line(&(&D_0013F450_368E8)->v80, t, 0x324, 0, 0) != 0) {
+        if (coll_line(&(&g_hero_r)->v80, t, 0x324, 0, 0) != 0) {
             f32 nb;
             nb = b * -0.5f;
-            z = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->vE0) - nb;
-            x = func_L00_002342F8_368E8(&(&D_0013F450_368E8)->v80);
-            y = func_L00_002342F8_368E8(&aridia_coll_hit_point);
+            z = gravity_z_r(&(&g_hero_r)->vE0) - nb;
+            x = gravity_z_r(&(&g_hero_r)->v80);
+            y = gravity_z_r(&aridia_coll_hit_point);
             if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0 && o[4] > 0.0f) {
                 return o[4];
             }

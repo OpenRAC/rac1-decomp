@@ -27,14 +27,14 @@ int Hero_PickHelpMode(void)
     qcopy(vp, v1);
     qcopy(v3, g->fE0);
     vec_scale_to_length(v3, v3, 0.55f);
-    func_001F9BD8_4C558(v3, v3, g->fE0);
+    FastVecAdd_r(v3, v3, g->fE0);
     v3[2] = f20;
-    func_001F9BD8_4C558(vp, v1, v3);
+    FastVecAdd_r(vp, v1, v3);
     if (!coll_line(v1, vp, 2, 0, 0)) goto L_BAC;
-    h = (char *)&D_L05_00174340_4C558;
+    h = (char *)&rilgar_coll_hit_r;
     if (*(int *)(h + 0x18) != 0) goto L_BAC;
     if (*(int *)(h + 0x1C) == 0) goto L_BAC;
-    if (!(1.2217305f < fast_atan2(*(float *)(h + 0x48), func_001F9CE8_4C558(h + 0x40)))) goto L_BAC;
+    if (!(1.2217305f < fast_atan2(*(float *)(h + 0x48), vec_length_xy_r(h + 0x40)))) goto L_BAC;
     g->f8A4 = FastAddRots(fast_atan2(*(float *)(h + 0x40), *(float *)(h + 0x44)), 3.1415927f);
     if (!(FastDiffRots(fast_atan2(g->fE0[0], g->fE0[1]), g->f8A4) < 0.7853982f)) goto L_BAC;
     if (g->f2DC < 1.0f) {
@@ -46,13 +46,13 @@ int Hero_PickHelpMode(void)
 
 L_BAC:
     if (((H_9F0 *)(D_0013E633 + 0xE1D))->b257 != 0) {
-        f20 = func_001F9CE8_4C558(((H_9F0 *)(D_0013E633 + 0xE1D))->f100);
-        if (f20 < func_001F9CE8_4C558(((H_9F0 *)(D_0013E633 + 0xE1D))->fE0) * 0.25f) {
+        f20 = vec_length_xy_r(((H_9F0 *)(D_0013E633 + 0xE1D))->f100);
+        if (f20 < vec_length_xy_r(((H_9F0 *)(D_0013E633 + 0xE1D))->fE0) * 0.25f) {
             Hero_TryMoveStateL05(0x6D, 1);
             return 1;
         }
     }
-    ee = D_0015EE84_2523C8;
+    ee = g_current_level_index_r;
     if (ee == 5) {
         if (((H_9F0 *)(D_0013E633 + 0xE1D))->f80[2] < 61.4f) {
             ((H_9F0 *)(D_0013E633 + 0xE1D))->f8A0 = 61.4f;
@@ -80,7 +80,7 @@ L_BAC:
     r16 = select_point_index_by_distance(vp, pp, 0.0f);
     r4 = offset_path_index(((H_9F0 *)(D_0013E633 + 0xE1D))->p8B4, r16, -1, 1);
     ((H_9F0 *)(D_0013E633 + 0xE1D))->s8C8 = r16;
-    if (D_0015EE84_2523C8 != 5) goto L_D68;
+    if (g_current_level_index_r != 5) goto L_D68;
     pts = (float (*)[4])((H_9F0 *)(D_0013E633 + 0xE1D))->p8B4;
     f1 = *(float *)((char *)pts + (r16 << 4) + 0x18);
     f0 = *(float *)((char *)pts + (r4 << 4) + 0x18);
@@ -135,12 +135,12 @@ L_DEC:
     }
 
     if (D_0013D355_254DE8[0x13B] != 0) {
-        if (D_0015EE84_2523C8 == 5 && ((H_9F0 *)(D_0013E633 + 0xE1D))->i6F0 == 4 && ((H_9F0 *)(D_0013E633 + 0xE1D))->i70C >= 4) {
+        if (g_current_level_index_r == 5 && ((H_9F0 *)(D_0013E633 + 0xE1D))->i6F0 == 4 && ((H_9F0 *)(D_0013E633 + 0xE1D))->i70C >= 4) {
             Flags_9F0 *fl = (Flags_9F0 *)(menu_item_enabled_115 + 1);
             if (fl->f7 == 0) {
                 fl->f7 = 1;
-                func_0022EE28_254DE8(1, 0, 0);
-                func_L00_00264DB8_254DE8(0x53D6, -1);
+                PlayBankSound_r(1, 0, 0);
+                ShowBanner_r(0x53D6, -1);
             }
         }
         ((H_9F0 *)(D_0013E633 + 0xE1D))->i714 = 0;

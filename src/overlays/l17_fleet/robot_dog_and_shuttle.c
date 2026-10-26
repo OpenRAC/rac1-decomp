@@ -49,7 +49,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float random_float_between(float, float);
 extern float multiply_global_factor(float);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void update_float_countdown(float *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
@@ -79,7 +79,7 @@ void update_robot_dog_hit_reaction_and_target_detection(Moby *moby, int arg) {
         return;
     }
     if (d->i38 != 0) {
-        d->f1D4 = func_001FA898_r(multiply_global_factor(random_float_between(180.0f, 240.0f)));
+        d->f1D4 = truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 240.0f)));
         d->i38 = 0;
     }
     update_float_countdown(&d->f1D4);
@@ -154,12 +154,12 @@ extern int process_moby_suck_cannon_suction(void *);
 extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 
-extern int func_L00_002DCDA8_pos(void *, void *, void *, float) __asm__("func_L00_002DCDA8");
+extern int process_moby_suck_cannon_suction_pos(void *, void *, void *, float) __asm__("func_L00_002DCDA8");
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
 int EnemyStunUpdate(unsigned char *moby, void *pos, void *target, float h) {
-    int result = func_L00_002DCDA8_pos(moby, pos, target, h);
+    int result = process_moby_suck_cannon_suction_pos(moby, pos, target, h);
     if (result) {
         moby[0x20] = 12;
     } else if (moby[0x20] == 12) {
@@ -286,9 +286,9 @@ void update_robot_dog_glow_effects(unsigned char *moby) {
         }
         glow_pulse_sine = FastSin(((float)(fleet_frame_count % glow_pulse_period_frames) / IntToFloat(glow_pulse_period_frames)) * 2.0f * 3.1415927f +
                      -3.1415927f);
-        x = func_001FA898_r(glow_pulse_sine * 20.0f);
-        y = func_001FA898_r(glow_pulse_sine * 70.0f);
-        z = func_001FA898_r(glow_pulse_sine * 10.0f);
+        x = truncate_float_to_s32_r(glow_pulse_sine * 20.0f);
+        y = truncate_float_to_s32_r(glow_pulse_sine * 70.0f);
+        z = truncate_float_to_s32_r(glow_pulse_sine * 10.0f);
         r += x;
         g += y;
         b += z;
@@ -557,7 +557,7 @@ extern void update_entity_matrix(char *, void *, void *, void *);
 
 extern char D_0013A5E0[];
 extern unsigned char D_0014171B[] NOT_SDA;
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 typedef struct { char pad0[0x454]; unsigned char collected[1]; } LevelState;
 extern LevelState fleet_moby_collected;
 typedef int u128_2F3450 __attribute__((mode(TI)));
@@ -610,7 +610,7 @@ void Moby1448Update(unsigned char *m) {
     switch (((Moby *)m)->state) {
     case 0:
         if (fleet_moby_collected.collected[(short)((Moby *)m)->save_id] != 0
-            || (*(int *)(D_0014171B + 0xAB75 + (((short)((Moby *)m)->save_id >> 5) * 4 + (D_0015EE84_m << 8))) >> (((Moby *)m)->save_id & 0x1F)) & 1) {
+            || (*(int *)(D_0014171B + 0xAB75 + (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >> (((Moby *)m)->save_id & 0x1F)) & 1) {
             v->sel = 0;
             v->dir = 0;
             v->side = 0;
@@ -690,7 +690,7 @@ void Moby1448Update(unsigned char *m) {
             set_camera_rotation(rot);
             Hero_ResetToPosition(fleet_camera_points + (v->cut << 7) + 0x30, fleet_camera_points + (v->cut << 7) + 0x70, 0x72, 0);
         } else if (fleet_moby_collected.collected[(short)((Moby *)m)->save_id] != 0
-                   || (*(int *)(D_0014171B + 0xAB75 + (((short)((Moby *)m)->save_id >> 5) * 4 + (D_0015EE84_m << 8))) >> (((Moby *)m)->save_id & 0x1F)) & 1) {
+                   || (*(int *)(D_0014171B + 0xAB75 + (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >> (((Moby *)m)->save_id & 0x1F)) & 1) {
             float d = vec_distance_xy(D_0013E633 + 0xE9D, fleet_camera_points + (v->cam[v->sel] << 7) + 0x30);
             if (vec_distance_xy(D_0013E633 + 0xE9D, fleet_camera_points + (v->cam[v->sel ^ 1] << 7) + 0x30) < d) {
                 int base;
@@ -728,7 +728,7 @@ void Moby1448Update(unsigned char *m) {
             rot[2] = FastAddRots(((Moby *)m)->rot.z, 3.1415927f);
             Hero_ResetToPosition(b, rot, 0, 0);
             CameraScript2(0);
-            *(int *)(D_0014171B + 0xAB75 + (((short)((Moby *)m)->save_id >> 5) * 4 + (D_0015EE84_m << 8))) |= 1 << (((Moby *)m)->save_id & 0x1F);
+            *(int *)(D_0014171B + 0xAB75 + (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) |= 1 << (((Moby *)m)->save_id & 0x1F);
             fleet_moby_killed_bits[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
         }
         break;
@@ -814,17 +814,17 @@ int update_shuttle_travel_and_camera(char *moby, int idx) {
 
     ApproachValue(&d->fA4, 1.0f, 1.0f / (float)scale_ticks(0x384));
     t = d->fA4 * (float)(c1->n - 1);
-    i1 = func_001FA898_r(t);
+    i1 = truncate_float_to_s32_r(t);
     f = (float)i1;
     t1 = t - f;
     t2 = d->fA4 * 1.02f;
     if (t2 > 1.0f) t2 = 1.0f;
     t = t2 * (float)(c2->n - 1);
-    i2 = func_001FA898_r(t);
+    i2 = truncate_float_to_s32_r(t);
     t2 = t - (float)i2;
     t = d->fA4 * (float)(c3->n - 1);
     t3 = t - f;
-    i3 = func_001FA898_r(t);
+    i3 = truncate_float_to_s32_r(t);
     lerp_vector(pos, &c1->p[i1], &c1->p[i1 + 1], t1);
     lerp_vector(moby + 0x10, &c3->p[i3], &c3->p[i3 + 1], t3);
     set_camera_position(pos);
@@ -870,7 +870,7 @@ extern void clear_active_help_record(void);
 extern void HeroL17_SetMoveState(int, int);
 extern void set_follow_camera_blend_output_flags(void);
 extern void set_follow_camera_angle_blend_from_position(int a, float x, float y);
-extern int func_001F9908_i(int *) __asm__("func_001F9908");
+extern int fast_dec_timer_i(int *) __asm__("func_001F9908");
 extern void enter_hero_idle_state_for_current_vehicle_mode(void);
 extern char *fleet_mobys MACRO_ADDR;
 extern char *fleet_mobys_end MACRO_ADDR;
@@ -1066,7 +1066,7 @@ void update_fleet_camera_box_watcher(char *moby) {
     }
     case 3:
         set_follow_camera_blend_output_flags();
-        if (func_001F9908_i((int *)(d + 0x5C))) {
+        if (fast_dec_timer_i((int *)(d + 0x5C))) {
             char *cam;
             set_follow_camera_angle_blend_from_position((int)(fleet_camera_points + (*(int *)&((Moby *)d)->rot.x << 7) + 0x30), 0.02617994f, 0.0f);
             cam = fleet_player_camera;
@@ -1238,7 +1238,7 @@ extern int is_point_inside_clip_volume(void *, int);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void draw_fleet_backdrop_quads(char *);
 extern short fleet_hero_fall_state_height;
-extern float D_L17_0015F718_m __asm__("D_L17_0015F718") MACRO_ADDR;
+extern float fleet_hero_fall_state_height_m __asm__("D_L17_0015F718") MACRO_ADDR;
 typedef int u128 __attribute__((mode(TI)));
 extern short fleet_backdrop_bend_length;
 extern short fleet_backdrop_base_length;
@@ -1260,11 +1260,11 @@ void update_fleet_backdrop_animation(unsigned char *moby) {
         if (*(int *)(hero_data + 0x2084) != 0x32 || *(struct Moby **)(hero_data + 0x15F0) == 0 ||
             (*(struct Moby **)(hero_data + 0x15F0))->oclass != 0x563) {
             if (is_point_inside_clip_volume(D_0013E633 + 0xE9D, *(int *)(moby_pvars + 0x4C))) {
-                D_L17_0015F718_m = 150.0f;
+                fleet_hero_fall_state_height_m = 150.0f;
                 goto done;
             }
         }
-        D_L17_0015F718_m = 10.0f;
+        fleet_hero_fall_state_height_m = 10.0f;
     }
 done:
     if (mby->state == 0) {

@@ -75,13 +75,13 @@ typedef struct {
     f32 z;
     s32 flag;
 } MapPoint_24F170;
-extern MapPoint_24F170 D_0013D6B8_24F170[] __asm__("D_0013D6B8");
+extern MapPoint_24F170 race_gates_r[] __asm__("D_0013D6B8");
 extern unsigned char item_available[];
 
 /* mission status from the flags of map points 20, 22 and 24 and item flag 2: 1, 2 or 0 */
 int GetMapPointMissionStatus(void) {
-    if (D_0013D6B8_24F170[20].flag && !D_0013D6B8_24F170[24].flag) return 1;
-    if (D_0013D6B8_24F170[24].flag && item_available[2] && !D_0013D6B8_24F170[22].flag) return 2;
+    if (race_gates_r[20].flag && !race_gates_r[24].flag) return 1;
+    if (race_gates_r[24].flag && item_available[2] && !race_gates_r[22].flag) return 2;
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024F198);

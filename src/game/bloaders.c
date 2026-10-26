@@ -98,8 +98,8 @@ extern void LoadPifAsPSMT8H(void *arg0, void *arg1, int arg2, int arg3);
 extern long debug_font_pif_header;
 extern unsigned char debug_font_buffer[];
 
-extern int D_0015EF88_m __asm__("D_0015EF88") MACRO_ADDR;
-extern long D_0015EFC8_m __asm__("D_0015EFC8") MACRO_ADDR;
+extern int depth_buffer_address_m __asm__("D_0015EF88") MACRO_ADDR;
+extern long debug_font_pif_header_m __asm__("D_0015EFC8") MACRO_ADDR;
 
 /*
  * LoadDebugFont: forwards the D_00137C80[2]/[3] stream position to
@@ -114,8 +114,8 @@ void LoadDebugFont(void) {
     long localbuf[3];
 
     Load(debug_font_buffer, disc_table[2], disc_table[3]);
-    LoadPifAsPSMT8H(debug_font_buffer, localbuf, D_0015EF88_m + 0xC0000, 0x3FFC00);
-    D_0015EFC8_m = localbuf[0];
+    LoadPifAsPSMT8H(debug_font_buffer, localbuf, depth_buffer_address_m + 0xC0000, 0x3FFC00);
+    debug_font_pif_header_m = localbuf[0];
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001E9728);

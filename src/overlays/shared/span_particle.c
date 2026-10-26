@@ -7,7 +7,7 @@ extern unsigned char *batalia_span_particle_textures_ptr;
 extern unsigned char *create_part(int);
 extern float random_float_between(float, float);
 extern void vec_scale_to_length(void *, void *, float);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void FastVecAdd(void *, void *, void *);
 
 // Spawns a particle at a position with a color and scale chosen by kind.
@@ -52,7 +52,7 @@ void spawn_span_particle(float *pos, int kind, float *vec, float scale) {
         *(short *)(p + 0xA) = k2;
         *(int *)(p + 4) = ((c >> 2) << 24) | 0x606060;
         *(int *)(p + 0xC) = (c << 24) | 0x907070;
-        p[9] = func_001FA898_r(4.0f) + 0x60;
+        p[9] = truncate_float_to_s32_r(4.0f) + 0x60;
         p[3] = 0x44;
         p[1] = 3;
         p[2] = batalia_span_particle_textures_ptr[k];

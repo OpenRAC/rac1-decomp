@@ -74,7 +74,7 @@ typedef struct {
     unsigned char pa[0x1C - 0xA];
     E_289108 *list;
 } G_289108;
-extern G_289108 *D_L00_001605DC_g __asm__("D_L00_001605DC") MACRO_ADDR;
+extern G_289108 *sky_data_g __asm__("D_L00_001605DC") MACRO_ADDR;
 extern float IntToFloat(int);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -84,8 +84,8 @@ extern int func_001160D8(void);
 /* Steps each shrub sparkle entry: type 0 spins and scales a direction, type 1 randomises a colour. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00288ec0.c, FUN_L00_00289108. */
 void sky_particles_update(void) {
     int i;
-    for (i = 0; i < D_L00_001605DC_g->n; i++) {
-        E_289108 *e = &D_L00_001605DC_g->list[i];
+    for (i = 0; i < sky_data_g->n; i++) {
+        E_289108 *e = &sky_data_g->list[i];
         if (e->b0 == 0) {
             unsigned short *h = &e->hC;
             float a, b;
@@ -322,10 +322,10 @@ typedef struct {
     u8 padA[0x1C - 0xA];
     Part *parts;
 } Sys;
-extern Sys * D_L00_001605DC_8AF90 __asm__("D_L00_001605DC") MACRO_ADDR;
+extern Sys * sky_data_r __asm__("D_L00_001605DC") MACRO_ADDR;
 extern short sky_star_colors;
 extern short sky_pair_particle_colors;
-extern u8 D_L00_001BDB70_8AF90[] __asm__("D_L00_001BDB70");
+extern u8 sky_shell_matrix_r[] __asm__("D_L00_001BDB70");
 extern u8 sky_pair_particle_positions[];
 extern void SkyDrawShell(s32);
 extern s32 func_001160D8(void);
@@ -334,7 +334,7 @@ extern s32 random_integer_below(s32);
 extern f32 IntToFloat(s32);
 extern f32 FastCos(f32);
 extern f32 FastSin(f32);
-extern void func_00234C98_8AF90(s32, u64) __asm__("func_00234C98");
+extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
 
 /* Initializes and steps three types of sky particles before drawing the sky layer. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_00289cb8. */
 void draw_three_sky_shells_with_three_particle_types(void) {
@@ -353,13 +353,13 @@ void draw_three_sky_shells_with_three_particle_types(void) {
     f32 a;
     f32 b;
 
-    D_L00_001605DC_8AF90->h4 = 0;
-    set_identity_matrix(D_L00_001BDB70_8AF90);
+    sky_data_r->h4 = 0;
+    set_identity_matrix(sky_shell_matrix_r);
     SkyDrawShell(0);
-    if (D_L00_001605DC_8AF90->count == 0) {
-        D_L00_001605DC_8AF90->count = 0x100;
-        for (i = 0; i < D_L00_001605DC_8AF90->count; i++) {
-            p = &D_L00_001605DC_8AF90->parts[i];
+    if (sky_data_r->count == 0) {
+        sky_data_r->count = 0x100;
+        for (i = 0; i < sky_data_r->count; i++) {
+            p = &sky_data_r->parts[i];
             if (i >= 0xF0) {
                 p->type = 0;
                 q = &p->u;
@@ -413,8 +413,8 @@ void draw_three_sky_shells_with_three_particle_types(void) {
             }
         }
     }
-    for (i2 = 0; i2 < D_L00_001605DC_8AF90->count; i2++) {
-        p2 = &D_L00_001605DC_8AF90->parts[i2];
+    for (i2 = 0; i2 < sky_data_r->count; i2++) {
+        p2 = &sky_data_r->parts[i2];
         if (p2->type == 0) {
             q2 = &p2->u;
             p2->u.h.h0++;
@@ -462,7 +462,7 @@ void draw_three_sky_shells_with_three_particle_types(void) {
         }
     }
     SkySpriteProc();
-    func_00234C98_8AF90(0x42, 0x8000000044LL);
+    VU1_addGSregister_r(0x42, 0x8000000044LL);
     SkyDrawShell(1);
     SkyDrawShell(2);
 }
@@ -491,7 +491,7 @@ void draw_three_sky_shells_with_particles_and_modulo_50000_rotation(void) {
 }
 void set_identity_matrix();
 typedef int q128 __attribute__((mode(TI)));
-extern u8 * D_L00_001605DC_8B5C8 __asm__("D_L00_001605DC") MACRO_ADDR;
+extern u8 * sky_data_r2 __asm__("D_L00_001605DC") MACRO_ADDR;
 extern s32 level_frame_counter MACRO_ADDR;
 void SkyDrawShell(s32);
 void fast_euler_to_matrix(void *, void *);
@@ -499,14 +499,14 @@ void fast_euler_to_matrix(void *, void *);
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_0028a2f0. */
 void draw_sky_shells_with_modulo_40000_rotation(void) {
     Vec4 t;
-    *(s16 *)(D_L00_001605DC_8B5C8 + 4) = 0;
-    set_identity_matrix(D_L00_001BDB70_8AF90);
+    *(s16 *)(sky_data_r2 + 4) = 0;
+    set_identity_matrix(sky_shell_matrix_r);
     SkyDrawShell(0);
     qzero(&t);
     t.f[2] = (f32)(level_frame_counter % 40000) * 0.00015707963029854f - 3.1415927f;
-    fast_euler_to_matrix(D_L00_001BDB70_8AF90, &t);
+    fast_euler_to_matrix(sky_shell_matrix_r, &t);
     SkyDrawShell(1);
-    set_identity_matrix(D_L00_001BDB70_8AF90);
+    set_identity_matrix(sky_shell_matrix_r);
     SkyDrawShell(2);
 }
 extern int level_frame_counter MACRO_ADDR;
@@ -531,7 +531,7 @@ void draw_sky_shells_with_modulo_25000_rotation(void) {
     SkyDrawShell(4);
 }
 typedef int T28a480_q __attribute__((mode(TI)));
-extern int D_L00_0015F6B0_8B758b __asm__("D_L00_0015F6B0") MACRO_ADDR;
+extern int level_frame_counter_r __asm__("D_L00_0015F6B0") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_0028a480. */
 void draw_sky_shells_with_scaled_phase_rotation(void)
@@ -547,11 +547,11 @@ void draw_sky_shells_with_scaled_phase_rotation(void)
             fast_euler_to_matrix(sky_shell_matrix, v);
             break;
         case 1:
-            ((float *)v)[2] = (float)((D_L00_0015F6B0_8B758b * 5) & 0x1FFFF) * (3.14159265f / 65536.0f) - 3.14159265f;
+            ((float *)v)[2] = (float)((level_frame_counter_r * 5) & 0x1FFFF) * (3.14159265f / 65536.0f) - 3.14159265f;
             fast_euler_to_matrix(sky_shell_matrix, v);
             break;
         case 2:
-            ((float *)v)[2] = (float)((D_L00_0015F6B0_8B758b * 10) & 0x3FFFF) * 2.39684496e-05f - 3.14159265f;
+            ((float *)v)[2] = (float)((level_frame_counter_r * 10) & 0x3FFFF) * 2.39684496e-05f - 3.14159265f;
             fast_euler_to_matrix(sky_shell_matrix, v);
             break;
         case 3:
@@ -565,7 +565,7 @@ void draw_sky_shells_with_scaled_phase_rotation(void)
         SkyDrawShell(i);
     }
 }
-extern short D_L00_0015F6B0_s __asm__("D_L00_0015F6B0");
+extern short level_frame_counter_s __asm__("D_L00_0015F6B0");
 // Rotates each sky shell at its assigned angular rate before drawing.
 void draw_sky_shells_with_slow_medium_and_fast_rotation(void) {
  float v[4] __attribute__((aligned(16)));
@@ -583,7 +583,7 @@ void draw_sky_shells_with_slow_medium_and_fast_rotation(void) {
     fast_euler_to_matrix(sky_shell_matrix, v);
     break;
    case 3:
-    v[2] = *(unsigned short *)&D_L00_0015F6B0_s * (3.14159265f / 32768.0f) - 3.14159265f;
+    v[2] = *(unsigned short *)&level_frame_counter_s * (3.14159265f / 32768.0f) - 3.14159265f;
     fast_euler_to_matrix(sky_shell_matrix, v);
     break;
    default: set_identity_matrix(sky_shell_matrix); break;
@@ -736,10 +736,10 @@ void draw_seven_sky_shells_with_modulo_40000_and_60000_rotation(void) {
 }
 typedef int q_28b1a0 __attribute__((mode(TI)));
 typedef struct { short h0, h2, h4, h6; unsigned char pad[0x18]; unsigned char *e[1]; } S_28b1a0;
-extern S_28b1a0 *D_L00_001605DC_28b1a0 __asm__("D_L00_001605DC") MACRO_ADDR;
-extern unsigned char D_L00_001BDB70_28b1a0[] __asm__("D_L00_001BDB70") NOT_SDA;
-extern short D_L00_00160580_28b1a0 __asm__("D_L00_00160580");
-extern q_28b1a0 D_L00_001605E0_28b1a0 __asm__("D_L00_001605E0") MACRO_ADDR;
+extern S_28b1a0 *sky_data_r3 __asm__("D_L00_001605DC") MACRO_ADDR;
+extern unsigned char sky_shell_matrix_r2[] __asm__("D_L00_001BDB70") NOT_SDA;
+extern short sky_shell_rotation_phase_step_r __asm__("D_L00_00160580");
+extern q_28b1a0 sky_shell_origin_r __asm__("D_L00_001605E0") MACRO_ADDR;
 void func_001FA190_28b1a0(void *) __asm__("func_001FA190");
 void func_001F9BC0_28b1a0(void *) __asm__("func_001F9BC0");
 void func_L00_001FFA40_28b1a0(void *, void *) __asm__("func_L00_001FFA40");
@@ -753,49 +753,49 @@ void SkyShellsEntryUpdate(void)
     float *p;
     unsigned char *M;
     float k;
-    D_L00_001605DC_28b1a0->h4 = 0;
-    func_001FA190_28b1a0(D_L00_001BDB70_28b1a0);
+    sky_data_r3->h4 = 0;
+    func_001FA190_28b1a0(sky_shell_matrix_r2);
     func_001F9BC0_28b1a0(v);
-    for (; i < D_L00_001605DC_28b1a0->h6; i++) {
-        p = (float *)(D_L00_001605DC_28b1a0->e[i] + 8);
+    for (; i < sky_data_r3->h6; i++) {
+        p = (float *)(sky_data_r3->e[i] + 8);
         k = 1.0f;
         switch (i) {
         case 1:
             v[1] = 0.02f;
             k = 3.0f;
-            *p += (*(float *)&D_L00_00160580_28b1a0) * 0.55f;
+            *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.55f;
             break;
         case 2:
             v[1] = -0.02f;
             k = 2.5f;
-            *p += (*(float *)&D_L00_00160580_28b1a0) * 0.6f;
+            *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.6f;
             break;
         case 3:
             v[1] = 0.01f;
             k = 2.0f;
-            *p += (*(float *)&D_L00_00160580_28b1a0) * 0.7f;
+            *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.7f;
             break;
         case 4:
             v[1] = -0.01f;
             k = 1.5f;
-            *p += (*(float *)&D_L00_00160580_28b1a0) * 0.75f;
+            *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.75f;
             break;
         case 5:
             k = 1.25f;
-            *p += (*(float *)&D_L00_00160580_28b1a0) * 0.8f;
+            *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.8f;
             break;
         default:
-            func_001FA190_28b1a0(D_L00_001BDB70_28b1a0);
+            func_001FA190_28b1a0(sky_shell_matrix_r2);
             break;
         }
         if (i > 0) {
-            M = D_L00_001BDB70_28b1a0;
+            M = sky_shell_matrix_r2;
             v[2] = (float)((int)(*p + i * 2000.0f) % 10000) * 0.00062831853f - 3.1415927f;
             func_L00_001FFA40_28b1a0(M, v);
             func_001F9C48_28b1a0(M, M, k);
             func_001F9C48_28b1a0(M + 0x10, M + 0x10, k);
             func_001F9C48_28b1a0(M + 0x20, M + 0x20, k);
-            qcopy(M + 0x30, &D_L00_001605E0_28b1a0);
+            qcopy(M + 0x30, &sky_shell_origin_r);
         }
         func_0022C9A8_28b1a0(i);
     }

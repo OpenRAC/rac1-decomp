@@ -70,7 +70,7 @@ int Hud_GetIconIndex(int arg0) {
 
 extern int hud_state NOT_SDA;
 extern int queue_animation_update(int, int, int, int, int, int, int);
-extern char *func_001FFAB8_d(int, int, char *, int) __asm__("func_001FFAB8");
+extern char *Hud_HeapAlloc_d(int, int, char *, int) __asm__("func_001FFAB8");
 extern char hud_file_str[];
 extern unsigned char *hud_bank_main MACRO_ADDR;
 extern unsigned char *hud_bank_cursor MACRO_ADDR;
@@ -86,7 +86,7 @@ typedef struct {
     int unk7C;
     char pad80[0x10];
 } HudBank;
-extern HudBank D_00199C60_b[] __asm__("D_00199C60") NOT_SDA;
+extern HudBank hud_chan_slots_b[] __asm__("D_00199C60") NOT_SDA;
 
 /* HUD bank init: clears the first two words of the D_0019A4E8 arena,
    resets the 13 0x90-byte bank records at D_00199C60 (+0x64 = -1, the
@@ -105,17 +105,17 @@ void init_hud(void) {
     arena[0] = 0;
     arena[1] = 0;
     for (i = 0; i < 13; i++) {
-        D_00199C60_b[i].unk64 = -1;
-        D_00199C60_b[i].unk20 = 0x10000;
+        hud_chan_slots_b[i].unk64 = -1;
+        hud_chan_slots_b[i].unk20 = 0x10000;
         queue_animation_update(i, 0xFFFF, 0, 0, 0, 0, 1);
-        D_00199C60_b[i].unk7C = 0;
-        D_00199C60_b[i].unk6C = -6;
-        D_00199C60_b[i].unk04 = 0;
-        D_00199C60_b[i].unk24 = 0;
+        hud_chan_slots_b[i].unk7C = 0;
+        hud_chan_slots_b[i].unk6C = -6;
+        hud_chan_slots_b[i].unk04 = 0;
+        hud_chan_slots_b[i].unk24 = 0;
     }
     if (hud_bank_main == 0) {
-        hud_bank_main = (unsigned char *)func_001FFAB8_d(0x2800, 0, hud_file_str, 277);
-        hud_bank_aux = (unsigned char *)func_001FFAB8_d(0x1400, 0, hud_file_str, 278);
+        hud_bank_main = (unsigned char *)Hud_HeapAlloc_d(0x2800, 0, hud_file_str, 277);
+        hud_bank_aux = (unsigned char *)Hud_HeapAlloc_d(0x1400, 0, hud_file_str, 278);
     }
     buf = hud_bank_main;
     hud_bank_end = buf + 0x2800;
@@ -149,7 +149,7 @@ typedef struct {
     HudEntry *table1;
 } HudArena;
 
-extern HudArena D_0019A4E8_arena __asm__("D_0019A4E8");
+extern HudArena hud_state_arena __asm__("D_0019A4E8");
 
 /* LinkHudBank(int, char *) */
 void LinkHudBank(int bank, int addr) {
@@ -159,7 +159,7 @@ void LinkHudBank(int bank, int addr) {
     int limit;
     int i;
 
-    banks = (int *)((char *)D_0019A4E8_arena.header + 0x74);
+    banks = (int *)((char *)hud_state_arena.header + 0x74);
     slot = &banks[bank];
     if (*slot != 0) {
         return;
@@ -169,27 +169,27 @@ void LinkHudBank(int bank, int addr) {
     *slot = addr;
 
     if (bank != 0) {
-        start = D_0019A4E8_arena.header->limits1[bank - 1];
+        start = hud_state_arena.header->limits1[bank - 1];
     } else {
         start = 0;
     }
-    limit = D_0019A4E8_arena.header->limits1[bank];
+    limit = hud_state_arena.header->limits1[bank];
 
     for (i = start; i < limit; i++) {
-        D_0019A4E8_arena.table1[i].offset &= 0x7FFFFFFF;
-        D_0019A4E8_arena.table1[i].offset += addr;
+        hud_state_arena.table1[i].offset &= 0x7FFFFFFF;
+        hud_state_arena.table1[i].offset += addr;
     }
 
     if (bank != 0) {
-        start = D_0019A4E8_arena.header->limits2[bank - 1];
+        start = hud_state_arena.header->limits2[bank - 1];
     } else {
         start = 0;
     }
-    limit = D_0019A4E8_arena.header->limits2[bank];
+    limit = hud_state_arena.header->limits2[bank];
 
     for (i = start; i < limit; i++) {
-        D_0019A4E8_arena.table2[i].offset &= 0x7FFFFFFF;
-        D_0019A4E8_arena.table2[i].offset += addr;
+        hud_state_arena.table2[i].offset &= 0x7FFFFFFF;
+        hud_state_arena.table2[i].offset += addr;
     }
 }
 
@@ -256,9 +256,9 @@ struct HudState {
     s32 unk2C;
     s32 unk30;
 };
-extern struct HudState D_0019A4E8_FF958 __asm__("D_0019A4E8");
+extern struct HudState hud_state_r __asm__("D_0019A4E8");
 extern void LinkHudBank(s32 bank, s32 base);
-extern void func_00201348_FF958(u32 data, s32 dbp, s32 psm, s32 wlog, s32 hlog, s32 immediate) __asm__("func_00201348");
+extern void Hud_sendTexture_r(u32 data, s32 dbp, s32 psm, s32 wlog, s32 hlog, s32 immediate) __asm__("func_00201348");
 
 /* Uploads the image pages of one HUD bank to GS memory, from the depth buffer address up, and records each page's block offset. Bank 0's pages are linked first when the bank file is not linked yet.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/hud/hud_send_resident_bank.c, hud_send_resident_bank. */
@@ -274,26 +274,26 @@ void Hud_SendResidentBank(s32 bank, s32 base, s32 immediate) {
     s32 height_log2;
     s32 size;
 
-    if (D_0019A4E8_FF958.header.counts->loaded[bank] == 0) {
+    if (hud_state_r.header.counts->loaded[bank] == 0) {
         LinkHudBank(0, base);
         address = depth_buffer_address;
     } else {
         address = depth_buffer_address;
     }
-    counts = D_0019A4E8_FF958.header.counts;
+    counts = hud_state_r.header.counts;
     bank_offset = bank << 2;
     first = bank == 0 ? 0 : counts->ends[bank - 1];
     i = first;
-    end = *(s32 *)((u8 *)D_0019A4E8_FF958.header.counts + bank_offset + 0x34); /* ends[bank] */
+    end = *(s32 *)((u8 *)hud_state_r.header.counts + bank_offset + 0x34); /* ends[bank] */
     for (; i < end; i++) {
         page = address >> 8;
-        width_log2 = D_0019A4E8_FF958.image_pages[i].width_log2;
-        height_log2 = D_0019A4E8_FF958.image_pages[i].height_log2;
+        width_log2 = hud_state_r.image_pages[i].width_log2;
+        height_log2 = hud_state_r.image_pages[i].height_log2;
         size = 1 << (width_log2 + height_log2);
-        func_00201348_FF958(D_0019A4E8_FF958.image_pages[i].source_address, page, 0x1B, width_log2,
+        Hud_sendTexture_r(hud_state_r.image_pages[i].source_address, page, 0x1B, width_log2,
                          height_log2, immediate);
         address += size * 4;
-        D_0019A4E8_FF958.image_pages[i].gs_block_offset = page;
+        hud_state_r.image_pages[i].gs_block_offset = page;
     }
 }
 
@@ -341,7 +341,7 @@ __asm__(".section .text
 	nop
 ");
 
-extern char D_00199C60_raw[] __asm__("D_00199C60") NOT_SDA;
+extern char hud_chan_slots_raw[] __asm__("D_00199C60") NOT_SDA;
 extern int g_game_mode MACRO_ADDR;
 extern void apply_pending_animation(void *arg0);
 
@@ -354,7 +354,7 @@ extern void apply_pending_animation(void *arg0);
 int queue_animation_update(int arg0, int arg1, int arg2, int arg3, int arg4,
                  int arg5, int arg6) {
     int idx = arg0 & 0xF;
-    char *p = D_00199C60_raw + idx * 0x90;
+    char *p = hud_chan_slots_raw + idx * 0x90;
     int masked0 = arg0 & 0xFFF0;
     int r3;
     int cur;
@@ -446,7 +446,7 @@ typedef struct {
 extern HudRec90 hud_chan_slots[] NOT_SDA;
 /* func_001FFB38 returns the bank id; this caller ignores it, and its
    match was made against a void view. */
-extern void func_001FFB38_v(int, int, int, int, int, int, int) __asm__("func_001FFB38");
+extern void queue_animation_update_v(int, int, int, int, int, int, int) __asm__("func_001FFB38");
 
 /* Calls func_001FFB38(i, 0xFFFF, 0, 0, 0, 0, 0) on the record whose
    +0x64 is arg0 and returns 1, or returns 0 when none is. The nop in
@@ -459,7 +459,7 @@ int remove_hud_item(int arg0) {
         }
     }
     if (i < 13) {
-        func_001FFB38_v(i, 0xFFFF, 0, 0, 0, 0, 0);
+        queue_animation_update_v(i, 0xFFFF, 0, 0, 0, 0, 0);
         return 1;
     }
     return 0;
@@ -551,8 +551,8 @@ typedef struct HudBankCb {
     char pad1C[0x74];
 } HudBankCb;
 
-extern char D_0019A4E8_raw[] __asm__("D_0019A4E8");
-extern HudBankCb D_00199C60_cb[] __asm__("D_00199C60") NOT_SDA;
+extern char hud_state_raw[] __asm__("D_0019A4E8");
+extern HudBankCb hud_chan_slots_cb[] __asm__("D_00199C60") NOT_SDA;
 extern int letterbox_enabled MACRO_ADDR;
 extern int hud_msg_count MACRO_ADDR;
 extern int hud_msg_alpha MACRO_ADDR;
@@ -568,7 +568,7 @@ extern void draw_framed_text(int, int, int, int);
    while the D_0015F760 timer runs, or out once it stops, and draw
    the overlay text D_001994D8 (plus D_00199528 above 1000) with it. */
 void update_hud(void) {
-    char *arena = D_0019A4E8_raw;
+    char *arena = hud_state_raw;
     int i;
     HudBankCb *p;
     int col;
@@ -578,7 +578,7 @@ void update_hud(void) {
         return;
     }
     *(int *)(arena + 0xC) = 0xFFFFF0;
-    p = D_00199C60_cb;
+    p = hud_chan_slots_cb;
     for (i = 0; i < 13; i++) {
         if (p->update != 0) {
             p->update(p);
@@ -632,7 +632,7 @@ int GetIconFrame(int iconId, int sub) {
     short *pair;
 
     idx = Hud_GetIconIndex(iconId);
-    arena = D_0019A4E8_raw;
+    arena = hud_state_raw;
     row = (unsigned short *)(idx * 8 + *(int *)(arena + 0x1C));
     if (row[0] == 0xFFFF) {
         return 0;
@@ -653,7 +653,7 @@ int GetIconFrame(int iconId, int sub) {
 
 __asm__(".section .text\n\tnop\n");
 
-extern s32 D_0015EF74_00248 __asm__("D_0015EF74") MACRO_ADDR;
+extern s32 g_gs_texture_allocation_cursor_r __asm__("D_0015EF74") MACRO_ADDR;
 struct TextureUpload_00248 {
     s32 clut_data; /* 0x00: EE address of the CLUT (fun_00204cf0: texture CLUT pointer) */
     s16 unk4; /* 0x04: every writer stores 0 */
@@ -677,16 +677,16 @@ struct FrameImagePage_00248 {
     u8 width_log2;
     u8 height_log2;
 };
-extern s32 D_0015EF8C_00248 __asm__("D_0015EF8C") MACRO_ADDR;
-extern s32 D_0015F558_00248 __asm__("D_0015F558") MACRO_ADDR;
-extern struct TextureUpload_00248 D_0018D140_00248[] __asm__("D_0018D140");
+extern s32 g_gs_texture_allocation_base_r __asm__("D_0015EF8C") MACRO_ADDR;
+extern s32 pending_texture_upload_count_r __asm__("D_0015F558") MACRO_ADDR;
+extern struct TextureUpload_00248 pending_texture_uploads_r[] __asm__("D_0018D140");
 struct FrameTextureTables_00248 {
     u8 pad00[0x20];
     s32 frame_references_address;
     s32 image_pages_address;
     s32 palette_pages_address;
 };
-extern struct FrameTextureTables_00248 D_0019A4E8_00248 __asm__("D_0019A4E8");
+extern struct FrameTextureTables_00248 hud_state_r2 __asm__("D_0019A4E8");
 
 /* GetFrameTex: returns the TEX0 word of a HUD frame, allocating GS blocks for its palette and image pages
    and queueing their uploads the first time.
@@ -713,33 +713,33 @@ u64 func_00200248_r(s32 frame_id) {
     u64 palette_word;
 
     frame =
-        (struct FrameTextureRef_00248 *)(frame_id * 4 + D_0019A4E8_00248.frame_references_address);
-    palette_page = (struct FramePalettePage_00248 *)(D_0019A4E8_00248.palette_pages_address +
+        (struct FrameTextureRef_00248 *)(frame_id * 4 + hud_state_r2.frame_references_address);
+    palette_page = (struct FramePalettePage_00248 *)(hud_state_r2.palette_pages_address +
                                                frame->palette_index * 8);
-    image_page = (struct FrameImagePage_00248 *)(D_0019A4E8_00248.image_pages_address +
+    image_page = (struct FrameImagePage_00248 *)(hud_state_r2.image_pages_address +
                                            frame->image_index * 8);
     queued_transfer = 0;
 
     if (palette_page->gs_block_offset == 0 || image_page->gs_block_offset == 0) {
         /* Retail fills this first packet even when the queue is already full. */
-        packet_offset = D_0015F558_00248 * 0x10;
+        packet_offset = pending_texture_upload_count_r * 0x10;
         palette_source_address = palette_page->source_address;
-        initial_packet = D_0018D140_00248 + D_0015F558_00248;
+        initial_packet = pending_texture_uploads_r + pending_texture_upload_count_r;
         initial_packet->clut_data = palette_source_address;
         initial_packet->unk4 = 0;
         initial_packet->cbp = 0x3FF0;
-        *(s32 *)((u8 *)D_0018D140_00248 + packet_offset + 8) = palette_page->source_address;
+        *(s32 *)((u8 *)pending_texture_uploads_r + packet_offset + 8) = palette_page->source_address;
         initial_packet->tw = 5;
         initial_packet->th = 5;
         initial_packet->tbp = 0x3FF0;
     }
 
     if (palette_page->gs_block_offset == 0) {
-        palette_page->gs_block_offset = D_0015EF74_00248 >> 8;
-        D_0015EF74_00248 += 0x400;
-        if (D_0015F558_00248 < 0x40) {
+        palette_page->gs_block_offset = g_gs_texture_allocation_cursor_r >> 8;
+        g_gs_texture_allocation_cursor_r += 0x400;
+        if (pending_texture_upload_count_r < 0x40) {
             queued_transfer = 1;
-            palette_packet = D_0018D140_00248 + D_0015F558_00248;
+            palette_packet = pending_texture_uploads_r + pending_texture_upload_count_r;
             palette_packet->clut_data = palette_page->source_address;
             palette_packet->unk4 = 0;
             palette_packet->cbp = palette_page->gs_block_offset;
@@ -749,17 +749,17 @@ u64 func_00200248_r(s32 frame_id) {
     if (image_page->gs_block_offset == 0) {
         height_log2 = image_page->height_log2;
         width_log2 = image_page->width_log2;
-        allocation_cursor = D_0015EF74_00248;
+        allocation_cursor = g_gs_texture_allocation_cursor_r;
         image_page->gs_block_offset = allocation_cursor >> 8;
         if (height_log2 < width_log2) {
             height_log2 += width_log2 - height_log2;
         }
-        D_0015EF74_00248 = allocation_cursor + (1 << (height_log2 * 2));
-        image_upload_count = D_0015F558_00248;
+        g_gs_texture_allocation_cursor_r = allocation_cursor + (1 << (height_log2 * 2));
+        image_upload_count = pending_texture_upload_count_r;
         if (image_upload_count < 0x40) {
             queued_transfer = 1;
-            packet = D_0018D140_00248 + image_upload_count;
-            *(s32 *)((u8 *)D_0018D140_00248 + image_upload_count * 0x10 + 8) =
+            packet = pending_texture_uploads_r + image_upload_count;
+            *(s32 *)((u8 *)pending_texture_uploads_r + image_upload_count * 0x10 + 8) =
                 image_page->source_address;
             packet->tw = image_page->width_log2;
             packet->th = image_page->height_log2;
@@ -768,7 +768,7 @@ u64 func_00200248_r(s32 frame_id) {
     }
 
     if (queued_transfer != 0) {
-        D_0015F558_00248 += 1;
+        pending_texture_upload_count_r += 1;
     }
 
     return_shift = image_page->width_log2 - 6;
@@ -776,7 +776,7 @@ u64 func_00200248_r(s32 frame_id) {
         return_shift = 0;
     }
     return_mode = 0x13;
-    if (image_page->gs_block_offset < (D_0015EF8C_00248 >> 8)) {
+    if (image_page->gs_block_offset < (g_gs_texture_allocation_base_r >> 8)) {
         return_mode = 0x1B;
     }
     return_shift = 1 << return_shift;
@@ -801,7 +801,7 @@ extern long GetFrameTex(int);
    entry's +6/+7 log2 sizes) as the far UV. The entry is found through
    the arena's +0x20 index table into its +0x24 texture table. */
 void HudSprite(int tex, int x, int y, int w, int h, int alpha) {
-    char *arena = D_0019A4E8_raw;
+    char *arena = hud_state_raw;
     unsigned char *e = (unsigned char *)(*(char **)(arena + 0x24)
         + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
     int th;
@@ -840,7 +840,7 @@ void HudSprite(int tex, int x, int y, int w, int h, int alpha) {
    sprite, the texture turned a quarter: corners (x, y+h), (x, y),
    (x+w, y+h), (x+w, y) take UVs (tw, 0), (tw, th), (0, 0), (0, th). */
 void draw_hud_sprite_flipped(int tex, int x, int y, int w, int h, int alpha) {
-    char *arena = D_0019A4E8_raw;
+    char *arena = hud_state_raw;
     unsigned char *e = (unsigned char *)(*(char **)(arena + 0x24)
         + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
     int th;
@@ -887,7 +887,7 @@ LINKER_REMNANT("asm/remnants/text", func_002008B0);
 
 /* func_00200468 with the position and size already in 16ths of a pixel. */
 void draw_hud_sprite_subpixel(int tex, int x, int y, int w, int h, int alpha) {
-    char *arena = D_0019A4E8_raw;
+    char *arena = hud_state_raw;
     unsigned char *e = (unsigned char *)(*(char **)(arena + 0x24)
         + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
     int th;
@@ -925,7 +925,7 @@ void draw_hud_sprite_subpixel(int tex, int x, int y, int w, int h, int alpha) {
 /* func_002008B8 with an explicit texture window: UVs run from (u, v) to
    (u, v) plus the texture's size in 16ths. */
 void draw_hud_sprite_uv(int tex, int x, int y, int w, int h, int u, int v, int alpha) {
-    struct HudState *hud = &D_0019A4E8_FF958;
+    struct HudState *hud = &hud_state_r;
     struct HudTexPage *image_page;
     int th;
     int tw;
@@ -997,7 +997,7 @@ void append_power_of_two_textured_screen_sprite(long texture_register_value, s32
                                                 s32 texture_v, s32 alpha) {
     struct SpritePacket *tag;
     u64 *packet_words;
-    struct SpriteDepthState *arena = (struct SpriteDepthState *)D_0019A4E8_raw;
+    struct SpriteDepthState *arena = (struct SpriteDepthState *)hud_state_raw;
 
     render_packet_cursor.p->dma_word0 = 0x10000005;
     render_packet_cursor.p->dma_addr = 0;
@@ -1072,7 +1072,7 @@ void draw_rotated_sprite(int u, int v, long tex, float x, float y, float w, floa
     g_render_packet_cursor = base + 4;
     p = (long *)g_render_packet_cursor;
     vp = g_screen_extent;
-    arena = D_0019A4E8_raw;
+    arena = hud_state_raw;
     p[0] = 0xB400000000008001L;
     p[1] = 0x53535353106L;
     p[2] = tex;
@@ -1123,7 +1123,7 @@ void draw_hud_sprite_rect(int tex, int x0, int y0, int x1, int y1,
     p[3] = 0x156;
     p[4] = ((long)alpha << 24) | 0x7F7F7F;
     p[5] = u0 | ((long)v0 << 16);
-    arena = (HudDepthView *)D_0019A4E8_raw;
+    arena = (HudDepthView *)hud_state_raw;
     p[6] = (x0 + g_screen_extent[4] - 8)
          | ((long)(y0 + g_screen_extent[5] - 8) << 16)
          | ((long)arena->depth << 32);
@@ -1356,7 +1356,7 @@ void draw_stretchable_ui_frame(int a0, int a1, int a2, int a3, int a4) {
     draw_hud_sprite_flipped(v1, a0 - 0x20, a1, 0x20, a3, a4);
 }
 
-extern s32 func_001F6FD8_01A38(s32, s32, u64, s32, s32) __asm__("func_001F6FD8");
+extern s32 FontPrintCenterLarge_r(s32, s32, u64, s32, s32) __asm__("func_001F6FD8");
 extern void draw_stretchable_ui_frame(s32, s32, s32, s32, s32);
 void draw_framed_text(s32 x, s32 y, s32 color, s32 text);
 
@@ -1369,10 +1369,10 @@ void draw_framed_text(s32 x, s32 y, s32 color, s32 text) {
     if (alpha > 0x50) {
         alpha = 0x50;
     }
-    text_left = func_001F6FD8_01A38(x + 1, y + 1, (s64)color & (s64)(s32)0xFF000000, text, -1);
+    text_left = FontPrintCenterLarge_r(x + 1, y + 1, (s64)color & (s64)(s32)0xFF000000, text, -1);
     left = text_left - 0x20;
     draw_stretchable_ui_frame(left, y - 8, (x - left) * 2, 0x20, alpha);
-    func_001F6FD8_01A38(x, y, color, text, -1);
+    FontPrintCenterLarge_r(x, y, color, text, -1);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00201AE0);
@@ -1386,7 +1386,7 @@ struct DmaTag {
 struct TagPtr {
     struct DmaTag *p;
 };
-extern struct TagPtr D_00161000_01AF0 __asm__("D_00161000") MACRO_ADDR;
+extern struct TagPtr g_render_packet_cursor_r __asm__("D_00161000") MACRO_ADDR;
 extern s32 pal_mode MACRO_ADDR;
 extern s32 draw_buffer_address MACRO_ADDR;
 void draw_boot_image(u32 image_address);
@@ -1410,13 +1410,13 @@ void draw_boot_image(u32 image_address) {
         if (rows_after_upload < 0) {
             upload_rows = remaining_rows;
         }
-        D_00161000_01AF0.p->dma_control = 0x10000006;
-        D_00161000_01AF0.p->address = 0;
-        D_00161000_01AF0.p->vif0 = 0;
-        D_00161000_01AF0.p->vif1 = 0x50000006;
-        tag = D_00161000_01AF0.p;
+        g_render_packet_cursor_r.p->dma_control = 0x10000006;
+        g_render_packet_cursor_r.p->address = 0;
+        g_render_packet_cursor_r.p->vif0 = 0;
+        g_render_packet_cursor_r.p->vif1 = 0x50000006;
+        tag = g_render_packet_cursor_r.p;
         next = tag + 7;
-        D_00161000_01AF0.p = tag + 1;
+        g_render_packet_cursor_r.p = tag + 1;
         register_words = (u64 *)(tag + 1);
         register_words[0] = 0x4000000000000001;
         register_words[1] = 0xEEEEEEE;
@@ -1431,16 +1431,16 @@ void draw_boot_image(u32 image_address) {
         image_quadword_count = upload_rows << 7;
         register_words[10] = ((u64)image_quadword_count) | 0x0800000000008000;
         register_words[11] = 0;
-        D_00161000_01AF0.p = next;
-        D_00161000_01AF0.p->dma_control = image_quadword_count | 0x30000000;
-        D_00161000_01AF0.p->address = image_address;
+        g_render_packet_cursor_r.p = next;
+        g_render_packet_cursor_r.p->dma_control = image_quadword_count | 0x30000000;
+        g_render_packet_cursor_r.p->address = image_address;
         {
             s64 upload_bytes = upload_rows << 11;
             image_address += upload_bytes;
         }
-        D_00161000_01AF0.p->vif0 = 0;
-        D_00161000_01AF0.p->vif1 = (s32)image_quadword_count | 0x50000000;
-        D_00161000_01AF0.p++;
+        g_render_packet_cursor_r.p->vif0 = 0;
+        g_render_packet_cursor_r.p->vif1 = (s32)image_quadword_count | 0x50000000;
+        g_render_packet_cursor_r.p++;
         {
             s64 uploaded_blocks = upload_rows << 3;
             destination_block += uploaded_blocks;
@@ -1452,18 +1452,18 @@ void draw_boot_image(u32 image_address) {
         struct DmaTag *final_tag;
         struct DmaTag *final_next;
         u64 *final_words;
-        D_00161000_01AF0.p->dma_control = 0x10000002;
-        D_00161000_01AF0.p->address = 0;
-        D_00161000_01AF0.p->vif0 = 0;
-        D_00161000_01AF0.p->vif1 = 0x50000002;
-        final_tag = D_00161000_01AF0.p;
+        g_render_packet_cursor_r.p->dma_control = 0x10000002;
+        g_render_packet_cursor_r.p->address = 0;
+        g_render_packet_cursor_r.p->vif0 = 0;
+        g_render_packet_cursor_r.p->vif1 = 0x50000002;
+        final_tag = g_render_packet_cursor_r.p;
         final_next = final_tag + 3;
         final_words = (u64 *)(final_tag + 1);
-        D_00161000_01AF0.p = final_tag + 1;
+        g_render_packet_cursor_r.p = final_tag + 1;
         final_words[0] = 0x1000000000008001;
         final_words[1] = 0xE;
         final_words[2] = 0;
         final_words[3] = 0x3F;
-        D_00161000_01AF0.p = final_next;
+        g_render_packet_cursor_r.p = final_next;
     }
 }

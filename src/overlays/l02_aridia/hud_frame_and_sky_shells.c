@@ -158,7 +158,7 @@ s32 draw_hud_counter(HudElem *m) {
     return m->w;
 }
 extern void SetupSkyGifPaging(void);
-extern int D_0015EE84_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern void draw_four_sky_shells_with_animated_particles(void);
 extern void update_sky_shells_static(void);
 extern void DoSkyGifPaging(void);
@@ -167,7 +167,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draws the Aridia sky shells and sets the GS test and depth registers. */
 void Sky_DrawLevel02(void) {
     SetupSkyGifPaging();
-    if (D_0015EE84_m == 2) {
+    if (g_current_level_index_m == 2) {
         draw_four_sky_shells_with_animated_particles();
     } else {
         update_sky_shells_static();

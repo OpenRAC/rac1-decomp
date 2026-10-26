@@ -347,10 +347,10 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
         }
     }
 }
-extern char *D_L04_00160058_b __asm__("D_L04_00160058") MACRO_ADDR;
+extern char *eudora_mobys_b __asm__("D_L04_00160058") MACRO_ADDR;
 extern short eudora_floating_platform_spin_rate_deg;
-extern float D_0015EE6C_b __asm__("D_0015EE6C") MACRO_ADDR;
-extern float D_0015EE64_b __asm__("D_0015EE64") MACRO_ADDR;
+extern float g_frame_time_b __asm__("D_0015EE6C") MACRO_ADDR;
+extern float g_frame_scale_sq_b __asm__("D_0015EE64") MACRO_ADDR;
 extern void DeleteMoby(void *);
 extern float random_float_between(float, float);
 extern float random_angle_radians(void);
@@ -392,14 +392,14 @@ void FloatingPlatformUpdate(char *m) {
         int i;
         for (i = 0; i < 3; i++) {
             float *p = (float *)(d + 0x224) + i;
-            float a = FastAddRots(*p, *(float *)&eudora_floating_platform_spin_rate_deg * 0.017453292f * D_0015EE6C_b);
-            float g = D_0015EE64_b;
+            float a = FastAddRots(*p, *(float *)&eudora_floating_platform_spin_rate_deg * 0.017453292f * g_frame_time_b);
+            float g = g_frame_scale_sq_b;
             *p = a;
             *(float *)(d + 0x108 + i * 0x80) = a;
             EaseManipulatorOffsets(m, d + 0xA0 + i * 0x80, i, g * 0.03f, g * 0.3f);
         }
         if (*(int *)(d + 0x230) != -1) {
-            char *o = D_L04_00160058_b + (*(int *)(d + 0x230) << 8);
+            char *o = eudora_mobys_b + (*(int *)(d + 0x230) << 8);
             if (((Moby *)o)->oclass == 0x118) {
                 off = *((float *)((Moby *)o)->pvars) * 15.0f;
             }
@@ -1180,7 +1180,7 @@ void woodcut_bot_update(Moby *m) {
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern struct Moby *func_0020D348_m(int) __asm__("func_0020D348");
+extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 extern void moby_build_matrix(void *);
 extern void qcopy(void *, void *);
 // Spawns a class 0x23A moby copying fields from another and placing it at a position.
@@ -1189,7 +1189,7 @@ void *spawn_class_23a_moby(char *src, char *pos) {
     char *p = tmp;
     char *m;
     *(u128 *)tmp = *(u128 *)pos;
-    m = (char *)func_0020D348_m(0x23A);
+    m = (char *)CreateMoby_m(0x23A);
     if (m != 0) {
         *(unsigned char *)(m + 0x30) = 0xFF;
         *(unsigned short *)(m + 0x32) = *(unsigned short *)(src + 0x32);
@@ -1224,7 +1224,7 @@ void update_moby_translation_delta_matrix(char *m) {
 extern char *eudora_mobys MACRO_ADDR;
 extern float IntToFloat(int);
 extern float fast_fmod(float, float);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* update: blend two keyframes of a path and write the result to a position */
 void interpolate_moby_and_linked_moby_positions_on_path(char *moby) {
@@ -1244,7 +1244,7 @@ void interpolate_moby_and_linked_moby_positions_on_path(char *moby) {
     f = IntToFloat(t[0] - 1);
     g = (one - src[0]) * f;
     f = fast_fmod(g, one);
-    idx = func_001FA898_r(g);
+    idx = truncate_float_to_s32_r(g);
     if (f == 0.0f) n = 0;
     n += idx;
     FastVecScale(a, (char *)t + (idx * 16 + 0x10), one - f);
@@ -1434,7 +1434,7 @@ typedef struct { int owner; float height; int timer; } CollectData2BB8;
 typedef struct { char pad[0x18]; float height; char pad1[4]; unsigned char state; char pad2[0x57]; CollectData2BB8 *data; char pad3[0x2a]; short oclass; char pad4[0xa]; unsigned short id; char pad5[0x4c]; } CollectMoby2BB8;
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 extern float riser_rise_speed(char *);
-extern int func_001F9908_i(int *arg0) __asm__("func_001F9908");
+extern int fast_dec_timer_i(int *arg0) __asm__("func_001F9908");
 extern void Moby_PlaySound(int, int, int);
 extern int g_current_level_index MACRO_ADDR;
 extern int level_moby_killed[][64] NOT_SDA;
@@ -1471,7 +1471,7 @@ void upper_door_update(CollectMoby2BB8 *m) {
     case 2: {
         unsigned short id1, id2;
         m->height = m->height + riser_rise_speed((char *)m) * g_frame_time;
-        if (func_001F9908_i(&d->timer) != 0) {
+        if (fast_dec_timer_i(&d->timer) != 0) {
             id1 = m->id;
             level_moby_killed[g_current_level_index][(short)id1 >> 5] |= 1 << (id1 & 0x1F);
             id2 = m->id;
@@ -1495,25 +1495,25 @@ typedef struct {
     u8 pad50[0xB0];
 } Exit_002E2DF0;
 
-extern f32 D_0015EE6C_002E2DF0 __asm__("D_0015EE6C") MACRO_ADDR;
-extern s32 D_L04_0015F6A8_002E2DF0 __asm__("D_L04_0015F6A8") MACRO_ADDR;
-extern s32 D_L04_0015F720_002E2DF0 __asm__("D_L04_0015F720") MACRO_ADDR;
-extern u8 D_0013D5EB_002E2DF0[] __asm__("D_0013D5EB");
-extern u8 D_0013D5CA_002E2DF0[] __asm__("D_0013D5CA");
-extern char D_0013F4D0_002E2DF0[] __asm__("D_0013F4D0");
-extern char D_L04_001DCA60_002E2DF0[] __asm__("D_L04_001DCA60");
+extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
+extern s32 eudora_game_mode_r __asm__("D_L04_0015F6A8") MACRO_ADDR;
+extern s32 dialogue_message_duration_frames_r __asm__("D_L04_0015F720") MACRO_ADDR;
+extern u8 discount_purchase_pricing_r[] __asm__("D_0013D5EB");
+extern u8 gHaveHeliPack_r[] __asm__("D_0013D5CA");
+extern char gHeroPos_r[] __asm__("D_0013F4D0");
+extern char suck_cannon_no_exit_fmt_r[] __asm__("D_L04_001DCA60");
 extern Exit_002E2DF0 *portal_mobys_002E2DF0 __asm__("D_L04_00160058") MACRO_ADDR;
 extern f32 add_rot_002E2DF0(f32, f32) __asm__("func_001FA748");
 extern f32 dist_002E2DF0(void *, void *) __asm__("func_001F9D48");
-extern void func_L00_002D80A0_002E2DF0(Moby *) __asm__("func_L00_002D80A0");
+extern void initialize_moby_particle_effect_r(Moby *) __asm__("func_L00_002D80A0");
 extern void remove_moby_002E2DF0(Moby *) __asm__("func_0020D678");
-extern void func_L04_002E30E0_002E2DF0(Moby *) __asm__("func_L04_002E30E0");
-extern void func_L00_00299B68_002E2DF0(int) __asm__("func_L00_00299B68");
-extern void func_L00_00264DB8_002E2DF0(int, int) __asm__("func_L00_00264DB8");
-extern void func_L00_002618D8_002E2DF0(int, int) __asm__("func_L00_002618D8");
-extern void func_L00_00286128_002E2DF0(void *, void *) __asm__("func_L00_00286128");
-extern void func_001E9730_002E2DF0(char *, int) __asm__("func_001E9730");
-extern void func_0020BFC8_002E2DF0(int, int) __asm__("func_0020BFC8");
+extern void update_suck_cannon_particles_r(Moby *) __asm__("func_L04_002E30E0");
+extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
+extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
+extern void grant_inventory_item_r(int, int) __asm__("func_L00_002618D8");
+extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
+extern void STUB_printf_r(char *, int) __asm__("func_001E9730");
+extern void memcard_Save_r(int, int) __asm__("func_0020BFC8");
 
 /* Warp portal: spins, opens once the hero is near, then warps to the exit moby.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l04/gameplay/entities/002ca420.c, FUN_L04_002e1a10. */
@@ -1521,15 +1521,15 @@ void suck_cannon_update(Moby *moby) {
     PortalVars_002E2DF0 *vars = (PortalVars_002E2DF0 *)moby->pvars;
     Exit_002E2DF0 *exit;
 
-    moby->rot.z = add_rot_002E2DF0(moby->rot.z, D_0015EE6C_002E2DF0 * 1.5707964f);
-    if (D_L04_0015F6A8_002E2DF0 == 2)
+    moby->rot.z = add_rot_002E2DF0(moby->rot.z, g_frame_time_r * 1.5707964f);
+    if (eudora_game_mode_r == 2)
         moby->flags |= 0x41;
     else if (moby->flags & 1)
         moby->flags &= ~0x41;
     switch (moby->state) {
     case 0:
-        func_L00_002D80A0_002E2DF0(moby);
-        if (*(D_0013D5EB_002E2DF0 + 0xE)) {
+        initialize_moby_particle_effect_r(moby);
+        if (*(discount_purchase_pricing_r + 0xE)) {
             remove_moby_002E2DF0(moby);
             break;
         }
@@ -1537,30 +1537,30 @@ void suck_cannon_update(Moby *moby) {
         moby->pos.z += 1.0f;
         break;
     case 1:
-        func_L04_002E30E0_002E2DF0(moby);
-        if (dist_002E2DF0(&moby->pos, D_0013F4D0_002E2DF0) < 3.0f) {
+        update_suck_cannon_particles_r(moby);
+        if (dist_002E2DF0(&moby->pos, gHeroPos_r) < 3.0f) {
             moby->flags |= 0x41;
-            func_L00_00299B68_002E2DF0(2);
+            StartCutscene_r(2);
             moby->state = 2;
         }
         break;
     case 2:
-        if (D_L04_0015F6A8_002E2DF0 == 2)
+        if (eudora_game_mode_r == 2)
             break;
-        if (!*(D_0013D5CA_002E2DF0 + 7))
-            func_L00_00264DB8_002E2DF0(0xFA7, -1);
+        if (!*(gHaveHeliPack_r + 7))
+            ShowBanner_r(0xFA7, -1);
         else
-            func_L00_00264DB8_002E2DF0(0x53E4, -1);
-        D_L04_0015F720_002E2DF0 = 0xB4;
-        func_L00_002618D8_002E2DF0(9, 1);
+            ShowBanner_r(0x53E4, -1);
+        dialogue_message_duration_frames_r = 0xB4;
+        grant_inventory_item_r(9, 1);
         if (vars->exitMoby != -1) {
             exit = &portal_mobys_002E2DF0[vars->exitMoby];
-            func_L00_00286128_002E2DF0(&exit->pos, &exit->rot);
+            jet_reset_camera_r(&exit->pos, &exit->rot);
         } else {
-            func_001E9730_002E2DF0(D_L04_001DCA60_002E2DF0, *(s16 *)&moby->save_id);
+            STUB_printf_r(suck_cannon_no_exit_fmt_r, *(s16 *)&moby->save_id);
         }
         moby->state = 3;
-        func_0020BFC8_002E2DF0(0, -1);
+        memcard_Save_r(0, -1);
         break;
     case 3:
         remove_moby_002E2DF0(moby);
@@ -1722,8 +1722,8 @@ extern unsigned char discount_purchase_pricing[];
 extern int eudora_help_popup_state[] NOT_SDA;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int hero_death_count MACRO_ADDR;
-extern Moby *D_L04_00160064_2E57F8 __asm__("D_L04_00160064") MACRO_ADDR;
-extern Moby *D_L04_00160058_2E57F8 __asm__("D_L04_00160058") MACRO_ADDR;
+extern Moby *eudora_moby_list_r __asm__("D_L04_00160064") MACRO_ADDR;
+extern Moby *eudora_mobys_r __asm__("D_L04_00160058") MACRO_ADDR;
 extern unsigned char D_0013D5DC NOT_SDA;
 extern unsigned char D_0013D5E2 NOT_SDA;
 extern unsigned char menu_item_enabled_16 NOT_SDA;
@@ -1787,7 +1787,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                     Hero *h = (Hero *)(D_0013E633 + 0xE1D);
                     if (h->state.prev == 0x3B && h->state_timer == 0) {
                         Moby *m;
-                        for (m = D_L04_00160064_2E57F8; m != 0; m = m->next) {
+                        for (m = eudora_moby_list_r; m != 0; m = m->next) {
                             if (m->oclass == 0x118
                                 && FastVecDist(((float *)&m->pos), D_0013E633 + 0xE9D) < 3.0f
                                 && *(float *)*(void **)&m->pvars != 1.0f) {
@@ -1821,22 +1821,22 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
         }
 
         if (data->f48 != -1) {
-            if (D_L04_00160058_2E57F8[data->f48].oclass == 0x267 && D_L04_00160058_2E57F8[data->f48].state == 4) {
+            if (eudora_mobys_r[data->f48].oclass == 0x267 && eudora_mobys_r[data->f48].state == 4) {
                 menu_item_enabled_16 = 1;
             }
         }
         if (data->f4C != -1) {
-            if (D_L04_00160058_2E57F8[data->f4C].oclass == 0x267 && D_L04_00160058_2E57F8[data->f4C].state == 4) {
+            if (eudora_mobys_r[data->f4C].oclass == 0x267 && eudora_mobys_r[data->f4C].state == 4) {
                 menu_item_enabled_17 = 1;
             }
         }
         if (data->f40 != -1) {
-            if (D_L04_00160058_2E57F8[data->f40].oclass == 0x118 && D_L04_00160058_2E57F8[data->f40].state == 5) {
+            if (eudora_mobys_r[data->f40].oclass == 0x118 && eudora_mobys_r[data->f40].state == 5) {
                 menu_item_enabled_18 = 1;
             }
         }
         if (data->f44 != -1) {
-            if (D_L04_00160058_2E57F8[data->f44].oclass == 0x118 && D_L04_00160058_2E57F8[data->f44].state == 5) {
+            if (eudora_mobys_r[data->f44].oclass == 0x118 && eudora_mobys_r[data->f44].state == 5) {
                 menu_item_enabled_19 = 1;
             }
         }
@@ -1856,7 +1856,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                     }
                 }
             } else {
-                if (data->f48 != -1 && D_L04_00160058_2E57F8[data->f48].oclass == 0x267 && D_L04_00160058_2E57F8[data->f48].state == 4) {
+                if (data->f48 != -1 && eudora_mobys_r[data->f48].oclass == 0x267 && eudora_mobys_r[data->f48].state == 4) {
                     Help_2E57F8 *h = (Help_2E57F8 *)(D_0014171B + 0x22D);
                     unsigned int c = h[0x11].count;
                     if (c <= 0xFFFE) {
@@ -1972,7 +1972,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
 extern char eudora_coll_hit_normal[];
 extern float eudora_debris_spin_min_deg SDATA(D_L04_00161E08);
 extern float eudora_debris_spin_max_deg SDATA(D_L04_00161E0C);
-extern int func_001F9938_bounce(void *) __asm__("func_001F9938");
+extern int FastDecTimer_bounce(void *) __asm__("func_001F9938");
 extern int coll_sphere(float, void *, int, void *);
 extern float FastVecDot(void *a, void *b);
 extern void vec_reflect(void *, void *, void *);
@@ -2006,7 +2006,7 @@ void update_entity_bounce_and_decay(char *moby) {
     case ENTITY_MOTION_STATE_BOUNCE:
         if (entity->pos.z < pv->floor - 3.0f) {
             entity->state = ENTITY_MOTION_STATE_DECAY_AND_REMOVE;
-        } else if (func_001F9938_bounce(&pv->timer) != 0 && pv->bounces != 0) {
+        } else if (FastDecTimer_bounce(&pv->timer) != 0 && pv->bounces != 0) {
             if (coll_sphere(pv->radius, pos, 2, 0) != 0) {
                 VecQuad *collision_normal = (VecQuad *)eudora_coll_hit_normal;
                 float zero;

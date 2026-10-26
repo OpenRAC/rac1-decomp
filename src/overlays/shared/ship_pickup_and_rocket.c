@@ -329,29 +329,29 @@ typedef struct Rocket_2E8040 {
 } Rocket_2E8040;
 typedef struct Tex_2E8040 { char pad0[0x5C]; unsigned char *p5C; } Tex_2E8040;
 
-extern float func_002140F8_2E8040(float, float) __asm__("func_002140F8");
-extern void func_L00_001FF4B0_2E8040(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void func_001F9BD8_2E8040(void *, void *, void *) __asm__("func_001F9BD8");
-extern int func_001F9850_2E8040(int) __asm__("func_001F9850");
-extern unsigned char *func_L00_00272158_2E8040(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z, float w, float pw) __asm__("func_L00_00272158");
-extern void func_001F9EC0_2E8040(void *, void *, void *) __asm__("func_001F9EC0");
-extern float func_00214158_2E8040(void) __asm__("func_00214158");
-extern void func_002156E0_2E8040(void *dst, void *vec, void *axis, float angle) __asm__("func_002156E0");
-extern unsigned char *func_L00_0026DA50_2E8040(void *pos, void *dir, int c, int d, int n, int k, float f) __asm__("func_L00_0026DA50");
-extern float func_001F9D10_2E8040(void *, void *) __asm__("func_001F9D10");
-extern float func_L00_001FF860_2E8040(float, float) __asm__("func_L00_001FF860");
-extern float func_001F9D48_2E8040(void *, void *) __asm__("func_001F9D48");
-extern float func_L00_0025CE58_2E8040(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
-extern void func_00215C00_2E8040(void *, float, float, float) __asm__("func_00215C00");
-extern void func_L00_00250800_2E8040(void *, int, void *) __asm__("func_L00_00250800");
-extern int func_L00_001EFFF0_2E8040(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern void func_L00_0025F4A8_2E8040(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void func_0020D678_2E8040(void *) __asm__("func_0020D678");
-extern int func_001F9908_2E8040(void *) __asm__("func_001F9908");
-extern float D_0015EE6C_2E8040 __asm__("D_0015EE6C") MACRO_ADDR;
-extern float D_0015EE70_2E8040 __asm__("D_0015EE70") MACRO_ADDR;
+extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
+extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+extern int scale_ticks_r(int) __asm__("func_001F9850");
+extern unsigned char *PartType44Spawn_r(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z, float w, float pw) __asm__("func_L00_00272158");
+extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
+extern float random_angle_radians_r(void) __asm__("func_00214158");
+extern void build_look_at_matrix_r(void *dst, void *vec, void *axis, float angle) __asm__("func_002156E0");
+extern unsigned char *PartType21Spawn_r(void *pos, void *dir, int c, int d, int n, int k, float f) __asm__("func_L00_0026DA50");
+extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
+extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
+extern float SteerAngleWithVelocity_r(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
+extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
+extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
+extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
+extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
+extern void DeleteMoby_r(void *) __asm__("func_0020D678");
+extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
+extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
+extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern Tex_2E8040 D_L13_001B2680_2E8040 __asm__("D_L13_001B2680");
-extern Vec4A D_L13_001741E0_2E8040 __asm__("D_L13_001741E0");
+extern Vec4A gemlik_coll_hit_point_r __asm__("D_L13_001741E0");
 
 /* Update for the rocket (class 295): smoke trail, steering toward its target, collision and expiry. */
 void update_ship_rocket(Moby *m) {
@@ -367,21 +367,21 @@ void update_ship_rocket(Moby *m) {
     qcopy(&old, &*(Vec4A *)&m->pos);
     m->scale += (((Cls_2E8040 *)m->pclass)->scale - m->scale) * 0.1f;
     *(Q_2E8040 *)&dir = 0;
-    dir.x = func_002140F8_2E8040(-1.0f, 1.0f);
-    dir.y = func_002140F8_2E8040(-1.0f, 1.0f);
-    dir.z = func_002140F8_2E8040(-1.0f, 1.0f);
+    dir.x = random_float_between_r(-1.0f, 1.0f);
+    dir.y = random_float_between_r(-1.0f, 1.0f);
+    dir.z = random_float_between_r(-1.0f, 1.0f);
     vel = dir;
-    func_L00_001FF4B0_2E8040(&vel, &vel, func_002140F8_2E8040(0.1f, 0.2f) * D_0015EE6C_2E8040);
-    func_L00_001FF4B0_2E8040(&tmp, d, -func_002140F8_2E8040(D_0015EE6C_2E8040 * 0.1f, D_0015EE6C_2E8040));
-    func_001F9BD8_2E8040(&vel, &vel, &tmp);
-    p = func_L00_00272158_2E8040(&*(Vec4A *)&m->pos, (float *)&vel, func_001F9850_2E8040(6), 0x7F, 0xB0B0B0, 3, 40000.0f, 1000.0f, 1.0f, -0.0004f, 0.0f);
+    vec_scale_to_length_r(&vel, &vel, random_float_between_r(0.1f, 0.2f) * g_frame_time_r);
+    vec_scale_to_length_r(&tmp, d, -random_float_between_r(g_frame_time_r * 0.1f, g_frame_time_r));
+    FastVecAdd_r(&vel, &vel, &tmp);
+    p = PartType44Spawn_r(&*(Vec4A *)&m->pos, (float *)&vel, scale_ticks_r(6), 0x7F, 0xB0B0B0, 3, 40000.0f, 1000.0f, 1.0f, -0.0004f, 0.0f);
     if (p != 0) {
         p[3] = 0x48;
     }
     for (t = 0.0f; t < 1.0f; t += 0.33333334f) {
-        func_L00_001FF4B0_2E8040(&tmp, d, func_002140F8_2E8040(t, t + 0.33333334f) * d->speed);
-        func_001F9BD8_2E8040(&tmp, &tmp, &*(Vec4A *)&m->pos);
-        p = func_L00_00272158_2E8040(&tmp, (float *)&vel, func_001F9850_2E8040(0x3C), 0x7F, 0x606060, 3, 40000.0f, 1000.0f, 1.0f, -0.0002f, 0.0f);
+        vec_scale_to_length_r(&tmp, d, random_float_between_r(t, t + 0.33333334f) * d->speed);
+        FastVecAdd_r(&tmp, &tmp, &*(Vec4A *)&m->pos);
+        p = PartType44Spawn_r(&tmp, (float *)&vel, scale_ticks_r(0x3C), 0x7F, 0x606060, 3, 40000.0f, 1000.0f, 1.0f, -0.0002f, 0.0f);
         if (p != 0) {
             Tex_2E8040 *tex = &D_L13_001B2680_2E8040;
             p[2] = *tex->p5C;
@@ -389,9 +389,9 @@ void update_ship_rocket(Moby *m) {
         }
         *(Q_2E8040 *)&dir = 0;
         dir.z = 0.02f;
-        func_001F9EC0_2E8040(&dir, &dir, &*(Vec4A *)&m->rot_row0);
-        func_002156E0_2E8040(&dir, &dir, &*(Vec4A *)&m->rot_row0, func_00214158_2E8040());
-        p = func_L00_0026DA50_2E8040(&tmp, &dir, 0x4F007FFF, 0x1FFFFFFF, func_001F9850_2E8040(5), 1, 20000.0f);
+        matrix_mul_vec3_r(&dir, &dir, &*(Vec4A *)&m->rot_row0);
+        build_look_at_matrix_r(&dir, &dir, &*(Vec4A *)&m->rot_row0, random_angle_radians_r());
+        p = PartType21Spawn_r(&tmp, &dir, 0x4F007FFF, 0x1FFFFFFF, scale_ticks_r(5), 1, 20000.0f);
         if (p != 0) {
             p[3] = 0x48;
         }
@@ -400,30 +400,30 @@ void update_ship_rocket(Moby *m) {
         d->target = 0;
     }
     if (d->target != 0 && d->target->oclass == d->target_uid && d->target->state != 0xFE && d->target->state != 0xFD
-        && func_001F9D10_2E8040(&d->tpos, &*(Vec4A *)&d->target->pos) < 3.0f) {
-        m->rot.z = func_L00_001FF860_2E8040(d->target->pos.x - m->pos.x, d->target->pos.y - m->pos.y);
-        m->rot.y = -func_L00_001FF860_2E8040(func_001F9D48_2E8040(&*(Vec4A *)&m->pos, &*(Vec4A *)&d->target->pos), d->target->pos.z - m->pos.z);
+        && FastVecDist_r(&d->tpos, &*(Vec4A *)&d->target->pos) < 3.0f) {
+        m->rot.z = fast_atan2_r(d->target->pos.x - m->pos.x, d->target->pos.y - m->pos.y);
+        m->rot.y = -fast_atan2_r(vec_distance_xy_r(&*(Vec4A *)&m->pos, &*(Vec4A *)&d->target->pos), d->target->pos.z - m->pos.z);
         qcopy(&d->tpos, &*(Vec4A *)&d->target->pos);
     } else {
-        func_L00_0025CE58_2E8040(&m->rot.z, m->rot.z, &d->yawv, D_0015EE70_2E8040 * 251.32741f, D_0015EE70_2E8040 * 251.32741f, D_0015EE6C_2E8040 * 2513.2742f);
-        func_L00_0025CE58_2E8040(&m->rot.y, m->rot.y, &d->pitchv, D_0015EE70_2E8040 * 251.32741f, D_0015EE70_2E8040 * 251.32741f, D_0015EE6C_2E8040 * 2513.2742f);
+        SteerAngleWithVelocity_r(&m->rot.z, m->rot.z, &d->yawv, g_frame_time_sq_r * 251.32741f, g_frame_time_sq_r * 251.32741f, g_frame_time_r * 2513.2742f);
+        SteerAngleWithVelocity_r(&m->rot.y, m->rot.y, &d->pitchv, g_frame_time_sq_r * 251.32741f, g_frame_time_sq_r * 251.32741f, g_frame_time_r * 2513.2742f);
         d->target = 0;
     }
-    func_00215C00_2E8040(d, d->speed, m->rot.z, -m->rot.y);
-    func_001F9BD8_2E8040(&*(Vec4A *)&m->pos, &*(Vec4A *)&m->pos, d);
+    BuildSphericalOffset_r(d, d->speed, m->rot.z, -m->rot.y);
+    FastVecAdd_r(&*(Vec4A *)&m->pos, &*(Vec4A *)&m->pos, d);
     if (m->pos.x < 2.0f || m->pos.x > 1021.0f || m->pos.y < 2.0f || m->pos.y > 1021.0f || m->pos.z < 2.0f || m->pos.z > 1021.0f) {
-        func_0020D678_2E8040(m);
+        DeleteMoby_r(m);
         return;
     }
-    func_L00_00250800_2E8040(m, 1, &hitpos);
-    if (func_L00_001EFFF0_2E8040(&old, &hitpos, 0, d->owner, 0) != 0) {
-        qcopy(&tmp, &D_L13_001741E0_2E8040);
-        func_L00_0025F4A8_2E8040(m, d, &tmp, 2.0f, 10.0f, 10, 3, 0x10, 4.0f, 2.0f, 9.0f, 1.0f, 0, 20.0f, 0, 1, -1, 0);
-        func_0020D678_2E8040(m);
+    Moby_GetJointWorldPos_r(m, 1, &hitpos);
+    if (coll_line_r(&old, &hitpos, 0, d->owner, 0) != 0) {
+        qcopy(&tmp, &gemlik_coll_hit_point_r);
+        spawn_explosion_r(m, d, &tmp, 2.0f, 10.0f, 10, 3, 0x10, 4.0f, 2.0f, 9.0f, 1.0f, 0, 20.0f, 0, 1, -1, 0);
+        DeleteMoby_r(m);
         return;
     }
-    if (func_001F9908_2E8040(&d->timer) != 0) {
-        func_0020D678_2E8040(m);
+    if (fast_dec_timer_r(&d->timer) != 0) {
+        DeleteMoby_r(m);
     }
 }
 typedef struct { char pad0[0x39]; unsigned char field39; } Level13VendorItem;

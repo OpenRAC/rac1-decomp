@@ -29,7 +29,7 @@ void initialize_trick_combo_hud(HudElemX *e) {
     initialize_numeric_hud_values_and_dimensions(e);
 }
 extern float ApproachValue(float *p, float target, float maxstep);
-extern int func_001FA898_r(float) __asm__("func_001FA898");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int scale_ticks(int);
 extern char D_0013E633[];
 extern Hero hero_002670A0 __asm__("D_0013F450");
@@ -56,7 +56,7 @@ void update_trick_combo_hud(char *a) {
     cur = (float)*(int *)(a + 0x74);
     ApproachValue(&cur, (float)**(int **)(a + 0xC), 6.0f);
     u = (unsigned char *)(a + 0x70);
-    *(int *)(a + 0x74) = func_001FA898_r(cur);
+    *(int *)(a + 0x74) = truncate_float_to_s32_r(cur);
     switch (u[2]) {
     case 0: {
         char *H = D_0013E633 + 0xE1D;
@@ -174,8 +174,8 @@ void update_trick_combo_hud(char *a) {
 extern int func_00116248_002670A0(char *, const char *, ...) __asm__("func_00116248");
 extern float IntToFloat(int);
 extern int FastTweenColor(int, int, float);
-extern int func_001F6FD8_x(int, int, u64, int, int) __asm__("func_001F6FD8");
-extern char *func_001FE540_002670A0(int) __asm__("func_001FE540");
+extern int FontPrintCenterLarge_x(int, int, u64, int, int) __asm__("func_001F6FD8");
+extern char *msg_string_r(int) __asm__("func_001FE540");
 extern void draw_framed_text(int, int, int, int);
 extern int hud_screen_position(void *rec, int *x, int *y);
 extern int GetIconFrame(int, int);
@@ -233,15 +233,15 @@ int draw_trick_combo_hud(char *a) {
         } else {
             acc = *(int *)&trick_combo_text_color;
         }
-        h = func_001FA898_r(f21 * 128.0f) << 24;
+        h = truncate_float_to_s32_r(f21 * 128.0f) << 24;
         acc += h;
         if (u[2] == 1 || u[2] == 2) {
-            func_001F6FD8_x(*(int *)&trick_combo_spin_text_x + 1, *(int *)&trick_combo_spin_text_y + 1, h, (int)buf, -1);
-            func_001F6FD8_x(*(int *)&trick_combo_spin_text_x, *(int *)&trick_combo_spin_text_y, acc, (int)buf, -1);
+            FontPrintCenterLarge_x(*(int *)&trick_combo_spin_text_x + 1, *(int *)&trick_combo_spin_text_y + 1, h, (int)buf, -1);
+            FontPrintCenterLarge_x(*(int *)&trick_combo_spin_text_x, *(int *)&trick_combo_spin_text_y, acc, (int)buf, -1);
             func_00116248_002670A0(buf, rilgar_fmt_count_and_word, trick_combo_trick_count,
-                                   func_001FE540_002670A0(trick_combo_trick_count == 1 ? 0x517C : 0x517D));
-            func_001F6FD8_x(*(int *)&trick_combo_count_text_x + 1, *(int *)&trick_combo_count_text_y + 1, h, (int)buf, -1);
-            func_001F6FD8_x(*(int *)&trick_combo_count_text_x, *(int *)&trick_combo_count_text_y, acc, (int)buf, -1);
+                                   msg_string_r(trick_combo_trick_count == 1 ? 0x517C : 0x517D));
+            FontPrintCenterLarge_x(*(int *)&trick_combo_count_text_x + 1, *(int *)&trick_combo_count_text_y + 1, h, (int)buf, -1);
+            FontPrintCenterLarge_x(*(int *)&trick_combo_count_text_x, *(int *)&trick_combo_count_text_y, acc, (int)buf, -1);
         } else if (u[2] == 3) {
             sel = -1;
             if (trick_combo_trick_count == 3) {
@@ -275,7 +275,7 @@ int draw_trick_combo_hud(char *a) {
                 trick_combo_score = trick_combo_score / cnt;
                 func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
                 draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
-                func_00116248_002670A0(buf, rilgar_fmt_string, func_001FE540_002670A0(idx + 0x5092));
+                func_00116248_002670A0(buf, rilgar_fmt_string, msg_string_r(idx + 0x5092));
                 draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
             } else if (trick_combo_trick_count > 0) {
                 int n = 0;
@@ -290,15 +290,15 @@ int draw_trick_combo_hud(char *a) {
                     trick_combo_score = trick_combo_spins * 10;
                     func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
-                    func_00116248_002670A0(buf, rilgar_fmt_single_trick_line, func_001FE540_002670A0(out[0] + 0x5183), trick_combo_spins,
-                                           func_001FE540_002670A0(trick_combo_spins == 0x168 ? 0x50A7 : 0x50A8));
+                    func_00116248_002670A0(buf, rilgar_fmt_single_trick_line, msg_string_r(out[0] + 0x5183), trick_combo_spins,
+                                           msg_string_r(trick_combo_spins == 0x168 ? 0x50A7 : 0x50A8));
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
                 } else {
                     trick_combo_score = trick_combo_spins * 20;
                     func_00116248_002670A0(buf, rilgar_fmt_number, trick_combo_score);
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
-                    func_00116248_002670A0(buf, rilgar_fmt_double_trick_line, func_001FE540_002670A0(out[0] + 0x5183),
-                                           func_001FE540_002670A0(out[1] + 0x5183), trick_combo_spins);
+                    func_00116248_002670A0(buf, rilgar_fmt_double_trick_line, msg_string_r(out[0] + 0x5183),
+                                           msg_string_r(out[1] + 0x5183), trick_combo_spins);
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
                 }
             }
@@ -322,7 +322,7 @@ int draw_trick_combo_hud(char *a) {
         f0 = IntToFloat(rilgar_frame_count % r3) / (float)r3;
         f0 = FastSin(f0 * 6.283180236816406f - 3.141590118408203f);
         r3 = FastTweenColor(*(int *)&trick_combo_banner_color_from, *(int *)&trick_combo_banner_color_to, f0 * 0.5f + 0.5f);
-        func_00116248_002670A0(buf, func_001FE540_002670A0(0x531F));
+        func_00116248_002670A0(buf, msg_string_r(0x531F));
         draw_framed_text(*(int *)&trick_combo_banner_x + 1, *(int *)&trick_combo_banner_y + 1, 0x80000000, (int)buf);
         draw_framed_text(*(int *)&trick_combo_banner_x, *(int *)&trick_combo_banner_y, r3, (int)buf);
     }
@@ -492,9 +492,9 @@ typedef struct {
     int unk6C;
 } HudElem_002670A0;
 extern Hero hero_002670A0 __asm__("D_0013F450");
-extern int D_0013E600_002670A0[] __asm__("D_0013E600");
-extern int D_0015EE80_002670A0 __asm__("D_0015EE80") MACRO_ADDR;
-extern u8 D_0013D490_002670A0[] __asm__("D_0013D490");
+extern int g_screen_extent_r[] __asm__("D_0013E600");
+extern int pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
+extern u8 gSpecialItems_r[] __asm__("D_0013D490");
 extern int D_L05_0015FACC_002670A0 SDATA(D_L05_0015FACC);
 extern int D_L05_0015FAD0_002670A0 SDATA(D_L05_0015FAD0);
 extern int D_L05_0015FAD4_002670A0 SDATA(D_L05_0015FAD4);
@@ -505,17 +505,17 @@ extern int D_L05_0015FAE4_002670A0 SDATA(D_L05_0015FAE4);
 extern int D_L05_0015FAE8_002670A0 SDATA(D_L05_0015FAE8);
 extern int D_L05_0015FAEC_002670A0 SDATA(D_L05_0015FAEC);
 extern int D_L05_0015FAFC_002670A0 SDATA(D_L05_0015FAFC);
-extern char D_L05_0015F868_002670A0[] __asm__("D_L05_0015F868");
-extern char D_L05_0015FAB0_002670A0[] __asm__("D_L05_0015FAB0");
-extern char D_L05_0015FB08_002670A0[] __asm__("D_L05_0015FB08");
-extern char D_L05_0015FB10_002670A0[] __asm__("D_L05_0015FB10");
-extern char D_L05_0015FB20_002670A0[] __asm__("D_L05_0015FB20");
-extern char D_L05_0015FB28_002670A0[] __asm__("D_L05_0015FB28");
-extern void func_00201960_002670A0(int, int, int, int, int) __asm__("func_00201960");
-extern char *func_001FE540_002670A0(int) __asm__("func_001FE540");
+extern char rilgar_fmt_race_score_width_r[] __asm__("D_L05_0015F868");
+extern char rilgar_fmt_label_r[] __asm__("D_L05_0015FAB0");
+extern char rilgar_fmt_race_score_value_r[] __asm__("D_L05_0015FB08");
+extern char rilgar_fmt_race_time_width_r[] __asm__("D_L05_0015FB10");
+extern char rilgar_fmt_race_time_label_r[] __asm__("D_L05_0015FB20");
+extern char rilgar_fmt_race_time_value_r[] __asm__("D_L05_0015FB28");
+extern void draw_stretchable_ui_frame_r(int, int, int, int, int) __asm__("func_00201960");
+extern char *msg_string_r(int) __asm__("func_001FE540");
 extern int func_00116248_002670A0(char *, const char *, ...) __asm__("func_00116248");
-extern int func_001F6600_002670A0(char *, int) __asm__("func_001F6600");
-extern void func_L00_001FB7F8_002670A0(int x, int y, u64 color, char *text, int len) __asm__("func_L00_001FB7F8");
+extern int measure_text_width_regular_r(char *, int) __asm__("func_001F6600");
+extern void print_text_with_texture_3_r(int x, int y, u64 color, char *text, int len) __asm__("func_L00_001FB7F8");
 
 /* Draws the race timer HUD: the lap count line when laps are shown, then the time split into minutes, seconds and hundredths; returns the element's width.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui/hud/002661a0.c, FUN_L05_00266710. */
@@ -529,10 +529,10 @@ int draw_hud_timer(HudElem_002670A0 *e) {
     if (e->unk6C <= 0) {
         return 0;
     }
-    y0 = -(D_0015EE80_002670A0 ? D_L05_0015FAD0_002670A0 + 10 : D_L05_0015FAD0_002670A0 + 18) + D_0013E600_002670A0[1];
-    y1 = -(D_0015EE80_002670A0 ? D_L05_0015FAEC_002670A0 + 10 : D_L05_0015FAEC_002670A0 + 18) + D_0013E600_002670A0[1];
-    y2 = -(D_0015EE80_002670A0 ? D_L05_0015FAFC_002670A0 + 10 : D_L05_0015FAFC_002670A0 + 18) + D_0013E600_002670A0[1];
-    per_min = D_0015EE80_002670A0 ? 3000 : 3600;
+    y0 = -(pal_mode_r ? D_L05_0015FAD0_002670A0 + 10 : D_L05_0015FAD0_002670A0 + 18) + g_screen_extent_r[1];
+    y1 = -(pal_mode_r ? D_L05_0015FAEC_002670A0 + 10 : D_L05_0015FAEC_002670A0 + 18) + g_screen_extent_r[1];
+    y2 = -(pal_mode_r ? D_L05_0015FAFC_002670A0 + 10 : D_L05_0015FAFC_002670A0 + 18) + g_screen_extent_r[1];
+    per_min = pal_mode_r ? 3000 : 3600;
     per_sec = per_min / 60;
     frames = hero_002670A0.race_time_frames;
     min = frames / per_min;
@@ -541,28 +541,28 @@ int draw_hud_timer(HudElem_002670A0 *e) {
     frames -= sec * per_sec;
     hund = frames * 100 / per_sec;
 
-    if (D_0013D490_002670A0[0]) {
-        func_00201960_002670A0(D_L05_0015FACC_002670A0, y0, D_L05_0015FAD4_002670A0, D_L05_0015FAD8_002670A0, D_L05_0015FADC_002670A0);
+    if (gSpecialItems_r[0]) {
+        draw_stretchable_ui_frame_r(D_L05_0015FACC_002670A0, y0, D_L05_0015FAD4_002670A0, D_L05_0015FAD8_002670A0, D_L05_0015FADC_002670A0);
         x = D_L05_0015FAE8_002670A0;
-        func_00116248_002670A0(buf, D_L05_0015F868_002670A0, func_001FE540_002670A0(0x50A6), hero_002670A0.race_score);
-        x -= func_001F6600_002670A0(buf, -1) >> 1;
-        func_00116248_002670A0(buf, D_L05_0015FAB0_002670A0, func_001FE540_002670A0(0x50A6));
-        func_L00_001FB7F8_002670A0(x + 1, y1 + 1, 0x80000000, buf, -1);
-        func_L00_001FB7F8_002670A0(x, y1, D_L05_0015FAE0_002670A0, buf, -1);
-        x += func_001F6600_002670A0(buf, -1);
-        func_00116248_002670A0(buf, D_L05_0015FB08_002670A0, hero_002670A0.race_score);
-        func_L00_001FB7F8_002670A0(x + 1, y1 + 1, 0x80000000, buf, -1);
-        func_L00_001FB7F8_002670A0(x, y1, D_L05_0015FAE4_002670A0, buf, -1);
+        func_00116248_002670A0(buf, rilgar_fmt_race_score_width_r, msg_string_r(0x50A6), hero_002670A0.race_score);
+        x -= measure_text_width_regular_r(buf, -1) >> 1;
+        func_00116248_002670A0(buf, rilgar_fmt_label_r, msg_string_r(0x50A6));
+        print_text_with_texture_3_r(x + 1, y1 + 1, 0x80000000, buf, -1);
+        print_text_with_texture_3_r(x, y1, D_L05_0015FAE0_002670A0, buf, -1);
+        x += measure_text_width_regular_r(buf, -1);
+        func_00116248_002670A0(buf, rilgar_fmt_race_score_value_r, hero_002670A0.race_score);
+        print_text_with_texture_3_r(x + 1, y1 + 1, 0x80000000, buf, -1);
+        print_text_with_texture_3_r(x, y1, D_L05_0015FAE4_002670A0, buf, -1);
     }
     x = D_L05_0015FAE8_002670A0;
-    func_00116248_002670A0(buf, D_L05_0015FB10_002670A0, func_001FE540_002670A0(0x5246));
-    x -= func_001F6600_002670A0(buf, -1) >> 1;
-    func_00116248_002670A0(buf, D_L05_0015FB20_002670A0, func_001FE540_002670A0(0x5246));
-    func_L00_001FB7F8_002670A0(x + 1, y2 + 1, 0x80000000, buf, -1);
-    func_L00_001FB7F8_002670A0(x, y2, D_L05_0015FAE0_002670A0, buf, -1);
-    x += func_001F6600_002670A0(buf, -1);
-    func_00116248_002670A0(buf, D_L05_0015FB28_002670A0, min, sec, hund);
-    func_L00_001FB7F8_002670A0(x + 1, y2 + 1, 0x80000000, buf, -1);
-    func_L00_001FB7F8_002670A0(x, y2, D_L05_0015FAE4_002670A0, buf, -1);
+    func_00116248_002670A0(buf, rilgar_fmt_race_time_width_r, msg_string_r(0x5246));
+    x -= measure_text_width_regular_r(buf, -1) >> 1;
+    func_00116248_002670A0(buf, rilgar_fmt_race_time_label_r, msg_string_r(0x5246));
+    print_text_with_texture_3_r(x + 1, y2 + 1, 0x80000000, buf, -1);
+    print_text_with_texture_3_r(x, y2, D_L05_0015FAE0_002670A0, buf, -1);
+    x += measure_text_width_regular_r(buf, -1);
+    func_00116248_002670A0(buf, rilgar_fmt_race_time_value_r, min, sec, hund);
+    print_text_with_texture_3_r(x + 1, y2 + 1, 0x80000000, buf, -1);
+    print_text_with_texture_3_r(x, y2, D_L05_0015FAE4_002670A0, buf, -1);
     return e->w;
 }

@@ -21,9 +21,9 @@ typedef struct { u8 pad_0[0x10]; f32 pos[4]; u8 flags; } FlareMoby;
 typedef struct { FlareMoby *moby; s32 state; f32 intensity; s32 pad_c; s16 alpha[16]; s16 tex[16]; s32 color[16]; f32 dist[16]; f32 scale[16]; } LensFlare;
 typedef struct { u8 pad_0[0x8]; s32 cx; s32 cy; s32 ox; s32 oy; } ScreenInfo;
 extern u8 D_00187080_1edff8[] __asm__("D_00187180");
-extern ScreenInfo D_0013E600_1edff8 __asm__("D_0013E600");
+extern ScreenInfo g_screen_extent_r __asm__("D_0013E600");
 extern LensFlare D_00187300_1edff8 __asm__("D_00187400");
-extern f32 func_001F9D10_1edff8(void *, void *) __asm__("func_001F9D10");
+extern f32 FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern f32 ConvertIntegerToFloat(s32) __asm__("func_001FA888");
 extern s32 truncate_float_to_s32(f32) __asm__("func_001FA898");
 extern float AbsoluteFloat(float input) __asm__("func_001F9B88");
@@ -57,12 +57,12 @@ void draw_lens_flare(void) {
     if (D_00187300_1edff8.intensity <= 0.0f) {
         return;
     }
-    dist = func_001F9D10_1edff8(D_00187080_1edff8, D_00187300_1edff8.moby->pos);
-    ctr[0] = ConvertIntegerToFloat(D_0013E600_1edff8.cx);
-    ctr[1] = ConvertIntegerToFloat(D_0013E600_1edff8.cy);
+    dist = FastVecDist_r(D_00187080_1edff8, D_00187300_1edff8.moby->pos);
+    ctr[0] = ConvertIntegerToFloat(g_screen_extent_r.cx);
+    ctr[1] = ConvertIntegerToFloat(g_screen_extent_r.cy);
     project_to_screen_r(scr, D_00187300_1edff8.moby->pos);
-    scr[0] = (scr[0] - ConvertIntegerToFloat(D_0013E600_1edff8.ox)) * 0.0625f;
-    scr[1] = (scr[1] - ConvertIntegerToFloat(D_0013E600_1edff8.oy)) * 0.0625f;
+    scr[0] = (scr[0] - ConvertIntegerToFloat(g_screen_extent_r.ox)) * 0.0625f;
+    scr[1] = (scr[1] - ConvertIntegerToFloat(g_screen_extent_r.oy)) * 0.0625f;
     d[0] = ctr[0] - scr[0];
     d[1] = ctr[1] - scr[1];
     for (i = 0; i < 16; i++) {

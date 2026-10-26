@@ -7,44 +7,44 @@
 typedef struct { char pad[0x50]; int sz[8]; char pad2[0x20]; void *p[8]; } T_234fd0;
 typedef struct { char pad[0x18]; T_234fd0 *t; } G_234fd0;
 typedef struct { char pad[0x10]; void *h; char pad2[0x104 - 0x14]; int off; } B_234fd0;
-extern G_234fd0 D_L00_0017E5D8_234fd0 __asm__("D_L00_0017E5D8") __attribute__((section(".data")));
-extern B_234fd0 D_L00_001BA070_234fd0 __asm__("D_L00_001BA070") __attribute__((section(".data")));
-extern int D_L00_0017E610_234fd0 __asm__("D_L00_0017E610") __attribute__((section(".data")));
-extern int D_L00_0017E618_234fd0 __asm__("D_L00_0017E618") __attribute__((section(".data")));
-extern int D_L00_0017E61C_234fd0 __asm__("D_L00_0017E61C") __attribute__((section(".data")));
-extern int D_L00_0017E620_234fd0 __asm__("D_L00_0017E620") __attribute__((section(".data")));
+extern G_234fd0 texture_group_header_r __asm__("D_L00_0017E5D8") __attribute__((section(".data")));
+extern B_234fd0 level_menu_system_r __asm__("D_L00_001BA070") __attribute__((section(".data")));
+extern int texture_group1_upload_size_r __asm__("D_L00_0017E610") __attribute__((section(".data")));
+extern int texture_group3_upload_size_r __asm__("D_L00_0017E618") __attribute__((section(".data")));
+extern int texture_group4_upload_size_r __asm__("D_L00_0017E61C") __attribute__((section(".data")));
+extern int texture_group5_upload_size_r __asm__("D_L00_0017E620") __attribute__((section(".data")));
 void func_00234238_234fd0(void *, void *, int, int, int) __asm__("func_00234238");
 void func_0020C468_234fd0(void *, int) __asm__("func_0020C468");
 void func_001FF7F0_234fd0(int, int) __asm__("func_001FF7F0");
 /* HUD update. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_hud_00234fd0.c, FUN_L00_00234fd0. */
 void decompress_and_relocate_selected_groups(int mode) {
-    G_234fd0 *g = &D_L00_0017E5D8_234fd0;
-    int off = D_L00_001BA070_234fd0.off;
-    void *h = D_L00_001BA070_234fd0.h;
+    G_234fd0 *g = &texture_group_header_r;
+    int off = level_menu_system_r.off;
+    void *h = level_menu_system_r.h;
     { int n1; if ((n1 = g->t->sz[1])) {
-        func_00234238_234fd0(h, g->t->p[1], 0, D_L00_0017E610_234fd0 / 16, 0);
+        func_00234238_234fd0(h, g->t->p[1], 0, texture_group1_upload_size_r / 16, 0);
         func_0020C468_234fd0(h, off);
         func_001FF7F0_234fd0(0, off);
         off += n1; }
     }
     { int n3; if ((n3 = g->t->sz[3])) {
-        func_00234238_234fd0(h, g->t->p[3], 0, D_L00_0017E618_234fd0 / 16, 0);
+        func_00234238_234fd0(h, g->t->p[3], 0, texture_group3_upload_size_r / 16, 0);
         func_0020C468_234fd0(h, off);
         func_001FF7F0_234fd0(2, off);
         off += n3; }
     }
     if (mode == 0 || mode == 2) {
         { int n4; if ((n4 = g->t->sz[4])) {
-            func_00234238_234fd0(h, g->t->p[4], 0, D_L00_0017E61C_234fd0 / 16, 0);
+            func_00234238_234fd0(h, g->t->p[4], 0, texture_group4_upload_size_r / 16, 0);
             func_0020C468_234fd0(h, off);
             func_001FF7F0_234fd0(3, off);
             off += n4; }
         }
     }
     if ((unsigned)(mode - 1) < 2) {
-        G_234fd0 *g2 = &D_L00_0017E5D8_234fd0;
+        G_234fd0 *g2 = &texture_group_header_r;
         if (g2->t->sz[5]) {
-            func_00234238_234fd0(h, g2->t->p[5], 0, D_L00_0017E620_234fd0 / 16, 0);
+            func_00234238_234fd0(h, g2->t->p[5], 0, texture_group5_upload_size_r / 16, 0);
             func_0020C468_234fd0(h, off);
             func_001FF7F0_234fd0(4, off);
         }
@@ -53,29 +53,29 @@ void decompress_and_relocate_selected_groups(int mode) {
 typedef struct { int pad[5]; int a[8]; int b[16]; int c[8]; } T_235310;
 typedef struct { int v; short s; short pad; } E_235310;
 typedef struct { char pad[0x18]; T_235310 *t; char pad2[8]; E_235310 *a; E_235310 *b; } G_235310;
-extern G_235310 D_L00_0017E5D8_235ca0  __asm__("D_L00_0017E5D8") __attribute__((section(".data")));
+extern G_235310 texture_group_header_r2  __asm__("D_L00_0017E5D8") __attribute__((section(".data")));
 /* HUD update. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_hud_00234fd0.c, FUN_L00_00235310. */
 void apply_group_entry_adjustment(int n) {
-    int d = D_L00_0017E5D8_235ca0.t->c[n];
+    int d = texture_group_header_r2.t->c[n];
     int i, j, s, end;
     if (n == 0) {
-        for (j = 0; j < D_L00_0017E5D8_235ca0.t->b[0]; j++) {
-            D_L00_0017E5D8_235ca0.a[j].s = 0;
+        for (j = 0; j < texture_group_header_r2.t->b[0]; j++) {
+            texture_group_header_r2.a[j].s = 0;
         }
     }
-    if (n) s = D_L00_0017E5D8_235ca0.t->a[n - 1]; else s = 0;
-    end = D_L00_0017E5D8_235ca0.t->a[n];
+    if (n) s = texture_group_header_r2.t->a[n - 1]; else s = 0;
+    end = texture_group_header_r2.t->a[n];
     for (i = s; i < end; i++) {
-        D_L00_0017E5D8_235ca0.b[i].v -= d;
-        D_L00_0017E5D8_235ca0.b[i].v |= 0x80000000;
+        texture_group_header_r2.b[i].v -= d;
+        texture_group_header_r2.b[i].v |= 0x80000000;
     }
-    if (n) s = D_L00_0017E5D8_235ca0.t->b[n - 1]; else s = 0;
-    end = D_L00_0017E5D8_235ca0.t->b[n];
+    if (n) s = texture_group_header_r2.t->b[n - 1]; else s = 0;
+    end = texture_group_header_r2.t->b[n];
     for (i = s; i < end; i++) {
-        D_L00_0017E5D8_235ca0.a[i].v -= d;
-        D_L00_0017E5D8_235ca0.a[i].v |= 0x80000000;
+        texture_group_header_r2.a[i].v -= d;
+        texture_group_header_r2.a[i].v |= 0x80000000;
     }
-    D_L00_0017E5D8_235ca0.t->c[n] = 0;
+    texture_group_header_r2.t->c[n] = 0;
 }
 extern volatile s32 level_mobys_end MACRO_ADDR;
 extern volatile int alt_moby_array_start MACRO_ADDR;
@@ -439,7 +439,7 @@ void Hud_InitParticles(HudElem *e) {
         hud_star_particles[i][3] += random_float_between(-0.6f, 0.6f);
     }
 }
-extern void func_L00_00236830_v(HudElem *) __asm__("func_L00_00236830");
+extern void Hud_UpdateCounter_v(HudElem *) __asm__("func_L00_00236830");
 extern int rendered_frame_count MACRO_ADDR;
 extern float hud_star_particles[][4];
 extern short star_init_limit0_gp;
@@ -454,7 +454,7 @@ void Hud_UpdateParticles(HudElem *e) {
     int par;
     float *p;
 
-    func_L00_00236830_v(e);
+    Hud_UpdateCounter_v(e);
     cnt = rendered_frame_count;
     par = cnt - (cnt / 2) * 2;
     p = hud_star_particles[par];
@@ -1035,10 +1035,10 @@ typedef struct {
     u8 p1D0[8];
     int w1D8;
 } G_t_38530;
-extern G_t_38530 D_0013CA40_38530 __asm__("D_0013CA40");
+extern G_t_38530 g_controller_state_r __asm__("D_0013CA40");
 extern short quick_select_fade_steps;
 extern int D_L00_0015FB54_38530 SDATA(D_L00_0015FB54);
-extern Ent_38530 ** D_L00_0015FB78_38530 __asm__("D_L00_0015FB78") MACRO_ADDR;
+extern Ent_38530 ** hud_selector_slot_tables_r __asm__("D_L00_0015FB78") MACRO_ADDR;
 extern int quick_select_last_state MACRO_ADDR;
 extern int quick_select_close_frame MACRO_ADDR;
 extern float fast_atan2(float, float);
@@ -1064,9 +1064,9 @@ typedef struct {
     u16 hE;
     u8 p10[8];
 } Route;
-extern Progress D_0013F450_38530 __asm__("D_0013F450");
+extern Progress g_hero_r __asm__("D_0013F450");
 extern Stats usage_stats;
-extern Route D_L00_001C43B0_38530[] __asm__("D_L00_001C43B0");
+extern Route item_price_table_r[] __asm__("D_L00_001C43B0");
 extern int weapon_ammo_counts[];
 extern u8 D_00141722[];
 extern short quick_select_snap_margin;
@@ -1091,9 +1091,9 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
 
     p->w7C = scale_ticks(0xB4);
     p->w6C = 0x18;
-    if (FastDecTimer(D_00141722)) D_0013CA40_38530.w1CC = 2;
-    x = D_0013CA40_38530.f148;
-    y = D_0013CA40_38530.f14C;
+    if (FastDecTimer(D_00141722)) g_controller_state_r.w1CC = 2;
+    x = g_controller_state_r.f148;
+    y = g_controller_state_r.f14C;
     mag = vec_length(x * x + y * y);
     if (mag != 0.0f) {
         x /= mag;
@@ -1101,14 +1101,14 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
     }
     ang = fast_atan2(x, y);
     if ((p->w78 >> 24) == 0) {
-        if ((D_0013CA40_38530.w1C4 & 0xF000) || mag < 0.5f || --p->w78 == -1) {
+        if ((g_controller_state_r.w1C4 & 0xF000) || mag < 0.5f || --p->w78 == -1) {
             p->w74 = -1;
             p->w78 = 0x10000FF;
         }
     }
     n = 0;
     old = p->w74;
-    if ((p->w78 >> 24) == 1 && (D_0013CA40_38530.w1C0 & 0x10)) {
+    if ((p->w78 >> 24) == 1 && (g_controller_state_r.w1C0 & 0x10)) {
         if (mag > 0.9f) {
             a = ang + 3.1415927f + 3.1415927f + 1.5707964f + 3.1415927f / (float)quick_select_slot_count;
             f = a * ((float)quick_select_slot_count / 6.2831855f);
@@ -1126,17 +1126,17 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
                 (*(float *)&quick_select_slot_angle_offset) = FastNormalizeAngle(a - ((float)s * 0.7853982f + 0.39269909f));
                 if ((*(float *)&quick_select_slot_angle_offset) > 0.0f) n = 1;
             }
-        } else if (D_0013CA40_38530.w1D8 == 0 && (D_0013CA40_38530.w1C4 & 0xF000)) {
+        } else if (g_controller_state_r.w1D8 == 0 && (g_controller_state_r.w1C4 & 0xF000)) {
             int w;
             w = old;
-            if (D_0013CA40_38530.w1C4 & 0x1000) { int t; if (w == -1) t = quick_select_default_up_slot; else t = D_L00_0015FB78_38530[(*(s32 *)&quick_select_page)][w].f10; w = t; }
-            if (D_0013CA40_38530.w1C4 & 0x4000) { int t; if (w == -1) t = quick_select_default_down_slot; else t = D_L00_0015FB78_38530[(*(s32 *)&quick_select_page)][w].f14; w = t; }
-            if (D_0013CA40_38530.w1C4 & 0x8000) { int t; if (w == -1) t = quick_select_default_left_slot; else t = D_L00_0015FB78_38530[(*(s32 *)&quick_select_page)][w].f8; w = t; }
-            if (D_0013CA40_38530.w1C4 & 0x2000) { int t; if (w == -1) t = quick_select_default_right_slot; else t = D_L00_0015FB78_38530[(*(s32 *)&quick_select_page)][w].fC; w = t; }
+            if (g_controller_state_r.w1C4 & 0x1000) { int t; if (w == -1) t = quick_select_default_up_slot; else t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].f10; w = t; }
+            if (g_controller_state_r.w1C4 & 0x4000) { int t; if (w == -1) t = quick_select_default_down_slot; else t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].f14; w = t; }
+            if (g_controller_state_r.w1C4 & 0x8000) { int t; if (w == -1) t = quick_select_default_left_slot; else t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].f8; w = t; }
+            if (g_controller_state_r.w1C4 & 0x2000) { int t; if (w == -1) t = quick_select_default_right_slot; else t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].fC; w = t; }
             p->w74 = w;
         }
         {
-            Ent_38530 *t = D_L00_0015FB78_38530[(*(s32 *)&quick_select_page)];
+            Ent_38530 *t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)];
             int cur = p->w74;
             if (t[cur].f0 == 0 && n != 0) {
                 k = (cur + n) % quick_select_slot_count;
@@ -1146,20 +1146,20 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
     }
     if (p->w74 != old) c[1] = 0;
     else if (c[1] < (*(int *)&quick_select_fade_steps)) c[1]++;
-    if (!(D_0013CA40_38530.w1C0 & 0x10)) {
+    if (!(g_controller_state_r.w1C0 & 0x10)) {
         int sel = p->w74;
-        if (sel >= 0 && (id = D_L00_0015FB78_38530[(*(s32 *)&quick_select_page)][sel].f18) != 0) {
+        if (sel >= 0 && (id = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][sel].f18) != 0) {
             Route *rr;
             int ri = id;
-            if (D_0013F450_38530.w10B8 != id) {
+            if (g_hero_r.w10B8 != id) {
                 if (usage_stats.hA0 < 0xFFFF) usage_stats.hA0++;
             }
             if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.hA2)
                 usage_stats.hA2 = scale_ticks(gameplay_event_frame_count) / 600;
             usage_stats.wA4 = usage_stats.wA4 | (1 << g_current_level_index) | 0x80000000;
-            if (id == 0x18) D_0013F450_38530.b1FF5 = 1;
-            else D_0013F450_38530.w20B8 = id;
-            rr = &D_L00_001C43B0_38530[ri];
+            if (id == 0x18) g_hero_r.b1FF5 = 1;
+            else g_hero_r.w20B8 = id;
+            rr = &item_price_table_r[ri];
             if (rr->h8 && rr->hE < weapon_ammo_counts[id]) weapon_ammo_counts[id] = rr->hE;
         }
         if (c[0]) c[0]--;
@@ -1375,7 +1375,7 @@ void initialize_four_slot_hud_selector(char *a) {
     *(int *)(a + 0x78) = scale_ticks(30);
     *(int *)&quick_select_page = 0;
 }
-extern short D_L00_0015F80C_39510b __asm__("D_L00_0015F80C");
+extern short quick_select_page_r __asm__("D_L00_0015F80C");
 typedef struct { int f0, f4, f8, fC, f10, f14, f18; } Ent;
 typedef struct {
     u8 p0[0x64]; int w64; u8 p68[4]; int w6C; u8 b70; u8 b71; u8 p72[2]; int w74; int w78; int w7C;
@@ -1383,9 +1383,9 @@ typedef struct {
 typedef struct { u8 p0[0x148]; float f148; float f14C; u8 p150[0x70]; int w1C0; int w1C4; u8 p1C8[4]; int w1CC; } G_t;
 extern G_t g_controller_state;
 extern int D_L00_0017E604;
-extern short D_L00_0015FB48_39510 __asm__("D_L00_0015FB48");
-extern int D_L00_0015FB54_export __asm__("D_L00_0015FB54") MACRO_ADDR;
-extern Ent ** D_L00_0015FB78_39510 __asm__("D_L00_0015FB78") MACRO_ADDR;
+extern short quick_select_slot_count_r __asm__("D_L00_0015FB48");
+extern int quick_select_last_slot_export __asm__("D_L00_0015FB54") MACRO_ADDR;
+extern Ent ** hud_selector_slot_tables_r2 __asm__("D_L00_0015FB78") MACRO_ADDR;
 extern int radial_select_default_left_slot;
 extern int radial_select_default_right_slot;
 extern int radial_select_default_up_slot;
@@ -1418,25 +1418,25 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
     old = o->w74;
     if (*((s8 *)o + 0x7B) == 1) {
         if (0.9f < len) {
-            n = (*(int *)&D_L00_0015FB48_39510);
+            n = (*(int *)&quick_select_slot_count_r);
             o->w74 = (int)((ang + 3.1415927f + 3.1415927f + 1.5707964f + 3.1415927f / (float)n) * ((float)n / 6.2831855f)) % n;
         }
         if (g_controller_state.w1C4 & 0xF000) {
             cur = o->w74;
             if (g_controller_state.w1C4 & 0x1000) {
-                if (cur == -1) t = radial_select_default_up_slot; else t = D_L00_0015FB78_39510[(*(int *)&D_L00_0015F80C_39510b)][cur].f10;
+                if (cur == -1) t = radial_select_default_up_slot; else t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].f10;
                 cur = t;
             }
             if (g_controller_state.w1C4 & 0x4000) {
-                if (cur == -1) t = radial_select_default_down_slot; else t = D_L00_0015FB78_39510[(*(int *)&D_L00_0015F80C_39510b)][cur].f14;
+                if (cur == -1) t = radial_select_default_down_slot; else t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].f14;
                 cur = t;
             }
             if (g_controller_state.w1C4 & 0x8000) {
-                if (cur == -1) t = radial_select_default_left_slot; else t = D_L00_0015FB78_39510[(*(int *)&D_L00_0015F80C_39510b)][cur].f8;
+                if (cur == -1) t = radial_select_default_left_slot; else t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].f8;
                 cur = t;
             }
             if (g_controller_state.w1C4 & 0x2000) {
-                if (cur == -1) t = radial_select_default_right_slot; else t = D_L00_0015FB78_39510[(*(int *)&D_L00_0015F80C_39510b)][cur].fC;
+                if (cur == -1) t = radial_select_default_right_slot; else t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].fC;
                 cur = t;
             }
             o->w74 = cur;
@@ -1449,13 +1449,13 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
     }
     if (!(g_controller_state.w1C0 & 0x10)) {
         if (o->w74 == -1) radial_select_choice[0] = 0;
-        else radial_select_choice[0] = D_L00_0015FB78_39510[(*(int *)&D_L00_0015F80C_39510b)][o->w74].f18;
+        else radial_select_choice[0] = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][o->w74].f18;
         if (c[0] != 0) c[0]--;
     } else if (c[0] < (*(int *)&quick_select_fade_steps)) {
         c[0]++;
     }
     if (c[0] == 0) {
-        { int a = o->w78; int b = o->w74; D_L00_0015FB54_export = b; quick_select_last_state = a; }
+        { int a = o->w78; int b = o->w74; quick_select_last_slot_export = b; quick_select_last_state = a; }
         remove_hud_item(o->w64);
         o->w6C = -6;
         quick_select_close_frame = rendered_frame_count;
@@ -1474,9 +1474,9 @@ typedef struct {
     int sel;
 } Elem_239918;
 
-extern int D_L00_0015F6B0_239918 __asm__("D_L00_0015F6B0") MACRO_ADDR;
-extern int D_L00_0015FB48_239918 __asm__("D_L00_0015FB48") MACRO_ADDR;
-extern Ent_239918 **D_L00_0015FB78_239918 __asm__("D_L00_0015FB78") MACRO_ADDR;
+extern int level_frame_counter_r __asm__("D_L00_0015F6B0") MACRO_ADDR;
+extern int quick_select_slot_count_r2 __asm__("D_L00_0015FB48") MACRO_ADDR;
+extern Ent_239918 **hud_selector_slot_tables_r3 __asm__("D_L00_0015FB78") MACRO_ADDR;
 extern int D_L00_0015F860_239918 SDATA(D_L00_0015F860);
 extern int D_L00_0015F890_239918 SDATA(D_L00_0015F890);
 extern int D_L00_0015F7F8_239918 SDATA(D_L00_0015F7F8);
@@ -1490,21 +1490,21 @@ extern float D_L00_0015F8A4_239918 SDATA(D_L00_0015F8A4);
 extern int D_L00_0015F8B4_239918 SDATA(D_L00_0015F8B4);
 extern int D_L00_0015F8B8_239918 SDATA(D_L00_0015F8B8);
 extern int D_L00_0015F8BC_239918 SDATA(D_L00_0015F8BC);
-extern Ids_239918 D_L00_0015F8C0_239918 __asm__("D_L00_0015F8C0");
-extern char D_L00_0017E5D8_239918[] __asm__("D_L00_0017E5D8");
-extern float func_001FA888_239918(int) __asm__("func_001FA888");
-extern float func_001F9FA8_239918(float) __asm__("func_001F9FA8");
-extern int func_001FA898_239918(float) __asm__("func_001FA898");
-extern float func_001F9F90_239918(float) __asm__("func_001F9F90");
-extern float func_001FA748_239918(float, float) __asm__("func_001FA748");
-extern int func_00200198_239918(int, int) __asm__("func_00200198");
-extern void func_00200468_239918(int, int, int, int, int, int) __asm__("func_00200468");
-extern void func_L00_0023BAB8_239918(void *, int, int, int, int, int) __asm__("func_L00_0023BAB8");
-extern int func_001FE540_239918(int) __asm__("func_001FE540");
+extern Ids_239918 quick_select_label_msg_ids_r __asm__("D_L00_0015F8C0");
+extern char texture_group_header_r3[] __asm__("D_L00_0017E5D8");
+extern float IntToFloat_r(int) __asm__("func_001FA888");
+extern float FastSin_r(float) __asm__("func_001F9FA8");
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern float FastCos_r(float) __asm__("func_001F9F90");
+extern float FastAddRots_r(float, float) __asm__("func_001FA748");
+extern int GetIconFrame_r(int, int) __asm__("func_00200198");
+extern void HudSprite_r(int, int, int, int, int, int) __asm__("func_00200468");
+extern void HudFrame_r(void *, int, int, int, int, int) __asm__("func_L00_0023BAB8");
+extern int msg_string_r(int) __asm__("func_001FE540");
 extern int func_00116810_239918(int) __asm__("func_00116810");
-extern int func_001FA8A8_239918(int, int, float) __asm__("func_001FA8A8");
-extern int func_001F6EA8_239918(int, int, int, int, int) __asm__("func_001F6EA8");
-extern int func_L00_00236400_239918(void *, int *, int *) __asm__("func_L00_00236400");
+extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
+extern int FontPrintCenter_r(int, int, int, int, int) __asm__("func_001F6EA8");
+extern int hud_screen_position_r(void *, int *, int *) __asm__("func_L00_00236400");
 
 /* Draws the radial selection HUD element: the four mirrored corners of its ring, one icon per entry on a circle
  * (the selected one with a glow), then the selected entry's name; returns the element's word at 0x58. */
@@ -1517,8 +1517,8 @@ int draw_hud_radial_selector_panel(Elem_239918 *e) {
 
     q = e->cnt;
     {
-        float t = func_001FA888_239918(e->cnt[0]);
-        f22 = t / func_001FA888_239918(D_L00_0015F860_239918);
+        float t = IntToFloat_r(e->cnt[0]);
+        f22 = t / IntToFloat_r(D_L00_0015F860_239918);
     }
     if (1.0f < f22) {
         f22 = 1.0f;
@@ -1526,8 +1526,8 @@ int draw_hud_radial_selector_panel(Elem_239918 *e) {
         f22 = 0.0f;
     }
     {
-        float t = func_001FA888_239918(q[1]);
-        f23 = t / func_001FA888_239918(D_L00_0015F860_239918);
+        float t = IntToFloat_r(q[1]);
+        f23 = t / IntToFloat_r(D_L00_0015F860_239918);
     }
     if (1.0f < f23) {
         f23 = 1.0f;
@@ -1535,60 +1535,60 @@ int draw_hud_radial_selector_panel(Elem_239918 *e) {
         f23 = 0.0f;
     }
     {
-        float t = func_001FA888_239918(D_L00_0015F6B0_239918 % D_L00_0015F890_239918);
+        float t = IntToFloat_r(level_frame_counter_r % D_L00_0015F890_239918);
         float wave;
         float s;
-        t = t / func_001FA888_239918(D_L00_0015F890_239918);
+        t = t / IntToFloat_r(D_L00_0015F890_239918);
         t = t * 6.2831802f;
-        wave = func_001F9FA8_239918(t - 3.1415901f);
+        wave = FastSin_r(t - 3.1415901f);
         s = f22 * 128.0f;
-        a = func_001FA898_239918(s);
+        a = truncate_float_to_s32_r(s);
         wave = wave * 0.125f;
         wave = wave + 0.875f;
-        b = func_001FA898_239918(s * wave);
+        b = truncate_float_to_s32_r(s * wave);
     }
     x = e->x;
     y = e->y;
-    func_L00_00236400_239918(e, &x, &y);
+    hud_screen_position_r(e, &x, &y);
     hw = D_L00_0015F7F8_239918 / 2;
     hh = D_L00_0015F7FC_239918 / 2;
-    func_00200468_239918(func_00200198_239918(0xE934, 1), x, y, hw, hh, a);
-    func_00200468_239918(func_00200198_239918(0xE934, 1), x + D_L00_0015F7F8_239918, y + D_L00_0015F7FC_239918, -hw, -hh, a);
-    func_00200468_239918(func_00200198_239918(0xE934, 1), x + D_L00_0015F7F8_239918, y, -hw, hh, a);
-    func_00200468_239918(func_00200198_239918(0xE934, 1), x, y + D_L00_0015F7FC_239918, hw, -hh, a);
-    for (i = 0; i < D_L00_0015FB48_239918; i++) {
+    HudSprite_r(GetIconFrame_r(0xE934, 1), x, y, hw, hh, a);
+    HudSprite_r(GetIconFrame_r(0xE934, 1), x + D_L00_0015F7F8_239918, y + D_L00_0015F7FC_239918, -hw, -hh, a);
+    HudSprite_r(GetIconFrame_r(0xE934, 1), x + D_L00_0015F7F8_239918, y, -hw, hh, a);
+    HudSprite_r(GetIconFrame_r(0xE934, 1), x, y + D_L00_0015F7FC_239918, hw, -hh, a);
+    for (i = 0; i < quick_select_slot_count_r2; i++) {
         int X, Y;
-        float f20 = func_001FA748_239918((float)i * 2.0f * 3.1415927f / (float)D_L00_0015FB48_239918 - 3.1415927f, 1.5707964f);
-        X = x + D_L00_0015F800_239918 + (int)(D_L00_0015F86C_239918 * func_001F9F90_239918(f20) * D_L00_0015F8A4_239918);
-        Y = y + D_L00_0015F804_239918 + (int)(D_L00_0015F86C_239918 * func_001F9FA8_239918(f20));
-        if (e->sel == i && D_L00_0015FB78_239918[D_L00_0015F80C_239918][i].f0 != 0) {
-            func_00200468_239918(func_00200198_239918(0xE99C, 0), X - 0x13, Y - 0x13, 0x26, 0x26, b);
+        float f20 = FastAddRots_r((float)i * 2.0f * 3.1415927f / (float)quick_select_slot_count_r2 - 3.1415927f, 1.5707964f);
+        X = x + D_L00_0015F800_239918 + (int)(D_L00_0015F86C_239918 * FastCos_r(f20) * D_L00_0015F8A4_239918);
+        Y = y + D_L00_0015F804_239918 + (int)(D_L00_0015F86C_239918 * FastSin_r(f20));
+        if (e->sel == i && hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f0 != 0) {
+            HudSprite_r(GetIconFrame_r(0xE99C, 0), X - 0x13, Y - 0x13, 0x26, 0x26, b);
         }
-        if (D_L00_0015FB78_239918[D_L00_0015F80C_239918][i].f0 != 0) {
+        if (hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f0 != 0) {
             if (i != e->sel) {
-                alpha = func_001FA898_239918((float)a * D_L00_0015F8A0_239918);
+                alpha = truncate_float_to_s32_r((float)a * D_L00_0015F8A0_239918);
             } else {
                 alpha = a;
             }
-            if (((Arena_239918 *)D_L00_0017E5D8_239918)->f2C != 0) {
-                func_L00_0023BAB8_239918(e, func_00200198_239918(D_L00_0015FB78_239918[D_L00_0015F80C_239918][i].f0, D_L00_0015FB78_239918[D_L00_0015F80C_239918][i].f4), X, Y, 1, alpha);
+            if (((Arena_239918 *)texture_group_header_r3)->f2C != 0) {
+                HudFrame_r(e, GetIconFrame_r(hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f0, hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f4), X, Y, 1, alpha);
             } else {
-                func_L00_0023BAB8_239918(e, func_00200198_239918(D_L00_0015FB78_239918[D_L00_0015F80C_239918][i].f0, D_L00_0015FB78_239918[D_L00_0015F80C_239918][i].f4 + 4), X, Y, 1, a);
+                HudFrame_r(e, GetIconFrame_r(hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f0, hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f4 + 4), X, Y, 1, a);
             }
         }
     }
     k = e->sel;
-    if (k >= 0 && D_L00_0015FB78_239918[D_L00_0015F80C_239918][k].f0 != 0) {
-        tmp = D_L00_0015F8C0_239918;
-        if (D_L00_0015FB78_239918[D_L00_0015F80C_239918][k].f0 != 0) {
-            str = func_001FE540_239918(tmp.v[k]);
+    if (k >= 0 && hud_selector_slot_tables_r3[D_L00_0015F80C_239918][k].f0 != 0) {
+        tmp = quick_select_label_msg_ids_r;
+        if (hud_selector_slot_tables_r3[D_L00_0015F80C_239918][k].f0 != 0) {
+            str = msg_string_r(tmp.v[k]);
             if (str != 0 && func_00116810_239918(str) != 0) {
                 float f20 = f23 * f22;
-                col = func_001FA8A8_239918(D_L00_0015F8B4_239918, D_L00_0015F8B8_239918, f20);
-                shadow = func_001FA8A8_239918(0, 0x80000000, f20);
+                col = FastTweenColor_r(D_L00_0015F8B4_239918, D_L00_0015F8B8_239918, f20);
+                shadow = FastTweenColor_r(0, 0x80000000, f20);
                 yy = y + D_L00_0015F8BC_239918 + D_L00_0015F804_239918;
-                func_001F6EA8_239918(x + D_L00_0015F800_239918 - 1, yy - 1, shadow, str, -1);
-                func_001F6EA8_239918(x + D_L00_0015F800_239918, yy, col, str, -1);
+                FontPrintCenter_r(x + D_L00_0015F800_239918 - 1, yy - 1, shadow, str, -1);
+                FontPrintCenter_r(x + D_L00_0015F800_239918, yy, col, str, -1);
             }
         }
     }
@@ -1685,7 +1685,7 @@ void update_health_hud_animation_and_visibility(HudElem *e) {
     update_hud_animation_frame((char *)e + 0x40);
 }
 extern char D_0013E633[];
-extern int D_0015EE80_m __asm__("D_0015EE80") MACRO_ADDR;
+extern int pal_mode_m __asm__("D_0015EE80") MACRO_ADDR;
 extern int hero_max_health MACRO_ADDR;
 extern short health_hud_y;
 extern short health_hud_backing_alpha;
@@ -1716,7 +1716,7 @@ int draw_health_hud_panel(char *e) {
         return *(int *)&((Moby *)e)->anim_speed;
     }
     x0 = *(int *)(e + 0x50);
-    if (D_0015EE80_m) {
+    if (pal_mode_m) {
         y0 = *(int *)&health_hud_y + 0xA;
     } else {
         y0 = *(int *)&health_hud_y + 0x12;
@@ -1885,7 +1885,7 @@ typedef struct {
 extern s32 truncate_float_to_s32(f32);
 extern void draw_hud_sprite_flipped(s32, s32, s32, s32, s32, s32);
 extern s32 hero_current_state;
-extern s32 D_0015EE80_3A788 __asm__("D_0015EE80") MACRO_ADDR;
+extern s32 pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
 extern s32 gBolts MACRO_ADDR;
 extern s32 g_game_language MACRO_ADDR;
 extern short bolt_text_color_clear;
@@ -1902,7 +1902,7 @@ extern char bolt_separator_string[];
 extern char bolt_separator_alt_string[];
 extern f32 IntToFloat(int);
 extern int FastTweenColor(int, int, f32);
-extern void func_L00_0023BAB8_3A788(void *, int, int, int, int, int) __asm__("func_L00_0023BAB8");
+extern void HudFrame_r2(void *, int, int, int, int, int) __asm__("func_L00_0023BAB8");
 extern int func_00116248_3A788() __asm__("func_00116248");
 extern void font_print_right(int, int, int, char *, int);
 
@@ -1925,7 +1925,7 @@ int draw_bolt_counter_hud_panel(HudElem_3A788 *m)
         return m->w;
 
     fade = m->cnt;
-    y = D_0015EE80_3A788 ? 10 : 18;
+    y = pal_mode_r ? 10 : 18;
     x = m->unk50;
 
     open = IntToFloat(m->cnt[0]) / IntToFloat((*(s32 *)&bolt_panel_open_steps_gp));
@@ -1954,7 +1954,7 @@ int draw_bolt_counter_hud_panel(HudElem_3A788 *m)
     panel_x -= slide;
     HudSprite(GetIconFrame(0x7580, 0), panel_x, y, slide + 0x10, 32, alpha);
     HudSprite(GetIconFrame(0x7580, 1), panel_x - 0x20, y, 32, 32, alpha);
-    func_L00_0023BAB8_3A788(m, GetIconFrame(0x754F, *frame >> 1), icon_x, y, 0, 0x80);
+    HudFrame_r2(m, GetIconFrame(0x754F, *frame >> 1), icon_x, y, 0, 0x80);
 
     /* the count, shadow first */
     color = FastTweenColor((*(s32 *)&bolt_text_color_clear), (*(s32 *)&bolt_text_color_opaque), text);
@@ -2247,19 +2247,19 @@ int update_hud_animation_frame(char *p) {
     return r;
 }
 typedef struct E_23ac78 { int a; unsigned int flags; int b[3]; void (*cb)(struct E_23ac78 *); char pad[0x68 - 0x18]; int on; int lvl; char pad2[0x7C - 0x70]; int t; char pad3[0x90 - 0x80]; } E_23ac78;
-extern E_23ac78 D_L00_0017DD50_23b610[]  __asm__("D_L00_0017DD50") __attribute__((section(".data")));
+extern E_23ac78 hud_elements_r[]  __asm__("D_L00_0017DD50") __attribute__((section(".data")));
 typedef struct { int a; int b; } H_23ac78;
-extern H_23ac78 D_L00_0017E5D8_23b610  __asm__("D_L00_0017E5D8") __attribute__((section(".data")));
-extern void func_L00_0023B750_23b610(void) __asm__("func_L00_0023B750");
-extern void func_001FFC48_23b610(void *) __asm__("func_001FFC48");
+extern H_23ac78 texture_group_header_r4  __asm__("D_L00_0017E5D8") __attribute__((section(".data")));
+extern void update_weapon_hud_state_r(void) __asm__("func_L00_0023B750");
+extern void apply_pending_animation_r(void *) __asm__("func_001FFC48");
 /* Text/HUD update. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_text_0023a7a8.c, FUN_L00_0023ac78. */
 int update_hud_elements(int call) {
     int n = 0;
     E_23ac78 *e;
     H_23ac78 *h;
-    func_L00_0023B750_23b610();
-    e = D_L00_0017DD50_23b610;
-    h = &D_L00_0017E5D8_23b610;
+    update_weapon_hud_state_r();
+    e = hud_elements_r;
+    h = &texture_group_header_r4;
     do {
         if ((e->flags & 0x10) || h->b != 0) {
             if (e->t < scale_ticks(10)) {
@@ -2273,13 +2273,13 @@ int update_hud_elements(int call) {
             if (e->lvl >= -5) e->lvl--;
         }
         if (e->on && e->lvl == -6) {
-            func_001FFC48_23b610(e);
+            apply_pending_animation_r(e);
         }
         if (call && e->cb) {
             e->cb(e);
         }
         e++;
-    } while ((int)e < (int)(D_L00_0017DD50_23b610 + 13));
+    } while ((int)e < (int)(hud_elements_r + 13));
     return n;
 }
 typedef struct {

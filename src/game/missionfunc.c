@@ -69,7 +69,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 extern int current_vu_chain;
 extern int map_slot_use[];
 extern void move_map_entry_slot(int a, int b);
-extern PadSlots D_001A01F0_slots __asm__("D_001A01F0");
+extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 extern int *menu_level_indices;
 extern unsigned char menu_item_enabled_0 NOT_SDA;
@@ -107,7 +107,7 @@ extern void DebugEnter_Nop(void);
 extern int compress_map_coverage(void *dst, int size, int a, int b);
 extern void downsample_map_coverage(void *dst);
 extern short g_current_level_index;
-extern int D_0015EE84_far __asm__("D_0015EE84") NOT_SDA;
+extern int g_current_level_index_far __asm__("D_0015EE84") NOT_SDA;
 extern int map_coverage_active[] NOT_SDA;
 extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
 extern void expand_map_coverage(void *, unsigned char *);
@@ -183,10 +183,10 @@ int update_mission_list(void) {
 }
 
 extern unsigned char level_available[];
-extern unsigned char D_0013D5C8_b[] __asm__("D_0013D5C8");
+extern unsigned char item_available_b[] __asm__("D_0013D5C8");
 extern unsigned char items_acquired[];
 typedef struct { int a, b, c, d; } Rec16_C940;
-extern Rec16_C940 D_0013D6B8_r[] __asm__("D_0013D6B8");
+extern Rec16_C940 race_gates_r[] __asm__("D_0013D6B8");
 extern unsigned char gSpecialItems[];
 extern unsigned char gold_bolts_collected[][4];
 
@@ -198,14 +198,14 @@ int check_mission_condition(short type, int arg) {
     case 1:
         return level_available[arg] != 0;
     case 2:
-        return D_0013D5C8_b[arg] != 0;
+        return item_available_b[arg] != 0;
     case 3:
         return items_acquired[arg] != 0;
     case 4:
-        if (arg < 0x79) return D_0013D6B8_r[arg].d != 0;
+        if (arg < 0x79) return race_gates_r[arg].d != 0;
         break;
     case 5:
-        if (arg < 0x79) return D_0013D6B8_r[arg].d >= 2;
+        if (arg < 0x79) return race_gates_r[arg].d >= 2;
         break;
     case 6:
         return gSpecialItems[arg] != 0;
@@ -351,13 +351,13 @@ int is_item_available(int arg0) {
     return base[arg0] != 0;
 }
 
-/* Two flat `&&` returns over D_0013D6B8_r[20/24/22].d; retail's reuse of
+/* Two flat `&&` returns over race_gates_r[20/24/22].d; retail's reuse of
    the %hi register comes out by itself. */
 int MissionCond_Obj14Obj18Stage(void) {
-    if (D_0013D6B8_r[20].d != 0 && D_0013D6B8_r[24].d == 0) {
+    if (race_gates_r[20].d != 0 && race_gates_r[24].d == 0) {
         return 1;
     }
-    if (D_0013D6B8_r[24].d != 0 && gHaveHeliPack != 0 && D_0013D6B8_r[22].d == 0) {
+    if (race_gates_r[24].d != 0 && gHaveHeliPack != 0 && race_gates_r[22].d == 0) {
         return 2;
     }
     return 0;
@@ -465,15 +465,15 @@ struct MapState_0CDE0 {
     s32 pan_x[20];               /* 0x104 */
     s32 pan_y[20];               /* 0x154 */
 };
-extern struct MapState_0CDE0 D_001A01F0_0CDE0 __asm__("D_001A01F0");
-extern struct Hero D_0013F450_0CDE0 __asm__("D_0013F450");
-extern s32 D_0015EE84_0CDE0 __asm__("D_0015EE84") MACRO_ADDR;
-extern u8 D_0013DE60_0CDE0[] __asm__("D_0013DE60");
-extern struct MapIcon_0CDE0 *D_001A2F40_0CDE0[] __asm__("D_001A2F40");
+extern struct MapState_0CDE0 level_map_selection_r __asm__("D_001A01F0");
+extern struct Hero g_hero_r __asm__("D_0013F450");
+extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
+extern u8 level_visit_state_r[] __asm__("D_0013DE60");
+extern struct MapIcon_0CDE0 *map_icon_lists_r[] __asm__("D_001A2F40");
 extern s32 D_001A02F4_0CDE0[] __asm__("D_001A02F4");
-extern s32 D_0015FE20_0CDE0 __asm__("D_0015FE20") MACRO_ADDR;
-extern MapWorldObject_0CDE0 *D_00199578_0CDE0[] __asm__("D_00199578");
-extern MapPoint_0CDE0 D_0013D6B8_0CDE0[] __asm__("D_0013D6B8");
+extern s32 map_use_alt_level_layout_r __asm__("D_0015FE20") MACRO_ADDR;
+extern MapWorldObject_0CDE0 *menu_action_messages_r[] __asm__("D_00199578");
+extern MapPoint_0CDE0 race_gates_r2[] __asm__("D_0013D6B8");
 extern s32 D_0013D6C4_0CDE0[] __asm__("D_0013D6C4");
 extern struct {
     u8 pad0[0x10];
@@ -482,7 +482,7 @@ extern struct {
 
 extern void func_00208C38_0CDE0(f32 *outx, f32 *outy, s32 view, f32 x,
                                 f32 y) __asm__("func_00208C38");
-extern void func_00208AB0_0CDE0(s32 idx, char *dst) __asm__("func_00208AB0");
+extern void FormatMenuItemText_r(s32 idx, char *dst) __asm__("func_00208AB0");
 extern void func_001F75D0_0CDE0(struct TextRegion_0CDE0 *, long, char *,
                                     int) __asm__("func_001F75D0");
 
@@ -497,19 +497,19 @@ void update_map_icons(s32 level, s32 flag) {
     struct MapIcon_0CDE0 *icon;
     s32 icon_index;
 
-    if (level < 19 && D_0013DE60_0CDE0[level] != 0) {
-        D_001A01F0_0CDE0.icons = D_001A2F40_0CDE0[level];
+    if (level < 19 && level_visit_state_r[level] != 0) {
+        level_map_selection_r.icons = map_icon_lists_r[level];
     } else {
-        D_001A01F0_0CDE0.icons = 0;
+        level_map_selection_r.icons = 0;
     }
 
-    if (D_0013F450_0CDE0.motion.pos.f[2] != 0.0f && level == D_0015EE84_0CDE0 && flag) {
-        func_00208C38_0CDE0(&map_x, &map_y, D_0015FE20_0CDE0 ? level + 100 : level, D_0013F450_0CDE0.motion.pos.f[0],
-                            D_0013F450_0CDE0.motion.pos.f[1]);
-        D_001A01F0_0CDE0.pan_x[level] = (s32)(map_x * 4096.0f) << 16;
-        D_001A01F0_0CDE0.pan_y[level] = (s32)(map_y * 4096.0f) << 16;
+    if (g_hero_r.motion.pos.f[2] != 0.0f && level == g_current_level_index_r && flag) {
+        func_00208C38_0CDE0(&map_x, &map_y, map_use_alt_level_layout_r ? level + 100 : level, g_hero_r.motion.pos.f[0],
+                            g_hero_r.motion.pos.f[1]);
+        level_map_selection_r.pan_x[level] = (s32)(map_x * 4096.0f) << 16;
+        level_map_selection_r.pan_y[level] = (s32)(map_y * 4096.0f) << 16;
     } else {
-        /* D_001A02F4_0CDE0 is &D_001A01F0_0CDE0.posx: a null-guarded reset that can
+        /* D_001A02F4_0CDE0 is &level_map_selection_r.posx: a null-guarded reset that can
            never run, but retail still emits it with p folded to 0. */
         s32 *p = D_001A02F4_0CDE0;
         if (p == 0) {
@@ -518,14 +518,14 @@ void update_map_icons(s32 level, s32 flag) {
         }
     }
 
-    if (D_001A01F0_0CDE0.icons == 0) {
+    if (level_map_selection_r.icons == 0) {
         return;
     }
 
-    if (!(D_001A01F0_0CDE0.icons->flags & 4)) {
+    if (!(level_map_selection_r.icons->flags & 4)) {
         icon_index = 0;
         do {
-            icon = &D_001A01F0_0CDE0.icons[icon_index];
+            icon = &level_map_selection_r.icons[icon_index];
             if (icon->id == -1) {
                 icon->x = 0.234375f;
                 icon->y = 0.30078125f;
@@ -551,24 +551,24 @@ void update_map_icons(s32 level, s32 flag) {
                 icon->x = 0.625f;
                 icon->y = 0.72265625f;
             } else {
-                if (level == D_0015EE84_0CDE0) {
-                    if (D_00199578_0CDE0[icon->id] != 0) {
-                        func_00208C38_0CDE0(&icon->x, &icon->y, level, D_00199578_0CDE0[icon->id]->x,
-                                            D_00199578_0CDE0[icon->id]->y);
-                        D_001A01F0_0CDE0.icons[icon_index].angle = D_00199578_0CDE0[icon->id]->z;
+                if (level == g_current_level_index_r) {
+                    if (menu_action_messages_r[icon->id] != 0) {
+                        func_00208C38_0CDE0(&icon->x, &icon->y, level, menu_action_messages_r[icon->id]->x,
+                                            menu_action_messages_r[icon->id]->y);
+                        level_map_selection_r.icons[icon_index].angle = menu_action_messages_r[icon->id]->z;
                     }
                 } else {
-                    func_00208C38_0CDE0(&icon->x, &icon->y, level, D_0013D6B8_0CDE0[icon->id].x,
-                                        D_0013D6B8_0CDE0[icon->id].y);
-                    D_001A01F0_0CDE0.icons[icon_index].angle = D_0013D6B8_0CDE0[icon->id].z;
+                    func_00208C38_0CDE0(&icon->x, &icon->y, level, race_gates_r2[icon->id].x,
+                                        race_gates_r2[icon->id].y);
+                    level_map_selection_r.icons[icon_index].angle = race_gates_r2[icon->id].z;
                 }
             }
             icon_index++;
-        } while (!(D_001A01F0_0CDE0.icons[icon_index].flags & 4));
+        } while (!(level_map_selection_r.icons[icon_index].flags & 4));
     }
 
-    for (icon_index = 0; !(D_001A01F0_0CDE0.icons[icon_index].flags & 4); icon_index++) {
-        icon = &D_001A01F0_0CDE0.icons[icon_index];
+    for (icon_index = 0; !(level_map_selection_r.icons[icon_index].flags & 4); icon_index++) {
+        icon = &level_map_selection_r.icons[icon_index];
         icon->flags &= ~0x10;
         icon->active = 0;
         if (icon->link == -1) {
@@ -579,12 +579,12 @@ void update_map_icons(s32 level, s32 flag) {
         if ((icon->flags & 0x1000) && (D_0013D6C4_0CDE0[icon->id * 4] ^ 1) & 1) {
             icon->active = 0;
         }
-        if (D_001A01F0_0CDE0.icons[icon_index].label_text_id != 0) {
+        if (level_map_selection_r.icons[icon_index].label_text_id != 0) {
             s32 label_height_changed = 0;
             s16 previous_label_height;
 
-            D_001A01F0_0CDE0.icons[icon_index].flags |= 0x10;
-            func_00208AB0_0CDE0(icon_index, label_text);
+            level_map_selection_r.icons[icon_index].flags |= 0x10;
+            FormatMenuItemText_r(icon_index, label_text);
             {
                 struct TextRegion_0CDE0 text_window = {
                     0, icon->label_height, 0, icon->label_width, 4, 4, 0, 0, 0xF, 4};
