@@ -540,7 +540,45 @@ void gadgebot_telepot_pad_update(char *m)
         func_L00_002E9A18_2BFBB8(0);
     }
 }
-INCLUDE_ASM("asm/overlays", func_L10_002C0348);
+extern L10State D_L10_001BAD60;
+extern unsigned char D_L10_0015FD08[];
+extern unsigned char menu_item_enabled_67[] NOT_SDA;
+/* Collectible platform: state 0 arms it, state 1 lets it fall, state 2 sits above the pickup's spot.
+   0xFF held in the save-id variable: from PR #130. */
+void func_L10_002C0348(char *m) {
+    char *d = *(char **)(m + 0x78);
+    unsigned short id;
+    int b, idx;
+    switch (((unsigned char *)m)[0x20]) {
+    case 0:
+        *(u128 *)d = *(u128 *)(m + 0x10);
+        id = *(unsigned short *)(m + 0xB2);
+        if (orxon_collected_flags_base.collected[(short)id] != 0 ||
+            ((*(int *)(help_stats_base + 0xAB75 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) != 0) {
+            m[0x20] = 1;
+        }
+        break;
+    case 1:
+        { float t = -g_frame_time_x; *(float *)(m + 0x14) += t; }
+        if (*(float *)(m + 0x14) <= ((float *)d)[1] + -3.75f) {
+            D_L10_001BAD60.collected[*(short *)(m + 0xB2)] = ((unsigned char *)m)[0xB0] + 2;
+            id = 255;
+            b = ((unsigned char *)m)[0xB0];
+            idx = (unsigned char)b;
+            if (b == id ||
+                (D_L10_0015FD08[idx] != id &&
+                 saved_mission_state[idx + (g_current_level_index << 4)] == id)) {
+                orxon_collected_flags_base.collected[*(short *)(m + 0xB2)] = b + 2;
+            }
+            m[0x20] = 2;
+            if (g_current_level_index == 10) menu_item_enabled_67[1] = 1;
+        }
+        break;
+    case 2:
+        *(float *)(m + 0x14) = ((float *)d)[1] + -3.75f;
+        break;
+    }
+}
 extern char hero_globals_base[];
 extern int fast_dec_timer(int *arg0);
 extern void euler_to_matrix(float *, float *);

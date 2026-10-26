@@ -1,16 +1,16 @@
 {
  "measures": {
-  "fuzzy_match_percent": 89.21473985095489,
+  "fuzzy_match_percent": 89.22574825295582,
   "total_code": "3706260",
-  "matched_code": "3301572",
-  "matched_code_percent": 89.08096032118631,
+  "matched_code": "3301980",
+  "matched_code_percent": 89.09196872318725,
   "total_functions": 5101,
-  "matched_functions": 4997,
-  "matched_functions_percent": 97.96118408155263,
-  "complete_code": "512672",
-  "complete_code_percent": 13.832596741728858,
+  "matched_functions": 4998,
+  "matched_functions_percent": 97.98078808076848,
+  "complete_code": "569076",
+  "complete_code_percent": 15.354454355603762,
   "total_units": 140,
-  "complete_units": 102
+  "complete_units": 103
  },
  "units": [
   {
@@ -42060,17 +42060,17 @@
   {
    "name": "Level 10: Orxon",
    "measures": {
-    "fuzzy_match_percent": 99.27664704630877,
+    "fuzzy_match_percent": 100.0,
     "total_code": "56404",
-    "matched_code": "55996",
-    "matched_code_percent": 99.27664704630877,
+    "matched_code": "56404",
+    "matched_code_percent": 100.0,
     "total_functions": 57,
-    "matched_functions": 56,
-    "matched_functions_percent": 98.24561403508773,
-    "complete_code": "0",
-    "complete_code_percent": 0.0,
+    "matched_functions": 57,
+    "matched_functions_percent": 100.0,
+    "complete_code": "56404",
+    "complete_code_percent": 100.0,
     "total_units": 1,
-    "complete_units": 0
+    "complete_units": 1
    },
    "functions": [
     {
@@ -42130,7 +42130,7 @@
     {
      "name": "func_L10_002C0348",
      "size": "408",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "583296",
      "metadata": {
       "virtual_address": "2887424"
@@ -42588,7 +42588,7 @@
     }
    ],
    "metadata": {
-    "complete": false,
+    "complete": true,
     "source_path": "src/overlays/l10_orxon",
     "progress_categories": [
      "level_code",
@@ -49603,15 +49603,15 @@
    "id": "level_code",
    "name": "Level code",
    "measures": {
-    "fuzzy_match_percent": 88.84174411265948,
+    "fuzzy_match_percent": 88.85434197769189,
     "total_code": "3238644",
-    "matched_code": "2877212",
-    "matched_code_percent": 88.84002070002137,
+    "matched_code": "2877620",
+    "matched_code_percent": 88.85261856505377,
     "total_functions": 3399,
-    "matched_functions": 3367,
-    "matched_functions_percent": 99.05854663136216,
-    "complete_code": "281904",
-    "complete_code_percent": 8.704383686505833
+    "matched_functions": 3368,
+    "matched_functions_percent": 99.0879670491321,
+    "complete_code": "338308",
+    "complete_code_percent": 10.445976772995119
    }
   },
   {
@@ -49663,15 +49663,15 @@
    "id": "levels",
    "name": "Level-specific code",
    "measures": {
-    "fuzzy_match_percent": 85.07507513364135,
+    "fuzzy_match_percent": 85.09496775250462,
     "total_code": "2051012",
-    "matched_code": "1744900",
-    "matched_code_percent": 85.07507513364135,
+    "matched_code": "1745308",
+    "matched_code_percent": 85.09496775250462,
     "total_functions": 1464,
-    "matched_functions": 1448,
-    "matched_functions_percent": 98.90710382513662,
-    "complete_code": "281904",
-    "complete_code_percent": 13.744629480471104
+    "matched_functions": 1449,
+    "matched_functions_percent": 98.97540983606558,
+    "complete_code": "338308",
+    "complete_code_percent": 16.49468652548108
    }
   },
   {
@@ -49828,15 +49828,15 @@
    "id": "level_10",
    "name": "Level 10: Orxon",
    "measures": {
-    "fuzzy_match_percent": 99.27664704630877,
+    "fuzzy_match_percent": 100.0,
     "total_code": "56404",
-    "matched_code": "55996",
-    "matched_code_percent": 99.27664704630877,
+    "matched_code": "56404",
+    "matched_code_percent": 100.0,
     "total_functions": 57,
-    "matched_functions": 56,
-    "matched_functions_percent": 98.24561403508773,
-    "complete_code": "0",
-    "complete_code_percent": 0.0
+    "matched_functions": 57,
+    "matched_functions_percent": 100.0,
+    "complete_code": "56404",
+    "complete_code_percent": 100.0
    }
   },
   {
