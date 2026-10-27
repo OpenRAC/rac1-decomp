@@ -74,12 +74,14 @@ extern char osd_kernel_patch_code[];
 extern int PatchIsNeeded(void);
 extern void flush_cache(int);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* inline asm: EE kernel syscall 0x74. */
 void func_0011DDD0(int a0, int a1) {
     __asm__ volatile("addiu $3,$0,0x74
 	syscall");
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* inline asm: EE kernel syscall 0x5A. */
 void func_0011DDE0(void *a0, void *a1, int a2) {
     __asm__ volatile("addiu $3,$0,0x5A
@@ -98,6 +100,7 @@ int alarm_kCopy(int *dst, int *src, unsigned int nbytes) {
     return 0;
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* inline asm: EE kernel syscall 0x5B. */
 int func_0011DE28(int a0) {
     __asm__ volatile("addiu $3,$0,0x5B

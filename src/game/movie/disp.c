@@ -66,6 +66,7 @@ ASM_FUNC("asm/handwritten/text", func_0023C7A8); /* vblankHandler */
 extern int D_001612E8 MACRO_ADDR;
 extern int D_0016130C MACRO_ADDR;
 extern void func_0023E710(int);
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* shut down: free buffer if set, then sync and enable interrupts */
 int func_0023C910(void) {
     if (D_001612E8 != 0) {

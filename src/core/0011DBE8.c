@@ -70,12 +70,14 @@ extern void kernel_init_tlb(void);
 extern int FirstSemaphore;
 extern int SecondSemaphore;
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* inline asm: EE kernel syscall 0x74. */
 void func_0011DBE8(int a0, int a1) {
     __asm__ volatile("addiu $3,$0,0x74
 	syscall");
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* inline asm: EE kernel syscall 0x5A. */
 void func_0011DBF8(int a0, void *a1, int a2) {
     __asm__ volatile("addiu $3,$0,0x5A
@@ -94,6 +96,7 @@ int osd_kCopy(int *dst, int *src, unsigned int nbytes) {
     return 0;
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* inline asm: EE kernel syscall 0x5B. */
 int func_0011DC40(int a0) {
     __asm__ volatile("addiu $3,$0,0x5B

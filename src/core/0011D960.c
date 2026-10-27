@@ -74,6 +74,7 @@ extern void kernel_init_tlb(void);
 
 ASM_FUNC("asm/handwritten/core_text", func_0011D960);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* handwritten: enable interrupts, return whether they were enabled before. */
 int func_0011D9A8(void) {
     int s;
@@ -129,6 +130,7 @@ int *kFindAddress(int *p, int *end, int val) {
     return p;
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* inline asm: EE kernel syscall 0x83. */
 int func_0011DA80(int a0, int a1, void *a2) {
     __asm__ volatile("addiu $3,$0,0x83
@@ -175,6 +177,7 @@ void InitSystemCallTableAddress(void) {
     initsys_kernel_scan_address = a;
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* inline asm: EE kernel syscall 0x74. */
 void func_0011DB98(int a0, int a1) {
     __asm__ volatile("addiu $3,$0,0x74

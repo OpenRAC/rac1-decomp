@@ -219,6 +219,7 @@ void do_csc2(void *arg0, unsigned int arg1, int arg2) {
     remove_dmac_handler(3, h);
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* Start one DMA transfer (channel 0x1000B400) of up to 0xFFFF qwords from the {qwc, addr} block; returns 1 if empty, else 0. */
 int func_0012A718(int a0, unsigned int *a1) {
     unsigned int n;

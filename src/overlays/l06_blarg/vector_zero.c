@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* Zeroes a vector (stores vf0: 0,0,0,1). */
 void func_L06_002172B0(float *v)
 {

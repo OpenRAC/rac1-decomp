@@ -13,6 +13,7 @@ void clear_twelve_bytes(s64 *v) {
     __asm__ volatile ("nop");
     ((s32 *)v)[2] = 0;
 }
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* Adds the xyz of vector c to vector b in place (a is unused). */
 void func_L00_001FF240(int a, float *b, float *c)
 {
@@ -25,6 +26,7 @@ void func_L00_001FF240(int a, float *b, float *c)
         "sqc2 $vf1,0(%0)\n\t"
         : : "r"(b), "r"(c) : "memory");
 }
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* Vector op on xyz of two vectors, result stored via the destination pointer. */
 void func_L00_001FF270(int a, float *b, float *c)
 {
@@ -38,6 +40,7 @@ void func_L00_001FF270(int a, float *b, float *c)
         : : "r"(b), "r"(b), "r"(c) : "memory");
 }
 ASM_FUNC("asm/overlays", func_L00_001FF2C8);
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* Vector op on xyz of two vectors, result stored via the destination pointer. */
 void func_L00_001FF2F8(float *a, float *b, float *c)
 {
@@ -67,6 +70,7 @@ INCLUDE_ASM("asm/overlays", func_L00_001FF968);
 ASM_FUNC("asm/overlays", func_L00_001FFA40);
 INCLUDE_ASM("asm/overlays", func_L00_001FFB78);
 ASM_FUNC("asm/overlays", func_L00_001FFCF8);
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* Adds two 4x4 matrices: a = b + c. */
 void func_L00_001FFDD0(float *a, float *b, float *c)
 {

@@ -253,6 +253,18 @@ def overlay_listed(listing: Path, marker: re.Pattern) -> set[str]:
     for directory, _ in overlay_dirs():
         for path in sorted(directory.glob("*.c")):
             marked += marker.findall(path.read_text(errors="replace"))
+    # A listed function may be rewritten in C (still classified as original assembly).
+    unmarked = set(listed) - set(marked)
+    if unmarked:
+        text = "\n".join(p.read_text(errors="replace") for d, _ in overlay_dirs() for p in sorted(d.glob("*.c")))
+        marked += [n for n in unmarked
+                   if re.search(r"^(?!extern\b)[A-Za-z_][^;\n]*\b" + n + r"\s*\([^;]*$", text, re.M)]
+    # A listed function may be rewritten in C (still classified as original assembly).
+    unmarked = set(listed) - set(marked)
+    if unmarked:
+        text = "\n".join(p.read_text(errors="replace") for d, _ in overlay_dirs() for p in sorted(d.glob("*.c")))
+        marked += [n for n in unmarked
+                   if re.search(r"^(?!extern\b)[A-Za-z_][^;\n]*\b" + n + r"\s*\([^;]*$", text, re.M)]
     if sorted(marked) != sorted(listed):
         sys.exit(f"*** {listing} disagrees with src/overlays/: "
                  f"listed only {sorted(set(listed) - set(marked))}, marked only {sorted(set(marked) - set(listed))}")

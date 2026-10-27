@@ -1476,6 +1476,7 @@ void fs_call_sema_signal(void) {
     signal_semaphore(fs_call_sema);
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* calls the handler stored at p[0] with p[1], then syncs and enables interrupts. */
 void func_0011BC80(int unused, int *p) {
     void (*fn)(int) = (void (*)(int))p[0];

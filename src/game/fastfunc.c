@@ -50,6 +50,7 @@ LINKER_REMNANT("asm/remnants/text", func_001F9810);
 
 extern float D_0015EE60 SDATA(D_0015EE60);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* Scale helper: returns the gp-resident constant D_0015EE60 times x. */
 float func_001F9840(float x) {
     float k = D_0015EE60;
@@ -62,6 +63,7 @@ ASM_FUNC("asm/handwritten/text", func_001F9850);
 
 extern float D_0015EE64 SDATA(D_0015EE64);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* returns the gp-resident float D_0015EE64 times x. */
 float func_001F9878(float x) {
     float t = D_0015EE64;
@@ -74,6 +76,7 @@ ASM_FUNC("asm/handwritten/text", func_001F9888);
 
 extern float D_0015EE68 SDATA(D_0015EE68);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* returns the gp-resident float D_0015EE68 times x. */
 float func_001F98B0(float x) {
     float t = D_0015EE68;
@@ -86,6 +89,7 @@ ASM_FUNC("asm/handwritten/text", func_001F98C0);
 
 extern float D_0015EE6C SDATA(D_0015EE6C);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* returns the gp-resident float D_0015EE6C times x. */
 float func_001F98E8(float x) {
     float t = D_0015EE6C;
@@ -96,6 +100,7 @@ float func_001F98E8(float x) {
 
 extern float D_0015EE70 SDATA(D_0015EE70);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* handwritten: scale x by a global constant. */
 float func_001F98F8(float x) {
     float t = D_0015EE70;
@@ -138,6 +143,7 @@ ASM_FUNC("asm/handwritten/text", func_001F9AC0);
  */
 ASM_FUNC("asm/handwritten/text", func_001F9AF0);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* clip flags of a vector against its w */
 int func_001F9B20(float *v) {
     int r;
@@ -206,6 +212,7 @@ ASM_FUNC("asm/handwritten/text", func_001F9BB0);
  */
 ASM_FUNC("asm/handwritten/text", func_001F9BC0);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* store the vector (0,0,0,1) */
 void func_001F9BC8(float *out) {
     /* inline asm: VU0 vmr32 + store */
@@ -216,6 +223,7 @@ void func_001F9BC8(float *out) {
         : : "r"(out) : "memory");
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* Adds/subtracts the xyz of two vectors into dst. */
 void func_001F9BD8(float *dst, float *a, float *b) {
     /* inline asm: COP2 vector load */
@@ -228,6 +236,7 @@ void func_001F9BD8(float *dst, float *a, float *b) {
     __asm__ __volatile__("sqc2 $vf1,0x0(%0)" : : "r"(dst) : "memory");
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* Adds/subtracts the xyz of two vectors into dst. */
 void func_001F9BF0(float *dst, float *a, float *b) {
     /* inline asm: COP2 vector load */
@@ -246,6 +255,7 @@ ASM_FUNC("asm/handwritten/text", func_001F9C30);
 
 ASM_FUNC("asm/handwritten/text", func_001F9C48);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* componentwise vector multiply */
 void func_001F9C60(float *out, float *a, float *b) {
     /* inline asm: VU0 vmul */
@@ -260,6 +270,7 @@ void func_001F9C60(float *out, float *a, float *b) {
 
 ASM_FUNC("asm/handwritten/text", func_001F9C78);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* Cross product of two vectors into dst. */
 void func_001F9CA0(float *dst, float *a, float *b) {
     /* inline asm: COP2 vector load */
@@ -288,6 +299,7 @@ ASM_FUNC("asm/handwritten/text", func_001F9E10);
 
 ASM_FUNC("asm/handwritten/text", func_001F9E58);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* transform a vector by a 4x3 matrix */
 void func_001F9EC0(float *out, float *v, float *m) {
     /* inline asm: VU0 matrix multiply */
@@ -304,6 +316,7 @@ void func_001F9EC0(float *out, float *v, float *m) {
         : : "r"(out), "r"(v), "r"(m) : "memory");
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* transform a point by a 4x4 matrix */
 void func_001F9EE8(float *out, float *v, float *m) {
     /* inline asm: VU0 matrix multiply */
@@ -322,6 +335,7 @@ void func_001F9EE8(float *out, float *v, float *m) {
         : : "r"(out), "r"(v), "r"(m) : "memory");
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* unpack four bytes into a float vector */
 void func_001F9F18(float *out, unsigned int packed) {
     /* inline asm: MMI unpack + VU0 int to float */
@@ -346,6 +360,7 @@ ASM_FUNC("asm/handwritten/text", func_001F9FC0);
 
 ASM_FUNC("asm/handwritten/text", func_001FA058);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* Writes a 3-row identity matrix to m. */
 void func_001FA168(float *m) {
     /* inline asm: build identity rows in VU0 */
@@ -354,6 +369,7 @@ void func_001FA168(float *m) {
     __asm__ __volatile__(".set noreorder\n\tsqc2 $vf1,0x0(%0)\n\tsqc2 $vf2,0x10(%0)\n\tsqc2 $vf3,0x20(%0)\n\t.set reorder" : : "r"(m) : "memory");
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* Writes a 4x4 identity matrix to m. */
 void func_001FA190(float *m) {
     /* inline asm: build identity rows in VU0 */
@@ -391,6 +407,7 @@ ASM_FUNC("asm/handwritten/text", func_001FA460);
  */
 ASM_FUNC("asm/handwritten/text", func_001FA480);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* transpose the 3x3 part of a matrix, w column set to (0,0,0,1) */
 void func_001FA4A0(float *out, float *m) {
     /* inline asm: VU0 transpose */
@@ -417,6 +434,7 @@ void func_001FA4A0(float *out, float *m) {
         : : "r"(out), "r"(m) : "memory");
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* multiply two 3x3 matrices */
 void func_001FA4F0(void *out, void *a, void *b) {
     /* inline asm: VU0 matrix multiply */
@@ -445,6 +463,7 @@ void func_001FA4F0(void *out, void *a, void *b) {
 
 ASM_FUNC("asm/handwritten/text", func_001FA540);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* vector product mixing cross product and dot product (quaternion multiply) */
 void func_001FA588(void *out, void *a, void *b) {
     /* inline asm: VU0 quaternion multiply */
@@ -469,6 +488,7 @@ void func_001FA588(void *out, void *a, void *b) {
 
 ASM_FUNC("asm/handwritten/text", func_001FA5C8);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* quaternion to 3x3 rotation matrix */
 void func_001FA648(void *q, void *out) {
     /* inline asm: VU0 quaternion to matrix */
@@ -505,6 +525,7 @@ void func_001FA648(void *q, void *out) {
         : : "r"(q), "r"(out) : "memory");
 }
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* Builds a 4x4 rotation matrix in dst from the quaternion at q. */
 void func_001FA6C0(float *q, float *dst) {
     /* inline asm: load quaternion, identity rows */

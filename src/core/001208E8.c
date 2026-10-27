@@ -83,6 +83,7 @@ extern int sce_sif_alloc_iop_heap(int arg0);
 
 extern int func_00118CA0(int a);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* handwritten: call func_00118CA0 with the third arg, sync, enable interrupts. */
 void func_001208E8(int a, int b, int c) {
     func_00118CA0(c);

@@ -42,6 +42,7 @@ extern void func_0011D960(void);
 extern int func_0011D9A8(void);
 extern int func_00118AF0(int a);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* handwritten: interrupt-safe wrapper around func_00118AF0, with a sync. */
 int func_00119328(int a) {
     int s;
@@ -60,6 +61,7 @@ int func_00119328(int a) {
 extern int func_0011D9A8(void);
 extern int func_00118AE0(int a);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* disables-interrupts wrapper: calls func_00118AE0 with EI-state restore. */
 int func_00119390(int a) {
     int r;
@@ -77,6 +79,7 @@ int func_00119390(int a) {
 
 extern int func_00118B10(int a);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* disables-interrupts wrapper: calls func_00118B10 with EI-state restore. */
 int func_001193F8(int a) {
     int r;
@@ -95,6 +98,7 @@ int func_001193F8(int a) {
 extern int func_0011D9A8(void);
 extern int func_00118B00(int);
 
+/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
 /* DisableDmac/EnableDmac wrapper: masks interrupts around the call when EIE is set. */
 int func_00119460(int a0) {
     int ie;
