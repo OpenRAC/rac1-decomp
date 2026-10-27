@@ -678,7 +678,7 @@ struct Hero {
     void *unk1620;                 /* 0x1620 */
     void *unk1624;                 /* 0x1624 */
     f32 glow_phase;                 /* 0x1628: phase of the hero moby's colour pulse (func_L00_002086C8) */
-    u8 pad_162C[0x4];
+    f32 unk162C;                   /* 0x162C */
     s32 vehicle_hp;                /* 0x1630 */
     s16 unk1634;                   /* 0x1634 */
     s16 vehicle_triangle_cooldown; /* 0x1636 */
@@ -695,10 +695,17 @@ struct Hero {
     u8 saved_pos_rot[0x20];        /* 0x1D00 */
     f32 stick_x;                    /* 0x1D20: stick vector (d-pad when the stick is idle) */
     f32 stick_y;                    /* 0x1D24 */
-    u8 pad_1D28[0x68];
-    struct HeroEase unk1D90;       /* 0x1D90: manipulator record handed to attach_manipulator (FUN_L00_00234808) */
-    u8 pad_1E40[0x70];
-    s16 unk1EB0;                   /* 0x1EB0 */
+    u8 pad_1D28[0x28];
+    Vec4 unk1D50[4];                /* 0x1D50: joint positions */
+    struct HeroManipulator unk1D90; /* 0x1D90: manipulator record (FUN_L00_00234808) */
+    Vec4 draw_queue_vec[8];        /* 0x1DD0: quad positions */
+    s32 draw_queue_val[8];         /* 0x1E50: colors/values */
+    f32 draw_queue_f0[8];          /* 0x1E70: size/param0 */
+    f32 draw_queue_f1[8];          /* 0x1E90: size/param1 */
+    union {
+        s16 draw_queue_count;          /* 0x1EB0: queued quad count */
+        s16 unk1EB0;
+    };
     s16 unk1EB2;                   /* 0x1EB2: once flag for queueing FUN_L00_00207d40 */
     u8 pad_1EB4[0x1C];
     f32 unk1ED0;                   /* 0x1ED0 */
@@ -766,15 +773,23 @@ struct Hero {
     s32 pos_history_count;         /* 0x21B4: unk1B00 ring count */
     u8 pad_21B8[0x20];
     s16 unk21D8[8][4];             /* 0x21D8: 8 slots of four s16 */
-    s32 grind_voice;                /* 0x2218: voice of sound slot 0, -1 = none (slots 0-7 run to 0x2234, FUN_L00_00206c08) */
-    s32 unk221C;                   /* 0x221C: voice of sound slot 1 */
-    s32 voice_slot2;               /* 0x2220 */
-    s32 unk2224;                   /* 0x2224 */
-    s32 voice_slot4;               /* 0x2228 */
-    s32 pack_swim_voice;           /* 0x222C */
-    s32 voice_slot6;               /* 0x2230 */
-    s32 board_boost_voice;         /* 0x2234 */
-    struct Moby *unk2238[8];       /* 0x2238: per sound slot (unk2218 + i * 4): moby the sound plays on, 0 = hero.moby */
+    union {
+        struct {
+            s32 grind_voice;                /* 0x2218: voice of sound slot 0, -1 = none (slots 0-7 run to 0x2234, FUN_L00_00206c08) */
+            s32 unk221C;                   /* 0x221C: voice of sound slot 1 */
+            s32 voice_slot2;               /* 0x2220 */
+            s32 unk2224;                   /* 0x2224 */
+            s32 voice_slot4;               /* 0x2228 */
+            s32 pack_swim_voice;           /* 0x222C */
+            s32 voice_slot6;               /* 0x2230 */
+            s32 board_boost_voice;         /* 0x2234 */
+        };
+        s32 sound_slots[8];
+    };
+    union {
+        struct Moby *unk2238[8];       /* 0x2238: per sound slot (unk2218 + i * 4): moby the sound plays on, 0 = hero.moby */
+        struct Moby *sound_slot_mobys[8];
+    };
     u8 pad_2258[0x18];
     s32 fidget_index;              /* 0x2270 */
     s32 unk2274;                   /* 0x2274 */
@@ -793,7 +808,8 @@ struct Hero {
     struct HeroHealth health;      /* 0x22A8 */
     s32 unk22B4;                   /* 0x22B4 */
     f32 current_path_dist;         /* 0x22B8: distance to the nearest carrying path this frame (water_current_update keeps the minimum) */
-    u8 pad_22BC[0x8];
+    u8 pad_22BC[4];
+    void *unk22C0;                 /* 0x22C0 */
     s32 slot3_anim_timer;          /* 0x22C4 */
     s16 unk22C8;                   /* 0x22C8 */
     u8 unk22CA;                    /* 0x22CA */
@@ -809,13 +825,16 @@ struct Hero {
     s16 unk22DC;                   /* 0x22DC */
     s16 vehicle_toggle_timer;      /* 0x22DE */
     s16 glow_pulse_level;          /* 0x22E0 */
-    u8 pad_22E2[0x6];
+    s16 pad22E2;                   /* 0x22E2 */
+    s32 unk22E4;                   /* 0x22E4 */
     f32 unk22E8;                   /* 0x22E8: phase for the items[4].moby colour */
     f32 unk22EC;                   /* 0x22EC: phase for the items[4].moby2 colour */
     f32 unk22F0;                   /* 0x22F0: phase for the items[5].moby colour */
     s32 color_fade_active;         /* 0x22F4 */
     s32 tint_color;                /* 0x22F8 */
     s16 unk22FC;                   /* 0x22FC */
+    s16 unk22FE;                   /* 0x22FE */
+    s32 unk2300;                   /* 0x2300 */
 };
 
 typedef struct Hero Hero;
