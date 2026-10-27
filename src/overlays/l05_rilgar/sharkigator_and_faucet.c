@@ -6,7 +6,225 @@
 #include "hero.h"
 #include "moby.h"
 
-INCLUDE_ASM("asm/overlays", func_L05_002D28D0);
+extern int func_002140B0(int);
+extern int func_001F9850(int);
+extern void func_0020D678(void *);
+extern void func_00213DE0(void *, int, int, int);
+extern float func_L00_001FF860(float, float);
+extern float func_L00_0025CE58(float *, float *, float, float, float, float);
+extern void func_L00_001FF4B0(float *, float *, float);
+extern void func_001F9BD8(void *, void *, void *);
+extern void func_001F9BF0(void *, void *, void *);
+extern float func_001F9D10(void *, void *);
+extern int func_001F9908(int *arg0);
+extern float func_001F9B88(float);
+extern float func_001F9D48(void *, void *);
+extern float func_00214D88(float *, float *, float, float, float, float);
+extern float func_001FA748(float, float);
+extern void func_001FA1F8(void *, void *);
+extern int func_L00_0025A778(void *, void *, int);
+extern void func_L00_00217718(void *, void *, int, int);
+extern void func_0022ED80(int, int, int);
+extern void func_L00_00211908(void);
+extern void func_L00_002EBF50(void *, void *, int, int, int);
+extern void func_L05_002D3078(char *moby);
+extern void func_L05_002D3220(int unused, char *p);
+extern char *D_L05_001B0CB0[];
+extern char D_L05_00167180[] ;
+extern short D_L05_00161450;
+extern float D_L05_001613A0[4] MACRO_ADDR;
+extern float D_0015EE6C MACRO_ADDR;
+extern float D_0015EE70 MACRO_ADDR;
+
+#define HI(o) (*(int *)(h + (o)))
+#define HF(o) (*(float *)(h + (o)))
+static inline short pick_2D28D0(int c) {
+    if (c) return 600;
+    return 180;
+}
+void func_L05_002D28D0(char *moby) {
+    extern char D_0013F450[];
+    char *data = *(char **)(moby + 0x78);
+    int state = *(unsigned char *)(moby + 0x20);
+    int one = 1;
+    char *path;
+    char *point;
+    float v[4] __attribute__((aligned(16)));
+    float w[4] __attribute__((aligned(16)));
+    float z[4] __attribute__((aligned(16)));
+    float speed;
+    float height;
+    int index;
+    int duration;
+
+    switch (state) {
+    case 0: goto state_zero;
+    case 1: goto state_one;
+    case 2: goto state_two;
+    case 3: goto state_three;
+    default: return;
+    }
+state_zero:
+    {
+        if (*(int *)(data + 0x64) != 0) {
+            *(unsigned char *)(moby + 0x20) = 2;
+            *(unsigned short *)(moby + 0x34) |= 1;
+            *(unsigned char *)(moby + 0x30) = 0xff;
+            *(float *)(data + 0x74) = *(float *)(moby + 0x18);
+            *(int *)(data + 0x7c) = ((int (*)(int))func_001F9850)(30);
+            return;
+        }
+        index = *(int *)(data + 0x60);
+        if (index == -1) {
+            ((void (*)(char *))func_0020D678)(moby);
+            return;
+        }
+        {
+            char *path = ((char * *)D_L05_001B0CB0)[index];
+            *(int *)(data + 0x68) = ((int (*)(int))func_002140B0)(*(int *)path);
+        }
+        *(int *)(data + 0x6c) = ((int (*)(int))func_001F9850)(600);
+        if (*(unsigned char *)(moby + 0x53) != 1) {
+            ((void (*)(char *, int, int, int))func_00213DE0)(moby, 1, 0, ((int (*)(int))func_001F9850)(10));
+        }
+        {
+            char *path = ((char * *)D_L05_001B0CB0)[*(int *)(data + 0x60)];
+            height = *(float *)(path + 0x18) - (*(float *)&D_L05_00161450);
+        }
+        *(float *)(moby + 0x18) = height;
+        *(float *)(data + 0x80) = height;
+        *(unsigned char *)(moby + 0x20) = one;
+        return;
+    }
+state_one:
+    {
+        path = ((char * *)D_L05_001B0CB0)[*(int *)(data + 0x60)];
+        qcopy(v, path + *(int *)(data + 0x68) * 16 + 0x10);
+        point = moby + 0x48;
+        height = ((float (*)(float, float))func_L00_001FF860)(v[0] - *(float *)(moby + 0x10), v[1] - *(float *)(moby + 0x14));
+        func_L00_0025CE58((float *)point, (float *)(data + 0x70), height, D_0015EE70 * 3.1415927f, D_0015EE70 * 3.1415927f,
+                      D_0015EE6C * 3.1415927f);
+        ((void (*)(float, void *, void *))func_L00_001FF4B0)(D_0015EE6C * 3.0f, w, moby + 0xc0);
+        ((void (*)(void *, void *, void *))func_001F9BD8)(moby + 0x10, moby + 0x10, w);
+        height = ((float (*)(void *, void *))func_001F9D10)(moby + 0x10, v);
+        if (height < 3.0f || ((int (*)(void *))func_001F9908)(data + 0x6c) != 0) {
+            int n;
+            {
+                char *path = ((char * *)D_L05_001B0CB0)[*(int *)(data + 0x60)];
+                n = ((int (*)(int))func_002140B0)(*(int *)path);
+            }
+            {
+                char *path = ((char * *)D_L05_001B0CB0)[*(int *)(data + 0x60)];
+                *(int *)(data + 0x68) = (*(int *)(data + 0x68) + n) % *(int *)path;
+            }
+            *(int *)(data + 0x6c) = ((int (*)(int))func_001F9850)(600);
+        }
+        { char *h = D_0013F450;
+        if ((HI(0x208C) == 0x12 || HI(0x2084) == 0x12) &&
+            ((float (*)(void *, void *))func_001F9D48)(moby + 0x10, h + 0x80) < 8.0f) {
+            speed = ((D_L05_001613A0[2]) - (*(float *)&D_L05_00161450)) - 2.0f;
+        } else {
+            speed = ((D_L05_001613A0[2]) - (*(float *)&D_L05_00161450)) - 0.5f;
+            ((void (*)(char *))func_L05_002D3078)(moby);
+        }
+        }
+        ((void (*)(float *, float, float *, float, float, float))func_00214D88)((float *)(moby + 0x18), speed, (float *)(data + 0x78), D_0015EE70 + D_0015EE70,
+                     D_0015EE70 + D_0015EE70,
+                     D_0015EE6C + D_0015EE6C);
+        return;
+    }
+state_two:
+    {
+        ((int (*)(void *))func_001F9908)(data + 0x7c);
+        { char *h = D_0013F450;
+        height = ((float (*)(float))func_001F9B88)(HF(0x2F0) - *(float *)(data + 0x74));
+        if (height < 0.33f && HI(0x208C) == 0x12) {
+            char *d;
+            if (*(int *)(data + 0x7c) != 0) return;
+            d = D_L05_00167180;
+            *(float *)(moby + 0x44) = -1.5533431f;
+            *(float *)(moby + 0x48) = ((float (*)(float, float))func_001FA748)(*(float *)(d + 0x158), 1.5707964f);
+            func_001FA1F8(moby + 0xc0, moby + 0x40);
+            qcopy(moby + 0x10, h + 0x80);
+            ((void (*)(float, void *, void *))func_L00_001FF4B0)((*(float *)&D_L05_00161450), v, moby + 0xe0);
+            ((void (*)(void *, void *, void *))func_001F9BF0)(moby + 0x10, moby + 0x10, v);
+            ((Moby *)moby)->pos.z -= 2.0f;
+            *(float *)(data + 0x78) = D_0015EE6C * 10.0f;
+            *(unsigned short *)(moby + 0x34) &= 0xfffe;
+            if (*(unsigned char *)(moby + 0x53) != state)
+                ((void (*)(char *, int, int, int))func_00213DE0)(moby, 2, 0, ((int (*)(int))func_001F9850)(5));
+            *(unsigned char *)(moby + 0xbc) = 0;
+            *(unsigned char *)(moby + 0x20) = 3;
+            func_L00_002EBF50(d + 0x140, d + 0x150, 0, 0, 0);
+            return;
+        }
+        }
+        { char *h = D_0013F450;
+        if (HI(0x2084) == 0x12) return;
+        {
+        char *path = ((char * *)D_L05_001B0CB0)[*(int *)(data + 0x60)];
+        duration = pick_2D28D0(func_L00_0025A778(h + 0x80, path + 0x10, *(int *)path));
+        }
+        *(int *)(data + 0x7c) = ((int (*)(int))func_001F9850)(duration);
+        }
+        return;
+    }
+state_three:
+    {
+        float speed;
+        { char *h = D_0013F450;
+        if (HF(0x2F0) < *(float *)(moby + 0x18) || *(float *)(data + 0x78) < 0.0f) {
+            if (HI(0x2084) != 0x72) {
+                qcopy_nc(v, h + 0x80);
+                {
+                /* register pin: $5 = v set before the v[2] store (retail: move $5,$sp; swc1; jal; move $4 in slot). */
+                register char *a1 __asm__("$5") = (char *)v;
+                /* inline asm: empty barrier so $5 is set before the v[2] store. */
+                __asm__ volatile("");
+                v[2] = HF(0x2F0);
+                /* inline asm: empty barrier so $4 is set after the v[2] store (it lands in the jal slot). */
+                __asm__ volatile("");
+                ((void (*)(char *, void *))func_L05_002D3220)(moby, a1);
+                }
+                func_L00_00217718(h + 0x80, h + 0x90, 0x72, 0);
+            } else {
+                qcopy(h + 0x80, moby + 0x10);
+            }
+            *(unsigned char *)(h + 0x20A5) = one;
+            HF(0x88) += 20.0f;
+        }
+        }
+        {
+            float s = *(float *)(data + 0x78);
+            ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + s;
+        }
+        speed = *(float *)(data + 0x78) - D_0015EE70 * 10.0f;
+        ((struct { char p[0x78]; float f; } *)data)->f = speed;
+        if (speed < D_0015EE6C + D_0015EE6C) {
+            ((void (*)(float, void *, void *))func_L00_001FF4B0)((*(float *)&D_L05_00161450), v, moby + 0xe0);
+            func_L00_0025CE58((float *)(moby + 0x44), (float *)(data + 0x70), 1.5533431f, D_0015EE70 * 12.566371f,
+                          D_0015EE70 * 12.566371f, D_0015EE6C * 25.132742f);
+            func_001FA1F8(moby + 0xc0, moby + 0x40);
+            ((void (*)(float, void *, void *))func_L00_001FF4B0)((*(float *)&D_L05_00161450), w, moby + 0xe0);
+            ((void (*)(void *, void *, void *))func_001F9BF0)(z, w, v);
+            ((void (*)(void *, void *, void *))func_001F9BF0)(moby + 0x10, moby + 0x10, z);
+        }
+        if (*(float *)(data + 0x78) < 0.0f) { char *h = D_0013F450;
+            if (*(float *)(moby + 0x18) < HF(0x2F0) && *(unsigned char *)(moby + 0xbc) == 0) {
+                *(unsigned char *)(moby + 0xbc) = 1;
+                ((int (*)(int, int, char *))func_0022ED80)(0, 0, moby);
+                ((void (*)(float, void *, void *))func_L00_001FF4B0)((*(float *)&D_L05_00161450), v, moby + 0xe0);
+                ((void (*)(void *, void *, void *))func_001F9BD8)(v, v, moby + 0x10);
+                v[2] = HF(0x2F0);
+                ((void (*)(char *, void *))func_L05_002D3220)(moby, (char *)v);
+            }
+        }
+        if (*(float *)(data + 0x78) < 0.0f &&
+            *(float *)(moby + 0x18) < *(float *)(data + 0x74) - 8.0f) func_L00_00211908();
+        if ((*(unsigned char *)(moby + 0x70) & 2) != 0 && *(unsigned char *)(moby + 0x53) != 1)
+            ((void (*)(char *, int, int, int))func_00213DE0)(moby, 1, 0, ((int (*)(int))func_001F9850)(10));
+    }
+}
 extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
 extern float FastAddRots(float, float);
 extern float random_float_between(float, float);

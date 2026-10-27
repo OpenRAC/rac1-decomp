@@ -2268,7 +2268,144 @@ void horny_toad_update(Moby *moby) {
         }
     }
 }
-INCLUDE_ASM("asm/overlays", func_L00_002D6610);
+/* Veldin level code: per-frame step of a moby's state 0x20 (retail func_L00_002D6610, 0x364 bytes).
+ * Runs a sub-state machine on a[0x20] (3, 5, 8, 10, 12); when a[0x20] is 12 or the sweep finds
+ * nothing it only stores 0xFF into a[0xA4]. Globals at gp-0x52xx are read as floats. */
+extern char *func_L00_0025B478(void *, int, int);
+extern int func_L00_0025B4D0(void *, void *, void *, int, int *, float *, int, int);
+extern void func_L00_0025BBA0(void *, float *, void *, void *);
+extern void func_L00_0025D5B0(void *, void *, int, int, int, float);
+extern void func_L00_0025E4B0(void *, void *);
+extern void func_L00_0025E590(void *, void *);
+extern int func_L00_00260FB0(float, void *, void *, int, int, void *, int);
+extern int func_001F9938(void *);
+extern float func_001F9878(float);
+extern short D_L00_00161A40;
+extern short D_L00_00161A44;
+extern short D_L00_00161A48;
+extern short D_L00_00161A4C;
+extern short D_L00_00161A58;
+extern short D_L00_00161A5C;
+
+void func_L00_002D6610(void *a0) {
+    char *a = (char *)a0;
+    char *d;
+    char *b;
+    char *q;
+    Vx vec;
+    int i10;
+    float f14;
+    float t18;
+    float f20;
+    float f0, f1, f2, f3, f5, f6;
+    int r1, r2, v, k;
+    unsigned short h;
+
+    d = *(char **)(a + 0x78);
+    if (*(unsigned char *)(a + 0x20) == 0)
+        return;
+
+    if (cinematic_mode_r == 2) {
+        a[0x31] = 0;
+        *(unsigned short *)(a + 0x34) |= 1;
+    } else {
+        a[0x31] = 1;
+        *(unsigned short *)(a + 0x34) &= 0xFFFE;
+    }
+
+    f20 = 0.0f;
+    f14 = f20;
+    b = func_L00_0025B478(a, 0x330000, 0);
+    r1 = func_L00_0025B4D0(a, b, d + 0x20, 0, &i10, &f14, 0, 4);
+    (void)r1;
+
+    /* Whether the hit counts is the resolver's fifth argument (1: none, or one still held off);
+       its return value is the reaction to play, 1 for a wrench hit. */
+    if (i10 != 1 && *(unsigned char *)(a + 0x20) != 12 && f14 != 0.0f) {
+        char *q1;
+        /* register pin: retail loads the 0x94 value 41 into $t0 ($8). */
+        register int n41 __asm__("$8") = 41;
+        /* register pin: retail loads the frame time and later 0.75 into $f4. */
+        register float ft __asm__("$f4") = g_frame_time_r;
+        register float c75 __asm__("$f4");
+        /* register pin: retail loads the squared frame time first, into $f0. */
+        register float fsq __asm__("$f0") = g_frame_time_sq_r;
+        f6 = *(float *)&D_L00_00161A40 * fsq;
+        f5 = *(float *)&D_L00_00161A44 * fsq;
+        f3 = *(float *)&D_L00_00161A48 * ft;
+        f2 = *(float *)&D_L00_00161A4C * ft;
+        f0 = *(float *)(d + 0x20) - f14;
+        d[0xAD] = 0;
+        f1 = g_frame_time_r + g_frame_time_r;
+        *(int *)(d + 0x94) = n41;
+        *(int *)(d + 0x90) = 512;
+        c75 = 0.75f;
+        *(float *)(d + 0x98) = c75;
+        *(float *)(d + 0x20) = f0;
+        *(float *)(d + 0x80) = f6;
+        *(float *)(d + 0x84) = f5;
+        *(float *)(d + 0x88) = f3;
+        *(float *)(d + 0x8C) = f2;
+        *(float *)(d + 0xBC) = f1;
+        q1 = d + 0x70;
+        *(unsigned short *)(a + 0x34) &= 0xEFFF;
+
+        vec = *(Vx *)(b + 0x10);
+        func_L00_0025BBA0(&vec, &t18, d + 0x88, d + 0x8C);
+        f20 = t18;
+        r2 = func_002140B0(2);
+        func_L00_0025D5B0(a, q1, r2 + 6, 1, 0, f20);
+        {
+            float c0 = *(float *)&D_L00_00161A5C;
+            float c4 = *(float *)&D_L00_00161A58;
+            *(float *)(d + 0xC0) = c0;
+            *(float *)(d + 0xC4) = c4;
+        }
+        *(unsigned char *)(a + 0x20) = 12;
+        *(unsigned char *)(d + 0x67) = 0x78;
+        func_L00_0025E4B0(a, d + 0x60);
+        func_L00_002584A8_2D19E8((u8 *)a, 0, -1);
+    }
+    *(unsigned char *)(a + 0xA4) = 0xFF;
+    func_L00_0025E590(a, d + 0x60);
+
+    if (*(unsigned char *)(a + 0x20) == 3) {
+        char *p;
+        q = d + 0x180;
+        k = *(int *)(d + 0x1E4);
+        p = level_paths_r2[k];
+        func_L00_00260FB0(64.0f, a, q, 0, 0, p + 0x10, *(int *)p);
+    } else {
+        char *p;
+        q = d + 0x180;
+        k = *(int *)(d + 0x1E0);
+        p = level_paths_r2[k];
+        func_L00_00260FB0(24.0f, a, q, 0, 0, p + 0x10, *(int *)p);
+    }
+    v = *(int *)(d + 0x1C0);
+
+    if (v == 0) {
+        char *h = hero_globals_base_r + 0xE1D;
+        *(int *)(d + 0x1C0) = *(int *)(h + 0x2080);
+        qcopy(q, h + 0x80);
+    }
+
+    func_001F9938(d + 0x276);
+    if (*(int *)(d + 0x38) != 0) {
+        *(short *)(d + 0x276) = (short)truncate_float_to_s32_r_r(
+            func_001F9878(func_002140F8_2D19E8(180.0f, 240.0f)));
+    }
+    *(int *)(d + 0x38) = 0;
+
+    if (*(unsigned char *)(a + 0x20) == 5 || *(unsigned char *)(a + 0x20) == 8) {
+        if (*(short *)(d + 0x276) != 0) {
+            *(unsigned char *)(a + 0x20) = 10;
+            if (*(unsigned char *)(a + 0x53) != 4) {
+                func_00213DE0(a, 4, 0, ticks_2D4398(20));
+            }
+        }
+    }
+}
 extern float fast_atan2(float, float);
 extern float FastAddRots(float, float);
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
