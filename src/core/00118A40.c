@@ -606,8 +606,44 @@ int libc_glue_fstat(void *arg0, void *arg1) {
     return 0;
 }
 
-ASM_FUNC("asm/handwritten/core_text", func_001191E0);
+/* Invalidate D-cache lines (both ways) whose tag lies in [start, end]. */
+void func_001191E0(unsigned int start, unsigned int end) {
+    int i;
+    unsigned int tag;
 
-ASM_FUNC("asm/handwritten/core_text", func_00119288);
+    for (i = 0; i < 0x1000; i += 0x40) {
+        /* inline asm: cache index load tag way 0, read TagLo */
+        __asm__ volatile("sync\n\tcache 0x10,0(%1)\n\tsync\n\tmfc0 %0,$28" : "=r"(tag) : "r"(i));
+        tag = (tag & 0xFFFFF000) + i;
+        if (!(tag < start) && !(end < tag)) {
+            /* inline asm: cache index store tag way 0 */
+            __asm__ volatile("sync\n\tcache 0x14,0(%0)\n\tsync" : : "r"(i));
+        }
+        /* inline asm: cache index load tag way 1, read TagLo */
+        __asm__ volatile("sync\n\tcache 0x10,1(%1)\n\tsync\n\tmfc0 %0,$28" : "=r"(tag) : "r"(i));
+        tag = (tag & 0xFFFFF000) + i;
+        if (!(tag < start) && !(end < tag)) {
+            /* inline asm: cache index store tag way 1 */
+            __asm__ volatile("sync\n\tcache 0x14,1(%0)\n\tsync" : : "r"(i));
+        }
+        /* inline asm: sync */
+        __asm__ volatile("sync");
+    }
+}
+
+extern int func_0011D960(void);
+extern void func_0011D9A8(void);
+extern void func_001191E0(unsigned a, unsigned b);
+
+/* handwritten: interrupt-safe wrapper around func_001191E0 with 64-byte aligned args. */
+void func_00119288(unsigned a, unsigned b) {
+    int s;
+    /* inline asm: mfc0 status */
+    __asm__ volatile("mfc0 %0, $12" : "=r"(s));
+    s &= 0x10000;
+    if (s != 0) func_0011D960();
+    func_001191E0(a & 0xFFFFFFC0, b & 0xFFFFFFC0);
+    if (s != 0) func_0011D9A8();
+}
 
 LINKER_REMNANT("asm/remnants/core_text", func_00119308);

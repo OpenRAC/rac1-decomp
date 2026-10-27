@@ -48,45 +48,61 @@ extern void begin_draw_frame(void);
 
 LINKER_REMNANT("asm/remnants/text", func_001F9810);
 
-ASM_FUNC("asm/handwritten/text", func_001F9840);
+extern float D_0015EE60 SDATA(D_0015EE60);
+
+/* Scale helper: returns the gp-resident constant D_0015EE60 times x. */
+float func_001F9840(float x) {
+    float k = D_0015EE60;
+    /* inline asm: nop (handwritten load delay). */
+    __asm__ volatile("nop");
+    return k * x;
+}
 
 ASM_FUNC("asm/handwritten/text", func_001F9850);
 
-/*
- * Hand-written: return *(float *)&D_0015EE64 * x;  (gp 0x0015EE64)
- * as `lwc1 $f0,off($28) / nop / jr $31 / mul.s`. Nothing in the
- * toolchain writes that nop. Probed: neither GNU ee-as nor either
- * ps2eeas version puts a nop after lwc1, and gcc's own load-delay
- * "nops" are only `#nop` comments. The rest of the evidence: five
- * identical scale helpers sit here, three of them unreferenced but
- * intact, which the linker's dead-stripping does not leave of compiled
- * code; and fastfunc.o is hand-written noreorder code throughout
- * (tools/ps2eeas_nops.py exempts it). Our C comes out 12 bytes, retail
- * is 16. An older note blamed an assembler load delay.
- */
-ASM_FUNC("asm/handwritten/text", func_001F9878);
+extern float D_0015EE64 SDATA(D_0015EE64);
+
+/* returns the gp-resident float D_0015EE64 times x. */
+float func_001F9878(float x) {
+    float t = D_0015EE64;
+    /* inline asm: nop (hand-written load delay slot) */
+    __asm__ volatile("nop");
+    return t * x;
+}
 
 ASM_FUNC("asm/handwritten/text", func_001F9888);
 
-/*
- * Hand-written: return *(float *)&D_0015EE68 * x;  (gp 0x0015EE68)
- * as `lwc1 $f0,off($28) / nop / jr $31 / mul.s`. Nothing in the
- * toolchain writes that nop. Probed: neither GNU ee-as nor either
- * ps2eeas version puts a nop after lwc1, and gcc's own load-delay
- * "nops" are only `#nop` comments. The rest of the evidence: five
- * identical scale helpers sit here, three of them unreferenced but
- * intact, which the linker's dead-stripping does not leave of compiled
- * code; and fastfunc.o is hand-written noreorder code throughout
- * (tools/ps2eeas_nops.py exempts it). Our C comes out 12 bytes, retail
- * is 16. An older note blamed an assembler load delay.
- */
-ASM_FUNC("asm/handwritten/text", func_001F98B0);
+extern float D_0015EE68 SDATA(D_0015EE68);
+
+/* returns the gp-resident float D_0015EE68 times x. */
+float func_001F98B0(float x) {
+    float t = D_0015EE68;
+    /* inline asm: nop (hand-written load delay slot) */
+    __asm__ volatile("nop");
+    return t * x;
+}
 
 ASM_FUNC("asm/handwritten/text", func_001F98C0);
 
-ASM_FUNC("asm/handwritten/text", func_001F98E8);
+extern float D_0015EE6C SDATA(D_0015EE6C);
 
-ASM_FUNC("asm/handwritten/text", func_001F98F8);
+/* returns the gp-resident float D_0015EE6C times x. */
+float func_001F98E8(float x) {
+    float t = D_0015EE6C;
+    /* inline asm: nop (hand-written load delay slot) */
+    __asm__ volatile("nop");
+    return t * x;
+}
+
+extern float D_0015EE70 SDATA(D_0015EE70);
+
+/* handwritten: scale x by a global constant. */
+float func_001F98F8(float x) {
+    float t = D_0015EE70;
+    /* inline asm: explicit load-delay nop */
+    __asm__ volatile(".set push\n\t.set noreorder\n\tnop\n\t.set pop");
+    return t * x;
+}
 
 ASM_FUNC("asm/handwritten/text", func_001F9908);
 

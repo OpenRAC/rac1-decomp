@@ -38,13 +38,82 @@ extern void _vfprintf_r(void *, void *, int, int);
 extern int libc_glue_write();
 extern int CoreGlobalWord NOT_SDA;
 
-ASM_FUNC("asm/handwritten/core_text", func_00119328);
+extern void func_0011D960(void);
+extern int func_0011D9A8(void);
+extern int func_00118AF0(int a);
 
-ASM_FUNC("asm/handwritten/core_text", func_00119390);
+/* handwritten: interrupt-safe wrapper around func_00118AF0, with a sync. */
+int func_00119328(int a) {
+    int s;
+    int r;
+    /* inline asm: mfc0 status */
+    __asm__ volatile("mfc0 %0, $12" : "=r"(s));
+    s &= 0x10000;
+    if (s != 0) func_0011D960();
+    r = func_00118AF0(a);
+    /* inline asm: sync */
+    __asm__ volatile("sync");
+    if (s != 0) func_0011D9A8();
+    return r;
+}
 
-ASM_FUNC("asm/handwritten/core_text", func_001193F8);
+extern int func_0011D9A8(void);
+extern int func_00118AE0(int a);
 
-ASM_FUNC("asm/handwritten/core_text", func_00119460);
+/* disables-interrupts wrapper: calls func_00118AE0 with EI-state restore. */
+int func_00119390(int a) {
+    int r;
+    int ie;
+    /* inline asm: mfc0 Status */
+    __asm__ volatile("mfc0 %0, $12" : "=r"(ie));
+    ie &= 0x10000;
+    if (ie != 0) func_0011D960();
+    r = func_00118AE0(a);
+    /* inline asm: sync */
+    __asm__ volatile("sync");
+    if (ie != 0) func_0011D9A8();
+    return r;
+}
+
+extern int func_00118B10(int a);
+
+/* disables-interrupts wrapper: calls func_00118B10 with EI-state restore. */
+int func_001193F8(int a) {
+    int r;
+    int ie;
+    /* inline asm: mfc0 Status */
+    __asm__ volatile("mfc0 %0, $12" : "=r"(ie));
+    ie &= 0x10000;
+    if (ie != 0) func_0011D960();
+    r = func_00118B10(a);
+    /* inline asm: sync */
+    __asm__ volatile("sync");
+    if (ie != 0) func_0011D9A8();
+    return r;
+}
+
+extern int func_0011D9A8(void);
+extern int func_00118B00(int);
+
+/* DisableDmac/EnableDmac wrapper: masks interrupts around the call when EIE is set. */
+int func_00119460(int a0) {
+    int ie;
+    int r;
+
+    /* inline asm: read COP0 Status. */
+    __asm__ volatile("mfc0 %0,$12" : "=r"(ie));
+    ie &= 0x10000;
+    if (ie) {
+        func_0011D960();
+    }
+    r = func_00118B00(a0);
+    /* inline asm: sync. */
+    __asm__ volatile("sync");
+    if (ie) {
+        func_0011D9A8();
+    }
+    return r;
+}
 
 typedef struct {
     unsigned char type;

@@ -49,7 +49,7 @@ extern void sif_send_cmd_common(int, int, int, int, int, int, int);
 extern void sceSifExitCmd(void);
 extern int RpcCommandState NOT_SDA;
 extern int disable_interrupts(void);
-extern void enable_interrupts(void);
+extern int enable_interrupts(void);
 extern int fs_iob_sema;
 extern int fs_iob_sema_2;
 extern char fs_iob_table[];
@@ -74,7 +74,16 @@ extern void kernel_init_tlb(void);
 
 ASM_FUNC("asm/handwritten/core_text", func_0011D960);
 
-ASM_FUNC("asm/handwritten/core_text", func_0011D9A8);
+/* handwritten: enable interrupts, return whether they were enabled before. */
+int func_0011D9A8(void) {
+    int s;
+    /* inline asm: mfc0 status */
+    __asm__ volatile("mfc0 %0, $12" : "=r"(s));
+    s &= 0x10000;
+    /* inline asm: ei */
+    __asm__ volatile("ei");
+    return s != 0;
+}
 
 extern int create_semaphore(void *);
 extern int FirstSemaphore;

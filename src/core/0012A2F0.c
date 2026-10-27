@@ -219,14 +219,38 @@ void do_csc2(void *arg0, unsigned int arg1, int arg2) {
     remove_dmac_handler(3, h);
 }
 
-ASM_FUNC("asm/handwritten/core_text", func_0012A718);
+/* Start one DMA transfer (channel 0x1000B400) of up to 0xFFFF qwords from the {qwc, addr} block; returns 1 if empty, else 0. */
+int func_0012A718(int a0, unsigned int *a1) {
+    unsigned int n;
+
+    *(volatile int *)0x1000E010 = 0x10;
+    n = a1[0];
+    if (n == 0) {
+        return 1;
+    }
+    if (0xFFFF < n) {
+        *(volatile int *)0x1000B410 = a1[1];
+        *(volatile int *)0x1000B420 = 0xFFFF;
+        *(volatile int *)0x1000B400 = 0x101;
+        a1[1] = (a1[1] + 0xFFFF0) & 0xFFFFFFF;
+        a1[0] = a1[0] - 0xFFFF;
+    } else {
+        *(volatile int *)0x1000B410 = a1[1];
+        *(volatile int *)0x1000B420 = a1[0];
+        *(volatile int *)0x1000B400 = 0x101;
+        a1[0] = 0;
+    }
+    /* inline asm: sync; ei. */
+    __asm__ volatile("sync\n\tei");
+    return 0;
+}
 
 extern void *dispatch_mpeg_callback_result(void *, int *) __asm__("func_0012BC78");
 /* Transfer the MPEG input through the IPU/SPR DMA channel, splitting large blocks. */
 extern void *add_dmac_handler2(int, void *, int, void *);
 extern void enable_dmac_atomic(int);
 extern void do_csc2(void *, unsigned int, int);
-extern void csc_store_ref_image_dma_handler();
+extern int csc_store_ref_image_dma_handler();
 
 void _csc_storeRefImage(void *arg0, int *arg1) {
     char *p = (char *)arg0;

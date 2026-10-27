@@ -1476,7 +1476,13 @@ void fs_call_sema_signal(void) {
     signal_semaphore(fs_call_sema);
 }
 
-ASM_FUNC("asm/handwritten/core_text", func_0011BC80);
+/* calls the handler stored at p[0] with p[1], then syncs and enables interrupts. */
+void func_0011BC80(int unused, int *p) {
+    void (*fn)(int) = (void (*)(int))p[0];
+    if (fn != 0) fn(p[1]);
+    /* inline asm: sync; ei */
+    __asm__ volatile("sync\n\tei");
+}
 
 /* CD/DVD init step: install the two RPC-side handlers, bind the RPC server
  * at 0x80000001 (retrying until it has an address), clear the 32-slot table
