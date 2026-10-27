@@ -3,6 +3,7 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "moby.h"
+#include "hero.h"
 
 extern int STUB_printf();
 extern void DeleteMoby(void *);
@@ -277,14 +278,14 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
     }
     case ELEVATOR_STATE_WAIT_FOR_HERO_EXIT_AT_TOP:
     case ELEVATOR_STATE_WAIT_FOR_HERO_EXIT_AT_BOTTOM: {
-        char *g;
+        struct Hero *g;
         if (Sound_IsPlaying(moby, vars->voice)) {
             Sound_StopSlot(vars->voice);
             vars->voice = -1;
         }
-        g = (char *)hero_globals_base + 0xE1D;
-        if (*(struct Moby **)(g + 0x2FC) == m && *(short *)(g + 0x30E) == 0
-            && !(vec_distance_xy(g + 0x80, &m->pos) > 0.5f)) {
+        g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (g->ground_moby == m && g->air_frames.s == 0
+            && !(vec_distance_xy(&g->motion.pos, &m->pos) > 0.5f)) {
             break;
         }
         if (m->state == 7) {
@@ -299,7 +300,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
     case ELEVATOR_STATE_WAIT_AT_TOP:
     case ELEVATOR_STATE_WAIT_AT_BOTTOM: {
         int i;
-        char *g;
+        struct Hero *g;
         vars->pulse = FastAddRots(vars->pulse, g_frame_time * 6.2831855f);
         i = truncate_float_to_s32_r((FastSin(vars->pulse) * 4.0f - 3.0f) * 128.0f);
         if (i > 0x80) {
@@ -308,15 +309,15 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
             i = 0x20;
         }
         m->glow_color = 0x80000000 | (i << 16) | (i << 8) | i;
-        g = (char *)hero_globals_base + 0xE1D;
-        if (*(struct Moby **)(g + 0x2FC) != m || *(short *)(g + 0x30E) != 0
-            || vec_distance_xy(g + 0x80, &m->pos) > 1.1f) {
+        g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (g->ground_moby != m || g->air_frames.s != 0
+            || vec_distance_xy(&g->motion.pos, &m->pos) > 1.1f) {
             vars->armed = 1;
         }
         if (vars->armed != 0) {
-            char *h = (char *)hero_globals_base + 0xE1D;
-            if (*(struct Moby **)(h + 0x2FC) == m && *(short *)(h + 0x30E) == 0
-                && vec_distance_xy(h + 0x80, &m->pos) < 0.5f) {
+            struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            if (h->ground_moby == m && h->air_frames.s == 0
+                && vec_distance_xy(&h->motion.pos, &m->pos) < 0.5f) {
                 m->glow_color = 0x80208020;
                 if (m->state == 5) {
                     m->command = 2;
@@ -368,7 +369,7 @@ void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w)
     float ang = *(float *)(moby + 0x48);
     float r = 2.5f;
     float z = 1.5f;
-    unsigned char *x;
+    struct Hero *x;
     if ((moby[0xBC] >= 2 && (moby[0xBC] & 1)) || (moby[0x20] >= 2 && (moby[0x20] & 1))) {
         ang = FastSubRots(ang, 1.5707964f);
     } else {
@@ -383,8 +384,8 @@ void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w)
     v[2] = z;
     FastVecAdd(v, v, moby + 0x10);
     clear_u64_value(w);
-    x = hero_globals_base + 0xE1D;
-    w[2] = fast_atan2(*(float *)(x + 0xD0) - v[0], *(float *)(x + 0xD4) - v[1]);
+    x = (struct Hero *)(hero_globals_base + 0xE1D);
+    w[2] = fast_atan2(x->motion.body_center.f[0] - v[0], x->motion.body_center.f[1] - v[1]);
     *(int *)(w + 1) = 0;
 }
 typedef int Q_2B5368 __attribute__((mode(TI)));
@@ -2149,10 +2150,10 @@ extern short jet_hud_palette;
 void DrawGemlikTurretHud(char *moby) {
     char *d = ((char *)((Moby *)moby)->pvars);
     char *s;
-    unsigned char *base;
-    unsigned char *g;
-    unsigned char *h;
-    unsigned char *b;
+    struct Hero *base;
+    struct Hero *g;
+    struct Hero *h;
+    struct Hero *b;
     int sp10;
     int sp14;
     int tex;
@@ -2196,16 +2197,16 @@ void DrawGemlikTurretHud(char *moby) {
     }
     y = 0x40;
     x = 0x18;
-    base = hero_globals_base + 0xE1D;
-    n = base[0x15F7];
+    base = (struct Hero *)(hero_globals_base + 0xE1D);
+    n = base->ship_ammo_max;
     for (i = 0; i < n; i++) {
-        g = hero_globals_base + 0xE1D;
-        if (i < g[0x15F6]) {
+        g = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (i < g->ship_ammo) {
             append_scaled_screen_triangle_strip(x, y, 0.5f, gemlik_turret_hud_pip_strip, 0x19, 0xFFFFF3, 0x50008F00);
         } else {
             append_scaled_screen_triangle_strip(x, y, 0.5f, gemlik_turret_hud_pip_strip, 0x19, 0xFFFFF3, 0x20004F00);
         }
-        n = g[0x15F7];
+        n = g->ship_ammo_max;
         if (i == n >> 1) {
             y = 0x2E;
             x += 0x1E;
@@ -2218,17 +2219,17 @@ void DrawGemlikTurretHud(char *moby) {
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, GetEffectTex(0x12), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, GetEffectTex(8), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
-    b = hero_globals_base + 0xE1D;
-    if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) / 10.0f && (gemlik_frame_count / 90) & 1) {
+    b = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (b->ship_hp < b->ship_hp_max / 10.0f && (gemlik_frame_count / 90) & 1) {
         FontPrintCenterSmall_c(0x100, 0x186, 0x80000080L, msg_string_id(0x526E), 0x64);
     }
-    h = hero_globals_base + 0xE1D;
-    f = *(float *)(h + 0x15FC) - *(float *)(d + 0xF0);
+    h = (struct Hero *)(hero_globals_base + 0xE1D);
+    f = h->ship_hp - *(float *)(d + 0xF0);
     f *= 0.2f;
     q = FastAbsF(f);
     if (q > 1.0f) f /= q;
     *(float *)(d + 0xF0) += f;
-    v = truncate_float_to_s32_r(*(float *)(d + 0xF0) * 251.0f / *(float *)(h + 0x1600)) + 2;
+    v = truncate_float_to_s32_r(*(float *)(d + 0xF0) * 251.0f / h->ship_hp_max) + 2;
     if (v > 0xFD) v = 0xFD;
     if (v < 2) v = 2;
     lo = *(int *)(d + 0xF4) <= v ? *(int *)(d + 0xF4) : v;
@@ -2277,8 +2278,8 @@ extern int spawn_ship_rocket(void *, void *, float, int, void *, int);
 /* Fires a timed burst from a moby while a pad button is held and ammo remains. */
 void fire_fighter_jet_rocket(char *moby, char *obj) {
     if (fast_dec_timer_i(obj + 0x84) && (*(int *)(pad_globals_base + 0x2610) & 0x28)) {
-        unsigned char *u = hero_globals_base + 0xE1D;
-        if (u[0x15F6] != 0) {
+        struct Hero *u = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (u->ship_ammo != 0) {
             char a[16];
             char b[16];
             float s;
@@ -2293,7 +2294,7 @@ void fire_fighter_jet_rocket(char *moby, char *obj) {
             h = scale_ticks(300);
             if (spawn_ship_rocket(moby, a, s, *(int *)(obj + 0xEC), pos, h) != 0) {
                 Moby_PlaySound(2, 0, (int)moby);
-                u[0x15F6]--;
+                u->ship_ammo--;
                 *(int *)(obj + 0x84) = scale_ticks(30);
             }
         }
@@ -2380,7 +2381,7 @@ void PlayerFighterFlight(void *a0, void *a1) {
     float h, tn;
     float ratio;
     char *pad;
-    char *g;
+    struct Hero *g;
     char *e;
     char *p;
     int idx;
@@ -2439,11 +2440,11 @@ void PlayerFighterFlight(void *a0, void *a1) {
     }
 
     if (o->count > scale_ticks(5)) {
-        char *h = (char *)hero_globals_base + 0xE1D;
+        struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         ka = frame_scale * 0.1f;
         kb = frame_scale * 0.25f;
-        a = *(float *)(h + 0x1D20);
-        b = *(float *)(h + 0x1D24);
+        a = h->stick_x;
+        b = h->stick_y;
         if (*(int *)(pad_globals_base + 0x2600) & 0x200) {
             a = a / (frame_scale * 0.012271847f);
             a = a * (frame_scale * 0.015707964f);
@@ -2572,9 +2573,9 @@ void PlayerFighterFlight(void *a0, void *a1) {
             o->speed = o->speed * 0.7f;
             if (*(char **)(p + 0x18) != 0) {
                 if (o->iDC == 0) {
-                    g = (char *)hero_globals_base + 0xE1D;
-                    *(float *)(g + 0x15FC) = *(float *)(g + 0x15FC) - 5.0f;
-                    if (*(float *)(g + 0x15FC) < 0.0f) {
+                    g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+                    g->ship_hp = g->ship_hp - 5.0f;
+                    if (g->ship_hp < 0.0f) {
                         FastVecSub(side, p + 0x50, p + 0x60);
                         vec_scale_to_length(side, side, 1.0f);
                         vec_reflect(vel, dir, p + 0x40);

@@ -226,14 +226,14 @@ extern short rilgar_faucet_pulse_color_b2;
 /* eases the pulse level of the moby that holds the focus and mixes its colour from two palettes */
 void update_hydrodisplacer_faucet_pulse_color(void *mv) {
     char *moby = mv;
-    char *base = hero_globals_base + 0xE1D;
+    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
     char *data = ((char *)((Moby *)moby)->pvars);
     int r;
     float s;
-    if (*(char **)(base + 0x2FC) == moby) {
+    if (*(char **)&base->ground_moby == moby) {
         ApproachValue((float *)(data + 0x1C), 1.0f, g_frame_time + g_frame_time);
-        if (*(int *)(base + 0x1090) != 0) {
-            if (*(int *)(base + 0x10B8) == 0x16) ((unsigned char *)moby)[0xBC] = 1;
+        if (*(int *)&base->items[0].moby != 0) {
+            if (base->items[0].item_id == 0x16) ((unsigned char *)moby)[0xBC] = 1;
             else ((unsigned char *)moby)[0xBC] = 0;
         } else {
             ((unsigned char *)moby)[0xBC] = 0;
@@ -418,15 +418,15 @@ extern char hero_globals_base[];
 /* Scans two moby lists near the player and adds a timer bonus when one is in range. */
 void add_moby_frames_for_group_proximity(char *moby) {
     char *d = ((char *)((Moby *)moby)->pvars);
-    char *x = hero_globals_base + 0xE1D;
+    struct Hero *x = (struct Hero *)(hero_globals_base + 0xE1D);
     char *p;
     char *e;
     float v0[4];
     int cur0;
     int cur1;
-    if (*(int *)(x + 0x894) < scale_ticks(0xB4)) return;
+    if (x->race_time_frames < scale_ticks(0xB4)) return;
     if (fast_dec_timer((int *)(d + 0x264)) == 0) return;
-    p = *(char **)(x + 0x86C);
+    p = *(char **)&x->hoverboard_moby;
     if (p == 0) return;
     e = ((char *)((Moby *)p)->pvars);
     if (*(int *)(e + 0x44) != -1) {
@@ -1332,7 +1332,7 @@ void build_hero_follow_camera_transform(char *m) {
     char *at = m + 0x30;
     char *up = m + 0x10;
     char *side = m + 0x20;
-    char *g;
+    struct Hero *g;
     char *a;
     char *b;
     float v0[4];
@@ -1341,13 +1341,13 @@ void build_hero_follow_camera_transform(char *m) {
     float v3[4];
     float v4[4];
     update_hero_follow_camera_focus(m);
-    g = hero_globals_base + 0xE1D;
+    g = (struct Hero *)(hero_globals_base + 0xE1D);
     a = d + 0x80;
     b = d + 0xE0;
-    vec_scale_to_length(v3, *(char **)(g + 0x2080) + 0xC0, 1.0f);
+    vec_scale_to_length(v3, *(char **)&g->moby + 0xC0, 1.0f);
     vec_scale_to_length(v3, v3, *(float *)(d + 0xE0));
     FastVecSub(at, a, v3);
-    vec_scale_to_length(v4, g + 0x290, -1.0f);
+    vec_scale_to_length(v4, &g->gravity_dir, -1.0f);
     vec_scale_to_length(v3, v4, *(float *)(b + 0x10));
     FastVecAdd(at, at, v3);
     vec_scale_to_length(v0, v4, *(float *)(a + 0x4C));

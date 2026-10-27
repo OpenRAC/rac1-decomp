@@ -236,8 +236,8 @@ void draw_ship_hud(char *moby) {
     char *d = ((char *)((Moby *)moby)->pvars);
     char *s;
     short *p;
-    unsigned char *base;
-    unsigned char *g;
+    struct Hero *base;
+    struct Hero *g;
     void *list[12];
     int sp40;
     int sp44;
@@ -282,17 +282,17 @@ void draw_ship_hud(char *moby) {
     }
     y = 0x40;
     x = 0x18;
-    base = (unsigned char *)hero_globals_base + 0xE1D;
+    base = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
     i = 0;
-    if (base[0x15F7] != 0) {
+    if (base->ship_ammo_max != 0) {
         do {
-            g = (unsigned char *)hero_globals_base + 0xE1D;
-            if (i < g[0x15F6]) {
+            g = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+            if (i < g->ship_ammo) {
                 append_scaled_screen_triangle_strip(x, y, 0.5f, ship_hud_missile_pip, 0x19, 0xFFFFF3, 0x50008F00);
             } else {
                 append_scaled_screen_triangle_strip(x, y, 0.5f, ship_hud_missile_pip, 0x19, 0xFFFFF3, 0x20004F00);
             }
-            n = g[0x15F7];
+            n = g->ship_ammo_max;
             if (i == n >> 1) {
                 y = 0x2E;
                 x += 0x1E;
@@ -329,8 +329,8 @@ void draw_ship_hud(char *moby) {
         }
     }
     {
-    unsigned char *b = (unsigned char *)hero_globals_base + 0xE1D;
-    if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) * 0.25f) {
+    struct Hero *b = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+    if (b->ship_hp < b->ship_hp_max * 0.25f) {
         int cnt = ((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x58].count;
         if (cnt == 0) {
             Help_Request(0x2AFF, 0x58);
@@ -354,9 +354,9 @@ void draw_ship_hud(char *moby) {
     }
     fast_dec_timer_i(d + 0x120);
     {
-    unsigned char *g2 = (unsigned char *)hero_globals_base + 0xE1D;
-    if ((g2[0x15F6] < 5 && ((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x57].count == 0)
-        || (g2[0x15F6] == 0 && ((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x57].count < 2 && *(int *)(d + 0x120) == 0)) {
+    struct Hero *g2 = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+    if ((g2->ship_ammo < 5 && ((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x57].count == 0)
+        || (g2->ship_ammo == 0 && ((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x57].count < 2 && *(int *)(d + 0x120) == 0)) {
         Help_Request(0x2AFE, 0x57);
         *(int *)(d + 0x120) = scale_ticks(0x4B0);
     }
@@ -370,13 +370,13 @@ void draw_ship_hud(char *moby) {
         FontPrintCenterLarge_c(0x100, 0xC8, 0x80005080L, msg_string_id(0x5243), 0x11);
     }
     {
-    unsigned char *h = (unsigned char *)hero_globals_base + 0xE1D;
-    f = *(float *)(h + 0x15FC) - *(float *)(d + 0xF0);
+    struct Hero *h = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+    f = h->ship_hp - *(float *)(d + 0xF0);
     f *= 0.2f;
     q = FastAbsF(f);
     if (q > 1.0f) f /= q;
     *(float *)(d + 0xF0) += f;
-    v = truncate_float_to_s32_r(*(float *)(d + 0xF0) * 251.0f / *(float *)(h + 0x1600)) + 2;
+    v = truncate_float_to_s32_r(*(float *)(d + 0xF0) * 251.0f / h->ship_hp_max) + 2;
     if (v > 0xFD) v = 0xFD;
     if (v < 2) v = 2;
     lo = *(int *)(d + 0xF4) <= v ? *(int *)(d + 0xF4) : v;
@@ -443,8 +443,8 @@ extern short ship_missile_cooldown;
 /* on a pad press, fires the aimed shot and resets the cooldown */
 void try_fire_ship_projectile(char *moby, char *d) {
     if (fast_dec_timer_i(d + 0x84) && (*(int *)(pad_globals_base + 0x2610) & 0x28)) {
-        char *g = hero_globals_base + 0xE1D;
-        if (*(unsigned char *)(g + 0x15F6) != 0) {
+        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (g->ship_ammo != 0) {
             char a[16];
             char b[16];
             int t = 0;
@@ -456,7 +456,7 @@ void try_fire_ship_projectile(char *moby, char *d) {
             if (*(int *)(d + 0x88) != 0 && !(500 < *(int *)(d + 0x8C))) t = *(int *)(d + 0x88);
             if (spawn_ship_projectile(moby, a, t, moby + 0x40, *(float *)&ship_missile_speed * *(float *)&ship_speed_scale, scale_ticks(300))) {
                 Moby_PlaySound_i(2, 0, (int)moby);
-                *(unsigned char *)(g + 0x15F6) -= 1;
+                g->ship_ammo -= 1;
                 *(int *)(d + 0x84) = *(int *)&ship_missile_cooldown;
             }
         }

@@ -604,7 +604,7 @@ void align_hero_to_tresspasser_pad(char *moby) {
     char *g;
     float f;
     float lim;
-    char *p;
+    struct Hero *p;
     Moby_GetJointWorldPos(moby, 0, v);
     g = hero_globals_base + 0xE9D;
     FastVecSub(v, v, g);
@@ -618,8 +618,8 @@ void align_hero_to_tresspasser_pad(char *moby) {
     } else if (f < -lim) {
         f = -lim;
     }
-    p = hero_globals_base + 0xE1D;
-    *(float *)(p + 0x98) = FastAddRots(f, *(float *)(p + 0x98));
+    p = (struct Hero *)(hero_globals_base + 0xE1D);
+    p->motion.rot.f[2] = FastAddRots(f, p->motion.rot.f[2]);
 }
 extern void draw_tresspasser_puzzle_ring_arc(int, u32, float, float, float, float);
 extern int GetEffectTex(int);

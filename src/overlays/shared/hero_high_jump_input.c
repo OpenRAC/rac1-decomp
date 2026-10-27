@@ -104,8 +104,8 @@ void update_hero_locomotion_state(void) {
     char *b, *c, *d;
     int n;
     b = hero_globals_base + 0xE1D;
-    *(int *)(b + 0x2284) = 0;
-    if (*(unsigned char *)(b + 0x12E2) != 0 && *(float *)&g_frame_time_r * 0.5f < *(float *)(b + 0x164)) {
+    ((struct Hero *)b)->unk2284 = 0;
+    if (((struct Hero *)b)->on_ice_ground != 0 && *(float *)&g_frame_time_r * 0.5f < ((struct Hero *)b)->motion.flat_speed) {
         HeroEnterMoveState(0x2F, 1);
         return;
     }
@@ -162,11 +162,11 @@ extern int hero_slot_item_id(int);
 
 // Tries the crouch-jump style moves in priority order and starts the first whose conditions hold. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00229010.c, FUN_L00_00229660.
 int hero_handle_jump_press(void) {
-    char *g = (char *)hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     int n, t, k;
     int m;
-    char *p;
-    if (*(int *)(g + 0x2084) == 0xE) {
+    struct Hero *p;
+    if (g->state.current == 0xE) {
         return 0;
     }
     n = get_hero_high_jump_input_window_frames();
@@ -178,24 +178,24 @@ found:
         return 1;
     }
     k = scale_ticks(9);
-    p = (char *)hero_globals_base + 0xE1D;
-    if (scale_ticks(6) < *(int *)(p + 0x198)) {
+    p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    if (scale_ticks(6) < p->state_timer) {
         if (pad_pressed_within(0x40, k, 0) == 0) {
             return 0;
         }
-        if (hero_slot_item_id(3) == 2 && gHaveHeliPack != 0 && *(short *)(p + 0x22D8) == 0 &&
-            (2.5f < *(float *)(p + 0x248) || *(float *)(p + 0x250) < 0.785398185f) &&
-            0.7f < *(float *)(p + 0x229C) && g_frame_time * 0.9f < *(float *)(p + 0x168)) {
+        if (hero_slot_item_id(3) == 2 && gHaveHeliPack != 0 && p->pack_disabled == 0 &&
+            (2.5f < p->wall_probe_distance || p->wall_normal_pitch < 0.785398185f) &&
+            0.7f < p->stick_magnitude && g_frame_time * 0.9f < p->motion.forward_speed) {
             m = 0xA;
             goto found;
         }
         if (hero_slot_item_id(3) == 3) {
-            char *q = (char *)hero_globals_base + 0xE1D;
-            if (*(short *)(q + 0x22D8) == 0 &&
-                0.7f < *(float *)(q + 0x229C) &&
-                (2.5f < *(float *)(q + 0x248) || *(unsigned char *)(q + 0x254) != 0) &&
-                g_frame_time * 0.9f < *(float *)(q + 0x168)) {
-                if (*(int *)(q + 0x1B8) != 0) {
+            struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            if (q->pack_disabled == 0 &&
+                0.7f < q->stick_magnitude &&
+                (2.5f < q->wall_probe_distance || q->wall_probe_moby_in_class_range != 0) &&
+                g_frame_time * 0.9f < q->motion.forward_speed) {
+                if (q->long_jump_lockout != 0) {
                     return 1;
                 }
                 m = 0x10;
@@ -203,15 +203,15 @@ found:
             }
         }
         if (hero_slot_item_id(3) == 3) {
-            char *r = (char *)hero_globals_base + 0xE1D;
-            if (*(short *)(r + 0x22D8) == 0) {
+            struct Hero *r = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            if (r->pack_disabled == 0) {
                 m = 0xD;
                 goto found;
             }
         }
         if (hero_slot_item_id(3) == 2) {
-            char *s = (char *)hero_globals_base + 0xE1D;
-            if (*(short *)(s + 0x22D8) == 0 && gHaveHeliPack != 0) {
+            struct Hero *s = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            if (s->pack_disabled == 0 && gHaveHeliPack != 0) {
                 m = 0xF;
                 goto found;
             }
@@ -230,22 +230,22 @@ extern float coll_hit_point_z;
 
 /* Test whether the player can reach the point in front of him. */
 int check_hero_forward_collision_height(void) {
-    char *g = (char *)hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     Vec4A a, b;
     float t, d;
-    if (*(float *)(g + 0x164) < *(float *)(g + 0x234) / (float)scale_ticks(0x14))
+    if (g->motion.flat_speed < g->capsule_radius / (float)scale_ticks(0x14))
         return 0;
-    t = FastDiffRots(fast_atan2(*(float *)(g + 0x100), *(float *)(g + 0x104)), *(float *)(g + 0x98));
+    t = FastDiffRots(fast_atan2(g->motion.displacement.f[0], g->motion.displacement.f[1]), g->motion.rot.f[2]);
     if (0.5235988f < t)
         return 0;
-    qcopy(&a, g + 0x80);
-    a.x += FastCos(*(float *)(g + 0x98)) * *(float *)(g + 0x234) * 0.75f;
-    a.y += FastSin(*(float *)(g + 0x98)) * *(float *)(g + 0x234) * 0.75f;
+    qcopy(&a, &g->motion.pos);
+    a.x += FastCos(g->motion.rot.f[2]) * g->capsule_radius * 0.75f;
+    a.y += FastSin(g->motion.rot.f[2]) * g->capsule_radius * 0.75f;
     qcopy(&b, &a);
     a.z += 0.47f;
     b.z -= 1.0f;
-    if (coll_line(&a, &b, 2, *(int *)(g + 0x2080), 0)) {
-        d = coll_hit_point_z - *(float *)(g + 0x88);
+    if (coll_line(&a, &b, 2, *(int *)&g->moby, 0)) {
+        d = coll_hit_point_z - g->motion.pos.f[2];
         if (d < 0.37f && -1.0f < d)
             return 1;
         return 0;
@@ -259,19 +259,19 @@ extern int HeroEnterMoveState(int, int);
 
 /* starts the pending global action if conditions hold; returns 1 on success */
 int try_start_hero_item_idle_animation(void) {
-    char *p = hero_globals_base + 0xE1D;
-    if (*(unsigned char *)(p + 0x20A8) != 0 && *(unsigned char *)(p + 0x20AA) != 0 && *(short *)(p + 0x22C8) == 0) {
+    struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (p->item_anim_active != 0 && p->unk20AA != 0 && p->unk22C8 == 0) {
         int i = hero_slot_item_id(0);
         int v;
-        if (i != *(int *)(p + 0x2298)) {
+        if (i != p->item_anim_item_id) {
             cancel_hero_item_animation();
             return 0;
         }
         v = item_defs[i].v;
         if (HeroEnterMoveState(0, 0) == 0) return 0;
         set_hero_animation(v, 0, (float)scale_ticks(11));
-        if (*(int *)(p + 0xD08) != 0) *(int *)(p + 0xD14) = 1;
-        *(int *)(p + 0x2294) = v;
+        if (*(int *)&p->held_item_anim_blend[0] != 0) p->unkD14 = 1;
+        p->item_hold_anim = v;
         return 1;
     }
     return 0;

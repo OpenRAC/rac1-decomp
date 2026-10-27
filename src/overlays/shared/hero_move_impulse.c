@@ -16,7 +16,7 @@ int hero_get_gadget_anim_id(int a) {
     if (((unsigned char *)base)[0x20A4] == 3) {
         return 0;
     }
-    if (*(int *)(base + 0x22A8) == 1) {
+    if (((struct Hero *)base)->health.hp == 1) {
         return 0x54;
     }
     if (((unsigned char *)base)[0x12E2] != 0) {
@@ -31,7 +31,7 @@ int hero_get_gadget_anim_id(int a) {
     if (((unsigned char *)base)[0x20AA] == 0) {
         return 0;
     }
-    if (*(short *)(base + 0x22C8) != 0) {
+    if (((struct Hero *)base)->unk22C8 != 0) {
         return 0;
     }
     i = hero_slot_item_id(0) * 0x4C;

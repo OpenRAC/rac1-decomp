@@ -2342,7 +2342,7 @@ extern int FindNearestTargetMoby(char *, char *, float);
 void update_homing_mine_spawner_target(char *m) {
     struct Moby *spawner = (struct Moby *)m;
     u8 *spawner_data = spawner->pvars;
-    char *pad;
+    struct Hero *pad;
     if (spawner->state != 0) {
         if (*(int *)(spawner_data + 0x38) != 0) {
             *(short *)(spawner_data + 0xFE) = scale_ticks(0xB4);
@@ -2359,9 +2359,9 @@ void update_homing_mine_spawner_target(char *m) {
             }
         }
         if (*(int *)(spawner_data + 0xB0) == 0) {
-            pad = hero_globals_base + 0xE1D;
-            *(int *)(spawner_data + 0xB0) = *(int *)(pad + 0x2080);
-            qcopy(spawner_data + 0x70, pad + 0x80);
+            pad = (struct Hero *)(hero_globals_base + 0xE1D);
+            *(int *)(spawner_data + 0xB0) = *(int *)&pad->moby;
+            qcopy(spawner_data + 0x70, &pad->motion.pos);
         }
     }
 }

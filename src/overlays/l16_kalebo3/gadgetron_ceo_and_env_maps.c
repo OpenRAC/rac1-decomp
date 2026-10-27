@@ -327,10 +327,10 @@ void update_two_region_trigger_latch(char *moby) {
         break;
     }
     case 1: {
-        char *h = hero_globals_base + 0xE1D;
-        if (*(int *)(h + 0x2084) == 0x42) {
+        struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (h->state.current == 0x42) {
             *(int *)(data + 8) = 0;
-        } else if (is_point_inside_clip_volume(h + 0x80, *(int *)(data + 4)) != 0) {
+        } else if (is_point_inside_clip_volume(&h->motion.pos, *(int *)(data + 4)) != 0) {
             unsigned char *f = (unsigned char *)menu_item_enabled_115 + 0x1;
             if (f[0x19] == 0) {
                 f[0x19] = 1;

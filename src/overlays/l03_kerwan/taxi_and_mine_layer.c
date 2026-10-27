@@ -2674,7 +2674,7 @@ extern int scale_ticks(int);
 /* ActivateCamera_14: seed the camera's smoothing state from the current camera table entry */
 void initialize_hero_relative_camera(char *m) {
     CameraMobyECD40 *mob = (CameraMobyECD40 *)m;
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     CameraConfigECD40 *e = kerwan_camera_descriptors_camera[mob->index].config;
     CameraSmoothECD40 *d1;
     CameraZoomECD40 *v;
@@ -2686,8 +2686,8 @@ void initialize_hero_relative_camera(char *m) {
     float buf[16];
     d1 = &mob->camera->origin;
     d1->duration = 1.5f;
-    d1->sourceFlag = *(int *)(g + 0x2080);
-    qcopy(d1, g + 0x80);
+    d1->sourceFlag = *(int *)&g->moby;
+    qcopy(d1, &g->motion.pos);
     *(int *)&d1->position[3] = 0;
     v = &mob->camera->zoom;
     t = e->range;
@@ -2699,7 +2699,7 @@ void initialize_hero_relative_camera(char *m) {
     a->speed = 0.01f;
     a->acceleration = 0.2f;
     clear_u64_value(a->motion);
-    qcopy(a, g + 0x80);
+    qcopy(a, &g->motion.pos);
     b = mob->camera;
     b->timer = scale_ticks(0x78);
     dd = kerwan_camera_descriptors_camera;
@@ -2707,7 +2707,7 @@ void initialize_hero_relative_camera(char *m) {
     c->flags30 = 0;
     c->flags28 = 0;
     c->flags2C = 0;
-    height = *(float *)(g + 0x88);
+    height = g->motion.pos.f[2];
     c->flags20 = 0;
     c->height = height;
     c->flags24 = 0;
@@ -2736,19 +2736,19 @@ void update_smoothed_hero_relative_camera_position(void *arg) {
     char *d = *(char **)(m + 0x70);
     char *a = d + 0xD0;
     char *b = d + 0xF0;
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     float v3[4];
     float v1[4];
     float v2[4];
-    char *h;
-    if (*(int *)(g + 0x2284) != 0x50 || *(int *)(g + 0x2084) == 0x11) {
-        *(float *)(b + 0x34) = *(float *)(g + 0x88);
+    struct Hero *h;
+    if (g->unk2284 != 0x50 || g->state.current == 0x11) {
+        *(float *)(b + 0x34) = g->motion.pos.f[2];
     }
     vec_scale_to_length(v1, hero_globals_base + 0x10AD, -*(float *)(a + 0x10));
     vec_scale_to_length(v3, b, -*(float *)a);
-    h = hero_globals_base + 0xE1D;
-    *(float *)d = Cam_InterpValues(d + 0x10, *(float *)d, *(float *)(h + 0x80), *(float *)(d + 0x20), *(float *)(d + 0x24), *(float *)(d + 0x28));
-    *(float *)(d + 4) = Cam_InterpValues(d + 0x14, *(float *)(d + 4), *(float *)(h + 0x84), *(float *)(d + 0x20), *(float *)(d + 0x24), *(float *)(d + 0x28));
+    h = (struct Hero *)(hero_globals_base + 0xE1D);
+    *(float *)d = Cam_InterpValues(d + 0x10, *(float *)d, h->motion.pos.f[0], *(float *)(d + 0x20), *(float *)(d + 0x24), *(float *)(d + 0x28));
+    *(float *)(d + 4) = Cam_InterpValues(d + 0x14, *(float *)(d + 4), h->motion.pos.f[1], *(float *)(d + 0x20), *(float *)(d + 0x24), *(float *)(d + 0x28));
     *(float *)(d + 8) = Cam_InterpValues(d + 0x18, *(float *)(d + 8), *(float *)(b + 0x34), *(float *)(d + 0x20), *(float *)(d + 0x24), *(float *)(d + 0x28));
     FastVecAdd(v2, d, v1);
     FastVecAdd(v2, v2, v3);
@@ -2785,10 +2785,10 @@ void rebuild_camera_orientation_axes(void *arg) {
 }
 /* Returns -1 if hero state is 6, or hero mode is 0x50 and state is not 0x11; else 0. */
 int hero_in_state_6_or_mode_50(void) {
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
 
-    if (*(int *)(g + 0x2284) != 0x50 || *(int *)(g + 0x2084) == 0x11) {
-        if (*(int *)(g + 0x2084) != 6) {
+    if (g->unk2284 != 0x50 || g->state.current == 0x11) {
+        if (g->state.current != 6) {
             goto none;
         }
     }

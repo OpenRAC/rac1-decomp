@@ -1936,7 +1936,7 @@ void update_gemlik_projectile(struct Moby *moby) {
     int i;
     int flags;
     int stationary;
-    unsigned char *base;
+    struct Hero *base;
     char *ent;
     struct L13Ent00178480 *e;
 
@@ -1947,17 +1947,17 @@ void update_gemlik_projectile(struct Moby *moby) {
     vec_set_length_xy(&work.velocity, &work.velocity, 1.0f);
     work.velocity.z = 1.0f;
     flags = 0x10001;
-    base = (unsigned char *)hero_globals_base + 0xE1D;
-    if (base[0x1FF6] != 0 && *(float *)(data + 0xC) != 31337.6015625f &&
-        FastVecDist(&moby->pos, base + 0x80) < 2.0f) {
+    base = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+    if (base->ammo_used != 0 && *(float *)(data + 0xC) != 31337.6015625f &&
+        FastVecDist(&moby->pos, &base->motion.pos) < 2.0f) {
         vec_scale_to_length(data, data, 0.5f);
         FastVecSub(&moby->pos, &moby->pos, data);
         qzero(data);
         *(int *)(data + 0x2C) = 5;
         *(float *)(data + 0xC) = 31337.6015625f;
         for (i = 0; i < 6; i++) {
-            unsigned char *b = (unsigned char *)hero_globals_base + 0xE1D;
-            ent = ((char **)(b + 0x2020))[i];
+            struct Hero *b = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+            ent = ((char **)b->unk2020)[i];
             if (ent != 0) {
                 int f2 = flags | 1;
                 InitDirectionalHitQuery(work.hit, moby, f2, 1.0f, &work.velocity);
@@ -3535,7 +3535,7 @@ extern char hero_globals_base[] NOT_SDA;
 void compute_lift_mount_transform(char *mobyp, float *mount_position, float *mount_rotation) {
     struct Moby *moby = (struct Moby *)mobyp;
     float mount_offset_angle, k;
-    char *base;
+    struct Hero *base;
     clear_u64_value(mount_rotation);
     k = 2.25f;
     if ((moby->command >= 2 && (moby->command & 1)) ||
@@ -3551,8 +3551,8 @@ void compute_lift_mount_transform(char *mobyp, float *mount_position, float *mou
     mount_position[2] = 1.5f;
     matrix_mul_vec3(mount_position, mount_position, &moby->rot_row0);
     FastVecAdd(mount_position, mount_position, &moby->pos);
-    base = hero_globals_base + 0xE1D;
-    mount_rotation[2] = fast_atan2(*(float *)(base + 0xD0) - mount_position[0], *(float *)(base + 0xD4) - mount_position[1]);
+    base = (struct Hero *)(hero_globals_base + 0xE1D);
+    mount_rotation[2] = fast_atan2(base->motion.body_center.f[0] - mount_position[0], base->motion.body_center.f[1] - mount_position[1]);
 }
 extern short *gemlik_moby_groups[];
 extern char *get_moby_suck_cannon_record(char *);
@@ -3587,16 +3587,16 @@ void apply_configured_moby_state_and_command(char *moby) {
     char *d = ((char *)((Moby *)moby)->pvars);
     int *p = (int *)d;
     int i;
-    char *base;
+    struct Hero *base;
     for (i = 0; i < 8; i++) {
         if (*p != -1) {
             if (count_eligible_mobies_in_list(*p, -1) != 0) return;
             p++;
         }
     }
-    base = hero_globals_base + 0xE1D;
-    if (*(int *)(base + 0x15F0) != 0 && *(int *)(base + 0x2084) == 0x32) return;
-    if (*(int *)(d + 0x28) != -1 && is_point_inside_clip_volume(base + 0x80, *(int *)(d + 0x28)) == 0) return;
+    base = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (*(int *)&base->ship_moby != 0 && base->state.current == 0x32) return;
+    if (*(int *)(d + 0x28) != -1 && is_point_inside_clip_volume(&base->motion.pos, *(int *)(d + 0x28)) == 0) return;
     if (*(int *)(d + 0x20) != -1) moby[0x20] = d[0x20];
     if (*(int *)(d + 0x24) == -1) return;
     moby[0xBC] = d[0x24];

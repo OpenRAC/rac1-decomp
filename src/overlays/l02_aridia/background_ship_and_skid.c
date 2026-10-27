@@ -885,10 +885,10 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
         }
         break;
     case 1: {
-        char *h = hero_globals_base + 0xE1D;
-        if (*(int *)(h + 0x300) != 0) {
+        struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (h->grounded_frames != 0) {
             data[0x15] = 0;
-        } else if (is_point_inside_clip_volume(h + 0x80, data[0x13]) != 0) {
+        } else if (is_point_inside_clip_volume(&h->motion.pos, data[0x13]) != 0) {
             unsigned char *q = menu_item_enabled_115 + 1;
             if (q[1] == 0) {
                 q[1] = 1;
@@ -957,12 +957,12 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
     {
         char *b = help_stats_base + 0x34D;
         if (*(unsigned short *)(b + 0x80) == 0) {
-            char *h;
+            struct Hero *h;
             if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data[6]) != 0) {
                 *(unsigned short *)(b + 0x80) = 0xFFFF;
             }
-            h = hero_globals_base + 0xE1D;
-            if (*(int *)(h + 0x2084) != 0x2C && *(int *)(h + 0x2090) == 0x2C && *(int *)(h + 0x198) == 1) {
+            h = (struct Hero *)(hero_globals_base + 0xE1D);
+            if (h->state.current != 0x2C && h->state.prev == 0x2C && h->state_timer == 1) {
                 data[0xC]++;
             }
             if (data[0xC] >= 2) {
@@ -1017,9 +1017,9 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
         char *b = help_stats_base + 0x34D;
         unsigned short v = *(unsigned short *)(b + 0x230);
         if (v == 0 || *(unsigned short *)(b + 0x238) == 0) {
-            char *h = hero_globals_base + 0xE1D;
-            if (*(int *)(h + 0x2084) == 0x72) {
-                char *p = *(char **)(h + 0x2FC);
+            struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+            if (h->state.current == 0x72) {
+                char *p = *(char **)&h->ground_moby;
                 if (p != 0 && *(short *)(p + 0xA6) == 0x267) {
                     if (v == 0) {
                         Help_Request(0x7DB, 0x46);

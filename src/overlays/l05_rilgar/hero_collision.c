@@ -463,58 +463,58 @@ int Camera_MoveWithCollision(int mode) {
     float saved[4];
     float tmp[4];
     float d[4];
-    char *a = hero_globals_base + 0xE1D;
+    struct Hero *a = (struct Hero *)(hero_globals_base + 0xE1D);
     char *b;
     char *p;
     int i;
     int r;
     int m;
     float len;
-    if (*(int *)(a + 0x1CC) != 0) return 1;
-    qcopy(saved, a + 0x80);
+    if (a->collision_off_frames != 0) return 1;
+    qcopy(saved, &a->motion.pos);
     clear_u64_value(tmp);
-    if (*(short *)(a + 0x22DA) != 0) {
+    if (a->path_constrain_pending != 0) {
         Hero_ConstrainToPath();
-        *(short *)(a + 0x22DA) = 0;
+        a->path_constrain_pending = 0;
     }
-    m = *(int *)(a + 0x208C);
+    m = a->state.control_mode;
     if (m == 0x11) {
     } else if (m == 0x16) {
         transform_hero_local_offset_to_world(tmp, 0.0f, 0.0f, 0.7f);
-        FastVecSub(tmp, tmp, a + 0x80);
+        FastVecSub(tmp, tmp, &a->motion.pos);
     } else {
-        int c = *(unsigned char *)(a + 0x20B3);
-        if (c != 0 || *(short *)(a + 0x1F8) != 0) {
-            if (c == 1 || *(short *)(a + 0x1F8) != 0 || (unsigned)(m - 0x15) < 2) {
+        int c = a->gravity_mode;
+        if (c != 0 || a->unk1F8 != 0) {
+            if (c == 1 || a->unk1F8 != 0 || (unsigned)(m - 0x15) < 2) {
                 HeroOffsetAlongViewZ(tmp, tmp, 0.6f);
             } else {
-                HeroMoveDownAlongNormal(tmp, tmp, -*(float *)(a + 0x224));
+                HeroMoveDownAlongNormal(tmp, tmp, -a->capsule_bottom);
             }
         } else {
-            tmp[2] = *(float *)(a + 0x224);
+            tmp[2] = a->capsule_bottom;
         }
     }
     FastVecAdd(hero_globals_base + 0xE9D, hero_globals_base + 0xE9D, tmp);
     r = 0x24;
     if (*(int *)(hero_globals_base + 0xE9D + 0x2004) == 0x7F) r = 0xD24;
     for (i = 0; i < 8; i++) {
-        a = hero_globals_base + 0xE1D;
-        if (*(unsigned char *)(a + 0x20B3) != 0) {
-            if (coll_sphere(*(float *)&frame_scale_s * 0.4f, a + 0x80, r, *(void **)(a + 0x2080)) == 0) break;
+        a = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (a->gravity_mode != 0) {
+            if (coll_sphere(*(float *)&frame_scale_s * 0.4f, &a->motion.pos, r, *(void **)&a->moby) == 0) break;
         } else {
             int hit;
-            m = *(int *)(a + 0x208C);
+            m = a->state.control_mode;
             if (m == 0x11) {
-                hit = coll_sphere(0.6f, a + 0x80, r, *(void **)(a + 0x2080));
+                hit = coll_sphere(0.6f, &a->motion.pos, r, *(void **)&a->moby);
                 if (hit == 0) break;
             } else if (m == 0x16) {
-                hit = coll_sphere(*(float *)((char *)&g_frame_scale_sq_m - 4) * 0.5f, a + 0x80, r, *(void **)(a + 0x2080));
+                hit = coll_sphere(*(float *)((char *)&g_frame_scale_sq_m - 4) * 0.5f, &a->motion.pos, r, *(void **)&a->moby);
                 if (hit == 0) break;
             } else {
-                float t = *(float *)(a + 0x220) - *(float *)(a + 0x224);
+                float t = a->capsule_top - a->capsule_bottom;
                 if (t < 0.05f) t = 0.05f;
-                if ((coll_capsule(*(float *)(a + 0x234), t, a + 0x80, r, *(void **)(a + 0x2080))
-                     | coll_sphere_hero_groups(*(float *)(a + 0x234), a + 0x80)) == 0) break;
+                if ((coll_capsule(a->capsule_radius, t, &a->motion.pos, r, *(void **)&a->moby)
+                     | coll_sphere_hero_groups(a->capsule_radius, &a->motion.pos)) == 0) break;
             }
         }
         p = hero_globals_base + 0xE9D;
@@ -534,9 +534,9 @@ int Camera_MoveWithCollision(int mode) {
             if (d[0] > 512.0f) d[0] = 512.0f; else if (d[0] < -512.0f) d[0] = -512.0f;
             if (d[1] > 512.0f) d[1] = 512.0f; else if (d[1] < -512.0f) d[1] = -512.0f;
             if (d[2] > 512.0f) d[2] = 512.0f; else if (d[2] < -512.0f) d[2] = -512.0f;
-            a = hero_globals_base + 0xE1D;
-            vec_scale_to_length(d, d, *(float *)(a + 0x234));
-            FastVecAdd(a + 0x80, saved, d);
+            a = (struct Hero *)(hero_globals_base + 0xE1D);
+            vec_scale_to_length(d, d, a->capsule_radius);
+            FastVecAdd(&a->motion.pos, saved, d);
         }
         return -1;
     }

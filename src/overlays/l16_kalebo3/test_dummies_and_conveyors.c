@@ -41,7 +41,7 @@ void HomingSparkUpdate(unsigned char *m) {
     void *position;
     void *matrix;
     char *particle;
-    char *player;
+    struct Hero *player;
     float yaw,pitch;
     switch(((Moby *)m)->state) {
     case 0: {
@@ -94,21 +94,21 @@ void HomingSparkUpdate(unsigned char *m) {
         query.active=impact_state;
         qcopy(query.direction,desired.f);
         vec_set_length_xy(query.direction,query.direction,1.0f);
-        player=hero_globals_base+0xE1D;
+        player=(struct Hero *)(hero_globals_base+0xE1D);
         query.direction[2]=1.0f;
         query.direction[3]=5627.9248046875f;
         query.kind=3;
         query.cls=*(unsigned short *)&((Moby *)m)->oclass;
         query.enabled=impact_state;
-        if(coll_line_spark(previous.f,position,0,*(void**)(player+0x2080),&query)) {
+        if(coll_line_spark(previous.f,position,0,*(void **)&player->moby,&query)) {
             L16SparkHit *result=&kalebo3_coll_hit_hit;
             char *hit=result->moby;
             if(hit) {
-                if(hit==*(char**)(player+0x2080) || hit==*(char**)d)break;
+                if(hit==*(char **)&player->moby || hit==*(char**)d)break;
             } else if(result->count<=0)break;
             qcopy(position,result->position);
             ((Moby *)m)->state=impact_state;
-        } else if(FastDecTimer(d+4) || vec_distance_xy(position,player+0x80)>60.0f) {
+        } else if(FastDecTimer(d+4) || vec_distance_xy(position,&player->motion.pos)>60.0f) {
 remove:
             DeleteMoby(m);
         }
@@ -905,14 +905,14 @@ void test_dummy_update(unsigned char *moby) {
             }
         } else {
             char *position = (char *)&((struct Moby *)moby)->pos;
-            char *g;
+            struct Hero *g;
             FastVecSub(position_or_delta.f, path + (dummy_data->node * 16 + 16), position);
             ClampVectorLength(position_or_delta.f, test_dummy_path_movement_speed_limit_gp * g_frame_time);
             FastVecAdd(position, position, position_or_delta.f);
             Moby_GetJointWorldPos(moby, test_dummy_hold_joint, position_or_direction.f);
             MobySphereHitDirectional_r((int)moby, 0.333f, position_or_direction.f, 1, 1.0f, 1.0f, 0, 1, 0);
-            g = hero_globals_base + 0xE1D;
-            if (kalebo3_coll_hit_moby == *(char **)(g + 0x2080) && *(int *)(g + 0x1C0) == 0) {
+            g = (struct Hero *)(hero_globals_base + 0xE1D);
+            if (kalebo3_coll_hit_moby == *(char **)&g->moby && g->invulnerable_frames == 0) {
                 Moby_PlaySound_i(6, 0, moby);
             }
             if (FastVecLength(position_or_delta.f) < 0.0001f) {
@@ -1617,20 +1617,20 @@ extern void transform_vector(void *, void *, void *);
 // Checks the nearby list entries of two classes against the moby and adds a timed delay when one is close.
 void accumulate_moby_frames_in_group_bounds(char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     float v[4];
     char *l1;
     char *l2;
     char *other;
     char *od;
 
-    if (*(int *)(g + 0x894) < scale_ticks(0xB4)) {
+    if (g->race_time_frames < scale_ticks(0xB4)) {
         return;
     }
     if (!fast_dec_timer((int *)(data + 0x2DC))) {
         return;
     }
-    other = *(char **)(g + 0x86C);
+    other = *(char **)&g->hoverboard_moby;
     if (!other) {
         return;
     }
@@ -1894,7 +1894,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
         break;
     case 2:
         g = hero_globals_base + 0xE1D;
-        if (*(int *)(g + 0x208C) != 22) {
+        if (((struct Hero *)g)->state.control_mode != 22) {
             ((Moby *)m)->state = 0;
             break;
         }
@@ -1905,7 +1905,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
             spawn_moby_break_fragments(m, 0x655, 1, 0x656, 2, 2, 0);
             spawn_moby_break_fragments(m, 0x6FA, 1, 0x6FB, 1, 1, 0);
             *(short *)(d + 0x2F2) = 0;
-            *(int *)(g + 0x8A8) += 250;
+            ((struct Hero *)g)->race_score += 250;
             ((Moby *)m)->state = 3;
             *(int *)&((Moby *)m)->collision = 0;
             ((Moby *)m)->flags |= 0x41;
@@ -1982,10 +1982,10 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
                 speed = g_frame_time * 19.0f;
             }
             g = hero_globals_base + 0xE1D;
-            if (*(int *)(g + 0x894) < scale_ticks(700)) {
+            if (((struct Hero *)g)->race_time_frames < scale_ticks(700)) {
                 speed += g_frame_time * 3.0f;
             }
-            if (*(short *)(g - (-(*(int *)(d + 0x2CC) * 2)) + 0x7C0) < *(int *)(g + 0x8C0)) {
+            if (*(short *)(g - (-(*(int *)(d + 0x2CC) * 2)) + 0x7C0) < ((struct Hero *)g)->race_position) {
                 speed -= g_frame_time;
             } else {
                 speed += g_frame_time;

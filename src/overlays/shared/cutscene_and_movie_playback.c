@@ -270,7 +270,7 @@ typedef struct { char pad[0x30]; int a30; } Vd;
 
 // Sets up the vendor screen state from the requested entry and runs it until the screen closes.
 void StartCutscene(int arg) {
-    char *d;
+    struct Hero *d;
     Obj *p;
     char *h;
     char *q;
@@ -280,8 +280,8 @@ void StartCutscene(int arg) {
     float one;
     if (arg < 0) return;
     if (cinematic_mode == 2) return;
-    d = (char *)hero_globals_base + 0xE1D;
-    if (*(int *)(d + 0x22A8) == 0) {
+    d = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    if (d->health.hp == 0) {
         Hero_OnKilled();
         return;
     }
@@ -311,7 +311,7 @@ void StartCutscene(int arg) {
     *(int *)(player_camera + 0x394) = 0;
     level_white_fade_level = 0;
     HeroEnterMoveState(0x64, 2);
-    d[0x20A5] = 1;
+    *(char *)&d->unk20A5 = 1;
     HeroSetObjectFlags();
     if (active_scene_trigger_target != 0) *(unsigned short *)(active_scene_trigger_target + 0x34) |= 1;
     if (level_menu_system_target != 0) *(unsigned short *)(level_menu_system_target + 0x34) |= 1;
@@ -768,7 +768,7 @@ extern void prepare_movie_playback(int, int, int);
 /* Dialog stream update: pick the entry's pair and start it unless one is already playing. */
 void PlayMovieEntryIfIdle(int idx) {
     int a, b;
-    char *base;
+    struct Hero *base;
     if (idx < 0) return;
     if (pal_mode != 0) {
         b = disc_table_g.alt[idx].b;
@@ -777,10 +777,10 @@ void PlayMovieEntryIfIdle(int idx) {
         b = disc_table_g.normal[idx].b;
         a = disc_table_g.normal[idx].a;
     }
-    base = hero_globals_base + 0xE1D;
-    if (*(int *)(base + 0x22A8) == 0) {
+    base = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (base->health.hp == 0) {
         Hero_OnKilled();
-    } else if (*(unsigned char *)(base + 0x20B1) == 0) {
+    } else if (base->fall_fade_pending == 0) {
         prepare_movie_playback(b, a, g_game_language);
     }
 }

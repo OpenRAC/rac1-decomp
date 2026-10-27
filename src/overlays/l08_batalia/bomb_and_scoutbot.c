@@ -1301,7 +1301,7 @@ char *select_blarg_bombthrower_waypoint(char *moby) {
     char *p;
     float bestD, bestA;
     int idx;
-    char *base;
+    struct Hero *base;
     if (t == 0) return 0;
     best = 0;
     idx = *(unsigned short *)t & 0x7FFF;
@@ -1313,9 +1313,9 @@ char *select_blarg_bombthrower_waypoint(char *moby) {
             float ang, d, a;
             a = fast_atan2(*(float *)(p + 0x10) - *(float *)(moby + 0x10),
                                   *(float *)(p + 0x14) - *(float *)(moby + 0x14));
-            base = hero_globals_base + 0xE1D;
-            ang = FastDiffRots(a, fast_atan2(*(float *)(base + 0x80) - *(float *)(moby + 0x10),
-                                                     *(float *)(base + 0x84) - *(float *)(moby + 0x14)));
+            base = (struct Hero *)(hero_globals_base + 0xE1D);
+            ang = FastDiffRots(a, fast_atan2(base->motion.pos.f[0] - *(float *)(moby + 0x10),
+                                                     base->motion.pos.f[1] - *(float *)(moby + 0x14)));
             d = FastVecDist(moby + 0x10, p + 0x10);
             if (ang < 1.5707964f) {
                 if (bestA < ang) {
@@ -1446,17 +1446,17 @@ void blarg_bombthrower_update(Moby *moby) {
             if (damage < 1.0f) {
                 d->tint = 100;
             } else {
-                char *base;
+                struct Hero *base;
                 d->f80 = g_frame_time_sq * 30.0f;
                 d->f88 = g_frame_time * 5.0f;
                 d->f8C = g_frame_time * 7.0f;
                 d->i94 = 9;
                 d->f84 = 0.0005f;
                 d->bAD = 0;
-                base = hero_globals_base + 0xE1D;
+                base = (struct Hero *)(hero_globals_base + 0xE1D);
                 InitKnockback(moby, d->blk70,
-                                  fast_atan2(moby->pos.x - *(float *)(base + 0x80),
-                                                    moby->pos.y - *(float *)(base + 0x84)),
+                                  fast_atan2(moby->pos.x - base->motion.pos.f[0],
+                                                    moby->pos.y - base->motion.pos.f[1]),
                                   6, 1, 0);
                 d->fC0 = 6.0f;
                 d->fC4 = 10.0f;
@@ -1464,17 +1464,17 @@ void blarg_bombthrower_update(Moby *moby) {
                 moby->state = 0x5A;
             }
         } else {
-            char *base;
+            struct Hero *base;
             d->i94 = 9;
             d->f84 = 0.0005f;
             d->f80 = g_frame_time_sq * 30.0f;
             d->f88 = batalia_bombthrower_knockback_speed * g_frame_time;
             d->f8C = batalia_bombthrower_knockback_lift * g_frame_time;
             d->bAD = 0;
-            base = hero_globals_base + 0xE1D;
+            base = (struct Hero *)(hero_globals_base + 0xE1D);
             InitKnockback(moby, d->blk70,
-                              fast_atan2(moby->pos.x - *(float *)(base + 0x80),
-                                                moby->pos.y - *(float *)(base + 0x84)),
+                              fast_atan2(moby->pos.x - base->motion.pos.f[0],
+                                                moby->pos.y - base->motion.pos.f[1]),
                               9, 1, 0);
             d->fC0 = 6.0f;
             d->fC4 = 10.0f;

@@ -4,6 +4,7 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "moby.h"
+#include "hero.h"
 
 extern void load_display_text_resource_entry(float *arg0, int *arg1);
 extern void FastVecAdd(void *, void *, void *);
@@ -2260,11 +2261,11 @@ char *PartType34Spawn(char *vec, float *pos, float sc, float vy) {
         b = scale_ticks(0x8C);
         *(short *)(p + 0xA) = rand_range(a, b);
         if (vy == -1.0f) {
-            char *x = hero_globals_base + 0xE1D;
-            if (*(int *)(x + 0x2084) == 0x31) {
-                *(float *)(q + 0x10) = *(float *)(x + 0x88) + 0.4f;
+            struct Hero *x = (struct Hero *)(hero_globals_base + 0xE1D);
+            if (x->state.current == 0x31) {
+                *(float *)(q + 0x10) = x->motion.pos.f[2] + 0.4f;
             } else {
-                *(float *)(q + 0x10) = *(float *)(x + 0x2F0);
+                *(float *)(q + 0x10) = x->water_surface_z;
             }
         } else {
             *(float *)(q + 0x10) = vy;

@@ -1041,15 +1041,15 @@ extern void FastVecAdd(void *, void *, void *);
 
 // Computes an offset vector from the player's angle data, or copies the default vector when there is no player.
 void predict_hero_vehicle_position(char *out, float scale) {
-    char *x = hero_globals_base + 0xE1D;
-    if (*(char **)(x + 0x15F0) == 0) {
-        qcopy(out, x + 0x80);
+    struct Hero *x = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (*(char **)&x->ship_moby == 0) {
+        qcopy(out, &x->motion.pos);
     } else {
-        char *d = *(char **)(*(char **)(x + 0x15F0) + 0x78);
-        float a = FastAddRots(*(float *)(*(char **)(x + 0x15F0) + 0x48), *(float *)(d + 0x90));
-        float b = FastAddRots(*(float *)(*(char **)(x + 0x15F0) + 0x44), *(float *)(d + 0x94));
+        char *d = *(char **)(*(char **)&x->ship_moby + 0x78);
+        float a = FastAddRots(*(float *)(*(char **)&x->ship_moby + 0x48), *(float *)(d + 0x90));
+        float b = FastAddRots(*(float *)(*(char **)&x->ship_moby + 0x44), *(float *)(d + 0x94));
         BuildSphericalOffset(out, scale * *(float *)(d + 0x64), a, -b);
-        FastVecAdd(out, out, *(char **)(x + 0x15F0) + 0x10);
+        FastVecAdd(out, out, *(char **)&x->ship_moby + 0x10);
     }
 }
 extern float frame_scale MACRO_ADDR;
@@ -2953,9 +2953,9 @@ int advance_moby_along_selected_path(char *m, char *d, int idx, int turn) {
     yaw = fast_atan2(v[0], v[1]);
     pitch = -fast_atan2(vec_length_xy(v), v[2]);
     if (((unsigned char *)m)[0x20] == 5) {
-        char *g = hero_globals_base + 0xE1D;
-        yaw = fast_atan2(*(float *)(g + 0x80) - *(float *)(m + 0x10), *(float *)(g + 0x84) - *(float *)(m + 0x14));
-        pitch = -fast_atan2(vec_distance_xy(m + 0x10, g + 0x80), *(float *)(g + 0x88) - *(float *)(m + 0x18));
+        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        yaw = fast_atan2(g->motion.pos.f[0] - *(float *)(m + 0x10), g->motion.pos.f[1] - *(float *)(m + 0x14));
+        pitch = -fast_atan2(vec_distance_xy(m + 0x10, &g->motion.pos), g->motion.pos.f[2] - *(float *)(m + 0x18));
     }
     if (turn != 0) {
         update_moby_spring_steering_and_banking(m, d, yaw, pitch);
@@ -3445,22 +3445,22 @@ extern float FastVecDist(void *, void *);
 
 /* Steers a moby toward the hero: scales by distance and orients it with the hero's angles. */
 void predict_hero_ship_projectile_lead_position(char *a, char *b, float f) {
-    char *base = hero_globals_base + 0xE1D;
-    char *d = *(char **)(*(char **)(base + 0x15F0) + 0x78);
-    float y = FastAddRots(*(float *)(*(char **)(base + 0x15F0) + 0x48), *(float *)(d + 0x90));
-    float x = FastAddRots(*(float *)(*(char **)(base + 0x15F0) + 0x44), *(float *)(d + 0x94));
-    float dist = FastVecDist(b, *(char **)(base + 0x15F0) + 0x10);
+    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    char *d = *(char **)(*(char **)&base->ship_moby + 0x78);
+    float y = FastAddRots(*(float *)(*(char **)&base->ship_moby + 0x48), *(float *)(d + 0x90));
+    float x = FastAddRots(*(float *)(*(char **)&base->ship_moby + 0x44), *(float *)(d + 0x94));
+    float dist = FastVecDist(b, *(char **)&base->ship_moby + 0x10);
     float k = *(float *)(d + 0x64);
     BuildSphericalOffset(a, dist / (k + f) * k, y, -x);
-    FastVecAdd(a, a, *(char **)(base + 0x15F0) + 0x10);
+    FastVecAdd(a, a, *(char **)&base->ship_moby + 0x10);
 }
 extern float vec_distance_xy(void *, void *);
 extern void predict_hero_ship_projectile_lead_position(char *a, char *b, float f);
 
 /* Angles from pos to the hero's target (led by lead when positive) or to the hero; returns the yaw. */
 float calculate_hero_aim_angles(float *pos, float *pitch, float *yaw, float lead) {
-    char *base = hero_globals_base + 0xE1D;
-    char *t = *(char **)(base + 0x15F0);
+    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    char *t = *(char **)&base->ship_moby;
     float v[4];
     float y;
     float p;
@@ -3473,9 +3473,9 @@ float calculate_hero_aim_angles(float *pos, float *pitch, float *yaw, float lead
         y = fast_atan2(v[0] - pos[0], v[1] - pos[1]);
         p = -fast_atan2(vec_distance_xy(pos, v), v[2] - pos[2]);
     } else {
-        char *p0 = hero_globals_base + 0xE1D;
-        y = fast_atan2(*(float *)(p0 + 0x80) - pos[0], *(float *)(p0 + 0x84) - pos[1]);
-        p = -fast_atan2(vec_distance_xy(pos, p0 + 0x80), *(float *)(p0 + 0x88) - pos[2]);
+        struct Hero *p0 = (struct Hero *)(hero_globals_base + 0xE1D);
+        y = fast_atan2(p0->motion.pos.f[0] - pos[0], p0->motion.pos.f[1] - pos[1]);
+        p = -fast_atan2(vec_distance_xy(pos, &p0->motion.pos), p0->motion.pos.f[2] - pos[2]);
     }
     if (yaw != 0) *yaw = y;
     if (pitch != 0) *pitch = p;
@@ -3530,16 +3530,16 @@ extern void Moby_PlaySound(int, int, int);
 /* computes a velocity vector for a moby from the camera/player and spawns a projectile */
 unsigned char *fire_class_53_projectile(char *a, char *b) {
     float v0[4], v1[4], v2[4], v3[4], v4[4];
-    char *x;
+    struct Hero *x;
     unsigned char *r;
     Moby_GetJointWorldPos(a, 0xE, v0);
-    x = hero_globals_base + 0xE1D;
-    if (*(char **)(x + 0x15F0) != 0 && *(short *)(*(char **)(x + 0x15F0) + 0xA6) == 0x45) {
+    x = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (*(char **)&x->ship_moby != 0 && *(short *)(*(char **)&x->ship_moby + 0xA6) == 0x45) {
         predict_hero_ship_projectile_lead_position((char *)v2, (char *)v0, g_frame_time * 20.0f);
         FastVecSub(v3, v2, v0);
         vec_scale_to_length(v1, v3, g_frame_time * 20.0f);
-        vec_scale_to_length(v4, *(char **)(x + 0x15F0) + 0xD0, random_float_between(-(g_frame_time * 30.0f), g_frame_time * 30.0f));
-        vec_scale_to_length(v3, *(char **)(x + 0x15F0) + 0xE0, random_float_between(-(g_frame_time * 30.0f), g_frame_time * 30.0f));
+        vec_scale_to_length(v4, *(char **)&x->ship_moby + 0xD0, random_float_between(-(g_frame_time * 30.0f), g_frame_time * 30.0f));
+        vec_scale_to_length(v3, *(char **)&x->ship_moby + 0xE0, random_float_between(-(g_frame_time * 30.0f), g_frame_time * 30.0f));
         FastVecAdd(v4, v4, v3);
         vec_scale_to_length(v4, v4, random_float_between(g_frame_time * 5.0f, g_frame_time * 30.0f));
         FastVecAdd(v1, v1, v4);

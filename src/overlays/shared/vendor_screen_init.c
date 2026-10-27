@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "hero.h"
 
 typedef struct { char p0[0x10]; int f10; char p14[0x4C - 0x14]; } R_2afd00;
 extern char novalis_vendor_screen_state[];
@@ -42,12 +43,12 @@ extern int Music_ContinueStreamIfReady(void);
 
 /* Opens the vendor screen for moby m in level lvl: sets up its camera, resets the screen state and runs it until it closes. */
 void initialize_vendor_screen(char *m, int lvl) {
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     char *s = novalis_vendor_screen_state;
     char *c = fx_cutscene;
     char *sc;
     char *c2;
-    char *g2;
+    struct Hero *g2;
     char *q;
     char *qq;
     int n;
@@ -65,8 +66,8 @@ void initialize_vendor_screen(char *m, int lvl) {
     reset_hud_and_suspend_weapon_updates();
     clear_active_help_record();
     Hero_SetMoveState(100, 1);
-    g[0x20AC] = 1;
-    g[0x20A5] = 1;
+    *(char *)&g->item_use_locked = 1;
+    *(char *)&g->unk20A5 = 1;
     HeroSetObjectFlags();
     matrix_mul_vec3(sc, &novalis_vendor_screen_anchor_offset, m + 0xC0);
     FastVecAdd(sc, sc, m + 0x10);
@@ -85,7 +86,7 @@ void initialize_vendor_screen(char *m, int lvl) {
     relocated_address_base = n;
     *(int *)&novalis_white_fade_level = 0;
     clear_hero_item_slot(0, 0);
-    *(int *)(g + 0x20B8) = lvl;
+    g->pending_item[0] = lvl;
     select_world_object_resource_tables(novalis_item_defs[lvl].f10, -1);
     load_scene_chunks_with_fade(r);
     q = (char *)help_stats_base + 0x100B5;
@@ -96,7 +97,7 @@ void initialize_vendor_screen(char *m, int lvl) {
         sce_gs_sync_v(0);
     }
     c2 = fx_cutscene;
-    g2 = hero_globals_base + 0xE1D;
-    update_item_tint_from_hero(*(int *)(c2 + 0x17C), *(int *)(g2 + 0x2080));
+    g2 = (struct Hero *)(hero_globals_base + 0xE1D);
+    update_item_tint_from_hero(*(int *)(c2 + 0x17C), *(int *)&g2->moby);
     Music_ContinueStreamIfReady();
 }

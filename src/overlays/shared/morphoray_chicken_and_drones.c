@@ -251,8 +251,8 @@ void update_doom_bot_spawner(char *m) {
         return;
     }
     {
-        char *P = hero_globals_base + 0xE1D;
-        if (*(unsigned char *)(P + 0x20A5) != 0 && ((Moby *)m)->state < 2) {
+        struct Hero *P = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (P->unk20A5 != 0 && ((Moby *)m)->state < 2) {
             ((Moby *)m)->flags = ((Moby *)m)->flags | 0x41;
         } else {
             ((Moby *)m)->flags = ((Moby *)m)->flags & 0xFFBE;
@@ -261,8 +261,8 @@ void update_doom_bot_spawner(char *m) {
     {
         if (*(short *)(*(char **)(s + 0x30) + 0xA6) == 0xE5 && *(short *)(s + 0x3A) == 0 &&
             FastVecLength(s) > 0.0f) {
-            char *P = hero_globals_base + 0xE1D;
-            if (*(int *)(P + 0x2FC) == 0 || moby_get_ride_transform(*(char **)(P + 0x2FC)) == 0) {
+            struct Hero *P = (struct Hero *)(hero_globals_base + 0xE1D);
+            if (*(int *)&P->ground_moby == 0 || moby_get_ride_transform(*(char **)&P->ground_moby) == 0) {
                 predict_doom_bot_spawner_landing(s, m, 1);
             } else {
                 if (predict_doom_bot_spawner_landing(s, m, 0) == 0) {
@@ -310,7 +310,7 @@ void update_doom_bot_spawner(char *m) {
         break;
     }
     case 2: {
-        char *P;
+        struct Hero *P;
         f22 = 0.5f;
         f21 = IntToFloat(gold_weapon_purchased_20) + 1.0f;
         {
@@ -338,8 +338,8 @@ void update_doom_bot_spawner(char *m) {
             v2.v[2] = v2.v[2] - d / *(float *)(p + 0x24);
         }
         qcopy(&v3, &v0);
-        P = hero_globals_base + 0xE1D;
-        g = *(void **)(P + 0x2080);
+        P = (struct Hero *)(hero_globals_base + 0xE1D);
+        g = *(void **)&P->moby;
         f20 = f21 * 0.2f;
         v3.v[2] = v3.v[2] + f20;
         r = coll_sphere(f21 * 0.3f, &v3, 4, g);
@@ -352,7 +352,7 @@ void update_doom_bot_spawner(char *m) {
             FastVecScale(s, s, f22);
             if (FastVecLength(s) < frame_scale * f21) goto L344;
         } else {
-            r = coll_line(&v1, &v2, 0, *(int *)(P + 0x2080), 0);
+            r = coll_line(&v1, &v2, 0, *(int *)&P->moby, 0);
             if (r == 0) goto Lret;
             w = collision_hit_point;
             qcopy(m + 0x10, w);
@@ -365,8 +365,8 @@ void update_doom_bot_spawner(char *m) {
             FastVecScale(s, s, f22);
             if (FastVecLength(s) < frame_scale * f21) goto L344;
         }
-        if (*(int *)(P + 0x2FC) == 0) goto Lfin;
-        if (moby_get_ride_transform(*(char **)(P + 0x2FC)) != 0) {
+        if (*(int *)&P->ground_moby == 0) goto Lfin;
+        if (moby_get_ride_transform(*(char **)&P->ground_moby) != 0) {
             float a20 = FastVecLength(s);
             if (a20 < frame_scale * f21 + FastVecLength(Q - 0x40)) {
                 goto L344;
@@ -415,7 +415,7 @@ void update_doom_bot_spawner(char *m) {
             if (cnt >= 8) {
                 *(short *)(s + 0x38) = scale_ticks(0xF);
             } else {
-                char *P = hero_globals_base + 0xE1D;
+                struct Hero *P = (struct Hero *)(hero_globals_base + 0xE1D);
                 f20 = 0.05f;
                 f21 = 6.2831855f;
                 f22 = 0.25f;
@@ -426,8 +426,8 @@ void update_doom_bot_spawner(char *m) {
                 f20 = f20 * f0;
                 v1.v[1] = f20;
                 v1.v[2] = frame_scale * 0.02f;
-                if (*(int *)(P + 0x2FC) != 0 && moby_get_ride_transform(*(char **)(P + 0x2FC)) != 0) {
-                    FastVecAdd(&v1, &v1, P + 0x100);
+                if (*(int *)&P->ground_moby != 0 && moby_get_ride_transform(*(char **)&P->ground_moby) != 0) {
+                    FastVecAdd(&v1, &v1, &P->motion.displacement);
                 }
                 FastVecAdd(&v0, &v1, m + 0x10);
                 spawn_doom_bot(*(int *)(s + 0x30), &v0, &v1);
@@ -516,7 +516,7 @@ char *spawn_morphoray_chicken(char *src) {
     unsigned char *r0;
     unsigned char *pos2;
     unsigned char *p;
-    unsigned char *g;
+    struct Hero *g;
     unsigned char *g2;
     unsigned char *r;
     int *q;
@@ -541,8 +541,8 @@ char *spawn_morphoray_chicken(char *src) {
         p = m + 0x10;
         qcopy(p, src + 0x10);
         clear_u64_value(m + 0x40);
-        g = (unsigned char *)hero_globals_base + 0xE1D;
-        ((Moby *)m)->rot.z = fast_atan2(((Moby *)m)->pos.x - *(float *)(g + 0x80), ((Moby *)m)->pos.y - *(float *)(g + 0x84));
+        g = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+        ((Moby *)m)->rot.z = fast_atan2(((Moby *)m)->pos.x - g->motion.pos.f[0], ((Moby *)m)->pos.y - g->motion.pos.f[1]);
         h = ProbeGroundHeight(p, 0, 0.5f);
         if (((Moby *)m)->pos.z <= h) {
             ((Moby *)m)->pos.z = h;

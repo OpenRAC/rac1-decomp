@@ -3,6 +3,7 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "moby.h"
+#include "hero.h"
 
 typedef int q128_2F1558 __attribute__((mode(TI)));
 typedef struct {
@@ -601,7 +602,7 @@ void Moby1448Update(unsigned char *m) {
     int t;
     int idx;
     char *p;
-    char *pl;
+    struct Hero *pl;
 
     qcopy(old_pos, m + 0x10);
     qcopy(old_rot, m + 0x40);
@@ -637,8 +638,8 @@ void Moby1448Update(unsigned char *m) {
             Moby_PlaySound(1, 0, (int)m);
             v->sfx = 0;
         }
-        pl = hero_globals_base + 0xE1D;
-        if (*(unsigned char **)(pl + 0x2FC) == m && *(short *)(pl + 0x30E) == 0
+        pl = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (*(unsigned char **)&pl->ground_moby == m && pl->air_frames.s == 0
             && scale_ticks(30) < v->timer) {
             update_shuttle_help_message(m);
             if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && *(int *)&fleet_shown_help_message == 10) {
@@ -911,11 +912,11 @@ void update_fleet_camera_box_watcher(char *moby) {
         }
         break;
     case 1: {
-        char *h = hero_globals_base + 0xE1D;
-        int v = *(int *)(h + 0x2084);
+        struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+        int v = h->state.current;
         if (v == 0x76 || v == 0x32) {
             *(int *)(d + 0x6C) = 0;
-        } else if (is_point_inside_clip_volume(h + 0x80, *(int *)(d + 0x64)) || is_point_inside_clip_volume(h + 0x80, *(int *)(d + 0x68))) {
+        } else if (is_point_inside_clip_volume(&h->motion.pos, *(int *)(d + 0x64)) || is_point_inside_clip_volume(&h->motion.pos, *(int *)(d + 0x68))) {
             if (gSkillPoints[0x1C] == 0) {
                 gSkillPoints[0x1C] = 1;
                 PlayBankSound(1, 0, 0);
@@ -1256,9 +1257,9 @@ void update_fleet_backdrop_animation(unsigned char *moby) {
     float vector_sum[4];
     int i;
     if (*(int *)(moby_pvars + 0x4C) != -1) {
-        char *hero_data = hero_globals_base + 0xE1D;
-        if (*(int *)(hero_data + 0x2084) != 0x32 || *(struct Moby **)(hero_data + 0x15F0) == 0 ||
-            (*(struct Moby **)(hero_data + 0x15F0))->oclass != 0x563) {
+        struct Hero *hero_data = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (hero_data->state.current != 0x32 || hero_data->ship_moby == 0 ||
+            (hero_data->ship_moby)->oclass != 0x563) {
             if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(moby_pvars + 0x4C))) {
                 fleet_hero_fall_state_height_m = 150.0f;
                 goto done;

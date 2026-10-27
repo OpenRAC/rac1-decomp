@@ -1387,9 +1387,9 @@ void batalia_deserter_update(char *m) {
             }
         }
         {
-            char *h = hero_globals_base + 0xE1D;
-            if (*(int *)(h + 0x2FC) == 0) {
-                if (scale_ticks(30) < *(int *)(h + 0x300) || deserter_data->h56 != 0) {
+            struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+            if (*(int *)&h->ground_moby == 0) {
+                if (scale_ticks(30) < h->grounded_frames || deserter_data->h56 != 0) {
                     Npc_TryStartDialog(m, (char *)deserter_data + 0x20);
                     PlaceMarkerAheadOfMoby(2.2f, m);
                 }

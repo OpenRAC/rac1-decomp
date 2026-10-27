@@ -1798,15 +1798,15 @@ void extermitank_update(unsigned char *m) {
     switch (((Moby *)m)->state) {
     case 0: {
         char *c;
-        char *g;
+        struct Hero *g;
         if (*(char **)(d + 0x184) == 0) {
             *(char **)(d + 0x184) = CreateMoby(0x368);
             (*(char **)(d + 0x184))[0x30] = 0x40;
             *(short *)(*(char **)(d + 0x184) + 0x32) = 0x40;
             (*(char **)(d + 0x184))[0x31] = 1;
             {
-                char *g2 = hero_globals_base + 0xE1D;
-                *(long *)(*(char **)(d + 0x184) + 0x38) = *(long *)(*(char **)(g2 + 0x2080) + 0x38);
+                struct Hero *g2 = (struct Hero *)(hero_globals_base + 0xE1D);
+                *(long *)(*(char **)(d + 0x184) + 0x38) = *(long *)(*(char **)&g2->moby + 0x38);
             }
             *(short *)(*(char **)(d + 0x184) + 0x34) = 0x4000;
             c = *(char **)(d + 0x184);
@@ -1820,8 +1820,8 @@ void extermitank_update(unsigned char *m) {
             *(short *)(*(char **)(d + 0x188) + 0x32) = 0x40;
             (*(char **)(d + 0x188))[0x31] = 1;
             {
-                char *g2 = hero_globals_base + 0xE1D;
-                *(long *)(*(char **)(d + 0x188) + 0x38) = *(long *)(*(char **)(g2 + 0x2080) + 0x38);
+                struct Hero *g2 = (struct Hero *)(hero_globals_base + 0xE1D);
+                *(long *)(*(char **)(d + 0x188) + 0x38) = *(long *)(*(char **)&g2->moby + 0x38);
             }
             *(short *)(*(char **)(d + 0x188) + 0x34) = 0x4000;
             c = *(char **)(d + 0x188);
@@ -1832,8 +1832,8 @@ void extermitank_update(unsigned char *m) {
         AttachManipulator((char *)m, 0, (unsigned char *)(d + 0xF0));
         AttachManipulator((char *)m, 1, (unsigned char *)(d + 0x130));
         ((Moby *)m)->flags |= 0x1000;
-        g = hero_globals_base + 0xE1D;
-        *(long *)(m + 0x38) = *(long *)(*(char **)(g + 0x2080) + 0x38);
+        g = (struct Hero *)(hero_globals_base + 0xE1D);
+        *(long *)(m + 0x38) = *(long *)(*(char **)&g->moby + 0x38);
         MoveCtl_Init(d + 0x70);
         *(float *)(d + 0x7C) = 2.0f;
         *(float *)(d + 0x78) = 4.0f;
@@ -1901,8 +1901,8 @@ void extermitank_update(unsigned char *m) {
             }
         }
         if (vec_distance_xy(m + 0x10, hero_globals_base + 0xE9D) < 16.0f) {
-            char *g = hero_globals_base + 0xE1D;
-            float a = fast_atan2(*(float *)(g + 0x80) - ((Moby *)m)->pos.x, *(float *)(g + 0x84) - ((Moby *)m)->pos.y);
+            struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+            float a = fast_atan2(g->motion.pos.f[0] - ((Moby *)m)->pos.x, g->motion.pos.f[1] - ((Moby *)m)->pos.y);
             step_angle_toward_target((float *)(d + 0x194), 0, a, g_frame_time * 1.5707964f);
             step_angle_toward_target((float *)(d + 0x198), 0, 0.08726646f, g_frame_time * 1.5707964f);
         } else {
@@ -2009,8 +2009,8 @@ void extermitank_update(unsigned char *m) {
             ((Moby *)m)->state = 1;
         }
         {
-            char *g = hero_globals_base + 0xE1D;
-            float a = fast_atan2(*(float *)(g + 0x80) - ((Moby *)m)->pos.x, *(float *)(g + 0x84) - ((Moby *)m)->pos.y);
+            struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+            float a = fast_atan2(g->motion.pos.f[0] - ((Moby *)m)->pos.x, g->motion.pos.f[1] - ((Moby *)m)->pos.y);
             step_angle_toward_target((float *)(d + 0x194), 0, a, g_frame_time * 1.5707964f);
             step_angle_toward_target((float *)(d + 0x198), 0, 0.08726646f, g_frame_time * 1.5707964f);
         }
@@ -2197,7 +2197,7 @@ typedef struct {
 /* Drops stale entries from the moby's 8 slots, then pushes each remaining one away from the hero. */
 void process_extermitank_particle_hits(char *m) {
     char **slots = (char **)(((char *)((Moby *)m)->pvars) + 0x1A0);
-    char *base;
+    struct Hero *base;
     Hit_306CF0 h;
     int i;
     int j;
@@ -2209,13 +2209,13 @@ void process_extermitank_particle_hits(char *m) {
             }
         }
     }
-    base = hero_globals_base + 0xE1D;
-    if (*(int *)(base + 0x1158) == 6) return;
+    base = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (base->items[2].item_id == 6) return;
     h.flags |= 1;
     h.owner = m;
     h.x14 = 1;
     h.x1C = 1.0f;
-    FastVecSub(h.v, base + 0x80, m + 0x10);
+    FastVecSub(h.v, &base->motion.pos, m + 0x10);
     h.v[2] = 0.0f;
     vec_set_length_xy(h.v, h.v, 1.5f);
     h.v[2] = 1.0f;

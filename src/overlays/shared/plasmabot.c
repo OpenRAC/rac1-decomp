@@ -931,11 +931,11 @@ float update_plasmabot_aim_quaternion(char *moby, int flag, float x) {
         float c[4];
         float *bp;
         float *cp;
-        char *g;
+        struct Hero *g;
         float t;
         qcopy(a, owner + 0x10);
-        g = hero_globals_base + 0xE1D;
-        if (*(char **)(g + 0x2080) == owner) a[2] = a[2] - *(float *)(g + 0x2DC);
+        g = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (*(char **)&g->moby == owner) a[2] = a[2] - g->ground_distance;
         bp = b;
         FastVecSub(bp, a, moby + 0x10);
         b[2] = b[2] + 1.5f;

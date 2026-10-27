@@ -4,6 +4,7 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "moby.h"
+#include "hero.h"
 
 typedef struct {
     Vec4 home;
@@ -1990,9 +1991,9 @@ void ultramech_unlimited_update(UMoby *m) {
             }
         }
         if (d->w164 != 2 && d->path != -1) {
-            unsigned char *pl = hero_globals_base + 0xE1D;
-            if (pl[0x20A4] == 2 && (m->flags & 0x1000)) {
-                if (d->w1D0 != -1 && !IsPointInPolygon(pl + 0x80, quartu_paths[d->w1D0]->pt, quartu_paths[d->w1D0]->n)) {
+            struct Hero *pl = (struct Hero *)(hero_globals_base + 0xE1D);
+            if (pl->vehicle_mode == 2 && (m->flags & 0x1000)) {
+                if (d->w1D0 != -1 && !IsPointInPolygon(&pl->motion.pos, quartu_paths[d->w1D0]->pt, quartu_paths[d->w1D0]->n)) {
                     m->w94 = 0;
                     m->flags = (m->flags | 0x41) & 0xEFFF;
                 } else {

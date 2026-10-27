@@ -1068,7 +1068,7 @@ void decoy_glove_update(unsigned char *moby) {
     extern void Moby_PlaySound(int, int, int);
     char *d;
     char *p;
-    char *g;
+    struct Hero *g;
     float vb[4];
     float va[4];
     float vc[4];
@@ -1105,16 +1105,16 @@ void decoy_glove_update(unsigned char *moby) {
     }
     *(int *)(d + 0x50) = 0;
 target_valid:
-    g = hero_globals_base + 0xE1D;
-    if (*(int *)(g + 0x2084) == 1) HeroEnterMoveState(0x1E, 1);
+    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (g->state.current == 1) HeroEnterMoveState(0x1E, 1);
     if (fast_dec_timer((int *)(d + 0x54))) {
-        if (*(unsigned char *)(g + 0x20AC) == 0) {
-            if (*(unsigned char *)(g + 0x20A8) && *(int *)(g + 0x1BC) == scale_ticks(0x11)) goto L3D10;
-            if (*(int *)(pad_globals_base + 0x2604) & *(int *)(g + 0x10A0)) {
-                if (*(int *)(g + 0x2084) == 0x1E && get_ammo(-1)) goto L3D10;
+        if (g->item_use_locked == 0) {
+            if (g->item_anim_active && g->item_anim_frames == scale_ticks(0x11)) goto L3D10;
+            if (*(int *)(pad_globals_base + 0x2604) & g->items[0].button_mask) {
+                if (g->state.current == 0x1E && get_ammo(-1)) goto L3D10;
             }
-            g = hero_globals_base + 0xE1D;
-            if (*(int *)(g + 0x2084) == 0x23 && *(int *)(g + 0x198) == scale_ticks(0x10)) goto L3D10;
+            g = (struct Hero *)(hero_globals_base + 0xE1D);
+            if (g->state.current == 0x23 && g->state_timer == scale_ticks(0x10)) goto L3D10;
         }
     }
     goto L3D34;
@@ -1151,8 +1151,8 @@ L3D34:
         *(int *)(d + 0x54) = scale_ticks(0x14);
         break;
     case 4: {
-        char *h = hero_globals_base + 0xE1D;
-        if (*(int *)(h + 0x2084) != 0x23 && *(unsigned char *)(h + 0x20A8) == 0) ((Moby *)moby)->state = 2;
+        struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (h->state.current != 0x23 && h->item_anim_active == 0) ((Moby *)moby)->state = 2;
         break;
     }
     case 5:
@@ -1172,8 +1172,8 @@ L3D34:
         qzero(&loc);
         *(int *)(d + 0x50) = spawn_decoy(moby, d + 0x40, &loc);
     } else {
-        char *h = hero_globals_base + 0xE1D;
-        if (*(unsigned char *)(h + 0x20A8)) {
+        struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (h->item_anim_active) {
             qzero(&loc);
             *(int *)(d + 0x50) = spawn_decoy(moby, d + 0x40, &loc);
         }
@@ -2614,8 +2614,8 @@ void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
         r = fast_atan2(path->a[idx + 1].f[0] - o->v[0], path->a[idx + 1].f[1] - o->v[1]);
         o->f48 = SpringTurn(&st->v6C, o->f48, r, 0.01f, 0.3f, 0.1f);
     } else {
-        char *g = hero_globals_base + 0xE1D;
-        r = fast_atan2(*(float *)(g + 0x80) - o->v[0], *(float *)(g + 0x84) - o->v[1]);
+        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        r = fast_atan2(g->motion.pos.f[0] - o->v[0], g->motion.pos.f[1] - o->v[1]);
         o->f48 = SpringTurn(&st->v6C, o->f48, r, 0.01f, 0.3f, 0.1f);
     }
     FastVecSub(&v, &w, &o->v[0]);

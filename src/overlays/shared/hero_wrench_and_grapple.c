@@ -14,21 +14,21 @@ extern void stick_target(int, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00220b80.c, FUN_L02_00220b80. */
 void update_hero_stick_target_magnitude(void) {
-    char *x;
+    struct Hero *x;
     stick_target(0, 1.0f);
-    x = hero_globals_base + 0xE1D;
-    if (*(int *)(x + 0x2084) == 0x3F) {
+    x = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (x->state.current == 0x3F) {
         float two = g_frame_time + g_frame_time;
-        float v = g_frame_time * 3.5f * *(float *)(x + 0x190);
-        *(float *)(x + 0x190) = v;
+        float v = g_frame_time * 3.5f * x->target_speed;
+        x->target_speed = v;
         if (v < two) {
-            *(float *)(x + 0x190) = two;
+            x->target_speed = two;
         }
-    } else if (0.0f < *(float *)(x + 0x190)) {
-        if (*(float *)(x + 0x190) < aridia_hero_speed_bands[3]) {
-            *(float *)(x + 0x190) = aridia_hero_speed_bands[2] * g_frame_time;
+    } else if (0.0f < x->target_speed) {
+        if (x->target_speed < aridia_hero_speed_bands[3]) {
+            x->target_speed = aridia_hero_speed_bands[2] * g_frame_time;
         } else {
-            *(float *)(x + 0x190) = aridia_hero_speed_bands[6] * g_frame_time;
+            x->target_speed = aridia_hero_speed_bands[6] * g_frame_time;
         }
     }
 }

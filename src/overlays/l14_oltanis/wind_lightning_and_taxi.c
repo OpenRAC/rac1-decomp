@@ -222,7 +222,7 @@ void register_hero_hit_in_clip_volume(char *moby)
 {
     char *base = hero_globals_base + 0xE9D;
     Req r;
-    char *q;
+    struct Hero *q;
     if (is_point_inside_clip_volume(base, *(int *)(((char *)((Moby *)moby)->pvars) + 0x200)) != 0) {
         r.flags = 0x200001;
         r.range = 100.0f;
@@ -234,9 +234,9 @@ void register_hero_hit_in_clip_volume(char *moby)
         r.a = 5;
         r.b = 4;
         r.c = *(unsigned short *)&((Moby *)moby)->oclass;
-        q = hero_globals_base + 0xE1D;
-        *(int *)(q + 0x22A8) = 0;
-        record_moby_hit(*(int *)(q + 0x2080), &r);
+        q = (struct Hero *)(hero_globals_base + 0xE1D);
+        q->health.hp = 0;
+        record_moby_hit(*(int *)&q->moby, &r);
     }
 }
 typedef struct {
@@ -1961,7 +1961,7 @@ void rebuild_elevator_world_path(char *moby) {
     char *dst = oltanis_paths[*(int *)(data + 0x114)] + 0x10;
     int i = 10;
     float one = 1.0f;
-    char *x;
+    struct Hero *x;
     do {
         matrix_mul_vec3(dst, src, moby + 0xC0);
         src += 0x10;
@@ -1970,8 +1970,8 @@ void rebuild_elevator_world_path(char *moby) {
         *(float *)(dst + 0xC) = one;
         dst += 0x10;
     } while (i >= 0);
-    x = hero_globals_base + 0xE1D;
-    *(short *)(x + 0x22DA) = *(unsigned short *)(data + 0x114);
+    x = (struct Hero *)(hero_globals_base + 0xE1D);
+    x->path_constrain_pending = *(unsigned short *)(data + 0x114);
 }
 extern short g_frame_time_s __asm__("D_0015EE6C");
 extern float FastAbsF(float);

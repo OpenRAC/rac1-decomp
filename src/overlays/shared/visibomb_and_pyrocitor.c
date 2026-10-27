@@ -344,7 +344,7 @@ extern int Moby_PlaySound(int, int, int);
 /* Per-frame update of a moby that arms a pickup-style reaction when the player state allows it. */
 void visibomb_update(char *m) {
     int *p;
-    char *g;
+    struct Hero *g;
     char *pad;
     char *g2;
     float t0[4];
@@ -353,26 +353,26 @@ void visibomb_update(char *m) {
     if (m == 0) return;
     p = ((int *)((Moby *)m)->pvars);
     fast_dec_timer(p);
-    g = hero_globals_base + 0xE1D;
+    g = (struct Hero *)(hero_globals_base + 0xE1D);
     pad = pad_globals_base + 0x2460;
-    if ((*(int *)(pad + 0x1A4) & *(int *)(g + 0x10A0)) != 0 && p[0] == 0 && p[1] == 0
-        && *(unsigned char *)(g + 0x20AC) == 0) {
-        int st = *(int *)(g + 0x208C);
+    if ((*(int *)(pad + 0x1A4) & g->items[0].button_mask) != 0 && p[0] == 0 && p[1] == 0
+        && g->item_use_locked == 0) {
+        int st = g->state.control_mode;
         if (st != 7 && st != 2 && st != 3 && st != 4 && st != 5 && st != 6 && st != 0x10
             && st != 0xE && st != 9 && st != 0xA && st != 0xB && st < 0xD) {
-            int w = *(int *)(g + 0x2084);
+            int w = g->state.current;
             if (w != 0x72 && w != 0x65 && w != 0x32) {
                 int x;
                 g2 = player_camera;
                 x = *(int *)(g2 + 0x180);
                 if (x == 0 || *(short *)(x + 0x86) != 5) {
-                    if (*(int *)(g + 0x300) != 0) {
-                        int y = *(int *)(g + 0x2FC);
+                    if (g->grounded_frames != 0) {
+                        int y = *(int *)&g->ground_moby;
                         if (y == 0 || (*(short *)(y + 0xA6) != 0x13E && *(short *)(y + 0xA6) != 0x46F)) {
                             if (use_ammo(-1, 1) != 0) {
                                 f21 = 0;
-                                f20 = *(float *)(g + 0x688);
-                                if (*(int *)(g + 0x2084) == 1 && (*(unsigned short *)(*(int *)(g + 0x2080) + 0x34) & 1)) {
+                                f20 = g->held_pose_yaw;
+                                if (g->state.current == 1 && (*(unsigned short *)(*(int *)&g->moby + 0x34) & 1)) {
                                     char *v = g2 + 0x350;
                                     f20 = fast_atan2(*(float *)(g2 + 0x350), *(float *)(g2 + 0x354));
                                     f21 = -fast_atan2(vec_length_xy(v), *(float *)(g2 + 0x358));
@@ -381,8 +381,8 @@ void visibomb_update(char *m) {
                                     FastVecAdd(t0, t0, t1);
                                     FastVecAdd(t0, t0, g2 + 0x140);
                                 } else {
-                                    char *q = hero_globals_base + 0xE1D;
-                                    if (*(short *)(q + 0x22C8) == 1) {
+                                    struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                                    if (q->unk22C8 == 1) {
                                         f21 = fast_atan2(vec_length_xy(m + 0xD0), ((Moby *)m)->rot_row1.z);
                                         BuildSphericalOffset(t0, 0.6f, f20, -f21);
                                         FastVecAdd(t0, t0, m + 0x10);
@@ -405,7 +405,7 @@ void visibomb_update(char *m) {
                                     *(unsigned int *)(h + 0x6C) = *(unsigned int *)(h + 0x6C) | (1 << g_current_level_index) | 0x80000000;
                                     p[0] = scale_ticks(0x3C);
                                 }
-                            } else if ((*(int *)(pad + 0x1A4) & *(int *)(g + 0x10A0)) != 0) {
+                            } else if ((*(int *)(pad + 0x1A4) & g->items[0].button_mask) != 0) {
                                 Moby_PlaySound(0, 0, (int)m);
                             }
                         }
@@ -884,7 +884,7 @@ unsigned char *select_blaster_auto_aim_target(int ign, Vec4 *from, float *yaw, f
     float e;
     float s;
     float t;
-    unsigned char *g;
+    struct Hero *g;
 
     best = 0;
     src.q = from->q;
@@ -911,8 +911,8 @@ unsigned char *select_blaster_auto_aim_target(int ign, Vec4 *from, float *yaw, f
         if (bestd < d) {
             continue;
         }
-        g = hero_globals_base + 0xE1D;
-        BuildSphericalOffset(&w, d, *yaw, *pitch + *(float *)(g + 0x2E4) * 0.5f);
+        g = (struct Hero *)(hero_globals_base + 0xE1D);
+        BuildSphericalOffset(&w, d, *yaw, *pitch + g->ground_pitch.f * 0.5f);
         FastVecAdd(&w, &w, from);
         e = FastArcSin(FastVecDist(&w, &tp) / (d + d));
         e = e + e;
@@ -1822,12 +1822,12 @@ int func_L00_002B7EC0_r(char *m, float r) {
             if (dist < 12.0f) {
                 unsigned h = *(unsigned short *)(e + 0xA6);
                 if ((h >= 0x1F4 && h <= 0x1F5) || (short)h == 0x1F9 || (short)h == 0x1FF) {
-                    char *g = hero_globals_base + 0xE1D;
-                    if (FastDiffRots(*(float *)(g + 0x98), fast_atan2(*(float *)(e + 0x10) - *(float *)(g + 0x80), *(float *)(e + 0x14) - *(float *)(g + 0x84))) < 0.9599311f) {
+                    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+                    if (FastDiffRots(g->motion.rot.f[2], fast_atan2(*(float *)(e + 0x10) - g->motion.pos.f[0], *(float *)(e + 0x14) - g->motion.pos.f[1])) < 0.9599311f) {
                         if (d[5] == lim) {
                             FastVecSub(&q, e + 0x10, m + 0x10);
                             vec_scale_to_length(&q, &q, 1.5f);
-                            PostHitMessage(e, (int)m, 0x10000, g + 0x80, &q, 1.0f);
+                            PostHitMessage(e, (int)m, 0x10000, &g->motion.pos, &q, 1.0f);
                             d[4] = scale_ticks(rand_range(5, 0x2D));
                         }
                         d[5] = d[5] + 1;
@@ -1836,9 +1836,9 @@ int func_L00_002B7EC0_r(char *m, float r) {
             }
             if (dist < r) {
                 float f1;
-                char *gb = hero_globals_base + 0xE1D;
-                f1 = fast_atan2(*(float *)(e + 0x10) - *(float *)(gb + 0x80), *(float *)(e + 0x14) - *(float *)(gb + 0x84));
-                if (FastDiffRots(*(float *)(gb + 0x98), f1) < 0.9599311f) {
+                struct Hero *gb = (struct Hero *)(hero_globals_base + 0xE1D);
+                f1 = fast_atan2(*(float *)(e + 0x10) - gb->motion.pos.f[0], *(float *)(e + 0x14) - gb->motion.pos.f[1]);
+                if (FastDiffRots(gb->motion.rot.f[2], f1) < 0.9599311f) {
                     char *h = *(char **)(c + 0x18);
                     if (h == 0) {
                         *(char **)(c + 0x18) = m;
@@ -1857,8 +1857,8 @@ int func_L00_002B7EC0_r(char *m, float r) {
             if (mob[0x20] >= 0) {
                 char *h2 = ((char *)((Moby *)mob)->pvars);
                 if (vec_distance_xy(&pos, mob + 0x10) < r) {
-                    char *g3 = hero_globals_base + 0xE1D;
-                    if (FastDiffRots(*(float *)(g3 + 0x98), fast_atan2(((Moby *)mob)->pos.x - *(float *)(g3 + 0x80), ((Moby *)mob)->pos.y - *(float *)(g3 + 0x84))) < 0.9599311f) {
+                    struct Hero *g3 = (struct Hero *)(hero_globals_base + 0xE1D);
+                    if (FastDiffRots(g3->motion.rot.f[2], fast_atan2(((Moby *)mob)->pos.x - g3->motion.pos.f[0], ((Moby *)mob)->pos.y - g3->motion.pos.f[1])) < 0.9599311f) {
                         *(char **)(h2 + 0x78) = m;
                         count++;
                     }

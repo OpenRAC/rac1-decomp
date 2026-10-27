@@ -675,15 +675,15 @@ void woodcut_bot_update(Moby *m) {
             src = *(unsigned char **)(p + 0x20);
             one = 1.0f;
             if (src != 0) {
-                unsigned char *h = hero_globals_base + 0xE1D;
-                if (src != *(unsigned char **)(h + 0x1090)) {
+                struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+                if (src != *(unsigned char **)&h->items[0].moby) {
                     angle = fast_atan2(m->pos.x - *(float *)(src + 0x10), m->pos.y - *(float *)(src + 0x14));
                 } else {
-                    angle = fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84));
+                    angle = fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1]);
                 }
             } else {
-                unsigned char *h = hero_globals_base + 0xE1D;
-                angle = fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84));
+                struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+                angle = fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1]);
             }
             a = g_frame_time_sq * 30.0f;
             b = g_frame_time_sq * 10.0f;
@@ -1052,7 +1052,7 @@ void woodcut_bot_update(Moby *m) {
                     int i;
 
                     for (i = 0; i < 9; i++) {
-                        unsigned char *h = hero_globals_base + 0xE1D;
+                        struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
                         float ang;
 
                         if ((i & 1) == 0) {
@@ -1061,7 +1061,7 @@ void woodcut_bot_update(Moby *m) {
                         } else {
                             sign = -sign;
                         }
-                        ang = FastAddRots(sign * tab.v[i >> 1], fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84)));
+                        ang = FastAddRots(sign * tab.v[i >> 1], fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1]));
                         BuildSphericalOffset(v, 6.0f, ang, m->rot.y);
                         FastVecAdd(v, v, pos);
                         if (IsPointInPolygon(v, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
@@ -1147,10 +1147,10 @@ void woodcut_bot_update(Moby *m) {
 
         StepColorFade(m, d->fB0);
         if (d->f3E4 > 0.0f) {
-            unsigned char *h = hero_globals_base + 0xE1D;
+            struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
 
-            w[0] = FastCos(fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84))) * d->f3E4;
-            w[1] = FastSin(fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84))) * d->f3E4;
+            w[0] = FastCos(fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1])) * d->f3E4;
+            w[1] = FastSin(fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1])) * d->f3E4;
             w[2] = 0.0f;
             FastVecAdd(w, w, pos);
             d->f3E4 += -2.0f / (multiply_global_factor(15.0f) * multiply_global_factor(15.0f));

@@ -339,8 +339,8 @@ void update_hero_relocation_trigger(char *m) {
         enter_hero_vehicle_mode(1, 0x43, orxon_mobys_r + (*(int *)d << 8));
         MusicRequestTrack(2, 4);
     } else {
-        unsigned char *h = (unsigned char *)hero_globals_base + 0xE1D;
-        if (h[0x20A4] == 1) {
+        struct Hero *h = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+        if (h->vehicle_mode == 1) {
         exit_hero_vehicle_mode();
         {
             Hero_ResetToPosition(orxon_scene_points + (*(int *)(d + 4) << 7) + 0x30, orxon_scene_points + (*(int *)(d + 4) << 7) + 0x70, 0, 1);
@@ -352,10 +352,10 @@ void update_hero_relocation_trigger(char *m) {
             *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 2;
             *(int *)((*(int *)d << 8) + (int)bs + 0x94) = 0;
         }
-            h[0x22CB] = 1;
+            h->vent_updraft = 1;
             DeleteMoby(m);
         } else {
-            h[0x22CB] = 1;
+            h->vent_updraft = 1;
             DeleteMoby(m);
         }
     }

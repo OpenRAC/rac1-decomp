@@ -756,7 +756,7 @@ extern float FastAddRots(float, float);
 void update_linked_moby_scale_and_rotation(char *m) {
     char *p = ((char *)((Moby *)m)->pvars);
     char *par = *(char **)(p + 8);
-    char *g;
+    struct Hero *g;
     int v;
     int d;
     if (*(unsigned char *)(par + 0x20) == 0 || (*(unsigned char *)(par + 0x20) & 0xF0) == 0xF0) {
@@ -769,8 +769,8 @@ void update_linked_moby_scale_and_rotation(char *m) {
             ((Moby *)m)->flags |= *(unsigned short *)(*(char **)(p + 8) + 0x34) & 1;
         }
     }
-    g = hero_globals_base + 0xE1D;
-    if (*(int *)(g + 0x10B0) < scale_ticks(0x19)) {
+    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (g->items[0].ready_frames < scale_ticks(0x19)) {
         ((Moby *)m)->flags |= 0x41;
     }
     v = *(int *)(p + 4);
@@ -818,14 +818,14 @@ void walloper_update(char *m) {
     float vec1[4] __attribute__((aligned(16)));
     float t[4] __attribute__((aligned(16)));
     float w[5][4] __attribute__((aligned(16)));
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     int i;
     int n;
     int j;
     int q;
     int any;
 
-    if (*(unsigned char *)(*(char **)(g + 0x2080) + 0x53) != 0x82) {
+    if (*(unsigned char *)(*(char **)&g->moby + 0x53) != 0x82) {
         held_weapon_tesla_walloper_factor = 0.1f;
     }
     switch (*(unsigned char *)(m + 0x20)) {
@@ -840,7 +840,7 @@ void walloper_update(char *m) {
         walloper_effect_fade_out_countdown = scale_ticks(*(int *)&walloper_fade_out_ticks);
         break;
     case 2:
-        if (*(int *)(g + 0x2084) == 0x20) {
+        if (g->state.current == 0x20) {
             float f = MobyGetFrameValue(m);
             if (6.0f <= f) {
                 flag = 1;
@@ -1164,14 +1164,14 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
     int res[1];
     float distance, angle, elevation, headingError, limit, apparentAngle, radius, reduction;
     int i;
-    char *g;
+    struct Hero *g;
     char *m0;
 
     limit = *(float *)&tesla_arc_range;
     a0s[0] = (int)self;
     *(VecQuad *)start = *(VecQuad *)position;
-    g = hero_globals_base + 0xE1D;
-    m0 = *(char **)(g + 0x2080);
+    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    m0 = *(char **)&g->moby;
     *(VecQuad *)end = *(VecQuad *)(m0 + 0x10);
     position = start;
     end[2] = position[2];
@@ -1201,13 +1201,13 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
         distance = FastVecDist(position, target);
         if (distance < 2.5f) {
             float toward;
-            char *g1 = hero_globals_base + 0xE1D;
-            moby = *(char **)(g1 + 0x2080);
-            toward = fast_atan2(*(float *)(candidate + 0x10) - *(float *)(g1 + 0x80),
-                                   *(float *)(candidate + 0x14) - *(float *)(g1 + 0x84));
+            struct Hero *g1 = (struct Hero *)(hero_globals_base + 0xE1D);
+            moby = *(char **)&g1->moby;
+            toward = fast_atan2(*(float *)(candidate + 0x10) - g1->motion.pos.f[0],
+                                   *(float *)(candidate + 0x14) - g1->motion.pos.f[1]);
             if (FastDiffRots(*(float *)(moby + 0x48), toward) < 1.0471976f &&
                 FastAbsF(position[2] - target[2]) < 2.0f &&
-                !coll_line((Vec4f *)position, (Vec4f *)target, 6, *(char **)(g1 + 0x2080), 0)) {
+                !coll_line((Vec4f *)position, (Vec4f *)target, 6, *(char **)&g1->moby, 0)) {
                 res[0] = (int)candidate;
                 *pitch = -elevation;
                 *heading = angle;
@@ -1217,8 +1217,8 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
         if (distance > limit)
             continue;
         {
-            char *g2 = hero_globals_base + 0xE1D;
-            BuildSphericalOffset(offset, distance, *heading, *pitch + *(float *)(g2 + 0x2E4) * 0.5f);
+            struct Hero *g2 = (struct Hero *)(hero_globals_base + 0xE1D);
+            BuildSphericalOffset(offset, distance, *heading, *pitch + g2->ground_pitch.f * 0.5f);
         }
         FastVecAdd(offset, offset, position);
         apparentAngle = FastArcSin(FastVecDist(offset, target) / (distance + distance));

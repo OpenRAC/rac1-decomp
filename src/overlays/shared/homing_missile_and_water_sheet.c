@@ -1376,10 +1376,10 @@ extern int coll_sphere(float, void *, int, void *);
 void update_moby_hit_stats_and_state(char *m) {
     char *d = ((char *)((Moby *)m)->pvars);
     char *info = MobyGetHitMessage(m, 0x330000, 0);
-    char *g;
+    struct Hero *g;
     ((unsigned char *)m)[0xA4] = 0xFF;
-    g = hero_globals_base + 0xE1D;
-    if (*(int *)(g + 0x2084) != 0x32) {
+    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (g->state.current != 0x32) {
         ((Moby *)m)->flags &= 0xEFFF;
     } else {
         ((Moby *)m)->flags |= 0x1000;
@@ -1416,8 +1416,8 @@ void update_moby_hit_stats_and_state(char *m) {
             }
         }
     } else if (((unsigned char *)m)[0x20] == 5) {
-        char *g2 = hero_globals_base + 0xE1D;
-        if (*(int *)(g2 + 0x2084) != 0x32) {
+        struct Hero *g2 = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (g2->state.current != 0x32) {
             m[0x20] = 4;
             *(int *)&((Moby *)m)->collision = 0;
             ((Moby *)m)->flags |= 1;

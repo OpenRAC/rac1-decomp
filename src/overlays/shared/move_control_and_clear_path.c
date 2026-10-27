@@ -2,6 +2,7 @@
 #include "common.h"
 #include "vector.h"
 #include "include_asm.h"
+#include "hero.h"
 
 // Fills a jump pattern record with its default constants.
 void MoveCtl_Init(char *p)
@@ -240,13 +241,13 @@ s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius,
 extern char hero_globals_base[];
 /* Return 1 when the hero is standing on or riding moby m. */
 int is_hero_on_moby(char *m) {
-    char *h = hero_globals_base + 0xE1D;
+    struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
 
-    if (*(int *)(h + 0x208C) == 3 || *(int *)(h + 0x2084) == 0x1C) {
-        if (*(char **)(h + 0x4F8) == m) {
+    if (h->state.control_mode == 3 || h->state.current == 0x1C) {
+        if (*(char **)&h->ledge_moby == m) {
             return 1;
         }
-    } else if (*(short *)(h + 0x30E) == 0 && *(char **)(h + 0x2FC) == m) {
+    } else if (h->air_frames.s == 0 && *(char **)&h->ground_moby == m) {
         return 1;
     }
     return 0;

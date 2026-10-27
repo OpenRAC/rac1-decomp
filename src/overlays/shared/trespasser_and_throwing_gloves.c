@@ -756,7 +756,7 @@ void aim_throw_arc(float *a, float *b, float *out, float x, float y, float lim) 
     V4 t;
     float u[3];
     float r, e, q;
-    char *base;
+    struct Hero *base;
     if (lim < FastVecDist(a, b)) {
         FastVecSub(&t, b, a);
         vec_scale_to_length(&t, &t, lim - 0.01f);
@@ -765,11 +765,11 @@ void aim_throw_arc(float *a, float *b, float *out, float x, float y, float lim) 
         qcopy(&t, b);
     }
     r = fast_atan2(t.x - a[0], t.y - a[1]);
-    base = (char *)hero_globals_base + 0xE1D;
-    if (0.87266463f < FastDiffRots(*(float *)(base + 0x98), r) || vec_distance_xy(a, &t) < 1.5f) {
-        r = *(float *)(base + 0x98);
+    base = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    if (0.87266463f < FastDiffRots(base->motion.rot.f[2], r) || vec_distance_xy(a, &t) < 1.5f) {
+        r = base->motion.rot.f[2];
         u[0] = FastCos(r) * 1.5f;
-        u[1] = FastSin(*(float *)(base + 0x98)) * 1.5f;
+        u[1] = FastSin(base->motion.rot.f[2]) * 1.5f;
         u[2] = 0.0f;
         FastVecAdd(u, u, a);
         t.x = u[0];
@@ -2639,7 +2639,7 @@ void compute_glove_of_doom_launch_velocity(float *pos, float *tgt, float *out, f
     float s;
     float k;
     float v;
-    char *P;
+    struct Hero *P;
     if (range < FastVecDist(pos, tgt)) {
         FastVecSub(&t, tgt, pos);
         vec_scale_to_length(&t, &t, range - 0.01f);
@@ -2648,11 +2648,11 @@ void compute_glove_of_doom_launch_velocity(float *pos, float *tgt, float *out, f
         qcopy(&t, tgt);
     }
     ang = fast_atan2(t.x - pos[0], t.y - pos[1]);
-    P = (char *)hero_globals_base + 0xE1D;
-    if (FastDiffRots(*(float *)(P + 0x98), ang) > 0.87266463f || vec_distance_xy(pos, &t) < 1.5f) {
-        ang = *(float *)(P + 0x98);
+    P = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    if (FastDiffRots(P->motion.rot.f[2], ang) > 0.87266463f || vec_distance_xy(pos, &t) < 1.5f) {
+        ang = P->motion.rot.f[2];
         u.x = FastCos(ang) * 1.5f;
-        u.y = FastSin(*(float *)(P + 0x98)) * 1.5f;
+        u.y = FastSin(P->motion.rot.f[2]) * 1.5f;
         *(int *)&u.z = 0;
         FastVecAdd(&u, &u, pos);
         t.x = u.x;
@@ -2965,7 +2965,7 @@ extern short glove_of_doom_ring_index;
 char *spawn_glove_of_doom_held_moby(int a0, char *pos, char *vec) {
     char *m = CreateMoby_m(0xE6);
     char *d;
-    char *g;
+    struct Hero *g;
     char *old;
 
     if (m != 0) {
@@ -2980,8 +2980,8 @@ char *spawn_glove_of_doom_held_moby(int a0, char *pos, char *vec) {
         *(int *)(d + 0x34) = 0;
         *(short *)(d + 0x38) = 0;
         ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.01f;
-        g = (char *)hero_globals_base + 0xE1D;
-        if (*(unsigned char *)(g + 0x20A5) != 0 || *(unsigned char *)(g + 0x20AF) != 0) {
+        g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (g->unk20A5 != 0 || g->unk20AF != 0) {
             ((Moby *)m)->flags |= 0x41;
         }
         old = (char *)glove_of_doom_ring[*(int *)&glove_of_doom_ring_index];

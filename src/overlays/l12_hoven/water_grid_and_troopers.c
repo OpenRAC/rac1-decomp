@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "moby.h"
+#include "hero.h"
 
 /* functional: medium. level 12 moby update (class 19): state 0 claims a slot in the 0x1190-byte table and builds it,
  * state 2 steers, then the per-frame tail. Not a match (1380 bytes against 1420). Starts from the near miss in
@@ -60,7 +61,7 @@ typedef struct {
 void update_level_12_water_tile(char *moby) {
     L12WaterTileData *data;
     char *rec;
-    char *x;
+    struct Hero *x;
     char *q;
     float *P;
     float one;
@@ -157,14 +158,14 @@ void update_level_12_water_tile(char *moby) {
             ApproachWithVelocity(&((struct Moby *)moby)->pos.z, &data->vel, data->target_z, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f);
             Group_CopyZToTableSlots(moby);
         }
-        x = hero_globals_base + 0xE1D;
-        dist_x = FastAbsF(*(float *)(x + 0x80) - ((struct Moby *)moby)->pos.x);
+        x = (struct Hero *)(hero_globals_base + 0xE1D);
+        dist_x = FastAbsF(x->motion.pos.f[0] - ((struct Moby *)moby)->pos.x);
         if (dist_x <= 8.0f) {
-            *(float *)(x + 0x2F0) = ((struct Moby *)moby)->pos.z;
+            x->water_surface_z = ((struct Moby *)moby)->pos.z;
         } else {
-            dist_y = FastAbsF(*(float *)(x + 0x84) - ((struct Moby *)moby)->pos.y);
+            dist_y = FastAbsF(x->motion.pos.f[1] - ((struct Moby *)moby)->pos.y);
             if (dist_y <= 8.0f) {
-                *(float *)(x + 0x2F0) = ((struct Moby *)moby)->pos.z;
+                x->water_surface_z = ((struct Moby *)moby)->pos.z;
             }
         }
         if (random_integer_below(200) == 0) {

@@ -6,6 +6,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "camera.h"
+#include "hero.h"
 
 extern CameraSystem player_camera;
 extern char hero_globals_base[];
@@ -25,7 +26,7 @@ void setup_level_cameras(void) {
     CameraSystem *g1;
     CameraFollow *q;
     Vec4 *p1;
-    char *base;
+    struct Hero *base;
     int i;
     int k;
 
@@ -38,19 +39,19 @@ void setup_level_cameras(void) {
         gCameraSlotUsedLvl[k] = 0;
     }
     g1 = &player_camera;
-    base = hero_globals_base + 0xE1D;
+    base = (struct Hero *)(hero_globals_base + 0xE1D);
     q = &g1->follow;
     p1 = &g1->follow.up;
     g1->previous = 0;
     g1->blend.phase = 0;
-    vec_scale_to_length(p1, (char *)(*(int *)(base + 0x2080) + 0xE0), 1.0f);
+    vec_scale_to_length(p1, (char *)(*(int *)&base->moby + 0xE0), 1.0f);
     qcopy(&g1->follow.up_target, p1);
     qcopy(&g1->follow.up_target_prev, p1);
     clear_u64_value(g1->follow.up_vel);
-    qcopy(&g1->follow.hero_prev, base + 0x80);
+    qcopy(&g1->follow.hero_prev, &base->motion.pos);
     {
-        float f0 = *(float *)(base + 0x98);
-        float f1 = *(float *)(base + 0x88);
+        float f0 = base->motion.rot.f[2];
+        float f1 = base->motion.pos.f[2];
         q->hero_coll_moby = 0;
         q->unkCC = 0;
         q->coll_bits = 0;

@@ -2723,11 +2723,11 @@ void SharkigatorUpdate(unsigned char *moby) {
         Profile_Mark(start, mpos);
         FastVecSub(data + 0xD0, mpos, old);
         if (one <= F(data, 0x14C)) {
-            char *g = hero_globals_base + 0xE1D;
-            *(int *)(g + 0x22A8) = 0;
+            struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+            g->health.hp = 0;
             HeroEnterMoveState(0x3D, 1);
-            *(int *)(*(char **)(g + 0x2080) + 0x98) = -1;
-            g[0x20A5] = 1;
+            *(int *)(*(char **)&g->moby + 0x98) = -1;
+            *(char *)&g->unk20A5 = 1;
             ((Moby *)moby)->state = 6;
         } else {
             F(data, 0x13C) = ang;

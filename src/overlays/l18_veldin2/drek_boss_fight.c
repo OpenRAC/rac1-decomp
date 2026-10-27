@@ -480,11 +480,11 @@ void update_lift_state_and_queue_draw(unsigned char *m)
         synchronize_lift_group_height(m);
         ApproachWithVelocity(d->f0, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f, (float *)(m + 0x18), (float *)((char *)d + 0x18));
         if (FastAbsF(((Moby *)m)->pos.z - d->f0) > 0.1f) {
-            char *b = hero_globals_base + 0xE1D;
-            if ((unsigned)(*(int *)(b + 0x208C) - 0x11) < 2) {
+            struct Hero *b = (struct Hero *)(hero_globals_base + 0xE1D);
+            if ((unsigned)(b->state.control_mode - 0x11) < 2) {
                 float f = ((Moby *)m)->pos.z;
-                if (*(float *)(b + 0x2F0) < f) {
-                    *(float *)(b + 0x2F0) = f;
+                if (b->water_surface_z < f) {
+                    b->water_surface_z = f;
                 }
             }
         }
@@ -1912,11 +1912,11 @@ extern short sinking_platform_fall_count;
 void count_drek_boss_platform_event_once(char *moby) {
     char *d = ((char *)((Moby *)moby)->pvars);
     if (*(int *)(d + 0x3E4) == 0) {
-        char *a = hero_globals_base + 0xE1D;
-        if (*(int *)(a + 0x300) != 0) {
-            *(int *)(d + 0x3E8) = *(int *)(a + 0x2FC);
+        struct Hero *a = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (a->grounded_frames != 0) {
+            *(int *)(d + 0x3E8) = *(int *)&a->ground_moby;
         }
-        if (*(int *)(a + 0x2084) == 0x77) {
+        if (a->state.current == 0x77) {
             char *t = *(char **)(d + 0x3E8);
             *(int *)(d + 0x3E4) = 1;
             if (t != 0) {
@@ -2550,8 +2550,8 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
     y = (*(float *)&drek_boss_second_scalar_far_hero_target_gp - *(float *)&drek_boss_second_scalar_near_hero_target_gp) * f + *(float *)&drek_boss_second_scalar_near_hero_target_gp;
     st = ((Moby *)moby)->state;
     if (st == 0x13) {
-        char *g = hero_globals_base + 0xE1D;
-        if ((*(int *)(g + 0x208C) == 0xF || *(int *)(g + 0x2084) == 0x42) && *(int *)(d + 0x364) == 0 &&
+        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        if ((g->state.control_mode == 0xF || g->state.current == 0x42) && *(int *)(d + 0x364) == 0 &&
             *(float *)(d + 0x390) <= 25.0f && *(int *)(d + 0x360) == 0) {
 x = *(float *)&drek_boss_first_scalar_gated_follow_target_gp;
             y = *(float *)&drek_boss_second_scalar_gated_follow_target_gp;
@@ -2578,7 +2578,7 @@ x = *(float *)&drek_boss_first_scalar_gated_follow_target_gp;
             p3 = (float *)(d + 0x37C);
     } else if (st == 0 || st == 10 || st == 11 || st == 1 || st == 0x1B) {
         int i;
-        char *g;
+        struct Hero *g;
         char *q;
         p0 = (float *)(t + 0x34);
             p1 = (float *)(t + 0x38);
@@ -2586,8 +2586,8 @@ x = *(float *)&drek_boss_first_scalar_gated_follow_target_gp;
             char *m;
             if (*(int *)(d + 0x3EC) == 0) {
                 char *pl;
-                g = hero_globals_base + 0xE1D;
-                pl = *(char **)(g + 0x2FC);
+                g = (struct Hero *)(hero_globals_base + 0xE1D);
+                pl = *(char **)&g->ground_moby;
                 if (pl != 0 && *(short *)(pl + 0xA6) == 0x24B) {
                     *(int *)(d + 0x3EC) = 1;
                 }

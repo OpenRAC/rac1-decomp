@@ -1697,9 +1697,9 @@ void alien_snapper_update(Moby *moby)
             moby->state = 0xC;
         } else if (vec_distance_xy(&moby->pos, &target->pos) < D_L06_00161F54_91A8) {
             if (FastAbsF_r2(target->pos.z - moby->pos.z) < 1.0f) {
-                char *hero = hero_globals_base + 0xE1D;
+                struct Hero *hero = (struct Hero *)(hero_globals_base + 0xE1D);
 
-                if (*(int *)(hero + 0x1C0) < scale_ticks(10)) {
+                if (hero->invulnerable_frames < scale_ticks(10)) {
                     moby->state = 0xB;
                     if (moby->prev_seq != 4) {
                         MobyBlendAnimation_r(moby, 4, 0, scale_ticks(10));
@@ -1783,13 +1783,13 @@ void alien_snapper_update(Moby *moby)
         break;
     }
     case 15: {
-        char *hero = hero_globals_base + 0xE1D;
+        struct Hero *hero = (struct Hero *)(hero_globals_base + 0xE1D);
 
         SteerAngleWithVelocity_r(&moby->rot.z,
-                          fast_atan2_r(*(float *)(hero + 0x80) - moby->pos.x,
-                                                 *(float *)(hero + 0x84) - moby->pos.y), &v->f190,
+                          fast_atan2_r(hero->motion.pos.f[0] - moby->pos.x,
+                                                 hero->motion.pos.f[1] - moby->pos.y), &v->f190,
                           g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f, g_frame_time * 12.566371f);
-        if (vec_distance_xy(&moby->pos, hero + 0x80) < 4.0f) {
+        if (vec_distance_xy(&moby->pos, &hero->motion.pos) < 4.0f) {
             moby->state = 0x10;
             if (moby->prev_seq != 4) {
                 MobyBlendAnimation_r(moby, 4, 0, scale_ticks(20));
@@ -1798,11 +1798,11 @@ void alien_snapper_update(Moby *moby)
         break;
     }
     case 16: {
-        char *hero = hero_globals_base + 0xE1D;
+        struct Hero *hero = (struct Hero *)(hero_globals_base + 0xE1D);
 
         SteerAngleWithVelocity_r(&moby->rot.z,
-                          fast_atan2_r(*(float *)(hero + 0x80) - moby->pos.x,
-                                                 *(float *)(hero + 0x84) - moby->pos.y), &v->f190,
+                          fast_atan2_r(hero->motion.pos.f[0] - moby->pos.x,
+                                                 hero->motion.pos.f[1] - moby->pos.y), &v->f190,
                           g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f, g_frame_time * 12.566371f);
         if (1.0f < MobyGetFrameValue_r(moby) && MobyGetFrameValue_r(moby) < 8.0f) {
             u.bite.push[0] = FastCos(moby->rot.z) * 0.2f;
@@ -2791,9 +2791,9 @@ int update_alien_queen_intro_camera(char *moby) {
         vec_scale_to_length(v1, moby + 0xC0, 8.0f);
         FastVecAdd(v1, v1, moby + 0x10);
         x = hero_globals_base + 0xE1D;
-        v1[2] = *(float *)(x + 0x88) + 2.0f;
+        v1[2] = ((struct Hero *)x)->motion.pos.f[2] + 2.0f;
         vec_scale_to_length(v2, x, -7.0f);
-        FastVecAdd(v2, v2, x + 0x80);
+        FastVecAdd(v2, v2, &((struct Hero *)x)->motion.pos);
         v2[2] += 4.0f;
         pos = moby + 0x10;
         lerp_vector(v0, v1, v2, *(float *)(data + 0x118));
@@ -2835,9 +2835,9 @@ int update_alien_queen_first_recovery_camera(char *moby) {
         vec_scale_to_length(v1, moby + 0xC0, 8.0f);
         FastVecAdd(v1, v1, moby + 0x10);
         x = hero_globals_base + 0xE1D;
-        v1[2] = *(float *)(x + 0x88) + 2.0f;
+        v1[2] = ((struct Hero *)x)->motion.pos.f[2] + 2.0f;
         vec_scale_to_length(v2, x, -7.0f);
-        FastVecAdd(v2, v2, x + 0x80);
+        FastVecAdd(v2, v2, &((struct Hero *)x)->motion.pos);
         v2[2] += 4.0f;
         pos = moby + 0x10;
         lerp_vector(v0, v1, v2, *(float *)(data + 0x118));
@@ -3396,8 +3396,8 @@ void enqueue_moby_draw_callbacks_by_clip_volume(char *moby) {
     }
     p = data + 0x10;
     for (i = 0; i < 4; p++, i++) {
-        char *g = (char *)hero_globals_base + 0xE1D;
-        if (*(int *)(g + 0x208C) == 15 || (*p >= 0 && is_point_inside_clip_volume(blarg_camera_pos, *p))) {
+        struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (g->state.control_mode == 15 || (*p >= 0 && is_point_inside_clip_volume(blarg_camera_pos, *p))) {
             AddDrawCallback((void *)draw_dual_texture_864_quad_mesh, moby);
             return;
         }

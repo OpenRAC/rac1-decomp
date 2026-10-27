@@ -298,16 +298,16 @@ extern float g_frame_time MACRO_ADDR;
 
 // Resets the screen fade and eases a scale factor toward one of two table targets.
 void quantize_hero_input_target_speed(void) {
-    char *x;
+    struct Hero *x;
     float cur;
     stick_target(1.0f, 0);
-    x = hero_globals_base + 0xE1D;
-    cur = *(float *)(x + 0x190);
+    x = (struct Hero *)(hero_globals_base + 0xE1D);
+    cur = x->target_speed;
     if (0.0f < cur) {
         if (cur < blarg_hero_speed_bands[3]) {
-            *(float *)(x + 0x190) = blarg_hero_speed_bands[2] * g_frame_time;
+            x->target_speed = blarg_hero_speed_bands[2] * g_frame_time;
         } else {
-            *(float *)(x + 0x190) = blarg_hero_speed_bands[6] * g_frame_time;
+            x->target_speed = blarg_hero_speed_bands[6] * g_frame_time;
         }
     }
 }

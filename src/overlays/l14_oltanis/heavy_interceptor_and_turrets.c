@@ -3542,7 +3542,7 @@ extern float FastArcSin(float x);
 // Turns a moby's tail toward its target: a spring on each of its three points, with the axis-angle rotation for the tilt.
 void update_platform_tilt_basis(char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
-    char *g = (char *)hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     float v[4];
     float up[4];
     float d[4];
@@ -3556,12 +3556,12 @@ void update_platform_tilt_basis(char *moby) {
     up[2] = 1.0f;
     up[3] = 1.0f;
 
-    if ((*(char **)(g + 0x2FC) == moby && *(short *)(g + 0x30E) == 0) ||
-        (*(char **)(g + 0x4F8) == moby && *(int *)(g + 0x208C) == 3)) {
-        char *p = (char *)hero_globals_base + 0xE1D;
+    if ((*(char **)&g->ground_moby == moby && g->air_frames.s == 0) ||
+        (*(char **)&g->ledge_moby == moby && g->state.control_mode == 3)) {
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         *(char *)&((Moby *)moby)->command = 1;
-        if (FastAbsF(*(float *)(p + 0x80) - ((Moby *)moby)->pos.x) < 0.1f &&
-            FastAbsF(*(float *)(p + 0x84) - ((Moby *)moby)->pos.y) < 0.1f) {
+        if (FastAbsF(p->motion.pos.f[0] - ((Moby *)moby)->pos.x) < 0.1f &&
+            FastAbsF(p->motion.pos.f[1] - ((Moby *)moby)->pos.y) < 0.1f) {
             qcopy(v, up);
         } else {
             FastVecSub(d, (char *)hero_globals_base + 0xE9D, moby + 0x10);

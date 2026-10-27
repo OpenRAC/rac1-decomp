@@ -3,6 +3,7 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "moby.h"
+#include "hero.h"
 
 typedef int v128 __attribute__((mode(TI)));
 extern float animation_start(int a, unsigned int b);
@@ -342,8 +343,8 @@ void dreks_fleet_turret_update(char *m) {
         }
         break;
     case 1: {
-        char *g = (char *)hero_globals_base + 0xE1D;
-        if (*(short *)(g + 0x308) != 0) {
+        struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (g->unk308 != 0) {
             qcopy(dir, m + 0x10);
             dir[2] += 10.0f;
             FastVecSub(from, fleet_camera_points + (d->zone << 7) + 0x30, dir);
@@ -353,10 +354,10 @@ void dreks_fleet_turret_update(char *m) {
             if (coll_line(dir, from, 2, m, 0) == 0) {
                 ((Moby *)m)->state = 2;
             }
-        } else if (*(int *)(g + 0x2084) == 0x32) {
-            char *v = *(char **)(g + 0x15F0);
+        } else if (g->state.current == 0x32) {
+            char *v = *(char **)&g->ship_moby;
             if (v != 0 && *(short *)(v + 0xA6) == 0x563) {
-                if (vec_distance_xy(m + 0x10, g + 0x80) < 254.0f) {
+                if (vec_distance_xy(m + 0x10, &g->motion.pos) < 254.0f) {
                     ((Moby *)m)->state = 3;
                 }
             }
@@ -411,8 +412,8 @@ void dreks_fleet_turret_update(char *m) {
         break;
     }
     case 3: {
-        char *g = (char *)hero_globals_base + 0xE1D;
-        if (*(int *)(g + 0x2084) != 0x32 || *(char **)(g + 0x15F0) == 0 || *(short *)(*(char **)(g + 0x15F0) + 0xA6) != 0x563) {
+        struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (g->state.current != 0x32 || *(char **)&g->ship_moby == 0 || *(short *)(*(char **)&g->ship_moby + 0xA6) != 0x563) {
             ((Moby *)m)->state = 1;
         } else {
             Aim347 aim;
@@ -437,7 +438,7 @@ void dreks_fleet_turret_update(char *m) {
             off = FastDiffRots(d->fD4, -fast_atan2(vec_length_xy(dir), dir[2]));
             if (fast_dec_timer(&d->timer) && off < 0.034906585f) {
                 if (FastDiffRots(((Moby *)m)->rot.z, fast_atan2(aim.pos[0] - ((Moby *)m)->pos.x, aim.pos[1] - ((Moby *)m)->pos.y)) < 0.034906585f) {
-                    if (coll_line(from, aim.pos, 2, *(char **)(g + 0x15F0), 0) == 0) {
+                    if (coll_line(from, aim.pos, 2, *(char **)&g->ship_moby, 0) == 0) {
                         char *p;
                         qzero(zero);
                         FastVecSub(tmp, j + 4, j);
@@ -813,7 +814,7 @@ void update_fleet_bobbing_moby(char *m) {
     int out;
     char *data = ((char *)((Moby *)m)->pvars);
     char *r;
-    char *g;
+    struct Hero *g;
     float yy;
     int i;
     clear_u64_value(v);
@@ -835,8 +836,8 @@ void update_fleet_bobbing_moby(char *m) {
         InitDirectionalHitQuery_alt(w, (int)m, 0x10001, 1.0f, v);
         qcopy(pos, m + 0x10);
         pos[2] = pos[2] + 0.75f;
-        g = (char *)hero_globals_base + 0xE1D;
-        if (*(char **)(g + 0x23C) == m || *(char **)(g + 0x240) == m || coll_sphere_mobys_alt(1.0f, pos, 0x10, m, w)) {
+        g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (*(char **)&g->coll_hit_moby == m || *(char **)&g->unk240 == m || coll_sphere_mobys_alt(1.0f, pos, 0x10, m, w)) {
             if (fleet_coll_hit_moby != 0 && *(short *)(fleet_coll_hit_moby + 0xA6) != 0x343) {
                 spawn_explosion_alt(m, v, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 1, 7.0f, 0, 1, -1, 0);
                 ((Moby *)m)->pos.z = ((Moby *)m)->pos.z + 1.0f;
@@ -1028,8 +1029,8 @@ void update_drone_flight_and_sparks(char *moby) {
     float w[12];
     char *d = ((char *)((Moby *)moby)->pvars);
     char *t;
-    char *g;
-    char *g2;
+    struct Hero *g;
+    struct Hero *g2;
     char *r;
     int step;
     int hit;
@@ -1074,8 +1075,8 @@ void update_drone_flight_and_sparks(char *moby) {
             hit = *(int *)(r + 0x18);
             if (hit != 0) {
                 if (hit != *(int *)(d + 0x3C)) {
-                    g = (char *)hero_globals_base + 0xE1D;
-                    if (*(short *)(g + 0x308) != 0 && hit == *(int *)(g + 0x2080)) {
+                    g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+                    if (g->unk308 != 0 && hit == *(int *)&g->moby) {
                         unsigned char *rec = help_stats_base + 0x34D;
                         if (*(unsigned short *)(rec + 0x458) == 0) {
                             (*(unsigned short *)(rec + 0x458))++;
@@ -1088,8 +1089,8 @@ void update_drone_flight_and_sparks(char *moby) {
                     }
                     qcopy(moby + 0x10, fleet_coll_hit_point);
                     MobySphereHitDirectional((int)moby, 0.75f, moby + 0x10, 1, 6.0f, 0.0f, 0, 1, 0);
-                    g2 = (char *)hero_globals_base + 0xE1D;
-                    if (*(short *)(g2 + 0x308) != 0 && *(int *)(fleet_coll_hit_point - 8) == *(int *)(g2 + 0x2080)) {
+                    g2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+                    if (g2->unk308 != 0 && *(int *)(fleet_coll_hit_point - 8) == *(int *)&g2->moby) {
                         unsigned char *rec = help_stats_base + 0x34D;
                         if (*(unsigned short *)(rec + 0x458) == 0) {
                             (*(unsigned short *)(rec + 0x458))++;
@@ -1567,10 +1568,10 @@ extern short fleet_hud_health_clut;
 void DrawFleetHud(char *moby) {
     char *d = ((char *)((Moby *)moby)->pvars);
     char *s;
-    unsigned char *base;
-    unsigned char *g;
-    unsigned char *h;
-    unsigned char *b;
+    struct Hero *base;
+    struct Hero *g;
+    struct Hero *h;
+    struct Hero *b;
     int sp10;
     int sp14;
     int tex;
@@ -1620,16 +1621,16 @@ void DrawFleetHud(char *moby) {
     }
     y = 0x40;
     x = 0x18;
-    base = hero_globals_base + 0xE1D;
-    n = base[0x15F7];
+    base = (struct Hero *)(hero_globals_base + 0xE1D);
+    n = base->ship_ammo_max;
     for (i = 0; i < n; i++) {
-        g = hero_globals_base + 0xE1D;
-        if (i < g[0x15F6]) {
+        g = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (i < g->ship_ammo) {
             append_scaled_screen_triangle_strip(x, y, 0.5f, fleet_hud_ammo_pip_shape, 0x19, 0xFFFFF3, 0x50008F00);
         } else {
             append_scaled_screen_triangle_strip(x, y, 0.5f, fleet_hud_ammo_pip_shape, 0x19, 0xFFFFF3, 0x20004F00);
         }
-        n = g[0x15F7];
+        n = g->ship_ammo_max;
         if (i == n >> 1) {
             y = 0x2E;
             x += 0x1E;
@@ -1642,20 +1643,20 @@ void DrawFleetHud(char *moby) {
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, GetEffectTex(0x12), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, GetEffectTex(8), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
-    b = hero_globals_base + 0xE1D;
-    if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) / 10.0f && (fleet_frame_count / 90) & 1) {
+    b = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (b->ship_hp < b->ship_hp_max / 10.0f && (fleet_frame_count / 90) & 1) {
         FontPrintCenterSmall_c(0x100, 0x186, 0x80000080L, msg_string_id(0x526E), 0x64);
     }
     if (((Moby *)moby)->state == 8) {
         FontPrintCenterSmall_c(0x100, 0xC8, 0x80005080L, msg_string_id(0x5243), 0x64);
     }
-    h = hero_globals_base + 0xE1D;
-    f = *(float *)(h + 0x15FC) - *(float *)(d + 0xF0);
+    h = (struct Hero *)(hero_globals_base + 0xE1D);
+    f = h->ship_hp - *(float *)(d + 0xF0);
     f *= 0.2f;
     q = FastAbsF(f);
     if (q > 1.0f) f /= q;
     *(float *)(d + 0xF0) += f;
-    v = truncate_float_to_s32_r(*(float *)(d + 0xF0) * 251.0f / *(float *)(h + 0x1600)) + 2;
+    v = truncate_float_to_s32_r(*(float *)(d + 0xF0) * 251.0f / h->ship_hp_max) + 2;
     if (v > 0xFD) v = 0xFD;
     if (v < 2) v = 2;
     lo = *(int *)(d + 0xF4) <= v ? *(int *)(d + 0xF4) : v;
@@ -1876,7 +1877,7 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
     float t;
     float k;
     char *pad;
-    char *g;
+    struct Hero *g;
     char *e;
     char *p;
     int idx;
@@ -1935,9 +1936,9 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
     }
 
     if (fleet_jet_steer_start_frame < o->count) {
-        g = (char *)hero_globals_base + 0xE1D;
-        x = *(float *)(g + 0x1D20);
-        y = *(float *)(g + 0x1D24);
+        g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        x = g->stick_x;
+        y = g->stick_y;
         ka = fighter_jet_horizontal_steering_settle_threshold_scale_gp;
         kb = fighter_jet_vertical_steering_settle_threshold_scale_gp;
         a = x;
@@ -2057,9 +2058,9 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
             o->speed = k;
             if (*(char **)(p + 0x18) != 0 && *(short *)(*(char **)(p + 0x18) + 0xA6) != 0x15B) {
                 if (o->iDC == 0) {
-                    g = (char *)hero_globals_base + 0xE1D;
-                    *(float *)(g + 0x15FC) = *(float *)(g + 0x15FC) - fighter_jet_collision_damage_gp;
-                    if (*(float *)(g + 0x15FC) < 0.0f) {
+                    g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+                    g->ship_hp = g->ship_hp - fighter_jet_collision_damage_gp;
+                    if (g->ship_hp < 0.0f) {
                         FastVecSub(side, p + 0x50, p + 0x60);
                         vec_scale_to_length(side, side, 1.0f);
                         vec_reflect(vel, dir, p + 0x40);
@@ -2606,7 +2607,7 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
     char *d = ((char *)((Moby *)moby)->pvars);
     float v[4];
     float zz, dist, tmp, hi, lo, f, t, k, r, s;
-    unsigned char *base;
+    struct Hero *base;
     FastVecScale(v, d + 0x10, *(float *)(d + 0x64) * (float)scale_ticks(0x3C));
     FastVecAdd(v, v, moby + 0x10);
     zz = v[2];
@@ -2627,8 +2628,8 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
         } else {
             *a = (1.0f - *a) * r + *a;
         }
-        base = hero_globals_base + 0xE1D;
-        base[0x160F] |= 2;
+        base = (struct Hero *)(hero_globals_base + 0xE1D);
+        base->ship_flags |= 2;
     }
     if (t - 10.0f < zz) {
         float q, w;
@@ -2640,7 +2641,7 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
         *b = (-1.0f - *b) * q + *b;
         {
             unsigned char *p = hero_globals_base + 0xE1D;
-            p[0x160F] |= 2;
+            ((struct Hero *)p)->ship_flags |= 2;
         }
     } else if (zz < k + 10.0f) {
         float q, w;
@@ -2652,7 +2653,7 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
         *b = (1.0f - *b) * q + *b;
         {
             unsigned char *p = hero_globals_base + 0xE1D;
-            p[0x160F] |= 2;
+            ((struct Hero *)p)->ship_flags |= 2;
         }
     }
 }
@@ -2789,7 +2790,7 @@ void magnet_elevator_update(char *moby) {
         W(moby, 0x90) = 0x80000000 | (i << 16) | (i << 8) | i;
         g = (char *)hero_globals_base + 0xE1D;
         if (H(g, 0x308) != 0 || W(state, 0x7C) == 0) {
-            if (P(g, 0x2FC) == moby && H(g, 0x30E) == 0 && vec_distance_xy(g + 0x80, moby + 0x10) < 0.5f) {
+            if (P(g, 0x2FC) == moby && H(g, 0x30E) == 0 && vec_distance_xy(&((struct Hero *)g)->motion.pos, moby + 0x10) < 0.5f) {
                 Moby_PlaySound(1, 0, (int)moby);
                 if (B(moby, 0x20) == 7) {
                     B(moby, 0x20) = 2;

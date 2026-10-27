@@ -1487,7 +1487,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
     char *owner;
     D_29E8A0 *d;
     M_29E8A0 *t;
-    char *hero;
+    struct Hero *hero;
     float yaw;
     float pitch;
     int k;
@@ -1619,17 +1619,17 @@ void update_target_leading_missile(M_29E8A0 *m) {
         coll.count = 1;
         qcopy(coll.v, vel);
         vec_set_length_xy(coll.v, coll.v, 1.0f);
-        hero = hero_globals_base + 0xE1D;
+        hero = (struct Hero *)(hero_globals_base + 0xE1D);
         coll.v[3] = 5627.9248f;
         coll.kind = 3;
         coll.id = m->id;
         coll.v[2] = 1.0f;
         coll.one = 1;
-        if (coll_line(v60, m->pos, 0, *(char **)(hero + 0x2080), &coll) != 0) {
+        if (coll_line(v60, m->pos, 0, *(char **)&hero->moby, &coll) != 0) {
             char *hit = quartu_coll_hit;
             char *hm = *(char **)(hit + 0x18);
             if (hm != 0) {
-                if (hm != *(char **)(hero + 0x2080) && hm != d->owner) {
+                if (hm != *(char **)&hero->moby && hm != d->owner) {
                     m->bc = 2;
                     qcopy(m->pos, hit + 0x20);
                     FastVecSub(vB0, hit + 0x50, hit + 0x60);
@@ -1648,7 +1648,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
                 vec_scale_to_length(v70, v70, g_frame_time + g_frame_time);
                 vec_scale_to_length(v80, hit + 0x40, 1.0f);
             }
-        } else if (fast_dec_timer(&d->timer) != 0 || vec_distance_xy(m->pos, (float *)(hero + 0x80)) > 260.0f) {
+        } else if (fast_dec_timer(&d->timer) != 0 || vec_distance_xy(m->pos, (float *)&hero->motion.pos) > 260.0f) {
             moby_index_list_remove(m, quartu_missile_index_list);
             DeleteMoby(m);
             return;
@@ -1818,15 +1818,15 @@ void update_scaling_fading_hit_sphere(char *param) {
     HitSphereState *state = (HitSphereState *)moby->pvars;
     float half_relative_scale = moby->scale / moby_class->scale * 0.5f;
     char *pos;
-    char *globals;
+    struct Hero *globals;
     half_relative_scale = half_relative_scale + state->offset;
     moby->scale = half_relative_scale + half_relative_scale;
     moby->scale = moby->scale * moby_class->scale;
     if (state->frames < scale_ticks(0x28))
         moby->alpha = state->frames * 127 / scale_ticks(0x28);
-    globals = hero_globals_base + 0xE1D;
+    globals = (struct Hero *)(hero_globals_base + 0xE1D);
     pos = (char *)&moby->pos;
-    MobySphereHitDirectional(half_relative_scale, *(char **)(globals + 0x2080), pos, (float)truncate_float_to_s32_r(state->radius), 1.0f, 0x30000, 0, 1, 0);
+    MobySphereHitDirectional(half_relative_scale, *(char **)&globals->moby, pos, (float)truncate_float_to_s32_r(state->radius), 1.0f, 0x30000, 0, 1, 0);
     if (fast_dec_timer(&state->frames))
         DeleteMoby(moby);
 }
@@ -2191,7 +2191,7 @@ extern float random_float_between(float, float);
 // wakes the first idle moby in a list and initialises it at a position
 int activate_first_inactive_group_moby(int idx, void *pos) {
     short *p = (short *)quartu_moby_groups[idx];
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     do {
         unsigned char *m = (unsigned char *)quartu_moby_array_m + ((*(unsigned short *)p & 0x7FFF) << 8);
         if (((Moby *)m)->state == 1) {
@@ -2206,7 +2206,7 @@ int activate_first_inactive_group_moby(int idx, void *pos) {
             *(int *)(data + 0x68) = scale_ticks(0x3C);
             qcopy(m + 0x10, pos);
             ((Moby *)m)->pos.z -= 1.0f;
-            ((Moby *)m)->rot.z = fast_atan2(*(float *)(g + 0x80) - ((Moby *)m)->pos.x, *(float *)(g + 0x84) - ((Moby *)m)->pos.y);
+            ((Moby *)m)->rot.z = fast_atan2(g->motion.pos.f[0] - ((Moby *)m)->pos.x, g->motion.pos.f[1] - ((Moby *)m)->pos.y);
             return 1;
         }
     } while (*p++ >= 0);
@@ -3219,17 +3219,17 @@ extern int hero_is_in_special_state(void);
 
 // Checks whether the pad-state object is in state 0x18/0x19 and a probed height is above a threshold.
 int hero_is_near_ground(void) {
-    char *p;
+    struct Hero *p;
     float vec[4];
     float h;
     if (hero_is_in_special_state() != 0) return 1;
-    p = hero_globals_base + 0xE1D;
-    if ((unsigned)(*(int *)(p + 0x2084) - 0x18) < 2) {
-        *(u128 *)vec = *(u128 *)(p + 0x80);
+    p = (struct Hero *)(hero_globals_base + 0xE1D);
+    if ((unsigned)(p->state.current - 0x18) < 2) {
+        *(u128 *)vec = *(u128 *)&p->motion.pos.i[0];
         vec[2] = vec[2] + 2.0f;
         h = ProbeGroundHeight(vec, 0, 0.5f);
         if (CollType() != 0) return 0;
-        if (*(float *)(p + 0x88) <= h) return 1;
+        if (p->motion.pos.f[2] <= h) return 1;
     }
     return 0;
 }

@@ -1045,7 +1045,7 @@ char *spawn_bomb(int owner, void *pos) {
     if (m) {
         V2AE110 u, t;
         char *v = ((char *)((Moby *)m)->pvars);
-        char *g;
+        struct Hero *g;
         float a;
         t.q = 0;
         t.f[0] = random_float_between(-3.1415927f, 3.1415927f);
@@ -1060,8 +1060,8 @@ char *spawn_bomb(int owner, void *pos) {
         *(short *)(v + 0x56) = 0;
         *(short *)(v + 0x6A) = 0;
         *(int *)(v + 0x60) = 0;
-        g = hero_globals_base + 0xE1D;
-        *(float *)(v + 0x6C) = fast_atan2(*(float *)(g + 0x670), *(float *)(g + 0x674));
+        g = (struct Hero *)(hero_globals_base + 0xE1D);
+        *(float *)(v + 0x6C) = fast_atan2(g->facing_x, g->facing_y);
         *(int *)(v + 0x64) = 0;
         qcopy(m + 0x10, pos);
         clear_u64_value((float *)v);
@@ -1238,27 +1238,27 @@ extern void draw_bomb_landing_marker(char *moby);
 int predict_throw_landing(void *vp, void *m, int mode) {
     V_AE6B0 position, velocity, previous, hero_position, offset, start;
     int timer, found = 0, object_hit = 0, i;
-    char *hero = hero_globals_base + 0xE1D;
+    struct Hero *hero = (struct Hero *)(hero_globals_base + 0xE1D);
         char *last;
     char *cam;
-    char *h;
+    struct Hero *h;
 
-    if (*(int *)(hero + 0x2084) == 0x72)
+    if (hero->state.current == 0x72)
         return 0;
     if (cinematic_mode != 0)
         return 0;
     qcopy(&previous, m + 0x10);
     if (*(unsigned char *)(m + 0x20) == 0) {
-        position.f[0] = FastCos(FastAddRots(-0.36196801f, fast_atan2(*(float *)(hero + 0x670), *(float *)(hero + 0x674)))) * 0.85903901f;
-        position.f[1] = FastSin(FastAddRots(-0.36196801f, fast_atan2(*(float *)(hero + 0x670), *(float *)(hero + 0x674)))) * 0.85903901f;
+        position.f[0] = FastCos(FastAddRots(-0.36196801f, fast_atan2(hero->facing_x, hero->facing_y))) * 0.85903901f;
+        position.f[1] = FastSin(FastAddRots(-0.36196801f, fast_atan2(hero->facing_x, hero->facing_y))) * 0.85903901f;
         position.f[2] = 0.0f;
-        FastVecAdd(&position, &position, hero + 0x80);
+        FastVecAdd(&position, &position, &hero->motion.pos);
         position.f[2] += 0.49082f;
         qcopy(&velocity, v);
-        if (*(int *)(hero + 0x208C) == 0xF)
-            FastVecAdd(&velocity, &velocity, hero + 0x100);
-        if (*(int *)(hero + 0x2FC) != 0 && moby_get_ride_transform(*(unsigned char **)(hero + 0x2FC)) && mode)
-            FastVecAdd(&velocity, &velocity, hero + 0x100);
+        if (hero->state.control_mode == 0xF)
+            FastVecAdd(&velocity, &velocity, &hero->motion.displacement);
+        if (*(int *)&hero->ground_moby != 0 && moby_get_ride_transform(*(unsigned char **)&hero->ground_moby) && mode)
+            FastVecAdd(&velocity, &velocity, &hero->motion.displacement);
         timer = scale_ticks(300);
     } else {
         char *hp = *(char **)(v->holder + 0x78);
@@ -1270,14 +1270,14 @@ int predict_throw_landing(void *vp, void *m, int mode) {
         if (t50)
             v->holder_flag = 1;
     }
-    h = hero_globals_base + 0xE1D;
-    cam = *(char **)(h + 0x2080);
+    h = (struct Hero *)(hero_globals_base + 0xE1D);
+    cam = *(char **)&h->moby;
     hero_position = *(V_AE6B0 *)(cam + 0x10);
     hero_position.f[2] = position.f[2];
     if (coll_line(&hero_position, &position, 0x10, (int)cam, 0) &&
         (CollType() || 0.0f < velocity.f[2])) {
         if (D_H910.moby != 0 && D_H910.i1C <= 0) {
-            if (((char *)D_H910.moby != *(char **)(h + 0x2080) && (char *)D_H910.moby != v->holder) ||
+            if (((char *)D_H910.moby != *(char **)&h->moby && (char *)D_H910.moby != v->holder) ||
                 timer < scale_ticks(300) - scale_ticks(10)) {
                 offset = (V_AE6B0){{0.0f, 0.0f, 0.0f, 0.0f}};
                 offset.f[2] = 0.5f;
@@ -1306,8 +1306,8 @@ int predict_throw_landing(void *vp, void *m, int mode) {
         }
     }
     if (screen_globals_base[0x4D0] != 0) {
-        char *g = hero_globals_base + 0xE1D;
-        if (*(int *)(g + 0x2084) == 1) {
+        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (g->state.current == 1) {
             float z = velocity.f[2];
             FastVecScale(&velocity, &velocity, 1.5f);
             velocity.f[2] = z / 1.5f;
@@ -1328,8 +1328,8 @@ int predict_throw_landing(void *vp, void *m, int mode) {
             if (!(position.f[2] - hero_position.f[2] < 2.0f))
                 goto check_surface;
             {
-                char *g = hero_globals_base + 0xE1D;
-                if (((char *)D_H910.moby == *(char **)(g + 0x2080) || (char *)D_H910.moby == v->holder) &&
+                struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+                if (((char *)D_H910.moby == *(char **)&g->moby || (char *)D_H910.moby == v->holder) &&
                     timer >= scale_ticks(300) - scale_ticks(10))
                     continue;
             }

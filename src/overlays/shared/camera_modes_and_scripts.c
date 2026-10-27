@@ -36,10 +36,10 @@ extern void FastVecAdd(void *, void *, void *);
 void update_hero_aligned_camera_position(char *p) {
     char a[16] __attribute__((aligned(16)));
     char b[16] __attribute__((aligned(16)));
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     int m;
-    vec_scale_to_length(a, *(char **)(g + 0x2080) + 0xE0, 1.0f);
-    m = *(unsigned char *)(g + 0x20A4);
+    vec_scale_to_length(a, *(char **)&g->moby + 0xE0, 1.0f);
+    m = g->vehicle_mode;
     if (m == 2) {
         FastVecScale(b, a, 9.5f);
     } else if (m == 1) {
@@ -707,7 +707,7 @@ int update_orbit_camera_from_target_moby(char *a, char *t) {
     float *c;
     char *n;
     u128 *pw;
-    char *g;
+    struct Hero *g;
     char *cam;
     char *pp;
     char *cp;
@@ -732,17 +732,17 @@ int update_orbit_camera_from_target_moby(char *a, char *t) {
     if (*(int *)(n + 0x10) > 0) goto pos;
     *(float *)(m + 0xAC) = FastAddRots(*(float *)(m + 0xAC), *(float *)(n + 0x18));
     *(float *)(n + 0x18) *= 0.97f;
-    g = (char *)hero_globals_base + 0xE1D;
+    g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     cam = player_camera_c;
-    pp = g + 0x80;
+    pp = (char *)&g->motion.pos;
     cp = cam + 0x140;
-    ang = fast_atan2(*(float *)(cam + 0x140) - *(float *)(g + 0x80), *(float *)(cam + 0x144) - *(float *)(g + 0x84));
+    ang = fast_atan2(*(float *)(cam + 0x140) - g->motion.pos.f[0], *(float *)(cam + 0x144) - g->motion.pos.f[1]);
     ang = FastDiffRots(ang, *(float *)(cam + 0x158));
     d1 = vec_distance_xy(pp, cp);
-    if (d1 < vec_distance_xy(*(char **)(g + 0x1090) + 0x10, cp)) {
+    if (d1 < vec_distance_xy(*(char **)&g->items[0].moby + 0x10, cp)) {
         x = vec_distance_xy(pp, cp);
     } else {
-        x = vec_distance_xy(*(char **)(g + 0x1090) + 0x10, cp);
+        x = vec_distance_xy(*(char **)&g->items[0].moby + 0x10, cp);
     }
     if (x < 0.77f) {
         if (ang < 1.5707964f) {
@@ -798,12 +798,12 @@ extern float FastVecDist(void *, void *);
 
 /* Sets the moby's state to 2 (and arms the camera-side fields) when the target is nearly in front and close, else to 4. */
 void select_camera_mode_by_hero_alignment_and_distance(char *m) {
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     char *s = (char *)&player_camera;
-    char *t = *(char **)(g + 0x2080);
+    char *t = *(char **)&g->moby;
     float a = fast_atan2(*(float *)(t + 0x10) - *(float *)(s + 0x140), *(float *)(t + 0x14) - *(float *)(s + 0x144));
     float b = FastDiffRots(*(float *)(s + 0x158), a);
-    if (b < 0.55850536f && FastVecDist(g + 0x80, s + 0x140) < 8.0f) {
+    if (b < 0.55850536f && FastVecDist(&g->motion.pos, s + 0x140) < 8.0f) {
         s[0x273] = 0;
         *(short *)(m + 0x7E) = 2;
         *(float *)(s + 0x294) = 0.018f;
@@ -839,7 +839,7 @@ extern float FastSin(float);
 /* Sets up the camera activation moby: tuning floats, then the pose copied from the current camera. */
 void initialize_target_tracking_camera(void *arg) {
     char *m = arg;
-    char *g;
+    struct Hero *g;
     int lvl0 = g_current_level_index;
     int lvl;
     char *p = *(char **)(m + 0x70) + 0x40;
@@ -852,11 +852,11 @@ void initialize_target_tracking_camera(void *arg) {
         *(float *)(p + 0x4C) = 2.0f;
     else
         *(float *)(p + 0x4C) = 1.5f;
-    g = hero_globals_base + 0xE1D;
+    g = (struct Hero *)(hero_globals_base + 0xE1D);
     *(float *)(p + 0x48) = 0.20943951606750488f;
     *(float *)(p + 0x58) = 0.001745329238474369f;
     *(float *)(p + 0x5C) = -0.004363323096185923f;
-    *(int *)(p + 0x44) = *(int *)(g + 0x2080);
+    *(int *)(p + 0x44) = *(int *)&g->moby;
     {
         char *q0 = *(char **)(m + 0x70);
         *(float *)(q0 + 0xA0) = 4.639999866485596f;
@@ -889,20 +889,20 @@ void initialize_target_tracking_camera(void *arg) {
     qcopy(m + 0x20, src + 0x20);
     qcopy(m + 0x40, m);
     *(short *)(m + 0x7E) = 0;
-    lvl = *(int *)(g + 0x2084);
+    lvl = g->state.current;
     if ((unsigned)(lvl - 0x2C) < 2) {
-        *(float *)(p + 0x30) = FastCos(*(float *)(g + 0x9AC));
-        *(float *)(p + 0x34) = FastSin(*(float *)(g + 0x9AC));
+        *(float *)(p + 0x30) = FastCos(g->swing_yaw);
+        *(float *)(p + 0x34) = FastSin(g->swing_yaw);
         *(int *)(p + 0x38) = 0;
-        *(float *)(s19 + 0xB8) = *(float *)(g + 0x9AC);
-        *(int *)(w + 8) = *(int *)(g + 0x994);
+        *(float *)(s19 + 0xB8) = g->swing_yaw;
+        *(int *)(w + 8) = *(int *)&g->swing_target_moby;
     } else {
-        FastVecSub(p + 0x30, *(char **)(g + 0x964) + 0x10, m + 0x30);
+        FastVecSub(p + 0x30, *(char **)&g->grapple_target + 0x10, m + 0x30);
         *(int *)(p + 0x38) = 0;
         *(int *)(p + 0x3C) = 0;
         vec_scale_to_length(p + 0x30, p + 0x30, 1.0f);
         *(float *)(s19 + 0xB8) = fast_atan2(*(float *)(p + 0x30), *(float *)(p + 0x34));
-        *(int *)(w + 8) = *(int *)(g + 0x964);
+        *(int *)(w + 8) = *(int *)&g->grapple_target;
     }
     gg = (char *)&player_camera;
     *(char *)(gg + 0x273) = 2;

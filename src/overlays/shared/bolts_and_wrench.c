@@ -1535,28 +1535,28 @@ extern void update_moby_animation_state_p(void *) __asm__("func_0020D6D0");
 
 /* copies a moby's animation selection from the player moby, or starts an animation */
 void update_wrench_animation_from_hero_state(char *m) {
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     int r;
-    if (*(int *)(g + 0x2084) == 0x3B) {
-        int t = *(unsigned char *)(*(char **)(g + 0x2080) + 0x53);
+    if (g->state.current == 0x3B) {
+        int t = *(unsigned char *)(*(char **)&g->moby + 0x53);
         r = 0xB;
         if (t == 0x40) r = 0x13;
         if (t == 0x41) r = 0x12;
         if (r >= 0x12 && r <= 0x13) {
             *(unsigned char *)(m + 0x52) = r;
             *(unsigned char *)(m + 0x53) = r;
-            *(float *)(m + 0x54) = *(float *)(*(char **)(g + 0x2080) + 0x54);
-            *(unsigned char *)(m + 0x50) = *(unsigned char *)(*(char **)(g + 0x2080) + 0x50);
-            *(unsigned char *)(m + 0x51) = *(unsigned char *)(*(char **)(g + 0x2080) + 0x51);
-            if (*(unsigned char *)(*(char **)(g + 0x2080) + 0x52) != *(unsigned char *)(*(char **)(g + 0x2080) + 0x53)) {
+            *(float *)(m + 0x54) = *(float *)(*(char **)&g->moby + 0x54);
+            *(unsigned char *)(m + 0x50) = *(unsigned char *)(*(char **)&g->moby + 0x50);
+            *(unsigned char *)(m + 0x51) = *(unsigned char *)(*(char **)&g->moby + 0x51);
+            if (*(unsigned char *)(*(char **)&g->moby + 0x52) != *(unsigned char *)(*(char **)&g->moby + 0x53)) {
                 *(unsigned char *)(m + 0x50) = *(unsigned char *)(m + 0x51);
             }
             update_moby_animation_state_p(m);
         } else {
             MobyBlendAnimation(m, r, 0, scale_ticks(7));
         }
-    } else if (*(int *)(g + 0x2090) == 0x3B) {
-        if (*(int *)(g + 0x198) == 1) {
+    } else if (g->state.prev == 0x3B) {
+        if (g->state_timer == 1) {
             MobyBlendAnimation(m, 1, 0, scale_ticks(0x11));
         }
     }
@@ -1669,7 +1669,7 @@ extern int try_collect_ammo_pickup(void *);
 void process_mobies_near_returning_wrench(char *a) {
     char *m = suck_moby_list;
     if (m != 0) {
-        char *g = hero_globals_base + 0xE1D;
+        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
         do {
             int st = *(unsigned char *)(m + 0x20);
             if (st == 0xFE) return;
@@ -1677,7 +1677,7 @@ void process_mobies_near_returning_wrench(char *a) {
             if (m != 0 && *(char **)(m + 0x24) != 0 && *(short *)(*(char **)(m + 0x24) + 0x46) == 0x13) {
                 if (FastVecDist(m + 0x10, a + 0x10) < 2.7f) {
                     float f = random_float_between(-30.0f, 30.0f);
-                    if (begin_bolt_attraction(m, *(int *)(g + 0x2080), f * 0.017453292f, 0.0f)) return;
+                    if (begin_bolt_attraction(m, *(int *)&g->moby, f * 0.017453292f, 0.0f)) return;
                 }
             } else {
                 if (is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(m) != 0) {
@@ -2415,21 +2415,21 @@ int predict_mine_impact(char *a0, char *o, int mode) {
     float C[4];
     float box[4];
     int x;
-    char *base = hero_globals_base + 0xE1D;
+    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
     int i;
     char *tmp;
-    if (*(int *)(base + 0x2084) == 0x72) return 0;
+    if (base->state.current == 0x72) return 0;
     if (cinematic_mode != 0) return 0;
     qcopy(C, o + 0x10);
     if (*(unsigned char *)(o + 0x20) == 0) {
-        w[0] = FastCos(FastAddRots(-0.36196801f, fast_atan2(*(float *)(base + 0x670), *(float *)(base + 0x674)))) * 0.859039f;
-        w[1] = FastSin(FastAddRots(-0.36196801f, fast_atan2(*(float *)(base + 0x670), *(float *)(base + 0x674)))) * 0.859039f;
+        w[0] = FastCos(FastAddRots(-0.36196801f, fast_atan2(base->facing_x, base->facing_y))) * 0.859039f;
+        w[1] = FastSin(FastAddRots(-0.36196801f, fast_atan2(base->facing_x, base->facing_y))) * 0.859039f;
         *(int *)&w[2] = 0;
-        FastVecAdd(w, w, base + 0x80);
+        FastVecAdd(w, w, &base->motion.pos);
         w[2] = w[2] + 0.49082f;
         qcopy(B, a0);
-        if (*(int *)(base + 0x2FC) != 0 && moby_get_ride_transform((void *)*(int *)(base + 0x2FC)) != 0 && mode != 0) {
-            FastVecAdd(B, B, base + 0x100);
+        if (*(int *)&base->ground_moby != 0 && moby_get_ride_transform((void *)*(int *)&base->ground_moby) != 0 && mode != 0) {
+            FastVecAdd(B, B, &base->motion.displacement);
         }
         x = scale_ticks(0x78);
     } else {
@@ -2444,8 +2444,8 @@ int predict_mine_impact(char *a0, char *o, int mode) {
         }
     }
     {
-        char *base2 = hero_globals_base + 0xE1D;
-        char *b2 = *(char **)(base2 + 0x2080);
+        struct Hero *base2 = (struct Hero *)(hero_globals_base + 0xE1D);
+        char *b2 = *(char **)&base2->moby;
         *(u128 *)box = *(u128 *)(b2 + 0x10);
         box[2] = w[2];
         if (coll_line(box, w, 0x10, (int)b2, 0) != 0) {

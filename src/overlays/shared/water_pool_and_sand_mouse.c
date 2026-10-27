@@ -591,9 +591,9 @@ void novalis_elevator_update(unsigned char *moby) {
         break;
     case 2:
         if (*(int *)(data + 0xC8) == 0 && is_hero_on_moby(moby)) {
-            char *g = hero_globals_base + 0xE1D;
-            *(short *)(g + 0x1F2) = 4;
-            *(short *)(g + 0x1F4) = 4;
+            struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+            g->jump_lock_timer = 4;
+            g->unk1F4 = 4;
         }
         if (*(short *)(data + 0xBA) != 0
             || (*(float *)(data + 0xBC) < 0.0f
@@ -1212,9 +1212,9 @@ extern void vec_scale_to_length(void *, void *, float);
 void compute_sand_mouse_approach_target(int unused, void *out)
 {
     char scratch[16];
-    char *base = hero_globals_base + 0xE1D;
-    vec_scale_to_length(scratch, *(char **)(base + 0x2080) + 0xD0, 1.0f);
-    FastVecAdd(out, scratch, base + 0x80);
+    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    vec_scale_to_length(scratch, *(char **)&base->moby + 0xD0, 1.0f);
+    FastVecAdd(out, scratch, &base->motion.pos);
 }
 typedef struct { float a[4]; } Vs __attribute__((aligned(16)));
 extern int probe_vertical_ground_collision(Vs *p, int x, int y, float f, float g);
@@ -1281,7 +1281,7 @@ void *select_sand_mouse_spawn_target(void *moby, void *from, void *ang, float ya
     char *t;
     for (t = novalis_moby_list; t != 0; t = *(char **)(t + 0x28)) {
         char *hs = novalis_coll_hit_h;
-        char *pl = hero_globals_base + 0xE1D;
+        struct Hero *pl = (struct Hero *)(hero_globals_base + 0xE1D);
         float *hp;
         int cls;
         float dist, score, p2;
@@ -1309,7 +1309,7 @@ void *select_sand_mouse_spawn_target(void *moby, void *from, void *ang, float ya
         if (!(score < bestScore)) continue;
         if (coll_line_t(from, tp, 0, moby, 0)) {
             char *hit = *(char **)(hs + 0x18);
-            if (hit == 0 || hit == *(char **)(pl + 0x2080) || hit == 0 || *(char **)(hit + 0x24) == 0
+            if (hit == 0 || hit == *(char **)&pl->moby || hit == 0 || *(char **)(hit + 0x24) == 0
                 || *(short *)(*(char **)(hit + 0x24) + 0x46) != cls) {
                 continue;
             }

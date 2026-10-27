@@ -1010,10 +1010,10 @@ extern char hero_globals_base[];
 /* picks camera yaw/pitch style outputs and a position offset per camera mode */
 void compute_suck_cannon_suction_aim_and_origin(char *m, float *a, float *b, float *c) {
     float v[3];
-    char *g;
+    struct Hero *g;
     Moby_GetJointWorldPos(m, 0, c);
-    g = hero_globals_base + 0xE1D;
-    if (*(int *)(g + 0x2084) == 1 || *(int *)(g + 0x2084) == 0x1E) {
+    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (g->state.current == 1 || g->state.current == 0x1E) {
         char *s = player_camera;
         v[1] = 0;
         v[0] = 1.2f;
@@ -1022,14 +1022,14 @@ void compute_suck_cannon_suction_aim_and_origin(char *m, float *a, float *b, flo
         *b = -*(float *)(s + 0x154);
         matrix_mul_vec3(v, v, s + 0x350);
         c[2] = v[2] + *(float *)(m + 0x18);
-        c[0] = v[0] + *(float *)(g + 0x80);
-        c[1] = v[1] + *(float *)(g + 0x84);
-    } else if (*(short *)(g + 0x22C8) == 1) {
-        *a = *(float *)(g + 0x688);
+        c[0] = v[0] + g->motion.pos.f[0];
+        c[1] = v[1] + g->motion.pos.f[1];
+    } else if (g->unk22C8 == 1) {
+        *a = g->held_pose_yaw;
         *b = *(float *)(m + 0x44);
     } else {
-        *a = *(float *)(g + 0x688);
-        *b = *(float *)(g + 0x684);
+        *a = g->held_pose_yaw;
+        *b = g->basis_pitch;
     }
 }
 typedef struct M_da360 {
@@ -1765,8 +1765,8 @@ int cancel_suck_cannon_suction(char *m) {
         if (k != -1) {
             char *g = hero_globals_base + 0xE1D;
             *(int *)(g + 0x2050 - (-(k * 4))) = 0;
-            if (*(int *)(g + 0x207C) > 0) {
-                *(int *)(g + 0x207C) = *(int *)(g + 0x207C) - 1;
+            if (((struct Hero *)g)->suck_cannon_incoming > 0) {
+                ((struct Hero *)g)->suck_cannon_incoming = ((struct Hero *)g)->suck_cannon_incoming - 1;
             }
         }
     }

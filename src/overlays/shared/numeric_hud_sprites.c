@@ -59,11 +59,11 @@ void update_trick_combo_hud(char *a) {
     *(int *)(a + 0x74) = truncate_float_to_s32_r(cur);
     switch (u[2]) {
     case 0: {
-        char *H = hero_globals_base + 0xE1D;
-        if (*(short *)(H + 0x30E) < 6) {
+        struct Hero *H = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (H->air_frames.s < 6) {
             return;
         }
-        v = *(int *)(H + 0x70C);
+        v = H->unk70C;
         if (!((float)v >= 1.0f)) {
             return;
         }
@@ -81,8 +81,8 @@ void update_trick_combo_hud(char *a) {
         break;
     }
     case 1: {
-        char *T;
-        char *H;
+        struct Hero *T;
+        struct Hero *H;
         char *G;
         if (*(unsigned char *)(a + 0x70) < 10) {
             *(unsigned char *)(a + 0x70) += 1;
@@ -90,31 +90,31 @@ void update_trick_combo_hud(char *a) {
         if (u[1] != 0) {
             u[1]--;
         }
-        T = hero_globals_base + 0xE1D;
-        trick_combo_trick_count = *(int *)(T + 0x6F0);
+        T = (struct Hero *)(hero_globals_base + 0xE1D);
+        trick_combo_trick_count = T->tricks_landed[4];
         {
             int k;
             for (k = 0; k < 4; k++) {
-                (&trick_combo_trick_flags)[k] = ((int *)(T + 0x6E0))[k];
+                (&trick_combo_trick_flags)[k] = ((int *)T->tricks_landed)[k];
             }
         }
-        H = hero_globals_base + 0xE1D;
-        if (trick_combo_spins < *(int *)(H + 0x70C)) {
-            trick_combo_spins = *(int *)(H + 0x70C);
+        H = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (trick_combo_spins < H->unk70C) {
+            trick_combo_spins = H->unk70C;
             u[1] = *(unsigned char *)&trick_combo_flash_ticks;
         }
-        if (*(int *)(H + 0x300) == 0) {
-            if (!(*(int *)(H + 0x2084) >= 0x6D && *(int *)(H + 0x2084) <= 0x6F)) {
+        if (H->grounded_frames == 0) {
+            if (!(H->state.current >= 0x6D && H->state.current <= 0x6F)) {
                 return;
             }
         }
         trick_combo_score = 0;
-        *(int *)(H + 0x70C) = 0;
-        *(int *)(H + 0x6F0) = 0;
+        H->unk70C = 0;
+        H->tricks_landed[4] = 0;
         {
             int k;
             for (k = 3; k >= 0; k--) {
-                ((int *)(H + 0x6E0))[k] = 0;
+                ((int *)H->tricks_landed)[k] = 0;
             }
         }
         G = (char *)&hero_002670A0;
@@ -125,8 +125,8 @@ void update_trick_combo_hud(char *a) {
             }
         }
         {
-        char *K = hero_globals_base + 0xE1D;
-        if (*(int *)(K + 0x2084) == 0x6B) {
+        struct Hero *K = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (K->state.current == 0x6B) {
             if (trick_combo_trick_count >= 3) {
                 trick_combo_recent3 = trick_combo_recent2;
                 trick_combo_recent2 = trick_combo_recent1;
@@ -212,15 +212,15 @@ int draw_trick_combo_hud(char *a) {
     int out[4];
     int xa, xb;
     float f20, f21, f0, f12;
-    char *E;
+    struct Hero *E;
     int r, sel, cnt, k, idx, h, acc, id, id2, i, s16, r3, t;
 
     f21 = (float)u[0] / 10.0f;
     if (f21 > 1.0f) {
         f21 = 1.0f;
     }
-    E = hero_globals_base + 0xE1D;
-    if (*(int *)(E + 0x208C) != 0x16) {
+    E = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (E->state.control_mode != 0x16) {
         return *(int *)(a + 0x58);
     }
     if (u[2] != 0) {
@@ -315,8 +315,8 @@ int draw_trick_combo_hud(char *a) {
     draw_cropped_hud_sprite(id, xa, xb, s16, 0x40, 0x80);
     id2 = GetIconFrame(0x7558, 0);
     HudSprite(id2, xa, xb, 0x100, 0x40, 0x80);
-    E = hero_globals_base + 0xE1D;
-    t = (unsigned char)E[0x8AE];
+    E = (struct Hero *)(hero_globals_base + 0xE1D);
+    t = (unsigned char)*(char *)&E->off_course_frames;
     if (scale_ticks(0x78) < t) {
         r3 = scale_ticks(0x3C);
         f0 = IntToFloat(rilgar_frame_count % r3) / (float)r3;
@@ -422,7 +422,7 @@ int draw_hud_progress_and_rank(char *e) {
     char buf[0x50] __attribute__((aligned(16)));
     int x, y, y1, tx, px, py, w;
     int pal;
-    char *hd;
+    struct Hero *hd;
     char *t, *f, *h2;
 
     if (*(int *)(e + 0x6C) <= 0)
@@ -430,7 +430,7 @@ int draw_hud_progress_and_rank(char *e) {
     pal = pal_mode;
     x = hud_sub_66D10(g_screen_extent[1], pal, &rilgar_progress_frame_bottom);
     y = hud_sub_66D10(g_screen_extent[1], pal, &rilgar_progress_text_bottom);
-    hd = hero_globals_base + 0xE1D;
+    hd = (struct Hero *)(hero_globals_base + 0xE1D);
     y1 = y + 1;
     draw_stretchable_ui_frame(*(int *)&(rilgar_progress_frame_x), x, *(int *)&(rilgar_progress_frame_width), *(int *)&(rilgar_progress_frame_height), *(int *)&(rilgar_progress_frame_alpha));
     tx = *(int *)&(rilgar_progress_label_x);
@@ -440,14 +440,14 @@ int draw_hud_progress_and_rank(char *e) {
     w = measure_text_width_regular(buf, -1);
     tx = tx + w;
     {
-        int n = *(short *)(hd + 0x89A) + 1;
+        int n = hd->race_lap + 1;
         if (!(n < 4)) n = 3;
         sprintf(buf, rilgar_fmt_progress_number, n);
     }
     print_text_with_texture_3(tx - 1, y + 2, 0x80000000L, buf, -1);
     print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_value_color), buf, -1);
     {
-        int n = *(int *)(hd + 0x8C0);
+        int n = hd->race_position;
         tx = *(int *)&(rilgar_progress_rank_right_x);
         n = n - 1;
         if (!(n < 5)) n = 4;
@@ -464,7 +464,7 @@ int draw_hud_progress_and_rank(char *e) {
     print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
     if (g_current_level_index != 0x10)
         return *(int *)(e + 0x58);
-    sprintf(buf + 0x40, rilgar_fmt_number, *(unsigned char *)(hd + 0x8CE));
+    sprintf(buf + 0x40, rilgar_fmt_number, hd->race_ammo);
     py = pal_mode ? 0xA : 0x12;
     px = *(int *)(e + 0x50);
     if (*(unsigned char *)(special_items_base + 0x13B) == 0) {

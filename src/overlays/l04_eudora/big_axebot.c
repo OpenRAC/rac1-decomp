@@ -2272,15 +2272,15 @@ void BlargTrooperUpdate(char *moby) {
         o = *(char **)(hit + 0x20);
         one = 1.0f;
         if (o != 0) {
-            char *g = (char *)hero_globals_base + 0xE1D;
-            if (o != *(char **)(g + 0x1090)) {
+            struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            if (o != *(char **)&g->items[0].moby) {
                 ang2 = fast_atan2(((Moby *)moby)->pos.x - *(float *)(o + 0x10), ((Moby *)moby)->pos.y - *(float *)(o + 0x14));
             } else {
-                ang2 = fast_atan2(((Moby *)moby)->pos.x - *(float *)(g + 0x80), ((Moby *)moby)->pos.y - *(float *)(g + 0x84));
+                ang2 = fast_atan2(((Moby *)moby)->pos.x - g->motion.pos.f[0], ((Moby *)moby)->pos.y - g->motion.pos.f[1]);
             }
         } else {
-            char *g = (char *)hero_globals_base + 0xE1D;
-            ang2 = fast_atan2(((Moby *)moby)->pos.x - *(float *)(g + 0x80), ((Moby *)moby)->pos.y - *(float *)(g + 0x84));
+            struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            ang2 = fast_atan2(((Moby *)moby)->pos.x - g->motion.pos.f[0], ((Moby *)moby)->pos.y - g->motion.pos.f[1]);
         }
         t = *(float *)(data + 0x20) - dmg;
         *(float *)(data + 0x20) = t;

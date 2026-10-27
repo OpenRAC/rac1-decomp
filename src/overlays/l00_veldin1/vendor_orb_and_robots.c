@@ -551,7 +551,7 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
     VendPath *path;
     TrollMoby *t;
     Vec4 v;
-    u8 *g;
+    struct Hero *g;
     s32 hit;
     f32 dmg;
     f32 angle;
@@ -626,9 +626,9 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
         }
     }
     if (vars->targetMoby == 0) {
-        g = hero_globals_base + 0xE1D;
-        vars->targetMoby = *(TrollMoby **)(g + 0x2080);
-        qcopy(&vars->target, g + 0x80);
+        g = (struct Hero *)(hero_globals_base + 0xE1D);
+        vars->targetMoby = *(TrollMoby **)&g->moby;
+        qcopy(&vars->target, &g->motion.pos);
     }
     if (vars->unk1BC >= 0) {
         t = (TrollMoby *)(moby_array_start + (vars->unk1BC << 8));
