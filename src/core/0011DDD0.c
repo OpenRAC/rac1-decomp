@@ -74,9 +74,17 @@ extern char osd_kernel_patch_code[];
 extern int PatchIsNeeded(void);
 extern void flush_cache(int);
 
-ASM_FUNC("asm/handwritten/core_text", func_0011DDD0);
+/* inline asm: EE kernel syscall 0x74. */
+void func_0011DDD0(int a0, int a1) {
+    __asm__ volatile("addiu $3,$0,0x74
+	syscall");
+}
 
-ASM_FUNC("asm/handwritten/core_text", func_0011DDE0);
+/* inline asm: EE kernel syscall 0x5A. */
+void func_0011DDE0(void *a0, void *a1, int a2) {
+    __asm__ volatile("addiu $3,$0,0x5A
+	syscall");
+}
 
 /* kCopy: alarm.o's own copy of the word-at-a-time copy helper (nbytes
  * rounded down to words); returns 0. Same body as func_0011DA08
@@ -90,7 +98,11 @@ int alarm_kCopy(int *dst, int *src, unsigned int nbytes) {
     return 0;
 }
 
-ASM_FUNC("asm/handwritten/core_text", func_0011DE28);
+/* inline asm: EE kernel syscall 0x5B. */
+int func_0011DE28(int a0) {
+    __asm__ volatile("addiu $3,$0,0x5B
+	syscall");
+}
 
 extern void alarm_set_syscall(int, int);
 extern void alarm_kernel_copy(void *, void *, int);

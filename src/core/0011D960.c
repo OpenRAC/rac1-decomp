@@ -120,7 +120,11 @@ int *kFindAddress(int *p, int *end, int val) {
     return p;
 }
 
-ASM_FUNC("asm/handwritten/core_text", func_0011DA80);
+/* inline asm: EE kernel syscall 0x83. */
+int func_0011DA80(int a0, int a1, void *a2) {
+    __asm__ volatile("addiu $3,$0,0x83
+	syscall");
+}
 
 LINKER_REMNANT("asm/remnants/core_text", func_0011DA90);
 
@@ -162,7 +166,11 @@ void InitSystemCallTableAddress(void) {
     initsys_kernel_scan_address = a;
 }
 
-ASM_FUNC("asm/handwritten/core_text", func_0011DB98);
+/* inline asm: EE kernel syscall 0x74. */
+void func_0011DB98(int a0, int a1) {
+    __asm__ volatile("addiu $3,$0,0x74
+	syscall");
+}
 
 extern void supplement_crt0(void);
 extern void InitSystemCallTableAddress(void);

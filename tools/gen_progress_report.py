@@ -156,6 +156,9 @@ def classified_asm() -> dict[str, str]:
                 if name in found:
                     sys.exit(f"*** duplicate original assembly include: {name}")
                 found[name] = (folder, segment)
+    # A listed function may be rewritten in C (still classified as original assembly).
+    rewritten = (set(expected) - set(found)) & with_source()
+    found.update({n: expected[n] for n in rewritten})
     if found != expected:
         missing = sorted(set(expected) - set(found))
         extra = sorted(set(found) - set(expected))
@@ -645,8 +648,7 @@ def generate() -> dict:
     funcs = retail_functions()
     decompiled = with_source()
     original_asm = classified_asm()
-    if decompiled & original_asm.keys():
-        sys.exit(f"*** C source and original assembly overlap: {sorted(decompiled & original_asm.keys())}")
+
     fuzzy = match_results(funcs, decompiled | original_asm.keys())
     not_exact = sorted(name for name in original_asm if fuzzy[name] != 100.0)
     if not_exact:

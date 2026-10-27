@@ -38,149 +38,437 @@ extern void _vfprintf_r(void *, void *, int, int);
 extern int libc_glue_write();
 extern int _lseek_r(int *errOut, void *a, void *b, void *c);
 
-ASM_FUNC("asm/handwritten/core_text", func_00118A40);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118A50);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118A60);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118A70);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118A80);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118A90);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118AA0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118AB0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118AC0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118AD0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118AE0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118AF0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118B00);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118B10);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118B20);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118B30);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118B40);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118B50);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118B60);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118B70);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118B80);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118B90);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118BA0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118BB0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118BC0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118BD0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118BE0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118BF0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118C00);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118C10);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118C20);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118C30);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118C40);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118C50);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118C60);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118C70);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118C80);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118C90);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118CA0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118CB0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118CC0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118CD0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118CE0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118CF0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118D00);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118D10);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118D20);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118D30);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118D40);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118D50);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118D60);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118D70);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118D80);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118D90);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118DA0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118DB0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118DC0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118DD0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118DE0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118DF0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118E00);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118E10);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118E20);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118E30);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118E40);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118E50);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118E60);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118E70);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118E80);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118E90);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118EA0);
-
-ASM_FUNC("asm/handwritten/core_text", func_00118EB0);
+/* inline asm: EE kernel syscall 0x0. */
+void func_00118A40(void) {
+    __asm__ volatile("addiu $3,$0,0x0
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x2. */
+void func_00118A50(void) {
+    __asm__ volatile("addiu $3,$0,0x2
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x4. */
+void func_00118A60(void) {
+    __asm__ volatile("addiu $3,$0,0x4
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x8. */
+void func_00118A70(void) {
+    __asm__ volatile("addiu $3,$0,0x8
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0xC. */
+void func_00118A80(void) {
+    __asm__ volatile("addiu $3,$0,0xC
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x10. */
+void func_00118A90(void) {
+    __asm__ volatile("addiu $3,$0,0x10
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x11. */
+void func_00118AA0(void) {
+    __asm__ volatile("addiu $3,$0,0x11
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x12. */
+void func_00118AB0(void) {
+    __asm__ volatile("addiu $3,$0,0x12
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x12. */
+void func_00118AC0(void) {
+    __asm__ volatile("addiu $3,$0,0x12
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x13. */
+void func_00118AD0(void) {
+    __asm__ volatile("addiu $3,$0,0x13
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x14. */
+void func_00118AE0(void) {
+    __asm__ volatile("addiu $3,$0,0x14
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x15. */
+void func_00118AF0(void) {
+    __asm__ volatile("addiu $3,$0,0x15
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x16. */
+void func_00118B00(void) {
+    __asm__ volatile("addiu $3,$0,0x16
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x17. */
+void func_00118B10(void) {
+    __asm__ volatile("addiu $3,$0,0x17
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0xFC. */
+void func_00118B20(int a0, void *a1, int a2) {
+    __asm__ volatile("addiu $3,$0,0xFC
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0x1A. */
+void func_00118B30(void) {
+    __asm__ volatile("addiu $3,$0,-0x1A
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0xFE. */
+void func_00118B40(void) {
+    __asm__ volatile("addiu $3,$0,-0xFE
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x20. */
+void func_00118B50(void) {
+    __asm__ volatile("addiu $3,$0,0x20
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x21. */
+void func_00118B60(void) {
+    __asm__ volatile("addiu $3,$0,0x21
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x22. */
+void func_00118B70(void) {
+    __asm__ volatile("addiu $3,$0,0x22
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x25. */
+void func_00118B80(void) {
+    __asm__ volatile("addiu $3,$0,0x25
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0x26. */
+void func_00118B90(void) {
+    __asm__ volatile("addiu $3,$0,-0x26
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x29. */
+void func_00118BA0(void) {
+    __asm__ volatile("addiu $3,$0,0x29
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0x2A. */
+void func_00118BB0(void) {
+    __asm__ volatile("addiu $3,$0,-0x2A
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x2B. */
+void func_00118BC0(void) {
+    __asm__ volatile("addiu $3,$0,0x2B
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0x2E. */
+void func_00118BD0(void) {
+    __asm__ volatile("addiu $3,$0,-0x2E
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x2F. */
+int func_00118BE0(void) {
+    __asm__ volatile("addiu $3,$0,0x2F
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x30. */
+void func_00118BF0(void) {
+    __asm__ volatile("addiu $3,$0,0x30
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x32. */
+void func_00118C00(void) {
+    __asm__ volatile("addiu $3,$0,0x32
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x33. */
+void func_00118C10(void) {
+    __asm__ volatile("addiu $3,$0,0x33
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0x34. */
+void func_00118C20(void) {
+    __asm__ volatile("addiu $3,$0,-0x34
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0x36. */
+void func_00118C30(void) {
+    __asm__ volatile("addiu $3,$0,-0x36
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x37. */
+void func_00118C40(void) {
+    __asm__ volatile("addiu $3,$0,0x37
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0x3A. */
+void func_00118C50(void) {
+    __asm__ volatile("addiu $3,$0,-0x3A
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x3E. */
+void func_00118C60(void) {
+    __asm__ volatile("addiu $3,$0,0x3E
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x40. */
+void func_00118C70(void) {
+    __asm__ volatile("addiu $3,$0,0x40
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x41. */
+void func_00118C80(int a0) {
+    __asm__ volatile("addiu $3,$0,0x41
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x42. */
+void func_00118C90(void) {
+    __asm__ volatile("addiu $3,$0,0x42
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0x43. */
+void func_00118CA0(void) {
+    __asm__ volatile("addiu $3,$0,-0x43
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x44. */
+void func_00118CB0(void) {
+    __asm__ volatile("addiu $3,$0,0x44
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x45. */
+void func_00118CC0(void) {
+    __asm__ volatile("addiu $3,$0,0x45
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0x46. */
+void func_00118CD0(void) {
+    __asm__ volatile("addiu $3,$0,-0x46
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x4A. */
+void func_00118CE0(void *a0) {
+    __asm__ volatile("addiu $3,$0,0x4A
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x4B. */
+void func_00118CF0(void *a0) {
+    __asm__ volatile("addiu $3,$0,0x4B
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x4E. */
+void func_00118D00(void) {
+    __asm__ volatile("addiu $3,$0,0x4E
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x52. */
+void func_00118D10(void) {
+    __asm__ volatile("addiu $3,$0,0x52
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x56. */
+void func_00118D20(void) {
+    __asm__ volatile("addiu $3,$0,0x56
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0x5A. */
+void func_00118D30(void) {
+    __asm__ volatile("addiu $3,$0,-0x5A
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x5D. */
+void func_00118D40(void) {
+    __asm__ volatile("addiu $3,$0,0x5D
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x5F. */
+void func_00118D50(void) {
+    __asm__ volatile("addiu $3,$0,0x5F
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x61. */
+void func_00118D60(void) {
+    __asm__ volatile("addiu $3,$0,0x61
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x62. */
+void func_00118D70(void) {
+    __asm__ volatile("addiu $3,$0,0x62
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x64. */
+void func_00118D80(void) {
+    __asm__ volatile("addiu $3,$0,0x64
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0x67. */
+void func_00118D90(void) {
+    __asm__ volatile("addiu $3,$0,-0x67
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x6B. */
+void func_00118DA0(void) {
+    __asm__ volatile("addiu $3,$0,0x6B
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x6C. */
+void func_00118DB0(void) {
+    __asm__ volatile("addiu $3,$0,0x6C
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x6F. */
+void func_00118DC0(void) {
+    __asm__ volatile("addiu $3,$0,0x6F
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x70. */
+void func_00118DD0(void) {
+    __asm__ volatile("addiu $3,$0,0x70
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x71. */
+void func_00118DE0(void) {
+    __asm__ volatile("addiu $3,$0,0x71
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x72. */
+void func_00118DF0(void) {
+    __asm__ volatile("addiu $3,$0,0x72
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x73. */
+void func_00118E00(unsigned int *a0, long *a1) {
+    __asm__ volatile("addiu $3,$0,0x73
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x76. */
+void func_00118E10(void) {
+    __asm__ volatile("addiu $3,$0,0x76
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x77. */
+void func_00118E20(void) {
+    __asm__ volatile("addiu $3,$0,0x77
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0x77. */
+void func_00118E30(void) {
+    __asm__ volatile("addiu $3,$0,-0x77
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x78. */
+void func_00118E40(void) {
+    __asm__ volatile("addiu $3,$0,0x78
+	syscall");
+}
+
+/* inline asm: EE kernel syscall -0x78. */
+void func_00118E50(void) {
+    __asm__ volatile("addiu $3,$0,-0x78
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x79. */
+void func_00118E60(void) {
+    __asm__ volatile("addiu $3,$0,0x79
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x7A. */
+int func_00118E70(int a0) {
+    __asm__ volatile("addiu $3,$0,0x7A
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x7B. */
+void func_00118E80(void) {
+    __asm__ volatile("addiu $3,$0,0x7B
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x7C. */
+void func_00118E90(void) {
+    __asm__ volatile("addiu $3,$0,0x7C
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x7F. */
+int func_00118EA0(void) {
+    __asm__ volatile("addiu $3,$0,0x7F
+	syscall");
+}
+
+/* inline asm: EE kernel syscall 0x82. */
+void func_00118EB0(void) {
+    __asm__ volatile("addiu $3,$0,0x82
+	syscall");
+}
 
 extern int CoreGlobalWord NOT_SDA;
 
