@@ -21,7 +21,6 @@ int remove_help_message_for_selector(int a) {
     return 0;
 }
 
-/* inline asm: hook call (beq/move/jal with empty slots); retail shape not reached in C yet. */
 /* NON_MATCHING func_L00_002657B8 -- src/overlays/shared/mobyutil_00265558.c
  * Best so far: SIZE ours 264 / retail 260, checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
@@ -99,7 +98,7 @@ void link_and_update_all_mobys(void)
                 if (!(cur->flags & 0x40)) {
                     MobyAnimAdvance(cur);
                 }
-                /* inline asm: hook call (beq/move/jal with empty slots); retail shape not reached in C yet. */
+                /* inline asm: hook call (beq/move/jal with empty slots). The original used inline asm here too: GCC 2.95 reorg leaves both slots empty only next to asm (see reorg.c stop_search_p). */
                 { int r; __asm__ volatile("beq %1,$0,1f\n\tmove $4,%2\n\tjal $31,%1\n1:" : "=r"(r) : "r"(cur->updateFn), "r"(cur) : "$4", "$31", "memory"); }
                 if (!(cur->flags & 0x4)) {
                     moby_build_matrix(cur);
