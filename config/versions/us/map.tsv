@@ -4507,7 +4507,6 @@ func_L13_00308860	src/overlays/l13_gemlik/qwark_starfighter_and_forcefield.c	mat
 func_L13_00308FA8	src/overlays/l13_gemlik/qwark_starfighter_and_forcefield.c	match	13:00307B10	904	100.00
 func_L13_00309330	src/overlays/l13_gemlik/qwark_starfighter_and_forcefield.c	differs	13:00307E98	3700	0.00
 func_L13_0030A1C8	src/overlays/l13_gemlik/qwark_starfighter_and_forcefield.c	match	13:00308D10	1632	100.00
-func_L13_0030A828	src/overlays/l13_gemlik/qwark_starfighter_and_forcefield.c	match	13:00309370	392	100.00
 func_L13_0030A9B0	src/overlays/l13_gemlik/qwark_starfighter_and_forcefield.c	match	13:003094F8	980	100.00
 func_L13_0030B080	src/overlays/l13_gemlik/qwark_starfighter_and_forcefield.c	match	13:00309BC8	704	100.00
 func_L13_0030B340	src/overlays/l13_gemlik/qwark_starfighter_and_forcefield.c	match	13:00309E88	1492	100.00

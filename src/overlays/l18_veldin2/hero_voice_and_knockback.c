@@ -3,6 +3,7 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "vector.h"
+#include "hero.h"
 
 extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
@@ -15,51 +16,51 @@ extern void Hero_OnKilled(void);
 
 /* Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. */
 void HeroL18_UpdateStateFlags(void) {
-    char *g = (char *)hero_globals_base + 0xE1D;
-    int c = *(unsigned char *)(g + 0x12ED);
-    int s = *(short *)(g + 0x12E0);
+    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    int c = g->ground_sound_class;
+    int s = g->ground_type;
     int t;
-    FastMemZero16(g + 0x12E0, 0x10);
-    *(unsigned char *)(g + 0x12ED) = c;
-    *(short *)(g + 0x12E0) = -1;
-    *(unsigned char *)(g + 0x20A9) = 0;
-    *(short *)(g + 0x308) = 0;
+    FastMemZero16(&g->ground_type, 0x10);
+    g->ground_sound_class = c;
+    g->ground_type = -1;
+    g->wading = 0;
+    g->unk308 = 0;
     if (s == -1) return;
     if (s == 2) {
-        if (*(short *)(g + 0x30C) == 0 || *(float *)(g + 0x2DC) < 0.3f) {
-            *(unsigned char *)(g + 0x12E7) = 1;
-            if (*(unsigned char *)(g + 0x20A4) == 0) {
-                char *m = *(char **)(g + 0x10E0);
+        if (g->frames_off_ground.s == 0 || g->ground_distance < 0.3f) {
+            g->on_magnet_ground = 1;
+            if (g->vehicle_mode == 0) {
+                char *m = *(char **)&g->items[1].moby;
                 if (m != 0 && *(short *)(m + 0xA6) == 0xAD) {
-                    *(short *)(g + 0x308) = 1;
+                    g->unk308 = 1;
                 }
             }
         }
     }
     if (s == 0xE) {
-        char *p = (char *)hero_globals_base + 0xE1D;
-        *(unsigned char *)(p + 0x12E4) = 1;
-        *(float *)(p + 0x22A4) = 0.2f;
-        *(float *)(p + 0x2F0) = *(float *)(p + 0x2D8) + 0.2f;
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        p->base_condition = 1;
+        p->water_depth = 0.2f;
+        p->water_surface_z = p->ground_z.f + 0.2f;
     }
     if (s == 0) {
-        char *p = (char *)hero_globals_base + 0xE1D;
-        float d = *(float *)(p + 0x2F0) - *(float *)(p + 0x2D8);
-        *(float *)(p + 0x22A4) = d;
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        float d = p->water_surface_z - p->ground_z.f;
+        p->water_depth = d;
         if (d < 0.85f && 0.25f < d) {
-            *(unsigned char *)(p + 0x20A9) = 1;
+            p->wading = 1;
         }
-        p = (char *)hero_globals_base + 0xE1D;
-        *(unsigned char *)(p + 0x12E4) = 1;
+        p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        p->base_condition = 1;
     }
     if (s == 3) {
-        char *p = (char *)hero_globals_base + 0xE1D;
-        *(unsigned char *)(p + 0x12E6) = 1;
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        p->selector_3 = 1;
     }
     if (g_current_level_index == 0xD) {
-        char *p = (char *)hero_globals_base + 0xE1D;
-        if (*(int *)(p + 0x2084) != 0x7B) {
-            if (coll_sphere(*(float *)(p + 0x234) + 0.03f, p + 0xD0, 2, 0) != 0) {
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (p->state.current != 0x7B) {
+            if (coll_sphere(p->capsule_radius + 0.03f, &p->motion.body_center, 2, 0) != 0) {
                 if (CollType() == 0xB) {
                     HeroL18_SetMoveState(0x7B, 1);
                     return;
@@ -67,16 +68,16 @@ void HeroL18_UpdateStateFlags(void) {
             }
         }
     }
-    if (s == 0xB) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EB) = 1; }
-    if (s == 2) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12E7) = 1; }
-    if (s == 4) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12E3) = 1; }
-    if (s == 8) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
-    if (s == 9) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EE) = 1; }
-    if (s == 0xC) { char *p = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(p + 0x12EA) = 1; }
+    if (s == 0xB) { struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D); p->selector_11 = 1; }
+    if (s == 2) { struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D); p->on_magnet_ground = 1; }
+    if (s == 4) { struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D); p->selector_4 = 1; }
+    if (s == 8) { struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D); p->on_slip_ground = 1; }
+    if (s == 9) { struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D); p->unk12EE = 1; }
+    if (s == 0xC) { struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D); p->on_slip_ground = 1; }
     {
-        char *p = (char *)hero_globals_base + 0xE1D;
-        if (*(unsigned char *)(p + 0x12E3) != 0 && *(int *)(p + 0x300) != 0) {
-            t = *(int *)(p + 0x208C);
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (p->selector_4 != 0 && p->grounded_frames != 0) {
+            t = p->state.control_mode;
             if (t != 0x10 && t != 0x14 && t != 7) {
                 HeroL18_SetMoveState(0x31, 1);
                 return;
@@ -84,16 +85,16 @@ void HeroL18_UpdateStateFlags(void) {
         }
     }
     {
-        char *p = (char *)hero_globals_base + 0xE1D;
-        if (*(unsigned char *)(p + 0x12E6) != 0) {
-            t = *(int *)(p + 0x2084);
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (p->selector_3 != 0) {
+            t = p->state.current;
             if (t != 0x68 && t != 0x7B) {
-                if (FastAbsF(*(float *)(p + 0x2F4) - (*(float *)(p + 0x88) + 0.25f)) < 1.0f) {
-                    if (0.0f < *(float *)(p + 0x2F4) - *(float *)(p + 0x88)) {
-                        if (*(int *)(p + 0x2084) != 0x69 || *(short *)(p + 0x41E) != 0) {
-                            if (*(float *)(p + 0x108) < 0.0f) {
+                if (FastAbsF(p->sink_surface_z - (p->motion.pos.f[2] + 0.25f)) < 1.0f) {
+                    if (0.0f < p->sink_surface_z - p->motion.pos.f[2]) {
+                        if (p->state.current != 0x69 || p->past_jump_apex != 0) {
+                            if (p->motion.displacement.f[2] < 0.0f) {
                                 exit_hero_vehicle_mode_if_mode_three();
-                                if (*(int *)(p + 0x22A8) != 0) {
+                                if (p->health.hp != 0) {
                                     HeroL18_SetMoveState(0x68, 1);
                                 } else {
                                     HeroL18_SetMoveState(0x7B, 1);
@@ -107,13 +108,13 @@ void HeroL18_UpdateStateFlags(void) {
         }
     }
     {
-        char *p = (char *)hero_globals_base + 0xE1D;
-        if (*(unsigned char *)(p + 0x12EB) != 0) {
-            if (*(int *)(p + 0x2084) != 0x7B) {
-                if (FastAbsF(*(float *)(p + 0x2F4) - (*(float *)(p + 0x88) + 0.25f)) < 1.0f) {
-                    if (0.0f < *(float *)(p + 0x2F4) - *(float *)(p + 0x88)) {
-                        if (*(float *)(p + 0x108) < 0.0f) {
-                            if ((unsigned)(*(unsigned char *)(p + 0x20A4) - 1) < 2) {
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (p->selector_11 != 0) {
+            if (p->state.current != 0x7B) {
+                if (FastAbsF(p->sink_surface_z - (p->motion.pos.f[2] + 0.25f)) < 1.0f) {
+                    if (0.0f < p->sink_surface_z - p->motion.pos.f[2]) {
+                        if (p->motion.displacement.f[2] < 0.0f) {
+                            if ((unsigned)(p->vehicle_mode - 1) < 2) {
                                 Hero_OnKilled();
                             } else {
                                 exit_hero_vehicle_mode_if_mode_three();

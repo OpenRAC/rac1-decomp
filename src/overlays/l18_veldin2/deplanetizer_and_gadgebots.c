@@ -5,6 +5,50 @@
 #include "vector.h"
 #include "moby.h"
 
+/* Moby that drags a child moby along with it. */
+struct ChildCarrierVars {
+    u8 pad_00[0x20];
+    u8 matrix[0x40];                /* 0x20: update_entity_matrix block */
+    Vec4A last_pos;                 /* 0x60 */
+    Vec4A last_rot;                 /* 0x70 */
+    s32 has_child_class;            /* 0x80: nonzero allows a child to spawn */
+    char *child;                    /* 0x84 */
+};
+
+/* Gadgebot: walks to its target, gets launched and glows. */
+struct GadgebotVars {
+    u8 pad_00[0x20];
+    f32 health;                     /* 0x20 */
+    s16 unk_24;                     /* 0x24 */
+    u8 pad_26[0xA];
+    f32 unk_30;                     /* 0x30 */
+    u8 pad_34[0xC];
+    Vec4A unk_40;                   /* 0x40 */
+    u8 pad_50[0x8];
+    u8 unk_58;                      /* 0x58 */
+    u8 pad_59[0x3];
+    u8 unk_5C;                      /* 0x5C */
+    u8 pad_5D[0x13];
+    u8 carry[0x10];                 /* 0x70: CarriedMobyUpdate / mine_fall state */
+    u8 pad_80[0xB8];
+    s16 unk_138;                    /* 0x138 */
+    u8 pad_13A[0x6];
+    void *params;                   /* 0x140 */
+    u8 pad_144[0x3C];
+    Vec4A target_pos;               /* 0x180 */
+    u8 pad_190[0x34];
+    s32 mode;                       /* 0x1C4: 2 walks to the target */
+    u8 pad_1C8[0x8];
+    Vec4A fall_vel;                 /* 0x1D0: z (0x1D8) falls with gravity */
+    void *path;                     /* 0x1E0 */
+    u8 pad_1E4[0x4];
+    f32 turn_vel;                   /* 0x1E8 */
+    f32 heading_offset;             /* 0x1EC */
+    f32 speed;                      /* 0x1F0 */
+    f32 glow;                       /* 0x1F4: launch glow strength */
+    f32 phase;                      /* 0x1F8 */
+};
+
 typedef int u128_9D48 __attribute__((mode(TI)));
 typedef struct { char pad0[0x30]; int state; int timer; char pad38[0x140]; Moby *objs[8]; } ML_9D48;
 typedef struct { float f[5]; } F5_9D48;
@@ -721,7 +765,7 @@ extern void moby_build_matrix(void *);
 
 /* updates a moby that drags a child moby along with it */
 void update_moby_transform_and_child(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct ChildCarrierVars *data = (struct ChildCarrierVars *)((Moby *)moby)->pvars;
     char tmp[16];
     char *child;
     switch (((Moby *)moby)->state) {
@@ -729,23 +773,23 @@ void update_moby_transform_and_child(char *moby) {
         moby[0x20] = 1;
         break;
     case 1:
-        FastVecSub(tmp, moby + 0x10, data + 0x60);
-        update_entity_matrix(data + 0x20, tmp, data + 0x70, moby + 0x40);
+        FastVecSub(tmp, moby + 0x10, &data->last_pos);
+        update_entity_matrix(data->matrix, tmp, &data->last_rot, moby + 0x40);
         break;
     }
-    if (((Moby *)moby)->command != 0 && *(int *)(data + 0x80) != 0 && *(int *)(data + 0x84) == 0) {
+    if (((Moby *)moby)->command != 0 && data->has_child_class != 0 && *(int *)&data->child == 0) {
         char *c = CreateMoby_m(0x764);
-        *(char **)(data + 0x84) = c;
+        data->child = c;
         if (c != 0) {
             *(unsigned short *)(c + 0x32) = *(unsigned short *)&((Moby *)moby)->draw_dist;
-            (*(char **)(data + 0x84))[0x31] = 1;
-            *(long *)(*(char **)(data + 0x84) + 0x38) = *(long *)(moby + 0x38);
-            *(float *)(*(char **)(data + 0x84) + 0x2C) *= ((Moby *)moby)->scale / *(float *)(*(char **)(moby + 0x24) + 0x24);
+            data->child[0x31] = 1;
+            *(long *)(data->child + 0x38) = *(long *)(moby + 0x38);
+            *(float *)(data->child + 0x2C) *= ((Moby *)moby)->scale / *(float *)(*(char **)(moby + 0x24) + 0x24);
         }
     }
-    qcopy(data + 0x60, moby + 0x10);
-    qcopy(data + 0x70, moby + 0x40);
-    child = *(char **)(data + 0x84);
+    qcopy(&data->last_pos, moby + 0x10);
+    qcopy(&data->last_rot, moby + 0x40);
+    child = data->child;
     if (child != 0) {
         qcopy(child + 0x10, moby + 0x10);
         qcopy(child + 0x40, moby + 0x40);
@@ -865,7 +909,7 @@ extern char gadgebot_start_moby_byte73;
 /* Moby update for the class 0x772 enemy. */
 void Moby1906Update(unsigned char *m) {
     char tmp[16];
-    unsigned char *e = ((unsigned char *)((Moby *)m)->pvars);
+    struct GadgebotVars *e = (struct GadgebotVars *)((Moby *)m)->pvars;
     unsigned char *s0;
     update_gadgebot_damage_target_and_glow(m);
     switch (((Moby *)m)->state) {
@@ -876,13 +920,13 @@ void Moby1906Update(unsigned char *m) {
         else ((Moby *)m)->flags &= 0x7FFF;
         ((Moby *)m)->flags |= 0x100;
         ((Moby *)m)->unk73 = gadgebot_start_moby_byte73;
-        *(void **)(e + 0x140) = &gadgebot_params_block;
-        *(float *)(e + 0x20) = 1.0f;
-        e[0x58] = 8;
-        *(short *)(e + 0x24) = 1;
-        e[0x5C] = 1;
-        *(float *)(e + 0x30) = 0.5f;
-        *(float *)(e + 0x1F8) = random_angle_radians();
+        e->params = &gadgebot_params_block;
+        e->health = 1.0f;
+        e->unk_58 = 8;
+        e->unk_24 = 1;
+        e->unk_5C = 1;
+        e->unk_30 = 0.5f;
+        e->phase = random_angle_radians();
         ((Moby *)m)->update_dist = 0xFF;
         h = ((Moby *)m)->flags;
         ((Moby *)m)->draw_dist = 0xFF;
@@ -897,8 +941,8 @@ void Moby1906Update(unsigned char *m) {
         float a = 10.0f;
         float r;
         s0 = m + 0x10;
-        *(float *)(e + 0x1D8) = *(float *)(e + 0x1D8) - g_frame_time_sq * a;
-        FastVecAdd(s0, s0, e + 0x1D0);
+        e->fall_vel.z = e->fall_vel.z - g_frame_time_sq * a;
+        FastVecAdd(s0, s0, &e->fall_vel);
         qcopy(tmp, s0);
         ((float *)tmp)[2] += 1.0f;
         r = ProbeGroundHeight(tmp, 0, 0.5f);
@@ -912,23 +956,23 @@ void Moby1906Update(unsigned char *m) {
         break;
     }
     case 7:
-        if (CarriedMobyUpdate(m, e + 0x70)) {
+        if (CarriedMobyUpdate(m, e->carry)) {
             ((Moby *)m)->state = 2;
-            *(short *)(e + 0x138) = 0;
+            e->unk_138 = 0;
         }
         break;
     case 2:
-        if (*(int *)(e + 0x1C4) == 2) {
-            if (!(10.0f < f9d48_i(m + 0x10, e + 0x180))) break;
+        if (e->mode == 2) {
+            if (!(10.0f < f9d48_i(m + 0x10, &e->target_pos))) break;
         }
         ((Moby *)m)->state = 3;
         if (((Moby *)m)->prev_seq != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(10));
         break;
     case 3: {
         float f;
-        *(QVd058 *)tmp = *(QVd058 *)(e + 0x180);
+        *(QVd058 *)tmp = *(QVd058 *)&e->target_pos.x;
         f = fd9a0_c(m, tmp);
-        if (*(int *)(e + 0x1C4) == 2 && f < 5.0f) {
+        if (e->mode == 2 && f < 5.0f) {
             ((Moby *)m)->state = 2;
             if (((Moby *)m)->prev_seq) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
             break;
@@ -945,19 +989,19 @@ void Moby1906Update(unsigned char *m) {
     case 4: {
         float r, k, b, d;
         s0 = m + 0x48;
-        r = fast_atan2(*(float *)(e + 0x180) - ((Moby *)m)->pos.x, *(float *)(e + 0x184) - ((Moby *)m)->pos.y);
+        r = fast_atan2(e->target_pos.x - ((Moby *)m)->pos.x, e->target_pos.y - ((Moby *)m)->pos.y);
         k = 6.2831855f;
         b = g_frame_time_sq * k;
         d = g_frame_time * k;
-        SteerAngleWithVelocity((float *)s0, (float *)(e + 0x1E8), r, b, b, d);
+        SteerAngleWithVelocity((float *)s0, &e->turn_vel, r, b, b, d);
         if (IsFrameWithinWindow((char *)m, 14.0f)) collect_mobies_in_sphere_at_moby_point(m, 0.5f, 1.0f, 1.0f, 1, 1, 0, 1, 0);
         if (((Moby *)m)->anim_flags & 2) {
-            if (*(int *)(e + 0x1C4) == 2) {
+            if (e->mode == 2) {
                 ((Moby *)m)->state = 2;
                 if (((Moby *)m)->prev_seq) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
                 break;
             }
-            if (!(2.5f < f9d48_i(m + 0x10, e + 0x180))) break;
+            if (!(2.5f < f9d48_i(m + 0x10, &e->target_pos))) break;
             ((Moby *)m)->state = 3;
             if (((Moby *)m)->prev_seq != 1) MobyBlendAnimation(m, 1, 0, scale_ticks(10));
             break;
@@ -965,11 +1009,11 @@ void Moby1906Update(unsigned char *m) {
         break;
     }
     case 5:
-        if (!(mine_fall(m, e + 0x70) & 0x140)) break;
+        if (!(mine_fall(m, e->carry) & 0x140)) break;
     case 6:
         qcopy(tmp, m + 0x10);
         ((float *)tmp)[2] += 0.5f;
-        func_L00_0025F4A8_alt(m, e + 0x40, tmp, 0.0f, 0.0f, 5, 2, 4, 1.0f, 0.5f, 9.0f, 0.5f, 4, 0.0f, 0, 1, -1, 0);
+        func_L00_0025F4A8_alt(m, &e->unk_40, tmp, 0.0f, 0.0f, 5, 2, 4, 1.0f, 0.5f, 9.0f, 0.5f, 4, 0.0f, 0, 1, -1, 0);
         ((Moby *)m)->state = 8;
         if (((Moby *)m)->prev_seq) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
         *(int *)&((Moby *)m)->collision = 0;
@@ -978,12 +1022,12 @@ void Moby1906Update(unsigned char *m) {
     }
     s0 = m + 0xC0;
     euler_rotation_basis(s0, m + 0x40);
-    if (*(float *)(e + 0x1F4) != 0.0f) {
+    if (e->glow != 0.0f) {
         float g;
-        ApproachValue((float *)(e + 0x1F4), 0.0f, g_frame_time * 4.0f);
+        ApproachValue(&e->glow, 0.0f, g_frame_time * 4.0f);
         g = 1.0f;
-        FastVecScale(m + 0xE0, m + 0xE0, *(float *)(e + 0x1F4) + g);
-        g = g - *(float *)(e + 0x1F4);
+        FastVecScale(m + 0xE0, m + 0xE0, e->glow + g);
+        g = g - e->glow;
         FastVecScale(s0, s0, g);
         FastVecScale(m + 0xD0, m + 0xD0, g);
         AddDrawCallback(draw_gadgebot_launch_glow_quad, m);
@@ -1159,21 +1203,21 @@ float move_gadgebot_toward_target(char *self, float *src) {
     float b[4];
     float z = 0.0f;
     float h = 0.5f;
-    char *o = ((char *)((Moby *)self)->pvars);
+    struct GadgebotVars *o = (struct GadgebotVars *)((Moby *)self)->pvars;
     float dist;
     *(QVec *)&a = *(QVec *)src;
     {
-        float d = FastAddRots(fast_atan2(a.v[0] - ((Moby *)self)->pos.x, a.v[1] - ((Moby *)self)->pos.y), *(float *)(o + 0x1EC));
-        SteerAngleWithVelocity((float *)(self + 0x48), (float *)(o + 0x1E8), d, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f, g_frame_time * 6.2831855f);
+        float d = FastAddRots(fast_atan2(a.v[0] - ((Moby *)self)->pos.x, a.v[1] - ((Moby *)self)->pos.y), o->heading_offset);
+        SteerAngleWithVelocity((float *)(self + 0x48), &o->turn_vel, d, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f, g_frame_time * 6.2831855f);
     }
     b[0] = z;
     dist = vec_distance_xy((float *)(self + 0x10), a.v);
-    ApproachWithVelocity(b, (float *)(o + 0x1F0), dist, g_frame_time_sq * 6.0f, g_frame_time_sq * 6.0f, g_frame_time * 5.0f);
-    v[0] = FastCos(((Moby *)self)->rot.z) * *(float *)(o + 0x1F0);
-    v[1] = FastSin(((Moby *)self)->rot.z) * *(float *)(o + 0x1F0);
+    ApproachWithVelocity(b, &o->speed, dist, g_frame_time_sq * 6.0f, g_frame_time_sq * 6.0f, g_frame_time * 5.0f);
+    v[0] = FastCos(((Moby *)self)->rot.z) * o->speed;
+    v[1] = FastSin(((Moby *)self)->rot.z) * o->speed;
     v[2] = -(g_frame_time + g_frame_time);
     move_4318((int)self, (int)v, h, h, z, 0);
-    resolve_point_path_segment_xy_clearance(h, *(void **)(o + 0x1E0), self + 0x10, self + 0x10);
+    resolve_point_path_segment_xy_clearance(h, o->path, self + 0x10, self + 0x10);
     return dist;
 }
 extern int veldin2_moby_groups_r[] __asm__("D_L18_001AC540");
@@ -1270,7 +1314,7 @@ void func_L18_002FDD20_r(struct Moby *m) __asm__("func_L18_002FDD20");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/vendor/002f88e8.c, FUN_L18_002fc860. */
 void func_L18_002FDD20_r(struct Moby *m) {
-    char *d = (char *)m->pvars;
+    struct GadgebotVars *d = (struct GadgebotVars *)m->pvars;
     Pk_2FDD20 pk;
     float mat[4][4];
     float w;
@@ -1278,8 +1322,8 @@ void func_L18_002FDD20_r(struct Moby *m) {
     int c;
     int i;
     float *p;
-    h = *(float *)(d + 0x1F4) + 1.0f + (*(float *)&gadgebot_launch_glow_vertical_scale_adjustment_r);
-    w = 1.0f - *(float *)(d + 0x1F4) + (*(float *)&gadgebot_launch_glow_horizontal_scale_adjustment_r);
+    h = d->glow + 1.0f + (*(float *)&gadgebot_launch_glow_vertical_scale_adjustment_r);
+    w = 1.0f - d->glow + (*(float *)&gadgebot_launch_glow_horizontal_scale_adjustment_r);
     qcopy(mat[3], &m->pos);
     mat[3][2] -= (*(float *)&gadgebot_launch_glow_z_offset_r);
     clear_u64_value_r(mat[2]);
@@ -1294,7 +1338,7 @@ void func_L18_002FDD20_r(struct Moby *m) {
     pk.a = 0;
     pk.d = (unsigned long)(*(int *)&gadgebot_launch_glow_blend_minuend_selector_r) | ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_subtrahend_selector_r) << 2) | ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_alpha_factor_selector_r) << 4) |
            ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_addend_selector_r) << 6) | 0x8000000000ULL;
-    c = FastTweenColor_r((*(int *)&gadgebot_launch_glow_tint_start_r), (*(int *)&gadgebot_launch_glow_tint_end_r), *(float *)(d + 0x1F4));
+    c = FastTweenColor_r((*(int *)&gadgebot_launch_glow_tint_start_r), (*(int *)&gadgebot_launch_glow_tint_end_r), d->glow);
     for (i = 0; i < 4; i++) {
         pk.uv[i][0] = gadgebot_launch_glow_uvs_r[i][0];
         pk.uv[i][1] = gadgebot_launch_glow_uvs_r[i][1];

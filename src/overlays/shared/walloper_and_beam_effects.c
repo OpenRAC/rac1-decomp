@@ -5,6 +5,28 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Tesla beam: draw state read by the beam and arc effects. */
+struct BeamArcVars {
+    u8 pad_00[0x3E];
+    s16 arc_alpha;                  /* 0x3E: alpha of the main and second beam */
+};
+
+/* Linked moby: follows its parent's visibility and spins. */
+struct LinkedMobyVars {
+    u8 pad_00[0x4];
+    s32 anim_offset;                /* 0x04: point-pair offset, wraps in 0..0x1000 */
+    char *parent;                   /* 0x08 */
+    f32 spin;                       /* 0x0C: scale factor and yaw step */
+};
+
+/* Doom bot: spawned with a rotation and its owner. */
+struct DoomBotVars {
+    u8 pad_00[0x10];
+    Vec4A rot;                      /* 0x10 */
+    u8 pad_20[0x40];
+    s32 owner;                      /* 0x60 */
+};
+
 typedef union { float f[4]; struct { float x,y,z,w; } v; unsigned int q __attribute__((mode(TI))); } V43;
 typedef struct M43 M43;
 typedef struct { char pad0[0x10]; int collision; char pad14[0x32]; short category; } Class43;
@@ -498,15 +520,15 @@ extern void draw_beam_anchor_camera_facing_quads(void *);
 
 /* Scrolls the texture offset and refreshes the five scrolling-strip records of a moby. */
 void draw_beam_and_arc_effects(char *m) {
-    char *p = ((char *)((Moby *)m)->pvars);
+    struct BeamArcVars *p = (struct BeamArcVars *)((Moby *)m)->pvars;
     float t = *(float *)&beam_arc_tex_scroll - *(float *)&beam_arc_tex_scroll_speed * frame_scale;
     *(float *)&beam_arc_tex_scroll = t;
     if (t <= -8.0f) {
         *(float *)&beam_arc_tex_scroll = t + 8.0f;
     }
-    draw_beam_and_arc_two_pass_quads(tesla_beam_points, *(int *)&beam_arc_main_inner_alpha, *(int *)&beam_arc_main_outer_alpha, *(short *)(p + 0x3E),
+    draw_beam_and_arc_two_pass_quads(tesla_beam_points, *(int *)&beam_arc_main_inner_alpha, *(int *)&beam_arc_main_outer_alpha, p->arc_alpha,
         *(float *)&beam_arc_main_half_width, *(float *)&beam_arc_main_outer_half_width, *(float *)&beam_arc_main_end_extension);
-    draw_beam_and_arc_two_pass_quads(tesla_beam_points + 0x140, *(int *)&beam_arc_second_inner_alpha, *(int *)&beam_arc_second_outer_alpha, *(short *)(p + 0x3E),
+    draw_beam_and_arc_two_pass_quads(tesla_beam_points + 0x140, *(int *)&beam_arc_second_inner_alpha, *(int *)&beam_arc_second_outer_alpha, p->arc_alpha,
         *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, *(float *)&beam_arc_second_end_extension);
     draw_beam_and_arc_two_pass_quads(arc_points, *(short *)&beam_arc_bolt0_alpha, *(short *)&beam_arc_bolt0_alpha, 5,
         *(float *)&beam_arc_bolt_half_width, *(float *)&beam_arc_bolt_outer_half_width, 0.2f);
@@ -727,14 +749,14 @@ extern void moby_build_matrix(void *);
 char *spawn_linked_moby_from_basis(char *src) {
     char *m = CreateMoby(0xB3);
     if (m != 0) {
-        char *p = ((char *)((Moby *)m)->pvars);
+        struct LinkedMobyVars *p = (struct LinkedMobyVars *)((Moby *)m)->pvars;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
         *(short *)&((Moby *)m)->flags = 0x204;
         m[0x23] = 0x50;
         m[0x20] = 0;
-        *(char **)(p + 8) = src;
+        p->parent = src;
         clear_u64_value(m + 0x40);
         *(Vu *)(m + 0xC0) = *(Vu *)(src + 0xC0);
         *(Vu *)(m + 0xD0) = *(Vu *)(src + 0xD0);
@@ -754,9 +776,9 @@ extern float FastAddRots(float, float);
 
 /* Per-frame update of a moby that follows its parent's flag and spins. */
 void update_linked_moby_scale_and_rotation(char *m) {
-    char *p = ((char *)((Moby *)m)->pvars);
-    char *par = *(char **)(p + 8);
-    char *g;
+    struct LinkedMobyVars *p = (struct LinkedMobyVars *)((Moby *)m)->pvars;
+    char *par = p->parent;
+    struct Hero *g;
     int v;
     int d;
     if (*(unsigned char *)(par + 0x20) == 0 || (*(unsigned char *)(par + 0x20) & 0xF0) == 0xF0) {
@@ -766,26 +788,26 @@ void update_linked_moby_scale_and_rotation(char *m) {
     if (par != 0) {
         if ((((Moby *)m)->flags & 1) != (*(unsigned short *)(par + 0x34) & 1)) {
             ((Moby *)m)->flags &= 0xFFFE;
-            ((Moby *)m)->flags |= *(unsigned short *)(*(char **)(p + 8) + 0x34) & 1;
+            ((Moby *)m)->flags |= *(unsigned short *)(p->parent + 0x34) & 1;
         }
     }
-    g = hero_globals_base + 0xE1D;
-    if (*(int *)(g + 0x10B0) < scale_ticks(0x19)) {
+    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (g->items[0].ready_frames < scale_ticks(0x19)) {
         ((Moby *)m)->flags |= 0x41;
     }
-    v = *(int *)(p + 4);
+    v = p->anim_offset;
     d = -0xC0;
-    *(int *)(p + 4) = v - 0xC0;
+    p->anim_offset = v - 0xC0;
     if (v - 0xC0 > 0x1000) {
         d = -0x10C0;
-        *(int *)(p + 4) = v - 0x10C0;
+        p->anim_offset = v - 0x10C0;
     } else if (v - 0xC0 < 0) {
         d = 0xF40;
-        *(int *)(p + 4) = v + 0xF40;
+        p->anim_offset = v + 0xF40;
     }
     offset_moby_class_point_pairs(*(unsigned char **)(m + 0x24), 0, d);
-    ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)(p + 0xC) * random_float_between(0.5f, 1.0f);
-    ((Moby *)m)->rot.y = FastAddRots(((Moby *)m)->rot.y, normalize_angle(*(float *)(p + 0xC)));
+    ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * p->spin * random_float_between(0.5f, 1.0f);
+    ((Moby *)m)->rot.y = FastAddRots(((Moby *)m)->rot.y, normalize_angle(p->spin));
     moby_anim_sphere_lerp(m);
 }
 extern short walloper_arc_timers[];
@@ -818,14 +840,14 @@ void walloper_update(char *m) {
     float vec1[4] __attribute__((aligned(16)));
     float t[4] __attribute__((aligned(16)));
     float w[5][4] __attribute__((aligned(16)));
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     int i;
     int n;
     int j;
     int q;
     int any;
 
-    if (*(unsigned char *)(*(char **)(g + 0x2080) + 0x53) != 0x82) {
+    if (*(unsigned char *)(*(char **)&g->moby + 0x53) != 0x82) {
         held_weapon_tesla_walloper_factor = 0.1f;
     }
     switch (*(unsigned char *)(m + 0x20)) {
@@ -840,7 +862,7 @@ void walloper_update(char *m) {
         walloper_effect_fade_out_countdown = scale_ticks(*(int *)&walloper_fade_out_ticks);
         break;
     case 2:
-        if (*(int *)(g + 0x2084) == 0x20) {
+        if (g->state.current == 0x20) {
             float f = MobyGetFrameValue(m);
             if (6.0f <= f) {
                 flag = 1;
@@ -1164,14 +1186,14 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
     int res[1];
     float distance, angle, elevation, headingError, limit, apparentAngle, radius, reduction;
     int i;
-    char *g;
+    struct Hero *g;
     char *m0;
 
     limit = *(float *)&tesla_arc_range;
     a0s[0] = (int)self;
     *(VecQuad *)start = *(VecQuad *)position;
-    g = hero_globals_base + 0xE1D;
-    m0 = *(char **)(g + 0x2080);
+    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    m0 = *(char **)&g->moby;
     *(VecQuad *)end = *(VecQuad *)(m0 + 0x10);
     position = start;
     end[2] = position[2];
@@ -1201,13 +1223,13 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
         distance = FastVecDist(position, target);
         if (distance < 2.5f) {
             float toward;
-            char *g1 = hero_globals_base + 0xE1D;
-            moby = *(char **)(g1 + 0x2080);
-            toward = fast_atan2(*(float *)(candidate + 0x10) - *(float *)(g1 + 0x80),
-                                   *(float *)(candidate + 0x14) - *(float *)(g1 + 0x84));
+            struct Hero *g1 = (struct Hero *)(hero_globals_base + 0xE1D);
+            moby = *(char **)&g1->moby;
+            toward = fast_atan2(*(float *)(candidate + 0x10) - g1->motion.pos.f[0],
+                                   *(float *)(candidate + 0x14) - g1->motion.pos.f[1]);
             if (FastDiffRots(*(float *)(moby + 0x48), toward) < 1.0471976f &&
                 FastAbsF(position[2] - target[2]) < 2.0f &&
-                !coll_line((Vec4f *)position, (Vec4f *)target, 6, *(char **)(g1 + 0x2080), 0)) {
+                !coll_line((Vec4f *)position, (Vec4f *)target, 6, *(char **)&g1->moby, 0)) {
                 res[0] = (int)candidate;
                 *pitch = -elevation;
                 *heading = angle;
@@ -1217,8 +1239,8 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
         if (distance > limit)
             continue;
         {
-            char *g2 = hero_globals_base + 0xE1D;
-            BuildSphericalOffset(offset, distance, *heading, *pitch + *(float *)(g2 + 0x2E4) * 0.5f);
+            struct Hero *g2 = (struct Hero *)(hero_globals_base + 0xE1D);
+            BuildSphericalOffset(offset, distance, *heading, *pitch + g2->ground_pitch.f * 0.5f);
         }
         FastVecAdd(offset, offset, position);
         apparentAngle = FastArcSin(FastVecDist(offset, target) / (distance + distance));
@@ -2733,16 +2755,16 @@ extern void copy_hero_moby_field_38(void *);
 char *spawn_doom_bot(int owner, void *pos, void *rot) {
     char *m = CreateMoby(0xBA);
     if (m != 0) {
-        char *p;
+        struct DoomBotVars *p;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
-        p = ((char *)((Moby *)m)->pvars);
+        p = (struct DoomBotVars *)((Moby *)m)->pvars;
         m[0x20] = 0;
         m[0xBC] = 0;
         qcopy(m + 0x10, pos);
-        qcopy(p + 0x10, rot);
-        *(int *)(p + 0x60) = owner;
+        qcopy(&p->rot, rot);
+        p->owner = owner;
         moby_build_matrix(m);
         copy_hero_moby_field_38(m);
         ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.1f;

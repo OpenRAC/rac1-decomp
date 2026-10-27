@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "vector.h"
+#include "hero.h"
 
 typedef struct { char pad[0x24]; int v; char pad2[0x24]; } Rec;
 extern Rec fleet_item_defs[];
@@ -10,31 +11,31 @@ extern int hero_slot_item_id(int);
 
 /* Returns the current help record's value, 0x54 or 0x6E in two special states, or 0 when no record applies. */
 int select_hero_help_value(int a) {
-    char *g = (char *)hero_globals_base + 0xE1D;
-    switch (*(unsigned char *)(g + 0x20A4)) {
+    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    switch (g->vehicle_mode) {
     case 1:
         return 0;
     case 3:
         return 0;
     }
     {
-        char *g2 = (char *)hero_globals_base + 0xE1D;
-        if (*(int *)(g2 + 0x22A8) == 1) {
+        struct Hero *g2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (g2->health.hp == 1) {
             return 0x54;
         }
-        if (*(unsigned char *)(g2 + 0x12E2) != 0) {
+        if (g2->on_ice_ground != 0) {
             return 0x6E;
         }
         if (a == 0) {
             return 0;
         }
-        if (*(unsigned char *)(g2 + 0x20A8) == 0) {
+        if (g2->item_anim_active == 0) {
             return 0;
         }
-        if (*(unsigned char *)(g2 + 0x20AA) == 0) {
+        if (g2->unk20AA == 0) {
             return 0;
         }
-        if (*(short *)(g2 + 0x22C8) != 0) {
+        if (g2->unk22C8 != 0) {
             return 0;
         }
     }
@@ -239,57 +240,57 @@ extern float g_frame_time MACRO_ADDR;
 
 /* Per-frame easing of the camera blend parameters at the shared global block, by mode. */
 void update_hero_smoothing(void) {
-    char *a = (char *)hero_globals_base + 0xE1D;
-    char *b;
-    char *c;
+    struct Hero *a = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *b;
+    struct Hero *c;
     char *g;
     float *p;
 
-    switch (*(unsigned char *)(a + 0x20A4)) {
+    switch (a->vehicle_mode) {
     case 0:
-        *(float *)(a + 0x228) = 0.8f;
-        *(float *)(a + 0x22C) = 0.7f;
-        *(float *)(a + 0x230) = 0.45f;
+        a->capsule_top_target = 0.8f;
+        a->capsule_bottom_target = 0.7f;
+        a->capsule_radius_target = 0.45f;
         break;
     case 1:
-        *(float *)(a + 0x228) = 0.59999996f;
-        *(float *)(a + 0x22C) = 0.45000002f;
-        *(float *)(a + 0x230) = 0.3f;
+        a->capsule_top_target = 0.59999996f;
+        a->capsule_bottom_target = 0.45000002f;
+        a->capsule_radius_target = 0.3f;
         break;
     case 3:
-        *(float *)(a + 0x228) = 0.8f;
-        *(float *)(a + 0x22C) = 0.6f;
-        *(float *)(a + 0x230) = 0.45f;
+        a->capsule_top_target = 0.8f;
+        a->capsule_bottom_target = 0.6f;
+        a->capsule_radius_target = 0.45f;
         break;
     }
-    b = (char *)hero_globals_base + 0xE1D;
-    if (*(int *)(b + 0x208C) == 4) {
-        if (*(int *)(b + 0x198) > *(int *)(b + 0x420)) {
-            if (*(short *)(b + 0x41E) == 0) {
-                *(float *)(b + 0x22C) = *(float *)(b + 0x434);
+    b = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    if (b->state.control_mode == 4) {
+        if (b->state_timer > b->takeoff_frame) {
+            if (b->past_jump_apex == 0) {
+                b->capsule_bottom_target = b->unk434;
             }
         }
-    } else if (*(int *)(b + 0x2084) == 6) {
-        *(float *)(b + 0x22C) = 0.5f;
-    } else if (*(int *)(b + 0x2084) == 4) {
-        *(float *)(b + 0x228) = 0.35000002f;
-    } else if ((unsigned)(*(int *)(b + 0x208C) - 0x11) < 2) {
-        *(int *)(b + 0x228) = 0;
-        *(int *)(b + 0x22C) = 0;
-    } else if (*(unsigned char *)(b + 0x12E2) != 0 && *(int *)(b + 0x300) != 0) {
-        *(float *)(b + 0x228) = 0.8f;
-        *(float *)(b + 0x22C) = 0.9f;
+    } else if (b->state.current == 6) {
+        b->capsule_bottom_target = 0.5f;
+    } else if (b->state.current == 4) {
+        b->capsule_top_target = 0.35000002f;
+    } else if ((unsigned)(b->state.control_mode - 0x11) < 2) {
+        *(int *)&b->capsule_top_target = 0;
+        *(int *)&b->capsule_bottom_target = 0;
+    } else if (b->on_ice_ground != 0 && b->grounded_frames != 0) {
+        b->capsule_top_target = 0.8f;
+        b->capsule_bottom_target = 0.9f;
     } else {
-        char *q = (char *)hero_globals_base + 0xE1D;
-        if (*(int *)(q + 0x2084) == 0x7F) {
-            *(float *)(q + 0x230) = 0.8f;
+        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (q->state.current == 0x7F) {
+            q->capsule_radius_target = 0.8f;
         }
     }
-    c = (char *)hero_globals_base + 0xE1D;
-    if (*(unsigned char *)(c + 0x257) != 0 && *(int *)(c + 0x2094) != 0x12
-        && *(int *)(c + 0x208C) != 0x11 && *(unsigned char *)(c + 0x12E4) == 0) {
-        float d = vec_distance_xy(c + 0x210, c + 0x80);
-        if (!(*(float *)(c + 0x234) * 0.5f < d)) {
+    c = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    if (c->wall_hit != 0 && c->state.prev_control_mode != 0x12
+        && c->state.control_mode != 0x11 && c->base_condition == 0) {
+        float d = vec_distance_xy(&c->wall_contact_point, &c->motion.pos);
+        if (!(c->capsule_radius * 0.5f < d)) {
             return;
         }
     }

@@ -6,6 +6,69 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Elevator with a rotating ring: volume, speed and lift offset. */
+struct ElevatorRingVars {
+    u8 pad_00[0xA0];
+    s32 volume;                     /* 0xA0: index of the elevator volume */
+    u8 pad_A4[0xC];
+    f32 speed;                      /* 0xB0 */
+    u8 pad_B4[0x4];
+    f32 offset;                     /* 0xB8: lift translation */
+};
+
+/* Sand shark nest: hit response, knockback and the shark it counts down. */
+struct SharkNestVars {
+    u8 pad_00[0x20];
+    f32 health;                     /* 0x20: hit response block, ComputeHitResponse */
+    u8 pad_24[0xA];
+    u8 hit_state;                   /* 0x2E */
+    u8 pad_2F[0x31];
+    s16 color_fade;                 /* 0x60: StepColorFade block */
+    u8 pad_62[0x5];
+    u8 flash;                       /* 0x67: hit flash strength */
+    u8 pad_68[0x8];
+    u8 knockback[0x10];             /* 0x70: InitKnockback block */
+    u8 pad_80[0x8];
+    f32 hit_yaw;                    /* 0x88 */
+    f32 hit_pitch;                  /* 0x8C */
+    u8 pad_90[0x4];
+    s32 mode;                       /* 0x94 */
+    u8 pad_98[0x28];
+    f32 unk_C0;                     /* 0xC0 */
+    f32 unk_C4;                     /* 0xC4 */
+    u8 pad_C8[0x18];
+    s32 shark;                      /* 0xE0: moby index of the owner shark, -1 when none */
+};
+
+/* Transport pod: two rail mobys that follow it. */
+struct PodRailsVars {
+    u8 pad_00[0x84];
+    char *rail_a;                   /* 0x84 */
+    char *rail_b;                   /* 0x88 */
+    s32 unk_8C;                     /* 0x8C: cleared */
+    s32 unk_90;                     /* 0x90: cleared */
+    f32 rail_a_z;                   /* 0x94: height offset of rail a */
+    f32 rail_b_z;                   /* 0x98: height offset of rail b */
+};
+
+/* Rocket launcher: radius of the sound wave expanding from the shot, -1 once heard. */
+struct RocketSoundVars {
+    u8 pad_00[0x10];
+    f32 wave;                       /* 0x10 */
+};
+
+/* Tresspasser door: its closed position and the moby that opens it. */
+struct DoorVars {
+    Vec4A home;                     /* 0x00 */
+    s32 partner;                    /* 0x10: moby index of the opener, -1 when none */
+};
+
+/* Sand shark egg: the child it releases (the first 0x60 bytes are the mine_fall block). */
+struct SharkEggVars {
+    u8 fall[0x60];                  /* 0x00: mine_fall state */
+    char *child;                    /* 0x60 */
+};
+
 extern void prepare_scaled_table_with_byte_128(void *);
 
 /* Prepares the scaled table on a scratch buffer. */
@@ -190,7 +253,7 @@ extern short sand_shark_puff_start_color;
 extern short sand_shark_puff_end_color;
 
 /* pvars of moby class 580 (sand_shark), the fields its update function touches. */
-typedef struct {
+typedef struct Vars_2D5250 {
     char pad000[0x20];
     float f20;            /* 0x020 */
     short s24;            /* 0x024 */
@@ -895,10 +958,10 @@ void extend_group_sand_shark_timers(char *arg) {
         do {
             char *o = (char *)aridia_mobys_m + ((*(unsigned short *)p & 0x7FFF) << 8);
             if (((Moby *)o)->oclass == 0x244) {
-                char *d = ((char *)((Moby *)o)->pvars);
+                struct Vars_2D5250 *d = (struct Vars_2D5250 *)((Moby *)o)->pvars;
                 float f = multiply_global_factor(random_float_between(240.0f, 300.0f));
-                if ((float)*(short *)(d + 0x25E) < f) {
-                    *(short *)(d + 0x25E) = truncate_float_to_s32_r(f);
+                if ((float)d->t25E < f) {
+                    d->t25E = truncate_float_to_s32_r(f);
                 }
             }
         } while (*p++ >= 0);
@@ -1193,7 +1256,7 @@ void *handle_sand_shark_suck_cannon_storage(char *moby, void *v) {
     if (r) {
         int idx;
         moby[0x20] = 9;
-        idx = *(int *)(((char *)((Moby *)moby)->pvars) + 0x288);
+        idx = ((struct Vars_2D5250 *)((Moby *)moby)->pvars)->i288;
         if (idx >= 0) {
             char *o = *(char **)(D_L02_00160058_g + idx * 256 + 0x78);
             (*(int *)(o + 0x14C))--;
@@ -1230,14 +1293,14 @@ extern int scale_ticks(int);
 
 /* Sends a sand shark home when it leaves its path polygon. */
 void begin_sand_shark_return_home_if_outside_path(unsigned char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    char *entry = aridia_paths[*(int *)(data + 0x290)];
+    struct Vars_2D5250 *data = (struct Vars_2D5250 *)((Moby *)moby)->pvars;
+    char *entry = aridia_paths[data->i290];
     if (IsPointInPolygon(moby + 0x10, entry + 0x10, *(int *)entry) == 0) {
         ((Moby *)moby)->state = 0x12;
         if (((Moby *)moby)->prev_seq) {
             MobyBlendAnimation(moby, 0, 0, scale_ticks(20));
         }
-        *(int *)(data + 0x298) = 1;
+        data->i298 = 1;
     }
 }
 extern void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m);
@@ -1937,10 +2000,10 @@ typedef struct {
 void DrawRotatingQuadRing(char *m) {
     L02RingPacket packet;
     L02RingMatrix matrix;
-    char *d = ((char *)((Moby *)m)->pvars);
-    int bound_index = (*(int *)(d + 0xA0)) << 7;
+    struct ElevatorRingVars *d = (struct ElevatorRingVars *)((Moby *)m)->pvars;
+    int bound_index = (d->volume) << 7;
     char *entry = (char *)(bound_index + aridia_elevator_volumes);
-    float translation = *(float *)(d + 0xB8);
+    float translation = d->offset;
     float lower = *(float *)(entry + 0x38);
     float half = *(float *)(entry + 0x28);
     float upper = lower + half + translation;
@@ -1954,7 +2017,7 @@ void DrawRotatingQuadRing(char *m) {
     lower = lower - half;
     lower += translation;
     color = FastTweenColor(*(int *)&aridia_elevator_ring_slow_color, *(int *)&aridia_elevator_ring_fast_color,
-                          FastAbsF(*(float *)(d + 0xB0)) / (*(float *)&aridia_elevator_max_speed * g_frame_time));
+                          FastAbsF(d->speed) / (*(float *)&aridia_elevator_max_speed * g_frame_time));
     copy_matrix_rotation(&matrix, m + 0xC0);
     qcopy(matrix.position, m + 16);
     matrix.position[2] = lower;
@@ -2205,7 +2268,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 
 /* Enemy hit reaction: on a hit takes damage and is knocked back; when its health runs out it is flung and dies. */
 void handle_sand_shark_nest_damage(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct SharkNestVars *d = (struct SharkNestVars *)((Moby *)m)->pvars;
     float v[4];
     int hit;
     float dmg;
@@ -2213,63 +2276,63 @@ void handle_sand_shark_nest_damage(char *m) {
     float k2;
     char *h;
     dmg = 0.0f;
-    if (((unsigned char *)d)[0x2E] == 2) {
-        d[0x2E] = 1;
-        if (*(int *)(d + 0xE0) >= 0) {
-            char *od = *(char **)((*(int *)(d + 0xE0) << 8) + aridia_mobys_m + 0x78);
+    if (d->hit_state == 2) {
+        d->hit_state = 1;
+        if (d->shark >= 0) {
+            char *od = *(char **)((d->shark << 8) + aridia_mobys_m + 0x78);
             *(int *)(od + 0x150) -= 1;
         }
         DeleteMoby(m);
         return;
     }
     h = MobyGetHitMessage(m, 0x330000, 0);
-    ComputeHitResponse(m, h, d + 0x20, 0, &hit, &dmg, 0, 4);
+    ComputeHitResponse(m, h, &d->health, 0, &hit, &dmg, 0, 4);
     if (h != 0 && hit != 1 && ((unsigned char *)m)[0x20] != 4) {
         if (hit == 3) {
-            *(float *)(d + 0x20) = 0.0f;
+            d->health = 0.0f;
         } else {
-            *(float *)(d + 0x20) -= dmg;
+            d->health -= dmg;
         }
-        *(int *)(d + 0x94) = 4;
-        if (0.0f < *(float *)(d + 0x20)) {
+        d->mode = 4;
+        if (0.0f < d->health) {
             {
                 float a = g_frame_time * 4.0f;
                 float b = g_frame_time * 3.0f;
-                *(float *)(d + 0x88) = a;
-                *(float *)(d + 0x8C) = b;
+                d->hit_yaw = a;
+                d->hit_pitch = b;
             }
             *(Q_2de418 *)v = *(Q_2de418 *)(h + 0x10);
-            HeadingFromVector(v, &k1, d + 0x88, d + 0x8C);
-            InitKnockback(k1, m, d + 0x70, 3, 1, 0);
+            HeadingFromVector(v, &k1, &d->hit_yaw, &d->hit_pitch);
+            InitKnockback(k1, m, d->knockback, 3, 1, 0);
             if (1.0f <= dmg) {
-                d[0x67] = 0x78;
+                d->flash = 0x78;
                 m[0x20] = 3;
                 MobyBlendAnimation(m, 2, 0, 0);
             } else {
-                d[0x67] = 0x78;
+                d->flash = 0x78;
             }
         } else {
             ((Moby *)m)->flags &= 0xEFFF;
-            ((unsigned char *)d)[0x67] = 0xFA;
+            d->flash = 0xFA;
             m[0x20] = 4;
             {
                 float b = g_frame_time * 11.0f;
                 float a = g_frame_time * 3.0f;
-                *(float *)(d + 0x8C) = a;
-                *(float *)(d + 0x88) = b;
+                d->hit_pitch = a;
+                d->hit_yaw = b;
             }
             *(Q_2de418 *)v = *(Q_2de418 *)(h + 0x10);
-            HeadingFromVector(v, &k2, d + 0x88, d + 0x8C);
-            InitKnockback(k2, m, d + 0x70, 3, 1, 0);
-            *(float *)(d + 0xC0) = 9.0f;
-            *(float *)(d + 0xC4) = 19.0f;
+            HeadingFromVector(v, &k2, &d->hit_yaw, &d->hit_pitch);
+            InitKnockback(k2, m, d->knockback, 3, 1, 0);
+            d->unk_C0 = 9.0f;
+            d->unk_C4 = 19.0f;
             if (((unsigned char *)m)[0x53] != 3) MobyBlendAnimation(m, 3, 0, 0);
             SetDeathBits(m, 0, -1);
         }
-        RerollEffectCounter(m, (short *)(d + 0x60));
+        RerollEffectCounter(m, &d->color_fade);
     }
     ((unsigned char *)m)[0xA4] = 0xFF;
-    StepColorFade(m, d + 0x60);
+    StepColorFade(m, &d->color_fade);
     fast_subtract_rotations_cf(m + 0xBC);
 }
 
@@ -2786,23 +2849,23 @@ void advance_transport_pod_rails_to_offsets(char *moby) {
 // Copies the moby position into two linked objects and eases their heights toward it.
 void snap_transport_pod_rails_to_offsets(char *moby)
 {
-    char *d = ((char *)((Moby *)moby)->pvars);
-    char *a = *(char **)(d + 0x84);
+    struct PodRailsVars *d = (struct PodRailsVars *)((Moby *)moby)->pvars;
+    char *a = d->rail_a;
     float k, k2;
     float r;
     qcopy(a + 0x10, moby + 0x10);
-    qcopy(*(char **)(d + 0x88) + 0x10, moby + 0x10);
+    qcopy(d->rail_b + 0x10, moby + 0x10);
     k = *(float *)&transport_pod_rail_twist;
-    *(float *)(a + 0x18) = ((Moby *)moby)->pos.z + *(float *)(d + 0x94);
-    *(int *)(d + 0x8C) = 0;
-    *(float *)(*(char **)(d + 0x88) + 0x18) = ((Moby *)moby)->pos.z + *(float *)(d + 0x98);
-    *(int *)(d + 0x90) = 0;
-    r = FastAddRots(((Moby *)moby)->rot.z, (*(float *)(*(char **)(d + 0x84) + 0x18) - ((Moby *)moby)->pos.z) * k * 0.017453292f);
+    *(float *)(a + 0x18) = ((Moby *)moby)->pos.z + d->rail_a_z;
+    d->unk_8C = 0;
+    *(float *)(d->rail_b + 0x18) = ((Moby *)moby)->pos.z + d->rail_b_z;
+    d->unk_90 = 0;
+    r = FastAddRots(((Moby *)moby)->rot.z, (*(float *)(d->rail_a + 0x18) - ((Moby *)moby)->pos.z) * k * 0.017453292f);
     k2 = *(float *)&transport_pod_rail_twist;
-    *(float *)(*(char **)(d + 0x84) + 0x48) = r;
-    *(float *)(*(char **)(d + 0x88) + 0x48) = FastAddRots(((Moby *)moby)->rot.z, (*(float *)(*(char **)(d + 0x88) + 0x18) - ((Moby *)moby)->pos.z) * k2 * 0.017453292f);
-    moby_build_matrix(*(char **)(d + 0x84));
-    moby_build_matrix(*(char **)(d + 0x88));
+    *(float *)(d->rail_a + 0x48) = r;
+    *(float *)(d->rail_b + 0x48) = FastAddRots(((Moby *)moby)->rot.z, (*(float *)(d->rail_b + 0x18) - ((Moby *)moby)->pos.z) * k2 * 0.017453292f);
+    moby_build_matrix(d->rail_a);
+    moby_build_matrix(d->rail_b);
 }
 extern char hero_globals_base[];
 extern short aridia_crane_anim_speed;
@@ -3000,13 +3063,13 @@ extern short rocket_launcher_far_sound_end;
 extern int hero_current_state;
 // Sets two sound-channel gains from distance when the expanding range reaches the hero.
 void play_rocket_launcher_delayed_shot_sounds(char *moby) {
- char *data = ((char *)((Moby *)moby)->pvars);
+ struct RocketSoundVars *data = (struct RocketSoundVars *)((Moby *)moby)->pvars;
  float distance;
  int sound_a, sound_b, gain_a, gain_b;
- if (*(float *)(data + 0x10) >= 0.0f) {
+ if (data->wave >= 0.0f) {
   distance = FastVecDist(aridia_camera_pos, moby + 0x10);
-  *(float *)(data + 0x10) += *(float *)&rocket_launcher_sound_wave_speed * g_frame_time;
-  if (distance < *(float *)(data + 0x10) && hero_current_state != 0x72) {
+  data->wave += *(float *)&rocket_launcher_sound_wave_speed * g_frame_time;
+  if (distance < data->wave && hero_current_state != 0x72) {
    sound_a = Moby_PlaySound(0, 0x10, (int)moby);
    sound_b = Moby_PlaySound(1, 0x10, (int)moby);
    gain_a = truncate_float_to_s32_r((1.0f - (distance - *(float *)&rocket_launcher_near_sound_start) / (*(float *)&rocket_launcher_near_sound_end - *(float *)&rocket_launcher_near_sound_start)) * 1024.0f);
@@ -3017,7 +3080,7 @@ void play_rocket_launcher_delayed_shot_sounds(char *moby) {
    else if (gain_b < 0) gain_b = 0;
    Sound_SetPitchBend(sound_a, gain_a);
    Sound_SetPitchBend(sound_b, gain_b);
-   *(float *)(data + 0x10) = -1.0f;
+   data->wave = -1.0f;
   }
  }
 }
@@ -3093,17 +3156,17 @@ extern float g_frame_time MACRO_ADDR;
 
 // Moby update: copy position, then wait for a partner moby and slide toward it.
 void tresspasser_door1_update(unsigned char *moby) {
-    char *d = ((char *)((Moby *)moby)->pvars);
+    struct DoorVars *d = (struct DoorVars *)((Moby *)moby)->pvars;
     float a[4];
     float b[4];
     switch (((Moby *)moby)->state) {
     case 0:
-        qcopy(d, moby + 0x10);
+        qcopy(&d->home, moby + 0x10);
         ((Moby *)moby)->state = 1;
         break;
     case 1:
-        if (*(int *)(d + 0x10) >= 0) {
-            unsigned char *o = (unsigned char *)((*(int *)(d + 0x10) << 8) + D_L02_00160058_g);
+        if (d->partner >= 0) {
+            unsigned char *o = (unsigned char *)((d->partner << 8) + D_L02_00160058_g);
             short c = *(short *)(o + 0xA6);
             if (c == 0x267 || c == 0x23F) {
                 if (o[0x20] == 4) {
@@ -3115,7 +3178,7 @@ void tresspasser_door1_update(unsigned char *moby) {
         break;
     case 2:
         vec_scale_to_length(a, moby + 0xD0, 2.0f);
-        FastVecAdd(a, d, a);
+        FastVecAdd(a, &d->home, a);
         FastVecSub(b, a, moby + 0x10);
         ClampVectorLength(b, g_frame_time + g_frame_time);
         FastVecAdd(moby + 0x10, moby + 0x10, b);
@@ -3128,14 +3191,14 @@ void tresspasser_door1_update(unsigned char *moby) {
 }
 /* moves a moby through three states: latch position, wait for a peer to reach state 4, then slide toward it */
 void tresspasser_door2_update(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct DoorVars *data = (struct DoorVars *)((Moby *)moby)->pvars;
     switch (((unsigned char *)moby)[0x20]) {
     case 0:
-        qcopy(data, moby + 0x10);
+        qcopy(&data->home, moby + 0x10);
         moby[0x20] = 1;
         break;
     case 1: {
-        int id = *(int *)(data + 0x10);
+        int id = data->partner;
         if (id >= 0) {
             char *m = (char *)((id << 8) + D_L02_00160058_g);
             int t = *(short *)(m + 0xA6);
@@ -3150,7 +3213,7 @@ void tresspasser_door2_update(char *moby) {
         float b[4];
         char *pos = moby + 0x10;
         vec_scale_to_length(a, moby + 0xD0, -2.0f);
-        FastVecAdd(a, data, a);
+        FastVecAdd(a, &data->home, a);
         FastVecSub(b, a, pos);
         ClampVectorLength(b, g_frame_time + g_frame_time);
         FastVecAdd(pos, pos, b);
@@ -3168,7 +3231,7 @@ extern short sandshark_egg_dust_end_color;
 void sandshark_egg_update(char *moby) {
     float u[4];
     float v[4];
-    char *d = ((char *)((Moby *)moby)->pvars);
+    struct SharkEggVars *d = (struct SharkEggVars *)((Moby *)moby)->pvars;
     int i;
     float *vp;
     int r;
@@ -3177,7 +3240,7 @@ void sandshark_egg_update(char *moby) {
     switch (((unsigned char *)moby)[0x20]) {
     case 1:
         clear_u64_value(u);
-        if (mine_fall(moby, d) & 1) {
+        if (mine_fall(moby, ((char *)d)) & 1) {
             moby[0x20] = 2;
         }
         vp = v;
@@ -3194,13 +3257,13 @@ void sandshark_egg_update(char *moby) {
         } while (i >= 0);
         break;
     case 2:
-        c = *(char **)(d + 0x60);
+        c = d->child;
         qcopy(c + 0x10, moby + 0x10);
         c[0x20] = 0x11;
-        MobyBlendAnimation(*(char **)(d + 0x60), 5, 0, 1);
-        *(int *)(*(char **)(d + 0x60) + 0x94) = *(int *)(*(char **)(*(char **)(d + 0x60) + 0x24) + 0x10);
-        *(float *)(*(char **)(d + 0x60) + 0x58) = 1.0f;
-        moby_build_matrix(*(char **)(d + 0x60));
+        MobyBlendAnimation(d->child, 5, 0, 1);
+        *(int *)(d->child + 0x94) = *(int *)(*(char **)(d->child + 0x24) + 0x10);
+        *(float *)(d->child + 0x58) = 1.0f;
+        moby_build_matrix(d->child);
         DeleteMoby(moby);
         break;
     }

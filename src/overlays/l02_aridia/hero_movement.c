@@ -18,34 +18,34 @@ extern void Hero_OnKilled(void);
 
 // Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l02/ui_help_0021b698.c, FUN_L02_0021b698.
 void process_hero_ground_material_effects(void) {
-    char *g = (char *)hero_globals_base + 0xE1D;
-    int keep = *(unsigned char *)(g + 0x12ED);
-    int st = *(short *)(g + 0x12E0);
-    FastMemZero16(g + 0x12E0, 0x10);
-    *(unsigned char *)(g + 0x12ED) = keep;
-    *(short *)(g + 0x12E0) = -1;
-    *(unsigned char *)(g + 0x20A9) = 0;
-    *(short *)(g + 0x308) = 0;
+    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    int keep = g->ground_sound_class;
+    int st = g->ground_type;
+    FastMemZero16(&g->ground_type, 0x10);
+    g->ground_sound_class = keep;
+    g->ground_type = -1;
+    g->wading = 0;
+    g->unk308 = 0;
     if (st == -1) return;
     if (st == 2) {
-        if (*(short *)(g + 0x30C) == 0 || *(float *)(g + 0x2DC) < 0.3f) {
-            *(unsigned char *)(g + 0x12E7) = 1;
-            if (*(unsigned char *)(g + 0x20A4) == 0) {
-                char *p = *(char **)(g + 0x10E0);
+        if (g->frames_off_ground.s == 0 || g->ground_distance < 0.3f) {
+            g->on_magnet_ground = 1;
+            if (g->vehicle_mode == 0) {
+                char *p = *(char **)&g->items[1].moby;
                 if (p != 0 && *(short *)(p + 0xA6) == 0xAD) {
-                    *(short *)(g + 0x308) = 1;
+                    g->unk308 = 1;
                 }
             }
         }
     }
     if (st == 3) {
-        char *q = (char *)hero_globals_base + 0xE1D;
-        *(unsigned char *)(q + 0x12E6) = 1;
+        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        q->selector_3 = 1;
     }
     if (g_current_level_index == 0xD) {
-        char *q = (char *)hero_globals_base + 0xE1D;
-        if (*(int *)(q + 0x2084) != 0x7B) {
-            if (coll_sphere(*(float *)(q + 0x234) + 0.03f, q + 0xD0, 2, 0) != 0) {
+        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (q->state.current != 0x7B) {
+            if (coll_sphere(q->capsule_radius + 0.03f, &q->motion.body_center, 2, 0) != 0) {
                 if (CollType() == 0xB) {
                     HeroL02_SetMoveState(0x7B, 1);
                     return;
@@ -53,18 +53,18 @@ void process_hero_ground_material_effects(void) {
             }
         }
     }
-    if (st == 0xB) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EB) = 1; }
-    if (st == 2) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12E7) = 1; }
-    if (st == 0xD) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EC) = 1; }
-    if (st == 8) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EA) = 1; }
-    if (st == 9) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EE) = 1; }
-    if (st == 0xC) { char *q = (char *)hero_globals_base + 0xE1D; *(unsigned char *)(q + 0x12EA) = 1; }
+    if (st == 0xB) { struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D); q->selector_11 = 1; }
+    if (st == 2) { struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D); q->on_magnet_ground = 1; }
+    if (st == 0xD) { struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D); q->selector_13 = 1; }
+    if (st == 8) { struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D); q->on_slip_ground = 1; }
+    if (st == 9) { struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D); q->unk12EE = 1; }
+    if (st == 0xC) { struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D); q->on_slip_ground = 1; }
     {
-        char *q = (char *)hero_globals_base + 0xE1D;
-        if (*(unsigned char *)(q + 0x12EC) != 0 && *(int *)(q + 0x2084) != 0x7F) {
-            if (FastAbsF(*(float *)(q + 0x2F0) - (*(float *)(q + 0x88) + 0.25f)) < 1.0f) {
-                if (*(float *)(q + 0x2F0) - *(float *)(q + 0x88) > 0.0f) {
-                    if (*(float *)(q + 0x108) < 0.0f) {
+        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (q->selector_13 != 0 && q->state.current != 0x7F) {
+            if (FastAbsF(q->water_surface_z - (q->motion.pos.f[2] + 0.25f)) < 1.0f) {
+                if (q->water_surface_z - q->motion.pos.f[2] > 0.0f) {
+                    if (q->motion.displacement.f[2] < 0.0f) {
                         exit_hero_vehicle_mode_if_mode_three();
                         HeroL02_SetMoveState(0x7F, 1);
                         return;
@@ -74,14 +74,14 @@ void process_hero_ground_material_effects(void) {
         }
     }
     {
-        char *h = (char *)hero_globals_base + 0xE1D;
-        if (*(unsigned char *)(h + 0x12E6) != 0 && *(int *)(h + 0x2084) != 0x68 && *(int *)(h + 0x2084) != 0x7B) {
-            if (FastAbsF(*(float *)(h + 0x2F4) - (*(float *)(h + 0x88) + 0.25f)) < 1.0f) {
-                if (*(float *)(h + 0x2F4) - *(float *)(h + 0x88) > 0.0f) {
-                    if (*(int *)(h + 0x2084) != 0x69 || *(short *)(h + 0x41E) != 0) {
-                        if (*(float *)(h + 0x108) < 0.0f) {
+        struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (h->selector_3 != 0 && h->state.current != 0x68 && h->state.current != 0x7B) {
+            if (FastAbsF(h->sink_surface_z - (h->motion.pos.f[2] + 0.25f)) < 1.0f) {
+                if (h->sink_surface_z - h->motion.pos.f[2] > 0.0f) {
+                    if (h->state.current != 0x69 || h->past_jump_apex != 0) {
+                        if (h->motion.displacement.f[2] < 0.0f) {
                             exit_hero_vehicle_mode_if_mode_three();
-                            if (*(int *)(h + 0x22A8) == 0) HeroL02_SetMoveState(0x7B, 1);
+                            if (h->health.hp == 0) HeroL02_SetMoveState(0x7B, 1);
                             else HeroL02_SetMoveState(0x68, 1);
                             return;
                         }
@@ -91,12 +91,12 @@ void process_hero_ground_material_effects(void) {
         }
     }
     {
-        char *h = (char *)hero_globals_base + 0xE1D;
-        if (*(unsigned char *)(h + 0x12EB) != 0 && *(int *)(h + 0x2084) != 0x7B) {
-            if (FastAbsF(*(float *)(h + 0x2F4) - (*(float *)(h + 0x88) + 0.25f)) < 1.0f) {
-                if (*(float *)(h + 0x2F4) - *(float *)(h + 0x88) > 0.0f) {
-                    if (*(float *)(h + 0x108) < 0.0f) {
-                        if ((unsigned)(*(unsigned char *)(h + 0x20A4) - 1) < 2) {
+        struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (h->selector_11 != 0 && h->state.current != 0x7B) {
+            if (FastAbsF(h->sink_surface_z - (h->motion.pos.f[2] + 0.25f)) < 1.0f) {
+                if (h->sink_surface_z - h->motion.pos.f[2] > 0.0f) {
+                    if (h->motion.displacement.f[2] < 0.0f) {
+                        if ((unsigned)(h->vehicle_mode - 1) < 2) {
                             Hero_OnKilled();
                         } else {
                             exit_hero_vehicle_mode_if_mode_three();

@@ -328,15 +328,15 @@ extern void blend_hero_mapped_moby_animation(int, int, float);
 
 /* Starts animation sequence A0 (slot byte A1) over time T on the object at +0x2080 of the game block. */
 void set_hero_animation(int a0, int a1, float t) {
-    char *g2;
-    char *g3;
-    char *g1 = hero_globals_base + 0xE1D;
-    char *obj = *(char **)(g1 + 0x2080);
+    struct Hero *g2;
+    struct Hero *g3;
+    struct Hero *g1 = (struct Hero *)(hero_globals_base + 0xE1D);
+    char *obj = *(char **)&g1->moby;
     int slot;
     int o;
     char *e;
 
-    if (*(int *)(g1 + 0xA98) & 2) {
+    if (g1->anim_flags & 2) {
         *(int *)(obj + 0x54) = 0;
     }
     if (draw_map51_m[1] != 0) {
@@ -362,31 +362,31 @@ void set_hero_animation(int a0, int a1, float t) {
     *(unsigned char *)(obj + 0x51) = a1;
     *(unsigned char *)(obj + 0x53) = a0;
     update_moby_animation_state(obj);
-    g2 = hero_globals_base + 0xE1D;
-    *(float *)(g2 + 0xA90) = 1.0f;
+    g2 = (struct Hero *)(hero_globals_base + 0xE1D);
+    g2->anim_speed = 1.0f;
     if (t > 0.0f) {
-        *(float *)(g2 + 0xA94) = 1.0f / t;
+        g2->anim_frame_rate = 1.0f / t;
         *(float *)(obj + 0x54) = 0.0f;
-        *(int *)(g2 + 0xAA0) = -1;
+        g2->anim_blend_curve = -1;
     } else {
-        *(float *)(g2 + 0xA94) = 1.0f;
-        *(int *)(g2 + 0xAA0) = truncate_float_to_s32(-t) - 1;
-        *(int *)(g2 + 0xAA4) = 0;
+        g2->anim_frame_rate = 1.0f;
+        g2->anim_blend_curve = truncate_float_to_s32(-t) - 1;
+        g2->anim_blend_step = 0;
         *(float *)(obj + 0x54) = 0.0f;
     }
     clear_hero_queued_animation();
-    g3 = hero_globals_base + 0xE1D;
+    g3 = (struct Hero *)(hero_globals_base + 0xE1D);
     o = a0 * 4;
     *(unsigned char *)(obj + 0x7C) = *(unsigned char *)(*(int *)(*(int *)(obj + 0x24) + o + 0x48) + 0x11);
-    *(int *)(g3 + 0xA9C) = 1;
+    g3->anim_changing = 1;
     if (t < 0.0f) {
-        t = *(int *)((char *)&hero_anim_blend_presets + *(int *)(g3 + 0xAA0) * 4);
+        t = *(int *)((char *)&hero_anim_blend_presets + g3->anim_blend_curve * 4);
     }
-    if (*(unsigned char *)(g3 + 0x20A4) == 0) {
+    if (g3->vehicle_mode == 0) {
         blend_hero_slot3_mapped_animation_pair(a0, a1, t);
     }
     clear_hero_mapped_moby_animation_state();
-    if (*(int *)(g3 + 0x2278) != 0) {
+    if (*(int *)&g3->unk2278 != 0) {
         blend_hero_mapped_moby_animation(a0, a1, t);
     }
 }
@@ -427,9 +427,9 @@ void hero_queue_sequence(int bank, int seq) {
 extern char hero_globals_base[];
 // resets two fields in the global game block
 void clear_hero_queued_animation(void) {
-    char *b = hero_globals_base + 0xE1D;
-    *(int *)(b + 0xAB0) = -1;
-    *(int *)(b + 0xAB8) = 0;
+    struct Hero *b = (struct Hero *)(hero_globals_base + 0xE1D);
+    b->anim_loop_frame = -1;
+    b->queued_frame_request = 0;
 }
 /* Stores ID at D_0013F450 + 0xAB8, or func_001F9850(5) when ID is -1. */
 void hero_set_attack_ticks(int id) {
@@ -809,13 +809,13 @@ void clear_hero_moby_flag_bit0(void) {
 }
 /* Stores two floats, an index and a byte, and sets the bits of a byte mask in a flag halfword. */
 void configure_hero_point_effect_emission(float a, float b, short c, unsigned char d, unsigned char e, unsigned char f) {
-    char *base = hero_globals_base + 0xE1D;
+    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
 
-    *(int *)(base + 0x12A8) = c;
-    *(short *)(base + 0x12AC) = d;
-    *(unsigned short *)(base + 0x12AE) = (*(unsigned short *)(base + 0x12AE) & ~f) | e;
-    *(float *)(base + 0x12A0) = a;
-    *(float *)(base + 0x12A4) = b;
+    base->items[6].unk38 = c;
+    base->items[6].unk3C = d;
+    base->items[6].unk3E = (base->items[6].unk3E & ~f) | e;
+    base->items[6].unk30 = a;
+    base->items[6].unk34 = b;
 }
 extern float fast_atan2(float, float);
 extern void clear_u64_value(void *);
@@ -1579,8 +1579,8 @@ extern int FastTweenColor(int, int, float);
 void HeroAttachManipulators(char *obj) {
     float f20 = *(float *)&hero_scale;
     char *s0;
-    char *q;
-    char *q2;
+    struct Hero *q;
+    struct Hero *q2;
     char *b;
     int c1, c0;
     float t;
@@ -1607,10 +1607,10 @@ void HeroAttachManipulators(char *obj) {
             }
         }
     }
-    q = hero_globals_base + 0xE1D;
+    q = (struct Hero *)(hero_globals_base + 0xE1D);
     c1 = 0x806E8C6E;
     c0 = 0x805A3232;
-    *(float *)(q + 0x1628) = FastAddRots(*(float *)(q + 0x1628), g_frame_time * 2.0943951f);
+    q->glow_phase = FastAddRots(q->glow_phase, g_frame_time * 2.0943951f);
     if (g_current_level_index == 0) {
         b = cutscene_state;
         if (*(int *)(b + 0x30) == 0) {
@@ -1618,13 +1618,13 @@ void HeroAttachManipulators(char *obj) {
                 if (*(int *)(b + 0x34) <= scale_ticks(0x438)) {
                     c1 = 0x806EAAFA;
                     c0 = 0x80326E5A;
-                    *(float *)(q + 0x1628) = FastAddRots(*(float *)(q + 0x1628), g_frame_time * 5.9341192245f);
+                    q->glow_phase = FastAddRots(q->glow_phase, g_frame_time * 5.9341192245f);
                 }
             }
         }
     }
-    q2 = hero_globals_base + 0xE1D;
-    t = FastSin(*(float *)(q2 + 0x1628));
+    q2 = (struct Hero *)(hero_globals_base + 0xE1D);
+    t = FastSin(q2->glow_phase);
     *(int *)(obj + 0x90) = FastTweenColor(c1, c0, t * 0.5f + 0.5f);
     update_hero_slot4_and_slot5_mobys((int)obj);
 }

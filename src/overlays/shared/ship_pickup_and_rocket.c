@@ -3,6 +3,20 @@
 #include "include_asm.h"
 #include "moby.h"
 
+/* Ship rocket: homes in on a target. Same layout as Rocket_2E8040 below (defined after use). */
+struct ShipRocketVars {
+    Vec4A offset;                   /* 0x00: spherical offset from the source */
+    Vec4A target_pos;               /* 0x10: copy of the target position */
+    char *source;                   /* 0x20 */
+    char *target;                   /* 0x24 */
+    s32 arg;                        /* 0x28 */
+    f32 scale;                      /* 0x2C */
+    s32 unk_30;                     /* 0x30 */
+    s32 unk_34;                     /* 0x34 */
+    u8 pad_38[0x4];
+    s32 target_uid;                 /* 0x3C */
+};
+
 typedef unsigned int u128_7d50 __attribute__((mode(TI)));
 extern int gemlik_dma_packet_cursor MACRO_ADDR;
 extern u128_7d50 gemlik_2d_prim_giftag;
@@ -277,34 +291,34 @@ extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int,
 unsigned char *spawn_ship_rocket(char *src, char *pos, char *target, char *vec, int arg, float scale) {
     unsigned char *moby = CreateMoby(0x127);
     if (moby != 0) {
-        char *data = ((char *)((Moby *)moby)->pvars);
+        struct ShipRocketVars *data = (struct ShipRocketVars *)((Moby *)moby)->pvars;
         ((Moby *)moby)->update_dist = 0xFF;
         ((Moby *)moby)->draw_dist = 0xFF;
         ((Moby *)moby)->visible = 1;
         ((Moby *)moby)->state = 0;
-        *(char **)(data + 0x20) = src;
-        *(char **)(data + 0x24) = target;
+        data->source = src;
+        data->target = target;
         qcopy(moby + 0x10, pos);
         qcopy(moby + 0x40, vec);
         if (target != 0) {
             char *e;
-            *(int *)(data + 0x3C) = *(short *)(target + 0xA6);
+            data->target_uid = *(short *)(target + 0xA6);
             e = GetFlaggedPvarWord(target);
             if (e != 0) {
                 *(unsigned short *)(e + 0x1E) |= 0x80;
             }
         }
-        *(int *)(data + 0x28) = arg;
-        *(float *)(data + 0x2C) = scale;
-        *(int *)(data + 0x30) = 0;
-        *(int *)(data + 0x34) = 0;
-        BuildSphericalOffset(data, scale, *(float *)(vec + 8), -*(float *)(vec + 4));
+        data->arg = arg;
+        data->scale = scale;
+        data->unk_30 = 0;
+        data->unk_34 = 0;
+        BuildSphericalOffset(((char *)data), scale, *(float *)(vec + 8), -*(float *)(vec + 4));
         if (((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
-        FastVecAdd(moby + 0x10, moby + 0x10, data);
-        if (*(char **)(data + 0x24) != 0) {
-            qcopy(data + 0x10, *(char **)(data + 0x24) + 0x10);
+        FastVecAdd(moby + 0x10, moby + 0x10, &data->offset);
+        if (data->target != 0) {
+            qcopy(&data->target_pos, data->target + 0x10);
         }
         ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) *
                                   (*(float *)(src + 0x2C) / *(float *)(*(char **)(src + 0x24) + 0x24));

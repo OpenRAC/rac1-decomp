@@ -6,6 +6,25 @@
 #include "vector.h"
 #include "hero.h"
 
+/* Class 0x3F1 shot: flies along vel for ticks, owned by the firing moby. */
+struct ShotVars {
+    Vec3f vel;                      /* 0x00 */
+    f32 scale;                      /* 0x10 */
+    s32 life;                       /* 0x14: ticks to live */
+    s32 timer;                      /* 0x18 */
+    char *owner;                    /* 0x1C */
+};
+
+/* Class 0x3F9 fireball: flies along vel leaving smoke, bursts on a hit, shrinks when the timer ends. */
+struct FireballVars {
+    Vec3f vel;                      /* 0x00 */
+    f32 scale;                      /* 0x10 */
+    s32 life;                       /* 0x14: ticks to live */
+    s32 timer;                      /* 0x18 */
+    s32 owner;                      /* 0x1C */
+    f32 hit_radius;                 /* 0x20 */
+};
+
 LINKER_REMNANT("asm/overlays", func_L11_002C99E0);
 extern char gHeroPos[];
 extern unsigned char gSpecialItems_1[];
@@ -83,9 +102,9 @@ extern void moby_build_matrix(void *);
 unsigned char *spawn_class_3f1_moby(char *owner, float *dir, float *pos, float a, float b) {
     unsigned char *m = CreateMoby(0x3F1);
     if (m) {
-        char *d = ((char *)((Moby *)m)->pvars);
+        struct ShotVars *d = (struct ShotVars *)((Moby *)m)->pvars;
         float f;
-        *(char **)(d + 0x1C) = owner;
+        *(char **)(((char *)d) + 0x1C) = owner;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = truncate_float_to_s32_r(a);
         *(int *)&((Moby *)m)->rot.x = 0;
@@ -93,19 +112,19 @@ unsigned char *spawn_class_3f1_moby(char *owner, float *dir, float *pos, float a
         f = vec_length_xy(dir);
         ((Moby *)m)->rot.y = -fast_atan2(f, dir[2]);
         ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
-        *(float *)(d + 0x10) = 1.0f;
+        *(float *)&d->life = 1.0f;
         if (b > 0.0f) {
-            vec_scale_to_length(d, dir, b);
+            vec_scale_to_length(&d->vel, dir, b);
         } else {
-            qcopy(d, dir);
+            qcopy(&d->vel, dir);
             b = FastVecLength(dir);
         }
         qcopy(m + 0x10, pos);
-        *(int *)(d + 0x18) = *(int *)(d + 0x14) = truncate_float_to_s32_r(a / b);
+        *(int *)&d->owner = d->timer = truncate_float_to_s32_r(a / b);
         *(short *)&((Moby *)m)->flags = 0x200;
         ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) *
             (*(float *)(owner + 0x2C) / *(float *)(*(char **)(owner + 0x24) + 0x24));
-        ((Moby *)m)->alpha = truncate_float_to_s32_r(*(float *)(d + 0x10) * 24.0f);
+        ((Moby *)m)->alpha = truncate_float_to_s32_r(*(float *)&d->life * 24.0f);
         set_moby_color(m, 0xFF, 0xFF, 0xFF);
         moby_build_matrix(m);
     }
@@ -243,28 +262,28 @@ extern void vec_scale_to_length(void *, void *, float);
 char *spawn_class_3f9_moby(int owner, float *dir, float *pos, float size, float len, float z) {
     char *m = CreateMoby(0x3F9);
     if (m != 0) {
-        char *p = ((char *)((Moby *)m)->pvars);
+        struct FireballVars *p = (struct FireballVars *)((Moby *)m)->pvars;
         int r;
         *(int *)&((Moby *)m)->collision = 0;
-        *(int *)(p + 0x1C) = owner;
+        *(int *)&p->hit_radius = owner;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = truncate_float_to_s32(size);
         *(int *)&((Moby *)m)->rot.x = 0;
         m[0x31] = 1;
         ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(dir), dir[2]);
         ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
-        *(float *)(p + 0x10) = 1.0f;
+        *(float *)&p->life = 1.0f;
         if (len > 0.0f) {
-            vec_scale_to_length(p, dir, len);
+            vec_scale_to_length(&p->vel, dir, len);
         } else {
-            qcopy(p, dir);
+            qcopy(&p->vel, dir);
             len = FastVecLength(dir);
         }
         qcopy(m + 0x10, pos);
         r = truncate_float_to_s32(size / len);
-        *(int *)(p + 0x14) = r;
-        *(float *)(p + 0x20) = z;
-        *(int *)(p + 0x18) = r - 13;
+        p->timer = r;
+        *(float *)(((char *)p) + 0x20) = z;
+        p->owner = r - 13;
         *(short *)&((Moby *)m)->flags = 0x200;
         moby_build_matrix(m);
     }
@@ -306,11 +325,11 @@ void update_projectile_with_trail(char *m) {
     c = FastTweenColor(*(int *)&projectile_trail_color_a, *(int *)&projectile_trail_color_b, random_float_between(0.0f, 1.0f));
     rand_vec(p, 0.0f, 0.1f);
     FastVecAdd(p, p, pos);
-    FastVecScale(v, d, *(float *)&projectile_trail_speed_scale);
+    FastVecScale(v, &((struct FireballVars *)d)->vel, *(float *)&projectile_trail_speed_scale);
     PartType27Spawn((char *)p, (char *)v, c, scale_ticks(*(int *)&projectile_trail_life_ticks), (float)*(int *)&projectile_trail_size);
-    FastVecAdd(pos, pos, d);
+    FastVecAdd(pos, pos, &((struct FireballVars *)d)->vel);
     InitDirectionalHitQuery(hit, m, 0x10000, *(float *)(d + 0x20), d);
-    if (coll_line(old, pos, 0, *(void **)(d + 0x1C), hit)) {
+    if (coll_line(old, pos, 0, *(void **)&((struct FireballVars *)d)->hit_radius, hit)) {
         int i;
         for (i = 0; i < 5; i++) {
             *(u128 *)r = 0;
@@ -318,7 +337,7 @@ void update_projectile_with_trail(char *m) {
             r[1] = random_float_between(-1.0f, 1.0f);
             r[2] = random_float_between(-1.0f, 1.0f);
             *(u128 *)q = *(u128 *)r;
-            vec_reflect(r, d, pokitaru_coll_hit_normal);
+            vec_reflect(r, &((struct FireballVars *)d)->vel, pokitaru_coll_hit_normal);
             vec_scale_to_length(q, q, FastVecLength(r) * 0.5f);
             FastVecAdd(q, r, q);
             vec_scale_to_length(q, q, random_float_between(g_frame_time_e * 5.0f, g_frame_time_e * 9.0f));
@@ -327,9 +346,9 @@ void update_projectile_with_trail(char *m) {
         DeleteMoby(m);
         return;
     }
-    if (fast_dec_timer((int *)(d + 0x18))) {
-        *(float *)(d + 0x10) *= 0.74f;
-        if (*(float *)(d + 0x10) < 0.02f) {
+    if (fast_dec_timer(&((struct FireballVars *)d)->owner)) {
+        *(float *)&((struct FireballVars *)d)->life *= 0.74f;
+        if (*(float *)&((struct FireballVars *)d)->life < 0.02f) {
             DeleteMoby(m);
         }
     }
@@ -1376,10 +1395,10 @@ extern int coll_sphere(float, void *, int, void *);
 void update_moby_hit_stats_and_state(char *m) {
     char *d = ((char *)((Moby *)m)->pvars);
     char *info = MobyGetHitMessage(m, 0x330000, 0);
-    char *g;
+    struct Hero *g;
     ((unsigned char *)m)[0xA4] = 0xFF;
-    g = hero_globals_base + 0xE1D;
-    if (*(int *)(g + 0x2084) != 0x32) {
+    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (g->state.current != 0x32) {
         ((Moby *)m)->flags &= 0xEFFF;
     } else {
         ((Moby *)m)->flags |= 0x1000;
@@ -1416,8 +1435,8 @@ void update_moby_hit_stats_and_state(char *m) {
             }
         }
     } else if (((unsigned char *)m)[0x20] == 5) {
-        char *g2 = hero_globals_base + 0xE1D;
-        if (*(int *)(g2 + 0x2084) != 0x32) {
+        struct Hero *g2 = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (g2->state.current != 0x32) {
             m[0x20] = 4;
             *(int *)&((Moby *)m)->collision = 0;
             ((Moby *)m)->flags |= 1;

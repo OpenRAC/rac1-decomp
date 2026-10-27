@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "vector.h"
+#include "hero.h"
 
 extern unsigned char *create_part(int);
 extern int truncate_float_to_s32(float);
@@ -859,14 +860,14 @@ void update_moving_hero_relative_alpha_fade_particle(char *m) {
     int col;
     float a;
     if (*(int *)(v + 0x1C) == 1) {
-        char *g = (char *)hero_globals_base + 0xE1D;
-        *(float *)(m + 0x10) = *(float *)(g + 0x80) + *(float *)(v + 0x10);
-        *(float *)(m + 0x14) = *(float *)(g + 0x84) + *(float *)(v + 0x14);
-        *(float *)(m + 0x18) = *(float *)(g + 0x88) + *(float *)(v + 0x18);
+        struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        *(float *)(m + 0x10) = g->motion.pos.f[0] + *(float *)(v + 0x10);
+        *(float *)(m + 0x14) = g->motion.pos.f[1] + *(float *)(v + 0x14);
+        *(float *)(m + 0x18) = g->motion.pos.f[2] + *(float *)(v + 0x18);
         FastVecAdd(m + 0x10, m + 0x10, v);
-        *(float *)(v + 0x10) = *(float *)(m + 0x10) - *(float *)(g + 0x80);
-        *(float *)(v + 0x14) = *(float *)(m + 0x14) - *(float *)(g + 0x84);
-        *(float *)(v + 0x18) = *(float *)(m + 0x18) - *(float *)(g + 0x88);
+        *(float *)(v + 0x10) = *(float *)(m + 0x10) - g->motion.pos.f[0];
+        *(float *)(v + 0x14) = *(float *)(m + 0x14) - g->motion.pos.f[1];
+        *(float *)(v + 0x18) = *(float *)(m + 0x18) - g->motion.pos.f[2];
     } else {
         FastVecAdd(m + 0x10, m + 0x10, v);
     }

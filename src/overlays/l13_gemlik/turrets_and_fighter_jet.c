@@ -3,6 +3,78 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "moby.h"
+#include "hero.h"
+
+/* Volume trigger: while the hero is inside the clip volume it sets the *_in states, outside the *_out states. */
+struct VolumeTriggerVars {
+    s32 clip_volume;                /* 0x00: -1 when unset */
+    s32 moby_ids[4];                /* 0x04: switched mobys, -1 none */
+    s32 list_ids[4];                /* 0x14: switched moby lists, -1 none */
+    s8 moby_in[4];                  /* 0x24: state of each moby when inside */
+    s8 moby_out[4];                 /* 0x28 */
+    s8 list_in[4];                  /* 0x2C */
+    s8 list_out[4];                 /* 0x30 */
+    s8 self_state_in;               /* 0x34 */
+    s8 self_state_out;              /* 0x35 */
+    s8 self_cmd_in;                 /* 0x36: written to moby+0xBC */
+    s8 self_cmd_out;                /* 0x37 */
+    s8 inside;                      /* 0x38 */
+};
+
+/* Blarg turret: the target search result at the start, the target moby and the shot timing. */
+struct BlargTurretVars {
+    u8 target_query[0x40];          /* 0x00: FindNearestTargetMoby result */
+    char *target;                   /* 0x40: nearest moby, else the hero */
+    u8 pad_44[0x24];
+    f32 shot_time;                  /* 0x68: passed to spawn_gemlik_projectile */
+};
+
+/* Blarg turret child (class 0x24): follows its parent turret. */
+struct TurretChildVars {
+    char *hit_block;                /* 0x00: points at health */
+    u8 pad_04[0x8];
+    char *fade_block;               /* 0x0C: points at color_fade */
+    u8 pad_10[0x10];
+    f32 health;                     /* 0x20 */
+    s16 unk_24;                     /* 0x24 */
+    u8 pad_26[0x2];
+    s8 unk_28;                      /* 0x28 */
+    s8 unk_29;                      /* 0x29 */
+    s8 unk_2A;                      /* 0x2A */
+    u8 pad_2B[0x5];
+    f32 unk_30;                     /* 0x30 */
+    u8 pad_34[0x2C];
+    u8 color_fade[0x10];            /* 0x60 */
+    char *parent;                   /* 0x70 */
+};
+
+/* Gem-lock gunner turret: idle animations then a burst when destroyed. */
+struct GunnerVars {
+    u8 pad_00[0x29];
+    u8 unk_29;                      /* 0x29 */
+    u8 pad_2A[0x2E];
+    u8 unk_58;                      /* 0x58 */
+    u8 pad_59[0x1];
+    u8 unk_5A;                      /* 0x5A */
+    u8 pad_5B[0x15];
+    u8 *parent;                     /* 0x70 */
+};
+
+/* Fighter jet HUD: current lock target, its timer and the shown hit points. */
+struct FighterJetHudVars {
+    u8 pad_00[0x88];
+    s32 target;                     /* 0x88: locked moby */
+    s32 target_timer;               /* 0x8C */
+    u8 pad_90[0x50];
+    s32 indicator_x;                /* 0xE0 */
+    s32 indicator_y;                /* 0xE4 */
+    u8 pad_E8[0x4];
+    s32 lock_target;                /* 0xEC */
+    f32 hp_shown;                   /* 0xF0: eased towards ship_hp */
+    s32 hp_bar;                     /* 0xF4: last drawn bar value */
+    u8 pad_F8[0xC];
+    s32 tex_index;                  /* 0x104 */
+};
 
 extern int STUB_printf();
 extern void DeleteMoby(void *);
@@ -15,143 +87,143 @@ extern char volume_trigger_bad_target_msg[];
 // Switches linked mobys and lists between two state sets when the watched moby's test changes.
 void update_moby_volume_trigger(char *moby)
 {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    if (*(int *)data == -1) {
+    struct VolumeTriggerVars *data = (struct VolumeTriggerVars *)((Moby *)moby)->pvars;
+    if (data->clip_volume == -1) {
         STUB_printf(volume_trigger_bad_target_msg, *(short *)&((Moby *)moby)->save_id);
         DeleteMoby(moby);
         return;
     }
-    if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)data) != 0) {
-        if (data[0x38] == 0) {
+    if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->clip_volume) != 0) {
+        if (data->inside == 0) {
             {
-                int uid = *(int *)(data + 0x4);
+                int uid = data->moby_ids[0];
                 if (uid != -1) {
                     char *m = gemlik_moby_array_start_m + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
                             if (st != 0xFD) {
-                                if (data[0x24] != -1) m[0x20] = data[0x24];
+                                if (data->moby_in[0] != -1) m[0x20] = data->moby_in[0];
                             }
                         }
                     }
                 }
             }
-            if (*(int *)(data + 0x14) != -1 && data[0x2C] != -1) set_moby_list_state(*(int *)(data + 0x14), data[0x2C]);
+            if (data->list_ids[0] != -1 && data->list_in[0] != -1) set_moby_list_state(data->list_ids[0], data->list_in[0]);
             {
-                int uid = *(int *)(data + 0x8);
+                int uid = data->moby_ids[1];
                 if (uid != -1) {
                     char *m = gemlik_moby_array_start_m + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
                             if (st != 0xFD) {
-                                if (data[0x25] != -1) m[0x20] = data[0x25];
+                                if (data->moby_in[1] != -1) m[0x20] = data->moby_in[1];
                             }
                         }
                     }
                 }
             }
-            if (*(int *)(data + 0x18) != -1 && data[0x2D] != -1) set_moby_list_state(*(int *)(data + 0x18), data[0x2D]);
+            if (data->list_ids[1] != -1 && data->list_in[1] != -1) set_moby_list_state(data->list_ids[1], data->list_in[1]);
             {
-                int uid = *(int *)(data + 0xC);
+                int uid = data->moby_ids[2];
                 if (uid != -1) {
                     char *m = gemlik_moby_array_start_m + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
                             if (st != 0xFD) {
-                                if (data[0x26] != -1) m[0x20] = data[0x26];
+                                if (data->moby_in[2] != -1) m[0x20] = data->moby_in[2];
                             }
                         }
                     }
                 }
             }
-            if (*(int *)(data + 0x1C) != -1 && data[0x2E] != -1) set_moby_list_state(*(int *)(data + 0x1C), data[0x2E]);
+            if (data->list_ids[2] != -1 && data->list_in[2] != -1) set_moby_list_state(data->list_ids[2], data->list_in[2]);
             {
-                int uid = *(int *)(data + 0x10);
+                int uid = data->moby_ids[3];
                 if (uid != -1) {
                     char *m = gemlik_moby_array_start_m + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
                             if (st != 0xFD) {
-                                if (data[0x27] != -1) m[0x20] = data[0x27];
+                                if (data->moby_in[3] != -1) m[0x20] = data->moby_in[3];
                             }
                         }
                     }
                 }
             }
-            if (*(int *)(data + 0x20) != -1 && data[0x2F] != -1) set_moby_list_state(*(int *)(data + 0x20), data[0x2F]);
-            if (data[0x34] != -1) moby[0x20] = data[0x34];
-            if (data[0x36] != -1) moby[0xBC] = data[0x36];
-            data[0x38] = 1;
+            if (data->list_ids[3] != -1 && data->list_in[3] != -1) set_moby_list_state(data->list_ids[3], data->list_in[3]);
+            if (data->self_state_in != -1) moby[0x20] = data->self_state_in;
+            if (data->self_cmd_in != -1) moby[0xBC] = data->self_cmd_in;
+            data->inside = 1;
         }
     } else {
-        if (data[0x38] == 1) {
+        if (data->inside == 1) {
             {
-                int uid = *(int *)(data + 0x4);
+                int uid = data->moby_ids[0];
                 if (uid != -1) {
                     char *m = gemlik_moby_array_start_m + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
                             if (st != 0xFD) {
-                                if (data[0x28] != -1) m[0x20] = data[0x28];
+                                if (data->moby_out[0] != -1) m[0x20] = data->moby_out[0];
                             }
                         }
                     }
                 }
             }
-            if (*(int *)(data + 0x14) != -1 && data[0x30] != -1) set_moby_list_state(*(int *)(data + 0x14), data[0x30]);
+            if (data->list_ids[0] != -1 && data->list_out[0] != -1) set_moby_list_state(data->list_ids[0], data->list_out[0]);
             {
-                int uid = *(int *)(data + 0x8);
+                int uid = data->moby_ids[1];
                 if (uid != -1) {
                     char *m = gemlik_moby_array_start_m + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
                             if (st != 0xFD) {
-                                if (data[0x29] != -1) m[0x20] = data[0x29];
+                                if (data->moby_out[1] != -1) m[0x20] = data->moby_out[1];
                             }
                         }
                     }
                 }
             }
-            if (*(int *)(data + 0x18) != -1 && data[0x31] != -1) set_moby_list_state(*(int *)(data + 0x18), data[0x31]);
+            if (data->list_ids[1] != -1 && data->list_out[1] != -1) set_moby_list_state(data->list_ids[1], data->list_out[1]);
             {
-                int uid = *(int *)(data + 0xC);
+                int uid = data->moby_ids[2];
                 if (uid != -1) {
                     char *m = gemlik_moby_array_start_m + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
                             if (st != 0xFD) {
-                                if (data[0x2A] != -1) m[0x20] = data[0x2A];
+                                if (data->moby_out[2] != -1) m[0x20] = data->moby_out[2];
                             }
                         }
                     }
                 }
             }
-            if (*(int *)(data + 0x1C) != -1 && data[0x32] != -1) set_moby_list_state(*(int *)(data + 0x1C), data[0x32]);
+            if (data->list_ids[2] != -1 && data->list_out[2] != -1) set_moby_list_state(data->list_ids[2], data->list_out[2]);
             {
-                int uid = *(int *)(data + 0x10);
+                int uid = data->moby_ids[3];
                 if (uid != -1) {
                     char *m = gemlik_moby_array_start_m + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
                             if (st != 0xFD) {
-                                if (data[0x2B] != -1) m[0x20] = data[0x2B];
+                                if (data->moby_out[3] != -1) m[0x20] = data->moby_out[3];
                             }
                         }
                     }
                 }
             }
-            if (*(int *)(data + 0x20) != -1 && data[0x33] != -1) set_moby_list_state(*(int *)(data + 0x20), data[0x33]);
-            if (data[0x35] != -1) moby[0x20] = data[0x35];
-            if (data[0x37] != -1) moby[0xBC] = data[0x37];
-            data[0x38] = 0;
+            if (data->list_ids[3] != -1 && data->list_out[3] != -1) set_moby_list_state(data->list_ids[3], data->list_out[3]);
+            if (data->self_state_out != -1) moby[0x20] = data->self_state_out;
+            if (data->self_cmd_out != -1) moby[0xBC] = data->self_cmd_out;
+            data->inside = 0;
         }
     }
 }
@@ -277,14 +349,14 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
     }
     case ELEVATOR_STATE_WAIT_FOR_HERO_EXIT_AT_TOP:
     case ELEVATOR_STATE_WAIT_FOR_HERO_EXIT_AT_BOTTOM: {
-        char *g;
+        struct Hero *g;
         if (Sound_IsPlaying(moby, vars->voice)) {
             Sound_StopSlot(vars->voice);
             vars->voice = -1;
         }
-        g = (char *)hero_globals_base + 0xE1D;
-        if (*(struct Moby **)(g + 0x2FC) == m && *(short *)(g + 0x30E) == 0
-            && !(vec_distance_xy(g + 0x80, &m->pos) > 0.5f)) {
+        g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (g->ground_moby == m && g->air_frames.s == 0
+            && !(vec_distance_xy(&g->motion.pos, &m->pos) > 0.5f)) {
             break;
         }
         if (m->state == 7) {
@@ -299,7 +371,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
     case ELEVATOR_STATE_WAIT_AT_TOP:
     case ELEVATOR_STATE_WAIT_AT_BOTTOM: {
         int i;
-        char *g;
+        struct Hero *g;
         vars->pulse = FastAddRots(vars->pulse, g_frame_time * 6.2831855f);
         i = truncate_float_to_s32_r((FastSin(vars->pulse) * 4.0f - 3.0f) * 128.0f);
         if (i > 0x80) {
@@ -308,15 +380,15 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
             i = 0x20;
         }
         m->glow_color = 0x80000000 | (i << 16) | (i << 8) | i;
-        g = (char *)hero_globals_base + 0xE1D;
-        if (*(struct Moby **)(g + 0x2FC) != m || *(short *)(g + 0x30E) != 0
-            || vec_distance_xy(g + 0x80, &m->pos) > 1.1f) {
+        g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (g->ground_moby != m || g->air_frames.s != 0
+            || vec_distance_xy(&g->motion.pos, &m->pos) > 1.1f) {
             vars->armed = 1;
         }
         if (vars->armed != 0) {
-            char *h = (char *)hero_globals_base + 0xE1D;
-            if (*(struct Moby **)(h + 0x2FC) == m && *(short *)(h + 0x30E) == 0
-                && vec_distance_xy(h + 0x80, &m->pos) < 0.5f) {
+            struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            if (h->ground_moby == m && h->air_frames.s == 0
+                && vec_distance_xy(&h->motion.pos, &m->pos) < 0.5f) {
                 m->glow_color = 0x80208020;
                 if (m->state == 5) {
                     m->command = 2;
@@ -368,7 +440,7 @@ void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w)
     float ang = *(float *)(moby + 0x48);
     float r = 2.5f;
     float z = 1.5f;
-    unsigned char *x;
+    struct Hero *x;
     if ((moby[0xBC] >= 2 && (moby[0xBC] & 1)) || (moby[0x20] >= 2 && (moby[0x20] & 1))) {
         ang = FastSubRots(ang, 1.5707964f);
     } else {
@@ -383,8 +455,8 @@ void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w)
     v[2] = z;
     FastVecAdd(v, v, moby + 0x10);
     clear_u64_value(w);
-    x = hero_globals_base + 0xE1D;
-    w[2] = fast_atan2(*(float *)(x + 0xD0) - v[0], *(float *)(x + 0xD4) - v[1]);
+    x = (struct Hero *)(hero_globals_base + 0xE1D);
+    w[2] = fast_atan2(x->motion.body_center.f[0] - v[0], x->motion.body_center.f[1] - v[1]);
     *(int *)(w + 1) = 0;
 }
 typedef int Q_2B5368 __attribute__((mode(TI)));
@@ -540,19 +612,19 @@ void fire_blarg_turret_projectile(char *moby)
 {
     float v[4];
     float v2[4];
-    char *data;
+    struct BlargTurretVars *data;
     float d, x, ang;
-    data = ((char *)((Moby *)moby)->pvars);
+    data = (struct BlargTurretVars *)((Moby *)moby)->pvars;
     if (gemlik_frame_count % *(int *)&gemlik_turret_fire_interval == 0) {
         Moby_GetJointWorldPos(moby, 0, v);
-        d = vec_distance_xy(moby + 0x10, *(char **)(data + 0x40) + 0x10);
+        d = vec_distance_xy(moby + 0x10, data->target + 0x10);
         x = (20.0f - d) / 20.0f * 5.0f + 2.5f;
         ang = FastAddRots(random_float_between(-x, x) * 0.017453292f, ((Moby *)moby)->rot.z);
         v2[0] = FastCos(ang) * (*(float *)&gemlik_turret_shot_speed * g_frame_time);
         v2[1] = FastSin(ang) * (*(float *)&gemlik_turret_shot_speed * g_frame_time);
         v2[2] = 0;
         FastVecAdd(v, v, v2);
-        spawn_gemlik_projectile(*(float *)(data + 0x68), v, v2, moby);
+        spawn_gemlik_projectile(data->shot_time, v, v2, moby);
     }
 }
 extern int FindNearestTargetMoby(void *, void *, float);
@@ -564,8 +636,8 @@ void update_blarg_turret_target_and_state(unsigned char *moby) {
     if (((Moby *)moby)->state == 3) distance = 22.0f;
     else distance = 20.0f;
     FindNearestTargetMoby(moby, data, distance);
-    if (*(int *)(data + 0x40) == 0) {
-        *(int *)(data + 0x40) = *(int *)(hero_globals_base + 0x2E9D);
+    if (*(int *)&((struct BlargTurretVars *)data)->target == 0) {
+        *(int *)&((struct BlargTurretVars *)data)->target = *(int *)(hero_globals_base + 0x2E9D);
     }
     if (((Moby *)moby)->command >= 4) ((Moby *)moby)->state = ((Moby *)moby)->command;
 }
@@ -577,24 +649,24 @@ extern void copy_hero_moby_field_38(void *);
 char *spawn_blarg_turret_child(char *parent) {
     char *m = CreateMoby(0x24);
     if (m) {
-        char *d = ((char *)((Moby *)m)->pvars);
-        *(char **)(d + 0x70) = parent;
-        *(char **)d = d + 0x20;
-        *(char **)(d + 0xC) = d + 0x60;
+        struct TurretChildVars *d = (struct TurretChildVars *)((Moby *)m)->pvars;
+        d->parent = parent;
+        d->hit_block = (char *)&d->health;
+        d->fade_block = (char *)d->color_fade;
         m[0x30] = parent[0x30];
-        *(unsigned short *)&((Moby *)m)->draw_dist = *(unsigned short *)(*(char **)(d + 0x70) + 0x32);
+        *(unsigned short *)&((Moby *)m)->draw_dist = *(unsigned short *)(d->parent + 0x32);
         m[0x31] = 1;
         ((Moby *)m)->flags |= 0x20;
         m[0x20] = 0;
         m[0xBC] = 0;
-        qcopy(m + 0x10, *(char **)(d + 0x70) + 0x10);
+        qcopy(m + 0x10, d->parent + 0x10);
         ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)(parent + 0x2C) / *(float *)(*(char **)(parent + 0x24) + 0x24);
-        *(float *)(d + 0x20) = 1.0f;
-        *(short *)(d + 0x24) = 1;
-        d[0x28] = 0;
-        d[0x29] = 1;
-        d[0x2A] = 3;
-        *(float *)(d + 0x30) = 0.7f;
+        d->health = 1.0f;
+        d->unk_24 = 1;
+        d->unk_28 = 0;
+        d->unk_29 = 1;
+        d->unk_2A = 3;
+        d->unk_30 = 0.7f;
         moby_build_matrix(m);
         copy_hero_moby_field_38(m);
     }
@@ -687,18 +759,18 @@ void blarg_gunner_update(unsigned char *raw) {
         BLARG_GUNNER_STATE_DESTROY = 2
     };
     struct Moby *moby = (struct Moby *)raw;
-    unsigned char *moby_vars = moby->pvars;
+    struct GunnerVars *moby_vars = (struct GunnerVars *)moby->pvars;
     float explosion_offset[4];
     float explosion_spawn_position[4];
     switch (moby->state) {
     case BLARG_GUNNER_STATE_INITIALIZE:
-        moby_vars[0x29] = 1;
+        moby_vars->unk_29 = 1;
         moby->state = 1;
-        moby_vars[0x5A] = 6;
-        moby_vars[0x58] = 8;
+        moby_vars->unk_5A = 6;
+        moby_vars->unk_58 = 8;
         break;
     case BLARG_GUNNER_STATE_ACTIVE:
-        if ((*(unsigned char **)(moby_vars + 0x70))[0x20] == 3) {
+        if (moby_vars->parent[0x20] == 3) {
             if (moby->prev_seq != 2) {
                 int x = rand_range(0, 3);
                 int y = rand_range(7, 0xC);
@@ -718,7 +790,7 @@ void blarg_gunner_update(unsigned char *raw) {
                 moby->anim_speed = random_float_between(0.8f, 1.2f);
             }
         }
-        process_blarg_gunner_hits(moby, moby_vars);
+        process_blarg_gunner_hits(moby, ((unsigned char *)moby_vars));
         break;
     case BLARG_GUNNER_STATE_DESTROY:
         if (moby->anim_flags & 2) {
@@ -2147,12 +2219,12 @@ extern short jet_hud_palette;
 
 /* Draws the Gemlik turret HUD: target marker, ammo icons, gauge sprites and warning, refreshes the gauge colour table, then the two frame halves. */
 void DrawGemlikTurretHud(char *moby) {
-    char *d = ((char *)((Moby *)moby)->pvars);
+    struct FighterJetHudVars *d = (struct FighterJetHudVars *)((Moby *)moby)->pvars;
     char *s;
-    unsigned char *base;
-    unsigned char *g;
-    unsigned char *h;
-    unsigned char *b;
+    struct Hero *base;
+    struct Hero *g;
+    struct Hero *h;
+    struct Hero *b;
     int sp10;
     int sp14;
     int tex;
@@ -2175,64 +2247,64 @@ void DrawGemlikTurretHud(char *moby) {
     float f;
     float q;
 
-    update_fighter_jet_target_tracking((int)moby, d);
-    if (*(int *)(d + 0x88) != 0) {
-        project_world_point_to_screen_pixels(*(char **)(d + 0x88) + 0x10, &sp10, &sp14, 0);
-        if (*(int *)(d + 0x8C) > scale_ticks(0x1F4)) {
-            t = IntToFloat(*(int *)(d + 0x8C) - scale_ticks(0x1F4));
+    update_fighter_jet_target_tracking((int)moby, ((char *)d));
+    if (d->target != 0) {
+        project_world_point_to_screen_pixels(*(char **)&d->target + 0x10, &sp10, &sp14, 0);
+        if (d->target_timer > scale_ticks(0x1F4)) {
+            t = IntToFloat(d->target_timer - scale_ticks(0x1F4));
             t = t / IntToFloat(scale_ticks(0x4B));
             m = 2.0f * (1.0f - t);
             k = t * 5.0f + 1.0f;
             if (m > 1.0f) m = 1.0f;
             c = truncate_float_to_s32_r(m * 96.0f);
             append_four_quarter_turn_effect_quads_f(IntToFloat(sp10), IntToFloat(sp14), k, normalize_angle(IntToFloat(gemlik_frame_count) / 30.0f), 0, 0xFF, 0, c);
-            *(int *)(d + 0xEC) = 0;
+            d->lock_target = 0;
         } else {
             a = 0xFF;
-            if ((*(int *)(d + 0x8C) / scale_ticks(0x14)) & 1) a = 0;
+            if ((d->target_timer / scale_ticks(0x14)) & 1) a = 0;
             append_four_quarter_turn_effect_quads_f(IntToFloat(sp10), IntToFloat(sp14), 1.0f, 0.0f, 0xFF, a, 0, 0x60);
-            *(int *)(d + 0xEC) = *(int *)(d + 0x88);
+            d->lock_target = d->target;
         }
     }
     y = 0x40;
     x = 0x18;
-    base = hero_globals_base + 0xE1D;
-    n = base[0x15F7];
+    base = (struct Hero *)(hero_globals_base + 0xE1D);
+    n = base->ship_ammo_max;
     for (i = 0; i < n; i++) {
-        g = hero_globals_base + 0xE1D;
-        if (i < g[0x15F6]) {
+        g = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (i < g->ship_ammo) {
             append_scaled_screen_triangle_strip(x, y, 0.5f, gemlik_turret_hud_pip_strip, 0x19, 0xFFFFF3, 0x50008F00);
         } else {
             append_scaled_screen_triangle_strip(x, y, 0.5f, gemlik_turret_hud_pip_strip, 0x19, 0xFFFFF3, 0x20004F00);
         }
-        n = g[0x15F7];
+        n = g->ship_ammo_max;
         if (i == n >> 1) {
             y = 0x2E;
             x += 0x1E;
         }
         y += 0x12;
     }
-    ex = *(int *)(d + 0xE0);
-    ey = *(int *)(d + 0xE4);
+    ex = d->indicator_x;
+    ey = d->indicator_y;
     tex = GetEffectTex(0x11);
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, GetEffectTex(0x12), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, GetEffectTex(8), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
-    b = hero_globals_base + 0xE1D;
-    if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) / 10.0f && (gemlik_frame_count / 90) & 1) {
+    b = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (b->ship_hp < b->ship_hp_max / 10.0f && (gemlik_frame_count / 90) & 1) {
         FontPrintCenterSmall_c(0x100, 0x186, 0x80000080L, msg_string_id(0x526E), 0x64);
     }
-    h = hero_globals_base + 0xE1D;
-    f = *(float *)(h + 0x15FC) - *(float *)(d + 0xF0);
+    h = (struct Hero *)(hero_globals_base + 0xE1D);
+    f = h->ship_hp - d->hp_shown;
     f *= 0.2f;
     q = FastAbsF(f);
     if (q > 1.0f) f /= q;
-    *(float *)(d + 0xF0) += f;
-    v = truncate_float_to_s32_r(*(float *)(d + 0xF0) * 251.0f / *(float *)(h + 0x1600)) + 2;
+    d->hp_shown += f;
+    v = truncate_float_to_s32_r(d->hp_shown * 251.0f / h->ship_hp_max) + 2;
     if (v > 0xFD) v = 0xFD;
     if (v < 2) v = 2;
-    lo = *(int *)(d + 0xF4) <= v ? *(int *)(d + 0xF4) : v;
-    hi = *(int *)(d + 0xF4) < v ? v : *(int *)(d + 0xF4);
+    lo = d->hp_bar <= v ? d->hp_bar : v;
+    hi = d->hp_bar < v ? v : d->hp_bar;
     for (j = lo; j <= hi; j++) {
         idx = (j & 0xE7) | ((j & 0x10) >> 1) | ((j & 8) << 1);
         if (j < v) {
@@ -2242,9 +2314,9 @@ void DrawGemlikTurretHud(char *moby) {
         }
     }
     s = (char *)screen_globals_base + 0x4A6;
-    DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(*(int *)(d + 0x104) + 0x28));
-    DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(*(int *)(d + 0x104) + 0x29));
-    *(int *)(d + 0xF4) = v;
+    DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(d->tex_index + 0x28));
+    DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(d->tex_index + 0x29));
+    d->hp_bar = v;
 }
 extern float g_frame_time MACRO_ADDR;
 extern void BuildSphericalOffset(void *, float, float, float);
@@ -2277,8 +2349,8 @@ extern int spawn_ship_rocket(void *, void *, float, int, void *, int);
 /* Fires a timed burst from a moby while a pad button is held and ammo remains. */
 void fire_fighter_jet_rocket(char *moby, char *obj) {
     if (fast_dec_timer_i(obj + 0x84) && (*(int *)(pad_globals_base + 0x2610) & 0x28)) {
-        unsigned char *u = hero_globals_base + 0xE1D;
-        if (u[0x15F6] != 0) {
+        struct Hero *u = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (u->ship_ammo != 0) {
             char a[16];
             char b[16];
             float s;
@@ -2293,7 +2365,7 @@ void fire_fighter_jet_rocket(char *moby, char *obj) {
             h = scale_ticks(300);
             if (spawn_ship_rocket(moby, a, s, *(int *)(obj + 0xEC), pos, h) != 0) {
                 Moby_PlaySound(2, 0, (int)moby);
-                u[0x15F6]--;
+                u->ship_ammo--;
                 *(int *)(obj + 0x84) = scale_ticks(30);
             }
         }
@@ -2380,7 +2452,7 @@ void PlayerFighterFlight(void *a0, void *a1) {
     float h, tn;
     float ratio;
     char *pad;
-    char *g;
+    struct Hero *g;
     char *e;
     char *p;
     int idx;
@@ -2439,11 +2511,11 @@ void PlayerFighterFlight(void *a0, void *a1) {
     }
 
     if (o->count > scale_ticks(5)) {
-        char *h = (char *)hero_globals_base + 0xE1D;
+        struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         ka = frame_scale * 0.1f;
         kb = frame_scale * 0.25f;
-        a = *(float *)(h + 0x1D20);
-        b = *(float *)(h + 0x1D24);
+        a = h->stick_x;
+        b = h->stick_y;
         if (*(int *)(pad_globals_base + 0x2600) & 0x200) {
             a = a / (frame_scale * 0.012271847f);
             a = a * (frame_scale * 0.015707964f);
@@ -2572,9 +2644,9 @@ void PlayerFighterFlight(void *a0, void *a1) {
             o->speed = o->speed * 0.7f;
             if (*(char **)(p + 0x18) != 0) {
                 if (o->iDC == 0) {
-                    g = (char *)hero_globals_base + 0xE1D;
-                    *(float *)(g + 0x15FC) = *(float *)(g + 0x15FC) - 5.0f;
-                    if (*(float *)(g + 0x15FC) < 0.0f) {
+                    g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+                    g->ship_hp = g->ship_hp - 5.0f;
+                    if (g->ship_hp < 0.0f) {
                         FastVecSub(side, p + 0x50, p + 0x60);
                         vec_scale_to_length(side, side, 1.0f);
                         vec_reflect(vel, dir, p + 0x40);

@@ -5,6 +5,40 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Spawner (class 0x75D): picks a target, then throws eggs (class 0x75E) towards it, up to max_eggs alive. */
+struct SpawnerVars {
+    u8 pad_00[0x70];
+    u8 explosion_pos[0x10];         /* 0x70: explosion origin */
+    f32 range;                      /* 0x80: min spread radius for the target */
+    s32 path_a;                     /* 0x84: -1 none */
+    s32 path_b;                     /* 0x88: index into the path table, -1 none */
+    s16 spawn_delay;                /* 0x8C: ticks between eggs */
+    s16 spawn_timer;                /* 0x8E */
+    u8 max_eggs;                    /* 0x90 */
+    u8 egg_count;                   /* 0x91: live eggs */
+    u8 nearest_first;               /* 0x92: pick the nearest slot instead of a random one */
+    u8 egg_kind;                    /* 0x93 */
+    s32 group;                      /* 0x94: moby group of the eggs */
+    u8 pad_98[0x8];
+    s32 target_slots[4];            /* 0xA0: indices into the target table, -1 none */
+    char *eggs[20];                 /* 0xB0: live eggs by slot */
+    Vec4A target_pos;               /* 0x100 */
+    u8 pad_110[0x30];
+    char *target;                   /* 0x140 */
+    s32 target_state;               /* 0x144: 2 when there is none */
+};
+
+/* Spawner egg (class 0x75E): flies on vel, remembers its spawner and slot. */
+struct SpawnerEggVars {
+    Vec4A vel;                      /* 0x00 */
+    char *owner;                    /* 0x10: the spawner */
+    s32 unk_14;                     /* 0x14 */
+    s16 timer;                      /* 0x18 */
+    s8 kind;                        /* 0x1A */
+    s8 unk_1B;                      /* 0x1B */
+    s8 slot;                        /* 0x1C: index in the spawner's eggs */
+};
+
 /* Per-instance variables of the oClass 52 moby (moby->pvars). */
 typedef struct {
     u8 pad0[0x20];
@@ -1312,71 +1346,71 @@ typedef struct {
  * has 201 buckets here and hashes by register number), which is the order of the four spill slots 0x64..0x70. */
 void Moby1885Update(char *moby)
 {
-    char *d = ((char *)((Moby *)moby)->pvars);
+    struct SpawnerVars *d = (struct SpawnerVars *)((Moby *)moby)->pvars;
     float v[4];
     float rot[4];
     float pos2[4];
     float arr[4];
 
-    process_spawner_hit_record_r(moby, d);
+    process_spawner_hit_record_r(moby, ((char *)d));
     switch ((unsigned char)moby[0x20]) {
     case 0: {
         int h = 0;
-        while (get_first_moby_in_group_r2(&h, *(int *)(d + 0x94), 0, 0) == 0) {
+        while (get_first_moby_in_group_r2(&h, d->group, 0, 0) == 0) {
             DeleteMoby_r3((void *)h);
         }
         moby[0x20] = 1;
         return;
     }
     case 1: {
-        process_spawner_hit_record_r(moby, d);
-        if (!FastDecTimer_r2(d + 0x8E))
+        process_spawner_hit_record_r(moby, ((char *)d));
+        if (!FastDecTimer_r2(&d->spawn_timer))
             return;
         if (random_integer_below_r3(7) == 0) {
             char *a6 = 0;
             int a7 = 0;
             char *a8 = 0;
             int a9 = 0;
-            if (*(int *)(d + 0x84) != -1) {
-                a6 = d + 0x84;
+            if (d->path_a != -1) {
+                a6 = (char *)&d->path_a;
                 a7 = 1;
             }
-            if (*(int *)(d + 0x88) != -1) {
-                char *q = gaspar_paths_r2[*(int *)(d + 0x88)];
+            if (d->path_b != -1) {
+                char *q = gaspar_paths_r2[d->path_b];
                 a9 = *(int *)q;
                 a8 = q + 0x10;
             }
-            FindNearestEligibleMoby_r2(moby, d + 0x100, *(float *)(d + 0x80), a6, a7, a8, a9);
+            FindNearestEligibleMoby_r2(moby, &d->target_pos, d->range, a6, a7, a8, a9);
         } else {
-            char *p = *(char **)(d + 0x140);
+            char *p = d->target;
             if (p != 0 && (unsigned char)p[0x20] != 0xFE && (unsigned char)p[0x20] != 0xFD) {
-                qcopy(d + 0x100, p + 0x10);
+                qcopy(&d->target_pos, p + 0x10);
             } else {
-                *(int *)(d + 0x140) = 0;
-                *(int *)(d + 0x144) = 2;
+                *(int *)&d->target = 0;
+                d->target_state = 2;
             }
         }
-        if (*(int *)(d + 0x144) == 2)
+        if (d->target_state == 2)
             return;
         {
-        int last = refresh_spawner_population_and_find_free_slot_r((int)moby, d);
+        int last = refresh_spawner_population_and_find_free_slot_r((int)moby, ((char *)d));
         char *sel;
-        if ((unsigned char)d[0x91] >= (unsigned char)d[0x90])
+        if ((unsigned char)*(char *)&d->egg_count >= (unsigned char)*(char *)&d->max_eggs)
             return;
         if (last == -1)
             return;
-        if ((unsigned char)d[0x91] != 0) {
+        if ((unsigned char)*(char *)&d->egg_count != 0) {
             if (!(D_L09_0015F6B8_30BF88 < 0.85f))
                 return;
             if (!(D_L09_0015F6B4_30BF88 < 0.85f))
                 return;
         }
         sel = 0;
-        if (*(unsigned char *)(d + 0x92) != 0) {
+        if (d->nearest_first != 0) {
             int i;
             float best = 100000.0f;
             for (i = 0; i < 4; i++) {
-                int idx = *(int *)(d + 0xA0 + i * 4);
+                int idx = *(int *)(((char *)d) + 0xA0 + i * 4);
                 if (idx != -1) {
                     char *q = D_L09_0016016C_30BF88 + (idx << 7);
                     float f = FastVecDist_r4(hero_globals_base_r + 0xE9D, q + 0x30);
@@ -1387,9 +1421,9 @@ void Moby1885Update(char *moby)
                 }
             }
             if (sel == 0) {
-                FastVecSub_r2(v, d + 0x100, moby + 0x10);
+                FastVecSub_r2(v, &d->target_pos, moby + 0x10);
                 FastVecScale_r(v, v, 0.5f);
-                if (3.0f < *(float *)(d + 0x80))
+                if (3.0f < d->range)
                     clamp_vec_length_r(v, v, 3.0f);
                 if (FastVecLength_r3(v) < 3.0f)
                     vec_scale_to_length_r2(v, v, 3.0f);
@@ -1402,14 +1436,14 @@ void Moby1885Update(char *moby)
             int i;
             for (i = 0; i < 4; i++) {
                 int k = (i + nn) % 4;
-                int idx = *(int *)(d + (k << 2) + 0xA0);
+                int idx = *(int *)(((char *)d) + (k << 2) + 0xA0);
                 if (idx != -1) {
                     sel = D_L09_0016016C_30BF88 + (idx << 7);
                     break;
                 }
             }
             if (sel == 0) {
-                float s = *(float *)(d + 0x80);
+                float s = d->range;
                 if (s < 3.0f)
                     s = 3.0f;
                 generate_random_scaled_vector2_r(v, s);
@@ -1440,14 +1474,14 @@ void Moby1885Update(char *moby)
             FastVecAdd_r2(pos2, pos2, arr);
             rot[2] = jump_speed_4318_r(pos2, v, 0, f20, -(g_frame_time_sq_r2 * 9.8f));
         }
-        ((Sp_30BF88 *)d)->slots[last] = spawn_spawner_egg_r((int)moby, pos2, rot, (unsigned char)d[0x93], (unsigned char)last);
-        *(short *)(d + 0x8E) = scale_ticks_r4(*(short *)(d + 0x8C));
-        d[0x91] = (char)(d[0x91] + 1);
+        ((Sp_30BF88 *)((char *)d))->slots[last] = spawn_spawner_egg_r((int)moby, pos2, rot, (unsigned char)*(char *)&d->egg_kind, (unsigned char)last);
+        d->spawn_timer = scale_ticks_r4(d->spawn_delay);
+        d->egg_count = (char)(*(char *)&d->egg_count + 1);
         }
         return;
     }
     case 2:
-        spawn_explosion_r2(moby, d + 0x70, 0, 0.0f, 0.0f, 30, 8, 20, 8.0f, 4.0f, 18.0f, 1.0f, 1, 15.0f, 1, 1, -1, 0);
+        spawn_explosion_r2(moby, d->explosion_pos, 0, 0.0f, 0.0f, 30, 8, 20, 8.0f, 4.0f, 18.0f, 1.0f, 1, 15.0f, 1, 1, -1, 0);
         SpawnBreakFragment_r(moby, 0x6C5, moby + 0x10, moby + 0x40, 0, 0, 0.0f, gaspar_zero_vec_r, gaspar_zero_vec_r, gaspar_zero_vec_r);
         SpawnBreakFragment_r(moby, 0x6C6, moby + 0x10, moby + 0x40, 0, 0, 0.0f, gaspar_zero_vec_r, gaspar_zero_vec_r, gaspar_zero_vec_r);
         SpawnBreakFragment_r(moby, 0x6C7, moby + 0x10, moby + 0x40, 0, 0, 0.0f, gaspar_zero_vec_r, gaspar_zero_vec_r, gaspar_zero_vec_r);
@@ -1466,22 +1500,22 @@ extern void moby_build_matrix(void *);
 char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsigned char b) {
     char *m = (char *)CreateMoby(0x75E);
     if (m) {
-        char *d = ((char *)((Moby *)m)->pvars);
-        *(int *)(d + 0x10) = owner;
+        struct SpawnerEggVars *d = (struct SpawnerEggVars *)((Moby *)m)->pvars;
+        *(int *)&d->owner = owner;
         qcopy(m + 0x10, pos);
-        qcopy(d, rot);
+        qcopy(&d->vel, rot);
         ((Moby *)m)->rot.x = random_float_between(-3.1415927f, 3.1415927f);
         ((Moby *)m)->rot.y = random_float_between(-3.1415927f, 3.1415927f);
-        *(int *)(d + 0x14) = 0;
-        *(short *)(d + 0x18) = scale_ticks(500);
+        d->unk_14 = 0;
+        d->timer = scale_ticks(500);
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0x40;
         m[0x31] = 1;
         m[0x20] = 0;
         ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.3f;
-        d[0x1C] = b;
-        d[0x1A] = a;
-        d[0x1B] = 0;
+        d->slot = b;
+        d->kind = a;
+        d->unk_1B = 0;
         moby_build_matrix(m);
     }
     return m;

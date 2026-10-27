@@ -1449,10 +1449,11 @@ void mpeg_init_seq(void *arg0) {
             return;
         p = (unsigned int *)(s + 0x528);
     }
+    a[0] = mbw;
     a[1] = mbh;
-    /* inline asm: the a[0] store, which also moves p into q8, so q8's spill
-       store follows both a[] stores (retail: sw $s7,0($a1); sw $v0,0x44($sp)) */
-    __asm__("sw %2,%1" : "=r"(q8), "=m"(a[0]) : "r"(mbw), "0"(p) : "memory");
+    if ((mbw & 0xF) && (mbw & 0xE))
+        p = q8;
+    q8 = p;
     t = mbh * 0x180;
     q0 = (unsigned int *)(s + 0x1E8);
     q1 = (unsigned int *)(s + 0x250);

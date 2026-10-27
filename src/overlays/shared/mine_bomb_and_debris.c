@@ -6,6 +6,52 @@
 #include "moby.h"
 #include "vector.h"
 
+/* Glow particle (class 0x70): spinning shard that shrinks and fades out. */
+struct GlowParticleVars {
+    Vec4A velocity;                 /* 0x00 */
+    void *owner;                    /* 0x10 */
+    s32 life;                       /* 0x14: full lifetime in ticks */
+    f32 full_scale;                 /* 0x18 */
+    s16 fade_start;                 /* 0x1C: ticks at which shrinking starts */
+    s16 alpha;                      /* 0x1E */
+};
+
+/* Bomb (class 0x79) as set up by spawn_bomb; launch_bomb below has a smaller BombVars of the same block. */
+struct BombSpawnVars {
+    Vec4A velocity;                 /* 0x00 */
+    u8 pad_10[0x40];
+    s32 owner;                      /* 0x50 */
+    u8 pad_54[0x2];
+    s16 unk_56;                     /* 0x56 */
+    f32 spin_a;                     /* 0x58: random spin step */
+    f32 spin_b;                     /* 0x5C */
+    s32 target;                     /* 0x60 */
+    s32 unk_64;                     /* 0x64 */
+    u8 pad_68[0x2];
+    s16 unk_6A;                     /* 0x6A */
+    f32 hero_heading;               /* 0x6C: hero facing angle at launch */
+};
+
+/* Devastator missile (class 0x99): homes on a target for a limited time. */
+struct DevastatorMissileVars {
+    Vec4A aim_pos;                  /* 0x00: target position, z raised by height_offset */
+    u8 *owner;                      /* 0x10 */
+    s32 life_timer;                 /* 0x14 */
+    u8 *target;                     /* 0x18 */
+    f32 height_offset;              /* 0x1C */
+    f32 unk_20;                     /* 0x20: speed / 3 */
+    s32 unk_24;                     /* 0x24 */
+    s32 unk_28;                     /* 0x28 */
+    f32 unk_2C;                     /* 0x2C */
+    f32 unk_30;                     /* 0x30 */
+    f32 speed;                      /* 0x34 */
+    s32 unk_38;                     /* 0x38: 1 unless the target says otherwise */
+    s16 fuse;                       /* 0x3C */
+    s16 fuse_max;                   /* 0x3E */
+    u8 pad_40[0x8];
+    f32 range;                      /* 0x48 */
+};
+
 typedef int Q910 __attribute__((mode(TI)));
 typedef float V910[4] __attribute__((aligned(16)));
 typedef union { Q910 q; float f[4]; } U910;
@@ -870,7 +916,7 @@ char *spawn_glow_particle(void *owner, void *pos, void *vel, float scale, int li
                         unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
     char *m = CreateMoby(0x70);
     if (m != 0) {
-        char *d = ((char *)((Moby *)m)->pvars);
+        struct GlowParticleVars *d = (struct GlowParticleVars *)((Moby *)m)->pvars;
         Vec4 tmp;
         Vec4 rot;
         int s;
@@ -885,17 +931,17 @@ char *spawn_glow_particle(void *owner, void *pos, void *vel, float scale, int li
         ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
         set_moby_color(m, r, g, b);
-        *(float *)(d + 0x18) = ((Moby *)m)->scale * scale;
+        d->full_scale = ((Moby *)m)->scale * scale;
         *(int *)&((Moby *)m)->scale = 0;
-        *(void **)(d + 0x10) = owner;
+        d->owner = owner;
         qcopy(m + 0x10, pos);
-        qcopy(d, vel);
+        qcopy(&d->velocity, vel);
         qcopy(m + 0x40, &tmp);
-        *(int *)(d + 0x14) = life;
-        s = *(unsigned short *)(d + 0x14) - scale_ticks(4);
-        *(short *)(d + 0x1C) = s;
-        ((Moby *)m)->scale = IntToFloat(*(int *)(d + 0x14) - (short)s) * *(float *)(d + 0x18) / IntToFloat(*(int *)(d + 0x14));
-        *(short *)(d + 0x1E) = a;
+        d->life = life;
+        s = *(unsigned short *)&d->life - scale_ticks(4);
+        d->fade_start = s;
+        ((Moby *)m)->scale = IntToFloat(d->life - (short)s) * d->full_scale / IntToFloat(d->life);
+        d->alpha = a;
         moby_build_matrix(m);
     }
     return m;
@@ -1044,8 +1090,8 @@ char *spawn_bomb(int owner, void *pos) {
     char *m = spawn_79(0x79);
     if (m) {
         V2AE110 u, t;
-        char *v = ((char *)((Moby *)m)->pvars);
-        char *g;
+        struct BombSpawnVars *v = (struct BombSpawnVars *)((Moby *)m)->pvars;
+        struct Hero *g;
         float a;
         t.q = 0;
         t.f[0] = random_float_between(-3.1415927f, 3.1415927f);
@@ -1056,21 +1102,21 @@ char *spawn_bomb(int owner, void *pos) {
         ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
         m[0x20] = 0;
-        *(int *)(v + 0x50) = owner;
-        *(short *)(v + 0x56) = 0;
-        *(short *)(v + 0x6A) = 0;
-        *(int *)(v + 0x60) = 0;
-        g = hero_globals_base + 0xE1D;
-        *(float *)(v + 0x6C) = fast_atan2(*(float *)(g + 0x670), *(float *)(g + 0x674));
-        *(int *)(v + 0x64) = 0;
+        v->owner = owner;
+        v->unk_56 = 0;
+        v->unk_6A = 0;
+        v->target = 0;
+        g = (struct Hero *)(hero_globals_base + 0xE1D);
+        v->hero_heading = fast_atan2(g->facing_x, g->facing_y);
+        v->unk_64 = 0;
         qcopy(m + 0x10, pos);
-        clear_u64_value((float *)v);
+        clear_u64_value((float *)((char *)v));
         qcopy(m + 0x40, &u);
         a = random_float_between(g_frame_time * 1.0471976f, g_frame_time * 3.1415927f);
         {
             float d = g_frame_time;
-            *(float *)(v + 0x58) = a;
-            *(float *)(v + 0x5C) = random_float_between(d * 1.0471976f, d * 3.1415927f);
+            v->spin_a = a;
+            v->spin_b = random_float_between(d * 1.0471976f, d * 3.1415927f);
         }
         moby_build_matrix(m);
     }
@@ -1238,27 +1284,27 @@ extern void draw_bomb_landing_marker(char *moby);
 int predict_throw_landing(void *vp, void *m, int mode) {
     V_AE6B0 position, velocity, previous, hero_position, offset, start;
     int timer, found = 0, object_hit = 0, i;
-    char *hero = hero_globals_base + 0xE1D;
+    struct Hero *hero = (struct Hero *)(hero_globals_base + 0xE1D);
         char *last;
     char *cam;
-    char *h;
+    struct Hero *h;
 
-    if (*(int *)(hero + 0x2084) == 0x72)
+    if (hero->state.current == 0x72)
         return 0;
     if (cinematic_mode != 0)
         return 0;
     qcopy(&previous, m + 0x10);
     if (*(unsigned char *)(m + 0x20) == 0) {
-        position.f[0] = FastCos(FastAddRots(-0.36196801f, fast_atan2(*(float *)(hero + 0x670), *(float *)(hero + 0x674)))) * 0.85903901f;
-        position.f[1] = FastSin(FastAddRots(-0.36196801f, fast_atan2(*(float *)(hero + 0x670), *(float *)(hero + 0x674)))) * 0.85903901f;
+        position.f[0] = FastCos(FastAddRots(-0.36196801f, fast_atan2(hero->facing_x, hero->facing_y))) * 0.85903901f;
+        position.f[1] = FastSin(FastAddRots(-0.36196801f, fast_atan2(hero->facing_x, hero->facing_y))) * 0.85903901f;
         position.f[2] = 0.0f;
-        FastVecAdd(&position, &position, hero + 0x80);
+        FastVecAdd(&position, &position, &hero->motion.pos);
         position.f[2] += 0.49082f;
         qcopy(&velocity, v);
-        if (*(int *)(hero + 0x208C) == 0xF)
-            FastVecAdd(&velocity, &velocity, hero + 0x100);
-        if (*(int *)(hero + 0x2FC) != 0 && moby_get_ride_transform(*(unsigned char **)(hero + 0x2FC)) && mode)
-            FastVecAdd(&velocity, &velocity, hero + 0x100);
+        if (hero->state.control_mode == 0xF)
+            FastVecAdd(&velocity, &velocity, &hero->motion.displacement);
+        if (*(int *)&hero->ground_moby != 0 && moby_get_ride_transform(*(unsigned char **)&hero->ground_moby) && mode)
+            FastVecAdd(&velocity, &velocity, &hero->motion.displacement);
         timer = scale_ticks(300);
     } else {
         char *hp = *(char **)(v->holder + 0x78);
@@ -1270,14 +1316,14 @@ int predict_throw_landing(void *vp, void *m, int mode) {
         if (t50)
             v->holder_flag = 1;
     }
-    h = hero_globals_base + 0xE1D;
-    cam = *(char **)(h + 0x2080);
+    h = (struct Hero *)(hero_globals_base + 0xE1D);
+    cam = *(char **)&h->moby;
     hero_position = *(V_AE6B0 *)(cam + 0x10);
     hero_position.f[2] = position.f[2];
     if (coll_line(&hero_position, &position, 0x10, (int)cam, 0) &&
         (CollType() || 0.0f < velocity.f[2])) {
         if (D_H910.moby != 0 && D_H910.i1C <= 0) {
-            if (((char *)D_H910.moby != *(char **)(h + 0x2080) && (char *)D_H910.moby != v->holder) ||
+            if (((char *)D_H910.moby != *(char **)&h->moby && (char *)D_H910.moby != v->holder) ||
                 timer < scale_ticks(300) - scale_ticks(10)) {
                 offset = (V_AE6B0){{0.0f, 0.0f, 0.0f, 0.0f}};
                 offset.f[2] = 0.5f;
@@ -1306,8 +1352,8 @@ int predict_throw_landing(void *vp, void *m, int mode) {
         }
     }
     if (screen_globals_base[0x4D0] != 0) {
-        char *g = hero_globals_base + 0xE1D;
-        if (*(int *)(g + 0x2084) == 1) {
+        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (g->state.current == 1) {
             float z = velocity.f[2];
             FastVecScale(&velocity, &velocity, 1.5f);
             velocity.f[2] = z / 1.5f;
@@ -1328,8 +1374,8 @@ int predict_throw_landing(void *vp, void *m, int mode) {
             if (!(position.f[2] - hero_position.f[2] < 2.0f))
                 goto check_surface;
             {
-                char *g = hero_globals_base + 0xE1D;
-                if (((char *)D_H910.moby == *(char **)(g + 0x2080) || (char *)D_H910.moby == v->holder) &&
+                struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+                if (((char *)D_H910.moby == *(char **)&g->moby || (char *)D_H910.moby == v->holder) &&
                     timer >= scale_ticks(300) - scale_ticks(10))
                     continue;
             }
@@ -2088,7 +2134,7 @@ extern short active_homing_missiles[];
 unsigned char *spawn_devastator_missile(unsigned char *a, Vec4 *pos, unsigned char *tgt, float f12, float f13, float f14, float f15, float f16) {
     Vec4 tmp;
     unsigned char *m;
-    unsigned char *v;
+    struct DevastatorMissileVars *v;
     unsigned char *r;
     float t;
     int n;
@@ -2096,50 +2142,50 @@ unsigned char *spawn_devastator_missile(unsigned char *a, Vec4 *pos, unsigned ch
 
     m = (unsigned char *)CreateMoby(0x99);
     if (m != 0) {
-        v = ((unsigned char *)((Moby *)m)->pvars);
+        v = (struct DevastatorMissileVars *)((Moby *)m)->pvars;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0xFF;
         ((Moby *)m)->visible = 1;
         ((Moby *)m)->rot.z = f15;
         ((Moby *)m)->rot.y = f16;
         ((Moby *)m)->state = 0;
-        *(unsigned char **)(v + 0x10) = a;
+        v->owner = a;
         qcopy(m + 0x10, pos);
         t = g_frame_time * 20.0f;
-        *(int *)(v + 0x38) = 1;
-        *(float *)(v + 0x48) = 70.0f;
-        *(float *)(v + 0x34) = t;
-        *(int *)(v + 0x24) = 0;
-        *(int *)(v + 0x28) = 0;
-        *(unsigned char **)(v + 0x18) = tgt;
-        *(float *)(v + 0x20) = t / 3.0f;
+        v->unk_38 = 1;
+        v->range = 70.0f;
+        v->speed = t;
+        v->unk_24 = 0;
+        v->unk_28 = 0;
+        v->target = tgt;
+        v->unk_20 = t / 3.0f;
         if (tgt != 0) {
             r = GetFlaggedPvarWord(tgt);
             if (r != 0) {
                 *(unsigned short *)(r + 0x1E) |= 0x80;
                 if (r[0xB]) {
-                    *(int *)(v + 0x38) = 0;
+                    v->unk_38 = 0;
                 }
                 if (r[0xC]) {
-                    *(float *)(v + 0x34) = (float)r[0xC] * g_frame_time;
+                    v->speed = (float)r[0xC] * g_frame_time;
                 }
-                if (g_frame_time * 20.0f < *(float *)(v + 0x34)) {
-                    *(float *)(v + 0x48) = 140.0f;
+                if (g_frame_time * 20.0f < v->speed) {
+                    v->range = 140.0f;
                 }
             }
         }
-        *(float *)(v + 0x2C) = f12;
-        *(float *)(v + 0x30) = f13;
-        *(int *)(v + 0x14) = scale_ticks(300);
+        v->unk_2C = f12;
+        v->unk_30 = f13;
+        v->life_timer = scale_ticks(300);
         if (tgt != 0) {
-            qcopy(v, tgt + 0x10);
-            *(float *)(v + 0x1C) = f14;
-            *(float *)(v + 8) += f14;
+            qcopy(&v->aim_pos, tgt + 0x10);
+            v->height_offset = f14;
+            v->aim_pos.z += f14;
         }
         x = FastVecLength(hero_globals_base_u + 0xF5D);
         n = scale_ticks(g_frame_time * 0.1f < x ? 0x3C : 0xF);
-        *(short *)(v + 0x3E) = n;
-        *(short *)(v + 0x3C) = n;
+        v->fuse_max = n;
+        v->fuse = n;
         if (a != 0 && a[0x20] != 0xFE && a[0x20] != 0xFD) {
             tmp.q = ((Vec4 *)(a + 0x10))->q;
         } else {

@@ -177,7 +177,7 @@ void update_level_help_controller(unsigned char *moby) {
 typedef int u128 __attribute__((mode(TI)));
 typedef struct { int count; int pad4[3]; Vec4 pts[1]; } VendPath;
 typedef struct { u8 pad0[0x10]; Vec4 pos; } VendTarget;
-typedef struct {
+typedef struct VendVars {
     u8 pad0[0x20];
     float unk20;
     s16 unk24;
@@ -201,7 +201,8 @@ typedef struct {
     u8 pad1B0[4];
     int unk1B4;
     int pathIdx;
-    u8 pad1BC[0x1D0 - 0x1BC];
+    u8 pad1BC[4];
+    Vec4A effectPos; /* 0x1C0: effect position, the joint world pos */
     float turnVel;
     float speed;
     s16 timer;
@@ -551,7 +552,7 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
     VendPath *path;
     TrollMoby *t;
     Vec4 v;
-    u8 *g;
+    struct Hero *g;
     s32 hit;
     f32 dmg;
     f32 angle;
@@ -626,9 +627,9 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
         }
     }
     if (vars->targetMoby == 0) {
-        g = hero_globals_base + 0xE1D;
-        vars->targetMoby = *(TrollMoby **)(g + 0x2080);
-        qcopy(&vars->target, g + 0x80);
+        g = (struct Hero *)(hero_globals_base + 0xE1D);
+        vars->targetMoby = *(TrollMoby **)&g->moby;
+        qcopy(&vars->target, &g->motion.pos);
     }
     if (vars->unk1BC >= 0) {
         t = (TrollMoby *)(moby_array_start + (vars->unk1BC << 8));
@@ -656,7 +657,7 @@ extern float veldin1_zero_vec[] MACRO_ADDR;
 // spawns a spark: steps the moby's position and emits one fast particle and three slow tails
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e1aa8.
 void update_veldin_robot_effects(char *m) {
-    char *vars;
+    struct VendVars *vars;
     char *p;
     char *t;
     float *pos;
@@ -664,17 +665,17 @@ void update_veldin_robot_effects(char *m) {
     int i;
     int life;
 
-    vars = ((char *)((Moby *)m)->pvars);
-    pos = (float *)(vars + 0x1C0);
+    vars = (struct VendVars *)((Moby *)m)->pvars;
+    pos = &vars->effectPos.x;
     Moby_GetJointWorldPos(m, 1, pos);
-    ((float *)(vars + 0x1C0))[2] -= 0.333f;
+    (&vars->effectPos.x)[2] -= 0.333f;
     random_spherical_offset(vel, 0.005f, 0.03f);
     p = spawn_mode_controlled_rotating_alpha_fade_particle(pos, vel, 0x7F, m);
     if (p != 0) {
         *(float *)(p + 0xC) = random_float_between(6000.0f, 32000.0f);
     }
     for (i = 0; i < 3; i++) {
-        p = spawn_mode_controlled_rotating_alpha_fade_particle((float *)(vars + 0x1C0), veldin1_zero_vec, 0x7F, m);
+        p = spawn_mode_controlled_rotating_alpha_fade_particle(&vars->effectPos.x, veldin1_zero_vec, 0x7F, m);
         if (p != 0) {
             t = p + 0x20;
             if (i == 2 && random_integer_below(8) == 0) {

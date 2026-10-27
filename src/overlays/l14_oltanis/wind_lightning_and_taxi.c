@@ -7,21 +7,118 @@
 #include "moby.h"
 #include "pad.h"
 
+/* Ribbon effect: two ribbon paths (0x00 and 0xA0) and the texture scroll. */
+struct RibbonVars {
+    u8 path_a[0xA0];                /* 0x00 */
+    u8 path_b[0xA0];                /* 0xA0 */
+    u8 pad_140[0xAC];
+    f32 scroll;                     /* 0x1EC: texture scroll, wraps at -8 */
+};
+
+/* Hero hit volume: the clip volume the hit is registered in. */
+struct HeroHitVolumeVars {
+    u8 pad_00[0x200];
+    s32 clip_volume;                /* 0x200 */
+};
+
+/* Path lightning controller: which path the strikes follow. */
+struct PathLightningVars {
+    s32 path;                       /* 0x00: row of oltanis_paths_ee */
+};
+
+/* Elevator (class 685): rides a path out and back, springs towards the spline point. */
+struct ElevatorVars {
+    u8 pad_00[0x60];
+    u8 entity[0x40];                /* 0x60: update_entity_matrix block */
+    s32 path_from;                  /* 0xA0: row of oltanis_paths */
+    s32 point;                      /* 0xA4: spline segment */
+    f32 point_dist;                 /* 0xA8: distance into the segment */
+    f32 dir;                        /* 0xAC: +1 forward, -1 back */
+    f32 travelled;                  /* 0xB0 */
+    f32 length_from;                /* 0xB4: length of path_from */
+    s32 path_to;                    /* 0xB8 */
+    f32 length_to;                  /* 0xBC */
+    f32 pos_vel_x;                  /* 0xC0: spring velocities */
+    f32 pos_vel_y;                  /* 0xC4 */
+    f32 pos_vel_z;                  /* 0xC8 */
+    u8 pad_CC[0x4];
+    f32 rot_start_x;                /* 0xD0 */
+    f32 rot_start_y;                /* 0xD4 */
+    f32 rot_start_z;                /* 0xD8 */
+    u8 pad_DC[0x4];
+    Vec4A rot_from;                 /* 0xE0: end rotation of path_from */
+    Vec4A rot_to;                   /* 0xF0 */
+    f32 rot_vel_x;                  /* 0x100 */
+    f32 rot_vel_y;                  /* 0x104 */
+    f32 rot_vel_z;                  /* 0x108 */
+    u8 pad_10C[0x4];
+    s32 mission;                    /* 0x110: mission slot of the unlock */
+    s32 link_path;                  /* 0x114 */
+    s32 call_a;                     /* 0x118: command values that start a ride */
+    s32 call_b;                     /* 0x11C */
+    s32 call_c;                     /* 0x120 */
+    s16 locked;                     /* 0x124 */
+    s16 pitch;                      /* 0x126 */
+    f32 pitch_spring;               /* 0x128 */
+    s32 voice;                      /* 0x12C: sound slot, -1 when none */
+    s32 pitch_base;                 /* 0x130 */
+    s32 pitch_alt;                  /* 0x134 */
+    f32 glow;                       /* 0x138 */
+};
+
+/* Qwark: dialog, the elevator it unlocks and the big-head cheat manipulators. */
+struct QwarkVars {
+    u8 pad_00[0x4];
+    s16 dialog_state;               /* 0x04 */
+    u8 pad_06[0x2];
+    u8 started;                     /* 0x08 */
+    u8 pad_09[0x3];
+    f32 unk_0C;                     /* 0x0C */
+    u8 pad_10[0x10];
+    char *dialog_name;              /* 0x20 */
+    u8 pad_24[0x1C];
+    s32 clip_volume;                /* 0x40 */
+    s32 elevator;                   /* 0x44: index of the elevator moby */
+    s32 clip_volume_b;              /* 0x48 */
+    u8 pad_4C[0x34];
+    u8 body_manip[0x10];            /* 0x80 */
+    u8 pad_90[0x54];
+    f32 unk_E4;                     /* 0xE4 */
+    f32 unk_E8;                     /* 0xE8 */
+    u8 pad_EC[0x4];
+    f32 height;                     /* 0xF0 */
+    u8 pad_F4[0xC];
+    u8 head_manip[0x10];            /* 0x100 */
+    u8 pad_110[0x58];
+    f32 unk_168;                    /* 0x168 */
+    u8 pad_16C[0x14];
+    Vec4A look_pos;                 /* 0x180 */
+    u8 pad_190[0x4];
+    s32 look_timer;                 /* 0x194 */
+    s32 look_retarget;              /* 0x198 */
+};
+typedef struct L14BoltVars {
+    Vec4 vel; /* 0x00 */
+    Vec4 origin; /* 0x10 */
+    void *ignore; /* 0x20: collision owner to skip */
+    s32 solid; /* 0x24 */
+} L14BoltVars;
+
 extern void VU1_addGSregister(int, long);
 extern void draw_ribbon_effect_path(void *, void *, int, int, int);
 extern float frame_scale MACRO_ADDR;
 
 // Scrolls a texture offset and draws two layers.
 void draw_ribbon_effect(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
-    float v = *(float *)(d + 0x1EC) - frame_scale * 0.2f;
-    *(float *)(d + 0x1EC) = v;
+    struct RibbonVars *d = (struct RibbonVars *)((Moby *)m)->pvars;
+    float v = d->scroll - frame_scale * 0.2f;
+    d->scroll = v;
     if (v <= -8.0f) {
-        *(float *)(d + 0x1EC) = v + 8.0f;
+        d->scroll = v + 8.0f;
     }
     VU1_addGSregister(0x47, 0x51001);
-    draw_ribbon_effect_path(m, d, 0x80, 0x40, 10);
-    draw_ribbon_effect_path(m, d + 0xA0, 0x30, 0x10, 0x14);
+    draw_ribbon_effect_path(m, ((char *)d), 0x80, 0x40, 10);
+    draw_ribbon_effect_path(m, d->path_b, 0x30, 0x10, 0x14);
 }
 typedef int u128_E0910 __attribute__((mode(TI)));
 typedef struct { float x, y, z, w; } __attribute__((aligned(16))) V_E0910;
@@ -58,7 +155,7 @@ void draw_ribbon_effect_path(void *m, void *path, int outer_alpha, int inner_alp
     V_E0910 quad_to_world[4];
     V_E0910 wm[4];
     V_E0910 world_path_points[2];
-    char *moby_vars = (char *)ribbon_moby->pvars;
+    struct RibbonVars *moby_vars = (struct RibbonVars *)ribbon_moby->pvars;
     int inner_layer_color;
     int i;
 
@@ -84,13 +181,13 @@ void draw_ribbon_effect_path(void *m, void *path, int outer_alpha, int inner_alp
     layer_quads[1].uv[2][1] = 0.0f;
     layer_quads[1].uv[3][0] = 0.0f;
     layer_quads[1].uv[3][1] = 1.0f;
-    layer_quads[0].uv[0][0] = *(float *)(moby_vars + 0x1EC) + 0.0f;
+    layer_quads[0].uv[0][0] = moby_vars->scroll + 0.0f;
     layer_quads[0].uv[0][1] = 0.0f;
-    layer_quads[0].uv[1][0] = *(float *)(moby_vars + 0x1EC) + 0.0f;
+    layer_quads[0].uv[1][0] = moby_vars->scroll + 0.0f;
     layer_quads[0].uv[1][1] = 1.0f;
-    layer_quads[0].uv[2][0] = *(float *)(moby_vars + 0x1EC) + 1.0f;
+    layer_quads[0].uv[2][0] = moby_vars->scroll + 1.0f;
     layer_quads[0].uv[2][1] = 0.0f;
-    layer_quads[0].uv[3][0] = *(float *)(moby_vars + 0x1EC) + 1.0f;
+    layer_quads[0].uv[3][0] = moby_vars->scroll + 1.0f;
     layer_quads[0].uv[3][1] = 1.0f;
     *(u128_E0910 *)&w[0] = 0;
     w[0].w = 1.0f;
@@ -191,13 +288,13 @@ void draw_ribbon_effect_path(void *m, void *path, int outer_alpha, int inner_alp
         outer_half_width = CubicInterpolate(-1.0f, 0.0f, 1.0f, 0.0f, IntToFloat(i) / IntToFloat(point_count)) * 0.0f + 0.2f;
         w[0].z = outer_half_width;
         w[1].z = 2.0f * outer_half_width;
-        layer_quads[0].uv[0][0] = *(float *)(moby_vars + 0x1EC) + 0.0f;
+        layer_quads[0].uv[0][0] = moby_vars->scroll + 0.0f;
         layer_quads[0].uv[0][1] = 0.0f;
-        layer_quads[0].uv[1][0] = *(float *)(moby_vars + 0x1EC) + 0.0f;
+        layer_quads[0].uv[1][0] = moby_vars->scroll + 0.0f;
         layer_quads[0].uv[1][1] = 1.0f;
-        layer_quads[0].uv[2][0] = *(float *)(moby_vars + 0x1EC) + 1.0f;
+        layer_quads[0].uv[2][0] = moby_vars->scroll + 1.0f;
         layer_quads[0].uv[2][1] = 0.0f;
-        layer_quads[0].uv[3][0] = *(float *)(moby_vars + 0x1EC) + 1.0f;
+        layer_quads[0].uv[3][0] = moby_vars->scroll + 1.0f;
         layer_quads[0].uv[3][1] = 1.0f;
     }
 }
@@ -222,8 +319,8 @@ void register_hero_hit_in_clip_volume(char *moby)
 {
     char *base = hero_globals_base + 0xE9D;
     Req r;
-    char *q;
-    if (is_point_inside_clip_volume(base, *(int *)(((char *)((Moby *)moby)->pvars) + 0x200)) != 0) {
+    struct Hero *q;
+    if (is_point_inside_clip_volume(base, ((struct HeroHitVolumeVars *)((Moby *)moby)->pvars)->clip_volume) != 0) {
         r.flags = 0x200001;
         r.range = 100.0f;
         r.one = 1;
@@ -234,9 +331,9 @@ void register_hero_hit_in_clip_volume(char *moby)
         r.a = 5;
         r.b = 4;
         r.c = *(unsigned short *)&((Moby *)moby)->oclass;
-        q = hero_globals_base + 0xE1D;
-        *(int *)(q + 0x22A8) = 0;
-        record_moby_hit(*(int *)(q + 0x2080), &r);
+        q = (struct Hero *)(hero_globals_base + 0xE1D);
+        q->health.hp = 0;
+        record_moby_hit(*(int *)&q->moby, &r);
     }
 }
 typedef struct {
@@ -890,21 +987,21 @@ extern void moby_build_matrix(void *);
 char *spawn_flying_bolt(void *a, float *b, int c, int d) {
     char *m = CreateMoby_m(0x2A9);
     if (m) {
-        char *data;
+        struct L14BoltVars *data;
         *(int *)&((Moby *)m)->rot.x = 0;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0x7F;
         m[0x31] = 1;
-        data = ((char *)((Moby *)m)->pvars);
+        data = (struct L14BoltVars *)((Moby *)m)->pvars;
         ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(b), b[2]);
         ((Moby *)m)->rot.z = fast_atan2(b[0], b[1]);
         qcopy(m + 0x10, a);
-        qcopy(data + 0x10, a);
-        qcopy(data, b);
+        qcopy(&data->origin, a);
+        qcopy(&data->vel, b);
         MobyBlendAnimation(m, 1, 0, scale_ticks(5));
         *(short *)&((Moby *)m)->flags = 0x208;
-        *(int *)(data + 0x20) = c;
-        *(int *)(data + 0x24) = d;
+        *(int *)&data->ignore = c;
+        data->solid = d;
         m[0x23] = 0x10;
         moby_build_matrix(m);
     }
@@ -916,12 +1013,6 @@ typedef struct {
     char _pad00[0x10];
     unsigned char nframes; /* 0x10 */
 } AnimSeq_EE260;
-typedef struct {
-    Vec4 vel; /* 0x00 */
-    Vec4 origin; /* 0x10 */
-    void *ignore; /* 0x20: collision owner to skip */
-    s32 solid; /* 0x24 */
-} L14BoltVars;
 typedef struct {
     u8 pad0[0x18];
     u8 flag18;
@@ -1048,7 +1139,7 @@ extern void update_branched_lightning_arc(char *);
 /* Camera-intro controller: waits for the cutscene flag, then every few seconds moves the focus to a random
  * visible point of its path. */
 void update_path_lightning_controller(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct PathLightningVars *d = (struct PathLightningVars *)((Moby *)m)->pvars;
     int idx[5];
     float v[4];
     int st;
@@ -1079,7 +1170,7 @@ void update_path_lightning_controller(char *m) {
     }
     if (fast_dec_timer(&lightning_strike_timer) == 0) return;
     if (*(int *)&lightning_arc_built == 0) {
-        int *path = oltanis_paths_ee[*(int *)d];
+        int *path = oltanis_paths_ee[d->path];
         int i;
         int n = 0;
         for (i = 0; i < path[0] && n < 5; i++) {
@@ -1578,7 +1669,7 @@ extern char voice_pool_r[] __asm__("D_0013E650");
  * D_0014C150, D_0014C290, ...), not offsets of D_0013E633. The read of data+0x130 in state 3 is a struct member:
  * a member load may be scheduled above the store to the stack float t30, a cast load may not. */
 void Moby685Update(char *moby) {
-    char *data;
+    struct ElevatorVars *data;
     char *tbl;
     float f1v;
     float f0;
@@ -1591,14 +1682,14 @@ void Moby685Update(char *moby) {
     char v20[16];
     float t30;
 
-    data = ((char *)((Moby *)moby)->pvars);
+    data = (struct ElevatorVars *)((Moby *)moby)->pvars;
     if (((unsigned char *)moby)[0x20] != 0) {
         if (((unsigned char *)moby)[0xBC] == 2) {
-            if (*(float *)(data + 0xAC) < 0.0f) {
-                tbl = oltanis_paths_r2[*(int *)(data + 0xB8)];
-                *(float *)(data + 0xAC) = -*(float *)(data + 0xAC);
-                *(int *)(data + 0xA4) = *(int *)tbl - 2;
-                *(float *)(data + 0xA8) = *(float *)(tbl + (*(int *)(data + 0xA4) << 4) + 0x1C);
+            if (data->dir < 0.0f) {
+                tbl = oltanis_paths_r2[data->path_to];
+                data->dir = -data->dir;
+                data->point = *(int *)tbl - 2;
+                data->point_dist = *(float *)(tbl + (data->point << 4) + 0x1C);
                 ((unsigned char *)moby)[0xBC] = 1;
             }
         }
@@ -1611,54 +1702,54 @@ void Moby685Update(char *moby) {
         ((unsigned char *)moby)[0x20] = 1;
         ((unsigned char *)moby)[0xBC] = 0;
         initialize_elevator_path_state_r(moby);
-        qcopy(moby + 0x10, oltanis_paths_r2[*(int *)(data + 0xA0)] + 0x10);
-        qcopy(moby + 0x40, data + 0xD0);
+        qcopy(moby + 0x10, oltanis_paths_r2[data->path_from] + 0x10);
+        qcopy(moby + 0x40, &data->rot_start_x);
         {
             unsigned short hw = ((Moby *)moby)->save_id;
             int sh = (short)hw;
             if (((Tab_2EFD38 *)oltanis_collected_flags_base_r)->b[sh]) {
-                *(short *)(data + 0x124) = 0;
+                data->locked = 0;
             } else if (((*(int *)(level_moby_killed_r + ((sh >> 5) * 4 + (g_current_level_index_m << 8))) >> (hw & 0x1F)) ^ 1) & 1) {
-                if (saved_mission_state_r[*(int *)(data + 0x110) + (g_current_level_index_m << 4)] != 0xFF) {
-                    *(short *)(data + 0x124) = 0;
+                if (saved_mission_state_r[data->mission + (g_current_level_index_m << 4)] != 0xFF) {
+                    data->locked = 0;
                 } else {
-                    *(short *)(data + 0x124) = 1;
+                    data->locked = 1;
                 }
             } else {
-                *(short *)(data + 0x124) = 0;
+                data->locked = 0;
             }
         }
         ((unsigned char *)moby)[0x30] = 0xFF;
         ((Moby *)moby)->glow_color = 0x80303030;
-        *(int *)(data + 0x12C) = -1;
-        *(int *)(data + 0x130) = -1;
-        *(int *)(data + 0x134) = -1;
-        *(int *)(data + 0x138) = 0;
+        data->voice = -1;
+        data->pitch_base = -1;
+        data->pitch_alt = -1;
+        *(int *)&data->glow = 0;
         break;
     case 1:
         update_elevator_idle_glow_r(moby);
-        v = *(int *)(data + 0x118);
+        v = data->call_a;
         if (v >= 0) {
             if (is_point_inside_clip_volume_r2(gHeroPos_r, v) != 0) {
                 ((unsigned char *)moby)[0xBC] = 0;
-                *(float *)(data + 0xAC) = -1.0f;
-                *(int *)(data + 0xA4) = 0;
-                *(float *)(data + 0xA8) = 0.0f;
+                data->dir = -1.0f;
+                data->point = 0;
+                data->point_dist = 0.0f;
             }
         }
-        v = *(int *)(data + 0x11C);
+        v = data->call_b;
         if (v >= 0 && is_point_inside_clip_volume_r2(gHeroPos_r, v) != 0) {
             ((unsigned char *)moby)[0xBC] = 0;
-            *(int *)(data + 0xA4) = *(int *)oltanis_paths_r2[*(int *)(data + 0xA0)] - 2;
-            *(float *)(data + 0xA8) = *(float *)(oltanis_paths_r2[*(int *)(data + 0xA0)] + (*(int *)(data + 0xA4) << 4) + 0x1C);
-            *(float *)(data + 0xAC) = 1.0f;
+            data->point = *(int *)oltanis_paths_r2[data->path_from] - 2;
+            data->point_dist = *(float *)(oltanis_paths_r2[data->path_from] + (data->point << 4) + 0x1C);
+            data->dir = 1.0f;
         }
-        v = *(int *)(data + 0x120);
+        v = data->call_c;
         if (v >= 0 && is_point_inside_clip_volume_r2(gHeroPos_r, v) != 0) {
             ((unsigned char *)moby)[0xBC] = 1;
-            *(int *)(data + 0xA4) = *(int *)oltanis_paths_r2[*(int *)(data + 0xB8)] - 2;
-            *(float *)(data + 0xA8) = *(float *)(oltanis_paths_r2[*(int *)(data + 0xB8)] + (*(int *)(data + 0xA4) << 4) + 0x1C);
-            *(float *)(data + 0xAC) = 1.0f;
+            data->point = *(int *)oltanis_paths_r2[data->path_to] - 2;
+            data->point_dist = *(float *)(oltanis_paths_r2[data->path_to] + (data->point << 4) + 0x1C);
+            data->dir = 1.0f;
         }
         if (((char *)((Hero *)g_hero_r2)->ground_moby) == moby && ((Hero *)g_hero_r2)->frames_off_ground.s == 0) {
             if (0.0f < FastVecDot_r(moby + 0xE0, ((char *)((Hero *)g_hero_r2)->moby) + 0xE0)) {
@@ -1666,72 +1757,72 @@ void Moby685Update(char *moby) {
                 if (f0 < 1.0f) {
                     r = Moby_PlaySound_r(1, 0, (int)moby);
                     if (r >= 0) {
-                        if (*(int *)(data + 0x134) < 0) {
-                            *(int *)(data + 0x134) = D_0013E740_2EFD38;
+                        if (data->pitch_alt < 0) {
+                            data->pitch_alt = D_0013E740_2EFD38;
                         }
-                        Sound_SetPitchBend_r(r, *(int *)(data + 0x134));
+                        Sound_SetPitchBend_r(r, data->pitch_alt);
                     }
-                    f1v = *(float *)(data + 0xAC);
+                    f1v = data->dir;
                     if (f1v == -1.0f) {
-                        if (*(short *)(data + 0x124) != 0) {
+                        if (data->locked != 0) {
                             ((unsigned char *)moby)[0xBC] = 2;
                         } else {
                             ((unsigned char *)moby)[0xBC] = 0;
                         }
                     }
                     ((unsigned char *)moby)[0x20] = 2;
-                    *(int *)(data + 0xB0) = 0;
-                    *(float *)(data + 0xAC) = -*(float *)(data + 0xAC);
+                    *(int *)&data->travelled = 0;
+                    data->dir = -data->dir;
                 }
             }
         }
         break;
     case 2:
-        if (Sound_IsPlaying_r(moby, *(int *)(data + 0x12C)) == 0) {
-            *(int *)(data + 0x12C) = Moby_PlaySound_r(0, 4, (int)moby);
-            if (*(int *)(data + 0x12C) != 0) {
-                if (*(int *)(data + 0x130) < 0) {
-                    *(int *)(data + 0x130) = D_0013E6D0_2EFD38;
+        if (Sound_IsPlaying_r(moby, data->voice) == 0) {
+            data->voice = Moby_PlaySound_r(0, 4, (int)moby);
+            if (data->voice != 0) {
+                if (data->pitch_base < 0) {
+                    data->pitch_base = D_0013E6D0_2EFD38;
                 }
-                Sound_SetPitchBend_r(*(int *)(data + 0x12C), *(int *)(data + 0x130));
+                Sound_SetPitchBend_r(data->voice, data->pitch_base);
             }
         }
         ((Moby *)moby)->glow_color = FastTweenColor_r(((Moby *)moby)->glow_color, 0x80808040, 0.1f);
         if (advance_elevator_along_path_r(moby) != 0) {
             ((unsigned char *)moby)[0x20] = 3;
-            *(short *)(data + 0x126) = *(unsigned short *)(data + 0x130);
+            data->pitch = *(unsigned short *)&data->pitch_base;
         }
         rebuild_elevator_world_path_r(moby);
         FastVecSub_r(v20, moby + 0x10, v0);
-        update_entity_matrix_r(data + 0x60, v20, v10, moby + 0x40);
+        update_entity_matrix_r(data->entity, v20, v10, moby + 0x40);
         break;
     case 3:
-        ft = FastVecLength_r2(data + 0xC0);
+        ft = FastVecLength_r2(&data->pos_vel_x);
         if (0.001f <= ft) {
-            if (Sound_IsPlaying_r(moby, *(int *)(data + 0x12C)) == 0) {
-                *(int *)(data + 0x12C) = Moby_PlaySound_r(0, 4, (int)moby);
+            if (Sound_IsPlaying_r(moby, data->voice) == 0) {
+                data->voice = Moby_PlaySound_r(0, 4, (int)moby);
             }
-            t30 = IntToFloat_r2(*(short *)(data + 0x126));
+            t30 = IntToFloat_r2(data->pitch);
             {
                 float *pt = &t30;
-                f0 = IntToFloat_r2(((Data_2EFD38 *)data)->f130);
-                Spring_r(pt, (float *)(data + 0x128), f0 * 0.25f, 0.003f, 0.2f, 0.0f);
+                f0 = IntToFloat_r2(data->pitch_base);
+                Spring_r(pt, &data->pitch_spring, f0 * 0.25f, 0.003f, 0.2f, 0.0f);
             }
-            *(short *)(data + 0x126) = truncate_float_to_s32_r2(t30);
-            if (*(int *)(data + 0x12C) >= 0) {
-                Sound_SetPitchBend_r(*(int *)(data + 0x12C), *(short *)(data + 0x126));
+            data->pitch = truncate_float_to_s32_r2(t30);
+            if (data->voice >= 0) {
+                Sound_SetPitchBend_r(data->voice, data->pitch);
             }
             rebuild_elevator_world_path_r(moby);
         } else {
             update_elevator_idle_glow_r(moby);
-            v = *(int *)(data + 0x12C);
+            v = data->voice;
             if (v != -1 && ((Slot_2EFD38 *)((Voice_2EFD38 *)voice_pool_r + v))->owner == moby && ((Slot_2EFD38 *)((Voice_2EFD38 *)voice_pool_r + v))->b74 != 0) {
                 Sound_StopSlot_r(v);
             }
-            *(int *)(data + 0x12C) = -1;
+            data->voice = -1;
             s = Moby_PlaySound_r(1, 0, (int)moby);
             if (s >= 0) {
-                Sound_SetPitchBend_r(s, *(int *)(data + 0x134) / 3);
+                Sound_SetPitchBend_r(s, data->pitch_alt / 3);
             }
             ((unsigned char *)moby)[0x20] = 4;
             if (g_hero_ground_moby_r != moby) {
@@ -1754,7 +1845,7 @@ void Moby685Update(char *moby) {
             settle_elevator_at_path_endpoint_r(moby);
             if (g_hero_ground_moby_r == moby) {
                 FastVecSub_r(v20, moby + 0x10, v0);
-                update_entity_matrix_r(data + 0x60, v20, v10, moby + 0x40);
+                update_entity_matrix_r(data->entity, v20, v10, moby + 0x40);
             }
         }
     }
@@ -1763,29 +1854,29 @@ extern char * oltanis_paths[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eef60. */
 void initialize_elevator_path_state(struct Moby *m) {
-    char *d = (char *)m->pvars;
+    struct ElevatorVars *d = (struct ElevatorVars *)m->pvars;
     int *path;
     int *e;
     int *first;
     int i;
 
-    if (*(int *)(d + 0xA0) == -1) {
+    if (d->path_from == -1) {
         DeleteMoby(m);
         return;
     }
-    e = (int *)oltanis_paths[*(int *)(d + 0xA0)];
-    if (*e == 0 || *(int *)(d + 0x114) == -1 ||
-        *(int *)oltanis_paths[*(int *)(d + 0x114)] != 11) {
+    e = (int *)oltanis_paths[d->path_from];
+    if (*e == 0 || d->link_path == -1 ||
+        *(int *)oltanis_paths[d->link_path] != 11) {
         DeleteMoby(m);
         return;
     }
 
-    *(float *)(d + 0xB4) = 0.0f;
+    d->length_from = 0.0f;
     path = e;
     first = path + 4;
     for (i = 0; i < *path - 1; i++) {
         ((f32 *)path)[i * 4 + 7] = FastVecDist(&path[i * 4 + 4], &path[i * 4 + 8]);
-        *(float *)(d + 0xB4) += ((f32 *)path)[i * 4 + 7];
+        d->length_from += ((f32 *)path)[i * 4 + 7];
     }
     {
         f32 len = FastVecDist(&((f32 *)e)[i * 4 + 4], first);
@@ -1793,20 +1884,20 @@ void initialize_elevator_path_state(struct Moby *m) {
         *(f32 *)(pt + 0x1C) = len;
     }
 
-    path = (int *)oltanis_paths[*(int *)(d + 0xB8)];
-    *(float *)(d + 0xBC) = 0.0f;
+    path = (int *)oltanis_paths[d->path_to];
+    d->length_to = 0.0f;
     for (i = 0; i < *path - 1; i++) {
         ((f32 *)path)[i * 4 + 7] = FastVecDist(&path[i * 4 + 4], &path[i * 4 + 8]);
-        *(float *)(d + 0xBC) += ((f32 *)path)[i * 4 + 7];
+        d->length_to += ((f32 *)path)[i * 4 + 7];
     }
     {
         f32 len = FastVecDist(&((f32 *)path)[i * 4 + 4], path + 4);
         char *pt = (char *)path + i * 16;
         *(f32 *)(pt + 0x1C) = len;
     }
-    *(float *)(d + 0xAC) = -1.0f;
-    *(int *)(d + 0xA8) = 0;
-    *(int *)(d + 0xA4) = 0;
+    d->dir = -1.0f;
+    *(int *)&d->point_dist = 0;
+    d->point = 0;
 }
 extern char *oltanis_paths[];
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
@@ -1818,7 +1909,7 @@ extern short elevator_path_speed;
 /* Moves the moby along its current path, easing its rotation; returns 1 when the path end is reached. */
 int advance_elevator_along_path(char *m) {
     struct Moby *elevator_moby = (struct Moby *)m;
-    char *moby_vars = (char *)elevator_moby->pvars;
+    struct ElevatorVars *moby_vars = (struct ElevatorVars *)elevator_moby->pvars;
     float rot[4];
     float pos[4];
     char *selected_path;
@@ -1828,28 +1919,28 @@ int advance_elevator_along_path(char *m) {
     float x_rotation_blend;
     int path_endpoint_reached;
     if (elevator_moby->command == 0) {
-        selected_path = oltanis_paths[*(int *)(moby_vars + 0xA0)];
-        total = *(float *)(moby_vars + 0xB4);
-        qcopy(rot, moby_vars + 0xE0);
+        selected_path = oltanis_paths[moby_vars->path_from];
+        total = moby_vars->length_from;
+        qcopy(rot, &moby_vars->rot_from);
     } else {
-        selected_path = oltanis_paths[*(int *)(moby_vars + 0xB8)];
-        total = *(float *)(moby_vars + 0xBC);
-        qcopy(rot, moby_vars + 0xF0);
+        selected_path = oltanis_paths[moby_vars->path_to];
+        total = moby_vars->length_to;
+        qcopy(rot, &moby_vars->rot_to);
     }
     step = *(float *)&elevator_path_speed * g_frame_time;
-    path_endpoint_reached = Spline_AdvanceByDistance_r2(selected_path, pos, moby_vars + 0xA4, moby_vars + 0xA8, 0, step * *(float *)(moby_vars + 0xAC));
-    Spring(&elevator_moby->pos.x, (float *)(moby_vars + 0xC0), pos[0], 0.003f, 0.2f, 0.0f);
-    Spring(&elevator_moby->pos.y, (float *)(moby_vars + 0xC4), pos[1], 0.003f, 0.2f, 0.0f);
-    Spring(&elevator_moby->pos.z, (float *)(moby_vars + 0xC8), pos[2], 0.003f, 0.2f, 0.0f);
-    *(float *)(moby_vars + 0xB0) += step;
-    rotation_blend = *(float *)(moby_vars + 0xB0) / total;
+    path_endpoint_reached = Spline_AdvanceByDistance_r2(selected_path, pos, &moby_vars->point, &moby_vars->point_dist, 0, step * moby_vars->dir);
+    Spring(&elevator_moby->pos.x, &moby_vars->pos_vel_x, pos[0], 0.003f, 0.2f, 0.0f);
+    Spring(&elevator_moby->pos.y, &moby_vars->pos_vel_y, pos[1], 0.003f, 0.2f, 0.0f);
+    Spring(&elevator_moby->pos.z, &moby_vars->pos_vel_z, pos[2], 0.003f, 0.2f, 0.0f);
+    moby_vars->travelled += step;
+    rotation_blend = moby_vars->travelled / total;
     if (1.0f < rotation_blend)
         rotation_blend = 1.0f;
     if (path_endpoint_reached != 0)
         rotation_blend = 1.0f;
-    if (*(float *)(moby_vars + 0xAC) < 0.0f)
+    if (moby_vars->dir < 0.0f)
         rotation_blend = 1.0f - rotation_blend;
-    if (0.0f < *(float *)(moby_vars + 0xAC)) {
+    if (0.0f < moby_vars->dir) {
         x_rotation_blend = 0.0f;
         if (0.5f < rotation_blend)
             x_rotation_blend = (rotation_blend - 0.5f) + (rotation_blend - 0.5f);
@@ -1860,17 +1951,17 @@ int advance_elevator_along_path(char *m) {
     }
     if (1.0f < x_rotation_blend)
         x_rotation_blend = 1.0f;
-    elevator_moby->rot.x = interpolate_angle(*(float *)(moby_vars + 0xD0), rot[0], x_rotation_blend);
-    elevator_moby->rot.y = interpolate_angle(*(float *)(moby_vars + 0xD4), rot[1], rotation_blend);
-    elevator_moby->rot.z = interpolate_angle(*(float *)(moby_vars + 0xD8), rot[2], rotation_blend);
+    elevator_moby->rot.x = interpolate_angle(moby_vars->rot_start_x, rot[0], x_rotation_blend);
+    elevator_moby->rot.y = interpolate_angle(moby_vars->rot_start_y, rot[1], rotation_blend);
+    elevator_moby->rot.z = interpolate_angle(moby_vars->rot_start_z, rot[2], rotation_blend);
     if (path_endpoint_reached != 0) {
-        if (0.0f < *(float *)(moby_vars + 0xAC)) {
+        if (0.0f < moby_vars->dir) {
             int last_segment_index = *(int *)selected_path - 2;
-            *(int *)(moby_vars + 0xA4) = last_segment_index;
-            *(float *)(moby_vars + 0xA8) = *(float *)(selected_path + (last_segment_index << 4) + 0x1C);
+            moby_vars->point = last_segment_index;
+            moby_vars->point_dist = *(float *)(selected_path + (last_segment_index << 4) + 0x1C);
         } else {
-            *(int *)(moby_vars + 0xA4) = 0;
-            *(float *)(moby_vars + 0xA8) = 0.0f;
+            moby_vars->point = 0;
+            moby_vars->point_dist = 0.0f;
         }
         return 1;
     }
@@ -1881,29 +1972,29 @@ extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
 /* Springs the moby's position (and, while moving, its rotation) toward its current path point. */
 void settle_elevator_at_path_endpoint(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct ElevatorVars *d = (struct ElevatorVars *)((Moby *)m)->pvars;
     float pos[4];
     float rot[4];
     char *e;
     if (((unsigned char *)m)[0xBC] == 0) {
-        e = oltanis_paths[*(int *)(d + 0xA0)];
-        qcopy(rot, d + 0xE0);
+        e = oltanis_paths[d->path_from];
+        qcopy(rot, &d->rot_from);
     } else {
-        e = oltanis_paths[*(int *)(d + 0xB8)];
-        qcopy(rot, d + 0xF0);
+        e = oltanis_paths[d->path_to];
+        qcopy(rot, &d->rot_to);
     }
-    if (*(float *)(d + 0xAC) > 0.0f) {
+    if (d->dir > 0.0f) {
         qcopy(pos, e + *(int *)e * 16);
     } else {
         qcopy(pos, e + 0x10);
     }
-    Spring((float *)(m + 0x10), (float *)(d + 0xC0), pos[0], 0.003f, 0.2f, 0.0f);
-    Spring((float *)(m + 0x14), (float *)(d + 0xC4), pos[1], 0.003f, 0.2f, 0.0f);
-    Spring((float *)(m + 0x18), (float *)(d + 0xC8), pos[2], 0.003f, 0.2f, 0.0f);
-    if (0.0f < *(float *)(d + 0xAC)) {
-        Spring((float *)(m + 0x40), (float *)(d + 0x100), rot[0], 0.003f, 0.2f, 0.0f);
-        Spring((float *)(m + 0x44), (float *)(d + 0x104), rot[1], 0.003f, 0.2f, 0.0f);
-        Spring((float *)(m + 0x48), (float *)(d + 0x108), rot[2], 0.003f, 0.2f, 0.0f);
+    Spring((float *)(m + 0x10), &d->pos_vel_x, pos[0], 0.003f, 0.2f, 0.0f);
+    Spring((float *)(m + 0x14), &d->pos_vel_y, pos[1], 0.003f, 0.2f, 0.0f);
+    Spring((float *)(m + 0x18), &d->pos_vel_z, pos[2], 0.003f, 0.2f, 0.0f);
+    if (0.0f < d->dir) {
+        Spring((float *)(m + 0x40), &d->rot_vel_x, rot[0], 0.003f, 0.2f, 0.0f);
+        Spring((float *)(m + 0x44), &d->rot_vel_y, rot[1], 0.003f, 0.2f, 0.0f);
+        Spring((float *)(m + 0x48), &d->rot_vel_z, rot[2], 0.003f, 0.2f, 0.0f);
     }
 }
 typedef struct {
@@ -1956,12 +2047,12 @@ extern char *oltanis_paths[];
 
 /* Rebuild the 11 vectors of a table entry from the moby's matrix and position. */
 void rebuild_elevator_world_path(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct ElevatorVars *data = (struct ElevatorVars *)((Moby *)moby)->pvars;
     char *src = elevator_local_path_points;
-    char *dst = oltanis_paths[*(int *)(data + 0x114)] + 0x10;
+    char *dst = oltanis_paths[data->link_path] + 0x10;
     int i = 10;
     float one = 1.0f;
-    char *x;
+    struct Hero *x;
     do {
         matrix_mul_vec3(dst, src, moby + 0xC0);
         src += 0x10;
@@ -1970,8 +2061,8 @@ void rebuild_elevator_world_path(char *moby) {
         *(float *)(dst + 0xC) = one;
         dst += 0x10;
     } while (i >= 0);
-    x = hero_globals_base + 0xE1D;
-    *(short *)(x + 0x22DA) = *(unsigned short *)(data + 0x114);
+    x = (struct Hero *)(hero_globals_base + 0xE1D);
+    x->path_constrain_pending = *(unsigned short *)&data->link_path;
 }
 extern short g_frame_time_s __asm__("D_0015EE6C");
 extern float FastAbsF(float);
@@ -1982,7 +2073,7 @@ extern int FastTweenColor(int, int, float);
 
 // pulses the moby's tint while the player is near, else fades it to a dim colour
 void update_elevator_idle_glow(char *moby) {
-    char *data = (char *)((struct Moby *)moby)->pvars;
+    struct ElevatorVars *data = (struct ElevatorVars *)((struct Moby *)moby)->pvars;
     struct Hero *x = (struct Hero *)(hero_globals_base + 0xE1D);
     if (FastAbsF(((struct Moby *)moby)->pos.x - x->motion.pos.f[0]) > 40.0f ||
         FastAbsF(((struct Moby *)moby)->pos.y - x->motion.pos.f[1]) > 40.0f) {
@@ -1990,8 +2081,8 @@ void update_elevator_idle_glow(char *moby) {
             FastTweenColor(((struct Moby *)moby)->glow_color, 0x80303030, 0.1f);
     } else {
         int i, col;
-        float a = FastAddRots(*(float *)(data + 0x138), *(float *)&g_frame_time_s * 6.2831855f);
-        *(float *)(data + 0x138) = a;
+        float a = FastAddRots(data->glow, *(float *)&g_frame_time_s * 6.2831855f);
+        data->glow = a;
         i = truncate_float_to_s32_r((FastSin(a) * 4.0f - 3.0f) * 128.0f);
         if (i > 0x80)
             i = 0x80;
@@ -2017,7 +2108,11 @@ typedef struct Data_2F19C0 {
     float pos[4];
     float rot[4];
     int station[5];
-    char pad94[0x18];
+    int route_return_hub;      /* 0x94: row of oltanis_paths */
+    int route_hub_outbound;    /* 0x98 */
+    int route_return_feeder_origin; /* 0x9C */
+    int route_return_feeder_destination; /* 0xA0 */
+    char padA4[8];
     int *path;
     short hB0;
     short sound;
@@ -2027,7 +2122,10 @@ typedef struct Data_2F19C0 {
     int fBC;
     float t;
     float v;
-    char padC8[0x18];
+    char padC8[0xC];
+    float step_limit;          /* 0xD4: per-segment travel step */
+    float accel_step;          /* 0xD8 */
+    char padDC[4];
     float pos2[4];
     float rot2[4];
     int vol[3];
@@ -2346,43 +2444,43 @@ enum {
 /* Pick the taxi's path and direction from its stop kind, then set its travel speed limits. */
 void prepare_taxi_route(char *moby)
 {
-    char *taxi_vars = (char *)((struct Moby *)moby)->pvars;
+    struct Data_2F19C0 *taxi_vars = (struct Data_2F19C0 *)((struct Moby *)moby)->pvars;
     char *selected_path;
     float first_segment_length;
     float travel_step_limit;
     float travel_acceleration_step;
     float inv;
 
-    switch (*(short *)(taxi_vars + 0xB4)) {
+    switch (taxi_vars->cur) {
     case TAXI_STOP_RETURN_HUB:
-        *(char **)(taxi_vars + 0xAC) = oltanis_paths[*(int *)(taxi_vars + 0x94)];
-        *(short *)(taxi_vars + 0xB6) = 1;
+        *(char **)&taxi_vars->path = oltanis_paths[taxi_vars->route_return_hub];
+        taxi_vars->dst = 1;
         break;
     case TAXI_STOP_HUB_OUTBOUND_DESTINATION:
-        *(char **)(taxi_vars + 0xAC) = oltanis_paths[*(int *)(taxi_vars + 0x98)];
-        *(short *)(taxi_vars + 0xB6) = 0;
+        *(char **)&taxi_vars->path = oltanis_paths[taxi_vars->route_hub_outbound];
+        taxi_vars->dst = 0;
         break;
     case TAXI_STOP_RETURN_FEEDER_ORIGIN:
-        *(char **)(taxi_vars + 0xAC) = oltanis_paths[*(int *)(taxi_vars + 0x9C)];
-        *(short *)(taxi_vars + 0xB6) = 3;
+        *(char **)&taxi_vars->path = oltanis_paths[taxi_vars->route_return_feeder_origin];
+        taxi_vars->dst = 3;
         break;
     case TAXI_STOP_RETURN_FEEDER_DESTINATION:
-        *(char **)(taxi_vars + 0xAC) = oltanis_paths[*(int *)(taxi_vars + 0xA0)];
-        *(short *)(taxi_vars + 0xB6) = 0;
+        *(char **)&taxi_vars->path = oltanis_paths[taxi_vars->route_return_feeder_destination];
+        taxi_vars->dst = 0;
         break;
     case 4:
         break;
     }
-    selected_path = *(char **)(taxi_vars + 0xAC);
+    selected_path = *(char **)&taxi_vars->path;
     first_segment_length = FastVecDist(selected_path + 0x10, selected_path + 0x20);
-    first_segment_length = first_segment_length * (float)**(int **)(taxi_vars + 0xAC);
+    first_segment_length = first_segment_length * (float)*taxi_vars->path;
     travel_step_limit = g_frame_time_r * 5.0f;
     travel_acceleration_step = g_frame_time_sq * 2.5f;
     inv = 1.0f / first_segment_length;
-    *(int *)(taxi_vars + 0xC4) = 0;
-    *(int *)(taxi_vars + 0xC0) = 0;
-    *(float *)(taxi_vars + 0xD4) = travel_step_limit * inv;
-    *(float *)(taxi_vars + 0xD8) = travel_acceleration_step * inv;
+    *(int *)&taxi_vars->v = 0;
+    *(int *)&taxi_vars->t = 0;
+    taxi_vars->step_limit = travel_step_limit * inv;
+    taxi_vars->accel_step = travel_acceleration_step * inv;
 }
 extern int moby_group_index_limit MACRO_ADDR;
 extern unsigned short *oltanis_moby_groups[];
@@ -2414,10 +2512,10 @@ extern void try_set_help_message(int, int);
 
 /* Vendor text: pick the message from the vendor data state. */
 void request_taxi_stop_prompt(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    int v = *(short *)(data + 0xB4);
+    struct Data_2F19C0 *data = (struct Data_2F19C0 *)((Moby *)moby)->pvars;
+    int v = data->cur;
     if (((Moby *)moby)->state == 5) {
-        v = *(short *)(data + 0xB6);
+        v = data->dst;
     }
     switch (v) {
     case 0:
@@ -2471,7 +2569,7 @@ extern unsigned char help_stats_base_r[] __asm__("D_0014171B") NOT_SDA;
  * byte at +0x20 (state 0 waits until the moby may start, state 1 tracks the hero, state 2 marks the moby done and
  * deletes it, as state 3 does), then the aiming tail on the countdowns at data + 0x194 and 0x198. */
 void qwark_oltanis_update(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct QwarkVars *d = (struct QwarkVars *)((Moby *)m)->pvars;
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (((Moby *)m)->visible != 0) {
         if (FastVecDist(m + 0x10, oltanis_camera_pos) < 28.0f) {
@@ -2487,30 +2585,30 @@ void qwark_oltanis_update(char *m) {
             DeleteMoby(m);
             return;
         }
-        if (*(int *)(d + 0x44) == -1 || *(int *)(d + 0x48) == -1) {
+        if (d->elevator == -1 || d->clip_volume_b == -1) {
             DeleteMoby(m);
             return;
         }
-        *(char **)(d + 0x20) = qwark_oltanis_dialogue_name;
-        DialogRequest_Init(m, d);
-        d[8] = 1;
+        d->dialog_name = qwark_oltanis_dialogue_name;
+        DialogRequest_Init(m, ((char *)d));
+        d->started = 1;
         m[0x20] = 1;
         break;
     }
     case 1:
-        if (*(unsigned char *)(d + 8) == 1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(d + 0x40)) != 0) {
+        if (d->started == 1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->clip_volume) != 0) {
             if ((help_stats_base_r + 0xAA35)[((Moby *)m)->mission + (g_current_level_index_m << 4)] != 0xFF) {
                 char *t;
                 jet_clear_persistent((unsigned char)m[0xB0]);
-                t = oltanis_clip_volumes_r + (*(int *)(d + 0x48) << 7);
+                t = oltanis_clip_volumes_r + (d->clip_volume_b << 7);
                 jet_reset_camera(t + 0x30, t + 0x70);
             }
-            enable_elevator_alternate_route_r(oltanis_mobys_r + (*(int *)(d + 0x44) << 8));
-            *(float *)(d + 0xC) = 255.0f;
+            enable_elevator_alternate_route_r(oltanis_mobys_r + (d->elevator << 8));
+            d->unk_0C = 255.0f;
         } else {
-            *(float *)(d + 0xC) = 1.7f;
+            d->unk_0C = 1.7f;
         }
-        if (Npc_TryStartDialog(m, d) != 0) {
+        if (Npc_TryStartDialog(m, ((char *)d)) != 0) {
             PlaceMarkerAheadOfMoby(3.0f, m);
             m[0x20] = 2;
         }
@@ -2518,14 +2616,14 @@ void qwark_oltanis_update(char *m) {
     case 2:
         if (oltanis_game_mode == 2) break;
         m[0x20] = 1;
-        if (*(short *)(d + 4) != 3 && *(short *)(d + 4) != 4) break;
-        if (*(short *)(d + 4) == 4) {
+        if (d->dialog_state != 3 && d->dialog_state != 4) break;
+        if (d->dialog_state == 4) {
             ShowBanner(0x53E2, -1);
         } else {
             ShowBanner(0x36B3, -1);
         }
         grant_inventory_item(0x20, 1);
-        mark_elevator_collected(oltanis_mobys_r + (*(int *)(d + 0x44) << 8));
+        mark_elevator_collected(oltanis_mobys_r + (d->elevator << 8));
         *(int *)(help_stats_base_r + 0xAB75 + (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) |= 1 << (((Moby *)m)->save_id & 0x1F);
         oltanis_moby_killed_bits[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
         memcard_Save(0, -1);
@@ -2549,30 +2647,30 @@ void qwark_oltanis_update(char *m) {
                        fast_atan2(*(float *)((a_ = g - 0x80) + 0xD0) - ((Moby *)m)->pos.x,
                                          *(float *)(a_ + 0xD4) - ((Moby *)m)->pos.y)) < 1.5707964f) {
                 if (0.01f < FastVecLength(g + 0x80)) {
-                    *(int *)(d + 0x194) = scale_ticks(0x78);
+                    d->look_timer = scale_ticks(0x78);
                 } else {
-                    fast_dec_timer((int *)(d + 0x194));
+                    fast_dec_timer(&d->look_timer);
                 }
-            } else if (*(int *)(d + 0x194) != 0) {
-                *(int *)(d + 0x194) = 0;
-                qcopy(d + 0x180, hero_globals_base + 0xEED);
+            } else if (d->look_timer != 0) {
+                d->look_timer = 0;
+                qcopy(&d->look_pos, hero_globals_base + 0xEED);
             }
-            if (fast_dec_timer((int *)(d + 0x198)) != 0) {
+            if (fast_dec_timer(&d->look_retarget) != 0) {
                 float y;
                 float z;
                 float x = random_float_between(180.0f, 300.0f);
-                *(int *)(d + 0x198) = truncate_float_to_s32_r(multiply_global_factor(x));
+                d->look_retarget = truncate_float_to_s32_r(multiply_global_factor(x));
                 y = FastAddRots(((Moby *)m)->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
                 z = random_float_between(0.0f, 30.0f) * 0.017453292f;
-                BuildSphericalOffset(d + 0x180, 6.0f, y, z);
-                FastVecAdd(d + 0x180, d + 0x180, m + 0x10);
+                BuildSphericalOffset(&d->look_pos, 6.0f, y, z);
+                FastVecAdd(&d->look_pos, &d->look_pos, m + 0x10);
             }
-            if (*(int *)(d + 0x194) != 0) {
+            if (d->look_timer != 0) {
                 qcopy(b, hero_globals_base + 0xEED);
                 sx = 0.04f;
                 sy = 0.3f;
             } else {
-                qcopy(b, d + 0x180);
+                qcopy(b, &d->look_pos);
             }
         }
         if (doit != 0) {
@@ -2589,16 +2687,16 @@ void qwark_oltanis_update(char *m) {
             else if (f20 < -1.5707964f) f20 = -1.5707964f;
             if (f2 > 0.5235988f) f2 = 0.5235988f;
             else if (f2 < -0.5235988f) f2 = -0.5235988f;
-            *(float *)(d + 0xE4) = f2;
-            *(float *)(d + 0xE8) = f20 * 0.6f;
-            *(float *)(d + 0x168) = f20 * 0.4f;
+            d->unk_E4 = f2;
+            d->unk_E8 = f20 * 0.6f;
+            d->unk_168 = f20 * 0.4f;
         }
-        if (gCheats[0] != 0) *(float *)(d + 0xF0) = 2.75f;
-        EaseManipulatorOffsets(m, d + 0x80, 0, sx * g_frame_scale_sq, sy * g_frame_scale_sq);
-        EaseManipulatorOffsets(m, d + 0x100, 1, sx * g_frame_scale_sq, sy * g_frame_scale_sq);
+        if (gCheats[0] != 0) d->height = 2.75f;
+        EaseManipulatorOffsets(m, d->body_manip, 0, sx * g_frame_scale_sq, sy * g_frame_scale_sq);
+        EaseManipulatorOffsets(m, d->head_manip, 1, sx * g_frame_scale_sq, sy * g_frame_scale_sq);
     }
 }
-typedef struct {
+typedef struct L14FlightPathVars {
     u8 pad0[0x60];
     s32 segment;
     s32 along;
@@ -2837,10 +2935,16 @@ typedef struct {
     s32 segment;               /* 0x60: reset to 0 */
     s32 unk64;                 /* 0x64: reset to 0 */
     s32 path;                  /* 0x68: row of D_L14_001B0F30 */
-    u8 pad6C[0x4];
-    f32 vel[3];                /* 0x70: zeroed */
+    s32 voice;                 /* 0x6C: sound slot, -1 when none */
+    f32 vel_x;                 /* 0x70: zeroed */
+    f32 vel_y;                 /* 0x74 */
+    f32 vel_z;                 /* 0x78 */
     f32 phase;                 /* 0x7C */
-    f32 spin[3];               /* 0x80: zeroed */
+    f32 spin_x;                /* 0x80: zeroed */
+    f32 spin_y;                /* 0x84 */
+    f32 spin_z;                /* 0x88 */
+    s32 final_leg;             /* 0x8C */
+    s32 unk_90;                /* 0x90 */
 } L14FlightPathVars;
 
 // Resets a path-following moby to the start of its path and computes each segment's length and its initial heading.
@@ -2855,7 +2959,7 @@ void initialize_flight_path_state(char *moby) {
     data->unk64 = 0;
     qcopy(&((struct Moby *)moby)->pos, path + 4);
     ((struct Moby *)moby)->rot.z = fast_atan2(path[8] - path[4], path[9] - path[5]);
-    data->spin[0] = data->spin[1] = data->spin[2] = data->vel[0] = data->vel[1] = data->vel[2] = 0.0f;
+    data->spin_x = data->spin_y = data->spin_z = data->vel_x = data->vel_y = data->vel_z = 0.0f;
 }
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
@@ -2871,26 +2975,26 @@ extern short enemy_fighter_bank_yaw_range;
 // Steers a moby toward a target position and updates its velocity/rotation springs.
 void advance_enemy_fighter_along_flight_path(char *m) {
     struct Moby *moby = (struct Moby *)m;
-    char *moby_vars = (char *)moby->pvars;
+    struct L14FlightPathVars *moby_vars = (struct L14FlightPathVars *)moby->pvars;
     float path_target_position[3];
     float path_position_delta[3];
     float target_yaw, yaw_error_factor, path_vertical_angle;
-    Spline_AdvanceByDistance((int)oltanis_paths[*(int *)(moby_vars + 0x68)], (char *)path_target_position, moby_vars + 0x60, moby_vars + 0x64, 1, (*(float *)&enemy_fighter_path_speed) * g_frame_time);
-    Spring(&moby->pos.x, (float *)(moby_vars + 0x70), path_target_position[0], (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
-    Spring(&moby->pos.y, (float *)(moby_vars + 0x74), path_target_position[1], (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
-    Spring(&moby->pos.z, (float *)(moby_vars + 0x78), path_target_position[2], (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
+    Spline_AdvanceByDistance((int)oltanis_paths[moby_vars->path], (char *)path_target_position, (char *)&moby_vars->segment, (char *)&moby_vars->along, 1, (*(float *)&enemy_fighter_path_speed) * g_frame_time);
+    Spring(&moby->pos.x, &moby_vars->f70, path_target_position[0], (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
+    Spring(&moby->pos.y, &moby_vars->f74, path_target_position[1], (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
+    Spring(&moby->pos.z, &moby_vars->f78, path_target_position[2], (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
     FastVecSub(path_position_delta, path_target_position, &moby->pos);
     if (FastAbsF(path_position_delta[0]) > 0.01f) {
         if (FastAbsF(path_position_delta[1]) > 0.01f) {
             target_yaw = fast_atan2(path_position_delta[0], path_position_delta[1]);
             yaw_error_factor = FastSubRots(moby->rot.z, target_yaw);
-            MobySpringTurn(m, (float *)(moby_vars + 0x88), target_yaw, (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
+            MobySpringTurn(m, &moby_vars->f88, target_yaw, (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
             path_vertical_angle = fast_atan2(vec_length_xy(path_position_delta), path_position_delta[2]);
-            Spring(&moby->rot.y, (float *)(moby_vars + 0x84), -path_vertical_angle, (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
+            Spring(&moby->rot.y, &moby_vars->f84, -path_vertical_angle, (*(float *)&enemy_fighter_spring_stiffness), (*(float *)&enemy_fighter_spring_damping), 0.0f);
             yaw_error_factor = yaw_error_factor / (*(float *)&enemy_fighter_bank_yaw_range);
             if (yaw_error_factor > 1.0f) yaw_error_factor = 1.0f;
             if (yaw_error_factor < -1.0f) yaw_error_factor = -1.0f;
-            Spring(&moby->rot.x, (float *)(moby_vars + 0x80), yaw_error_factor * (*(float *)&enemy_fighter_max_bank), 0.003f, (*(float *)&enemy_fighter_spring_damping), 0.0f);
+            Spring(&moby->rot.x, &moby_vars->f80, yaw_error_factor * (*(float *)&enemy_fighter_max_bank), 0.003f, (*(float *)&enemy_fighter_spring_damping), 0.0f);
         }
     }
 }
@@ -3275,44 +3379,44 @@ extern void FastVecSub(void *, void *, void *);
 /* Flies the moby along its path, banking and pitching toward the next point; returns 1 once it is removed at the end. */
 int advance_moby_along_flight_path(char *m) {
     struct Moby *moby = (struct Moby *)m;
-    char *moby_vars = (char *)moby->pvars;
+    struct L14FlightPathVars *moby_vars = (struct L14FlightPathVars *)moby->pvars;
     float path_target_position[4];
     float path_position_delta[4];
     float yaw;
     float yaw_error_factor;
     int path_boundary_reached;
-    path_boundary_reached = Spline_AdvanceByDistance_r2(oltanis_paths_ee[*(int *)(moby_vars + 0x68)], path_target_position, moby_vars + 0x60, moby_vars + 0x64,
-                                 (unsigned int)*(int *)(moby_vars + 0x8C) >> 31,
+    path_boundary_reached = Spline_AdvanceByDistance_r2(oltanis_paths_ee[moby_vars->path], path_target_position, &moby_vars->segment, &moby_vars->along,
+                                 (unsigned int)*(int *)(((char *)moby_vars) + 0x8C) >> 31,
                                  *(float *)&fighter921_path_speed * g_frame_time);
-    if (*(int *)(moby_vars + 0x8C) != 0 && (path_boundary_reached != 0 || *(short *)(race_state + 0x86) != 0x13)) {
-        flag_vendor_item(((Moby *)moby_vars)->glow_color);
-        if (*(int *)(moby_vars + 0x6C) != -1) {
-            char *voice_entry = hero_globals_base + 0x1D + *(int *)(moby_vars + 0x6C) * 0x70;
+    if (*(int *)(((char *)moby_vars) + 0x8C) != 0 && (path_boundary_reached != 0 || *(short *)(race_state + 0x86) != 0x13)) {
+        flag_vendor_item(((Moby *)((char *)moby_vars))->glow_color);
+        if (moby_vars->sound != -1) {
+            char *voice_entry = hero_globals_base + 0x1D + moby_vars->sound * 0x70;
             if (((Voice_2FE038 *)voice_entry)->owner == moby && ((Voice_2FE038 *)voice_entry)->on != 0) {
-                Sound_StopSlot(*(int *)(moby_vars + 0x6C));
+                Sound_StopSlot(moby_vars->sound);
             }
         }
-        *(int *)(moby_vars + 0x6C) = -1;
+        moby_vars->sound = -1;
         DeleteMoby(moby);
         return 1;
     }
-    Spring(&moby->pos.x, (float *)(moby_vars + 0x70), path_target_position[0], *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
-    Spring(&moby->pos.y, (float *)(moby_vars + 0x74), path_target_position[1], *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
-    Spring(&moby->pos.z, (float *)(moby_vars + 0x78), path_target_position[2], *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
+    Spring(&moby->pos.x, &moby_vars->f70, path_target_position[0], *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
+    Spring(&moby->pos.y, &moby_vars->f74, path_target_position[1], *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
+    Spring(&moby->pos.z, &moby_vars->f78, path_target_position[2], *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
     FastVecSub(path_position_delta, path_target_position, &moby->pos);
     if (0.01f < FastAbsF(path_position_delta[0])) {
         if (0.01f < FastAbsF(path_position_delta[1])) {
             yaw = fast_atan2(path_position_delta[0], path_position_delta[1]);
             yaw_error_factor = FastSubRots(moby->rot.z, yaw);
-            MobySpringTurn(moby, (float *)(moby_vars + 0x88), yaw, *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
+            MobySpringTurn(moby, &moby_vars->f88, yaw, *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
             yaw = fast_atan2(vec_length_xy(path_position_delta), path_position_delta[2]);
-            Spring(&moby->rot.y, (float *)(moby_vars + 0x84), -yaw, *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
+            Spring(&moby->rot.y, &moby_vars->f84, -yaw, *(float *)&fighter921_spring_stiffness, *(float *)&fighter921_spring_damping, 0.0f);
             yaw_error_factor = yaw_error_factor / *(float *)&fighter921_bank_yaw_range;
             if (1.0f < yaw_error_factor)
                 yaw_error_factor = 1.0f;
             if (yaw_error_factor < -1.0f)
                 yaw_error_factor = -1.0f;
-            Spring(&moby->rot.x, (float *)(moby_vars + 0x80), yaw_error_factor * *(float *)&fighter921_max_bank, 0.003f, *(float *)&fighter921_spring_damping, 0.0f);
+            Spring(&moby->rot.x, &moby_vars->f80, yaw_error_factor * *(float *)&fighter921_max_bank, 0.003f, *(float *)&fighter921_spring_damping, 0.0f);
         }
     }
     return 0;

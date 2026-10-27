@@ -3,6 +3,23 @@
 #include "moby.h"
 #include "callees.h"
 #include "include_asm.h"
+/* Rocket: velocity, owner, life and start distance. */
+struct RocketVars {
+    f32 vel_x; /* 0x00 */
+    f32 vel_y; /* 0x04 */
+    f32 vel_z; /* 0x08 */
+    f32 vel_w; /* 0x0C */
+    s32 owner_a; /* 0x10 */
+    s32 owner_b; /* 0x14 */
+    s32 life; /* 0x18 */
+    u8 pad_1C[0xC];
+    s32 hit_flag; /* 0x28 */
+    u8 pad_2C[0x4];
+    s32 unk_30; /* 0x30 */
+    s32 unk_34; /* 0x34 */
+    f32 start_dist; /* 0x38 */
+};
+
 
 typedef struct {
     float pad0[4];
@@ -65,25 +82,25 @@ extern char hero_globals_base[];
 /* spawn a moby of class 0x333 with position, velocity vector and aim angles */
 char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
     char *m = (char *)CreateMoby_m(0x333);
-    char *d;
+    struct RocketVars *d;
     if (m) {
         ((Moby *)m)->scale = ((Moby *)m)->scale * scale;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0x7E;
-        d = ((char *)((Moby *)m)->pvars);
+        d = (struct RocketVars *)((Moby *)m)->pvars;
         m[0x31] = 1;
         m[0x20] = 1;
         qcopy(m + 0x10, pos);
-        qcopy(d, vel);
-        *(int *)(d + 0x18) = scale_ticks(c);
-        *(int *)(d + 0x10) = a;
-        *(int *)(d + 0x14) = b;
-        *(int *)(d + 0x28) = 0;
-        *(float *)(d + 0x38) = FastVecDist(m + 0x10, hero_globals_base + 0xE9D);
-        *(int *)(d + 0x30) = 0;
-        *(int *)(d + 0x34) = 0;
-        ((Moby *)m)->rot.z = fast_atan2(*(float *)d, *(float *)(d + 4));
-        ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(d), *(float *)(d + 8));
+        qcopy(&d->vel_x, vel);
+        d->life = scale_ticks(c);
+        d->owner_a = a;
+        d->owner_b = b;
+        d->hit_flag = 0;
+        d->start_dist = FastVecDist(m + 0x10, hero_globals_base + 0xE9D);
+        d->unk_30 = 0;
+        d->unk_34 = 0;
+        ((Moby *)m)->rot.z = fast_atan2(*(float *)((char *)d), d->vel_y);
+        ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(&d->vel_x), d->vel_z);
         moby_build_matrix(m);
     }
     return m;

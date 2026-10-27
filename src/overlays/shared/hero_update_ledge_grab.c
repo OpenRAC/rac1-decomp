@@ -403,7 +403,7 @@ typedef struct { char pad[0x98]; float ang; } G98;
 
 // Builds two view-offset vectors from a stored position and the camera angle, tests them against the level, and possibly realigns the aim vector.
 void adjust_hero_velocity_from_collision_probes(int arg) {
-    char *p = (char *)hero_globals_base + 0xE1D;
+    struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     Vec4f a0;
     Vec4f u;
     Vec4f a1;
@@ -413,14 +413,14 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     char *r;
     int s;
     float f;
-    if (*(short *)(p + 0x308) != 0) return;
-    if (gravity_length_xy((float *)(p + 0xE0)) < g_frame_time * 0.1f) return;
+    if (p->unk308 != 0) return;
+    if (gravity_length_xy((float *)&p->motion.velocity) < g_frame_time * 0.1f) return;
     sa = 0.37f;
     sb = 0.5f;
-    if ((unsigned)(*(int *)(p + 0x208C) - 0x11) < 2) {
+    if ((unsigned)(p->state.control_mode - 0x11) < 2) {
         sa = 0.0f;
         sb = 0.7f;
-    } else if (*(unsigned char *)(p + 0x20A4) == 1) {
+    } else if (p->vehicle_mode == 1) {
         sa = 0.35f;
         sb = 0.27f;
     }
@@ -448,15 +448,15 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     s = -1;
     FastVecAdd(&w, &w, &a1);
     {
-        char *g1 = (char *)hero_globals_base + 0xE1D;
-        if (coll_line(&a1, &w, 4, *(int *)(g1 + 0x2080), 0) != 0 && blarg_coll_hit_type > 0) {
+        struct Hero *g1 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (coll_line(&a1, &w, 4, *(int *)&g1->moby, 0) != 0 && blarg_coll_hit_type > 0) {
             s = CollType();
         }
     }
     f = 0.0f;
     {
-    char *g2 = (char *)hero_globals_base + 0xE1D;
-    if (coll_line(&a0, &u, 4, *(int *)(g2 + 0x2080), 0) != 0) {
+    struct Hero *g2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    if (coll_line(&a0, &u, 4, *(int *)&g2->moby, 0) != 0) {
         char *q = blarg_coll_hit;
         if (*(int *)(q + 0x1C) > 0) {
             f = fast_atan2(*(float *)(q + 0x48), vec_length_xy(q + 0x40));
@@ -464,16 +464,16 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     }
     }
     if (f >= 0.87266463f || s == 8 || s == 12) {
-        char *g = (char *)hero_globals_base + 0xE1D;
+        struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         char *q = blarg_coll_hit;
         float d;
-        *(int *)(g + 0x240) = *(int *)(q + 0x18);
+        g->unk240 = *(int *)(q + 0x18);
         *(int *)(q + 0x48) = 0;
         sceVu0Normalize(q + 0x40, q + 0x40);
-        d = -*(float *)(g + 0xE0) * *(float *)(q + 0x40) - *(float *)(g + 0xE4) * *(float *)(q + 0x44);
+        d = -g->motion.velocity.f[0] * *(float *)(q + 0x40) - g->motion.velocity.f[1] * *(float *)(q + 0x44);
         if (d > 0.0f) {
             FastVecScale(q + 0x40, q + 0x40, d);
-            FastVecAdd(g + 0xE0, g + 0xE0, q + 0x40);
+            FastVecAdd(&g->motion.velocity, &g->motion.velocity, q + 0x40);
         }
     }
 }

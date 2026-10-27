@@ -5,6 +5,12 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Class 0x565 trigger: index of the transform whose xy bounds mark block entries. */
+struct Class565Vars {
+    u8 pad_00[0xC];
+    s32 bounds_index;               /* 0x0C: -1 none */
+};
+
 
 typedef struct { int idx; char pad[0x2C]; } VEnt;
 typedef struct {
@@ -191,12 +197,12 @@ extern void set_group_class_0630_moby_byte_bc(int, int);
 /* Activates a class 0x565 moby in state 1: marks block entries in its bounds and wakes its group. */
 void activate_drek_boss_class_0565_moby(unsigned char *moby) {
     Moby *m = (Moby *)moby;
-    char *state = (char *)m->pvars;
+    struct Class565Vars *state = (struct Class565Vars *)m->pvars;
     if (m->oclass == 0x565 && m->state == 1) {
-        if (*(int *)(state + 0xC) != -1) {
-            mark_block_entries_within_transform_xy_bounds(0x802, *(int *)(state + 0xC));
-            mark_block_entries_within_transform_xy_bounds(0x908, *(int *)(state + 0xC));
-            mark_block_entries_within_transform_xy_bounds(0x954, *(int *)(state + 0xC));
+        if (state->bounds_index != -1) {
+            mark_block_entries_within_transform_xy_bounds(0x802, state->bounds_index);
+            mark_block_entries_within_transform_xy_bounds(0x908, state->bounds_index);
+            mark_block_entries_within_transform_xy_bounds(0x954, state->bounds_index);
         }
         m->state = 2;
         set_group_class_0630_moby_byte_bc(m->group, 1);
@@ -480,11 +486,11 @@ void update_lift_state_and_queue_draw(unsigned char *m)
         synchronize_lift_group_height(m);
         ApproachWithVelocity(d->f0, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f, (float *)(m + 0x18), (float *)((char *)d + 0x18));
         if (FastAbsF(((Moby *)m)->pos.z - d->f0) > 0.1f) {
-            char *b = hero_globals_base + 0xE1D;
-            if ((unsigned)(*(int *)(b + 0x208C) - 0x11) < 2) {
+            struct Hero *b = (struct Hero *)(hero_globals_base + 0xE1D);
+            if ((unsigned)(b->state.control_mode - 0x11) < 2) {
                 float f = ((Moby *)m)->pos.z;
-                if (*(float *)(b + 0x2F0) < f) {
-                    *(float *)(b + 0x2F0) = f;
+                if (b->water_surface_z < f) {
+                    b->water_surface_z = f;
                 }
             }
         }
@@ -720,7 +726,8 @@ typedef struct BossData {
     char p218[4];
     int f21C;
     int f220;
-    char p224[0xC];
+    int camera_index; /* 0x224: row of veldin2_camera_descriptors */
+    char p228[8];
     int f230[4];
     int f240[4];
     int f250[4];
@@ -758,7 +765,9 @@ typedef struct BossData {
     char p36C[4];
     float f370;
     float f374;
-    char p378[0x14];
+    float cam_dist_vel; /* 0x378: camera distance approach velocity */
+    float cam_height_vel; /* 0x37C */
+    char p380[0xC];
     float f38C;
     float f390;
     char p394[4];
@@ -778,6 +787,9 @@ typedef struct BossData {
     float f3D8;
     float f3DC;
     float f3E0;
+    int platform_event_done; /* 0x3E4: latched once the hero lands on a platform */
+    int ground_platform; /* 0x3E8: the moby the hero last stood on */
+    int stood_on_platform; /* 0x3EC: set once the hero stood on a class 0x24B platform */
 } BossData;
 typedef struct BossShared {
     char p0[0x10];
@@ -1910,15 +1922,15 @@ extern short sinking_platform_fall_count;
 
 /* Latches the target from the global block once, and counts a class 0x24B hit. */
 void count_drek_boss_platform_event_once(char *moby) {
-    char *d = ((char *)((Moby *)moby)->pvars);
-    if (*(int *)(d + 0x3E4) == 0) {
-        char *a = hero_globals_base + 0xE1D;
-        if (*(int *)(a + 0x300) != 0) {
-            *(int *)(d + 0x3E8) = *(int *)(a + 0x2FC);
+    struct BossData *d = (struct BossData *)((Moby *)moby)->pvars;
+    if (d->platform_event_done == 0) {
+        struct Hero *a = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (a->grounded_frames != 0) {
+            d->ground_platform = *(int *)&a->ground_moby;
         }
-        if (*(int *)(a + 0x2084) == 0x77) {
-            char *t = *(char **)(d + 0x3E8);
-            *(int *)(d + 0x3E4) = 1;
+        if (a->state.current == 0x77) {
+            char *t = *(char **)&d->ground_platform;
+            d->platform_event_done = 1;
             if (t != 0) {
                 if (*(short *)(t + 0xA6) == 0x24B) {
                     *(int *)&sinking_platform_fall_count = *(int *)&sinking_platform_fall_count + 1;
@@ -2202,8 +2214,8 @@ extern void FastVecAdd(void *, void *, void *);
 
 /* steps a moby's offset vector toward a target, returns whether both settled */
 int advance_drek_boss_planar_position_toward_target(char *moby, float arg, void *x) {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    char *p = data + 0x3C0;
+    struct BossData *data = (struct BossData *)((Moby *)moby)->pvars;
+    char *p = (char *)data->f3C0;
     float a[4];
     float b[4];
     float v = 0.0f;
@@ -2214,11 +2226,11 @@ int advance_drek_boss_planar_position_toward_target(char *moby, float arg, void 
     a[2] = v;
     len = FastVecLength(a);
     s = g_frame_time_sq * 10.0f;
-    ApproachWithVelocity(len, s, s, arg, b, (float *)(data + 0x374));
-    vec_scale_to_length(a, a, *(float *)(data + 0x374));
+    ApproachWithVelocity(len, s, s, arg, b, &data->f374);
+    vec_scale_to_length(a, a, data->f374);
     FastVecAdd(p, p, a);
     if (len < 0.1f) {
-        if (*(float *)(data + 0x374) < 0.1f) {
+        if (data->f374 < 0.1f) {
             return 1;
         }
         return 0;
@@ -2235,18 +2247,18 @@ extern short drek_boss_follow_distance;
 /* Moves a moby's follow distance toward a target, clamped to a range, then applies it. */
 void update_drek_boss_hero_follow_movement(char *m) {
     float v[4];
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct BossData *d = (struct BossData *)((Moby *)m)->pvars;
     char *b = hero_globals_base + 0xE9D;
     float t;
     float lo, hi;
-    FastVecSub(v, b, veldin2_arena_nodes + (*(int *)(d + 0x344) << 7) + 0x30);
+    FastVecSub(v, b, veldin2_arena_nodes + (d->f344 << 7) + 0x30);
     v[2] = 0.0f;
     if (*(int *)(b + 0x200C) == 0xF) {
         ClampVectorLength(v, *(float *)&drek_boss_arena_radius_mode_f);
     } else {
         ClampVectorLength(v, *(float *)&drek_boss_arena_radius);
     }
-    FastVecAdd(v, v, veldin2_arena_nodes + (*(int *)(d + 0x344) << 7) + 0x30);
+    FastVecAdd(v, v, veldin2_arena_nodes + (d->f344 << 7) + 0x30);
     t = *(float *)(hero_globals_base + 0xF7D);
     t += (vec_distance_xy(m + 0x10, v) - *(float *)&drek_boss_follow_distance) / *(float *)&drek_boss_follow_distance * (g_frame_time * 4.75f);
     hi = g_frame_time * 20.0f;
@@ -2369,8 +2381,8 @@ extern short drek_boss_platform_tilt_ticks;
 
 /* Returns the nearest sinkable platform (class 0x24B) in range for the Drek boss to fire at. */
 unsigned char *select_drek_boss_platform_firing_target(char *self) {
-    char *data = ((char *)((Moby *)self)->pvars);
-    short *p = veldin2_moby_groups[*(int *)(data + 0x398)];
+    struct BossData *data = (struct BossData *)((Moby *)self)->pvars;
+    short *p = veldin2_moby_groups[data->f398];
     unsigned char *best = 0;
     float bestd = 1024.0f;
     float v[4];
@@ -2384,7 +2396,7 @@ start:
         int off = (*(unsigned short *)p & 0x7FFF) << 8;
         unsigned char *m = (unsigned char *)((int)off + (int)veldin2_moby_table);
         if (*(short *)(m + 0xA6) == 0x24B) {
-            char *c = data + 0x3C0;
+            char *c = (char *)data->f3C0;
             unsigned char *q;
             request_floating_platform_sink(m);
             q = veldin2_moby_table + off;
@@ -2452,8 +2464,8 @@ extern short drek_boss_action_allowed[];
 
 /* Picks a new state for the moby at random among the allowed transitions, retrying up to 100 times until one is accepted. */
 int select_drek_boss_next_action(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    int state = *(int *)(data + 0x350);
+    struct BossData *data = (struct BossData *)((Moby *)moby)->pvars;
+    int state = data->f350;
     int tries = 0;
     int r;
     int ok;
@@ -2467,18 +2479,18 @@ int select_drek_boss_next_action(char *moby) {
         case 4: state = 0x11; break;
         case 5: state = 0x13; break;
         }
-        ok = *(short *)((char *)drek_boss_action_allowed + r * 2 + *(int *)(data + 0x34C) * 12);
-        if (state == *(int *)(data + 0x350)) ok = 0;
+        ok = *(short *)((char *)drek_boss_action_allowed + r * 2 + data->f34C * 12);
+        if (state == data->f350) ok = 0;
         if (state == 0x13) {
-            if (*(int *)(data + 0x364) != 0) {
+            if (data->f364 != 0) {
                 ok = 0;
             } else {
-                float d = vec_distance_xy(hero_globals_base + 0xE9D, veldin2_arena_nodes + *(int *)(data + 0x25C) * 128 + 0x30);
+                float d = vec_distance_xy(hero_globals_base + 0xE9D, veldin2_arena_nodes + data->f250[3] * 128 + 0x30);
                 if (*(float *)&drek_boss_arena_radius + 2.0f < d) ok = 0;
             }
         }
         if (state == 0x11) {
-            if (*(int *)(data + 0x350) == 0xE) ok = 0;
+            if (data->f350 == 0xE) ok = 0;
         }
         if (ok != 0) break;
         tries++;
@@ -2526,8 +2538,8 @@ extern short drek_boss_follow_camera_height_target_gp;
 
 /* Steers the camera-ish follow targets of a moby from its state and the player distance. */
 void update_drek_boss_state_dependent_scalars(char *moby) {
-    char *d = ((char *)((Moby *)moby)->pvars);
-    char *t = *(char **)(veldin2_camera_descriptors + *(int *)(d + 0x224) * 32 + 0x1C);
+    struct BossData *d = (struct BossData *)((Moby *)moby)->pvars;
+    char *t = *(char **)(veldin2_camera_descriptors + d->camera_index * 32 + 0x1C);
     float f;
     float x;
     float y;
@@ -2537,8 +2549,8 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
     float *p3;
     unsigned char st;
 
-    fast_dec_timer((int *)(d + 0x360));
-    f = vec_distance_xy(hero_globals_base + 0xE9D, d + 0x3C0);
+    fast_dec_timer(&d->f360);
+    f = vec_distance_xy(hero_globals_base + 0xE9D, d->f3C0);
     if (f > *(float *)&drek_boss_scalar_blend_max_hero_distance_gp) {
         f = *(float *)&drek_boss_scalar_blend_max_hero_distance_gp;
     } else if (f < *(float *)&drek_boss_scalar_blend_min_hero_distance_gp) {
@@ -2550,21 +2562,21 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
     y = (*(float *)&drek_boss_second_scalar_far_hero_target_gp - *(float *)&drek_boss_second_scalar_near_hero_target_gp) * f + *(float *)&drek_boss_second_scalar_near_hero_target_gp;
     st = ((Moby *)moby)->state;
     if (st == 0x13) {
-        char *g = hero_globals_base + 0xE1D;
-        if ((*(int *)(g + 0x208C) == 0xF || *(int *)(g + 0x2084) == 0x42) && *(int *)(d + 0x364) == 0 &&
-            *(float *)(d + 0x390) <= 25.0f && *(int *)(d + 0x360) == 0) {
+        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        if ((g->state.control_mode == 0xF || g->state.current == 0x42) && d->f364 == 0 &&
+            d->f390 <= 25.0f && d->f360 == 0) {
 x = *(float *)&drek_boss_first_scalar_gated_follow_target_gp;
             y = *(float *)&drek_boss_second_scalar_gated_follow_target_gp;
             p0 = (float *)(t + 0x34);
             p1 = (float *)(t + 0x38);
-            p2 = (float *)(d + 0x378);
-            p3 = (float *)(d + 0x37C);
+            p2 = &d->cam_dist_vel;
+            p3 = &d->cam_height_vel;
         } else {
             p0 = (float *)(t + 0x34);
             p1 = (float *)(t + 0x38);
-            p3 = (float *)(d + 0x37C);
-            p2 = (float *)(d + 0x378);
-            if (vec_distance_xy(hero_globals_base + 0xE9D, veldin2_arena_nodes + (*(int *)(d + 0x344) << 7) + 0x30) < 28.0f) {
+            p3 = &d->cam_height_vel;
+            p2 = &d->cam_dist_vel;
+            if (vec_distance_xy(hero_globals_base + 0xE9D, veldin2_arena_nodes + (d->f344 << 7) + 0x30) < 28.0f) {
                 x = *(float *)&drek_boss_first_scalar_near_node_follow_target_gp;
                 y = *(float *)&drek_boss_cam_node_height;
             }
@@ -2574,34 +2586,34 @@ x = *(float *)&drek_boss_first_scalar_gated_follow_target_gp;
         y = *(float *)&drek_boss_follow_camera_height_target_gp;
         p0 = (float *)(t + 0x34);
             p1 = (float *)(t + 0x38);
-            p2 = (float *)(d + 0x378);
-            p3 = (float *)(d + 0x37C);
+            p2 = &d->cam_dist_vel;
+            p3 = &d->cam_height_vel;
     } else if (st == 0 || st == 10 || st == 11 || st == 1 || st == 0x1B) {
         int i;
-        char *g;
+        struct Hero *g;
         char *q;
         p0 = (float *)(t + 0x34);
             p1 = (float *)(t + 0x38);
-        for (i = 0, p2 = (float *)(d + 0x378), p3 = (float *)(d + 0x37C); i < 0x30; i++) {
+        for (i = 0, p2 = &d->cam_dist_vel, p3 = &d->cam_height_vel; i < 0x30; i++) {
             char *m;
-            if (*(int *)(d + 0x3EC) == 0) {
+            if (d->stood_on_platform == 0) {
                 char *pl;
-                g = hero_globals_base + 0xE1D;
-                pl = *(char **)(g + 0x2FC);
+                g = (struct Hero *)(hero_globals_base + 0xE1D);
+                pl = *(char **)&g->ground_moby;
                 if (pl != 0 && *(short *)(pl + 0xA6) == 0x24B) {
-                    *(int *)(d + 0x3EC) = 1;
+                    d->stood_on_platform = 1;
                 }
             }
             if (veldin2_camera_trigger_used[i] != 0) {
                 m = veldin2_camera_trigger_records + i * 0xA0;
                 if (*(short *)(m + 0x86) == 0x12) {
                     SetTableEntryFlagIfKind18(m);
-                    if (*(int *)(d + 0x368) != -1) {
-                        Hud_SetBarValueById(*(int *)(d + 0x368), 0);
-                        *(int *)(d + 0x368) = -1;
+                    if (d->f368 != -1) {
+                        Hud_SetBarValueById(d->f368, 0);
+                        d->f368 = -1;
                     }
                     if (((Moby *)moby)->state >= 2) {
-                        if (*(int *)(d + 0x3EC) != 0 || *(int *)&drek_boss_camera_reset_done != 0) {
+                        if (d->stood_on_platform != 0 || *(int *)&drek_boss_camera_reset_done != 0) {
                             char *w;
                             q = veldin2_player_camera;
                             w = *(char **)(q + 0x180);
@@ -2618,11 +2630,11 @@ x = *(float *)&drek_boss_first_scalar_gated_follow_target_gp;
     } else {
         p0 = (float *)(t + 0x34);
             p1 = (float *)(t + 0x38);
-            p2 = (float *)(d + 0x378);
-            p3 = (float *)(d + 0x37C);
-        if (*(float *)(d + 0x38C) > 0.0f) {
-            *(int *)(d + 0x368) = queue_animation_update(0x16, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
-                                                (int)draw_segmented_hud_meter_base + 0x20, (int)(d + 0x36C), 0x15E);
+            p2 = &d->cam_dist_vel;
+            p3 = &d->cam_height_vel;
+        if (d->f38C > 0.0f) {
+            d->f368 = queue_animation_update(0x16, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
+                                                (int)draw_segmented_hud_meter_base + 0x20, (int)d->p36C, 0x15E);
         }
     }
     ApproachWithVelocity_p(p0, x, p2, *(float *)&drek_boss_cam_accel * g_frame_time_sq, *(float *)&drek_boss_cam_accel * g_frame_time_sq,

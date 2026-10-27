@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "camera.h"
 #include "pad.h"
+#include "hero.h"
 
 typedef struct { s32 a, b, c, d; } E001f36f8;
 extern short debug_text_queue_count;
@@ -379,16 +380,16 @@ void update_hero_from_debug_camera(void) {
     char *m;
     float x = *(float *)(g + 0x140) + FastCos(t) * *(float *)(c + 0x8C);
     b = hero_globals_base + 0xE1D;
-    *(float *)(b + 0x80) = x;
-    *(float *)(b + 0x84) = *(float *)(g + 0x144) + FastSin(t) * *(float *)(c + 0x8C);
-    *(float *)(b + 0x88) = *(float *)(g + 0x148) + *(float *)(c + 0x90);
-    *(float *)(b + 0x98) = FastAddRots(*(float *)(g + 0x158), *(float *)(c + 0x84));
-    euler_to_matrix(b, b + 0x90);
-    m = *(char **)(b + 0x2080);
-    qcopy(m + 0x10, b + 0x80);
-    qcopy(m + 0x40, b + 0x90);
+    ((struct Hero *)b)->motion.pos.f[0] = x;
+    ((struct Hero *)b)->motion.pos.f[1] = *(float *)(g + 0x144) + FastSin(t) * *(float *)(c + 0x8C);
+    ((struct Hero *)b)->motion.pos.f[2] = *(float *)(g + 0x148) + *(float *)(c + 0x90);
+    ((struct Hero *)b)->motion.rot.f[2] = FastAddRots(*(float *)(g + 0x158), *(float *)(c + 0x84));
+    euler_to_matrix(b, &((struct Hero *)b)->motion.rot);
+    m = *(char **)&((struct Hero *)b)->moby;
+    qcopy(m + 0x10, &((struct Hero *)b)->motion.pos);
+    qcopy(m + 0x40, &((struct Hero *)b)->motion.rot);
     copy_memory_by_alignment((int)(m + 0xC0), b, 0x30);
-    moby_build_matrix(*(void **)(b + 0x2080));
+    moby_build_matrix(*(void **)&((struct Hero *)b)->moby);
 }
 /* NON_MATCHING func_L00_001F4918 -- src/overlays/shared/draw_001F3A78.c
  * Best so far: BYTES 169/4932 (96.6% of the bytes match), checked 2026-10-09.

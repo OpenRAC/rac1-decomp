@@ -5,6 +5,14 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Path mover (class 0x382): rides a rail path, turning its matrix with it. */
+struct PathMoverVars {
+    u8 pad_00[0x20];
+    u8 matrix[0x40];                /* 0x20: update_entity_matrix block */
+    char *path;                     /* 0x60 */
+    f32 dist;                       /* 0x64: distance travelled along the path */
+};
+
 struct Manip;
 struct GifEntry;
 struct AnimSeq;
@@ -456,8 +464,25 @@ typedef float MineVec[4] __attribute__((aligned(16)));
 typedef struct {
     OvlQuad q[5];
 } MineBlast;
-typedef struct {
-    u8 pad0[0x60]; /* 0x00: fall record (FUN_L00_0025c698) */
+typedef struct MineVars {
+    u8 pad0[0x10]; /* 0x00: fall record (FUN_L00_0025c698) */
+    f32 unk_10;
+    f32 unk_14;
+    f32 unk_18;
+    f32 unk_1C;
+    s32 unk_20;
+    s32 unk_24;
+    f32 unk_28;
+    u8 pad2C[0x4];
+    f32 unk_30;
+    f32 unk_34;
+    f32 unk_38;
+    u8 pad3C[0x1];
+    s8 unk_3D;
+    u8 pad3E[0xA];
+    f32 unk_48;
+    f32 unk_4C;
+    u8 pad50[0x10];
     s32 unk60;
     s32 timer; /* 0x64: arming delay */
     struct Moby *target; /* 0x68: moby it is stuck to or homing on */
@@ -660,7 +685,7 @@ extern void InitKnockback(void *, void *, int, int, int, float);
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002cc888. */
 char *spawn_mine_layer_projectile(char *parent_moby, void *pos, float *launch_velocity) {
     struct Moby *spawned_moby = (struct Moby *)CreateMoby(0x273);
-    char *spawned_moby_vars;
+    struct MineVars *spawned_moby_vars;
     float frame_scale_squared;
     struct Moby *parent = (struct Moby *)parent_moby;
 
@@ -672,24 +697,24 @@ char *spawn_mine_layer_projectile(char *parent_moby, void *pos, float *launch_ve
     spawned_moby->visible = 1;
     spawned_moby->spawn_frame = parent->spawn_frame;
     qcopy(&spawned_moby->pos, pos);
-    spawned_moby_vars = (char *)spawned_moby->pvars;
+    spawned_moby_vars = (struct MineVars *)spawned_moby->pvars;
     frame_scale_squared = g_frame_scale_sq;
-    *(float *)(spawned_moby_vars + 0x10) = frame_scale_squared * 0.008f;
-    *(float *)(spawned_moby_vars + 0x14) = frame_scale_squared * 0.0005f;
-    *(float *)(spawned_moby_vars + 0x18) = vec_length_xy(launch_velocity);
-    *(float *)(spawned_moby_vars + 0x1C) = launch_velocity[2];
-    *(int *)(spawned_moby_vars + 0x20) = 0x400;
-    *(float *)(spawned_moby_vars + 0x28) = 1.0f;
-    *(float *)(spawned_moby_vars + 0x30) = 0.75f;
-    *(float *)(spawned_moby_vars + 0x34) = 0.5f;
-    *(float *)(spawned_moby_vars + 0x38) = 0.65f;
-    *(float *)(spawned_moby_vars + 0x48) = 0.2f;
-    *(float *)(spawned_moby_vars + 0x4C) = 0.01f;
-    spawned_moby_vars[0x3D] = 0;
-    *(int *)(spawned_moby_vars + 0x24) = 1;
-    InitKnockback(spawned_moby, spawned_moby_vars, 0, 1, 0, fast_atan2(launch_velocity[0], launch_velocity[1]));
-    *(char **)(spawned_moby_vars + 0x68) = parent_moby;
-    *(int *)(spawned_moby_vars + 0x6C) = 0;
+    spawned_moby_vars->unk_10 = frame_scale_squared * 0.008f;
+    spawned_moby_vars->unk_14 = frame_scale_squared * 0.0005f;
+    spawned_moby_vars->unk_18 = vec_length_xy(launch_velocity);
+    spawned_moby_vars->unk_1C = launch_velocity[2];
+    spawned_moby_vars->unk_20 = 0x400;
+    spawned_moby_vars->unk_28 = 1.0f;
+    spawned_moby_vars->unk_30 = 0.75f;
+    spawned_moby_vars->unk_34 = 0.5f;
+    spawned_moby_vars->unk_38 = 0.65f;
+    spawned_moby_vars->unk_48 = 0.2f;
+    spawned_moby_vars->unk_4C = 0.01f;
+    spawned_moby_vars->unk_3D = 0;
+    spawned_moby_vars->unk_24 = 1;
+    InitKnockback(spawned_moby, ((char *)spawned_moby_vars), 0, 1, 0, fast_atan2(launch_velocity[0], launch_velocity[1]));
+    *(char **)&spawned_moby_vars->target = parent_moby;
+    spawned_moby_vars->age = 0;
     spawned_moby->state = 1;
     return (char *)spawned_moby;
 }
@@ -741,6 +766,10 @@ struct RailTaxiVars_D4560 {
     s32 onward[5]; /* 0xBC: optional leg taken when the hero walks away (-1: none) */
     s32 help[5]; /* 0xD0: help message mode at each route's stop (FUN_L03_002d3100) */
     s32 unkE4; /* 0xE4: set to -1 on arrival */
+    f32 bob_phase; /* 0xE8: update_moby_vertical_oscillation state */
+    f32 bob_amount; /* 0xEC */
+    f32 sway_a; /* 0xF0: update_moby_rotation_oscillation state */
+    f32 sway_b; /* 0xF4 */
 };
 typedef struct {
     u8 pad0[0x454];
@@ -1012,9 +1041,9 @@ extern short taxi_rocking_second_phase_rate_degrees_g __asm__("D_L03_00161B80");
 
 /* Sets two speed pairs on a moby's data from level constants scaled by degrees-to-radians and the frame scale. */
 void update_taxi_bobbing_and_rocking(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
-    update_moby_vertical_oscillation(*(float *)&taxi_bobbing_amplitude_g, *(float *)&taxi_bobbing_phase_rate_degrees_g * 0.0174532925f * g_frame_time, m, (float *)(d + 0xEC), (float *)(d + 0xE8));
-    update_moby_rotation_oscillation(m, d + 0xF0, d + 0xF4, *(float *)&taxi_rocking_amplitude_g, *(float *)&taxi_rocking_first_phase_rate_degrees_g * 0.0174532925f * g_frame_time, *(float *)&taxi_rocking_second_phase_rate_degrees_g * 0.0174532925f * g_frame_time);
+    struct RailTaxiVars_D4560 *d = (struct RailTaxiVars_D4560 *)((Moby *)m)->pvars;
+    update_moby_vertical_oscillation(*(float *)&taxi_bobbing_amplitude_g, *(float *)&taxi_bobbing_phase_rate_degrees_g * 0.0174532925f * g_frame_time, m, &d->bob_amount, &d->bob_phase);
+    update_moby_rotation_oscillation(m, (char *)&d->sway_a, (char *)&d->sway_b, *(float *)&taxi_rocking_amplitude_g, *(float *)&taxi_rocking_first_phase_rate_degrees_g * 0.0174532925f * g_frame_time, *(float *)&taxi_rocking_second_phase_rate_degrees_g * 0.0174532925f * g_frame_time);
 }
 typedef u32 u128_D5220 __attribute__((mode(TI), aligned(16)));
 struct Manip_D5220;
@@ -1501,31 +1530,31 @@ void RailMobyUpdate(struct Moby *m) {
     float old[4];
     float a[4];
     float b[4];
-    char *v;
+    struct PathMoverVars *v;
     char *p;
     int i;
     float t;
 
     *(OvlQuad_DC3E8 *)old = *(OvlQuad_DC3E8 *)&m->pos;
-    v = (char *)m->pvars;
-    *(float *)(v + 0x64) += path_mover_distance_step_r;
-    a[0] = FastCos_r2(m->rot.z) * *(float *)(v + 0x64);
-    a[1] = FastSin_r2(m->rot.z) * *(float *)(v + 0x64);
+    v = (struct PathMoverVars *)m->pvars;
+    v->dist += path_mover_distance_step_r;
+    a[0] = FastCos_r2(m->rot.z) * v->dist;
+    a[1] = FastSin_r2(m->rot.z) * v->dist;
     *(int *)&a[2] = 0;
-    FastVecAdd_r2(a, a, *(char **)(v + 0x60) + 0x10);
-    i = truncate_float_to_s32_r(*(float *)(v + 0x64) / *(float *)(*(char **)(v + 0x60) + 0x1C));
+    FastVecAdd_r2(a, a, v->path + 0x10);
+    i = truncate_float_to_s32_r(v->dist / *(float *)(v->path + 0x1C));
     t = IntToFloat_r2(i);
-    p = *(char **)(v + 0x60);
-    t = (*(float *)(v + 0x64) - t * *(float *)(p + 0x1C)) / *(float *)(p + 0x1C);
+    p = v->path;
+    t = (v->dist - t * *(float *)(p + 0x1C)) / *(float *)(p + 0x1C);
     if (i >= *(int *)p - 2) {
         DeleteMoby_r5(m);
         return;
     }
     FastVecSub_r(b, ((float (*)[4])p)[i + 2], ((float (*)[4])p)[i + 1]);
     FastVecScale_r(b, b, t);
-    FastVecAdd_r2(&m->pos, b, (*(float (**)[4])(v + 0x60))[i + 1]);
+    FastVecAdd_r2(&m->pos, b, (*(float (**)[4])(&v->path))[i + 1]);
     FastVecSub_r(a, &m->pos, old);
-    update_entity_matrix_r2(v + 0x20, a, &m->rot, &m->rot);
+    update_entity_matrix_r2(v->matrix, a, &m->rot, &m->rot);
 }
 struct Manip_DC560;
 struct GifEntry_DC560;
@@ -1563,9 +1592,9 @@ struct Moby *func_L03_002DC560_r(struct RailPath_DC560 *path, float dist) {
         clear_u64_value_r(&m->rot);
         end = (Vec4 *)((u8 *)path + (path->count - 1) * 16) + 1;
         m->rot.z = fast_atan2_r2(end->f[0] - m->pos.x, end->f[1] - m->pos.y);
-        move = v + 0x20;
-        *(float *)(v + 0x64) = dist;
-        *(struct RailPath_DC560 **)(v + 0x60) = path;
+        move = (u8 *)((struct PathMoverVars *)v)->matrix;
+        ((struct PathMoverVars *)v)->dist = dist;
+        *(struct RailPath_DC560 **)&((struct PathMoverVars *)v)->path = path;
         *(u8 **)(v + 0x8) = move;
         moby_build_matrix_r(m);
     }
@@ -2674,7 +2703,7 @@ extern int scale_ticks(int);
 /* ActivateCamera_14: seed the camera's smoothing state from the current camera table entry */
 void initialize_hero_relative_camera(char *m) {
     CameraMobyECD40 *mob = (CameraMobyECD40 *)m;
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     CameraConfigECD40 *e = kerwan_camera_descriptors_camera[mob->index].config;
     CameraSmoothECD40 *d1;
     CameraZoomECD40 *v;
@@ -2686,8 +2715,8 @@ void initialize_hero_relative_camera(char *m) {
     float buf[16];
     d1 = &mob->camera->origin;
     d1->duration = 1.5f;
-    d1->sourceFlag = *(int *)(g + 0x2080);
-    qcopy(d1, g + 0x80);
+    d1->sourceFlag = *(int *)&g->moby;
+    qcopy(d1, &g->motion.pos);
     *(int *)&d1->position[3] = 0;
     v = &mob->camera->zoom;
     t = e->range;
@@ -2699,7 +2728,7 @@ void initialize_hero_relative_camera(char *m) {
     a->speed = 0.01f;
     a->acceleration = 0.2f;
     clear_u64_value(a->motion);
-    qcopy(a, g + 0x80);
+    qcopy(a, &g->motion.pos);
     b = mob->camera;
     b->timer = scale_ticks(0x78);
     dd = kerwan_camera_descriptors_camera;
@@ -2707,7 +2736,7 @@ void initialize_hero_relative_camera(char *m) {
     c->flags30 = 0;
     c->flags28 = 0;
     c->flags2C = 0;
-    height = *(float *)(g + 0x88);
+    height = g->motion.pos.f[2];
     c->flags20 = 0;
     c->height = height;
     c->flags24 = 0;
@@ -2736,19 +2765,19 @@ void update_smoothed_hero_relative_camera_position(void *arg) {
     char *d = *(char **)(m + 0x70);
     char *a = d + 0xD0;
     char *b = d + 0xF0;
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     float v3[4];
     float v1[4];
     float v2[4];
-    char *h;
-    if (*(int *)(g + 0x2284) != 0x50 || *(int *)(g + 0x2084) == 0x11) {
-        *(float *)(b + 0x34) = *(float *)(g + 0x88);
+    struct Hero *h;
+    if (g->unk2284 != 0x50 || g->state.current == 0x11) {
+        *(float *)(b + 0x34) = g->motion.pos.f[2];
     }
     vec_scale_to_length(v1, hero_globals_base + 0x10AD, -*(float *)(a + 0x10));
     vec_scale_to_length(v3, b, -*(float *)a);
-    h = hero_globals_base + 0xE1D;
-    *(float *)d = Cam_InterpValues(d + 0x10, *(float *)d, *(float *)(h + 0x80), *(float *)(d + 0x20), *(float *)(d + 0x24), *(float *)(d + 0x28));
-    *(float *)(d + 4) = Cam_InterpValues(d + 0x14, *(float *)(d + 4), *(float *)(h + 0x84), *(float *)(d + 0x20), *(float *)(d + 0x24), *(float *)(d + 0x28));
+    h = (struct Hero *)(hero_globals_base + 0xE1D);
+    *(float *)d = Cam_InterpValues(d + 0x10, *(float *)d, h->motion.pos.f[0], *(float *)(d + 0x20), *(float *)(d + 0x24), *(float *)(d + 0x28));
+    *(float *)(d + 4) = Cam_InterpValues(d + 0x14, *(float *)(d + 4), h->motion.pos.f[1], *(float *)(d + 0x20), *(float *)(d + 0x24), *(float *)(d + 0x28));
     *(float *)(d + 8) = Cam_InterpValues(d + 0x18, *(float *)(d + 8), *(float *)(b + 0x34), *(float *)(d + 0x20), *(float *)(d + 0x24), *(float *)(d + 0x28));
     FastVecAdd(v2, d, v1);
     FastVecAdd(v2, v2, v3);
@@ -2785,10 +2814,10 @@ void rebuild_camera_orientation_axes(void *arg) {
 }
 /* Returns -1 if hero state is 6, or hero mode is 0x50 and state is not 0x11; else 0. */
 int hero_in_state_6_or_mode_50(void) {
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
 
-    if (*(int *)(g + 0x2284) != 0x50 || *(int *)(g + 0x2084) == 0x11) {
-        if (*(int *)(g + 0x2084) != 6) {
+    if (g->unk2284 != 0x50 || g->state.current == 0x11) {
+        if (g->state.current != 6) {
             goto none;
         }
     }

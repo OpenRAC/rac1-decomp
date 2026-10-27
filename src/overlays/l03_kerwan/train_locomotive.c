@@ -6,6 +6,121 @@
 #include "hero.h"
 #include "moby.h"
 
+typedef struct Train292890 {
+    u8 pad_00[0x60];
+    char motion[0x40];         /* 0x60: passed to update_entity_matrix */
+    s32 iA0;                   /* 0xA0: next car id, -1 when none */
+    u8 pad_A4[0x14];
+    s32 iB8;                   /* 0xB8: index printed when the train is removed */
+    f32 fBC;                   /* 0xBC: rear offset */
+    f32 fC0;                   /* 0xC0: speed divisor */
+    s32 iC4;                   /* 0xC4: index of the coupling moby */
+    f32 fC8;                   /* 0xC8: step length */
+    f32 fCC;                   /* 0xCC: spring state for the yaw */
+    f32 fD0;                   /* 0xD0: spring state for the pitch */
+    u8 pad_D4[0x8];
+    f32 fDC;                   /* 0xDC: distance margin */
+    u8 pad_E0[0x1C];
+    f32 fFC;                   /* 0xFC: written on the coupling train */
+} Train292890;
+
+typedef struct Car292890 {
+    u8 pad_00[0x20];
+    char motion[0x80];         /* 0x20: passed to update_entity_matrix */
+    char prev_pos[0x10];       /* 0xA0: position as of the last frame */
+    char prev_rot[0x10];       /* 0xB0: rotation as of the last frame */
+    s32 iC0;                   /* 0xC0: next car id, -1 at the end */
+    f32 fC4;                   /* 0xC4: coupling length */
+} Car292890;
+
+
+/* Spline-following moby family (red ship and its emitter helpers): hermite path, springs, timers. */
+struct SplineMobyVars {
+    u8 pad_00[0x2B];
+    u8 unk_2B;                      /* 0x2B */
+    u8 unk_2C;                      /* 0x2C */
+    u8 pad_2D[0x33];
+    char path[0x30];                /* 0x60: path descriptor, node index first */
+    Vec4A p0;                       /* 0x90: hermite start point */
+    Vec4A tangent0;                 /* 0xA0 */
+    Vec4A tangent1;                 /* 0xB0: w (0xBC) is the segment length */
+    Vec4A p1;                       /* 0xC0: hermite end point */
+    Vec4A cur_pos;                  /* 0xD0 */
+    Vec4A prev_pos;                 /* 0xE0 */
+    Vec4A emitter_pos;              /* 0xF0 */
+    f32 seg_t;                      /* 0x100: position along the segment, 0..1 */
+    f32 unk_104;                    /* 0x104 */
+    f32 unk_108;                    /* 0x108 */
+    f32 speed;                      /* 0x10C */
+    f32 pitch_gain;                 /* 0x110 */
+    f32 pitch_vel;                  /* 0x114: SpringTurn velocity */
+    f32 yaw_gain;                   /* 0x118 */
+    f32 yaw_vel;                    /* 0x11C: SpringTurn velocity */
+    f32 step_div;                   /* 0x120 */
+    f32 pitch_scale;                /* 0x124 */
+    f32 yaw_scale;                  /* 0x128 */
+    s16 timer;                      /* 0x12C */
+    u8 emit_timer_a;                /* 0x12E */
+    u8 emit_timer_b;                /* 0x12F */
+    u8 pad_130;
+    u8 unk_131;                     /* 0x131 */
+    s16 yaw_offset_deg;             /* 0x132 */
+    f32 wobble_amp;                 /* 0x134 */
+    f32 wobble_rate;                /* 0x138 */
+    f32 wobble_phase;               /* 0x13C */
+    f32 offset_a;                   /* 0x140 */
+    f32 offset_b;                   /* 0x144 */
+    s16 sound_timer;                /* 0x148 */
+    s16 respawn_timer;              /* 0x14A */
+    s16 sound_min;                  /* 0x14C */
+    s16 sound_range;                /* 0x14E */
+    s32 emitted_moby;               /* 0x150: index in kerwan_mobys, -1 when none */
+};
+
+/* Short-lived spark moby attached to a parent. */
+struct ParentSparkVars {
+    char *parent;                   /* 0x00 */
+    s32 color;                      /* 0x04 */
+    s32 unk_08;                     /* 0x08 */
+    s16 unk_0C;                     /* 0x0C */
+    s16 unk_0E;                     /* 0x0E */
+    u8 pad_10[0x4];
+    f32 unk_14;                     /* 0x14 */
+};
+
+/* Robot dog (class 0x23E). */
+struct RobotDogVars {
+    u8 pad_00[0x20];
+    f32 health;                     /* 0x20: ComputeHitResponse */
+    u8 pad_24[0x14];
+    s32 unk_38;                     /* 0x38 */
+    u8 pad_3C[0xD4];
+    s16 color_fade;                 /* 0x110: RerollEffectCounter block */
+    u8 pad_112[0x5];
+    u8 flash;                       /* 0x117: hit flash strength */
+    u8 pad_118[0x8];
+    u8 knockback[0x10];             /* 0x120: InitKnockback */
+    f32 knock_speed;                /* 0x130 */
+    u8 pad_134[0x4];
+    f32 hit_pitch;                  /* 0x138 */
+    f32 hit_yaw;                    /* 0x13C */
+    u8 pad_140[0x4];
+    s32 unk_144;                    /* 0x144 */
+    u8 pad_148[0x15];
+    u8 unk_15D;                     /* 0x15D */
+    u8 pad_15E[0x12];
+    f32 unk_170;                    /* 0x170 */
+    f32 unk_174;                    /* 0x174 */
+    u8 pad_178[0xB4];
+    f32 unk_22C;                    /* 0x22C */
+    f32 unk_230;                    /* 0x230 */
+    u8 pad_234[0xC];
+    s32 stun_timer;                 /* 0x240 */
+    u8 pad_244[0x4];
+    s32 linked_moby;                /* 0x248: index in kerwan_mobys, -1 when none */
+    u8 pad_24C[0x38];
+    s32 release_state;              /* 0x284: -1 when free to release */
+};
 typedef int Q_293720 __attribute__((mode(TI)));
 extern char *kerwan_mobys_t __asm__("D_L03_00160058") MACRO_ADDR;
 extern short kerwan_train_car_spacing;
@@ -30,41 +145,41 @@ void place_metropolis_train(char *moby, float *pos, float heading) {
     float old_rot[4];
     float car_pos[4];
     float car_off[4];
-    char *data;
+    struct Train292890 *data;
     char *coupling;
     int next_id;
     *(Q_293720 *)start = *(Q_293720 *)pos;
-    data = (char *)((struct Moby *)moby)->pvars;
-    coupling = kerwan_mobys_t + (*(int *)(data + 0xC4) << 8);
-    next_id = *(int *)(data + 0xA0);
+    data = (struct Train292890 *)((struct Moby *)moby)->pvars;
+    coupling = kerwan_mobys_t + (data->iC4 << 8);
+    next_id = data->iA0;
     *(Q_293720 *)old_pos = *(Q_293720 *)&((struct Moby *)moby)->pos;
     *(Q_293720 *)old_rot = *(Q_293720 *)&((struct Moby *)moby)->rot;
     qcopy(coupling + 0x10, start);
-    offset[0] = FastCos(heading) * -*(float *)(data + 0xDC);
-    offset[1] = FastSin(heading) * -*(float *)(data + 0xDC);
+    offset[0] = FastCos(heading) * -data->fDC;
+    offset[1] = FastSin(heading) * -data->fDC;
     offset[2] = 0.0f;
     FastVecAdd(&((struct Moby *)moby)->pos, start, offset);
     ((struct Moby *)moby)->rot.z = FastAddRots(heading, 3.1415927f);
     ((struct Moby *)moby)->rot.y = 0.0f;
     FastVecSub(delta, &((struct Moby *)moby)->pos, old_pos);
-    update_entity_matrix(data + 0x60, delta, old_rot, &((struct Moby *)moby)->rot);
-    *(int *)(data + 0xCC) = 0;
-    *(int *)(data + 0xD0) = 0;
-    offset[0] = FastCos(heading) * -*(float *)(data + 0xBC);
-    offset[1] = FastSin(heading) * -*(float *)(data + 0xBC);
+    update_entity_matrix(data->motion, delta, old_rot, &((struct Moby *)moby)->rot);
+    *(int *)&data->fCC = 0;
+    *(int *)&data->fD0 = 0;
+    offset[0] = FastCos(heading) * -data->fBC;
+    offset[1] = FastSin(heading) * -data->fBC;
     offset[2] = 0.0f;
     FastVecAdd(offset, offset, &((struct Moby *)moby)->pos);
     while (next_id != -1) {
         char *car = kerwan_mobys_t + (next_id << 8);
-        char *car_data = (char *)((struct Moby *)car)->pvars;
-        qcopy(car_data + 0xA0, &((struct Moby *)car)->pos);
-        qcopy(car_data + 0xB0, &((struct Moby *)car)->rot);
+        Car292890 *car_data = (Car292890 *)((struct Moby *)car)->pvars;
+        qcopy(car_data->prev_pos, &((struct Moby *)car)->pos);
+        qcopy(car_data->prev_rot, &((struct Moby *)car)->rot);
         car_pos[0] = FastCos(heading) * -*(float *)&kerwan_train_car_spacing;
         car_pos[1] = FastSin(heading) * -*(float *)&kerwan_train_car_spacing;
         car_pos[2] = 0.0f;
         FastVecAdd(car_pos, car_pos, offset);
-        car_off[0] = FastCos(heading) * -*(float *)(car_data + 0xC4);
-        car_off[1] = FastSin(heading) * -*(float *)(car_data + 0xC4);
+        car_off[0] = FastCos(heading) * -car_data->fC4;
+        car_off[1] = FastSin(heading) * -car_data->fC4;
         car_off[2] = 0.0f;
         FastVecAdd(&((struct Moby *)car)->pos, car_off, car_pos);
         ((struct Moby *)car)->pos.z = ((struct Moby *)moby)->pos.z;
@@ -74,11 +189,11 @@ void place_metropolis_train(char *moby, float *pos, float heading) {
         moby_build_matrix(car);
         ((struct Moby *)car)->flags |= 6;
         Moby_GetJointWorldPos(car, 1, offset);
-        FastVecSub(delta, &((struct Moby *)car)->pos, car_data + 0xA0);
-        update_entity_matrix(car_data + 0x20, delta, car_data + 0xB0, &((struct Moby *)car)->rot);
-        qcopy(car_data + 0xA0, &((struct Moby *)car)->pos);
-        qcopy(car_data + 0xB0, &((struct Moby *)car)->rot);
-        next_id = *(int *)(car_data + 0xC0);
+        FastVecSub(delta, &((struct Moby *)car)->pos, car_data->prev_pos);
+        update_entity_matrix(car_data->motion, delta, car_data->prev_rot, &((struct Moby *)car)->rot);
+        qcopy(car_data->prev_pos, &((struct Moby *)car)->pos);
+        qcopy(car_data->prev_rot, &((struct Moby *)car)->rot);
+        next_id = car_data->iC0;
     }
     ((struct Moby *)coupling)->state = 0;
     ((struct Moby *)coupling)->flags |= 6;
@@ -96,32 +211,6 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char kerwan_train_motion_error_msg[];
 
-typedef struct Train292890 {
-    u8 pad_00[0x60];
-    char motion[0x40];         /* 0x60: passed to update_entity_matrix */
-    s32 iA0;                   /* 0xA0: next car id, -1 when none */
-    u8 pad_A4[0x14];
-    s32 iB8;                   /* 0xB8: index printed when the train is removed */
-    u8 pad_BC[0x4];
-    f32 fC0;                   /* 0xC0: speed divisor */
-    s32 iC4;                   /* 0xC4: index of the coupling moby */
-    f32 fC8;                   /* 0xC8: step length */
-    f32 fCC;                   /* 0xCC: spring state for the yaw */
-    f32 fD0;                   /* 0xD0: spring state for the pitch */
-    u8 pad_D4[0x8];
-    f32 fDC;                   /* 0xDC: distance margin */
-    u8 pad_E0[0x1C];
-    f32 fFC;                   /* 0xFC: written on the coupling train */
-} Train292890;
-
-typedef struct Car292890 {
-    u8 pad_00[0x20];
-    char motion[0x80];         /* 0x20: passed to update_entity_matrix */
-    char prev_pos[0x10];       /* 0xA0: position as of the last frame */
-    char prev_rot[0x10];       /* 0xB0: rotation as of the last frame */
-    s32 iC0;                   /* 0xC0: next car id, -1 at the end */
-    f32 fC4;                   /* 0xC4: coupling length */
-} Car292890;
 
 // Steers this moby and its partner toward each other, then walks the chain of mobys through 0xC0.
 void update_metropolis_train_motion(char *moby) {
@@ -235,9 +324,9 @@ void update_metropolis_train_idle_motion(struct Moby *moby) {
     float old_pos[4];
     float old_rot[4];
     float delta[4];
-    char *data;
+    struct Train292890 *data;
     char *car;
-    char *car_data;
+    Car292890 *car_data;
     char *p;
     char *q;
     int next_id;
@@ -245,35 +334,35 @@ void update_metropolis_train_idle_motion(struct Moby *moby) {
     float *dp;
     char *motion;
 
-    data = (char *)moby->pvars;
+    data = (struct Train292890 *)moby->pvars;
     moby->unk72 = 0x40;
     p = &moby->pos;
     qcopy(old_pos, p);
     q = &moby->rot;
     qcopy(old_rot, q);
-    next_id = *(int *)(data + 0xA0);
+    next_id = data->iA0;
     if (next_id != -1) {
         id = next_id;
         dp = delta;
-        motion = data + 0x60;
+        motion = (char *)data->motion;
         do {
             car = kerwan_mobys_t + (id << 8);
-            car_data = ((char *)((Moby *)car)->pvars);
+            car_data = (Car292890 *)((Moby *)car)->pvars;
             car[0x72] = 0x40;
-            FastVecSub_r(delta, car + 0x10, car_data + 0xA0);
-            update_entity_matrix_r(car_data + 0x20, delta, car_data + 0xB0, car + 0x40);
-            qcopy(car_data + 0xA0, car + 0x10);
-            qcopy(car_data + 0xB0, car + 0x40);
-            id = *(int *)(car_data + 0xC0);
+            FastVecSub_r(delta, car + 0x10, car_data->prev_pos);
+            update_entity_matrix_r(car_data->motion, delta, car_data->prev_rot, car + 0x40);
+            qcopy(car_data->prev_pos, car + 0x10);
+            qcopy(car_data->prev_rot, car + 0x40);
+            id = car_data->iC0;
         } while (id != -1);
         FastVecSub_r(dp, &moby->pos, old_pos);
         update_entity_matrix_r(motion, dp, old_rot, &moby->rot);
     } else {
-        STUB_printf_r(kerwan_train_motion_error_msg_r, *(int *)(data + 0xB8));
+        STUB_printf_r(kerwan_train_motion_error_msg_r, data->iB8);
         DeleteMoby_r(moby);
         return;
     }
-    *(unsigned short *)(kerwan_mobys_t + (*(int *)(data + 0xC4) << 8) + 0x34) |= 6;
+    *(unsigned short *)(kerwan_mobys_t + (data->iC4 << 8) + 0x34) |= 6;
 }
 typedef int Q_294040 __attribute__((mode(TI)));
 typedef struct Path_294040 { int count; int pad[3]; Vec4f n[2]; } Path_294040;
@@ -742,32 +831,32 @@ void metropolis_train_carriage_update(char *moby) {
     float position_delta[4];
     float joint_zero_world_position[4];
     struct Moby *m;
-    char *data;
+    struct Car292890 *data;
     char *current_position;
     char *current_rotation;
     char *previous_rotation;
     char *previous_position;
     m = (struct Moby *)moby;
-    data = (char *)m->pvars;
+    data = (struct Car292890 *)m->pvars;
     if ((m->flags & 2) == 0) {
         current_position = (char *)&m->pos;
-        previous_position = data + 0xA0;
-        previous_rotation = data + 0xB0;
+        previous_position = (char *)data->prev_pos;
+        previous_rotation = (char *)data->prev_rot;
         current_rotation = (char *)&m->rot;
         if (m->state == 0) {
-            *(int *)(data + 0x60) = 0;
-            *(short *)(data + 0x64) = 0;
-            data[0x68] = 4;
-            *(short *)(data + 0x7E) = 0xD;
+            *(int *)&data->motion[64] = 0;
+            *(short *)&data->motion[68] = 0;
+            data->motion[72] = 4;
+            *(short *)&data->motion[94] = 0xD;
             Moby_GetJointWorldPos(moby, 0, joint_zero_world_position);
-            *(float *)(data + 0xC4) = FastVecDist(current_position, joint_zero_world_position);
+            data->fC4 = FastVecDist(current_position, joint_zero_world_position);
             qcopy(previous_position, current_position);
             qcopy(previous_rotation, current_rotation);
-            *(int *)(data + 0x5C) = 3;
+            *(int *)&data->motion[60] = 3;
             m->update_dist = m->draw_dist = 0xFF;
         }
         FastVecSub(position_delta, current_position, previous_position);
-        update_entity_matrix(data + 0x20, position_delta, previous_rotation, current_rotation);
+        update_entity_matrix(data->motion, position_delta, previous_rotation, current_rotation);
         qcopy(previous_position, current_position);
         qcopy(previous_rotation, current_rotation);
     }
@@ -787,19 +876,19 @@ void add_moby_rotation_based_offsets(char *moby, float *out) {
     float d[4];
     float b[4];
     float m[16];
-    char *data;
+    struct SplineMobyVars *data;
     *(u128 *)v = 0;
     v[0] = 1.0f;
-    data = ((char *)((Moby *)moby)->pvars);
-    if (*(float *)(data + 0x140) != 0.0f || *(float *)(data + 0x144) != 0.0f) {
+    data = (struct SplineMobyVars *)((Moby *)moby)->pvars;
+    if (data->offset_a != 0.0f || data->offset_b != 0.0f) {
         euler_to_matrix(m, (float *)(moby + 0x40));
         transform_vector(a, v, m);
         *(u128 *)b = *(u128 *)a;
         b[2] = b[2] - 1.0f;
         FastVecCross(c, a, b);
         FastVecCross(d, a, c);
-        FastVecScale(c, c, *(float *)(data + 0x140));
-        FastVecScale(d, d, *(float *)(data + 0x144));
+        FastVecScale(c, c, data->offset_a);
+        FastVecScale(d, d, data->offset_b);
         FastVecAdd(out, out, c);
         FastVecAdd(out, out, d);
     }
@@ -857,13 +946,13 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
     float v[4];
     float v1[4];
     float v2[4];
-    unsigned char *data;
+    struct SplineMobyVars *data;
     float *vp;
     int i, n, n2, r, r2;
     float a, b;
     vp = v;
     *(u128 *)v = *(u128 *)a1;
-    data = ((unsigned char *)((Moby *)moby)->pvars);
+    data = (struct SplineMobyVars *)((Moby *)moby)->pvars;
     if (((Moby *)moby)->flags & 1) return;
     switch ((short)*(unsigned short *)&((Moby *)moby)->oclass) {
     case 0x74:
@@ -884,7 +973,7 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
     case 0x78:
     case 0x84:
         if (a2 != 0) return;
-        if (!fast_subtract_rotations_cf(data + 0x12E)) return;
+        if (!fast_subtract_rotations_cf(&data->emit_timer_a)) return;
         if (FastVecLength(vp) < g_frame_time * 40.0f && FastVecDist(moby + 0x10, kerwan_camera_pos) < 75.0f) {
             FastVecScale(vp, vp, 0.7f);
             n = 9;
@@ -901,11 +990,11 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
         }
         r = scale_ticks(7);
         r2 = scale_ticks(0x14);
-        data[0x12E] = rand_range(r, r2);
+        data->emit_timer_a = rand_range(r, r2);
         return;
     case 0x76:
         if (a2 != 0) return;
-        if (!fast_subtract_rotations_cf(data + 0x12E)) return;
+        if (!fast_subtract_rotations_cf(&data->emit_timer_a)) return;
         if (FastVecLength(vp) < g_frame_time * 40.0f && FastVecDist(moby + 0x10, kerwan_camera_pos) < 90.0f) {
             FastVecScale(vp, vp, 0.5f);
             n2 = 14;
@@ -922,17 +1011,17 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
         }
         r = scale_ticks(7);
         r2 = scale_ticks(0x14);
-        data[0x12E] = rand_range(r, r2);
+        data->emit_timer_a = rand_range(r, r2);
         return;
     case 0x4B:
     case 0x77:
-        fast_subtract_rotations_cf(data + 0x12F);
-        if (a2 != 0 && data[0x12F] == 0) return;
-        fast_subtract_rotations_cf(data + 0x12E);
-        if (data[0x12E] == 0 || data[0x12F] != 0) {
-            Moby_GetJointWorldPos(moby, 0, data + 0xF0);
+        fast_subtract_rotations_cf(&data->emit_timer_b);
+        if (a2 != 0 && data->emit_timer_b == 0) return;
+        fast_subtract_rotations_cf(&data->emit_timer_a);
+        if (data->emit_timer_a == 0 || data->emit_timer_b != 0) {
+            Moby_GetJointWorldPos(moby, 0, &data->emitter_pos);
         }
-        if (data[0x12E] != 0) return;
+        if (data->emit_timer_a != 0) return;
         if (FastVecLength(vp) < g_frame_time * 40.0f && FastVecDist(moby + 0x10, kerwan_camera_pos) < 90.0f) {
             unsigned char *p;
             int s17 = 0xA040;
@@ -941,12 +1030,12 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
                 s17 = 0x30A0;
                 s18 = 0x90A0;
             }
-            p = data + 0xF0;
+            p = (unsigned char *)&data->emitter_pos;
             r = scale_ticks(0x32);
             spawn_emitter_child_effect(moby, p, s17, s18, g_frame_time * 2.5f, 0.15f, r);
-            data[0x12F] = scale_ticks(0x32);
+            data->emit_timer_b = scale_ticks(0x32);
         }
-        data[0x12E] = scale_ticks(0xD);
+        data->emit_timer_a = scale_ticks(0xD);
         return;
     }
 }
@@ -962,30 +1051,30 @@ extern float g_frame_time MACRO_ADDR;
 // Steers a moby's rotation toward its target using spring-damped angle updates.
 void update_spline_moby_orientation(char *m) {
     struct Moby *moby = (struct Moby *)m;
-    char *moby_data = (char *)moby->pvars;
+    struct SplineMobyVars *moby_data = (struct SplineMobyVars *)moby->pvars;
     float position_delta[4];
-    float yaw_offset_radians = (float)*(short *)(moby_data + 0x132) * 0.017453292f;
+    float yaw_offset_radians = (float)moby_data->yaw_offset_deg * 0.017453292f;
     float yaw_step, x, y, z, w;
     FastSubRots(moby->rot.z, yaw_offset_radians);
-    x = fast_atan2(*(float *)(moby_data + 0xD0) - *(float *)(moby_data + 0xE0),
-                          *(float *)(moby_data + 0xD4) - *(float *)(moby_data + 0xE4));
+    x = fast_atan2(moby_data->cur_pos.x - moby_data->prev_pos.x,
+                          moby_data->cur_pos.y - moby_data->prev_pos.y);
     x = FastAddRots(x, yaw_offset_radians);
     y = FastSubRots(x, moby->rot.z);
-    yaw_step = y * (1.0f / *(float *)(moby_data + 0x120) * frame_scale);
+    yaw_step = y * (1.0f / moby_data->step_div * frame_scale);
     moby->rot.z = FastAddRots(yaw_step, moby->rot.z);
-    FastVecSub(position_delta, moby_data + 0xD0, moby_data + 0xE0);
+    FastVecSub(position_delta, &moby_data->cur_pos, &moby_data->prev_pos);
     z = fast_atan2(vec_length_xy(position_delta), position_delta[2]);
-    moby->rot.y = SpringTurn((float *)(moby_data + 0x11C), moby->rot.y, -z,
-        *(float *)(moby_data + 0x118) * 10.0f * 0.017453292f * g_frame_time_sq,
-        *(float *)(moby_data + 0x118) * 5.0f * 0.017453292f * g_frame_time_sq,
-        *(float *)(moby_data + 0x118) * 0.017453292f * g_frame_time);
-    w = normalize_angle(yaw_step * *(float *)(moby_data + 0x124));
+    moby->rot.y = SpringTurn(&moby_data->yaw_vel, moby->rot.y, -z,
+        moby_data->yaw_gain * 10.0f * 0.017453292f * g_frame_time_sq,
+        moby_data->yaw_gain * 5.0f * 0.017453292f * g_frame_time_sq,
+        moby_data->yaw_gain * 0.017453292f * g_frame_time);
+    w = normalize_angle(yaw_step * moby_data->pitch_scale);
     w = FastSubRots(moby->rot.x, w);
-    w = normalize_angle(w * *(float *)(moby_data + 0x128));
-    moby->rot.x = SpringTurn((float *)(moby_data + 0x114), moby->rot.x, w,
-        *(float *)(moby_data + 0x110) * 10.0f * 0.017453292f * g_frame_time_sq,
-        *(float *)(moby_data + 0x110) * 5.0f * 0.017453292f * g_frame_time_sq,
-        *(float *)(moby_data + 0x110) * 0.017453292f * g_frame_time);
+    w = normalize_angle(w * moby_data->yaw_scale);
+    moby->rot.x = SpringTurn(&moby_data->pitch_vel, moby->rot.x, w,
+        moby_data->pitch_gain * 10.0f * 0.017453292f * g_frame_time_sq,
+        moby_data->pitch_gain * 5.0f * 0.017453292f * g_frame_time_sq,
+        moby_data->pitch_gain * 0.017453292f * g_frame_time);
 }
 extern int FastDecTimer(void *);
 extern float FastVecDist(void *, void *);
@@ -994,7 +1083,7 @@ extern int scale_ticks(int);
 // Picks the next animation frame value for a moby in one of several states, storing it at data+0x148.
 void update_emitter_intermittent_sound(char *moby) {
     struct Moby *m = (struct Moby *)moby;
-    char *data = (char *)m->pvars;
+    struct SplineMobyVars *data = (struct SplineMobyVars *)m->pvars;
     int unused_local;
     float distance_to_reference;
     switch (m->oclass) {
@@ -1005,12 +1094,12 @@ void update_emitter_intermittent_sound(char *moby) {
     case MOBY_CLASS_TWO_JOINT_PARTICLE_EMITTER:
     case MOBY_CLASS_FIFTEEN_PARTICLE_BURST_EMITTER:
     case MOBY_CLASS_DEFAULT_COLOR_CHILD_EFFECT_EMITTER:
-        if (*(short *)(data + 0x148) == -1) {
-            int lo = *(short *)(data + 0x14C);
-            *(short *)(data + 0x148) = scale_ticks(rand_range(lo, lo + *(short *)(data + 0x14E)));
+        if (data->sound_timer == -1) {
+            int lo = data->sound_min;
+            data->sound_timer = scale_ticks(rand_range(lo, lo + data->sound_range));
         } else {
             int x, y;
-            if (!FastDecTimer(data + 0x148)) {
+            if (!FastDecTimer(&data->sound_timer)) {
                 break;
             }
             distance_to_reference = FastVecDist((char *)&m->pos, kerwan_camera_pos);
@@ -1019,7 +1108,7 @@ void update_emitter_intermittent_sound(char *moby) {
             }
             x = scale_ticks(0x898);
             y = scale_ticks(0x898);
-            *(short *)(data + 0x148) = scale_ticks(rand_range(x, y + scale_ticks(0x3E8)));
+            data->sound_timer = scale_ticks(rand_range(x, y + scale_ticks(0x3E8)));
         }
         break;
     }
@@ -1044,12 +1133,12 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
     float spot[4];
     float vel[4];
     float push[4];
-    char *data;
+    struct SplineMobyVars *data;
     char *hit;
     int idx;
     unsigned char *e;
 
-    data = ((char *)((Moby *)moby)->pvars);
+    data = (struct SplineMobyVars *)((Moby *)moby)->pvars;
     hit = MobyGetHitMessage(moby, 0xA30000, 0);
     if (hit != 0 && *(unsigned short *)(hit + 0x28) != 0x102) {
         clear_u64_value(spot);
@@ -1066,7 +1155,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
         } else {
             spawn_randomized_bolt_drop_r(moby, 3, 5, 2, -1);
         }
-        *(short *)(data + 0x14A) = scale_ticks(600);
+        data->respawn_timer = scale_ticks(600);
         spawn_explosion(moby, vel, spot, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
         FastVecScale(push, moby + 0xC0, frame_scale * 0.075f);
         push[2] += frame_scale * 0.08f;
@@ -1116,21 +1205,21 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
     }
     kerwan_red_ship_update_slot = (void *)red_ship_1_update;
     ((unsigned char *)moby)[0xA4] = 0xFF;
-    if (*(short *)(data + 0x14A) != 0) {
-        if (FastDecTimer(data + 0x14A) && flag) {
+    if (data->respawn_timer != 0) {
+        if (FastDecTimer(&data->respawn_timer) && flag) {
             *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
             ((Moby *)moby)->flags = (((Moby *)moby)->flags & 0xFFBE) | 0x1000;
         } else {
             *(int *)&((Moby *)moby)->collision = 0;
             ((Moby *)moby)->flags |= 0x41;
-            idx = *(int *)(data + 0x150);
+            idx = data->emitted_moby;
             if (idx != -1) {
                 e = (unsigned char *)voice_pool_r2 + idx * 0x70;
                 if (*(char **)(e + 0x88) == moby && e[0x74]) {
                     Sound_StopSlot(idx);
                 }
             }
-            *(int *)(data + 0x150) = -1;
+            data->emitted_moby = -1;
             ((Moby *)moby)->flags &= 0xEFFF;
         }
     }
@@ -1171,13 +1260,13 @@ void red_ship_1_update(char *moby) {
     float vec[4];
     float tmp[4];
     char *item;
-    char *data;
+    struct SplineMobyVars *data;
     char *pm;
     char *cur;
     char *cur0;
     char *pos0;
     char *p;
-    char *d;
+    struct SplineMobyVars *d;
     int *path;
     int flag;
     int found;
@@ -1190,16 +1279,16 @@ void red_ship_1_update(char *moby) {
 
     *(OvlQuad *)zero = 0;
     flag = 0;
-    data = ((char *)((Moby *)moby)->pvars);
+    data = (struct SplineMobyVars *)((Moby *)moby)->pvars;
     if (((unsigned char *)moby)[0x31] == 0) {
         *(OvlQuad *)vec = *(OvlQuad *)(moby + 0x10);
         vec[3] = 7.0f;
         flag = FastBSphereCheck(vec, ((Moby *)moby)->draw_dist) == -1;
     }
-    if (data == 0) {
+    if (((char *)data) == 0) {
         return;
     }
-    pm = data + 0x60;
+    pm = (char *)data->path;
     if (((unsigned char *)moby)[0x21] != 0xFF && ((unsigned char *)moby)[0x20] != 0 &&
         ((unsigned char *)moby)[0x20] != 3) {
         found = 0;
@@ -1220,9 +1309,9 @@ void red_ship_1_update(char *moby) {
             if (!found) {
                 get_first_moby_in_group((int *)&item, ((unsigned char *)moby)[0x21], 0, 0);
                 while (item != 0) {
-                    d = ((char *)((Moby *)item)->pvars);
+                    d = (struct SplineMobyVars *)((Moby *)item)->pvars;
                     item[0x20] = 3;
-                    *(short *)(d + 0x12C) = scale_ticks(5);
+                    d->timer = scale_ticks(5);
                     get_next_moby_in_group((int *)&item, (int)item, 0, 0);
                 }
             }
@@ -1243,20 +1332,20 @@ void red_ship_1_update(char *moby) {
                          truncate_float_to_s32((moby - kerwan_mobys) >> 8));
         }
         ((unsigned char *)moby)[0x30] = 0xFF;
-        data[0x2B] = 1;
-        data[0x2C] = 0x25;
-        if (*(float *)(data + 0x140) > 500.0f) {
-            *(float *)(data + 0x140) = random_float_between(-1.0f, 1.0f) * *(float *)(data + 0x140) / 1000.0f;
+        data->unk_2B = 1;
+        data->unk_2C = 0x25;
+        if (data->offset_a > 500.0f) {
+            data->offset_a = random_float_between(-1.0f, 1.0f) * data->offset_a / 1000.0f;
         }
-        if (*(float *)(data + 0x144) > 500.0f) {
-            *(float *)(data + 0x144) = random_float_between(-1.0f, 1.0f) * *(float *)(data + 0x144) / 1000.0f;
+        if (data->offset_b > 500.0f) {
+            data->offset_b = random_float_between(-1.0f, 1.0f) * data->offset_b / 1000.0f;
         }
         if (*(int *)(pm + 0x14) == -1) {
             moby[0x20] = 2;
             break;
         }
         pos0 = moby + 0x10;
-        data[0x131] = ((moby - kerwan_mobys) >> 8) / 2 % 7;
+        data->unk_131 = ((moby - kerwan_mobys) >> 8) / 2 % 7;
         initialize_path_descriptor(pm);
         if (((unsigned char *)pm)[5] == 0) {
             if (*(int *)pm <= 0) {
@@ -1274,32 +1363,32 @@ void red_ship_1_update(char *moby) {
             *(int *)(pm + 0x8) = 0;
             *(int *)(pm + 0x1C) = 0;
         }
-        cur0 = data + 0xA0;
-        *(OvlQuad *)(data + 0xE0) = *(OvlQuad *)(*(char **)(pm + 0x10) + *(int *)pm * 0x10 + 0x10);
-        *(float *)(data + 0x100) = 1.0f;
-        compute_path_node_tangent(cur0, (int *)pm, 0, *(float *)(data + 0x104), *(float *)(data + 0x108));
-        *(OvlQuad *)(data + 0xB0) = *(OvlQuad *)(data + 0xC0) =
+        cur0 = (char *)&data->tangent0;
+        *(OvlQuad *)&data->prev_pos.x = *(OvlQuad *)(*(char **)(pm + 0x10) + *(int *)pm * 0x10 + 0x10);
+        data->seg_t = 1.0f;
+        compute_path_node_tangent(cur0, (int *)pm, 0, data->unk_104, data->unk_108);
+        *(OvlQuad *)&data->tangent1.x = *(OvlQuad *)&data->p1.x =
             *(OvlQuad *)(*(char **)(pm + 0x10) + *(int *)pm * 0x10 + 0x10);
         ((Moby *)moby)->rot.x = 0.0f;
-        ((Moby *)moby)->rot.y = -fast_atan2(vec_length_xy(cur0), *(float *)(data + 0xA8));
-        ((Moby *)moby)->rot.z = fast_atan2(*(float *)(data + 0xA0) - zero[0], *(float *)(data + 0xA4) - zero[1]);
-        *(float *)(data + 0x114) = 0.0f;
-        *(float *)(data + 0x11C) = 0.0f;
-        *(OvlQuad *)(moby + 0x10) = *(OvlQuad *)(data + 0xE0);
+        ((Moby *)moby)->rot.y = -fast_atan2(vec_length_xy(cur0), data->tangent0.z);
+        ((Moby *)moby)->rot.z = fast_atan2(data->tangent0.x - zero[0], data->tangent0.y - zero[1]);
+        data->pitch_vel = 0.0f;
+        data->yaw_vel = 0.0f;
+        *(OvlQuad *)(moby + 0x10) = *(OvlQuad *)&data->prev_pos.x;
         add_moby_rotation_based_offsets_r(moby, pos0);
-        data[0x131] = 7;
-        f = *(float *)(data + 0x13C);
+        data->unk_131 = 7;
+        f = data->wobble_phase;
         if (f > 6.2831855f) {
-            *(float *)(data + 0x13C) = f * 0.017453292f;
-        } else if (*(float *)(data + 0x134) != 0.0f && f == -1.0f) {
-            *(float *)(data + 0x13C) = random_angle_radians();
+            data->wobble_phase = f * 0.017453292f;
+        } else if (data->wobble_amp != 0.0f && f == -1.0f) {
+            data->wobble_phase = random_angle_radians();
         }
-        *(OvlQuad *)(data + 0xD0) = *(OvlQuad *)(data + 0xC0);
-        compute_sampled_spline_path_lengths(pm, 0, moby, *(float *)(data + 0x104), *(float *)(data + 0x108));
-        if (*(short *)(data + 0x12C) > 0) {
+        *(OvlQuad *)&data->cur_pos.x = *(OvlQuad *)&data->p1.x;
+        compute_sampled_spline_path_lengths(pm, 0, moby, data->unk_104, data->unk_108);
+        if (data->timer > 0) {
             moby[0x20] = 3;
         } else {
-            *(short *)(data + 0x14A) = 0;
+            data->respawn_timer = 0;
             moby[0x20] = 1;
         }
         break;
@@ -1307,47 +1396,47 @@ void red_ship_1_update(char *moby) {
         if (*(int *)(pm + 0x14) != -1) {
             moby[0x20] = 0;
         }
-        idx = *(int *)(data + 0x150);
+        idx = data->emitted_moby;
         if (idx != -1) {
             e = (unsigned char *)voice_pool + idx * 0x70;
             if (*(char **)(e + 0x88) == moby && e[0x74]) {
                 Sound_StopSlot(idx);
             }
         }
-        *(int *)(data + 0x150) = -1;
+        data->emitted_moby = -1;
         break;
     case 3:
-        if (FastDecTimer(data + 0x12C)) {
+        if (FastDecTimer(&data->timer)) {
             moby[0x20] = 1;
         }
         break;
     case 1:
         *(OvlQuad *)old_rot = *(OvlQuad *)(moby + 0x40);
         *(OvlQuad *)old_pos = *(OvlQuad *)(moby + 0x10);
-        cur = data + 0xA0;
-        if (*(float *)(data + 0x100) >= 1.0f) {
-            *(float *)(data + 0x100) -= 1.0f;
+        cur = (char *)&data->tangent0;
+        if (data->seg_t >= 1.0f) {
+            data->seg_t -= 1.0f;
             n = advance_path_node_index(pm);
-            *(OvlQuad *)(data + 0x90) = *(OvlQuad *)(data + 0xA0);
-            compute_path_node_tangent(cur, (int *)pm, 1, *(float *)(data + 0x104), *(float *)(data + 0x108));
-            *(OvlQuad *)(data + 0xB0) = *(OvlQuad *)(data + 0xC0);
-            *(OvlQuad *)(data + 0xC0) = *(OvlQuad *)(*(char **)(pm + 0x10) + resolve_path_node_index(pm, n + 1) * 0x10 + 0x10);
+            *(OvlQuad *)&data->p0.x = *(OvlQuad *)&data->tangent0.x;
+            compute_path_node_tangent(cur, (int *)pm, 1, data->unk_104, data->unk_108);
+            *(OvlQuad *)&data->tangent1.x = *(OvlQuad *)&data->p1.x;
+            *(OvlQuad *)&data->p1.x = *(OvlQuad *)(*(char **)(pm + 0x10) + resolve_path_node_index(pm, n + 1) * 0x10 + 0x10);
         }
-        step = (*(float *)(data + 0x10C) + *(float *)(data + 0x134) * FastSin(*(float *)(data + 0x13C))) /
-               *(float *)(data + 0xBC);
-        *(float *)(data + 0x13C) = FastAddRots(*(float *)(data + 0x13C), *(float *)(data + 0x138) * 0.017453292f);
-        *(OvlQuad *)(data + 0xE0) = *(OvlQuad *)(data + 0xD0);
-        evaluate_cubic_hermite_segment(*(float *)(data + 0x100) + step, data + 0xD0, data + 0xB0, data + 0xC0, data + 0x90, cur);
+        step = (data->speed + data->wobble_amp * FastSin(data->wobble_phase)) /
+               data->tangent1.w;
+        data->wobble_phase = FastAddRots(data->wobble_phase, data->wobble_rate * 0.017453292f);
+        *(OvlQuad *)&data->prev_pos.x = *(OvlQuad *)&data->cur_pos.x;
+        evaluate_cubic_hermite_segment(data->seg_t + step, &data->cur_pos, &data->tangent1, &data->p1, &data->p0, cur);
         if (!flag) {
             func_L03_0029E1A8_9ED60(moby);
         } else {
             clear_u64_value(moby + 0x40);
-            ((Moby *)moby)->rot.z = fast_atan2(*(float *)(data + 0xD0) - *(float *)(data + 0xE0),
-                                                   *(float *)(data + 0xD4) - *(float *)(data + 0xE4));
+            ((Moby *)moby)->rot.z = fast_atan2(data->cur_pos.x - data->prev_pos.x,
+                                                   data->cur_pos.y - data->prev_pos.y);
         }
         cur = moby + 0x10;
-        *(float *)(data + 0x100) += step;
-        *(OvlQuad *)(moby + 0x10) = *(OvlQuad *)(data + 0xE0);
+        data->seg_t += step;
+        *(OvlQuad *)(moby + 0x10) = *(OvlQuad *)&data->prev_pos.x;
         if (!flag) {
             add_moby_rotation_based_offsets_r(moby, cur);
         }
@@ -1370,24 +1459,24 @@ char *func_L03_002BC038_r(Moby *parent, int unused, int color, int a3, int a4, f
 char *func_L03_002BC038_r(Moby *parent, int unused, int color, int a3, int a4, float f, float scale) {
     char *m = func_0020D348_2BC038(0xEB);
     if (m) {
-        char *d = ((char *)((Moby *)m)->pvars);
+        struct ParentSparkVars *d = (struct ParentSparkVars *)((Moby *)m)->pvars;
         int r, g, b;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0x7F;
         m[0x31] = 1;
         ((Moby *)m)->scale *= scale;
-        *(char **)d = (char *)parent;
+        d->parent = (char *)parent;
         qcopy(m + 0x10, (char *)parent->pvars + 0xF0);
         *(OvlQuad_2BC038 *)(m + 0x40) = *(OvlQuad_2BC038 *)&parent->rot;
         ((Moby *)m)->rot.x = func_00214158_2BC038();
-        *(short *)(d + 0xC) = a4;
+        d->unk_0C = a4;
         b = (color >> 16) & 0xFF;
         g = (color >> 8) & 0xFF;
         r = color & 0xFF;
-        *(short *)(d + 0xE) = a4;
-        *(float *)(d + 0x14) = f;
-        *(int *)(d + 0x4) = color;
-        *(int *)(d + 0x8) = a3;
+        d->unk_0E = a4;
+        d->unk_14 = f;
+        d->color = color;
+        d->unk_08 = a3;
         func_L00_00251328_2BC038(m, r, g, b);
         func_L00_00251E30_2BC038(m);
     }
@@ -1781,38 +1870,38 @@ typedef struct RobotDogHit {
 /* Applies damage reaction, knockback parameters and animation state. */
 void update_robot_dog_hit_reaction(unsigned char *moby) {
  float vector[4]; int result; float damage; float angle;
- char *data=(char *)((struct Moby *)moby)->pvars;
+ struct RobotDogVars *data = (struct RobotDogVars *)((struct Moby *)moby)->pvars;
  struct RobotDogHit *hit;
- if (*(int *)(data+0x38)!=0 || (*(int *)(data+0x248)!=-1 && can_release_linked_robot_dog((unsigned char *)(kerwan_mobys+(*(int *)(data+0x248)<<8)))))
-  *(int *)(data+0x240)=scale_ticks(240);
- if (fast_dec_timer((int *)(data+0x240))) *(float *)(data+0x230)=*(float *)(data+0x22C);
- else *(float *)(data+0x230)=*(float *)(data+0x22C)*2.0f;
+ if (data->unk_38!=0 || (data->linked_moby!=-1 && can_release_linked_robot_dog((unsigned char *)(kerwan_mobys+(data->linked_moby<<8)))))
+  data->stun_timer=scale_ticks(240);
+ if (fast_dec_timer(&data->stun_timer)) data->unk_230=data->unk_22C;
+ else data->unk_230=data->unk_22C*2.0f;
  damage=0.0f;
  hit=(struct RobotDogHit *)MobyGetHitMessage(moby,0x330000,0);
- ComputeHitResponse(moby,hit,data+0x20,0,&result,&damage,0,4);
+ ComputeHitResponse(moby,hit,&data->health,0,&result,&damage,0,4);
  if (result!=1 && ((struct Moby *)moby)->state != 21) {
   struct Moby *other;
   if (((struct Moby *)moby)->group != 255) MobyGroup_SetByteBC(((struct Moby *)moby)->group,1);
-  { float health=*(float *)(data+0x20)-damage;
+  { float health=data->health-damage;
   float speed=g_frame_time_sq*50.0f;
-  *(int *)(data+0x144)=9;
-  data[0x15D]=0;
-  *(float *)(data+0x130)=speed;
-  *(float *)(data+0x20)=health; }
+  data->unk_144=9;
+  data->unk_15D=0;
+  data->knock_speed=speed;
+  data->health=health; }
   other=hit->other;
   angle=fast_atan2(((struct Moby *)moby)->pos.x-other->pos.x,((struct Moby *)moby)->pos.y-other->pos.y);
   { float rotationSpeed=g_frame_time*10.0f;
   ((struct Moby *)moby)->flags &= 0xEFFF;
-  *(float *)(data+0x13C)=rotationSpeed; }
-  trooper_set_knockback((float *)(data+0x120),4.5f,2.0f);
-  *(float *)(data+0x170)=5.0f;
-  *(float *)(data+0x174)=12.0f;
+  data->hit_yaw=rotationSpeed; }
+  trooper_set_knockback((float *)data->knockback,4.5f,2.0f);
+  data->unk_170=5.0f;
+  data->unk_174=12.0f;
   *(L03Quad *)vector=hit->vec;
-  HeadingFromVector(vector,&angle,data+0x138,data+0x13C);
-  InitKnockback(angle,moby,data+0x120,4,1,0);
+  HeadingFromVector(vector,&angle,&data->hit_pitch,&data->hit_yaw);
+  InitKnockback(angle,moby,data->knockback,4,1,0);
   ((struct Moby *)moby)->state=21;
-  *(unsigned char *)(data+0x117)=240;
-  RerollEffectCounter(moby,(short *)(data+0x110));
+  data->flash=240;
+  RerollEffectCounter(moby,&data->color_fade);
  }
  ((struct Moby *)moby)->hit_slot=255;
 }
@@ -1821,15 +1910,15 @@ LINKER_REMNANT("asm/overlays", func_L03_002C8000);
 /* Return 1 when the robot dog (class 0x23E) may be released from the train. */
 int can_release_linked_robot_dog(unsigned char *moby) {
     unsigned char state;
-    char *data;
-    data = ((char *)((Moby *)moby)->pvars);
+    struct RobotDogVars *data;
+    data = (struct RobotDogVars *)((Moby *)moby)->pvars;
     if (!moby) return 0;
     state = ((Moby *)moby)->state;
     if (state == 0xFE) return 0;
     if (state == 0xFD) return 0;
     if (((Moby *)moby)->oclass != 0x23E) return 0;
     if (((Moby *)moby)->seq == 10 && MobyGetFrameValue(moby) >= 10.0f) return 1;
-    if (((Moby *)moby)->state == 10 || ((Moby *)moby)->state == 13 || *(int *)(data + 0x284) == -1) return 1;
+    if (((Moby *)moby)->state == 10 || ((Moby *)moby)->state == 13 || data->release_state == -1) return 1;
     return 0;
 }
 /* Return 1 when moby is a live class 0x23E moby in state 9. */

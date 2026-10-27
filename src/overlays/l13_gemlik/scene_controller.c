@@ -4,6 +4,25 @@
 #include "include_asm.h"
 #include "moby.h"
 
+/* Hit proxy (moby 0x660): forwards the hits it takes to the moby that owns it. */
+struct HitProxyVars {
+    char *hit_data_ptr;             /* 0x00: points at hit_data */
+    u8 pad_04[0x1C];
+    u8 hit_data[0x40];              /* 0x20 */
+    char *owner;                    /* 0x60 */
+    s32 owner_id;                   /* 0x64: owner's id, checked to catch a reused slot */
+};
+
+/* Moby 1805: takes hits until its health is gone. */
+struct Moby1805Vars {
+    u8 pad_00[0x20];
+    f32 health;                     /* 0x20: hit response block */
+    u8 pad_24[0x3C];
+    s16 color_fade;                 /* 0x60: StepColorFade block */
+    u8 pad_62[0x5];
+    u8 flash;                       /* 0x67: hit flash strength */
+};
+
 typedef struct MobyData_30CAE0 {
     int f0;
     int f4;
@@ -355,13 +374,13 @@ char *spawn_scaled_owned_moby(char *owner, void *position, float scale) {
         ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
         moby[0x20] = 0;
-        *(char **)(data + 0x60) = owner;
+        ((struct HitProxyVars *)data)->owner = owner;
         ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * scale;
         qcopy(moby + 0x10, position);
         if (owner != 0) {
-            *(int *)(data + 0x64) = *(short *)(owner + 0xA6);
+            ((struct HitProxyVars *)data)->owner_id = *(short *)(owner + 0xA6);
         }
-        *(char **)(data) = data + 0x20;
+        *(char **)(data) = (char *)((struct HitProxyVars *)data)->hit_data;
         ((Moby *)moby)->flags |= 0x20;
         moby_build_matrix(moby);
     }
@@ -373,11 +392,11 @@ extern void record_moby_hit(void *, void *);
 
 /* updates the moby: deletes it when its owner is gone, else copies the owner's effect data and marks it */
 void forward_moby_hits_to_owner(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    char *owner = *(char **)(data + 0x60);
+    struct HitProxyVars *data = (struct HitProxyVars *)((Moby *)moby)->pvars;
+    char *owner = data->owner;
     char *p;
     char buf[0x30];
-    if (owner == 0 || *(short *)(owner + 0xA6) != *(int *)(data + 0x64) ||
+    if (owner == 0 || *(short *)(owner + 0xA6) != data->owner_id ||
         (unsigned char)owner[0x20] == 0xFE || (unsigned char)owner[0x20] == 0xFD) {
         DeleteMoby(moby);
         return;
@@ -392,7 +411,7 @@ void forward_moby_hits_to_owner(char *moby) {
         *(short *)(buf + 0x1A) = *(short *)(p + 0x2A);
         *(float *)(buf + 0x1C) = *(float *)(p + 0x2C);
         *(int *)(buf + 0x20) = *(int *)(p + 0x30);
-        record_moby_hit(*(void **)(data + 0x60), buf);
+        record_moby_hit(*(void **)&data->owner, buf);
     }
     ((unsigned char *)moby)[0xA4] = 0xFF;
 }
@@ -588,7 +607,7 @@ extern void StepColorFade(void *, void *);
  * func_L00_00265050 effects for types 0x709 to 0x70C, twice. */
 void Moby1805Update(void *moby) {
     char *m = moby;
-    char *data;
+    struct Moby1805Vars *data;
     char *item;
     char *p;
     int st;
@@ -599,23 +618,23 @@ void Moby1805Update(void *moby) {
         DeleteMoby(moby);
         return;
     }
-    data = ((char *)((Moby *)m)->pvars);
+    data = (struct Moby1805Vars *)((Moby *)m)->pvars;
     item = MobyGetHitMessage(moby, 0x10000, 0);
-    ComputeHitResponse(moby, item, data + 0x20, 0, &st, 0, 0, 4);
+    ComputeHitResponse(moby, item, &data->health, 0, &st, 0, 0, 4);
     switch (((unsigned char *)m)[0x20]) {
     case 0:
         m[0x20] = 1;
         break;
     case 1:
-        p = data + 0x60;
+        p = (char *)&data->color_fade;
         if (item != 0) {
-            float a = *(float *)(data + 0x20);
+            float a = data->health;
             float b = *(float *)(item + 0x2C);
             if (a < b) {
                 m[0x20] = 2;
             } else {
-                *(float *)(data + 0x20) = a - b;
-                ((unsigned char *)data)[0x67] = 0xFA;
+                data->health = a - b;
+                data->flash = 0xFA;
                 RerollEffectCounter(moby, (short *)p);
             }
             ((unsigned char *)m)[0xA4] = 0xFF;

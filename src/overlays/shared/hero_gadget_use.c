@@ -10,10 +10,10 @@ extern unsigned char hero_globals_base[] NOT_SDA;
 
 /* Steps two floats of arg toward a target and clamps them to [-1, 1]. */
 void smooth_and_clamp_value_pair(float *out, float *p, float step) {
-    char *g = (char *)hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     float v[2];
-    v[0] = -*(float *)(g + 0x1D20);
-    v[1] = *(float *)(g + 0x1D24);
+    v[0] = -g->stick_x;
+    v[1] = g->stick_y;
     ApproachValue(p + 2, v[0], step);
     if (p[2] > 1.0f) p[2] = 1.0f;
     if (p[2] < -1.0f) p[2] = -1.0f;
@@ -25,19 +25,19 @@ void smooth_and_clamp_value_pair(float *out, float *p, float step) {
 }
 /* Pose/tilt lookup for an animation id: *out = 0, returns 1 for the ids that apply. */
 int hero_anim_tilt_lookup(int id, float *out) {
-    char *g;
+    struct Hero *g;
     *out = 0.0f;
-    g = (char *)hero_globals_base + 0xE1D;
-    if (*(int *)(g + 0x208C) == 0x16 && *(unsigned char *)(g + 0x8CE) != 0
-        && (unsigned int)(*(unsigned char *)(*(char **)(g + 0x2080) + 0x53) - 0x69) < 4)
+    g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    if (g->state.control_mode == 0x16 && g->race_ammo != 0
+        && (unsigned int)(*(unsigned char *)(*(char **)&g->moby + 0x53) - 0x69) < 4)
         return 1;
     switch (id) {
     case 0x37:
         *out = -0.9599310755729675f;
         return 1;
     case 0x1C: case 0x1D: case 0x1F: {
-        char *h = (char *)hero_globals_base + 0xE1D;
-        if (*(float *)(h + 0xAA8) > 25.0f) *out = -1.3089969158172607f;
+        struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (h->anim_frame > 25.0f) *out = -1.3089969158172607f;
         return 1;
     }
     case 0x31: case 0x32: case 0x4A: case 0x4B: case 0x50: case 0x60: case 0x6D: case 0x6E:
@@ -104,10 +104,10 @@ void apply_hero_item_slot_selection(int i) {
 
     if (i == 0) {
         int v;
-        char *g = (char *)hero_globals_base + 0xE1D;
-        v = *(int *)(g + 0x10B8);
-        if (v != 8 && v != 0x17 && v != 9 && *(unsigned char *)(g + 0x10AC) == 2) {
-            *(unsigned char *)(g + 0x10AC) = 0;
+        struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        v = g->items[0].item_id;
+        if (v != 8 && v != 0x17 && v != 9 && g->items[0].switch_lock == 2) {
+            g->items[0].switch_lock = 0;
         }
     }
     if (i == 0) {
@@ -516,79 +516,79 @@ extern void Hero_TryMoveStateL05(int, int);
 
 /* Decides whether the hero's current motion warrants the swing effect, running a probe when the conditions line up. */
 int try_apply_hero_water_and_ground_transitions(void) {
-    char *g = (char *)hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     int ret;
-    int k = *(int *)(g + 0x208C);
+    int k = g->state.control_mode;
     int s;
     float a[4];
     float b[4];
     if ((unsigned)(k - 0x15) < 2) return 0;
-    s = *(int *)(g + 0x2084);
+    s = g->state.current;
     if (s == 0x6F || s == 0x6D || s == 0x6E || s == 0x6A) return 0;
     ret = 0;
-    if (*(unsigned char *)(g + 0x12E4) != 0) {
+    if (g->base_condition != 0) {
         if (k == 0x11) {
-            if (*(int *)(g + 0x2088) != 1) {
-                if (0.0f < *(float *)(g + 0x108)) {
-                    if (*(float *)(g + 0x2F0) - 0.4f < *(float *)(g + 0x88))
+            if (g->state.step != 1) {
+                if (0.0f < g->motion.displacement.f[2]) {
+                    if (g->water_surface_z - 0.4f < g->motion.pos.f[2])
                         ret = 1;
                 }
             }
         } else if (k != 0x12 && k != 3) {
             float lim = 0.2f;
             float r;
-            if (lim < FastAbsF(*(float *)(g + 0xE8)) + 0.07f)
-                lim = FastAbsF(*(float *)(g + 0xE8)) + 0.07f;
-            r = FastAbsF(*(float *)(g + 0x2F0) - (*(float *)(g + 0x88) + 0.45f));
+            if (lim < FastAbsF(g->motion.velocity.f[2]) + 0.07f)
+                lim = FastAbsF(g->motion.velocity.f[2]) + 0.07f;
+            r = FastAbsF(g->water_surface_z - (g->motion.pos.f[2] + 0.45f));
             if (r < lim) {
-                int k2 = *(int *)(g + 0x208C);
-                if (!(k2 == 4 && *(short *)(g + 0x41E) == 0)) {
-                    if (0.8f < *(float *)(g + 0x22A4)) {
-                        if (*(float *)(g + 0x108) < 0.0f)
+                int k2 = g->state.control_mode;
+                if (!(k2 == 4 && g->past_jump_apex == 0)) {
+                    if (0.8f < g->water_depth) {
+                        if (g->motion.displacement.f[2] < 0.0f)
                             ret = 1;
                     }
                 }
             }
             {
-                char *q = (char *)hero_globals_base + 0xE1D;
-                if (*(float *)(q + 0x88) < *(float *)(q + 0x2F0) - 0.8f) {
-                    if (*(int *)(q + 0x208C) != 4 || *(short *)(q + 0x41E) != 0)
+                struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+                if (q->motion.pos.f[2] < q->water_surface_z - 0.8f) {
+                    if (q->state.control_mode != 4 || q->past_jump_apex != 0)
                         ret = 1;
                 }
             }
         }
     }
     {
-        char *h = (char *)hero_globals_base + 0xE1D;
+        struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         float lim2 = 0.27f;
-        if (lim2 < FastAbsF(*(float *)(h + 0xE8)) + 0.07f)
-            lim2 = FastAbsF(*(float *)(h + 0xE8)) + 0.07f;
-        if (*(int *)(h + 0x2084) == 0x12) {
-            if (*(short *)(h + 0x41E) != 0) {
-                if (*(float *)(h + 0x88) < *(float *)(h + 0x2F0) - 0.7f)
+        if (lim2 < FastAbsF(h->motion.velocity.f[2]) + 0.07f)
+            lim2 = FastAbsF(h->motion.velocity.f[2]) + 0.07f;
+        if (h->state.current == 0x12) {
+            if (h->past_jump_apex != 0) {
+                if (h->motion.pos.f[2] < h->water_surface_z - 0.7f)
                     ret = 1;
             }
         }
     }
     {
-        char *p = (char *)hero_globals_base + 0xE1D;
-        int kk = *(int *)(p + 0x208C);
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        int kk = p->state.control_mode;
         int t;
         float f12v;
         int s2;
-        if ((unsigned)(kk - 0x11) < 2 || kk == 7 || kk == 0x14 || *(int *)(p + 0x2084) == 0x12)
+        if ((unsigned)(kk - 0x11) < 2 || kk == 7 || kk == 0x14 || p->state.current == 0x12)
             goto done;
         t = *(int *)&rilgar_frame_count;
         if (t & 0xF) goto done;
         f12v = 4.0f;
         if ((t & 0x3F) == 0) f12v = 16.0f;
         hero_get_collision_ray_endpoints(a, b, 0, f12v, 1.3f);
-        if (coll_line(a, b, 2, *(int *)(p + 0x2080), 0) == 0) goto done;
+        if (coll_line(a, b, 2, *(int *)&p->moby, 0) == 0) goto done;
         s2 = CollType();
-        *(short *)(p + 0x12E0) = s2;
+        p->ground_type = s2;
         if ((s2 << 16) != 0) goto done;
         a[2] = rilgar_coll_hit_z - 0.01f;
-        if (coll_line(a, b, 2, *(int *)(p + 0x2080), 0) != 0) goto done;
+        if (coll_line(a, b, 2, *(int *)&p->moby, 0) != 0) goto done;
         Hero_TryMoveStateL05(0x34, 1);
         return 1;
     }
@@ -1038,47 +1038,47 @@ extern int select_hero_hoverboard_animation_variant(void);
 void update_hero_hoverboard_trick_animations(void) {
     char *g = (char *)hero_globals_base + 0xE1D;
     int pad;
-    *(short *)(g + 0x888) = truncate_float_to_s32(predict_hero_trajectory_intercept_time(60.0f, *(float *)(g + 0x860), -1.0f));
+    ((struct Hero *)g)->board_jump_land_frames = truncate_float_to_s32(predict_hero_trajectory_intercept_time(60.0f, ((struct Hero *)g)->board_gravity, -1.0f));
     if (((unsigned char *)g)[0x88D] != 0 && ((pad = *(int *)(pad_globals_base + 0x2600)) & 0xF) != 0) {
-        g[0x88F] = 0;
-        if (pad & 8) g[0x88F] = 1;
-        else if (pad & 1) g[0x88F] = 2;
-        else if (pad & 2) g[0x88F] = 3;
+        *(char *)&((struct Hero *)g)->air_pose_index = 0;
+        if (pad & 8) *(char *)&((struct Hero *)g)->air_pose_index = 1;
+        else if (pad & 1) *(char *)&((struct Hero *)g)->air_pose_index = 2;
+        else if (pad & 2) *(char *)&((struct Hero *)g)->air_pose_index = 3;
         {
             char *h = (char *)hero_globals_base + 0xE1D;
             int a = ((unsigned char *)h)[0x88F] + 0x69;
-            if (((unsigned char *)*(char **)(h + 0x2080))[0x53] != a) {
+            if (((unsigned char *)*(char **)&((struct Hero *)h)->moby)[0x53] != a) {
                 set_hero_animation(a, 2, (float)scale_ticks(5));
                 hero_queue_sequence(hoverboard_trick_sounds[((unsigned char *)h)[0x88F]].bank,
                                   hoverboard_trick_sounds[((unsigned char *)h)[0x88F]].seq);
-            } else if ((float)*(int *)(h + 0xAB0) - 2.0f < *(float *)(h + 0xAA8)) {
+            } else if ((float)((struct Hero *)h)->anim_loop_frame - 2.0f < ((struct Hero *)h)->anim_frame) {
                 ((Hero *)h)->tricks_landed[((unsigned char *)h)[0x88F]] = 1;
-                *(int *)(h + 0x6F8) += 1;
+                ((struct Hero *)h)->unk6F8 += 1;
             }
         }
     }
     {
-        char *k = (char *)hero_globals_base + 0xE1D;
-        if ((*(short *)(k + 0x30E) == 0 || (*(int *)(pad_globals_base + 0x2600) & 0xF) == 0)
-            && (unsigned int)(((unsigned char *)*(char **)(k + 0x2080))[0x53] - 0x69) < 4
-            && *(int *)(k + 0xA9C) == 0
-            && *(int *)(k + 0xAB0) < ((unsigned char *)*(char **)(k + 0x2080))[0x51]
-            && ((unsigned char *)*(char **)(k + 0x2080))[0x51] < *(int *)(k + 0xAB4)) {
-            int t = *(short *)(k + 0x888);
+        struct Hero *k = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if ((k->air_frames.s == 0 || (*(int *)(pad_globals_base + 0x2600) & 0xF) == 0)
+            && (unsigned int)(((unsigned char *)*(char **)&k->moby)[0x53] - 0x69) < 4
+            && k->anim_changing == 0
+            && k->anim_loop_frame < ((unsigned char *)*(char **)&k->moby)[0x51]
+            && ((unsigned char *)*(char **)&k->moby)[0x51] < k->queued_anim_frame) {
+            int t = k->board_jump_land_frames;
             if (t > scale_ticks(0x1E)) {
                 int x = select_hero_hoverboard_animation_variant();
                 set_hero_animation(x, 9, (float)scale_ticks(0x11));
             } else {
-                t = *(short *)(k + 0x888);
+                t = k->board_jump_land_frames;
                 if (t < scale_ticks(0xA)) t = scale_ticks(0xA);
                 set_hero_animation(select_hero_hoverboard_animation_variant(), 0xD, (float)t);
             }
         }
     }
     {
-        char *h = (char *)hero_globals_base + 0xE1D;
-        if (*(short *)(h + 0x8BC) != 0) {
-            int a = ((unsigned char *)*(char **)(h + 0x2080))[0x53];
+        struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (h->hoverboard_airborne != 0) {
+            int a = ((unsigned char *)*(char **)&h->moby)[0x53];
             if (a == 0x52 || a == 0x7D || a == 0x68 || a == 0x7E) {
                 int x = select_hero_hoverboard_animation_variant();
                 set_hero_animation(x, 0xB, (float)scale_ticks(0xA));
@@ -1086,8 +1086,8 @@ void update_hero_hoverboard_trick_animations(void) {
         }
     }
     {
-        char *h = (char *)hero_globals_base + 0xE1D;
-        if ((*(int *)(h + 0xA98) & 2) && *(short *)(h + 0x30C) != 0) {
+        struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if ((h->anim_flags & 2) && h->frames_off_ground.s != 0) {
             int x = select_hero_hoverboard_animation_variant();
             set_hero_animation(x, 9, (float)scale_ticks(7));
         }
@@ -1276,35 +1276,35 @@ extern void clear_u64_value(void *);
 
 /* Finds the nearest path node ahead of the hero (behind the facing test) and returns its position and heading. */
 void compute_hero_hoverboard_respawn_transform(float *out, float *rot) {
-    char *g = (char *)hero_globals_base + 0xE1D;
-    char *m = *(char **)(g + 0x86C);
+    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    char *m = *(char **)&g->hoverboard_moby;
     char *path;
     float distance;
     int i, best;
     float tmp[4] __attribute__((aligned(16)));
 
     if (m == 0) {
-        qcopy(out, g + 0x80);
-        qcopy(rot, g + 0x90);
+        qcopy(out, &g->motion.pos);
+        qcopy(rot, &g->motion.rot);
         return;
     }
     path = rilgar_paths_r[*(int *)(((char *)((Moby *)m)->pvars) + 0x24)];
     distance = 9999999.0f;
     best = 0;
     for (i = 0; i < *(int *)path; i += 2) {
-            char *h = (char *)hero_globals_base + 0xE1D;
+            struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
             char *p = path + i * 16;
             float limit = 4.0f;
-            float angle = fast_atan2(*(float *)(p + 0x10) - *(float *)(h + 0x80), *(float *)(p + 0x14) - *(float *)(h + 0x84));
+            float angle = fast_atan2(*(float *)(p + 0x10) - h->motion.pos.f[0], *(float *)(p + 0x14) - h->motion.pos.f[1]);
             int n2 = *(int *)path + 2;
             int next = (i + n2) % *(int *)path;
             char *q = path + next * 16;
             if (FastDiffRots(angle, fast_atan2(*(float *)(q + 0x10) - *(float *)(p + 0x10), *(float *)(q + 0x14) - *(float *)(p + 0x14))) > 1.5707964f) {
                 float d;
-                if (g_current_level_index_r == 0x10 && *(char **)(h + 0x8B4) != 0) {
-                    char *verts = *(char **)(h + 0x8B4);
-                    char *v1 = verts + *(short *)(h + 0x8C8) * 16;
-                    char *v2 = verts + *(short *)(h + 0x898) * 16;
+                if (g_current_level_index_r == 0x10 && *(char **)&h->race_path != 0) {
+                    char *verts = *(char **)&h->race_path;
+                    char *v1 = verts + h->wrong_way_path_point * 16;
+                    char *v2 = verts + h->race_path_node * 16;
                     float z1 = *(float *)(v1 + 0x18);
                     float z2 = *(float *)(v2 + 0x18);
                     if (z1 < z2) {
@@ -1868,15 +1868,15 @@ extern char rilgar_hoverboard_link_table[];
 
 // Clears two slots in the game state block and refills them when the flag is set and the mode is 0x15 or 0x16.
 void hero_update_linked_target(void) {
-    char *g = (char *)hero_globals_base + 0xE1D;
-    int v = *(int *)(g + 0x86C);
+    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    int v = *(int *)&g->hoverboard_moby;
 
-    *(int *)(g + 0x2278) = 0;
-    *(int *)(g + 0x227C) = 0;
+    *(int *)&g->unk2278 = 0;
+    g->unk227C = 0;
     if (v != 0) {
-        if ((unsigned)(*(int *)(g + 0x208C) - 0x15) < 2) {
-            *(int *)(g + 0x2278) = v;
-            *(int *)(g + 0x227C) = (int)rilgar_hoverboard_link_table;
+        if ((unsigned)(g->state.control_mode - 0x15) < 2) {
+            *(int *)&g->unk2278 = v;
+            g->unk227C = (int)rilgar_hoverboard_link_table;
         }
     }
 }

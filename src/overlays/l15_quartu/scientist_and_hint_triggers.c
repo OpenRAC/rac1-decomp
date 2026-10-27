@@ -74,8 +74,8 @@ void ultramech_scientist_update(char *moby) {
         return;
     }
     {
-        char *player = hero_globals_base + 0xE1D;
-        if (*(unsigned char *)(player + 0x20A4) != 2) {
+        struct Hero *player = (struct Hero *)(hero_globals_base + 0xE1D);
+        if (player->vehicle_mode != 2) {
             int mobys = quartu_moby_array;
             *(int *)((*(int *)(data + 0x14C) << 8) + mobys + 0x94) = 0;
             *(unsigned short *)((*(int *)(data + 0x14C) << 8) + mobys + 0x34) |= 0x41;
@@ -196,8 +196,8 @@ void ultramech_scientist_update(char *moby) {
         break;
     case ULTRAMECH_SCIENTIST_WAIT_FOR_PRE_SCENE_CONDITIONS:
         {
-            char *player = hero_globals_base + 0xE1D;
-            if (*(unsigned char *)(player + 0x20A4) != 2) {
+            struct Hero *player = (struct Hero *)(hero_globals_base + 0xE1D);
+            if (player->vehicle_mode != 2) {
                 break;
             }
         }
@@ -272,7 +272,7 @@ void ultramech_scientist_update(char *moby) {
     }
 
     {
-    char *player;
+    struct Hero *player;
     float target[4];
     float eye[4];
     float eye_to_target_vector[4];
@@ -290,12 +290,12 @@ void ultramech_scientist_update(char *moby) {
     aim = 1;
     value = vec_distance_xy((float *)&((struct Moby *)moby)->pos, (float *)(hero_globals_base + 0xE9D));
     if (value < 8.0f) {
-        player = hero_globals_base + 0xE1D;
-        value = fast_atan2(*(float *)(player + 0xD0) - ((struct Moby *)moby)->pos.x,
-                                  *(float *)(player + 0xD4) - ((struct Moby *)moby)->pos.y);
+        player = (struct Hero *)(hero_globals_base + 0xE1D);
+        value = fast_atan2(player->motion.body_center.f[0] - ((struct Moby *)moby)->pos.x,
+                                  player->motion.body_center.f[1] - ((struct Moby *)moby)->pos.y);
         value = FastDiffRots(((struct Moby *)moby)->rot.z, value);
         if (value < 1.5707964f) {
-            value = FastVecLength(player + 0x100);
+            value = FastVecLength(&player->motion.displacement);
             if (0.01f < value) {
                 *(int *)(data + 0x274) = scale_ticks(120);
             } else {

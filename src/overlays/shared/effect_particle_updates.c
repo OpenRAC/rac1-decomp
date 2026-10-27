@@ -4,6 +4,7 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "moby.h"
+#include "hero.h"
 
 extern void load_display_text_resource_entry(float *arg0, int *arg1);
 extern void FastVecAdd(void *, void *, void *);
@@ -306,10 +307,11 @@ void update_colliding_effect_particle(unsigned char *m) {
         vec_scale_to_length(v3, coll_hit_normal, 0.055f);
         FastVecAdd(m + 0x10, (char *)coll_hit_normal - 0x20, v3);
     } else {
-        /* inline asm: keeps $s0 live at the else label so reorg fills the beqz delay slot with addiu $a0 like retail */
-        register unsigned char *s0 __asm__("$16");
-        __asm__ volatile("" : : "r"(s0));
-        *(u128_6AB *)(m + 0x10) = *(u128_6AB *)tmp;
+        /* q is never set and both arms are the same: jump2 folds the branch away, but flow2 has
+           already seen $s0 live here, so reorg fills the beqz slot with addiu $a0 like retail. */
+        unsigned char *q;
+        if (q) *(u128_6AB *)(m + 0x10) = *(u128_6AB *)tmp;
+        else *(u128_6AB *)(m + 0x10) = *(u128_6AB *)tmp;
     }
 
     fl = *(int *)(t + 0x70);
@@ -362,9 +364,11 @@ void update_colliding_effect_particle(unsigned char *m) {
         }
 
         {
-        /* register pin: retail keeps 65535.0f in $f21 and 255.0f in $f20 here */
-        register float c65 __asm__("$f21") = 65535.0f;
-        register float c255 __asm__("$f20") = 255.0f;
+        float c65 = 65535.0f;
+        float c255;
+        /* never taken (m[4] is a byte); splits the block so 65535.0f gets $f21 and 255.0f $f20 like retail */
+        if (m[4] & 0x100) e[0x18] = 0;
+        c255 = 255.0f;
         e[0x18] = truncate_float_to_s32(f24 * c65);
         e[0x19] = truncate_float_to_s32(f23 * c65);
         e[0x1A] = truncate_float_to_s32(f22 * c65);
@@ -2260,11 +2264,11 @@ char *PartType34Spawn(char *vec, float *pos, float sc, float vy) {
         b = scale_ticks(0x8C);
         *(short *)(p + 0xA) = rand_range(a, b);
         if (vy == -1.0f) {
-            char *x = hero_globals_base + 0xE1D;
-            if (*(int *)(x + 0x2084) == 0x31) {
-                *(float *)(q + 0x10) = *(float *)(x + 0x88) + 0.4f;
+            struct Hero *x = (struct Hero *)(hero_globals_base + 0xE1D);
+            if (x->state.current == 0x31) {
+                *(float *)(q + 0x10) = x->motion.pos.f[2] + 0.4f;
             } else {
-                *(float *)(q + 0x10) = *(float *)(x + 0x2F0);
+                *(float *)(q + 0x10) = x->water_surface_z;
             }
         } else {
             *(float *)(q + 0x10) = vy;

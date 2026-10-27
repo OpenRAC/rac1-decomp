@@ -183,20 +183,20 @@ void update_hero_target_heading(float a, float b, float c) {
     char *g = hero_globals_base + 0xE1D;
     float d;
     char *m;
-    if (*(int *)(g + 0xA58) == 0) {
-        d = *(float *)(g + 0x98);
-        if (*(float *)(g + 0x229C) > 0.5f) {
+    if (((struct Hero *)g)->heading_locked == 0) {
+        d = ((struct Hero *)g)->motion.rot.f[2];
+        if (((struct Hero *)g)->stick_magnitude > 0.5f) {
             stick_target(0, 1.0f);
-            d = *(float *)(g + 0x180);
-            *(int *)(g + 0xA58) = 1;
-            *(int *)(g + 0xA54) = 0;
+            d = ((struct Hero *)g)->motion.move_yaw;
+            ((struct Hero *)g)->heading_locked = 1;
+            *(int *)&((struct Hero *)g)->melee_target = 0;
         }
         m = find_best_hero_heading_target(a, d, b, c);
-        if (m != 0 && (*(int *)(g + 0xA54) == 0 || *(int *)(g + 0xA58) != 0)) {
-            *(float *)(g + 0xA5C) = fast_atan2(*(float *)(m + 0x10) - *(float *)(g + 0x80), *(float *)(m + 0x14) - *(float *)(g + 0x84));
-            *(char **)(g + 0xA54) = m;
+        if (m != 0 && (*(int *)&((struct Hero *)g)->melee_target == 0 || ((struct Hero *)g)->heading_locked != 0)) {
+            ((struct Hero *)g)->attack_target_yaw = fast_atan2(*(float *)(m + 0x10) - ((struct Hero *)g)->motion.pos.f[0], *(float *)(m + 0x14) - ((struct Hero *)g)->motion.pos.f[1]);
+            *(char **)&((struct Hero *)g)->melee_target = m;
         } else {
-            { char *h = hero_globals_base + 0xE1D; *(float *)(h + 0xA5C) = d; }
+            { struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D); h->attack_target_yaw = d; }
         }
     }
 }
@@ -404,7 +404,7 @@ void update_hero_motion_response_parameters(void) {
     char *x2c;
     char *x2d;
     char *x3;
-    char *h;
+    struct Hero *h;
     float t, r, n, c, u, a, b, d;
     int st;
 
@@ -413,8 +413,8 @@ void update_hero_motion_response_parameters(void) {
         if (0.7f < t) t = 0.7f;
         else if (t < -0.7f) t = -0.7f;
         t = t * FastAbsF(t) * 1.25f;
-        h = hero_globals_base + 0xE1D;
-        r = *(float *)(h + 0x164) / (g_frame_time * 3.0f);
+        h = (struct Hero *)(hero_globals_base + 0xE1D);
+        r = h->motion.flat_speed / (g_frame_time * 3.0f);
         x = D_L00_0017A780;
         n = -t;
         XF(0x1240) = n * 0.3f;
@@ -619,7 +619,7 @@ extern int scale_ticks(int);
 /* builds the three view vectors and applies the camera offset to the moby. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00214658.c, FUN_L00_002163f0. */
 void apply_hero_reference_tilt(void) {
     unsigned char *g = (unsigned char *)hero_globals_base + 0xE1D;
-    unsigned char *h;
+    struct Hero *h;
     M_c m;
     V_c a, b, c;
     float f20, f21, f22, one = 1.0f, k = 0.8f;
@@ -632,24 +632,24 @@ void apply_hero_reference_tilt(void) {
     b.f[2] = k;
     c.f[2] = k;
     transform_vector(&b, &b, g);
-    *(U128 *)&a = *(U128 *)(g + 0x270);
-    if (g[0x20B3] == 2) FastVecScale(&a, g + 0x290, -1.0f);
-    if (g[0x20B3] == 1) {
-        if (*(short *)(g + 0x30E) < scale_ticks(10) || *(float *)(g + 0x2DC) < one)
-            *(U128 *)&a = *(U128 *)(g + 0x270);
+    *(U128 *)&a = *(U128 *)&((struct Hero *)g)->ground_normal.i[0];
+    if (((struct Hero *)g)->gravity_mode == 2) FastVecScale(&a, &((struct Hero *)g)->gravity_dir, -1.0f);
+    if (((struct Hero *)g)->gravity_mode == 1) {
+        if (((struct Hero *)g)->air_frames.s < scale_ticks(10) || ((struct Hero *)g)->ground_distance < one)
+            *(U128 *)&a = *(U128 *)&((struct Hero *)g)->ground_normal.i[0];
     }
-    h = (unsigned char *)hero_globals_base + 0xE1D;
-    if (*(short *)(h + 0x30E) != 0 && *(short *)(h + 0x1F8) != 0) {
+    h = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+    if (h->air_frames.s != 0 && h->unk1F8 != 0) {
         f20 = g_frame_scale_sq * 0.001f;
         f21 = f20;
     }
     compute_hero_reference_tilt_rotation(&a, &m, 0, f21, f20, f22);
     {
-    unsigned char *n = (unsigned char *)hero_globals_base + 0xE1D;
-    if (n[0x20B3] == 1 && *(short *)(n + 0x30E) != 0) {
+    struct Hero *n = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+    if (n->gravity_mode == 1 && n->air_frames.s != 0) {
         transform_vector(&c, &c, &m);
-        FastVecSub(n + 0x80, n + 0x80, &c);
-        FastVecAdd(n + 0x80, n + 0x80, &b);
+        FastVecSub(&n->motion.pos, &n->motion.pos, &c);
+        FastVecAdd(&n->motion.pos, &n->motion.pos, &b);
     }
     }
 }
@@ -663,24 +663,24 @@ void update_hero_tilt(void) {
     char *g = hero_globals_base + 0xE1D;
     int r;
     float t[2];
-    r = *(unsigned char *)(g + 0x20B3);
-    if (*(short *)(g + 0x1F8) != 0) {
+    r = ((struct Hero *)g)->gravity_mode;
+    if (((struct Hero *)g)->unk1F8 != 0) {
         r = 1;
     }
     if (r == 0) {
-        if (*(int *)(g + 0x2084) == 0x25 || *(int *)(g + 0x2084) == 0x26) {
+        if (((struct Hero *)g)->state.current == 0x25 || ((struct Hero *)g)->state.current == 0x26) {
             return;
         }
-        if (*(int *)(g + 0x208C) == 0x11 || *(int *)(g + 0x208C) == 0x15 || *(int *)(g + 0x208C) == 0x16) {
+        if (((struct Hero *)g)->state.control_mode == 0x11 || ((struct Hero *)g)->state.control_mode == 0x15 || ((struct Hero *)g)->state.control_mode == 0x16) {
             return;
         }
-        if (*(int *)(g + 0x2084) == 0x77 || *(int *)(g + 0x2084) == 0x31 || *(int *)(g + 0x2084) == 0x2D || *(int *)(g + 0x2084) == 0x2C) {
+        if (((struct Hero *)g)->state.current == 0x77 || ((struct Hero *)g)->state.current == 0x31 || ((struct Hero *)g)->state.current == 0x2D || ((struct Hero *)g)->state.current == 0x2C) {
             return;
         }
         t[0] = 0.0f;
         t[1] = 0.0f;
-        SpringAngle(g + 0x90, g + 0xA0, 0, -t[0], g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, g_frame_time * 5.2359877f);
-        SpringAngle(g + 0x94, g + 0xA4, 0, -t[1], g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, g_frame_time * 5.2359877f);
+        SpringAngle(&((struct Hero *)g)->motion.rot, &((struct Hero *)g)->motion.rot_spring_vel, 0, -t[0], g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, g_frame_time * 5.2359877f);
+        SpringAngle(&((struct Hero *)g)->motion.rot.f[1], &((struct Hero *)g)->motion.rot_spring_vel.f[1], 0, -t[1], g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, g_frame_time * 5.2359877f);
     } else if (r >= 0) {
         if (r < 3) {
             apply_hero_reference_tilt();
@@ -887,16 +887,16 @@ extern int Moby_PlaySound(int, int, int);
 
 /* passes a pointer chosen by a mode byte to func_0022ED80, copying a vector first in mode 3 */
 int allocate_hero_voice_for_entry(int a, int b) {
-    char *p = hero_globals_base + 0xE1D;
+    struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
     int c;
-    if (*(unsigned char *)(p + 0x20A4) == 3) {
-        c = *(int *)(p + 0xA88);
+    if (p->vehicle_mode == 3) {
+        c = *(int *)&p->unkA88;
         if (c != 0) {
-            qcopy((char *)c + 0x10, p + 0x80);
+            qcopy((char *)c + 0x10, &p->motion.pos);
             return Moby_PlaySound(a, b, c);
         }
     } else {
-        return Moby_PlaySound(a, b, *(int *)(p + 0x2080));
+        return Moby_PlaySound(a, b, *(int *)&p->moby);
     }
     return -1;
 }
@@ -1082,11 +1082,11 @@ extern int *coll_sphere_moby_hits[];
 /* Initialise the pool once, then for each of the first n entries of type 5 or 9 halve and apply its position. */
 void emit_filtered_entry_sparkles(int a, int n) {
     if (n != 0) {
-        char *d = hero_globals_base + 0xE1D;
+        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         int i;
-        if (*(int *)(d + 0xA64) == 0) {
+        if (d->unkA64 == 0) {
             Moby_PlaySound(1, 0, a);
-            *(int *)(d + 0xA64) = 1;
+            d->unkA64 = 1;
         }
         for (i = 0; i < n; i++) {
             int *m = coll_sphere_moby_hits[i];

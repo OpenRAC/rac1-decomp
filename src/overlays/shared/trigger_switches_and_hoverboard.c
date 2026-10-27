@@ -5,6 +5,57 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+/* Hydrodisplacer faucet: pulse phase and strength. */
+struct FaucetPulseVars {
+    u8 pad_00[0x18];
+    f32 phase; /* 0x18 */
+    f32 pulse; /* 0x1C */
+};
+
+/* Wobbling moby: random sway and phase speeds. */
+struct MobyWobbleVars {
+    u8 pad_00[0x10];
+    Vec4 axis_rot; /* 0x10 */
+    u8 pad_20[0x20];
+    f32 base_yaw; /* 0x40 */
+    f32 sway_phase; /* 0x44 */
+    f32 phase; /* 0x48 */
+    f32 sway_speed; /* 0x4C */
+    f32 phase_speed; /* 0x50 */
+};
+
+/* Rilgar ride moby: follows a path with a sine wobble; slot and variant for the help message. */
+struct RilgarRideVars {
+    u8 pad_00[0x60];
+    Vec4 start_pos; /* 0x60 */
+    Vec4 start_rot; /* 0x70 */
+    u8 pad_80[0x2C];
+    int * path; /* 0xAC */
+    u8 pad_B0[0x4];
+    s16 slot_idx; /* 0xB4 */
+    s16 variant; /* 0xB6 */
+    u8 pad_B8[0x8];
+    f32 path_t; /* 0xC0 */
+    f32 path_t_vel; /* 0xC4 */
+    f32 bob_phase; /* 0xC8 */
+    f32 roll_phase; /* 0xCC */
+    f32 pitch_phase; /* 0xD0 */
+    f32 accel; /* 0xD4 */
+    f32 max_speed; /* 0xD8 */
+    s32 table_path_idx; /* 0xDC */
+};
+
+/* Glow sprite: random alpha flicker. */
+struct GlowSpriteVars {
+    u8 pad_00[0x60];
+    s32 alpha; /* 0x60 */
+    u8 pad_64[0x3];
+    u8 unk_67; /* 0x67 */
+    s32 color; /* 0x68 */
+    u8 pad_6C[0x4];
+    f32 scale; /* 0x70 */
+};
+
 
 LINKER_REMNANT("asm/overlays", func_L05_002CF2C0);
 LINKER_REMNANT("asm/overlays", func_L05_002D5398);
@@ -226,30 +277,30 @@ extern short rilgar_faucet_pulse_color_b2;
 /* eases the pulse level of the moby that holds the focus and mixes its colour from two palettes */
 void update_hydrodisplacer_faucet_pulse_color(void *mv) {
     char *moby = mv;
-    char *base = hero_globals_base + 0xE1D;
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct FaucetPulseVars *data = (struct FaucetPulseVars *)((Moby *)moby)->pvars;
     int r;
     float s;
-    if (*(char **)(base + 0x2FC) == moby) {
-        ApproachValue((float *)(data + 0x1C), 1.0f, g_frame_time + g_frame_time);
-        if (*(int *)(base + 0x1090) != 0) {
-            if (*(int *)(base + 0x10B8) == 0x16) ((unsigned char *)moby)[0xBC] = 1;
+    if (*(char **)&base->ground_moby == moby) {
+        ApproachValue(&data->pulse, 1.0f, g_frame_time + g_frame_time);
+        if (*(int *)&base->items[0].moby != 0) {
+            if (base->items[0].item_id == 0x16) ((unsigned char *)moby)[0xBC] = 1;
             else ((unsigned char *)moby)[0xBC] = 0;
         } else {
             ((unsigned char *)moby)[0xBC] = 0;
         }
     } else {
-        ApproachValue((float *)(data + 0x1C), 0.0f, *(float *)&g_frame_time_s);
+        ApproachValue(&data->pulse, 0.0f, *(float *)&g_frame_time_s);
     }
-    if (*(float *)(data + 0x1C) != 0.0f) {
-        s = FastAddRots(*(float *)(data + 0x18), g_frame_time * 6.2831855f);
-        *(float *)(data + 0x18) = s;
+    if (data->pulse != 0.0f) {
+        s = FastAddRots(data->phase, g_frame_time * 6.2831855f);
+        data->phase = s;
         if (((unsigned char *)moby)[0xBC] == 1) {
             r = FastTweenColor(*(int *)&rilgar_faucet_pulse_color_a1, *(int *)&rilgar_faucet_pulse_color_b1, (FastSin(s) + 1.0f) * 0.5f);
         } else {
             r = FastTweenColor(*(int *)&rilgar_faucet_pulse_color_a2, *(int *)&rilgar_faucet_pulse_color_b2, (FastSin(s) + 1.0f) * 0.5f);
         }
-        ((Moby *)moby)->glow_color = FastTweenColor(*(int *)&rilgar_faucet_rest_color, r, *(float *)(data + 0x1C));
+        ((Moby *)moby)->glow_color = FastTweenColor(*(int *)&rilgar_faucet_rest_color, r, data->pulse);
     } else {
         ((Moby *)moby)->glow_color = *(int *)&rilgar_faucet_rest_color;
     }
@@ -418,15 +469,15 @@ extern char hero_globals_base[];
 /* Scans two moby lists near the player and adds a timer bonus when one is in range. */
 void add_moby_frames_for_group_proximity(char *moby) {
     char *d = ((char *)((Moby *)moby)->pvars);
-    char *x = hero_globals_base + 0xE1D;
+    struct Hero *x = (struct Hero *)(hero_globals_base + 0xE1D);
     char *p;
     char *e;
     float v0[4];
     int cur0;
     int cur1;
-    if (*(int *)(x + 0x894) < scale_ticks(0xB4)) return;
+    if (x->race_time_frames < scale_ticks(0xB4)) return;
     if (fast_dec_timer((int *)(d + 0x264)) == 0) return;
-    p = *(char **)(x + 0x86C);
+    p = *(char **)&x->hoverboard_moby;
     if (p == 0) return;
     e = ((char *)((Moby *)p)->pvars);
     if (*(int *)(e + 0x44) != -1) {
@@ -482,35 +533,35 @@ extern void draw_moby_wobble_quads(unsigned char *m);
 
 /* UpdateMoby_823: pick random wobble parameters, then animate them each frame */
 void update_moby_wobble(unsigned char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct MobyWobbleVars *d = (struct MobyWobbleVars *)((Moby *)m)->pvars;
     float r, lo, hi;
     switch (((Moby *)m)->state) {
     case 0:
-        *(float *)(d + 0x40) = ((Moby *)m)->rot.z;
-        *(float *)(d + 0x48) = random_angle_radians();
+        d->base_yaw = ((Moby *)m)->rot.z;
+        d->phase = random_angle_radians();
         r = random_angle_radians();
         lo = g_frame_time * 0.47123888f;
         hi = g_frame_time * 0.5235988f;
-        *(float *)(d + 0x44) = r;
+        d->sway_phase = r;
         r = randf_sym(lo, hi);
         lo = g_frame_time * 0.20943951f;
         hi = g_frame_time * 0.2617994f;
-        *(float *)(d + 0x50) = r;
-        *(float *)(d + 0x4C) = randf_sym(lo, hi);
+        d->phase_speed = r;
+        d->sway_speed = randf_sym(lo, hi);
         set_moby_color(m, 0x80, 0x80, 0x80);
-        AttachManipulator((char *)m, 0, d);
+        AttachManipulator((char *)m, 0, ((char *)d));
         ((Moby *)m)->state = 1;
         break;
     case 1: {
         float k = 0.5235988f;
         float t;
         AddDrawCallback((void *)draw_moby_wobble_quads, m);
-        t = FastAddRots(*(float *)(d + 0x44), *(float *)(d + 0x4C));
-        *(float *)(d + 0x44) = t;
-        ((Moby *)m)->rot.z = FastAddRots(*(float *)(d + 0x40), FastSin(t) * k);
-        t = FastAddRots(*(float *)(d + 0x48), *(float *)(d + 0x50));
-        *(float *)(d + 0x48) = t;
-        axis_rotation_2d48(d + 0x10, 1, FastSin(t) * k + k);
+        t = FastAddRots(d->sway_phase, d->sway_speed);
+        d->sway_phase = t;
+        ((Moby *)m)->rot.z = FastAddRots(d->base_yaw, FastSin(t) * k);
+        t = FastAddRots(d->phase, d->phase_speed);
+        d->phase = t;
+        axis_rotation_2d48(&d->axis_rot, 1, FastSin(t) * k + k);
         break;
     }
     }
@@ -565,12 +616,12 @@ void draw_moby_wobble_quads(unsigned char *m) {
     float offset_a_x, offset_a_z, offset_b_x, offset_b_z;
     int i, j, k;
     float *vertex_a, *vertex_b;
-    char *vars = (char *)moby->pvars;
+    struct MobyWobbleVars *vars = (struct MobyWobbleVars *)moby->pvars;
 
     f_pos_0D678(moby, 0, position);
     f_clear_0D678(rotation);
     rotation[2] = moby->rot.z;
-    rotation[1] = f_sin_0D678(*(float *)(vars + 0x48)) * 0.5235988f + 0.5235988f;
+    rotation[1] = f_sin_0D678(vars->phase) * 0.5235988f + 0.5235988f;
     side = matrix;
     f_rot_0D678(side, rotation);
     direction = matrix + 4;
@@ -859,22 +910,22 @@ extern char * rilgar_level_cuboids MACRO_ADDR;
 void reset_selected_moby_to_current_placement(void *moby_v)
 {
     char *moby = moby_v;
-    char *data = ((char *)((Moby *)moby)->pvars);
-    char *spawn = FindMobyByDataId(moby, *(short *)(data + 0xB6));
+    struct RilgarRideVars *data = (struct RilgarRideVars *)((Moby *)moby)->pvars;
+    char *spawn = FindMobyByDataId(moby, data->variant);
     char *position;
     if (spawn != 0) {
         int index;
-        char *slot=data;
+        char *slot=((char *)data);
         char *entry;
         position=spawn+0x10;
-        slot+=*(short *)(data+0xB4)<<2;
+        slot+=data->slot_idx<<2;
         index=*(int *)(slot+0x80)<<7;
         entry=rilgar_level_cuboids;
         qcopy(position, (void *)(index+(int)entry+0x30));
         qcopy(spawn + 0x40, (void *)(index+(int)entry+0x70));
         PickNearestTargetSlot(spawn);
     }
-    *(short *)(data + 0xB4) = *(unsigned short *)(data + 0xB6);
+    data->slot_idx = *(unsigned short *)&data->variant;
 }
 typedef struct {
     char pad[0x78];
@@ -906,18 +957,18 @@ extern void SamplePathAt(int *, int, void *, float *, int, float);
 
 /* Advances a moby's path: steps the path position and returns whether it has reached the end. */
 int AdvanceMobyPath(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct RilgarRideVars *d = (struct RilgarRideVars *)((Moby *)m)->pvars;
     int *path;
-    ApproachWithVelocity(1.0f, *(float *)(d + 0xD8), *(float *)(d + 0xD8), *(float *)(d + 0xD4), (float *)(d + 0xC0), (float *)(d + 0xC4));
-    path = *(int **)(d + 0xAC);
-    SamplePathAt(path, 0, d + 0x60, (float *)(d + 0x70), 0, *(float *)(d + 0xC0) * (float)(*path - 1));
-    return *(float *)(d + 0xC0) >= 1.0f;
+    ApproachWithVelocity(1.0f, d->max_speed, d->max_speed, d->accel, &d->path_t, &d->path_t_vel);
+    path = d->path;
+    SamplePathAt(path, 0, &d->start_pos, &d->start_rot.f[0], 0, d->path_t * (float)(*path - 1));
+    return d->path_t >= 1.0f;
 }
 extern void try_set_help_message(int, int);
 
 /* Plays the sound that goes with the moby's current variant. */
 void request_moby_variant_help_message(char *moby) {
-    switch (*(short *)(((char *)((Moby *)moby)->pvars) + 0xB6)) {
+    switch (((struct RilgarRideVars *)((Moby *)moby)->pvars)->variant) {
     case 0: try_set_help_message(8, 0x13A5); break;
     case 1: try_set_help_message(8, 0x1398); break;
     case 2: try_set_help_message(8, 0x139A); break;
@@ -929,22 +980,22 @@ void request_moby_variant_help_message(char *moby) {
 extern float g_frame_time MACRO_ADDR;
 /* Wobbles a moby's position and rotation from its sine-driven state. */
 void apply_moby_position_and_rotation_wobble(char *moby) {
-    char *d = ((char *)((Moby *)moby)->pvars);
+    struct RilgarRideVars *d = (struct RilgarRideVars *)((Moby *)moby)->pvars;
     float s, t, w;
-    qcopy(moby + 0x10, d + 0x60);
-    qcopy(moby + 0x40, d + 0x70);
-    s = FastAddRots(*(float *)(d + 0xC8), g_frame_time * 2.0943951f);
-    *(float *)(d + 0xC8) = s;
+    qcopy(moby + 0x10, &d->start_pos);
+    qcopy(moby + 0x40, &d->start_rot);
+    s = FastAddRots(d->bob_phase, g_frame_time * 2.0943951f);
+    d->bob_phase = s;
     t = FastSin(s);
     w = g_frame_time * 1.6929693f;
     ((Moby *)moby)->pos.z += t * 0.25f;
-    s = FastAddRots(*(float *)(d + 0xCC), w);
-    *(float *)(d + 0xCC) = s;
+    s = FastAddRots(d->roll_phase, w);
+    d->roll_phase = s;
     t = FastAddRots(((Moby *)moby)->rot.y, FastSin(s) * 0.08726646f);
     w = g_frame_time * 0.9250245f;
     ((Moby *)moby)->rot.y = t;
-    s = FastAddRots(*(float *)(d + 0xD0), w);
-    *(float *)(d + 0xD0) = s;
+    s = FastAddRots(d->pitch_phase, w);
+    d->pitch_phase = s;
     ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, FastSin(s) * 0.08726646f);
     if (((Moby *)moby)->rot.x > 0.17453292f) ((Moby *)moby)->rot.x = 0.17453292f;
     else if (((Moby *)moby)->rot.x < -0.17453292f) ((Moby *)moby)->rot.x = -0.17453292f;
@@ -958,8 +1009,8 @@ extern char g_hero[];
 
 /* Transforms the 7 vectors of a level table entry into the moby's space and records its index. */
 void transform_moby_vector_table_to_world_space(char *a) {
-    char *data = ((char *)((Moby *)a)->pvars);
-    int idx = *(int *)(data + 0xDC);
+    struct RilgarRideVars *data = (struct RilgarRideVars *)((Moby *)a)->pvars;
+    int idx = data->table_path_idx;
     if (idx != -1) {
         char *p = rilgar_paths[idx];
         if (*(int *)p == 7) {
@@ -970,7 +1021,7 @@ void transform_moby_vector_table_to_world_space(char *a) {
                 FastVecAdd(p + 0x10 + i * 16, p + 0x10 + i * 16, a + 0x10);
             }
             g = g_hero;
-            *(unsigned short *)(g + 0x22DA) = *(unsigned short *)(data + 0xDC);
+            *(unsigned short *)(g + 0x22DA) = *(unsigned short *)&data->table_path_idx;
         }
     }
 }
@@ -1201,7 +1252,7 @@ extern void draw_world_quad(void *, void *, s32);
 
 /* Draws the moby's camera-facing glow sprite, flickering its alpha at random. */
 void draw_moby_glow_sprite(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct GlowSpriteVars *d = (struct GlowSpriteVars *)((Moby *)m)->pvars;
     Pk_31e468 pk;
     float up[4];
     float M[4][4];
@@ -1233,16 +1284,16 @@ void draw_moby_glow_sprite(char *m) {
     FastVecCross(M[2], M[1], M[0]);
     FastVecScale(w, M[0], *(float *)&rilgar_glow_camera_pull);
     FastVecAdd(M[3], M[3], w);
-    if (((unsigned char *)d)[0x67] != 0 && random_integer_below(8) == 0) {
-        *(int *)(d + 0x60) >>= 1;
+    if (d->unk_67 != 0 && random_integer_below(8) == 0) {
+        d->alpha >>= 1;
     }
-    col = (*(int *)(d + 0x60) << 24) | *(int *)(d + 0x68);
+    col = (d->alpha << 24) | d->color;
     pk.col[3] = col;
     pk.col[2] = col;
     pk.col[1] = col;
     pk.col[0] = col;
     for (j = 0; j < 4; j++) {
-        FastVecScale(pk.m[j], rilgar_glow_quad_corners[j], *(float *)(d + 0x70));
+        FastVecScale(pk.m[j], rilgar_glow_quad_corners[j], d->scale);
         transform_vector(pk.m[j], pk.m[j], M);
     }
     draw_world_quad(&pk, 0, 0);
@@ -1332,7 +1383,7 @@ void build_hero_follow_camera_transform(char *m) {
     char *at = m + 0x30;
     char *up = m + 0x10;
     char *side = m + 0x20;
-    char *g;
+    struct Hero *g;
     char *a;
     char *b;
     float v0[4];
@@ -1341,13 +1392,13 @@ void build_hero_follow_camera_transform(char *m) {
     float v3[4];
     float v4[4];
     update_hero_follow_camera_focus(m);
-    g = hero_globals_base + 0xE1D;
+    g = (struct Hero *)(hero_globals_base + 0xE1D);
     a = d + 0x80;
     b = d + 0xE0;
-    vec_scale_to_length(v3, *(char **)(g + 0x2080) + 0xC0, 1.0f);
+    vec_scale_to_length(v3, *(char **)&g->moby + 0xC0, 1.0f);
     vec_scale_to_length(v3, v3, *(float *)(d + 0xE0));
     FastVecSub(at, a, v3);
-    vec_scale_to_length(v4, g + 0x290, -1.0f);
+    vec_scale_to_length(v4, &g->gravity_dir, -1.0f);
     vec_scale_to_length(v3, v4, *(float *)(b + 0x10));
     FastVecAdd(at, at, v3);
     vec_scale_to_length(v0, v4, *(float *)(a + 0x4C));

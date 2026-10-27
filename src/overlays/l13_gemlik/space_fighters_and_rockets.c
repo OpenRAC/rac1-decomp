@@ -7,50 +7,61 @@
 #include "hero.h"
 #include "moby.h"
 
-extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
-extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void MobyBlendAnimation(void *, int, int, int);
+/* Class 0x53 shot: flies along velocity until the timer ends. */
+typedef struct ProjectileVars_2C32D0 {
+    u8 pad_00[0x20];
+    f32 health;                    /* 0x20 */
+    s16 unk_24;                    /* 0x24 */
+    u8 pad_26[0x2];
+    s8 unk_28;                     /* 0x28 */
+    s8 unk_29;                     /* 0x29 */
+    u8 pad_2A[0x6];
+    f32 unk_30;                    /* 0x30 */
+    u8 pad_34[0x2C];
+    Vec4f velocity;                /* 0x60 */
+    s32 timer;                     /* 0x70 */
+    Moby *target;                  /* 0x74: owner */
+} ProjectileVars_2C32D0;
 
-/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/unclassified_002c13b0.c, FUN_L13_002c13b0. */
-unsigned char *spawn_level_13_homing_rocket(char *src, char *pos, char *target, char *vec, int arg, float scale,
-                                float f2) {
-    unsigned char *moby = (unsigned char *)CreateMoby(0x52);
-    if (moby != 0) {
-        char *data = ((char *)((Moby *)moby)->pvars);
-        ((Moby *)moby)->update_dist = 0xFF;
-        ((Moby *)moby)->draw_dist = 0xFF;
-        ((Moby *)moby)->visible = 1;
-        ((Moby *)moby)->state = 0;
-        *(char **)(data + 0x24) = target;
-        *(char **)(data + 0x20) = src;
-        qcopy(moby + 0x10, pos);
-        qcopy(moby + 0x40, vec);
-        {
-            float *sp = &scale;
-            *(float *)(data + 0x2C) = *sp;
-        }
-        *(float *)(data + 0x38) = f2;
-        *(int *)(data + 0x28) = arg;
-        *(int *)(data + 0x30) = 0;
-        *(int *)(data + 0x34) = 0;
-        qcopy(data, ((char *)((Moby *)src)->pvars) + 0xC0);
-        if (((Moby *)moby)->prev_seq != 1) {
-            MobyBlendAnimation(moby, 1, 0, 10);
-        }
-        FastVecAdd(moby + 0x10, moby + 0x10, data);
-        if (*(char **)(data + 0x24) != 0) {
-            qcopy(data + 0x10, *(char **)(data + 0x24) + 0x10);
-        }
-        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24);
-        moby_build_matrix(moby);
-        spawn_source_attached_fading_effect_particle((char *)moby, 0x60808080, arg, 0, 500000.0f);
-    }
-    return moby;
-}
-typedef int Q_2C27B0 __attribute__((mode(TI)));
-typedef struct Cls_2C27B0 { char pad0[0x24]; float scale; } Cls_2C27B0;
+/* Forcefield tower (class 0xAA): hit response block, sound voice and the linked-state slot. */
+struct ForcefieldTowerVars {
+    u8 pad_00[0x20];
+    u8 hit_block[0x10];            /* 0x20: process_forcefield_tower_damage state */
+    u8 pad_30[0x40];
+    s32 voice;                     /* 0x70: sound slot, -1 when none */
+    s32 linked_slot;               /* 0x74: index into linked_state_flags, -1 none */
+};
+
+/* Asteroid fragment (class 0x584): tumbles on spin_x/y/z, splits while splits_left > 0. */
+struct AsteroidFragmentVars {
+    Vec4A vel;                     /* 0x00 */
+    u8 pad_10[0x20];
+    f32 spin_x;                    /* 0x30 */
+    f32 spin_y;                    /* 0x34 */
+    f32 spin_z;                    /* 0x38 */
+    u8 pad_3C[0x4];
+    s32 unk_40;                    /* 0x40 */
+    u8 pad_44[0x4];
+    char *owner;                   /* 0x48 */
+    s16 timer;                     /* 0x4C */
+    s16 splits_left;               /* 0x4E */
+};
+
+/* Child moby of class 0x160: follows its owner. */
+struct OwnerLinkVars {
+    char *owner;                   /* 0x00 */
+    s32 unk_04;                    /* 0x04 */
+};
+
+/* Part blown off an attachment point: drifts on vel and spins. */
+struct DetachedPartVars {
+    u8 pad_00[0x10];
+    Vec4A vel;                     /* 0x10 */
+    u8 pad_20[0x10];
+    f32 spin_x;                    /* 0x30 */
+    f32 spin_y;                    /* 0x34 */
+    f32 spin_z;                    /* 0x38 */
+};
 typedef struct Rocket_2C27B0 {
     Vec4A vel;
     Vec4A tpos;
@@ -62,6 +73,51 @@ typedef struct Rocket_2C27B0 {
     float pitchv;
     float maxspeed;
 } Rocket_2C27B0;
+
+extern char *CreateMoby(int);
+extern void moby_build_matrix(void *);
+extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
+extern void FastVecAdd(void *, void *, void *);
+extern void MobyBlendAnimation(void *, int, int, int);
+
+/* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/unclassified_002c13b0.c, FUN_L13_002c13b0. */
+unsigned char *spawn_level_13_homing_rocket(char *src, char *pos, char *target, char *vec, int arg, float scale,
+                                float f2) {
+    unsigned char *moby = (unsigned char *)CreateMoby(0x52);
+    if (moby != 0) {
+        struct Rocket_2C27B0 *data = (struct Rocket_2C27B0 *)((Moby *)moby)->pvars;
+        ((Moby *)moby)->update_dist = 0xFF;
+        ((Moby *)moby)->draw_dist = 0xFF;
+        ((Moby *)moby)->visible = 1;
+        ((Moby *)moby)->state = 0;
+        *(char **)&data->target = target;
+        *(char **)&data->owner = src;
+        qcopy(moby + 0x10, pos);
+        qcopy(moby + 0x40, vec);
+        {
+            float *sp = &scale;
+            data->speed = *sp;
+        }
+        data->maxspeed = f2;
+        data->timer = arg;
+        *(int *)&data->yawv = 0;
+        *(int *)&data->pitchv = 0;
+        qcopy(&data->vel, ((char *)((Moby *)src)->pvars) + 0xC0);
+        if (((Moby *)moby)->prev_seq != 1) {
+            MobyBlendAnimation(moby, 1, 0, 10);
+        }
+        FastVecAdd(moby + 0x10, moby + 0x10, &data->vel);
+        if (*(char **)&data->target != 0) {
+            qcopy(&data->tpos, *(char **)&data->target + 0x10);
+        }
+        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24);
+        moby_build_matrix(moby);
+        spawn_source_attached_fading_effect_particle((char *)moby, 0x60808080, arg, 0, 500000.0f);
+    }
+    return moby;
+}
+typedef int Q_2C27B0 __attribute__((mode(TI)));
+typedef struct Cls_2C27B0 { char pad0[0x24]; float scale; } Cls_2C27B0;
 typedef struct Hit_2C27B0 { char pad0[0x20]; Moby *owner; } Hit_2C27B0;
 typedef struct Veh_2C27B0 { char pad0[0x64]; float f64; char pad68[0x28]; float f90; float f94; } Veh_2C27B0;
 typedef struct Tex_2C27B0 { char pad0[0x5C]; unsigned char *p5C; } Tex_2C27B0;
@@ -226,23 +282,23 @@ extern void copy_hero_moby_field_38(void *);
 unsigned char *spawn_class_53_projectile(char *owner, char *pos, char *vec) {
     unsigned char *moby = (unsigned char *)CreateMoby(0x53);
     if (moby != 0) {
-        char *data;
+        struct ProjectileVars_2C32D0 *data;
         ((Moby *)moby)->update_dist = 0xFF;
         ((Moby *)moby)->draw_dist = 0xFF;
         ((Moby *)moby)->visible = 1;
         ((Moby *)moby)->state = 0;
         ((Moby *)moby)->command = 0;
         ((Moby *)moby)->scale = *(float *)(*(char **)((char *)moby + 0x24) + 0x24) * 0.1f;
-        data = ((char *)((Moby *)moby)->pvars);
+        data = (struct ProjectileVars_2C32D0 *)((Moby *)moby)->pvars;
         qcopy((char *)moby + 0x10, pos);
-        qcopy(data + 0x60, vec);
-        *(char **)(data + 0x74) = owner;
-        data[0x28] = 0;
-        *(float *)(data + 0x20) = 20.0f;
-        *(short *)(data + 0x24) = 0x14;
-        *(float *)(data + 0x30) = 0.5f;
-        data[0x29] = 1;
-        *(int *)(data + 0x70) = scale_ticks(0x168);
+        qcopy(&data->velocity, vec);
+        *(char **)&data->target = owner;
+        data->unk_28 = 0;
+        data->health = 20.0f;
+        data->unk_24 = 0x14;
+        data->unk_30 = 0.5f;
+        data->unk_29 = 1;
+        data->timer = scale_ticks(0x168);
         if (((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
@@ -271,14 +327,6 @@ extern char hero_globals_base_r[] __asm__("D_0013E633");
 typedef struct { char pad0[0x18]; char *f18; } G_2C32D0;
 extern char gemlik_coll_hit_result_r[] __asm__("D_L13_001741C0");
 
-typedef struct {
-    u8 pad_00[0x20];
-    f32 health;                    /* 0x20 */
-    u8 pad_24[0x3C];
-    Vec4f velocity;                /* 0x60 */
-    s32 timer;                     /* 0x70 */
-    Moby *target;                  /* 0x74 */
-} ProjectileVars_2C32D0;
 
 typedef struct {
     u8 pad_00[0x18];
@@ -1041,15 +1089,15 @@ extern void FastVecAdd(void *, void *, void *);
 
 // Computes an offset vector from the player's angle data, or copies the default vector when there is no player.
 void predict_hero_vehicle_position(char *out, float scale) {
-    char *x = hero_globals_base + 0xE1D;
-    if (*(char **)(x + 0x15F0) == 0) {
-        qcopy(out, x + 0x80);
+    struct Hero *x = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (*(char **)&x->ship_moby == 0) {
+        qcopy(out, &x->motion.pos);
     } else {
-        char *d = *(char **)(*(char **)(x + 0x15F0) + 0x78);
-        float a = FastAddRots(*(float *)(*(char **)(x + 0x15F0) + 0x48), *(float *)(d + 0x90));
-        float b = FastAddRots(*(float *)(*(char **)(x + 0x15F0) + 0x44), *(float *)(d + 0x94));
+        char *d = *(char **)(*(char **)&x->ship_moby + 0x78);
+        float a = FastAddRots(*(float *)(*(char **)&x->ship_moby + 0x48), *(float *)(d + 0x90));
+        float b = FastAddRots(*(float *)(*(char **)&x->ship_moby + 0x44), *(float *)(d + 0x94));
         BuildSphericalOffset(out, scale * *(float *)(d + 0x64), a, -b);
-        FastVecAdd(out, out, *(char **)(x + 0x15F0) + 0x10);
+        FastVecAdd(out, out, *(char **)&x->ship_moby + 0x10);
     }
 }
 extern float frame_scale MACRO_ADDR;
@@ -1877,7 +1925,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
 
 /* Forcefield tower update (moby class 170): state machine over its pieces. */
 void forcefield_tower_update(char *moby) {
-    char *d = ((char *)((Moby *)moby)->pvars);
+    struct ForcefieldTowerVars *d = (struct ForcefieldTowerVars *)((Moby *)moby)->pvars;
     float vec[4];
     float blk[4];
     float acc[4];
@@ -1893,11 +1941,11 @@ void forcefield_tower_update(char *moby) {
         ((Moby *)moby)->state = 1;
         if (a < b) ((Moby *)moby)->update_dist = *(unsigned char *)(moby + 0x32);
         rnd = g_current_level_index;
-        *(int *)(d + 0x70) = -1;
+        d->voice = -1;
         h = ((Moby *)moby)->save_id;
         w = *(int *)((char *)help_stats_base + 0xAB75 + ((short)h >> 5) * 4 + (rnd << 8));
         if ((w >> (h & 0x1F)) & 1) {
-            if (*(int *)(d + 0x74) != -1) linked_state_flags[*(int *)(d + 0x74)] = 1;
+            if (d->linked_slot != -1) linked_state_flags[d->linked_slot] = 1;
             DeleteMoby(moby);
         } else {
             Moby_GetJointWorldPos(moby, 0, vec);
@@ -1908,19 +1956,19 @@ void forcefield_tower_update(char *moby) {
     break;
     }
     case 1: {
-        int t = *(int *)(d + 0x74);
+        int t = d->linked_slot;
         int v;
         if (t != -1) linked_state_flags[t] = 0;
-        if (*(int *)(d + 0x70) == -1) goto alloc;
-        if (Sound_IsPlaying(moby, *(int *)(d + 0x70))) goto done;
-        if (*(int *)(d + 0x70) != -1) goto play;
+        if (d->voice == -1) goto alloc;
+        if (Sound_IsPlaying(moby, d->voice)) goto done;
+        if (d->voice != -1) goto play;
 alloc:
-        *(int *)(d + 0x70) = Moby_PlaySound_s(0, 4, (int)moby);
-        if (*(int *)(d + 0x70) == -1) goto done;
+        d->voice = Moby_PlaySound_s(0, 4, (int)moby);
+        if (d->voice == -1) goto done;
 play:
         qzero(vec);
         vec[2] = vec[2] + 8.7f;
-        set_voice_position(*(int *)(d + 0x70), vec);
+        set_voice_position(d->voice, vec);
 done:
         v = ((Moby *)moby)->visible;
         if (v != 0 && random_integer_below(9) == 0) {
@@ -1938,7 +1986,7 @@ done:
             m = scale_ticks(e % 40 + 40);
             func_L00_0026AA10_C4748(vec, s17, s16, s18, f20, 0.0f, m);
         }
-        process_forcefield_tower_damage(moby, d, (float *)(d + 0x20));
+        process_forcefield_tower_damage(moby, ((char *)d), (float *)d->hit_block);
     break;
     }
     case 2: {
@@ -1977,7 +2025,7 @@ done:
                 FastVecAdd(acc, acc, moby + 0x10);
                 emit_forcefield_tower_destruction_effects(moby, acc, 1);
             } while (k >= 0);
-            if (*(int *)(d + 0x74) != -1) linked_state_flags[*(int *)(d + 0x74)] = 1;
+            if (d->linked_slot != -1) linked_state_flags[d->linked_slot] = 1;
             DeleteMoby(moby);
         }
     }
@@ -1995,34 +2043,34 @@ extern int func_001160D8(void);
 char *spawn_asteroid_fragment(char *owner, char *pos, char *vec, int a3, float f) {
     char *moby = CreateMoby(0x584);
     if (moby != 0) {
-        char *d;
+        struct AsteroidFragmentVars *d;
         float r;
         ((unsigned char *)moby)[0x30] = 0xFF;
-        d = ((char *)((Moby *)moby)->pvars);
+        d = (struct AsteroidFragmentVars *)((Moby *)moby)->pvars;
         *(unsigned short *)&((Moby *)moby)->draw_dist = *(unsigned short *)(owner + 0x32);
         moby[0x31] = 1;
         moby[0x20] = 2;
         moby[0xBC] = 0;
         moby[0x72] = 0;
         qcopy(moby + 0x10, pos);
-        qcopy(d, vec);
+        qcopy(&d->vel, vec);
         ((Moby *)moby)->scale = f;
-        *(char **)(d + 0x48) = owner;
-        *(int *)(d + 0x40) = 1;
-        *(short *)(d + 0x4C) = scale_ticks(0x1E);
-        *(short *)(d + 0x4E) = a3;
+        d->owner = owner;
+        d->unk_40 = 1;
+        d->timer = scale_ticks(0x1E);
+        d->splits_left = a3;
         *(int *)&((Moby *)moby)->collision = 0;
         r = random_float_between(-30.0f, 30.0f) * 0.017453292f * g_frame_time;
         switch (func_001160D8() % 3) {
-        case 0: *(float *)(d + 0x30) = r; break;
-        case 1: *(float *)(d + 0x34) = r; break;
-        case 2: *(float *)(d + 0x38) = r; break;
+        case 0: d->spin_x = r; break;
+        case 1: d->spin_y = r; break;
+        case 2: d->spin_z = r; break;
         }
         r = random_float_between(-180.0f, 180.0f) * 0.017453292f * g_frame_time;
         switch (func_001160D8() % 3) {
-        case 0: *(float *)(d + 0x30) = r; break;
-        case 1: *(float *)(d + 0x34) = r; break;
-        case 2: *(float *)(d + 0x38) = r; break;
+        case 0: d->spin_x = r; break;
+        case 1: d->spin_y = r; break;
+        case 2: d->spin_z = r; break;
         }
         ((Moby *)moby)->rot.x = random_angle_radians();
         ((Moby *)moby)->rot.y = random_angle_radians();
@@ -2576,16 +2624,16 @@ void update_linked_switch_group(char *moby) {
 char *spawn_owner_linked_class_160_moby(char *owner) {
     char *moby = CreateMoby(0x160);
     if (moby != 0) {
-        char *data;
+        struct OwnerLinkVars *data;
         ((unsigned char *)moby)[0x30] = 0xFF;
         ((Moby *)moby)->draw_dist = 0x3FF;
         moby[0x31] = 1;
-        data = ((char *)((Moby *)moby)->pvars);
+        data = (struct OwnerLinkVars *)((Moby *)moby)->pvars;
         moby[0x20] = 0;
         moby[0xBC] = 0;
         qcopy(moby + 0x10, owner + 0x10);
-        *(char **)data = owner;
-        *(int *)(data + 4) = 0;
+        data->owner = owner;
+        data->unk_04 = 0;
         ((Moby *)moby)->flags |= 0x200;
         moby_build_matrix(moby);
         copy_hero_moby_field_38(moby);
@@ -2953,9 +3001,9 @@ int advance_moby_along_selected_path(char *m, char *d, int idx, int turn) {
     yaw = fast_atan2(v[0], v[1]);
     pitch = -fast_atan2(vec_length_xy(v), v[2]);
     if (((unsigned char *)m)[0x20] == 5) {
-        char *g = hero_globals_base + 0xE1D;
-        yaw = fast_atan2(*(float *)(g + 0x80) - *(float *)(m + 0x10), *(float *)(g + 0x84) - *(float *)(m + 0x14));
-        pitch = -fast_atan2(vec_distance_xy(m + 0x10, g + 0x80), *(float *)(g + 0x88) - *(float *)(m + 0x18));
+        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        yaw = fast_atan2(g->motion.pos.f[0] - *(float *)(m + 0x10), g->motion.pos.f[1] - *(float *)(m + 0x14));
+        pitch = -fast_atan2(vec_distance_xy(m + 0x10, &g->motion.pos), g->motion.pos.f[2] - *(float *)(m + 0x18));
     }
     if (turn != 0) {
         update_moby_spring_steering_and_banking(m, d, yaw, pitch);
@@ -3037,8 +3085,8 @@ void detach_moby_joint_attachment(void *unused, char *p, int idx) {
     char **slot = (char **)(base + off);
     char *moby = *slot;
     if (moby != 0) {
-        char *data = ((char *)((Moby *)moby)->pvars);
-        float *v = (float *)(data + 0x10);
+        struct DetachedPartVars *data = (struct DetachedPartVars *)((Moby *)moby)->pvars;
+        float *v = &data->vel.x;
         float t, r0, r1, r2;
         SpawnExplosionFx(unused, moby + 0x10, -1, 2.0f, 13.0f);
         FastVecScale(v, p + 0x70, 0.95f);
@@ -3049,14 +3097,14 @@ void detach_moby_joint_attachment(void *unused, char *p, int idx) {
         t = t * 0.34906585f;
         r0 = random_float_between(-t, t);
         t = g_frame_time;
-        *(float *)(data + 0x30) = r0;
+        data->spin_x = r0;
         t = t * 3.1415927f;
         r1 = random_float_between(-t, t);
         t = g_frame_time;
-        *(float *)(data + 0x34) = r1;
+        data->spin_y = r1;
         t = t * 3.1415927f;
         r2 = random_float_between(-t, t);
-        *(float *)(data + 0x38) = r2;
+        data->spin_z = r2;
         *(long *)(moby + 0x38) = 0x40404000000000L;
         ((Moby *)moby)->hit_slot = 0xFF;
         *slot = 0;
@@ -3445,22 +3493,22 @@ extern float FastVecDist(void *, void *);
 
 /* Steers a moby toward the hero: scales by distance and orients it with the hero's angles. */
 void predict_hero_ship_projectile_lead_position(char *a, char *b, float f) {
-    char *base = hero_globals_base + 0xE1D;
-    char *d = *(char **)(*(char **)(base + 0x15F0) + 0x78);
-    float y = FastAddRots(*(float *)(*(char **)(base + 0x15F0) + 0x48), *(float *)(d + 0x90));
-    float x = FastAddRots(*(float *)(*(char **)(base + 0x15F0) + 0x44), *(float *)(d + 0x94));
-    float dist = FastVecDist(b, *(char **)(base + 0x15F0) + 0x10);
+    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    char *d = *(char **)(*(char **)&base->ship_moby + 0x78);
+    float y = FastAddRots(*(float *)(*(char **)&base->ship_moby + 0x48), *(float *)(d + 0x90));
+    float x = FastAddRots(*(float *)(*(char **)&base->ship_moby + 0x44), *(float *)(d + 0x94));
+    float dist = FastVecDist(b, *(char **)&base->ship_moby + 0x10);
     float k = *(float *)(d + 0x64);
     BuildSphericalOffset(a, dist / (k + f) * k, y, -x);
-    FastVecAdd(a, a, *(char **)(base + 0x15F0) + 0x10);
+    FastVecAdd(a, a, *(char **)&base->ship_moby + 0x10);
 }
 extern float vec_distance_xy(void *, void *);
 extern void predict_hero_ship_projectile_lead_position(char *a, char *b, float f);
 
 /* Angles from pos to the hero's target (led by lead when positive) or to the hero; returns the yaw. */
 float calculate_hero_aim_angles(float *pos, float *pitch, float *yaw, float lead) {
-    char *base = hero_globals_base + 0xE1D;
-    char *t = *(char **)(base + 0x15F0);
+    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    char *t = *(char **)&base->ship_moby;
     float v[4];
     float y;
     float p;
@@ -3473,9 +3521,9 @@ float calculate_hero_aim_angles(float *pos, float *pitch, float *yaw, float lead
         y = fast_atan2(v[0] - pos[0], v[1] - pos[1]);
         p = -fast_atan2(vec_distance_xy(pos, v), v[2] - pos[2]);
     } else {
-        char *p0 = hero_globals_base + 0xE1D;
-        y = fast_atan2(*(float *)(p0 + 0x80) - pos[0], *(float *)(p0 + 0x84) - pos[1]);
-        p = -fast_atan2(vec_distance_xy(pos, p0 + 0x80), *(float *)(p0 + 0x88) - pos[2]);
+        struct Hero *p0 = (struct Hero *)(hero_globals_base + 0xE1D);
+        y = fast_atan2(p0->motion.pos.f[0] - pos[0], p0->motion.pos.f[1] - pos[1]);
+        p = -fast_atan2(vec_distance_xy(pos, &p0->motion.pos), p0->motion.pos.f[2] - pos[2]);
     }
     if (yaw != 0) *yaw = y;
     if (pitch != 0) *pitch = p;
@@ -3530,16 +3578,16 @@ extern void Moby_PlaySound(int, int, int);
 /* computes a velocity vector for a moby from the camera/player and spawns a projectile */
 unsigned char *fire_class_53_projectile(char *a, char *b) {
     float v0[4], v1[4], v2[4], v3[4], v4[4];
-    char *x;
+    struct Hero *x;
     unsigned char *r;
     Moby_GetJointWorldPos(a, 0xE, v0);
-    x = hero_globals_base + 0xE1D;
-    if (*(char **)(x + 0x15F0) != 0 && *(short *)(*(char **)(x + 0x15F0) + 0xA6) == 0x45) {
+    x = (struct Hero *)(hero_globals_base + 0xE1D);
+    if (*(char **)&x->ship_moby != 0 && *(short *)(*(char **)&x->ship_moby + 0xA6) == 0x45) {
         predict_hero_ship_projectile_lead_position((char *)v2, (char *)v0, g_frame_time * 20.0f);
         FastVecSub(v3, v2, v0);
         vec_scale_to_length(v1, v3, g_frame_time * 20.0f);
-        vec_scale_to_length(v4, *(char **)(x + 0x15F0) + 0xD0, random_float_between(-(g_frame_time * 30.0f), g_frame_time * 30.0f));
-        vec_scale_to_length(v3, *(char **)(x + 0x15F0) + 0xE0, random_float_between(-(g_frame_time * 30.0f), g_frame_time * 30.0f));
+        vec_scale_to_length(v4, *(char **)&x->ship_moby + 0xD0, random_float_between(-(g_frame_time * 30.0f), g_frame_time * 30.0f));
+        vec_scale_to_length(v3, *(char **)&x->ship_moby + 0xE0, random_float_between(-(g_frame_time * 30.0f), g_frame_time * 30.0f));
         FastVecAdd(v4, v4, v3);
         vec_scale_to_length(v4, v4, random_float_between(g_frame_time * 5.0f, g_frame_time * 30.0f));
         FastVecAdd(v1, v1, v4);

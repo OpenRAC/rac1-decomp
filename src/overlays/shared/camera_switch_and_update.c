@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "camera.h"
 #include "vector.h"
+#include "hero.h"
 
 /* The level copies of the camera tables (include/camera.h). */
 extern Camera gCameraSlotsLvl[];
@@ -243,15 +244,15 @@ void Camera_CaptureHeroRelativeView(void) {
     float a[4];
     float b[4];
     float c[4];
-    char *g = hero_globals_base + 0xE1D;
+    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     CamBlend *d = &player_camera.blend;
 
-    vec_scale_to_length(a, *(char **)(g + 0x2080) + 0xC0, 1.0f);
-    vec_scale_to_length(b, *(char **)(g + 0x2080) + 0xD0, 1.0f);
-    vec_scale_to_length(c, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+    vec_scale_to_length(a, *(char **)&g->moby + 0xC0, 1.0f);
+    vec_scale_to_length(b, *(char **)&g->moby + 0xD0, 1.0f);
+    vec_scale_to_length(c, *(char **)&g->moby + 0xE0, 1.0f);
     qcopy(&d->orbit.fwd, a);
     qcopy(&d->orbit.up, c);
-    Camera_Pos2Polar3d(&d->orbit.yaw, &d->orbit.pos, g + 0x80, a, b, c);
+    Camera_Pos2Polar3d(&d->orbit.yaw, &d->orbit.pos, &g->motion.pos, a, b, c);
     qcopy(&d->orbit.rot, &d->orbit.saved_rot);
 }
 /* The final mode store goes through this alias, as in func_001ECC48: written
@@ -286,11 +287,11 @@ void Camera_CaptureTransform(Camera *from) {
             extract_matrix_rotation_quaternion(&r->orbit.saved_rot, from);
             Camera_CaptureHeroRelativeView();
         } else {
-            char *g = hero_globals_base + 0xE1D;
+            struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
 
-            vec_scale_to_length(local0, *(char **)(g + 0x2080) + 0xC0, 1.0f);
-            vec_scale_to_length(local1, *(char **)(g + 0x2080) + 0xD0, 1.0f);
-            vec_scale_to_length(local2, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+            vec_scale_to_length(local0, *(char **)&g->moby + 0xC0, 1.0f);
+            vec_scale_to_length(local1, *(char **)&g->moby + 0xD0, 1.0f);
+            vec_scale_to_length(local2, *(char **)&g->moby + 0xE0, 1.0f);
             Camera_Pos2Polar3d(&r->orbit.yaw, &from->pos,
                           &(*(Camera **)((char *)r - 0xF0))->pos, /* player_camera.current */
                           local0, local1, local2);
@@ -564,7 +565,7 @@ void resolve_camera_movement_collisions(float *pos, float r) {
     Camera *o = player_camera.current;
     float *src = &o->prev_pos.x;
     int n, i, j;
-    char *base;
+    struct Hero *base;
     float *q;
 
     v[0] = src[0];
@@ -585,8 +586,8 @@ void resolve_camera_movement_collisions(float *pos, float r) {
     for (i = 0; i < n; i++) {
         q = coll_resolved_pos;
         FastVecAdd(pos, pos, d);
-        base = hero_globals_base + 0xE1D;
-        for (j = 0; j < 6 && coll_sphere_f(pos, *(int *)&gCamSphereMaskLvl, *(void **)(base + 0x2080), r); j++) {
+        base = (struct Hero *)(hero_globals_base + 0xE1D);
+        for (j = 0; j < 6 && coll_sphere_f(pos, *(int *)&gCamSphereMaskLvl, *(void **)&base->moby, r); j++) {
             qcopy(pos, q);
             {
                 Camera *t = player_camera.current;

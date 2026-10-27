@@ -5,6 +5,36 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Red button sequence controller: switches linked mobys on and off through the scripted cut scene. */
+struct SequenceVars {
+    s32 list_a;                     /* 0x00: moby list whose state 4 is set, then cleared */
+    s32 list_b;                     /* 0x04: state 18 list */
+    s32 list_c;                     /* 0x08: state 18 list */
+    s32 scene_point;                /* 0x0C: entry of blarg_scene_points */
+    s32 list_d;                     /* 0x10: state 17 list */
+    s32 list_e;                     /* 0x14: state 15 list */
+    s32 list_f;                     /* 0x18: state 15 list */
+    s32 group;                      /* 0x1C: moby group that must be gone first */
+    s32 moby_a;                     /* 0x20: moby slot put in state 3 */
+    s32 path_id;                    /* 0x24 */
+    s32 scene_point_b;              /* 0x28 */
+    s32 red_button;                 /* 0x2C: moby slot of the red button */
+    s32 moby_b;                     /* 0x30: moby slot put in state 5 */
+    s32 listed_group;               /* 0x34: class 0x5E8 group to activate */
+    u8 pad_38[0x78];
+    s32 path_index;                 /* 0xB0 */
+    s32 timer;                      /* 0xB4 */
+    f32 ramp;                       /* 0xB8: exit ramp progress, 0..1 */
+    s32 ramp_delay;                 /* 0xBC */
+    s32 spark_timer;                /* 0xC0 */
+};
+
+/* Flying debris / bobbing prop: bobs in place, or drifts and turns until the level state changes. */
+struct DriftVars {
+    Vec4A vel;                      /* 0x00: w = base height while bobbing, speed while drifting */
+    Vec4A spin;                     /* 0x10 */
+};
+
 extern f32 referencePosition[];
 typedef u32 u128_FE5D0 __attribute__((mode(TI), aligned(16)));
 typedef struct {
@@ -755,9 +785,9 @@ extern short blarg_bobbing_moby_amplitude;
 
 // Update for a bobbing moby: waits, then follows a sine offset, then drifts and deletes itself.
 void update_moby_bobbing_and_motion(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct DriftVars *data = (struct DriftVars *)((Moby *)moby)->pvars;
     int state;
-    if (data == 0) {
+    if (((char *)data) == 0) {
         DeleteMoby(moby);
         return;
     }
@@ -766,23 +796,23 @@ void update_moby_bobbing_and_motion(char *moby) {
     case 0:
         ((Moby *)moby)->draw_dist = 0x200;
         ((unsigned char *)moby)[0x30] = 0xFF;
-        *(float *)(data + 0xC) = ((Moby *)moby)->pos.z;
+        data->vel.w = ((Moby *)moby)->pos.z;
         moby[0x20] = 1;
         break;
     case 1:
         if (*(int *)(hero_globals_base + 0x2EA1) == 0x72) {
-            ((Moby *)moby)->pos.z = *(float *)(data + 0xC);
+            ((Moby *)moby)->pos.z = data->vel.w;
         } else {
             float f = IntToFloat(blarg_frame_count % 600) / 600.0f;
             float g = FastSin(f * 6.28318f);
-            ((Moby *)moby)->pos.z = *(float *)(data + 0xC) + *(float *)&blarg_bobbing_moby_amplitude * g;
+            ((Moby *)moby)->pos.z = data->vel.w + *(float *)&blarg_bobbing_moby_amplitude * g;
         }
         break;
     case 2:
-        if (*(float *)(data + 0xC) > 1.0f)
-            FastVecScale(data, data, 0.985f);
-        FastVecAdd(moby + 0x10, moby + 0x10, data);
-        FastVecAdd(moby + 0x40, moby + 0x40, data + 0x10);
+        if (data->vel.w > 1.0f)
+            FastVecScale(&data->vel, &data->vel, 0.985f);
+        FastVecAdd(moby + 0x10, moby + 0x10, &data->vel);
+        FastVecAdd(moby + 0x40, moby + 0x40, &data->spin);
         if (*(int *)(hero_globals_base + 0x2EA1) != 0x72)
             DeleteMoby(moby);
         break;
@@ -790,10 +820,10 @@ void update_moby_bobbing_and_motion(char *moby) {
 }
 /* Sets state 2 and stores the vectors a and b in the moby's data block. */
 void begin_moby_linear_and_angular_motion(char *arg, void *a, void *b) {
-    char *dst = ((char *)((Moby *)arg)->pvars);
+    struct DriftVars *dst = (struct DriftVars *)((Moby *)arg)->pvars;
     arg[0x20] = 2;
-    qcopy(dst, a);
-    qcopy(dst + 0x10, b);
+    qcopy(&dst->vel, a);
+    qcopy(&dst->spin, b);
 }
 typedef float Vec_3024C8[4] __attribute__((aligned(16)));
 struct Data_3024C8;
@@ -1166,7 +1196,7 @@ typedef struct {
  * table slot address across the vector copy (qcopy_nc) and re-reads the path pointer after the store to d+0xB0.
  * d+0xB8/0xBC are struct members so the stores can sink below the loads of the next call's arguments. */
 void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct SequenceVars *d = (struct SequenceVars *)((Moby *)m)->pvars;
     float va[4];
     float vc[4];
     float vb[4];
@@ -1177,35 +1207,35 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
             DeleteMoby_r(m);
             return;
         }
-        set_moby_list_state_4_r(*(int *)(d + 0x0));
-        set_moby_list_state_18_r(*(int *)(d + 0x4));
-        set_moby_list_state_18_r(*(int *)(d + 0x8));
+        set_moby_list_state_4_r(d->list_a);
+        set_moby_list_state_18_r(d->list_b);
+        set_moby_list_state_18_r(d->list_c);
         ((Moby *)m)->state = 1;
         ((Moby *)m)->update_dist = 0xFF;
         return;
     case 1:
-        if (count_active_moby_group_members_r(*(int *)(d + 0x1C), -1) != 0) return;
-        begin_red_button_rotation_r(level_mobys_q_p + (*(int *)(d + 0x2C) << 8));
-        if (get_red_button_sequence_status_r(level_mobys_q_p + (*(int *)(d + 0x2C) << 8)) != 1) return;
+        if (count_active_moby_group_members_r(d->group, -1) != 0) return;
+        begin_red_button_rotation_r(level_mobys_q_p + (d->red_button << 8));
+        if (get_red_button_sequence_status_r(level_mobys_q_p + (d->red_button << 8)) != 1) return;
         ((Moby *)m)->state = 2;
         queue_moby_dialogue_line_r((char *)m, 0);
         return;
     case 2:
-        if (get_red_button_sequence_status_r(level_mobys_q_p + (*(int *)(d + 0x2C) << 8)) != 2) return;
+        if (get_red_button_sequence_status_r(level_mobys_q_p + (d->red_button << 8)) != 2) return;
         ((Moby *)m)->state = 3;
-        *(int *)(d + 0xB0) = 1;
+        d->path_index = 1;
         MusicRequestTrack_r(6, 9);
         if (dialogue_playback_phase_r == 3) Music_ContinueStreamIfReady_r();
-        set_moby_list_state_17_r(*(int *)(d + 0x10));
-        set_moby_list_state_15_r(*(int *)(d + 0x14));
-        set_moby_list_state_15_r(*(int *)(d + 0x18));
-        clear_moby_list_state_4_r(*(int *)(d + 0x0));
-        clear_moby_list_state_18_r(*(int *)(d + 0x4));
-        clear_moby_list_state_18_r(*(int *)(d + 0x8));
-        set_moby_state_3_r(level_mobys_q_p + (*(int *)(d + 0x20) << 8));
-        ((Ent_302FE8 *)blarg_scene_points_r)[*(int *)(d + 0xC)].f38 = ((Ent_302FE8 *)blarg_scene_points_r)[*(int *)(d + 0xC)].f38 + 10.0f;
+        set_moby_list_state_17_r(d->list_d);
+        set_moby_list_state_15_r(d->list_e);
+        set_moby_list_state_15_r(d->list_f);
+        clear_moby_list_state_4_r(d->list_a);
+        clear_moby_list_state_18_r(d->list_b);
+        clear_moby_list_state_18_r(d->list_c);
+        set_moby_state_3_r(level_mobys_q_p + (d->moby_a << 8));
+        ((Ent_302FE8 *)blarg_scene_points_r)[d->scene_point].f38 = ((Ent_302FE8 *)blarg_scene_points_r)[d->scene_point].f38 + 10.0f;
         {
-            int *p = (int *)blarg_paths_r[*(int *)(d + 0x24)];
+            int *p = (int *)blarg_paths_r[d->path_id];
             float r2;
             qcopy(va, (char *)p + 0x20);
             qcopy(vb, (char *)p + 0x10);
@@ -1220,7 +1250,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
             set_camera_position_r(va);
             set_camera_rotation_r(vc);
             {
-                char *q = blarg_scene_points_r + (*(int *)(d + 0x28) << 7);
+                char *q = blarg_scene_points_r + (d->scene_point_b << 7);
                 Hero_ResetToPosition_r(q + 0x30, q + 0x70, 0x72, 0);
             }
         }
@@ -1230,23 +1260,23 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
         int b0;
         int nb;
         float r;
-        b0 = *(int *)(d + 0xB0);
-        qcopy_nc(vb, (char *)blarg_paths_r[*(int *)(d + 0x24)] + 0x10 + (b0 << 4));
+        b0 = d->path_index;
+        qcopy_nc(vb, (char *)blarg_paths_r[d->path_id] + 0x10 + (b0 << 4));
         nb = b0 + 1;
-        *(int *)(d + 0xB0) = nb;
-        if (nb == blarg_paths_r[*(int *)(d + 0x24)][0] - 1) {
+        d->path_index = nb;
+        if (nb == blarg_paths_r[d->path_id][0] - 1) {
             ((Moby *)m)->state = 4;
             queue_moby_dialogue_line_r((char *)m, 1);
-            *(int *)(d + 0xB4) = truncate_float_to_s32_r2(multiply_global_factor_r(*(float *)&D_L06_00162154_302FE8));
+            d->timer = truncate_float_to_s32_r2(multiply_global_factor_r(*(float *)&D_L06_00162154_302FE8));
             CameraScript2_r(2);
             HeroL06_TrySetMoveState_r(0, 1);
             scripted_camera_sequence_active_r = 0;
             return;
         }
-        activate_listed_class_5e8_mobys_r(*(int *)(d + 0x34));
-        x = *(int *)(d + 0xB0) - 30;
+        activate_listed_class_5e8_mobys_r(d->listed_group);
+        x = d->path_index - 30;
         if (x < 0) x = 0;
-        qcopy(va, (char *)blarg_paths_r[*(int *)(d + 0x24)] + 0x10 + (x << 4));
+        qcopy(va, (char *)blarg_paths_r[d->path_id] + 0x10 + (x << 4));
         clear_u64_value_r(vc);
         vc[2] = fast_atan2_r(va[0] - vb[0], va[1] - vb[1]);
         r = vec_distance_xy_r(vb, va);
@@ -1257,20 +1287,20 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
     }
     case 4: {
         int v = scale_ticks_r(0x708);
-        if (*(int *)(d + 0xB4) == v) {
+        if (d->timer == v) {
             if (dialogue_playback_phase_r == 3) Music_ContinueStreamIfReady_r();
         } else {
             v = scale_ticks_r(0x384);
-            if (*(int *)(d + 0xB4) == v) {
+            if (d->timer == v) {
                 queue_moby_dialogue_line_r((char *)m, 2);
             } else {
                 v = scale_ticks_r(0x12C);
-                if (*(int *)(d + 0xB4) == v && dialogue_playback_phase_r == 3) Music_ContinueStreamIfReady_r();
+                if (d->timer == v && dialogue_playback_phase_r == 3) Music_ContinueStreamIfReady_r();
             }
         }
-        if (fast_dec_timer_r(d + 0xC0) != 0) {
+        if (fast_dec_timer_r(&d->spark_timer) != 0) {
             allocate_voice_for_group_entry_r(0, 0, (int)((Hero *)(hero_globals_base_r2 + 0xE1D))->moby);
-            *(int *)(d + 0xC0) = truncate_float_to_s32_r2(multiply_global_factor_r(random_float_between_r(480.0f, 600.0f)));
+            d->spark_timer = truncate_float_to_s32_r2(multiply_global_factor_r(random_float_between_r(480.0f, 600.0f)));
             ((Snd_302FE8 *)referencePosition_r)->f160 = 0.4f;
             ((Snd_302FE8 *)referencePosition_r)->i168 = scale_ticks_r(0x3C);
         }
@@ -1280,23 +1310,23 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
             return;
         }
         if (level_game_mode_q_r != 0) return;
-        if (fast_dec_timer_r(d + 0xB4) == 0) return;
+        if (fast_dec_timer_r(&d->timer) == 0) return;
         ((Moby *)m)->state = 5;
-        ((Dat_302FE8 *)d)->iBC = scale_ticks_r(0xF);
-        ((Dat_302FE8 *)d)->fB8 = 0.0f;
-        set_moby_state_5_r(level_mobys_q_p + (*(int *)(d + 0x30) << 8));
+        d->ramp_delay = scale_ticks_r(0xF);
+        d->ramp = 0.0f;
+        set_moby_state_5_r(level_mobys_q_p + (d->moby_b << 8));
         allocate_voice_for_group_entry_r(1, 0, (int)((Hero *)(hero_globals_base_r2 + 0xE1D))->moby);
         return;
     }
     case 5:
-        if (*(float *)(d + 0xB8) == 1.0f) {
+        if (d->ramp == 1.0f) {
             Hero_OnKilled_r();
             linked_sequence_exit_ramp_progress_r = 0.0f;
             return;
         }
-        if (fast_dec_timer_r(d + 0xBC) == 0) return;
-        ApproachValue_r((float *)(d + 0xB8), 1.0f, g_frame_time_r * 6.0f);
-        linked_sequence_exit_ramp_progress_r = *(float *)(d + 0xB8);
+        if (fast_dec_timer_r(&d->ramp_delay) == 0) return;
+        ApproachValue_r(&d->ramp, 1.0f, g_frame_time_r * 6.0f);
+        linked_sequence_exit_ramp_progress_r = d->ramp;
         return;
     default:
         return;
@@ -1351,7 +1381,7 @@ typedef struct {
     char pad0[0x24];
     float f24;
 } Cls_3039B8;
-typedef struct {
+typedef struct Data_3039B8 {
     char pad0[0x20];
     char area[0x40];
     int a[5];
@@ -1681,36 +1711,36 @@ extern void try_set_help_message(int, int);
 
 /* Picks the next selection state from the menu mode, then queues the matching sound. */
 void update_shuttle_route_selection_and_prompt(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
-    switch (*(int *)(d + 0xBC)) {
+    struct Data_3039B8 *d = (struct Data_3039B8 *)((Moby *)m)->pvars;
+    switch (d->sel) {
     case 0: {
         int idx = g_current_level_index_r << 4;
-        int a = *(unsigned char *)(*(int *)(d + 0xF8) + idx + (int)saved_mission_state);
+        int a = *(unsigned char *)(d->fF8 + idx + (int)saved_mission_state);
         if (a != 0xFF) {
-            *(int *)(d + 0x9C) = 0;
+            d->f9C = 0;
         } else {
-            int b = *(unsigned char *)(*(int *)(d + 0xFC) + idx + (int)saved_mission_state);
+            int b = *(unsigned char *)(d->fFC + idx + (int)saved_mission_state);
             if (b == a) {
-                *(int *)(d + 0x9C) = 3;
+                d->f9C = 3;
             } else {
-                *(int *)(d + 0x9C) = -1;
+                d->f9C = -1;
             }
         }
         break;
     }
     case 1:
-        *(int *)(d + 0x9C) = 1;
+        d->f9C = 1;
         break;
     case 2:
-        *(int *)(d + 0x9C) = 4;
+        d->f9C = 4;
         break;
     }
-    if (help_records_83_count == 0 && *(int *)(d + 0x9C) == 0 && (*(unsigned char *)&gHelpDeskText_i != 0 || *(unsigned char *)&gHelpDeskVoice_i != 0)) {
+    if (help_records_83_count == 0 && d->f9C == 0 && (*(unsigned char *)&gHelpDeskText_i != 0 || *(unsigned char *)&gHelpDeskVoice_i != 0)) {
         Help_Request(0x177A, 0x53);
-        *(int *)(d + 0x9C) = -1;
+        d->f9C = -1;
         return;
     }
-    switch (*(int *)(d + 0x9C)) {
+    switch (d->f9C) {
     case 0:
         try_set_help_message(10, 0x1782);
         break;

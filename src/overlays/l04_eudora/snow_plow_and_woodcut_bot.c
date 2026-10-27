@@ -6,6 +6,110 @@
 #include "hero.h"
 #include "moby.h"
 
+typedef int w128 __attribute__((mode(TI)));
+typedef struct { int v[6]; } WBJoints;
+typedef struct { float v[5]; } WBAngles;
+
+typedef struct WBData {
+    /* 0x000 */ char pad000[0x20];
+    /* 0x020 */ float hp;
+    /* 0x024 */ short f24;
+    /* 0x026 */ char pad026[2];
+    /* 0x028 */ unsigned char f28;
+    /* 0x029 */ unsigned char f29;
+    /* 0x02A */ char pad02A[6];
+    /* 0x030 */ float f30;
+    /* 0x034 */ char pad034[4];
+    /* 0x038 */ int f38;
+    /* 0x03C */ char pad03C[0x1C];
+    /* 0x058 */ unsigned char f58;
+    /* 0x059 */ char pad059;
+    /* 0x05A */ unsigned char f5A;
+    /* 0x05B */ char pad05B[0x55];
+    /* 0x0B0 */ char fB0[7];
+    /* 0x0B7 */ unsigned char fB7;
+    /* 0x0B8 */ char pad0B8[8];
+    /* 0x0C0 */ char fC0[0x10];
+    /* 0x0D0 */ float fD0;
+    /* 0x0D4 */ float fD4;
+    /* 0x0D8 */ float fD8;
+    /* 0x0DC */ float fDC;
+    /* 0x0E0 */ int fE0;
+    /* 0x0E4 */ int fE4;
+    /* 0x0E8 */ float fE8;
+    /* 0x0EC */ char pad0EC[0x11];
+    /* 0x0FD */ unsigned char fFD;
+    /* 0x0FE */ char pad0FE[0x12];
+    /* 0x110 */ float f110;
+    /* 0x114 */ float f114;
+    /* 0x118 */ char pad118[8];
+    /* 0x120 */ unsigned char f120;
+    /* 0x121 */ unsigned char f121;
+    /* 0x122 */ char pad122[0xE];
+    /* 0x130 */ char f130[0x30];
+    /* 0x160 */ char f160[0x70];           /* leg rig, passed to initialize_leg_rig */
+    /* 0x1D0 */ int anim_ids[13];          /* anim ids copied from the class table */
+    /* 0x204 */ char pad204[0xC];
+    /* 0x210 */ unsigned char unk_210;
+    /* 0x211 */ unsigned char unk_211;
+    /* 0x212 */ unsigned char unk_212;
+    /* 0x213 */ unsigned char unk_213;
+    /* 0x214 */ unsigned char unk_214;
+    /* 0x215 */ unsigned char unk_215;
+    /* 0x216 */ char pad216[1];
+    /* 0x217 */ unsigned char f217;
+    /* 0x218 */ char pad218[0xC];
+    /* 0x224 */ float leg_amount;
+    /* 0x228 */ char pad228[4];
+    /* 0x22C */ float leg_angle_half;
+    /* 0x230 */ float leg_angle_full;
+    /* 0x234 */ float leg_angle_other;
+    /* 0x238 */ char pad238[4];
+    /* 0x23C */ float leg_speed;
+    /* 0x240 */ float unk_240;
+    /* 0x244 */ char pad244[0xC];
+    /* 0x250 */ unsigned char joint_250;
+    /* 0x251 */ unsigned char joint_251;
+    /* 0x252 */ unsigned char joint_252;
+    /* 0x253 */ unsigned char joint_253;
+    /* 0x254 */ char pad254[0xAC];
+    /* 0x300 */ unsigned char joint_300;
+    /* 0x301 */ unsigned char joint_301;
+    /* 0x302 */ unsigned char joint_302;
+    /* 0x303 */ unsigned char joint_303;
+    /* 0x304 */ char pad304[0xAC];
+    /* 0x3B0 */ float f3B0[4];
+    /* 0x3C0 */ unsigned char f3C0;
+    /* 0x3C1 */ unsigned char f3C1;
+    /* 0x3C2 */ short t3C2;
+    /* 0x3C4 */ short t3C4;
+    /* 0x3C6 */ short t3C6;
+    /* 0x3C8 */ float f3C8;
+    /* 0x3CC */ char pad3CC[4];
+    /* 0x3D0 */ float f3D0;
+    /* 0x3D4 */ float f3D4;
+    /* 0x3D8 */ float f3D8;
+    /* 0x3DC */ int f3DC;
+    /* 0x3E0 */ float f3E0;
+    /* 0x3E4 */ float f3E4;
+    /* 0x3E8 */ float f3E8;
+} WBData;
+
+/* Eudora leaf: drifts on the wind, bounces off the ground and fades out after a random time. */
+struct LeafVars {
+    Vec4A vel;                      /* 0x00 */
+    Vec4A drift;                    /* 0x10: wind drift, z = lift */
+    f32 spin_x;                     /* 0x20 */
+    f32 spin_y;                     /* 0x24 */
+    f32 spin_z;                     /* 0x28 */
+    u8 pad_2C[0x4];
+    Vec4A home_pos;                 /* 0x30: where it respawns */
+    s32 life;                       /* 0x40 */
+    s32 timer;                      /* 0x44 */
+    u8 pad_48[0x4];
+    f32 base_scale;                 /* 0x4C */
+};
+
 /* NON_MATCHING func_L04_002CB800 -- src/overlays/l04_eudora/vendor_002CB800.c
  * Best so far: BYTES 159/4972 (96.8% of the bytes match), checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
@@ -425,8 +529,8 @@ extern void initialize_leg_rig(void *, char *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/002ca420.c, FUN_L04_002d1418. */
 void initialize_woodcut_bot_movement_data(void *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
-    char *p = d + 0x160;
+    struct WBData *d = (struct WBData *)((Moby *)m)->pvars;
+    char *p = (char *)d->f160;
     float speed;
     float angleHalf;
     float angleFull;
@@ -434,19 +538,19 @@ void initialize_woodcut_bot_movement_data(void *m) {
     float amount;
     float frameScale;
     float otherScale;
-    *(int *)(d + 0x1d0) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
-    *(int *)(d + 0x1d4) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
-    *(int *)(d + 0x1d8) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
-    *(int *)(d + 0x1dc) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
-    *(int *)(d + 0x1e0) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
-    *(int *)(d + 0x1e4) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
-    *(int *)(d + 0x1e8) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
-    *(int *)(d + 0x1ec) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x54) + 0x14);
-    *(int *)(d + 0x1f0) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
-    *(int *)(d + 0x1f4) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
-    *(int *)(d + 0x1f8) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
-    *(int *)(d + 0x1fc) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
-    *(int *)(d + 0x200) = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
+    d->anim_ids[0] = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
+    d->anim_ids[1] = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
+    d->anim_ids[2] = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
+    d->anim_ids[3] = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
+    d->anim_ids[4] = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
+    d->anim_ids[5] = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
+    d->anim_ids[6] = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
+    d->anim_ids[7] = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x54) + 0x14);
+    d->anim_ids[8] = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
+    d->anim_ids[9] = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
+    d->anim_ids[10] = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
+    d->anim_ids[11] = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
+    d->anim_ids[12] = *(int *)(*(char **)(*(char **)(m + 0x24) + 0x70) + 0x14);
     initialize_leg_rig_angle_defaults(m, p);
     frameScale = g_frame_time_sq;
     otherScale = g_frame_time;
@@ -455,26 +559,26 @@ void initialize_woodcut_bot_movement_data(void *m) {
     speed = frameScale * 9.8f;
     angleHalf = frameScale * 3.1415927f;
     amount = frameScale * 10.0f;
-    *(unsigned char *)(d + 0x214) = 7;
-    *(unsigned char *)(d + 0x210) = 0;
-    *(unsigned char *)(d + 0x211) = 0;
-    *(float *)(d + 0x23c) = speed;
-    *(float *)(d + 0x22c) = angleHalf;
-    *(float *)(d + 0x230) = angleFull;
-    *(float *)(d + 0x234) = angleOther;
-    *(float *)(d + 0x224) = amount;
-    *(unsigned char *)(d + 0x212) = 0xff;
-    *(unsigned char *)(d + 0x213) = 0x10;
-    *(unsigned char *)(d + 0x215) = 7;
-    *(unsigned char *)(d + 0x250) = 10;
-    *(unsigned char *)(d + 0x251) = 8;
-    *(unsigned char *)(d + 0x253) = 12;
-    *(unsigned char *)(d + 0x252) = 14;
-    *(unsigned char *)(d + 0x300) = 11;
-    *(unsigned char *)(d + 0x301) = 9;
-    *(unsigned char *)(d + 0x303) = 13;
-    *(unsigned char *)(d + 0x302) = 15;
-    *(float *)(d + 0x240) = 0.5f;
+    d->unk_214 = 7;
+    d->unk_210 = 0;
+    d->unk_211 = 0;
+    d->leg_speed = speed;
+    d->leg_angle_half = angleHalf;
+    d->leg_angle_full = angleFull;
+    d->leg_angle_other = angleOther;
+    d->leg_amount = amount;
+    d->unk_212 = 0xff;
+    d->unk_213 = 0x10;
+    d->unk_215 = 7;
+    d->joint_250 = 10;
+    d->joint_251 = 8;
+    d->joint_253 = 12;
+    d->joint_252 = 14;
+    d->joint_300 = 11;
+    d->joint_301 = 9;
+    d->joint_303 = 13;
+    d->joint_302 = 15;
+    d->unk_240 = 0.5f;
     initialize_leg_rig(m, p);
 }
 extern void clear_u64_value(void *);
@@ -492,66 +596,6 @@ void emit_woodcut_bot_death_effects(void *m) {
     func_L00_0025F4A8_alt(m, vec, pos, 0.0f, 0.0f, 10, 3, 4,
                           2.0f, 1.0f, 100000.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
 }
-typedef int w128 __attribute__((mode(TI)));
-typedef struct { int v[6]; } WBJoints;
-typedef struct { float v[5]; } WBAngles;
-
-typedef struct WBData {
-    /* 0x000 */ char pad000[0x20];
-    /* 0x020 */ float hp;
-    /* 0x024 */ short f24;
-    /* 0x026 */ char pad026[2];
-    /* 0x028 */ unsigned char f28;
-    /* 0x029 */ unsigned char f29;
-    /* 0x02A */ char pad02A[6];
-    /* 0x030 */ float f30;
-    /* 0x034 */ char pad034[4];
-    /* 0x038 */ int f38;
-    /* 0x03C */ char pad03C[0x1C];
-    /* 0x058 */ unsigned char f58;
-    /* 0x059 */ char pad059;
-    /* 0x05A */ unsigned char f5A;
-    /* 0x05B */ char pad05B[0x55];
-    /* 0x0B0 */ char fB0[7];
-    /* 0x0B7 */ unsigned char fB7;
-    /* 0x0B8 */ char pad0B8[8];
-    /* 0x0C0 */ char fC0[0x10];
-    /* 0x0D0 */ float fD0;
-    /* 0x0D4 */ float fD4;
-    /* 0x0D8 */ float fD8;
-    /* 0x0DC */ float fDC;
-    /* 0x0E0 */ int fE0;
-    /* 0x0E4 */ int fE4;
-    /* 0x0E8 */ float fE8;
-    /* 0x0EC */ char pad0EC[0x11];
-    /* 0x0FD */ unsigned char fFD;
-    /* 0x0FE */ char pad0FE[0x12];
-    /* 0x110 */ float f110;
-    /* 0x114 */ float f114;
-    /* 0x118 */ char pad118[8];
-    /* 0x120 */ unsigned char f120;
-    /* 0x121 */ unsigned char f121;
-    /* 0x122 */ char pad122[0xE];
-    /* 0x130 */ char f130[0x30];
-    /* 0x160 */ char f160[0xB7];
-    /* 0x217 */ unsigned char f217;
-    /* 0x218 */ char pad218[0x198];
-    /* 0x3B0 */ float f3B0[4];
-    /* 0x3C0 */ unsigned char f3C0;
-    /* 0x3C1 */ unsigned char f3C1;
-    /* 0x3C2 */ short t3C2;
-    /* 0x3C4 */ short t3C4;
-    /* 0x3C6 */ short t3C6;
-    /* 0x3C8 */ float f3C8;
-    /* 0x3CC */ char pad3CC[4];
-    /* 0x3D0 */ float f3D0;
-    /* 0x3D4 */ float f3D4;
-    /* 0x3D8 */ float f3D8;
-    /* 0x3DC */ int f3DC;
-    /* 0x3E0 */ float f3E0;
-    /* 0x3E4 */ float f3E4;
-    /* 0x3E8 */ float f3E8;
-} WBData;
 
 
 typedef struct WBQuery {
@@ -675,15 +719,15 @@ void woodcut_bot_update(Moby *m) {
             src = *(unsigned char **)(p + 0x20);
             one = 1.0f;
             if (src != 0) {
-                unsigned char *h = hero_globals_base + 0xE1D;
-                if (src != *(unsigned char **)(h + 0x1090)) {
+                struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+                if (src != *(unsigned char **)&h->items[0].moby) {
                     angle = fast_atan2(m->pos.x - *(float *)(src + 0x10), m->pos.y - *(float *)(src + 0x14));
                 } else {
-                    angle = fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84));
+                    angle = fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1]);
                 }
             } else {
-                unsigned char *h = hero_globals_base + 0xE1D;
-                angle = fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84));
+                struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+                angle = fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1]);
             }
             a = g_frame_time_sq * 30.0f;
             b = g_frame_time_sq * 10.0f;
@@ -1052,7 +1096,7 @@ void woodcut_bot_update(Moby *m) {
                     int i;
 
                     for (i = 0; i < 9; i++) {
-                        unsigned char *h = hero_globals_base + 0xE1D;
+                        struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
                         float ang;
 
                         if ((i & 1) == 0) {
@@ -1061,7 +1105,7 @@ void woodcut_bot_update(Moby *m) {
                         } else {
                             sign = -sign;
                         }
-                        ang = FastAddRots(sign * tab.v[i >> 1], fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84)));
+                        ang = FastAddRots(sign * tab.v[i >> 1], fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1]));
                         BuildSphericalOffset(v, 6.0f, ang, m->rot.y);
                         FastVecAdd(v, v, pos);
                         if (IsPointInPolygon(v, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
@@ -1147,10 +1191,10 @@ void woodcut_bot_update(Moby *m) {
 
         StepColorFade(m, d->fB0);
         if (d->f3E4 > 0.0f) {
-            unsigned char *h = hero_globals_base + 0xE1D;
+            struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
 
-            w[0] = FastCos(fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84))) * d->f3E4;
-            w[1] = FastSin(fast_atan2(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84))) * d->f3E4;
+            w[0] = FastCos(fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1])) * d->f3E4;
+            w[1] = FastSin(fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1])) * d->f3E4;
             w[2] = 0.0f;
             FastVecAdd(w, w, pos);
             d->f3E4 += -2.0f / (multiply_global_factor(15.0f) * multiply_global_factor(15.0f));
@@ -1291,7 +1335,7 @@ void leaf_update(struct MobyP *moby) {
     Vec4 work;
     Vec4 initialDirection;
     Vec4 direction;
-    char *data = (char *)moby->pvars;
+    struct LeafVars *data = (struct LeafVars *)moby->pvars;
     float speed;
     float amount;
     int timer;
@@ -1302,19 +1346,19 @@ void leaf_update(struct MobyP *moby) {
     old.f[1] = random_float_between(-1.0f, 1.0f);
     old.f[2] = random_float_between(-1.0f, 1.0f);
     random.q = old.q;
-    speed = vector_length_xy(data);
+    speed = vector_length_xy(&data->vel);
     qcopy(&old, &moby->pos);
     switch (moby->state) {
     case 0:
-        qcopy(data + 0x30, &moby->pos);
-        *(int *)(data + 0x40) = *(int *)(data + 0x44) = random_int_between(120, 2400);
-        *(float *)(data + 0x4c) = moby->scale * random_float_between(0.8f, 1.2f);
+        qcopy(&data->home_pos, &moby->pos);
+        data->life = data->timer = random_int_between(120, 2400);
+        data->base_scale = moby->scale * random_float_between(0.8f, 1.2f);
         moby->state = 1;
         break;
     case 1:
         if (!(vec_distance_xy(&moby->pos, eudora_camera_pos) < 32.0f))
             return;
-        if (!fast_dec_timer((int *)(data + 0x44)))
+        if (!fast_dec_timer(&data->timer))
             return;
         direction.q = 0;
         direction.f[0] = random_float_between(-1.0f, 1.0f);
@@ -1337,59 +1381,59 @@ void leaf_update(struct MobyP *moby) {
         moby->state = 2;
         return;
     case 2:
-        fast_dec_timer((int *)(data + 0x44));
+        fast_dec_timer(&data->timer);
         normalize_vector_xyz(&random, &random, eudora_leaf_drift[5] / 10.0f);
-        add_vector_xyz(data + 0x10, data + 0x10, &random);
-        normalize_vector_xyz(&work, data + 0x10, 5.0f);
-        normalize_vector_xyz(data + 0x10, data + 0x10, eudora_leaf_drift[5] * 0.5f);
+        add_vector_xyz(&data->drift, &data->drift, &random);
+        normalize_vector_xyz(&work, &data->drift, 5.0f);
+        normalize_vector_xyz(&data->drift, &data->drift, eudora_leaf_drift[5] * 0.5f);
         add_vector_xyz(&work, &work, &moby->pos);
         if (collision_line(&old, &work, 6, 0, 0) && !rib_p(8)) {
-            vec_reflect(data + 0x10, data + 0x10, eudora_coll_hit_point + 0x20);
-            *(float *)(data + 0x18) += eudora_leaf_drift[5] / 10.0f;
+            vec_reflect(&data->drift, &data->drift, eudora_coll_hit_point + 0x20);
+            data->drift.z += eudora_leaf_drift[5] / 10.0f;
         }
-        add_vector_xyz(data, data, data + 0x10);
+        add_vector_xyz(&data->vel, &data->vel, &data->drift);
         work.f[0] = eudora_leaf_drift[5] * fast_cos(eudora_leaf_drift[1]);
         work.f[1] = eudora_leaf_drift[5] * fast_sin(eudora_leaf_drift[1]);
         work.f[2] = frame_time * -0.5f;
         scale_vector_xyz(&work, &work, 0.4f);
-        scale_vector_xyz(data, data, 0.6f);
-        add_vector_xyz(data, &work, data);
-        add_vector_xyz(&moby->pos, &moby->pos, data);
+        scale_vector_xyz(&data->vel, &data->vel, 0.6f);
+        add_vector_xyz(&data->vel, &work, &data->vel);
+        add_vector_xyz(&moby->pos, &moby->pos, &data->vel);
         if (collision_line(&old, &moby->pos, 6, 0, 0)) {
             qcopy(&moby->pos, eudora_coll_hit_point);
-            vec_reflect(data, data, eudora_coll_hit_point + 0x20);
-            scale_vector_xyz(data, data, 0.25f);
-            add_vector_xyz(&moby->pos, &moby->pos, data);
-            *(float *)(data + 8) += eudora_leaf_drift[5] / 5.0f;
+            vec_reflect(&data->vel, &data->vel, eudora_coll_hit_point + 0x20);
+            scale_vector_xyz(&data->vel, &data->vel, 0.25f);
+            add_vector_xyz(&moby->pos, &moby->pos, &data->vel);
+            data->vel.z += eudora_leaf_drift[5] / 5.0f;
         }
         if (eudora_leaf_drift[5] < speed)
-            normalize_vector_xyz(data, data, eudora_leaf_drift[5]);
+            normalize_vector_xyz(&data->vel, &data->vel, eudora_leaf_drift[5]);
         {
             float amount = frame_time * -0.5f;
-            if (amount < *(float *)(data + 8))
-                *(float *)(data + 8) += amount / 10.0f;
+            if (amount < data->vel.z)
+                data->vel.z += amount / 10.0f;
             else
-                *(float *)(data + 8) = amount;
+                data->vel.z = amount;
         }
-        moby->rot.x = fast_add_rotations(moby->rot.x, *(float *)(data + 0x20));
-        moby->rot.y = fast_add_rotations(moby->rot.y, *(float *)(data + 0x24));
-        moby->rot.z = fast_add_rotations(moby->rot.z, *(float *)(data + 0x28));
-        if (*(int *)(data + 0x40) - scale_ticks(10) < *(int *)(data + 0x44)) {
-            amount = cif_p(*(int *)(data + 0x44) - *(int *)(data + 0x40));
-            moby->scale = (*(float *)(data + 0x4c) * amount) / multiply_global_factor(10.0f);
+        moby->rot.x = fast_add_rotations(moby->rot.x, data->spin_x);
+        moby->rot.y = fast_add_rotations(moby->rot.y, data->spin_y);
+        moby->rot.z = fast_add_rotations(moby->rot.z, data->spin_z);
+        if (data->life - scale_ticks(10) < data->timer) {
+            amount = cif_p(data->timer - data->life);
+            moby->scale = (data->base_scale * amount) / multiply_global_factor(10.0f);
         } else {
-            if (*(int *)(data + 0x44) < scale_ticks(100))
+            if (data->timer < scale_ticks(100))
                 moby->scale *= 0.99f;
             else
-                moby->scale = *(float *)(data + 0x4c);
+                moby->scale = data->base_scale;
         }
-        if (*(int *)(data + 0x44) > 0)
+        if (data->timer > 0)
             return;
-        qcopy(&moby->pos, data + 0x30);
+        qcopy(&moby->pos, &data->home_pos);
         timer = random_int_between(120, 2400);
         /* Preserve the retail ordering of the timer reload stores. */
-        *(volatile int *)(data + 0x40) = timer;
-        *(volatile int *)(data + 0x44) = timer;
+        *(volatile int *)&data->life = timer;
+        *(volatile int *)&data->timer = timer;
         moby->state = 1;
         break;
     default:

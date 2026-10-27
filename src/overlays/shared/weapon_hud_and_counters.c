@@ -3,6 +3,7 @@
 #include "moby.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "hero.h"
 
 typedef struct { char pad[0x50]; int sz[8]; char pad2[0x20]; void *p[8]; } T_234fd0;
 typedef struct { char pad[0x18]; T_234fd0 *t; } G_234fd0;
@@ -2300,14 +2301,14 @@ extern int draw_weapon_ammo_hud_panel(char *);
 
 /* Shows or hides the weapon HUD element depending on the current weapon. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_text_002377b8.c, FUN_L00_0023adb8. */
 void update_weapon_hud_state(void) {
-    char *base;
+    struct Hero *base;
     int w;
     int mode;
 
     if (*(int *)&weapon_hud_suspended == 0) {
-        base = hero_globals_base + 0xE1D;
-        w = *(int *)(base + 0x10B8);
-        mode = *(unsigned char *)(base + 0x20A4);
+        base = (struct Hero *)(hero_globals_base + 0xE1D);
+        w = base->items[0].item_id;
+        mode = base->vehicle_mode;
         if (((WeaponRec *)((char *)item_price_table + w * 24))->unk8 == 0) {
             w = 0;
         }
@@ -2324,8 +2325,8 @@ void update_weapon_hud_state(void) {
                 Hud_SetBarValueById(D_hud_pair[1], 0);
                 D_hud_pair[1] = -1;
             }
-            *(short *)(base + 0x1634) = queue_animation_update(0x10, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
-                                                      (int)draw_hud_cropped_gauge_panel, (int)(base + 0x1630), 200);
+            base->unk1634 = queue_animation_update(0x10, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
+                                                      (int)draw_hud_cropped_gauge_panel, (int)((char *)&base->vehicle_hp), 200);
         } else {
             if (D_hud_pair[1] != -1) {
                 Hud_SetBarValueById(D_hud_pair[1], 0);

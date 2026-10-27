@@ -1,16 +1,16 @@
 {
  "measures": {
-  "fuzzy_match_percent": 89.71162889813452,
+  "fuzzy_match_percent": 89.70105219817283,
   "total_code": "3706260",
-  "matched_code": "3319988",
-  "matched_code_percent": 89.57784936836596,
+  "matched_code": "3319596",
+  "matched_code_percent": 89.56727266840427,
   "total_functions": 5101,
-  "matched_functions": 5010,
-  "matched_functions_percent": 98.21603607135856,
-  "complete_code": "590704",
-  "complete_code_percent": 15.938007587163339,
+  "matched_functions": 5009,
+  "matched_functions_percent": 98.19643207214271,
+  "complete_code": "486092",
+  "complete_code_percent": 13.11543172902063,
   "total_units": 140,
-  "complete_units": 106
+  "complete_units": 105
  },
  "units": [
   {
@@ -44247,17 +44247,17 @@
   {
    "name": "Level 13: Gemlik Base",
    "measures": {
-    "fuzzy_match_percent": 100.0,
+    "fuzzy_match_percent": 99.62528199441746,
     "total_code": "104612",
-    "matched_code": "104612",
-    "matched_code_percent": 100.0,
+    "matched_code": "104220",
+    "matched_code_percent": 99.62528199441746,
     "total_functions": 107,
-    "matched_functions": 107,
-    "matched_functions_percent": 100.0,
-    "complete_code": "104612",
-    "complete_code_percent": 100.0,
+    "matched_functions": 106,
+    "matched_functions_percent": 99.06542056074767,
+    "complete_code": "0",
+    "complete_code_percent": 0.0,
     "total_units": 1,
-    "complete_units": 1
+    "complete_units": 0
    },
    "functions": [
     {
@@ -45055,7 +45055,7 @@
     {
      "name": "func_L13_0030A828",
      "size": "392",
-     "fuzzy_match_percent": 100.0,
+     "fuzzy_match_percent": 0.0,
      "address": "787288",
      "metadata": {
       "virtual_address": "3191776"
@@ -45225,7 +45225,7 @@
     }
    ],
    "metadata": {
-    "complete": true,
+    "complete": false,
     "source_path": "src/overlays/l13_gemlik",
     "progress_categories": [
      "level_code",
@@ -49603,15 +49603,15 @@
    "id": "level_code",
    "name": "Level code",
    "measures": {
-    "fuzzy_match_percent": 89.32960261146332,
+    "fuzzy_match_percent": 89.31749878035374,
     "total_code": "3238644",
-    "matched_code": "2893012",
-    "matched_code_percent": 89.32787919882519,
+    "matched_code": "2892620",
+    "matched_code_percent": 89.31577536771563,
     "total_functions": 3399,
-    "matched_functions": 3376,
-    "matched_functions_percent": 99.32333039129156,
-    "complete_code": "338308",
-    "complete_code_percent": 10.445976772995119
+    "matched_functions": 3375,
+    "matched_functions_percent": 99.29390997352162,
+    "complete_code": "233696",
+    "complete_code_percent": 7.215859476990987
    }
   },
   {
@@ -49663,15 +49663,15 @@
    "id": "levels",
    "name": "Level-specific code",
    "measures": {
-    "fuzzy_match_percent": 85.19053033331838,
+    "fuzzy_match_percent": 85.17141781715563,
     "total_code": "2051012",
-    "matched_code": "1747268",
-    "matched_code_percent": 85.19053033331838,
+    "matched_code": "1746876",
+    "matched_code_percent": 85.17141781715563,
     "total_functions": 1464,
-    "matched_functions": 1450,
-    "matched_functions_percent": 99.04371584699453,
-    "complete_code": "338308",
-    "complete_code_percent": 16.49468652548108
+    "matched_functions": 1449,
+    "matched_functions_percent": 98.97540983606558,
+    "complete_code": "233696",
+    "complete_code_percent": 11.394180043802766
    }
   },
   {
@@ -49873,15 +49873,15 @@
    "id": "level_13",
    "name": "Level 13: Gemlik Base",
    "measures": {
-    "fuzzy_match_percent": 100.0,
+    "fuzzy_match_percent": 99.62528199441746,
     "total_code": "104612",
-    "matched_code": "104612",
-    "matched_code_percent": 100.0,
+    "matched_code": "104220",
+    "matched_code_percent": 99.62528199441746,
     "total_functions": 107,
-    "matched_functions": 107,
-    "matched_functions_percent": 100.0,
-    "complete_code": "104612",
-    "complete_code_percent": 100.0
+    "matched_functions": 106,
+    "matched_functions_percent": 99.06542056074767,
+    "complete_code": "0",
+    "complete_code_percent": 0.0
    }
   },
   {

@@ -5,6 +5,90 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Electric gate: its trigger and the sound voice slot it claims. */
+struct ElectricGateWatchVars {
+    s32 trigger;                    /* 0x00: moby index whose command byte 0xBC opens it */
+    int *voice_slot;                /* 0x04: shared voice slot cell, -1 when none */
+};
+
+/* Fog zone: the level fog setting inside and outside the zone and the tint colours. */
+struct FogZoneVars {
+    f32 out_near;                   /* 0x00: fog set when leaving */
+    f32 out_near_intensity;         /* 0x04 */
+    f32 out_far;                    /* 0x08 */
+    f32 out_far_intensity;          /* 0x0C */
+    f32 in_near;                    /* 0x10: fog set when entering (stored as int 0) */
+    f32 in_near_intensity;          /* 0x14 */
+    f32 in_far;                     /* 0x18 */
+    f32 in_far_intensity;           /* 0x1C */
+    u8 out_red;                     /* 0x20 */
+    u8 out_green;                   /* 0x21 */
+    u8 out_blue;                    /* 0x22 */
+    u8 in_red;                      /* 0x23 */
+    u8 in_green;                    /* 0x24 */
+    u8 in_blue;                     /* 0x25 */
+    u8 pad_26[0x2];
+    s32 volume_out;                 /* 0x28: volume that restores the outside fog (and caps the hero) */
+    s32 volume_in;                  /* 0x2C: volume that sets the inside fog */
+    s32 tint_a;                     /* 0x30: tint colour at one side of the gate */
+    s32 tint_b;                     /* 0x34: tint colour at the other side */
+    s32 tint_volume;                /* 0x38: volume (cuboid) that blends the tint */
+};
+
+/* Triggered mover: slides along a cuboid's direction, then lowers. */
+struct SlideLowerVars {
+    Vec4A velocity;                 /* 0x00: slide velocity; z is also the lowering speed */
+    s32 cuboid;                     /* 0x10: cuboid index */
+    s32 trigger;                    /* 0x14: moby index whose command byte 0xBC starts it */
+    f32 distance;                   /* 0x18: slide distance unit */
+    s32 reversed;                   /* 0x1C */
+};
+
+/* Drain cover: tilts and wobbles under the hero. */
+struct DrainCoverVars {
+    u8 pad_00[0x90];
+    f32 tilt_x_vel;                 /* 0x90 */
+    f32 tilt_y_vel;                 /* 0x94 */
+    f32 wobble_x;                   /* 0x98 */
+    f32 wobble_y;                   /* 0x9C */
+    f32 wobble_x_step;              /* 0xA0 */
+    f32 wobble_y_step;              /* 0xA4 */
+};
+
+/* Flying piece of a broken grating (classes 0x3D4 and 0x3D5). */
+struct GratingPieceVars {
+    u8 pad_00[0xC];
+    s32 unk_0C;                     /* 0x0C: set to 0x200 */
+};
+
+/* Marker ring: index of the path whose points it fills. */
+struct MarkerRingVars {
+    u8 pad_00[0x68];
+    s32 path;                       /* 0x68 */
+};
+
+/* Taxi pickup (class with five stops): blends to the route start, follows the path, blends to the stop. */
+struct TaxiVars {
+    u8 pad_00[0x20];
+    u8 entity_matrix[0x40];         /* 0x20: update_entity_matrix block */
+    Vec4A blend_pos;                /* 0x60: position at the blend end */
+    Vec4A blend_rot;                /* 0x70: rotation at the blend end */
+    s32 stop[5];                    /* 0x80: cuboid index of each stop */
+    s32 route[6];                   /* 0x94: path index per route */
+    char *path;                     /* 0xAC: current route */
+    s16 unk_B0;                     /* 0xB0: set to -1 at start */
+    s16 voice;                      /* 0xB2: engine sound slot, -1 when none */
+    s16 start_stop;                 /* 0xB4: stop it sits at, -1 when none */
+    s16 end_stop;                   /* 0xB6: stop the chosen route ends at */
+    s32 mission_a;                  /* 0xB8: saved_mission_state index gating stop 2 */
+    s32 mission_b;                  /* 0xBC */
+    f32 blend;                      /* 0xC0: 0..1 */
+    f32 blend_vel;                  /* 0xC4 */
+    u8 pad_C8[0xC];
+    f32 path_speed;                 /* 0xD4 */
+    f32 path_accel;                 /* 0xD8 */
+};
+
 typedef struct {
     float x;
     float y;
@@ -54,7 +138,7 @@ extern unsigned char *moby_pool_4f60_r __asm__("D_L05_00160098") MACRO_ADDR;
 
 // Updates the claimed-slot marker: claims or reassigns a table slot while the player is near.
 void electric_gate_update(char *m) {
-    char *data = ((char *)((Moby *)m)->pvars);
+    struct ElectricGateWatchVars *data = (struct ElectricGateWatchVars *)((Moby *)m)->pvars;
     int state = ((Moby *)m)->state;
     char *base;
     char *tab;
@@ -68,7 +152,7 @@ void electric_gate_update(char *m) {
         ((Moby *)m)->flags |= 1;
         ((Moby *)m)->state = 1;
         ((Moby *)m)->visible = 0;
-        **(int **)(data + 4) = -1;
+        *data->voice_slot = -1;
         break;
     case 1:
         if (*(int *)&electric_gate_last_draw_frame != rilgar_frame_count) {
@@ -78,7 +162,7 @@ void electric_gate_update(char *m) {
         pos = m + 0x10;
         tab = rilgar_camera_pos;
         if (FastVecDist(pos, tab) < 64.0f) {
-            idx = **(int **)(data + 4);
+            idx = *data->voice_slot;
             if (idx >= 0) {
                 base = hero_globals_base + 0x1D;
                 o = *(char **)(base + idx * 0x70 + 0x88);
@@ -90,18 +174,18 @@ void electric_gate_update(char *m) {
                                 if (!(d < FastVecDist(o + 0x10, tab))) goto after;
                             }
                             q = base + 0x90;
-                            *(char **)(base + **(int **)(data + 4) * 0x70 + 0x88) = m;
-                            qcopy(**(int **)(data + 4) * 0x70 + q, pos);
+                            *(char **)(base + *data->voice_slot * 0x70 + 0x88) = m;
+                            qcopy(*data->voice_slot * 0x70 + q, pos);
                         }
                         goto after;
                     }
                 }
             }
-            **(int **)(data + 4) = Moby_PlaySound_i(0, 4, m);
+            *data->voice_slot = Moby_PlaySound_i(0, 4, m);
         }
     after:
-        if (*(int *)data >= 0) {
-            if (moby_pool_4f60_r[*(int *)data * 256 + 0xBC] != 0) {
+        if (data->trigger >= 0) {
+            if (moby_pool_4f60_r[data->trigger * 256 + 0xBC] != 0) {
                 Moby_PlaySound_i(1, 0, m);
                 *(int *)&((Moby *)m)->collision = 0;
                 ((Moby *)m)->state = 2;
@@ -234,52 +318,52 @@ extern int FastTweenColor(int, int, float);
 /* Fog zone: switches the level fog between its two settings when the hero enters either trigger volume, and
  * tints a colour by the hero's side of a gate while inside the third. */
 void update_fog_zone(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct FogZoneVars *d = (struct FogZoneVars *)((Moby *)m)->pvars;
     float v[4];
     float w[4];
     char *g = hero_globals_base + 0xE9D;
-    if (is_point_inside_clip_volume(g, *(int *)(d + 0x28))) {
+    if (is_point_inside_clip_volume(g, d->volume_out)) {
         *(float *)(g + 0x270) = 500.0f;
     }
     switch (((unsigned char *)m)[0x20]) {
     case 0:
-        d[0x20] = rilgar_fog_color_red[0];
-        d[0x21] = rilgar_fog_color_green[0];
-        d[0x22] = rilgar_fog_color_blue[0];
+        d->out_red = rilgar_fog_color_red[0];
+        d->out_green = rilgar_fog_color_green[0];
+        d->out_blue = rilgar_fog_color_blue[0];
         {
             float f0 = rilgar_fog_near_distance;
             float f1 = rilgar_fog_far_distance;
             float f2 = rilgar_fog_near_intensity;
             float f3 = rilgar_fog_far_intensity;
-            *(float *)(d + 0) = f0;
-            *(float *)(d + 8) = f1;
-            *(float *)(d + 4) = f2;
-            *(float *)(d + 0xC) = f3;
+            d->out_near = f0;
+            d->out_far = f1;
+            d->out_near_intensity = f2;
+            d->out_far_intensity = f3;
         }
-        d[0x23] = 0x49;
-        d[0x24] = 0x53;
-        d[0x25] = 0xC;
-        *(float *)(d + 0x18) = 33792.0f;
-        *(float *)(d + 0x14) = 255.0f;
-        *(int *)(d + 0x10) = 0;
-        *(int *)(d + 0x1C) = 0;
+        d->in_red = 0x49;
+        d->in_green = 0x53;
+        d->in_blue = 0xC;
+        d->in_far = 33792.0f;
+        d->in_near_intensity = 255.0f;
+        *(int *)&d->in_near = 0;
+        *(int *)&d->in_far_intensity = 0;
         {
             int c = rilgar_zone_tint_red[0] + (rilgar_zone_tint_green[0] << 8) + (rilgar_zone_tint_blue[0] << 16) + (rilgar_zone_tint_alpha[0] << 24);
-            *(int *)(d + 0x34) = 0x40408070;
-            *(int *)(d + 0x30) = c;
+            d->tint_b = 0x40408070;
+            d->tint_a = c;
         }
         m[0x20] = 1;
         break;
     case 1:
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(d + 0x2C))) {
-            rilgar_fog_color_red[0] = d[0x23];
-            rilgar_fog_color_green[0] = d[0x24];
-            rilgar_fog_color_blue[0] = d[0x25];
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->volume_in)) {
+            rilgar_fog_color_red[0] = *(char *)&d->in_red;
+            rilgar_fog_color_green[0] = *(char *)&d->in_green;
+            rilgar_fog_color_blue[0] = *(char *)&d->in_blue;
             {
-                float f0 = *(float *)(d + 0x10);
-                float f1 = *(float *)(d + 0x18);
-                float f2 = *(float *)(d + 0x14);
-                float f3 = *(float *)(d + 0x1C);
+                float f0 = d->in_near;
+                float f1 = d->in_far;
+                float f2 = d->in_near_intensity;
+                float f3 = d->in_far_intensity;
                 rilgar_fog_near_distance = f0;
                 rilgar_fog_far_distance = f1;
                 rilgar_fog_near_intensity = f2;
@@ -289,15 +373,15 @@ void update_fog_zone(char *m) {
         }
         break;
     case 2:
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(d + 0x28))) {
-            rilgar_fog_color_red[0] = d[0x20];
-            rilgar_fog_color_green[0] = d[0x21];
-            rilgar_fog_color_blue[0] = d[0x22];
+        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->volume_out)) {
+            rilgar_fog_color_red[0] = *(char *)&d->out_red;
+            rilgar_fog_color_green[0] = *(char *)&d->out_green;
+            rilgar_fog_color_blue[0] = *(char *)&d->out_blue;
             {
-                float f0 = *(float *)(d + 0);
-                float f1 = *(float *)(d + 8);
-                float f2 = *(float *)(d + 4);
-                float f3 = *(float *)(d + 0xC);
+                float f0 = d->out_near;
+                float f1 = d->out_far;
+                float f2 = d->out_near_intensity;
+                float f3 = d->out_far_intensity;
                 rilgar_fog_near_distance = f0;
                 rilgar_fog_far_distance = f1;
                 rilgar_fog_near_intensity = f2;
@@ -308,12 +392,12 @@ void update_fog_zone(char *m) {
         break;
     }
     g = hero_globals_base + 0xE9D;
-    if (is_point_inside_clip_volume(g, *(int *)(d + 0x38))) {
+    if (is_point_inside_clip_volume(g, d->tint_volume)) {
         int c;
-        FastVecSub(v, g, rilgar_level_cuboids_c + *(int *)(d + 0x38) * 128 + 0x30);
+        FastVecSub(v, g, rilgar_level_cuboids_c + d->tint_volume * 128 + 0x30);
         v[3] = 0.0f;
-        matrix_mul_vec3(w, v, rilgar_level_cuboids_c + *(int *)(d + 0x38) * 128 + 0x40);
-        c = FastTweenColor(*(int *)(d + 0x30), *(int *)(d + 0x34), (w[0] + 1.0f) * 0.5f);
+        matrix_mul_vec3(w, v, rilgar_level_cuboids_c + d->tint_volume * 128 + 0x40);
+        c = FastTweenColor(d->tint_a, d->tint_b, (w[0] + 1.0f) * 0.5f);
         rilgar_zone_tint_green[0] = c >> 8;
         rilgar_zone_tint_blue[0] = c >> 16;
         rilgar_zone_tint_red[0] = c;
@@ -337,7 +421,7 @@ extern float advance_30F9D0(float, float, float, float, float *, float *) __asm_
    it toward the end point, 3 lowers it to 5.9 below the entry's height.
    Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_0030e508. */
 void update_triggered_moby_slide_and_lowering(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct SlideLowerVars *data = (struct SlideLowerVars *)((Moby *)moby)->pvars;
     float v[4];
     float pos;
     float speed;
@@ -349,11 +433,11 @@ void update_triggered_moby_slide_and_lowering(char *moby) {
     case 0: {
         char *e0;
 
-        e0 = (char *)(rilgar_level_cuboids_r + (*(int *)(data + 0x10) << 7));
+        e0 = (char *)(rilgar_level_cuboids_r + (data->cuboid << 7));
         qcopy(moby + 0x10, e0 + 0x30);
         ((Moby *)moby)->rot.z = *(float *)(e0 + 0x78);
-        scale_30F9D0(v, e0 + 0x10, *(float *)(data + 0x18));
-        if (*(int *)(data + 0x1C) != 0) {
+        scale_30F9D0(v, e0 + 0x10, data->distance);
+        if (data->reversed != 0) {
             mul_30F9D0(v, v, -1.0f);
             ((Moby *)moby)->flags |= 0x8000;
         }
@@ -362,38 +446,38 @@ void update_triggered_moby_slide_and_lowering(char *moby) {
         break;
     }
     case 1:
-        if (moby_pool_4f60_r[*(int *)(data + 0x14) * 256 + 0xBC] != 0) {
+        if (moby_pool_4f60_r[data->trigger * 256 + 0xBC] != 0) {
             voice_30F9D0(0, 0, moby);
             ((Moby *)moby)->state = 2;
-            clear_30F9D0(data);
+            clear_30F9D0(&data->velocity);
         }
         break;
     case 2:
-        e = (char *)(rilgar_level_cuboids_r + (*(int *)(data + 0x10) << 7));
-        reach = *(float *)(data + 0x18) * 3.0f;
+        e = (char *)(rilgar_level_cuboids_r + (data->cuboid << 7));
+        reach = data->distance * 3.0f;
         pos = 0.0f;
         scale_30F9D0(v, e + 0x10, reach);
-        if (*(int *)(data + 0x1C) != 0) {
+        if (data->reversed != 0) {
             mul_30F9D0(v, v, -1.0f);
         }
         add_30F9D0(v, e + 0x30, v);
         sub_30F9D0(v, v, moby + 0x10);
         len = len_30F9D0(v);
-        speed = len_30F9D0(data);
+        speed = len_30F9D0(&data->velocity);
         advance_30F9D0(len, g_frame_time_sq_r * 20.0f, g_frame_time_sq_r * 30.0f,
                        g_frame_time_r * 10.0f, &pos, &speed);
-        scale_30F9D0(data, v, speed);
-        add_30F9D0(moby + 0x10, moby + 0x10, data);
+        scale_30F9D0(&data->velocity, v, speed);
+        add_30F9D0(moby + 0x10, moby + 0x10, &data->velocity);
         if (len_30F9D0(v) < 0.01f) {
             ((Moby *)moby)->state = 3;
         }
         break;
     case 3:
         e = (char *)rilgar_level_cuboids_r;
-        e += *(int *)(data + 0x10) << 7;
+        e += data->cuboid << 7;
         advance_30F9D0(*(float *)(e + 0x38) - 5.9f, g_frame_time_sq_r * 20.0f,
                        g_frame_time_sq_r * 40.0f, g_frame_time_r * 10.0f,
-                       (float *)(moby + 0x18), (float *)(data + 8));
+                       (float *)(moby + 0x18), &data->velocity.z);
         if (((Moby *)moby)->pos.z < *(float *)(e + 0x38) - 5.9f) {
             ((Moby *)moby)->state = 4;
         }
@@ -682,7 +766,7 @@ extern short drain_cover_tilt_max_speed;
  * 0xA4, then calls func_L00_0025CE58 on the moby's values at +0x40 and +0x44 with the results. */
 void update_drain_cover_tilt(char *moby, float turn_scale, float speed_scale) {
     Moby *m = (Moby *)moby;
-    u8 *data = m->pvars;
+    struct DrainCoverVars *data = (struct DrainCoverVars *)m->pvars;
     Hero *game = (Hero *)(hero_globals_base + 0xE1D);
     float offset[4];
     float vertical;
@@ -703,16 +787,16 @@ void update_drain_cover_tilt(char *moby, float turn_scale, float speed_scale) {
     }
 
     deg_to_rad = 0.017453292f;
-    *(float *)(data + 0x98) = FastAddRots(*(float *)(data + 0x98), *(float *)(data + 0xA0));
-    *(float *)(data + 0x9C) = FastAddRots(*(float *)(data + 0x9C), *(float *)(data + 0xA4));
-    target0 = FastAddRots(vertical, FastSin(*(float *)(data + 0x98)) * turn_scale * *(float *)&drain_cover_wobble_amount);
-    target1 = FastAddRots(horizontal, FastSin(*(float *)(data + 0x9C)) * turn_scale * *(float *)&drain_cover_wobble_amount);
+    data->wobble_x = FastAddRots(data->wobble_x, data->wobble_x_step);
+    data->wobble_y = FastAddRots(data->wobble_y, data->wobble_y_step);
+    target0 = FastAddRots(vertical, FastSin(data->wobble_x) * turn_scale * *(float *)&drain_cover_wobble_amount);
+    target1 = FastAddRots(horizontal, FastSin(data->wobble_y) * turn_scale * *(float *)&drain_cover_wobble_amount);
 
-    SteerAngleWithVelocity_r(&m->rot.x, target0, (float *)(data + 0x90),
+    SteerAngleWithVelocity_r(&m->rot.x, target0, &data->tilt_x_vel,
                       *(float *)&drain_cover_tilt_accel * speed_scale * deg_to_rad * g_frame_time_sq,
                       *(float *)&drain_cover_tilt_decel * speed_scale * deg_to_rad * g_frame_time_sq,
                       *(float *)&drain_cover_tilt_max_speed * deg_to_rad * g_frame_time);
-    SteerAngleWithVelocity_r(&m->rot.y, target1, (float *)(data + 0x94),
+    SteerAngleWithVelocity_r(&m->rot.y, target1, &data->tilt_y_vel,
                       *(float *)&drain_cover_tilt_accel * speed_scale * deg_to_rad * g_frame_time_sq,
                       *(float *)&drain_cover_tilt_decel * speed_scale * deg_to_rad * g_frame_time_sq,
                       *(float *)&drain_cover_tilt_max_speed * deg_to_rad * g_frame_time);
@@ -747,10 +831,10 @@ void pipe_mounted_grating_update(struct Moby *moby) {
     if (MobyGetHitMessage(moby, 0xB30000, 0) != 0) {
         piece = CreateMoby(0x3D4);
         if (piece != 0) {
-            char *vars;
+            struct GratingPieceVars *vars;
             piece->spawn_frame = moby->spawn_frame;
             piece->visible = 1;
-            vars = (char *)piece->pvars;
+            vars = (struct GratingPieceVars *)piece->pvars;
             piece->draw_dist = 0x40;
             piece->update_dist = 0x40;
             qcopy(&piece->pos, &moby->pos);
@@ -759,7 +843,7 @@ void pipe_mounted_grating_update(struct Moby *moby) {
             FastVecScale(vel, &moby->rot_row0, -(speed * g_frame_time));
             clear_u64_value(spin_vel);
             initialize_moby_launch_motion(piece, moby, vel, spin_vel, scale_ticks(60));
-            *(int *)(vars + 0xC) = 0x200;
+            vars->unk_0C = 0x200;
         }
         Moby_PlaySound(0, 0, piece);
         angle = 0.0f;
@@ -769,7 +853,7 @@ void pipe_mounted_grating_update(struct Moby *moby) {
                 angle = FastAddRots(angle, 1.0471976f);
                 piece = CreateMoby(0x3D5);
                 if (piece != 0) {
-                    char *vars = (char *)piece->pvars;
+                    struct GratingPieceVars *vars = (struct GratingPieceVars *)piece->pvars;
                     *(u128_10A90 *)spin_vel = 0;
                     *(u128_10A90 *)drift = 0;
                     spin_vel[2] = 0.75f;
@@ -805,7 +889,7 @@ void pipe_mounted_grating_update(struct Moby *moby) {
                     FastVecScale(vel, &moby->rot_row0, -(speed * g_frame_time));
                     clear_u64_value(spin_vel);
                     initialize_moby_launch_motion(piece, moby, vel, spin_vel, truncate_float_to_s32(multiply_global_factor(life)));
-                    *(int *)(vars + 0xC) = 0x200;
+                    vars->unk_0C = 0x200;
                     piece->rot.x = angle;
                     moby_build_matrix_r(piece);
                 }
@@ -1289,8 +1373,8 @@ extern char *rilgar_paths[];
 // Fill a ring of points (radius 3.5) around the moby from an angle step, rotating each by the moby's matrix.
 void place_marker_ring(char *moby) {
     int i = 0;
-    char *data = ((char *)((Moby *)moby)->pvars);
-    char *tab = rilgar_paths[*(int *)(data + 0x68)];
+    struct MarkerRingVars *data = (struct MarkerRingVars *)((Moby *)moby)->pvars;
+    char *tab = rilgar_paths[data->path];
     float ang = 0.0f;
     float step = 6.28318f / (float)(*(int *)tab - 1);
     for (; i < *(int *)tab; i++) {
@@ -2321,7 +2405,7 @@ void PickupL05_Update(char *moby) {
         TAXI_BLEND_TO_DESTINATION = 5,
         TAXI_WAIT_FOR_ACTIVATION = 6
     };
-    char *taxi_data = (char *)((struct Moby *)moby)->pvars;
+    struct TaxiVars *taxi_data = (struct TaxiVars *)((struct Moby *)moby)->pvars;
     float old_position[4], old_rotation[4], position_delta[4], rotation_or_start_position_scratch[4], interpolation_end_position[4], interpolation_start_angles[4], interpolation_end_angles[4], hero_offset[4];
     struct Hero *pickup_hero;
     struct Hero *travel_hero;
@@ -2339,8 +2423,8 @@ void PickupL05_Update(char *moby) {
     set_moby_dialogue_record_value(moby, (((struct Moby *)moby)->flags ^ 1) & 1);
     switch (((struct Moby *)moby)->state) {
     case TAXI_INITIALIZE:
-        *(short *)(taxi_data + 0xB0) = -1;
-        *(short *)&((Moby *)taxi_data)->save_id = -1;
+        taxi_data->unk_B0 = -1;
+        taxi_data->voice = -1;
         PickNearestTargetSlot(moby);
         break;
     case TAXI_WAIT_FOR_PICKUP:
@@ -2355,7 +2439,7 @@ void PickupL05_Update(char *moby) {
                 request_moby_variant_help_message(moby);
                 if (*(int *)(pad_globals_base + 0x2604) & 0x10) {
                     ((struct Moby *)moby)->state = 3;
-                    destination_stop_moby = FindMobyByDataId(moby, ((Moby *)taxi_data)->unkB6);
+                    destination_stop_moby = FindMobyByDataId(moby, taxi_data->end_stop);
                     if (destination_stop_moby != 0) {
                         destination_stop_moby->state = 2;
                         destination_stop_moby->flags |= 1;
@@ -2367,44 +2451,44 @@ void PickupL05_Update(char *moby) {
         }
         break;
     case TAXI_BLEND_TO_PATH_START:
-        ApproachWithVelocity(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, (float *)(taxi_data + 0xC0), (float *)(taxi_data + 0xC4));
+        ApproachWithVelocity(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, &taxi_data->blend, &taxi_data->blend_vel);
         qa = rotation_or_start_position_scratch;
-        s = *(int *)(taxi_data + 0x80 - (-(((Moby *)taxi_data)->unkB4 * 4)));
+        s = taxi_data->stop[taxi_data->start_stop];
         tab = rilgar_level_cuboids;
         qcopy(qa, tab[s].position);
         qcopy(interpolation_start_angles, tab[s].direction);
         z = 0.0f;
-        SamplePathAt_r(z, *(int **)(taxi_data + 0xAC), 0, interpolation_end_position, interpolation_end_angles, 0);
-        lerp_vector(taxi_data + 0x60, rotation_or_start_position_scratch, interpolation_end_position, ((Moby *)taxi_data)->rot_row0.x);
-        *(float *)(taxi_data + 0x74) = FastAddRots(FastSubRots(interpolation_end_angles[1], interpolation_start_angles[1]) * ((Moby *)taxi_data)->rot_row0.x, interpolation_start_angles[1]);
-        *(float *)(taxi_data + 0x78) = FastAddRots(FastSubRots(interpolation_end_angles[2], interpolation_start_angles[2]) * ((Moby *)taxi_data)->rot_row0.x, interpolation_start_angles[2]);
-        if (1.0f <= ((Moby *)taxi_data)->rot_row0.x) {
-            ((Moby *)taxi_data)->rot_row0.x = z;
-            ((Moby *)taxi_data)->rot_row0.y = z;
+        SamplePathAt_r(z, *(int **)&taxi_data->path, 0, interpolation_end_position, interpolation_end_angles, 0);
+        lerp_vector(&taxi_data->blend_pos, rotation_or_start_position_scratch, interpolation_end_position, taxi_data->blend);
+        taxi_data->blend_rot.y = FastAddRots(FastSubRots(interpolation_end_angles[1], interpolation_start_angles[1]) * taxi_data->blend, interpolation_start_angles[1]);
+        taxi_data->blend_rot.z = FastAddRots(FastSubRots(interpolation_end_angles[2], interpolation_start_angles[2]) * taxi_data->blend, interpolation_start_angles[2]);
+        if (1.0f <= taxi_data->blend) {
+            taxi_data->blend = z;
+            taxi_data->blend_vel = z;
             ((struct Moby *)moby)->state = 4;
         }
         break;
     case TAXI_FOLLOW_PATH:
         if (AdvanceMobyPath(moby)) {
-            *(int *)&((Moby *)taxi_data)->rot_row0.x = 0;
-            *(int *)&((Moby *)taxi_data)->rot_row0.y = 0;
+            *(int *)&taxi_data->blend = 0;
+            *(int *)&taxi_data->blend_vel = 0;
             ((struct Moby *)moby)->state = 5;
         }
         break;
     case TAXI_BLEND_TO_DESTINATION:
-        ApproachWithVelocity(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, (float *)(taxi_data + 0xC0), (float *)(taxi_data + 0xC4));
+        ApproachWithVelocity(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, &taxi_data->blend, &taxi_data->blend_vel);
         qa = interpolation_end_position;
-        s = *(int *)(taxi_data + 0x80 - (-(((Moby *)taxi_data)->unkB6 * 4)));
+        s = taxi_data->stop[taxi_data->end_stop];
         tab = rilgar_level_cuboids;
         qcopy(qa, tab[s].position);
         qcopy(interpolation_end_angles, tab[s].direction);
-        SamplePathAt(*(int **)(taxi_data + 0xAC), 0, rotation_or_start_position_scratch, interpolation_start_angles, 0, (float)**(int **)(taxi_data + 0xAC));
-        lerp_vector(taxi_data + 0x60, rotation_or_start_position_scratch, interpolation_end_position, ((Moby *)taxi_data)->rot_row0.x);
-        *(float *)(taxi_data + 0x74) = FastAddRots(FastSubRots(interpolation_end_angles[1], interpolation_start_angles[1]) * ((Moby *)taxi_data)->rot_row0.x, interpolation_start_angles[1]);
-        *(float *)(taxi_data + 0x78) = FastAddRots(FastSubRots(interpolation_end_angles[2], interpolation_start_angles[2]) * ((Moby *)taxi_data)->rot_row0.x, interpolation_start_angles[2]);
-        if (1.0f <= ((Moby *)taxi_data)->rot_row0.x) {
-            *(int *)&((Moby *)taxi_data)->rot_row0.x = 0;
-            *(int *)&((Moby *)taxi_data)->rot_row0.y = 0;
+        SamplePathAt(*(int **)&taxi_data->path, 0, rotation_or_start_position_scratch, interpolation_start_angles, 0, (float)**(int **)&taxi_data->path);
+        lerp_vector(&taxi_data->blend_pos, rotation_or_start_position_scratch, interpolation_end_position, taxi_data->blend);
+        taxi_data->blend_rot.y = FastAddRots(FastSubRots(interpolation_end_angles[1], interpolation_start_angles[1]) * taxi_data->blend, interpolation_start_angles[1]);
+        taxi_data->blend_rot.z = FastAddRots(FastSubRots(interpolation_end_angles[2], interpolation_start_angles[2]) * taxi_data->blend, interpolation_start_angles[2]);
+        if (1.0f <= taxi_data->blend) {
+            *(int *)&taxi_data->blend = 0;
+            *(int *)&taxi_data->blend_vel = 0;
             ((struct Moby *)moby)->state = 1;
             reset_selected_moby_to_current_placement(moby);
         }
@@ -2412,7 +2496,7 @@ void PickupL05_Update(char *moby) {
     case TAXI_WAIT_FOR_ACTIVATION:
         t = (unsigned char *)help_stats_base + 0xAA35;
         k = g_current_level_index * 16;
-        if (t[*(int *)(taxi_data + 0xB8) + k] == 0xFF || t[*(int *)(taxi_data + 0xBC) + k] == 0xFF) {
+        if (t[taxi_data->mission_a + k] == 0xFF || t[taxi_data->mission_b + k] == 0xFF) {
             struct MobyClass *model = ((struct Moby *)moby)->pclass;
             unsigned short flags = ((struct Moby *)moby)->flags;
             int value = model->collision;
@@ -2429,40 +2513,40 @@ void PickupL05_Update(char *moby) {
         travel_hero->jump_lock_timer = 2;
         travel_hero->unk1F4 = 2;
         transform_moby_vector_table_to_world_space(moby);
-        if (Sound_IsPlaying(moby, *(short *)&((Moby *)taxi_data)->save_id) == 0) {
-            *(short *)&((Moby *)taxi_data)->save_id = Moby_PlaySound_i(0, 4, moby);
+        if (Sound_IsPlaying(moby, taxi_data->voice) == 0) {
+            taxi_data->voice = Moby_PlaySound_i(0, 4, moby);
         }
-    } else if (Sound_IsPlaying(moby, *(short *)&((Moby *)taxi_data)->save_id) != 0) {
-        voice_slot_index = *(short *)&((Moby *)taxi_data)->save_id;
+    } else if (Sound_IsPlaying(moby, taxi_data->voice) != 0) {
+        voice_slot_index = taxi_data->voice;
         if (voice_slot_index != -1) {
             voice_slot = hero_globals_base + 0x1D + voice_slot_index * 0x70;
             if (*(char **)(voice_slot + 0x88) == moby && *(unsigned char *)(voice_slot + 0x74) != 0) {
                 Sound_StopSlot(voice_slot_index);
             }
         }
-        *(short *)&((Moby *)taxi_data)->save_id = -1;
+        taxi_data->voice = -1;
     }
     FastVecSub(position_delta, &((struct Moby *)moby)->pos, old_position);
-    update_entity_matrix(taxi_data + 0x20, position_delta, old_rotation, &((struct Moby *)moby)->rot);
+    update_entity_matrix(taxi_data->entity_matrix, position_delta, old_rotation, &((struct Moby *)moby)->rot);
 }
 extern unsigned char saved_mission_state[][16];
 
 /* picks the nearest target slot and sets the moby's state */
 void PickNearestTargetSlot(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    int *list = (int *)(data + 0x80);
+    struct TaxiVars *data = (struct TaxiVars *)((Moby *)moby)->pvars;
+    int *list = &data->stop[0];
     int i;
     int idx;
     char *g;
-    *(short *)(data + 0xB4) = -1;
+    data->start_stop = -1;
     for (i = 0; i < 5; i++) {
         if (FastVecDist(moby + 0x10, rilgar_level_cuboids_c + (list[i] << 7) + 0x30) < 1.0f) {
-            *(short *)(data + 0xB4) = i;
+            data->start_stop = i;
         }
     }
-    switch (*(short *)(data + 0xB4)) {
+    switch (data->start_stop) {
     case 2:
-        if (saved_mission_state[g_current_level_index][*(int *)(data + 0xB8)] == 0xFF || saved_mission_state[g_current_level_index][*(int *)(data + 0xBC)] == 0xFF) {
+        if (saved_mission_state[g_current_level_index][data->mission_a] == 0xFF || saved_mission_state[g_current_level_index][data->mission_b] == 0xFF) {
             int v = *(int *)(*(char **)(moby + 0x24) + 0x10);
             moby[0x31] = 1;
             *(int *)&((Moby *)moby)->collision = v;
@@ -2490,57 +2574,57 @@ void PickNearestTargetSlot(char *moby) {
     }
     {
         int *selected = list;
-        selected += *(short *)(data + 0xB4);
+        selected += data->start_stop;
         idx = *selected << 7;
     }
     g = rilgar_level_cuboids_c;
-    qcopy(data + 0x60, (void *)(idx + (int)g + 0x30));
-    qcopy(data + 0x70, (void *)(idx + (int)g + 0x70));
+    qcopy(&data->blend_pos, (void *)(idx + (int)g + 0x30));
+    qcopy(&data->blend_rot, (void *)(idx + (int)g + 0x70));
 }
 extern char * rilgar_paths[];
 extern unsigned char saved_mission_state[][16];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/unclassified_0030d6a0.c, FUN_L05_003193a8. */
 void select_taxi_route(char *moby) {
-    char *d = ((char *)((Moby *)moby)->pvars);
+    struct TaxiVars *d = (struct TaxiVars *)((Moby *)moby)->pvars;
     char *p;
     float inv, a, b, r;
-    switch (*(short *)(d + 0xB4)) {
+    switch (d->start_stop) {
     case 0:
-        *(char **)(d + 0xAC) = rilgar_paths[*(int *)(d + 0x94)];
-        *(short *)(d + 0xB6) = 1;
+        d->path = rilgar_paths[d->route[0]];
+        d->end_stop = 1;
         break;
     case 1:
-        *(char **)(d + 0xAC) = rilgar_paths[*(int *)(d + 0x98)];
-        *(short *)(d + 0xB6) = 0;
+        d->path = rilgar_paths[d->route[1]];
+        d->end_stop = 0;
         break;
     case 2:
-        if (saved_mission_state[g_current_level_index][*(int *)(d + 0xB8)] != 0xFF) {
-            *(char **)(d + 0xAC) = rilgar_paths[*(int *)(d + 0x9C)];
-            *(short *)(d + 0xB6) = 3;
+        if (saved_mission_state[g_current_level_index][d->mission_a] != 0xFF) {
+            d->path = rilgar_paths[d->route[2]];
+            d->end_stop = 3;
         } else {
-            *(char **)(d + 0xAC) = rilgar_paths[*(int *)(d + 0xA4)];
-            *(short *)(d + 0xB6) = 4;
+            d->path = rilgar_paths[d->route[4]];
+            d->end_stop = 4;
         }
         break;
     case 3:
-        *(char **)(d + 0xAC) = rilgar_paths[*(int *)(d + 0xA0)];
-        *(short *)(d + 0xB6) = 2;
+        d->path = rilgar_paths[d->route[3]];
+        d->end_stop = 2;
         break;
     case 4:
-        *(char **)(d + 0xAC) = rilgar_paths[*(int *)(d + 0xA8)];
-        *(short *)(d + 0xB6) = 2;
+        d->path = rilgar_paths[d->route[5]];
+        d->end_stop = 2;
         break;
     }
-    p = *(char **)(d + 0xAC);
+    p = d->path;
     r = FastVecDist(p + 0x10, p + 0x20);
     a = g_frame_time * 20.0f;
     b = g_frame_time_sq * 5.0f;
-    inv = 1.0f / (r * (float)**(int **)(d + 0xAC));
-    *(int *)(d + 0xC4) = 0;
-    *(int *)(d + 0xC0) = 0;
-    *(float *)(d + 0xD4) = a * inv;
-    *(float *)(d + 0xD8) = b * inv;
+    inv = 1.0f / (r * (float)**(int **)&d->path);
+    *(int *)&d->blend_vel = 0;
+    *(int *)&d->blend = 0;
+    d->path_speed = a * inv;
+    d->path_accel = b * inv;
 }
 // Updates trailer visibility and flag bit from the current mode.
 void qwarks_trailer_update(char *moby) {
