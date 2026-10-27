@@ -81,29 +81,29 @@ extern char hero_globals_base[];
 
 /* spawn a moby of class 0x333 with position, velocity vector and aim angles */
 char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
-    char *m = (char *)CreateMoby_m(0x333);
+    Moby *m = (Moby *)((char *)CreateMoby_m(0x333));
     struct RocketVars *d;
     if (m) {
-        ((Moby *)m)->scale = ((Moby *)m)->scale * scale;
-        ((Moby *)m)->update_dist = 0xFF;
-        ((Moby *)m)->draw_dist = 0x7E;
-        d = (struct RocketVars *)((Moby *)m)->pvars;
-        m[0x31] = 1;
-        m[0x20] = 1;
-        qcopy(m + 0x10, pos);
+        m->scale = m->scale * scale;
+        m->update_dist = 0xFF;
+        m->draw_dist = 0x7E;
+        d = (struct RocketVars *)m->pvars;
+        m->visible = 1;
+        m->state = 1;
+        qcopy(&m->pos, pos);
         qcopy(&d->vel_x, vel);
         d->life = scale_ticks(c);
         d->owner_a = a;
         d->owner_b = b;
         d->hit_flag = 0;
-        d->start_dist = FastVecDist(m + 0x10, hero_globals_base + 0xE9D);
+        d->start_dist = FastVecDist(&m->pos, hero_globals_base + 0xE9D);
         d->unk_30 = 0;
         d->unk_34 = 0;
-        ((Moby *)m)->rot.z = fast_atan2(*(float *)((char *)d), d->vel_y);
-        ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(&d->vel_x), d->vel_z);
+        m->rot.z = fast_atan2(*(float *)((char *)d), d->vel_y);
+        m->rot.y = -fast_atan2(vec_length_xy(&d->vel_x), d->vel_z);
         moby_build_matrix(m);
     }
-    return m;
+    return (char *)m;
 }
 extern s32 g_current_level_index MACRO_ADDR;
 typedef int Q_cc2e8 __attribute__((mode(TI), aligned(16)));
@@ -150,8 +150,8 @@ extern void Sound_PlayClassSound(int, int, void *, int);
 extern void DeleteMoby(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00298940.c, FUN_L10_002cc2e8. */
-void Moby819Update(char *m) {
-    Shot_cc2e8 *d = ((Shot_cc2e8 *)((Moby *)m)->pvars);
+void Moby819Update(Moby *m) {
+    Shot_cc2e8 *d = ((Shot_cc2e8 *)m->pvars);
     float pos0[4] __attribute__((aligned(16)));
     float c[4] __attribute__((aligned(16)));
     float diff[4] __attribute__((aligned(16)));
@@ -165,13 +165,13 @@ void Moby819Update(char *m) {
     float h;
     char *tb;
 
-    switch ((unsigned char)m[0x20]) {
+    switch ((unsigned char)*(char *)&m->state) {
     case 1:
-        qcopy(pos0, m + 0x10);
+        qcopy(pos0, &m->pos);
         if (d->target == 0 || (unsigned char)d->target[0x20] == 0xFE ||
             (unsigned char)d->target[0x20] == 0xFD)
-            m[0x20] = 2;
-        p = m + 0x10;
+            m->state = 2;
+        p = (char *)&m->pos;
         g = g_hero;
         if ((unsigned char)(g[0x20A4] - 1) < 2 && (tg = d->target) == *(char **)(g + 0x2080)) {
             speed = FastVecLength(d);
@@ -209,14 +209,14 @@ void Moby819Update(char *m) {
                 yaw = fast_atan2(diff[0], diff[1]);
                 pitch = -fast_atan2(vec_length_xy(diff), diff[2]);
             }
-            ((Rot_cc2e8 *)m)->rz = SpringTurn(((Rot_cc2e8 *)m)->rz, yaw, g_frame_time_sq * 6.2831855f,
+            m->rot.z = SpringTurn(m->rot.z, yaw, g_frame_time_sq * 6.2831855f,
                                               g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f,
                                               &d->yawSpeed);
-            ((Rot_cc2e8 *)m)->ry = SpringTurn(((Rot_cc2e8 *)m)->ry, pitch, g_frame_time_sq * 6.2831855f,
+            m->rot.y = SpringTurn(m->rot.y, pitch, g_frame_time_sq * 6.2831855f,
                                               g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f,
                                               &d->pitchSpeed);
-            ((Rot_cc2e8 *)m)->rx = FastAddRots(((Rot_cc2e8 *)m)->rx, g_frame_time * 6.2831855f);
-            BuildSphericalOffset(speed, ((Rot_cc2e8 *)m)->rz, -((Rot_cc2e8 *)m)->ry, d);
+            m->rot.x = FastAddRots(m->rot.x, g_frame_time * 6.2831855f);
+            BuildSphericalOffset(speed, m->rot.z, -m->rot.y, d);
         }
         clear_u64_value(c);
         PartType04Spawn(p, c, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(15, 22)), 0x28,
@@ -240,17 +240,17 @@ void Moby819Update(char *m) {
                     d->vel[2] = 1.0f;
                     PostHitMessage(1.0f, *(int *)(tb + 0x18), m, 0x10003, tb + 0x20, diff);
                 }
-                m[0x20] = 2;
+                m->state = 2;
             }
         }
         if (fast_dec_timer(&d->timer))
-            m[0x20] = 2;
+            m->state = 2;
         break;
     case 2:
         if (g_current_level_index != 10)
-            SpawnExplosionFx(m, m + 0x10, -1, 0.25f, 13.0f);
+            SpawnExplosionFx(m, &m->pos, -1, 0.25f, 13.0f);
         else
-            SpawnExplosionFx(m, m + 0x10, -1, 0.25f, 0.0f);
+            SpawnExplosionFx(m, &m->pos, -1, 0.25f, 0.0f);
         Sound_PlayClassSound(0, 0, m, 0x99);
         DeleteMoby(m);
         break;

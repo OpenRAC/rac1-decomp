@@ -80,9 +80,11 @@ typedef struct {
     int unk00, unk04;
     char pad08[0x18];
     int unk20, unk24;
-    char pad28[0x3C];
+    int unk28, unk2C, unk30, unk34, unk38;
+    char pad3C[0x28];
     int unk64, unk68, unk6C;
-    char pad70[0xC];
+    int unk70;
+    char pad74[8];
     int unk7C;
     char pad80[0x10];
 } HudBank;
@@ -354,7 +356,7 @@ extern void apply_pending_animation(void *arg0);
 int queue_animation_update(int arg0, int arg1, int arg2, int arg3, int arg4,
                  int arg5, int arg6) {
     int idx = arg0 & 0xF;
-    char *p = hud_chan_slots_raw + idx * 0x90;
+    HudBank *p = (HudBank *)(hud_chan_slots_raw + idx * 0x90);
     int masked0 = arg0 & 0xFFF0;
     int r3;
     int cur;
@@ -362,32 +364,32 @@ int queue_animation_update(int arg0, int arg1, int arg2, int arg3, int arg4,
     if (g_game_mode == 5 && idx != 2 && idx != 0) {
         return 0;
     }
-    if (*(int *)(p + 0x2C) == arg5 && *(int *)(p + 0x28) == arg6
-        && *(int *)(p + 0x20) == arg1 && *(int *)(p + 0x24) == masked0
-        && *(int *)(p + 0x30) == arg2 && *(int *)(p + 0x34) == arg3
-        && *(int *)(p + 0x38) == arg4) {
-        return *(int *)(p + 0x64);
+    if (p->unk2C == arg5 && p->unk28 == arg6
+        && p->unk20 == arg1 && p->unk24 == masked0
+        && p->unk30 == arg2 && p->unk34 == arg3
+        && p->unk38 == arg4) {
+        return p->unk64;
     }
     cur = hud_state;
-    *(int *)(p + 0x2C) = arg5;
-    r3 = masked0 & *(int *)(p + 4);
-    *(int *)(p + 0x64) = cur;
+    p->unk2C = arg5;
+    r3 = masked0 & p->unk04;
+    p->unk64 = cur;
     r3 = r3 & 0x20;
     cur = cur + 1;
-    *(int *)(p + 0x28) = arg6;
+    p->unk28 = arg6;
     hud_state = cur;
-    *(int *)(p + 0x20) = arg1;
-    *(int *)(p + 0x30) = arg2;
-    *(int *)(p + 0x34) = arg3;
-    *(int *)(p + 0x38) = arg4;
-    *(int *)(p + 0x68) = 1;
-    *(int *)(p + 0x24) = masked0;
-    *(int *)(p + 0x7C) = 0;
-    *(int *)(p + 0x70) = 0;
+    p->unk20 = arg1;
+    p->unk30 = arg2;
+    p->unk34 = arg3;
+    p->unk38 = arg4;
+    p->unk68 = 1;
+    p->unk24 = masked0;
+    p->unk7C = 0;
+    p->unk70 = 0;
     if (r3 != 0) {
         apply_pending_animation(p);
     }
-    return *(int *)(p + 0x64);
+    return p->unk64;
 }
 
 extern void load_animation_definition(void *, int);

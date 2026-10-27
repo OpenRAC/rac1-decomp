@@ -210,19 +210,19 @@ void update_visible_resident_objects(void) {
     m = visible_moby_list;
     if (m != 0) {
         while (1) {
-            if ((signed char)m[0x20] < 0) {
-                m = *(char **)(m + 0x28);
+            if ((signed char)*(char *)&((Moby *)m)->state < 0) {
+                m = *(char **)&((Moby *)m)->next;
             } else {
-                if (!(*(unsigned short *)(m + 0x34) & 0x40)) {
+                if (!(((Moby *)m)->flags & 0x40)) {
                     advance_moby_animation(m);
                 }
                 /* inline asm: hook call (beq/move/jal with empty slots). The original used inline asm here too: GCC 2.95 reorg leaves both slots empty only next to asm (see reorg.c stop_search_p). */
                 { int r; __asm__ volatile("beq %1,$0,1f\n\tmove $4,%2\n\tjal $31,%1\n1:" : "=r"(r) : "r"(*(void (**)(void *))(m + 0x74)), "r"(m) : "$4", "$31", "memory"); }
-                if (*(unsigned short *)(m + 0x34) & 0x4) {
-                    m = *(char **)(m + 0x28);
+                if (((Moby *)m)->flags & 0x4) {
+                    m = *(char **)&((Moby *)m)->next;
                 } else {
                     refresh_moby_spatial_bounds(m);
-                    m = *(char **)(m + 0x28);
+                    m = *(char **)&((Moby *)m)->next;
                 }
             }
             if (m == 0) break;

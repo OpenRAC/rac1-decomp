@@ -1361,13 +1361,34 @@ extern unsigned char help_stats_base NOT_SDA;
 extern unsigned char hero_globals_base NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
+/* layout of checkpoint_level_state (0xC58 bytes) */
+struct CheckpointState {
+    s32 valid;
+    u8 pad_04[0xC];
+    Vec4 hero_pos;
+    Vec4 hero_rot;
+    s32 unk_30;
+    s32 unk_34;
+    s32 unk_38;
+    s32 unk_3C;
+    u8 unk_40;
+    u8 unk_41;
+    u8 unk_42;
+    u8 pad_43[0x1];
+    s32 vehicle_mode;
+    s32 unk_48;
+    s32 unk_4C;
+    u8 pad_50[0xC04];
+    s32 unk_C54;
+};
+
 /* Seeds the pause-menu snapshot: copies the header, marks valid entries in the bitmasks, fills the state record. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_state_00284e50.c, FUN_L00_00284e50. */
 void jet_reset_camera(void *a0, void *a1)
 {
     unsigned char *src;
     int i;
     int lvl;
-    char *g;
+    struct CheckpointState *g;
 
     copy_memory_by_alignment((int)&checkpoint_moby_states, &current_moby_states, 0x404);
     lvl = g_current_level_index_m;
@@ -1379,10 +1400,10 @@ void jet_reset_camera(void *a0, void *a1)
         level_moby_killed[lvl][i >> 5] |= 1 << (i & 0x1F);
         session_moby_killed[i >> 5] |= 1 << (i & 0x1F);
     }
-    g = (char *)checkpoint_level_state;
-    *(int *)g = 1;
-    qcopy(g + 0x10, a0);
-    qcopy(g + 0x20, a1);
+    g = (struct CheckpointState *)((char *)checkpoint_level_state);
+    g->valid = 1;
+    qcopy(&g->hero_pos, a0);
+    qcopy(&g->hero_rot, a1);
     {
         char *hero = g_hero;
         char *stat = voice_pool;
@@ -1390,20 +1411,20 @@ void jet_reset_camera(void *a0, void *a1)
         char *p = *(char **)(hero + 0x2080);
         signed char v = *(signed char *)(fb + 0x22);
 
-        *(int *)(g + 0x30) = *(int *)((char *)p + 0x38);
-        *(int *)(g + 0x34) = *(int *)((char *)p + 0x3C);
-        *(int *)(g + 0x38) = *(int *)((char *)p + 0x80);
-        *(int *)(g + 0x44) = *(unsigned char *)(hero + 0x20A4);
-        *(int *)(g + 0x48) = (int)p;
-        *(int *)(g + 0x4C) = *(short *)(hero + 0x22CC);
-        *(int *)(g + 0x3C) = *(int *)(stat + 0x64);
-        *(unsigned char *)(g + 0x40) = *(unsigned char *)(stat + 0x68);
-        *(unsigned char *)(g + 0x41) = *(unsigned char *)(stat + 0x69);
-        *(unsigned char *)(g + 0x42) = *(unsigned char *)(stat + 0x6A);
+        g->unk_30 = *(int *)((char *)p + 0x38);
+        g->unk_34 = *(int *)((char *)p + 0x3C);
+        g->unk_38 = *(int *)((char *)p + 0x80);
+        g->vehicle_mode = *(unsigned char *)(hero + 0x20A4);
+        g->unk_48 = (int)p;
+        g->unk_4C = *(short *)(hero + 0x22CC);
+        g->unk_3C = *(int *)(stat + 0x64);
+        g->unk_40 = *(unsigned char *)(stat + 0x68);
+        g->unk_41 = *(unsigned char *)(stat + 0x69);
+        g->unk_42 = *(unsigned char *)(stat + 0x6A);
         if (v != -1) {
-            *(int *)(g + 0xC54) = v;
+            g->unk_C54 = v;
         } else {
-            *(int *)(g + 0xC54) = *(short *)(fb + 0x38);
+            g->unk_C54 = *(short *)(fb + 0x38);
         }
     }
 }
@@ -1420,7 +1441,7 @@ extern void register_audio_stream_callback(void);
 
 /* loads the saved pause-menu state block into the game globals */
 void restore_or_clear_level_state(void) {
-    char *p = (char *)checkpoint_level_state;
+    struct CheckpointState *p = (struct CheckpointState *)((char *)checkpoint_level_state);
     unsigned char *g;
     unsigned char *b;
     char *e;
@@ -1430,20 +1451,20 @@ void restore_or_clear_level_state(void) {
         return;
     }
     copy_memory_by_alignment((int)current_level_state, p, 0xC60);
-    qcopy(g_hero + 0x80, p + 0x10);
-    qcopy(g_hero + 0x90, p + 0x20);
+    qcopy(g_hero + 0x80, &p->hero_pos);
+    qcopy(g_hero + 0x90, &p->hero_rot);
     g = (unsigned char *)g_hero;
-    *(int *)(*(char **)(g + 0x2080) + 0x38) = *(int *)(p + 0x30);
-    *(int *)(*(char **)(g + 0x2080) + 0x3C) = *(int *)(p + 0x34);
-    *(int *)(*(char **)(g + 0x2080) + 0x80) = *(int *)(p + 0x38);
+    *(int *)(*(char **)(g + 0x2080) + 0x38) = p->unk_30;
+    *(int *)(*(char **)(g + 0x2080) + 0x3C) = p->unk_34;
+    *(int *)(*(char **)(g + 0x2080) + 0x80) = p->unk_38;
     b = (unsigned char *)voice_pool;
-    *(int *)(b + 0x64) = *(int *)(p + 0x3C);
-    b[0x68] = p[0x40];
-    b[0x69] = p[0x41];
-    b[0x6A] = p[0x42];
-    *(unsigned short *)(&help_stats_base + 0x100ED) = *(unsigned short *)(p + 0xC54);
+    *(int *)(b + 0x64) = p->unk_3C;
+    b[0x68] = *(char *)&p->unk_40;
+    b[0x69] = *(char *)&p->unk_41;
+    b[0x6A] = *(char *)&p->unk_42;
+    *(unsigned short *)(&help_stats_base + 0x100ED) = *(unsigned short *)&p->unk_C54;
     b[0x6B] |= 7;
-    k = *(int *)(p + 0x44);
+    k = p->vehicle_mode;
     if (k == 0 || k == 3) goto done;
     s = 0;
     switch (k) {

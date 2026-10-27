@@ -747,24 +747,24 @@ extern void moby_anim_sphere_lerp(void *);
 extern void moby_build_matrix(void *);
 /* Spawn a class 0xB3 moby linked to src, copying its basis rows; returns the moby or 0. */
 char *spawn_linked_moby_from_basis(char *src) {
-    char *m = CreateMoby(0xB3);
+    Moby *m = (Moby *)CreateMoby(0xB3);
     if (m != 0) {
-        struct LinkedMobyVars *p = (struct LinkedMobyVars *)((Moby *)m)->pvars;
-        ((Moby *)m)->update_dist = 0xFF;
-        ((Moby *)m)->draw_dist = 0xFF;
-        m[0x31] = 1;
-        *(short *)&((Moby *)m)->flags = 0x204;
-        m[0x23] = 0x50;
-        m[0x20] = 0;
+        struct LinkedMobyVars *p = (struct LinkedMobyVars *)m->pvars;
+        m->update_dist = 0xFF;
+        m->draw_dist = 0xFF;
+        m->visible = 1;
+        *(short *)&m->flags = 0x204;
+        m->alpha = 0x50;
+        m->state = 0;
         p->parent = src;
-        clear_u64_value(m + 0x40);
-        *(Vu *)(m + 0xC0) = *(Vu *)(src + 0xC0);
-        *(Vu *)(m + 0xD0) = *(Vu *)(src + 0xD0);
-        *(Vu *)(m + 0xE0) = *(Vu *)(src + 0xE0);
+        clear_u64_value(&m->rot);
+        *(Vu *)&m->rot_row0 = *(Vu *)&((Moby *)src)->rot_row0;
+        *(Vu *)&m->rot_row1 = *(Vu *)&((Moby *)src)->rot_row1;
+        *(Vu *)&m->rot_row2 = *(Vu *)&((Moby *)src)->rot_row2;
         moby_anim_sphere_lerp(m);
         moby_build_matrix(m);
     }
-    return m;
+    return (char *)m;
 }
 extern char hero_globals_base[];
 extern void DeleteMoby(void *);
@@ -775,25 +775,25 @@ extern float normalize_angle(float);
 extern float FastAddRots(float, float);
 
 /* Per-frame update of a moby that follows its parent's flag and spins. */
-void update_linked_moby_scale_and_rotation(char *m) {
-    struct LinkedMobyVars *p = (struct LinkedMobyVars *)((Moby *)m)->pvars;
-    char *par = p->parent;
+void update_linked_moby_scale_and_rotation(Moby *m) {
+    struct LinkedMobyVars *p = (struct LinkedMobyVars *)m->pvars;
+    Moby *par = (Moby *)p->parent;
     struct Hero *g;
     int v;
     int d;
-    if (*(unsigned char *)(par + 0x20) == 0 || (*(unsigned char *)(par + 0x20) & 0xF0) == 0xF0) {
+    if (par->state == 0 || (par->state & 0xF0) == 0xF0) {
         DeleteMoby(m);
         return;
     }
     if (par != 0) {
-        if ((((Moby *)m)->flags & 1) != (*(unsigned short *)(par + 0x34) & 1)) {
-            ((Moby *)m)->flags &= 0xFFFE;
-            ((Moby *)m)->flags |= *(unsigned short *)(p->parent + 0x34) & 1;
+        if ((m->flags & 1) != (par->flags & 1)) {
+            m->flags &= 0xFFFE;
+            m->flags |= *(unsigned short *)(p->parent + 0x34) & 1;
         }
     }
     g = (struct Hero *)(hero_globals_base + 0xE1D);
     if (g->items[0].ready_frames < scale_ticks(0x19)) {
-        ((Moby *)m)->flags |= 0x41;
+        m->flags |= 0x41;
     }
     v = p->anim_offset;
     d = -0xC0;
@@ -805,9 +805,9 @@ void update_linked_moby_scale_and_rotation(char *m) {
         d = 0xF40;
         p->anim_offset = v + 0xF40;
     }
-    offset_moby_class_point_pairs(*(unsigned char **)(m + 0x24), 0, d);
-    ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * p->spin * random_float_between(0.5f, 1.0f);
-    ((Moby *)m)->rot.y = FastAddRots(((Moby *)m)->rot.y, normalize_angle(p->spin));
+    offset_moby_class_point_pairs(*(unsigned char **)&m->pclass, 0, d);
+    m->scale = *(float *)(*(char **)&m->pclass + 0x24) * p->spin * random_float_between(0.5f, 1.0f);
+    m->rot.y = FastAddRots(m->rot.y, normalize_angle(p->spin));
     moby_anim_sphere_lerp(m);
 }
 extern short walloper_arc_timers[];
@@ -834,7 +834,7 @@ extern void AddDrawCallback(void *, void *);
 extern void draw_walloper_arc_and_quad_effects(int);
 
 // Per-frame update of a moby that scatters ten fading sparkle quads around the hero.
-void walloper_update(char *m) {
+void walloper_update(Moby *m) {
     int flag = 0;
     float vec0[4] __attribute__((aligned(16)));
     float vec1[4] __attribute__((aligned(16)));
@@ -850,9 +850,9 @@ void walloper_update(char *m) {
     if (*(unsigned char *)(*(char **)&g->moby + 0x53) != 0x82) {
         held_weapon_tesla_walloper_factor = 0.1f;
     }
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (m->state) {
     case 0:
-        m[0x20] = 2;
+        m->state = 2;
         for (q = 0; q < 10; q++) {
             walloper_arc_timers[q] = 0;
             walloper_arc_state_a[q] = 2;
@@ -888,8 +888,8 @@ void walloper_update(char *m) {
             MobyBlendAnimation(m, 1, 0, scale_ticks(12));
         }
     }
-    FastVecScale(vec0, m + 0xD0, -0.5f);
-    FastVecAdd(vec0, vec0, m + 0x10);
+    FastVecScale(vec0, &m->rot_row1, -0.5f);
+    FastVecAdd(vec0, vec0, &m->pos);
     any = 0;
     for (j = 0; j < 10; j++) {
         if (walloper_arc_timers[j] != 0) {
@@ -1106,7 +1106,7 @@ typedef struct {
 
 /* builds a four-vector billboard quad around a point and runs the draw packet */
 void draw_walloper_camera_facing_quad(int arg) {
-    char *m = (char *)arg;
+    Moby *m = (Moby *)((char *)arg);
     W q[4];
     T t;
     W c, d, e, bb, tmp, a, f;
@@ -1114,8 +1114,8 @@ void draw_walloper_camera_facing_quad(int arg) {
     int i, col, r;
     float *qq;
     float *cc;
-    FastVecScale(a, m + 0xD0, *(float *)&walloper_glow_forward_offset);
-    FastVecAdd(bb, a, m + 0x10);
+    FastVecScale(a, &m->rot_row1, *(float *)&walloper_glow_forward_offset);
+    FastVecAdd(bb, a, &m->pos);
     t.q0 = GetEffectTex(*(int *)&walloper_glow_tex);
     t.q2 = 0x8000000048L;
     t.q1 = 0xFF9000000260L;
@@ -1205,16 +1205,16 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
     }
     i = 0;
     if ((candidate = active_mobies[i]) != 0) do {
-        if (*(signed char *)(candidate + 0x20) < 0 || *(short *)(candidate + 0xA6) == 0x58E ||
-            *(short *)(candidate + 0xA6) == 0x452)
+        if (*(signed char *)&((Moby *)candidate)->state < 0 || ((Moby *)candidate)->oclass == 0x58E ||
+            ((Moby *)candidate)->oclass == 0x452)
             continue;
-        qcopy(target, candidate + 0x10);
+        qcopy(target, &((Moby *)candidate)->pos);
         data = (char *)GetFlaggedPvarWord(candidate);
         if (!data)
             continue;
         target[2] += *(float *)(data + 0x10);
-        if (!candidate || !*(char **)(candidate + 0x24) ||
-            *(short *)(*(char **)(candidate + 0x24) + 0x46) != 5)
+        if (!candidate || !*(char **)&((Moby *)candidate)->pclass ||
+            *(short *)(*(char **)&((Moby *)candidate)->pclass + 0x46) != 5)
             continue;
         angle = fast_atan2(target[0] - position[0], target[1] - position[1]);
         distance = vec_distance_xy(position, target);
@@ -1225,8 +1225,8 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
             float toward;
             struct Hero *g1 = (struct Hero *)(hero_globals_base + 0xE1D);
             moby = *(char **)&g1->moby;
-            toward = fast_atan2(*(float *)(candidate + 0x10) - g1->motion.pos.f[0],
-                                   *(float *)(candidate + 0x14) - g1->motion.pos.f[1]);
+            toward = fast_atan2(((Moby *)candidate)->pos.x - g1->motion.pos.f[0],
+                                   ((Moby *)candidate)->pos.y - g1->motion.pos.f[1]);
             if (FastDiffRots(*(float *)(moby + 0x48), toward) < 1.0471976f &&
                 FastAbsF(position[2] - target[2]) < 2.0f &&
                 !coll_line((Vec4f *)position, (Vec4f *)target, 6, *(char **)&g1->moby, 0)) {
@@ -1554,8 +1554,8 @@ extern char tesla_chain_points_base[];
 extern Vec4A tesla_pulse_dir[];
 
 /* rebuilds the camera tables from a moby's matrix */
-void reset_beam_chain_and_pulse_state(char *m) {
-    char *p = ((char *)((Moby *)m)->pvars);
+void reset_beam_chain_and_pulse_state(Moby *m) {
+    char *p = ((char *)m->pvars);
     if (tesla_chain_reset_pending != 0) {
         float f;
         char v[16];
@@ -1563,7 +1563,7 @@ void reset_beam_chain_and_pulse_state(char *m) {
         tesla_chain_reset_pending = 0;
         f = *(float *)&tesla_arc_range / IntToFloat(12);
         tesla_chain_segment_length = f;
-        FastVecScale(v, m + 0xD0, -f);
+        FastVecScale(v, &m->rot_row1, -f);
         qcopy(&tesla_chain_points, p);
         for (i = 10; i >= 0; i--) {
             FastVecAdd((char *)&tesla_chain_points + 16 * (11 - i), tesla_chain_points_base + 16 * (11 - i), v);
@@ -2187,7 +2187,7 @@ typedef struct {
 
 // Draws a textured quad twice (first tinted, then white) from a moby's orientation. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002b94d0.c, FUN_L00_002be890.
 void draw_beam_origin_camera_facing_quads(void *mv) {
-    char *m = mv;
+    Moby *m = (Moby *)mv;
     Q_t quad;
     V_t mat[4];
     V_t t;
@@ -2211,7 +2211,7 @@ void draw_beam_origin_camera_facing_quads(void *mv) {
     quad.unk64 = 0;
     quad.unk68 = 1.0f;
     quad.unk6C = 1.0f;
-    vec_scale_to_length(&e, m + 0xD0, *(float *)&tesla_origin_forward_offset);
+    vec_scale_to_length(&e, &m->rot_row1, *(float *)&tesla_origin_forward_offset);
     FastVecAdd(&mat[3], &tesla_chain_points, &e);
     FastVecSub(&e, g_debug_camera, &mat[3]);
     vec_scale_to_length(&mat[0], &e, 1.0f);
@@ -2239,7 +2239,7 @@ extern int coll_sphere(float, void *, int, void *);
 extern int coll_hit_result[];
 
 /* Nudge a position and ask the level helper about it, lowering a global on success. */
-int probe_moby_raised_sphere_collision(char *a, int b, Vx *c) {
+int probe_moby_raised_sphere_collision(Moby *a, int b, Vx *c) {
     Vx v;
     float s;
     float t;
@@ -2248,7 +2248,7 @@ int probe_moby_raised_sphere_collision(char *a, int b, Vx *c) {
     if (c != 0) {
         qcopy(&v, c);
     } else {
-        qcopy(&v, a + 0x10);
+        qcopy(&v, &a->pos);
     }
     t = s * 0.2f;
     v.z = v.z + t;
@@ -2262,40 +2262,40 @@ int probe_moby_raised_sphere_collision(char *a, int b, Vx *c) {
 extern char g_hero[];
 /* Copy five state fields from a into their hero slots. */
 void save_state_fields_to_hero(char *a) {
-    char *g = g_hero;
-    *(float *)(g + 0x1ED0) = *(float *)(a + 0x40);
-    *(float *)(g + 0x1ED4) = *(float *)(a + 0x44);
-    *(float *)(g + 0x1ED8) = *(float *)(a + 0x48);
-    *(int *)(g + 0x1F08) = *(int *)(a + 0x4C);
-    *(float *)(g + 0x1EE4) = *(float *)(a + 0x5C);
+    Hero *g = (Hero *)g_hero;
+    g->unk1ED0 = *(float *)(a + 0x40);
+    g->unk1ED4 = *(float *)(a + 0x44);
+    g->unk1ED8 = *(float *)(a + 0x48);
+    g->unk1F08 = *(int *)(a + 0x4C);
+    g->unk1EE4 = *(float *)(a + 0x5C);
 }
 /* Copy the five hero state fields saved by save_state_fields_to_hero back into a. */
 void restore_state_fields_from_hero(char *a) {
-    char *g = g_hero;
-    *(float *)(a + 0x40) = *(float *)(g + 0x1ED0);
-    *(float *)(a + 0x44) = *(float *)(g + 0x1ED4);
-    *(float *)(a + 0x48) = *(float *)(g + 0x1ED8);
-    *(int *)(a + 0x4C) = *(int *)(g + 0x1F08);
-    *(float *)(a + 0x5C) = *(float *)(g + 0x1EE4);
+    Hero *g = (Hero *)g_hero;
+    *(float *)(a + 0x40) = g->unk1ED0;
+    *(float *)(a + 0x44) = g->unk1ED4;
+    *(float *)(a + 0x48) = g->unk1ED8;
+    *(int *)(a + 0x4C) = g->unk1F08;
+    *(float *)(a + 0x5C) = g->unk1EE4;
 }
 /* Copy a's vector, a flag byte and a float into the hero's second save slots. */
 void save_state_vector_and_fields_to_hero(char *a) {
-    char *g = g_hero;
-    *(float *)(g + 0x1F20) = *(float *)(a + 0x50);
-    *(float *)(g + 0x1F24) = *(float *)(a + 0x54);
-    *(float *)(g + 0x1F28) = *(float *)(a + 0x58);
-    *(char *)(g + 0x1F3F) = *(char *)(a + 0x68);
-    *(float *)(g + 0x1F40) = *(float *)(a + 0x44);
-    qcopy(g + 0x1F10, a);
+    Hero *g = (Hero *)g_hero;
+    g->unk1F20 = *(float *)(a + 0x50);
+    g->unk1F24 = *(float *)(a + 0x54);
+    g->unk1F28 = *(float *)(a + 0x58);
+    g->unk1F3F = *(char *)(a + 0x68);
+    g->unk1F40 = *(float *)(a + 0x44);
+    qcopy(&g->unk1F10, a);
 }
 /* Copy the hero's second save slots back into a (without the vector). */
 void restore_saved_state_fields_from_hero(char *a) {
-    char *g = g_hero;
-    *(float *)(a + 0x50) = *(float *)(g + 0x1F20);
-    *(float *)(a + 0x54) = *(float *)(g + 0x1F24);
-    *(float *)(a + 0x58) = *(float *)(g + 0x1F28);
-    *(char *)(a + 0x68) = *(char *)(g + 0x1F3F);
-    *(float *)(a + 0x44) = *(float *)(g + 0x1F40);
+    Hero *g = (Hero *)g_hero;
+    *(float *)(a + 0x50) = g->unk1F20;
+    *(float *)(a + 0x54) = g->unk1F24;
+    *(float *)(a + 0x58) = g->unk1F28;
+    *(char *)(a + 0x68) = g->unk1F3F;
+    *(float *)(a + 0x44) = g->unk1F40;
 }
 typedef struct { char pad[0x46]; short f46; } SubS;
 typedef struct { char pad[0x24]; SubS *sub; } TopS;
@@ -2605,13 +2605,13 @@ void initialize_moby_hop_trajectory(unsigned char *m, unsigned char *o, void *sr
 #define F2BF(p, x) (*(float *)((p) + (x)))
     *(int *)(o + 0x30) = 0;
     qcopy(o, src);
-    s = vec_distance_xy(m + 0x10, o);
+    s = vec_distance_xy(&((Moby *)m)->pos, o);
     s = s * s;
     t = F2BF(o, 0x1C) * 35.0f * F2BF(o, 0x20) / (FastAbsF(F2BF(o, 8) - F2BF(m, 0x18)) + 1.0f) * (s + 0.25f);
     F2BF(o, 0x14) = t;
     if (F2BF(o, 0x20) < t) F2BF(o, 0x14) = F2BF(o, 0x20);
     F2BF(o, 0x18) = fast_atan2(F2BF(o, 0) - F2BF(m, 0x10), F2BF(o, 4) - F2BF(m, 0x14));
-    r = jump_speed_4318(m + 0x10, o, 0, F2BF(o, 0x14), -F2BF(o, 0x1C));
+    r = jump_speed_4318(&((Moby *)m)->pos, o, 0, F2BF(o, 0x14), -F2BF(o, 0x1C));
     lim = g_frame_time * 7.0f;
     F2BF(o, 0x10) = r;
     if (lim < r) F2BF(o, 0x10) = lim;
@@ -2753,23 +2753,23 @@ extern void copy_hero_moby_field_38(void *);
 
 /* Spawn a doom bot (class 0xBA) for owner at pos with rot; returns the moby or 0. */
 char *spawn_doom_bot(int owner, void *pos, void *rot) {
-    char *m = CreateMoby(0xBA);
+    Moby *m = (Moby *)CreateMoby(0xBA);
     if (m != 0) {
         struct DoomBotVars *p;
-        ((Moby *)m)->update_dist = 0xFF;
-        ((Moby *)m)->draw_dist = 0xFF;
-        m[0x31] = 1;
-        p = (struct DoomBotVars *)((Moby *)m)->pvars;
-        m[0x20] = 0;
-        m[0xBC] = 0;
-        qcopy(m + 0x10, pos);
+        m->update_dist = 0xFF;
+        m->draw_dist = 0xFF;
+        m->visible = 1;
+        p = (struct DoomBotVars *)m->pvars;
+        m->state = 0;
+        m->command = 0;
+        qcopy(&m->pos, pos);
         qcopy(&p->rot, rot);
         p->owner = owner;
         moby_build_matrix(m);
         copy_hero_moby_field_38(m);
-        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.1f;
+        m->scale = *(float *)(*(char **)&m->pclass + 0x24) * 0.1f;
     }
-    return m;
+    return (char *)m;
 }
 
 typedef struct {

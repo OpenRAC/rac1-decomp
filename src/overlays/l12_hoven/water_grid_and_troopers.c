@@ -305,15 +305,15 @@ extern void MobyGroup_SetByteBC(int, int);
 
 extern int process_moby_suck_cannon_suction_pos(void *, void *, void *) __asm__("func_L00_002DCDA8");
 /* Suck cannon suction for a group moby: marks its group and sets state 8 while held. */
-int GroupMoby_UpdateActiveState(unsigned char *moby, void *pos, void *target) {
+int GroupMoby_UpdateActiveState(Moby *moby, void *pos, void *target) {
     int active;
-    if (moby[0x20] == 9 || moby[0x20] == 11 || moby[0x20] == 13) return 0;
+    if (moby->state == 9 || moby->state == 11 || moby->state == 13) return 0;
     active = process_moby_suck_cannon_suction_pos(moby, pos, target);
     if (active) {
-        if (moby[0x21] != 0xFF) MobyGroup_SetByteBC(moby[0x21], 1);
-        moby[0x20] = 8;
-    } else if (moby[0x20] == 8) {
-        moby[0x20] = 1;
+        if (moby->group != 0xFF) MobyGroup_SetByteBC(moby->group, 1);
+        moby->state = 8;
+    } else if (moby->state == 8) {
+        moby->state = 1;
     }
     return active;
 }
@@ -322,12 +322,12 @@ extern int store_moby_in_suck_cannon_pos(void *, void *, void *, float) __asm__(
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
-int carried_moby_place_and_set_state(char *a, void *pos, void *t, float h) {
+int carried_moby_place_and_set_state(Moby *a, void *pos, void *t, float h) {
     int r = store_moby_in_suck_cannon_pos(a, pos, t, h);
     if (r == 0) {
-        if (*(unsigned char *)(a + 0x20) == 8) a[0x20] = 1;
+        if (a->state == 8) a->state = 1;
     } else {
-        a[0x20] = 8;
+        a->state = 8;
     }
     return r;
 }
@@ -366,16 +366,16 @@ extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 
 // Picks an animation for the moby from a query result unless it is already playing.
-void select_hoven_anklebiter_pursuit_animation(unsigned char *moby) {
+void select_hoven_anklebiter_pursuit_animation(Moby *moby) {
     switch (random_integer_below(2)) {
     case 0:
-        if (moby[0x53] != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(8));
+        if (moby->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(8));
         break;
     case 1:
-        if (moby[0x53] != 0xF) MobyBlendAnimation(moby, 0xF, 0, scale_ticks(8));
+        if (moby->prev_seq != 0xF) MobyBlendAnimation(moby, 0xF, 0, scale_ticks(8));
         break;
     default:
-        if (moby[0x53] != 0x10) MobyBlendAnimation(moby, 0x10, 0, scale_ticks(8));
+        if (moby->prev_seq != 0x10) MobyBlendAnimation(moby, 0x10, 0, scale_ticks(8));
         break;
     }
 }
@@ -1057,14 +1057,14 @@ extern void ApproachValue(void *, float, float);
 extern float SpringAngle(float *, float, float *, int, float, float, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/entities/002bf140.c, FUN_L12_002e3c08. */
-void steer_platform_toward_target(char *m, float *ang, void *target, int unused, int brake) {
-    struct HovenPlatformVars *d = (struct HovenPlatformVars *)((Moby *)m)->pvars;
+void steer_platform_toward_target(Moby *m, float *ang, void *target, int unused, int brake) {
+    struct HovenPlatformVars *d = (struct HovenPlatformVars *)m->pvars;
     float v[4];
     float dist;
     float speed;
     float acc;
     float lim = 1.9198622f;
-    FastVecSub(v, target, m + 0x10);
+    FastVecSub(v, target, &m->pos);
     dist = FastVecLength(v);
     speed = FastVecLength(&d->vel);
     if (brake) {
@@ -1082,11 +1082,11 @@ void steer_platform_toward_target(char *m, float *ang, void *target, int unused,
             speed -= d->accel * g_frame_time_sq;
     }
     vec_scale_to_length(&d->vel, v, speed);
-    ApproachValue(m + 0x40, ang[0], FastDiffRots(ang[0], ((Moby *)m)->rot.x) / (*(float *)&platform_tilt_approach_divisor));
-    ApproachValue(m + 0x44, ang[1], FastDiffRots(ang[1], ((Moby *)m)->rot.y) / (*(float *)&platform_tilt_approach_divisor));
-    SpringAngle((float *)(m + 0x48), ang[2], &d->yaw_vel, 0, g_frame_scale_sq * 0.005f, g_frame_scale_sq * 0.3f,
+    ApproachValue(&m->rot, ang[0], FastDiffRots(ang[0], m->rot.x) / (*(float *)&platform_tilt_approach_divisor));
+    ApproachValue(&m->rot.y, ang[1], FastDiffRots(ang[1], m->rot.y) / (*(float *)&platform_tilt_approach_divisor));
+    SpringAngle(&m->rot.z, ang[2], &d->yaw_vel, 0, g_frame_scale_sq * 0.005f, g_frame_scale_sq * 0.3f,
            g_frame_time * lim);
-    FastVecAdd(m + 0x10, m + 0x10, &d->vel);
+    FastVecAdd(&m->pos, &m->pos, &d->vel);
 }
 extern char hero_globals_base[];
 extern short platform_tilt_offset_divisor;
@@ -2096,7 +2096,13 @@ typedef struct BlargTrooperVars_e81e0 {
     f32 speed;                 /* 0x230 */
     u8 pad_234[0xC];
     s16 alert_timer;           /* 0x240 */
-    u8 pad_242[0x32];
+    u8 unk242;                 /* 0x242 */
+    u8 unk243;                 /* 0x243 */
+    u8 pad_244[4];
+    struct Moby *attachment;   /* 0x248: spawned bone attachment moby */
+    u8 pad_24C[0x20];
+    s32 unk26C;                /* 0x26C */
+    u8 pad_270[4];
     s32 call_enabled;          /* 0x274 */
     s32 groups[4];             /* 0x278 */
     s32 call_timer;            /* 0x288 */
@@ -2265,12 +2271,12 @@ extern void *spawn_moby_attachment(void *, void *);
 
 /* Keeps the Blarg trooper's attachment on its bone, spawning it if missing. */
 void update_blarg_trooper_attachment(unsigned char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    unsigned char *target = *(unsigned char **)(data + 0x248);
+    struct BlargTrooperVars_e81e0 *data = (struct BlargTrooperVars_e81e0 *)((char *)((Moby *)moby)->pvars);
+    unsigned char *target = *(unsigned char **)&data->attachment;
     if (target != 0) {
         unsigned char *current;
         update_moby_bone_attachment(moby, target, 1);
-        current = *(unsigned char **)(data + 0x248);
+        current = *(unsigned char **)&data->attachment;
         if (((Moby *)moby)->flags & 1) {
             *(unsigned short *)(current + 0x34) |= 0x41;
         } else {
@@ -2279,7 +2285,7 @@ void update_blarg_trooper_attachment(unsigned char *moby) {
     } else {
         char vector[16];
         Moby_GetJointWorldPos(moby, 1, vector);
-        *(void **)(data + 0x248) = spawn_moby_attachment(moby, vector);
+        *(void **)&data->attachment = spawn_moby_attachment(moby, vector);
     }
 }
 extern float g_frame_time_sq MACRO_ADDR;
@@ -2308,7 +2314,7 @@ void steer_blarg_trooper_toward_point(struct Moby *moby, float *target, float ma
     float delta[4] __attribute__((aligned(16)));
     int count;
 
-    if (*(unsigned char *)(data + 0x242)) {
+    if (((struct BlargTrooperVars_e81e0 *)data)->unk242) {
         float *rotation = &moby->rot.z;
         angle = fast_atan2(target[0] - moby->pos.x, target[1] - moby->pos.y);
         SteerAngleWithVelocity(rotation, data + 0x23c, angle, g_frame_time_sq * 15.707963f,
@@ -2339,21 +2345,21 @@ void steer_blarg_trooper_toward_point(struct Moby *moby, float *target, float ma
     }
     *(OvlQuad *)old = *(OvlQuad *)&moby->pos;
     move_moby_along_heading(moby, data + 0xd0);
-    if (*(int *)(data + 0x26c) != -1) {
+    if (((struct BlargTrooperVars_e81e0 *)data)->unk26C != -1) {
         FastVecSub(delta, old, &moby->pos);
         vec_scale_to_length(delta, delta, 0.05f);
         FastVecAdd(next, old, delta);
-        if (SegmentCrossPolyline(*(int *)(data + 0x26c), &moby->pos, next, result)) {
-            char *path = hoven_paths[*(int *)(data + 0x26c)];
+        if (SegmentCrossPolyline(((struct BlargTrooperVars_e81e0 *)data)->unk26C, &moby->pos, next, result)) {
+            char *path = hoven_paths[((struct BlargTrooperVars_e81e0 *)data)->unk26C];
             if (!IsPointInPolygon(&moby->pos, path + 0x10, *(int *)path))
                 *(OvlQuad *)&moby->pos = *(OvlQuad *)result;
             if (FastVecDist(&moby->pos, old) < g_frame_time * 0.5f) {
-                ++*(unsigned char *)(data + 0x243);
-                count = *(unsigned char *)(data + 0x243);
+                ++((struct BlargTrooperVars_e81e0 *)data)->unk243;
+                count = ((struct BlargTrooperVars_e81e0 *)data)->unk243;
                 if (scale_ticks(15) < count)
-                    *(unsigned char *)(data + 0x242) = 1;
+                    ((struct BlargTrooperVars_e81e0 *)data)->unk242 = 1;
             } else {
-                *(unsigned char *)(data + 0x243) = 0;
+                ((struct BlargTrooperVars_e81e0 *)data)->unk243 = 0;
             }
         }
     }
@@ -3270,16 +3276,16 @@ extern short helicopter_rotation_smoothing_divisor;
 /* UpdateMoby_336: does nothing without a data block. State 0 picks a table from D_L12_001B0C30[data + 0x74] and
  * places the moby at one of its points; state 1 walks the table's points (index at data + 0x60), easing the angles at
  * +0x40 and +0x48 toward the next point and setting +0x44 to 0.5236. */
-void Moby336Update(char *m) {
-    struct HelicopterPathVars *d = (struct HelicopterPathVars *)((Moby *)m)->pvars;
+void Moby336Update(Moby *m) {
+    struct HelicopterPathVars *d = (struct HelicopterPathVars *)m->pvars;
     float A[4];
     float B[4];
     float C[4];
     float E[4];
     if (((char *)d) != 0) {
-        int r = check_scaled_vector_bsphere_i(m, IntToFloat(((Moby *)m)->draw_dist));
-        process_helicopter_hits_and_reactivation(m, r == -1);
-        switch ((unsigned char)m[0x20]) {
+        int r = check_scaled_vector_bsphere_i((char *)&m->bsphere, IntToFloat(m->draw_dist));
+        process_helicopter_hits_and_reactivation((char *)m, r == -1);
+        switch ((unsigned char)*(char *)&m->state) {
         case 0:
             if (d->path_id != -1) {
                 char *tbl;
@@ -3291,16 +3297,16 @@ void Moby336Update(char *m) {
                 idx = d->start_index;
                 cnt = *(int *)tbl - 1;
                 if (cnt < idx) idx = cnt;
-                qcopy((m + 0x10), tbl + idx * 16 + 0x10);
+                qcopy(((char *)&m->pos), tbl + idx * 16 + 0x10);
                 d->unk_2A = 0x10;
                 d->unk_28 = 2;
                 d->unk_2C = 0x2C;
                 d->unk_30 = 1.4f;
                 d->unk_2B = 1;
                 d->path_pos = idx;
-                m[0x20] = 1;
-                ((Moby *)m)->draw_dist = 0xAA;
-                ((Moby *)m)->flags |= 0x1000;
+                m->state = 1;
+                m->draw_dist = 0xAA;
+                m->flags |= 0x1000;
             }
             break;
         case 1: {
@@ -3321,22 +3327,22 @@ void Moby336Update(char *m) {
             h = fast_atan2(A[0], A[1]);
             h = FastSubRots(h, fast_atan2(B[0], B[1]));
             ang = h / FastVecLength(A);
-            ((Moby *)m)->rot.x = FastAddRots(((Moby *)m)->rot.x,
-                FastSubRots(ang * *(float *)&helicopter_path_bank_scale, ((Moby *)m)->rot.x) / *(float *)&helicopter_rotation_smoothing_divisor);
-            if (FastVecDist(m + 0x10, C) < *(float *)&helicopter_path_speed * g_frame_time) {
+            m->rot.x = FastAddRots(m->rot.x,
+                FastSubRots(ang * *(float *)&helicopter_path_bank_scale, m->rot.x) / *(float *)&helicopter_rotation_smoothing_divisor);
+            if (FastVecDist(&m->pos, C) < *(float *)&helicopter_path_speed * g_frame_time) {
                 char *t3;
                 d->path_pos = next;
                 t3 = *(char **)(p + 0x10);
                 if (next == *(int *)t3 - 1) {
-                    qcopy((m + 0x10), t3 + 0x10);
+                    qcopy(((char *)&m->pos), t3 + 0x10);
                 }
             }
-            FastVecSub(E, C, m + 0x10);
+            FastVecSub(E, C, &m->pos);
             vec_scale_to_length(E, E, *(float *)&helicopter_path_speed * g_frame_time);
-            FastVecAdd(m + 0x10, m + 0x10, E);
-            ((Moby *)m)->rot.z = FastAddRots(((Moby *)m)->rot.z,
-                FastSubRots(fast_atan2(E[0], E[1]), ((Moby *)m)->rot.z) / *(float *)&helicopter_rotation_smoothing_divisor);
-            ((Moby *)m)->rot.y = 0.52359879f;
+            FastVecAdd(&m->pos, &m->pos, E);
+            m->rot.z = FastAddRots(m->rot.z,
+                FastSubRots(fast_atan2(E[0], E[1]), m->rot.z) / *(float *)&helicopter_rotation_smoothing_divisor);
+            m->rot.y = 0.52359879f;
             break;
         }
         }
@@ -3346,52 +3352,52 @@ extern float vec_distance_xy(void *, void *);
 extern int fast_subtract_rotations_cf(void *);
 
 /* Idle critter: waits a random time, then plays one of its fidget animations (or reacts when the hero comes close). */
-void crane_arm_update(unsigned char *m) {
-    float dist = vec_distance_xy(m + 0x10, hero_globals_base + 0xE9D);
-    switch (m[0x20]) {
+void crane_arm_update(Moby *m) {
+    float dist = vec_distance_xy(&m->pos, hero_globals_base + 0xE9D);
+    switch (m->state) {
     case 0:
-        if (m[0x53] != 0) MobyBlendAnimation(m, 0, 0, 0);
-        m[0x20] = 1;
-        m[0xBC] = random_integer_below(scale_ticks(0xB4));
+        if (m->prev_seq != 0) MobyBlendAnimation(m, 0, 0, 0);
+        m->state = 1;
+        m->command = random_integer_below(scale_ticks(0xB4));
         break;
     case 1:
-        if (m[0x52] == 0 && dist < 9.0f && m[0xBC] < 2) m[0xBC] = 2;
-        if (dist < 12.0f && m[0x52] == m[0x53] && m[0x52] != 0) m[0xBC] = 0;
-        if (fast_subtract_rotations_cf(m + 0xBC)) {
-            switch (m[0x52]) {
+        if (m->seq == 0 && dist < 9.0f && m->command < 2) m->command = 2;
+        if (dist < 12.0f && m->seq == m->prev_seq && m->seq != 0) m->command = 0;
+        if (fast_subtract_rotations_cf(&m->command)) {
+            switch (m->seq) {
             case 0:
                 if (random_integer_below(0x100) & 1) {
-                    if (m[0x53] != 3) MobyBlendAnimation(m, 3, 0, 0);
+                    if (m->prev_seq != 3) MobyBlendAnimation(m, 3, 0, 0);
                 } else {
-                    if (m[0x53] != 5) MobyBlendAnimation(m, 5, 0, 0);
+                    if (m->prev_seq != 5) MobyBlendAnimation(m, 5, 0, 0);
                 }
                 break;
             case 1:
-                if (m[0x53] != 4) MobyBlendAnimation(m, 4, 0, 0);
+                if (m->prev_seq != 4) MobyBlendAnimation(m, 4, 0, 0);
                 break;
             case 2:
-                if (m[0x53] != 6) MobyBlendAnimation(m, 6, 0, 0);
+                if (m->prev_seq != 6) MobyBlendAnimation(m, 6, 0, 0);
                 break;
             }
-            m[0x20] = 2;
+            m->state = 2;
         }
         break;
     case 2:
-        if (m[0x70] & 2) {
-            switch (m[0x52]) {
+        if (m->anim_flags & 2) {
+            switch (m->seq) {
             case 3:
-                if (m[0x53] != 1) MobyBlendAnimation(m, 1, 0, 0);
+                if (m->prev_seq != 1) MobyBlendAnimation(m, 1, 0, 0);
                 break;
             case 4:
             case 6:
-                if (m[0x53] != 0) MobyBlendAnimation(m, 0, 0, 0);
+                if (m->prev_seq != 0) MobyBlendAnimation(m, 0, 0, 0);
                 break;
             case 5:
-                if (m[0x53] != 2) MobyBlendAnimation(m, 2, 0, 0);
+                if (m->prev_seq != 2) MobyBlendAnimation(m, 2, 0, 0);
                 break;
             }
-            m[0x20] = 1;
-            m[0xBC] = random_integer_below(scale_ticks(0xB4));
+            m->state = 1;
+            m->command = random_integer_below(scale_ticks(0xB4));
         }
         break;
     }

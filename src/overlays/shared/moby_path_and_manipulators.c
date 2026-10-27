@@ -56,7 +56,7 @@ extern char bolt_bonus_divisor_debug_format[];
 
 /* Per-moby effect update: builds a short vector set from the moby's
    0x10 vector and calls the helper chain for each queued unit. */
-void spawn_randomized_bolt_drop(char *a, int b, int c, int flags, int idx)
+void spawn_randomized_bolt_drop(Moby *a, int b, int c, int flags, int idx)
 {
     float s0[4], s10[4], s20[4], s30[4], s40[4], s50[4], s60[4];
     float t70, t74;
@@ -73,9 +73,9 @@ void spawn_randomized_bolt_drop(char *a, int b, int c, int flags, int idx)
     c30 = 0;
     clear_u64_value(s0);
     if (!(flags & 0x20)) {
-        if (*(unsigned char *)(a + 0xB0) != 0xFF
-            && (unsigned)(*(unsigned short *)(a + 0xA6) - 0x1F4) >= 0x29) {
-            current_moby_mission_complete = mission_state[*(unsigned char *)(a + 0xB0)] == 0xFF;
+        if (a->mission != 0xFF
+            && (unsigned)(*(unsigned short *)&a->oclass - 0x1F4) >= 0x29) {
+            current_moby_mission_complete = mission_state[a->mission] == 0xFF;
         }
     }
     f84 = 0;
@@ -219,7 +219,7 @@ void spawn_randomized_bolt_drop(char *a, int b, int c, int flags, int idx)
         }
     }
     while (ones || c23 || c22 || c30) {
-        qcopy(s10, a + 0x10);
+        qcopy(s10, &a->pos);
         s10[2] = s10[2] + 0.5f;
         f21 = random_angle_radians();
         s20[0] = FastCos(f21) * (random_float_between(0.0f, 3.0f) * g_frame_time);
@@ -245,8 +245,8 @@ void spawn_randomized_bolt_drop(char *a, int b, int c, int flags, int idx)
                 }
             }
             FastVecScale(s40, s20, lim);
-            FastVecAdd(s40, s40, a + 0x10);
-            rv = SegmentCrossPolyline(idx, a + 0x10, s40, s50);
+            FastVecAdd(s40, s40, &a->pos);
+            rv = SegmentCrossPolyline(idx, &a->pos, s40, s50);
             FastVecSub(s40, s50, s10);
             s40[2] = 0.0f;
             vec_scale_to_length(s60, s40, 0.25f);
@@ -304,41 +304,58 @@ extern float fast_atan2(float, float);
 extern int scale_ticks(int);
 extern float interpolate_angle(float, float, float);
 
+/* Wander state (the idle_pos block in a moby's pvars). */
+struct WanderState {
+    f32 home_x;                         /* 0x00: home point */
+    f32 home_y;                         /* 0x04 */
+    u8 pad_08[0x8];
+    f32 unk_10;                         /* 0x10: passed to MoveKeepingOverGround */
+    f32 speed;                          /* 0x14: step length per frame */
+    f32 turn_rate;                      /* 0x18 */
+    f32 max_dist;                       /* 0x1C: max distance from home */
+    f32 hero_avoid_dist;                /* 0x20: steer away from the hero inside this */
+    f32 heading;                        /* 0x24: target yaw */
+    s16 wandering;                      /* 0x28: 1 while a heading is picked */
+    s16 timer;                          /* 0x2A */
+    s16 timer_min;                      /* 0x2C */
+    s16 timer_max;                      /* 0x2E */
+};
+
 // Steers a moby around: picks a wander heading, moves it and updates its heading toward a target.
-void update_object_wander_movement(char *moby, char *d, float a, float b) {
+void update_object_wander_movement(Moby *moby, struct WanderState *d, float a, float b) {
     char *pos;
     float v[4];
     int r;
     int t;
     float dist;
-    if (*(short *)(d + 0x28) == 0) {
-        pos = moby + 0x10;
-        *(float *)(d + 0x24) = *(float *)(d + 0x24) + randf_sym(0.7853982f, 2.6179938f);
-        *(short *)(d + 0x2A) = rand_range(*(short *)(d + 0x2C), *(short *)(d + 0x2E));
-        *(short *)(d + 0x28) = 1;
+    if (d->wandering == 0) {
+        pos = (char *)&moby->pos;
+        d->heading = d->heading + randf_sym(0.7853982f, 2.6179938f);
+        d->timer = rand_range(d->timer_min, d->timer_max);
+        d->wandering = 1;
     } else {
-        step_angle_toward_target((float *)(moby + 0x48), 0, *(float *)(d + 0x24), *(float *)(d + 0x18));
-        if (FastDecTimer(d + 0x2A) != 0) *(short *)(d + 0x28) = 0;
-        pos = moby + 0x10;
+        step_angle_toward_target(&moby->rot.z, 0, d->heading, d->turn_rate);
+        if (FastDecTimer(&d->timer) != 0) d->wandering = 0;
+        pos = (char *)&moby->pos;
     }
     qcopy(v, pos);
-    v[0] = v[0] + FastCos(*(float *)(moby + 0x48)) * *(float *)(d + 0x14);
-    v[1] = v[1] + FastSin(*(float *)(moby + 0x48)) * *(float *)(d + 0x14);
-    r = MoveKeepingOverGround(moby, pos, v, 0, a, *(float *)(d + 0x10), b, 0.5235988f);
-    *(float *)(moby + 0x18) = ProbeGroundHeight(pos, 0, 0.5f);
-    dist = vec_distance_xy(pos, d);
-    if (r == 0 || *(float *)(d + 0x1C) < dist) {
-        *(float *)(d + 0x24) = fast_atan2(*(float *)(d + 0) - *(float *)(moby + 0x10), *(float *)(d + 4) - *(float *)(moby + 0x14));
+    v[0] = v[0] + FastCos(moby->rot.z) * d->speed;
+    v[1] = v[1] + FastSin(moby->rot.z) * d->speed;
+    r = MoveKeepingOverGround(moby, pos, v, 0, a, d->unk_10, b, 0.5235988f);
+    moby->pos.z = ProbeGroundHeight(pos, 0, 0.5f);
+    dist = vec_distance_xy(pos, &d->home_x);
+    if (r == 0 || d->max_dist < dist) {
+        d->heading = fast_atan2(d->home_x - moby->pos.x, d->home_y - moby->pos.y);
         t = scale_ticks(0x1E);
-        *(short *)(d + 0x2A) = rand_range(t, scale_ticks(0x5A));
-        *(short *)(d + 0x28) = 1;
+        d->timer = rand_range(t, scale_ticks(0x5A));
+        d->wandering = 1;
     } else {
         char *g = hero_globals_base + 0xE9D;
         dist = vec_distance_xy(pos, g);
-        if (dist < *(float *)(d + 0x20)) {
+        if (dist < d->hero_avoid_dist) {
             char *q = g - 0x80;
-            dist = dist / *(float *)(d + 0x20);
-            *(float *)(d + 0x24) = interpolate_angle(*(float *)(d + 0x24), fast_atan2(*(float *)(moby + 0x10) - *(float *)(q + 0x80), *(float *)(moby + 0x14) - *(float *)(q + 0x84)), dist);
+            dist = dist / d->hero_avoid_dist;
+            d->heading = interpolate_angle(d->heading, fast_atan2(moby->pos.x - *(float *)(q + 0x80), moby->pos.y - *(float *)(q + 0x84)), dist);
         }
     }
 }
@@ -665,124 +682,126 @@ void compose_target_euler_rotation(char *a, float x, float y, float z) {
     sce_vu0_mul_matrix(u, u, t);
     matrix_to_euler(u, a + 0x40);
 }
+typedef int q_263680 __attribute__((mode(TI)));
+/* Ring of the last 8 position/rotation samples of a source moby, replayed into up to 4 trailing mobys. */
+struct TransformHistory {
+    q_263680 pos[8];
+    q_263680 rot[8];
+    int trail_alpha[4];               /* 0x100: alpha of each trailing moby */
+    int delay[4];                     /* 0x110: samples each trailing moby lags behind */
+    struct Moby *trail[4];            /* 0x120 */
+    short head;                       /* 0x130 */
+    short count;                      /* 0x132 */
+    struct Moby *src;                 /* 0x134 */
+    int n;                            /* 0x138: trailing mobys in use */
+    int active;                       /* 0x13C */
+};
 /* Starts a manipulator state in b if it is idle. */
-void initialize_moby_transform_history(int a, char *b) {
-    if (*(int *)(b + 0x13C) == 0) {
-        *(int *)(b + 0x134) = a;
-        *(int *)(b + 0x13C) = 1;
-        *(short *)(b + 0x132) = 0;
-        *(int *)(b + 0x138) = 0;
-        *(short *)(b + 0x130) = 0;
+void initialize_moby_transform_history(int a, struct TransformHistory *b) {
+    if (b->active == 0) {
+        b->src = (struct Moby *)a;
+        b->active = 1;
+        b->count = 0;
+        b->n = 0;
+        b->head = 0;
     }
 }
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 
 /* adds a spawned copy of an object to the owner's list (up to 4) */
-void create_moby_transform_history_entry(char *o, int a, int b) {
-    if (*(int *)(o + 0x138) != 4) {
+void create_moby_transform_history_entry(struct TransformHistory *o, int a, int b) {
+    if (o->n != 4) {
         if (b < 9) {
-            char *m = (char *)CreateMoby_m(*(short *)(*(char **)(o + 0x134) + 0xA6));
+            Moby *m = CreateMoby_m(o->src->oclass);
             if (m != 0) {
-                *(short *)(m + 0x32) = *(unsigned short *)(*(char **)(o + 0x134) + 0x32);
-                *(long *)(m + 0x38) = *(long *)(*(char **)(o + 0x134) + 0x38);
-                m[0x31] = 1;
-                *(short *)(m + 0x34) = 0x80A;
-                m[0x30] = 0;
-                *(int *)(m + 0x94) = 0;
-                if (*(short *)(m + 0xA6) == 0) m[0x72] = 0;
-                m[0x23] = a;
-                *(int *)(o + (*(int *)(o + 0x138) << 2) + 0x110) = b;
-                *(int *)(o + (*(int *)(o + 0x138) << 2) + 0x100) = a;
-                *(char **)(o + (*(int *)(o + 0x138) << 2) + 0x120) = m;
-                *(int *)(o + 0x138) = *(int *)(o + 0x138) + 1;
+                m->draw_dist = o->src->draw_dist;
+                m->spawn_frame = o->src->spawn_frame;
+                m->visible = 1;
+                m->flags = 0x80A;
+                m->update_dist = 0;
+                m->collision = 0;
+                if (m->oclass == 0) m->unk72 = 0;
+                m->alpha = a;
+                o->delay[o->n] = b;
+                o->trail_alpha[o->n] = a;
+                o->trail[o->n] = m;
+                o->n = o->n + 1;
             }
         }
     }
 }
-typedef int q_263680 __attribute__((mode(TI)));
-typedef struct {
-    q_263680 a[8];
-    q_263680 b[8];
-    unsigned char pad[0x10];
-    int w[8];
-    short head;
-    short count;
-    unsigned char *src;
-    int n;
-    int active;
-} S_263680;
-extern void clear_moby_transform_history(char *o);
+extern void clear_moby_transform_history(struct TransformHistory *o);
 extern void update_moby_animation_state_a(void *) __asm__("func_0020D6D0");
 extern void moby_build_matrix(void *);
 
 /* Pushes the source object's transforms into an 8-entry ring and replays them into the trailing objects, ending them when all faded.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_state_00261968.c, FUN_L00_00262608. */
-void update_moby_transform_history(S_263680 *s, int dec) {
-    unsigned char *src;
-    unsigned char *o;
+void update_moby_transform_history(struct TransformHistory *s, int dec) {
+    Moby *src;
+    Moby *o;
     int h, i, k, done;
     if (!s->active)
         return;
     src = s->src;
-    if (!src || src[0x20] == 0xFE || src[0x20] == 0xFD) {
-        clear_moby_transform_history((char *)s);
+    if (!src || src->state == 0xFE || src->state == 0xFD) {
+        clear_moby_transform_history(s);
         return;
     }
     h = s->head;
-    qcopy(&s->a[h], src + 0x10);
-    qcopy(&s->b[h], src + 0x40);
+    qcopy(&s->pos[h], &src->pos);
+    qcopy(&s->rot[h], &src->rot);
     s->head = (h + 1) % 8;
     if (++s->count > 8)
         s->count = 8;
     for (i = 0; i < s->n; i++) {
         int t;
-        if (s->count >= (t = s->w[i])) {
-            o = (unsigned char *)*(int *)((char *)&s->w[i] + 0x10);
+        if (s->count >= (t = s->delay[i])) {
+            o = s->trail[i];
             k = (s->head - t + 8) % 8;
-            o[0x52] = s->src[0x52];
-            o[0x53] = s->src[0x53];
-            o[0x50] = s->src[0x50];
-            o[0x51] = s->src[0x51];
-            *(float *)(o + 0x54) = *(float *)(s->src + 0x54);
+            o->seq = s->src->seq;
+            o->prev_seq = s->src->prev_seq;
+            o->frame = s->src->frame;
+            o->prev_frame = s->src->prev_frame;
+            o->anim_time = s->src->anim_time;
             update_moby_animation_state_a(o);
-            qcopy(o + 0x10, &s->a[k]);
-            qcopy(o + 0x40, &s->b[k]);
+            qcopy(&o->pos, &s->pos[k]);
+            qcopy(&o->rot, &s->rot[k]);
             moby_build_matrix(o);
         }
     }
     if (dec) {
         done = 1;
         for (i = 0; i < s->n; i++) {
-            unsigned char *q = (unsigned char *)*(int *)((char *)&s->w[i] + 0x10);
+            Moby *q = s->trail[i];
             if (q) {
-                int v = q[0x23];
+                int v = q->alpha;
                 int a = v;
                 if (dec < v)
                     v = dec;
                 a -= v;
-                q[0x23] = a;
+                q->alpha = a;
                 if ((unsigned char)a)
                     done = 0;
             }
         }
         if (done)
-            clear_moby_transform_history((char *)s);
+            clear_moby_transform_history(s);
     }
 }
 extern void DeleteMoby(int);
 
 /* Deletes every moby in the owner's list and marks it inactive. */
-void clear_moby_transform_history(char *o) {
+void clear_moby_transform_history(struct TransformHistory *o) {
     int i;
-    if (*(int *)(o + 0x13C) != 0) {
-        for (i = 0; i < *(int *)(o + 0x138); i++) {
-            int *p = (int *)(o + 0x120) + i;
+    if (o->active != 0) {
+        for (i = 0; i < o->n; i++) {
+            int *p = (int *)o->trail + i;
             if (*p != 0) {
                 DeleteMoby(*p);
                 *p = 0;
             }
         }
-        *(int *)(o + 0x13C) = 0;
+        o->active = 0;
     }
 }
 LINKER_REMNANT("asm/overlays", func_L00_00263938);
@@ -793,50 +812,69 @@ extern float SpringAngle(char *, char *, float, float, float, float, int);
 extern void build_quaternion_from_axis_rotations(void *a, float *v);
 extern void clear_u64_value(void *);
 
+/* A manipulator state: eased rotation offsets and scale applied to a held moby. */
+struct ManipState {
+    u8 pad_00;
+    u8 attached;                        /* 0x01: AttachManipulator done */
+    u8 pad_02[0xE];
+    f32 quat[4];                        /* 0x10: built from euler */
+    f32 scale[3];                       /* 0x20 */
+    u8 pad_2C[0x14];
+    f32 euler[3];                       /* 0x40: eased offsets */
+    u8 pad_4C[4];
+    f32 euler_vel[3];                   /* 0x50 */
+    u8 pad_5C[4];
+    f32 goal[3];                        /* 0x60: offsets are eased toward this */
+    u8 pad_6C[4];
+    f32 goal_scale;                     /* 0x70: scale applied each frame, then reset to 1 */
+    u8 pad_74[4];
+    struct Moby *target;                /* 0x78: held moby */
+};
+
 /* Eases a moby's per-axis offsets toward zero and applies them and its scale to the held object, resetting when settled.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_state_00261968.c, FUN_L00_002628d8. */
-void EaseManipulatorOffsets(int m, unsigned char *p, int c, float fa, float fb) {
-    unsigned char *o = *(unsigned char **)(p + 0x78);
+void EaseManipulatorOffsets(int m, struct ManipState *p, int c, float fa, float fb) {
+    unsigned char *o = *(unsigned char **)&p->target;
     float f;
     if (!o) {
-        *(int *)(p + 0x78) = m;
+        *(int *)&p->target = m;
     } else if ((int)o != m) {
-        if (p[1] && o[0x20] < 0x7F)
+        if (p->attached && o[0x20] < 0x7F)
             DetachManipulator((int)o, p);
-        p[1] = 0;
-        *(int *)(p + 0x78) = m;
+        p->attached = 0;
+        *(int *)&p->target = m;
     }
-    if (*(float *)(p + 0x60) == 0.0f && *(float *)(p + 0x64) == 0.0f && *(float *)(p + 0x68) == 0.0f
-        && *(float *)(p + 0x70) == 1.0f
-        && FastAbsF(*(float *)(p + 0x40)) < 0.005f
-        && FastAbsF(*(float *)(p + 0x44)) < 0.005f
-        && FastAbsF(*(float *)(p + 0x48)) < 0.005f) {
-        if (p[1])
+    if (p->goal[0] == 0.0f && p->goal[1] == 0.0f && p->goal[2] == 0.0f
+        && p->goal_scale == 1.0f
+        && FastAbsF(p->euler[0]) < 0.005f
+        && FastAbsF(p->euler[1]) < 0.005f
+        && FastAbsF(p->euler[2]) < 0.005f) {
+        if (p->attached)
             DetachManipulator(m, p);
         return;
     }
-    SpringAngle(p + 0x40, p + 0x50, *(float *)(p + 0x60), fa, fb, 0.0f, 0);
-    SpringAngle(p + 0x44, p + 0x54, *(float *)(p + 0x64), fa, fb, 0.0f, 0);
-    SpringAngle(p + 0x48, p + 0x58, *(float *)(p + 0x68), fa, fb, 0.0f, 0);
-    if (!p[1])
+    SpringAngle((char *)p->euler, (char *)p->euler_vel, p->goal[0], fa, fb, 0.0f, 0);
+    SpringAngle((char *)&p->euler[1], (char *)&p->euler_vel[1], p->goal[1], fa, fb, 0.0f, 0);
+    SpringAngle((char *)&p->euler[2], (char *)&p->euler_vel[2], p->goal[2], fa, fb, 0.0f, 0);
+    if (!p->attached)
         AttachManipulator(m, c, p);
-    build_quaternion_from_axis_rotations(p + 0x10, (float *)(p + 0x40));
-    f = *(float *)(p + 0x70);
-    *(float *)(p + 0x20) = f;
-    *(float *)(p + 0x24) = f;
-    *(float *)(p + 0x28) = f;
-    clear_u64_value(p + 0x60);
-    *(float *)(p + 0x70) = 1.0f;
+    build_quaternion_from_axis_rotations(p->quat, &p->euler[0]);
+    f = p->goal_scale;
+    p->scale[0] = f;
+    p->scale[1] = f;
+    p->scale[2] = f;
+    clear_u64_value(p->goal);
+    p->goal_scale = 1.0f;
 }
 extern float FastAddRots(float, float);
 /* Bobs a's Z with a sine of phase *p, advancing the phase by y. */
-void update_moby_vertical_oscillation(float x, float y, char *a, float *p, float *q) {
+void update_moby_vertical_oscillation(float x, float y, Moby *a, float *p, float *q) {
     float t;
     *p = FastAddRots(*p, y);
-    *(float *)(a + 0x18) -= *q;
+    a->pos.z -= *q;
     t = FastSin(*p) * x;
     *q = t;
-    *(float *)(a + 0x18) += t;
+    a->pos.z += t;
 }
 
 /* Writes a Lissajous-style offset to o[0x10] and o[0x11] and advances the angles. */
@@ -1140,29 +1178,29 @@ void cutscene_set_camera_target(u8 *m) {
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 
 /* Sets a moby's three float fields to x, running its setup call first when it has a flag byte; without the global flag only runs func_0020D9D8 on a flagged moby. */
-void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m) {
+void Manipulator_ApplyScale(float x, int a, int b, struct ManipState *m) {
     if (draw_map51_m[3] != 0) {
-        if (m[1] == 0) {
+        if (m->attached == 0) {
             AttachManipulator(a, b, m);
         }
-        *(float *)(m + 0x20) = x;
-        *(float *)(m + 0x24) = x;
-        *(float *)(m + 0x28) = x;
-    } else if (m[1] != 0) {
+        m->scale[0] = x;
+        m->scale[1] = x;
+        m->scale[2] = x;
+    } else if (m->attached != 0) {
         DetachManipulator(a, m);
     }
 }
 /* sets the float at p + 0x70 to x when the byte at 0x15EEB7 is set, else to 1. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/002630b8.c, FUN_L00_00263b38. */
-void manipulator_set_scale(char *p, float x) {
+void manipulator_set_scale(struct ManipState *p, float x) {
     if (*(unsigned char *)0x15EEB7) {
-        *(float *)(p + 0x70) = x;
+        p->goal_scale = x;
         return;
     }
-    *(float *)(p + 0x70) = 1.0f;
+    p->goal_scale = 1.0f;
 }
 // Store 1.0 to offset 0x70
-void Manipulator_ResetScale(char *arg) {
-    *(float *)(arg + 0x70) = 1.0f;
+void Manipulator_ResetScale(struct ManipState *arg) {
+    arg->goal_scale = 1.0f;
 }
 LINKER_REMNANT("asm/overlays", func_L00_00264BD8);
 typedef struct {
@@ -1278,24 +1316,24 @@ extern void rand_vec(float *, float, float);
 
 /* Spawns a break-effect fragment moby of class cls from src, and initialises its motion data. */
 void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11, float scale, float *v12) {
-    char *m = (char *)CreateMoby_m(cls);
+    Moby *m = (Moby *)((char *)CreateMoby_m(cls));
     struct BreakFragmentVars *d;
     float t[4];
     float r, f21, k, k2;
 
     if (m != 0) {
-        r = *(float *)(src + 0x2C) / *(float *)(*(char **)(src + 0x24) + 0x24);
-        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * r;
-        m[0x31] = 1;
-        ((Moby *)m)->flags |= 0x100;
-        d = (struct BreakFragmentVars *)((Moby *)m)->pvars;
-        *(long *)(m + 0x38) = *(long *)(src + 0x38);
-        m[0x20] = 1;
-        qcopy(m + 0x10, pos);
-        euler_rotation_basis(m + 0xC0, mat);
-        ((Moby *)m)->update_dist = 0xFF;
-        ((Moby *)m)->draw_dist = 0x80;
-        *(int *)&((Moby *)m)->collision = 0;
+        r = ((Moby *)src)->scale / *(float *)(*(char **)&((Moby *)src)->pclass + 0x24);
+        m->scale = *(float *)(*(char **)&m->pclass + 0x24) * r;
+        m->visible = 1;
+        m->flags |= 0x100;
+        d = (struct BreakFragmentVars *)m->pvars;
+        *(long *)&m->spawn_frame = *(long *)&((Moby *)src)->spawn_frame;
+        m->state = 1;
+        qcopy(&m->pos, pos);
+        euler_rotation_basis(&m->rot_row0, mat);
+        m->update_dist = 0xFF;
+        m->draw_dist = 0x80;
+        *(int *)&m->collision = 0;
         if (a8 == 0)
             d->life = truncate_float_to_s32_r(multiply_global_factor(random_float_between(60.0f, 120.0f)));
         else
@@ -1324,8 +1362,8 @@ void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int 
             qcopy(&d->velocity, v11);
         }
         if (FastVecLength(v12) == 0.0f && v12[3] == 0.0f) {
-            qcopy(t, *(char **)(m + 0x24) + 0x30);
-            k2 = ((Moby *)m)->scale;
+            qcopy(t, *(char **)&m->pclass + 0x30);
+            k2 = m->scale;
             k2 = k2 * 0.0009765625f;
             FastVecScale(t, t, k2);
             t[3] = t[3] * k2;
@@ -1335,7 +1373,7 @@ void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int 
         }
         moby_build_matrix(m);
     }
-    return m;
+    return (char *)m;
 }
 extern int timed_hud_frames_left MACRO_ADDR;
 extern int timed_hud_visible MACRO_ADDR;

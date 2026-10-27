@@ -86,7 +86,7 @@ extern char *CreateMoby(int);
 /* Spawns a class 0x326 moby linked to and placed at moby a. */
 char *create_linked_class_0326_moby(char *a) {
     char *m;
-    if (a[0x20] < 0) return 0;
+    if (*(char *)&((Moby *)a)->state < 0) return 0;
     m = CreateMoby(0x326);
     if (m != 0) {
         struct LinkedMobyVars *p = (struct LinkedMobyVars *)((Moby *)m)->pvars;
@@ -95,7 +95,7 @@ char *create_linked_class_0326_moby(char *a) {
         p->linked = a;
         *(int *)&((Moby *)m)->collision = 0;
         ((Moby *)m)->flags |= 0x41;
-        qcopy(m + 0x10, a + 0x10);
+        qcopy(m + 0x10, &((Moby *)a)->pos);
     }
     return m;
 }
@@ -205,11 +205,11 @@ extern int random_integer_below(int);
 extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
 
 /* Build a direction to the target, scale it and emit two effect pieces from the moby's position. */
-void spawn_nanotech_ball_collection_effect_pair(char *m) {
+void spawn_nanotech_ball_collection_effect_pair(Moby *m) {
     Vx a;
     Vx b;
     Vx c;
-    char *p = m + 0x10;
+    char *p = (char *)&m->pos;
     FastVecSub(&a, g_debug_camera, p);
     FastVecScale(&b, hero_globals_base + 0x10AD,
         random_float_between(*(float *)&nanotech_spark_speed_min * g_frame_time, *(float *)&nanotech_spark_speed_max * g_frame_time));
@@ -313,9 +313,9 @@ extern char hero_globals_base[] NOT_SDA;
 extern int coll_line(void *, void *, int, int, int);
 
 // tests a sightline from a moby (raised 0.5) to the player's position (raised 0.5); true if clear
-int is_nanotech_ball_target_line_clear(char *m) {
+int is_nanotech_ball_target_line_clear(Moby *m) {
     Vz a, b;
-    qcopy(&a, m + 0x10);
+    qcopy(&a, &m->pos);
     a.z += 0.5f;
     qcopy(&b, *(char **)(hero_globals_base + 0x2E9D) + 0x10);
     b.z += 0.5f;
@@ -967,10 +967,10 @@ extern void moby_anim_sphere_lerp(void *);
 void compose_moby_rotation_with_euler_offset(char *a, char *b, void *c) {
     V t0, t1, t2;
     euler_to_matrix(&t0, c);
-    copy_matrix_rotation(&t1, a + 0xC0);
+    copy_matrix_rotation(&t1, &((Moby *)a)->rot_row0);
     sce_vu0_mul_matrix(&t2, &t1, &t0);
-    matrix_copy_rows(b + 0xC0, &t2);
-    *(unsigned short *)(b + 0x34) |= 4;
+    matrix_copy_rows(&((Moby *)b)->rot_row0, &t2);
+    ((Moby *)b)->flags |= 4;
     moby_anim_sphere_lerp(b);
 }
 typedef struct { u8 pad0[0x2050]; char *slot[10]; s32 i2078; s32 i207C; } G_2db508;
@@ -985,7 +985,7 @@ int process_suck_cannon_suction_candidate(u8 *p, void *q, void *m_, void *r_, vo
     char *m = (char *)m_;
     char *r = (char *)r_;
     int ret = 0;
-    int (*fn)(void *, void *, void *) = **(int (***)(void *, void *, void *))(*(char **)(m + 0x24) + 0x2C);
+    int (*fn)(void *, void *, void *) = **(int (***)(void *, void *, void *))(*(char **)&((Moby *)m)->pclass + 0x2C);
     G_2db508 *g;
     char *x;
     int c;
@@ -998,13 +998,13 @@ int process_suck_cannon_suction_candidate(u8 *p, void *q, void *m_, void *r_, vo
             n = g->i2078 + g->i207C;
             if (gGoldSuckCannon_r == 0 ? n < 5 : n < 10) {
                 x = *(char **)(r + 0x70);
-                if (((unsigned char *)m)[0x53] != (unsigned char)x[3]) {
+                if (((Moby *)m)->prev_seq != (unsigned char)x[3]) {
                     MobyBlendAnimation(m, (unsigned char)x[3], 0, scale_ticks(10));
                 }
                 *(short *)(r + 0x68) = 3;
                 *(int *)(r + 0x6C) = 0;
-                *(float *)(m + 0x58) = 1.0f;
-                *(float *)(r + 0x64) = vec_distance_xy(m + 0x10, buf);
+                ((Moby *)m)->anim_speed = 1.0f;
+                *(float *)(r + 0x64) = vec_distance_xy(&((Moby *)m)->pos, buf);
                 for (i = 0; i < (gGoldSuckCannon_r == 0 ? 5 : 10); i++) {
                     if (g_hero_r.slot[i] == 0) {
                         g_hero_r.slot[i] = m;
@@ -1040,7 +1040,7 @@ extern char player_camera[];
 extern char hero_globals_base[];
 
 /* picks camera yaw/pitch style outputs and a position offset per camera mode */
-void compute_suck_cannon_suction_aim_and_origin(char *m, float *a, float *b, float *c) {
+void compute_suck_cannon_suction_aim_and_origin(Moby *m, float *a, float *b, float *c) {
     float v[3];
     struct Hero *g;
     Moby_GetJointWorldPos(m, 0, c);
@@ -1053,12 +1053,12 @@ void compute_suck_cannon_suction_aim_and_origin(char *m, float *a, float *b, flo
         v[2] = 0;
         *b = -*(float *)(s + 0x154);
         matrix_mul_vec3(v, v, s + 0x350);
-        c[2] = v[2] + *(float *)(m + 0x18);
+        c[2] = v[2] + m->pos.z;
         c[0] = v[0] + g->motion.pos.f[0];
         c[1] = v[1] + g->motion.pos.f[1];
     } else if (g->unk22C8 == 1) {
         *a = g->held_pose_yaw;
-        *b = *(float *)(m + 0x44);
+        *b = m->rot.y;
     } else {
         *a = g->held_pose_yaw;
         *b = g->basis_pitch;
@@ -1627,40 +1627,65 @@ s32 scale_ticks(s32);
 void MobyBlendAnimation(void *, s32, s32, s32);
 f32 vec_distance_xy(void *, void *);
 
+/* Per-moby suck cannon record (returned by the class handler). */
+struct SuckCannonRecord {
+    u8 pad_00[0xC];
+    f32 unk_0C;                     /* 0x0C: set 1.0 when a suction starts */
+    Vec4 launch_pos;                /* 0x10 */
+    u8 pad_20[0x20];
+    u8 unk_40[0x8];                 /* 0x40 */
+    f32 unk_48;                     /* 0x48 */
+    u8 pad_4C[0x14];
+    u8 *target;                     /* 0x60 */
+    f32 target_dist;                /* 0x64 */
+    s16 state;                      /* 0x68: 8 = unusable */
+    s16 unk_6A;                     /* 0x6A */
+    s32 timer;                      /* 0x6C */
+    u8 *anim_ids;                   /* 0x70 */
+    char *other;                    /* 0x74 */
+    u8 pad_78[0x10];
+    s32 unk_88;                     /* 0x88 */
+    u8 pad_8C[0x4];
+    f32 unk_90;                     /* 0x90 */
+    s32 unk_94;                     /* 0x94 */
+    u8 pad_98[0x4];
+    s16 unk_9C;                     /* 0x9C */
+};
+
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d7f88.c, FUN_L00_002db8f8. */
-s32 process_moby_suck_cannon_suction(u8 *moby, u8 *position, u8 *target) {
-    u8 *record = func_L00_002DCD40_DCDA8(moby);
+s32 process_moby_suck_cannon_suction(Moby *moby, u8 *position, u8 *target) {
+    struct SuckCannonRecord *record = (struct SuckCannonRecord *)func_L00_002DCD40_DCDA8((u8 *)moby);
     s16 state;
     if (record == 0)
         goto missing;
-    if (moby == 0 || moby[0x20] == 0xFE || moby[0x20] == 0xFD || *(s16 *)(record + 0x68) == 8)
+    if (moby == 0 || moby->state == 0xFE || moby->state == 0xFD || record->state == 8)
         goto fail;
-    qcopy_nc(record, position);
-    *(u8 **)(record + 0x60) = target;
-    *(f32 *)(record + 0xC) = 1.0f;
-    state = (s16)(*(u16 *)(record + 0x68) - 1);
+    qcopy_nc((u8 *)record, position);
+    record->target = target;
+    record->unk_0C = 1.0f;
+    state = (s16)(*(u16 *)&record->state - 1);
     switch (state) {
     case 0:
-        if (1.0f <= *(f32 *)(record + 0x6C)) {
+        if (1.0f <= *(f32 *)&record->timer) {
             {
-                u8 *seq = *(u8 **)(record + 0x70);
-                if (moby[0x53] != seq[2]) {
+                u8 *seq = record->anim_ids;
+                if (moby->prev_seq != seq[2]) {
                     MobyBlendAnimation(moby, seq[2], 0, scale_ticks(10));
                 }
             }
-            *(s32 *)(record + 0x6C) = 0;
-            *(s16 *)(record + 0x68) = 2;
+            record->timer = 0;
+            record->state = 2;
             return 1;
         }
         {
-            u8 *seq = *(u8 **)(record + 0x70);
-            if (moby[0x53] != seq[1]) {
+            u8 *seq = record->anim_ids;
+            if (moby->prev_seq != seq[1]) {
                 MobyBlendAnimation(moby, seq[1], 0, scale_ticks(10));
             }
         }
         return 1;
     case 1:
-        if (!(1.0f <= *(f32 *)(record + 0x6C)))
+        if (!(1.0f <= *(f32 *)&record->timer))
             return 1;
         return 2;
     case 2:
@@ -1671,25 +1696,25 @@ s32 process_moby_suck_cannon_suction(u8 *moby, u8 *position, u8 *target) {
     case 5:
     case 6:
         {
-            u8 *seq = *(u8 **)(record + 0x70);
-            if (moby[0x53] != seq[3]) {
+            u8 *seq = record->anim_ids;
+            if (moby->prev_seq != seq[3]) {
                 MobyBlendAnimation(moby, seq[3], 0, scale_ticks(10));
             }
         }
-        *(s16 *)(record + 0x68) = 3;
-        *(s32 *)(record + 0x6C) = 0;
-        *(f32 *)(moby + 0x58) = 1.0f;
-        *(f32 *)(record + 0x64) = vec_distance_xy(moby + 0x10, target + 0x10);
+        record->state = 3;
+        record->timer = 0;
+        moby->anim_speed = 1.0f;
+        record->target_dist = vec_distance_xy(&moby->pos, &((Moby *)target)->pos);
         break;
     default:
         {
-            u8 *seq = *(u8 **)(record + 0x70);
-            if (moby[0x53] != seq[1]) {
+            u8 *seq = record->anim_ids;
+            if (moby->prev_seq != seq[1]) {
                 MobyBlendAnimation(moby, seq[1], 0, scale_ticks(10));
             }
         }
-        *(s32 *)(record + 0x6C) = 0;
-        *(s16 *)(record + 0x68) = 1;
+        record->timer = 0;
+        record->state = 1;
         return 1;
     }
     return 2;
@@ -1707,24 +1732,24 @@ extern void MobyBlendAnimation(void *, int, int, int);
 
 /* Place a moby at the given position under its owner, reset its owner's state to 4 and start the matching animation. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbb20. */
 int store_moby_in_suck_cannon(unsigned char *m, void *v) {
-    unsigned char *o = (unsigned char *)get_moby_suck_cannon_record((char *)m);
+    struct SuckCannonRecord *o = (struct SuckCannonRecord *)((unsigned char *)get_moby_suck_cannon_record((char *)m));
     int g;
     if (o == 0) return 0;
-    if (m != 0 && m[0x20] != 0xFE && m[0x20] != 0xFD && *(short *)(o + 0x68) != 8) {
-        qcopy(m + 0x10, v);
-        compose_moby_rotation_with_euler_offset(*(char **)(o + 0x60), (char *)m, &suck_cannon_stored_rot_offset);
+    if (m != 0 && ((Moby *)m)->state != 0xFE && ((Moby *)m)->state != 0xFD && o->state != 8) {
+        qcopy(&((Moby *)m)->pos, v);
+        compose_moby_rotation_with_euler_offset(*(char **)&o->target, (char *)m, &suck_cannon_stored_rot_offset);
         moby_anim_sphere_lerp(m);
         g = *(int *)(hero_globals_base + 0x1EAD);
         if (g != 0 && *(short *)(g + 0xA6) == 0x351) {
             Moby_PlaySound(5, 0, g);
         }
         SetDeathBits(m, 0, -1);
-        *(short *)(o + 0x68) = 4;
-        if (m[0x53] != *(unsigned char *)(*(unsigned char **)(o + 0x70) + 4)) {
-            unsigned char c = *(unsigned char *)(*(unsigned char **)(o + 0x70) + 4);
+        o->state = 4;
+        if (((Moby *)m)->prev_seq != *(unsigned char *)(o->anim_ids + 4)) {
+            unsigned char c = *(unsigned char *)(o->anim_ids + 4);
             MobyBlendAnimation(m, c, 0, scale_ticks(10));
         }
-        *(int *)(m + 0x2C) = 0;
+        *(int *)&((Moby *)m)->scale = 0;
         return 1;
     }
     return 0;
@@ -1737,45 +1762,45 @@ extern float vec_distance_xy(void *, void *);
 extern int Moby_PlaySound(int, int, int);
 
 /* starts a moby's animation from a data moby and sets up its effect state */
-int launch_suck_cannon_projectile(char *m, float *pos, char *other, float f) {
-    char *d;
+int launch_suck_cannon_projectile(Moby *m, float *pos, char *other, float f) {
+    struct SuckCannonRecord *d;
     unsigned char *r;
     char *e;
     short s;
 
-    d = get_moby_suck_cannon_record(m);
+    d = (struct SuckCannonRecord *)get_moby_suck_cannon_record((char *)m);
     if (d == 0) return 0;
-    if (m != 0 && (unsigned char)m[0x20] != 0xFE && (unsigned char)m[0x20] != 0xFD
-        && *(short *)(d + 0x68) != 8) {
-        m[0x31] = 1;
-        *(unsigned short *)(m + 0x34) &= 0xFFFC;
-        r = *(unsigned char **)(d + 0x70);
+    if (m != 0 && (unsigned char)*(char *)&m->state != 0xFE && (unsigned char)*(char *)&m->state != 0xFD
+        && d->state != 8) {
+        m->visible = 1;
+        m->flags &= 0xFFFC;
+        r = d->anim_ids;
         if (pos[3] == 1.23456f) {
-            if ((unsigned char)m[0x53] != r[6]) {
+            if ((unsigned char)*(char *)&m->prev_seq != r[6]) {
                 MobyBlendAnimation(m, r[6], 0, scale_ticks(0x14));
             }
-            *(int *)(m + 0x98) = *(int *)(d + 0x88);
-            *(short *)(d + 0x68) = 6;
+            m->collision_disable = d->unk_88;
+            d->state = 6;
         } else {
-            if ((unsigned char)m[0x53] != r[5]) {
+            if ((unsigned char)*(char *)&m->prev_seq != r[5]) {
                 MobyBlendAnimation(m, r[5], 0, scale_ticks(0));
             }
-            *(short *)(d + 0x68) = 5;
+            d->state = 5;
         }
-        qcopy(d + 0x10, pos);
-        *(int *)(d + 0x94) = scale_ticks(0x12C);
-        *(char **)(d + 0x74) = other;
+        qcopy(&d->launch_pos, pos);
+        d->unk_94 = scale_ticks(0x12C);
+        d->other = other;
         if (other) {
             e = GetFlaggedPvarWord(other);
             if (e) *(unsigned short *)(e + 0x1E) |= 0x80;
-            qcopy(d + 0x40, other + 0x10);
-            *(float *)(d + 0x90) = f;
-            *(float *)(d + 0x48) += f;
+            qcopy(d->unk_40, &((Moby *)other)->pos);
+            d->unk_90 = f;
+            d->unk_48 += f;
         }
-        if (vec_distance_xy(m + 0x10, hero_globals_base + 0xE9D) < 1.0f) {
-            FastVecAdd(m + 0x10, m + 0x10, d + 0x10);
+        if (vec_distance_xy(&m->pos, hero_globals_base + 0xE9D) < 1.0f) {
+            FastVecAdd(&m->pos, &m->pos, &d->launch_pos);
         }
-        s = *(short *)(d + 0x9C);
+        s = d->unk_9C;
         if (s >= 0) Moby_PlaySound(s, 0, (int)m);
         return 2;
     }
@@ -1783,17 +1808,17 @@ int launch_suck_cannon_projectile(char *m, float *pos, char *other, float f) {
 }
 /* Frees a moby's state slot and returns 1 when it is in state 4. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbe20. */
 int cancel_suck_cannon_suction(char *m) {
-    char *s = get_moby_suck_cannon_record(m);
+    struct SuckCannonRecord *s = (struct SuckCannonRecord *)get_moby_suck_cannon_record(m);
     int st;
     if (s == 0) return 0;
     if (m == 0) return 0;
-    if ((unsigned char)m[0x20] == 0xFE) return 0;
-    if ((unsigned char)m[0x20] == 0xFD) return 0;
-    st = *(short *)(s + 0x68);
+    if ((unsigned char)*(char *)&((Moby *)m)->state == 0xFE) return 0;
+    if ((unsigned char)*(char *)&((Moby *)m)->state == 0xFD) return 0;
+    st = s->state;
     if (st == 8) return 0;
     switch (st) {
     case 3: {
-        int k = *(short *)(s + 0x6A);
+        int k = s->unk_6A;
         if (k != -1) {
             char *g = hero_globals_base + 0xE1D;
             *(int *)(g + 0x2050 - (-(k * 4))) = 0;
@@ -1804,11 +1829,11 @@ int cancel_suck_cannon_suction(char *m) {
     }
     case 1:
     case 2: {
-        if (*(unsigned char *)(m + 0x53) != *(unsigned char *)(*(char **)(s + 0x70) + 7)) {
-            unsigned char c = *(unsigned char *)(*(char **)(s + 0x70) + 7);
+        if (((Moby *)m)->prev_seq != *(unsigned char *)(*(char **)&s->anim_ids + 7)) {
+            unsigned char c = *(unsigned char *)(*(char **)&s->anim_ids + 7);
             MobyBlendAnimation(m, c, 0, scale_ticks(10));
         }
-        *(short *)(s + 0x68) = 7;
+        s->state = 7;
         return 0;
     }
     case 4:
@@ -1872,7 +1897,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
     step = 1;
     if ((&gold_weapon_purchased)->b9 == 0) step = 2;
     FastVecScale(b, b, f22);
-    FastVecSub(a, g_debug_camera, self + 0x10);
+    FastVecSub(a, g_debug_camera, &((Moby *)self)->pos);
     f23 = FastVecLength(a);
     for (; i < 10 / step; i++) {
         *(u128_DD3D8 *)g = 0;
@@ -1888,7 +1913,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
         FastVecAdd(e, e, b);
         {
             int h = scale_ticks(60);
-            SpawnFallingSpark(self + 0x10, (char *)e, rand_range(h, scale_ticks(120)), 0, (&gold_weapon_purchased)->b9);
+            SpawnFallingSpark((char *)&((Moby *)self)->pos, (char *)e, rand_range(h, scale_ticks(120)), 0, (&gold_weapon_purchased)->b9);
         }
     }
     for (j = 0; j < 4 / step; j++) {
@@ -1905,7 +1930,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
         FastVecAdd(e, e, b);
         {
             int h = scale_ticks(60);
-            SpawnFallingSpark(self + 0x10, (char *)e, rand_range(h, scale_ticks(90)), 1, (&gold_weapon_purchased)->b9);
+            SpawnFallingSpark((char *)&((Moby *)self)->pos, (char *)e, rand_range(h, scale_ticks(90)), 1, (&gold_weapon_purchased)->b9);
         }
     }
     *(u128_DD3D8 *)g = 0;
@@ -1920,7 +1945,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
     clamp_vec_length(e, e, g_frame_time * 10.0f);
     {
         int h = scale_ticks(60);
-        SpawnFallingSpark(self + 0x10, (char *)e, rand_range(h, scale_ticks(90)), 1, (&gold_weapon_purchased)->b9);
+        SpawnFallingSpark((char *)&((Moby *)self)->pos, (char *)e, rand_range(h, scale_ticks(90)), 1, (&gold_weapon_purchased)->b9);
     }
     if (f23 < 6.0f) {
         k = truncate_float_to_s32_r(f23) + 1;
@@ -1944,17 +1969,17 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
             big = f22 * 400000.0f;
             r1 = rand_range(scale_ticks(15), scale_ticks(20));
             r2 = rand_range(scale_ticks(25), scale_ticks(30));
-            PartType11Spawn(self + 0x10, b, A, B, big, r1, r2, 0, 0, sh);
+            PartType11Spawn(&((Moby *)self)->pos, b, A, B, big, r1, r2, 0, 0, sh);
         } while (--cnt);
     }
     if (f23 > 9.0f) {
         float s4 = f22 * 4.0f;
-        spawn_randomly_rotated_colored_moby_r(s4, self, self + 0x10, b, scale_ticks(15), 0x7F, 0x7F, 0x7F, 0x20);
+        spawn_randomly_rotated_colored_moby_r(s4, self, &((Moby *)self)->pos, b, scale_ticks(15), 0x7F, 0x7F, 0x7F, 0x20);
         r0 = 0x7F;
         g0 = 0x20;
         b0 = 0;
         swap_color_channel_words(&r0, &g0, &b0, (&gold_weapon_purchased)->b9);
-        spawn_randomly_rotated_colored_moby_r(s4, self, self + 0x10, b, scale_ticks(24), r0, g0, b0, 0x20);
+        spawn_randomly_rotated_colored_moby_r(s4, self, &((Moby *)self)->pos, b, scale_ticks(24), r0, g0, b0, 0x20);
     }
     r1 = 0x7F;
     g1 = 0x3F;
@@ -1962,7 +1987,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
     swap_color_channel_words(&r1, &g1, &b1, (&gold_weapon_purchased)->b9);
     {
         float s = f22 * 4.0f;
-        spawn_randomly_rotated_colored_moby_r(s, self, self + 0x10, b, scale_ticks(20), r1, g1, b1, 0x30);
+        spawn_randomly_rotated_colored_moby_r(s, self, &((Moby *)self)->pos, b, scale_ticks(20), r1, g1, b1, 0x30);
     }
     r1 = 0x60;
     g1 = 0x10;
@@ -1970,7 +1995,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
     swap_color_channel_words(&r1, &g1, &b1, (&gold_weapon_purchased)->b9);
     {
         float s = f22 * 3.5f;
-        spawn_randomly_rotated_colored_moby_r(s, self, self + 0x10, b, scale_ticks(27), r1, g1, b1, 0x40);
+        spawn_randomly_rotated_colored_moby_r(s, self, &((Moby *)self)->pos, b, scale_ticks(27), r1, g1, b1, 0x40);
     }
     r1 = 0x20;
     g1 = 0;
@@ -1978,14 +2003,14 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
     swap_color_channel_words(&r1, &g1, &b1, (&gold_weapon_purchased)->b9);
     {
         float s = f22 * 3.0f;
-        spawn_randomly_rotated_colored_moby_r(s, self, self + 0x10, b, scale_ticks(29), r1, g1, b1, 0x20);
+        spawn_randomly_rotated_colored_moby_r(s, self, &((Moby *)self)->pos, b, scale_ticks(29), r1, g1, b1, 0x20);
     }
     player_camera_r.f160 = (f23 < 20.0f) ? 0.4f - f23 * 0.0175f : 0.050000012f;
     player_camera_r.i168 = scale_ticks(25);
-    mine_camera_blast((char *)&blk, self + 0x10, 0, 0);
+    mine_camera_blast((char *)&blk, (char *)&((Moby *)self)->pos, 0, 0);
     if ((&gold_weapon_purchased)->b9) {
-        k = coll_sphere_mobys_r(3.0f, self + 0x10, 0x10, self, 0);
-        *(u128_DD3D8 *)e = *(u128_DD3D8 *)(self + 0x10);
+        k = coll_sphere_mobys_r(3.0f, &((Moby *)self)->pos, 0x10, self, 0);
+        *(u128_DD3D8 *)e = *(u128_DD3D8 *)&((Moby *)self)->pos;
         SendRadialMessageToMobys(self, e, coll_sphere_moby_hits, k, 0, 0x830000, 2, 1, 2.0f, 1.0f, 1.0f);
     }
 }
@@ -1994,21 +2019,21 @@ typedef struct { float v[4]; } __attribute__((aligned(16))) Q2DDDE8;
 extern void spawn_suck_cannon_projectile_explosion(char *, char *);
 
 // Initializes an object from its template and calls its handler.
-void finalize_suck_cannon_moby(char *p, char *q, int flag) {
+void finalize_suck_cannon_moby(Moby *p, char *q, int flag) {
     Mtx2DDDE8 m;
     void (*fn)(char *);
-    if (flag) spawn_suck_cannon_projectile_explosion(p, q);
-    *(int *)(p + 0x98) = *(int *)(q + 0x84);
-    qzero(p + 0x40);
-    euler_to_matrix(&m, p + 0x40);
-    matrix_copy_rows(p + 0xC0, &m);
+    if (flag) spawn_suck_cannon_projectile_explosion((char *)p, q);
+    p->collision_disable = *(int *)(q + 0x84);
+    qzero(&p->rot);
+    euler_to_matrix(&m, &p->rot);
+    matrix_copy_rows(&p->rot_row0, &m);
     moby_anim_sphere_lerp(p);
-    *(unsigned short *)(p + 0x34) &= ~4;
-    *(int *)(p + 0x98) = *(int *)(q + 0x84);
-    *(float *)(p + 0x2C) = *(float *)(*(char **)(p + 0x24) + 0x24);
+    p->flags &= ~4;
+    p->collision_disable = *(int *)(q + 0x84);
+    p->scale = *(float *)(*(char **)&p->pclass + 0x24);
     *(short *)(q + 0x68) = 0;
-    fn = *(void (**)(char *))(*(char **)(*(char **)(p + 0x24) + 0x2C) + 0x14);
-    if (fn) fn(p); else DeleteMoby(p);
+    fn = *(void (**)(char *))(*(char **)(*(char **)&p->pclass + 0x2C) + 0x14);
+    if (fn) fn((char *)p); else DeleteMoby(p);
 }
 typedef struct { char pad0[0xC]; void (*fC)(void *); } Cb_2DDEA0;
 typedef struct { char pad0[0x10]; int i10; char pad14[0x10]; float f24; char pad28[4]; Cb_2DDEA0 *f2C; char pad30[0x16]; short h46; } Cls_2DDEA0;
@@ -2847,24 +2872,24 @@ extern void begin_bolt_attraction(void *, int, float, float);
 extern void try_collect_ammo_pickup(void *);
 
 /* Scatter a moby away from nearby positions in the hazard table. */
-void scatter_moby_from_hazards(char *m) {
+void scatter_moby_from_hazards(Moby *m) {
     char *base;
     char *pos;
     int i;
     float lim;
     if (m == 0) return;
-    if (*(unsigned char *)(m + 0x20) == 0xFE) return;
-    if (*(unsigned char *)(m + 0x20) == 0xFD) return;
+    if (m->state == 0xFE) return;
+    if (m->state == 0xFD) return;
     if (random_integer_below(10)) return;
-    if (*(int *)(m + 0x24) == 0 || *(short *)(*(int *)(m + 0x24) + 0x46) != 0x13) {
+    if (*(int *)&m->pclass == 0 || *(short *)(*(int *)&m->pclass + 0x46) != 0x13) {
         if (!is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(m)) return;
     }
-    if (!(FastVecDist(m + 0x10, pos = hero_globals_base + 0xE9D) < 30.0f)) return;
+    if (!(FastVecDist(&m->pos, pos = hero_globals_base + 0xE9D) < 30.0f)) return;
     for (i = 0; i < 10 && suck_beam_segment_alpha[i] >= 8; i++) {
         lim = i * 0.3f + 0.1f;
         if (lim < 2.0f) lim = 2.0f;
-        if (FastVecDist(m + 0x10, suck_beam_points + i * 16) < lim) {
-            if (m != 0 && *(int *)(m + 0x24) != 0 && *(short *)(*(int *)(m + 0x24) + 0x46) == 0x13) {
+        if (FastVecDist(&m->pos, suck_beam_points + i * 16) < lim) {
+            if (m != 0 && *(int *)&m->pclass != 0 && *(short *)(*(int *)&m->pclass + 0x46) == 0x13) {
                 base = pos - 0x80;
                 begin_bolt_attraction(m, *(int *)(base + 0x2080), 0.0f, 0.0f);
             } else {
@@ -2931,13 +2956,13 @@ extern short red_orb_color_b;
 /* update for the pulsing colour object */
 void red_orb_update(char *m) {
     char *p = ((char *)((Moby *)m)->pvars);
-    unsigned char s = m[0x20];
+    unsigned char s = *(char *)&((Moby *)m)->state;
     float a;
     int c, hi, r, g, b;
     switch (s) {
     case 0:
         *(float *)p = *(float *)p * 0.017453292f;
-        m[0x20] = 1;
+        ((Moby *)m)->state = 1;
         break;
     case 1:
         a = FastAddRots(*(float *)p, *(float *)&red_orb_pulse_speed_deg * 0.017453292f * g_frame_time);
@@ -2954,12 +2979,12 @@ void red_orb_update(char *m) {
 }
 extern void update_instance_attachment_points_and_lengths(void *);
 /* Resets the quad moby's blend values when flagged, then updates its attachment points. */
-void quad_moby_update(char *a) {
-    if (*(unsigned char *)(a + 0x70) & 2) {
+void quad_moby_update(Moby *a) {
+    if (a->anim_flags & 2) {
         float o = 1.0f;
-        if (0.0f < *(float *)(a + 0x58)) o = 0.0f;
-        *(float *)(a + 0x54) = o;
-        *(float *)(a + 0x58) = 0.0f;
+        if (0.0f < a->anim_speed) o = 0.0f;
+        a->anim_time = o;
+        a->anim_speed = 0.0f;
     }
     update_instance_attachment_points_and_lengths(a);
 }
@@ -2993,9 +3018,9 @@ extern void moby_build_matrix(void *);
 
 /* Creates a moby of type 0x4A8 at pos with a random rotation, and fills its data block from the arguments. */
 char *spawn_randomly_rotated_colored_moby(void *owner, void *pos, void *vel, int life, unsigned char r, unsigned char g, unsigned char b, unsigned char a, float scale) {
-    char *m = CreateMoby(0x4A8);
+    Moby *m = (Moby *)CreateMoby(0x4A8);
     if (m != 0) {
-        struct ColoredFragmentVars *d = (struct ColoredFragmentVars *)((Moby *)m)->pvars;
+        struct ColoredFragmentVars *d = (struct ColoredFragmentVars *)m->pvars;
         Vec4 tmp;
         Vec4 rot;
         rot.q = 0;
@@ -3003,24 +3028,24 @@ char *spawn_randomly_rotated_colored_moby(void *owner, void *pos, void *vel, int
         rot.f[1] = random_float_between(-3.1415927f, 3.1415927f);
         rot.f[2] = random_float_between(-3.1415927f, 3.1415927f);
         tmp = rot;
-        m[0x20] = 0;
-        m[0x23] = a;
-        ((unsigned char *)m)[0x30] = 0xFF;
-        ((Moby *)m)->draw_dist = 0xFF;
-        m[0x31] = 1;
+        m->state = 0;
+        m->alpha = a;
+        m->update_dist = 0xFF;
+        m->draw_dist = 0xFF;
+        m->visible = 1;
         set_moby_color(m, r, g, b);
-        d->scale = ((Moby *)m)->scale * scale;
-        *(int *)&((Moby *)m)->scale = 0;
+        d->scale = m->scale * scale;
+        *(int *)&m->scale = 0;
         d->owner = owner;
-        qcopy(m + 0x10, pos);
+        qcopy(&m->pos, pos);
         qcopy(((char *)d), vel);
-        qcopy(m + 0x40, &tmp);
+        qcopy(&m->rot, &tmp);
         d->tag = a;
         d->life = life;
         d->life_start = *(unsigned short *)&d->life;
         moby_build_matrix(m);
     }
-    return m;
+    return (char *)m;
 }
 typedef struct {
     float x, y, z, w;

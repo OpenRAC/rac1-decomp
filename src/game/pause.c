@@ -1072,29 +1072,29 @@ void render_level_effects_and_screen_sprites(void) {
  * one `char *` local per block that reads a global.
  */
 int Pause_PageInput(int arg0) {
-    char *g = menu_system;
+    struct MenuSystem *g = (struct MenuSystem *)menu_system;
 
-    if (*(int *)(*(char **)(g + 4) + 0x40) != arg0) {
+    if (*(int *)(*(char **)&g->current + 0x40) != arg0) {
         return 0;
     }
     {
-        char *pad = g_controller_state;
-        if (*(int *)(pad + 0x1C4) & 0xD00) {
-            if (*(int *)(g + 0x124) == 0) {
+        PadState *pad = (PadState *)g_controller_state;
+        if (*(int *)&pad->pressed_unmasked & 0xD00) {
+            if (g->close_locked == 0) {
                 return 1;
             }
         }
     }
     {
-        char *pad2 = g_controller_state;
-        if (*(int *)(pad2 + 0x1C4) & 0x10) {
-            char *g2 = menu_system;
-            int t = *(int *)(*(char **)(g2 + 4) + 0x38);
+        PadState *pad2 = (PadState *)g_controller_state;
+        if (*(int *)&pad2->pressed_unmasked & 0x10) {
+            struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
+            int t = *(int *)(*(char **)&g2->current + 0x38);
             if (t != 0) {
-                *(int *)(g2 + 8) = t;
+                *(int *)&g2->next = t;
                 return 0;
             }
-            if (*(int *)(g2 + 0x124) == 0) {
+            if (g2->close_locked == 0) {
                 return -1;
             }
         }
@@ -1114,30 +1114,30 @@ extern void Moby_PlaySound(int, int, int);
    after the clamp, and each arm stores the bar position itself. */
 int update_menu_icon_list(char *arg0) {
     {
-        char *pad = g_controller_state;
-        if (*(int *)(pad + 0x1C4) & 0xD00) {
+        PadState *pad = (PadState *)g_controller_state;
+        if (*(int *)&pad->pressed_unmasked & 0xD00) {
             if (menu_system_close_locked == 0) {
                 return 1;
             }
         }
     }
     {
-        char *pad2 = g_controller_state;
-        if (*(int *)(pad2 + 0x1C4) & 0x10) {
-            char *g = menu_system;
-            int t = *(int *)(*(char **)(g + 4) + 0x38);
+        PadState *pad2 = (PadState *)g_controller_state;
+        if (*(int *)&pad2->pressed_unmasked & 0x10) {
+            struct MenuSystem *g = (struct MenuSystem *)menu_system;
+            int t = *(int *)(*(char **)&g->current + 0x38);
             if (t != 0) {
-                *(int *)(g + 8) = t;
+                *(int *)&g->next = t;
                 return 0;
             }
-            if (*(int *)(g + 0x124) == 0) {
+            if (g->close_locked == 0) {
                 return -1;
             }
         }
     }
     {
-        char *pad3 = g_controller_state;
-        int v = *(int *)(pad3 + 0x1C4);
+        PadState *pad3 = (PadState *)g_controller_state;
+        int v = *(int *)&pad3->pressed_unmasked;
         int old = *(int *)(arg0 + 0x3C);
         if ((v & 0x1000) && old != 0) {
             *(int *)(arg0 + 0x3C) = old - 1;
@@ -2118,29 +2118,29 @@ int find_next_pause_page(char *arg0, int arg1) {
         return 0;
     }
     {
-        char *g = menu_system;
-        if (*(int *)(g + 0x134) != 0 && (*(int *)(arg0 + 0x30) & 8)) {
+        struct MenuSystem *g = (struct MenuSystem *)menu_system;
+        if (g->unk134 != 0 && (*(int *)(arg0 + 0x30) & 8)) {
             ok = 1;
         }
-        if (*(int *)(g + 0x138) != 0 && (*(int *)(arg0 + 0x30) & 4)) {
+        if (g->unk138 != 0 && (*(int *)(arg0 + 0x30) & 4)) {
             ok = 1;
         }
     }
     while (ok) {
-        char *g = menu_system;
+        struct MenuSystem *g = (struct MenuSystem *)menu_system;
         found = 1;
         arg0 = *(char **)(arg0 + 0x4C);
         ok = 0;
-        if (*(int *)(g + 0x134) != 0 && (*(int *)(arg0 + 0x30) & 8)) {
+        if (g->unk134 != 0 && (*(int *)(arg0 + 0x30) & 8)) {
             ok = 1;
         }
-        if (*(int *)(g + 0x138) != 0 && (*(int *)(arg0 + 0x30) & 4)) {
+        if (g->unk138 != 0 && (*(int *)(arg0 + 0x30) & 4)) {
             ok = 1;
         }
     }
     if (found) {
-        char *g2 = menu_system;
-        *(char **)(*(char **)(g2 + 4) + 0x80) = arg0;
+        struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
+        *(char **)(*(char **)&g2->current + 0x80) = arg0;
     }
     return 0;
 }
@@ -2432,10 +2432,10 @@ int leave_map_screen(void) {
         }
     }
     if (cd_read_state[4] != 0) {
-        char *g = menu_system;
-        if (*(unsigned char *)(g + 0xCB) != 0) {
+        struct MenuSystem *g = (struct MenuSystem *)menu_system;
+        if (g->pending_buffer != 0) {
             request_audio_stream_break();
-            g[0xCB] = 0;
+            g->pending_buffer = 0;
             level_map_selection_slots.flags[level_map_selection_slots.sel] = -1;
             level_map_selection_slots.sel = -1;
         }
@@ -3004,20 +3004,20 @@ int update_menu_item_slots(SelList_0021D7A0 *arg0) {
     char *q = *(char **)(current_menu_page + 0x40);
     int item = *(short *)(*(int *)(q + 0x3C) * 10 + *(char **)(q + 0x48) + 6);
     int old = arg0->idx;
-    char *pad = g_controller_state;
+    PadState *pad = (PadState *)g_controller_state;
     int i;
 
-    if (*(int *)(pad + 0x1C4) & 8) {
+    if (*(int *)&pad->pressed_unmasked & 8) {
         arg0->idx = (old + 1) % 8;
     }
-    if (*(int *)(pad + 0x1C4) & 4) {
+    if (*(int *)&pad->pressed_unmasked & 4) {
         arg0->idx = (arg0->idx + 7) % 8;
     }
     if (arg0->idx != old) {
         Moby_PlaySound(1, 0x11, arg0->id);
     }
     if (item != 0 && ((unsigned char *)&item_available)[item] != 0
-        && (*(int *)(pad + 0x1C4) & 0x40)) {
+        && (*(int *)&pad->pressed_unmasked & 0x40)) {
         Stats_0021D7A0 *s = &usage_stats;
 
         if (s->count <= 0xFFFE) {
@@ -3426,15 +3426,15 @@ extern int start_audio_stream_read_3(int, int, int) __asm__("func_00217628");
    (+0x50 = 1 on success, 3 on failure). */
 int enter_menu_help_text(char *arg0) {
     int i;
-    char *g;
+    struct MenuSystem *g;
     initialize_menu_stream_buffers(1);
     *(int *)(arg0 + 0x54) = 0;
     *(int *)(arg0 + 0x38) = 0;
-    g = menu_system;
+    g = (struct MenuSystem *)menu_system;
     for (i = 0; i < 5; i++) {
         if (menu_stream_buffers_t[i].key != 0
             && (unsigned int)menu_stream_buffers_t[i].key
-                   < *(unsigned int *)(g + 0x10C)) {
+                   < *(unsigned int *)&g->unk10C) {
             menu_stream_buffers_t[i].flags |= 2;
         }
     }
@@ -3516,8 +3516,8 @@ int update_menu_help_text_load(char *arg0) {
         break;
     case 1:
         if (cd_read_state[4] == 0) {
-            char *g = menu_system;
-            int *tbl = *(int **)(g + 0x108);
+            struct MenuSystem *g = (struct MenuSystem *)menu_system;
+            int *tbl = *(int **)&g->help_text_buffer;
             int *p = (int *)((char *)tbl + tbl[g_game_language]);
             int n = *p++;
             int sz = *p++;
@@ -3530,7 +3530,7 @@ int update_menu_help_text_load(char *arg0) {
             *(int *)(arg0 + 0x54) = help_msgs_m;
             *(int *)(arg0 + 0x38) = *(int *)(b + 0x2C);
             *(int *)(b + 0x2C) = n;
-            t = *(int **)(g + 0x108);
+            t = *(int **)&g->help_text_buffer;
             help_msgs_m = (int)t;
             for (i = 0; i < pauseSlotCount(); i++) {
                 int d = (int)t - 8;
@@ -4524,8 +4524,8 @@ extern int space_load_pending MACRO_ADDR;
    each block that reads the pad word gives retail's pattern: the %hi
    kept in a register and the %lo rebuilt before each use. */
 int Menu_BackInput(char *arg0) {
-    char *pad = g_controller_state;
-    int v = *(int *)(pad + 0x1C4);
+    PadState *pad = (PadState *)g_controller_state;
+    int v = *(int *)&pad->pressed_unmasked;
 
     if (v & 0xD00) {
         if (*(int *)(arg0 + 0x30) & 0x20) {
@@ -4534,24 +4534,24 @@ int Menu_BackInput(char *arg0) {
         return -1;
     }
     if (v & 0x10) {
-        char *g;
+        struct MenuSystem *g;
         int t;
         if (*(int *)(arg0 + 0x30) & 0x20) {
             selected_level_index = g_current_level_index;
         }
-        g = menu_system;
-        t = *(int *)(*(char **)(g + 4) + 0x38);
+        g = (struct MenuSystem *)menu_system;
+        t = *(int *)(*(char **)&g->current + 0x38);
         if (t != 0) {
-            *(int *)(g + 8) = t;
+            *(int *)&g->next = t;
             return 0;
         }
-        if (*(int *)(g + 0x124) == 0) {
+        if (g->close_locked == 0) {
             return -1;
         }
     }
     {
-        char *pad2 = g_controller_state;
-        if (*(int *)(pad2 + 0x1C4) & 0x20) {
+        PadState *pad2 = (PadState *)g_controller_state;
+        if (*(int *)&pad2->pressed_unmasked & 0x20) {
             memory_card_state_field_fc = 0;
             space_load_level = -1;
             space_load_pending = 1;
@@ -4821,13 +4821,13 @@ extern void font_print_right_c(int, int, long, char *, int) __asm__("func_001F6C
    copy). */
 int DrawGBsShipMenu__maybe(char *arg0) {
     char buf[0x100];
-    char *t = gCamera;
+    CameraSystem *t = (CameraSystem *)gCamera;
     char *o = *(char **)(arg0 + 0x44);
     int count;
 
-    *(float *)(o + 0x10) = *(float *)(t + 0x140) + 8.0f;
-    *(float *)(o + 0x14) = *(float *)(t + 0x144) + gold_bolt_marker_y_offset_f;
-    *(float *)(o + 0x18) = *(float *)(t + 0x148) - 0.1f;
+    *(float *)(o + 0x10) = t->pos.f[0] + 8.0f;
+    *(float *)(o + 0x14) = t->pos.f[1] + gold_bolt_marker_y_offset_f;
+    *(float *)(o + 0x18) = t->pos.f[2] - 0.1f;
     if (*(int *)(arg0 + 0x44) != 0) {
         DrawMobyList(*(int *)(arg0 + 0x44), 1);
     }
@@ -6409,13 +6409,13 @@ typedef struct {
    with flag 1 starts the timer and flips D_0016044C (func_001FBC80 once
    it is set). The row is indexed directly at each use (index-first addu)
    and the cursor compare is written new != old, as retail's beq has it. */
-int update_menu_option_list(char *arg0) {
-    char *g = menu_system;
-    int sel = *(char **)(*(char **)(g + 4) + 0x40) == arg0;
+int update_menu_option_list(struct MenuScreen *arg0) {
+    struct MenuSystem *g = (struct MenuSystem *)menu_system;
+    int sel = *(char **)(*(char **)&g->current + 0x40) == (char *)arg0;
 
-    if (*(int *)(arg0 + 0x3C) != 0) {
-        int t = *(int *)(arg0 + 0x3C) - 1;
-        *(int *)(arg0 + 0x3C) = t;
+    if (arg0->data.options.fade_timer != 0) {
+        int t = arg0->data.options.fade_timer - 1;
+        arg0->data.options.fade_timer = t;
         gFade = (float)(t < 5 ? t : 4) * 0.25f;
         return 0;
     }
@@ -6423,65 +6423,65 @@ int update_menu_option_list(char *arg0) {
         return 0;
     }
     {
-        char *pad = g_controller_state;
-        if (*(int *)(pad + 0x1C4) & 0xD00) {
-            if (*(int *)(g + 0x124) == 0) {
+        PadState *pad = (PadState *)g_controller_state;
+        if (*(int *)&pad->pressed_unmasked & 0xD00) {
+            if (g->close_locked == 0) {
                 return 1;
             }
         }
     }
     {
-        char *pad2 = g_controller_state;
-        if (*(int *)(pad2 + 0x1C4) & 0x10) {
-            char *g2 = menu_system;
-            int t = *(int *)(*(char **)(g2 + 4) + 0x38);
+        PadState *pad2 = (PadState *)g_controller_state;
+        if (*(int *)&pad2->pressed_unmasked & 0x10) {
+            struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
+            int t = *(int *)(*(char **)&g2->current + 0x38);
             if (t != 0) {
-                *(int *)(g2 + 8) = t;
+                *(int *)&g2->next = t;
                 return 0;
             }
-            if (*(int *)(g2 + 0x124) == 0) {
+            if (g2->close_locked == 0) {
                 return -1;
             }
         }
     }
     {
-        char *pad3 = g_controller_state;
-        int old = *(int *)(arg0 + 0x38);
-        if ((*(int *)(pad3 + 0x1C4) & 0x1000) && old != 0) {
-            *(int *)(arg0 + 0x38) = old - 1;
+        PadState *pad3 = (PadState *)g_controller_state;
+        int old = arg0->data.options.selection;
+        if ((*(int *)&pad3->pressed_unmasked & 0x1000) && old != 0) {
+            arg0->data.options.selection = old - 1;
         }
         {
-            char *pad4 = g_controller_state;
-            if (*(int *)(pad4 + 0x1C4) & 0x4000) {
-                int c = *(int *)(arg0 + 0x38);
-                if ((*(Row14 **)(arg0 + 0x34))[c + 1].w0 != 0) {
-                    *(int *)(arg0 + 0x38) = c + 1;
+            PadState *pad4 = (PadState *)g_controller_state;
+            if (*(int *)&pad4->pressed_unmasked & 0x4000) {
+                int c = arg0->data.options.selection;
+                if ((*(Row14 **)&arg0->data.options.list)[c + 1].w0 != 0) {
+                    arg0->data.options.selection = c + 1;
                 }
             }
         }
         {
-            char *pad5 = g_controller_state;
-            if (*(int *)(pad5 + 0x1C4) & 0x40) {
-                Moby_PlaySound(0, 0x11, *(int *)(arg0 + 0x14));
-                if ((*(Row14 **)(arg0 + 0x34))[*(int *)(arg0 + 0x38)].flags & 1) {
+            PadState *pad5 = (PadState *)g_controller_state;
+            if (*(int *)&pad5->pressed_unmasked & 0x40) {
+                Moby_PlaySound(0, 0x11, arg0->moby);
+                if ((*(Row14 **)&arg0->data.options.list)[arg0->data.options.selection].flags & 1) {
                     if (*(unsigned char *)&requested_video_mode_i) {
-                        char *g3 = menu_system;
-                        mode_freeze_init(6, *(void **)(g3 + 4), 0);
+                        struct MenuSystem *g3 = (struct MenuSystem *)menu_system;
+                        mode_freeze_init(6, *(void **)&g3->current, 0);
                     } else {
                         FadeToBlack(4);
-                        *(int *)(arg0 + 0x3C) = scale_game_frame_count(0x10);
+                        arg0->data.options.fade_timer = scale_game_frame_count(0x10);
                         *(unsigned char *)&requested_video_mode_i = !*(unsigned char *)&requested_video_mode_i;
                     }
                 } else {
-                    unsigned char *buf = (*(Row14 **)(arg0 + 0x34))[*(int *)(arg0 + 0x38)].buf;
+                    unsigned char *buf = (*(Row14 **)&arg0->data.options.list)[arg0->data.options.selection].buf;
                     if (buf != 0) {
                         buf[0] = !buf[0];
                     }
                 }
             }
         }
-        if (*(int *)(arg0 + 0x38) != old) {
-            Moby_PlaySound(1, 0x11, *(int *)(arg0 + 0x14));
+        if (arg0->data.options.selection != old) {
+            Moby_PlaySound(1, 0x11, arg0->moby);
         }
     }
     return 0;
@@ -6587,57 +6587,57 @@ typedef struct {
    no-notify path, where the compare already left it in $v0), and the
    count walks an `int *e = rec->e` set before its first test, which puts
    `rec + 8` in the test's delay slot as retail does. */
-int update_menu_choice_list(char *arg0) {
-    char *g = menu_system;
+int update_menu_choice_list(struct MenuScreen *arg0) {
+    struct MenuSystem *g = (struct MenuSystem *)menu_system;
 
-    if (*(char **)(*(char **)(g + 4) + 0x40) != arg0) {
+    if (*(char **)(*(char **)&g->current + 0x40) != (char *)arg0) {
         return 0;
     }
     {
-        char *pad = g_controller_state;
-        if (*(int *)(pad + 0x1C4) & 0xD00) {
-            if (*(int *)(g + 0x124) == 0) {
+        PadState *pad = (PadState *)g_controller_state;
+        if (*(int *)&pad->pressed_unmasked & 0xD00) {
+            if (g->close_locked == 0) {
                 return 1;
             }
         }
     }
     {
-        char *pad2 = g_controller_state;
-        if (*(int *)(pad2 + 0x1C4) & 0x10) {
-            char *g2 = menu_system;
-            int t = *(int *)(*(char **)(g2 + 4) + 0x38);
+        PadState *pad2 = (PadState *)g_controller_state;
+        if (*(int *)&pad2->pressed_unmasked & 0x10) {
+            struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
+            int t = *(int *)(*(char **)&g2->current + 0x38);
             if (t != 0) {
-                *(int *)(g2 + 8) = t;
+                *(int *)&g2->next = t;
                 return 0;
             }
-            if (*(int *)(g2 + 0x124) == 0) {
+            if (g2->close_locked == 0) {
                 return -1;
             }
         }
     }
     {
-        char *pad3 = g_controller_state;
-        int old = *(int *)(arg0 + 0x38);
-        if ((*(int *)(pad3 + 0x1C4) & 0x1000) && old != 0) {
-            *(int *)(arg0 + 0x38) = old - 1;
+        PadState *pad3 = (PadState *)g_controller_state;
+        int old = arg0->data.choices.selection;
+        if ((*(int *)&pad3->pressed_unmasked & 0x1000) && old != 0) {
+            arg0->data.choices.selection = old - 1;
         }
         {
-            char *pad4 = g_controller_state;
-            if (*(int *)(pad4 + 0x1C4) & 0x4000) {
-                int c = *(int *)(arg0 + 0x38);
-                if ((*(Row18 **)(arg0 + 0x34))[c + 1].w0 != 0) {
-                    *(int *)(arg0 + 0x38) = c + 1;
+            PadState *pad4 = (PadState *)g_controller_state;
+            if (*(int *)&pad4->pressed_unmasked & 0x4000) {
+                int c = arg0->data.choices.selection;
+                if ((*(Row18 **)&arg0->data.choices.list)[c + 1].w0 != 0) {
+                    arg0->data.choices.selection = c + 1;
                 }
             }
         }
-        if (old != *(int *)(arg0 + 0x38)) {
-            Moby_PlaySound(1, 0x11, *(int *)(arg0 + 0x14));
+        if (old != arg0->data.choices.selection) {
+            Moby_PlaySound(1, 0x11, arg0->moby);
         }
     }
     {
-        Row18 *rec = &(*(Row18 **)(arg0 + 0x34))[*(int *)(arg0 + 0x38)];
+        Row18 *rec = &(*(Row18 **)&arg0->data.choices.list)[arg0->data.choices.selection];
         int n = 0;
-        char *pad5;
+        PadState *pad5;
         int *e;
 
         e = rec->e;
@@ -6646,12 +6646,12 @@ int update_menu_choice_list(char *arg0) {
                 n++;
             } while (e[n] != 0 && n < 4);
         }
-        pad5 = g_controller_state;
-        if (*(int *)(pad5 + 0x1C4) & 0x40) {
+        pad5 = (PadState *)g_controller_state;
+        if (*(int *)&pad5->pressed_unmasked & 0x40) {
             unsigned char *buf = rec->buf;
             if (buf != 0) {
                 buf[0] = (buf[0] + 1) % n;
-                Moby_PlaySound(0, 0x11, *(int *)(arg0 + 0x14));
+                Moby_PlaySound(0, 0x11, arg0->moby);
             }
         }
     }
@@ -6893,11 +6893,11 @@ int handle_menu_action_buttons(char *arg0) {
     int v = pad0_pressed_unmasked;
 
     if (v & 0x10) {
-        char *g = menu_system;
-        int t = *(int *)(*(char **)(g + 4) + 0x38);
+        struct MenuSystem *g = (struct MenuSystem *)menu_system;
+        int t = *(int *)(*(char **)&g->current + 0x38);
         if (t != 0) {
-            *(int *)(g + 8) = t;
-        } else if (*(int *)(g + 0x124) == 0) {
+            *(int *)&g->next = t;
+        } else if (g->close_locked == 0) {
             return -1;
         }
     } else if (v & 0x800) {
@@ -6907,11 +6907,11 @@ int handle_menu_action_buttons(char *arg0) {
         Moby_PlaySound(0, 0x11, *(int *)(arg0 + 0x14));
         return 1;
     } else if (v & 0x20) {
-        char *g = menu_system;
-        *(int *)(g + 0xE4) = selected_level_index;
-        *(int *)(g + 0xF0) = *(int *)(g + 4);
-        *(int *)(g + 0xC) = 3;
-        *(int *)(g + 0xF4) = 0xF;
+        struct MenuSystem *g = (struct MenuSystem *)menu_system;
+        g->unkE4 = selected_level_index;
+        *(int *)&g->unkF0 = *(int *)&g->current;
+        g->close_request = 3;
+        g->unkF4 = 0xF;
         Moby_PlaySound(0, 0x11, *(int *)(arg0 + 0x14));
     }
     return 0;
@@ -6921,17 +6921,17 @@ extern int acquire_menu_stream_buffer(int);
 extern char *current_menu_page NOT_SDA;
 
 /* Enter hook for the prompt screen: clears the page's +0x84 word and takes a stream buffer. */
-int enter_menu_prompt(void *arg0) {
+int enter_menu_prompt(struct MenuScreen *arg0) {
     *(int *)(current_menu_page + 0x84) = 0;
-    *(int *)((char *)arg0 + 0x54) = acquire_menu_stream_buffer(0);
+    arg0->data.prompt.buffer = acquire_menu_stream_buffer(0);
     return 0;
 }
 
 extern int release_menu_stream_buffer(int);
 
 /* Leave hook for the prompt screen: frees its stream buffer. */
-int leave_menu_prompt(void *arg0) {
-    *(int *)((char *)arg0 + 0x54) = release_menu_stream_buffer(*(int *)((char *)arg0 + 0x54));
+int leave_menu_prompt(struct MenuScreen *arg0) {
+    arg0->data.prompt.buffer = release_menu_stream_buffer(arg0->data.prompt.buffer);
     return 0;
 }
 
@@ -6963,22 +6963,22 @@ extern char menu_system[] NOT_SDA;
    confirms (page +0x84 = 1) and 0x10 cancels, both going back. */
 int Menu_ConfirmPromptInput(void) {
     if (mode_freeze_state_m != 0x10 && mode_freeze_state_m != 1) {
-        char *g = menu_system;
-        int val = *(int *)(*(char **)(g + 4) + 0x38);
-        *(int *)(g + 8) = val;
+        struct MenuSystem *g = (struct MenuSystem *)menu_system;
+        int val = *(int *)(*(char **)&g->current + 0x38);
+        *(int *)&g->next = val;
         return 0;
     }
     {
         int v = pad0_pressed;
         if (v & 0x20) {
-            char *g = menu_system;
-            *(int *)(g + 0xD4) = 0;
-            *(int *)(g + 8) = *(int *)(*(char **)(g + 4) + 0x38);
-            *(int *)(*(char **)(g + 4) + 0x84) = 1;
+            struct MenuSystem *g = (struct MenuSystem *)menu_system;
+            g->unkD4 = 0;
+            *(int *)&g->next = *(int *)(*(char **)&g->current + 0x38);
+            *(int *)(*(char **)&g->current + 0x84) = 1;
         } else if (v & 0x10) {
-            char *g = menu_system;
-            *(int *)(g + 8) = *(int *)(*(char **)(g + 4) + 0x38);
-            *(int *)(*(char **)(g + 4) + 0x84) = 0;
+            struct MenuSystem *g = (struct MenuSystem *)menu_system;
+            *(int *)&g->next = *(int *)(*(char **)&g->current + 0x38);
+            *(int *)(*(char **)&g->current + 0x84) = 0;
         }
     }
     return 0;
@@ -7001,7 +7001,7 @@ extern void font_print_window_small(TextBox *, long, char *, int);
    is an aggregate initializer: this compiler clears it with a memset
    libcall, fills a temporary and copies that into the local with
    ldl/ldr/sdl/sdr pairs, exactly retail's sequence. */
-int draw_prompt_box(char *arg0) {
+int draw_prompt_box(struct MenuScreen *arg0) {
     char *text;
     int v;
 
@@ -7021,11 +7021,11 @@ int draw_prompt_box(char *arg0) {
         break;
     }
     {
-        TextBox c = { { 1, *(int *)(arg0 + 0x24) + 1, 1, *(int *)(arg0 + 0x20) + 1,
-                        *(int *)(arg0 + 0x20) >> 1, 5, 0, 0, 0x10, 5 } };
+        TextBox c = { { 1, arg0->height + 1, 1, arg0->width + 1,
+                        arg0->width >> 1, 5, 0, 0, 0x10, 5 } };
 
         font_print_window_small(&c, 0x80000000L, text, -1);
-        c.s[5] = (*(int *)(arg0 + 0x24) - c.s[7]) >> 1;
+        c.s[5] = (arg0->height - c.s[7]) >> 1;
         c.s[9] ^= 4;
         font_print_window_small(&c, 0x80000000L, text, -1);
         c.s[0]--;
@@ -7053,41 +7053,41 @@ extern void Moby_PlaySound(int, int, int);
 
 /* Pause sub-menu with a 30-entry wrapping cursor at arg0+0x40, in
    func_0021F7D0's shape. */
-int handle_cyclic_menu_selection_input(char *arg0) {
-    char *pad = g_controller_state;
+int handle_cyclic_menu_selection_input(struct MenuScreen *arg0) {
+    PadState *pad = (PadState *)g_controller_state;
     int w, old;
 
-    if (*(int *)(pad + 0x1C4) & 0xD00) {
+    if (*(int *)&pad->pressed_unmasked & 0xD00) {
         if (*(int *)(menu_system + 0x124) == 0) {
             return 1;
         }
     }
     {
-        char *pad2 = g_controller_state;
-        if (*(int *)(pad2 + 0x1C4) & 0x10) {
-            char *g = menu_system;
-            int t = *(int *)(*(char **)(g + 4) + 0x38);
+        PadState *pad2 = (PadState *)g_controller_state;
+        if (*(int *)&pad2->pressed_unmasked & 0x10) {
+            struct MenuSystem *g = (struct MenuSystem *)menu_system;
+            int t = *(int *)(*(char **)&g->current + 0x38);
             if (t != 0) {
-                *(int *)(g + 8) = t;
+                *(int *)&g->next = t;
                 return 0;
             }
-            if (*(int *)(g + 0x124) == 0) {
+            if (g->close_locked == 0) {
                 return -1;
             }
         }
     }
     {
-        char *pad3 = g_controller_state;
-        w = *(int *)(pad3 + 0x1A4);
+        PadState *pad3 = (PadState *)g_controller_state;
+        w = pad3->pressed;
     }
-    old = *(int *)(arg0 + 0x40);
+    old = arg0->data.list.selected;
     if (w & 0x40) {
-        *(int *)(arg0 + 0x40) = (old + 1) % 30;
+        arg0->data.list.selected = (old + 1) % 30;
     } else if (w & 0x20) {
-        *(int *)(arg0 + 0x40) = (old + 29) % 30;
+        arg0->data.list.selected = (old + 29) % 30;
     }
-    if (*(int *)(arg0 + 0x40) != old) {
-        Moby_PlaySound(1, 0x11, *(int *)(arg0 + 0x14));
+    if (arg0->data.list.selected != old) {
+        Moby_PlaySound(1, 0x11, arg0->moby);
     }
     return 0;
 }
@@ -7095,39 +7095,39 @@ int handle_cyclic_menu_selection_input(char *arg0) {
 extern void Moby_PlaySound(int, int, int);
 
 /* func_00222DB0's twin with a 12-entry cursor at arg0+0x54. */
-int update_menu_cycle_selection(char *arg0) {
-    char *pad = g_controller_state;
+int update_menu_cycle_selection(struct MenuScreen *arg0) {
+    PadState *pad = (PadState *)g_controller_state;
     int w;
 
-    if (*(int *)(pad + 0x1C4) & 0xD00) {
+    if (*(int *)&pad->pressed_unmasked & 0xD00) {
         if (*(int *)(menu_system + 0x124) == 0) {
             return 1;
         }
     }
     {
-        char *pad2 = g_controller_state;
-        if (*(int *)(pad2 + 0x1C4) & 0x10) {
-            char *g = menu_system;
-            int t = *(int *)(*(char **)(g + 4) + 0x38);
+        PadState *pad2 = (PadState *)g_controller_state;
+        if (*(int *)&pad2->pressed_unmasked & 0x10) {
+            struct MenuSystem *g = (struct MenuSystem *)menu_system;
+            int t = *(int *)(*(char **)&g->current + 0x38);
             if (t != 0) {
-                *(int *)(g + 8) = t;
+                *(int *)&g->next = t;
                 return 0;
             }
-            if (*(int *)(g + 0x124) == 0) {
+            if (g->close_locked == 0) {
                 return -1;
             }
         }
     }
     {
-        char *pad3 = g_controller_state;
-        w = *(int *)(pad3 + 0x1A4);
+        PadState *pad3 = (PadState *)g_controller_state;
+        w = pad3->pressed;
     }
     if (w & 0x2040) {
-        *(int *)(arg0 + 0x54) = (*(int *)(arg0 + 0x54) + 1) % 12;
-        Moby_PlaySound(1, 0x11, *(int *)(arg0 + 0x14));
+        arg0->data.cycle.selection = (arg0->data.cycle.selection + 1) % 12;
+        Moby_PlaySound(1, 0x11, arg0->moby);
     } else if (w & 0x8020) {
-        *(int *)(arg0 + 0x54) = (*(int *)(arg0 + 0x54) + 11) % 12;
-        Moby_PlaySound(1, 0x11, *(int *)(arg0 + 0x14));
+        arg0->data.cycle.selection = (arg0->data.cycle.selection + 11) % 12;
+        Moby_PlaySound(1, 0x11, arg0->moby);
     }
     return 0;
 }
@@ -7244,8 +7244,8 @@ int process_global_state_flags(void) {
         copy_memory_aligned(tbl0, gCheats, 0xC);
         copy_memory_aligned(tbl1, selector_available, 0xC);
         {
-            char *g = menu_system;
-            memcard_RestoreGame(*(int *)(g + 0xE0));
+            struct MenuSystem *g = (struct MenuSystem *)menu_system;
+            memcard_RestoreGame(g->unkE0);
         }
         {
             unsigned char *m2 = gSkillPoints;
@@ -7291,27 +7291,27 @@ extern char timed_sequence_page5[];
    written out in each case: cross-jumping merges it, leaving each
    case's own argument load in its branch's delay slot. */
 int update_timed_menu_sequence(char *arg0) {
-    char *pad = g_controller_state;
-    char *g = menu_system;
-    int fast = (*(long *)(pad + 0x1A0) & 0xF) == 0xF;
+    PadState *pad = (PadState *)g_controller_state;
+    struct MenuSystem *g = (struct MenuSystem *)menu_system;
+    int fast = (*(long *)&pad->held & 0xF) == 0xF;
     int x;
 
-    if (*(int *)(g + 0xDC) == 0 || (fast && (*(int *)(pad + 0x1A0) & 0x10))) {
-        if (*(int *)(pad + 0x1C4) & 0xD00) {
-            if (*(int *)(g + 0x124) == 0) {
+    if (g->unkDC == 0 || (fast && (pad->held & 0x10))) {
+        if (*(int *)&pad->pressed_unmasked & 0xD00) {
+            if (g->close_locked == 0) {
                 return 1;
             }
         }
         {
-            char *pad2 = g_controller_state;
-            if (*(int *)(pad2 + 0x1C4) & 0x10) {
-                char *g2 = menu_system;
-                int t = *(int *)(*(char **)(g2 + 4) + 0x38);
+            PadState *pad2 = (PadState *)g_controller_state;
+            if (*(int *)&pad2->pressed_unmasked & 0x10) {
+                struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
+                int t = *(int *)(*(char **)&g2->current + 0x38);
                 if (t != 0) {
-                    *(int *)(g2 + 8) = t;
+                    *(int *)&g2->next = t;
                     return 0;
                 }
-                if (*(int *)(g2 + 0x124) == 0) {
+                if (g2->close_locked == 0) {
                     return -1;
                 }
             }
@@ -7444,8 +7444,8 @@ int update_timed_menu_sequence(char *arg0) {
             return 0;
         }
         {
-            char *g3 = menu_system;
-            if (*(int *)(g3 + 0xDC) != 0) {
+            struct MenuSystem *g3 = (struct MenuSystem *)menu_system;
+            if (g3->unkDC != 0) {
                 return 1;
             }
         }
@@ -7661,10 +7661,10 @@ typedef struct { char pad[0x20]; PageRec rec[1]; } PageTbl;
 int draw_menu_selection_text(char *arg0) {
     char *g = menu_system;
     char *b = memory_card_state;
-    int row = ((PageTbl *)b)->rec[*(int *)(*(char **)(*(char **)(g + 4) + 0x40) + 0x40)].row;
+    int row = ((PageTbl *)b)->rec[*(int *)(*(char **)(*(char **)&((struct MenuSystem *)g)->current + 0x40) + 0x40)].row;
 
     SetupGifPaging(0);
-    if (*(int *)(b + 0xDC) < 3 && *(int *)(b + 0xE4) < 0
+    if (((struct MemoryCardState_1A1A0 *)b)->state < 3 && ((struct MemoryCardState_1A1A0 *)b)->pending_state < 0
         && *(int *)(g + 0x154) >= 0xB && *(int *)(b + 8) == 2) {
         if (row == -1) {
             FontPrintCenter(*(int *)(arg0 + 0x20) / 2, *(int *)(arg0 + 0x24) / 2 - 8,
@@ -7718,59 +7718,59 @@ extern void prepare_save_game(int, int);
    handling, with slot selection on 0x1000/0x4000 and 0x40 either
    loading the slot (via D_001D28F8) or re-arming. Each branch reaches
    the globals through its own block-scoped pointers. */
-int saving_data_menu(char *arg0) {
-    char *g = menu_system;
+int saving_data_menu(struct MenuScreen *arg0) {
+    struct MenuSystem *g = (struct MenuSystem *)menu_system;
     int s;
     int old;
 
-    if (*(char **)(*(char **)(g + 4) + 0x40) != arg0) {
+    if (*(char **)(*(char **)&g->current + 0x40) != (char *)arg0) {
         return 0;
     }
-    s = *(int *)(arg0 + 0x4C);
+    s = arg0->data.save.step;
     if (s == 0) {
-        char *m = *(char **)(g + 0xD0);
+        char *m = *(char **)&g->previous;
         if (m == save_overwrite_confirm_page) {
             if (*(int *)(m + 0x84) != 0) {
-                *(int *)(arg0 + 0x4C) = 1;
+                arg0->data.save.step = 1;
             }
         }
-        s = *(int *)(arg0 + 0x4C);
+        s = arg0->data.save.step;
     }
     if (s == 1) {
-        char *g2;
+        struct MenuSystem *g2;
 
-        prepare_save_game(*(int *)(arg0 + 0x48), *(int *)(arg0 + 0x40));
-        g2 = menu_system;
-        *(int *)(g2 + 0x12C) = 0x4FB5;
-        *(int *)(g2 + 0x128) = 1;
+        prepare_save_game(arg0->data.save.save_data, arg0->data.save.slot);
+        g2 = (struct MenuSystem *)menu_system;
+        g2->card_op_text = 0x4FB5;
+        g2->card_op_pending = 1;
         memory_card_error_latch = 0;
     }
-    *(int *)(arg0 + 0x4C) = 2;
-    old = *(int *)(arg0 + 0x40);
+    arg0->data.save.step = 2;
+    old = arg0->data.save.slot;
     {
         char *g3 = menu_system;
 
-        if (*(int *)(g3 + 0x128) != 0) {
+        if (((struct MenuSystem *)g3)->card_op_pending != 0) {
             char *d = memory_card_state;
             char *e;
 
-            if (*(int *)(d + 0xDC) >= 3) {
+            if (((struct MemoryCardState_1A1A0 *)d)->state >= 3) {
                 return 0;
             }
-            if (*(int *)(d + 0xE4) >= 0) {
+            if (((struct MemoryCardState_1A1A0 *)d)->pending_state >= 0) {
                 return 0;
             }
             if (*(int *)(g3 + 0x154) < 11) {
                 return 0;
             }
-            *(int *)(g3 + 0x128) = 0;
+            ((struct MenuSystem *)g3)->card_op_pending = 0;
             if (*(int *)(d + 0xEC) != 0 || *(int *)(d + 0x1C) != 0 || memory_card_error_latch != 0) {
                 char *d2 = memory_card_state;
-                char *g4 = menu_system;
+                struct MenuSystem *g4 = (struct MenuSystem *)menu_system;
 
                 mode_freeze_flags_m |= 0x80;
                 *(int *)(d2 + 0xFC) = 0;
-                mode_freeze_init(3, *(void **)(g4 + 4), 0);
+                mode_freeze_init(3, *(void **)&g4->current, 0);
                 return 0;
             }
             e = d + 0x30;
@@ -7783,31 +7783,31 @@ int saving_data_menu(char *arg0) {
         }
     }
     {
-        char *pad = g_controller_state;
-        if (*(int *)(pad + 0x1C4) & 0xD00) {
-            char *g2 = menu_system;
-            if (*(int *)(g2 + 0x124) == 0) {
+        PadState *pad = (PadState *)g_controller_state;
+        if (*(int *)&pad->pressed_unmasked & 0xD00) {
+            struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
+            if (g2->close_locked == 0) {
                 return 1;
             }
         }
     }
     {
-        char *pad = g_controller_state;
-        if (*(int *)(pad + 0x1C4) & 0x10) {
-            char *g2 = menu_system;
-            int t = *(int *)(*(char **)(g2 + 4) + 0x38);
+        PadState *pad = (PadState *)g_controller_state;
+        if (*(int *)&pad->pressed_unmasked & 0x10) {
+            struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
+            int t = *(int *)(*(char **)&g2->current + 0x38);
             if (t != 0) {
-                *(int *)(g2 + 8) = t;
+                *(int *)&g2->next = t;
                 return 0;
             }
-            if (*(int *)(g2 + 0x124) == 0) {
+            if (g2->close_locked == 0) {
                 return -1;
             }
         }
     }
     if (mode_freeze_state_m != 0x10 && mode_freeze_state_m != 1) {
-        char *g2 = menu_system;
-        *(int *)(g2 + 8) = *(int *)(*(char **)(g2 + 4) + 0x38);
+        struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
+        *(int *)&g2->next = *(int *)(*(char **)&g2->current + 0x38);
         return 0;
     }
     {
@@ -7815,10 +7815,10 @@ int saving_data_menu(char *arg0) {
         int p;
         int x;
 
-        if (*(int *)(d + 0xDC) >= 3) {
+        if (((struct MemoryCardState_1A1A0 *)d)->state >= 3) {
             return 0;
         }
-        if (*(int *)(d + 0xE4) >= 0) {
+        if (((struct MemoryCardState_1A1A0 *)d)->pending_state >= 0) {
             return 0;
         }
         {
@@ -7830,40 +7830,40 @@ int saving_data_menu(char *arg0) {
         if (*(int *)(d + 8) != 2) {
             return 0;
         }
-        if (*(int *)(arg0 + 0x30) & 1) {
-            char *pad = g_controller_state;
-            p = *(int *)(pad + 0x1B4);
+        if (arg0->data.save.flags & 1) {
+            PadState *pad = (PadState *)g_controller_state;
+            p = pad->raw_pressed;
         } else {
-            char *pad = g_controller_state;
-            p = *(int *)(pad + 0x1A4);
+            PadState *pad = (PadState *)g_controller_state;
+            p = pad->pressed;
         }
         x = memcard_selected_slot;
-        *(int *)(arg0 + 0x40) = x;
+        arg0->data.save.slot = x;
         if ((p & 0x1000) && x != 0) {
-            *(int *)(arg0 + 0x40) = x - 1;
+            arg0->data.save.slot = x - 1;
         }
-        if ((p & 0x4000) && *(int *)(arg0 + 0x40) < 4) {
-            *(int *)(arg0 + 0x40) = *(int *)(arg0 + 0x40) + 1;
+        if ((p & 0x4000) && arg0->data.save.slot < 4) {
+            arg0->data.save.slot = arg0->data.save.slot + 1;
         }
-        memcard_selected_slot = *(int *)(arg0 + 0x40);
+        memcard_selected_slot = arg0->data.save.slot;
         if (p & 0x40) {
             char *d2 = memory_card_state;
 
             if (*(int *)(d2 + 8) == 2) {
                 if (*(int *)(d2 + 0x20 + memcard_selected_slot * 0x1C) != -1) {
-                    char *g2 = menu_system;
+                    struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
 
-                    *(int *)(g2 + 0xD4) = 0;
-                    *(char **)(g2 + 8) = save_overwrite_confirm_page;
-                    save_confirm_slot = *(int *)(arg0 + 0x40);
+                    g2->unkD4 = 0;
+                    *(char **)&g2->next = save_overwrite_confirm_page;
+                    save_confirm_slot = arg0->data.save.slot;
                 } else {
-                    *(int *)(arg0 + 0x4C) = 1;
+                    arg0->data.save.step = 1;
                 }
             }
         }
     }
-    if (*(int *)(arg0 + 0x40) != old) {
-        Moby_PlaySound(1, 0x11, *(int *)(arg0 + 0x14));
+    if (arg0->data.save.slot != old) {
+        Moby_PlaySound(1, 0x11, arg0->moby);
     }
     return 0;
 }
@@ -7872,30 +7872,30 @@ extern void initialize_global_state_entry(int arg0);
 extern short screen_globals_base_r[] __asm__("D_0013E15A");
 
 /* Load-slot menu handler (func_00224040's sibling): with a load armed it either aborts or starts the sound fade and loads; otherwise pad handling with slot selection. */
-int loading_data_menu(char *arg0) {
+int loading_data_menu(struct MenuScreen *arg0) {
     char *g = menu_system;
-    int old = *(int *)(arg0 + 0x40);
+    int old = arg0->data.save.slot;
 
-    if (*(int *)(g + 0x128) != 0) {
+    if (((struct MenuSystem *)g)->card_op_pending != 0) {
         char *d = memory_card_state;
 
-        if (*(int *)(d + 0xDC) >= 3) {
+        if (((struct MemoryCardState_1A1A0 *)d)->state >= 3) {
             return 0;
         }
-        if (*(int *)(d + 0xE4) >= 0) {
+        if (((struct MemoryCardState_1A1A0 *)d)->pending_state >= 0) {
             return 0;
         }
         if (*(int *)(g + 0x154) < 11) {
             return 0;
         }
-        *(int *)(g + 0x128) = 0;
+        ((struct MenuSystem *)g)->card_op_pending = 0;
         if (*(int *)(d + 0xEC) != 0 || *(int *)(d + 0x1C) != 0 || memory_card_error_latch != 0) {
             char *d2 = memory_card_state;
-            char *g4 = menu_system;
+            struct MenuSystem *g4 = (struct MenuSystem *)menu_system;
 
             mode_freeze_flags_m |= 0x100;
             *(int *)(d2 + 0xFC) = 0;
-            mode_freeze_init(3, *(void **)(g4 + 4), 0);
+            mode_freeze_init(3, *(void **)&g4->current, 0);
             return 0;
         }
         {
@@ -7916,30 +7916,30 @@ int loading_data_menu(char *arg0) {
         }
     }
     {
-        char *pad = g_controller_state;
-        if (*(int *)(pad + 0x1C4) & 0xD00) {
-            if (*(int *)(g + 0x124) == 0) {
+        PadState *pad = (PadState *)g_controller_state;
+        if (*(int *)&pad->pressed_unmasked & 0xD00) {
+            if (((struct MenuSystem *)g)->close_locked == 0) {
                 return 1;
             }
         }
     }
     {
-        char *pad = g_controller_state;
-        if (*(int *)(pad + 0x1C4) & 0x10) {
-            char *g2 = menu_system;
-            int t = *(int *)(*(char **)(g2 + 4) + 0x38);
+        PadState *pad = (PadState *)g_controller_state;
+        if (*(int *)&pad->pressed_unmasked & 0x10) {
+            struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
+            int t = *(int *)(*(char **)&g2->current + 0x38);
             if (t != 0) {
-                *(int *)(g2 + 8) = t;
+                *(int *)&g2->next = t;
                 return 0;
             }
-            if (*(int *)(g2 + 0x124) == 0) {
+            if (g2->close_locked == 0) {
                 return -1;
             }
         }
     }
     if (mode_freeze_state_m != 0x10 && mode_freeze_state_m != 1) {
-        char *g2 = menu_system;
-        *(int *)(g2 + 8) = *(int *)(*(char **)(g2 + 4) + 0x38);
+        struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
+        *(int *)&g2->next = *(int *)(*(char **)&g2->current + 0x38);
         return 0;
     }
     {
@@ -7947,10 +7947,10 @@ int loading_data_menu(char *arg0) {
         int p;
         int x;
 
-        if (*(int *)(d + 0xDC) >= 3) {
+        if (((struct MemoryCardState_1A1A0 *)d)->state >= 3) {
             return 0;
         }
-        if (*(int *)(d + 0xE4) >= 0) {
+        if (((struct MemoryCardState_1A1A0 *)d)->pending_state >= 0) {
             return 0;
         }
         {
@@ -7962,46 +7962,46 @@ int loading_data_menu(char *arg0) {
         if (*(int *)(d + 8) != 2) {
             return 0;
         }
-        if (*(int *)(arg0 + 0x30) & 1) {
-            char *pad = g_controller_state;
-            p = *(int *)(pad + 0x1B4);
+        if (arg0->data.save.flags & 1) {
+            PadState *pad = (PadState *)g_controller_state;
+            p = pad->raw_pressed;
         } else {
-            char *pad = g_controller_state;
-            p = *(int *)(pad + 0x1C4);
+            PadState *pad = (PadState *)g_controller_state;
+            p = *(int *)&pad->pressed_unmasked;
         }
         x = memcard_selected_slot;
-        *(int *)(arg0 + 0x40) = x;
+        arg0->data.save.slot = x;
         if ((p & 0x1000) && x != 0) {
-            *(int *)(arg0 + 0x40) = x - 1;
+            arg0->data.save.slot = x - 1;
         }
-        if ((p & 0x4000) && *(int *)(arg0 + 0x40) < 4) {
-            *(int *)(arg0 + 0x40) = *(int *)(arg0 + 0x40) + 1;
+        if ((p & 0x4000) && arg0->data.save.slot < 4) {
+            arg0->data.save.slot = arg0->data.save.slot + 1;
         }
-        memcard_selected_slot = *(int *)(arg0 + 0x40);
+        memcard_selected_slot = arg0->data.save.slot;
         if (p & 0x40) {
             char *d2 = memory_card_state;
 
             if (*(int *)(d2 + 8) == 2) {
                 if (*(int *)(d2 + 0x20 + memcard_selected_slot * 0x1C) >= 0) {
-                    char *g2;
+                    struct MenuSystem *g2;
 
-                    Moby_PlaySound(0, 0x11, *(int *)(arg0 + 0x14));
+                    Moby_PlaySound(0, 0x11, arg0->moby);
                     *(int *)(d2 + 0xC8) = 0;
-                    *(int *)(d2 + 0x14) = *(int *)(arg0 + 0x40);
-                    if (*(int *)(d2 + 0xE4) < 0) {
+                    *(int *)(d2 + 0x14) = arg0->data.save.slot;
+                    if (((struct MemoryCardState_1A1A0 *)d2)->pending_state < 0) {
                         *(int *)(d2 + 0xE8) = 0;
-                        *(int *)(d2 + 0xE4) = 0xD;
+                        ((struct MemoryCardState_1A1A0 *)d2)->pending_state = 0xD;
                     }
-                    g2 = menu_system;
-                    *(int *)(g2 + 0x128) = 1;
-                    *(int *)(g2 + 0x12C) = 0x4FB6;
+                    g2 = (struct MenuSystem *)menu_system;
+                    g2->card_op_pending = 1;
+                    g2->card_op_text = 0x4FB6;
                     memory_card_error_latch = 0;
                 }
             }
         }
     }
-    if (*(int *)(arg0 + 0x40) != old) {
-        Moby_PlaySound(1, 0x11, *(int *)(arg0 + 0x14));
+    if (arg0->data.save.slot != old) {
+        Moby_PlaySound(1, 0x11, arg0->moby);
     }
     return 0;
 }
@@ -9616,9 +9616,9 @@ extern int menu_stream_buffers[];
    regions: a0 = 0 gives one small (0x11800) buffer, otherwise three small and two
    large (0x4F000) ones. Unused slots are cleared. */
 void initialize_menu_stream_buffers(int a0) {
-    char *g = menu_system;
-    int v7 = *(int *)(g + 0x108);
-    int v8 = *(int *)(g + 0x10C);
+    struct MenuSystem *g = (struct MenuSystem *)menu_system;
+    int v7 = g->help_text_buffer;
+    int v8 = g->unk10C;
     int f2, t10;
     int i, end;
 
@@ -9695,17 +9695,17 @@ int acquire_menu_stream_buffer(int invert) {
    table at every use, not kept in a local. */
 int release_menu_stream_buffer(int key) {
     int i;
-    char *g;
+    struct MenuSystem *g;
 
     for (i = 0; i < 5; i++) {
         if (menu_stream_buffers_t[i].key == key) {
             if ((menu_stream_buffers_t[i].flags & 2) != 0) {
                 if ((menu_stream_buffers_t[i].flags & 4) != 0) {
-                    g = menu_system;
+                    g = (struct MenuSystem *)menu_system;
                     menu_stream_buffers_t[i].flags ^= 4;
-                    if (*(unsigned char *)(g + 0xCB) != 0) {
+                    if (g->pending_buffer != 0) {
                         request_audio_stream_break();
-                        g[0xCB] = 0;
+                        g->pending_buffer = 0;
                     }
                 }
                 menu_stream_buffers_t[i].flags &= ~2;
@@ -10020,10 +10020,10 @@ extern int current_preview_animation_request_field_c;
 /* Breaks a pending preview audio stream and clears the preview animation queue. */
 int clear_preview_animation_queue(void) {
     if (cd_read_state[4] != 0) {
-        char *g = menu_system;
-        if (*(unsigned char *)(g + 0xCB) != 0) {
+        struct MenuSystem *g = (struct MenuSystem *)menu_system;
+        if (g->pending_buffer != 0) {
             request_audio_stream_break();
-            g[0xCB] = 0;
+            g->pending_buffer = 0;
         }
     }
     current_preview_animation_request_field_c = 0;
@@ -10206,9 +10206,9 @@ void prepare_save_game(int arg0, int arg1) {
     *(int *)(b + 0xF4) = arg0;
     *(int *)(b + 0x14) = arg1;
     *(int *)(b + 0xC8) = 0;
-    if (*(int *)(b + 0xE4) < 0) {
+    if (((struct MemoryCardState_1A1A0 *)b)->pending_state < 0) {
         *(int *)(b + 0xE8) = 0;
-        *(int *)(b + 0xE4) = 0x13;
+        ((struct MemoryCardState_1A1A0 *)b)->pending_state = 0x13;
     }
 }
 
@@ -10232,9 +10232,9 @@ void start_memory_card_save(int arg0, int arg1) {
         *(int *)(b + 0x14) = arg1;
         *(int *)(b + arg1 * 0x1C + 0x20) = 0;
         *(int *)(b + 0xF4) = arg0;
-        if (*(int *)(b + 0xE4) < 0) {
+        if (((struct MemoryCardState_1A1A0 *)b)->pending_state < 0) {
             *(int *)(b + 0xE8) = 0;
-            *(int *)(b + 0xE4) = 0x13;
+            ((struct MemoryCardState_1A1A0 *)b)->pending_state = 0x13;
         }
     }
 }

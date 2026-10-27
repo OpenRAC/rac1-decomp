@@ -372,7 +372,7 @@ extern void FastVecScale(void *, void *, float);
 
 /* Spawn point for the moby: its slot's stored position and rotation, or, with no slot, a point beside it on the side facing the hero.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002a4038.c, FUN_L02_002d8910. */
-void compute_tresspasser_pad_camera_transform(float *pos, float *rot, char *moby) {
+void compute_tresspasser_pad_camera_transform(float *pos, float *rot, Moby *moby) {
     V2d8910 v;
     float left;
     float right;
@@ -382,15 +382,15 @@ void compute_tresspasser_pad_camera_transform(float *pos, float *rot, char *moby
     int idx;
     char *base;
 
-    idx = *(int *)(*(char **)(moby + 0x78) + 0xE8);
+    idx = *(int *)(*(char **)&moby->pvars + 0xE8);
     if (idx == -1) {
-        left = FastAddRots(*(float *)(moby + 0x48), 1.57079637f);
-        right = FastAddRots(*(float *)(moby + 0x48), -1.57079637f);
-        to = fast_atan2(aridia_player_camera_r.x - *(float *)(moby + 0x10),
-                          aridia_player_camera_r.y - *(float *)(moby + 0x14));
+        left = FastAddRots(moby->rot.z, 1.57079637f);
+        right = FastAddRots(moby->rot.z, -1.57079637f);
+        to = fast_atan2(aridia_player_camera_r.x - moby->pos.x,
+                          aridia_player_camera_r.y - moby->pos.y);
         dl = FastDiffRots(to, left);
         pick = dl < FastDiffRots(to, right) ? left : right;
-        FastVecAdd(v, gHeroPos, moby + 0x10);
+        FastVecAdd(v, gHeroPos, &moby->pos);
         FastVecScale(v, v, 0.5f);
         qcopy(pos, v);
         pos[0] += FastCos(pick) * 2.0f;
@@ -1432,12 +1432,12 @@ extern unsigned char gCheats[] MACRO_ADDR;
 extern Level02MobyList talk_camera;
 extern unsigned char big_head_cheat_manipulator[];
 /* Re-arms the matching entry of the moby list when the level mode is 2. */
-void attach_big_head_cheat_manipulator_to_matching_moby(char *moby) {
+void attach_big_head_cheat_manipulator_to_matching_moby(Moby *moby) {
     int i;
     if (aridia_cinematic_mode == 2 && gCheats[0] != 0) {
         for (i = 0; i < talk_camera.count; i++) {
             char *e = talk_camera.mobys[i];
-            if (*(short *)(e + 0xA6) == *(short *)(moby + 0xA6)) {
+            if (((Moby *)e)->oclass == moby->oclass) {
                 unsigned char *s = big_head_cheat_manipulator;
                 if (s[1] == 0) {
                     AttachManipulator(e, 0, s);
@@ -1703,11 +1703,11 @@ extern void draw_offset_textured_effect_quad(void *, int, float, float);
 /* Walks the moby list matching this moby's id and pulses each match's data slots while it is bright. */
 void draw_background_ship_1_joint_billboards(char *self) {
     char *cur;
-    get_first_moby_in_group((int *)&cur, *(unsigned char *)(self + 0x21), 0, 0);
+    get_first_moby_in_group((int *)&cur, ((Moby *)self)->group, 0, 0);
     while (cur != 0) {
-        if (*(unsigned char *)(cur + 0x31) != 0) {
-            char *data = *(char **)(cur + 0x78);
-            if (*(short *)(cur + 0xA6) == *(short *)(self + 0xA6)) {
+        if (((Moby *)cur)->visible != 0) {
+            char *data = *(char **)&((Moby *)cur)->pvars;
+            if (((Moby *)cur)->oclass == ((Moby *)self)->oclass) {
                 if ((*(int *)(data + 0xB0) & 0xFF) > 0x80) {
                     char *q = data + 0x80;
                     int i;
@@ -1746,7 +1746,7 @@ void prepare_background_ship_1_joint_billboards(char *moby) {
     v = frame_counter_ref;
     r = *(unsigned char *)(moby + 0x92);
     g = *(unsigned char *)(moby + 0x91);
-    b = *(unsigned char *)(moby + 0x90);
+    b = *(unsigned char *)&((Moby *)moby)->glow_color;
     c = (r << 16) | 0x30000000;
     c |= g << 8;
     c |= b;
@@ -1823,7 +1823,7 @@ void background_ship_1_update(char *moby) {
         d->unk_2C = 0x28;
         d->first_leg = f70;
         d->unk_2B = 1;
-        qcopy(moby + 0x10, aridia_paths[d->path] + 0x10);
+        qcopy(&((Moby *)moby)->pos, aridia_paths[d->path] + 0x10);
         d->phase = random_angle_radians();
         d->voice = m1;
         ((Moby *)moby)->state = 1;
@@ -1832,7 +1832,7 @@ void background_ship_1_update(char *moby) {
         break;
     }
     case 1:
-        qcopy(tv, moby + 0x10);
+        qcopy(tv, &((Moby *)moby)->pos);
         if (Sound_IsPlaying(moby, d->voice) == 0) {
             d->voice = Moby_PlaySound_r_r(1, 4, (int)moby);
         }
@@ -1842,16 +1842,16 @@ void background_ship_1_update(char *moby) {
             d->path_pos = d->path_pos - (float)*(int *)t;
         }
         if (g_current_level_index_r == 9) {
-            SamplePathAt((int *)t, 1, moby + 0x10, (float *)(moby + 0x40), 0, d->path_pos);
+            SamplePathAt((int *)t, 1, &((Moby *)moby)->pos, &((Moby *)moby)->rot.x, 0, d->path_pos);
         } else {
-            SamplePathAt((int *)t, 0, moby + 0x10, (float *)(moby + 0x40), 0, d->path_pos);
+            SamplePathAt((int *)t, 0, &((Moby *)moby)->pos, &((Moby *)moby)->rot.x, 0, d->path_pos);
         }
         if (((Moby *)moby)->pos.x < 8.0f) {
             *(int *)&((Moby *)moby)->collision = 0;
         } else if (((Moby *)moby)->pos.y < 8.0f) {
             *(int *)&((Moby *)moby)->collision = 0;
         } else {
-            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
+            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((Moby *)moby)->pclass + 0x10);
         }
         if (((Moby *)moby)->visible != 0) {
             spawn_background_ship_1_joint_sparks(moby, tv);
@@ -1889,14 +1889,14 @@ void background_ship_1_update(char *moby) {
             }
         }
         Moby_PlaySound_r_r(0, 0, (int)moby);
-        FastVecScale(tv, moby + 0xC0, *(float *)&background_ship_1_debris_speed * frame_scale);
+        FastVecScale(tv, &((Moby *)moby)->rot_row0, *(float *)&background_ship_1_debris_speed * frame_scale);
         tv[2] = tv[2] + *(float *)&background_ship_1_debris_lift * frame_scale;
         r1 = scale_ticks(90);
-        SpawnBreakFragment(moby, 0x5F2, (float *)(moby + 0x10), (void *)(moby + 0x40), r1, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
+        SpawnBreakFragment(moby, 0x5F2, &((Moby *)moby)->pos.x, (void *)&((Moby *)moby)->rot, r1, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         r2 = scale_ticks(90);
-        SpawnBreakFragment(moby, 0x5F5, (float *)(moby + 0x10), (void *)(moby + 0x40), r2, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
+        SpawnBreakFragment(moby, 0x5F5, &((Moby *)moby)->pos.x, (void *)&((Moby *)moby)->rot, r2, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         r3 = scale_ticks(90);
-        SpawnBreakFragment(moby, 0x790, (float *)(moby + 0x10), (void *)(moby + 0x40), r3, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
+        SpawnBreakFragment(moby, 0x790, &((Moby *)moby)->pos.x, (void *)&((Moby *)moby)->rot, r3, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         DeleteMoby(moby);
         break;
     default:
@@ -1972,9 +1972,9 @@ void draw_matching_moby_slot_quads(char *self) {
     char *cur;
     get_first_moby_in_group((int *)&cur, *(unsigned char *)(self + 0x21), 0, 0);
     while (cur != 0) {
-        if (*(unsigned char *)(cur + 0x31) != 0) {
-            char *data = *(char **)(cur + 0x78);
-            if (*(short *)(cur + 0xA6) == *(short *)(self + 0xA6)) {
+        if (((Moby *)cur)->visible != 0) {
+            char *data = *(char **)&((Moby *)cur)->pvars;
+            if (((Moby *)cur)->oclass == *(short *)(self + 0xA6)) {
                 if ((*(int *)(data + 0xE0) & 0xFF) > 0x80) {
                     char *q = data + 0x80;
                     int i;
@@ -2071,7 +2071,7 @@ void background_ship_2_update(char *moby) {
         d->unk_2C = 0x28;
         d->first_leg = f70;
         d->unk_2B = 1;
-        qcopy(moby + 0x10, aridia_paths[d->path] + 0x10);
+        qcopy(&((Moby *)moby)->pos, aridia_paths[d->path] + 0x10);
         d->phase = random_angle_radians();
         d->voice = m1;
         ((Moby *)moby)->state = 1;
@@ -2084,7 +2084,7 @@ void background_ship_2_update(char *moby) {
             DeleteMoby(moby);
             return;
         }
-        qcopy(tv, moby + 0x10);
+        qcopy(tv, &((Moby *)moby)->pos);
         if (Sound_IsPlaying(moby, d->voice) == 0) {
             d->voice = Moby_PlaySound_r_r(1, 4, (int)moby);
         }
@@ -2097,16 +2097,16 @@ void background_ship_2_update(char *moby) {
             d->path_pos = d->path_pos - (float)*(int *)t;
         }
         if ((unsigned int)(g_current_level_index_r - 9) < 2) {
-            SamplePathAt((int *)t, 1, moby + 0x10, (float *)(moby + 0x40), 0, d->path_pos);
+            SamplePathAt((int *)t, 1, &((Moby *)moby)->pos, &((Moby *)moby)->rot.x, 0, d->path_pos);
         } else {
-            SamplePathAt((int *)t, 0, moby + 0x10, (float *)(moby + 0x40), 0, d->path_pos);
+            SamplePathAt((int *)t, 0, &((Moby *)moby)->pos, &((Moby *)moby)->rot.x, 0, d->path_pos);
         }
         if (((Moby *)moby)->pos.x < 8.0f) {
             *(int *)&((Moby *)moby)->collision = 0;
         } else if (((Moby *)moby)->pos.y < 8.0f) {
             *(int *)&((Moby *)moby)->collision = 0;
         } else {
-            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
+            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((Moby *)moby)->pclass + 0x10);
         }
         if (((Moby *)moby)->visible != 0) {
             if (g_current_level_index_r != 10) {
@@ -2148,14 +2148,14 @@ void background_ship_2_update(char *moby) {
             }
         }
         Moby_PlaySound_r_r(0, 0, (int)moby);
-        FastVecScale(tv, moby + 0xC0, *(float *)&background_ship_2_debris_speed * frame_scale);
+        FastVecScale(tv, &((Moby *)moby)->rot_row0, *(float *)&background_ship_2_debris_speed * frame_scale);
         tv[2] = tv[2] + *(float *)&background_ship_2_debris_lift * frame_scale;
         r1 = scale_ticks(90);
-        SpawnBreakFragment(moby, 0x5F6, (float *)(moby + 0x10), (void *)(moby + 0x40), r1, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
+        SpawnBreakFragment(moby, 0x5F6, &((Moby *)moby)->pos.x, (void *)&((Moby *)moby)->rot, r1, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         r2 = scale_ticks(90);
-        SpawnBreakFragment(moby, 0x5F8, (float *)(moby + 0x10), (void *)(moby + 0x40), r2, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
+        SpawnBreakFragment(moby, 0x5F8, &((Moby *)moby)->pos.x, (void *)&((Moby *)moby)->rot, r2, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         r3 = scale_ticks(90);
-        SpawnBreakFragment(moby, 0x5F9, (float *)(moby + 0x10), (void *)(moby + 0x40), r3, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
+        SpawnBreakFragment(moby, 0x5F9, &((Moby *)moby)->pos.x, (void *)&((Moby *)moby)->rot, r3, 0, g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
         DeleteMoby(moby);
         return;
     default:
@@ -2265,13 +2265,13 @@ extern void spawn_moby_from_placement(void *, int);
 void white_flower_update(char *m) {
     int hit = 0;
     char *r = MobyGetHitMessage(m, 0x10000, 0);
-    switch (*(unsigned char *)(m + 0x20)) {
+    switch (((Moby *)m)->state) {
     case 0:
-        m[0x20] = 1;
+        ((Moby *)m)->state = 1;
         break;
     case 1:
         if (r != 0 && *(float *)(r + 0x2C) > 0.0f) hit = 1;
-        if (hit) m[0x20] = 2;
+        if (hit) ((Moby *)m)->state = 2;
         break;
     case 2:
         Moby_PlaySound(0, 0, (int)m);

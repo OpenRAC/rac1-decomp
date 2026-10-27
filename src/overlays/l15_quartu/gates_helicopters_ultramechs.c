@@ -2362,8 +2362,8 @@ extern short ultramech_scale;
 
 /* Level 15 moby update: finds the table entry that owns this moby, runs its state switch and refreshes its range and target. */
 void process_ultramech_hits_and_update_target(void *mobyp) {
-    char *moby = (char *)mobyp;
-    char *data = ((char *)((Moby *)moby)->pvars);
+    Moby *moby = (Moby *)((char *)mobyp);
+    char *data = ((char *)moby->pvars);
     char *other = 0;
     int i;
     Vec4A vA;
@@ -2374,7 +2374,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
     int sel;
     int r2;
 
-    ((Moby *)moby)->scale = *(float *)&ultramech_hit_check_scale * *(float *)(*(char **)(moby + 0x24) + 0x24);
+    moby->scale = *(float *)&ultramech_hit_check_scale * *(float *)(*(char **)&moby->pclass + 0x24);
     a44 = 0;
     *(int *)(data + 0x1C8) = 0;
 
@@ -2395,14 +2395,14 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
     }
 
     sel = ComputeHitResponse(moby, other, data + 0x20, 0, &a40, &a44, 0, 4);
-    if (other != 0 && a40 != 1 && (unsigned char)moby[0x20] != 10 && (unsigned char)moby[0x20] != 0x40
+    if (other != 0 && a40 != 1 && (unsigned char)*(char *)&moby->state != 10 && (unsigned char)*(char *)&moby->state != 0x40
         && *(short *)(*(char **)(other + 0x20) + 0xA6) != 0x350) {
         float d;
         d = *(float *)(data + 0x20) - *(float *)&a44;
         *(float *)(data + 0x20) = d;
         if (*(unsigned short *)(other + 0x2A) == 0x100)
             sel = 9;
-        if ((unsigned char)moby[0x20] == 2)
+        if ((unsigned char)*(char *)&moby->state == 2)
             sel = 9;
         if (d <= 0.0f)
             sel = 1;
@@ -2441,25 +2441,25 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
             *(float *)(data + 0xC0) = 12.0f;
             *(float *)(data + 0xC4) = 16.0f;
             p20 = *(char **)(other + 0x20);
-            r = fast_atan2(((Moby *)moby)->pos.x - *(float *)(p20 + 0x10),
-                                  ((Moby *)moby)->pos.y - *(float *)(p20 + 0x14));
+            r = fast_atan2(moby->pos.x - *(float *)(p20 + 0x10),
+                                  moby->pos.y - *(float *)(p20 + 0x14));
             *(u128 *)&vA = *(u128 *)(other + 0x10);
             f48 = r;
             HeadingFromVector(&vA, &f48, data + 0x88, data + 0x8C);
             InitKnockback(f48, moby, data + 0x70, 8, 1, 0);
             Sound_PlayClassSound_r(0, 0, moby, 0x79);
-            moby[0x20] = 9;
+            moby->state = 9;
             ((unsigned char *)data)[0x67] = 0x78;
             break;
         }
         case 1:
         case 2:
             *(u128 *)&vA = 0;
-            ((Moby *)moby)->flags &= 0xEFFF;
+            moby->flags &= 0xEFFF;
             Moby_GetJointWorldPos(moby, 7, &vB);
             spawn_explosion(moby, &vA, &vB, 0.0f, 0.0f, 20, 6, 0x20, 16.0f, 8.0f, 9.0f, 4.0f, -1, 32.0f, 1, 0x10, -1, 0);
             Sound_PlayClassSound_r(0, 0, moby, 0x79);
-            moby[0x20] = 10;
+            moby->state = 10;
             ((unsigned char *)data)[0x67] = 0xF0;
             SetDeathBits(moby, 0x200, -1);
             break;
@@ -2471,13 +2471,13 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
     if (other != 0)
         *(int *)(other + 0x34) = 0;
 
-    ((unsigned char *)moby)[0xA4] = 0xFF;
+    moby->hit_slot = 0xFF;
     StepColorFade(moby, data + 0x60);
-    ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&ultramech_scale;
+    moby->scale = *(float *)(*(char **)&moby->pclass + 0x24) * *(float *)&ultramech_scale;
     *(int *)(data + 0x164) = 0;
 
-    if ((unsigned char)moby[0x20] == 1 || *(int *)(data + 0x1D0) == -1) {
-        if ((unsigned char)moby[0x20] == 1)
+    if ((unsigned char)*(char *)&moby->state == 1 || *(int *)(data + 0x1D0) == -1) {
+        if ((unsigned char)*(char *)&moby->state == 1)
             *(float *)(data + 0x1B8) = *(float *)(data + 0x174);
         else
             *(float *)(data + 0x1B8) = *(float *)(data + 0x178);
@@ -2489,7 +2489,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
         FindNearestEligibleMoby(*(float *)(data + 0x1B8), moby, data + 0x120, 0, 0, p->pt, p->n);
     }
 
-    if (*(float *)(data + 0x1B8) < FastVecDist(moby + 0x10, data + 0x120))
+    if (*(float *)(data + 0x1B8) < FastVecDist(&moby->pos, data + 0x120))
         *(int *)(data + 0x164) = 2;
     if (*(int *)(data + 0x160) == 0)
         *(int *)(data + 0x160) = *(int *)(hero_globals_base + 0x2E9D);
@@ -2562,23 +2562,23 @@ extern void moby_build_matrix(void *, void *);
 
 /* Creates a class 0x4E9 moby at vector and returns it, or 0 if none is free. */
 char *spawn_poison_vessel(void *unused, void *vector) {
-    char *moby = CreateMoby(0x4E9);
+    Moby *moby = (Moby *)CreateMoby(0x4E9);
     if (moby != 0) {
-        char *data = ((char *)((Moby *)moby)->pvars);
+        char *data = ((char *)moby->pvars);
         char *field;
-        ((unsigned char *)moby)[0x30] = 0xFF;
-        ((Moby *)moby)->draw_dist = 0x7F;
-        moby[0x31] = 1;
-        moby[0x20] = 0;
-        moby[0xBC] = 0;
+        moby->update_dist = 0xFF;
+        moby->draw_dist = 0x7F;
+        moby->visible = 1;
+        moby->state = 0;
+        moby->command = 0;
         ((struct PoisonVesselVars *)data)->unk_10 = 0;
         clear_u64_value(data);
-        qcopy(moby + 0x10, vector);
-        field = *(char **)(moby + 0x24);
-        *(int *)&((Moby *)moby)->collision = *(int *)(field + 0x10);
+        qcopy(&moby->pos, vector);
+        field = *(char **)&moby->pclass;
+        *(int *)&moby->collision = *(int *)(field + 0x10);
         moby_build_matrix(moby, field);
     }
-    return moby;
+    return (char *)moby;
 }
 typedef struct Data_2E9358 {
     float f0;
@@ -2764,18 +2764,18 @@ extern short poison_vessel_spawn_interval;
 extern char *spawn_poison_vessel(void *, void *);
 
 /* Per-frame update: picks a random value on spawn, then re-rolls and spawns a child when triggered. */
-void update_poison_vessel_spawner(char *moby) {
-    int *data = ((int *)((Moby *)moby)->pvars);
-    switch (((Moby *)moby)->state) {
+void update_poison_vessel_spawner(Moby *moby) {
+    int *data = ((int *)moby->pvars);
+    switch (moby->state) {
     case 0:
         data[0] = truncate_float_to_s32_r(multiply_global_factor(*(float *)(data + 1) * 60.0f));
-        moby[0x20] = 1;
-        ((unsigned char *)moby)[0x30] = 0xFF;
+        moby->state = 1;
+        moby->update_dist = 0xFF;
         break;
     case 1:
         if (fast_dec_timer(data)) {
             data[0] = truncate_float_to_s32_r(multiply_global_factor(*(float *)&poison_vessel_spawn_interval * 60.0f));
-            spawn_poison_vessel(moby, moby + 0x10);
+            spawn_poison_vessel(moby, &moby->pos);
         }
         break;
     }

@@ -849,10 +849,10 @@ s32 HeroL01_TryTakeHit(s32 arg) {
     }
     g_hero_r3.p2280 = 0;
     m = g_hero_r3.p2080;
-    if (m[0xA4] == 0xFF) {
+    if (((Moby *)m)->hit_slot == 0xFF) {
         return 0;
     }
-    tbl = &novalis_moby_hit_records[m[0xA4]];
+    tbl = &novalis_moby_hit_records[((Moby *)m)->hit_slot];
     if (tbl->p34 != m) {
         return 0;
     }
@@ -1032,14 +1032,14 @@ extern void stick_target(int, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_00232290. */
 void hero_speed_from_table(void) {
-    char *x;
+    Hero *x;
     stick_target(0, 1.0f);
-    x = hero_globals_base_r + 0xE1D;
-    if (0.0f < *(float *)(x + 0x190)) {
-        if (*(float *)(x + 0x190) < novalis_hero_speed_bands[3]) {
-            *(float *)(x + 0x190) = novalis_hero_speed_bands[2] * g_frame_time;
+    x = (Hero *)(hero_globals_base_r + 0xE1D);
+    if (0.0f < x->target_speed) {
+        if (x->target_speed < novalis_hero_speed_bands[3]) {
+            x->target_speed = novalis_hero_speed_bands[2] * g_frame_time;
         } else {
-            *(float *)(x + 0x190) = novalis_hero_speed_bands[6] * g_frame_time;
+            x->target_speed = novalis_hero_speed_bands[6] * g_frame_time;
         }
     }
     {
@@ -1076,7 +1076,11 @@ void clip_hero_horizontal_velocity(int flag) {
     struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     float f2, f21, f20;
     int k, x;
-    char *h1, *h2, *h3, *w, *w3;
+    char *h1;
+    Hero *h2;
+    Hero *h3;
+    char *w;
+    char *w3;
     float *u;
 
     if (g->unk308 != 0) {
@@ -1120,25 +1124,25 @@ void clip_hero_horizontal_velocity(int flag) {
         }
     }
     f20 = 0.0f;
-    h2 = (char *)hero_globals_base + 0xE1D;
-    if (coll_line(s, p, 4, *(int *)(h2 + 0x2080), 0) != 0) {
+    h2 = (Hero *)((char *)hero_globals_base + 0xE1D);
+    if (coll_line(s, p, 4, *(int *)&h2->moby, 0) != 0) {
         w = novalis_coll_hit;
         if (*(int *)(w + 0x1C) > 0) {
             f20 = fast_atan2(*(float *)(w + 0x48), vec_length_xy(w + 0x40));
         }
     }
     if (f20 >= 0.87266463f || k == 8 || k == 12) {
-        h3 = (char *)hero_globals_base + 0xE1D;
+        h3 = (Hero *)((char *)hero_globals_base + 0xE1D);
         w3 = novalis_coll_hit;
         u = (float *)(w3 + 0x40);
         *(int *)(w3 + 0x48) = 0;
-        *(int *)(h3 + 0x240) = *(int *)(w3 + 0x18);
+        h3->unk240 = *(int *)(w3 + 0x18);
         sceVu0Normalize(u, u);
         {
-            float c = -*(float *)(h3 + 0xE0) * *(float *)(w3 + 0x40) - *(float *)(h3 + 0xE4) * *(float *)(w3 + 0x44);
+            float c = -h3->motion.velocity.f[0] * *(float *)(w3 + 0x40) - h3->motion.velocity.f[1] * *(float *)(w3 + 0x44);
             if (c > 0.0f) {
                 FastVecScale(u, u, c);
-                FastVecAdd(h3 + 0xE0, h3 + 0xE0, u);
+                FastVecAdd(&h3->motion.velocity, &h3->motion.velocity, u);
             }
         }
     }
@@ -1541,8 +1545,8 @@ void air_accel(float step) {
         *(u128_34970 *)w = *(u128_34970 *)(h + 0x840);
         {
             float t = forward_component(w);
-            char *g5 = (char *)&g_hero;
-            *(float *)(g5 + 0x194) = *(float *)(g5 + 0x168) - t;
+            Hero *g5 = (Hero *)((char *)&g_hero);
+            g5->ground_speed = g5->motion.forward_speed - t;
         }
         break;
     }
@@ -1731,7 +1735,9 @@ extern char pad_globals_base[];
 
 // Chooses the next hero state when landing, with sounds and effects.
 void select_hero_locomotion_state(void) {
-    char *b, *c, *d;
+    char *b;
+    Hero *c;
+    char *d;
     int n;
     b = hero_globals_base + 0xE1D;
     ((struct Hero *)b)->unk2284 = 0;
@@ -1742,18 +1748,18 @@ void select_hero_locomotion_state(void) {
         hero_queue_sequence(3, 0x12);
         return;
     }
-    c = hero_globals_base + 0xE1D;
-    if (0.3f < *(float *)(c + 0x229C) && *(int *)(c + 0x1C4) == 0) {
-        if (*(unsigned char *)(c + 0x12E2) != 0 || *(unsigned char *)(c + 0x20A9) != 0) {
+    c = (Hero *)(hero_globals_base + 0xE1D);
+    if (0.3f < c->stick_magnitude && c->move_lock_timer == 0) {
+        if (c->on_ice_ground != 0 || c->wading != 0) {
             hl_next(2, 1);
             return;
         }
         if (hl_next(2, 0)) {
-            *(int *)(c + 0x2088) = 1;
+            c->state.step = 1;
             n = scale_ticks(8);
-            if (scale_ticks(5) < *(int *)(c + 0x418)) n = scale_ticks(14);
+            if (scale_ticks(5) < c->rail_land_frames) n = scale_ticks(14);
             set_hero_animation(4, novalis_hero_run_step1_start_frame, (float)n);
-            *(short *)(c + 0x3BC) = 1;
+            c->run_start_blending = 1;
         }
         return;
     }

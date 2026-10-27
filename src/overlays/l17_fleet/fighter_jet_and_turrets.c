@@ -25,6 +25,14 @@ struct FleetBobberVars {
 };
 
 /* Stops platform: slides along its direction from its start position. */
+/* A looping-sound voice record (moby.sound_slot indexes them at stride 0x70). */
+struct VoiceRef {
+    u8 pad_00[0x74];
+    u8 on;                          /* 0x74 */
+    u8 pad_75[0x13];
+    void *owner;                    /* 0x88: moby that started it */
+};
+
 struct StopsPlatformVars {
     Vec4A start_pos;                /* 0x00 */
     s32 trigger_moby;               /* 0x10: index in fleet_mobys, -1 when none */
@@ -681,7 +689,7 @@ struct Blk {
 };
 
 /* Fleet moby 669 update: spins up, then sprays particles from points on a rotating ring. */
-void update_fleet_rotating_radial_effect(char *m) {
+void update_fleet_rotating_radial_effect(Moby *m) {
     u128_2D8CC8 sp0[1];
     u128_2D8CC8 sp10[1];
     struct Blk blk;
@@ -702,28 +710,28 @@ void update_fleet_rotating_radial_effect(char *m) {
     int c;
     char *w;
 
-    d = ((float *)((Moby *)m)->pvars);
+    d = ((float *)m->pvars);
     if (hero_is_in_special_state() != 0) {
-        switch (((Moby *)m)->state) {
+        switch (m->state) {
         case 0:
-            ((Moby *)m)->update_dist = 0xFF;
-            ((Moby *)m)->state = 1;
+            m->update_dist = 0xFF;
+            m->state = 1;
             d[1] = d[0] * *(float *)&fleet_ring_spin_rate_deg * 0.017453292f * g_frame_time;
             break;
         case 1:
-            ((Moby *)m)->rot.x = FastAddRots(((Moby *)m)->rot.x, d[1]);
+            m->rot.x = FastAddRots(m->rot.x, d[1]);
             AddDrawCallback(draw_fleet_scrolling_radial_quads, m);
             break;
         }
-        FastVecSub(sp0, hero_globals_base + 0xE9D, (m + 0x10));
-        if (FastVecDot(sp0, (m + 0xC0)) > 0.0f) {
-            vec_scale_to_length(sp10, (m + 0xC0), 1.0f);
+        FastVecSub(sp0, hero_globals_base + 0xE9D, ((char *)&m->pos));
+        if (FastVecDot(sp0, ((char *)&m->rot_row0)) > 0.0f) {
+            vec_scale_to_length(sp10, ((char *)&m->rot_row0), 1.0f);
         } else {
-            vec_scale_to_length(sp10, (m + 0xC0), -1.0f);
+            vec_scale_to_length(sp10, ((char *)&m->rot_row0), -1.0f);
         }
         {
         int i;
-        blk.p10 = m;
+        blk.p10 = (char *)m;
         blk.v14 = 0x10001;
         blk.i20 = 1;
         blk.c18 = 1;
@@ -731,8 +739,8 @@ void update_fleet_rotating_radial_effect(char *m) {
         blk.f8 = 1.0f;
         blk.fC = 5627.9248046875f;
         blk.c19 = 1;
-        blk.h1A = *(unsigned short *)&((Moby *)m)->oclass;
-        euler_rotation_basis(mat1, m + 0x40);
+        blk.h1A = *(unsigned short *)&m->oclass;
+        euler_rotation_basis(mat1, &m->rot);
         normalize_vector_triplet(mat1);
         copy_matrix_rotation(mat2, mat1);
         i = 0;
@@ -743,28 +751,28 @@ void update_fleet_rotating_radial_effect(char *m) {
                 g = *(float *)&fleet_ring_angle_offset_deg * 0.017453292f;
                 BuildSphericalOffset(spC0, *(float *)&fleet_ring_radius, 1.5707964f, FastAddRots(FastAddRots(g, FastNormalizeAngle(IntToFloat(i) * 2.0943952f)), f21));
                 transform_vector(spC0, spC0, mat2);
-                add_vectors(spD0, spC0, (m + 0x10));
-                if (FastVecDist((m + 0x10), hero_globals_base + 0xE9D) < 30.0f) {
-                    coll_line((m + 0x10), spC0, 9, m, &blk);
+                add_vectors(spD0, spC0, ((char *)&m->pos));
+                if (FastVecDist(((char *)&m->pos), hero_globals_base + 0xE9D) < 30.0f) {
+                    coll_line(((char *)&m->pos), spC0, 9, m, &blk);
                 }
-                spD0[0] = *(u128_2D8CC8 *)(m + 0x10);
+                spD0[0] = *(u128_2D8CC8 *)&m->pos;
                 *(float *)((char *)spD0 + 0xC) = *(float *)&fleet_ring_radius;
                 if (FastBSphereCheck((char *)spD0, 20.0f) != -1 && (j == 0 || j == 4)) {
                     spF0[0] = 0;
                     *(float *)((char *)spF0 + 8) = 12.0f;
-                    matrix_mul_vec3(spF0, spF0, (m + 0xC0));
+                    matrix_mul_vec3(spF0, spF0, ((char *)&m->rot_row0));
                     {
                         for (k = 0; k < *(int *)&fleet_ring_spark_count; k++) {
                             f20 = -1.0f;
                             if (func_001160D8() & 1) f20 = 1.0f;
                             c = truncate_float_to_s32_r(multiply_global_factor(random_float_between(*(float *)&fleet_ring_spark_life * 0.5f, *(float *)&fleet_ring_spark_life)));
                             if (c <= 0) c = 1;
-                            FastVecSub(sp100, spC0, (m + 0x10));
+                            FastVecSub(sp100, spC0, ((char *)&m->pos));
                             spF0[0] = sp100[0];
                             FastVecScale(spF0, spF0, f20);
                             len = FastVecLength(spF0);
                             if (f20 < 0.0f) spE0[0] = spC0[0];
-                            else spE0[0] = *(u128_2D8CC8 *)(m + 0x10);
+                            else spE0[0] = *(u128_2D8CC8 *)&m->pos;
                             FastVecScale(spF0, spF0, random_float_between(0.0f, 0.9f));
                             w = (char *)sp100;
                             add_vectors(w, spE0, spF0);
@@ -988,9 +996,9 @@ void StopsPlatformUpdate(char *m) {
         if (FastAbsF((d->offset)) > 2.0f) {
             idx = (d->sound_slot);
             if (idx != -1) {
-                char *e = (char *)hero_globals_base + 0x1D + idx * 0x70;
-                if (*(char **)(e + 0x88) == m) {
-                    if (*(unsigned char *)(e + 0x74) != 0) Sound_StopSlot(idx);
+                struct VoiceRef *e = (struct VoiceRef *)((char *)hero_globals_base + 0x1D + idx * 0x70);
+                if (*(char **)&e->owner == m) {
+                    if (e->on != 0) Sound_StopSlot(idx);
                 }
             }
             (d->sound_slot) = -1;
@@ -1001,9 +1009,9 @@ void StopsPlatformUpdate(char *m) {
         (d->offset) = 0.0f;
         idx = (d->sound_slot);
         if (idx != -1) {
-            char *e = (char *)hero_globals_base + 0x1D + idx * 0x70;
-            if (*(char **)(e + 0x88) == m) {
-                if (*(unsigned char *)(e + 0x74) != 0) Sound_StopSlot(idx);
+            struct VoiceRef *e = (struct VoiceRef *)((char *)hero_globals_base + 0x1D + idx * 0x70);
+            if (*(char **)&e->owner == m) {
+                if (e->on != 0) Sound_StopSlot(idx);
             }
         }
         (d->sound_slot) = -1;
@@ -1023,9 +1031,9 @@ void StopsPlatformUpdate(char *m) {
     case 4:
         idx = (d->sound_slot);
         if (idx != -1) {
-            char *e = (char *)hero_globals_base + 0x1D + idx * 0x70;
-            if (*(char **)(e + 0x88) == m) {
-                if (*(unsigned char *)(e + 0x74) != 0) Sound_StopSlot(idx);
+            struct VoiceRef *e = (struct VoiceRef *)((char *)hero_globals_base + 0x1D + idx * 0x70);
+            if (*(char **)&e->owner == m) {
+                if (e->on != 0) Sound_StopSlot(idx);
             }
         }
         (d->sound_slot) = -1;
@@ -1076,9 +1084,9 @@ void StopsPlatformUpdate(char *m) {
         if ((d->offset) == 0.0f) {
             idx = (d->sound_slot);
             if (idx != -1) {
-                char *e = (char *)hero_globals_base + 0x1D + idx * 0x70;
-                if (*(char **)(e + 0x88) == m) {
-                    if (*(unsigned char *)(e + 0x74) != 0) Sound_StopSlot(idx);
+                struct VoiceRef *e = (struct VoiceRef *)((char *)hero_globals_base + 0x1D + idx * 0x70);
+                if (*(char **)&e->owner == m) {
+                    if (e->on != 0) Sound_StopSlot(idx);
                 }
             }
             (d->sound_slot) = -1;
@@ -1094,14 +1102,14 @@ extern char fleet_coll_hit_result[];
 extern int gameplay_event_frame_count MACRO_ADDR;
 
 /* Updates moby 1368: a drone that drifts toward the hero, tags what it hits and sprays sparks until its timer runs out. */
-void update_drone_flight_and_sparks(char *moby) {
+void update_drone_flight_and_sparks(Moby *moby) {
     float a[4];
     float b[4];
     float c[4];
     float e[4];
     float f[4];
     float w[12];
-    struct FleetDroneVars *d = (struct FleetDroneVars *)((Moby *)moby)->pvars;
+    struct FleetDroneVars *d = (struct FleetDroneVars *)moby->pvars;
     char *t;
     struct Hero *g;
     struct Hero *g2;
@@ -1110,29 +1118,29 @@ void update_drone_flight_and_sparks(char *moby) {
     int hit;
     int n;
 
-    switch (((Moby *)moby)->state) {
+    switch (moby->state) {
     case 0:
-        ((Moby *)moby)->draw_dist = 0;
-        moby[0x31] = 0;
+        moby->draw_dist = 0;
+        moby->visible = 0;
         t = (char *)&d->target_pos;
         *(u128 *)e = *(u128 *)(hero_globals_base + 0xEED);
         e[2] = e[2] - 0.5f;
         if (vec_distance_xy(e, t) < 8.0f) {
             lerp_vector(t, e, t, 0.99f);
         }
-        if (vec_distance_xy(moby + 0x10, t) > 4.0f) {
-            if (FastDiffRots(((Moby *)moby)->rot.z,
-                              fast_atan2(d->target_pos.x - ((Moby *)moby)->pos.x,
-                                                d->target_pos.y - ((Moby *)moby)->pos.y)) < 0.7853982f) {
-                FastVecSub(c, t, moby + 0x10);
+        if (vec_distance_xy(&moby->pos, t) > 4.0f) {
+            if (FastDiffRots(moby->rot.z,
+                              fast_atan2(d->target_pos.x - moby->pos.x,
+                                                d->target_pos.y - moby->pos.y)) < 0.7853982f) {
+                FastVecSub(c, t, &moby->pos);
                 vec_scale_to_length(&d->vel, c, d->speed);
             }
         }
         FastVecScale(c, &d->vel, -20.0f);
         step = 0;
-        FastVecAdd(a, moby + 0x10, &d->vel);
-        FastVecAdd(b, moby + 0x10, c);
-        lerp_vector(f, a, moby + 0x10, 0.5f);
+        FastVecAdd(a, &moby->pos, &d->vel);
+        FastVecAdd(b, &moby->pos, c);
+        lerp_vector(f, a, &moby->pos, 0.5f);
         if (d->timer < 0x3C) {
             step = (0x3C - d->timer) >> 2;
         }
@@ -1141,11 +1149,11 @@ void update_drone_flight_and_sparks(char *moby) {
         create_drone_flight_trail_record((char *)a, 0, step);
         b[2] = b[2] + 0.25f;
         InitDirectionalHitQuery_alt((char *)w, (int)moby, 1, 6.0f, ((char *)d));
-        *(short *)((char *)w + 0x1A) = ((Moby *)moby)->oclass;
-        qcopy(moby + 0x10, a);
+        *(short *)((char *)w + 0x1A) = moby->oclass;
+        qcopy(&moby->pos, a);
         r = fleet_coll_hit_result;
         *(int *)(r + 0x18) = 0;
-        if (coll_line(b, a, 0, moby, w) != 0 || coll_sphere(0.5f, moby + 0x10, 0, moby) != 0) {
+        if (coll_line(b, a, 0, moby, w) != 0 || coll_sphere(0.5f, &moby->pos, 0, moby) != 0) {
             hit = *(int *)(r + 0x18);
             if (hit != 0) {
                 if (hit != *(int *)&d->hit_target) {
@@ -1161,8 +1169,8 @@ void update_drone_flight_and_sparks(char *moby) {
                             *(int *)(rec + 0x45C) = *(int *)(rec + 0x45C) | (1 << g_current_level_index) | 0x80000000;
                         }
                     }
-                    qcopy(moby + 0x10, fleet_coll_hit_point);
-                    MobySphereHitDirectional((int)moby, 0.75f, moby + 0x10, 1, 6.0f, 0.0f, 0, 1, 0);
+                    qcopy(&moby->pos, fleet_coll_hit_point);
+                    MobySphereHitDirectional((int)moby, 0.75f, &moby->pos, 1, 6.0f, 0.0f, 0, 1, 0);
                     g2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
                     if (g2->unk308 != 0 && *(int *)(fleet_coll_hit_point - 8) == *(int *)&g2->moby) {
                         unsigned char *rec = help_stats_base + 0x34D;
@@ -1176,27 +1184,27 @@ void update_drone_flight_and_sparks(char *moby) {
                         }
                     }
                     d->timer = scale_ticks(0x1E);
-                    moby[0x20] = 1;
+                    moby->state = 1;
                     return;
                 }
-            } else if (vec_distance_xy(moby + 0x10, d->hit_target + 0x10) > 10.0f) {
-                qcopy(moby + 0x10, r + 0x20);
+            } else if (vec_distance_xy(&moby->pos, d->hit_target + 0x10) > 10.0f) {
+                qcopy(&moby->pos, r + 0x20);
                 d->timer = scale_ticks(0x1E);
-                moby[0x20] = 1;
+                moby->state = 1;
                 return;
             }
         }
         if (scale_ticks(0x46) < d->timer) {
-            if (((Moby *)moby)->pos.x > 890.0f || ((Moby *)moby)->pos.y > 890.0f || ((Moby *)moby)->pos.z > 890.0f
-                || ((Moby *)moby)->pos.x < 80.0f || ((Moby *)moby)->pos.x < 80.0f
-                || ((Moby *)moby)->pos.y < 80.0f || ((Moby *)moby)->pos.z < 80.0f) {
+            if (moby->pos.x > 890.0f || moby->pos.y > 890.0f || moby->pos.z > 890.0f
+                || moby->pos.x < 80.0f || moby->pos.x < 80.0f
+                || moby->pos.y < 80.0f || moby->pos.z < 80.0f) {
                 d->timer = scale_ticks(0x46);
             }
         }
         if (fast_dec_timer(&d->timer) != 0
-            || ((Moby *)moby)->pos.x > 968.0f || ((Moby *)moby)->pos.y > 968.0f || ((Moby *)moby)->pos.z > 968.0f
-            || ((Moby *)moby)->pos.x < 10.0f || ((Moby *)moby)->pos.x < 10.0f
-            || ((Moby *)moby)->pos.y < 10.0f || ((Moby *)moby)->pos.z < 10.0f) {
+            || moby->pos.x > 968.0f || moby->pos.y > 968.0f || moby->pos.z > 968.0f
+            || moby->pos.x < 10.0f || moby->pos.x < 10.0f
+            || moby->pos.y < 10.0f || moby->pos.z < 10.0f) {
             DeleteMoby(moby);
         }
         break;
@@ -1204,7 +1212,7 @@ void update_drone_flight_and_sparks(char *moby) {
         float x = random_float_between(g_frame_time + g_frame_time, g_frame_time * 10.0f);
         float y = random_float_between(-3.1415927f, 3.1415927f);
         BuildSphericalOffset(a, x, y, random_float_between(-3.1415927f, 3.1415927f));
-        spawn_moving_hero_relative_alpha_fade_particle((float *)(moby + 0x10), (char *)a, 0x60FF3020, 0xF, random_integer_below(0xFF), 0, 3.0f);
+        spawn_moving_hero_relative_alpha_fade_particle(&moby->pos.x, (char *)a, 0x60FF3020, 0xF, random_integer_below(0xFF), 0, 3.0f);
         if (fast_dec_timer(&d->timer) != 0) {
             DeleteMoby(moby);
         }
@@ -1952,7 +1960,7 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
     float k;
     char *pad;
     struct Hero *g;
-    char *e;
+    struct VoiceRef *e;
     char *p;
     int idx;
     int hc;
@@ -1964,8 +1972,8 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
             if (*(int *)(pad + 0x1B4) & 0x40) {
                 idx = o->i10C;
                 if (idx != -1) {
-                    e = (char *)hero_globals_base + 0x1D + idx * 0x70;
-                    if (*(char **)(e + 0x88) == (char *)m && *(unsigned char *)(e + 0x74) != 0) {
+                    e = (struct VoiceRef *)((char *)hero_globals_base + 0x1D + idx * 0x70);
+                    if (*(char **)&e->owner == (char *)m && e->on != 0) {
                         Sound_StopSlot(idx);
                     }
                 }
@@ -1974,8 +1982,8 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
             } else if (*(int *)(pad + 0x1B8) & 0x40) {
                 idx = o->i10C;
                 if (idx != -1) {
-                    e = (char *)hero_globals_base + 0x1D + idx * 0x70;
-                    if (*(char **)(e + 0x88) == (char *)m && *(unsigned char *)(e + 0x74) != 0) {
+                    e = (struct VoiceRef *)((char *)hero_globals_base + 0x1D + idx * 0x70);
+                    if (*(char **)&e->owner == (char *)m && e->on != 0) {
                         Sound_StopSlot(idx);
                     }
                 }

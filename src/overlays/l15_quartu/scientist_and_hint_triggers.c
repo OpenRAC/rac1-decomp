@@ -51,6 +51,44 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 
 /* Update function of moby class 1446 (ultramech scientist): state switch, then the head look-at block shaped like func_L11_002D18D0's (doit flag guards the vector part). */
+struct UltramechScientistVars {
+    u8 pad_00[0x4];
+    s16 unk_04;
+    u8 pad_06[0x2];
+    u8 unk_08;
+    u8 pad_09[0x3];
+    f32 unk_0C;
+    u8 pad_10[0x26];
+    s16 unk_36;
+    u8 pad_38[0x108];
+    s32 unk_140;
+    s32 group_144;
+    s32 group_148;
+    s32 scientist_slot;
+    s32 camera_path;
+    s32 hero_path;
+    s32 spawned_slot;
+    s32 delay_timer;
+    Vec4 manip_160;
+    u8 pad_170[0x54];
+    f32 unk_1C4;
+    f32 unk_1C8;
+    u8 pad_1CC[0x4];
+    f32 unk_1D0;
+    u8 pad_1D4[0xC];
+    Vec4 manip_1E0;
+    u8 pad_1F0[0x58];
+    f32 unk_248;
+    u8 pad_24C[0x14];
+    Vec4 look_target;
+    u8 pad_270[0x4];
+    s32 look_timer;
+    s32 unk_278;
+    s32 clip_volume;
+    s32 jet_group;
+    s32 jet_clear_id;
+};
+
 void ultramech_scientist_update(char *moby) {
     enum {
         ULTRAMECH_SCIENTIST_INITIALIZE = 0,
@@ -63,22 +101,22 @@ void ultramech_scientist_update(char *moby) {
         ULTRAMECH_SCIENTIST_START_SECOND_SCENE_AND_SAVE = 7,
         ULTRAMECH_SCIENTIST_SAVE_AND_DISABLE = 8
     };
-    char *data;
+    struct UltramechScientistVars *data;
     char *hero_pos;
-    char *other;
+    Moby *other;
     int control_mode;
 
-    data = (char *)((struct Moby *)moby)->pvars;
+    data = (struct UltramechScientistVars *)((char *)((struct Moby *)moby)->pvars);
     apply_npc_big_head_cheat(moby);
-    if (*(int *)(data + 0x14C) == -1) {
+    if (data->scientist_slot == -1) {
         return;
     }
     {
         struct Hero *player = (struct Hero *)(hero_globals_base + 0xE1D);
         if (player->vehicle_mode != 2) {
             int mobys = quartu_moby_array;
-            *(int *)((*(int *)(data + 0x14C) << 8) + mobys + 0x94) = 0;
-            *(unsigned short *)((*(int *)(data + 0x14C) << 8) + mobys + 0x34) |= 0x41;
+            *(int *)((data->scientist_slot << 8) + mobys + 0x94) = 0;
+            *(unsigned short *)((data->scientist_slot << 8) + mobys + 0x34) |= 0x41;
         }
     }
     if (((struct Moby *)moby)->state == 9) {
@@ -100,9 +138,9 @@ void ultramech_scientist_update(char *moby) {
     case ULTRAMECH_SCIENTIST_INITIALIZE:
         ((struct Moby *)moby)->state = 1;
         ((struct Moby *)moby)->update_dist = 0xFF;
-        *(float *)(data + 0xC) = 20.0f;
+        data->unk_0C = 20.0f;
         DialogRequest_Init(moby, data);
-        if (((unsigned char *)(help_stats_base + 0xAA35))[*(int *)(data + 0x280) + (g_current_level_index << 4)] != 0xFF) {
+        if (((unsigned char *)(help_stats_base + 0xAA35))[data->jet_group + (g_current_level_index << 4)] != 0xFF) {
             break;
         }
         if (*(unsigned char *)(gemlik_available + 3) != 0) {
@@ -110,27 +148,27 @@ void ultramech_scientist_update(char *moby) {
             break;
         }
         ((struct Moby *)moby)->state = 3;
-        other = quartu_moby_list;
+        other = (Moby *)quartu_moby_list;
         if (other == 0) {
             break;
         }
         {
         int dead_state = 0xFE;
         int gone_state = 0xFD;
-        for (; other != 0; other = *(char **)(other + 0x28)) {
-            if (*(unsigned char *)(other + 0xB0) != *(int *)(data + 0x280)) {
+        for (; other != 0; other = (Moby *)(*(char **)&other->next)) {
+            if (other->mission != data->jet_group) {
                 continue;
             }
-            if (other == moby) {
+            if (((char *)other) == moby) {
                 continue;
             }
             if (other == 0) {
                 continue;
             }
-            if (*(unsigned char *)(other + 0x20) == dead_state) {
+            if (other->state == dead_state) {
                 continue;
             }
-            if (*(unsigned char *)(other + 0x20) == gone_state) {
+            if (other->state == gone_state) {
                 continue;
             }
             DeleteMoby(other);
@@ -139,7 +177,7 @@ void ultramech_scientist_update(char *moby) {
         break;
     case ULTRAMECH_SCIENTIST_WAIT_FOR_DIALOGUE:
         hero_pos = hero_globals_base + 0xE9D;
-        if (is_point_inside_clip_volume(hero_pos, *(int *)(data + 0x27C)) == 0) {
+        if (is_point_inside_clip_volume(hero_pos, data->clip_volume) == 0) {
             break;
         }
         control_mode = *(int *)(hero_pos + 0x200C);
@@ -149,30 +187,30 @@ void ultramech_scientist_update(char *moby) {
         if (Npc_TryStartDialog(moby, data) == 0) {
             break;
         }
-        jet_clear_persistent(*(int *)(data + 0x280));
+        jet_clear_persistent(data->jet_group);
         ((struct Moby *)moby)->anim_speed = 0.0f;
         ((struct Moby *)moby)->state = 2;
-        other = quartu_moby_list;
+        other = (Moby *)quartu_moby_list;
         if (other == 0) {
             break;
         }
         {
         int dead_state = 0xFE;
         int gone_state = 0xFD;
-        for (; other != 0; other = *(char **)(other + 0x28)) {
-            if (*(unsigned char *)(other + 0xB0) != *(int *)(data + 0x280)) {
+        for (; other != 0; other = (Moby *)(*(char **)&other->next)) {
+            if (other->mission != data->jet_group) {
                 continue;
             }
-            if (other == moby) {
+            if (((char *)other) == moby) {
                 continue;
             }
             if (other == 0) {
                 continue;
             }
-            if (*(unsigned char *)(other + 0x20) == dead_state) {
+            if (other->state == dead_state) {
                 continue;
             }
-            if (*(unsigned char *)(other + 0x20) == gone_state) {
+            if (other->state == gone_state) {
                 continue;
             }
             DeleteMoby(other);
@@ -184,10 +222,10 @@ void ultramech_scientist_update(char *moby) {
             break;
         }
         ((struct Moby *)moby)->anim_speed = 1.0f;
-        if (*(short *)(data + 0x4) == 0) {
-            if (*(int *)(data + 0x150) != -1) {
+        if (data->unk_04 == 0) {
+            if (data->camera_path != -1) {
                 char *paths = quartu_cuboids;
-                jet_reset_camera(paths + (*(int *)(data + 0x150) << 7) + 0x30, paths + (*(int *)(data + 0x150) << 7) + 0x70);
+                jet_reset_camera(paths + (data->camera_path << 7) + 0x30, paths + (data->camera_path << 7) + 0x70);
             }
             ((struct Moby *)moby)->state = 3;
         } else {
@@ -201,45 +239,45 @@ void ultramech_scientist_update(char *moby) {
                 break;
             }
         }
-        if (*(int *)(data + 0x158) != -1) {
-            char *spawned = (char *)quartu_moby_array + (*(int *)(data + 0x158) << 8);
+        if (data->spawned_slot != -1) {
+            char *spawned = (char *)quartu_moby_array + (data->spawned_slot << 8);
             if (spawned != 0) {
                 int state = *(unsigned char *)(spawned + 0x20);
                 if (state != 0xFE) {
                     if (state != 0xFD) {
                         DeleteMoby(spawned);
-                        *(int *)(data + 0x158) = -1;
+                        data->spawned_slot = -1;
                     }
                 }
             }
         }
-        if (count_active_moby_group_members(*(int *)(data + 0x144), 0x40) != 0) {
+        if (count_active_moby_group_members(data->group_144, 0x40) != 0) {
             break;
         }
-        if (count_active_moby_group_members(*(int *)(data + 0x148), 0x40) != 0) {
+        if (count_active_moby_group_members(data->group_148, 0x40) != 0) {
             break;
         }
         ((struct Moby *)moby)->state = 4;
-        *(int *)(data + 0x15C) = scale_ticks(120);
+        data->delay_timer = scale_ticks(120);
         break;
     case ULTRAMECH_SCIENTIST_WAIT_FOR_PRE_SCENE_DELAY:
-        if (fast_dec_timer(data + 0x15C) == 0) {
+        if (fast_dec_timer(&data->delay_timer) == 0) {
             break;
         }
         restore_saved_hero_moby_and_clear_vehicle_mode();
-        MobySetAnimation((char *)quartu_moby_array + (*(int *)(data + 0x14C) << 8), 0, 0);
-        *(int *)(data + 0x140) = 1;
-        *(short *)(data + 0x36) = 1;
-        *(unsigned char *)(data + 0x8) = 1;
+        MobySetAnimation((char *)quartu_moby_array + (data->scientist_slot << 8), 0, 0);
+        data->unk_140 = 1;
+        data->unk_36 = 1;
+        data->unk_08 = 1;
         unlock_planet(0x10);
-        jet_clear_persistent(*(int *)(data + 0x284));
+        jet_clear_persistent(data->jet_clear_id);
         MusicRequestTrack(0, 5);
-        if (*(int *)(data + 0x154) != -1) {
+        if (data->hero_path != -1) {
             char *paths = quartu_cuboids;
             char *paths_again;
-            Hero_ResetToPosition(paths + (*(int *)(data + 0x154) << 7) + 0x30, paths + (*(int *)(data + 0x154) << 7) + 0x70, 0, 1);
+            Hero_ResetToPosition(paths + (data->hero_path << 7) + 0x30, paths + (data->hero_path << 7) + 0x70, 0, 1);
             paths_again = quartu_cuboids;
-            jet_reset_camera(paths_again + (*(int *)(data + 0x154) << 7) + 0x30, paths_again + (*(int *)(data + 0x154) << 7) + 0x70);
+            jet_reset_camera(paths_again + (data->hero_path << 7) + 0x30, paths_again + (data->hero_path << 7) + 0x70);
         }
         ((struct Moby *)moby)->state = 5;
         break;
@@ -297,37 +335,37 @@ void ultramech_scientist_update(char *moby) {
         if (value < 1.5707964f) {
             value = FastVecLength(&player->motion.displacement);
             if (0.01f < value) {
-                *(int *)(data + 0x274) = scale_ticks(120);
+                data->look_timer = scale_ticks(120);
             } else {
-                fast_dec_timer(data + 0x274);
+                fast_dec_timer(&data->look_timer);
             }
             goto wander;
         }
     }
-    if (*(int *)(data + 0x274) != 0) {
-        *(int *)(data + 0x274) = 0;
-        qcopy(data + 0x260, hero_globals_base + 0xE1D + 0xD0);
+    if (data->look_timer != 0) {
+        data->look_timer = 0;
+        qcopy(&data->look_target, hero_globals_base + 0xE1D + 0xD0);
     }
 wander:
-    if (fast_dec_timer(data + 0x278) == 0) {
+    if (fast_dec_timer(&data->unk_278) == 0) {
         goto aim_head;
     }
     deg_to_rad = 0.017453292f;
     value = random_float_between(180.0f, 300.0f);
     value = multiply_global_factor(value);
-    *(int *)(data + 0x278) = truncate_float_to_s32(value);
+    data->unk_278 = truncate_float_to_s32(value);
     value = random_float_between(-90.0f, 90.0f);
     heading = FastAddRots(((struct Moby *)moby)->rot.z, value * deg_to_rad);
     value = random_float_between(0.0f, 30.0f);
-    BuildSphericalOffset(data + 0x260, 6.0f, heading, value * deg_to_rad);
-    FastVecAdd(data + 0x260, data + 0x260, &((struct Moby *)moby)->pos);
+    BuildSphericalOffset(&data->look_target, 6.0f, heading, value * deg_to_rad);
+    FastVecAdd(&data->look_target, &data->look_target, &((struct Moby *)moby)->pos);
 aim_head:
-    if (*(int *)(data + 0x274) != 0) {
+    if (data->look_timer != 0) {
         qcopy(target, hero_globals_base + 0xE1D + 0xD0);
         ease_rate = 0.04f;
         ease_limit = 0.3f;
     } else {
-        qcopy(target, data + 0x260);
+        qcopy(target, &data->look_target);
     }
     if (aim != 0) {
     qcopy(eye, &((struct Moby *)moby)->pos);
@@ -348,15 +386,15 @@ aim_head:
     } else if (pitch < -0.5235988f) {
         pitch = -0.5235988f;
     }
-    *(float *)(data + 0x1C8) = yaw * 0.5f;
-    *(float *)(data + 0x1C4) = pitch * 1.25f;
-    *(float *)(data + 0x248) = yaw * 0.5f;
+    data->unk_1C8 = yaw * 0.5f;
+    data->unk_1C4 = pitch * 1.25f;
+    data->unk_248 = yaw * 0.5f;
     }
     if (gCheats[0] != 0) {
-        *(float *)(data + 0x1D0) = 2.75f;
+        data->unk_1D0 = 2.75f;
     }
-    EaseManipulatorOffsets(moby, data + 0x160, 1, ease_rate * g_frame_scale_sq, ease_limit * g_frame_scale_sq);
-    EaseManipulatorOffsets(moby, data + 0x1E0, 0, ease_rate * g_frame_scale_sq, ease_limit * g_frame_scale_sq);
+    EaseManipulatorOffsets(moby, (char *)&data->manip_160, 1, ease_rate * g_frame_scale_sq, ease_limit * g_frame_scale_sq);
+    EaseManipulatorOffsets(moby, (char *)&data->manip_1E0, 0, ease_rate * g_frame_scale_sq, ease_limit * g_frame_scale_sq);
     }
 }
 typedef struct Talk_2EE7E8 {

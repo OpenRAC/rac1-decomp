@@ -432,12 +432,12 @@ void visibomb_update(char *m) {
                                 } else {
                                     struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
                                     if (q->unk22C8 == 1) {
-                                        f21 = fast_atan2(vec_length_xy(m + 0xD0), ((Moby *)m)->rot_row1.z);
+                                        f21 = fast_atan2(vec_length_xy(&((Moby *)m)->rot_row1), ((Moby *)m)->rot_row1.z);
                                         BuildSphericalOffset(t0, 0.6f, f20, -f21);
-                                        FastVecAdd(t0, t0, m + 0x10);
+                                        FastVecAdd(t0, t0, &((Moby *)m)->pos);
                                     } else {
                                         BuildSphericalOffset(t0, 0.6f, f20, -f21);
-                                        FastVecAdd(t0, t0, m + 0x10);
+                                        FastVecAdd(t0, t0, &((Moby *)m)->pos);
                                     }
                                 }
                                 if (((Moby *)m)->prev_seq != 3) MobyBlendAnimation(m, 3, 0, 0);
@@ -517,7 +517,7 @@ void update_linked_moby_states(char *m) {
                     if (*(unsigned char *)(t + 0x20) == 0x50) {
                         *(unsigned char *)(t + 0x20) = 0x51;
                         u = q[i];
-                        qcopy(u + 0x10, m + 0x10);
+                        qcopy(u + 0x10, &((Moby *)m)->pos);
                         *(unsigned char *)(u + 0xA4) = 0xFF;
                         break;
                     }
@@ -922,7 +922,7 @@ unsigned char *select_blaster_auto_aim_target(int ign, Vec4 *from, float *yaw, f
     Vec4 src;
     Vec4 tp;
     Vec4 w;
-    unsigned char *m;
+    Moby *m;
     unsigned char *r;
     unsigned char *best;
     float bestd;
@@ -939,18 +939,18 @@ unsigned char *select_blaster_auto_aim_target(int ign, Vec4 *from, float *yaw, f
     src.q = from->q;
     from = &src;
     bestd = 20.0f;
-    for (m = (unsigned char *)suck_moby_list; m != 0; m = *(unsigned char **)(m + 0x28)) {
-        if ((signed char)m[0x20] < 0) {
+    for (m = (Moby *)suck_moby_list; m != 0; m = m->next) {
+        if ((signed char)m->state < 0) {
             continue;
         }
-        qcopy(&tp, m + 0x10);
+        qcopy(&tp, &m->pos);
         r = GetFlaggedPvarWord(m);
         if (r != 0) {
             tp.f[2] += *(float *)(r + 0x10);
         } else {
             tp.f[2] += 0.5f;
         }
-        if (!(*(unsigned short *)(m + 0x34) & 0x1000)) {
+        if (!(m->flags & 0x1000)) {
             continue;
         }
         a = fast_atan2(tp.f[0] - from->f[0], tp.f[1] - from->f[1]);
@@ -987,7 +987,7 @@ unsigned char *select_blaster_auto_aim_target(int ign, Vec4 *from, float *yaw, f
             if (dy < 0.17453292f) {
                 *yaw = a;
             }
-            best = m;
+            best = (unsigned char *)m;
         }
     }
     return best;
@@ -1457,7 +1457,7 @@ typedef unsigned int u128_t __attribute__((mode(TI), aligned(16)));
 typedef struct { u128_t r[4]; } M_t;
 
 // Steers the held object's pose: eases a field toward 0.45, spins it, and rebuilds its matrix and position from the parent. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002b2100.c, FUN_L00_002b5ba0.
-void update_attached_moby_transform(unsigned char *m, unsigned char *o) {
+void update_attached_moby_transform(Moby *m, unsigned char *o) {
     M_t a, b, c;
     Vec4 k, r;
     unsigned char *e = *(unsigned char **)(o + 0x20);
@@ -1473,11 +1473,11 @@ void update_attached_moby_transform(unsigned char *m, unsigned char *o) {
     }
     *(float *)(*(unsigned char **)(o + 0x20) + 0x48) = frame_scale * -1.5707964f;
     euler_to_matrix(&b, *(unsigned char **)(o + 0x20) + 0x40);
-    copy_matrix_rotation(&c, m + 0xC0);
+    copy_matrix_rotation(&c, &m->rot_row0);
     sce_vu0_mul_matrix(&a, &c, &b);
     matrix_copy_rows(*(unsigned char **)(o + 0x20) + 0xC0, &a);
     transform_vector(&r, &k, &a);
-    FastVecAdd(*(unsigned char **)(o + 0x20) + 0x10, &r, m + 0x10);
+    FastVecAdd(*(unsigned char **)(o + 0x20) + 0x10, &r, &m->pos);
     moby_anim_sphere_lerp(*(unsigned char **)(o + 0x20));
 }
 extern unsigned char *spawn_spinning_fade_in_out_effect_particle(void *pos, int spin, int col, float range, float f1, float f2, float f3, float scale);
@@ -1498,7 +1498,7 @@ extern V6 glow_burst_spark_colors_b;
 extern float cpu_frame_load MACRO_ADDR;
 
 /* spawns a burst of sparks and glow flashes at a moby, scaled by its distance from the origin marker */
-void spawn_moby_particle_and_glow_burst(char *m, int flag) {
+void spawn_moby_particle_and_glow_burst(Moby *m, int flag) {
     float tmp[4];
     float d[4];
     float n[4];
@@ -1507,14 +1507,14 @@ void spawn_moby_particle_and_glow_burst(char *m, int flag) {
     float len, extra, sc;
     int count, i, j;
 
-    qcopy(tmp, m + 0x10);
+    qcopy(tmp, &m->pos);
     tmp[2] += 0.3f;
     spawn_spinning_fade_in_out_effect_particle(tmp, 1, 0x40808080, 0.3f, 1.01f, 1.075f, 0.05f, 50000.0f);
     for (j = 4; j >= 0; j--) {
         spawn_spinning_fade_in_out_effect_particle(tmp, 1, 0x40808080, 0.3f, 1.01f, 1.07f, 0.05f, 50000.0f);
     }
     if (flag != 0) {
-        FastVecSub(d, g_debug_camera, m + 0x10);
+        FastVecSub(d, g_debug_camera, &m->pos);
         clear_u64_value(n);
         len = FastVecLength(d);
         if (len < 8.0f) {
@@ -1536,16 +1536,16 @@ void spawn_moby_particle_and_glow_burst(char *m, int flag) {
             pb = B.v + random_integer_below(6);
             a = rand_range(scale_ticks(15), scale_ticks(20));
             b = rand_range(scale_ticks(25), scale_ticks(30));
-            PartType11Spawn(m + 0x10, n, *pa, *pb, a, b, 0, 0, 400000.0f, sc);
+            PartType11Spawn(&m->pos, n, *pa, *pb, a, b, 0, 0, 400000.0f, sc);
         } while (--i);
         }
         if (cpu_frame_load < 0.95f) {
-            spawn_glow_particle(m, m + 0x10, n, scale_ticks(15), 0x7F, 0x7F, 0x7F, 0x20, 3.0f);
-            spawn_glow_particle(m, m + 0x10, n, scale_ticks(24), 0x7F, 0x20, 0, 0x20, 2.0f);
+            spawn_glow_particle(m, &m->pos, n, scale_ticks(15), 0x7F, 0x7F, 0x7F, 0x20, 3.0f);
+            spawn_glow_particle(m, &m->pos, n, scale_ticks(24), 0x7F, 0x20, 0, 0x20, 2.0f);
         }
-        spawn_glow_particle(m, m + 0x10, n, scale_ticks(20), 0x7F, 0x40, 0, 0x30, 3.0f);
-        spawn_glow_particle(m, m + 0x10, n, scale_ticks(27), 0x60, 0x10, 0, 0x40, 2.0f);
-        spawn_glow_particle(m, m + 0x10, n, scale_ticks(29), 0x20, 0, 0, 0x20, 1.0f);
+        spawn_glow_particle(m, &m->pos, n, scale_ticks(20), 0x7F, 0x40, 0, 0x30, 3.0f);
+        spawn_glow_particle(m, &m->pos, n, scale_ticks(27), 0x60, 0x10, 0, 0x40, 2.0f);
+        spawn_glow_particle(m, &m->pos, n, scale_ticks(29), 0x20, 0, 0, 0x20, 1.0f);
     }
 }
 typedef int u128_2B7430 __attribute__((mode(TI)));
@@ -1859,7 +1859,7 @@ int func_L00_002B7EC0_r(char *m, float r) {
     int n;
     float dist;
     int i;
-    *(Vx *)&pos = *(Vx *)(m + 0x10);
+    *(Vx *)&pos = *(Vx *)&((Moby *)m)->pos;
     d = ((int *)((Moby *)m)->pvars);
     n = d[5];
     lim = random_integer_below(n > 0 ? n : 1);
@@ -1874,7 +1874,7 @@ int func_L00_002B7EC0_r(char *m, float r) {
                     struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
                     if (FastDiffRots(g->motion.rot.f[2], fast_atan2(*(float *)(e + 0x10) - g->motion.pos.f[0], *(float *)(e + 0x14) - g->motion.pos.f[1])) < 0.9599311f) {
                         if (d[5] == lim) {
-                            FastVecSub(&q, e + 0x10, m + 0x10);
+                            FastVecSub(&q, e + 0x10, &((Moby *)m)->pos);
                             vec_scale_to_length(&q, &q, 1.5f);
                             PostHitMessage(e, (int)m, 0x10000, &g->motion.pos, &q, 1.0f);
                             d[4] = scale_ticks(rand_range(5, 0x2D));
@@ -2109,7 +2109,7 @@ extern short taunter_effect_alpha;
 extern short taunter_effect_color;
 
 /* Draws ten billboard-lit quads around a moby using the table of offsets. */
-void draw_taunter_effect_quads(char *m) {
+void draw_taunter_effect_quads(Moby *m) {
     struct {
         float v[4][4];
         unsigned int col[4];
@@ -2131,7 +2131,7 @@ void draw_taunter_effect_quads(char *m) {
     pk.uv[5] = 0.0f;
     pk.uv[6] = 1.0f;
     pk.uv[7] = 1.0f;
-    vec_scale_to_length(f, m + 0xD0, -1.0f);
+    vec_scale_to_length(f, &m->rot_row1, -1.0f);
     for (i = 0; i < 10; i++) {
         if (taunter_effect_slots[i].s8 != 0) {
             FastVecScale(g, f, taunter_effect_slots[i].f);

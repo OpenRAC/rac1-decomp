@@ -305,30 +305,30 @@ extern float FastSin(float);
 extern char *spawn_doom_bot(int, void *, void *);
 extern void DeleteMoby(void *);
 
-void update_doom_bot_spawner(char *m) {
+void update_doom_bot_spawner(Moby *m) {
     struct ThrowVars_2c8440_2C9820 *s;
     float f0, f1, f2, f3, f20, f21, f22, f23;
     Q4 v0, v1, v2, v3;
     int r;
-    char *w;
+    Hero *w;
     char *Q;
     void *g;
 
     if (m == 0) return;
-    s = (struct ThrowVars_2c8440_2C9820 *)((Moby *)m)->pvars;
+    s = (struct ThrowVars_2c8440_2C9820 *)m->pvars;
     if (((char *)s) == 0) return;
-    if (((Moby *)m)->pos.x < 2.0f || 1021.0f < ((Moby *)m)->pos.x ||
-        ((Moby *)m)->pos.y < 2.0f || 1021.0f < ((Moby *)m)->pos.y ||
-        ((Moby *)m)->pos.z < 2.0f || 1021.0f < ((Moby *)m)->pos.z) {
+    if (m->pos.x < 2.0f || 1021.0f < m->pos.x ||
+        m->pos.y < 2.0f || 1021.0f < m->pos.y ||
+        m->pos.z < 2.0f || 1021.0f < m->pos.z) {
         DeleteMoby(m);
         return;
     }
     {
         struct Hero *P = (struct Hero *)(hero_globals_base + 0xE1D);
-        if (P->unk20A5 != 0 && ((Moby *)m)->state < 2) {
-            ((Moby *)m)->flags = ((Moby *)m)->flags | 0x41;
+        if (P->unk20A5 != 0 && m->state < 2) {
+            m->flags = m->flags | 0x41;
         } else {
-            ((Moby *)m)->flags = ((Moby *)m)->flags & 0xFFBE;
+            m->flags = m->flags & 0xFFBE;
         }
     }
     {
@@ -336,17 +336,17 @@ void update_doom_bot_spawner(char *m) {
             FastVecLength(&s->vel) > 0.0f) {
             struct Hero *P = (struct Hero *)(hero_globals_base + 0xE1D);
             if (*(int *)&P->ground_moby == 0 || moby_get_ride_transform(*(char **)&P->ground_moby) == 0) {
-                predict_doom_bot_spawner_landing(((char *)s), m, 1);
+                predict_doom_bot_spawner_landing(((char *)s), (char *)m, 1);
             } else {
-                if (predict_doom_bot_spawner_landing(((char *)s), m, 0) == 0) {
-                    predict_doom_bot_spawner_landing(((char *)s), m, 2);
+                if (predict_doom_bot_spawner_landing(((char *)s), (char *)m, 0) == 0) {
+                    predict_doom_bot_spawner_landing(((char *)s), (char *)m, 2);
                 }
             }
         }
     }
-    switch (((Moby *)m)->state) {
+    switch (m->state) {
     case 0:
-        m[0x20] = 1;
+        m->state = 1;
         s->tick_timer = scale_ticks(4);
         s->timer = 0;
         s->unk_3C = 0;
@@ -354,9 +354,9 @@ void update_doom_bot_spawner(char *m) {
     case 1: {
         s->timer = 0;
         {
-            char *p = *(char **)(m + 0x24);
-            if (((Moby *)m)->scale < *(float *)(p + 0x24) * 0.25f) {
-                ((Moby *)m)->scale = ((Moby *)m)->scale + *(float *)(p + 0x24) * (frame_scale * 0.05f);
+            char *p = *(char **)&m->pclass;
+            if (m->scale < *(float *)(p + 0x24) * 0.25f) {
+                m->scale = m->scale + *(float *)(p + 0x24) * (frame_scale * 0.05f);
             }
         }
         if (fast_dec_timer(&s->tick_timer) != 0) {
@@ -387,9 +387,9 @@ void update_doom_bot_spawner(char *m) {
         f22 = 0.5f;
         f21 = IntToFloat(gold_weapon_purchased_20) + 1.0f;
         {
-            char *p = *(char **)(m + 0x24);
-            if (((Moby *)m)->scale < *(float *)(p + 0x24) * f22 * f21) {
-                ((Moby *)m)->scale = ((Moby *)m)->scale +
+            char *p = *(char **)&m->pclass;
+            if (m->scale < *(float *)(p + 0x24) * f22 * f21) {
+                m->scale = m->scale +
                     *(float *)(p + 0x24) * (frame_scale * 0.05f) * f21;
             }
         }
@@ -398,14 +398,14 @@ void update_doom_bot_spawner(char *m) {
             spawn_moby_bound_effect_particle(m);
         }
         s->vel.f[2] = s->vel.f[2] - g_frame_time_sq * 9.0f;
-        FastVecAdd(&v0, m + 0x10, &s->vel);
+        FastVecAdd(&v0, &m->pos, &s->vel);
         Q = hero_globals_base + 0xF5D;
-        add_vectors(&v3, m + 0x10, Q);
-        qcopy(&v1, m + 0x10);
+        add_vectors(&v3, &m->pos, Q);
+        qcopy(&v1, &m->pos);
         f23 = 0.15f;
         {
-            char *p = *(char **)(m + 0x24);
-            float d = frame_scale * f23 * ((Moby *)m)->scale;
+            char *p = *(char **)&m->pclass;
+            float d = frame_scale * f23 * m->scale;
             v1.v[2] = v1.v[2] - d / *(float *)(p + 0x24);
             qcopy(&v2, &v0);
             v2.v[2] = v2.v[2] - d / *(float *)(p + 0x24);
@@ -417,24 +417,24 @@ void update_doom_bot_spawner(char *m) {
         v3.v[2] = v3.v[2] + f20;
         r = coll_sphere(f21 * 0.3f, &v3, 4, g);
         if (r != 0) {
-            w = coll_resolved_pos;
-            qcopy(m + 0x10, w);
-            ((Moby *)m)->pos.z = ((Moby *)m)->pos.z - f20;
+            w = (Hero *)coll_resolved_pos;
+            qcopy(&m->pos, w->rot_matrix);
+            m->pos.z = m->pos.z - f20;
             f21 = 0.01f;
-            vec_reflect(&s->vel, &s->vel, w + 0x10);
+            vec_reflect(&s->vel, &s->vel, &w->rot_matrix[4]);
             FastVecScale(&s->vel, &s->vel, f22);
             if (FastVecLength(&s->vel) < frame_scale * f21) goto L344;
         } else {
             r = coll_line(&v1, &v2, 0, *(int *)&P->moby, 0);
             if (r == 0) goto Lret;
-            w = collision_hit_point;
-            qcopy(m + 0x10, w);
+            w = (Hero *)collision_hit_point;
+            qcopy(&m->pos, w->rot_matrix);
             {
-                char *p = *(char **)(m + 0x24);
-                ((Moby *)m)->pos.z = ((Moby *)m)->pos.z + frame_scale * f23 * ((Moby *)m)->scale / *(float *)(p + 0x24);
+                char *p = *(char **)&m->pclass;
+                m->pos.z = m->pos.z + frame_scale * f23 * m->scale / *(float *)(p + 0x24);
             }
             f21 = 0.01f;
-            vec_reflect(&s->vel, &s->vel, w + 0x20);
+            vec_reflect(&s->vel, &s->vel, &w->rot_matrix[8]);
             FastVecScale(&s->vel, &s->vel, f22);
             if (FastVecLength(&s->vel) < frame_scale * f21) goto L344;
         }
@@ -452,27 +452,27 @@ void update_doom_bot_spawner(char *m) {
             s->timer = n;
             if (coll_hit_result[6] == 0 || coll_hit_result[7] > 0 ||
                 (short)n > scale_ticks(0xF0)) {
-                m[0x20] = 3;
+                m->state = 3;
                 s->timer = 0;
             }
         }
     L394:
-        w = hero_globals_base + 0xE1D;
-        if (*(int *)(w + 0x2FC) != 0 && moby_get_ride_transform(*(char **)(w + 0x2FC)) != 0) {
-            FastVecAdd(&s->vel, &s->vel, w + 0x100);
+        w = (Hero *)(hero_globals_base + 0xE1D);
+        if (*(int *)&w->ground_moby != 0 && moby_get_ride_transform(*(char **)&w->ground_moby) != 0) {
+            FastVecAdd(&s->vel, &s->vel, &w->motion.displacement);
         }
     Lfin:
-        FastVecAdd(m + 0x10, m + 0x10, &s->vel);
+        FastVecAdd(&m->pos, &m->pos, &s->vel);
         spawn_moby_collision_particles(m);
         return;
     Lret:
-        qcopy(m + 0x10, &v0);
+        qcopy(&m->pos, &v0);
         return;
     }
     case 3: {
-        f0 = ProbeGroundHeight(m + 0x10, 0, 0.5f);
+        f0 = ProbeGroundHeight(&m->pos, 0, 0.5f);
         if (f0 != 0.0f && g_coll_hit_moby != 0) {
-            RotateWithMoby((int)m, g_coll_hit_moby, m + 0x10, m + 0x40, m + 0x10, m + 0x40);
+            RotateWithMoby((int)m, g_coll_hit_moby, (char *)&m->pos, &m->rot, (char *)&m->pos, &m->rot);
         }
         if (FastDecTimer(&s->timer) != 0) {
             char *p = (char *)suck_moby_list;
@@ -502,12 +502,12 @@ void update_doom_bot_spawner(char *m) {
                 if (*(int *)&P->ground_moby != 0 && moby_get_ride_transform(*(char **)&P->ground_moby) != 0) {
                     FastVecAdd(&v1, &v1, &P->motion.displacement);
                 }
-                FastVecAdd(&v0, &v1, m + 0x10);
+                FastVecAdd(&v0, &v1, &m->pos);
                 spawn_doom_bot(*(int *)&s->holder, &v0, &v1);
                 s->timer = scale_ticks(8);
                 s->unk_3C = s->unk_3C + 1;
                 if (s->unk_3C >= 4) {
-                    m[0x20] = 4;
+                    m->state = 4;
                 }
             }
         }
@@ -520,28 +520,28 @@ void update_doom_bot_spawner(char *m) {
         break;
     }
     case 4:
-        f0 = ((Moby *)m)->scale * 0.92f;
-        ((Moby *)m)->alpha = ((Moby *)m)->alpha - 4;
-        ((Moby *)m)->scale = f0;
-        f0 = ProbeGroundHeight(m + 0x10, 0, 0.5f);
+        f0 = m->scale * 0.92f;
+        m->alpha = m->alpha - 4;
+        m->scale = f0;
+        f0 = ProbeGroundHeight(&m->pos, 0, 0.5f);
         if (f0 != 0.0f && g_coll_hit_moby != 0) {
-            RotateWithMoby((int)m, g_coll_hit_moby, m + 0x10, m + 0x40, m + 0x10, m + 0x40);
+            RotateWithMoby((int)m, g_coll_hit_moby, (char *)&m->pos, &m->rot, (char *)&m->pos, &m->rot);
         }
-        if (((Moby *)m)->alpha == 0) {
+        if (m->alpha == 0) {
             DeleteMoby(m);
         }
         break;
     case 5:
     default:
-        m[0x20] = 0;
+        m->state = 0;
         break;
     }
 }
 // resets the fields of a record (if non-null) to their defaults
 void reset_morphoray_chicken_slot_defaults(char *a) {
     if (a != 0) {
-        *(int *)(a + 0x78) = 0;
-        *(float *)(a + 0x7C) = 0.05f;
+        *(int *)&((Moby *)a)->pvars = 0;
+        *(float *)&((Moby *)a)->unk7C = 0.05f;
         *(float *)&((Moby *)a)->unk80 = 0.863f;
         *(int *)(a + 0x84) = 4;
         *(int *)(a + 0x88) = 3;
@@ -549,7 +549,7 @@ void reset_morphoray_chicken_slot_defaults(char *a) {
         *(short *)(a + 0x9C) = -1;
         *(short *)(a + 0x9E) = -1;
         *(int *)(a + 0xA0) = -1;
-        *(int *)(a + 0xA4) = -1;
+        *(int *)&((Moby *)a)->hit_slot = -1;
         *(int *)(a + 0xA8) = -1;
         *(int *)(a + 0xAC) = -1;
     }
@@ -601,19 +601,19 @@ char *spawn_morphoray_chicken(char *src) {
     float z;
     int n, rn;
     if (m != 0) {
-        m[0x30] = 0x7F;
+        ((Moby *)m)->update_dist = 0x7F;
         ((Moby *)m)->draw_dist = 0x7F;
-        m[0x31] = 1;
+        ((Moby *)m)->visible = 1;
         d = (struct ChickenVars *)((Moby *)m)->pvars;
         if ((((Moby *)src)->flags & 0x20) && (r0 = *(unsigned char **)(((char *)((Moby *)src)->pvars) + 0xC)) != 0) {
             set_moby_color(m, r0[4], r0[5], r0[6]);
         } else {
-            *(long *)(m + 0x38) = *(long *)(src + 0x38);
+            *(long *)&((Moby *)m)->spawn_frame = *(long *)&((Moby *)src)->spawn_frame;
         }
         ((Moby *)m)->anim_speed = random_float_between(0.85f, 1.15f);
-        p = m + 0x10;
-        qcopy(p, src + 0x10);
-        clear_u64_value(m + 0x40);
+        p = (char *)&((Moby *)m)->pos;
+        qcopy(p, &((Moby *)src)->pos);
+        clear_u64_value(&((Moby *)m)->rot);
         g = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
         ((Moby *)m)->rot.z = fast_atan2(((Moby *)m)->pos.x - g->motion.pos.f[0], ((Moby *)m)->pos.y - g->motion.pos.f[1]);
         h = ProbeGroundHeight(p, 0, 0.5f);
@@ -628,16 +628,16 @@ char *spawn_morphoray_chicken(char *src) {
             ((Moby *)m)->rot.x = -fast_atan2(vec_length(t[0] * t[0] + v[2] * v[2]), t[1]);
             ((Moby *)m)->rot.y = fast_atan2(t[2], t[0]);
         }
-        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
+        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)&((Moby *)m)->pclass + 0x10);
         Moby_PlaySound_ri(1, 0, m);
-        m[0x20] = 1;
+        ((Moby *)m)->state = 1;
         d->unk_66 = 0;
         d->life_timer = rand_range(scale_ticks(0x78), scale_ticks(0x12C));
         g2 = screen_globals_base + 0x4C6;
         d->unk_78 = IntToFloat(g2[0x15]) * 3.0f + 1.0f;
         d->unk_70 = -1;
         d->color_index = g2[0x15];
-        m[0xBC] = *(unsigned char *)&d->color_index;
+        ((Moby *)m)->command = *(unsigned char *)&d->color_index;
         SetDeathBits(src, 0, -1);
         r = (unsigned char *)GetFlaggedPvarWord(src);
         if (r != 0 && r[0xE] == 1) {
@@ -645,7 +645,7 @@ char *spawn_morphoray_chicken(char *src) {
         } else {
             DeleteMoby(src);
         }
-        z = 0.0f; PartType05Spawn(m + 0x10, 1000000.0f, 0x7F, 0x7F, 0x7F, scale_ticks(0xF), z);
+        z = 0.0f; PartType05Spawn(&((Moby *)m)->pos, 1000000.0f, 0x7F, 0x7F, 0x7F, scale_ticks(0xF), z);
         FastMemSet(((char *)d), 0, 0x20);
         r = (unsigned char *)morphoray_chicken_slots[*(int *)&morphoray_chicken_next_slot];
         if (r != 0 && *(short *)(r + 0xA6) == 0x10E && r[0x20] != 0xFE && r[0x20] != 0xFD) {
@@ -763,7 +763,7 @@ void update_morphoray_chicken(Moby *m) {
     Vec4A W;
     Vec4A V;
     Vars_2CABC0 *d;
-    char *h;
+    Hero *h;
     float save58;
     float ang;
     float s;
@@ -777,10 +777,10 @@ void update_morphoray_chicken(Moby *m) {
     Moby *o;
 
     hit = 0;
-    h = g_hero_CB;
+    h = (Hero *)g_hero_CB;
     d = (Vars_2CABC0 *)m->pvars;
     save58 = m->anim_speed;
-    ang = atan2_CB(m->pos.x - *(float *)(h + 0x80), m->pos.y - *(float *)(h + 0x84));
+    ang = atan2_CB(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1]);
     if (m->state == 0) {
         m->state = 1;
         d->h66 = 0;
@@ -1189,11 +1189,11 @@ char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float
         ((Moby *)m)->update_dist = 0x7F;
         ((Moby *)m)->draw_dist = 0x7F;
         ((Moby *)m)->visible = 1;
-        *(long *)(m + 0x38) = *(long *)(a + 0x38);
+        *(long *)&((Moby *)m)->spawn_frame = *(long *)(a + 0x38);
         ((Moby *)m)->rot.x = ((float *)&homing_shot_attached_particle_size)[2];
         ((Moby *)m)->rot.y = FastAddRots(f15, (&homing_shot_rotation_params)[1]);
         ((Moby *)m)->rot.z = f14;
-        qcopy(m + 0x10, t);
+        qcopy(&((Moby *)m)->pos, t);
         if (b != 0) {
             int rr;
             qcopy(&d->vel_x, b + 0x10);
@@ -1221,7 +1221,7 @@ char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float
         r = coll_line(lf, t, 0, (int)a, 0);
         if (r != 0) {
             BuildSphericalOffset(out, g_frame_time * 40.0f, ((Moby *)m)->rot.z, -((Moby *)m)->rot.y);
-            qcopy(m + 0x10, collision_hit_point);
+            qcopy(&((Moby *)m)->pos, collision_hit_point);
             t = tmp;
             k = 4;
             do {
@@ -1239,7 +1239,7 @@ char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float
                 r = scale_ticks(10);
                 r2 = scale_ticks(15);
                 r3 = rand_range(r, r2);
-                PartType27Spawn(m + 0x10, (char *)v, 0x7F2F4F6F, r3, 30000.0f);
+                PartType27Spawn(&((Moby *)m)->pos, (char *)v, 0x7F2F4F6F, r3, 30000.0f);
             } while (k >= 0);
             p = (unsigned char *)screen_globals_base + 0x4C6;
             if (p[0xF] == 0) {
@@ -1261,7 +1261,7 @@ char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float
         } else {
             spawn_source_attached_fading_effect_particle(m, 0x2F4F7F7F, d->life, -1, *(float *)&homing_shot_attached_particle_size);
             for (i = 0; i < 17; i++) {
-                q = (char *)spawn_random_size_rotated_particle(m + 0x10, (char *)veldin1_zero_vec, 1, 0.0f);
+                q = (char *)spawn_random_size_rotated_particle((char *)&((Moby *)m)->pos, (char *)veldin1_zero_vec, 1, 0.0f);
                 if (q != 0) {
                     *(float *)(q + 0xC) = random_float_between(*(float *)&homing_shot_trail_initial_size_min, *(float *)&homing_shot_trail_initial_size_max);
                     fi = IntToFloat(i);
@@ -1592,25 +1592,25 @@ typedef struct { float pad[4]; float v10; float v14; int pad2; int r1c; float f2
 
 /* Spawns a debris moby with randomized spin and velocity. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_002c8440.c, FUN_L00_002cbf68. */
 char *spawn_feather_moby(int unused, float *pos, float *vel) {
-    char *m = CreateMoby_r(0x1AC);
+    Moby *m = (Moby *)CreateMoby_r(0x1AC);
     if (m) {
         DD *d;
         int lo, hi;
         float sc;
-        m[0x30] = 0x40;
-        ((Moby *)m)->flags |= 0x1000;
-        ((Moby *)m)->draw_dist = 0x20;
-        m[0x31] = 1;
-        d = ((DD *)((Moby *)m)->pvars);
-        m[0x20] = 0;
-        m[0xBC] = 0;
-        qcopy(m + 0x10, pos);
-        ((Moby *)m)->pos.z += random_float_between(0.2f, 0.7f);
-        ((Moby *)m)->pos.x += vel[0] * 3.0f;
-        ((Moby *)m)->pos.y += vel[1] * 3.0f;
+        m->update_dist = 0x40;
+        m->flags |= 0x1000;
+        m->draw_dist = 0x20;
+        m->visible = 1;
+        d = ((DD *)m->pvars);
+        m->state = 0;
+        m->command = 0;
+        qcopy(&m->pos, pos);
+        m->pos.z += random_float_between(0.2f, 0.7f);
+        m->pos.x += vel[0] * 3.0f;
+        m->pos.y += vel[1] * 3.0f;
         qcopy(d, vel);
-        ((Moby *)m)->rot.y = randf_sym(0.17453292f, 0.5235988f);
-        ((Moby *)m)->rot.x = random_float_between(0.17453292f, 0.7853982f);
+        m->rot.y = randf_sym(0.17453292f, 0.5235988f);
+        m->rot.x = random_float_between(0.17453292f, 0.7853982f);
         {
             float t = random_float_between(200.0f, 370.0f) * 0.017453292f * g_frame_time;
             d->i24 = -1;
@@ -1618,9 +1618,9 @@ char *spawn_feather_moby(int unused, float *pos, float *vel) {
         }
         if (func_001160D8() & 1) {
             d->i24 = 1;
-            ((Moby *)m)->rot.y = -((Moby *)m)->rot.y;
+            m->rot.y = -m->rot.y;
         }
-        ((Moby *)m)->rot.z = random_angle_radians();
+        m->rot.z = random_angle_radians();
         d->f28 = -(random_float_between(200.0f, 550.0f) * 0.017453292f * g_frame_time);
         d->v10 = random_angle_radians();
         {
@@ -1632,15 +1632,15 @@ char *spawn_feather_moby(int unused, float *pos, float *vel) {
         hi = truncate_float_to_s32_r((float)*(int *)&feather_base_lifetime * 1.2f);
         d->r1c = scale_ticks(rand_range(lo, hi));
         sc = *(float *)&feather_scale_multiplier;
-        ((Moby *)m)->scale = ((Moby *)m)->scale * sc;
+        m->scale = m->scale * sc;
         if (hero_globals_base_r[2]) {
-            ((Moby *)m)->scale += ((Moby *)m)->scale;
+            m->scale += m->scale;
         }
         d->f20 = random_float_between(-1.2f, -0.4f) * g_frame_time;
         moby_build_matrix(m);
         copy_hero_moby_field_38(m);
     }
-    return m;
+    return (char *)m;
 }
 extern void FastVecAdd(void *, void *, void *);
 extern float FastAddRots(float, float);
@@ -1653,28 +1653,28 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern short falling_moby_horizontal_velocity_scale;
 
 // UpdateMoby_428: apply gravity and drag to the moby's velocity, then test for despawn.
-void update_damped_falling_moby(char *m) {
-    float *d = ((float *)((Moby *)m)->pvars);
+void update_damped_falling_moby(Moby *m) {
+    float *d = ((float *)m->pvars);
     float z;
     float k;
-    FastVecAdd(m + 0x10, m + 0x10, d);
+    FastVecAdd(&m->pos, &m->pos, d);
     k = *(float *)&falling_moby_horizontal_velocity_scale;
     z = d[2] - g_frame_time_sq * 15.0f;
     d[0] *= k;
     d[1] *= k;
     d[2] = z;
     if (z < d[8]) d[2] = d[8];
-    ((Moby *)m)->rot.z = FastAddRots(((Moby *)m)->rot.z, d[10]);
-    ((Moby *)m)->rot.x = FastAddRots(((Moby *)m)->rot.x, d[11] * (float)*(int *)&d[9]);
-    if (FastAbsF(((Moby *)m)->rot.x) > 0.7853982f) {
+    m->rot.z = FastAddRots(m->rot.z, d[10]);
+    m->rot.x = FastAddRots(m->rot.x, d[11] * (float)*(int *)&d[9]);
+    if (FastAbsF(m->rot.x) > 0.7853982f) {
         *(int *)&d[9] = -*(int *)&d[9];
     }
-    if (fast_dec_timer((int *)&d[7]) || ((Moby *)m)->visible == 0) {
+    if (fast_dec_timer((int *)&d[7]) || m->visible == 0) {
         DeleteMoby(m);
         return;
     }
     if (*(int *)&d[7] < scale_ticks(0x1E)) {
-        if (fast_subtract_rotations_cf(m + 0x23)) {
+        if (fast_subtract_rotations_cf(&m->alpha)) {
             DeleteMoby(m);
         }
     }
@@ -2012,13 +2012,13 @@ unsigned char *spawn_ryno_rocket(int a, V4 *pos, unsigned char *tgt, float f12, 
         ((Moby *)m)->rot.y = f14;
         ((Moby *)m)->state = 0;
         v->owner = a;
-        qcopy(m + 0x10, pos);
+        qcopy(&((Moby *)m)->pos, pos);
         qcopy(&v->start_pos, pos);
         v->unk_34 = 0;
         v->unk_38 = 0;
         *(int *)&v->steer_speed = 0;
         *(unsigned char **)&v->target = tgt;
-        ((Moby *)m)->scale = *(float *)(*(unsigned char **)(m + 0x24) + 0x24) * 0.25f;
+        ((Moby *)m)->scale = *(float *)(*(unsigned char **)&((Moby *)m)->pclass + 0x24) * 0.25f;
         if (tgt != 0) {
             v->target_oclass = *(short *)(tgt + 0xA6);
             r = (unsigned char *)GetFlaggedPvarWord(tgt);
@@ -2051,7 +2051,7 @@ unsigned char *spawn_ryno_rocket(int a, V4 *pos, unsigned char *tgt, float f12, 
         s.f[2] = pos->f[2];
         if (coll_line(&s, pos, 0, (int)p, 0)) {
             ((Moby *)m)->command = 2;
-            qcopy(m + 0x10, collision_hit_point);
+            qcopy(&((Moby *)m)->pos, collision_hit_point);
             BuildSphericalOffset(&w, v->steer_speed, ((Moby *)m)->rot.z, -((Moby *)m)->rot.y);
             vec_reflect(&dir, &w, collision_hit_point + 0x20);
             vec_scale_to_length(&dir, &dir, g_frame_time + g_frame_time);
@@ -2075,7 +2075,7 @@ extern void vec_set_length_xy(void *, void *, float);
 typedef struct { float x, y, z, w; char *p; int c; unsigned char b18; unsigned char b19; unsigned short s; float e; int i; } RocketHit;
 
 /* Rocket moby update: steers the rocket toward its target, moves it with collision retries, then checks hits and range. */
-void RocketSteerUpdate(char *m) {
+void RocketSteerUpdate(Moby *m) {
     struct RynoRocketVars *d;
     char *q;
     char *p;
@@ -2099,10 +2099,10 @@ void RocketSteerUpdate(char *m) {
     float zf;
 
     if (m == 0) return;
-    d = (struct RynoRocketVars *)((Moby *)m)->pvars;
+    d = (struct RynoRocketVars *)m->pvars;
     if (((char *)d) == 0) return;
 
-    a = ((Moby *)m)->scale;
+    a = m->scale;
     k = g_frame_time;
     *(u128 *)&z = 0;
     z.f[2] = k * 8.0f;
@@ -2110,7 +2110,7 @@ void RocketSteerUpdate(char *m) {
     k60 = frame_scale;
     {
         float k64 = g_frame_scale_sq;
-        ((Moby *)m)->scale = a + (*(float *)(*(char **)(m + 0x24) + 0x24) - a) * (k60 * 0.05f);
+        m->scale = a + (*(float *)(*(char **)&m->pclass + 0x24) - a) * (k60 * 0.05f);
         {
             float e = d->steer_speed;
             d->steer_speed = e + (k * 20.0f - e) * (k60 * 0.1f) * k64;
@@ -2126,9 +2126,9 @@ void RocketSteerUpdate(char *m) {
             r = scale_ticks(250);
             r -= scale_ticks(100);
             if (d->timer < r) {
-                ((Moby *)m)->rot.y = FastAddRots(((Moby *)m)->rot.y, FastSin(d->phase) * (frame_scale * 0.04f));
+                m->rot.y = FastAddRots(m->rot.y, FastSin(d->phase) * (frame_scale * 0.04f));
             }
-            ((Moby *)m)->rot.z = FastAddRots(((Moby *)m)->rot.z, FastCos(d->phase) * (frame_scale * 0.05f));
+            m->rot.z = FastAddRots(m->rot.z, FastCos(d->phase) * (frame_scale * 0.05f));
         } else {
             qcopy(&u.v.c, q + 0x10);
             u.v.c.f[2] = u.v.c.f[2] + d->aim_height;
@@ -2157,9 +2157,9 @@ void RocketSteerUpdate(char *m) {
                 FastVecScale(&v90, &u.v.b, t);
                 FastVecAdd(&v90, &v90, &u.v.a);
                 g = fast_atan2(v90.f[0], v90.f[1]);
-                ((Moby *)m)->rot.z = SpringTurn((float *)&d->unk_34, ((Moby *)m)->rot.z, g, g_frame_time_sq * 188.49556f, 0.0f, 0.0f);
+                m->rot.z = SpringTurn((float *)&d->unk_34, m->rot.z, g, g_frame_time_sq * 188.49556f, 0.0f, 0.0f);
                 g = fast_atan2(vec_length_xy(&v90), v90.f[2]);
-                ((Moby *)m)->rot.y = SpringTurn((float *)&d->unk_38, ((Moby *)m)->rot.y, -g, g_frame_time_sq * 188.49556f, 0.0f, 0.0f);
+                m->rot.y = SpringTurn((float *)&d->unk_38, m->rot.y, -g, g_frame_time_sq * 188.49556f, 0.0f, 0.0f);
             }
             s = FastVecLength(&u.v.a);
             if (s < 6.0f) {
@@ -2170,7 +2170,7 @@ void RocketSteerUpdate(char *m) {
         }
     }
 
-    BuildSphericalOffset(&v50, d->steer_speed, ((Moby *)m)->rot.z, -((Moby *)m)->rot.y);
+    BuildSphericalOffset(&v50, d->steer_speed, m->rot.z, -m->rot.y);
     *(u128 *)&u.v.b = 0;
     u.v.b.f[0] = random_float_between(-1.0f, 1.0f);
     u.v.b.f[1] = random_float_between(-1.0f, 1.0f);
@@ -2180,12 +2180,12 @@ void RocketSteerUpdate(char *m) {
     vec_scale_to_length(&z, &v50, -random_float_between(g_frame_time * 0.1f, g_frame_time));
     FastVecAdd(&u.v.a, &u.v.a, &z);
     vec_scale_to_length(&z, &v50, random_float_between(0.0f, 1.0f) * d->steer_speed);
-    FastVecAdd(&z, &z, m + 0x10);
+    FastVecAdd(&z, &z, &m->pos);
     {
         int c1 = scale_ticks(rand_range(0x1C, 0x28));
         PartType04Spawn(&z, &u.v.a, 0x6F00AFFF, 0x100000FF, c1, 0x28, rand_range(0x28, 0x46), 1);
     }
-    qcopy(&v20, m + 0x10);
+    qcopy(&v20, &m->pos);
     FastVecAdd(&d->start_pos, &d->start_pos, &v50);
     d->phase = FastAddRots(d->phase, d->unk_50);
     d->unk_4C = FastAddRots(d->unk_4C, d->unk_54);
@@ -2205,10 +2205,10 @@ void RocketSteerUpdate(char *m) {
         zf = 0.0f;
         u.v.a.f[3] = zf;
         u.v.a.f[0] = zf;
-        euler_to_matrix(va0, m + 0x40);
+        euler_to_matrix(va0, &m->rot);
         transform_vector(&u.v.a, &u.v.a, va0);
-        FastVecAdd(m + 0x10, &d->start_pos, &u.v.a);
-        if (coll_line(&v20, m + 0x10, 6, (int)m, 0) == 0) goto done;
+        FastVecAdd(&m->pos, &d->start_pos, &u.v.a);
+        if (coll_line(&v20, &m->pos, 6, (int)m, 0) == 0) goto done;
         goto hit;
     top:;
     }
@@ -2220,16 +2220,16 @@ hit:
 done:
 
     if (flag) {
-        ((Moby *)m)->rot.z = fast_atan2(((Moby *)m)->pos.x - v20.f[0], ((Moby *)m)->pos.y - v20.f[1]);
-        ((Moby *)m)->rot.y = -fast_atan2(vec_distance_xy(&v20, m + 0x10), ((Moby *)m)->pos.z - v20.f[2]);
+        m->rot.z = fast_atan2(m->pos.x - v20.f[0], m->pos.y - v20.f[1]);
+        m->rot.y = -fast_atan2(vec_distance_xy(&v20, &m->pos), m->pos.z - v20.f[2]);
         d->unk_34 = 0;
         d->unk_38 = 0;
     }
 
-    if (((Moby *)m)->pos.x < 0.0f || ((Moby *)m)->pos.y < 0.0f || ((Moby *)m)->pos.z < 0.0f) goto del;
+    if (m->pos.x < 0.0f || m->pos.y < 0.0f || m->pos.z < 0.0f) goto del;
     u.h.c = 0x830000;
     u.h.e = 3.0f;
-    u.h.p = m;
+    u.h.p = (char *)m;
     u.h.i = 1;
     qcopy(&u.v.a, &v50);
     vec_set_length_xy(&u.v.a, &u.v.a, 1.0f);
@@ -2237,15 +2237,15 @@ done:
     u.h.b18 = 3;
     u.h.w = 5627.925f;
     u.h.b19 = 3;
-    u.h.s = *(unsigned short *)&((Moby *)m)->oclass;
-    if (coll_line(&v20, m + 0x10, 0, (int)m, (int)&u.v.a)) {
+    u.h.s = *(unsigned short *)&m->oclass;
+    if (coll_line(&v20, &m->pos, 0, (int)m, (int)&u.v.a)) {
         gg = (char *)coll_hit_result;
         p = *(char **)(gg + 0x18);
         if (p != 0) {
             if (p == *(char **)(hero_globals_base + 0x2E9D) || p == *(char **)&d->owner
                 || *(short *)(p + 0xA6) == 0x1C9 || *(short *)(p + 0xA6) == 0) goto keep;
-            m[0xBC] = 2;
-            qcopy(m + 0x10, gg + 0x20);
+            m->command = 2;
+            qcopy(&m->pos, gg + 0x20);
             vec_reflect(&dir, &v50, gg + 0x40);
             vec_scale_to_length(&dir, &dir, g_frame_time + g_frame_time);
             spawn_explosion_alt(m, &dir, 0, 0.0f, 0.0f, 10, 3, 9, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
@@ -2253,8 +2253,8 @@ done:
             return;
         } else {
             if (*(int *)(gg + 0x1C) <= 0) goto keep;
-            m[0xBC] = 1;
-            qcopy(m + 0x10, gg + 0x20);
+            m->command = 1;
+            qcopy(&m->pos, gg + 0x20);
             vec_reflect(&dir, &v50, gg + 0x40);
             vec_scale_to_length(&dir, &dir, g_frame_time + g_frame_time);
             spawn_explosion_alt(m, &dir, 0, 0.0f, 1.0f, 10, 3, 9, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
@@ -2263,7 +2263,7 @@ done:
         }
     } else {
         if (fast_dec_timer(&d->timer) == 0
-            && !(200.0f < vec_distance_xy(m + 0x10, *(char **)(hero_globals_base + 0x2E9D) + 0x10))) goto keep;
+            && !(200.0f < vec_distance_xy(&m->pos, *(char **)(hero_globals_base + 0x2E9D) + 0x10))) goto keep;
     }
 del:
     DeleteMoby(m);
@@ -2363,8 +2363,8 @@ char *select_nearest_drone_target(char *a, int *excl) {
     char *m;
     float best = 1e9f;
     float v[4];
-    for (m = (char *)suck_moby_list; m != 0; m = *(char **)(m + 0x28)) {
-        char *cls = *(char **)(m + 0x24);
+    for (m = (char *)suck_moby_list; m != 0; m = *(char **)&((Moby *)m)->next) {
+        char *cls = *(char **)&((Moby *)m)->pclass;
         int t = 0;
         float dist;
         char *h;
@@ -2389,10 +2389,10 @@ char *select_nearest_drone_target(char *a, int *excl) {
             short c = ((Moby *)m)->oclass;
             if (c != 0x350 && c != 0x31) continue;
         }
-        dist = FastVecDist(a, m + 0x10);
+        dist = FastVecDist(a, &((Moby *)m)->pos);
         if (((Moby *)m)->oclass == 0x4D6) {
             vec_scale_to_length(v, ((char *)((Moby *)m)->pvars), dist);
-            FastVecAdd(v, v, m + 0x10);
+            FastVecAdd(v, v, &((Moby *)m)->pos);
             if (dist < FastVecDist(a, v)) continue;
         } else {
             float lim;
@@ -2416,7 +2416,7 @@ char *select_nearest_drone_target(char *a, int *excl) {
         h = get_moby_suck_cannon_record(m);
         if (h != 0 && *(short *)(h + 0x68) > 0) continue;
         x = (char *)GetFlaggedPvarWord(m);
-        qcopy(v, m + 0x10);
+        qcopy(v, &((Moby *)m)->pos);
         if (x != 0) v[2] = v[2] + (*(float *)(x + 0x10) + 0.05f);
         if (coll_line(a, v, 6, (int)m, 0) == 0) {
             best = dist;

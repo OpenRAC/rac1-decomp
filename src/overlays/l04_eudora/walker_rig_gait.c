@@ -477,7 +477,7 @@ extern float inv_frame_scale MACRO_ADDR;
 typedef int u128_96938 __attribute__((mode(TI)));
 
 /* Level 04 walker update: blends heading and speed, places the legs, probes the ground and sets the anim rate; returns flags. */
-int leg_walker_update(char *m, char *s, float speed, float ang, float accel) {
+int leg_walker_update(Moby *m, char *s, float speed, float ang, float accel) {
     float buf[8];
     float v20[24];
     float v80[4];
@@ -497,24 +497,24 @@ int leg_walker_update(char *m, char *s, float speed, float ang, float accel) {
     char **pp;
     float *f;
 
-    if (*(unsigned char *)(m + 0x52) != 0xFF) {
+    if (m->seq != 0xFF) {
         t = MobyGetFrameValue((struct Moby *)m);
     } else {
-        t = IntToFloat(*(unsigned char *)(m + 0x51)) + animation_start(*(unsigned char *)(m + 0x22), *(unsigned char *)(m + 0x53));
+        t = IntToFloat(m->prev_frame) + animation_start(m->class_slot, m->prev_seq);
     }
-    flags = rig_pick_mode_r(m, s, t);
+    flags = rig_pick_mode_r((char *)m, s, t);
     if (*(unsigned short *)(s + 0xEE) & 4) {
-        *(float *)(m + 0x48) = SpringTurn(*(float *)(m + 0x48), *(float *)(s + 0x6C), (float *)(s + 0xC8),
+        m->rot.z = SpringTurn(m->rot.z, *(float *)(s + 0x6C), (float *)(s + 0xC8),
                                                  *(float *)(s + 0xCC), *(float *)(s + 0xD0), *(float *)(s + 0xD4));
     } else if (flags & 0xF) {
-        *(float *)(m + 0x48) = SpringTurn(*(float *)(m + 0x48), ang, (float *)(s + 0xC8),
+        m->rot.z = SpringTurn(m->rot.z, ang, (float *)(s + 0xC8),
                                                  *(float *)(s + 0xCC), *(float *)(s + 0xD0), *(float *)(s + 0xD4));
     } else {
-        *(float *)(m + 0x48) = SpringTurn(*(float *)(m + 0x48), ang, (float *)(s + 0xC8),
+        m->rot.z = SpringTurn(m->rot.z, ang, (float *)(s + 0xC8),
                                                  0.0f, *(float *)(s + 0xD0) + *(float *)(s + 0xD0), *(float *)(s + 0xD4));
     }
-    rig_animate_r(m, s, flags, ang);
-    *(float *)(m + 0x44) = SpringTurn(*(float *)(m + 0x44), *(float *)(s + 0xB8), (float *)(s + 0xBC),
+    rig_animate_r((char *)m, s, flags, ang);
+    m->rot.y = SpringTurn(m->rot.y, *(float *)(s + 0xB8), (float *)(s + 0xBC),
                                              0.005f, 0.01f, frame_scale * 0.017453292f);
 
     ((int *)buf)[0] = *(unsigned char *)(s + 0xF0);
@@ -548,7 +548,7 @@ int leg_walker_update(char *m, char *s, float speed, float ang, float accel) {
     for (i = 0; i < 6; i++) {
         FastVecAdd_r(s + i * 0x10, &v20[i * 4], v80);
     }
-    FastVecAdd_r(m + 0x10, m + 0x10, v80);
+    FastVecAdd_r(&m->pos, &m->pos, v80);
 
     changed = (flags ^ *(unsigned char *)(s + 0xB6)) & flags;
     *(unsigned char *)(s + 0xB6) = flags;
@@ -561,29 +561,29 @@ int leg_walker_update(char *m, char *s, float speed, float ang, float accel) {
         if (*(float *)(s + 0xC0) < speed) *(float *)(s + 0xC0) = speed;
     }
 
-    res = update_leg_rig_height_and_tilt_r(m, s);
-    WalkCycleStep_r(m, s, speed, ang, accel, changed);
+    res = update_leg_rig_height_and_tilt_r((char *)m, s);
+    WalkCycleStep_r((char *)m, s, speed, ang, accel, changed);
 
     if (!(*(unsigned short *)(s + 0xEE) & 4)) {
         rig_probe_setup(m, 0, &a90, (float *)buf, &a94, &a98);
-        if (*(unsigned char *)(m + 0x53) == **(int **)(s + 0x7C) ||
-            *(unsigned char *)(m + 0x53) == **(int **)(s + 0x74) ||
-            *(unsigned char *)(m + 0x53) == **(int **)(s + 0x78)) {
+        if (m->prev_seq == **(int **)(s + 0x7C) ||
+            m->prev_seq == **(int **)(s + 0x74) ||
+            m->prev_seq == **(int **)(s + 0x78)) {
             *(float *)(s + 0xE8) = *(float *)(s + 0xE0) + *(float *)(s + 0xE0);
-        } else if (*(unsigned char *)(m + 0x53) == **(int **)(s + 0x8C) && (*(unsigned char *)(s + 0xB6) & 0xF)) {
+        } else if (m->prev_seq == **(int **)(s + 0x8C) && (*(unsigned char *)(s + 0xB6) & 0xF)) {
             *(float *)(s + 0xE8) = *(float *)(s + 0xE0) + *(float *)(s + 0xE0);
-        } else if (*(unsigned char *)(m + 0x53) == *(unsigned char *)(m + 0x52)) {
+        } else if (m->prev_seq == m->seq) {
             *(float *)(s + 0xE8) = *(float *)(s + 0xE8) * 0.9f;
         }
         buf[2] = buf[2] + *(float *)(s + 0xE8);
         a98 = a98 - *(float *)(s + 0xE8);
-        FastVecSub(buf + 4, m + 0x10, buf);
+        FastVecSub(buf + 4, &m->pos, buf);
         for (k = 0; k < 8 && coll_capsule(a94, a98, buf, 4, m); k++) {
             qcopy(buf, eudora_coll_resolved_pos);
             res |= 1;
         }
-        FastVecSub(v20, buf, m + 0x10);
-        FastVecAdd_r(m + 0x10, buf, buf + 4);
+        FastVecSub(v20, buf, &m->pos);
+        FastVecAdd_r(&m->pos, buf, buf + 4);
         if (vec_length_xy_r(v20) < *(float *)(s + 0xC0) * 0.5f) res |= 2;
     }
 
@@ -595,16 +595,16 @@ int leg_walker_update(char *m, char *s, float speed, float ang, float accel) {
     ((int *)buf)[5] = *(unsigned char *)(s + 0xB5);
     transform_scaled_vertex_batch((struct Moby *)m, 6, (int *)buf, s);
 
-    if (*(unsigned char *)(s + 0xB7) == 0x12 && *(unsigned char *)(m + 0x52) == **(int **)(s + 0xA0)) {
+    if (*(unsigned char *)(s + 0xB7) == 0x12 && m->seq == **(int **)(s + 0xA0)) {
         return res;
     }
-    *(float *)(m + 0x58) = 1.0f;
+    m->anim_speed = 1.0f;
     if (*(unsigned char *)(s + 0xB7) != 0) {
         pp = (char **)(s + 0x70);
         for (i = 0; i < 13; i++, pp++) {
-            if (*((int **)(s + 0x70))[i] == *(unsigned char *)(m + 0x52)) {
+            if (*((int **)(s + 0x70))[i] == m->seq) {
                 if (!(*(float *)(s + 0xC0) < g_frame_time * 0.19f) ||
-                    !(FastDiffRots(*(float *)(m + 0x48), ang) > 0.092399783f) ||
+                    !(FastDiffRots(m->rot.z, ang) > 0.092399783f) ||
                     !(speed < g_frame_time * 0.19f)) {
                     f = ((float **)(s + 0x70))[i];
                     t = *(float *)(s + 0xC0);
@@ -612,7 +612,7 @@ int leg_walker_update(char *m, char *s, float speed, float ang, float accel) {
                     t = g_frame_time * 0.19f;
                     f = (float *)*pp;
                 }
-                *(float *)(m + 0x58) = inv_frame_scale * FastAbsF_r(t / f[2]);
+                m->anim_speed = inv_frame_scale * FastAbsF_r(t / f[2]);
                 break;
             }
         }

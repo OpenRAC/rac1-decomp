@@ -17,7 +17,10 @@ struct ShipVars {
     f32 bank_b;                     /* 0x38 */
     u8 pad_3C[0x28];
     f32 speed;                      /* 0x64 */
-    u8 pad_68[0x20];
+    u8 pad_68[2];
+    u16 muzzle_index;               /* 0x6A: next gun point, 0..3 */
+    u8 pad_6C[0x18];
+    s32 fire_cooldown;              /* 0x84: ticks until the next shot */
     s32 target;                     /* 0x88: locked moby */
     s32 target_timer;               /* 0x8C: ticks locked */
     u8 pad_90[0x50];
@@ -512,7 +515,7 @@ void update_ship_shot_firing_and_reticle(char *moby, char *obj, float p2, float 
     }
     vec_scale_to_length_r(a, a, 23.0f);
     FastVecAdd_r(d, a, moby + 0x10);
-    project_world_point_to_screen_pixels_r(d, obj + 0xE0, obj + 0xE4, 0);
+    project_world_point_to_screen_pixels_r(d, &((struct ShipVars *)obj)->reticle_x, &((struct ShipVars *)obj)->reticle_y, 0);
 }
 extern void fast_dec_timer(int *arg0);
 extern void Moby_GetJointWorldPos(void *, int, void *);
@@ -529,23 +532,23 @@ extern short ship_speed_scale;
 extern short ship_missile_cooldown;
 
 /* on a pad press, fires the aimed shot and resets the cooldown */
-void try_fire_ship_projectile(char *moby, char *d) {
-    if (fast_dec_timer_i(d + 0x84) && (*(int *)(pad_globals_base + 0x2610) & 0x28)) {
+void try_fire_ship_projectile(char *moby, struct ShipVars *d) {
+    if (fast_dec_timer_i(&d->fire_cooldown) && (*(int *)(pad_globals_base + 0x2610) & 0x28)) {
         struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
         if (g->ship_ammo != 0) {
             char a[16];
             char b[16];
             int t = 0;
-            int v = (*(unsigned short *)(d + 0x6A) + 1) & 3;
-            *(unsigned short *)(d + 0x6A) = v;
+            int v = (d->muzzle_index + 1) & 3;
+            d->muzzle_index = v;
             Moby_GetJointWorldPos(moby, v + 7, a);
             vec_scale_to_length(b, d, 0.3f);
             FastVecAdd(a, a, b);
-            if (*(int *)(d + 0x88) != 0 && !(500 < *(int *)(d + 0x8C))) t = *(int *)(d + 0x88);
+            if (d->target != 0 && !(500 < d->target_timer)) t = d->target;
             if (spawn_ship_projectile(moby, a, t, moby + 0x40, *(float *)&ship_missile_speed * *(float *)&ship_speed_scale, scale_ticks(300))) {
                 Moby_PlaySound_i(2, 0, (int)moby);
                 g->ship_ammo -= 1;
-                *(int *)(d + 0x84) = *(int *)&ship_missile_cooldown;
+                d->fire_cooldown = *(int *)&ship_missile_cooldown;
             }
         }
     }
@@ -1083,15 +1086,15 @@ void jet_fighter_update(Moby *moby) {
                     try_set_help_message(7, 0x2B09);
                 } else {
                     int elapsed, period;
-                    char *statistics;
+                    HelpTab_313218 *statistics;
                     elapsed = scale_ticks(gameplay_event_frame_count);
                     period = 600;
-                    statistics = help_stats_base + 0x34D;
-                    elapsed -= *(unsigned short *)(statistics + 0x1E2) * period;
-                    if (elapsed > (int)((float)scale_ticks(18) * 60.0f) || *(unsigned short *)(statistics + 0x1E2) * period == 0) {
+                    statistics = (HelpTab_313218 *)(help_stats_base + 0x34D);
+                    elapsed -= statistics->r[0x3C].best * period;
+                    if (elapsed > (int)((float)scale_ticks(18) * 60.0f) || statistics->r[0x3C].best * period == 0) {
                         Help_Request(0x2AFA, 0x3C);
-                    } else if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(statistics + 0x1E2)) {
-                        *(unsigned short *)(statistics + 0x1E2) = scale_ticks(gameplay_event_frame_count) / 600;
+                    } else if (scale_ticks(gameplay_event_frame_count) / 600 > statistics->r[0x3C].best) {
+                        statistics->r[0x3C].best = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                 }
                 if (item_available[7] != 0 && (*(int *)(pad_globals_base + 0x2604) & 0x10)) {
@@ -2232,16 +2235,16 @@ extern void *store_moby_in_suck_cannon_pos(void *, void *, void *, float) __asm_
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
-void *moby_park_state_on_find(unsigned char *arg, void *pos, void *t, float h) {
+void *moby_park_state_on_find(Moby *arg, void *pos, void *t, float h) {
     void *found = store_moby_in_suck_cannon_pos(arg, pos, t, h);
     if (found != 0) {
-        unsigned char state = arg[0x20];
+        unsigned char state = arg->state;
         if (state != 0x14) {
-            arg[0xBC] = state;
-            arg[0x20] = 0x14;
+            arg->command = state;
+            arg->state = 0x14;
         }
-    } else if (arg[0x20] == 0x14) {
-        arg[0x20] = arg[0xBC];
+    } else if (arg->state == 0x14) {
+        arg->state = arg->command;
     }
     return found;
 }
@@ -2841,35 +2844,35 @@ extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern void *SpawnBreakFragment_s(char *, int, void *, void *, int, int, float *, float *, float, float *) __asm__("func_L00_00265050");
 
 /* Bubbling vent: puffs a bubble while the hero is near; on trigger spawns three debris pieces and goes idle. */
-void update_oil_tanker_link_effects_and_destruction(char *m) {
-    struct OilTankerLinkVars *d = (struct OilTankerLinkVars *)((Moby *)m)->pvars;
+void update_oil_tanker_link_effects_and_destruction(Moby *m) {
+    struct OilTankerLinkVars *d = (struct OilTankerLinkVars *)m->pvars;
     float v[4];
     float w[4];
     float r[4];
-    switch (((unsigned char *)m)[0x20]) {
+    switch (m->state) {
     case 0:
         if (fast_dec_timer_i(&d->bubble_timer) == 0 && random_integer_below(*(int *)&oil_tanker_link_bubble_chance) == 0
-            && ((unsigned char *)m)[0x31] != 0 && *(int *)&pokitaru_available_moby_slot_count >= 0x47) {
-            matrix_mul_vec3(v, &oil_tanker_link_bubble_offset, m + 0xC0);
-            FastVecAdd(v, v, m + 0x10);
+            && m->visible != 0 && *(int *)&pokitaru_available_moby_slot_count >= 0x47) {
+            matrix_mul_vec3(v, &oil_tanker_link_bubble_offset, &m->rot_row0);
+            FastVecAdd(v, v, &m->pos);
             rand_vec(r, 0.0f, *(float *)&oil_tanker_link_bubble_jitter * g_frame_time);
-            FastVecSub(w, m + 0x10, &d->prev_pos);
+            FastVecSub(w, &m->pos, &d->prev_pos);
             w[2] -= g_frame_time + g_frame_time;
             FastVecAdd(w, w, r);
             spawn_class_5f4_moby_with_random_rotation_5(v, w, pokitaru_ocean_height, 0, random_float_between(*(float *)&oil_tanker_link_bubble_scale_min, *(float *)&oil_tanker_link_bubble_scale_max));
         }
-        qcopy(&d->prev_pos, m + 0x10);
+        qcopy(&d->prev_pos, &m->pos);
         break;
     case 1:
-        SpawnExplosionFx(m, m + 0x10, -1, 5.0f, 13.0f);
-        FastVecScale(v, m + 0xC0, *(float *)&oil_tanker_link_debris_speed * frame_scale);
+        SpawnExplosionFx(m, &m->pos, -1, 5.0f, 13.0f);
+        FastVecScale(v, &m->rot_row0, *(float *)&oil_tanker_link_debris_speed * frame_scale);
         v[2] += frame_scale * 0.08f;
-        SpawnBreakFragment_s(m, 0x785, m + 0x10, m + 0x40, scale_ticks(0x5A), 0, v, pokitaru_zero_vec, g_frame_time_sq * 12.0f, pokitaru_zero_vec);
-        SpawnBreakFragment_s(m, 0x786, m + 0x10, m + 0x40, scale_ticks(0x5A), 0, v, pokitaru_zero_vec, g_frame_time_sq * 12.0f, pokitaru_zero_vec);
-        SpawnBreakFragment_s(m, 0x787, m + 0x10, m + 0x40, scale_ticks(0x5A), 0, v, pokitaru_zero_vec, g_frame_time_sq * 12.0f, pokitaru_zero_vec);
-        m[0x20] = 2;
-        m[0x31] = 0;
-        ((Moby *)m)->flags |= 1;
+        SpawnBreakFragment_s((char *)m, 0x785, &m->pos, &m->rot, scale_ticks(0x5A), 0, v, pokitaru_zero_vec, g_frame_time_sq * 12.0f, pokitaru_zero_vec);
+        SpawnBreakFragment_s((char *)m, 0x786, &m->pos, &m->rot, scale_ticks(0x5A), 0, v, pokitaru_zero_vec, g_frame_time_sq * 12.0f, pokitaru_zero_vec);
+        SpawnBreakFragment_s((char *)m, 0x787, &m->pos, &m->rot, scale_ticks(0x5A), 0, v, pokitaru_zero_vec, g_frame_time_sq * 12.0f, pokitaru_zero_vec);
+        m->state = 2;
+        m->visible = 0;
+        m->flags |= 1;
         break;
     }
 }
@@ -3329,11 +3332,11 @@ char *activate_listed_blarg_ship(int idx) {
     do {
         int id = *p & 0x7FFF;
         if (*(short *)((id << 8) + pokitaru_mobys_m + 0xA6) == 0x527 && *(unsigned char *)((id << 8) + pokitaru_mobys_m + 0x20) == 4 && random_integer_below(10) == 0) {
-            char *m;
+            Moby *m;
             struct BlargShipVars *d;
             float a;
-            m = (char *)pokitaru_mobys_m + (id << 8);
-            d = (struct BlargShipVars *)((Moby *)m)->pvars;
+            m = (Moby *)((char *)pokitaru_mobys_m + (id << 8));
+            d = (struct BlargShipVars *)m->pvars;
             qcopy(v2, pokitaru_camera_rot);
             v2[0] = 0;
             if (v2[1] > 0.17453292f) v2[1] = 0.17453292f;
@@ -3347,16 +3350,16 @@ char *activate_listed_blarg_ship(int idx) {
             vec_scale_to_length(v0, v3, 6.0f);
             FastVecAdd(v1, v1, v0);
             qcopy(&d->hero_pos, hero_globals_base + 0xE9D);
-            qcopy(m + 0x10, v1);
-            m[0x20] = 5;
-            m[0xBC] = 1;
+            qcopy(&m->pos, v1);
+            m->state = 5;
+            m->command = 1;
             d->turn_speed = g_frame_time * 20.0f;
             d->unk_98 = 0;
             d->unk_94 = 5.0f;
-            if (((unsigned char *)m)[0x53] != 0) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
-            ((Moby *)m)->flags &= 0xFFFE;
-            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
-            return m;
+            if (m->prev_seq != 0) MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+            m->flags &= 0xFFFE;
+            *(int *)&m->collision = *(int *)(*(char **)&m->pclass + 0x10);
+            return (char *)m;
         }
     } while (*p++ >= 0);
     return 0;
@@ -3458,21 +3461,21 @@ void update_bubble_motion_and_scale(char *m) {
 
 /* Creates a class 0x5F4 moby at position with random rotation and returns it, or 0. */
 char *spawn_class_5f4_moby_with_random_rotation(void *position, void *vector, void *owner, float scale) {
-    char *moby = CreateMoby(0x5F4);
+    Moby *moby = (Moby *)CreateMoby(0x5F4);
     if (moby != 0) {
-        struct BubbleVars *data = (struct BubbleVars *)((Moby *)moby)->pvars;
-        moby[0x20] = 1;
-        qcopy(moby + 0x10, position);
-        ((Moby *)moby)->rot.x = random_angle_radians();
-        ((Moby *)moby)->rot.z = random_angle_radians();
-        ((Moby *)moby)->draw_dist = 0xFF;
-        ((unsigned char *)moby)[0x30] = 0xFF;
-        moby[0x31] = 1;
-        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * scale;
+        struct BubbleVars *data = (struct BubbleVars *)moby->pvars;
+        moby->state = 1;
+        qcopy(&moby->pos, position);
+        moby->rot.x = random_angle_radians();
+        moby->rot.z = random_angle_radians();
+        moby->draw_dist = 0xFF;
+        moby->update_dist = 0xFF;
+        moby->visible = 1;
+        moby->scale = *(float *)(*(char **)&moby->pclass + 0x24) * scale;
         *(void **)&data->surface = owner;
         qcopy(&data->vel_x, vector);
     }
-    return moby;
+    return (char *)moby;
 }
 extern short bubble_splash_color_a;
 extern short bubble_splash_color_b;

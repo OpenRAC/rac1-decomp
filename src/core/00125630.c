@@ -775,10 +775,10 @@ short mpeg_get_dmvector(int arg0) {
  * of globals; FRAME_PICTURE == 3, TOP_FIELD == 1 (ISO encoding).
  */
 void dualPrimeVector(void *arg0, int DMV[][2], int *dmvector, int mvx, int mvy) {
-    char *s = (char *)arg0;
+    struct MpegDecoder *s = (struct MpegDecoder *)((char *)arg0);
 
-    if (*(int *)(s + 0x174) == 3) {
-        int top_field_first = *(int *)(s + 0x178);
+    if (s->picture_structure == 3) {
+        int top_field_first = s->top_field_first;
         if (top_field_first) {
             DMV[0][0] = ((mvx + (mvx > 0)) >> 1) + dmvector[0];
             DMV[0][1] = ((mvy + (mvy > 0)) >> 1) + dmvector[1] - 1;
@@ -793,7 +793,7 @@ void dualPrimeVector(void *arg0, int DMV[][2], int *dmvector, int mvx, int mvy) 
     } else {
         DMV[0][0] = ((mvx + (mvx > 0)) >> 1) + dmvector[0];
         DMV[0][1] = ((mvy + (mvy > 0)) >> 1) + dmvector[1];
-        if (*(int *)(s + 0x174) == 1) {
+        if (s->picture_structure == 1) {
             DMV[0][1]--;
         } else {
             DMV[0][1]++;
@@ -823,12 +823,12 @@ int mb_address_increment(void *arg0) {
             break;
         case 0:
             ret = _peepBit(s, 11);
-            if (*(int *)(s + 0x848) != 0 && ret == 15) {
+            if (((struct MpegDecoder *)s)->unk848 != 0 && ret == 15) {
                 _flushBuf(s, 11);
                 cont = 1;
             } else {
                 _errMessage(s, str_mpeg_invalid_mb_addr_inc, code);
-                *(int *)(s + 0x11C) = 1;
+                ((struct MpegDecoder *)s)->unk11C = 1;
                 return 1;
             }
             break;
@@ -852,15 +852,15 @@ extern int _doMC(void *, int);
 extern void _Error(void *, void *);
 
 int _pictureData0(void *arg0) {
-    char *s = (char *)arg0;
+    struct MpegDecoder *s = (struct MpegDecoder *)((char *)arg0);
     int count;
     int ret;
 
-    *(int *)(s + 0x810) = 0;
-    *(int *)(s + 0x814) = 0;
+    s->mb_buf_index = 0;
+    *(int *)((char *)s + 0x814) = 0;
 
-    count = *(int *)(s + 0x12C) * *(int *)(s + 0x130);
-    if (*(int *)(s + 0x174) != 3) {
+    count = s->mb_width * s->mb_height;
+    if (s->picture_structure != 3) {
         count >>= 1;
     }
 
@@ -877,7 +877,7 @@ int _pictureData0(void *arg0) {
         ;
 
     if (ret == 0) {
-        _doMC(s, (unsigned int)*(int *)(s + 0x810) < 1);
+        _doMC(s, (unsigned int)s->mb_buf_index < 1);
     }
 
     if ((unsigned int)(ret - 1) < 2) {
@@ -905,14 +905,14 @@ extern char str_mpeg_slice_a0_error[];
  * +0x1B0, and zero eight fields of the *arg4 output struct.
  */
 int _sliceA0(void *arg0, int arg1, int *arg2, int *arg3, void *arg4) {
-    char *s = (char *)arg0;
+    struct MpegDecoder *s = (struct MpegDecoder *)((char *)arg0);
     char *p5 = (char *)arg4;
     unsigned int code;
     int sliceB_result;
     int mbInc;
     int row;
 
-    *(int *)(s + 0x11C) = 0;
+    s->unk11C = 0;
     next_start_code(s);
     code = _peepBit(s, 0x20);
 
@@ -923,18 +923,18 @@ int _sliceA0(void *arg0, int arg1, int *arg2, int *arg3, void *arg4) {
 
     _flushBuf(s, 0x20);
     sliceB_result = _sliceB(s);
-    mbInc = mb_address_increment(s);
+    mbInc = mb_address_increment((char *)s);
     *arg3 = mbInc;
 
-    if (*(int *)(s + 0x11C) != 0) {
+    if (s->unk11C != 0) {
         _Error(s, str_mpeg_slice_a0_error);
         return 1;
     }
 
     row = (sliceB_result << 7) + (int)(code & 0xFF) - 1;
-    *arg2 = row * (*(int *)(s + 0x12C)) + mbInc - 1;
+    *arg2 = row * (s->mb_width) + mbInc - 1;
     *arg3 = 1;
-    *(int *)(s + 0x1B0) = 1;
+    s->dc_reset = 1;
     *(int *)(p5 + 0x14) = 0;
     *(int *)(p5 + 0x10) = 0;
     *(int *)(p5 + 0x4) = 0;
@@ -971,7 +971,7 @@ extern int _motionComp0(void *, int, int, int, int, void *, void *, void *);
  * happens along the way.
  */
 int _slice0(void *arg0, int mbCount) {
-    char *s = (char *)arg0;
+    struct MpegDecoder *s = (struct MpegDecoder *)((char *)arg0);
     int mbAddr = 0;
     int mbInc = 0;
     int local48, local4C, local50;
@@ -984,7 +984,7 @@ int _slice0(void *arg0, int mbCount) {
     if (r != 0) {
         return r;
     }
-    *(int *)(s + 0x11C) = 0;
+    s->unk11C = 0;
 
     for (;;) {
         int mbIdx;
@@ -994,8 +994,8 @@ int _slice0(void *arg0, int mbCount) {
             return 0;
         }
 
-        mbIdx = *(int *)(s + 0x810);
-        entry = s + mbIdx * 0x140;
+        mbIdx = s->mb_buf_index;
+        entry = (char *)s + mbIdx * 0x140;
         *(int *)(entry + 0x6CC) = 0;
         r = _waitBdecOut(s);
         if (r == 0) {
@@ -1005,17 +1005,17 @@ int _slice0(void *arg0, int mbCount) {
         if (mbInc == 0) {
             int peeked = _peepBit(s, 0x17);
             if (peeked == 0) {
-                *(int *)(s + 0x11C) = 0;
+                s->unk11C = 0;
                 return 3;
             }
-            if (*(int *)(s + 0x11C) != 0) {
-                *(int *)(s + 0x11C) = 0;
+            if (s->unk11C != 0) {
+                s->unk11C = 0;
                 return 3;
             }
 
-            mbInc = mb_address_increment(s);
-            if (*(int *)(s + 0x11C) != 0) {
-                *(int *)(s + 0x11C) = 0;
+            mbInc = mb_address_increment((char *)s);
+            if (s->unk11C != 0) {
+                s->unk11C = 0;
                 return 1;
             }
         }
@@ -1029,13 +1029,13 @@ int _slice0(void *arg0, int mbCount) {
             r = _decMB0(s, &local48, &local4C, &local50, local0,
                                scratch20, scratch30);
             if (r == 0) {
-                *(int *)(s + 0x11C) = 0;
+                s->unk11C = 0;
                 return 1;
             }
         } else {
-            r = _skipMB0(s, local0, &local4C, scratch20, &local48);
+            r = _skipMB0((char *)s, local0, &local4C, scratch20, &local48);
             if (r == 0) {
-                *(int *)(s + 0x11C) = 0;
+                s->unk11C = 0;
                 return 2;
             }
         }
@@ -1043,17 +1043,17 @@ int _slice0(void *arg0, int mbCount) {
         r = _motionComp0(s, mbAddr, mbInc, local48, local4C, local0,
                            scratch20, scratch30);
         if (r == 0) {
-            *(int *)(s + 0x11C) = 0;
+            s->unk11C = 0;
             return 2;
         }
 
         if (mbAddr != 0) {
-            int fault = *(int *)(s + 0x810);
+            int fault = s->mb_buf_index;
             _doMC(s, fault ^ 1);
         }
 
         mbAddr = mbAddr + 1;
-        *(int *)(s + 0x810) ^= 1;
+        s->mb_buf_index ^= 1;
         mbInc = mbInc - 1;
     }
 }
@@ -1075,28 +1075,28 @@ int _skipMB0(void *a0, int *a1, int *a2, int *a3, int *a4) {
     int c;
     int mask;
 
-    idx = *(int *)((char *)a0 + 0x810);
+    idx = ((struct MpegDecoder *)a0)->mb_buf_index;
     entry = (char *)a0 + idx * 0x140;
     *(int *)(entry + 0x6CC) = 1;
-    *(int *)((char *)a0 + 0x1B0) = 1;
+    ((struct MpegDecoder *)a0)->dc_reset = 1;
 
-    if (*(int *)((char *)a0 + 0x150) == 2) {
+    if (((struct MpegDecoder *)a0)->picture_coding_type == 2) {
         *(int *)((char *)a1 + 0x14) = 0;
         *(int *)((char *)a1 + 0x10) = 0;
         *(int *)((char *)a1 + 0x4) = 0;
         *(int *)((char *)a1 + 0x0) = 0;
     }
 
-    if (*(int *)((char *)a0 + 0x174) == 3) {
+    if (((struct MpegDecoder *)a0)->picture_structure == 3) {
         *a2 = 2;
     } else {
         *a2 = 1;
-        c = (*(int *)((char *)a0 + 0x174) == 2);
+        c = (((struct MpegDecoder *)a0)->picture_structure == 2);
         a3[1] = c;
         *a3 = c;
     }
 
-    if (*(int *)((char *)a0 + 0x150) == 1) {
+    if (((struct MpegDecoder *)a0)->picture_coding_type == 1) {
         _Error(a0, str_mpeg_skipped_mb_in_i_picture);
         ret = 0;
     }

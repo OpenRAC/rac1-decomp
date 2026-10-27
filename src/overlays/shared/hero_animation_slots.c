@@ -439,15 +439,15 @@ extern int is_moby_in_class_range_500_to_540(void *);
 float score_hero_target_candidate(void *o_v, float yaw, float range, float ylim, float plim, int *out) {
     char *o = o_v;
     float v[4] __attribute__((aligned(16)));
-    char *g;
+    Hero *g;
     char *q = g_hero + 0x80;
     float d, a, s, p, m, r;
 
     *out = 0;
     qcopy(v, q);
-    g = q - 0x80;
-    if (*(int *)(g + 0x2084) == 0x14) {
-        v[2] = *(float *)(g + 0x2D8);
+    g = (Hero *)(q - 0x80);
+    if (g->state.current == 0x14) {
+        v[2] = g->ground_z.f;
     }
     d = FastVecDist(v, o + 0x10);
     if (range < d) *out = 1;
@@ -455,7 +455,7 @@ float score_hero_target_candidate(void *o_v, float yaw, float range, float ylim,
     s = a;
     m = a;
     p = FastDiffRots(fast_atan2(vec_distance_xy(v, o + 0x10), *(float *)(o + 0x18) - v[2]), 0.0f);
-    if (*(int *)(g + 0x2084) == 1 || *(int *)(g + 0x2084) == 0x1E) {
+    if (g->state.current == 1 || g->state.current == 0x1E) {
         char *c = player_camera;
         float b = FastDiffRots(fast_atan2(*(float *)(o + 0x10) - *(float *)(c + 0x140), *(float *)(o + 0x14) - *(float *)(c + 0x144)), *(float *)(c + 0x158));
         p = FastDiffRots(fast_atan2(vec_distance_xy(c + 0x140, o + 0x10), *(float *)(o + 0x18) - *(float *)(c + 0x148)), -*(float *)(c + 0x154));
@@ -631,13 +631,35 @@ extern int return_hero_animation_id_unchanged(int);
 
 #define GB (D_0013E633 + 0xE1D)
 #define SLOT(i) (((char **)(D_0013E633 + 0x1B1D))[i])
+/* A hero item animation blend slot (allocate_moby_animation_slot; hero + 0xD00 holds two).
+   Its frame/seq bytes mirror Moby.frame..prev_seq. */
+struct AnimBlendSlot {
+    u8 unk_00[6];          /* 0x00 */
+    u8 has_pose[2];        /* 0x06: 1 when seq[j] < 0x17 got a pose buffer */
+    f32 weight;            /* 0x08: eased to 1 while the item is held, to 0 before release */
+    u8 pad_0C[0xC];
+    void *class_header;    /* 0x18: moby class header of the item */
+    u8 pad_1C[4];
+    u8 frame;              /* 0x20 */
+    u8 next_frame;         /* 0x21 */
+    u8 seq;                /* 0x22 */
+    u8 next_seq;           /* 0x23: blended toward from seq */
+    f32 blend;             /* 0x24: 0..1 from seq to next_seq */
+    f32 unk_28;            /* 0x28 */
+    f32 blend_rate;        /* 0x2C */
+    s16 seq_changed;       /* 0x30 */
+    u8 blending;           /* 0x32 */
+    u8 blend_started;      /* 0x33 */
+    s32 releasing;         /* 0x34: set to 1 to fade the slot out and free it */
+    char *pose_buffers[2]; /* 0x38 */
+};
 
 void update_hero_item_slot_animation_blends(void) {
     int i;
 
     for (i = 0; i < 2; i++) {
-        char *g = GB;
-        char *o;
+        Hero *g = (Hero *)GB;
+        struct AnimBlendSlot *o;
         
         int diff;
         struct { short v; } w;
@@ -645,80 +667,80 @@ void update_hero_item_slot_animation_blends(void) {
         int k;
         int j;
         float out;
-        char *t0 = SLOT(i);
+        struct AnimBlendSlot *t0 = (struct AnimBlendSlot *)SLOT(i);
 
-        if (t0 != 0 && *(int *)(t0 + 0x34) != 0) {
-            if (ApproachValue((float *)(t0 + 8), 0.0f, frame_scale * 0.1f) == 0.0f) {
-                release_moby_animation_slot(*(char **)(g + 0x2080), &SLOT(i));
+        if (t0 != 0 && t0->releasing != 0) {
+            if (ApproachValue(&t0->weight, 0.0f, frame_scale * 0.1f) == 0.0f) {
+                release_moby_animation_slot(*(char **)&g->moby, &SLOT(i));
             }
         } else {
-            int c = *(unsigned char *)(g + 0x20AB);
+            int c = g->unk20AB;
             int want = 0;
 
             if (c != 0 && (i == 0 || c == 2)) {
                 want = 1;
             }
             {
-                char *h = GB;
-                if (*(unsigned char *)(h + 0x20AF) != 0) {
-                    char *t1;
+                Hero *h = (Hero *)GB;
+                if (h->unk20AF != 0) {
+                    struct AnimBlendSlot *t1;
                     want = 0;
-                    t1 = SLOT(i);
+                    t1 = (struct AnimBlendSlot *)SLOT(i);
                     if (t1 != 0) {
-                        *(int *)(t1 + 0x34) = 1;
+                        t1->releasing = 1;
                     }
                 }
             }
             if (want) {
-                char *h = GB;
+                Hero *h = (Hero *)GB;
                 if (SLOT(i) == 0) {
-                    char *n = (char *)allocate_moby_animation_slot(*(char **)(h + 0x2080), ((int *)&hero_item_slot_anim_ids)[i]);
+                    char *n = (char *)allocate_moby_animation_slot(*(char **)&h->moby, ((int *)&hero_item_slot_anim_ids)[i]);
                     SLOT(i) = n;
-                    *(float *)(n + 8) = 0.0f;
+                    ((struct AnimBlendSlot *)n)->weight = 0.0f;
                     *(char **)(SLOT(i) + 0x18) = moby_class_headers[g_class_slot[i + 1]];
                 }
             } else {
-                char *h = GB;
-                char *t2 = SLOT(i);
+                Hero *h = (Hero *)GB;
+                struct AnimBlendSlot *t2 = (struct AnimBlendSlot *)SLOT(i);
                 if (t2 == 0) {
                     continue;
                 }
-                if (ApproachValue((float *)(t2 + 8), 0.0f, frame_scale * 0.1f) == 0.0f) {
-                    release_moby_animation_slot(*(char **)(h + 0x2080), &SLOT(i));
+                if (ApproachValue(&t2->weight, 0.0f, frame_scale * 0.1f) == 0.0f) {
+                    release_moby_animation_slot(*(char **)&h->moby, &SLOT(i));
                 }
             }
         }
 
         {
-            char *h = GB;
+            Hero *h = (Hero *)GB;
             char *hr;
-            o = SLOT(i);
+            o = (struct AnimBlendSlot *)SLOT(i);
             if (o == 0) {
                 continue;
             }
-            hr = *(char **)(h + 0x2080);
+            hr = *(char **)&h->moby;
             diff = *(unsigned char *)(hr + 0x52) != *(unsigned char *)(hr + 0x53);
-            if (*(int *)(h + 0xD08) != 0 && *(int *)(h + 0xD14) == 0) {
-                ApproachValue((float *)(o + 8), 0.0f, frame_scale * 0.1f);
-            } else if (*(int *)(o + 0x34) == 0) {
-                ApproachValue((float *)(o + 8), 1.0f, frame_scale * 0.1f);
+            if (*(int *)&h->held_item_anim_blend[0] != 0 && h->unkD14 == 0) {
+                ApproachValue(&o->weight, 0.0f, frame_scale * 0.1f);
+            } else if (o->releasing == 0) {
+                ApproachValue(&o->weight, 1.0f, frame_scale * 0.1f);
             }
         }
 
         w.v = 0;
         if (diff) {
-            char *h = GB;
-            if (*(int *)(h + 0xA9C) != 0) {
-                int a = return_hero_animation_id_unchanged(*(unsigned char *)(o + 0x23));
-                if (a != return_hero_animation_id_unchanged(*(unsigned char *)(*(char **)(h + 0x2080) + 0x53))) {
-                    w.v = *(unsigned char *)(o + 0x22) != *(unsigned char *)(o + 0x23);
+            Hero *h = (Hero *)GB;
+            if (h->anim_changing != 0) {
+                int a = return_hero_animation_id_unchanged(o->next_seq);
+                if (a != return_hero_animation_id_unchanged(*(unsigned char *)(*(char **)&h->moby + 0x53))) {
+                    w.v = o->seq != o->next_seq;
                 }
             }
         }
-        *(short *)(o + 0x30) = w.v;
+        o->seq_changed = w.v;
 
-        r = hero_get_state_aim_pitch(*(unsigned char *)(*(char **)(g + 0x2080) + 0x53), &out);
-        if (r != 0 || *(unsigned char *)(o + 0x32) != 0) {
+        r = hero_get_state_aim_pitch(*(unsigned char *)(*(char **)&g->moby + 0x53), &out);
+        if (r != 0 || o->blending != 0) {
             if (out != 0.0f) {
                 float x = g_frame_scale_sq;
                 char *tb = (char *)D_L00_0017A780;
@@ -729,97 +751,97 @@ void update_hero_item_slot_animation_blends(void) {
                 *(float *)(tb + 0x624) = x * 0.05f;
                 *(float *)(tb + 0x628) = x * 0.3f;
             }
-            if (r != 0 && (*(unsigned char *)(o + 0x32) == 0 || *(unsigned char *)(o + 0x23) != 0)) {
+            if (r != 0 && (o->blending == 0 || o->next_seq != 0)) {
                 {
-                    if (*(unsigned char *)(o + 0x22) == *(unsigned char *)(o + 0x23) ||
-                        0.5f < *(float *)(o + 0x24)) {
-                        *(char *)(o + 0x22) = *(char *)(o + 0x23);
-                        *(char *)(o + 0x20) = *(char *)(o + 0x21);
+                    if (o->seq == o->next_seq ||
+                        0.5f < o->blend) {
+                        o->seq = *(char *)&o->next_seq;
+                        o->frame = *(char *)&o->next_frame;
                     }
-                    *(float *)(o + 0x24) = 0.0f;
-                    *(char *)(o + 0x23) = 0;
-                    *(char *)(o + 0x21) = 0;
-                    *(float *)(o + 0x28) = 1.0f;
-                    *(float *)(o + 0x2C) = 1.0f / (float)scale_ticks(0xF);
-                    *(char *)(o + 0x32) = 1;
-                    *(char *)(o + 0x33) = 0;
+                    o->blend = 0.0f;
+                    o->next_seq = 0;
+                    o->next_frame = 0;
+                    o->unk_28 = 1.0f;
+                    o->blend_rate = 1.0f / (float)scale_ticks(0xF);
+                    o->blending = 1;
+                    o->blend_started = 0;
                 }
             }
             if (r == 0) {
-                if (*(unsigned char *)(o + 0x33) == 0) {
-                    char *hr = *(char **)(g + 0x2080);
-                    *(char *)(o + 0x23) = resolve_moby_animation_id(hr, *(unsigned char *)(hr + 0x53));
-                    *(char *)(o + 0x21) = 0;
-                    *(char *)(o + 0x33) = 1;
-                    *(float *)(o + 0x24) = 0.0f;
-                    *(float *)(o + 0x28) = 0.0f;
+                if (o->blend_started == 0) {
+                    char *hr = *(char **)&g->moby;
+                    o->next_seq = resolve_moby_animation_id(hr, *(unsigned char *)(hr + 0x53));
+                    o->next_frame = 0;
+                    o->blend_started = 1;
+                    o->blend = 0.0f;
+                    o->unk_28 = 0.0f;
                 } else {
-                    float f = *(float *)(o + 0x24) + frame_scale * 0.1f;
-                    *(float *)(o + 0x24) = f;
+                    float f = o->blend + frame_scale * 0.1f;
+                    o->blend = f;
                     if (1.0f < f) {
-                        *(float *)(o + 0x24) = 1.0f;
+                        o->blend = 1.0f;
                     }
-                    if (*(float *)(o + 0x24) == 1.0f) {
-                        *(char *)(o + 0x32) = 0;
+                    if (o->blend == 1.0f) {
+                        o->blending = 0;
                     }
                 }
             } else {
-                *(float *)(o + 0x28) = 1.0f;
+                o->unk_28 = 1.0f;
             }
             for (j = 0; j < 2; j++) {
-                unsigned char *id = (unsigned char *)(o + 0x22);
-                char *e = o + 6;
+                unsigned char *id = &o->seq;
+                char *e = (char *)o->has_pose;
                 if (id[j] < 0x17) {
                     e[j] = 1;
-                    *(char **)(o + 0x38 + j * 4) = hero_item_blend_pose_buffers + (i * 0x800 + j * 0x400);
+                    *(char **)((char *)o + 0x38 + j * 4) = hero_item_blend_pose_buffers + (i * 0x800 + j * 0x400);
                 } else {
                     e[j] = 0;
                 }
             }
-            advance_moby_animation_blend(*(char **)(g + 0x2080), (unsigned char *)o);
+            advance_moby_animation_blend(*(char **)&g->moby, (unsigned char *)o);
         } else {
-            if (*(short *)(o + 0x30) == 0) {
-                char *h = GB;
+            if (o->seq_changed == 0) {
+                Hero *h = (Hero *)GB;
                 for (k = 0; k < 2; k++) {
                     if (!diff || k == 1) {
-                        char *hr = *(char **)(h + 0x2080);
-                        unsigned char *p = (unsigned char *)(o + 0x22);
+                        char *hr = *(char **)&h->moby;
+                        unsigned char *p = &o->seq;
                         p[k] = resolve_moby_animation_id(hr, *(unsigned char *)(hr + k + 0x52));
                     }
                 }
             }
-            if (*(short *)(o + 0x30) != 0) {
-                float f = *(float *)(o + 0x24) + frame_scale * 0.15f;
-                *(float *)(o + 0x24) = f;
+            if (o->seq_changed != 0) {
+                float f = o->blend + frame_scale * 0.15f;
+                o->blend = f;
                 if (1.0f <= f) {
-                    *(char *)(o + 0x22) = *(char *)(o + 0x23);
-                    *(char *)(o + 0x20) = *(char *)(o + 0x21);
-                    *(short *)(o + 0x30) = 0;
+                    o->seq = *(char *)&o->next_seq;
+                    o->frame = *(char *)&o->next_frame;
+                    o->seq_changed = 0;
                 }
             } else {
                 if (!diff) {
-                    *(char *)(o + 0x20) = *(unsigned char *)(*(char **)(g + 0x2080) + 0x50);
+                    o->frame = *(unsigned char *)(*(char **)&g->moby + 0x50);
                 }
                 /* o is never null: same arms, jump merges them; keeps retail's registers. */
                 if (o) {
-                    *(char *)(o + 0x21) = *(unsigned char *)(*(char **)(g + 0x2080) + 0x51);
-                    *(float *)(o + 0x24) = *(float *)(*(char **)(g + 0x2080) + 0x54);
+                    o->next_frame = *(unsigned char *)(*(char **)&g->moby + 0x51);
+                    o->blend = *(float *)(*(char **)&g->moby + 0x54);
                 } else {
-                    *(char *)(o + 0x21) = *(unsigned char *)(*(char **)(g + 0x2080) + 0x51);
-                    *(float *)(o + 0x24) = *(float *)(*(char **)(g + 0x2080) + 0x54);
+                    o->next_frame = *(unsigned char *)(*(char **)&g->moby + 0x51);
+                    o->blend = *(float *)(*(char **)&g->moby + 0x54);
                 }
             }
             for (j = 0; j < 2; j++) {
-                unsigned char *id = (unsigned char *)(o + 0x22);
-                char *e = o + 6;
+                unsigned char *id = &o->seq;
+                char *e = (char *)o->has_pose;
                 if (id[j] < 0x17) {
                     e[j] = 1;
-                    *(char **)(o + 0x38 + j * 4) = hero_item_blend_pose_buffers + (i * 0x800 + j * 0x400);
+                    *(char **)((char *)o + 0x38 + j * 4) = hero_item_blend_pose_buffers + (i * 0x800 + j * 0x400);
                 } else {
                     e[j] = 0;
                 }
             }
-            advance_moby_animation_blend(*(char **)(g + 0x2080), (unsigned char *)o);
+            advance_moby_animation_blend(*(char **)&g->moby, (unsigned char *)o);
         }
     }
 }
@@ -1465,7 +1487,7 @@ void update_hero_item_mobys(void)
     s32 red;
     s32 color_green;
     s32 color_blue;
-    u8 *moby;
+    Moby *moby;
     s32 slot_offset;
     u8 *slot;
     u8 *effect;
@@ -1482,12 +1504,12 @@ void update_hero_item_mobys(void)
             if ((j > 0) && (i != 1) && (i != 3) && (i != 4))
                 break;
             slot = ((u8 *) (hero_globals_base + 0xE1D)) + slot_offset;
-            moby = *((u8 **) (slot + 0x1090));
+            moby = (Moby *)(*((u8 **) (slot + 0x1090)));
             if (j == 1)
-                moby = *((u8 **) (slot + 0x1094));
+                moby = (Moby *)(*((u8 **) (slot + 0x1094)));
             if (moby != 0)
             {
-                *((u64 *) (moby + 0x38)) = *((u64 *) ((*((u8 **) (((u8 *) (hero_globals_base + 0xE1D)) + 0x2080))) + 0x38));
+                moby->spawn_frame = *((u64 *) ((*((u8 **) (((u8 *) (hero_globals_base + 0xE1D)) + 0x2080))) + 0x38));
                 item_id = *((s32 *) (slot + 0x10b8));
                 joint = ((struct { ItemDef_FC18 a[1]; } *) item_defs_r)->a[item_id].joint;
                 if ((i == 1) && (j == 1))
@@ -1500,11 +1522,11 @@ void update_hero_item_mobys(void)
                     matrix_to_euler(((u8 *) (hero_globals_base + 0x18DD)) + (joint * 0x40), slot_vec);
                     MobyAnimAdvance(moby);
                     moby_build_matrix(moby);
-                    *((u16 *) (moby + 0x34)) &= 0xfffb;
+                    moby->flags &= 0xfffb;
                 }
                 else
                 {
-                    qcopy(moby + 0x10, (((u8 *) (hero_globals_base + 0xE1D)) + 0xaf0) + (joint * 0x40));
+                    qcopy(&moby->pos, (((u8 *) (hero_globals_base + 0xE1D)) + 0xaf0) + (joint * 0x40));
                     if (((*(int *) &D_L00_0015F770) == 0) || (((struct { ItemDef_FC18 a[1]; } *) item_defs_r)->a[item_id].unk18 == 0))
                     {
                         first = is_hero_slot_item_id_10_17_20_or_25(i);
@@ -1513,35 +1535,35 @@ void update_hero_item_mobys(void)
                         if (((first == 0) && (second == 0)) && (third == 0))
                             MobyAnimAdvance(moby);
                         moby_build_matrix(moby);
-                        matrix_copy_rows(moby + 0xc0, ((u8 *) (hero_globals_base + 0x18DD)) + (joint * 0x40));
+                        matrix_copy_rows(&moby->rot_row0, ((u8 *) (hero_globals_base + 0x18DD)) + (joint * 0x40));
                         if (((first == 0) && (second == 0)) && (third == 0))
-                            normalize_vector_triplet(moby + 0xc0);
+                            normalize_vector_triplet(&moby->rot_row0);
                         scratch.direction[0] = 1.0f;
                         scratch.direction[1] = 0.0f;
                         scratch.direction[2] = 0.0f;
-                        matrix_mul_vec3(scratch.direction, scratch.direction, moby + 0xc0);
-                        *((f32 *) (moby + 0x44)) = -fast_atan2(vec_length_xy(scratch.direction), scratch.direction[2]);
-                        *((f32 *) (moby + 0x48)) = fast_atan2(scratch.direction[0], scratch.direction[1]);
+                        matrix_mul_vec3(scratch.direction, scratch.direction, &moby->rot_row0);
+                        moby->rot.y = -fast_atan2(vec_length_xy(scratch.direction), scratch.direction[2]);
+                        moby->rot.z = fast_atan2(scratch.direction[0], scratch.direction[1]);
                         moby_anim_sphere_lerp(moby);
-                        *((u16 *) (moby + 0x34)) |= 6;
+                        moby->flags |= 6;
                         if (first != 0)
                         {
-                            pack_pose(hero_item_10_17_20_25_source_joints, hero_item_10_17_20_25_pose_buffer, *((s32 *) (moby + 0x24)), 0, 0);
-                            *((s32 *) (moby + 0x54)) = 0;
-                            *((s32 *) (moby + 0x50)) = 0;
-                            *((void **) (moby + 0x68)) = hero_item_10_17_20_25_pose_buffer;
-                            *((void **) (moby + 0x6c)) = hero_item_10_17_20_25_pose_buffer;
+                            pack_pose(hero_item_10_17_20_25_source_joints, hero_item_10_17_20_25_pose_buffer, *(s32 *)&moby->pclass, 0, 0);
+                            *(s32 *)&moby->anim_time = 0;
+                            *(s32 *)&moby->frame = 0;
+                            moby->cur_frame_data = hero_item_10_17_20_25_pose_buffer;
+                            moby->prev_frame_data = hero_item_10_17_20_25_pose_buffer;
                         }
                         else if (second != 0)
                         {
-                            if ((*((s16 *) (moby + 0xa6))) == 0x1b1)
-                                pack_pose(source_bone4_joints_class1b1, source_bone4_pose_buffer, *((s32 *) (moby + 0x24)), 6, 0);
+                            if ((moby->oclass) == 0x1b1)
+                                pack_pose(source_bone4_joints_class1b1, source_bone4_pose_buffer, *(s32 *)&moby->pclass, 6, 0);
                             else
-                                pack_pose(source_bone4_joints_default, source_bone4_pose_buffer, *((s32 *) (moby + 0x24)), 0, 0);
-                            *((s32 *) (moby + 0x54)) = 0;
-                            *((void **) (moby + 0x68)) = source_bone4_pose_buffer;
-                            *((void **) (moby + 0x6c)) = source_bone4_pose_buffer;
-                            *((s32 *) (moby + 0x50)) = 0;
+                                pack_pose(source_bone4_joints_default, source_bone4_pose_buffer, *(s32 *)&moby->pclass, 0, 0);
+                            *(s32 *)&moby->anim_time = 0;
+                            moby->cur_frame_data = source_bone4_pose_buffer;
+                            moby->prev_frame_data = source_bone4_pose_buffer;
+                            *(s32 *)&moby->frame = 0;
                         }
                         else if (third != 0)
                         {
@@ -1555,18 +1577,18 @@ void update_hero_item_mobys(void)
                             D_L00_0017A780[5].scale3.f[2] = 1.0f;
                             if (j == 0)
                             {
-                                pack_pose(hero_item_28_29_joints_slot0, hero_item_28_29_pose_buffer_slot0, *((s32 *) (moby + 0x24)), 0, 0);
-                                *((void **) (moby + 0x68)) = hero_item_28_29_pose_buffer_slot0;
-                                *((void **) (moby + 0x6c)) = hero_item_28_29_pose_buffer_slot0;
+                                pack_pose(hero_item_28_29_joints_slot0, hero_item_28_29_pose_buffer_slot0, *(s32 *)&moby->pclass, 0, 0);
+                                moby->cur_frame_data = hero_item_28_29_pose_buffer_slot0;
+                                moby->prev_frame_data = hero_item_28_29_pose_buffer_slot0;
                             }
                             else
                             {
-                                pack_pose(hero_item_28_29_joints_slot1, hero_item_28_29_pose_buffer_slot1, *((s32 *) (moby + 0x24)), 0, 0);
-                                *((void **) (moby + 0x68)) = hero_item_28_29_pose_buffer_slot1;
-                                *((void **) (moby + 0x6c)) = hero_item_28_29_pose_buffer_slot1;
+                                pack_pose(hero_item_28_29_joints_slot1, hero_item_28_29_pose_buffer_slot1, *(s32 *)&moby->pclass, 0, 0);
+                                moby->cur_frame_data = hero_item_28_29_pose_buffer_slot1;
+                                moby->prev_frame_data = hero_item_28_29_pose_buffer_slot1;
                             }
-                            *((s32 *) (moby + 0x54)) = 0;
-                            *((s32 *) (moby + 0x50)) = 0;
+                            *(s32 *)&moby->anim_time = 0;
+                            *(s32 *)&moby->frame = 0;
                             *((VecQuad *) D_L00_0017AA60) = scratch.saved[0];
                             *((VecQuad *) (D_L00_0017AA60 + 0xb0)) = scratch.saved[1];
                         }
@@ -1575,14 +1597,14 @@ void update_hero_item_mobys(void)
                     {
                         MobyAnimAdvance(moby);
                         if (((*(int *) &D_L00_0015F770) == 0) || (i != 0))
-                            matrix_to_euler(((u8 *) (hero_globals_base + 0x18DD)) + (joint * 0x40), moby + 0x40);
+                            matrix_to_euler(((u8 *) (hero_globals_base + 0x18DD)) + (joint * 0x40), &moby->rot);
                         else
                             update_hero_item_rotation_from_history((char *) moby, (u8 *) ((joint * 0x40) + ((s32) joint_mtx)));
                         moby_build_matrix(moby);
                         if (draw_map51[1])
-                            FastVecCross(moby + 0xe0, moby + 0xc0, moby + 0xd0);
+                            FastVecCross(&moby->rot_row2, &moby->rot_row0, &moby->rot_row1);
                         moby_anim_sphere_lerp(moby);
-                        *((u16 *) (moby + 0x34)) |= 6;
+                        moby->flags |= 6;
                     }
                 }
             }
@@ -1639,14 +1661,14 @@ extern void DeleteMoby(void *);
 
 // Ends slot i: records val, runs the object's 0x74 handler, then deletes its objects.
 void clear_hero_item_slot(int i, int val) {
-    char *r = hero_globals_base + 0xE1D + i * 0x50;
-    char *s;
-    *(int *)(r + 0x10A4) = val;
-    if (*(int *)(r + 0x10B4) != 3) {
-        char *o = *(char **)(r + 0x1090);
-        *(int *)(r + 0x10B4) = 3;
+    Hero *r = (Hero *)(hero_globals_base + 0xE1D + i * 0x50);
+    Hero *s;
+    r->items[0].respawn_frame = val;
+    if (r->items[0].state != 3) {
+        char *o = *(char **)&r->items[0].moby;
+        r->items[0].state = 3;
         if (o != 0) {
-            int t = (unsigned char)o[0x20];
+            int t = (unsigned char)*(char *)&((Moby *)o)->state;
             if (t != 0xFE) {
                 if (t != 0xFD) {
                     void (*fn)(void *) = *(void (**)(void *))(o + 0x74);
@@ -1655,17 +1677,17 @@ void clear_hero_item_slot(int i, int val) {
             }
         }
     }
-    s = hero_globals_base + 0xE1D + i * 0x50;
-    *(int *)(s + 0x10B4) = 0;
-    *(int *)(s + 0x10B8) = 0;
-    if (*(int *)(s + 0x1090) != 0) {
-        DeleteMoby(*(void **)(s + 0x1090));
-        *(int *)(s + 0x1090) = 0;
+    s = (Hero *)(hero_globals_base + 0xE1D + i * 0x50);
+    s->items[0].state = 0;
+    s->items[0].item_id = 0;
+    if (*(int *)&s->items[0].moby != 0) {
+        DeleteMoby(*(void **)&s->items[0].moby);
+        *(int *)&s->items[0].moby = 0;
     }
-    if (*(int *)(s + 0x1094) != 0) {
+    if (*(int *)&s->items[0].moby2 != 0) {
         if (i == 3) return;
-        DeleteMoby(*(void **)(s + 0x1094));
-        *(int *)(s + 0x1094) = 0;
+        DeleteMoby(*(void **)&s->items[0].moby2);
+        *(int *)&s->items[0].moby2 = 0;
     }
 }
 extern int scale_ticks(int);
@@ -1780,13 +1802,13 @@ void hero_switch_item(int i) {
     }
     if (i == 0) {
         Sel *g = (Sel *)(hero_globals_base + 0xE1D);
-        if (g->f20A7 != 0 && *(int *)((char *)g + 0x10B8) != 8) {
+        if (g->f20A7 != 0 && ((Hero *)g)->items[0].item_id != 8) {
             g->f20A6 = 1;
         }
     }
     if (i == 0) {
         Sel *g = (Sel *)(hero_globals_base + 0xE1D);
-        if (g->f20A7 != 0 && *(int *)((char *)g + 0x10B8) == 8) {
+        if (g->f20A7 != 0 && ((Hero *)g)->items[0].item_id == 8) {
             if (g->a[0] == 0x1F) {
                 g->a[0] = 0;
             }
@@ -1798,7 +1820,7 @@ void hero_switch_item(int i) {
     {
         Sel *g = (Sel *)(hero_globals_base + 0xE1D);
         if (g->f20AC != 0 && i == 0) {
-            if (g->f20A6 == 0 || *(int *)((char *)g + 0x10B8) == 8) {
+            if (g->f20A6 == 0 || ((Hero *)g)->items[0].item_id == 8) {
                 g->f20A6 = 0;
                 return;
             }
@@ -1811,7 +1833,7 @@ void hero_switch_item(int i) {
         if (i == 0) {
             int v;
             Sel *g = (Sel *)(hero_globals_base + 0xE1D);
-            v = *(int *)((char *)g + 0x10B8);
+            v = ((Hero *)g)->items[0].item_id;
             if (v != 8) {
                 if (g->f20A6 != 0 && v != 0 && v != 0x1F) {
                     g->c[0] = v;
@@ -1839,7 +1861,7 @@ void hero_switch_item(int i) {
         if (hero_is_in_special_state() || ((Sel *)(hero_globals_base + 0xE1D))->f2084 == 0x12) {
             int v;
             g = (Sel *)(hero_globals_base + 0xE1D);
-            v = *(int *)((char *)g + 0x1108);
+            v = ((Hero *)g)->items[1].item_id;
             if (v != 0) {
                 g->c[1] = v;
                 g->a[1] = 0x26;
@@ -1859,7 +1881,7 @@ void hero_switch_item(int i) {
             }
         }
         g = (Sel *)(hero_globals_base + 0xE1D);
-        if (*(unsigned char *)((char *)g + 0x12E7) != 0 && (&gHaveMorphORay)[7] != 0) {
+        if (((Hero *)g)->on_magnet_ground != 0 && (&gHaveMorphORay)[7] != 0) {
             if (*(int *)(help_stats_base + 0x49) != 0x1C || *(int *)((char *)g + i * 0x50 + 0x10B8) == 0) {
                 int v;
                 g->a[1] = 0x1C;
@@ -1878,7 +1900,7 @@ void hero_switch_item(int i) {
         Sel *h;
         Sel *h2;
         if (g->f208C == 0x11 || g->f2084 == 0x76 || g->f2084 == 0x6A || g->f2084 == 0x82
-            || *(unsigned char *)((char *)g + 0x22CB) != 0) {
+            || ((Hero *)g)->vent_updraft != 0) {
             if (((int *)(help_stats_base + 0x45))[i] != 6
                 || (h2 = (Sel *)(hero_globals_base + 0xE1D), *(int *)((char *)h2 + i * 0x50 + 0x10B8) == 0)) {
                 h = (Sel *)(hero_globals_base + 0xE1D);
@@ -1894,7 +1916,7 @@ void hero_switch_item(int i) {
                     }
                 }
             }
-        } else if (*(int *)((char *)g + 0x1158) == 6 && g->c[2] != 0) {
+        } else if (((Hero *)g)->items[2].item_id == 6 && g->c[2] != 0) {
             g->d[2] = 1;
         }
     }
@@ -1905,7 +1927,7 @@ void hero_switch_item(int i) {
             if (*(int *)(help_stats_base + 0x51) != 4) {
                 int v;
                 g = (Sel *)(hero_globals_base + 0xE1D);
-                v = *(int *)((char *)g + 0x11A8);
+                v = ((Hero *)g)->items[3].item_id;
                 if (v != 4 && gHaveHeliPack[2] != 0) {
                     g->c[3] = v;
                     flag4 = 1;
@@ -1949,7 +1971,7 @@ void hero_switch_item(int i) {
         Sel *g = (Sel *)(hero_globals_base + 0xE1D);
         int *s;
         int *sb;
-        if (*(unsigned char *)((char *)g + 0x1FF5) != 0) {
+        if (((Hero *)g)->unk1FF5 != 0) {
             replenish_hero_drones();
             g->a[i] = 0;
         }
@@ -1958,10 +1980,10 @@ void hero_switch_item(int i) {
         if (*s == 0x1F) {
             if (Hero_CanUseGadget()) {
                 int v;
-                if (*(short *)((char *)g + 0x22DE) == 0) {
+                if (((Hero *)g)->vehicle_toggle_timer == 0) {
                     allocate_hero_voice_for_entry(0x18, 0);
-                    *(short *)((char *)g + 0x22DE) = 0x12;
-                    *(short *)((char *)g + 0x22DC) = 1;
+                    ((Hero *)g)->vehicle_toggle_timer = 0x12;
+                    ((Hero *)g)->unk22DC = 1;
                 }
                 changed = 1;
                 g->b[i] = *s;
@@ -1988,7 +2010,7 @@ void hero_switch_item(int i) {
                 } else {
                     Sel *h;
                     int u;
-                    if (i == 0 && g->a[0] != 0x24 && *(int *)((char *)g + 0x10B8) != 8) {
+                    if (i == 0 && g->a[0] != 0x24 && ((Hero *)g)->items[0].item_id != 8) {
                         g_game_language_m[1] = *(int *)(help_stats_base + 0x45);
                     }
                     h = (Sel *)(hero_globals_base + 0xE1D);
@@ -2025,7 +2047,7 @@ void hero_switch_item(int i) {
         Sel *g = (Sel *)(hero_globals_base + 0xE1D);
         *(int *)((char *)g + i * 0x50 + 0x10B0) = 3;
         clear_hero_idle_rotation_targets();
-        *(int *)((char *)g + 0x1010) = rand_range(scale_ticks(0x32), scale_ticks(0x5A));
+        ((Hero *)g)->unk1010 = rand_range(scale_ticks(0x32), scale_ticks(0x5A));
         set_hero_item_switch_timer_for_item(*((int *)(hero_globals_base + 0xE1D + 0x20D4) + i));
         set_hero_condition_animation_timer_for_item(*((int *)(hero_globals_base + 0xE1D + 0x20D4) + i));
         if (g->f20A8 != 0) {
@@ -2208,26 +2230,26 @@ extern void release_and_clear_hero_voice_slots(void);
 
 /* Resets the help state: frees its markers, restores the camera target and closes the prompt. */
 void exit_hero_vehicle_mode(void) {
-    char *g = B;
+    Hero *g = (Hero *)B;
     char *g2;
     void *p;
     unsigned short *q;
     char *r;
     short s;
-    if (*(unsigned char *)(g + 0x20A4) == 1) {
-        int a = *(int *)(g + 0x22A8);
-        s = *(short *)(g + 0x22B0);
-        *(int *)(g + 0x22AC) = a;
-        *(int *)(g + 0x22A8) = s;
-        p = *(void **)(g + 0x1620);
+    if (g->vehicle_mode == 1) {
+        int a = g->health.hp;
+        s = g->health.unk22B0;
+        g->health.vehicle_mode_hp = a;
+        g->health.hp = s;
+        p = g->unk1620;
         if (p) {
             DeleteMoby(p);
-            *(int *)(g + 0x1620) = 0;
+            *(int *)&g->unk1620 = 0;
         }
-        p = *(void **)(g + 0x1624);
+        p = g->unk1624;
         if (p) {
             DeleteMoby(p);
-            *(int *)(g + 0x1624) = 0;
+            *(int *)&g->unk1624 = 0;
         }
     }
     g2 = B;
@@ -2238,26 +2260,26 @@ void exit_hero_vehicle_mode(void) {
         }
     }
     reset_hero_easing_records();
-    g = B;
-    q = *(unsigned short **)(g + 0xA84);
-    *(unsigned char *)(g + 0x20A4) = 0;
+    g = (Hero *)B;
+    q = *(unsigned short **)&g->unkA84;
+    g->vehicle_mode = 0;
     if (q) {
         q[0x34 / 2] &= 0xFFF9;
     }
-    *(int *)(g + 0xA84) = 0;
-    p = *(void **)(g + 0xA8C);
+    *(int *)&g->unkA84 = 0;
+    p = g->vehicle_mode3_moby;
     if (p) {
         DeleteMoby(p);
-        *(int *)(g + 0xA8C) = 0;
+        *(int *)&g->vehicle_mode3_moby = 0;
     }
     release_and_clear_hero_voice_slots();
-    r = *(char **)(g + 0xA88);
-    *(char **)(g + 0x2080) = r;
-    qcopy(r + 0x10, g + 0x80);
+    r = *(char **)&g->unkA88;
+    *(char **)&g->moby = r;
+    qcopy(r + 0x10, &g->motion);
     *(int *)(r + 0x98) = 0;
-    *(float *)(g + 0xA94) = 1.0f;
+    g->anim_frame_rate = 1.0f;
     clear_hero_queued_animation();
-    if (*(int *)(g + 0x2084) != 100 || (cinematic_mode != 2 && cinematic_mode != 6)) {
+    if (g->state.current != 100 || (cinematic_mode != 2 && cinematic_mode != 6)) {
         HeroEnterMoveState(0, 1);
     }
 }
@@ -2339,7 +2361,7 @@ void func_L00_00211338_113A0(void *, s32, f32, f32) __asm__("func_L00_00211338")
 s32 hero_check_damage(s32 arg) {
     u8 *m;
     T_210ce8 *tbl;
-    u8 *mob;
+    Moby *mob;
     s32 flag;
     s32 id;
     f32 a, b, e;
@@ -2362,10 +2384,10 @@ s32 hero_check_damage(s32 arg) {
     }
     g_hero_r4.p2280 = 0;
     m = g_hero_r4.p2080;
-    if (m[0xA4] == 0xFF) {
+    if (((Moby *)m)->hit_slot == 0xFF) {
         return 0;
     }
-    tbl = &moby_hits[m[0xA4]];
+    tbl = &moby_hits[((Moby *)m)->hit_slot];
     if (tbl->p34 != m) {
         return 0;
     }
@@ -2408,8 +2430,8 @@ s32 hero_check_damage(s32 arg) {
     }
     switch (g_hero_r4.b20A4) {
     case 0:
-        mob = g_hero_r4.p2280;
-        if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x4EB || *(s16 *)(mob + 0xA6) == 0x558)) {
+        mob = (Moby *)g_hero_r4.p2280;
+        if (mob != 0 && (mob->oclass == 0x4EB || mob->oclass == 0x558)) {
             id = 0x80;
         call_ret:
             HeroEnterMoveState(id, 1);
@@ -2421,31 +2443,31 @@ s32 hero_check_damage(s32 arg) {
             return 1;
         }
         if (g_hero_r4.i208C == 0x12) {
-            mob = g_hero_r4.p2280;
-            if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
+            mob = (Moby *)g_hero_r4.p2280;
+            if (mob != 0 && mob->oclass == 0x28F) {
                 id = 0x82;
                 goto call_ret;
             }
             HeroEnterMoveState(0x75, 1);
         } else if (g_hero_r4.i208C == 0x11) {
-            mob = g_hero_r4.p2280;
-            if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
+            mob = (Moby *)g_hero_r4.p2280;
+            if (mob != 0 && mob->oclass == 0x28F) {
                 id = 0x82;
                 goto call_ret;
             }
             if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
-                mob = g_hero_r4.p2280;
-                if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B
-                                 || *(s16 *)(mob + 0xA6) == 0x29D)) {
+                mob = (Moby *)g_hero_r4.p2280;
+                if (mob != 0 && (mob->oclass == 0x28F || mob->oclass == 0x7B
+                                 || mob->oclass == 0x29D)) {
                     func_L00_00217570_113A0(0x1C, 0);
                 }
             }
             HeroEnterMoveState(0x76, 1);
         } else if (g_hero_r4.i208C == 3) {
-            mob = g_hero_r4.p2280;
+            mob = (Moby *)g_hero_r4.p2280;
             if (mob != 0) {
                 id = 0x82;
-                if (*(s16 *)(mob + 0xA6) == 0x28F) {
+                if (mob->oclass == 0x28F) {
                     goto call_ret;
                 }
             }
@@ -2529,57 +2551,57 @@ extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
 /* Updates the hero camera's follow-speed targets by mode, then eases them. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_00211380. */
 void update_hero_collision_capsule_dimensions(void) {
-    char *g = g_hero;
-    char *h;
-    char *k;
-    char *t;
+    Hero *g = (Hero *)g_hero;
+    Hero *h;
+    Hero *k;
+    Hero *t;
     float *p;
     int v;
     int w;
     float d;
 
-    switch (*(unsigned char *)(g + 0x20A4)) {
+    switch (g->vehicle_mode) {
     case 0:
-        *(float *)(g + 0x228) = 0.8f;
-        *(float *)(g + 0x22C) = 0.7f;
-        *(float *)(g + 0x230) = 0.45f;
+        g->capsule_top_target = 0.8f;
+        g->capsule_bottom_target = 0.7f;
+        g->capsule_radius_target = 0.45f;
         break;
     case 1:
-        *(float *)(g + 0x228) = 0.59999996f;
-        *(float *)(g + 0x22C) = 0.45000002f;
-        *(float *)(g + 0x230) = 0.3f;
+        g->capsule_top_target = 0.59999996f;
+        g->capsule_bottom_target = 0.45000002f;
+        g->capsule_radius_target = 0.3f;
         break;
     case 2:
-        *(float *)(g + 0x228) = 5.25f;
-        *(float *)(g + 0x22C) = 4.45f;
-        *(float *)(g + 0x230) = 3.75f;
+        g->capsule_top_target = 5.25f;
+        g->capsule_bottom_target = 4.45f;
+        g->capsule_radius_target = 3.75f;
         break;
     case 3:
-        *(float *)(g + 0x228) = 0.8f;
-        *(float *)(g + 0x22C) = 0.6f;
-        *(float *)(g + 0x230) = 0.45f;
+        g->capsule_top_target = 0.8f;
+        g->capsule_bottom_target = 0.6f;
+        g->capsule_radius_target = 0.45f;
         break;
     }
-    h = g_hero;
-    v = *(int *)(h + 0x208C);
+    h = (Hero *)g_hero;
+    v = h->state.control_mode;
     if (v == 4) {
-        if (*(int *)(h + 0x198) > *(int *)(h + 0x420)) {
-            if (*(short *)(h + 0x41E) == 0) {
-                *(float *)(h + 0x22C) = *(float *)(h + 0x434);
+        if (h->state_timer > h->takeoff_frame) {
+            if (h->past_jump_apex == 0) {
+                h->capsule_bottom_target = h->unk434;
             }
         }
     } else {
-        w = *(int *)(h + 0x2084);
+        w = h->state.current;
         if (w == 6) {
-            *(float *)(h + 0x22C) = 0.5f;
+            h->capsule_bottom_target = 0.5f;
         } else if (w == 4) {
-            *(float *)(h + 0x228) = 0.35000002f;
+            h->capsule_top_target = 0.35000002f;
         } else if (v == 0x11 || v == 0x12) {
-            *(int *)(h + 0x228) = 0;
-            *(int *)(h + 0x22C) = 0;
-        } else if (*(unsigned char *)(h + 0x12E2) != 0 && *(int *)(h + 0x300) != 0) {
-            *(float *)(h + 0x228) = 0.8f;
-            *(float *)(h + 0x22C) = 0.9f;
+            *(int *)&h->capsule_top_target = 0;
+            *(int *)&h->capsule_bottom_target = 0;
+        } else if (h->on_ice_ground != 0 && h->grounded_frames != 0) {
+            h->capsule_top_target = 0.8f;
+            h->capsule_bottom_target = 0.9f;
         } else {
             char *m = g_hero;
             if (*(int *)(m + 0x2084) == 0x7F) {
@@ -2587,19 +2609,19 @@ void update_hero_collision_capsule_dimensions(void) {
             }
         }
     }
-    k = g_hero;
-    if (*(unsigned char *)(k + 0x257) != 0 && *(int *)(k + 0x2094) != 0x12
-        && *(int *)(k + 0x208C) != 0x11 && *(unsigned char *)(k + 0x12E4) == 0) {
-        float f = vec_distance_xy(k + 0x210, k + 0x80);
-        if (!(*(float *)(k + 0x234) * 0.5f < f)) {
+    k = (Hero *)g_hero;
+    if (k->wall_hit != 0 && k->state.prev_control_mode != 0x12
+        && k->state.control_mode != 0x11 && k->base_condition == 0) {
+        float f = vec_distance_xy(&k->wall_contact_point, &k->motion);
+        if (!(k->capsule_radius * 0.5f < f)) {
             return;
         }
     }
     p = (float *)(g_hero + 0x220);
-    t = g_hero;
-    ApproachValue(p, *(float *)(t + 0x228), frame_scale * 0.02f);
-    ApproachValue(p + 1, *(float *)(t + 0x22C), frame_scale * 0.02f);
-    Spring(p + 5, p + 6, *(float *)(t + 0x230),
+    t = (Hero *)g_hero;
+    ApproachValue(p, t->capsule_top_target, frame_scale * 0.02f);
+    ApproachValue(p + 1, t->capsule_bottom_target, frame_scale * 0.02f);
+    Spring(p + 5, p + 6, t->capsule_radius_target,
         g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.0f);
 }
 #include "pad.h"
@@ -2714,10 +2736,10 @@ void stick_target(float scale, int mode) {
     float len;
     float x, y;
 
-    char *p = PB;
+    Hero *p = (Hero *)PB;
 
-    v.f[1] = *(float *)(p + 0x1D24);
-    v.f[0] = *(float *)(p + 0x1D20);
+    v.f[1] = p->stick_y;
+    v.f[0] = p->stick_x;
     if (mode == 1) {
         if (FastAbsF(v.f[1]) > 0.7f && FastAbsF(v.f[0]) < 0.12f) {
             v.f[0] = 0.0f;
@@ -2732,12 +2754,12 @@ void stick_target(float scale, int mode) {
     }
     if (v.f[0] == 0.0f && v.f[1] == 0.0f) {
         Vec4 q;
-        char *z = PB;
-        *(float *)(z + 0x190) = 0.0f;
-        if (*(unsigned char *)(z + 0x20B3)) {
-            *(float *)(z + 0x180) = compute_hero_ground_aligned_heading();
+        Hero *z = (Hero *)PB;
+        z->target_speed = 0.0f;
+        if (z->gravity_mode) {
+            z->motion.move_yaw = compute_hero_ground_aligned_heading();
         } else {
-            *(float *)(z + 0x180) = *(float *)(z + 0x98);
+            z->motion.move_yaw = z->motion.rot.f[2];
         }
         q.q = 0;
         q.f[0] = 1.0f;
@@ -3462,27 +3484,27 @@ int resolve_hero_current_position_collisions(int arg) {
     char *q;
     int r;
     int i;
-    char *g = (char *)hero_globals_base + 0xE1D;
+    Hero *g = (Hero *)((char *)hero_globals_base + 0xE1D);
     float len;
     char *g2;
 
-    if (*(int *)(g + 0x1CC) != 0) return 1;
-    qcopy(v0, g + 0x80);
+    if (g->collision_off_frames != 0) return 1;
+    qcopy(v0, &g->motion);
     clear_u64_value(v1);
-    if (*(short *)(g + 0x22DA) != 0) {
+    if (g->path_constrain_pending != 0) {
         Hero_ConstrainToPath();
-        *(short *)(g + 0x22DA) = 0;
+        g->path_constrain_pending = 0;
     }
-    if (*(int *)(g + 0x208C) != 0x11) {
-        unsigned char c = *(unsigned char *)(g + 0x20B3);
-        if (c != 0 || *(short *)(g + 0x1F8) != 0) {
-            if (c == 1 || *(short *)(g + 0x1F8) != 0) {
+    if (g->state.control_mode != 0x11) {
+        unsigned char c = g->gravity_mode;
+        if (c != 0 || g->unk1F8 != 0) {
+            if (c == 1 || g->unk1F8 != 0) {
                 HeroOffsetAlongViewZ(v1, v1, 0.6f);
             } else {
-                HeroMoveDownAlongNormal(v1, v1, -*(float *)(g + 0x224));
+                HeroMoveDownAlongNormal(v1, v1, -g->capsule_bottom);
             }
         } else {
-            v1[2] = *(float *)(g + 0x224);
+            v1[2] = g->capsule_bottom;
         }
     }
     g2 = (char *)hero_globals_base + 0xE9D;
@@ -3490,18 +3512,18 @@ int resolve_hero_current_position_collisions(int arg) {
     r = 0x24;
     if (*(int *)(g2 + 0x2004) == 0x7F) r = 0xD24;
     for (i = 0; i < 8; i++) {
-        g = (char *)hero_globals_base + 0xE1D;
-        if (*(unsigned char *)(g + 0x20B3) != 0) {
-            if (coll_sphere(frame_scale * 0.4f, g + 0x80, r, *(void **)(g + 0x2080)) == 0) break;
+        g = (Hero *)((char *)hero_globals_base + 0xE1D);
+        if (g->gravity_mode != 0) {
+            if (coll_sphere(frame_scale * 0.4f, &g->motion, r, *(void **)&g->moby) == 0) break;
         } else {
-            if (*(int *)(g + 0x208C) == 0x11) {
-                if (coll_sphere(0.6f, g + 0x80, r, *(void **)(g + 0x2080)) == 0) break;
-            } else if (*(int *)(g + 0x208C) == 0xF) {
-                if (coll_sphere(frame_scale * 0.45f, g + 0x80, r, *(void **)(g + 0x2080)) == 0) break;
+            if (g->state.control_mode == 0x11) {
+                if (coll_sphere(0.6f, &g->motion, r, *(void **)&g->moby) == 0) break;
+            } else if (g->state.control_mode == 0xF) {
+                if (coll_sphere(frame_scale * 0.45f, &g->motion, r, *(void **)&g->moby) == 0) break;
             } else {
-                float t = *(float *)(g + 0x220) - *(float *)(g + 0x224);
+                float t = g->capsule_top - g->capsule_bottom;
                 if (t < 0.05f) t = 0.05f;
-                if ((coll_capsule(*(float *)(g + 0x234), t, g + 0x80, r, *(int *)(g + 0x2080)) | coll_sphere_hero_groups(*(float *)(g + 0x234), g + 0x80)) == 0) break;
+                if ((coll_capsule(g->capsule_radius, t, &g->motion, r, *(int *)&g->moby) | coll_sphere_hero_groups(g->capsule_radius, &g->motion)) == 0) break;
             }
         }
         p = (char *)hero_globals_base + 0xE9D;
@@ -3512,11 +3534,11 @@ int resolve_hero_current_position_collisions(int arg) {
         *(unsigned char *)(q + 0x257) = 1;
         *(int *)(q + 0x23C) = *(int *)(coll_resolved_pos - 0x18);
     }
-    g = (char *)hero_globals_base + 0xE9D;
-    FastVecSub((float *)g, (float *)g, v1);
-    FastVecSub(v2, (float *)g, v0);
+    g = (Hero *)((char *)hero_globals_base + 0xE9D);
+    FastVecSub(&g->rot_matrix[0], &g->rot_matrix[0], v1);
+    FastVecSub(v2, &g->rot_matrix[0], v0);
     len = FastVecLength(v2);
-    if (*(float *)(g + 0x1B4) * 1.5f < len) {
+    if (*(float *)&g->wall_jump_window * 1.5f < len) {
         if (arg == 0xF) {
         if (v2[0] > 512.0f) v2[0] = 512.0f;
         else if (v2[0] < -512.0f) v2[0] = -512.0f;
@@ -3524,9 +3546,9 @@ int resolve_hero_current_position_collisions(int arg) {
         else if (v2[1] < -512.0f) v2[1] = -512.0f;
         if (v2[2] > 512.0f) v2[2] = 512.0f;
         else if (v2[2] < -512.0f) v2[2] = -512.0f;
-        g = (char *)hero_globals_base + 0xE1D;
-        vec_scale_to_length(v2, v2, *(float *)(g + 0x234));
-        FastVecAdd(g + 0x80, v0, v2);
+        g = (Hero *)((char *)hero_globals_base + 0xE1D);
+        vec_scale_to_length(v2, v2, g->capsule_radius);
+        FastVecAdd(&g->motion, v0, v2);
         }
         return -1;
     }
@@ -3751,7 +3773,7 @@ void steer_hero_planar_velocity(float step) {
     float x;
     float a, s, t, l1, l2;
     char *p;
-    switch (((unsigned char *)g)[0x20B3]) {
+    switch (((Hero *)g)->gravity_mode) {
     case 0:
         a = ((struct Hero *)g)->motion.move_yaw;
         s = ((struct Hero *)g)->target_speed;
