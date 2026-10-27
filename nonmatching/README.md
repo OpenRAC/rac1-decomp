@@ -5,8 +5,6 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 
 | Function | Directory | Size | Best so far | Bytes matching |
 |---|---|---|---|---|
-| [`func_L00_0026ABC0`](shared/func_L00_0026ABC0.c) | shared | 1780 | BYTES 26/1780 | 98.5% |
-| [`func_L00_002A62D0`](shared/func_L00_002A62D0.c) | shared | 1896 | BYTES 721/1896 | 62.0% |
 | [`func_001150D4`](functional/func_001150D4.c) | functional | 0 | ? | - |
 | [`func_001151B4`](core/func_001151B4.c) | core | 0 | ? | - |
 | [`func_00115248`](functional/func_00115248.c) | functional | 0 | ? | - |
@@ -61,7 +59,6 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 | [`func_0012A418`](functional/func_0012A418.c) | functional | 0 | ? | - |
 | [`func_0012A718`](functional/func_0012A718.c) | functional | 0 | ? | - |
 | [`func_0012A7E8`](functional/func_0012A7E8.c) | functional | 0 | ? | - |
-| [`func_0012C608`](functional/func_0012C608.c) | functional | 0 | ? | - |
 | [`func_0012DA28`](functional/func_0012DA28.c) | functional | 0 | ? | - |
 | [`func_0012DB68`](functional/func_0012DB68.c) | functional | 0 | ? | - |
 | [`func_001EE9F8`](functional/func_001EE9F8.c) | functional | 0 | ? | - |
@@ -166,7 +163,6 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 | [`func_00212508`](functional/func_00212508.c) | functional | 112 | ? | - |
 | [`func_00212578`](functional/func_00212578.c) | functional | 224 | ? | - |
 | [`func_00213A78`](game/func_00213A78.c) | game | 0 | ? | - |
-| [`func_00213C78`](game/func_00213C78.c) | game | 148 | ? | - |
 | [`func_00218928`](game/func_00218928.c) | game | 8 | ? | - |
 | [`func_00218930`](game/func_00218930.c) | game | 0 | ? | - |
 | [`func_00218A80`](game/func_00218A80.c) | game | 140 | ? | - |
@@ -244,7 +240,6 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 | [`func_L00_00257E18`](game/func_L00_00257E18.c) | game | 164 | ? | - |
 | [`func_L00_00257F4C`](shared/func_L00_00257F4C.c) | shared | 104 | SIZE ours 112 / retail 272 | - |
 | [`func_L00_0025805C`](game/func_L00_0025805C.c) | game | 496 | ? | - |
-| [`func_L00_002657B8`](shared/func_L00_002657B8.c) | shared | 260 | SIZE ours 256 / retail 260 | - |
 | [`func_L00_00268760`](functional/func_L00_00268760.c) | functional | 320 | ? | - |
 | [`func_L00_002688A8`](game/func_L00_002688A8.c) | game | 260 | ? | - |
 | [`func_L00_002689B0`](functional/func_L00_002689B0.c) | functional | 216 | ? | - |
@@ -253,7 +248,6 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 | [`func_L00_0028D958`](functional/func_L00_0028D958.c) | functional | 208 | ? | - |
 | [`func_L00_002963D8`](functional/func_L00_002963D8.c) | functional | 584 | ? | - |
 | [`func_L00_002D2E60`](game/func_L00_002D2E60.c) | game | 1228 | ? | - |
-| [`func_L00_002D6610`](shared/func_L00_002D6610.c) | shared | 868 | SIZE ours 876 / retail 868 | - |
 | [`func_L00_002E17D4`](functional/func_L00_002E17D4.c) | functional | 28 | ? | - |
 | [`func_L01_0021F9C8`](functional/func_L01_0021F9C8.c) | functional | 784 | ? | - |
 | [`func_L01_00262BC0`](functional/func_L01_00262BC0.c) | functional | 360 | ? | - |
@@ -266,10 +260,8 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 | [`func_L02_00250720`](functional/func_L02_00250720.c) | functional | 824 | ? | - |
 | [`func_L02_00250A58`](functional/func_L02_00250A58.c) | functional | 544 | ? | - |
 | [`func_L02_00250C78`](functional/func_L02_00250C78.c) | functional | 836 | ? | - |
-| [`func_L05_002D28D0`](functional/func_L05_002D28D0.c) | functional | 1960 | ? | - |
 | [`func_L06_00216B38`](functional/func_L06_00216B38.c) | functional | 940 | ? | - |
 | [`func_L06_002172B0`](functional/func_L06_002172B0.c) | functional | 8 | ? | - |
-| [`func_L06_003089B8`](functional/func_L06_003089B8.c) | functional | 1740 | ? | - |
 | [`func_L08_00211A38`](functional/func_L08_00211A38.c) | functional | 48 | ? | - |
 | [`func_L08_00259040`](functional/func_L08_00259040.c) | functional | 116 | ? | - |
 | [`func_L12_002677B4`](functional/func_L12_002677B4.c) | functional | 216 | ? | - |

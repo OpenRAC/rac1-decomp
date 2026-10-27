@@ -198,7 +198,37 @@ void assign_moby_class_data(int id) {
 
 LINKER_REMNANT("asm/remnants/text", func_00213C70);
 
-INCLUDE_ASM("asm/nonmatchings/text", func_00213C78);
+extern void *func_0020E6B8(void);
+extern void func_0020E3D0(void *);
+extern void func_0020ED48(void *);
+extern void *D_00160024 MACRO_ADDR;
+
+void func_00213C78(void) {
+    char *m;
+
+    D_00160024 = func_0020E6B8();
+    m = D_00160024;
+    if (m != 0) {
+        while (1) {
+            if ((signed char)m[0x20] < 0) {
+                m = *(char **)(m + 0x28);
+            } else {
+                if (!(*(unsigned short *)(m + 0x34) & 0x40)) {
+                    func_0020E3D0(m);
+                }
+                /* inline asm: hook call (beq/move/jal with empty slots); retail shape not reached in C yet. */
+                { int r; __asm__ volatile("beq %1,$0,1f\n\tmove $4,%2\n\tjal $31,%1\n1:" : "=r"(r) : "r"(*(void (**)(void *))(m + 0x74)), "r"(m) : "$4", "$31", "memory"); }
+                if (*(unsigned short *)(m + 0x34) & 0x4) {
+                    m = *(char **)(m + 0x28);
+                } else {
+                    func_0020ED48(m);
+                    m = *(char **)(m + 0x28);
+                }
+            }
+            if (m == 0) break;
+        }
+    }
+}
 
 LINKER_REMNANT("asm/remnants/text", func_00213D10);
 

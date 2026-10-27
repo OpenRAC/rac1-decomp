@@ -1,16 +1,16 @@
 {
  "measures": {
-  "fuzzy_match_percent": 78.27451677250558,
+  "fuzzy_match_percent": 78.54709164666846,
   "total_code": "3693664",
-  "matched_code": "2878704",
-  "matched_code_percent": 77.93627140963552,
+  "matched_code": "2888772",
+  "matched_code_percent": 78.20884628379842,
   "total_functions": 5089,
-  "matched_functions": 4865,
-  "matched_functions_percent": 95.59834938101788,
-  "complete_code": "310124",
-  "complete_code_percent": 8.396107496512947,
+  "matched_functions": 4874,
+  "matched_functions_percent": 95.77520141481627,
+  "complete_code": "331752",
+  "complete_code_percent": 8.981650740294732,
   "total_units": 140,
-  "complete_units": 96
+  "complete_units": 99
  },
  "units": [
   {
@@ -3829,17 +3829,17 @@
   {
    "name": "core/001208E8",
    "measures": {
-    "fuzzy_match_percent": 79.82456140350877,
+    "fuzzy_match_percent": 100.0,
     "total_code": "3648",
-    "matched_code": "2912",
-    "matched_code_percent": 79.82456140350877,
+    "matched_code": "3648",
+    "matched_code_percent": 100.0,
     "total_functions": 20,
-    "matched_functions": 19,
-    "matched_functions_percent": 95.0,
-    "complete_code": "0",
-    "complete_code_percent": 0.0,
+    "matched_functions": 20,
+    "matched_functions_percent": 100.0,
+    "complete_code": "3648",
+    "complete_code_percent": 100.0,
     "total_units": 1,
-    "complete_units": 0
+    "complete_units": 1
    },
    "functions": [
     {
@@ -3998,7 +3998,7 @@
     {
      "name": "func_001211B0",
      "size": "736",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "2248",
      "metadata": {
       "virtual_address": "1183408"
@@ -4024,7 +4024,7 @@
     }
    ],
    "metadata": {
-    "complete": false,
+    "complete": true,
     "source_path": "src/core/001208E8.c",
     "progress_categories": [
      "executable",
@@ -5848,17 +5848,17 @@
   {
    "name": "core/0012AC80",
    "measures": {
-    "fuzzy_match_percent": 91.57164105106594,
+    "fuzzy_match_percent": 100.0,
     "total_code": "8068",
-    "matched_code": "7388",
-    "matched_code_percent": 91.57164105106594,
+    "matched_code": "8068",
+    "matched_code_percent": 100.0,
     "total_functions": 48,
-    "matched_functions": 47,
-    "matched_functions_percent": 97.91666666666667,
-    "complete_code": "0",
-    "complete_code_percent": 0.0,
+    "matched_functions": 48,
+    "matched_functions_percent": 100.0,
+    "complete_code": "8068",
+    "complete_code_percent": 100.0,
     "total_units": 1,
-    "complete_units": 0
+    "complete_units": 1
    },
    "functions": [
     {
@@ -6215,7 +6215,7 @@
     {
      "name": "func_0012C608",
      "size": "680",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "6536",
      "metadata": {
       "virtual_address": "1230024"
@@ -6295,7 +6295,7 @@
     }
    ],
    "metadata": {
-    "complete": false,
+    "complete": true,
     "source_path": "src/core/0012AC80.c",
     "progress_categories": [
      "executable",
@@ -13103,17 +13103,17 @@
   {
    "name": "game/mobyutil",
    "measures": {
-    "fuzzy_match_percent": 98.50686037126715,
+    "fuzzy_match_percent": 100.0,
     "total_code": "9912",
-    "matched_code": "9764",
-    "matched_code_percent": 98.50686037126715,
+    "matched_code": "9912",
+    "matched_code_percent": 100.0,
     "total_functions": 62,
-    "matched_functions": 61,
-    "matched_functions_percent": 98.38709677419355,
-    "complete_code": "0",
-    "complete_code_percent": 0.0,
+    "matched_functions": 62,
+    "matched_functions_percent": 100.0,
+    "complete_code": "9912",
+    "complete_code_percent": 100.0,
     "total_units": 1,
-    "complete_units": 0
+    "complete_units": 1
    },
    "functions": [
     {
@@ -13155,7 +13155,7 @@
     {
      "name": "func_00213C78",
      "size": "148",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "512",
      "metadata": {
       "virtual_address": "2173216"
@@ -13676,7 +13676,7 @@
     }
    ],
    "metadata": {
-    "complete": false,
+    "complete": true,
     "source_path": "src/game/mobyutil.c",
     "progress_categories": [
      "executable",
@@ -18418,13 +18418,13 @@
   {
    "name": "Shared level code",
    "measures": {
-    "fuzzy_match_percent": 88.40677400533545,
+    "fuzzy_match_percent": 88.95853163668986,
     "total_code": "1186028",
-    "matched_code": "1046972",
-    "matched_code_percent": 88.2754875938848,
+    "matched_code": "1053516",
+    "matched_code_percent": 88.8272452252392,
     "total_functions": 1927,
-    "matched_functions": 1868,
-    "matched_functions_percent": 96.93824597820446,
+    "matched_functions": 1873,
+    "matched_functions_percent": 97.19771665801764,
     "complete_code": "0",
     "complete_code_percent": 0.0,
     "total_units": 1,
@@ -25742,7 +25742,7 @@
     {
      "name": "func_L00_002657B8",
      "size": "260",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "498120",
      "metadata": {
       "virtual_address": "2507600"
@@ -26093,7 +26093,7 @@
     {
      "name": "func_L00_0026ABC0",
      "size": "1780",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "519464",
      "metadata": {
       "virtual_address": "2528944"
@@ -28991,7 +28991,7 @@
     {
      "name": "func_L00_002A62D0",
      "size": "1896",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "761952",
      "metadata": {
       "virtual_address": "2771432"
@@ -31358,7 +31358,7 @@
     {
      "name": "func_L00_002D6610",
      "size": "868",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "958848",
      "metadata": {
       "virtual_address": "2968328"
@@ -34823,7 +34823,7 @@
     {
      "name": "func_L06_003089B8",
      "size": "1740",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "1164568",
      "metadata": {
       "virtual_address": "3174048"
@@ -38442,13 +38442,13 @@
   {
    "name": "Level 05: Rilgar",
    "measures": {
-    "fuzzy_match_percent": 64.38425103611604,
+    "fuzzy_match_percent": 65.8348134991119,
     "total_code": "135120",
-    "matched_code": "86996",
-    "matched_code_percent": 64.38425103611604,
+    "matched_code": "88956",
+    "matched_code_percent": 65.8348134991119,
     "total_functions": 78,
-    "matched_functions": 72,
-    "matched_functions_percent": 92.3076923076923,
+    "matched_functions": 73,
+    "matched_functions_percent": 93.58974358974359,
     "complete_code": "0",
     "complete_code_percent": 0.0,
     "total_units": 1,
@@ -38548,7 +38548,7 @@
     {
      "name": "func_L05_002D28D0",
      "size": "1960",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "619792",
      "metadata": {
       "virtual_address": "2953240"
@@ -49480,28 +49480,28 @@
    "id": "executable",
    "name": "Executable",
    "measures": {
-    "fuzzy_match_percent": 88.46660617438465,
+    "fuzzy_match_percent": 88.80644068975107,
     "total_code": "460224",
-    "matched_code": "396208",
-    "matched_code_percent": 86.09025170351829,
+    "matched_code": "397772",
+    "matched_code_percent": 86.43008621888471,
     "total_functions": 1698,
-    "matched_functions": 1596,
-    "matched_functions_percent": 93.99293286219081,
-    "complete_code": "209788",
-    "complete_code_percent": 45.583889584202474
+    "matched_functions": 1599,
+    "matched_functions_percent": 94.1696113074205,
+    "complete_code": "231416",
+    "complete_code_percent": 50.2833402864692
    }
   },
   {
    "id": "level_code",
    "name": "Level code",
    "measures": {
-    "fuzzy_match_percent": 76.82384994309467,
+    "fuzzy_match_percent": 77.08685157603048,
     "total_code": "3233440",
-    "matched_code": "2482496",
-    "matched_code_percent": 76.77569399772379,
+    "matched_code": "2491000",
+    "matched_code_percent": 77.0386956306596,
     "total_functions": 3391,
-    "matched_functions": 3269,
-    "matched_functions_percent": 96.40224122677677,
+    "matched_functions": 3275,
+    "matched_functions_percent": 96.57918018283692,
     "complete_code": "100336",
     "complete_code_percent": 3.1030728883170866
    }
@@ -49510,15 +49510,15 @@
    "id": "game",
    "name": "Executable game code",
    "measures": {
-    "fuzzy_match_percent": 88.20215546289464,
+    "fuzzy_match_percent": 88.54978208878259,
     "total_code": "449908",
-    "matched_code": "385892",
-    "matched_code_percent": 85.77131324626367,
+    "matched_code": "387456",
+    "matched_code_percent": 86.11893987215164,
     "total_functions": 1668,
-    "matched_functions": 1566,
-    "matched_functions_percent": 93.88489208633094,
-    "complete_code": "199472",
-    "complete_code_percent": 44.33617539585871
+    "matched_functions": 1569,
+    "matched_functions_percent": 94.06474820143885,
+    "complete_code": "221100",
+    "complete_code_percent": 49.14338042444233
    }
   },
   {
@@ -49540,13 +49540,13 @@
    "id": "common",
    "name": "Shared level code",
    "measures": {
-    "fuzzy_match_percent": 88.40677400533545,
+    "fuzzy_match_percent": 88.95853163668986,
     "total_code": "1186028",
-    "matched_code": "1046972",
-    "matched_code_percent": 88.2754875938848,
+    "matched_code": "1053516",
+    "matched_code_percent": 88.8272452252392,
     "total_functions": 1927,
-    "matched_functions": 1868,
-    "matched_functions_percent": 96.93824597820446,
+    "matched_functions": 1873,
+    "matched_functions_percent": 97.19771665801764,
     "complete_code": "0",
     "complete_code_percent": 0.0
    }
@@ -49555,13 +49555,13 @@
    "id": "levels",
    "name": "Level-specific code",
    "measures": {
-    "fuzzy_match_percent": 70.11407572095895,
+    "fuzzy_match_percent": 70.20980633111459,
     "total_code": "2047412",
-    "matched_code": "1435524",
-    "matched_code_percent": 70.11407572095895,
+    "matched_code": "1437484",
+    "matched_code_percent": 70.20980633111459,
     "total_functions": 1464,
-    "matched_functions": 1401,
-    "matched_functions_percent": 95.69672131147541,
+    "matched_functions": 1402,
+    "matched_functions_percent": 95.76502732240438,
     "complete_code": "100336",
     "complete_code_percent": 4.900625765600671
    }
@@ -49645,13 +49645,13 @@
    "id": "level_05",
    "name": "Level 05: Rilgar",
    "measures": {
-    "fuzzy_match_percent": 64.38425103611604,
+    "fuzzy_match_percent": 65.8348134991119,
     "total_code": "135120",
-    "matched_code": "86996",
-    "matched_code_percent": 64.38425103611604,
+    "matched_code": "88956",
+    "matched_code_percent": 65.8348134991119,
     "total_functions": 78,
-    "matched_functions": 72,
-    "matched_functions_percent": 92.3076923076923,
+    "matched_functions": 73,
+    "matched_functions_percent": 93.58974358974359,
     "complete_code": "0",
     "complete_code_percent": 0.0
    }

@@ -973,7 +973,147 @@ void draw_pulsing_timer_display(char *moby) {
 void set_moby_state_two(char *arg) {
     arg[0x20] = 2;
 }
-INCLUDE_ASM("asm/overlays", func_L06_003089B8);
+/* functional: medium. Draws a spinning 4-quad textured cage plus a fading inner quad around the moby (data at moby+0x78: scale at 0x24, uv scroll at 0x1C, fade at 0x20; both advance 0.01 per call and wrap at 1.0): corners come from the level tables D_L06_001FEC20/ECB0/ECF8/ED20 rotated by a matrix built from D_L06_00167500+0x158, each quad submitted with func_L00_001FD1D8. Written from the asm alone (no NTSC draft); the packet layout (pos 0x00, colour 0x40, uv 0x50, tags 0x70) follows its stores. Nothing unchecked. */
+typedef struct {
+    float pos[4][4];
+    int col[4];
+    float uv[8];
+    long tag[4];
+} Pkt89B8 __attribute__((aligned(16)));
+extern void func_001FA1F8(void *, void *);
+extern void func_001F9EC0(void *, void *, void *);
+extern void func_L00_001FD1D8(void *, void *, int);
+extern char D_L06_00167500[];
+extern int D_L06_001FED20[][4];
+extern float D_L06_001FECB0[][2];
+extern char D_L06_001FEC20[];
+extern int D_L06_001FECF8[];
+
+void func_L06_003089B8(char *o) {
+    Pkt89B8 pk;
+    float v[4][4] __attribute__((aligned(16)));
+    float axis[4] __attribute__((aligned(16)));
+    float mat[12] __attribute__((aligned(16)));
+    float w[4][4] __attribute__((aligned(16)));
+    char *data = *(char **)(o + 0x78);
+    float f;
+    int i, col;
+    float *g = (float *)D_L06_00167500;
+    float *g2;
+
+    axis[2] = g[0x56];
+    axis[0] = 0.0f;
+    axis[1] = 0.0f;
+    func_001FA1F8(mat, axis);
+    f = *(float *)(data + 0x1C) + 0.01f;
+    *(float *)(data + 0x1C) = f;
+    if (1.0f < f) {
+        *(float *)(data + 0x1C) = f - 1.0f;
+    }
+    pk.tag[2] = 1;
+    pk.tag[3] = 0x4000000044L;
+    pk.tag[0] = 0;
+    pk.tag[1] = func_001F4868(0x18);
+    for (i = 0; i < 4; i++) {
+        func_001F9EC0(v[0], D_L06_001FEC20 + D_L06_001FED20[i][0] * 16, mat);
+        func_001F9EC0(v[1], D_L06_001FEC20 + D_L06_001FED20[i][1] * 16, mat);
+        func_001F9EC0(v[2], D_L06_001FEC20 + D_L06_001FED20[i][2] * 16, mat);
+        func_001F9EC0(v[3], D_L06_001FEC20 + D_L06_001FED20[i][3] * 16, mat);
+        pk.pos[0][0] = *(float *)(o + 0x10) + v[0][0] * *(float *)(data + 0x24);
+        pk.pos[0][1] = *(float *)(o + 0x14) + v[0][1] * *(float *)(data + 0x24);
+        pk.pos[0][2] = *(float *)(o + 0x18) + v[0][2];
+        pk.pos[1][0] = *(float *)(o + 0x10) + v[1][0] * *(float *)(data + 0x24);
+        pk.pos[1][1] = *(float *)(o + 0x14) + v[1][1] * *(float *)(data + 0x24);
+        pk.pos[1][2] = *(float *)(o + 0x18) + v[1][2];
+        pk.pos[2][0] = *(float *)(o + 0x10) + v[2][0] * *(float *)(data + 0x24);
+        pk.pos[2][1] = *(float *)(o + 0x14) + v[2][1] * *(float *)(data + 0x24);
+        pk.pos[2][2] = *(float *)(o + 0x18) + v[2][2];
+        pk.pos[3][0] = *(float *)(o + 0x10) + v[3][0] * *(float *)(data + 0x24);
+        pk.pos[3][1] = *(float *)(o + 0x14) + v[3][1] * *(float *)(data + 0x24);
+        pk.pos[3][2] = *(float *)(o + 0x18) + v[3][2];
+        pk.col[0] = D_L06_001FECF8[D_L06_001FED20[i][0]];
+        pk.col[1] = D_L06_001FECF8[D_L06_001FED20[i][1]];
+        pk.col[2] = D_L06_001FECF8[D_L06_001FED20[i][2]];
+        pk.col[3] = D_L06_001FECF8[D_L06_001FED20[i][3]];
+        pk.uv[0] = D_L06_001FECB0[D_L06_001FED20[i][0]][0];
+        pk.uv[1] = D_L06_001FECB0[D_L06_001FED20[i][0]][1] + *(float *)(data + 0x1C);
+        pk.uv[2] = D_L06_001FECB0[D_L06_001FED20[i][1]][0];
+        pk.uv[3] = D_L06_001FECB0[D_L06_001FED20[i][1]][1] + *(float *)(data + 0x1C);
+        pk.uv[4] = D_L06_001FECB0[D_L06_001FED20[i][2]][0];
+        pk.uv[5] = D_L06_001FECB0[D_L06_001FED20[i][2]][1] + *(float *)(data + 0x1C);
+        pk.uv[6] = D_L06_001FECB0[D_L06_001FED20[i][3]][0];
+        pk.uv[7] = D_L06_001FECB0[D_L06_001FED20[i][3]][1] + *(float *)(data + 0x1C);
+        func_L00_001FD1D8(&pk, 0, 1);
+    }
+    pk.tag[1] = func_001F4868(0x1B);
+    f = *(float *)(data + 0x20) + 0.01f;
+    *(float *)(data + 0x20) = f;
+    if (1.0f < f) {
+        *(int *)(data + 0x20) = 0;
+    }
+    {
+        float c[4][4] __attribute__((aligned(16)));
+        /* register pin: retail keeps 1.4f in $f5 and 1.1f in $f4 (local-alloc gives the reverse). */
+        register float k14 __asm__("$f5") = 1.4f;
+        register float k11 __asm__("$f4") = 1.1f;
+        *(u128 *)c[0] = 0;
+        c[0][0] = (-*(float *)(data + 0x20) * 1.2f) * *(float *)(data + 0x24);
+        c[0][1] = (-*(float *)(data + 0x20) * 1.2f) * *(float *)(data + 0x24);
+        c[0][2] = *(float *)(data + 0x20) * k14 + k11;
+        *(u128 *)c[1] = 0;
+        c[1][0] = (*(float *)(data + 0x20) * 1.2f) * *(float *)(data + 0x24);
+        c[1][1] = (-*(float *)(data + 0x20) * 1.2f) * *(float *)(data + 0x24);
+        c[1][2] = *(float *)(data + 0x20) * k14 + k11 - 0.2f;
+        *(u128 *)c[2] = 0;
+        c[2][0] = (-*(float *)(data + 0x20) * 1.2f) * *(float *)(data + 0x24);
+        c[2][1] = (*(float *)(data + 0x20) * 1.2f) * *(float *)(data + 0x24);
+        c[2][2] = *(float *)(data + 0x20) * k14 + k11;
+        *(u128 *)c[3] = 0;
+        c[3][0] = (*(float *)(data + 0x20) * 1.2f) * *(float *)(data + 0x24);
+        c[3][1] = (*(float *)(data + 0x20) * 1.2f) * *(float *)(data + 0x24);
+        c[3][2] = *(float *)(data + 0x20) * k14 + k11 - 0.2f;
+        *(u128 *)w[0] = *(u128 *)c[0];
+        *(u128 *)w[1] = *(u128 *)c[1];
+        *(u128 *)w[2] = *(u128 *)c[2];
+        *(u128 *)w[3] = *(u128 *)c[3];
+    }
+    g2 = (float *)D_L06_00167500;
+    axis[2] = g2[0x56];
+    axis[0] = 0.0f;
+    axis[1] = 0.0f;
+    func_001FA1F8(mat, axis);
+    func_001F9EC0(v[0], w[0], mat);
+    func_001F9EC0(v[1], w[1], mat);
+    func_001F9EC0(v[2], w[2], mat);
+    func_001F9EC0(v[3], w[3], mat);
+    pk.pos[0][0] = *(float *)(o + 0x10) + v[0][0];
+    pk.pos[0][1] = *(float *)(o + 0x14) + v[0][1];
+    pk.pos[0][2] = *(float *)(o + 0x18) + v[0][2];
+    pk.pos[1][0] = *(float *)(o + 0x10) + v[1][0];
+    pk.pos[1][1] = *(float *)(o + 0x14) + v[1][1];
+    pk.pos[1][2] = *(float *)(o + 0x18) + v[1][2];
+    pk.pos[2][0] = *(float *)(o + 0x10) + v[2][0];
+    pk.pos[2][1] = *(float *)(o + 0x14) + v[2][1];
+    pk.pos[2][2] = *(float *)(o + 0x18) + v[2][2];
+    pk.pos[3][0] = *(float *)(o + 0x10) + v[3][0];
+    pk.pos[3][1] = *(float *)(o + 0x14) + v[3][1];
+    pk.pos[3][2] = *(float *)(o + 0x18) + v[3][2];
+    col = (int)((1.0f - *(float *)(data + 0x20)) * 128.0f);
+    col = (col << 24) | 0x808080;
+    pk.col[0] = col;
+    pk.col[1] = col;
+    pk.col[2] = col;
+    pk.col[3] = col;
+    pk.uv[0] = 0.0f;
+    pk.uv[1] = 0.0f;
+    pk.uv[2] = 1.0f;
+    pk.uv[3] = 0.0f;
+    pk.uv[4] = 0.0f;
+    pk.uv[5] = 1.0f;
+    pk.uv[6] = 1.0f;
+    pk.uv[7] = 1.0f;
+    func_L00_001FD1D8(&pk, 0, 1);
+}
 extern void Moby_PlaySound(int, int, int);
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 extern void jet_clear_persistent(int idx);
@@ -1003,7 +1143,7 @@ void activate_bot_door_lock_target(unsigned char *a, unsigned char *m) {
    names by OpenRAC's tools/port.py. Not a PAL match: PAL's compiler gives our 1680 bytes for retail's 1664 bytes. */
 void activate_bot_door_lock_target(unsigned char *a, unsigned char *m);
 typedef int OvlQuad_p __attribute__((mode(TI)));
-extern void draw_bot_door_lock_glow(void);
+extern void draw_bot_door_lock_glow(char *);
 extern short bot_door_lock_bob_height;
 extern short bot_door_lock_bob_period;
 extern short bot_door_lock_pulse_period;
