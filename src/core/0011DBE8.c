@@ -70,19 +70,9 @@ extern void kernel_init_tlb(void);
 extern int FirstSemaphore;
 extern int SecondSemaphore;
 
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* inline asm: EE kernel syscall 0x74. */
-void func_0011DBE8(int a0, int a1) {
-    __asm__ volatile("addiu $3,$0,0x74
-	syscall");
-}
+ASM_FUNC("asm/handwritten/core_text", func_0011DBE8);
 
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* inline asm: EE kernel syscall 0x5A. */
-void func_0011DBF8(int a0, void *a1, int a2) {
-    __asm__ volatile("addiu $3,$0,0x5A
-	syscall");
-}
+ASM_FUNC("asm/handwritten/core_text", func_0011DBF8);
 
 /* kCopy: libosd.o's own copy of the word-at-a-time copy helper (nbytes
  * rounded down to words); returns 0. Same body as func_0011DA08
@@ -96,12 +86,7 @@ int osd_kCopy(int *dst, int *src, unsigned int nbytes) {
     return 0;
 }
 
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* inline asm: EE kernel syscall 0x5B. */
-int func_0011DC40(int a0) {
-    __asm__ volatile("addiu $3,$0,0x5B
-	syscall");
-}
+ASM_FUNC("asm/handwritten/core_text", func_0011DC40);
 
 
 /* Reads a word through func_00118CF0, rewrites its 13..15 bit field to 1,

@@ -156,9 +156,6 @@ def classified_asm() -> dict[str, str]:
                 if name in found:
                     sys.exit(f"*** duplicate original assembly include: {name}")
                 found[name] = (folder, segment)
-    # A listed function may be rewritten in C (still classified as original assembly).
-    rewritten = (set(expected) - set(found)) & with_source()
-    found.update({n: expected[n] for n in rewritten})
     if found != expected:
         missing = sorted(set(expected) - set(found))
         extra = sorted(set(found) - set(expected))
@@ -253,18 +250,6 @@ def overlay_listed(listing: Path, marker: re.Pattern) -> set[str]:
     for directory, _ in overlay_dirs():
         for path in sorted(directory.glob("*.c")):
             marked += marker.findall(path.read_text(errors="replace"))
-    # A listed function may be rewritten in C (still classified as original assembly).
-    unmarked = set(listed) - set(marked)
-    if unmarked:
-        text = "\n".join(p.read_text(errors="replace") for d, _ in overlay_dirs() for p in sorted(d.glob("*.c")))
-        marked += [n for n in unmarked
-                   if re.search(r"^(?!extern\b)[A-Za-z_][^;\n]*\b" + n + r"\s*\([^;]*$", text, re.M)]
-    # A listed function may be rewritten in C (still classified as original assembly).
-    unmarked = set(listed) - set(marked)
-    if unmarked:
-        text = "\n".join(p.read_text(errors="replace") for d, _ in overlay_dirs() for p in sorted(d.glob("*.c")))
-        marked += [n for n in unmarked
-                   if re.search(r"^(?!extern\b)[A-Za-z_][^;\n]*\b" + n + r"\s*\([^;]*$", text, re.M)]
     if sorted(marked) != sorted(listed):
         sys.exit(f"*** {listing} disagrees with src/overlays/: "
                  f"listed only {sorted(set(listed) - set(marked))}, marked only {sorted(set(marked) - set(listed))}")
@@ -660,7 +645,8 @@ def generate() -> dict:
     funcs = retail_functions()
     decompiled = with_source()
     original_asm = classified_asm()
-
+    if decompiled & original_asm.keys():
+        sys.exit(f"*** C source and original assembly overlap: {sorted(decompiled & original_asm.keys())}")
     fuzzy = match_results(funcs, decompiled | original_asm.keys())
     not_exact = sorted(name for name in original_asm if fuzzy[name] != 100.0)
     if not_exact:

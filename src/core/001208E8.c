@@ -81,17 +81,7 @@ extern void sceSifAddCmdHandler(int arg0, int arg1, int arg2);
 extern void fs_iob_sema_make(void);
 extern int sce_sif_alloc_iop_heap(int arg0);
 
-extern int func_00118CA0(int a);
-
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* handwritten: call func_00118CA0 with the third arg, sync, enable interrupts. */
-void func_001208E8(int a, int b, int c) {
-    func_00118CA0(c);
-    /* inline asm: sync */
-    __asm__ volatile("sync");
-    /* inline asm: ei */
-    __asm__ volatile("ei");
-}
+ASM_FUNC("asm/handwritten/core_text", func_001208E8);
 
 
 /* sceCdDelayThread: sleep on an alarm. Same stack-descriptor idiom as

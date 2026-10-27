@@ -132,12 +132,7 @@ int checkModelVersion(void) {
     return 0x1315670 < libc_atoi(&buf[n - 9]);
 }
 
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* inline asm: EE kernel syscall 0x80. */
-void func_00121DB8(int a0, int *a1, int *a2, int *a3, int *a4) {
-    __asm__ volatile("addiu $3,$0,0x80
-	syscall");
-}
+ASM_FUNC("asm/handwritten/core_text", func_00121DB8);
 
 typedef struct {
     short interMode;

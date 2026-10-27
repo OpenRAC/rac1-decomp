@@ -412,15 +412,7 @@ int sce_mc_write_buffer(int fd, unsigned char *buffer, int size) {
     return rpc_result;
 }
 
-extern int func_00119678(int tid);
-
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* alarm callback: wakes the thread in a2 from an interrupt, then syncs and enables interrupts. */
-void func_00123EC0(int a0, unsigned short a1, void *tid) {
-    func_00119678((int)tid);
-    /* inline asm: sync; ei */
-    __asm__ volatile("sync\n\tei");
-}
+ASM_FUNC("asm/handwritten/core_text", func_00123EC0);
 
 extern int sleep_thread(void);
 extern void mc_hear_alarm(int, unsigned short, void *);

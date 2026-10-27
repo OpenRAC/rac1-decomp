@@ -13,46 +13,10 @@ void clear_twelve_bytes(s64 *v) {
     __asm__ volatile ("nop");
     ((s32 *)v)[2] = 0;
 }
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* Adds the xyz of vector c to vector b in place (a is unused). */
-void func_L00_001FF240(int a, float *b, float *c)
-{
-    /* inline asm: COP2 vector load/add/store */
-    __asm__ __volatile__(
-        "lqc2 $vf1,0(%0)\n\t"
-        "lqc2 $vf2,0(%1)\n\t"
-        "vadd.xyz $vf1,$vf1,$vf2\n\t"
-        "nop\n\t"
-        "sqc2 $vf1,0(%0)\n\t"
-        : : "r"(b), "r"(c) : "memory");
-}
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* Vector op on xyz of two vectors, result stored via the destination pointer. */
-void func_L00_001FF270(int a, float *b, float *c)
-{
-    /* inline asm: COP2 vector load/op/store */
-    __asm__ __volatile__(
-        "lqc2 $vf1,0(%1)\n\t"
-        "lqc2 $vf2,0(%2)\n\t"
-        "vsub.xyz $vf1,$vf1,$vf2\n\t"
-        "nop\n\t"
-        "sqc2 $vf1,0(%0)\n\t"
-        : : "r"(b), "r"(b), "r"(c) : "memory");
-}
+ASM_FUNC("asm/overlays", func_L00_001FF240);
+ASM_FUNC("asm/overlays", func_L00_001FF270);
 ASM_FUNC("asm/overlays", func_L00_001FF2C8);
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* Vector op on xyz of two vectors, result stored via the destination pointer. */
-void func_L00_001FF2F8(float *a, float *b, float *c)
-{
-    /* inline asm: COP2 vector load/op/store */
-    __asm__ __volatile__(
-        "lqc2 $vf1,0(%1)\n\t"
-        "lqc2 $vf2,0(%2)\n\t"
-        "vmul.xyz $vf1,$vf1,$vf2\n\t"
-        "nop\n\t"
-        "sqc2 $vf1,0(%0)\n\t"
-        : : "r"(a), "r"(b), "r"(c) : "memory");
-}
+ASM_FUNC("asm/overlays", func_L00_001FF2F8);
 ASM_FUNC("asm/overlays", func_L00_001FF328);
 ASM_FUNC("asm/overlays", func_L00_001FF3E0);
 ASM_FUNC("asm/overlays", func_L00_001FF468);
@@ -70,36 +34,7 @@ INCLUDE_ASM("asm/overlays", func_L00_001FF968);
 ASM_FUNC("asm/overlays", func_L00_001FFA40);
 INCLUDE_ASM("asm/overlays", func_L00_001FFB78);
 ASM_FUNC("asm/overlays", func_L00_001FFCF8);
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* Adds two 4x4 matrices: a = b + c. */
-void func_L00_001FFDD0(float *a, float *b, float *c)
-{
-    /* inline asm: COP2 matrix load */
-    __asm__ __volatile__(
-        "lqc2 $vf1,0(%0)\n\t"
-        "lqc2 $vf2,0x10(%0)\n\t"
-        "lqc2 $vf3,0x20(%0)\n\t"
-        "lqc2 $vf4,0x30(%0)\n\t"
-        "lqc2 $vf5,0(%1)\n\t"
-        "lqc2 $vf6,0x10(%1)\n\t"
-        "lqc2 $vf7,0x20(%1)\n\t"
-        "lqc2 $vf8,0x30(%1)\n\t"
-        : : "r"(b), "r"(c) : "memory");
-    /* inline asm: COP2 matrix add */
-    __asm__ __volatile__(
-        "vadd.xyzw $vf1,$vf1,$vf5\n\t"
-        "vadd.xyzw $vf2,$vf2,$vf6\n\t"
-        "vadd.xyzw $vf3,$vf3,$vf7\n\t"
-        "vadd.xyzw $vf4,$vf4,$vf8\n\t");
-    /* inline asm: COP2 matrix store */
-    __asm__ __volatile__(
-        "sqc2 $vf1,0(%0)\n\t"
-        "sqc2 $vf2,0x10(%0)\n\t"
-        "sqc2 $vf3,0x20(%0)\n\t"
-        "sqc2 $vf4,0x30(%0)\n\t"
-        "nop\n\t"
-        : : "r"(a) : "memory");
-}
+ASM_FUNC("asm/overlays", func_L00_001FFDD0);
 ASM_FUNC("asm/overlays", func_L00_001FFED8);
 ASM_FUNC("asm/overlays", func_L00_002001D8);
 ASM_FUNC("asm/overlays", func_L00_00200210);

@@ -182,12 +182,7 @@ int sce_sif_reboot_iop(char *img) {
 
 LINKER_REMNANT("asm/remnants/core_text", func_0011D358);
 
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* inline asm: EE kernel syscall 0x5A. */
-void func_0011D360(void *a0, void *a1, int a2) {
-    __asm__ volatile("addiu $3,$0,0x5A
-	syscall");
-}
+ASM_FUNC("asm/handwritten/core_text", func_0011D360);
 
 /*
  * A word-at-a-time copy of nbytes (rounded down to words); returns 0.
@@ -206,19 +201,9 @@ int tlbfunc_kcopy(int *dst, int *src, unsigned int nbytes) {
     return 0;
 }
 
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* inline asm: EE kernel syscall 0x5B. */
-int func_0011D3A8(int a0) {
-    __asm__ volatile("addiu $3,$0,0x5B
-	syscall");
-}
+ASM_FUNC("asm/handwritten/core_text", func_0011D3A8);
 
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* inline asm: EE kernel syscall 0x74. */
-int func_0011D3B8(int a0, int a1) {
-    __asm__ volatile("addiu $3,$0,0x74
-	syscall");
-}
+ASM_FUNC("asm/handwritten/core_text", func_0011D3B8);
 
 extern int set_syscall(int, int);
 extern void kcopy(void *, void *, int);
@@ -279,12 +264,7 @@ int InitTLBFunctions(void) {
     return r;
 }
 
-/* Original: handwritten assembly (config/handwritten_asm.txt); this C rebuilds its bytes. */
-/* inline asm: EE kernel syscall 0x56. */
-void func_0011D490(void) {
-    __asm__ volatile("addiu $3,$0,0x56
-	syscall");
-}
+ASM_FUNC("asm/handwritten/core_text", func_0011D490);
 
 extern int init_tlb_32mb(void);
 extern int kernel_init_tlb(void);
