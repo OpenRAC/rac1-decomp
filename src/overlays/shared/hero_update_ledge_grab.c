@@ -96,39 +96,41 @@ extern float blarg_hero_bones_30_scale;
 typedef int u128_E7B8 __attribute__((mode(TI)));
 typedef struct {
     char pad0[0x80];
-    float a80[4];
-    float a90[4];
+    float pos[4];
+    float rot[4];
     char pad1[0x300 - 0xA0];
-    int i300;
+    int grounded_frames;
     char pad2[0x12E7 - 0x304];
-    unsigned char b12E7;
+    unsigned char on_magnet_ground;
     char pad3[0x1620 - 0x12E8];
-    char *m1620;
-    char *m1624;
-    float f1628;
+    char *unk1620;
+    char *unk1624;
+    float glow_phase;
     char pad4[0x1D50 - 0x162C];
-    char a1D50[0x30];
-    char a1D80[0x10];
+    char joint_pos[0x30];
+    char glow_pos[0x10];
     char pad5[0x2080 - 0x1D90];
-    char *p2080;
-    int i2084;
+    char *moby;
+    int state_current;
     char pad6[0x20A4 - 0x2088];
-    unsigned char b20A4;
+    unsigned char vehicle_mode;
     char pad7[0x20B8 - 0x20A5];
-    int i20B8;
+    int pending_item0;
     char pad8[0x22C0 - 0x20BC];
-    char *p22C0;
+    char *unk22C0;
     char pad9[0x22DC - 0x22C4];
-    short s22DC;
-    short s22DE;
-    short s22E0;
+    short unk22DC;
+    short vehicle_toggle_timer;
+    short glow_pulse_level;
     short pad22E2;
-    int c22E4;
+    int unk22E4;
     char padA[0x22FC - 0x22E8];
-    short s22FC;
-    short s22FE;
-    int i2300;
+    short unk22FC;
+    short unk22FE;
+    int unk2300;
 } GS_E7B8;
+
+#define G_HERO ((GS_E7B8 *)(hero_globals_base + 0xE1D))
 
 /* Hero frame update for the help/panel states: runs the update chain; in state 1 keeps two companion mobys (0x4B4 and 0x47A) placed on the hero and tints them, in state 3 pulses the hero tint and drives the fade colour and sound trigger. */
 void update_hero_vehicle_attachments_and_effects(void) {
@@ -144,62 +146,62 @@ void update_hero_vehicle_attachments_and_effects(void) {
     advance_hero_animation();
     hero_update();
     apply_hero_ground_material_response();
-    if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->b20A4 == 1) {
+    if (G_HERO->vehicle_mode == 1) {
         check_ledge_grab();
         update_hero_motion_response_parameters();
     }
     HeroL06_UpdateStateTransitions();
-    if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->b20A4 == 0) return;
+    if (G_HERO->vehicle_mode == 0) return;
     update_hero_delayed_voice_requests();
     update_hero_easing_records();
-    if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->b20A4 == 0) return;
+    if (G_HERO->vehicle_mode == 0) return;
     update_hero_vehicle_moby();
     update_hero_scalar_pulse();
     apply_hero_and_item_scale_sequence();
-    if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->b20A4 == 1) {
+    if (G_HERO->vehicle_mode == 1) {
         blarg_hero_bones_25_scale = sound_volume[10];
         update_hero_glow_and_extra_manipulators();
-        if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 == 0) {
-            ((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 = (char *)CreateMoby(0x4B4);
-            if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 != 0) {
-                *(int *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0x90) = 0x801432D7;
-                ((GS_E7B8 *)(hero_globals_base + 0xE1D))->i2300 = 0x301432D7;
-                qcopy_nc(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0x10, ((GS_E7B8 *)(hero_globals_base + 0xE1D))->a80);
-                qcopy_nc(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0x40, ((GS_E7B8 *)(hero_globals_base + 0xE1D))->a90);
-                *(short *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0x32) = 0x40;
-                ((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624[0x31] = 1;
-                ((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624[0x30] = 0;
-                *(short *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0x34) = 0;
-                *(float *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0x2C) *= 1.7f;
-                *(unsigned short *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0x34) |= 0x10;
-                moby_build_matrix((struct Moby *)((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624);
+        if (G_HERO->unk1624 == 0) {
+            G_HERO->unk1624 = (char *)CreateMoby(0x4B4);
+            if (G_HERO->unk1624 != 0) {
+                *(int *)(G_HERO->unk1624 + 0x90) = 0x801432D7;
+                G_HERO->unk2300 = 0x301432D7;
+                qcopy_nc(G_HERO->unk1624 + 0x10, G_HERO->pos);
+                qcopy_nc(G_HERO->unk1624 + 0x40, G_HERO->rot);
+                *(short *)(G_HERO->unk1624 + 0x32) = 0x40;
+                G_HERO->unk1624[0x31] = 1;
+                G_HERO->unk1624[0x30] = 0;
+                *(short *)(G_HERO->unk1624 + 0x34) = 0;
+                *(float *)(G_HERO->unk1624 + 0x2C) *= 1.7f;
+                *(unsigned short *)(G_HERO->unk1624 + 0x34) |= 0x10;
+                moby_build_matrix((struct Moby *)G_HERO->unk1624);
             }
         }
-        if ((*(unsigned short *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080 + 0x34) ^ 1) & 1) {
-            Moby_GetJointWorldPos(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080, 7, buf);
-            qcopy(((GS_E7B8 *)(hero_globals_base + 0xE1D))->a1D80, buf);
+        if ((*(unsigned short *)(G_HERO->moby + 0x34) ^ 1) & 1) {
+            Moby_GetJointWorldPos(G_HERO->moby, 7, buf);
+            qcopy(G_HERO->glow_pos, buf);
             enqueue_hero_glow_draw_callback_once();
-            if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 != 0) {
-                MobyTransformScaledVertex(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080, 7, &buf[4]);
-                qcopy_nc(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0x10, &buf[16]);
-                matrix_copy_rows(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0xC0, &buf[4]);
+            if (G_HERO->unk1624 != 0) {
+                MobyTransformScaledVertex(G_HERO->moby, 7, &buf[4]);
+                qcopy_nc(G_HERO->unk1624 + 0x10, &buf[16]);
+                matrix_copy_rows(G_HERO->unk1624 + 0xC0, &buf[4]);
                 *(u128_E7B8 *)off = 0;
                 off[2] = 0.0257f;
-                matrix_mul_vec3(off, off, ((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0xC0);
-                *(float *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0x18) -= off[2];
-                moby_build_matrix((struct Moby *)((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624);
+                matrix_mul_vec3(off, off, G_HERO->unk1624 + 0xC0);
+                *(float *)(G_HERO->unk1624 + 0x18) -= off[2];
+                moby_build_matrix((struct Moby *)G_HERO->unk1624);
                 k = 1.7f;
                 if (gCheats[3] != 0) k = 3.1f;
-                if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->s22FC != 0) k *= 1.4f;
-                ApproachValue((float *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0x2C), *(float *)(*(char **)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0x24) + 0x24) * k, 0.02f);
+                if (G_HERO->unk22FC != 0) k *= 1.4f;
+                ApproachValue((float *)(G_HERO->unk1624 + 0x2C), *(float *)(*(char **)(G_HERO->unk1624 + 0x24) + 0x24) * k, 0.02f);
             }
         }
         ca = 0x281414C8;
         cb = 0x1E00004B;
-        ((GS_E7B8 *)(hero_globals_base + 0xE1D))->f1628 = FastAddRots(((GS_E7B8 *)(hero_globals_base + 0xE1D))->f1628, g_frame_time * 2.96705961227417f);
-        if (FastDecTimer(&((GS_E7B8 *)(hero_globals_base + 0xE1D))->s22FC) == 0) {
-            ((GS_E7B8 *)(hero_globals_base + 0xE1D))->f1628 = FastAddRots(((GS_E7B8 *)(hero_globals_base + 0xE1D))->f1628, g_frame_time * 12.217304229736328f);
-            switch (((GS_E7B8 *)(hero_globals_base + 0xE1D))->s22FE) {
+        G_HERO->glow_phase = FastAddRots(G_HERO->glow_phase, g_frame_time * 2.96705961227417f);
+        if (FastDecTimer(&G_HERO->unk22FC) == 0) {
+            G_HERO->glow_phase = FastAddRots(G_HERO->glow_phase, g_frame_time * 12.217304229736328f);
+            switch (G_HERO->unk22FE) {
             case 1:
                 ca = 0x2814C814;
                 cb = 0x1E004B00;
@@ -218,59 +220,59 @@ void update_hero_vehicle_attachments_and_effects(void) {
                 break;
             }
         }
-        col = FastTweenColor(ca, cb, FastSin(((GS_E7B8 *)(hero_globals_base + 0xE1D))->f1628) * 0.5f + 0.5f);
-        if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 != 0) {
-            *(int *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0x90) = FastTweenColor(*(int *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1624 + 0x90), col, frame_scale * 0.1f);
+        col = FastTweenColor(ca, cb, FastSin(G_HERO->glow_phase) * 0.5f + 0.5f);
+        if (G_HERO->unk1624 != 0) {
+            *(int *)(G_HERO->unk1624 + 0x90) = FastTweenColor(*(int *)(G_HERO->unk1624 + 0x90), col, frame_scale * 0.1f);
         }
-        ((GS_E7B8 *)(hero_globals_base + 0xE1D))->i2300 = FastTweenColor(((GS_E7B8 *)(hero_globals_base + 0xE1D))->i2300, col, frame_scale * 0.1f);
-        if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620 == 0) {
+        G_HERO->unk2300 = FastTweenColor(G_HERO->unk2300, col, frame_scale * 0.1f);
+        if (G_HERO->unk1620 == 0) {
             m = (char *)CreateMoby(0x47A);
-            ((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620 = m;
+            G_HERO->unk1620 = m;
             if (m == 0) goto skip;
             {
-                qcopy_nc(m + 0x10, ((GS_E7B8 *)(hero_globals_base + 0xE1D))->a80);
-                qcopy_nc(m + 0x40, ((GS_E7B8 *)(hero_globals_base + 0xE1D))->a90);
+                qcopy_nc(m + 0x10, G_HERO->pos);
+                qcopy_nc(m + 0x40, G_HERO->rot);
                 *(short *)(m + 0x32) = 0x40;
-                ((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620[0x31] = 1;
-                ((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620[0x30] = 0;
-                *(short *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620 + 0x34) = 0;
-                moby_build_matrix((struct Moby *)((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620);
+                G_HERO->unk1620[0x31] = 1;
+                G_HERO->unk1620[0x30] = 0;
+                *(short *)(G_HERO->unk1620 + 0x34) = 0;
+                moby_build_matrix((struct Moby *)G_HERO->unk1620);
             }
         }
-        if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620 != 0) {
-            MobyTransformScaledVertex(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080, 5, buf);
-            qcopy_nc(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620 + 0x10, &buf[12]);
-            moby_build_matrix((struct Moby *)((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620);
+        if (G_HERO->unk1620 != 0) {
+            MobyTransformScaledVertex(G_HERO->moby, 5, buf);
+            qcopy_nc(G_HERO->unk1620 + 0x10, &buf[12]);
+            moby_build_matrix((struct Moby *)G_HERO->unk1620);
             clear_u64_value(&buf[16]);
-            buf[18] = -((GS_E7B8 *)(hero_globals_base + 0xE1D))->a90[2];
+            buf[18] = -G_HERO->rot[2];
             euler_to_matrix(rm, &buf[16]);
             sce_vu0_mul_matrix(buf, buf, rm);
-            matrix_copy_rows(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620 + 0xC0, buf);
-            *(long *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620 + 0x38) = *(long *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080 + 0x38);
-            if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->i2084 == 0x4F) {
-                if (((unsigned char *)((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620)[0x53] != 1) {
-                    MobyBlendAnimation(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620, 1, 0, scale_ticks(10));
+            matrix_copy_rows(G_HERO->unk1620 + 0xC0, buf);
+            *(long *)(G_HERO->unk1620 + 0x38) = *(long *)(G_HERO->moby + 0x38);
+            if (G_HERO->state_current == 0x4F) {
+                if (((unsigned char *)G_HERO->unk1620)[0x53] != 1) {
+                    MobyBlendAnimation(G_HERO->unk1620, 1, 0, scale_ticks(10));
                 }
-            } else if (((unsigned char *)((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620)[0x53] != 0) {
-                MobyBlendAnimation(((GS_E7B8 *)(hero_globals_base + 0xE1D))->m1620, 0, 0, scale_ticks(0x11));
+            } else if (((unsigned char *)G_HERO->unk1620)[0x53] != 0) {
+                MobyBlendAnimation(G_HERO->unk1620, 0, 0, scale_ticks(0x11));
             }
         }
 skip:
-        if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->p22C0 != 0) {
-            Moby_PlaySound(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p22C0 + 0x10, 0, ((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080);
-            ((GS_E7B8 *)(hero_globals_base + 0xE1D))->s22FE = (short)(int)((GS_E7B8 *)(hero_globals_base + 0xE1D))->p22C0;
-            ((GS_E7B8 *)(hero_globals_base + 0xE1D))->s22FC = scale_ticks(0x39);
+        if (G_HERO->unk22C0 != 0) {
+            Moby_PlaySound(G_HERO->unk22C0 + 0x10, 0, G_HERO->moby);
+            G_HERO->unk22FE = (short)(int)G_HERO->unk22C0;
+            G_HERO->unk22FC = scale_ticks(0x39);
         }
-        ((GS_E7B8 *)(hero_globals_base + 0xE1D))->p22C0 = 0;
+        G_HERO->unk22C0 = 0;
     }
-    reveal_map_around_position(((GS_E7B8 *)(hero_globals_base + 0xE1D))->a80);
-    if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->b20A4 == 3) {
+    reveal_map_around_position(G_HERO->pos);
+    if (G_HERO->vehicle_mode == 3) {
         if (gCheats[1] != 0) {
             blarg_hero_bones_30_scale = 1.9f;
         }
         c20 = 0x80;
         v = scale_ticks(0xAA);
-        h = ((GS_E7B8 *)(hero_globals_base + 0xE1D))->s22E0;
+        h = G_HERO->glow_pulse_level;
         if (h == 2) {
             v = scale_ticks(0x32);
         } else if (h == 1) {
@@ -284,55 +286,55 @@ skip:
         r16 = truncate_float_to_s32(f20 * 20.0f) + 0x32;
         r17 = truncate_float_to_s32(f20 * 70.0f) + 0xB4;
         t = truncate_float_to_s32(f20 * 10.0f);
-        *(unsigned short *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080 + 0x34) |= 0x10;
+        *(unsigned short *)(G_HERO->moby + 0x34) |= 0x10;
         if (r16 >= 0x100) r16 = 0xFF;
         if (r17 >= 0x100) r17 = 0xFF;
         r18 = t + 0x14;
-        if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->s22E0 == 2) {
+        if (G_HERO->glow_pulse_level == 2) {
             color = (c20 << 24) | (r18 << 16) | (((r16 + (int)((unsigned int)r16 >> 31)) >> 1) << 8) | r17;
         } else {
             color = (c20 << 24) | (r18 << 16) | (r17 << 8) | r16;
         }
-        *(int *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080 + 0x90) = FastTweenColor(*(int *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080 + 0x90), color, 0.1f);
+        *(int *)(G_HERO->moby + 0x90) = FastTweenColor(*(int *)(G_HERO->moby + 0x90), color, 0.1f);
         for (i = 0; i < 3; i++) {
-            Moby_GetJointWorldPos(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080, i, ((GS_E7B8 *)(hero_globals_base + 0xE1D))->a1D50 + i * 0x10);
+            Moby_GetJointWorldPos(G_HERO->moby, i, G_HERO->joint_pos + i * 0x10);
         }
         c20 = 0x30;
-        r18 = *(unsigned char *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080 + 0x92);
-        r17 = *(unsigned char *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080 + 0x91);
-        r16 = *(unsigned char *)(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080 + 0x90);
-        h2 = ((GS_E7B8 *)(hero_globals_base + 0xE1D))->s22DE;
+        r18 = *(unsigned char *)(G_HERO->moby + 0x92);
+        r17 = *(unsigned char *)(G_HERO->moby + 0x91);
+        r16 = *(unsigned char *)(G_HERO->moby + 0x90);
+        h2 = G_HERO->vehicle_toggle_timer;
         if (h2 != 0) {
             f20 = IntToFloat(h2);
             f20 = f20 / IntToFloat(0x12);
             c20 = truncate_float_to_s32(f20 * (float)c20);
         }
-        ((GS_E7B8 *)(hero_globals_base + 0xE1D))->c22E4 = (c20 << 24) | (r18 << 16) | (r17 << 8) | r16;
+        G_HERO->unk22E4 = (c20 << 24) | (r18 << 16) | (r17 << 8) | r16;
         enqueue_hero_glow_draw_callback_once();
-        ((GS_E7B8 *)(hero_globals_base + 0xE1D))->s22E0 = 0;
-        if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->b20A4 == 3) {
-            v2 = ((GS_E7B8 *)(hero_globals_base + 0xE1D))->i20B8;
+        G_HERO->glow_pulse_level = 0;
+        if (G_HERO->vehicle_mode == 3) {
+            v2 = G_HERO->pending_item0;
             if (v2 != 0 && v2 != 0x1F) {
-                if (((GS_E7B8 *)(hero_globals_base + 0xE1D))->s22DE == 0) {
+                if (G_HERO->vehicle_toggle_timer == 0) {
                     allocate_hero_voice_for_entry(0x19, 0);
-                    ((GS_E7B8 *)(hero_globals_base + 0xE1D))->s22DE = 0x12;
-                    ((GS_E7B8 *)(hero_globals_base + 0xE1D))->s22DC = 1;
+                    G_HERO->vehicle_toggle_timer = 0x12;
+                    G_HERO->unk22DC = 1;
                 }
             } else {
-                GS_E7B8 *g = (GS_E7B8 *)(hero_globals_base + 0xE1D);
-                int e = g->b12E7;
-                g->i20B8 = 0;
-                if (e != 0 && g->i300 != 0 && *(unsigned char *)(gHaveMorphORay + 7) != 0 &&
-                    g->s22DE == 0) {
+                GS_E7B8 *g = G_HERO;
+                int e = g->on_magnet_ground;
+                g->pending_item0 = 0;
+                if (e != 0 && g->grounded_frames != 0 && *(unsigned char *)(gHaveMorphORay + 7) != 0 &&
+                    g->vehicle_toggle_timer == 0) {
                     allocate_hero_voice_for_entry(0x19, 0);
-                    g->s22DE = 0x12;
-                    g->s22DC = 1;
+                    g->vehicle_toggle_timer = 0x12;
+                    g->unk22DC = 1;
                 }
             }
         }
     }
     update_hero_moby_probed_height_bounds();
-    apply_env_zone_lighting(((GS_E7B8 *)(hero_globals_base + 0xE1D))->p2080);
+    apply_env_zone_lighting(G_HERO->moby);
 }
 extern unsigned char g_hero[];
 extern s32 level_game_mode_q MACRO_ADDR;
@@ -344,43 +346,43 @@ extern void HeroL06_TrySetMoveState(int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0021d0a0.c, FUN_L06_00227cf8. */
 void restore_hero_from_vehicle_mode(void) {
-    unsigned char *g = g_hero;
-    unsigned char *m;
-    if (g[0x20A4] == 1) {
-        *(int *)(g + 0x22AC) = *(int *)(g + 0x22A8);
-        *(int *)(g + 0x22A8) = *(s16 *)(g + 0x22B0);
-        if (*(void **)(g + 0x1620)) {
-            DeleteMoby(*(void **)(g + 0x1620));
-            *(void **)(g + 0x1620) = 0;
+    Hero *g = (Hero *)g_hero;
+    Moby *m;
+    if (g->vehicle_mode == 1) {
+        g->health.vehicle_mode_hp = g->health.hp;
+        g->health.hp = g->health.unk22B0;
+        if (g->unk1620) {
+            DeleteMoby(g->unk1620);
+            g->unk1620 = 0;
         }
-        if (*(void **)(g + 0x1624)) {
-            DeleteMoby(*(void **)(g + 0x1624));
-            *(void **)(g + 0x1624) = 0;
+        if (g->unk1624) {
+            DeleteMoby(g->unk1624);
+            g->unk1624 = 0;
         }
     }
     {
-    unsigned char *g2 = g_hero;
+    Hero *g2 = (Hero *)g_hero;
     reset_hero_easing_records();
-    g2[0x20A4] = 0;
-    m = *(unsigned char **)(g2 + 0xA84);
+    g2->vehicle_mode = 0;
+    m = (Moby *)g2->unkA84;
     if (m) {
-        *(u16 *)(m + 0x34) &= ~6;
+        m->flags &= ~6;
     }
-    *(void **)(g2 + 0xA84) = 0;
-    if (*(void **)(g2 + 0xA8C)) {
-        DeleteMoby(*(void **)(g2 + 0xA8C));
-        *(void **)(g2 + 0xA8C) = 0;
+    g2->unkA84 = 0;
+    if (g2->vehicle_mode3_moby) {
+        DeleteMoby(g2->vehicle_mode3_moby);
+        g2->vehicle_mode3_moby = 0;
     }
     release_and_clear_hero_voice_slots();
     {
-        unsigned char *o = *(unsigned char **)(g2 + 0xA88);
-        *(unsigned char **)(g2 + 0x2080) = o;
-        qcopy(o + 0x10, g2 + 0x80);
-        *(int *)(o + 0x98) = 0;
+        Moby *o = (Moby *)g2->unkA88;
+        g2->moby = o;
+        qcopy(&o->pos, &g2->motion.pos);
+        o->collision_disable = 0;
     }
-    *(float *)(g2 + 0xA94) = 1.0f;
+    g2->anim_frame_rate = 1.0f;
     clear_hero_queued_animation();
-    if (*(int *)(g2 + 0x2084) != 100 || (level_game_mode_q != 2 && level_game_mode_q != 6)) {
+    if (g2->state.current != 100 || (level_game_mode_q != 2 && level_game_mode_q != 6)) {
         HeroL06_TrySetMoveState(0, 1);
     }
     }
