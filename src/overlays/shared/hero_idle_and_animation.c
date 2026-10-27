@@ -630,7 +630,7 @@ extern int queue_animation_update(int, int, int, int, int, int, int);
 void update_hero_bolt_exclamation_hud(void) {
     Hero *g;
     if (gHaveMorphORay[6] == 0) {
-        *(int *)(hero_globals_base + 0x2E65) = 0;
+        ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->nearby_moby_close = 0;
         return;
     }
     g = (Hero *)g_hero;
@@ -1566,7 +1566,7 @@ void apply_hero_and_item_scale_sequence(void) {
             if (u != 0) {
                 FastVecScale(u + 0xC0, u + 0xC0, g);
                 FastVecScale(u + 0xD0, u + 0xD0, g);
-                FastVecSub(tmp, u + 0x10, hero_globals_base + 0xEED);
+                FastVecSub(tmp, u + 0x10,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
                 gravity_set_z(tmp, tmp, 0.0f);
                 FastVecSub(u + 0x10, u + 0x10, tmp);
                 FastVecScale(tmp, tmp, f);
@@ -2181,7 +2181,7 @@ extern void compute_selected_world_matrices(int, int, void *, void *);
 /* update_hero_world_matrices: computes the hero attach matrices for model a. */
 void update_hero_world_matrices(int a) {
     T t;
-    if (a == 0) a = *(int *)(hero_globals_base + 0x2E9D);
+    if (a == 0) a = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
     t = hero_world_matrix_joints;
     compute_selected_world_matrices(a, 9, &t, hero_globals_base + 0x18DD);
 }
@@ -2209,7 +2209,7 @@ void pack_pose(int *joints, PackedPose *pose, unsigned char *model, int padding,
     unsigned long value;
 
     if (context == 0)
-        context = *(int *)(hero_globals_base + 0x2E9D);
+        context = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
     out = (unsigned long *)(pose + 1);
     func_L00_00255B90(context);
     pose->root_rotation = PACKED_IDENTITY;
@@ -2490,7 +2490,7 @@ void emit_hero_timed_effects(void) {
     float a, r, r0, f, a1, a2;
     int t, c, col, life, n1, n2, k;
     V4 *pt;
-    g = (char *)hero_globals_base + 0x12BB;
+    g = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->unk49E;
     if (FastDecTimer(g)) {
         qcopy(&v, g - 0x41E);
         base = g - 0x49E;
@@ -2595,7 +2595,7 @@ void update_hero_collision_ease_target(void) {
     p2 = D_L00_0017A780;
     *(float *)(p2 + 0x6D4) = s2 * 0.05f;
     *(float *)(p2 + 0x6D8) = s2 * 0.3f;
-    h = (char *)hero_globals_base + 0xE9D;
+    h = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
     f = FastVecDist(h, collision_hit_point);
     g2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     f = f - g2->capsule_radius;
@@ -2804,12 +2804,12 @@ void update_hero_target_tracking(void) {
             info = (char *)GetFlaggedPvarWord(m);
             if (info != 0) {
                 float d, a, sc, pri;
-                d = vec_distance_xy(hero_globals_base + 0xE9D, m + 0x10);
+                d = vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, m + 0x10);
                 if ((float)*(unsigned char *)(info + 0x38) < d) continue;
                 g3 = (char *)hero_globals_base + 0xE1D;
                 a = FastDiffRots(fast_atan2(*(float *)(m + 0x10) - *(float *)(g3 + 0x80), *(float *)(m + 0x14) - *(float *)(g3 + 0x84)), *(float *)(g3 + 0x98));
                 if (1.91986215f < a) continue;
-                if (1.04719758f < FastAbsF(fast_atan2(vec_distance_xy(m + 0x10, hero_globals_base + 0xE9D), *(float *)(g3 + 0x88) - *(float *)(m + 0x18)))) continue;
+                if (1.04719758f < FastAbsF(fast_atan2(vec_distance_xy(m + 0x10,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos), *(float *)(g3 + 0x88) - *(float *)(m + 0x18)))) continue;
                 sc = a * d + d;
                 if ((int)m == *(int *)(g3 + 0x2274)) {
                     sc -= 1.5f;

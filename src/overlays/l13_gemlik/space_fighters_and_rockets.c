@@ -905,12 +905,12 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
         if (moby_data->search_range < vec_distance_xy_r(&m->pos, &moby_data->target) ||
             8.0f < FastAbsF_r(m->pos.z - moby_data->target.f[2])) {
             moby_data->unkB4 = 2;
-        } else if (m->state != 5 && coll_line_r(&m->pos, hero_globals_base_r + 0xEED, 2, m, 0) != 0) {
+        } else if (m->state != 5 && coll_line_r(&m->pos,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center, 2, m, 0) != 0) {
             moby_data->unkB4 = 2;
         }
     }
     if (moby_data->unkB0 == 0) {
-        moby_data->unkB0 = *(int *)(hero_globals_base_r + 0x2E9D);
+        moby_data->unkB0 = *(int *)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby;
     }
 }
 extern char *MobyGetHitMessage(void *, int, int);
@@ -1135,7 +1135,7 @@ int update_blarg_space_fighter_path_following(char *moby, char *vars, int aim) {
     if (path == 0) {
         goto done;
     }
-    veh = *(char **)(hero_globals_base + 0x240D);
+    veh = *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ship_moby;
     if (veh != 0 && *(short *)(veh + 0xA6) == 0x45) {
         if (*(int *)(vars + 0xBC) != -1 &&
             (linked = gemlik_moby_array_start + (*(int *)(vars + 0xBC) << 8)) != 0 &&
@@ -1151,7 +1151,7 @@ int update_blarg_space_fighter_path_following(char *moby, char *vars, int aim) {
         if (*(int *)(vars + 0xBC) == -1 ||
             (linked = gemlik_moby_array_start + (*(int *)(vars + 0xBC) << 8)) == 0 ||
             (unsigned char)linked[0x20] == 0xFE || (unsigned char)linked[0x20] == 0xFD) {
-            qcopy(point, hero_globals_base + 0xE9D);
+            qcopy(point,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
         } else {
             qcopy(point, linked + 0x10);
         }
@@ -1164,12 +1164,12 @@ int update_blarg_space_fighter_path_following(char *moby, char *vars, int aim) {
     }
     qcopy(ahead, path + 0x10 + forward * 16);
     backward = backward - 5;
-    forward_distance = FastVecDist(ahead, hero_globals_base + 0xE9D);
+    forward_distance = FastVecDist(ahead,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
     if (backward < 0) {
         backward += *(int *)path;
     }
     qcopy(behind, path + 0x10 + backward * 16);
-    backward_distance = FastVecDist(behind, hero_globals_base + 0xE9D);
+    backward_distance = FastVecDist(behind,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
     if (backward_distance < forward_distance) {
         backward = forward;
         step = 1;
@@ -1202,7 +1202,7 @@ int update_blarg_space_fighter_path_following(char *moby, char *vars, int aim) {
             float speed = frame_scale * -0.04000002f + 1.0f;
             *(short *)(vars + 0xD2) = 10;
             *(float *)(vars + 0xCC) = *(float *)(vars + 0xCC) * speed;
-            distance = vec_distance_xy(&((Moby *)moby)->pos, hero_globals_base + 0xE9D);
+            distance = vec_distance_xy(&((Moby *)moby)->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
             if ((*(float *)(vars + 0xCC) < frame_scale * 0.1f) | (((Moby *)moby)->visible == 0) | (distance < 40.0f)) {
                 short old = *(short *)(vars + 0xB4);
                 *(signed char *)(vars + 0xD0) = step;
@@ -1355,7 +1355,7 @@ void update_blarg_space_fighter(Moby *moby) {
                 }
             }
         } else {
-            qcopy(hpos, hero_globals_base + 0xE9D);
+            qcopy(hpos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
         }
         if (moby->visible == 0) {
             d->fA8++;
@@ -1424,7 +1424,7 @@ void update_blarg_space_fighter(Moby *moby) {
                         FastVecAdd(v30, hpos, up);
                         FastVecAdd(v30, v30, v70);
                         add_random_offset_to_vector_xyz(v30, 0.6f);
-                        lead = vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D);
+                        lead = vec_distance_xy(&moby->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
                         vec_scale_to_length(v50, &vehd->vel, vehd->f64 * (lead / (vehd->f64 + g_frame_time * 50.0f)));
                         FastVecAdd(v30, v30, v50);
                         FastVecSub(v30, v30, &moby->pos);
@@ -2096,7 +2096,7 @@ void process_asteroid_hit(Moby *m, char *d, float s) {
     float b;
     int i;
     b = s * 10.0f;
-    if (20.0f < FastVecDist(&m->pos, hero_globals_base + 0xE9D)) {
+    if (20.0f < FastVecDist(&m->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos)) {
         a = b = 0.0f;
     }
     Moby_PlaySound_s(0, 0, (int)m);
@@ -3313,7 +3313,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                     m->command++;
                     rf = 1;
                     {
-                        Vars_2EAE80 *v = (Vars_2EAE80 *)(*(Moby **)(hero_globals_base_r + 0x240D))->pvars;
+                        Vars_2EAE80 *v = (Vars_2EAE80 *)(*(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->ship_moby)->pvars;
 
                         v->f88 = 0;
                         v->fEC = 0;
@@ -3340,7 +3340,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                     }
                     rf = 1;
                     {
-                        Vars_2EAE80 *v = (Vars_2EAE80 *)(*(Moby **)(hero_globals_base_r + 0x240D))->pvars;
+                        Vars_2EAE80 *v = (Vars_2EAE80 *)(*(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->ship_moby)->pvars;
 
                         v->f88 = 0;
                         v->fEC = 0;

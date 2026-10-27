@@ -386,7 +386,7 @@ void toxic_gas_vent_update(char *m) {
     struct GasVentVars *d = (struct GasVentVars *)((Moby *)m)->pvars;
     float s;
     if (d->clip_volume >= 0) {
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->clip_volume) != 0) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->clip_volume) != 0) {
             float x = *(float *)&toxic_gas_vent_near_d50_value;
             float y = *(float *)&toxic_gas_vent_near_anim_time;
             d->near_value = x;
@@ -491,10 +491,10 @@ void emit_toxic_gas_vent_sparks(char *moby)
     pos = moby + 0x10;
     qcopy(a0, pos);
     a0[3] = 4.0f;
-    if (10.0f < FastVecDist(hero_globals_base + 0xE9D, pos)) {
+    if (10.0f < FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, pos)) {
         if (FastBSphereCheck((char *)a0, 24.0f) == -1) return;
     }
-    if (24.0f < FastVecDist(hero_globals_base + 0xE9D, pos)) return;
+    if (24.0f < FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, pos)) return;
     qcopy(v50, pos);
     euler_to_matrix(v10, moby + 0x40);
     clear_u64_value(v60);
@@ -569,7 +569,7 @@ void check_oscillating_toxic_gas_vent_collisions(char *m) {
     ang = FastSubRots(d->phase, f25 * 4.0f);
     s.m = m;
     s.f1C = 1.0f;
-    s.flags = *(int *)(hero_globals_base + 0x1F75) != 6 ? 0x10001 : 0x10000;
+    s.flags = ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->items[2].item_id != 6 ? 0x10001 : 0x10000;
     s.i20 = one;
     clear_u64_value(&s);
     s.f8 = 1.0f;
@@ -622,7 +622,7 @@ void check_timed_toxic_gas_vent_collisions(char *m)
     int fl;
 
     fl = 0x10000;
-    if (*(int *)(hero_globals_base + 0x1F75) != 6) fl = 0x10001;
+    if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->items[2].item_id != 6) fl = 0x10001;
     q.flags = fl;
     d = (struct GasVentVars *)((Moby *)m)->pvars;
     q.owner = m;
@@ -889,7 +889,7 @@ void update_drawbridge(Moby *m) {
         ApproachValue_r(&s->f6C, 1.0f, 1.0f / scale_ticks_r(20));
         blarg_fade_level_r = 1.0f - FastAbsF_r(s->f6C);
         if (old < 0.0f && 0.0f <= s->f6C) {
-            Hero_ResetToPosition_r(hero_globals_base_r + 0xE9D, hero_globals_base_r + 0xEAD, 0x72, 1);
+            Hero_ResetToPosition_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.rot, 0x72, 1);
             CameraScript_r(blarg_scene_points_r + (s->i60 << 7) + 0x30, blarg_scene_points_r + (s->i60 << 7) + 0x70, 1, 0, 0);
         } else if (1.0f <= s->f6C) {
             m->state = 4;
@@ -1681,7 +1681,7 @@ void alien_snapper_update(Moby *moby)
                 }
             }
         } else if (moby->anim_flags & 2) {
-            if (vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D) < D_L06_00161F60_91A8) {
+            if (vec_distance_xy(&moby->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < D_L06_00161F60_91A8) {
                 moby->state = 8;
                 v->f194 = random_float_between(v->f198 * 0.017453292f, -(v->f198 * 0.017453292f));
                 if (moby->prev_seq != 1) {
@@ -1700,7 +1700,7 @@ void alien_snapper_update(Moby *moby)
         break;
     case 3:
         if (v->f1C0 >= 0) {
-            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, v->f1C0) != 0) {
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, v->f1C0) != 0) {
                 moby->state = 4;
                 if (moby->prev_seq != 3) {
                     MobyBlendAnimation_r(moby, 3, 0, scale_ticks(5));
@@ -2175,7 +2175,7 @@ void update_alien_snapper_hit_response_and_targeting(Moby *moby)
         }
     }
     if (data->f160 == 0) {
-        data->f160 = *(int *)(hero_globals_base_r + 0x2E9D);
+        data->f160 = *(int *)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby;
     }
 }
 /* Advances every moby in the arg's group from state 1 to state 2. */
@@ -2218,7 +2218,7 @@ float compute_alien_snapper_target_gap_angle(char *self) {
     v[0] = FastCos(ang) * 2.0f;
     v[1] = FastSin(ang) * 2.0f;
     v[2] = 0.0f;
-    FastVecAdd(v, v, hero_globals_base + 0xE9D);
+    FastVecAdd(v, v,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
     p = blarg_moby_groups[(unsigned char)self[0x21]];
     if (p == 0) {
         return 0.0f;
@@ -2810,7 +2810,7 @@ hit_response_done:
         moby[0x20] = 14;
         return;
     }
-    if ((unsigned char)moby[0x20] >= 2 && *(int *)(hero_globals_base + 0x1ED5) != 8 && (*(int *)(pad_globals_base + 0x2600) & 0x20))
+    if ((unsigned char)moby[0x20] >= 2 && ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->items[0].item_id != 8 && (*(int *)(pad_globals_base + 0x2600) & 0x20))
         data->unk_178 = 1;
     timer = data->timer2;
     if (timer != 0 && data->unk_170 != 0) {
@@ -2856,7 +2856,7 @@ hit_response_done:
         (FastSin(data->angle) + 1.0f) * 0.5f);
     path = blarg_paths[data->path];
     FindNearestEligibleMoby(255.0f, moby, &data->unk_70, 0, 0, path + 4, *path);
-    if (data->target == 0) data->target = *(int *)(hero_globals_base + 0x2E9D);
+    if (data->target == 0) data->target = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
 }
 extern float random_float_between(float, float);
 extern int activate_state_15_moby_at_position(void *, void *);
@@ -2894,7 +2894,7 @@ void start_alien_queen_intro(char *moby) {
     *(int *)&data->cam_t = 0;
     Hero_ResetToPosition(base + 0x30, base + 0x70, 0x72, 0);
     qcopy(v0, moby + 0x10);
-    v0[2] = *(float *)(hero_globals_base + 0xEA5) + 2.0f;
+    v0[2] = ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos.f[2] + 2.0f;
     vec_scale_to_length(v1, moby + 0xC0, 8.0f);
     FastVecAdd(v0, v0, v1);
     clear_u64_value(m);

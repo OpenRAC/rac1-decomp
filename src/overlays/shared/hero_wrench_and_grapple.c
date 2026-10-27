@@ -61,7 +61,7 @@ void Hero_ApplyMotionCollisionL02(void) {
     Hero *contact_player;
     Hero *motion_player;
     Hero *cap_player;
-    float *start = (float *)(hero_globals_base + 0xE9D);
+    float *start = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
     float *position;
     float *horizontal;
     float *extra_step;
@@ -84,7 +84,7 @@ void Hero_ApplyMotionCollisionL02(void) {
             limit = ((Hero *)position)->capsule_radius - 0.02f;
             if (limit < length) vec_scale_to_length(start, start, limit);
         }
-        position = (float *)(hero_globals_base + 0xEFD);
+        position = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.velocity);
         magnitude = gravity_z(position);
         limit = -*(float *)((char *)position + 0x1FC);
         if (magnitude < limit) {
@@ -104,7 +104,7 @@ void Hero_ApplyMotionCollisionL02(void) {
             }
         }
     }
-    position = (float *)(hero_globals_base + 0xE9D);
+    position = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
     FastVecAdd(position, position, (char *)position + 0x60);
     extra_step = (float *)((char *)position + 0x8A0);
     FastVecAdd(position, position, extra_step);
@@ -120,7 +120,7 @@ void Hero_ApplyMotionCollisionL02(void) {
     } else {
         Hero_UpdateGroundContact();
     }
-    position = (float *)(hero_globals_base + 0xF2D);
+    position = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.resolved_velocity);
     new_position = (float *)((char *)position - 0x90);
     horizontal = (float *)((char *)position + 0x20);
     FastVecSub(position, new_position, previous.f);

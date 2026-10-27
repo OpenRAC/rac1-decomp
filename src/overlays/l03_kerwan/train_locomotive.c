@@ -2130,7 +2130,7 @@ void update_kerwan_path_enemy(Moby *m) {
     }
     switch (m->state) {
     case 0:
-        (*(long *)&m->spawn_frame) = (*(long *)&(*(Moby **)(hero_globals_base + 0x2E9D))->spawn_frame);
+        (*(long *)&m->spawn_frame) = (*(long *)&(*(Moby **)&((struct Hero *)(hero_globals_base + 0xE1D))->moby)->spawn_frame);
         m->shadow_range = 0x1C;
         MoveCtl_Init((char *)&d->mv);
         d->mv.fC = 3.0f;

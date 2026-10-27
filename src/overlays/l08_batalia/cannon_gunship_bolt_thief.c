@@ -454,7 +454,7 @@ void update_batalia_cannon(Moby *moby) {
             return;
         }
         if (visited52[g_current_level_index_r][moby->mission] != 0xFF && (hero52.ship_flags & 1)) Hero_OnKilled_r();
-        if (((pad52.pressed & 0x10) || (*(unsigned char *)(hero_globals_base_r + 0x242C) & 1)) && visited52[g_current_level_index_r][moby->mission] == 0xFF) {
+        if (((pad52.pressed & 0x10) || (((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->ship_flags & 1)) && visited52[g_current_level_index_r][moby->mission] == 0xFF) {
             hero52.ship_flags = 0;
             hero_state52(0, 1);
             moby->command = 2; moby->rot.y = 0.0f;
@@ -866,7 +866,7 @@ void *spawn_joint_aligned_moby_part(char *parent, int oClass, int joint, int pjo
         *(short *)(m + 0x32) = 0xFF;
         m[0x31] = 1;
         *(unsigned short *)(m + 0x34) |= 0x4000;
-        *(long *)(m + 0x38) = *(long *)(*(char **)(hero_globals_base + 0x2E9D) + 0x38);
+        *(long *)(m + 0x38) = *(long *)(*(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby + 0x38);
         qcopy(m + 0x40, parent + 0x40);
         Moby_GetJointWorldPos(m, joint, v0);
         Moby_GetJointWorldPos(parent, pjoint, v10);
@@ -1455,7 +1455,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
         }
         m->flags |= 0x1000;
         d->b29 = 0;
-        m->spawn_frame = (*(long *)&(*(Moby **)(hero_globals_base + 0x2E9D))->spawn_frame);
+        m->spawn_frame = (*(long *)&(*(Moby **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby)->spawn_frame);
         clear_u64_value(&d->v40);
         m->state = 1;
         if (m->prev_seq != 1) {
@@ -1464,7 +1464,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
         break;
     case 1:
         qcopy(&va, &batalia_path_table_r[d->w220]->pts[0]);
-        if (FastVecDist(hero_globals_base + 0xE9D, &va) < 24.0f) {
+        if (FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, &va) < 24.0f) {
             build_bolt_thief_target_list((char *)m);
             m->state = 5;
             if (m->prev_seq != 3) {
@@ -1610,7 +1610,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
         if (FastVecDist(&m->pos, &va) < 0.5f) {
             c->idx = next;
         }
-        if (FastVecDist(hero_globals_base + 0xE9D, &m->pos) > 19.0f) {
+        if (FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, &m->pos) > 19.0f) {
             m->state = 7;
         }
         break;
@@ -1822,7 +1822,7 @@ void update_batalia_bolt_pickup(Moby *m) {
             m->state = 2;
         }
         if (m->visible == 0) {
-            if (m > batalia_mobys_last && vec_distance_xy(&m->pos, hero_globals_base + 0xE9D) > 24.0f) {
+            if (m > batalia_mobys_last && vec_distance_xy(&m->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) > 24.0f) {
                 DeleteMoby(m);
                 return;
             }
@@ -1873,7 +1873,7 @@ void update_batalia_bolt_pickup(Moby *m) {
             Vars_4BE8 *e = (Vars_4BE8 *)m->pvars;
             float k = 0.017453292f;
 
-            FastVecSub(b, &m->pos, hero_globals_base + 0xE9D);
+            FastVecSub(b, &m->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
             vec_scale_to_length(b, b, 1.0f);
             FastVecCross(b, a, b);
             build_axis_roll_matrix(e, b, batalia_bolt_collect_spin_speed * k * g_frame_time);
@@ -1881,7 +1881,7 @@ void update_batalia_bolt_pickup(Moby *m) {
             vec_scale_to_length(e->v40, a, g_frame_time * 8.0f);
             e->f74 = 0.0f;
             e->u70.f = g_frame_time * 8.0f;
-            e->u78.p = *(char **)(hero_globals_base + 0x2E9D);
+            e->u78.p = *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
             e->u7C.f = 0.5f;
             if (batalia_bolt_sound_frame + scale_ticks(3) < batalia_frame_count_r) {
                 batalia_bolt_sound_frame = batalia_frame_count_r;
@@ -1933,14 +1933,14 @@ void update_batalia_bolt_pickup(Moby *m) {
         FastVecAdd(&m->pos, &m->pos, d->v40);
         vec_scale_to_length(a, a, d->f74);
         FastVecAdd(&m->pos, &m->pos, a);
-        FastVecAdd(&m->pos, &m->pos, hero_globals_base + 0xF5D);
-        FastVecSub(c, &m->pos, hero_globals_base + 0x10BD);
-        transform_vector(c, c, hero_globals_base + 0xE5D);
+        FastVecAdd(&m->pos, &m->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.platform_carry);
+        FastVecSub(c, &m->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ground_point);
+        transform_vector(c, c,((struct Hero *)((char *)&hero_globals_base + 0xE1D))->inv_rot_matrix);
         if (((Moby *)d->u78.p)->oclass != 0 || c[2] > 0.0f) {
             ApproachValue_r(&d->u70.f, 0.0f, batalia_bolt_attract_accel * g_frame_time_sq);
             ApproachValue_r(&d->f74, batalia_bolt_attract_speed * g_frame_time, batalia_bolt_attract_accel * g_frame_time_sq);
         } else {
-            vec_scale_to_length(mt, hero_globals_base + 0xE3D, d->u70.f);
+            vec_scale_to_length(mt,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[8], d->u70.f);
             FastVecSub(mt + 4, mt, d->v40);
             ClampVectorLength(mt + 4, batalia_bolt_attract_accel * g_frame_time_sq);
             FastVecAdd(d->v40, d->v40, mt + 4);
@@ -2057,7 +2057,7 @@ void update_batalia_bolt_pickup(Moby *m) {
         if (m->pos.z < d->f60 - 4.0f && m->pos.z < ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] - 4.0f) {
             Vars_4BE8 *e = (Vars_4BE8 *)m->pvars;
 
-            *(u128_4BE8 *)e->v10 = *(u128_4BE8 *)(hero_globals_base + 0xEAD);
+            *(u128_4BE8 *)e->v10 = *(u128_4BE8 *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot.i[0];
             e->i68 = scale_ticks(1);
             m->state = 2;
             break;

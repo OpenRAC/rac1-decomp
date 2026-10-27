@@ -37,7 +37,7 @@ void HeroMovePipeline(void) {
     Hero *contact_player;
     Hero *motion_player;
     Hero *cap_player;
-    float *position = (float *)(hero_globals_base + 0xE9D);
+    float *position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos;
     Hero *player;
     float *vertical;
     float *horizontal;
@@ -62,7 +62,7 @@ void HeroMovePipeline(void) {
             limit = player->capsule_radius - 0.02f;
             if (limit < length) vec_scale_to_length(position, position, limit);
         }
-        position = (float *)(hero_globals_base + 0xEFD);
+        position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
         magnitude = gravity_z(position);
         limit = -*(float *)((char *)position + 0x1FC);
         if (magnitude < limit) {
@@ -80,7 +80,7 @@ void HeroMovePipeline(void) {
             if (limit < length) vec_scale_to_length(position, position, limit);
         }
     }
-    position = (float *)(hero_globals_base + 0xE9D);
+    position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos;
     FastVecAdd(position, position, (char *)position + 0x60);
     extra_step = (float *)((char *)position + 0x8A0);
     FastVecAdd(position, position, extra_step);
@@ -96,7 +96,7 @@ void HeroMovePipeline(void) {
     } else {
         HeroGroundProbe();
     }
-    position = (float *)(hero_globals_base + 0xF2D);
+    position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.resolved_velocity;
     new_position = (float *)((char *)position - 0x90);
     horizontal = (float *)((char *)position + 0x20);
     FastVecSub(position, new_position, previous.f);

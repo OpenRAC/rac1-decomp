@@ -503,7 +503,7 @@ void update_seeker_damage_and_target(Moby *m) {
         }
     }
     if (d->f160 == 0) {
-        d->f160 = *(Moby **)(hero_globals_base_r + 0x2E9D);
+        d->f160 = *(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby;
     }
 }
 typedef struct { float x, y, z, w; } __attribute__((aligned(16))) V_2E39E0;
@@ -677,7 +677,7 @@ void update_ground_melee_enemy(Moby *m) {
                     knock_2E39E0(m, d->motion, angle_2E39E0(m->pos.x - query.x, m->pos.y - query.y), 5, 1, 0);
                     d->f170 = 11.0f;
                     d->f174 = 18.0f;
-                    if (*(unsigned char *)(hero_globals_base_r + 0x2EC1) == 2) explode_2E39E0(m, 0x200, -1);
+                    if (((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->vehicle_mode == 2) explode_2E39E0(m, 0x200, -1);
                     else explode_2E39E0(m, 0, -1);
                     m->collision = 0;
                     m->state = 99;
@@ -704,9 +704,9 @@ void update_ground_melee_enemy(Moby *m) {
             wake_2E39E0(m);
             m->shadow_range = 30;
         }
-        if (fast_distance_2E39E0(&m->pos, hero_globals_base_r + 0xE9D) > 40.0f) return;
+        if (fast_distance_2E39E0(&m->pos,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos) > 40.0f) return;
         if (d->hidden != 0) {
-            if ((*(unsigned char *)&((Hero *)(hero_globals_base_r + 0xE9D))->unk2020[1]) != 2) {
+            if ((*(unsigned char *)&((Hero *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->unk2020[1]) != 2) {
                 m->update_dist = 0xFF;
                 m->collision = 0;
                 m->flags = (m->flags | 0x41) & 0xEFFF;
@@ -1272,7 +1272,7 @@ void process_spawner_hit_record(char *moby, char *d) {
             d[0x67] = 0x5A;
             RerollEffectCounter(moby, (short *)(d + 0x60));
         } else {
-            if (g_current_level_index_m == 0xD && FastAbsF(*(float *)(hero_globals_base + 0xEA5) - 248.0f) < 4.0f) {
+            if (g_current_level_index_m == 0xD && FastAbsF(((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos.f[2] - 248.0f) < 4.0f) {
                 SetDeathBits(moby, 0x200, -1);
             } else {
                 SetDeathBits(moby, 0, -1);
@@ -1413,7 +1413,7 @@ void Moby1885Update(char *moby)
                 int idx = *(int *)(((char *)d) + 0xA0 + i * 4);
                 if (idx != -1) {
                     char *q = D_L09_0016016C_30BF88 + (idx << 7);
-                    float f = FastVecDist_r4(hero_globals_base_r + 0xE9D, q + 0x30);
+                    float f = FastVecDist_r4(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, q + 0x30);
                     if (f < best) {
                         sel = q;
                         best = f;

@@ -400,7 +400,7 @@ void BoltThiefUpdate(L14Moby *m) {
         break;
     }
     case 2:
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->trigger)) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->trigger)) {
             if (d->mode == 1) {
                 MobySetAnimation(m, 0, 0);
             } else {
@@ -582,7 +582,7 @@ void sam_update(char *m) {
         break;
     }
     case 1:
-        if (d->started == 1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->clip_volume) != 0) {
+        if (d->started == 1 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->clip_volume) != 0) {
             if ((help_stats_base + 0xAA35)[((Moby *)m)->mission + (g_current_level_index << 4)] != 0xFF) {
                 char *t;
                 jet_clear_persistent((unsigned char)*(char *)&((Moby *)m)->mission);
@@ -622,7 +622,7 @@ void sam_update(char *m) {
         float sy = 0.3f;
         int doit = 0;
         if (((Moby *)m)->prev_seq == 0) {
-            char *g = hero_globals_base + 0xE9D;
+            char *g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
             char *a_;
             doit = 1;
             if (vec_distance_xy(&((Moby *)m)->pos, g) < 8.0f
@@ -636,7 +636,7 @@ void sam_update(char *m) {
                 }
             } else if (d->aim_timer != 0) {
                 d->aim_timer = 0;
-                qcopy(&d->aim_target, hero_globals_base + 0xEED);
+                qcopy(&d->aim_target,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
             }
             if (fast_dec_timer_r(&d->aim_retarget_timer) != 0) {
                 float y;
@@ -649,7 +649,7 @@ void sam_update(char *m) {
                 FastVecAdd(&d->aim_target, &d->aim_target, &((Moby *)m)->pos);
             }
             if (d->aim_timer != 0) {
-                qcopy(b, hero_globals_base + 0xEED);
+                qcopy(b,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
                 sx = 0.04f;
                 sy = 0.3f;
             } else {
@@ -1631,7 +1631,7 @@ void update_flying_car(Moby *m) {
         }
         break;
     case 1:
-        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->trigger)) {
+        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, d->trigger)) {
             m->flags &= 0xFFBE;
             m->collision = ((Model_308368 *)m->pclass)->bounds;
             if (d->part >= 0) {
@@ -2781,7 +2781,7 @@ INCLUDE_ASM("asm/overlays", func_L14_00317C4C);
 extern char hero_globals_base[];
 // Sets the exit camera's state field to 3 unless the global is 0xF.
 void exit_camera_set_state(char *moby) {
-    if (*(int *)(hero_globals_base + 0x2EA9) != 0xF) {
+    if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode != 0xF) {
         *(short *)(moby + 0x7E) = 3;
     }
 }

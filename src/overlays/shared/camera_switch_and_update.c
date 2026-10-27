@@ -512,7 +512,7 @@ void init_camera_system(void) {
     d[0] = s[0];
     d[1] = s[1];
     d[2] = s[2];
-    t = (float *)(hero_globals_base + 0xE9D);
+    t = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
     u = g->follow.pos.f;
     u[0] = t[0];
     u[1] = t[1];

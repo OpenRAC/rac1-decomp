@@ -2138,7 +2138,7 @@ void update_puffoid_damage_and_path_goal(Moby *m) {
     }
     if (d->f210 == 0) {
         d->f210 = (int)((Hero *)(hero_globals_base_r + 0xE1D))->moby;
-        qcopy(&d->f1D0, hero_globals_base_r + 0xE9D);
+        qcopy(&d->f1D0,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos);
     }
 }
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
@@ -2489,7 +2489,7 @@ void oil_tanker_front_update(char *moby) {
         return;
     }
     case 1:
-        if (*(int *)(hero_globals_base + 0x2EA1) == 0x32) {
+        if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current == 0x32) {
             int *z = (int *)chain_vars->catchup;
             short *h = chain_vars->offsets;
             int i;
@@ -3349,7 +3349,7 @@ char *activate_listed_blarg_ship(int idx) {
             FastVecAdd(v1, v1, v0);
             vec_scale_to_length(v0, v3, 6.0f);
             FastVecAdd(v1, v1, v0);
-            qcopy(&d->hero_pos, hero_globals_base + 0xE9D);
+            qcopy(&d->hero_pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
             qcopy(&m->pos, v1);
             m->state = 5;
             m->command = 1;

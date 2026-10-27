@@ -3,6 +3,7 @@
 #include "moby.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "hero.h"
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
     f32 vel_x; /* 0x00 */
@@ -96,7 +97,7 @@ char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
         d->owner_a = a;
         d->owner_b = b;
         d->hit_flag = 0;
-        d->start_dist = FastVecDist(&m->pos, hero_globals_base + 0xE9D);
+        d->start_dist = FastVecDist(&m->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
         d->unk_30 = 0;
         d->unk_34 = 0;
         m->rot.z = fast_atan2(*(float *)((char *)d), d->vel_y);
@@ -311,7 +312,7 @@ void update_hero_flag_from_moby_local_box(unsigned char *m) {
         m[0x31] = 0;
         break;
     case 1:
-        hero = hero_globals_base + 0xE9D;
+        hero =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (FastVecDist(m + 0x10, hero) < 8.0f) {
             FastVecSub(v, hero + 0x50, m + 0x10);
             matrix_from_basis_rows(mtx, m + 0xC0);
@@ -730,7 +731,7 @@ void Camera19_Update(char *moby) {
             } else {
                 FastVecSub(va, b + 0x10, pm);
             }
-            FastVecScale(v1, hero_globals_base + 0x10AD, -1.0f);
+            FastVecScale(v1,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -1.0f);
             vec_scale_to_length(moby, va, 1.0f);
             FastVecCross(moby + 0x10, moby, v1);
             vec_scale_to_length(moby + 0x10, moby + 0x10, 1.0f);
@@ -852,7 +853,7 @@ void Camera19_Update(char *moby) {
             Profile_Mark(h + 0x10, h + (*(int *)h << 4));
             FastVecSub(v1, v2, (moby + 0x30));
         }
-        FastVecScale(v2, hero_globals_base + 0x10AD, -1.0f);
+        FastVecScale(v2,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -1.0f);
         vec_scale_to_length(moby, v1, 1.0f);
         FastVecCross(moby + 0x10, moby, v2);
         vec_scale_to_length(moby + 0x10, moby + 0x10, 1.0f);
@@ -889,11 +890,11 @@ int evaluate_descriptor_eligibility(char *descriptor_owner, char *comparison_obj
         return 0;
     }
     x = *(int *)(descriptor_record + 0x48);
-    if (x >= 0 && *(int *)(hero_globals_base + 0x2EA9) != x) {
+    if (x >= 0 && ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode != x) {
         return 0;
     }
     y = *(int *)(descriptor_record + 0x44);
-    if (y >= 0 && *(int *)(hero_globals_base + 0x2EA1) != y) {
+    if (y >= 0 && ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current != y) {
         return 0;
     }
     return 1;

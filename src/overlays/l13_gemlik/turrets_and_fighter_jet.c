@@ -93,7 +93,7 @@ void update_moby_volume_trigger(Moby *moby)
         DeleteMoby(moby);
         return;
     }
-    if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->clip_volume) != 0) {
+    if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->clip_volume) != 0) {
         if (data->inside == 0) {
             {
                 int uid = data->moby_ids[0];
@@ -403,7 +403,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
             }
         }
         if (m->state == 4) {
-            char *p = (char *)hero_globals_base + 0xE9D;
+            char *p = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
             float d = vec_distance_xy(&m->pos, p);
             float e = FastAbsF((*(float *)(p + 0x258)) - vars->bottom);
             if (e < 2.0f && d < 32.0f && d > 5.0f) {
@@ -412,7 +412,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
                 vars->speed = -(g_frame_time * 5.0f);
             }
         } else if (m->state == 5) {
-            char *p = (char *)hero_globals_base + 0xE9D;
+            char *p = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
             float d = vec_distance_xy(&m->pos, p);
             float e = FastAbsF((*(float *)(p + 0x258)) - vars->top);
             if (e < 2.0f && d < 32.0f && d > 5.0f) {
@@ -522,7 +522,7 @@ void blarg_turret_update(Moby *m) {
     case 1:
         r = FastDiffRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
         if (r < 1.5707964f && vec_distance_xy_r(&m->pos, &t->pos) < 20.0f
-            && (data->volume == -1 || is_point_inside_clip_volume_r(hero_globals_base_r + 0xEED, data->volume) != 0)) {
+            && (data->volume == -1 || is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center, data->volume) != 0)) {
             data->f68 = 8.0f;
             if (m->prev_seq != 1) {
                 int a = rand_range_r(0, 3);
@@ -543,7 +543,7 @@ void blarg_turret_update(Moby *m) {
     case 3:
         r = FastDiffRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
         if (r >= 1.5707964f || vec_distance_xy_r(&m->pos, &t->pos) > 22.0f
-            || (data->volume != -1 && is_point_inside_clip_volume_r(hero_globals_base_r + 0xEED, data->volume) == 0)) {
+            || (data->volume != -1 && is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center, data->volume) == 0)) {
             if (m->prev_seq != 0) {
                 MobyBlendAnimation_r(m, 0, 0, rand_range_r(7, 13));
             }
@@ -637,7 +637,7 @@ void update_blarg_turret_target_and_state(unsigned char *moby) {
     else distance = 20.0f;
     FindNearestTargetMoby(moby, data, distance);
     if (*(int *)&((struct BlargTurretVars *)data)->target == 0) {
-        *(int *)&((struct BlargTurretVars *)data)->target = *(int *)(hero_globals_base + 0x2E9D);
+        *(int *)&((struct BlargTurretVars *)data)->target = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
     }
     if (((Moby *)moby)->command >= 4) ((Moby *)moby)->state = ((Moby *)moby)->command;
 }
@@ -1095,7 +1095,7 @@ void robosquawker_update(Moby *m) {
                 release_robosquawker_particle((Level13VendorMoby *)v);
                 v->x110[7] = 0x78;
                 RerollEffectCounter(m, (short *)v->x110);
-                if (FastAbsF(*(float *)(hero_globals_base + 0xEA5) - 248.0f) < 4.0f) {
+                if (FastAbsF(((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos.f[2] - 248.0f) < 4.0f) {
                     SetDeathBits(m, 0x200, -1);
                 } else {
                     SetDeathBits(m, 0, -1);
@@ -2051,7 +2051,7 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                     char *np = (char *)&((Moby *)m)->pos;
                     int c;
                     matrix_from_basis_rows(mat, gemlik_view_basis);
-                    FastVecSub(u, np, hero_globals_base + 0xE9D);
+                    FastVecSub(u, np,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
                     transform_vector(u, u, mat);
                     u[0] = -u[1];
                     u[1] = -u[2];
@@ -2659,7 +2659,7 @@ void PlayerFighterFlight(void *a0, void *a1) {
                     o->iDC = scale_ticks(10);
                 }
             } else {
-                *(float *)(hero_globals_base + 0x2419) = 0.0f;
+                ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ship_hp = 0.0f;
                 spawn_explosion(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 6, 1.0f, 50.0f, 1, 1, -1, 0);
                 m->flags |= 0x41;
                 o->s62 = scale_ticks(240);
@@ -2814,7 +2814,7 @@ void JetFighterUpdateL13(Jet47 *m) {
     case 1: {
         short enter=0;
         if (m->persistent!=0xFF && (help_stats_base+0xAA35)[m->persistent+(g_current_level_index<<4)]==0xFF) m->state=9;
-        else if (d->trigger!=-1 && is_point_inside_clip_volume(hero_globals_base+0xE9D,d->trigger)) { d->blend=0.99f; gemlik_fade_level=0.99f; enter=1; }
+        else if (d->trigger!=-1 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,d->trigger)) { d->blend=0.99f; gemlik_fade_level=0.99f; enter=1; }
         else if (jet_distance(m,((JetPlayer47*)(hero_globals_base+0xE1D))->moby)<2.0f && ((JetPlayer47*)(hero_globals_base+0xE1D))->state!=50 && ((JetPlayer47*)(hero_globals_base+0xE1D))->state!=29 && !((JetPlayer47*)(hero_globals_base+0xE1D))->busy) {
             int pressed=try_set_help_message(7,0x53E9)!=0;
             if (*(int*)(pad_globals_base+0x2604)&0x10) enter=pressed;
@@ -2948,7 +2948,7 @@ void JetFighterUpdateL13(Jet47 *m) {
             if (id!=-1) { audio=hero_globals_base+0x1D+id*0x70; if (*(Jet47**)(audio+0x88)==m && audio[0x74]) Sound_StopSlot(id); }
             d->weapon_sound=-1;
         }
-        jet_reset_camera(hero_globals_base+0xE9D,hero_globals_base+0xEAD); m->state=9;
+        jet_reset_camera(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot); m->state=9;
         break;
     case 9: DeleteMoby(m); return;
     case 10: break;
@@ -2961,6 +2961,6 @@ void JetFighterUpdateL13(Jet47 *m) {
     if (m->position[2]<15.0f) m->position[2]=15.0f;
     if (m->position[2]>1008.0f) m->position[2]=1008.0f;
     state=m->state;
-    if ((unsigned char)state==4) { qcopy_nc(hero_globals_base+0xE9D,m->position); qcopy_nc(hero_globals_base+0xEAD,d->angles); }
+    if ((unsigned char)state==4) { qcopy_nc(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,m->position); qcopy_nc(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot,d->angles); }
     if ((unsigned int)(state-3)<2 || (unsigned char)state==8) spawn_fighter_jet_joint_particles(m,(char*)d);
 }

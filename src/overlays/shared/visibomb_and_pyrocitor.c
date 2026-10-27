@@ -645,7 +645,7 @@ void draw_joint_aligned_beam_effect(Moby *m) {
     FastVecAdd_r2(&d, &d, &mtx[3]);
     FastVecSub_r(&a, g_debug_camera_r2, &d);
     vec_scale_to_length_r(&a, &a, 1.0f);
-    FastVecCross_r(&b, &a, hero_globals_base_r + 0x10AD);
+    FastVecCross_r(&b, &a,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->gravity_dir);
     vec_scale_to_length_r(&b, &b, -1.0f);
     FastVecCross_r(&c, &b, &a);
     pk.col[0] = pk.col[1] = pk.col[2] = pk.col[3] = 0x7F2020FF;
@@ -1437,7 +1437,7 @@ extern void DeleteMoby(int);
 void terminate_visibomb_missile(int a, int *b) {
     int *p = *(int **)(*(char **)b + 0x78);
     if (p != 0) p[1] = 0;
-    *(int *)(hero_globals_base + 0x2DFD) = 0;
+    *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->unk1FE0 = 0;
     select_camera_mode_by_hero_alignment_and_distance(b[5]);
     b[5] = 0;
     HeroEnterMoveState(0, 1);
@@ -2137,7 +2137,7 @@ void draw_taunter_effect_quads(Moby *m) {
             FastVecScale(g, f, taunter_effect_slots[i].f);
             FastVecAdd(d, taunter_effect_origin, g);
             qcopy(a, f);
-            FastVecScale(c, hero_globals_base + 0x10AD, -1.0f);
+            FastVecScale(c,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -1.0f);
             FastVecCross(b, a, c);
             vec_scale_to_length(b, b, 1.0f);
             FastVecCross(c, b, a);

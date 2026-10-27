@@ -931,7 +931,7 @@ int HeroEnterMoveState(int a, int b) {
             *(unsigned int *)(h + 0xEC) = *(unsigned int *)(h + 0xEC) | (1 << g_current_level_index) | 0x80000000;
         }
         {
-            char *v = (char *)hero_globals_base + 0xF6D;
+            char *v = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.momentum;
             qcopy(v, v - 0x40);
         }
         if (b) set_hero_animation(0x5F, 0, (float)scale_ticks(0xA));
@@ -1536,7 +1536,7 @@ int HeroEnterMoveState(int a, int b) {
             ((struct Hero *)p)->unk2284 = 0x50;
         }
         {
-            char *v = (char *)hero_globals_base + 0xEFD;
+            char *v = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.velocity;
             char *r;
             qcopy(v, v + 0x30);
             r = v - 0xE0;
@@ -2596,7 +2596,7 @@ int HeroEnterMoveState(int a, int b) {
             return 0;
         }
         {
-            char *v = (char *)hero_globals_base + 0xF2D;
+            char *v = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.resolved_velocity;
             char *g;
             float r = vec_length_xy(v);
             g = v - 0x110;

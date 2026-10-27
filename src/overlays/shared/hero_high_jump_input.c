@@ -135,7 +135,7 @@ void update_hero_locomotion_state(void) {
     if ((*(float *)&g_frame_time_r * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) || *(int *)(d + 0x2084) == 0x10) {
         if (HeroEnterMoveState(3, 0)) {
             set_hero_animation(5, 0, -1.0f);
-            ClampVectorLength(hero_globals_base + 0xF6D, *(float *)((char *)&g_frame_scale_sq + 8) * 5.0f);
+            ClampVectorLength(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.momentum, *(float *)((char *)&g_frame_scale_sq + 8) * 5.0f);
         }
         return;
     }

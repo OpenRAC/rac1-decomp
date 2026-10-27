@@ -413,7 +413,7 @@ void ChildSpawnerUpdate(Moby *moby) {
             }
         }
     }
-    dist = vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D);
+    dist = vec_distance_xy(&moby->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
     near1 = dist < d->f9C;
     near2 = dist < d->f90;
     spawn = 0;
@@ -421,7 +421,7 @@ void ChildSpawnerUpdate(Moby *moby) {
     inVol = 0;
     room = d->count < d->max;
     if (d->fD0 != -1) {
-        inVol = is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->fD0) != 0;
+        inVol = is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->fD0) != 0;
     }
     cond = inVol | near2;
     switch (d->b82) {
@@ -547,7 +547,7 @@ void ChildSpawnerUpdate(Moby *moby) {
                 float ang;
                 float rad;
                 ang = normalize_angle(IntToFloat(d->count) * 2.0f * 3.1415927f / IntToFloat(d->max + 1) - 3.1415927f);
-                rad = vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D) * 0.5f;
+                rad = vec_distance_xy(&moby->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) * 0.5f;
                 if (d->b83 & 8) {
                     rad = random_float_between(rad, 3.0f);
                 }
@@ -567,7 +567,7 @@ void ChildSpawnerUpdate(Moby *moby) {
             }
             case 1: {
                 float len;
-                FastVecSub(&v40, hero_globals_base + 0xE9D, &v30);
+                FastVecSub(&v40,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, &v30);
                 v40.z = 0.0f;
                 FastVecScale(&v40, &v40, 0.5f);
                 len = FastVecLength(&v40);
@@ -594,7 +594,7 @@ void ChildSpawnerUpdate(Moby *moby) {
                     float dd;
                     if (used[j] == 1) continue;
                     if (sample_random_transformed_point(d->pts[j], (float *)&v70) != 0) continue;
-                    dd = vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D);
+                    dd = vec_distance_xy(&moby->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
                     if (dd < best) {
                         qcopy(&v60, &v70);
                         best = dd;
@@ -1064,7 +1064,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
     case 1: {
         HPath49_2CDDC8 *path=kerwan_paths_r[d->activation_path];
         float progress,distance,step,limit,angle;
-        if (d->activation_region!=-1 && !is_point_inside_clip_volume_r(hero_globals_base_r+0xE9D,d->activation_region)) break;
+        if (d->activation_region!=-1 && !is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,d->activation_region)) break;
         d->activation_region=-1;
         find_nearest_path_point_r(path,m->position,w.projected,&w.segment_a,&w.fraction_a,0,999.0f,5.0f,0.0f);
         progress=IntToFloat_r(w.segment_a)*path->points[0].length+w.fraction_a+2.0f;
@@ -1946,7 +1946,7 @@ int evaluate_clip_volume_candidate(char *a0, char *a1) {
     int five;
     if (*(int *)(a0 + 0x74) != 4) return 0;
     if (a1 != 0 && *(short *)(a1 + 0x7E) == 0 && !(*(unsigned char *)(a0 + 0x7C) > *(unsigned char *)(a1 + 0x7C))) return 0;
-    if (is_point_inside_clip_volume_r2(hero_globals_base_r + 0xE9D, *(int *)(sub + 0xC)) != 0) {
+    if (is_point_inside_clip_volume_r2(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, *(int *)(sub + 0xC)) != 0) {
         if (is_point_inside_clip_volume_r2(kerwan_camera_pos, *(int *)(sub + 0xC)) != 0) return 1;
         q = kerwan_camera_pos - 0x140;
         five = *(int *)(q + 0x180);
@@ -1968,7 +1968,7 @@ void set_transform_state_three_when_outside_clip_volume(char *moby)
     char *entry = (char *)(kerwan_camera_descriptors + (*(short *)(moby + 0x84) << 5));
     char *sub = *(char **)(entry + 0x1C);
     if (*(int *)(moby + 0x74) == 4) {
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(sub + 0xC)) == 0) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, *(int *)(sub + 0xC)) == 0) {
             *(short *)(moby + 0x7E) = 3;
         }
     }

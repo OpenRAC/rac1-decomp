@@ -399,7 +399,7 @@ void update_doom_bot_spawner(Moby *m) {
         }
         s->vel.f[2] = s->vel.f[2] - g_frame_time_sq * 9.0f;
         FastVecAdd(&v0, &m->pos, &s->vel);
-        Q = hero_globals_base + 0xF5D;
+        Q =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.platform_carry;
         add_vectors(&v3, &m->pos, Q);
         qcopy(&v1, &m->pos);
         f23 = 0.15f;
@@ -1927,7 +1927,7 @@ void ryno_update(Moby *m) {
             dir.f[0] = 1.0f;
             apply_mat3_2CDAB8(dir.f, dir.f, ((Hero *)(hero_globals_base_r2 + 0xE1D))->basis[0].f);
         }
-        add_2CDAB8(ofs.f, hero_globals_base_r2 + 0xF1D, hero_globals_base_r2 + 0xF5D);
+        add_2CDAB8(ofs.f,&((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->motion.displacement,&((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->motion.platform_carry);
         scale_2CDAB8(ofs.f, ofs.f, 3.0f);
         add_2CDAB8(dir.f, dir.f, ofs.f);
         if (((Hero *)(hero_globals_base_r2 + 0xE1D))->items[6].locked_on != 0) {
@@ -2045,7 +2045,7 @@ unsigned char *spawn_ryno_rocket(int a, V4 *pos, unsigned char *tgt, float f12, 
         Moby_PlaySound(1, 0, (char *)m);
         *(u128 *)&z = 0;
         z.f[2] = g_frame_time * 8.0f;
-        p = *(unsigned char **)(hero_globals_base + 0x2E9D);
+        p = *(unsigned char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
         *(u128 *)&dir = *(u128 *)&z;
         *(u128 *)&s = *(u128 *)(p + 0x10);
         s.f[2] = pos->f[2];
@@ -2242,7 +2242,7 @@ done:
         gg = (char *)coll_hit_result;
         p = *(char **)(gg + 0x18);
         if (p != 0) {
-            if (p == *(char **)(hero_globals_base + 0x2E9D) || p == *(char **)&d->owner
+            if (p == *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby || p == *(char **)&d->owner
                 || *(short *)(p + 0xA6) == 0x1C9 || *(short *)(p + 0xA6) == 0) goto keep;
             m->command = 2;
             qcopy(&m->pos, gg + 0x20);
@@ -2263,7 +2263,7 @@ done:
         }
     } else {
         if (fast_dec_timer(&d->timer) == 0
-            && !(200.0f < vec_distance_xy(&m->pos, *(char **)(hero_globals_base + 0x2E9D) + 0x10))) goto keep;
+            && !(200.0f < vec_distance_xy(&m->pos, *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby + 0x10))) goto keep;
     }
 del:
     DeleteMoby(m);

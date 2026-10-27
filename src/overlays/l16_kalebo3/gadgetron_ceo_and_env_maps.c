@@ -139,7 +139,7 @@ void gadgetron_ceo_update(Moby *m) {
             PlaceMarkerAheadOfMoby(3.5f, m);
             m->state = 2;
         }
-        if (!gHaveMorphORay[9] && vec_distance_xy(hero_globals_base + 0xE9D, &m->pos) < 3.5f) {
+        if (!gHaveMorphORay[9] && vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, &m->pos) < 3.5f) {
             int elapsed, period;
             char *statistics;
             elapsed = scale_ticks(gameplay_event_frame_count);
@@ -163,7 +163,7 @@ void gadgetron_ceo_update(Moby *m) {
             m->command = 0;
             pose = gadgetron_ceo_hero_and_camera_pose;
             Hero_ResetToPosition(pose, pose + 0x10, 0, 1);
-            camera = hero_globals_base + 0x2B1D;
+            camera =((struct Hero *)((char *)&hero_globals_base + 0xE1D))->saved_pos_rot;
             qcopy(camera, pose + 0x20);
             qcopy(camera + 0x10, pose + 0x30);
             camera[0x3AC] = 1;
@@ -239,7 +239,7 @@ void gadgetron_ceo_update(Moby *m) {
             char *pose = gadgetron_ceo_hero_and_camera_pose;
             m->command = 0;
             Hero_ResetToPosition(pose, pose + 0x10, 0, 1);
-            camera = hero_globals_base + 0x2B1D;
+            camera =((struct Hero *)((char *)&hero_globals_base + 0xE1D))->saved_pos_rot;
             qcopy(camera, pose + 0x20);
             qcopy(camera + 0x10, pose + 0x30);
         }
@@ -250,7 +250,7 @@ void gadgetron_ceo_update(Moby *m) {
     head_rate = 0.3f;
     tracking = 0;
     if (m->prev_seq == 0) {
-        char *player = (char *)&hero_globals_base_challenge + 0xE9D;
+        char *player = &((struct Hero *)((char *)&hero_globals_base_challenge + 0xE1D))->motion.pos;
         tracking = 1;
         if (vec_distance_xy(&m->pos, player) < 8.0f &&
             FastDiffRots(m->rot.z,
@@ -260,7 +260,7 @@ void gadgetron_ceo_update(Moby *m) {
             else fast_dec_timer(&d->moving_timer);
         } else if (d->moving_timer) {
             d->moving_timer = 0;
-            qcopy(d->target, (char *)&hero_globals_base_challenge + 0xEED);
+            qcopy(d->target, &((struct Hero *)((char *)&hero_globals_base_challenge + 0xE1D))->motion.body_center);
         }
         if (fast_dec_timer(&d->target_timer)) {
             float heading;
@@ -270,7 +270,7 @@ void gadgetron_ceo_update(Moby *m) {
             FastVecAdd(d->target, d->target, &m->pos);
         }
         if (d->moving_timer) {
-            qcopy(scratch.target, (char *)&hero_globals_base_challenge + 0xEED);
+            qcopy(scratch.target, &((struct Hero *)((char *)&hero_globals_base_challenge + 0xE1D))->motion.body_center);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -350,7 +350,7 @@ void update_two_region_trigger_latch(char *moby) {
     struct TwoRegionTriggerVars *data = (struct TwoRegionTriggerVars *)((Moby *)moby)->pvars;
     switch (data->state) {
     case 0: {
-        char *g = hero_globals_base + 0xE9D;
+        char *g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (is_point_inside_clip_volume(g, *(int *)((char *)data)) != 0) {
             if (*(int *)(g + 0x200C) == 0xF) {
                 data->state = 1;
@@ -884,7 +884,7 @@ extern float ProbeGroundHeight(void *, int, float);
 extern void reposition_moby_with_collision_check(void *, void *);
 /* Repositions a target at random intervals while the hero is in the clip volume. */
 void update_target_reposition_cycle(char *moby) {
-    char *g = hero_globals_base + 0xE9D;
+    char *g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
     char *data = ((char *)((Moby *)moby)->pvars);
     char *target;
     int n;

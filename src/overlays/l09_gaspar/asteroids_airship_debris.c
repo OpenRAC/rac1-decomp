@@ -474,7 +474,7 @@ void update_airship_part(Moby *moby) {
         Moby_GetJointWorldPos(moby, 0, vec);
         FastVecSub(d->vel, ((f32 *)&moby->pos), vec);
         FastVecScale(d->vel, d->vel, G161430_3858 * g_frame_time / 20.0f);
-        FastVecSub(buf.m[0], vec, hero_globals_base + 0xE9D);
+        FastVecSub(buf.m[0], vec,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
         if (moby->oclass >= 0x4A1 && moby->oclass <= 0x4A2) {
             vec_scale_to_length(buf.m[0], buf.m[0], G161440_3858 * g_frame_time);
         } else {
@@ -1830,7 +1830,7 @@ void update_level09_item_unlock_and_frame_record(char *moby) {
             *(unsigned short *)(b + 0x2DA) = scale_ticks(gameplay_event_frame_count) / 600;
         }
         *(int *)(b + 0x2DC) = *(int *)(b + 0x2DC) | (1 << g_current_level_index_m) | 0x80000000;
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *data) != 0) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, *data) != 0) {
             Help_Request(0x2329, 0x5B);
         }
     }
@@ -2649,7 +2649,7 @@ void turret_update(struct Moby *moby) {
             } else {
                 moby->pos.z = vars->rest_z;
             }
-            if ((*(struct Moby **)(hero_globals_base + 0x1119)) != moby && vars->beam != -1) {
+            if ((((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ground_moby) != moby && vars->beam != -1) {
                 Moby_PlaySound(2, 0, moby);
                 release_point_light_slot(vars->beam);
                 vars->beam = -1;
@@ -3231,8 +3231,8 @@ void Moby1766Update(struct Moby *moby) {
                           vars->lag * 0.08726646f, frame_time * 0.31415927f,
                           frame_time * 0.4886922f);
         if (*(s32 *)((u8 *)vars + 0xC8) != 0) {
-            if ((vars->dir > 0 && *(s32 *)((u8 *)vars + 0xB4) != -1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(s32 *)((u8 *)vars + 0xB4))) ||
-                (vars->dir < 0 && *(s32 *)((u8 *)vars + 0xB0) != -1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(s32 *)((u8 *)vars + 0xB0)))) {
+            if ((vars->dir > 0 && *(s32 *)((u8 *)vars + 0xB4) != -1 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, *(s32 *)((u8 *)vars + 0xB4))) ||
+                (vars->dir < 0 && *(s32 *)((u8 *)vars + 0xB0) != -1 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, *(s32 *)((u8 *)vars + 0xB0)))) {
                 moby->state = 3;
             }
         }
@@ -3252,7 +3252,7 @@ void Moby1766Update(struct Moby *moby) {
         if (vars->yaw_offset == 0.0f) {
             if (vars->dir < 0) {
                 if (*(s32 *)((u8 *)vars + 0xB4) == -1 ||
-                    !is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(s32 *)((u8 *)vars + 0xB4)))
+                    !is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, *(s32 *)((u8 *)vars + 0xB4)))
                     goto test_forward;
                 if (!(vector_distance(&moby->pos, &path->node[path->count - 1]) > 8.0f) ||
                     !(vector_distance(&moby->pos, &path->node[0]) > 8.0f))
@@ -3262,7 +3262,7 @@ void Moby1766Update(struct Moby *moby) {
             } else {
             test_forward:
                 if (vars->dir > 0 && *(s32 *)((u8 *)vars + 0xB0) != -1 &&
-                    is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(s32 *)((u8 *)vars + 0xB0)) &&
+                    is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, *(s32 *)((u8 *)vars + 0xB0)) &&
                     vector_distance(&moby->pos, &path->node[path->count - 1]) > 8.0f &&
                     vector_distance(&moby->pos, &path->node[0]) > 8.0f) {
                     vars->dir = -1;

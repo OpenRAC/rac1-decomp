@@ -176,7 +176,7 @@ void ultramech_scientist_update(char *moby) {
         }
         break;
     case ULTRAMECH_SCIENTIST_WAIT_FOR_DIALOGUE:
-        hero_pos = hero_globals_base + 0xE9D;
+        hero_pos =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (is_point_inside_clip_volume(hero_pos, data->clip_volume) == 0) {
             break;
         }
@@ -326,7 +326,7 @@ void ultramech_scientist_update(char *moby) {
     ease_rate = 0.02f;
     ease_limit = 0.3f;
     aim = 1;
-    value = vec_distance_xy((float *)&((struct Moby *)moby)->pos, (float *)(hero_globals_base + 0xE9D));
+    value = vec_distance_xy((float *)&((struct Moby *)moby)->pos, (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos));
     if (value < 8.0f) {
         player = (struct Hero *)(hero_globals_base + 0xE1D);
         value = fast_atan2(player->motion.body_center.f[0] - ((struct Moby *)moby)->pos.x,
@@ -465,7 +465,7 @@ void update_quartu_hint_triggers(Moby *m) {
         if (t->npc[0] != -1) {
             e = (Moby *)(quartu_moby_array_r + (t->npc[0] << 8));
             if (e != 0 && e->oclass == 0x4E && e->state != 0xFE && e->state != 0xFD && e->state != 3
-                && is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, t->zone[3]) != 0
+                && is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->zone[3]) != 0
                 && (((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode < 2u || ((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == 9)
                 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1) {
                 if (gHaveHologuise_r[0] == 0) {
@@ -508,7 +508,7 @@ void update_quartu_hint_triggers(Moby *m) {
             Help_Request_r(0x3A9F, 0x89);
             quartu_pending_help_flag_r = 0;
         }
-        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, t->vol54) != 0
+        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->vol54) != 0
             && ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 3 && ((Hero *)(hero_globals_base_r + 0xE1D))->glow_pulse_level == 0
             && quartu_alarm_on_r == 0 && *(unsigned short *)(help_stats_base_r + 0x78D) == 0) {
             Help_Request_r(0x3A9E, 0x88);
@@ -517,7 +517,7 @@ void update_quartu_hint_triggers(Moby *m) {
         npc = -1;
         found = 0;
         for (i = 0; i < 1; i++) {
-            if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, t->zone[i]) != 0) {
+            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->zone[i]) != 0) {
                 pick = t->zone[i];
                 npc = t->npc[i];
                 found = 1;
@@ -548,12 +548,12 @@ void update_quartu_hint_triggers(Moby *m) {
         if (((Hero *)(hero_globals_base_r + 0xE1D))->moby->seq == 0xC && ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2) {
             ((Items_2EE7E8 *)gSpecialItems_r)->f6F = 1;
         }
-        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, t->vol1C) != 0 && ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2
+        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->vol1C) != 0 && ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2
             && ((Items_2EE7E8 *)gSpecialItems_r)->f6F == 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0
             && ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && *(int *)(help_stats_base_r + 0x751) >= 0) {
             Help_Request_r(0x3A9C, 0x80);
         }
-        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, t->vol20[0]) != 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0
+        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->vol20[0]) != 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0
             && ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && gHaveHeliPack_r[2] == 0
             && !(*(unsigned int *)(help_stats_base_r + 0x761) & (1 << g_current_level_index_r))) {
             Help_Request_r(0x3A9D, 0x82);
@@ -561,7 +561,7 @@ void update_quartu_hint_triggers(Moby *m) {
         pick = -1;
         found = 0;
         for (j = 0; j < 3; j++) {
-            if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, t->vol20[j]) != 0) {
+            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->vol20[j]) != 0) {
                 found = 1;
                 if (t->last != t->vol20[j]) {
                     pick = t->vol20[j];
@@ -586,7 +586,7 @@ void update_quartu_hint_triggers(Moby *m) {
             t->last = pick;
             t->hold38 = 0;
         }
-        if (((Items_2EE7E8 *)gSpecialItems_r)->f6E == 0 && is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, t->vol2C) != 0) {
+        if (((Items_2EE7E8 *)gSpecialItems_r)->f6E == 0 && is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->vol2C) != 0) {
             ((Items_2EE7E8 *)gSpecialItems_r)->f6E = 1;
         }
         break;
@@ -819,24 +819,24 @@ int is_hero_in_moby_follow_camera_region(char *moby) {
     int *e = *(int **)(quartu_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1C);
     int r;
     int i;
-    if (e[10] >= 0 && test_point_in_transformed_unit_cylinder(hero_globals_base + 0xE9D, e[10])) {
+    if (e[10] >= 0 && test_point_in_transformed_unit_cylinder(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, e[10])) {
         return 0;
     }
     if (e[3] >= 0) {
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, e[3])) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, e[3])) {
             return 1;
         }
     } else if (e[4] >= 0) {
-        if (test_point_in_transformed_unit_cylinder(hero_globals_base + 0xE9D, e[4])) {
+        if (test_point_in_transformed_unit_cylinder(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, e[4])) {
             return 1;
         }
     } else if (e[2] >= 0) {
-        if (test_point_in_transformed_unit_sphere((float *)(hero_globals_base + 0xE9D), e[2])) {
+        if (test_point_in_transformed_unit_sphere((float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos), e[2])) {
             return 1;
         }
     } else if (e[5] >= 0) {
         i = e[5];
-        if (IsPointInPolygon((float *)(hero_globals_base + 0xE9D), (float *)(quartu_paths[i] + 4), quartu_paths[i][0])) {
+        if (IsPointInPolygon((float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos), (float *)(quartu_paths[i] + 4), quartu_paths[i][0])) {
             return 1;
         }
     }

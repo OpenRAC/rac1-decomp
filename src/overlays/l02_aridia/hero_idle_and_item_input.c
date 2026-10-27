@@ -673,7 +673,7 @@ int HeroL02_SetMoveState(int a, int b) {
             p->unk2284 = 0x50;
         }
         {
-            char *v = hero_globals_base + 0xEFD;
+            char *v = &((struct Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
             char *r;
             qcopy(v, v + 0x30);
             r = v - 0xE0;
@@ -1289,7 +1289,7 @@ int HeroL02_SetMoveState(int a, int b) {
             return 0;
         }
         {
-            char *v = hero_globals_base + 0xF2D;
+            char *v = &((struct Hero *)(hero_globals_base + 0xE1D))->motion.resolved_velocity;
             char *g;
             float r = vec_length_xy(v);
             g = v - 0x110;
@@ -3273,7 +3273,7 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
 /* Put the hero in idle when nearly stopped, else in the stopping move state. */
 void enter_hero_idle_or_stop(void)
 {
-    if (*(float *)(hero_globals_base + 0xF7D) < g_frame_time * 2.7f) {
+    if (((struct Hero *)(hero_globals_base + 0xE1D))->motion.speed_xy < g_frame_time * 2.7f) {
         HeroL02_SetMoveState(0, 1);
     } else {
         HeroL02_SetMoveState(3, 1);

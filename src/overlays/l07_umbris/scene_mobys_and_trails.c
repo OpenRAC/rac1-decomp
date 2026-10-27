@@ -3,6 +3,7 @@
 #include "vector.h"
 #include "moby.h"
 #include "include_asm.h"
+#include "hero.h"
 
 /* functional: high. The NTSC decomp's matched C for the same instructions (FUN_L07_0031a9e8), carried to PAL's
    names by OpenRAC's tools/port.py. Not a PAL match: exact alone, but its file's other functions stop matching with it in place. */
@@ -344,7 +345,7 @@ void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby)
         int done;
         int i, k, m, n, rem;
         float have, max, ratio, at, a, b, v, c, near, step;
-        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->vol) == 0) {
+        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, d->vol) == 0) {
             return;
         }
         for (i = 0; (&D_L07_00161D30_31E6B0)[i] != -1; i++) {

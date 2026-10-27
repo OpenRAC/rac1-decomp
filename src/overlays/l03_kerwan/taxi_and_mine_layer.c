@@ -2296,7 +2296,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
         moby->state = 1;
         break;
     case 1:
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f78) != 0
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f78) != 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)) {
             unsigned char *g = special_items_base + 0x13B;
             g[0x1A] = 1;
@@ -2305,7 +2305,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
         {
             unsigned char *g = special_items_base + 0x13B;
             if (g[0x1A] == 0) {
-                if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f0) != 0
+                if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f0) != 0
                     && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
                     && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
                     Help_2E08E8 *b = help_records_r;
@@ -2313,7 +2313,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                         Help_Request(0xBB8, 0x14);
                     }
                 }
-                if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->fC) != 0
+                if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->fC) != 0
                     && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
                     && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
                     Help_2E08E8 *b = help_records_r;
@@ -2321,7 +2321,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                         Help_Request(0xBB9, 0x15);
                     }
                 }
-                if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f18) != 0
+                if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f18) != 0
                     && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
                     && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
                     Help_2E08E8 *b = help_records_r;
@@ -2332,7 +2332,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f30) != 0) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f30) != 0) {
             Help_2E08E8 *h = usage_stats_r;
             if (h[3].count == 0
                 && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)) {
@@ -2346,7 +2346,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f24) != 0 && usage_stats_r[3].count == 0
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f24) != 0 && usage_stats_r[3].count == 0
             && ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) >= 2 && ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) != 9
             && data->f58 == 0) {
             data->f50++;
@@ -2357,7 +2357,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f24) != 0 && usage_stats_r[3].count == 0
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f24) != 0 && usage_stats_r[3].count == 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
             && data->f50 % 6 == 0 && data->f50 != 0
             && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
@@ -2367,7 +2367,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f28) != 0
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f28) != 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
             && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
             Help_2E08E8 *b = help_records_r;
@@ -2384,12 +2384,12 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             int count = 0;
             for (m = kerwan_moby_list_r; m != 0; m = m->next) {
                 if (m->f24 != 0 && m->f24->f46 == 5
-                    && vec_distance_xy(m->pos, hero_globals_base + 0xE9D) < 8.0f) {
+                    && vec_distance_xy(m->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 8.0f) {
                     count++;
                 }
             }
 
-            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f3C) != 0 && count == 0
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f3C) != 0 && count == 0
                 && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
                 && ((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1E
                 && (gHaveHeliPack + 0xD)[0] != 0
@@ -2411,7 +2411,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f38) != 0
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f38) != 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
             && kerwan_usage_event_count < 3
             && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
@@ -2421,7 +2421,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f38) != 0
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f38) != 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
             && ((Hero *)(hero_globals_base + 0xE1D))->state.current == 1
             && kerwan_usage_event_timer == -1
@@ -2432,7 +2432,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f40) != 0
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f40) != 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
             && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
             Help_2E08E8 *b = help_records_r;
@@ -2449,7 +2449,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f34) != 0) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f34) != 0) {
             Help_2E08E8 *h = usage_stats_r;
             if (h[0xF].count == 0
                 && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)) {
@@ -2490,7 +2490,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f2C) != 0 && usage_stats_r[0x10].count == 0
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f2C) != 0 && usage_stats_r[0x10].count == 0
             && ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 6 && ((Hero *)(hero_globals_base + 0xE1D))->items[0].item_id == 8
             && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
             Help_2E08E8 *b = help_records_r;
@@ -2499,7 +2499,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f44) != 0
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f44) != 0
             && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
             && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
             Help_2E08E8 *b = help_records_r;
@@ -2508,7 +2508,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f7C) != 0
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f7C) != 0
             && ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2) {
             Help_2E08E8 *b = help_records_r;
             if (b[0x4F].count == 0 && usage_stats_r[0x14].count == 0) {
@@ -2527,11 +2527,11 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             }
         }
 
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f70) != 0) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f70) != 0) {
             unsigned char *g = special_items_base + 0x13B;
             g[0x18] = 1;
         }
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f74) != 0) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f74) != 0) {
             unsigned char *q = menu_item_enabled_115 + 1;
             if (q[3] == 0) {
                 q[3] = 1;
@@ -2773,7 +2773,7 @@ void update_smoothed_hero_relative_camera_position(void *arg) {
     if (g->unk2284 != 0x50 || g->state.current == 0x11) {
         *(float *)(b + 0x34) = g->motion.pos.f[2];
     }
-    vec_scale_to_length(v1, hero_globals_base + 0x10AD, -*(float *)(a + 0x10));
+    vec_scale_to_length(v1,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -*(float *)(a + 0x10));
     vec_scale_to_length(v3, b, -*(float *)a);
     h = (struct Hero *)(hero_globals_base + 0xE1D);
     *(float *)d = Cam_InterpValues(d + 0x10, *(float *)d, h->motion.pos.f[0], *(float *)(d + 0x20), *(float *)(d + 0x24), *(float *)(d + 0x28));
@@ -2802,7 +2802,7 @@ void rebuild_camera_orientation_axes(void *arg) {
     float b[4];
     float c[4];
     qcopy(b, d);
-    p[2] = Cam_InterpValues(d + 0xBC, p[2], *(float *)(hero_globals_base + 0xEA5), *(float *)&kerwan_hero_cam_blend_stiffness, *(float *)&kerwan_hero_cam_blend_damping, 0.0f);
+    p[2] = Cam_InterpValues(d + 0xBC, p[2], ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos.f[2], *(float *)&kerwan_hero_cam_blend_stiffness, *(float *)&kerwan_hero_cam_blend_damping, 0.0f);
     vec_scale_to_length(c, kerwan_player_camera_target_offset_dir, p[5]);
     FastVecAdd(b, c, b);
     FastVecSub(a, b, m + 0x30);
@@ -2844,7 +2844,7 @@ void update_camera_state_outside_clip_volume(char *moby)
     char *entry = (char *)((*(short *)(moby + 0x84) << 5) + kerwan_camera_descriptors);
     char *sub = *(char **)(entry + 0x1C);
     int value = *(int *)(sub + 0xC);
-    if (value >= 0 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, value) == 0) {
+    if (value >= 0 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, value) == 0) {
         *(short *)(moby + 0x7E) = 3;
     }
 }

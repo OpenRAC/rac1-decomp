@@ -3,6 +3,7 @@
 #include "moby.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "hero.h"
 
 /* Rocket tank: aims its turret at the hero, drives along a path and owns two child mobys. */
 struct RocketTankVars {
@@ -190,7 +191,7 @@ void rocket_tank_update(M1454 *m) {
             *(short *)(d->c138 + 0x32) = 0x40;
             d->c138[0x31] = 1;
             {
-                char *pl = *(char **)(hero_globals_base + 0x2E9D);
+                char *pl = *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
                 long t = *(long *)(pl + 0x38);
                 *(long *)(d->c138 + 0x38) = t;
             }
@@ -210,7 +211,7 @@ void rocket_tank_update(M1454 *m) {
             *(short *)(d->c13c + 0x32) = 0x40;
             d->c13c[0x31] = 1;
             {
-                char *pl = *(char **)(hero_globals_base + 0x2E9D);
+                char *pl = *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
                 long t = *(long *)(pl + 0x38);
                 *(long *)(d->c13c + 0x38) = t;
             }
@@ -261,7 +262,7 @@ void rocket_tank_update(M1454 *m) {
             v[2] = -FastSin(d->f118) * s;
             Moby_PlaySound(0, 0, (int)m);
             emit_radial_particle_burst(m, w, 0);
-            if (vec_distance_xy((char *)m + 0x10, hero_globals_base + 0xE9D) > 10.0f) {
+            if (vec_distance_xy((char *)m + 0x10,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) > 10.0f) {
                 create_class_29_moby((char *)m, w, v, 0);
             } else {
                 create_class_29_moby((char *)m, w, v, 1);
@@ -335,7 +336,7 @@ void update_rocket_tank_damage_and_aim(void *mv) {
     ((Moby *)m)->hit_slot = 0xFF;
     if (FindNearestTargetMoby(m, (char *)&d->aim_pos, 30.0f) != 2) {
         float *pa = (float *)(m + 0x10);
-        char *pl = hero_globals_base + 0xE9D;
+        char *pl =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (vec_distance_xy(pa, pl) < 10.0f) {
             char *q = pl - 0x80;
             d->target = *(char **)(q + 0x2080);

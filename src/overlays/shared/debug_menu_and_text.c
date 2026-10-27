@@ -152,7 +152,7 @@ void update_debug_camera(void) {
     if (((PadState *)g_controller_state_r)->stick_moved != 0) {
         return;
     }
-    k = *(short *)(hero_globals_base_r + 0x1125) == 2;
+    k = ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->unk308 == 2;
     if ((((PadDwords *)g_controller_state_r)->held_pressed.l & 3) != 3) {
         if (((PadDwords *)g_controller_state_r)->held_pressed.i & 0x1000) {
             if (k) {

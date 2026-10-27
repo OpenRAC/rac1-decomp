@@ -223,7 +223,7 @@ void update_projectile_motion_collision_and_trail(char *moby) {
     ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, g_frame_time * 6.2831855f);
     if (data->homing != 0) {
         f20 = FastVecLength(&data->vel_x);
-        FastVecSub(&data->vel_x, hero_globals_base + 0xEDD, moby + 0x10);
+        FastVecSub(&data->vel_x,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.near_ground_point, moby + 0x10);
         f1 = FastVecLength(&data->vel_x);
         if (f20 < f1) {
             vec_scale_to_length(&data->vel_x, &data->vel_x, f20);
@@ -1944,7 +1944,7 @@ void process_expanding_ring_collisions(char *moby) {
     float p, q, step;
     int i;
 
-    FastVecSub(v, hero_globals_base + 0xE9D, moby + 0x10);
+    FastVecSub(v,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, moby + 0x10);
     v[2] = 0.0f;
     vec_scale_to_length(v, v, g_frame_time * 4.0f);
     v[2] = g_frame_time * 4.0f;
@@ -2031,7 +2031,7 @@ void update_class_274_ring_effect(char *moby) {
         return;
     }
     pos = moby + 0x10;
-    tgt = hero_globals_base + 0xE9D;
+    tgt =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
     if (vec_distance_xy(pos, tgt) < d[0] + 0.5f) {
         FastVecSub(v, tgt, pos);
         v[2] = 0.0f;
@@ -2249,7 +2249,7 @@ void update_position_and_rotation_transition(char *moby) {
             Hero_ResetToPosition(&data->hero_x, v + 8, 0, 0);
             CameraScript2(2);
             moby[0x20] = 5;
-        } else if (*(int *)(hero_globals_base + 0x2EA1) != 0x72) {
+        } else if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current != 0x72) {
             clear_u64_value(v + 8);
             v[10] = data->hero_w;
             Hero_ResetToPosition(&data->hero_x, v + 8, 0x72, 1);
@@ -2284,7 +2284,7 @@ void update_position_and_rotation_transition(char *moby) {
                 CameraScript2(3);
                 moby[0x20] = 5;
             }
-        } else if (*(int *)(hero_globals_base + 0x2EA1) != 0x72) {
+        } else if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current != 0x72) {
             clear_u64_value(v + 8);
             v[10] = data->hero_w;
             Hero_ResetToPosition(&data->hero_x, v + 8, 0x72, 1);
@@ -2321,7 +2321,7 @@ void start_position_and_rotation_transition(char *moby, void *v0, void *v1, void
     data->max_speed = 1.0f / (float)scale_ticks(a6);
     data->timer = scale_ticks(a7);
     data->mode = a8;
-    *(int *)(hero_globals_base + 0xFDD) = scale_ticks(a6);
+    ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->invulnerable_frames = scale_ticks(a6);
 }
 typedef struct {
     char pad0[0x60];
@@ -2469,7 +2469,7 @@ void update_moby_hit_response_burst_and_ballistic_flight(char *moby) {
             ((struct Moby *)moby)->state = 3;
             data[2] = randf_sym(0.0f, 90.0f) * 0.017453292f * g_frame_time;
             data[3] = randf_sym(0.0f, 90.0f) * 0.017453292f * g_frame_time;
-            FastVecSub(data + 4, &((struct Moby *)moby)->pos, hero_globals_base + 0xE9D);
+            FastVecSub(data + 4, &((struct Moby *)moby)->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
             data[6] = 0.0f;
             vec_scale_to_length(data + 4, data + 4, s);
             rand_vec(u.tmp, s, s);
@@ -3130,7 +3130,7 @@ void draw_moby_billboard_quad_pair(V_2bb0b0 *pos) {
     mat[3].f[3] = 1.0f;
     FastVecSub(&mat[0], veldin2_camera_pos, &mat[3]);
     vec_scale_to_length(&mat[0], &mat[0], 1.0f);
-    FastVecCross(&mat[1], &mat[0], hero_globals_base + 0x10AD);
+    FastVecCross(&mat[1], &mat[0],&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir);
     vec_scale_to_length(&mat[1], &mat[1], -1.0f);
     FastVecCross(&mat[2], &mat[1], &mat[0]);
     c = *(int *)&electric_bolt_glow_core_color;

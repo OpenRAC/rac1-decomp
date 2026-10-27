@@ -317,7 +317,7 @@ typedef struct {
 /* If the moby's check passes, builds an effect request on the stack and submits it. */
 void register_hero_hit_in_clip_volume(char *moby)
 {
-    char *base = hero_globals_base + 0xE9D;
+    char *base =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
     Req r;
     struct Hero *q;
     if (is_point_inside_clip_volume(base, ((struct HeroHitVolumeVars *)((Moby *)moby)->pvars)->clip_volume) != 0) {
@@ -580,7 +580,7 @@ void update_wind_control(Moby *m) {
             initialize_wind_spark_r(m, i, sv);
         }
     }
-    if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->vol500)) {
+    if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, d->vol500)) {
         Hero *h;
         wind_push_vector_r.x = FastCos_r(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
         wind_push_vector_r.y = FastSin_r(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
@@ -589,7 +589,7 @@ void update_wind_control(Moby *m) {
         update_wind_sparks_r(m);
         h = (Hero *)(hero_globals_base_r + 0xE1D);
         if (h->unk308 == 0 && h->unk2284 != 0xD && (h->on_ice_ground != 0 || h->frames_off_ground.s != 0)
-            && is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->vol0)) {
+            && is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, d->vol0)) {
             float t;
             FastDecTimer_r(&d->timer2);
             t = (1.0f - IntToFloat_r(d->timer2) * d->rate2) * (d->speed * g_frame_time_r);
@@ -597,7 +597,7 @@ void update_wind_control(Moby *m) {
             sv[0] = FastCos_r(m->rot.z) * t;
             sv[1] = FastSin_r(m->rot.z) * t;
             sv[2] = 0.0f;
-            FastVecAdd_r(hero_globals_base_r + 0xF0D, hero_globals_base_r + 0xF0D, sv);
+            FastVecAdd_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.platform_delta,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.platform_delta, sv);
             d->timer = scale_ticks_r(D_L14_00161CD4_2EC3E8);
             d->rate = 1.0f / IntToFloat_r(d->timer);
             return;
@@ -622,7 +622,7 @@ void update_wind_control(Moby *m) {
         sv[0] = FastCos_r(m->rot.z) * t;
         sv[1] = FastSin_r(m->rot.z) * t;
         sv[2] = 0.0f;
-        FastVecAdd_r(hero_globals_base_r + 0xF0D, hero_globals_base_r + 0xF0D, sv);
+        FastVecAdd_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.platform_delta,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.platform_delta, sv);
     }
 }
 extern struct { char pad[0x30]; float v[4]; char rest[0x40]; } * oltanis_clip_volumes MACRO_ADDR;
@@ -2211,7 +2211,7 @@ void TaxiUpdate(Moby *moby) {
                 }
             }
         } else {
-            if (taxi_vars->vol[0] >= 0 && taxi_vars->cur != 0 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, taxi_vars->vol[0])) {
+            if (taxi_vars->vol[0] >= 0 && taxi_vars->cur != 0 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, taxi_vars->vol[0])) {
                 if (oltanis_frame_count < scale_ticks(ticks)) {
                     taxi_vars->dst = 0;
                     taxi_vars->cur = 0;
@@ -2230,7 +2230,7 @@ void TaxiUpdate(Moby *moby) {
                     moby->state = 3;
                 }
             }
-            if (taxi_vars->vol[1] >= 0 && taxi_vars->cur != 1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, taxi_vars->vol[1])) {
+            if (taxi_vars->vol[1] >= 0 && taxi_vars->cur != 1 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, taxi_vars->vol[1])) {
                 if (oltanis_frame_count < scale_ticks(ticks)) {
                     taxi_vars->dst = 1;
                     taxi_vars->cur = 1;
@@ -2245,7 +2245,7 @@ void TaxiUpdate(Moby *moby) {
                     moby->state = 3;
                 }
             }
-            if (taxi_vars->vol[2] >= 0 && taxi_vars->cur < 2 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, taxi_vars->vol[2])) {
+            if (taxi_vars->vol[2] >= 0 && taxi_vars->cur < 2 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, taxi_vars->vol[2])) {
                 if (oltanis_frame_count < scale_ticks(ticks)) {
                     taxi_vars->dst = 2;
                     taxi_vars->cur = 2;
@@ -2596,7 +2596,7 @@ void qwark_oltanis_update(char *m) {
         break;
     }
     case 1:
-        if (d->started == 1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->clip_volume) != 0) {
+        if (d->started == 1 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->clip_volume) != 0) {
             if ((help_stats_base_r + 0xAA35)[((Moby *)m)->mission + (g_current_level_index_m << 4)] != 0xFF) {
                 char *t;
                 jet_clear_persistent((unsigned char)m[0xB0]);
@@ -2639,7 +2639,7 @@ void qwark_oltanis_update(char *m) {
         float sy = 0.3f;
         int doit = 0;
         if (((Moby *)m)->prev_seq == 0) {
-            char *g = hero_globals_base + 0xE9D;
+            char *g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
             char *a_;
             doit = 1;
             if (vec_distance_xy(m + 0x10, g) < 8.0f
@@ -2653,7 +2653,7 @@ void qwark_oltanis_update(char *m) {
                 }
             } else if (d->look_timer != 0) {
                 d->look_timer = 0;
-                qcopy(&d->look_pos, hero_globals_base + 0xEED);
+                qcopy(&d->look_pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
             }
             if (fast_dec_timer(&d->look_retarget) != 0) {
                 float y;
@@ -2666,7 +2666,7 @@ void qwark_oltanis_update(char *m) {
                 FastVecAdd(&d->look_pos, &d->look_pos, m + 0x10);
             }
             if (d->look_timer != 0) {
-                qcopy(b, hero_globals_base + 0xEED);
+                qcopy(b,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
                 sx = 0.04f;
                 sy = 0.3f;
             } else {

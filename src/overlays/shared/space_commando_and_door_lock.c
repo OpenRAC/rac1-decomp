@@ -639,7 +639,7 @@ void process_blarg_space_commando_hits(char *m) {
     }
     }
     if (d->target_id == 0) {
-        d->target_id = *(int *)(hero_globals_base + 0x2E9D);
+        d->target_id = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
     }
 }
 extern float ProbeGroundHeight(void *, int, float);

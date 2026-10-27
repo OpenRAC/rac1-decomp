@@ -3,6 +3,7 @@
 #include "moby.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "hero.h"
 
 /* Ship pickup moby: remembers whether the hero is at the ship entry point. */
 struct ShipPickupVars {
@@ -182,11 +183,11 @@ void update_moby_proximity_interaction(unsigned char *m) {
         if (d->near_entry != 0) {
             matrix_mul_vec3(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
             FastVecAdd(tmp, tmp, p);
-            if (FastVecDist(tmp, hero_globals_base + 0xE9D) > 4.1f) {
+            if (FastVecDist(tmp,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) > 4.1f) {
                 d->near_entry = 0;
             }
         } else {
-            q = (unsigned char *)hero_globals_base + 0xE9D;
+            q = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
             if (vec_distance_xy(p, q) < 6.0f) {
                 matrix_mul_vec3(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
                 FastVecAdd(tmp, tmp, p);
@@ -201,7 +202,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
         if (d->near_entry != 0) {
             int r = try_set_help_message(2, 0x53E9) != 0;
             if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && r) {
-                if (g_current_level_index_m == 10 && *(unsigned char *)(hero_globals_base + 0x2EC1) == 1) {
+                if (g_current_level_index_m == 10 && ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->vehicle_mode == 1) {
                     ((Moby *)m)->state = 0x2A;
                     ((Moby *)m)->flags |= 0x41;
                     StartCutscene(9);

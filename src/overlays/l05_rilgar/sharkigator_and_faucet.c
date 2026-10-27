@@ -943,7 +943,7 @@ void amoeboid_update(unsigned char *m) {
         break;
     }
     case 2:
-        if (48.0f < vec_distance_xy(m + 0x10, hero_globals_base + 0xE9D)) {
+        if (48.0f < vec_distance_xy(m + 0x10,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos)) {
             ((Moby *)m)->state = 1;
             ((Moby *)m)->visible = 1;
             ((Moby *)m)->flags &= 0xFFFE;
@@ -962,7 +962,7 @@ extern int scale_ticks(int);
 void handle_amoeboid_hits(unsigned char *m) {
     char *r = MobyGetHitMessage(m, 0x330000, 0);
     if (r != 0) {
-        char *b = hero_globals_base + 0xF1D;
+        char *b =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.displacement;
         char *o;
         m[0x20] = 2;
         m[0x31] = 0;
@@ -1294,7 +1294,7 @@ void extermibot_update(unsigned char *m) {
         break;
     case 15:
         if ((d->wake_moby != -1 && ((unsigned char *)*(int *)&moby_pool_4f60)[d->wake_moby * 256 + 0xBC] != 0)
-            || (d->wake_volume != -1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->wake_volume) != 0)) {
+            || (d->wake_volume != -1 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->wake_volume) != 0)) {
             ((Moby *)m)->draw_dist = 0x40;
             ((Moby *)m)->flags |= 0x1000;
             ((Moby *)m)->state = 1;
@@ -1396,7 +1396,7 @@ void extermibot_update(unsigned char *m) {
             dir[3] = 5627.9248f;
             qcopy(out, t + 0x10);
             out[2] += 0.75f;
-            PostHitMessage(t, (int)m, *(int *)(hero_globals_base + 0x1F75) != 6 ? 0x10001 : 0x10000, out, dir, 1.0f);
+            PostHitMessage(t, (int)m, ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->items[2].item_id != 6 ? 0x10001 : 0x10000, out, dir, 1.0f);
         }
         if (((Moby *)m)->anim_flags & 2) {
             ((Moby *)m)->state = 9;
@@ -1598,7 +1598,7 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
         v0[2] = v0[2] + 0.5f;
         if (r->who != 0) {
             if (r->who->oclass == 0x47) {
-                qcopy(v10, hero_globals_base_r + 0xEED);
+                qcopy(v10,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center);
             } else if ((*(struct Moby **)&r->who->pclass != 0 && *(short *)((u8 *)((struct Moby *)r->who->pclass) + 0x46) == 5) || r->who->oclass == 0xBA) {
                 qcopy(v10, v0);
             } else {
@@ -1698,13 +1698,13 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
         }
     }
     if (d->target == 0) {
-        d->target = *(Moby **)(hero_globals_base_r + 0x2E9D);
+        d->target = *(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby;
     }
     d->f2D8 = FastAddRots_r2(d->f2D8, g_frame_time_r * 9.424778f);
     m->glow_color = FastTweenColor_r2(D_L05_00161B34_3047E8, D_L05_00161B38_3047E8, (FastSin_r2(d->f2D8) + 1.0f) * 0.5f);
     k = m->state;
     if (k < 10) {
-    if (k >= 4 && d->target == *(Moby **)(hero_globals_base_r + 0x2E9D)) {
+    if (k >= 4 && d->target == *(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby) {
         float yaw, pitch;
         FastVecSub_r(v0, ((float *)&d->target->pos), ((float *)&m->pos));
         yaw = FastSubRots_r2(fast_atan2_r2(v0[0], v0[1]), m->rot.z);
@@ -2086,7 +2086,7 @@ void extermitank_update(unsigned char *m) {
             }
             *(int *)pp = idx;
         }
-        h = hero_globals_base + 0xE9D;
+        h =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (vec_distance_xy(m + 0x10, h) < d->sight_range) {
             if (FastAbsF(((Moby *)m)->pos.z - *(float *)(h + 8)) < 4.0f) {
                 if (d->zone == -1
@@ -2101,7 +2101,7 @@ void extermitank_update(unsigned char *m) {
                 }
             }
         }
-        if (vec_distance_xy(m + 0x10, hero_globals_base + 0xE9D) < 16.0f) {
+        if (vec_distance_xy(m + 0x10,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 16.0f) {
             struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
             float a = fast_atan2(g->motion.pos.f[0] - ((Moby *)m)->pos.x, g->motion.pos.f[1] - ((Moby *)m)->pos.y);
             step_angle_toward_target(&d->turret_yaw, 0, a, g_frame_time * 1.5707964f);
@@ -2199,13 +2199,13 @@ void extermitank_update(unsigned char *m) {
         }
         qcopy(v40, m + 0x10);
         v40[2] = v40[2] + 3.0f;
-        h = hero_globals_base + 0xE9D;
+        h =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (d->sight_range < vec_distance_xy(m + 0x10, h)
             || 4.0f <= FastAbsF(((Moby *)m)->pos.z - *(float *)(h + 8))
             || (d->zone != -1
                 && IsPointInPolygon(h, rilgar_paths[d->zone] + 0x10,
                                      *(int *)rilgar_paths[d->zone]) == 0)
-            || coll_line(v40, hero_globals_base_r + 0xEED, 2, m, 0) != 0) {
+            || coll_line(v40,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center, 2, m, 0) != 0) {
             if (((Moby *)m)->prev_seq != 0) MobyBlendAnimation(m, 0, 0, 3);
             ((Moby *)m)->state = 1;
         }
@@ -3304,7 +3304,7 @@ void WaterSurfaceUpdate(Moby *moby) {
             v.f[0] = 211.0f;
             v.f[1] = 338.0f;
             v.f[2] = 25.0f;
-            if (FastVecDist(v.f, hero_globals_base + 0xE9D) < 6.0f) {
+            if (FastVecDist(v.f,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 6.0f) {
                 if (rilgar_flood_checkpoint_reached == 0) {
                     rilgar_flood_checkpoint_reached = 1;
                     if (moby->pos.z > rilgar_flood_skip_height) {

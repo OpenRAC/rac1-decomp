@@ -790,7 +790,7 @@ void big_axebot_update(M_B7B0 *moby) {
             }
         }
         if (data->f430 != -1 && data->f434 != -1 && data->f43A == 0
-            && (flag || is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f430) != 0)) {
+            && (flag || is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f430) != 0)) {
             moby->state = 4;
             moby->fBC |= 1;
             data->f43A = 1;
@@ -1676,7 +1676,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
             p.moby = moby;
             p.f14 = 0x10001;
             p.f1C = 1.0f;
-            FastVecSub(p.v, hero_globals_base + 0xE9D, moby->pos);
+            FastVecSub(p.v,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, moby->pos);
             vec_scale_to_length(p.v, p.v, g_frame_time * 10.0f);
             p.f20 = 1;
             coll_sphere_mobys(jp, 0x10, moby, &p, 0.5f);
@@ -2737,7 +2737,7 @@ void BlargTrooperUpdate(char *moby) {
         if (st == 1 || st == 3 || st == 4 || st == 5 || st == 6) {
             char *t = target;
             if (t == 0) {
-                t = *(char **)((char *)hero_globals_base + 0x2E9D);
+                t = *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
             }
             if (vec_distance_xy(pos, (float *)(t + 0x10)) < 24.0f) {
                 float f = FastSubRots(fast_atan2(*(float *)(t + 0x10) - ((Moby *)moby)->pos.x, *(float *)(t + 0x14) - ((Moby *)moby)->pos.y), ((Moby *)moby)->rot.z);
