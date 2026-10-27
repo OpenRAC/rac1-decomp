@@ -24,7 +24,7 @@ extern void BuildOcclVisibility(void);
 extern int occl_update NOT_SDA;
 extern char occl_visibility[];
 extern long gs_display_settings[3];
-extern int space_load_in_progress;
+extern int space_load_in_progress MACRO_ADDR;
 extern short draw_enable_mask;
 extern void append_gif_transfer_packet(void);
 extern void DrawDebugProfiler(void);
@@ -203,7 +203,7 @@ extern short freeze_box_record_flash_color;
 extern short freeze_box_no_record_color;
 extern short freeze_box_no_record_flash_color;
 extern s32 pause_restart_reset_flag MACRO_ADDR;
-extern short mode_freeze_state;
+extern int mode_freeze_state MACRO_ADDR;
 extern s32 pal_mode MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 extern s32 boot_level_active MACRO_ADDR;
@@ -642,4 +642,451 @@ void draw_freeze_message_box(void) {
     DoGifPaging();
 }
 
-INCLUDE_ASM("asm/nonmatchings/text", func_001FD3E8);
+/* The freeze screen's update (game mode 4: the dialogs over a frozen frame). D_00193400 is the
+   dialog: +0 its kind (0-8), +4 and +0x2C countdowns, +0x14 the mode to return to, +0x18 a menu
+   to show, +0x1C a step, +0x20 a frame counter, +0x24 a delay before input is taken. D_0013CBE4
+   holds the buttons pressed this frame (0x40 cross, 0x10 triangle, 0x20 circle); D_0015F6E8 is the
+   game's mode, which leaving the dialog sets; D_0015EFB4 the save menu's flags. Kind 3 is the
+   memory card dialog, whose step comes from D_0015EFB0. Written from the instructions. */
+
+typedef struct {
+    int kind;
+    int x4;
+    int x8;
+    int xC;
+    int x10;
+    int x14;
+    int x18;
+    int x1C;
+    int x20;
+    int x24;
+    int x28;
+    int x2C;
+} Freeze_FD3E8;
+
+extern int D_0013CBE4[];
+extern int D_0015EFB4 MACRO_ADDR;
+extern int D_0015EE84 MACRO_ADDR;
+extern int D_0015F6C8 MACRO_ADDR;
+extern int D_0015F6CC MACRO_ADDR;
+extern s32 D_001D60C0;
+extern int D_001D5F78[];
+extern int D_0015F728 MACRO_ADDR;
+extern int D_0015EF38 MACRO_ADDR;
+extern int D_0015EF3C MACRO_ADDR;
+extern int D_0013D48C[];
+extern int D_0015F6E4 MACRO_ADDR;
+extern int D_0015F690 MACRO_ADDR;
+extern short D_0013E15A[];
+extern unsigned char D_0016044C[4] MACRO_ADDR;
+extern char D_0013F450[];
+extern char D_0013D390[];
+extern char D_0013CA40[];
+extern char D_00141150[];
+
+extern int func_001F98C0(int);
+extern void func_0020BFC8(int, int);
+extern void func_001E9768(void);
+extern void func_001E97C0(void *, void *, int, int);
+extern void func_001F4E08(int);
+extern void func_001FFDA0(int, int);
+extern void func_001FFFA0(void);
+extern void func_00216D30(int, int);
+extern void func_00209DC0(void);
+extern void func_0022F4A0(int);
+extern void func_00227DB0(int);
+extern void func_0012E558(int);
+extern void func_00216F28(void);
+extern int func_0012DDC0(void);
+
+#define R (*(Freeze_FD3E8 *)D_00193400)
+#define PAD (D_0013CBE4[0])
+void func_001FD3E8(void) {
+    Freeze_FD3E8 *q;
+    Freeze_FD3E8 *r5;
+    char *dp1, *dp2;
+    char *h1, *h2, *h3, *h4;
+    int t;
+    int p1, p2, p3, p4, p5, p6, p7, p8, p9, pa;
+    char *m, *m2;
+    char *c;
+    int v;
+
+    ((int (*)(void))func_0022DD68)();
+    q = &R;
+    if (q->x4 != 0) {
+        q->x4--;
+    }
+    if (q->x2C != 0) {
+        q->x2C--;
+    }
+    switch (R.kind) {
+    case 5:
+        R.x20++;
+        t = func_001F98C0(0x5A);
+        if (t < R.x20 && R.x24 != 0) {
+            R.x24--;
+        }
+        r5 = &R;
+        t = func_001F98C0(0x78);
+        if (t < r5->x20 && (PAD & 0x40)) {
+            D_0015F6E8 = 0;
+            if (D_0015EE84 == 1) {
+                func_0020BFC8(0, -1);
+            }
+        }
+        break;
+    case 8:
+        R.x20++;
+        t = func_001F98C0(0x1E);
+        if (t < R.x20 && R.x24 != 0) {
+            R.x24--;
+        }
+        if (R.x24 == 0 && (PAD & 0x40)) {
+            D_0015EFB4 &= ~0x40;
+            D_0013D48C[0] = 0;
+            func_00227DB0(-1);
+            func_0022F4A0(0);
+            D_0013E15A[0] = 1;
+        }
+        break;
+    case 7:
+        R.x20++;
+        t = func_001F98C0(0x1E);
+        if (t < R.x20 && R.x24 != 0) {
+            R.x24--;
+        }
+        if (R.x24 == 0 && (PAD & 0x40)) {
+            D_0013D48C[0] = 0;
+            func_00227DB0(-1);
+            func_0022F4A0(0);
+            D_0013E15A[0] = 1;
+        }
+        break;
+    case 4:
+        p1 = PAD;
+        if (p1 & 0x10) {
+            h1 = D_0013F450;
+            m = *(char **)(h1 + 0x2080);
+            m[0x31] = 0;
+            *(int *)(m + 0x94) = 0;
+            *(unsigned short *)(m + 0x34) |= 1;
+            func_001E9768();
+            func_001E97C0(h1 + 0x1D00, h1 + 0x1D10, 0, 1);
+            D_0015F6E8 = 0;
+        } else if (p1 & 0x40) {
+            D_0015F6E8 = 0;
+        }
+        break;
+    case 6:
+        switch (R.x1C) {
+        case 0:
+            if (R.x4 == 0) {
+                R.x1C = 1;
+            }
+            break;
+        case 1:
+            p2 = PAD;
+            if (p2 & 0x10) {
+                D_0015F6E8 = R.x14;
+            } else if (p2 & 0x40) {
+                func_001F4E08(4);
+                D_0016044C[0] = 0;
+                R.x1C = 2;
+                R.x20 = func_001F98C0(0x258);
+            }
+            break;
+        case 2:
+            if (R.x20 == 0 || --R.x20 == 0) {
+                R.x1C = 3;
+                D_0016044C[0] = 1;
+                break;
+            }
+            p3 = PAD;
+            if (p3 & 0x10) {
+                func_001F4E08(4);
+                D_0015F6E8 = R.x14;
+                D_0016044C[0] = 1;
+            } else if (p3 & 0x40) {
+                D_0015F6E8 = R.x14;
+                D_0016044C[0] = 0;
+            }
+            break;
+        case 3:
+            if (PAD & 0x40) {
+                D_0015F6E8 = R.x14;
+            }
+            break;
+        default:
+            D_0015F6E8 = R.x14;
+            break;
+        }
+        break;
+    case 1:
+        p4 = PAD;
+        D_0015F728 = 2;
+        if (p4 & 0x10) {
+            D_0015F6E8 = 0;
+            h2 = D_0013F450;
+            h2[0x160F] |= 1;
+        } else if (p4 & 0x40) {
+            D_0015F6E8 = 0;
+        }
+        break;
+    case 2:
+        p5 = PAD;
+        D_0015F728 = 2;
+        if (p5 & 0x40) {
+            D_0015F6E8 = 0;
+        }
+        break;
+    case 0:
+        switch (R.x1C) {
+        case 0:
+            if (R.x20 < 8) {
+                R.x20++;
+            } else if (R.x24 < 8) {
+                R.x24++;
+            } else {
+                R.x1C = 1;
+            }
+            break;
+        case 1:
+            p6 = PAD;
+            if (p6 & 0x40) {
+                R.x1C = 2;
+            } else if (p6 & 0x820) {
+                R.x1C = 3;
+            }
+            break;
+        case 2:
+        case 3:
+            if (R.x24 != 0) {
+                R.x24--;
+                break;
+            }
+            if (R.x20 != 0) {
+                R.x20--;
+                break;
+            }
+            v = R.x1C;
+            if (v == 2) {
+                h3 = D_0013F450;
+                v = *(int *)(h3 + 0x880);
+                if (v != -1) {
+                    func_001FFDA0(v, 0);
+                    *(int *)(h3 + 0x880) = -1;
+                }
+                func_001FFFA0();
+                t = func_001F98C0(0x1068);
+                if (t < *(int *)(h3 + 0x19C)) {
+                    if (D_0015EE84 == 5) {
+                        D_0015EF38 = D_0015EF38 + 1;
+                    } else if (D_0015EE84 == 0x10) {
+                        D_0015EF3C = D_0015EF3C + 1;
+                    }
+                }
+                D_0015F6E8 = 0;
+                func_00216D30(0, 8);
+                func_001E97C0(D_00141150, D_00141150 + 0x10, 0, 1);
+                break;
+            }
+            D_0015F6E8 = 0;
+            h4 = D_0013F450;
+            if (*(short *)(h4 + 0x89A) >= 3) {
+                *(short *)(h4 + 0x89A) = *(unsigned short *)(h4 + 0x89A) - 1;
+                m2 = *(char **)(h4 + 0x890);
+                m2[0xBC] = 3;
+            }
+            break;
+        }
+        break;
+    case 3:
+        dp1 = D_0013D390;
+        if (*(int *)(dp1 + 0xB0) == 1) {
+            break;
+        }
+        R.x20++;
+        t = func_001F98C0(0x1E);
+        if (t < R.x20 && R.x24 != 0) {
+            R.x24--;
+        }
+        v = D_0015EFB0 - 1;
+        switch (v) {
+        case 1:
+            if (R.x24 == 0 && (PAD & 0x40)) {
+                D_0015EFB4 &= ~1;
+                D_0015F6E8 = R.x14;
+            }
+            break;
+        case 5:
+            if (R.x24 == 0 && (PAD & 0x20)) {
+                D_0015EFB4 |= 8;
+                break;
+            }
+            if (R.x4 == 0 && (PAD & 0x10)) {
+                { int fl = D_0015EFB4; fl |= 0x20; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
+                if (D_0015F6C8 == 0) {
+                    D_0015F6E8 = R.x14;
+                }
+            }
+            break;
+        case 12:
+            if (R.x24 == 0 && (PAD & 0x20)) {
+                D_0015EFB4 |= 0x10;
+                break;
+            }
+            if (R.x4 == 0 && (PAD & 0x10)) {
+                { int fl = D_0015EFB4; fl |= 0x20; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
+                if (D_0015F6C8 == 0) {
+                    D_0015F6E8 = R.x14;
+                }
+            }
+            break;
+        case 19:
+            if (R.x24 == 0 && (PAD & 0x40)) {
+                { int fl = D_0015EFB4; fl &= ~0x40; fl &= ~0x400; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
+                if (D_0015F6C8 != 0) {
+                    D_0015F6E8 = R.x14;
+                } else {
+                    dp2 = D_0013D390;
+                    *(int *)(dp2 + 0xFC) = 0;
+                    D_0015F6E4 = -1;
+                    D_0015F690 = 1;
+                    D_0015F6FC = 1;
+                }
+            }
+            break;
+        case 16:
+        case 17:
+        case 20:
+            if (R.x24 == 0 && (PAD & 0x40)) {
+                D_0015F6E8 = R.x14;
+                { int fl = D_0015EFB4; fl &= ~0x40; fl &= ~0x400; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
+            }
+            break;
+        case 0:
+        case 15:
+            D_0015F6E8 = R.x14;
+            D_001D5F78[0] = R.x18;
+            break;
+        case 11:
+            if (D_001D60C0 == 0) {
+                break;
+            }
+            if (R.x24 == 0 && (PAD & 0x10)) {
+                { int fl = D_0015EFB4; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
+                D_0015F6E8 = R.x14;
+            }
+            break;
+        case 18:
+            if (D_0015F6C8 != 0 && D_001D60C0 == 0) {
+                if (R.x24 != 0) {
+                    break;
+                }
+                p9 = PAD;
+                if (p9 & 0x40) {
+                    func_00209DC0();
+                    { int fl = D_0015EFB4; fl &= ~2; fl &= ~4; fl |= 0x20; D_0015EFB4 = fl; }
+                    func_0022F4A0(0);
+                    D_0013E15A[0] = 1;
+                    break;
+                }
+                if (p9 & 0x10) {
+                    { int fl = D_0015EFB4; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
+                    D_0015F6E8 = R.x14;
+                }
+                break;
+            }
+        case 2:
+        case 4:
+            if (R.x24 == 0 && (PAD & 0x10)) {
+                { int fl = D_0015EFB4; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
+                D_0015F6E8 = R.x14;
+            }
+            break;
+        case 22:
+        case 23:
+            if (R.x24 != 0) {
+                break;
+            }
+            pa = PAD;
+            if (pa & 0x40) {
+                func_00209DC0();
+                { int fl = D_0015EFB4; fl &= ~2; fl &= ~4; fl |= 0x20; D_0015EFB4 = fl; }
+                func_0022F4A0(0);
+                D_0013E15A[0] = 1;
+                break;
+            }
+            if (pa & 0x10) {
+                D_0015EFB4 |= 0x20;
+                D_0015F6E8 = R.x14;
+            }
+            break;
+        case 3:
+            if (D_0015F6C8 == 0) {
+                goto cardb;
+            }
+            if (D_001D60C0 != 0) {
+                goto set20;
+            }
+            if (R.x24 != 0) {
+                break;
+            }
+            c = D_0013CA40;
+            if (*(int *)(c + 0x1A4) & 0x40) {
+                func_00209DC0();
+                { int fl = D_0015EFB4; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
+                func_0022F4A0(0);
+                D_0013E15A[0] = 1;
+            }
+            if (R.x24 != 0) {
+                break;
+            }
+            if (*(int *)(c + 0x1A4) & 0x10) {
+                { int fl = D_0015EFB4; fl |= 0x20; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
+                D_0015F6E8 = R.x14;
+            }
+            break;
+        cardb:
+            if (D_0015F6CC == 0) {
+                goto set20;
+            }
+            if (R.x24 != 0) {
+                break;
+            }
+            p8 = PAD;
+            if (p8 & 0x10) {
+                D_0015F6E8 = R.x14;
+                { int fl = D_0015EFB4; fl |= 0x20; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
+            }
+            if (p8 & 0x20) {
+                func_00227DB0(-1);
+                func_0022F4A0(0);
+                D_0013E15A[0] = 1;
+            }
+            break;
+        set20:
+            if (R.x24 != 0) {
+                break;
+            }
+            if (PAD & 0x10) {
+                { int fl = D_0015EFB4; fl |= 0x20; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
+                D_0015F6E8 = R.x14;
+            }
+            break;
+        case 8:
+            if (D_0015F6C8 == 0 || (D_0015EFB4 & 6) != 0) {
+                break;
+            }
+            D_0015F6E8 = R.x14;
+            break;
+        }
+        break;
+    }
+    if ((unsigned int)(D_0015F6E8 - 3) >= 2) {
+        func_0012E558(0x1D);
+        func_00216F28();
+        func_0012DDC0();
+    }
+}

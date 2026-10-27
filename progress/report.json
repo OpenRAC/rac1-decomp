@@ -1,21 +1,21 @@
 {
  "measures": {
-  "fuzzy_match_percent": 99.55483714502377,
+  "fuzzy_match_percent": 99.63174597036534,
   "total_code": "3713488",
-  "matched_code": "3692624",
-  "matched_code_percent": 99.43815625632828,
+  "matched_code": "3695480",
+  "matched_code_percent": 99.51506508166985,
   "total_functions": 5117,
-  "matched_functions": 5104,
-  "matched_functions_percent": 99.74594488958374,
-  "complete_code": "2328612",
-  "complete_code_percent": 62.70686750569815,
+  "matched_functions": 5105,
+  "matched_functions_percent": 99.76548759038499,
+  "complete_code": "2337456",
+  "complete_code_percent": 62.94502634719703,
   "total_units": 141,
-  "complete_units": 134,
+  "complete_units": 135,
   "total_data": "699072",
-  "matched_data": "3852",
-  "matched_data_percent": 0.5510162043394672,
-  "complete_data": "3496",
-  "complete_data_percent": 0.5000915499404925
+  "matched_data": "3984",
+  "matched_data_percent": 0.5698983795660533,
+  "complete_data": "3792",
+  "complete_data_percent": 0.5424333974182917
  },
  "units": [
   {
@@ -10232,17 +10232,17 @@
   {
    "name": "game/freeze",
    "measures": {
-    "fuzzy_match_percent": 67.70691994572591,
+    "fuzzy_match_percent": 100.0,
     "total_code": "8844",
-    "matched_code": "5988",
-    "matched_code_percent": 67.70691994572591,
+    "matched_code": "8844",
+    "matched_code_percent": 100.0,
     "total_functions": 3,
-    "matched_functions": 2,
-    "matched_functions_percent": 66.66666666666667,
-    "complete_code": "0",
-    "complete_code_percent": 0.0,
+    "matched_functions": 3,
+    "matched_functions_percent": 100.0,
+    "complete_code": "8844",
+    "complete_code_percent": 100.0,
     "total_units": 1,
-    "complete_units": 0
+    "complete_units": 1
    },
    "functions": [
     {
@@ -10266,7 +10266,7 @@
     {
      "name": "func_001FD3E8",
      "size": "2856",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "5992",
      "metadata": {
       "virtual_address": "2085864"
@@ -10274,7 +10274,7 @@
     }
    ],
    "metadata": {
-    "complete": false,
+    "complete": true,
     "source_path": "src/game/freeze.c",
     "progress_categories": [
      "executable",
@@ -49763,20 +49763,20 @@
    "id": "executable",
    "name": "Executable",
    "measures": {
-    "fuzzy_match_percent": 98.82485332142151,
+    "fuzzy_match_percent": 99.4381974212059,
     "total_code": "465644",
-    "matched_code": "460172",
-    "matched_code_percent": 98.82485332142151,
+    "matched_code": "463028",
+    "matched_code_percent": 99.4381974212059,
     "total_functions": 1692,
-    "matched_functions": 1687,
-    "matched_functions_percent": 99.70449172576832,
-    "complete_code": "415768",
-    "complete_code_percent": 89.28881291286906,
+    "matched_functions": 1688,
+    "matched_functions_percent": 99.76359338061465,
+    "complete_code": "424612",
+    "complete_code_percent": 91.18811796136104,
     "total_data": "699072",
-    "matched_data": "3852",
-    "matched_data_percent": 0.5510162043394672,
-    "complete_data": "3496",
-    "complete_data_percent": 0.5000915499404925
+    "matched_data": "3984",
+    "matched_data_percent": 0.5698983795660533,
+    "complete_data": "3792",
+    "complete_data_percent": 0.5424333974182917
    }
   },
   {
@@ -49798,15 +49798,15 @@
    "id": "game",
    "name": "Executable game code",
    "measures": {
-    "fuzzy_match_percent": 98.79818673788523,
+    "fuzzy_match_percent": 99.42544892293635,
     "total_code": "455312",
-    "matched_code": "449840",
-    "matched_code_percent": 98.79818673788523,
+    "matched_code": "452696",
+    "matched_code_percent": 99.42544892293635,
     "total_functions": 1658,
-    "matched_functions": 1653,
-    "matched_functions_percent": 99.6984318455971,
-    "complete_code": "405436",
-    "complete_code_percent": 89.04575324173314
+    "matched_functions": 1654,
+    "matched_functions_percent": 99.75874547647769,
+    "complete_code": "414280",
+    "complete_code_percent": 90.98815757107215
    }
   },
   {

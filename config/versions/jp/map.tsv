@@ -917,6 +917,7 @@ func_001FBAB8	src/game/framebuf.c	match	boot:001FCBE0	448	100.00
 func_001FBC78	-	asm	boot:001FCDA0	4	100.00
 func_001FBC80	src/versions/jp/game/freeze/func_001FBC80.c	match	boot:001FCDA8	508	100.00
 func_001FBE80	src/game/freeze.c	differs	boot:001FCFA8	5568	0.00
+func_001FD3E8	src/game/freeze.c	differs	boot:001FE568	2856	0.00
 func_001FDF10	src/game/help.c	match	boot:001FF090	100	100.00
 func_001FDF78	src/game/help.c	match	boot:001FF0F8	1212	100.00
 func_001FE438	src/game/help.c	match	boot:001FF5B8	136	100.00

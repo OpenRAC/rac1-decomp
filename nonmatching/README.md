@@ -147,7 +147,6 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 | [`func_001FA8F0`](functional/func_001FA8F0.c) | functional | 0 | ? | - |
 | [`func_001FA9E8`](functional/func_001FA9E8.c) | functional | 60 | ? | - |
 | [`func_001FAA28`](functional/func_001FAA28.c) | functional | 0 | ? | - |
-| [`func_001FD3E8`](game/func_001FD3E8.c) | game | 2856 | ? | - |
 | [`func_00202AA8`](game/func_00202AA8.c) | game | 1104 | ? | - |
 | [`func_0020C210`](game/func_0020C210.c) | game | 32 | ? | - |
 | [`func_0020C230`](game/func_0020C230.c) | game | 56 | ? | - |
