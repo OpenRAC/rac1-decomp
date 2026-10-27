@@ -13,10 +13,10 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
         if (!(menu->flags & 0x100)) {
             return 1;
         }
-        if (((struct Card_21380 *)memory_card_state)->type != 2) {
+        if (((MemoryCardState *)memory_card_state)->card[0].type != 2) {
             goto done;
         }
-        if (((struct Card_21380 *)memory_card_state)->state < 3 && ((struct Card_21380 *)memory_card_state)->pending_state < 0 && ((struct MS_21380 *)menu_system)->ticks >= 0xB) {
+        if (((MemoryCardState *)memory_card_state)->state < 3 && ((MemoryCardState *)memory_card_state)->err < 0 && ((struct MS_21380 *)menu_system)->ticks >= 0xB) {
             goto done;
         }
         SetupGifPaging(0);

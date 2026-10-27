@@ -7,6 +7,7 @@
 #include "moby.h"
 #include "structs.h"
 #include "menu.h"
+#include "memcard.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -5164,20 +5165,7 @@ struct ClutImage_209A0 {
     u8 pixels[1];
 };
 
-/* Memory card state at D_0013D390, as far as this function reads it (PAL offsets). */
-struct MemoryCardState_209A0 {
-    u8 pad_0[0x20];
-    struct {
-        s32 unk0;             /* resource of the save in this slot, -1 none */
-        u8 pad_4[0x18];
-    } entries[5];             /* 0x20 */
-    u8 pad_AC[0x30];
-    s32 state;                /* 0xDC */
-    s32 sub;
-    s32 pending_state;        /* 0xE4 */
-};
-
-extern struct MemoryCardState_209A0 memory_card_state_r2 __asm__("D_0013D390");
+extern MemoryCardState memory_card_state_r2 __asm__("D_0013D390");
 
 
 extern s32 log2dim_r(s32) __asm__("func_001F9968");
@@ -5221,11 +5209,11 @@ s32 update_menu_stream_image(struct MenuScreen_209A0 *stream) {
         if (idx >= 5) {
             idx = 4;
         }
-        if (memory_card_state_r2.state < 3 && memory_card_state_r2.pending_state < 0 && D_001D5F70_209A0.unk154 >= 0xB) {
+        if (memory_card_state_r2.state < 3 && memory_card_state_r2.err < 0 && D_001D5F70_209A0.unk154 >= 0xB) {
             if (stream->data.stream.state == -1) {
                 stream->data.stream.state = 0;
             }
-            idx = memory_card_state_r2.entries[idx].unk0;
+            idx = memory_card_state_r2.card[0].slots[idx].id;
         } else {
             stream->data.stream.state = -1;
         }
@@ -5559,22 +5547,7 @@ struct MenuScreen_20DF0 {
     } data;
 };
 
-/* Memory card state at D_0013D390, as far as this function reads it (PAL offsets). */
-struct MemoryCardState_20DF0 {
-    u8 pad_0[0x8];
-    s32 type;                 /* 0x08: card 0's type, 2 = a PS2 card */
-    u8 pad_C[0x14];
-    struct {
-        s32 unk0;             /* resource of the save in this slot, -1 none */
-        u8 pad_4[0x18];
-    } entries[5];             /* 0x20 */
-    u8 pad_AC[0x30];
-    s32 state;                /* 0xDC */
-    s32 sub;
-    s32 pending_state;        /* 0xE4 */
-};
-
-extern struct MemoryCardState_20DF0 memory_card_state_r3 __asm__("D_0013D390");
+extern MemoryCardState memory_card_state_r3 __asm__("D_0013D390");
 
 typedef struct {
     s32 values[6];
@@ -5652,16 +5625,16 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
                 resource_index = 4;
             }
             if (memory_card_state_r3.state < 3) {
-                if (memory_card_state_r3.pending_state < 0 && D_001D5F70_20DF0.unk154 >= 0xB) {
+                if (memory_card_state_r3.err < 0 && D_001D5F70_20DF0.unk154 >= 0xB) {
                     if (stream->data.stream.state == -1) {
                         stream->data.stream.state = 0;
                     }
                     resource_index =
-                        *(s32 *)((u8 *)&memory_card_state_r3 + resource_index * 0x1C + 0x20);
+                        memory_card_state_r3.card[0].slots[resource_index].id;
                     if (resource_index == -1) {
                         stream->data.stream.state = resource_index;
                     }
-                    if (memory_card_state_r3.type != 2) {
+                    if (memory_card_state_r3.card[0].type != 2) {
                         stream->data.stream.state = -1;
                     }
                 } else {
@@ -5877,7 +5850,6 @@ struct Grid_21380 { char pad0[0x48]; struct Cell_21380 *cells; };
 struct Focus_21380 { char pad0[0x40]; struct Grid_21380 *focus; };
 struct Stream_21380 { char pad0[0x20]; int width; int height; char pad28[0xC]; int flags; int tw; int th; char pad40[4]; int state; int buffer[2]; int loaded_entry[2]; };
 struct MS_21380 { char pad0[4]; struct Focus_21380 *current; char pad8[0x120]; int card_op_pending; int card_op_text; char pad130[0x24]; int ticks; };
-struct Card_21380 { char pad0[8]; int type; char padC[0xD0]; int state; char padE0[4]; int pending_state; };
 extern long load_texture_file(int);
 
 /* Draws the stream image screen: while the card is checked it prints the centred
@@ -5898,10 +5870,10 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
         if (!(menu->flags & 0x100)) {
             return 1;
         }
-        if (((struct Card_21380 *)memory_card_state)->type != 2) {
+        if (((MemoryCardState *)memory_card_state)->card[0].type != 2) {
             goto done;
         }
-        if (((struct Card_21380 *)memory_card_state)->state < 3 && ((struct Card_21380 *)memory_card_state)->pending_state < 0 && ((struct MS_21380 *)menu_system)->ticks >= 0xB) {
+        if (((MemoryCardState *)memory_card_state)->state < 3 && ((MemoryCardState *)memory_card_state)->err < 0 && ((struct MS_21380 *)menu_system)->ticks >= 0xB) {
             goto done;
         }
         SetupGifPaging(0);
@@ -7477,10 +7449,6 @@ s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu_23B40 *menu) {
     return 2;
 }
 
-/* Page records in D_0013D390: stride 0x1C from +0x20. */
-typedef struct { int row; char pad[0x18]; } PageRec;
-typedef struct { char pad[0x20]; PageRec rec[1]; } PageTbl;
-
 /* func_00223140's sibling for the D_0013D390 pages: if the page passes
    four gates, draws icon 0x521C centred (row -1) or the row's two
    D_001DE0C0 icons at y 4 and 0x14. The row is read before
@@ -7488,12 +7456,12 @@ typedef struct { char pad[0x20]; PageRec rec[1]; } PageTbl;
    base (retail's base-first add). */
 int draw_menu_selection_text(MenuScreen *arg0) {
     char *g = menu_system;
-    char *b = memory_card_state;
-    int row = ((PageTbl *)b)->rec[*(int *)(*(char **)(*(char **)&((struct MenuSystem *)g)->current + 0x40) + 0x40)].row;
+    MemoryCardState *b = (MemoryCardState *)memory_card_state;
+    int row = b->card[0].slots[*(int *)(*(char **)(*(char **)&((struct MenuSystem *)g)->current + 0x40) + 0x40)].id;
 
     SetupGifPaging(0);
     if (((struct MemoryCardState_1A1A0 *)b)->state < 3 && ((struct MemoryCardState_1A1A0 *)b)->pending_state < 0
-        && *(int *)(g + 0x154) >= 0xB && *(int *)(b + 8) == 2) {
+        && *(int *)(g + 0x154) >= 0xB && b->card[0].type == 2) {
         if (row == -1) {
             FontPrintCenter(arg0->width / 2, arg0->height / 2 - 8,
                           0x80FFA888L, msg_string_id(0x521C), -1);
@@ -8046,29 +8014,6 @@ typedef struct {
     s32 selected_slot;
 } SaveMenu_24C30;
 
-typedef struct {
-    s32 id;
-    s32 bolts;
-    s32 count;
-    s32 time;
-    u8 pad_10[5];
-    u8 b15;
-    u8 b16;
-    u8 b17;
-    u8 pad_18[4];
-} SaveSlot_24C30;
-
-typedef struct {
-    u8 pad_0[8];
-    s32 state;
-    u8 pad_C[0x14];
-    SaveSlot_24C30 slots[5];
-    u8 pad_AC[0x30];
-    s32 xDC;
-    s32 pad_E0;
-    s32 xE4;
-} SaveInfo_24C30;
-
 /* Menu system state at D_001D5F70, as far as this function reads it. */
 struct MenuSystem_24C30 {
     u8 pad_0[0x154];
@@ -8076,7 +8021,7 @@ struct MenuSystem_24C30 {
 };
 extern struct MenuSystem_24C30 D_001D5F70_24C30 __asm__("D_001D5F70");
 
-extern SaveInfo_24C30 memory_card_state_r4 __asm__("D_0013D390");
+extern MemoryCardState memory_card_state_r4 __asm__("D_0013D390");
 extern s32 pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
 extern s32 panel_clear_color_r __asm__("D_001602B0") MACRO_ADDR;
 extern char fmt_decimal_r[] __asm__("D_001603A0");
@@ -8100,7 +8045,7 @@ extern s32 sprintf_r2(char *, const char *, ...) __asm__("func_00116248");
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/ui/menus/draw_save_slot_list.c, draw_save_slot_list. */
 s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
     char text[0x50];
-    SaveSlot_24C30 *slot;
+    McSaveSlot *slot;
     s32 color;
     s32 width;
     s32 inner_right;
@@ -8124,15 +8069,15 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
         inner_right = width - 3;
         inner_top = y - 1;
         inner_bottom = y + 0x31;
-        if (memory_card_state_r4.xDC < 3 && memory_card_state_r4.xE4 < 0 && D_001D5F70_24C30.unk154 >= 0xB &&
+        if (memory_card_state_r4.state < 3 && memory_card_state_r4.err < 0 && D_001D5F70_24C30.unk154 >= 0xB &&
             menu->selected_slot == i) {
             draw_hud_rect_blended_r4(0, highlight_top, width, highlight_bottom, 0x8020FFFF, 0);
             draw_hud_rect_blended_r4(3, inner_top, inner_right, inner_bottom, panel_clear_color_r, 0);
         }
         draw_hud_rect_blended_r4(3, inner_top, inner_right, inner_bottom, 0x80303030, 0);
-        slot = &memory_card_state_r4.slots[i];
-        if (memory_card_state_r4.xDC >= 3 || memory_card_state_r4.xE4 >= 0 || D_001D5F70_24C30.unk154 < 0xB ||
-            memory_card_state_r4.state != 2) {
+        slot = &memory_card_state_r4.card[0].slots[i];
+        if (memory_card_state_r4.state >= 3 || memory_card_state_r4.err >= 0 || D_001D5F70_24C30.unk154 < 0xB ||
+            memory_card_state_r4.card[0].type != 2) {
             y += 0x30;
         } else {
             if (slot->id == -1) {
@@ -8153,10 +8098,10 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
                 HudSprite_r(GetIconFrame_r2(0xE99E, 3), 4, y, 0x10, 0x10,
                                 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
-                if (slot->count != 0) {
+                if (slot->gold_bolts != 0) {
                     HudSprite_r(GetIconFrame_r2(0xE99E, 4), 0x4E, y, 0x10,
                                     0x10, 0x80);
-                    sprintf_r2(text, fmt_decimal_r, slot->count < 100 ? slot->count : 99);
+                    sprintf_r2(text, fmt_decimal_r, slot->gold_bolts < 100 ? slot->gold_bolts : 99);
                     FontPrintSmall_r(0x60, y, color, text, -1);
                 }
                 bolts = slot->bolts;
@@ -8176,7 +8121,7 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
                                 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
                 y += 0x10;
-                sprintf_r2(text, fmt_save_date_r, slot->b16, slot->b15, slot->b17);
+                sprintf_r2(text, fmt_save_date_r, slot->name.date.b16, slot->name.date.b15, slot->name.date.b17);
                 HudSprite_r(GetIconFrame_r2(0xE99E, 2), 4, y, 0x10, 0x10,
                                 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
@@ -10074,24 +10019,8 @@ struct MenuSystem_27DB0 {
 };
 
 extern struct MenuSystem_27DB0 D_001D5F70_27DB0 __asm__("D_001D5F70");
-typedef struct {
-    u8 pad0[0x14];
-    s32 slot;
-    u8 pad18[8];
-    struct {
-        s32 unk0;
-        u8 pad4[0x18];
-    } entries[5];
-    u8 pad[0xC8 - 0x20 - 5 * 0x1C];
-    s32 unkC8;
-    u8 padCC[0x18];
-    s32 unkE4;
-    s32 unkE8;
-    u8 padEC[8];
-    s32 unkF4;
-} Checkpoints_27DB0;
 
-extern Checkpoints_27DB0 memory_card_state_r5 __asm__("D_0013D390");
+extern MemoryCardState memory_card_state_r5 __asm__("D_0013D390");
 extern u8 gSpecialItems_r[] __asm__("D_0013D490");
 extern s32 weapon_ammo_counts_r[] __asm__("D_0013D530");
 extern u8 gold_weapon_purchased_r[] __asm__("D_0013E620");
@@ -10174,14 +10103,14 @@ void load_level_zero_preserving_progress(s32 slot) {
     sce_cd_read_clock_r(save_clock_time_r);
     sce_scf_get_local_time_from_rtc_r(save_clock_time_r);
     if (slot >= 0) {
-        memory_card_state_r5.slot = slot;
-        memory_card_state_r5.entries[slot].unk0 = 0;
+        memory_card_state_r5.card[0].x14 = slot;
+        memory_card_state_r5.card[0].slots[slot].id = 0;
         memcard_MakeWholeSave_r(D_001D5F70_27DB0.unkE0);
-        memory_card_state_r5.unkF4 = D_001D5F70_27DB0.unkE0;
-        memory_card_state_r5.unkC8 = 0;
-        if (memory_card_state_r5.unkE4 < 0) {
-            memory_card_state_r5.unkE8 = 0;
-            memory_card_state_r5.unkE4 = 0x13;
+        memory_card_state_r5.padF4 = D_001D5F70_27DB0.unkE0;
+        memory_card_state_r5.xC8 = 0;
+        if (memory_card_state_r5.err < 0) {
+            memory_card_state_r5.errCard = 0;
+            memory_card_state_r5.err = 0x13;
         }
     }
 }

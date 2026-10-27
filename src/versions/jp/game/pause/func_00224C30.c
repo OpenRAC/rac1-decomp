@@ -1,6 +1,6 @@
 s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
     char text[0x50];
-    SaveSlot_24C30 *slot;
+    McSaveSlot *slot;
     s32 color;
     s32 width;
     s32 inner_right;
@@ -24,15 +24,15 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
         inner_right = width - 3;
         inner_top = y - 1;
         inner_bottom = y + 0x31;
-        if (memory_card_state_r4.xDC < 3 && memory_card_state_r4.xE4 < 0 && D_001D5F70_24C30.unk154 >= 0xB &&
+        if (memory_card_state_r4.state < 3 && memory_card_state_r4.err < 0 && D_001D5F70_24C30.unk154 >= 0xB &&
             menu->selected_slot == i) {
             draw_hud_rect_blended_r4(0, highlight_top, width, highlight_bottom, 0x8020FFFF, 0);
             draw_hud_rect_blended_r4(3, inner_top, inner_right, inner_bottom, panel_clear_color_r, 0);
         }
         draw_hud_rect_blended_r4(3, inner_top, inner_right, inner_bottom, 0x80303030, 0);
-        slot = &memory_card_state_r4.slots[i];
-        if (memory_card_state_r4.xDC >= 3 || memory_card_state_r4.xE4 >= 0 || D_001D5F70_24C30.unk154 < 0xB ||
-            memory_card_state_r4.state != 2) {
+        slot = &memory_card_state_r4.card[0].slots[i];
+        if (memory_card_state_r4.state >= 3 || memory_card_state_r4.err >= 0 || D_001D5F70_24C30.unk154 < 0xB ||
+            memory_card_state_r4.card[0].type != 2) {
             y += 0x30;
         } else {
             if (slot->id == -1) {
@@ -53,10 +53,10 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
                 HudSprite_r(GetIconFrame_r2(0xE99E, 3), 4, y, 0x10, 0x10,
                                 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
-                if (slot->count != 0) {
+                if (slot->gold_bolts != 0) {
                     HudSprite_r(GetIconFrame_r2(0xE99E, 4), 0x4E, y, 0x10,
                                     0x10, 0x80);
-                    sprintf_r2(text, fmt_decimal_r, slot->count < 100 ? slot->count : 99);
+                    sprintf_r2(text, fmt_decimal_r, slot->gold_bolts < 100 ? slot->gold_bolts : 99);
                     FontPrintSmall_r(0x60, y, color, text, -1);
                 }
                 bolts = slot->bolts;
@@ -76,7 +76,7 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
                                 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
                 y += 0x10;
-                sprintf_r2(text, fmt_save_date_r, slot->b16, slot->b15, slot->b17);
+                sprintf_r2(text, fmt_save_date_r, slot->name.date.b16, slot->name.date.b15, slot->name.date.b17);
                 HudSprite_r(GetIconFrame_r2(0xE99E, 2), 4, y, 0x10, 0x10,
                                 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
