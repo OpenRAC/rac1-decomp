@@ -6,6 +6,45 @@
 #include "moby.h"
 #include "hero.h"
 
+/* Quartu helicopter: hit response, knockback and recoil. */
+struct HelicopterVars {
+    u8 pad_00[0x20];
+    f32 health;                     /* 0x20: ComputeHitResponse */
+    u8 pad_24[0x3C];
+    s16 color_fade;                 /* 0x60: StepColorFade block */
+    u8 pad_62[0x5];
+    u8 flash;                       /* 0x67: hit flash strength */
+    u8 pad_68[0x102];
+    s16 recoil_timer;               /* 0x16A */
+    u8 pad_16C[0x4];
+    f32 recoil_speed;               /* 0x170 */
+    f32 recoil_pitch;               /* 0x174 */
+    f32 recoil_yaw;                 /* 0x178 */
+};
+
+/* Conveyor belt: slides riders along its heading. */
+struct SideDriftVars {
+    u8 pad_00[0x40];
+    f32 drift_x;                    /* 0x40 */
+    f32 drift_y;                    /* 0x44 */
+    s32 drift_z;                    /* 0x48: stays 0 */
+    u8 pad_4C[0x14];
+    u8 entity_matrix[0x3C];         /* 0x60: update_entity_matrix block */
+    s32 flags;                      /* 0x9C: bit 2 set at init */
+};
+
+/* Poison vessel (class 0x4E9). */
+struct PoisonVesselVars {
+    u8 pad_00[0x10];
+    s32 unk_10;                     /* 0x10 */
+};
+
+/* A moby whose state drives a linked yaw updater. */
+struct LinkedYawSourceVars {
+    u8 pad_00[0x10];
+    s32 reversed;                   /* 0x10: nonzero flips the spin */
+};
+
 typedef struct {
     Vec4 home;
     s32 open_volume;
@@ -1681,21 +1720,21 @@ void process_helicopter_hits(char *m) {
     int hit_reaction_status;
     float fv;
     int hit_reaction_code;
-    char *helicopter_vars;
+    struct HelicopterVars *helicopter_vars;
     char *hit_record;
     float hit_away_heading, relative_hit_heading, recoil_rotation_y, recoil_rotation_x;
-    helicopter_vars = (char *)((struct Moby *)m)->pvars;
+    helicopter_vars = (struct HelicopterVars *)((struct Moby *)m)->pvars;
     fv = 0.0f;
     hit_record = MobyGetHitMessage(m, 0x330000, 0);
-    hit_reaction_code = ComputeHitResponse(m, hit_record, helicopter_vars + 0x20, 0, &hit_reaction_status, &fv, 0, 4);
+    hit_reaction_code = ComputeHitResponse(m, hit_record, &helicopter_vars->health, 0, &hit_reaction_status, &fv, 0, 4);
     if (hit_reaction_status != 1 && ((struct Moby *)m)->state != 7 && ((struct Moby *)m)->state != 0x40) {
-        float remaining_health = *(float *)(helicopter_vars + 0x20) - fv;
-        *(float *)(helicopter_vars + 0x20) = remaining_health;
+        float remaining_health = helicopter_vars->health - fv;
+        helicopter_vars->health = remaining_health;
         if (hit_reaction_code == 1 || remaining_health <= 0.0f) {
             ((struct Moby *)m)->state = 7;
         } else if (hit_reaction_code != 0xB) {
-            *(unsigned char *)(helicopter_vars + 0x67) = 0xB4;
-            RerollEffectCounter(m, (short *)(helicopter_vars + 0x60));
+            helicopter_vars->flash = 0xB4;
+            RerollEffectCounter(m, &helicopter_vars->color_fade);
             if (*(float *)(hit_record + 0x1C) == 5627.925f && ((struct Moby *)m)->state != 6) {
                 hit_away_heading = fast_atan2(((struct Moby *)m)->pos.x - *(float *)(hit_record + 0),
                                                      ((struct Moby *)m)->pos.y - *(float *)(hit_record + 4));
@@ -1704,21 +1743,21 @@ void process_helicopter_hits(char *m) {
                 recoil_rotation_x = FastSin(relative_hit_heading) * -0.34906584f;
                 if (FastAbsF(((struct Moby *)m)->rot.x) < FastAbsF(recoil_rotation_x)) {
                     ((struct Moby *)m)->rot.x = recoil_rotation_x;
-                    *(float *)(helicopter_vars + 0x174) = 0.0f;
+                    helicopter_vars->recoil_pitch = 0.0f;
                 }
                 if (FastAbsF(((struct Moby *)m)->rot.y) < FastAbsF(recoil_rotation_y)) {
                     ((struct Moby *)m)->rot.y = recoil_rotation_y;
-                    *(float *)(helicopter_vars + 0x178) = 0.0f;
+                    helicopter_vars->recoil_yaw = 0.0f;
                 }
-                *(float *)(helicopter_vars + 0x170) = g_frame_time * 4.0f;
-                *(short *)(helicopter_vars + 0x16A) = scale_ticks(0x3C);
+                helicopter_vars->recoil_speed = g_frame_time * 4.0f;
+                helicopter_vars->recoil_timer = scale_ticks(0x3C);
                 ((struct Moby *)m)->command = ((struct Moby *)m)->state;
                 ((struct Moby *)m)->state = 6;
             }
         }
     }
     ((struct Moby *)m)->hit_slot = 0xFF;
-    StepColorFade(m, helicopter_vars + 0x60);
+    StepColorFade(m, &helicopter_vars->color_fade);
 }
 extern char *quartu_moby_list MACRO_ADDR;
 extern void FindNearestTargetMoby_t(void *, float *, float) __asm__("func_L00_00260D30");
@@ -2465,16 +2504,16 @@ void update_moby_yaw_from_linked_state(char *moby) {
     int linked_moby_index = *(int *)self->pvars;
     if (linked_moby_index != -1) {
         struct Moby *other = (struct Moby *)(linked_moby_index * 256 + *(int *)&D_L15_00160058_g);
-        u8 *linked_moby_vars = other->pvars;
+        struct LinkedYawSourceVars *linked_moby_vars = (struct LinkedYawSourceVars *)other->pvars;
         int linked_moby_state = other->state;
         float step;
         if (linked_moby_state == 2) {
             step = *(float *)&quartu_linked_spin_rate * 0.017453292f * g_frame_time;
-            if (*(int *)(linked_moby_vars + 0x10) != 0)
+            if (linked_moby_vars->reversed != 0)
                 step = -step;
         } else if (linked_moby_state == 4) {
             step = *(float *)&quartu_linked_spin_rate * 0.017453292f * g_frame_time;
-            if (*(int *)(linked_moby_vars + 0x10) == 0)
+            if (linked_moby_vars->reversed == 0)
                 step = -step;
         } else {
             return;
@@ -2492,29 +2531,29 @@ void SideDriftUpdate(char *moby) {
         CONVEYOR_BELT_UPDATE_FRAME_OFFSET = 3
     };
     struct Moby *m = (struct Moby *)moby;
-    char *data = (char *)m->pvars;
-    if (data != 0) {
+    struct SideDriftVars *data = (struct SideDriftVars *)m->pvars;
+    if (((char *)data) != 0) {
         unsigned char state = m->state;
         switch (state) {
         case CONVEYOR_BELT_INITIALIZE: {
-            char *frame_offset = data + 0x40;
+            char *frame_offset = (char *)&data->drift_x;
             clear_u64_value(frame_offset);
-            *(int *)(data + 0x9C) |= 4;
+            data->flags |= 4;
             m->state = 3;
             break;
         }
         case CONVEYOR_BELT_UPDATE_FRAME_OFFSET:
             m->anim_speed = 1.3888889f;
-            *(float *)(data + 0x40) =
+            data->drift_x =
                 FastCos(FastAddRots(m->rot.z, 1.5707964f)) *
                 (g_frame_time * 2.5f);
-            *(float *)(data + 0x44) =
+            data->drift_y =
                 FastSin(FastAddRots(m->rot.z, 1.5707964f)) *
                 (g_frame_time * 2.5f);
-            *(int *)(data + 0x48) = 0;
+            data->drift_z = 0;
             break;
         }
-        update_entity_matrix(data + 0x60, data + 0x40, &m->rot, &m->rot);
+        update_entity_matrix(data->entity_matrix, &data->drift_x, &m->rot, &m->rot);
     }
 }
 extern char *CreateMoby(int);
@@ -2532,7 +2571,7 @@ char *spawn_poison_vessel(void *unused, void *vector) {
         moby[0x31] = 1;
         moby[0x20] = 0;
         moby[0xBC] = 0;
-        *(int *)(data + 0x10) = 0;
+        ((struct PoisonVesselVars *)data)->unk_10 = 0;
         clear_u64_value(data);
         qcopy(moby + 0x10, vector);
         field = *(char **)(moby + 0x24);

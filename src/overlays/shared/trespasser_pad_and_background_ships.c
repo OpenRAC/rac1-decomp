@@ -6,6 +6,69 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Trespasser puzzle: three rings of 12 slots, marker ring and the rotation state (also Data_2D9F08 below). */
+struct TrespasserPuzzleVars {
+    u8 pad_00[0x10];
+    s16 unk_10;                     /* 0x10 */
+    s16 unk_12;                     /* 0x12 */
+    s32 ring_shift_a;               /* 0x14: rotation offset of ring a */
+    s32 ring_shift_b;               /* 0x18 */
+    s32 ring_shift_c;               /* 0x1C */
+    s32 ring_a[12];                 /* 0x20: slot state, 2 is lit, 3 is used */
+    s32 ring_b[12];                 /* 0x50 */
+    s32 ring_c[12];                 /* 0x80 */
+    s32 markers[12];                /* 0xB0 */
+    s32 turning_ring;               /* 0xE0: ring being rotated, 1..3 */
+    f32 turn_angle;                 /* 0xE4: rotation of that ring */
+};
+
+/* Escalator: slides back and forth along its heading. */
+struct EscalatorVars {
+    u8 pad_00[0x40];
+    Vec4A velocity;                 /* 0x40 */
+    u8 pad_50[0x10];
+    u8 entity_matrix[0x3C];         /* 0x60: update_entity_matrix block */
+    u32 flags;                      /* 0x9C: bit 2 set at spawn */
+    s32 timer;                      /* 0xA0: reverse delay countdown */
+    s32 start_reversed;             /* 0xA4 */
+};
+
+/* Background ship 1 (three joint billboards). */
+struct BackgroundShip1Vars {
+    u8 pad_00[0x2B];
+    u8 unk_2B;                      /* 0x2B: set to 1 at start */
+    u8 unk_2C;                      /* 0x2C: set to 0x28 at start */
+    u8 pad_2D[0x33];
+    s32 path;                       /* 0x60: index into aridia_paths, -1 when unset */
+    f32 path_pos;                   /* 0x64: position along the path */
+    f32 phase;                      /* 0x68: random start angle */
+    s32 voice;                      /* 0x6C: engine sound slot, -1 when none */
+    f32 first_leg;                  /* 0x70: length of the first path segment */
+    f32 start_frac;                 /* 0x74: start position as fraction of the path */
+    u8 pad_78[0x8];
+    Vec4A joint_pos[3];             /* 0x80: world positions of joints 3..5 */
+    s32 color;                      /* 0xB0: packed light colour */
+    int *draw_stamp;                /* 0xB4: frame counter slot shared by the billboards */
+};
+
+/* Background ship 2: same head as ship 1, six joint billboards. */
+struct BackgroundShip2Vars {
+    u8 pad_00[0x2B];
+    u8 unk_2B;                      /* 0x2B */
+    u8 unk_2C;                      /* 0x2C */
+    u8 pad_2D[0x33];
+    s32 path;                       /* 0x60 */
+    f32 path_pos;                   /* 0x64 */
+    f32 phase;                      /* 0x68 */
+    s32 voice;                      /* 0x6C */
+    f32 first_leg;                  /* 0x70 */
+    f32 start_frac;                 /* 0x74 */
+    u8 pad_78[0x8];
+    Vec4A joint_pos[6];             /* 0x80 */
+    s32 color;                      /* 0xE0 */
+    int *draw_stamp;                /* 0xE4 */
+};
+
 LINKER_REMNANT("asm/overlays", func_L02_002A5218);
 extern u8 aridia_scaled_float_table[];
 extern float aridia_scaled_float_table_source[];
@@ -660,8 +723,8 @@ typedef struct { int v[12]; } Ring12;
 void draw_tresspasser_puzzle(char *moby) {
     struct { char unk0[0x78]; u64 texture; char unk80[0x10]; } ctx;
     int st0, st1;
-    char *data = ((char *)((Moby *)moby)->pvars);
-    Ring12 *markers = (Ring12 *)(data + 0xb0);
+    struct TrespasserPuzzleVars *data = (struct TrespasserPuzzleVars *)((Moby *)moby)->pvars;
+    Ring12 *markers = (Ring12 *)data->markers;
     Ring12 *first, *second, *third;
 
     int i, state, st2;
@@ -677,38 +740,38 @@ void draw_tresspasser_puzzle(char *moby) {
         }
     }
     st0 = 0; st1 = 0; st2 = 0;
-    if (*(float *)(data + 0xe4) > 0.31415927f) {
-        state = *(int *)(data + 0xe0);
+    if (data->turn_angle > 0.31415927f) {
+        state = data->turning_ring;
         if (state == 1) st0 = 1;
         else if (state == 2) st1 = 1;
         else st2 = 1;
-    } else if (*(float *)(data + 0xe4) < -0.31415927f) {
-        state = *(int *)(data + 0xe0);
+    } else if (data->turn_angle < -0.31415927f) {
+        state = data->turning_ring;
         if (state == 1) st0 = -1;
         else if (state == 2) st1 = -1;
         else st2 = -1;
     }
 
     i = 0;
-    first = (Ring12 *)(data + 0x20);
-    second = (Ring12 *)(data + 0x50);
-    third = (Ring12 *)(data + 0x80);
+    first = (Ring12 *)data->ring_a;
+    second = (Ring12 *)data->ring_b;
+    third = (Ring12 *)data->ring_c;
     {
         int index, other, slot, draw_second, color;
         float angle, distance, phase;
     for (; i < 12; ++i) {
         draw_second = 1;
         phase = -0.31415927f;
-        if (*(int *)(data + 0xe0) == 1) phase = FastAddRots(phase, *(float *)(data + 0xe4));
+        if (data->turning_ring == 1) phase = FastAddRots(phase, data->turn_angle);
         angle = FastAddRots(phase, (float)(i * 30) * 0.017453292f);
-        index = i + *(int *)(data + 0x14);
+        index = i + data->ring_shift_a;
         slot = index % 12;
         if (first->v[slot] == 2) {
-            other = i + *(int *)(data + 0x18) + st0 - st1;
+            other = i + data->ring_shift_b + st0 - st1;
             color = (*(int *)&tresspasser_default_radial_strip_color_gp);
             if (second->v[other % 12] != 0) distance = (float)(*(int *)&tresspasser_second_ring_arrow_distance_gp);
             else {
-                int t = i + *(int *)(data + 0x1c) + st0 - st2;
+                int t = i + data->ring_shift_c + st0 - st2;
                 if (third->v[t % 12] != 0) distance = (float)(*(int *)&tresspasser_third_ring_arrow_distance_gp);
                 else if (third->v[(t + 6) % 12] != 0) distance = (float)-(*(int *)&tresspasser_third_ring_arrow_distance_gp);
                 else if (second->v[(other + 6) % 12] != 0) distance = (float)-(*(int *)&tresspasser_second_ring_arrow_distance_gp);
@@ -740,16 +803,16 @@ void draw_tresspasser_puzzle(char *moby) {
         draw_second = 1;
         phase = -0.31415927f;
         color = (*(int *)&tresspasser_default_radial_strip_color_gp);
-        if (*(int *)(data + 0xe0) == 2) phase = FastAddRots(phase, *(float *)(data + 0xe4));
+        if (data->turning_ring == 2) phase = FastAddRots(phase, data->turn_angle);
         angle = FastAddRots(phase, (float)(i * 30) * 0.017453292f);
-        index = i + *(int *)(data + 0x18);
+        index = i + data->ring_shift_b;
         slot = index % 12;
         if (second->v[slot] == 2) {
-            other = i + *(int *)(data + 0x1c) + st1 - st2;
+            other = i + data->ring_shift_c + st1 - st2;
             if (third->v[other % 12] != 0) distance = (float)(*(int *)&tresspasser_third_ring_arrow_distance_gp);
             else if (third->v[(other + 6) % 12] != 0) distance = (float)-(*(int *)&tresspasser_third_ring_arrow_distance_gp);
             else if (second->v[(index + 6) % 12] != 0) distance = (float)-(*(int *)&tresspasser_second_ring_arrow_distance_gp);
-            else if (first->v[(i + *(int *)(data + 0x14) + st1 - st0 + 6) % 12] != 0) distance = (float)-(*(int *)&tresspasser_first_ring_arrow_distance_gp);
+            else if (first->v[(i + data->ring_shift_a + st1 - st0 + 6) % 12] != 0) distance = (float)-(*(int *)&tresspasser_first_ring_arrow_distance_gp);
             else {
                 int k;
                 distance = (float)-(*(int *)&tresspasser_unintercepted_strip_endpoint_distance_gp);
@@ -776,14 +839,14 @@ void draw_tresspasser_puzzle(char *moby) {
         draw_second = 1;
         phase = -0.31415927f;
         color = (*(int *)&tresspasser_default_radial_strip_color_gp);
-        if (*(int *)(data + 0xe0) == 3) phase = FastAddRots(phase, *(float *)(data + 0xe4));
+        if (data->turning_ring == 3) phase = FastAddRots(phase, data->turn_angle);
         angle = FastAddRots(phase, (float)(i * 30) * 0.017453292f);
-        index = i + *(int *)(data + 0x1c);
+        index = i + data->ring_shift_c;
         slot = index % 12;
         if (third->v[slot] == 2) {
             if (third->v[(index + 6) % 12] != 0) distance = (float)-(*(int *)&tresspasser_third_ring_arrow_distance_gp);
-            else if (second->v[(i + *(int *)(data + 0x18) + st2 - st1 + 6) % 12] != 0) distance = (float)-(*(int *)&tresspasser_second_ring_arrow_distance_gp);
-            else if (first->v[(i + *(int *)(data + 0x14) + st2 - st0 + 6) % 12] != 0) distance = (float)-(*(int *)&tresspasser_first_ring_arrow_distance_gp);
+            else if (second->v[(i + data->ring_shift_b + st2 - st1 + 6) % 12] != 0) distance = (float)-(*(int *)&tresspasser_second_ring_arrow_distance_gp);
+            else if (first->v[(i + data->ring_shift_a + st2 - st0 + 6) % 12] != 0) distance = (float)-(*(int *)&tresspasser_first_ring_arrow_distance_gp);
             else {
                 int k;
                 distance = (float)-(*(int *)&tresspasser_unintercepted_strip_endpoint_distance_gp);
@@ -808,19 +871,19 @@ void draw_tresspasser_puzzle(char *moby) {
         float angle;
     for (i = 0; i < 12; ++i) {
         angle = -0.2617994f;
-        if (*(int *)(data + 0xe0) == 1) {
+        if (data->turning_ring == 1) {
             color = FastTweenColor((*(int *)&tresspasser_selected_ring_base_color_gp), (*(int *)&tresspasser_selected_ring_base_color_gp) & 0xffffff,
                                   FastSin((float)((frame_counter_ref % 60) * 6) * 0.017453292f) * 0.5f + 0.5f);
-            if (*(float *)(data + 0xe4) != 0.0f) angle = FastAddRots(angle, *(float *)(data + 0xe4));
+            if (data->turn_angle != 0.0f) angle = FastAddRots(angle, data->turn_angle);
         } else color = (*(int *)&tresspasser_unselected_ring_color_gp);
         angle = FastAddRots(angle, (float)(i * 30) * 0.017453292f);
         phase = FastAddRots(angle, 0.5235988f);
         draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&tresspasser_first_ring_arc_first_boundary_radius_gp), (float)(*(int *)&tresspasser_first_ring_arc_second_boundary_radius_gp), color);
-        if (first->v[(i + *(int *)(data + 0x14)) % 12] != 0) {
-            if (first->v[(i + *(int *)(data + 0x14)) % 12] >= 3) {
+        if (first->v[(i + data->ring_shift_a) % 12] != 0) {
+            if (first->v[(i + data->ring_shift_a) % 12] >= 3) {
                 draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&tresspasser_arrow_unused_argument_gp), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&tresspasser_first_ring_arrow_distance_gp));
-                first->v[(i + *(int *)(data + 0x14)) % 12] = 2;
-            } else if (first->v[(i + *(int *)(data + 0x14)) % 12] == 2) {
+                first->v[(i + data->ring_shift_a) % 12] = 2;
+            } else if (first->v[(i + data->ring_shift_a) % 12] == 2) {
                 draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&tresspasser_arrow_unused_argument_gp), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&tresspasser_first_ring_arrow_distance_gp));
             } else {
                 draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&tresspasser_arrow_unused_argument_gp), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&tresspasser_first_ring_arrow_distance_gp));
@@ -833,19 +896,19 @@ void draw_tresspasser_puzzle(char *moby) {
         float angle;
     for (i = 0; i < 12; ++i) {
         angle = -0.2617994f;
-        if (*(int *)(data + 0xe0) == 2) {
+        if (data->turning_ring == 2) {
             color = FastTweenColor((*(int *)&tresspasser_selected_ring_base_color_gp), (*(int *)&tresspasser_selected_ring_base_color_gp) & 0xffffff,
                                   FastSin((float)((frame_counter_ref % 60) * 6) * 0.017453292f) * 0.5f + 0.5f);
-            if (*(float *)(data + 0xe4) != 0.0f) angle = FastAddRots(angle, *(float *)(data + 0xe4));
+            if (data->turn_angle != 0.0f) angle = FastAddRots(angle, data->turn_angle);
         } else color = (*(int *)&tresspasser_unselected_ring_color_gp);
         angle = FastAddRots(angle, (float)(i * 30) * 0.017453292f);
         phase = FastAddRots(angle, 0.5235988f);
         draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&tresspasser_second_ring_arc_first_boundary_radius_gp), (float)(*(int *)&tresspasser_second_ring_arc_second_boundary_radius_gp), color);
-        if (second->v[(i + *(int *)(data + 0x18)) % 12] != 0) {
-            if (second->v[(i + *(int *)(data + 0x18)) % 12] >= 3) {
+        if (second->v[(i + data->ring_shift_b) % 12] != 0) {
+            if (second->v[(i + data->ring_shift_b) % 12] >= 3) {
                 draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&tresspasser_arrow_unused_argument_gp), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&tresspasser_second_ring_arrow_distance_gp));
-                second->v[(i + *(int *)(data + 0x18)) % 12] = 2;
-            } else if (second->v[(i + *(int *)(data + 0x18)) % 12] == 2) {
+                second->v[(i + data->ring_shift_b) % 12] = 2;
+            } else if (second->v[(i + data->ring_shift_b) % 12] == 2) {
                 draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&tresspasser_arrow_unused_argument_gp), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&tresspasser_second_ring_arrow_distance_gp));
             } else {
                 draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&tresspasser_arrow_unused_argument_gp), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&tresspasser_second_ring_arrow_distance_gp));
@@ -858,19 +921,19 @@ void draw_tresspasser_puzzle(char *moby) {
         float angle;
     for (i = 0; i < 12; ++i) {
         angle = -0.2617994f;
-        if (*(int *)(data + 0xe0) == 3) {
+        if (data->turning_ring == 3) {
             color = FastTweenColor((*(int *)&tresspasser_selected_ring_base_color_gp), (*(int *)&tresspasser_selected_ring_base_color_gp) & 0xffffff,
                                   FastSin((float)((frame_counter_ref % 60) * 6) * 0.017453292f) * 0.5f + 0.5f);
-            if (*(float *)(data + 0xe4) != 0.0f) angle = FastAddRots(angle, *(float *)(data + 0xe4));
+            if (data->turn_angle != 0.0f) angle = FastAddRots(angle, data->turn_angle);
         } else color = (*(int *)&tresspasser_unselected_ring_color_gp);
         angle = FastAddRots(angle, (float)(i * 30) * 0.017453292f);
         phase = FastAddRots(angle, 0.5235988f);
         draw_tresspasser_puzzle_ring_arc(ctx.texture, angle, phase, (float)(*(int *)&tresspasser_third_ring_arc_first_boundary_radius_gp), (float)(*(int *)&tresspasser_third_ring_arc_second_boundary_radius_gp), color);
-        if (third->v[(i + *(int *)(data + 0x1c)) % 12] != 0) {
-            if (third->v[(i + *(int *)(data + 0x1c)) % 12] >= 3) {
+        if (third->v[(i + data->ring_shift_c) % 12] != 0) {
+            if (third->v[(i + data->ring_shift_c) % 12] >= 3) {
                 draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&tresspasser_arrow_unused_argument_gp), 0, FastAddRots(angle, 0.2617994f), (float)(*(int *)&tresspasser_third_ring_arrow_distance_gp));
-                third->v[(i + *(int *)(data + 0x1c)) % 12] = 2;
-            } else if (third->v[(i + *(int *)(data + 0x1c)) % 12] == 2) {
+                third->v[(i + data->ring_shift_c) % 12] = 2;
+            } else if (third->v[(i + data->ring_shift_c) % 12] == 2) {
                 draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&tresspasser_arrow_unused_argument_gp), 1, FastAddRots(angle, 0.2617994f), (float)(*(int *)&tresspasser_third_ring_arrow_distance_gp));
             } else {
                 draw_tresspasser_puzzle_arrow(ctx.texture, (*(int *)&tresspasser_arrow_unused_argument_gp), 2, FastAddRots(angle, 0.2617994f), (float)(*(int *)&tresspasser_third_ring_arrow_distance_gp));
@@ -1180,7 +1243,7 @@ extern short escalator_accel;
 extern short escalator_max_speed;
 /* Moby update for a pusher that slides back and forth along its heading. */
 void escalator_update(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct EscalatorVars *data = (struct EscalatorVars *)((Moby *)moby)->pvars;
     float limit;
     float y;
     int state;
@@ -1196,35 +1259,35 @@ void escalator_update(char *moby) {
     if (state == 3) goto state3;
     goto move;
 state0:
-        clear_u64_value(data + 0x40);
-        *(int *)(data + 0xa0) = scale_ticks((*(int *)&escalator_reverse_delay));
-        *(u32 *)(data + 0x9c) |= 4;
-        if (*(int *)(data + 0xa4) != 0) ((Moby *)moby)->state = 3;
+        clear_u64_value(&data->velocity);
+        data->timer = scale_ticks((*(int *)&escalator_reverse_delay));
+        data->flags |= 4;
+        if (data->start_reversed != 0) ((Moby *)moby)->state = 3;
         else ((Moby *)moby)->state = 1;
         goto move;
 state1: {
         float speed;
 
         ((Moby *)moby)->anim_speed = 1.0f;
-        if (fast_dec_timer((int *)(data + 0xa0))) {
-            speed = FastVecLength(data + 0x40) - (*(float *)&escalator_accel) * g_frame_time_sq;
+        if (fast_dec_timer(&data->timer)) {
+            speed = FastVecLength(&data->velocity) - (*(float *)&escalator_accel) * g_frame_time_sq;
             if (speed <= 0.0f) {
-                *(int *)(data + 0xa0) = scale_ticks((*(int *)&escalator_reverse_delay));
+                data->timer = scale_ticks((*(int *)&escalator_reverse_delay));
                 ((Moby *)moby)->state = 2;
             } else {
-                *(float *)(data + 0x40) = FastCos(((Moby *)moby)->rot.z) * -speed;
+                data->velocity.x = FastCos(((Moby *)moby)->rot.z) * -speed;
                 y = FastSin(((Moby *)moby)->rot.z) * -speed;
-                *(float *)(data + 0x48) = 0.0f;
-                *(float *)(data + 0x44) = y;
+                data->velocity.z = 0.0f;
+                data->velocity.y = y;
             }
         } else {
-            speed = FastVecLength(data + 0x40);
+            speed = FastVecLength(&data->velocity);
             limit = FastAbsF((*(float *)&escalator_max_speed) * g_frame_time);
             /* Retail loads D_0015EE6C_sq through its absolute EE address here. */
             if (speed < limit) speed += (*(float *)&escalator_accel) * g_frame_time_sq;
-            *(float *)(data + 0x40) = FastCos(((Moby *)moby)->rot.z) * -speed;
-            *(float *)(data + 0x44) = FastSin(((Moby *)moby)->rot.z) * -speed;
-            *(int *)(data + 0x48) = 0;
+            data->velocity.x = FastCos(((Moby *)moby)->rot.z) * -speed;
+            data->velocity.y = FastSin(((Moby *)moby)->rot.z) * -speed;
+            *(int *)&data->velocity.z = 0;
         }
         ((Moby *)moby)->anim_speed = speed / ((*(float *)&escalator_max_speed) * g_frame_time);
         goto move;
@@ -1233,33 +1296,33 @@ state2: {
         float speed;
 
         ((Moby *)moby)->anim_speed = -1.0f;
-        if (fast_dec_timer((int *)(data + 0xa0))) {
-            speed = FastVecLength(data + 0x40) - (*(float *)&escalator_accel) * g_frame_time_sq;
+        if (fast_dec_timer(&data->timer)) {
+            speed = FastVecLength(&data->velocity) - (*(float *)&escalator_accel) * g_frame_time_sq;
             if (speed <= 0.0f) {
-                *(int *)(data + 0xa0) = scale_ticks((*(int *)&escalator_reverse_delay));
+                data->timer = scale_ticks((*(int *)&escalator_reverse_delay));
                 ((Moby *)moby)->state = 1;
             } else {
-                *(float *)(data + 0x40) = FastCos(((Moby *)moby)->rot.z) * speed;
-                *(float *)(data + 0x44) = FastSin(((Moby *)moby)->rot.z) * speed;
-                *(float *)(data + 0x48) = 0.0f;
+                data->velocity.x = FastCos(((Moby *)moby)->rot.z) * speed;
+                data->velocity.y = FastSin(((Moby *)moby)->rot.z) * speed;
+                data->velocity.z = 0.0f;
             }
         } else {
-            speed = FastVecLength(data + 0x40);
+            speed = FastVecLength(&data->velocity);
             limit = FastAbsF((*(float *)&escalator_max_speed) * g_frame_time);
             if (speed < limit) speed += (*(float *)&escalator_accel) * g_frame_time_sq;
-            *(float *)(data + 0x40) = FastCos(((Moby *)moby)->rot.z) * speed;
-            *(float *)(data + 0x44) = FastSin(((Moby *)moby)->rot.z) * speed;
-            *(int *)(data + 0x48) = 0;
+            data->velocity.x = FastCos(((Moby *)moby)->rot.z) * speed;
+            data->velocity.y = FastSin(((Moby *)moby)->rot.z) * speed;
+            *(int *)&data->velocity.z = 0;
         }
         ((Moby *)moby)->anim_speed = speed / -((*(float *)&escalator_max_speed) * g_frame_time);
         goto move;
 }
 state3:
-        *(float *)(data + 0x40) = FastCos(((Moby *)moby)->rot.z) * -((*(float *)&escalator_max_speed) * g_frame_time);
-        *(float *)(data + 0x44) = FastSin(((Moby *)moby)->rot.z) * -((*(float *)&escalator_max_speed) * g_frame_time);
-        *(int *)(data + 0x48) = 0;
+        data->velocity.x = FastCos(((Moby *)moby)->rot.z) * -((*(float *)&escalator_max_speed) * g_frame_time);
+        data->velocity.y = FastSin(((Moby *)moby)->rot.z) * -((*(float *)&escalator_max_speed) * g_frame_time);
+        *(int *)&data->velocity.z = 0;
 move:
-    update_entity_matrix(data + 0x60, data + 0x40, moby + 0x40, moby + 0x40);
+    update_entity_matrix(data->entity_matrix, &data->velocity, moby + 0x40, moby + 0x40);
 }
 extern int aridia_mobys_x __asm__("D_L02_00160058") MACRO_ADDR;
 extern unsigned char help_stats_base_x[] __asm__("D_0014171B");
@@ -1665,7 +1728,7 @@ extern void AddDrawCallback(void (*)(void), void *);
 /* Refreshes a moby's three sub-objects, packs its colour bytes, and queues a redraw when the global changed. */
 void prepare_background_ship_1_joint_billboards(char *moby) {
     int i;
-    char *data;
+    struct BackgroundShip1Vars *data;
     char *p;
     int v;
     int r, g, b, c;
@@ -1674,8 +1737,8 @@ void prepare_background_ship_1_joint_billboards(char *moby) {
     if (((Moby *)moby)->group == 0xFF) {
         return;
     }
-    data = ((char *)((Moby *)moby)->pvars);
-    p = data + 0x80;
+    data = (struct BackgroundShip1Vars *)((Moby *)moby)->pvars;
+    p = (char *)data->joint_pos;
     for (i = 0; i < 3; i++) {
         Moby_GetJointWorldPos(moby, i + 3, p);
         p += 0x10;
@@ -1687,9 +1750,9 @@ void prepare_background_ship_1_joint_billboards(char *moby) {
     c = (r << 16) | 0x30000000;
     c |= g << 8;
     c |= b;
-    *(int *)(data + 0xB0) = c;
+    data->color = c;
     if (v != 0) {
-        q = *(int **)(data + 0xB4);
+        q = data->draw_stamp;
         if (v != *q) {
             *q = v;
             AddDrawCallback(draw_background_ship_1_joint_billboards, moby);
@@ -1726,7 +1789,7 @@ extern int gaspar_skill_ship_kills MACRO_ADDR;
 
 /* Update for a background ship moby: eases its attach point along a path, spawns effects and drives its state machine. */
 void background_ship_1_update(char *moby) {
-    char *d;
+    struct BackgroundShip1Vars *d;
     char *t;
     int r;
     int flag = 0;
@@ -1737,8 +1800,8 @@ void background_ship_1_update(char *moby) {
     int r1;
     int r2;
     int r3;
-    d = ((char *)((Moby *)moby)->pvars);
-    t = aridia_paths[*(int *)(d + 0x60)];
+    d = (struct BackgroundShip1Vars *)((Moby *)moby)->pvars;
+    t = aridia_paths[d->path];
     r = (int)MobyGetHitMessage(moby, 0x10000, 0);
     switch (((Moby *)moby)->state) {
     case 0: {
@@ -1746,42 +1809,42 @@ void background_ship_1_update(char *moby) {
         ((Moby *)moby)->update_dist = 0xFF;
         ((Moby *)moby)->draw_dist = 0xFF;
         m1 = -1;
-        if (*(int *)(d + 0x60) == m1) {
+        if (d->path == m1) {
             STUB_printf(background_ship_1_no_path_msg, *(short *)&((Moby *)moby)->save_id);
             DeleteMoby(moby);
             return;
         }
-        if (*(int *)aridia_paths[*(int *)(d + 0x60)] == 0) {
+        if (*(int *)aridia_paths[d->path] == 0) {
             STUB_printf(background_ship_1_empty_path_msg, *(short *)&((Moby *)moby)->save_id);
             DeleteMoby(moby);
             return;
         }
-        f70 = FastVecDist(aridia_paths[*(int *)(d + 0x60)] + 0x10, aridia_paths[*(int *)(d + 0x60)] + 0x20);
-        *(unsigned char *)(d + 0x2C) = 0x28;
-        *(float *)(d + 0x70) = f70;
-        *(unsigned char *)(d + 0x2B) = 1;
-        qcopy(moby + 0x10, aridia_paths[*(int *)(d + 0x60)] + 0x10);
-        *(float *)(d + 0x68) = random_angle_radians();
-        *(int *)(d + 0x6C) = m1;
+        f70 = FastVecDist(aridia_paths[d->path] + 0x10, aridia_paths[d->path] + 0x20);
+        d->unk_2C = 0x28;
+        d->first_leg = f70;
+        d->unk_2B = 1;
+        qcopy(moby + 0x10, aridia_paths[d->path] + 0x10);
+        d->phase = random_angle_radians();
+        d->voice = m1;
         ((Moby *)moby)->state = 1;
         ((Moby *)moby)->flags |= 0x10;
-        *(float *)(d + 0x64) = *(float *)(d + 0x74) * (float)*(int *)t;
+        d->path_pos = d->start_frac * (float)*(int *)t;
         break;
     }
     case 1:
         qcopy(tv, moby + 0x10);
-        if (Sound_IsPlaying(moby, *(int *)(d + 0x6C)) == 0) {
-            *(int *)(d + 0x6C) = Moby_PlaySound_r_r(1, 4, (int)moby);
+        if (Sound_IsPlaying(moby, d->voice) == 0) {
+            d->voice = Moby_PlaySound_r_r(1, 4, (int)moby);
         }
         p2 = *(float *)&background_ship_1_speed * g_frame_time;
-        *(float *)(d + 0x64) = *(float *)(d + 0x64) + p2 / *(float *)(d + 0x70);
-        if ((float)*(int *)t < *(float *)(d + 0x64)) {
-            *(float *)(d + 0x64) = *(float *)(d + 0x64) - (float)*(int *)t;
+        d->path_pos = d->path_pos + p2 / d->first_leg;
+        if ((float)*(int *)t < d->path_pos) {
+            d->path_pos = d->path_pos - (float)*(int *)t;
         }
         if (g_current_level_index_r == 9) {
-            SamplePathAt((int *)t, 1, moby + 0x10, (float *)(moby + 0x40), 0, *(float *)(d + 0x64));
+            SamplePathAt((int *)t, 1, moby + 0x10, (float *)(moby + 0x40), 0, d->path_pos);
         } else {
-            SamplePathAt((int *)t, 0, moby + 0x10, (float *)(moby + 0x40), 0, *(float *)(d + 0x64));
+            SamplePathAt((int *)t, 0, moby + 0x10, (float *)(moby + 0x40), 0, d->path_pos);
         }
         if (((Moby *)moby)->pos.x < 8.0f) {
             *(int *)&((Moby *)moby)->collision = 0;
@@ -1840,7 +1903,7 @@ void background_ship_1_update(char *moby) {
         break;
     }
     if (((Moby *)moby)->visible != 0) {
-        x = FastSin(*(float *)(d + 0x68)) * 4.0f - 3.0f;
+        x = FastSin(d->phase) * 4.0f - 3.0f;
         if (1.0f < x) {
             x = 1.0f;
         } else if (x < 0.0f) {
@@ -1852,7 +1915,7 @@ void background_ship_1_update(char *moby) {
             res = FastTweenColor_r(*(int *)&background_ship_1_light_color_off, *(int *)&background_ship_1_light_color_on, x);
             k = *(float *)&background_ship_1_light_spin_rate * 0.017453292f * g_frame_time;
             ((Moby *)moby)->glow_color = res;
-            *(float *)(d + 0x68) = FastAddRots(*(float *)(d + 0x68), k);
+            d->phase = FastAddRots(d->phase, k);
         }
         prepare_background_ship_1_joint_billboards(moby);
     }
@@ -1930,14 +1993,14 @@ extern int frame_counter_ref;
 /* refreshes a moby's six attach points and color, re-registers its draw callback */
 void prepare_background_ship_2_joint_draw_data(char *m) {
     int i;
-    char *data;
+    struct BackgroundShip2Vars *data;
     char *p;
     int *q;
     int col;
     int v;
     if (((Moby *)m)->group != 0xFF) {
-        data = ((char *)((Moby *)m)->pvars);
-        p = data + 0x80;
+        data = (struct BackgroundShip2Vars *)((Moby *)m)->pvars;
+        p = (char *)data->joint_pos;
         for (i = 0; i < 6; i++, p += 0x10) {
             Moby_GetJointWorldPos(m, i + 2, p);
         }
@@ -1946,9 +2009,9 @@ void prepare_background_ship_2_joint_draw_data(char *m) {
         col |= 0x30000000;
         col |= *(unsigned char *)(m + 0x91) << 8;
         col |= *(unsigned char *)(m + 0x90);
-        *(int *)(data + 0xE0) = col;
+        data->color = col;
         if (v != 0) {
-            q = *(int **)(data + 0xE4);
+            q = data->draw_stamp;
             if (v != *q) {
                 *q = v;
                 AddDrawCallback(draw_matching_moby_slot_quads, m);
@@ -1971,7 +2034,7 @@ extern short background_ship_2_debris_lift;
 
 /* Update for a ship moby: eases its attach point along a path, spawns effects and drives its state machine. */
 void background_ship_2_update(char *moby) {
-    char *d;
+    struct BackgroundShip2Vars *d;
     char *t;
     int r;
     int flag = 0;
@@ -1982,8 +2045,8 @@ void background_ship_2_update(char *moby) {
     int r1;
     int r2;
     int r3;
-    d = ((char *)((Moby *)moby)->pvars);
-    t = aridia_paths[*(int *)(d + 0x60)];
+    d = (struct BackgroundShip2Vars *)((Moby *)moby)->pvars;
+    t = aridia_paths[d->path];
     r = (int)MobyGetHitMessage(moby, 0x10000, 0);
     switch (((Moby *)moby)->state) {
     case 0: {
@@ -1994,26 +2057,26 @@ void background_ship_2_update(char *moby) {
             ((Moby *)moby)->scale = ((Moby *)moby)->scale * 0.5f;
         }
         m1 = -1;
-        if (*(int *)(d + 0x60) == m1) {
+        if (d->path == m1) {
             STUB_printf(background_ship_2_no_path_msg, *(short *)&((Moby *)moby)->save_id);
             DeleteMoby(moby);
             return;
         }
-        if (*(int *)aridia_paths[*(int *)(d + 0x60)] == 0) {
+        if (*(int *)aridia_paths[d->path] == 0) {
             STUB_printf(background_ship_2_empty_path_msg, *(short *)&((Moby *)moby)->save_id);
             DeleteMoby(moby);
             return;
         }
-        f70 = FastVecDist(aridia_paths[*(int *)(d + 0x60)] + 0x10, aridia_paths[*(int *)(d + 0x60)] + 0x20);
-        *(unsigned char *)(d + 0x2C) = 0x28;
-        *(float *)(d + 0x70) = f70;
-        *(unsigned char *)(d + 0x2B) = 1;
-        qcopy(moby + 0x10, aridia_paths[*(int *)(d + 0x60)] + 0x10);
-        *(float *)(d + 0x68) = random_angle_radians();
-        *(int *)(d + 0x6C) = m1;
+        f70 = FastVecDist(aridia_paths[d->path] + 0x10, aridia_paths[d->path] + 0x20);
+        d->unk_2C = 0x28;
+        d->first_leg = f70;
+        d->unk_2B = 1;
+        qcopy(moby + 0x10, aridia_paths[d->path] + 0x10);
+        d->phase = random_angle_radians();
+        d->voice = m1;
         ((Moby *)moby)->state = 1;
         ((Moby *)moby)->flags |= 0x10;
-        *(float *)(d + 0x64) = *(float *)(d + 0x74) * (float)*(int *)t;
+        d->path_pos = d->start_frac * (float)*(int *)t;
         break;
     }
     case 1:
@@ -2022,21 +2085,21 @@ void background_ship_2_update(char *moby) {
             return;
         }
         qcopy(tv, moby + 0x10);
-        if (Sound_IsPlaying(moby, *(int *)(d + 0x6C)) == 0) {
-            *(int *)(d + 0x6C) = Moby_PlaySound_r_r(1, 4, (int)moby);
+        if (Sound_IsPlaying(moby, d->voice) == 0) {
+            d->voice = Moby_PlaySound_r_r(1, 4, (int)moby);
         }
         p2 = *(float *)&background_ship_2_speed * g_frame_time;
         if (g_current_level_index_r == 10) {
             p2 = p2 * 0.25f;
         }
-        *(float *)(d + 0x64) = *(float *)(d + 0x64) + p2 / *(float *)(d + 0x70);
-        if ((float)*(int *)t < *(float *)(d + 0x64)) {
-            *(float *)(d + 0x64) = *(float *)(d + 0x64) - (float)*(int *)t;
+        d->path_pos = d->path_pos + p2 / d->first_leg;
+        if ((float)*(int *)t < d->path_pos) {
+            d->path_pos = d->path_pos - (float)*(int *)t;
         }
         if ((unsigned int)(g_current_level_index_r - 9) < 2) {
-            SamplePathAt((int *)t, 1, moby + 0x10, (float *)(moby + 0x40), 0, *(float *)(d + 0x64));
+            SamplePathAt((int *)t, 1, moby + 0x10, (float *)(moby + 0x40), 0, d->path_pos);
         } else {
-            SamplePathAt((int *)t, 0, moby + 0x10, (float *)(moby + 0x40), 0, *(float *)(d + 0x64));
+            SamplePathAt((int *)t, 0, moby + 0x10, (float *)(moby + 0x40), 0, d->path_pos);
         }
         if (((Moby *)moby)->pos.x < 8.0f) {
             *(int *)&((Moby *)moby)->collision = 0;
@@ -2099,7 +2162,7 @@ void background_ship_2_update(char *moby) {
         break;
     }
     if (((Moby *)moby)->visible != 0) {
-        x = FastSin(*(float *)(d + 0x68)) * 4.0f - 3.0f;
+        x = FastSin(d->phase) * 4.0f - 3.0f;
         if (1.0f < x) {
             x = 1.0f;
         } else if (x < 0.0f) {
@@ -2111,7 +2174,7 @@ void background_ship_2_update(char *moby) {
             res = FastTweenColor_r(*(int *)&background_ship_2_light_color_off, *(int *)&background_ship_2_light_color_on, x);
             k = *(float *)&background_ship_2_light_spin_rate * 0.017453292f * g_frame_time;
             ((Moby *)moby)->glow_color = res;
-            *(float *)(d + 0x68) = FastAddRots(*(float *)(d + 0x68), k);
+            d->phase = FastAddRots(d->phase, k);
         }
         prepare_background_ship_2_joint_draw_data(moby);
     }

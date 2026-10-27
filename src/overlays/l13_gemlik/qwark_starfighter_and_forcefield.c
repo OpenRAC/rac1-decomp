@@ -6,6 +6,95 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Part attached to a joint of a source moby (spawn_moby_joint_attachment). */
+struct JointAttachVars {
+    u8 pad_00[0x3C];
+    char *src;                      /* 0x3C: moby it follows */
+    s32 timer;                      /* 0x40: lifetime in ticks */
+    s32 joint;                      /* 0x44 */
+};
+
+/* Force field (class 404): waits for its link, fades out, scrolls its texture. */
+struct ForcefieldVars {
+    s32 link;                       /* 0x00: index of the moby that opens it, -1 when none */
+    f32 alpha;                      /* 0x04: 1 solid, fades to 0 */
+    u8 pad_08[0x4];
+    s16 scroll;                     /* 0x0C: texture scroll position, wraps at 0x1000 */
+    s16 light_slot;                 /* 0x0E: point light slot, -1 when none */
+};
+
+/* Controller that reports statistics and the hero volume flag. */
+struct LinkedVolumeVars {
+    s32 clip_volume;                /* 0x00: volume for the help message */
+    s32 link;                       /* 0x04: index of the linked moby, -1 when none */
+    s32 hero_volume;                /* 0x08: volume that clears the hero flag */
+};
+
+/* State relay: waits for a linked moby to enter one of six states, then sets states on two mobys. */
+struct StateRelayVars {
+    s32 link;                       /* 0x00: index of the watched moby, -1 when none */
+    u8 watch_a[6];                  /* 0x04: states that trigger group a */
+    u8 watch_b[6];                  /* 0x0A: states that trigger group b */
+    s32 target;                     /* 0x10: index of the moby that is set, -1 when none */
+    s8 a_target_state;              /* 0x14 */
+    s8 b_target_state;              /* 0x15 */
+    s8 a_target_command;            /* 0x16 */
+    s8 b_target_command;            /* 0x17 */
+    s8 a_self_state;                /* 0x18 */
+    s8 b_self_state;                /* 0x19 */
+    s8 a_self_command;              /* 0x1A */
+    s8 b_self_command;              /* 0x1B */
+    s8 phase;                       /* 0x1C: 0 setup, 1 waits for a, 2 waits for b */
+    s8 start_in_a;                  /* 0x1D */
+};
+
+/* Gate that follows a controller moby: opens and closes on its states, fades its light, spins. */
+struct LinkedGateVars {
+    s32 link;                       /* 0x00: index of the controller moby, -1 when none */
+    u8 open_states[6];              /* 0x04 */
+    u8 close_states[6];             /* 0x0A */
+    f32 open_amount;                /* 0x10: 0 closed, 1 open */
+    s32 spin;                       /* 0x14: wheel angle, wraps at 0x1000 */
+    s32 spin_disabled;              /* 0x18: nonzero keeps it closed and still */
+};
+
+/* Rocket attached to a joint of its source moby (class 0x4D1). */
+struct AttachedRocketVars {
+    Vec4A target_pos;               /* 0x00 */
+    Vec4A launch_pos;               /* 0x10 */
+    char *src;                      /* 0x20: moby it hangs from */
+    s16 attached;                   /* 0x24 */
+    s16 joint;                      /* 0x26 */
+    f32 speed;                      /* 0x28 */
+    s32 life;                       /* 0x2C */
+};
+
+/* Gemlik projectile (class 0x4D6). */
+struct GemlikProjectileVars {
+    Vec4A dir;                      /* 0x00 */
+    Vec4A start_pos;                /* 0x10 */
+    void *owner;                    /* 0x20 */
+    s32 active;                     /* 0x24 */
+    f32 speed;                      /* 0x28 */
+    s32 life;                       /* 0x2C: ticks to cross the speed distance */
+};
+
+/* Gemlik trail: anchor point, ground normal and 16 curve points (w of a point is 0 at the ends, else 1). */
+struct GemlikTrailVars {
+    u8 pad_00[0x1F0];
+    Vec4A anchor;                   /* 0x1F0: w holds the timer */
+    Vec4A normal;                   /* 0x200 */
+    Vec4A pt[16];                   /* 0x210 */
+};
+
+/* Moby that copies a configured state and command once its trigger lists are empty. */
+struct ConfiguredStateVars {
+    s32 trigger[8];                 /* 0x00: moby lists that must be empty, -1 skips */
+    s32 state;                      /* 0x20: -1 keeps the current state */
+    s32 command;                    /* 0x24: -1 keeps the current command */
+    s32 clip_volume;                /* 0x28: hero must be inside, -1 for anywhere */
+};
+
 struct GeometryQuad_EBD00 {
     Vec4 positions[4];
     u32 colors[4];
@@ -1116,24 +1205,24 @@ typedef int u128 __attribute__((mode(TI)));
 char *spawn_moby_joint_attachment(char *src, int arg, int id) {
     char *moby = CreateMoby_m(id);
     if (moby != 0) {
-        char *data;
+        struct JointAttachVars *data;
         float f = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)(src + 0x2C) /
                   *(float *)(*(char **)(src + 0x24) + 0x24);
-        data = ((char *)((Moby *)moby)->pvars);
+        data = (struct JointAttachVars *)((Moby *)moby)->pvars;
         ((Moby *)moby)->update_dist = 0xFF;
         ((Moby *)moby)->draw_dist = 0xFF;
         moby[0x31] = 1;
         moby[0x20] = 0;
         ((Moby *)moby)->scale = f;
-        *(int *)(data + 0x44) = arg;
+        data->joint = arg;
         Moby_GetJointWorldPos(src, arg, moby + 0x10);
-        *(char **)(data + 0x3C) = src;
+        data->src = src;
         moby_build_matrix(moby);
         qcopy(moby + 0x40, src + 0x40);
         *(u128 *)(moby + 0xC0) = *(u128 *)(src + 0xC0);
         *(u128 *)(moby + 0xD0) = *(u128 *)(src + 0xD0);
         *(u128 *)(moby + 0xE0) = *(u128 *)(src + 0xE0);
-        *(int *)(data + 0x40) = scale_ticks(0x258);
+        data->timer = scale_ticks(0x258);
         moby_build_matrix(moby);
     }
     return moby;
@@ -1299,57 +1388,57 @@ extern float frame_scale MACRO_ADDR;
 
 /* UpdateMoby_404: Updates a gem-lock pickup: waits for its flag, fades out, then deletes itself; always spins. */
 void forcefield_update(char *moby) {
-    char *d = ((char *)((Moby *)moby)->pvars);
+    struct ForcefieldVars *d = (struct ForcefieldVars *)((Moby *)moby)->pvars;
     int v, dx, old;
     switch (((unsigned char *)moby)[0x20]) {
     case 0:
         moby[0x20] = 1;
         moby[0x23] = 0x14;
         ((Moby *)moby)->flags |= 0xA08;
-        *(short *)(d + 0xE) = -1;
-        *(float *)(d + 4) = 1.0f;
+        d->light_slot = -1;
+        d->alpha = 1.0f;
         set_moby_color(moby, 0x80, 0x80, 0x80);
         break;
     case 1:
-        if (*(int *)d != -1) {
-            char *p = gemlik_moby_array_start_m + (*(int *)d << 8);
+        if (d->link != -1) {
+            char *p = gemlik_moby_array_start_m + (d->link << 8);
             if (p == 0 || (unsigned char)p[0x20] == 0xFE || (unsigned char)p[0x20] == 0xFD
                 || (*(int *)(help_stats_base + 0xAB75 + (((short)*(unsigned short *)(p + 0xB2) >> 5) * 4 + (g_current_level_index_m << 8))) >> (*(unsigned short *)(p + 0xB2) & 0x1F)) & 1) {
-                *(float *)(d + 4) = 1.0f;
+                d->alpha = 1.0f;
                 moby[0x20] = 2;
             }
         } else {
-            *(float *)(d + 4) = 1.0f;
+            d->alpha = 1.0f;
             moby[0x20] = 2;
             STUB_printf(forcefield_missing_link_fmt, ((Moby *)moby)->oclass, *(short *)&((Moby *)moby)->save_id);
         }
-        spawn_forcefield_contact_effects(moby, d);
+        spawn_forcefield_contact_effects(moby, ((char *)d));
         break;
     case 2:
-        *(float *)(d + 4) = *(float *)(d + 4) - frame_scale * 0.05f;
-        if (*(float *)(d + 4) < 0.0f) {
+        d->alpha = d->alpha - frame_scale * 0.05f;
+        if (d->alpha < 0.0f) {
             moby[0x20] = 3;
         } else {
-            moby[0x23] = truncate_float_to_s32_r_r(*(float *)(d + 4) * 20.0f);
+            moby[0x23] = truncate_float_to_s32_r_r(d->alpha * 20.0f);
         }
         break;
     case 3:
-        if (*(short *)(d + 0xE) != -1) {
-            release_point_light_slot(*(short *)(d + 0xE));
-            *(short *)(d + 0xE) = -1;
+        if (d->light_slot != -1) {
+            release_point_light_slot(d->light_slot);
+            d->light_slot = -1;
         }
         DeleteMoby(moby);
         return;
     }
-    v = (unsigned short)*(unsigned short *)(d + 0xC);
+    v = (unsigned short)*(unsigned short *)&d->scroll;
     dx = 0xC0;
-    *(short *)(d + 0xC) = v + 0xC0;
+    d->scroll = v + 0xC0;
     v += 0xC0;
     if ((short)v > 0x1000) {
-        *(short *)(d + 0xC) = v - 0x1000;
+        d->scroll = v - 0x1000;
         dx = -0xF40;
     } else if ((short)v < 0) {
-        *(short *)(d + 0xC) = v + 0x1000;
+        d->scroll = v + 0x1000;
         dx = 0x10C0;
     }
     offset_moby_class_point_pairs(*(unsigned char **)(moby + 0x24), dx, 0);
@@ -1380,14 +1469,14 @@ extern unsigned char menu_item_enabled_115[] NOT_SDA;
 
 /* Per-frame update: awards a stat/flag when its linked moby is gone, then sets a flag byte from a test. */
 void update_linked_moby_statistics_and_hero_volume_flag(char *moby) {
-    char *data;
+    struct LinkedVolumeVars *data;
     unsigned char *p;
     ((unsigned char *)moby)[0x30] = 0xFF;
-    data = ((char *)((Moby *)moby)->pvars);
+    data = (struct LinkedVolumeVars *)((Moby *)moby)->pvars;
     if (gemlik_help_popup_state[0] == 0 && gemlik_help_popup_state[9] == -1) {
         unsigned int v = *(unsigned int *)(hero_globals_base + 0x2EA9);
         if ((v < 2 || v == 9) ? gemlik_game_mode == 0 : 0) {
-            int idx = *(int *)(data + 4);
+            int idx = data->link;
             char *m;
             if (idx != -1) {
                 m = gemlik_moby_array_start_m + (idx << 8);
@@ -1411,7 +1500,7 @@ void update_linked_moby_statistics_and_hero_volume_flag(char *moby) {
                 *(unsigned int *)(q + 0x37C) = *(unsigned int *)(q + 0x37C) | (1 << g_current_level_index) | 0x80000000;
             } else {
             direct:
-                if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)data) != 0) {
+                if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->clip_volume) != 0) {
                     if (*(int *)(help_stats_base + 0x6C9) >= 0) {
                         Help_Request(0x32C8, 0x6F);
                     }
@@ -1419,7 +1508,7 @@ void update_linked_moby_statistics_and_hero_volume_flag(char *moby) {
             }
         }
     }
-    if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(data + 8)) != 0) {
+    if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->hero_volume) != 0) {
         (hero_globals_base + 0xE9D)[0x224B] = 0;
     } else {
         (hero_globals_base + 0xE9D)[0x224B] = 1;
@@ -1429,63 +1518,63 @@ extern char state_relay_missing_link_fmt[];
 
 /* State machine: waits for a linked moby to reach one of a set of states, then pushes states onto linked mobys. */
 void update_moby_state_relay(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct StateRelayVars *data = (struct StateRelayVars *)((Moby *)moby)->pvars;
     char *m = 0;
-    int idx = *(int *)data;
+    int idx = data->link;
     int found;
     int i;
     if (idx != -1) {
         m = gemlik_moby_array_start_m + (idx << 8);
     }
-    switch (data[0x1C]) {
+    switch (data->phase) {
     case 0:
         if (m == 0) {
             STUB_printf(state_relay_missing_link_fmt, *(short *)&((Moby *)moby)->save_id, ((Moby *)moby)->oclass);
             DeleteMoby(moby);
-        } else if (data[0x1D] != 0) {
-            data[0x1C] = 1;
+        } else if (data->start_in_a != 0) {
+            data->phase = 1;
         } else {
-            data[0x1C] = 2;
+            data->phase = 2;
         }
         break;
     case 1:
         found = 0;
         for (i = 0; i < 6; i++) {
-            if ((unsigned char)m[0x20] == (data + i)[0xA]) {
+            if ((unsigned char)m[0x20] == (((char *)data) + i)[0xA]) {
                 found = 1;
                 break;
             }
         }
         if (found) {
-            int idx2 = *(int *)(data + 0x10);
+            int idx2 = data->target;
             if (idx2 != -1) {
                 char *o = *(char **)&gemlik_moby_array_start_m + (idx2 << 8);
-                if (data[0x15] != -1) o[0x20] = data[0x15];
-                if (data[0x17] != -1) o[0xBC] = data[0x17];
+                if (data->b_target_state != -1) o[0x20] = data->b_target_state;
+                if (data->b_target_command != -1) o[0xBC] = data->b_target_command;
             }
-            if (data[0x19] != -1) moby[0x20] = data[0x19];
-            if (data[0x1B] != -1) moby[0xBC] = data[0x1B];
-            data[0x1C] = 2;
+            if (data->b_self_state != -1) moby[0x20] = data->b_self_state;
+            if (data->b_self_command != -1) moby[0xBC] = data->b_self_command;
+            data->phase = 2;
         }
         break;
     case 2:
         found = 0;
         for (i = 0; i < 6; i++) {
-            if ((unsigned char)m[0x20] == (data + i)[4]) {
+            if ((unsigned char)m[0x20] == (((char *)data) + i)[4]) {
                 found = 1;
                 break;
             }
         }
         if (found) {
-            int idx2 = *(int *)(data + 0x10);
+            int idx2 = data->target;
             if (idx2 != -1) {
                 char *o = *(char **)&gemlik_moby_array_start_m + (idx2 << 8);
-                if (data[0x14] != -1) o[0x20] = data[0x14];
-                if (data[0x16] != -1) o[0xBC] = data[0x16];
+                if (data->a_target_state != -1) o[0x20] = data->a_target_state;
+                if (data->a_target_command != -1) o[0xBC] = data->a_target_command;
             }
-            if (data[0x18] != -1) moby[0x20] = data[0x18];
-            if (data[0x1A] != -1) moby[0xBC] = data[0x1A];
-            data[0x1C] = 1;
+            if (data->a_self_state != -1) moby[0x20] = data->a_self_state;
+            if (data->a_self_command != -1) moby[0xBC] = data->a_self_command;
+            data->phase = 1;
         }
         break;
     }
@@ -1496,26 +1585,26 @@ extern int truncate_float_to_s32_d(float) __asm__("func_001FA898");
 /* Gate that follows its controller moby: opens when the controller is in one of its six "open" states,
  * closes on one of its six "close" states, fading its light with the opening and spinning its wheel. */
 void update_controller_linked_gate(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct LinkedGateVars *d = (struct LinkedGateVars *)((Moby *)m)->pvars;
     char *c = 0;
     int open;
     int close;
     int step;
-    if (*(int *)d != -1) {
-        c = gemlik_moby_array_start_m + (*(int *)d << 8);
+    if (d->link != -1) {
+        c = gemlik_moby_array_start_m + (d->link << 8);
     }
     open = 0;
     close = 0;
     if (((unsigned char *)m)[0x20] != 0) {
         int i;
         for (i = 0; i < 6; i++) {
-            if (((unsigned char *)c)[0x20] == (d + i)[4]) {
+            if (((unsigned char *)c)[0x20] == (((char *)d) + i)[4]) {
                 open = 1;
                 break;
             }
         }
         for (i = 0; i < 6; i++) {
-            if (((unsigned char *)c)[0x20] == (d + i)[0xA]) {
+            if (((unsigned char *)c)[0x20] == (((char *)d) + i)[0xA]) {
                 close = 1;
                 break;
             }
@@ -1530,13 +1619,13 @@ void update_controller_linked_gate(char *m) {
         }
         set_moby_color(m, 0x80, 0x80, 0x80);
         ((Moby *)m)->flags |= 0xA08;
-        if (*(int *)(d + 0x18) == 0) {
-            *(float *)(d + 0x10) = 1.0f;
+        if (d->spin_disabled == 0) {
+            d->open_amount = 1.0f;
             m[0x20] = 1;
             *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
             m[0x23] = 0x14;
         } else {
-            *(float *)(d + 0x10) = 0.0f;
+            d->open_amount = 0.0f;
             m[0x20] = 3;
             *(int *)&((Moby *)m)->collision = 0;
             m[0x23] = 0;
@@ -1553,9 +1642,9 @@ void update_controller_linked_gate(char *m) {
             m[0x20] = 4;
             *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
         }
-        *(float *)(d + 0x10) -= frame_scale * 0.05f;
-        if (*(float *)(d + 0x10) < 0.0f) {
-            *(float *)(d + 0x10) = 0.0f;
+        d->open_amount -= frame_scale * 0.05f;
+        if (d->open_amount < 0.0f) {
+            d->open_amount = 0.0f;
             m[0x20] = 3;
             *(int *)&((Moby *)m)->collision = 0;
             m[0x31] = 0;
@@ -1575,22 +1664,22 @@ void update_controller_linked_gate(char *m) {
             *(int *)&((Moby *)m)->collision = 0;
             m[0x20] = 2;
         }
-        *(float *)(d + 0x10) += frame_scale * 0.05f;
-        if (1.0f < *(float *)(d + 0x10)) {
-            *(float *)(d + 0x10) = 1.0f;
+        d->open_amount += frame_scale * 0.05f;
+        if (1.0f < d->open_amount) {
+            d->open_amount = 1.0f;
             m[0x20] = 1;
             *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
         }
         break;
     }
-    m[0x23] = truncate_float_to_s32_d(*(float *)(d + 0x10) * 20.0f);
+    m[0x23] = truncate_float_to_s32_d(d->open_amount * 20.0f);
     step = 0xC0;
-    *(int *)(d + 0x14) += step;
-    if (*(int *)(d + 0x14) > 0x1000) {
-        *(int *)(d + 0x14) -= 0x1000;
+    d->spin += step;
+    if (d->spin > 0x1000) {
+        d->spin -= 0x1000;
         step -= 0x1000;
-    } else if (*(int *)(d + 0x14) < 0) {
-        *(int *)(d + 0x14) += 0x1000;
+    } else if (d->spin < 0) {
+        d->spin += 0x1000;
         step += 0x1000;
     }
     offset_moby_class_point_pairs(*(unsigned char **)(m + 0x24), step, 0);
@@ -1606,24 +1695,24 @@ extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/vendor/003058a8.c, FUN_L13_003058a8. */
 char *create_attached_rocket(struct Moby *src, short cls) {
     char *m = CreateMoby_r(0x4D1);
-    char *d;
+    struct AttachedRocketVars *d;
     char *pos;
     if (m != 0) {
-        d = ((char *)((Moby *)m)->pvars);
+        d = (struct AttachedRocketVars *)((Moby *)m)->pvars;
         m[0x31] = 1;
         ((unsigned char *)m)[0x30] = 0xFF;
         ((Moby *)m)->draw_dist = 0x7F;
         m[0x20] = 1;
-        *(char **)(d + 0x20) = src;
-        *(short *)(d + 0x26) = cls;
-        *(short *)(d + 0x24) = 1;
+        d->src = src;
+        d->joint = cls;
+        d->attached = 1;
         pos = m + 0x10;
         Moby_GetJointWorldPos_r2(src, cls, pos);
         qcopy(m + 0x40, &src->rot);
         *(OvlQuad_306D40 *)(m + 0xC0) = *(OvlQuad_306D40 *)&src->rot_row0;
         *(OvlQuad_306D40 *)(m + 0xD0) = *(OvlQuad_306D40 *)&src->rot_row1;
         *(OvlQuad_306D40 *)(m + 0xE0) = *(OvlQuad_306D40 *)&src->rot_row2;
-        qcopy(d + 0x10, pos);
+        qcopy(&d->launch_pos, pos);
         *(int *)&((Moby *)m)->collision = 0;
         moby_build_matrix_r(m);
     }
@@ -1633,19 +1722,19 @@ typedef int u128_306E20 __attribute__((mode(TI)));
 
 /* Initializes a Gemlik moby from its data block, copying transforms and resetting state. */
 void launch_attached_rocket(char *moby, char *pos, int arg2, float arg3) {
-    char *d = ((char *)((Moby *)moby)->pvars);
-    char *s = *(char **)(d + 0x20);
+    struct AttachedRocketVars *d = (struct AttachedRocketVars *)((Moby *)moby)->pvars;
+    char *s = d->src;
     char *mp;
-    *(float *)(d + 0x28) = arg3;
+    d->speed = arg3;
     qcopy(moby + 0x40, s + 0x40);
     mp = moby + 0x10;
     *(u128_306E20 *)(moby + 0xC0) = *(u128_306E20 *)(s + 0xC0);
     *(u128_306E20 *)(moby + 0xD0) = *(u128_306E20 *)(s + 0xD0);
     *(u128_306E20 *)(moby + 0xE0) = *(u128_306E20 *)(s + 0xE0);
-    Moby_GetJointWorldPos(*(void **)(d + 0x20), *(short *)(d + 0x26), mp);
-    qcopy(d + 0x10, mp);
-    qcopy(d, pos);
-    *(int *)(d + 0x2C) = arg2;
+    Moby_GetJointWorldPos(*(void **)&d->src, d->joint, mp);
+    qcopy(&d->launch_pos, mp);
+    qcopy(&d->target_pos, pos);
+    d->life = arg2;
     moby[0x20] = 0;
     ((Moby *)moby)->flags &= 0xFFFE;
     *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
@@ -1883,7 +1972,7 @@ extern void moby_build_matrix(void *);
 char *spawn_gemlik_projectile(float speed, float *pos, float *dir, void *arg)
 {
     char *m;
-    char *p;
+    struct GemlikProjectileVars *p;
     float d;
     m = CreateMoby_m(0x4D6);
     if (m != 0) {
@@ -1891,20 +1980,20 @@ char *spawn_gemlik_projectile(float speed, float *pos, float *dir, void *arg)
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0x7F;
         m[0x31] = 1;
-        p = ((char *)((Moby *)m)->pvars);
+        p = (struct GemlikProjectileVars *)((Moby *)m)->pvars;
         d = vec_length_xy(dir);
         ((Moby *)m)->rot.y = -fast_atan2(d, dir[2]);
         ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
         qcopy(m + 0x10, pos);
-        qcopy(p + 0x10, pos);
-        qcopy(p, dir);
+        qcopy(&p->start_pos, pos);
+        qcopy(&p->dir, dir);
         MobyBlendAnimation(m, 1, 0, scale_ticks(5));
         *(short *)&((Moby *)m)->flags = 0x208;
-        *(int *)(p + 0x24) = 1;
-        *(void **)(p + 0x20) = arg;
-        *(float *)(p + 0x28) = speed;
+        p->active = 1;
+        p->owner = arg;
+        p->speed = speed;
         m[0x23] = 0x10;
-        *(int *)(p + 0x2C) = truncate_float_to_s32_r_r(speed / FastVecLength(p) + 1.0f);
+        p->life = truncate_float_to_s32_r_r(speed / FastVecLength(&p->dir) + 1.0f);
         moby_build_matrix(m);
     }
     return m;
@@ -2921,22 +3010,21 @@ extern float FastSin(float);
 extern void FastVecAdd(void *,void *,void *);
 extern char gemlik_coll_hit_normal[];
 extern short gemlik_trail_arc_degrees,gemlik_trail_ticks;
-/* initializes a sixteen-point curved trail around a moby */
-void initialize_gemlik_trail(char *m) {
- float v[4]; int i; char *d=((char *)((Moby *)m)->pvars);
+/* initializes a sixteen-point curved trail around a moby */ void initialize_gemlik_trail(char *m) {
+ float v[4]; int i; struct GemlikTrailVars *d=(struct GemlikTrailVars *)((Moby *)m)->pvars;
  ProbeGroundHeight(m+0x10,0,0.5f);
- vec_scale_to_length(d+0x200,gemlik_coll_hit_normal,1.0f);
- Moby_GetJointWorldPos(m,0,d+0x1f0);
+ vec_scale_to_length(&d->normal,gemlik_coll_hit_normal,1.0f);
+ Moby_GetJointWorldPos(m,0,&d->anchor);
  for(i=0;i<16;i++) {
  float angle=(IntToFloat(i)*0.0625f-0.5f)*(*(float *)&gemlik_trail_arc_degrees*0.017453292f);
  v[0]=FastCos(FastAddRots(angle,((Moby *)m)->rot.z))*0.5f;
  v[1]=FastSin(FastAddRots(angle,((Moby *)m)->rot.z))*0.5f;
  v[2]=0;
- FastVecAdd(d+0x210+i*16,d+0x1f0,v);
- if(i==0 || i==15) *(int *)(d+0x21c+i*16)=0;
- else *(float *)(d+0x21c+i*16)=1.0f;
+ FastVecAdd(&d->pt[i],&d->anchor,v);
+ if(i==0 || i==15) *(int *)&d->pt[i].w=0;
+ else d->pt[i].w=1.0f;
  }
- *(float *)(d+0x1fc)=scale_ticks(*(int *)&gemlik_trail_ticks);
+ d->anchor.w=scale_ticks(*(int *)&gemlik_trail_ticks);
 }
 typedef struct V4_30A9B0 {
     float x, y, z, w;
@@ -3584,8 +3672,8 @@ extern int count_eligible_mobies_in_list(int, int);
 
 /* Checks the moby's trigger lists and copies the configured state bytes into it. */
 void apply_configured_moby_state_and_command(char *moby) {
-    char *d = ((char *)((Moby *)moby)->pvars);
-    int *p = (int *)d;
+    struct ConfiguredStateVars *d = (struct ConfiguredStateVars *)((Moby *)moby)->pvars;
+    int *p = d->trigger;
     int i;
     struct Hero *base;
     for (i = 0; i < 8; i++) {
@@ -3596,8 +3684,8 @@ void apply_configured_moby_state_and_command(char *moby) {
     }
     base = (struct Hero *)(hero_globals_base + 0xE1D);
     if (*(int *)&base->ship_moby != 0 && base->state.current == 0x32) return;
-    if (*(int *)(d + 0x28) != -1 && is_point_inside_clip_volume(&base->motion.pos, *(int *)(d + 0x28)) == 0) return;
-    if (*(int *)(d + 0x20) != -1) moby[0x20] = d[0x20];
-    if (*(int *)(d + 0x24) == -1) return;
-    moby[0xBC] = d[0x24];
+    if (d->clip_volume != -1 && is_point_inside_clip_volume(&base->motion.pos, d->clip_volume) == 0) return;
+    if (d->state != -1) moby[0x20] = *(char *)&d->state;
+    if (d->command == -1) return;
+    moby[0xBC] = *(char *)&d->command;
 }

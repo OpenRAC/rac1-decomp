@@ -2,6 +2,36 @@
 #include "common.h"
 #include "include_asm.h"
 #include "moby.h"
+/* Electric water countdown timer display. */
+struct ElectricWaterCountdownVars {
+    u8 pad_00[0x12];
+    s16 frames; /* 0x12 */
+};
+
+/* Electric water bolt: start and end point. */
+struct ElectricWaterBoltVars {
+    u8 pad_00[0xF0];
+    Vec4 start; /* 0xF0 */
+    Vec4 end; /* 0x100 */
+};
+
+/* Spinning projectile: life timer and the last moby it hit. */
+struct SpinningProjectileVars {
+    u8 pad_00[0x38];
+    s32 timer; /* 0x38 */
+    char * last_hit; /* 0x3C */
+};
+
+/* Giant Clank pad: linked moby indices. */
+struct GiantClankPadVars {
+    u8 pad_00[0x60];
+    s32 target_idx; /* 0x60 */
+    u8 pad_64[0x4];
+    s32 unk_68; /* 0x68 */
+    u8 pad_6C[0x4];
+    s32 link_idx; /* 0x70 */
+};
+
 
 typedef unsigned int Q_2D7C00 __attribute__((mode(TI), aligned(16)));
 typedef struct {
@@ -496,7 +526,7 @@ extern short electric_water_timer_frame_alpha;
 /* Draws the level timer as "H:MM:SS.t" text with a pulsing colour. */
 void draw_electric_water_countdown(char *moby) {
     char buf[8];
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct ElectricWaterCountdownVars *data = (struct ElectricWaterCountdownVars *)((Moby *)moby)->pvars;
     float v;
     int col;
 
@@ -510,12 +540,12 @@ void draw_electric_water_countdown(char *moby) {
     }
     col = FastTweenColor(W(electric_water_timer_color_from), W(electric_water_timer_color_to), v);
     buf[0] = 0x30;
-    buf[1] = *(short *)(data + 0x12) / scale_ticks(0xE10) + 0x30;
+    buf[1] = data->frames / scale_ticks(0xE10) + 0x30;
     buf[2] = 0x3A;
-    buf[3] = *(short *)(data + 0x12) % scale_ticks(0xE10) / scale_ticks(0x258) + 0x30;
-    buf[4] = *(short *)(data + 0x12) % scale_ticks(0x258) / scale_ticks(0x3C) + 0x30;
+    buf[3] = data->frames % scale_ticks(0xE10) / scale_ticks(0x258) + 0x30;
+    buf[4] = data->frames % scale_ticks(0x258) / scale_ticks(0x3C) + 0x30;
     buf[5] = 0x3A;
-    buf[6] = *(short *)(data + 0x12) % scale_ticks(0x3C) / scale_ticks(6) + 0x30;
+    buf[6] = data->frames % scale_ticks(0x3C) / scale_ticks(6) + 0x30;
     buf[7] = truncate_float_to_s32_r((float)random_integer_below(10)) + 0x30;
     FontPrintCenterLarge(W(electric_water_timer_x), W(electric_water_timer_y), col, (int)buf, 8);
 }
@@ -549,7 +579,7 @@ extern void clear_u64_value(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d6810.c, FUN_L15_002d79e8. */
 void initialize_electric_water_bolt_effect(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct ElectricWaterBoltVars *d = (struct ElectricWaterBoltVars *)((Moby *)m)->pvars;
     float v[4];
     float step[4];
     int i;
@@ -559,9 +589,9 @@ void initialize_electric_water_bolt_effect(char *m) {
         (*(int *)&electric_water_bolt_reset_word) = 0;
         electric_water_bolt_initial_scaled_frame_count = scale_ticks((*(int *)&electric_water_bolt_initial_frame_count));
         (*(int *)&quartu_beam_arc_outer_color) = 0x7F2020;
-        FastVecSub(v, d + 0x100, d + 0xF0);
+        FastVecSub(v, &d->end, &d->start);
         vec_scale_to_length(step, v, (*(float *)&electric_water_bolt_initial_length_scale) / 20.0f);
-        qcopy(electric_water_bolt_points_r, d + 0xF0);
+        qcopy(electric_water_bolt_points_r, &d->start);
         for (i = 1; i < 20; i++) {
             FastVecAdd(electric_water_bolt_points_r[i], electric_water_bolt_points_base_r[i], step);
             electric_water_bolt_wave_offsets_r[i] = 0;
@@ -963,9 +993,9 @@ void update_spinning_projectile(unsigned char *m) {
     FastVecAdd(next, m + 0x10, d);
     InitDirectionalHitQuery(col, m, 1, 2.0f, d);
     *(short *)(col + 0x1A) = ((Moby *)m)->oclass;
-    if (coll_line(m + 0x10, next, 0, m, col) != 0 || coll_sphere(m + 0x10, 0, m, 0.3f) != 0 || fast_dec_timer(d + 0x38) != 0) {
+    if (coll_line(m + 0x10, next, 0, m, col) != 0 || coll_sphere(m + 0x10, 0, m, 0.3f) != 0 || fast_dec_timer(&((struct SpinningProjectileVars *)d)->timer) != 0) {
         hit = (char *)quartu_coll_hit_moby[0];
-        if (hit != 0 && (int)hit != *(int *)(d + 0x3C)) {
+        if (hit != 0 && (int)hit != *(int *)&((struct SpinningProjectileVars *)d)->last_hit) {
             if (*(short *)(hit + 0xA6) != 0x4E)
                 MobySphereHitDirectional(m, 0.5f, m + 0x10, 1, 2.0f, 0.0f, 0, 1, 0);
             SpawnExplosionFx(m, m + 0x10, 0.5f, 13.0f, -1);
@@ -998,8 +1028,8 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
         qcopy(m + 0x10, pos);
         p = ((char *)((Moby *)m)->pvars);
         FastVecScale(p, v, 5.0f);
-        *(int *)(p + 0x38) = scale_ticks(0xF0);
-        *(char **)(p + 0x3C) = src;
+        ((struct SpinningProjectileVars *)p)->timer = scale_ticks(0xF0);
+        ((struct SpinningProjectileVars *)p)->last_hit = src;
         m[0x23] = 0x30;
         ((Moby *)m)->flags |= 0x200;
         ((Moby *)m)->rot.z = fast_atan2(v[0], v[1]);
@@ -1281,7 +1311,7 @@ typedef int u128_2EE458 __attribute__((mode(TI)));
 
 // Update for the giant Clank pad moby: a small state machine that sets up its effect block and its timers.
 void giant_clank_pad_update(char *m) {
-    char *data = ((char *)((Moby *)m)->pvars);
+    struct GiantClankPadVars *data = (struct GiantClankPadVars *)((Moby *)m)->pvars;
     Moby *other;
     Moby *p0;
     int ns;
@@ -1300,7 +1330,7 @@ void giant_clank_pad_update(char *m) {
     st = ((unsigned char *)m)[0x20];
     switch (st) {
     case 0:
-        idx = *(int *)(data + 0x60);
+        idx = data->target_idx;
         if (idx == -1) {
             DeleteMoby(m);
             return;
@@ -1315,7 +1345,7 @@ void giant_clank_pad_update(char *m) {
             ns = 3;
         }
         m[0x20] = ns;
-        *(int *)(data + 0x68) = -1;
+        data->unk_68 = -1;
         return;
     case 1:
         m[0x20] = 2;
@@ -1335,7 +1365,7 @@ void giant_clank_pad_update(char *m) {
         if (quartu_help_message_selector != 4) return;
         if (g_hero_r.vehicle_mode == 2 && (gm = g_current_level_index) == 0xF) {
             other = quartu_moby_array_m;
-            other += *(int *)(data + 0x60);
+            other += data->target_idx;
             other->flags = other->flags | 1;
             other->collision = 0;
             other->visible = 0;
@@ -1349,12 +1379,12 @@ void giant_clank_pad_update(char *m) {
         }
         if (g_hero_r.vehicle_mode != 0) return;
 
-        other = &quartu_moby_array_m[*(int *)(data + 0x60)];
-        if (*(int *)(data + 0x70) != -1) {
-            o2 = &quartu_moby_array_m[*(int *)(data + 0x70)];
+        other = &quartu_moby_array_m[data->target_idx];
+        if (data->link_idx != -1) {
+            o2 = &quartu_moby_array_m[data->link_idx];
             if (o2 != 0 && o2->state != 0xFE && o2->state != 0xFD) {
                 DeleteMoby(o2);
-                *(int *)(data + 0x70) = -1;
+                data->link_idx = -1;
             }
         }
         *(u128_2EE458 *)V = *(u128_2EE458 *)(m + 0x10);
@@ -1384,5 +1414,5 @@ void giant_clank_pad_update(char *m) {
     default:
         return;
     }
-    *(int *)(data + 0x68) = -1;
+    data->unk_68 = -1;
 }

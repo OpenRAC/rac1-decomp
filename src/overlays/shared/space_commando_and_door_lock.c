@@ -3,6 +3,66 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+/* Blarg space commando: takes hits, fires a beam at the hero. */
+struct SpaceCommandoVars {
+    u8 pad_00[0x20];
+    f32 health; /* 0x20 */
+    u8 pad_24[0x2];
+    s16 unk_26; /* 0x26 */
+    u8 pad_28[0x10];
+    s32 stunned; /* 0x38 */
+    u8 pad_3C[0x24];
+    Vec4 color_fade_a; /* 0x60 */
+    u8 pad_70[0x8];
+    f32 hit_x; /* 0x78 */
+    f32 hit_y; /* 0x7C */
+    s32 unk_80; /* 0x80 */
+    u8 pad_84[0x4];
+    f32 hit_scale; /* 0x88 */
+    u8 pad_8C[0x24];
+    f32 beam_near; /* 0xB0 */
+    f32 beam_far; /* 0xB4 */
+    u8 pad_B8[0x58];
+    s16 color_fade; /* 0x110 */
+    u8 pad_112[0x5];
+    u8 flash; /* 0x117 */
+    u8 pad_118[0x8];
+    u8 home_pos[0x8]; /* 0x120 */
+    f32 home_z; /* 0x128 */
+    u8 pad_12C[0x34];
+    s32 target_id; /* 0x160 */
+    s32 mode; /* 0x164 */
+    u8 pad_168[0x8];
+    Vec4 sight_pos; /* 0x170 */
+    s32 path_idx; /* 0x180 */
+    u8 pad_184[0x4];
+    s32 fire_timer; /* 0x188 */
+    u8 pad_18C[0xC];
+    f32 sight_range; /* 0x198 */
+    u8 pad_19C[0x74];
+    f32 muzzle_pos; /* 0x210 */
+    u8 pad_214[0x4];
+    f32 muzzle_z; /* 0x218 */
+    f32 beam_ticks; /* 0x21C */
+    Vec4 beam_dir; /* 0x220 */
+    u8 beam_pts[0xC]; /* 0x230 */
+    u8 beam_hit[0x10]; /* 0x23C */
+};
+
+/* Blarg timer display: frame counter shown as mm:ss. */
+struct BlargTimerVars {
+    u8 pad_00[0xB4];
+    s32 frames; /* 0xB4 */
+};
+
+/* Timed projected sprite effect. */
+struct ProjectedSpriteVars {
+    u8 pad_00[0x4];
+    f32 rate; /* 0x04 */
+    s32 arg_a; /* 0x08 */
+    s32 arg_b; /* 0x0C */
+};
+
 
 extern struct Hero g_hero;
 typedef struct {
@@ -441,7 +501,7 @@ extern char menu_item_enabled_115[];
 // Level 06 update for a moby with a 12-state machine: aims at a target, runs timed effects, and sets its rotation.
 void process_blarg_space_commando_hits(char *m) {
     extern unsigned char gSkillPoints[];
-    char *d;
+    struct SpaceCommandoVars *d;
     char *t;
     char *p;
     int *e;
@@ -455,17 +515,17 @@ void process_blarg_space_commando_hits(char *m) {
     float f;
     float lo, hi, spd, off, pull;
 
-    d = ((char *)((Moby *)m)->pvars);
+    d = (struct SpaceCommandoVars *)((Moby *)m)->pvars;
     ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&space_commando_scale;
     update_blarg_space_commando_beam(m);
-    if (*(int *)(d + 0x38) != 0) {
-        *(int *)(d + 0x188) = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
-        *(int *)(d + 0x38) = 0;
+    if (d->stunned != 0) {
+        d->fire_timer = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
+        d->stunned = 0;
     }
-    fast_dec_timer((s32 *)(d + 0x188));
+    fast_dec_timer(&d->fire_timer);
     *(int *)&dt = 0;
     t = MobyGetHitMessage(m, 0x330000, 0);
-    r = ComputeHitResponse(m, t, d + 0x20, 0, &hit, &dt, 0, 4);
+    r = ComputeHitResponse(m, t, &d->health, 0, &hit, &dt, 0, 4);
     if (hit != 1 && (unsigned char)m[0x20] != 0x10) {
         if (*(int *)&g_current_level_index == 0xA && t != 0 && *(char **)(t + 0x20) != 0 &&
             *(short *)(*(char **)(t + 0x20) + 0xA6) == 0x31A && gSkillPoints[0x11] == 0) {
@@ -473,11 +533,11 @@ void process_blarg_space_commando_hits(char *m) {
             PlayBankSound(1, 0, 0);
             ShowBanner(0x53DB, -1);
         }
-        f = *(float *)(d + 0x20) - dt;
-        *(float *)(d + 0x20) = f;
+        f = d->health - dt;
+        d->health = f;
         if (f <= 0.0f) r = 1;
-        ((Moby *)d)->unk80 = 0x1F4;
-        *(float *)(d + 0x88) = 0.5f;
+        d->unk_80 = 0x1F4;
+        d->hit_scale = 0.5f;
         switch (r) {
         case 3:
         case 4:
@@ -492,17 +552,17 @@ void process_blarg_space_commando_hits(char *m) {
             int n;
             float b, a;
             m[0x20] = 0xF;
-            q = d + 0x60;
+            q = (char *)&d->color_fade_a;
             n = scale_ticks(0x3C);
             a = *(float *)&space_commando_hit_knockback_speed * g_frame_time;
             b = *(float *)&space_commando_hit_knockback_lift * g_frame_time;
-            *(short *)(d + 0x26) = n;
-            *(float *)(d + 0x7C) = b;
-            *(float *)(d + 0x78) = a;
-            *(float *)(d + 0xB0) = 8.0f;
-            *(float *)(d + 0xB4) = 15.0f;
+            d->unk_26 = n;
+            d->hit_y = b;
+            d->hit_x = a;
+            d->beam_near = 8.0f;
+            d->beam_far = 15.0f;
             InitKnockback(m, q, fast_atan2(*(float *)(t + 0x10), *(float *)(t + 0x14)), 7, 1, 0);
-            *(unsigned char *)(d + 0x117) = 0xFA;
+            d->flash = 0xFA;
             break;
         }
         case 1:
@@ -511,14 +571,14 @@ void process_blarg_space_commando_hits(char *m) {
             char *q;
             float a, b;
             m[0x20] = 0x10;
-            q = d + 0x60;
+            q = (char *)&d->color_fade_a;
             a = *(float *)&space_commando_death_knockback_speed * g_frame_time;
             b = *(float *)&space_commando_death_knockback_lift * g_frame_time;
             ((Moby *)m)->flags &= 0xEFFF;
-            *(float *)(d + 0x78) = a;
-            *(float *)(d + 0x7C) = b;
-            *(float *)(d + 0xB0) = 9.0f;
-            *(float *)(d + 0xB4) = 18.0f;
+            d->hit_x = a;
+            d->hit_y = b;
+            d->beam_near = 9.0f;
+            d->beam_far = 18.0f;
             bits = 0;
             lo = *(float *)&bits;
             bits = 0x3E4CCCCD;
@@ -549,7 +609,7 @@ void process_blarg_space_commando_hits(char *m) {
                     *(float *)(p + 0x2C) = *(float *)(p + 0x2C) * 0.4f;
                 }
             }
-            *(unsigned char *)(d + 0x117) = 0xFA;
+            d->flash = 0xFA;
             SetDeathBits(m, 0, -1);
             break;
         }
@@ -558,28 +618,28 @@ void process_blarg_space_commando_hits(char *m) {
         default:
             break;
         }
-        RerollEffectCounter(m, (short *)(d + 0x110));
+        RerollEffectCounter(m, &d->color_fade);
     }
     ((Moby *)m)->hit_slot = 0xFF;
-    StepColorFade(m, d + 0x110);
-    if (*(int *)(d + 0x188) != 0) {
-        *(float *)(d + 0x198) = *(float *)&space_commando_sight_range + 6.0f;
+    StepColorFade(m, &d->color_fade);
+    if (d->fire_timer != 0) {
+        d->sight_range = *(float *)&space_commando_sight_range + 6.0f;
     } else {
-        *(float *)(d + 0x198) = *(float *)&space_commando_sight_range;
+        d->sight_range = *(float *)&space_commando_sight_range;
     }
     {
-    char *q = d + 0x120;
-    e = blarg_paths[*(int *)(d + 0x180)];
-    if (FindNearestEligibleMoby(*(float *)(d + 0x198), m, q, 0, 0, e + 4, *e) != 2) {
-        if (*(float *)(d + 0x198) < vec_distance_xy(d + 0x170, d + 0x120)) {
-            *(int *)(d + 0x164) = 2;
-        } else if (3.0f < FastAbsF(((Moby *)m)->pos.z - *(float *)(d + 0x128))) {
-            *(int *)(d + 0x164) = 2;
+    char *q = (char *)d->home_pos;
+    e = blarg_paths[d->path_idx];
+    if (FindNearestEligibleMoby(d->sight_range, m, q, 0, 0, e + 4, *e) != 2) {
+        if (d->sight_range < vec_distance_xy(&d->sight_pos, d->home_pos)) {
+            d->mode = 2;
+        } else if (3.0f < FastAbsF(((Moby *)m)->pos.z - d->home_z)) {
+            d->mode = 2;
         }
     }
     }
-    if (*(int *)(d + 0x160) == 0) {
-        *(int *)(d + 0x160) = *(int *)(hero_globals_base + 0x2E9D);
+    if (d->target_id == 0) {
+        d->target_id = *(int *)(hero_globals_base + 0x2E9D);
     }
 }
 extern float ProbeGroundHeight(void *, int, float);
@@ -600,16 +660,16 @@ void initialize_blarg_space_commando_beam(char *m) {
     float v[4];
     int i;
     ProbeGroundHeight(m + 0x10, 0, 0.5f);
-    vec_scale_to_length(d + 0x220, blarg_coll_hit_normal, 1.0f);
-    Moby_GetJointWorldPos(m, 0, d + 0x210);
-    *(float *)(d + 0x218) = ((Moby *)m)->pos.z;
+    vec_scale_to_length(&((struct SpaceCommandoVars *)d)->beam_dir, blarg_coll_hit_normal, 1.0f);
+    Moby_GetJointWorldPos(m, 0, &((struct SpaceCommandoVars *)d)->muzzle_pos);
+    ((struct SpaceCommandoVars *)d)->muzzle_z = ((Moby *)m)->pos.z;
     for (i = 0; i < 16; i++) {
         float f = IntToFloat(i) * 0.0625f - 0.5f;
         f = f * (*(float *)&space_commando_beam_fan_degrees * 0.017453292f);
         v[0] = FastCos(FastAddRots(f, ((Moby *)m)->rot.z)) * 0.2f;
         v[1] = FastSin(FastAddRots(f, ((Moby *)m)->rot.z)) * 0.2f;
         v[2] = 0.15f;
-        FastVecAdd((float *)(d + 0x230 + i * 16), (float *)(d + 0x210), v);
+        FastVecAdd((float *)(d + 0x230 + i * 16), &((struct SpaceCommandoVars *)d)->muzzle_pos, v);
         if (i == 0 || i == 15) {
             float *w = (float *)(d + 0x23C + i * 16);
             *w = *w = 0.0f;
@@ -617,7 +677,7 @@ void initialize_blarg_space_commando_beam(char *m) {
             *(float *)(d + 0x23C + i * 16) = 1.0f;
         }
     }
-    *(float *)(d + 0x21C) = (float)scale_ticks(*(int *)&space_commando_beam_ticks);
+    ((struct SpaceCommandoVars *)d)->beam_ticks = (float)scale_ticks(*(int *)&space_commando_beam_ticks);
 }
 extern void FastVecSub(void *dst, void *a, void *b);
 extern float FastVecDot(void *a, void *b);
@@ -903,7 +963,7 @@ char *spawn_spinning_moby_fragment(int unused, char *pa, char *pb) {
     float *va = a;
     float *vb = b;
     char *m;
-    char *data;
+    struct FallingSpinVars *data;
     *(u128 *)a = *(u128 *)pa;
     *(u128 *)b = *(u128 *)pb;
     m = mk_a(rnd_a(random_float_between(1085.0f, 1089.0f)));
@@ -912,12 +972,12 @@ char *spawn_spinning_moby_fragment(int unused, char *pa, char *pb) {
         ((unsigned char *)m)[0x30] = 0xFF;
         ((Moby *)m)->draw_dist = 0x7E;
         m[0x31] = 1;
-        data = ((char *)((Moby *)m)->pvars);
+        data = (struct FallingSpinVars *)((Moby *)m)->pvars;
         qcopy(m + 0x10, va);
-        qcopy(data, vb);
-        *(float *)(data + 0x10) = random_float_between(-360.0f, 360.0f) * 0.017453292f * g_frame_time;
-        *(float *)(data + 0x14) = random_float_between(-360.0f, 360.0f) * 0.017453292f * g_frame_time;
-        *(float *)(data + 0x18) = random_float_between(-360.0f, 360.0f) * 0.017453292f * g_frame_time;
+        qcopy(&data->vel, vb);
+        data->rot_vel.x = random_float_between(-360.0f, 360.0f) * 0.017453292f * g_frame_time;
+        data->rot_vel.y = random_float_between(-360.0f, 360.0f) * 0.017453292f * g_frame_time;
+        data->rot_vel.z = random_float_between(-360.0f, 360.0f) * 0.017453292f * g_frame_time;
         m[0xBC] = rnd_a(multiply_global_factor(random_float_between(60.0f, 120.0f)));
         upd_a(m);
     }
@@ -946,7 +1006,7 @@ extern int FontPrintCenterLarge(int a, int b, int c, int d, int e);
 /* Draws the level timer as "H:MM:SS.t" text with a pulsing colour. */
 void draw_pulsing_timer_display(char *moby) {
     char buf[8];
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct BlargTimerVars *data = (struct BlargTimerVars *)((Moby *)moby)->pvars;
     float v;
     int col;
 
@@ -960,12 +1020,12 @@ void draw_pulsing_timer_display(char *moby) {
     }
     col = FastTweenColor(W(blarg_timer_pulse_color_a), W(blarg_timer_pulse_color_b), v);
     buf[0] = 0x30;
-    buf[1] = *(int *)(data + 0xB4) / scale_ticks(0xE10) + 0x30;
+    buf[1] = data->frames / scale_ticks(0xE10) + 0x30;
     buf[2] = 0x3A;
-    buf[3] = *(int *)(data + 0xB4) % scale_ticks(0xE10) / scale_ticks(0x258) + 0x30;
-    buf[4] = *(int *)(data + 0xB4) % scale_ticks(0x258) / scale_ticks(0x3C) + 0x30;
+    buf[3] = data->frames % scale_ticks(0xE10) / scale_ticks(0x258) + 0x30;
+    buf[4] = data->frames % scale_ticks(0x258) / scale_ticks(0x3C) + 0x30;
     buf[5] = 0x3A;
-    buf[6] = *(int *)(data + 0xB4) % scale_ticks(0x3C) / scale_ticks(6) + 0x30;
+    buf[6] = data->frames % scale_ticks(0x3C) / scale_ticks(6) + 0x30;
     buf[7] = truncate_float_to_s32_r((float)random_integer_below(10)) + 0x30;
     FontPrintCenterLarge(W(blarg_timer_display_x), W(blarg_timer_display_y), col, (int)buf, 8);
 }
@@ -1353,13 +1413,13 @@ void spawn_timed_projected_sprite_effect(char *src, int a1, int a2, int a3) {
     v = *(uq_b *)src;
     m = (unsigned char *)CreateMoby(0x76A);
     if (m) {
-        char *e = ((char *)((Moby *)m)->pvars);
+        struct ProjectedSpriteVars *e = (struct ProjectedSpriteVars *)((Moby *)m)->pvars;
         float f;
         qcopy(m + 0x10, vp);
         f = IntToFloat(a1);
-        *(int *)(e + 0xC) = a3;
-        *(int *)(e + 0x8) = a2;
-        *(float *)(e + 0x4) = 2.0f / f;
+        e->arg_b = a3;
+        e->arg_a = a2;
+        e->rate = 2.0f / f;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->state = 1;
     }

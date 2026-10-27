@@ -8,6 +8,12 @@
 #include "vector.h"
 #include "moby.h"
 
+/* Snagglebeast sphere effect: only the draw state is read here. */
+struct SnaggleSphereVars {
+    u8 pad_00[0x1C6];
+    u8 brightness;                  /* 0x1C6 */
+};
+
 extern void VU1_addGSregister(int, u64);
 extern u64 GetEffectTex(int);
 extern float IntToFloat(int);
@@ -39,8 +45,8 @@ static inline int fx_tint(int col) {
 
 // Umbris effect: builds GS packets for a flare strip from the moby's data and draws its segments
 void draw_snagglebeast_sphere_quad_strips(char *moby, int arg2, float fa, float fb, float fc, float fd, float fe) {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    int c = *(unsigned char *)(data + 0x1C6);
+    struct SnaggleSphereVars *data = (struct SnaggleSphereVars *)((Moby *)moby)->pvars;
+    int c = data->brightness;
     int col = (c << 24) | (c << 16) | (c << 8) | c;
     u64 ts = 0xFF9000000260L;
     u64 prim = 0xA000000029L;

@@ -5,6 +5,38 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Gadgetron CEO challenge room: handles of the jet groups it switches on and off. */
+struct CeoEnvVars {
+    u8 pad_00[0x60];
+    s32 jets_a[16];                 /* 0x60 */
+    s32 jets_b[8];                  /* 0xA0 */
+};
+
+/* Two-region trigger: latches while the hero is in clip volume A, then B. */
+struct TwoRegionTriggerVars {
+    s32 clip_a;                     /* 0x00 */
+    s32 clip_b;                     /* 0x04 */
+    s32 state;                      /* 0x08 */
+};
+
+/* Elevator ring stack: bound index into the level cylinders, speed and offset. */
+struct RingStackVars {
+    u8 pad_00[0xA0];
+    s32 bound_index;                /* 0xA0 */
+    u8 pad_A4[0xC];
+    f32 speed;                      /* 0xB0 */
+    u8 pad_B4[0x4];
+    f32 translation;                /* 0xB8 */
+};
+
+/* Target reposition cycle: moves a target at random intervals while the hero is in the clip volume. */
+struct RepositionCycleVars {
+    s32 group;                      /* 0x00 */
+    s32 target_index;               /* 0x04 */
+    s32 clip_volume;                /* 0x08 */
+    s32 timer;                      /* 0x0C */
+};
+
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 extern void set_ground_height_band(void *);
@@ -272,14 +304,14 @@ extern float kalebo3_hero_fall_state_height MACRO_ADDR;
 
 // Sets up the flags of two rows of sub-objects, then a global and a call.
 void activate_gadgetron_ceo_challenge_environment(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    int *p = (int *)(data + 0x60);
+    struct CeoEnvVars *data = (struct CeoEnvVars *)((Moby *)moby)->pvars;
+    int *p = &data->jets_a[0];
     int i;
     for (i = 15; i >= 0; i--) {
         jet_group_state(*p, 1, 1, 1);
         p++;
     }
-    p = (int *)(data + 0xA0);
+    p = &data->jets_b[0];
     for (i = 7; i >= 0; i--) {
         jet_group_state(*p, 0, 0, 0);
         p++;
@@ -293,15 +325,15 @@ extern void challenge_set_layout_param(float);
 // Resets the moby's two arrays of handles, then starts the follow-up effect.
 void restore_gadgetron_ceo_non_challenge_environment(char *moby)
 {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct CeoEnvVars *data = (struct CeoEnvVars *)((Moby *)moby)->pvars;
     int *p;
     int i;
-    p = (int *)(data + 0x60);
+    p = &data->jets_a[0];
     for (i = 15; i >= 0; i--) {
         jet_group_state(p[0], 0, 0, 0);
         p++;
     }
-    p = (int *)(data + 0xA0);
+    p = &data->jets_b[0];
     for (i = 7; i >= 0; i--) {
         jet_group_state(p[0], 1, 1, 0);
         p++;
@@ -315,13 +347,13 @@ extern int is_point_inside_clip_volume(void *, int);
 
 /* update: a two-state trigger on the player's state */
 void update_two_region_trigger_latch(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    switch (*(int *)(data + 8)) {
+    struct TwoRegionTriggerVars *data = (struct TwoRegionTriggerVars *)((Moby *)moby)->pvars;
+    switch (data->state) {
     case 0: {
         char *g = hero_globals_base + 0xE9D;
-        if (is_point_inside_clip_volume(g, *(int *)data) != 0) {
+        if (is_point_inside_clip_volume(g, *(int *)((char *)data)) != 0) {
             if (*(int *)(g + 0x200C) == 0xF) {
-                *(int *)(data + 8) = 1;
+                data->state = 1;
             }
         }
         break;
@@ -329,8 +361,8 @@ void update_two_region_trigger_latch(char *moby) {
     case 1: {
         struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
         if (h->state.current == 0x42) {
-            *(int *)(data + 8) = 0;
-        } else if (is_point_inside_clip_volume(&h->motion.pos, *(int *)(data + 4)) != 0) {
+            data->state = 0;
+        } else if (is_point_inside_clip_volume(&h->motion.pos, data->clip_b) != 0) {
             unsigned char *f = (unsigned char *)menu_item_enabled_115 + 0x1;
             if (f[0x19] == 0) {
                 f[0x19] = 1;
@@ -754,9 +786,9 @@ void DrawRingStack(char *m) {
     L16RingPacket packet;
     L16RingMatrix matrix;
     char *d=((char *)((Moby *)m)->pvars);
-    int bound_index=(*(int *)((char *)d+0xA0))<<7;
+    int bound_index=(((struct RingStackVars *)d)->bound_index)<<7;
     char *entry=(char *)(bound_index+(int)kalebo3_level_cylinders);
-    float translation=(*(float *)((char *)d+0xB8));
+    float translation=(((struct RingStackVars *)d)->translation);
     float lower=(*(float *)((char *)entry+0x38));
     float half=(*(float *)((char *)entry+0x28));
     float upper=lower+half+translation;
@@ -769,7 +801,7 @@ void DrawRingStack(char *m) {
     int i,j,sign,period;
     lower=lower-half;
     lower+=translation;
-    color=FastTweenColor((*(int *)&elevator_ring_color_start),(*(int *)&elevator_ring_color_end),FastAbsF((*(float *)((char *)d+0xB0)))/((*(float *)&elevator_max_speed)*g_frame_time));
+    color=FastTweenColor((*(int *)&elevator_ring_color_start),(*(int *)&elevator_ring_color_end),FastAbsF((((struct RingStackVars *)d)->speed))/((*(float *)&elevator_max_speed)*g_frame_time));
     copy_matrix_rotation(&matrix,m+0xC0);
     qcopy(matrix.position,m+16);
     matrix.position[2]=lower; matrix.position[3]=1.0f;
@@ -857,20 +889,20 @@ void update_target_reposition_cycle(char *moby) {
     char *target;
     int n;
     float pos[4];
-    if (!is_point_inside_clip_volume(g, *(int *)(data + 8))) return;
-    target = kalebo3_moby_array + (*(int *)(data + 4) << 8);
+    if (!is_point_inside_clip_volume(g, ((struct RepositionCycleVars *)data)->clip_volume)) return;
+    target = kalebo3_moby_array + (((struct RepositionCycleVars *)data)->target_index << 8);
     switch ((unsigned char)moby[0x20]) {
     case 0:
         moby[0x20] = 1;
-        *(int *)(data + 0xC) = scale_ticks(rand_range(0xB4, 0x168));
+        ((struct RepositionCycleVars *)data)->timer = scale_ticks(rand_range(0xB4, 0x168));
         break;
     case 1:
         if (vec_distance_xy(g, target + 0x10) > 3.0f) {
             if (find_group_class_010e_moby_in_state_6(*(int *)data) != 0) {
-                if (fast_dec_timer(data + 0xC)) {
+                if (fast_dec_timer(&((struct RepositionCycleVars *)data)->timer)) {
                     moby[0x20] = 2;
                     request_target_reposition(target);
-                    *(int *)(data + 0xC) = scale_ticks(rand_range(0xB4, 0x168));
+                    ((struct RepositionCycleVars *)data)->timer = scale_ticks(rand_range(0xB4, 0x168));
                 }
             }
         }

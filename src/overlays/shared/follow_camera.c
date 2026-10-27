@@ -7,6 +7,23 @@
 #include "moby.h"
 #include "camera.h"
 
+/* Hydrodisplacer effect emitter: only a spawn countdown. */
+struct HydroEffectVars {
+    u8 pad_00[0x4];
+    s32 spawn_timer;                /* 0x04: ticks until the next spawn */
+};
+
+/* Robot arm debris piece: flies with a velocity, spins, bounces off surfaces, explodes. */
+struct RobotArmVars {
+    Vec4A velocity;                 /* 0x00 */
+    Vec4A spin;                     /* 0x10: euler spin angles */
+    u8 offset[0xC];                 /* 0x20: sphere centre offset in the moby frame */
+    f32 radius;                     /* 0x2C: collision sphere radius */
+    s32 timer;                      /* 0x30: ticks until the state changes */
+    s32 flags;                      /* 0x34: bit 0 picks state 3, bit 1 the colour-swapped burst */
+    f32 gravity;                    /* 0x38: subtracted from velocity.z each frame */
+};
+
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
@@ -19,12 +36,12 @@ extern void PartType35Spawn(void *, void *, int, int);
 
 /* while the countdown value is ready, scatter a spawn by the camera's offset and reroll the delay */
 void emit_hydrodisplacer_effect(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct HydroEffectVars *d = (struct HydroEffectVars *)((Moby *)m)->pvars;
     float a[4];
     float b[4];
     struct Hero *pad;
     float f;
-    if (fast_dec_timer_r((int *)(d + 4))) {
+    if (fast_dec_timer_r(&d->spawn_timer)) {
         Moby_GetJointWorldPos(m, 0, a);
         f = random_float_between(g_frame_time, g_frame_time * 3.0f);
         vec_scale_to_length(b, m + 0xD0, -f);
@@ -33,7 +50,7 @@ void emit_hydrodisplacer_effect(char *m) {
         b[1] += pad->motion.displacement.f[1] * 0.8f;
         b[2] += pad->motion.displacement.f[2] + random_float_between(g_frame_time * -0.5f, g_frame_time + g_frame_time);
         PartType35Spawn(a, b, 2, rand_range(0x5A, 0x78));
-        *(int *)(d + 4) = rand_range(scale_ticks(5), scale_ticks(0xF));
+        d->spawn_timer = rand_range(scale_ticks(5), scale_ticks(0xF));
     }
 }
 extern char g_hero[];
@@ -931,7 +948,7 @@ extern float coll_hit_normal[] NOT_SDA;
 
 /* Update of an effect-group moby: state machine over its life, then it steers a sprite along its path and bounces it off surfaces. */
 void robot_arm_update(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct RobotArmVars *d = (struct RobotArmVars *)((Moby *)m)->pvars;
     float a20[4];
     float a30[12];
     float a60[4];
@@ -949,55 +966,55 @@ void robot_arm_update(char *m) {
         DeleteMoby(m);
         return;
     case 1:
-        if (fast_dec_timer_r((int *)(d + 0x30))) {
-            m[0x20] = (*(int *)(d + 0x34) & 1) ? 3 : 2;
-            *(int *)(d + 0x30) = truncate_float_to_s32_r(multiply_global_factor(10.0f));
+        if (fast_dec_timer_r(&d->timer)) {
+            m[0x20] = (d->flags & 1) ? 3 : 2;
+            d->timer = truncate_float_to_s32_r(multiply_global_factor(10.0f));
             return;
         }
         break;
     case 2:
-        matrix_mul_vec3(a20, d + 0x20, m + 0xC0);
+        matrix_mul_vec3(a20, d->offset, m + 0xC0);
         FastVecAdd(a20, a20, m + 0x10);
-        if (*(int *)(d + 0x34) & 2) {
-            spawn_color_swapped_explosion_burst(m, a20, -1, *(float *)(d + 0x2C) * 0.5f, 0.0f);
+        if (d->flags & 2) {
+            spawn_color_swapped_explosion_burst(m, a20, -1, d->radius * 0.5f, 0.0f);
         } else {
-            float h = *(float *)(d + 0x2C) * 0.5f;
-            spawn_explosion(m, veldin1_zero_vec, a20, 0.0f, 0.0f, 5, *(float *)(d + 0x2C), 3, h, 9.0f, 5, h, -1, 0.0f, 0, 0, -1, 0);
+            float h = d->radius * 0.5f;
+            spawn_explosion(m, veldin1_zero_vec, a20, 0.0f, 0.0f, 5, d->radius, 3, h, 9.0f, 5, h, -1, 0.0f, 0, 0, -1, 0);
         }
         DeleteMoby(m);
         return;
     case 3:
-        if (fast_dec_timer_r((int *)(d + 0x30))) {
+        if (fast_dec_timer_r(&d->timer)) {
             DeleteMoby(m);
             return;
         }
-        m[0x23] = truncate_float_to_s32_r((float)*(int *)(d + 0x30) / multiply_global_factor(10.0f) * 128.0f);
+        m[0x23] = truncate_float_to_s32_r((float)d->timer / multiply_global_factor(10.0f) * 128.0f);
         break;
     }
-    s23 = d + 0x10;
+    s23 = (char *)&d->spin;
     euler_rotation_basis(a30, s23);
-    matrix_mul_vec3(a20, d + 0x20, m + 0xC0);
+    matrix_mul_vec3(a20, d->offset, m + 0xC0);
     multiply_matrix3x3(m + 0xC0, a30, m + 0xC0);
-    matrix_mul_vec3(a60, d + 0x20, m + 0xC0);
+    matrix_mul_vec3(a60, d->offset, m + 0xC0);
     FastVecSub(a70, a60, a20);
     FastVecSub((float *)(m + 0x10), (float *)(m + 0x10), a70);
-    FastVecAdd(m + 0x10, m + 0x10, d);
-    r = *(float *)(d + 0x2C);
-    *(float *)(d + 8) = *(float *)(d + 8) - *(float *)(d + 0x38);
-    matrix_mul_vec3(a80, d + 0x20, m + 0xC0);
+    FastVecAdd(m + 0x10, m + 0x10, &d->velocity);
+    r = d->radius;
+    d->velocity.z = d->velocity.z - d->gravity;
+    matrix_mul_vec3(a80, d->offset, m + 0xC0);
     FastVecAdd(a80, a80, m + 0x10);
     if (coll_sphere_s(a80, r, 0, m)) {
         float f21, f20;
         q = coll_hit_normal;
         vec_scale_to_length(q, q, 1.0f);
-        f21 = FastVecLength(d);
-        f20 = FastVecDot(d, q);
+        f21 = FastVecLength(&d->velocity);
+        f20 = FastVecDot(&d->velocity, q);
         if (f20 < 0.0f) {
-            vec_reflect(d, d, q);
+            vec_reflect(&d->velocity, &d->velocity, q);
             vec_scale_to_length(aD0, q, f20 * 0.5f);
-            FastVecAdd(d, d, aD0);
-            vec_scale_to_length(d, d, f21);
-            FastVecCross(aE0, q, d);
+            FastVecAdd(&d->velocity, &d->velocity, aD0);
+            vec_scale_to_length(&d->velocity, &d->velocity, f21);
+            FastVecCross(aE0, q, &d->velocity);
             vec_scale_to_length(aE0, aE0, 1.0f);
             build_quaternion_from_axis_angle(aE0, aE0, FastVecLength(s23));
             quaternion_to_matrix(aE0, a90);

@@ -5,6 +5,39 @@
 #include "moby.h"
 #include "vector.h"
 
+/* Colored half-scale moby: owner and fading-particle color. */
+struct HalfScaleMobyVars {
+    Vec4A target;                   /* 0x00: copy of the target position */
+    s32 owner;                      /* 0x10 */
+    s32 color;                      /* 0x14 */
+};
+
+/* Moby 778: random burst of sparks between min and max count. */
+struct SparkBurstVars {
+    s32 min_count;                  /* 0x00 */
+    s32 max_count;                  /* 0x04 */
+};
+
+/* Pool drip (update_falling_splash_moby shares the layout but stays raw). */
+struct PoolDripVars {
+    Vec4A vel;                      /* 0x00: z (0x08) is pulled down by gravity */
+    f32 gravity;                    /* 0x10 */
+    s32 timer;                      /* 0x14: frames left */
+    s32 landed;                     /* 0x18 */
+    f32 spin;                       /* 0x1C: pitch step */
+};
+
+/* Debris moby: flies along dir while it tumbles. */
+struct DebrisMobyVars {
+    Vec4A vel;                      /* 0x00 */
+    f32 spin_x;                     /* 0x10 */
+    f32 spin_y;                     /* 0x14 */
+    f32 spin_z;                     /* 0x18 */
+    u8 pad_1C[0x4];
+    s32 timer;                      /* 0x20 */
+    char *source;                   /* 0x24 */
+};
+
 typedef int u128p __attribute__((mode(TI)));
 typedef struct {
     unsigned int c[3];
@@ -280,7 +313,7 @@ char *spawn_colored_half_scale_moby(int owner, void *pos, void *target, int colo
     Vy p;
     Vy t;
     char *m;
-    char *v;
+    struct HalfScaleMobyVars *v;
     Vy *pp;
     Vy *tp;
 
@@ -290,8 +323,8 @@ char *spawn_colored_half_scale_moby(int owner, void *pos, void *target, int colo
     t = *(Vy *)target;
     m = CreateMoby(0x2D2);
     if (m != 0) {
-        v = ((char *)((Moby *)m)->pvars);
-        *(int *)(v + 0x10) = owner;
+        v = (struct HalfScaleMobyVars *)((Moby *)m)->pvars;
+        v->owner = owner;
         m[0x30] = 0x7F;
         ((Moby *)m)->draw_dist = 0x7F;
         m[0x31] = 1;
@@ -301,10 +334,10 @@ char *spawn_colored_half_scale_moby(int owner, void *pos, void *target, int colo
         ((Moby *)m)->rot.y = random_angle_radians();
         ((Moby *)m)->rot.z = random_angle_radians();
         qcopy(m + 0x10, pp);
-        qcopy(v, tp);
-        *(int *)(v + 0x14) = color;
+        qcopy(&v->target, tp);
+        v->color = color;
         spawn_source_attached_fading_effect_particle(m, 0x2F00007F, color, -1, 210000.0f);
-        spawn_source_attached_fading_effect_particle(m, 0x4F004F7F, *(int *)(v + 0x14), -1, 115500.0f);
+        spawn_source_attached_fading_effect_particle(m, 0x4F004F7F, v->color, -1, 115500.0f);
         ((void (*)(void *))moby_build_matrix)(m);
     }
     return m;
@@ -1373,13 +1406,13 @@ typedef int u128b __attribute__((mode(TI)));
 
 // Breakable prop update: when hit, spawns a burst of debris sparks then replaces itself.
 void Moby778Update(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct SparkBurstVars *d = (struct SparkBurstVars *)((Moby *)m)->pvars;
     char *t = MobyGetHitMessage(m, 0x10000, 0);
     ((Moby *)m)->hit_slot = 0xFF;
     if (t != 0 && 0.0f < *(float *)(t + 0x2C)) {
         float v[4];
         float w[4];
-        int n = random_integer_below(*(int *)(d + 4) - *(int *)d + 1) + *(int *)d;
+        int n = random_integer_below(d->max_count - d->min_count + 1) + d->min_count;
         int k;
         if (n > 0) {
             do {
@@ -1477,7 +1510,7 @@ extern float g_frame_time_sq_s __asm__("D_0015EE70") MACRO_ADDR;
 char *pool_drip(void *position,float scale) {
  char *m=CreateMoby(0x313);
  if(m) {
-  char *data=((char *)((Moby *)m)->pvars);
+  struct PoolDripVars *data = (struct PoolDripVars *)((Moby *)m)->pvars;
   copy_hero_moby_field_38(m);
   *(int *)&((Moby *)m)->rot.x=0;
   ((Moby *)m)->scale*=scale;
@@ -1485,12 +1518,12 @@ char *pool_drip(void *position,float scale) {
   ((unsigned char *)m)[0x30]=0xFF;
   ((Moby *)m)->rot.z=random_angle_radians();
   qcopy(m+0x10,position);
-  qzero(data);
+  qzero(&data->vel);
   {float gravity=-g_frame_time;float duration=g_frame_time_sq_s*15.0f;
-  *(float *)(data+8)=gravity;
-  *(float *)(data+0x10)=duration;}
-  *(int *)(data+0x14)=120;
-  *(float *)(data+0x1C)=random_float_between(0.0031415929552167654f,0.06283185631036758f);
+  data->vel.z=gravity;
+  data->gravity=duration;}
+  data->timer=120;
+  data->spin=random_float_between(0.0031415929552167654f,0.06283185631036758f);
   moby_build_matrix_spawn(m);
  }
  return m;
@@ -1971,12 +2004,12 @@ typedef struct { int w[4]; } __attribute__((aligned(16))) Quad;
 /* spawn a debris moby on src, scaled, moving along dir with random spin and lifetime. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l01/gameplay_vendor_00309bf8.c, FUN_L01_0030be70. */
 char *SpawnDebrisMoby(char *src, void *dir, float scale) {
     char *m;
-    char *v;
+    struct DebrisMobyVars *v;
 
     m = CreateMoby(0x5E6);
     if (m != 0) {
-        v = ((char *)((Moby *)m)->pvars);
-        *(char **)(v + 0x24) = src;
+        v = (struct DebrisMobyVars *)((Moby *)m)->pvars;
+        v->source = src;
         qcopy(m + 0x10, src + 0x10);
         *(Quad *)(m + 0x40) = *(Quad *)(src + 0x40);
         m[0x20] = 0;
@@ -1984,11 +2017,11 @@ char *SpawnDebrisMoby(char *src, void *dir, float scale) {
         ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
         ((Moby *)m)->scale = ((Moby *)m)->scale * scale;
-        vec_scale_to_length(v, dir, random_float_between(0.8f, 1.2f));
-        *(float *)(v + 0x10) = randf_sym(0.0f, 0.008726646f);
-        *(float *)(v + 0x14) = randf_sym(0.05235988f, 0.13962634f);
-        *(float *)(v + 0x18) = randf_sym(0.0f, 0.017453292f);
-        *(int *)(v + 0x20) = scale_ticks(200);
+        vec_scale_to_length(&v->vel, dir, random_float_between(0.8f, 1.2f));
+        v->spin_x = randf_sym(0.0f, 0.008726646f);
+        v->spin_y = randf_sym(0.05235988f, 0.13962634f);
+        v->spin_z = randf_sym(0.0f, 0.017453292f);
+        v->timer = scale_ticks(200);
         ((void (*)(void *))moby_build_matrix)(m);
     }
     return m;

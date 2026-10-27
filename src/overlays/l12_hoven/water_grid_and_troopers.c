@@ -5,6 +5,55 @@
 #include "moby.h"
 #include "hero.h"
 
+/* Hoven troll walker (same class as TrollVars_e3528 below, which is defined after these functions). */
+struct HovenTrollVars {
+    u8 pad_00[0x120];
+    u8 fall[0x10];                  /* 0x120: knockback / fall state */
+    u8 pad_130[0x50];
+    u8 move_ctl[0x120];             /* 0x180: move_w block */
+    f32 turn_vel;                   /* 0x2A0: MobySpringTurn velocity */
+    u8 pad_2A4[0x2C];
+    s32 path_index;                 /* 0x2D0: index in hoven_paths, -1 when none */
+    s32 stuck_ticks;                /* 0x2D4: frames spent crossing the path */
+};
+
+/* Moving platform: accelerates toward a target speed and turns with a spring. */
+struct HovenPlatformVars {
+    u8 pad_00[0x40];
+    Vec4A vel;                      /* 0x40 */
+    u8 pad_50[0x80];
+    f32 max_speed;                  /* 0xD0: per tick */
+    f32 accel;                      /* 0xD4: per tick squared */
+    u8 pad_D8[0x20];
+    f32 yaw_vel;                    /* 0xF8: SpringAngle velocity */
+};
+
+/* Level 12 effects emitter: draws only while the camera is inside its clip volume. */
+struct EffectsEmitterVars {
+    u8 pad_00[0xC];
+    s32 clip_volume;                /* 0xC: -1 always draws */
+};
+
+/* Blarg helicopter flying along a hoven path. */
+struct HelicopterPathVars {
+    u8 pad_00[0x28];
+    u8 unk_28;                      /* 0x28 */
+    u8 pad_29;
+    u8 unk_2A;                      /* 0x2A */
+    u8 unk_2B;                      /* 0x2B */
+    u8 unk_2C;                      /* 0x2C */
+    u8 pad_2D[0x3];
+    f32 unk_30;                     /* 0x30 */
+    u8 pad_34[0x2C];
+    s32 path_pos;                   /* 0x60: path descriptor, current point */
+    u8 pad_64[0xC];
+    char *path_table;               /* 0x70 */
+    s32 path_id;                    /* 0x74: index in hoven_paths, -1 when none */
+    u8 pad_78[0x28];
+    s32 start_index;                /* 0xA0 */
+    s32 hit_timer;                  /* 0xA4 */
+};
+
 /* functional: medium. level 12 moby update (class 19): state 0 claims a slot in the 0x1190-byte table and builds it,
  * state 2 steers, then the per-frame tail. Not a match (1380 bytes against 1420). Starts from the near miss in
  * nonmatching/l12_hoven/, with two differences found by tools/equiv.py: the second near-hero test stores the
@@ -711,31 +760,31 @@ int move_hoven_anklebiter_toward_heading(char *moby, float target) {
     float k = 0.05f;
     float w[4];
     float v[4];
-    char *d;
+    struct HovenTrollVars *d;
     int r;
-    d = ((char *)((Moby *)moby)->pvars);
+    d = (struct HovenTrollVars *)((Moby *)moby)->pvars;
     *(u128 *)pos = *(u128 *)(moby + 0x10);
     ease_hoven_anklebiter_height_to_ground(moby);
-    MobySpringTurn(moby, (float *)(d + 0x2A0), target, k, 0.3f, 0.2f);
+    MobySpringTurn(moby, &d->turn_vel, target, k, 0.3f, 0.2f);
     vel[0] = FastCos(((Moby *)moby)->rot.z) * 2;
     vel[1] = FastSin(((Moby *)moby)->rot.z) * 2;
     vel[2] = 0;
-    r = move_w(moby, d + 0x180, vel, (char *)out, 1.0f);
-    if (*(int *)(d + 0x2D0) != -1) {
+    r = move_w(moby, d->move_ctl, vel, (char *)out, 1.0f);
+    if (d->path_index != -1) {
         float *vp = v;
         FastVecSub(vp, pos, moby + 0x10);
         vec_scale_to_length(vp, vp, k);
         FastVecAdd(w, pos, vp);
-        if (SegmentCrossPolyline(*(int *)(d + 0x2D0), moby + 0x10, w, res)) {
-            int *tbl = (int *)hoven_paths[*(int *)(d + 0x2D0)];
+        if (SegmentCrossPolyline(d->path_index, moby + 0x10, w, res)) {
+            int *tbl = (int *)hoven_paths[d->path_index];
             if (IsPointInPolygon(moby + 0x10, tbl + 4, *tbl) == 0) {
                 *(u128 *)(moby + 0x10) = *(u128 *)res;
             }
             if (FastVecDist(moby + 0x10, pos) < g_frame_time * 0.5f) {
-                *(int *)(d + 0x2D4) = *(int *)(d + 0x2D4) + 1;
-                if (scale_ticks(10) < *(int *)(d + 0x2D4)) r = 2;
+                d->stuck_ticks = d->stuck_ticks + 1;
+                if (scale_ticks(10) < d->stuck_ticks) r = 2;
             } else {
-                *(int *)(d + 0x2D4) = 0;
+                d->stuck_ticks = 0;
             }
         }
     }
@@ -772,7 +821,7 @@ void TrollSpawnBurst(struct Moby *mp) {
     float a[4];
     float b[4];
     float o[4];
-    char *d;
+    struct HovenTrollVars *d;
     float f20;
     float f21;
     float f22;
@@ -782,7 +831,7 @@ void TrollSpawnBurst(struct Moby *mp) {
     int j;
     int k;
     int x16, x17, x18, x19, r7;
-    d = ((char *)((Moby *)arg0)->pvars);
+    d = (struct HovenTrollVars *)((Moby *)arg0)->pvars;
     if (((unsigned char)arg0[0x20]) == 0xF) {
         n = truncate_float_to_s32_r((float)n * 1.5f);
     }
@@ -803,7 +852,7 @@ void TrollSpawnBurst(struct Moby *mp) {
         r = FastSin(f22);
         a[1] = r * (f20 * g_frame_time);
         a[2] = (f21 * g_frame_time) + 0.0f;
-        FastVecScale(o, d + 0x120, 0.5f);
+        FastVecScale(o, d->fall, 0.5f);
         o[2] = 0.0f;
         FastVecAdd(a, a, o);
         qcopy(b, a);
@@ -1009,7 +1058,7 @@ extern float SpringAngle(float *, float, float *, int, float, float, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/entities/002bf140.c, FUN_L12_002e3c08. */
 void steer_platform_toward_target(char *m, float *ang, void *target, int unused, int brake) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct HovenPlatformVars *d = (struct HovenPlatformVars *)((Moby *)m)->pvars;
     float v[4];
     float dist;
     float speed;
@@ -1017,27 +1066,27 @@ void steer_platform_toward_target(char *m, float *ang, void *target, int unused,
     float lim = 1.9198622f;
     FastVecSub(v, target, m + 0x10);
     dist = FastVecLength(v);
-    speed = FastVecLength(d + 0x40);
+    speed = FastVecLength(&d->vel);
     if (brake) {
         if (speed == 0.0f)
             speed = g_frame_time * 0.01f;
-        acc = *(float *)(d + 0xD4) * g_frame_time_sq;
+        acc = d->accel * g_frame_time_sq;
         if (acc < speed * speed / (dist + dist))
             speed -= acc;
-        else if (speed < *(float *)(d + 0xD0) * g_frame_time)
+        else if (speed < d->max_speed * g_frame_time)
             speed += acc;
     } else {
-        if (speed < *(float *)(d + 0xD0) * g_frame_time)
-            speed += *(float *)(d + 0xD4) * g_frame_time_sq;
-        else if (*(float *)(d + 0xD0) * g_frame_time < speed)
-            speed -= *(float *)(d + 0xD4) * g_frame_time_sq;
+        if (speed < d->max_speed * g_frame_time)
+            speed += d->accel * g_frame_time_sq;
+        else if (d->max_speed * g_frame_time < speed)
+            speed -= d->accel * g_frame_time_sq;
     }
-    vec_scale_to_length(d + 0x40, v, speed);
+    vec_scale_to_length(&d->vel, v, speed);
     ApproachValue(m + 0x40, ang[0], FastDiffRots(ang[0], ((Moby *)m)->rot.x) / (*(float *)&platform_tilt_approach_divisor));
     ApproachValue(m + 0x44, ang[1], FastDiffRots(ang[1], ((Moby *)m)->rot.y) / (*(float *)&platform_tilt_approach_divisor));
-    SpringAngle((float *)(m + 0x48), ang[2], (float *)(d + 0xF8), 0, g_frame_scale_sq * 0.005f, g_frame_scale_sq * 0.3f,
+    SpringAngle((float *)(m + 0x48), ang[2], &d->yaw_vel, 0, g_frame_scale_sq * 0.005f, g_frame_scale_sq * 0.3f,
            g_frame_time * lim);
-    FastVecAdd(m + 0x10, m + 0x10, d + 0x40);
+    FastVecAdd(m + 0x10, m + 0x10, &d->vel);
 }
 extern char hero_globals_base[];
 extern short platform_tilt_offset_divisor;
@@ -1517,7 +1566,7 @@ extern void AddDrawCallback(void *, void *);
 
 /* Queues the level 12 effects draw when the camera is inside the moby's clip volume. */
 void register_level_12_effects_draw_callback(unsigned char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct EffectsEmitterVars *data = (struct EffectsEmitterVars *)((Moby *)moby)->pvars;
     switch (((Moby *)moby)->state) {
     case 0:
         ((Moby *)moby)->state = 1;
@@ -1525,7 +1574,7 @@ void register_level_12_effects_draw_callback(unsigned char *moby) {
         break;
     case 1:
         {
-            int value = *(int *)(data + 0xC);
+            int value = data->clip_volume;
             if (value == -1 || is_point_inside_clip_volume(hoven_camera_pos, value)) {
                 AddDrawCallback((void *)draw_level_12_effects, moby);
             }
@@ -3172,7 +3221,7 @@ extern short planetbuster_engaged;
 
 // Spawns the effect for a moby and updates its state flags from the effect timer.
 void process_helicopter_hits_and_reactivation(char *m, int flag) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct HelicopterPathVars *d = (struct HelicopterPathVars *)((Moby *)m)->pvars;
     float a[4];
     float b[4];
     unsigned char *q;
@@ -3191,7 +3240,7 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
         qcopy(a, m + 0x10);
         clear_u64_value(b);
         spawn_randomized_bolt_drop(m, 0x1F, 0x4A, 2, -1);
-        *(int *)(d + 0xA4) = scale_ticks(500);
+        d->hit_timer = scale_ticks(500);
         spawn_explosion(m, b, a, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
     }
     ((Moby *)m)->hit_slot = 0xFF;
@@ -3199,8 +3248,8 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
         *(int *)&((Moby *)m)->collision = 0;
         ((Moby *)m)->flags = (((Moby *)m)->flags | 0x41) & 0xEFFF;
     }
-    if (*(int *)(d + 0xA4) == 0 && (((Moby *)m)->flags & 1) == 0) return;
-    if (fast_dec_timer((int *)(d + 0xA4)) != 0 && flag != 0 && *(int *)&planetbuster_engaged == 0) {
+    if (d->hit_timer == 0 && (((Moby *)m)->flags & 1) == 0) return;
+    if (fast_dec_timer(&d->hit_timer) != 0 && flag != 0 && *(int *)&planetbuster_engaged == 0) {
         *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
         ((Moby *)m)->flags = (((Moby *)m)->flags & 0xFFBE) | 0x1000;
     } else {
@@ -3222,40 +3271,40 @@ extern short helicopter_rotation_smoothing_divisor;
  * places the moby at one of its points; state 1 walks the table's points (index at data + 0x60), easing the angles at
  * +0x40 and +0x48 toward the next point and setting +0x44 to 0.5236. */
 void Moby336Update(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct HelicopterPathVars *d = (struct HelicopterPathVars *)((Moby *)m)->pvars;
     float A[4];
     float B[4];
     float C[4];
     float E[4];
-    if (d != 0) {
+    if (((char *)d) != 0) {
         int r = check_scaled_vector_bsphere_i(m, IntToFloat(((Moby *)m)->draw_dist));
         process_helicopter_hits_and_reactivation(m, r == -1);
         switch ((unsigned char)m[0x20]) {
         case 0:
-            if (*(int *)(d + 0x74) != -1) {
+            if (d->path_id != -1) {
                 char *tbl;
                 int idx;
                 int cnt;
-                initialize_path_descriptor(d + 0x60);
-                tbl = hoven_paths[*(int *)(d + 0x74)];
-                *(char **)(d + 0x70) = tbl;
-                idx = *(int *)(d + 0xA0);
+                initialize_path_descriptor((char *)&d->path_pos);
+                tbl = hoven_paths[d->path_id];
+                d->D_L11_001B11B0 = tbl;
+                idx = d->start_index;
                 cnt = *(int *)tbl - 1;
                 if (cnt < idx) idx = cnt;
                 qcopy((m + 0x10), tbl + idx * 16 + 0x10);
-                d[0x2A] = 0x10;
-                d[0x28] = 2;
-                d[0x2C] = 0x2C;
-                *(float *)(d + 0x30) = 1.4f;
-                d[0x2B] = 1;
-                *(int *)(d + 0x60) = idx;
+                d->unk_2A = 0x10;
+                d->unk_28 = 2;
+                d->unk_2C = 0x2C;
+                d->unk_30 = 1.4f;
+                d->unk_2B = 1;
+                d->path_pos = idx;
                 m[0x20] = 1;
                 ((Moby *)m)->draw_dist = 0xAA;
                 ((Moby *)m)->flags |= 0x1000;
             }
             break;
         case 1: {
-            char *p = d + 0x60;
+            char *p = (char *)&d->path_pos;
             int cur = *(int *)p;
             char *tbl = *(char **)(p + 0x10);
             int step = *(char *)(p + 4);
@@ -3276,7 +3325,7 @@ void Moby336Update(char *m) {
                 FastSubRots(ang * *(float *)&helicopter_path_bank_scale, ((Moby *)m)->rot.x) / *(float *)&helicopter_rotation_smoothing_divisor);
             if (FastVecDist(m + 0x10, C) < *(float *)&helicopter_path_speed * g_frame_time) {
                 char *t3;
-                *(int *)(d + 0x60) = next;
+                d->path_pos = next;
                 t3 = *(char **)(p + 0x10);
                 if (next == *(int *)t3 - 1) {
                     qcopy((m + 0x10), t3 + 0x10);

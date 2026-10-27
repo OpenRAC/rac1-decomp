@@ -5,6 +5,15 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Configurable spark emitter: one burst source at the moby, or one per point of a path. */
+struct ParticleEmitterVars {
+    s32 mode;                       /* 0x00: 0 idle, 1 / 2 / 3 spark kinds */
+    s32 path_id;                    /* 0x04: -1 = emit at the moby */
+    s16 timers[32];                 /* 0x08: emit timer per source */
+    s16 bursts[32];                 /* 0x48: burst timer per source */
+    f32 ground_height;              /* 0x88 */
+};
+
 typedef int u128_2E30F8 __attribute__((mode(TI)));
 typedef struct { float v[4]; char *m; int flags; unsigned char b0; unsigned char b1; unsigned short id; float f; int n; int pad[3]; } Hit2E30F8;
 typedef struct { char p0[0x1C0]; int f1C0; char p1[0x20A4 - 0x1C4]; unsigned char f20A4; } Hero2E30F8;
@@ -1157,11 +1166,18 @@ typedef struct ShipD_5E48 {
     char p0[0x20];
     float f20;
     short s24;
-    char p26[2];
+    short hit_timer;                /* 0x26 */
     unsigned char b28;
     unsigned char b29;
     char p2A[0x16];
-    char a40[0xB0];
+    char a40[0x10];                 /* 0x40: explosion position */
+    char p50[0x70];
+    short color_fade;               /* 0xC0: StepColorFade block */
+    char pC2[5];
+    unsigned char flash;            /* 0xC7: hit flash strength */
+    char pC8[8];
+    V_2E52B0 target_pos;            /* 0xD0 */
+    char pE0[0x10];
     V_2E52B0 vF0;
     char p100[0x10];
     Ship_5E48 *tgt;
@@ -1178,7 +1194,9 @@ typedef struct ShipD_5E48 {
     float f160;
     float f164;
     int i168;
-    char p16C[0x2A];
+    char p16C[0x24];
+    int path_id;                    /* 0x190 */
+    char p194[2];
     short s196;
     float f198;
     float f19C;
@@ -1443,9 +1461,9 @@ extern unsigned char hero_globals_base_e1d[] __asm__("D_0013E633");
 // Updates hit reactions and selects an enemy's movement target.
 void update_blarg_ship_hit_reactions_and_targeting(char *m) {
  char *d=((char *)((Moby *)m)->pvars),*hit=MobyGetHitMessage(m,0x370000,0); int flag; float amount=0;
- int result=ComputeHitResponse(m,hit,d+0x20,5,&flag,&amount,0,4);
+ int result=ComputeHitResponse(m,hit,&((struct ShipD_5E48 *)d)->f20,5,&flag,&amount,0,4);
  if(hit && flag!=1 && (unsigned char)m[0x20]!=8) {
-  *(float *)(d+0x20)-=amount; if(*(float *)(d+0x20)<=0) result=1;
+  ((struct ShipD_5E48 *)d)->f20-=amount; if(((struct ShipD_5E48 *)d)->f20<=0) result=1;
   if(*(int *)(hit+0x24)&0x40000) result=1;
   switch(result) {
   case 1: goto death;
@@ -1464,34 +1482,34 @@ void update_blarg_ship_hit_reactions_and_targeting(char *m) {
   default: goto react;
   }
  stun:
-  ((unsigned char *)d)[0xc7]=250;RerollEffectCounter(m,(short *)(d+0xc0));goto finish;
+  ((struct ShipD_5E48 *)d)->flash=250;RerollEffectCounter(m,&((struct ShipD_5E48 *)d)->color_fade);goto finish;
  death:
-  ((unsigned char *)d)[0xc7]=250;RerollEffectCounter(m,(short *)(d+0xc0));m[0x20]=8;goto finish;
+  ((struct ShipD_5E48 *)d)->flash=250;RerollEffectCounter(m,&((struct ShipD_5E48 *)d)->color_fade);m[0x20]=8;goto finish;
  react:
-  ((unsigned char *)d)[0xc7]=250;*(short *)(d+0x26)=scale_ticks(60);
-  RerollEffectCounter(m,(short *)(d+0xc0));MobyBlendAnimation(m,4,0,scale_ticks(6));
+  ((struct ShipD_5E48 *)d)->flash=250;((struct ShipD_5E48 *)d)->hit_timer=scale_ticks(60);
+  RerollEffectCounter(m,&((struct ShipD_5E48 *)d)->color_fade);MobyBlendAnimation(m,4,0,scale_ticks(6));
   m[0xbc]=m[0x20];m[0x20]=7;
  }
  finish:
- ((unsigned char *)m)[0xa4]=255;StepColorFade(m,d+0xc0);
+ ((unsigned char *)m)[0xa4]=255;StepColorFade(m,&((struct ShipD_5E48 *)d)->color_fade);
  { unsigned char *hero=hero_globals_base_e1d+0xE1D;
  if(hero[0x20a4]==1) {
-  char *v;select_hero_or_gadgebot_target(101.0f,m,d+0x110);
-  if(*(char **)(d+0x110)==0) *(int *)(d+0x114)=2;
-  else {v=orxon_paths[*(int *)(d+0x190)];
-   if(!IsPointInPolygon(*(char **)(d+0x110)+0x10,v+0x10,*(int *)v)) {*(int *)(d+0x110)=0;*(int *)(d+0x114)=2;}
-   else {*(int *)(d+0x114)=0;goto finaltarget;}
+  char *v;select_hero_or_gadgebot_target(101.0f,m,&((struct ShipD_5E48 *)d)->tgt);
+  if(*(char **)&((struct ShipD_5E48 *)d)->tgt==0) ((struct ShipD_5E48 *)d)->i114=2;
+  else {v=orxon_paths[((struct ShipD_5E48 *)d)->path_id];
+   if(!IsPointInPolygon(*(char **)&((struct ShipD_5E48 *)d)->tgt+0x10,v+0x10,*(int *)v)) {*(int *)&((struct ShipD_5E48 *)d)->tgt=0;((struct ShipD_5E48 *)d)->i114=2;}
+   else {((struct ShipD_5E48 *)d)->i114=0;goto finaltarget;}
   }
  } else {
-  char *v=orxon_paths[*(int *)(d+0x190)];
-  if(FindNearestEligibleMoby(101.0f,m,d+0xd0,0,0,v+0x10,*(int *)v)!=2 && ((unsigned char *)m)[0x31]==0) *(int *)(d+0x114)=2;
+  char *v=orxon_paths[((struct ShipD_5E48 *)d)->path_id];
+  if(FindNearestEligibleMoby(101.0f,m,&((struct ShipD_5E48 *)d)->target_pos,0,0,v+0x10,*(int *)v)!=2 && ((unsigned char *)m)[0x31]==0) ((struct ShipD_5E48 *)d)->i114=2;
  }
 finaltarget:
  ;
  }
- if(*(int *)(d+0x110)==0) {
+ if(*(int *)&((struct ShipD_5E48 *)d)->tgt==0) {
  unsigned char *hero2=hero_globals_base_e1d+0xE1D;
- *(char **)(d+0x110)=*(char **)(hero2+0x2080);
+ *(char **)&((struct ShipD_5E48 *)d)->tgt=*(char **)(hero2+0x2080);
  }
 }
 extern short orxon_vent_puff_color_a, orxon_vent_puff_color_b, orxon_vent_puff_speed_max, orxon_vent_puff_speed_min, directional_particle_gravity_gp, orxon_vent_spark_percent;
@@ -2137,48 +2155,48 @@ extern void emit_height_adjusted_burst_spark_particle_a01(float,void *,short *,s
 extern void emit_timed_spark_particle(void *,short *);
 // Updates a point emitter, optionally applying effects over up to 32 path points.
 void update_configurable_particle_emitter(char *m) {
- char *d=((char *)((Moby *)m)->pvars);
+ struct ParticleEmitterVars *d = (struct ParticleEmitterVars *)((Moby *)m)->pvars;
  switch((unsigned char)m[0x20]) {
  case 0:
-  switch(*(int *)d) {
+  switch(d->mode) {
   case 0:m[0x20]=1;break;
   case 1:
-   if(*(int *)(d+4)!=-1) {
-    char *tab=orxon_paths[*(int *)(d+4)];
+   if(d->path_id!=-1) {
+    char *tab=orxon_paths[d->path_id];
     char *pos=tab+0x10;
     int n=*(int *)tab;
     if(n>32)n=32;
     if(n>0) {int count=n;float *height=(float *)(tab+0x1C);
     do {*height=ProbeGroundHeight(pos,0,0.5f);pos+=0x10;height+=4;}while(--count);}
-   }else *(float *)(d+0x88)=ProbeGroundHeight(m+0x10,0,0.5f);
+   }else d->ground_height=ProbeGroundHeight(m+0x10,0,0.5f);
    m[0x20]=2;break;
   case 2:m[0x20]=3;break;
   }
   break;
  case 1:
-  if(*(int *)(d+4)==-1)emit_burst_spark_particle(m+0x10,(short *)(d+8),(short *)(d+0x48));
+  if(d->path_id==-1)emit_burst_spark_particle(m+0x10,&d->timers[0],&d->bursts[0]);
   else {
-   char *tab=orxon_paths[*(int *)(d+4)];int n=*(int *)tab;
+   char *tab=orxon_paths[d->path_id];int n=*(int *)tab;
    if(n>32)n=32;
-   if(n>0) {short *burst=(short *)(d+0x48);short *timer=(short *)(d+8);char *pos=tab+0x10;int count=n;
+   if(n>0) {short *burst=&d->bursts[0];short *timer=&d->timers[0];char *pos=tab+0x10;int count=n;
    do {emit_burst_spark_particle(pos,timer,burst);timer++;++burst;--count;pos+=0x10;}while(count);}
   }
   break;
  case 2:
-  if(*(int *)(d+4)==-1)emit_height_adjusted_burst_spark_particle_a01(*(float *)(d+0x88),m+0x10,(short *)(d+8),(short *)(d+0x48));
+  if(d->path_id==-1)emit_height_adjusted_burst_spark_particle_a01(d->ground_height,m+0x10,&d->timers[0],&d->bursts[0]);
   else {
-   char *tab=orxon_paths[*(int *)(d+4)];int n=*(int *)tab;
+   char *tab=orxon_paths[d->path_id];int n=*(int *)tab;
    if(n>32)n=32;
-   if(n>0) {float *height=(float *)(tab+0x1C);short *burst=(short *)(d+0x48);short *timer=(short *)(d+8);char *pos=tab+0x10;int count=n;
+   if(n>0) {float *height=(float *)(tab+0x1C);short *burst=&d->bursts[0];short *timer=&d->timers[0];char *pos=tab+0x10;int count=n;
    do {emit_height_adjusted_burst_spark_particle_a01(*height,pos,timer,burst);height+=4;++burst;++timer;--count;pos+=0x10;}while(count);}
   }
   break;
  case 3:
-  if(*(int *)(d+4)==-1)emit_timed_spark_particle(m+0x10,(short *)(d+8));
+  if(d->path_id==-1)emit_timed_spark_particle(m+0x10,&d->timers[0]);
   else {
-   char *tab=orxon_paths[*(int *)(d+4)];int n=*(int *)tab;
+   char *tab=orxon_paths[d->path_id];int n=*(int *)tab;
    if(n>32)n=32;
-   if(n>0) {short *timer=(short *)(d+8);char *pos=tab+0x10;int count=n;
+   if(n>0) {short *timer=&d->timers[0];char *pos=tab+0x10;int count=n;
    do {emit_timed_spark_particle(pos,timer);++timer;--count;pos+=0x10;}while(count);}
   }
   break;

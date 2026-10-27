@@ -4,6 +4,12 @@
 #include "callees.h"
 #include "include_asm.h"
 
+/* Ship pickup moby: remembers whether the hero is at the ship entry point. */
+struct ShipPickupVars {
+    u8 pad_00[0xC];
+    s16 near_entry;                 /* 0x0C: 1 while hero is within 4 units of the entry point */
+};
+
 extern char hero_globals_base[];
 /* Returns 1 if sound slot i belongs to owner a and is starting or playing. */
 int Sound_IsPlaying(int a, int i) {
@@ -151,7 +157,7 @@ extern void draw_light_flare(void);
 
 /* Per-frame update of a pickup-like moby: pulses its colour, tracks the player's range and collects items. */
 void update_moby_proximity_interaction(unsigned char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct ShipPickupVars *d = (struct ShipPickupVars *)((Moby *)m)->pvars;
     float *p;
     float tmp[4];
     int v;
@@ -173,11 +179,11 @@ void update_moby_proximity_interaction(unsigned char *m) {
             }
         }
         p = (float *)(m + 0x10);
-        if (*(short *)(d + 0xC) != 0) {
+        if (d->near_entry != 0) {
             matrix_mul_vec3(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
             FastVecAdd(tmp, tmp, p);
             if (FastVecDist(tmp, hero_globals_base + 0xE9D) > 4.1f) {
-                *(short *)(d + 0xC) = 0;
+                d->near_entry = 0;
             }
         } else {
             q = (unsigned char *)hero_globals_base + 0xE9D;
@@ -185,14 +191,14 @@ void update_moby_proximity_interaction(unsigned char *m) {
                 matrix_mul_vec3(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
                 FastVecAdd(tmp, tmp, p);
                 if (FastVecDist(tmp, q) < 4.0f) {
-                    *(short *)(d + 0xC) = 1;
+                    d->near_entry = 1;
                 }
             }
         }
         if (((Moby *)m)->flags & 1) {
-            *(short *)(d + 0xC) = 0;
+            d->near_entry = 0;
         }
-        if (*(short *)(d + 0xC) != 0) {
+        if (d->near_entry != 0) {
             int r = try_set_help_message(2, 0x53E9) != 0;
             if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && r) {
                 if (g_current_level_index_m == 10 && *(unsigned char *)(hero_globals_base + 0x2EC1) == 1) {

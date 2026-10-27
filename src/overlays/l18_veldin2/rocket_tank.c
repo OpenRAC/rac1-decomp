@@ -4,6 +4,40 @@
 #include "callees.h"
 #include "include_asm.h"
 
+/* Rocket tank: aims its turret at the hero, drives along a path and owns two child mobys. */
+struct RocketTankVars {
+    u8 pad_00[0x20];
+    f32 health;                     /* 0x20: hit response block */
+    u8 pad_24[0x1C];
+    u8 explosion[0x10];             /* 0x40: spawn_explosion_alt */
+    u8 pad_50[0x10];
+    s16 color_fade;                 /* 0x60: StepColorFade block */
+    u8 pad_62[0x5];
+    u8 flash;                       /* 0x67: hit flash strength */
+    u8 pad_68[0x8];
+    Vec4A aim_pos;                  /* 0x70: point the turret aims at */
+    u8 pad_80[0x30];
+    char *target;                   /* 0xB0: moby being aimed at */
+    s32 target_state;               /* 0xB4: 2 = no target */
+    u8 pad_B8[0x18];
+    Vec4A turret_rot;               /* 0xD0 */
+    u8 pad_E0[0x20];
+    s32 path_id;                    /* 0x100 */
+    u8 pad_104[0xC];
+    f32 turret_yaw;                 /* 0x110 */
+    f32 turret_yaw_vel;             /* 0x114 */
+    f32 turret_pitch;               /* 0x118 */
+    f32 turret_pitch_vel;           /* 0x11C */
+    s32 path_index;                 /* 0x120: current path point */
+    u8 pad_124[0x4];
+    f32 turn_vel;                   /* 0x128 */
+    f32 speed;                      /* 0x12C */
+    f32 aim_range;                  /* 0x130: max distance of the aim vector */
+    f32 aim_phase;                  /* 0x134: sway angle */
+    char *child_a;                  /* 0x138 */
+    char *child_b;                  /* 0x13C */
+};
+
 /* Declarations this file shares with vendor_002F2AE0.c, which it was part of until the two were found to be
    separate translation units: that file reaches D_L18_00162430 as a 2-byte object through $gp, this one as a
    4-byte one through lui. */
@@ -258,24 +292,24 @@ extern float SteerAngleWithVelocity(float *, float *, float, float, float, float
 /* Applies hits to the rocket tank and breaks it apart when its health runs out. */
 void update_rocket_tank_damage_and_aim(void *mv) {
     unsigned char *m = mv;
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct RocketTankVars *d = (struct RocketTankVars *)((Moby *)m)->pvars;
     int r;
     float dist;
     float v[4];
     int res;
-    ComputeHitResponse(m, MobyGetHitMessage(m, 0x330000, 0), d + 0x20, 0, &res, &dist, 0, 4);
+    ComputeHitResponse(m, MobyGetHitMessage(m, 0x330000, 0), &d->health, 0, &res, &dist, 0, 4);
     if (res != 1 && ((Moby *)m)->state != 0) {
-        float t = *(float *)(d + 0x20) - dist;
-        *(float *)(d + 0x20) = t;
+        float t = d->health - dist;
+        d->health = t;
         if (t > 0.0f) {
-            d[0x67] = 0x78;
+            d->flash = 0x78;
         } else {
             float *pa;
             float *dv;
             qcopy(v, m + 0x10);
             v[2] = v[2] + 1.0f;
             pa = (float *)(m + 0x10);
-            spawn_explosion_alt(m, d + 0x40, v, 0.0f, 0.0f, 20, 8, 20, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+            spawn_explosion_alt(m, d->explosion, v, 0.0f, 0.0f, 20, 8, 20, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             dv = veldin2_zero_vec;
             SpawnBreakFragment(m, 0x700, pa, m + 0x40, 0, 0, 0.0f, dv, dv, dv);
             SpawnBreakFragment(m, 0x701, pa, m + 0x40, 0, 0, 0.0f, dv, dv, dv);
@@ -288,38 +322,38 @@ void update_rocket_tank_damage_and_aim(void *mv) {
             SpawnBreakFragment(m, 0x6FF, pa, m + 0x40, 0, 0, 0.0f, dv, dv, dv);
             SetDeathBits(m, 0, -1);
             DeleteMoby(m);
-            if (*(char **)(d + 0x138)) {
-                DeleteMoby(*(char **)(d + 0x138));
+            if (d->child_a) {
+                DeleteMoby(d->child_a);
             }
-            if (*(char **)(d + 0x13C)) {
-                DeleteMoby(*(char **)(d + 0x13C));
+            if (d->child_b) {
+                DeleteMoby(d->child_b);
             }
             return;
         }
-        RerollEffectCounter(m, (short *)(d + 0x60));
+        RerollEffectCounter(m, &d->color_fade);
     }
     ((Moby *)m)->hit_slot = 0xFF;
-    if (FindNearestTargetMoby(m, d + 0x70, 30.0f) != 2) {
+    if (FindNearestTargetMoby(m, (char *)&d->aim_pos, 30.0f) != 2) {
         float *pa = (float *)(m + 0x10);
         char *pl = hero_globals_base + 0xE9D;
         if (vec_distance_xy(pa, pl) < 10.0f) {
             char *q = pl - 0x80;
-            *(char **)(d + 0xB0) = *(char **)(q + 0x2080);
-            qcopy(d + 0x70, *(char **)(q + 0x2080) + 0x10);
-        } else if (*(char **)(d + 0xB0)) {
-            if (30.0f < vec_distance_xy(pa, *(char **)(d + 0xB0) + 0x10)) {
-                *(int *)(d + 0xB4) = 2;
+            d->target = *(char **)(q + 0x2080);
+            qcopy(&d->aim_pos, *(char **)(q + 0x2080) + 0x10);
+        } else if (d->target) {
+            if (30.0f < vec_distance_xy(pa, d->target + 0x10)) {
+                d->target_state = 2;
             }
         }
     }
-    if (*(int *)(d + 0xB4) != 2) {
+    if (d->target_state != 2) {
         float a, b;
-        FastVecSub(v, d + 0x70, m + 0x10);
+        FastVecSub(v, &d->aim_pos, m + 0x10);
         v[2] = v[2] - 3.0f;
-        if (FastVecLength(v) > *(float *)(d + 0x130)) {
-            vec_set_length_xy(v, v, *(float *)(d + 0x130));
+        if (FastVecLength(v) > d->aim_range) {
+            vec_set_length_xy(v, v, d->aim_range);
         }
-        a = FastSin(*(float *)(d + 0x134)) * 0.08726646f;
+        a = FastSin(d->aim_phase) * 0.08726646f;
         a = FastAddRots(fast_atan2(v[0], v[1]), a);
         b = -fast_atan2(vec_length_xy(v), v[2]);
         if (b > 0.34906584f) {
@@ -327,16 +361,16 @@ void update_rocket_tank_damage_and_aim(void *mv) {
         } else if (b < -0.7853982f) {
             b = -0.7853982f;
         }
-        SteerAngleWithVelocity((float *)(d + 0x110), (float *)(d + 0x114), a, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
-        SteerAngleWithVelocity((float *)(d + 0x118), (float *)(d + 0x11C), b, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
+        SteerAngleWithVelocity(&d->turret_yaw, &d->turret_yaw_vel, a, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
+        SteerAngleWithVelocity(&d->turret_pitch, &d->turret_pitch_vel, b, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
     } else {
-        SteerAngleWithVelocity((float *)(d + 0x110), (float *)(d + 0x114), ((Moby *)m)->rot.z, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
-        SteerAngleWithVelocity((float *)(d + 0x118), (float *)(d + 0x11C), 0.0f, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
+        SteerAngleWithVelocity(&d->turret_yaw, &d->turret_yaw_vel, ((Moby *)m)->rot.z, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
+        SteerAngleWithVelocity(&d->turret_pitch, &d->turret_pitch_vel, 0.0f, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
     }
-    axis_rotation_2d48(v, 1, *(float *)(d + 0x118));
-    axis_rotation_2d48(d + 0xD0, 2, FastSubRots(*(float *)(d + 0x110), ((Moby *)m)->rot.z));
-    multiply_quaternions(d + 0xD0, v, d + 0xD0);
-    StepColorFade(m, d + 0x60);
+    axis_rotation_2d48(v, 1, d->turret_pitch);
+    axis_rotation_2d48(&d->turret_rot, 2, FastSubRots(d->turret_yaw, ((Moby *)m)->rot.z));
+    multiply_quaternions(&d->turret_rot, v, &d->turret_rot);
+    StepColorFade(m, &d->color_fade);
 }
 extern int *veldin2_paths[];
 extern short rocket_tank_path_speed;
@@ -348,42 +382,42 @@ extern float FastVecDist(void *, void *);
 
 /* Turns and drives the rocket tank toward its next path point, picking a new one on arrival. */
 void update_rocket_tank_path_movement(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct RocketTankVars *d = (struct RocketTankVars *)((Moby *)m)->pvars;
     float t[4];
     float v[4];
     float ang, f, z, sc;
     char *p;
-    qcopy(t, (char *)veldin2_paths[*(int *)(d + 0x100)] + *(int *)(d + 0x120) * 16 + 0x10);
+    qcopy(t, (char *)veldin2_paths[d->path_id] + d->path_index * 16 + 0x10);
     ang = fast_atan2(t[0] - ((Moby *)m)->pos.x, t[1] - ((Moby *)m)->pos.y);
-    SteerAngleWithVelocity((float *)(m + 0x48), (float *)(d + 0x128), ang, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
+    SteerAngleWithVelocity((float *)(m + 0x48), &d->turn_vel, ang, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
     f = *(float *)&rocket_tank_path_speed * g_frame_time;
     if (FastDiffRots(ang, ((Moby *)m)->rot.z) > 0.2617994f) {
         f = g_frame_time_g;
     }
-    ApproachValue((float *)(d + 0x12C), f, g_frame_time_sq);
+    ApproachValue(&d->speed, f, g_frame_time_sq);
     z = 0.0f;
-    vec_scale_to_length(v, m + 0xC0, *(float *)(d + 0x12C));
+    vec_scale_to_length(v, m + 0xC0, d->speed);
     move_4318((int)m, (int)v, 0.5f, 0.5f, z, 0);
     if (FastVecDist(m + 0x10, t) < 1.0f) {
-        int k = random_integer_below(*veldin2_paths[*(int *)(d + 0x100)] - 1) + 1;
-        *(int *)(d + 0x120) = (*(int *)(d + 0x120) + k) % *veldin2_paths[*(int *)(d + 0x100)];
+        int k = random_integer_below(*veldin2_paths[d->path_id] - 1) + 1;
+        d->path_index = (d->path_index + k) % *veldin2_paths[d->path_id];
     }
-    sc = *(float *)(d + 0x12C) / (*(float *)&rocket_tank_child_anim_ref_speed * g_frame_time);
+    sc = d->speed / (*(float *)&rocket_tank_child_anim_ref_speed * g_frame_time);
     if (sc > 2.0f) sc = 2.0f;
     else if (sc < z) sc = z;
-    p = *(char **)(d + 0x138);
+    p = d->child_a;
     if (p) {
         char *q;
         *(float *)(p + 0x58) = sc;
-        q = *(char **)(d + 0x138);
+        q = d->child_a;
         qcopy(q + 0x40, m + 0x40);
         qcopy(q + 0x10, m + 0x10);
     }
-    p = *(char **)(d + 0x13C);
+    p = d->child_b;
     if (p) {
         char *q;
         *(float *)(p + 0x58) = sc;
-        q = *(char **)(d + 0x13C);
+        q = d->child_b;
         qcopy(q + 0x40, m + 0x40);
         qcopy(q + 0x10, m + 0x10);
     }

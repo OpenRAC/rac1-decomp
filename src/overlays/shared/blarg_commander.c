@@ -4,6 +4,14 @@
 #include "include_asm.h"
 #include "moby.h"
 
+/* Blarg commander shot (class 0x55B): thrown by the commander, falls with mine_fall and bursts. */
+struct CommanderShotVars {
+    u8 pad_00[0x10];
+    s32 mine_ptr;                   /* 0x10: address of mine_state */
+    u8 pad_14[0xC];
+    u8 mine_state[0x10];            /* 0x20: mine_fall state */
+};
+
 extern void VU1_addGSregister(int, long);
 extern void font_queue_vu_state(void);
 extern int FastBSphereCheck(char *, float);
@@ -97,7 +105,7 @@ char *create_class_55b_moby_from_source(char *a0)
         *(u128_8670 *)(m + 0x40) = *(u128_8670 *)(a0 + 0x40);
         *(char **)(m + 0xB8) = a0;
         FastMemZero16(d, 0x20);
-        *(int *)(d + 0x10) = (int)(d + 0x20);
+        ((struct CommanderShotVars *)d)->mine_ptr = (int)((struct CommanderShotVars *)d)->mine_state;
         moby_build_matrix(m);
     }
     return (char *)m;
@@ -181,15 +189,15 @@ extern void DeleteMoby(void *);
 // updates a moby's velocity and either spawns an effect and deletes itself or expires by height
 void blarg_commander_update(char *m) {
     int st;
-    char *d;
+    struct CommanderShotVars *d;
     char *p;
     int r;
     MO *mo = (MO *)m;
     char v[16];
     st = ((Moby *)m)->prev_seq;
-    d = ((char *)((Moby *)m)->pvars);
+    d = (struct CommanderShotVars *)((Moby *)m)->pvars;
     if (st == 1) {
-        p = d + 0x20;
+        p = (char *)d->mine_state;
         r = mine_fall(m, p);
         mo->vx = FastAddRots(mo->vx, g_frame_time * 4.3633232f);
         mo->vy = FastAddRots(mo->vy, g_frame_time * 4.3633232f);

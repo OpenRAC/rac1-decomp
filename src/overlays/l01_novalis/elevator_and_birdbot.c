@@ -6,6 +6,23 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Tethered mine: hangs on a tether with four chain links, scales down with distance and blows up when hit. */
+struct TetheredMineVars {
+    u8 pad_00[0x2B];
+    s8 unk_2B;                      /* 0x2B */
+    s8 unk_2C;                      /* 0x2C */
+    u8 pad_2D[0xA3];
+    Vec4A anchor_a;                 /* 0xD0 */
+    Vec4A anchor_b;                 /* 0xE0 */
+    u8 pad_F0[0xC];
+    f32 tether_scale;               /* 0xFC */
+    u8 pad_100[0x40];
+    s32 links[4];                   /* 0x140: moby slots of the chain links, -1 when none */
+    u8 pad_150[0x20];
+    f32 base_scale;                 /* 0x170 */
+    f32 base_tether_scale;          /* 0x174 */
+};
+
 struct DmaTag_2BA898 {
     u32 tag;
     u32 addr;
@@ -2153,13 +2170,13 @@ extern void gunship_follow_path(char *);
 void TetheredMineUpdate(char *m) {
     float dir[4];
     float tmp[4];
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct TetheredMineVars *d = (struct TetheredMineVars *)((Moby *)m)->pvars;
     void *hit = MobyGetHitMessage(m, 0x800000, 0);
     float s;
     ((unsigned char *)m)[0xA4] = 0xFF;
     if (((unsigned char *)m)[0x20] == 0) {
-        *(float *)(d + 0x170) = ((Moby *)m)->scale;
-        *(float *)(d + 0x174) = *(float *)(d + 0xFC);
+        d->base_scale = ((Moby *)m)->scale;
+        d->base_tether_scale = d->tether_scale;
     }
     {
         float dist = FastVecDist(m + 0x10, camera_pos);
@@ -2170,8 +2187,8 @@ void TetheredMineUpdate(char *m) {
         if (1.0f < s) s = 1.0f;
         if (s < lo) s = lo;
     }
-    ((Moby *)m)->scale = *(float *)(d + 0x170) * s;
-    *(float *)(d + 0xFC) = *(float *)(d + 0x174) * s;
+    ((Moby *)m)->scale = d->base_scale * s;
+    d->tether_scale = d->base_tether_scale * s;
     if (hit != 0) {
         int i;
         int *t;
@@ -2181,12 +2198,12 @@ void TetheredMineUpdate(char *m) {
             PlayBankSound(1, 0, 0);
             ShowBanner(0x53DB, -1);
         }
-        FastVecSub(tmp, d + 0xD0, d + 0xE0);
+        FastVecSub(tmp, &d->anchor_a, &d->anchor_b);
         m[0x20] = 0x65;
         *(u128 *)dir = *(u128 *)tmp;
         spawn_explosion(m, dir, m + 0x10, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 1, 15.0f, 1, 1, -1, 0);
         SpawnDebrisMoby(m, dir, s);
-        t = (int *)(d + 0x140);
+        t = &d->links[0];
         for (i = 0; i < 4; i++) {
             if (t[i] != -1) {
                 DeleteMoby((char *)(*(int *)&novalis_mobys + (t[i] << 8)));
@@ -2198,8 +2215,8 @@ void TetheredMineUpdate(char *m) {
     if (((unsigned char *)m)[0x20] == 0x65) return;
     gunship_follow_path(m);
     ((Moby *)m)->flags |= 0x1000;
-    d[0x2B] = 1;
-    d[0x2C] = 0x64;
+    d->unk_2B = 1;
+    d->unk_2C = 0x64;
     if (175.0f <= ((Moby *)m)->pos.z) {
         m[0x23] = 0;
     } else if (125.0f < ((Moby *)m)->pos.z && ((Moby *)m)->pos.z < 175.0f) {

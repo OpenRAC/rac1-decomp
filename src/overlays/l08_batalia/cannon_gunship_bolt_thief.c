@@ -4,6 +4,37 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Bolt thief: scans a fixed list of mobys for its targets. */
+struct BoltThiefVars {
+    u8 pad_00[0x130];
+    s32 target_ids[10];             /* 0x130: indices in batalia_mobys */
+    char *targets[10];              /* 0x158: mobys of the thief class found in target_ids */
+};
+
+/* One joint-aligned part: the moby, what it hangs from and the joints that line them up. */
+struct JointPartSlot {
+    char *part;                     /* 0x00 */
+    char *anchor;                   /* 0x04 */
+    s32 joint;                      /* 0x08 */
+    s32 anchor_joint;               /* 0x0C */
+};
+
+/* Shrub: a chain of joint-aligned parts, slot 0 is the shrub itself. */
+struct ShrubVars {
+    u8 pad_00[0x60];
+    struct JointPartSlot slots[13]; /* 0x60 */
+    u8 pad_130[0xC];
+    s16 hit_count;                  /* 0x13C: wraps at 8 */
+};
+
+/* Commando body: a chain of joint-aligned parts, slot 0 is the commando itself. */
+struct JointLinkedVars {
+    u8 pad_00[0x60];
+    struct JointPartSlot slots[17]; /* 0x60 */
+    u8 pad_170[0xC];
+    s16 hit_count;                  /* 0x17C */
+};
+
 typedef struct RData51_2E0258 RData51_2E0258;
 struct RData51_2E0258 { char pad0[0x58]; int health, pad5C; Moby *linked[8]; int indices[4]; char pad90[0x10]; int timer; };
 extern void VU1_addGSregister_r(int, long) __asm__("func_00234C98");
@@ -1293,11 +1324,11 @@ extern char *batalia_mobys MACRO_ADDR;
 
 /* updates matching objects in the selected object range */
 void build_bolt_thief_target_list(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct BoltThiefVars *data = (struct BoltThiefVars *)((Moby *)moby)->pvars;
     int oclass=0x279;
     char *base = batalia_mobys;
-    int *ids = (int *)(data + 0x130);
-    char **output = (char **)(data + 0x158);
+    int *ids = &data->target_ids[0];
+    char **output = &data->targets[0];
     int i=9;
     for (;;) {
         char *other = (char *)((*ids << 8) + (unsigned int)base);
@@ -1621,7 +1652,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
     StepColorFade(m, d->x60);
 }
 typedef int u128_4BE8 __attribute__((mode(TI)));
-typedef struct {
+typedef struct Vars_4BE8 {
     float v0[4];               /* 0x00 */
     float v10[4];              /* 0x10 */
     float v20[4];              /* 0x20 */
@@ -2181,7 +2212,7 @@ void compute_batalia_bolt_pickup_surface_pose(char *m, float *out, float *rot) {
     float dir[4];
     float u[4];
     float v[4];
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct Vars_4BE8 *d = (struct Vars_4BE8 *)((Moby *)m)->pvars;
     float sx, sy, sz;
     float t;
     switch (((Moby *)m)->oclass) {
@@ -2201,23 +2232,23 @@ void compute_batalia_bolt_pickup_surface_pose(char *m, float *out, float *rot) {
         sz = *(float *)&batalia_bolt_forward_offset * *(float *)&batalia_bolt_scale;
         break;
     }
-    euler_to_matrix(b, (float *)(d + 0x10));
-    vec_scale_to_length(u, b, -FastSin(*(float *)(d + 0x60)));
-    vec_scale_to_length(v, b + 4, FastCos(*(float *)(d + 0x60)));
+    euler_to_matrix(b, &d->v10[0]);
+    vec_scale_to_length(u, b, -FastSin(d->f60));
+    vec_scale_to_length(v, b + 4, FastCos(d->f60));
     FastVecAdd(dir, u, v);
     t = sx * 0.017453292f;
     vec_scale_to_length(u, dir, FastCos(t));
     vec_scale_to_length(v, b + 8, FastSin(t));
     FastVecAdd(up, u, v);
-    vec_scale_to_length(u, b, -FastCos(*(float *)(d + 0x60)));
-    vec_scale_to_length(v, b + 4, -FastSin(*(float *)(d + 0x60)));
+    vec_scale_to_length(u, b, -FastCos(d->f60));
+    vec_scale_to_length(v, b + 4, -FastSin(d->f60));
     FastVecAdd(fwd, u, v);
     FastVecCross(side, up, fwd);
-    vec_scale_to_length(u, side, FastCos(*(float *)(d + 0x64)));
-    vec_scale_to_length(v, fwd, FastSin(*(float *)(d + 0x64)));
+    vec_scale_to_length(u, side, FastCos(d->f64));
+    vec_scale_to_length(v, fwd, FastSin(d->f64));
     FastVecAdd(r, u, v);
-    vec_scale_to_length(u, side, -FastSin(*(float *)(d + 0x64)));
-    vec_scale_to_length(v, fwd, FastCos(*(float *)(d + 0x64)));
+    vec_scale_to_length(u, side, -FastSin(d->f64));
+    vec_scale_to_length(v, fwd, FastCos(d->f64));
     FastVecAdd(r + 4, u, v);
     qcopy(r + 8, up);
     r[11] = 0.0f;
@@ -2226,7 +2257,7 @@ void compute_batalia_bolt_pickup_surface_pose(char *m, float *out, float *rot) {
     matrix_to_euler(r, rot);
     rot[3] = 0.0f;
     vec_scale_to_length(u, b + 8, sy);
-    FastVecAdd(out, d, u);
+    FastVecAdd(out, d->v0, u);
     vec_scale_to_length(v, dir, sz);
     FastVecAdd(out, out, v);
 }
@@ -2247,8 +2278,8 @@ extern short bolt_pickup_quad_center_offset_along_moby_c0;
 /* When the short at data + 0x6C is nonzero, projects the moby's offset position to screen space and draws a
  * four-corner quad there, its corners rotated in 90-degree steps by the angle at data + 0x74 and scaled by distance. */
 void draw_batalia_bolt_pickup_rotating_quad(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
-    if (*(short *)(d + 0x6C) != 0) {
+    struct Vars_4BE8 *d = (struct Vars_4BE8 *)((Moby *)m)->pvars;
+    if (d->s6C != 0) {
         long v[4];
         int w[4];
         int t[4];
@@ -2276,21 +2307,21 @@ void draw_batalia_bolt_pickup_rotating_quad(char *m) {
         r16 = (long)truncate_float_to_s32(a[2] * 0.9997f + *(float *)(g + 0x1A8)) << 32;
         if (len > 16.0f) len = 16.0f;
         else if (len < 4.0f) len = 4.0f;
-        s = IntToFloat(d[0x7B] + 0x10) * 0.015625f * (50.0f - len * 2.5f);
+        s = IntToFloat(((char *)d)[0x7B] + 0x10) * 0.015625f * (50.0f - len * 2.5f);
         {
-            float A = s * FastSin(*(float *)(d + 0x74));
-            float B = s * FastCos(*(float *)(d + 0x74));
-            float C = s * FastSin(FastAddRots(*(float *)(d + 0x74), 1.5707964f));
-            float D = s * FastCos(FastAddRots(*(float *)(d + 0x74), 1.5707964f));
-            float E = s * FastSin(FastAddRots(*(float *)(d + 0x74), 4.712389f));
-            float F = s * FastCos(FastAddRots(*(float *)(d + 0x74), 4.712389f));
-            float G = s * FastSin(FastAddRots(*(float *)(d + 0x74), 3.1415927f));
-            float H = s * FastCos(FastAddRots(*(float *)(d + 0x74), 3.1415927f));
+            float A = s * FastSin(d->f74);
+            float B = s * FastCos(d->f74);
+            float C = s * FastSin(FastAddRots(d->f74, 1.5707964f));
+            float D = s * FastCos(FastAddRots(d->f74, 1.5707964f));
+            float E = s * FastSin(FastAddRots(d->f74, 4.712389f));
+            float F = s * FastCos(FastAddRots(d->f74, 4.712389f));
+            float G = s * FastSin(FastAddRots(d->f74, 3.1415927f));
+            float H = s * FastCos(FastAddRots(d->f74, 3.1415927f));
             t[0] = 0;
             t[1] = 0x200;
             t[2] = 0x2000000;
             t[3] = 0x2000200;
-            dv = *(int *)(d + 0x78);
+            dv = d->u78.i;
             w[3] = dv; w[2] = dv; w[1] = dv; w[0] = dv;
             v[3] = r16; v[2] = r16; v[1] = r16; v[0] = r16;
             v[0] += (truncate_float_to_s32(B) << 20) + r18;
@@ -2309,41 +2340,41 @@ void draw_batalia_bolt_pickup_rotating_quad(char *m) {
 }
 /* spawns the child mobys this object owns and fills its part table */
 void spawn_shrub_parts(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    char *e = data + 0xBC;
+    struct ShrubVars *data = (struct ShrubVars *)((Moby *)moby)->pvars;
+    char *e = (char *)&data->slots[5].anchor_joint;
     int i = 0;
     char *c;
     char *c2;
     char *c3;
-    *(char **)(data + 0x60) = moby;
-    *(int *)(data + 0x64) = 0;
-    *(int *)(data + 0x68) = 0;
-    *(int *)(data + 0x6C) = 0;
-    *(char **)(data + 0x90) = spawn_joint_aligned_moby_part(moby, 0x1C0, 1, 0);
-    *(char **)(data + 0x94) = moby;
-    ((Moby *)data)->collision_disable = 1;
-    *(int *)(data + 0x9C) = 0;
+    data->slots[0].part = moby;
+    *(int *)&data->slots[0].anchor = 0;
+    data->slots[0].joint = 0;
+    data->slots[0].anchor_joint = 0;
+    data->slots[3].part = spawn_joint_aligned_moby_part(moby, 0x1C0, 1, 0);
+    data->slots[3].anchor = moby;
+    data->slots[3].joint = 1;
+    data->slots[3].anchor_joint = 0;
     c = spawn_joint_aligned_moby_part(moby, 0x1BD, 0, 2);
-    *(char **)(data + 0x70) = c;
-    *(int *)(data + 0x7C) = 2;
-    *(char **)(data + 0x74) = moby;
-    *(int *)(data + 0x78) = 0;
+    data->slots[1].part = c;
+    data->slots[1].anchor_joint = 2;
+    data->slots[1].anchor = moby;
+    data->slots[1].joint = 0;
     *(float *)(c + 0x2C) = *(float *)(*(char **)(c + 0x24) + 0x24) * 0.75f;
     c2 = spawn_joint_aligned_moby_part(moby, 0x1BA, 1, 1);
-    *(char **)(data + 0x80) = c2;
-    *(char **)(data + 0x84) = moby;
-    *(int *)(data + 0x88) = 1;
-    *(int *)(data + 0x8C) = 1;
+    data->slots[2].part = c2;
+    data->slots[2].anchor = moby;
+    data->slots[2].joint = 1;
+    data->slots[2].anchor_joint = 1;
     c3 = spawn_joint_aligned_moby_part(c2, 0x1B9, 0, 0);
-    *(char **)(data + 0xA0) = c3;
-    *(char **)(data + 0xA4) = *(char **)(data + 0x80);
-    *(int *)(data + 0xA8) = 0;
-    *(int *)(data + 0xAC) = 0;
+    data->slots[4].part = c3;
+    data->slots[4].anchor = data->slots[2].part;
+    data->slots[4].joint = 0;
+    data->slots[4].anchor_joint = 0;
     do {
         int j = i + 2;
         i++;
-        *(char **)(e - 0xC) = spawn_joint_aligned_moby_part(*(char **)(data + 0x90), 0x1BB, 0, j);
-        *(char **)(e - 8) = *(char **)(data + 0x90);
+        *(char **)(e - 0xC) = spawn_joint_aligned_moby_part(data->slots[3].part, 0x1BB, 0, j);
+        *(char **)(e - 8) = data->slots[3].part;
         *(int *)(e - 4) = 0;
         *(int *)e = j;
         e += 0x10;
@@ -2360,7 +2391,7 @@ extern float g_frame_time MACRO_ADDR;
  * set to 1, the slot cleared), or the moby's state becomes 0x63 if none is left. */
 void process_shrub_part_hits(char *m) {
     char *data = ((char *)((Moby *)m)->pvars);
-    char *base = data + 0x60;
+    char *base = (char *)((struct ShrubVars *)data)->slots;
     char **p = (char **)base;
     char **sq;
     int n = 0;
@@ -2381,9 +2412,9 @@ void process_shrub_part_hits(char *m) {
             }
         }
     }
-    *(unsigned short *)(data + 0x13C) += n;
-    if (*(short *)(data + 0x13C) >= 8) {
-        *(short *)(data + 0x13C) = *(short *)(data + 0x13C) % 8;
+    *(unsigned short *)&((struct ShrubVars *)data)->hit_count += n;
+    if (((struct ShrubVars *)data)->hit_count >= 8) {
+        ((struct ShrubVars *)data)->hit_count = ((struct ShrubVars *)data)->hit_count % 8;
         if (idx != 0) {
             int o1 = idx * 16;
             char **q = (char **)(base + o1);
@@ -2429,9 +2460,9 @@ extern short shrub_part_spin_speed;
 /* Re-aims the twelve child mobys of a parent, adjusts the parent's spin, then runs the children's follow-up. */
 void update_shrub_parts(char *a) {
     struct Moby *parent_moby = (struct Moby *)a;
-    char *data = (char *)parent_moby->pvars;
+    struct ShrubVars *data = (struct ShrubVars *)parent_moby->pvars;
     float part_joint_position[4], anchor_joint_position[4], joint_alignment_offset[4];
-    char *base = data + 0x60;
+    char *base = (char *)data->slots;
     int i;
     for (i = 0; i < 12; i++) {
         int *anchor_joint_cursor = (int *)(base + 0x1C + i * 16);
@@ -2444,9 +2475,9 @@ void update_shrub_parts(char *a) {
             FastVecAdd(&m->pos, &m->pos, joint_alignment_offset);
         }
     }
-    if (*(int *)(data + 0x90) != 0) {
-        struct Moby *spinning_part_moby = *(struct Moby **)(data + 0x90);
-        (*(struct Moby **)(data + 0x90))->rot.x = FastAddRots(
+    if (*(int *)&data->slots[3].part != 0) {
+        struct Moby *spinning_part_moby = *(struct Moby **)&data->slots[3].part;
+        (*(struct Moby **)&data->slots[3].part)->rot.x = FastAddRots(
             spinning_part_moby->rot.x,
             *(float *)&shrub_part_spin_speed * 0.01745329238474369049072265625f * g_frame_time);
     }
@@ -2682,61 +2713,61 @@ void shrub_update(struct Moby *moby) {
 }
 /* Builds the moby's part hierarchy: body, head, arms and eight trailing segments. */
 void spawn_joint_linked_moby_parts(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    char *e = data + 0xFC;
+    struct JointLinkedVars *data = (struct JointLinkedVars *)((Moby *)moby)->pvars;
+    char *e = (char *)&data->slots[9].anchor_joint;
     int i = 0;
     char *c;
     char *c2;
     char *c6;
     char *c8;
-    *(char **)(data + 0x60) = moby;
-    *(int *)(data + 0x64) = 0;
-    *(int *)(data + 0x68) = 0;
-    *(int *)(data + 0x6C) = 0;
-    *(char **)(data + 0x90) = spawn_joint_aligned_moby_part(moby, 0x1C0, 0, 0);
-    *(char **)(data + 0x94) = moby;
-    ((Moby *)data)->collision_disable = 0;
-    *(int *)(data + 0x9C) = 0;
+    data->slots[0].part = moby;
+    *(int *)&data->slots[0].anchor = 0;
+    data->slots[0].joint = 0;
+    data->slots[0].anchor_joint = 0;
+    data->slots[3].part = spawn_joint_aligned_moby_part(moby, 0x1C0, 0, 0);
+    data->slots[3].anchor = moby;
+    data->slots[3].joint = 0;
+    data->slots[3].anchor_joint = 0;
     c = spawn_joint_aligned_moby_part(moby, 0x1BD, 0, 2);
-    *(char **)(data + 0x70) = c;
-    *(int *)(data + 0x7C) = 2;
-    *(char **)(data + 0x74) = moby;
-    *(int *)(data + 0x78) = 0;
+    data->slots[1].part = c;
+    data->slots[1].anchor_joint = 2;
+    data->slots[1].anchor = moby;
+    data->slots[1].joint = 0;
     *(float *)(c + 0x2C) = *(float *)(*(char **)(c + 0x24) + 0x24) * 0.75f;
-    c2 = spawn_joint_aligned_moby_part(*(char **)(data + 0x90), 0x1BA, 1, 1);
-    *(char **)(data + 0x80) = c2;
-    *(char **)(data + 0x84) = *(char **)(data + 0x90);
-    *(int *)(data + 0x88) = 1;
-    *(int *)(data + 0x8C) = 1;
-    *(char **)(data + 0xA0) = spawn_joint_aligned_moby_part(c2, 0x1B9, 0, 0);
-    *(char **)(data + 0xA4) = *(char **)(data + 0x80);
-    *(int *)(data + 0xA8) = 0;
-    *(int *)(data + 0xAC) = 0;
-    *(char **)(data + 0xB0) = spawn_joint_aligned_moby_part(moby, 0x1D0, 0, 1);
-    *(char **)(data + 0xB4) = moby;
-    *(int *)(data + 0xB8) = 0;
-    *(int *)(data + 0xBC) = 1;
+    c2 = spawn_joint_aligned_moby_part(data->slots[3].part, 0x1BA, 1, 1);
+    data->slots[2].part = c2;
+    data->slots[2].anchor = data->slots[3].part;
+    data->slots[2].joint = 1;
+    data->slots[2].anchor_joint = 1;
+    data->slots[4].part = spawn_joint_aligned_moby_part(c2, 0x1B9, 0, 0);
+    data->slots[4].anchor = data->slots[2].part;
+    data->slots[4].joint = 0;
+    data->slots[4].anchor_joint = 0;
+    data->slots[5].part = spawn_joint_aligned_moby_part(moby, 0x1D0, 0, 1);
+    data->slots[5].anchor = moby;
+    data->slots[5].joint = 0;
+    data->slots[5].anchor_joint = 1;
     c6 = spawn_joint_aligned_moby_part(moby, 0x1D0, 0, 1);
-    *(char **)(data + 0xC0) = c6;
-    *(char **)(data + 0xC4) = moby;
-    *(int *)&((Moby *)data)->rot_row0.z = 0;
-    *(int *)&((Moby *)data)->rot_row0.w = 1;
+    data->slots[6].part = c6;
+    data->slots[6].anchor = moby;
+    data->slots[6].joint = 0;
+    data->slots[6].anchor_joint = 1;
     *(unsigned short *)(c6 + 0x34) |= 0x8000;
-    *(char **)(data + 0xD0) = spawn_joint_aligned_moby_part(*(char **)(data + 0x80), 0x1D1, 0, 0);
-    *(char **)(data + 0xD4) = *(char **)(data + 0x80);
-    *(int *)&((Moby *)data)->rot_row1.z = 0;
-    *(int *)&((Moby *)data)->rot_row1.w = 0;
-    c8 = spawn_joint_aligned_moby_part(*(char **)(data + 0x80), 0x1D1, 0, 0);
-    *(char **)(data + 0xE0) = c8;
-    *(char **)(data + 0xE4) = *(char **)(data + 0x80);
-    *(int *)&((Moby *)data)->rot_row2.z = 0;
-    *(int *)&((Moby *)data)->rot_row2.w = 0;
+    data->slots[7].part = spawn_joint_aligned_moby_part(data->slots[2].part, 0x1D1, 0, 0);
+    data->slots[7].anchor = data->slots[2].part;
+    data->slots[7].joint = 0;
+    data->slots[7].anchor_joint = 0;
+    c8 = spawn_joint_aligned_moby_part(data->slots[2].part, 0x1D1, 0, 0);
+    data->slots[8].part = c8;
+    data->slots[8].anchor = data->slots[2].part;
+    data->slots[8].joint = 0;
+    data->slots[8].anchor_joint = 0;
     *(unsigned short *)(c8 + 0x34) |= 0x8000;
     do {
         int j = i + 2;
         i++;
-        *(char **)(e - 0xC) = spawn_joint_aligned_moby_part(*(char **)(data + 0x90), 0x1BB, 0, j);
-        *(char **)(e - 8) = *(char **)(data + 0x90);
+        *(char **)(e - 0xC) = spawn_joint_aligned_moby_part(data->slots[3].part, 0x1BB, 0, j);
+        *(char **)(e - 8) = data->slots[3].part;
         *(int *)(e - 4) = 0;
         *(int *)e = j;
         e += 0x10;
@@ -2754,7 +2785,7 @@ extern s32 Moby_PlaySound_r3(s32, s32, struct Moby *) __asm__("func_0022ED80");
 void process_linked_moby_part_hits(struct Moby *moby) {
     int selected = 0;
     char *data = (char *)moby->pvars;
-    SwarmPart *slots = (SwarmPart *)(data + 0x60);
+    SwarmPart *slots = (SwarmPart *)((struct JointLinkedVars *)data)->slots;
     SwarmPart *slot = slots;
     int i = 0;
     int hits = 0;
@@ -2790,10 +2821,10 @@ mark_hit:
         i++;
         slot++;
     } while (i < 17);
-    total = *(u16 *)(data + 0x17c) + hits;
-    *(s16 *)(data + 0x17c) = total;
+    total = *(u16 *)&((struct JointLinkedVars *)data)->hit_count + hits;
+    ((struct JointLinkedVars *)data)->hit_count = total;
     if ((s16)total >= 12) {
-        *(s16 *)(data + 0x17c) = (s16)total % 12;
+        ((struct JointLinkedVars *)data)->hit_count = (s16)total % 12;
         if (selected != 0) {
             SwarmPart *chosen = &slots[selected];
             u8 *vector;
@@ -2842,13 +2873,13 @@ extern short commando_part_spin_speed;
 
 // Updates the moby's attached parts: pose each one, scale one value, then run the flagged ones.
 void update_commando_parts(char *arg) {
-    char *data = (char *)((struct Moby *)arg)->pvars;
+    struct JointLinkedVars *data = (struct JointLinkedVars *)((struct Moby *)arg)->pvars;
     float part_joint_position[4];
     float anchor_joint_position[4];
     float joint_alignment_offset[4];
     int i;
     char *part_entry_cursor;
-    char *parts = data + 0x60;
+    char *parts = (char *)data->slots;
     for (i = 0; i < 16; i++) {
         char *anchor_joint_cursor = parts + 0x1C + i * 16;
         struct Moby *part = *(struct Moby **)(anchor_joint_cursor - 0xC);
@@ -2860,8 +2891,8 @@ void update_commando_parts(char *arg) {
             FastVecAdd(&part->pos, &part->pos, joint_alignment_offset);
         }
     }
-    if (*(struct Moby **)(data + 0x90) != 0) {
-        (*(struct Moby **)(data + 0x90))->rot.x = FastAddRots((*(struct Moby **)(data + 0x90))->rot.x, *(float *)&commando_part_spin_speed * 0.0174532925f * g_frame_time);
+    if (*(struct Moby **)&data->slots[3].part != 0) {
+        (*(struct Moby **)&data->slots[3].part)->rot.x = FastAddRots((*(struct Moby **)&data->slots[3].part)->rot.x, *(float *)&commando_part_spin_speed * 0.0174532925f * g_frame_time);
     }
     part_entry_cursor = parts + 0x10;
     for (i = 0; i < 16; i++) {

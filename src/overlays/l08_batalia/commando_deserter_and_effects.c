@@ -6,6 +6,35 @@
 #include "vector.h"
 #include "moby.h"
 
+/* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
+struct HeightFollowerVars {
+    f32 top_z;                      /* 0x00: height when the driver is fully open */
+    f32 base_z;                     /* 0x04: height at spawn */
+    s32 driver;                     /* 0x08: moby index of the driver, -1 when none */
+};
+
+/* Vendor moby (1283): choice made and the hero reaction state. */
+struct VendorVars {
+    u8 pad_00[0x8];
+    u8 choice;                      /* 0x08 */
+    u8 pad_09[0x2D];
+    s16 reaction;                   /* 0x36 */
+};
+
+/* Moby that sprays particles along a line: spread, speeds and count. */
+struct EffectSprayVars {
+    u8 pad_00[0x4];
+    f32 spread;                     /* 0x04: half range of the random offset */
+    u8 pad_08[0x4];
+    f32 speed;                      /* 0x0C: spawn speed passed to the effect */
+    s32 effect;                     /* 0x10: effect type */
+    s32 count;                      /* 0x14: particles per frame */
+    f32 vy_min;                     /* 0x18 */
+    f32 vy_max;                     /* 0x1C */
+    f32 vz_min;                     /* 0x20 */
+    f32 vz_max;                     /* 0x24 */
+};
+
 /* A looping waypoint path: count points, 16 bytes apart. */
 typedef struct {
     s32 count;
@@ -239,14 +268,14 @@ void update_moby_height_from_driver(char *m)
     extern char ApproachValue[];
     extern unsigned short *batalia_moby_groups[];
     int k;
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct HeightFollowerVars *d = (struct HeightFollowerVars *)((Moby *)m)->pvars;
     char *o;
     unsigned short *p;
     int i;
     int t;
     unsigned char *g = special_items_base + 0x13B;
     unsigned char *g2;
-    if (g[0x2E] != 0 && *(int *)(d + 8) < 0) {
+    if (g[0x2E] != 0 && d->driver < 0) {
         o = (char *)&batalia_moby_groups[((Moby *)m)->group];
         p = *(unsigned short **)o;
         k = 0x1D8;
@@ -273,13 +302,13 @@ void update_moby_height_from_driver(char *m)
     }
     switch (((Moby *)m)->state) {
     case 0:
-        *(float *)(d + 4) = ((Moby *)m)->pos.z;
+        d->base_z = ((Moby *)m)->pos.z;
         ((Moby *)m)->state = 1;
         break;
     case 1:
         {
         extern short batalia_mobys;
-        i = *(int *)(d + 8);
+        i = d->driver;
         if (i < 0) break;
         o = (char *)((i << 8) + *(int *)&batalia_mobys);
         }
@@ -290,11 +319,11 @@ void update_moby_height_from_driver(char *m)
             Moby_PlaySound_r(0, 0, (struct Moby *)m);
             ((Moby *)m)->state = 2;
         } else {
-            ((void (*)(char *, float, float))(void *)ApproachValue)(m + 0x18, (*(float *)d - *(float *)(d + 4)) * *((float *)((Moby *)o)->pvars) + *(float *)(d + 4), g_frame_time_r * 10.0f);
+            ((void (*)(char *, float, float))(void *)ApproachValue)(m + 0x18, (d->top_z - d->base_z) * *((float *)((Moby *)o)->pvars) + d->base_z, g_frame_time_r * 10.0f);
         }
         break;
     case 2:
-        ((void (*)(char *, float, float))(void *)ApproachValue)(m + 0x18, *(float *)d, g_frame_time_r * 10.0f);
+        ((void (*)(char *, float, float))(void *)ApproachValue)(m + 0x18, d->top_z, g_frame_time_r * 10.0f);
         break;
     }
 }
@@ -1657,7 +1686,7 @@ void the_plumber_batalia_update(char *m) {
 
 // Sets the vendor state or closes the active interaction.
 void Moby1283SetMode(char *moby, int mode) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct VendorVars *data = (struct VendorVars *)((Moby *)moby)->pvars;
     moby[0x20] = 1;
     if (mode != 0) {
         if (mode <= 0) {
@@ -1665,13 +1694,13 @@ void Moby1283SetMode(char *moby, int mode) {
             return;
         } else {
             if (mode != 1) return;
-            data[8] = mode;
-            *(short *)(data + 0x36) = 3;
+            data->choice = mode;
+            data->reaction = 3;
             return;
         }
     } else {
-        data[8] = 1;
-        *(short *)(data + 0x36) = 4;
+        data->choice = 1;
+        data->reaction = 4;
     }
     return;
 close:
@@ -1825,24 +1854,24 @@ extern float g_frame_time MACRO_ADDR;
 
 // Per-frame update: for each entry, builds a rotated vector from the moby's data and spawns an effect.
 void spawn_batalia_moby_effects_with_random_motion(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct EffectSprayVars *data = (struct EffectSprayVars *)((Moby *)moby)->pvars;
     float a[4];
     float b[12];
     float c[4];
     int i;
-    for (i = 0; i < *(int *)(data + 0x14); i++) {
+    for (i = 0; i < data->count; i++) {
         a[0] = -1.0f;
-        a[1] = random_float_between(-*(float *)(data + 4), *(float *)(data + 4));
+        a[1] = random_float_between(-data->spread, data->spread);
         a[2] = 0;
         a[3] = 1.0f;
         euler_rotation_basis(b, moby + 0x40);
         matrix_mul_vec3(a, a, b);
         FastVecAdd(a, a, moby + 0x10);
         c[0] = 0;
-        c[1] = random_float_between(*(float *)(data + 0x18) * g_frame_time, *(float *)(data + 0x1C) * g_frame_time);
-        c[2] = random_float_between(*(float *)(data + 0x20) * g_frame_time, *(float *)(data + 0x24) * g_frame_time);
+        c[1] = random_float_between(data->vy_min * g_frame_time, data->vy_max * g_frame_time);
+        c[2] = random_float_between(data->vz_min * g_frame_time, data->vz_max * g_frame_time);
         c[3] = 0;
-        spawn_effect_with_initial_motion(a, c, *(int *)(data + 0x10), *(float *)(data + 0xC));
+        spawn_effect_with_initial_motion(a, c, data->effect, data->speed);
     }
 }
 extern void add_uv_scroll_offset(void *, int, int, void *);

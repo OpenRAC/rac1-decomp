@@ -6,6 +6,38 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+/* Class 0x326 moby: the moby it is linked to. */
+struct LinkedMobyVars {
+    u8 pad_00[0xC];
+    char * linked; /* 0x0C */
+};
+
+/* Nanotech ball: center, look-at point and slot distance. */
+struct NanotechBallVars {
+    u8 pad_00[0x10];
+    Vec4 center; /* 0x10 */
+    u8 look_at[0xC]; /* 0x20 */
+    f32 look_dist; /* 0x2C */
+};
+
+/* Vendor orb: spin matrix and angle. */
+struct VendorOrbVars {
+    u8 pad_00[0x10];
+    Vec4 spin_rot; /* 0x10 */
+    u8 pad_20[0x20];
+    f32 spin_angle; /* 0x40 */
+};
+
+/* Randomly rotated colored moby (0x4A8): owner, life and scale. */
+struct ColoredFragmentVars {
+    u8 pad_00[0x10];
+    void * owner; /* 0x10 */
+    s32 life; /* 0x14 */
+    f32 scale; /* 0x18 */
+    s16 life_start; /* 0x1C */
+    s16 tag; /* 0x1E */
+};
+
 
 typedef struct { char p0[0x10]; char v10[16]; float f14; char p18[0x8]; float f2C; char p30[0x10]; char q40[16]; } S_002d7f88;
 typedef struct { char p0[0xA6]; short hA6; } O_hdr;
@@ -57,10 +89,10 @@ char *create_linked_class_0326_moby(char *a) {
     if (a[0x20] < 0) return 0;
     m = CreateMoby(0x326);
     if (m != 0) {
-        char *p = ((char *)((Moby *)m)->pvars);
+        struct LinkedMobyVars *p = (struct LinkedMobyVars *)((Moby *)m)->pvars;
         ((Moby *)m)->update_dist = 0x40;
         ((Moby *)m)->state = 0;
-        *(char **)(p + 0xC) = a;
+        p->linked = a;
         *(int *)&((Moby *)m)->collision = 0;
         ((Moby *)m)->flags |= 0x41;
         qcopy(m + 0x10, a + 0x10);
@@ -257,12 +289,12 @@ void compute_nanotech_ball_slot_position(char *m, float *out, int i) {
     Vz v;
     char *pv = ((char *)((Moby *)m)->pvars);
     char *o;
-    build_look_at_matrix(&v, nanotech_slot_offsets + i * 16, *(float *)(pv + 0x2C), pv + 0x20);
+    build_look_at_matrix(&v, nanotech_slot_offsets + i * 16, ((struct NanotechBallVars *)pv)->look_dist, ((struct NanotechBallVars *)pv)->look_at);
     o = *(char **)(pv + (i << 2) + 0x30);
     if (o != 0 && ((Moby *)m)->state == 2) {
         vec_scale_to_length(&v, &v, *(float *)(o + 0x28));
     }
-    FastVecAdd(out, pv + 0x10, &v);
+    FastVecAdd(out, &((struct NanotechBallVars *)pv)->center, &v);
     out[2] += *(float *)pv;
 }
 extern char nanotech_slot_spin_axes[];
@@ -2939,19 +2971,19 @@ extern short vendor_orb_spin_speed_deg;
 
 /* UpdateMoby for class 1143: init then slowly spin/ease its value */
 void vendor_orb_update(unsigned char *m) {
-    char *p = ((char *)((Moby *)m)->pvars);
+    struct VendorOrbVars *p = (struct VendorOrbVars *)((Moby *)m)->pvars;
     switch (((Moby *)m)->state) {
     case 0:
         ((Moby *)m)->state = 1;
         ((Moby *)m)->unk73 = 0x20;
-        *(float *)(p + 0x40) = random_angle_radians();
-        AttachManipulator((char *)m, 1, p);
+        p->spin_angle = random_angle_radians();
+        AttachManipulator((char *)m, 1, ((char *)p));
         break;
     case 1: {
         float f = *(float *)&vendor_orb_spin_speed_deg * 0.017453292f * g_frame_time;
         ((Moby *)m)->rot.z = FastAddRots(((Moby *)m)->rot.z, f);
-        *(float *)(p + 0x40) = FastAddRots(*(float *)(p + 0x40), f * -2.0f);
-        axis_rotation_2d48(p + 0x10, 2, *(float *)(p + 0x40));
+        p->spin_angle = FastAddRots(p->spin_angle, f * -2.0f);
+        axis_rotation_2d48(&p->spin_rot, 2, p->spin_angle);
         break;
     }
     }
@@ -2963,7 +2995,7 @@ extern void moby_build_matrix(void *);
 char *spawn_randomly_rotated_colored_moby(void *owner, void *pos, void *vel, int life, unsigned char r, unsigned char g, unsigned char b, unsigned char a, float scale) {
     char *m = CreateMoby(0x4A8);
     if (m != 0) {
-        char *d = ((char *)((Moby *)m)->pvars);
+        struct ColoredFragmentVars *d = (struct ColoredFragmentVars *)((Moby *)m)->pvars;
         Vec4 tmp;
         Vec4 rot;
         rot.q = 0;
@@ -2977,15 +3009,15 @@ char *spawn_randomly_rotated_colored_moby(void *owner, void *pos, void *vel, int
         ((Moby *)m)->draw_dist = 0xFF;
         m[0x31] = 1;
         set_moby_color(m, r, g, b);
-        *(float *)(d + 0x18) = ((Moby *)m)->scale * scale;
+        d->scale = ((Moby *)m)->scale * scale;
         *(int *)&((Moby *)m)->scale = 0;
-        *(void **)(d + 0x10) = owner;
+        d->owner = owner;
         qcopy(m + 0x10, pos);
-        qcopy(d, vel);
+        qcopy(((char *)d), vel);
         qcopy(m + 0x40, &tmp);
-        *(short *)(d + 0x1E) = a;
-        *(int *)(d + 0x14) = life;
-        *(short *)(d + 0x1C) = *(unsigned short *)(d + 0x14);
+        d->tag = a;
+        d->life = life;
+        d->life_start = *(unsigned short *)&d->life;
         moby_build_matrix(m);
     }
     return m;

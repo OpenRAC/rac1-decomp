@@ -6,6 +6,94 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Crate: falls, stacks on other crates and rides moving platforms. */
+struct CrateVars {
+    u8 pad_00[0x40];
+    Vec4A motion;                   /* 0x40: per-frame motion, w = vertical speed (0x4C) */
+    u8 pad_50[0x10];
+    u8 matrix[0x40];                /* 0x60: update_entity_matrix block */
+    char *above;                    /* 0xA0: crate stacked on this one */
+    char *below;                    /* 0xA4: crate this one sits on */
+    u8 pad_A8[0x4];
+    s32 flags;                      /* 0xAC: 2 = frozen, 4 = pushed, 0x10 = settled */
+    f32 height;                     /* 0xB0 */
+    s32 last_frame;                 /* 0xB4: level_frame_counter of the last update */
+    u8 pad_B8[0x8];
+    s32 bolt_count;                 /* 0xC0 */
+    s16 unk_C4;                     /* 0xC4 */
+    s16 unk_C6;                     /* 0xC6 */
+    u8 pad_C8[0x2];
+    u8 unk_CA;                      /* 0xCA */
+    u8 unk_CB;                      /* 0xCB */
+    u8 pad_CC[0x4];
+    Vec4A attach_pos;               /* 0xD0 */
+    Vec4A attach_rot;               /* 0xE0 */
+    char *attach_moby;              /* 0xF0: moby carrying this crate */
+    f32 attach_lift;                /* 0xF4 */
+};
+
+/* Decoy glove: the decoy moby it launched and its launch position. */
+struct DecoyGloveVars {
+    u8 pad_00[0x40];
+    Vec4A pos;                      /* 0x40 */
+    char *decoy;                    /* 0x50: spawned decoy moby */
+    s32 timer;                      /* 0x54 */
+};
+
+/* Animated point light (moby class 639): radius and three tracked values ease between two limits. */
+struct PointLightVars {
+    Vec4A offset;                   /* 0x00: jitter extent or offset from the followed moby; w = flag word */
+    u8 pos[0xC];                    /* 0x10: copy of the moby position */
+    u8 cmd;                         /* 0x1C: start delay */
+    u8 pad_1D[0x3];
+    char *follow;                   /* 0x20: moby the light follows */
+    u8 unk_24;                      /* 0x24 */
+    u8 unk_25;                      /* 0x25 */
+    u8 unk_26;                      /* 0x26 */
+    u8 unk_27;                      /* 0x27 */
+    u8 unk_28;                      /* 0x28 */
+    u8 unk_29;                      /* 0x29 */
+    u8 unk_2A;                      /* 0x2A */
+    u8 unk_2B;                      /* 0x2B */
+    u8 unk_2C;                      /* 0x2C */
+    u8 unk_2D;                      /* 0x2D */
+    u8 unk_2E;                      /* 0x2E */
+    u8 unk_2F;                      /* 0x2F */
+    u8 unk_30;                      /* 0x30 */
+    u8 unk_31;                      /* 0x31 */
+    u8 unk_32;                      /* 0x32 */
+    u8 unk_33;                      /* 0x33 */
+    f32 start_radius;               /* 0x34 */
+    f32 radius_max;                 /* 0x38 */
+    f32 radius_min;                 /* 0x3C */
+    f32 radius_rise;                /* 0x40: radius change per frame going up */
+    f32 radius_fall;                /* 0x44: radius change per frame going down */
+    s32 life;                       /* 0x48: -1 = never expires */
+    s32 flags;                      /* 0x4C: ease direction and mode bits */
+    s32 light_slot;                 /* 0x50: -1 when none */
+    f32 value_a;                    /* 0x54: tracked value */
+    f32 value_b;                    /* 0x58: tracked value */
+    f32 value_c;                    /* 0x5C: tracked value */
+    f32 radius;                     /* 0x60 */
+    s32 follow_index;               /* 0x64: index into the moby array, -1 when none */
+    u8 unk_68;                      /* 0x68 */
+    u8 unk_69;                      /* 0x69 */
+    u8 unk_6A;                      /* 0x6A */
+    u8 unk_6B;                      /* 0x6B */
+    u16 period_a;                   /* 0x6C: retarget period of value_a */
+    u16 period_b;                   /* 0x6E */
+    u16 period_c;                   /* 0x70 */
+    u16 period_radius;              /* 0x72 */
+    s16 timer_a;                    /* 0x74 */
+    s16 timer_b;                    /* 0x76 */
+    s16 timer_c;                    /* 0x78 */
+    s16 timer_radius;               /* 0x7A */
+    u8 unk_7C;                      /* 0x7C */
+    u8 unk_7D;                      /* 0x7D */
+    u8 unk_7E;                      /* 0x7E */
+    u8 unk_7F;                      /* 0x7F */
+};
+
 typedef struct { f32 x, y, z, w; } __attribute__((aligned(16))) V_2cfcb8;
 struct Vars_2cfcb8;
 typedef struct M_2cfcb8 {
@@ -303,15 +391,15 @@ void func_L00_002D19E8_r(u8 *a) {
     b = ((u8 *)((Moby *)a)->pvars);
     h = ((Moby *)a)->oclass;
     tmp = D_L00_001EA1B0_2D19E8;
-    n = *(s16 *)(b + 0xC6) == 0;
+    n = ((struct CrateVars *)b)->unk_C6 == 0;
     if (h == 0x1F5)
         n = 0;
     if (n) {
         func_001F9BC0_2D19E8(&v20);
-        if (*(s32 *)(b + 0xF0)) {
+        if (*(s32 *)&((struct CrateVars *)b)->attach_moby) {
             if (a)
                 *(s16 *)&((Moby *)a)->occlusion = 0x7F80;
-            func_L00_00261478_2D19E8(a, *(s32 *)(b + 0xF0), a + 0x10, a + 0x40, &v30, &v40);
+            func_L00_00261478_2D19E8(a, *(s32 *)&((struct CrateVars *)b)->attach_moby, a + 0x10, a + 0x40, &v30, &v40);
             func_001F9BF0_2D19E8(&v20, &v30, a + 0x10);
         }
         if (g_current_level_index_r == 0xF && func_001F9B88_2D19E8(((Moby *)a)->pos.x - 166.0f) < 6.0f &&
@@ -322,11 +410,11 @@ void func_L00_002D19E8_r(u8 *a) {
             current_moby_mission_complete_r = save;
             return;
         }
-        func_L00_002584A8_2D19E8(a, 0x100, *(s32 *)(b + 0xC0));
+        func_L00_002584A8_2D19E8(a, 0x100, ((struct CrateVars *)b)->bolt_count);
         return;
     }
     if (h != 0x1F5) {
-        switch (*(u8 *)(b + 0xCB)) {
+        switch (((struct CrateVars *)b)->unk_CB) {
         case 1:
             n = 10;
             break;
@@ -371,7 +459,7 @@ void func_L00_002D19E8_r(u8 *a) {
             if (!p)
                 break;
             q = *(u8 **)(p + 0x78);
-            *(s16 *)(q + 4) = *(s16 *)(b + 0xC4);
+            *(s16 *)(q + 4) = ((struct CrateVars *)b)->unk_C4;
             t = func_00214158_2D19E8();
             r = func_002140F8_2D19E8(0.0f, (*(f32 *)&D_L00_00161998_2D19E8)) * g_frame_time_r;
             *(f32 *)(q + 0x10) = func_001F9F90_2D19E8(t) * r;
@@ -384,18 +472,18 @@ void func_L00_002D19E8_r(u8 *a) {
                     *(f32 *)(q + 0x18) = func_002140F8_2D19E8(lo, hi) * g_frame_time_r;
                 }
             }
-            if (*(s32 *)(b + 0xC0) >= 0) {
+            if (((struct CrateVars *)b)->bolt_count >= 0) {
                 s32 k = func_L00_0025A5D8_2D19E8(
                     &f54, &f58, (*(f32 *)&D_0015EE70_2D19E8) * 10.8f * -0.5f,
                     *(f32 *)(q + 0x18) - (*(f32 *)&D_0015EE70_2D19E8) * 10.8f * -0.5f,
                     *(f32 *)(p + 0x18) -
-                        *(f32 *)(level_paths_r2[*(s32 *)(b + 0xC0)] + 0x18));
+                        *(f32 *)(level_paths_r2[((struct CrateVars *)b)->bolt_count] + 0x18));
                 e = 120.0f;
                 if ((f32)k >= 1.0f && f54 > 0.0f && f54 < 120.0f)
                     e = f54;
                 func_001F9C30_2D19E8(&v20, q + 0x10, e);
                 func_001F9BD8_2D19E8(&v20, &v20, a + 0x10);
-                func_L00_00262BC0_2D19E8(*(s32 *)(b + 0xC0), a + 0x10, &v20, &v30);
+                func_L00_00262BC0_2D19E8(((struct CrateVars *)b)->bolt_count, a + 0x10, &v20, &v30);
                 func_001F9BF0_2D19E8(&v20, &v30, p + 0x10);
                 v20.f[2] = 0.0f;
                 func_L00_001FF4B0_2D19E8(&v40, &v20, 0.25f);
@@ -459,7 +547,7 @@ typedef struct { char pad[0x140]; float x; float y; } Cam140;
 void break_crate(void *mv, int a1, int av) {
     unsigned char *m = (unsigned char *)mv;
     unsigned char *a2 = (unsigned char *)av;
-    unsigned char *dat;
+    struct CrateVars *dat;
     unsigned char *owner;
     int d8 = 0;
     int dc = 0;
@@ -481,7 +569,7 @@ void break_crate(void *mv, int a1, int av) {
     int *q1, *q2;
     int c1, c2, a, b, dd, ee;
 
-    dat = ((unsigned char *)((Moby *)m)->pvars);
+    dat = (struct CrateVars *)((Moby *)m)->pvars;
     if (subtract_integer_with_clamp(level_frame_counter - crate_break_sound_frame) >= 2) {
         if (((Moby *)m)->oclass == 0x1FA) Sound_PlayClassSound(0, 0, m, 0x1F4);
         else Moby_PlaySound(0, 0, (int)m);
@@ -490,16 +578,16 @@ void break_crate(void *mv, int a1, int av) {
     if (subtract_integer_with_clamp(level_frame_counter - crate_break_effect_frame) >= 2) crate_break_effect_frame = level_frame_counter;
     else dc = 1;
 
-    if (*(unsigned char **)(dat + 0xA0)) {
-        unsigned char *ad = *(unsigned char **)(*(unsigned char **)(dat + 0xA0) + 0x78);
-        *(unsigned char **)(ad + 0xA4) = *(unsigned char **)(dat + 0xA4);
-        *(int *)(*(unsigned char **)(*(unsigned char **)(dat + 0xA0) + 0x78) + 0xAC) |= 4;
+    if (*(unsigned char **)&dat->above) {
+        unsigned char *ad = *(unsigned char **)(*(unsigned char **)&dat->above + 0x78);
+        *(unsigned char **)(ad + 0xA4) = *(unsigned char **)&dat->below;
+        *(int *)(*(unsigned char **)(*(unsigned char **)&dat->above + 0x78) + 0xAC) |= 4;
     }
-    if (*(unsigned char **)(dat + 0xA4)) {
-        if (is_moby_in_class_range_500_to_540(*(void **)(*(unsigned char **)(*(unsigned char **)(dat + 0xA4) + 0x78) + 0xA0)) == 0)
+    if (*(unsigned char **)&dat->below) {
+        if (is_moby_in_class_range_500_to_540(*(void **)(*(unsigned char **)(*(unsigned char **)&dat->below + 0x78) + 0xA0)) == 0)
             raise_kernel_trap();
-        *(unsigned char **)(*(unsigned char **)(*(unsigned char **)(dat + 0xA4) + 0x78) + 0xA0) = *(unsigned char **)(dat + 0xA0);
-        *(int *)(*(unsigned char **)(*(unsigned char **)(dat + 0xA4) + 0x78) + 0xAC) |= 4;
+        *(unsigned char **)(*(unsigned char **)(*(unsigned char **)&dat->below + 0x78) + 0xA0) = *(unsigned char **)&dat->above;
+        *(int *)(*(unsigned char **)(*(unsigned char **)&dat->below + 0x78) + 0xAC) |= 4;
     }
 
     qcopy(v0, m + 0x10);
@@ -588,9 +676,9 @@ void break_crate(void *mv, int a1, int av) {
     if (a1 != 0) {
         int nn;
         if (*(int *)(hero_globals_base + 0x2EA9) == 0x16)
-            *(unsigned char *)(dat + 0xCA) = scale_ticks(5);
+            dat->unk_CA = scale_ticks(5);
         else
-            *(unsigned char *)(dat + 0xCA) = 1;
+            dat->unk_CA = 1;
 
         vec_scale_to_length(v60, m + 0xE0, 0.5f);
         FastVecAdd(v60, v60, m + 0x10);
@@ -672,7 +760,7 @@ void update_crate_stack_motion(char *a) {
     float v5[4];
     float v6[4];
     float v7[4];
-    char *o = ((char *)((Moby *)a)->pvars);
+    struct CrateVars *o = (struct CrateVars *)((Moby *)a)->pvars;
     char *n;
     char *p;
     char *w;
@@ -680,27 +768,27 @@ void update_crate_stack_motion(char *a) {
     char *b;
     float lo, hi, dt, c1, c2, c3, x1, x2, y, t, len;
     int r, flags;
-    if (*(int *)(o + 0xB4) == level_frame_counter)
+    if (o->D_L00_00161488 == level_frame_counter)
         return;
     n = a;
     do {
         w = n;
-        n = *(char **)(((char *)((Moby *)w)->pvars) + 0xA4);
+        n = ((struct CrateVars *)((Moby *)w)->pvars)->below;
     } while (n != 0);
     n = w;
     do {
         a = n;
-        o = ((char *)((Moby *)a)->pvars);
-        flags = *(int *)(o + 0xAC);
-        n = *(char **)(o + 0xA0);
+        o = (struct CrateVars *)((Moby *)a)->pvars;
+        flags = o->flags;
+        n = o->above;
         if ((flags & 4) == 0)
-            *(int *)(o + 0xAC) = flags & ~0x10;
-        *(int *)(o + 0xAC) = *(int *)(o + 0xAC) & ~4;
+            o->flags = flags & ~0x10;
+        o->flags = o->flags & ~4;
         if (is_moby_in_class_range_500_to_540(a) == 0)
             return;
-        if (*(int *)(o + 0xAC) & 2)
+        if (o->flags & 2)
             return;
-        *(int *)(o + 0xB4) = level_frame_counter;
+        o->D_L00_00161488 = level_frame_counter;
         if (((Moby *)a)->state != 0) {
             g = hero_globals_base + 0xE9D;
             FastVecSub(v3, g, a + 0x10);
@@ -712,79 +800,79 @@ void update_crate_stack_motion(char *a) {
                 crate_drop_bolts(a);
             }
             dt = g_frame_time_sq;
-            c1 = *(float *)(o + 0x48) - dt * 9.8f;
-            *(float *)(o + 0x48) = c1;
+            c1 = o->motion.z - dt * 9.8f;
+            o->motion.z = c1;
             c2 = !(c1 < -0.3f) ? c1 : -0.3f;
-            *(float *)(o + 0x48) = c2;
+            o->motion.z = c2;
             hi = 0.3f;
             c3 = hi;
             if (!(hi < c2))
                 c3 = c2;
-            *(float *)(o + 0x48) = c3;
-            if (*(int *)(o + 0xF0) != 0) {
-                if (*(int *)(o + 0xA4) == 0) {
-                    x1 = *(float *)(o + 0x4C) - dt * 10.0f;
-                    *(float *)(o + 0x4C) = x1;
-                    t = ApproachValue((float *)(o + 0xF4), 0.0f, FastAbsF(x1));
+            o->motion.z = c3;
+            if (*(int *)&o->attach_moby != 0) {
+                if (*(int *)&o->below == 0) {
+                    x1 = o->motion.w - dt * 10.0f;
+                    o->motion.w = x1;
+                    t = ApproachValue(&o->attach_lift, 0.0f, FastAbsF(x1));
                     if (t == 0.0f)
-                        *(float *)(o + 0x4C) = 0.0f;
+                        o->motion.w = 0.0f;
                 } else {
-                    x2 = *(float *)(o + 0x4C) - dt * 10.0f;
-                    *(float *)(o + 0x4C) = x2;
-                    y = *(float *)(*(char **)(*(char **)(o + 0xA4) + 0x78) + 0xF4) + 1.0f;
-                    t = ApproachValue((float *)(o + 0xF4), y, FastAbsF(x2));
+                    x2 = o->motion.w - dt * 10.0f;
+                    o->motion.w = x2;
+                    y = *(float *)(*(char **)(o->below + 0x78) + 0xF4) + 1.0f;
+                    t = ApproachValue(&o->attach_lift, y, FastAbsF(x2));
                     if (t == 0.0f)
-                        *(float *)(o + 0x4C) = 0;
+                        o->motion.w = 0;
                 }
-                qcopy(v4, o + 0xD0);
-                v4[2] = v4[2] + *(float *)(o + 0xF4);
+                qcopy(v4, &o->attach_pos);
+                v4[2] = v4[2] + o->attach_lift;
                 if (a != 0)
                     *(short *)&((Moby *)a)->occlusion = 0x7F80;
                 qcopy(v5, a + 0x10);
                 qcopy(v6, a + 0x40);
-                transform_attachment_pose((int)a, *(char **)(o + 0xF0), v4, (float *)(o + 0xE0), (float *)(a + 0x10), (float *)(a + 0x40));
-                if (*(int *)(moby_get_ride_transform(*(char **)(o + 0xF0)) + 0x3C) & 4) {
-                    qcopy(o + 0xD0, v4);
-                    *(float *)(o + 0xD8) = *(float *)(o + 0xD8) - *(float *)(o + 0xF4);
+                transform_attachment_pose((int)a, o->attach_moby, v4, &o->attach_rot.x, (float *)(a + 0x10), (float *)(a + 0x40));
+                if (*(int *)(moby_get_ride_transform(o->attach_moby) + 0x3C) & 4) {
+                    qcopy(&o->attach_pos, v4);
+                    o->attach_pos.z = o->attach_pos.z - o->attach_lift;
                 }
                 FastVecSub(v7, a + 0x10, v5);
-                v7[3] = *(float *)(o + 0x4C);
-                qcopy(o + 0x40, v7);
-                update_entity_matrix(o + 0x60, (Vx *)(o + 0x40), v6, a + 0x40);
+                v7[3] = o->motion.w;
+                qcopy(&o->motion, v7);
+                update_entity_matrix(o->matrix, (Vx *)&o->motion, v6, a + 0x40);
             } else {
-                if (*(int *)(o + 0xA4) == 0) {
+                if (*(int *)&o->below == 0) {
                     qcopy(v0, a + 0x10);
                     qcopy(v1, a + 0x10);
-                    v0[2] = v0[2] + *(float *)(o + 0xB0) * 0.75f;
-                    v1[2] = v1[2] + *(float *)(o + 0x48);
+                    v0[2] = v0[2] + o->height * 0.75f;
+                    v1[2] = v1[2] + o->motion.z;
                     r = coll_line(v0, v1, 2, 0, 0);
                     qcopy(v2, collision_hit_point);
                 } else {
-                    qcopy(v2, *(char **)(o + 0xA4) + 0x10);
+                    qcopy(v2, o->below + 0x10);
                     v2[2] = v2[2] + 1.0f;
                     r = 0;
-                    if (((Moby *)a)->pos.z + *(float *)(o + 0x48) < v2[2])
+                    if (((Moby *)a)->pos.z + o->motion.z < v2[2])
                         r = 1;
                 }
                 if (r != 0) {
-                    len = FastVecLength(o + 0x40);
+                    len = FastVecLength(&o->motion);
                     if (g_frame_time * 0.5f < len) {
                         if (((Moby *)a)->oclass == 0x1F9 && ((Moby *)a)->state == 1) {
                             *(char *)&((Moby *)a)->command = 0;
                             ((Moby *)a)->state = 5;
                         } else {
-                            p = *(char **)(o + 0xA4);
+                            p = o->below;
                             if (p != 0 && *(short *)(p + 0xA6) == 0x1F9 && *(unsigned char *)(p + 0x20) == 1) {
                                 *(unsigned char *)(p + 0x20) = 5;
-                                *(char *)(*(char **)(o + 0xA4) + 0xBC) = 0;
+                                *(char *)(o->below + 0xBC) = 0;
                             }
                         }
                     }
                     ((Moby *)a)->pos.z = v2[2];
-                    *(int *)(o + 0x48) = 0;
+                    *(int *)&o->motion.z = 0;
                 } else {
-                    *(int *)(o + 0xAC) = *(int *)(o + 0xAC) | 4;
-                    FastVecAdd(a + 0x10, a + 0x10, o + 0x40);
+                    o->flags = o->flags | 4;
+                    FastVecAdd(a + 0x10, a + 0x10, &o->motion);
                 }
             }
         }
@@ -1066,7 +1154,7 @@ void decoy_glove_update(unsigned char *moby) {
     extern void DeleteMoby(void);
     extern void transform_vector();
     extern void Moby_PlaySound(int, int, int);
-    char *d;
+    struct DecoyGloveVars *d;
     char *p;
     struct Hero *g;
     float vb[4];
@@ -1079,35 +1167,35 @@ void decoy_glove_update(unsigned char *moby) {
     u128_D3B20 loc;
 
     if (moby == 0) return;
-    d = ((char *)((Moby *)moby)->pvars);
-    if (d == 0) return;
+    d = (struct DecoyGloveVars *)((Moby *)moby)->pvars;
+    if (((char *)d) == 0) return;
     *(u128_D3B20 *)va = 0;
     va[1] = -0.19f;
     va[2] = -0.11f;
     Moby_GetJointWorldPos(moby, 0, vb);
     MobyTransformScaledVertex_r(moby, 0, vd);
     transform_vector(vc, va, vd);
-    FastVecAdd(d + 0x40, vb, vc);
+    FastVecAdd(&d->pos, vb, vc);
 
-    p = *(char **)(d + 0x50);
+    p = d->decoy;
     if (p) {
         *(int *)(p + 0x98) = 1;
-        if (*(unsigned char *)(hero_globals_base + 6) && *(short *)(*(char **)(d + 0x50) + 0xA6) != 0x76C) {
+        if (*(unsigned char *)(hero_globals_base + 6) && *(short *)(d->decoy + 0xA6) != 0x76C) {
             qzero(&loc);
-            moby_index_list_remove(*(char **)(d + 0x50), decoy_list);
-            ((void (*)(void *))DeleteMoby)(*(char **)(d + 0x50));
-            *(int *)(d + 0x50) = spawn_decoy(moby, d + 0x40, &loc);
+            moby_index_list_remove(d->decoy, decoy_list);
+            ((void (*)(void *))DeleteMoby)(d->decoy);
+            *(int *)&d->decoy = spawn_decoy(moby, &d->pos, &loc);
         }
-        if (*(char **)(d + 0x50) != 0 &&
-            *(unsigned char *)(*(char **)(d + 0x50) + 0x20) != 0xFE &&
-            *(unsigned char *)(*(char **)(d + 0x50) + 0x20) != 0xFD)
+        if (d->decoy != 0 &&
+            *(unsigned char *)(d->decoy + 0x20) != 0xFE &&
+            *(unsigned char *)(d->decoy + 0x20) != 0xFD)
             goto target_valid;
     }
-    *(int *)(d + 0x50) = 0;
+    *(int *)&d->decoy = 0;
 target_valid:
     g = (struct Hero *)(hero_globals_base + 0xE1D);
     if (g->state.current == 1) HeroEnterMoveState(0x1E, 1);
-    if (fast_dec_timer((int *)(d + 0x54))) {
+    if (fast_dec_timer(&d->timer)) {
         if (g->item_use_locked == 0) {
             if (g->item_anim_active && g->item_anim_frames == scale_ticks(0x11)) goto L3D10;
             if (*(int *)(pad_globals_base + 0x2604) & g->items[0].button_mask) {
@@ -1123,12 +1211,12 @@ L3D10:
     use_ammo(-1, 1);
     ((Moby *)moby)->state = 3;
 L3D34:
-    *(u128_D3B20 *)&loc = *(u128_D3B20 *)(d + 0x40);
-    decoy_glove_aim_throw((int)moby, (void *)d, (float *)&loc);
+    *(u128_D3B20 *)&loc = *(u128_D3B20 *)&d->pos.x;
+    decoy_glove_aim_throw((int)moby, (void *)((char *)d), (float *)&loc);
 
     switch (((Moby *)moby)->state) {
     case 0:
-        *(int *)(d + 0x50) = 0;
+        *(int *)&d->decoy = 0;
         if (!(((Moby *)moby)->anim_flags & 2)) ((Moby *)moby)->state = 1; else ((Moby *)moby)->state = 2;
     case 1:
         if (((Moby *)moby)->anim_flags & 2) ((Moby *)moby)->state = 2;
@@ -1136,19 +1224,19 @@ L3D34:
     case 2:
         break;
     case 3:
-        if (*(char **)(d + 0x50)) {
+        if (d->decoy) {
             char *P = help_stats_base + 0x65;
             if (*(unsigned short *)(P + 0xC8) <= 0xFFFE) *(unsigned short *)(P + 0xC8) = *(unsigned short *)(P + 0xC8) + 1;
             if (scale_ticks(gameplay_event_frame_count) / 600 > (int)*(unsigned short *)(P + 0xCA))
                 *(unsigned short *)(P + 0xCA) = scale_ticks(gameplay_event_frame_count) / 600;
             *(unsigned int *)(P + 0xCC) = (*(unsigned int *)(P + 0xCC) | (1 << g_current_level_index)) | 0x80000000;
-            release_moby_with_collision_check((float *)(d + 0x40), *(char **)(d + 0x50), *(char **)(*(char **)(d + 0x50) + 0x78) + 0x10);
-            *(int *)(d + 0x50) = 0;
+            release_moby_with_collision_check(&d->pos.x, d->decoy, *(char **)(d->decoy + 0x78) + 0x10);
+            *(int *)&d->decoy = 0;
         } else {
             Moby_PlaySound(0, 0, (int)moby);
         }
         ((Moby *)moby)->state = 4;
-        *(int *)(d + 0x54) = scale_ticks(0x14);
+        d->timer = scale_ticks(0x14);
         break;
     case 4: {
         struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
@@ -1164,18 +1252,18 @@ L3D34:
         break;
     }
 
-    if (*(char **)(d + 0x50)) {
-        qcopy(*(char **)(d + 0x50) + 0x10, d + 0x40);
+    if (d->decoy) {
+        qcopy(d->decoy + 0x10, &d->pos);
         return;
     }
     if (get_ammo(-1)) {
         qzero(&loc);
-        *(int *)(d + 0x50) = spawn_decoy(moby, d + 0x40, &loc);
+        *(int *)&d->decoy = spawn_decoy(moby, &d->pos, &loc);
     } else {
         struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
         if (h->item_anim_active) {
             qzero(&loc);
-            *(int *)(d + 0x50) = spawn_decoy(moby, d + 0x40, &loc);
+            *(int *)&d->decoy = spawn_decoy(moby, &d->pos, &loc);
         }
     }
 }
@@ -1614,54 +1702,54 @@ extern void copy_hero_moby_field_38(void *);
 char *mine_camera_blast(char *a, char *b, int c, char *d) {
     char *m = CreateMoby(0x27F);
     if (m != 0) {
-        char *p;
+        struct PointLightVars *p;
         ((Moby *)m)->update_dist = 0xFF;
         m[0x31] = 1;
         ((Moby *)m)->flags |= 1;
-        p = ((char *)((Moby *)m)->pvars);
+        p = (struct PointLightVars *)((Moby *)m)->pvars;
         m[0x20] = 0;
         m[0xBC] = 0;
         qcopy(m + 0x10, b);
         if (d != 0) {
-            qcopy(p, d);
+            qcopy(&p->offset, d);
         } else {
-            qcopy(p, a);
+            qcopy(&p->offset, a);
         }
-        *(int *)(p + 0x20) = c;
+        *(int *)&p->follow = c;
         ((Moby *)m)->draw_dist = *(unsigned char *)(a + 0x3C);
-        p[0x24] = a[0x10];
-        p[0x25] = a[0x11];
-        p[0x26] = a[0x12];
-        p[0x27] = a[0x13];
-        p[0x28] = a[0x14];
-        p[0x29] = a[0x15];
-        p[0x68] = a[0x3D];
-        *(short *)(p + 0x6C) = *(unsigned short *)(a + 0x40);
-        p[0x2A] = a[0x16];
-        p[0x2B] = a[0x17];
-        p[0x2C] = a[0x18];
-        p[0x2D] = a[0x19];
-        p[0x2E] = a[0x1A];
-        p[0x69] = a[0x3E];
-        *(short *)(p + 0x6E) = *(unsigned short *)(a + 0x42);
-        p[0x2F] = a[0x1B];
-        p[0x30] = a[0x1C];
-        p[0x31] = a[0x1D];
-        p[0x32] = a[0x1E];
-        p[0x33] = a[0x1F];
-        p[0x6A] = a[0x3F];
-        *(short *)(p + 0x70) = *(unsigned short *)(a + 0x44);
-        *(float *)(p + 0x34) = *(float *)(a + 0x20);
-        *(float *)(p + 0x38) = *(float *)(a + 0x24);
-        *(float *)(p + 0x3C) = *(float *)(a + 0x28);
-        *(float *)(p + 0x40) = *(float *)(a + 0x2C);
-        *(float *)(p + 0x44) = *(float *)(a + 0x30);
-        p[0x6B] = a[0x48];
-        *(short *)(p + 0x72) = *(unsigned short *)(a + 0x46);
-        *(int *)(p + 0x48) = *(int *)(a + 0x34);
-        *(int *)(p + 0x4C) = *(int *)(a + 0x38);
-        p[0x1C] = a[0x49];
-        *(int *)(p + 0x64) = -1;
+        p->unk_24 = a[0x10];
+        p->unk_25 = a[0x11];
+        p->unk_26 = a[0x12];
+        p->unk_27 = a[0x13];
+        p->unk_28 = a[0x14];
+        p->unk_29 = a[0x15];
+        p->unk_68 = a[0x3D];
+        p->period_a = *(unsigned short *)(a + 0x40);
+        p->unk_2A = a[0x16];
+        p->unk_2B = a[0x17];
+        p->unk_2C = a[0x18];
+        p->unk_2D = a[0x19];
+        p->unk_2E = a[0x1A];
+        p->unk_69 = a[0x3E];
+        p->period_b = *(unsigned short *)(a + 0x42);
+        p->unk_2F = a[0x1B];
+        p->unk_30 = a[0x1C];
+        p->unk_31 = a[0x1D];
+        p->unk_32 = a[0x1E];
+        p->unk_33 = a[0x1F];
+        p->unk_6A = a[0x3F];
+        p->period_c = *(unsigned short *)(a + 0x44);
+        p->start_radius = *(float *)(a + 0x20);
+        p->radius_max = *(float *)(a + 0x24);
+        p->radius_min = *(float *)(a + 0x28);
+        p->radius_rise = *(float *)(a + 0x2C);
+        p->radius_fall = *(float *)(a + 0x30);
+        p->unk_6B = a[0x48];
+        p->period_radius = *(unsigned short *)(a + 0x46);
+        p->life = *(int *)(a + 0x34);
+        p->flags = *(int *)(a + 0x38);
+        p->cmd = a[0x49];
+        p->follow_index = -1;
         moby_build_matrix(m);
         copy_hero_moby_field_38(m);
     }
@@ -1684,7 +1772,7 @@ extern int allocate_colored_effect_slot(float *, float, float, float, float, flo
 
 /* moby class 639 update: runs its state machine and eases its tracked values toward their targets */
 void update_animated_point_light_moby(unsigned char *m) {
-    unsigned char *o;
+    struct PointLightVars *o;
     Vx tp;
     Vx t2;
     Vx t3;
@@ -1698,44 +1786,44 @@ void update_animated_point_light_moby(unsigned char *m) {
     int r;
 
     if (m == 0) return;
-    o = ((unsigned char *)((Moby *)m)->pvars);
+    o = (struct PointLightVars *)((Moby *)m)->pvars;
     c0 = 0;
-    if (o == 0) return;
+    if (((unsigned char *)o) == 0) return;
     if (((Moby *)m)->state == 0) {
         unsigned char b1c;
         ((Moby *)m)->update_dist = 0xFF;
-        b1c = o[0x1C];
+        b1c = o->cmd;
         ((Moby *)m)->command = b1c;
-        qcopy(o + 0x10, m + 0x10);
-        *(int *)(o + 0x50) = -1;
-        o[0x1C] = b1c;
-        *(int *)&((Moby *)o)->bsphere.w = *(int *)&((Moby *)o)->rot.w;
-        *(short *)(o + 0x74) = *(unsigned short *)(o + 0x6C);
-        *(short *)(o + 0x76) = *(unsigned short *)(o + 0x6E);
-        *(short *)(o + 0x78) = *(unsigned short *)(o + 0x70);
-        *(short *)(o + 0x7A) = *(unsigned short *)(o + 0x72);
-        ((Moby *)o)->anim_time = IntToFloat(o[0x25]) / 100.0f;
-        ((Moby *)o)->anim_speed = IntToFloat(o[0x2A]) / 100.0f;
+        qcopy(o->pos, m + 0x10);
+        o->light_slot = -1;
+        o->cmd = b1c;
+        *(int *)&o->offset.w = o->flags;
+        o->timer_a = o->period_a;
+        o->timer_b = o->period_b;
+        o->timer_c = o->period_c;
+        o->timer_radius = o->period_radius;
+        o->value_a = IntToFloat(o->unk_25) / 100.0f;
+        o->value_b = IntToFloat(o->unk_2A) / 100.0f;
         {
-            float f5 = IntToFloat(o[0x2F]) / 100.0f;
-            *(float *)(o + 0x60) = *(float *)(o + 0x34);
-            *(float *)(o + 0x5C) = f5;
+            float f5 = IntToFloat(o->unk_2F) / 100.0f;
+            o->radius = o->start_radius;
+            o->value_c = f5;
         }
-        if (*(int *)(o + 0x64) != -1) {
-            *(char **)(o + 0x20) = moby_array_start + (*(int *)(o + 0x64) << 8);
+        if (o->follow_index != -1) {
+            o->follow = moby_array_start + (o->follow_index << 8);
         }
-        if (((Moby *)o)->rot.x < 0.0f) ((Moby *)o)->rot.x = -((Moby *)o)->rot.x;
-        if (((Moby *)o)->rot.y < 0.0f) ((Moby *)o)->rot.y = -((Moby *)o)->rot.y;
+        if (o->radius_rise < 0.0f) o->radius_rise = -o->radius_rise;
+        if (o->radius_fall < 0.0f) o->radius_fall = -o->radius_fall;
         ((Moby *)m)->state = 1;
     }
     if (((Moby *)m)->command != 0) {
         ((Moby *)m)->command = ((Moby *)m)->command - 1;
         return;
     }
-    if (*(int *)&((Moby *)o)->rot.z != -1 && fast_dec_timer((int *)(o + 0x48))) {
-        if (*(int *)(o + 0x50) != -1) {
-            release_point_light_slot(*(int *)(o + 0x50));
-            *(int *)(o + 0x50) = -1;
+    if (o->life != -1 && fast_dec_timer(&o->life)) {
+        if (o->light_slot != -1) {
+            release_point_light_slot(o->light_slot);
+            o->light_slot = -1;
         }
         DeleteMoby_m(m);
         return;
@@ -1743,259 +1831,259 @@ void update_animated_point_light_moby(unsigned char *m) {
     {
         unsigned char *s = m + 0x10;
         qcopy(&tp, s);
-        tp.w = *(float *)(o + 0x60);
+        tp.w = o->radius;
         v21 = s;
         s = (unsigned char *)&tp;
         r = FastBSphereCheck_v(s, 255.0f);
     }
     if (r != -1) {
-        if (*(unsigned char **)(o + 0x20) != 0) {
-            qcopy(&t2, *(unsigned char **)(o + 0x20) + 0x10);
+        if (*(unsigned char **)&o->follow != 0) {
+            qcopy(&t2, *(unsigned char **)&o->follow + 0x10);
         } else {
-            qcopy(&t2, o + 0x10);
+            qcopy(&t2, o->pos);
         }
         v20 = &t2;
-        if (!(*(int *)&((Moby *)o)->rot.w & 0x800000)) {
-            if (*(int *)&((Moby *)o)->rot.w & 0x100000) {
-                if (*(int *)&((Moby *)o)->rot.w & 0x200000) {
-                    t3.x = random_float_between(-((Moby *)o)->bsphere.x, ((Moby *)o)->bsphere.x);
-                    t3.y = random_float_between(-((Moby *)o)->bsphere.y, ((Moby *)o)->bsphere.y);
-                    t3.z = random_float_between(-((Moby *)o)->bsphere.z, ((Moby *)o)->bsphere.z);
+        if (!(o->flags & 0x800000)) {
+            if (o->flags & 0x100000) {
+                if (o->flags & 0x200000) {
+                    t3.x = random_float_between(-o->offset.x, o->offset.x);
+                    t3.y = random_float_between(-o->offset.y, o->offset.y);
+                    t3.z = random_float_between(-o->offset.z, o->offset.z);
                     v19 = &t3;
                 } else {
-                    int c = *(int *)&((Moby *)o)->bsphere.w;
+                    int c = *(int *)&o->offset.w;
                     void *p = &t3;
-                    *(int *)&((Moby *)o)->bsphere.w = 0;
-                    FastVecScale(p, o, random_float_between(((Moby *)o)->bsphere.w, 1.0f));
-                    *(int *)&((Moby *)o)->bsphere.w = c;
+                    *(int *)&o->offset.w = 0;
+                    FastVecScale(p, &o->offset, random_float_between(o->offset.w, 1.0f));
+                    *(int *)&o->offset.w = c;
                     v19 = p;
                 }
             } else {
-                int c = *(int *)&((Moby *)o)->bsphere.w;
+                int c = *(int *)&o->offset.w;
                 void *p = &t3;
-                *(int *)&((Moby *)o)->bsphere.w = 0;
-                qcopy(p, o);
-                *(int *)&((Moby *)o)->bsphere.w = c;
+                *(int *)&o->offset.w = 0;
+                qcopy(p, &o->offset);
+                *(int *)&o->offset.w = c;
                 v19 = p;
             }
-            if (*(int *)&((Moby *)o)->rot.w & 0x400000) {
-                if (*(unsigned char **)(o + 0x20) != 0) {
-                    matrix_mul_vec3(v19, v19, *(unsigned char **)(o + 0x20) + 0xC0);
+            if (o->flags & 0x400000) {
+                if (*(unsigned char **)&o->follow != 0) {
+                    matrix_mul_vec3(v19, v19, *(unsigned char **)&o->follow + 0xC0);
                 }
             }
             FastVecAdd(v21, v20, v19);
         } else {
             qcopy(v21, &t2);
         }
-        if (*(unsigned short *)(o + 0x72) != 0) {
-            if (FastDecTimer(o + 0x7A)) {
-                *(short *)(o + 0x7A) = scale_ticks_r(*(unsigned short *)(o + 0x72));
-                if (*(int *)&((Moby *)o)->rot.w & 4) {
+        if (o->period_radius != 0) {
+            if (FastDecTimer(&o->timer_radius)) {
+                o->timer_radius = scale_ticks_r(o->period_radius);
+                if (o->flags & 4) {
                     c0 = 1;
-                    *(float *)(o + 0x60) = *(float *)(o + 0x3C);
-                    *(int *)&((Moby *)o)->rot.w &= 0xFFFFFFF7;
+                    o->radius = o->radius_min;
+                    o->flags &= 0xFFFFFFF7;
                 }
             }
         }
-        if (!(*(int *)&((Moby *)o)->rot.w & 0x80000)) {
-            s64 q = *(s64 *)(o + 0x48);
-            if ((q & (0xC000L << 18)) == (0x8000L << 18)) *(int *)&((Moby *)o)->rot.w ^= 0x2;
-            if (!(*(int *)&((Moby *)o)->rot.w & 0x2)) {
-                if (*(int *)&((Moby *)o)->rot.w & 0x8) {
-                    float t = *(float *)(o + 0x60) - ((Moby *)o)->rot.y * frame_scale;
-                    *(float *)(o + 0x60) = t;
-                    if (t <= *(float *)(o + 0x3C)) {
-                        *(float *)(o + 0x60) = *(float *)(o + 0x3C);
-                        if (*(int *)&((Moby *)o)->rot.w & 0x4) {
-                            if (scale_ticks_r(*(unsigned short *)(o + 0x72)) == 0) *(int *)&((Moby *)o)->rot.w ^= 0x8;
+        if (!(o->flags & 0x80000)) {
+            s64 q = *(s64 *)&o->life;
+            if ((q & (0xC000L << 18)) == (0x8000L << 18)) o->flags ^= 0x2;
+            if (!(o->flags & 0x2)) {
+                if (o->flags & 0x8) {
+                    float t = o->radius - o->radius_fall * frame_scale;
+                    o->radius = t;
+                    if (t <= o->radius_min) {
+                        o->radius = o->radius_min;
+                        if (o->flags & 0x4) {
+                            if (scale_ticks_r(o->period_radius) == 0) o->flags ^= 0x8;
                         }
                     }
                 } else {
-                    float t = *(float *)(o + 0x60) + ((Moby *)o)->rot.x * frame_scale;
-                    *(float *)(o + 0x60) = t;
-                    if (*(float *)(o + 0x38) <= t) {
-                        *(float *)(o + 0x60) = *(float *)(o + 0x38);
-                        if (!(*(int *)&((Moby *)o)->rot.w & 0x1)) {
-                            *(int *)&((Moby *)o)->rot.w ^= 0x8;
+                    float t = o->radius + o->radius_rise * frame_scale;
+                    o->radius = t;
+                    if (o->radius_max <= t) {
+                        o->radius = o->radius_max;
+                        if (!(o->flags & 0x1)) {
+                            o->flags ^= 0x8;
                         } else {
-                            ((Moby *)o)->shadow_range = scale_ticks_r(*(unsigned char *)(o + 0x6B));
-                            *(int *)&((Moby *)o)->rot.w = (*(int *)&((Moby *)o)->rot.w | 0x2) ^ 0x8;
+                            o->unk_7F = scale_ticks_r(o->unk_6B);
+                            o->flags = (o->flags | 0x2) ^ 0x8;
                         }
                     }
                 }
             } else {
-                if (*(unsigned char *)(o + 0x6B) != 0 && fast_subtract_rotations_cf(o + 0x7F)) *(int *)&((Moby *)o)->rot.w ^= 0x2;
+                if (o->unk_6B != 0 && fast_subtract_rotations_cf(&o->unk_7F)) o->flags ^= 0x2;
             }
         } else {
-            if (*(unsigned short *)(o + 0x72) == 0 || c0 == 1) {
-                *(float *)(o + 0x60) = random_float_between(*(float *)(o + 0x3C), *(float *)(o + 0x38));
+            if (o->period_radius == 0 || c0 == 1) {
+                o->radius = random_float_between(o->radius_min, o->radius_max);
             }
         }
-        if (*(unsigned short *)(o + 0x6C) != 0) {
-            if (FastDecTimer(o + 0x74)) {
-                *(short *)(o + 0x74) = scale_ticks_r(*(unsigned short *)(o + 0x6C));
-                *(int *)&((Moby *)o)->rot.w &= 0xFFFFFF7F;
-                ((Moby *)o)->anim_time = (float)*(unsigned char *)(o + 0x27);
+        if (o->period_a != 0) {
+            if (FastDecTimer(&o->timer_a)) {
+                o->timer_a = scale_ticks_r(o->period_a);
+                o->flags &= 0xFFFFFF7F;
+                o->value_a = (float)o->unk_27;
             }
         }
-        if (!(*(int *)&((Moby *)o)->rot.w & 0x10000)) {
-            s64 q = *(s64 *)(o + 0x48);
-            if ((q & (0xC000L << 22)) == (0x8000L << 22)) *(int *)&((Moby *)o)->rot.w ^= 0x20;
-            if (!(*(int *)&((Moby *)o)->rot.w & 0x20)) {
-                if (*(int *)&((Moby *)o)->rot.w & 0x80) {
-                    float a = IntToFloat(o[0x27]) / 100.0f;
-                    float b = IntToFloat(o[0x29]) / 100.0f;
-                    float t = ((Moby *)o)->anim_time - b * frame_scale;
-                    ((Moby *)o)->anim_time = t;
+        if (!(o->flags & 0x10000)) {
+            s64 q = *(s64 *)&o->life;
+            if ((q & (0xC000L << 22)) == (0x8000L << 22)) o->flags ^= 0x20;
+            if (!(o->flags & 0x20)) {
+                if (o->flags & 0x80) {
+                    float a = IntToFloat(o->unk_27) / 100.0f;
+                    float b = IntToFloat(o->unk_29) / 100.0f;
+                    float t = o->value_a - b * frame_scale;
+                    o->value_a = t;
                     if (t <= a) {
-                        ((Moby *)o)->anim_time = a;
-                        if (*(int *)&((Moby *)o)->rot.w & 0x40) {
-                            if (*(unsigned short *)(o + 0x6C) == 0) *(int *)&((Moby *)o)->rot.w ^= 0x80;
+                        o->value_a = a;
+                        if (o->flags & 0x40) {
+                            if (o->period_a == 0) o->flags ^= 0x80;
                         }
                     }
                 } else {
-                    float a = IntToFloat(o[0x26]) / 100.0f;
-                    float b = IntToFloat(o[0x28]) / 100.0f;
-                    float t = ((Moby *)o)->anim_time + b * frame_scale;
-                    ((Moby *)o)->anim_time = t;
+                    float a = IntToFloat(o->unk_26) / 100.0f;
+                    float b = IntToFloat(o->unk_28) / 100.0f;
+                    float t = o->value_a + b * frame_scale;
+                    o->value_a = t;
                     if (a <= t) {
-                        ((Moby *)o)->anim_time = a;
-                        if (!(*(int *)&((Moby *)o)->rot.w & 0x10)) {
-                            *(int *)&((Moby *)o)->rot.w ^= 0x80;
+                        o->value_a = a;
+                        if (!(o->flags & 0x10)) {
+                            o->flags ^= 0x80;
                         } else {
-                            ((Moby *)o)->unk7C = scale_ticks_r(o[0x68]);
-                            *(int *)&((Moby *)o)->rot.w = (*(int *)&((Moby *)o)->rot.w | 0x20) ^ 0x80;
+                            o->unk_7C = scale_ticks_r(o->unk_68);
+                            o->flags = (o->flags | 0x20) ^ 0x80;
                         }
                     }
                 }
             } else {
-                if (o[0x68] != 0 && fast_subtract_rotations_cf(o + 0x7C)) *(int *)&((Moby *)o)->rot.w ^= 0x20;
+                if (o->unk_68 != 0 && fast_subtract_rotations_cf(&o->unk_7C)) o->flags ^= 0x20;
             }
         } else {
-            if (*(unsigned short *)(o + 0x6C) == 0 || c1 == 1) {
-                float a = (float)truncate_float_to_s32_r_r((float)o[0x27]) / 100.0f;
-                float b = (float)truncate_float_to_s32_r_r((float)o[0x26]) / 100.0f;
-                ((Moby *)o)->anim_time = random_float_between(a, b);
+            if (o->period_a == 0 || c1 == 1) {
+                float a = (float)truncate_float_to_s32_r_r((float)o->unk_27) / 100.0f;
+                float b = (float)truncate_float_to_s32_r_r((float)o->unk_26) / 100.0f;
+                o->value_a = random_float_between(a, b);
             }
         }
-        if (*(unsigned short *)(o + 0x6E) != 0) {
-            if (FastDecTimer(o + 0x76)) {
-                *(short *)(o + 0x76) = scale_ticks_r(*(unsigned short *)(o + 0x6E));
-                *(int *)&((Moby *)o)->rot.w &= 0xFFFFF7FF;
-                ((Moby *)o)->anim_speed = (float)o[0x2C];
+        if (o->period_b != 0) {
+            if (FastDecTimer(&o->timer_b)) {
+                o->timer_b = scale_ticks_r(o->period_b);
+                o->flags &= 0xFFFFF7FF;
+                o->value_b = (float)o->unk_2C;
             }
         }
-        if (!(*(int *)&((Moby *)o)->rot.w & 0x20000)) {
-            s64 q = *(s64 *)(o + 0x48);
-            if ((q & (0xC000L << 26)) == (0x8000L << 26)) *(int *)&((Moby *)o)->rot.w ^= 0x200;
-            if (!(*(int *)&((Moby *)o)->rot.w & 0x200)) {
-                if (*(int *)&((Moby *)o)->rot.w & 0x800) {
-                    float a = IntToFloat(o[0x2C]) / 100.0f;
-                    float b = IntToFloat(o[0x2E]) / 100.0f;
-                    float t = ((Moby *)o)->anim_speed - b * frame_scale;
-                    ((Moby *)o)->anim_speed = t;
+        if (!(o->flags & 0x20000)) {
+            s64 q = *(s64 *)&o->life;
+            if ((q & (0xC000L << 26)) == (0x8000L << 26)) o->flags ^= 0x200;
+            if (!(o->flags & 0x200)) {
+                if (o->flags & 0x800) {
+                    float a = IntToFloat(o->unk_2C) / 100.0f;
+                    float b = IntToFloat(o->unk_2E) / 100.0f;
+                    float t = o->value_b - b * frame_scale;
+                    o->value_b = t;
                     if (t <= a) {
-                        ((Moby *)o)->anim_speed = a;
-                        if (*(int *)&((Moby *)o)->rot.w & 0x400) {
-                            if (*(unsigned short *)(o + 0x6E) == 0) *(int *)&((Moby *)o)->rot.w ^= 0x800;
+                        o->value_b = a;
+                        if (o->flags & 0x400) {
+                            if (o->period_b == 0) o->flags ^= 0x800;
                         }
                     }
                 } else {
-                    float a = IntToFloat(o[0x2B]) / 100.0f;
-                    float b = IntToFloat(o[0x2D]) / 100.0f;
-                    float t = ((Moby *)o)->anim_speed + b * frame_scale;
-                    ((Moby *)o)->anim_speed = t;
+                    float a = IntToFloat(o->unk_2B) / 100.0f;
+                    float b = IntToFloat(o->unk_2D) / 100.0f;
+                    float t = o->value_b + b * frame_scale;
+                    o->value_b = t;
                     if (a <= t) {
-                        ((Moby *)o)->anim_speed = a;
-                        if (!(*(int *)&((Moby *)o)->rot.w & 0x100)) {
-                            *(int *)&((Moby *)o)->rot.w ^= 0x800;
+                        o->value_b = a;
+                        if (!(o->flags & 0x100)) {
+                            o->flags ^= 0x800;
                         } else {
-                            ((Moby *)o)->sound_slot = scale_ticks_r(o[0x69]);
-                            *(int *)&((Moby *)o)->rot.w = (*(int *)&((Moby *)o)->rot.w | 0x200) ^ 0x800;
+                            o->unk_7D = scale_ticks_r(o->unk_69);
+                            o->flags = (o->flags | 0x200) ^ 0x800;
                         }
                     }
                 }
             } else {
-                if (o[0x69] != 0 && fast_subtract_rotations_cf(o + 0x7D)) *(int *)&((Moby *)o)->rot.w ^= 0x200;
+                if (o->unk_69 != 0 && fast_subtract_rotations_cf(&o->unk_7D)) o->flags ^= 0x200;
             }
         } else {
-            if (*(unsigned short *)(o + 0x6E) == 0 || c2 == 1) {
-                float a = (float)truncate_float_to_s32_r_r((float)o[0x2C]) / 100.0f;
-                float b = (float)truncate_float_to_s32_r_r((float)o[0x2B]) / 100.0f;
-                ((Moby *)o)->anim_speed = random_float_between(a, b);
+            if (o->period_b == 0 || c2 == 1) {
+                float a = (float)truncate_float_to_s32_r_r((float)o->unk_2C) / 100.0f;
+                float b = (float)truncate_float_to_s32_r_r((float)o->unk_2B) / 100.0f;
+                o->value_b = random_float_between(a, b);
             }
         }
-        if (*(unsigned short *)(o + 0x70) != 0) {
-            if (FastDecTimer(o + 0x78)) {
-                *(short *)(o + 0x78) = scale_ticks_r(*(unsigned short *)(o + 0x70));
-                *(int *)&((Moby *)o)->rot.w &= 0xFFFF7FFF;
-                *(float *)(o + 0x5C) = (float)((Moby *)o)->visible;
+        if (o->period_c != 0) {
+            if (FastDecTimer(&o->timer_c)) {
+                o->timer_c = scale_ticks_r(o->period_c);
+                o->flags &= 0xFFFF7FFF;
+                o->value_c = (float)o->unk_31;
             }
         }
-        if (!(*(int *)&((Moby *)o)->rot.w & 0x40000)) {
-            s64 q = *(s64 *)(o + 0x48);
-            if ((q & (0xC000L << 30)) == (0x8000L << 30)) *(int *)&((Moby *)o)->rot.w ^= 0x2000;
-            if (!(*(int *)&((Moby *)o)->rot.w & 0x2000)) {
-                if (*(int *)&((Moby *)o)->rot.w & 0x8000) {
-                    float a = IntToFloat(((Moby *)o)->visible) / 100.0f;
-                    float b = IntToFloat(o[0x33]) / 100.0f;
-                    float t = *(float *)(o + 0x5C) - b * frame_scale;
-                    *(float *)(o + 0x5C) = t;
+        if (!(o->flags & 0x40000)) {
+            s64 q = *(s64 *)&o->life;
+            if ((q & (0xC000L << 30)) == (0x8000L << 30)) o->flags ^= 0x2000;
+            if (!(o->flags & 0x2000)) {
+                if (o->flags & 0x8000) {
+                    float a = IntToFloat(o->unk_31) / 100.0f;
+                    float b = IntToFloat(o->unk_33) / 100.0f;
+                    float t = o->value_c - b * frame_scale;
+                    o->value_c = t;
                     if (t <= a) {
-                        *(float *)(o + 0x5C) = a;
-                        if (*(int *)&((Moby *)o)->rot.w & 0x4000) {
-                            if (*(unsigned short *)(o + 0x70) == 0) *(int *)&((Moby *)o)->rot.w ^= 0x8000;
+                        o->value_c = a;
+                        if (o->flags & 0x4000) {
+                            if (o->period_c == 0) o->flags ^= 0x8000;
                         }
                     }
                 } else {
-                    float a = IntToFloat(((Moby *)o)->update_dist) / 100.0f;
-                    float b = IntToFloat(o[0x32]) / 100.0f;
-                    float t = *(float *)(o + 0x5C) + b * frame_scale;
-                    *(float *)(o + 0x5C) = t;
+                    float a = IntToFloat(o->unk_30) / 100.0f;
+                    float b = IntToFloat(o->unk_32) / 100.0f;
+                    float t = o->value_c + b * frame_scale;
+                    o->value_c = t;
                     if (a <= t) {
-                        *(float *)(o + 0x5C) = a;
-                        if (!(*(int *)&((Moby *)o)->rot.w & 0x1000)) {
-                            *(int *)&((Moby *)o)->rot.w ^= 0x8000;
+                        o->value_c = a;
+                        if (!(o->flags & 0x1000)) {
+                            o->flags ^= 0x8000;
                         } else {
-                            ((Moby *)o)->anim_trigger_count = scale_ticks_r(o[0x6A]);
-                            *(int *)&((Moby *)o)->rot.w = (*(int *)&((Moby *)o)->rot.w | 0x2000) ^ 0x8000;
+                            o->unk_7E = scale_ticks_r(o->unk_6A);
+                            o->flags = (o->flags | 0x2000) ^ 0x8000;
                         }
                     }
                 }
             } else {
-                if (o[0x6A] != 0 && fast_subtract_rotations_cf(o + 0x7E)) *(int *)&((Moby *)o)->rot.w ^= 0x2000;
+                if (o->unk_6A != 0 && fast_subtract_rotations_cf(&o->unk_7E)) o->flags ^= 0x2000;
             }
         } else {
-            if (*(unsigned short *)(o + 0x70) == 0 || c3 == 1) {
-                float a = (float)truncate_float_to_s32_r_r((float)((Moby *)o)->visible) / 100.0f;
-                float b = (float)truncate_float_to_s32_r_r((float)((Moby *)o)->update_dist) / 100.0f;
-                *(float *)(o + 0x5C) = random_float_between(a, b);
+            if (o->period_c == 0 || c3 == 1) {
+                float a = (float)truncate_float_to_s32_r_r((float)o->unk_31) / 100.0f;
+                float b = (float)truncate_float_to_s32_r_r((float)o->unk_30) / 100.0f;
+                o->value_c = random_float_between(a, b);
             }
         }
-        r = *(int *)(o + 0x50);
+        r = o->light_slot;
         if (r == -1) {
-            float kk = IntToFloat(o[0x24]) / 100.0f;
-            *(int *)(o + 0x50) = allocate_colored_effect_slot((float *)v21, *(float *)(o + 0x60), kk, ((Moby *)o)->anim_time, ((Moby *)o)->anim_speed, *(float *)(o + 0x5C));
+            float kk = IntToFloat(o->unk_24) / 100.0f;
+            o->light_slot = allocate_colored_effect_slot((float *)v21, o->radius, kk, o->value_a, o->value_b, o->value_c);
         } else {
             unsigned char *e = level_point_lights + (r << 5);
             qcopy(e + 0x10, v21);
-            *(float *)(e + 0x1C) = *(float *)(o + 0x60);
-            *(float *)(e + 0x0) = ((Moby *)o)->anim_time;
-            *(float *)(e + 0x4) = ((Moby *)o)->anim_speed;
-            *(float *)(e + 0x8) = *(float *)(o + 0x5C);
-            *(float *)(e + 0xC) = IntToFloat(o[0x24]) / 100.0f;
+            *(float *)(e + 0x1C) = o->radius;
+            *(float *)(e + 0x0) = o->value_a;
+            *(float *)(e + 0x4) = o->value_b;
+            *(float *)(e + 0x8) = o->value_c;
+            *(float *)(e + 0xC) = IntToFloat(o->unk_24) / 100.0f;
         }
     } else {
-        if (*(int *)(o + 0x50) != -1) {
-            release_point_light_slot(*(int *)(o + 0x50));
-            *(int *)(o + 0x50) = r;
+        if (o->light_slot != -1) {
+            release_point_light_slot(o->light_slot);
+            o->light_slot = r;
         }
     }
 }
 typedef float Vec_5AC0[4] __attribute__((aligned(16)));
 typedef struct { u8 pad0[0x24]; float f24; } Class_5AC0;
 typedef struct { int count; int pad4[3]; Vec_5AC0 pts[1]; } Path_5AC0;
-typedef struct {
+typedef struct Data_5AC0 {
     u8 pad0[0x29];
     u8 f29;
     u8 pad2A[0x58 - 0x2A];
@@ -2028,9 +2116,11 @@ typedef struct {
     float f254;
     float f258;
     float f25C;
-    u8 pad260[0x14];
+    u8 pad260[0x10];
+    float unk_270;
     s16 f274;
     s16 f276;
+    float unk_278;
 } Data_5AC0;
 
 extern float horny_toad_scale SDATA(D_L00_00161A3C);
@@ -2418,32 +2508,32 @@ extern float g_frame_time MACRO_ADDR;
 /* Walks a moby toward a target point: turn to face it, ease its speed, step it along its heading; returns the distance (or 37.0 when a flag is set). Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d54c8. */
 float move_horny_toad_toward_position(unsigned char *m, float *t, float vel) {
     float vec[4] __attribute__((aligned(16)));
-    unsigned char *v;
+    struct Data_5AC0 *v;
     float ang, d, z, a, lim, w;
-    v = ((unsigned char *)((Moby *)m)->pvars);
+    v = (struct Data_5AC0 *)((Moby *)m)->pvars;
     ang = fast_atan2(t[0] - ((Moby *)m)->pos.x, t[1] - ((Moby *)m)->pos.y);
     z = ((Moby *)m)->pos.z;
     d = FastVecDist(m + 0x10, t);
     if (2.0f < d)
-        ang = FastAddRots(ang, *(float *)(v + 0x1FC));
+        ang = FastAddRots(ang, v->f1FC);
     if (((Moby *)m)->seq != ((Moby *)m)->prev_seq)
         return d;
-    SteerAngleWithVelocity((float *)(m + 0x48), (float *)(v + 0x1F4), ang, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 12.566371f);
-    ApproachWithVelocity(&vel, d, g_frame_time_sq * 8.0f, g_frame_time_sq * 12.0f, g_frame_time * 4.0f, (float *)(v + 0x1F8));
-    if (*(float *)(v + 0x1F8) < 0.0f)
-        *(float *)(v + 0x1F8) = 0.0f;
+    SteerAngleWithVelocity((float *)(m + 0x48), &v->f1F4, ang, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 12.566371f);
+    ApproachWithVelocity(&vel, d, g_frame_time_sq * 8.0f, g_frame_time_sq * 12.0f, g_frame_time * 4.0f, &v->f1F8);
+    if (v->f1F8 < 0.0f)
+        v->f1F8 = 0.0f;
     a = ((Moby *)m)->rot.z;
-    *(float *)(v + 0x278) = a;
-    vec[0] = FastCos(a) * *(float *)(v + 0x1F8);
-    vec[1] = FastSin(*(float *)(v + 0x278)) * *(float *)(v + 0x1F8);
+    v->unk_278 = a;
+    vec[0] = FastCos(a) * v->f1F8;
+    vec[1] = FastSin(v->unk_278) * v->f1F8;
     vec[2] = 0.0f;
-    vec[2] = *(float *)(v + 0x270) - g_frame_time_sq * 10.0f;
+    vec[2] = v->unk_270 - g_frame_time_sq * 10.0f;
     move_4318((int)m, (int)vec, 0.5f, 0.5f, 0.0f, 0x10);
     w = ((Moby *)m)->pos.z - z;
     lim = g_frame_time * 4.0f;
-    *(float *)(v + 0x270) = w;
+    v->unk_270 = w;
     if (lim < w)
-        *(float *)(v + 0x270) = lim;
+        v->unk_270 = lim;
     if (((Moby *)m)->anim_flags & 2)
         return d;
     return 37.0f;

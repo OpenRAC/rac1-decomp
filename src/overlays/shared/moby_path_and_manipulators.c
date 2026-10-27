@@ -5,6 +5,16 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+/* Break fragment: velocity, spin, life and gravity. */
+struct BreakFragmentVars {
+    u8 pad_00[0x10];
+    Vec4 velocity; /* 0x10 */
+    Vec4 spin; /* 0x20 */
+    s32 life; /* 0x30 */
+    s32 kind; /* 0x34 */
+    f32 gravity; /* 0x38 */
+};
+
 
 typedef int OvlQuad __attribute__((mode(TI)));
 typedef struct {
@@ -1269,7 +1279,7 @@ extern void rand_vec(float *, float, float);
 /* Spawns a break-effect fragment moby of class cls from src, and initialises its motion data. */
 void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11, float scale, float *v12) {
     char *m = (char *)CreateMoby_m(cls);
-    char *d;
+    struct BreakFragmentVars *d;
     float t[4];
     float r, f21, k, k2;
 
@@ -1278,7 +1288,7 @@ void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int 
         ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * r;
         m[0x31] = 1;
         ((Moby *)m)->flags |= 0x100;
-        d = ((char *)((Moby *)m)->pvars);
+        d = (struct BreakFragmentVars *)((Moby *)m)->pvars;
         *(long *)(m + 0x38) = *(long *)(src + 0x38);
         m[0x20] = 1;
         qcopy(m + 0x10, pos);
@@ -1287,14 +1297,14 @@ void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int 
         ((Moby *)m)->draw_dist = 0x80;
         *(int *)&((Moby *)m)->collision = 0;
         if (a8 == 0)
-            *(int *)(d + 0x30) = truncate_float_to_s32_r(multiply_global_factor(random_float_between(60.0f, 120.0f)));
+            d->life = truncate_float_to_s32_r(multiply_global_factor(random_float_between(60.0f, 120.0f)));
         else
-            *(int *)(d + 0x30) = a8;
-        *(int *)(d + 0x34) = a9;
-        if (*(float *)(d + 0x38) == 0.0f)
-            *(float *)(d + 0x38) = random_float_between(10.0f, 15.0f) * g_frame_time_sq;
+            d->life = a8;
+        d->kind = a9;
+        if (d->gravity == 0.0f)
+            d->gravity = random_float_between(10.0f, 15.0f) * g_frame_time_sq;
         else
-            *(float *)(d + 0x38) = scale;
+            d->gravity = scale;
         if (FastVecLength(v10) == 0.0f) {
             f21 = random_angle_radians();
             k = random_float_between(2.0f, 4.0f) * g_frame_time;
@@ -1302,16 +1312,16 @@ void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int 
             t[1] = FastSin(f21) * k;
             t[2] = 0.0f;
             t[2] = random_float_between(5.0f, 8.0f) * g_frame_time;
-            qcopy(d, t);
+            qcopy(((char *)d), t);
         } else {
-            qcopy(d, v10);
+            qcopy(((char *)d), v10);
         }
         if (FastVecLength(v11) == 0.0f) {
             float g = g_frame_time;
             rand_vec(t, g * 3.1415927f, g * 6.2831855f);
-            qcopy(d + 0x10, t);
+            qcopy(&d->velocity, t);
         } else {
-            qcopy(d + 0x10, v11);
+            qcopy(&d->velocity, v11);
         }
         if (FastVecLength(v12) == 0.0f && v12[3] == 0.0f) {
             qcopy(t, *(char **)(m + 0x24) + 0x30);
@@ -1319,9 +1329,9 @@ void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int 
             k2 = k2 * 0.0009765625f;
             FastVecScale(t, t, k2);
             t[3] = t[3] * k2;
-            qcopy(d + 0x20, t);
+            qcopy(&d->spin, t);
         } else {
-            qcopy(d + 0x20, v12);
+            qcopy(&d->spin, v12);
         }
         moby_build_matrix(m);
     }

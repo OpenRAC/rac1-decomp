@@ -7,6 +7,63 @@
 #include "moby.h"
 #include "camera.h"
 
+/* Gadget vendor: a ring moby that glows and spins while the hero is near. */
+struct VendorVars {
+    s32 state;                      /* 0x00 */
+    s32 unk_04;                     /* 0x04 */
+    u8 pad_08[0x4];
+    char *ring;                     /* 0x0C: ring moby */
+    u8 ring_a_manip[0x10];          /* 0x10: AttachManipulator */
+    u8 ring_a_rot[0x30];            /* 0x20 */
+    u8 ring_b_manip[0x10];          /* 0x50: AttachManipulator */
+    u8 ring_b_rot[0x30];            /* 0x60 */
+    f32 glow;                       /* 0x90: 0..1 */
+};
+
+/* Homing bolt (moby 0x100): flies at its target until the timer runs out. */
+struct HomingBoltVars {
+    Vec4A aim_pos;                  /* 0x00: target position, z raised by aim_height */
+    void *owner;                    /* 0x10 */
+    s32 life;                       /* 0x14: ticks */
+    char *target;                   /* 0x18 */
+    f32 aim_height;                 /* 0x1C */
+    s32 unk_20;                     /* 0x20 */
+    s32 unk_24;                     /* 0x24 */
+    s32 unk_28;                     /* 0x28 */
+    f32 unk_2C;                     /* 0x2C */
+    f32 unk_30;                     /* 0x30 */
+    f32 speed;                      /* 0x34 */
+    s32 can_retarget;               /* 0x38 */
+    s16 unk_3C;                     /* 0x3C */
+    s16 unk_3E;                     /* 0x3E */
+};
+
+/* Wrench impact marker: quads that flare around the hit point. */
+struct ImpactMarkerVars {
+    u8 pad_00[0x10];
+    Vec4A pos;                      /* 0x10 */
+    Vec3f normal;                   /* 0x20 */
+};
+
+/* Mine (moby 0x4A): spawned with an owner and a few timers. */
+struct MineSpawnVars {
+    u8 pad_00[0x30];
+    s32 owner;                      /* 0x30 */
+    u8 pad_34[0x2];
+    u16 unk_36;                     /* 0x36 */
+    f32 unk_38;                     /* 0x38 */
+    f32 unk_3C;                     /* 0x3C */
+    u8 pad_40[0x1C];
+    s32 unk_5C;                     /* 0x5C */
+    f32 unk_60;                     /* 0x60 */
+    f32 unk_64;                     /* 0x64 */
+    s32 unk_68;                     /* 0x68 */
+    f32 unk_6C;                     /* 0x6C */
+    f32 unk_70;                     /* 0x70 */
+    s32 unk_74;                     /* 0x74 */
+    s32 unk_78;                     /* 0x78 */
+};
+
 LINKER_REMNANT("asm/overlays", func_L00_002A5138);
 /* Pokes a round ripple into the level water height grids: each 0x1190-byte patch holds
  * two 23x16 height buffers (current/previous frame, indices D_L00_001612D8 / D_L00_001612E0);
@@ -594,7 +651,7 @@ extern G_pp_t G_pp __asm__("D_0013F450");
 
 /* Per-frame update of a pulsing light-beam moby: spawns a child, fades it with distance to the player, draws it and may trigger the player's grab. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_002a4830.c, FUN_L00_002a57a8. */
 void vendor_update(char *moby) {
-    char *p = ((char *)((Moby *)moby)->pvars);
+    struct VendorVars *p = (struct VendorVars *)((Moby *)moby)->pvars;
     char *c;
     int i;
     float f;
@@ -610,45 +667,45 @@ void vendor_update(char *moby) {
     switch (((Moby *)moby)->state) {
     case 0:
         ((Moby *)moby)->state = 1;
-        *(int *)(p + 0) = 0;
-        *(int *)(p + 4) = 0;
-        *(char **)(p + 0xC) = CreateMoby(0x477);
-        *(unsigned short *)(*(char **)(p + 0xC) + 0x34) |= 2;
-        *(short *)(*(char **)(p + 0xC) + 0x32) = 0x40;
-        *(float *)(*(char **)(p + 0xC) + 0x10) = ((Moby *)moby)->pos.x;
-        *(float *)(*(char **)(p + 0xC) + 0x14) = ((Moby *)moby)->pos.y;
-        *(float *)(*(char **)(p + 0xC) + 0x18) = ((Moby *)moby)->pos.z + 2.95f;
-        c = *(char **)(p + 0xC);
+        p->state = 0;
+        p->unk_04 = 0;
+        p->ring = CreateMoby(0x477);
+        *(unsigned short *)(p->ring + 0x34) |= 2;
+        *(short *)(p->ring + 0x32) = 0x40;
+        *(float *)(p->ring + 0x10) = ((Moby *)moby)->pos.x;
+        *(float *)(p->ring + 0x14) = ((Moby *)moby)->pos.y;
+        *(float *)(p->ring + 0x18) = ((Moby *)moby)->pos.z + 2.95f;
+        c = p->ring;
         if (*(unsigned char *)(*(char **)(c + 0x24) + 6) != 0) *(unsigned char *)(c + 0x73) = 0x20;
-        *(int *)(p + 0x90) = 0;
+        *(int *)&p->glow = 0;
         for (i = 0; i < 2; i++) {
-            AttachManipulator(*(char **)(p + 0xC), i, p + 0x10 + i * 0x40);
+            AttachManipulator(p->ring, i, ((char *)p) + 0x10 + i * 0x40);
         }
-        moby_build_matrix(*(char **)(p + 0xC));
+        moby_build_matrix(p->ring);
         break;
     case 1:
-        if (*(float *)(p + 0x90) > 0.0f) *(float *)(p + 0x90) -= 0.1f;
-        if (*(float *)(p + 0x90) <= 0.0f) *(unsigned short *)(*(char **)(p + 0xC) + 0x34) |= 1;
+        if (p->glow > 0.0f) p->glow -= 0.1f;
+        if (p->glow <= 0.0f) *(unsigned short *)(p->ring + 0x34) |= 1;
         if ((level_frame_counter & 7) == 0) {
             char *g = hero_globals_base + 0xE9D;
             if (vec_distance_xy(moby + 0x10, g) <= 16.0f) {
                 if (FastAbsF(((Moby *)moby)->pos.z - *(float *)(g + 8)) <= 8.0f) {
                     ((Moby *)moby)->state = 2;
                     if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, 10);
-                    *(unsigned short *)(*(char **)(p + 0xC) + 0x34) &= 0xFFFE;
+                    *(unsigned short *)(p->ring + 0x34) &= 0xFFFE;
                 }
             }
         }
         AddDrawCallback(draw_vendor_effects, moby);
-        axis_rotation_2d48(p + 0x20, 2, *(float *)&vendor_ring_a_angle);
-        axis_rotation_2d48(p + 0x60, 2, *(float *)&vendor_ring_b_angle);
+        axis_rotation_2d48(p->ring_a_rot, 2, *(float *)&vendor_ring_a_angle);
+        axis_rotation_2d48(p->ring_b_rot, 2, *(float *)&vendor_ring_b_angle);
         *(float *)&vendor_ring_a_angle = FastAddRots(*(float *)&vendor_ring_a_angle, 0.01f);
         t2 = FastAddRots(*(float *)&vendor_ring_b_angle, -0.02f);
-        m = *(char **)(p + 0xC);
-        t3 = *(float *)(p + 0x90) * *(float *)(*(char **)(m + 0x24) + 0x24) * 2.5f;
+        m = p->ring;
+        t3 = p->glow * *(float *)(*(char **)(m + 0x24) + 0x24) * 2.5f;
         *(float *)&vendor_ring_b_angle = t2;
         *(float *)(m + 0x2C) = t3;
-        moby_build_matrix(*(char **)(p + 0xC));
+        moby_build_matrix(p->ring);
         break;
     case 2: {
         float dist;
@@ -657,7 +714,7 @@ void vendor_update(char *moby) {
         int a;
         int b;
         int r;
-        if (*(float *)(p + 0x90) < 1.0f) *(float *)(p + 0x90) += 0.1f;
+        if (p->glow < 1.0f) p->glow += 0.1f;
         g = hero_globals_base + 0xE9D;
         dist = vec_distance_xy(moby + 0x10, g);
         dz = FastAbsF(((Moby *)moby)->pos.z - *(float *)(g + 8));
@@ -671,15 +728,15 @@ void vendor_update(char *moby) {
         AddDrawCallback(draw_vendor_effects, moby);
         a = 1;
         b = 1;
-        axis_rotation_2d48(p + 0x20, 2, *(float *)&vendor_ring_a_angle);
-        axis_rotation_2d48(p + 0x60, 2, *(float *)&vendor_ring_b_angle);
+        axis_rotation_2d48(p->ring_a_rot, 2, *(float *)&vendor_ring_a_angle);
+        axis_rotation_2d48(p->ring_b_rot, 2, *(float *)&vendor_ring_b_angle);
         *(float *)&vendor_ring_a_angle = FastAddRots(*(float *)&vendor_ring_a_angle, 0.01f);
         t2 = FastAddRots(*(float *)&vendor_ring_b_angle, -0.02f);
-        m = *(char **)(p + 0xC);
-        t3 = *(float *)(p + 0x90) * *(float *)(*(char **)(m + 0x24) + 0x24) * 2.5f;
+        m = p->ring;
+        t3 = p->glow * *(float *)(*(char **)(m + 0x24) + 0x24) * 2.5f;
         *(float *)&vendor_ring_b_angle = t2;
         *(float *)(m + 0x2C) = t3;
-        moby_build_matrix(*(char **)(p + 0xC));
+        moby_build_matrix(p->ring);
         if (G_pp.i208C != 0 && G_pp.i2084 != 3 && G_pp.i208C != 1) { a = 0; b = 0; }
         if (G_pp.i2084 == 0x1D || G_pp.i2084 == 0x32) { a = 0; b = 0; }
         if (G_pp.b20A4) { a = 0; b = 0; }
@@ -697,11 +754,11 @@ void vendor_update(char *moby) {
         break;
     }
     case 3:
-        m = *(char **)(p + 0xC);
+        m = p->ring;
         if (m != 0) {
-            *(int *)(p + 0x90) = 0;
-            *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)(p + 0x90) * 2.5f;
-            moby_build_matrix(*(char **)(p + 0xC));
+            *(int *)&p->glow = 0;
+            *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * p->glow * 2.5f;
+            moby_build_matrix(p->ring);
         }
         break;
     }
@@ -710,7 +767,7 @@ typedef struct {
     char pad0[0x24];
     float scale;               /* 0x24 */
 } Class_A7078;
-typedef struct {
+typedef struct Vars_A7078 {
     float pos[4];              /* 0x00: point it hovers around */
     float ang[4];              /* 0x10 */
     float vel[4];              /* 0x20 */
@@ -1162,7 +1219,7 @@ extern void vec_scale_to_length(float *, float *, float);
 
 /* Steers a thrown moby along its path: builds its orientation from the data's angles and, when done, releases the held target. */
 void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct Vars_A7078 *data = (struct Vars_A7078 *)((Moby *)moby)->pvars;
     float m0[12];
     float m1[12];
     float v60[4];
@@ -1173,11 +1230,11 @@ void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
     float C[4];
     float c1, c2, c3, c4, c5;
 
-    if (*(char **)(data + 0x5C) != 0) {
-        transform_attachment_pose((int)moby, *(char **)(data + 0x5C), (float *)data, (float *)(data + 0x10), A, B);
+    if (*(char **)&data->held != 0) {
+        transform_attachment_pose((int)moby, *(char **)&data->held, (float *)((char *)data), &data->ang[0], A, B);
     } else {
-        qcopy(A, data);
-        qcopy(B, data + 0x10);
+        qcopy(A, data->pos);
+        qcopy(B, data->ang);
     }
     switch (((Moby *)moby)->oclass) {
     case 13:
@@ -1193,14 +1250,14 @@ void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
         c1 = 0.0175f; c2 = -0.35f; c3 = 0.135f; c4 = 0.3f; c5 = 0.25f;
         break;
     }
-    if (*(unsigned char *)(data + 0x55) & 1) {
-        *(float *)(data + 0x50) = FastAddRots(*(float *)(data + 0x50), c1);
-        *(float *)(data + 0x58) = FastAddRots(*(float *)(data + 0x58), -0.0125f);
+    if (data->f55 & 1) {
+        data->f50 = FastAddRots(data->f50, c1);
+        data->f58 = FastAddRots(data->f58, -0.0125f);
     } else {
-        *(float *)(data + 0x50) = FastSubRots(*(float *)(data + 0x50), c1);
-        *(float *)(data + 0x58) = FastSubRots(*(float *)(data + 0x58), -0.0125f);
+        data->f50 = FastSubRots(data->f50, c1);
+        data->f58 = FastSubRots(data->f58, -0.0125f);
     }
-    qcopy(v60, data + 0x50);
+    qcopy(v60, &data->f50);
     v60[1] = c2;
     euler_rotation_basis(m0, v60);
     euler_rotation_basis(m1, B);
@@ -1212,31 +1269,31 @@ void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
     if (out1 != 0) qcopy(out1, A);
     if (out2 != 0) qcopy(out2, B);
     if (((Moby *)moby)->state == 3) {
-        char *obj = *(char **)(data + 0x5C);
-        if (obj != 0 && *(unsigned char *)(data + 0x57) == 0) {
+        char *obj = *(char **)&data->held;
+        if (obj != 0 && data->f57 == 0) {
             int r;
             char *x;
-            if ((unsigned char)obj[0x20] == 0xFE || (*(unsigned char **)(data + 0x5C))[0x20] == 0xFD) {
+            if ((unsigned char)obj[0x20] == 0xFE || (*(unsigned char **)&data->held)[0x20] == 0xFD) {
                 r = 1;
             } else {
                 r = coll_sphere(c5, moby + 0x10, 0x22, moby) == 0;
             }
             if (r) {
                 moby[0x20] = 1;
-                clear_u64_value(data + 0x30);
-                *(float *)(data + 0x3C) = 1.0f;
-                x = moby_get_ride_transform(*(char **)(data + 0x5C));
+                clear_u64_value(data->quat);
+                data->quat[3] = 1.0f;
+                x = moby_get_ride_transform(*(char **)&data->held);
                 if (x != 0) {
-                    qcopy(data + 0x20, x + 0x10);
+                    qcopy(data->vel, x + 0x10);
                 } else {
-                    clear_u64_value(data + 0x20);
+                    clear_u64_value(data->vel);
                 }
                 vec_scale_to_length(C, &m1[8], g_frame_time);
                 vec_scale_to_length(D, (float *)(moby + 0xC0), g_frame_time);
                 FastVecAdd(C, C, D);
-                FastVecAdd(data + 0x20, data + 0x20, C);
-                FastVecAdd(moby + 0x10, moby + 0x10, data + 0x20);
-                *(char **)(data + 0x5C) = 0;
+                FastVecAdd(data->vel, data->vel, C);
+                FastVecAdd(moby + 0x10, moby + 0x10, data->vel);
+                *(char **)&data->held = 0;
             }
         }
     }
@@ -1252,7 +1309,7 @@ int begin_bolt_attraction(void *moby_v, int target_i, float sx, float sy) {
     char *moby = moby_v;
     char *target = (char *)target_i;
     float v[12];
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct Vars_A7078 *data = (struct Vars_A7078 *)((Moby *)moby)->pvars;
 
     if (((Moby *)moby)->state == 4) {
         return 0;
@@ -1269,17 +1326,17 @@ int begin_bolt_attraction(void *moby_v, int target_i, float sx, float sy) {
         }
     }
     if (((Moby *)moby)->state == 3) {
-        euler_rotation_basis(v, data + 0x10);
-        vec_scale_to_length((float *)(data + 0x20), v + 8, random_float_between(3.0f, 7.0f) * g_frame_time);
+        euler_rotation_basis(v, data->ang);
+        vec_scale_to_length(&data->vel[0], v + 8, random_float_between(3.0f, 7.0f) * g_frame_time);
     }
-    *(float *)(data + 0x4C) = sx;
-    *(float *)(data + 0x48) = sy;
-    *(int *)(data + 0x64) = 0;
-    *(char **)(data + 0x60) = target;
+    data->f4C = sx;
+    data->f48 = sy;
+    *(int *)&data->f64 = 0;
+    *(char **)&data->target = target;
     FastVecSub(v + 4, target + 0x10, moby + 0x10);
-    FastVecCross(v, data + 0x20, v + 4);
-    vec_scale_to_length((float *)(data + 0x30), v, 1.0f);
-    build_quaternion_from_axis_angle(data + 0x30, data + 0x30, random_float_between((*(float *)&(bolt_attract_max_spin_deg)) * 0.333f, (*(float *)&(bolt_attract_max_spin_deg))) * 0.017453293f * g_frame_time);
+    FastVecCross(v, data->vel, v + 4);
+    vec_scale_to_length(&data->quat[0], v, 1.0f);
+    build_quaternion_from_axis_angle(data->quat, data->quat, random_float_between((*(float *)&(bolt_attract_max_spin_deg)) * 0.333f, (*(float *)&(bolt_attract_max_spin_deg))) * 0.017453293f * g_frame_time);
     moby[0x20] = 4;
     return 1;
 }
@@ -2037,7 +2094,7 @@ extern void append_unique_moby_index(void *, short *, int);
 /* Spawns a homing bolt (class 0x100) from owner at pos, aimed at tgt or at whatever lies along its heading. */
 char *spawn_homing_bolt(void *owner, void *pos, float a, float b, float c, char *tgt, float rz, float ry) {
     char *m;
-    char *d;
+    struct HomingBoltVars *d;
     Vec4 t;
     Vec4 p;
     m = (char *)CreateMoby(0x100);
@@ -2047,7 +2104,7 @@ char *spawn_homing_bolt(void *owner, void *pos, float a, float b, float c, char 
         m[0x20] = 0;
         ((Moby *)m)->scale *= *(float *)&homing_bolt_bounds_scale;
         ((Moby *)m)->draw_dist = 0xFF;
-        d = ((char *)((Moby *)m)->pvars);
+        d = (struct HomingBoltVars *)((Moby *)m)->pvars;
         ((Moby *)m)->rot.z = rz;
         ((Moby *)m)->rot.y = ry;
         if (tgt == 0) {
@@ -2055,40 +2112,40 @@ char *spawn_homing_bolt(void *owner, void *pos, float a, float b, float c, char 
             p.q = *(Q_2aa998 *)pos;
             tgt = select_auto_aim_target_moby(owner, &p, &t, &a, &b, &c, 0.34906584f);
         }
-        *(void **)(d + 0x10) = owner;
+        d->owner = owner;
         qcopy(m + 0x10, pos);
-        *(float *)(d + 0x34) = g_frame_time * 100.0f;
-        *(int *)(d + 0x38) = 1;
-        *(int *)(d + 0x24) = 0;
-        *(int *)(d + 0x28) = 0;
-        *(int *)(d + 0x20) = 0;
-        *(char **)(d + 0x18) = tgt;
+        d->speed = g_frame_time * 100.0f;
+        d->can_retarget = 1;
+        d->unk_24 = 0;
+        d->unk_28 = 0;
+        d->unk_20 = 0;
+        d->target = tgt;
         if (tgt != 0) {
             unsigned char *e = (unsigned char *)GetFlaggedPvarWord(tgt);
             if (e != 0) {
                 *(unsigned short *)(e + 0x1E) |= 0x80;
-                if (e[0xB] != 0) *(int *)(d + 0x38) = 0;
-                if (e[0xC] != 0) *(float *)(d + 0x34) = (float)e[0xC] * g_frame_time;
+                if (e[0xB] != 0) d->can_retarget = 0;
+                if (e[0xC] != 0) d->speed = (float)e[0xC] * g_frame_time;
             }
         }
-        *(float *)(d + 0x2C) = a;
-        *(float *)(d + 0x30) = b;
-        *(int *)(d + 0x14) = scale_ticks(0x96);
+        d->unk_2C = a;
+        d->unk_30 = b;
+        d->life = scale_ticks(0x96);
         if (tgt != 0) {
-            qcopy(d, tgt + 0x10);
-            *(float *)(d + 8) += c;
-            *(float *)(d + 0x1C) = c;
+            qcopy(&d->aim_pos, tgt + 0x10);
+            d->aim_pos.z += c;
+            d->aim_height = c;
         }
         {
             int r;
             if (FastVecLength((float *)(g_hero + 0x140)) > g_frame_time * 0.1f) {
                 r = scale_ticks(0x3C);
-                *(short *)(d + 0x3E) = r;
-                *(short *)(d + 0x3C) = r;
+                d->unk_3E = r;
+                d->unk_3C = r;
             } else {
                 r = scale_ticks(1);
-                *(short *)(d + 0x3E) = r;
-                *(short *)(d + 0x3C) = r;
+                d->unk_3E = r;
+                d->unk_3C = r;
             }
         }
         t.q = ((BoltOwner_2AA998 *)owner)->position.q;
@@ -2228,7 +2285,7 @@ void func_L00_002AAEF0_r(char *moby) {
     float M[4][4];
     float E[4][4];
     float rot1[4];
-    char *d = ((char *)((Moby *)moby)->pvars);
+    struct ImpactMarkerVars *d = (struct ImpactMarkerVars *)((Moby *)moby)->pvars;
     int i;
 
     if (cinematic_mode == 2) return;
@@ -2238,10 +2295,10 @@ void func_L00_002AAEF0_r(char *moby) {
         float den;
         float r;
         int kind;
-        float x = *(float *)(d + 0x20);
-        float z = *(float *)(d + 0x28);
-        rot1[0] = FastAddRots(-fast_atan2(vec_length(x * x + z * z), *(float *)(d + 0x24)), 1.5707964f);
-        rot1[1] = fast_atan2(*(float *)(d + 0x28), *(float *)(d + 0x20));
+        float x = d->normal.x;
+        float z = d->normal.z;
+        rot1[0] = FastAddRots(-fast_atan2(vec_length(x * x + z * z), d->normal.y), 1.5707964f);
+        rot1[1] = fast_atan2(d->normal.z, d->normal.x);
         rot1[2] = 0;
         rot1[3] = 0;
         impact_marker_euler = 0;
@@ -2256,7 +2313,7 @@ void func_L00_002AAEF0_r(char *moby) {
         euler_to_matrix(E, &impact_marker_euler);
         euler_to_matrix(M, rot1);
         sce_vu0_mul_matrix(M, M, E);
-        qcopy(M[3], d + 0x10);
+        qcopy(M[3], &d->pos);
         kind = 0x11;
         if (odd) kind = 0x12;
         q.rgba[0] = 0x80808080;
@@ -2288,35 +2345,35 @@ void moby_build_matrix(void *);
 unsigned char *spawn_mine(int owner, q128_2a9ed0 *pos) {
     unsigned char *m = func_0020D348_AB170(0x4A);
     if (m) {
-        unsigned char *v = ((unsigned char *)((Moby *)m)->pvars);
+        struct MineSpawnVars *v = (struct MineSpawnVars *)((Moby *)m)->pvars;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0x7F;
         ((Moby *)m)->visible = 1;
         ((Moby *)m)->scale = ((Moby *)m)->scale * 0.5f;
         ((Moby *)m)->state = 0;
-        *(int *)(v + 0x30) = owner;
-        *(short *)&((Moby *)v)->occlusion = 0;
-        *(int *)(v + 0x78) = 0;
+        v->owner = owner;
+        *(short *)&v->unk_36 = 0;
+        v->unk_78 = 0;
         qcopy(m + 0x10, pos);
-        clear_u64_value(v);
+        clear_u64_value(((unsigned char *)v));
         {
         float a = random_float_between(g_frame_time * 1.0471976f, g_frame_time * 3.1415927f);
         float d = g_frame_time;
         float b;
         int x;
         float z;
-        *(float *)(v + 0x38) = a;
+        v->unk_38 = a;
         b = random_float_between(d * 1.0471976f, d * 3.1415927f);
         x = level_frame_counter;
         z = 0.0f;
-        *(float *)(v + 0x3C) = b;
-        *(float *)(v + 0x64) = z;
-        *(float *)(v + 0x60) = z;
-        *(float *)(v + 0x70) = z;
-        *(float *)(v + 0x6C) = z;
-        *(int *)(v + 0x5C) = x;
-        *(int *)(v + 0x74) = 0;
-        *(int *)(v + 0x68) = -1;
+        v->unk_3C = b;
+        v->unk_64 = z;
+        v->unk_60 = z;
+        v->unk_70 = z;
+        v->unk_6C = z;
+        v->unk_5C = x;
+        v->unk_74 = 0;
+        v->unk_68 = -1;
         *(int *)&((Moby *)m)->collision = 0;
         }
         moby_build_matrix(m);

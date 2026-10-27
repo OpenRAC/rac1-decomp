@@ -4,6 +4,49 @@
 #include "hero.h"
 #include "moby.h"
 
+/* Skid McMarx (Aridia): dialogue, blink timer and look-at state. Shares the block with McmarxRelocVars below. */
+struct SkidMcMarxVars {
+    u8 pad_00[0x4];
+    s16 dialog_result;              /* 0x04: 2 when the dialogue ends the mission */
+    u8 pad_06[0x2];
+    u8 unk_08;                      /* 0x08 */
+    u8 pad_09[0x3];
+    f32 talk_range;                 /* 0x0C: 255 inside the clip volume, else 2.5 */
+    u8 pad_10[0x10];
+    char *dialogue_name;            /* 0x20 */
+    u8 pad_24[0x1C];
+    u8 body_manip[0x64];            /* 0x40: EaseManipulatorOffsets block for the body */
+    f32 body_pitch;                 /* 0xA4 */
+    f32 body_yaw;                   /* 0xA8 */
+    u8 pad_AC[0x4];
+    f32 unk_B0;                     /* 0xB0: set to 2.75 by the cheat */
+    u8 pad_B4[0xC];
+    u8 head_manip[0x68];            /* 0xC0: EaseManipulatorOffsets block for the head */
+    f32 head_yaw;                   /* 0x128 */
+    u8 pad_12C[0x3E];
+    s16 blink_timer;                /* 0x16A */
+    s32 clip_volume;                /* 0x16C: area where the dialogue range is widened */
+    Vec4A look_target;              /* 0x170: random point Skid looks at */
+    s32 state;                      /* 0x180 */
+    u8 pad_184[0x4];
+    s32 notice_timer;               /* 0x188: ticks the hero counts as moving nearby */
+    s32 look_timer;                 /* 0x18C: ticks until a new look target */
+};
+
+/* Aridia lift platform: index of the driver moby. */
+struct LiftcarVars {
+    u8 pad_00[0x60];
+    u8 entity_matrix[0x40];         /* 0x60: update_entity_matrix block */
+    s32 driver;                     /* 0xA0 */
+    s32 voice;                      /* 0xA4: sound slot of the loop sound, -1 when none */
+};
+
+/* Projectile (class 0x4B8): heading and lifetime. */
+struct ProjectileVars {
+    Vec4A dir;                      /* 0x00 */
+    s32 life;                       /* 0x10 */
+};
+
 extern void attach_big_head_cheat_manipulator_to_matching_moby(void *);
 extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(void *);
@@ -323,7 +366,7 @@ extern unsigned char hero_globals_base[];
 /* Skid McMarx update: spawn, talk and warp states, aims at the player and sets the body and head poses. */
 void SkidMcMarxAridiaUpdate(char *m)
 {
-    char *d;
+    struct SkidMcMarxVars *d;
     char *p;
     char *pl;
     float rate;
@@ -333,7 +376,7 @@ void SkidMcMarxAridiaUpdate(char *m)
     float s_eye[4];
     float s_delta[4];
 
-    d = ((char *)((Moby *)m)->pvars);
+    d = (struct SkidMcMarxVars *)((Moby *)m)->pvars;
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     update_skid_mcmarx_relocation_sequence(m);
     switch (((Moby *)m)->state) {
@@ -342,25 +385,25 @@ void SkidMcMarxAridiaUpdate(char *m)
             DeleteMoby(m);
             return;
         }
-        *(int *)(d + 0x180) = 0;
-        *(char **)(d + 0x20) = skid_mcmarx_dialogue_name;
+        d->state = 0;
+        d->dialogue_name = skid_mcmarx_dialogue_name;
         ((Moby *)m)->state = 1;
         ((Moby *)m)->update_dist = 0xFF;
-        DialogRequest_Init(m, d);
+        DialogRequest_Init(m, ((char *)d));
         initialize_moby_grounding(m);
         break;
     case 1:
-        if (*(unsigned char *)(d + 8) == 1 &&
-            is_point_inside_clip_volume((char *)&hero_globals_base + 0xE9D, *(int *)(d + 0x16C)) != 0) {
-            *(float *)(d + 0xC) = 255.0f;
+        if (d->unk_08 == 1 &&
+            is_point_inside_clip_volume((char *)&hero_globals_base + 0xE9D, d->clip_volume) != 0) {
+            d->talk_range = 255.0f;
         } else {
-            *(float *)(d + 0xC) = 2.5f;
+            d->talk_range = 2.5f;
         }
-        if (Npc_TryStartDialog(m, d)) {
+        if (Npc_TryStartDialog(m, ((char *)d))) {
             PlaceMarkerAheadOfMoby(2.5f, m);
             ((Moby *)m)->state = 2;
         }
-        if (*(short *)(d + 4) == 2) {
+        if (d->dialog_result == 2) {
             Help_Request(0x7D0, 0xA);
             grant_inventory_item(0x1E, 1);
             jet_clear_persistent(((Moby *)m)->mission);
@@ -369,9 +412,9 @@ void SkidMcMarxAridiaUpdate(char *m)
             DeleteMoby(m);
             return;
         }
-        if (((Moby *)m)->prev_seq == 0 && FastDecTimer((int *)(d + 0x16A))) {
+        if (((Moby *)m)->prev_seq == 0 && FastDecTimer((int *)&d->blink_timer)) {
             int mode;
-            *(short *)(d + 0x16A) = truncate_float_to_s32(multiply_global_factor(random_float_between(1200.0f, 2400.0f)));
+            d->blink_timer = truncate_float_to_s32(multiply_global_factor(random_float_between(1200.0f, 2400.0f)));
             mode = 1;
             if (random_integer_below(2) == 0) mode = 2;
             if (((Moby *)m)->prev_seq != mode)
@@ -407,26 +450,26 @@ void SkidMcMarxAridiaUpdate(char *m)
                 fast_atan2(*(float *)((pl = p - 0x80) + 0xD0) - ((Moby *)m)->pos.x,
                     *(float *)(pl + 0xD4) - ((Moby *)m)->pos.y)) < 1.5707964f) {
             if (FastVecLength(p + 0x80) > 0.01f)
-                *(int *)(d + 0x188) = scale_ticks(120);
+                d->notice_timer = scale_ticks(120);
             else
-                fast_dec_timer((int *)(d + 0x188));
-        } else if (*(int *)(d + 0x188) != 0) {
-            *(int *)(d + 0x188) = 0;
-            qcopy(d + 0x170, (char *)&hero_globals_base + 0xEED);
+                fast_dec_timer(&d->notice_timer);
+        } else if (d->notice_timer != 0) {
+            d->notice_timer = 0;
+            qcopy(&d->look_target, (char *)&hero_globals_base + 0xEED);
         }
-        if (fast_dec_timer((int *)(d + 0x18C))) {
+        if (fast_dec_timer(&d->look_timer)) {
             float heading;
-            *(int *)(d + 0x18C) = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 300.0f)));
+            d->look_timer = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 300.0f)));
             heading = FastAddRots(((Moby *)m)->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
-            BuildSphericalOffset(d + 0x170, 6.0f, heading, random_float_between(0.0f, 30.0f) * 0.017453292f);
-            FastVecAdd(d + 0x170, d + 0x170, m + 0x10);
+            BuildSphericalOffset(&d->look_target, 6.0f, heading, random_float_between(0.0f, 30.0f) * 0.017453292f);
+            FastVecAdd(&d->look_target, &d->look_target, m + 0x10);
         }
-        if (*(int *)(d + 0x188) != 0) {
+        if (d->notice_timer != 0) {
             qcopy(s_target, (char *)&hero_globals_base + 0xEED);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
-            qcopy(s_target, d + 0x170);
+            qcopy(s_target, &d->look_target);
         }
     }
     if (tracking) {
@@ -441,13 +484,13 @@ void SkidMcMarxAridiaUpdate(char *m)
         else if (yaw < -1.5707964f) yaw = -1.5707964f;
         if (pitch > 0.5235988f) pitch = 0.5235988f;
         else if (pitch < -0.5235988f) pitch = -0.5235988f;
-        *(float *)(d + 0xA4) = pitch;
-        *(float *)(d + 0xA8) = yaw * 0.6f;
-        *(float *)(d + 0x128) = yaw * 0.4f;
+        d->body_pitch = pitch;
+        d->body_yaw = yaw * 0.6f;
+        d->head_yaw = yaw * 0.4f;
     }
-    if (gCheats[0] != 0) *(float *)(d + 0xB0) = 2.75f;
-    EaseManipulatorOffsets_r2(m, d + 0x40, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
-    EaseManipulatorOffsets_r2(m, d + 0xC0, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
+    if (gCheats[0] != 0) d->unk_B0 = 2.75f;
+    EaseManipulatorOffsets_r2(m, d->body_manip, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
+    EaseManipulatorOffsets_r2(m, d->head_manip, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
 extern char gHeroPos[];
 extern char * aridia_mobys MACRO_ADDR;
@@ -567,8 +610,8 @@ extern void update_entity_matrix(void *, void *, void *, void *);
 /* Lift platform carried by an animated driver moby: follows the driver's joint 0, waits at an end (3/5) for the hero to step on, then plays the driver's up or down animation (2/4) with its loop sound until it ends.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/entities/002e0dc0.c, FUN_L02_002e2228. */
 void liftcar_platform_update(struct Moby *moby) {
-    char *data = (char *)moby->pvars;
-    struct Moby *driver = &aridia_mobys_r[*(int *)(data + 0xA0)];
+    struct LiftcarVars *data = (struct LiftcarVars *)moby->pvars;
+    struct Moby *driver = &aridia_mobys_r[data->driver];
     Vec4 delta;
     Vec4 old_rot;
     float joint_mtx[16];
@@ -608,11 +651,11 @@ void liftcar_platform_update(struct Moby *moby) {
             if (moby->state == 5 || moby->state == 1) {
                 moby->state = 2;
                 MobySetAnimation(driver, 0, 0);
-                *(int *)(data + 0xA4) = Moby_PlaySound(2, 4, driver);
+                data->voice = Moby_PlaySound(2, 4, driver);
             } else {
                 moby->state = 4;
                 MobySetAnimation(driver, 2, 0);
-                *(int *)(data + 0xA4) = Moby_PlaySound(0, 4, driver);
+                data->voice = Moby_PlaySound(0, 4, driver);
             }
         } else if (g_hero.ground_moby != moby) {
             moby->command = 0;
@@ -624,33 +667,33 @@ void liftcar_platform_update(struct Moby *moby) {
         moby->rot.z = fast_atan2(joint_mtx[0], joint_mtx[1]);
         if (vec_distance_xy(&moby->pos, &g_hero.motion.pos) < 1.5f && g_hero.motion.pos.f[2] < moby->pos.z - 1.5f) {
             driver->anim_speed = 0.0f;
-            voice = *(int *)(data + 0xA4);
+            voice = data->voice;
             if (voice != -1) {
                 char *e = voice_pool + voice * 0x70;
                 if (*(struct Moby **)(e + 0x88) == driver && *(unsigned char *)(e + 0x74) != 0) {
                     Sound_StopSlot(voice);
                 }
             }
-            *(int *)(data + 0xA4) = -1;
+            data->voice = -1;
         }
         if (driver->anim_speed == 0.0f &&
             (vec_distance_xy(&moby->pos, &g_hero.motion.pos) > 2.0f || moby->pos.z - 1.25f < g_hero.motion.pos.f[2])) {
             driver->anim_speed = 1.0f;
             if (moby->state == 2) {
-                *(int *)(data + 0xA4) = Moby_PlaySound(2, 4, driver);
+                data->voice = Moby_PlaySound(2, 4, driver);
             } else {
-                *(int *)(data + 0xA4) = Moby_PlaySound(0, 4, driver);
+                data->voice = Moby_PlaySound(0, 4, driver);
             }
         }
         if (driver->anim_flags & 2) {
-            voice = *(int *)(data + 0xA4);
+            voice = data->voice;
             if (voice != -1) {
                 char *e = voice_pool + voice * 0x70;
                 if (*(struct Moby **)(e + 0x88) == driver && *(unsigned char *)(e + 0x74) != 0) {
                     Sound_StopSlot(voice);
                 }
             }
-            *(int *)(data + 0xA4) = -1;
+            data->voice = -1;
             if (moby->state == 2) {
                 moby->state = 3;
                 MobyBlendAnimation(driver, 1, 0, 0);
@@ -667,7 +710,7 @@ void liftcar_platform_update(struct Moby *moby) {
         break;
     }
     FastVecAdd(&delta, &delta, &moby->pos);
-    update_entity_matrix(data + 0x60, &delta, &old_rot, &moby->rot);
+    update_entity_matrix(data->entity_matrix, &delta, &old_rot, &moby->rot);
 }
 extern int aridia_ocean_clip_culling_override_r __asm__("D_L02_0015F6E8") MACRO_ADDR;
 extern char aridia_camera_pos[];
@@ -809,7 +852,7 @@ extern short aridia_projectile_color_b;
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/vendor/002ebf20.c, FUN_L02_002ec228. */
 char *spawn_projectile_moby(char *src, void *pos, float *dir) {
     char *moby;
-    char *data;
+    struct ProjectileVars *data;
     moby = CreateMoby(0x4B8);
     if (moby != 0) {
         moby[0x31] = 1;
@@ -820,9 +863,9 @@ char *spawn_projectile_moby(char *src, void *pos, float *dir) {
         ((Moby *)moby)->rot.z = fast_atan2(dir[0], dir[1]);
         ((Moby *)moby)->rot.y = fast_atan2(vec_length_xy(dir), dir[2]);
         moby[0x20] = 1;
-        data = ((char *)((Moby *)moby)->pvars);
-        qcopy(data, dir);
-        *(int *)(data + 0x10) = scale_ticks(0x3C);
+        data = (struct ProjectileVars *)((Moby *)moby)->pvars;
+        qcopy(&data->dir, dir);
+        data->life = scale_ticks(0x3C);
     }
     return moby;
 }
