@@ -23,9 +23,9 @@ extern int font_vu_program[];
 extern int gaspar_grid_setup_dma_block[];
 extern float gaspar_camera_pos[];
 extern float gaspar_view_params[];
-extern float gaspar_grid_saved_view0 MACRO_ADDR;
-extern float gaspar_grid_saved_view1 MACRO_ADDR;
-extern float gaspar_grid_saved_view2 MACRO_ADDR;
+extern float saved_textured_grid_fog_near_distance MACRO_ADDR;
+extern float saved_textured_grid_fog_far_distance MACRO_ADDR;
+extern float saved_textured_grid_fog_near_intensity MACRO_ADDR;
 extern float gaspar_grid_saved_view3 MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l09/gameplay/entities/0021e538.c, FUN_L09_002c1978. */
@@ -48,9 +48,9 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
     float saved1 = current[0x21c / 4];
     float saved2 = current[0x228 / 4];
     float saved3 = current[0x22c / 4];
-    gaspar_grid_saved_view0 = saved0;
-    gaspar_grid_saved_view1 = saved1;
-    gaspar_grid_saved_view2 = saved2;
+    saved_textured_grid_fog_near_distance = saved0;
+    saved_textured_grid_fog_far_distance = saved1;
+    saved_textured_grid_fog_near_intensity = saved2;
     gaspar_grid_saved_view3 = saved3;
     if (textured_grid_view_settings_mode != 1) {
         current[0x218 / 4] = *(float *)(data + 0x20);

@@ -1413,7 +1413,75 @@ void _sequenceHeader(void *arg0) {
     mpeg_init_seq(*(void **)(s + 0x858));
 }
 
-INCLUDE_ASM("asm/nonmatchings/core_text", func_0012C608);
+void mpeg_init_seq(void *arg0) {
+    extern void mpeg_init_ref_image_addrs(unsigned int *, unsigned int *, unsigned int *, unsigned int *,
+                              unsigned int *, unsigned int *, unsigned int *, unsigned int *,
+                              unsigned int *, int, int, int, int, int);
+    int *a = (int *)arg0;
+    char *s = *(char **)((char *)arg0 + 0x40);
+    int f = *(int *)(s + 0x848);
+    int h, mbw, mbh;
+    unsigned int n, t;
+    unsigned int *q0, *q1, *q2, *q3, *q4, *q5, *q6, *q7, *q8;
+
+    if (f == 0) {
+        *(int *)(s + 0x174) = 3;
+        *(int *)(s + 0x13C) = 1;
+        *(int *)(s + 0x140) = 1;
+        *(int *)(s + 0x188) = 1;
+        *(int *)(s + 0x17C) = 1;
+        *(int *)(s + 0x144) = 5;
+    }
+    *(int *)(s + 0x12C) = (*(int *)(s + 0x124) + 0xF) >> 4;
+    if (f != 0 && *(int *)(s + 0x13C) == 0)
+        h = ((*(int *)(s + 0x128) + 0x1F) >> 5) << 1;
+    else
+        h = (*(int *)(s + 0x128) + 0xF) >> 4;
+    *(int *)(s + 0x130) = h;
+    mbh = h << 4;
+    mbw = *(int *)(s + 0x12C) << 4;
+    {
+    unsigned int *p;
+    if (mbw != a[0]) {
+        p = (unsigned int *)(s + 0x528);
+    } else {
+        if (mbh == a[1])
+            return;
+        p = (unsigned int *)(s + 0x528);
+    }
+    a[1] = mbh;
+    /* inline asm: the a[0] store, which also moves p into q8, so q8's spill
+       store follows both a[] stores (retail: sw $s7,0($a1); sw $v0,0x44($sp)) */
+    __asm__("sw %2,%1" : "=r"(q8), "=m"(a[0]) : "r"(mbw), "0"(p) : "memory");
+    t = mbh * 0x180;
+    q0 = (unsigned int *)(s + 0x1E8);
+    q1 = (unsigned int *)(s + 0x250);
+    q2 = (unsigned int *)(s + 0x2B8);
+    q3 = (unsigned int *)(s + 0x320);
+    q4 = (unsigned int *)(s + 0x388);
+    q5 = (unsigned int *)(s + 0x3F0);
+    q6 = (unsigned int *)(s + 0x458);
+    q7 = (unsigned int *)(s + 0x4C0);
+    n = (mbw * t) >> 8;
+    mpeg_work_area_reset_to_mark(s + 0x108);
+    *(unsigned int *)(s + 0xFC) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
+    *(unsigned int *)(s + 0x100) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
+    *(unsigned int *)(s + 0x104) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
+    mpeg_init_ref_image_addrs(q0, q1, q2,
+                  q3, q4, q5,
+                  q6, q7, q8,
+                  *(int *)(s + 0xFC), *(int *)(s + 0x100), *(int *)(s + 0x104), mbw, mbh);
+    mpeg_set_frame_size(q0, mbw, mbh);
+    mpeg_set_frame_size(q1, mbw, mbh);
+    mpeg_set_frame_size(q2, mbw, mbh);
+    mpeg_set_frame_size(q3, mbw, mbh >> 1);
+    mpeg_set_frame_size(q4, mbw, mbh >> 1);
+    mpeg_set_frame_size(q5, mbw, mbh >> 1);
+    mpeg_set_frame_size(q6, mbw, mbh >> 1);
+    mpeg_set_frame_size(q7, mbw, mbh >> 1);
+    mpeg_set_frame_size(q8, mbw, mbh >> 1);
+    }
+}
 
 void mpeg_init_ref_image_addrs(unsigned int *o0, unsigned int *o1, unsigned int *o2, unsigned int *o3,
                    unsigned int *o4, unsigned int *o5, unsigned int *o6, unsigned int *o7,

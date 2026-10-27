@@ -109,7 +109,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 d->i124 = -1;
             } else if (d->f130 != 0.0f) {
                 ApproachValue(&d->f130, 0.0f, g_frame_time * 4.0f);
-                fleet_fade_level = d->f130;
+                fighter_jet_transition_fade_value = d->f130;
             }
             jet_animate((unsigned char *)moby, *(float *)&fleet_jet_idle_anim_speed * fighter_jet_scale);
             break;
@@ -118,7 +118,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             float f;
             ApproachValue(&d->f130, 1.0f, g_frame_time * 4.0f);
             f = d->f130;
-            fleet_fade_level = f;
+            fighter_jet_transition_fade_value = f;
             if (f == 1.0f) {
                 Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
                 g->cur = (int)moby;
@@ -159,8 +159,8 @@ void FighterJetUpdate(Moby1379 *moby) {
                 moby->b30 = 0xFF;
                 d->v30[2] = moby->rot[2];
                 d->v20[2] = d->v30[2];
-                d->fB4 = fleet_jet_chase_cam_x * fighter_jet_scale;
-                d->fBC = fleet_jet_chase_cam_z * fighter_jet_scale;
+                d->fB4 = fighter_jet_camera_base_offset_x_gp * fighter_jet_scale;
+                d->fBC = fighter_jet_camera_base_offset_z_gp * fighter_jet_scale;
                 d->iB8 = 0;
                 g->p2080->i98 = -1;
                 BuildSphericalOffset(d, fleet_jet_launch_speed, d->v30[2], -d->v30[1]);
@@ -197,7 +197,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             }
             if (d->f130 != 0.0f) {
                 ApproachValue(&d->f130, 0.0f, g_frame_time * 4.0f);
-                fleet_fade_level = d->f130;
+                fighter_jet_transition_fade_value = d->f130;
             }
             {
                 Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
@@ -238,7 +238,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             d->i10C = -1;
             moby->state = 1;
             d->f130 = 0.99f;
-            fleet_fade_level = 0.99f;
+            fighter_jet_transition_fade_value = 0.99f;
             break;
         }
         case 7:
@@ -279,7 +279,7 @@ void FighterJetUpdate(Moby1379 *moby) {
             PlayerShipUpdate(moby, d);
             if (fast_dec_timer(&d->tF8) != 0) {
                 ApproachValue(&d->f130, 1.0f, g_frame_time * 4.0f);
-                fleet_fade_level = d->f130;
+                fighter_jet_transition_fade_value = d->f130;
             }
             if (d->f130 >= 1.0f) {
                 Glob1379 *g = (Glob1379 *)(hero_globals_base + 0xE1D);
@@ -340,7 +340,7 @@ void FighterJetUpdate(Moby1379 *moby) {
                 return;
             }
             ApproachValue(&d->f130, 0.0f, g_frame_time * 4.0f);
-            fleet_fade_level = d->f130;
+            fighter_jet_transition_fade_value = d->f130;
             break;
         case 3:
         case 6:

@@ -9,7 +9,7 @@ extern float random_angle_radians(void);
 extern float random_float_between(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern int rand_range(int, int);
-extern void PartType22Spawn(void *, void *, int, int, int, float);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, int, float);
 extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 typedef struct { char pad0[0x44]; short n; char pad1[0x132]; char *m[1]; } G_2DC848;
@@ -39,6 +39,6 @@ void emit_level3_state5_moby_effects(void) {
   lo = scale_ticks(12);
   hi = scale_ticks(35);
   value = rand_range(lo, hi);
-  PartType22Spawn(position, direction, 0x80808080, 0x808080, value, 147000.0f);
+  spawn_effect_particle_with_target_scalar(position, direction, 0x80808080, 0x808080, value, 147000.0f);
  }
 }

@@ -284,7 +284,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 extern void libc_memset(void *, int, int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float WrapAngle(float);
+extern float normalize_angle(float);
 extern float FastCos(float);
 extern float FastSin(float);
 extern void clamp_vec_length(void *, void *, float);
@@ -488,7 +488,7 @@ void ChildSpawnerUpdate(Moby *moby) {
             case 0: {
                 float ang;
                 float rad;
-                ang = WrapAngle(IntToFloat(d->count) * 2.0f * 3.1415927f / IntToFloat(d->max + 1) - 3.1415927f);
+                ang = normalize_angle(IntToFloat(d->count) * 2.0f * 3.1415927f / IntToFloat(d->max + 1) - 3.1415927f);
                 rad = vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D) * 0.5f;
                 if (d->b83 & 8) {
                     rad = random_float_between(rad, 3.0f);
@@ -781,8 +781,8 @@ void Moby545Update(char *moby)
                 }
             }
             if (FastDecTimer(d + 0x14)) ((unsigned char *)moby)[0x20] = 2;
-            ((Moby *)moby)->rot.x = WrapAngle(*(float *)(d + 0x0));
-            ((Moby *)moby)->rot.y = WrapAngle(*(float *)(d + 0x4));
+            ((Moby *)moby)->rot.x = normalize_angle(*(float *)(d + 0x0));
+            ((Moby *)moby)->rot.y = normalize_angle(*(float *)(d + 0x4));
             ((Moby *)moby)->collision_disable = sv0;
             (*(Moby **)(d + 0x10))->collision_disable = sv1;
             ((Moby *)moby)->collision = sv2;
@@ -1757,7 +1757,7 @@ extern LevelCollected_2dddf8 kerwan_checkpoint_level_state;
 extern s32 level_moby_killed[][64];
 extern s32 g_current_level_index MACRO_ADDR;
 /* Rise 4 units at frame speed once the moby's save slot is collected or killed, then hold. */
-void RiseWhenCollectedUpdate(struct Moby *m)
+void garage_door_update(struct Moby *m)
 {
     Vec4 *target = (Vec4 *)m->pvars;
     s16 idx;

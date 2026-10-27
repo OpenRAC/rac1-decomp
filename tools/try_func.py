@@ -77,7 +77,7 @@ DEF = re.compile(r"^(?!extern\b)[A-Za-z_].*?\b(func_[0-9A-Fa-f]{8})(?:_r)?\s*\("
 # overlay_check instead of the masked compare() below. Their sources live
 # under src/overlays/ (any subdirectory), not in SEGMENT_SOURCES.
 OVERLAY_NAME = re.compile(r"^func_L\d{2}_[0-9A-Fa-f]{8}$")
-OVERLAY_STUB = re.compile(r"^\s*INCLUDE_ASM\([^)]*\b(func_L\d{2}_[0-9A-Fa-f]{8})\)")
+OVERLAY_STUB = re.compile(r"^\s*(?:INCLUDE_ASM|ASM_FUNC)\([^)]*\b(func_L\d{2}_[0-9A-Fa-f]{8})\)")
 OVERLAY_DEF = re.compile(r"^(?!extern\b)[A-Za-z_].*?\b(func_L\d{2}_[0-9A-Fa-f]{8})(?:_r)?\s*\(")
 
 

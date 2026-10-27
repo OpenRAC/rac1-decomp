@@ -298,10 +298,10 @@ extern int FastTweenColor(int, int, float);
 extern int GetEffectTex(int);
 extern void FastVecAdd(void *, void *, void *);
 extern void draw_world_quad(void *, void *, int);
-extern short rocket_target_pulse_alpha_a;
-extern short rocket_target_pulse_alpha_b;
-extern short rocket_target_pulse_alpha_c;
-extern short rocket_target_pulse_alpha_d;
+extern short rocket_target_pulse_blend_minuend_selector_gp;
+extern short rocket_target_pulse_blend_subtrahend_selector_gp;
+extern short rocket_target_pulse_blend_alpha_factor_selector_gp;
+extern short rocket_target_pulse_blend_addend_selector_gp;
 extern short rocket_target_pulse_color_a;
 extern short rocket_target_pulse_color_b;
 extern float sparkle_quad_corners[];
@@ -329,7 +329,7 @@ void draw_rocket_target_pulse_quad(char *moby) {
     q = GetEffectTex(13);
     pk[1] = q;
     pk[2] = 0xFF90L << 32 | 0x260;
-    pk[3] = ((*(int *)&(rocket_target_pulse_alpha_a)) | ((long)(*(int *)&(rocket_target_pulse_alpha_b)) << 2) | ((long)(*(int *)&(rocket_target_pulse_alpha_c)) << 4) | ((long)(*(int *)&(rocket_target_pulse_alpha_d)) << 6)) | (0x8000L << 24);
+    pk[3] = ((*(int *)&(rocket_target_pulse_blend_minuend_selector_gp)) | ((long)(*(int *)&(rocket_target_pulse_blend_subtrahend_selector_gp)) << 2) | ((long)(*(int *)&(rocket_target_pulse_blend_alpha_factor_selector_gp)) << 4) | ((long)(*(int *)&(rocket_target_pulse_blend_addend_selector_gp)) << 6)) | (0x8000L << 24);
     pk[0] = 0;
     {
         float *oa = sparkle_quad_corners;
@@ -962,7 +962,7 @@ char *find_nearest_class_247_moby_in_list(void *pos, int idx) {
 }
 
 // Sets the data fields 0x30 and 0x24 of each listed moby whose class is 0x247.
-void Moby583_ActivateGroup(int idx) {
+void set_class_247_list_data_fields(int idx) {
     short *p = (short *)veldin2_moby_groups[idx];
     if (p != 0) {
         char *base = veldin2_moby_table_m;
@@ -1229,13 +1229,13 @@ typedef struct {
 extern void FastVecScale(void *out, void *a, f32 s);
 extern f32 IntToFloat(s32);
 extern short veldin2_hero_fall_state_height;
-extern short sinking_platform_sink_accel_flagged;
-extern short sinking_platform_sink_accel;
-extern short sinking_platform_tilt_speed_flagged;
-extern short sinking_platform_tilt_speed;
+extern short floating_platform_sink_acceleration_config_84_nonzero_gp;
+extern short floating_platform_sink_acceleration_config_84_zero_gp;
+extern short floating_platform_tilt_rate_degrees_config_84_nonzero_gp;
+extern short floating_platform_tilt_rate_degrees_config_84_zero_gp;
 extern short sinking_platform_trigger_radius;
-extern short sinking_platform_fall_count_min;
-extern short sinking_platform_fall_count_max;
+extern short floating_platform_motion_scale_input_start_gp;
+extern short floating_platform_motion_scale_input_end_gp;
 extern short sinking_platform_fall_count;
 extern void spawn_floating_platform_sparks_r(struct Moby *) __asm__("func_L18_002D9CA8");
 extern void HeroL18_SetMoveState(int, int);
@@ -1277,7 +1277,7 @@ void SinkingPlatformUpdate(struct Moby *moby) {
         if (fast_dec_timer((int *)(data + 0x7C)) == 0) {
             break;
         }
-        t = (IntToFloat((*(int *)&sinking_platform_fall_count)) - (*(float *)&sinking_platform_fall_count_min)) / ((*(float *)&sinking_platform_fall_count_max) - (*(float *)&sinking_platform_fall_count_min));
+        t = (IntToFloat((*(int *)&sinking_platform_fall_count)) - (*(float *)&floating_platform_motion_scale_input_start_gp)) / ((*(float *)&floating_platform_motion_scale_input_end_gp) - (*(float *)&floating_platform_motion_scale_input_start_gp));
         if (1.0f < t) {
             t = 1.0f;
         } else if (t < 0.0f) {
@@ -1285,9 +1285,9 @@ void SinkingPlatformUpdate(struct Moby *moby) {
         }
         t = 1.0f - t * 0.333f;
         if (*(int *)(data + 0x84) != 0) {
-            rate = (*(float *)&sinking_platform_tilt_speed_flagged) * t;
+            rate = (*(float *)&floating_platform_tilt_rate_degrees_config_84_nonzero_gp) * t;
         } else {
-            rate = (*(float *)&sinking_platform_tilt_speed) * t;
+            rate = (*(float *)&floating_platform_tilt_rate_degrees_config_84_zero_gp) * t;
         }
         *(float *)(data + 0x6C) = rate * 0.017453292f * g_frame_time;
         moby->state = 4;
@@ -1315,7 +1315,7 @@ void SinkingPlatformUpdate(struct Moby *moby) {
             spawn_floating_platform_sparks_r(moby);
             *(int *)(data + 0x8C) = scale_ticks(rand_range(0xF, 0x1E));
         }
-        sink = (IntToFloat((*(int *)&sinking_platform_fall_count)) - (*(float *)&sinking_platform_fall_count_min)) / ((*(float *)&sinking_platform_fall_count_max) - (*(float *)&sinking_platform_fall_count_min));
+        sink = (IntToFloat((*(int *)&sinking_platform_fall_count)) - (*(float *)&floating_platform_motion_scale_input_start_gp)) / ((*(float *)&floating_platform_motion_scale_input_end_gp) - (*(float *)&floating_platform_motion_scale_input_start_gp));
         if (1.0f < sink) {
             sink = 1.0f;
         } else if (sink < 0.0f) {
@@ -1325,9 +1325,9 @@ void SinkingPlatformUpdate(struct Moby *moby) {
         if (*(int *)(data + 0x80) != 0 || (*(int *)(data + 0x88) != 0 && *(int *)(data + 0x84) == 0)) {
             *(float *)(data + 0x70) -= g_frame_time_sq * 15.0f;
         } else if (*(int *)(data + 0x84) != 0) {
-            *(float *)(data + 0x70) -= (*(float *)&sinking_platform_sink_accel_flagged) * sink * g_frame_time_sq;
+            *(float *)(data + 0x70) -= (*(float *)&floating_platform_sink_acceleration_config_84_nonzero_gp) * sink * g_frame_time_sq;
         } else {
-            *(float *)(data + 0x70) -= (*(float *)&sinking_platform_sink_accel) * sink * g_frame_time_sq;
+            *(float *)(data + 0x70) -= (*(float *)&floating_platform_sink_acceleration_config_84_zero_gp) * sink * g_frame_time_sq;
         }
         *(float *)(data + 0x64) += *(float *)(data + 0x70);
         if (moby->pos.z < *(float *)(data + 0x60) - 10.0f) {
@@ -1483,21 +1483,21 @@ extern short ring_projectile_glow_color_a;
 extern short ring_projectile_glow_color_b;
 extern short ring_projectile_spark_gravity;
 extern short ring_projectile_spark_speed_scale;
-extern short ring_projectile_spark_jitter;
+extern short ballistic_ring_trail_vector_offset_rate_gp;
 extern short ring_projectile_spark_life;
-extern short ring_projectile_spark_time2;
+extern short ballistic_ring_trail_spark_gravity_multiplier_base_gp;
 extern short ring_projectile_spark_time3;
-extern short ring_projectile_spark_time_spread;
-extern short ring_projectile_spark_start_size_min;
-extern short ring_projectile_spark_start_size_max;
-extern short ring_projectile_spark_end_size_min;
-extern short ring_projectile_spark_end_size_max;
+extern short ballistic_ring_trail_spark_relative_variation_limit_gp;
+extern short ballistic_ring_trail_first_spark_w_range_start_gp;
+extern short ballistic_ring_trail_first_spark_w_range_end;
+extern short ballistic_ring_trail_second_spark_w_range_start_gp;
+extern short ballistic_ring_trail_second_spark_w_range_end_gp;
 extern short ring_projectile_spark_start_color_a;
 extern short ballistic_ring_trail_initial_color_end;
 extern short ring_projectile_spark_end_color_a;
 extern short ring_projectile_spark_end_color_b;
 extern short ring_projectile_spark_count;
-extern short ring_projectile_spark_texture;
+extern short ballistic_ring_trail_spark_resource_selector_gp;
 
 /* Moby update for a falling fireball (class 0x270) created by func_L18_002DCD28. */
 extern Hero hero __asm__("D_0013F450");
@@ -1528,20 +1528,20 @@ void update_ballistic_ring_projectile(char *moby) {
         for (; i < *(int *)&ring_projectile_spark_count; i++) {
             cc = spark_vector_offset;
             FastVecScale(first_spark_vector, moby_vars, *(float *)&ring_projectile_spark_speed_scale);
-            rand_vec(cc, 0.0f, *(float *)&ring_projectile_spark_jitter * g_frame_time);
+            rand_vec(cc, 0.0f, *(float *)&ballistic_ring_trail_vector_offset_rate_gp * g_frame_time);
             FastVecAdd(first_spark_vector, cc, first_spark_vector);
             rand_vec(spark_spawn_position, 0.0f, 0.5f);
             FastVecAdd(spark_spawn_position, spark_spawn_position, &((struct Moby *)moby)->pos);
             clear_u64_value(second_spark_vector);
-            first_spark_vector[3] = random_float_between(*(float *)&ring_projectile_spark_start_size_min, *(float *)&ring_projectile_spark_start_size_max);
-            second_spark_vector[3] = random_float_between(*(float *)&ring_projectile_spark_end_size_min, *(float *)&ring_projectile_spark_end_size_max);
+            first_spark_vector[3] = random_float_between(*(float *)&ballistic_ring_trail_first_spark_w_range_start_gp, *(float *)&ballistic_ring_trail_first_spark_w_range_end);
+            second_spark_vector[3] = random_float_between(*(float *)&ballistic_ring_trail_second_spark_w_range_start_gp, *(float *)&ballistic_ring_trail_second_spark_w_range_end_gp);
             i0 = FastTweenColor(*(int *)&ring_projectile_spark_start_color_a, *(int *)&ballistic_ring_trail_initial_color_end, random_float_between(0.0f, 1.0f));
             i1 = FastTweenColor(*(int *)&ring_projectile_spark_end_color_a, *(int *)&ring_projectile_spark_end_color_b, random_float_between(0.0f, 1.0f));
             i2 = truncate_float_to_s32_r(multiply_global_factor((float)*(int *)&ring_projectile_spark_life * random_float_between(0.0f, 1.0f) + 1.0f));
-            i3 = truncate_float_to_s32_r(multiply_global_factor((float)*(int *)&ring_projectile_spark_time2 * (random_float_between(-*(float *)&ring_projectile_spark_time_spread, *(float *)&ring_projectile_spark_time_spread) + 1.0f)));
-            i4 = truncate_float_to_s32_r(multiply_global_factor((float)*(int *)&ring_projectile_spark_time3 * (random_float_between(-*(float *)&ring_projectile_spark_time_spread, *(float *)&ring_projectile_spark_time_spread) + 1.0f)));
+            i3 = truncate_float_to_s32_r(multiply_global_factor((float)*(int *)&ballistic_ring_trail_spark_gravity_multiplier_base_gp * (random_float_between(-*(float *)&ballistic_ring_trail_spark_relative_variation_limit_gp, *(float *)&ballistic_ring_trail_spark_relative_variation_limit_gp) + 1.0f)));
+            i4 = truncate_float_to_s32_r(multiply_global_factor((float)*(int *)&ring_projectile_spark_time3 * (random_float_between(-*(float *)&ballistic_ring_trail_spark_relative_variation_limit_gp, *(float *)&ballistic_ring_trail_spark_relative_variation_limit_gp) + 1.0f)));
             second_spark_vector[2] = second_spark_vector[2] - *(float *)&ring_projectile_spark_gravity * g_frame_time_sq * (float)i3;
-            PartType02Spawn(spark_spawn_position, first_spark_vector, second_spark_vector, i0, i1, i2, i3, i4, *(int *)&ring_projectile_spark_texture);
+            PartType02Spawn(spark_spawn_position, first_spark_vector, second_spark_vector, i0, i1, i2, i3, i4, *(int *)&ballistic_ring_trail_spark_resource_selector_gp);
         }
         moby_vars[12] = FastAddRots(moby_vars[12], g_frame_time * 18.849556f);
         {
@@ -2325,8 +2325,8 @@ void set_moby_group_state_two(char *arg) {
     set_moby_list_state(arg, 0x2);
 }
 extern void draw_electric_water_bolt_effect(char *);
-extern short homing_spark_quad2_spin_speed;
-extern short homing_spark_quad3_spin_speed;
+extern short target_effect_first_rotation_rate_degrees_gp;
+extern short target_effect_second_rotation_rate_degrees_gp;
 extern short homing_spark_bolt_jitter;
 extern short homing_spark_travel_speed;
 extern void spawn_explosion_burst(void *);
@@ -2338,8 +2338,8 @@ extern void MobySphereHitDirectional_r(int, void *, float, int, float, float, in
 /* Moby update for a homing spark (class 0x3D7). */
 void update_moby_target_travel_and_electric_effects(char *moby) {
     float *d = ((float *)((Moby *)moby)->pvars);
-    float t = FastAddRots(d[0xB], *(float *)&homing_spark_quad2_spin_speed * 0.017453292f * g_frame_time);
-    float u = *(float *)&homing_spark_quad3_spin_speed * 0.017453292f * g_frame_time;
+    float t = FastAddRots(d[0xB], *(float *)&target_effect_first_rotation_rate_degrees_gp * 0.017453292f * g_frame_time);
+    float u = *(float *)&target_effect_second_rotation_rate_degrees_gp * 0.017453292f * g_frame_time;
     d[0xB] = t;
     d[0xC] = FastAddRots(d[0xC], u);
     switch (((unsigned char *)moby)[0x20]) {
@@ -2549,11 +2549,11 @@ extern void spawn_timed_projected_sprite_effect(void *, int, int, int);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern int truncate_float_to_s32(float);
 extern char *spawn_glow_particle(void *, void *, void *, float, int, unsigned char, unsigned char, unsigned char, unsigned char);
-extern short homing_spark_particle_texture, homing_spark_burst_spark_count, homing_spark_burst_speed_min, homing_spark_burst_speed_max, homing_spark_burst_start_color, homing_spark_burst_end_color;
-extern short homing_spark_burst_life, homing_spark_burst_time2, homing_spark_burst_time3, homing_spark_burst_spark_size, homing_spark_burst_rise_speed, homing_spark_burst_end_speed_scale;
-extern short homing_spark_plume_count, homing_spark_plume_speed_min, homing_spark_plume_speed_max, homing_spark_plume_scale, homing_spark_plume_time1_min, homing_spark_plume_time1_max;
-extern short homing_spark_plume_time2_min, homing_spark_plume_time2_max, homing_spark_plume_spread_radius, homing_spark_glow1_size, homing_spark_glow1_life, homing_spark_glow1_rgba;
-extern short homing_spark_glow2_size, homing_spark_glow2_life, homing_spark_glow2_rgba, homing_spark_glow3_size, homing_spark_glow3_life, homing_spark_glow3_rgba;
+extern short homing_spark_particle_texture, homing_spark_burst_spark_count, homing_spark_burst_speed_min, homing_spark_burst_speed_max, explosion_burst_spark_initial_color_gp, explosion_burst_spark_second_color_gp;
+extern short homing_spark_burst_life, homing_spark_burst_time2, homing_spark_burst_time3, explosion_burst_spark_vector_w_gp, explosion_burst_spark_second_vector_z_rate_gp, homing_spark_burst_end_speed_scale;
+extern short homing_spark_plume_count, homing_spark_plume_speed_min, homing_spark_plume_speed_max, explosion_burst_particle_scale_multiplier_gp, explosion_burst_particle_frame_count_range_start_gp, explosion_burst_particle_frame_count_range_end_gp;
+extern short explosion_burst_particle_second_frame_count_range_start_gp, explosion_burst_particle_second_frame_count_range_end_gp, homing_spark_plume_spread_radius, explosion_burst_first_glow_scale_multiplier_gp, explosion_burst_first_glow_duration_frames_gp, homing_spark_glow1_rgba;
+extern short explosion_burst_second_glow_scale_multiplier_gp, explosion_burst_second_glow_duration_frames_gp, homing_spark_glow2_rgba, explosion_burst_third_glow_scale_multiplier_gp, explosion_burst_third_glow_duration_frames_gp, homing_spark_glow3_rgba;
 extern short homing_spark_burst_shake_amplitude, homing_spark_burst_shake_frames;
 extern unsigned char homing_spark_glow1_gba[3] MACRO_ADDR;
 extern unsigned char homing_spark_glow2_gba[3] MACRO_ADDR;
@@ -2588,14 +2588,14 @@ void spawn_explosion_burst(void *source_moby) {
         BuildSphericalOffset(&velocity, random_float_between(F(homing_spark_burst_speed_min), F(homing_spark_burst_speed_max)) * g_frame_time, angle, elevation);
         FastVecScale(offset, &velocity, F(homing_spark_burst_end_speed_scale));
         i++;
-        offset[2] += F(homing_spark_burst_rise_speed) * random_float_between(0.8f, 1.2f) * g_frame_time;
-        velocity.v[3] = F(homing_spark_burst_spark_size);
-        offset[3] = F(homing_spark_burst_spark_size);
+        offset[2] += F(explosion_burst_spark_second_vector_z_rate_gp) * random_float_between(0.8f, 1.2f) * g_frame_time;
+        velocity.v[3] = F(explosion_burst_spark_vector_w_gp);
+        offset[3] = F(explosion_burst_spark_vector_w_gp);
         scale = random_float_between(0.8f, 1.2f);
         x = truncate_float_to_s32(scale_ticks(I(homing_spark_burst_life)) * scale);
         y = truncate_float_to_s32(scale_ticks(I(homing_spark_burst_time2)) * scale);
         z = truncate_float_to_s32(scale_ticks(I(homing_spark_burst_time3)) * scale);
-        PartType02Spawn((char *)&moby->pos, &velocity, offset, I(homing_spark_burst_start_color), I(homing_spark_burst_end_color), x, y, z, I(homing_spark_particle_texture));
+        PartType02Spawn((char *)&moby->pos, &velocity, offset, I(explosion_burst_spark_initial_color_gp), I(explosion_burst_spark_second_color_gp), x, y, z, I(homing_spark_particle_texture));
     }
     for (j = 0; j < I(homing_spark_plume_count);) {
         float speed, elevation, angle, offset_x, offset_y, scale;
@@ -2615,25 +2615,25 @@ void spawn_explosion_burst(void *source_moby) {
         FastVecAdd(offset, offset, (char *)&moby->pos);
         color1 = homing_spark_plume_start_colors[random_integer_below(6)];
         color2 = homing_spark_plume_end_colors[random_integer_below(6)];
-        scale = F(homing_spark_plume_scale) * 400000.0f;
-        a = scale_ticks(rand_range(I(homing_spark_plume_time1_min), I(homing_spark_plume_time1_max)));
-        b = scale_ticks(rand_range(I(homing_spark_plume_time2_min), I(homing_spark_plume_time2_max)));
+        scale = F(explosion_burst_particle_scale_multiplier_gp) * 400000.0f;
+        a = scale_ticks(rand_range(I(explosion_burst_particle_frame_count_range_start_gp), I(explosion_burst_particle_frame_count_range_end_gp)));
+        b = scale_ticks(rand_range(I(explosion_burst_particle_second_frame_count_range_start_gp), I(explosion_burst_particle_second_frame_count_range_end_gp)));
         PartType11Spawn(offset, &velocity, color1, color2, scale, a, b, speed, 0, 0);
     }
-    if (F(homing_spark_glow1_size) > 0.0f) {
+    if (F(explosion_burst_first_glow_scale_multiplier_gp) > 0.0f) {
         char *pos = (char *)&moby->pos;
-        int t = scale_ticks(I(homing_spark_glow1_life));
-        spawn_glow_particle(source_moby, pos, &veldin2_zero_vec, F(homing_spark_glow1_size), t, *(unsigned char *)&homing_spark_glow1_rgba, homing_spark_glow1_gba[0], homing_spark_glow1_gba[1], homing_spark_glow1_gba[2]);
+        int t = scale_ticks(I(explosion_burst_first_glow_duration_frames_gp));
+        spawn_glow_particle(source_moby, pos, &veldin2_zero_vec, F(explosion_burst_first_glow_scale_multiplier_gp), t, *(unsigned char *)&homing_spark_glow1_rgba, homing_spark_glow1_gba[0], homing_spark_glow1_gba[1], homing_spark_glow1_gba[2]);
     }
-    if (F(homing_spark_glow2_size) > 0.0f) {
+    if (F(explosion_burst_second_glow_scale_multiplier_gp) > 0.0f) {
         char *pos = (char *)&moby->pos;
-        int t = scale_ticks(I(homing_spark_glow2_life));
-        spawn_glow_particle(source_moby, pos, &veldin2_zero_vec, F(homing_spark_glow2_size), t, *(unsigned char *)&homing_spark_glow2_rgba, homing_spark_glow2_gba[0], homing_spark_glow2_gba[1], homing_spark_glow2_gba[2]);
+        int t = scale_ticks(I(explosion_burst_second_glow_duration_frames_gp));
+        spawn_glow_particle(source_moby, pos, &veldin2_zero_vec, F(explosion_burst_second_glow_scale_multiplier_gp), t, *(unsigned char *)&homing_spark_glow2_rgba, homing_spark_glow2_gba[0], homing_spark_glow2_gba[1], homing_spark_glow2_gba[2]);
     }
-    if (F(homing_spark_glow3_size) > 0.0f) {
+    if (F(explosion_burst_third_glow_scale_multiplier_gp) > 0.0f) {
         char *pos = (char *)&moby->pos;
-        int t = scale_ticks(I(homing_spark_glow3_life));
-        spawn_glow_particle(source_moby, pos, &veldin2_zero_vec, F(homing_spark_glow3_size), t, *(unsigned char *)&homing_spark_glow3_rgba, homing_spark_glow3_gba[0], homing_spark_glow3_gba[1], homing_spark_glow3_gba[2]);
+        int t = scale_ticks(I(explosion_burst_third_glow_duration_frames_gp));
+        spawn_glow_particle(source_moby, pos, &veldin2_zero_vec, F(explosion_burst_third_glow_scale_multiplier_gp), t, *(unsigned char *)&homing_spark_glow3_rgba, homing_spark_glow3_gba[0], homing_spark_glow3_gba[1], homing_spark_glow3_gba[2]);
     }
     if (F(homing_spark_burst_shake_amplitude) > 0.0f) {
         L18FlareView *camera = (L18FlareView *)veldin2_player_camera;
@@ -2713,7 +2713,7 @@ typedef struct { V_ec290 p[5]; } P_ec290;
 
 extern void FastVecCross(void *, void *, void *);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
-extern float WrapAngle(float);
+extern float normalize_angle(float);
 extern float randf_sym(float lo, float hi);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern int rand_range(int, int);
@@ -2732,10 +2732,10 @@ extern short electric_bolt_swell_phase_step;
 extern short electric_bolt_wave_phase_step;
 extern short electric_bolt_wave_height_start;
 extern short electric_bolt_wave_height_end;
-extern short electric_bolt_wave_jitter_base;
-extern short electric_bolt_wave_jitter_range;
+extern short primary_bolt_z_jitter_range_start_gp;
+extern short primary_bolt_z_jitter_range_end_gp;
 extern short electric_bolt_color;
-extern short electric_bolt_spark_reach;
+extern short electric_bolt_particle_direction_scale_gp;
 extern short electric_bolt_wander_blend;
 extern float frame_scale MACRO_ADDR;
 extern V_ec290 electric_bolt_points_base[];
@@ -2788,8 +2788,8 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
         float b;
         f21 = *(float *)&electric_bolt_wave_height_start
               + (*(float *)&electric_bolt_wave_height_end - *(float *)&electric_bolt_wave_height_start) * (IntToFloat(i) * 0.05f);
-        f21 = f21 * FastSin(WrapAngle(*(float *)&electric_bolt_wave_phase + (float)i * *(float *)&electric_bolt_wave_phase_step));
-        f21 = f21 + randf_sym(*(float *)&electric_bolt_wave_jitter_base, *(float *)&electric_bolt_wave_jitter_range);
+        f21 = f21 * FastSin(normalize_angle(*(float *)&electric_bolt_wave_phase + (float)i * *(float *)&electric_bolt_wave_phase_step));
+        f21 = f21 + randf_sym(*(float *)&primary_bolt_z_jitter_range_start_gp, *(float *)&primary_bolt_z_jitter_range_end_gp);
         electric_bolt_points[0][i].f[2] = electric_bolt_points[0][i].f[2] - electric_bolt_wave_heights[i];
         electric_bolt_wave_heights[i] = f21;
         a = random_angle_radians();
@@ -2828,9 +2828,9 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
             float h;
             float ang;
             float m;
-            g = WrapAngle(*(float *)&electric_bolt_twist_phase + (float)i * *(float *)&electric_bolt_twist_phase_step);
+            g = normalize_angle(*(float *)&electric_bolt_twist_phase + (float)i * *(float *)&electric_bolt_twist_phase_step);
             h = *(float *)&electric_bolt_twist_height
-                * FastSin(WrapAngle(*(float *)&electric_bolt_swell_phase + (float)i * *(float *)&electric_bolt_swell_phase_step));
+                * FastSin(normalize_angle(*(float *)&electric_bolt_swell_phase + (float)i * *(float *)&electric_bolt_swell_phase_step));
             qcopy(&electric_bolt_points[1][i], &electric_bolt_points[0][i]);
             h = h * FastSin(g) + randf_sym(0.0f, 0.1f);
             electric_bolt_points[1][i].f[2] = electric_bolt_points[1][i].f[2] + h;
@@ -2910,7 +2910,7 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
     }
     scale = randf_sym(0.52359879f, 1.04719758f);
     f20 = random_float_between(-0.52359879f, 1.04719758f);
-    FastVecScale(&s[5], &s[0], *(float *)&electric_bolt_spark_reach * frame_scale);
+    FastVecScale(&s[5], &s[0], *(float *)&electric_bolt_particle_direction_scale_gp * frame_scale);
     build_look_at_matrix(&s[5], &s[5], &s[6], f20);
     build_look_at_matrix(&s[5], &s[5], &s[7], scale);
     r = rand_range(1, 8);

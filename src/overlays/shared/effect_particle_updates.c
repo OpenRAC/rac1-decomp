@@ -263,7 +263,168 @@ void update_scalar_and_fade_effect_particle(char *m) {
         *(int *)(m + 4) = (*(int *)(m + 4) & 0xFFFFFF) | ((*(int *)(m + 0x20) * 127 / scale_ticks(6)) << 24);
     }
 }
-INCLUDE_ASM("asm/overlays", func_L00_0026ABC0);
+extern void subtract_homogeneous_scaled_vector_xyz(void *, void *, void *, float);
+extern void vec_scale_to_length(void *, void *, float);
+extern float IntToFloat(int);
+extern int truncate_float_to_s32(float);
+extern void euler_to_matrix(void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern void clamp_vec_length(void *, void *, float);
+extern void KillPart(void *);
+extern f32 coll_hit_normal[];
+typedef int u128_6AB __attribute__((mode(TI)));
+
+/* Particle type 6 update: moves the particle, clamps its velocity and colour, then kills it when it leaves its bounds. */
+void update_colliding_effect_particle(unsigned char *m) {
+    unsigned char *t;
+    unsigned char *e;
+    float tmp[4];
+    float o[4];
+    float v2[4];
+    float v3[4];
+    float v4[16];
+    float k;
+    float f22, f23, f24;
+    int fl;
+    int bb;
+    int r4, r5, r6, r7;
+
+    e = m + 0x20;
+    t = *(unsigned char **)(e + 0xC);
+    tmp[0] = *(float *)(m + 0x10) + *(float *)(m + 0x20);
+    tmp[1] = *(float *)(m + 0x14) + *(float *)(e + 0x4);
+    tmp[2] = *(float *)(m + 0x18) + *(float *)(e + 0x8);
+
+    if ((*(int *)(t + 0x70) & 1) && coll_line(m + 0x10, tmp, 4, (int)m, 0)) {
+        v2[0] = *(float *)(m + 0x20);
+        v2[1] = *(float *)(e + 0x4);
+        v2[2] = *(float *)(e + 0x8);
+        subtract_homogeneous_scaled_vector_xyz(o, v2, coll_hit_normal, *(float *)(t + 0x3C));
+        *(float *)(m + 0x20) = o[0];
+        *(float *)(e + 0x4) = o[1];
+        *(float *)(e + 0x8) = o[2];
+        vec_scale_to_length(v3, coll_hit_normal, 0.055f);
+        FastVecAdd(m + 0x10, (char *)coll_hit_normal - 0x20, v3);
+    } else {
+        /* inline asm: keeps $s0 live at the else label so reorg fills the beqz delay slot with addiu $a0 like retail */
+        register unsigned char *s0 __asm__("$16");
+        __asm__ volatile("" : : "r"(s0));
+        *(u128_6AB *)(m + 0x10) = *(u128_6AB *)tmp;
+    }
+
+    fl = *(int *)(t + 0x70);
+    if (fl & 2) {
+        f24 = IntToFloat((m[4] << 8) | e[0x18]) / 65535.0f;
+        f23 = (float)truncate_float_to_s32((float)((*(int *)(m + 4) & 0xFF00) | e[0x19])) / 65535.0f;
+        f22 = (float)truncate_float_to_s32((float)((int)(((unsigned int)*(int *)(m + 4) >> 8) & 0xFF00) | e[0x1A])) / 65535.0f;
+
+        if (e[0x1B] & 0x10) {
+            f24 = f24 - *(float *)(t + 0x4C) * frame_scale;
+            k = frame_scale;
+        } else {
+            f24 = f24 + *(float *)(t + 0x4C) * frame_scale;
+            k = frame_scale;
+        }
+        if (e[0x1B] & 0x20) {
+            f23 = f23 - *(float *)(t + 0x50) * k;
+        } else {
+            f23 = f23 + *(float *)(t + 0x50) * k;
+        }
+        if (e[0x1B] & 0x40) {
+            f22 = f22 - *(float *)(t + 0x54) * frame_scale;
+        } else {
+            f22 = f22 + *(float *)(t + 0x54) * frame_scale;
+        }
+
+        if (*(float *)(t + 0x64) < f24) {
+            f24 = *(float *)(t + 0x64);
+            if (*(int *)(t + 0x70) & 0x100) e[0x1B] ^= 0x10;
+        }
+        if (f24 < *(float *)(t + 0x58)) {
+            f24 = *(float *)(t + 0x58);
+            if (*(int *)(t + 0x70) & 0x10) e[0x1B] ^= 0x10;
+        }
+        if (*(float *)(t + 0x68) < f23) {
+            f23 = *(float *)(t + 0x68);
+            if (*(int *)(t + 0x70) & 0x200) e[0x1B] ^= 0x20;
+        }
+        if (f23 < *(float *)(t + 0x5C)) {
+            f23 = *(float *)(t + 0x5C);
+            if (*(int *)(t + 0x70) & 0x20) e[0x1B] ^= 0x20;
+        }
+        if (*(float *)(t + 0x6C) < f22) {
+            f22 = *(float *)(t + 0x6C);
+            if (*(int *)(t + 0x70) & 0x400) e[0x1B] ^= 0x40;
+        }
+        if (f22 < *(float *)(t + 0x60)) {
+            f22 = *(float *)(t + 0x60);
+            if (*(int *)(t + 0x70) & 0x40) e[0x1B] ^= 0x40;
+        }
+
+        {
+        /* register pin: retail keeps 65535.0f in $f21 and 255.0f in $f20 here */
+        register float c65 __asm__("$f21") = 65535.0f;
+        register float c255 __asm__("$f20") = 255.0f;
+        e[0x18] = truncate_float_to_s32(f24 * c65);
+        e[0x19] = truncate_float_to_s32(f23 * c65);
+        e[0x1A] = truncate_float_to_s32(f22 * c65);
+        r4 = truncate_float_to_s32(f24 * c255);
+        r5 = truncate_float_to_s32(f23 * c255);
+        r6 = truncate_float_to_s32(f22 * c255);
+        r7 = truncate_float_to_s32(*(float *)(e + 0x10) * c255);
+        }
+        *(int *)(m + 4) = (r4 & 0xFF) | ((r5 & 0xFF) << 8) | ((r6 & 0xFF) << 16) | (r7 << 24);
+        goto dtest;
+    }
+    if (!(fl & 4)) goto b0b0;
+    r7 = truncate_float_to_s32(*(float *)(e + 0x10) * 255.0f);
+    *(int *)(m + 4) = (*(int *)(m + 4) & 0xFFFFFF) | (r7 << 24);
+dtest:
+    if (*(int *)(t + 0x70) & 4) {
+        k = frame_scale;
+        if (e[0x1B] & 0x80) {
+            *(float *)(e + 0x10) = *(float *)(e + 0x10) - *(float *)(t + 0x38) * k;
+        } else {
+            *(float *)(e + 0x10) = *(float *)(e + 0x10) + *(float *)(t + 0x38) * k;
+        }
+        if (*(float *)(e + 0x10) > *(float *)(t + 0x48)) {
+            *(float *)(e + 0x10) = *(float *)(t + 0x48);
+            if (*(int *)(t + 0x70) & 0x800) e[0x1B] ^= 0x80;
+        }
+        if (*(float *)(e + 0x10) < *(float *)(t + 0x44)) {
+            *(float *)(e + 0x10) = *(float *)(t + 0x44);
+            if (*(int *)(t + 0x70) & 0x80) e[0x1B] ^= 0x80;
+        }
+    }
+b0b0:
+    m[8] = truncate_float_to_s32(*(float *)(e + 0x14) * 255.0f);
+
+    if (*(int *)(t + 0x70) & 8) {
+        tmp[0] = *(float *)(e + 0x0);
+        tmp[1] = *(float *)(e + 0x4);
+        tmp[2] = *(float *)(e + 0x8);
+        if (*(int *)(t + 0x70) & 0x8000) {
+            euler_to_matrix(v4, *(char **)(t + 0x7C) + 0x40);
+            transform_vector(o, t, v4);
+        } else {
+            *(u128_6AB *)o = *(u128_6AB *)t;
+        }
+        FastVecAdd(tmp, tmp, o);
+        clamp_vec_length(tmp, tmp, *(float *)(t + 0x40));
+        *(float *)(e + 0x0) = tmp[0];
+        *(float *)(e + 0x4) = tmp[1];
+        *(float *)(e + 0x8) = tmp[2];
+    }
+
+    *(float *)(m + 0xC) = *(float *)(m + 0xC) + *(float *)(t + 0x30) * frame_scale;
+    if (*(float *)(m + 0xC) < *(float *)(t + 0x74)) *(float *)(m + 0xC) = *(float *)(t + 0x74);
+    if (*(float *)(m + 0xC) > *(float *)(t + 0x78)) *(float *)(m + 0xC) = *(float *)(t + 0x78);
+
+    *(float *)(e + 0x14) = *(float *)(e + 0x14) + *(float *)(t + 0x34) * frame_scale;
+    if (*(float *)(e + 0x10) <= 0.0f || FastDecTimer(m + 0xA) || *(float *)(m + 0x10) < *(float *)(t + 0x10) || *(float *)(m + 0x14) < *(float *)(t + 0x14) || *(float *)(m + 0x18) < *(float *)(t + 0x18) || *(float *)(t + 0x20) < *(float *)(m + 0x10) || *(float *)(t + 0x24) < *(float *)(m + 0x14) || *(float *)(t + 0x28) < *(float *)(m + 0x18)) {
+        KillPart(m);
+    }
+}
 extern void *create_part(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float IntToFloat(int);
@@ -1265,7 +1426,7 @@ extern char *part_type22_textures;
 extern float g_frame_time_sq MACRO_ADDR;
 
 /* spawns a type 22 particle with the given position, velocity, colour and lifetime */
-void PartType22Spawn(void *pos, void *vel, int c, int d, int e, float x) {
+void spawn_effect_particle_with_target_scalar(void *pos, void *vel, int c, int d, int e, float x) {
     char *m = create_part(0x16);
     char *p;
     int r;

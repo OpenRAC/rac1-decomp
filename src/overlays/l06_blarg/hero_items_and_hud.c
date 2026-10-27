@@ -26,7 +26,7 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float blarg_hero_fall_state_height MACRO_ADDR;
 extern int blarg_shown_help_message MACRO_ADDR;
-extern int blarg_hero_run_start_anim_mode MACRO_ADDR;
+extern int landing_run_animation_start_frame MACRO_ADDR;
 extern short blarg_hero_double_tap_timer;
 extern float blarg_player_camera_yaw;
 extern int blarg_hero_state_1e_clear_word;
@@ -1495,7 +1495,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         HeroL06_TrySetMoveState(2, 0);
                         if (g_hero.state.current == 2) {
                             g_hero.state.step = 1;
-                            set_hero_animation(4, blarg_hero_run_start_anim_mode, scale_ticks(0xC));
+                            set_hero_animation(4, landing_run_animation_start_frame, scale_ticks(0xC));
                         }
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                         break;

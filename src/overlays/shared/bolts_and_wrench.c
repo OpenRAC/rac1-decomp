@@ -257,7 +257,7 @@ extern int scale_ticks(int);
 extern float frame_scale MACRO_ADDR;
 extern short smoke_particle_stagger_ticks_base;
 extern short smoke_particle_timer_ticks_base;
-extern short smoke_particle_aux_ticks_base;
+extern short configured_reciprocal_denominator_frames;
 extern short smoke_scroll_offset;
 extern short smoke_scroll_speed;
 extern short smoke_particle_stagger_ticks;
@@ -265,21 +265,21 @@ extern short smoke_particle_timer_ticks;
 extern short smoke_particle_timer_ticks_inv;
 extern int smoke_particle_aux_ticks MACRO_ADDR;
 extern short smoke_particle_aux_ticks_inv;
-extern int smoke_particle_pool_next MACRO_ADDR;
+extern int fetch_add_accumulator MACRO_ADDR;
 
 // Texture scroll moby update: init the scroll constants, then scroll and wrap.
 void update_frame_timing_and_wrapped_value(char *m) {
     switch (*(unsigned char *)(m + 0x20)) {
     case 0: {
         float one;
-        smoke_particle_pool_next = 0;
+        fetch_add_accumulator = 0;
         m[0x20] = 1;
         *(unsigned char *)(m + 0x30) = 0xFF;
         one = 1.0f;
         *(int *)&smoke_particle_stagger_ticks = scale_ticks(*(int *)&smoke_particle_stagger_ticks_base);
         *(int *)&smoke_particle_timer_ticks = scale_ticks(*(int *)&smoke_particle_timer_ticks_base);
         *(float *)&smoke_particle_timer_ticks_inv = one / IntToFloat(*(int *)&smoke_particle_timer_ticks);
-        smoke_particle_aux_ticks = scale_ticks(*(int *)&smoke_particle_aux_ticks_base);
+        smoke_particle_aux_ticks = scale_ticks(*(int *)&configured_reciprocal_denominator_frames);
         *(float *)&smoke_particle_aux_ticks_inv = one / (float)smoke_particle_aux_ticks;
         break;
     }
@@ -294,7 +294,7 @@ void update_frame_timing_and_wrapped_value(char *m) {
     }
 }
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002a4830.c, FUN_L00_002a4dc8. */
-int fetch_and_add_global_accumulator(int a) { int t = smoke_particle_pool_next; smoke_particle_pool_next = t + a; return t; }
+int fetch_and_add_global_accumulator(int a) { int t = fetch_add_accumulator; fetch_add_accumulator = t + a; return t; }
 extern void *CreateMoby(int oClass);
 extern void moby_build_matrix(void *);
 
@@ -369,7 +369,210 @@ void camera_object_update(char *camera_object) {
         *(float *)(camera_object + 0x10) = 5.0f;
     }
 }
-INCLUDE_ASM("asm/overlays", func_L00_002A62D0);
+/* func_L00_002A62D0 -- src/overlays/shared/vendor_002A5138.c (functional C for the port, not a match)
+ * Draw callback of the pulsing light-beam moby (queued through func_001F49B0 by func_L00_002A6A38).
+ * Scrolls the beam's texture offset (D_L00_0016145C), draws four quads of the beam from the
+ * D_L00_001D7660 corner table (indices D_L00_001D7760, colours D_L00_001D7738, uvs D_L00_001D76F0/F4)
+ * rotated by the camera-facing matrix and scaled by the parent's 0x90; then grows a glow quad with
+ * D_L00_00161460 (alpha fading as it grows) and puts four sparkles on a ring around the moby.
+ * The source file declares this function `void (void)`; the definition takes its real argument
+ * under another C name. First pass shape from an earlier worker's attempt.
+ * equiv: NEAR (only which call a leftover argument register is credited to). */
+typedef unsigned int Q_2A62D0 __attribute__((mode(TI), aligned(16)));
+typedef union { Q_2A62D0 q; float f[4]; } V_2A62D0;
+typedef struct {
+    float v[4][4];
+    int col[4];
+    float uv[4][2];
+} Quad_2A62D0;
+
+extern short light_beam_texture_scroll;
+extern short light_beam_glow_phase;
+extern float light_beam_corner_table[][4];
+extern float light_beam_corner_uvs[][2];
+extern float D_L00_001D76F4[][2];
+extern int light_beam_corner_colors[];
+extern int light_beam_quad_corner_indices[][4];
+
+extern void euler_rotation_basis(void *, void *);
+extern int GetEffectTex(int);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void draw_world_quad(void *, void *, int);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void draw_offset_textured_effect_quad(void *, int, float, float);
+
+void draw_vendor_effects(char *m) {
+    char *p = *(char **)(m + 0x78);
+    Quad_2A62D0 qd;
+    long pk[4];
+    float q[4][4];
+    float d0[4];
+    float mtx[3][4];
+    V_2A62D0 M[4];
+    V_2A62D0 T[4];
+    float zero;
+    char *g, *h;
+    float (*t4)[2]; float (*t0)[2];
+    int izero;
+    float off;
+    /* register pin: the sparkle 1.1 lives in $f22, copied from the glow block's 1.1 */
+    register float kk __asm__("$f22");
+    /* register pin: &d0 for the second func_001FA1F8 call */
+    register float *ap __asm__("$5");
+    int k, i, i0, i1, i2, i3, col;
+
+    h = (char *)&player_camera;
+    d0[2] = *(float *)(h + 0x158);
+    d0[0] = 0.0f;
+    d0[1] = 0.0f;
+    euler_rotation_basis(mtx, d0);
+
+    (*(float *)&light_beam_texture_scroll) = (*(float *)&light_beam_texture_scroll) + 0.01f;
+    if (1.0f < (*(float *)&light_beam_texture_scroll)) {
+        (*(float *)&light_beam_texture_scroll) = (*(float *)&light_beam_texture_scroll) - 1.0f;
+    }
+
+    pk[2] = 1;
+    pk[3] = 0x4000000044L;
+    pk[0] = 0;
+    pk[1] = GetEffectTex(0x18);
+
+    for (k = 0; k < 4; k++) {
+        matrix_mul_vec3(q[0], light_beam_corner_table[light_beam_quad_corner_indices[k][0]], mtx);
+        matrix_mul_vec3(q[1], light_beam_corner_table[light_beam_quad_corner_indices[k][1]], mtx);
+        matrix_mul_vec3(q[2], light_beam_corner_table[light_beam_quad_corner_indices[k][2]], mtx);
+        matrix_mul_vec3(q[3], light_beam_corner_table[light_beam_quad_corner_indices[k][3]], mtx);
+
+        qd.v[0][0] = *(float *)(m + 0x10) + q[0][0] * *(float *)(p + 0x90);
+        qd.v[0][1] = *(float *)(m + 0x14) + q[0][1] * *(float *)(p + 0x90);
+        qd.v[0][2] = *(float *)(m + 0x18) + q[0][2];
+        qd.v[1][0] = *(float *)(m + 0x10) + q[1][0] * *(float *)(p + 0x90);
+        qd.v[1][1] = *(float *)(m + 0x14) + q[1][1] * *(float *)(p + 0x90);
+        qd.v[1][2] = *(float *)(m + 0x18) + q[1][2];
+        qd.v[2][0] = *(float *)(m + 0x10) + q[2][0] * *(float *)(p + 0x90);
+        qd.v[2][1] = *(float *)(m + 0x14) + q[2][1] * *(float *)(p + 0x90);
+        qd.v[2][2] = *(float *)(m + 0x18) + q[2][2];
+        qd.v[3][0] = *(float *)(m + 0x10) + q[3][0] * *(float *)(p + 0x90);
+        qd.v[3][1] = *(float *)(m + 0x14) + q[3][1] * *(float *)(p + 0x90);
+        qd.v[3][2] = *(float *)(m + 0x18) + q[3][2];
+
+        i0 = light_beam_quad_corner_indices[k][0];
+        i1 = light_beam_quad_corner_indices[k][1];
+        i2 = light_beam_quad_corner_indices[k][2];
+        i3 = light_beam_quad_corner_indices[k][3];
+        off = (*(float *)&light_beam_texture_scroll);
+        qd.col[0] = light_beam_corner_colors[i0];
+        qd.col[1] = light_beam_corner_colors[i1];
+        qd.col[2] = light_beam_corner_colors[i2];
+        qd.col[3] = light_beam_corner_colors[i3];
+        t0 = light_beam_corner_uvs;
+        t4 = (float (*)[2])&t0[0][1];
+        qd.uv[0][0] = t0[i0][0];
+        qd.uv[0][1] = t4[i0][0] + off;
+        qd.uv[1][0] = t0[i1][0];
+        qd.uv[1][1] = t4[i1][0] + off;
+        qd.uv[2][0] = t0[i2][0];
+        qd.uv[2][1] = t4[i2][0] + off;
+        qd.uv[3][0] = t0[i3][0];
+        qd.uv[3][1] = t4[i3][0] + off;
+        draw_world_quad(&qd, 0, 1);
+    }
+
+    pk[1] = GetEffectTex(0x1B);
+
+    (*(float *)&light_beam_glow_phase) = (*(float *)&light_beam_glow_phase) + 0.01f;
+    if (1.0f < (*(float *)&light_beam_glow_phase)) {
+        (*(float *)&light_beam_glow_phase) = 0.0f;
+    }
+
+    {
+        float g = (*(float *)&light_beam_glow_phase);
+        float n = -g * 1.2f;
+        float pp = g * 1.2f;
+        float z = g * 1.4f + 1.1f;
+        float zz = z - 0.2f;
+        kk = 1.1f;
+
+        T[0].q = 0;
+        T[0].f[0] = n * *(float *)(p + 0x90);
+        T[0].f[1] = n * *(float *)(p + 0x90);
+        T[0].f[2] = z;
+        T[1].q = 0;
+        T[1].f[0] = pp * *(float *)(p + 0x90);
+        T[1].f[1] = n * *(float *)(p + 0x90);
+        T[1].f[2] = zz;
+        T[2].q = 0;
+        T[2].f[0] = n * *(float *)(p + 0x90);
+        T[2].f[1] = pp * *(float *)(p + 0x90);
+        T[2].f[2] = z;
+        T[3].q = 0;
+        T[3].f[0] = pp * *(float *)(p + 0x90);
+        T[3].f[1] = pp * *(float *)(p + 0x90);
+        T[3].f[2] = zz;
+        M[0].q = T[0].q;
+        T[0].q = M[0].q;
+        M[1].q = T[1].q;
+        T[1].q = M[1].q;
+        M[2].q = T[2].q;
+        M[3].q = T[3].q;
+    }
+
+    g = (char *)&player_camera;
+    off = *(float *)(g + 0x158);
+    d0[0] = 0.0f;
+    d0[2] = off;
+    d0[1] = 0.0f;
+    /* inline asm: ap = d0 (frame slot 0xD0). The kk input puts it after retail's mov.s $f22,$f5;
+     * the $4 clobber keeps addiu $a0 (mtx) after it. */
+    __asm__("addiu %0,$sp,0xD0" : "=r"(ap) : "f"(kk) : "$4");
+    euler_rotation_basis(mtx, ap);
+    matrix_mul_vec3(q[0], M[0].f, mtx);
+    matrix_mul_vec3(q[1], M[1].f, mtx);
+    matrix_mul_vec3(q[2], M[2].f, mtx);
+    matrix_mul_vec3(q[3], M[3].f, mtx);
+
+    col = ((int)((1.0f - (*(float *)&light_beam_glow_phase)) * 128.0f) << 24) | 0x808080;
+    qd.v[0][0] = *(float *)(m + 0x10) + q[0][0];
+    qd.v[0][1] = *(float *)(m + 0x14) + q[0][1];
+    qd.v[0][2] = *(float *)(m + 0x18) + q[0][2];
+    qd.v[1][0] = *(float *)(m + 0x10) + q[1][0];
+    qd.v[1][1] = *(float *)(m + 0x14) + q[1][1];
+    qd.v[1][2] = *(float *)(m + 0x18) + q[1][2];
+    qd.v[2][0] = *(float *)(m + 0x10) + q[2][0];
+    qd.v[2][1] = *(float *)(m + 0x14) + q[2][1];
+    qd.v[2][2] = *(float *)(m + 0x18) + q[2][2];
+    qd.v[3][0] = *(float *)(m + 0x10) + q[3][0];
+    qd.v[3][1] = *(float *)(m + 0x14) + q[3][1];
+    qd.v[3][2] = *(float *)(m + 0x18) + q[3][2];
+    qd.col[0] = col;
+    qd.col[1] = col;
+    qd.col[2] = col;
+    qd.col[3] = col;
+    qd.uv[0][0] = 0.0f;
+    qd.uv[0][1] = 0.0f;
+    qd.uv[1][0] = 1.0f;
+    qd.uv[1][1] = 0.0f;
+    qd.uv[2][0] = 0.0f;
+    qd.uv[2][1] = 1.0f;
+    qd.uv[3][0] = 1.0f;
+    qd.uv[3][1] = 1.0f;
+    draw_world_quad(&qd, 0, 1);
+
+    /* the sparkle vector reuses the first matrix row's slot in retail; its w is that row's 0 */
+    izero = 0;
+    zero = *(float *)&izero;
+    for (i = 0; i < 4; i++) {
+        float ang = (float)i * 3.14159f * 0.5f - 3.14159f;
+        T[0].f[0] = FastCos(ang) * kk;
+        T[0].f[1] = FastSin(ang) * kk;
+        T[0].f[2] = 0.59f;
+        matrix_mul_vec3(T[0].f, T[0].f, m + 0xC0);
+        FastVecAdd(T[0].f, T[0].f, m + 0x10);
+        draw_offset_textured_effect_quad(T[0].f, *(int *)(m + 0x90) & 0xFFFF0000, 0.1333f, zero);
+    }
+}
 extern float FastSin(float);
 extern void AttachManipulator(char *, int, void *);
 extern float vec_distance_xy(void *, void *);
@@ -379,7 +582,7 @@ extern void axis_rotation_2d48(void *, int, float);
 extern float fast_atan2(float, float);
 extern int try_set_help_message(int, int);
 extern void open_vendor_menu(void *);
-extern void draw_vendor_effects(void);
+extern void draw_vendor_effects();
 extern int level_frame_counter MACRO_ADDR;
 extern short vendor_glow_pulse_phase;
 extern short vendor_ring_a_angle;
@@ -954,7 +1157,7 @@ extern int transform_attachment_pose(int x, char *o, float *p, float *q, float *
 extern int coll_sphere(float, void *, int, void *);
 extern void clear_u64_value(void *);
 extern char *GetFlaggedPvarWord(void *);
-extern char *func_L00_00261448(void *);
+extern char *moby_get_ride_transform(void *);
 extern void vec_scale_to_length(float *, float *, float);
 
 /* Steers a thrown moby along its path: builds its orientation from the data's angles and, when done, releases the held target. */
@@ -1022,7 +1225,7 @@ void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
                 moby[0x20] = 1;
                 clear_u64_value(data + 0x30);
                 *(float *)(data + 0x3C) = 1.0f;
-                x = func_L00_00261448(*(char **)(data + 0x5C));
+                x = moby_get_ride_transform(*(char **)(data + 0x5C));
                 if (x != 0) {
                     qcopy(data + 0x20, x + 0x10);
                 } else {
@@ -1369,7 +1572,7 @@ int get_wrench_hit_sound_variant(void) {
     return r;
 }
 extern char *GetFlaggedPvarWord(void *);
-extern char *func_L00_00261448(void *);
+extern char *moby_get_ride_transform(void *);
 /* Return 1 when the moby the wrench hit is flagged to react to wrench hits. */
 int should_trigger_wrench_hit_reaction(void) {
     char *x = GetFlaggedPvarWord(g_coll_hit_moby);
@@ -2171,7 +2374,7 @@ void initialize_moby_motion_at_position(Vec4 *pos, N2 *self, void *arg) {
     vec_scale_to_length(d.f, d.f, random_float_between(g_frame_time * 0.01f, g_frame_time * 0.1f));
     FastVecAdd(m, &d, arg);
     P = (P2 *)(hero_globals_base + 0xE1D);
-    if (P->p2FC && func_L00_00261448(P->p2FC)) {
+    if (P->p2FC && moby_get_ride_transform(P->p2FC)) {
         FastVecAdd(m, m, P->v100);
     }
     m->h34 = scale_ticks(0x78);
@@ -2225,7 +2428,7 @@ int predict_mine_impact(char *a0, char *o, int mode) {
         FastVecAdd(w, w, base + 0x80);
         w[2] = w[2] + 0.49082f;
         qcopy(B, a0);
-        if (*(int *)(base + 0x2FC) != 0 && func_L00_00261448((void *)*(int *)(base + 0x2FC)) != 0 && mode != 0) {
+        if (*(int *)(base + 0x2FC) != 0 && moby_get_ride_transform((void *)*(int *)(base + 0x2FC)) != 0 && mode != 0) {
             FastVecAdd(B, B, base + 0x100);
         }
         x = scale_ticks(0x78);
@@ -2268,9 +2471,9 @@ int predict_mine_impact(char *a0, char *o, int mode) {
     if (x != 0) {
         if (mode == 0) {
             if (g_coll_hit_moby == 0) return 0;
-            if (func_L00_00261448(g_coll_hit_moby) == 0) return 0;
+            if (moby_get_ride_transform(g_coll_hit_moby) == 0) return 0;
         }
-        if (mode != 2 || g_coll_hit_moby == 0 || func_L00_00261448(g_coll_hit_moby) == 0) {
+        if (mode != 2 || g_coll_hit_moby == 0 || moby_get_ride_transform(g_coll_hit_moby) == 0) {
             AddDrawCallback(draw_mine_predicted_impact_marker, o);
         }
         {

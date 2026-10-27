@@ -2346,10 +2346,10 @@ s32 find_nearest_path_point(s32 *path, OvlQuad *point, OvlQuad *nearest,
     return 1;
 }
 LINKER_REMNANT("asm/overlays", func_L00_0025F360);
-extern f32 func_L00_002001D8(void *, f32);
+extern f32 split_float_fraction(void *, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math_rotations_0025d238.c, FUN_L00_0025e310. */
-f32 WrapAngle(f32 a) {
+f32 normalize_angle(f32 a) {
     f32 out;
     f32 x;
     f32 pi = 3.14159274f;
@@ -2357,7 +2357,7 @@ f32 WrapAngle(f32 a) {
 
     x = a + pi;
     x /= tp;
-    x = func_L00_002001D8(&out, x);
+    x = split_float_fraction(&out, x);
     x *= tp;
     return x - pi;
 }
@@ -3036,7 +3036,7 @@ int FindNearestEligibleMoby(char *a, char *o, float best, int *list, int n, floa
     return res;
 }
 /* Returns the third word of the moby private data when flag 0x20 is set, else zero. */
-int func_L00_00261448(char *m) {
+int moby_get_ride_transform(char *m) {
  if (m == 0) return 0;
  if (!(*(unsigned short *)(m + 0x34) & 0x20)) return 0;
  return *(int *)(*(char **)(m + 0x78) + 8);
@@ -3046,7 +3046,7 @@ extern void matrix_to_euler(void *, void *);
 
 /* transforms a point into the local space of a moby's matrix and back */
 int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d) {
-    char *r = (char *)func_L00_00261448(m);
+    char *r = (char *)moby_get_ride_transform(m);
     float t0[16];
     float t1[16];
     char *p;
@@ -3073,7 +3073,7 @@ int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, floa
     float m0[16] __attribute__((aligned(16)));
     float m1[16] __attribute__((aligned(16)));
     float v[4] __attribute__((aligned(16)));
-    char *e = (char *)func_L00_00261448(o);
+    char *e = (char *)moby_get_ride_transform(o);
     if (e == 0) return 0;
     matrix_mul_vec3(r, p, o + 0xC0);
     FastVecAdd(r, r, o + 0x10);
@@ -3102,7 +3102,7 @@ int convert_pose_to_reference_local(int x, char *o, float *a, float *c, float *b
     float v[4];
     float w[4];
     float pad[12];
-    if (func_L00_00261448(o) == 0) return 0;
+    if (moby_get_ride_transform(o) == 0) return 0;
     FastVecSub(v, a, o + 0x10);
     matrix_from_basis_rows(m, o + 0xC0);
     transform_vector(b, v, m);

@@ -1,4 +1,4 @@
-extern int D_L00_00173CF0[];
+extern int slideshow_image_end_times[];
 void update_slideshow(void) {
     int s0, t, i, r, one;
     int *src, *dst;
@@ -12,7 +12,7 @@ void update_slideshow(void) {
     s0 = *(unsigned char *)(pad_globals_base + 0x2CF2) == 0x41;
     one = 1;
     if (IST == 0) {
-        if (ITMR >= D_L00_00173CF0[IIDX] - 0x24) {
+        if (ITMR >= slideshow_image_end_times[IIDX] - 0x24) {
             if (*(short *)(help_stats_base + 0x100BD) != 0) {
                 update_audio_stream_until_idle(1);
             }

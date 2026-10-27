@@ -28,7 +28,7 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float kalebo3_hero_fall_state_height MACRO_ADDR;
 extern int kalebo3_help_message_selector MACRO_ADDR;
-extern int kalebo3_hero_run_step1_start_frame MACRO_ADDR;
+extern int run_animation_start_frame_after_landing MACRO_ADDR;
 extern short kalebo3_hero_double_tap_timer;
 extern float kalebo3_camera_yaw;
 extern int kalebo3_look_release_reset_word;
@@ -1703,7 +1703,7 @@ void Hero_ChooseStateTransition(void) {
                         Hero_TryMoveState(2, 0);
                         if (g_hero.state.current == 2) {
                             g_hero.state.step = 1;
-                            set_hero_animation(4, kalebo3_hero_run_step1_start_frame, scale_ticks(0xC));
+                            set_hero_animation(4, run_animation_start_frame_after_landing, scale_ticks(0xC));
                         }
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                         break;

@@ -343,6 +343,7 @@ func_00120E98	src/core/001208E8.c	match	boot:00120B98	152	100.00
 func_00120F30	src/core/001208E8.c	match	boot:00120C30	160	100.00
 func_00120FD0	src/core/001208E8.c	match	boot:00120CD0	108	100.00
 func_00121040	src/core/001208E8.c	match	boot:00120D40	368	100.00
+func_001211B0	src/core/001208E8.c	match	boot:00120EB0	736	100.00
 func_00121490	src/core/001208E8.c	match	boot:00121190	504	100.00
 func_00121688	src/core/001208E8.c	match	boot:00121388	196	100.00
 func_00121750	src/core/00121750.c	match	boot:00121450	480	100.00
@@ -430,6 +431,7 @@ func_00125548	-	asm	boot:00125408	168	100.00
 func_001255F0	-	asm	boot:001254B0	64	100.00
 func_00125630	src/core/00125630.c	match	boot:001254F0	592	100.00
 func_00125880	src/core/00125630.c	match	boot:00125740	1796	100.00
+func_00125F88	src/core/00125630.c	match	boot:00125E48	1052	100.00
 func_001263A8	src/core/00125630.c	match	boot:00126268	540	100.00
 func_001265C8	-	asm	boot:00126488	116	100.00
 func_00126640	-	asm	boot:00126500	148	100.00
@@ -542,6 +544,7 @@ func_0012C430	src/core/0012AC80.c	match	boot:0012C2F0	52	100.00
 func_0012C468	src/core/0012AC80.c	match	boot:0012C328	84	100.00
 func_0012C4C0	src/core/0012AC80.c	match	boot:0012C380	32	100.00
 func_0012C4E0	src/core/0012AC80.c	match	boot:0012C3A0	292	100.00
+func_0012C608	src/core/0012AC80.c	match	boot:0012C4C8	680	100.00
 func_0012C8B0	src/core/0012AC80.c	match	boot:0012C770	224	100.00
 func_0012C990	src/core/0012AC80.c	match	boot:0012C850	224	100.00
 func_0012CA70	src/core/0012AC80.c	match	boot:0012C930	304	100.00
@@ -1197,6 +1200,7 @@ func_00213A78	-	asm	boot:00212720	308	100.00
 func_00213BAC	-	asm	boot:00212854	4	100.00
 func_00213BB8	src/game/mobyutil.c	match	boot:00212860	180	100.00
 func_00213C70	-	asm	boot:00212918	4	100.00
+func_00213C78	src/game/mobyutil.c	match	boot:00212920	148	100.00
 func_00213D10	-	asm	boot:002129B8	20	100.00
 func_00213D28	src/game/mobyutil.c	match	boot:002129D0	184	100.00
 func_00213DE0	src/game/mobyutil.c	match	boot:00212A88	328	100.00
@@ -1912,6 +1916,7 @@ func_L00_0020E0A8	src/overlays/shared/hero_animation_slots.c	match	00:0020D558	6
 func_L00_0020E0E8	src/overlays/shared/hero_animation_slots.c	match	00:0020D598	8	100.00
 func_L00_0020E0F0	src/overlays/shared/hero_animation_slots.c	match	00:0020D5A0	8	100.00
 func_L00_0020E100	src/overlays/shared/hero_animation_slots.c	match	00:0020D5B0	696	100.00
+func_L00_0020E3B8	src/overlays/shared/hero_animation_slots.c	match	00:0020D868	1596	100.00
 func_L00_0020E9F8	src/overlays/shared/hero_animation_slots.c	match	00:0020DEA8	356	100.00
 func_L00_0020EB60	src/overlays/shared/hero_animation_slots.c	match	00:0020E010	460	100.00
 func_L00_0020ED30	src/overlays/shared/hero_animation_slots.c	match	00:0020E1E0	144	100.00
@@ -2415,6 +2420,7 @@ func_L00_00264EA8	src/overlays/shared/moby_path_and_manipulators.c	match	00:0026
 func_L00_00265050	src/overlays/shared/moby_path_and_manipulators.c	match	00:00263BE8	840	100.00
 func_L00_002653A0	src/overlays/shared/moby_path_and_manipulators.c	match	00:00263F38	156	100.00
 func_L00_00265558	src/overlays/shared/help_message_removal.c	match	00:002640F0	96	100.00
+func_L00_002657B8	src/overlays/shared/help_message_removal.c	match	00:00264350	260	100.00
 func_L00_002664B0	src/overlays/shared/music_track_requests.c	differs	01:00279B60	68	0.00
 func_L00_002664F4	-	differs	01:00279BA4	16	0.00
 func_L00_002666C8	src/overlays/shared/music_track_requests.c	match	00:00265210	64	100.00
@@ -2446,6 +2452,7 @@ func_L00_0026A7F8	src/overlays/shared/effect_particle_updates.c	match	00:002692E
 func_L00_0026A910	src/overlays/shared/effect_particle_updates.c	match	00:00269400	252	100.00
 func_L00_0026AA10	src/overlays/shared/effect_particle_updates.c	match	00:00269500	252	100.00
 func_L00_0026AB10	src/overlays/shared/effect_particle_updates.c	match	00:00269600	176	100.00
+func_L00_0026ABC0	src/overlays/shared/effect_particle_updates.c	match	00:002696B0	1780	100.00
 func_L00_0026B368	src/overlays/shared/effect_particle_updates.c	match	00:00269E58	236	100.00
 func_L00_0026B458	src/overlays/shared/effect_particle_updates.c	match	00:00269F48	300	100.00
 func_L00_0026B590	src/overlays/shared/effect_particle_updates.c	match	00:0026A080	392	100.00
@@ -2677,6 +2684,7 @@ func_L00_002A5F68	src/overlays/shared/bolts_and_wrench.c	match	00:002A4680	236	1
 func_L00_002A6058	src/overlays/shared/bolts_and_wrench.c	match	00:002A4770	20	100.00
 func_L00_002A6070	src/overlays/shared/bolts_and_wrench.c	match	00:002A4788	100	100.00
 func_L00_002A60D8	src/overlays/shared/bolts_and_wrench.c	match	00:002A47F0	504	100.00
+func_L00_002A62D0	src/overlays/shared/bolts_and_wrench.c	match	00:002A49E8	1896	100.00
 func_L00_002A6A38	src/overlays/shared/bolts_and_wrench.c	differs	00:002A5150	1584	0.00
 func_L00_002A7078	src/overlays/shared/bolts_and_wrench.c	match	00:002A5780	3480	100.00
 func_L00_002A7E10	src/overlays/shared/bolts_and_wrench.c	match	00:002A6518	632	100.00
@@ -2850,6 +2858,7 @@ func_L00_002D4C80	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D3178
 func_L00_002D4CE8	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D31E0	472	100.00
 func_L00_002D4EC0	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D33B8	3068	100.00
 func_L00_002D5AC0	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D3FB8	2896	100.00
+func_L00_002D6610	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D4B08	868	100.00
 func_L00_002D6978	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D4E70	532	100.00
 func_L00_002D6B90	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D5088	76	100.00
 func_L00_002D6C80	src/overlays/shared/crates_and_veldin_ship.c	match	00:002D5178	44	100.00
@@ -3605,6 +3614,7 @@ func_L05_002A1098	-	asm	05:0029FBC8	12	100.00
 func_L05_002A1170	-	asm	05:0029FCA0	84	100.00
 func_L05_002B4AC0	-	asm	05:002B31D0	28	100.00
 func_L05_002CF2C0	-	asm	05:002CDA18	12	100.00
+func_L05_002D28D0	src/overlays/l05_rilgar/sharkigator_and_faucet.c	match	05:002D1018	1960	100.00
 func_L05_002D3078	src/overlays/l05_rilgar/sharkigator_and_faucet.c	match	05:002D17C0	420	100.00
 func_L05_002D3220	src/overlays/l05_rilgar/sharkigator_and_faucet.c	match	05:002D1968	508	100.00
 func_L05_002D5398	-	asm	05:002D3AE0	20	100.00
@@ -3846,6 +3856,7 @@ func_L06_00305C58	src/overlays/l06_blarg/fred_and_commando.c	match	06:00304140	4
 func_L06_00305E38	src/overlays/l06_blarg/fred_and_commando.c	match	06:00304320	1544	100.00
 func_L06_00306440	src/overlays/l06_blarg/fred_and_commando.c	match	06:00304928	364	100.00
 func_L06_003065B0	src/overlays/l06_blarg/fred_and_commando.c	match	06:00304A98	564	100.00
+func_L06_003089B8	src/overlays/shared/space_commando_and_door_lock.c	match	06:00306EA0	1740	100.00
 func_L06_00309088	src/overlays/shared/space_commando_and_door_lock.c	match	06:00307570	232	100.00
 func_L06_00309170	src/overlays/shared/space_commando_and_door_lock.c	match	06:00307658	1664	100.00
 func_L06_003097F0	src/overlays/l06_blarg/fred_and_commando.c	match	06:00307CD8	1208	100.00

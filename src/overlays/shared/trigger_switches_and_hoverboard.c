@@ -269,7 +269,7 @@ extern void FastVecScale(void *, void *, float);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern short rilgar_frame_count;
 extern int hoverboard_race_finished MACRO_ADDR;
-extern short rilgar_hoverboard_trail_velocity_w;
+extern short hoverboard_effect_displacement_w_gp;
 extern short rilgar_hoverboard_trail_start_color;
 extern short rilgar_hoverboard_trail_end_color;
 extern unsigned char special_items_base[];
@@ -373,7 +373,7 @@ void hoverboard_update(unsigned char *moby) {
         FastVecAdd(effect_position, effect_position, delta);
         FastVecAdd(effect_position, effect_position, offset);
         qcopy(effect_position, delta);
-        effect_position[3] = (float)*(int *)&rilgar_hoverboard_trail_velocity_w;
+        effect_position[3] = (float)*(int *)&hoverboard_effect_displacement_w_gp;
         if (((struct Moby *)moby)->command == 0) {
             int a;
             int b;

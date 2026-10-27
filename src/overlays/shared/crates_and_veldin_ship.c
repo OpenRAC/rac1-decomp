@@ -656,7 +656,7 @@ extern void crate_drop_bolts(void *);
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, float *s);
 extern int GetFlaggedPvarWord(char *);
-extern int func_L00_00261448(char *);
+extern int moby_get_ride_transform(char *);
 extern void update_entity_matrix(char *a, Vx *b, void *c, void *d);
 extern int coll_line(void *, void *, int, int, int);
 extern float FastVecLength(void *);
@@ -743,7 +743,7 @@ void update_crate_stack_motion(char *a) {
                 qcopy(v5, a + 0x10);
                 qcopy(v6, a + 0x40);
                 transform_attachment_pose((int)a, *(char **)(o + 0xF0), v4, (float *)(o + 0xE0), (float *)(a + 0x10), (float *)(a + 0x40));
-                if (*(int *)(func_L00_00261448(*(char **)(o + 0xF0)) + 0x3C) & 4) {
+                if (*(int *)(moby_get_ride_transform(*(char **)(o + 0xF0)) + 0x3C) & 4) {
                     qcopy(o + 0xD0, v4);
                     *(float *)(o + 0xD8) = *(float *)(o + 0xD8) - *(float *)(o + 0xF4);
                 }
@@ -2268,7 +2268,144 @@ void horny_toad_update(Moby *moby) {
         }
     }
 }
-INCLUDE_ASM("asm/overlays", func_L00_002D6610);
+/* Veldin level code: per-frame step of a moby's state 0x20 (retail func_L00_002D6610, 0x364 bytes).
+ * Runs a sub-state machine on a[0x20] (3, 5, 8, 10, 12); when a[0x20] is 12 or the sweep finds
+ * nothing it only stores 0xFF into a[0xA4]. Globals at gp-0x52xx are read as floats. */
+extern char *MobyGetHitMessage(void *, int, int);
+extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
+extern void HeadingFromVector(void *, float *, void *, void *);
+extern void InitKnockback(void *, void *, int, int, int, float);
+extern void RerollEffectCounter(void *, void *);
+extern void StepColorFade(void *, void *);
+extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
+extern int FastDecTimer(void *);
+extern float multiply_global_factor(float);
+extern short D_L00_00161A40;
+extern short D_L00_00161A44;
+extern short D_L00_00161A48;
+extern short D_L00_00161A4C;
+extern short D_L00_00161A58;
+extern short D_L00_00161A5C;
+
+void process_horny_toad_hit_reaction(void *a0) {
+    char *a = (char *)a0;
+    char *d;
+    char *b;
+    char *q;
+    Vx vec;
+    int i10;
+    float f14;
+    float t18;
+    float f20;
+    float f0, f1, f2, f3, f5, f6;
+    int r1, r2, v, k;
+    unsigned short h;
+
+    d = *(char **)(a + 0x78);
+    if (*(unsigned char *)(a + 0x20) == 0)
+        return;
+
+    if (cinematic_mode_r == 2) {
+        a[0x31] = 0;
+        *(unsigned short *)(a + 0x34) |= 1;
+    } else {
+        a[0x31] = 1;
+        *(unsigned short *)(a + 0x34) &= 0xFFFE;
+    }
+
+    f20 = 0.0f;
+    f14 = f20;
+    b = MobyGetHitMessage(a, 0x330000, 0);
+    r1 = ComputeHitResponse(a, b, d + 0x20, 0, &i10, &f14, 0, 4);
+    (void)r1;
+
+    /* Whether the hit counts is the resolver's fifth argument (1: none, or one still held off);
+       its return value is the reaction to play, 1 for a wrench hit. */
+    if (i10 != 1 && *(unsigned char *)(a + 0x20) != 12 && f14 != 0.0f) {
+        char *q1;
+        /* register pin: retail loads the 0x94 value 41 into $t0 ($8). */
+        register int n41 __asm__("$8") = 41;
+        /* register pin: retail loads the frame time and later 0.75 into $f4. */
+        register float ft __asm__("$f4") = g_frame_time_r;
+        register float c75 __asm__("$f4");
+        /* register pin: retail loads the squared frame time first, into $f0. */
+        register float fsq __asm__("$f0") = g_frame_time_sq_r;
+        f6 = *(float *)&D_L00_00161A40 * fsq;
+        f5 = *(float *)&D_L00_00161A44 * fsq;
+        f3 = *(float *)&D_L00_00161A48 * ft;
+        f2 = *(float *)&D_L00_00161A4C * ft;
+        f0 = *(float *)(d + 0x20) - f14;
+        d[0xAD] = 0;
+        f1 = g_frame_time_r + g_frame_time_r;
+        *(int *)(d + 0x94) = n41;
+        *(int *)(d + 0x90) = 512;
+        c75 = 0.75f;
+        *(float *)(d + 0x98) = c75;
+        *(float *)(d + 0x20) = f0;
+        *(float *)(d + 0x80) = f6;
+        *(float *)(d + 0x84) = f5;
+        *(float *)(d + 0x88) = f3;
+        *(float *)(d + 0x8C) = f2;
+        *(float *)(d + 0xBC) = f1;
+        q1 = d + 0x70;
+        *(unsigned short *)(a + 0x34) &= 0xEFFF;
+
+        vec = *(Vx *)(b + 0x10);
+        HeadingFromVector(&vec, &t18, d + 0x88, d + 0x8C);
+        f20 = t18;
+        r2 = random_integer_below(2);
+        InitKnockback(a, q1, r2 + 6, 1, 0, f20);
+        {
+            float c0 = *(float *)&D_L00_00161A5C;
+            float c4 = *(float *)&D_L00_00161A58;
+            *(float *)(d + 0xC0) = c0;
+            *(float *)(d + 0xC4) = c4;
+        }
+        *(unsigned char *)(a + 0x20) = 12;
+        *(unsigned char *)(d + 0x67) = 0x78;
+        RerollEffectCounter(a, d + 0x60);
+        func_L00_002584A8_2D19E8((u8 *)a, 0, -1);
+    }
+    *(unsigned char *)(a + 0xA4) = 0xFF;
+    StepColorFade(a, d + 0x60);
+
+    if (*(unsigned char *)(a + 0x20) == 3) {
+        char *p;
+        q = d + 0x180;
+        k = *(int *)(d + 0x1E4);
+        p = level_paths_r2[k];
+        FindNearestEligibleMoby(64.0f, a, q, 0, 0, p + 0x10, *(int *)p);
+    } else {
+        char *p;
+        q = d + 0x180;
+        k = *(int *)(d + 0x1E0);
+        p = level_paths_r2[k];
+        FindNearestEligibleMoby(24.0f, a, q, 0, 0, p + 0x10, *(int *)p);
+    }
+    v = *(int *)(d + 0x1C0);
+
+    if (v == 0) {
+        char *h = hero_globals_base_r + 0xE1D;
+        *(int *)(d + 0x1C0) = *(int *)(h + 0x2080);
+        qcopy(q, h + 0x80);
+    }
+
+    FastDecTimer(d + 0x276);
+    if (*(int *)(d + 0x38) != 0) {
+        *(short *)(d + 0x276) = (short)truncate_float_to_s32_r_r(
+            multiply_global_factor(func_002140F8_2D19E8(180.0f, 240.0f)));
+    }
+    *(int *)(d + 0x38) = 0;
+
+    if (*(unsigned char *)(a + 0x20) == 5 || *(unsigned char *)(a + 0x20) == 8) {
+        if (*(short *)(d + 0x276) != 0) {
+            *(unsigned char *)(a + 0x20) = 10;
+            if (*(unsigned char *)(a + 0x53) != 4) {
+                MobyBlendAnimation(a, 4, 0, ticks_2D4398(20));
+            }
+        }
+    }
+}
 extern float fast_atan2(float, float);
 extern float FastAddRots(float, float);
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
@@ -2424,7 +2561,7 @@ extern void FastVecScale(void *, void *, float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern void vec_scale_to_length(void *, void *, float);
 extern float FastSubRots(float, float);
-extern short infobot_path_min_speed;
+extern short infobot_slot_path_minimum_speed_gp;
 
 /* Steers an object along a path with speed limits. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d5988. */
 void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
@@ -2449,7 +2586,7 @@ void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
     c = st->v60;
     if (l <= (c * c) / (s + s)) {
         f32 a1 = c - s;
-        f32 b1 = *(float *)&infobot_path_min_speed * g_frame_time;
+        f32 b1 = *(float *)&infobot_slot_path_minimum_speed_gp * g_frame_time;
         st->v60 = a1;
         if (a1 < b1) st->v60 = b1;
     } else {
@@ -2469,7 +2606,7 @@ void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
     FastVecAdd(&w, &w, &path->a[idx]);
     l = vec_distance_xy_r((void *)((char *)path + path->n * 16), &o->v[0]);
     if (l < 1.0f) {
-        if (st->v60 <= *(float *)&infobot_path_min_speed * g_frame_time) {
+        if (st->v60 <= *(float *)&infobot_slot_path_minimum_speed_gp * g_frame_time) {
             o->flag = p;
         }
     }
@@ -2966,13 +3103,13 @@ typedef struct { u8 pad[0x10]; Vec4f pos; u8 state; u8 pad21[0xF]; u8 b30; u8 pa
 extern Vec4f smoke_particle_unit_positions_r[] __asm__("D_L00_001CBAE0");
 extern u8 smoke_particle_matrix_select[];
 extern s16 smoke_particle_timer[];
-extern short smoke_fire_particle_jitter;
-extern short smoke_fire_particle_max_size;
+extern short smoke_fire_emitted_particle_position_spread_gp;
+extern short smoke_fire_emitted_particle_random_scalar_upper_bound_gp;
 extern short smoke_fire_particles_per_frame;
-extern short smoke_fire_particle_min_spin;
-extern short smoke_fire_particle_max_spin;
-extern short smoke_fire_particle_rgb;
-extern short smoke_fire_cull_distance;
+extern short smoke_fire_emitted_particle_sign_randomized_sample_min_gp;
+extern short smoke_fire_emitted_particle_sign_randomized_sample_max_gp;
+extern short smoke_fire_emitted_particle_base_color_gp;
+extern short smoke_fire_far_culling_distance_gp;
 extern Vec4f g_debug_camera_r2 __asm__("D_L00_00166EC0");
 void func_0020D678_D83D8(P *) __asm__("func_0020D678");
 float FastVecLength(void *);
@@ -3039,7 +3176,7 @@ void particle_spawner_smoke_fire_update(P *p) {
         qcopy(&v, tbl + 0x30);
         v.z += 9.0f;
         v.w = 10.0f;
-        if (FastBSphereCheck(&v, (*(float *)&smoke_fire_cull_distance)) < 0) return;
+        if (FastBSphereCheck(&v, (*(float *)&smoke_fire_far_culling_distance_gp)) < 0) return;
         if (q->flag42 && vec_distance_xy(&g_debug_camera_r2, &p->pos) < 128.0f) {
             for (e = 0; e < (*(int *)&smoke_fire_particles_per_frame); e++) {
                 a.x = randf_sym(0.0f, 1.0f);
@@ -3052,9 +3189,9 @@ void particle_spawner_smoke_fire_update(P *p) {
                 a.y = randf_sym(0.0f, g_frame_time * 0.25f);
                 a.z = q->f20 * g_frame_time;
                 f = random_float_between(q->f24, q->f28);
-                col = rand_range(q->h2C, q->h2E) << 24 | (*(int *)&smoke_fire_particle_rgb);
-                r = rand_range((*(int *)&smoke_fire_particle_min_spin), (*(int *)&smoke_fire_particle_max_spin));
-                ent = PartType23Spawn(&b, r, (*(float *)&smoke_fire_particle_jitter), 1.0f, &a, (*(float *)&smoke_fire_particle_max_size), col, f);
+                col = rand_range(q->h2C, q->h2E) << 24 | (*(int *)&smoke_fire_emitted_particle_base_color_gp);
+                r = rand_range((*(int *)&smoke_fire_emitted_particle_sign_randomized_sample_min_gp), (*(int *)&smoke_fire_emitted_particle_sign_randomized_sample_max_gp));
+                ent = PartType23Spawn(&b, r, (*(float *)&smoke_fire_emitted_particle_position_spread_gp), 1.0f, &a, (*(float *)&smoke_fire_emitted_particle_random_scalar_upper_bound_gp), col, f);
                 if (ent) {
                     sub = &ent->sub;
                     ent->h0A = scale_ticks_r(rand_range(q->x30, q->x34));
@@ -3100,18 +3237,18 @@ extern float smoke_particle_timer_ticks_inv MACRO_ADDR;
 extern float smoke_particle_aux_ticks_inv MACRO_ADDR;
 extern unsigned short smoke_particle_aux_ticks SDATA(D_L00_00161450);
 extern int D_L00_00161A68 SDATA(D_L00_00161A68);
-extern float D_L00_00161A6C SDATA(D_L00_00161A6C);
-extern u8 D_L00_00161A70[4] SDATA(D_L00_00161A70);
-extern u8 D_L00_00161A78[8] SDATA(D_L00_00161A78);
-extern int D_L00_001E16D0[][4];
-extern float D_L00_001E1610[][4];
-extern float D_L00_001E1790[];
-extern float D_L00_001E1794[];
-extern float D_L00_001E14F0[][4];
-extern float D_L00_001E1530[];
-extern float D_L00_001E1550[][4];
-extern float D_L00_001E1730[];
-extern float D_L00_001E1734[];
+extern float k_smoke_alpha_scale SDATA(D_L00_00161A6C);
+extern u8 smoke_quad_vertex_alpha_mask[4] SDATA(D_L00_00161A70);
+extern u8 smoke_mesh_vertex_alpha_mask[8] SDATA(D_L00_00161A78);
+extern int smoke_cube_face_vertex_indices[][4];
+extern float smoke_particle_mesh_vertex_positions[][4];
+extern float smoke_particle_mesh_uv_v_column[];
+extern float smoke_particle_mesh_uv_u_column[];
+extern float smoke_particle_quad_positions[][4];
+extern float smoke_particle_quad_uvs[];
+extern float smoke_box_vertex_positions[][4];
+extern float smoke_box_uv_v_column[];
+extern float smoke_box_uv_u_column[];
 extern void FastVecCross(void *, void *, void *);
 extern void VU1_addGSregister(s32, s64);
 
@@ -3168,35 +3305,35 @@ void draw_smoke_fire_spawner(P *spawner) {
         width = smoke_particle_speed_a[i];
         height = smoke_particle_speed_b[i];
         if (((u8 *)smoke_particle_is_mesh)[i]) {
-            rows = D_L00_001E16D0;
+            rows = smoke_cube_face_vertex_indices;
             quad.primitive = 0x8000000044L;
             one = 1.0f;
             for (k = 2; k < 4; k++) {
                 for (j = 0; j < 4; j++) {
                     index = rows[k][j];
-                    vertex = D_L00_001E1610[index];
+                    vertex = smoke_particle_mesh_vertex_positions[index];
                     quad.positions[j].f[0] = vertex[0];
                     quad.positions[j].f[1] = vertex[1] * width;
                     quad.positions[j].f[2] = vertex[2] * height;
                     quad.positions[j].f[3] = one;
                     transform_vector((Vec4f *)&quad.positions[j], (Vec4f *)&quad.positions[j], transform);
-                    quad.texture_coordinates[j][0] = D_L00_001E1794[index * 2] + smoke_particle_scroll[i];
-                    quad.texture_coordinates[j][1] = D_L00_001E1790[index * 2];
-                    quad.colors[j] = mesh_alpha * D_L00_00161A78[index] | mesh_color;
+                    quad.texture_coordinates[j][0] = smoke_particle_mesh_uv_u_column[index * 2] + smoke_particle_scroll[i];
+                    quad.texture_coordinates[j][1] = smoke_particle_mesh_uv_v_column[index * 2];
+                    quad.colors[j] = mesh_alpha * smoke_mesh_vertex_alpha_mask[index] | mesh_color;
                 }
                 draw_world_quad(&quad, 0, 0);
             }
         } else {
             if (smoke_particle_timer[i]) {
                 FastDecTimer(&smoke_particle_timer[i]);
-                alpha = truncate_float_to_s32((1.0f - IntToFloat(smoke_particle_timer[i]) * smoke_particle_timer_ticks_inv) * D_L00_00161A6C);
+                alpha = truncate_float_to_s32((1.0f - IntToFloat(smoke_particle_timer[i]) * smoke_particle_timer_ticks_inv) * k_smoke_alpha_scale);
             } else if (smoke_particle_life_timer[i]) {
                 if (FastDecTimer(&smoke_particle_life_timer[i])) {
                     reset_smoke_fire_spawner_particle(spawner, i);
                     alpha = 0;
                     smoke_particle_matrix_select[i] = random_integer_below(2);
                 } else {
-                    alpha = truncate_float_to_s32(IntToFloat(smoke_particle_life_timer[i]) * smoke_particle_aux_ticks_inv * D_L00_00161A6C);
+                    alpha = truncate_float_to_s32(IntToFloat(smoke_particle_life_timer[i]) * smoke_particle_aux_ticks_inv * k_smoke_alpha_scale);
                 }
             } else {
                 if (FastDecTimer(&smoke_particle_start_delay[i])) {
@@ -3208,13 +3345,13 @@ void draw_smoke_fire_spawner(P *spawner) {
             quad.primitive = 0x8000000048L;
             one = 1.0f;
             for (particle_quad_vertex_index = 0; particle_quad_vertex_index < 4; particle_quad_vertex_index++) {
-                quad.positions[particle_quad_vertex_index].f[0] = D_L00_001E14F0[particle_quad_vertex_index][0];
-                quad.positions[particle_quad_vertex_index].f[1] = D_L00_001E14F0[particle_quad_vertex_index][1] * width;
-                quad.positions[particle_quad_vertex_index].f[2] = D_L00_001E14F0[particle_quad_vertex_index][2] * height;
+                quad.positions[particle_quad_vertex_index].f[0] = smoke_particle_quad_positions[particle_quad_vertex_index][0];
+                quad.positions[particle_quad_vertex_index].f[1] = smoke_particle_quad_positions[particle_quad_vertex_index][1] * width;
+                quad.positions[particle_quad_vertex_index].f[2] = smoke_particle_quad_positions[particle_quad_vertex_index][2] * height;
                 quad.positions[particle_quad_vertex_index].f[3] = one;
-                quad.texture_coordinates[particle_quad_vertex_index][0] = D_L00_001E1530[particle_quad_vertex_index * 2] - smoke_particle_scroll[i];
-                quad.texture_coordinates[particle_quad_vertex_index][1] = D_L00_001E1530[particle_quad_vertex_index * 2 + 1];
-                quad.colors[particle_quad_vertex_index] = alpha * D_L00_00161A70[particle_quad_vertex_index] | q->col;
+                quad.texture_coordinates[particle_quad_vertex_index][0] = smoke_particle_quad_uvs[particle_quad_vertex_index * 2] - smoke_particle_scroll[i];
+                quad.texture_coordinates[particle_quad_vertex_index][1] = smoke_particle_quad_uvs[particle_quad_vertex_index * 2 + 1];
+                quad.colors[particle_quad_vertex_index] = alpha * smoke_quad_vertex_alpha_mask[particle_quad_vertex_index] | q->col;
                 transform_vector((Vec4f *)&quad.positions[particle_quad_vertex_index], (Vec4f *)&quad.positions[particle_quad_vertex_index], transform);
             }
             draw_world_quad(&quad, 0, 0);
@@ -3227,16 +3364,16 @@ void draw_smoke_fire_spawner(P *spawner) {
     if (q->flag42 == 0) {
         for (k = 0; k < 6; k++) {
             for (j = 0; j < 4; j++) {
-                index = D_L00_001E16D0[k][j];
-                vertex = D_L00_001E1550[index];
+                index = smoke_cube_face_vertex_indices[k][j];
+                vertex = smoke_box_vertex_positions[index];
                 quad.positions[j].f[0] = vertex[0];
                 quad.positions[j].f[1] = vertex[1] * q->f48;
                 quad.positions[j].f[2] = vertex[2] * q->f4C;
                 quad.positions[j].f[3] = 1.0f;
                 transform_vector((Vec4f *)&quad.positions[j], (Vec4f *)&quad.positions[j], facing);
-                quad.texture_coordinates[j][0] = D_L00_001E1734[index * 2] + smoke_scroll_offset;
-                quad.texture_coordinates[j][1] = D_L00_001E1730[index * 2];
-                quad.colors[j] = D_L00_00161A78[index] * 0xFF000000 | mesh_color;
+                quad.texture_coordinates[j][0] = smoke_box_uv_u_column[index * 2] + smoke_scroll_offset;
+                quad.texture_coordinates[j][1] = smoke_box_uv_v_column[index * 2];
+                quad.colors[j] = smoke_mesh_vertex_alpha_mask[index] * 0xFF000000 | mesh_color;
             }
             draw_world_quad(&quad, 0, 0);
         }

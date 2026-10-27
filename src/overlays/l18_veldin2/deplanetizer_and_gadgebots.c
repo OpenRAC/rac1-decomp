@@ -17,7 +17,7 @@ extern Moby *deplanetizer_class_59b_moby MACRO_ADDR;
 extern int deplanetizer_glow_quad_alpha MACRO_ADDR;
 extern float deplanetizer_camera_quad_base_scale MACRO_ADDR;
 extern float deplanetizer_three_quad_local_x_scale MACRO_ADDR;
-extern float veldin2_beam_ring_radius_end MACRO_ADDR;
+extern float beam_effect_default_length MACRO_ADDR;
 extern int deplanetizer_beam_color_a MACRO_ADDR;
 extern int deplanetizer_beam_color_b MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -30,20 +30,20 @@ extern short deplanetizer_camera_quad_scale_to;
 extern short deplanetizer_quads_start_tick;
 extern short deplanetizer_camera_quad_ramp_end_tick;
 extern short deplanetizer_quads_end_tick;
-extern short deplanetizer_shot2_glow_start_tick;
-extern short deplanetizer_shot2_glow_end_tick;
-extern short deplanetizer_shot2_streak_start_tick;
-extern short deplanetizer_shot2_streak_end_tick;
-extern short deplanetizer_shot2_quads_start_tick;
-extern short deplanetizer_shot2_camera_quad_ramp_end_tick;
+extern short deplanetizer_state_7_glow_alpha_ramp_start_frame_gp;
+extern short deplanetizer_state_7_glow_alpha_ramp_end_frame_gp;
+extern short deplanetizer_state_7_three_quad_scale_ramp_start_frame_gp;
+extern short deplanetizer_state_7_three_quad_scale_ramp_end_frame_gp;
+extern short deplanetizer_state_7_camera_quad_start_frame_gp;
+extern short deplanetizer_state_7_camera_quad_scale_ramp_end_frame_gp;
 extern short deplanetizer_glow_start_tick;
 extern short deplanetizer_glow_end_tick;
 extern short deplanetizer_streak_start_tick;
 extern short deplanetizer_streak_end_tick;
-extern short deplanetizer_trail_size;
-extern short deplanetizer_burst_cam_offset;
-extern short deplanetizer_burst_speed;
-extern short deplanetizer_burst_puff_growth;
+extern short deplanetizer_joint_trail_base_size_gp;
+extern short deplanetizer_burst_local_spawn_offset_x_gp;
+extern short deplanetizer_burst_velocity_scale_gp;
+extern short deplanetizer_burst_particle_size_gp;
 extern int scale_ticks(int);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -195,12 +195,12 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
         if (veldin2_cutscene_state_r.state == 7) {
             if (veldin2_cutscene_state_r.timer == 1) {
                 Moby *m;
-                *(int *)&deplanetizer_glow_start_tick = *(int *)&deplanetizer_shot2_glow_start_tick;
-                *(int *)&deplanetizer_glow_end_tick = *(int *)&deplanetizer_shot2_glow_end_tick;
-                *(int *)&deplanetizer_streak_start_tick = *(int *)&deplanetizer_shot2_streak_start_tick;
-                *(int *)&deplanetizer_streak_end_tick = *(int *)&deplanetizer_shot2_streak_end_tick;
-                *(int *)&deplanetizer_quads_start_tick = *(int *)&deplanetizer_shot2_quads_start_tick;
-                *(int *)&deplanetizer_camera_quad_ramp_end_tick = *(int *)&deplanetizer_shot2_camera_quad_ramp_end_tick;
+                *(int *)&deplanetizer_glow_start_tick = *(int *)&deplanetizer_state_7_glow_alpha_ramp_start_frame_gp;
+                *(int *)&deplanetizer_glow_end_tick = *(int *)&deplanetizer_state_7_glow_alpha_ramp_end_frame_gp;
+                *(int *)&deplanetizer_streak_start_tick = *(int *)&deplanetizer_state_7_three_quad_scale_ramp_start_frame_gp;
+                *(int *)&deplanetizer_streak_end_tick = *(int *)&deplanetizer_state_7_three_quad_scale_ramp_end_frame_gp;
+                *(int *)&deplanetizer_quads_start_tick = *(int *)&deplanetizer_state_7_camera_quad_start_frame_gp;
+                *(int *)&deplanetizer_camera_quad_ramp_end_tick = *(int *)&deplanetizer_state_7_camera_quad_scale_ramp_end_frame_gp;
                 for (m = veldin2_moby_list; m != 0; m = m->next) {
                     if (m->oclass == 0x59B) {
                         deplanetizer_class_59b_moby = m;
@@ -247,8 +247,8 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                         float f = IntToFloat(j) / 12.0f;
                         lerp_vector(x, a, deplanetizer_trail_prev_tip_a, f);
                         lerp_vector(e, b, deplanetizer_trail_prev_tip_b, f);
-                        spawn_deplanetizer_gun_trail_effects(x, x, veldin2_zero_vec, *(float *)&deplanetizer_trail_size, *(float *)&deplanetizer_trail_size * 0.4f);
-                        spawn_deplanetizer_gun_trail_effects(e, e, veldin2_zero_vec, *(float *)&deplanetizer_trail_size, *(float *)&deplanetizer_trail_size * 0.4f);
+                        spawn_deplanetizer_gun_trail_effects(x, x, veldin2_zero_vec, *(float *)&deplanetizer_joint_trail_base_size_gp, *(float *)&deplanetizer_joint_trail_base_size_gp * 0.4f);
+                        spawn_deplanetizer_gun_trail_effects(e, e, veldin2_zero_vec, *(float *)&deplanetizer_joint_trail_base_size_gp, *(float *)&deplanetizer_joint_trail_base_size_gp * 0.4f);
                     }
                     qcopy(deplanetizer_trail_prev_tip_a, a);
                     qcopy(deplanetizer_trail_prev_tip_b, b);
@@ -275,10 +275,10 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                 col1 = 0x7F7F20;
                 v->f48 = fast_atan2(moby->rot_row1.x, moby->rot_row1.y);
                 v->f4C = fast_atan2(vec_length_xy(&moby->rot_row1), moby->rot_row1.z);
-                save = veldin2_beam_ring_radius_end;
-                veldin2_beam_ring_radius_end = 24.0f;
+                save = beam_effect_default_length;
+                beam_effect_default_length = 24.0f;
                 update_beam_ring_rail_and_pulse_effects(moby);
-                veldin2_beam_ring_radius_end = save;
+                beam_effect_default_length = save;
                 deplanetizer_beam_color_a = col0;
                 deplanetizer_beam_color_b = col1;
             }
@@ -292,16 +292,16 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
             char *target;
             int i;
             target = veldin2_camera_matrix;
-            matrix_mul_vec3(a, &deplanetizer_burst_cam_offset, target);
+            matrix_mul_vec3(a, &deplanetizer_burst_local_spawn_offset_x_gp, target);
             FastVecAdd(a, a, target - 0x210);
             qcopy(b, veldin2_camera_matrix + 0x10);
             for (i = 0; i < 32; i++) {
                 int r;
                 char *p;
                 build_look_at_matrix(c, b, veldin2_camera_matrix, IntToFloat(i) * 0.19634955f);
-                vec_scale_to_length(c, c, *(float *)&deplanetizer_burst_speed * frame_scale);
+                vec_scale_to_length(c, c, *(float *)&deplanetizer_burst_velocity_scale_gp * frame_scale);
                 r = random_integer_below(16);
-                p = PartType23Spawn_c(a, random_integer_below(2) ? -r : r, c, 0.0f, 1.0f, 1.01f, *(float *)&deplanetizer_burst_puff_growth, 0x7F7F7F7F);
+                p = PartType23Spawn_c(a, random_integer_below(2) ? -r : r, c, 0.0f, 1.0f, 1.01f, *(float *)&deplanetizer_burst_particle_size_gp, 0x7F7F7F7F);
                 if (p != 0) {
                     char *e = p + 0x20;
                     *(short *)(p + 0xA) = scale_ticks(0x3C);
@@ -324,7 +324,7 @@ typedef struct {
     unsigned long a, b, c, d;
 } Pk_9780;
 typedef struct { char pad[0x30]; int state; int n; } ML_9780;
-extern float deplanetizer_flare_cam_offset MACRO_ADDR;
+extern float deplanetizer_camera_quad_local_offset_x MACRO_ADDR;
 extern volatile float deplanetizer_flare_cam_offset_y MACRO_ADDR;
 extern volatile float deplanetizer_flare_cam_offset_z MACRO_ADDR;
 extern float deplanetizer_flare_cam_offset_w MACRO_ADDR;
@@ -357,7 +357,7 @@ void draw_three_scaled_camera_facing_quads(void) {
     char *target;
 
     if (veldin2_cutscene_state.n == scale_ticks((*(int *)&deplanetizer_quads_start_tick) + 1)) {
-        deplanetizer_flare_cam_offset = 1.0f;
+        deplanetizer_camera_quad_local_offset_x = 1.0f;
         deplanetizer_flare_cam_offset_y = 0.0f;
         if (veldin2_cutscene_state.state == 7) {
             tilt = -0.15f;
@@ -373,7 +373,7 @@ void draw_three_scaled_camera_facing_quads(void) {
     pk.a = 0;
     VU1_addGSregister(0x4A, 0);
     VU1_addGSregister(0x47, 0x51001);
-    matrix_mul_vec3(mat[3], &deplanetizer_flare_cam_offset, veldin2_camera_matrix);
+    matrix_mul_vec3(mat[3], &deplanetizer_camera_quad_local_offset_x, veldin2_camera_matrix);
     target = veldin2_camera_matrix;
     target -= 0x210;
     FastVecAdd(mat[3], mat[3], target);
@@ -859,7 +859,7 @@ extern void draw_gadgebot_launch_glow_quad(void);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char gadgebot_params_block;
-extern short gadgebot_close_anim_start_frame;
+extern short gadgebot_sequence_2_start_frame_gp;
 extern char gadgebot_start_moby_byte73;
 
 /* Moby update for the class 0x772 enemy. */
@@ -936,7 +936,7 @@ void Moby1906Update(unsigned char *m) {
         if (f < 1.5f) {
             ((Moby *)m)->state = 4;
             if (((Moby *)m)->prev_seq != 2) {
-                int v = (int)*(float *)&gadgebot_close_anim_start_frame;
+                int v = (int)*(float *)&gadgebot_sequence_2_start_frame_gp;
                 MobyBlendAnimation(m, 2, v, scale_ticks(5));
             }
         }
@@ -1027,10 +1027,10 @@ extern short gadgebot_glow_spin_rate_attack;
 extern short gadgebot_glow_color_from;
 extern short gadgebot_glow_color_to;
 extern short gadgebot_scale;
-extern short gadgebot_knockback_gravity;
-extern short gadgebot_knockback_drag;
-extern short gadgebot_knockback_speed;
-extern short gadgebot_knockback_lift;
+extern short gadgebot_death_fall_gravity_gp;
+extern short gadgebot_death_fall_horizontal_speed_approach_rate_gp;
+extern short gadgebot_death_fall_base_horizontal_speed_gp;
+extern short gadgebot_death_fall_base_vertical_speed_gp;
 extern int veldin2_paths[];
 extern char hero_globals_base[];
 extern void draw_group_class_0772_joint_glows(unsigned char *);
@@ -1098,10 +1098,10 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
                 moby->state = 6;
             } else {
                 float k = g_frame_time_sq;
-                float t0 = F(gadgebot_knockback_gravity) * k;
-                float t1 = F(gadgebot_knockback_drag) * k;
-                float t2 = F(gadgebot_knockback_speed) * g_frame_time;
-                float t3 = F(gadgebot_knockback_lift) * g_frame_time;
+                float t0 = F(gadgebot_death_fall_gravity_gp) * k;
+                float t1 = F(gadgebot_death_fall_horizontal_speed_approach_rate_gp) * k;
+                float t2 = F(gadgebot_death_fall_base_horizontal_speed_gp) * g_frame_time;
+                float t3 = F(gadgebot_death_fall_base_vertical_speed_gp) * g_frame_time;
                 fall_setup_value_or_path_slot_address = 0x200;
                 sentry_vars->unk90 = fall_setup_value_or_path_slot_address;
                 k = 0.5f;

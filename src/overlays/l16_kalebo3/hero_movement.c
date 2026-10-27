@@ -102,7 +102,7 @@ extern float vector_length_xyz_cf(float *, int);
 extern float FastVecLength(void *);
 extern float ApproachValue(float *, float, float);
 extern float FastCos(float);
-extern void set_first_hero_easing_parameters(float, float);
+extern void Hero_SetTiltSpringParams(float, float);
 extern void emit_hero_periodic_surface_particles(int, int);
 extern void fast_sin_cf(int, int);
 extern float FastSin(float);
@@ -637,9 +637,9 @@ void Hero_UpdateStatePhysics(void) {
             clip_hero_horizontal_velocity(0);
             lean = g_hero.unk8EC * FastCos(ang) * -7.0f;
             SpringAngle(&g_hero.motion.rot.f[0], lean, &g_hero.swim_lean_vel, 0, 0.007f, 0.17f, g_frame_time * 1.2217305f);
-            set_first_hero_easing_parameters(0.009f, 0.22f);
-            set_first_hero_easing_parameters(0.04f, 0.2f);
-            set_first_hero_easing_parameters(0.02f, 0.2f);
+            Hero_SetTiltSpringParams(0.009f, 0.22f);
+            Hero_SetTiltSpringParams(0.04f, 0.2f);
+            Hero_SetTiltSpringParams(0.02f, 0.2f);
             kalebo3_hero_bones[1].f60[1] = roll * 47.0f;
             kalebo3_hero_bones[1].f60[2] = lean * 1.5f;
             kalebo3_hero_bones[1].f60[0] = lean * 1.4f;
@@ -852,7 +852,7 @@ void Hero_UpdateStatePhysics(void) {
             }
             g_hero.prev_air_frames = g_hero.air_frames.s;
             if (g_hero.air_frames.s == 0) {
-                set_first_hero_easing_parameters(0.008f, 0.1f);
+                Hero_SetTiltSpringParams(0.008f, 0.1f);
                 kalebo3_hero_bones[0].f60[0] = g_hero.motion.yaw_rate * -12.0f;
                 if (kalebo3_hero_bones[0].f60[0] > 0.55850536f) {
                     kalebo3_hero_bones[0].f60[0] = 0.55850536f;
@@ -862,7 +862,7 @@ void Hero_UpdateStatePhysics(void) {
             }
             if (g_hero.air_frames.s != 0) {
                 if (g_hero.vert_ramp_launch == 0) {
-                    set_first_hero_easing_parameters(0.015f, 0.08f);
+                    Hero_SetTiltSpringParams(0.015f, 0.08f);
                     transform_vector(vec[1], g_hero.motion.displacement.f, g_hero.inv_rot_matrix);
                     kalebo3_hero_bones[0].f60[1] = -fast_atan2(vec_length_xy(vec[1]), vec[1][2]);
                     if (kalebo3_hero_bones[0].f60[1] > 0.61086524f) {
@@ -1104,20 +1104,20 @@ void Hero_UpdateStatePhysics(void) {
             if (g_hero.stick_magnitude < 0.2f) {
                 lean = 0.0f;
             }
-            set_first_hero_easing_parameters(0.02f, 0.2f);
+            Hero_SetTiltSpringParams(0.02f, 0.2f);
             kalebo3_hero_bones[3].f60[2] = lean * 37.0f;
             kalebo3_hero_bones[3].f60[1] = lean * -22.0f;
             if (lean > 0.0f) {
                 kalebo3_hero_bones[3].f60[0] = lean * -22.0f;
             }
-            set_first_hero_easing_parameters(0.008f, 0.1f);
+            Hero_SetTiltSpringParams(0.008f, 0.1f);
             kalebo3_hero_bones[0].f60[0] += lean * -11.0f;
             if (kalebo3_hero_bones[0].f60[0] > 0.6632251f) {
                 kalebo3_hero_bones[0].f60[0] = 0.6632251f;
             } else if (kalebo3_hero_bones[0].f60[0] < -0.6632251f) {
                 kalebo3_hero_bones[0].f60[0] = -0.6632251f;
             }
-            set_first_hero_easing_parameters(0.012f, 0.22f);
+            Hero_SetTiltSpringParams(0.012f, 0.22f);
             kalebo3_hero_bones[1].f60[1] = lean * 25.0f;
             kalebo3_hero_bones[1].f60[0] = lean * -10.0f;
             if (g_hero.air_frames.s != 0 && g_hero.trick_input != 0) {
@@ -2094,9 +2094,9 @@ void Hero_UpdateStatePhysics(void) {
             if (g_hero.state_timer > scale_ticks(0x64)) {
                 SpringAngle(&g_hero.motion.rot.f[1], -g_hero.rail_ride_pitch, &g_hero.rail_ride_pitch_vel, 0, g_frame_scale_sq * 0.035f, g_frame_scale_sq * 0.3f, g_frame_time * 1.9198622f);
             }
-            set_first_hero_easing_parameters(0.009f, 0.22f);
-            set_first_hero_easing_parameters(0.04f, 0.2f);
-            set_first_hero_easing_parameters(0.02f, 0.2f);
+            Hero_SetTiltSpringParams(0.009f, 0.22f);
+            Hero_SetTiltSpringParams(0.04f, 0.2f);
+            Hero_SetTiltSpringParams(0.02f, 0.2f);
             kalebo3_hero_bones[1].f60[2] = lean * 2.1f;
             kalebo3_hero_bones[1].f60[0] = lean * 3.5f;
         }
@@ -2204,7 +2204,7 @@ void Hero_UpdateStatePhysics(void) {
                         if (tilt < -0.7853982f) {
                             tilt = -0.7853982f;
                         }
-                        set_first_hero_easing_parameters(0.03f, 0.2f);
+                        Hero_SetTiltSpringParams(0.03f, 0.2f);
                         if (g_hero.grind_anim_variant != 0) {
                             kalebo3_hero_lean_angles[1] = -tilt;
                         } else {
@@ -2216,9 +2216,9 @@ void Hero_UpdateStatePhysics(void) {
                     kalebo3_hero_lean_angles[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
                 }
                 if (hasW) {
-                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
-                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
-                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
+                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
+                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
+                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
                     if (g_hero.grind_look_moby != 0) {
                         float a;
 

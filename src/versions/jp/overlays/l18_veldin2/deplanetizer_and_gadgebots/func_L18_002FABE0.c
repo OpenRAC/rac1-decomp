@@ -26,7 +26,7 @@ void draw_three_scaled_camera_facing_quads(void) {
     char *target;
 
     if (veldin2_cutscene_state.n == scale_ticks((*(int *)&deplanetizer_quads_start_tick) + 1)) {
-        deplanetizer_flare_cam_offset = 1.0f;
+        deplanetizer_camera_quad_local_offset_x = 1.0f;
         deplanetizer_flare_cam_offset_y = 0.0f;
         if (veldin2_cutscene_state.state == 7) {
             tilt = -0.15f;
@@ -42,7 +42,7 @@ void draw_three_scaled_camera_facing_quads(void) {
     pk.a = 0;
     VU1_addGSregister(0x4A, 0);
     VU1_addGSregister(0x47, 0x51001);
-    matrix_mul_vec3(mat[3], &deplanetizer_flare_cam_offset, veldin2_camera_matrix);
+    matrix_mul_vec3(mat[3], &deplanetizer_camera_quad_local_offset_x, veldin2_camera_matrix);
     target = veldin2_camera_matrix;
     target -= 0x210;
     FastVecAdd(mat[3], mat[3], target);

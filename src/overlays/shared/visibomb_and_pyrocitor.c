@@ -2134,21 +2134,21 @@ typedef struct Data_2B8AE8 {
 } Data_2B8AE8;
 
 extern float D_L00_001615E0 SDATA(D_L00_001615E0);
-extern float D_L00_001615E4 SDATA(D_L00_001615E4);
-extern int D_L00_001615E8 SDATA(D_L00_001615E8);
-extern int D_L00_001615EC SDATA(D_L00_001615EC);
-extern float D_L00_001615F0 SDATA(D_L00_001615F0);
-extern float D_L00_001615F4 SDATA(D_L00_001615F4);
-extern float D_L00_001615F8 SDATA(D_L00_001615F8);
-extern int D_L00_00161600 SDATA(D_L00_00161600);
-extern short D_L00_001615C0;
-extern short D_L00_001615D0;
+extern float pyrocitor_flame_damping_rate SDATA(D_L00_001615E4);
+extern int pyrocitor_flame_initial_particle_count SDATA(D_L00_001615E8);
+extern int pyrocitor_flame_extra_particle_count SDATA(D_L00_001615EC);
+extern float pyrocitor_flame_base_length SDATA(D_L00_001615F0);
+extern float pyrocitor_flame_spread_at_full_length SDATA(D_L00_001615F4);
+extern float pyrocitor_flame_spread_at_zero_length SDATA(D_L00_001615F8);
+extern int pyrocitor_ammo_use_interval_ticks SDATA(D_L00_00161600);
+extern short pyrocitor_light_color_a;
+extern short pyrocitor_light_color_b;
 extern Light_2B8AE8 level_point_lights[];
 extern V_2B8AE8 veldin1_zero_vec MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern f32 spin_particle_speed_decay MACRO_ADDR;
 extern int hero_current_state;
-extern char D_L00_001670F0[];
+extern char player_camera_up_axis[];
 extern char collision_hit_point[];
 extern Order_2B8AE8 gold_weapon_purchased;
 
@@ -2256,7 +2256,7 @@ void pyrocitor_update(Moby *moby) {
             matrix_mul_vec3((V4 *)&dir, (V4 *)&dir, (V4 *)&(*(Hero *)&g_hero).basis);
             FastVecAdd(&level_point_lights[v->light].pos, &(*(Hero *)&g_hero).motion.pos, &dir);
             level_point_lights[v->light].pos.f.w = 7.5f;
-            lerp_vector(&scratch, &D_L00_001615C0, &D_L00_001615D0,
+            lerp_vector(&scratch, &pyrocitor_light_color_a, &pyrocitor_light_color_b,
                 FastSin(((f32)((*(int *)&level_frame_counter) % 120) / 120.0f) * 6.28318f - 3.14159f) * 0.5f + 0.5f);
             lerp_vector(&level_point_lights[v->light], &level_point_lights[v->light], &scratch, 0.1f);
         }
@@ -2267,13 +2267,13 @@ void pyrocitor_update(Moby *moby) {
         else
             gate = 0;
         if (hero_current_state == 1 && (moby->flags & 1)) {
-            vec_scale_to_length(&scratch, D_L00_001670F0, -1.0f);
-            FastVecAdd(&scratch, &scratch, D_L00_001670F0 - 0x230);
-            vec_scale_to_length(&dir, D_L00_001670F0 - 0x20, D_L00_001615F0 + speed + 0.75f);
+            vec_scale_to_length(&scratch, player_camera_up_axis, -1.0f);
+            FastVecAdd(&scratch, &scratch, player_camera_up_axis - 0x230);
+            vec_scale_to_length(&dir, player_camera_up_axis - 0x20, pyrocitor_flame_base_length + speed + 0.75f);
             FastVecAdd(&endpoint, &dir, &scratch);
         } else {
             qcopy(&scratch, &pos);
-            vec_scale_to_length(&dir, &(*(Hero *)&g_hero).facing_x, D_L00_001615F0 + speed + 0.75f);
+            vec_scale_to_length(&dir, &(*(Hero *)&g_hero).facing_x, pyrocitor_flame_base_length + speed + 0.75f);
             FastVecAdd(&endpoint, &dir, &pos);
         }
         if (coll_line(&(*(Hero *)&g_hero).motion.body_center, &scratch, 2, 0, 0)) {
@@ -2283,21 +2283,21 @@ void pyrocitor_update(Moby *moby) {
             if (length < 0.0f)
                 length = 0.0f;
         } else {
-            length = D_L00_001615F0 + speed;
+            length = pyrocitor_flame_base_length + speed;
         }
         accel = spin_particle_speed_decay * g_frame_time_sq;
-        damping = D_L00_001615E4 * g_frame_time;
+        damping = pyrocitor_flame_damping_rate * g_frame_time;
         ApproachWithVelocity(length, 1.0f, accel, damping, &pos_out, &vel_out);
         vec_scale_to_length(&dir, &dir, vel_out);
         {
             s32 initial_count, extra;
-            initial_count = D_L00_001615E8;
-            extra = D_L00_001615EC;
+            initial_count = pyrocitor_flame_initial_particle_count;
+            extra = pyrocitor_flame_extra_particle_count;
             if (length < 4.0f || (moby->flags & 1))
                 initial_count = 1;
             for (i = 0; i < extra + initial_count; i++) {
                 rand_vec((float *)&random_vec, 0.0f,
-                    ((D_L00_001615F4 - D_L00_001615F8) * (length / (D_L00_001615F0 + speed)) + D_L00_001615F8) *
+                    ((pyrocitor_flame_spread_at_full_length - pyrocitor_flame_spread_at_zero_length) * (length / (pyrocitor_flame_base_length + speed)) + pyrocitor_flame_spread_at_zero_length) *
                         g_frame_time);
                 FastVecAdd(&random_vec, &random_vec, &dir);
                 FastVecScale(&particle_pos, &dir, random_float_between(0.0f, 1.0f));
@@ -2337,7 +2337,7 @@ void pyrocitor_update(Moby *moby) {
             FastVecAdd(&particle_pos, &particle_pos, &random_vec);
             spawn_color_decaying_effect_particle(&scratch, &particle_pos, gold_weapon_purchased.level);
         }
-        if ((*(int *)&level_frame_counter) % scale_ticks(D_L00_00161600) == 0)
+        if ((*(int *)&level_frame_counter) % scale_ticks(pyrocitor_ammo_use_interval_ticks) == 0)
             use_ammo(-1, 1);
         ready = get_ammo(-1);
         if (FastDecTimer(&v->timer)) {

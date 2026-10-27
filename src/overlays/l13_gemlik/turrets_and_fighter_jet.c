@@ -1878,7 +1878,7 @@ void draw_fighter_jet_radar_icon(char *rot, char *from, char *moby, int icon, lo
 extern void project_world_point_to_screen_pixels(void *, void *, void *, int);
 extern void draw_fighter_jet_radar_icon(char *rot, char *from, char *moby, int icon, long color, int tex);
 extern void project_to_screen(float *, void *);
-extern float WrapAngle(float);
+extern float normalize_angle(float);
 extern void emit_transformed_2d_vertex_packet(void *, int, int, long, float, float, float, float);
 extern void matrix_from_basis_rows(void *, void *);
 extern unsigned char screen_globals_base[];
@@ -1963,13 +1963,13 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
-                        float ang = WrapAngle(IntToFloat(gemlik_frame_count) / 20.0f);
+                        float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
                         emit_transformed_2d_vertex_packet(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.0f, ang);
                     }
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
-                        float ang = WrapAngle(IntToFloat(gemlik_frame_count) / 20.0f);
+                        float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
                         emit_transformed_2d_vertex_packet(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.3f, -ang);
                     }
                 }
@@ -2003,13 +2003,13 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                         {
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
-                            float ang = WrapAngle(IntToFloat(gemlik_frame_count) / 20.0f);
+                            float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
                             emit_transformed_2d_vertex_packet(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.0f, ang);
                         }
                         {
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
-                            float ang = WrapAngle(IntToFloat(gemlik_frame_count) / 20.0f);
+                            float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
                             emit_transformed_2d_vertex_packet(tab, 0x1E, 0xFFFFF3, 0x500000FF, x, y, 1.3f, -ang);
                         }
                     } else {
@@ -2030,7 +2030,7 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
-                        float ang = WrapAngle(IntToFloat(gemlik_frame_count) / 20.0f);
+                        float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
                         emit_transformed_2d_vertex_packet(jet_target_marker_shape, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y, 1.0f, -ang);
                     }
                 }
@@ -2044,7 +2044,7 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
-                        float ang = WrapAngle(IntToFloat(gemlik_frame_count) / 20.0f);
+                        float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
                         emit_transformed_2d_vertex_packet(jet_target_marker_shape, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y, 1.0f, -ang);
                     }
                 }
@@ -2185,7 +2185,7 @@ void DrawGemlikTurretHud(char *moby) {
             k = t * 5.0f + 1.0f;
             if (m > 1.0f) m = 1.0f;
             c = truncate_float_to_s32_r(m * 96.0f);
-            append_four_quarter_turn_effect_quads_f(IntToFloat(sp10), IntToFloat(sp14), k, WrapAngle(IntToFloat(gemlik_frame_count) / 30.0f), 0, 0xFF, 0, c);
+            append_four_quarter_turn_effect_quads_f(IntToFloat(sp10), IntToFloat(sp14), k, normalize_angle(IntToFloat(gemlik_frame_count) / 30.0f), 0, 0xFF, 0, c);
             *(int *)(d + 0xEC) = 0;
         } else {
             a = 0xFF;

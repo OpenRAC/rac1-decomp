@@ -13,8 +13,8 @@ extern u64 GetEffectTex(int);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float func_L00_002001D8(void *, float);
-extern float WrapAngle(float);
+extern float split_float_fraction(void *, float);
+extern float normalize_angle(float);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern float FastAddRots(float, float);
 extern void FastVecAdd(void *, void *, void *);
@@ -69,11 +69,11 @@ void draw_snagglebeast_sphere_quad_strips(char *moby, int arg2, float fa, float 
     Moby_GetJointWorldPos(moby, 9, v90);
     qcopy(vA0, v90);
     vA0[2] = vA0[2] - (fb - 0.8f);
-    quad.uv[0][0] = func_L00_002001D8(&vB0, spin * -0.01f);
+    quad.uv[0][0] = split_float_fraction(&vB0, spin * -0.01f);
     quad.uv[2][0] = quad.uv[0][0];
     quad.uv[1][0] = quad.uv[0][0] + 1.0f;
     quad.uv[3][0] = quad.uv[1][0];
-    quad.uv[0][1] = func_L00_002001D8(&vB0, spin * -0.02f);
+    quad.uv[0][1] = split_float_fraction(&vB0, spin * -0.02f);
     quad.uv[1][1] = quad.uv[0][1];
     quad.uv[2][1] = quad.uv[0][1] + 1.0f;
     quad.uv[3][1] = quad.uv[2][1];
@@ -100,7 +100,7 @@ void draw_snagglebeast_sphere_quad_strips(char *moby, int arg2, float fa, float 
             color |= fx_tint(col);
             quad.colors[3] = color;
             quad.colors[2] = color;
-            wrapped = WrapAngle(angle + spin * 0.02f);
+            wrapped = normalize_angle(angle + spin * 0.02f);
             BuildSphericalOffset(&quad.pos[2], fb, wrapped, theta);
             BuildSphericalOffset(&quad.pos[3], fb, FastAddRots(wrapped, da), theta);
             if (0.0f < theta) {

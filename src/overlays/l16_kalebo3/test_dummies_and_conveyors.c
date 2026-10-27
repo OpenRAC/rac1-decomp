@@ -724,8 +724,8 @@ typedef struct {
 extern char *kalebo3_coll_hit_moby;
 extern int test_dummy_hold_joint SDATA(D_L16_00161A88);
 extern float test_dummy_bomb_horizontal_launch_speed SDATA(D_L16_00161A8C);
-extern float test_dummy_move_step_limit SDATA(D_L16_00161A90);
-extern float test_dummy_shot_distance SDATA(D_L16_00161A94);
+extern float test_dummy_path_movement_speed_limit_gp SDATA(D_L16_00161A90);
+extern float test_dummy_spray_range_gp SDATA(D_L16_00161A94);
 extern void update_test_dummy_damage_and_respawn(void *);
 extern void *find_nearest_test_dummy_door(int, void *);
 extern void refresh_test_dummy_door_timer(char *);
@@ -907,7 +907,7 @@ void test_dummy_update(unsigned char *moby) {
             char *position = (char *)&((struct Moby *)moby)->pos;
             char *g;
             FastVecSub(position_or_delta.f, path + (dummy_data->node * 16 + 16), position);
-            ClampVectorLength(position_or_delta.f, test_dummy_move_step_limit * g_frame_time);
+            ClampVectorLength(position_or_delta.f, test_dummy_path_movement_speed_limit_gp * g_frame_time);
             FastVecAdd(position, position, position_or_delta.f);
             Moby_GetJointWorldPos(moby, test_dummy_hold_joint, position_or_direction.f);
             MobySphereHitDirectional_r((int)moby, 0.333f, position_or_direction.f, 1, 1.0f, 1.0f, 0, 1, 0);
@@ -981,7 +981,7 @@ void test_dummy_update(unsigned char *moby) {
                 position_or_delta.f[0] - ((struct Moby *)moby)->pos.x,
                 position_or_delta.f[1] - ((struct Moby *)moby)->pos.y));
             position_or_direction.f[2] = 0.0f;
-            effect_slots_fire(slots, position_or_delta.f, position_or_direction.f, test_dummy_shot_distance);
+            effect_slots_fire(slots, position_or_delta.f, position_or_direction.f, test_dummy_spray_range_gp);
             position_or_direction.f[3] = 5627.925f;
             position_or_direction.f[2] = 1.0f;
             InitDirectionalHitQuery(&fx, moby, 0x10001, 1.0f, position_or_direction.f);

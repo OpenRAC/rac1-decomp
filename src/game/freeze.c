@@ -664,44 +664,44 @@ typedef struct {
     int x2C;
 } Freeze_FD3E8;
 
-extern int D_0013CBE4[];
-extern int D_0015EFB4 MACRO_ADDR;
-extern int D_0015EE84 MACRO_ADDR;
-extern int D_0015F6C8 MACRO_ADDR;
-extern int D_0015F6CC MACRO_ADDR;
-extern s32 D_001D60C0;
-extern int D_001D5F78[];
-extern int D_0015F728 MACRO_ADDR;
-extern int D_0015EF38 MACRO_ADDR;
-extern int D_0015EF3C MACRO_ADDR;
-extern int D_0013D48C[];
-extern int D_0015F6E4 MACRO_ADDR;
-extern int D_0015F690 MACRO_ADDR;
-extern short D_0013E15A[];
-extern unsigned char D_0016044C[4] MACRO_ADDR;
-extern char D_0013F450[];
-extern char D_0013D390[];
-extern char D_0013CA40[];
+extern int pad0_pressed[];
+extern int mode_freeze_flags MACRO_ADDR;
+extern int g_current_level_index MACRO_ADDR;
+extern int boot_level_active MACRO_ADDR;
+extern int pause_restart_reset_flag MACRO_ADDR;
+extern s32 freeze_prompt_override_flag;
+extern int pause_current_action_list[];
+extern int occl_fallback_mode MACRO_ADDR;
+extern int rilgar_hoverboard_races_finished MACRO_ADDR;
+extern int kalebo3_hoverboard_races_finished MACRO_ADDR;
+extern int memory_card_state_field_fc[];
+extern int space_load_level MACRO_ADDR;
+extern int space_load_pending MACRO_ADDR;
+extern short screen_globals_base[];
+extern unsigned char requested_video_mode[4] MACRO_ADDR;
+extern char g_hero[];
+extern char memory_card_state[];
+extern char g_controller_state[];
 extern char D_00141150[];
 
-extern int func_001F98C0(int);
-extern void func_0020BFC8(int, int);
-extern void func_001E9768(void);
-extern void func_001E97C0(void *, void *, int, int);
-extern void func_001F4E08(int);
-extern void func_001FFDA0(int, int);
-extern void func_001FFFA0(void);
-extern void func_00216D30(int, int);
-extern void func_00209DC0(void);
-extern void func_0022F4A0(int);
-extern void func_00227DB0(int);
-extern void func_0012E558(int);
-extern void func_00216F28(void);
-extern int func_0012DDC0(void);
+extern int scale_game_frame_count(int);
+extern void memcard_Save(int, int);
+extern void Profile_Mark(void);
+extern void noop_callback_k(void *, void *, int, int);
+extern void FadeToBlack(int);
+extern void Hud_SetBarValueById(int, int);
+extern void update_resource_counter(void);
+extern void Music_QueueTrack(int, int);
+extern void load_and_initialize_level_chunk(void);
+extern void initialize_global_state_entry(int);
+extern void load_level_zero_preserving_progress(int);
+extern void snd_ContinueAllSoundsInGroup(int);
+extern void music_Unpause(void);
+extern int snd_FlushSoundCommands(void);
 
 #define R (*(Freeze_FD3E8 *)D_00193400)
 #define PAD (D_0013CBE4[0])
-void func_001FD3E8(void) {
+void update_mode_freeze(void) {
     Freeze_FD3E8 *q;
     Freeze_FD3E8 *r5;
     char *dp1, *dp2;
@@ -712,7 +712,7 @@ void func_001FD3E8(void) {
     char *c;
     int v;
 
-    ((int (*)(void))func_0022DD68)();
+    ((int (*)(void))sound_update)();
     q = &R;
     if (q->x4 != 0) {
         q->x4--;
@@ -723,59 +723,59 @@ void func_001FD3E8(void) {
     switch (R.kind) {
     case 5:
         R.x20++;
-        t = func_001F98C0(0x5A);
+        t = scale_game_frame_count(0x5A);
         if (t < R.x20 && R.x24 != 0) {
             R.x24--;
         }
         r5 = &R;
-        t = func_001F98C0(0x78);
+        t = scale_game_frame_count(0x78);
         if (t < r5->x20 && (PAD & 0x40)) {
-            D_0015F6E8 = 0;
-            if (D_0015EE84 == 1) {
-                func_0020BFC8(0, -1);
+            g_game_mode = 0;
+            if (g_current_level_index == 1) {
+                memcard_Save(0, -1);
             }
         }
         break;
     case 8:
         R.x20++;
-        t = func_001F98C0(0x1E);
+        t = scale_game_frame_count(0x1E);
         if (t < R.x20 && R.x24 != 0) {
             R.x24--;
         }
         if (R.x24 == 0 && (PAD & 0x40)) {
-            D_0015EFB4 &= ~0x40;
-            D_0013D48C[0] = 0;
-            func_00227DB0(-1);
-            func_0022F4A0(0);
-            D_0013E15A[0] = 1;
+            mode_freeze_flags &= ~0x40;
+            memory_card_state_field_fc[0] = 0;
+            load_level_zero_preserving_progress(-1);
+            initialize_global_state_entry(0);
+            screen_globals_base[0] = 1;
         }
         break;
     case 7:
         R.x20++;
-        t = func_001F98C0(0x1E);
+        t = scale_game_frame_count(0x1E);
         if (t < R.x20 && R.x24 != 0) {
             R.x24--;
         }
         if (R.x24 == 0 && (PAD & 0x40)) {
-            D_0013D48C[0] = 0;
-            func_00227DB0(-1);
-            func_0022F4A0(0);
-            D_0013E15A[0] = 1;
+            memory_card_state_field_fc[0] = 0;
+            load_level_zero_preserving_progress(-1);
+            initialize_global_state_entry(0);
+            screen_globals_base[0] = 1;
         }
         break;
     case 4:
         p1 = PAD;
         if (p1 & 0x10) {
-            h1 = D_0013F450;
+            h1 = g_hero;
             m = *(char **)(h1 + 0x2080);
             m[0x31] = 0;
             *(int *)(m + 0x94) = 0;
             *(unsigned short *)(m + 0x34) |= 1;
-            func_001E9768();
-            func_001E97C0(h1 + 0x1D00, h1 + 0x1D10, 0, 1);
-            D_0015F6E8 = 0;
+            Profile_Mark();
+            noop_callback_k(h1 + 0x1D00, h1 + 0x1D10, 0, 1);
+            g_game_mode = 0;
         } else if (p1 & 0x40) {
-            D_0015F6E8 = 0;
+            g_game_mode = 0;
         }
         break;
     case 6:
@@ -788,56 +788,56 @@ void func_001FD3E8(void) {
         case 1:
             p2 = PAD;
             if (p2 & 0x10) {
-                D_0015F6E8 = R.x14;
+                g_game_mode = R.x14;
             } else if (p2 & 0x40) {
-                func_001F4E08(4);
-                D_0016044C[0] = 0;
+                FadeToBlack(4);
+                requested_video_mode[0] = 0;
                 R.x1C = 2;
-                R.x20 = func_001F98C0(0x258);
+                R.x20 = scale_game_frame_count(0x258);
             }
             break;
         case 2:
             if (R.x20 == 0 || --R.x20 == 0) {
                 R.x1C = 3;
-                D_0016044C[0] = 1;
+                requested_video_mode[0] = 1;
                 break;
             }
             p3 = PAD;
             if (p3 & 0x10) {
-                func_001F4E08(4);
-                D_0015F6E8 = R.x14;
-                D_0016044C[0] = 1;
+                FadeToBlack(4);
+                g_game_mode = R.x14;
+                requested_video_mode[0] = 1;
             } else if (p3 & 0x40) {
-                D_0015F6E8 = R.x14;
-                D_0016044C[0] = 0;
+                g_game_mode = R.x14;
+                requested_video_mode[0] = 0;
             }
             break;
         case 3:
             if (PAD & 0x40) {
-                D_0015F6E8 = R.x14;
+                g_game_mode = R.x14;
             }
             break;
         default:
-            D_0015F6E8 = R.x14;
+            g_game_mode = R.x14;
             break;
         }
         break;
     case 1:
         p4 = PAD;
-        D_0015F728 = 2;
+        occl_fallback_mode = 2;
         if (p4 & 0x10) {
-            D_0015F6E8 = 0;
-            h2 = D_0013F450;
+            g_game_mode = 0;
+            h2 = g_hero;
             h2[0x160F] |= 1;
         } else if (p4 & 0x40) {
-            D_0015F6E8 = 0;
+            g_game_mode = 0;
         }
         break;
     case 2:
         p5 = PAD;
-        D_0015F728 = 2;
+        occl_fallback_mode = 2;
         if (p5 & 0x40) {
-            D_0015F6E8 = 0;
+            g_game_mode = 0;
         }
         break;
     case 0:
@@ -871,28 +871,28 @@ void func_001FD3E8(void) {
             }
             v = R.x1C;
             if (v == 2) {
-                h3 = D_0013F450;
+                h3 = g_hero;
                 v = *(int *)(h3 + 0x880);
                 if (v != -1) {
-                    func_001FFDA0(v, 0);
+                    Hud_SetBarValueById(v, 0);
                     *(int *)(h3 + 0x880) = -1;
                 }
-                func_001FFFA0();
-                t = func_001F98C0(0x1068);
+                update_resource_counter();
+                t = scale_game_frame_count(0x1068);
                 if (t < *(int *)(h3 + 0x19C)) {
-                    if (D_0015EE84 == 5) {
-                        D_0015EF38 = D_0015EF38 + 1;
-                    } else if (D_0015EE84 == 0x10) {
-                        D_0015EF3C = D_0015EF3C + 1;
+                    if (g_current_level_index == 5) {
+                        rilgar_hoverboard_races_finished = rilgar_hoverboard_races_finished + 1;
+                    } else if (g_current_level_index == 0x10) {
+                        kalebo3_hoverboard_races_finished = kalebo3_hoverboard_races_finished + 1;
                     }
                 }
-                D_0015F6E8 = 0;
-                func_00216D30(0, 8);
-                func_001E97C0(D_00141150, D_00141150 + 0x10, 0, 1);
+                g_game_mode = 0;
+                Music_QueueTrack(0, 8);
+                noop_callback_k(D_00141150, D_00141150 + 0x10, 0, 1);
                 break;
             }
-            D_0015F6E8 = 0;
-            h4 = D_0013F450;
+            g_game_mode = 0;
+            h4 = g_hero;
             if (*(short *)(h4 + 0x89A) >= 3) {
                 *(short *)(h4 + 0x89A) = *(unsigned short *)(h4 + 0x89A) - 1;
                 m2 = *(char **)(h4 + 0x890);
@@ -902,58 +902,58 @@ void func_001FD3E8(void) {
         }
         break;
     case 3:
-        dp1 = D_0013D390;
+        dp1 = memory_card_state;
         if (*(int *)(dp1 + 0xB0) == 1) {
             break;
         }
         R.x20++;
-        t = func_001F98C0(0x1E);
+        t = scale_game_frame_count(0x1E);
         if (t < R.x20 && R.x24 != 0) {
             R.x24--;
         }
-        v = D_0015EFB0 - 1;
+        v = mode_freeze_state - 1;
         switch (v) {
         case 1:
             if (R.x24 == 0 && (PAD & 0x40)) {
-                D_0015EFB4 &= ~1;
-                D_0015F6E8 = R.x14;
+                mode_freeze_flags &= ~1;
+                g_game_mode = R.x14;
             }
             break;
         case 5:
             if (R.x24 == 0 && (PAD & 0x20)) {
-                D_0015EFB4 |= 8;
+                mode_freeze_flags |= 8;
                 break;
             }
             if (R.x4 == 0 && (PAD & 0x10)) {
-                { int fl = D_0015EFB4; fl |= 0x20; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
-                if (D_0015F6C8 == 0) {
-                    D_0015F6E8 = R.x14;
+                { int fl = mode_freeze_flags; fl |= 0x20; fl &= ~2; fl &= ~4; mode_freeze_flags = fl; }
+                if (boot_level_active == 0) {
+                    g_game_mode = R.x14;
                 }
             }
             break;
         case 12:
             if (R.x24 == 0 && (PAD & 0x20)) {
-                D_0015EFB4 |= 0x10;
+                mode_freeze_flags |= 0x10;
                 break;
             }
             if (R.x4 == 0 && (PAD & 0x10)) {
-                { int fl = D_0015EFB4; fl |= 0x20; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
-                if (D_0015F6C8 == 0) {
-                    D_0015F6E8 = R.x14;
+                { int fl = mode_freeze_flags; fl |= 0x20; fl &= ~2; fl &= ~4; mode_freeze_flags = fl; }
+                if (boot_level_active == 0) {
+                    g_game_mode = R.x14;
                 }
             }
             break;
         case 19:
             if (R.x24 == 0 && (PAD & 0x40)) {
-                { int fl = D_0015EFB4; fl &= ~0x40; fl &= ~0x400; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
-                if (D_0015F6C8 != 0) {
-                    D_0015F6E8 = R.x14;
+                { int fl = mode_freeze_flags; fl &= ~0x40; fl &= ~0x400; fl &= ~2; fl &= ~4; mode_freeze_flags = fl; }
+                if (boot_level_active != 0) {
+                    g_game_mode = R.x14;
                 } else {
-                    dp2 = D_0013D390;
+                    dp2 = memory_card_state;
                     *(int *)(dp2 + 0xFC) = 0;
-                    D_0015F6E4 = -1;
-                    D_0015F690 = 1;
-                    D_0015F6FC = 1;
+                    space_load_level = -1;
+                    space_load_pending = 1;
+                    space_load_in_progress = 1;
                 }
             }
             break;
@@ -961,48 +961,48 @@ void func_001FD3E8(void) {
         case 17:
         case 20:
             if (R.x24 == 0 && (PAD & 0x40)) {
-                D_0015F6E8 = R.x14;
-                { int fl = D_0015EFB4; fl &= ~0x40; fl &= ~0x400; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
+                g_game_mode = R.x14;
+                { int fl = mode_freeze_flags; fl &= ~0x40; fl &= ~0x400; fl &= ~2; fl &= ~4; mode_freeze_flags = fl; }
             }
             break;
         case 0:
         case 15:
-            D_0015F6E8 = R.x14;
-            D_001D5F78[0] = R.x18;
+            g_game_mode = R.x14;
+            pause_current_action_list[0] = R.x18;
             break;
         case 11:
-            if (D_001D60C0 == 0) {
+            if (freeze_prompt_override_flag == 0) {
                 break;
             }
             if (R.x24 == 0 && (PAD & 0x10)) {
-                { int fl = D_0015EFB4; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
-                D_0015F6E8 = R.x14;
+                { int fl = mode_freeze_flags; fl &= ~2; fl &= ~4; mode_freeze_flags = fl; }
+                g_game_mode = R.x14;
             }
             break;
         case 18:
-            if (D_0015F6C8 != 0 && D_001D60C0 == 0) {
+            if (boot_level_active != 0 && freeze_prompt_override_flag == 0) {
                 if (R.x24 != 0) {
                     break;
                 }
                 p9 = PAD;
                 if (p9 & 0x40) {
-                    func_00209DC0();
-                    { int fl = D_0015EFB4; fl &= ~2; fl &= ~4; fl |= 0x20; D_0015EFB4 = fl; }
-                    func_0022F4A0(0);
-                    D_0013E15A[0] = 1;
+                    load_and_initialize_level_chunk();
+                    { int fl = mode_freeze_flags; fl &= ~2; fl &= ~4; fl |= 0x20; mode_freeze_flags = fl; }
+                    initialize_global_state_entry(0);
+                    screen_globals_base[0] = 1;
                     break;
                 }
                 if (p9 & 0x10) {
-                    { int fl = D_0015EFB4; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
-                    D_0015F6E8 = R.x14;
+                    { int fl = mode_freeze_flags; fl &= ~2; fl &= ~4; mode_freeze_flags = fl; }
+                    g_game_mode = R.x14;
                 }
                 break;
             }
         case 2:
         case 4:
             if (R.x24 == 0 && (PAD & 0x10)) {
-                { int fl = D_0015EFB4; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
-                D_0015F6E8 = R.x14;
+                { int fl = mode_freeze_flags; fl &= ~2; fl &= ~4; mode_freeze_flags = fl; }
+                g_game_mode = R.x14;
             }
             break;
         case 22:
@@ -1012,44 +1012,44 @@ void func_001FD3E8(void) {
             }
             pa = PAD;
             if (pa & 0x40) {
-                func_00209DC0();
-                { int fl = D_0015EFB4; fl &= ~2; fl &= ~4; fl |= 0x20; D_0015EFB4 = fl; }
-                func_0022F4A0(0);
-                D_0013E15A[0] = 1;
+                load_and_initialize_level_chunk();
+                { int fl = mode_freeze_flags; fl &= ~2; fl &= ~4; fl |= 0x20; mode_freeze_flags = fl; }
+                initialize_global_state_entry(0);
+                screen_globals_base[0] = 1;
                 break;
             }
             if (pa & 0x10) {
-                D_0015EFB4 |= 0x20;
-                D_0015F6E8 = R.x14;
+                mode_freeze_flags |= 0x20;
+                g_game_mode = R.x14;
             }
             break;
         case 3:
-            if (D_0015F6C8 == 0) {
+            if (boot_level_active == 0) {
                 goto cardb;
             }
-            if (D_001D60C0 != 0) {
+            if (freeze_prompt_override_flag != 0) {
                 goto set20;
             }
             if (R.x24 != 0) {
                 break;
             }
-            c = D_0013CA40;
+            c = g_controller_state;
             if (*(int *)(c + 0x1A4) & 0x40) {
-                func_00209DC0();
-                { int fl = D_0015EFB4; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
-                func_0022F4A0(0);
-                D_0013E15A[0] = 1;
+                load_and_initialize_level_chunk();
+                { int fl = mode_freeze_flags; fl &= ~2; fl &= ~4; mode_freeze_flags = fl; }
+                initialize_global_state_entry(0);
+                screen_globals_base[0] = 1;
             }
             if (R.x24 != 0) {
                 break;
             }
             if (*(int *)(c + 0x1A4) & 0x10) {
-                { int fl = D_0015EFB4; fl |= 0x20; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
-                D_0015F6E8 = R.x14;
+                { int fl = mode_freeze_flags; fl |= 0x20; fl &= ~2; fl &= ~4; mode_freeze_flags = fl; }
+                g_game_mode = R.x14;
             }
             break;
         cardb:
-            if (D_0015F6CC == 0) {
+            if (pause_restart_reset_flag == 0) {
                 goto set20;
             }
             if (R.x24 != 0) {
@@ -1057,13 +1057,13 @@ void func_001FD3E8(void) {
             }
             p8 = PAD;
             if (p8 & 0x10) {
-                D_0015F6E8 = R.x14;
-                { int fl = D_0015EFB4; fl |= 0x20; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
+                g_game_mode = R.x14;
+                { int fl = mode_freeze_flags; fl |= 0x20; fl &= ~2; fl &= ~4; mode_freeze_flags = fl; }
             }
             if (p8 & 0x20) {
-                func_00227DB0(-1);
-                func_0022F4A0(0);
-                D_0013E15A[0] = 1;
+                load_level_zero_preserving_progress(-1);
+                initialize_global_state_entry(0);
+                screen_globals_base[0] = 1;
             }
             break;
         set20:
@@ -1071,22 +1071,22 @@ void func_001FD3E8(void) {
                 break;
             }
             if (PAD & 0x10) {
-                { int fl = D_0015EFB4; fl |= 0x20; fl &= ~2; fl &= ~4; D_0015EFB4 = fl; }
-                D_0015F6E8 = R.x14;
+                { int fl = mode_freeze_flags; fl |= 0x20; fl &= ~2; fl &= ~4; mode_freeze_flags = fl; }
+                g_game_mode = R.x14;
             }
             break;
         case 8:
-            if (D_0015F6C8 == 0 || (D_0015EFB4 & 6) != 0) {
+            if (boot_level_active == 0 || (mode_freeze_flags & 6) != 0) {
                 break;
             }
-            D_0015F6E8 = R.x14;
+            g_game_mode = R.x14;
             break;
         }
         break;
     }
-    if ((unsigned int)(D_0015F6E8 - 3) >= 2) {
-        func_0012E558(0x1D);
-        func_00216F28();
-        func_0012DDC0();
+    if ((unsigned int)(g_game_mode - 3) >= 2) {
+        snd_ContinueAllSoundsInGroup(0x1D);
+        music_Unpause();
+        snd_FlushSoundCommands();
     }
 }

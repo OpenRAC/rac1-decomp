@@ -168,9 +168,9 @@ extern int kalebo3_game_mode MACRO_ADDR;
 extern int kalebo3_cutscene_scene_id;
 extern char *kalebo3_path_table[];
 extern char kalebo3_camera_pos[];
-extern short blarg_elite_commando_hover_enabled;
-extern short blarg_elite_commando_joint_aim_enabled;
-extern short blarg_elite_commando_joint_sparks_enabled;
+extern short blarg_elite_commando_bobbing_and_voice_enabled_gp;
+extern short blarg_elite_commando_joint_aim_enabled_gp;
+extern short blarg_elite_commando_joint_sparks_enabled_gp;
 
 /* Update the floating enemy's patrol, attack and death states. */
 void blarg_elite_commando_update(char *m) {
@@ -364,7 +364,7 @@ animate_idle:
     default:
         break;
     }
-    if (*(int *)&blarg_elite_commando_hover_enabled) {
+    if (*(int *)&blarg_elite_commando_bobbing_and_voice_enabled_gp) {
         *(float *)(d + 0x2BC) = ((Moby *)m)->pos.z;
         if (((unsigned char *)m)[0x20] != 0 && ((unsigned char *)m)[0x20] != 10) {
             ApproachValue((float *)(d + 0x2EC), 0.25f, g_frame_time * 0.25f);
@@ -378,8 +378,8 @@ animate_idle:
         if (FastVecDist_update(m + 0x10, kalebo3_camera_pos) < 32.0f && !Sound_IsPlaying(m, *(int *)(d + 0x304)))
             *(int *)(d + 0x304) = Moby_PlaySound_update(7, 4, m);
     }
-    if (*(int *)&blarg_elite_commando_joint_aim_enabled) update_blarg_elite_commando_joint_aim(m);
-    if (*(int *)&blarg_elite_commando_joint_sparks_enabled && *(int *)(hero_globals_base + 0x2EA9) != 22) emit_blarg_elite_commando_joint_sparks(m);
+    if (*(int *)&blarg_elite_commando_joint_aim_enabled_gp) update_blarg_elite_commando_joint_aim(m);
+    if (*(int *)&blarg_elite_commando_joint_sparks_enabled_gp && *(int *)(hero_globals_base + 0x2EA9) != 22) emit_blarg_elite_commando_joint_sparks(m);
     if (g_current_level_index == 18 && kalebo3_game_mode == 2 && (unsigned int)(kalebo3_cutscene_scene_id - 3) < 3U) DeleteMoby(m);
 }
 extern char *MobyGetHitMessage(void *, int, int);
@@ -1233,9 +1233,9 @@ extern void FastVecScale(void *, void *, float);
 extern void draw_world_quad(void *, void *, int);
 extern float grindrail_barrier_ring_uvs[4][2], grindrail_barrier_core_uvs[4][2];
 extern float grindrail_barrier_ring_quad_corners[4][4], grindrail_barrier_core_quad_corners[4][4];
-extern short grindrail_barrier_ring_color_a, grindrail_barrier_ring_color_b, grindrail_barrier_core_color;
-extern short grindrail_barrier_alpha_a, grindrail_barrier_alpha_b, grindrail_barrier_alpha_c, grindrail_barrier_alpha_d;
-extern short grindrail_barrier_ring_texture, grindrail_barrier_core_texture, grindrail_barrier_quad_count;
+extern short grindrail_barrier_ring_blend_start_color, grindrail_barrier_ring_base_color, grindrail_barrier_accent_color;
+extern short grindrail_barrier_blend_minuend_selector, grindrail_barrier_blend_subtrahend_selector, grindrail_barrier_blend_multiplier_selector, grindrail_barrier_blend_addend_selector;
+extern short grindrail_barrier_ring_texture_id, grindrail_barrier_accent_texture_id, grindrail_barrier_ring_quad_count;
 
 /* Draw the animated ring quads and four rotating accents around a moby. */
 void draw_grindrail_barrier_effect(char *m) {
@@ -1250,14 +1250,14 @@ void draw_grindrail_barrier_effect(char *m) {
     int i;
     qcopy(rotation, m + 0x40);
     qcopy(transform[3], m + 0x10);
-    quad.texture = GetEffectTex(*(int *)&grindrail_barrier_ring_texture);
+    quad.texture = GetEffectTex(*(int *)&grindrail_barrier_ring_texture_id);
     u = &quad.uv[0][0];
     v = &quad.uv[0][1];
     quad.giftag = 0xFF9000000260UL;
-    quad.primitive = (unsigned long)*(int *)&grindrail_barrier_alpha_a
-        | ((unsigned long)*(int *)&grindrail_barrier_alpha_b << 2)
-        | ((unsigned long)*(int *)&grindrail_barrier_alpha_c << 4)
-        | ((unsigned long)*(int *)&grindrail_barrier_alpha_d << 6)
+    quad.primitive = (unsigned long)*(int *)&grindrail_barrier_blend_minuend_selector
+        | ((unsigned long)*(int *)&grindrail_barrier_blend_subtrahend_selector << 2)
+        | ((unsigned long)*(int *)&grindrail_barrier_blend_multiplier_selector << 4)
+        | ((unsigned long)*(int *)&grindrail_barrier_blend_addend_selector << 6)
         | 0x8000000000UL;
     quad.flags = 0;
     color_base = quad.color;
@@ -1266,18 +1266,18 @@ void draw_grindrail_barrier_effect(char *m) {
         for (k = 0; k < 4; ++k) {
             u[k * 2] = grindrail_barrier_ring_uvs[k][0];
             v[k * 2] = grindrail_barrier_ring_uvs[k][1];
-            color_base[k] = *(int *)&grindrail_barrier_ring_color_b;
+            color_base[k] = *(int *)&grindrail_barrier_ring_base_color;
             qcopy(quad.position[k], grindrail_barrier_ring_quad_corners[k]);
             FastVecScale(quad.position[k], quad.position[k], scale);
         }
     }
     angles = data->cardinal_angles;
-    angle_step = 6.2831855f / IntToFloat(*(int *)&grindrail_barrier_quad_count);
-    phase_step = 3.0f / IntToFloat(*(int *)&grindrail_barrier_quad_count);
+    angle_step = 6.2831855f / IntToFloat(*(int *)&grindrail_barrier_ring_quad_count);
+    phase_step = 3.0f / IntToFloat(*(int *)&grindrail_barrier_ring_quad_count);
     phase = data->phase;
     while (phase < 0.0f) phase += 1.0f;
     while (phase > 1.0f) phase -= 1.0f;
-    for (i = 0; i < *(int *)&grindrail_barrier_quad_count;) {
+    for (i = 0; i < *(int *)&grindrail_barrier_ring_quad_count;) {
         float blend;
         int color, j;
         rotation[0] = FastAddRots(data->yaw, (float)i * angle_step);
@@ -1285,16 +1285,16 @@ void draw_grindrail_barrier_effect(char *m) {
         if (phase > 0.5f) blend = (-phase + 1.0f) + (-phase + 1.0f);
         else blend = phase + phase;
         ++i;
-        color = FastTweenColor(*(int *)&grindrail_barrier_ring_color_a, *(int *)&grindrail_barrier_ring_color_b, blend);
+        color = FastTweenColor(*(int *)&grindrail_barrier_ring_blend_start_color, *(int *)&grindrail_barrier_ring_base_color, blend);
         for (j = 1; j >= 0; --j) color_base[j] = color;
         phase += phase_step;
         if (phase > 1.0f) phase -= 1.0f;
         draw_world_quad(&quad, transform, 0);
     }
-    quad.texture = GetEffectTex(*(int *)&grindrail_barrier_core_texture);
+    quad.texture = GetEffectTex(*(int *)&grindrail_barrier_accent_texture_id);
     {
         int k;
-        int solid_color = *(int *)&grindrail_barrier_core_color;
+        int solid_color = *(int *)&grindrail_barrier_accent_color;
         for (k = 0; k < 4; ++k) {
             u[k * 2] = grindrail_barrier_core_uvs[k][0];
             v[k * 2] = grindrail_barrier_core_uvs[k][1];

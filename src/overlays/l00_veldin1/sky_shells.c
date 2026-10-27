@@ -124,7 +124,7 @@ extern float random_angle_radians(void);
 extern float random_float_between(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern int rand_range(int, int);
-extern void PartType22Spawn(void *, void *, int, int, int, float);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, int, float);
 extern void emit_moby_particle_pairs(void *);
 extern void apply_env_zone_lighting(void *);
 extern void render_environment_mapped_object();
@@ -173,7 +173,7 @@ void apply_level_specific_cutscene_moby_effects(void) {
                 b = random_angle_radians();
                 BuildSphericalOffset(v, random_float_between(g_frame_time * 0.7f, g_frame_time * 2.2f), a, b);
                 r = scale_ticks(0xC);
-                PartType22Spawn(buf, v, 0x80808080, 0x808080, rand_range(r, scale_ticks(0x23)), 147000.0f);
+                spawn_effect_particle_with_target_scalar(buf, v, 0x80808080, 0x808080, rand_range(r, scale_ticks(0x23)), 147000.0f);
             }
         }
     }

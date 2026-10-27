@@ -2253,16 +2253,16 @@ extern char special_items_base[] NOT_SDA;
 typedef struct { char pad0[0x140]; float x,y,z,w; } Camera46;
 extern Camera46 batalia_player_camera;
 extern unsigned int batalia_mobys_last MACRO_ADDR;
-extern float batalia_rocket_flight_speed SDATA(D_L08_00161A90);
+extern float rocket_configured_heading_speed_base_gp SDATA(D_L08_00161A90);
 extern float batalia_rocket_steer_accel_max SDATA(D_L08_00161A94);
 extern float batalia_rocket_route_speed SDATA(D_L08_00161A98);
 extern float batalia_rocket_hit_distance SDATA(D_L08_00161A9C);
 extern float batalia_rocket_exhaust_spread_max SDATA(D_L08_00161AA4);
-extern int batalia_rocket_exhaust_life_ticks SDATA(D_L08_00161AB0);
-extern float batalia_rocket_exhaust_start_size SDATA(D_L08_00161AB4);
-extern float batalia_rocket_exhaust_end_size SDATA(D_L08_00161AB8);
-extern int batalia_rocket_exhaust_start_color SDATA(D_L08_00161ABC);
-extern int batalia_rocket_exhaust_end_color SDATA(D_L08_00161AC0);
+extern int rocket_guidance_effect_frame_count_gp SDATA(D_L08_00161AB0);
+extern float rocket_guidance_effect_velocity_w_gp SDATA(D_L08_00161AB4);
+extern float rocket_guidance_effect_auxiliary_vector_w_gp SDATA(D_L08_00161AB8);
+extern int rocket_guidance_effect_initial_color_gp SDATA(D_L08_00161ABC);
+extern int rocket_guidance_effect_second_color_gp SDATA(D_L08_00161AC0);
 extern void *MobyGetHitMessage(void*,int,int);
 extern void DeleteMoby(void*);
 extern float vec_length_xy(void*);
@@ -2333,10 +2333,10 @@ void update_rocket(M46 *m) {
         vec_scale_to_length(effect,m->matrix[2],radius*FastCos(angle));
         vec_scale_to_length(aux,m->matrix[1],radius*FastSin(angle));
         FastVecAdd(effect,effect,aux); qcopy(aux,aux);
-        effect[3]=batalia_rocket_exhaust_start_size; aux[3]=batalia_rocket_exhaust_end_size;
-        life=scale_ticks(batalia_rocket_exhaust_life_ticks);
-        size0=truncate_float_to_s32_r_r(batalia_rocket_exhaust_start_size); size1=truncate_float_to_s32_r_r(batalia_rocket_exhaust_end_size);
-        PartType04Spawn(m->position,effect,batalia_rocket_exhaust_start_color,batalia_rocket_exhaust_end_color,life,size0,size1,1);
+        effect[3]=rocket_guidance_effect_velocity_w_gp; aux[3]=rocket_guidance_effect_auxiliary_vector_w_gp;
+        life=scale_ticks(rocket_guidance_effect_frame_count_gp);
+        size0=truncate_float_to_s32_r_r(rocket_guidance_effect_velocity_w_gp); size1=truncate_float_to_s32_r_r(rocket_guidance_effect_auxiliary_vector_w_gp);
+        PartType04Spawn(m->position,effect,rocket_guidance_effect_initial_color_gp,rocket_guidance_effect_second_color_gp,life,size0,size1,1);
         return;
     }
     case 2: {
@@ -2363,10 +2363,10 @@ void update_rocket(M46 *m) {
         vec_scale_to_length(effect,m->matrix[2],radius*FastCos(angle));
         vec_scale_to_length(aux,m->matrix[1],radius*FastSin(angle));
         FastVecAdd(effect,effect,aux); qcopy(aux,aux);
-        effect[3]=batalia_rocket_exhaust_start_size; aux[3]=batalia_rocket_exhaust_end_size;
-        life=scale_ticks(batalia_rocket_exhaust_life_ticks);
-        size0=truncate_float_to_s32_r_r(batalia_rocket_exhaust_start_size); size1=truncate_float_to_s32_r_r(batalia_rocket_exhaust_end_size);
-        PartType04Spawn(m->position,effect,batalia_rocket_exhaust_start_color,batalia_rocket_exhaust_end_color,life,size0,size1,1);
+        effect[3]=rocket_guidance_effect_velocity_w_gp; aux[3]=rocket_guidance_effect_auxiliary_vector_w_gp;
+        life=scale_ticks(rocket_guidance_effect_frame_count_gp);
+        size0=truncate_float_to_s32_r_r(rocket_guidance_effect_velocity_w_gp); size1=truncate_float_to_s32_r_r(rocket_guidance_effect_auxiliary_vector_w_gp);
+        PartType04Spawn(m->position,effect,rocket_guidance_effect_initial_color_gp,rocket_guidance_effect_second_color_gp,life,size0,size1,1);
         return;
     }
     case 3:
@@ -2466,7 +2466,7 @@ void update_rocket(M46 *m) {
         step_angle_toward_target(&m->rotation[2],0,d->yaw,g_frame_time*0.5235988f);
         step_angle_toward_target(&m->rotation[1],0,-d->pitch,g_frame_time*0.5235988f);
         m->rotation[0]=FastAddRots(m->rotation[0],g_frame_time*6.2831855f);
-        BuildSphericalOffset(d->velocity,(batalia_rocket_flight_speed+batalia_rocket_flight_speed)*g_frame_time,m->rotation[2],-m->rotation[1]);
+        BuildSphericalOffset(d->velocity,(rocket_configured_heading_speed_base_gp+rocket_configured_heading_speed_base_gp)*g_frame_time,m->rotation[2],-m->rotation[1]);
         FastVecAdd(m->position,m->position,d->velocity);
         if (coll_point_query_stub(m->position,0x400,2,m,0) || m->position[0]<5.0f || m->position[0]>500.0f || m->position[1]<5.0f || m->position[1]>500.0f || m->position[2]<5.0f || m->position[2]>500.0f || FastVecDist(hero_globals_base+0xE9D,m->position)<16.0f) m->state=6;
         return;

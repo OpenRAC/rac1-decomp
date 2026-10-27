@@ -205,7 +205,7 @@ extern struct Hero g_hero_r __asm__("D_0013F450");
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern struct { f32 f[0xB68 / 4]; } D_L00_0017A780_15738 __asm__("D_L00_0017A780");
 extern void transform_vector(void *, void *, void *);
-extern void set_first_hero_easing_parameters(f32, f32);
+extern void Hero_SetTiltSpringParams(f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00214658.c, FUN_L00_00214fe8. */
 void update_hero_transformed_negative_z_angle_parameters(void) {
@@ -217,7 +217,7 @@ void update_hero_transformed_negative_z_angle_parameters(void) {
     vec.q = 0;
     v[2] = -1.0f;
     transform_vector(v, v, (char *)state + 0x40);
-    set_first_hero_easing_parameters(g_frame_scale_sq * 0.013f, g_frame_scale_sq * 0.3f);
+    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.013f, g_frame_scale_sq * 0.3f);
     limit = 0.43633232f;
     if (state->state.current == 0x3f) limit = 0.29670596f;
     else if (state->state.current == 0x70) limit = 0.08726646f;
@@ -262,7 +262,7 @@ extern struct Hero g_hero_r2 __asm__("D_0013F450");
 typedef struct { f32 f[0x300]; } T_215340;
 extern T_215340 lean_state_r __asm__("D_L00_0017A780");
 extern f32 g_frame_time MACRO_ADDR;
-extern void set_first_hero_easing_parameters(f32, f32);
+extern void Hero_SetTiltSpringParams(f32, f32);
 extern void set_first_hero_easing_parameters_r(f32, f32) __asm__("func_L00_0020A858");
 extern void set_first_hero_easing_parameters_r2(f32, f32) __asm__("func_L00_0020A858");
 extern void set_first_hero_easing_parameters_r3(f32, f32) __asm__("func_L00_0020A858");
@@ -281,7 +281,7 @@ void adjust_hero_pose_targets_from_motion(void) {
     f32 x;
 
     if (g_hero_r2.state.current == 0x02) {
-        set_first_hero_easing_parameters(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
         set_first_hero_easing_parameters_r(0.04f, 0.2f);
         set_first_hero_easing_parameters_r2(0.04f, 0.2f);
         set_first_hero_easing_parameters_r3(0.02f, 0.2f);
@@ -322,7 +322,7 @@ void adjust_hero_pose_targets_from_motion(void) {
             (lean_state_r.f[(0xB68) / 4]) = nw * 0.3f;
         }
     } else if (g_hero_r2.state.current == 0x08 || g_hero_r2.state.current == 0x81) {
-        set_first_hero_easing_parameters(0.008f, 0.08f);
+        Hero_SetTiltSpringParams(0.008f, 0.08f);
         set_first_hero_easing_parameters_r(0.015f, 0.08f);
         set_first_hero_easing_parameters_r2(0.015f, 0.08f);
         set_first_hero_easing_parameters_r3(0.008f, 0.1f);
@@ -367,7 +367,7 @@ void adjust_hero_pose_targets_from_motion(void) {
         (lean_state_r.f[(0xAB8) / 4]) = -b * 0.3f;
         (lean_state_r.f[(0xB68) / 4]) = -b * 0.3f;
     } else if (g_hero_r2.state.control_mode == 2 || g_hero_r2.state.control_mode == 4) {
-        set_first_hero_easing_parameters(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
         set_first_hero_easing_parameters_r(0.04f, 0.2f);
         set_first_hero_easing_parameters_r2(0.04f, 0.2f);
         set_first_hero_easing_parameters_r3(0.02f, 0.2f);

@@ -793,8 +793,8 @@ extern s32 render_sequence_slots[];
 extern struct LevelProjectionState_305A0 view_context;
 extern struct CommonArchiveMemory level_resource_buffers;
 extern LevelFrame_CP warp_trail_colors[] NOT_SDA;
-extern LevelFrame_u128 D_001D9E70[] NOT_SDA;
-extern f32 D_001D9EC0[] NOT_SDA;
+extern LevelFrame_u128 sky_shell_scroll_dirs[] NOT_SDA;
+extern f32 sky_shell_base_rot_z_by_mode[] NOT_SDA;
 extern f32 cam_mode_min_fov[] NOT_SDA;
 extern u8 level_available[20] NOT_SDA;
 
@@ -915,9 +915,9 @@ void update_level_gameplay_frame(void) {
         FastVecScale(&first_position, &D_00160600_gp, scale);
         FastVecAdd(&D_001605F0_gp, &D_001605F0_gp, &first_position);
     }
-    FastVecScale(sky_shell_translation, &D_001D9E70[((*(LevelFrame_LRS *)&level_render_state)).mode],
+    FastVecScale(sky_shell_translation, &sky_shell_scroll_dirs[((*(LevelFrame_LRS *)&level_render_state)).mode],
                  (f32)(((*(LevelFrame_LGS *)&render_sequence)).time - scale_game_frame_count(0x78)) * 20.0f * scale);
-    sky_shell_base_rot_z = D_001D9EC0[((*(LevelFrame_LRS *)&level_render_state)).mode];
+    sky_shell_base_rot_z = sky_shell_base_rot_z_by_mode[((*(LevelFrame_LRS *)&level_render_state)).mode];
     for (object_index = 0; object_index < ((*(LevelFrame_LGS *)&render_sequence)).count; object_index++) {
         object = (((LevelFrame_LRO **)render_sequence_slots))[object_index];
         for (subframe = 0; subframe < 2; subframe++) {
@@ -2123,7 +2123,7 @@ extern s32 part_active_count MACRO_ADDR;
 extern u8 part_slot_bitmap[];
 extern s32 occl_fog_count MACRO_ADDR;
 extern s32 part_clip_dist MACRO_ADDR;
-extern short D_001605E0;
+extern short resident_quad_start_pos;
 extern u8 level_available[20] NOT_SDA;
 extern u8 level_init_cleared_block[];
 extern u8 level_init_cleared_block2[];
@@ -3011,7 +3011,7 @@ typedef struct {
 } EnvironmentMappedObject;
 extern s32 ship_substate_r[] __asm__("D_0013E150");
 extern s32 g_game_mode MACRO_ADDR;
-extern short env_map_first_frame;
+extern short environment_mapping_uv_refresh_state;
 extern short env_map_was_active;
 extern short env_map_blend_timer;
 extern short environment_mesh_colors;
@@ -3084,7 +3084,7 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
     if (g_game_mode == 6 && ship_substate_r[0] == 4) {
         mapping_enabled = 0;
     }
-    if (mapping_enabled != 0 || (*(s32 *)&env_map_first_frame) == 1) {
+    if (mapping_enabled != 0 || (*(s32 *)&environment_mapping_uv_refresh_state) == 1) {
         (*(s32 *)&env_map_was_active) = 1;
         fast_dec_timer(&(*(s32 *)&env_map_blend_timer));
         transition_fraction =
@@ -3101,7 +3101,7 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
             fast_vec_normalize(reflection, reflection, 1.0f);
             reflection[2] += 1.0f;
             sphere_denominator = vec_length(reflection[2] * 2.0f) * 2.0f;
-            if ((*(s32 *)&env_map_first_frame) == 1 || (*(s32 *)&env_map_blend_timer) == 0) {
+            if ((*(s32 *)&environment_mapping_uv_refresh_state) == 1 || (*(s32 *)&env_map_blend_timer) == 0) {
                 env_map_uvs[element_index][0] = reflection[0] / sphere_denominator + 0.5f;
                 env_map_uvs[element_index][1] = reflection[1] / sphere_denominator + 0.5f;
             } else {
@@ -3113,8 +3113,8 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
                     coordinate + (env_map_saved_uvs[element_index][1] - coordinate) * transition_fraction;
             }
         }
-        if ((*(s32 *)&env_map_first_frame) == 1) {
-            (*(s32 *)&env_map_first_frame) = 2;
+        if ((*(s32 *)&environment_mapping_uv_refresh_state) == 1) {
+            (*(s32 *)&environment_mapping_uv_refresh_state) = 2;
         }
     } else {
         if ((*(s32 *)&env_map_was_active) == 1) {

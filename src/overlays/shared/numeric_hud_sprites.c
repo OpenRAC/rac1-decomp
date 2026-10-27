@@ -329,14 +329,14 @@ int draw_trick_combo_hud(char *a) {
     return *(int *)(a + 0x58);
 }
 extern void Hud_SetBarValueById(int arg0, int arg1);
-extern int rilgar_hud_held_bar_id MACRO_ADDR;
+extern int animation_parameter_target_id MACRO_ADDR;
 extern int rilgar_hud_hold_active MACRO_ADDR;
 extern short rilgar_hud_release_count;
 // Releases the held hud element if any, clears a flag and bumps a counter.
 void hud_release_held_element(void) {
-    if (rilgar_hud_held_bar_id != -1) {
-        Hud_SetBarValueById(rilgar_hud_held_bar_id, 0);
-        rilgar_hud_held_bar_id = -1;
+    if (animation_parameter_target_id != -1) {
+        Hud_SetBarValueById(animation_parameter_target_id, 0);
+        animation_parameter_target_id = -1;
     }
     rilgar_hud_hold_active = 0;
     *(int *)&rilgar_hud_release_count = *(int *)&rilgar_hud_release_count + 1;

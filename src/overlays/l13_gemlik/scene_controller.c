@@ -431,29 +431,29 @@ char *spawn_poison_vessel_effect_moby(void *a, void *b, int c, int d) {
     }
     return (char *)m;
 }
-extern short gemlik_spark1_rise_speed;
-extern short gemlik_spark2_time1;
-extern short gemlik_spark2_time2;
-extern short gemlik_spark2_time3;
-extern short gemlik_spark2_rise_speed;
-extern short gemlik_spark2_drift_accel;
-extern short gemlik_spark2_lift_accel;
+extern short moby_spark_first_batch_vertical_velocity_base_gp;
+extern short moby_spark_second_batch_frame_count_base_gp;
+extern short moby_spark_second_batch_second_frame_count_base_gp;
+extern short moby_spark_second_batch_third_frame_count_base_gp;
+extern short moby_spark_second_batch_vertical_velocity_base_gp;
+extern short moby_spark_second_batch_horizontal_acceleration_gp;
+extern short moby_spark_second_batch_vertical_acceleration_base_gp;
 extern short gemlik_spark1_spread_deg;
 extern short gemlik_spark2_spread_deg;
-extern short gemlik_spark2_unused_jitter;
-extern short gemlik_spark1_start_size;
-extern short gemlik_spark1_end_size;
-extern short gemlik_spark2_start_size;
-extern short gemlik_spark2_end_size;
+extern short moby_spark_second_batch_discarded_random_bound_gp;
+extern short moby_spark_first_batch_discarded_velocity_w_initializer_gp;
+extern short moby_spark_first_batch_acceleration_w_initializer_gp;
+extern short moby_spark_second_batch_discarded_velocity_w_initializer_gp;
+extern short moby_spark_second_batch_acceleration_w_initializer_gp;
 extern short gemlik_spark1_start_color;
 extern short gemlik_spark1_end_color;
 extern short gemlik_spark2_start_color;
 extern short gemlik_spark2_end_color;
-extern short gemlik_spark1_time1;
-extern short gemlik_spark1_time2;
-extern short gemlik_spark1_time3;
-extern short gemlik_spark1_drift_accel;
-extern short gemlik_spark1_lift_accel;
+extern short moby_spark_first_batch_frame_count_base_gp;
+extern short moby_spark_first_batch_second_frame_count_base_gp;
+extern short moby_spark_first_batch_third_frame_count_base_gp;
+extern short moby_spark_first_batch_horizontal_acceleration_gp;
+extern short moby_spark_first_batch_vertical_acceleration_base_gp;
 extern char hero_globals_base[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float fast_atan2(float, float);
@@ -492,8 +492,8 @@ void update_moby_motion_and_emit_sparks(char *moby)
 
     qcopy(&old_pos, &((struct Moby *)moby)->pos);
     if (((struct Moby *)moby)->command == 1) {
-        velocity.f[3] = *(float *)&gemlik_spark1_start_size;
-        acceleration.f[3] = *(float *)&gemlik_spark1_end_size;
+        velocity.f[3] = *(float *)&moby_spark_first_batch_discarded_velocity_w_initializer_gp;
+        acceleration.f[3] = *(float *)&moby_spark_first_batch_acceleration_w_initializer_gp;
         for (i = 0; i < 2; i++) {
             qcopy(&position, &((struct Moby *)moby)->pos);
             r = random_float_between(-0.0649999976f, 0.0649999976f);
@@ -504,24 +504,24 @@ void update_moby_motion_and_emit_sparks(char *moby)
             position.f[2] = position.f[2] + r;
             qzero(&velocity);
             r = 0.0174532924f;
-            velocity.f[2] = random_float_between(*(float *)&gemlik_spark1_rise_speed * g_frame_time * 0.899999976f, *(float *)&gemlik_spark1_rise_speed * g_frame_time * 1.10000002f);
+            velocity.f[2] = random_float_between(*(float *)&moby_spark_first_batch_vertical_velocity_base_gp * g_frame_time * 0.899999976f, *(float *)&moby_spark_first_batch_vertical_velocity_base_gp * g_frame_time * 1.10000002f);
             f20 = random_float_between(-*(float *)&gemlik_spark1_spread_deg, *(float *)&gemlik_spark1_spread_deg) * r;
             t = FastAddRots(fast_atan2(data->dir_x, data->dir_y), f20);
-            acceleration.f[0] = FastCos(t) * (*(float *)&gemlik_spark1_drift_accel * g_frame_time);
+            acceleration.f[0] = FastCos(t) * (*(float *)&moby_spark_first_batch_horizontal_acceleration_gp * g_frame_time);
             t = FastAddRots(fast_atan2(data->dir_x, data->dir_y), f20);
-            acceleration.f[1] = FastSin(t) * (*(float *)&gemlik_spark1_drift_accel * g_frame_time);
+            acceleration.f[1] = FastSin(t) * (*(float *)&moby_spark_first_batch_horizontal_acceleration_gp * g_frame_time);
             acceleration.f[2] = 0.0f;
-            acceleration.f[2] = random_float_between(*(float *)&gemlik_spark1_lift_accel * g_frame_time * 0.899999976f, *(float *)&gemlik_spark1_lift_accel * g_frame_time * 1.10000002f);
-            t = random_float_between(*(float *)&gemlik_spark1_time1, *(float *)&gemlik_spark1_time1 + *(float *)&gemlik_spark1_time1);
+            acceleration.f[2] = random_float_between(*(float *)&moby_spark_first_batch_vertical_acceleration_base_gp * g_frame_time * 0.899999976f, *(float *)&moby_spark_first_batch_vertical_acceleration_base_gp * g_frame_time * 1.10000002f);
+            t = random_float_between(*(float *)&moby_spark_first_batch_frame_count_base_gp, *(float *)&moby_spark_first_batch_frame_count_base_gp + *(float *)&moby_spark_first_batch_frame_count_base_gp);
             spark_frame_count = truncate_float_to_s32_r(multiply_global_factor(t));
-            t = random_float_between(*(float *)&gemlik_spark1_time2, *(float *)&gemlik_spark1_time2 * 1.20000005f);
+            t = random_float_between(*(float *)&moby_spark_first_batch_second_frame_count_base_gp, *(float *)&moby_spark_first_batch_second_frame_count_base_gp * 1.20000005f);
             second_spark_frame_count = truncate_float_to_s32_r(multiply_global_factor(t));
-            t = random_float_between(*(float *)&gemlik_spark1_time3, *(float *)&gemlik_spark1_time3 * 1.20000005f);
+            t = random_float_between(*(float *)&moby_spark_first_batch_third_frame_count_base_gp, *(float *)&moby_spark_first_batch_third_frame_count_base_gp * 1.20000005f);
             third_spark_frame_count = truncate_float_to_s32_r(multiply_global_factor(t));
             PartType02Spawn(&position, &velocity, &acceleration, *(int *)&gemlik_spark1_start_color, *(int *)&gemlik_spark1_end_color, spark_frame_count, second_spark_frame_count, third_spark_frame_count, -1);
         }
-        velocity.f[3] = *(float *)&gemlik_spark2_start_size;
-        acceleration.f[3] = *(float *)&gemlik_spark2_end_size;
+        velocity.f[3] = *(float *)&moby_spark_second_batch_discarded_velocity_w_initializer_gp;
+        acceleration.f[3] = *(float *)&moby_spark_second_batch_acceleration_w_initializer_gp;
         for (i = 0; i < 2; i++) {
             qcopy(&second_pos, &((struct Moby *)moby)->pos);
             r = random_float_between(-0.100000001f, 0.100000001f);
@@ -530,22 +530,22 @@ void update_moby_motion_and_emit_sparks(char *moby)
             second_pos.f[1] = second_pos.f[1] + r;
             r = random_float_between(-0.100000001f, 0.100000001f);
             second_pos.f[2] = second_pos.f[2] + r;
-            random_float_between(-*(float *)&gemlik_spark2_unused_jitter, *(float *)&gemlik_spark2_unused_jitter);
+            random_float_between(-*(float *)&moby_spark_second_batch_discarded_random_bound_gp, *(float *)&moby_spark_second_batch_discarded_random_bound_gp);
             qzero(&velocity);
             deg = 0.0174532924f;
-            velocity.f[2] = random_float_between(*(float *)&gemlik_spark2_rise_speed * g_frame_time * 0.699999988f, *(float *)&gemlik_spark2_rise_speed * g_frame_time * 1.5f);
+            velocity.f[2] = random_float_between(*(float *)&moby_spark_second_batch_vertical_velocity_base_gp * g_frame_time * 0.699999988f, *(float *)&moby_spark_second_batch_vertical_velocity_base_gp * g_frame_time * 1.5f);
             f20 = random_float_between(-*(float *)&gemlik_spark2_spread_deg, *(float *)&gemlik_spark2_spread_deg) * deg;
             r = FastAddRots(fast_atan2(data->dir_x, data->dir_y), f20);
-            acceleration.f[0] = FastCos(r) * (*(float *)&gemlik_spark2_drift_accel * g_frame_time);
+            acceleration.f[0] = FastCos(r) * (*(float *)&moby_spark_second_batch_horizontal_acceleration_gp * g_frame_time);
             r = FastAddRots(fast_atan2(data->dir_x, data->dir_y), f20);
-            acceleration.f[1] = FastSin(r) * (*(float *)&gemlik_spark2_drift_accel * g_frame_time);
+            acceleration.f[1] = FastSin(r) * (*(float *)&moby_spark_second_batch_horizontal_acceleration_gp * g_frame_time);
             acceleration.f[2] = 0.0f;
-            acceleration.f[2] = random_float_between(*(float *)&gemlik_spark2_lift_accel * g_frame_time * 0.699999988f, *(float *)&gemlik_spark2_lift_accel * g_frame_time * 1.5f);
-            r = random_float_between(*(float *)&gemlik_spark2_time1, *(float *)&gemlik_spark2_time1 + *(float *)&gemlik_spark2_time1);
+            acceleration.f[2] = random_float_between(*(float *)&moby_spark_second_batch_vertical_acceleration_base_gp * g_frame_time * 0.699999988f, *(float *)&moby_spark_second_batch_vertical_acceleration_base_gp * g_frame_time * 1.5f);
+            r = random_float_between(*(float *)&moby_spark_second_batch_frame_count_base_gp, *(float *)&moby_spark_second_batch_frame_count_base_gp + *(float *)&moby_spark_second_batch_frame_count_base_gp);
             spark_frame_count = truncate_float_to_s32_r(multiply_global_factor(r));
-            r = random_float_between(*(float *)&gemlik_spark2_time2, *(float *)&gemlik_spark2_time2 * 1.20000005f);
+            r = random_float_between(*(float *)&moby_spark_second_batch_second_frame_count_base_gp, *(float *)&moby_spark_second_batch_second_frame_count_base_gp * 1.20000005f);
             second_spark_frame_count = truncate_float_to_s32_r(multiply_global_factor(r));
-            r = random_float_between(*(float *)&gemlik_spark2_time3, *(float *)&gemlik_spark2_time3 * 1.20000005f);
+            r = random_float_between(*(float *)&moby_spark_second_batch_third_frame_count_base_gp, *(float *)&moby_spark_second_batch_third_frame_count_base_gp * 1.20000005f);
             third_spark_frame_count = truncate_float_to_s32_r(multiply_global_factor(r));
             PartType02Spawn(&second_pos, &velocity, &acceleration, *(int *)&gemlik_spark2_start_color, *(int *)&gemlik_spark2_end_color, spark_frame_count, second_spark_frame_count, third_spark_frame_count, -1);
         }

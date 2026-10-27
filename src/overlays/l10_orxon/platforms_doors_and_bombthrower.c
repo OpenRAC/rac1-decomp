@@ -545,7 +545,7 @@ extern unsigned char D_L10_0015FD08[];
 extern unsigned char menu_item_enabled_67[] NOT_SDA;
 /* Collectible platform: state 0 arms it, state 1 lets it fall, state 2 sits above the pickup's spot.
    0xFF held in the save-id variable: from PR #130. */
-void func_L10_002C0348(char *m) {
+void gate_update(char *m) {
     char *d = *(char **)(m + 0x78);
     unsigned short id;
     int b, idx;
@@ -1771,13 +1771,13 @@ extern f32 data_processor_quad_uvs[] ;
 #define D_L10_001DA2C0_DBA50 D_L10_001DA2C0
 extern f32 data_processor_quad_corners[] ;
 #define D_L10_001DA2E0_DBA50 D_L10_001DA2E0
-extern short data_processor_blend_a;
+extern short data_processor_linked_effect_blend_minuend_selector_gp;
 #define D_L10_00161CF0_DBA50 (*(s32 *)&D_L10_00161CF0)
-extern short data_processor_blend_b;
+extern short data_processor_linked_effect_blend_subtrahend_selector_gp;
 #define D_L10_00161CF4_DBA50 (*(s32 *)&D_L10_00161CF4)
-extern short data_processor_blend_c;
+extern short data_processor_linked_effect_blend_alpha_factor_selector_gp;
 #define D_L10_00161CF8_DBA50 (*(s32 *)&D_L10_00161CF8)
-extern short data_processor_blend_d;
+extern short data_processor_linked_effect_blend_addend_selector_gp;
 #define D_L10_00161CFC_DBA50 (*(s32 *)&D_L10_00161CFC)
 extern short data_processor_color_start;
 #define D_L10_00161D10_DBA50 (*(s32 *)&D_L10_00161D10)
