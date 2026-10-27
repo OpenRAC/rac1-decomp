@@ -528,8 +528,9 @@ int sce_cd_init(int mode) {
     int a, b, c;
     int *rd;
     int tid;
+    int no_wait = 1;
 
-    if (cd_scmd_sync(1) != 0) {
+    if (cd_scmd_sync(no_wait) != 0) {
         return 0;
     }
     sceSifInitRpc(0);
@@ -538,8 +539,7 @@ int sce_cd_init(int mode) {
     *(volatile int *)&cd_thread_id = tid;
     {
         int *p0 = &D_00131400, *p1 = &cd_ncmd_rpc_bound, *p2 = &cd_scmd_rpc_bound, *p3 = cd_disk_ready_rpc_bound, *p6 = &cd_init_rpc_bound, *p4 = &cd_poweroff_installed, *p5 = &cd_read_mode_flags;
-        /* register pin: retail keeps the -1 in $4 (hi(D_001313FC) then lands in $3). */
-        register int m __asm__("$4") = -1;
+        int m = -1;
         *p4 = m; *p0 = m; *p1 = m; *p2 = m; *p3 = m;
         *p5 = 0;
         cd_init_call_count++;
