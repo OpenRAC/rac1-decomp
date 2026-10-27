@@ -1,6 +1,6 @@
 {
  "measures": {
-  "fuzzy_match_percent": 77.68577709333607,
+  "fuzzy_match_percent": 77.68577709333609,
   "total_code": "3694820",
   "matched_code": "2847556",
   "matched_code_percent": 77.06886939011913,
@@ -10897,7 +10897,7 @@
   {
    "name": "game/loaders",
    "measures": {
-    "fuzzy_match_percent": 99.99064277798303,
+    "fuzzy_match_percent": 99.990642777983,
     "total_code": "10828",
     "matched_code": "10232",
     "matched_code_percent": 94.49575175471001,
@@ -18445,7 +18445,7 @@
   {
    "name": "Shared level code",
    "measures": {
-    "fuzzy_match_percent": 87.29876410593569,
+    "fuzzy_match_percent": 87.2987641059357,
     "total_code": "1186380",
     "matched_code": "1032796",
     "matched_code_percent": 87.05440078221143,
@@ -40062,7 +40062,7 @@
   {
    "name": "Level 07: Umbris",
    "measures": {
-    "fuzzy_match_percent": 79.55171047556071,
+    "fuzzy_match_percent": 79.5517104755607,
     "total_code": "72588",
     "matched_code": "57600",
     "matched_code_percent": 79.35195900148786,
@@ -47793,7 +47793,7 @@
   {
    "name": "Level 17: Drek's Fleet",
    "measures": {
-    "fuzzy_match_percent": 59.86298210622292,
+    "fuzzy_match_percent": 59.86298210622294,
     "total_code": "140384",
     "matched_code": "80788",
     "matched_code_percent": 57.547868702986094,
@@ -49585,7 +49585,7 @@
    "id": "common",
    "name": "Shared level code",
    "measures": {
-    "fuzzy_match_percent": 87.29876410593569,
+    "fuzzy_match_percent": 87.2987641059357,
     "total_code": "1186380",
     "matched_code": "1032796",
     "matched_code_percent": 87.05440078221143,
@@ -49720,7 +49720,7 @@
    "id": "level_07",
    "name": "Level 07: Umbris",
    "measures": {
-    "fuzzy_match_percent": 79.55171047556071,
+    "fuzzy_match_percent": 79.5517104755607,
     "total_code": "72588",
     "matched_code": "57600",
     "matched_code_percent": 79.35195900148786,
@@ -49870,7 +49870,7 @@
    "id": "level_17",
    "name": "Level 17: Drek's Fleet",
    "measures": {
-    "fuzzy_match_percent": 59.86298210622292,
+    "fuzzy_match_percent": 59.86298210622294,
     "total_code": "140384",
     "matched_code": "80788",
     "matched_code_percent": 57.547868702986094,
