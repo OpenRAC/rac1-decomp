@@ -6,6 +6,111 @@
 #include "moby.h"
 #include "hero.h"
 
+/* Sentrybot: patrols a path, turns toward what it notices, raises its
+   linked alarm and shoots when it sees the hero. */
+struct SentrybotVars {
+    u8 pad_00[0x20];
+    f32 health;                     /* 0x20: hit response block, ComputeHitResponse */
+    s16 unk_24;                     /* 0x24 */
+    u8 pad_26[0x2];
+    u8 unk_28;                      /* 0x28 */
+    u8 unk_29;                      /* 0x29 */
+    u8 pad_2A[0xE];
+    s32 reset_idle;                 /* 0x38: nonzero rolls a new idle countdown */
+    u8 pad_3C[0x24];
+    s16 color_fade;                 /* 0x60: StepColorFade block */
+    u8 pad_62[0x5];
+    u8 flash;                       /* 0x67: hit flash strength */
+    u8 pad_68[0x8];
+    u8 knockback[0x10];             /* 0x70: InitKnockback / mine_fall state */
+    f32 kb_gravity;                 /* 0x80 */
+    f32 kb_approach;                /* 0x84 */
+    f32 kb_forward;                 /* 0x88 */
+    f32 kb_up;                      /* 0x8C */
+    s32 kb_amount;                  /* 0x90 */
+    s32 kb_mode;                    /* 0x94 */
+    f32 kb_unk_98;                  /* 0x98 */
+    u8 pad_9C[0x11];
+    u8 kb_unk_AD;                   /* 0xAD */
+    u8 pad_AE[0x12];
+    f32 kb_unk_C0;                  /* 0xC0 */
+    f32 kb_unk_C4;                  /* 0xC4 */
+    u8 pad_C8[0x8];
+    Vec4A target_pos;               /* 0xD0: from FindNearestEligibleMoby */
+    u8 pad_E0[0x20];
+    Vec4A aim_point;                /* 0x100: where it shoots */
+    char *target;                   /* 0x110: defaults to the hero */
+    s32 sight;                      /* 0x114: 1 sees, 2 lost */
+    u8 pad_118[0x8];
+    s32 search_path;                /* 0x120: targets are searched along it */
+    s32 patrol_path;                /* 0x124: -1 stands still */
+    s32 alarm;                      /* 0x128: linked alarm moby, -1 when none */
+    s32 linked_a;                   /* 0x12C: moby released on alert, -1 when none */
+    f32 idle_countdown;             /* 0x130 */
+    f32 speed;                      /* 0x134 */
+    f32 turn_vel;                   /* 0x138 */
+    s32 patrol_point;               /* 0x13C */
+    u8 pad_140[0x4];
+    s32 at_point;                   /* 0x144 */
+    s32 wait_frames;                /* 0x148: at least 5 */
+    s32 wait_timer;                 /* 0x14C */
+    s32 linked_b;                   /* 0x150: moby released on alert, -1 when none */
+    s16 linked_cooldown;            /* 0x154 */
+    s16 alert_timer;                /* 0x156 */
+    s16 hero_spotted;               /* 0x158 */
+    u8 can_see;                     /* 0x15A: line of sight to the hero */
+    u8 lost_target;                 /* 0x15B */
+    u8 next_state;                  /* 0x15C: state after the turn */
+    u8 next_anim;                   /* 0x15D: animation after the turn */
+    u8 sight_count;                 /* 0x15E */
+    u8 woke;                        /* 0x15F: wake animation played */
+    Vec3f home_pos;                 /* 0x160 */
+    f32 home_yaw;                   /* 0x16C */
+    f32 turn_yaw;                   /* 0x170: yaw the turn animations start from */
+    u8 pad_174[0x8];
+    s32 attention_group;            /* 0x17C */
+    s32 wake_mobys[4];              /* 0x180: it wakes when one is up, -1 when unused */
+    char *attention;                /* 0x190: moby it looks at */
+    s16 attention_locked;           /* 0x194 */
+    s16 attention_timer;            /* 0x196 */
+    char *noticed;                  /* 0x198: set by set_sentrybot_attention_target */
+    s16 noticed_timer;              /* 0x19C */
+    u8 fired;                       /* 0x19E */
+    u8 sees_aim_point;              /* 0x19F */
+    u8 head_manip[0x64];            /* 0x1A0: EaseManipulatorOffsets block */
+    f32 head_pitch;                 /* 0x204 */
+    f32 head_yaw;                   /* 0x208 */
+    u8 pad_20C[0x14];
+    u8 body_manip[0x68];            /* 0x220: EaseManipulatorOffsets block */
+    f32 body_yaw;                   /* 0x288 */
+    u8 pad_28C[0x14];
+    Vec4A effect_quads[3];          /* 0x2A0: drawn by draw_sentrybot_effect_quads */
+    s32 show_volume[2];             /* 0x2D0: shown only inside these clip volumes */
+    s32 hide_volume[2];             /* 0x2D8: hidden inside these clip volumes */
+};
+
+/* Rocket fired by a sentrybot: flies along vel until it hits something
+   other than its owner or times out. */
+struct RocketVars {
+    Vec4A vel;                      /* 0x00: per frame */
+    s32 sound_played;               /* 0x10: fly-by sound */
+    s32 life_timer;                 /* 0x14 */
+    s32 owner;                      /* 0x18: hits on this moby are ignored */
+};
+
+/* Spark emitter (level 15, class 78): sprays sparks at its linked moby. */
+struct SparkEmitterVars {
+    Vec4A spark_pos;                /* 0x00: zero when nothing is drawn */
+    s32 linked_moby;                /* 0x10: -1 when none */
+    s32 fade_frames;                /* 0x14 */
+};
+
+/* Spiderbot effect: the quad drawn at effect_pos. */
+struct SpiderbotEffectVars {
+    u8 pad_00[0x10];
+    Vec4A effect_pos;               /* 0x10 */
+};
+
 typedef struct { char pad0[0x2084]; int f2084; char pad1[0x258]; short f22E0; } Hero98BB8;
 typedef struct { char pad0[0x180]; int f180[4]; } Sentry98BB8;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
@@ -78,7 +183,7 @@ void sentrybot_update(unsigned char *moby) {
     float mat[4][4];
     int j2;
     int j3;
-    unsigned char *data;
+    struct SentrybotVars *data;
     char *target;
     int flag;
     int a;
@@ -90,22 +195,22 @@ void sentrybot_update(unsigned char *moby) {
     float s;
 
     if (*(int *)&sentrybot_update_disabled_gp != 0) return;
-    data = ((unsigned char *)((Moby *)moby)->pvars);
+    data = (struct SentrybotVars *)((Moby *)moby)->pvars;
     if (quartu_game_mode == 2) {
         ((Moby *)moby)->flags |= 0x41;
         return;
     }
-    a = *(int *)(data + 0x2D0);
+    a = data->show_volume[0];
     flag = 0;
     if (a != -1) {
         flag = is_point_inside_clip_volume(quartu_camera_pos, a) == 0;
-        if (*(int *)(data + 0x2D4) != -1) {
-            flag &= is_point_inside_clip_volume(quartu_camera_pos, *(int *)(data + 0x2D4)) == 0;
+        if (data->show_volume[1] != -1) {
+            flag &= is_point_inside_clip_volume(quartu_camera_pos, data->show_volume[1]) == 0;
         }
-    } else if (*(int *)(data + 0x2D8) != -1) {
+    } else if (data->hide_volume[0] != -1) {
         flag = is_point_inside_clip_volume(quartu_camera_pos, a);
-        if (*(int *)(data + 0x2DC) != -1) {
-            flag |= is_point_inside_clip_volume(quartu_camera_pos, *(int *)(data + 0x2DC));
+        if (data->hide_volume[1] != -1) {
+            flag |= is_point_inside_clip_volume(quartu_camera_pos, data->hide_volume[1]);
         }
     }
     update_sentrybot_hit_response_and_target_visibility(moby, flag);
@@ -116,41 +221,41 @@ void sentrybot_update(unsigned char *moby) {
     }
     ((Moby *)moby)->flags = (((Moby *)moby)->flags & 0xFFBE) | 0x1000;
     *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
-    target = *(char **)(data + 0x110);
-    manipulator_set_scale(data + 0x1A0, 2.5f);
+    target = data->target;
+    manipulator_set_scale(data->head_manip, 2.5f);
     if (((Moby *)moby)->visible != 0 && FastVecDist(moby + 0x10, quartu_camera_pos) < 28.0f) {
         set_ground_height_band(moby);
         ((Moby *)moby)->shadow_range = 0x16;
     }
-    if (((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x65) *(short *)(data + 0x156) = 0;
-    FastDecTimer(data + 0x154);
-    FastDecTimer(data + 0x156);
-    FastDecTimer(data + 0x19C);
-    if (*(short *)(data + 0x156) != 0 && *(int *)(data + 0x128) != -1) {
-        char *o = (char *)((*(int *)(data + 0x128) << 8) + quartu_moby_array_m);
+    if (((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x65) data->alert_timer = 0;
+    FastDecTimer(&data->linked_cooldown);
+    FastDecTimer(&data->alert_timer);
+    FastDecTimer(&data->noticed_timer);
+    if (data->alert_timer != 0 && data->alarm != -1) {
+        char *o = (char *)((data->alarm << 8) + quartu_moby_array_m);
         if (*(int *)(((char *)((Moby *)o)->pvars) + 8) != 0) set_sentrybot_alarm_duration(o, 0xB4);
     }
-    if (((Moby *)moby)->command == 0) data[0x15F] = 0;
+    if (((Moby *)moby)->command == 0) data->woke = 0;
     switch (((Moby *)moby)->state) {
     case 0:
-        if (*(int *)(data + 0x120) == -1 || *quartu_paths[*(int *)(data + 0x120)] == 0) {
+        if (data->search_path == -1 || *quartu_paths[data->search_path] == 0) {
             DeleteMoby(moby);
             return;
         }
-        *(short *)(data + 0x24) = 3;
-        *(float *)(data + 0x20) = 3.0f;
-        data[0x28] = 2;
-        data[0x29] = 0;
-        qcopy(data + 0x160, moby + 0x10);
-        *(float *)(data + 0x16C) = ((Moby *)moby)->rot.z;
-        if (*(int *)(data + 0x148) < 5) *(int *)(data + 0x148) = 5;
-        *(int *)(data + 0x144) = 1;
+        data->unk_24 = 3;
+        data->health = 3.0f;
+        data->unk_28 = 2;
+        data->unk_29 = 0;
+        qcopy(&data->home_pos, moby + 0x10);
+        data->home_yaw = ((Moby *)moby)->rot.z;
+        if (data->wait_frames < 5) data->wait_frames = 5;
+        data->at_point = 1;
         ((Moby *)moby)->state = 2;
         ((Moby *)moby)->flags |= 0x1000;
         {
             int i;
             for (i = 0; i < 4; i++) {
-                if (((Sentry98BB8 *)data)->f180[i] != -1) {
+                if (data->wake_mobys[i] != -1) {
                     ((Moby *)moby)->state = 1;
                     break;
                 }
@@ -161,7 +266,7 @@ void sentrybot_update(unsigned char *moby) {
     case 1: {
         int i;
         for (i = 0; i < 4; i++) {
-            if (((unsigned char *)((((Sentry98BB8 *)data)->f180[i] << 8) + quartu_moby_array_m))[0x20] >= 2) {
+            if (((unsigned char *)((data->wake_mobys[i] << 8) + quartu_moby_array_m))[0x20] >= 2) {
                 ((Moby *)moby)->state = 2;
                 break;
             }
@@ -170,103 +275,103 @@ void sentrybot_update(unsigned char *moby) {
     }
     case 2:
     case 3:
-        if (*(int *)(data + 0x114) != 2) {
+        if (data->sight != 2) {
             ((Moby *)moby)->command = 1;
-            if (data[0x15F] != 0) {
+            if (data->woke != 0) {
                 ((Moby *)moby)->state = 0x10;
                 if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
             } else {
-                data[0x15F] = 1;
+                data->woke = 1;
                 ((Moby *)moby)->state = 0xB;
-                data[0x15C] = 0x10;
-                data[0x15D] = 3;
+                data->next_state = 0x10;
+                data->next_anim = 3;
                 if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
-        } else if (*(short *)(data + 0x156) != 0 && data[0x15B] == 0) {
-            if (data[0x15A] != 0 || *(int *)(data + 0x124) == -1) {
-                begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(target + 0x10), (void *)0x10, (void *)3);
+        } else if (data->alert_timer != 0 && data->lost_target == 0) {
+            if (data->can_see != 0 || data->patrol_path == -1) {
+                begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(target + 0x10), (void *)0x10, (void *)3);
             } else {
-                if (*(int *)(data + 0x144) != 0) {
-                    *(int *)(data + 0x13C) = (*(int *)(data + 0x13C) + 1) % *quartu_paths[*(int *)(data + 0x124)];
+                if (data->at_point != 0) {
+                    data->patrol_point = (data->patrol_point + 1) % *quartu_paths[data->patrol_path];
                 }
-                *(int *)(data + 0x144) = 0;
+                data->at_point = 0;
                 ((Moby *)moby)->command = 1;
-                if (data[0x15F] != 0) {
+                if (data->woke != 0) {
                     ((Moby *)moby)->state = 0xD;
                     if (((Moby *)moby)->prev_seq != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(10));
                 } else {
-                    data[0x15F] = 1;
+                    data->woke = 1;
                     ((Moby *)moby)->state = 0xB;
-                    data[0x15C] = 0xD;
-                    data[0x15D] = 0xE;
+                    data->next_state = 0xD;
+                    data->next_anim = 0xE;
                     if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
                 }
             }
-        } else if (*(short *)(data + 0x19C) != 0) {
-            begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(*(char **)(data + 0x198) + 0x10), (void *)0xA, (void *)0xF);
-        } else if (FastDecTimer(data + 0x196) != 0
-                   && (*(int *)(data + 0x190) = find_sentrybot_attention_target((char *)moby)) != 0
-                   && (*(short *)(data + 0x194) != 0 || random_integer_below(scale_ticks(0x96)) == 0)) {
-            begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(*(char **)(data + 0x190) + 0x10), (void *)0xA, (void *)0xF);
+        } else if (data->noticed_timer != 0) {
+            begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(data->noticed + 0x10), (void *)0xA, (void *)0xF);
+        } else if (FastDecTimer(&data->attention_timer) != 0
+                   && (*(int *)&data->attention = find_sentrybot_attention_target((char *)moby)) != 0
+                   && (data->attention_locked != 0 || random_integer_below(scale_ticks(0x96)) == 0)) {
+            begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(data->attention + 0x10), (void *)0xA, (void *)0xF);
         } else if (((Moby *)moby)->state == 2) {
-            if (*(int *)(data + 0x124) != -1) {
-                if (*(int *)(data + 0x144) == 0 || can_sentrybot_advance_patrol(moby) != 0) {
-                    *(int *)(data + 0x14C) = scale_ticks(*(int *)(data + 0x148));
+            if (data->patrol_path != -1) {
+                if (data->at_point == 0 || can_sentrybot_advance_patrol(moby) != 0) {
+                    data->wait_timer = scale_ticks(data->wait_frames);
                     ((Moby *)moby)->state = 3;
                 }
-            } else if (*(short *)(data + 0x158) != 0 && ((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x59) {
-                if (*(int *)(data + 0x150) != -1 || *(int *)(data + 0x12C) != -1
-                    || (*(short *)(data + 0x154) == 0 && random_integer_below(0x78) == 0)) {
-                    data[0x15D] = 0;
-                    data[0x15C] = 2;
+            } else if (data->hero_spotted != 0 && ((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x59) {
+                if (data->linked_b != -1 || data->linked_a != -1
+                    || (data->linked_cooldown == 0 && random_integer_below(0x78) == 0)) {
+                    data->next_anim = 0;
+                    data->next_state = 2;
                     ((Moby *)moby)->state = 5;
                     if (((Moby *)moby)->prev_seq != 2) MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
                 }
-            } else if (*(int *)(data + 0x124) == -1) {
-                begin_sentrybot_turn_toward_heading(moby, data, 2, 0, *(float *)(data + 0x16C));
+            } else if (data->patrol_path == -1) {
+                begin_sentrybot_turn_toward_heading(moby, ((unsigned char *)data), 2, 0, data->home_yaw);
             }
         } else if (((Moby *)moby)->state == 3) {
-            if (fast_dec_timer(data + 0x14C) != 0) {
-                if (*(int *)(data + 0x144) != 0) {
-                    *(int *)(data + 0x13C) = (*(int *)(data + 0x13C) + 1) % *quartu_paths[*(int *)(data + 0x124)];
+            if (fast_dec_timer(&data->wait_timer) != 0) {
+                if (data->at_point != 0) {
+                    data->patrol_point = (data->patrol_point + 1) % *quartu_paths[data->patrol_path];
                 }
-                *(int *)(data + 0x144) = 0;
-                begin_sentrybot_turn_toward_point((char *)moby, data, (float *)((char *)quartu_paths[*(int *)(data + 0x124)] + (*(int *)(data + 0x13C) * 0x10 + 0x10)), (void *)4, (void *)0xD);
+                data->at_point = 0;
+                begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)((char *)quartu_paths[data->patrol_path] + (data->patrol_point * 0x10 + 0x10)), (void *)4, (void *)0xD);
             }
         }
         break;
     case 10:
-        if (*(int *)(data + 0x114) != 2) {
+        if (data->sight != 2) {
             ((Moby *)moby)->command = 1;
-            if (data[0x15F] != 0) {
+            if (data->woke != 0) {
                 ((Moby *)moby)->state = 0x10;
                 if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
             } else {
-                data[0x15F] = 1;
+                data->woke = 1;
                 ((Moby *)moby)->state = 0xB;
-                data[0x15C] = 0x10;
-                data[0x15D] = 3;
+                data->next_state = 0x10;
+                data->next_anim = 3;
                 if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
         } else if (((Moby *)moby)->anim_flags & 2) {
             ((Moby *)moby)->state = 2;
             if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
-            *(short *)(data + 0x196) = scale_ticks(0x168);
-            *(short *)(data + 0x194) = 0;
+            data->attention_timer = scale_ticks(0x168);
+            data->attention_locked = 0;
         }
         break;
     case 5:
         if (((Moby *)moby)->anim_flags & 2) {
-            *(short *)(data + 0x154) = scale_ticks(0xF0);
-            if (*(int *)(data + 0x150) != -1) {
-                mark_moby_killed_and_release_owned_voice(quartu_moby_array_m + (*(int *)(data + 0x150) << 8));
-                *(int *)(data + 0x150) = -1;
+            data->linked_cooldown = scale_ticks(0xF0);
+            if (data->linked_b != -1) {
+                mark_moby_killed_and_release_owned_voice(quartu_moby_array_m + (data->linked_b << 8));
+                data->linked_b = -1;
             }
-            if (*(int *)(data + 0x12C) != -1) {
-                mark_moby_killed_and_release_owned_voice(quartu_moby_array_m + (*(int *)(data + 0x12C) << 8));
-                *(int *)(data + 0x12C) = -1;
+            if (data->linked_a != -1) {
+                mark_moby_killed_and_release_owned_voice(quartu_moby_array_m + (data->linked_a << 8));
+                data->linked_a = -1;
             }
-            ((Moby *)moby)->state = data[0x15C];
+            ((Moby *)moby)->state = data->next_state;
             switch (((Moby *)moby)->state) {
             case 2:
                 if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
@@ -280,17 +385,17 @@ void sentrybot_update(unsigned char *moby) {
     case 6:
     case 7:
     case 8:
-        if (*(int *)(data + 0x114) != 2
-            && FastDiffRots(((Moby *)moby)->rot.z, fast_atan2(*(float *)(data + 0xD0) - ((Moby *)moby)->pos.x, *(float *)(data + 0xD4) - ((Moby *)moby)->pos.y)) < 0.5235988f) {
+        if (data->sight != 2
+            && FastDiffRots(((Moby *)moby)->rot.z, fast_atan2(data->target_pos.x - ((Moby *)moby)->pos.x, data->target_pos.y - ((Moby *)moby)->pos.y)) < 0.5235988f) {
             ((Moby *)moby)->command = 1;
-            if (data[0x15F] != 0) {
+            if (data->woke != 0) {
                 ((Moby *)moby)->state = 0x10;
                 if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
             } else {
-                data[0x15F] = 1;
+                data->woke = 1;
                 ((Moby *)moby)->state = 0xB;
-                data[0x15C] = 0x10;
-                data[0x15D] = 3;
+                data->next_state = 0x10;
+                data->next_anim = 3;
                 if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
         } else {
@@ -310,127 +415,127 @@ void sentrybot_update(unsigned char *moby) {
             if (((Moby *)moby)->anim_flags & 2) {
                 int k = truncate_float_to_s32_r(animation_end(((Moby *)moby)->class_slot, anim));
                 if (tbl != 0) {
-                    ((Moby *)moby)->rot.z = FastAddRots(*(float *)(data + 0x170), tbl[k] * 0.017453292f);
+                    ((Moby *)moby)->rot.z = FastAddRots(data->turn_yaw, tbl[k] * 0.017453292f);
                 }
-                ((Moby *)moby)->state = data[0x15C];
-                if (((Moby *)moby)->prev_seq != data[0x15D]) MobyBlendAnimation(moby, data[0x15D], 0, scale_ticks(10));
+                ((Moby *)moby)->state = data->next_state;
+                if (((Moby *)moby)->prev_seq != data->next_anim) MobyBlendAnimation(moby, data->next_anim, 0, scale_ticks(10));
             } else if (((Moby *)moby)->seq == ((Moby *)moby)->prev_seq && tbl != 0) {
                 float t = MobyGetFrameValue(moby);
                 int k = truncate_float_to_s32_r(t);
                 t -= IntToFloat(k);
-                ((Moby *)moby)->rot.z = FastAddRots(*(float *)(data + 0x170), (tbl[k] + (tbl[k + 1] - tbl[k]) * t) * 0.017453292f);
+                ((Moby *)moby)->rot.z = FastAddRots(data->turn_yaw, (tbl[k] + (tbl[k + 1] - tbl[k]) * t) * 0.017453292f);
             }
         }
         break;
     case 4: {
         float sp = g_frame_time * 2.0f;
-        if (move_sentrybot_toward_point((char *)moby, (float *)((char *)quartu_paths[*(int *)(data + 0x124)] + (*(int *)(data + 0x13C) * 0x10 + 0x10)), sp)) {
+        if (move_sentrybot_toward_point((char *)moby, (float *)((char *)quartu_paths[data->patrol_path] + (data->patrol_point * 0x10 + 0x10)), sp)) {
             ((Moby *)moby)->state = 2;
-            *(int *)(data + 0x144) = 1;
+            data->at_point = 1;
             if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
-        } else if (*(int *)(data + 0x114) != 2) {
+        } else if (data->sight != 2) {
             ((Moby *)moby)->command = 1;
-            if (data[0x15F] != 0) {
+            if (data->woke != 0) {
                 ((Moby *)moby)->state = 0x10;
                 if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
             } else {
-                data[0x15F] = 1;
+                data->woke = 1;
                 ((Moby *)moby)->state = 0xB;
-                data[0x15C] = 0x10;
-                data[0x15D] = 3;
+                data->next_state = 0x10;
+                data->next_anim = 3;
                 if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
-        } else if (*(short *)(data + 0x156) != 0 && data[0x15B] == 0) {
-            if (data[0x15A] != 0) {
-                begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(target + 0x10), (void *)0x10, (void *)3);
+        } else if (data->alert_timer != 0 && data->lost_target == 0) {
+            if (data->can_see != 0) {
+                begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(target + 0x10), (void *)0x10, (void *)3);
             } else {
-                *(int *)(data + 0x14C) = scale_ticks(0x3C);
+                data->wait_timer = scale_ticks(0x3C);
                 ((Moby *)moby)->command = 1;
-                if (data[0x15F] != 0) {
+                if (data->woke != 0) {
                     ((Moby *)moby)->state = 0xD;
                     if (((Moby *)moby)->prev_seq != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(10));
                 } else {
-                    data[0x15F] = 1;
+                    data->woke = 1;
                     ((Moby *)moby)->state = 0xB;
-                    data[0x15C] = 0xD;
-                    data[0x15D] = 0xE;
+                    data->next_state = 0xD;
+                    data->next_anim = 0xE;
                     if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
                 }
             }
-        } else if (*(short *)(data + 0x19C) != 0) {
-            begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(*(char **)(data + 0x198) + 0x10), (void *)0xA, (void *)0xF);
-        } else if (*(short *)(data + 0x158) != 0 && ((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x59) {
-            if (*(int *)(data + 0x150) != -1 || *(int *)(data + 0x12C) != -1 || *(short *)(data + 0x154) == 0) {
-                data[0x15C] = ((Moby *)moby)->state;
-                data[0x15D] = 0xD;
+        } else if (data->noticed_timer != 0) {
+            begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(data->noticed + 0x10), (void *)0xA, (void *)0xF);
+        } else if (data->hero_spotted != 0 && ((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x59) {
+            if (data->linked_b != -1 || data->linked_a != -1 || data->linked_cooldown == 0) {
+                data->next_state = ((Moby *)moby)->state;
+                data->next_anim = 0xD;
                 ((Moby *)moby)->state = 5;
                 if (((Moby *)moby)->prev_seq != 2) MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
             }
-        } else if (FastDecTimer(data + 0x196) != 0
-                   && (*(int *)(data + 0x190) = find_sentrybot_attention_target((char *)moby)) != 0
-                   && (*(short *)(data + 0x194) != 0 || random_integer_below(scale_ticks(0x96)) == 0)) {
-            begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(*(char **)(data + 0x190) + 0x10), (void *)0xA, (void *)0xF);
+        } else if (FastDecTimer(&data->attention_timer) != 0
+                   && (*(int *)&data->attention = find_sentrybot_attention_target((char *)moby)) != 0
+                   && (data->attention_locked != 0 || random_integer_below(scale_ticks(0x96)) == 0)) {
+            begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(data->attention + 0x10), (void *)0xA, (void *)0xF);
         }
         break;
     }
     case 13: {
         float sp = g_frame_time * 3.5f;
-        if (move_sentrybot_toward_point((char *)moby, (float *)((char *)quartu_paths[*(int *)(data + 0x124)] + (*(int *)(data + 0x13C) * 0x10 + 0x10)), sp)) {
+        if (move_sentrybot_toward_point((char *)moby, (float *)((char *)quartu_paths[data->patrol_path] + (data->patrol_point * 0x10 + 0x10)), sp)) {
             ((Moby *)moby)->state = 0xC;
-            *(int *)(data + 0x144) = 1;
+            data->at_point = 1;
             if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
-        } else if (*(int *)(data + 0x114) != 2 && data[0x15B] == 0) {
+        } else if (data->sight != 2 && data->lost_target == 0) {
             ((Moby *)moby)->command = 1;
-            if (data[0x15F] != 0) {
+            if (data->woke != 0) {
                 ((Moby *)moby)->state = 0x10;
                 if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
             } else {
-                data[0x15F] = 1;
+                data->woke = 1;
                 ((Moby *)moby)->state = 0xB;
-                data[0x15C] = 0x10;
-                data[0x15D] = 3;
+                data->next_state = 0x10;
+                data->next_anim = 3;
                 if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
-        } else if (*(short *)(data + 0x156) != 0) {
-            *(int *)(data + 0x14C) = scale_ticks(0x3C);
+        } else if (data->alert_timer != 0) {
+            data->wait_timer = scale_ticks(0x3C);
         } else {
             ((Moby *)moby)->state = 9;
             if (((Moby *)moby)->prev_seq != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
-            if (*(int *)(data + 0x128) != -1) {
-                char *o = (char *)((*(int *)(data + 0x128) << 8) + quartu_moby_array_m);
+            if (data->alarm != -1) {
+                char *o = (char *)((data->alarm << 8) + quartu_moby_array_m);
                 if (*(int *)(((char *)((Moby *)o)->pvars) + 8) != 0) set_sentrybot_alarm_duration(o, scale_ticks(0x1E));
             }
         }
         break;
     }
     case 9: {
-        unsigned char *home = data + 0x160;
+        unsigned char *home = (unsigned char *)&data->home_pos;
         if (FastVecDist(moby + 0x10, home) > 0.2f) {
             move_sentrybot_toward_point((char *)moby, (float *)home, g_frame_time * 2.0f);
-        } else if (*(int *)(data + 0x124) != -1) {
+        } else if (data->patrol_path != -1) {
             ((Moby *)moby)->command = 0;
-            *(int *)(data + 0x144) = 0;
-            begin_sentrybot_turn_toward_point((char *)moby, data, (float *)((char *)quartu_paths[*(int *)(data + 0x124)] + (*(int *)(data + 0x13C) * 0x10 + 0x10)), (void *)2, (void *)0);
+            data->at_point = 0;
+            begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)((char *)quartu_paths[data->patrol_path] + (data->patrol_point * 0x10 + 0x10)), (void *)2, (void *)0);
         } else {
-            begin_sentrybot_turn_toward_heading(moby, data, 2, 0, *(float *)(data + 0x16C));
+            begin_sentrybot_turn_toward_heading(moby, ((unsigned char *)data), 2, 0, data->home_yaw);
         }
         break;
     }
     case 20: {
-        unsigned char *home = data + 0x160;
+        unsigned char *home = (unsigned char *)&data->home_pos;
         if (FastVecDist(moby + 0x10, home) > 0.2f) {
             move_sentrybot_toward_point((char *)moby, (float *)home, g_frame_time * 3.0f);
-        } else if (*(short *)(data + 0x156) == 0) {
+        } else if (data->alert_timer == 0) {
             ((Moby *)moby)->command = 0;
-            *(int *)(data + 0x144) = 0;
-            if (*(int *)(data + 0x124) != -1) {
-                begin_sentrybot_turn_toward_point((char *)moby, data, (float *)((char *)quartu_paths[*(int *)(data + 0x124)] + (*(int *)(data + 0x13C) * 0x10 + 0x10)), (void *)2, (void *)0);
+            data->at_point = 0;
+            if (data->patrol_path != -1) {
+                begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)((char *)quartu_paths[data->patrol_path] + (data->patrol_point * 0x10 + 0x10)), (void *)2, (void *)0);
             } else {
-                begin_sentrybot_turn_toward_heading(moby, data, 2, 0, *(float *)(data + 0x16C));
+                begin_sentrybot_turn_toward_heading(moby, ((unsigned char *)data), 2, 0, data->home_yaw);
             }
-        } else if (FastDiffRots(((Moby *)moby)->rot.z, fast_atan2(*(float *)(data + 0xD0) - ((Moby *)moby)->pos.x, *(float *)(data + 0xD4) - ((Moby *)moby)->pos.y)) > 0.7853982f
-                   && data[0x15B] == 0) {
-            begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(data + 0xD0), (void *)0x10, (void *)3);
+        } else if (FastDiffRots(((Moby *)moby)->rot.z, fast_atan2(data->target_pos.x - ((Moby *)moby)->pos.x, data->target_pos.y - ((Moby *)moby)->pos.y)) > 0.7853982f
+                   && data->lost_target == 0) {
+            begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), &data->target_pos.x, (void *)0x10, (void *)3);
         } else {
             ((Moby *)moby)->state = 0xC;
             if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
@@ -438,8 +543,8 @@ void sentrybot_update(unsigned char *moby) {
         break;
     }
     case 11:
-        if (*(int *)(data + 0x128) != -1) {
-            prepare_sentrybot_alarm((unsigned char *)(quartu_moby_array_m + (*(int *)(data + 0x128) << 8)));
+        if (data->alarm != -1) {
+            prepare_sentrybot_alarm((unsigned char *)(quartu_moby_array_m + (data->alarm << 8)));
         }
         if (((Moby *)moby)->anim_flags & 2) {
             if (((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x65) {
@@ -447,23 +552,23 @@ void sentrybot_update(unsigned char *moby) {
                 if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             } else {
                 alert_visible_group_sentrybots(moby);
-                if (*(int *)(data + 0x128) != -1
-                    && *(int *)(*(char **)((char *)((*(int *)(data + 0x128) << 8) + quartu_moby_array_m) + 0x78) + 8) == 0
+                if (data->alarm != -1
+                    && *(int *)(*(char **)((char *)((data->alarm << 8) + quartu_moby_array_m) + 0x78) + 8) == 0
                     && can_sentrybot_approach_linked_moby(moby) != 0) {
                     ((Moby *)moby)->state = 0xE;
                     if (((Moby *)moby)->prev_seq != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(0x14));
-                } else if (data[0x15C] == 0x10) {
-                    begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(target + 0x10), (void *)0x10, (void *)3);
+                } else if (data->next_state == 0x10) {
+                    begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(target + 0x10), (void *)0x10, (void *)3);
                 } else {
-                    if (data[0x15C] != 0xFF) ((Moby *)moby)->state = data[0x15C];
-                    if (data[0x15D] != 0xFF && ((Moby *)moby)->prev_seq != data[0x15D]) MobyBlendAnimation(moby, data[0x15D], 0, scale_ticks(10));
+                    if (data->next_state != 0xFF) ((Moby *)moby)->state = data->next_state;
+                    if (data->next_anim != 0xFF && ((Moby *)moby)->prev_seq != data->next_anim) MobyBlendAnimation(moby, data->next_anim, 0, scale_ticks(10));
                 }
             }
         }
         break;
     case 14:
-        prepare_sentrybot_alarm((unsigned char *)(quartu_moby_array_m + (*(int *)(data + 0x128) << 8)));
-        FastVecSub(va, (char *)(quartu_moby_array_m + (*(int *)(data + 0x128) << 8)) + 0x10, moby + 0x10);
+        prepare_sentrybot_alarm((unsigned char *)(quartu_moby_array_m + (data->alarm << 8)));
+        FastVecSub(va, (char *)(quartu_moby_array_m + (data->alarm << 8)) + 0x10, moby + 0x10);
         vec_scale_to_length(va, va, FastVecLength(va) - 1.5f);
         FastVecAdd(va, va, moby + 0x10);
         if (move_sentrybot_toward_point((char *)moby, va, g_frame_time * 4.0f)) {
@@ -473,16 +578,16 @@ void sentrybot_update(unsigned char *moby) {
         break;
     case 15:
         if (((Moby *)moby)->seq == ((Moby *)moby)->prev_seq && MobyGetFrameValue(moby) >= 12.0f) {
-            set_sentrybot_alarm_duration((char *)(quartu_moby_array_m + (*(int *)(data + 0x128) << 8)), 0xB4);
+            set_sentrybot_alarm_duration((char *)(quartu_moby_array_m + (data->alarm << 8)), 0xB4);
         }
         if (((Moby *)moby)->anim_flags & 2) {
-            set_sentrybot_alarm_duration((char *)(quartu_moby_array_m + (*(int *)(data + 0x128) << 8)), 0xB4);
-            begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(target + 0x10), (void *)0x14, (void *)0xE);
+            set_sentrybot_alarm_duration((char *)(quartu_moby_array_m + (data->alarm << 8)), 0xB4);
+            begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(target + 0x10), (void *)0x14, (void *)0xE);
         }
         break;
     case 18:
-        *(short *)(data + 0x19C) = 0;
-        *(short *)(data + 0x194) = 0;
+        data->noticed_timer = 0;
+        data->attention_locked = 0;
         alert_visible_group_sentrybots(moby);
         if (((Moby *)moby)->anim_flags & 2) {
             if (((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x65) {
@@ -490,14 +595,14 @@ void sentrybot_update(unsigned char *moby) {
                 if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             } else {
                 ((Moby *)moby)->state = 0x13;
-                data[0x19E] = 0;
+                data->fired = 0;
                 if (((Moby *)moby)->prev_seq != 6) MobyBlendAnimation(moby, 6, 0, scale_ticks(10));
             }
         }
         break;
     case 16:
-        *(short *)(data + 0x19C) = 0;
-        *(short *)(data + 0x194) = 0;
+        data->noticed_timer = 0;
+        data->attention_locked = 0;
         alert_visible_group_sentrybots(moby);
         if (((Moby *)moby)->anim_flags & 2) {
             if (((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x65) {
@@ -505,172 +610,172 @@ void sentrybot_update(unsigned char *moby) {
                 if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             } else {
                 ((Moby *)moby)->state = 0x11;
-                data[0x19E] = 0;
+                data->fired = 0;
                 if (((Moby *)moby)->prev_seq != 4) MobyBlendAnimation(moby, 4, 0, scale_ticks(10));
             }
         }
         break;
     case 19:
-        *(short *)(data + 0x19C) = 0;
-        *(short *)(data + 0x194) = 0;
+        data->noticed_timer = 0;
+        data->attention_locked = 0;
         alert_visible_group_sentrybots(moby);
-        if (data[0x19E] == 0) {
+        if (data->fired == 0) {
             float t = MobyGetFrameValue(moby);
             if (t >= 0.85f && t < 3.0f) {
                 j2 = 2;
                 compute_selected_world_matrices(moby, 1, &j2, mat);
                 transform_scaled_vertex_batch((char *)moby, 1, &j2, (char *)pos);
                 vec_scale_to_length(va, mat[1], *(float *)&sentrybot_emission_vector_speed_gp * g_frame_time);
-                FastVecSub(vb, data + 0x100, pos);
+                FastVecSub(vb, &data->aim_point, pos);
                 vec_scale_to_length(vb, vb, *(float *)&sentrybot_emission_vector_speed_gp * g_frame_time);
                 if (FastDiffRots(fast_atan2(va[0], va[1]), fast_atan2(vb[0], vb[1])) > 0.7853982f
                     || FastDiffRots(fast_atan2(vec_length_xy(va), va[2]), fast_atan2(vec_length_xy(vb), vb[2])) > 0.7853982f) {
-                    spawn_class_3a6_moby((char *)moby, va, (char *)pos, (char *)(data + 0x100));
+                    spawn_class_3a6_moby((char *)moby, va, (char *)pos, (char *)&data->aim_point);
                 } else {
-                    spawn_class_3a6_moby((char *)moby, vb, (char *)pos, (char *)(data + 0x100));
+                    spawn_class_3a6_moby((char *)moby, vb, (char *)pos, (char *)&data->aim_point);
                 }
-                data[0x19E] = 1;
+                data->fired = 1;
             }
         }
         if (((Moby *)moby)->anim_flags & 2) {
             if (((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x65) {
                 ((Moby *)moby)->state = 0xC;
                 if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
-            } else if (*(int *)(data + 0x128) != -1
-                       && *(int *)(*(char **)((char *)((*(int *)(data + 0x128) << 8) + quartu_moby_array_m) + 0x78) + 8) == 0
+            } else if (data->alarm != -1
+                       && *(int *)(*(char **)((char *)((data->alarm << 8) + quartu_moby_array_m) + 0x78) + 8) == 0
                        && can_sentrybot_approach_linked_moby(moby) != 0) {
                 ((Moby *)moby)->state = 0xE;
                 if (((Moby *)moby)->prev_seq != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(0x14));
-            } else if (FastDiffRots(((Moby *)moby)->rot.z, fast_atan2(*(float *)(data + 0xD0) - ((Moby *)moby)->pos.x, *(float *)(data + 0xD4) - ((Moby *)moby)->pos.y)) > 0.7853982f) {
-                begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(data + 0xD0), (void *)0x10, (void *)3);
-            } else if (*(int *)(data + 0x114) == 2) {
+            } else if (FastDiffRots(((Moby *)moby)->rot.z, fast_atan2(data->target_pos.x - ((Moby *)moby)->pos.x, data->target_pos.y - ((Moby *)moby)->pos.y)) > 0.7853982f) {
+                begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), &data->target_pos.x, (void *)0x10, (void *)3);
+            } else if (data->sight == 2) {
                 ((Moby *)moby)->state = 0xC;
                 if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             } else {
                 ((Moby *)moby)->state = 0x10;
                 if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
             }
-            data[0x19E] = 0;
+            data->fired = 0;
         }
         break;
     case 17:
-        *(short *)(data + 0x19C) = 0;
-        *(short *)(data + 0x194) = 0;
+        data->noticed_timer = 0;
+        data->attention_locked = 0;
         alert_visible_group_sentrybots(moby);
-        if (data[0x19E] == 0) {
+        if (data->fired == 0) {
             float t = MobyGetFrameValue(moby);
             if (t >= 0.85f && t < 3.0f) {
                 j3 = 3;
                 compute_selected_world_matrices(moby, 1, &j3, mat);
                 transform_scaled_vertex_batch((char *)moby, 1, &j3, (char *)pos);
                 vec_scale_to_length(va, mat[1], -(*(float *)&sentrybot_emission_vector_speed_gp * g_frame_time));
-                FastVecSub(vb, data + 0x100, pos);
+                FastVecSub(vb, &data->aim_point, pos);
                 vec_scale_to_length(vb, vb, *(float *)&sentrybot_emission_vector_speed_gp * g_frame_time);
                 if (FastDiffRots(fast_atan2(va[0], va[1]), fast_atan2(vb[0], vb[1])) > 0.7853982f
                     || FastDiffRots(fast_atan2(vec_length_xy(va), va[2]), fast_atan2(vec_length_xy(vb), vb[2])) > 0.7853982f) {
-                    spawn_class_3a6_moby((char *)moby, va, (char *)pos, (char *)(data + 0x100));
+                    spawn_class_3a6_moby((char *)moby, va, (char *)pos, (char *)&data->aim_point);
                 } else {
-                    spawn_class_3a6_moby((char *)moby, vb, (char *)pos, (char *)(data + 0x100));
+                    spawn_class_3a6_moby((char *)moby, vb, (char *)pos, (char *)&data->aim_point);
                 }
-                data[0x19E] = 1;
+                data->fired = 1;
             }
         }
         if (((Moby *)moby)->anim_flags & 2) {
             if (((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x65) {
                 ((Moby *)moby)->state = 0xC;
                 if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
-            } else if (*(int *)(data + 0x128) != -1
-                       && *(int *)(*(char **)((char *)((*(int *)(data + 0x128) << 8) + quartu_moby_array_m) + 0x78) + 8) == 0
+            } else if (data->alarm != -1
+                       && *(int *)(*(char **)((char *)((data->alarm << 8) + quartu_moby_array_m) + 0x78) + 8) == 0
                        && can_sentrybot_approach_linked_moby(moby) != 0) {
                 ((Moby *)moby)->state = 0xE;
                 if (((Moby *)moby)->prev_seq != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(0x14));
-            } else if (FastDiffRots(((Moby *)moby)->rot.z, fast_atan2(*(float *)(data + 0xD0) - ((Moby *)moby)->pos.x, *(float *)(data + 0xD4) - ((Moby *)moby)->pos.y)) > 0.7853982f) {
-                begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(data + 0xD0), (void *)0x12, (void *)5);
-            } else if (*(int *)(data + 0x114) == 2) {
+            } else if (FastDiffRots(((Moby *)moby)->rot.z, fast_atan2(data->target_pos.x - ((Moby *)moby)->pos.x, data->target_pos.y - ((Moby *)moby)->pos.y)) > 0.7853982f) {
+                begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), &data->target_pos.x, (void *)0x12, (void *)5);
+            } else if (data->sight == 2) {
                 ((Moby *)moby)->state = 0xC;
                 if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             } else {
                 ((Moby *)moby)->state = 0x12;
                 if (((Moby *)moby)->prev_seq != 5) MobyBlendAnimation(moby, 5, 0, scale_ticks(10));
             }
-            data[0x19E] = 0;
+            data->fired = 0;
         }
         break;
     case 12:
         if (((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x65) {
             ((Moby *)moby)->state = 9;
             if (((Moby *)moby)->prev_seq != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
-            if (*(int *)(data + 0x128) != -1) {
-                char *o = (char *)((*(int *)(data + 0x128) << 8) + quartu_moby_array_m);
+            if (data->alarm != -1) {
+                char *o = (char *)((data->alarm << 8) + quartu_moby_array_m);
                 if (*(int *)(((char *)((Moby *)o)->pvars) + 8) != 0) set_sentrybot_alarm_duration(o, -1);
             }
         } else {
-            int mode = *(int *)(data + 0x114);
-            if (mode != 2 && data[0x15B] == 0) {
-                begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(data + 0xD0), (void *)0x10, (void *)3);
-            } else if (*(short *)(data + 0x156) == 0) {
+            int mode = data->sight;
+            if (mode != 2 && data->lost_target == 0) {
+                begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), &data->target_pos.x, (void *)0x10, (void *)3);
+            } else if (data->alert_timer == 0) {
                 ((Moby *)moby)->state = 9;
                 if (((Moby *)moby)->prev_seq != 0xD) MobyBlendAnimation(moby, 0xD, 0, scale_ticks(10));
-                if (*(int *)(data + 0x128) != -1) {
-                    char *o = (char *)((*(int *)(data + 0x128) << 8) + quartu_moby_array_m);
+                if (data->alarm != -1) {
+                    char *o = (char *)((data->alarm << 8) + quartu_moby_array_m);
                     if (*(int *)(((char *)((Moby *)o)->pvars) + 8) != 0) set_sentrybot_alarm_duration(o, scale_ticks(0x1E));
                 }
-            } else if (data[0x15A] != 0) {
-                if (mode != 2 && data[0x15B] == 0) {
-                    begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(target + 0x10), (void *)0x10, (void *)3);
+            } else if (data->can_see != 0) {
+                if (mode != 2 && data->lost_target == 0) {
+                    begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(target + 0x10), (void *)0x10, (void *)3);
                 } else {
-                    begin_sentrybot_turn_toward_point((char *)moby, data, (float *)(target + 0x10), (void *)0xC, (void *)0);
+                    begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(target + 0x10), (void *)0xC, (void *)0);
                 }
-            } else if (*(int *)(data + 0x124) != -1) {
-                if (*(int *)(data + 0x144) != 0) {
-                    *(int *)(data + 0x13C) = (*(int *)(data + 0x13C) + 1) % *quartu_paths[*(int *)(data + 0x124)];
+            } else if (data->patrol_path != -1) {
+                if (data->at_point != 0) {
+                    data->patrol_point = (data->patrol_point + 1) % *quartu_paths[data->patrol_path];
                 }
-                *(int *)(data + 0x144) = 0;
-                *(int *)(data + 0x14C) = scale_ticks(0x3C);
+                data->at_point = 0;
+                data->wait_timer = scale_ticks(0x3C);
                 ((Moby *)moby)->command = 1;
-                if (data[0x15F] != 0) {
+                if (data->woke != 0) {
                     ((Moby *)moby)->state = 0xD;
                     if (((Moby *)moby)->prev_seq != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(10));
                 } else {
-                    data[0x15F] = 1;
+                    data->woke = 1;
                     ((Moby *)moby)->state = 0xB;
-                    data[0x15C] = 0xD;
-                    data[0x15D] = 0xE;
+                    data->next_state = 0xD;
+                    data->next_anim = 0xE;
                     if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
                 }
             }
         }
         break;
     case 21: {
-        int r = mine_fall(moby, data + 0x70);
+        int r = mine_fall(moby, data->knockback);
         if (r & 0x40) {
             ProbeGroundHeight(moby + 0x10, 0, 0.5f);
-            if (CollType() == -1 && *(float *)(data + 0x168) - 5.0f < ((Moby *)moby)->pos.z) {
+            if (CollType() == -1 && data->home_pos.z - 5.0f < ((Moby *)moby)->pos.z) {
                 if (((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x65) {
                     ((Moby *)moby)->state = 0xC;
                     if (((Moby *)moby)->prev_seq != 0) MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
                 } else {
                     ((Moby *)moby)->command = 1;
-                    if (data[0x15F] != 0) {
+                    if (data->woke != 0) {
                         ((Moby *)moby)->state = 0x10;
                         if (((Moby *)moby)->prev_seq != 3) MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
                     } else {
-                        data[0x15F] = 1;
+                        data->woke = 1;
                         ((Moby *)moby)->state = 0xB;
-                        data[0x15C] = 0x10;
-                        data[0x15D] = 3;
+                        data->next_state = 0x10;
+                        data->next_anim = 3;
                         if (((Moby *)moby)->prev_seq != 1) MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
                     }
                 }
                 return;
             }
-            if (*(int *)(data + 0x12C) != -1) {
-                mark_moby_killed_and_release_owned_voice(quartu_moby_array_m + (*(int *)(data + 0x12C) << 8));
-                *(int *)(data + 0x12C) = -1;
+            if (data->linked_a != -1) {
+                mark_moby_killed_and_release_owned_voice(quartu_moby_array_m + (data->linked_a << 8));
+                data->linked_a = -1;
             }
-            if (*(int *)(data + 0x150) != -1) {
-                mark_moby_killed_and_release_owned_voice(quartu_moby_array_m + (*(int *)(data + 0x150) << 8));
-                *(int *)(data + 0x150) = -1;
+            if (data->linked_b != -1) {
+                mark_moby_killed_and_release_owned_voice(quartu_moby_array_m + (data->linked_b << 8));
+                data->linked_b = -1;
             }
             Moby_PlaySound(0xD, 0, (int)moby);
             SpawnExplosionFx(moby, moby + 0x10, -1, 0.5f, 13.0f);
@@ -684,14 +789,14 @@ void sentrybot_update(unsigned char *moby) {
         break;
     }
     case 23:
-        if (mine_fall(moby, data + 0x70) & 0x160) {
-            if (*(int *)(data + 0x12C) != -1) {
-                mark_moby_killed_and_release_owned_voice(quartu_moby_array_m + (*(int *)(data + 0x12C) << 8));
-                *(int *)(data + 0x12C) = -1;
+        if (mine_fall(moby, data->knockback) & 0x160) {
+            if (data->linked_a != -1) {
+                mark_moby_killed_and_release_owned_voice(quartu_moby_array_m + (data->linked_a << 8));
+                data->linked_a = -1;
             }
-            if (*(int *)(data + 0x150) != -1) {
-                mark_moby_killed_and_release_owned_voice(quartu_moby_array_m + (*(int *)(data + 0x150) << 8));
-                *(int *)(data + 0x150) = -1;
+            if (data->linked_b != -1) {
+                mark_moby_killed_and_release_owned_voice(quartu_moby_array_m + (data->linked_b << 8));
+                data->linked_b = -1;
             }
             Moby_PlaySound(0xD, 0, (int)moby);
             SpawnExplosionFx(moby, moby + 0x10, -1, 0.5f, 13.0f);
@@ -702,12 +807,12 @@ void sentrybot_update(unsigned char *moby) {
         break;
     }
     update_sentrybot_joint_aim(moby);
-    if (*(short *)(data + 0x156) != 0) {
+    if (data->alert_timer != 0) {
         lvl = 2;
-    } else if (*(int *)(data + 0x114) != 2) {
+    } else if (data->sight != 2) {
         lvl = 2;
     } else {
-        lvl = *(short *)(data + 0x158) != 0;
+        lvl = data->hero_spotted != 0;
     }
     tick = quartu_frame_count;
     if (tick != *(int *)&sentrybot_alert_level_frame_stamp_gp || ((Hero98BB8 *)(hero_globals_base + 0xE1D))->f22E0 < lvl) {
@@ -739,7 +844,7 @@ void sentrybot_update(unsigned char *moby) {
     }
     ((Moby *)moby)->glow_color = FastTweenColor(((Moby *)moby)->glow_color, color, 0.1f);
     {
-        unsigned char *p = data + 0x2A0;
+        unsigned char *p = (unsigned char *)data->effect_quads;
         int i;
         for (i = 0; i < 3; i++) {
             Moby_GetJointWorldPos(moby, i + 4, p);
@@ -810,20 +915,20 @@ extern float vec_distance_xy(float *, float *);
 // Turns a moby toward a point, updates its speed and velocity, and reports whether it is within 0.2 of it.
 int move_sentrybot_toward_point(char *moby, float *point, float arg) {
     float *fp = (float *)(moby + 0x48);
-    char *d = ((char *)((Moby *)moby)->pvars);
+    struct SentrybotVars *d = (struct SentrybotVars *)((Moby *)moby)->pvars;
     float vec[4];
     float a;
     float ang;
     a = fast_atan2(point[0] - ((Moby *)moby)->pos.x, point[1] - ((Moby *)moby)->pos.y);
-    SteerAngleWithVelocity(fp, (float *)(d + 0x138), a, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 6.981317f);
+    SteerAngleWithVelocity(fp, &d->turn_vel, a, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 6.981317f);
     ang = fast_atan2(point[0] - ((Moby *)moby)->pos.x, point[1] - ((Moby *)moby)->pos.y);
     if (FastDiffRots(((Moby *)moby)->rot.z, ang) < 0.7853982f) {
-        ApproachValue(d + 0x134, arg, g_frame_time_sq * 9.0f);
+        ApproachValue(&d->speed, arg, g_frame_time_sq * 9.0f);
     } else {
-        ApproachValue(d + 0x134, 0.0f, g_frame_time_sq * 9.0f);
+        ApproachValue(&d->speed, 0.0f, g_frame_time_sq * 9.0f);
     }
-    vec[0] = FastCos(((Moby *)moby)->rot.z) * *(float *)(d + 0x134);
-    vec[1] = FastSin(((Moby *)moby)->rot.z) * *(float *)(d + 0x134);
+    vec[0] = FastCos(((Moby *)moby)->rot.z) * d->speed;
+    vec[1] = FastSin(((Moby *)moby)->rot.z) * d->speed;
     vec[2] = -(g_frame_time * 0.5f);
     move_4318((int)moby, (int)vec, 0.5f, 0.5f, 0.0f, 0);
     return vec_distance_xy((float *)(moby + 0x10), point) < 0.2f;
@@ -833,7 +938,7 @@ extern int quartu_moby_groups[];
 /* checks that no closer live object blocks the line to the target */
 int can_sentrybot_approach_linked_moby(void *mm) {
     char *m = mm;
-    int idx = *(int *)(((char *)((Moby *)m)->pvars) + 0x128);
+    int idx = ((struct SentrybotVars *)((Moby *)m)->pvars)->alarm;
     char *t;
     float d;
     short *p;
@@ -848,7 +953,7 @@ int can_sentrybot_approach_linked_moby(void *mm) {
         char *o = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + quartu_moby_array_m);
         if (((unsigned char *)o)[0x20] == 0xE) return 0;
         if (((unsigned char *)o)[0xBC] == 1) {
-            int j = *(int *)(((char *)((Moby *)o)->pvars) + 0x128);
+            int j = ((struct SentrybotVars *)((Moby *)o)->pvars)->alarm;
             if (j != -1) {
                 if (vec_distance_xy((float *)(o + 0x10), (float *)((char *)quartu_moby_array_m + (j << 8) + 0x10)) < d) return 0;
             }
@@ -860,13 +965,13 @@ extern int coll_line(void *, void *, int, void *, void *);
 
 // Finds the nearest visible target moby from the moby's candidate list, returning its address.
 int find_sentrybot_attention_target(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct SentrybotVars *d = (struct SentrybotVars *)((Moby *)m)->pvars;
     int best = 0;
     float bd;
     float a[4];
     float b[4];
     short *p;
-    int idx = *(int *)(d + 0x17C);
+    int idx = d->attention_group;
     if (idx == -1) return 0;
     p = (short *)quartu_moby_groups[idx];
     if (p == 0) return 0;
@@ -880,8 +985,8 @@ int find_sentrybot_attention_target(char *m) {
             float f = FastDiffRots(((Moby *)m)->rot.z,
                 fast_atan2(*(float *)(o + 0x10) - ((Moby *)m)->pos.x, *(float *)(o + 0x14) - ((Moby *)m)->pos.y));
             unsigned char st = ((char *)((id << 8) + quartu_moby_array_m))[0x20];
-            if (st == 7 || st == 0xF) *(short *)(d + 0x194) = 1;
-            if (*(short *)(d + 0x194) != 0 || f < 1.2217305f) {
+            if (st == 7 || st == 0xF) d->attention_locked = 1;
+            if (d->attention_locked != 0 || f < 1.2217305f) {
                 qcopy(b, (char *)((id << 8) + quartu_moby_array_m) + 0x10);
                 a[2] += 1.0f;
                 if (coll_line(a, b, 2, 0, 0) == 0) {
@@ -894,7 +999,7 @@ int find_sentrybot_attention_target(char *m) {
             }
         }
     } while (*p++ >= 0);
-    if (*(short *)(d + 0x194) == 0) {
+    if (d->attention_locked == 0) {
         if (bd > 8.0f) best = 0;
     }
     return best;
@@ -912,9 +1017,9 @@ int can_sentrybot_advance_patrol(void *mm) {
         if (((Moby *)o)->oclass == 0x2C && o != 0
             && ((unsigned char *)o)[0x20] != 0xFE && ((unsigned char *)o)[0x20] != 0xFD
             && ((unsigned char *)o)[0xBC] == 0) {
-            char *d = ((char *)((Moby *)o)->pvars);
-            if (*(int *)(d + 0x144) == 0 && *(int *)(d + 0x124) != -1
-                && *(int *)(d + 0x13C) >= *(int *)(m + 0x13C))
+            struct SentrybotVars *d = (struct SentrybotVars *)((Moby *)o)->pvars;
+            if (d->at_point == 0 && d->patrol_path != -1
+                && d->patrol_point >= *(int *)(m + 0x13C))
                 return 0;
         }
     } while (*(short *)p++ >= 0);
@@ -930,18 +1035,18 @@ void alert_visible_group_sentrybots(void *mobyv) {
     char *moby = mobyv;
     float a[4];
     float b[4];
-    char *d = ((char *)((Moby *)moby)->pvars);
+    struct SentrybotVars *d = (struct SentrybotVars *)((Moby *)moby)->pvars;
     unsigned short *list;
     int idx;
     int r;
     char *m;
 
     if (*(int *)(hero_globals_base + 0x2EA1) == 0x65) {
-        *(short *)(d + 0x156) = 0;
+        d->alert_timer = 0;
         return;
     }
     if ((unsigned char)moby[0x21] == 0xFF) {
-        *(short *)(d + 0x156) = scale_ticks(0xB4);
+        d->alert_timer = scale_ticks(0xB4);
         return;
     }
     list = (unsigned short *)quartu_moby_groups[(unsigned char)moby[0x21]];
@@ -984,7 +1089,7 @@ extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 /* Turns the turret head toward its current target (or remembered point), clamping yaw and pitch, and eases both joints. */
 void update_sentrybot_joint_aim(void *mv) {
     char *m = mv;
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct SentrybotVars *d = (struct SentrybotVars *)((Moby *)m)->pvars;
     float tgt[4];
     float pos[4];
     float dir[4];
@@ -992,14 +1097,14 @@ void update_sentrybot_joint_aim(void *mv) {
     float k2 = 0.3f;
     float yaw, pitch;
     int have = 0;
-    if (*(short *)(d + 0x194) != 0 && *(char **)(d + 0x190) != 0) {
-        qcopy(tgt, *(char **)(d + 0x190) + 0x10);
+    if (d->attention_locked != 0 && d->attention != 0) {
+        qcopy(tgt, d->attention + 0x10);
         have = 1;
-    } else if (*(short *)(d + 0x19C) != 0 && *(char **)(d + 0x198) != 0) {
-        qcopy(tgt, *(char **)(d + 0x198) + 0x10);
+    } else if (d->noticed_timer != 0 && d->noticed != 0) {
+        qcopy(tgt, d->noticed + 0x10);
         have = 1;
-    } else if (((unsigned char *)d)[0x19F] != 0) {
-        qcopy(tgt, d + 0x100);
+    } else if (d->sees_aim_point != 0) {
+        qcopy(tgt, &d->aim_point);
         have = 1;
     }
     if (have) {
@@ -1022,20 +1127,20 @@ void update_sentrybot_joint_aim(void *mv) {
         yaw = pitch;
     }
     if ((unsigned int)(((unsigned char *)m)[0x20] - 0x10) < 2) {
-        *(float *)(d + 0x288) = yaw;
-        if (1.0471976f < yaw) *(float *)(d + 0x288) = 1.0471976f;
-        else if (yaw < -1.0471976f) *(float *)(d + 0x288) = -1.0471976f;
-        *(float *)(d + 0x208) = yaw - *(float *)(d + 0x288);
+        d->body_yaw = yaw;
+        if (1.0471976f < yaw) d->body_yaw = 1.0471976f;
+        else if (yaw < -1.0471976f) d->body_yaw = -1.0471976f;
+        d->head_yaw = yaw - d->body_yaw;
     } else {
-        *(float *)(d + 0x208) = yaw * 0.7f;
-        *(float *)(d + 0x288) = yaw * 0.3f;
+        d->head_yaw = yaw * 0.7f;
+        d->body_yaw = yaw * 0.3f;
     }
     {
         float e = g_frame_scale_sq;
-        *(float *)(d + 0x204) = pitch;
-        EaseManipulatorOffsets(m, d + 0x1A0, 1, k1 * e, k2 * e);
+        d->head_pitch = pitch;
+        EaseManipulatorOffsets(m, d->head_manip, 1, k1 * e, k2 * e);
     }
-    EaseManipulatorOffsets(m, d + 0x220, 0, k1 * g_frame_scale_sq, k2 * g_frame_scale_sq);
+    EaseManipulatorOffsets(m, d->body_manip, 0, k1 * g_frame_scale_sq, k2 * g_frame_scale_sq);
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
@@ -1087,7 +1192,7 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
         SENTRYBOT_NO_KNOCKBACK_START_RESPONSE = 11
     };
     struct Moby *moby = object;
-    unsigned char *data = moby->pvars;
+    struct SentrybotVars *data = (struct SentrybotVars *)moby->pvars;
     SentryHitMessage *hit;
     float impact;
     int kind;
@@ -1106,29 +1211,29 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
     moby->scale = moby->pclass->scale * *(float *)&quartu_sentrybot_scale_factor;
     impact = 0.0f;
     hit = (SentryHitMessage *)MobyGetHitMessage(moby, 0x330000, 0);
-    code = ComputeHitResponse(moby, hit, data + 0x20, 0, &kind, &impact, 0, 4);
+    code = ComputeHitResponse(moby, hit, &data->health, 0, &kind, &impact, 0, 4);
     if (kind != 1 && moby->state != 0x17) {
         if (*(unsigned char *)(hero_globals_base + 0x2EC1) == 0)
             alert_visible_group_sentrybots(moby);
-        *(float *)(data + 0x20) -= impact;
+        data->health -= impact;
         if (hit->other->oclass == 0x47)
             code = 3;
-        if (*(float *)(data + 0x20) <= 0.0f)
+        if (data->health <= 0.0f)
             code = 1;
         amount = truncate_float_to_s32_r(512.0f);
         speed = *(float *)&sentrybot_knockback_gravity_gp * g_frame_time_sq;
-        *(int *)(data + 0x90) = amount;
-        *(float *)(data + 0x98) = 0.5f;
-        *(int *)(data + 0x94) = 9;
-        *(float *)(data + 0x80) = speed;
-        data[0xAD] = 0;
+        data->kb_amount = amount;
+        data->kb_unk_98 = 0.5f;
+        data->kb_mode = 9;
+        data->kb_gravity = speed;
+        data->kb_unk_AD = 0;
         switch (code) {
         case SENTRYBOT_NO_KNOCKBACK_SETUP_RESPONSE:
         case SENTRYBOT_NO_KNOCKBACK_START_RESPONSE:
             break;
         case SENTRYBOT_FIRST_CHANNEL_BLEND_HIT_RESPONSE:
         case SENTRYBOT_FIRST_CHANNEL_BLEND_TARGET_HIT_RESPONSE:
-            data[0x67] = 0xFA;
+            data->flash = 0xFA;
             break;
         case NONLETHAL_KNOCKBACK_HIT_RESPONSE:
         case NONLETHAL_ARC_HIT_RESPONSE:
@@ -1150,12 +1255,12 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
                 forward = *(float *)&sentrybot_recoverable_knockback_horizontal_speed_gp * step;
                 lateral = *(float *)&sentrybot_recoverable_knockback_vertical_speed_gp * step;
                 vz = *(float *)&sentrybot_recoverable_knockback_horizontal_speed_approach_rate_gp * step;
-                *(float *)(data + 0x80) = fall_speed;
-                *(float *)(data + 0x88) = forward;
-                *(float *)(data + 0x8C) = lateral;
-                *(float *)(data + 0x84) = vz;
-                *(float *)(data + 0xC0) = 5.0f;
-                *(float *)(data + 0xC4) = 10.0f;
+                data->kb_gravity = fall_speed;
+                data->kb_forward = forward;
+                data->kb_up = lateral;
+                data->kb_approach = vz;
+                data->kb_unk_C0 = 5.0f;
+                data->kb_unk_C4 = 10.0f;
             }
             {
                 float heading = fast_atan2(moby->pos.x - hit->other->pos.x,
@@ -1163,11 +1268,11 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
                 *(VecQuad *)hit_vector_or_sight_line_origin = hit->point;
                 angle = heading;
             }
-            HeadingFromVector(hit_vector_or_sight_line_origin, &angle, data + 0x88, data + 0x8C);
-            InitKnockback(moby, data + 0x70, 7, 1, 0, angle);
+            HeadingFromVector(hit_vector_or_sight_line_origin, &angle, &data->kb_forward, &data->kb_up);
+            InitKnockback(moby, data->knockback, 7, 1, 0, angle);
             moby->state = 0x15;
             moby->command = 2;
-            data[0x67] = 0x78;
+            data->flash = 0x78;
             break;
         case LETHAL_HIT_RESPONSE:
         case DEATH_KNOCKBACK_HIT_RESPONSE:
@@ -1186,12 +1291,12 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
                 lateral = *(float *)&sentrybot_death_knockback_vertical_speed_gp * step;
                 vz = *(float *)&sentrybot_death_knockback_horizontal_speed_approach_rate_gp * step;
                 moby->flags &= 0xEFFF;
-                *(float *)(data + 0x80) = fall_speed;
-                *(float *)(data + 0x88) = forward;
-                *(float *)(data + 0x8C) = lateral;
-                *(float *)(data + 0x84) = vz;
-                *(float *)(data + 0xC0) = 8.0f;
-                *(float *)(data + 0xC4) = 16.0f;
+                data->kb_gravity = fall_speed;
+                data->kb_forward = forward;
+                data->kb_up = lateral;
+                data->kb_approach = vz;
+                data->kb_unk_C0 = 8.0f;
+                data->kb_unk_C4 = 16.0f;
             }
             {
                 float heading = fast_atan2(moby->pos.x - hit->other->pos.x,
@@ -1199,79 +1304,79 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
                 *(VecQuad *)hit_vector_or_sight_line_origin = hit->point;
                 fall_angle = heading;
             }
-            HeadingFromVector(hit_vector_or_sight_line_origin, &fall_angle, data + 0x88, data + 0x8C);
-            InitKnockback(moby, data + 0x70, 8, 1, 0, fall_angle);
+            HeadingFromVector(hit_vector_or_sight_line_origin, &fall_angle, &data->kb_forward, &data->kb_up);
+            InitKnockback(moby, data->knockback, 8, 1, 0, fall_angle);
             moby->state = 0x17;
             moby->command = 2;
-            data[0x67] = 0xF0;
+            data->flash = 0xF0;
             break;
         }
-        RerollEffectCounter(moby, data + 0x60);
+        RerollEffectCounter(moby, &data->color_fade);
     }
     moby->hit_slot = 0xFF;
-    StepColorFade(moby, data + 0x60);
+    StepColorFade(moby, &data->color_fade);
     if (flag != 0)
         return;
-    if (*(int *)(data + 0x38) != 0) {
+    if (data->reset_idle != 0) {
         float value;
         int rounded;
         value = func_002140F8_r(180.0f, 240.0f);
         rounded = truncate_float_to_s32_r(multiply_global_factor(value));
-        *(int *)(data + 0x38) = 0;
-        *(float *)(data + 0x130) = (float)rounded;
+        data->reset_idle = 0;
+        data->idle_countdown = (float)rounded;
     }
-    func_L08_00211A38_r(data + 0x130);
+    func_L08_00211A38_r(&data->idle_countdown);
     if (FastVecDist(&moby->pos, (hero_globals_base + 0xEED)) < 64.0f) {
         group = 0;
         qcopy(hit_vector_or_sight_line_origin, &moby->pos);
         hit_vector_or_sight_line_origin[2] += 1.0f;
-        if (*(int *)(data + 0x12C) != -1)
-            group = quartu_moby_array_m + (*(int *)(data + 0x12C) << 8);
-        data[0x15A] = func_L00_001EFFF0_r(hit_vector_or_sight_line_origin, (hero_globals_base + 0xEED), 2, (void *)group, 0) == 0;
+        if (data->linked_a != -1)
+            group = quartu_moby_array_m + (data->linked_a << 8);
+        data->can_see = func_L00_001EFFF0_r(hit_vector_or_sight_line_origin, (hero_globals_base + 0xEED), 2, (void *)group, 0) == 0;
     } else {
-        data[0x15A] = 0;
+        data->can_see = 0;
     }
-    path = quartu_paths[*(int *)(data + 0x120)];
-    if (FindNearestEligibleMoby(moby, data + 0xD0, 128.0f, 0, 0, path + 4, *path) != 2) {
+    path = quartu_paths[data->search_path];
+    if (FindNearestEligibleMoby(moby, &data->target_pos, 128.0f, 0, 0, path + 4, *path) != 2) {
         float target_angle;
         seen = 0;
-        target_angle = fast_atan2(*(float *)(data + 0xD0) - moby->pos.x,
-                              *(float *)(data + 0xD4) - moby->pos.y);
+        target_angle = fast_atan2(data->target_pos.x - moby->pos.x,
+                              data->target_pos.y - moby->pos.y);
         if ((FastDiffRots(moby->rot.z, target_angle) < 1.5707964f &&
-             (*(short *)(hero_globals_base + 0x1125) == 0 || FastAbsF(moby->pos.z - *(float *)(data + 0xD8)) < 4.0f)) ||
+             (*(short *)(hero_globals_base + 0x1125) == 0 || FastAbsF(moby->pos.z - data->target_pos.z) < 4.0f)) ||
             moby->state == 0x10 || moby->state == 0x11) {
-            seen = data[0x15A];
+            seen = data->can_see;
         }
-        if (*(int *)(data + 0x114) == 1)
-            data[0x15E] = data[0x15B] + 1;
+        if (data->sight == 1)
+            data->sight_count = data->lost_target + 1;
         else if (*(unsigned char *)(hero_globals_base + 0x2EC1) != 3)
-            data[0x15E] = 0;
-        else if (data[0x15E] >= 2)
-            data[0x15B] = 1;
-        data[0x19F] = 1;
+            data->sight_count = 0;
+        else if (data->sight_count >= 2)
+            data->lost_target = 1;
+        data->sees_aim_point = 1;
         if (seen == 0) {
-            if (data[0x15A] == 0)
-                data[0x15B] = 1;
-            data[0x19F] = 0;
-            *(int *)(data + 0x114) = 2;
-            *(short *)(data + 0x158) = 0;
-        } else if (((*(short *)(data + 0x156) == 0 || data[0x15B] != 0) &&
+            if (data->can_see == 0)
+                data->lost_target = 1;
+            data->sees_aim_point = 0;
+            data->sight = 2;
+            data->hero_spotted = 0;
+        } else if (((data->alert_timer == 0 || data->lost_target != 0) &&
                     *(unsigned char *)(hero_globals_base + 0x2EC1) == 3) ||
-                   (data[0x15E] != 0 && *(int *)(data + 0x114) != 1)) {
-            *(int *)(data + 0x114) = 2;
-            *(short *)(data + 0x158) = 1;
-        } else if (*(unsigned char *)(hero_globals_base + 0x2EC1) != 3 && *(int *)(data + 0x114) != 2) {
-            data[0x15B] = 0;
+                   (data->sight_count != 0 && data->sight != 1)) {
+            data->sight = 2;
+            data->hero_spotted = 1;
+        } else if (*(unsigned char *)(hero_globals_base + 0x2EC1) != 3 && data->sight != 2) {
+            data->lost_target = 0;
         }
         if (quartu_game_mode == 2)
-            *(int *)(data + 0x114) = 2;
+            data->sight = 2;
     } else {
-        data[0x19F] = 0;
-        data[0x15B] = 1;
-        *(short *)(data + 0x158) = 0;
+        data->sees_aim_point = 0;
+        data->lost_target = 1;
+        data->hero_spotted = 0;
     }
-    if (*(int *)(data + 0x110) == 0)
-        *(int *)(data + 0x110) = *(int *)(hero_globals_base + 0x2E9D);
+    if (*(int *)&data->target == 0)
+        *(int *)&data->target = *(int *)(hero_globals_base + 0x2E9D);
 }
 
 #undef func_002140F8_r
@@ -1302,30 +1407,30 @@ void spawn_rocket_detonation_glow(char *moby);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00278fd8.c, FUN_L15_0029ac30. */
 void ProjectileUpdate(unsigned char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct RocketVars *d = (struct RocketVars *)((Moby *)m)->pvars;
     float next[4];
     float back[4];
     char col[0x30];
     float s;
-    if (*(int *)(d + 0x10) == 0) {
+    if (d->sound_played == 0) {
         if (FastVecDist(m + 0x10, quartu_camera_pos_r) < 15.0f) {
             Sound_PlayClassSound(9, 0, m, 0x27E);
-            *(int *)(d + 0x10) = 1;
+            d->sound_played = 1;
         }
     }
     if (((Moby *)m)->state != 0)
         return;
     s = 1.0f;
     ((Moby *)m)->rot.x = FastAddRots(((Moby *)m)->rot.x, g_frame_time * 6.2831855f);
-    FastVecAdd(next, m + 0x10, d);
-    FastVecScale(back, d, -2.0f);
+    FastVecAdd(next, m + 0x10, &d->vel);
+    FastVecScale(back, &d->vel, -2.0f);
     FastVecAdd(back, back, m + 0x10);
     if (hero_vehicle_mode[0] == 2 && random_integer_below(5) != 0)
         s = 0.0f;
-    InitDirectionalHitQuery(col, m, 0x10003, s, d);
+    InitDirectionalHitQuery(col, m, 0x10003, s, ((char *)d));
     *(short *)(col + 0x1A) = ((Moby *)m)->oclass;
-    if (coll_line(back, next, 0x10, m, col) != 0 || fast_dec_timer(d + 0x14) != 0) {
-        if (quartu_coll_hit_moby[0] != *(int *)(d + 0x18)) {
+    if (coll_line(back, next, 0x10, m, col) != 0 || fast_dec_timer(&d->life_timer) != 0) {
+        if (quartu_coll_hit_moby[0] != d->owner) {
             Sound_PlayClassSound(8, 0, m, 0x27E);
             spawn_rocket_detonation_glow((char *)m);
             DeleteMoby(m);
@@ -2321,7 +2426,7 @@ static inline int save_flag_clear_2A3DD0(unsigned short id) {
 /* Level 15 moby update (class 78), three states: 0 picks the first state from the kill and save flags,
  * 1 sprays sixteen random sparks around the moby and parks its data vector, 2 counts down. */
 void update_spark_emitter_moby(unsigned char *moby) {
-    unsigned char *d = ((unsigned char *)((Moby *)moby)->pvars);
+    struct SparkEmitterVars *d = (struct SparkEmitterVars *)((Moby *)moby)->pvars;
     float V[4];
     float W[16];
     float A[4];
@@ -2344,7 +2449,7 @@ void update_spark_emitter_moby(unsigned char *moby) {
         break;
     }
     case 1: {
-        int idx = *(int *)(d + 0x10);
+        int idx = d->linked_moby;
         if ((idx != -1 && D_L15_00160058_2A3DD0[idx].state == 2)
             || saved_mission_state_r[g_current_level_index_r][((Moby *)moby)->mission] == 0xFF) {
             mark_moby_killed_and_release_owned_voice_r(moby);
@@ -2397,20 +2502,20 @@ void update_spark_emitter_moby(unsigned char *moby) {
                 create_type_47_particle_r(A, B, C, col, 0x60808080, fa, fb, fc, moby);
             } while (i >= 0);
             if (FastAbsF_r(V[1]) < hi && z < V[2] && V[2] < hi) {
-                matrix_mul_vec3_r(d, V, moby + 0xC0);
-                FastVecAdd_r(d, d, moby + 0x10);
+                matrix_mul_vec3_r(&d->spark_pos, V, moby + 0xC0);
+                FastVecAdd_r(&d->spark_pos, &d->spark_pos, moby + 0x10);
             } else {
-                qzero(d);
+                qzero(&d->spark_pos);
             }
             AddDrawCallback_r(draw_spark_emitter_effect_quads_r, moby);
         }
         break;
     }
     case 2:
-        if ((*(int *)(d + 0x14))++ >= 0x3D) {
+        if ((d->fade_frames)++ >= 0x3D) {
             ((Moby *)moby)->state = 3;
         } else {
-            qzero(d);
+            qzero(&d->spark_pos);
             AddDrawCallback_r(draw_spark_emitter_effect_quads_r, moby);
         }
         break;
@@ -2775,16 +2880,16 @@ void draw_spiderbot_effect_quad(char *moby) {
     float E[4];
     float C[4];
     float D[4];
-    char *d = ((char *)((Moby *)moby)->pvars);
+    struct SpiderbotEffectVars *d = (struct SpiderbotEffectVars *)((Moby *)moby)->pvars;
     int i;
-    FastVecSub(A, d + 0x10, moby + 0x10);
+    FastVecSub(A, &d->effect_pos, moby + 0x10);
     *(u128_2A8850 *)B = *(u128_2A8850 *)A;
     vec_scale_to_length(B, B, 0.5f);
     *(u128_2A8850 *)C = *(u128_2A8850 *)(moby + 0x10);
     add_vectors(D, C, B);
-    FastVecSub(E, C, d + 0x10);
+    FastVecSub(E, C, &d->effect_pos);
     FastVecSub(A, C, quartu_camera_pos);
-    FastVecSub(F, d + 0x10, quartu_camera_pos);
+    FastVecSub(F, &d->effect_pos, quartu_camera_pos);
     FastVecCross(A, A, E);
     vec_scale_to_length(A, A, 0.1f);
     FastVecCross(F, F, E);
@@ -2805,9 +2910,9 @@ void draw_spiderbot_effect_quad(char *moby) {
     *(u128_2A8850 *)q.v[0] = *(u128_2A8850 *)D;
     FastVecAdd(D, C, A);
     *(u128_2A8850 *)q.v[1] = *(u128_2A8850 *)D;
-    FastVecSub(D, d + 0x10, F);
+    FastVecSub(D, &d->effect_pos, F);
     *(u128_2A8850 *)q.v[2] = *(u128_2A8850 *)D;
-    FastVecAdd(D, d + 0x10, F);
+    FastVecAdd(D, &d->effect_pos, F);
     *(u128_2A8850 *)q.v[3] = *(u128_2A8850 *)D;
     draw_world_quad(&q, 0, 0);
 }
@@ -2941,11 +3046,12 @@ void MovingMobyUpdate(struct Moby *moby) {
 typedef struct L15AlarmData {
     int mode;
     int idx;
-    int f8;
+    int f8;                     /* 0x08: alarm on */
     int c;
     int d10;
     float f14;
-    char blk18[16];
+    int timer;                  /* 0x18: alarm frames left */
+    char pad1C[12];
 } L15AlarmData;
 
 extern int D_L15_00161B3C_gp SDATA(D_L15_00161B3C);
@@ -3037,7 +3143,7 @@ void sentrybot_alarm_update(Moby *m) {
         r = FastTweenColor(0x801414DC, 0x8004048C, (f + 1.0f) * 0.5f);
         m->glow_color = r;
         d->f14 = FastAddRots(d->f14, g_frame_time * 12.566371f);
-        if (fast_dec_timer(d->blk18) == 0 && quartu_game_mode != 2)
+        if (fast_dec_timer(&d->timer) == 0 && quartu_game_mode != 2)
             break;
         set_sentrybot_alarm_duration((char *)m, 0);
         d->f8 = 0;
@@ -3070,7 +3176,7 @@ void sentrybot_alarm_update(Moby *m) {
             if (coll_line(tmp, h2 + 0x50, 2, 0, 0) == 0 && activate_first_inactive_group_moby(d->idx, pos))
                 d->c = d->d10;
         }
-        r = fast_dec_timer(d->blk18);
+        r = fast_dec_timer(&d->timer);
         if (r != 0 || quartu_game_mode == 2) {
             set_sentrybot_alarm_duration((char *)m, 0);
             d->f8 = 0;
@@ -3114,7 +3220,7 @@ extern short quartu_alarm_intensity;
 
 // Sets the two fields of the moby's data (and of matching mobys in the level list) from a flag.
 void set_sentrybot_alarm_duration(char *m, int a) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct L15AlarmData *d = (struct L15AlarmData *)((Moby *)m)->pvars;
     int flag;
     short *p;
     if (a == -1) {
@@ -3123,8 +3229,8 @@ void set_sentrybot_alarm_duration(char *m, int a) {
     }
     flag = a != 0;
     if (((unsigned char *)m)[0x21] == 0xFF) {
-        *(int *)(d + 0x18) = scale_ticks(a);
-        *(int *)(d + 8) = flag;
+        d->timer = scale_ticks(a);
+        d->f8 = flag;
         return;
     }
     p = (short *)quartu_moby_groups[((unsigned char *)m)[0x21]];
@@ -3132,9 +3238,9 @@ void set_sentrybot_alarm_duration(char *m, int a) {
         do {
             char *o = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + quartu_moby_array_m);
             if (((Moby *)o)->oclass == 0x198) {
-                char *e = ((char *)((Moby *)o)->pvars);
-                *(int *)(e + 8) = flag;
-                *(int *)(e + 0x18) = scale_ticks(a);
+                struct L15AlarmData *e = (struct L15AlarmData *)((Moby *)o)->pvars;
+                e->f8 = flag;
+                e->timer = scale_ticks(a);
             }
         } while (*p++ >= 0);
     }
@@ -3142,7 +3248,7 @@ void set_sentrybot_alarm_duration(char *m, int a) {
 
 // Moby update: state 1 starts an animation, state 3 allocates a value once.
 void prepare_sentrybot_alarm(unsigned char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct L15AlarmData *data = (struct L15AlarmData *)((Moby *)moby)->pvars;
     if (((Moby *)moby)->state == 1) {
         ((Moby *)moby)->state = 2;
         if (((Moby *)moby)->prev_seq != 1) {
@@ -3150,8 +3256,8 @@ void prepare_sentrybot_alarm(unsigned char *moby) {
         }
     }
     if (((Moby *)moby)->state == 3) {
-        if (*(int *)(data + 8) == 0) {
-            *(int *)(data + 0x18) = scale_ticks(0x78);
+        if (data->f8 == 0) {
+            data->timer = scale_ticks(0x78);
         }
     }
 }
