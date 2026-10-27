@@ -10,6 +10,195 @@
 
 struct MenuScreen;
 
+struct MenuScreenWords {
+    u8 pad_30[0x4];
+    s32 unk34; /* 0x34: flags 0x40 / 0x80 (draw_map_screen) */
+    s32 saved_text_count; /* 0x38: previous help_msg_count */
+    s32 unk3C; /* 0x3C: stream buffer (FUN_00225660) */
+    u8 pad_40[0x10];
+    s32 load_state; /* 0x50: 0, 1 or 3 */
+    s32 saved_text_table; /* 0x54: previous help_msgs_m */
+    u8 pad_58[0x8];
+};
+
+struct MenuOption {
+    void *unk0; /* 0x0: 0 ends the list */
+    u8 *flag; /* 0x4: toggled by confirm (pad 0x40) */
+    u8 pad_8[0x8];
+    u32 flags; /* 0x10: bit 0 = fade out and toggle D_0016034C instead */
+};
+
+struct MenuOptionListData {
+    u8 pad_30[0x4];
+    struct MenuOption *list; /* 0x34: ended by a null unk0 */
+    s32 selection; /* 0x38: pad 0x1000 up, 0x4000 down */
+    s32 fade_timer; /* 0x3C: counts down after fade_to_black, drives D_0015F43C */
+};
+
+struct MenuChoice {
+    s32 unk0; /* 0x0: 0 ends the list */
+    u8 *value; /* 0x4: chosen option; confirm advances it */
+    s32 option[4]; /* 0x8: 0 ends them early */
+};
+
+struct MenuChoiceListData {
+    u8 pad_30[0x4];
+    struct MenuChoice *list; /* 0x34: ended by a zero unk0 */
+    s32 selection; /* 0x38: pad 0x1000 up, 0x4000 down */
+};
+
+struct MenuMissionListData {
+    s32 choice[19]; /* 0x30: selected mission per level; -1 while unfocused */
+    s32 count; /* 0x7C: collect_mission_ids result */
+};
+
+struct MenuItemGridData {
+    s32 flags; /* 0x30: 2 fixed row step, 4/8 lockable, 0x20 no equipped frame */
+    f32 margin_x; /* 0x34: left margin */
+    f32 margin_y; /* 0x38: top margin */
+    s32 selected_cell; /* 0x3C: highlighted cell */
+    s32 rows; /* 0x40 */
+    s32 cols; /* 0x44 */
+    struct MenuGridCell *cells; /* 0x48: rows * cols */
+    struct MenuScreen *up; /* 0x4C */
+    struct MenuScreen *down; /* 0x50 */
+    struct MenuScreen *left; /* 0x54 */
+    struct MenuScreen *right; /* 0x58 */
+};
+
+struct MenuIcon {
+    u16 icon; /* 0x0: get_icon_frame icon */
+    s16 frame; /* 0x2: get_icon_frame frame */
+};
+
+struct MenuIconListData {
+    u8 pad_30[0xC];
+    s32 cursor; /* 0x3C: highlighted icon */
+    s32 count; /* 0x40: icons drawn */
+    u8 pad_44[0x4];
+    struct MenuIcon *list; /* 0x48 */
+    u8 pad_4C[0x10];
+    s32 first_y; /* 0x5C: y of the first icon, 0x260 per icon */
+};
+
+struct MenuSaveSlotData {
+    s32 flags; /* 0x30: bit 0 pad repeat mask, 0x2000 second variant */
+    u8 pad_34[0xC];
+    s32 slot; /* 0x40: memory card slot 0..4, mirrored in D_0015EE34 */
+    u8 pad_44[0x4];
+    s32 save_data; /* 0x48: buffer for prepare_save_game / FUN_00226a70 */
+    s32 step; /* 0x4C: 0 idle, 1 start saving, 2 started */
+};
+
+struct MenuPromptData {
+    u8 pad_30[0x24];
+    s32 buffer; /* 0x54: stream buffer */
+};
+
+struct MenuItemSlotsData {
+    s32 items[8]; /* 0x30: item id per slot */
+    s32 cursor; /* 0x50: slot 0..7, pad 8/4 step it */
+};
+
+struct MenuCycleData {
+    u8 pad_30[0x24];
+    s32 selection; /* 0x54: one of twelve, wraps */
+};
+
+struct MenuTextItem {
+    s16 text; /* 0x0: help text id; 0 ends the list */
+    s16 action; /* 0x2: confirm action, see above */
+    union {
+        s32 value; /* page, close value, level or language */
+        struct {
+            u16 lo; /* action 6: menu_system.unkE4 */
+            s16 hi; /* action 6: menu_action_messages index, 0 = none */
+        } half;
+    } param; /* 0x4 */
+    s16 subtext; /* 0x8: second line text id, 0 = none */
+    s16 fade_timer; /* 0xA: up while selected, down otherwise */
+};
+
+struct MenuTextListData {
+    s32 flags; /* 0x30: 1 pad repeat, 2 no highlight, 4/8 font, 0x10 fixed step, 0x20 D_001A0314, 0x1000 wrap, 0x8000 scroll once */
+    struct MenuTextItem *items; /* 0x34: ended by a zero text */
+    struct MenuScreen *up; /* 0x38: focus above the first entry */
+    struct MenuScreen *down; /* 0x3C: focus below the last entry */
+    s32 selected; /* 0x40: highlighted entry */
+    s32 scroll; /* 0x44: text offset, keeps the selection visible */
+};
+
+struct MenuStreamEntry {
+    s32 sector; /* 0x0: start_audio_stream_read sector */
+    s32 sector_count; /* 0x4: 0 = nothing to load */
+};
+
+struct MenuStreamData {
+    struct MenuStreamEntry *entries; /* 0x30 */
+    s32 flags; /* 0x34: see above */
+    s32 texture_width; /* 0x38: draw size of the streamed image */
+    s32 texture_height; /* 0x3C */
+    s32 *language_base; /* 0x40: base entry for flags 0x1000 */
+    s32 state; /* 0x44: see above */
+    s32 buffer[2]; /* 0x48: stream buffers */
+    s32 loaded_entry[2]; /* 0x50: entry held by each buffer, -1 none */
+    s32 fixed_entry; /* 0x58: entry for flags 1, -1 none */
+    s32 elapsed_frames; /* 0x5C: updates since enter */
+    s32 read_offset; /* 0x60: data offset of a flags 0x20 read */
+};
+
+struct MenuItemPreviewData {
+    u8 pad_30[0x4];
+    s32 state; /* 0x34 */
+    f32 rotation_angle; /* 0x38 */
+    u8 pad_3C[0x8];
+    struct Moby *moby; /* 0x44: preview moby (create_menu_preview_moby) */
+    struct Moby *second_moby; /* 0x48: optional, drawn after moby */
+};
+
+struct MenuLabelData {
+    s32 flags; /* 0x30: see above */
+    s32 text_id; /* 0x34: help text id, or table of text ids per value */
+    u32 text_stride; /* 0x38: byte stride of the text_id table */
+    s32 scroll_offset; /* 0x3C: text scroll, 1/16 px */
+    u8 pad_40[0x4];
+    s32 fade_timer; /* 0x44: reset to scale_game_frames(menu_fade_duration) */
+    s32 cached_value; /* 0x48: value shown while fading */
+    s32 value_variant; /* 0x4C */
+};
+
+struct MenuScreen {
+    s32 (*update)(struct MenuScreen *); /* 0x00 */
+    u8 pad_4[0x4];
+    void (*enter)(struct MenuScreen *, s32); /* 0x08 */
+    void (*leave)(struct MenuScreen *, s32); /* 0x0C */
+    s32 unk10; /* 0x10: bit 2 set by FUN_0021d1f8 */
+    s32 moby; /* 0x14: its menu moby D_001D5D90[i]; menu sounds play on it */
+    s32 x; /* 0x18: left edge */
+    s32 y; /* 0x1C: top edge */
+    s32 width; /* 0x20 */
+    s32 height; /* 0x24 */
+    u8 pad_28[0x8];
+    union {
+        struct MenuScreenWords raw; /* not understood yet */
+        struct MenuOptionListData options; /* FUN_00220e28 */
+        struct MenuChoiceListData choices; /* FUN_002212b8 */
+        struct MenuMissionListData missions; /* FUN_0021c4c0 */
+        struct MenuItemGridData grid; /* draw_menu_item_grid */
+        struct MenuIconListData icons; /* FUN_00219fa0 */
+        struct MenuSaveSlotData save; /* saving_data_menu, saving_data_menu2 */
+        struct MenuItemSlotsData slots; /* FUN_0021c7a0 */
+        struct MenuCycleData cycle; /* update_menu_cycle_selection */
+        struct MenuTextListData list; /* draw_menu_text_list, fun_0021abf8 */
+        struct MenuStreamData stream; /* fun_0021fdc8, fun_0021f990 */
+        struct MenuItemPreviewData preview; /* FUN_0021e110, update_item_preview_moby */
+        struct MenuLabelData label; /* fun_0021a328 */
+        struct MenuPromptData prompt; /* draw_prompt_box, fun_00221a48 */
+    } data; /* 0x30 */
+};
+
+typedef struct MenuScreen MenuScreen;
+
 struct MenuPage {
     s32 moby_anims[14]; /* 0x00: animation per menu moby */
     struct MenuPage *back; /* 0x38: page for the back button (pad 0x10); 0 = none */
