@@ -1956,11 +1956,11 @@ extern u8 *coll_sphere_moby_hits[];
 #define g6F10 ((f32 *)D_L00_00166F10)
 extern float follow_cam_turn_blend_weight MACRO_ADDR;
 #define g40 D_L00_0015F040
-extern short follow_cam_heading_slide_enabled;
+extern short follow_camera_rotation_slide_enabled_gp;
 #define g64 (*(s32 *)&D_L00_00161E64)
-extern short follow_cam_heading_steadiness_min;
+extern short follow_camera_rotation_slide_trigger_threshold_gp;
 #define g54 (*(f32 *)&D_L00_00161E54)
-extern short follow_cam_slide_lateral_spring_max;
+extern short follow_camera_rotation_slide_lateral_spring_target_gp;
 #define g58 (*(f32 *)&D_L00_00161E58)
 extern short follow_cam_vehicle2_eye_offset;
 #define g68 (*(f32 *)&D_L00_00161E68)
@@ -1968,9 +1968,9 @@ extern short follow_cam_vehicle2_distance;
 #define g6C (*(f32 *)&D_L00_00161E6C)
 extern short follow_cam_vehicle2_height;
 #define g70 (*(f32 *)&D_L00_00161E70)
-extern short follow_cam_vehicle2_clearance_extra;
+extern short follow_camera_vehicle_collision_probe_step_growth_factor_gp;
 #define g74 (*(f32 *)&D_L00_00161E74)
-extern short follow_cam_vehicle2_clearance_scale;
+extern short follow_camera_vehicle_collision_probe_scale_gp;
 #define g78 (*(f32 *)&D_L00_00161E78)
 extern float FastCos(float);
 extern float FastSin(float);
@@ -3456,9 +3456,9 @@ extern float fast_atan2(float, float);
 extern float FastAddRots(float, float);
 extern short follow_cam_turn_stiffness;
 extern short follow_cam_turn_damping;
-extern short follow_cam_turn_max_speed;
-extern short follow_cam_turn_reverse_max_speed;
-extern short follow_cam_turn_max_step;
+extern short follow_camera_pitch_input_return_step_limit;
+extern short follow_camera_pitch_input_tracking_step_limit;
+extern short follow_camera_pitch_angle_step_limit;
 
 typedef struct TurnPitchVec_2e8bb8 {
     Vec4 vec;                               /* 0x00: vector the look-at matrix is built in */
@@ -3513,15 +3513,15 @@ void follow_camera_turn_and_pitch(int mi, float a, float b) {
     }
     zero = 0.0f;
     if (b == zero) {
-        sel = *(float *)&follow_cam_turn_max_speed;
+        sel = *(float *)&follow_camera_pitch_input_return_step_limit;
     } else if (!(FastAbsF(b) < FastAbsF(turn_pitch_state->turn_rate))) {
-        sel = *(float *)&follow_cam_turn_reverse_max_speed;
+        sel = *(float *)&follow_camera_pitch_input_tracking_step_limit;
     } else if (zero < b && zero < turn_pitch_state->turn_rate) {
-        sel = *(float *)&follow_cam_turn_max_speed;
+        sel = *(float *)&follow_camera_pitch_input_return_step_limit;
     } else if (b < zero && turn_pitch_state->turn_rate < zero) {
-        sel = *(float *)&follow_cam_turn_max_speed;
+        sel = *(float *)&follow_camera_pitch_input_return_step_limit;
     } else {
-        sel = *(float *)&follow_cam_turn_reverse_max_speed;
+        sel = *(float *)&follow_camera_pitch_input_tracking_step_limit;
     }
     turn_pitch_state->turn_rate = Cam_InterpValues(&turn_pitch_state->turn_rate_spring, turn_pitch_state->turn_rate, b,
                                                    *(float *)&follow_cam_turn_stiffness, *(float *)&follow_cam_turn_damping, sel);
@@ -3540,23 +3540,23 @@ void follow_camera_turn_and_pitch(int mi, float a, float b) {
     vec_scale_to_length(axis, axis, 1.0f);
     b = fast_atan2(e, b);
     abs_ang = FastAbsF(b);
-    if (abs_ang < FastAbsF(lim) && sel == *(float *)&follow_cam_turn_max_speed) {
+    if (abs_ang < FastAbsF(lim) && sel == *(float *)&follow_camera_pitch_input_return_step_limit) {
         turn_pitch_state->turn_rate = b / 0.69813168f;
     }
     if (b < lim) {
-        if (lim < FastAddRots(b, *(float *)&follow_cam_turn_max_step)) {
+        if (lim < FastAddRots(b, *(float *)&follow_camera_pitch_angle_step_limit)) {
             turn_pitch_vector->step.f = FastSubRots(lim, b);
         } else {
-            turn_pitch_vector->step.f = *(float *)&follow_cam_turn_max_step;
+            turn_pitch_vector->step.f = *(float *)&follow_camera_pitch_angle_step_limit;
         }
     } else if (lim < b) {
         if (((CamTurnPitch_2e8bb8 *)cam->state_buf)->unk208 < 0) {
             turn_pitch_vector->step.i = 0;
         } else {
-            if (FastAddRots(b, -*(float *)&follow_cam_turn_max_step) < lim) {
+            if (FastAddRots(b, -*(float *)&follow_camera_pitch_angle_step_limit) < lim) {
                 turn_pitch_vector->step.f = FastSubRots(lim, b);
             } else {
-                turn_pitch_vector->step.f = -*(float *)&follow_cam_turn_max_step;
+                turn_pitch_vector->step.f = -*(float *)&follow_camera_pitch_angle_step_limit;
             }
         }
     } else {

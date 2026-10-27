@@ -85,7 +85,7 @@ void draw_ship_hud(char *moby) {
             k = t * 5.0f + 1.0f;
             if (m > 1.0f) m = 1.0f;
             c = truncate_float_to_s32_r(m * 96.0f);
-            draw_quarter_turn_textured_quads_f(IntToFloat(sp40), IntToFloat(sp44), k, WrapAngle(IntToFloat(level_frame) / 30.0f), 0, 0xFF, 0, c);
+            draw_quarter_turn_textured_quads_f(IntToFloat(sp40), IntToFloat(sp44), k, normalize_angle(IntToFloat(level_frame) / 30.0f), 0, 0xFF, 0, c);
             *(int *)(d + 0xEC) = 0;
         } else {
             a = 0xFF;

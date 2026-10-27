@@ -422,7 +422,7 @@ extern int CollType_r(void) __asm__("func_L00_001F3958");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern Obj_D688 *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
-extern Obj_D688 *func_L00_00261448(char *);
+extern Obj_D688 *moby_get_ride_transform(char *);
 extern int coll_capsule_r(float, float, void *, int, int) __asm__("func_L00_001F1D20");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
@@ -479,7 +479,7 @@ void update_hero_ledge_probe(void) {
     if (((Hit_D688 *)novalis_coll_hit_r)->m18 != 0) {
         ok = 0;
         a = GetFlaggedPvarWord_r(((Hit_D688 *)novalis_coll_hit_r)->m18);
-        b = func_L00_00261448(((Hit_D688 *)novalis_coll_hit_r)->m18);
+        b = moby_get_ride_transform(((Hit_D688 *)novalis_coll_hit_r)->m18);
         if (a != 0 && (a->h1E & 1)) {
             ok = 1;
         } else if (b != 0) {

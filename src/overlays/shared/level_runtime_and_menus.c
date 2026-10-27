@@ -708,11 +708,11 @@ typedef struct {
     u8 exclusion[32][4];
 } MapBitGrid;
 
-extern s32 D_L00_00184318 NOT_SDA;
-extern s32 D_L00_0015FEB8 SDATA(D_L00_0015FEB8);
-extern MapFilter D_L00_00182CA0[19][16] NOT_SDA;
-extern MapFilterCallback D_L00_00184090[19][8] NOT_SDA;
-extern s32 D_L00_001845A8[] NOT_SDA;
+extern s32 map_menu_cache_active NOT_SDA;
+extern s32 map_reveal_alt_projection_flag SDATA(D_L00_0015FEB8);
+extern MapFilter map_filter_range_table[19][16] NOT_SDA;
+extern MapFilterCallback map_filter_callback_table[19][8] NOT_SDA;
+extern s32 map_filter_unlocked_flags[] NOT_SDA;
 extern void map_world_to_uv(f32, f32, f32 *, f32 *, s32);
 extern s32 ensure_menu_cache_entry(s32);
 
@@ -738,10 +738,10 @@ void reveal_map_around_position(f32 *position) {
     s32 column_end;
     s32 row;
 
-    if (D_L00_00184318 == 0) {
+    if (map_menu_cache_active == 0) {
         return;
     }
-    if (D_L00_0015FEB8 != 0) {
+    if (map_reveal_alt_projection_flag != 0) {
         map_world_to_uv(position[0], position[1], &px, &py, g_current_level_index + 100);
     } else {
         map_world_to_uv(position[0], position[1], &px, &py, g_current_level_index);
@@ -772,15 +772,15 @@ void reveal_map_around_position(f32 *position) {
         if (i <= 0) {
             continue;
         }
-        if (D_L00_00182CA0[level][i].lower != D_L00_00182CA0[level][i].upper) {
+        if (map_filter_range_table[level][i].lower != map_filter_range_table[level][i].upper) {
             f32 height = *(f32 *)((u8 *)((Hero *)g_hero_r)->moby + 0x18);
-            if (D_L00_00182CA0[level][i].lower > height || height > D_L00_00182CA0[level][i].upper) {
+            if (map_filter_range_table[level][i].lower > height || height > map_filter_range_table[level][i].upper) {
                 filters[i] = 0;
                 continue;
             }
         }
-        index = D_L00_00182CA0[level][i].index;
-        flags = D_L00_00182CA0[level][i].flags;
+        index = map_filter_range_table[level][i].index;
+        flags = map_filter_range_table[level][i].flags;
         if (flags == 0) {
             continue;
         }
@@ -812,61 +812,61 @@ void reveal_map_around_position(f32 *position) {
             filters[i] = 0;
             continue;
         }
-        if ((flags & 0x80) && !D_L00_001845A8[index]) {
+        if ((flags & 0x80) && !map_filter_unlocked_flags[index]) {
             filters[i] = 0;
             continue;
         }
         if (flags & 0x100) {
-            callback = D_L00_00184090[g_current_level_index][0];
+            callback = map_filter_callback_table[g_current_level_index][0];
             if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
                 filters[i] = 0;
                 continue;
             }
         }
         if (flags & 0x200) {
-            callback = D_L00_00184090[g_current_level_index][1];
+            callback = map_filter_callback_table[g_current_level_index][1];
             if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
                 filters[i] = 0;
                 continue;
             }
         }
         if (flags & 0x400) {
-            callback = D_L00_00184090[g_current_level_index][2];
+            callback = map_filter_callback_table[g_current_level_index][2];
             if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
                 filters[i] = 0;
                 continue;
             }
         }
         if (flags & 0x800) {
-            callback = D_L00_00184090[g_current_level_index][3];
+            callback = map_filter_callback_table[g_current_level_index][3];
             if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
                 filters[i] = 0;
                 continue;
             }
         }
         if (flags & 0x1000) {
-            callback = D_L00_00184090[g_current_level_index][4];
+            callback = map_filter_callback_table[g_current_level_index][4];
             if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
                 filters[i] = 0;
                 continue;
             }
         }
         if (flags & 0x2000) {
-            callback = D_L00_00184090[g_current_level_index][5];
+            callback = map_filter_callback_table[g_current_level_index][5];
             if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
                 filters[i] = 0;
                 continue;
             }
         }
         if (flags & 0x4000) {
-            callback = D_L00_00184090[g_current_level_index][6];
+            callback = map_filter_callback_table[g_current_level_index][6];
             if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
                 filters[i] = 0;
                 continue;
             }
         }
         if (flags & 0x8000) {
-            callback = D_L00_00184090[g_current_level_index][7];
+            callback = map_filter_callback_table[g_current_level_index][7];
             if (callback != 0 && !callback(position[0], position[1], position[2], x, y)) {
                 filters[i] = 0;
                 continue;

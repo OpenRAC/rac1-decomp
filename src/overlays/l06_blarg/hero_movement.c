@@ -772,7 +772,7 @@ extern float random_float_between(float, float);
 extern float FastAddRots(float, float);
 extern float FastVecLength(void *);
 extern float ApproachValue(float *, float, float);
-extern void set_first_hero_easing_parameters(float, float);
+extern void Hero_SetTiltSpringParams(float, float);
 extern void ClampVectorLength(void *, float);
 extern int solve_quadratic_equation(float *, float *, float, float, float);
 extern float step_angle_toward_target(float *, int, float, float);
@@ -1880,7 +1880,7 @@ void HeroL06_UpdateMovement(void) {
                         if (tilt < -0.7853982f) {
                             tilt = -0.7853982f;
                         }
-                        set_first_hero_easing_parameters(0.03f, 0.2f);
+                        Hero_SetTiltSpringParams(0.03f, 0.2f);
                         if (((Hero *)&g_hero)->grind_anim_variant != 0) {
                             blarg_hero_lean_angles[1] = -tilt;
                         } else {
@@ -1892,9 +1892,9 @@ void HeroL06_UpdateMovement(void) {
                     blarg_hero_lean_angles[0] = fast_atan2(vec_length_xy(((Hero *)&g_hero)->motion.displacement.f), ((Hero *)&g_hero)->motion.displacement.f[2]);
                 }
                 if (hasW) {
-                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
-                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
-                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
+                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
+                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
+                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
                     if (((Hero *)&g_hero)->grind_look_moby != 0) {
                         float a;
 

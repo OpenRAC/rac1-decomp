@@ -81,13 +81,13 @@ void update_hero_hoverboard_race_progress(void) {
     if (near != 0 || (FastDiffRots_r(((Hero *)(hero_globals_base + 0xE1D))->motion.rot.f[2], dir) > 1.5707964f && ((Hero *)(hero_globals_base + 0xE1D))->trick_input == 0)) {
         ((Hero *)(hero_globals_base + 0xE1D))->off_course_frames++;
         if (((Hero *)(hero_globals_base + 0xE1D))->off_course_frames > scale_ticks(0xB4)) {
-            if (rilgar_off_course_reset_started == 0) {
-                rilgar_off_course_reset_started = 1;
-                rilgar_off_course_reset_ready = 0;
+            if (race_respawn_request_active == 0) {
+                race_respawn_request_active = 1;
+                race_respawn_gate_state = 0;
                 rilgar_off_course_reset_rate = frame_scale_r * 0.08f;
             }
             ((Hero *)(hero_globals_base + 0xE1D))->off_course_reset_pending = 1;
-            if (rilgar_off_course_reset_ready == 1) {
+            if (race_respawn_gate_state == 1) {
                 ((Hero *)(hero_globals_base + 0xE1D))->off_course_reset_pending = 0;
                 compute_hero_hoverboard_respawn_transform_r(v0, v1);
                 ((Hero *)(hero_globals_base + 0xE1D))->off_course_frames = 0;

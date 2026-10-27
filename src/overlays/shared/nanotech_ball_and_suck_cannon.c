@@ -160,8 +160,8 @@ extern float g_frame_time MACRO_ADDR;
 extern short nanotech_spark_speed_min;
 extern short nanotech_spark_speed_max;
 extern unsigned char nanotech_spark_life;
-extern short nanotech_spark_color_a;
-extern short nanotech_spark_color_b;
+extern short nanotech_ball_collection_first_particle_color;
+extern short nanotech_ball_collection_second_particle_color;
 extern short nanotech_spark_size_a;
 extern short nanotech_spark_size_b;
 extern void FastVecSub(void *, void *, void *);
@@ -182,8 +182,8 @@ void spawn_nanotech_ball_collection_effect_pair(char *m) {
     FastVecScale(&b, hero_globals_base + 0x10AD,
         random_float_between(*(float *)&nanotech_spark_speed_min * g_frame_time, *(float *)&nanotech_spark_speed_max * g_frame_time));
     build_look_at_matrix(&c, &b, random_angle_radians(), &a);
-    spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&nanotech_spark_color_a, nanotech_spark_life, random_integer_below(0xFF) & 0xFF, 1, *(float *)&nanotech_spark_size_a);
-    spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&nanotech_spark_color_b, nanotech_spark_life, random_integer_below(0xFF) & 0xFF, 1, *(float *)&nanotech_spark_size_b);
+    spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&nanotech_ball_collection_first_particle_color, nanotech_spark_life, random_integer_below(0xFF) & 0xFF, 1, *(float *)&nanotech_spark_size_a);
+    spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&nanotech_ball_collection_second_particle_color, nanotech_spark_life, random_integer_below(0xFF) & 0xFF, 1, *(float *)&nanotech_spark_size_b);
 }
 typedef struct { f32 x, y, z, w; } __attribute__((aligned(16))) V_2d8510;
 typedef struct { u8 p0[0x58]; s16 h58[4]; f32 f60[4]; } O_2d8510;
@@ -194,8 +194,8 @@ extern T_2d8510 part_type_textures;
 extern short nanotech_ring_fade_ticks;
 extern short nanotech_ring_color_a;
 extern short nanotech_ring_color_b;
-extern short nanotech_ring_blend_flag;
-extern short nanotech_ring_texture;
+extern short nanotech_ball_collection_second_particle_mode_selector;
+extern short nanotech_ball_collection_particle_byte_source_index;
 extern short nanotech_ring_spin_speeds;
 extern short nanotech_ring_sizes;
 extern short nanotech_ring_heights;
@@ -238,9 +238,9 @@ s32 update_nanotech_ball_collection_effects(M_2d8510 *m) {
         al = truncate_float_to_s32(IntToFloat(hi) * (1.0f - t)) << 24;
         c = al | (c & 0xFFFFFF);
         a.z = z + (((f32 *)&nanotech_ring_heights))[i];
-        p = PartType59Spawn(&a, c, truncate_float_to_s32(o->f60[i]), (*(s32 *)&nanotech_ring_texture), 0, 2, 1, (((f32 *)&nanotech_ring_sizes))[i] * t);
+        p = PartType59Spawn(&a, c, truncate_float_to_s32(o->f60[i]), (*(s32 *)&nanotech_ball_collection_particle_byte_source_index), 0, 2, 1, (((f32 *)&nanotech_ring_sizes))[i] * t);
         if (p) p[2] = *part_type_textures.pF8;
-        p = PartType59Spawn(&a, al | 0xFFFFFF, truncate_float_to_s32(o->f60[i]), (*(s32 *)&nanotech_ring_texture), (*(s32 *)&nanotech_ring_blend_flag), 2, 1, (((f32 *)&nanotech_ring_sizes))[i] * (t * 0.7f));
+        p = PartType59Spawn(&a, al | 0xFFFFFF, truncate_float_to_s32(o->f60[i]), (*(s32 *)&nanotech_ball_collection_particle_byte_source_index), (*(s32 *)&nanotech_ball_collection_second_particle_mode_selector), 2, 1, (((f32 *)&nanotech_ring_sizes))[i] * (t * 0.7f));
         if (p) p[2] = *part_type_textures.pF8;
         FastVecAdd(&a, &a, &b);
     }
@@ -2352,8 +2352,8 @@ int CarriedMobyUpdate(Moby *self, char *q) {
     return 0;
 }
 extern short suck_beam_segment_alpha[];
-extern short suck_beam_scroll_phase;
-extern short suck_beam_ring_scroll_phase;
+extern short suction_effect_texture_u_offset;
+extern short suction_effect_texture_v_offset;
 extern short suck_beam_scroll_speed;
 extern char suck_beam_ring_vertices[];
 extern char suck_beam_ring_vertices_base[];
@@ -2386,15 +2386,15 @@ void suck_beam_draw_mesh(void) {
     s.t2 = 0x0000FF9000000260L;
     s.t3 = 0x8000000048L;
     s.t0 = 0;
-    a = *(float *)&suck_beam_scroll_phase;
-    *(float *)&suck_beam_scroll_phase = a + 0.001f;
-    if (*(float *)&suck_beam_scroll_phase > 7.0f) *(float *)&suck_beam_scroll_phase -= 7.0f;
+    a = *(float *)&suction_effect_texture_u_offset;
+    *(float *)&suction_effect_texture_u_offset = a + 0.001f;
+    if (*(float *)&suction_effect_texture_u_offset > 7.0f) *(float *)&suction_effect_texture_u_offset -= 7.0f;
     step = 0.3f;
     a += step;
     for (i = 1; i < 10; i++) {
-        b = *(float *)&suck_beam_ring_scroll_phase;
-        *(float *)&suck_beam_ring_scroll_phase = b + *(float *)&suck_beam_scroll_speed;
-        if (*(float *)&suck_beam_ring_scroll_phase > 7.0f) *(float *)&suck_beam_ring_scroll_phase -= 7.0f;
+        b = *(float *)&suction_effect_texture_v_offset;
+        *(float *)&suction_effect_texture_v_offset = b + *(float *)&suck_beam_scroll_speed;
+        if (*(float *)&suction_effect_texture_v_offset > 7.0f) *(float *)&suction_effect_texture_v_offset -= 7.0f;
         a2 = a + step;
         for (j = 0; j < 20; j++) {
             qcopy(s.q[0], suck_beam_ring_vertices + (j * 16 + i * 0x140));
@@ -2542,8 +2542,8 @@ typedef struct Particle41 {
 } Particle41;
 typedef struct { short idx; short angle; float f; float phase; float phase_step; float speed; char *p; } E04_pt3;
 
-extern V41 D_L00_001E4E90[];
-extern float D_L00_001E6330[];
+extern V41 suck_beam_ring_unit_offsets[];
+extern float suck_beam_segment_turn_angles[];
 extern char collision_hit_point[];
 extern float Camera_SmoothAngle(void *,float,float,float,float,float);
 extern float FastAddRots(float, float);
@@ -2629,7 +2629,7 @@ void suck_beam_update(void *moby,void *position) {
     FastVecCross(&frame[0],&frame[2],&frame[1]);
     { int k;
     for(k=0;k<20;k++) {
-        FastVecScale(&tmp_a,&D_L00_001E4E90[k],0.1f);
+        FastVecScale(&tmp_a,&suck_beam_ring_unit_offsets[k],0.1f);
         matrix_mul_vec3(&tmp_a,&tmp_a,frame);
         FastVecAdd(&((V41 *)suck_beam_ring_vertices)[k],suck_beam_points,&tmp_a);
     }
@@ -2643,7 +2643,7 @@ void suck_beam_update(void *moby,void *position) {
         FastVecCross(&tmp_c,&tmp_b,&tmp_a);
         dot=FastVecDot(&tmp_a,&tmp_b);
         { float target=1.5707964f-FastArcSin(dot/(FastVecLength(&tmp_a)*suck_beam_segment_length));
-        turn=Camera_SmoothAngle(&D_L00_001E6330[i],0.0f,target,0.06f,0.2f,0.0f);
+        turn=Camera_SmoothAngle(&suck_beam_segment_turn_angles[i],0.0f,target,0.06f,0.2f,0.0f);
         delta=FastSubRots(target,turn); }
         if(FastAbsF(delta)>0.31415927f)turn=FastAddRots(turn,FastSubRots(delta,0.31415927f));
         build_look_at_matrix(&motion,&tmp_a,turn,&tmp_c);
@@ -2664,7 +2664,7 @@ void suck_beam_update(void *moby,void *position) {
         for(j=0;j<20;j++) {
             angle=(float)i*0.3f+0.1f;
             angle+=FastSin(FastAddRots((*(float *)&suck_beam_init_zero_1)+(float)i*0.7f,0.0f))*0.1f;
-            FastVecScale(&tmp_f,&D_L00_001E4E90[j],angle);
+            FastVecScale(&tmp_f,&suck_beam_ring_unit_offsets[j],angle);
             matrix_mul_vec3(&tmp_f,&tmp_f,&interp);
             FastVecAdd(&((V41 (*)[20])suck_beam_ring_vertices)[i][j],suck_beam_points+i*16,&tmp_f);
         }

@@ -622,7 +622,7 @@ extern int quartu_ripple_alpha_blend SDATA(D_L15_00162264);
 extern int quartu_ripple_mesh_texture SDATA(D_L15_00162268);
 extern int quartu_ripple_mesh_alpha SDATA(D_L15_0016226C);
 extern float quartu_ripple_mesh_wavelength SDATA(D_L15_00162270);
-extern float quartu_ripple_spin_period SDATA(D_L15_00162274);
+extern float scaled_ripple_phase_advance_divisor_gp SDATA(D_L15_00162274);
 extern float quartu_ripple_mesh_wave_height SDATA(D_L15_00162278);
 extern float quartu_ripple_mesh_uv_scroll_rate SDATA(D_L15_0016227C);
 extern float quartu_ripple_vertex_scale SDATA(D_L15_00162280);
@@ -646,7 +646,7 @@ void draw_scaled_moby_radial_ripple_mesh(char *moby) {
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
-    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(quartu_ripple_spin_period) * 0.017453292f * g_frame_time);
+    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(scaled_ripple_phase_advance_divisor_gp) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     color = (quartu_ripple_mesh_alpha << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 46; i++) {
@@ -693,7 +693,7 @@ extern int quartu_ripple88_alpha_blend SDATA(D_L15_001622D4);
 extern int quartu_ripple88_texture SDATA(D_L15_001622D8);
 extern int quartu_ripple88_alpha SDATA(D_L15_001622DC);
 extern float quartu_ripple88_wavelength SDATA(D_L15_001622E0);
-extern float quartu_ripple88_spin_period SDATA(D_L15_001622E4);
+extern float ripple_88_phase_advance_divisor_gp SDATA(D_L15_001622E4);
 extern float quartu_ripple88_wave_height SDATA(D_L15_001622E8);
 extern float quartu_ripple88_uv_scroll_rate SDATA(D_L15_001622EC);
 extern float quartu_ripple88_vertex_scale SDATA(D_L15_001622F0);
@@ -716,7 +716,7 @@ void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
-    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(quartu_ripple88_spin_period) * 0.017453292f * g_frame_time);
+    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(ripple_88_phase_advance_divisor_gp) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     color = (quartu_ripple88_alpha << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 88; i++) {

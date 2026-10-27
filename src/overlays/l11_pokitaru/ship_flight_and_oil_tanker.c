@@ -210,7 +210,7 @@ extern void append_scaled_screen_triangle_strip(float, float, float, void *, int
 extern void append_rotated_sprite_quad(float, float, float, float, float, int, int, int, int, int, int, int, float, float);
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern int FontPrintCenterLarge_c(int, int, long, void *, int) __asm__("func_001F6FD8");
-extern float WrapAngle(float);
+extern float normalize_angle(float);
 extern int scale_ticks(int);
 extern float FastAbsF(float);
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
@@ -319,7 +319,7 @@ void draw_ship_hud(char *moby) {
             k = t * 5.0f + 1.0f;
             if (m > 1.0f) m = 1.0f;
             c = truncate_float_to_s32_r(m * 96.0f);
-            draw_quarter_turn_textured_quads_f(IntToFloat(sp40), IntToFloat(sp44), k, WrapAngle(IntToFloat(level_frame) / 30.0f), 0, 0xFF, 0, c);
+            draw_quarter_turn_textured_quads_f(IntToFloat(sp40), IntToFloat(sp44), k, normalize_angle(IntToFloat(level_frame) / 30.0f), 0, 0xFF, 0, c);
             *(int *)(d + 0xEC) = 0;
         } else {
             a = 0xFF;
@@ -1347,9 +1347,9 @@ extern char path_table[];
 extern char * pokitaru_mobys MACRO_ADDR;
 extern short puffoid_move_params;
 extern short puffoid_scale;
-extern short puffoid_attack_range;
-extern short puffoid_heading_jitter_deg;
-extern short puffoid_jump_speed;
+extern short puffoid_spray_target_distance_metric_threshold_gp;
+extern short puffoid_chase_heading_offset_limit_degrees_gp;
+extern short puffoid_jump_horizontal_speed_gp;
 extern short puffoid_jump_gravity;
 extern void update_puffoid_damage_and_path_goal();
 extern void update_moby_target_heading_and_conditional_movement(char *a0, float *a1);
@@ -1461,9 +1461,9 @@ void puffoid_update(struct Moby *moby) {
                 MobyBlendAnimation(moby, 0, 0, 5);
             }
             FastVecSub(d->vel, ((char **)path_table)[d->path] + 0x20, &moby->pos);
-            vec_set_length_xy(d->vel, d->vel, (*(float *)&puffoid_jump_speed) * g_frame_time);
+            vec_set_length_xy(d->vel, d->vel, (*(float *)&puffoid_jump_horizontal_speed_gp) * g_frame_time);
             d->vel[2] = jump_speed_4318(&moby->pos, ((char **)path_table)[d->path] + 0x20, 0,
-                                        (*(float *)&puffoid_jump_speed) * g_frame_time, -((*(float *)&puffoid_jump_gravity) * g_frame_time_sq));
+                                        (*(float *)&puffoid_jump_horizontal_speed_gp) * g_frame_time, -((*(float *)&puffoid_jump_gravity) * g_frame_time_sq));
         }
         break;
     }
@@ -1489,7 +1489,7 @@ void puffoid_update(struct Moby *moby) {
         break;
     case 2:
         if (d->unk214 != 2) {
-            d->unk24C = random_float_between(-(*(float *)&puffoid_heading_jitter_deg), (*(float *)&puffoid_heading_jitter_deg)) * 0.017453292f;
+            d->unk24C = random_float_between(-(*(float *)&puffoid_chase_heading_offset_limit_degrees_gp), (*(float *)&puffoid_chase_heading_offset_limit_degrees_gp)) * 0.017453292f;
             moby->state = 4;
             if (moby->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
@@ -1511,7 +1511,7 @@ void puffoid_update(struct Moby *moby) {
     case 3:
         update_moby_target_heading_and_conditional_movement((char *)moby, d->unk260);
         if (d->unk214 != 2) {
-            d->unk24C = random_float_between(-(*(float *)&puffoid_heading_jitter_deg), (*(float *)&puffoid_heading_jitter_deg)) * 0.017453292f;
+            d->unk24C = random_float_between(-(*(float *)&puffoid_chase_heading_offset_limit_degrees_gp), (*(float *)&puffoid_chase_heading_offset_limit_degrees_gp)) * 0.017453292f;
             moby->state = 4;
             if (moby->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
@@ -1524,7 +1524,7 @@ void puffoid_update(struct Moby *moby) {
         }
         break;
     case 4:
-        if ((moby->anim_flags & 2) && vec_distance_xy(&moby->pos, &target->pos) < (*(float *)&puffoid_attack_range)) {
+        if ((moby->anim_flags & 2) && vec_distance_xy(&moby->pos, &target->pos) < (*(float *)&puffoid_spray_target_distance_metric_threshold_gp)) {
             moby->state = 5;
             if (moby->prev_seq != 2) {
                 MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
@@ -1559,7 +1559,7 @@ void puffoid_update(struct Moby *moby) {
         break;
     case 5:
         update_moby_target_heading_and_conditional_movement((char *)moby, (float *)&target->pos);
-        if ((moby->anim_flags & 2) && (*(float *)&puffoid_attack_range) < vec_distance_xy(&moby->pos, &target->pos)) {
+        if ((moby->anim_flags & 2) && (*(float *)&puffoid_spray_target_distance_metric_threshold_gp) < vec_distance_xy(&moby->pos, &target->pos)) {
             moby->state = 4;
             if (moby->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
@@ -1578,7 +1578,7 @@ void puffoid_update(struct Moby *moby) {
                 MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             }
         } else if (d->unk214 != 2) {
-            d->unk24C = random_float_between(-(*(float *)&puffoid_heading_jitter_deg), (*(float *)&puffoid_heading_jitter_deg)) * 0.017453292f;
+            d->unk24C = random_float_between(-(*(float *)&puffoid_chase_heading_offset_limit_degrees_gp), (*(float *)&puffoid_chase_heading_offset_limit_degrees_gp)) * 0.017453292f;
             moby->state = 4;
             if (moby->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
@@ -1650,9 +1650,9 @@ void puffoid_update(struct Moby *moby) {
                 }
                 FastVecSub(d->vel, dest, &moby->pos);
                 n = scale_ticks(0x3C);
-                { float len = FastVecLength(d->vel); float kk = (*(float *)&puffoid_jump_speed) * g_frame_time; moby->anim_speed = (float)n * kk / len;
+                { float len = FastVecLength(d->vel); float kk = (*(float *)&puffoid_jump_horizontal_speed_gp) * g_frame_time; moby->anim_speed = (float)n * kk / len;
                 vec_set_length_xy(d->vel, d->vel, kk); }
-                d->vel[2] = jump_speed_4318(&moby->pos, dest, 0, (*(float *)&puffoid_jump_speed) * g_frame_time,
+                d->vel[2] = jump_speed_4318(&moby->pos, dest, 0, (*(float *)&puffoid_jump_horizontal_speed_gp) * g_frame_time,
                                             -((*(float *)&puffoid_jump_gravity) * g_frame_time_sq));
                 moby->rot.z = fast_atan2(d->vel[0], d->vel[1]);
             }
@@ -1678,7 +1678,7 @@ void puffoid_update(struct Moby *moby) {
         RotateWithMoby(moby, pokitaru_mobys + (d->carrier << 8), &moby->pos, &moby->rot,
                             &moby->pos, &moby->rot);
         if (d->unk214 != 2) {
-            d->unk24C = random_float_between(-(*(float *)&puffoid_heading_jitter_deg), (*(float *)&puffoid_heading_jitter_deg)) * 0.017453292f;
+            d->unk24C = random_float_between(-(*(float *)&puffoid_chase_heading_offset_limit_degrees_gp), (*(float *)&puffoid_chase_heading_offset_limit_degrees_gp)) * 0.017453292f;
             moby->state = 0xF;
             if (moby->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
@@ -1689,7 +1689,7 @@ void puffoid_update(struct Moby *moby) {
         RotateWithMoby(moby, pokitaru_mobys + (d->carrier << 8), &moby->pos, &moby->rot,
                             &moby->pos, &moby->rot);
         update_moby_target_heading_and_conditional_movement((char *)moby, (float *)&target->pos);
-        if ((moby->anim_flags & 2) && vec_distance_xy(&moby->pos, &target->pos) < (*(float *)&puffoid_attack_range)) {
+        if ((moby->anim_flags & 2) && vec_distance_xy(&moby->pos, &target->pos) < (*(float *)&puffoid_spray_target_distance_metric_threshold_gp)) {
             moby->state = 0x10;
             if (moby->prev_seq != 2) {
                 MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
@@ -1703,7 +1703,7 @@ void puffoid_update(struct Moby *moby) {
         RotateWithMoby(moby, pokitaru_mobys + (d->carrier << 8), &moby->pos, &moby->rot,
                             &moby->pos, &moby->rot);
         update_moby_target_heading_and_conditional_movement((char *)moby, (float *)&target->pos);
-        if ((moby->anim_flags & 2) && (*(float *)&puffoid_attack_range) < vec_distance_xy(&moby->pos, &target->pos)) {
+        if ((moby->anim_flags & 2) && (*(float *)&puffoid_spray_target_distance_metric_threshold_gp) < vec_distance_xy(&moby->pos, &target->pos)) {
             moby->state = 0xF;
             if (moby->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
@@ -2483,9 +2483,9 @@ void update_oil_tanker_front_path_pose(char *moby) {
 extern float FastVecDist(void *, void *);
 extern int truncate_float_to_s32(float);
 extern void moby_build_matrix(void *);
-extern short oil_tanker_link_hitch_offset;
-extern short oil_tanker_link_follow_distance;
-extern short oil_tanker_link_sound_ticks;
+extern short oil_tanker_spacing_reference_offset_gp;
+extern short oil_tanker_link_spacing_threshold_gp;
+extern short oil_tanker_link_marker_cooldown_frames_gp;
 extern int pokitaru_cinematic_mode MACRO_ADDR;
 
 typedef struct { int count; char pad4[0xC]; float pts[1][4]; } ChainPath_8C90;
@@ -2511,7 +2511,7 @@ void update_oil_tanker_link_path_poses(void *mv) {
     float spacing_reference_position[4];
     int i;
 
-    vec_scale_to_length(spacing_reference_position, &moby->rot_row0, (*(float *)&oil_tanker_link_hitch_offset));
+    vec_scale_to_length(spacing_reference_position, &moby->rot_row0, (*(float *)&oil_tanker_spacing_reference_offset_gp));
     FastVecAdd(spacing_reference_position, spacing_reference_position, &moby->pos);
     for (i = 0; i < chain_vars->count; i++) {
         int segment_start_index = chain_vars->offsets[i];
@@ -2524,7 +2524,7 @@ void update_oil_tanker_link_path_poses(void *mv) {
         float yaw0, yaw1, pitch0;
         float *qa, *qb, *qc;
 
-        while (segment_end_distance > (*(float *)&oil_tanker_link_follow_distance)) {
+        while (segment_end_distance > (*(float *)&oil_tanker_link_spacing_threshold_gp)) {
             segment_start_index = segment_end_index;
             segment_end_index = (segment_start_index + 1) % chain_path->count;
             segment_start_distance = segment_end_distance;
@@ -2540,12 +2540,12 @@ void update_oil_tanker_link_path_poses(void *mv) {
                     if (pokitaru_cinematic_mode == 0) {
                         Moby_PlaySound(2, 0, (int)chain_vars->links[i]);
                     }
-                    *(s32 *)(lv + 0x28) = scale_ticks((*(int *)&oil_tanker_link_sound_ticks));
+                    *(s32 *)(lv + 0x28) = scale_ticks((*(int *)&oil_tanker_link_marker_cooldown_frames_gp));
                 }
             }
         }
-        if (segment_start_distance > (*(float *)&oil_tanker_link_follow_distance)) {
-            segment_fraction = (segment_start_distance - (*(float *)&oil_tanker_link_follow_distance)) / (segment_start_distance - segment_end_distance);
+        if (segment_start_distance > (*(float *)&oil_tanker_link_spacing_threshold_gp)) {
+            segment_fraction = (segment_start_distance - (*(float *)&oil_tanker_link_spacing_threshold_gp)) / (segment_start_distance - segment_end_distance);
         } else {
             segment_fraction = 0.0f;
         }
@@ -2581,7 +2581,7 @@ void update_oil_tanker_link_path_poses(void *mv) {
             pitch0);
         ((struct Moby *)chain_vars->links[i])->rot.z = FastAddRots(FastSubRots(yaw1, yaw0) * segment_fraction, yaw0);
         moby_build_matrix(chain_vars->links[i]);
-        vec_scale_to_length(spacing_reference_position, &((struct Moby *)chain_vars->links[i])->rot_row0, (*(float *)&oil_tanker_link_hitch_offset));
+        vec_scale_to_length(spacing_reference_position, &((struct Moby *)chain_vars->links[i])->rot_row0, (*(float *)&oil_tanker_spacing_reference_offset_gp));
         FastVecAdd(spacing_reference_position, spacing_reference_position, &((struct Moby *)chain_vars->links[i])->pos);
     }
 }
@@ -2886,7 +2886,7 @@ void set_moby_position_and_refresh_removal_timer(char *arg, void *src) {
 extern int scale_ticks(int);
 
 /* Sets state 2, copies the vector src into the data block and starts a timer. */
-void Moby1297_Launch(char *arg, void *src) {
+void set_moby_state_two_data_and_timer(char *arg, void *src) {
     char *dst;
     arg[0x20] = 2;
     dst = ((char *)((Moby *)arg)->pvars);

@@ -13,11 +13,11 @@ typedef struct {
     float uv[4][2];
     long unk70, tex, unk80, unk88;
 } Packet_2fd1a0;
-extern short dual_texture_mesh_alpha_a;
-extern short dual_texture_mesh_alpha_b;
-extern short dual_texture_mesh_alpha_c;
-extern short dual_texture_mesh_alpha_d;
-extern short dual_texture_mesh_alpha_fix;
+extern short dual_texture_mesh_blend_color_a_selector_gp;
+extern short dual_texture_mesh_blend_color_b_selector_gp;
+extern short dual_texture_mesh_blend_alpha_c_selector_gp;
+extern short dual_texture_mesh_blend_color_d_selector_gp;
+extern short dual_texture_mesh_blend_fixed_alpha_gp;
 extern short dual_texture_mesh_texture;
 extern short dual_texture_mesh_color;
 extern short blarg_quad_mesh_second_color;
@@ -57,11 +57,11 @@ void draw_dual_texture_50_quad_mesh(void) {
     second.tex = GetEffectTex_r(0x2a);
     second.unk80 = 0xFF9000000260L;
     first.unk80 = 0xFF9000000260L;
-    flags = (long)(*(int *)&dual_texture_mesh_alpha_a);
-    flags |= (long)(*(int *)&dual_texture_mesh_alpha_b) << 2;
-    flags |= (long)(*(int *)&dual_texture_mesh_alpha_c) << 4;
-    flags |= (long)(*(int *)&dual_texture_mesh_alpha_d) << 6;
-    flags |= (long)(*(int *)&dual_texture_mesh_alpha_fix) << 32;
+    flags = (long)(*(int *)&dual_texture_mesh_blend_color_a_selector_gp);
+    flags |= (long)(*(int *)&dual_texture_mesh_blend_color_b_selector_gp) << 2;
+    flags |= (long)(*(int *)&dual_texture_mesh_blend_alpha_c_selector_gp) << 4;
+    flags |= (long)(*(int *)&dual_texture_mesh_blend_color_d_selector_gp) << 6;
+    flags |= (long)(*(int *)&dual_texture_mesh_blend_fixed_alpha_gp) << 32;
     second.unk88 = flags;
     first.unk88 = flags;
     second.unk70 = 0;
@@ -106,11 +106,11 @@ typedef struct {
     float uv[4][2];
     long unk70, tex, unk80, unk88;
 } Packet_2fd460;
-extern short dual_texture_mesh_alpha_a;
-extern short dual_texture_mesh_alpha_b;
-extern short dual_texture_mesh_alpha_c;
-extern short dual_texture_mesh_alpha_d;
-extern short dual_texture_mesh_alpha_fix;
+extern short dual_texture_mesh_blend_color_a_selector_gp;
+extern short dual_texture_mesh_blend_color_b_selector_gp;
+extern short dual_texture_mesh_blend_alpha_c_selector_gp;
+extern short dual_texture_mesh_blend_color_d_selector_gp;
+extern short dual_texture_mesh_blend_fixed_alpha_gp;
 extern short dual_texture_mesh_texture;
 extern short dual_texture_mesh_color;
 extern short blarg_quad_mesh_second_color;
@@ -149,9 +149,9 @@ void draw_dual_texture_58_quad_mesh(void) {
     first.tex = GetEffectTex_r2((*(int *)&dual_texture_mesh_texture));
     second.tex = GetEffectTex_r2(0x2a);
     matrix_ptr = matrix;
-    flags = (long)(*(int *)&dual_texture_mesh_alpha_a) | (long)(*(int *)&dual_texture_mesh_alpha_b) << 2 |
-            (long)(*(int *)&dual_texture_mesh_alpha_c) << 4 | (long)(*(int *)&dual_texture_mesh_alpha_d) << 6 |
-            (long)(*(int *)&dual_texture_mesh_alpha_fix) << 32;
+    flags = (long)(*(int *)&dual_texture_mesh_blend_color_a_selector_gp) | (long)(*(int *)&dual_texture_mesh_blend_color_b_selector_gp) << 2 |
+            (long)(*(int *)&dual_texture_mesh_blend_alpha_c_selector_gp) << 4 | (long)(*(int *)&dual_texture_mesh_blend_color_d_selector_gp) << 6 |
+            (long)(*(int *)&dual_texture_mesh_blend_fixed_alpha_gp) << 32;
     second.unk88 = flags;
     first.unk88 = flags;
     second.unk80 = 0xFF9000000260L;
@@ -207,11 +207,11 @@ typedef struct {
     float uv[4][2];
     long unk70, tex, unk80, unk88;
 } Packet_2fd748;
-extern short dual_texture_mesh_alpha_a;
-extern short dual_texture_mesh_alpha_b;
-extern short dual_texture_mesh_alpha_c;
-extern short dual_texture_mesh_alpha_d;
-extern short dual_texture_mesh_alpha_fix;
+extern short dual_texture_mesh_blend_color_a_selector_gp;
+extern short dual_texture_mesh_blend_color_b_selector_gp;
+extern short dual_texture_mesh_blend_alpha_c_selector_gp;
+extern short dual_texture_mesh_blend_color_d_selector_gp;
+extern short dual_texture_mesh_blend_fixed_alpha_gp;
 extern short dual_texture_mesh_texture;
 extern short dual_texture_mesh_color;
 extern short blarg_quad_mesh_second_color;
@@ -250,9 +250,9 @@ void draw_dual_texture_864_quad_mesh(void) {
     first.tex = GetEffectTex_r3((*(int *)&dual_texture_mesh_texture));
     second.tex = GetEffectTex_r3(0x2a);
     matrix_ptr = matrix;
-    flags = (long)(*(int *)&dual_texture_mesh_alpha_a) | (long)(*(int *)&dual_texture_mesh_alpha_b) << 2 |
-            (long)(*(int *)&dual_texture_mesh_alpha_c) << 4 | (long)(*(int *)&dual_texture_mesh_alpha_d) << 6 |
-            (long)(*(int *)&dual_texture_mesh_alpha_fix) << 32;
+    flags = (long)(*(int *)&dual_texture_mesh_blend_color_a_selector_gp) | (long)(*(int *)&dual_texture_mesh_blend_color_b_selector_gp) << 2 |
+            (long)(*(int *)&dual_texture_mesh_blend_alpha_c_selector_gp) << 4 | (long)(*(int *)&dual_texture_mesh_blend_color_d_selector_gp) << 6 |
+            (long)(*(int *)&dual_texture_mesh_blend_fixed_alpha_gp) << 32;
     second.unk88 = flags;
     first.unk88 = flags;
     second.unk80 = 0xFF9000000260L;
@@ -644,14 +644,14 @@ typedef struct {
 typedef struct {
     short v, uv;
 } I3003f0;
-extern short blarg_tube_alpha_a;
-extern short blarg_tube_alpha_b;
-extern short blarg_tube_alpha_c;
-extern short blarg_tube_alpha_d;
-extern short blarg_tube_texture;
-extern short blarg_tube_alpha_fix;
+extern short backdrop_mesh_blend_color_a_selector_gp;
+extern short backdrop_mesh_blend_color_b_selector_gp;
+extern short backdrop_mesh_blend_alpha_c_selector_gp;
+extern short backdrop_mesh_blend_color_d_selector_gp;
+extern short backdrop_mesh_effect_texture_index_gp;
+extern short backdrop_mesh_blend_fixed_alpha_gp;
 extern short blarg_tube_color;
-extern short blarg_tube_mesh_scale;
+extern short backdrop_mesh_vertex_position_scale_gp;
 extern V3003f0 blarg_tube_mesh64_verts[];
 extern I3003f0 blarg_tube_mesh64_corner_indices[];
 extern UV3003f0 blarg_tube_mesh64_uvs[];
@@ -666,9 +666,9 @@ void draw_backdrop_mesh(void) {
     int i, j, k;
     I3003f0 *e;
 
-    quad.tex = GetEffectTex_r4((*(int *)&blarg_tube_texture));
-    quad.unk88 = (long)(*(int *)&blarg_tube_alpha_a) | ((long)(*(int *)&blarg_tube_alpha_b) << 2) | ((long)(*(int *)&blarg_tube_alpha_c) << 4) |
-                 ((long)(*(int *)&blarg_tube_alpha_d) << 6) | ((long)(*(int *)&blarg_tube_alpha_fix) << 32);
+    quad.tex = GetEffectTex_r4((*(int *)&backdrop_mesh_effect_texture_index_gp));
+    quad.unk88 = (long)(*(int *)&backdrop_mesh_blend_color_a_selector_gp) | ((long)(*(int *)&backdrop_mesh_blend_color_b_selector_gp) << 2) | ((long)(*(int *)&backdrop_mesh_blend_alpha_c_selector_gp) << 4) |
+                 ((long)(*(int *)&backdrop_mesh_blend_color_d_selector_gp) << 6) | ((long)(*(int *)&backdrop_mesh_blend_fixed_alpha_gp) << 32);
     quad.unk80 = 0xFF9000000260L;
     quad.unk70 = 0;
     set_identity_matrix(&buf);
@@ -682,7 +682,7 @@ void draw_backdrop_mesh(void) {
         e = &blarg_tube_mesh64_corner_indices[i * 4];
         for (j = 0; j < 4; j++) {
             k = e->uv;
-            FastVecScale(&quad.corner[j], &blarg_tube_mesh64_verts[e->v], (*(float *)&blarg_tube_mesh_scale));
+            FastVecScale(&quad.corner[j], &blarg_tube_mesh64_verts[e->v], (*(float *)&backdrop_mesh_vertex_position_scale_gp));
             e++;
             quad.uv[j].u = blarg_tube_mesh64_uvs[k].u;
             quad.uv[j].v = blarg_tube_mesh64_uvs[k].v;
@@ -714,13 +714,13 @@ void effect_quad_draw_single(void) {
     int i;
     int j;
 
-    pkt[1] = GetEffectTex_r5((*(int *)&blarg_tube_texture));
+    pkt[1] = GetEffectTex_r5((*(int *)&backdrop_mesh_effect_texture_index_gp));
     mp = mat[0];
     pkt[2] = 0xFF9000000260;
-    pkt[3] = (*(int *)&blarg_tube_alpha_a) | (long)(*(int *)&blarg_tube_alpha_b) << 2;
-    pkt[3] |= (long)(*(int *)&blarg_tube_alpha_c) << 4;
-    pkt[3] |= (long)(*(int *)&blarg_tube_alpha_d) << 6;
-    pkt[3] |= (long)(*(int *)&blarg_tube_alpha_fix) << 32;
+    pkt[3] = (*(int *)&backdrop_mesh_blend_color_a_selector_gp) | (long)(*(int *)&backdrop_mesh_blend_color_b_selector_gp) << 2;
+    pkt[3] |= (long)(*(int *)&backdrop_mesh_blend_alpha_c_selector_gp) << 4;
+    pkt[3] |= (long)(*(int *)&backdrop_mesh_blend_color_d_selector_gp) << 6;
+    pkt[3] |= (long)(*(int *)&backdrop_mesh_blend_fixed_alpha_gp) << 32;
     pkt[0] = 0;
     set_identity_matrix(mp);
     mat[3][2] = (*(float *)&blarg_tube_base_z);
@@ -729,7 +729,7 @@ void effect_quad_draw_single(void) {
     colors[1] = (*(unsigned int *)&blarg_tube_color);
     colors[0] = (*(unsigned int *)&blarg_tube_color);
     for (i = 0; i < 96; i++) {
-        FastVecScale(center, &blarg_tube_mesh96_centers[i], (*(float *)&blarg_tube_mesh_scale));
+        FastVecScale(center, &blarg_tube_mesh96_centers[i], (*(float *)&backdrop_mesh_vertex_position_scale_gp));
         transform_vector(center, center, mat);
         FastVecSub(dir, center, blarg_camera_pos_r3);
         vec_scale_to_length(dir, dir, 1.0f);
@@ -739,7 +739,7 @@ void effect_quad_draw_single(void) {
         for (j = 0; j < 4; j++) {
             int a = blarg_tube_mesh96_corner_indices[i][j][0];
             int b = blarg_tube_mesh96_corner_indices[i][j][1];
-            FastVecScale(&m[j], &blarg_tube_mesh96_verts[a], (*(float *)&blarg_tube_mesh_scale));
+            FastVecScale(&m[j], &blarg_tube_mesh96_verts[a], (*(float *)&backdrop_mesh_vertex_position_scale_gp));
             uv[j][0] = blarg_tube_mesh96_uvs[b][0];
             uv[j][1] = blarg_tube_mesh96_uvs[b][1];
         }
@@ -1423,11 +1423,11 @@ extern char blarg_paths_r2[] __asm__("D_L06_001B0FB0");
 extern char *blarg_scene_points MACRO_ADDR;
 extern int blarg_shown_help_message MACRO_ADDR;
 extern int blarg_shuttle_at_second_stop MACRO_ADDR;
-extern float shuttle_alt_scale SDATA(D_L06_00162184);
+extern float shuttle_second_stop_ride_scale_multiplier_gp SDATA(D_L06_00162184);
 extern float shuttle_scale SDATA(D_L06_00162188);
 extern int shuttle_forced_departure SDATA(D_L06_00162190);
-extern int blarg_explosion_flash_pending SDATA(D_L06_00162194);
-extern int blarg_explosion_flash_ticks SDATA(D_L06_00162198);
+extern int class_076a_moby_spawn_requested_gp SDATA(D_L06_00162194);
+extern int class_076a_moby_rate_input_frames_gp SDATA(D_L06_00162198);
 extern int blarg_explosion_flash_color_a SDATA(D_L06_0016219C);
 extern int blarg_explosion_flash_color_b SDATA(D_L06_001621A0);
 
@@ -1447,10 +1447,10 @@ void ShuttleUpdate(Moby *moby) {
     qcopy(old_pos, ((float *)&moby->pos));
     qcopy(old_rot, ((float *)&moby->rot));
     moby->scale = ((Cls_3039B8 *)moby->pclass)->f24 * shuttle_scale;
-    if (blarg_explosion_flash_pending != 0) {
-        blarg_explosion_flash_pending = 0;
+    if (class_076a_moby_spawn_requested_gp != 0) {
+        class_076a_moby_spawn_requested_gp = 0;
         *(u128_3039B8 *)b = *(u128_3039B8 *)(hero_globals_base + 0xEED);
-        spawn_timed_projected_sprite_effect((char *)b, scale_ticks(blarg_explosion_flash_ticks), blarg_explosion_flash_color_a, blarg_explosion_flash_color_b);
+        spawn_timed_projected_sprite_effect((char *)b, scale_ticks(class_076a_moby_rate_input_frames_gp), blarg_explosion_flash_color_a, blarg_explosion_flash_color_b);
     }
     switch (moby->state) {
     case 0:
@@ -1492,20 +1492,20 @@ void ShuttleUpdate(Moby *moby) {
                 case 0:
                     d->sel = 1;
                     d->fC4 = shuttle_scale;
-                    d->fC8 = shuttle_alt_scale;
+                    d->fC8 = shuttle_second_stop_ride_scale_multiplier_gp;
                     d->side = 0;
                     MusicRequestTrack(4, 8);
                     break;
                 case 1:
                     d->side = 1;
-                    d->fC4 = shuttle_alt_scale;
+                    d->fC4 = shuttle_second_stop_ride_scale_multiplier_gp;
                     d->fC8 = shuttle_scale;
                     d->sel = 0;
                     MusicRequestTrack(0, 10);
                     break;
                 case 2:
                     d->side = 2;
-                    d->fC4 = shuttle_alt_scale;
+                    d->fC4 = shuttle_second_stop_ride_scale_multiplier_gp;
                     d->fC8 = shuttle_scale;
                     d->sel = 0;
                     break;
@@ -1631,7 +1631,7 @@ void ShuttleUpdate(Moby *moby) {
     case 2:
         if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->fF0) != 0) {
             d->side = 2;
-            d->fC4 = shuttle_alt_scale;
+            d->fC4 = shuttle_second_stop_ride_scale_multiplier_gp;
             d->fC8 = shuttle_scale;
             d->sel = 0;
             d->go = 1;
@@ -1931,20 +1931,20 @@ extern short blarg_explosion_flash_ticks_r __asm__("D_L06_00162198");
 extern short blarg_explosion_flash_color_a_r __asm__("D_L06_0016219C");
 extern short blarg_explosion_flash_color_b_r __asm__("D_L06_001621A0");
 extern short shuttle_debris_particle_speed;
-extern short shuttle_debris_life_ticks;
-extern short shuttle_debris_phase2_ticks;
-extern short shuttle_debris_phase3_ticks;
-extern short shuttle_debris_time_jitter;
-extern short shuttle_debris_start_size_min;
-extern short shuttle_debris_start_size_max;
-extern short shuttle_debris_end_size_min;
-extern short shuttle_debris_end_size_max;
-extern short shuttle_debris_color_a_from;
-extern short shuttle_debris_color_a_to;
-extern short shuttle_debris_color_b_from;
-extern short shuttle_debris_color_b_to;
+extern short shuttle_breakup_particle_timing_random_span_frames_gp;
+extern short shuttle_breakup_particle_timing_base_a_frames_gp;
+extern short shuttle_breakup_particle_timing_base_b_frames_gp;
+extern short shuttle_breakup_particle_timing_variation_fraction_gp;
+extern short shuttle_breakup_particle_velocity_w_random_bound_a_gp;
+extern short shuttle_breakup_particle_velocity_w_random_bound_b_gp;
+extern short shuttle_breakup_particle_acceleration_w_random_bound_a_gp;
+extern short shuttle_breakup_particle_acceleration_w_random_bound_b_gp;
+extern short shuttle_breakup_particle_first_color_blend_a_gp;
+extern short shuttle_breakup_particle_first_color_blend_b_gp;
+extern short shuttle_breakup_particle_second_color_blend_a_gp;
+extern short shuttle_breakup_particle_second_color_blend_b_gp;
 extern short shuttle_debris_particles_per_piece;
-extern short shuttle_debris_sprite;
+extern short shuttle_breakup_particle_table_index_and_flags_gp;
 extern void spawn_timed_projected_sprite_effect_r(void *, int, int, int) __asm__("func_L06_0030D338");
 extern void rand_vec(void *, float, float);
 extern void ScatterPiecesExplode(float, struct Moby *, void *, void *, int);
@@ -2008,18 +2008,18 @@ void break_apart_shuttle_linked_mobys(struct Moby *moby) {
             FastVecAdd(pos, pos, &((struct Moby *)(level_mobys_q + (id << 8)))->pos);
             rand_vec(vel, 0.0f, (*(float *)&shuttle_debris_particle_speed) * g_frame_time);
             clear_u64_value(accel);
-            vel[3] = random_float_between((*(float *)&shuttle_debris_start_size_min), (*(float *)&shuttle_debris_start_size_max));
-            accel[3] = random_float_between((*(float *)&shuttle_debris_end_size_min), (*(float *)&shuttle_debris_end_size_max));
+            vel[3] = random_float_between((*(float *)&shuttle_breakup_particle_velocity_w_random_bound_a_gp), (*(float *)&shuttle_breakup_particle_velocity_w_random_bound_b_gp));
+            accel[3] = random_float_between((*(float *)&shuttle_breakup_particle_acceleration_w_random_bound_a_gp), (*(float *)&shuttle_breakup_particle_acceleration_w_random_bound_b_gp));
             particle = PartType02Spawn(
                 pos, vel, accel,
-                FastTweenColor((*(int *)&shuttle_debris_color_a_from), (*(int *)&shuttle_debris_color_a_to), random_float_between(0.0f, 1.0f)),
-                FastTweenColor((*(int *)&shuttle_debris_color_b_from), (*(int *)&shuttle_debris_color_b_to), random_float_between(0.0f, 1.0f)),
-                truncate_float_to_s32(multiply_global_factor((float)(*(int *)&shuttle_debris_life_ticks) * random_float_between(0.0f, 1.0f) + 1.0f)),
+                FastTweenColor((*(int *)&shuttle_breakup_particle_first_color_blend_a_gp), (*(int *)&shuttle_breakup_particle_first_color_blend_b_gp), random_float_between(0.0f, 1.0f)),
+                FastTweenColor((*(int *)&shuttle_breakup_particle_second_color_blend_a_gp), (*(int *)&shuttle_breakup_particle_second_color_blend_b_gp), random_float_between(0.0f, 1.0f)),
+                truncate_float_to_s32(multiply_global_factor((float)(*(int *)&shuttle_breakup_particle_timing_random_span_frames_gp) * random_float_between(0.0f, 1.0f) + 1.0f)),
                 truncate_float_to_s32(multiply_global_factor(
-                    (float)(*(int *)&shuttle_debris_phase2_ticks) * (random_float_between(-(*(float *)&shuttle_debris_time_jitter), (*(float *)&shuttle_debris_time_jitter)) + 1.0f))),
+                    (float)(*(int *)&shuttle_breakup_particle_timing_base_a_frames_gp) * (random_float_between(-(*(float *)&shuttle_breakup_particle_timing_variation_fraction_gp), (*(float *)&shuttle_breakup_particle_timing_variation_fraction_gp)) + 1.0f))),
                 truncate_float_to_s32(multiply_global_factor(
-                    (float)(*(int *)&shuttle_debris_phase3_ticks) * (random_float_between(-(*(float *)&shuttle_debris_time_jitter), (*(float *)&shuttle_debris_time_jitter)) + 1.0f))),
-                (*(int *)&shuttle_debris_sprite));
+                    (float)(*(int *)&shuttle_breakup_particle_timing_base_b_frames_gp) * (random_float_between(-(*(float *)&shuttle_breakup_particle_timing_variation_fraction_gp), (*(float *)&shuttle_breakup_particle_timing_variation_fraction_gp)) + 1.0f))),
+                (*(int *)&shuttle_breakup_particle_table_index_and_flags_gp));
             if (particle != 0) {
                 particle[9] = truncate_float_to_s32(4.0f) - 0x20;
             }
@@ -2302,18 +2302,18 @@ extern int vector_stream_fade_ticks MACRO_ADDR;
 extern int vector_stream_regen_ticks MACRO_ADDR;
 extern short vector_stream_uv_scroll;
 extern short vector_stream_matrix_scale;
-extern short vector_stream_uv_scroll_speed;
-extern float vector_stream_jitter SDATA(D_L06_00162290);
-extern short vector_stream_length;
-extern short vector_stream_moby_scale;
-extern short vector_stream_burst_color_from;
-extern short vector_stream_burst_color_to;
-extern short vector_stream_burst_size_min;
-extern short vector_stream_burst_size_max;
-extern short vector_stream_burst_life_min;
-extern short vector_stream_burst_life_max;
-extern short vector_stream_burst_speed_min;
-extern short vector_stream_burst_speed_max;
+extern short vector_stream_phase_rate_gp;
+extern float vector_stream_increment_random_scale_bound_gp SDATA(D_L06_00162290);
+extern short vector_stream_x_extent_gp;
+extern short vector_stream_moby_scale_multiplier_gp;
+extern short vector_stream_burst_color_blend_a_gp;
+extern short vector_stream_burst_color_blend_b_gp;
+extern short vector_stream_burst_min_particle_scale_gp;
+extern short vector_stream_burst_max_particle_scale_gp;
+extern short vector_stream_burst_min_lifetime_frames_gp;
+extern short vector_stream_burst_max_lifetime_frames_gp;
+extern short vector_stream_burst_velocity_random_scale_bound_a_gp;
+extern short vector_stream_burst_velocity_random_scale_bound_b_gp;
 void draw_moby_vector_streams(char *m);
 void test_moby_vector_stream_collision_lines(char *m);
 extern float vector_stream_rotations[];
@@ -2343,7 +2343,7 @@ void update_moby_vector_streams_and_particle_burst(char *moby)
 
     switch ((unsigned char)moby[0x20]) {
     case 0:
-        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&vector_stream_moby_scale;
+        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&vector_stream_moby_scale_multiplier_gp;
         vector_stream_fade_ticks = 0x16;
         vector_stream_regen_ticks = 0x2D;
         d->timer[1] = 0xB;
@@ -2380,19 +2380,19 @@ void update_moby_vector_streams_and_particle_burst(char *moby)
             d->f18 = Moby_PlaySound_r2(0, 4, moby);
         }
         test_moby_vector_stream_collision_lines(moby);
-        v = *(float *)&vector_stream_uv_scroll + *(float *)&vector_stream_uv_scroll_speed * g_frame_time;
+        v = *(float *)&vector_stream_uv_scroll + *(float *)&vector_stream_phase_rate_gp * g_frame_time;
         *(float *)&vector_stream_uv_scroll = v;
         if (1.0f < v) {
             *(float *)&vector_stream_uv_scroll = v - 1.0f;
         }
-        f21 = *(float *)&vector_stream_length / 30.0f;
-        f20 = -(*(float *)&vector_stream_length * 0.5f);
+        f21 = *(float *)&vector_stream_x_extent_gp / 30.0f;
+        f20 = -(*(float *)&vector_stream_x_extent_gp * 0.5f);
         for (i = 0; i < 4; i++) {
             if (d->timer[i] == 0) {
                 for (j = 0; j < 30; j++) {
                     set_vec_to_origin_point(d->a[i][j]);
                     d->a[i][j][0] = f20;
-                    rand_vec(u.tmp[j], 0.0f, vector_stream_jitter * g_frame_time);
+                    rand_vec(u.tmp[j], 0.0f, vector_stream_increment_random_scale_bound_gp * g_frame_time);
                     f20 += f21;
                 }
                 for (k = 1; k < 29; k++) {
@@ -2445,12 +2445,12 @@ void update_moby_vector_streams_and_particle_burst(char *moby)
                 float scale;
                 int s;
                 unsigned char life;
-                vec_scale_to_length(u.m.pos, u.m.b, randf_sym(0.0f, *(float *)&vector_stream_length * 0.75f));
+                vec_scale_to_length(u.m.pos, u.m.b, randf_sym(0.0f, *(float *)&vector_stream_x_extent_gp * 0.75f));
                 FastVecAdd(u.m.pos, u.m.pos, u.m.b + 12);
-                color = FastTweenColor(*(int *)&vector_stream_burst_color_from, *(int *)&vector_stream_burst_color_to, random_float_between(0.0f, 1.0f));
-                scale = random_float_between(*(float *)&vector_stream_burst_size_min, *(float *)&vector_stream_burst_size_max);
-                s = truncate_float_to_s32(random_float_between((float)*(int *)&vector_stream_burst_life_min, (float)*(int *)&vector_stream_burst_life_max));
-                rand_vec(u.m.vel, *(float *)&vector_stream_burst_speed_min * g_frame_time, *(float *)&vector_stream_burst_speed_max * g_frame_time);
+                color = FastTweenColor(*(int *)&vector_stream_burst_color_blend_a_gp, *(int *)&vector_stream_burst_color_blend_b_gp, random_float_between(0.0f, 1.0f));
+                scale = random_float_between(*(float *)&vector_stream_burst_min_particle_scale_gp, *(float *)&vector_stream_burst_max_particle_scale_gp);
+                s = truncate_float_to_s32(random_float_between((float)*(int *)&vector_stream_burst_min_lifetime_frames_gp, (float)*(int *)&vector_stream_burst_max_lifetime_frames_gp));
+                rand_vec(u.m.vel, *(float *)&vector_stream_burst_velocity_random_scale_bound_a_gp * g_frame_time, *(float *)&vector_stream_burst_velocity_random_scale_bound_b_gp * g_frame_time);
                 life = scale_ticks(s);
                 spawn_moving_hero_relative_alpha_fade_particle_r(u.m.pos, u.m.vel, color, scale, life, (unsigned char)random_integer_below(0xFF), 0);
             }

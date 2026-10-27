@@ -478,8 +478,8 @@ extern void StepColorFade(void *, void *);
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
 extern int FindNearestTargetMoby(void *, float, void *);
 extern float veldin1_robot_target_range SDATA(D_L00_00161CA0);
-extern float veldin1_robot_hit_knock_gravity SDATA(D_L00_00161CA4);
-extern float veldin1_robot_hit_knock_drag SDATA(D_L00_00161CA8);
+extern float veldin_robot_knockback_gravity_gp SDATA(D_L00_00161CA4);
+extern float veldin_robot_knockback_xy_speed_step_gp SDATA(D_L00_00161CA8);
 extern float veldin1_robot_hit_knock_speed SDATA(D_L00_00161CAC);
 extern float veldin1_robot_hit_knock_lift SDATA(D_L00_00161CB0);
 
@@ -575,8 +575,8 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
     if (hit != 1 && m->state != 8 && dmg != 0.0f) {
         vars->health -= dmg;
         vars->unk90 = 0x200;
-        vars->unk80 = veldin1_robot_hit_knock_gravity * g_frame_time_sq;
-        vars->unk84 = veldin1_robot_hit_knock_drag * g_frame_time_sq;
+        vars->unk80 = veldin_robot_knockback_gravity_gp * g_frame_time_sq;
+        vars->unk84 = veldin_robot_knockback_xy_speed_step_gp * g_frame_time_sq;
         vars->unk88 = veldin1_robot_hit_knock_speed * g_frame_time;
         vars->unk8C = veldin1_robot_hit_knock_lift * g_frame_time;
         vars->unkAD = 0;

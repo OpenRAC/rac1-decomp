@@ -503,25 +503,25 @@ int cd_scmd_prechk(int arg0) {
     return 1;
 }
 
-extern int D_00131410;
-extern int D_0013140C;
+extern int cd_init_call_count;
+extern int cd_init_rpc_bound;
 extern int D_00131400;
-extern s32 D_00131404[];
-extern int D_001313F4;
-extern int D_001313E4;
-extern int D_001313FC;
-extern int D_001313E0;
-extern int D_001313EC;
-extern char D_00159A68[];
-extern int D_00159AC0[];
-extern int D_001325C0;
-extern char D_00153050[];
-extern char D_00153070[];
-extern void func_0011AD70(void *, int);
-extern int func_00120CA0(void);
+extern s32 cd_disk_ready_rpc_bound[];
+extern int cd_read_mode_flags;
+extern int cd_poweroff_installing;
+extern int cd_poweroff_installed;
+extern int cd_callback_sema;
+extern int cd_scmd_sema;
+extern char cd_init_rpc_client[];
+extern int cd_init_rpc_send_buffer[];
+extern int cd_scmd_recv_buffer;
+extern char cd_bind_error_fmt[];
+extern char cd_exit_message[];
+extern void sceSifWriteBackDCache(void *, int);
+extern int cd_install_poweroff_handler(void);
 
 /* sceCdInit (libcdvd.a cdvd000.o) */
-int func_001211B0(int mode) {
+int sce_cd_init(int mode) {
     int r;
     int i;
     int ret;
@@ -529,39 +529,39 @@ int func_001211B0(int mode) {
     int *rd;
     int tid;
 
-    if (func_00120FD0(1) != 0) {
+    if (cd_scmd_sync(1) != 0) {
         return 0;
     }
-    func_0011AE20(0);
-    tid = func_00118BE0();
-    *(volatile int *)&D_001313E4 = 1;
-    *(volatile int *)&D_00159850 = tid;
+    sceSifInitRpc(0);
+    tid = get_thread_id();
+    *(volatile int *)&cd_poweroff_installing = 1;
+    *(volatile int *)&cd_thread_id = tid;
     {
-        int *p0 = &D_00131400, *p1 = &D_001313F8, *p2 = &D_00131408, *p3 = D_00131404, *p6 = &D_0013140C, *p4 = &D_001313FC, *p5 = &D_001313F4;
+        int *p0 = &D_00131400, *p1 = &cd_ncmd_rpc_bound, *p2 = &cd_scmd_rpc_bound, *p3 = cd_disk_ready_rpc_bound, *p6 = &cd_init_rpc_bound, *p4 = &cd_poweroff_installed, *p5 = &cd_read_mode_flags;
         /* register pin: retail keeps the -1 in $4 (hi(D_001313FC) then lands in $3). */
         register int m __asm__("$4") = -1;
         *p4 = m; *p0 = m; *p1 = m; *p2 = m; *p3 = m;
         *p5 = 0;
-        D_00131410++;
+        cd_init_call_count++;
         *p6 = m;
     }
     while (1) {
-        r = func_0011B2F8(D_00159A68, 0x80000592, 0);
+        r = sceSifBindRpc(cd_init_rpc_client, 0x80000592, 0);
         if (r < 0) {
-            if (D_001313D0 > 0) {
-                func_0011A6C8(D_00153050, r, D_00131410);
+            if (cd_debug_level > 0) {
+                scePrintf(cd_bind_error_fmt, r, cd_init_call_count);
             }
             for (i = 0x100000; i != -1; i--)
                 ;
             continue;
         }
-        if (((SifRpcClientData *)D_00159A68)->serve != 0) {
-            rd = &D_001325C0;
-            D_00159AC0[0] = mode;
-            D_0013140C = 0;
-            func_0011AD70(D_00159AC0, 4);
-            if (func_0011B4C8(D_00159A68, 0, 0, D_00159AC0, 4, rd, 0x10, 0, 0) < 0) {
-                *(volatile int *)&D_001313E4 = 0;
+        if (((SifRpcClientData *)cd_init_rpc_client)->serve != 0) {
+            rd = &cd_scmd_recv_buffer;
+            cd_init_rpc_send_buffer[0] = mode;
+            cd_init_rpc_bound = 0;
+            sceSifWriteBackDCache(cd_init_rpc_send_buffer, 4);
+            if (sif_call_rpc(cd_init_rpc_client, 0, 0, cd_init_rpc_send_buffer, 4, rd, 0x10, 0, 0) < 0) {
+                *(volatile int *)&cd_poweroff_installing = 0;
                 return 0;
             }
             break;
@@ -575,27 +575,27 @@ int func_001211B0(int mode) {
     ret = 1;
     if (a != 0xFF) {
         if (a == 0xFE) {
-            D_001313D0 = 1;
+            cd_debug_level = 1;
         } else if (b / 256 < 2 || c / 256 < 2) {
             ret = 2;
         }
     }
-    *(volatile int *)&D_001313E4 = 0;
+    *(volatile int *)&cd_poweroff_installing = 0;
     switch (mode) {
     case 5:
-        if (D_001313D0 > 0) {
-            func_0011A6C8(D_00153070);
+        if (cd_debug_level > 0) {
+            scePrintf(cd_exit_message);
         }
-        func_00120BC0();
-        *(volatile int *)&D_001313E8 = -1;
-        *(volatile int *)&D_001313EC = -1;
-        *(volatile int *)&D_001313E0 = -1;
+        cdvd_exit();
+        *(volatile int *)&cd_ncmd_sema = -1;
+        *(volatile int *)&cd_scmd_sema = -1;
+        *(volatile int *)&cd_callback_sema = -1;
         break;
     case 0:
     case 1:
     default:
-        func_00120B28();
-        func_00120CA0();
+        cd_sema_init();
+        cd_install_poweroff_handler();
         break;
     }
     return ret;

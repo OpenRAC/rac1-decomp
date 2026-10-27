@@ -257,7 +257,7 @@ extern int scale_ticks(int);
 extern float frame_scale MACRO_ADDR;
 extern short smoke_particle_stagger_ticks_base;
 extern short smoke_particle_timer_ticks_base;
-extern short smoke_particle_aux_ticks_base;
+extern short configured_reciprocal_denominator_frames;
 extern short smoke_scroll_offset;
 extern short smoke_scroll_speed;
 extern short smoke_particle_stagger_ticks;
@@ -265,21 +265,21 @@ extern short smoke_particle_timer_ticks;
 extern short smoke_particle_timer_ticks_inv;
 extern int smoke_particle_aux_ticks MACRO_ADDR;
 extern short smoke_particle_aux_ticks_inv;
-extern int smoke_particle_pool_next MACRO_ADDR;
+extern int fetch_add_accumulator MACRO_ADDR;
 
 // Texture scroll moby update: init the scroll constants, then scroll and wrap.
 void update_frame_timing_and_wrapped_value(char *m) {
     switch (*(unsigned char *)(m + 0x20)) {
     case 0: {
         float one;
-        smoke_particle_pool_next = 0;
+        fetch_add_accumulator = 0;
         m[0x20] = 1;
         *(unsigned char *)(m + 0x30) = 0xFF;
         one = 1.0f;
         *(int *)&smoke_particle_stagger_ticks = scale_ticks(*(int *)&smoke_particle_stagger_ticks_base);
         *(int *)&smoke_particle_timer_ticks = scale_ticks(*(int *)&smoke_particle_timer_ticks_base);
         *(float *)&smoke_particle_timer_ticks_inv = one / IntToFloat(*(int *)&smoke_particle_timer_ticks);
-        smoke_particle_aux_ticks = scale_ticks(*(int *)&smoke_particle_aux_ticks_base);
+        smoke_particle_aux_ticks = scale_ticks(*(int *)&configured_reciprocal_denominator_frames);
         *(float *)&smoke_particle_aux_ticks_inv = one / (float)smoke_particle_aux_ticks;
         break;
     }
@@ -294,7 +294,7 @@ void update_frame_timing_and_wrapped_value(char *m) {
     }
 }
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002a4830.c, FUN_L00_002a4dc8. */
-int fetch_and_add_global_accumulator(int a) { int t = smoke_particle_pool_next; smoke_particle_pool_next = t + a; return t; }
+int fetch_and_add_global_accumulator(int a) { int t = fetch_add_accumulator; fetch_add_accumulator = t + a; return t; }
 extern void *CreateMoby(int oClass);
 extern void moby_build_matrix(void *);
 
@@ -386,24 +386,24 @@ typedef struct {
     float uv[4][2];
 } Quad_2A62D0;
 
-extern short D_L00_0016145C;
-extern short D_L00_00161460;
-extern float D_L00_001D7660[][4];
-extern float D_L00_001D76F0[][2];
+extern short light_beam_texture_scroll;
+extern short light_beam_glow_phase;
+extern float light_beam_corner_table[][4];
+extern float light_beam_corner_uvs[][2];
 extern float D_L00_001D76F4[][2];
-extern int D_L00_001D7738[];
-extern int D_L00_001D7760[][4];
+extern int light_beam_corner_colors[];
+extern int light_beam_quad_corner_indices[][4];
 
-extern void func_001FA1F8(void *, void *);
-extern int func_001F4868(int);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001F9BD8(void *, void *, void *);
-extern void func_L00_001FD1D8(void *, void *, int);
-extern float func_001F9F90(float);
-extern float func_001F9FA8(float);
-extern void func_L00_00264690(void *, int, float, float);
+extern void euler_rotation_basis(void *, void *);
+extern int GetEffectTex(int);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void draw_world_quad(void *, void *, int);
+extern float FastCos(float);
+extern float FastSin(float);
+extern void draw_offset_textured_effect_quad(void *, int, float, float);
 
-void func_L00_002A62D0(char *m) {
+void draw_vendor_effects(char *m) {
     char *p = *(char **)(m + 0x78);
     Quad_2A62D0 qd;
     long pk[4];
@@ -423,27 +423,27 @@ void func_L00_002A62D0(char *m) {
     register float *ap __asm__("$5");
     int k, i, i0, i1, i2, i3, col;
 
-    h = (char *)&D_L00_00166D80;
+    h = (char *)&player_camera;
     d0[2] = *(float *)(h + 0x158);
     d0[0] = 0.0f;
     d0[1] = 0.0f;
-    func_001FA1F8(mtx, d0);
+    euler_rotation_basis(mtx, d0);
 
-    (*(float *)&D_L00_0016145C) = (*(float *)&D_L00_0016145C) + 0.01f;
-    if (1.0f < (*(float *)&D_L00_0016145C)) {
-        (*(float *)&D_L00_0016145C) = (*(float *)&D_L00_0016145C) - 1.0f;
+    (*(float *)&light_beam_texture_scroll) = (*(float *)&light_beam_texture_scroll) + 0.01f;
+    if (1.0f < (*(float *)&light_beam_texture_scroll)) {
+        (*(float *)&light_beam_texture_scroll) = (*(float *)&light_beam_texture_scroll) - 1.0f;
     }
 
     pk[2] = 1;
     pk[3] = 0x4000000044L;
     pk[0] = 0;
-    pk[1] = func_001F4868(0x18);
+    pk[1] = GetEffectTex(0x18);
 
     for (k = 0; k < 4; k++) {
-        func_001F9EC0(q[0], D_L00_001D7660[D_L00_001D7760[k][0]], mtx);
-        func_001F9EC0(q[1], D_L00_001D7660[D_L00_001D7760[k][1]], mtx);
-        func_001F9EC0(q[2], D_L00_001D7660[D_L00_001D7760[k][2]], mtx);
-        func_001F9EC0(q[3], D_L00_001D7660[D_L00_001D7760[k][3]], mtx);
+        matrix_mul_vec3(q[0], light_beam_corner_table[light_beam_quad_corner_indices[k][0]], mtx);
+        matrix_mul_vec3(q[1], light_beam_corner_table[light_beam_quad_corner_indices[k][1]], mtx);
+        matrix_mul_vec3(q[2], light_beam_corner_table[light_beam_quad_corner_indices[k][2]], mtx);
+        matrix_mul_vec3(q[3], light_beam_corner_table[light_beam_quad_corner_indices[k][3]], mtx);
 
         qd.v[0][0] = *(float *)(m + 0x10) + q[0][0] * *(float *)(p + 0x90);
         qd.v[0][1] = *(float *)(m + 0x14) + q[0][1] * *(float *)(p + 0x90);
@@ -458,16 +458,16 @@ void func_L00_002A62D0(char *m) {
         qd.v[3][1] = *(float *)(m + 0x14) + q[3][1] * *(float *)(p + 0x90);
         qd.v[3][2] = *(float *)(m + 0x18) + q[3][2];
 
-        i0 = D_L00_001D7760[k][0];
-        i1 = D_L00_001D7760[k][1];
-        i2 = D_L00_001D7760[k][2];
-        i3 = D_L00_001D7760[k][3];
-        off = (*(float *)&D_L00_0016145C);
-        qd.col[0] = D_L00_001D7738[i0];
-        qd.col[1] = D_L00_001D7738[i1];
-        qd.col[2] = D_L00_001D7738[i2];
-        qd.col[3] = D_L00_001D7738[i3];
-        t0 = D_L00_001D76F0;
+        i0 = light_beam_quad_corner_indices[k][0];
+        i1 = light_beam_quad_corner_indices[k][1];
+        i2 = light_beam_quad_corner_indices[k][2];
+        i3 = light_beam_quad_corner_indices[k][3];
+        off = (*(float *)&light_beam_texture_scroll);
+        qd.col[0] = light_beam_corner_colors[i0];
+        qd.col[1] = light_beam_corner_colors[i1];
+        qd.col[2] = light_beam_corner_colors[i2];
+        qd.col[3] = light_beam_corner_colors[i3];
+        t0 = light_beam_corner_uvs;
         t4 = (float (*)[2])&t0[0][1];
         qd.uv[0][0] = t0[i0][0];
         qd.uv[0][1] = t4[i0][0] + off;
@@ -477,18 +477,18 @@ void func_L00_002A62D0(char *m) {
         qd.uv[2][1] = t4[i2][0] + off;
         qd.uv[3][0] = t0[i3][0];
         qd.uv[3][1] = t4[i3][0] + off;
-        func_L00_001FD1D8(&qd, 0, 1);
+        draw_world_quad(&qd, 0, 1);
     }
 
-    pk[1] = func_001F4868(0x1B);
+    pk[1] = GetEffectTex(0x1B);
 
-    (*(float *)&D_L00_00161460) = (*(float *)&D_L00_00161460) + 0.01f;
-    if (1.0f < (*(float *)&D_L00_00161460)) {
-        (*(float *)&D_L00_00161460) = 0.0f;
+    (*(float *)&light_beam_glow_phase) = (*(float *)&light_beam_glow_phase) + 0.01f;
+    if (1.0f < (*(float *)&light_beam_glow_phase)) {
+        (*(float *)&light_beam_glow_phase) = 0.0f;
     }
 
     {
-        float g = (*(float *)&D_L00_00161460);
+        float g = (*(float *)&light_beam_glow_phase);
         float n = -g * 1.2f;
         float pp = g * 1.2f;
         float z = g * 1.4f + 1.1f;
@@ -519,7 +519,7 @@ void func_L00_002A62D0(char *m) {
         M[3].q = T[3].q;
     }
 
-    g = (char *)&D_L00_00166D80;
+    g = (char *)&player_camera;
     off = *(float *)(g + 0x158);
     d0[0] = 0.0f;
     d0[2] = off;
@@ -527,13 +527,13 @@ void func_L00_002A62D0(char *m) {
     /* inline asm: ap = d0 (frame slot 0xD0). The kk input puts it after retail's mov.s $f22,$f5;
      * the $4 clobber keeps addiu $a0 (mtx) after it. */
     __asm__("addiu %0,$sp,0xD0" : "=r"(ap) : "f"(kk) : "$4");
-    func_001FA1F8(mtx, ap);
-    func_001F9EC0(q[0], M[0].f, mtx);
-    func_001F9EC0(q[1], M[1].f, mtx);
-    func_001F9EC0(q[2], M[2].f, mtx);
-    func_001F9EC0(q[3], M[3].f, mtx);
+    euler_rotation_basis(mtx, ap);
+    matrix_mul_vec3(q[0], M[0].f, mtx);
+    matrix_mul_vec3(q[1], M[1].f, mtx);
+    matrix_mul_vec3(q[2], M[2].f, mtx);
+    matrix_mul_vec3(q[3], M[3].f, mtx);
 
-    col = ((int)((1.0f - (*(float *)&D_L00_00161460)) * 128.0f) << 24) | 0x808080;
+    col = ((int)((1.0f - (*(float *)&light_beam_glow_phase)) * 128.0f) << 24) | 0x808080;
     qd.v[0][0] = *(float *)(m + 0x10) + q[0][0];
     qd.v[0][1] = *(float *)(m + 0x14) + q[0][1];
     qd.v[0][2] = *(float *)(m + 0x18) + q[0][2];
@@ -558,19 +558,19 @@ void func_L00_002A62D0(char *m) {
     qd.uv[2][1] = 1.0f;
     qd.uv[3][0] = 1.0f;
     qd.uv[3][1] = 1.0f;
-    func_L00_001FD1D8(&qd, 0, 1);
+    draw_world_quad(&qd, 0, 1);
 
     /* the sparkle vector reuses the first matrix row's slot in retail; its w is that row's 0 */
     izero = 0;
     zero = *(float *)&izero;
     for (i = 0; i < 4; i++) {
         float ang = (float)i * 3.14159f * 0.5f - 3.14159f;
-        T[0].f[0] = func_001F9F90(ang) * kk;
-        T[0].f[1] = func_001F9FA8(ang) * kk;
+        T[0].f[0] = FastCos(ang) * kk;
+        T[0].f[1] = FastSin(ang) * kk;
         T[0].f[2] = 0.59f;
-        func_001F9EC0(T[0].f, T[0].f, m + 0xC0);
-        func_001F9BD8(T[0].f, T[0].f, m + 0x10);
-        func_L00_00264690(T[0].f, *(int *)(m + 0x90) & 0xFFFF0000, 0.1333f, zero);
+        matrix_mul_vec3(T[0].f, T[0].f, m + 0xC0);
+        FastVecAdd(T[0].f, T[0].f, m + 0x10);
+        draw_offset_textured_effect_quad(T[0].f, *(int *)(m + 0x90) & 0xFFFF0000, 0.1333f, zero);
     }
 }
 extern float FastSin(float);
@@ -1157,7 +1157,7 @@ extern int transform_attachment_pose(int x, char *o, float *p, float *q, float *
 extern int coll_sphere(float, void *, int, void *);
 extern void clear_u64_value(void *);
 extern char *GetFlaggedPvarWord(void *);
-extern char *func_L00_00261448(void *);
+extern char *moby_get_ride_transform(void *);
 extern void vec_scale_to_length(float *, float *, float);
 
 /* Steers a thrown moby along its path: builds its orientation from the data's angles and, when done, releases the held target. */
@@ -1225,7 +1225,7 @@ void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
                 moby[0x20] = 1;
                 clear_u64_value(data + 0x30);
                 *(float *)(data + 0x3C) = 1.0f;
-                x = func_L00_00261448(*(char **)(data + 0x5C));
+                x = moby_get_ride_transform(*(char **)(data + 0x5C));
                 if (x != 0) {
                     qcopy(data + 0x20, x + 0x10);
                 } else {
@@ -1572,7 +1572,7 @@ int get_wrench_hit_sound_variant(void) {
     return r;
 }
 extern char *GetFlaggedPvarWord(void *);
-extern char *func_L00_00261448(void *);
+extern char *moby_get_ride_transform(void *);
 /* Return 1 when the moby the wrench hit is flagged to react to wrench hits. */
 int should_trigger_wrench_hit_reaction(void) {
     char *x = GetFlaggedPvarWord(g_coll_hit_moby);
@@ -2374,7 +2374,7 @@ void initialize_moby_motion_at_position(Vec4 *pos, N2 *self, void *arg) {
     vec_scale_to_length(d.f, d.f, random_float_between(g_frame_time * 0.01f, g_frame_time * 0.1f));
     FastVecAdd(m, &d, arg);
     P = (P2 *)(hero_globals_base + 0xE1D);
-    if (P->p2FC && func_L00_00261448(P->p2FC)) {
+    if (P->p2FC && moby_get_ride_transform(P->p2FC)) {
         FastVecAdd(m, m, P->v100);
     }
     m->h34 = scale_ticks(0x78);
@@ -2428,7 +2428,7 @@ int predict_mine_impact(char *a0, char *o, int mode) {
         FastVecAdd(w, w, base + 0x80);
         w[2] = w[2] + 0.49082f;
         qcopy(B, a0);
-        if (*(int *)(base + 0x2FC) != 0 && func_L00_00261448((void *)*(int *)(base + 0x2FC)) != 0 && mode != 0) {
+        if (*(int *)(base + 0x2FC) != 0 && moby_get_ride_transform((void *)*(int *)(base + 0x2FC)) != 0 && mode != 0) {
             FastVecAdd(B, B, base + 0x100);
         }
         x = scale_ticks(0x78);
@@ -2471,9 +2471,9 @@ int predict_mine_impact(char *a0, char *o, int mode) {
     if (x != 0) {
         if (mode == 0) {
             if (g_coll_hit_moby == 0) return 0;
-            if (func_L00_00261448(g_coll_hit_moby) == 0) return 0;
+            if (moby_get_ride_transform(g_coll_hit_moby) == 0) return 0;
         }
-        if (mode != 2 || g_coll_hit_moby == 0 || func_L00_00261448(g_coll_hit_moby) == 0) {
+        if (mode != 2 || g_coll_hit_moby == 0 || moby_get_ride_transform(g_coll_hit_moby) == 0) {
             AddDrawCallback(draw_mine_predicted_impact_marker, o);
         }
         {

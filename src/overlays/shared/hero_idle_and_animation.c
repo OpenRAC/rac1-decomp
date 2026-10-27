@@ -2117,7 +2117,7 @@ f32 adjust_hero_animation_speed_for_target_frame(f32 a, f32 b, f32 c, f32 d)
 }
 extern unsigned char hero_globals_base[] NOT_SDA;
 extern int truncate_float_to_s32(float);
-extern float func_L00_002001D8(void *, float);
+extern float split_float_fraction(void *, float);
 
 /* Interpolates a per-frame table at the hero's current animation position. */
 float vector_length_xyz_cf(float *a, int n) {
@@ -2130,7 +2130,7 @@ float vector_length_xyz_cf(float *a, int n) {
     if (*(int *)(d + 0xA98) & 2) {
         p = m;
     }
-    w = func_L00_002001D8(buf, *(float *)(d + 0xAA8));
+    w = split_float_fraction(buf, *(float *)(d + 0xAA8));
     return w * a[i] + (*(float *)(d + 0xAAC) - w) * a[p];
 }
 typedef unsigned int u128_002090d0 __attribute__((mode(TI), aligned(16)));
@@ -2532,7 +2532,7 @@ void emit_hero_timed_effects(void) {
 }
 extern char D_L00_0017A780[];
 // stores two floats into a global block
-void set_first_hero_easing_parameters(float a, float b) {
+void Hero_SetTiltSpringParams(float a, float b) {
     char *p = D_L00_0017A780;
     *(float *)(p + 0xA4) = a;
     *(float *)(p + 0xA8) = b;
@@ -2664,7 +2664,7 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
     ga = (char *)hero_globals_base + 0xE1D;
     if (*(int *)(ga + 0x260) != 0 && *(float *)(ga + 0x258) > 1.4f && *(float *)(ga + 0x248) > 1.0f) {
         b = *(float *)&g_frame_scale_sq_g;
-        set_first_hero_easing_parameters(b * 0.015f, b * 0.3f);
+        Hero_SetTiltSpringParams(b * 0.015f, b * 0.3f);
         a = *(float *)(ga + 0x258) * 1.5f * 0.0174532924f + 0.191986218f;
         if (a > 0.471238881f) a = 0.471238881f;
         lim = (1.0f - *(float *)(ga + 0x25C)) * 35.0f * 0.0174532924f;
@@ -2672,7 +2672,7 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
         f1 = g_frame_scale_sq_m;
         h3 = D_L00_0017A780;
         *(float *)(h3 + 0x274) = a;
-        set_first_hero_easing_parameters(f1 * 0.008f, f1 * 0.3f);
+        Hero_SetTiltSpringParams(f1 * 0.008f, f1 * 0.3f);
         *(float *)(h3 + 0x114) = *(float *)(h3 + 0x274) * 0.7f;
         return;
     }
@@ -2704,12 +2704,12 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
         if (*(float *)(g3 + 0x1004) < 0.0f) *(float *)(g3 + 0x1004) = 0.0f;
     }
     g4 = (char *)hero_globals_base + 0xE1D;
-    set_first_hero_easing_parameters(*(float *)(g4 + 0x1014), *(float *)(g4 + 0x1018));
+    Hero_SetTiltSpringParams(*(float *)(g4 + 0x1014), *(float *)(g4 + 0x1018));
     f2 = g_frame_scale_sq_m;
     h4 = D_L00_0017A780;
     *(float *)(h4 + 0x278) = *(float *)(g4 + 0x1008);
     *(float *)(h4 + 0x274) = *(float *)(g4 + 0x1004);
-    set_first_hero_easing_parameters(f2 * 0.008f, f2 * 0.3f);
+    Hero_SetTiltSpringParams(f2 * 0.008f, f2 * 0.3f);
     *(float *)(h4 + 0x118) = *(float *)(h4 + 0x278) * 0.52f;
     *(float *)(h4 + 0x114) = *(float *)(h4 + 0x274) * 0.55f;
 }
@@ -2853,11 +2853,11 @@ void update_hero_target_tracking(void) {
         else if (f20 < -0.296705961f) f20 = -0.296705961f;
         f21 = 0.0f;
     }
-    set_first_hero_easing_parameters(g_frame_scale_sq * 0.021f, g_frame_scale_sq * 0.27f);
+    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.021f, g_frame_scale_sq * 0.27f);
     p = D_L00_0017A780;
     *(float *)(p + 0x274) = f21;
     *(float *)(p + 0x278) = f20 * 0.7f;
-    set_first_hero_easing_parameters(g_frame_scale_sq * 0.014f, g_frame_scale_sq * 0.3f);
+    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.014f, g_frame_scale_sq * 0.3f);
     *(float *)(p + 0x1C8) = *(float *)(p + 0x278) * 0.55f;
 }
 typedef struct { u8 p0[0x2C0]; f32 f2C0, f2C4, f2C8, f2CC, f2D0, f2D4; u8 p2D8[0x308 - 0x2D8]; s16 h308; u8 p30A[0x418 - 0x30A]; s32 i418; u8 p41C[0x10E0 - 0x41C]; s32 i10E0; u8 p10E4[0x12A0 - 0x10E4]; f32 f12A0, f12A4; s32 i12A8; s16 h12AC; u16 h12AE; u8 p12B0[0x2080 - 0x12B0]; u8 *p2080; s32 i2084; u8 p2088[4]; s32 i208C; } P_20b1d8;
@@ -3247,7 +3247,7 @@ extern int CollType_r2(void) __asm__("func_L00_001F3958");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern float fast_atan2_r3(float, float) __asm__("func_L00_001FF860");
 extern Obj_20C568 *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
-extern Obj_20C568 *func_L00_00261448(char *);
+extern Obj_20C568 *moby_get_ride_transform(char *);
 extern int coll_capsule_r(float, float, void *, int, int) __asm__("func_L00_001F1D20");
 extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
 extern float FastDiffRots_r2(float, float) __asm__("func_001FA850");
@@ -3316,7 +3316,7 @@ void check_ledge_grab(void) {
     if (((Hit_20C568 *)coll_hit_result_r)->m18 != 0) {
         ok = 0;
         a = GetFlaggedPvarWord_r(((Hit_20C568 *)coll_hit_result_r)->m18);
-        b = func_L00_00261448(((Hit_20C568 *)coll_hit_result_r)->m18);
+        b = moby_get_ride_transform(((Hit_20C568 *)coll_hit_result_r)->m18);
         if (a != 0 && (a->h1E & 1)) {
             ok = 1;
         } else if (b != 0) {

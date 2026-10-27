@@ -32,10 +32,10 @@ extern char *oltanis_clip_volumes MACRO_ADDR;
 extern char oltanis_camera_pos[];
 extern float oltanis_vendor_beam_quad_uvs[][2];
 extern short oltanis_vendor_beam_tex_index;
-extern short oltanis_vendor_beam_alpha_a;
-extern short oltanis_vendor_beam_alpha_b;
-extern short oltanis_vendor_beam_alpha_c;
-extern short oltanis_vendor_beam_alpha_d;
+extern short vendor_beam_blend_minuend_selector_gp;
+extern short vendor_beam_blend_subtrahend_selector_gp;
+extern short vendor_beam_blend_alpha_factor_selector_gp;
+extern short vendor_beam_blend_addend_selector_gp;
 
 typedef struct {
     int idx;
@@ -70,8 +70,8 @@ void draw_vendor_beam(char *m) {
     FastVecSub(v230, oltanis_camera_pos, ((Frame_03430 *)oltanis_clip_volumes)[d->idx].v[3]);
     matrix_mul_vec3(v230, v230, M2);
     tex = GetEffectTex(*(int *)&oltanis_vendor_beam_tex_index);
-    flags = (long)*(int *)&oltanis_vendor_beam_alpha_a | ((long)*(int *)&oltanis_vendor_beam_alpha_b << 2) | ((long)*(int *)&oltanis_vendor_beam_alpha_c << 4)
-            | ((long)*(int *)&oltanis_vendor_beam_alpha_d << 6) | (0x8000L << 24);
+    flags = (long)*(int *)&vendor_beam_blend_minuend_selector_gp | ((long)*(int *)&vendor_beam_blend_subtrahend_selector_gp << 2) | ((long)*(int *)&vendor_beam_blend_alpha_factor_selector_gp << 4)
+            | ((long)*(int *)&vendor_beam_blend_addend_selector_gp << 6) | (0x8000L << 24);
     P[2].state = 0xFF9000000260L;
     P[1].state = 0xFF9000000260L;
     P[0].state = 0xFF9000000260L;

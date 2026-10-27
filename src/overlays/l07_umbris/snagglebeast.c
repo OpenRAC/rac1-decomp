@@ -41,7 +41,7 @@ extern int truncate_float_to_s32(float);
 extern int scale_ticks(int);
 extern u64 GetEffectTex(int);
 extern void draw_world_quad(void *, int, int);
-extern float WrapAngle(float);
+extern float normalize_angle(float);
 extern float FastCos(float);
 extern float FastSin(float);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -105,7 +105,7 @@ void draw_snagglebeast_rope_attack_layer(void *mobyp, float radius, int phase, f
     for (angle = -3.1415927f; angle < step + 3.1415927f; angle += step) {
         qcopy(&quad.positions[0], &quad.positions[1]);
         qcopy(&quad.positions[2], &quad.positions[3]);
-        wrapped = WrapAngle(angle + spin * 0.02f);
+        wrapped = normalize_angle(angle + spin * 0.02f);
         offset[1] = radius * FastCos(wrapped);
         offset[2] = radius * FastSin(wrapped);
         offset[0] = 0.0f;

@@ -198,30 +198,30 @@ void assign_moby_class_data(int id) {
 
 LINKER_REMNANT("asm/remnants/text", func_00213C70);
 
-extern void *func_0020E6B8(void);
-extern void func_0020E3D0(void *);
-extern void func_0020ED48(void *);
-extern void *D_00160024 MACRO_ADDR;
+extern void *build_resident_visibility_list(void);
+extern void advance_moby_animation(void *);
+extern void refresh_moby_spatial_bounds(void *);
+extern void *visible_moby_list MACRO_ADDR;
 
-void func_00213C78(void) {
+void update_visible_resident_objects(void) {
     char *m;
 
-    D_00160024 = func_0020E6B8();
-    m = D_00160024;
+    visible_moby_list = build_resident_visibility_list();
+    m = visible_moby_list;
     if (m != 0) {
         while (1) {
             if ((signed char)m[0x20] < 0) {
                 m = *(char **)(m + 0x28);
             } else {
                 if (!(*(unsigned short *)(m + 0x34) & 0x40)) {
-                    func_0020E3D0(m);
+                    advance_moby_animation(m);
                 }
                 /* inline asm: hook call (beq/move/jal with empty slots); retail shape not reached in C yet. */
                 { int r; __asm__ volatile("beq %1,$0,1f\n\tmove $4,%2\n\tjal $31,%1\n1:" : "=r"(r) : "r"(*(void (**)(void *))(m + 0x74)), "r"(m) : "$4", "$31", "memory"); }
                 if (*(unsigned short *)(m + 0x34) & 0x4) {
                     m = *(char **)(m + 0x28);
                 } else {
-                    func_0020ED48(m);
+                    refresh_moby_spatial_bounds(m);
                     m = *(char **)(m + 0x28);
                 }
             }

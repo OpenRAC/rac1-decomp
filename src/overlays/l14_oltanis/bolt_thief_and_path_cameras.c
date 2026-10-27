@@ -597,7 +597,7 @@ extern short oltanis_spark_contact_radius;
 extern short oltanis_spark_min_speed;
 extern short oltanis_spark_roll_slowdown;
 extern short oltanis_spark_bounce_damping;
-extern short oltanis_spark_first_bounce_speed;
+extern short spark_first_bounce_horizontal_speed_gp;
 extern int coll_sphere(void *, int, void *, float);
 extern int fast_dec_timer(int *);
 extern int FastDecTimer(short *);
@@ -693,7 +693,7 @@ void update_bouncing_spark(Moby *m)
           m->state = 1;
           if ((++d->bounces) == 1)
           {
-            vec_set_length_xy(&d->vel, &d->vel, *(float *)&oltanis_spark_first_bounce_speed * g_frame_time);
+            vec_set_length_xy(&d->vel, &d->vel, *(float *)&spark_first_bounce_horizontal_speed_gp * g_frame_time);
             d->vel.z = d->vel.z * *(float *)&oltanis_spark_bounce_damping;
           }
           else
@@ -1676,13 +1676,13 @@ typedef struct {
 extern VoicePool voice_pool;
 extern char * oltanis_paths[];
 extern short oltanis_mobys_r2 __asm__("D_L14_00160098");
-extern short oltanis_flying_car_spring_stiffness;
-extern short oltanis_flying_car_spring_damping;
+extern short flying_car_tracking_spring_gain_gp;
+extern short flying_car_motion_spring_damping_gp;
 extern short oltanis_flying_car_max_bank;
-extern short oltanis_flying_car_bank_yaw_range;
-extern short oltanis_flying_car_sink_speed_max;
-extern short oltanis_flying_car_rise_speed;
-extern short oltanis_flying_car_crash_height;
+extern short flying_car_full_bank_yaw_error_gp;
+extern short flying_car_max_sink_offset_rate_gp;
+extern short flying_car_sink_offset_recovery_rate_gp;
+extern short flying_car_burst_height_threshold_gp;
 extern int Spline_AdvanceByDistance_r(char *path, float *out, void *pos, void *t, int dir, float step) __asm__("func_L00_0025E860");
 extern void SpawnExplosionFx_r2(void *, void *, f32, f32, s32) __asm__("func_L00_00260108");
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
@@ -1703,7 +1703,7 @@ int update_flying_car_path_motion(struct Moby *moby) {
 
     end = Spline_AdvanceByDistance_r(oltanis_paths[*(int *)(d + 0x78)], pos, d + 0x70, d + 0x74, *(short *)(d + 0x8E),
                          ((Moby *)d)->rot_row0.z * g_frame_time);
-    if ((*(short *)(d + 0x8E) == 0 && end != 0) || moby->pos.z <= (*(float *)&oltanis_flying_car_crash_height)) {
+    if ((*(short *)(d + 0x8E) == 0 && end != 0) || moby->pos.z <= (*(float *)&flying_car_burst_height_threshold_gp)) {
         SpawnExplosionFx_r2(moby, &moby->pos, 5.0f, 13.0f, -1);
         moby->state = 3;
         moby->flags |= 0x41;
@@ -1731,13 +1731,13 @@ int update_flying_car_path_motion(struct Moby *moby) {
         float lim;
         float s;
         s = *(float *)(d + 0xB4) + *(float *)(d + 0xB8) * g_frame_scale_sq;
-        lim = (*(float *)&oltanis_flying_car_sink_speed_max) * g_frame_time;
+        lim = (*(float *)&flying_car_max_sink_offset_rate_gp) * g_frame_time;
         *(float *)(d + 0xB4) = s;
         if (lim < s)
             *(float *)(d + 0xB4) = lim;
         *(float *)(d + 0xB0) += *(float *)(d + 0xB4);
     } else {
-        *(float *)(d + 0xB0) -= (*(float *)&oltanis_flying_car_rise_speed) * g_frame_time;
+        *(float *)(d + 0xB0) -= (*(float *)&flying_car_sink_offset_recovery_rate_gp) * g_frame_time;
         *(int *)(d + 0xB4) = 0;
         if (*(float *)(d + 0xB0) < *(float *)(d + 0xB4))
             *(float *)(d + 0xB0) = *(float *)(d + 0xB4);
@@ -1745,22 +1745,22 @@ int update_flying_car_path_motion(struct Moby *moby) {
     pos[2] -= *(float *)(d + 0xB0);
     if (pos[2] < 10.0f)
         pos[2] = 10.0f;
-    Spring(&moby->pos.x, (f32 *)(d + 0x80), pos[0], (*(float *)&oltanis_flying_car_spring_stiffness), (*(float *)&oltanis_flying_car_spring_damping), 0.0f);
-    Spring(&moby->pos.y, (f32 *)(d + 0x84), pos[1], (*(float *)&oltanis_flying_car_spring_stiffness), (*(float *)&oltanis_flying_car_spring_damping), 0.0f);
-    Spring(&moby->pos.z, (f32 *)(d + 0x88), pos[2], (*(float *)&oltanis_flying_car_spring_stiffness), (*(float *)&oltanis_flying_car_spring_damping), 0.0f);
+    Spring(&moby->pos.x, (f32 *)(d + 0x80), pos[0], (*(float *)&flying_car_tracking_spring_gain_gp), (*(float *)&flying_car_motion_spring_damping_gp), 0.0f);
+    Spring(&moby->pos.y, (f32 *)(d + 0x84), pos[1], (*(float *)&flying_car_tracking_spring_gain_gp), (*(float *)&flying_car_motion_spring_damping_gp), 0.0f);
+    Spring(&moby->pos.z, (f32 *)(d + 0x88), pos[2], (*(float *)&flying_car_tracking_spring_gain_gp), (*(float *)&flying_car_motion_spring_damping_gp), 0.0f);
     FastVecSub(delta, pos, &moby->pos);
     if (0.01f < FastAbsF(delta[0]) && 0.01f < FastAbsF(delta[1])) {
         yaw = fast_atan2(delta[0], delta[1]);
         bank = FastSubRots(moby->rot.z, yaw);
-        MobySpringTurn_r(moby, yaw, (f32 *)(d + 0x98), (*(float *)&oltanis_flying_car_spring_stiffness), (*(float *)&oltanis_flying_car_spring_damping), 0.0f);
+        MobySpringTurn_r(moby, yaw, (f32 *)(d + 0x98), (*(float *)&flying_car_tracking_spring_gain_gp), (*(float *)&flying_car_motion_spring_damping_gp), 0.0f);
         pitch = -fast_atan2(vec_length_xy(delta), delta[2]);
-        Spring(&moby->rot.y, (f32 *)(d + 0x94), pitch, (*(float *)&oltanis_flying_car_spring_stiffness), (*(float *)&oltanis_flying_car_spring_damping), 0.0f);
-        bank /= (*(float *)&oltanis_flying_car_bank_yaw_range);
+        Spring(&moby->rot.y, (f32 *)(d + 0x94), pitch, (*(float *)&flying_car_tracking_spring_gain_gp), (*(float *)&flying_car_motion_spring_damping_gp), 0.0f);
+        bank /= (*(float *)&flying_car_full_bank_yaw_error_gp);
         if (1.0f < bank)
             bank = 1.0f;
         if (bank < -1.0f)
             bank = -1.0f;
-        Spring(&moby->rot.x, (f32 *)(d + 0x90), bank * (*(float *)&oltanis_flying_car_max_bank), 0.003f, (*(float *)&oltanis_flying_car_spring_damping), 0.0f);
+        Spring(&moby->rot.x, (f32 *)(d + 0x90), bank * (*(float *)&oltanis_flying_car_max_bank), 0.003f, (*(float *)&flying_car_motion_spring_damping_gp), 0.0f);
     }
     return 1;
 }
@@ -2408,12 +2408,12 @@ extern int oltanis_key_cam_key_count MACRO_ADDR;
 extern int oltanis_key_cam_key_index MACRO_ADDR;
 extern float oltanis_key_cam_yaw MACRO_ADDR;
 extern float oltanis_key_cam_path_progress MACRO_ADDR;
-extern float oltanis_key_cam_yaw_smoothing SDATA(D_L14_00162560);
-extern float oltanis_key_cam_angle1_smoothing SDATA(D_L14_00162564);
-extern float oltanis_key_cam_value2_smoothing SDATA(D_L14_00162568);
-extern float oltanis_key_cam_angle3_smoothing SDATA(D_L14_0016256C);
-extern float oltanis_key_cam_angle4_smoothing SDATA(D_L14_00162570);
-extern float oltanis_key_cam_heading_blend_rate SDATA(D_L14_00162574);
+extern float path_key_camera_heading_offset_spring_gain SDATA(D_L14_00162560);
+extern float path_key_camera_placement_elevation_spring_gain SDATA(D_L14_00162564);
+extern float path_key_camera_placement_distance_spring_gain SDATA(D_L14_00162568);
+extern float path_key_camera_lateral_axis_rotation_spring_gain SDATA(D_L14_0016256C);
+extern float path_key_camera_up_axis_rotation_spring_gain SDATA(D_L14_00162570);
+extern float path_key_camera_heading_blend_step_factor SDATA(D_L14_00162574);
 extern float oltanis_key_cam_lean_second_deg SDATA(D_L14_0016257C);
 extern float oltanis_key_cam_lean_first_deg SDATA(D_L14_00162580);
 extern float oltanis_key_cam_path_distances[][1000];
@@ -2581,17 +2581,17 @@ void update_path_key_camera(char *cam) {
         }
         t = num / den;
     }
-    k = oltanis_key_cam_yaw_smoothing;
+    k = path_key_camera_heading_offset_spring_gain;
     x = interpolate_angle(oltanis_path_camera_keys[st->idx].a0 * 0.017453292f, oltanis_path_camera_keys[st->idx + 1].a0 * 0.017453292f, t);
     cur->f0 = Camera_SmoothAngle(vel, cur->f0, x, k, 0.2f, 0.0f);
-    k = oltanis_key_cam_angle1_smoothing;
+    k = path_key_camera_placement_elevation_spring_gain;
     x = interpolate_angle(oltanis_path_camera_keys[st->idx].a4 * 0.017453292f, oltanis_path_camera_keys[st->idx + 1].a4 * 0.017453292f, t);
     cur->f4 = Camera_SmoothAngle(vel + 1, cur->f4, x, k, 0.2f, 0.0f);
-    cur->f8 = Cam_InterpValues(vel + 2, cur->f8, oltanis_path_camera_keys[st->idx].a8 + (oltanis_path_camera_keys[st->idx + 1].a8 - oltanis_path_camera_keys[st->idx].a8) * t, oltanis_key_cam_value2_smoothing, 0.2f, 0.0f);
-    k = oltanis_key_cam_angle3_smoothing;
+    cur->f8 = Cam_InterpValues(vel + 2, cur->f8, oltanis_path_camera_keys[st->idx].a8 + (oltanis_path_camera_keys[st->idx + 1].a8 - oltanis_path_camera_keys[st->idx].a8) * t, path_key_camera_placement_distance_spring_gain, 0.2f, 0.0f);
+    k = path_key_camera_lateral_axis_rotation_spring_gain;
     x = interpolate_angle(oltanis_path_camera_keys[st->idx].aC * 0.017453292f, oltanis_path_camera_keys[st->idx + 1].aC * 0.017453292f, t);
     cur->fC = Camera_SmoothAngle(vel + 3, cur->fC, x, k, 0.2f, 0.0f);
-    k = oltanis_key_cam_angle4_smoothing;
+    k = path_key_camera_up_axis_rotation_spring_gain;
     x = interpolate_angle(oltanis_path_camera_keys[st->idx].a10 * 0.017453292f, oltanis_path_camera_keys[st->idx + 1].a10 * 0.017453292f, t);
     cur->f10 = Camera_SmoothAngle(vel + 4, cur->f10, x, k, 0.2f, 0.0f);
     ang = FastAddRots(fast_atan2(((float *)((Hero *)(hero_globals_base + 0xE1D))->moby)[0x34], ((float *)((Hero *)(hero_globals_base + 0xE1D))->moby)[0x35]), cur->f0);
@@ -2608,16 +2608,16 @@ void update_path_key_camera(char *cam) {
     }
     if (b == 0.0f && a == 0.0f) {
         b = (st->fC != 0.0f) ? st->fC : st->f8;
-        st->f10 += (0.0f - st->f10) * oltanis_key_cam_heading_blend_rate;
+        st->f10 += (0.0f - st->f10) * path_key_camera_heading_blend_step_factor;
         ang = interpolate_angle(ang, b, CubicInterpolate(1.0f, 0.0f, 1.0f, 0.0f, st->f10));
     } else {
         if (b != 0.0f) {
-            st->f10 += (1.0f - st->f10) * oltanis_key_cam_heading_blend_rate;
+            st->f10 += (1.0f - st->f10) * path_key_camera_heading_blend_step_factor;
             ang = interpolate_angle(ang, b, CubicInterpolate(1.0f, 0.0f, 1.0f, 0.0f, st->f10));
             st->f8 = a;
             st->fC = b;
         } else {
-            st->f10 += (0.0f - st->f10) * oltanis_key_cam_heading_blend_rate;
+            st->f10 += (0.0f - st->f10) * path_key_camera_heading_blend_step_factor;
             ang = interpolate_angle(ang, a, CubicInterpolate(1.0f, 0.0f, 1.0f, 0.0f, st->f10));
             st->f8 = a;
             st->fC = b;

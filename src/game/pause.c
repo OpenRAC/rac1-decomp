@@ -10358,14 +10358,14 @@ void load_level_zero_preserving_progress(s32 slot) {
     }
 }
 
-extern int game_clock_paused MACRO_ADDR;
+extern int counter_advance_disabled MACRO_ADDR;
 extern int pal_mode MACRO_ADDR;
 
 /* Advances the D_0015EF24 frame counter unless D_0015F6D0 is set; with
    D_0015EE80 set it jumps 10 extra every 50th tick. */
 void tick_space_transition(void) {
     int t;
-    if (game_clock_paused != 0) {
+    if (counter_advance_disabled != 0) {
         return;
     }
     t = game_clock_ticks;

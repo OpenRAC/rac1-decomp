@@ -847,7 +847,7 @@ void maintain_emitter_sound_voice(unsigned char *moby) {
 }
 extern float random_angle_radians(void);
 extern int scale_ticks(int);
-extern void PartType22Spawn(void *, void *, int, int, float, int);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern int fast_subtract_rotations_cf(void *);
 extern void spawn_emitter_child_effect(void *, void *, int, int, float, float, int);
 extern char kerwan_camera_pos[];
@@ -876,7 +876,7 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
             BuildSphericalOffset(v2, g_frame_time * 0.15f, a, b);
             FastVecAdd(v2, v2, vp);
             r = scale_ticks(0x14);
-            PartType22Spawn(v1, v2, 0x8040C0F0, 0x808080, 84000.0f, r);
+            spawn_effect_particle_with_target_scalar(v1, v2, 0x8040C0F0, 0x808080, 84000.0f, r);
         }
         return;
     case 0x73:
@@ -895,7 +895,7 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
                 BuildSphericalOffset(v2, g_frame_time * 0.6f, a, b);
                 FastVecAdd(v2, v2, vp);
                 r = scale_ticks(0x23);
-                PartType22Spawn(v1, v2, 0x80808080, 0x808080, 105000.0f, r);
+                spawn_effect_particle_with_target_scalar(v1, v2, 0x80808080, 0x808080, 105000.0f, r);
                 n--;
             } while (n >= 0);
         }
@@ -916,7 +916,7 @@ void update_moby_emitter_effects(unsigned char *moby, float *a1, int a2) {
                 BuildSphericalOffset(v2, g_frame_time * 1.2f, a, b);
                 FastVecAdd(v2, v2, vp);
                 r = scale_ticks(0x2D);
-                PartType22Spawn(v1, v2, 0x80808080, 0x808080, 168000.0f, r);
+                spawn_effect_particle_with_target_scalar(v1, v2, 0x80808080, 0x808080, 168000.0f, r);
                 n2--;
             } while (n2 >= 0);
         }
@@ -955,7 +955,7 @@ extern float fast_atan2(float, float);
 extern float FastAddRots(float, float);
 extern void FastVecSub(void *, void *, void *);
 extern float vec_length_xy(void *);
-extern float WrapAngle(float);
+extern float normalize_angle(float);
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -979,9 +979,9 @@ void update_spline_moby_orientation(char *m) {
         *(float *)(moby_data + 0x118) * 10.0f * 0.017453292f * g_frame_time_sq,
         *(float *)(moby_data + 0x118) * 5.0f * 0.017453292f * g_frame_time_sq,
         *(float *)(moby_data + 0x118) * 0.017453292f * g_frame_time);
-    w = WrapAngle(yaw_step * *(float *)(moby_data + 0x124));
+    w = normalize_angle(yaw_step * *(float *)(moby_data + 0x124));
     w = FastSubRots(moby->rot.x, w);
-    w = WrapAngle(w * *(float *)(moby_data + 0x128));
+    w = normalize_angle(w * *(float *)(moby_data + 0x128));
     moby->rot.x = SpringTurn((float *)(moby_data + 0x114), moby->rot.x, w,
         *(float *)(moby_data + 0x110) * 10.0f * 0.017453292f * g_frame_time_sq,
         *(float *)(moby_data + 0x110) * 5.0f * 0.017453292f * g_frame_time_sq,
@@ -1974,7 +1974,7 @@ extern int coll_sphere(float, void *, int, void *);
 extern int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d);
 extern float ProbeGroundHeight(void *, int, float);
 extern unsigned char *GetFlaggedPvarWord(int);
-extern unsigned char *func_L00_00261448(int);
+extern unsigned char *moby_get_ride_transform(int);
 extern void RotatePointAboutAxis(void *, void *, float);
 extern void DeleteMoby(void *);
 extern int g_current_level_index MACRO_ADDR;
@@ -2721,7 +2721,7 @@ void update_kerwan_path_enemy(Moby *m) {
         (*(float (*)[4])&m->pos)[2] = (*(float (*)[4])&m->pos)[2] - 2.0f;
         if ((*(float (*)[4])&m->pos)[2] < g) {
             char *h = kerwan_coll_hit;
-            if (*(int *)(h + 0x18) != 0 && func_L00_00261448(*(int *)(h + 0x18)) != 0) {
+            if (*(int *)(h + 0x18) != 0 && moby_get_ride_transform(*(int *)(h + 0x18)) != 0) {
                 d->i280 = *(Moby **)(h + 0x18) - kerwan_mobys_r;
             } else if (d->i280 != -1) {
                 short cls = (*(unsigned short *)&kerwan_mobys_r[d->i280].oclass);

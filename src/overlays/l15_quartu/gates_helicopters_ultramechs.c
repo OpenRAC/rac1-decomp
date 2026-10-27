@@ -1897,7 +1897,7 @@ extern float random_float_between(float, float);
 extern int random_integer_below(int);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern int rand_range(int, int);
-extern void PartType22Spawn(void *, void *, int, int, float, int);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 
 extern unsigned char hero_globals_base[];
@@ -2293,7 +2293,7 @@ spawn:
                 k = random_integer_below(100) & 1;
                 Moby_GetJointWorldPos(m, j, &v20);
                 matrix_mul_vec3(&v10, &v10, m->mtx);
-                PartType22Spawn(&v20, &v10, k ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(1.5f, 3.0f) * 210000.0f, scale_ticks(k ? rand_range(0xA, 0xF) : rand_range(0x14, 0x1E)));
+                spawn_effect_particle_with_target_scalar(&v20, &v10, k ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(1.5f, 3.0f) * 210000.0f, scale_ticks(k ? rand_range(0xA, 0xF) : rand_range(0x14, 0x1E)));
             }
         }
     } else if (m->state > 1 && m->state != 0x40) {
@@ -2315,9 +2315,9 @@ extern void InitKnockback(float, void *, void *, int, int, int);
 extern int Sound_PlayClassSound_r(int, int, void *, int) __asm__("func_L00_0028EF68");
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
 extern short ultramech_hit_check_scale;
-extern short ultramech_knock_gravity;
-extern short ultramech_knock_speed;
-extern short ultramech_knock_lift;
+extern short ultramech_knockback_gravity_gp;
+extern short ultramech_knockback_horizontal_speed_gp;
+extern short ultramech_knockback_vertical_speed_gp;
 extern short ultramech_scale;
 
 /* Level 15 moby update: finds the table entry that owns this moby, runs its state switch and refreshes its range and target. */
@@ -2368,7 +2368,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
             sel = 1;
 
         r2 = truncate_float_to_s32(2560.0f);
-        *(float *)(data + 0x80) = *(float *)&ultramech_knock_gravity * g_frame_time_sq;
+        *(float *)(data + 0x80) = *(float *)&ultramech_knockback_gravity_gp * g_frame_time_sq;
         *(int *)(data + 0x90) = r2;
         *(float *)(data + 0x98) = 2.5f;
         *(float *)(data + 0x84) = 0.0005f;
@@ -2391,8 +2391,8 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
         case 8: {
             char *p20;
             float k = g_frame_time;
-            float a = *(float *)&ultramech_knock_speed * k;
-            float b = *(float *)&ultramech_knock_lift * k;
+            float a = *(float *)&ultramech_knockback_horizontal_speed_gp * k;
+            float b = *(float *)&ultramech_knockback_vertical_speed_gp * k;
             float r;
             *(int *)(data + 0x1C8) = 1;
             *(float *)(data + 0x88) = a;
@@ -2757,8 +2757,8 @@ extern short quartu_ripple_base_uvs;
 extern int quartu_ripple_alpha_fix SDATA(D_L15_0016216C);
 extern int quartu_ripple_texture SDATA(D_L15_00162170);
 extern int quartu_ripple_alpha SDATA(D_L15_00162174);
-extern float quartu_ripple_wavelength SDATA(D_L15_00162178);
-extern float quartu_ripple_wave_period SDATA(D_L15_0016217C);
+extern float ripple_mesh_buffers_radial_wavelength_gp SDATA(D_L15_00162178);
+extern float ripple_mesh_buffers_phase_advance_divisor_gp SDATA(D_L15_0016217C);
 extern float quartu_ripple_wave_height SDATA(D_L15_00162180);
 extern float quartu_ripple_uv_scroll_rate SDATA(D_L15_00162184);
 typedef struct { float f0; float f4; } RippleData_2EC080;
@@ -2781,7 +2781,7 @@ void draw_moby_radial_ripple_mesh_buffers(char *moby) {
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, ((long)0xFF90 << 32) | 0x260);
     ripple_data->f0 = ripple_data->f4;
-    ripple_data->f4 = FastAddRots(ripple_data->f4, 360.0f / multiply_global_factor(quartu_ripple_wave_period) * 0.017453292f * g_frame_time);
+    ripple_data->f4 = FastAddRots(ripple_data->f4, 360.0f / multiply_global_factor(ripple_mesh_buffers_phase_advance_divisor_gp) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     color = (quartu_ripple_alpha << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 3; i++) {
@@ -2790,8 +2790,8 @@ void draw_moby_radial_ripple_mesh_buffers(char *moby) {
             float *p = (float *)(*template_vertex_buffer_entry + j * 12);
             float t = quartu_ripple_wave_height *
                 FastSin(FastAddRots(FastNormalizeAngle(
-                    fast_fmod(vec_length(p[0] * p[0] + p[1] * p[1]), quartu_ripple_wavelength)
-                        * 6.2831855f / quartu_ripple_wavelength), ripple_data->f4));
+                    fast_fmod(vec_length(p[0] * p[0] + p[1] * p[1]), ripple_mesh_buffers_radial_wavelength_gp)
+                        * 6.2831855f / ripple_mesh_buffers_radial_wavelength_gp), ripple_data->f4));
             *(float *)(j * 12 + ((int *)&quartu_ripple_position_bufs)[i]) = p[0] + m->pos.x;
             *(float *)(j * 12 + ((int *)&quartu_ripple_position_bufs)[i] + 4) = p[1] + m->pos.y;
             *(float *)(j * 12 + ((int *)&quartu_ripple_position_bufs)[i] + 8) = p[2] + m->pos.z + t;
@@ -2836,7 +2836,7 @@ extern int ring_wave_alpha_fix SDATA(D_L15_001621D4);
 extern int ring_wave_texture SDATA(D_L15_001621D8);
 extern int ring_wave_alpha SDATA(D_L15_001621DC);
 extern float ring_wave_wavelength SDATA(D_L15_001621E0);
-extern float ring_wave_period SDATA(D_L15_001621E4);
+extern float ripple_mesh_phase_advance_divisor_gp SDATA(D_L15_001621E4);
 extern float ring_wave_height SDATA(D_L15_001621E8);
 extern float ring_wave_uv_scroll_rate SDATA(D_L15_001621EC);
 
@@ -2862,7 +2862,7 @@ void RingWave_DrawA(char *moby) {
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
-    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(ring_wave_period) * 0.017453292f * g_frame_time);
+    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(ripple_mesh_phase_advance_divisor_gp) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     /* The second float of each pair in uv_scroll_factors: v_scroll_factors->f[0] is f[1], v_scroll_factors->f[2] is f[3]. */
     v_scroll_factors = (Quad4 *)&uv_scroll_factors.f[1];

@@ -696,17 +696,17 @@ extern int D_L08_0015F4F8 MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern Sound45 batalia_lights[];
 extern float IntToFloat(int),FastSin(float),FastCos(float),vec_length(float);
-extern float random_float_between(float,float),WrapAngle(float),FastVecDist(void*,void*);
+extern float random_float_between(float,float),normalize_angle(float),FastVecDist(void*,void*);
 extern int truncate_float_to_s32(float);
 extern int GetEffectTex(int),scale_ticks(int),fast_dec_timer(int*),FastDecTimer(void*);
 extern void euler_to_matrix(void*,void*),transform_vector(void*,void*,void*);
 extern void FastVecSub(void*,void*,void*),FastVecAdd(void*,void*,void*),FastVecCross(void*,void*,void*);
 extern void FastVecScale(void*,void*,float),vec_scale_to_length(void*,void*,float);
-extern float SmoothNoise(float,char*),func_L00_002001D8(void*,float);
+extern float SmoothNoise(float,char*),split_float_fraction(void*,float);
 extern void draw_world_quad(void*,void*,int);
 extern unsigned char *func_L08_0027C218(void*,float,void*,void*,short,unsigned char,unsigned char,unsigned char,unsigned char);
 extern int rand_range(int,int);
-extern void PartType22Spawn(void*,void*,int,int,float,int);
+extern void spawn_effect_particle_with_target_scalar(void*,void*,int,int,float,int);
 
 /* Builds the animated grid, draws its quads, and updates attached effects. */
 void draw_flickering_mesh_effect(M45 *moby) {
@@ -801,14 +801,14 @@ void draw_flickering_mesh_effect(M45 *moby) {
             row_noise=((float(*)(char*,float))SmoothNoise)((char*)data,y);
             for (;j<=data->nx;j++) {
                 x=IntToFloat(j)/IntToFloat(data->nx);
-                swing=FastSin(WrapAngle(data->noise_speed*time));
+                swing=FastSin(normalize_angle(data->noise_speed*time));
                 wave=time*phase+data->noise_amp*swing;
                 noise=SmoothNoise(x,(char*)data);
                 drop=z0*x+z1*(1.0f-x);
                 theta=x*3.1415927f;
                 wave+=noise*data->noise_u+row_noise*data->noise_v+bias*data->noise_bias;
-                angle0=WrapAngle(wave+phase0+data->wave_u*x+data->wave2_v*y);
-                angle1=WrapAngle(wave+phase1+data->wave_v*y+data->wave2_u*x);
+                angle0=normalize_angle(wave+phase0+data->wave_u*x+data->wave2_v*y);
+                angle1=normalize_angle(wave+phase1+data->wave_v*y+data->wave2_u*x);
                 shape=FastSin(theta);
                 shape=vec_length(shape);
                 drop*=shape;
@@ -818,9 +818,9 @@ void draw_flickering_mesh_effect(M45 *moby) {
                 sway1=FastSin(angle1);
                 vec_scale_to_length(&scratch[1],&side_step[0],amp2*sway1*shape*noise);
                 a=FastSin(y*3.1415927f); b=FastSin(theta);
-                turn0=WrapAngle(wave+data->wave_u*x);
+                turn0=normalize_angle(wave+data->wave_u*x);
                 normal_angle0=FastSin(turn0);
-                turn1=WrapAngle(wave+data->wave2_v*y);
+                turn1=normalize_angle(wave+data->wave2_v*y);
                 normal_angle1=FastSin(turn1);
                 lift=a*b*(data->normal_u*normal_angle0+data->normal_v*normal_angle1);
                 vec_scale_to_length(&scratch[3],&normal,lift);
@@ -838,9 +838,9 @@ void draw_flickering_mesh_effect(M45 *moby) {
         }
         }
         {
-            f=func_L00_002001D8(&fraction,time*data->u_rate+data->u_amp*FastSin(WrapAngle(time*data->u_phase)));
+            f=split_float_fraction(&fraction,time*data->u_rate+data->u_amp*FastSin(normalize_angle(time*data->u_phase)));
             for (ui=0;ui<=data->nx;ui++) { u[ui]=f; f+=inv_x/data->tex_u_scale; }
-            f=func_L00_002001D8(&fraction,time*data->v_rate+data->v_amp*FastSin(WrapAngle(time*data->v_phase)));
+            f=split_float_fraction(&fraction,time*data->v_rate+data->v_amp*FastSin(normalize_angle(time*data->v_phase)));
             for (ui=0;ui<=data->ny;ui++) { v[ui]=f; f+=inv_y/data->tex_v_scale; }
         }
         {
@@ -907,7 +907,7 @@ void draw_flickering_mesh_effect(M45 *moby) {
                     scratch[0][2]=random_float_between(0.0f,data->puff_z)*frame_scale;
                     if (scratch==0 && i<0) data->puff_timer=0;
                     FastVecScale(&scratch[0],&scratch[0],one-data->puff_blend+fshape*data->puff_blend);
-                    PartType22Spawn(&scratch[1],&scratch[0],c0,c1,fsize,flife);
+                    spawn_effect_particle_with_target_scalar(&scratch[1],&scratch[0],c0,c1,fsize,flife);
                 }
             }
             if (data->sound_index!=-1) {

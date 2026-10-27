@@ -28,7 +28,7 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float veldin2_hero_fall_state_height MACRO_ADDR;
-extern int veldin2_help_message_selector MACRO_ADDR;
+extern int hero_triangle_hud_activation_inhibit MACRO_ADDR;
 extern int veldin2_hero_run_step1_start_frame MACRO_ADDR;
 extern short veldin2_hero_double_tap_timer;
 extern S167700 veldin2_player_camera;
@@ -161,7 +161,7 @@ void HeroStateTransitions(void) {
             HeroL18_SetMoveState(0x3D, 1);
         } else if (process_hero_item_action_input() == 0 && try_enter_hero_water_state() == 0 && try_transition_hero_water_state() == 0 && try_start_hero_weapon_fire_state() == 0) {
             if ((g_controller_state.pressed & 0x10) || (((int)g_controller_state.pressed_unmasked) & 0x10)) {
-                if (g_hero.items[0].switch_lock != 2 && veldin2_help_message_selector == 0
+                if (g_hero.items[0].switch_lock != 2 && hero_triangle_hud_activation_inhibit == 0
                     && (g_hero.item_use_locked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.item_select_blocked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.vehicle_mode == 0 || g_hero.vehicle_mode == 3)) {

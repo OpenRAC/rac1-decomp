@@ -1461,7 +1461,7 @@ extern int truncate_float_to_s32(float);
 extern float random_float_between(float, float);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern int rand_range(int, int);
-extern void PartType22Spawn(void *, void *, int, int, float, int);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 extern float eudora_camera_pos[4];
 extern float g_frame_time MACRO_ADDR;
@@ -1999,7 +1999,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
         alt = random_integer_below(100) & 1;
         Moby_GetJointWorldPos(moby, 0, a);
         matrix_mul_vec3(b, b, moby->fC0);
-        PartType22Spawn(a, b, alt ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(75000.0f, 100000.0f), scale_ticks(alt ? rand_range(10, 15) : rand_range(20, 30)));
+        spawn_effect_particle_with_target_scalar(a, b, alt ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(75000.0f, 100000.0f), scale_ticks(alt ? rand_range(10, 15) : rand_range(20, 30)));
         }
     }
     StepColorFade(moby, data->fB0);
@@ -2051,7 +2051,7 @@ extern f32 random_angle_radians(void);
 extern Puff *PartType23Spawn(void *, f32, f32, f32, int, void *, f32, int);
 extern void PartType21Spawn(void *, void *, int, int, int, int, f32);
 extern short eudora_smoke_puff_rise_speed;
-extern short eudora_smoke_puff_size;
+extern short smoke_trail_puff_position_jitter_scale_gp;
 
 /* Lays a trail of smoke puffs from FROM to TO with a burst at each end.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/0029eb20.c, FUN_L04_002c41e0. */
@@ -2085,7 +2085,7 @@ void spawn_smoke_puff_trail_with_endpoint_bursts(void *owner, void *from, void *
         grey = grey | (grey << 16 | grey << 8);
         size = random_float_between(1.0f, 1.02f);
         spin = rand_range(-2, 2);
-        puff = PartType23Spawn(&at, (*(f32 *)&eudora_smoke_puff_size), 1.0f, size, spin, &vel, grow + a * 210000.0f, tint << 24 | grey);
+        puff = PartType23Spawn(&at, (*(f32 *)&smoke_trail_puff_position_jitter_scale_gp), 1.0f, size, spin, &vel, grow + a * 210000.0f, tint << 24 | grey);
         if (puff != 0) {
             tail = &puff->tail;
             if (random_integer_below(2) != 0) {

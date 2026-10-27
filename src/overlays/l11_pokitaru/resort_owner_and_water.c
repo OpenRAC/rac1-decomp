@@ -2095,13 +2095,13 @@ void update_child_sets_controller(Moby *moby) {
     }
 }
 extern short child_sets_height_offset;
-extern short child_sets_forward_offset;
+extern short child_set_child_axis2_offset_length_gp;
 extern short child_sets_side_offset;
-extern short child_sets_fold_angle_deg;
+extern short child_set_fold_rotation_x_degrees_gp;
 extern short child_sets_tilt_deg;
-extern short child_sets_tip_forward_offset;
-extern short child_sets_tip_up_offset;
-extern short child_sets_tip_turn_deg;
+extern short attached_child_source_axis2_offset_length_gp;
+extern short attached_child_source_axis1_offset_length_gp;
+extern short attached_child_rotation_y_degrees_gp;
 extern short child_sets_slider_height;
 extern void vec_scale_to_length(void *out, void *a, float len);
 extern void euler_rotation_basis(void *, void *);

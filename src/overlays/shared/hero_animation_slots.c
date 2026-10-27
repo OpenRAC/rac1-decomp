@@ -621,18 +621,18 @@ void update_hero_condition_animation(void) {
         }
     }
 }
-extern short D_L00_0015F780;
-extern float D_0015EE64 MACRO_ADDR;
-extern unsigned char D_L00_00197F40[];
-extern char *D_L00_00197680[];
+extern short hero_item_slot_anim_ids;
+extern float g_frame_scale_sq MACRO_ADDR;
+extern unsigned char g_class_slot[];
+extern char *moby_class_headers[];
 extern struct HeroEase D_L00_0017A780[];
-extern char D_L00_0017CB80[];
-extern int func_L00_002056D0(int);
+extern char hero_item_blend_pose_buffers[];
+extern int return_hero_animation_id_unchanged(int);
 
 #define GB (D_0013E633 + 0xE1D)
 #define SLOT(i) (((char **)(D_0013E633 + 0x1B1D))[i])
 
-void func_L00_0020E3B8(void) {
+void update_hero_item_slot_animation_blends(void) {
     int i;
 
     for (i = 0; i < 2; i++) {
@@ -648,8 +648,8 @@ void func_L00_0020E3B8(void) {
         char *t0 = SLOT(i);
 
         if (t0 != 0 && *(int *)(t0 + 0x34) != 0) {
-            if (func_00214D28((float *)(t0 + 8), 0.0f, D_0015EE60 * 0.1f) == 0.0f) {
-                func_L00_00250120(*(char **)(g + 0x2080), &SLOT(i));
+            if (ApproachValue((float *)(t0 + 8), 0.0f, frame_scale * 0.1f) == 0.0f) {
+                release_moby_animation_slot(*(char **)(g + 0x2080), &SLOT(i));
             }
         } else {
             int c = *(unsigned char *)(g + 0x20AB);
@@ -672,10 +672,10 @@ void func_L00_0020E3B8(void) {
             if (want) {
                 char *h = GB;
                 if (SLOT(i) == 0) {
-                    char *n = (char *)func_L00_00250060(*(char **)(h + 0x2080), ((int *)&D_L00_0015F780)[i]);
+                    char *n = (char *)allocate_moby_animation_slot(*(char **)(h + 0x2080), ((int *)&hero_item_slot_anim_ids)[i]);
                     SLOT(i) = n;
                     *(float *)(n + 8) = 0.0f;
-                    *(char **)(SLOT(i) + 0x18) = D_L00_00197680[D_L00_00197F40[i + 1]];
+                    *(char **)(SLOT(i) + 0x18) = moby_class_headers[g_class_slot[i + 1]];
                 }
             } else {
                 char *h = GB;
@@ -683,8 +683,8 @@ void func_L00_0020E3B8(void) {
                 if (t2 == 0) {
                     continue;
                 }
-                if (func_00214D28((float *)(t2 + 8), 0.0f, D_0015EE60 * 0.1f) == 0.0f) {
-                    func_L00_00250120(*(char **)(h + 0x2080), &SLOT(i));
+                if (ApproachValue((float *)(t2 + 8), 0.0f, frame_scale * 0.1f) == 0.0f) {
+                    release_moby_animation_slot(*(char **)(h + 0x2080), &SLOT(i));
                 }
             }
         }
@@ -699,9 +699,9 @@ void func_L00_0020E3B8(void) {
             hr = *(char **)(h + 0x2080);
             diff = *(unsigned char *)(hr + 0x52) != *(unsigned char *)(hr + 0x53);
             if (*(int *)(h + 0xD08) != 0 && *(int *)(h + 0xD14) == 0) {
-                func_00214D28((float *)(o + 8), 0.0f, D_0015EE60 * 0.1f);
+                ApproachValue((float *)(o + 8), 0.0f, frame_scale * 0.1f);
             } else if (*(int *)(o + 0x34) == 0) {
-                func_00214D28((float *)(o + 8), 1.0f, D_0015EE60 * 0.1f);
+                ApproachValue((float *)(o + 8), 1.0f, frame_scale * 0.1f);
             }
         }
 
@@ -709,18 +709,18 @@ void func_L00_0020E3B8(void) {
         if (diff) {
             char *h = GB;
             if (*(int *)(h + 0xA9C) != 0) {
-                int a = func_L00_002056D0(*(unsigned char *)(o + 0x23));
-                if (a != func_L00_002056D0(*(unsigned char *)(*(char **)(h + 0x2080) + 0x53))) {
+                int a = return_hero_animation_id_unchanged(*(unsigned char *)(o + 0x23));
+                if (a != return_hero_animation_id_unchanged(*(unsigned char *)(*(char **)(h + 0x2080) + 0x53))) {
                     w.v = *(unsigned char *)(o + 0x22) != *(unsigned char *)(o + 0x23);
                 }
             }
         }
         *(short *)(o + 0x30) = w.v;
 
-        r = func_L00_0020DC68(*(unsigned char *)(*(char **)(g + 0x2080) + 0x53), &out);
+        r = hero_get_state_aim_pitch(*(unsigned char *)(*(char **)(g + 0x2080) + 0x53), &out);
         if (r != 0 || *(unsigned char *)(o + 0x32) != 0) {
             if (out != 0.0f) {
-                float x = D_0015EE64;
+                float x = g_frame_scale_sq;
                 char *tb = (char *)D_L00_0017A780;
                 *(float *)(tb + 0x694) = out;
                 *(float *)(tb + 0x5E4) = out;
@@ -740,7 +740,7 @@ void func_L00_0020E3B8(void) {
                     *(char *)(o + 0x23) = 0;
                     *(char *)(o + 0x21) = 0;
                     *(float *)(o + 0x28) = 1.0f;
-                    *(float *)(o + 0x2C) = 1.0f / (float)func_001F9850(0xF);
+                    *(float *)(o + 0x2C) = 1.0f / (float)scale_ticks(0xF);
                     *(char *)(o + 0x32) = 1;
                     *(char *)(o + 0x33) = 0;
                 }
@@ -748,13 +748,13 @@ void func_L00_0020E3B8(void) {
             if (r == 0) {
                 if (*(unsigned char *)(o + 0x33) == 0) {
                     char *hr = *(char **)(g + 0x2080);
-                    *(char *)(o + 0x23) = func_L00_0020DC50(hr, *(unsigned char *)(hr + 0x53));
+                    *(char *)(o + 0x23) = resolve_moby_animation_id(hr, *(unsigned char *)(hr + 0x53));
                     *(char *)(o + 0x21) = 0;
                     *(char *)(o + 0x33) = 1;
                     *(float *)(o + 0x24) = 0.0f;
                     *(float *)(o + 0x28) = 0.0f;
                 } else {
-                    float f = *(float *)(o + 0x24) + D_0015EE60 * 0.1f;
+                    float f = *(float *)(o + 0x24) + frame_scale * 0.1f;
                     *(float *)(o + 0x24) = f;
                     if (1.0f < f) {
                         *(float *)(o + 0x24) = 1.0f;
@@ -771,12 +771,12 @@ void func_L00_0020E3B8(void) {
                 char *e = o + 6;
                 if (id[j] < 0x17) {
                     e[j] = 1;
-                    *(char **)(o + 0x38 + j * 4) = D_L00_0017CB80 + (i * 0x800 + j * 0x400);
+                    *(char **)(o + 0x38 + j * 4) = hero_item_blend_pose_buffers + (i * 0x800 + j * 0x400);
                 } else {
                     e[j] = 0;
                 }
             }
-            func_L00_002501C8(*(char **)(g + 0x2080), (unsigned char *)o);
+            advance_moby_animation_blend(*(char **)(g + 0x2080), (unsigned char *)o);
         } else {
             if (*(short *)(o + 0x30) == 0) {
                 char *h = GB;
@@ -784,12 +784,12 @@ void func_L00_0020E3B8(void) {
                     if (!diff || k == 1) {
                         char *hr = *(char **)(h + 0x2080);
                         unsigned char *p = (unsigned char *)(o + 0x22);
-                        p[k] = func_L00_0020DC50(hr, *(unsigned char *)(hr + k + 0x52));
+                        p[k] = resolve_moby_animation_id(hr, *(unsigned char *)(hr + k + 0x52));
                     }
                 }
             }
             if (*(short *)(o + 0x30) != 0) {
-                float f = *(float *)(o + 0x24) + D_0015EE60 * 0.15f;
+                float f = *(float *)(o + 0x24) + frame_scale * 0.15f;
                 *(float *)(o + 0x24) = f;
                 if (1.0f <= f) {
                     *(char *)(o + 0x22) = *(char *)(o + 0x23);
@@ -814,12 +814,12 @@ void func_L00_0020E3B8(void) {
                 char *e = o + 6;
                 if (id[j] < 0x17) {
                     e[j] = 1;
-                    *(char **)(o + 0x38 + j * 4) = D_L00_0017CB80 + (i * 0x800 + j * 0x400);
+                    *(char **)(o + 0x38 + j * 4) = hero_item_blend_pose_buffers + (i * 0x800 + j * 0x400);
                 } else {
                     e[j] = 0;
                 }
             }
-            func_L00_002501C8(*(char **)(g + 0x2080), (unsigned char *)o);
+            advance_moby_animation_blend(*(char **)(g + 0x2080), (unsigned char *)o);
         }
     }
 }
@@ -1424,15 +1424,15 @@ extern int cinematic_mode MACRO_ADDR;
 extern short D_L00_0015F770 MACRO_ADDR;
 extern s32 level_frame_counter MACRO_ADDR;
 extern u8 draw_map51[] MACRO_ADDR;
-extern u8 D_L00_0017A6C0[];
-extern u8 D_L00_0017C580[];
+extern u8 hero_item_10_17_20_25_source_joints[];
+extern u8 hero_item_10_17_20_25_pose_buffer[];
 extern u8 source_bone4_joints_class1b1[];
 extern u8 source_bone4_pose_buffer[];
 extern u8 source_bone4_joints_default[];
-extern u8 D_L00_0017A750[];
-extern u8 D_L00_0017C980[];
-extern u8 D_L00_0017A768[];
-extern u8 D_L00_0017CA80[];
+extern u8 hero_item_28_29_joints_slot0[];
+extern u8 hero_item_28_29_pose_buffer_slot0[];
+extern u8 hero_item_28_29_joints_slot1[];
+extern u8 hero_item_28_29_pose_buffer_slot1[];
 extern u8 D_L00_0017AA60[];
 extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *);
@@ -1526,11 +1526,11 @@ void update_hero_item_mobys(void)
                         *((u16 *) (moby + 0x34)) |= 6;
                         if (first != 0)
                         {
-                            pack_pose(D_L00_0017A6C0, D_L00_0017C580, *((s32 *) (moby + 0x24)), 0, 0);
+                            pack_pose(hero_item_10_17_20_25_source_joints, hero_item_10_17_20_25_pose_buffer, *((s32 *) (moby + 0x24)), 0, 0);
                             *((s32 *) (moby + 0x54)) = 0;
                             *((s32 *) (moby + 0x50)) = 0;
-                            *((void **) (moby + 0x68)) = D_L00_0017C580;
-                            *((void **) (moby + 0x6c)) = D_L00_0017C580;
+                            *((void **) (moby + 0x68)) = hero_item_10_17_20_25_pose_buffer;
+                            *((void **) (moby + 0x6c)) = hero_item_10_17_20_25_pose_buffer;
                         }
                         else if (second != 0)
                         {
@@ -1555,15 +1555,15 @@ void update_hero_item_mobys(void)
                             D_L00_0017A780[5].scale3.f[2] = 1.0f;
                             if (j == 0)
                             {
-                                pack_pose(D_L00_0017A750, D_L00_0017C980, *((s32 *) (moby + 0x24)), 0, 0);
-                                *((void **) (moby + 0x68)) = D_L00_0017C980;
-                                *((void **) (moby + 0x6c)) = D_L00_0017C980;
+                                pack_pose(hero_item_28_29_joints_slot0, hero_item_28_29_pose_buffer_slot0, *((s32 *) (moby + 0x24)), 0, 0);
+                                *((void **) (moby + 0x68)) = hero_item_28_29_pose_buffer_slot0;
+                                *((void **) (moby + 0x6c)) = hero_item_28_29_pose_buffer_slot0;
                             }
                             else
                             {
-                                pack_pose(D_L00_0017A768, D_L00_0017CA80, *((s32 *) (moby + 0x24)), 0, 0);
-                                *((void **) (moby + 0x68)) = D_L00_0017CA80;
-                                *((void **) (moby + 0x6c)) = D_L00_0017CA80;
+                                pack_pose(hero_item_28_29_joints_slot1, hero_item_28_29_pose_buffer_slot1, *((s32 *) (moby + 0x24)), 0, 0);
+                                *((void **) (moby + 0x68)) = hero_item_28_29_pose_buffer_slot1;
+                                *((void **) (moby + 0x6c)) = hero_item_28_29_pose_buffer_slot1;
                             }
                             *((s32 *) (moby + 0x54)) = 0;
                             *((s32 *) (moby + 0x50)) = 0;

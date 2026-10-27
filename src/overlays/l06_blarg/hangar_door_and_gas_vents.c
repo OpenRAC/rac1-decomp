@@ -2555,7 +2555,7 @@ extern Hero g_hero;
 extern unsigned char pad_globals_base[];
 extern short active_marker_id NOT_SDA;
 extern int *blarg_paths[];
-extern short alien_queen_glow_pulse_speed;
+extern short alien_queen_glow_phase_speed_degrees_gp;
 extern short alien_queen_glow_color_a;
 extern short alien_queen_glow_color_b;
 extern char *MobyGetHitMessage(void *, int, int);
@@ -2708,7 +2708,7 @@ hit_response_done:
         }
     }
     *(float *)(data + 0x128) = FastAddRots(*(float *)(data + 0x128),
-        *(float *)&alien_queen_glow_pulse_speed * 0.017453292f * g_frame_time);
+        *(float *)&alien_queen_glow_phase_speed_degrees_gp * 0.017453292f * g_frame_time);
     ((Moby *)moby)->glow_color = FastTweenColor(*(int *)&alien_queen_glow_color_a, *(int *)&alien_queen_glow_color_b,
         (FastSin(*(float *)(data + 0x128)) + 1.0f) * 0.5f);
     path = blarg_paths[*(int *)(data + 0xEC)];
@@ -2934,11 +2934,11 @@ extern short blarg_slide_pair_stutter_a;
 extern short blarg_slide_pair_stutter_b;
 extern short blarg_slide_pair_stutter_rot_a;
 extern short blarg_slide_pair_stutter_rot_b;
-extern short blarg_slide_pair_accel;
-extern short blarg_slide_pair_decel;
+extern short moby_pair_phase_distance_acceleration_gp;
+extern short moby_pair_phase_distance_deceleration_gp;
 extern short blarg_slide_pair_max_speed;
-extern short blarg_slide_pair_rot_accel;
-extern short blarg_slide_pair_rot_decel;
+extern short moby_pair_phase_rotation_y_acceleration_degrees_gp;
+extern short moby_pair_phase_rotation_y_deceleration_degrees_gp;
 extern short blarg_slide_pair_rot_max_speed;
 extern short blarg_slide_pair_hold_ticks_min;
 extern short blarg_slide_pair_hold_ticks_max;
@@ -3043,11 +3043,11 @@ void update_moby_pair_transforms(char *moby) {
         target_rot_b = *(float *)(*(char **)(data + 0x40) + 0x44);
         target_a = phase_a;
         target_b = phase_b;
-        acceleration = (*(float *)&blarg_slide_pair_accel);
-        max_speed = (*(float *)&blarg_slide_pair_decel);
+        acceleration = (*(float *)&moby_pair_phase_distance_acceleration_gp);
+        max_speed = (*(float *)&moby_pair_phase_distance_deceleration_gp);
         damping = (*(float *)&blarg_slide_pair_max_speed);
-        rotation_acceleration = (*(float *)&blarg_slide_pair_rot_accel);
-        rotation_speed = (*(float *)&blarg_slide_pair_rot_decel);
+        rotation_acceleration = (*(float *)&moby_pair_phase_rotation_y_acceleration_degrees_gp);
+        rotation_speed = (*(float *)&moby_pair_phase_rotation_y_deceleration_degrees_gp);
         rotation_damping = (*(float *)&blarg_slide_pair_rot_max_speed);
         next_phase = 2;
         next_timer = truncate_float_to_s32(random_float_between((float)(*(int *)&blarg_slide_pair_move_ticks_min), (float)(*(int *)&blarg_slide_pair_move_ticks_max)));
@@ -3057,11 +3057,11 @@ void update_moby_pair_transforms(char *moby) {
         target_b = (*(float *)&blarg_slide_pair_stutter_b);
         target_rot_a = (*(float *)&blarg_slide_pair_stutter_rot_a);
         target_rot_b = (*(float *)&blarg_slide_pair_stutter_rot_b);
-        acceleration = (*(float *)&blarg_slide_pair_accel);
-        max_speed = (*(float *)&blarg_slide_pair_decel);
+        acceleration = (*(float *)&moby_pair_phase_distance_acceleration_gp);
+        max_speed = (*(float *)&moby_pair_phase_distance_deceleration_gp);
         damping = (*(float *)&blarg_slide_pair_max_speed);
-        rotation_acceleration = (*(float *)&blarg_slide_pair_rot_accel);
-        rotation_speed = (*(float *)&blarg_slide_pair_rot_decel);
+        rotation_acceleration = (*(float *)&moby_pair_phase_rotation_y_acceleration_degrees_gp);
+        rotation_speed = (*(float *)&moby_pair_phase_rotation_y_deceleration_degrees_gp);
         rotation_damping = (*(float *)&blarg_slide_pair_rot_max_speed);
         next_phase = 1;
         next_timer = truncate_float_to_s32(random_float_between((float)(*(int *)&blarg_slide_pair_hold_ticks_min), (float)(*(int *)&blarg_slide_pair_hold_ticks_max)));

@@ -400,7 +400,7 @@ extern float FastAddRots(float, float);
 extern float FastVecLength(void *);
 extern float ApproachValue(float *, float, float);
 extern float FastCos(float);
-extern void set_first_hero_easing_parameters(float, float);
+extern void Hero_SetTiltSpringParams(float, float);
 extern float FastSin(float);
 extern void FastVecSub(void *, void *, void *);
 extern void ClampVectorLength(void *, float);
@@ -1524,10 +1524,10 @@ void HeroL14_UpdateStatePhysics(void) {
         break;
     case 0x2F:
         update_hero_planar_movement_velocity();
-        set_first_hero_easing_parameters(0.04f, 0.2f);
-        set_first_hero_easing_parameters(0.04f, 0.2f);
-        set_first_hero_easing_parameters(0.04f, 0.2f);
-        set_first_hero_easing_parameters(0.02f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.02f, 0.2f);
         if (moby->prev_seq == 0x37) {
             float a;
 
@@ -1669,7 +1669,7 @@ void HeroL14_UpdateStatePhysics(void) {
                         if (tilt < -0.7853982f) {
                             tilt = -0.7853982f;
                         }
-                        set_first_hero_easing_parameters(0.03f, 0.2f);
+                        Hero_SetTiltSpringParams(0.03f, 0.2f);
                         if (g_hero.grind_anim_variant != 0) {
                             oltanis_hero_spline_tilt[1] = -tilt;
                         } else {
@@ -1681,9 +1681,9 @@ void HeroL14_UpdateStatePhysics(void) {
                     oltanis_hero_spline_tilt[0] = fast_atan2(vec_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
                 }
                 if (hasW) {
-                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
-                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
-                    set_first_hero_easing_parameters(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
+                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
+                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
+                    Hero_SetTiltSpringParams(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f);
                     if (g_hero.grind_look_moby != 0) {
                         float a;
 

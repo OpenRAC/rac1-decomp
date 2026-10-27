@@ -37,7 +37,7 @@ void DrawGemlikTurretHud(char *moby) {
             k = t * 5.0f + 1.0f;
             if (m > 1.0f) m = 1.0f;
             c = truncate_float_to_s32_r(m * 96.0f);
-            append_four_quarter_turn_effect_quads_f(IntToFloat(sp10), IntToFloat(sp14), k, WrapAngle(IntToFloat(gemlik_frame_count) / 30.0f), 0, 0xFF, 0, c);
+            append_four_quarter_turn_effect_quads_f(IntToFloat(sp10), IntToFloat(sp14), k, normalize_angle(IntToFloat(gemlik_frame_count) / 30.0f), 0, 0xFF, 0, c);
             *(int *)(d + 0xEC) = 0;
         } else {
             a = 0xFF;

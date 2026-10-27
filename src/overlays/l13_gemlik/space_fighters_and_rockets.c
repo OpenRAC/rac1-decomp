@@ -923,7 +923,7 @@ void process_blarg_space_fighter_damage(unsigned char *moby, unsigned char *d, f
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern float FastAbsF(float);
-extern float WrapAngle(float);
+extern float normalize_angle(float);
 extern float g_frame_time MACRO_ADDR;
 
 /* steers a moby's pitch toward a target with a spring, then damps and clamps it */
@@ -938,7 +938,7 @@ void steer_blarg_space_fighter(char *moby, char *d, float p2, float p3) {
     if (1.5707964f < v) *(float *)(moby + 0x40) = 1.5707964f;
     if (*(float *)(moby + 0x40) < -1.5707964f) *(float *)(moby + 0x40) = -1.5707964f;
     *(float *)(moby + 0x40) = *(float *)(moby + 0x40) * 0.98f;
-    WrapAngle(*(float *)(moby + 0x40));
+    normalize_angle(*(float *)(moby + 0x40));
 }
 extern float FastVecDist(void *, void *);
 extern float IntToFloat(int);
@@ -2913,7 +2913,7 @@ void update_moby_spring_steering_and_banking(char *m, char *p, float a, float b)
     if (*(float *)(m + 0x40) > 1.5707964f) *(float *)(m + 0x40) = 1.5707964f;
     if (*(float *)(m + 0x40) < -1.5707964f) *(float *)(m + 0x40) = -1.5707964f;
     *(float *)(m + 0x40) *= 0.985f;
-    WrapAngle(*(float *)(m + 0x40));
+    normalize_angle(*(float *)(m + 0x40));
 }
 extern float vec_length_xy(void *);
 /* Steers moby m along path idx toward its next point, facing along the motion (or the hero in state 5); turns it when turn. Returns 1 on a wrap. */

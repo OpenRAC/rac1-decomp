@@ -11,7 +11,7 @@ extern char hero_globals_base[];
 extern char collision_hit_point[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern int GetFlaggedPvarWord(char *);
-extern int func_L00_00261448(char *);
+extern int moby_get_ride_transform(char *);
 extern void FastVecAdd(void *, void *, void *);
 extern int coll_line(void *, void *, int, int, int);
 extern void vec_scale_to_length(void *, void *, float);
@@ -32,7 +32,7 @@ void release_glove_of_doom_held_moby(Q4 *release_position, char *released_moby, 
     Vec4 collision_start, collision_position_offset;
     qcopy(q, initial_velocity);
     P = (Hero *)(hero_globals_base + 0xE1D);
-    if (P->ground_moby && func_L00_00261448(P->ground_moby)) {
+    if (P->ground_moby && moby_get_ride_transform(P->ground_moby)) {
         FastVecAdd(q, q, &P->motion.displacement);
     }
     released_moby_position = &moby->pos;
@@ -262,7 +262,7 @@ void update_doom_bot_spawner(char *m) {
         if (*(short *)(*(char **)(s + 0x30) + 0xA6) == 0xE5 && *(short *)(s + 0x3A) == 0 &&
             FastVecLength(s) > 0.0f) {
             char *P = hero_globals_base + 0xE1D;
-            if (*(int *)(P + 0x2FC) == 0 || func_L00_00261448(*(char **)(P + 0x2FC)) == 0) {
+            if (*(int *)(P + 0x2FC) == 0 || moby_get_ride_transform(*(char **)(P + 0x2FC)) == 0) {
                 predict_doom_bot_spawner_landing(s, m, 1);
             } else {
                 if (predict_doom_bot_spawner_landing(s, m, 0) == 0) {
@@ -366,7 +366,7 @@ void update_doom_bot_spawner(char *m) {
             if (FastVecLength(s) < frame_scale * f21) goto L344;
         }
         if (*(int *)(P + 0x2FC) == 0) goto Lfin;
-        if (func_L00_00261448(*(char **)(P + 0x2FC)) != 0) {
+        if (moby_get_ride_transform(*(char **)(P + 0x2FC)) != 0) {
             float a20 = FastVecLength(s);
             if (a20 < frame_scale * f21 + FastVecLength(Q - 0x40)) {
                 goto L344;
@@ -385,7 +385,7 @@ void update_doom_bot_spawner(char *m) {
         }
     L394:
         w = hero_globals_base + 0xE1D;
-        if (*(int *)(w + 0x2FC) != 0 && func_L00_00261448(*(char **)(w + 0x2FC)) != 0) {
+        if (*(int *)(w + 0x2FC) != 0 && moby_get_ride_transform(*(char **)(w + 0x2FC)) != 0) {
             FastVecAdd(s, s, w + 0x100);
         }
     Lfin:
@@ -426,7 +426,7 @@ void update_doom_bot_spawner(char *m) {
                 f20 = f20 * f0;
                 v1.v[1] = f20;
                 v1.v[2] = frame_scale * 0.02f;
-                if (*(int *)(P + 0x2FC) != 0 && func_L00_00261448(*(char **)(P + 0x2FC)) != 0) {
+                if (*(int *)(P + 0x2FC) != 0 && moby_get_ride_transform(*(char **)(P + 0x2FC)) != 0) {
                     FastVecAdd(&v1, &v1, P + 0x100);
                 }
                 FastVecAdd(&v0, &v1, m + 0x10);
@@ -1078,10 +1078,10 @@ extern unsigned char coll_hit_normal[];
 extern float g_frame_time MACRO_ADDR;
 extern float veldin1_zero_vec[] MACRO_ADDR;
 extern float homing_shot_rotation_params MACRO_ADDR;
-extern short homing_shot_fade_effect_size;
-extern short homing_shot_burst_size_min;
-extern short homing_shot_burst_size_max;
-extern short homing_shot_burst_end_size;
+extern short homing_shot_attached_particle_size;
+extern short homing_shot_trail_initial_size_min;
+extern short homing_shot_trail_initial_size_max;
+extern short homing_shot_trail_size_blend_target;
 
 // Builds a moby's data block from its source moby and a position vector; returns the new moby or 0.
 char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float f14, float f15) {
@@ -1117,7 +1117,7 @@ char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float
         ((Moby *)m)->draw_dist = 0x7F;
         ((Moby *)m)->visible = 1;
         *(long *)(m + 0x38) = *(long *)(a + 0x38);
-        ((Moby *)m)->rot.x = ((float *)&homing_shot_fade_effect_size)[2];
+        ((Moby *)m)->rot.x = ((float *)&homing_shot_attached_particle_size)[2];
         ((Moby *)m)->rot.y = FastAddRots(f15, (&homing_shot_rotation_params)[1]);
         ((Moby *)m)->rot.z = f14;
         qcopy(m + 0x10, t);
@@ -1186,15 +1186,15 @@ char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float
             ((Moby *)m)->rot.y = -fast_atan2(len, out[2]);
             return m;
         } else {
-            spawn_source_attached_fading_effect_particle(m, 0x2F4F7F7F, *(short *)(d + 0x24), -1, *(float *)&homing_shot_fade_effect_size);
+            spawn_source_attached_fading_effect_particle(m, 0x2F4F7F7F, *(short *)(d + 0x24), -1, *(float *)&homing_shot_attached_particle_size);
             for (i = 0; i < 17; i++) {
                 q = (char *)spawn_random_size_rotated_particle(m + 0x10, (char *)veldin1_zero_vec, 1, 0.0f);
                 if (q != 0) {
-                    *(float *)(q + 0xC) = random_float_between(*(float *)&homing_shot_burst_size_min, *(float *)&homing_shot_burst_size_max);
+                    *(float *)(q + 0xC) = random_float_between(*(float *)&homing_shot_trail_initial_size_min, *(float *)&homing_shot_trail_initial_size_max);
                     fi = IntToFloat(i);
                     f16 = fi / IntToFloat(16);
                     ret = CubicInterpolate(-1.5f, 0.0f, 1.0f, 0.0f, f16);
-                    *(float *)(q + 0xC) = *(float *)(q + 0xC) + (*(float *)&homing_shot_burst_end_size - *(float *)(q + 0xC)) * ret;
+                    *(float *)(q + 0xC) = *(float *)(q + 0xC) + (*(float *)&homing_shot_trail_size_blend_target - *(float *)(q + 0xC)) * ret;
                     r = truncate_float_to_s32(ret * -64.0f + 128.0f);
                     *(int *)(q + 4) = (r << 24) | 0xFFFFFF;
                     ((int *)(d + 0x2C))[i] = (int)q;

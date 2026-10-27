@@ -26,8 +26,8 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float rilgar_hero_fall_state_height MACRO_ADDR;
-extern int rilgar_shown_help_message MACRO_ADDR;
-extern int rilgar_hero_run_step1_start_frame MACRO_ADDR;
+extern int item_selector_hud_open_blocker MACRO_ADDR;
+extern int landing_run_entry_animation_frame MACRO_ADDR;
 extern short rilgar_hero_double_tap_timer;
 extern float rilgar_player_camera_yaw;
 extern int rilgar_hero_state_1e_clear_word;
@@ -145,7 +145,7 @@ void HeroL05_UpdateStateTransitions(void) {
             Hero_TryMoveStateL05(0x3D, 1);
         } else if (process_hero_primary_item_input() == 0 && try_apply_hero_water_and_ground_transitions() == 0 && try_transition_hero_water_state() == 0 && try_start_hero_weapon_fire_state() == 0) {
             if ((g_controller_state.pressed & 0x10) || (((int)g_controller_state.pressed_unmasked) & 0x10)) {
-                if (g_hero.items[0].switch_lock != 2 && rilgar_shown_help_message == 0
+                if (g_hero.items[0].switch_lock != 2 && item_selector_hud_open_blocker == 0
                     && (g_hero.item_use_locked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.item_select_blocked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.vehicle_mode == 0 || g_hero.vehicle_mode == 3)) {
@@ -1384,7 +1384,7 @@ void HeroL05_UpdateStateTransitions(void) {
                         Hero_TryMoveStateL05(2, 0);
                         if (g_hero.state.current == 2) {
                             g_hero.state.step = 1;
-                            set_hero_animation(4, rilgar_hero_run_step1_start_frame, scale_ticks(0xC));
+                            set_hero_animation(4, landing_run_entry_animation_frame, scale_ticks(0xC));
                         }
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                         break;

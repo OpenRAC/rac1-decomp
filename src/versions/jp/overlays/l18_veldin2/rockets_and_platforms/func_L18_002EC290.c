@@ -34,8 +34,8 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
         float b;
         f21 = *(float *)&electric_bolt_wave_height_start
               + (*(float *)&electric_bolt_wave_height_end - *(float *)&electric_bolt_wave_height_start) * (IntToFloat(i) * 0.05f);
-        f21 = f21 * FastSin(WrapAngle(*(float *)&electric_bolt_wave_phase + (float)i * *(float *)&electric_bolt_wave_phase_step));
-        f21 = f21 + randf_sym(*(float *)&electric_bolt_wave_jitter_base, *(float *)&electric_bolt_wave_jitter_range);
+        f21 = f21 * FastSin(normalize_angle(*(float *)&electric_bolt_wave_phase + (float)i * *(float *)&electric_bolt_wave_phase_step));
+        f21 = f21 + randf_sym(*(float *)&primary_bolt_z_jitter_range_start_gp, *(float *)&primary_bolt_z_jitter_range_end_gp);
         electric_bolt_points[0][i].f[2] = electric_bolt_points[0][i].f[2] - electric_bolt_wave_heights[i];
         electric_bolt_wave_heights[i] = f21;
         a = random_angle_radians();
@@ -74,9 +74,9 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
             float h;
             float ang;
             float m;
-            g = WrapAngle(*(float *)&electric_bolt_twist_phase + (float)i * *(float *)&electric_bolt_twist_phase_step);
+            g = normalize_angle(*(float *)&electric_bolt_twist_phase + (float)i * *(float *)&electric_bolt_twist_phase_step);
             h = *(float *)&electric_bolt_twist_height
-                * FastSin(WrapAngle(*(float *)&electric_bolt_swell_phase + (float)i * *(float *)&D_J_L18_001620AC));
+                * FastSin(normalize_angle(*(float *)&electric_bolt_swell_phase + (float)i * *(float *)&D_J_L18_001620AC));
             qcopy(&electric_bolt_points[1][i], &electric_bolt_points[0][i]);
             h = h * FastSin(g) + randf_sym(0.0f, 0.1f);
             electric_bolt_points[1][i].f[2] = electric_bolt_points[1][i].f[2] + h;
@@ -156,7 +156,7 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
     }
     scale = randf_sym(0.52359879f, 1.04719758f);
     f20 = random_float_between(-0.52359879f, 1.04719758f);
-    FastVecScale(&s[5], &s[0], *(float *)&electric_bolt_spark_reach * frame_scale);
+    FastVecScale(&s[5], &s[0], *(float *)&electric_bolt_particle_direction_scale_gp * frame_scale);
     build_look_at_matrix(&s[5], &s[5], &s[6], f20);
     build_look_at_matrix(&s[5], &s[5], &s[7], scale);
     r = rand_range(1, 8);

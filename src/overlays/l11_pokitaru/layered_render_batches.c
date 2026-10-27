@@ -68,7 +68,7 @@ extern float pokitaru_layered_scroll_entries_b[] MACRO_ADDR;
 extern PairA_31F760 pokitaru_layered_2b_scroll[] MACRO_ADDR;
 extern float layered_effect_pos_y MACRO_ADDR;
 extern float layered_effect_position_z MACRO_ADDR;
-extern float layered_effect_radius MACRO_ADDR;
+extern float layered_effect_bounds_radius MACRO_ADDR;
 extern int pokitaru_layered_uv_wobble[];
 extern short layered_effect_color_tables_initialized;
 extern short layered_effect_position_x;
@@ -117,7 +117,7 @@ void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
         effect_bounds[0] = *(float *)&layered_effect_position_x;
         effect_bounds[1] = layered_effect_pos_y;
         effect_bounds[2] = layered_effect_position_z;
-        effect_bounds[3] = layered_effect_radius;
+        effect_bounds[3] = layered_effect_bounds_radius;
         if (FastBSphereCheck((char *)effect_bounds, 1000.0f) < 0)
             break;
         if (!(*(float *)(reference_position_base + 0x148) > 180.0f))
@@ -239,7 +239,7 @@ extern float pokitaru_faded_scroll_entries_b[] MACRO_ADDR;
 extern PairA_3205C0 pokitaru_faded_2b_scroll[] MACRO_ADDR;
 extern float distance_faded_effect_position_y MACRO_ADDR;
 extern float distance_faded_effect_position_z MACRO_ADDR;
-extern float distance_faded_effect_radius MACRO_ADDR;
+extern float distance_faded_effect_bounds_radius MACRO_ADDR;
 extern int pokitaru_faded_uv_wobble[];
 extern short distance_faded_effect_color_tables_initialized;
 extern short distance_faded_effect_position_x;
@@ -292,7 +292,7 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
             effect_bounds[0] = *(float *)&distance_faded_effect_position_x;
             effect_bounds[1] = distance_faded_effect_position_y;
             effect_bounds[2] = distance_faded_effect_position_z;
-            effect_bounds[3] = distance_faded_effect_radius;
+            effect_bounds[3] = distance_faded_effect_bounds_radius;
             if (FastBSphereCheck((char *)effect_bounds, 1000.0f) >= 0) {
                 if (reference_position_base->pos[2] > 180.0f) {
                     effect_to_reference_delta[0] = *(float *)&distance_faded_effect_position_x;

@@ -865,15 +865,15 @@ extern int hoven_turret_manned SDATA(D_L12_00161F80);
 extern int hoven_turret_destroyed SDATA(D_L12_00161F84);
 extern float hoven_turret_pitch_min SDATA(D_L12_00161F28);
 extern float hoven_turret_pitch_max SDATA(D_L12_00161F2C);
-extern float hoven_turret_yaw_speed SDATA(D_L12_00161F50);
-extern float hoven_turret_pitch_speed SDATA(D_L12_00161F54);
-extern float hoven_turret_yaw_accel SDATA(D_L12_00161F58);
-extern float hoven_turret_pitch_accel SDATA(D_L12_00161F5C);
-extern float hoven_turret_yaw_brake SDATA(D_L12_00161F60);
-extern float hoven_turret_pitch_brake SDATA(D_L12_00161F64);
-extern float hoven_turret_shot_speed SDATA(D_L12_00161F68);
-extern float hoven_turret_wreck_blast_dist_min SDATA(D_L12_00161EE0);
-extern float hoven_turret_wreck_blast_dist_max SDATA(D_L12_00161EE4);
+extern float hoven_turret_yaw_input_rate SDATA(D_L12_00161F50);
+extern float hoven_turret_pitch_input_rate SDATA(D_L12_00161F54);
+extern float hoven_turret_yaw_acceleration_rate SDATA(D_L12_00161F58);
+extern float hoven_turret_pitch_acceleration_rate SDATA(D_L12_00161F5C);
+extern float hoven_turret_yaw_braking_rate SDATA(D_L12_00161F60);
+extern float hoven_turret_pitch_braking_rate SDATA(D_L12_00161F64);
+extern float hoven_turret_firing_offset_rate SDATA(D_L12_00161F68);
+extern float hoven_turret_destruction_view_offset_distance_min SDATA(D_L12_00161EE0);
+extern float hoven_turret_destruction_view_offset_distance_max SDATA(D_L12_00161EE4);
 extern char hoven_player_camera_r[] __asm__("D_L12_00167180");
 extern float hoven_zero_vec[] MACRO_ADDR;
 
@@ -1049,18 +1049,18 @@ void hoven_turret_update(Moby *moby) {
                 y = -y;
             }
             joy[1] = y;
-            tgt = hoven_turret_yaw_speed * 0.017453292f * g_frame_time * -joy[0];
+            tgt = hoven_turret_yaw_input_rate * 0.017453292f * g_frame_time * -joy[0];
             if ((d->f7C >= 0.0f && d->f7C < tgt) || (d->f7C <= 0.0f && tgt < d->f7C)) {
-                ApproachValue(&d->f7C, tgt, hoven_turret_yaw_accel * 0.017453292f * g_frame_time_sq);
+                ApproachValue(&d->f7C, tgt, hoven_turret_yaw_acceleration_rate * 0.017453292f * g_frame_time_sq);
             } else {
-                ApproachValue(&d->f7C, tgt, hoven_turret_yaw_brake * 0.017453292f * g_frame_time_sq);
+                ApproachValue(&d->f7C, tgt, hoven_turret_yaw_braking_rate * 0.017453292f * g_frame_time_sq);
             }
             moby->rot.z = FastAddRots(moby->rot.z, d->f7C);
-            tgt2 = -(hoven_turret_pitch_speed * 0.017453292f * g_frame_time) * -joy[1];
+            tgt2 = -(hoven_turret_pitch_input_rate * 0.017453292f * g_frame_time) * -joy[1];
             if ((d->f78 >= 0.0f && d->f78 < tgt2) || (d->f78 <= 0.0f && tgt2 < d->f78)) {
-                ApproachValue(&d->f78, tgt2, hoven_turret_pitch_accel * 0.017453292f * g_frame_time_sq);
+                ApproachValue(&d->f78, tgt2, hoven_turret_pitch_acceleration_rate * 0.017453292f * g_frame_time_sq);
             } else {
-                ApproachValue(&d->f78, tgt2, hoven_turret_pitch_brake * 0.017453292f * g_frame_time_sq);
+                ApproachValue(&d->f78, tgt2, hoven_turret_pitch_braking_rate * 0.017453292f * g_frame_time_sq);
             }
             d->f74 = FastAddRots(d->f74, d->f78);
             if (d->f74 > hoven_turret_pitch_max) {
@@ -1082,7 +1082,7 @@ void hoven_turret_update(Moby *moby) {
 
                 MobyBlendAnimation(moby, d->f80 == 1 ? 4 : 3, 0, 1);
                 yaw = FastAddRots(moby->rot.z, 1.5707964f);
-                BuildSphericalOffset(dir, hoven_turret_shot_speed * g_frame_time, yaw, d->f74);
+                BuildSphericalOffset(dir, hoven_turret_firing_offset_rate * g_frame_time, yaw, d->f74);
                 if (d->f80 == 1) {
                     d->f80 = 0;
                     Moby_GetJointWorldPos(moby, 2, muz);
@@ -1131,7 +1131,7 @@ void hoven_turret_update(Moby *moby) {
             float c;
             float t;
 
-            a = random_float_between(hoven_turret_wreck_blast_dist_min, hoven_turret_wreck_blast_dist_max);
+            a = random_float_between(hoven_turret_destruction_view_offset_distance_min, hoven_turret_destruction_view_offset_distance_max);
             b = FastAddRots(((Cam_304920 *)hoven_player_camera_r)->f158, randf_sym(0.0f, 0.5235988f));
             c = FastAddRots(((Cam_304920 *)hoven_player_camera_r)->f154, randf_sym(0.0f, 0.5235988f));
             qcopy(v, ((Cam_304920 *)hoven_player_camera_r)->f140);
@@ -1169,30 +1169,30 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float FastNormalizeAngle_r(float) __asm__("func_001FA7D8");
 extern float IntToFloat_r3(int) __asm__("func_001FA888");
 extern void draw_geometry_quad_5188_r(void *, void *, void *, long, int) __asm__("func_L02_0020BF88");
-extern short hoven_turret_gauge_frame_color;
-extern short hoven_turret_gauge_frame_uv3;
-extern short hoven_turret_gauge_frame_uv0;
-extern short hoven_turret_gauge_frame_uv1;
-extern short hoven_turret_gauge_frame_uv2;
-extern short hoven_turret_gauge_frame_tex;
+extern short hoven_turret_hud_frame_color;
+extern short hoven_turret_hud_frame_vertex_3_uv;
+extern short hoven_turret_hud_frame_vertex_0_uv;
+extern short hoven_turret_hud_frame_vertex_1_uv;
+extern short hoven_turret_hud_frame_vertex_2_uv;
+extern short hoven_turret_hud_frame_texture_index_offset;
 extern short hoven_turret_gauge_frame_half_height;
 extern short hoven_turret_gauge_center_y;
 extern short hoven_turret_gauge_frame_half_width;
 extern short hoven_turret_gauge_center_x;
-extern short hoven_turret_gauge_ring_uv0;
-extern short hoven_turret_gauge_ring_uv1;
-extern short hoven_turret_gauge_ring_uv2;
-extern short hoven_turret_gauge_ring_uv3;
+extern short hoven_turret_hud_health_dial_vertex_0_uv;
+extern short hoven_turret_hud_health_dial_vertex_1_uv;
+extern short hoven_turret_hud_health_dial_vertex_2_uv;
+extern short hoven_turret_hud_health_dial_vertex_3_uv;
 extern short hoven_turret_gauge_ring_radius_x;
 extern short hoven_turret_gauge_ring_radius_y;
-extern short hoven_turret_gauge_marker_uv0;
-extern short hoven_turret_gauge_marker_uv3;
-extern short hoven_turret_gauge_marker_uv2;
-extern short hoven_turret_gauge_marker_uv1;
+extern short hoven_turret_hud_orientation_indicator_vertex_0_uv;
+extern short hoven_turret_hud_orientation_indicator_vertex_3_uv;
+extern short hoven_turret_hud_orientation_indicator_vertex_2_uv;
+extern short hoven_turret_hud_orientation_indicator_vertex_1_uv;
 extern short hoven_turret_gauge_marker_radius_y;
 extern short hoven_turret_gauge_marker_radius_x;
-extern short hoven_turret_gauge_yaw_marker_tex;
-extern short hoven_turret_gauge_pitch_marker_tex;
+extern short hoven_turret_hud_yaw_indicator_texture_index;
+extern short hoven_turret_hud_pitch_indicator_texture_index;
 
 typedef struct {
     char pad0[0x74];
@@ -1217,15 +1217,15 @@ void draw_hoven_turret_hud(Moby *moby) {
     float a;
 
     VU1_addGSregister(0x42, 0x8000000044L);
-    uv[0] = *(int *)&hoven_turret_gauge_frame_uv0;
-    uv[1] = *(int *)&hoven_turret_gauge_frame_uv1;
-    uv[2] = *(int *)&hoven_turret_gauge_frame_uv2;
-    uv[3] = *(int *)&hoven_turret_gauge_frame_uv3;
-    col[3] = *(int *)&hoven_turret_gauge_frame_color;
-    col[2] = *(int *)&hoven_turret_gauge_frame_color;
-    col[1] = *(int *)&hoven_turret_gauge_frame_color;
-    col[0] = *(int *)&hoven_turret_gauge_frame_color;
-    tex = GetEffectTex_r2(*(int *)&hoven_turret_gauge_frame_tex + 0x28);
+    uv[0] = *(int *)&hoven_turret_hud_frame_vertex_0_uv;
+    uv[1] = *(int *)&hoven_turret_hud_frame_vertex_1_uv;
+    uv[2] = *(int *)&hoven_turret_hud_frame_vertex_2_uv;
+    uv[3] = *(int *)&hoven_turret_hud_frame_vertex_3_uv;
+    col[3] = *(int *)&hoven_turret_hud_frame_color;
+    col[2] = *(int *)&hoven_turret_hud_frame_color;
+    col[1] = *(int *)&hoven_turret_hud_frame_color;
+    col[0] = *(int *)&hoven_turret_hud_frame_color;
+    tex = GetEffectTex_r2(*(int *)&hoven_turret_hud_frame_texture_index_offset + 0x28);
     for (i = 0; i < 4; i++) {
         float sx;
         float sy;
@@ -1254,10 +1254,10 @@ void draw_hoven_turret_hud(Moby *moby) {
         draw_geometry_quad_5188_r(xy, uv, col, tex, 1);
     }
     tex = GetEffectTex_r2(6);
-    uv[0] = *(int *)&hoven_turret_gauge_ring_uv0;
-    uv[1] = *(int *)&hoven_turret_gauge_ring_uv1;
-    uv[2] = *(int *)&hoven_turret_gauge_ring_uv2;
-    uv[3] = *(int *)&hoven_turret_gauge_ring_uv3;
+    uv[0] = *(int *)&hoven_turret_hud_health_dial_vertex_0_uv;
+    uv[1] = *(int *)&hoven_turret_hud_health_dial_vertex_1_uv;
+    uv[2] = *(int *)&hoven_turret_hud_health_dial_vertex_2_uv;
+    uv[3] = *(int *)&hoven_turret_hud_health_dial_vertex_3_uv;
     if (d->f8C > 100.0f) {
         c = FastTweenColor(0x6000FFFF, 0x6000FF00, (d->f8C - 100.0f) / 100.0f);
     } else {
@@ -1304,10 +1304,10 @@ void draw_hoven_turret_hud(Moby *moby) {
     } else {
         c = FastTweenColor(0x5000FF00, 0x5000FFFF, IntToFloat_r3(d->f88) / (float)scale_ticks(0xF));
     }
-    uv[0] = *(int *)&hoven_turret_gauge_marker_uv0;
-    uv[1] = *(int *)&hoven_turret_gauge_marker_uv1;
-    uv[2] = *(int *)&hoven_turret_gauge_marker_uv2;
-    uv[3] = *(int *)&hoven_turret_gauge_marker_uv3;
+    uv[0] = *(int *)&hoven_turret_hud_orientation_indicator_vertex_0_uv;
+    uv[1] = *(int *)&hoven_turret_hud_orientation_indicator_vertex_1_uv;
+    uv[2] = *(int *)&hoven_turret_hud_orientation_indicator_vertex_2_uv;
+    uv[3] = *(int *)&hoven_turret_hud_orientation_indicator_vertex_3_uv;
     col[3] = c;
     col[2] = c;
     col[1] = c;
@@ -1328,7 +1328,7 @@ void draw_hoven_turret_hud(Moby *moby) {
     a = FastNormalizeAngle_r(FastAddRots(moby->rot.z * 4.0f, 3.1415927f));
     xy[3] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) - (int)0x80000000);
     xy[3] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
-    draw_geometry_quad_5188_r(xy, uv, col, GetEffectTex(*(int *)&hoven_turret_gauge_yaw_marker_tex), 1);
+    draw_geometry_quad_5188_r(xy, uv, col, GetEffectTex(*(int *)&hoven_turret_hud_yaw_indicator_texture_index), 1);
     xy[3] = 0xFFFFF000000000L;
     xy[2] = 0xFFFFF000000000L;
     xy[1] = 0xFFFFF000000000L;
@@ -1345,7 +1345,7 @@ void draw_hoven_turret_hud(Moby *moby) {
     a = FastNormalizeAngle_r(FastAddRots(d->f74 * 8.0f, 3.1415927f));
     xy[3] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) - (int)0x80000000);
     xy[3] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
-    draw_geometry_quad_5188_r(xy, uv, col, GetEffectTex(*(int *)&hoven_turret_gauge_pitch_marker_tex), 1);
+    draw_geometry_quad_5188_r(xy, uv, col, GetEffectTex(*(int *)&hoven_turret_hud_pitch_indicator_texture_index), 1);
 }
 typedef struct {
     char pad0[0xAC];
@@ -1521,7 +1521,7 @@ extern float FastDiffRots(float, float);
 extern int fast_subtract_rotations_cf(void *);
 extern void *spawn_class_b8_projectile(void *, void *, void *, int);
 extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
-extern void PartType22Spawn(void *, void *, int, int, float, int);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 void initialize_planetbuster_maximus_detached_part_motion(struct Moby *moby, int slot);
 extern void update_planetbuster_maximus_detached_parts(char *);
@@ -1753,7 +1753,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                         v1[1] = FastSin(ang) * s;
                         v1[2] = 0.0f;
                         v1[2] = random_float_between(g_frame_time, g_frame_time * 5.5f);
-                        PartType22Spawn(v0, v1, 0x500A1414, 0xA0A0A, 420000.0f, c);
+                        spawn_effect_particle_with_target_scalar(v0, v1, 0x500A1414, 0xA0A0A, 420000.0f, c);
                     }
                     *(int *)&((Moby *)m)->collision = 0;
                     ((Moby *)m)->flags |= 0x41;
@@ -1783,7 +1783,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                 v1[2] = 0.0f;
                 v1[2] = random_float_between(g_frame_time * 7.0f, g_frame_time * 17.0f) * IntToFloat_r3(lvl) * 1.5f
                         / IntToFloat_r3(5);
-                PartType22Spawn(v0, v1, (rand_range(0x46, 0xCD) << 8) | 0x460A00AA, 0xA0A46, 420000.0f, c);
+                spawn_effect_particle_with_target_scalar(v0, v1, (rand_range(0x46, 0xCD) << 8) | 0x460A00AA, 0xA0A46, 420000.0f, c);
             }
             for (j = 0; j < 3; j++) {
                 int c;
@@ -1798,7 +1798,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                 v1[1] = FastSin(ang) * s;
                 v1[2] = 0.0f;
                 v1[2] = random_float_between(g_frame_time * 2.4f, g_frame_time * 5.5f);
-                PartType22Spawn(v0, v1, 0x460A1414, 0xA0A0A, 504000.03f, c);
+                spawn_effect_particle_with_target_scalar(v0, v1, 0x460A1414, 0xA0A0A, 504000.03f, c);
             }
         }
         }
@@ -1990,8 +1990,8 @@ extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
 extern int planetbuster_engaged MACRO_ADDR;
 extern char *hoven_camera_points MACRO_ADDR;
 extern int hoven_cutscene_active MACRO_ADDR;
-extern short planetbuster_sway_rate_a;
-extern short planetbuster_sway_rate_b;
+extern short planetbuster_maximus_rotation_oscillation_common_factor_phase_rate_degrees;
+extern short planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees;
 extern short planetbuster_sway_amplitude;
 extern void capture_linked_moby_relative_transforms(char *, void *, int);
 extern void apply_linked_moby_relative_transforms(char *, char *, int);
@@ -2084,8 +2084,8 @@ void planetbuster_maximus_part_update(char *moby) {
         }
         update_moby_vertical_oscillation(0.7f, g_frame_time * 1.2217305f, moby, (float *)(d + 0x5CC), (float *)(d + 0x5C8));
         update_moby_rotation_oscillation(moby, d + 0x5E4, d + 0x5E8, *(float *)&planetbuster_sway_amplitude,
-                          *(float *)&planetbuster_sway_rate_a * 0.017453292f * g_frame_time,
-                          *(float *)&planetbuster_sway_rate_b * 0.017453292f * g_frame_time);
+                          *(float *)&planetbuster_maximus_rotation_oscillation_common_factor_phase_rate_degrees * 0.017453292f * g_frame_time,
+                          *(float *)&planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees * 0.017453292f * g_frame_time);
         apply_linked_moby_relative_transforms(moby, d, 0x11);
         if (is_point_inside_clip_volume(hero_globals_base_e + 0xE9D, *(int *)(d + 0x5EC)) || hoven_turret_manned_m) {
             int i;
@@ -2104,8 +2104,8 @@ void planetbuster_maximus_part_update(char *moby) {
         float f;
         update_moby_vertical_oscillation(0.7f, g_frame_time * 1.2217305f, moby, (float *)(d + 0x5CC), (float *)(d + 0x5C8));
         update_moby_rotation_oscillation(moby, d + 0x5E4, d + 0x5E8, *(float *)&planetbuster_sway_amplitude,
-                          *(float *)&planetbuster_sway_rate_a * 0.017453292f * g_frame_time,
-                          *(float *)&planetbuster_sway_rate_b * 0.017453292f * g_frame_time);
+                          *(float *)&planetbuster_maximus_rotation_oscillation_common_factor_phase_rate_degrees * 0.017453292f * g_frame_time,
+                          *(float *)&planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees * 0.017453292f * g_frame_time);
         path = hoven_paths_r2[*(int *)(d + 0x5C0)];
         if (*(short *)(d + 0x5F8) < *(int *)path - 11) {
             ApproachValue((float *)(d + 0x5F0), g_frame_time * 8.0f, g_frame_time_sq * 10.0f);
@@ -2139,8 +2139,8 @@ void planetbuster_maximus_part_update(char *moby) {
         SpringAngle(moby + 0x48, 3.0543261f, d + 0x5F4, -1, g_frame_scale_sq * 0.0015f, g_frame_scale_sq * 0.3f, g_frame_time * 0.17453292f);
         update_moby_vertical_oscillation(0.7f, g_frame_time * 1.2217305f, moby, (float *)(d + 0x5CC), (float *)(d + 0x5C8));
         update_moby_rotation_oscillation(moby, d + 0x5E4, d + 0x5E8, *(float *)&planetbuster_sway_amplitude,
-                          *(float *)&planetbuster_sway_rate_a * 0.017453292f * g_frame_time,
-                          *(float *)&planetbuster_sway_rate_b * 0.017453292f * g_frame_time);
+                          *(float *)&planetbuster_maximus_rotation_oscillation_common_factor_phase_rate_degrees * 0.017453292f * g_frame_time,
+                          *(float *)&planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees * 0.017453292f * g_frame_time);
         apply_linked_moby_relative_transforms(moby, d, 0x11);
         update_planetbuster_maximus_guns(moby);
         break;

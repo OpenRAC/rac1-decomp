@@ -965,7 +965,7 @@ void update_plasmabot_aim_joint_rotation(char *a, float x) {
     }
     axis_rotation_2d48(d + 0x130, 2, *(float *)(d + 0x270));
 }
-extern short plasmabot_beam_cooldown_ticks;
+extern short plasmabot_beam_cooldown_frames;
 extern short *oltanis_moby_groups[];
 extern char *oltanis_mobys MACRO_ADDR;
 extern int scale_ticks(int);
@@ -980,7 +980,7 @@ void Group_ResetClass28Timers(int idx) {
                 char *moby = oltanis_mobys + ((*(unsigned short *)p & 0x7FFF) << 8);
                 char *data = ((char *)((Moby *)moby)->pvars);
                 if (((Moby *)moby)->oclass == 0x1C) {
-                    *(short *)(data + 0x260) = scale_ticks(*(int *)&plasmabot_beam_cooldown_ticks);
+                    *(short *)(data + 0x260) = scale_ticks(*(int *)&plasmabot_beam_cooldown_frames);
                 }
             } while (*p++ >= 0);
         }
@@ -1737,7 +1737,7 @@ typedef struct {
     struct Moby *moby;
 } MobyHit_ff640;
 extern char * oltanis_mobys_end MACRO_ADDR;
-extern short floating_mine_bob_speed;
+extern short floating_mine_glow_phase_step_gp;
 extern float ProbeGroundHeight(float, void *, int);
 extern void Spring_r(float *, float *, float, float, float, float) __asm__("func_L00_0025C918");
 extern MobyHit_ff640 *MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0025B478");
@@ -1826,7 +1826,7 @@ void update_floating_mine(struct Moby *moby) {
         break;
     }
     }
-    vars->phase = FastAddRots(vars->phase, (*(float *)&floating_mine_bob_speed));
+    vars->phase = FastAddRots(vars->phase, (*(float *)&floating_mine_glow_phase_step_gp));
     s = FastSin(vars->phase);
     r = truncate_float_to_s32(s * 48.0f) + 0xCF;
     g = truncate_float_to_s32(s * 32.0f) + 0x30;
@@ -1993,9 +1993,9 @@ extern short vendor_beam_jitter_radius;
 extern short vendor_beam_jitter_speed;
 extern short vendor_beam_spark_color_start;
 extern short vendor_beam_spark_color_end;
-extern short vendor_beam_spark_w;
+extern short vendor_beam_spark_step_w_gp;
 extern short vendor_beam_spark_tex_a;
-extern short vendor_beam_spark_tex_b;
+extern short vendor_beam_branch_end_spark_color_gp;
 
 typedef struct {
     int idx;
@@ -2101,8 +2101,8 @@ void start_vendor_beam_pulse(char *moby) {
             Vq_02C80 *p = &beam->pts[l];
             transform_vector(&work, p, matrix);
             qcopy(&delta, &p[32]);
-            delta.w = (*(float *)&vendor_beam_spark_w);
-            s17 = random_integer_below(2) ? (*(int *)&vendor_beam_spark_tex_a) : (*(int *)&vendor_beam_spark_tex_b);
+            delta.w = (*(float *)&vendor_beam_spark_step_w_gp);
+            s17 = random_integer_below(2) ? (*(int *)&vendor_beam_spark_tex_a) : (*(int *)&vendor_beam_branch_end_spark_color_gp);
             n = scale_ticks(random_integer_below(10) + 20);
             PartType02Spawn(&work, &delta, &delta, (*(int *)&vendor_beam_spark_color_start), (*(int *)&vendor_beam_spark_color_end), l >> 1, 15, n, s17);
         }
@@ -2110,10 +2110,10 @@ void start_vendor_beam_pulse(char *moby) {
             int n, unused_color;
             transform_vector(&work, &beam->a[3][k], matrix);
             qcopy(&delta, &beam->b[3][k]);
-            delta.w = (*(float *)&vendor_beam_spark_w);
-            unused_color = random_integer_below(2) ? (*(int *)&vendor_beam_spark_tex_a) : (*(int *)&vendor_beam_spark_tex_b);
+            delta.w = (*(float *)&vendor_beam_spark_step_w_gp);
+            unused_color = random_integer_below(2) ? (*(int *)&vendor_beam_spark_tex_a) : (*(int *)&vendor_beam_branch_end_spark_color_gp);
             n = scale_ticks(random_integer_below(10) + 20);
-            PartType02Spawn(&work, &delta, &delta, (*(int *)&vendor_beam_spark_color_start), (*(int *)&vendor_beam_spark_color_end), beam->cnt[k] >> 1, 15, n, (*(int *)&vendor_beam_spark_tex_b));
+            PartType02Spawn(&work, &delta, &delta, (*(int *)&vendor_beam_spark_color_start), (*(int *)&vendor_beam_spark_color_end), beam->cnt[k] >> 1, 15, n, (*(int *)&vendor_beam_branch_end_spark_color_gp));
         }
     }
 }

@@ -54,24 +54,24 @@ typedef struct MobyRecord {
     char pad4[0x100 - 0x78];
 } MobyRecord;
 
-extern int D_L00_001ABD80;
-extern MobyRecord *D_L00_001600A4 MACRO_ADDR;
-extern MobyRecord *D_L00_00160098 MACRO_ADDR;
+extern int active_mobies;
+extern MobyRecord *suck_moby_list MACRO_ADDR;
+extern MobyRecord *moby_array_start MACRO_ADDR;
 
-extern void func_L00_002514B8(MobyRecord *);
-extern void func_L00_00251E30(MobyRecord *);
+extern void MobyAnimAdvance(MobyRecord *);
+extern void moby_build_matrix(MobyRecord *);
 
-void func_L00_002657B8(void)
+void link_and_update_all_mobys(void)
 {
     MobyRecord *cur;
     MobyRecord *m;
     MobyRecord *prev;
     unsigned char st;
 
-    D_L00_001ABD80 = 0;
-    D_L00_001600A4 = 0;
+    active_mobies = 0;
+    suck_moby_list = 0;
 
-    m = D_L00_00160098;
+    m = moby_array_start;
     prev = 0;
     st = m->state;
     if (st != 0xFF) {
@@ -81,7 +81,7 @@ void func_L00_002657B8(void)
                     if (prev != 0)
                         prev->next = m;
                     else
-                        D_L00_001600A4 = m;
+                        suck_moby_list = m;
                     prev = m;
                 }
             }
@@ -92,17 +92,17 @@ void func_L00_002657B8(void)
     if (prev != 0)
         prev->next = 0;
 
-    cur = D_L00_001600A4;
+    cur = suck_moby_list;
     if (cur != 0) {
         do {
             if (cur->state >= 0) {
                 if (!(cur->flags & 0x40)) {
-                    func_L00_002514B8(cur);
+                    MobyAnimAdvance(cur);
                 }
                 /* inline asm: hook call (beq/move/jal with empty slots); retail shape not reached in C yet. */
                 { int r; __asm__ volatile("beq %1,$0,1f\n\tmove $4,%2\n\tjal $31,%1\n1:" : "=r"(r) : "r"(cur->updateFn), "r"(cur) : "$4", "$31", "memory"); }
                 if (!(cur->flags & 0x4)) {
-                    func_L00_00251E30(cur);
+                    moby_build_matrix(cur);
                 }
             }
             cur = cur->next;

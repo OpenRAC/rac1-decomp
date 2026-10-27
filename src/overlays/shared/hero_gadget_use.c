@@ -1368,8 +1368,8 @@ extern int pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
 extern int race_best_times_r[2] __asm__("D_0015EF58") MACRO_ADDR;
 extern int gBolts_r __asm__("D_0015EE98") MACRO_ADDR;
 extern int race_best_records_r[2] __asm__("D_0015EF68") MACRO_ADDR;
-extern int rilgar_off_course_reset_started SDATA(D_L05_0015F760);
-extern int rilgar_off_course_reset_ready SDATA(D_L05_0015F764);
+extern int race_respawn_request_active SDATA(D_L05_0015F760);
+extern int race_respawn_gate_state SDATA(D_L05_0015F764);
 extern float rilgar_off_course_reset_rate SDATA(D_L05_0015F75C);
 extern int hoverboard_race_finished SDATA(D_L05_0015F788);
 extern float FastVecDist_r2(void *, void *) __asm__("func_001F9D10");
@@ -1468,13 +1468,13 @@ void update_hero_hoverboard_race_progress(void) {
     if (near != 0 || (FastDiffRots_r(((Hero *)(hero_globals_base + 0xE1D))->motion.rot.f[2], dir) > 1.5707964f && ((Hero *)(hero_globals_base + 0xE1D))->trick_input == 0)) {
         ((Hero *)(hero_globals_base + 0xE1D))->off_course_frames++;
         if (((Hero *)(hero_globals_base + 0xE1D))->off_course_frames > scale_ticks(0xB4)) {
-            if (rilgar_off_course_reset_started == 0) {
-                rilgar_off_course_reset_started = 1;
-                rilgar_off_course_reset_ready = 0;
+            if (race_respawn_request_active == 0) {
+                race_respawn_request_active = 1;
+                race_respawn_gate_state = 0;
                 rilgar_off_course_reset_rate = frame_scale_r * 0.08f;
             }
             ((Hero *)(hero_globals_base + 0xE1D))->off_course_reset_pending = 1;
-            if (rilgar_off_course_reset_ready == 1) {
+            if (race_respawn_gate_state == 1) {
                 ((Hero *)(hero_globals_base + 0xE1D))->off_course_reset_pending = 0;
                 compute_hero_hoverboard_respawn_transform_r(v0, v1);
                 ((Hero *)(hero_globals_base + 0xE1D))->off_course_frames = 0;

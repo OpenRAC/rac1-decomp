@@ -1793,14 +1793,14 @@ extern s32 height_map_min_height MACRO_ADDR;
 extern s32 height_map_max_height MACRO_ADDR;
 extern s32 height_map_data MACRO_ADDR;
 extern s32 moby_class_count MACRO_ADDR;
-extern s32 level_sound_bank_handle MACRO_ADDR;
-extern s32 swap_moby_class_count MACRO_ADDR;
+extern s32 saved_sound_bank_handle MACRO_ADDR;
+extern s32 moby_class_reference_count MACRO_ADDR;
 extern s32 loaded_swap_moby_class_set MACRO_ADDR;
 extern s32 swap_moby_class_block_field_8 MACRO_ADDR;
-extern s32 shrub_texture_count MACRO_ADDR;
+extern s32 shrub_texture_ref_count MACRO_ADDR;
 extern s32 sky_data MACRO_ADDR;
-extern s32 tfrag_texture_count MACRO_ADDR;
-extern s32 tie_texture_count MACRO_ADDR;
+extern s32 tfrag_texture_ref_count MACRO_ADDR;
+extern s32 tie_texture_ref_count MACRO_ADDR;
 extern u64 level_tex0_regs_128a[3];
 extern u64 level_tex0_regs_64[3];
 extern u64 level_tex0_regs_128b[3];
@@ -1925,7 +1925,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         level_texture_data_base = 0;
         copy_memory_by_alignment(mission_state, saved_mission_state + g_current_level_index * 16, 0x10);
         upload_texture_images((char *)(src[6] + (s32)src), h->v[0], (char *)h + h->v[1]);
-        level_sound_bank_handle = sound_bank_handle;
+        saved_sound_bank_handle = sound_bank_handle;
         flush_cache(0);
         used = fast_decompress((char *)(src[0x14] + (s32)src), base);
 
@@ -1941,8 +1941,8 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         level_tex0_regs_128b[2] = 0x0040000400004000;
 
         t1 = (TexRef244110 *)((char *)h + h->v[0xD]);
-        tfrag_texture_count = h->v[0xC];
-        for (c1 = 0; c1 < tfrag_texture_count; c1++)
+        tfrag_texture_ref_count = h->v[0xC];
+        for (c1 = 0; c1 < tfrag_texture_ref_count; c1++)
             tfrag_texture_addrs[c1] = level_texture_data_base + t1[c1].offset + (log2dim(t1[c1].kind) << 28);
         tex = (TexRef244110 *)((char *)h + h->v[0xF]);
         moby_texture_count = h->v[0xE];
@@ -1950,12 +1950,12 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
             moby_texture_addrs[c2] = level_texture_data_base + tex[c2].offset + (log2dim(tex[c2].kind) << 28);
         FastMemCopy(moby_texture_records, tex, moby_texture_count * 16);
         t3 = (TexRef244110 *)((char *)h + h->v[0x11]);
-        tie_texture_count = h->v[0x10];
-        for (c3 = 0; c3 < tie_texture_count; c3++)
+        tie_texture_ref_count = h->v[0x10];
+        for (c3 = 0; c3 < tie_texture_ref_count; c3++)
             tie_texture_addrs[c3] = level_texture_data_base + t3[c3].offset + (log2dim(t3[c3].kind) << 28);
         t4 = (TexRef244110 *)((char *)h + h->v[0x13]);
-        shrub_texture_count = h->v[0x12];
-        for (c4 = 0; c4 < shrub_texture_count; c4++)
+        shrub_texture_ref_count = h->v[0x12];
+        for (c4 = 0; c4 < shrub_texture_ref_count; c4++)
             shrub_texture_addrs[c4] = level_texture_data_base + t4[c4].offset + (log2dim(t4[c4].kind) << 28);
 
         initialize_tfrag_render_data(base + h->v[2], (char *)h + h->v[0xD]);
@@ -1980,7 +1980,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         loaded_swap_moby_class_set = -1;
         q = (char *)h + h->v[0x21];
         swap_moby_class_block_field_8 = 0;
-        swap_moby_class_count = h->v[0x20];
+        moby_class_reference_count = h->v[0x20];
         for (m = 0; m < h->v[0x20]; m++, q += 0x10) {
             swap_moby_class_ids[m] = *(s32 *)(q + 4);
             swap_moby_class_data[m] = base + *(s32 *)q;
@@ -2045,10 +2045,10 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         for (ci = 0; ci < moby_class_count; ci++, span++) {
             Class244110 *cls = moby_class_headers[ci];
             if (cls == 0) {
-                for (j = 0; j < swap_moby_class_count; j++)
+                for (j = 0; j < moby_class_reference_count; j++)
                     if (swap_moby_class_ids[j] == moby_class_ids[ci])
                         break;
-                if (j < swap_moby_class_count) {
+                if (j < moby_class_reference_count) {
                     FastMemSet(swap_moby_class_sounds[j], -1, 0x20);
                     e = tbl + span->off;
                     for (k = 0; k < span->count && k < 15; k++, e += 4)
