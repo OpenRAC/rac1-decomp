@@ -294,7 +294,7 @@ void update_hero_smoothing(void) {
             return;
         }
     }
-    p = (float *)(hero_globals_base + 0x103D);
+    p = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->capsule_top);
     g = (char *)p - 0x220;
     ApproachValue(p, *(float *)(g + 0x228), frame_scale * 0.02f);
     ApproachValue(p + 1, *(float *)(g + 0x22C), frame_scale * 0.02f);

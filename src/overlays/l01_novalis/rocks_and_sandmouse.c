@@ -761,7 +761,7 @@ void agnogg_ship_front_update(Moby *moby) {
                 }
             }
             deactivate_recorded_moby_r();
-            if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, data->f10) != 0) {
+            if (is_point_inside_clip_volume_r(&((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos, data->f10) != 0) {
                 moby->flags = moby->flags & 0xFFBE;
                 moby->collision = ((Class_2FC140 *)moby->pclass)->f10;
                 if (data->link != -1) {
@@ -835,7 +835,7 @@ void agnogg_ship_front_update(Moby *moby) {
         if (flag == 0) {
             break;
         }
-        n4 = *(int *)(hero_globals_base_r + 0x2EA9);
+        n4 = ((struct Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode;
         if (n4 == 7) {
             break;
         }
@@ -1352,7 +1352,7 @@ void door_left_update(Moby *m) {
         m->state = 1;
         break;
     case 1:
-        player = (V *)(hero_globals_base + 0xE9D);
+        player = (V *)(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos);
         if (vec_distance_xy(v, player) < v->radius && FastAbsF(m->pos.z - player->f[2]) < 2.0f) {
             m->state = 2;
             if (m->oclass == 0x300) {
@@ -1369,7 +1369,7 @@ void door_left_update(Moby *m) {
         break;
     case 3:
         k = 1.1f;
-        if (vec_distance_xy(v, hero_globals_base + 0xE9D) > v->radius * k
+        if (vec_distance_xy(v, &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos) > v->radius * k
             && vec_distance_xy(v, camera_pos) > v->radius * k) {
             m->state = 4;
             if (m->oclass == 0x300) {
@@ -1378,7 +1378,7 @@ void door_left_update(Moby *m) {
         }
         break;
     case 4:
-        player = (V *)(hero_globals_base + 0xE9D);
+        player = (V *)(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos);
         if (vec_distance_xy(v, player) < v->radius && FastAbsF(m->pos.z - player->f[2]) < 2.0f) {
             m->state = 2;
         } else {

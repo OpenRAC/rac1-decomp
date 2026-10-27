@@ -529,7 +529,7 @@ void update_bomber_tank(Moby *moby) {
             d->part_a->update_dist = 0x40;
             d->part_a->draw_dist = 0x40;
             d->part_a->visible = 1;
-            d->part_a->spawn_frame = (*(Moby **)(hero_globals_base + 0x2E9D))->spawn_frame;
+            d->part_a->spawn_frame = (*(Moby **)&((struct Hero *)(hero_globals_base + 0xE1D))->moby)->spawn_frame;
             d->part_a->flags = 0x4000;
             p = d->part_a;
             qcopy(&p->pos, &moby->pos);
@@ -543,7 +543,7 @@ void update_bomber_tank(Moby *moby) {
             d->part_b->update_dist = 0x40;
             d->part_b->draw_dist = 0x40;
             d->part_b->visible = 1;
-            d->part_b->spawn_frame = (*(Moby **)(hero_globals_base + 0x2E9D))->spawn_frame;
+            d->part_b->spawn_frame = (*(Moby **)&((struct Hero *)(hero_globals_base + 0xE1D))->moby)->spawn_frame;
             d->part_b->flags = 0xC000;
             p = d->part_b;
             qcopy(&p->pos, &moby->pos);
@@ -867,7 +867,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
     if (d->partB != 0) d->partB->hit_slot = 0xFF;
 
     follow_2D5FA8(100.0f, m, d->target, 0, 0, batalia_path_table_r[d->path]->list, batalia_path_table_r[d->path]->count);
-    if (d->fF0 == 0) d->fF0 = *(int *)(hero_globals_base_r + 0x2E9D);
+    if (d->fF0 == 0) d->fF0 = *(int *)&((struct Hero *)(hero_globals_base_r + 0xE1D))->moby;
     if (d->mode != 2) {
         float yaw, len, pitch;
         subtract_2D5FA8(vec, d->target, (float *)&m->pos);
@@ -1581,7 +1581,7 @@ void blarg_bombthrower_update(Moby *moby) {
     moby->hit_slot = 0xFF;
     look.r44 = FindNearestTargetMoby(moby, 16.0f, &look);
     if (look.target == 0) {
-        look.target = *(Moby **)(hero_globals_base + 0x2E9D);
+        look.target = *(Moby **)&((struct Hero *)(hero_globals_base + 0xE1D))->moby;
     }
     target = look.target;
     switch (moby->state) {
@@ -1999,7 +1999,7 @@ void select_shuttle_route_for_hero(char *m) {
     };
     Moby *moby = (Moby *)m;
     ShuttleVars *data = (ShuttleVars *)moby->pvars;
-    char *pl = hero_globals_base + 0xE9D;
+    char *pl = &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos;
     Route_2dd4f8 *route = batalia_path_table_r_r[data->route_index];
     Route_2dd4f8 *configured_path = batalia_path_table_r_r[data->configured_index];
     Route_2dd4f8 *alternate_path = batalia_path_table_r_r[data->alternate_index];
@@ -2472,7 +2472,7 @@ void update_rocket(M46 *m) {
     }
     case 3:
         if (batalia_game_mode) return;
-        if (FastVecDist(hero_globals_base+0xE9D,(char*)d->path+(d->path->count<<4))<d->activation_range && timer46(&d->timer)) {
+        if (FastVecDist(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos,(char*)d->path+(d->path->count<<4))<d->activation_range && timer46(&d->timer)) {
             m->flags=0x40; m->state=4; m->animation=m->model->animation;
             m->rotation[2]=fast_atan2(d->path->e[1][0]-m->position[0],d->path->e[1][1]-m->position[1]);
             Moby_PlaySound(1,0,m);
@@ -2569,7 +2569,7 @@ void update_rocket(M46 *m) {
         m->rotation[0]=FastAddRots(m->rotation[0],g_frame_time*6.2831855f);
         BuildSphericalOffset(d->velocity,(rocket_configured_heading_speed_base_gp+rocket_configured_heading_speed_base_gp)*g_frame_time,m->rotation[2],-m->rotation[1]);
         FastVecAdd(m->position,m->position,d->velocity);
-        if (coll_point_query_stub(m->position,0x400,2,m,0) || m->position[0]<5.0f || m->position[0]>500.0f || m->position[1]<5.0f || m->position[1]>500.0f || m->position[2]<5.0f || m->position[2]>500.0f || FastVecDist(hero_globals_base+0xE9D,m->position)<16.0f) m->state=6;
+        if (coll_point_query_stub(m->position,0x400,2,m,0) || m->position[0]<5.0f || m->position[0]>500.0f || m->position[1]<5.0f || m->position[1]>500.0f || m->position[2]<5.0f || m->position[2]>500.0f || FastVecDist(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos,m->position)<16.0f) m->state=6;
         return;
     case 6:
         if (batalia_mobys_last<(unsigned int)m) spawn_explosion(m,d->velocity,m->position,0.0f,0.0f,15,10,10,3.0f,2.0f,9.0f,1.0f,-1,15.0f,1,1,-1,0);

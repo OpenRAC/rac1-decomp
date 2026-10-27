@@ -2098,7 +2098,7 @@ void planetbuster_maximus_part_update(char *moby) {
             qcopy(moby + 0x10, path + 1);
             d->base_z = ((Moby *)moby)->pos.z;
             ((Moby *)moby)->rot.z = fast_atan2(path[2].v[0] - path[1].v[0], path[2].v[1] - path[1].v[1]);
-            if (*(float *)(hero_globals_base_e + 0xEA5) < 52.0f) {
+            if (((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos.f[2] < 52.0f) {
                 ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + 3.0f;
             }
             for (i = 0; i < 5; i++) {
@@ -2133,14 +2133,14 @@ void planetbuster_maximus_part_update(char *moby) {
                 if (s != -1) ((M34_7DB0 *)(base + (s << 8)))->flags &= ~0x41;
             }
         }
-        h = hero_globals_base_e + 0xE9D;
+        h =&((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos;
         r = is_point_inside_clip_volume(h, d->clip_hero_b);
         if (*(float *)(h + 8) > 52.0f && r == 0) {
             ApproachValue((float *)(moby + 0x18), d->base_z, g_frame_time + g_frame_time);
         } else {
             float add = 3.0f;
             if (r) add = 10.0f;
-            if (is_point_inside_clip_volume(hero_globals_base_e + 0xE9D, d->clip_hero_a)) {
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos, d->clip_hero_a)) {
                 d->timer = scale_ticks(0x5A);
             }
             if (!fast_dec_timer(&d->timer)) add = 19.0f;
@@ -2152,7 +2152,7 @@ void planetbuster_maximus_part_update(char *moby) {
                           *(float *)&planetbuster_maximus_rotation_oscillation_common_factor_phase_rate_degrees * 0.017453292f * g_frame_time,
                           *(float *)&planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees * 0.017453292f * g_frame_time);
         apply_linked_moby_relative_transforms(moby, ((char *)d), 0x11);
-        if (is_point_inside_clip_volume(hero_globals_base_e + 0xE9D, d->clip_manned) || hoven_turret_manned_m) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos, d->clip_manned) || hoven_turret_manned_m) {
             int i;
             planetbuster_engaged = 1;
             for (i = 0; i < 5; i++) {
@@ -2507,7 +2507,7 @@ void trigger_scene_once_in_clip_volume(char *moby) {
             DeleteMoby(moby);
             return;
         }
-        p = hero_globals_base + 0xE9D;
+        p =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (is_point_inside_clip_volume(p, *(int *)data) != 0) {
             *(char *)(*(int *)(data + 4) + base + 0x5C) = 1;
             qcopy(hoven_cutscene_hero_pos, p);

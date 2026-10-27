@@ -2448,7 +2448,7 @@ void update_ballistic_effect_particle_with_contact_spawns(char *particle) {
     } else if (mode == 3) {
         particle_position = &p->pos;
         FastVecAdd(particle_position, particle_position, particle_data);
-        water_surface_z = *(float *)(hero_globals_base + 0x110D);
+        water_surface_z = ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->water_surface_z;
         if (p->pos.z < water_surface_z) {
             p->pos.z = water_surface_z;
             spawn_moving_resizing_height_snapped_alpha_fade_particle(particle_position, 0, -1, 0.2f, 5250.0f);

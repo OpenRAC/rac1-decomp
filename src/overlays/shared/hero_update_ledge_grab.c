@@ -424,7 +424,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
         sa = 0.35f;
         sb = 0.27f;
     }
-    r = (char *)hero_globals_base + 0xE9D;
+    r = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
     qcopy(&a0, r);
     a0.z = a0.z + sa;
     qcopy(&a1, r);

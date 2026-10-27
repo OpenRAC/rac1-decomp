@@ -368,7 +368,7 @@ extern int scale_ticks(int);
 /* Fades the progress HUD in when the hero is in mode 0x16, else fades it out. */
 void set_progress_hud_fade_from_hero_mode(char *moby)
 {
-    if (*(int *)(hero_globals_base + 0x2EA9) == 0x16) {
+    if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode == 0x16) {
         *(int *)(moby + 0x7C) = scale_ticks(0x1E);
         *(int *)(moby + 0x6C) = 5;
     } else {

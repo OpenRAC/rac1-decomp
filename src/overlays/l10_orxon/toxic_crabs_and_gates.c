@@ -171,7 +171,7 @@ void toxic_crab_update(Moby *m) {
         see = coll_line(from, to, 2, m, 0) == 0;
     }
     if (!see || (!(FastAbsF(*(float *)(t + 0x18) - m->pos.z) < 1.0f)
-                 && is_moby_in_class_range_500_to_540(*(int *)(hero_globals_base + 0x1119)) == 0)) {
+                 && is_moby_in_class_range_500_to_540(*(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ground_moby) == 0)) {
         see = 0;
     }
     switch (m->state) {
@@ -258,7 +258,7 @@ void toxic_crab_update(Moby *m) {
                 }
             }
         } else if (m->anim_flags & 2) {
-            if (vec_distance_xy(&m->pos, hero_globals_base + 0xE9D) < *(float *)&toxic_crab_aggro_radius) {
+            if (vec_distance_xy(&m->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < *(float *)&toxic_crab_aggro_radius) {
                 float x;
                 m->state = 5;
                 d->i1D8 = 0;
@@ -938,7 +938,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             }
         }
         if (r->h2A == 0x47) {
-            *(u128_2E52B0 *)&vA = *(u128_2E52B0 *)(hero_globals_base_r + 0xE9D);
+            *(u128_2E52B0 *)&vA = *(u128_2E52B0 *)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos.i[0];
             *(u128_2E52B0 *)&vB = *(u128_2E52B0 *)((V_2E52B0 *)&m->pos);
             vA.z += 1.0f;
             vB.z += 1.0f;
@@ -1092,7 +1092,7 @@ float compute_toxic_crab_group_approach_angle(char *self) {
     v[0] = FastCos(owner_to_self_angle) * 2.0f;
     v[1] = FastSin(owner_to_self_angle) * 2.0f;
     v[2] = 0.0f;
-    FastVecAdd(v, v, hero_globals_base + 0xE9D);
+    FastVecAdd(v, v,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
     group_entry = orxon_moby_groups[((struct Moby *)self)->group];
     if (group_entry != 0) {
         do {
@@ -1712,7 +1712,7 @@ void update_conditional_help_messages(Moby *m)
     int flag;
     int sub;
 
-    if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->f1C)) {
+    if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, d->f1C)) {
         D_L10_00161FB8_2E9978 = 1;
     } else {
         D_L10_00161FB8_2E9978 = 0;
@@ -1723,15 +1723,15 @@ void update_conditional_help_messages(Moby *m)
         m->state = 1;
         break;
     case 1:
-        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->f0) != 0
-            && (((HeroPos_2E9978 *)(hero_globals_base_r + 0xE9D))->f200C < 2 || ((HeroPos_2E9978 *)(hero_globals_base_r + 0xE9D))->f200C == 9)
+        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, d->f0) != 0
+            && (((HeroPos_2E9978 *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C < 2 || ((HeroPos_2E9978 *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C == 9)
             && ((Msg_2E9978 *)orxon_help_state_r)->f0 == 0
             && ((Msg_2E9978 *)orxon_help_state_r)->f24 == -1
             && *(unsigned short *)(help_stats_base_r + 0x4F5) == 0) {
             Help_Request_r(0x2710, 0x35);
         }
-        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->f4) != 0
-            && (((HeroPos_2E9978 *)(hero_globals_base_r + 0xE9D))->f200C < 2 || ((HeroPos_2E9978 *)(hero_globals_base_r + 0xE9D))->f200C == 9)
+        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, d->f4) != 0
+            && (((HeroPos_2E9978 *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C < 2 || ((HeroPos_2E9978 *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C == 9)
             && ((Msg_2E9978 *)orxon_help_state_r)->f0 == 0
             && ((Msg_2E9978 *)orxon_help_state_r)->f24 == -1) {
             if (((Flags_2E9978 *)(special_items_base_r + 0x13B))->f4 == 0) {
@@ -1750,8 +1750,8 @@ void update_conditional_help_messages(Moby *m)
             && *(unsigned short *)(help_stats_base_r + 0x4FD) == 0) {
             Help_Request_r(0x2711, 0x36);
         }
-        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->f8) != 0
-            && (((HeroPos_2E9978 *)(hero_globals_base_r + 0xE9D))->f200C < 2 || ((HeroPos_2E9978 *)(hero_globals_base_r + 0xE9D))->f200C == 9)
+        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, d->f8) != 0
+            && (((HeroPos_2E9978 *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C < 2 || ((HeroPos_2E9978 *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C == 9)
             && gHaveHeliPack_r[9] == 0
             && ((Msg_2E9978 *)orxon_help_state_r)->f0 == 0
             && ((Msg_2E9978 *)orxon_help_state_r)->f24 == -1
@@ -1764,14 +1764,14 @@ void update_conditional_help_messages(Moby *m)
         }
         if (flag == 0) break;
         if (d->f10 != -1
-            && vec_distance_xy_r2(hero_globals_base_r + 0xE9D, &orxon_mobys_r[d->f10].pos) < 15.0f
+            && vec_distance_xy_r2(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, &orxon_mobys_r[d->f10].pos) < 15.0f
             && d->f14 != -1
-            && vec_distance_xy_r2(hero_globals_base_r + 0xE9D, &orxon_mobys_r[d->f14].pos) < 15.0f
+            && vec_distance_xy_r2(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, &orxon_mobys_r[d->f14].pos) < 15.0f
             && *(unsigned short *)(help_stats_base_r + 0x69D) == 0) {
             Help_Request_r(0x2717, 0x6A);
         }
         if (flag == 0) break;
-        if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, d->f18) == 0) break;
+        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, d->f18) == 0) break;
         if (d->f20 == -1) break;
         if (orxon_mobys_r[d->f20].oclass != 0x3F7) break;
         if (orxon_mobys_r[d->f20].state == 4) break;

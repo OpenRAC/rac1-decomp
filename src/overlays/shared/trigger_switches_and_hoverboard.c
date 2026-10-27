@@ -358,7 +358,7 @@ void hoverboard_update(unsigned char *moby) {
     st = ((struct Moby *)moby)->state;
     switch (st) {
     case 0:
-        hero_pos = hero_globals_base + 0xE9D;
+        hero_pos =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (FastVecDist(hero_pos, &((struct Moby *)moby)->pos) < 5.5f) {
             if (*(int *)&rilgar_frame_count >= 4) {
                 int grp;
@@ -1587,7 +1587,7 @@ extern f32 Cam_InterpValues_r(f32 *vel, f32 from, f32 to, f32 stiffness, f32 dam
 // Steers the moby's two axis angles toward its target, then runs the blend step once its state byte is 1.
 void update_hero_follow_camera_orbit(char *moby) {
     char *d = *(char **)&((Camera *)moby)->state_buf;
-    char *g = hero_globals_base + 0x10AD;
+    char *g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir;
     char *p80;
     float v0[4];
     float v10[4];
@@ -1663,7 +1663,7 @@ void update_hero_follow_camera_orbit(char *moby) {
         *(float *)(moby + 0x50) = Camera_SmoothAngle(q + 3, *(float *)(moby + 0x50), q[0], q[6], q[9], 0.0f);
         *(float *)(moby + 0x54) = Camera_SmoothAngle(q + 4, *(float *)(moby + 0x54), q[1], q[7], q[10], 0.0f);
         *(float *)(moby + 0x58) = Cam_InterpValues_r(q + 5, *(float *)(moby + 0x58), q[2], q[8], q[11], 0.0f);
-        if (*(unsigned char *)(hero_globals_base + 0x16AB) == 0) {
+        if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->vert_ramp_launch == 0) {
             *(short *)(d + 0x1C) = 0;
             FastVecScale(d, d, -1.0f);
         }
@@ -1755,7 +1755,7 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     V_32B1F8 probe;
     V_32B1F8 step;
     Orbit_32B1F8 *d = m->orbit;
-    char *g = hero_globals_base_r + 0x10AD;
+    char *g =&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->gravity_dir;
     Preset_32B1F8 *cur;
     Focus_32B1F8 *q;
     Track_32B1F8 *tr;

@@ -1241,7 +1241,7 @@ void commando_update(char *m) {
             unlock_planet(10);
             queue_planet_unlock_message(10);
             jet_clear_persistent((unsigned char)m[0xB0]);
-            g = hero_globals_base + 0xE9D;
+            g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
             jet_reset_camera(g, g + 0x10);
             memcard_Save(0, -1);
             DeleteMoby(m);
@@ -1256,7 +1256,7 @@ void commando_update(char *m) {
         float head_rate = 0.3f;
         int tracking = 0;
         if (moby->prev_seq == 1) {
-            char *player = hero_globals_base + 0xE9D;
+            char *player =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
             char *a_;
             tracking = 1;
             if (vec_distance_xy(&moby->pos, player) < 8.0f
@@ -1270,7 +1270,7 @@ void commando_update(char *m) {
                 }
             } else if (commando_vars->moving_timer != 0) {
                 commando_vars->moving_timer = 0;
-                qcopy(commando_vars->target, hero_globals_base + 0xEED);
+                qcopy(commando_vars->target,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
             }
             if (fast_dec_timer(&commando_vars->target_timer) != 0) {
                 float y;
@@ -1283,7 +1283,7 @@ void commando_update(char *m) {
                 FastVecAdd(commando_vars->target, commando_vars->target, &moby->pos);
             }
             if (commando_vars->moving_timer != 0) {
-                qcopy(target, hero_globals_base + 0xEED);
+                qcopy(target,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
                 rate = 0.04f;
                 head_rate = 0.3f;
             } else {
@@ -1403,7 +1403,7 @@ void batalia_deserter_update(char *m) {
         if (deserter_data->i64 >= 0) DialogRequest_Init(m, (char *)deserter_data + 0x20);
         break;
     case 1:
-        if (vec_distance_xy(&moby->pos, hero_globals_base + 0xE9D) < 8.0f) {
+        if (vec_distance_xy(&moby->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 8.0f) {
             jet_clear_persistent((unsigned char)moby->mission);
             moby->state = 2;
         }
@@ -1438,7 +1438,7 @@ void batalia_deserter_update(char *m) {
         float head_rate = 0.3f;
         int tracking = 0;
         if (moby->prev_seq == 1) {
-            char *player = hero_globals_base + 0xE9D;
+            char *player =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
             char *hero_base;
             tracking = 1;
             if (vec_distance_xy(&moby->pos, player) < 8.0f
@@ -1452,7 +1452,7 @@ void batalia_deserter_update(char *m) {
                 }
             } else if (deserter_data->moving_timer != 0) {
                 deserter_data->moving_timer = 0;
-                qcopy(deserter_data->target, hero_globals_base + 0xEED);
+                qcopy(deserter_data->target,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
             }
             if (fast_dec_timer(&deserter_data->target_timer) != 0) {
                 float y;
@@ -1465,7 +1465,7 @@ void batalia_deserter_update(char *m) {
                 FastVecAdd(deserter_data->target, deserter_data->target, &moby->pos);
             }
             if (deserter_data->moving_timer != 0) {
-                qcopy(target, hero_globals_base + 0xEED);
+                qcopy(target,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
                 rate = 0.04f;
                 head_rate = 0.3f;
             } else {
@@ -1626,7 +1626,7 @@ void the_plumber_batalia_update(char *m) {
         float sy = 0.3f;
         int doit = 0;
         if (((struct Moby *)m)->prev_seq == 0) {
-            char *g = hero_globals_base + 0xE9D;
+            char *g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
             Hero *a_;
             doit = 1;
             if (vec_distance_xy(&((struct Moby *)m)->pos, g) < 8.0f
@@ -1640,7 +1640,7 @@ void the_plumber_batalia_update(char *m) {
                 }
             } else if (d->moving_timer != 0) {
                 d->moving_timer = 0;
-                qcopy(d->target, hero_globals_base + 0xEED);
+                qcopy(d->target,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
             }
             if (fast_dec_timer(&d->target_timer) != 0) {
                 float y;
@@ -1653,7 +1653,7 @@ void the_plumber_batalia_update(char *m) {
                 FastVecAdd(d->target, d->target, &((struct Moby *)m)->pos);
             }
             if (d->moving_timer != 0) {
-                qcopy(b, hero_globals_base + 0xEED);
+                qcopy(b,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
                 sx = 0.0300000f;
                 sy = 0.3f;
             } else {

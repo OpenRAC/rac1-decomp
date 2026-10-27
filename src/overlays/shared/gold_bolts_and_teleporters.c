@@ -426,7 +426,7 @@ void update_explosive_projectile(Moby *moby) {
             if (cutscene_active == 0 && d->ids[r] != -1) {
                 if (((Moby *)novalis_mobys)[d->ids[r]].oclass == 0x2BC) {
                     Tgt_2F7E08 *e = (*(void **)&((Moby *)novalis_mobys)[d->ids[r]].pvars);
-                    if (e->h4 == 0 && e->timer == 0 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, e->vol) != 0
+                    if (e->h4 == 0 && e->timer == 0 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, e->vol) != 0
                         && is_point_inside_clip_volume(camera_pos, e->vol) != 0) {
                         e->timer = scale_ticks(rand_range(0x3C, 0xB4));
                     }
@@ -704,7 +704,7 @@ void update_cutscene_trigger(Moby *m) {
             m->state = 1;
             break;
         }
-        g = hero_globals_base_c + 0xE9D;
+        g =&((struct Hero *)((char *)&hero_globals_base_c + 0xE1D))->motion.pos;
         if (is_point_inside_clip_volume(g, d->clip_volume) == 0 && m->command != 1) break;
         qcopy(a, camera_pos_c);
         qcopy(b, camera_pos_c + 0x10);
@@ -1150,7 +1150,7 @@ void update_target_outside_zone_timeout(char *m) {
     Vec4f *tp;
 
     moby->update_dist = 0xFF;
-    if (*(int *)(hero_globals_base + 0x2EA1) != 0x1D) goto fail;
+    if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current != 0x1D) goto fail;
     {
         for (candidate_moby = (struct Moby *)novalis_moby_list; candidate_moby != 0; candidate_moby = candidate_moby->next) {
             if (candidate_moby->oclass == 0xAC) {
@@ -1675,7 +1675,7 @@ void TeleporterPadUpdate(char *moby) {
     }
     active = active != 0;
     if (((Moby *)moby)->state != 0 && data->clip_volume != -1 && !active
-        && is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->clip_volume) != 0) {
+        && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->clip_volume) != 0) {
         active = 1;
         activate_teleporter_and_record_state(moby);
         show_teleporter_and_children(moby);
@@ -2818,7 +2818,7 @@ void sandmouse_update(Moby *m) {
                 }
             }
             if (p->link != -1) {
-                if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, p->radius)) {
+                if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, p->radius)) {
                     LNK(p->link)->command = 3;
                 } else {
                     LNK(p->link)->command = 1;

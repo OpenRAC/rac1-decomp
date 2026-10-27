@@ -182,7 +182,7 @@ void skids_agent_update(Moby *m) {
         d->f178->flags |= 0x100;
         break;
     case 1:
-        if (d->f8 == 1 && is_point_inside_clip_volume((char *)&hero_globals_base_r + 0xE9D, d->f154) != 0) {
+        if (d->f8 == 1 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, d->f154) != 0) {
             d->fC = 255.0f;
         } else {
             d->fC = 3.7f;
@@ -190,7 +190,7 @@ void skids_agent_update(Moby *m) {
         if (Npc_TryStartDialog(m, d) != 0) {
             PlaceMarkerAheadOfMoby(2.2f, m);
             m->state = 2;
-        } else if (gHaveHeliPack[3] == 0 && vec_distance_xy(((float *)&m->pos), (char *)&hero_globals_base_r + 0xE9D) < 3.0f) {
+        } else if (gHaveHeliPack[3] == 0 && vec_distance_xy(((float *)&m->pos), &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos) < 3.0f) {
             Stats_2E21F8 *stats = (Stats_2E21F8 *)(help_stats_base + 0x34D);
             if (stats->f70 != 0) {
                 int elapsed, period;
@@ -307,7 +307,7 @@ void skids_agent_update(Moby *m) {
     head_rate = 0.3f;
     tracking = 0;
     if (m->prev_seq == 0) {
-        char *player = (char *)&hero_globals_base_r + 0xE9D;
+        char *player = &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos;
         tracking = 1;
         if (vec_distance_xy(((float *)&m->pos), player) < 8.0f &&
             FastDiffRots(m->rot.z,
@@ -317,7 +317,7 @@ void skids_agent_update(Moby *m) {
             else FastDecTimer((int *)&d->f174);
         } else if (d->f174) {
             d->f174 = 0;
-            qcopy(d->f160, (char *)&hero_globals_base_r + 0xEED);
+            qcopy(d->f160, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center);
         }
         if (FastDecTimer((int *)&d->f176)) {
             float heading;
@@ -327,7 +327,7 @@ void skids_agent_update(Moby *m) {
             FastVecAdd(d->f160, d->f160, ((float *)&m->pos));
         }
         if (d->f174) {
-            qcopy(v0, (char *)&hero_globals_base_r + 0xEED);
+            qcopy(v0, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -394,7 +394,7 @@ void SkidMcMarxAridiaUpdate(char *m)
         break;
     case 1:
         if (d->unk_08 == 1 &&
-            is_point_inside_clip_volume((char *)&hero_globals_base + 0xE9D, d->clip_volume) != 0) {
+            is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->clip_volume) != 0) {
             d->talk_range = 255.0f;
         } else {
             d->talk_range = 2.5f;
@@ -407,7 +407,7 @@ void SkidMcMarxAridiaUpdate(char *m)
             Help_Request(0x7D0, 0xA);
             grant_inventory_item(0x1E, 1);
             jet_clear_persistent(((Moby *)m)->mission);
-            jet_reset_camera((char *)&hero_globals_base + 0xE9D, (char *)&hero_globals_base + 0xEAD);
+            jet_reset_camera(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot);
             memcard_Save(0, -1);
             DeleteMoby(m);
             return;
@@ -443,7 +443,7 @@ void SkidMcMarxAridiaUpdate(char *m)
     head_rate = 0.3f;
     tracking = 0;
     if (((Moby *)m)->prev_seq == 0) {
-        p = (char *)&hero_globals_base + 0xE9D;
+        p = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         tracking = 1;
         if (vec_distance_xy(m + 0x10, p) < 8.0f &&
             FastDiffRots(((Moby *)m)->rot.z,
@@ -455,7 +455,7 @@ void SkidMcMarxAridiaUpdate(char *m)
                 fast_dec_timer(&d->notice_timer);
         } else if (d->notice_timer != 0) {
             d->notice_timer = 0;
-            qcopy(&d->look_target, (char *)&hero_globals_base + 0xEED);
+            qcopy(&d->look_target, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
         }
         if (fast_dec_timer(&d->look_timer)) {
             float heading;
@@ -465,7 +465,7 @@ void SkidMcMarxAridiaUpdate(char *m)
             FastVecAdd(&d->look_target, &d->look_target, m + 0x10);
         }
         if (d->notice_timer != 0) {
-            qcopy(s_target, (char *)&hero_globals_base + 0xEED);
+            qcopy(s_target, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {

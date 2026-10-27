@@ -398,7 +398,7 @@ void finish_cutscene(void) {
     for (o = level_mobys_end; o->st != 0xFF; o++) {
         if (!(o->st & 0x80) && (o->type == 0x4A || o->type == 0xCB)) o->flags &= 0xFF7F;
     }
-    p = hero_globals_base + 0xE9D;
+    p =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
     HeroEnterMoveState(0, 1);
     g = ProbeGroundHeight(p, 0, 0.5f);
     if (2.0f < g) {

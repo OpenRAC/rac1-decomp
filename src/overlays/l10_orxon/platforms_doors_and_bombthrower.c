@@ -2592,7 +2592,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
         r19 = FindNearestTargetMoby(data->f180, moby, data->fC0);
         if (r19 != 2) {
             Anim_2E0FF8 *bp = &((Anim_2E0FF8 *)orxon_scene_points)[data->f194];
-            FastVecSub(v, hero_globals_base + 0xE9D, bp->f30);
+            FastVecSub(v,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, bp->f30);
             v[3] = 0.0f;
             matrix_mul_vec3(w, v, bp->f40);
             if (w[0] <= -1.0f || 0.0f <= w[0] || w[1] <= -1.0f || 1.0f <= w[1] || w[2] <= -1.0f || 1.0f <= w[2]) data->f104 = 2;
@@ -2608,7 +2608,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
         if (data->f180 < vec_distance_xy(data->f130, data->fC0)) data->f104 = 2;
         else if (moby->visible == 0) data->f104 = 2;
     }
-    if (data->f100 == 0) data->f100 = *(int *)(hero_globals_base + 0x2E9D);
+    if (data->f100 == 0) data->f100 = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
 }
 extern short *orxon_moby_groups[];
 typedef struct { char p0[0x10]; float x; float y; char p1[8]; unsigned char state; char p2[0xDF]; } Ent;
@@ -2987,7 +2987,7 @@ void Moby1199Update(Moby *m) {
         Moby_GetJointWorldPos(m, 0, v);
         coll_sphere_mobys(0.2f, v, 0, m, &v[4]);
         if (FastVecDist_r(&m->pos, &P->pos) < one
-            || *(int *)(hero_globals_base_r + 0x2EA9) == 7
+            || ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->state.control_mode == 7
             || (m->anim_flags & 2)) {
             m->state = 12;
             if (m->prev_seq != 3) MobyBlendAnimation_r(m, 3, 0, scale_ticks_r2(2));
@@ -3187,7 +3187,7 @@ void update_class_1199_hit_reactions_and_targeting(Moby *moby)
         r19 = FindNearestTargetMoby_r(moby, data->fC0, data->f180);
         if (r19 != 2) {
             Anim_2E2B80 *bp = &orxon_scene_points_r2[data->f194];
-            FastVecSub_r3(v, hero_globals_base_r + 0xE9D, bp->f30);
+            FastVecSub_r3(v,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, bp->f30);
             v[3] = 0.0f;
             matrix_mul_vec3_r2(w, v, bp->f40);
             if (w[0] <= -1.0f || 1.0f <= w[0] || w[1] <= -1.0f || 1.0f <= w[1] || w[2] <= -1.0f || 1.0f <= w[2]) {

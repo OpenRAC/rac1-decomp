@@ -201,7 +201,41 @@ def convert(body, fname):
         if not r: return x.group(0)
         cnt += 1; e = f'((struct Hero *)(hero_globals_base + 0xE1D))->{r[0]}'
         return f'*({T}{"" if T.endswith("*") else " "}*)&{e}' if r[1] else e
-    if fname not in NOINL: body = re.sub(r'\*\s*\(\s*([A-Za-z_][\w ]*?(?:\s*\*)*)\s*\*\s*\)\s*\(\s*' + HEROX + r'\s*\+\s*' + NUM + r'\s*\)', inl, body)
+
+    # inline: *(T *)(hero_globals_base + NUM) where NUM >= 0xE1D
+    def inl_direct(x):
+        nonlocal cnt
+        T = x.group(1).strip()
+        sym = x.group(2)
+        raw_num = int(x.group(3), 0)
+        if raw_num < 0xE1D: return x.group(0)
+        off = raw_num - 0xE1D
+        r = pick_value(off, T)
+        if not r: return x.group(0)
+        cnt += 1; e = f'((struct Hero *)((char *)&{sym} + 0xE1D))->{r[0]}'
+        return f'*({T}{"" if T.endswith("*") else " "}*)&{e}' if r[1] else e
+
+    # address: hero_globals_base + NUM where NUM > 0xE1D
+    def addr_direct(x):
+        nonlocal cnt
+        nxt = x.string[x.end():].lstrip()
+        if nxt.startswith(')[') or nxt.startswith('['): return x.group(0)
+        sym = x.group(1)
+        raw_num = int(x.group(2), 0)
+        if raw_num <= 0xE1D: return x.group(0)
+        off = raw_num - 0xE1D
+        addr = pick_addr(off)
+        if not addr: return x.group(0)
+        cnt += 1
+        if addr.startswith('&'):
+            return f'&((struct Hero *)((char *)&{sym} + 0xE1D))->{addr[1:]}'
+        else:
+            return f'((struct Hero *)((char *)&{sym} + 0xE1D))->{addr}'
+
+    if fname not in NOINL:
+        body = re.sub(r'\*\s*\(\s*([A-Za-z_][\w ]*?(?:\s*\*)*)\s*\*\s*\)\s*\(\s*' + HEROX + r'\s*\+\s*' + NUM + r'\s*\)', inl, body)
+        body = re.sub(r'\*\s*\(\s*([A-Za-z_][\w ]*?(?:\s*\*)*)\s*\*\s*\)\s*\(\s*(?:\(\s*(?:unsigned\s+)?char\s*\*\s*\)\s*)?&?\s*(hero_globals_base(?:_\w+)?)\s*\+\s*' + NUM + r'\s*\)', inl_direct, body)
+        body = re.sub(r'(?<![\w.>])(?:\(\s*(?:unsigned\s+)?char\s*\*\s*\)\s*)?&?\s*(hero_globals_base(?:_\w+)?)\s*\+\s*' + NUM + r'(?![\w\[(])', addr_direct, body)
 
     decl = re.compile(r'(?:(?<=[;{}])|^)(\s*)(?:const\s+)?(' + BYTE + r')\s*\*\s*(\w+)\s*(=\s*([^;,]*?))?\s*([;,])', re.M)
     ds = list(decl.finditer(body))

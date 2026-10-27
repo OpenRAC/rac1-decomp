@@ -342,7 +342,7 @@ void update_clip_volume_moby_activation_trigger(char *m) {
     int *d = ((int *)((Moby *)m)->pvars);
     switch (((unsigned char *)m)[0x20]) {
     case 0:
-        if (d[1] >= 0 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d[1])) {
+        if (d[1] >= 0 && is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d[1])) {
             m[0x20] = 1;
             if (((unsigned char *)m)[0x53] != 1) {
                 MobyBlendAnimation(m, 1, 0, 5);
@@ -800,7 +800,7 @@ void update_moby_bobbing_and_motion(char *moby) {
         moby[0x20] = 1;
         break;
     case 1:
-        if (*(int *)(hero_globals_base + 0x2EA1) == 0x72) {
+        if (((struct Hero *)(hero_globals_base + 0xE1D))->state.current == 0x72) {
             ((Moby *)moby)->pos.z = data->vel.w;
         } else {
             float f = IntToFloat(blarg_frame_count % 600) / 600.0f;
@@ -813,7 +813,7 @@ void update_moby_bobbing_and_motion(char *moby) {
             FastVecScale(&data->vel, &data->vel, 0.985f);
         FastVecAdd(moby + 0x10, moby + 0x10, &data->vel);
         FastVecAdd(moby + 0x40, moby + 0x40, &data->spin);
-        if (*(int *)(hero_globals_base + 0x2EA1) != 0x72)
+        if (((struct Hero *)(hero_globals_base + 0xE1D))->state.current != 0x72)
             DeleteMoby(moby);
         break;
     }
@@ -1479,7 +1479,7 @@ void ShuttleUpdate(Moby *moby) {
     moby->scale = ((Cls_3039B8 *)moby->pclass)->f24 * shuttle_scale;
     if (class_076a_moby_spawn_requested_gp != 0) {
         class_076a_moby_spawn_requested_gp = 0;
-        *(u128_3039B8 *)b = *(u128_3039B8 *)(hero_globals_base + 0xEED);
+        *(u128_3039B8 *)b = *(u128_3039B8 *)&((struct Hero *)(hero_globals_base + 0xE1D))->motion.body_center.i[0];
         spawn_timed_projected_sprite_effect((char *)b, scale_ticks(class_076a_moby_rate_input_frames_gp), blarg_explosion_flash_color_a, blarg_explosion_flash_color_b);
     }
     switch (moby->state) {
@@ -1492,7 +1492,7 @@ void ShuttleUpdate(Moby *moby) {
         }
         moby->update_dist = 0xFF;
         moby->draw_dist = 0x80;
-        *(long *)&moby->spawn_frame = *(long *)&(*(Moby **)(hero_globals_base + 0x2E9D))->spawn_frame;
+        *(long *)&moby->spawn_frame = *(long *)&(*(Moby **)&((struct Hero *)(hero_globals_base + 0xE1D))->moby)->spawn_frame;
         moby->state = 1;
         if (moby->prev_seq != 2) {
             MobyBlendAnimation(moby, 2, 0, 0);
@@ -1554,21 +1554,21 @@ void ShuttleUpdate(Moby *moby) {
                 }
             }
         } else if (d->go == 0) {
-            if (d->sel == 0 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->zone[0]) != 0) {
+            if (d->sel == 0 && is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->zone[0]) != 0) {
                 int base = (int)blarg_scene_points;
                 int ofs = d->cam[2] << 7;
                 qcopy(((float *)&moby->pos), (char *)(ofs + base + 0x30));
                 qcopy(((float *)&moby->rot), (char *)(ofs + base + 0x70));
                 d->sel = 2;
                 blarg_shuttle_at_second_stop = 0;
-            } else if (d->sel == 2 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->zone[1]) != 0) {
+            } else if (d->sel == 2 && is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->zone[1]) != 0) {
                 int ofs = d->cam[0] << 7;
                 int base = (int)blarg_scene_points;
                 qcopy(((float *)&moby->pos), (char *)(ofs + base + 0x30));
                 qcopy(((float *)&moby->rot), (char *)(ofs + base + 0x70));
                 d->sel = 0;
                 blarg_shuttle_at_second_stop = 0;
-            } else if (d->sel != 1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->zone[2]) != 0) {
+            } else if (d->sel != 1 && is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->zone[2]) != 0) {
                 int base = (int)blarg_scene_points;
                 int ofs = d->cam[1] << 7;
                 qcopy(((float *)&moby->pos), (char *)(ofs + base + 0x30));
@@ -1643,7 +1643,7 @@ void ShuttleUpdate(Moby *moby) {
         }
         break;
     case 6:
-        if (vec_distance_xy(hero_globals_base + 0xE9D, level_mobys_q + (d->f10C << 8) + 0x10) < 3.5f) {
+        if (vec_distance_xy(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, level_mobys_q + (d->f10C << 8) + 0x10) < 3.5f) {
             char *o = level_mobys_q + (d->f10C << 8);
             qcopy(b, o + 0x10);
             qcopy(rot, o + 0x40);
@@ -1659,7 +1659,7 @@ void ShuttleUpdate(Moby *moby) {
         }
         break;
     case 2:
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->fF0) != 0) {
+        if (is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->fF0) != 0) {
             d->side = 2;
             d->fC4 = shuttle_second_stop_ride_scale_multiplier_gp;
             d->fC8 = shuttle_scale;
@@ -2168,7 +2168,7 @@ void red_button_update(Moby *m) {
         break;
     }
     case 3:
-        if (vec_distance_xy_r2(hero_globals_base_r2 + 0xE9D, &*(V_3054D8 *)&m->pos) < 3.7f) {
+        if (vec_distance_xy_r2(&((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos, &*(V_3054D8 *)&m->pos) < 3.7f) {
             nz = try_set_help_message_r(4, 0x1783) != 0;
             if ((*(int *)(pad_globals_base_r + 0x2604) & 0x10) && nz) {
                 Moby_PlaySound_r(2, 0, m);
@@ -2234,7 +2234,7 @@ void red_button_update(Moby *m) {
             v20.y = v20.y - 2.5f;
             clear_u64_value_r2(&v10);
             v10.y = -0.2617993878f;
-            v10.z = *(float *)(hero_globals_base_r2 + 0xEB5);
+            v10.z = ((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.rot.f[2];
             CameraScript_r2(&v20, &v10, 2, scale_ticks_r2(0x12C), 0);
             ((Fx_3054D8 *)referencePosition_r)->f160 = 0.3f;
             ((Fx_3054D8 *)referencePosition_r)->f168 = scale_ticks_r2(0x2D);
@@ -2248,7 +2248,7 @@ void red_button_update(Moby *m) {
         v10.y = v10.y - 2.5f;
         clear_u64_value_r2(&v0);
         v0.y = -0.2617993878f;
-        v0.z = *(float *)(hero_globals_base_r2 + 0xEB5);
+        v0.z = ((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.rot.f[2];
         set_camera_position_r2(&v10);
         set_camera_rotation_r2(&v0);
         if (2.0f <= d->t) {

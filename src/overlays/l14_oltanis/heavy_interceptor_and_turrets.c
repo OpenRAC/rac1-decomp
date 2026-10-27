@@ -2582,7 +2582,7 @@ void update_minibomber_target(char *moby) {
         int *p = oltanis_paths[data->target_path];
         FindNearestEligibleMoby(255.0f, moby, data->target_search, 0, 0, p + 4, *p);
         if (*(int *)&data->target == 0) {
-            *(int *)&data->target = *(int *)(hero_globals_base + 0x2E9D);
+            *(int *)&data->target = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
         }
     }
 }
@@ -2975,7 +2975,7 @@ unsigned char *spawn_flying_debris(char *owner, float angle, char *posp) {
         FastVecSub(v1, v0, owner + 0x10);
         vec[6] = 0.0f;
         vec_scale_to_length(v1, v1, random_float_between(frame_scale * 0.075f, frame_scale * 0.2f));
-        g = hero_globals_base + 0x10AD;
+        g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir;
         FastVecCross(vec + 8, g, v1);
         build_look_at_matrix(&d->vel, v1, g, randf_sym(0.0f, 0.7853982f));
         d->vel.z = random_float_between(frame_scale * 0.05f, frame_scale * 0.32f);
@@ -3765,7 +3765,7 @@ void update_platform_tilt_basis(char *moby) {
             FastAbsF(p->motion.pos.f[1] - ((Moby *)moby)->pos.y) < 0.1f) {
             qcopy(v, up);
         } else {
-            FastVecSub(d, (char *)hero_globals_base + 0xE9D, moby + 0x10);
+            FastVecSub(d, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, moby + 0x10);
             d[2] = d[2] + *(float *)&platform_tilt_direction_z_offset;
             len = FastVecLength(d);
             if (len == 0.0f) {

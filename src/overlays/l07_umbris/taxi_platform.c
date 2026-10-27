@@ -195,7 +195,7 @@ void update_taxi_platform(unsigned char *moby) {
     case 2:
         if (data->wait_timer != 0
             || (data->rise < 0.0f
-                && vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos), hero = hero_globals_base + 0xE9D) < 2.0f
+                && vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos), hero = &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos) < 2.0f
                 && FastAbsF(F(hero -= 0x80, 0x88) - F(moby, 0x18)) < 4.0f
                 && F(moby, 0x18) - F(hero, 0x88) > 1.0f)) {
             int r;
@@ -267,7 +267,7 @@ void update_taxi_platform(unsigned char *moby) {
     FastVecSub(delta, ((unsigned char *)&((Moby *)moby)->pos), orig);
     update_entity_matrix(data->matrix, delta, &((Moby *)moby)->rot, &((Moby *)moby)->rot);
     if (!is_hero_on_moby(moby)) {
-        if (2.0f < vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos), hero_globals_base + 0xE9D)) {
+        if (2.0f < vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos), &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos)) {
             if (data->wait_timer == 0) {
                 data->go_request = 1;
             }
@@ -517,7 +517,7 @@ void update_umbris_scene_progression(Moby *moby)
     case 4:
         if (((Flags_2F6F20 *)(special_items_base_r + 0x13B))->f29 == 0) {
             if (data->f0 != -1) {
-                if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, data->f0) != 0) {
+                if (is_point_inside_clip_volume_r(&((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos, data->f0) != 0) {
                     ((Flags_2F6F20 *)(special_items_base_r + 0x13B))->f29 = 1;
                     if (data->fC != -1) {
                         Moby *e = &level_mobys_r[data->fC];
@@ -573,7 +573,7 @@ void update_umbris_scene_progression(Moby *moby)
             Moby *e;
             if (data->fC == -1 || (e = &level_mobys_r[data->fC]) == 0 || e->state == 0xFE || e->state == 0xFD) {
                 if (data->f4 != -1) {
-                    if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, data->f4) != 0) {
+                    if (is_point_inside_clip_volume_r(&((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos, data->f4) != 0) {
                         Hero_ResetToPosition_r(scene_points_r[data->f1C].f30, scene_points_r[data->f1C].f70, 0x72, 1);
                         ((Flags_2F6F20 *)(special_items_base_r + 0x13B))->f2A = 1;
                         moby->state = 9;
@@ -607,9 +607,9 @@ void update_umbris_scene_progression(Moby *moby)
         }
         if (data->f10 != -1) {
             Moby *e = &level_mobys_r[data->f10];
-            FastVecSub_r(v, hero_globals_base_r + 0xE9D, &e->pos);
+            FastVecSub_r(v, &((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos, &e->pos);
             clamp_vec_length_r(v, v, 0.9f);
-            FastVecAdd_r(&e->pos, hero_globals_base_r + 0xE9D, v);
+            FastVecAdd_r(&e->pos, &((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos, v);
             DeleteMoby_r(e);
         }
         clear_bit_grid_rectangle_r(0x87, 0xC, 0x56, 0x3C);
@@ -994,7 +994,7 @@ void update_linear_projectile(Moby *m) {
         DeleteMoby(m);
         return;
     }
-    if ((m->visible != 0 || vec_distance_xy(&m->pos, hero_globals_base + 0xE9D) < 30.0f) &&
+    if ((m->visible != 0 || vec_distance_xy(&m->pos, &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos) < 30.0f) &&
         coll_line_r(&old, &m->pos, pass, v->ignore, v) != 0) {
         qcopy(&m->pos, &umbris_coll_hit_point);
         if (m->visible != 0) {
@@ -1313,7 +1313,7 @@ void WaterPlateUpdate(Moby *m) {
         }
         break;
     case 3:
-        if (d->volume >= 0 && is_point_inside_clip_volume_r2(hero_globals_base + 0xE9D, d->volume)) {
+        if (d->volume >= 0 && is_point_inside_clip_volume_r2(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->volume)) {
             d->f1C = 0;
             set_moby_list_state_r(m->group, 4);
         }
@@ -1978,7 +1978,7 @@ void update_fading_ring_effect(unsigned char *m) {
         return;
     }
     AddDrawCallback((void *)draw_fading_ring_effect, m);
-    register_fading_ring_hit(*(void **)(hero_globals_base + 0x2E9D), m, d);
+    register_fading_ring_hit(*(void **)&((struct Hero *)(hero_globals_base + 0xE1D))->moby, m, d);
     for (p = umbris_moby_list; p; p = *(char **)(p + 0x28)) {
         register_fading_ring_hit(p, m, d);
     }
@@ -2595,7 +2595,7 @@ void SharkigatorUpdate(unsigned char *moby) {
         inside = IsPointInPolygon(&tgt, p + 0x10, *(int *)p) != 0;
     } else {
         char *p = ((struct SharkigatorVars *)data)->unk_148;
-        hero = hero_globals_base + 0xE9D;
+        hero = &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos;
         inside = IsPointInPolygon(hero, p + 0x10, *(int *)p) != 0;
         if (vec_distance_xy(&((Moby *)moby)->pos, hero) < 30.0f) {
             tgt.moby = *(int *)(hero + 0x2000);
@@ -2662,7 +2662,7 @@ void SharkigatorUpdate(unsigned char *moby) {
         }
     }
     if (1.0f <= ((struct SharkigatorVars *)data)->jump_blend) {
-        *(u128 *)(hero_globals_base + 0xE9D) = *(u128 *)&((Moby *)moby)->pos;
+        *(u128 *)&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos.i[0] = *(u128 *)&((Moby *)moby)->pos;
     }
 
     switch (((Moby *)moby)->state) {
@@ -2673,14 +2673,14 @@ void SharkigatorUpdate(unsigned char *moby) {
         if ((((Moby *)moby)->anim_flags & 2) && ((Moby *)moby)->prev_seq != 0) {
             MobyBlendAnimation(moby, 0, 0, 10);
         }
-        if (inside && tgt.moby != 0 && tgt.moby == *(int *)(hero_globals_base + 0x2E9D) &&
+        if (inside && tgt.moby != 0 && tgt.moby == *(int *)&((struct Hero *)(hero_globals_base + 0xE1D))->moby &&
             !test_other_group_moby_state_range(moby, 4, 6)) {
             if (((Moby *)moby)->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, 10);
             }
             ((Moby *)moby)->state = 4;
         }
-        if (tgt.moby != 0 && tgt.moby == *(int *)(hero_globals_base + 0x2E9D) &&
+        if (tgt.moby != 0 && tgt.moby == *(int *)&((struct Hero *)(hero_globals_base + 0xE1D))->moby &&
             test_sharkigator_target_sphere_collision(moby, tgt.moby, 1.5f)) {
             if (((Moby *)moby)->prev_seq != 2) {
                 MobyBlendAnimation(moby, 2, 0, 2);
@@ -2707,7 +2707,7 @@ void SharkigatorUpdate(unsigned char *moby) {
         if ((((Moby *)moby)->anim_flags & 2) && ((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
-        if (inside && tgt.moby != 0 && tgt.moby == *(int *)(hero_globals_base + 0x2E9D)) {
+        if (inside && tgt.moby != 0 && tgt.moby == *(int *)&((struct Hero *)(hero_globals_base + 0xE1D))->moby) {
             if (!test_other_group_moby_state_range(moby, 4, 6)) {
                 if (((Moby *)moby)->prev_seq != 1) {
                     MobyBlendAnimation(moby, 1, 0, 10);
@@ -2739,7 +2739,7 @@ void SharkigatorUpdate(unsigned char *moby) {
             ((struct SharkigatorVars *)data)->wander_timer = func_001160D8() % 120 + 60;
             ((Moby *)moby)->state = 1;
         }
-        if (tgt.moby != 0 && tgt.moby == *(int *)(hero_globals_base + 0x2E9D) &&
+        if (tgt.moby != 0 && tgt.moby == *(int *)&((struct Hero *)(hero_globals_base + 0xE1D))->moby &&
             test_sharkigator_target_sphere_collision(moby, tgt.moby, 1.5f)) {
             if (((Moby *)moby)->prev_seq != 2) {
                 MobyBlendAnimation(moby, 2, 0, 2);
@@ -2768,7 +2768,7 @@ void SharkigatorUpdate(unsigned char *moby) {
         d = fast_atan2(d, tgt.pos[2] - F(moby, 0x18));
         F(moby, 0x44) = SpringTurn(&((struct SharkigatorVars *)data)->pitch_spring, F(moby, 0x44), -d,
                                           g_frame_time_sq * pi4, g_frame_time_sq * zero, g_frame_time * pi4);
-        if (!(vec_distance_xy(&((Moby *)moby)->pos, hero_globals_base + 0xE9D) < three)) {
+        if (!(vec_distance_xy(&((Moby *)moby)->pos, &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos) < three)) {
             close = 0;
         }
         if (close) {
@@ -2787,7 +2787,7 @@ void SharkigatorUpdate(unsigned char *moby) {
         }
         ((struct { char p[0x138]; float f; } *)data)->f = tgt.pos[2] - 0.25f;
         advance_sharkigator_swim_movement((char *)moby, data, g_frame_time_sq * 38.0f, g_frame_time_sq * 0.0f, g_frame_time * 38.0f);
-        if (!inside || *(short *)(hero_globals_base + 0x1129) == 0) {
+        if (!inside || ((struct Hero *)(hero_globals_base + 0xE1D))->frames_off_ground.s == 0) {
             if (((Moby *)moby)->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, 10);
             }
@@ -2835,7 +2835,7 @@ void SharkigatorUpdate(unsigned char *moby) {
         } else {
             ((struct SharkigatorVars *)data)->heading = ang;
         }
-        if (inside || *(short *)(hero_globals_base + 0x1129) != 0) {
+        if (inside || ((struct Hero *)(hero_globals_base + 0xE1D))->frames_off_ground.s != 0) {
             goto end;
         }
         *(int *)&((struct SharkigatorVars *)data)->jump_blend = 0;
@@ -3233,15 +3233,15 @@ void update_command_triggered_falling_platform(Moby *m) {
             float c;
             float c2;
             fast_dec_timer_r2(&d->fAC);
-            FastVecSub_r2(&v3, hero_globals_base_r2 + 0xE9D, &m->pos);
+            FastVecSub_r2(&v3, &((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos, &m->pos);
             c = FastVecDot_r(&v3, &m->rot_row0);
             c2 = FastVecDot_r(&v3, &m->rot_row1);
             c = c * 0.03f;
             f21 = FastAddRots_r(FastAddRots_r(f21, c2 * -0.03f), c);
             v4 = (*(V_3126A8 *)&m->rot);
             v5 = (*(V_3126A8 *)&m->pos);
-            reorient_position_about_pivot_r(hero_globals_base_r2 + 0xE9D, &v6, &m->pos, &v4, &m->rot);
-            FastVecSub_r2(&((Hero *)(hero_globals_base_r2 + 0xE1D))->motion.platform_delta, &v6, hero_globals_base_r2 + 0xE9D);
+            reorient_position_about_pivot_r(&((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos, &v6, &m->pos, &v4, &m->rot);
+            FastVecSub_r2(&((Hero *)(hero_globals_base_r2 + 0xE1D))->motion.platform_delta, &v6, &((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos);
             ((Hero *)(hero_globals_base_r2 + 0xE1D))->motion.platform_delta.f[2] += m->pos.z - v5.z;
         }
         step_angle_toward_target_r(&m->rot.x, 0, f21, g_frame_time_r * 0.17453292f);

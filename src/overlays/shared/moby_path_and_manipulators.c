@@ -350,7 +350,7 @@ void update_object_wander_movement(Moby *moby, struct WanderState *d, float a, f
         d->timer = rand_range(t, scale_ticks(0x5A));
         d->wandering = 1;
     } else {
-        char *g = hero_globals_base + 0xE9D;
+        char *g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         dist = vec_distance_xy(pos, g);
         if (dist < d->hero_avoid_dist) {
             char *q = g - 0x80;

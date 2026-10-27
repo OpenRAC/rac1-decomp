@@ -764,7 +764,7 @@ void Moby471Update(unsigned char *m) {
             vec_scale_to_length(vec, &((Moby *)m)->rot_row0, d->speed);
             update_conveyor_group_motion_transforms(((Moby *)m)->group, vec);
         }
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->leave_volume)) ((Moby *)m)->state = one;
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->leave_volume)) ((Moby *)m)->state = one;
         AddDrawCallback(draw_conveyor_belt_strips, m);
         break;
     case 1:
@@ -774,7 +774,7 @@ void Moby471Update(unsigned char *m) {
             vec_scale_to_length(vec, &((Moby *)m)->rot_row0, d->speed);
             update_conveyor_group_motion_transforms(((Moby *)m)->group, vec);
         }
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->enter_volume)) ((Moby *)m)->state = 2;
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->enter_volume)) ((Moby *)m)->state = 2;
         AddDrawCallback(draw_conveyor_belt_strips, m);
         break;
     }
@@ -1539,7 +1539,7 @@ void draw_test_dummy_group_glows(L16BeamMoby *moby) {
             pos[3] = 1.0f;
             FastVecSub(a, kalebo3_camera_pos, pos);
             vec_scale_to_length(a, a, 1.0f);
-            FastVecCross(b, a, hero_globals_base + 0x10AD);
+            FastVecCross(b, a,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir);
             vec_scale_to_length(b, b, -1.0f);
             FastVecCross(c, b, a);
             draw_world_quad(&packet, a, 0);
@@ -2078,7 +2078,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
         break;
     }
     case 1:
-        if (*(int *)(hero_globals_base + 0x2EA9) == 22) {
+        if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode == 22) {
             ((Moby *)m)->update_dist = 255;
             *(int *)&((Moby *)m)->collision = *(int *)(*(char **)&((Moby *)m)->pclass + 0x10);
             ((Moby *)m)->flags &= ~0x41;
@@ -2097,7 +2097,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
         }
         break;
     case 3:
-        if (*(int *)(hero_globals_base + 0x2EA9) != 22) {
+        if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode != 22) {
             ((Moby *)m)->state = 0;
         } else {
             int count = d->unk_2F2 + 1;
@@ -2477,7 +2477,7 @@ void update_triggered_group_objective(char *m) {
         }
         break;
     case SCENE_STATE_WAIT_FOR_TRIGGER: {
-        char *player = hero_globals_base+0xE9D;
+        char *player =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (!is_point_inside_clip_volume(player, scene_data->trigger))
             break;
         scene_data->timer = scale_ticks(60);
@@ -2526,14 +2526,14 @@ notify:
     case SCENE_STATE_COMPLETE:
         break;
     case SCENE_STATE_HIDDEN_WAIT_FOR_TRIGGER:
-        if (is_point_inside_clip_volume(hero_globals_base+0xE9D, scene_data->trigger)) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, scene_data->trigger)) {
             activate_class_0287_group_and_find_nearest(scene_data->helper, 0);
             activate_test_dummy_group(scene_data->path);
             moby->state = 6;
         }
         break;
     case SCENE_STATE_HIDDEN_WAIT_FOR_LINKED_MOBYS: {
-        char *player = hero_globals_base+0xE9D;
+        char *player =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (is_point_inside_clip_volume(player, scene_data->trigger) && scene_data->camera >= 0)
             *(unsigned short *)(player + 0x225A) = *(unsigned short *)&scene_data->camera;
         if (!count_active_moby_group_members(scene_data->path, -1)) {
@@ -2558,7 +2558,7 @@ void compute_triggered_scene_path_pose(char *moby, void *out1, float *out2) {
     float v[4];
     char *entry = kalebo3_level_cuboids_m + (*(int *)((char *)data) << 7);
     char *tbl = kalebo3_path_table[data->path_index];
-    FastVecSub(v, hero_globals_base + 0xE9D, entry + 0x30);
+    FastVecSub(v,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, entry + 0x30);
     v[3] = 0;
     matrix_mul_vec3(v, v, entry + 0x40);
     ApproachWithVelocity((v[1] + 1.0f) * 0.5f, g_frame_time_sq, g_frame_time_sq, g_frame_time + g_frame_time, &data->progress, &data->progress_vel);
@@ -2724,7 +2724,7 @@ void help_desk_lady_update(Moby *moby) {
             Help_Request(0x3E82, 0x84);
             grant_inventory_item(0x21, 1);
             jet_clear_persistent(moby->mission);
-            player = (char *)&hero_globals_base_watch + 0xE9D;
+            player = &((struct Hero *)((char *)&hero_globals_base_watch + 0xE1D))->motion.pos;
             jet_reset_camera(player, player + 0x10);
             memcard_Save(0, -1);
             moby->state = 3;
@@ -2733,7 +2733,7 @@ void help_desk_lady_update(Moby *moby) {
     }
     flags = (L16WatchFlags *)((char *)&special_items_base_watch + 0x13B);
     if (!flags->entered &&
-        is_point_inside_clip_volume((char *)&hero_globals_base_watch + 0xE9D, watch_data->entry_region))
+        is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_watch + 0xE1D))->motion.pos, watch_data->entry_region))
         flags->entered = 1;
     if (!((L16WatchFlags *)((char *)&special_items_base_watch + 0x13B))->mission &&
         ((L16WatchPlayer *)((char *)&hero_globals_base_watch + 0xE1D))->mode == 15)
@@ -2742,7 +2742,7 @@ void help_desk_lady_update(Moby *moby) {
     head_rate = 0.3f;
     tracking = 0;
     if (moby->prev_seq == 0) {
-        char *player = (char *)&hero_globals_base_watch + 0xE9D;
+        char *player = &((struct Hero *)((char *)&hero_globals_base_watch + 0xE1D))->motion.pos;
         tracking = 1;
         if (vec_distance_xy(&moby->pos, player) < 8.0f &&
             FastDiffRots(
@@ -2983,7 +2983,7 @@ void CratePlatformUpdate(L16CrateMoby *m) {
         break;
     }
     case 2:
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->trigger)) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->trigger)) {
             if (d->mode == 1) {
                 MobySetAnimation(m, 0, 0);
             } else {
@@ -3448,7 +3448,7 @@ void update_grindrail_gate(unsigned char *m) {
         gate_moby->update_dist = 0xFF;
         break;
     case GRINDRAIL_GATE_CHECK_HERO_BOUNDS:
-        hero_position = hero_globals_base + 0xE9D;
+        hero_position =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (FastVecDist(&gate_moby->pos, hero_position) < 16.0f) {
             matrix_from_basis_rows(pos, &gate_moby->rot_row0);
             FastVecSub(hero_offset_from_gate, hero_position, &gate_moby->pos);
@@ -3496,7 +3496,7 @@ void update_local_bounds_command_trigger(unsigned char *m) {
         trigger_moby->update_dist = 0xFF;
         break;
     case GRINDRAIL_TRIGGER_CHECK_LOCAL_BOUNDS:
-        bounds_check_position = hero_globals_base + 0xE9D;
+        bounds_check_position =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (FastVecDist(&trigger_moby->pos, bounds_check_position) < 16.0f) {
             matrix_from_basis_rows(pos, &trigger_moby->rot_row0);
             FastVecSub(bounds_check_offset_from_trigger, bounds_check_position, &trigger_moby->pos);
@@ -3546,7 +3546,7 @@ void grindrail_button_update(unsigned char *m) {
         break;
     case GRINDRAIL_BUTTON_CHECK_ACTIVATION:
         if (fast_dec_timer(&button_data->timer)) {
-            g = hero_globals_base + 0xE9D;
+            g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
             if (vec_distance_xy(&button_moby->pos, g) < 4.0f) {
                 base = g - 0x80;
                 if (*(int *)(base + 0x2084) == 0x28 && *(int *)(base + 0x5A8) != -1) {

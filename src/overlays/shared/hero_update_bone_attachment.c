@@ -356,7 +356,7 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
         f2 = 1.5f;
         f21 = 5.0f;
     }
-    base = hero_globals_base + 0xE9D;
+    base =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
     qcopy(a, base);
     a[2] = a[2] + f2;
     qcopy(b, base);

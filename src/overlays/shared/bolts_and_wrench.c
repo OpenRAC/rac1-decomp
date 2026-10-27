@@ -667,7 +667,7 @@ void vendor_update(char *moby) {
         if (p->glow > 0.0f) p->glow -= 0.1f;
         if (p->glow <= 0.0f) *(unsigned short *)(p->ring + 0x34) |= 1;
         if ((level_frame_counter & 7) == 0) {
-            char *g = hero_globals_base + 0xE9D;
+            char *g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
             if (vec_distance_xy(moby + 0x10, g) <= 16.0f) {
                 if (FastAbsF(((Moby *)moby)->pos.z - *(float *)(g + 8)) <= 8.0f) {
                     ((Moby *)moby)->state = 2;
@@ -695,7 +695,7 @@ void vendor_update(char *moby) {
         int b;
         int r;
         if (p->glow < 1.0f) p->glow += 0.1f;
-        g = hero_globals_base + 0xE9D;
+        g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         dist = vec_distance_xy(moby + 0x10, g);
         dz = FastAbsF(((Moby *)moby)->pos.z - *(float *)(g + 8));
         if ((level_frame_counter & 7) == 0) {
@@ -959,7 +959,7 @@ void bolt_update(Moby *m) {
         }
         FastVecSub_r(u.s.a, ((float *)&m->pos), coll_hit_result_r.pos);
         vec_reflect_r(d->vel, d->vel, u.s.a);
-        dist = vec_distance_xy_r(((float *)&m->pos), hero_globals_base_r + 0xE9D);
+        dist = vec_distance_xy_r(((float *)&m->pos),&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos);
         {
             Hero *h = (Hero *)(hero_globals_base_r + 0xE1D);
             if (dist < h->reach_distance && FastAbsF_r(m->pos.z - h->motion.pos.f[2]) < h->reach_height) {
@@ -1006,7 +1006,7 @@ void bolt_update(Moby *m) {
     }
     case 3: {
         float dist;
-        dist = vec_distance_xy_r(((float *)&m->pos), hero_globals_base_r + 0xE9D);
+        dist = vec_distance_xy_r(((float *)&m->pos),&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos);
         {
             Hero *h = (Hero *)(hero_globals_base_r + 0xE1D);
             if (dist < h->reach_distance && FastAbsF_r(m->pos.z - h->motion.pos.f[2]) < h->reach_height) {
@@ -1052,14 +1052,14 @@ void bolt_update(Moby *m) {
     case 4: {
         int flag = 0;
         if (d->target->oclass == 0) {
-            FastVecSub_r(u.s.a, ((float *)&m->pos), hero_globals_base_r + 0x10BD);
-            transform_vector_r(u.s.a, u.s.a, hero_globals_base_r + 0xE5D);
+            FastVecSub_r(u.s.a, ((float *)&m->pos),&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->ground_point);
+            transform_vector_r(u.s.a, u.s.a,((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->inv_rot_matrix);
             if (u.s.a[2] < 0.0f) {
                 flag = 1;
             }
         }
         if (flag) {
-            vec_scale_to_length_r(u.s.a, hero_globals_base_r + 0xE3D, g_frame_time_r * 7.0f);
+            vec_scale_to_length_r(u.s.a,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->rot_matrix[8], g_frame_time_r * 7.0f);
             FastVecSub_r(u.s.b, u.s.a, d->vel);
             ClampVectorLength_r(u.s.b, g_frame_time_sq_r * 50.0f);
             FastVecAdd_r(d->vel, d->vel, u.s.b);
@@ -1081,10 +1081,10 @@ void bolt_update(Moby *m) {
         quaternion_to_rotation_basis_r(d->quat, u.t.m);
         multiply_matrix3x3_r(((float *)&m->rot_row0), u.t.m, ((float *)&m->rot_row0));
         FastVecAdd_r(((float *)&m->pos), ((float *)&m->pos), d->vel);
-        FastVecSub_r(u.t.e, hero_globals_base_r + 0xEED, ((float *)&m->pos));
+        FastVecSub_r(u.t.e,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center, ((float *)&m->pos));
         if (d->f64 < FastVecLength_r(u.t.e)) {
             if (d->f4C != 0.0f || d->f48 != 0.0f) {
-                matrix_mul_vec3_r(u.t.e, u.t.e, hero_globals_base_r + 0xE5D);
+                matrix_mul_vec3_r(u.t.e, u.t.e,((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->inv_rot_matrix);
                 clear_u64_value_r(u.t.g);
                 u.t.g[1] = d->f48;
                 u.t.g[2] = d->f4C;
@@ -1820,7 +1820,7 @@ static __inline__ WPlayer48 *wplayer48(void) { return (WPlayer48*)g_hero; }
 static __inline__ float *wend48(void) { return (float*)(hero_globals_base+0x181D); }
 
 static __inline__ unsigned long wdelta48(int animation) { return (unsigned char)(animation-15); }
-static __inline__ float *wvelocity48(void) { return (float*)(hero_globals_base+0xF5D); }
+static __inline__ float *wvelocity48(void) { return (float*)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.platform_carry); }
 
 static __inline__ unsigned char *waudio48(int slot) { return voice_pool+slot*0x70; }
 
@@ -1984,7 +1984,7 @@ void wrench_update(Wrench48 *m) {
         float *position;
         float radius;
         {
-        char *control=hero_globals_base+0x25CD;
+        char *control=((struct Hero *)((char *)&hero_globals_base + 0xE1D))->unk17B0;
         WPlayer48 *control_player=(WPlayer48*)(control-0x17B0);
         update_moby_transform_history(control,0);
         m->parent=control_player->moby; control_player->wrench_state=2;
@@ -2130,7 +2130,7 @@ char *spawn_homing_bolt(void *owner, void *pos, float a, float b, float c, char 
         }
         t.q = ((BoltOwner_2AA998 *)owner)->position.q;
         t.f[2] = ((float *)pos)[2];
-        if (coll_line(&t, pos, 0, *(int *)(hero_globals_base + 0x2E9D), 0) != 0) {
+        if (coll_line(&t, pos, 0, *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby, 0) != 0) {
             m[0xBC] = 1;
             qcopy(m + 0x10, &collision_hit_point);
         }

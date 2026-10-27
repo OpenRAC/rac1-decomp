@@ -16,6 +16,7 @@ from pathlib import Path
 TARGETS = {
     'moby': {'header': 'moby.h',
              'recs': {'Moby': 'struct Moby', 'MobyClass': 'struct MobyClass'},
+             'alias': {'Moby': r'(Moby|\w*Moby)(_[0-9A-Fa-f_]+)?'},
              'clone': 'Vec4f', 'clone_name': r'V\w*'},
     'hero': {'header': 'hero.h',
              'recs': {n: 'struct ' + n for n in ('Hero', 'HeroState', 'HeroMotion', 'HeroItemSlot', 'HeroRandTimer',

@@ -534,7 +534,7 @@ void compute_rotated_vector_angles(Vx *in, float *out) {
     Vx v0;
     Vx *v = &v0;
     qcopy(v, in);
-    euler_to_matrix(&m0, (char *)*(int *)(hero_globals_base + 0x2E9D) + 0x40);
+    euler_to_matrix(&m0, (char *)*(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby + 0x40);
     matrix_from_basis_rows(&n0, &m0);
     transform_vector(v, v, &n0);
     out[0] = fast_atan2(vec_length(v0.x * v0.x + v0.z * v0.z), v0.y);
@@ -593,7 +593,7 @@ void compute_hero_reference_tilt_rotation(V_c *v, M_c *m, void *p, float a, floa
         r.f[2] = pitch;
         r.f[0] = 0.0f;
     } else {
-        SpringAngle((char *)&t, hero_globals_base + 0xEC1, 0, pitch, a, b, c);
+        SpringAngle((char *)&t,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot_spring_vel.f[1], 0, pitch, a, b, c);
         r.f[0] = 0.0f;
         r.f[2] = t;
     }
@@ -609,7 +609,7 @@ void compute_hero_reference_tilt_rotation(V_c *v, M_c *m, void *p, float a, floa
     fast_euler_to_matrix(&m1, &r);
     sce_vu0_mul_matrix(m, &m1, m);
     if (p) matrix_to_euler(m, p);
-    else matrix_to_euler(m, hero_globals_base + 0xEAD);
+    else matrix_to_euler(m,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot);
 }
 typedef int U128 __attribute__((mode(TI)));
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -693,7 +693,7 @@ extern void set_gravity_relative_vector_length_xy(float *dst, float *src, float 
 extern void clear_u64_value(void *);
 // Bleeds off the hero's momentum vector by amount a, clearing it when it is tiny.
 void reduce_and_apply_hero_planar_velocity_addend(float a) {
-    float *v = (float *)(hero_globals_base + 0xF6D);
+    float *v = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.momentum);
     float s = gravity_length_xy(v);
     if (s > 0.001f) {
         float z = 0.0f;
@@ -961,7 +961,7 @@ extern void apply_nearest_environment_sample(int);
 
 /* resets the level state from two vectors: sets up camera matrices, clears flags, starts sound bank */
 void Hero_ResetToPosition(void *a, void *b, int c, int d) {
-    char *p = hero_globals_base + 0xE9D;
+    char *p =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
     char *q;
     qcopy(p, a);
     q = p - 0x80;
@@ -994,7 +994,7 @@ void Hero_ResetToPosition(void *a, void *b, int c, int d) {
     else hero_control_mode_11_flag = 0;
     update_hero_ground_contact_and_surface_slopes();
     if (d) init_camera_system();
-    apply_nearest_environment_sample(*(int *)(hero_globals_base + 0x2E9D));
+    apply_nearest_environment_sample(*(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby);
 }
 typedef struct {
     unsigned char pad0[0x80];

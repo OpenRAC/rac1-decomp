@@ -182,7 +182,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                     v[0] = FastCos(f20) * z;
                     v[1] = FastSin(f20) * z;
                     v[2] = 15.0f;
-                    FastVecAdd(v, v, hero_globals_base + 0xE9D);
+                    FastVecAdd(v, v,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
                     n = scale_ticks(240);
                     spawn_debris_moby(v, veldin2_zero_vec, 0x2B8, n,
                                       *(float *)&veldin2_moby_group_debris_scale, 2.0f, 1.0f, 0.75f, 0);
@@ -2025,7 +2025,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
                     step = step * 3.0f;
                 }
             }
-            if (*(int *)(hero_globals_base + 0x2EA9) == 0xF) {
+            if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode == 0xF) {
                 boss_data->f390 = boss_data->f390 + step;
             } else {
                 *(float *)boss_data->p394 = *(float *)boss_data->p394 + step;
@@ -2106,7 +2106,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
         FindNearestEligibleMoby(512.0f, moby, (char *)boss_data->f70, 0, 0, e + 4, e[0]);
     }
     if (boss_data->fB0 == 0) {
-        boss_data->fB0 = *(Moby **)(hero_globals_base + 0x2E9D);
+        boss_data->fB0 = *(Moby **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
     }
     {
         int type = ((Moby *)moby)->state;
@@ -2202,7 +2202,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
                 if (((Moby *)moby)->prev_seq != 0) {
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(0x14));
                 }
-                boss_data->f330 = find_class_247_moby_with_largest_xy_angle_in_list((float *)boss_data->f3C0, (float *)(hero_globals_base + 0xE9D), boss_data->f200);
+                boss_data->f330 = find_class_247_moby_with_largest_xy_angle_in_list((float *)boss_data->f3C0, (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos), boss_data->f200);
                 *(int *)&boss_data->f390 = 0;
                 *(int *)boss_data->p394 = 0;
             }
@@ -2248,7 +2248,7 @@ extern short drek_boss_follow_distance;
 void update_drek_boss_hero_follow_movement(char *m) {
     float v[4];
     struct BossData *d = (struct BossData *)((Moby *)m)->pvars;
-    char *b = hero_globals_base + 0xE9D;
+    char *b =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
     float t;
     float lo, hi;
     FastVecSub(v, b, veldin2_arena_nodes + (d->f344 << 7) + 0x30);
@@ -2259,7 +2259,7 @@ void update_drek_boss_hero_follow_movement(char *m) {
         ClampVectorLength(v, *(float *)&drek_boss_arena_radius);
     }
     FastVecAdd(v, v, veldin2_arena_nodes + (d->f344 << 7) + 0x30);
-    t = *(float *)(hero_globals_base + 0xF7D);
+    t = ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.speed_xy;
     t += (vec_distance_xy(m + 0x10, v) - *(float *)&drek_boss_follow_distance) / *(float *)&drek_boss_follow_distance * (g_frame_time * 4.75f);
     hi = g_frame_time * 20.0f;
     lo = g_frame_time * 4.75f;
@@ -2485,7 +2485,7 @@ int select_drek_boss_next_action(char *moby) {
             if (data->f364 != 0) {
                 ok = 0;
             } else {
-                float d = vec_distance_xy(hero_globals_base + 0xE9D, veldin2_arena_nodes + data->f250[3] * 128 + 0x30);
+                float d = vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, veldin2_arena_nodes + data->f250[3] * 128 + 0x30);
                 if (*(float *)&drek_boss_arena_radius + 2.0f < d) ok = 0;
             }
         }
@@ -2550,7 +2550,7 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
     unsigned char st;
 
     fast_dec_timer(&d->f360);
-    f = vec_distance_xy(hero_globals_base + 0xE9D, d->f3C0);
+    f = vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->f3C0);
     if (f > *(float *)&drek_boss_scalar_blend_max_hero_distance_gp) {
         f = *(float *)&drek_boss_scalar_blend_max_hero_distance_gp;
     } else if (f < *(float *)&drek_boss_scalar_blend_min_hero_distance_gp) {
@@ -2576,7 +2576,7 @@ x = *(float *)&drek_boss_first_scalar_gated_follow_target_gp;
             p1 = (float *)(t + 0x38);
             p3 = &d->cam_height_vel;
             p2 = &d->cam_dist_vel;
-            if (vec_distance_xy(hero_globals_base + 0xE9D, veldin2_arena_nodes + (d->f344 << 7) + 0x30) < 28.0f) {
+            if (vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, veldin2_arena_nodes + (d->f344 << 7) + 0x30) < 28.0f) {
                 x = *(float *)&drek_boss_first_scalar_near_node_follow_target_gp;
                 y = *(float *)&drek_boss_cam_node_height;
             }

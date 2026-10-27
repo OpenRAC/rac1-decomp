@@ -133,7 +133,7 @@ extern void ClampVectorLength(void *a, float x);
 // Builds a vector from two global blocks, transforms it, and passes it on with a summed float.
 void compose_and_limit_hero_velocity(void) {
     char tmp[16];
-    char *p = hero_globals_base + 0x158D;
+    char *p =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->unk770;
     char *q;
     qcopy(p, p - 0x670);
     q = p - 0x770;

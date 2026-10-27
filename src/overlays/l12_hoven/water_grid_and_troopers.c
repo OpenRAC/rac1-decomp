@@ -522,7 +522,7 @@ void update_hoven_anklebiter(Moby *m) {
     Manipulator_SetScale_r(d->collision_data,2.2f);
     select54((char *)m,(char *)&work,d->range);
     target=work.moby;
-    if (!target) target=*(Moby **)(hero_globals_base_r+0x2E9D);
+    if (!target) target=*(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby;
     if (m->pos.z<26.0f) { DeleteMoby_r(m); return; }
     switch(m->state) {
     case 0:
@@ -677,7 +677,7 @@ void update_hoven_anklebiter(Moby *m) {
         break;
     }
     case 5:
-        (*(Moby **)(hero_globals_base_r+0x2E9D))->anim_speed=1.3f;
+        (*(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby)->anim_speed=1.3f;
         angle=fast_atan2_r(target->pos.x-m->pos.x,target->pos.y-m->pos.y);
         MobySpringTurn_r((char *)m,&d->turn_velocity,angle,0.05f,0.3f,0.2f);
         if(m->seq==m->prev_seq && IsFrameWithinWindow_r((char *)m,13.0f) && FastAbsF_r(m->pos.z-target->pos.z)<0.5f && vec_distance_xy_r(&m->pos,&target->pos)<2.0f && FastDiffRots_r(fast_atan2_r(target->pos.x-m->pos.x,target->pos.y-m->pos.y),m->rot.z)<0.2617994f) {
@@ -697,7 +697,7 @@ void update_hoven_anklebiter(Moby *m) {
         return_distance=FastVecDist_r(&target->pos,d->home); d->return_timer++; blocked=0;
         if(d->path!=-1) {
             char *path=hoven_paths_r[d->path];
-            blocked=IsPointInPolygon_r(hero_globals_base_r+0xE9D,path+0x10,*(int *)path)==0;
+            blocked=IsPointInPolygon_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,path+0x10,*(int *)path)==0;
         }
         if(!blocked) {
             if(return_distance<d->range) {
@@ -1102,7 +1102,7 @@ void compute_platform_target_tilt(char *moby, float *out, int on) {
     float pad[12];
     float g;
     if (on) {
-        FastVecSub(a, hero_globals_base + 0xE9D, moby + 0x10);
+        FastVecSub(a,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, moby + 0x10);
         clear_u64_value(m);
         m[2] = -*(float *)(moby + 0x48);
         euler_to_matrix(b, m);
@@ -1498,7 +1498,7 @@ void miner_update(Moby *m) {
     head_rate = 0.3f;
     tracking = 0;
     if (m->prev_seq == 0) {
-        char *player = (char *)&hero_globals_base_r2 + 0xE9D;
+        char *player = &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->motion.pos;
         tracking = 1;
         if (vec_distance_xy(&m->pos, player) < 8.0f &&
             FastDiffRots(m->rot.z,
@@ -1508,7 +1508,7 @@ void miner_update(Moby *m) {
             else fast_dec_timer(&d->moving_timer);
         } else if (d->moving_timer) {
             d->moving_timer = 0;
-            qcopy(d->target, (char *)&hero_globals_base_r2 + 0xEED);
+            qcopy(d->target, &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->motion.body_center);
         }
         if (fast_dec_timer(&d->target_timer)) {
             float heading;
@@ -1518,7 +1518,7 @@ void miner_update(Moby *m) {
             FastVecAdd(d->target, d->target, &m->pos);
         }
         if (d->moving_timer) {
-            qcopy(scratch.target, (char *)&hero_globals_base_r2 + 0xEED);
+            qcopy(scratch.target, &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->motion.body_center);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -2157,13 +2157,13 @@ void process_blarg_trooper_damage_and_alerts(char *moby) {
                 b = FastAddRots(((struct Moby *)moby)->rot.z, pi);
                 help_direction_or_hit_position.f[1] = FastSin(b);
                 help_direction_or_hit_position.f[2] = 0.0f;
-                PostHitMessage(moby, *(int *)(hero_globals_base + 0x2E9D), 0x10000,
+                PostHitMessage(moby, *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby, 0x10000,
                                &((struct Moby *)moby)->pos, help_direction_or_hit_position.f, 1.0f);
             }
         }
     }
     if (vars->volume != -1) {
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, vars->volume) != 0) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, vars->volume) != 0) {
             remove_blarg_trooper_and_attachment(moby);
             return;
         }
@@ -2565,7 +2565,7 @@ void Moby326Update(char *moby) {
             }
         }
         n = M_I(data, 0x80);
-        if (n == -1 || is_point_inside_clip_volume(hero_globals_base + 0xE9D, n) == 0) {
+        if (n == -1 || is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, n) == 0) {
             if (r == 0) {
                 break;
             }
@@ -2621,7 +2621,7 @@ void Moby326Update(char *moby) {
         if (g_current_level_index == 12 && gHaveHeliPack[9] == 0 && *(unsigned short *)(help_stats_base + 0x635) == 0) {
             Help_Request(0x2EE2, 0x5D);
         }
-        tgt = hero_globals_base + 0xE9D;
+        tgt =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         d = vec_distance_xy(moby + 0x10, tgt);
         if (M_I(data, 0xC0) == 0) {
             if (d < 21.0f && M_F(moby, 0x18) - M_F(tgt, 8) > 1.0f) {
@@ -3104,7 +3104,7 @@ void edwina_update(char *m) {
         float sy = 0.3f;
         int doit = 0;
         if (moby->prev_seq == 0) {
-            char *g = hero_globals_base + 0xE9D;
+            char *g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
             L16WatchPlayer *a_;
             doit = 1;
             if (vec_distance_xy(&moby->pos, g) < 8.0f
@@ -3118,7 +3118,7 @@ void edwina_update(char *m) {
                 }
             } else if (moby_data->moving_timer != 0) {
                 moby_data->moving_timer = 0;
-                qcopy(moby_data->target, hero_globals_base + 0xEED);
+                qcopy(moby_data->target,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
             }
             if (fast_dec_timer(&moby_data->target_timer) != 0) {
                 float y;
@@ -3131,7 +3131,7 @@ void edwina_update(char *m) {
                 FastVecAdd(moby_data->target, moby_data->target, &moby->pos);
             }
             if (moby_data->moving_timer != 0) {
-                qcopy(b, hero_globals_base + 0xEED);
+                qcopy(b,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
                 sx = 0.04f;
                 sy = 0.3f;
             } else {
@@ -3232,7 +3232,7 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
     float b[4];
     unsigned char *q;
     if (MobyGetHitMessage(m, 0xA30000, 0) != 0) {
-        if (*(int *)(hero_globals_base + 0x2EA1) != 0x32) {
+        if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current != 0x32) {
             *(int *)&helicopter_hit_count += 1;
             if (*(int *)&helicopter_hit_count >= 5) {
                 q = (unsigned char *)(menu_item_enabled_115 + 1);
@@ -3353,7 +3353,7 @@ extern int fast_subtract_rotations_cf(void *);
 
 /* Idle critter: waits a random time, then plays one of its fidget animations (or reacts when the hero comes close). */
 void crane_arm_update(Moby *m) {
-    float dist = vec_distance_xy(&m->pos, hero_globals_base + 0xE9D);
+    float dist = vec_distance_xy(&m->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
     switch (m->state) {
     case 0:
         if (m->prev_seq != 0) MobyBlendAnimation(m, 0, 0, 0);

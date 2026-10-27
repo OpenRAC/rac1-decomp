@@ -200,7 +200,7 @@ void update_robot_dog_hit_reaction_and_target_detection(Moby *moby, int arg) {
         yaw = FastDiffRots(moby->rot.z, ang2);
         qcopy(tmp, &moby->pos);
         tmp[2] += 1.0f;
-        r = coll_line(tmp, hero_globals_base + 0xEED, 2, 0, 0) == 0;
+        r = coll_line(tmp,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center, 2, 0, 0) == 0;
         d->b1E4 = r;
         if (yaw < 1.0471976f) {
             d->b1E4 = r << 1;
@@ -288,7 +288,7 @@ void update_robot_dog_aim_joint(char *moby) {
     float pitch;
     qcopy(tmp, moby + 0x10);
     tmp[2] += 0.5f;
-    FastVecSub(v, hero_globals_base + 0xEED, tmp);
+    FastVecSub(v,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center, tmp);
     yaw = FastSubRots(fast_atan2(v[0], v[1]), ((Moby *)moby)->rot.z);
     pitch = -fast_atan2(vec_length_xy(v), v[2]);
     if (yaw > 1.0471976f) {
@@ -699,7 +699,7 @@ void Moby1448Update(unsigned char *m) {
         }
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0x80;
-        *(long *)(m + 0x38) = *(long *)(*(char **)(hero_globals_base + 0x2E9D) + 0x38);
+        *(long *)(m + 0x38) = *(long *)(*(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby + 0x38);
         ((Moby *)m)->state = 1;
         v->timer = 0;
         if (((Moby *)m)->prev_seq != 2) {
@@ -773,8 +773,8 @@ void Moby1448Update(unsigned char *m) {
             Hero_ResetToPosition(fleet_camera_points + (v->cut << 7) + 0x30, fleet_camera_points + (v->cut << 7) + 0x70, 0x72, 0);
         } else if (fleet_moby_collected.collected[(short)((Moby *)m)->save_id] != 0
                    || (*(int *)(help_stats_base + 0xAB75 + (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >> (((Moby *)m)->save_id & 0x1F)) & 1) {
-            float d = vec_distance_xy(hero_globals_base + 0xE9D, fleet_camera_points + (v->cam[v->sel] << 7) + 0x30);
-            if (vec_distance_xy(hero_globals_base + 0xE9D, fleet_camera_points + (v->cam[v->sel ^ 1] << 7) + 0x30) < d) {
+            float d = vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, fleet_camera_points + (v->cam[v->sel] << 7) + 0x30);
+            if (vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, fleet_camera_points + (v->cam[v->sel ^ 1] << 7) + 0x30) < d) {
                 int base;
                 int ofs;
                 t = v->sel ^ 1;
@@ -986,8 +986,8 @@ void update_fleet_camera_box_watcher(char *moby) {
     st = d->phase;
     switch (st) {
     case 0:
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->skill_box_a)) {
-            if (*(int *)(hero_globals_base + 0x2EA9) == 0x11) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->skill_box_a)) {
+            if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode == 0x11) {
                 d->phase = 1;
             }
         }
@@ -1050,7 +1050,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         found = 0;
         for (i = 0; i < 1; i++) {
             off = i * 4;
-            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *(int *)(((char *)d) + off))) {
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, *(int *)(((char *)d) + off))) {
                 found = 1;
                 if (d->last_target != *(int *)(((char *)d) + off)) {
                     tgt = *(int *)(((char *)d) + off);
@@ -1075,7 +1075,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             if (*(unsigned char *)(m + 0x20) == 3) goto skip1;
         }
         if (d->dwell_a > d->cooldown && tgt != -1
-            && ((unsigned int)*(int *)(hero_globals_base + 0x2EA9) < 2 || *(int *)(hero_globals_base + 0x2EA9) == 9)
+            && ((unsigned int)((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode < 2 || ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode == 9)
             && fleet_help_popup_state[0] == 0 && fleet_help_popup_state[9] == -1 && gHaveHologuise != 0) {
             d->cooldown = scale_ticks(0x708);
             if (*(int *)(help_stats_base + 0x739) >= 0) {
@@ -1085,7 +1085,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             d->dwell_a = 0;
         }
     skip1:
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->box_b[0]) && fleet_help_popup_state[0] == 0
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->box_b[0]) && fleet_help_popup_state[0] == 0
             && fleet_help_popup_state[9] == -1 && gHaveHeliPack[2] == 0) {
             int w = *(int *)(help_stats_base + 0x761);
             mask = 1 << g_current_level_index;
@@ -1098,7 +1098,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         for (i = 0; i < 3; i++) {
             off = i * 4;
             q = (int *)(((char *)d) + 0x20 + off);
-            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, *q)) {
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, *q)) {
                 found = 1;
                 if (d->last_target != *q) {
                     tgt = *q;
@@ -1106,7 +1106,7 @@ void update_fleet_camera_box_watcher(char *moby) {
                 break;
             }
         }
-        if (!found || (d->dwell_b += 1, *(int *)(hero_globals_base + 0x2EA1) == 0x35)) {
+        if (!found || (d->dwell_b += 1, ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current == 0x35)) {
             d->dwell_b = 0;
             d->last_target = -1;
         }
@@ -1120,7 +1120,7 @@ void update_fleet_camera_box_watcher(char *moby) {
             && (help_stats_base + 0xAA35)[d->mission_slot + (g_current_level_index << 4)] == 0xFF) {
             d->done = 1;
         }
-        if (d->done == 0 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->camera_box)) {
+        if (d->done == 0 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->camera_box)) {
             clear_active_help_record();
             if (*(int *)(help_stats_base + 0x7A9) >= 0) {
                 Help_Request(0x4268, 0x8B);
@@ -1341,7 +1341,7 @@ void update_fleet_backdrop_animation(unsigned char *moby) {
         struct Hero *hero_data = (struct Hero *)(hero_globals_base + 0xE1D);
         if (hero_data->state.current != 0x32 || hero_data->ship_moby == 0 ||
             (hero_data->ship_moby)->oclass != 0x563) {
-            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, moby_pvars->clip_volume)) {
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, moby_pvars->clip_volume)) {
                 fleet_hero_fall_state_height_m = 150.0f;
                 goto done;
             }
@@ -1486,7 +1486,7 @@ void Moby1843Update(unsigned char *moby) {
             ((Moby *)moby)->collision = 0;
             ((Moby *)moby)->flags |= 1;
         } else if (((Moby *)moby)->visible == 0) {
-            if (FastVecDist(&((Moby *)moby)->pos, hero_globals_base + 0xE9D) < 32.0f) {
+            if (FastVecDist(&((Moby *)moby)->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 32.0f) {
                 ((Moby *)moby)->state = 3;
                 ((Moby *)moby)->collision = 0;
                 ((Moby *)moby)->flags |= 1;
@@ -1497,7 +1497,7 @@ void Moby1843Update(unsigned char *moby) {
         qcopy(scratch_vector, &((Moby *)moby)->pos);
         scratch_vector[3] = 3.0f;
         if (FastBSphereCheck((char *)&((Moby *)moby)->pos, 512.0f) == -1) {
-            if (FastVecDist(&((Moby *)moby)->pos, hero_globals_base + 0xE9D) > 32.0f) {
+            if (FastVecDist(&((Moby *)moby)->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) > 32.0f) {
                 moby_pvars->dwell += 1;
                 if (scale_ticks(60) < moby_pvars->dwell) {
                     ((Moby *)moby)->state = 1;
@@ -1526,8 +1526,8 @@ void Moby1843Update(unsigned char *moby) {
             clamped_euler_angles[1] = -0.2617994f;
         }
         euler_rotation_basis(rotation_basis_row0, clamped_euler_angles);
-        FastVecSub(hero_position_delta, hero_globals_base + 0xE9D, &moby_pvars->hero_pos);
-        qcopy(&moby_pvars->hero_pos, hero_globals_base + 0xE9D);
+        FastVecSub(hero_position_delta,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, &moby_pvars->hero_pos);
+        qcopy(&moby_pvars->hero_pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
         FastVecAdd(&((Moby *)moby)->pos, &((Moby *)moby)->pos, hero_position_delta);
         offset_angle = FastAddRots(0.7853982f, (float)moby_pvars->quadrant * 1.5707964f);
         vec_scale_to_length(scratch_vector, rotation_basis_row1, FastSin(offset_angle) * 8.0f);
@@ -1560,7 +1560,7 @@ void Moby1843Update(unsigned char *moby) {
                 ((Moby *)moby)->command = 0;
             }
         } else {
-            float *tgt = (float *)(hero_globals_base + 0xE9D);
+            float *tgt = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
             float *yaw = &((Moby *)moby)->rot.z;
             float *pitch = &((Moby *)moby)->rot.y;
             float ang;
@@ -1600,8 +1600,8 @@ void Moby1843Update(unsigned char *moby) {
         }
         break;
     case BLARG_SHIP_BURST_AND_DEACTIVATE:
-        FastVecSub(scratch_vector, hero_globals_base + 0xE9D, &moby_pvars->hero_pos);
-        qcopy(&moby_pvars->hero_pos, hero_globals_base + 0xE9D);
+        FastVecSub(scratch_vector,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, &moby_pvars->hero_pos);
+        qcopy(&moby_pvars->hero_pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
         FastVecAdd(&((Moby *)moby)->pos, &((Moby *)moby)->pos, scratch_vector);
         SpawnExplosionFx(moby, &((Moby *)moby)->pos, -1, 2.0f, 13.0f);
         if (random_integer_below(2)) {
@@ -1647,7 +1647,7 @@ char *try_activate_blarg_ship_from_list(int list) {
         FastVecAdd(B, B, A);
         vec_scale_to_length(A, D, 6.0f);
         FastVecAdd(B, B, A);
-        qcopy(d + 0xB0, hero_globals_base + 0xE9D);
+        qcopy(d + 0xB0,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
         qcopy(m + 0x10, B);
         m[0x20] = 5;
         m[0xBC] = 1;

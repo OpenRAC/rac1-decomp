@@ -511,7 +511,7 @@ extern void update_trespasser_pickup(void *);
 void trespasser_update(Moby *m) {
     if (((struct TrespasserVars *)m->pvars)->picked_up != 0) {
         update_trespasser_pickup(m);
-    } else if (*(int *)(pad_globals_base + 0x2600) & *(int *)(hero_globals_base + 0x1EBD)) {
+    } else if (*(int *)(pad_globals_base + 0x2600) & ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->items[0].button_mask) {
         m->command = 1;
     } else {
         m->command = 0;
@@ -2113,14 +2113,14 @@ void devestator_ammo_update(Moby *m) {
         m->pos.z += p->rise_speed;
         limit = FastVecLength(&p->velocity);
         ApproachValue(&limit, g_frame_time * 64.0f, g_frame_time_sq * 24.0f);
-        FastVecSub(&p->velocity, hero_globals_base + 0xEED, &m->pos);
+        FastVecSub(&p->velocity,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center, &m->pos);
         if (m->scale == 0.0f || FastVecLength(&p->velocity) < limit) {
             DeleteMoby(m);
             return;
         }
         vec_scale_to_length(&p->velocity, &p->velocity, limit);
         FastVecAdd(&m->pos, &m->pos, &p->velocity);
-        distance = FastVecDist(&m->pos, hero_globals_base + 0xEED);
+        distance = FastVecDist(&m->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
         factor = (float)scale_ticks(30);
         factor = factor * limit;
         factor = factor + 0.01f;
@@ -2790,13 +2790,13 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2)
     out = (float *)P->pvars;
     *(u128 *)v80 = 0;
     v80[0] = 1.0f;
-    matrix_mul_vec3_r(v80, v80, hero_globals_base_r + 0x145D);
+    matrix_mul_vec3_r(v80, v80,((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->basis);
     {
         Hero *h = (Hero *)(hero_globals_base_r + 0xE1D);
         q0[0] = FastCos_r(FastAddRots_r(-0.361968011f, fast_atan2_r(h->facing_x, h->facing_y))) * 0.859039009f;
         q0[1] = FastSin_r(FastAddRots_r(-0.361968011f, fast_atan2_r(h->facing_x, h->facing_y))) * 0.859039009f;
         q0[2] = 0.0f;
-        FastVecAdd_r2(q0, q0, hero_globals_base_r + 0xE9D);
+        FastVecAdd_r2(q0, q0,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos);
         q0[2] = q0[2] + 0.390819997f;
         fast_atan2_r(v80[0], v80[1]);
         s = (((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f;
@@ -2832,7 +2832,7 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2)
                 va0[2] = f23;
                 FastVecAdd_r2(vc0, g_debug_camera_r4, va0);
                 if (coll_line_r5(g_debug_camera_r4, vc0, 2, a0, 0)
-                    && ((Hit_2C88A8 *)coll_hit_result_r4)->moby != *(void **)(hero_globals_base_r + 0x2E9D)) {
+                    && ((Hit_2C88A8 *)coll_hit_result_r4)->moby != *(void **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby) {
                     qcopy(v90, ((Hit_2C88A8 *)coll_hit_result_r4)->point);
                     flag = 1;
                     f22 = fast_atan2_r(v90[0] - q0[0], v90[1] - q0[1]);
@@ -2846,7 +2846,7 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2)
                 }
             }
         } else {
-            *(int *)(hero_globals_base_r + 0x186D) = 0;
+            *(int *)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->throw_target = 0;
         }
     }
     compute_glove_of_doom_launch_velocity_r(q0, v90, out, g_frame_time_sq_r2 * 9.0f, 0.00000999999975f,

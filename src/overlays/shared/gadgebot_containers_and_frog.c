@@ -528,7 +528,7 @@ void frog_update(unsigned char *m) {
         FastVecSub(A, &t->pos, &((Moby *)m)->pos);
         probe_frog_local_z_collision((char *)m);
         blend_frog_rotation_to_facing_frame((char *)m, (float *)blarg_coll_hit_normal, A);
-        if (vec_distance_xy(hero_globals_base + 0xE9D, &((Moby *)m)->pos) < ((struct FrogVars *)d)->wake_dist) {
+        if (vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, &((Moby *)m)->pos) < ((struct FrogVars *)d)->wake_dist) {
             ((Moby *)m)->state = 4;
             if (((Moby *)m)->prev_seq != 4) MobyBlendAnimation(m, 4, 0, scale_ticks(5));
         }
@@ -680,7 +680,7 @@ void frog_update(unsigned char *m) {
         B[2] = 0.0f;
         blend_frog_rotation_to_facing_frame((char *)m, &((Moby *)m)->rot_row2.x, B);
         f = MobyGetFrameValue(m);
-        if (((Moby *)m)->seq == ((Moby *)m)->prev_seq && f >= 10.0f && f <= 15.0f && *(int *)(hero_globals_base + 0x2EA1) != 0x51) {
+        if (((Moby *)m)->seq == ((Moby *)m)->prev_seq && f >= 10.0f && f <= 15.0f && ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current != 0x51) {
             vec_scale_to_length(A, &((Moby *)m)->rot_row0, (((struct FrogVars *)d)->speed + ((struct FrogVars *)d)->speed) * g_frame_time);
             move_frog_with_collision_resolution(m, A, 1, 0.3f, 0.3f);
             collect_mobies_in_sphere_at_moby_point(m, 0, 1, 0.333f, 1.0f, 1.0f, 0, 1, 0);
@@ -2750,7 +2750,7 @@ void update_moby_rotation_group(Moby *m) {
             flag = 0;
             if (d->idx >= 0) {
                                 if (level_mobys_q_r3[d->idx].oclass == 0x5A8) {
-                    if (vec_distance_xy(hero_globals_base + 0xE9D, (*(float (*)[4])&level_mobys_q_r3[d->idx].pos)) < 20.0f) {
+                    if (vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, (*(float (*)[4])&level_mobys_q_r3[d->idx].pos)) < 20.0f) {
                         flag = 1;
                     }
                 } else if (level_mobys_q_r3[d->idx].oclass == 0x24A) {
@@ -2759,7 +2759,7 @@ void update_moby_rotation_group(Moby *m) {
                     flag = level_mobys_q_r3[d->idx].state >= 3;
                 }
             } else {
-                if (vec_distance_xy((*(float (*)[4])&m->pos), hero_globals_base + 0xE9D) < 6.0f && rotation_group_fallback_proximity_trigger_inhibit_gp == 0.0f) {
+                if (vec_distance_xy((*(float (*)[4])&m->pos),&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 6.0f && rotation_group_fallback_proximity_trigger_inhibit_gp == 0.0f) {
                     flag = 1;
                 }
             }

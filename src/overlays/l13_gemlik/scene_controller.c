@@ -3,6 +3,7 @@
 #include "records.h"
 #include "include_asm.h"
 #include "moby.h"
+#include "hero.h"
 
 /* Hit proxy (moby 0x660): forwards the hits it takes to the moby that owns it. */
 struct HitProxyVars {
@@ -108,7 +109,7 @@ void update_gemlik_scene_controller(Moby *moby)
     case 4:
         if (((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f65 == 0) {
             if (data->f0 != -1) {
-                if (is_point_inside_clip_volume_r(hero_globals_base_r + 0xE9D, data->f0) != 0) {
+                if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, data->f0) != 0) {
                     ((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f65 = 1;
                     if (data->f14 != -1) {
                         Moby *e = &gemlik_moby_array_start_r[data->f14];
@@ -585,7 +586,7 @@ void update_moby_motion_and_emit_sparks(char *moby)
     if (FastDecTimer(&data->life) != 0) {
         DeleteMoby(moby);
     } else if (((struct Moby *)moby)->command == 1) {
-        if (coll_line(&old_pos, &((struct Moby *)moby)->pos, 2, *(int *)(hero_globals_base + 0x2E9D), 0)) {
+        if (coll_line(&old_pos, &((struct Moby *)moby)->pos, 2, *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby, 0)) {
             spawn_type_52_particle_near_moby(moby);
             DeleteMoby(moby);
         }

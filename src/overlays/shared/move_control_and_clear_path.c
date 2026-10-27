@@ -284,7 +284,7 @@ extern char hero_globals_base[];
 void spawn_proximity_gated_bolts(char *moby)
 {
     int r = 0;
-    if (vec_distance_xy(moby + 0x10, hero_globals_base + 0xE9D) < 7.0f) {
+    if (vec_distance_xy(moby + 0x10,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 7.0f) {
         r = 2;
     }
     spawn_randomized_bolt_drop(moby, 4, 7, r, -1);

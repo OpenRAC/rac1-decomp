@@ -713,7 +713,7 @@ int HeroL06_TrySetMoveState(int a, int b) {
             p->unk2284 = 0x50;
         }
         {
-            char *v = hero_globals_base + 0xEFD;
+            char *v =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.velocity;
             char *r;
             qcopy(v, v + 0x30);
             r = v - 0xE0;
@@ -1560,7 +1560,7 @@ int HeroL06_TrySetMoveState(int a, int b) {
             return 0;
         }
         {
-            char *v = hero_globals_base + 0xF2D;
+            char *v =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.resolved_velocity;
             char *g;
             float r = vec_length_xy(v);
             g = v - 0x110;

@@ -426,7 +426,7 @@ int Hero_TryMoveState(int a, int b) {
                 *(unsigned short *)(h + 0xEA) = scale_ticks(gameplay_event_frame_count) / 600;
             }
             *(unsigned int *)(h + 0xEC) = *(unsigned int *)(h + 0xEC) | (1 << g_current_level_index) | 0x80000000;
-            v = hero_globals_base + 0xF6D;
+            v =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.momentum;
             qcopy(v, v - 0x40);
         }
         if (b) set_hero_animation(0x5F, 0, (float)scale_ticks(0xA));
@@ -561,7 +561,7 @@ int Hero_TryMoveState(int a, int b) {
             p->unk690 = -0.2f;
         }
         {
-            char *v2 = hero_globals_base + 0xEFD;
+            char *v2 =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.velocity;
             char *w;
             clear_u64_value(v2);
             w = v2 + 0x70;
@@ -1110,7 +1110,7 @@ int Hero_TryMoveState(int a, int b) {
             p->unk2284 = 0x50;
         }
         {
-            char *v = hero_globals_base + 0xEFD;
+            char *v =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.velocity;
             char *r;
             qcopy(v, v + 0x30);
             r = v - 0xE0;
@@ -1771,7 +1771,7 @@ int Hero_TryMoveState(int a, int b) {
             return 0;
         }
         {
-            char *v = hero_globals_base + 0xF2D;
+            char *v =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.resolved_velocity;
             char *g;
             float r = vec_length_xy(v);
             g = v - 0x110;

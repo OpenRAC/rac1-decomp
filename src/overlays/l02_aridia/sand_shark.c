@@ -410,7 +410,7 @@ void sand_shark_update(unsigned char *moby) {
         if (w[0x20] < 5) {
             break;
         }
-        if (*(int *)(hero_globals_base + 0x2EA1) == 0x72) {
+        if (((struct Hero *)(hero_globals_base + 0xE1D))->state.current == 0x72) {
             break;
         }
         ((Moby *)moby)->flags &= 0xFFBE;
@@ -423,7 +423,7 @@ void sand_shark_update(unsigned char *moby) {
         break;
     }
     case 1:
-        FastVecSub(v0, hero_globals_base + 0xE9D, moby + 0x10);
+        FastVecSub(v0, &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, moby + 0x10);
         ((Moby *)moby)->state = 0x12;
         if (((Moby *)moby)->prev_seq != 0) {
             MobyBlendAnimation(moby, 0, 0, scale_ticks(3));
@@ -804,10 +804,10 @@ void sand_shark_update(unsigned char *moby) {
     case 0xC:
     {
         int in;
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->i26C)) {
+        if (is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->i26C)) {
             in = 1;
         } else {
-            in = is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->i270) != 0;
+            in = is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->i270) != 0;
         }
         if (in) {
             float dz, vz, ft, k;
@@ -1161,7 +1161,7 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
         ((Moby *)moby)->pos.z -= 10.0f;
     }
     if (d->i38 != 0 ||
-        (!FastDecTimer(&d->t25C) && vec_distance_xy(moby + 0x10, hero_globals_base_r + 0xE9D) < 10.0f)) {
+        (!FastDecTimer(&d->t25C) && vec_distance_xy(moby + 0x10, &((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos) < 10.0f)) {
         d->t25E = truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 240.0f)));
     }
     d->i38 = 0;
@@ -1443,7 +1443,7 @@ void update_level02_bot(unsigned char *raw) {
         data->b58 = 0xF;
         data->b5A = 8;
         data->b29 = 0;
-        *(long *)&moby->spawn_frame = *(long *)(*(char **)(hero_globals_base + 0x2E9D) + 0x38);
+        *(long *)&moby->spawn_frame = *(long *)&((struct Hero *)(hero_globals_base + 0xE1D))->moby->spawn_frame;
         MoveCtl_Init(data->walk);
         step = g_frame_time * 4.0f;
         data->b28 = 2;
@@ -1588,8 +1588,8 @@ void update_level02_bot(unsigned char *raw) {
     case L02_BOT_WAIT_FOR_WAKE_TRIGGER:
         triggered = 0;
         if (data->wake_volume >= 0) {
-            triggered = is_point_inside_clip_volume(hero_globals_base + 0x10BD, data->wake_volume) != 0;
-        } else if (FastVecDist(hero_globals_base + 0xE9D, aridia_scene_points + data->post * 0x80 + 0x30) < data->wake_range) {
+            triggered = is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->ground_point, data->wake_volume) != 0;
+        } else if (FastVecDist(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, aridia_scene_points + data->post * 0x80 + 0x30) < data->wake_range) {
             triggered = 1;
         }
         if (triggered) {
@@ -2474,7 +2474,6 @@ extern void enter_hero_idle_or_stop(void);
 extern void set_vendor_camera_mode(int, int);
 extern void set_selected_object_float_triplets(float, float, float, float, float, float);
 
-typedef struct PPlayer { char pad0[0x2FC]; unsigned char *pod; char pad300[0xE]; short mode; char pad310[0x1D94]; unsigned char blocked; } PPlayer;
 #define G(i) ((char *)D_L02_00160058 + ((i) << 8))
 #define HP ((float *)(D_0013E633 + 0xE9D))
 /* Transport pod state machine: boarding, rail moves, ride camera and disembarking. */
@@ -2612,8 +2611,8 @@ void transport_pod_update(unsigned char *moby) {
             ((struct Moby *)moby)->command = 0;
             moby[0x20] = 3;
             Moby_PlaySound(1, 0, (int)moby);
-        } else if (((PPlayer *)(hero_globals_base + 0xE1D))->pod == moby && ((PPlayer *)(hero_globals_base + 0xE1D))->mode == 0 &&
-                   ((PPlayer *)(hero_globals_base + 0xE1D))->blocked == 0) {
+        } else if (((struct Hero *)(hero_globals_base + 0xE1D))->ground_moby == (struct Moby *)moby && ((struct Hero *)(hero_globals_base + 0xE1D))->air_frames.s == 0 &&
+                   ((struct Hero *)(hero_globals_base + 0xE1D))->vehicle_mode == 0) {
             qcopy(b, moby + 0x10);
             b[2] += 2.0f;
             if (((struct Moby *)moby)->command == 0) {
@@ -2745,7 +2744,7 @@ void transport_pod_update(unsigned char *moby) {
         }
         break;
     case TRANSPORT_POD_WAIT_FOR_RIDER_TO_LEAVE:
-        if (*(unsigned char **)(hero_globals_base + 0x1119) != moby) {
+        if ((unsigned char *)((struct Hero *)(hero_globals_base + 0xE1D))->ground_moby != moby) {
             moby[0x20] = 5;
         }
         break;

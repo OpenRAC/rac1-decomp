@@ -211,7 +211,7 @@ void spawn_nanotech_ball_collection_effect_pair(Moby *m) {
     Vx c;
     char *p = (char *)&m->pos;
     FastVecSub(&a, g_debug_camera, p);
-    FastVecScale(&b, hero_globals_base + 0x10AD,
+    FastVecScale(&b,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir,
         random_float_between(*(float *)&nanotech_spark_speed_min * g_frame_time, *(float *)&nanotech_spark_speed_max * g_frame_time));
     build_look_at_matrix(&c, &b, random_angle_radians(), &a);
     spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&nanotech_ball_collection_first_particle_color, nanotech_spark_life, random_integer_below(0xFF) & 0xFF, 1, *(float *)&nanotech_spark_size_a);
@@ -317,7 +317,7 @@ int is_nanotech_ball_target_line_clear(Moby *m) {
     Vz a, b;
     qcopy(&a, &m->pos);
     a.z += 0.5f;
-    qcopy(&b, *(char **)(hero_globals_base + 0x2E9D) + 0x10);
+    qcopy(&b, *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby + 0x10);
     b.z += 0.5f;
     return coll_line(&a, &b, 0x12, 0, 0) == 0;
 }
@@ -591,8 +591,8 @@ void nanotech_ball_update(Moby *m) {
     case 3:
         if (primary_nanotech_ball_moby_r == m) update_nanotech_ball_slot_offsets_r();
         if (d->h56 != 0) {
-            FastVecScale_r(&m->pos, hero_globals_base_r + 0x10AD, -D_L00_00161B24_2D9EA0);
-            FastVecAdd_r(&m->pos, hero_globals_base_r + 0xE9D, &m->pos);
+            FastVecScale_r(&m->pos,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->gravity_dir, -D_L00_00161B24_2D9EA0);
+            FastVecAdd_r(&m->pos,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, &m->pos);
             m->rot.w = 0.52359879f;
             if (update_nanotech_ball_collection_effects_r(m) != 0 && random_integer_below_r(5) == 0) spawn_nanotech_ball_collection_effect_pair_r(m);
         }
@@ -621,8 +621,8 @@ void nanotech_ball_update(Moby *m) {
             else DeleteMoby_r(m);
         } else {
             int i;
-            FastVecScale_r(&v20, hero_globals_base_r + 0x10AD, -D_L00_00161B24_2D9EA0);
-            FastVecAdd_r(&v20, hero_globals_base_r + 0xE9D, &v20);
+            FastVecScale_r(&v20,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->gravity_dir, -D_L00_00161B24_2D9EA0);
+            FastVecAdd_r(&v20,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, &v20);
             for (i = 0; i < 8; i++) {
                 Part_2D9EA0 *e = d->slots[i];
                 Ext_2D9EA0 *x;
@@ -1739,7 +1739,7 @@ int store_moby_in_suck_cannon(unsigned char *m, void *v) {
         qcopy(&((Moby *)m)->pos, v);
         compose_moby_rotation_with_euler_offset(*(char **)&o->target, (char *)m, &suck_cannon_stored_rot_offset);
         moby_anim_sphere_lerp(m);
-        g = *(int *)(hero_globals_base + 0x1EAD);
+        g = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->items[0].moby;
         if (g != 0 && *(short *)(g + 0xA6) == 0x351) {
             Moby_PlaySound(5, 0, g);
         }
@@ -1797,7 +1797,7 @@ int launch_suck_cannon_projectile(Moby *m, float *pos, char *other, float f) {
             d->unk_90 = f;
             d->unk_48 += f;
         }
-        if (vec_distance_xy(&m->pos, hero_globals_base + 0xE9D) < 1.0f) {
+        if (vec_distance_xy(&m->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 1.0f) {
             FastVecAdd(&m->pos, &m->pos, &d->launch_pos);
         }
         s = d->unk_9C;
@@ -2884,7 +2884,7 @@ void scatter_moby_from_hazards(Moby *m) {
     if (*(int *)&m->pclass == 0 || *(short *)(*(int *)&m->pclass + 0x46) != 0x13) {
         if (!is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(m)) return;
     }
-    if (!(FastVecDist(&m->pos, pos = hero_globals_base + 0xE9D) < 30.0f)) return;
+    if (!(FastVecDist(&m->pos, pos =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 30.0f)) return;
     for (i = 0; i < 10 && suck_beam_segment_alpha[i] >= 8; i++) {
         lim = i * 0.3f + 0.1f;
         if (lim < 2.0f) lim = 2.0f;

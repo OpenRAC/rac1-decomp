@@ -620,13 +620,13 @@ void novalis_elevator_update(unsigned char *moby) {
     }
     path = novalis_paths[data->path_idx];
     if (data->clip_volume != -1) {
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->clip_volume) == 0) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->clip_volume) == 0) {
             ((Moby *)moby)->update_dist = 0xFF;
             *(int *)&((Moby *)moby)->collision = 0;
             ((Moby *)moby)->flags |= 0x41;
             return;
         }
-        if (data->clip_volume != -1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->clip_volume)) {
+        if (data->clip_volume != -1 && is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->clip_volume)) {
             ((Moby *)moby)->flags &= 0xFFBE;
             *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((Moby *)moby)->pclass + 0x10);
             data->clip_volume = -1;
@@ -634,7 +634,7 @@ void novalis_elevator_update(unsigned char *moby) {
     }
     if (data->trigger_idx != -1) {
         unsigned short id;
-        if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->trigger_idx)
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->trigger_idx)
             || novalis_checkpoint_level_state.collected[(short)(id = ((Moby *)moby)->save_id)] != 0
             || (*(int *)(help_stats_base + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) & 1) {
             if (data->trigger_idx != -1) {
@@ -676,8 +676,8 @@ void novalis_elevator_update(unsigned char *moby) {
         if (on) {
             float fa;
             if ((data->use_on_hero != 0 && is_hero_on_moby(moby))
-                || (fa = FastVecDist(hero_globals_base + 0xE9D, path + *(int *)path * 16),
-                    FastVecDist(hero_globals_base + 0xE9D, path + 0x10) < fa)) {
+                || (fa = FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, path + *(int *)path * 16),
+                    FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, path + 0x10) < fa)) {
                 ((Moby *)moby)->command = 2;
                 data->speed = -1.0f / multiply_global_factor(data->travel_time * 60.0f);
                 data->use_on_hero = 0;
@@ -688,8 +688,8 @@ void novalis_elevator_update(unsigned char *moby) {
         if (on) {
             float nr;
             if ((data->use_on_hero != 0 && is_hero_on_moby(moby))
-                || (nr = FastVecDist(hero_globals_base + 0xE9D, path + 0x10),
-                    FastVecDist(hero_globals_base + 0xE9D, path + *(int *)path * 16) < nr)) {
+                || (nr = FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, path + 0x10),
+                    FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, path + *(int *)path * 16) < nr)) {
                 ((Moby *)moby)->command = 2;
                 data->speed = 1.0f / multiply_global_factor(data->travel_time * 60.0f);
                 data->use_on_hero = 0;
@@ -704,7 +704,7 @@ void novalis_elevator_update(unsigned char *moby) {
         }
         if (data->wait_timer != 0
             || (data->unk_BC < 0.0f
-                && vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos), hero = (hero_globals_base + 0xE9D)) < 2.83f
+                && vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos), hero = (&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos)) < 2.83f
                 && FastAbsF(*(float *)((hero -= 0x80) + 0x88) - ((Moby *)moby)->pos.z) < 4.0f
                 && ((Moby *)moby)->pos.z - *(float *)(hero + 0x88) > 0.9f)) {
             int r;
@@ -773,7 +773,7 @@ void novalis_elevator_update(unsigned char *moby) {
     FastVecSub(delta, ((unsigned char *)&((Moby *)moby)->pos), orig);
     update_entity_matrix((char *)&data->unk_60, delta, &((Moby *)moby)->rot, &((Moby *)moby)->rot);
     if (!is_hero_on_moby(moby)) {
-        if (2.0f < vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos), (hero_globals_base + 0xE9D))) {
+        if (2.0f < vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos), (&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos))) {
             if (data->wait_timer == 0) {
                 data->use_on_hero = 1;
             }
@@ -1192,7 +1192,7 @@ void bolt_crank_update(char *m) {
             F(h, 0x180) = FastAddRots(1.5707964f, f22);
         }
         }
-        step_angle_toward_target((float *)(hero_globals_base + 0xEB5), F(H, 0x180), 0, g_frame_time * 6.2831855f);
+        step_angle_toward_target((float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot.f[2]), F(H, 0x180), 0, g_frame_time * 6.2831855f);
         F(s, 0x24) = F(s, 0x24) + g_frame_time_sq * 9.8f;
         F(H, 0x88) = F(H, 0x88) - (F(s, 0x24) - 2.0f);
         g = ProbeGroundHeight(HP, 0, 0.5f);
@@ -1216,7 +1216,7 @@ void bolt_crank_update(char *m) {
         F(s, 0x0) = F(s, 0x18) / (F(s, 0x30) * 6.2831855f);
         if (1.0f < F(s, 0x0)) F(s, 0x0) = 1.0f;
         if (F(s, 0x0) < 0.0f) F(s, 0x0) = 0.0f;
-        FastMemZero16(hero_globals_base + 0xEFD, 0x90);
+        FastMemZero16(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.velocity, 0x90);
         goto done;
     case 4:
         F(m, 0x18) = F(m, 0x18) - g_frame_time * 0.5f;
@@ -2043,7 +2043,7 @@ void update_moby_motion_collision_and_burst(char *moby) {
         if (gz < moby_vars->floor_offset) {
             mb->pos.z = mb->pos.z + (moby_vars->floor_offset - gz);
             moby_vars->vel_z.i = 0;
-        } else if (mb->pos.z < *(float *)(hero_globals_base + 0x10C5) + moby_vars->floor_offset) {
+        } else if (mb->pos.z < ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ground_point.f[2] + moby_vars->floor_offset) {
             moby_vars->vel_z.i = 0;
         } else {
             moby_vars->vel_z.f -= g_frame_time_sq * 10.8f;
@@ -2510,7 +2510,7 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
         if (p != 0) {
             short cls = *(short *)(p + 0xA6);
             if (cls == 0x47) {
-                qcopy(&w, hero_globals_base + 0xEED);
+                qcopy(&w,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
                 wp = &w.q;
             } else {
                 x = *(char **)(p + 0x24);
@@ -2648,7 +2648,7 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
         }
     }
     if (*(int *)&d->target == 0) {
-        *(int *)&d->target = *(int *)(hero_globals_base + 0x2E9D);
+        *(int *)&d->target = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
     }
     ang = FastAddRots(d->wobble_angle, g_frame_time * 9.424778f);
     d->wobble_angle = ang;

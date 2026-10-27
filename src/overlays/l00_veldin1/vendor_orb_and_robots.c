@@ -68,7 +68,7 @@ void clank_cutscene_trigger_update(M *m) {
         break;
     case 1:
         if (e->s56) {
-            if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, e->i60))
+            if (is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, e->i60))
                 e->f2c = 16.0f;
             else
                 e->f2c = 3.0f;
@@ -719,7 +719,7 @@ void draw_veldin_robot_effect_quad(char *m) {
     bb[3] = 1.0f;
     FastVecSub(c, g_debug_camera, bb);
     vec_scale_to_length(c, c, 1.0f);
-    FastVecCross(d, c, hero_globals_base + 0x10AD);
+    FastVecCross(d, c, &((struct Hero *)(hero_globals_base + 0xE1D))->gravity_dir);
     vec_scale_to_length(d, d, -1.0f);
     FastVecCross(e, d, c);
     t.q0 = GetEffectTex(11);

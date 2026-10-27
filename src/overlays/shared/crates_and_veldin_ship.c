@@ -599,7 +599,7 @@ void break_crate(void *mv, int a1, int av) {
     if (a2 != 0) {
         qcopy(v10, a2 + 0x10);
     } else {
-        FastVecSub(v10, &((Moby *)m)->pos, *(unsigned char **)(hero_globals_base + 0x2E9D) + 0x10);
+        FastVecSub(v10, &((Moby *)m)->pos, *(unsigned char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby + 0x10);
     }
 
     switch ((short)(*(unsigned short *)&((Moby *)m)->oclass - 0x1F4)) {
@@ -675,7 +675,7 @@ void break_crate(void *mv, int a1, int av) {
     c8 = 8.0f;
     if (a1 != 0) {
         int nn;
-        if (*(int *)(hero_globals_base + 0x2EA9) == 0x16)
+        if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode == 0x16)
             dat->unk_CA = scale_ticks(5);
         else
             dat->unk_CA = 1;
@@ -790,7 +790,7 @@ void update_crate_stack_motion(Moby *a) {
             return;
         o->last_frame = level_frame_counter;
         if (a->state != 0) {
-            g = hero_globals_base + 0xE9D;
+            g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
             FastVecSub(v3, g, &a->pos);
             matrix_mul_vec3(v3, v3, &a->rot_row0);
             if (FastAbsF(v3[0]) < 0.55f && FastAbsF(v3[1]) < 0.55f && v3[2] < 0 &&
@@ -1069,13 +1069,13 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position)
     output = (float *)target->pvars;
     *(u128_2D3608 *)direction = 0;
     direction[0] = 1.0f;
-    matrix_mul_vec3_r(direction, direction, hero_globals_base_r + 0x145D);
+    matrix_mul_vec3_r(direction, direction,((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->basis);
     {
         Hero *h = (Hero *)(hero_globals_base_r + 0xE1D);
         anchor_ptr[0] = FastCos_r(FastAddRots_r(-0.361968011f, fast_atan2_r(h->facing_x, h->facing_y))) * 0.859039009f;
         anchor_ptr[1] = FastSin_r(FastAddRots_r(-0.361968011f, fast_atan2_r(h->facing_x, h->facing_y))) * 0.859039009f;
         anchor_ptr[2] = 0.0f;
-        FastVecAdd_r2(anchor_ptr, anchor_ptr, hero_globals_base_r + 0xE9D);
+        FastVecAdd_r2(anchor_ptr, anchor_ptr,&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos);
         anchor_ptr[2] = anchor_ptr[2] + 0.390819997f;
         fast_atan2_r(direction[0], direction[1]);
         range = (((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f;
@@ -1111,7 +1111,7 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position)
                 launch[2] = vertical;
                 FastVecAdd_r2(endpoint, g_debug_camera_r, launch);
                 if (coll_line_r2(g_debug_camera_r, endpoint, 2, collision_arg, 0)
-                    && ((Hit_2D3608 *)coll_hit_result_r)->moby != *(void **)(hero_globals_base_r + 0x2E9D)) {
+                    && ((Hit_2D3608 *)coll_hit_result_r)->moby != *(void **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby) {
                     qcopy(aim, ((Hit_2D3608 *)coll_hit_result_r)->point);
                     hit = 1;
                     heading = fast_atan2_r(aim[0] - anchor_ptr[0], aim[1] - anchor_ptr[1]);
@@ -1125,7 +1125,7 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position)
                 }
             }
         } else {
-            *(int *)(hero_globals_base_r + 0x186D) = 0;
+            *(int *)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->throw_target = 0;
         }
     }
     compute_glove_of_doom_launch_velocity_r(anchor_ptr, aim, output + 4, g_frame_time_sq_r * 9.0f, 0.00000999999975f,
@@ -1688,7 +1688,7 @@ extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 /* Starts animation 6 if the hero state is 8 and the moby is not already playing it. */
 void helipack_update(Moby *a) {
-    if (*(int *)(hero_globals_base + 0x2EA1) == 8) {
+    if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current == 8) {
         if (a->prev_seq != 6) {
             MobyBlendAnimation(a, 6, 0, scale_ticks(10));
         }

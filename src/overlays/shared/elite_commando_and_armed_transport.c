@@ -4,6 +4,7 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "moby.h"
+#include "hero.h"
 
 /* One aimed joint of the elite commando: manipulator block plus the eased pitch and yaw. */
 struct EliteJointAim {
@@ -212,7 +213,7 @@ void HomingProjectileUpdate(char *m) {
     }
     remaining=delta;
     if(coll_line((m+0x10),next,0,m,0)!=0 || FastVecLength(remaining)<d->length) {
-        if(*(unsigned char*)(hero_globals_base+0x2EC1)==2) MobySphereHitDirectional((int)m,2.0f,(m+0x10),3,2.0f,1.0f,0,1,0);
+        if(((struct Hero *)((char *)&hero_globals_base + 0xE1D))->vehicle_mode==2) MobySphereHitDirectional((int)m,2.0f,(m+0x10),3,2.0f,1.0f,0,1,0);
         Sound_PlayClassSound(4,0,(int)m,0x54C);
         spawn_explosion(m,((char *)d),(m+0x10),4.0f,4.0f,10,3,16,4.0f,2.0f,9.0f,-1,1.0f,15.0f,1,1,-1,0);
         DeleteMoby(m);
@@ -309,7 +310,7 @@ void blarg_elite_commando_update(char *m) {
     owner = d->owner;
     cls = *(short *)(owner + 0xA6);
     if (cls == 0 || cls == 0x1A3) {
-        qcopy(target, hero_globals_base + 0xEDD);
+        qcopy(target,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.near_ground_point);
     } else {
         qcopy(target, owner + 0x10);
     }
@@ -503,7 +504,7 @@ animate_idle:
             d->sound_slot = Moby_PlaySound_update(7, 4, m);
     }
     if (*(int *)&blarg_elite_commando_joint_aim_enabled_gp) update_blarg_elite_commando_joint_aim(m);
-    if (*(int *)&blarg_elite_commando_joint_sparks_enabled_gp && *(int *)(hero_globals_base + 0x2EA9) != 22) emit_blarg_elite_commando_joint_sparks(m);
+    if (*(int *)&blarg_elite_commando_joint_sparks_enabled_gp && ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode != 22) emit_blarg_elite_commando_joint_sparks(m);
     if (g_current_level_index == 18 && kalebo3_game_mode == 2 && (unsigned int)(kalebo3_cutscene_scene_id - 3) < 3U) DeleteMoby(m);
 }
 extern char *MobyGetHitMessage(void *, int, int);
@@ -882,7 +883,7 @@ void update_blarg_elite_commando_joint_aim(char *m) {
         float *savedTarget,*savedMatrix;
         float yaw,pitch;
         qcopy(position,m+0x10);position[2]+=2.0f;
-        if(*(short*)(d->owner+0xA6)==0) qcopy(target,hero_globals_base+0xEED);
+        if(*(short*)(d->owner+0xA6)==0) qcopy(target,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
         else qcopy(target,&d->aim_fallback);
         savedTarget=target;
         matrix_from_basis_rows(matrix,m+0xC0);
@@ -1459,7 +1460,7 @@ void group_trigger_nearest(int idx) {
         do {
             char *m = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
             if (*(short *)(m + 0xA6) != 0x5A3) {
-                float d = FastVecDist_r(hero_globals_base + 0xE9D, m + 0x10);
+                float d = FastVecDist_r(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, m + 0x10);
                 if (d < bestd) {
                     bestd = d;
                     best = m;

@@ -710,7 +710,7 @@ void draw_beam_anchor_camera_facing_quads(void *mv) {
     mat[3].f[3] = 1.0f;
     FastVecSub(&mat[0], g_debug_camera, &mat[3]);
     vec_scale_to_length(&mat[0], &mat[0], 1.0f);
-    FastVecCross(&mat[1], &mat[0], hero_globals_base + 0x10AD);
+    FastVecCross(&mat[1], &mat[0],&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir);
     vec_scale_to_length(&mat[1], &mat[1], -1.0f);
     FastVecCross(&mat[2], &mat[1], &mat[0]);
     c = *(int *)&beam_anchor_quad_color;
@@ -1142,7 +1142,7 @@ void draw_walloper_camera_facing_quad(int arg) {
     t.c[0] = col;
     FastVecSub(f, g_debug_camera, bb);
     vec_scale_to_length(cc, f, 1.0f);
-    FastVecCross(d, cc, hero_globals_base + 0x10AD);
+    FastVecCross(d, cc,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir);
     vec_scale_to_length(d, d, -1.0f);
     FastVecCross(e, d, cc);
     FastVecScale(f, cc, 0.2f);
@@ -1702,7 +1702,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
     }
     len = D_L00_001617AC_2BE3A8;
     if (p->target == 0) {
-        if (coll_line_r(p, &end, 20, *(void **)(hero_globals_base_r2 + 0x2E9D), 0) != 0) {
+        if (coll_line_r(p, &end, 20, *(void **)&((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->moby, 0) != 0) {
             len = vec_distance_xy_r(&collision_hit_point_r, p);
         }
     } else {
@@ -1735,7 +1735,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
                 FastVecAdd_r2(&tesla_chain_points_r[i], &tesla_chain_points_r[i - 1], &tmp);
             }
             FastVecSub_r(&dir, &tesla_chain_points_r[i], &tesla_chain_points_r[i - 1]);
-            FastVecCross_r(&side, &dir, hero_globals_base_r2 + 0x10AD);
+            FastVecCross_r(&side, &dir,&((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->gravity_dir);
             vec_scale_to_length_r2(&side, &side, D_L00_001617D8_2BE3A8 + (D_L00_001617DC_2BE3A8 - D_L00_001617D8_2BE3A8) * t);
             {
                 Vec4A ring;
@@ -1795,8 +1795,8 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
             cols = tesla_spark_colors_r;
             col = cols.c[random_integer_below_r(5)];
             w = randf_sym_r(0.0f, D_L00_0016180C_2BE3A8);
-            build_look_at_matrix_r(&out, &dir, hero_globals_base_r2 + 0x10AD, randf_sym_r(0.0f, D_L00_0016180C_2BE3A8));
-            FastVecCross_r(&up, &dir, hero_globals_base_r2 + 0x10AD);
+            build_look_at_matrix_r(&out, &dir,&((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->gravity_dir, randf_sym_r(0.0f, D_L00_0016180C_2BE3A8));
+            FastVecCross_r(&up, &dir,&((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->gravity_dir);
             build_look_at_matrix_r(&out, &out, &up, w);
             n = truncate_float_to_s32_r3(len * 1.2f / (D_L00_00161804_2BE3A8 * frame_scale_r));
             if (p->target != 0) {
@@ -2158,7 +2158,7 @@ void draw_beam_pulse_quads(void *unused) {
             q.rgba[0] = col;
             qcopy(pd, &tesla_pulse_pos[i]);
             qcopy(&A, &tesla_pulse_dir[i]);
-            FastVecScale(&C, hero_globals_base + 0x10AD, -1.0f);
+            FastVecScale(&C,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -1.0f);
             FastVecCross(&B, &A, &C);
             vec_scale_to_length(&B, &B, 1.0f);
             FastVecCross(&C, &B, &A);
@@ -2215,7 +2215,7 @@ void draw_beam_origin_camera_facing_quads(void *mv) {
     FastVecAdd(&mat[3], &tesla_chain_points, &e);
     FastVecSub(&e, g_debug_camera, &mat[3]);
     vec_scale_to_length(&mat[0], &e, 1.0f);
-    FastVecCross(&mat[1], &mat[0], hero_globals_base + 0x10AD);
+    FastVecCross(&mat[1], &mat[0],&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir);
     vec_scale_to_length(&mat[1], &mat[1], -1.0f);
     FastVecCross(&mat[2], &mat[1], &mat[0]);
     for (i = 3; i >= 0; i--) {
@@ -2725,7 +2725,7 @@ int try_start_moby_hop(Mob_2C0CF8 *m, Blk_2C0CF8 *p, void *q, int flag) {
         }
     }
     save_state_vector_and_fields_to_hero_r(p);
-    initialize_moby_hop_trajectory_r(m, hero_globals_base_r2 + 0x2D2D, land);
+    initialize_moby_hop_trajectory_r(m,&((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->unk1F10, land);
     restore_saved_state_fields_from_hero_r(p);
     FastVecScale_r3(mid, d, 0.5f);
     FastVecAdd_r3(mid, mid, m->pos);

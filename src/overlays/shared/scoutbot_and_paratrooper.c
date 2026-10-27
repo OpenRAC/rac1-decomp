@@ -367,7 +367,7 @@ void update_scoutbot_health_and_target(char *m) {
         }
     }
     if (*(int *)&d->f1B0 == 0) {
-        *(int *)&d->f1B0 = *(int *)(hero_globals_base + 0x2E9D);
+        *(int *)&d->f1B0 = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
     }
 }
 /* functional: medium. Draw callback of a Scoutbot's beam: builds a textured quad packet (colour from four sdata words, UVs of a unit square), orients it towards the target moby (data+0x218) with a rotation matrix from two angles, and draws four pairs of quads (lit core and two flaring side strips, each drawn twice with the +-0.25 jitter). Not run against captured calls. */
@@ -1692,7 +1692,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
             ((struct Paratrooper302618 *)d)->f164 = 2;
         }
     }
-    if (*(int *)&((struct Paratrooper302618 *)d)->f160 == 0) *(int *)&((struct Paratrooper302618 *)d)->f160 = *(int *)(hero_globals_base + 0x2E9D);
+    if (*(int *)&((struct Paratrooper302618 *)d)->f160 == 0) *(int *)&((struct Paratrooper302618 *)d)->f160 = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
 
     st = ((Moby *)m)->state;
     if (st == 0 || st == 5 || st == 7 || st == 4) {
