@@ -238,17 +238,20 @@ struct MpegRefImage {
     s32 unkC;
     s32 unk10; /* non-zero: sized check in _isOutSizeOK;
                                            _getRef0 macroblock index x * unk10 + y */
-    u8 pad_14[0x14];
-    s32 status; /* 1: output by _dispRefImage; ClearMpegReferenceBuffer zeroes it */
-    u8 pad_2C[0x18];
-    s32 unk44;
-    s32 unk48;
-    s32 unk4C;
-    s32 unk50;
-    s32 unk54;
-    s32 unk58;
-    s32 unk5C;
-    s32 unk60;
+    u8 pad_14[4];
+    s64 pts; /* 0x18 */
+    s64 dts; /* 0x20 */
+    s32 status; /* 0x28: 1: output by _dispRefImage; ClearMpegReferenceBuffer zeroes it */
+    s32 picture_coding_type; /* 0x2C */
+    s32 picture_structure;   /* 0x30 */
+    s32 unk13C;              /* 0x34 */
+    s32 progressive_frame;   /* 0x38 */
+    s32 top_field_first;     /* 0x3C */
+    s32 repeat_first_field;  /* 0x40 */
+    s32 frame_centre_horizontal_offset[3]; /* 0x44 */
+    s32 frame_centre_vertical_offset[3];   /* 0x50 */
+    s32 display_horizontal_size;           /* 0x5C */
+    s32 display_vertical_size;             /* 0x60 */
 };
 typedef void (*MpegMcFunc)(void);
 struct MpegMcFetch {
@@ -311,7 +314,8 @@ struct MpegDecoder {
     s32 out_max_height; /* >= picture height; 0: check out_max_size */
     s32 out_max_size; /* >= unkC * unk10 of the picture */
 
-    u8 pad_E8[0x10];
+    s32 unkE8;
+    u8 pad_EC[0xC];
     s32 unkF8; /* 1 -> 2 in _outputFrame */
     s32 frame_buffers[3]; /* reserved in _sequenceHeader, passed to _initRefImages */
     u8 pad_108[0x10];
@@ -353,26 +357,35 @@ struct MpegDecoder {
     s32 repeat_first_field;
     s32 progressive_frame;
 
-    u8 pad_18C[0x20];
-    s32 unk1AC;
+    /* picture_display_extension */
+    s32 frame_centre_horizontal_offset[3]; /* 0x18C */
+    s32 frame_centre_vertical_offset[3];   /* 0x198 */
+    s32 closed_gop;                        /* 0x1A4 */
+    s32 broken_link;                       /* 0x1A8 */
+    s32 temporal_reference_framenum;       /* 0x1AC */
     s32 dc_reset; /* DCR bit of the IPU BDEC command (_decMB0); set by _skipMB0 */
     s32 quantiser_scale_code; /* 5 bits from the slice header (_sliceB); QSC of BDEC */
     struct MpegRefImage *ref_images[12]; /* chosen by picture_structure / picture_coding_type in _outputFrame */
     u8 pad_1E8[0x3A8];
     struct MpegMbBuffer mb_buf[2];
     s32 mb_buf_index; /* toggled per slice in _slice0 */
-    u8 pad_814[0x8];
+    s32 unk814;
+    s32 ipu_cmd_status; /* 0x818: set from IpuCommandTable */
     u8 *mc_work; /* _getRef0: destination of the queued fetches */
     s32 unk820;
-    u8 pad_824[0x1C];
+    s32 unk824;
+    s64 pts;
+    s64 dts;
+    s32 bit_buffer; /* 0x838: top bits cached from IPU */
+    s32 bit_count;  /* 0x83C: bits left in bit_buffer (0x20 = 32) */
 
     /* quant_matrix_extension / sequence_header */
     s32 load_intra_quantiser_matrix; /* set -> IPU SETIQ intra (0x50000000) */
     s32 load_non_intra_quantiser_matrix;/* set -> IPU SETIQ non-intra (0x58000000) */
     s32 unk848; /* 0: _sequenceHeader loads frame-picture defaults */
-    s32 unk84C;
-    s32 unk850;
-    s32 unk854;
+    s32 temporal_reference_base;
+    s32 true_framenum_max;
+    s32 temporal_reference_gop_reset;
     struct sceMpeg *mpeg; /* owning sceMpeg (_dispRefImage writes its pts/dts/flags) */
 };
 extern char str_mpeg_invalid_motion_type_a[];
@@ -857,7 +870,7 @@ int _pictureData0(void *arg0) {
     int ret;
 
     s->mb_buf_index = 0;
-    *(int *)((char *)s + 0x814) = 0;
+    s->unk814 = 0;
 
     count = s->mb_width * s->mb_height;
     if (s->picture_structure != 3) {
@@ -906,7 +919,7 @@ extern char str_mpeg_slice_a0_error[];
  */
 int _sliceA0(void *arg0, int arg1, int *arg2, int *arg3, void *arg4) {
     struct MpegDecoder *s = (struct MpegDecoder *)((char *)arg0);
-    char *p5 = (char *)arg4;
+    int *p5 = (int *)arg4;
     unsigned int code;
     int sliceB_result;
     int mbInc;
@@ -935,14 +948,14 @@ int _sliceA0(void *arg0, int arg1, int *arg2, int *arg3, void *arg4) {
     *arg2 = row * (s->mb_width) + mbInc - 1;
     *arg3 = 1;
     s->dc_reset = 1;
-    *(int *)(p5 + 0x14) = 0;
-    *(int *)(p5 + 0x10) = 0;
-    *(int *)(p5 + 0x4) = 0;
-    *(int *)(p5 + 0x0) = 0;
-    *(int *)(p5 + 0x1C) = 0;
-    *(int *)(p5 + 0x18) = 0;
-    *(int *)(p5 + 0xC) = 0;
-    *(int *)(p5 + 0x8) = 0;
+    p5[5] = 0;
+    p5[4] = 0;
+    p5[1] = 0;
+    p5[0] = 0;
+    p5[7] = 0;
+    p5[6] = 0;
+    p5[3] = 0;
+    p5[2] = 0;
     return 0;
 }
 
@@ -995,8 +1008,7 @@ int _slice0(void *arg0, int mbCount) {
         }
 
         mbIdx = s->mb_buf_index;
-        entry = (char *)s + mbIdx * 0x140;
-        *(int *)(entry + 0x6CC) = 0;
+        s->mb_buf[mbIdx].unk13C = 0;
         r = _waitBdecOut(s);
         if (r == 0) {
             return 2;
@@ -1069,34 +1081,33 @@ extern char str_mpeg_skipped_mb_in_i_picture[];
  * +0x150 == 1. The func_0012C468 call takes arg0 -- the moby struct,
  * still live in $4 -- not a4/s0, which is a common trap here. */
 int _skipMB0(void *a0, int *a1, int *a2, int *a3, int *a4) {
+    struct MpegDecoder *s = (struct MpegDecoder *)a0;
     int idx;
-    char *entry;
     int ret = 1;
     int c;
     int mask;
 
-    idx = ((struct MpegDecoder *)a0)->mb_buf_index;
-    entry = (char *)a0 + idx * 0x140;
-    *(int *)(entry + 0x6CC) = 1;
-    ((struct MpegDecoder *)a0)->dc_reset = 1;
+    idx = s->mb_buf_index;
+    s->mb_buf[idx].unk13C = 1;
+    s->dc_reset = 1;
 
-    if (((struct MpegDecoder *)a0)->picture_coding_type == 2) {
-        *(int *)((char *)a1 + 0x14) = 0;
-        *(int *)((char *)a1 + 0x10) = 0;
-        *(int *)((char *)a1 + 0x4) = 0;
-        *(int *)((char *)a1 + 0x0) = 0;
+    if (s->picture_coding_type == 2) {
+        a1[5] = 0;
+        a1[4] = 0;
+        a1[1] = 0;
+        a1[0] = 0;
     }
 
-    if (((struct MpegDecoder *)a0)->picture_structure == 3) {
+    if (s->picture_structure == 3) {
         *a2 = 2;
     } else {
         *a2 = 1;
-        c = (((struct MpegDecoder *)a0)->picture_structure == 2);
+        c = (s->picture_structure == 2);
         a3[1] = c;
         *a3 = c;
     }
 
-    if (((struct MpegDecoder *)a0)->picture_coding_type == 1) {
+    if (s->picture_coding_type == 1) {
         _Error(a0, str_mpeg_skipped_mb_in_i_picture);
         ret = 0;
     }
@@ -1113,35 +1124,9 @@ extern void motion_vectors_x(void *, int *, int *, int *, int, int, int, int, in
 extern void receive_data_from_ipu(void *, int);
 extern void send_ipu_command(char *, unsigned int);
 
-typedef struct {
-    char pad000[0x11C];
-    int unk11C;
-    char pad120[0x30];
-    int unk150;
-    int unk154;
-    int unk158;
-    int unk15C;
-    int unk160;
-    int unk164;
-    int unk168;
-    int unk16C;
-    int unk170;
-    int unk174;
-    char pad178[4];
-    int unk17C;
-    int unk180;
-    char pad184[0x2C];
-    int unk1B0;
-    int unk1B4;
-    char pad1B8[0x810 - 0x1B8];
-    int unk810;
-    char pad814[0x848 - 0x814];
-    int unk848;
-} MbDec;
-
 /* Decodes one macroblock's modes and motion vectors through the IPU VLC engine (libmpeg _decMB0). Adapted from Lombyte's project (GPL-3.0) for PAL: sdk/library/_decMB0.c, _decMB0. */
 int _decMB0(void *arg0, int *arg1, int *arg2, int *arg3, void *arg4, void *arg5, void *arg6) {
-    MbDec *d = arg0;
+    struct MpegDecoder *d = (struct MpegDecoder *)arg0;
     int *mb = arg4;
     int *sp20;
     int *sp24;
@@ -1158,7 +1143,7 @@ int _decMB0(void *arg0, int *arg1, int *arg2, int *arg3, void *arg4, void *arg5,
     unsigned int g1;
     unsigned int g2;
 
-    *IPU_CTRL = (*IPU_CTRL & 0xF8FFFFFF) | (d->unk150 << 24);
+    *IPU_CTRL = (*IPU_CTRL & 0xF8FFFFFF) | (d->picture_coding_type << 24);
     sp20 = arg3;
     sp24 = arg5;
     v = ipu_vdec((int)d, 1);
@@ -1169,15 +1154,15 @@ int _decMB0(void *arg0, int *arg1, int *arg2, int *arg3, void *arg4, void *arg5,
         return 0;
     }
     if (v & 0xC) {
-        if (d->unk174 == 3 && d->unk17C != 0) {
+        if (d->picture_structure == 3 && d->frame_pred_frame_dct != 0) {
             *arg2 = 2;
         } else {
             *arg2 = _nextBit(d, 2);
         }
-    } else if ((v & 1) && d->unk180 != 0) {
-        *arg2 = ((d->unk174 ^ 3) == 0) ? 2 : 1;
+    } else if ((v & 1) && d->concealment_motion_vectors != 0) {
+        *arg2 = ((d->picture_structure ^ 3) == 0) ? 2 : 1;
     }
-    if (d->unk174 == 3) {
+    if (d->picture_structure == 3) {
         var19 = ((*arg2 ^ 1) == 0) ? 2 : 1;
         var20 = *arg2 == 2;
     } else {
@@ -1188,21 +1173,21 @@ int _decMB0(void *arg0, int *arg1, int *arg2, int *arg3, void *arg4, void *arg5,
     var23 = 0;
     motion_flag = *arg2 == 3;
     if (var20 == 0) {
-        var23 = d->unk174 == 3;
+        var23 = d->picture_structure == 3;
     }
     var103 = 0;
-    if (d->unk174 == 3 && d->unk17C == 0 && (*arg1 & 3) != 0) {
+    if (d->picture_structure == 3 && d->frame_pred_frame_dct == 0 && (*arg1 & 3) != 0) {
         var103 = _nextBit(d, 1);
     } else {
         var103 = 0;
     }
     *sp20 = var103;
     if (*arg1 & 0x10) {
-        d->unk1B4 = _nextBit(d, 5);
+        d->quantiser_scale_code = _nextBit(d, 5);
     }
-    if ((*arg1 & 8) || ((*arg1 & 1) && d->unk180 != 0)) {
+    if ((*arg1 & 8) || ((*arg1 & 1) && d->concealment_motion_vectors != 0)) {
         if (d->unk848 != 0) {
-            motion_vectors_x(d, mb, arg6, sp24, 0, var19, var20, d->unk164 - 1, d->unk168 - 1, motion_flag, var23);
+            motion_vectors_x(d, mb, arg6, sp24, 0, var19, var20, d->f_code_forward_h - 1, d->f_code_forward_v - 1, motion_flag, var23);
         } else {
             t7 = d->unk158 - 1;
             motion_vector(d, mb, arg6, t7, t7, 0, 0, d->unk154);
@@ -1213,7 +1198,7 @@ int _decMB0(void *arg0, int *arg1, int *arg2, int *arg3, void *arg4, void *arg5,
     }
     if (*arg1 & 4) {
         if (d->unk848 != 0) {
-            motion_vectors_x(d, mb, arg6, sp24, 1, var19, var20, d->unk16C - 1, d->unk170 - 1, 0, var23);
+            motion_vectors_x(d, mb, arg6, sp24, 1, var19, var20, d->f_code_backward_h - 1, d->f_code_backward_v - 1, 0, var23);
         } else {
             t7b = d->unk160 - 1;
             motion_vector(d, mb + 2, arg6, t7b, t7b, 0, 0, d->unk15C);
@@ -1222,23 +1207,23 @@ int _decMB0(void *arg0, int *arg1, int *arg2, int *arg3, void *arg4, void *arg5,
     if (d->unk11C != 0) {
         return 0;
     }
-    if ((*arg1 & 1) && d->unk180 != 0) {
+    if ((*arg1 & 1) && d->concealment_motion_vectors != 0) {
         _flushBuf(d, 1);
     }
     if ((*arg1 & 3) != 0) {
-        receive_data_from_ipu(*(void **)((char *)d + d->unk810 * 0x140 + 0x594), 0x300);
+        receive_data_from_ipu((void *)d->mb_buf[d->mb_buf_index].ipu_out, 0x300);
         wait_ipu_idle(d);
-        g1 = ((*arg1 & 1) << 27) | (d->unk1B4 << 16);
-        g2 = (d->unk1B0 << 26) | 0x20000000;
+        g1 = ((*arg1 & 1) << 27) | (d->quantiser_scale_code << 16);
+        g2 = (d->dc_reset << 26) | 0x20000000;
         send_ipu_command((char *)d, (g1 | g2) | (*sp20 << 25));
     } else {
-        *(int *)((char *)d + d->unk810 * 0x140 + 0x6CC) = 1;
+        d->mb_buf[d->mb_buf_index].unk13C = 1;
     }
-    d->unk1B0 = 0;
+    d->dc_reset = 0;
     if (d->unk11C != 0) {
         return 0;
     }
-    if (((*arg1 & 1) || (d->unk1B0 = 1, (*arg1 & 1) != 0)) && d->unk180 == 0) {
+    if (((*arg1 & 1) || (d->dc_reset = 1, (*arg1 & 1) != 0)) && d->concealment_motion_vectors == 0) {
         mb[5] = 0;
         mb[4] = 0;
         mb[1] = 0;
@@ -1248,15 +1233,15 @@ int _decMB0(void *arg0, int *arg1, int *arg2, int *arg3, void *arg4, void *arg5,
         mb[3] = 0;
         mb[2] = 0;
     }
-    t4 = d->unk150;
+    t4 = d->picture_coding_type;
     if (t4 == 2) {
         if (!(*arg1 & 9)) {
             mb[0] = (mb[1] = (mb[4] = (mb[5] = 0)));
-            if (d->unk174 == 3) {
+            if (d->picture_structure == 3) {
                 *arg2 = t4;
             } else {
                 *arg2 = 1;
-                *sp24 = d->unk174 == 2;
+                *sp24 = d->picture_structure == 2;
             }
         }
     }
@@ -1352,7 +1337,7 @@ extern int IpuCommandTable[];
 void send_ipu_command(char *arg0, unsigned int arg1) {
     volatile int *reg = (volatile int *)0x10002000;
     *reg = arg1;
-    *(int *)(arg0 + 0x818) = IpuCommandTable[arg1 >> 28];
+    ((struct MpegDecoder *)arg0)->ipu_cmd_status = IpuCommandTable[arg1 >> 28];
 }
 
 extern void dispatch_mpeg_cb_nodata(int);
@@ -1361,11 +1346,12 @@ extern void dispatch_mpeg_cb_nodata(int);
    nudging the IOP via func_0012BCC8 every 5001 spins so a stalled
    stream cannot deadlock. Same wait loop documented on func_00128860. */
 void wait_ipu_idle(void *arg0) {
+    struct MpegDecoder *d = (struct MpegDecoder *)arg0;
     int counter = 0;
 
     while ((*(volatile int *)0x10002010 & 0x80004000) == 0x80000000) {
         if (counter++ >= 0x1389) {
-            dispatch_mpeg_cb_nodata(*(int *)((char *)arg0 + 0x858));
+            dispatch_mpeg_cb_nodata((int)d->mpeg);
             counter = 0;
         }
     }
@@ -1385,29 +1371,18 @@ void wait_ipu_idle(void *arg0) {
  * absolute `ld` address instead (160 against 176 bytes).
  */
 long wait_ipu_cmd_result(void *arg0) {
+    struct MpegDecoder *d = (struct MpegDecoder *)arg0;
     long v;
     int counter = 0;
     while ((v = *(volatile long *)0x10002000) < 0 && (*(volatile int *)0x10002010 & 0x4000) == 0) {
         if (counter++ >= 0x1389) {
-            dispatch_mpeg_cb_nodata(*(int *)((char *)arg0 + 0x858));
+            dispatch_mpeg_cb_nodata((int)d->mpeg);
             counter = 0;
         }
     }
     return v;
 }
 
-
-typedef struct {
-    unsigned char pad0[0x11C];
-    int unk11C;
-    unsigned char pad120[0x6F8];
-    int unk818;
-    unsigned char pad81C[0x1C];
-    int unk838;
-    int unk83C;
-    unsigned char pad840[0x18];
-    void *cbData;
-} MpegVdec;
 
 #define IPU_CMD  ((volatile unsigned long *)0x10002000)
 #define IPU_CTRL ((volatile unsigned int *)0x10002010)
@@ -1416,7 +1391,7 @@ typedef struct {
 
 /* _ipuVdec (libmpeg). Adapted from Lombyte's project (GPL-3.0) for PAL. */
 short ipu_vdec(int arg0, int tbl) {
-    MpegVdec *d = (MpegVdec *)arg0;
+    struct MpegDecoder *d = (struct MpegDecoder *)arg0;
     int i;
     int j;
     unsigned int cmd;
@@ -1428,28 +1403,28 @@ short ipu_vdec(int arg0, int tbl) {
     j = 0;
     while ((*IPU_CTRL & 0x80004000) == 0x80000000) {
         if (j++ > 5000) {
-            dispatch_mpeg_cb_nodata((int)d->cbData);
+            dispatch_mpeg_cb_nodata((int)d->mpeg);
             j = 0;
         }
     }
     cmd = (tbl << 26) | 0x30000000;
     *(volatile unsigned int *)IPU_CMD = cmd;
-    d->unk818 = IpuCommandTable[(int)cmd >> 28];
+    d->ipu_cmd_status = IpuCommandTable[(int)cmd >> 28];
     r = *IPU_CMD;
     while (r < 0) {
         if (i++ > 5000) {
-            dispatch_mpeg_cb_nodata((int)d->cbData);
+            dispatch_mpeg_cb_nodata((int)d->mpeg);
             i = 0;
         }
         r = *IPU_CMD;
     }
     bp = *IPU_BP;
     top = *IPU_TOP;
-    d->unk838 = top;
+    d->bit_buffer = top;
     if (top < 0) {
-        d->unk83C = -(bp & 0x1F) & 0x1F;
+        d->bit_count = -(bp & 0x1F) & 0x1F;
     } else {
-        d->unk83C = 32;
+        d->bit_count = 32;
     }
     d->unk11C = (int)r == 0;
     return (short)r;
@@ -1497,6 +1472,7 @@ short ipu_vdec(int arg0, int tbl) {
  * Why it failed under 2.95.3: retail keeps only $16/$17/$18 across the
  * call (object, D_00132F70 base, n) in a 0x40 frame and REMATERIALISES
  * the hardware constants 0x10002010 / 0x80004000 / 0x80000000 with
+ * the hardware constants 0x10002010 / 0x80004000 / 0x80000000 with
  * lui/ori at each use, where 2.95.3 hoists all three into callee-saved
  * registers (a 0x70 frame, 0x114 against 0x108). 2.9-ee, this object's
  * compiler, rematerialises them like retail (see func_00128968), and the
@@ -1509,27 +1485,27 @@ short ipu_vdec(int arg0, int tbl) {
    it runs short and nudging the callback while the IPU stays busy.
    Adapted from Lombyte's project (GPL-3.0) for PAL. */
 int _peepBit(void *arg, int count) {
-    char *ctx = arg;
+    struct MpegDecoder *ctx = (struct MpegDecoder *)arg;
     int counter;
 
-    if (*(int *)(ctx + 0x818) == 0 && *(int *)(ctx + 0x83C) >= count) {
+    if (ctx->ipu_cmd_status == 0 && ctx->bit_count >= count) {
         goto done;
     }
     counter = 0;
     if ((*(volatile unsigned int *)0x10002010 & 0x80004000) == 0x80000000) {
         do {
             if (counter++ >= 0x1389) {
-                dispatch_mpeg_cb_nodata(*(void **)(ctx + 0x858));
+                dispatch_mpeg_cb_nodata((int)ctx->mpeg);
                 counter = 0;
             }
         } while ((*(volatile unsigned int *)0x10002010 & 0x80004000) == 0x80000000);
     }
     *(volatile unsigned int *)0x10002000 = 0x40000000;
-    *(int *)(ctx + 0x818) = IpuCommandTable[4];
-    *(int *)(ctx + 0x838) = wait_ipu_cmd_result(ctx);
-    *(int *)(ctx + 0x83C) = 0x20;
+    ctx->ipu_cmd_status = IpuCommandTable[4];
+    ctx->bit_buffer = wait_ipu_cmd_result(ctx);
+    ctx->bit_count = 0x20;
 done:
-    return (unsigned int)*(int *)(ctx + 0x838) >> (0x20 - count);
+    return (unsigned int)ctx->bit_buffer >> (0x20 - count);
 }
 
 /*
@@ -1545,20 +1521,21 @@ done:
  * The stores go in source order 0x838 then 0x83C.
  */
 void _flushBuf(void *arg0, int arg1) {
+    struct MpegDecoder *s = (struct MpegDecoder *)arg0;
     int counter = 0;
     unsigned int cmd;
 
     while ((*(volatile int *)0x10002010 & 0x80004000) == 0x80000000) {
         if (counter++ >= 0x1389) {
-            dispatch_mpeg_cb_nodata(*(int *)((char *)arg0 + 0x858));
+            dispatch_mpeg_cb_nodata((int)s->mpeg);
             counter = 0;
         }
     }
     cmd = arg1 | 0x40000000;
     *(volatile int *)0x10002000 = cmd;
-    *(int *)((char *)arg0 + 0x818) = IpuCommandTable[cmd >> 28];
-    *(int *)((char *)arg0 + 0x838) = wait_ipu_cmd_result(arg0);
-    *(int *)((char *)arg0 + 0x83C) = 0x20;
+    s->ipu_cmd_status = IpuCommandTable[cmd >> 28];
+    s->bit_buffer = wait_ipu_cmd_result(arg0);
+    s->bit_count = 0x20;
 }
 
 /* _nextBit (libmpeg.a:mpc.o), Get_Bits: waits for the IPU, refills the
@@ -1567,7 +1544,7 @@ void _flushBuf(void *arg0, int arg1) {
  * computed before the command store, or the allocator swaps $v1 and $a0.
  */
 int _nextBit(void *arg0, int n) {
-    char *s = (char *)arg0;
+    struct MpegDecoder *s = (struct MpegDecoder *)arg0;
     int counter = 0;
     unsigned int cmd;
     unsigned int idx;
@@ -1576,25 +1553,25 @@ int _nextBit(void *arg0, int n) {
 
     while ((*(volatile int *)0x10002010 & 0x80004000) == 0x80000000) {
         if (counter++ >= 0x1389) {
-            dispatch_mpeg_cb_nodata(*(int *)(s + 0x858));
+            dispatch_mpeg_cb_nodata((int)s->mpeg);
             counter = 0;
         }
     }
 
-    if (*(int *)(s + 0x818) != 0 || *(int *)(s + 0x83C) < n) {
+    if (s->ipu_cmd_status != 0 || s->bit_count < n) {
         *(volatile int *)0x10002000 = 0x40000000;
-        *(int *)(s + 0x818) = IpuCommandTable[4];
-        *(int *)(s + 0x838) = wait_ipu_cmd_result(s);
+        s->ipu_cmd_status = IpuCommandTable[4];
+        s->bit_buffer = wait_ipu_cmd_result(s);
     }
 
-    *(int *)(s + 0x83C) = 0x20;
-    oldBits = *(unsigned int *)(s + 0x838);
+    s->bit_count = 0x20;
+    oldBits = (unsigned int)s->bit_buffer;
     cmd = n | 0x40000000;
     idx = cmd >> 28;
     *(volatile unsigned int *)0x10002000 = cmd;
     result = oldBits >> (0x20 - n);
-    *(int *)(s + 0x818) = IpuCommandTable[idx];
-    *(int *)(s + 0x838) = wait_ipu_cmd_result(s);
+    s->ipu_cmd_status = IpuCommandTable[idx];
+    s->bit_buffer = wait_ipu_cmd_result(s);
     return result;
 }
 
@@ -1615,7 +1592,7 @@ void next_start_code(void *arg0) {
 extern void extra_bit_information(void *);
 
 int _sliceB(void *arg0) {
-    *(int *)((char *)arg0 + 0x1B4) = _nextBit(arg0, 5);
+    ((struct MpegDecoder *)arg0)->quantiser_scale_code = _nextBit(arg0, 5);
     if (_nextBit(arg0, 1) != 0) {
         _nextBit(arg0, 1);
         _flushBuf(arg0, 7);
@@ -1642,7 +1619,7 @@ typedef struct {
  * On picture_start it returns picture_coding_type (+0x150).
  */
 int mpeg_next_header(void *arg0) {
-    char *s = (char *)arg0;
+    struct MpegDecoder *s = (struct MpegDecoder *)arg0;
     unsigned int code;
     Buf18 buf;
 
@@ -1661,10 +1638,10 @@ int mpeg_next_header(void *arg0) {
             buf.n = 5;
             buf.v[0] = -1;
             buf.v[1] = -1;
-            dispatch_mpeg_callback(*(int *)(s + 0x858), &buf);
-            *(long long *)(s + 0x830) = buf.v[1];
-            *(long long *)(s + 0x828) = buf.v[0];
-            return *(int *)(s + 0x150);
+            dispatch_mpeg_callback((int)s->mpeg, &buf);
+            s->dts = buf.v[1];
+            s->pts = buf.v[0];
+            return s->picture_coding_type;
         case 0x1B7:
             return 0;
         }
@@ -1683,19 +1660,19 @@ extern void update_temp_track_data(void *, int);
  * (x-2)<2u range check; B_TYPE alone is a plain ==3.
  */
 void picture_header(void *arg0) {
-    char *s = (char *)arg0;
+    struct MpegDecoder *s = (struct MpegDecoder *)arg0;
     int temporal_reference = _nextBit(s, 10);
 
-    *(int *)(s + 0x150) = _nextBit(s, 3);   /* picture_coding_type */
-    _nextBit(s, 16);                         /* vbv_delay, discarded */
+    s->picture_coding_type = _nextBit(s, 3);   /* picture_coding_type */
+    _nextBit(s, 16);                           /* vbv_delay, discarded */
 
-    if ((unsigned int)(*(int *)(s + 0x150) - 2) < 2) {
-        *(int *)(s + 0x154) = _nextBit(s, 1);  /* full_pel_forward_vector */
-        *(int *)(s + 0x158) = _nextBit(s, 3);  /* forward_f_code */
+    if ((unsigned int)(s->picture_coding_type - 2) < 2) {
+        s->unk154 = _nextBit(s, 1);  /* full_pel_forward_vector */
+        s->unk158 = _nextBit(s, 3);  /* forward_f_code */
     }
-    if (*(int *)(s + 0x150) == 3) {
-        *(int *)(s + 0x15C) = _nextBit(s, 1);  /* full_pel_backward_vector */
-        *(int *)(s + 0x160) = _nextBit(s, 3);  /* backward_f_code */
+    if (s->picture_coding_type == 3) {
+        s->unk15C = _nextBit(s, 1);  /* full_pel_backward_vector */
+        s->unk160 = _nextBit(s, 3);  /* backward_f_code */
     }
 
     extra_bit_information(s);   /* extra_bit_information */
@@ -1749,47 +1726,31 @@ void _extensionAndUserData(void *arg0) {
     }
 }
 
-typedef struct {
-    unsigned char pad_0[0xD4];
-    int pict_struct0;
-    unsigned char pad_D8[0x8C];
-    int f_code00;
-    int f_code01;
-    int f_code10;
-    int f_code11;
-    int picture_structure;
-    int top_field_first;
-    int frame_pred_frame_dct;
-    int concealment_mvs;
-    int repeat_first_field;
-    int progressive_frame;
-} PicExt;
-
 /* _pictureCodingExtension: parse an MPEG-2 picture coding extension:
    the four f_codes, intra DC precision, q_scale_type, intra VLC format
    and alternate scan straight into IPU_CTRL (0x10002010), the rest into
    the decoder state; the composite display fields are skipped. Adapted
    from Lombyte's project (GPL-3.0) for PAL. */
 void _pictureCodingExtension(void *arg) {
-    PicExt *arg0 = arg;
+    struct MpegDecoder *arg0 = (struct MpegDecoder *)arg;
     int temp_2_35;
     int temp_6_65;
     int temp_6_77;
     int temp_6_89;
 
-    arg0->f_code00 = _nextBit(arg0, 4);
-    arg0->f_code01 = _nextBit(arg0, 4);
-    arg0->f_code10 = _nextBit(arg0, 4);
-    arg0->f_code11 = _nextBit(arg0, 4);
+    arg0->f_code_forward_h = _nextBit(arg0, 4);
+    arg0->f_code_forward_v = _nextBit(arg0, 4);
+    arg0->f_code_backward_h = _nextBit(arg0, 4);
+    arg0->f_code_backward_v = _nextBit(arg0, 4);
     *(int *)0x10002010 = (*(int *)0x10002010 & 0xFFFCFFFF) | (_nextBit(arg0, 2) << 0x10);
     temp_2_35 = _nextBit(arg0, 2);
     arg0->picture_structure = temp_2_35;
-    if (arg0->pict_struct0 == 0) {
-        arg0->pict_struct0 = temp_2_35;
+    if (arg0->unkD4 == 0) {
+        arg0->unkD4 = temp_2_35;
     }
     arg0->top_field_first = _nextBit(arg0, 1);
     arg0->frame_pred_frame_dct = _nextBit(arg0, 1);
-    arg0->concealment_mvs = _nextBit(arg0, 1);
+    arg0->concealment_motion_vectors = _nextBit(arg0, 1);
     temp_6_65 = (*(volatile unsigned int *)0x10002010 & 0xFFBFFFFF) | (_nextBit(arg0, 1) << 0x16);
     *(volatile unsigned int *)0x10002010 = temp_6_65;
     temp_6_77 = (*(volatile unsigned int *)0x10002010 & 0xFFDFFFFF) | (_nextBit(arg0, 1) << 0x15);
@@ -1820,34 +1781,34 @@ void extra_bit_information(void *arg0) {
  * Temporal_Reference_Base (+0x84C), and GOP reset state (+0x854).
  */
 void update_temp_track_data(void *arg0, int arg1) {
-    char *s = (char *)arg0;
+    struct MpegDecoder *s = (struct MpegDecoder *)arg0;
     int flag = 0;
     int x = 0;
     int max;
 
-    if (*(int *)(s + 0x150) != 3) {
+    if (s->picture_coding_type != 3) {
         if (arg1 != 0) {
             if (arg1 < 0) {
-                flag = *(int *)(s + 0x854) == 0;
+                flag = s->temporal_reference_gop_reset == 0;
             }
-            *(int *)(s + 0x854) = 0;
+            s->temporal_reference_gop_reset = 0;
             x = arg1;
         }
     }
 
-    *(int *)(s + 0x1AC) = *(int *)(s + 0x84C) + arg1;
+    s->temporal_reference_framenum = s->temporal_reference_base + arg1;
 
     if (flag) {
         if (x >= arg1) {
-            *(int *)(s + 0x1AC) += 0x400;
+            s->temporal_reference_framenum += 0x400;
         }
     }
 
-    max = *(int *)(s + 0x850);
-    if (max < *(int *)(s + 0x1AC)) {
-        max = *(int *)(s + 0x1AC);
+    max = s->true_framenum_max;
+    if (max < s->temporal_reference_framenum) {
+        max = s->temporal_reference_framenum;
     }
-    *(int *)(s + 0x850) = max;
+    s->true_framenum_max = max;
 }
 
 
@@ -1863,11 +1824,11 @@ void update_temp_track_data(void *arg0, int arg1) {
  * extensionAndUserData.
  */
 void _groupOfPicturesHeader(void *arg0) {
-    char *s = (char *)arg0;
+    struct MpegDecoder *s = (struct MpegDecoder *)arg0;
 
-    *(int *)(s + 0xE8) = 0;
-    *(int *)(s + 0x84C) = *(int *)(s + 0x850) + 1;
-    *(int *)(s + 0x854) = 1;
+    s->unkE8 = 0;
+    s->temporal_reference_base = s->true_framenum_max + 1;
+    s->temporal_reference_gop_reset = 1;
 
     _nextBit(s, 1);  /* drop_flag */
     _nextBit(s, 5);  /* hour */
@@ -1875,8 +1836,8 @@ void _groupOfPicturesHeader(void *arg0) {
     _nextBit(s, 1);  /* marker_bit */
     _nextBit(s, 6);  /* sec */
     _nextBit(s, 6);  /* frame */
-    *(int *)(s + 0x1A4) = _nextBit(s, 1);  /* closed_gop */
-    *(int *)(s + 0x1A8) = _nextBit(s, 1);  /* broken_link */
+    s->closed_gop = _nextBit(s, 1);  /* closed_gop */
+    s->broken_link = _nextBit(s, 1);  /* broken_link */
 
     _extensionAndUserData(s);
 }
@@ -1895,22 +1856,22 @@ extern char str_mpeg_load_chroma_non_intra_qm[];
  * setting either just logs a warning through func_0012C468.
  */
 void _quantMatrixExtension(void *arg0) {
-    char *s = (char *)arg0;
+    struct MpegDecoder *s = (struct MpegDecoder *)arg0;
     int flag;
 
     flag = _nextBit(s, 1);        /* load_intra_quantizer_matrix */
-    *(int *)(s + 0x840) = flag;
+    s->load_intra_quantiser_matrix = flag;
     if (flag != 0) {
         wait_ipu_idle(s);
-        send_ipu_command(s, 0x50000000);
+        send_ipu_command((char *)s, 0x50000000);
         wait_ipu_idle(s);
     }
 
     flag = _nextBit(s, 1);        /* load_non_intra_quantizer_matrix */
-    *(int *)(s + 0x844) = flag;
+    s->load_non_intra_quantiser_matrix = flag;
     if (flag != 0) {
         wait_ipu_idle(s);
-        send_ipu_command(s, 0x58000000);
+        send_ipu_command((char *)s, 0x58000000);
         wait_ipu_idle(s);
     }
 
@@ -1922,44 +1883,30 @@ void _quantMatrixExtension(void *arg0) {
         _Error(s, str_mpeg_load_chroma_non_intra_qm);
     }
 }
-typedef struct {
-    char pad_00[0x13C];
-    int  unk_13C;
-    char pad_140[0x150 - 0x140];
-    int  unk_150;
-    char pad_154[0x174 - 0x154];
-    int  unk_174;
-    int  unk_178;
-    char pad_17C[0x184 - 0x17C];
-    int  unk_184;
-    char pad_188[0x18C - 0x188];
-    int  f1[3];
-    int  f2[3];
-} State;
 
 void picture_display_extension(void *arg0) {
-    State *s = (State *)arg0;
+    struct MpegDecoder *s = (struct MpegDecoder *)arg0;
     int count;
     int i;
 
-    if (s->unk_13C != 0) {
-        if (s->unk_184 == 0) {
+    if (s->unk13C != 0) {
+        if (s->repeat_first_field == 0) {
             count = 1;
         } else {
-            count = s->unk_178 != 0 ? 3 : 2;
+            count = s->top_field_first != 0 ? 3 : 2;
         }
     } else {
-        if (s->unk_174 != 3) {
+        if (s->picture_structure != 3) {
             count = 1;
         } else {
-            count = s->unk_184 != 0 ? 3 : 2;
+            count = s->repeat_first_field != 0 ? 3 : 2;
         }
     }
 
     for (i = 0; i < count; i++) {
-        s->f1[i] = _nextBit(s, 0x10);
+        s->frame_centre_horizontal_offset[i] = _nextBit(s, 0x10);
         _nextBit(s, 1);
-        s->f2[i] = _nextBit(s, 0x10);
+        s->frame_centre_vertical_offset[i] = _nextBit(s, 0x10);
         _nextBit(s, 1);
     }
 }
@@ -2008,34 +1955,34 @@ extern char str_mpeg_unknown_picture_structure[];
  * the memory re-read is exact under 2.9-ee too.
  */
 int mpeg_dec_picture(void *arg0) {
-    char *s = arg0;
-    int state = *(int *)(s + 0x174);
-    char *target;
+    struct MpegDecoder *s = (struct MpegDecoder *)arg0;
+    int state = s->picture_structure;
+    struct MpegRefImage *target;
     int r;
 
-    if (state == 3 && *(int *)(s + 0x120) != 0) {
+    if (state == 3 && s->second_field != 0) {
         _Error(s, str_mpeg_odd_field_pictures);
-        *(int *)(s + 0x120) = 0;
-        state = *(int *)(s + 0x174);
+        s->second_field = 0;
+        state = s->picture_structure;
     }
     switch (state) {
     case 3:
-        target = *(char **)(s + 0x1C0);
+        target = s->ref_images[2];
         break;
     case 1:
-        target = *(char **)(s + 0x1D0);
+        target = s->ref_images[6];
         break;
     case 2:
-        target = *(char **)(s + 0x1E0);
+        target = s->ref_images[10];
         break;
     default:
-        target = *(char **)(s + 0x1C0);
+        target = s->ref_images[2];
         _Error(s, str_mpeg_unknown_picture_structure);
         break;
     }
     r = _pictureData0(s);
     if (r != 0) {
-        *(int *)(target + 0x28) = 1;
+        target->status = 1;
     }
     return r;
 }
@@ -2043,30 +1990,31 @@ int mpeg_dec_picture(void *arg0) {
 extern void _dispRefImage();
 
 void mpeg_output_frame(void *arg0, int arg1, int arg2) {
-    char *s = (char *)arg0;
-    int v, w;
+    struct MpegDecoder *s = (struct MpegDecoder *)arg0;
+    struct MpegRefImage *v;
+    struct MpegRefImage *w;
 
     if (arg2 != 0) {
-        if (*(int *)(s + 0x174) == 3) {
-            if (*(int *)(s + 0x150) == 3) {
-                v = *(int *)(s + 0x1C4);
+        if (s->picture_structure == 3) {
+            if (s->picture_coding_type == 3) {
+                v = s->ref_images[3];
             } else {
-                v = *(int *)(s + 0x1B8);
+                v = s->ref_images[0];
             }
             _dispRefImage(s, v, arg1 - 1);
         } else {
-            if (*(int *)(s + 0x150) == 3) {
-                v = *(int *)(s + 0x1D4);
-                w = *(int *)(s + 0x1E4);
+            if (s->picture_coding_type == 3) {
+                v = s->ref_images[7];
+                w = s->ref_images[11];
             } else {
-                v = *(int *)(s + 0x1C8);
-                w = *(int *)(s + 0x1D8);
+                v = s->ref_images[4];
+                w = s->ref_images[8];
             }
             _dispRefImageField(s, v, w, arg1 - 1);
         }
     }
-    if (*(int *)(s + 0xF8) == 1) {
-        *(int *)(s + 0xF8) = 2;
+    if (s->unkF8 == 1) {
+        s->unkF8 = 2;
     }
 }
 
@@ -2075,10 +2023,10 @@ void mpeg_output_frame(void *arg0, int arg1, int arg2) {
    reference frames whether the picture can be output; otherwise rotate
    forward/backward pairs (when arg1 is 0). Then stamp the selected
    frame record with the picture's parameters. */
-#define PI_(o) (*(int *)((char *)p + (o)))
 #define PP_(o) (*(char **)((char *)p + (o)))
 #define RDY_(o) (*(int *)(PP_(o) + 0x28))
 int mpeg_update_ref_image(void *p, int arg1) {
+    struct MpegDecoder *s = (struct MpegDecoder *)p;
     char *rec;
     int ret;
     int n;
@@ -2087,31 +2035,31 @@ int mpeg_update_ref_image(void *p, int arg1) {
 
     rec = 0;
     ret = 0;
-    n = (PI_(0x174) == 3) ? 2 : 4;
-    if (PI_(0x150) == 3) {
+    n = (s->picture_structure == 3) ? 2 : 4;
+    if (s->picture_coding_type == 3) {
         PP_(0x1C0) = PP_(0x1C4);
         PP_(0x1D0) = PP_(0x1D4);
         PP_(0x1E0) = PP_(0x1E4);
-        if (PI_(0xA0) + PI_(0xA4) >= n) {
-            PI_(0xE8) = 0;
-            PI_(0x1A8) = 0;
-            PI_(0x1A4) = 0;
+        if (s->unkA0 + s->unkA4 >= n) {
+            s->unkE8 = 0;
+            s->broken_link = 0;
+            s->closed_gop = 0;
         }
-        if ((PI_(0xE8) != 0 || PI_(0x1A8) != 0) && PI_(0x1A4) == 0) {
+        if ((s->unkE8 != 0 || s->broken_link != 0) && s->closed_gop == 0) {
             RDY_(0x1B8) = 0;
             RDY_(0x1C8) = 0;
             RDY_(0x1D8) = 0;
         }
-        PI_(0xE8) = 0;
-        PI_(0x1A8) = 0;
-        if (PI_(0x174) == 3) {
-            if (RDY_(0x1B8) == 1 || PI_(0x1A4) != 0) {
+        s->unkE8 = 0;
+        s->broken_link = 0;
+        if (s->picture_structure == 3) {
+            if (RDY_(0x1B8) == 1 || s->closed_gop != 0) {
                 if (RDY_(0x1BC) == 1) {
                     ret = 1;
                 }
             }
         } else {
-            if ((RDY_(0x1C8) == 1 && RDY_(0x1D8) == 1) || PI_(0x1A4) != 0) {
+            if ((RDY_(0x1C8) == 1 && RDY_(0x1D8) == 1) || s->closed_gop != 0) {
                 if (RDY_(0x1CC) == 1) {
                     if (RDY_(0x1DC) == 1) {
                         ret = 1;
@@ -2134,19 +2082,19 @@ int mpeg_update_ref_image(void *p, int arg1) {
         PP_(0x1C0) = PP_(0x1BC);
         PP_(0x1D0) = PP_(0x1CC);
         PP_(0x1E0) = PP_(0x1DC);
-        if (PI_(0x174) == 3) {
-            if (PI_(0x150) != 2 || RDY_(0x1B8) == 1) {
+        if (s->picture_structure == 3) {
+            if (s->picture_coding_type != 2 || RDY_(0x1B8) == 1) {
                 ret = 1;
             }
         } else {
-            cur = (PI_(0x174) == 1) ? PP_(0x1E0) : PP_(0x1D0);
-            if (PI_(0x150) != 2 || (arg1 != 0 && *(int *)(cur + 0x28) == 1) ||
+            cur = (s->picture_structure == 1) ? PP_(0x1E0) : PP_(0x1D0);
+            if (s->picture_coding_type != 2 || (arg1 != 0 && *(int *)(cur + 0x28) == 1) ||
                 (RDY_(0x1C8) == 1 && RDY_(0x1D8) == 1)) {
                 ret = 1;
             }
         }
     }
-    switch (PI_(0x174)) {
+    switch (s->picture_structure) {
     case 3:
         rec = PP_(0x1C0);
         break;
@@ -2157,26 +2105,29 @@ int mpeg_update_ref_image(void *p, int arg1) {
         rec = PP_(0x1E0);
         break;
     }
-    *(int *)(rec + 0x28) = 0;
-    *(long *)(rec + 0x18) = *(long *)((char *)p + 0x828);
-    *(int *)(rec + 0x2C) = PI_(0x150);
-    *(long *)(rec + 0x20) = *(long *)((char *)p + 0x830);
-    *(int *)(rec + 0x30) = PI_(0x174);
-    *(int *)(rec + 0x34) = PI_(0x13C);
-    *(int *)(rec + 0x38) = PI_(0x188);
-    *(int *)(rec + 0x3C) = PI_(0x178);
-    *(int *)(rec + 0x40) = PI_(0x184);
-    *(int *)(rec + 0x44) = PI_(0x18C);
-    *(int *)(rec + 0x48) = PI_(0x190);
-    *(int *)(rec + 0x4C) = PI_(0x194);
-    *(int *)(rec + 0x50) = PI_(0x198);
-    *(int *)(rec + 0x54) = PI_(0x19C);
-    *(int *)(rec + 0x58) = PI_(0x1A0);
-    *(int *)(rec + 0x5C) = PI_(0x148);
-    *(int *)(rec + 0x60) = PI_(0x14C);
+    {
+        struct MpegRefImage *r = (struct MpegRefImage *)rec;
+        struct MpegDecoder *s = (struct MpegDecoder *)p;
+        r->status = 0;
+        r->pts = s->pts;
+        r->picture_coding_type = s->picture_coding_type;
+        r->dts = s->dts;
+        r->picture_structure = s->picture_structure;
+        r->unk13C = s->unk13C;
+        r->progressive_frame = s->progressive_frame;
+        r->top_field_first = s->top_field_first;
+        r->repeat_first_field = s->repeat_first_field;
+        r->frame_centre_horizontal_offset[0] = s->frame_centre_horizontal_offset[0];
+        r->frame_centre_horizontal_offset[1] = s->frame_centre_horizontal_offset[1];
+        r->frame_centre_horizontal_offset[2] = s->frame_centre_horizontal_offset[2];
+        r->frame_centre_vertical_offset[0] = s->frame_centre_vertical_offset[0];
+        r->frame_centre_vertical_offset[1] = s->frame_centre_vertical_offset[1];
+        r->frame_centre_vertical_offset[2] = s->frame_centre_vertical_offset[2];
+        r->display_horizontal_size = s->display_horizontal_size;
+        r->display_vertical_size = s->display_vertical_size;
+    }
     return ret;
 }
-#undef PI_
 #undef PP_
 #undef RDY_
 
@@ -2191,48 +2142,32 @@ extern void _Error_a(void *, void *) __asm__("func_0012C468");
    at D_00153A80 and report it. Returns whether it fits. */
 int _isOutSizeOK(void *arg0, void *arg1) {
     char buf[0x100];
-    char *h = (char *)arg0;
-    char *q = (char *)arg1;
-    int e = *(int *)(h + 0xE0);
+    struct MpegDecoder *h = (struct MpegDecoder *)arg0;
+    struct MpegRefImage *q = (struct MpegRefImage *)arg1;
+    int e = h->out_max_height;
     int ok;
 
     if (e != 0) {
-        ok = *(int *)(h + 0xDC) >= *(int *)(q + 0x4) &&
-             e >= *(int *)(q + 0x8);
+        ok = h->out_max_width >= q->width &&
+             e >= q->height;
     } else {
-        ok = *(int *)(h + 0xE4) >= *(int *)(q + 0xC) * *(int *)(q + 0x10);
+        ok = h->out_max_size >= q->unkC * q->unk10;
     }
     if (ok == 0) {
-        sprintf_4(buf, str_mpeg_buffer_too_small_fmt, *(int *)(q + 0x4),
-                        *(int *)(q + 0x8));
+        sprintf_4(buf, str_mpeg_buffer_too_small_fmt, q->width,
+                        q->height);
         _Error_a(arg0, buf);
     }
     return ok;
 }
 
-struct Cpr8Mpeg {
-    unsigned char pad_0[0xD8];
-    int unkD8;
-    unsigned char pad_DC[0x4];
-    int unkE0;
-    int unkE4;
-    unsigned char pad_E8[0x8C];
-    int unk174;
-};
-
-struct Cpr8Pic {
-    int unk0;
-    unsigned char pad_4[0x8];
-    int unkC;
-    int unk10;
-};
-
 /* _cpr8 (libmpeg): copy a decoded picture to its destination with two
    chained DMA transfers per row, per field (two fields when +0xE0 gives
    an interlaced width). Adapted from Lombyte's project (GPL-3.0) for PAL; its
    goto-shaped control flow is what matches. */
-void _cpr8(struct Cpr8Mpeg *arg0, struct Cpr8Pic *arg1) {
-    struct Cpr8Mpeg *m;
+void _cpr8(void *arg0, void *arg1) {
+    struct MpegDecoder *m;
+    struct MpegRefImage *pic;
     int fields;
     int base;
     int intr2;
@@ -2247,22 +2182,23 @@ void _cpr8(struct Cpr8Mpeg *arg0, struct Cpr8Pic *arg1) {
     int w;
     int f;
 
-    m = (struct Cpr8Mpeg *)arg0;
-    src = arg1->unk0 & 0x0FFFFFFF;
-    base = arg0->unkD8 & 0x0FFFFFFF;
-    if (m->unk174 == 3) {
+    m = (struct MpegDecoder *)arg0;
+    pic = (struct MpegRefImage *)arg1;
+    src = (int)pic->data & 0x0FFFFFFF;
+    base = m->unkD8 & 0x0FFFFFFF;
+    if (m->picture_structure == 3) {
         goto block_3;
     }
-    width = m->unkE0;
+    width = m->out_max_height;
     w = width;
     if (width != 0) {
         goto block_8;
     }
     goto block_4;
 block_3:
-    w = m->unkE0;
+    w = m->out_max_height;
 block_4:
-    row = arg1->unk10 * 0x180;
+    row = pic->unk10 * 0x180;
     qwc = row >> 4;
     if (w == 0) {
         goto block_6;
@@ -2276,14 +2212,14 @@ block_7:
     goto block_9;
 block_8:
     stride = (width >> 4) * 0xC0;
-    row = ((int) arg1->unk10 >> 1) * 0x180;
+    row = ((int) pic->unk10 >> 1) * 0x180;
     fields = 2;
     qwc = row >> 4;
 block_9:
     f = 0;
     while (f < fields) {
         dst = base;
-        for (i = 0; i < arg1->unkC; i++) {
+        for (i = 0; i < pic->unkC; i++) {
             intr1 = disable_interrupts();
             *(volatile int *)0x1000D480 = 0;
             *(volatile int *)0x1000D410 = src;
@@ -2314,18 +2250,18 @@ block_9:
             src += row;
         }
         f++;
-        base += m->unkE4 * 0xC0;
+        base += m->out_max_size * 0xC0;
     }
     return;
 }
 
 int mpeg_mark_picture_output(void *arg0) {
-    Obj40 *s = (Obj40 *)arg0;
+    struct MpegDecoder *s = (struct MpegDecoder *)arg0;
     int r = 1;
-    if (s->unk008 != 2) {
-        int v = s->unk118;
-        s->unk008 = 2;
-        s->unk0AC = v;
+    if (s->unk8 != 2) {
+        int v = s->frame_count;
+        s->unk8 = 2;
+        s->frame_base = v;
     }
     s->unk820 = r;
     return r;
@@ -2333,7 +2269,7 @@ int mpeg_mark_picture_output(void *arg0) {
 
 long _getPtsDtsFlags(void *arg0, void *arg1, void *arg2, void *arg3, void *arg4) {
     char *s = arg0;
-    char *t = arg1;
+    struct MpegRefImage *t = (struct MpegRefImage *)arg1;
     long *o1 = arg2;
     long v;
     long packed;
@@ -2341,7 +2277,7 @@ long _getPtsDtsFlags(void *arg0, void *arg1, void *arg2, void *arg3, void *arg4)
     if (*(int *)(s + 0x70) != 0) {
         int base;
         extern long func_0011EEC8(long, long);
-        v = *(long *)(t + 0x18);
+        v = t->pts;
         if (v >= 0 || (base = *(int *)(s + 0x80)) < 0) {
             *o1 = v;
         } else {
@@ -2355,17 +2291,17 @@ long _getPtsDtsFlags(void *arg0, void *arg1, void *arg2, void *arg3, void *arg4)
             }
         }
     } else {
-        *o1 = *(long *)(t + 0x18);
+        *o1 = t->pts;
     }
     if (*(int *)(s + 0xF8) == 2 && (v = *(long *)(s + 0xF0)) >= 0) {
         *o1 = v;
         *(int *)(s + 0xF8) = 0;
         *(long *)(s + 0xF0) = -1;
     }
-    *(long *)arg3 = *(long *)(t + 0x20);
-    packed = ((long)*(int *)(t + 0x34) << 8) | ((long)*(int *)(t + 0x38) << 7)
-           | ((long)*(int *)(t + 0x3C) << 6) | ((long)*(int *)(t + 0x40) << 5)
-           | ((long)*(int *)(t + 0x30) << 3) | *(int *)(t + 0x2C);
+    *(long *)arg3 = t->dts;
+    packed = ((long)t->unk13C << 8) | ((long)t->progressive_frame << 7)
+           | ((long)t->top_field_first << 6) | ((long)t->repeat_first_field << 5)
+           | ((long)t->picture_structure << 3) | t->picture_coding_type;
     *(long *)arg4 = packed;
     return packed;
 }
@@ -2373,27 +2309,29 @@ long _getPtsDtsFlags(void *arg0, void *arg1, void *arg2, void *arg3, void *arg4)
 extern long _getPtsDtsFlags(void *s, void *t, void *o1, void *o3, void *o4);
 extern unsigned int mpeg_display_field_count_table[];
 extern void _csc_storeRefImage(void *arg0, void *arg1);
-void _dispRefImage(char *s, char *t) {
-    char *base;
+void _dispRefImage(char *s_arg, char *t_arg) {
+    struct MpegDecoder *s = (struct MpegDecoder *)s_arg;
+    struct MpegRefImage *t = (struct MpegRefImage *)t_arg;
+    struct sceMpeg *base;
     long x;
 
-    base = *(char **)(s + 0x858);
-    _getPtsDtsFlags(s, t, base + 0x10, base + 0x18, base + 0x20);
-    base = *(char **)(s + 0x858);
-    x = *(long *)(base + 0x20);
-    *(int *)(s + 0x80) = *(int *)(base + 0x10);
-    *(unsigned long *)(s + 0x88) = mpeg_display_field_count_table[(int)(x >> 5) & 0xF];
-    *(int *)(s + 0xCC) = *(int *)(t + 0x5C);
-    *(int *)(s + 0xD0) = *(int *)(t + 0x60);
-    *(int *)(s + 0xB4) = *(int *)(t + 0x44);
-    *(int *)(s + 0xB8) = *(int *)(t + 0x48);
-    *(int *)(s + 0xBC) = *(int *)(t + 0x4C);
-    *(int *)(s + 0xC0) = *(int *)(t + 0x50);
-    *(int *)(s + 0xC4) = *(int *)(t + 0x54);
-    *(int *)(s + 0xC8) = *(int *)(t + 0x58);
+    base = s->mpeg;
+    _getPtsDtsFlags(s, t, (char *)base + 0x10, (char *)base + 0x18, (char *)base + 0x20);
+    base = s->mpeg;
+    x = *(long *)((char *)base + 0x20);
+    s->unk80 = *(int *)((char *)base + 0x10);
+    s->unk88 = mpeg_display_field_count_table[(int)(x >> 5) & 0xF];
+    s->unkCC = t->display_horizontal_size;
+    s->unkD0 = t->display_vertical_size;
+    s->unkB4 = t->frame_centre_horizontal_offset[0];
+    s->unkB8 = t->frame_centre_horizontal_offset[1];
+    s->unkBC = t->frame_centre_horizontal_offset[2];
+    s->unkC0 = t->frame_centre_vertical_offset[0];
+    s->unkC4 = t->frame_centre_vertical_offset[1];
+    s->unkC8 = t->frame_centre_vertical_offset[2];
     if (_isOutSizeOK(s, t) == 0) return;
-    if (*(int *)(t + 0x28) != 1) return;
-    if (*(int *)(s + 0xB0) != 0) {
+    if (t->status != 1) return;
+    if (s->unkB0 != 0) {
         _csc_storeRefImage(s, t);
     } else {
         _cpr8((void *)s, (void *)t);
