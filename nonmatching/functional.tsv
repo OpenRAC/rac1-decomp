@@ -46,7 +46,6 @@ func_L00_002D6610	nonmatching/game/func_L00_002D6610.c
 func_L00_001FF860	nonmatching/game/func_L00_001FF860.c
 func_L00_00200290	nonmatching/game/func_L00_00200290.c
 func_L00_00251388	nonmatching/game/func_L00_00251388.c
-func_001FD3E8	nonmatching/game/func_001FD3E8.c
 func_0022FDC0	nonmatching/functional/func_0022FDC0.c
 func_L00_001F3958	nonmatching/game/func_L00_001F3958.c
 func_L00_001F3988	nonmatching/game/func_L00_001F3988.c
@@ -178,7 +177,6 @@ func_L00_001FFA40	nonmatching/functional/func_L00_001FFA40.c
 func_L00_002003C8	nonmatching/functional/func_L00_002003C8.c
 func_L01_002635C8	nonmatching/functional/func_L01_002635C8.c
 func_L00_00268760	nonmatching/functional/func_L00_00268760.c
-func_L00_002D8898	nonmatching/shared/func_L00_002D8898.c
 # Joined pieces (config/overlays/joined.tsv): the owner's file is one C function over them, checked with
 # tools/behave.sh against the owner's and the pieces' retail bytes together.
 # Written with tools/behave.sh as the check.
