@@ -6,6 +6,9 @@
 #
 #   src/path/file.c  -flag ...
 
+# The published PS2DEV frontend lowers scalar min/max without an extra copy.
+src/game/fastfunc.c -ffast-math
+
 src/overlays/l15_quartu/moby_follow_camera.c    -fno-force-mem
 src/overlays/l16_kalebo3/test_dummies_and_conveyors.c   -fno-sched-interblock
 src/overlays/l18_veldin2/bone_glow_quads.c   -mno-split-addresses

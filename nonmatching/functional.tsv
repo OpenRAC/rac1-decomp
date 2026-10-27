@@ -9,7 +9,6 @@ func_001F98E8	nonmatching/game/func_001F98E8.c
 func_001F98F8	nonmatching/game/func_001F98F8.c
 func_001F9A00	nonmatching/game/func_001F9A00.c
 func_001F9AF0	nonmatching/functional/func_001F9AF0.c
-func_001F9B90	nonmatching/game/func_001F9B90.c
 func_001FA058	nonmatching/game/func_001FA058.c
 func_001FA190	nonmatching/game/func_001FA190.c
 func_001FA540	nonmatching/game/func_001FA540.c
@@ -68,7 +67,6 @@ func_00218930	nonmatching/game/func_00218930.c
 func_00218928	nonmatching/game/func_00218928.c
 func_00213A78	nonmatching/game/func_00213A78.c
 func_002116A0	nonmatching/game/func_002116A0.c
-func_001F9B98	nonmatching/game/func_001F9B98.c
 func_001F9C60	nonmatching/game/func_001F9C60.c
 func_001FA1C0	nonmatching/game/func_001FA1C0.c
 func_00218A80	nonmatching/game/func_00218A80.c
