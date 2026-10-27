@@ -16,7 +16,7 @@ extern void update_follow_camera_pose(void *);
 extern void follow_camera_approach(void *);
 /* Update for the camera moby. */
 void follow_camera_update(char *m) {
-    char *p = *(char **)(m + 0x70) + 0x1D0;
+    char *p = *(char **)&((Camera *)m)->state_buf + 0x1D0;
     *(float *)&follow_cam_setting_value = ((float *)&follow_cam_setting_values)[vendor_stock[5]];
     apply_follow_camera_translation(m);
     follow_camera_apply_overrides(m);
@@ -65,7 +65,7 @@ void initialize_hero_aligned_camera_pose(char *m) {
     float a[4];
     float b[4];
     char *g = g_hero;
-    char *p;
+    Camera *p;
     int c;
     void *q;
     char *d;
@@ -82,10 +82,10 @@ void initialize_hero_aligned_camera_pose(char *m) {
     q = camera_cross_axis_ptr;
     d = m + 0x20;
     qcopy(d, a);
-    p = m + 0x10;
-    FastVecCross(p, q, a);
-    vec_scale_to_length(p, p, 1.0f);
-    FastVecCross(m, a, p);
+    p = (Camera *)(m + 0x10);
+    FastVecCross(p->basis, q, a);
+    vec_scale_to_length(p->basis, p->basis, 1.0f);
+    FastVecCross(m, a, p->basis);
     qcopy(m + 0x40, m);
 }
 extern void initialize_hero_aligned_camera_pose(char *m);
@@ -127,13 +127,13 @@ float FastSubRots(float, float);
 int coll_sphere(void *, int, void *, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002e9f38. */
-void update_hero_aligned_camera_from_input(u8 *o) {
+void update_hero_aligned_camera_from_input(Camera *o) {
     V up;
     V side;
     V d;
     S_9f38 *st;
     float t, r, k;
-    st = *(S_9f38 **)(o + 0x70);
+    st = *(S_9f38 **)&o->state_buf;
     func_L00_002EB170_EB3E8(o);
     vec_scale_to_length(&up, g_hero_r.p2080 + 0xE0, 1.0f);
     if (player_camera_r.blend.phase == 0 && g_hero_r.b20A5 == 0) g_hero_r.b20A5 = 1;
@@ -144,9 +144,9 @@ void update_hero_aligned_camera_from_input(u8 *o) {
     r = FastAbsF(st->a);
     k = (*(float *)&hero_aligned_cam_gain_at_rest) + ((*(float *)&hero_aligned_cam_gain_at_full) - (*(float *)&hero_aligned_cam_gain_at_rest)) * r;
     st->a = r = func_001EC120_EB3E8(st->a, t, (*(float *)&hero_aligned_cam_input_stiffness), (*(float *)&hero_aligned_cam_input_damping), (*(float *)&hero_aligned_cam_input_max_step), &st->va);
-    if (r != 0.0f) build_look_at_matrix(o, o, &up, k * r);
+    if (r != 0.0f) build_look_at_matrix(o->basis, o->basis, &up, k * r);
     if (g_hero_r.f14C != 0.0f && g_hero_r.s308 == 0)
-        build_look_at_matrix(o, o, &up, g_hero_r.f14C);
+        build_look_at_matrix(o->basis, o->basis, &up, g_hero_r.f14C);
     t = -g_controller_state.f10C;
     if (t == 0.0f) t = -g_controller_state.f104;
     if (t == 0.0f) t = IntToFloat((g_controller_state.i1A0 >> 12) & 1);
@@ -158,7 +158,7 @@ void update_hero_aligned_camera_from_input(u8 *o) {
     st->b = func_001EC120_EB3E8(st->b, t, (*(float *)&hero_aligned_cam_input_stiffness), (*(float *)&hero_aligned_cam_input_damping), (*(float *)&hero_aligned_cam_input_max_step), &st->vb);
     if (st->b != 0.0f) {
         float a, n, z;
-        FastVecCross(&side, o, &up);
+        FastVecCross(&side, o->basis, &up);
         a = k * st->b;
         n = FastAbsF(FastAddRots(st->ang, a));
         if (1.1170107f < n && FastAbsF(st->ang) < n)
@@ -168,24 +168,24 @@ void update_hero_aligned_camera_from_input(u8 *o) {
         else
             st->z = func_001EC120_EB3E8(st->z, 0.0f, 0.005f, 0.2f, 0.0f, &st->vz);
         z = 0.0f;
-        d.f[0] = *(float *)(o + 0);
-        d.f[1] = *(float *)(o + 4);
+        d.f[0] = *(float *)&o->basis[0];
+        d.f[1] = *(float *)((u8 *)o + 4);
         d.f[3] = z;
         d.f[2] = z;
         vec_scale_to_length(&d, &d, st->z);
-        FastVecAdd(o + 0x30, o + 0x30, &d);
-        if (coll_sphere(o + 0x30, 0x12, g_hero_r.p2080, 0.3f))
+        FastVecAdd(&o->pos, &o->pos, &d);
+        if (coll_sphere(&o->pos, 0x12, g_hero_r.p2080, 0.3f))
             st->z = func_001EC120_EB3E8(st->z, z, 0.005f, 0.2f, z, &st->vz);
         n = FastAddRots(st->ang, a);
         if (FastAbsF(n) > 1.4660766f)
             { float m = 1.4660766f; if (!(z < n)) m = -1.4660766f; a = FastSubRots(m, st->ang); }
-        build_look_at_matrix(o, o, &side, a);
+        build_look_at_matrix(o->basis, o->basis, &side, a);
         st->ang = FastAddRots(st->ang, a);
     }
-    vec_scale_to_length(o, o, 1.0f);
-    FastVecCross(o + 0x10, o, &up);
-    vec_scale_to_length(o + 0x10, o + 0x10, 1.0f);
-    FastVecCross(o + 0x20, o + 0x10, o);
+    vec_scale_to_length(o->basis, o->basis, 1.0f);
+    FastVecCross(&o->basis[1], o, &up);
+    vec_scale_to_length(&o->basis[1], &o->basis[1], 1.0f);
+    FastVecCross(&o->basis[2], &o->basis[1], o);
 }
 typedef int q_2eb938 __attribute__((mode(TI)));
 typedef struct { f32 f[4]; } V_2eb938;
@@ -357,22 +357,22 @@ extern char *find_camera_record_by_id(int);
 /* Copies a vector into the current object's slot, switching to state 5 first. */
 void set_camera_position(char *src) {
     char *g = g_current_follow_cam;
-    char *p;
+    Camera *p;
     if (*(short *)(g + 0x86) != 5)
-        p = find_camera_record_by_id(5);
+        p = (Camera *)find_camera_record_by_id(5);
     else
-        p = g;
-    qcopy(*(char **)(p + 0x70) + 0x80, src);
+        p = (Camera *)g;
+    qcopy(*(char **)&p->state_buf + 0x80, src);
 }
 /* Copies the vector at src into the camera record's state block. */
 void set_camera_rotation(char *src) {
     char *g = g_current_follow_cam;
-    char *p;
+    Camera *p;
     if (*(short *)(g + 0x86) != 5)
-        p = find_camera_record_by_id(5);
+        p = (Camera *)find_camera_record_by_id(5);
     else
-        p = g;
-    qcopy(*(char **)(p + 0x70) + 0x90, src);
+        p = (Camera *)g;
+    qcopy(*(char **)&p->state_buf + 0x90, src);
 }
 LINKER_REMNANT("asm/overlays", func_L00_002EBF38);
 typedef struct { f32 v[4]; } __attribute__((aligned(16))) V_2ebf50;
@@ -393,14 +393,14 @@ void CameraScript(V_2ebf50 *pa, V_2ebf50 *pb, s32 mode, s32 w, s32 x) {
     qcopy(&c, &g_debug_camera_r[0]);
     qcopy(&d, &g_debug_camera_r[1]);
     func_L00_001EB890_2ebf50(m);
-    n = *(u8 **)(m + 0x70);
+    n = *(u8 **)&((Camera *)m)->state_buf;
     e = n + 0xE0;
     p = n + 0x80;
-    m[0x7C] = 7;
-    m[0x7D] = 1;
-    qcopy(m + 0x30, &a);
+    ((Camera *)m)->priority = 7;
+    ((Camera *)m)->handoff_state = 1;
+    qcopy(&((Camera *)m)->pos, &a);
     qcopy(&g_debug_camera_r[0], &a);
-    qcopy(m + 0x40, &b);
+    qcopy(((Camera *)m)->type_data, &b);
     qcopy(p, &a);
     qcopy(n + 0x90, &b);
     *(s32 *)(e + 0x40) = x;
@@ -409,8 +409,8 @@ void CameraScript(V_2ebf50 *pa, V_2ebf50 *pb, s32 mode, s32 w, s32 x) {
         if (mode != 3) return;
         *(f32 *)(e + 0x44) = 1.0f;
         *(f32 *)(e + 0x48) = 0.0f;
-        qcopy(m + 0x30, &c);
-        qcopy(m + 0x40, &d);
+        qcopy(&((Camera *)m)->pos, &c);
+        qcopy(((Camera *)m)->type_data, &d);
         qcopy(n + 0x110, &gHeroPos_r2);
         func_L00_001ED9B0_2ebf50(n + 0xFC, &c, &gHeroPos_r2);
     }
@@ -424,8 +424,8 @@ extern char hero_globals_base[];
 
 /* camera script command 2: sets the camera object's mode from the command number */
 void CameraScript2(int mode) {
-    char *g = (char *)&player_camera;
-    char *obj = *(char **)(g + 0x180);
+    CameraSystem *g = (CameraSystem *)((char *)&player_camera);
+    char *obj = *(char **)&g->current;
     float a[4];
     float b[4];
     float mx[16];
@@ -439,45 +439,45 @@ void CameraScript2(int mode) {
         vec_scale_to_length(a, mx + 8, 1.2f);
         FastVecAdd(p, t - 0x10, a);
         FastVecAdd(p, p, b);
-        *(short *)(*(char **)(g + 0x180) + 0x8A) = 1;
+        *(short *)(*(char **)&g->current + 0x8A) = 1;
     } else if (mode == 2) {
-        g[0x273] = 0;
+        g->blend.next_kind = 0;
         *(short *)(obj + 0x7E) = mode;
-        *(float *)(g + 0x294) = 0.018f;
-        *(float *)(g + 0x288) = 0.018f;
+        g->blend.lerp.pos_rate_cfg = 0.018f;
+        g->blend.lerp.rot_rate_cfg = 0.018f;
     } else if (mode == 1) {
         *(short *)(obj + 0x7E) = 3;
     } else if (mode == 4) {
-        g[0x273] = 0;
+        g->blend.next_kind = 0;
         *(short *)(obj + 0x7E) = 5;
-        *(float *)(g + 0x294) = 0.018f;
-        *(float *)(g + 0x288) = 0.018f;
+        g->blend.lerp.pos_rate_cfg = 0.018f;
+        g->blend.lerp.rot_rate_cfg = 0.018f;
     }
 }
 LINKER_REMNANT("asm/overlays", func_L00_002EC208);
 extern void clear_u64_value(void *);
 
 /* Camera-state init: sets the default parameters and builds the moby's matrix. */
-void initialize_camera_pose_springs(char *m) {
+void initialize_camera_pose_springs(Camera *m) {
     float v[16];
     char *q;
     char *p;
-    *(int *)(*(char **)(m + 0x70) + 0xC0) = 4;
-    q = *(char **)(m + 0x70) + 0x30;
+    *(int *)(*(char **)&m->state_buf + 0xC0) = 4;
+    q = *(char **)&m->state_buf + 0x30;
     *(float *)(q + 0x20) = 0.05f;
     *(float *)(q + 0x24) = 0.3f;
     *(float *)(q + 0x28) = 1.0f;
     *(short *)(q + 0x2C) = 1;
     clear_u64_value(q);
-    p = *(char **)(m + 0x70);
+    p = *(char **)&m->state_buf;
     *(float *)(p + 0x10) = 0.3f;
     *(float *)(p + 0x14) = 0.3f;
     *(float *)(p + 0x18) = 1.0f;
     *(short *)(p + 0x1C) = 1;
     clear_u64_value(p);
-    euler_to_matrix(v, m + 0x40);
+    euler_to_matrix(v, m->type_data);
     matrix_copy_rows(m, v);
-    *(short *)(m + 0x7E) = 0;
+    m->transition_state = 0;
 }
 extern int fast_dec_timer(int *);
 extern float IntToFloat(int);
@@ -500,24 +500,24 @@ extern float camera_yaw;
 void update_camera_pose_from_targets(void *arg) {
     char *m = arg;
     float mtx[16];
-    char *d = *(char **)(m + 0x70);
+    char *d = *(char **)&((Camera *)m)->state_buf;
     char *a = d + 0x30;
     char *b = d + 0x80;
     char *c = d + 0xE0;
     int t = *(unsigned char *)(m + 0x88);
     if (t == 1) {
-        qcopy(m + 0x30, b);
-        qcopy(m + 0x40, d + 0x90);
+        qcopy(&((Camera *)m)->pos, b);
+        qcopy(((Camera *)m)->type_data, d + 0x90);
     } else if (t == 2) {
         float u;
         fast_dec_timer((int *)c);
         u = (float)(*(int *)(c + 4) - *(int *)(d + 0xE0)) / IntToFloat(*(int *)(c + 4));
-        interpolate_vector_xyz_cosine_eased(m + 0x30, m + 0x30, b, u);
-        interpolate_wrapped_rotations_cosine_eased((float *)(m + 0x40), (float *)(m + 0x40), (float *)(d + 0x90), u);
+        interpolate_vector_xyz_cosine_eased(&((Camera *)m)->pos, &((Camera *)m)->pos, b, u);
+        interpolate_wrapped_rotations_cosine_eased((float *)((Camera *)m)->type_data, (float *)((Camera *)m)->type_data, (float *)(d + 0x90), u);
     } else if (t == 3) {
         if (fast_dec_timer((int *)c) != 0) {
-            qcopy(m + 0x30, b);
-            qcopy(m + 0x40, d + 0x90);
+            qcopy(&((Camera *)m)->pos, b);
+            qcopy(((Camera *)m)->type_data, d + 0x90);
         } else {
             float t, x, y, diff, z;
             t = (float)(*(int *)(c + 4) - *(int *)(d + 0xE0)) / IntToFloat(*(int *)(c + 4));
@@ -539,8 +539,8 @@ void update_camera_pose_from_targets(void *arg) {
             F(c, 0x24) = F(c, 0x24) + (F(c, 0x10) - F(c, 0x24)) * CubicInterpolate(F(c, 0x44), 0, 1.0f, F(c, 0x48), t);
             F(c, 0x20) = interpolate_wrapped_angle_cosine_eased(F(c, 0x20), F(c, 0xC), t);
             interpolate_vector_xyz_cosine_eased(c + 0x30, c + 0x30, hero_globals_base + 0xE9D, t);
-            compute_position_from_spherical_offset(m + 0x30, c + 0x1C, c + 0x30);
-            interpolate_wrapped_rotations_cosine_eased((float *)(m + 0x40), (float *)(m + 0x40), (float *)(b + 0x10), t);
+            compute_position_from_spherical_offset(&((Camera *)m)->pos, c + 0x1C, c + 0x30);
+            interpolate_wrapped_rotations_cosine_eased((float *)((Camera *)m)->type_data, (float *)((Camera *)m)->type_data, (float *)(b + 0x10), t);
         }
     } else {
         if (*(short *)(d + 0x1C) == 1) {
@@ -554,18 +554,18 @@ void update_camera_pose_from_targets(void *arg) {
             F(m, 0x48) = Camera_SmoothAngle(d + 0x38, F(m, 0x48), F(b, 0x18), F(a, 0x20), F(a, 0x24), F(a, 0x28));
         }
     }
-    euler_to_matrix(mtx, m + 0x40);
+    euler_to_matrix(mtx, ((Camera *)m)->type_data);
     matrix_copy_rows(m, mtx);
 }
 extern void update_camera_pose_from_targets(void *);
 extern void resolve_camera_movement_collisions(void *, float);
 /* Update wrapper: runs the base camera update, then a follow-up call if a flag is set. */
-void update_camera_pose_with_optional_collision(char *a) {
-    char *p = *(char **)(a + 0x70) + 0xE0;
+void update_camera_pose_with_optional_collision(Camera *a) {
+    char *p = *(char **)&a->state_buf + 0xE0;
     update_camera_pose_from_targets(a);
     if (*(int *)(p + 0x40) != 0) {
-        a[0x89] = 0;
-        resolve_camera_movement_collisions(a + 0x30, 0.5f);
+        a->hit_wall = 0;
+        resolve_camera_movement_collisions(&a->pos, 0.5f);
     }
 }
 extern float FastAddRots(float, float);
@@ -573,15 +573,15 @@ extern float FastAddRots(float, float);
 void initialize_orbit_camera_pose(void *arg) {
     char *a = arg;
     float m[16];
-    char *p = *(char **)(a + 0x70) + 0xB0;
-    compute_position_from_spherical_offset(a + 0x30, a + 0x50, p);
+    char *p = *(char **)&((Camera *)a)->state_buf + 0xB0;
+    compute_position_from_spherical_offset(&((Camera *)a)->pos, a + 0x50, p);
     *(float *)(a + 0x50) = FastAddRots(*(float *)(a + 0x50), *(float *)(p + 0x18));
     *(int *)(a + 0x40) = 0;
     *(float *)(a + 0x44) = FastAddRots(*(float *)(a + 0x54), *(float *)(a + 0x5C));
     *(float *)(a + 0x48) = FastAddRots(3.14159274101257324f, *(float *)(a + 0x50));
     *(float *)(a + 0x48) = FastAddRots(*(float *)(a + 0x48), *(float *)(a + 0x60));
     *(int *)(a + 0x4C) = 0;
-    euler_to_matrix(m, a + 0x40);
+    euler_to_matrix(m, ((Camera *)a)->type_data);
     matrix_copy_rows(a, m);
 }
 extern void copy_five_floats_with_rotation_offset(void *, void *, float);
@@ -590,7 +590,7 @@ extern void clear_twelve_bytes(void *);
 extern void initialize_orbit_camera_pose(void *);
 /* Sets up a camera moby from the vectors c and b and the value f. */
 void initialize_orbit_camera_from_parameters(char *a, void *b, void *c, float f) {
-    char *p = *(char **)(a + 0x70);
+    char *p = *(char **)&((Camera *)a)->state_buf;
     char *q = p + 0xB0;
     qcopy(q, c);
     qcopy(p + 0x80, c);
@@ -605,10 +605,10 @@ void initialize_orbit_camera_from_parameters(char *a, void *b, void *c, float f)
 
 /* Resets the orbit camera's state block and sets its default smoothing rates. */
 void initialize_orbit_camera_state(void *arg) {
-    char *p = arg;
+    Camera *p = (Camera *)arg;
     char *m;
-    *(int *)(*(char **)(p + 0x70) + 0xF0) = 0;
-    m = *(char **)(p + 0x70);
+    *(int *)(*(char **)&p->state_buf + 0xF0) = 0;
+    m = *(char **)&p->state_buf;
     *(int *)(m + 0x9C) = 0;
     *(int *)(m + 0xA8) = 0;
     *(int *)(m + 0xAC) = 0;
@@ -628,7 +628,7 @@ void initialize_orbit_camera_state(void *arg) {
     zero_five_words(m);
     clear_twelve_bytes(m + 0x90);
     initialize_orbit_camera_pose(p);
-    *(short *)(p + 0x7E) = 0;
+    p->transition_state = 0;
 }
 typedef struct OrbitCamState_2EC930 {
     f32 pos[5];                 /* 0x00: eased positions (first argument of Camera_SmoothAngle / Cam_InterpValues) */
@@ -654,7 +654,7 @@ typedef struct OrbitCamObj_2EC930 {
 
 /* smooths camera values toward targets and rebuilds the camera matrix */
 void update_orbit_camera_pose(char *camera_object) {
-    OrbitCamState_2EC930 *camera_state = *(OrbitCamState_2EC930 **)(camera_object + 0x70);
+    OrbitCamState_2EC930 *camera_state = *(OrbitCamState_2EC930 **)&((Camera *)camera_object)->state_buf;
     f32 *orbit_origin = camera_state->origin;
     OrbitCamObj_2EC930 *obj = (OrbitCamObj_2EC930 *)camera_object;
     f32 rotation_matrix[16];
@@ -708,11 +708,11 @@ int update_orbit_camera_from_target_moby(char *a, char *t) {
     char *n;
     u128 *pw;
     struct Hero *g;
-    char *cam;
+    CameraSystem *cam;
     char *pp;
     char *cp;
     float ang, d1, x;
-    m = *(char **)(a + 0x70);
+    m = *(char **)&((Camera *)a)->state_buf;
     c = (float *)(m + 0x64);
     if (!t) goto one;
     v[0] = 0;
@@ -733,11 +733,11 @@ int update_orbit_camera_from_target_moby(char *a, char *t) {
     *(float *)(m + 0xAC) = FastAddRots(*(float *)(m + 0xAC), *(float *)(n + 0x18));
     *(float *)(n + 0x18) *= 0.97f;
     g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-    cam = player_camera_c;
+    cam = (CameraSystem *)player_camera_c;
     pp = (char *)&g->motion.pos;
-    cp = cam + 0x140;
-    ang = fast_atan2(*(float *)(cam + 0x140) - g->motion.pos.f[0], *(float *)(cam + 0x144) - g->motion.pos.f[1]);
-    ang = FastDiffRots(ang, *(float *)(cam + 0x158));
+    cp = (char *)&cam->pos;
+    ang = fast_atan2(cam->pos.f[0] - g->motion.pos.f[0], cam->pos.f[1] - g->motion.pos.f[1]);
+    ang = FastDiffRots(ang, cam->rot.f[2]);
     d1 = vec_distance_xy(pp, cp);
     if (d1 < vec_distance_xy(*(char **)&g->items[0].moby + 0x10, cp)) {
         x = vec_distance_xy(pp, cp);
@@ -781,7 +781,7 @@ char *initialize_mode6_orbit_camera(char *a) {
     camera_blend_phase[0] = 0;
     SwitchCamera(m);
     update_orbit_camera_from_target_moby(m, a);
-    p = *(char **)(m + 0x70);
+    p = *(char **)&((Camera *)m)->state_buf;
     qcopy(p + 0xB0, p + 0x80);
     q = p + 0x14;
     copy_five_floats_with_rotation_offset(q, orbit_cam_mode6_params_a, 0.0f);
@@ -799,15 +799,15 @@ extern float FastVecDist(void *, void *);
 /* Sets the moby's state to 2 (and arms the camera-side fields) when the target is nearly in front and close, else to 4. */
 void select_camera_mode_by_hero_alignment_and_distance(char *m) {
     struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
-    char *s = (char *)&player_camera;
+    CameraSystem *s = (CameraSystem *)((char *)&player_camera);
     char *t = *(char **)&g->moby;
-    float a = fast_atan2(*(float *)(t + 0x10) - *(float *)(s + 0x140), *(float *)(t + 0x14) - *(float *)(s + 0x144));
-    float b = FastDiffRots(*(float *)(s + 0x158), a);
-    if (b < 0.55850536f && FastVecDist(&g->motion.pos, s + 0x140) < 8.0f) {
-        s[0x273] = 0;
+    float a = fast_atan2(*(float *)(t + 0x10) - s->pos.f[0], *(float *)(t + 0x14) - s->pos.f[1]);
+    float b = FastDiffRots(s->rot.f[2], a);
+    if (b < 0.55850536f && FastVecDist(&g->motion.pos, &s->pos) < 8.0f) {
+        s->blend.next_kind = 0;
         *(short *)(m + 0x7E) = 2;
-        *(float *)(s + 0x294) = 0.018f;
-        *(float *)(s + 0x288) = 0.018f;
+        s->blend.lerp.pos_rate_cfg = 0.018f;
+        s->blend.lerp.rot_rate_cfg = 0.018f;
     } else {
         *(short *)(m + 0x7E) = 4;
     }
@@ -818,13 +818,13 @@ extern char g_hero[];
 void initialize_orbit_camera_from_hero(void *arg) {
     char *a = arg;
     char *g = g_hero + 0x80;
-    char *p0 = *(char **)(a + 0x70);
+    char *p0 = *(char **)&((Camera *)a)->state_buf;
     char *q = p0 + 0xB0;
     char *p;
     qcopy(q, g);
     *(float *)(q + 8) += 2.0f;
     qcopy(p0 + 0xC0, g + 0x10);
-    p = *(char **)(a + 0x70);
+    p = *(char **)&((Camera *)a)->state_buf;
     qcopy(p + 0x80, q);
     zero_five_words(p + 0x14);
     *(float *)(p + 0x1C) = 4.639999866485596f;
@@ -838,11 +838,11 @@ extern float FastSin(float);
 
 /* Sets up the camera activation moby: tuning floats, then the pose copied from the current camera. */
 void initialize_target_tracking_camera(void *arg) {
-    char *m = arg;
+    Camera *m = (Camera *)arg;
     struct Hero *g;
     int lvl0 = g_current_level_index;
     int lvl;
-    char *p = *(char **)(m + 0x70) + 0x40;
+    char *p = *(char **)&m->state_buf + 0x40;
     float f;
     char *t, *q, *r, *w, *s19, *src;
     char *gg, *gg0, *h;
@@ -858,37 +858,37 @@ void initialize_target_tracking_camera(void *arg) {
     *(float *)(p + 0x5C) = -0.004363323096185923f;
     *(int *)(p + 0x44) = *(int *)&g->moby;
     {
-        char *q0 = *(char **)(m + 0x70);
+        char *q0 = *(char **)&m->state_buf;
         *(float *)(q0 + 0xA0) = 4.639999866485596f;
         q0 += 0xA0;
         *(float *)(q0 + 4) = 0.5f;
         *(float *)(q0 + 0x10) = 2.0f;
         *(float *)(q0 + 0x14) = 0.05f;
     }
-    r = *(char **)(m + 0x70);
+    r = *(char **)&m->state_buf;
     *(int *)(r + 0x18) = 0;
     *(float *)(r + 0x10) = 0.01f;
     *(float *)(r + 0x14) = 0.3f;
     *(short *)(r + 0x1E) = scale_ticks(0x78);
     *(short *)(r + 0x1C) = 0;
     clear_u64_value(r);
-    q = *(char **)(m + 0x70);
+    q = *(char **)&m->state_buf;
     t = q + 0x30;
     *(float *)(t + 4) = 0.02f;
     *(float *)(t + 8) = 0.2f;
     *(int *)(t + 0xC) = 0;
     *(int *)(q + 0x30) = 0;
-    s19 = *(char **)(m + 0x70);
+    s19 = *(char **)&m->state_buf;
     w = s19 + 0xB8;
     *(int *)(w + 4) = 0;
     gg0 = (char *)&player_camera;
     src = *(char **)(gg0 + 0x184);
-    qcopy(m + 0x30, src + 0x30);
-    qcopy(m, src);
-    qcopy(m + 0x10, src + 0x10);
-    qcopy(m + 0x20, src + 0x20);
-    qcopy(m + 0x40, m);
-    *(short *)(m + 0x7E) = 0;
+    qcopy(&m->pos, src + 0x30);
+    qcopy(m->basis, src);
+    qcopy(&m->basis[1], src + 0x10);
+    qcopy(&m->basis[2], src + 0x20);
+    qcopy(m->type_data, (char *)m);
+    m->transition_state = 0;
     lvl = g->state.current;
     if ((unsigned)(lvl - 0x2C) < 2) {
         *(float *)(p + 0x30) = FastCos(g->swing_yaw);
@@ -897,7 +897,7 @@ void initialize_target_tracking_camera(void *arg) {
         *(float *)(s19 + 0xB8) = g->swing_yaw;
         *(int *)(w + 8) = *(int *)&g->swing_target_moby;
     } else {
-        FastVecSub(p + 0x30, *(char **)&g->grapple_target + 0x10, m + 0x30);
+        FastVecSub(p + 0x30, *(char **)&g->grapple_target + 0x10, &m->pos);
         *(int *)(p + 0x38) = 0;
         *(int *)(p + 0x3C) = 0;
         vec_scale_to_length(p + 0x30, p + 0x30, 1.0f);
@@ -905,9 +905,9 @@ void initialize_target_tracking_camera(void *arg) {
         *(int *)(w + 8) = *(int *)&g->grapple_target;
     }
     gg = (char *)&player_camera;
-    *(char *)(gg + 0x273) = 2;
-    *(short *)(gg + 0x270) = 1;
-    *(int *)(gg + 0x2F4) = scale_ticks(0x3C);
+    ((CameraSystem *)gg)->blend.next_kind = 2;
+    ((CameraSystem *)gg)->blend.phase = 1;
+    ((CameraSystem *)gg)->blend.orbit.frames = scale_ticks(0x3C);
 }
 typedef struct {
     u8 pad0[0x180];
@@ -947,8 +947,8 @@ extern float rope_turn_k_2ED320 SDATA(D_L00_00161EA8);
    the hero's yaw, then places it behind the hero and pulls it in front of geometry. Adapted from Lombyte's project (GPL-3.0) for
    PAL: src/overlays/shared/gameplay/camera/follow_camera_update.c, FUN_L00_002ebe70. The moby list pointer
    D_L00_00160098 is MACRO_ADDR (retail loads it with its lui into one register). */
-void update_target_tracking_camera_position(char *cam) {
-    char *state = *(char **)(cam + 0x70);
+void update_target_tracking_camera_position(Camera *cam) {
+    char *state = *(char **)&cam->state_buf;
     char *follow = state + 0x40;
     float *distance = (float *)(state + 0xa0);
     float *angle = (float *)(state + 0xb8);
@@ -1036,23 +1036,23 @@ void update_target_tracking_camera_position(char *cam) {
     normalize_2ED320(-*distance, position, follow + 0x30);
     position[2] += distance[4];
     FastVecAdd_2ED320(position, position, &hero_2ED320.motion.pos);
-    if (coll_line_2ED320(cam + 0x30, position, 0x12, 0, 0) != 0) {
-        FastVecSub_2ED320(offset, &coll_pos_2ED320, cam + 0x30);
+    if (coll_line_2ED320(&cam->pos, position, 0x12, 0, 0) != 0) {
+        FastVecSub_2ED320(offset, &coll_pos_2ED320, &cam->pos);
         collision_position = &coll_pos_2ED320;
         length = FastVecLength_2ED320(offset);
         if (length > 0.5f) {
             FastVecScale_2ED320((length - 0.5f) / length, offset, offset);
-            FastVecAdd_2ED320(position, cam + 0x30, offset);
+            FastVecAdd_2ED320(position, &cam->pos, offset);
             for (i = 0; i < 5; i++) {
                 if (coll_sphere_2ED320(0.75f, position, 0, 0) != 0) qcopy(position, collision_position + 1);
                 else break;
             }
         }
-        qcopy(cam + 0x30, position);
-        FastVecSub_2ED320(offset, &hero_2ED320.motion.pos, cam + 0x30);
+        qcopy(&cam->pos, position);
+        FastVecSub_2ED320(offset, &hero_2ED320.motion.pos, &cam->pos);
         *angle = FastArcTan_2ED320(offset[0], offset[1]);
         *(int *)(angle + 1) = 0;
-    } else qcopy(cam + 0x30, position);
+    } else qcopy(&cam->pos, position);
 }
 extern void FastVecSub(void *, void *, void *);
 extern float FastVecDot(void *, void *);
@@ -1061,8 +1061,8 @@ extern void build_look_at_matrix(void *, void *, void *, float);
 extern char hero_globals_base[] NOT_SDA;
 extern char camera_view_up_axis[] NOT_SDA;
 /* orients a moby to face the camera, blending by the turn angle */
-void turn_camera_view_toward_hero(char *m) {
-    char *p = *(char **)(m + 0x70);
+void turn_camera_view_toward_hero(Camera *m) {
+    char *p = *(char **)&m->state_buf;
     char *q = p + 0x40;
     char *g = hero_globals_base + 0xE9D;
     float a[4];
@@ -1073,9 +1073,9 @@ void turn_camera_view_toward_hero(char *m) {
     float *s = (float *)(p + 0x30);
     qcopy(a, g);
     a[2] += *(float *)(q + 0x4C);
-    FastVecSub(b, a, m + 0x30);
+    FastVecSub(b, a, &m->pos);
     vec_scale_to_length(b, b, 1.0f);
-    t = 1.5707964f - FastArcSin(FastVecDot(b, m));
+    t = 1.5707964f - FastArcSin(FastVecDot(b, m->basis));
     if (*(int *)(g + 0x2004) == 0x25) {
         *s = *s + 0.017f;
         if (*s > 1.0f) *s = 1.0f;
@@ -1083,13 +1083,13 @@ void turn_camera_view_toward_hero(char *m) {
     } else {
         ang = Camera_SmoothAngle(s, 0.0f, t, 0.02f, 0.175f, 0.0f);
     }
-    FastVecCross(c, b, m + 0x40);
-    build_look_at_matrix(m, m + 0x40, c, ang);
-    vec_scale_to_length(m + 0x40, m, 1.0f);
-    qcopy(m, m + 0x40);
-    FastVecCross(m + 0x10, m, camera_view_up_axis);
-    vec_scale_to_length(m + 0x10, m + 0x10, 1.0f);
-    FastVecCross(m + 0x20, m + 0x10, m);
+    FastVecCross(c, b, m->type_data);
+    build_look_at_matrix(m->basis, m->type_data, c, ang);
+    vec_scale_to_length(m->type_data, m, 1.0f);
+    qcopy(m->basis, m->type_data);
+    FastVecCross(&m->basis[1], m, camera_view_up_axis);
+    vec_scale_to_length(&m->basis[1], &m->basis[1], 1.0f);
+    FastVecCross(&m->basis[2], &m->basis[1], m);
 }
 /* Two stripped store-word slots; InitCamera_7 begins at +0x10 and is
  * an independent placement of the existing return-zero func_001E97C8. */
@@ -1348,9 +1348,9 @@ stop:
         return;
     }
     if (params->timer == 0) {
-        u8 *g = (u8 *)&player_camera;
-        params->start_lateral_stiffness = FOLLOW_CAM_STATE(*(struct UpdateCam **)(g + 0x180))->follow.lateral_stiffness;
-        params->start_lateral_damping = FOLLOW_CAM_STATE(*(struct UpdateCam **)(g + 0x180))->follow.lateral_damping;
+        CameraSystem *g = (CameraSystem *)((u8 *)&player_camera);
+        params->start_lateral_stiffness = FOLLOW_CAM_STATE(*(struct UpdateCam **)&g->current)->follow.lateral_stiffness;
+        params->start_lateral_damping = FOLLOW_CAM_STATE(*(struct UpdateCam **)&g->current)->follow.lateral_damping;
     }
     if (*(s32 *)&params->type == 5) {
         *(s32 *)&params->swing = 0;

@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "moby.h"
 
 typedef struct { int a; int b; int c; char pad[0x20]; } T2C_2407C0;
 typedef struct { char pad[0x194]; float f194; } H194_2407C0;
@@ -72,10 +73,20 @@ extern unsigned char hoven_hero_run_jump_land_anim_by_frame[];
 extern T2C_2407C0 hoven_attack_records[];
 extern float hoven_hero_anim_time_curves[][25];
 
+/* How often each move was used: count, best time in minutes, bit per level. help_stats_base + 0x22D and item_usage are tables of these. */
+struct MoveUsage {
+    u16 count;
+    u16 best_minutes;
+    u32 level_mask;
+};
+struct MoveUsageTable {
+    struct MoveUsage e[0x40];
+};
+
 /* Puts the hero into move state A (with its animation when B is set); returns 0 when the change is refused (level 12 build). */
 int HeroL12_SetMoveState(int a, int b) {
     int old2088;
-    char *moby;
+    Moby *moby;
     int old20A7;
     {
         struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
@@ -91,7 +102,7 @@ int HeroL12_SetMoveState(int a, int b) {
     {
         struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
         old2088 = p->state.step;
-        moby = *(char **)&p->moby;
+        moby = (Moby *)(*(char **)&p->moby);
         old20A7 = p->item_select_blocked;
         p->state.prev2 = p->state.prev;
         p->state.prev2_control_mode = p->state.prev_control_mode;
@@ -103,7 +114,7 @@ int HeroL12_SetMoveState(int a, int b) {
         p->unk20A5 = 0;
         p->item_use_locked = 0;
         if (p->vehicle_mode == 0) {
-            *(int *)(moby + 0x98) = 0;
+            moby->collision_disable = 0;
             p->tilt_disabled = 0;
             p->item_select_blocked = 0;
             p->unk20B2 = 0;
@@ -377,32 +388,32 @@ int HeroL12_SetMoveState(int a, int b) {
         p->unk2284 = 0;
         p->health.hp = 0;
         if (p->jump_button_frames > scale_ticks(0x32)) {
-            char *h = help_stats_base + 0x22D;
-            if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
-                *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
+            struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x22D);
+            if (h->e[12].count <= 0xFFFE) {
+                h->e[12].count = h->e[12].count + 1;
             }
         }
         {
-            char *h = help_stats_base + 0x22D;
-            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0x62)) {
-                *(unsigned short *)(h + 0x62) = scale_ticks(gameplay_event_frame_count) / 600;
+            struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x22D);
+            if (scale_ticks(gameplay_event_frame_count) / 600 > h->e[12].best_minutes) {
+                h->e[12].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
             }
             {
                 struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
-                *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << g_current_level_index) | 0x80000000;
+                h->e[12].level_mask = h->e[12].level_mask | (1 << g_current_level_index) | 0x80000000;
                 if (q->swim_cross_tap_count >= 3) {
-                    if (*(unsigned short *)(h + 0xE8) <= 0xFFFE) {
-                        *(unsigned short *)(h + 0xE8) = *(unsigned short *)(h + 0xE8) + 1;
+                    if (h->e[29].count <= 0xFFFE) {
+                        h->e[29].count = h->e[29].count + 1;
                     }
                 }
             }
         }
         {
-            char *h = help_stats_base + 0x22D;
-            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0xEA)) {
-                *(unsigned short *)(h + 0xEA) = scale_ticks(gameplay_event_frame_count) / 600;
+            struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x22D);
+            if (scale_ticks(gameplay_event_frame_count) / 600 > h->e[29].best_minutes) {
+                h->e[29].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
             }
-            *(unsigned int *)(h + 0xEC) = *(unsigned int *)(h + 0xEC) | (1 << g_current_level_index) | 0x80000000;
+            h->e[29].level_mask = h->e[29].level_mask | (1 << g_current_level_index) | 0x80000000;
         }
         {
             char *v = hero_globals_base + 0xF6D;
@@ -606,7 +617,7 @@ int HeroL12_SetMoveState(int a, int b) {
             struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
             float d = q->anim_frame;
             int id = 6;
-            if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4 && 3.0f < d && d < 16.0f) id = 5;
+            if (return_hero_animation_id_unchanged(moby->seq) == 4 && 3.0f < d && d < 16.0f) id = 5;
             set_hero_animation(id, 4, (float)scale_ticks(9));
         }
         break;
@@ -621,7 +632,7 @@ int HeroL12_SetMoveState(int a, int b) {
         if (b) {
             int id = 6;
             float d = p->anim_frame;
-            if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4 && 3.0f < d && d < 16.0f) id = 5;
+            if (return_hero_animation_id_unchanged(moby->seq) == 4 && 3.0f < d && d < 16.0f) id = 5;
             set_hero_animation(id, 4, (float)scale_ticks(9));
         }
         break;
@@ -658,14 +669,14 @@ int HeroL12_SetMoveState(int a, int b) {
         p->state.control_mode = 0xD;
         p->unk2284 = 7;
         {
-            char *h = help_stats_base + 0x65;
-            if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
-                *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
+            struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x65);
+            if (h->e[12].count <= 0xFFFE) {
+                h->e[12].count = h->e[12].count + 1;
             }
-            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0x62)) {
-                *(unsigned short *)(h + 0x62) = scale_ticks(gameplay_event_frame_count) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > h->e[12].best_minutes) {
+                h->e[12].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
             }
-            *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << g_current_level_index) | 0x80000000;
+            h->e[12].level_mask = h->e[12].level_mask | (1 << g_current_level_index) | 0x80000000;
         }
         p->motion.move_yaw = fast_atan2(*(float *)(*(char **)&p->grapple_target + 0x10) - p->motion.pos.f[0], *(float *)(*(char **)&p->grapple_target + 0x14) - p->motion.pos.f[1]);
         if (b) {
@@ -701,14 +712,14 @@ int HeroL12_SetMoveState(int a, int b) {
         p->state.control_mode = 0xE;
         p->unk2284 = 7;
         {
-            char *h = help_stats_base + 0x65;
-            if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
-                *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
+            struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x65);
+            if (h->e[12].count <= 0xFFFE) {
+                h->e[12].count = h->e[12].count + 1;
             }
-            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0x62)) {
-                *(unsigned short *)(h + 0x62) = scale_ticks(gameplay_event_frame_count) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > h->e[12].best_minutes) {
+                h->e[12].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
             }
-            *(unsigned int *)(h + 0x64) = *(unsigned int *)(h + 0x64) | (1 << g_current_level_index) | 0x80000000;
+            h->e[12].level_mask = h->e[12].level_mask | (1 << g_current_level_index) | 0x80000000;
         }
         p->swing_entry_push = 1;
         p->swing_length_vel = 0.0f;
@@ -1198,7 +1209,7 @@ int HeroL12_SetMoveState(int a, int b) {
                 } else if (s == 9) {
                     int id = 8;
                     int n = truncate_float_to_s32(q->anim_frame);
-                    if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4) id = hoven_hero_run_jump_land_anim_by_frame[n];
+                    if (return_hero_animation_id_unchanged(moby->seq) == 4) id = hoven_hero_run_jump_land_anim_by_frame[n];
                     set_hero_animation(id, 0, (float)scale_ticks(5));
                 } else if (s == 0xA) {
                     set_hero_animation(0x12, 0, (float)scale_ticks(5));
@@ -1260,15 +1271,15 @@ int HeroL12_SetMoveState(int a, int b) {
         p->unkA64 = 0;
         switch (p->state.current) {
         case 0x14: {
-            char *h = help_stats_base + 0x22D;
+            struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x22D);
             struct Hero *q;
-            if (*(unsigned short *)(h + 0) <= 0xFFFE) {
-                *(unsigned short *)(h + 0) = *(unsigned short *)(h + 0) + 1;
+            if (h->e[0].count <= 0xFFFE) {
+                h->e[0].count = h->e[0].count + 1;
             }
-            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 2)) {
-                *(unsigned short *)(h + 2) = scale_ticks(gameplay_event_frame_count) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > h->e[0].best_minutes) {
+                h->e[0].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
             }
-            *(unsigned int *)(h + 4) = *(unsigned int *)(h + 4) | (1 << g_current_level_index) | 0x80000000;
+            h->e[0].level_mask = h->e[0].level_mask | (1 << g_current_level_index) | 0x80000000;
             q = (struct Hero *)(hero_globals_base + 0xE1D);
             q->unk2284 = 0x50;
             q->attack_record = 4;
@@ -1287,24 +1298,24 @@ int HeroL12_SetMoveState(int a, int b) {
             break;
         }
         case 0x15: {
-            char *h = help_stats_base + 0x22D;
-            char *h2;
+            struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x22D);
+            struct MoveUsageTable *h2;
             struct Hero *q;
-            if (*(unsigned short *)(h + 8) <= 0xFFFE) {
-                *(unsigned short *)(h + 8) = *(unsigned short *)(h + 8) + 1;
+            if (h->e[1].count <= 0xFFFE) {
+                h->e[1].count = h->e[1].count + 1;
             }
-            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0xA)) {
-                *(unsigned short *)(h + 0xA) = scale_ticks(gameplay_event_frame_count) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > h->e[1].best_minutes) {
+                h->e[1].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
             }
-            *(unsigned int *)(h + 0xC) = *(unsigned int *)(h + 0xC) | (1 << g_current_level_index) | 0x80000000;
-            h2 = item_usage;
-            if (*(unsigned short *)(h2 + 0x128) <= 0xFFFE) {
-                *(unsigned short *)(h2 + 0x128) = *(unsigned short *)(h2 + 0x128) + 1;
+            h->e[1].level_mask = h->e[1].level_mask | (1 << g_current_level_index) | 0x80000000;
+            h2 = (struct MoveUsageTable *)item_usage;
+            if (h2->e[37].count <= 0xFFFE) {
+                h2->e[37].count = h2->e[37].count + 1;
             }
-            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h2 + 0x12A)) {
-                *(unsigned short *)(h2 + 0x12A) = scale_ticks(gameplay_event_frame_count) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > h2->e[37].best_minutes) {
+                h2->e[37].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
             }
-            *(unsigned int *)(h2 + 0x12C) = *(unsigned int *)(h2 + 0x12C) | (1 << g_current_level_index) | 0x80000000;
+            h2->e[37].level_mask = h2->e[37].level_mask | (1 << g_current_level_index) | 0x80000000;
             q = (struct Hero *)(hero_globals_base + 0xE1D);
             q->attack_record = 3;
             q->saved_item[0] = 0;
@@ -1330,18 +1341,18 @@ int HeroL12_SetMoveState(int a, int b) {
             break;
         }
         case 0x13: {
-            char *h = help_stats_base + 0x65;
+            struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x65);
             struct Hero *q;
             T2C_2407C0 *e;
             int k;
-            if (*(unsigned short *)(h + 0x40) <= 0xFFFE) {
-                *(unsigned short *)(h + 0x40) = *(unsigned short *)(h + 0x40) + 1;
+            if (h->e[8].count <= 0xFFFE) {
+                h->e[8].count = h->e[8].count + 1;
             }
-            if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0x42)) {
-                *(unsigned short *)(h + 0x42) = scale_ticks(gameplay_event_frame_count) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > h->e[8].best_minutes) {
+                h->e[8].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
             }
             q = (struct Hero *)(hero_globals_base + 0xE1D);
-            *(unsigned int *)(h + 0x44) = *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;
+            h->e[8].level_mask = h->e[8].level_mask | (1 << g_current_level_index) | 0x80000000;
             e = &hoven_attack_records[q->attack_record];
             q->saved_item[0] = 0;
             k = 0;

@@ -4,6 +4,7 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "moby.h"
+#include "hero.h"
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
     u8 pad_00[0x20];
@@ -144,8 +145,8 @@ extern void FastVecAdd(void *, void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/00312948.c, FUN_L07_00312e70. */
 void draw_snagglebeast_rope_attack_layer(void *mobyp, float radius, int phase, float speed, int color) {
-    char *moby = mobyp;
-    struct SnagglebeastVars *vars = (struct SnagglebeastVars *)((Moby *)moby)->pvars;
+    Moby *moby = (Moby *)mobyp;
+    struct SnagglebeastVars *vars = (struct SnagglebeastVars *)moby->pvars;
     struct GeometryQuad quad;
     struct GeometryQuad inner;
     float offset[4];
@@ -204,7 +205,7 @@ void draw_snagglebeast_rope_attack_layer(void *mobyp, float radius, int phase, f
         offset[1] = radius * FastCos(wrapped);
         offset[2] = radius * FastSin(wrapped);
         offset[0] = 0.0f;
-        matrix_mul_vec3(offset, offset, moby + 0xC0);
+        matrix_mul_vec3(offset, offset, &moby->rot_row0);
         FastVecAdd(&quad.positions[3], vars->attach_pos, offset);
         if (angle != -3.1415927f) {
             draw_world_quad(&quad, 0, 1);
@@ -460,12 +461,12 @@ extern char *umbris_paths[];
 void select_snagglebeast_chase_waypoint(char *m, char *a, void *b, void *c) {
     float v[8];
     void *r = collect_snagglebeast_navigation_ids(m, a, v);
-    if (follow_path(v, r, *(int *)(a + 0x188), 0.0f, m + 0x10, b, c)) return;
+    if (follow_path(v, r, *(int *)(a + 0x188), 0.0f, &((Moby *)m)->pos, b, c)) return;
     {
         int i = select_point_index_by_distance(b, umbris_paths[*(int *)(a + 0x290)], 0.0f);
         int j = select_point_index_by_distance(umbris_paths[*(int *)(a + 0x290)] + (i * 16 + 0x10), umbris_paths[*(int *)(a + 0x188)], 0.0f);
-        if (follow_path(v, r, *(int *)(a + 0x188), 0.0f, m + 0x10, umbris_paths[*(int *)(a + 0x188)] + (j * 16 + 0x10), c)) return;
-        i = select_point_index_by_distance(m + 0x10, umbris_paths[*(int *)(a + 0x188)], 0.0f);
+        if (follow_path(v, r, *(int *)(a + 0x188), 0.0f, &((Moby *)m)->pos, umbris_paths[*(int *)(a + 0x188)] + (j * 16 + 0x10), c)) return;
+        i = select_point_index_by_distance(&((Moby *)m)->pos, umbris_paths[*(int *)(a + 0x188)], 0.0f);
         qcopy(c, umbris_paths[*(int *)(a + 0x188)] + i * 16 + 0x10);
     }
 }
@@ -487,7 +488,7 @@ extern void FastVecScale(void *, void *, float);
 /* steers a moby toward a target, then handles the pickup contact */
 int update_snagglebeast_chase_movement(char *m, char *a, void *p6, float *p7, float thr) {
     float v[4];
-    char *mp = m + 0x10;
+    char *mp = (char *)&((Moby *)m)->pos;
     float d = vec_distance_xy(mp, p6);
     int r = 4;
     char *tbl = umbris_paths[*(int *)(a + 0x290)];
@@ -500,21 +501,21 @@ int update_snagglebeast_chase_movement(char *m, char *a, void *p6, float *p7, fl
             FastVecAdd(mp, mp, v);
         }
     } else {
-        char *g = g_hero;
+        Hero *g = (Hero *)g_hero;
         float h;
-        float dx = *(float *)(g + 0x80) - *(float *)(m + 0x10);
-        float dy = *(float *)(g + 0x84) - *(float *)(m + 0x14);
+        float dx = g->motion.pos.f[0] - ((Moby *)m)->pos.x;
+        float dy = g->motion.pos.f[1] - ((Moby *)m)->pos.y;
         h = fast_atan2(dx, dy);
         MobySpringTurn(m, h, (float *)(a + 0x168), g_frame_time_sq * 2.0943952f, g_frame_time_sq * 0.6981317f, g_frame_time * 2.0943952f);
     }
     if ((umbris_frame_count & 3) == 3) {
-        char *mp2 = m + 0x10;
+        char *mp2 = (char *)&((Moby *)m)->pos;
         if (probe_vertical_ground_collision(mp2, (int)m, 0, 0.1f, 1.0f)) {
             int *t = umbris_coll_hit;
-            unsigned char *q = *(unsigned char **)(t + 6);
-            if (q != 0 && t[7] > 0 && ((Moby *)q)->oclass == 0x42D && ((Moby *)q)->command == 0) {
-                if (((struct SnagglebeastVars *)((Moby *)q)->pvars)->unk_BE != 0) {
-                    FastVecSub(v, q + 0x10, mp2);
+            Moby *q = (Moby *)(*(unsigned char **)(t + 6));
+            if (q != 0 && t[7] > 0 && q->oclass == 0x42D && q->command == 0) {
+                if (((struct SnagglebeastVars *)q->pvars)->unk_BE != 0) {
+                    FastVecSub(v, &q->pos, mp2);
                     v[2] = 0;
                     FastVecScale(v, v, 0.5f);
                     FastVecAdd(mp2, mp2, v);
@@ -555,26 +556,26 @@ extern void MobyBlendAnimation(void *, int, int, int);
 
 /* latches onto a target when it is turned toward enough, then picks a turn animation */
 int start_snagglebeast_turn_toward_target(unsigned char *m, unsigned char *obj, float *vec, int a, int b) {
-    float h = fast_atan2(vec[0] - *(float *)(m + 0x10), vec[1] - *(float *)(m + 0x14));
-    if (*(float *)(obj + 0x98) < FastDiffRots(*(float *)(m + 0x48), h)) {
+    float h = fast_atan2(vec[0] - ((Moby *)m)->pos.x, vec[1] - ((Moby *)m)->pos.y);
+    if (*(float *)(obj + 0x98) < FastDiffRots(((Moby *)m)->rot.z, h)) {
         *(int *)(obj + 0x168) = 0;
-        *(float *)(m + 0x58) = 1.0f;
-        obj[0x1F4] = m[0x20];
+        ((Moby *)m)->anim_speed = 1.0f;
+        obj[0x1F4] = ((Moby *)m)->state;
         obj[0x1F6] = a;
         obj[0x1F5] = b;
         qcopy(obj + 0xC0, vec);
-        if (fast_atan2(vec[0] - *(float *)(m + 0x10), vec[1] - *(float *)(m + 0x14)) < 0.0f) {
-            if (m[0x53] != 3) {
+        if (fast_atan2(vec[0] - ((Moby *)m)->pos.x, vec[1] - ((Moby *)m)->pos.y) < 0.0f) {
+            if (((Moby *)m)->prev_seq != 3) {
                 int r = rand_range(0, 1);
                 MobyBlendAnimation(m, 3, r, rand_range(0xF, 0x14));
             }
         } else {
-            if (m[0x53] != 0xE) {
+            if (((Moby *)m)->prev_seq != 0xE) {
                 int r = rand_range(0, 1);
                 MobyBlendAnimation(m, 0xE, r, rand_range(0xF, 0x14));
             }
         }
-        m[0x20] = 7;
+        ((Moby *)m)->state = 7;
         return 1;
     }
     return 0;
@@ -588,9 +589,9 @@ extern float g_frame_scale_sq MACRO_ADDR;
 void update_snagglebeast_target_joint_animation(char *moby, char *d, float *t) {
     float a;
     float k;
-    if (((unsigned char *)moby)[0x20] < 10) {
-        a = fast_atan2(t[0] - *(float *)(moby + 0x10), t[1] - *(float *)(moby + 0x14));
-        *(float *)(d + 0x268) = FastSubRots(a, *(float *)(moby + 0x48));
+    if (((Moby *)moby)->state < 10) {
+        a = fast_atan2(t[0] - ((Moby *)moby)->pos.x, t[1] - ((Moby *)moby)->pos.y);
+        *(float *)(d + 0x268) = FastSubRots(a, ((Moby *)moby)->rot.z);
     } else {
         *(int *)(d + 0x268) = 0;
     }
@@ -763,26 +764,26 @@ void snagglebeast_update(unsigned char *m) {
     if (umbris_scene_state == 2) return;
     if (d->unk_1A4 != -1 && !is_point_inside_clip_volume(g_hero + 0x80, d->unk_1A4)) return;
     if (((Moby *)m)->visible != 0) {
-        if (FastVecDist(m + 0x10, debris_far_point) < 35.0f) {
+        if (FastVecDist(&((Moby *)m)->pos, debris_far_point) < 35.0f) {
             set_ground_height_band(m);
             ((Moby *)m)->shadow_range = 0x1C;
         }
     }
-    qcopy(&oldpos, m + 0x10);
+    qcopy(&oldpos, &((Moby *)m)->pos);
     t20 = &d->health;
     process_snagglebeast_damage(m, ((unsigned char *)d), t20);
     see = 0;
     FindNearestTargetMoby(m, &tgt, 30.0f);
-    dist = vec_distance_xy(&tgt, m + 0x10);
+    dist = vec_distance_xy(&tgt, &((Moby *)m)->pos);
     ang = fast_atan2(tgt.pos.f[0] - ((Moby *)m)->pos.x, tgt.pos.f[1] - ((Moby *)m)->pos.y);
-    hdist = vec_distance_xy(m + 0x10, g_hero + 0x80);
+    hdist = vec_distance_xy(&((Moby *)m)->pos, g_hero + 0x80);
     {
-        char *g = g_hero;
-        hang = fast_atan2(*(float *)(g + 0x80) - ((Moby *)m)->pos.x, *(float *)(g + 0x84) - ((Moby *)m)->pos.y);
+        Hero *g = (Hero *)g_hero;
+        hang = fast_atan2(g->motion.pos.f[0] - ((Moby *)m)->pos.x, g->motion.pos.f[1] - ((Moby *)m)->pos.y);
     }
     if (fast_subtract_rotations_cf(&d->unk_1F7)) {
-        if ((vec_distance_xy(m + 0x10, g_hero + 0x80) > 8.0f && ((Moby *)m)->state != 5)
-            || (vec_distance_xy(m + 0x10, g_hero + 0x80) > 6.0f && (((Moby *)m)->state == 5 || ((Moby *)m)->command % 3U == 1))) {
+        if ((vec_distance_xy(&((Moby *)m)->pos, g_hero + 0x80) > 8.0f && ((Moby *)m)->state != 5)
+            || (vec_distance_xy(&((Moby *)m)->pos, g_hero + 0x80) > 6.0f && (((Moby *)m)->state == 5 || ((Moby *)m)->command % 3U == 1))) {
             see = 1;
         }
     }
@@ -791,8 +792,8 @@ void snagglebeast_update(unsigned char *m) {
     if (FastDecTimer(&d->unk_19A) && dist > 9.0f) t19A = 1;
     a = 0;
     if (d->unk_1C7 != 0) {
-        char *g = g_hero;
-        if (tgt.moby == *(void **)(g + 0x2080) && dist < 30.0f
+        Hero *g = (Hero *)g_hero;
+        if (tgt.moby == *(void **)&g->moby && dist < 30.0f
             && FastAbsF(FastSubRots(ang, ((Moby *)m)->rot.z)) < 1.3962634f) {
             a = 1;
         }
@@ -802,12 +803,12 @@ void snagglebeast_update(unsigned char *m) {
         if (((((Moby *)m)->state == 5 || ((Moby *)m)->command % 3U == 1) && dist < 14.0f) || (((Moby *)m)->state != 5 && dist < 10.0f)) b = 1;
     }
     {
-        char *g = g_hero;
+        Hero *g = (Hero *)g_hero;
         c = 0;
         e = 0;
-        if (((Moby *)m)->pos.z + 1.0f < *(float *)(g + 0x2D8)) {
-            if (*(char **)(g + 0x2FC) != 0 && *(short *)(*(char **)(g + 0x2FC) + 0xA6) >= 0x459
-                && *(short *)(*(char **)(g + 0x2FC) + 0xA6) < 0x45D) {
+        if (((Moby *)m)->pos.z + 1.0f < g->ground_z.f) {
+            if (*(char **)&g->ground_moby != 0 && *(short *)(*(char **)&g->ground_moby + 0xA6) >= 0x459
+                && *(short *)(*(char **)&g->ground_moby + 0xA6) < 0x45D) {
                 e = 1;
             }
         }
@@ -935,7 +936,7 @@ void snagglebeast_update(unsigned char *m) {
         ((Moby *)m)->draw_dist = 0xFF;
         d->unk_1A8 = -1;
         d->hud_anim = -1;
-        d->unk_1C0 = select_point_index_by_distance(m + 0x10, umbris_paths[d->path_idx], 0.0f);
+        d->unk_1C0 = select_point_index_by_distance(&((Moby *)m)->pos, umbris_paths[d->path_idx], 0.0f);
         suck_reset(m);
         ((Moby *)m)->scale *= 1.75f;
         d->unk_1C7 = 0;
@@ -1022,8 +1023,8 @@ void snagglebeast_update(unsigned char *m) {
             }
         }
         if (((Moby *)m)->seq == 9 || ((Moby *)m)->seq == 0xD) ((Moby *)m)->state = update_alternating_joint_emission_burst(m, (char *)((unsigned char *)d), (float *)&tgt);
-        if ((((Moby *)m)->command % 3U == 0 && vec_distance_xy(&tgt, m + 0x10) > 13.0f)
-            || (((Moby *)m)->command % 3U == 1 && vec_distance_xy(&tgt, m + 0x10) > 20.0f)) {
+        if ((((Moby *)m)->command % 3U == 0 && vec_distance_xy(&tgt, &((Moby *)m)->pos) > 13.0f)
+            || (((Moby *)m)->command % 3U == 1 && vec_distance_xy(&tgt, &((Moby *)m)->pos) > 20.0f)) {
             d->unk_198 = scale_ticks(0x23);
             d->phase_timer = scale_ticks(0x1E);
             ((Moby *)m)->state = 1;
@@ -1034,7 +1035,7 @@ void snagglebeast_update(unsigned char *m) {
         MobySpringTurn((char *)m, ang, (float *)&d->turn_vel, g_frame_time_sq * 1.5707964f, g_frame_time_sq * 0.6981317f, g_frame_time * 1.0471976f);
         if (IsFrameWithinWindow(m, 31.0f) || IsFrameWithinWindow(m, 67.0f) || IsFrameWithinWindow(m, 101.0f)) {
             d->phase += 1;
-            qcopy(&va, m + 0x10);
+            qcopy(&va, &((Moby *)m)->pos);
             d->turn_vel = 0;
             spawn_moby_class_1046((int)m, &va, 0x3A, 1.0f, 25.0f, 2.0f, g_frame_time * 8.0f, 1.0f);
             Moby_GetJointWorldPos(m, (d->phase & 1) + 5, &va);
@@ -1083,7 +1084,7 @@ void snagglebeast_update(unsigned char *m) {
             va.f[2] = ProbeGroundHeight(&va, 0, 0.5f);
             d->phase_timer += 1;
             if (d->phase == 0) {
-                FastVecSub(&vb, m + 0x10, &va);
+                FastVecSub(&vb, &((Moby *)m)->pos, &va);
                 vb.f[2] = 0.0f;
                 vec_scale_to_length(&vb, &vb, 1.0f);
                 vec_scale_to_length(&vg, &vb, 0.075f);
@@ -1147,16 +1148,16 @@ void snagglebeast_update(unsigned char *m) {
             thr = 6.0f;
             if (d->clip_volume != -1 && (d->unk_19C & 3) == 0 && is_point_inside_clip_volume(&tgt, d->clip_volume)) {
                 qcopy(&vb, umbris_paths[d->path_idx2] + select_point_index_by_distance(&tgt, umbris_paths[d->path_idx2], 0.0f) * 16 + 0x10);
-                dd = vec_distance_xy(m + 0x10, &vb);
+                dd = vec_distance_xy(&((Moby *)m)->pos, &vb);
             } else {
                 qcopy(&vb, &tgt);
                 qcopy(&vb, umbris_paths[d->home_path] + select_point_index_by_distance(&vb, umbris_paths[d->home_path], 0.0f) * 16 + 0x10);
-                dd = vec_distance_xy(m + 0x10, &vb);
+                dd = vec_distance_xy(&((Moby *)m)->pos, &vb);
                 if (dd < d->unk_9C + 1.0f) qcopy(&vb, &tgt);
             }
         } else {
             qcopy(&vb, umbris_paths[d->path_idx] + d->unk_1A8 * 16 + 0x10);
-            dd = vec_distance_xy(m + 0x10, &vb);
+            dd = vec_distance_xy(&((Moby *)m)->pos, &vb);
         }
         update_snagglebeast_chase_speed(m, ((unsigned char *)d), dd, thr, 1.5f);
         if ((d->unk_298 & 3) == 0) select_snagglebeast_chase_waypoint((char *)m, (char *)((unsigned char *)d), &vb, d->attach_pos);
@@ -1221,7 +1222,7 @@ void snagglebeast_update(unsigned char *m) {
                 }
                 if (e) {
                     d->phase = 0;
-                    { char *g = g_hero; qcopy(&d->unk_150, *(char **)(g + 0x2FC) + 0x10); }
+                    { Hero *g = (Hero *)g_hero; qcopy(&d->unk_150, *(char **)&g->ground_moby + 0x10); }
                     d->unk_158 += 3.0f;
                     ((Moby *)m)->state = 9;
                 }
@@ -1347,7 +1348,7 @@ void snagglebeast_update(unsigned char *m) {
             FastVecScale(d->move_vec, d->move_vec, 0.7f);
             d->unk_108 = z;
             d->unk_108 -= g_frame_time * 9.8f;
-            FastVecAdd(m + 0x10, m + 0x10, d->move_vec);
+            FastVecAdd(&((Moby *)m)->pos, &((Moby *)m)->pos, d->move_vec);
             if (((Moby *)m)->pos.z < d->unk_1B8) done = 1;
         } else {
             if (MobyGetFrameValue(m) > 79.0f) done = 1;
@@ -1362,7 +1363,7 @@ void snagglebeast_update(unsigned char *m) {
     }
     case 14:
         FastVecScale(d->move_vec, d->move_vec, 0.4f);
-        FastVecAdd(m + 0x10, m + 0x10, d->move_vec);
+        FastVecAdd(&((Moby *)m)->pos, &((Moby *)m)->pos, d->move_vec);
         if (MobyGetFrameValue(m) < 168.0f) {
             Moby_GetJointWorldPos(m, 0xA, &va);
             va.f[2] = 34.6f;
@@ -1442,7 +1443,7 @@ void snagglebeast_update(unsigned char *m) {
             d->unk_CC = FastAddRots(((Moby *)m)->rot.z, vg.f[2]);
         }
         if (((Moby *)m)->seq == 0xA) {
-            qcopy(m + 0x10, &d->target_x);
+            qcopy(&((Moby *)m)->pos, &d->target_x);
             ((Moby *)m)->rot.z = d->unk_CC;
             if (((SbData *)((unsigned char *)d))->i1D8[d->unk_19D] != -1) {
                 *(unsigned char *)(level_mobys + ((SbData *)((unsigned char *)d))->i1D8[d->unk_19D] * 0x100 + 0xBC) = 0;
@@ -1473,13 +1474,13 @@ void snagglebeast_update(unsigned char *m) {
         } else {
             if (d->unk_1C4 != 0 || (fast_dec_timer(&d->phase_timer) && fr < 0.6f)) {
                 int slot;
-                char *g = g_hero;
+                Hero *g = (Hero *)g_hero;
                 d->unk_1C4 = 1;
-                if (*(int *)(g + 0x2084) != 0x78) {
+                if (g->state.current != 0x78) {
                     qcopy(d->rope_start, g_hero + 0x80);
                     qcopy(d->rope_end, g_hero + 0x80);
-                    if (((Moby *)m)->pos.z < *(float *)(g + 0x88)) {
-                        d->unk_128 = *(float *)(g + 0x88) + 2.0f;
+                    if (((Moby *)m)->pos.z < g->motion.pos.f[2]) {
+                        d->unk_128 = g->motion.pos.f[2] + 2.0f;
                     } else {
                         d->unk_128 = ((Moby *)m)->pos.z + 2.0f;
                     }
@@ -1496,7 +1497,7 @@ void snagglebeast_update(unsigned char *m) {
                 {
                     char *g2 = g_hero;
                     *(float *)(g2 + 0x1D48) = FastAddRots(*(float *)(g2 + 0x1D48), g_frame_time * 25.132742f);
-                    *(float *)(g2 + 0x98) = FastAddRots(*(float *)(g2 + 0x1D48), g_frame_time * 25.132742f);
+                    ((Hero *)g2)->motion.rot.f[2] = FastAddRots(*(float *)(g2 + 0x1D48), g_frame_time * 25.132742f);
                 }
                 d->rope_len = hdist;
                 slot = snagglebeast_stage_item_slots[d->phase][0];
@@ -1551,7 +1552,7 @@ void snagglebeast_update(unsigned char *m) {
                                 d->unk_1AC += 10.0f;
                                 Spline_AdvanceByDistance(path, &ve, &pidx, &pfrac, d->unk_1AC, 1);
                                 d1 = vec_distance_xy(g_hero + 0x80, &ve);
-                                d2 = vec_distance_xy(m + 0x10, &ve);
+                                d2 = vec_distance_xy(&((Moby *)m)->pos, &ve);
                             } while (d1 < 8.0f || d2 < 12.0f);
                             add_random_xy_offset((float *)&ve, 0.5f);
                             FastVecSub(&vc, &ve, g_hero + 0x80);
@@ -1626,7 +1627,7 @@ void snagglebeast_update(unsigned char *m) {
             d->phase = 1;
             break;
         case 1:
-            if ((*(unsigned long *)(m + 0x50) & 0xFFFF0000) != 0x07070000 && ((Moby *)m)->prev_seq != 7) {
+            if ((*(unsigned long *)&((Moby *)m)->frame & 0xFFFF0000) != 0x07070000 && ((Moby *)m)->prev_seq != 7) {
                 MobyBlendAnimation(m, 7, 0, rand_range(0xA, 0xD));
             }
             if (((Moby *)m)->seq == 7) {
@@ -1643,7 +1644,7 @@ void snagglebeast_update(unsigned char *m) {
             }
             break;
         case 2:
-            if ((*(unsigned long *)(m + 0x50) & 0xFFFF0000) != 0x07070000 && ((Moby *)m)->prev_seq != 7) {
+            if ((*(unsigned long *)&((Moby *)m)->frame & 0xFFFF0000) != 0x07070000 && ((Moby *)m)->prev_seq != 7) {
                 MobyBlendAnimation(m, 7, 0, rand_range(7, 0xA));
             }
             if (fast_dec_timer(&d->phase_timer)) {
@@ -1658,7 +1659,7 @@ void snagglebeast_update(unsigned char *m) {
             }
             break;
         case 3: {
-            float r = vec_distance_xy(m + 0x10, &tgt.v30);
+            float r = vec_distance_xy(&((Moby *)m)->pos, &tgt.v30);
             d->rope_len += frame_scale;
             if (r <= d->rope_len) d->phase = 4;
             if (fast_dec_timer(&d->phase_timer)) d->phase_timer = scale_ticks(0x14);
@@ -1696,7 +1697,7 @@ void snagglebeast_update(unsigned char *m) {
         if (((Moby *)m)->anim_flags & 2) {
             vec_scale_to_length(d->move_vec, d->move_vec, 1.0f);
             d->unk_108 = 1.0f;
-            qcopy(&va, m + 0x10);
+            qcopy(&va, &((Moby *)m)->pos);
             va.f[2] = d->unk_1B8 + 1.0f;
             spawn_explosion(m, d->move_vec, &va, 0.0f, 0.0f, 0x14, 0xC, 0x40, 7.0f, 5.0f, 10.0f, -1, 1.0f, 50.0f, 1, 1, -1, 0);
             ((Moby *)m)->flags |= 0x41;
@@ -1709,7 +1710,7 @@ void snagglebeast_update(unsigned char *m) {
         if (((Moby *)m)->anim_flags & 2) {
             if (e) {
                 d->phase = 0;
-                { char *g = g_hero; qcopy(&d->unk_150, *(char **)(g + 0x2FC) + 0x10); }
+                { Hero *g = (Hero *)g_hero; qcopy(&d->unk_150, *(char **)&g->ground_moby + 0x10); }
                 d->unk_158 += 3.0f;
                 ((Moby *)m)->state = 9;
             } else {
@@ -1729,7 +1730,7 @@ void snagglebeast_update(unsigned char *m) {
     case 17:
         break;
     }
-    FastVecSub(d->move_vec, m + 0x10, &oldpos);
+    FastVecSub(d->move_vec, &((Moby *)m)->pos, &oldpos);
     if (((Moby *)m)->state < 0xA) jet_animate(m, 2.5f);
     update_timed_point_light_color((char *)((unsigned char *)d));
 }
@@ -1972,12 +1973,12 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
     FastVecSub(v10, gHeroPos, anchor);
     v10[2] += 0.6f;
     norm_319080(v10, v10, 2.8f);
-    FastVecCross(v20, v10, (char *)moby + 0xD0);
+    FastVecCross(v20, v10, &((Moby *)moby)->rot_row1);
     norm_319080(v20, v20, 1.0f);
     qcopy(snagglebeast_rope_centers_r, anchor);
-    matrix_mul_vec3(v30, snagglebeast_rope_sway_from_r, (char *)moby + 0xC0);
+    matrix_mul_vec3(v30, snagglebeast_rope_sway_from_r, &((Moby *)moby)->rot_row0);
     add_319080(v30, v30, v10);
-    matrix_mul_vec3(v40, snagglebeast_rope_sway_to_r, (char *)moby + 0xC0);
+    matrix_mul_vec3(v40, snagglebeast_rope_sway_to_r, &((Moby *)moby)->rot_row0);
     add_319080(v40, v40, v10);
     {
         float t = (float)D_L07_00161C10_319080 / IntToFloat(scale_ticks(60));
@@ -1988,7 +1989,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
     }
     if (D_L07_00161C10_319080 >= scale_ticks(60)) {
         qcopy(snagglebeast_rope_sway_from_r, snagglebeast_rope_sway_to_r);
-        norm_319080(v50, (char *)moby + 0xC0, 2.8f);
+        norm_319080(v50, &((Moby *)moby)->rot_row0, 2.8f);
         *(u128_319080 *)v60 = 0;
         *(u128_319080 *)v70 = 0;
         v60[2] = 0.1f;

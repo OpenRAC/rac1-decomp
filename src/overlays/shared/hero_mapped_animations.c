@@ -15,9 +15,9 @@ extern int scale_ticks(int);
    sequence is read into a local before the func_001F9850 call, as
    retail holds it in a saved register across it. */
 void blend_hero_slot3_animation_pair(void) {
-    char *base = g_hero;
-    char *a = *(char **)(base + 0x1180);
-    char *b = *(char **)(base + 0x1184);
+    Hero *base = (Hero *)g_hero;
+    char *a = *(char **)&base->items[3].moby;
+    char *b = *(char **)&base->items[3].moby2;
     int buf[2];
     int seq;
 
@@ -90,7 +90,7 @@ int lookup_hero_slot3_animation_key(int key, int *out) {
    two scalars next to the spilled ID, which gives retail's 0x80 frame;
    the block pointer is re-formed for each stage, as retail does. */
 void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     char *blk2;
     char *blk3;
     char *a;
@@ -100,11 +100,11 @@ void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
     int ok;
     int seq;
 
-    if (*(int *)(base + 0x11A4) != 2) {
+    if (base->items[3].state != 2) {
         return;
     }
-    a = *(char **)(base + 0x1180);
-    b = *(char **)(base + 0x1184);
+    a = *(char **)&base->items[3].moby;
+    b = *(char **)&base->items[3].moby2;
     if (a == 0 || b == 0) {
         return;
     }
@@ -192,23 +192,23 @@ extern char g_hero[];
    +0x1184 that exist. The pair goes in a two-int stack array (&buf[1] is
    retail's `ori $6, $sp, 4`). */
 void sync_hero_slot3_animation_speed(void) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     int buf[2];
 
-    if (*(unsigned char *)(base + 0x20A4) != 0) {
+    if (base->vehicle_mode != 0) {
         return;
     }
-    if (*(int *)(base + 0x11A4) != 2) {
+    if (base->items[3].state != 2) {
         return;
     }
-    if (select_hero_slot3_animation_pair(*(unsigned char *)(*(char **)(base + 0x2080) + 0x53), &buf[0], &buf[1]) == 0) {
+    if (select_hero_slot3_animation_pair(*(unsigned char *)(*(char **)&base->moby + 0x53), &buf[0], &buf[1]) == 0) {
         return;
     }
-    if (*(char **)(base + 0x1180) != 0) {
-        *(float *)(*(char **)(base + 0x1180) + 0x58) = *(float *)(base + 0xA90);
+    if (*(char **)&base->items[3].moby != 0) {
+        *(float *)(*(char **)&base->items[3].moby + 0x58) = base->anim_speed;
     }
-    if (*(char **)(base + 0x1184) != 0) {
-        *(float *)(*(char **)(base + 0x1184) + 0x58) = *(float *)(base + 0xA90);
+    if (*(char **)&base->items[3].moby2 != 0) {
+        *(float *)(*(char **)&base->items[3].moby2 + 0x58) = base->anim_speed;
     }
 }
 extern short *hero_mapped_moby_seq_pairs;
@@ -241,17 +241,17 @@ extern int scale_ticks(int);
    the animation has a previous sequence (+0x53), restarts sequence 0.
    Retail reloads the animation pointer at each use. */
 void blend_hero_mapped_moby_animation(int a0, int a1, float a2) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     int buf[4];
     int ok;
 
-    if (*(void **)(base + 0x2278) != 0) {
-        if (*(int *)(base + 0x227C) != 0) {
+    if (base->unk2278 != 0) {
+        if (base->unk227C != 0) {
             ok = lookup_s16_pair_value(a0, buf);
             if (ok != 0) {
-                MobyBlendAnimation(*(void **)(base + 0x2278), buf[0], a1, (int)a2);
-            } else if (*(unsigned char *)(*(char **)(base + 0x2278) + 0x53) != 0) {
-                MobyBlendAnimation(*(void **)(base + 0x2278), 0, 0, scale_ticks(7));
+                MobyBlendAnimation(base->unk2278, buf[0], a1, (int)a2);
+            } else if (*(unsigned char *)(*(char **)&base->unk2278 + 0x53) != 0) {
+                MobyBlendAnimation(base->unk2278, 0, 0, scale_ticks(7));
             }
         }
     }
@@ -260,12 +260,12 @@ void blend_hero_mapped_moby_animation(int a0, int a1, float a2) {
    and a sequence ready for the current id (func_L00_00232A18), copies
    the float at +0xA90 to the animation's field 0x58. */
 void sync_hero_mapped_moby_animation_speed(void) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     int buf[4];
 
-    if (*(void **)(base + 0x2278) != 0 && *(int *)(base + 0x227C) != 0
-        && lookup_s16_pair_value(*(unsigned char *)(*(char **)(base + 0x2080) + 0x53), buf) != 0) {
-        *(float *)(*(char **)(base + 0x2278) + 0x58) = *(float *)(base + 0xA90);
+    if (base->unk2278 != 0 && base->unk227C != 0
+        && lookup_s16_pair_value(*(unsigned char *)(*(char **)&base->moby + 0x53), buf) != 0) {
+        *(float *)(*(char **)&base->unk2278 + 0x58) = base->anim_speed;
     }
 }
 typedef struct {
@@ -299,16 +299,16 @@ typedef struct {
    up in its bank of the model. The typed structs give retail's
    base-first index adds, which byte offsets turn round. */
 void sync_hero_mapped_moby_animation_frames(void) {
-    char *base = g_hero;
-    AnimState *obj = *(AnimState **)(base + 0x2278);
+    Hero *base = (Hero *)g_hero;
+    AnimState *obj = *(AnimState **)&base->unk2278;
 
     if (obj == 0) {
         return;
     }
-    obj->f5C = *(float *)(base + 0xA94);
-    obj->f54 = *(float *)(*(char **)(base + 0x2080) + 0x54);
-    obj->seq[0] = *(unsigned char *)(*(char **)(base + 0x2080) + 0x51);
-    obj->seq[1] = *(unsigned char *)(*(char **)(base + 0x2080) + 0x51);
+    obj->f5C = base->anim_frame_rate;
+    obj->f54 = *(float *)(*(char **)&base->moby + 0x54);
+    obj->seq[0] = *(unsigned char *)(*(char **)&base->moby + 0x51);
+    obj->seq[1] = *(unsigned char *)(*(char **)&base->moby + 0x51);
     obj->id[0] = obj->model->banks[obj->bank[0]]->ids[obj->seq[0]];
     obj->id[1] = obj->model->banks[obj->bank[1]]->ids[obj->seq[1]];
 }
@@ -415,12 +415,12 @@ void HeroStartSequenceInBank(int bank, int seq) {
    there. */
 void hero_queue_sequence(int bank, int seq) {
     if (bank >= 0) {
-        char *base = g_hero;
-        AnimState *obj = *(AnimState **)(base + 0x2080);
+        Hero *base = (Hero *)g_hero;
+        AnimState *obj = *(AnimState **)&base->moby;
 
         if (seq < obj->model->banks[obj->bank[1]]->count) {
-            *(int *)(base + 0xAB0) = bank;
-            *(int *)(base + 0xAB4) = seq;
+            base->anim_loop_frame = bank;
+            base->queued_anim_frame = seq;
         }
     }
 }
@@ -688,19 +688,19 @@ typedef struct {
    re-forms the address from the saved %hi after the loop and again
    before the last test. */
 void HeroSetObjectFlags(void) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     char *tail;
     char *last;
     char *obj;
     int i;
 
-    *(unsigned short *)(*(char **)(base + 0xA88) + 0x34) |= 1;
+    *(unsigned short *)(*(char **)&base->unkA88 + 0x34) |= 1;
     for (i = 0; i < 7; i++) {
-        if (((ObjPair *)(base + 0x1090))[i].a != 0) {
-            *(unsigned short *)(((ObjPair *)(base + 0x1090))[i].a + 0x34) |= 1;
+        if (((ObjPair *)base->items)[i].a != 0) {
+            *(unsigned short *)(((ObjPair *)base->items)[i].a + 0x34) |= 1;
         }
-        if (((ObjPair *)(base + 0x1090))[i].b != 0) {
-            *(unsigned short *)(((ObjPair *)(base + 0x1090))[i].b + 0x34) |= 1;
+        if (((ObjPair *)base->items)[i].b != 0) {
+            *(unsigned short *)(((ObjPair *)base->items)[i].b + 0x34) |= 1;
         }
     }
     tail = g_hero;
@@ -730,20 +730,20 @@ void HeroSetObjectFlags(void) {
    +0x20AE is set in mode 8 (+0x10B8). Each stage takes a fresh pointer to the
    block, as retail re-forms it from the saved %hi before each one. */
 void HeroClearObjectFlags(void) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     char *blk2;
     char *blk3;
     char *blk4;
     char *obj;
     int i;
 
-    *(unsigned short *)(*(char **)(base + 0xA88) + 0x34) &= ~1;
+    *(unsigned short *)(*(char **)&base->unkA88 + 0x34) &= ~1;
     for (i = 0; i < 7; i++) {
-        if (((ObjPair *)(base + 0x1090))[i].a != 0) {
-            *(unsigned short *)(((ObjPair *)(base + 0x1090))[i].a + 0x34) &= ~1;
+        if (((ObjPair *)base->items)[i].a != 0) {
+            *(unsigned short *)(((ObjPair *)base->items)[i].a + 0x34) &= ~1;
         }
-        if (((ObjPair *)(base + 0x1090))[i].b != 0) {
-            *(unsigned short *)(((ObjPair *)(base + 0x1090))[i].b + 0x34) &= ~1;
+        if (((ObjPair *)base->items)[i].b != 0) {
+            *(unsigned short *)(((ObjPair *)base->items)[i].b + 0x34) &= ~1;
         }
     }
     blk2 = g_hero;
@@ -775,9 +775,9 @@ void HeroClearObjectFlags(void) {
     blk4 = g_hero;
     if ((*(unsigned char *)(blk4 + 0x20AE) != 0 && *(int *)(blk4 + 0x10B8) == 8)
         || *(unsigned char *)(blk4 + 0x20AF) != 0) {
-        char *blk5 = g_hero;
+        Hero *blk5 = (Hero *)g_hero;
 
-        obj = ((ObjPair *)(blk5 + 0x1090))[0].a;
+        obj = ((ObjPair *)blk5->items)[0].a;
         if (obj != 0) {
             *(unsigned short *)(obj + 0x34) |= 0x41;
         }
@@ -786,11 +786,11 @@ void HeroClearObjectFlags(void) {
 /* Sets bit 0 of the flags (0x34) of the objects at D_0013F450 + 0x2080
    and, when present, +0x1620. */
 void set_hero_moby_flag_bit0(void) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     char *obj;
 
-    *(unsigned short *)(*(char **)(base + 0x2080) + 0x34) |= 1;
-    obj = *(char **)(base + 0x1620);
+    *(unsigned short *)(*(char **)&base->moby + 0x34) |= 1;
+    obj = *(char **)&base->unk1620;
     if (obj != 0) {
         *(unsigned short *)(obj + 0x34) |= 1;
     }
@@ -798,11 +798,11 @@ void set_hero_moby_flag_bit0(void) {
 /* Clears what func_L00_00233A90 sets: bit 0 of the flags (0x34) of the
    objects at D_0013F450 + 0x2080 and, when present, +0x1620. */
 void clear_hero_moby_flag_bit0(void) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     char *obj;
 
-    *(unsigned short *)(*(char **)(base + 0x2080) + 0x34) &= ~1;
-    obj = *(char **)(base + 0x1620);
+    *(unsigned short *)(*(char **)&base->moby + 0x34) &= ~1;
+    obj = *(char **)&base->unk1620;
     if (obj != 0) {
         *(unsigned short *)(obj + 0x34) &= ~1;
     }
@@ -876,13 +876,13 @@ extern unsigned char gHaveMagneboots NOT_SDA;
    +0x308. One `||` condition: retail sends every true test to a single
    `r = 1` block after the call. */
 int resolve_hero_gravity_mode(void) {
-    char *base = g_hero;
-    int state = *(int *)(base + 0x2084);
-    int r = *(short *)(base + 0x308);
+    Hero *base = (Hero *)g_hero;
+    int state = base->state.current;
+    int r = base->unk308;
 
     if (state == 0x3F || state == 0x71 || state == 0x70
-        || (*(unsigned char *)(base + 0x12E7) != 0 && gHaveMagneboots != 0 && state == 0
-            && *(short *)(base + 0x30E) < scale_ticks(4))) {
+        || (base->on_magnet_ground != 0 && gHaveMagneboots != 0 && state == 0
+            && base->air_frames.s < scale_ticks(4))) {
         r = 1;
     }
     return r;
@@ -896,20 +896,20 @@ extern void vec_scale_to_length(void *, void *, float);
    vector at +0x290. That one is named from the symbol, not the base
    local: retail forms it with its own lui. */
 void HeroMoveDownAlongNormal(float *dst, float *src, float h) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     float d[4] __attribute__((aligned(16)));
 
-    switch (*(unsigned char *)(base + 0x20B3)) {
+    switch (base->gravity_mode) {
     case 0:
         dst[2] = src[2] - h;
         break;
     case 1:
-        vec_scale_to_length(d, base + 0x270, -h);
+        vec_scale_to_length(d, &base->ground_normal, -h);
         FastVecAdd(dst, src, d);
         break;
     case 2:
-        if (*(int *)(base + 0x2084) == 0x3E && *(short *)(base + 0x30E) == 0) {
-            vec_scale_to_length(d, base + 0x270, -h);
+        if (base->state.current == 0x3E && base->air_frames.s == 0) {
+            vec_scale_to_length(d, &base->ground_normal, -h);
         } else {
             vec_scale_to_length(d, g_hero + 0x290, h);
         }
@@ -965,16 +965,16 @@ void offset_hero_position_against_gravity(float *dst, float *src, float h) {
    through the rotation func_001FA218 builds from its angles (+0x40). The
    switch gives retail's case tree. */
 void add_hero_forward_offset(float *dst, float *src, float r) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     float m[16] __attribute__((aligned(16)));
     float off[4] __attribute__((aligned(16)));
     float angle;
 
-    switch (*(unsigned char *)(base + 0x20B3)) {
+    switch (base->gravity_mode) {
     case 0:
         qcopy(dst, src);
-        dst[0] += FastCos(*(float *)(*(char **)(base + 0x2080) + 0x48)) * r;
-        dst[1] += FastSin(*(float *)(*(char **)(base + 0x2080) + 0x48)) * r;
+        dst[0] += FastCos(*(float *)(*(char **)&base->moby + 0x48)) * r;
+        dst[1] += FastSin(*(float *)(*(char **)&base->moby + 0x48)) * r;
         break;
     case 1:
     case 2:
@@ -982,7 +982,7 @@ void add_hero_forward_offset(float *dst, float *src, float r) {
         off[0] = FastCos(angle) * r;
         off[1] = FastSin(angle) * r;
         off[2] = angle;
-        euler_to_matrix(m, *(char **)(base + 0x2080) + 0x40);
+        euler_to_matrix(m, *(char **)&base->moby + 0x40);
         transform_vector(off, off, m);
         FastVecAdd(dst, src, off);
         break;
@@ -995,11 +995,11 @@ void add_hero_forward_offset(float *dst, float *src, float r) {
    angles at +0x40 of the object at +0x2080. The switch gives retail's
    case tree. */
 void HeroOffsetAlongViewZ(float *dst, float *src, float dz) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     float m[16] __attribute__((aligned(16)));
     float off[4] __attribute__((aligned(16)));
 
-    switch (*(unsigned char *)(base + 0x20B3)) {
+    switch (base->gravity_mode) {
     case 0:
         qcopy(dst, src);
         dst[2] += dz;
@@ -1008,7 +1008,7 @@ void HeroOffsetAlongViewZ(float *dst, float *src, float dz) {
     case 2:
         clear_u64_value(off);
         off[2] = dz;
-        euler_to_matrix(m, *(char **)(base + 0x2080) + 0x40);
+        euler_to_matrix(m, *(char **)&base->moby + 0x40);
         transform_vector(off, off, m);
         FastVecAdd(dst, src, off);
         break;
@@ -1024,21 +1024,21 @@ extern void FastVecSub(void *, void *, void *);
    vector at +0x270 scaled to unit length (func_L00_001FF4B0), in mode 2
    the one at +0x290 as is. DST = SRC - dot(n, SRC) n. */
 void gravity_flatten(float *dst, float *src) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     float n[4] __attribute__((aligned(16)));
 
-    switch (*(unsigned char *)(base + 0x20B3)) {
+    switch (base->gravity_mode) {
     case 0:
         qcopy(dst, src);
         dst[2] = 0.0f;
         break;
     case 1:
-        vec_scale_to_length(n, base + 0x270, 1.0f);
+        vec_scale_to_length(n, &base->ground_normal, 1.0f);
         FastVecScale(n, n, FastVecDot(n, src));
         FastVecSub(dst, src, n);
         break;
     case 2:
-        FastVecScale(n, base + 0x290, FastVecDot(base + 0x290, src));
+        FastVecScale(n, &base->gravity_dir, FastVecDot(&base->gravity_dir, src));
         FastVecSub(dst, src, n);
         break;
     }
@@ -1052,17 +1052,17 @@ extern void matrix_from_basis_rows(void *, void *);
    at +0x2080 (func_001FA4A0 transposes it); other modes give 0. The
    switch gives retail's case tree. */
 float gravity_length_xy(float *v) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     float m[16] __attribute__((aligned(16)));
     float inv[16] __attribute__((aligned(16)));
     float out[4] __attribute__((aligned(16)));
 
-    switch (*(unsigned char *)(base + 0x20B3)) {
+    switch (base->gravity_mode) {
     case 0:
         return vec_length_xy(v);
     case 1:
     case 2:
-        euler_to_matrix(m, *(char **)(base + 0x2080) + 0x40);
+        euler_to_matrix(m, *(char **)&base->moby + 0x40);
         matrix_from_basis_rows(inv, m);
         transform_vector(out, v, inv);
         return vec_length_xy(out);
@@ -1075,18 +1075,18 @@ float gravity_length_xy(float *v) {
    builds from the angles at +0x40 of the object at +0x2080; other modes
    give 0. The switch gives retail's case tree. */
 float gravity_z(float *v) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     float m[16] __attribute__((aligned(16)));
     float axis[4] __attribute__((aligned(16)));
 
-    switch (*(unsigned char *)(base + 0x20B3)) {
+    switch (base->gravity_mode) {
     case 0:
         return v[2];
     case 1:
     case 2:
         clear_u64_value(axis);
         axis[2] = 1.0f;
-        euler_to_matrix(m, *(char **)(base + 0x2080) + 0x40);
+        euler_to_matrix(m, *(char **)&base->moby + 0x40);
         transform_vector(axis, axis, m);
         return FastVecDot(axis, v);
     }
@@ -1100,18 +1100,18 @@ float gravity_z(float *v) {
    bltz / slti 3 range test is gcc's case tree, which an if chain folds
    to one sltu. */
 void gravity_set_z(float *dst, float *src, float z) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
 
-    switch (*(unsigned char *)(base + 0x20B3)) {
+    switch (base->gravity_mode) {
     case 0:
         qcopy(dst, src);
         dst[2] = z;
         break;
     case 1:
     case 2:
-        transform_vector(dst, src, base + 0x40);
+        transform_vector(dst, src, base->inv_rot_matrix);
         dst[2] = z;
-        transform_vector(dst, dst, base);
+        transform_vector(dst, dst, base->rot_matrix);
         break;
     }
 }
@@ -1122,17 +1122,17 @@ extern void vec_set_length_xy(float *, float *, float);
    0x20B3) directly, in modes 1 and 2 between the transforms by the
    matrices at +0x40 and +0x0. The switch gives retail's case tree. */
 void set_gravity_relative_vector_length_xy(float *dst, float *src, float z) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
 
-    switch (*(unsigned char *)(base + 0x20B3)) {
+    switch (base->gravity_mode) {
     case 0:
         vec_set_length_xy(dst, src, z);
         break;
     case 1:
     case 2:
-        transform_vector(dst, src, base + 0x40);
+        transform_vector(dst, src, base->inv_rot_matrix);
         vec_set_length_xy(dst, dst, z);
-        transform_vector(dst, dst, base);
+        transform_vector(dst, dst, base->rot_matrix);
         break;
     }
 }
@@ -1179,16 +1179,16 @@ extern float fast_atan2(float, float);
    in an aligned stack copy; any other mode gives 0. The switch gives
    retail's case tree. */
 float compute_gravity_relative_vector_inclination(float *v) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
     float tmp[4] __attribute__((aligned(16)));
 
-    switch (*(unsigned char *)(base + 0x20B3)) {
+    switch (base->gravity_mode) {
     case 0:
         return fast_atan2(v[2], vec_length_xy(v));
     case 1:
     case 2:
         qcopy(tmp, v);
-        transform_vector(tmp, tmp, base + 0x40);
+        transform_vector(tmp, tmp, base->inv_rot_matrix);
         return fast_atan2(tmp[2], vec_length_xy(tmp));
     }
     return 0.0f;
@@ -1473,10 +1473,10 @@ extern int resolve_point_path_segment_clearance(int, void *, void *, float);
    at +0x80 (as both pointers) and the float at +0x234; when it returns
    nonzero, sets the short at +0x1F6 to 4. */
 void Hero_ConstrainToPath(void) {
-    char *base = g_hero;
+    Hero *base = (Hero *)g_hero;
 
-    if (resolve_point_path_segment_clearance(*(short *)(base + 0x22DA), base + 0x80, base + 0x80, *(float *)(base + 0x234)) != 0) {
-        *(short *)(base + 0x1F6) = 4;
+    if (resolve_point_path_segment_clearance(base->path_constrain_pending, &base->motion, &base->motion, base->capsule_radius) != 0) {
+        base->unk1F6 = 4;
     }
 }
 typedef struct {
@@ -1699,7 +1699,7 @@ void show_health_hud(void) {
 extern char g_hero[];
 /* Clears the secondary animation object pointers, not the movement speed targets. */
 void clear_hero_mapped_moby_animation_state(void) {
-    char *base = g_hero;
-    *(int *)(base + 0x2278) = 0;
-    *(int *)(base + 0x227C) = 0;
+    Hero *base = (Hero *)g_hero;
+    *(int *)&base->unk2278 = 0;
+    base->unk227C = 0;
 }

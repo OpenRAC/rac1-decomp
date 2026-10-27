@@ -4,6 +4,7 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "camera.h"
 
 /* Moby that points at a linked moby by index. */
 struct LinkedRemovalVars {
@@ -220,11 +221,11 @@ void spawn_moby_offset_puffs(Moby *p) {
 extern char *oltanis_mobys MACRO_ADDR;
 extern void DeleteMoby(void *);
 /* deletes the linked moby and then the owner if still active */
-void mark_moby_and_linked_moby_for_removal(char *moby) {
- struct LinkedRemovalVars *data = (struct LinkedRemovalVars *)((Moby *)moby)->pvars;
+void mark_moby_and_linked_moby_for_removal(Moby *moby) {
+ struct LinkedRemovalVars *data = (struct LinkedRemovalVars *)moby->pvars;
  char *other=oltanis_mobys+(data->linked_moby<<8);
  if(other!=0 && other[0x20]>=0) DeleteMoby(other);
- if(moby[0x20]>=0) DeleteMoby(moby);
+ if(*(char *)&moby->state>=0) DeleteMoby(moby);
 }
 typedef struct L14Model {
     char pad0[0x10];
@@ -507,15 +508,15 @@ int update_bolt_thief_path_movement(char *moby) {
         t = g_frame_time * 20.0f;
     if (data->speed != 0.0f)
         t = data->speed * g_frame_time;
-    if ((unsigned char)moby[0x20] == 5)
+    if ((unsigned char)*(char *)&((Moby *)moby)->state == 5)
         path = oltanis_paths[data->path_b];
     else
         path = oltanis_paths[data->path_a];
     r = Spline_AdvanceByDistance(path, pos, &data->spline_seg, &data->spline_t, t, 0);
-    Spring((float *)(moby + 0x10), &data->pos_vel.x, pos[0], *(float *)&oltanis_bolt_thief_spring_stiffness, *(float *)&oltanis_bolt_thief_spring_damping, 0.0f);
-    Spring((float *)(moby + 0x14), &data->pos_vel.y, pos[1], *(float *)&oltanis_bolt_thief_spring_stiffness, *(float *)&oltanis_bolt_thief_spring_damping, 0.0f);
-    Spring((float *)(moby + 0x18), &data->pos_vel.z, pos[2], *(float *)&oltanis_bolt_thief_spring_stiffness, *(float *)&oltanis_bolt_thief_spring_damping, 0.0f);
-    FastVecSub(delta, pos, moby + 0x10);
+    Spring(&((Moby *)moby)->pos.x, &data->pos_vel.x, pos[0], *(float *)&oltanis_bolt_thief_spring_stiffness, *(float *)&oltanis_bolt_thief_spring_damping, 0.0f);
+    Spring(&((Moby *)moby)->pos.y, &data->pos_vel.y, pos[1], *(float *)&oltanis_bolt_thief_spring_stiffness, *(float *)&oltanis_bolt_thief_spring_damping, 0.0f);
+    Spring(&((Moby *)moby)->pos.z, &data->pos_vel.z, pos[2], *(float *)&oltanis_bolt_thief_spring_stiffness, *(float *)&oltanis_bolt_thief_spring_damping, 0.0f);
+    FastVecSub(delta, pos, &((Moby *)moby)->pos);
     if (FastAbsF(delta[0]) > 0.01f) {
         if (FastAbsF(delta[1]) > 0.01f) {
             MobySpringTurn(moby, fast_atan2(delta[0], delta[1]), &data->turn_vel, *(float *)&oltanis_bolt_thief_spring_stiffness, *(float *)&oltanis_bolt_thief_spring_damping, 0.0f);
@@ -576,7 +577,7 @@ void sam_update(char *m) {
         }
         d->dialogue_name = oltanis_sam_dialogue_name;
         DialogRequest_Init(m, ((char *)d));
-        m[0x20] = 1;
+        ((Moby *)m)->state = 1;
         d->started = 1;
         break;
     }
@@ -584,7 +585,7 @@ void sam_update(char *m) {
         if (d->started == 1 && is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->clip_volume) != 0) {
             if ((help_stats_base + 0xAA35)[((Moby *)m)->mission + (g_current_level_index << 4)] != 0xFF) {
                 char *t;
-                jet_clear_persistent((unsigned char)m[0xB0]);
+                jet_clear_persistent((unsigned char)*(char *)&((Moby *)m)->mission);
                 t = oltanis_clip_volumes_r + (d->clip_start << 7);
                 jet_reset_camera(t + 0x30, t + 0x70);
             }
@@ -599,12 +600,12 @@ void sam_update(char *m) {
             qcopy(g + 0x10, t + 0x30);
             clear_u64_value(g + 0x20);
             *(float *)(g + 0x28) = *(float *)(t + 0x78);
-            m[0x20] = 2;
+            ((Moby *)m)->state = 2;
         }
         break;
     case 2:
         if (oltanis_game_mode == 2) break;
-        m[0x20] = 1;
+        ((Moby *)m)->state = 1;
         if (d->dialog_state != 4) break;
         unlock_planet(0xF);
         queue_planet_unlock_message(0xF);
@@ -624,7 +625,7 @@ void sam_update(char *m) {
             char *g = hero_globals_base + 0xE9D;
             char *a_;
             doit = 1;
-            if (vec_distance_xy(m + 0x10, g) < 8.0f
+            if (vec_distance_xy(&((Moby *)m)->pos, g) < 8.0f
                 && FastDiffRots(((Moby *)m)->rot.z,
                        fast_atan2(*(float *)((a_ = g - 0x80) + 0xD0) - ((Moby *)m)->pos.x,
                                          *(float *)(a_ + 0xD4) - ((Moby *)m)->pos.y)) < 1.5707964f) {
@@ -645,7 +646,7 @@ void sam_update(char *m) {
                 y = FastAddRots(((Moby *)m)->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
                 z = random_float_between(0.0f, 30.0f) * 0.017453292f;
                 BuildSphericalOffset(&d->aim_target, 6.0f, y, z);
-                FastVecAdd(&d->aim_target, &d->aim_target, m + 0x10);
+                FastVecAdd(&d->aim_target, &d->aim_target, &((Moby *)m)->pos);
             }
             if (d->aim_timer != 0) {
                 qcopy(b, hero_globals_base + 0xEED);
@@ -660,7 +661,7 @@ void sam_update(char *m) {
             float u[4];
             float f20;
             float f2;
-            qcopy(w, m + 0x10);
+            qcopy(w, &((Moby *)m)->pos);
             w[2] = w[2] + 1.0f;
             FastVecSub(u, b, w);
             f20 = FastSubRots(fast_atan2(u[0], u[1]), ((Moby *)m)->rot.z);
@@ -909,32 +910,32 @@ extern short oltanis_spark_start_scale;
 
 /* Spawns a moby with its data block filled from the arguments. */
 char *create_bouncing_spark(int a0, float *a1, float *a2, int a3, float f) {
-    char *moby = CreateMoby(0x4A9);
+    Moby *moby = (Moby *)CreateMoby(0x4A9);
     float t, u;
     unsigned short g;
     if (moby != 0) {
-        struct Spark_2288 *d = (struct Spark_2288 *)((Moby *)moby)->pvars;
-        ((unsigned char *)moby)[0x30] = 0xFF;
-        ((Moby *)moby)->draw_dist = 0xFF;
-        moby[0x31] = 1;
-        moby[0x20] = 0;
+        struct Spark_2288 *d = (struct Spark_2288 *)moby->pvars;
+        moby->update_dist = 0xFF;
+        moby->draw_dist = 0xFF;
+        moby->visible = 1;
+        moby->state = 0;
         d->owner = a0;
-        qcopy(moby + 0x10, a1);
+        qcopy(&moby->pos, a1);
         qcopy(&d->vel, a2);
         g = oltanis_spark_trail_ticks;
         d->vel.w = f;
         d->fade = a3;
         d->trail = g;
         d->bounces = 0;
-        *(int *)&((Moby *)moby)->rot.x = 0;
-        *(int *)&((Moby *)moby)->rot.y = 0;
+        *(int *)&moby->rot.x = 0;
+        *(int *)&moby->rot.y = 0;
         t = fast_atan2(a2[0], a2[1]);
-        u = ((Moby *)moby)->scale * *(float *)&oltanis_spark_start_scale;
-        ((Moby *)moby)->rot.z = t;
-        ((Moby *)moby)->scale = u;
+        u = moby->scale * *(float *)&oltanis_spark_start_scale;
+        moby->rot.z = t;
+        moby->scale = u;
         moby_build_matrix(moby);
     }
-    return moby;
+    return (char *)moby;
 }
 extern char oltanis_scaled_float_table[];
 extern void register_audio_stream_callback(void);
@@ -1088,7 +1089,7 @@ extern f32 ApproachValue_r(f32 *, f32, f32) __asm__("func_00214D28");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00305758. */
 void CollectiblePickupUpdate(struct Moby *moby) {
-    u8 *o = (u8 *)moby;
+    Moby *o = (Moby *)((u8 *)moby);
     struct CollectibleVars *d = (struct CollectibleVars *)moby->pvars;
     f32 v[4];
     u8 state = moby->state;
@@ -1100,24 +1101,24 @@ void CollectiblePickupUpdate(struct Moby *moby) {
             return;
         }
         initialize_morphoray_private_state_r((void *)moby);
-        ProbeGroundHeight_r(o + 0x10, 0, 0.5f);
+        ProbeGroundHeight_r(&o->pos, 0, 0.5f);
         moby->rot.x = 0.0f;
         moby->rot.y = -1.5707964f;
         moby->pos.z = oltanis_coll_hit_point_z_r[0] + D_L14_001622B8_06BE0;
-        qcopy(&d->pos, o + 0x10);
+        qcopy(&d->pos, &o->pos);
         moby->state = 1;
         break;
     case 1:
-        *(f32 *)(o + 0x48) = FastAddRots_r(*(f32 *)(o + 0x48), D_L14_001622BC_06BE0);
-        qcopy(o + 0x10, &d->pos);
-        FastVecScale_r2(v, o + 0xd0, D_L14_001622C0_06BE0);
-        FastVecAdd_r2(o + 0x10, o + 0x10, v);
+        o->rot.z = FastAddRots_r(o->rot.z, D_L14_001622BC_06BE0);
+        qcopy(&o->pos, &d->pos);
+        FastVecScale_r2(v, &o->rot_row1, D_L14_001622C0_06BE0);
+        FastVecAdd_r2(&o->pos, &o->pos, v);
         update_morphoray_particles_r(moby);
         if (oltanis_frame_count_r % 10 != 0)
             return;
-        if (!(vec_distance_xy_r(o + 0x10, g_hero_r.motion.pos.f) < 1.0f))
+        if (!(vec_distance_xy_r(&o->pos, g_hero_r.motion.pos.f) < 1.0f))
             return;
-        if (!(FastAbsF_r(*(f32 *)(o + 0x18) - g_hero_r.motion.pos.f[2]) < 2.0f))
+        if (!(FastAbsF_r(o->pos.z - g_hero_r.motion.pos.f[2]) < 2.0f))
             return;
         if (gHaveMorphORay_r != 0)
             d->picked_up = state;
@@ -1141,11 +1142,11 @@ void CollectiblePickupUpdate(struct Moby *moby) {
             DeleteMoby_r(moby);
             return;
         }
-        *(u16 *)(o + 0x34) |= 0x41;
+        o->flags |= 0x41;
         break;
     case 3:
-        ApproachValue_r((f32 *)(o + 0x2c), 0.0f, *(f32 *)(*(u8 **)(o + 0x24) + 0x24) * 0.02f);
-        if (*(f32 *)(o + 0x2c) == 0.0f)
+        ApproachValue_r(&o->scale, 0.0f, *(f32 *)(*(u8 **)&o->pclass + 0x24) * 0.02f);
+        if (o->scale == 0.0f)
             DeleteMoby_r(moby);
         break;
     }
@@ -1363,45 +1364,45 @@ void update_triggered_helper_moby_sequence(Moby *moby) {
 /* Creates a class 0x574 moby at the owner's position and returns it, or 0 if none is free. */
 char *create_helper_sequence_owner_moby(char *owner)
 {
-    char *moby = CreateMoby(0x574);
+    Moby *moby = (Moby *)CreateMoby(0x574);
     if (moby != 0) {
-        qcopy(moby + 0x10, owner + 0x10);
-        qcopy(moby + 0x40, owner + 0x40);
-        moby[0x30] = 0x40;
-        moby[0x20] = 0;
-        *(short *)(moby + 0x32) = 0x40;
-        moby[0x31] = 1;
+        qcopy(&moby->pos, owner + 0x10);
+        qcopy(&moby->rot, owner + 0x40);
+        moby->update_dist = 0x40;
+        moby->state = 0;
+        moby->draw_dist = 0x40;
+        moby->visible = 1;
         moby_build_matrix(moby);
     }
-    return moby;
+    return (char *)moby;
 }
 /* steps the moby from state 0 to 1 and 2 to 3, setting its pvars. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_003061d8. */
 void Moby1397Update(void *arg) {
-    char *moby = arg;
+    Moby *moby = (Moby *)arg;
     struct Moby1397Vars *d;
-    switch ((unsigned char)moby[0x20]) {
+    switch ((unsigned char)*(char *)&moby->state) {
     case 0:
-        d = (struct Moby1397Vars *)((Moby *)moby)->pvars;
+        d = (struct Moby1397Vars *)moby->pvars;
         d->unk_28 = 4;
         d->unk_20 = 0;
         d->unk_24 = 0;
         d->unk_3E = 0;
-        moby[0x20] = 1;
+        moby->state = 1;
         break;
     case 2:
-        ((struct Moby1397Vars *)((Moby *)moby)->pvars)->unk_3E = 5;
-        moby[0x20] = 3;
+        ((struct Moby1397Vars *)moby->pvars)->unk_3E = 5;
+        moby->state = 3;
         break;
     }
 }
 // Resets the moby's data block fields and sets its state to 1.
-void InitPvarsAndEnterState1(int unused, char *moby) {
-    char *d = *(char **)(moby + 0x78);
+void InitPvarsAndEnterState1(int unused, Moby *moby) {
+    char *d = *(char **)&moby->pvars;
     d[0x28] = 4;
     *(int *)(d + 0x20) = 0;
     *(short *)(d + 0x24) = 0;
     *(short *)(d + 0x3E) = 0;
-    moby[0x20] = 1;
+    moby->state = 1;
 }
 INCLUDE_ASM("asm/overlays", func_L14_003076A4);
 typedef u32 u128_08000 __attribute__((mode(TI), aligned(16)));
@@ -1719,8 +1720,8 @@ extern float fast_atan2(float, float);
 extern char *oltanis_paths[];
 
 /* Precomputes per-point segment values of a path and snaps the moby to its first point. */
-void initialize_flying_car_path(char *moby) {
-    struct FlyingCarVars *d = (struct FlyingCarVars *)((Moby *)moby)->pvars;
+void initialize_flying_car_path(Moby *moby) {
+    struct FlyingCarVars *d = (struct FlyingCarVars *)moby->pvars;
     char *p = oltanis_paths[d->path_index];
     int i;
     for (i = 0; i < *(int *)p; i++) {
@@ -1730,8 +1731,8 @@ void initialize_flying_car_path(char *moby) {
     }
     d->spline_seg = 0;
     *(int *)&d->spline_t = 0;
-    qcopy(moby + 0x10, p + 0x10);
-    ((Moby *)moby)->rot.z = fast_atan2(*(float *)(p + 0x20) - *(float *)(p + 0x10), *(float *)(p + 0x24) - *(float *)(p + 0x14));
+    qcopy(&moby->pos, p + 0x10);
+    moby->rot.z = fast_atan2(*(float *)(p + 0x20) - *(float *)(p + 0x10), *(float *)(p + 0x24) - *(float *)(p + 0x14));
     d->bank_vel = d->pitch_vel = d->yaw_vel = d->pos_vel.x = d->pos_vel.y = d->pos_vel.z = 0.0f;
 }
 typedef u32 u128_08AA8 __attribute__((mode(TI), aligned(16)));
@@ -1984,7 +1985,7 @@ typedef struct {
 } Stops_316388;
 
 /* Activate function of camera 20 (level 14): clears the record, builds the path tables and copies the camera vectors. */
-void Camera20Activate(char *cam) {
+void Camera20Activate(Camera *cam) {
     float v[4] __attribute__((aligned(16)));
     char *obj;
     char *data;
@@ -1998,9 +1999,9 @@ void Camera20Activate(char *cam) {
     short *so;
     float d, f0, f20, f21;
 
-    obj = *(char **)(oltanis_camera_descriptors + *(short *)(cam + 0x84) * 32 + 0x1C);
+    obj = *(char **)(oltanis_camera_descriptors + cam->def_index * 32 + 0x1C);
     obj[0x38] = 3;
-    q = (Run_316388 *)(*(char **)(cam + 0x70) + 0x40);
+    q = (Run_316388 *)(*(char **)&cam->state_buf + 0x40);
     q->seg = 0;
     q->t = 0;
     q->len_a = 0;
@@ -2009,15 +2010,15 @@ void Camera20Activate(char *cam) {
     q->started = 0;
     q->timer = scale_ticks(*(short *)(obj + 0x3A));
 
-    s = (Stops_316388 *)(*(char **)(cam + 0x70) + 0x58);
+    s = (Stops_316388 *)(*(char **)&cam->state_buf + 0x58);
     for (k = 0; k < 8; k++) {
         s->fov[k] = 0;
         s->seg[k] = -1;
     }
 
-    p30 = cam + 0x30;
-    p10 = cam + 0x10;
-    p20 = cam + 0x20;
+    p30 = (char *)&cam->pos;
+    p10 = (char *)&cam->basis[1];
+    p20 = (char *)&cam->basis[2];
     s->fov_end = fast_atan2(1.0f, oltanis_view_params_v.fB0) * 2.0f;
 
     if (*(int *)(obj + 0x20) >= 0) {
@@ -2067,18 +2068,18 @@ void Camera20Activate(char *cam) {
 
     f20 = 0.03f;
     f21 = 0.2f;
-    data = *(char **)(cam + 0x70);
+    data = *(char **)&cam->state_buf;
     *(float *)(data + 0) = f20;
     *(float *)(data + 4) = f21;
     clear_u64_value(data + 0x10);
-    data = *(char **)(cam + 0x70);
+    data = *(char **)&cam->state_buf;
     *(float *)(data + 0x20) = f20;
     *(float *)(data + 0x24) = f21;
     clear_u64_value(data + 0x30);
 
     p = oltanis_player_camera_c.p184;
     qcopy(p30, p + 0x30);
-    qcopy(cam, p);
+    qcopy(cam->basis, p);
     qcopy(p10, p + 0x10);
     qcopy(p20, p + 0x20);
 

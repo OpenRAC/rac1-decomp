@@ -58,12 +58,12 @@ typedef int u128 __attribute__((mode(TI)));
 char *select_homing_missile_target(float *pos, float *aim, float r1, float r2, float maxd) {
     char *best = 0;
     char *q;
-    char *p = pokitaru_moby_list;
+    Moby *p = (Moby *)pokitaru_moby_list;
     float bestd = 10.0f;
     while (p != 0) {
-        if ((*(unsigned short *)(p + 0x34) & 0x1000) && p != 0 && *(char **)(p + 0x24) != 0 && *(short *)(*(char **)(p + 0x24) + 0x46) == 5) {
+        if ((p->flags & 0x1000) && p != 0 && *(char **)&p->pclass != 0 && *(short *)(*(char **)&p->pclass + 0x46) == 5) {
             float d;
-            q = p + 0x10;
+            q = (char *)&p->pos;
             d = vec_distance_xy(pos, q);
             if (d < maxd) {
                 float tmp[4];
@@ -80,13 +80,13 @@ char *select_homing_missile_target(float *pos, float *aim, float r1, float r2, f
                         score = score + vec_length(FastVecDist(pos, tmp));
                         if (score < bestd) {
                             bestd = score;
-                            best = p;
+                            best = (char *)p;
                         }
                     }
                 }
             }
         }
-        p = *(char **)(p + 0x28);
+        p = (Moby *)(*(char **)&p->next);
     }
     return best;
 }
@@ -119,10 +119,10 @@ unsigned char *spawn_class_3f1_moby(char *owner, float *dir, float *pos, float a
             qcopy(&d->vel, dir);
             b = FastVecLength(dir);
         }
-        qcopy(m + 0x10, pos);
+        qcopy(&((Moby *)m)->pos, pos);
         *(int *)&d->owner = d->timer = truncate_float_to_s32_r(a / b);
         *(short *)&((Moby *)m)->flags = 0x200;
-        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) *
+        ((Moby *)m)->scale = *(float *)(*(char **)&((Moby *)m)->pclass + 0x24) *
             (*(float *)(owner + 0x2C) / *(float *)(*(char **)(owner + 0x24) + 0x24));
         ((Moby *)m)->alpha = truncate_float_to_s32_r(*(float *)&d->life * 24.0f);
         set_moby_color(m, 0xFF, 0xFF, 0xFF);
@@ -269,7 +269,7 @@ char *spawn_class_3f9_moby(int owner, float *dir, float *pos, float size, float 
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = truncate_float_to_s32(size);
         *(int *)&((Moby *)m)->rot.x = 0;
-        m[0x31] = 1;
+        ((Moby *)m)->visible = 1;
         ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(dir), dir[2]);
         ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
         *(float *)&p->life = 1.0f;
@@ -279,7 +279,7 @@ char *spawn_class_3f9_moby(int owner, float *dir, float *pos, float size, float 
             qcopy(&p->vel, dir);
             len = FastVecLength(dir);
         }
-        qcopy(m + 0x10, pos);
+        qcopy(&((Moby *)m)->pos, pos);
         r = truncate_float_to_s32(size / len);
         p->timer = r;
         *(float *)(((char *)p) + 0x20) = z;
@@ -306,7 +306,7 @@ extern int fast_dec_timer(int *);
 
 /* Fireball: flies along its velocity leaving smoke; when it hits something it bursts into five puffs
  * and is deleted, otherwise it shrinks away once its timer runs out. */
-void update_projectile_with_trail(char *m) {
+void update_projectile_with_trail(Moby *m) {
     float old[4];
     float p[4];
     float v[4];
@@ -318,9 +318,9 @@ void update_projectile_with_trail(char *m) {
     char *pos;
     int c;
     if (m == 0) return;
-    d = ((char *)((Moby *)m)->pvars);
+    d = ((char *)m->pvars);
     if (d == 0) return;
-    pos = m + 0x10;
+    pos = (char *)&m->pos;
     qcopy(old, pos);
     c = FastTweenColor(*(int *)&projectile_trail_color_a, *(int *)&projectile_trail_color_b, random_float_between(0.0f, 1.0f));
     rand_vec(p, 0.0f, 0.1f);
@@ -341,7 +341,7 @@ void update_projectile_with_trail(char *m) {
             vec_scale_to_length(q, q, FastVecLength(r) * 0.5f);
             FastVecAdd(q, r, q);
             vec_scale_to_length(q, q, random_float_between(g_frame_time_e * 5.0f, g_frame_time_e * 9.0f));
-            PartType27Spawn(m + 0x10, (char *)q, 0x7F2F4F6F, rand_range(scale_ticks(10), scale_ticks(15)), 90000.0f);
+            PartType27Spawn((char *)&m->pos, (char *)q, 0x7F2F4F6F, rand_range(scale_ticks(10), scale_ticks(15)), 90000.0f);
         }
         DeleteMoby(m);
         return;
@@ -841,16 +841,16 @@ extern char pokitaru_pool_tiles[];
 extern int pokitaru_mobys_m __asm__("D_L11_00160058") MACRO_ADDR;
 
 // For each index in the moby's list, copy its z to the entry and to the table slot the entry points at.
-void Group_CopyZToTableSlots(char *moby) {
-    short *p = pokitaru_moby_groups[*(unsigned char *)(moby + 0x21)];
+void Group_CopyZToTableSlots(Moby *moby) {
+    short *p = pokitaru_moby_groups[moby->group];
     int base = pokitaru_mobys_m;
     do {
         int i = (*p & 0x7FFF) * 256;
         char *e = (char *)(i + base);
         char *s;
-        ((Moby *)e)->pos.z = *(float *)(moby + 0x18);
+        ((Moby *)e)->pos.z = moby->pos.z;
         s = pokitaru_pool_tiles + *(int *)(((char *)((Moby *)e)->pvars) + 4) * 0x1190;
-        *(float *)(s + 8) = *(float *)(moby + 0x18);
+        *(float *)(s + 8) = moby->pos.z;
     } while (*p++ >= 0);
 }
 typedef struct { unsigned char pad0[0x454]; unsigned char collected[1]; } LvState_3102C8;
@@ -983,9 +983,9 @@ void thruster_pack_lock_update(Lock_3102C8 *moby)
     }
 }
 /* Recognize the active vendor object state. */
-int test_linked_moby_turn_trigger(char *moby) {
-    if (*(short *)(moby + 0xA6) == 0x49B &&
-        ((unsigned char *)moby)[0x20] == 2) {
+int test_linked_moby_turn_trigger(Moby *moby) {
+    if (moby->oclass == 0x49B &&
+        moby->state == 2) {
         return 1;
     }
     return 0;
@@ -1252,7 +1252,7 @@ typedef struct {
 } Quad_31A738;
 
 /* Draw textured trail quads between the moby's linked mobys (longer with cheat 2 on). */
-void draw_linked_moby_trails(char *m) {
+void draw_linked_moby_trails(Moby *m) {
     Quad_31A738 q[16];
     float off[2][4];
     short *p, *np;
@@ -1261,7 +1261,7 @@ void draw_linked_moby_trails(char *m) {
     long skip;
     char *o, *pv;
 
-    if (*(unsigned char *)(m + 0x21) == 0xFF) {
+    if (m->group == 0xFF) {
         return;
     }
     if (gCheats[2] != 0) {
@@ -1296,13 +1296,13 @@ void draw_linked_moby_trails(char *m) {
     off[0][2] = 0.25f;
     off[1][2] = -0.25f;
 
-    p = pokitaru_moby_groups[*(unsigned char *)(m + 0x21)];
+    p = pokitaru_moby_groups[m->group];
     do {
         np = p + 1;
         skip = 1;
         o = (char *)(((*p & 0x7FFF) << 8) + (int)pokitaru_mobys);
         c1 = ((Moby *)o)->oclass;
-        c2 = *(short *)(m + 0xA6);
+        c2 = m->oclass;
         vis = ((Moby *)o)->visible;
         if ((c1 ^ c2) == 0) {
             skip = 0;
@@ -1343,8 +1343,8 @@ extern int level_frame MACRO_ADDR;
 extern short moby_trail_length;
 
 /* Advances a trail ring buffer and records two offset points each fourth frame. */
-void update_moby_trail_points(char *moby) {
-    char *d = ((char *)((Moby *)moby)->pvars);
+void update_moby_trail_points(Moby *moby) {
+    char *d = ((char *)moby->pvars);
     float v[4];
     float w[4];
     int t;
@@ -1361,15 +1361,15 @@ void update_moby_trail_points(char *moby) {
     v[1] = 0.7f;
     v[0] = -1.2f;
     v[2] = 0.3f;
-    matrix_mul_vec3(v, v, moby + 0xC0);
-    FastVecAdd(d + ((*(int *)(d + 0x2C4) << 4) + 0xC0), v, moby + 0x10);
+    matrix_mul_vec3(v, v, &moby->rot_row0);
+    FastVecAdd(d + ((*(int *)(d + 0x2C4) << 4) + 0xC0), v, &moby->pos);
     *(float *)(d + (*(int *)(d + 0x2C4) << 4) + 0xCC) = 1.0f;
     *(u128_31AAE0 *)w = 0;
     w[0] = -1.2f;
     w[1] = -0.7f;
     w[2] = 0.3f;
-    matrix_mul_vec3(w, w, moby + 0xC0);
-    FastVecAdd(d + ((*(int *)(d + 0x2C4) << 4) + 0x1C0), w, moby + 0x10);
+    matrix_mul_vec3(w, w, &moby->rot_row0);
+    FastVecAdd(d + ((*(int *)(d + 0x2C4) << 4) + 0x1C0), w, &moby->pos);
     t = level_frame;
     *(float *)(d + (*(int *)(d + 0x2C4) << 4) + 0x1CC) = 1.0f;
     if (t != 0) {
@@ -1392,16 +1392,16 @@ extern void MobyBlendAnimation(void *, int, int, int);
 extern int coll_sphere(float, void *, int, void *);
 
 /* Collectable crate: when hit, updates the totals (count, best time, levels mask, a level-11 bonus) and breaks open. */
-void update_moby_hit_stats_and_state(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+void update_moby_hit_stats_and_state(Moby *m) {
+    char *d = ((char *)m->pvars);
     char *info = MobyGetHitMessage(m, 0x330000, 0);
     struct Hero *g;
-    ((unsigned char *)m)[0xA4] = 0xFF;
+    m->hit_slot = 0xFF;
     g = (struct Hero *)(hero_globals_base + 0xE1D);
     if (g->state.current != 0x32) {
-        ((Moby *)m)->flags &= 0xEFFF;
+        m->flags &= 0xEFFF;
     } else {
-        ((Moby *)m)->flags |= 0x1000;
+        m->flags |= 0x1000;
     }
     if (info != 0) {
         char *st = (char *)help_stats_base + 0x34D;
@@ -1423,27 +1423,27 @@ void update_moby_hit_stats_and_state(char *m) {
         }
         if (*(int *)(d + 0x88) != 0) {
             st2 = 6;
-            cur = ((unsigned char *)m)[0x20];
+            cur = m->state;
         } else {
-            cur = ((unsigned char *)m)[0x20];
+            cur = m->state;
             st2 = 2;
         }
         if (cur != st2) {
-            m[0x20] = st2;
-            if (((unsigned char *)m)[0x53] != 1) {
+            m->state = st2;
+            if (m->prev_seq != 1) {
                 MobyBlendAnimation(m, 1, 0, scale_ticks(10));
             }
         }
-    } else if (((unsigned char *)m)[0x20] == 5) {
+    } else if (m->state == 5) {
         struct Hero *g2 = (struct Hero *)(hero_globals_base + 0xE1D);
         if (g2->state.current != 0x32) {
-            m[0x20] = 4;
-            *(int *)&((Moby *)m)->collision = 0;
-            ((Moby *)m)->flags |= 1;
+            m->state = 4;
+            *(int *)&m->collision = 0;
+            m->flags |= 1;
         }
-        if (coll_sphere(1.0f, m + 0x10, 0, m)) {
-            m[0x20] = 6;
-            if (((unsigned char *)m)[0x53] != 1) {
+        if (coll_sphere(1.0f, &m->pos, 0, m)) {
+            m->state = 6;
+            if (m->prev_seq != 1) {
                 MobyBlendAnimation(m, 1, 0, scale_ticks(10));
             }
         }

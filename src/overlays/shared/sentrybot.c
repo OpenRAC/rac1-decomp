@@ -105,6 +105,17 @@ struct SparkEmitterVars {
     s32 fade_frames;                /* 0x14 */
 };
 
+/* Spiderbot pvars. */
+struct SpiderbotVars {
+    Vec4A home_pos;                 /* 0x00: position at spawn */
+    Vec4A unk_10;                   /* 0x10 */
+    s32 mode;                       /* 0x20: 0 and 3+ pick the state at spawn */
+    f32 unk_24;                     /* 0x24 */
+    f32 unk_28;                     /* 0x28 */
+    f32 heading;                    /* 0x2C */
+    f32 speed;                      /* 0x30 */
+};
+
 /* Spiderbot effect: the quad drawn at effect_pos. */
 struct SpiderbotEffectVars {
     u8 pad_00[0x10];
@@ -184,7 +195,7 @@ void sentrybot_update(unsigned char *moby) {
     int j2;
     int j3;
     struct SentrybotVars *data;
-    char *target;
+    Moby *target;
     int flag;
     int a;
     int lvl;
@@ -221,7 +232,7 @@ void sentrybot_update(unsigned char *moby) {
     }
     ((Moby *)moby)->flags = (((Moby *)moby)->flags & 0xFFBE) | 0x1000;
     *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
-    target = data->target;
+    target = (Moby *)data->target;
     manipulator_set_scale(data->head_manip, 2.5f);
     if (((Moby *)moby)->visible != 0 && FastVecDist(moby + 0x10, quartu_camera_pos) < 28.0f) {
         set_ground_height_band(moby);
@@ -289,7 +300,7 @@ void sentrybot_update(unsigned char *moby) {
             }
         } else if (data->alert_timer != 0 && data->lost_target == 0) {
             if (data->can_see != 0 || data->patrol_path == -1) {
-                begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(target + 0x10), (void *)0x10, (void *)3);
+                begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), &target->pos.x, (void *)0x10, (void *)3);
             } else {
                 if (data->at_point != 0) {
                     data->patrol_point = (data->patrol_point + 1) % *quartu_paths[data->patrol_path];
@@ -447,7 +458,7 @@ void sentrybot_update(unsigned char *moby) {
             }
         } else if (data->alert_timer != 0 && data->lost_target == 0) {
             if (data->can_see != 0) {
-                begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(target + 0x10), (void *)0x10, (void *)3);
+                begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), &target->pos.x, (void *)0x10, (void *)3);
             } else {
                 data->wait_timer = scale_ticks(0x3C);
                 ((Moby *)moby)->command = 1;
@@ -558,7 +569,7 @@ void sentrybot_update(unsigned char *moby) {
                     ((Moby *)moby)->state = 0xE;
                     if (((Moby *)moby)->prev_seq != 0xE) MobyBlendAnimation(moby, 0xE, 0, scale_ticks(0x14));
                 } else if (data->next_state == 0x10) {
-                    begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(target + 0x10), (void *)0x10, (void *)3);
+                    begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), &target->pos.x, (void *)0x10, (void *)3);
                 } else {
                     if (data->next_state != 0xFF) ((Moby *)moby)->state = data->next_state;
                     if (data->next_anim != 0xFF && ((Moby *)moby)->prev_seq != data->next_anim) MobyBlendAnimation(moby, data->next_anim, 0, scale_ticks(10));
@@ -582,7 +593,7 @@ void sentrybot_update(unsigned char *moby) {
         }
         if (((Moby *)moby)->anim_flags & 2) {
             set_sentrybot_alarm_duration((char *)(quartu_moby_array_m + (data->alarm << 8)), 0xB4);
-            begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(target + 0x10), (void *)0x14, (void *)0xE);
+            begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), &target->pos.x, (void *)0x14, (void *)0xE);
         }
         break;
     case 18:
@@ -722,9 +733,9 @@ void sentrybot_update(unsigned char *moby) {
                 }
             } else if (data->can_see != 0) {
                 if (mode != 2 && data->lost_target == 0) {
-                    begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(target + 0x10), (void *)0x10, (void *)3);
+                    begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), &target->pos.x, (void *)0x10, (void *)3);
                 } else {
-                    begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), (float *)(target + 0x10), (void *)0xC, (void *)0);
+                    begin_sentrybot_turn_toward_point((char *)moby, ((unsigned char *)data), &target->pos.x, (void *)0xC, (void *)0);
                 }
             } else if (data->patrol_path != -1) {
                 if (data->at_point != 0) {
@@ -980,10 +991,10 @@ int find_sentrybot_attention_target(char *m) {
     bd = 0.0f;
     do {
         int id = *(unsigned short *)p & 0x7FFF;
-        char *o = (char *)((id << 8) + quartu_moby_array_m);
-        if (*(short *)(o + 0xA6) == 0x27B && *(unsigned char *)(o + 0x20) >= 6 && *(unsigned char *)(o + 0x20) < 0x10) {
+        Moby *o = (Moby *)((char *)((id << 8) + quartu_moby_array_m));
+        if (o->oclass == 0x27B && o->state >= 6 && o->state < 0x10) {
             float f = FastDiffRots(((Moby *)m)->rot.z,
-                fast_atan2(*(float *)(o + 0x10) - ((Moby *)m)->pos.x, *(float *)(o + 0x14) - ((Moby *)m)->pos.y));
+                fast_atan2(o->pos.x - ((Moby *)m)->pos.x, o->pos.y - ((Moby *)m)->pos.y));
             unsigned char st = ((char *)((id << 8) + quartu_moby_array_m))[0x20];
             if (st == 7 || st == 0xF) d->attention_locked = 1;
             if (d->attention_locked != 0 || f < 1.2217305f) {
@@ -2425,43 +2436,43 @@ static inline int save_flag_clear_2A3DD0(unsigned short id) {
 
 /* Level 15 moby update (class 78), three states: 0 picks the first state from the kill and save flags,
  * 1 sprays sixteen random sparks around the moby and parks its data vector, 2 counts down. */
-void update_spark_emitter_moby(unsigned char *moby) {
-    struct SparkEmitterVars *d = (struct SparkEmitterVars *)((Moby *)moby)->pvars;
+void update_spark_emitter_moby(Moby *moby) {
+    struct SparkEmitterVars *d = (struct SparkEmitterVars *)moby->pvars;
     float V[4];
     float W[16];
     float A[4];
     float B[4];
     float C[4];
 
-    switch (((Moby *)moby)->state) {
+    switch (moby->state) {
     case 0: {
         unsigned short id;
-        ((Moby *)moby)->flags |= 1;
-        ((Moby *)moby)->visible = 0;
-        id = ((Moby *)moby)->save_id;
+        moby->flags |= 1;
+        moby->visible = 0;
+        id = moby->save_id;
         if (quartu_collected_flags_base_r.killed[(short)id] == 0 && save_flag_clear_2A3DD0(id)) {
-            ((Moby *)moby)->state = 1;
+            moby->state = 1;
         } else {
-            ((Moby *)moby)->command = 0xFF;
-            *(int *)&((Moby *)moby)->collision = 0;
-            ((Moby *)moby)->state = 3;
+            moby->command = 0xFF;
+            *(int *)&moby->collision = 0;
+            moby->state = 3;
         }
         break;
     }
     case 1: {
         int idx = d->linked_moby;
         if ((idx != -1 && D_L15_00160058_2A3DD0[idx].state == 2)
-            || saved_mission_state_r[g_current_level_index_r][((Moby *)moby)->mission] == 0xFF) {
+            || saved_mission_state_r[g_current_level_index_r][moby->mission] == 0xFF) {
             mark_moby_killed_and_release_owned_voice_r(moby);
         } else {
-            Voice_2A3DD0 *e = (Voice_2A3DD0 *)(voice_pool_r + ((Moby *)moby)->command * 0x70);
+            Voice_2A3DD0 *e = (Voice_2A3DD0 *)(voice_pool_r + moby->command * 0x70);
             float lo, hi, z, one;
             int i;
             if (e->owner != (char *)moby || e->active == 0) {
-                ((Moby *)moby)->command = Moby_PlaySound_r(0, 4, moby);
+                moby->command = Moby_PlaySound_r(0, 4, moby);
             }
-            FastVecSub_r(V, hero_globals_base_r + 0xEED, moby + 0x10);
-            matrix_from_basis_rows_r(W, moby + 0xC0);
+            FastVecSub_r(V, hero_globals_base_r + 0xEED, &moby->pos);
+            matrix_from_basis_rows_r(W, &moby->rot_row0);
             transform_vector_r(V, V, W);
             V[0] = 0.0f;
             z = V[0];
@@ -2481,10 +2492,10 @@ void update_spark_emitter_moby(unsigned char *moby) {
                 C[0] = z;
                 C[1] = random_float_between_r(lo, hi);
                 C[2] = random_float_between_r(lo, hi);
-                matrix_mul_vec3_r(A, A, moby + 0xC0);
-                matrix_mul_vec3_r(B, B, moby + 0xC0);
-                matrix_mul_vec3_r(C, C, moby + 0xC0);
-                FastVecAdd_r(A, A, moby + 0x10);
+                matrix_mul_vec3_r(A, A, &moby->rot_row0);
+                matrix_mul_vec3_r(B, B, &moby->rot_row0);
+                matrix_mul_vec3_r(C, C, &moby->rot_row0);
+                FastVecAdd_r(A, A, &moby->pos);
                 vec_scale_to_length_r(B, B, one / (float)scale_ticks_r(30));
                 vec_scale_to_length_r(C, C, one / (float)scale_ticks_r(30));
                 B[3] = 0.125f;
@@ -2502,8 +2513,8 @@ void update_spark_emitter_moby(unsigned char *moby) {
                 create_type_47_particle_r(A, B, C, col, 0x60808080, fa, fb, fc, moby);
             } while (i >= 0);
             if (FastAbsF_r(V[1]) < hi && z < V[2] && V[2] < hi) {
-                matrix_mul_vec3_r(&d->spark_pos, V, moby + 0xC0);
-                FastVecAdd_r(&d->spark_pos, &d->spark_pos, moby + 0x10);
+                matrix_mul_vec3_r(&d->spark_pos, V, &moby->rot_row0);
+                FastVecAdd_r(&d->spark_pos, &d->spark_pos, &moby->pos);
             } else {
                 qzero(&d->spark_pos);
             }
@@ -2513,7 +2524,7 @@ void update_spark_emitter_moby(unsigned char *moby) {
     }
     case 2:
         if ((d->fade_frames)++ >= 0x3D) {
-            ((Moby *)moby)->state = 3;
+            moby->state = 3;
         } else {
             qzero(&d->spark_pos);
             AddDrawCallback_r(draw_spark_emitter_effect_quads_r, moby);
@@ -2715,94 +2726,94 @@ extern void draw_spiderbot_effect_quad();
 extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle_r(float *pos, char *vel, int color, unsigned char life, unsigned char b, int mode, float scale) __asm__("func_L00_00273F80");
 
 /* Spiderbot update: steps the walk/turn state, then probes ahead and sprays sparks along the path. */
-void spiderbot_update(unsigned char *moby) {
+void spiderbot_update(Moby *moby) {
     float old[4];
     float A[4];
     float B[4];
     float C[4];
-    unsigned char *d = ((unsigned char *)((Moby *)moby)->pvars);
-    *(u128_2A8090 *)old = *(u128_2A8090 *)(moby + 0x10);
+    struct SpiderbotVars *d = (struct SpiderbotVars *)((unsigned char *)moby->pvars);
+    *(u128_2A8090 *)old = *(u128_2A8090 *)&moby->pos;
     {
     float D[4];
     float M[16];
     float T[4];
-    switch (((Moby *)moby)->state) {
+    switch (moby->state) {
     case 0:
-        *(u128_2A8090 *)d = *(u128_2A8090 *)old;
-        ((Moby *)moby)->anim_speed = *(float *)(d + 0x30) / 1.5f;
-        *(float *)(d + 0x28) = *(float *)(d + 0x28) * 0.017453292f;
-        if (*(int *)(d + 0x20) == 0) {
-            ((Moby *)moby)->state = 1;
-            *(float *)(d + 0x2C) = ((Moby *)moby)->rot.z;
-        } else if (*(int *)(d + 0x20) >= 3) {
-            ((Moby *)moby)->state = 2;
-            *(float *)(d + 0x2C) = ((Moby *)moby)->rot.z;
+        *(u128_2A8090 *)&d->home_pos = *(u128_2A8090 *)old;
+        moby->anim_speed = d->speed / 1.5f;
+        d->unk_28 = d->unk_28 * 0.017453292f;
+        if (d->mode == 0) {
+            moby->state = 1;
+            d->heading = moby->rot.z;
+        } else if (d->mode >= 3) {
+            moby->state = 2;
+            d->heading = moby->rot.z;
         } else {
-            ((Moby *)moby)->state = 3;
+            moby->state = 3;
         }
         break;
     case 1: {
         *(u128_2A8090 *)C = 0;
-        C[2] = *(float *)(d + 0x24);
+        C[2] = d->unk_24;
         *(u128_2A8090 *)D = 0;
         *(u128_2A8090 *)B = *(u128_2A8090 *)C;
-        *(float *)(d + 0x28) = FastAddRots(*(float *)(d + 0x28),
-            360.0f / (*(float *)(d + 0x24) * 6.2831855f / *(float *)(d + 0x30)) * 0.017453292f * g_frame_time);
-        ((Moby *)moby)->anim_speed = *(float *)(d + 0x30) / 1.5f;
-        C[0] = FastCos(*(float *)(d + 0x2C));
-        C[1] = FastSin(*(float *)(d + 0x2C));
+        d->unk_28 = FastAddRots(d->unk_28,
+            360.0f / (d->unk_24 * 6.2831855f / d->speed) * 0.017453292f * g_frame_time);
+        moby->anim_speed = d->speed / 1.5f;
+        C[0] = FastCos(d->heading);
+        C[1] = FastSin(d->heading);
         C[2] = 0.0f;
-        build_look_at_matrix(A, B, C, *(float *)(d + 0x28));
-        FastVecAdd(T, d, A);
-        *(u128_2A8090 *)(moby + 0x10) = *(u128_2A8090 *)T;
-        D[2] = FastAddRots(*(float *)(d + 0x2C), 1.5707964f);
-        D[1] = FastAddRots(-*(float *)(d + 0x28), 3.1415927f);
+        build_look_at_matrix(A, B, C, d->unk_28);
+        FastVecAdd(T, &d->home_pos, A);
+        *(u128_2A8090 *)&moby->pos = *(u128_2A8090 *)T;
+        D[2] = FastAddRots(d->heading, 1.5707964f);
+        D[1] = FastAddRots(-d->unk_28, 3.1415927f);
         euler_to_matrix(M, D);
-        matrix_copy_rows(moby + 0xC0, M);
-        normalize_vector_triplet(moby + 0xC0);
-        ((Moby *)moby)->flags |= 0x100;
+        matrix_copy_rows(&moby->rot_row0, M);
+        normalize_vector_triplet(&moby->rot_row0);
+        moby->flags |= 0x100;
         break;
     }
     case 2: {
         float b1;
         float b2;
         *(u128_2A8090 *)C = 0;
-        C[2] = -*(float *)(d + 0x24);
+        C[2] = -d->unk_24;
         *(u128_2A8090 *)D = 0;
         *(u128_2A8090 *)B = *(u128_2A8090 *)C;
-        b1 = FastAddRots(FastNormalizeAngle(FastCos(*(float *)(d + 0x28)) * 1.5707964f),
-                           *(int *)(d + 0x20) == 4 ? 1.5707964f : 0.0f);
-        *(float *)(d + 0x28) = FastAddRots(*(float *)(d + 0x28),
-            360.0f / (*(float *)(d + 0x24) * 6.2831855f / *(float *)(d + 0x30)) * 0.017453292f * g_frame_time);
-        b2 = FastAddRots(FastNormalizeAngle(FastCos(*(float *)(d + 0x28)) * 1.5707964f),
-                           *(int *)(d + 0x20) == 4 ? 1.5707964f : 0.0f);
-        ((Moby *)moby)->anim_speed = *(float *)(d + 0x24) * FastSubRots(b2, b1) / (g_frame_time * 1.5f);
-        C[0] = FastCos(*(float *)(d + 0x2C));
-        C[1] = FastSin(*(float *)(d + 0x2C));
+        b1 = FastAddRots(FastNormalizeAngle(FastCos(d->unk_28) * 1.5707964f),
+                           d->mode == 4 ? 1.5707964f : 0.0f);
+        d->unk_28 = FastAddRots(d->unk_28,
+            360.0f / (d->unk_24 * 6.2831855f / d->speed) * 0.017453292f * g_frame_time);
+        b2 = FastAddRots(FastNormalizeAngle(FastCos(d->unk_28) * 1.5707964f),
+                           d->mode == 4 ? 1.5707964f : 0.0f);
+        moby->anim_speed = d->unk_24 * FastSubRots(b2, b1) / (g_frame_time * 1.5f);
+        C[0] = FastCos(d->heading);
+        C[1] = FastSin(d->heading);
         C[2] = 0.0f;
         build_look_at_matrix(A, B, C, b2);
-        FastVecAdd(T, d, A);
-        *(u128_2A8090 *)(moby + 0x10) = *(u128_2A8090 *)T;
-        D[2] = FastAddRots(*(float *)(d + 0x2C), 1.5707964f);
+        FastVecAdd(T, &d->home_pos, A);
+        *(u128_2A8090 *)&moby->pos = *(u128_2A8090 *)T;
+        D[2] = FastAddRots(d->heading, 1.5707964f);
         D[1] = FastAddRots(-b2, 0.0f);
         euler_to_matrix(M, D);
-        matrix_copy_rows(moby + 0xC0, M);
-        normalize_vector_triplet(moby + 0xC0);
-        ((Moby *)moby)->flags |= 0x100;
+        matrix_copy_rows(&moby->rot_row0, M);
+        normalize_vector_triplet(&moby->rot_row0);
+        moby->flags |= 0x100;
         break;
     }
     case 3: {
         float w;
         float x;
-        w = FastCos(*(float *)(d + 0x28)) * *(float *)(d + 0x24);
-        *(float *)(d + 0x28) = FastAddRots(*(float *)(d + 0x28),
-            360.0f / (*(float *)(d + 0x24) * 6.2831855f / *(float *)(d + 0x30)) * 0.017453292f * g_frame_time);
-        x = FastCos(*(float *)(d + 0x28)) * *(float *)(d + 0x24);
-        ((Moby *)moby)->anim_speed = (x - w) / (g_frame_time * 1.5f);
-        BuildSphericalOffset(A, x, *(int *)(d + 0x20) != 2 ? ((Moby *)moby)->rot.z : 0.0f,
-                      *(int *)(d + 0x20) == 2 ? 1.5707964f : 0.0f);
-        FastVecAdd(B, d, A);
-        *(u128_2A8090 *)(moby + 0x10) = *(u128_2A8090 *)B;
+        w = FastCos(d->unk_28) * d->unk_24;
+        d->unk_28 = FastAddRots(d->unk_28,
+            360.0f / (d->unk_24 * 6.2831855f / d->speed) * 0.017453292f * g_frame_time);
+        x = FastCos(d->unk_28) * d->unk_24;
+        moby->anim_speed = (x - w) / (g_frame_time * 1.5f);
+        BuildSphericalOffset(A, x, d->mode != 2 ? moby->rot.z : 0.0f,
+                      d->mode == 2 ? 1.5707964f : 0.0f);
+        FastVecAdd(B, &d->home_pos, A);
+        *(u128_2A8090 *)&moby->pos = *(u128_2A8090 *)B;
         break;
     }
     }
@@ -2813,26 +2824,26 @@ void spiderbot_update(unsigned char *moby) {
         int i;
         *(u128_2A8090 *)B = 0;
         B[2] = 12.0f;
-        matrix_mul_vec3_r(B, B, moby + 0xC0);
-        FastVecAdd(R.v, moby + 0x10, B);
+        matrix_mul_vec3_r(B, B, &moby->rot_row0);
+        FastVecAdd(R.v, &moby->pos, B);
         *(u128_2A8090 *)A = *(u128_2A8090 *)R.v;
         R.flags = 0x10001;
-        R.moby = moby;
+        R.moby = (unsigned char *)moby;
         R.f1C = 1.0f;
         R.i20 = 1;
         vec_scale_to_length(R.v, B, 1.0f);
-        R.h1A = *(unsigned short *)&((Moby *)moby)->oclass;
+        R.h1A = *(unsigned short *)&moby->oclass;
         R.f8 = 1.0f;
         R.fC = 5627.9248f;
         R.b18 = 1;
         R.b19 = 1;
-        FastVecSub(T2, moby + 0x10, old);
+        FastVecSub(T2, &moby->pos, old);
         *(u128_2A8090 *)C = *(u128_2A8090 *)T2;
-        coll_line(moby + 0x10, A, 9, moby, &R);
-        if (coll_line(moby + 0x10, A, 2, 0, 0)) {
-            *(u128_2A8090 *)(d + 0x10) = *(u128_2A8090 *)quartu_coll_hit_point;
+        coll_line(&moby->pos, A, 9, moby, &R);
+        if (coll_line(&moby->pos, A, 2, 0, 0)) {
+            *(u128_2A8090 *)&d->unk_10 = *(u128_2A8090 *)quartu_coll_hit_point;
         } else {
-            *(u128_2A8090 *)(d + 0x10) = *(u128_2A8090 *)A;
+            *(u128_2A8090 *)&d->unk_10 = *(u128_2A8090 *)A;
         }
         for (i = 0; i < *(int *)&quartu_spiderbot_spark_count; i++) {
             float s;
@@ -2842,11 +2853,11 @@ void spiderbot_update(unsigned char *moby) {
             s = -1.0f;
             if (func_001160D8() & 1) s = 1.0f;
             k = truncate_float_to_s32(multiply_global_factor(random_float_between(*(float *)&quartu_spiderbot_spark_life * 0.5f, *(float *)&quartu_spiderbot_spark_life)));
-            FastVecSub(T2, d + 0x10, moby + 0x10);
+            FastVecSub(T2, &d->unk_10, &moby->pos);
             *(u128_2A8090 *)B = *(u128_2A8090 *)T2;
             FastVecScale(B, B, s);
             len = FastVecLength(B);
-            *(u128_2A8090 *)A = s < 0.0f ? *(u128_2A8090 *)(d + 0x10) : *(u128_2A8090 *)(moby + 0x10);
+            *(u128_2A8090 *)A = s < 0.0f ? *(u128_2A8090 *)&d->unk_10 : *(u128_2A8090 *)&moby->pos;
             life = k;
             FastVecScale(B, B, random_float_between(0.0f, 0.9f));
             add_vectors(T2, A, B);

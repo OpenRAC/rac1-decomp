@@ -239,6 +239,7 @@ static inline short pick_2D28D0(int c) {
     if (c) return 600;
     return 180;
 }
+/* State 3 follows Lombyte's project (sharkigator_update): repeated join statements and the no-op moby++/moby-- give retail's schedule. */
 void rilgar_sharkigator_update(char *moby) {
     extern char g_hero[];
     char *data = *(char **)(moby + 0x78);
@@ -373,31 +374,32 @@ state_three:
         if (HF(0x2F0) < *(float *)(moby + 0x18) || *(float *)(data + 0x78) < 0.0f) {
             if (HI(0x2084) != 0x72) {
                 qcopy_nc(v, h + 0x80);
-                {
-                /* register pin: $5 = v set before the v[2] store (retail: move $5,$sp; swc1; jal; move $4 in slot). */
-                register char *a1 __asm__("$5") = (char *)v;
-                /* inline asm: empty barrier so $5 is set before the v[2] store. */
-                __asm__ volatile("");
                 v[2] = HF(0x2F0);
-                /* inline asm: empty barrier so $4 is set after the v[2] store (it lands in the jal slot). */
-                __asm__ volatile("");
-                ((void (*)(char *, void *))spawn_sharkigator_splash_effects)(moby, a1);
-                }
+                ((void (*)(char *, void *))spawn_sharkigator_splash_effects)(moby, v);
                 Hero_ResetToPosition(h + 0x80, h + 0x90, 0x72, 0);
+                *(unsigned char *)(h + 0x20A5) = one;
+                HF(0x88) += 20.0f;
             } else {
                 qcopy(h + 0x80, moby + 0x10);
+                *(unsigned char *)(h + 0x20A5) = one;
+                HF(0x88) += 20.0f;
             }
-            *(unsigned char *)(h + 0x20A5) = one;
-            HF(0x88) += 20.0f;
+            /* no-op: keeps retail's delay-slot fill around the splash call */
+            moby++;
+            moby--;
+            speed = *(float *)(data + 0x78);
+        } else {
+            speed = *(float *)(data + 0x78);
         }
         }
         {
-            float s = *(float *)(data + 0x78);
-            ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + s;
-        }
-        speed = *(float *)(data + 0x78) - g_frame_time_sq * 10.0f;
-        ((struct { char p[0x78]; float f; } *)data)->f = speed;
-        if (speed < g_frame_time + g_frame_time) {
+            float acceleration = g_frame_time_sq * 10.0f;
+            float threshold = g_frame_time + g_frame_time;
+            ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + speed;
+            {
+            float speed = *(float *)(data + 0x78) - acceleration;
+            *(float *)(data + 0x78) = speed;
+        if (speed < threshold) {
             ((void (*)(float, void *, void *))vec_scale_to_length)((*(float *)&D_L05_00161450), v, moby + 0xe0);
             SteerAngleWithVelocity((float *)(moby + 0x44), (float *)(data + 0x70), 1.5533431f, g_frame_time_sq * 12.566371f,
                           g_frame_time_sq * 12.566371f, g_frame_time * 25.132742f);
@@ -405,6 +407,8 @@ state_three:
             ((void (*)(float, void *, void *))vec_scale_to_length)((*(float *)&D_L05_00161450), w, moby + 0xe0);
             ((void (*)(void *, void *, void *))FastVecSub)(z, w, v);
             ((void (*)(void *, void *, void *))FastVecSub)(moby + 0x10, moby + 0x10, z);
+        }
+            }
         }
         if (*(float *)(data + 0x78) < 0.0f) { char *h = g_hero;
             if (*(float *)(moby + 0x18) < HF(0x2F0) && *(unsigned char *)(moby + 0xbc) == 0) {

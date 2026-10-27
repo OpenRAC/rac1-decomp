@@ -516,7 +516,7 @@ void process_blarg_space_commando_hits(char *m) {
     float lo, hi, spd, off, pull;
 
     d = (struct SpaceCommandoVars *)((Moby *)m)->pvars;
-    ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&space_commando_scale;
+    ((Moby *)m)->scale = *(float *)(*(char **)&((Moby *)m)->pclass + 0x24) * *(float *)&space_commando_scale;
     update_blarg_space_commando_beam(m);
     if (d->stunned != 0) {
         d->fire_timer = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
@@ -526,7 +526,7 @@ void process_blarg_space_commando_hits(char *m) {
     *(int *)&dt = 0;
     t = MobyGetHitMessage(m, 0x330000, 0);
     r = ComputeHitResponse(m, t, &d->health, 0, &hit, &dt, 0, 4);
-    if (hit != 1 && (unsigned char)m[0x20] != 0x10) {
+    if (hit != 1 && (unsigned char)*(char *)&((Moby *)m)->state != 0x10) {
         if (*(int *)&g_current_level_index == 0xA && t != 0 && *(char **)(t + 0x20) != 0 &&
             *(short *)(*(char **)(t + 0x20) + 0xA6) == 0x31A && gSkillPoints[0x11] == 0) {
             gSkillPoints[0x11] = 1;
@@ -551,7 +551,7 @@ void process_blarg_space_commando_hits(char *m) {
             char *q;
             int n;
             float b, a;
-            m[0x20] = 0xF;
+            ((Moby *)m)->state = 0xF;
             q = (char *)&d->color_fade_a;
             n = scale_ticks(0x3C);
             a = *(float *)&space_commando_hit_knockback_speed * g_frame_time;
@@ -570,7 +570,7 @@ void process_blarg_space_commando_hits(char *m) {
         {
             char *q;
             float a, b;
-            m[0x20] = 0x10;
+            ((Moby *)m)->state = 0x10;
             q = (char *)&d->color_fade_a;
             a = *(float *)&space_commando_death_knockback_speed * g_frame_time;
             b = *(float *)&space_commando_death_knockback_lift * g_frame_time;
@@ -591,7 +591,7 @@ void process_blarg_space_commando_hits(char *m) {
             pull = *(float *)&bits;
             for (k = 0; k < 10; k++) {
                 float ang;
-                qcopy(vv, m + 0x10);
+                qcopy(vv, &((Moby *)m)->pos);
                 vv[2] = vv[2] + 2.5f;
                 vv[0] = vv[0] + randf_sym(lo, hi);
                 vv[1] = vv[1] + randf_sym(lo, hi);
@@ -655,19 +655,19 @@ extern char blarg_coll_hit_normal[];
 extern short space_commando_beam_fan_degrees;
 extern short space_commando_beam_ticks;
 // Builds the sixteen-segment fan of data vectors for a moby from its yaw.
-void initialize_blarg_space_commando_beam(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+void initialize_blarg_space_commando_beam(Moby *m) {
+    char *d = ((char *)m->pvars);
     float v[4];
     int i;
-    ProbeGroundHeight(m + 0x10, 0, 0.5f);
+    ProbeGroundHeight(&m->pos, 0, 0.5f);
     vec_scale_to_length(&((struct SpaceCommandoVars *)d)->beam_dir, blarg_coll_hit_normal, 1.0f);
     Moby_GetJointWorldPos(m, 0, &((struct SpaceCommandoVars *)d)->muzzle_pos);
-    ((struct SpaceCommandoVars *)d)->muzzle_z = ((Moby *)m)->pos.z;
+    ((struct SpaceCommandoVars *)d)->muzzle_z = m->pos.z;
     for (i = 0; i < 16; i++) {
         float f = IntToFloat(i) * 0.0625f - 0.5f;
         f = f * (*(float *)&space_commando_beam_fan_degrees * 0.017453292f);
-        v[0] = FastCos(FastAddRots(f, ((Moby *)m)->rot.z)) * 0.2f;
-        v[1] = FastSin(FastAddRots(f, ((Moby *)m)->rot.z)) * 0.2f;
+        v[0] = FastCos(FastAddRots(f, m->rot.z)) * 0.2f;
+        v[1] = FastSin(FastAddRots(f, m->rot.z)) * 0.2f;
         v[2] = 0.15f;
         FastVecAdd((float *)(d + 0x230 + i * 16), &((struct SpaceCommandoVars *)d)->muzzle_pos, v);
         if (i == 0 || i == 15) {
@@ -736,7 +736,7 @@ void update_blarg_space_commando_beam(void *arg) {
         A[2] = 0.0f;
         vec_scale_to_length(A, A, scale);
         FastVecAdd(A, (float *)&data->pts[i], A);
-        FastVecSub(W, A, moby + 0x10);
+        FastVecSub(W, A, &((Moby *)moby)->pos);
         t = FastVecDot(W, &data->dir);
         if (0.4f < t) {
             A[2] = A[2] - (g_frame_time + g_frame_time);
@@ -962,26 +962,26 @@ char *spawn_spinning_moby_fragment(int unused, char *pa, char *pb) {
     float b[4];
     float *va = a;
     float *vb = b;
-    char *m;
+    Moby *m;
     struct FallingSpinVars *data;
     *(u128 *)a = *(u128 *)pa;
     *(u128 *)b = *(u128 *)pb;
-    m = mk_a(rnd_a(random_float_between(1085.0f, 1089.0f)));
+    m = (Moby *)mk_a(rnd_a(random_float_between(1085.0f, 1089.0f)));
     if (m != 0) {
-        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&spinning_fragment_scale;
-        ((unsigned char *)m)[0x30] = 0xFF;
-        ((Moby *)m)->draw_dist = 0x7E;
-        m[0x31] = 1;
-        data = (struct FallingSpinVars *)((Moby *)m)->pvars;
-        qcopy(m + 0x10, va);
+        m->scale = *(float *)(*(char **)&m->pclass + 0x24) * *(float *)&spinning_fragment_scale;
+        m->update_dist = 0xFF;
+        m->draw_dist = 0x7E;
+        m->visible = 1;
+        data = (struct FallingSpinVars *)m->pvars;
+        qcopy(&m->pos, va);
         qcopy(&data->vel, vb);
         data->rot_vel.x = random_float_between(-360.0f, 360.0f) * 0.017453292f * g_frame_time;
         data->rot_vel.y = random_float_between(-360.0f, 360.0f) * 0.017453292f * g_frame_time;
         data->rot_vel.z = random_float_between(-360.0f, 360.0f) * 0.017453292f * g_frame_time;
-        m[0xBC] = rnd_a(multiply_global_factor(random_float_between(60.0f, 120.0f)));
+        m->command = rnd_a(multiply_global_factor(random_float_between(60.0f, 120.0f)));
         upd_a(m);
     }
-    return m;
+    return (char *)m;
 }
 extern int blarg_frame_count MACRO_ADDR;
 extern short blarg_timer_display_x;
@@ -1055,7 +1055,7 @@ void draw_bot_door_lock_glow(char *o) {
     float axis[4] __attribute__((aligned(16)));
     float mat[12] __attribute__((aligned(16)));
     float w[4][4] __attribute__((aligned(16)));
-    char *data = *(char **)(o + 0x78);
+    char *data = *(char **)&((Moby *)o)->pvars;
     float f;
     int i, col;
     float *g = (float *)referencePosition;
@@ -1079,18 +1079,18 @@ void draw_bot_door_lock_glow(char *o) {
         matrix_mul_vec3(v[1], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][1] * 16, mat);
         matrix_mul_vec3(v[2], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][2] * 16, mat);
         matrix_mul_vec3(v[3], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][3] * 16, mat);
-        pk.pos[0][0] = *(float *)(o + 0x10) + v[0][0] * *(float *)(data + 0x24);
-        pk.pos[0][1] = *(float *)(o + 0x14) + v[0][1] * *(float *)(data + 0x24);
-        pk.pos[0][2] = *(float *)(o + 0x18) + v[0][2];
-        pk.pos[1][0] = *(float *)(o + 0x10) + v[1][0] * *(float *)(data + 0x24);
-        pk.pos[1][1] = *(float *)(o + 0x14) + v[1][1] * *(float *)(data + 0x24);
-        pk.pos[1][2] = *(float *)(o + 0x18) + v[1][2];
-        pk.pos[2][0] = *(float *)(o + 0x10) + v[2][0] * *(float *)(data + 0x24);
-        pk.pos[2][1] = *(float *)(o + 0x14) + v[2][1] * *(float *)(data + 0x24);
-        pk.pos[2][2] = *(float *)(o + 0x18) + v[2][2];
-        pk.pos[3][0] = *(float *)(o + 0x10) + v[3][0] * *(float *)(data + 0x24);
-        pk.pos[3][1] = *(float *)(o + 0x14) + v[3][1] * *(float *)(data + 0x24);
-        pk.pos[3][2] = *(float *)(o + 0x18) + v[3][2];
+        pk.pos[0][0] = ((Moby *)o)->pos.x + v[0][0] * *(float *)(data + 0x24);
+        pk.pos[0][1] = ((Moby *)o)->pos.y + v[0][1] * *(float *)(data + 0x24);
+        pk.pos[0][2] = ((Moby *)o)->pos.z + v[0][2];
+        pk.pos[1][0] = ((Moby *)o)->pos.x + v[1][0] * *(float *)(data + 0x24);
+        pk.pos[1][1] = ((Moby *)o)->pos.y + v[1][1] * *(float *)(data + 0x24);
+        pk.pos[1][2] = ((Moby *)o)->pos.z + v[1][2];
+        pk.pos[2][0] = ((Moby *)o)->pos.x + v[2][0] * *(float *)(data + 0x24);
+        pk.pos[2][1] = ((Moby *)o)->pos.y + v[2][1] * *(float *)(data + 0x24);
+        pk.pos[2][2] = ((Moby *)o)->pos.z + v[2][2];
+        pk.pos[3][0] = ((Moby *)o)->pos.x + v[3][0] * *(float *)(data + 0x24);
+        pk.pos[3][1] = ((Moby *)o)->pos.y + v[3][1] * *(float *)(data + 0x24);
+        pk.pos[3][2] = ((Moby *)o)->pos.z + v[3][2];
         pk.col[0] = door_lock_glow_corner_colors[door_lock_glow_quad_corner_indices[i][0]];
         pk.col[1] = door_lock_glow_corner_colors[door_lock_glow_quad_corner_indices[i][1]];
         pk.col[2] = door_lock_glow_corner_colors[door_lock_glow_quad_corner_indices[i][2]];
@@ -1146,18 +1146,18 @@ void draw_bot_door_lock_glow(char *o) {
     matrix_mul_vec3(v[1], w[1], mat);
     matrix_mul_vec3(v[2], w[2], mat);
     matrix_mul_vec3(v[3], w[3], mat);
-    pk.pos[0][0] = *(float *)(o + 0x10) + v[0][0];
-    pk.pos[0][1] = *(float *)(o + 0x14) + v[0][1];
-    pk.pos[0][2] = *(float *)(o + 0x18) + v[0][2];
-    pk.pos[1][0] = *(float *)(o + 0x10) + v[1][0];
-    pk.pos[1][1] = *(float *)(o + 0x14) + v[1][1];
-    pk.pos[1][2] = *(float *)(o + 0x18) + v[1][2];
-    pk.pos[2][0] = *(float *)(o + 0x10) + v[2][0];
-    pk.pos[2][1] = *(float *)(o + 0x14) + v[2][1];
-    pk.pos[2][2] = *(float *)(o + 0x18) + v[2][2];
-    pk.pos[3][0] = *(float *)(o + 0x10) + v[3][0];
-    pk.pos[3][1] = *(float *)(o + 0x14) + v[3][1];
-    pk.pos[3][2] = *(float *)(o + 0x18) + v[3][2];
+    pk.pos[0][0] = ((Moby *)o)->pos.x + v[0][0];
+    pk.pos[0][1] = ((Moby *)o)->pos.y + v[0][1];
+    pk.pos[0][2] = ((Moby *)o)->pos.z + v[0][2];
+    pk.pos[1][0] = ((Moby *)o)->pos.x + v[1][0];
+    pk.pos[1][1] = ((Moby *)o)->pos.y + v[1][1];
+    pk.pos[1][2] = ((Moby *)o)->pos.z + v[1][2];
+    pk.pos[2][0] = ((Moby *)o)->pos.x + v[2][0];
+    pk.pos[2][1] = ((Moby *)o)->pos.y + v[2][1];
+    pk.pos[2][2] = ((Moby *)o)->pos.z + v[2][2];
+    pk.pos[3][0] = ((Moby *)o)->pos.x + v[3][0];
+    pk.pos[3][1] = ((Moby *)o)->pos.y + v[3][1];
+    pk.pos[3][2] = ((Moby *)o)->pos.z + v[3][2];
     col = (int)((1.0f - *(float *)(data + 0x20)) * 128.0f);
     col = (col << 24) | 0x808080;
     pk.col[0] = col;
@@ -1180,21 +1180,21 @@ extern void jet_clear_persistent(int idx);
 
 /* state transitions of a moby depending on its id at 0xA6 */
 void activate_bot_door_lock_target(unsigned char *a, unsigned char *m) {
-    switch (*(short *)(m + 0xA6)) {
+    switch (((Moby *)m)->oclass) {
     case 0x3F7:
     case 0x502:
-        if (m[0x20] == 2) {
-            m[0x20] = 3;
+        if (((Moby *)m)->state == 2) {
+            ((Moby *)m)->state = 3;
             Moby_PlaySound(0, 0, (int)m);
         }
         break;
     case 0x404:
-        if (m[0x20] == 1) m[0x20] = 2;
+        if (((Moby *)m)->state == 1) ((Moby *)m)->state = 2;
         break;
     case 0x542:
-        m[0x20] = 2;
+        ((Moby *)m)->state = 2;
         Sound_PlayClassSound(0, 0, (int)m, 0x434);
-        m[0x30] = 0xFF;
+        ((Moby *)m)->update_dist = 0xFF;
         jet_clear_persistent(a[0xB0]);
         break;
     }
@@ -1235,8 +1235,8 @@ struct LockVars_p {
 };
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/00307578.c, FUN_L06_00307d30. */
-void bot_door_lock_update(char *moby) {
-    struct LockVars_p *data = ((struct LockVars_p *)((Moby *)moby)->pvars);
+void bot_door_lock_update(Moby *moby) {
+    struct LockVars_p *data = ((struct LockVars_p *)moby->pvars);
     float pos[4];
     float offset[3];
     float result[4];
@@ -1248,23 +1248,23 @@ void bot_door_lock_update(char *moby) {
 
     if (data->id[0] == -1) return;
     data->f10 = FastAddRots(data->f10, (360.0f / (*(float *)&bot_door_lock_pulse_period)) * 0.017453292f * g_frame_time);
-    *(unsigned int *)&((Moby *)moby)->glow_color = ((unsigned int (*)(float, int, int))FastTweenColor)((FastCos(data->f10) + 1.0f) * 0.5f, 0x80464646, 0x80828282);
-    switch ((unsigned char)moby[0x20]) {
+    *(unsigned int *)&moby->glow_color = ((unsigned int (*)(float, int, int))FastTweenColor)((FastCos(data->f10) + 1.0f) * 0.5f, 0x80464646, 0x80828282);
+    switch ((unsigned char)*(char *)&moby->state) {
     case 0:
         data->cnt = data->init_cnt;
         data->f6 = random_angle_radians();
         data->f10 = random_angle_radians();
-        moby[0x20] = 1;
+        moby->state = 1;
         data->f9 = (*(float *)&bot_door_lock_fade_max);
         return;
     case 1:
-        *(OvlQuad_p *)pos = *(OvlQuad_p *)(moby + 0x10);
+        *(OvlQuad_p *)pos = *(OvlQuad_p *)&moby->pos;
         pos[2] += 2.75f;
-        if (FastVecDist(((float *)&blarg_camera_pos), moby + 0x10) < 32.0f) {
+        if (FastVecDist(((float *)&blarg_camera_pos), &moby->pos) < 32.0f) {
             float lim = (*(float *)&bot_door_lock_fade_max);
             data->f9 += g_frame_time + g_frame_time;
             if (lim < data->f9) data->f9 = lim;
-        } else if (36.0f < FastVecDist(((float *)&blarg_camera_pos), moby + 0x10)) {
+        } else if (36.0f < FastVecDist(((float *)&blarg_camera_pos), &moby->pos)) {
             data->f9 -= g_frame_time + g_frame_time;
             if (data->f9 < 0.0f) data->f9 = 0.0f;
         }
@@ -1281,31 +1281,31 @@ void bot_door_lock_update(char *moby) {
                     PartType41Spawn(pos, moby, data->cnt + 2, color, 0x7f, 4, 0xff, 0.5f);
                 } else {
                     if (*(unsigned char *)&draw_map51) {
-                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
+                        angle = FastAddRots(moby->rot.z, 1.5707964f);
                         offset[0] = FastCos(angle) * 0.15f;
-                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
+                        angle = FastAddRots(moby->rot.z, 1.5707964f);
                         offset[1] = FastSin(angle) * 0.15f;
                         offset[2] = 0.0f;
                         add_vectors(result, offset, pos);
                         PartType41Spawn(offset, moby, data->cnt / 10 + 2, color, 0x7f, 4, 0xff, 0.5f);
-                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
+                        angle = FastAddRots(moby->rot.z, 1.5707964f);
                         offset[0] = FastCos(angle) * -0.4f;
-                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
+                        angle = FastAddRots(moby->rot.z, 1.5707964f);
                         offset[1] = FastSin(angle) * -0.4f;
                         offset[2] = 0.0f;
                         add_vectors(result, offset, pos);
                         PartType41Spawn(offset, moby, data->cnt % 10 + 2, color, 0x7f, 4, 0xff, 0.5f);
                     } else {
-                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
+                        angle = FastAddRots(moby->rot.z, 1.5707964f);
                         offset[0] = FastCos(angle) * -0.4f;
-                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
+                        angle = FastAddRots(moby->rot.z, 1.5707964f);
                         offset[1] = FastSin(angle) * -0.4f;
                         offset[2] = 0.0f;
                         add_vectors(result, offset, pos);
                         PartType41Spawn(offset, moby, data->cnt / 10 + 2, color, 0x7f, 4, 0xff, 0.5f);
-                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
+                        angle = FastAddRots(moby->rot.z, 1.5707964f);
                         offset[0] = FastCos(angle) * 0.15f;
-                        angle = FastAddRots(((Moby *)moby)->rot.z, 1.5707964f);
+                        angle = FastAddRots(moby->rot.z, 1.5707964f);
                         offset[1] = FastSin(angle) * 0.15f;
                         offset[2] = 0.0f;
                         add_vectors(result, offset, pos);
@@ -1314,11 +1314,11 @@ void bot_door_lock_update(char *moby) {
                 }
             }
         }
-        if (data->cnt < 1 || saved_mission_state[(unsigned char)moby[0xb0] + (*(int *)&g_current_level_index) * 16] == 0xff) {
+        if (data->cnt < 1 || saved_mission_state[(unsigned char)*(char *)&moby->mission + (*(int *)&g_current_level_index) * 16] == 0xff) {
             for (i = 0; i < 4; i++) {
                 if (data->id[i] != -1) activate_bot_door_lock_target((unsigned char *)moby, (unsigned char *)((*(int *)&level_mobys_q) + data->id[i] * 0x100));
             }
-            moby[0x20] = 2;
+            moby->state = 2;
         }
         break;
     case 2:
@@ -1338,26 +1338,26 @@ extern void moby_build_matrix(void *);
 extern float blarg_zero_vec[] MACRO_ADDR;
 
 /* Update: waits for a positive value, then spawns effects and a child moby and deletes itself. */
-void update_hit_triggered_moby_breakup(char *moby) {
+void update_hit_triggered_moby_breakup(Moby *moby) {
     char *p;
     int f;
     float z;
     char *a;
     char *b;
-    char *m;
+    Moby *m;
     float *d;
     f = 0;
     p = MobyGetHitMessage(moby, 0x10000, 0);
-    switch (((unsigned char *)moby)[0x20]) {
+    switch (moby->state) {
     case 0:
-        moby[0x20] = 1;
+        moby->state = 1;
         break;
     case 1:
         if (p != 0 && *(float *)(p + 0x2C) > 0.0f) {
             f = 1;
         }
         if (f != 0) {
-            moby[0x20] = 2;
+            moby->state = 2;
         }
         break;
     case 2:
@@ -1365,18 +1365,18 @@ void update_hit_triggered_moby_breakup(char *moby) {
         Moby_PlaySound(0, 0, (int)moby);
         d = blarg_zero_vec;
         spawn_proximity_gated_bolts(moby);
-        a = moby + 0x10;
-        b = moby + 0x40;
+        a = (char *)&moby->pos;
+        b = (char *)&moby->rot;
         SpawnBreakFragment(moby, 0x679, a, b, 0, 0, z, d, d, d);
         SpawnBreakFragment(moby, 0x67A, a, b, 0, 0, z, d, d, d);
         SpawnBreakFragment(moby, 0x67B, a, b, 0, 0, z, d, d, d);
-        m = CreateMoby(0x678);
+        m = (Moby *)CreateMoby(0x678);
         if (m != 0) {
-            m[0x31] = 1;
-            *(short *)(m + 0x32) = 0xFF;
-            qcopy(m + 0x10, a);
-            qcopy(m + 0x40, b);
-            *(long *)(m + 0x38) = *(long *)(moby + 0x38);
+            m->visible = 1;
+            m->draw_dist = 0xFF;
+            qcopy(&m->pos, a);
+            qcopy(&m->rot, b);
+            *(long *)&m->spawn_frame = *(long *)&moby->spawn_frame;
             moby_build_matrix(m);
         }
         DeleteMoby(moby);
@@ -1388,9 +1388,9 @@ extern void AddDrawCallback(void *, void *);
 extern void draw_projected_fading_quad(char *);
 
 /* UpdateMoby: state 0 deletes, state 1 draws and times out */
-void update_timed_sprite_effect(char *m) {
-    float *d = ((float *)((Moby *)m)->pvars);
-    switch ((unsigned char)m[0x20]) {
+void update_timed_sprite_effect(Moby *m) {
+    float *d = ((float *)m->pvars);
+    switch ((unsigned char)*(char *)&m->state) {
     case 0:
         DeleteMoby(m);
         break;
@@ -1409,19 +1409,19 @@ typedef int uq_b __attribute__((mode(TI)));
 void spawn_timed_projected_sprite_effect(char *src, int a1, int a2, int a3) {
     uq_b v;
     char *vp = (char *)&v;
-    unsigned char *m;
+    Moby *m;
     v = *(uq_b *)src;
-    m = (unsigned char *)CreateMoby(0x76A);
+    m = (Moby *)((unsigned char *)CreateMoby(0x76A));
     if (m) {
-        struct ProjectedSpriteVars *e = (struct ProjectedSpriteVars *)((Moby *)m)->pvars;
+        struct ProjectedSpriteVars *e = (struct ProjectedSpriteVars *)m->pvars;
         float f;
-        qcopy(m + 0x10, vp);
+        qcopy(&m->pos, vp);
         f = IntToFloat(a1);
         e->arg_b = a3;
         e->arg_a = a2;
         e->rate = 2.0f / f;
-        ((Moby *)m)->update_dist = 0xFF;
-        ((Moby *)m)->state = 1;
+        m->update_dist = 0xFF;
+        m->state = 1;
     }
 }
 extern unsigned char screen_globals_base[];
@@ -1451,7 +1451,7 @@ void draw_projected_fading_quad(char *moby) {
     s32 *screen_center;
     float screen_offset;
 
-    qcopy(&pos, moby + 0x10);
+    qcopy(&pos, &((Moby *)moby)->pos);
     size = d[0];
     if (1.0f < size) size = 1.0f;
     fade = d[0] - 1.0f;

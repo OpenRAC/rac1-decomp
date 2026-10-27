@@ -590,7 +590,7 @@ void break_crate(void *mv, int a1, int av) {
         *(int *)(*(unsigned char **)(*(unsigned char **)&dat->below + 0x78) + 0xAC) |= 4;
     }
 
-    qcopy(v0, m + 0x10);
+    qcopy(v0, &((Moby *)m)->pos);
     v0[2] = v0[2] + 0.3f;
     spawn_spinning_fade_in_out_effect_particle(v0, 1, 0x40808080, 0.3f, 1.01f, 1.075f, 0.05f, 5e4f);
     for (k = 4; k >= 0; k--)
@@ -599,7 +599,7 @@ void break_crate(void *mv, int a1, int av) {
     if (a2 != 0) {
         qcopy(v10, a2 + 0x10);
     } else {
-        FastVecSub(v10, m + 0x10, *(unsigned char **)(hero_globals_base + 0x2E9D) + 0x10);
+        FastVecSub(v10, &((Moby *)m)->pos, *(unsigned char **)(hero_globals_base + 0x2E9D) + 0x10);
     }
 
     switch ((short)(*(unsigned short *)&((Moby *)m)->oclass - 0x1F4)) {
@@ -632,10 +632,10 @@ void break_crate(void *mv, int a1, int av) {
     {
         for (k = 0; k < n; k++) {
             matrix_mul_vec3(v70, crate_debris_piece_offsets + k * 16, v30);
-            FastVecAdd(v70, v70, m + 0x10);
+            FastVecAdd(v70, v70, &((Moby *)m)->pos);
             qcopy(v80, crate_debris_piece_rotations + k * 16);
             v80[2] = FastAddRots(v80[2], v20[2]);
-            FastVecSub(v60, v70, m + 0x10);
+            FastVecSub(v60, v70, &((Moby *)m)->pos);
             v60[2] = 0.0f;
             f = random_float_between(1.0f, 5.0f);
             vec_scale_to_length(v60, v60, f * g_frame_time);
@@ -654,7 +654,7 @@ void break_crate(void *mv, int a1, int av) {
         v70[0] = random_float_between(-0.5f, 0.5f);
         v70[1] = random_float_between(-0.5f, 0.5f);
         v70[2] = random_float_between(0.0f, 1.0f);
-        FastVecAdd(v70, v70, m + 0x10);
+        FastVecAdd(v70, v70, &((Moby *)m)->pos);
         f = random_float_between(6.0f, 12.0f) * g_frame_time;
         rand_vec(v60, f, f);
         if (v60[2] < 0.0f) v60[2] = -v60[2];
@@ -680,9 +680,9 @@ void break_crate(void *mv, int a1, int av) {
         else
             dat->unk_CA = 1;
 
-        vec_scale_to_length(v60, m + 0xE0, 0.5f);
-        FastVecAdd(v60, v60, m + 0x10);
-        FastVecSub(v70, g_debug_camera, m + 0x10);
+        vec_scale_to_length(v60, &((Moby *)m)->rot_row2, 0.5f);
+        FastVecAdd(v60, v60, &((Moby *)m)->pos);
+        FastVecSub(v70, g_debug_camera, &((Moby *)m)->pos);
         clear_u64_value(v80);
         f21 = FastVecLength(v70);
         nn = 10;
@@ -751,7 +751,7 @@ extern float FastVecLength(void *);
 extern void FastVecAdd(void *, void *, void *);
 
 /* per-frame update of a thrown object chain: walks to the root, then moves each link and resolves its collision */
-void update_crate_stack_motion(char *a) {
+void update_crate_stack_motion(Moby *a) {
     float v0[4];
     float v1[4];
     float v2[4];
@@ -760,7 +760,7 @@ void update_crate_stack_motion(char *a) {
     float v5[4];
     float v6[4];
     float v7[4];
-    struct CrateVars *o = (struct CrateVars *)((Moby *)a)->pvars;
+    struct CrateVars *o = (struct CrateVars *)a->pvars;
     char *n;
     char *p;
     char *w;
@@ -770,15 +770,15 @@ void update_crate_stack_motion(char *a) {
     int r, flags;
     if (o->last_frame == level_frame_counter)
         return;
-    n = a;
+    n = (char *)a;
     do {
         w = n;
         n = ((struct CrateVars *)((Moby *)w)->pvars)->below;
     } while (n != 0);
     n = w;
     do {
-        a = n;
-        o = (struct CrateVars *)((Moby *)a)->pvars;
+        a = (Moby *)n;
+        o = (struct CrateVars *)a->pvars;
         flags = o->flags;
         n = o->above;
         if ((flags & 4) == 0)
@@ -789,14 +789,14 @@ void update_crate_stack_motion(char *a) {
         if (o->flags & 2)
             return;
         o->last_frame = level_frame_counter;
-        if (((Moby *)a)->state != 0) {
+        if (a->state != 0) {
             g = hero_globals_base + 0xE9D;
-            FastVecSub(v3, g, a + 0x10);
-            matrix_mul_vec3(v3, v3, a + 0xC0);
+            FastVecSub(v3, g, &a->pos);
+            matrix_mul_vec3(v3, v3, &a->rot_row0);
             if (FastAbsF(v3[0]) < 0.55f && FastAbsF(v3[1]) < 0.55f && v3[2] < 0 &&
                 (b = g - 0x80, -(*(float *)(b + 0x220) + *(float *)(b + 0x234)) < v3[2]) &&
-                (((Moby *)a)->state == 1 || ((Moby *)a)->state == 5)) {
-                break_crate(a, ((Moby *)a)->oclass == 0x1F9, 0);
+                (a->state == 1 || a->state == 5)) {
+                break_crate(a, a->oclass == 0x1F9, 0);
                 crate_drop_bolts(a);
             }
             dt = g_frame_time_sq;
@@ -827,22 +827,22 @@ void update_crate_stack_motion(char *a) {
                 qcopy(v4, &o->attach_pos);
                 v4[2] = v4[2] + o->attach_lift;
                 if (a != 0)
-                    *(short *)&((Moby *)a)->occlusion = 0x7F80;
-                qcopy(v5, a + 0x10);
-                qcopy(v6, a + 0x40);
-                transform_attachment_pose((int)a, o->attach_moby, v4, &o->attach_rot.x, (float *)(a + 0x10), (float *)(a + 0x40));
+                    *(short *)&a->occlusion = 0x7F80;
+                qcopy(v5, &a->pos);
+                qcopy(v6, &a->rot);
+                transform_attachment_pose((int)a, o->attach_moby, v4, &o->attach_rot.x, &a->pos.x, &a->rot.x);
                 if (*(int *)(moby_get_ride_transform(o->attach_moby) + 0x3C) & 4) {
                     qcopy(&o->attach_pos, v4);
                     o->attach_pos.z = o->attach_pos.z - o->attach_lift;
                 }
-                FastVecSub(v7, a + 0x10, v5);
+                FastVecSub(v7, &a->pos, v5);
                 v7[3] = o->motion.w;
                 qcopy(&o->motion, v7);
-                update_entity_matrix(o->matrix, (Vx *)&o->motion, v6, a + 0x40);
+                update_entity_matrix(o->matrix, (Vx *)&o->motion, v6, &a->rot);
             } else {
                 if (*(int *)&o->below == 0) {
-                    qcopy(v0, a + 0x10);
-                    qcopy(v1, a + 0x10);
+                    qcopy(v0, &a->pos);
+                    qcopy(v1, &a->pos);
                     v0[2] = v0[2] + o->height * 0.75f;
                     v1[2] = v1[2] + o->motion.z;
                     r = coll_line(v0, v1, 2, 0, 0);
@@ -851,15 +851,15 @@ void update_crate_stack_motion(char *a) {
                     qcopy(v2, o->below + 0x10);
                     v2[2] = v2[2] + 1.0f;
                     r = 0;
-                    if (((Moby *)a)->pos.z + o->motion.z < v2[2])
+                    if (a->pos.z + o->motion.z < v2[2])
                         r = 1;
                 }
                 if (r != 0) {
                     len = FastVecLength(&o->motion);
                     if (g_frame_time * 0.5f < len) {
-                        if (((Moby *)a)->oclass == 0x1F9 && ((Moby *)a)->state == 1) {
-                            *(char *)&((Moby *)a)->command = 0;
-                            ((Moby *)a)->state = 5;
+                        if (a->oclass == 0x1F9 && a->state == 1) {
+                            *(char *)&a->command = 0;
+                            a->state = 5;
                         } else {
                             p = o->below;
                             if (p != 0 && *(short *)(p + 0xA6) == 0x1F9 && *(unsigned char *)(p + 0x20) == 1) {
@@ -868,11 +868,11 @@ void update_crate_stack_motion(char *a) {
                             }
                         }
                     }
-                    ((Moby *)a)->pos.z = v2[2];
+                    a->pos.z = v2[2];
                     *(int *)&o->motion.z = 0;
                 } else {
                     o->flags = o->flags | 4;
-                    FastVecAdd(a + 0x10, a + 0x10, &o->motion);
+                    FastVecAdd(&a->pos, &a->pos, &o->motion);
                 }
             }
         }
@@ -1369,9 +1369,9 @@ void draw_metal_detector_trail(Moby *moby) {
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char metal_detector_dig_counts[];
 /* increments the selected packed nibble, saturating at fifteen */
-void increment_metal_detector_collection_counter(unsigned char *moby) {
+void increment_metal_detector_collection_counter(Moby *moby) {
  int row=g_current_level_index;
- if (row<20) { int index=moby[0xBC]-1;
+ if (row<20) { int index=moby->command-1;
  if (index&1) { unsigned char *p=metal_detector_dig_counts+(index/2+row*16); unsigned int value=*p; int n=(value&15)+1; if(n>=16)n=15; *p=(value&240)|n; }
  else { unsigned char *p=metal_detector_dig_counts+(index/2+row*16); unsigned int value=*p; int n=(value>>4)+1; if(n>=16)n=15; *p=(value&15)|(n<<4); }
  }
@@ -1687,9 +1687,9 @@ extern char hero_globals_base[] NOT_SDA;
 extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 /* Starts animation 6 if the hero state is 8 and the moby is not already playing it. */
-void helipack_update(char *a) {
+void helipack_update(Moby *a) {
     if (*(int *)(hero_globals_base + 0x2EA1) == 8) {
-        if (*(unsigned char *)(a + 0x53) != 6) {
+        if (a->prev_seq != 6) {
             MobyBlendAnimation(a, 6, 0, scale_ticks(10));
         }
     }
@@ -1700,23 +1700,23 @@ extern void copy_hero_moby_field_38(void *);
 
 /* spawn a moby of type 0x27F and copy a spawn record into its data */
 char *mine_camera_blast(char *a, char *b, int c, char *d) {
-    char *m = CreateMoby(0x27F);
+    Moby *m = (Moby *)CreateMoby(0x27F);
     if (m != 0) {
         struct PointLightVars *p;
-        ((Moby *)m)->update_dist = 0xFF;
-        m[0x31] = 1;
-        ((Moby *)m)->flags |= 1;
-        p = (struct PointLightVars *)((Moby *)m)->pvars;
-        m[0x20] = 0;
-        m[0xBC] = 0;
-        qcopy(m + 0x10, b);
+        m->update_dist = 0xFF;
+        m->visible = 1;
+        m->flags |= 1;
+        p = (struct PointLightVars *)m->pvars;
+        m->state = 0;
+        m->command = 0;
+        qcopy(&m->pos, b);
         if (d != 0) {
             qcopy(&p->offset, d);
         } else {
             qcopy(&p->offset, a);
         }
         *(int *)&p->follow = c;
-        ((Moby *)m)->draw_dist = *(unsigned char *)(a + 0x3C);
+        m->draw_dist = *(unsigned char *)(a + 0x3C);
         p->unk_24 = a[0x10];
         p->unk_25 = a[0x11];
         p->unk_26 = a[0x12];
@@ -1753,7 +1753,7 @@ char *mine_camera_blast(char *a, char *b, int c, char *d) {
         moby_build_matrix(m);
         copy_hero_moby_field_38(m);
     }
-    return m;
+    return (char *)m;
 }
 extern int FastBSphereCheck_v(void *, float) __asm__("func_L00_00200290");
 extern void DeleteMoby_m(void *) __asm__("func_0020D678");
@@ -1771,7 +1771,7 @@ extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 
 /* moby class 639 update: runs its state machine and eases its tracked values toward their targets */
-void update_animated_point_light_moby(unsigned char *m) {
+void update_animated_point_light_moby(Moby *m) {
     struct PointLightVars *o;
     Vx tp;
     Vx t2;
@@ -1786,15 +1786,15 @@ void update_animated_point_light_moby(unsigned char *m) {
     int r;
 
     if (m == 0) return;
-    o = (struct PointLightVars *)((Moby *)m)->pvars;
+    o = (struct PointLightVars *)m->pvars;
     c0 = 0;
     if (((unsigned char *)o) == 0) return;
-    if (((Moby *)m)->state == 0) {
+    if (m->state == 0) {
         unsigned char b1c;
-        ((Moby *)m)->update_dist = 0xFF;
+        m->update_dist = 0xFF;
         b1c = o->cmd;
-        ((Moby *)m)->command = b1c;
-        qcopy(o->pos, m + 0x10);
+        m->command = b1c;
+        qcopy(o->pos, &m->pos);
         o->light_slot = -1;
         o->cmd = b1c;
         *(int *)&o->offset.w = o->flags;
@@ -1814,10 +1814,10 @@ void update_animated_point_light_moby(unsigned char *m) {
         }
         if (o->radius_rise < 0.0f) o->radius_rise = -o->radius_rise;
         if (o->radius_fall < 0.0f) o->radius_fall = -o->radius_fall;
-        ((Moby *)m)->state = 1;
+        m->state = 1;
     }
-    if (((Moby *)m)->command != 0) {
-        ((Moby *)m)->command = ((Moby *)m)->command - 1;
+    if (m->command != 0) {
+        m->command = m->command - 1;
         return;
     }
     if (o->life != -1 && fast_dec_timer(&o->life)) {
@@ -1829,7 +1829,7 @@ void update_animated_point_light_moby(unsigned char *m) {
         return;
     }
     {
-        unsigned char *s = m + 0x10;
+        unsigned char *s = (unsigned char *)&m->pos;
         qcopy(&tp, s);
         tp.w = o->radius;
         v21 = s;
@@ -2567,12 +2567,12 @@ extern int process_moby_suck_cannon_suction_h(void *, void *, void *, float) __a
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
-int CarriedMoby_UpdateState9(char *a, void *p, void *t, float h) {
+int CarriedMoby_UpdateState9(Moby *a, void *p, void *t, float h) {
     int r = process_moby_suck_cannon_suction_h(a, p, t, h);
     if (r == 0) {
-        if (*(unsigned char *)(a + 0x20) == 9) a[0x20] = 5;
+        if (a->state == 9) a->state = 5;
     } else {
-        a[0x20] = 9;
+        a->state = 9;
     }
     return r;
 }
@@ -3584,23 +3584,23 @@ extern void set_moby_color(void *, int, int, int);
 extern float random_angle_radians(void);
 /* Creates a class 0x307 moby at src, scaled by f, and returns it (or 0). */
 char *spawn_burst_moby(Vy *src, float f) {
-    char *m = CreateMoby(0x307);
+    Moby *m = (Moby *)CreateMoby(0x307);
     if (m != 0) {
         copy_hero_moby_field_38(m);
         set_moby_color(m, 0x28, 0x28, 0x46);
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        *(short *)(m + 0x32) = 0x40;
-        *(float *)(m + 0x2C) *= f;
-        qcopy(m + 0x10, src);
-        *(float *)(m + 0x48) = random_angle_radians();
+        m->update_dist = 0xFF;
+        m->draw_dist = 0x40;
+        m->scale *= f;
+        qcopy(&m->pos, src);
+        m->rot.z = random_angle_radians();
         moby_build_matrix(m);
     }
-    return m;
+    return (char *)m;
 }
 extern void DeleteMoby(void);
 /* Fade-out update: grows the moby, lowers its alpha and deletes it when faded. */
-void grow_and_fade_out_update(char *a) {
-    *(float *)(a + 0x2C) = *(float *)(a + 0x2C) * 1.025f;
-    a[0x23] = a[0x23] - 3;
-    if ((unsigned char)a[0x23] < 4) DeleteMoby();
+void grow_and_fade_out_update(Moby *a) {
+    a->scale = a->scale * 1.025f;
+    a->alpha = *(char *)&a->alpha - 3;
+    if ((unsigned char)*(char *)&a->alpha < 4) DeleteMoby();
 }

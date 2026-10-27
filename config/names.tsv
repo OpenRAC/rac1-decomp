@@ -11730,7 +11730,7 @@ func_0022D7E0	sky_bsphere_check	descriptive	the NTSC decomp	sky_bsphere_check at
 func_0022F738	build_resident_indexed_texture_warp_meshes	descriptive	the NTSC decomp	build_resident_indexed_texture_warp_meshes at US boot 0x0022E420 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_00232A00	append_scrolling_textured_quad	descriptive	the NTSC decomp	append_scrolling_textured_quad at US boot 0x002316E8 (src/textbin/ui/loading/play_level_loading_slides.c); US function table counterpart	
 func_00232B90	prepare_loading_slide_textures	descriptive	the NTSC decomp	prepare_loading_slide_textures at US boot 0x00231878 (src/textbin/ui/loading/play_level_loading_slides.c); US function table counterpart	
-func_00235118	vif1_dma_interrupt_handler	descriptive	the NTSC decomp	vif1_dma_interrupt_handler at US boot 0x00233E00 (src/rendering/dmac_vif1_enable.c); US function table counterpart	
+func_00235118	vif1_dma_interrupt_handler	descriptive	the NTSC decomp	vif1_dma_interrupt_handler at US boot 0x00233E00 (src/rendering/vu1/dmac_vif1_enable.c); US function table counterpart	
 func_00236060	build_tfrag_texture_dma	descriptive	the NTSC decomp	build_tfrag_texture_dma at US boot 0x00234D48 (src/assembly/textbin/build_tfrag_texture_dma.c); US function table counterpart	
 func_00238F98	project_graphics_bounds_float	descriptive	the NTSC decomp	project_graphics_bounds_float at US boot 0x00237C80 (src/gameplay/vendor/render_vendor_capture_pass_sequence.c); US function table counterpart	
 func_0023A220	render_vendor_buy_label_pass	descriptive	the NTSC decomp	render_vendor_buy_label_pass at US boot 0x00238F08 (src/assembly/textbin/gameplay/vendor/render_vendor_buy_label_pass.c); US function table counterpart	
@@ -12017,9 +12017,9 @@ D_0015F6FC	space_load_in_progress	descriptive	the NTSC decomp	space_load_in_prog
 D_0015F704	font_state	descriptive	the NTSC decomp	font_state at US boot 0x0015F620 (include/rnc/ui/text/font_state.h); US/PAL address translation (code of both refers to it)	
 D_0015F710	level_sound_def_count	descriptive	the NTSC decomp	level_sound_def_count at US boot 0x0015F630 (include/rnc/audio/sound_state.h); US/PAL address translation (code of both refers to it)	
 D_0015F714	level_sound_defs	descriptive	the NTSC decomp	level_sound_defs at US boot 0x0015F634 (include/rnc/audio/sound_state.h); US/PAL address translation (code of both refers to it)	
-D_0015F724	occl_oct	descriptive	the NTSC decomp	occl_oct at US boot 0x0015F644 (src/rendering/build_occlusion_visibility.c); US/PAL address translation (code of both refers to it)	
-D_0015F72C	occl_invalid_grid	descriptive	the NTSC decomp	occl_invalid_grid at US boot 0x0015F64C (src/rendering/build_occlusion_visibility.c); US/PAL address translation (code of both refers to it)	
-D_0015F730	occl_previous_grid	descriptive	the NTSC decomp	occl_previous_grid at US boot 0x0015F650 (src/rendering/build_occlusion_visibility.c); US/PAL address translation (code of both refers to it)	
+D_0015F724	occl_oct	descriptive	the NTSC decomp	occl_oct at US boot 0x0015F644 (src/rendering/occlusion/build_occlusion_visibility.c); US/PAL address translation (code of both refers to it)	
+D_0015F72C	occl_invalid_grid	descriptive	the NTSC decomp	occl_invalid_grid at US boot 0x0015F64C (src/rendering/occlusion/build_occlusion_visibility.c); US/PAL address translation (code of both refers to it)	
+D_0015F730	occl_previous_grid	descriptive	the NTSC decomp	occl_previous_grid at US boot 0x0015F650 (src/rendering/occlusion/build_occlusion_visibility.c); US/PAL address translation (code of both refers to it)	
 D_0015F760	hud_msg_count	descriptive	the NTSC decomp	hud_msg_count at US boot 0x0015F680 (src/ui/hud/update_hud.c); US/PAL address translation (code of both refers to it)	
 D_0015F768	hud_msg_y	descriptive	the NTSC decomp	hud_msg_y at US boot 0x0015F688 (include/rnc/ui/hud/update_hud_globals.h); US/PAL address translation (code of both refers to it)	
 D_0015F780	help_msgs	descriptive	the NTSC decomp	help_msgs at US boot 0x0015F6A0 (src/gameplay/state/transition_load_wad.c); US/PAL address translation (code of both refers to it)	
@@ -12221,7 +12221,7 @@ D_001DE1A8	level_map_markers	descriptive	the NTSC decomp	level_map_markers at US
 D_001DE338	vu_chain_table	descriptive	the NTSC decomp	vu_chain_table at US boot 0x001DDFB8 (src/runtime/dma/calculate_dma_transfer_address.c); US/PAL address translation (code of both refers to it)	
 D_001DEAC0	tfrag_vu_const_block	descriptive	the NTSC decomp	tfrag_vu_const_block at US boot 0x001DE740 (src/rendering/view/update_view_context.c); US/PAL address translation (code of both refers to it)	
 D_001DED30	shrub_vu1_constants	descriptive	the NTSC decomp	shrub_vu1_constants at US boot 0x001DE9B0 (src/rendering/view/update_view_context.c); US/PAL address translation (code of both refers to it)	
-D_001DF180	vu1_gs_regs_tex_flush	descriptive	the NTSC decomp	vu1_gs_regs_tex_flush at US boot 0x001DEE00 (src/rendering/vu1_tex_flush.c); US/PAL address translation (code of both refers to it)	
+D_001DF180	vu1_gs_regs_tex_flush	descriptive	the NTSC decomp	vu1_gs_regs_tex_flush at US boot 0x001DEE00 (src/rendering/vu1/vu1_tex_flush.c); US/PAL address translation (code of both refers to it)	
 D_001DF3D0	normal_font_metrics	descriptive	the NTSC decomp	normal_font_metrics at US boot 0x001DF050 (include/rnc/ui/text/font_metrics.h); US/PAL address translation (code of both refers to it)	
 D_001DF770	small_font_metrics	descriptive	the NTSC decomp	small_font_metrics at US boot 0x001DF3F0 (include/rnc/ui/text/font_metrics.h); US/PAL address translation (code of both refers to it)	
 D_001DFB10	large_font_metrics	descriptive	the NTSC decomp	large_font_metrics at US boot 0x001DF790 (include/rnc/ui/text/font_metrics.h); US/PAL address translation (code of both refers to it)	

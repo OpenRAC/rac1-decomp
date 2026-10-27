@@ -217,7 +217,7 @@ void update_qwarks_starfighter_attack_commands(void *mobyp, void *pp) {
     char *q;
     unsigned char c, e;
 
-    switch (((unsigned char *)moby)[0xBC]) {
+    switch (((Moby *)moby)->command) {
     case 1:
         goto s1;
     case 2:
@@ -237,7 +237,7 @@ void update_qwarks_starfighter_attack_commands(void *mobyp, void *pp) {
     }
 
 s1:
-    if (((unsigned char *)moby)[0x20] != 4) {
+    if (((Moby *)moby)->state != 4) {
         goto s1b;
     }
     if (!fast_dec_timer(p + 0xF8)) {
@@ -250,7 +250,7 @@ s1:
         return;
     }
     ((unsigned char *)p)[0xFD] = 0;
-    moby[0x20] = 3;
+    ((Moby *)moby)->state = 3;
     *(int *)(p + 0xF8) = scale_ticks(0x12C);
     return;
 
@@ -264,14 +264,14 @@ s1b:
         }
     }
     *(int *)(p + 0xF8) = scale_ticks(0x1E);
-    moby[0x20] = 4;
+    ((Moby *)moby)->state = 4;
     return;
 
 s3:
     fast_dec_timer(p + 0x124);
     fast_dec_timer(p + 0x100);
     fast_dec_timer(p + 0xF8);
-    if (((unsigned char *)moby)[0x20] == 5) {
+    if (((Moby *)moby)->state == 5) {
         goto s308;
     }
     v = *(int *)(p + 0x11C);
@@ -296,13 +296,13 @@ s3:
             *(int *)(p + 0x100) = scale_ticks(0x258);
             qcopy(p + 0x80, sv);
             ((unsigned char *)p)[0xFF] = 0;
-            moby[0x20] = 5;
+            ((Moby *)moby)->state = 5;
             return;
         }
         }
     }
-    if (((unsigned char *)moby)[0xBC] == 3) {
-        moby[0x20] = 4;
+    if (((Moby *)moby)->command == 3) {
+        ((Moby *)moby)->state = 4;
         if (*(int *)(p + 0xF8) != 0) {
             return;
         }
@@ -321,10 +321,10 @@ s3:
     ((unsigned char *)p)[0xFE] = e;
     if (!e) {
         ((unsigned char *)p)[0xFD] = rand_range(4, 6);
-        moby[0x20] = 4;
+        ((Moby *)moby)->state = 4;
     } else {
         ((unsigned char *)p)[0xFD] = rand_range(0x14, 0x32);
-        moby[0x20] = 3;
+        ((Moby *)moby)->state = 3;
     }
     *(int *)(p + 0xF8) = scale_ticks(0x78);
     return;
@@ -347,7 +347,7 @@ s308:
     }
     *(int *)(p + 0x100) = scale_ticks(0x258);
     *(int *)(p + 0xF8) = scale_ticks(0x78);
-    moby[0x20] = 4;
+    ((Moby *)moby)->state = 4;
     Moby_PlaySound(5, 0, (int)moby);
     return;
 
@@ -366,7 +366,7 @@ s2:
     if (!fast_dec_timer(p + 0xF8)) {
         return;
     }
-    if (((unsigned char *)moby)[0xBC] != 2) {
+    if (((Moby *)moby)->command != 2) {
         goto s2b;
     }
     if (fast_subtract_rotations_cf(p + 0xFD) == 0) {
@@ -376,10 +376,10 @@ s2:
     ((unsigned char *)p)[0xFE] = e;
     if (!e) {
         ((unsigned char *)p)[0xFD] = rand_range(4, 6);
-        moby[0x20] = 4;
+        ((Moby *)moby)->state = 4;
     } else {
         ((unsigned char *)p)[0xFD] = rand_range(0x14, 0x32);
-        moby[0x20] = 3;
+        ((Moby *)moby)->state = 3;
     }
     *(int *)(p + 0xF8) = scale_ticks(0x3C);
     return;
@@ -398,17 +398,17 @@ s2y:
     return;
 
 s2b:
-    moby[0x20] = 3;
+    ((Moby *)moby)->state = 3;
     fire_class_53_projectile(moby, p);
     *(int *)(p + 0xF8) = scale_ticks(0x14);
     return;
 
 s4:
-    moby[0x20] = 3;
+    ((Moby *)moby)->state = 3;
     if (((unsigned char *)p)[0x10E] != 0) {
         return;
     }
-    moby[0xBC] = 5;
+    ((Moby *)moby)->command = 5;
     queue_starfighter_voice_line(moby, p, 0x1B, 2);
     {
         char *z = *(char **)(*(int *)(hero_globals_base + 0x240D) + 0x78);
@@ -1203,29 +1203,29 @@ typedef int u128 __attribute__((mode(TI)));
 
 // Spawns a moby from a template moby and copies its transform.
 char *spawn_moby_joint_attachment(char *src, int arg, int id) {
-    char *moby = CreateMoby_m(id);
+    Moby *moby = (Moby *)CreateMoby_m(id);
     if (moby != 0) {
         struct JointAttachVars *data;
-        float f = *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)(src + 0x2C) /
+        float f = *(float *)(*(char **)&moby->pclass + 0x24) * *(float *)(src + 0x2C) /
                   *(float *)(*(char **)(src + 0x24) + 0x24);
-        data = (struct JointAttachVars *)((Moby *)moby)->pvars;
-        ((Moby *)moby)->update_dist = 0xFF;
-        ((Moby *)moby)->draw_dist = 0xFF;
-        moby[0x31] = 1;
-        moby[0x20] = 0;
-        ((Moby *)moby)->scale = f;
+        data = (struct JointAttachVars *)moby->pvars;
+        moby->update_dist = 0xFF;
+        moby->draw_dist = 0xFF;
+        moby->visible = 1;
+        moby->state = 0;
+        moby->scale = f;
         data->joint = arg;
-        Moby_GetJointWorldPos(src, arg, moby + 0x10);
+        Moby_GetJointWorldPos(src, arg, &moby->pos);
         data->src = src;
         moby_build_matrix(moby);
-        qcopy(moby + 0x40, src + 0x40);
-        *(u128 *)(moby + 0xC0) = *(u128 *)(src + 0xC0);
-        *(u128 *)(moby + 0xD0) = *(u128 *)(src + 0xD0);
-        *(u128 *)(moby + 0xE0) = *(u128 *)(src + 0xE0);
+        qcopy(&moby->rot, src + 0x40);
+        *(u128 *)&moby->rot_row0 = *(u128 *)(src + 0xC0);
+        *(u128 *)&moby->rot_row1 = *(u128 *)(src + 0xD0);
+        *(u128 *)&moby->rot_row2 = *(u128 *)(src + 0xE0);
         data->timer = scale_ticks(0x258);
         moby_build_matrix(moby);
     }
-    return moby;
+    return (char *)moby;
 }
 extern char gemlik_coll_hit_result[];
 extern void FastVecScale(void *, void *, float);
@@ -1387,14 +1387,14 @@ extern char forcefield_missing_link_fmt[];
 extern float frame_scale MACRO_ADDR;
 
 /* UpdateMoby_404: Updates a gem-lock pickup: waits for its flag, fades out, then deletes itself; always spins. */
-void forcefield_update(char *moby) {
-    struct ForcefieldVars *d = (struct ForcefieldVars *)((Moby *)moby)->pvars;
+void forcefield_update(Moby *moby) {
+    struct ForcefieldVars *d = (struct ForcefieldVars *)moby->pvars;
     int v, dx, old;
-    switch (((unsigned char *)moby)[0x20]) {
+    switch (moby->state) {
     case 0:
-        moby[0x20] = 1;
-        moby[0x23] = 0x14;
-        ((Moby *)moby)->flags |= 0xA08;
+        moby->state = 1;
+        moby->alpha = 0x14;
+        moby->flags |= 0xA08;
         d->light_slot = -1;
         d->alpha = 1.0f;
         set_moby_color(moby, 0x80, 0x80, 0x80);
@@ -1405,21 +1405,21 @@ void forcefield_update(char *moby) {
             if (p == 0 || (unsigned char)p[0x20] == 0xFE || (unsigned char)p[0x20] == 0xFD
                 || (*(int *)(help_stats_base + 0xAB75 + (((short)*(unsigned short *)(p + 0xB2) >> 5) * 4 + (g_current_level_index_m << 8))) >> (*(unsigned short *)(p + 0xB2) & 0x1F)) & 1) {
                 d->alpha = 1.0f;
-                moby[0x20] = 2;
+                moby->state = 2;
             }
         } else {
             d->alpha = 1.0f;
-            moby[0x20] = 2;
-            STUB_printf(forcefield_missing_link_fmt, ((Moby *)moby)->oclass, *(short *)&((Moby *)moby)->save_id);
+            moby->state = 2;
+            STUB_printf(forcefield_missing_link_fmt, moby->oclass, *(short *)&moby->save_id);
         }
         spawn_forcefield_contact_effects(moby, ((char *)d));
         break;
     case 2:
         d->alpha = d->alpha - frame_scale * 0.05f;
         if (d->alpha < 0.0f) {
-            moby[0x20] = 3;
+            moby->state = 3;
         } else {
-            moby[0x23] = truncate_float_to_s32_r_r(d->alpha * 20.0f);
+            moby->alpha = truncate_float_to_s32_r_r(d->alpha * 20.0f);
         }
         break;
     case 3:
@@ -1441,7 +1441,7 @@ void forcefield_update(char *moby) {
         d->scroll = v + 0x1000;
         dx = 0x10C0;
     }
-    offset_moby_class_point_pairs(*(unsigned char **)(moby + 0x24), dx, 0);
+    offset_moby_class_point_pairs(*(unsigned char **)&moby->pclass, dx, 0);
 }
 typedef struct {
     char pad0[0x34];
@@ -1517,8 +1517,8 @@ void update_linked_moby_statistics_and_hero_volume_flag(char *moby) {
 extern char state_relay_missing_link_fmt[];
 
 /* State machine: waits for a linked moby to reach one of a set of states, then pushes states onto linked mobys. */
-void update_moby_state_relay(char *moby) {
-    struct StateRelayVars *data = (struct StateRelayVars *)((Moby *)moby)->pvars;
+void update_moby_state_relay(Moby *moby) {
+    struct StateRelayVars *data = (struct StateRelayVars *)moby->pvars;
     char *m = 0;
     int idx = data->link;
     int found;
@@ -1529,7 +1529,7 @@ void update_moby_state_relay(char *moby) {
     switch (data->phase) {
     case 0:
         if (m == 0) {
-            STUB_printf(state_relay_missing_link_fmt, *(short *)&((Moby *)moby)->save_id, ((Moby *)moby)->oclass);
+            STUB_printf(state_relay_missing_link_fmt, *(short *)&moby->save_id, moby->oclass);
             DeleteMoby(moby);
         } else if (data->start_in_a != 0) {
             data->phase = 1;
@@ -1552,8 +1552,8 @@ void update_moby_state_relay(char *moby) {
                 if (data->b_target_state != -1) o[0x20] = data->b_target_state;
                 if (data->b_target_command != -1) o[0xBC] = data->b_target_command;
             }
-            if (data->b_self_state != -1) moby[0x20] = data->b_self_state;
-            if (data->b_self_command != -1) moby[0xBC] = data->b_self_command;
+            if (data->b_self_state != -1) moby->state = data->b_self_state;
+            if (data->b_self_command != -1) moby->command = data->b_self_command;
             data->phase = 2;
         }
         break;
@@ -1572,8 +1572,8 @@ void update_moby_state_relay(char *moby) {
                 if (data->a_target_state != -1) o[0x20] = data->a_target_state;
                 if (data->a_target_command != -1) o[0xBC] = data->a_target_command;
             }
-            if (data->a_self_state != -1) moby[0x20] = data->a_self_state;
-            if (data->a_self_command != -1) moby[0xBC] = data->a_self_command;
+            if (data->a_self_state != -1) moby->state = data->a_self_state;
+            if (data->a_self_command != -1) moby->command = data->a_self_command;
             data->phase = 1;
         }
         break;
@@ -1584,8 +1584,8 @@ extern int truncate_float_to_s32_d(float) __asm__("func_001FA898");
 
 /* Gate that follows its controller moby: opens when the controller is in one of its six "open" states,
  * closes on one of its six "close" states, fading its light with the opening and spinning its wheel. */
-void update_controller_linked_gate(char *m) {
-    struct LinkedGateVars *d = (struct LinkedGateVars *)((Moby *)m)->pvars;
+void update_controller_linked_gate(Moby *m) {
+    struct LinkedGateVars *d = (struct LinkedGateVars *)m->pvars;
     char *c = 0;
     int open;
     int close;
@@ -1595,7 +1595,7 @@ void update_controller_linked_gate(char *m) {
     }
     open = 0;
     close = 0;
-    if (((unsigned char *)m)[0x20] != 0) {
+    if (m->state != 0) {
         int i;
         for (i = 0; i < 6; i++) {
             if (((unsigned char *)c)[0x20] == (((char *)d) + i)[4]) {
@@ -1610,69 +1610,69 @@ void update_controller_linked_gate(char *m) {
             }
         }
     }
-    switch (((unsigned char *)m)[0x20]) {
+    switch (m->state) {
     case 0:
         if (c == 0) {
-            STUB_printf(linked_gate_missing_link_fmt, *(short *)&((Moby *)m)->save_id, ((Moby *)m)->oclass);
+            STUB_printf(linked_gate_missing_link_fmt, *(short *)&m->save_id, m->oclass);
             DeleteMoby(m);
             return;
         }
         set_moby_color(m, 0x80, 0x80, 0x80);
-        ((Moby *)m)->flags |= 0xA08;
+        m->flags |= 0xA08;
         if (d->spin_disabled == 0) {
             d->open_amount = 1.0f;
-            m[0x20] = 1;
-            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
-            m[0x23] = 0x14;
+            m->state = 1;
+            *(int *)&m->collision = *(int *)(*(char **)&m->pclass + 0x10);
+            m->alpha = 0x14;
         } else {
             d->open_amount = 0.0f;
-            m[0x20] = 3;
-            *(int *)&((Moby *)m)->collision = 0;
-            m[0x23] = 0;
+            m->state = 3;
+            *(int *)&m->collision = 0;
+            m->alpha = 0;
         }
         break;
     case 1:
         if (close) {
-            *(int *)&((Moby *)m)->collision = 0;
-            m[0x20] = 2;
+            *(int *)&m->collision = 0;
+            m->state = 2;
         }
         break;
     case 2:
         if (open) {
-            m[0x20] = 4;
-            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
+            m->state = 4;
+            *(int *)&m->collision = *(int *)(*(char **)&m->pclass + 0x10);
         }
         d->open_amount -= frame_scale * 0.05f;
         if (d->open_amount < 0.0f) {
             d->open_amount = 0.0f;
-            m[0x20] = 3;
-            *(int *)&((Moby *)m)->collision = 0;
-            m[0x31] = 0;
-            ((Moby *)m)->flags |= 1;
+            m->state = 3;
+            *(int *)&m->collision = 0;
+            m->visible = 0;
+            m->flags |= 1;
         }
         break;
     case 3:
         if (open) {
-            m[0x20] = 4;
-            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
-            m[0x31] = 1;
-            ((Moby *)m)->flags &= 0xFFFE;
+            m->state = 4;
+            *(int *)&m->collision = *(int *)(*(char **)&m->pclass + 0x10);
+            m->visible = 1;
+            m->flags &= 0xFFFE;
         }
         break;
     case 4:
         if (close) {
-            *(int *)&((Moby *)m)->collision = 0;
-            m[0x20] = 2;
+            *(int *)&m->collision = 0;
+            m->state = 2;
         }
         d->open_amount += frame_scale * 0.05f;
         if (1.0f < d->open_amount) {
             d->open_amount = 1.0f;
-            m[0x20] = 1;
-            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
+            m->state = 1;
+            *(int *)&m->collision = *(int *)(*(char **)&m->pclass + 0x10);
         }
         break;
     }
-    m[0x23] = truncate_float_to_s32_d(d->open_amount * 20.0f);
+    m->alpha = truncate_float_to_s32_d(d->open_amount * 20.0f);
     step = 0xC0;
     d->spin += step;
     if (d->spin > 0x1000) {
@@ -1682,7 +1682,7 @@ void update_controller_linked_gate(char *m) {
         d->spin += 0x1000;
         step += 0x1000;
     }
-    offset_moby_class_point_pairs(*(unsigned char **)(m + 0x24), step, 0);
+    offset_moby_class_point_pairs(*(unsigned char **)&m->pclass, step, 0);
 }
 struct Manip_306D40;
 struct GifEntry_306D40;
@@ -1694,50 +1694,50 @@ extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/vendor/003058a8.c, FUN_L13_003058a8. */
 char *create_attached_rocket(struct Moby *src, short cls) {
-    char *m = CreateMoby_r(0x4D1);
+    Moby *m = (Moby *)CreateMoby_r(0x4D1);
     struct AttachedRocketVars *d;
     char *pos;
     if (m != 0) {
-        d = (struct AttachedRocketVars *)((Moby *)m)->pvars;
-        m[0x31] = 1;
-        ((unsigned char *)m)[0x30] = 0xFF;
-        ((Moby *)m)->draw_dist = 0x7F;
-        m[0x20] = 1;
+        d = (struct AttachedRocketVars *)m->pvars;
+        m->visible = 1;
+        m->update_dist = 0xFF;
+        m->draw_dist = 0x7F;
+        m->state = 1;
         d->src = src;
         d->joint = cls;
         d->attached = 1;
-        pos = m + 0x10;
+        pos = (char *)&m->pos;
         Moby_GetJointWorldPos_r2(src, cls, pos);
-        qcopy(m + 0x40, &src->rot);
-        *(OvlQuad_306D40 *)(m + 0xC0) = *(OvlQuad_306D40 *)&src->rot_row0;
-        *(OvlQuad_306D40 *)(m + 0xD0) = *(OvlQuad_306D40 *)&src->rot_row1;
-        *(OvlQuad_306D40 *)(m + 0xE0) = *(OvlQuad_306D40 *)&src->rot_row2;
+        qcopy(&m->rot, &src->rot);
+        *(OvlQuad_306D40 *)&m->rot_row0 = *(OvlQuad_306D40 *)&src->rot_row0;
+        *(OvlQuad_306D40 *)&m->rot_row1 = *(OvlQuad_306D40 *)&src->rot_row1;
+        *(OvlQuad_306D40 *)&m->rot_row2 = *(OvlQuad_306D40 *)&src->rot_row2;
         qcopy(&d->launch_pos, pos);
-        *(int *)&((Moby *)m)->collision = 0;
+        *(int *)&m->collision = 0;
         moby_build_matrix_r(m);
     }
-    return m;
+    return (char *)m;
 }
 typedef int u128_306E20 __attribute__((mode(TI)));
 
 /* Initializes a Gemlik moby from its data block, copying transforms and resetting state. */
-void launch_attached_rocket(char *moby, char *pos, int arg2, float arg3) {
-    struct AttachedRocketVars *d = (struct AttachedRocketVars *)((Moby *)moby)->pvars;
+void launch_attached_rocket(Moby *moby, char *pos, int arg2, float arg3) {
+    struct AttachedRocketVars *d = (struct AttachedRocketVars *)moby->pvars;
     char *s = d->src;
     char *mp;
     d->speed = arg3;
-    qcopy(moby + 0x40, s + 0x40);
-    mp = moby + 0x10;
-    *(u128_306E20 *)(moby + 0xC0) = *(u128_306E20 *)(s + 0xC0);
-    *(u128_306E20 *)(moby + 0xD0) = *(u128_306E20 *)(s + 0xD0);
-    *(u128_306E20 *)(moby + 0xE0) = *(u128_306E20 *)(s + 0xE0);
+    qcopy(&moby->rot, s + 0x40);
+    mp = (char *)&moby->pos;
+    *(u128_306E20 *)&moby->rot_row0 = *(u128_306E20 *)(s + 0xC0);
+    *(u128_306E20 *)&moby->rot_row1 = *(u128_306E20 *)(s + 0xD0);
+    *(u128_306E20 *)&moby->rot_row2 = *(u128_306E20 *)(s + 0xE0);
     Moby_GetJointWorldPos(*(void **)&d->src, d->joint, mp);
     qcopy(&d->launch_pos, mp);
     qcopy(&d->target_pos, pos);
     d->life = arg2;
-    moby[0x20] = 0;
-    ((Moby *)moby)->flags &= 0xFFFE;
-    *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
+    moby->state = 0;
+    moby->flags &= 0xFFFE;
+    *(int *)&moby->collision = *(int *)(*(char **)&moby->pclass + 0x10);
     moby_build_matrix(moby);
 }
 typedef int OvlQuad_p __attribute__((mode(TI)));
@@ -1979,12 +1979,12 @@ char *spawn_gemlik_projectile(float speed, float *pos, float *dir, void *arg)
         *(int *)&((Moby *)m)->rot.x = 0;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0x7F;
-        m[0x31] = 1;
+        ((Moby *)m)->visible = 1;
         p = (struct GemlikProjectileVars *)((Moby *)m)->pvars;
         d = vec_length_xy(dir);
         ((Moby *)m)->rot.y = -fast_atan2(d, dir[2]);
         ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
-        qcopy(m + 0x10, pos);
+        qcopy(&((Moby *)m)->pos, pos);
         qcopy(&p->start_pos, pos);
         qcopy(&p->dir, dir);
         MobyBlendAnimation(m, 1, 0, scale_ticks(5));
@@ -1992,7 +1992,7 @@ char *spawn_gemlik_projectile(float speed, float *pos, float *dir, void *arg)
         p->active = 1;
         p->owner = arg;
         p->speed = speed;
-        m[0x23] = 0x10;
+        ((Moby *)m)->alpha = 0x10;
         p->life = truncate_float_to_s32_r_r(speed / FastVecLength(&p->dir) + 1.0f);
         moby_build_matrix(m);
     }
@@ -3671,8 +3671,8 @@ extern char hero_globals_base[];
 extern int count_eligible_mobies_in_list(int, int);
 
 /* Checks the moby's trigger lists and copies the configured state bytes into it. */
-void apply_configured_moby_state_and_command(char *moby) {
-    struct ConfiguredStateVars *d = (struct ConfiguredStateVars *)((Moby *)moby)->pvars;
+void apply_configured_moby_state_and_command(Moby *moby) {
+    struct ConfiguredStateVars *d = (struct ConfiguredStateVars *)moby->pvars;
     int *p = d->trigger;
     int i;
     struct Hero *base;
@@ -3685,7 +3685,7 @@ void apply_configured_moby_state_and_command(char *moby) {
     base = (struct Hero *)(hero_globals_base + 0xE1D);
     if (*(int *)&base->ship_moby != 0 && base->state.current == 0x32) return;
     if (d->clip_volume != -1 && is_point_inside_clip_volume(&base->motion.pos, d->clip_volume) == 0) return;
-    if (d->state != -1) moby[0x20] = *(char *)&d->state;
+    if (d->state != -1) moby->state = *(char *)&d->state;
     if (d->command == -1) return;
-    moby[0xBC] = *(char *)&d->command;
+    moby->command = *(char *)&d->command;
 }

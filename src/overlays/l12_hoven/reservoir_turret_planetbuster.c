@@ -193,15 +193,15 @@ typedef struct {
 } Quad;
 
 // Draws a ring of four-vertex strips around the moby with a lit colour.
-void draw_water_reservoir(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+void draw_water_reservoir(Moby *moby) {
+    char *data = ((char *)moby->pvars);
     Quad q;
     float m[12];
     float pos[4];
     float a, b;
     int i, col;
-    copy_matrix_rotation(m, moby + 0xC0);
-    qcopy(pos, moby + 0x10);
+    copy_matrix_rotation(m, &moby->rot_row0);
+    qcopy(pos, &moby->pos);
     pos[2] = pos[2] + *(float *)(data + 8);
     pos[3] = 1.0f;
     q.g[1] = GetEffectTex(0x10);
@@ -221,7 +221,7 @@ void draw_water_reservoir(char *moby) {
         q.v[1] = a;
         q.v[13] = b;
         q.v[5] = b;
-        if (moby[0xBC] & 1) {
+        if (*(char *)&moby->command & 1) {
             q.v[2] = -FastCos(a * *(float *)&water_reservoir_curve_scale) + 2.0f;
             q.v[6] = -FastCos(b * *(float *)&water_reservoir_curve_scale) + 2.0f;
         } else {
@@ -237,31 +237,43 @@ extern float vec_length_xy(void *);
 extern int scale_ticks(int);
 extern void moby_build_matrix(void *);
 
+/* Rocket pvars (class 0x199). */
+struct HovenRocketVars {
+    f32 dir[4];                     /* 0x00: flight direction */
+    s32 owner;                      /* 0x10 */
+    s32 timer;                      /* 0x14 */
+    f32 unk_18;                     /* 0x18 */
+    f32 unk_1C;                     /* 0x1C */
+    u8 pad_20[4];
+    f32 unk_24;                     /* 0x24 */
+    s32 unk_28;                     /* 0x28 */
+};
+
 // Spawns a moby with a data block aimed from its direction vector.
 char *spawn_rocket(char *src, char *pos, int owner, int seed, float f0, float f1, float f2) {
-    char *moby = CreateMoby(0x199);
+    Moby *moby = (Moby *)CreateMoby(0x199);
     if (moby != 0) {
-        char *data;
+        struct HovenRocketVars *data;
         int r;
-        data = ((char *)((Moby *)moby)->pvars);
-        ((unsigned char *)moby)[0x30] = 0xFF;
-        ((Moby *)moby)->draw_dist = 0x7E;
-        moby[0x31] = 1;
-        moby[0x20] = 1;
-        qcopy(moby + 0x10, pos);
-        qcopy(data, src);
-        ((Moby *)moby)->rot.z = fast_atan2(*(float *)data, *(float *)(data + 4));
-        ((Moby *)moby)->rot.y = -fast_atan2(vec_length_xy(data), *(float *)(data + 8));
+        data = (struct HovenRocketVars *)((char *)moby->pvars);
+        moby->update_dist = 0xFF;
+        moby->draw_dist = 0x7E;
+        moby->visible = 1;
+        moby->state = 1;
+        qcopy(&moby->pos, pos);
+        qcopy(data->dir, src);
+        moby->rot.z = fast_atan2(data->dir[0], data->dir[1]);
+        moby->rot.y = -fast_atan2(vec_length_xy(data->dir), data->dir[2]);
         r = scale_ticks(seed);
-        *(int *)(data + 0x10) = owner;
-        *(float *)(data + 0x18) = f2;
-        *(float *)(data + 0x1C) = f0;
-        *(float *)(data + 0x24) = f1;
-        *(int *)(data + 0x28) = 0;
-        *(int *)(data + 0x14) = r;
+        data->owner = owner;
+        data->unk_18 = f2;
+        data->unk_1C = f0;
+        data->unk_24 = f1;
+        data->unk_28 = 0;
+        data->timer = r;
         moby_build_matrix(moby);
     }
-    return moby;
+    return (char *)moby;
 }
 typedef struct {
     float vel[4];
@@ -412,15 +424,15 @@ void update_hoven_help_and_dialogue(char *m) {
     {
         char *h = help_stats_base_e + 0x34D;
         if (*(unsigned short *)(h + 0x368) == 0) {
-            char *q = hero_globals_base_e + 0xE1D;
-            if (*(int *)(q + 0x2084) == 0x81) {
+            Hero *q = (Hero *)(hero_globals_base_e + 0xE1D);
+            if (q->state.current == 0x81) {
                 *(unsigned short *)(h + 0x368) = *(unsigned short *)(h + 0x368) + 1;
             }
             if (scale_ticks(gameplay_event_frame_count_e) / 600 > *(unsigned short *)(h + 0x36A)) {
                 *(unsigned short *)(h + 0x36A) = scale_ticks(gameplay_event_frame_count_e) / 600;
             }
             *(unsigned int *)(h + 0x36C) = *(unsigned int *)(h + 0x36C) | (1 << g_current_level_index_e) | 0x80000000;
-            if (is_point_inside_clip_volume(q + 0x80, d[0])) {
+            if (is_point_inside_clip_volume(&q->motion, d[0])) {
                 Help_Request(0x2EE3, 0x6D);
             }
         }
@@ -430,10 +442,10 @@ void update_hoven_help_and_dialogue(char *m) {
         if (*(unsigned short *)(h + 0x370) == 0
             || (*(unsigned short *)(h + 0x370) < 2
                 && scale_ticks(gameplay_event_frame_count_e) - *(unsigned short *)(h + 0x372) * 600 > scale_ticks(72000))) {
-            char *q = hero_globals_base_e + 0xE1D;
-            if (*(int *)(q + 0x2084) == 0x81) {
+            Hero *q = (Hero *)(hero_globals_base_e + 0xE1D);
+            if (q->state.current == 0x81) {
                 d[1]++;
-                if ((pad_globals_base_e[0x2600 / 4] & 3) && 0.3f < *(float *)(q + 0x229C)) {
+                if ((pad_globals_base_e[0x2600 / 4] & 3) && 0.3f < q->stick_magnitude) {
                     d[2]++;
                 } else {
                     d[2] = 0;
@@ -1929,32 +1941,32 @@ void update_planetbuster_maximus_detached_parts(char *moby) {
     int last = 17;
     for (i = 0, off = 0; i < 18; i++, off += 4) {
         int s = planetbuster_detached_part_ids[i];
-        char *obj;
+        Moby *obj;
         float f1;
         if (s == 0) {
             continue;
         }
         if (i == last) {
-            obj = moby;
+            obj = (Moby *)moby;
         } else {
             if (s == -1) {
                 continue;
             }
-            obj = (char *)(hoven_mobys_m + (s << 8));
+            obj = (Moby *)((char *)(hoven_mobys_m + (s << 8)));
         }
         if (i == last) {
             f1 = planetbuster_fall_pos;
             if (f1 == -1.0f) {
-                qcopy((char *)&planetbuster_fall_pos, obj + 0x10);
-                qcopy((char *)&planetbuster_maximus_detached_owner_rotation, obj + 0x40);
+                qcopy((char *)&planetbuster_fall_pos, &obj->pos);
+                qcopy((char *)&planetbuster_maximus_detached_owner_rotation, &obj->rot);
             }
-            qcopy((char *)&planetbuster_path_pos, obj + 0x10);
-            qcopy((char *)&planetbuster_path_rot, obj + 0x40);
-            qcopy(obj + 0x10, (char *)&planetbuster_fall_pos);
-            qcopy(obj + 0x40, (char *)&planetbuster_maximus_detached_owner_rotation);
-            f1 = *(float *)(obj + 0x18);
+            qcopy((char *)&planetbuster_path_pos, &obj->pos);
+            qcopy((char *)&planetbuster_path_rot, &obj->rot);
+            qcopy(&obj->pos, (char *)&planetbuster_fall_pos);
+            qcopy(&obj->rot, (char *)&planetbuster_maximus_detached_owner_rotation);
+            f1 = obj->pos.z;
         } else {
-            f1 = *(float *)(obj + 0x18);
+            f1 = obj->pos.z;
         }
         if (f1 < 20.0f) {
             if (i == last) {
@@ -1965,27 +1977,27 @@ void update_planetbuster_maximus_detached_parts(char *moby) {
         }
         f1 = *(float *)(data + 0x338 + i * 16) - *(float *)(data + off + 0x570);
         *(float *)(data + 0x338 + i * 16) = f1;
-        *(float *)(obj + 0x18) = *(float *)(obj + 0x18) + f1;
-        if (*(short *)(obj + 0xA6) == 0x500) {
-            *(float *)(obj + 0x40) = FastAddRots(*(float *)(obj + 0x40), g_frame_time * 0.34906584f);
-            SpringAngle(obj + 0x44, 1.5707964f, data + 0x454 + i * 16, 0, 0.00200000009f, 0.3f, 0.0f);
-        } else if (*(short *)(obj + 0xA6) == 0x4FD) {
-            *(float *)(obj + 0x40) = FastAddRots(*(float *)(obj + 0x40), *(float *)(data + 0x450 + i * 16));
-            SpringAngle(obj + 0x44, -1.5707964f, (float *)(data + 0x450 + i * 16) + 1, 0, *(float *)(data + 0x45C + i * 16), 0.3f, 0.0f);
-        } else if (*(short *)(obj + 0xA6) == 0x4FA) {
+        obj->pos.z = obj->pos.z + f1;
+        if (obj->oclass == 0x500) {
+            obj->rot.x = FastAddRots(obj->rot.x, g_frame_time * 0.34906584f);
+            SpringAngle(&obj->rot.y, 1.5707964f, data + 0x454 + i * 16, 0, 0.00200000009f, 0.3f, 0.0f);
+        } else if (obj->oclass == 0x4FD) {
+            obj->rot.x = FastAddRots(obj->rot.x, *(float *)(data + 0x450 + i * 16));
+            SpringAngle(&obj->rot.y, -1.5707964f, (float *)(data + 0x450 + i * 16) + 1, 0, *(float *)(data + 0x45C + i * 16), 0.3f, 0.0f);
+        } else if (obj->oclass == 0x4FA) {
             float t;
-            *(float *)(obj + 0x40) = FastAddRots(*(float *)(obj + 0x40), g_frame_time * -0.87266463f);
-            t = FastAddRots(*(float *)(obj + 0x44), *(float *)(data + 0x454 + i * 16));
-            *(float *)(obj + 0x14) = *(float *)(obj + 0x14) + g_frame_time * -4.0f;
-            *(float *)(obj + 0x44) = t;
+            obj->rot.x = FastAddRots(obj->rot.x, g_frame_time * -0.87266463f);
+            t = FastAddRots(obj->rot.y, *(float *)(data + 0x454 + i * 16));
+            obj->pos.y = obj->pos.y + g_frame_time * -4.0f;
+            obj->rot.y = t;
         } else {
-            *(float *)(obj + 0x14) = *(float *)(obj + 0x14) + g_frame_time * -4.0f;
-            *(float *)(obj + 0x40) = FastAddRots(*(float *)(obj + 0x40), *(float *)(data + 0x450 + i * 16));
-            *(float *)(obj + 0x44) = FastAddRots(*(float *)(obj + 0x44), *(float *)(data + 0x454 + i * 16));
+            obj->pos.y = obj->pos.y + g_frame_time * -4.0f;
+            obj->rot.x = FastAddRots(obj->rot.x, *(float *)(data + 0x450 + i * 16));
+            obj->rot.y = FastAddRots(obj->rot.y, *(float *)(data + 0x454 + i * 16));
         }
         if (i == last) {
-            qcopy((char *)&planetbuster_fall_pos, obj + 0x10);
-            qcopy((char *)&planetbuster_maximus_detached_owner_rotation, obj + 0x40);
+            qcopy((char *)&planetbuster_fall_pos, &obj->pos);
+            qcopy((char *)&planetbuster_maximus_detached_owner_rotation, &obj->rot);
         }
         moby_build_matrix(obj);
     }
@@ -2322,13 +2334,13 @@ extern float vec_distance_xy(void *, void *);
 extern void spawn_next_linked_moby(char *);
 
 /* Door/switch moby: clears its linked mobys, waits for the hero, opens, fires its list one by one, closes. */
-void homing_mine_spawner_update(char *m) {
-    struct MineSpawnerVars *d = (struct MineSpawnerVars *)((Moby *)m)->pvars;
+void homing_mine_spawner_update(Moby *m) {
+    struct MineSpawnerVars *d = (struct MineSpawnerVars *)m->pvars;
     int *slots;
     int i;
-    update_homing_mine_spawner_target(m);
+    update_homing_mine_spawner_target((char *)m);
     slots = &d->slots[0];
-    switch (((unsigned char *)m)[0x20]) {
+    switch (m->state) {
     case 0:
         for (i = 0; i < 12; i++) {
             if (slots[i] != -1) {
@@ -2338,49 +2350,49 @@ void homing_mine_spawner_update(char *m) {
                 }
             }
         }
-        m[0x20] = 1;
+        m->state = 1;
         break;
     case 1:
         if (d->target_state != 2) {
-            if (vec_distance_xy(m + 0x10, &d->target_pos) < d->range) {
-                m[0x20] = 2;
+            if (vec_distance_xy(&m->pos, &d->target_pos) < d->range) {
+                m->state = 2;
             }
         }
         break;
     case 2:
-        if (((unsigned char *)m)[0x53] != 1) {
+        if (m->prev_seq != 1) {
             MobyBlendAnimation(m, 1, 0, scale_ticks(2));
         }
-        if (m[0x70] & 2) {
-            if (((unsigned char *)m)[0x53] != 2) {
+        if (*(char *)&m->anim_flags & 2) {
+            if (m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(2));
             }
-            m[0x20] = 3;
+            m->state = 3;
         }
         break;
     case 3:
         if (FastDecTimer(&d->spawn_timer)) {
             if (slots[d->next_slot] != -1) {
-                spawn_next_linked_moby(m);
-                m[0xBC] = ((unsigned char *)m)[0xBC] == 0;
+                spawn_next_linked_moby((char *)m);
+                m->command = m->command == 0;
                 d->spawn_timer = scale_ticks(0x28);
             }
             d->next_slot += 1;
         }
         if (d->next_slot == 12 || slots[d->next_slot] == -1) {
-            m[0x20] = 4;
+            m->state = 4;
         }
         break;
     case 4:
-        ((Moby *)m)->flags &= 0xEFFF;
-        if (((unsigned char *)m)[0x53] != 3) {
+        m->flags &= 0xEFFF;
+        if (m->prev_seq != 3) {
             MobyBlendAnimation(m, 3, 0, scale_ticks(2));
         }
-        if (m[0x70] & 2) {
-            if (((unsigned char *)m)[0x53] != 0) {
+        if (*(char *)&m->anim_flags & 2) {
+            if (m->prev_seq != 0) {
                 MobyBlendAnimation(m, 0, 0, scale_ticks(2));
             }
-            m[0x20] = 5;
+            m->state = 5;
         }
         break;
     case 5:
@@ -2523,15 +2535,15 @@ static inline unsigned char func_L12_pick(int cur) {
 }
 
 /* Cutscene moby: on cinematic steps 1 and 7 aims the camera at a picked moby. */
-void emit_phase_selected_moby_effects(unsigned char *moby) {
+void emit_phase_selected_moby_effects(Moby *moby) {
     Level12MobyList *list;
     Level12MobyList *l2;
     int cur;
     int k;
-    switch (moby[0x20]) {
+    switch (moby->state) {
     case 0:
-        moby[0x30] = 0xFF;
-        moby[0x20] = 1;
+        moby->update_dist = 0xFF;
+        moby->state = 1;
         break;
     case 1:
         if (hoven_cinematic_mode == 2) {

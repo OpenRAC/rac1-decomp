@@ -317,15 +317,15 @@ extern int FastTweenColor(int, int, float);
 
 /* Fog zone: switches the level fog between its two settings when the hero enters either trigger volume, and
  * tints a colour by the hero's side of a gate while inside the third. */
-void update_fog_zone(char *m) {
-    struct FogZoneVars *d = (struct FogZoneVars *)((Moby *)m)->pvars;
+void update_fog_zone(Moby *m) {
+    struct FogZoneVars *d = (struct FogZoneVars *)m->pvars;
     float v[4];
     float w[4];
     char *g = hero_globals_base + 0xE9D;
     if (is_point_inside_clip_volume(g, d->volume_out)) {
         *(float *)(g + 0x270) = 500.0f;
     }
-    switch (((unsigned char *)m)[0x20]) {
+    switch (m->state) {
     case 0:
         d->out_red = rilgar_fog_color_red[0];
         d->out_green = rilgar_fog_color_green[0];
@@ -352,7 +352,7 @@ void update_fog_zone(char *m) {
             d->tint_b = 0x40408070;
             d->tint_a = c;
         }
-        m[0x20] = 1;
+        m->state = 1;
         break;
     case 1:
         if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, d->volume_in)) {
@@ -369,7 +369,7 @@ void update_fog_zone(char *m) {
                 rilgar_fog_near_intensity = f2;
                 rilgar_fog_far_intensity = f3;
             }
-            m[0x20] = 2;
+            m->state = 2;
         }
         break;
     case 2:
@@ -387,7 +387,7 @@ void update_fog_zone(char *m) {
                 rilgar_fog_near_intensity = f2;
                 rilgar_fog_far_intensity = f3;
             }
-            m[0x20] = 1;
+            m->state = 1;
         }
         break;
     }
@@ -420,8 +420,8 @@ extern float advance_30F9D0(float, float, float, float, float *, float *) __asm_
    1 waits for the trigger byte 0xBC of its D_L05_00160098 record, 2 eases
    it toward the end point, 3 lowers it to 5.9 below the entry's height.
    Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_0030e508. */
-void update_triggered_moby_slide_and_lowering(char *moby) {
-    struct SlideLowerVars *data = (struct SlideLowerVars *)((Moby *)moby)->pvars;
+void update_triggered_moby_slide_and_lowering(Moby *moby) {
+    struct SlideLowerVars *data = (struct SlideLowerVars *)moby->pvars;
     float v[4];
     float pos;
     float speed;
@@ -429,26 +429,26 @@ void update_triggered_moby_slide_and_lowering(char *moby) {
     float len;
     float reach;
 
-    switch (((Moby *)moby)->state) {
+    switch (moby->state) {
     case 0: {
         char *e0;
 
         e0 = (char *)(rilgar_level_cuboids_r + (data->cuboid << 7));
-        qcopy(moby + 0x10, e0 + 0x30);
-        ((Moby *)moby)->rot.z = *(float *)(e0 + 0x78);
+        qcopy(&moby->pos, e0 + 0x30);
+        moby->rot.z = *(float *)(e0 + 0x78);
         scale_30F9D0(v, e0 + 0x10, data->distance);
         if (data->reversed != 0) {
             mul_30F9D0(v, v, -1.0f);
-            ((Moby *)moby)->flags |= 0x8000;
+            moby->flags |= 0x8000;
         }
-        add_30F9D0(moby + 0x10, moby + 0x10, v);
-        ((Moby *)moby)->state = 1;
+        add_30F9D0(&moby->pos, &moby->pos, v);
+        moby->state = 1;
         break;
     }
     case 1:
         if (moby_pool_4f60_r[data->trigger * 256 + 0xBC] != 0) {
             voice_30F9D0(0, 0, moby);
-            ((Moby *)moby)->state = 2;
+            moby->state = 2;
             clear_30F9D0(&data->velocity);
         }
         break;
@@ -461,15 +461,15 @@ void update_triggered_moby_slide_and_lowering(char *moby) {
             mul_30F9D0(v, v, -1.0f);
         }
         add_30F9D0(v, e + 0x30, v);
-        sub_30F9D0(v, v, moby + 0x10);
+        sub_30F9D0(v, v, &moby->pos);
         len = len_30F9D0(v);
         speed = len_30F9D0(&data->velocity);
         advance_30F9D0(len, g_frame_time_sq_r * 20.0f, g_frame_time_sq_r * 30.0f,
                        g_frame_time_r * 10.0f, &pos, &speed);
         scale_30F9D0(&data->velocity, v, speed);
-        add_30F9D0(moby + 0x10, moby + 0x10, &data->velocity);
+        add_30F9D0(&moby->pos, &moby->pos, &data->velocity);
         if (len_30F9D0(v) < 0.01f) {
-            ((Moby *)moby)->state = 3;
+            moby->state = 3;
         }
         break;
     case 3:
@@ -477,9 +477,9 @@ void update_triggered_moby_slide_and_lowering(char *moby) {
         e += data->cuboid << 7;
         advance_30F9D0(*(float *)(e + 0x38) - 5.9f, g_frame_time_sq_r * 20.0f,
                        g_frame_time_sq_r * 40.0f, g_frame_time_r * 10.0f,
-                       (float *)(moby + 0x18), &data->velocity.z);
-        if (((Moby *)moby)->pos.z < *(float *)(e + 0x38) - 5.9f) {
-            ((Moby *)moby)->state = 4;
+                       &moby->pos.z, &data->velocity.z);
+        if (moby->pos.z < *(float *)(e + 0x38) - 5.9f) {
+            moby->state = 4;
         }
         break;
     }
@@ -1640,7 +1640,7 @@ void update_hoverboard_girl_cutscene_instances(char *arg) {
                     }
                 }
                 if (*(int *)&g_breast_growth_count != 0) {
-                    update_hoverboard_girl_boobs_animation(moby, *(int *)(arg + 0x78));
+                    update_hoverboard_girl_boobs_animation(moby, *(int *)&((Moby *)arg)->pvars);
                 }
             }
         }
@@ -2540,21 +2540,21 @@ void PickNearestTargetSlot(char *moby) {
     char *g;
     data->start_stop = -1;
     for (i = 0; i < 5; i++) {
-        if (FastVecDist(moby + 0x10, rilgar_level_cuboids_c + (list[i] << 7) + 0x30) < 1.0f) {
+        if (FastVecDist(&((Moby *)moby)->pos, rilgar_level_cuboids_c + (list[i] << 7) + 0x30) < 1.0f) {
             data->start_stop = i;
         }
     }
     switch (data->start_stop) {
     case 2:
         if (saved_mission_state[g_current_level_index][data->mission_a] == 0xFF || saved_mission_state[g_current_level_index][data->mission_b] == 0xFF) {
-            int v = *(int *)(*(char **)(moby + 0x24) + 0x10);
-            moby[0x31] = 1;
+            int v = *(int *)(*(char **)&((Moby *)moby)->pclass + 0x10);
+            ((Moby *)moby)->visible = 1;
             *(int *)&((Moby *)moby)->collision = v;
             ((Moby *)moby)->flags = ((Moby *)moby)->flags & 0xFFFE;
-            moby[0x20] = 1;
+            ((Moby *)moby)->state = 1;
         } else {
-            moby[0x20] = 6;
-            moby[0x31] = 0;
+            ((Moby *)moby)->state = 6;
+            ((Moby *)moby)->visible = 0;
             ((Moby *)moby)->flags = ((Moby *)moby)->flags | 1;
             *(int *)&((Moby *)moby)->collision = 0;
         }
@@ -2564,11 +2564,11 @@ void PickNearestTargetSlot(char *moby) {
     case 3:
     case 4:
         {
-            int v = *(int *)(*(char **)(moby + 0x24) + 0x10);
-            moby[0x31] = 1;
+            int v = *(int *)(*(char **)&((Moby *)moby)->pclass + 0x10);
+            ((Moby *)moby)->visible = 1;
             *(int *)&((Moby *)moby)->collision = v;
             ((Moby *)moby)->flags = ((Moby *)moby)->flags & 0xFFFE;
-            moby[0x20] = 1;
+            ((Moby *)moby)->state = 1;
         }
         break;
     }

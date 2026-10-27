@@ -531,7 +531,7 @@ int draw_hud_stars(HudElem *rec) {
         }
     }
     hud_screen_position(rec, &x, &y);
-    apply_hud_slide_offset(rec, &x, &y, *(int *)(r + 0x6C), 0);
+    apply_hud_slide_offset(rec, &x, &y, ((HudElem *)r)->unk6C, 0);
 
     {
         int w = *(int *)&hud_stars_width * 0xD0;
@@ -548,7 +548,7 @@ int draw_hud_stars(HudElem *rec) {
         draw_hud_rect_blended(left, top, right, bottom, 0x80684C2F, 1);
     }
 
-    n = *(int *)(r + 0x74);
+    n = ((HudElem *)r)->unk74;
     if (n * 3 < 10001) {
         s = scale_ticks(1);
         f0 = multiply_global_factor(0.75f);
@@ -556,7 +556,7 @@ int draw_hud_stars(HudElem *rec) {
     } else {
         flagA = 0;
     }
-    n = *(int *)(r + 0x74);
+    n = ((HudElem *)r)->unk74;
     if (n * 3 < 10001) {
         s = scale_ticks(1);
         f0 = multiply_global_factor(0.75f);
@@ -588,7 +588,7 @@ int draw_hud_stars(HudElem *rec) {
         v0[0] = ox * f20;
         v0[1] = oy * f20;
     }
-    f21 = (float)(10000 - *(int *)(r + 0x74)) / 10000.0f;
+    f21 = (float)(10000 - ((HudElem *)r)->unk74) / 10000.0f;
     f21 = 116.0f - (f21 + f21) * 116.0f;
     t21 = GetIconFrame(*(int *)r, 2);
 
@@ -643,7 +643,7 @@ int draw_hud_stars(HudElem *rec) {
         FastVecAdd(v50, v50, v10);
         draw_hud_sprite_subpixel(t21, (int)v50[0], (int)v50[1], w, w, 0x80);
     }
-    return *(int *)(r + 0x58);
+    return ((HudElem *)r)->w;
 }
 /* func_L00_002377E0 -- src/overlays/shared/hud_00235960.c
  * EXACT. The e->h copy goes through __builtin_memcpy (scalar MEM, as in
@@ -1363,17 +1363,17 @@ extern void *hud_selector_slot_tables MACRO_ADDR;
 extern short radial_select_slot_tables;
 extern short quick_select_page;
 /* Set up the HUD selector for four slots: slot tables, size, timer and first page. */
-void initialize_four_slot_hud_selector(char *a) {
+void initialize_four_slot_hud_selector(HudElem *a) {
     int x = *(int *)&quick_select_width;
     int y = *(int *)&quick_select_height;
     quick_select_slot_count = 4;
     hud_selector_slot_tables = &radial_select_slot_tables;
-    *(short *)(a + 0x48) = 0;
-    *(short *)(a + 0x4A) = 0;
-    *(int *)&((Moby *)a)->anim_speed = x;
-    *(int *)(a + 0x5C) = y;
-    *(int *)(a + 0x74) = -2;
-    *(int *)(a + 0x78) = scale_ticks(30);
+    a->unk48 = 0;
+    a->unk4A = 0;
+    a->w = x;
+    a->h = y;
+    a->unk74 = -2;
+    a->unk78 = scale_ticks(30);
     *(int *)&quick_select_page = 0;
 }
 extern short quick_select_page_r __asm__("D_L00_0015F80C");
@@ -1703,7 +1703,7 @@ extern void HudSprite(int, int, int, int, int, int);
 extern void HudFrame(char *, int, int, int, int, int);
 
 /* Draws the health bar (and its nanotech orbs) of a HUD element; returns the element's field 0x58. */
-int draw_health_hud_panel(char *e) {
+int draw_health_hud_panel(HudElem *e) {
     int y0, n, alpha;
     char *ip;
     short *tbl;
@@ -1714,20 +1714,20 @@ int draw_health_hud_panel(char *e) {
     unsigned char *q;
 
     if (({ char *gb = hero_globals_base + 0xE1D; *(unsigned char *)(gb + (0x20A4)); }) == 2 || ({ char *gb = hero_globals_base + 0xE1D; *(int *)(gb + (0x2084)); }) == 0x32) {
-        return *(int *)&((Moby *)e)->anim_speed;
+        return e->w;
     }
-    x0 = *(int *)(e + 0x50);
+    x0 = e->unk50;
     if (pal_mode_m) {
         y0 = *(int *)&health_hud_base_y_offset + 0xA;
     } else {
         y0 = *(int *)&health_hud_base_y_offset + 0x12;
     }
-    n = *(int *)(e + 0x78);
-    q = (unsigned char *)e + 0x70;
-    if (((unsigned char *)e)[0x70] == 0) {
-        return *(int *)&((Moby *)e)->anim_speed;
+    n = e->unk78;
+    q = (char *)e->cnt;
+    if (e->cnt[0] == 0) {
+        return e->w;
     }
-    f20 = IntToFloat(((unsigned char *)e)[0x70]);
+    f20 = IntToFloat(e->cnt[0]);
     f21 = f20 / IntToFloat((*(int *)&health_hud_fade_steps));
     if (f21 > 1.0f) {
         f21 = 1.0f;
@@ -1743,7 +1743,7 @@ int draw_health_hud_panel(char *e) {
     }
     alpha = truncate_float_to_s32(f22 * 128.0f);
     w = truncate_float_to_s32((float)*(int *)&health_hud_panel_max_alpha * f21);
-    ip = *(char **)(e + 0x80);
+    ip = *(char **)&e->unk80;
     phase = *(short *)ip >> 1;
     if (n == 0) {
         phase = 0x1E;
@@ -1789,10 +1789,10 @@ int draw_health_hud_panel(char *e) {
         }
     }
     for (i = 0; i < cnt; i++) {
-        HudFrame(e, GetIconFrame(0x7536, phase), x0 + tbl[i * 2], y0 + tbl[i * 2 + 1], 1, alpha);
+        HudFrame((char *)e, GetIconFrame(0x7536, phase), x0 + tbl[i * 2], y0 + tbl[i * 2 + 1], 1, alpha);
         if (phase != 0x1E) {
             int a, b, px, py;
-            HudFrame(e, GetIconFrame(0x7536, 0x1E), x0 + tbl[i * 2], y0 + tbl[i * 2 + 1], 1, alpha);
+            HudFrame((char *)e, GetIconFrame(0x7536, 0x1E), x0 + tbl[i * 2], y0 + tbl[i * 2 + 1], 1, alpha);
             a = GetIconFrame(0x7536, 0x1F);
             px = x0 + tbl[i * 2];
             py = y0 + tbl[i * 2 + 1];
@@ -1807,7 +1807,7 @@ int draw_health_hud_panel(char *e) {
             }
         }
     }
-    return *(int *)&((Moby *)e)->anim_speed;
+    return e->w;
 }
 extern HudCounter bolt_counter_icon_tick MACRO_ADDR;
 extern void initialize_numeric_hud_timer_and_base_dimensions(HudElem *);
@@ -2034,7 +2034,7 @@ extern int FastTweenColor(int, int, float);
 extern void print_text_with_texture_3(int, int, int, char *, int);
 
 /* Draw the bolt counter panel sliding in with its fade; skipped in some hero states. */
-int draw_hud_bolt_exclamation_panel(char *m) {
+int draw_hud_bolt_exclamation_panel(HudElem *m) {
     char buf[16];
     unsigned char *q;
     int x, y, panel_right, panel_left, slide, alpha, text_alpha;
@@ -2049,14 +2049,14 @@ int draw_hud_bolt_exclamation_panel(char *m) {
         if (pal_mode == 0)
             y = alternate_y;
     }
-    x = *(int *)(m + 0x50);
+    x = m->unk50;
     if (*(unsigned char *)(g + 0x20A4) == 2)
-        return *(int *)(m + 0x58);
+        return m->w;
     if (*(int *)(g + 0x2084) == 50)
-        return *(int *)(m + 0x58);
-    q = (unsigned char *)(m + 0x70);
+        return m->w;
+    q = &m->cnt[0];
     if (q[0] == 0)
-        return *(int *)(m + 0x58);
+        return m->w;
 
     open = IntToFloat(q[0]) / IntToFloat(*(int *)&health_hud_fade_steps);
     if (1.0f < open)
@@ -2077,7 +2077,7 @@ int draw_hud_bolt_exclamation_panel(char *m) {
     panel_left = panel_right - slide;
     HudSprite(GetIconFrame(0x7580, 0), panel_left, y, slide + 16, 32, alpha);
     HudSprite(GetIconFrame(0x7580, 1), panel_left - 32, y, 32, 32, alpha);
-    HudFrame(m, GetIconFrame(0x754f, level_frame_counter % 60 >> 1), x - 32, y, 0, text_alpha);
+    HudFrame((char *)m, GetIconFrame(0x754f, level_frame_counter % 60 >> 1), x - 32, y, 0, text_alpha);
 
     sprintf(buf, bolt_exclamation_format);
     text_x = x + *(int *)&bolt_exclamation_text_x;
@@ -2092,7 +2092,7 @@ int draw_hud_bolt_exclamation_panel(char *m) {
     color = FastTweenColor(*(int *)&bolt_exclamation_color_from, *(int *)&bolt_exclamation_color_to, scaled_text);
     print_text_with_texture_3(text_x + 1, text_y + 1, shadow, buf, -1);
     print_text_with_texture_3(text_x, text_y, color, buf, -1);
-    return *(int *)(m + 0x58);
+    return m->w;
 }
 extern short g_hero_vehicle_triangle_cooldown NOT_SDA;
 extern int GetIconFrame(int, int);
@@ -2152,16 +2152,16 @@ extern int FastTweenColor(int, int, float);
 /* Draws the weapon HUD tile: three-part frame, weapon icon and ammo text with shadow, faded by the slide-in timers. */
 int draw_weapon_ammo_hud_panel(char *m) {
     char buf[16];
-    char *q = m + 0x70;
+    char *q = (char *)((HudElem *)m)->cnt;
     int x4;
     int y = 0x12;
     int x, a, alpha, w, s16, tex, c1, wd, v74;
     float f21, f20;
     if (pal_mode) y = 0xA;
-    x = *(int *)(m + 0x50);
-    if (*(unsigned char *)(m + 0x70) == 0) return *(int *)(m + 0x58);
+    x = ((HudElem *)m)->unk50;
+    if (((HudElem *)m)->cnt[0] == 0) return ((HudElem *)m)->w;
     {
-        f20 = IntToFloat(*(unsigned char *)(m + 0x70));
+        f20 = IntToFloat(((HudElem *)m)->cnt[0]);
         f21 = f20 / IntToFloat(*(int *)&weapon_hud_open_steps);
         if (f21 > 1.0f) f21 = 1.0f;
         else if (f21 < 0.0f) f21 = 0.0f;
@@ -2171,7 +2171,7 @@ int draw_weapon_ammo_hud_panel(char *m) {
         else if (f20 < 0.0f) f20 = 0.0f;
         alpha = truncate_float_to_s32(f21 * 128.0f);
         a = truncate_float_to_s32((float)alpha * 0.7f);
-        if (*(int *)(m + 8) < 100) w = *(int *)&weapon_hud_panel_width;
+        if (((HudElem *)m)->unk08 < 100) w = *(int *)&weapon_hud_panel_width;
         else w = *(int *)&weapon_hud_wide_panel_width;
         x4 = x + 4;
         wd = x + truncate_float_to_s32((float)w * f21);
@@ -2181,8 +2181,8 @@ int draw_weapon_ammo_hud_panel(char *m) {
         tex = GetIconFrame(*(int *)m, 3);
         *(int *)(m + 0x44) = tex;
         HudFrame(m, tex, x, y, 0, alpha);
-        v74 = *(int *)(m + 0x74);
-        sprintf(buf, hud_ammo_format, v74, *(int *)(m + 8));
+        v74 = ((HudElem *)m)->unk74;
+        sprintf(buf, hud_ammo_format, v74, ((HudElem *)m)->unk08);
         if (v74 != 0)
             s16 = FastTweenColor(*(int *)&weapon_hud_ammo_color_from, *(int *)&weapon_hud_ammo_color_to, f20);
         else
@@ -2191,7 +2191,7 @@ int draw_weapon_ammo_hud_panel(char *m) {
         font_print_right(x + *(int *)&weapon_hud_text_x + w + 1, y + *(int *)&weapon_hud_text_y + 1, c1, buf, -1);
         font_print_right(x + *(int *)&weapon_hud_text_x + w, y + *(int *)&weapon_hud_text_y, s16, buf, -1);
     }
-    return *(int *)(m + 0x58);
+    return ((HudElem *)m)->w;
 }
 LINKER_REMNANT("asm/overlays", func_L00_0023B430);
 extern int random_integer_below(int);

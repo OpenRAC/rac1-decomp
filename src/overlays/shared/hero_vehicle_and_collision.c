@@ -599,7 +599,7 @@ extern float hero_anim_blend_curves[][25];
 /* Puts the hero into move state A (with its animation when B is set); returns 0 when the change is refused (shared build: levels 00, 04, 07, 09, 10, 13). */
 int HeroEnterMoveState(int a, int b) {
     int old2088;
-    char *moby;
+    Moby *moby;
     int old20A7;
     Vec4A d;
     Vec4A out;
@@ -617,7 +617,7 @@ int HeroEnterMoveState(int a, int b) {
     {
         char *p = (char *)hero_globals_base + 0xE1D;
         old2088 = ((struct Hero *)p)->state.step;
-        moby = *(char **)&((struct Hero *)p)->moby;
+        moby = (Moby *)(*(char **)&((struct Hero *)p)->moby);
         old20A7 = ((struct Hero *)p)->item_select_blocked;
         ((struct Hero *)p)->state.prev2 = ((struct Hero *)p)->state.prev;
         ((struct Hero *)p)->state.prev2_control_mode = ((struct Hero *)p)->state.prev_control_mode;
@@ -629,7 +629,7 @@ int HeroEnterMoveState(int a, int b) {
         ((struct Hero *)p)->unk20A5 = 0;
         ((struct Hero *)p)->item_use_locked = 0;
         if (((struct Hero *)p)->vehicle_mode == 0) {
-            *(int *)(moby + 0x98) = 0;
+            moby->collision_disable = 0;
             ((struct Hero *)p)->tilt_disabled = 0;
             ((struct Hero *)p)->item_select_blocked = 0;
             ((struct Hero *)p)->unk20B2 = 0;
@@ -976,7 +976,7 @@ int HeroEnterMoveState(int a, int b) {
         *(int *)&veldin1_look_stat_timer = scale_ticks(0x3C);
         if (((struct Hero *)p)->unk20AA == 0) {
             t = hero_idle_sequence(1);
-            if (*(unsigned char *)(*(char **)&((struct Hero *)p)->moby + 0x53) != t && b) {
+            if (((struct Hero *)p)->moby->prev_seq != t && b) {
                 set_hero_animation(t, 0, (float)scale_ticks(0x12));
             }
         }
@@ -1142,7 +1142,7 @@ int HeroEnterMoveState(int a, int b) {
             struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
             float d = q->anim_frame;
             int id = 6;
-            if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4 && 3.0f < d && d < 16.0f) id = 5;
+            if (return_hero_animation_id_unchanged(moby->seq) == 4 && 3.0f < d && d < 16.0f) id = 5;
             set_hero_animation(id, 4, (float)scale_ticks(9));
         }
         break;
@@ -1157,7 +1157,7 @@ int HeroEnterMoveState(int a, int b) {
         if (b) {
             int id = 6;
             float d = ((struct Hero *)p)->anim_frame;
-            if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4 && 3.0f < d && d < 16.0f) id = 5;
+            if (return_hero_animation_id_unchanged(moby->seq) == 4 && 3.0f < d && d < 16.0f) id = 5;
             set_hero_animation(id, 4, (float)scale_ticks(9));
         }
         break;
@@ -1179,7 +1179,7 @@ int HeroEnterMoveState(int a, int b) {
             ClampVectorLength(&q->motion.momentum, g_frame_time * 7.0f);
             if (g_frame_time * 3.5f < q->motion.forward_speed) allocate_hero_voice_for_entry(0xC, 0);
             if (b) {
-                if (*(unsigned char *)(*(char **)&q->moby + 0x52) == hero_idle_sequence(0)) {
+                if (q->moby->seq == hero_idle_sequence(0)) {
                     set_hero_animation(0xD, 2, (float)scale_ticks(9));
                 } else {
                     set_hero_animation(0xD, 2, (float)scale_ticks(0xE));
@@ -1956,7 +1956,7 @@ int HeroEnterMoveState(int a, int b) {
                 } else if (s == 9) {
                     int id = 8;
                     int n = truncate_float_to_s32(q->anim_frame);
-                    if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4) id = hero_run_jump_anim_ids[n];
+                    if (return_hero_animation_id_unchanged(moby->seq) == 4) id = hero_run_jump_anim_ids[n];
                     set_hero_animation(id, 0, (float)scale_ticks(5));
                 } else if (s == 0x5E) {
                     set_hero_animation(4, 0, (float)scale_ticks(8));

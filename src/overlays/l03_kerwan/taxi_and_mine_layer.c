@@ -1082,18 +1082,18 @@ typedef int u128 __attribute__((mode(TI)));
 
 // Spawns a moby of class 0x341 at a position, initialises its data and registers it.
 char *compute_interpolated_record_value_cf(char *a, char *pos, char *parent, int n, float f0, float f1, float f2) {
-    char *m = (char *)CreateMoby_m(0x341);
+    Moby *m = (Moby *)((char *)CreateMoby_m(0x341));
     char *d;
     if (m != 0) {
         float v[4];
-        ((Moby *)m)->update_dist = 0xFF;
-        ((Moby *)m)->draw_dist = 0x7E;
-        d = ((char *)((Moby *)m)->pvars);
-        m[0x31] = 1;
-        m[0x20] = 1;
-        qcopy(m + 0x10, pos);
+        m->update_dist = 0xFF;
+        m->draw_dist = 0x7E;
+        d = ((char *)m->pvars);
+        m->visible = 1;
+        m->state = 1;
+        qcopy(&m->pos, pos);
         qcopy(d, a);
-        ((Moby *)m)->rot.z = fast_atan2(*(float *)d, *(float *)(d + 4));
+        m->rot.z = fast_atan2(*(float *)d, *(float *)(d + 4));
         *(int *)(d + 0x14) = scale_ticks(n);
         *(float *)(d + 0x18) = f2;
         *(float *)(d + 0x1C) = f0;
@@ -1104,12 +1104,12 @@ char *compute_interpolated_record_value_cf(char *a, char *pos, char *parent, int
         v[2] = *(float *)(pos + 8);
         if (coll_line(v, pos, 2, parent, 0) != 0) {
             *(int *)(d + 0x14) = 0;
-            *(u128 *)(m + 0x10) = *(u128 *)kerwan_coll_hit_point;
+            *(u128 *)&m->pos = *(u128 *)kerwan_coll_hit_point;
             *(int *)(d + 0x24) = 0;
         }
         moby_build_matrix(m);
     }
-    return m;
+    return (char *)m;
 }
 struct Manip_D5790;
 struct GifEntry_D5790;
@@ -1462,7 +1462,7 @@ void helga_update(struct Moby *m) {
             (h = (struct Hero *)((u8 *)g - 0x80),
              FastDiffRots(m->rot.z, fast_atan2(h->motion.body_center.f[0] - m->pos.x, h->motion.body_center.f[1] - m->pos.y))) <
                 1.5707964f) {
-            if (FastVecLength((u8 *)g + 0x80) > 0.01f) {
+            if (FastVecLength(&((Hero *)g)->motion) > 0.01f) {
                 v->watch_timer = scale_ticks(120);
             } else {
                 ((int (*)(s32 *))fast_dec_timer)(&v->watch_timer);
@@ -1842,7 +1842,7 @@ void big_al_update(struct Moby *m) {
             (h = (struct Hero *)((u8 *)g - 0x80),
              FastDiffRots(m->rot.z, fast_atan2(h->motion.body_center.f[0] - m->pos.x, h->motion.body_center.f[1] - m->pos.y))) <
                 1.5707964f) {
-            if (FastVecLength((u8 *)g + 0x80) > 0.01f) {
+            if (FastVecLength(&((Hero *)g)->motion) > 0.01f) {
                 v->watch_timer = scale_ticks(120);
             } else {
                 ((int (*)(s32 *))fast_dec_timer)(&v->watch_timer);
@@ -1932,7 +1932,7 @@ void robot_qwark_update(unsigned char *m) {
     float pos[4] __attribute__((aligned(16)));
     float tmp[4] __attribute__((aligned(16)));
 
-    if (((Moby *)m)->visible != 0 && FastVecDist(m + 0x10, kerwan_camera_pos) < 26.0f) {
+    if (((Moby *)m)->visible != 0 && FastVecDist(&((Moby *)m)->pos, kerwan_camera_pos) < 26.0f) {
         set_ground_height_band(m);
         ((Moby *)m)->shadow_range = 21;
     }
@@ -1953,7 +1953,7 @@ void robot_qwark_update(unsigned char *m) {
             PlayBankSound(1, 0, 0);
             ShowBanner(0x53DB, -1);
         }
-        *(u128_DD158 *)pos = *(u128_DD158 *)(m + 0x10);
+        *(u128_DD158 *)pos = *(u128_DD158 *)&((Moby *)m)->pos;
         pos[2] += 1.0f;
         *(u128_DD158 *)vel = 0;
         spawn_explosion(m, vel, pos, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
@@ -1968,7 +1968,7 @@ void robot_qwark_update(unsigned char *m) {
     }
     switch (((Moby *)m)->state) {
     case 0:
-        *(unsigned long *)(m + 0x38) = *(unsigned long *)(g_hero_moby[0] + 0x38);
+        *(unsigned long *)&((Moby *)m)->spawn_frame = *(unsigned long *)(g_hero_moby[0] + 0x38);
         ((Moby *)m)->state = 1;
         DialogRequest_Init(m, (unsigned char *)d);
         if (menu_item_enabled_9[4] != 0) {
@@ -2000,7 +2000,7 @@ void robot_qwark_update(unsigned char *m) {
         pos[0] = FastCos(random_angle_radians()) * random_float_between(0.0f, 0.5f) * random_float_between(0.0f, 1.0f);
         pos[1] = FastSin(random_angle_radians()) * random_float_between(0.0f, 0.5f) * random_float_between(0.0f, 1.0f);
         pos[2] = 0.0f;
-        add_vectors(tmp, pos, m + 0x10);
+        add_vectors(tmp, pos, &((Moby *)m)->pos);
         if (random_integer_below(3) == 0) {
             spawn_effect_particle_with_target_scalar(pos, vel, 0x20202020, 0x7F7F7F, 157500.0f, scale_ticks(rand_range(0x3C, 0x78)));
         }

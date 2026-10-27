@@ -460,6 +460,7 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern void draw_offset_textured_effect_quad(void *, int, float, float);
 
+typedef struct { float x, y, z, w; } __attribute__((aligned(16))) VendorGlowCorner;
 void draw_vendor_effects(char *m) {
     char *p = *(char **)(m + 0x78);
     Quad_2A62D0 qd;
@@ -467,17 +468,14 @@ void draw_vendor_effects(char *m) {
     float q[4][4];
     float d0[4];
     float mtx[3][4];
-    V_2A62D0 M[4];
-    V_2A62D0 T[4];
+    /* pi and half are named locals declared before zero: their pseudos get lower numbers, which breaks global-alloc ties the way retail does. */
+    float pi;
+    float half;
     float zero;
     char *g, *h;
     float (*t4)[2]; float (*t0)[2];
     int izero;
     float off;
-    /* register pin: the sparkle 1.1 lives in $f22, copied from the glow block's 1.1 */
-    register float kk __asm__("$f22");
-    /* register pin: &d0 for the second func_001FA1F8 call */
-    register float *ap __asm__("$5");
     int k, i, i0, i1, i2, i3, col;
 
     h = (char *)&player_camera;
@@ -545,50 +543,29 @@ void draw_vendor_effects(char *m) {
     }
 
     {
-        float g = (*(float *)&light_beam_glow_phase);
-        float n = -g * 1.2f;
-        float pp = g * 1.2f;
-        float z = g * 1.4f + 1.1f;
+        float ph = (*(float *)&light_beam_glow_phase);
+        float n = -ph * 1.2f;
+        float pp = ph * 1.2f;
+        float z = ph * 1.4f + 1.1f;
         float zz = z - 0.2f;
-        kk = 1.1f;
-
-        T[0].q = 0;
-        T[0].f[0] = n * *(float *)(p + 0x90);
-        T[0].f[1] = n * *(float *)(p + 0x90);
-        T[0].f[2] = z;
-        T[1].q = 0;
-        T[1].f[0] = pp * *(float *)(p + 0x90);
-        T[1].f[1] = n * *(float *)(p + 0x90);
-        T[1].f[2] = zz;
-        T[2].q = 0;
-        T[2].f[0] = n * *(float *)(p + 0x90);
-        T[2].f[1] = pp * *(float *)(p + 0x90);
-        T[2].f[2] = z;
-        T[3].q = 0;
-        T[3].f[0] = pp * *(float *)(p + 0x90);
-        T[3].f[1] = pp * *(float *)(p + 0x90);
-        T[3].f[2] = zz;
-        M[0].q = T[0].q;
-        T[0].q = M[0].q;
-        M[1].q = T[1].q;
-        T[1].q = M[1].q;
-        M[2].q = T[2].q;
-        M[3].q = T[3].q;
-    }
+        VendorGlowCorner c[4] = {
+            { n * *(float *)(p + 0x90), n * *(float *)(p + 0x90), z },
+            { pp * *(float *)(p + 0x90), n * *(float *)(p + 0x90), zz },
+            { n * *(float *)(p + 0x90), pp * *(float *)(p + 0x90), z },
+            { pp * *(float *)(p + 0x90), pp * *(float *)(p + 0x90), zz },
+        };
 
     g = (char *)&player_camera;
     off = *(float *)(g + 0x158);
     d0[0] = 0.0f;
     d0[2] = off;
     d0[1] = 0.0f;
-    /* inline asm: ap = d0 (frame slot 0xD0). The kk input puts it after retail's mov.s $f22,$f5;
-     * the $4 clobber keeps addiu $a0 (mtx) after it. */
-    __asm__("addiu %0,$sp,0xD0" : "=r"(ap) : "f"(kk) : "$4");
-    euler_rotation_basis(mtx, ap);
-    matrix_mul_vec3(q[0], M[0].f, mtx);
-    matrix_mul_vec3(q[1], M[1].f, mtx);
-    matrix_mul_vec3(q[2], M[2].f, mtx);
-    matrix_mul_vec3(q[3], M[3].f, mtx);
+    euler_rotation_basis(mtx, d0);
+    matrix_mul_vec3(q[0], &c[0], mtx);
+    matrix_mul_vec3(q[1], &c[1], mtx);
+    matrix_mul_vec3(q[2], &c[2], mtx);
+    matrix_mul_vec3(q[3], &c[3], mtx);
+    }
 
     col = ((int)((1.0f - (*(float *)&light_beam_glow_phase)) * 128.0f) << 24) | 0x808080;
     qd.v[0][0] = *(float *)(m + 0x10) + q[0][0];
@@ -620,14 +597,17 @@ void draw_vendor_effects(char *m) {
     /* the sparkle vector reuses the first matrix row's slot in retail; its w is that row's 0 */
     izero = 0;
     zero = *(float *)&izero;
+    pi = 3.14159f;
+    half = 0.5f;
     for (i = 0; i < 4; i++) {
-        float ang = (float)i * 3.14159f * 0.5f - 3.14159f;
-        T[0].f[0] = FastCos(ang) * kk;
-        T[0].f[1] = FastSin(ang) * kk;
-        T[0].f[2] = 0.59f;
-        matrix_mul_vec3(T[0].f, T[0].f, m + 0xC0);
-        FastVecAdd(T[0].f, T[0].f, m + 0x10);
-        draw_offset_textured_effect_quad(T[0].f, *(int *)(m + 0x90) & 0xFFFF0000, 0.1333f, zero);
+        V_2A62D0 S;
+        float ang = (float)i * pi * half - pi;
+        S.f[0] = FastCos(ang) * 1.1f;
+        S.f[1] = FastSin(ang) * 1.1f;
+        S.f[2] = 0.59f;
+        matrix_mul_vec3(S.f, S.f, m + 0xC0);
+        FastVecAdd(S.f, S.f, m + 0x10);
+        draw_offset_textured_effect_quad(S.f, *(int *)(m + 0x90) & 0xFFFF0000, 0.1333f, zero);
     }
 }
 extern float FastSin(float);

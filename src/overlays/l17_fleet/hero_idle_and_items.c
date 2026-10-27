@@ -3,6 +3,7 @@
 #include "vector.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "moby.h"
 
 typedef struct { int a; int b; int c; char pad[0x20]; } T2C_21ED38;
 typedef struct { char pad[0x194]; float f194; } H194_21ED38;
@@ -85,7 +86,7 @@ extern float fleet_hero_anim_time_curves[][25];
 /* Puts the hero into move state A (with its animation when B is set); returns 0 when the change is refused (level 17's build). */
 int HeroL17_SetMoveState(int a, int b) {
     int old2088;
-    char *moby;
+    Moby *moby;
     int old20A7;
     Vec4A d;
     Vec4A out;
@@ -103,7 +104,7 @@ int HeroL17_SetMoveState(int a, int b) {
     {
         struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         old2088 = p->state.step;
-        moby = *(char **)&p->moby;
+        moby = (Moby *)(*(char **)&p->moby);
         old20A7 = p->item_select_blocked;
         p->state.prev2 = p->state.prev;
         p->state.prev2_control_mode = p->state.prev_control_mode;
@@ -115,7 +116,7 @@ int HeroL17_SetMoveState(int a, int b) {
         p->unk20A5 = 0;
         p->item_use_locked = 0;
         if (p->vehicle_mode == 0) {
-            *(int *)(moby + 0x98) = 0;
+            moby->collision_disable = 0;
             p->tilt_disabled = 0;
             p->item_select_blocked = 0;
             p->unk20B2 = 0;
@@ -628,7 +629,7 @@ int HeroL17_SetMoveState(int a, int b) {
             struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
             float d = q->anim_frame;
             int id = 6;
-            if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4 && 3.0f < d && d < 16.0f) id = 5;
+            if (return_hero_animation_id_unchanged(moby->seq) == 4 && 3.0f < d && d < 16.0f) id = 5;
             set_hero_animation(id, 4, (float)scale_ticks(9));
         }
         break;
@@ -643,7 +644,7 @@ int HeroL17_SetMoveState(int a, int b) {
         if (b) {
             int id = 6;
             float d = p->anim_frame;
-            if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4 && 3.0f < d && d < 16.0f) id = 5;
+            if (return_hero_animation_id_unchanged(moby->seq) == 4 && 3.0f < d && d < 16.0f) id = 5;
             set_hero_animation(id, 4, (float)scale_ticks(9));
         }
         break;
@@ -1427,7 +1428,7 @@ int HeroL17_SetMoveState(int a, int b) {
                 } else if (s == 9) {
                     int id = 8;
                     int n = truncate_float_to_s32(q->anim_frame);
-                    if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4) id = fleet_hero_run_jump_land_anim_by_frame[n];
+                    if (return_hero_animation_id_unchanged(moby->seq) == 4) id = fleet_hero_run_jump_land_anim_by_frame[n];
                     set_hero_animation(id, 0, (float)scale_ticks(5));
                 } else if (s == 0x49) {
                     set_hero_animation(7, 5, (float)scale_ticks(5));
