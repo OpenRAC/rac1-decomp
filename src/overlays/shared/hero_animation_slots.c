@@ -621,7 +621,208 @@ void update_hero_condition_animation(void) {
         }
     }
 }
-INCLUDE_ASM("asm/overlays", func_L00_0020E3B8);
+extern short D_L00_0015F780;
+extern float D_0015EE64 MACRO_ADDR;
+extern unsigned char D_L00_00197F40[];
+extern char *D_L00_00197680[];
+extern struct HeroEase D_L00_0017A780[];
+extern char D_L00_0017CB80[];
+extern int func_L00_002056D0(int);
+
+#define GB (D_0013E633 + 0xE1D)
+#define SLOT(i) (((char **)(D_0013E633 + 0x1B1D))[i])
+
+void func_L00_0020E3B8(void) {
+    int i;
+
+    for (i = 0; i < 2; i++) {
+        char *g = GB;
+        char *o;
+        
+        int diff;
+        struct { short v; } w;
+        int r;
+        int k;
+        int j;
+        float out;
+        char *t0 = SLOT(i);
+
+        if (t0 != 0 && *(int *)(t0 + 0x34) != 0) {
+            if (func_00214D28((float *)(t0 + 8), 0.0f, D_0015EE60 * 0.1f) == 0.0f) {
+                func_L00_00250120(*(char **)(g + 0x2080), &SLOT(i));
+            }
+        } else {
+            int c = *(unsigned char *)(g + 0x20AB);
+            int want = 0;
+
+            if (c != 0 && (i == 0 || c == 2)) {
+                want = 1;
+            }
+            {
+                char *h = GB;
+                if (*(unsigned char *)(h + 0x20AF) != 0) {
+                    char *t1;
+                    want = 0;
+                    t1 = SLOT(i);
+                    if (t1 != 0) {
+                        *(int *)(t1 + 0x34) = 1;
+                    }
+                }
+            }
+            if (want) {
+                char *h = GB;
+                if (SLOT(i) == 0) {
+                    char *n = (char *)func_L00_00250060(*(char **)(h + 0x2080), ((int *)&D_L00_0015F780)[i]);
+                    SLOT(i) = n;
+                    *(float *)(n + 8) = 0.0f;
+                    *(char **)(SLOT(i) + 0x18) = D_L00_00197680[D_L00_00197F40[i + 1]];
+                }
+            } else {
+                char *h = GB;
+                char *t2 = SLOT(i);
+                if (t2 == 0) {
+                    continue;
+                }
+                if (func_00214D28((float *)(t2 + 8), 0.0f, D_0015EE60 * 0.1f) == 0.0f) {
+                    func_L00_00250120(*(char **)(h + 0x2080), &SLOT(i));
+                }
+            }
+        }
+
+        {
+            char *h = GB;
+            char *hr;
+            o = SLOT(i);
+            if (o == 0) {
+                continue;
+            }
+            hr = *(char **)(h + 0x2080);
+            diff = *(unsigned char *)(hr + 0x52) != *(unsigned char *)(hr + 0x53);
+            if (*(int *)(h + 0xD08) != 0 && *(int *)(h + 0xD14) == 0) {
+                func_00214D28((float *)(o + 8), 0.0f, D_0015EE60 * 0.1f);
+            } else if (*(int *)(o + 0x34) == 0) {
+                func_00214D28((float *)(o + 8), 1.0f, D_0015EE60 * 0.1f);
+            }
+        }
+
+        w.v = 0;
+        if (diff) {
+            char *h = GB;
+            if (*(int *)(h + 0xA9C) != 0) {
+                int a = func_L00_002056D0(*(unsigned char *)(o + 0x23));
+                if (a != func_L00_002056D0(*(unsigned char *)(*(char **)(h + 0x2080) + 0x53))) {
+                    w.v = *(unsigned char *)(o + 0x22) != *(unsigned char *)(o + 0x23);
+                }
+            }
+        }
+        *(short *)(o + 0x30) = w.v;
+
+        r = func_L00_0020DC68(*(unsigned char *)(*(char **)(g + 0x2080) + 0x53), &out);
+        if (r != 0 || *(unsigned char *)(o + 0x32) != 0) {
+            if (out != 0.0f) {
+                float x = D_0015EE64;
+                char *tb = (char *)D_L00_0017A780;
+                *(float *)(tb + 0x694) = out;
+                *(float *)(tb + 0x5E4) = out;
+                *(float *)(tb + 0x6D4) = x * 0.05f;
+                *(float *)(tb + 0x6D8) = x * 0.3f;
+                *(float *)(tb + 0x624) = x * 0.05f;
+                *(float *)(tb + 0x628) = x * 0.3f;
+            }
+            if (r != 0 && (*(unsigned char *)(o + 0x32) == 0 || *(unsigned char *)(o + 0x23) != 0)) {
+                {
+                    if (*(unsigned char *)(o + 0x22) == *(unsigned char *)(o + 0x23) ||
+                        0.5f < *(float *)(o + 0x24)) {
+                        *(char *)(o + 0x22) = *(char *)(o + 0x23);
+                        *(char *)(o + 0x20) = *(char *)(o + 0x21);
+                    }
+                    *(float *)(o + 0x24) = 0.0f;
+                    *(char *)(o + 0x23) = 0;
+                    *(char *)(o + 0x21) = 0;
+                    *(float *)(o + 0x28) = 1.0f;
+                    *(float *)(o + 0x2C) = 1.0f / (float)func_001F9850(0xF);
+                    *(char *)(o + 0x32) = 1;
+                    *(char *)(o + 0x33) = 0;
+                }
+            }
+            if (r == 0) {
+                if (*(unsigned char *)(o + 0x33) == 0) {
+                    char *hr = *(char **)(g + 0x2080);
+                    *(char *)(o + 0x23) = func_L00_0020DC50(hr, *(unsigned char *)(hr + 0x53));
+                    *(char *)(o + 0x21) = 0;
+                    *(char *)(o + 0x33) = 1;
+                    *(float *)(o + 0x24) = 0.0f;
+                    *(float *)(o + 0x28) = 0.0f;
+                } else {
+                    float f = *(float *)(o + 0x24) + D_0015EE60 * 0.1f;
+                    *(float *)(o + 0x24) = f;
+                    if (1.0f < f) {
+                        *(float *)(o + 0x24) = 1.0f;
+                    }
+                    if (*(float *)(o + 0x24) == 1.0f) {
+                        *(char *)(o + 0x32) = 0;
+                    }
+                }
+            } else {
+                *(float *)(o + 0x28) = 1.0f;
+            }
+            for (j = 0; j < 2; j++) {
+                unsigned char *id = (unsigned char *)(o + 0x22);
+                char *e = o + 6;
+                if (id[j] < 0x17) {
+                    e[j] = 1;
+                    *(char **)(o + 0x38 + j * 4) = D_L00_0017CB80 + (i * 0x800 + j * 0x400);
+                } else {
+                    e[j] = 0;
+                }
+            }
+            func_L00_002501C8(*(char **)(g + 0x2080), (unsigned char *)o);
+        } else {
+            if (*(short *)(o + 0x30) == 0) {
+                char *h = GB;
+                for (k = 0; k < 2; k++) {
+                    if (!diff || k == 1) {
+                        char *hr = *(char **)(h + 0x2080);
+                        unsigned char *p = (unsigned char *)(o + 0x22);
+                        p[k] = func_L00_0020DC50(hr, *(unsigned char *)(hr + k + 0x52));
+                    }
+                }
+            }
+            if (*(short *)(o + 0x30) != 0) {
+                float f = *(float *)(o + 0x24) + D_0015EE60 * 0.15f;
+                *(float *)(o + 0x24) = f;
+                if (1.0f <= f) {
+                    *(char *)(o + 0x22) = *(char *)(o + 0x23);
+                    *(char *)(o + 0x20) = *(char *)(o + 0x21);
+                    *(short *)(o + 0x30) = 0;
+                }
+            } else {
+                if (!diff) {
+                    *(char *)(o + 0x20) = *(unsigned char *)(*(char **)(g + 0x2080) + 0x50);
+                }
+                /* o is never null: same arms, jump merges them; keeps retail's registers. */
+                if (o) {
+                    *(char *)(o + 0x21) = *(unsigned char *)(*(char **)(g + 0x2080) + 0x51);
+                    *(float *)(o + 0x24) = *(float *)(*(char **)(g + 0x2080) + 0x54);
+                } else {
+                    *(char *)(o + 0x21) = *(unsigned char *)(*(char **)(g + 0x2080) + 0x51);
+                    *(float *)(o + 0x24) = *(float *)(*(char **)(g + 0x2080) + 0x54);
+                }
+            }
+            for (j = 0; j < 2; j++) {
+                unsigned char *id = (unsigned char *)(o + 0x22);
+                char *e = o + 6;
+                if (id[j] < 0x17) {
+                    e[j] = 1;
+                    *(char **)(o + 0x38 + j * 4) = D_L00_0017CB80 + (i * 0x800 + j * 0x400);
+                } else {
+                    e[j] = 0;
+                }
+            }
+            func_L00_002501C8(*(char **)(g + 0x2080), (unsigned char *)o);
+        }
+    }
+}
 typedef struct { char pad[0x28]; int v; char pad2[0x20]; } Rec;
 extern Rec item_defs[] __attribute__((section(".data")));
 extern char hero_globals_base[];

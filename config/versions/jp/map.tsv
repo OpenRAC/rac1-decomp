@@ -430,6 +430,7 @@ func_00125548	-	asm	boot:00125548	168	100.00
 func_001255F0	-	asm	boot:001255F0	64	100.00
 func_00125630	src/core/00125630.c	match	boot:00125630	592	100.00
 func_00125880	src/core/00125630.c	match	boot:00125880	1796	100.00
+func_00125F88	src/core/00125630.c	match	boot:00125F88	1052	100.00
 func_001263A8	src/core/00125630.c	match	boot:001263A8	540	100.00
 func_001265C8	-	asm	boot:001265C8	116	100.00
 func_00126640	-	asm	boot:00126640	148	100.00
@@ -1912,6 +1913,7 @@ func_L00_0020E0A8	src/overlays/shared/hero_animation_slots.c	match	00:0020F050	6
 func_L00_0020E0E8	src/overlays/shared/hero_animation_slots.c	match	00:0020F090	8	100.00
 func_L00_0020E0F0	src/overlays/shared/hero_animation_slots.c	match	00:0020F098	8	100.00
 func_L00_0020E100	src/overlays/shared/hero_animation_slots.c	match	00:0020F0A8	696	100.00
+func_L00_0020E3B8	src/overlays/shared/hero_animation_slots.c	match	00:0020F360	1596	100.00
 func_L00_0020E9F8	src/overlays/shared/hero_animation_slots.c	match	00:0020F9A0	356	100.00
 func_L00_0020EB60	src/overlays/shared/hero_animation_slots.c	match	00:0020FB08	460	100.00
 func_L00_0020ED30	src/overlays/shared/hero_animation_slots.c	match	00:0020FCD8	144	100.00
