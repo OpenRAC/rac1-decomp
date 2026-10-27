@@ -7,7 +7,6 @@ Each file is the best attempt so far at a level function that isn't exact yet.
 |---|---|---|---|---|
 | [`func_L00_0026ABC0`](shared/func_L00_0026ABC0.c) | shared | 1780 | BYTES 26/1780 | 98.5% |
 | [`func_L00_002A62D0`](shared/func_L00_002A62D0.c) | shared | 1896 | BYTES 721/1896 | 62.0% |
-| [`func_L00_002BA7C8`](shared/func_L00_002BA7C8.c) | shared | 5292 | BYTES 3888/5292 | 26.5% |
 | [`func_001150D4`](functional/func_001150D4.c) | functional | 0 | ? | - |
 | [`func_001151B4`](core/func_001151B4.c) | core | 0 | ? | - |
 | [`func_00115248`](functional/func_00115248.c) | functional | 0 | ? | - |
