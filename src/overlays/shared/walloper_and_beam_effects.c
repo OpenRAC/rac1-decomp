@@ -5,7 +5,475 @@
 #include "hero.h"
 #include "moby.h"
 
-INCLUDE_ASM("asm/overlays", func_L00_002BA7C8);
+typedef union { float f[4]; struct { float x,y,z,w; } v; unsigned int q __attribute__((mode(TI))); } V43;
+typedef struct M43 M43;
+typedef struct { char pad0[0x10]; int collision; char pad14[0x32]; short category; } Class43;
+typedef struct { char pad0[4]; short kind; char pad6[10]; float height; } Aim43;
+typedef struct {
+    V43 position,end;
+    M43 *target;
+    char pad24[0x14];
+    M43 *second;
+    char pad3C[2];
+    short count;
+    union { unsigned long packed; struct { unsigned short seek0,seek1,hit0,hit1; } h; } timers;
+} Weapon43;
+struct M43 {
+    char pad0[0x10]; V43 position;
+    unsigned char state; char pad21[3]; Class43 *cls;
+    char pad28[0x50]; Weapon43 *data;
+    char pad7C[0x18]; int collision;
+    char pad98[14]; unsigned short id;
+    char padA8[0x38]; V43 forward;
+};
+typedef struct {
+    char pad0[0x80]; V43 position;
+    char pad90[8]; float yaw;
+    char pad9C[0x1F4]; V43 direction;
+    char pad2A0[0x3B0]; V43 row1,row2;
+    char pad670[0x1A10]; M43 *moby;
+} Hero43;
+typedef struct { char pad0[0x140]; V43 position; char pad150[8]; float yaw; } Camera43;
+typedef struct {
+    V43 normal; int x,y;
+    unsigned char type,mode; unsigned short id;
+    float amount; int flags,pad[3];
+} Damage43;
+typedef struct {
+    V43 target0,target1;
+    Damage43 damage;
+    V43 normal,direction,delta,next,step,noise;
+    M43 *ignored[128];
+    V43 goal;
+    union { struct { V43 origin; Damage43 timed; } arc; Damage43 second; } tail;
+    V43 differences[5];
+} Work43;
+#define F43(x) (*(float *)&(x))
+extern char D_0013E633[];
+extern Camera43 D_L00_00166D80;
+extern char *D_L00_001ABD80[];
+extern char D_L00_001DB8C0[];
+extern float D_L00_001DBB40[], D_L00_001DBCD0[];
+extern V43 D_L00_001DBB90[];
+extern float D_L00_00166EC0[];
+extern Vec4 D_L00_00173F60;
+extern char D_L00_001DBD20[];
+#define arcs_lb ((Vec4 (*)[5])D_L00_001DBD20)
+extern float D_L00_00161664 SDATA(D_L00_00161664);
+extern float D_L00_00161668 SDATA(D_L00_00161668);
+extern float D_L00_0016166C SDATA(D_L00_0016166C);
+extern float D_L00_00161670 SDATA(D_L00_00161670);
+extern float D_L00_00161674 SDATA(D_L00_00161674);
+extern float D_L00_00161678 SDATA(D_L00_00161678);
+extern float D_L00_0016167C SDATA(D_L00_0016167C);
+extern float D_L00_00161680 SDATA(D_L00_00161680);
+extern float D_L00_00161684 SDATA(D_L00_00161684);
+extern float D_L00_00161688 SDATA(D_L00_00161688);
+extern float D_L00_0016168C SDATA(D_L00_0016168C);
+extern float D_L00_00161690 SDATA(D_L00_00161690);
+extern float D_L00_00161694 SDATA(D_L00_00161694);
+extern float D_L00_00161698 SDATA(D_L00_00161698);
+extern float D_L00_0016169C SDATA(D_L00_0016169C);
+extern float D_L00_001616A0 SDATA(D_L00_001616A0);
+extern float D_L00_001616B4 SDATA(D_L00_001616B4);
+extern float D_L00_001616B8 SDATA(D_L00_001616B8);
+extern short D_L00_001616C8;
+extern float D_L00_001616F8 SDATA(D_L00_001616F8);
+extern float D_L00_001616FC SDATA(D_L00_001616FC);
+extern short D_L00_00161728[] MACRO_ADDR;
+extern short D_L00_00161738[] MACRO_ADDR;
+extern short D_L00_00161740[] MACRO_ADDR;
+extern int D_L00_00161730 MACRO_ADDR;
+extern float D_0015EE60 MACRO_ADDR;
+extern char D_L00_0015F660[] MACRO_ADDR;
+extern float func_001FA748(float, float), func_001FA790(float, float), func_001FA850(float, float);
+extern float func_001F9CB8(void *), func_001F9CE8(void *), func_001F9D10(void *, void *);
+extern void func_001F9BF0(void *, void *, void *), func_001F9BD8(void *, void *, void *), func_001F9CA0(void *, void *, void *);
+extern void func_001F9C30(void *, void *, float);
+extern void func_L00_001FF4B0(void *, void *, float);
+extern void func_001F9BC0();
+extern void func_001F9C08(void *, void *, void *, float);
+extern float func_001F9F90(float), func_001F9FA8(float), func_L00_001FF860(float, float);
+extern float func_001FA888(int);
+extern int func_001FA898(float);
+extern int func_001F9850(int);
+extern int func_001F9938();
+extern int func_L00_0025D390();
+extern float func_L00_00258C80(float, float);
+extern float func_002140F8(float, float);
+extern float func_L00_0025F368(float);
+extern int func_L00_00258BC8(int, int), func_002140B0(int);
+extern void func_002156E0(void *, void *, void *, float);
+extern void func_L00_0025A8C0(void *, void *, int, void *, float);
+extern void func_L00_0025AAC0(void *, void *);
+extern int func_L00_0025A868(void *);
+extern int func_L00_001EFFF0(Vec4f *, Vec4f *, int, void *, int);
+extern void func_L00_001F2BE8(void *, int, void *, void *, float);
+extern void func_0022ED80(int, int, void *);
+extern unsigned char *func_L00_00272F00(void *, int, float, float, int, int, int, float *, float);
+#define hero43 (*(Hero43 *)(D_0013E633 + 0xE1D))
+
+typedef struct { Vec4 direction; int words[2]; u8 kind, mode; short id; float amount; int flag; } HitDescriptor;
+typedef struct {
+    Vec4 origin;
+    Vec4 tip;
+    M43 *target;
+    u8 pad24[0x14];
+    M43 *second_target;
+    u8 pad3c[2];
+    short count3e;
+    short target_timer;
+    short second_timer;
+    short unk44;
+    short unk46;
+} WalloperBeam;
+
+/* Body ported from Lombyte's project (build_beam_and_arc_points, MIT). */
+void func_L00_002BA7C8(u8 *o) {
+    Vec4 target0, target1;
+    struct { Vec4 direction; int words[2]; u8 kind, mode; short id; float amount; int flag; } hit;
+    Vec4 camera_direction, direction, delta, blend, step, offset;
+    M43 *collided[128];
+    Vec4 target_delta;
+    union { struct { Vec4 origin; HitDescriptor hit0; } first; HitDescriptor hit1; } effects;
+    /* Retail uses a five-vector scratch span with differences beginning at slot 1. */
+    Vec4 differences[5];
+    WalloperBeam *v = *(WalloperBeam **)(o + 0x78);
+    int i;
+    M43 *best = 0, *second = 0, *candidate, **list;
+    char *data;
+    float best_score = 0.0f, second_score = 0.0f;
+    int enabled = (u8)D_0013E633[0];
+    float spacing = D_L00_00161664 / 20.0f;
+    float distance, angle, score, n, amplitude, wave, length, factor, phase, side_wave;
+    float side_phase;
+    float x_s, x_c, x_a, x_m;
+    Hero43 *player;
+    float *camera;
+    Hero43 *aim_hero;
+    float primary_distance, sign;
+    float distance_w17;
+    float distance_w16;
+    float factor_w15;
+    float factor_w13;
+    float length_w4;
+    float length_w3;
+    int k;
+    int m;
+    int mirror;
+    int seg;
+    int j, hit_result, collided_count, spin;
+    char *previous, *side;
+    Vec4 *beam;
+    float *side_waves;
+    D_L00_0016167C = func_001FA748(D_L00_0016167C, D_L00_00161680);
+    D_L00_00161684 = func_001FA790(D_L00_00161684, D_L00_00161688);
+    D_L00_00161698 = func_001FA748(D_L00_00161698, D_L00_0016169C);
+    if (!v->target || (enabled && !v->second_target)) {
+        if (v->second_target) {
+            v->target = v->second_target;
+            v->target_timer = v->second_timer;
+            v->second_target = 0;
+            v->second_timer = 0;
+        } else {
+            for (k = 0; (candidate = ((M43 **)D_L00_001ABD80)[k]) != 0; k++) {
+                camera = ((float *)&D_L00_00166D80);
+                aim_hero = &hero43;
+                if (candidate == v->target || candidate == v->second_target ||
+                    !candidate || !candidate->cls ||
+                    *(short *)((char *)candidate->cls + 0x46) != 5) continue;
+                if (candidate->state == 0xfe) goto next_candidate;
+                if (candidate->state == 0xfd) goto next_candidate;
+                if (!func_L00_0025D390(candidate)) continue;
+                func_001F9BF0(&target0, &candidate->position, v);
+                distance_w16 = func_001F9CE8(&target0);
+                if (D_L00_00161664 < distance_w16) continue;
+                length_w3 = func_001FA850(camera[0x56],
+                    func_L00_001FF860(candidate->position.v.x - camera[0x50], candidate->position.v.y - camera[0x51]));
+                if (D_L00_0016166C < length_w3) continue;
+                score = func_001FA850(
+                    func_L00_001FF860(candidate->position.v.x - aim_hero->position.f[0], candidate->position.v.y - aim_hero->position.f[1]),
+                    aim_hero->yaw);
+                if (D_L00_00161668 < score) continue;
+                score = ((D_L00_0016166C - length_w3) / D_L00_0016166C) * D_L00_001616FC +
+                        (D_L00_00161664 - distance_w16) / D_L00_00161664;
+                if (best_score < score) {
+                    second_score = best_score; second = best;
+                    best_score = score; best = candidate;
+                } else if (second_score < score) { second_score = score; second = candidate; }
+next_candidate:;
+            }
+        }
+    }
+    if (best) {
+        if (v->target) second = best;
+        else {
+            v->target = best;
+            v->target_timer = 0;
+            func_0022ED80(1, 0, o);
+        }
+    }
+    if (second && enabled) {
+        distance_w17 = func_001F9D10(v, &best->position);
+        if (distance_w17 < D_L00_00161664) {
+            angle = func_001F9D10(&best->position, &second->position);
+            if (distance_w17 + angle < D_L00_00161664) {
+                v->second_target = second;
+                v->second_timer = 0;
+            }
+        }
+    }
+    primary_distance = 0.0f;
+    if (v->target) {
+        data = (char *)func_L00_0025D390(v->target);
+        qcopy(&target0, &v->target->position);
+        target0.f[2] += *(float *)(data + 0x10);
+        primary_distance = func_001F9D10(v, &target0);
+        spacing = primary_distance * 0.05f;
+    }
+    if (v->second_target) {
+        data = (char *)func_L00_0025D390(v->second_target);
+        qcopy(&target1, &v->second_target->position);
+        target1.f[2] += *(float *)(data + 0x10);
+        spacing = (func_001F9D10(&target0, &target1) + primary_distance) * 0.05f;
+    }
+    if (enabled) (*(int *)&D_L00_001616C8) = 0x207f20;
+    else (*(int *)&D_L00_001616C8) = 0x7f2020;
+    func_001F9BC0(&camera_direction);
+    func_L00_0025A8C0(&hit, o, 0x210000, &camera_direction, enabled + 2.0f);
+    hit.kind = 5; hit.mode = 1; hit.id = *(short *)(o + 0xa6);
+    v->count3e = 20;
+    player = &hero43;
+    func_L00_001F2BE8(v, 0x10, player->moby, &hit, 0.3f);
+    func_001F9BF0(&direction, &v->tip, v);
+    func_L00_001FF4B0(&direction, &direction, 1.0f);
+    if (v->target || v->second_target) {
+        func_001F9CA0(&delta, &direction, &player->direction);
+        func_002156E0(&direction, &direction, &delta, 0.17453292f);
+    }
+    hit_result = 0;
+    collided_count = 0;
+    func_001F9C30(&step, &direction, spacing);
+    qcopy(D_L00_001DB8C0, v); qcopy(D_L00_001DB8C0 + 0x140, v);
+    beam = (Vec4 *)D_L00_001DB8C0;
+    side_waves = (float *)D_L00_001DBCD0;
+    for (seg = 1; seg < 20; seg++) {
+        previous = (char *)&beam[seg - 1];
+        side = (char *)&beam[seg + 20];
+        n = (float)seg;
+        factor = D_L00_00161674 + (D_L00_00161678 - D_L00_00161674) *
+                    (func_001FA888(seg) * 0.05f);
+        phase = func_L00_0025F368(D_L00_0016167C + n * D_L00_00161670);
+        wave = factor * func_001F9FA8(phase);
+        wave += func_L00_00258C80(D_L00_001616B4, D_L00_001616B8);
+
+        beam[seg].f[2] -= ((float *)D_L00_001DBB40)[seg];
+        ((float *)D_L00_001DBB40)[seg] = wave;
+        func_001F9BF0(&delta, &beam[seg], (char *)D_L00_001DB8C0 - 16 + seg * 16);
+        func_001F9C08(&blend, &delta, &step, 0.85f);
+        {
+            float blend_length = func_001F9CB8(&blend);
+            if (blend_length == 0.0f) qcopy(&beam[seg], previous);
+            else {
+                func_001F9C30(&blend, &blend, spacing / blend_length);
+                func_001F9BD8(&beam[seg], (char *)D_L00_001DB8C0 - 16 + seg * 16, &blend); qcopy(&step, &blend);
+            }
+        }
+        beam[seg].f[2] += wave;
+        func_001F9BF0(&delta, &beam[seg], (char *)D_L00_001DB8C0 - 16 + seg * 16);
+        if (v->target) {
+            if (!enabled || !v->second_target) {
+                func_001F9BF0(&target_delta, &target0, &beam[seg]);
+                length_w4 = func_001F9CB8(&target_delta);
+                if (length_w4 != 0.0f) {
+                    if (seg == 19) { factor_w13 = 0.5f; spacing = length_w4; }
+                    else if (seg >= 16) { factor_w13 = 0.5f; spacing = length_w4 / func_001FA888(19 - seg); }
+                    else factor_w13 = 0.1f;
+                    func_001F9C30(&target_delta, &target_delta, spacing / length_w4);
+                    func_001F9C08(&step, &step, &target_delta, factor_w13);
+                }
+            } else {
+                if (seg >= 10) func_001F9BF0(&target_delta, &target1, &beam[seg]);
+                else func_001F9BF0(&target_delta, &target0, &beam[seg]);
+                length_w4 = func_001F9CB8(&target_delta);
+                if (length_w4 != 0.0f) {
+                    if (seg == 9 || seg == 19) { factor_w13 = 0.7f; spacing = length_w4; }
+                    else if ((unsigned)(seg - 5) < 5) { factor_w13 = 0.7f; spacing = length_w4 / func_001FA888(9 - seg); }
+                    else if (seg > 14) { factor_w13 = 0.7f; spacing = length_w4 / func_001FA888(19 - seg); }
+                    else factor_w13 = 0.2f;
+                    func_001F9C30(&target_delta, &target_delta, spacing / length_w4);
+                    func_001F9C08(&step, &step, &target_delta, factor_w13);
+                }
+            }
+        }
+        if (seg < 10) {
+            Vec4 *nz, *dst;
+            side_phase = func_L00_0025F368(D_L00_00161684 + (float)seg * D_L00_0016168C);
+            angle = func_L00_0025F368(D_L00_00161698 + (float)seg * D_L00_001616A0);
+            factor = D_L00_00161690 * func_001F9FA8(angle);
+            qcopy(side, &beam[seg]);
+            x_s = func_001F9FA8(side_phase);
+            side_wave = func_L00_00258C80(0.0f, 0.1f);
+            x_c = factor * x_s + side_wave;
+            side_waves[seg] = x_c;
+            *(float *)((char *)&beam[seg] + 0x148) += x_c;
+            x_a = func_001FA748(func_L00_001FF860(delta.f[0], delta.f[1]), 1.5707964f);
+            x_m = D_L00_00161694 * func_001F9F90(side_phase);
+            offset.f[0] = func_001F9F90(x_a) * x_m;
+            offset.f[1] = func_001F9FA8(x_a) * x_m;
+            dst = &D_L00_001DBB90[seg];
+            nz = &offset;
+            offset.f[2] = 0.0f;
+            qcopy_nc(dst, nz);
+            func_001F9BD8(side, side, nz);
+        } else {
+            mirror = 21 - seg;
+            qcopy(side, &beam[seg]);
+            *(float *)((char *)&beam[seg] + 0x148) += side_waves[mirror];
+            func_001F9BD8(side, side, &D_L00_001DBB90[mirror]);
+            qcopy(&offset, &D_L00_001DBB90[seg]);
+        }
+        if (seg == 1) {
+            Hero43 *h = &hero43;
+            func_001F9C30(&effects.first.origin, (char *)h->moby + 0xe0, 0.5f);
+            func_001F9BD8(&target_delta, &h->position, &effects.first.origin);
+            hit_result = func_L00_001EFFF0((Vec4f *)&target_delta, (Vec4f *)v, 0x10, h->moby, 0);
+        } else if (seg == 19 || !(seg & 1)) {
+            hit_result = func_L00_001EFFF0((Vec4f *)((char *)D_L00_001DB8C0 - 32 + seg * 16), (Vec4f *)&beam[seg], 0x10, o, 0);
+        } else continue;
+        func_001F9BF0(&camera_direction, &beam[seg], D_L00_00166EC0);
+        camera_direction.f[2] = 0.0f;
+        length = func_001F9CB8(&camera_direction);
+        if (length == 0.0f) camera_direction.f[2] = 1.0f;
+        else func_001F9C30(&camera_direction, &camera_direction, 1.0f / length);
+        camera_direction.f[2] = 1.0f;
+        camera_direction.f[3] = 5627.9248046875f;
+        qcopy(&hit.direction, &camera_direction);
+        if (hit_result) {
+            candidate = (M43 *)(*(int *)((char *)&D_L00_00173F60 - 8));
+            if (candidate) {
+                if (!func_L00_0025D390(candidate) || !candidate->cls ||
+                    *(short *)((char *)candidate->cls + 0x46) != 5)
+                    func_L00_0025AAC0(candidate, &hit);
+                else {
+                    hit_result = 0; collided[collided_count++] = candidate;
+                    candidate->collision = 0;
+                }
+            }
+            if (hit_result) {
+                qcopy(&beam[seg], &D_L00_00173F60);
+                v->count3e = seg;
+                qcopy(&v->tip, &D_L00_00173F60);
+                if (!(*(int *)((char *)&D_L00_00173F60 - 8)) || func_L00_0025A868((*(int *)((char *)&D_L00_00173F60 - 8)))) {
+                    v->target = 0; v->target_timer = 0;
+                }
+                break;
+            }
+        }
+    }
+    for (k = 0; k < collided_count; k++)
+        collided[k]->collision = *(int *)((char *)collided[k]->cls + 0x10);
+    if (!hit_result) qcopy(&v->tip, D_L00_001DB8C0 + 0x130);
+    if (v->target && !(*(unsigned long *)&v->target_timer & 0xffff0000ffffUL)) {
+        func_001F9BF0(&target_delta, &v->target->position, D_L00_00166EC0);
+        target_delta.f[2] = 0.0f;
+        func_L00_001FF4B0(&target_delta, &target_delta, 1.0f);
+        target_delta.f[2] = 1.0f;
+        target_delta.f[3] = 5627.9248046875f;
+        func_L00_0025A8C0(&effects.first.hit0, o, 0x210000, &target_delta, enabled + 2.0f);
+        effects.first.hit0.kind = 5; effects.first.hit0.mode = 3; effects.first.hit0.id = *(short *)(o + 0xa6);
+        func_L00_0025AAC0(v->target, &effects.first.hit0);
+        {
+            char *aim;
+            int frames = 5;
+            aim = (char *)func_L00_0025D390(v->target);
+            if (aim && *(short *)(aim + 4) == 1) frames = 1;
+            v->unk44 = func_001F9850(frames);
+        }
+    }
+    if (v->second_target && !(*(unsigned long *)&v->target_timer & 0xffff0000ffff0000UL)) {
+        func_001F9BF0(&target_delta, &v->second_target->position, D_L00_00166EC0);
+        target_delta.f[2] = 0.0f;
+        func_L00_001FF4B0(&target_delta, &target_delta, 1.0f);
+        target_delta.f[2] = 1.0f;
+        target_delta.f[3] = 5627.9248046875f;
+        func_L00_0025A8C0(&effects.hit1, o, 0x210000, &target_delta, enabled + 2.0f);
+        effects.hit1.kind = 5; effects.hit1.mode = 3; effects.hit1.id = *(short *)(o + 0xa6);
+        func_L00_0025AAC0(v->second_target, &effects.hit1);
+        {
+            char *aim;
+            int frames = 5;
+            aim = (char *)func_L00_0025D390(v->second_target);
+            if (aim && *(short *)(aim + 4) == 1) frames = 1;
+            v->unk46 = func_001F9850(frames);
+        }
+    }
+    for (i = 0; i < 4; i++) {
+        Vec4 *rows;
+        if (i < 2) { qcopy(&effects.first.origin, v); factor_w15 = 0.4f; }
+        else { qcopy(&effects.first.origin, &v->tip); factor_w15 = 0.5f; }
+        if (func_001F9938(&D_L00_00161728[i])) {
+            D_L00_00161728[i] = func_001F9850(D_L00_00161738[i]);
+            ((short *)&D_L00_00161730)[i] = 0;
+            angle = func_L00_00258C80(0.5235988f, 1.0471976f);
+            phase = func_002140F8(-1.0471976f, 0.17453292f);
+            func_001F9C30(&target_delta, &direction, factor_w15);
+            rows = (Vec4 *)&hero43.row1;
+            func_002156E0(&target_delta, &target_delta, rows, phase);
+            func_002156E0(&target_delta, &target_delta, rows + 1, angle);
+            qcopy(&arcs_lb[i][0], &effects.first.origin);
+            func_001F9BD8(&arcs_lb[i][1], &effects.first.origin, &target_delta);
+            sign = 1.0f;
+            for (m = 2; m < 5; m++) {
+                func_001F9BF0(&effects.first.hit0, &arcs_lb[i][-1] + m, D_L00_00166EC0);
+                phase = func_002140F8(0.17453292f, 0.9599311f) * sign;
+                sign = -sign;
+                func_002156E0(&target_delta, &target_delta, &effects.first.hit0, phase);
+                func_001F9BD8(&arcs_lb[i][m], &arcs_lb[i][-1] + m, &target_delta);
+            }
+        } else {
+            int d, n0;
+            for (j = 1; j < 5; j++) {
+                func_001F9BF0(&differences[j], &arcs_lb[i][j], &arcs_lb[i][-1] + j);
+                differences[j].f[0] += func_L00_00258C80(0.0f, 0.1f);
+                differences[j].f[1] += func_L00_00258C80(0.0f, 0.1f);
+                differences[j].f[2] += func_L00_00258C80(0.0f, 0.1f);
+            }
+            qcopy(&arcs_lb[i][0], &effects.first.origin);
+            for (j = 1; j < 5; j++)
+                func_001F9BD8(&arcs_lb[i][j], &arcs_lb[i][-1] + j, &differences[j]);
+            d = D_L00_00161740[i]; n0 = D_L00_00161728[i];
+            if (d < n0) d = n0 - d; else d = d - n0;
+            distance = func_001FA888(d) / func_001FA888(func_001F9850(15));
+            ((short *)&D_L00_00161730)[i] = func_001FA898((1.0f - distance) * 32.0f);
+        }
+    }
+    angle = func_L00_00258C80(0.5235988f, 1.0471976f);
+    phase = func_002140F8(-0.5235988f, 1.0471976f);
+    func_001F9C30(&target_delta, &direction, D_L00_001616F8 * D_0015EE60);
+    func_002156E0(&target_delta, &target_delta, &hero43.row1, phase);
+    func_002156E0(&target_delta, &target_delta, &hero43.row2, angle);
+    spin = func_L00_00258BC8(1, 8); if (func_002140B0(2)) spin = -spin;
+    amplitude = func_002140F8(0.2f, 0.6f);
+    func_L00_00272F00(v, func_001F9850(15), amplitude * 0.3f, amplitude, (*(int *)&D_L00_001616C8) | 0x7f000000, 0, spin, (float *)&target_delta, 0.0f);
+    spin = -spin + (*(unsigned char *)v >> 8) + (((unsigned char *)v)[1] >> 8);
+    func_L00_00272F00(v, func_001F9850(15), amplitude * 0.15f, amplitude * 0.5f, 0x307f7f7f, 0, spin, (float *)&target_delta, 0.0f);
+    spin = func_L00_00258BC8(1, 8); if (func_002140B0(2)) spin = -spin;
+    amplitude = func_002140F8(0.15f, 3.0f);
+    {
+        /* Fakematch: a never-taken branch (cprop proves dead == 0, then jump deletes it). Retail
+           had about 30 more insns before gcse that vanish later; they size the PRE hash table,
+           which orders the &target_delta and &effects spill slots. */
+        int dead = 0;
+        if (amplitude < 0.0f) dead = 0;
+        if (dead) {
+            func_L00_00272F00(v, func_001F9850(15), amplitude, amplitude, 0, 0, spin, (float *)&target_delta, 0.0f);
+            func_L00_00272F00(v, func_001F9850(15), amplitude, amplitude, 0, 0, spin, (float *)&target_delta, 0.0f);
+            func_L00_00272F00(v, func_001F9850(15), amplitude, amplitude, 0, 0, spin, (float *)&target_delta, 0.0f);
+        }
+    }
+    func_L00_00272F00(&v->tip, func_001F9850(12), amplitude * 0.1f, amplitude, (*(int *)&D_L00_001616C8) | 0x7f000000, 0, spin, (float *)D_L00_0015F660, 0.0f);
+}
 extern float frame_scale MACRO_ADDR;
 extern short beam_arc_tex_scroll;
 extern short beam_arc_tex_scroll_speed;

@@ -2749,6 +2749,7 @@ func_L00_002B9A90	src/overlays/shared/visibomb_and_pyrocitor.c	match	00:002B8798
 func_L00_002B9AA8	-	joined	00:002B87B0	48	100.00
 func_L00_002B9AD8	src/overlays/shared/visibomb_and_pyrocitor.c	match	00:002B87E0	2860	100.00
 func_L00_002BA608	src/overlays/shared/visibomb_and_pyrocitor.c	match	00:002B9310	444	100.00
+func_L00_002BA7C8	src/overlays/shared/walloper_and_beam_effects.c	differs	00:002B94D0	5280	0.00
 func_L00_002BBC78	src/overlays/shared/walloper_and_beam_effects.c	match	00:002BA970	368	100.00
 func_L00_002BBDE8	src/overlays/shared/walloper_and_beam_effects.c	match	00:002BAAE0	1488	100.00
 func_L00_002BC3B8	src/overlays/shared/walloper_and_beam_effects.c	match	00:002BB0B0	688	100.00
