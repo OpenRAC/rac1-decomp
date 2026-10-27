@@ -846,8 +846,8 @@ func_001F9B48	-	asm	boot:001FAC70	4	100.00
 func_001F9B50	-	asm	boot:001FAC78	32	100.00
 func_001F9B70	-	asm	boot:001FAC98	24	100.00
 func_001F9B88	src/game/fastfunc.c	match	boot:001FACB0	8	100.00
-func_001F9B90	-	asm	boot:001FACB8	8	100.00
-func_001F9B98	-	asm	boot:001FACC0	8	100.00
+func_001F9B90	src/game/fastfunc.c	match	boot:001FACB8	8	100.00
+func_001F9B98	src/game/fastfunc.c	match	boot:001FACC0	8	100.00
 func_001F9BA0	-	asm	boot:001FACC8	16	100.00
 func_001F9BB0	-	asm	boot:001FACD8	16	100.00
 func_001F9BC0	-	asm	boot:001FACE8	8	100.00

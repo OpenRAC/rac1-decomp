@@ -134,34 +134,16 @@ float FastAbsF(float arg0) {
     return __builtin_fabsf(arg0);
 }
 
-/*
- * REVERTED to INCLUDE_ASM deliberately, and this one matters beyond
- * these two functions.
- *
- * They are max.s/min.s single-instruction wrappers. Retail is 8 bytes
- * each (max.s scheduled into the jr's delay slot). Written as inline asm
- * this compiler emits 12 bytes -- jr first, then the asm in dead-code
- * position, because inline asm is opaque to its scheduler. So they were
- * never matches; they were 4 bytes LONGER than retail each.
- *
- * A non-matching function that is *longer* than retail shifts every
- * later function in the segment, so these two were silently adding 8
- * bytes of drift to every downstream address reference in text.c --
- * func_001F7B40, for instance, was instruction-for-instruction identical
- * to retail yet reported 1/44 purely because its `jal` target had moved.
- * Reverting them restores the stubs' exact retail bytes and removes that
- * drift.
- *
- * General rule this establishes: a size-mismatched function should be
- * reverted to INCLUDE_ASM, not kept as documented-close C. Byte-diff
- * near-misses of the same size are harmless to keep; longer ones corrupt
- * verification for everything after them. (This is the same failure mode
- * as the old core_text func_00112380 drift, which is why that one was
- * worth fixing rather than tolerating.)
- */
-ASM_FUNC("asm/handwritten/text", func_001F9B90);
+/* The whole-file PS2DEV GCC 3.2.3 profile emits the R5900 scalar operation
+ * directly in the return slot. This comparison order preserves retail's
+ * operand order as well as its eight-byte function size. */
+float max_float(float a, float b) {
+    return b > a ? b : a;
+}
 
-ASM_FUNC("asm/handwritten/text", func_001F9B98);
+float min_float(float a, float b) {
+    return b < a ? b : a;
+}
 
 ASM_FUNC("asm/handwritten/text", func_001F9BA0);
 
