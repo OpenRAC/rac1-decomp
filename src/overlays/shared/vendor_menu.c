@@ -1083,8 +1083,8 @@ extern short vendor_auxiliary_moby_local_offset;
 extern short vendor_item_display_local_offset;
 extern short vendor_spin_moby0_local_offset;
 extern short vendor_spin_moby5_local_offset;
-extern s32 vendor_exit_delay_frames MACRO_ADDR;
-extern s32 vendor_intro_frames MACRO_ADDR;
+extern s32 vendor_close_delay_frames_remaining MACRO_ADDR;
+extern s32 vendor_opening_countdown_frames MACRO_ADDR;
 extern s32 pal_mode MACRO_ADDR;
 extern f32 render_view_tan_half_fov NOT_SDA;
 

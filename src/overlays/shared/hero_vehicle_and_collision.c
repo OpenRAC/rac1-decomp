@@ -3027,7 +3027,7 @@ extern PadState g_controller_state_p228770 __asm__("D_0013CA40");
 extern int last_weapon_id_r __asm__("D_00141760");
 extern unsigned char item_available_r[] __asm__("D_0013D5C8");
 extern Rec2C_228770 attack_records_r[] __asm__("D_L00_0017BD28");
-extern int hero_r1_double_tap_timer SDATA(D_L00_0015F754);
+extern int hero_repeat_press_window_frames SDATA(D_L00_0015F754);
 extern int pad_pressed_within_r2(int, int, int *) __asm__("func_L00_00267BA8");
 extern void launch_hero_wrench(void);
 extern int Hero_CanUseGadget(void);
@@ -3317,8 +3317,8 @@ int process_hero_equipped_item_input(void) {
     if (g_hero_h228770.state_timer == start) {
         if (hero_slot_item_id(3) == 3 && g_hero_h228770.state.current != 0x81 && (g_hero_h228770.unk308 == 0 || item_available_r[0x1C] == 0)
             && g_hero_h228770.pack_disabled == 0) {
-            fast_dec_timer_r2(&hero_r1_double_tap_timer);
-            if (hero_r1_double_tap_timer != 0) {
+            fast_dec_timer_r2(&hero_repeat_press_window_frames);
+            if (hero_repeat_press_window_frames != 0) {
                 if (g_hero_h228770.state.control_mode < 2U || g_hero_h228770.state.control_mode == 0xC
                     || ((g_hero_h228770.state.control_mode == 2 || g_hero_h228770.state.control_mode == 4) && g_hero_h228770.grounded_frames != 0)) {
                     if ((g_controller_state_p228770.held & 8) && (g_controller_state_p228770.pressed & 8)) {
@@ -3327,7 +3327,7 @@ int process_hero_equipped_item_input(void) {
                 }
             }
             if ((g_controller_state_p228770.pressed & 8) && g_hero_h228770.state.current != 0x81) {
-                hero_r1_double_tap_timer = scale_ticks(0x1E);
+                hero_repeat_press_window_frames = scale_ticks(0x1E);
             }
         } else if (g_hero_h228770.state.current != 0x13 && g_hero_h228770.state.current != 0x81 && g_hero_h228770.state.current != 0x15 && g_hero_h228770.state.current != 0x16) {
             g_hero_h228770.unk22CA = 0;

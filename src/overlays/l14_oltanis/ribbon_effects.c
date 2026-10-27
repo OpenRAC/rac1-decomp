@@ -12,7 +12,7 @@
 extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);
 extern float IntToFloat(int);
-extern float WrapAngle(float);
+extern float normalize_angle(float);
 extern float FastSin(float);
 extern float randf_sym(float, float);
 extern float FastCos(float x);
@@ -79,7 +79,7 @@ void animate_ribbon_effect_paths(char *moby)
             f21 = f20;
         } else {
             float t = (float)i;
-            f21 = FastSin(WrapAngle(d->ripple_phase + t * step)) * c1;
+            f21 = FastSin(normalize_angle(d->ripple_phase + t * step)) * c1;
             f21 = f21 + randf_sym(0.0f, 0.2f);
             f20 = t;
         }
@@ -114,8 +114,8 @@ void animate_ribbon_effect_paths(char *moby)
         float fi = (float)i;
         float x, b, c, s;
         o[10].height.i = 0;
-        x = WrapAngle(d->sweep_phase_a + fi * k99);
-        b = WrapAngle(d->sweep_phase_b + fi * k20);
+        x = normalize_angle(d->sweep_phase_a + fi * k99);
+        b = normalize_angle(d->sweep_phase_b + fi * k20);
         c = FastSin(b) * k75;
         s = FastSin(x);
         o[10].height.f = o[10].height.f + (c * s + randf_sym(0.0f, 0.2f));

@@ -1125,8 +1125,8 @@ void update_branched_lightning_arc(char *moby) {
     extern short lightning_arc_pulse_progress;
     extern short lightning_grow_ticks;
     extern short lightning_arc_segment_length;
-    extern short lightning_arc_step_jitter_min;
-    extern short lightning_arc_step_jitter_max;
+    extern short lightning_main_arc_z_step_range_start_gp;
+    extern short lightning_main_arc_z_step_range_end_gp;
     extern short lightning_arc_max_offset;
     extern short lightning_arc_life_min;
     extern short lightning_arc_life_max;
@@ -1166,7 +1166,7 @@ void update_branched_lightning_arc(char *moby) {
             p[3] = 1.0f;
             p[0] = (*(float *)&lightning_arc_segment_length) * (float)i;
             if (i < 39) {
-                p[2] = p[-2] + randf_sym((*(float *)&lightning_arc_step_jitter_min), (*(float *)&lightning_arc_step_jitter_max));
+                p[2] = p[-2] + randf_sym((*(float *)&lightning_main_arc_z_step_range_start_gp), (*(float *)&lightning_main_arc_z_step_range_end_gp));
                 if ((*(float *)&lightning_arc_max_offset) < (*&p)[2]) {
                     p[2] = (*(float *)&lightning_arc_max_offset);
                 } else if (p[2] < -(*(float *)&lightning_arc_max_offset)) {
@@ -1290,10 +1290,10 @@ extern short lightning_branch_point_timers[];
 extern int lightning_branch_starts[] MACRO_ADDR;
 extern V_2EF078 lightning_branch_points[];
 extern int lightning_grow_ticks SDATA(D_L14_00161D40);
-extern int lightning_arc_core_color SDATA(D_L14_00161D48);
-extern int lightning_arc_glow_color SDATA(D_L14_00161D4C);
-extern float lightning_arc_width_end SDATA(D_L14_00161D50);
-extern float lightning_arc_width_start SDATA(D_L14_00161D54);
+extern int lightning_arc_outer_base_color_gp SDATA(D_L14_00161D48);
+extern int lightning_arc_inner_base_color_gp SDATA(D_L14_00161D4C);
+extern float lightning_arc_outer_half_width_end_gp SDATA(D_L14_00161D50);
+extern float lightning_arc_outer_half_width_start_gp SDATA(D_L14_00161D54);
 extern float lightning_arc_glow_width_scale SDATA(D_L14_00161D58);
 
 // Draws the lightning bolt between two points as a chain of textured quad pairs, with three side branches.
@@ -1319,7 +1319,7 @@ void draw_branched_lightning_arc(void) {
     a = truncate_float_to_s32_r(IntToFloat(lightning_arc_point_timers[0]) / IntToFloat(scale_ticks(lightning_grow_ticks)) * 255.0f) - lightning_arc_fade_alpha[0];
     if (a < 0) a = 0;
     if (a > 0xFF) a = 0xFF;
-    c = lightning_arc_core_color | (a << 24);
+    c = lightning_arc_outer_base_color_gp | (a << 24);
     q[0].col[1] = c;
     q[0].col[0] = c;
     q[0].uv[0][0] = 0.0f;
@@ -1332,7 +1332,7 @@ void draw_branched_lightning_arc(void) {
     q[0].uv[3][1] = 1.0f;
     FastMemCopy(&q[1], &q[0], 0x90);
     q[1].tex = GetEffectTex(0x2C);
-    q[1].col[0] = q[1].col[1] = lightning_arc_glow_color | ((a >> 1) << 24);
+    q[1].col[0] = q[1].col[1] = lightning_arc_inner_base_color_gp | ((a >> 1) << 24);
     FastVecSub(&m[0], lightning_arc_start_pos, lightning_arc_end_pos);
     vec_scale_to_length(&m[0], &m[0], 1.0f);
     m[0].w = 0.0f;
@@ -1347,10 +1347,10 @@ void draw_branched_lightning_arc(void) {
     m[2].w = 0.0f;
     qcopy(&m[3], lightning_arc_end_pos);
     *(u128_2EF078 *)&sz[0] = 0;
-    sz[0].z = lightning_arc_width_start;
+    sz[0].z = lightning_arc_outer_half_width_start_gp;
     sz[0].w = 1.0f;
     *(u128_2EF078 *)&sz[1] = 0;
-    sz[1].z = lightning_arc_width_start * lightning_arc_glow_width_scale;
+    sz[1].z = lightning_arc_outer_half_width_start_gp * lightning_arc_glow_width_scale;
     sz[1].w = 1.0f;
     qcopy(&q[0].v[0], &sz[0]);
     FastVecScale(&q[0].v[1], &q[0].v[0], -1.0f);
@@ -1396,8 +1396,8 @@ void draw_branched_lightning_arc(void) {
             if (b < 0) b = 0;
             if (b > 0xFF) b = 0xFF;
         }
-        q[0].col[2] = q[0].col[3] = lightning_arc_core_color | (b << 24);
-        q[1].col[2] = q[1].col[3] = lightning_arc_glow_color | ((b >> 1) << 24);
+        q[0].col[2] = q[0].col[3] = lightning_arc_outer_base_color_gp | (b << 24);
+        q[1].col[2] = q[1].col[3] = lightning_arc_inner_base_color_gp | ((b >> 1) << 24);
         draw_world_quad(&q[0], 0, 0);
         draw_world_quad(&q[1], 0, 0);
         q[0].col[0] = q[0].col[1] = q[0].col[2];
@@ -1406,7 +1406,7 @@ void draw_branched_lightning_arc(void) {
         qcopy(&q[0].v[1], &q[0].v[3]);
         qcopy(&q[1].v[0], &q[1].v[2]);
         qcopy(&q[1].v[1], &q[1].v[3]);
-        sz[0].z = lightning_arc_width_start + (lightning_arc_width_end - lightning_arc_width_start) * CubicInterpolate(-1.0f, 0.0f, 1.0f, 0.0f, IntToFloat(i) / IntToFloat(0x28));
+        sz[0].z = lightning_arc_outer_half_width_start_gp + (lightning_arc_outer_half_width_end_gp - lightning_arc_outer_half_width_start_gp) * CubicInterpolate(-1.0f, 0.0f, 1.0f, 0.0f, IntToFloat(i) / IntToFloat(0x28));
         sz[1].z = sz[0].z * lightning_arc_glow_width_scale;
     }
     qcopy(&m2[0], &m[0]);
@@ -1422,11 +1422,11 @@ void draw_branched_lightning_arc(void) {
         a = truncate_float_to_s32_r(t * 255.0f) - lightning_arc_fade_alpha[0];
         if (a < 0) a = 0;
         if (a > 0xFF) a = 0xFF;
-        c = lightning_arc_core_color | (a << 24);
+        c = lightning_arc_outer_base_color_gp | (a << 24);
         q[0].col[1] = c;
         q[0].col[0] = c;
-        q[1].col[0] = q[1].col[1] = lightning_arc_glow_color | ((a >> 1) << 24);
-        sz[0].z = (lightning_arc_width_start + (lightning_arc_width_end - lightning_arc_width_start) * CubicInterpolate(-1.0f, 0.0f, 1.0f, 0.0f, IntToFloat(lightning_branch_starts[j]) / IntToFloat(0x28))) * 0.75f;
+        q[1].col[0] = q[1].col[1] = lightning_arc_inner_base_color_gp | ((a >> 1) << 24);
+        sz[0].z = (lightning_arc_outer_half_width_start_gp + (lightning_arc_outer_half_width_end_gp - lightning_arc_outer_half_width_start_gp) * CubicInterpolate(-1.0f, 0.0f, 1.0f, 0.0f, IntToFloat(lightning_branch_starts[j]) / IntToFloat(0x28))) * 0.75f;
         sz[1].z = sz[0].z * 4.0f;
         qcopy(&q[0].v[0], &sz[0]);
         FastVecScale(&q[0].v[1], &q[0].v[0], -1.0f);
@@ -1463,10 +1463,10 @@ void draw_branched_lightning_arc(void) {
             a = truncate_float_to_s32_r(t * 255.0f) - lightning_arc_fade_alpha[0];
             if (a < 0) a = 0;
             if (a > 0xFF) a = 0xFF;
-            c = lightning_arc_core_color | (a << 24);
+            c = lightning_arc_outer_base_color_gp | (a << 24);
             q[0].col[3] = c;
             q[0].col[2] = c;
-            q[1].col[2] = q[1].col[3] = lightning_arc_glow_color | ((a >> 1) << 24);
+            q[1].col[2] = q[1].col[3] = lightning_arc_inner_base_color_gp | ((a >> 1) << 24);
             draw_world_quad(&q[0], 0, 0);
             draw_world_quad(&q[1], 0, 0);
             q[0].col[0] = q[0].col[1] = q[0].col[2];
@@ -2730,11 +2730,11 @@ typedef struct {
     u8 padC[0x14];
     L14PuffTail_2FD870 tail; /* 0x20 */
 } L14Puff_2FD870;
-extern short enemy_fighter_exhaust_forward_offset;
-extern short enemy_fighter_exhaust_side_offset;
-extern short enemy_fighter_exhaust_up_offset;
-extern short enemy_fighter_exhaust_ring_offset;
-extern short enemy_fighter_exhaust_color;
+extern short enemy_fighter_exhaust_base_row0_offset_gp;
+extern short enemy_fighter_exhaust_paired_emitter_offset_gp;
+extern short enemy_fighter_exhaust_base_row2_offset_gp;
+extern short enemy_fighter_exhaust_ring_row0_offset_gp;
+extern short enemy_fighter_exhaust_paired_puff_color_gp;
 extern char oltanis_zero_vector[] MACRO_ADDR;
 extern void FastVecScale(void *, void *, f32);
 extern s32 scale_ticks(s32);
@@ -2756,16 +2756,16 @@ void spawn_enemy_fighter_exhaust(struct Moby *m) {
 
     if (m->state == 0 || m->state == 2 || m->visible == 0)
         return;
-    FastVecScale(&step, &m->rot_row0, (*(f32 *)&enemy_fighter_exhaust_forward_offset));
+    FastVecScale(&step, &m->rot_row0, (*(f32 *)&enemy_fighter_exhaust_base_row0_offset_gp));
     FastVecAdd(&pos, &m->pos, &step);
-    FastVecScale(&step, &m->rot_row2, (*(f32 *)&enemy_fighter_exhaust_up_offset));
+    FastVecScale(&step, &m->rot_row2, (*(f32 *)&enemy_fighter_exhaust_base_row2_offset_gp));
     FastVecAdd(&pos, &pos, &step);
     qcopy(&base, &pos);
-    FastVecScale(&step, &m->rot_row1, (*(f32 *)&enemy_fighter_exhaust_side_offset));
+    FastVecScale(&step, &m->rot_row1, (*(f32 *)&enemy_fighter_exhaust_paired_emitter_offset_gp));
     FastVecAdd(&pos, &pos, &step);
     for (j = 0; j < 2; j++) {
         spin = random_integer_below(16);
-        puff = PartType23Spawn_r(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&enemy_fighter_exhaust_color));
+        puff = PartType23Spawn_r(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&enemy_fighter_exhaust_paired_puff_color_gp));
         if (puff != 0) {
             L14PuffTail_2FD870 *tail = &puff->tail;
             puff->life = scale_ticks(12);
@@ -2777,7 +2777,7 @@ void spawn_enemy_fighter_exhaust(struct Moby *m) {
     }
     spin = 16;
     size = 100000.0f;
-    FastVecScale(&step, &m->rot_row0, (*(f32 *)&enemy_fighter_exhaust_ring_offset));
+    FastVecScale(&step, &m->rot_row0, (*(f32 *)&enemy_fighter_exhaust_ring_row0_offset_gp));
     FastVecAdd(&pos, &pos, &step);
     life = scale_ticks(2);
     for (i = 0; i < 3; i++) {
@@ -2795,11 +2795,11 @@ void spawn_enemy_fighter_exhaust(struct Moby *m) {
         life *= 2;
         size -= 20000.0f;
     }
-    FastVecScale(&step, &m->rot_row1, (*(f32 *)&enemy_fighter_exhaust_side_offset));
+    FastVecScale(&step, &m->rot_row1, (*(f32 *)&enemy_fighter_exhaust_paired_emitter_offset_gp));
     FastVecSub(&pos, &base, &step);
     for (j = 0; j < 2; j++) {
         spin = random_integer_below(16);
-        puff = PartType23Spawn_r(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&enemy_fighter_exhaust_color));
+        puff = PartType23Spawn_r(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&enemy_fighter_exhaust_paired_puff_color_gp));
         if (puff != 0) {
             L14PuffTail_2FD870 *tail = &puff->tail;
             puff->frame = (m->draw_dist >> 5 << 4) + truncate_float_to_s32(4.0f);
@@ -2811,7 +2811,7 @@ void spawn_enemy_fighter_exhaust(struct Moby *m) {
     }
     spin = 16;
     size = 100000.0f;
-    FastVecScale(&step, &m->rot_row0, (*(f32 *)&enemy_fighter_exhaust_ring_offset));
+    FastVecScale(&step, &m->rot_row0, (*(f32 *)&enemy_fighter_exhaust_ring_row0_offset_gp));
     FastVecAdd(&pos, &pos, &step);
     life = scale_ticks(2);
     for (i = 0; i < 3; i++) {
@@ -3154,7 +3154,7 @@ extern short fighter921_exhaust_side_offset;
 extern short fighter921_exhaust_up_offset;
 extern short fighter921_exhaust_ring_offset;
 extern short fighter921_exhaust_smoke_offset;
-extern short fighter921_exhaust_color;
+extern short moby_exhaust_paired_puff_color_gp;
 
 /* Exhaust of the second engine moby: puffs and rings on both sides plus a grey puff in the middle.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fd310. */
@@ -3181,7 +3181,7 @@ void spawn_moby_exhaust_puffs(struct Moby *m) {
     FastVecAdd(&pos, &pos, &step);
     for (j = 0; j < 2; j++) {
         spin = random_integer_below(16);
-        puff = PartType23Spawn(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&fighter921_exhaust_color));
+        puff = PartType23Spawn(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&moby_exhaust_paired_puff_color_gp));
         if (puff != 0) {
             L14PuffTail *tail = &puff->tail;
             puff->life = scale_ticks(12);
@@ -3232,7 +3232,7 @@ void spawn_moby_exhaust_puffs(struct Moby *m) {
     FastVecSub(&pos, &base, &step);
     for (j = 0; j < 2; j++) {
         spin = random_integer_below(16);
-        puff = PartType23Spawn(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&fighter921_exhaust_color));
+        puff = PartType23Spawn(&pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? spin : -spin, oltanis_zero_vector, 200000.0f, (*(s32 *)&moby_exhaust_paired_puff_color_gp));
         if (puff != 0) {
             L14PuffTail *tail = &puff->tail;
             puff->life = scale_ticks(12);

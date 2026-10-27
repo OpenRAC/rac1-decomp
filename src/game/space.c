@@ -3011,7 +3011,7 @@ typedef struct {
 } EnvironmentMappedObject;
 extern s32 ship_substate_r[] __asm__("D_0013E150");
 extern s32 g_game_mode MACRO_ADDR;
-extern short env_map_first_frame;
+extern short environment_mapping_uv_refresh_state;
 extern short env_map_was_active;
 extern short env_map_blend_timer;
 extern short environment_mesh_colors;
@@ -3084,7 +3084,7 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
     if (g_game_mode == 6 && ship_substate_r[0] == 4) {
         mapping_enabled = 0;
     }
-    if (mapping_enabled != 0 || (*(s32 *)&env_map_first_frame) == 1) {
+    if (mapping_enabled != 0 || (*(s32 *)&environment_mapping_uv_refresh_state) == 1) {
         (*(s32 *)&env_map_was_active) = 1;
         fast_dec_timer(&(*(s32 *)&env_map_blend_timer));
         transition_fraction =
@@ -3101,7 +3101,7 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
             fast_vec_normalize(reflection, reflection, 1.0f);
             reflection[2] += 1.0f;
             sphere_denominator = vec_length(reflection[2] * 2.0f) * 2.0f;
-            if ((*(s32 *)&env_map_first_frame) == 1 || (*(s32 *)&env_map_blend_timer) == 0) {
+            if ((*(s32 *)&environment_mapping_uv_refresh_state) == 1 || (*(s32 *)&env_map_blend_timer) == 0) {
                 env_map_uvs[element_index][0] = reflection[0] / sphere_denominator + 0.5f;
                 env_map_uvs[element_index][1] = reflection[1] / sphere_denominator + 0.5f;
             } else {
@@ -3113,8 +3113,8 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
                     coordinate + (env_map_saved_uvs[element_index][1] - coordinate) * transition_fraction;
             }
         }
-        if ((*(s32 *)&env_map_first_frame) == 1) {
-            (*(s32 *)&env_map_first_frame) = 2;
+        if ((*(s32 *)&environment_mapping_uv_refresh_state) == 1) {
+            (*(s32 *)&environment_mapping_uv_refresh_state) = 2;
         }
     } else {
         if ((*(s32 *)&env_map_was_active) == 1) {

@@ -1875,7 +1875,7 @@ extern void PlaceMarkerAheadOfMoby(float, void *);
 extern void MobySetAnimation(unsigned char *, int, int);
 extern int PlayBankSound(int, int, int);
 extern void add_vectors(void *, void *, void *);
-extern void PartType22Spawn(void *, void *, int, int, float, int);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 extern unsigned char menu_item_enabled_115[] ;
 extern unsigned char gHaveHeliPack[] ;
@@ -1973,7 +1973,7 @@ void robot_qwark_update(unsigned char *m) {
         pos[2] = 0.0f;
         add_vectors(tmp, pos, m + 0x10);
         if (random_integer_below(3) == 0) {
-            PartType22Spawn(pos, vel, 0x20202020, 0x7F7F7F, 157500.0f, scale_ticks(rand_range(0x3C, 0x78)));
+            spawn_effect_particle_with_target_scalar(pos, vel, 0x20202020, 0x7F7F7F, 157500.0f, scale_ticks(rand_range(0x3C, 0x78)));
         }
         break;
     }
@@ -2526,7 +2526,7 @@ extern void cutscene_set_camera_target(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int rand_range(int, int);
 extern float random_float_between(float, float);
-extern void PartType22Spawn(void *, void *, int, int, float, int);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 /* Starts the cutscene, then during mode 3 (frames 900-10000) emits two particle beams from the listed moby.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/vendor/002df520.c, FUN_L03_002e01d0. */
@@ -2566,9 +2566,9 @@ void update_kerwan_cutscene_effects(char *m) {
         zero.q = 0;
         Moby_GetJointWorldPos(moby, 0, from);
         Moby_GetJointWorldPos(moby, 1, to);
-        PartType22Spawn(from, &zero, 0x7F7F7F7F, 0x7F7F7F, random_float_between(0.25f, 0.5f) * 210000.0f,
+        spawn_effect_particle_with_target_scalar(from, &zero, 0x7F7F7F7F, 0x7F7F7F, random_float_between(0.25f, 0.5f) * 210000.0f,
                          scale_ticks(rand_range(45, 60)));
-        PartType22Spawn(to, &zero, 0x407F7F7F, 0x7F7F7F, random_float_between(0.25f, 0.5f) * 210000.0f,
+        spawn_effect_particle_with_target_scalar(to, &zero, 0x407F7F7F, 0x7F7F7F, random_float_between(0.25f, 0.5f) * 210000.0f,
                          scale_ticks(rand_range(45, 60)));
         break;
     }

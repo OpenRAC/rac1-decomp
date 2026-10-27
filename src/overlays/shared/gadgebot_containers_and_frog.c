@@ -694,9 +694,9 @@ struct RespawnVars {
     f32 glow_phase;
 };
 extern f32 blarg_zero_vec[] MACRO_ADDR;
-extern short blarg_frog_glow_pulse_speed_deg;
-extern short blarg_frog_glow_color_a;
-extern short blarg_frog_glow_color_b;
+extern short frog_glow_phase_rate_degrees_gp;
+extern short frog_glow_color_start_gp;
+extern short frog_glow_color_end_gp;
 extern short level_mobys_q_r __asm__("D_L06_00160058");
 extern u8 hero_vehicle_mode[];
 extern int * blarg_paths[];
@@ -777,8 +777,8 @@ void update_frog_health_respawn_and_target(struct Moby *moby) {
         }
     }
     moby->hit_slot = 0xFF;
-    vars->glow_phase = FastAddRots(vars->glow_phase, (*(f32 *)&blarg_frog_glow_pulse_speed_deg) * 0.017453292f * g_frame_time);
-    moby->glow_color = FastTweenColor((*(int *)&blarg_frog_glow_color_a), (*(int *)&blarg_frog_glow_color_b), (FastSin(vars->glow_phase) + 1.0f) * 0.5f);
+    vars->glow_phase = FastAddRots(vars->glow_phase, (*(f32 *)&frog_glow_phase_rate_degrees_gp) * 0.017453292f * g_frame_time);
+    moby->glow_color = FastTweenColor((*(int *)&frog_glow_color_start_gp), (*(int *)&frog_glow_color_end_gp), (FastSin(vars->glow_phase) + 1.0f) * 0.5f);
     if (vars->new_blink != 0) {
         vars->blink_timer = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
         vars->new_blink = 0;
@@ -1267,7 +1267,7 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern Moby *level_mobys_q MACRO_ADDR;
-extern short blarg_gadgebot_eye_height;
+extern short gadgebot_position_snapshot_z_offset_gp;
 extern char blarg_camera_pos[];
 extern GbHit blarg_coll_hit;
 extern Moby *blarg_coll_hit_moby;
@@ -1452,11 +1452,11 @@ void GadgebotUpdate(Moby *moby) {
                 }
             }
             if (gCheats[3] != 0) {
-                *(float *)&blarg_gadgebot_eye_height = 0.35f;
+                *(float *)&gadgebot_position_snapshot_z_offset_gp = 0.35f;
                 d->ctl.i00 = 0x177;
             } else {
                 d->ctl.i00 = 0x12C;
-                *(float *)&blarg_gadgebot_eye_height = 0.27f;
+                *(float *)&gadgebot_position_snapshot_z_offset_gp = 0.27f;
             }
             moby->flags = (moby->flags & 0xFFBE) | 0x1000;
             (*(int *)&moby->collision) = (*(GbClass **)&moby->pclass)->f10;
@@ -1890,7 +1890,7 @@ void GadgebotUpdate(Moby *moby) {
         float s24;
 
         qcopy(v10, (*(float (*)[4])&moby->pos));
-        v10[2] += *(float *)&blarg_gadgebot_eye_height + 0.02f;
+        v10[2] += *(float *)&gadgebot_position_snapshot_z_offset_gp + 0.02f;
         qcopy(v40, (*(float (*)[4])&moby->pos));
         s10 = d->ctl.f10;
         s24 = d->ctl.f24;
@@ -2665,10 +2665,10 @@ typedef struct {
 } Vars_2F6330;
 
 extern Moby *level_mobys_q_r3 __asm__("D_L06_00160058") MACRO_ADDR;
-extern float blarg_rotation_group_turn_accel_deg SDATA(D_L06_00161DC8);
-extern float blarg_rotation_group_turn_decel_deg SDATA(D_L06_00161DCC);
-extern float blarg_rotation_group_turn_max_speed_deg SDATA(D_L06_00161DD0);
-extern float blarg_rotation_group_proximity_suppress SDATA(D_L06_00161DD4);
+extern float rotation_group_angular_velocity_adjustment_degrees_gp SDATA(D_L06_00161DC8);
+extern float rotation_group_angular_deceleration_degrees_gp SDATA(D_L06_00161DCC);
+extern float rotation_group_max_angular_speed_degrees_gp SDATA(D_L06_00161DD0);
+extern float rotation_group_fallback_proximity_trigger_inhibit_gp SDATA(D_L06_00161DD4);
 extern float blarg_rotation_group_pivot_offset SDATA(D_L06_00161DD8);
 extern char hero_globals_base[];
 extern Moby *CreateMoby_r(int) __asm__("func_0020D348");
@@ -2725,7 +2725,7 @@ void update_moby_rotation_group(Moby *m) {
                     flag = level_mobys_q_r3[d->idx].state >= 3;
                 }
             } else {
-                if (vec_distance_xy((*(float (*)[4])&m->pos), hero_globals_base + 0xE9D) < 6.0f && blarg_rotation_group_proximity_suppress == 0.0f) {
+                if (vec_distance_xy((*(float (*)[4])&m->pos), hero_globals_base + 0xE9D) < 6.0f && rotation_group_fallback_proximity_trigger_inhibit_gp == 0.0f) {
                     flag = 1;
                 }
             }
@@ -2753,9 +2753,9 @@ void update_moby_rotation_group(Moby *m) {
     case 4:
     case 5:
         SteerAngleWithVelocity(&d->f14, &d->f20, 1.0471976f,
-                          blarg_rotation_group_turn_accel_deg * 0.017453292f * g_frame_time_sq,
-                          blarg_rotation_group_turn_decel_deg * 0.017453292f * g_frame_time_sq,
-                          blarg_rotation_group_turn_max_speed_deg * 0.017453292f * g_frame_time);
+                          rotation_group_angular_velocity_adjustment_degrees_gp * 0.017453292f * g_frame_time_sq,
+                          rotation_group_angular_deceleration_degrees_gp * 0.017453292f * g_frame_time_sq,
+                          rotation_group_max_angular_speed_degrees_gp * 0.017453292f * g_frame_time);
         (*(float (*)[4])&m->rot)[0] = FastSubRots(d->f10, d->f14);
         if (d->f14 >= 1.0471976f) {
             m->flags |= 1;
@@ -2770,9 +2770,9 @@ void update_moby_rotation_group(Moby *m) {
     case 8:
     case 9:
         SteerAngleWithVelocity(&d->f14, &d->f20, 0.0f,
-                          blarg_rotation_group_turn_accel_deg * 0.017453292f * g_frame_time_sq,
-                          blarg_rotation_group_turn_decel_deg * 0.017453292f * g_frame_time_sq,
-                          blarg_rotation_group_turn_max_speed_deg * 0.017453292f * g_frame_time);
+                          rotation_group_angular_velocity_adjustment_degrees_gp * 0.017453292f * g_frame_time_sq,
+                          rotation_group_angular_deceleration_degrees_gp * 0.017453292f * g_frame_time_sq,
+                          rotation_group_max_angular_speed_degrees_gp * 0.017453292f * g_frame_time);
         (*(float (*)[4])&m->rot)[0] = FastSubRots(d->f10, d->f14);
         if (d->f14 <= 0.0f) {
             if (m->state == 8) {
@@ -2871,7 +2871,7 @@ void initialize_energy_sphere_holder_vars(char *moby) {
     holder_vars[15] = 1.75f;
     holder_vars[14] = 2.25f;
 }
-extern short blarg_holder_beam_color_a, blarg_holder_beam_color_b, blarg_holder_beam_blend_flag, blarg_holder_beam_texture, blarg_holder_spark_color, blarg_holder_spark_scale;
+extern short blarg_holder_beam_color_a, blarg_holder_beam_color_b, energy_sphere_holder_beam_particle_variant_flag_gp, blarg_holder_beam_texture, blarg_holder_spark_color, blarg_holder_spark_scale;
 extern short blarg_holder_spark_life_ticks;
 extern void clear_u64_value(void *);
 extern int truncate_float_to_s32_g(float) __asm__("func_001FA898");
@@ -2913,7 +2913,7 @@ void update_energy_sphere_holder_beam_effects(char *m) {
         }
         f = IntToFloat(scale_ticks(0xFF) - d->t[i]) / (float)scale_ticks(0xFF);
         c = FastTweenColor(*(int *)&blarg_holder_beam_color_a, *(int *)&blarg_holder_beam_color_b, FastAbsF(0.5f - f));
-        PartType59Spawn_g(pos, c, truncate_float_to_s32_g(d->ph[i]), *(int *)&blarg_holder_beam_texture, *(int *)&blarg_holder_beam_blend_flag, 2, 0,
+        PartType59Spawn_g(pos, c, truncate_float_to_s32_g(d->ph[i]), *(int *)&blarg_holder_beam_texture, *(int *)&energy_sphere_holder_beam_particle_variant_flag_gp, 2, 0,
                           d->sz[i]);
         FastVecAdd(pos, pos, step);
     }

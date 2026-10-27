@@ -413,10 +413,10 @@ extern int fleet_ripple_ring_color_buf[1] SDATA(D_L17_00162330);
 extern int fleet_ripple_ring_alpha_fix SDATA(D_L17_00162334);
 extern int fleet_ripple_ring_texture SDATA(D_L17_00162338);
 extern int fleet_ripple_ring_alpha SDATA(D_L17_0016233C);
-extern float fleet_ripple_ring_wavelength SDATA(D_L17_00162340);
-extern float fleet_ripple_ring_wave_period SDATA(D_L17_00162344);
-extern float fleet_ripple_ring_wave_height SDATA(D_L17_00162348);
-extern float fleet_ripple_ring_uv_scroll_speed SDATA(D_L17_0016234C);
+extern float ring_ripple_radial_phase_distance_scale_gp SDATA(D_L17_00162340);
+extern float ring_ripple_phase_period_gp SDATA(D_L17_00162344);
+extern float ring_ripple_z_amplitude_gp SDATA(D_L17_00162348);
+extern float ring_ripple_uv_scroll_rate_gp SDATA(D_L17_0016234C);
 extern T4 fleet_ripple_ring_uv_scroll_factors;
 
 /* Builds the rippling 89-point ring around the moby (template points moved to its position, z waved by distance from the centre), then draws it twice with scrolled texture coordinates. */
@@ -428,21 +428,21 @@ void draw_ripple_ring(char *moby) {
     int color;
     int i, j, n, k;
 
-    scale = IntToFloat(fleet_frame_count) * (fleet_ripple_ring_uv_scroll_speed * g_frame_time);
+    scale = IntToFloat(fleet_frame_count) * (ring_ripple_uv_scroll_rate_gp * g_frame_time);
     VU1_addGSregister(6, GetEffectTex(fleet_ripple_ring_texture));
     VU1_addGSregister(0x42, ((long)fleet_ripple_ring_alpha_fix << 32) | 0x44);
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, ((long)0xFF90 << 32) | 0x260);
     d->f0 = d->f4;
-    d->f4 = FastAddRots(d->f4, 360.0f / multiply_global_factor(fleet_ripple_ring_wave_period) * 0.017453292f * g_frame_time);
+    d->f4 = FastAddRots(d->f4, 360.0f / multiply_global_factor(ring_ripple_phase_period_gp) * 0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     color = (fleet_ripple_ring_alpha << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < fleet_ripple_ring_vertex_count[0]; i++) {
         RingPt *p = &fleet_ripple_ring_template_verts[i];
-        float w = fleet_ripple_ring_wave_height *
+        float w = ring_ripple_z_amplitude_gp *
             FastSin(FastAddRots(FastNormalizeAngle(
-                fast_fmod(vec_length(p->x * p->x + p->y * p->y), fleet_ripple_ring_wavelength)
-                    * 6.2831855f / fleet_ripple_ring_wavelength), d->f4));
+                fast_fmod(vec_length(p->x * p->x + p->y * p->y), ring_ripple_radial_phase_distance_scale_gp)
+                    * 6.2831855f / ring_ripple_radial_phase_distance_scale_gp), d->f4));
         fleet_ripple_ring_vertices[i].x = p->x + ((Moby *)moby)->pos.x;
         fleet_ripple_ring_vertices[i].y = p->y + ((Moby *)moby)->pos.y;
         fleet_ripple_ring_vertices[i].z = p->z + ((Moby *)moby)->pos.z + w;

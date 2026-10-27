@@ -37,7 +37,7 @@ extern void update_hero_moby_probed_height_bounds(void);
 extern void apply_env_zone_lighting(void *);
 
 /* Per-frame hero update: animation, state, voices, vehicle, scale, glow pulse and attachments. */
-void HeroL15_FrameUpdate(void) {
+void update_hero_and_vehicle_mode_effects(void) {
     unsigned char *b0, *b1, *b2, *b3, *b4, *b5, *b6;
     unsigned char *moby;
     unsigned int copy[4] __attribute__((aligned(16)));

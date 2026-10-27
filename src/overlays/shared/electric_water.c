@@ -68,7 +68,7 @@ extern char *quartu_cuboids MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern short electric_water_on_duration_seconds;
 extern short electric_water_off_duration_seconds;
-extern short electric_water_bolt_suppress;
+extern short electric_water_path_arc_inhibit_gp;
 extern unsigned char quartu_current_level_state_moby_flags[];
 extern unsigned char quartu_checkpoint_level_state_moby_flags[];
 extern int level_moby_killed[];
@@ -249,7 +249,7 @@ void electric_water_update(unsigned char *m) {
             }
         }
 
-        if ((!inside || !wet) && random_integer_below(1) == 0 && (*(float *)&electric_water_bolt_suppress) == 0.0f) {
+        if ((!inside || !wet) && random_integer_below(1) == 0 && (*(float *)&electric_water_path_arc_inhibit_gp) == 0.0f) {
             best = 0;
             for (line_offset = 0; line_offset < 24; line_offset += 8) {
                 line = &vars->lines[line_offset];
@@ -596,7 +596,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecCross(void *, void *, void *);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern void FastVecScale(void *, void *, float);
-extern float WrapAngle(float);
+extern float normalize_angle(float);
 extern float randf_sym(float lo, float hi);
 extern float random_angle_radians(void);
 extern void BuildSphericalOffset(void *, float, float, float);
@@ -676,7 +676,7 @@ void update_electric_water_bolt_effect(Moby *moby) {
         float b;
         f21 = *(float *)&electric_water_bolt_wave_amp_start
               + (*(float *)&electric_water_bolt_wave_amp_end - *(float *)&electric_water_bolt_wave_amp_start) * (IntToFloat(i) * 0.05f);
-        f21 = f21 * FastSin(WrapAngle(*(float *)&electric_water_bolt_wave_phase + (float)i * *(float *)&electric_water_bolt_wave_point_phase));
+        f21 = f21 * FastSin(normalize_angle(*(float *)&electric_water_bolt_wave_phase + (float)i * *(float *)&electric_water_bolt_wave_point_phase));
         f21 = f21 + randf_sym(*(float *)&electric_water_bolt_jitter_center, *(float *)&electric_water_bolt_jitter_range);
         electric_water_bolt_points_r2[0][i].f[2] = electric_water_bolt_points_r2[0][i].f[2] - electric_water_bolt_wave_offsets[i];
         electric_water_bolt_wave_offsets[i] = f21;
@@ -716,9 +716,9 @@ void update_electric_water_bolt_effect(Moby *moby) {
             float h;
             float ang;
             float m;
-            g = WrapAngle(*(float *)&electric_water_mirror_bolt_phase + (float)i * *(float *)&electric_water_mirror_bolt_point_phase);
+            g = normalize_angle(*(float *)&electric_water_mirror_bolt_phase + (float)i * *(float *)&electric_water_mirror_bolt_point_phase);
             h = *(float *)&electric_water_mirror_bolt_height_amp
-                * FastSin(WrapAngle(*(float *)&electric_water_mirror_bolt_height_phase + (float)i * *(float *)&electric_water_mirror_bolt_height_point_phase));
+                * FastSin(normalize_angle(*(float *)&electric_water_mirror_bolt_height_phase + (float)i * *(float *)&electric_water_mirror_bolt_height_point_phase));
             qcopy(&electric_water_bolt_points_r2[1][i], &electric_water_bolt_points_r2[0][i]);
             h = h * FastSin(g) + randf_sym(0.0f, 0.1f);
             electric_water_bolt_points_r2[1][i].f[2] = electric_water_bolt_points_r2[1][i].f[2] + h;

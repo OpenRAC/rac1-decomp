@@ -727,18 +727,18 @@ extern char *PartType02Spawn_r(void *, void *, void *, int, int, int, int, int, 
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern Pair_2E2A38 falling_debris_smoke_choices;
-extern int falling_debris_burst_count SDATA(D_L08_00161C90);
+extern int falling_debris_burst_particle_count SDATA(D_L08_00161C90);
 extern int falling_debris_burst_lower SDATA(D_L08_00161C94);
 extern int falling_debris_burst_upper SDATA(D_L08_00161C98);
-extern float falling_debris_burst_rise_speed SDATA(D_L08_00161C9C);
-extern float falling_debris_burst_end_rise_speed SDATA(D_L08_00161CA0);
-extern float falling_debris_burst_spread_speed SDATA(D_L08_00161CA4);
-extern float falling_debris_burst_end_spread_speed SDATA(D_L08_00161CA8);
-extern int falling_debris_burst_time_a SDATA(D_L08_00161CAC);
-extern int falling_debris_burst_time_b SDATA(D_L08_00161CB0);
-extern int falling_debris_burst_time_c SDATA(D_L08_00161CB4);
-extern float falling_debris_burst_start_w SDATA(D_L08_00161CB8);
-extern float falling_debris_burst_end_w SDATA(D_L08_00161CBC);
+extern float falling_debris_burst_primary_vertical_scale SDATA(D_L08_00161C9C);
+extern float falling_debris_burst_secondary_vertical_scale SDATA(D_L08_00161CA0);
+extern float falling_debris_burst_primary_planar_scale SDATA(D_L08_00161CA4);
+extern float falling_debris_burst_secondary_planar_scale SDATA(D_L08_00161CA8);
+extern int falling_debris_burst_frame_count_random_min SDATA(D_L08_00161CAC);
+extern int falling_debris_burst_secondary_frame_count_random_min SDATA(D_L08_00161CB0);
+extern int falling_debris_burst_tertiary_frame_count_random_min SDATA(D_L08_00161CB4);
+extern float falling_debris_burst_primary_vector_w SDATA(D_L08_00161CB8);
+extern float falling_debris_burst_secondary_vector_w SDATA(D_L08_00161CBC);
 
 /* Update function for moby classes 441-443 on level 08 (falling debris): picks its spin, falls with a smoke trail, bursts into particles near the ground, then falls on until out of bounds. */
 void update_falling_debris(Moby *m) {
@@ -784,7 +784,7 @@ void update_falling_debris(Moby *m) {
                                      random_float_between(8.0f, 16.0f) * g_frame_time);
         }
         if (m->pos.z < 15.2f) {
-            for (i = 0; i < falling_debris_burst_count; i++) {
+            for (i = 0; i < falling_debris_burst_particle_count; i++) {
                 float ang = random_angle_radians();
                 int c1;
                 int c2;
@@ -792,17 +792,17 @@ void update_falling_debris(Moby *m) {
                 qcopy(a40, &m->pos);
                 a40[0] += random_float_between(-3.0f, 3.0f);
                 a40[1] += random_float_between(-3.0f, 3.0f);
-                v10[2] = falling_debris_burst_rise_speed * g_frame_time;
-                v10[0] += FastCos(ang) * falling_debris_burst_spread_speed;
-                v10[1] += FastSin(ang) * falling_debris_burst_spread_speed;
-                v30[2] = falling_debris_burst_end_rise_speed * g_frame_time;
-                v30[0] += FastCos(ang) * falling_debris_burst_end_spread_speed;
-                v30[1] += FastSin(ang) * falling_debris_burst_end_spread_speed;
-                v10[3] = falling_debris_burst_start_w;
-                v30[3] = falling_debris_burst_end_w;
-                c1 = truncate_float_to_s32(multiply_global_factor(random_float_between((float)falling_debris_burst_time_a, (float)(falling_debris_burst_time_a * 2))));
-                c2 = truncate_float_to_s32(multiply_global_factor(random_float_between((float)falling_debris_burst_time_b, (float)(falling_debris_burst_time_b * 2))));
-                c3 = truncate_float_to_s32(multiply_global_factor(random_float_between((float)falling_debris_burst_time_c, (float)(falling_debris_burst_time_c * 2))));
+                v10[2] = falling_debris_burst_primary_vertical_scale * g_frame_time;
+                v10[0] += FastCos(ang) * falling_debris_burst_primary_planar_scale;
+                v10[1] += FastSin(ang) * falling_debris_burst_primary_planar_scale;
+                v30[2] = falling_debris_burst_secondary_vertical_scale * g_frame_time;
+                v30[0] += FastCos(ang) * falling_debris_burst_secondary_planar_scale;
+                v30[1] += FastSin(ang) * falling_debris_burst_secondary_planar_scale;
+                v10[3] = falling_debris_burst_primary_vector_w;
+                v30[3] = falling_debris_burst_secondary_vector_w;
+                c1 = truncate_float_to_s32(multiply_global_factor(random_float_between((float)falling_debris_burst_frame_count_random_min, (float)(falling_debris_burst_frame_count_random_min * 2))));
+                c2 = truncate_float_to_s32(multiply_global_factor(random_float_between((float)falling_debris_burst_secondary_frame_count_random_min, (float)(falling_debris_burst_secondary_frame_count_random_min * 2))));
+                c3 = truncate_float_to_s32(multiply_global_factor(random_float_between((float)falling_debris_burst_tertiary_frame_count_random_min, (float)(falling_debris_burst_tertiary_frame_count_random_min * 2))));
                 PartType02Spawn_r(a40, v10, v30, falling_debris_burst_lower, falling_debris_burst_upper, c1, c2, c3, -1);
             }
             m->state = 3;
@@ -2241,8 +2241,8 @@ extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
 extern void draw_geometry_quad_5188(void *, void *, void *, s32, s32);
 extern char batalia_screen_projection_base[];
-extern short batalia_bolt_glint_up_offset;
-extern short batalia_bolt_glint_side_offset;
+extern short bolt_pickup_quad_center_offset_along_moby_e0;
+extern short bolt_pickup_quad_center_offset_along_moby_c0;
 
 /* When the short at data + 0x6C is nonzero, projects the moby's offset position to screen space and draws a
  * four-corner quad there, its corners rotated in 90-degree steps by the angle at data + 0x74 and scaled by distance. */
@@ -2260,9 +2260,9 @@ void draw_batalia_bolt_pickup_rotating_quad(char *m) {
         long r16;
         int dv;
         qcopy(a, m + 0x10);
-        vec_scale_to_length(b, m + 0xE0, *(float *)&batalia_bolt_glint_up_offset);
+        vec_scale_to_length(b, m + 0xE0, *(float *)&bolt_pickup_quad_center_offset_along_moby_e0);
         FastVecAdd(a, a, b);
-        vec_scale_to_length(b, m + 0xC0, *(float *)&batalia_bolt_glint_side_offset);
+        vec_scale_to_length(b, m + 0xC0, *(float *)&bolt_pickup_quad_center_offset_along_moby_c0);
         FastVecAdd(a, a, b);
         FastVecSub(a, a, batalia_hero_pos);
         len = FastVecLength(a);

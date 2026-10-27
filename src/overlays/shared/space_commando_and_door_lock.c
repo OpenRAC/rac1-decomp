@@ -727,11 +727,11 @@ typedef struct {
     f32 uv[4][2];
     u64 tag[4];
 } QuadPacket_f680;
-extern short space_commando_beam_alpha_a;
-extern short space_commando_beam_alpha_b;
-extern short space_commando_beam_alpha_c;
-extern short space_commando_beam_alpha_d;
-extern short space_commando_beam_alpha_fix;
+extern short beam_blend_minuend_selector_gp;
+extern short beam_blend_subtrahend_selector_gp;
+extern short beam_blend_alpha_multiplier_selector_gp;
+extern short beam_blend_addend_selector_gp;
+extern short beam_blend_fixed_alpha_gp;
 extern short space_commando_beam_texture;
 extern short space_commando_beam_outer_color_a;
 extern short space_commando_beam_outer_color_b;
@@ -764,11 +764,11 @@ void DrawBeam(char *moby) {
     i = 0;
     pk[0].tag[1] = GetEffectTex((*(s32 *)&space_commando_beam_texture));
     pk[1].tag[1] = GetEffectTex((*(s32 *)&space_commando_beam_texture));
-    regs = (*(s32 *)&space_commando_beam_alpha_a);
-    regs |= (u64)(*(s32 *)&space_commando_beam_alpha_b) << 2;
-    regs |= (u64)(*(s32 *)&space_commando_beam_alpha_c) << 4;
-    regs |= (u64)(*(s32 *)&space_commando_beam_alpha_d) << 6;
-    regs |= (u64)(*(s32 *)&space_commando_beam_alpha_fix) << 32;
+    regs = (*(s32 *)&beam_blend_minuend_selector_gp);
+    regs |= (u64)(*(s32 *)&beam_blend_subtrahend_selector_gp) << 2;
+    regs |= (u64)(*(s32 *)&beam_blend_alpha_multiplier_selector_gp) << 4;
+    regs |= (u64)(*(s32 *)&beam_blend_addend_selector_gp) << 6;
+    regs |= (u64)(*(s32 *)&beam_blend_fixed_alpha_gp) << 32;
     /* Store order is load-bearing: it sets which register keeps regs. */
     pk[1].tag[2] = 0x0000FF9000000260ULL;
     pk[0].tag[2] = 0x0000FF9000000260ULL;
@@ -823,9 +823,9 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void FastVecScale(void *, void *, float);
 extern void lerp_vector(void *, void *, void *, float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern short space_commando_beam_spark_lower, space_commando_beam_spark_upper, space_commando_beam_spark_start_w, space_commando_beam_spark_end_w, space_commando_beam_spark_time_a_min, space_commando_beam_spark_time_a_max;
+extern short beam_spark_initial_word_gp, beam_spark_second_word_gp, space_commando_beam_spark_start_w, space_commando_beam_spark_end_w, space_commando_beam_spark_time_a_min, space_commando_beam_spark_time_a_max;
 extern short space_commando_beam_spark_time_b_min, space_commando_beam_spark_time_b_max, space_commando_beam_spark_time_c_min, space_commando_beam_spark_time_c_max, space_commando_beam_spark_speed_min, space_commando_beam_spark_speed_max;
-extern short space_commando_beam_spark_lift_min, space_commando_beam_spark_lift_max, space_commando_beam_spark_chance, space_commando_beam_spark_texture;
+extern short space_commando_beam_spark_lift_min, space_commando_beam_spark_lift_max, space_commando_beam_spark_chance, beam_spark_lookup_index_and_flags_gp;
 
 /* Spawns a burst of effects for each pair of ready entries in the moby's table. */
 void spawn_blarg_space_commando_beam_sparks(char *moby) {
@@ -860,7 +860,7 @@ void spawn_blarg_space_commando_beam_sparks(char *moby) {
         w[3] = *(float *)&space_commando_beam_spark_end_w;
         p = data + (off + 0x230);
         lerp_vector(s10, p, p, random_float_between(0.0f, 1.0f));
-        PartType02Spawn(s10, v, w, *(int *)&space_commando_beam_spark_lower, *(int *)&space_commando_beam_spark_upper, s18, s19, s17, *(int *)&space_commando_beam_spark_texture);
+        PartType02Spawn(s10, v, w, *(int *)&beam_spark_initial_word_gp, *(int *)&beam_spark_second_word_gp, s18, s19, s17, *(int *)&beam_spark_lookup_index_and_flags_gp);
     }
 }
 extern void DeleteMoby(void *);
@@ -980,16 +980,16 @@ typedef struct {
     float uv[8];
     long tag[4];
 } Pkt89B8 __attribute__((aligned(16)));
-extern void func_001FA1F8(void *, void *);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_L00_001FD1D8(void *, void *, int);
-extern char D_L06_00167500[];
+extern void euler_rotation_basis(void *, void *);
+extern void matrix_mul_vec3(void *, void *, void *);
+extern void draw_world_quad(void *, void *, int);
+extern char referencePosition[];
 extern int D_L06_001FED20[][4];
 extern float D_L06_001FECB0[][2];
 extern char D_L06_001FEC20[];
 extern int D_L06_001FECF8[];
 
-void func_L06_003089B8(char *o) {
+void draw_bot_door_lock_glow(char *o) {
     Pkt89B8 pk;
     float v[4][4] __attribute__((aligned(16)));
     float axis[4] __attribute__((aligned(16)));
@@ -998,13 +998,13 @@ void func_L06_003089B8(char *o) {
     char *data = *(char **)(o + 0x78);
     float f;
     int i, col;
-    float *g = (float *)D_L06_00167500;
+    float *g = (float *)referencePosition;
     float *g2;
 
     axis[2] = g[0x56];
     axis[0] = 0.0f;
     axis[1] = 0.0f;
-    func_001FA1F8(mat, axis);
+    euler_rotation_basis(mat, axis);
     f = *(float *)(data + 0x1C) + 0.01f;
     *(float *)(data + 0x1C) = f;
     if (1.0f < f) {
@@ -1013,12 +1013,12 @@ void func_L06_003089B8(char *o) {
     pk.tag[2] = 1;
     pk.tag[3] = 0x4000000044L;
     pk.tag[0] = 0;
-    pk.tag[1] = func_001F4868(0x18);
+    pk.tag[1] = GetEffectTex(0x18);
     for (i = 0; i < 4; i++) {
-        func_001F9EC0(v[0], D_L06_001FEC20 + D_L06_001FED20[i][0] * 16, mat);
-        func_001F9EC0(v[1], D_L06_001FEC20 + D_L06_001FED20[i][1] * 16, mat);
-        func_001F9EC0(v[2], D_L06_001FEC20 + D_L06_001FED20[i][2] * 16, mat);
-        func_001F9EC0(v[3], D_L06_001FEC20 + D_L06_001FED20[i][3] * 16, mat);
+        matrix_mul_vec3(v[0], D_L06_001FEC20 + D_L06_001FED20[i][0] * 16, mat);
+        matrix_mul_vec3(v[1], D_L06_001FEC20 + D_L06_001FED20[i][1] * 16, mat);
+        matrix_mul_vec3(v[2], D_L06_001FEC20 + D_L06_001FED20[i][2] * 16, mat);
+        matrix_mul_vec3(v[3], D_L06_001FEC20 + D_L06_001FED20[i][3] * 16, mat);
         pk.pos[0][0] = *(float *)(o + 0x10) + v[0][0] * *(float *)(data + 0x24);
         pk.pos[0][1] = *(float *)(o + 0x14) + v[0][1] * *(float *)(data + 0x24);
         pk.pos[0][2] = *(float *)(o + 0x18) + v[0][2];
@@ -1043,9 +1043,9 @@ void func_L06_003089B8(char *o) {
         pk.uv[5] = D_L06_001FECB0[D_L06_001FED20[i][2]][1] + *(float *)(data + 0x1C);
         pk.uv[6] = D_L06_001FECB0[D_L06_001FED20[i][3]][0];
         pk.uv[7] = D_L06_001FECB0[D_L06_001FED20[i][3]][1] + *(float *)(data + 0x1C);
-        func_L00_001FD1D8(&pk, 0, 1);
+        draw_world_quad(&pk, 0, 1);
     }
-    pk.tag[1] = func_001F4868(0x1B);
+    pk.tag[1] = GetEffectTex(0x1B);
     f = *(float *)(data + 0x20) + 0.01f;
     *(float *)(data + 0x20) = f;
     if (1.0f < f) {
@@ -1077,15 +1077,15 @@ void func_L06_003089B8(char *o) {
         *(u128 *)w[2] = *(u128 *)c[2];
         *(u128 *)w[3] = *(u128 *)c[3];
     }
-    g2 = (float *)D_L06_00167500;
+    g2 = (float *)referencePosition;
     axis[2] = g2[0x56];
     axis[0] = 0.0f;
     axis[1] = 0.0f;
-    func_001FA1F8(mat, axis);
-    func_001F9EC0(v[0], w[0], mat);
-    func_001F9EC0(v[1], w[1], mat);
-    func_001F9EC0(v[2], w[2], mat);
-    func_001F9EC0(v[3], w[3], mat);
+    euler_rotation_basis(mat, axis);
+    matrix_mul_vec3(v[0], w[0], mat);
+    matrix_mul_vec3(v[1], w[1], mat);
+    matrix_mul_vec3(v[2], w[2], mat);
+    matrix_mul_vec3(v[3], w[3], mat);
     pk.pos[0][0] = *(float *)(o + 0x10) + v[0][0];
     pk.pos[0][1] = *(float *)(o + 0x14) + v[0][1];
     pk.pos[0][2] = *(float *)(o + 0x18) + v[0][2];
@@ -1112,7 +1112,7 @@ void func_L06_003089B8(char *o) {
     pk.uv[5] = 1.0f;
     pk.uv[6] = 1.0f;
     pk.uv[7] = 1.0f;
-    func_L00_001FD1D8(&pk, 0, 1);
+    draw_world_quad(&pk, 0, 1);
 }
 extern void Moby_PlaySound(int, int, int);
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);

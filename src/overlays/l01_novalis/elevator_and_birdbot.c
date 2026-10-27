@@ -251,7 +251,7 @@ extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern int rand_range(int, int);
 extern int scale_ticks(int);
-extern void PartType22Spawn(void *, void *, unsigned int, unsigned int, float, int);
+extern void spawn_effect_particle_with_target_scalar(void *, void *, unsigned int, unsigned int, float, int);
 
 /* Spawns three bursts of sparks around a moby with random velocity, colours and size. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002e6518. */
 void spawn_birdbot_movement_particles(SplashMoby *m, u128 *origin) {
@@ -284,7 +284,7 @@ void spawn_birdbot_movement_particles(SplashMoby *m, u128 *origin) {
         c1 = &inner.c[random_integer_below(6)];
         c2 = &outer.c[random_integer_below(6)];
         size = random_float_between(105000.0f, 157500.0f);
-        PartType22Spawn(&tmp, &vel, *c1, *c2, size, scale_ticks(rand_range(5, 0xF)));
+        spawn_effect_particle_with_target_scalar(&tmp, &vel, *c1, *c2, size, scale_ticks(rand_range(5, 0xF)));
     }
 }
 typedef u32 u128_E7B68 __attribute__((mode(TI), aligned(16)));
@@ -1322,10 +1322,10 @@ typedef struct {
 extern int novalis_game_mode MACRO_ADDR;
 extern char *novalis_moby_list MACRO_ADDR;
 extern int novalis_peckbot_explosion_slots[] MACRO_ADDR;
-extern float novalis_peckbot_hit_knock_lift SDATA(D_L01_00161AF0);
-extern float novalis_peckbot_hit_knock_speed SDATA(D_L01_00161AF4);
-extern float novalis_peckbot_jump_speed SDATA(D_L01_00161AF8);
-extern float novalis_peckbot_jump_gravity SDATA(D_L01_00161AFC);
+extern float peckbot_nonfatal_knockback_vertical_speed_gp SDATA(D_L01_00161AF0);
+extern float peckbot_nonfatal_knockback_horizontal_speed_gp SDATA(D_L01_00161AF4);
+extern float peckbot_home_knockback_speed_gp SDATA(D_L01_00161AF8);
+extern float peckbot_home_knockback_acceleration_gp SDATA(D_L01_00161AFC);
 extern short novalis_peckbot_spawn_d0_record;
 
 extern void MobyGroup_SetByteBC(int, int);
@@ -1398,8 +1398,8 @@ void peckbot_update(Moby *m) {
             v->f20 -= hit->f2C;
             v->f130 = 0.008f;
             v->f134 = 0.0005f;
-            v->f138 = novalis_peckbot_hit_knock_speed * g_frame_time;
-            v->f13C = novalis_peckbot_hit_knock_lift * g_frame_time;
+            v->f138 = peckbot_nonfatal_knockback_horizontal_speed_gp * g_frame_time;
+            v->f13C = peckbot_nonfatal_knockback_vertical_speed_gp * g_frame_time;
             v->w144 = 9;
             v->b15D = 0;
             if (v->f20 <= 0.0f) {
@@ -1604,9 +1604,9 @@ void peckbot_update(Moby *m) {
                 MobyBlendAnimation(m, 6, 0, scale_ticks(3));
             }
             v->f134 = 0.0f;
-            v->f130 = novalis_peckbot_jump_gravity;
-            v->f138 = novalis_peckbot_jump_speed * g_frame_time;
-            v->f13C = jump_speed_4318(&m->pos, &v->v1D0, &out, novalis_peckbot_jump_speed * g_frame_time, -novalis_peckbot_jump_gravity);
+            v->f130 = peckbot_home_knockback_acceleration_gp;
+            v->f138 = peckbot_home_knockback_speed_gp * g_frame_time;
+            v->f13C = jump_speed_4318(&m->pos, &v->v1D0, &out, peckbot_home_knockback_speed_gp * g_frame_time, -peckbot_home_knockback_acceleration_gp);
             v->w144 = 0xD;
             v->b15D = 0;
             InitKnockback(m->rot.z, m, v->x120, 6, 1, 0);

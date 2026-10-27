@@ -1463,7 +1463,7 @@ extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int,
 extern char *spawn_randomly_rotated_colored_moby(void *, void *, void *, float, int, unsigned char, unsigned char, unsigned char, int);
 extern void swap_color_channel_words(int *, int *, int *, int);
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
-extern float WrapAngle(float);
+extern float normalize_angle(float);
 extern float interpolate_scalar_linear(float, float, float);
 
 /* Update of moby class 121, a thrown bomb: it flies and spins, bounces once on the ground, explodes on a hit or when its timer runs out, then its blast ring grows for 15 frames. */
@@ -1870,7 +1870,7 @@ void bomb_update(M_2aedd0 *m) {
         int v;
 
         d->h6a++;
-        v = truncate_float_to_s32(FastSin(WrapAngle((float)d->h6a * 0.068f)) * 96.0f) + 0x9F;
+        v = truncate_float_to_s32(FastSin(normalize_angle((float)d->h6a * 0.068f)) * 96.0f) + 0x9F;
         m->color = (v << 16) | (0xFF << 24) | (v << 8) | v;
     }
     if (m->state == 2) {

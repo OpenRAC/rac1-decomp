@@ -1465,7 +1465,7 @@ extern int gBolts MACRO_ADDR;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int quick_swap_item MACRO_ADDR;
 extern float aridia_hero_fall_state_height MACRO_ADDR;
-extern int aridia_shown_help_message MACRO_ADDR;
+extern int item_selector_hud_inhibit MACRO_ADDR;
 extern int aridia_hero_run_step1_start_frame MACRO_ADDR;
 extern short aridia_hero_double_tap_timer;
 extern float aridia_player_camera_yaw;
@@ -1553,7 +1553,7 @@ void HeroL02_UpdateStateTransitions(void) {
             HeroL02_SetMoveState(0x3D, 1);
         } else if (process_hero_item_action_input() == 0 && try_start_hero_weapon_fire_state() == 0) {
             if ((g_controller_state.pressed & 0x10) || (((int)g_controller_state.pressed_unmasked) & 0x10)) {
-                if (g_hero.items[0].switch_lock != 2 && aridia_shown_help_message == 0
+                if (g_hero.items[0].switch_lock != 2 && item_selector_hud_inhibit == 0
                     && (g_hero.item_use_locked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.item_select_blocked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)
                     && (g_hero.vehicle_mode == 0 || g_hero.vehicle_mode == 3)) {

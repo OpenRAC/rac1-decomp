@@ -482,7 +482,7 @@ void _getAllRefs(struct MpegDecoder *d, int bx, int by, int mb_type, int motion_
 extern MpegMcFunc D_00132F30[];
 extern MpegMcFunc D_00132F50[];
 
-void func_00125F88(struct MpegDecoder *d, struct MpegRefImage *ref, int sfield, int dfield, int yofs, int h,
+void _getRef0(struct MpegDecoder *d, struct MpegRefImage *ref, int sfield, int dfield, int yofs, int h,
                    int bx, int by, int dx, int dy, int fieldpred, int avg) {
     struct MpegMcFetch *fl;
     struct MpegMcFetch *fc;

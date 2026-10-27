@@ -2271,15 +2271,15 @@ void horny_toad_update(Moby *moby) {
 /* Veldin level code: per-frame step of a moby's state 0x20 (retail func_L00_002D6610, 0x364 bytes).
  * Runs a sub-state machine on a[0x20] (3, 5, 8, 10, 12); when a[0x20] is 12 or the sweep finds
  * nothing it only stores 0xFF into a[0xA4]. Globals at gp-0x52xx are read as floats. */
-extern char *func_L00_0025B478(void *, int, int);
-extern int func_L00_0025B4D0(void *, void *, void *, int, int *, float *, int, int);
-extern void func_L00_0025BBA0(void *, float *, void *, void *);
-extern void func_L00_0025D5B0(void *, void *, int, int, int, float);
-extern void func_L00_0025E4B0(void *, void *);
-extern void func_L00_0025E590(void *, void *);
-extern int func_L00_00260FB0(float, void *, void *, int, int, void *, int);
-extern int func_001F9938(void *);
-extern float func_001F9878(float);
+extern char *MobyGetHitMessage(void *, int, int);
+extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
+extern void HeadingFromVector(void *, float *, void *, void *);
+extern void InitKnockback(void *, void *, int, int, int, float);
+extern void RerollEffectCounter(void *, void *);
+extern void StepColorFade(void *, void *);
+extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
+extern int FastDecTimer(void *);
+extern float multiply_global_factor(float);
 extern short D_L00_00161A40;
 extern short D_L00_00161A44;
 extern short D_L00_00161A48;
@@ -2287,7 +2287,7 @@ extern short D_L00_00161A4C;
 extern short D_L00_00161A58;
 extern short D_L00_00161A5C;
 
-void func_L00_002D6610(void *a0) {
+void process_horny_toad_hit_reaction(void *a0) {
     char *a = (char *)a0;
     char *d;
     char *b;
@@ -2315,8 +2315,8 @@ void func_L00_002D6610(void *a0) {
 
     f20 = 0.0f;
     f14 = f20;
-    b = func_L00_0025B478(a, 0x330000, 0);
-    r1 = func_L00_0025B4D0(a, b, d + 0x20, 0, &i10, &f14, 0, 4);
+    b = MobyGetHitMessage(a, 0x330000, 0);
+    r1 = ComputeHitResponse(a, b, d + 0x20, 0, &i10, &f14, 0, 4);
     (void)r1;
 
     /* Whether the hit counts is the resolver's fifth argument (1: none, or one still held off);
@@ -2351,10 +2351,10 @@ void func_L00_002D6610(void *a0) {
         *(unsigned short *)(a + 0x34) &= 0xEFFF;
 
         vec = *(Vx *)(b + 0x10);
-        func_L00_0025BBA0(&vec, &t18, d + 0x88, d + 0x8C);
+        HeadingFromVector(&vec, &t18, d + 0x88, d + 0x8C);
         f20 = t18;
-        r2 = func_002140B0(2);
-        func_L00_0025D5B0(a, q1, r2 + 6, 1, 0, f20);
+        r2 = random_integer_below(2);
+        InitKnockback(a, q1, r2 + 6, 1, 0, f20);
         {
             float c0 = *(float *)&D_L00_00161A5C;
             float c4 = *(float *)&D_L00_00161A58;
@@ -2363,24 +2363,24 @@ void func_L00_002D6610(void *a0) {
         }
         *(unsigned char *)(a + 0x20) = 12;
         *(unsigned char *)(d + 0x67) = 0x78;
-        func_L00_0025E4B0(a, d + 0x60);
+        RerollEffectCounter(a, d + 0x60);
         func_L00_002584A8_2D19E8((u8 *)a, 0, -1);
     }
     *(unsigned char *)(a + 0xA4) = 0xFF;
-    func_L00_0025E590(a, d + 0x60);
+    StepColorFade(a, d + 0x60);
 
     if (*(unsigned char *)(a + 0x20) == 3) {
         char *p;
         q = d + 0x180;
         k = *(int *)(d + 0x1E4);
         p = level_paths_r2[k];
-        func_L00_00260FB0(64.0f, a, q, 0, 0, p + 0x10, *(int *)p);
+        FindNearestEligibleMoby(64.0f, a, q, 0, 0, p + 0x10, *(int *)p);
     } else {
         char *p;
         q = d + 0x180;
         k = *(int *)(d + 0x1E0);
         p = level_paths_r2[k];
-        func_L00_00260FB0(24.0f, a, q, 0, 0, p + 0x10, *(int *)p);
+        FindNearestEligibleMoby(24.0f, a, q, 0, 0, p + 0x10, *(int *)p);
     }
     v = *(int *)(d + 0x1C0);
 
@@ -2390,10 +2390,10 @@ void func_L00_002D6610(void *a0) {
         qcopy(q, h + 0x80);
     }
 
-    func_001F9938(d + 0x276);
+    FastDecTimer(d + 0x276);
     if (*(int *)(d + 0x38) != 0) {
         *(short *)(d + 0x276) = (short)truncate_float_to_s32_r_r(
-            func_001F9878(func_002140F8_2D19E8(180.0f, 240.0f)));
+            multiply_global_factor(func_002140F8_2D19E8(180.0f, 240.0f)));
     }
     *(int *)(d + 0x38) = 0;
 
@@ -2401,7 +2401,7 @@ void func_L00_002D6610(void *a0) {
         if (*(short *)(d + 0x276) != 0) {
             *(unsigned char *)(a + 0x20) = 10;
             if (*(unsigned char *)(a + 0x53) != 4) {
-                func_00213DE0(a, 4, 0, ticks_2D4398(20));
+                MobyBlendAnimation(a, 4, 0, ticks_2D4398(20));
             }
         }
     }
@@ -2561,7 +2561,7 @@ extern void FastVecScale(void *, void *, float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern void vec_scale_to_length(void *, void *, float);
 extern float FastSubRots(float, float);
-extern short infobot_path_min_speed;
+extern short infobot_slot_path_minimum_speed_gp;
 
 /* Steers an object along a path with speed limits. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d5988. */
 void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
@@ -2586,7 +2586,7 @@ void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
     c = st->v60;
     if (l <= (c * c) / (s + s)) {
         f32 a1 = c - s;
-        f32 b1 = *(float *)&infobot_path_min_speed * g_frame_time;
+        f32 b1 = *(float *)&infobot_slot_path_minimum_speed_gp * g_frame_time;
         st->v60 = a1;
         if (a1 < b1) st->v60 = b1;
     } else {
@@ -2606,7 +2606,7 @@ void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
     FastVecAdd(&w, &w, &path->a[idx]);
     l = vec_distance_xy_r((void *)((char *)path + path->n * 16), &o->v[0]);
     if (l < 1.0f) {
-        if (st->v60 <= *(float *)&infobot_path_min_speed * g_frame_time) {
+        if (st->v60 <= *(float *)&infobot_slot_path_minimum_speed_gp * g_frame_time) {
             o->flag = p;
         }
     }
@@ -3103,13 +3103,13 @@ typedef struct { u8 pad[0x10]; Vec4f pos; u8 state; u8 pad21[0xF]; u8 b30; u8 pa
 extern Vec4f smoke_particle_unit_positions_r[] __asm__("D_L00_001CBAE0");
 extern u8 smoke_particle_matrix_select[];
 extern s16 smoke_particle_timer[];
-extern short smoke_fire_particle_jitter;
-extern short smoke_fire_particle_max_size;
+extern short smoke_fire_emitted_particle_position_spread_gp;
+extern short smoke_fire_emitted_particle_random_scalar_upper_bound_gp;
 extern short smoke_fire_particles_per_frame;
-extern short smoke_fire_particle_min_spin;
-extern short smoke_fire_particle_max_spin;
-extern short smoke_fire_particle_rgb;
-extern short smoke_fire_cull_distance;
+extern short smoke_fire_emitted_particle_sign_randomized_sample_min_gp;
+extern short smoke_fire_emitted_particle_sign_randomized_sample_max_gp;
+extern short smoke_fire_emitted_particle_base_color_gp;
+extern short smoke_fire_far_culling_distance_gp;
 extern Vec4f g_debug_camera_r2 __asm__("D_L00_00166EC0");
 void func_0020D678_D83D8(P *) __asm__("func_0020D678");
 float FastVecLength(void *);
@@ -3176,7 +3176,7 @@ void particle_spawner_smoke_fire_update(P *p) {
         qcopy(&v, tbl + 0x30);
         v.z += 9.0f;
         v.w = 10.0f;
-        if (FastBSphereCheck(&v, (*(float *)&smoke_fire_cull_distance)) < 0) return;
+        if (FastBSphereCheck(&v, (*(float *)&smoke_fire_far_culling_distance_gp)) < 0) return;
         if (q->flag42 && vec_distance_xy(&g_debug_camera_r2, &p->pos) < 128.0f) {
             for (e = 0; e < (*(int *)&smoke_fire_particles_per_frame); e++) {
                 a.x = randf_sym(0.0f, 1.0f);
@@ -3189,9 +3189,9 @@ void particle_spawner_smoke_fire_update(P *p) {
                 a.y = randf_sym(0.0f, g_frame_time * 0.25f);
                 a.z = q->f20 * g_frame_time;
                 f = random_float_between(q->f24, q->f28);
-                col = rand_range(q->h2C, q->h2E) << 24 | (*(int *)&smoke_fire_particle_rgb);
-                r = rand_range((*(int *)&smoke_fire_particle_min_spin), (*(int *)&smoke_fire_particle_max_spin));
-                ent = PartType23Spawn(&b, r, (*(float *)&smoke_fire_particle_jitter), 1.0f, &a, (*(float *)&smoke_fire_particle_max_size), col, f);
+                col = rand_range(q->h2C, q->h2E) << 24 | (*(int *)&smoke_fire_emitted_particle_base_color_gp);
+                r = rand_range((*(int *)&smoke_fire_emitted_particle_sign_randomized_sample_min_gp), (*(int *)&smoke_fire_emitted_particle_sign_randomized_sample_max_gp));
+                ent = PartType23Spawn(&b, r, (*(float *)&smoke_fire_emitted_particle_position_spread_gp), 1.0f, &a, (*(float *)&smoke_fire_emitted_particle_random_scalar_upper_bound_gp), col, f);
                 if (ent) {
                     sub = &ent->sub;
                     ent->h0A = scale_ticks_r(rand_range(q->x30, q->x34));

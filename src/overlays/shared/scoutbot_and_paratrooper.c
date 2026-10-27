@@ -632,8 +632,8 @@ extern short homing_shot_launch_spread;
 extern short homing_shot_spark_time_a;
 extern short homing_shot_spark_time_b;
 extern short homing_shot_spark_time_c;
-extern short homing_shot_launch_start_w;
-extern short homing_shot_launch_end_w;
+extern short moby_creation_particle_primary_motion_w_gp;
+extern short moby_creation_particle_secondary_motion_w_gp;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002937a0.c, FUN_L08_002e7eb0. */
 char *create_moby_with_particles(int owner, float *position, float *rotation, int value) {
@@ -689,8 +689,8 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
                 vec_scale_to_length(offset_ptr, matrix_row_ptr, magnitude * FastSin(angle));
                 FastVecAdd(velocity_ptr, velocity_ptr, offset_ptr);
                 qcopy(offset_ptr, velocity_ptr);
-                velocity[3] = (*(float *)&homing_shot_launch_start_w);
-                offset[3] = (*(float *)&homing_shot_launch_end_w);
+                velocity[3] = (*(float *)&moby_creation_particle_primary_motion_w_gp);
+                offset[3] = (*(float *)&moby_creation_particle_secondary_motion_w_gp);
                 i++;
                 PartType21Spawn(moby + 0x10, velocity_ptr, (*(int *)&homing_shot_flash_color_a), (*(int *)&homing_shot_flash_color_b),
                     rand_range(scale_ticks(10), scale_ticks(20)), 1, 20000.0f);
@@ -733,8 +733,8 @@ extern short homing_shot_trail_spread;
 extern short homing_shot_spark_time_a;
 extern short homing_shot_spark_time_b;
 extern short homing_shot_spark_time_c;
-extern short homing_shot_trail_start_w;
-extern short homing_shot_trail_end_w;
+extern short homing_projectile_trail_primary_motion_w_gp;
+extern short homing_projectile_trail_secondary_motion_w_gp;
 extern float batalia_coll_hit_point[4];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002937a0.c, FUN_L08_002e8210. */
@@ -772,8 +772,8 @@ void Moby458Update(char *moby) {
         vec_scale_to_length(offset, moby + 0xd0, magnitude * FastSin(angle));
         FastVecAdd(velocity, velocity, offset);
         qcopy(offset, offset);
-        velocity[3] = (*(float *)&homing_shot_trail_start_w);
-        offset[3] = (*(float *)&homing_shot_trail_end_w);
+        velocity[3] = (*(float *)&homing_projectile_trail_primary_motion_w_gp);
+        offset[3] = (*(float *)&homing_projectile_trail_secondary_motion_w_gp);
         i++;
         a = truncate_float_to_s32(multiply_global_factor(random_float_between(
             (float)(*(int *)&homing_shot_spark_time_a), (float)(*(int *)&homing_shot_spark_time_a) * 1.2f)));
@@ -973,12 +973,12 @@ extern short spark_emitter_start_rise;
 extern short spark_emitter_start_speed;
 extern short spark_emitter_end_rise;
 extern short spark_emitter_end_speed;
-extern short spark_emitter_time_a;
-extern short spark_emitter_time_b;
-extern short spark_emitter_time_c;
+extern short spark_emitter_default_frame_count_base_gp;
+extern short spark_emitter_default_second_frame_count_base_gp;
+extern short spark_emitter_default_third_frame_count_base_gp;
 extern short spark_emitter_interval;
-extern short spark_emitter_start_w;
-extern short spark_emitter_end_w;
+extern short spark_emitter_default_primary_motion_w_gp;
+extern short spark_emitter_default_secondary_motion_w_gp;
 extern short spark_emitter_start_side_spread;
 extern short spark_emitter_end_side_spread;
 
@@ -1007,11 +1007,11 @@ void Moby648Update(char *m) {
         vec_scale_to_length(d, e + 4, random_float_between(-(*(f32 *)&spark_emitter_end_side_spread), (*(f32 *)&spark_emitter_end_side_spread)) * g_frame_time);
         FastVecAdd(v1, v1, d);
         v1[2] += random_float_between((*(f32 *)&spark_emitter_end_rise), (*(f32 *)&spark_emitter_end_rise) * 1.5f) * g_frame_time;
-        v0[3] = (*(f32 *)&spark_emitter_start_w);
-        v1[3] = (*(f32 *)&spark_emitter_end_w);
-        s0 = truncate_float_to_s32(multiply_global_factor(random_float_between((f32)(*(s32 *)&spark_emitter_time_a), (f32)(*(s32 *)&spark_emitter_time_a) * 1.2f)));
-        s16 = truncate_float_to_s32(multiply_global_factor(random_float_between((f32)(*(s32 *)&spark_emitter_time_b), (f32)(*(s32 *)&spark_emitter_time_b) * 1.2f)));
-        s2 = truncate_float_to_s32(multiply_global_factor(random_float_between((f32)(*(s32 *)&spark_emitter_time_c), (f32)(*(s32 *)&spark_emitter_time_c) * 1.2f)));
+        v0[3] = (*(f32 *)&spark_emitter_default_primary_motion_w_gp);
+        v1[3] = (*(f32 *)&spark_emitter_default_secondary_motion_w_gp);
+        s0 = truncate_float_to_s32(multiply_global_factor(random_float_between((f32)(*(s32 *)&spark_emitter_default_frame_count_base_gp), (f32)(*(s32 *)&spark_emitter_default_frame_count_base_gp) * 1.2f)));
+        s16 = truncate_float_to_s32(multiply_global_factor(random_float_between((f32)(*(s32 *)&spark_emitter_default_second_frame_count_base_gp), (f32)(*(s32 *)&spark_emitter_default_second_frame_count_base_gp) * 1.2f)));
+        s2 = truncate_float_to_s32(multiply_global_factor(random_float_between((f32)(*(s32 *)&spark_emitter_default_third_frame_count_base_gp), (f32)(*(s32 *)&spark_emitter_default_third_frame_count_base_gp) * 1.2f)));
         PartType02Spawn(c, v0, v1, (*(s32 *)&spark_emitter_lower), (*(s32 *)&spark_emitter_upper), s0, s16, s2, -1);
     } else {
         *(s32 *)(v + 0x3C) = *(s32 *)(v + 0x14);

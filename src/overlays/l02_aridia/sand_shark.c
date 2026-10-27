@@ -910,7 +910,7 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern float g_frame_time MACRO_ADDR;
-extern int aridia_burst_throttle_count MACRO_ADDR;
+extern int sand_shark_particle_emission_throttle_input MACRO_ADDR;
 extern short sand_shark_burst_rise_min, sand_shark_burst_rise_max, sand_shark_burst_end_rise_min, sand_shark_burst_end_rise_max;
 extern short sand_shark_burst_spread_min, sand_shark_burst_spread_max, sand_shark_burst_start_scale, sand_shark_burst_end_scale;
 extern short sand_shark_burst_life_min, sand_shark_burst_life_max, sand_shark_burst_stage2_min, sand_shark_burst_stage2_max;
@@ -928,9 +928,9 @@ void emit_sand_shark_radial_particles(void *pos, int n) {
     int a, b, c;
     float *pv = v;
     *(u128b *)v = *(u128b *)pos;
-    if (aridia_burst_throttle_count >= 0x5DD) {
+    if (sand_shark_particle_emission_throttle_input >= 0x5DD) {
         n = n / 4;
-    } else if (aridia_burst_throttle_count > 0x400) {
+    } else if (sand_shark_particle_emission_throttle_input > 0x400) {
         n = n / 2;
     }
     for (i = 0; i < n; i++) {
@@ -969,7 +969,7 @@ void emit_sand_shark_single_particle(void *pos) {
     int a, b, c;
     float *pv = v;
     *(u128b *)v = *(u128b *)pos;
-    if (aridia_burst_throttle_count < 0x6A5) {
+    if (sand_shark_particle_emission_throttle_input < 0x6A5) {
         r = random_angle_radians();
         qcopy(w, pv);
         w[2] = w[2] + random_float_between(0.125f, 0.0f);
@@ -1044,10 +1044,10 @@ typedef struct {
 } Vars_2D70C0;
 
 
-extern float sand_shark_death_knock_lift SDATA(D_L02_00161998);
-extern float sand_shark_death_knock_speed SDATA(D_L02_0016199C);
-extern float sand_shark_death_knock_gravity SDATA(D_L02_001619A4);
-extern float sand_shark_death_knock_drag SDATA(D_L02_001619A8);
+extern float sand_shark_death_knockback_vertical_speed_gp SDATA(D_L02_00161998);
+extern float sand_shark_death_knockback_horizontal_speed_gp SDATA(D_L02_0016199C);
+extern float sand_shark_death_knockback_gravity_gp SDATA(D_L02_001619A4);
+extern float sand_shark_death_knockback_horizontal_speed_approach_rate_gp SDATA(D_L02_001619A8);
 extern int *aridia_paths_r[] __asm__("D_L02_001B0DB0");
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_sq MACRO_ADDR;
@@ -1117,10 +1117,10 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
         if (d->hp <= 0.0f) {
             d->hp -= dmg;
             d->i140 = 0x200;
-            d->f130 = sand_shark_death_knock_gravity * g_frame_time_sq;
-            d->f134 = sand_shark_death_knock_drag * g_frame_time_sq;
-            d->f138 = sand_shark_death_knock_speed * g_frame_time;
-            d->f13C = sand_shark_death_knock_lift * g_frame_time;
+            d->f130 = sand_shark_death_knockback_gravity_gp * g_frame_time_sq;
+            d->f134 = sand_shark_death_knockback_horizontal_speed_approach_rate_gp * g_frame_time_sq;
+            d->f138 = sand_shark_death_knockback_horizontal_speed_gp * g_frame_time;
+            d->f13C = sand_shark_death_knockback_vertical_speed_gp * g_frame_time;
             d->b15D = 0;
             d->i144 = 9;
             d->f16C = 2.0f * g_frame_time;
@@ -1273,8 +1273,8 @@ extern float g_frame_time MACRO_ADDR;
 extern char *aridia_scene_points MACRO_ADDR;
 extern int frame_counter_ref MACRO_ADDR;
 extern float aridia_zero_vec[] MACRO_ADDR;
-extern float aridia_bot_shot_range SDATA(D_L02_00161B10);
-extern float aridia_bot_gravity SDATA(D_L02_00161B14);
+extern float level02_bot_attack_shot_nominal_length_gp SDATA(D_L02_00161B10);
+extern float level02_bot_gravity_gp SDATA(D_L02_00161B14);
 extern int aridia_bot_spray_color SDATA(D_L02_00161B18);
 extern int aridia_bot_spray_ticks_min SDATA(D_L02_00161B20);
 extern int aridia_bot_spray_ticks_max SDATA(D_L02_00161B24);
@@ -1439,7 +1439,7 @@ void update_level02_bot(unsigned char *raw) {
         ClampVectorLength(position, g_frame_time * 6.0f);
         FastVecAdd(&moby->pos, &moby->pos, position);
         ground = ProbeGroundHeight(&moby->pos, 0, 0.5f);
-        ApproachValue(&data->velocity[2], g_frame_time * 40.0f, aridia_bot_gravity * g_frame_time_sq);
+        ApproachValue(&data->velocity[2], g_frame_time * 40.0f, level02_bot_gravity_gp * g_frame_time_sq);
         ApproachValue(&moby->pos.z, ground, data->velocity[2]);
         if (moby->pos.z == ground) {
             moby->state = 4;
@@ -1568,7 +1568,7 @@ void update_level02_bot(unsigned char *raw) {
         direction[0] = FastCos(fast_atan2(position[0] - moby->pos.x, position[1] - moby->pos.y));
         direction[1] = FastSin(fast_atan2(position[0] - moby->pos.x, position[1] - moby->pos.y));
         direction[2] = -0.1f;
-        effect_slots_fire(data->shots, position, direction, aridia_bot_shot_range);
+        effect_slots_fire(data->shots, position, direction, level02_bot_attack_shot_nominal_length_gp);
         direction[3] = 5627.925f;
         direction[2] = 1.0f;
         InitDirectionalHitQuery(shot, (int)moby, 0x10001, direction, 1.0f);
@@ -2352,10 +2352,10 @@ extern float g_frame_time_sq;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern void advance_transport_pod_rails_to_offsets(char *);
 extern void snap_transport_pod_rails_to_offsets(char *);
-extern short transport_pod_rail_a_offset;
-extern short transport_pod_rail_b_offset;
-extern short transport_pod_cycle_rails;
-extern short transport_pod_show_path;
+extern short transport_pod_configured_rail_a_height_offset_gp;
+extern short transport_pod_configured_rail_b_height_offset_gp;
+extern short transport_pod_rail_cycle_enabled_gp;
+extern short transport_pod_path_markers_enabled_gp;
 extern short transport_pod_camera_param_1;
 extern short transport_pod_camera_param_2;
 extern short transport_pod_camera_param_3;
@@ -2451,7 +2451,7 @@ void transport_pod_update(unsigned char *moby) {
 
     FastVecScale(delta, moby + 0x10, -1.0f);
     qcopy(rot, moby + 0x40);
-    if ((*(float *)&transport_pod_show_path) != 0.0f) {
+    if ((*(float *)&transport_pod_path_markers_enabled_gp) != 0.0f) {
         for (i = 0; i < *(int *)aridia_paths[transport_pod_vars->path]; i++) {
             qcopy(a, aridia_paths[transport_pod_vars->path] + i * 0x10 + 0x10);
             PartType41Spawn(a, moby, 4, 0x800000FF, 0x7F, 2, 0xFF, 0.1f);
@@ -2705,12 +2705,12 @@ void transport_pod_update(unsigned char *moby) {
         break;
     case TRANSPORT_POD_POSITION_RAILS_FROM_CONFIGURED_OFFSETS:
         {
-        float ha = (*(float *)&transport_pod_rail_a_offset), hb = (*(float *)&transport_pod_rail_b_offset);
+        float ha = (*(float *)&transport_pod_configured_rail_a_height_offset_gp), hb = (*(float *)&transport_pod_configured_rail_b_height_offset_gp);
         transport_pod_vars->rail_a_off = ha;
         transport_pod_vars->rail_b_off = hb;
         }
         advance_transport_pod_rails_to_offsets((char *)moby);
-        if ((*(float *)&transport_pod_cycle_rails) != 0.0f) {
+        if ((*(float *)&transport_pod_rail_cycle_enabled_gp) != 0.0f) {
             moby[0x20] = 0x10;
         }
         break;
@@ -2718,7 +2718,7 @@ void transport_pod_update(unsigned char *moby) {
         transport_pod_vars->rail_a_off = 2.0f;
         transport_pod_vars->rail_b_off = -4.0f;
         advance_transport_pod_rails_to_offsets((char *)moby);
-        if ((*(float *)&transport_pod_cycle_rails) == 0.0f) {
+        if ((*(float *)&transport_pod_rail_cycle_enabled_gp) == 0.0f) {
             moby[0x20] = 0xF;
         } else if (FastAbsF(((struct Moby *)transport_pod_vars->rail_a)->pos.z - ((struct Moby *)moby)->pos.z - 2.0f) < 0.01f &&
                    FastAbsF(((struct Moby *)transport_pod_vars->rail_b)->pos.z - ((struct Moby *)moby)->pos.z + 4.0f) < 0.01f) {
@@ -2729,7 +2729,7 @@ void transport_pod_update(unsigned char *moby) {
         transport_pod_vars->rail_a_off = -1.0f;
         transport_pod_vars->rail_b_off = -1.0f;
         advance_transport_pod_rails_to_offsets((char *)moby);
-        if ((*(float *)&transport_pod_cycle_rails) == 0.0f) {
+        if ((*(float *)&transport_pod_rail_cycle_enabled_gp) == 0.0f) {
             moby[0x20] = 0xF;
         } else if (FastAbsF(((struct Moby *)transport_pod_vars->rail_a)->pos.z - ((struct Moby *)moby)->pos.z + 1.0f) < 0.01f &&
                    FastAbsF(((struct Moby *)transport_pod_vars->rail_b)->pos.z - ((struct Moby *)moby)->pos.z + 1.0f) < 0.01f) {
@@ -2889,9 +2889,9 @@ void crane_update(unsigned char *moby) {
         break;
     }
 }
-extern short rocket_launcher_turn_accel;
-extern short rocket_launcher_turn_speed;
-extern short rocket_launcher_recoil;
+extern short rocket_launcher_yaw_acceleration_gp;
+extern short rocket_launcher_max_yaw_speed_gp;
+extern short rocket_launcher_shot_sound_initial_distance_gp;
 extern short rocket_launcher_shot_speed;
 extern short rocket_launcher_glow_start_color;
 extern short rocket_launcher_glow_end_color;
@@ -2944,8 +2944,8 @@ void rocket_launcher_update(unsigned char *m) {
         }
         break;
     case 1:
-        A = *(float *)&rocket_launcher_turn_accel * 0.01745329238f * g_frame_time_sq;
-        C = *(float *)&rocket_launcher_turn_speed * 0.01745329238f * g_frame_time;
+        A = *(float *)&rocket_launcher_yaw_acceleration_gp * 0.01745329238f * g_frame_time_sq;
+        C = *(float *)&rocket_launcher_max_yaw_speed_gp * 0.01745329238f * g_frame_time;
         SteerAngleWithVelocity(&moby->rot.z, &rocket_launcher_vars->yaw_vel, rocket_launcher_vars->target_yaw, A, A, C);
         if (Sound_IsPlaying(m, rocket_launcher_vars->voice) == 0) {
             rocket_launcher_vars->voice = Moby_PlaySound(2, 4, (int)m);
@@ -2961,7 +2961,7 @@ void rocket_launcher_update(unsigned char *m) {
             }
             rocket_launcher_vars->voice = -1;
             Moby_PlaySound(3, 0, (int)m);
-            rocket_launcher_vars->recoil = *(float *)&rocket_launcher_recoil;
+            rocket_launcher_vars->recoil = *(float *)&rocket_launcher_shot_sound_initial_distance_gp;
             moby->state = 2;
             if (moby->prev_seq != 1) {
                 MobyBlendAnimation(m, 1, 0, 1);

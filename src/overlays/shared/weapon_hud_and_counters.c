@@ -1687,11 +1687,11 @@ void update_health_hud_animation_and_visibility(HudElem *e) {
 extern char hero_globals_base[];
 extern int pal_mode_m __asm__("D_0015EE80") MACRO_ADDR;
 extern int hero_max_health MACRO_ADDR;
-extern short health_hud_y;
-extern short health_hud_backing_alpha;
-extern short health_hud_backing_y_offset;
-extern short health_hud_cap_size;
-extern short health_hud_second_row_y_offset;
+extern short health_hud_base_y_offset;
+extern short health_hud_panel_max_alpha;
+extern short health_hud_panel_y_offset;
+extern short health_hud_panel_cap_size;
+extern short health_hud_panel_row_y_step;
 extern short health_hud_icon_offsets;
 extern short health_hud_icon_offsets_8[];
 extern short health_hud_icon_offsets_5[];
@@ -1717,9 +1717,9 @@ int draw_health_hud_panel(char *e) {
     }
     x0 = *(int *)(e + 0x50);
     if (pal_mode_m) {
-        y0 = *(int *)&health_hud_y + 0xA;
+        y0 = *(int *)&health_hud_base_y_offset + 0xA;
     } else {
-        y0 = *(int *)&health_hud_y + 0x12;
+        y0 = *(int *)&health_hud_base_y_offset + 0x12;
     }
     n = *(int *)(e + 0x78);
     q = (unsigned char *)e + 0x70;
@@ -1741,7 +1741,7 @@ int draw_health_hud_panel(char *e) {
         f22 = 0.0f;
     }
     alpha = truncate_float_to_s32(f22 * 128.0f);
-    w = truncate_float_to_s32((float)*(int *)&health_hud_backing_alpha * f21);
+    w = truncate_float_to_s32((float)*(int *)&health_hud_panel_max_alpha * f21);
     ip = *(char **)(e + 0x80);
     phase = *(short *)ip >> 1;
     if (n == 0) {
@@ -1767,23 +1767,23 @@ int draw_health_hud_panel(char *e) {
         bw = truncate_float_to_s32(f21 * 48.0f);
     }
     x = x0 - bw;
-    y = y0 + *(int *)&health_hud_backing_y_offset;
+    y = y0 + *(int *)&health_hud_panel_y_offset;
     tex = GetIconFrame(0x7580, 1);
     tex2 = GetIconFrame(0x7580, 0);
-    draw_hud_sprite_flipped(tex, x0 + bw, y, (*(int *)&health_hud_cap_size), (*(int *)&health_hud_cap_size), w);
-    HudSprite(tex2, x, y, bw << 1, (*(int *)&health_hud_cap_size), w);
+    draw_hud_sprite_flipped(tex, x0 + bw, y, (*(int *)&health_hud_panel_cap_size), (*(int *)&health_hud_panel_cap_size), w);
+    HudSprite(tex2, x, y, bw << 1, (*(int *)&health_hud_panel_cap_size), w);
     {
-        int h = (*(int *)&health_hud_cap_size);
+        int h = (*(int *)&health_hud_panel_cap_size);
         HudSprite(tex, x - h, y, h, h, w);
     }
     if (bw2) {
         int x2;
-        y += *(int *)&health_hud_second_row_y_offset;
-        draw_hud_sprite_flipped(tex, x0 + bw2, y, (*(int *)&health_hud_cap_size), (*(int *)&health_hud_cap_size), w);
+        y += *(int *)&health_hud_panel_row_y_step;
+        draw_hud_sprite_flipped(tex, x0 + bw2, y, (*(int *)&health_hud_panel_cap_size), (*(int *)&health_hud_panel_cap_size), w);
         x2 = x0 - bw2;
-        HudSprite(tex2, x2, y, bw2 << 1, (*(int *)&health_hud_cap_size), w);
+        HudSprite(tex2, x2, y, bw2 << 1, (*(int *)&health_hud_panel_cap_size), w);
         {
-            int h = (*(int *)&health_hud_cap_size);
+            int h = (*(int *)&health_hud_panel_cap_size);
             HudSprite(tex, x2 - h, y, h, h, w);
         }
     }

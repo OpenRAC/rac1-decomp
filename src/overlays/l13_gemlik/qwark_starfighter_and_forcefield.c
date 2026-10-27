@@ -447,7 +447,7 @@ extern float vec_distance_xy(void *, void *);
 extern void update_moby_spring_steering_and_banking(void *, void *, float, float);
 extern float FastSubRots(float, float);
 extern float FastAbsF(float);
-extern float WrapAngle(float);
+extern float normalize_angle(float);
 extern float FastAddRots(float, float);
 extern float FastDiffRots(float, float);
 extern void AddDrawCallback(void *, void *);
@@ -785,10 +785,10 @@ void update_qwarks_starfighter(Moby388 *moby) {
                                               *(float *)(ship + 0x34));
                     abs_pitch_error = FastAbsF(pitch_error);
                     if (abs_yaw_error > 0.38397244f) {
-                        *(float *)(ship + 0x38) = FastAddRots(*(float *)(ship + 0x38), WrapAngle((abs_yaw_error - 0.38397244f) / 0.17453292f * yaw_error));
+                        *(float *)(ship + 0x38) = FastAddRots(*(float *)(ship + 0x38), normalize_angle((abs_yaw_error - 0.38397244f) / 0.17453292f * yaw_error));
                     }
                     if (abs_pitch_error > 0.38397244f) {
-                        *(float *)(ship + 0x34) = FastAddRots(*(float *)(ship + 0x34), WrapAngle((abs_pitch_error - 0.38397244f) / 0.17453292f * pitch_error));
+                        *(float *)(ship + 0x34) = FastAddRots(*(float *)(ship + 0x34), normalize_angle((abs_pitch_error - 0.38397244f) / 0.17453292f * pitch_error));
                     }
                 }
             }
@@ -2721,10 +2721,10 @@ extern int CollType(void);
 extern char gemlik_reference_axis[] MACRO_ADDR;
 extern char gemlik_coll_hit_result[] MACRO_ADDR;
 extern short blarg_commando_scale;
-extern short blarg_commando_stun_knock_up;
-extern short blarg_commando_stun_knock_back;
-extern short blarg_commando_hit_knock_up;
-extern short blarg_commando_hit_knock_back;
+extern short blarg_space_commando_stun_horizontal_knockback_speed;
+extern short blarg_space_commando_stun_vertical_knockback_speed;
+extern short blarg_space_commando_dying_horizontal_knockback_speed;
+extern short blarg_space_commando_dying_vertical_knockback_speed;
 
 struct WalkerVars_a1c8 {
     u8 pad0[0x20];
@@ -2814,8 +2814,8 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby)
             float ku, kb;
             moby->state = 0xF;
             st = scale_ticks(0x3C);
-            ku = *(float *)&blarg_commando_stun_knock_up * g_frame_time;
-            kb = *(float *)&blarg_commando_stun_knock_back * g_frame_time;
+            ku = *(float *)&blarg_space_commando_stun_horizontal_knockback_speed * g_frame_time;
+            kb = *(float *)&blarg_space_commando_stun_vertical_knockback_speed * g_frame_time;
             vars->stun_timer = st;
             vars->knock_up = ku;
             vars->knock_back = kb;
@@ -2830,8 +2830,8 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby)
             {
             float ku, kb;
             moby->state = 0x10;
-            ku = *(float *)&blarg_commando_hit_knock_up * g_frame_time;
-            kb = *(float *)&blarg_commando_hit_knock_back * g_frame_time;
+            ku = *(float *)&blarg_space_commando_dying_horizontal_knockback_speed * g_frame_time;
+            kb = *(float *)&blarg_space_commando_dying_vertical_knockback_speed * g_frame_time;
             moby->flags &= ~0x1000;
             vars->knock_up = ku;
             vars->knock_min = 9.0f;

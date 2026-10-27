@@ -1413,8 +1413,8 @@ void _sequenceHeader(void *arg0) {
     mpeg_init_seq(*(void **)(s + 0x858));
 }
 
-void func_0012C608(void *arg0) {
-    extern void func_0012C8B0(unsigned int *, unsigned int *, unsigned int *, unsigned int *,
+void mpeg_init_seq(void *arg0) {
+    extern void mpeg_init_ref_image_addrs(unsigned int *, unsigned int *, unsigned int *, unsigned int *,
                               unsigned int *, unsigned int *, unsigned int *, unsigned int *,
                               unsigned int *, int, int, int, int, int);
     int *a = (int *)arg0;
@@ -1463,23 +1463,23 @@ void func_0012C608(void *arg0) {
     q6 = (unsigned int *)(s + 0x458);
     q7 = (unsigned int *)(s + 0x4C0);
     n = (mbw * t) >> 8;
-    func_0012BD50(s + 0x108);
-    *(unsigned int *)(s + 0xFC) = func_0012BD60(s, s + 0x108, n, 0x40);
-    *(unsigned int *)(s + 0x100) = func_0012BD60(s, s + 0x108, n, 0x40);
-    *(unsigned int *)(s + 0x104) = func_0012BD60(s, s + 0x108, n, 0x40);
-    func_0012C8B0(q0, q1, q2,
+    mpeg_work_area_reset_to_mark(s + 0x108);
+    *(unsigned int *)(s + 0xFC) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
+    *(unsigned int *)(s + 0x100) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
+    *(unsigned int *)(s + 0x104) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
+    mpeg_init_ref_image_addrs(q0, q1, q2,
                   q3, q4, q5,
                   q6, q7, q8,
                   *(int *)(s + 0xFC), *(int *)(s + 0x100), *(int *)(s + 0x104), mbw, mbh);
-    func_0012C4C0(q0, mbw, mbh);
-    func_0012C4C0(q1, mbw, mbh);
-    func_0012C4C0(q2, mbw, mbh);
-    func_0012C4C0(q3, mbw, mbh >> 1);
-    func_0012C4C0(q4, mbw, mbh >> 1);
-    func_0012C4C0(q5, mbw, mbh >> 1);
-    func_0012C4C0(q6, mbw, mbh >> 1);
-    func_0012C4C0(q7, mbw, mbh >> 1);
-    func_0012C4C0(q8, mbw, mbh >> 1);
+    mpeg_set_frame_size(q0, mbw, mbh);
+    mpeg_set_frame_size(q1, mbw, mbh);
+    mpeg_set_frame_size(q2, mbw, mbh);
+    mpeg_set_frame_size(q3, mbw, mbh >> 1);
+    mpeg_set_frame_size(q4, mbw, mbh >> 1);
+    mpeg_set_frame_size(q5, mbw, mbh >> 1);
+    mpeg_set_frame_size(q6, mbw, mbh >> 1);
+    mpeg_set_frame_size(q7, mbw, mbh >> 1);
+    mpeg_set_frame_size(q8, mbw, mbh >> 1);
     }
 }
 

@@ -461,7 +461,7 @@ extern float vector_length_xyz_cf(float *, int);
 extern float FastVecLength(void *);
 extern float ApproachValue(float *, float, float);
 extern float FastCos(float);
-extern void set_first_hero_easing_parameters(float, float);
+extern void Hero_SetTiltSpringParams(float, float);
 extern void emit_hero_periodic_surface_particles(int, int);
 extern void fast_sin_cf(int, int);
 extern float FastSin(float);
@@ -982,9 +982,9 @@ void Hero_UpdateStatePhysicsL12(void) {
             clip_hero_horizontal_velocity(0);
             lean = g_hero.unk8EC * FastCos(ang) * -7.0f;
             SpringAngle(&g_hero.motion.rot.f[0], lean, &g_hero.swim_lean_vel, 0, 0.007f, 0.17f, g_frame_time * 1.2217305f);
-            set_first_hero_easing_parameters(0.009f, 0.22f);
-            set_first_hero_easing_parameters(0.04f, 0.2f);
-            set_first_hero_easing_parameters(0.02f, 0.2f);
+            Hero_SetTiltSpringParams(0.009f, 0.22f);
+            Hero_SetTiltSpringParams(0.04f, 0.2f);
+            Hero_SetTiltSpringParams(0.02f, 0.2f);
             hoven_hero_bones[1].f60[1] = roll * 47.0f;
             hoven_hero_bones[1].f60[2] = lean * 1.5f;
             hoven_hero_bones[1].f60[0] = lean * 1.4f;
@@ -2026,10 +2026,10 @@ void Hero_UpdateStatePhysicsL12(void) {
         break;
     case 0x2F:
         update_hero_planar_movement_velocity();
-        set_first_hero_easing_parameters(0.04f, 0.2f);
-        set_first_hero_easing_parameters(0.04f, 0.2f);
-        set_first_hero_easing_parameters(0.04f, 0.2f);
-        set_first_hero_easing_parameters(0.02f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.02f, 0.2f);
         if (moby->prev_seq == 0x37) {
             float a;
 

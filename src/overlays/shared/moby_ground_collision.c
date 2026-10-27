@@ -2346,10 +2346,10 @@ s32 find_nearest_path_point(s32 *path, OvlQuad *point, OvlQuad *nearest,
     return 1;
 }
 LINKER_REMNANT("asm/overlays", func_L00_0025F360);
-extern f32 func_L00_002001D8(void *, f32);
+extern f32 split_float_fraction(void *, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math_rotations_0025d238.c, FUN_L00_0025e310. */
-f32 WrapAngle(f32 a) {
+f32 normalize_angle(f32 a) {
     f32 out;
     f32 x;
     f32 pi = 3.14159274f;
@@ -2357,7 +2357,7 @@ f32 WrapAngle(f32 a) {
 
     x = a + pi;
     x /= tp;
-    x = func_L00_002001D8(&out, x);
+    x = split_float_fraction(&out, x);
     x *= tp;
     return x - pi;
 }
