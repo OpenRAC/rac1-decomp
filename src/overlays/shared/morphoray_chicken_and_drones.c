@@ -11,7 +11,7 @@ extern char hero_globals_base[];
 extern char collision_hit_point[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern int GetFlaggedPvarWord(char *);
-extern int func_L00_00261448(char *);
+extern int moby_get_ride_transform(char *);
 extern void FastVecAdd(void *, void *, void *);
 extern int coll_line(void *, void *, int, int, int);
 extern void vec_scale_to_length(void *, void *, float);
@@ -32,7 +32,7 @@ void release_glove_of_doom_held_moby(Q4 *release_position, char *released_moby, 
     Vec4 collision_start, collision_position_offset;
     qcopy(q, initial_velocity);
     P = (Hero *)(hero_globals_base + 0xE1D);
-    if (P->ground_moby && func_L00_00261448(P->ground_moby)) {
+    if (P->ground_moby && moby_get_ride_transform(P->ground_moby)) {
         FastVecAdd(q, q, &P->motion.displacement);
     }
     released_moby_position = &moby->pos;
@@ -262,7 +262,7 @@ void update_doom_bot_spawner(char *m) {
         if (*(short *)(*(char **)(s + 0x30) + 0xA6) == 0xE5 && *(short *)(s + 0x3A) == 0 &&
             FastVecLength(s) > 0.0f) {
             char *P = hero_globals_base + 0xE1D;
-            if (*(int *)(P + 0x2FC) == 0 || func_L00_00261448(*(char **)(P + 0x2FC)) == 0) {
+            if (*(int *)(P + 0x2FC) == 0 || moby_get_ride_transform(*(char **)(P + 0x2FC)) == 0) {
                 predict_doom_bot_spawner_landing(s, m, 1);
             } else {
                 if (predict_doom_bot_spawner_landing(s, m, 0) == 0) {
@@ -366,7 +366,7 @@ void update_doom_bot_spawner(char *m) {
             if (FastVecLength(s) < frame_scale * f21) goto L344;
         }
         if (*(int *)(P + 0x2FC) == 0) goto Lfin;
-        if (func_L00_00261448(*(char **)(P + 0x2FC)) != 0) {
+        if (moby_get_ride_transform(*(char **)(P + 0x2FC)) != 0) {
             float a20 = FastVecLength(s);
             if (a20 < frame_scale * f21 + FastVecLength(Q - 0x40)) {
                 goto L344;
@@ -385,7 +385,7 @@ void update_doom_bot_spawner(char *m) {
         }
     L394:
         w = hero_globals_base + 0xE1D;
-        if (*(int *)(w + 0x2FC) != 0 && func_L00_00261448(*(char **)(w + 0x2FC)) != 0) {
+        if (*(int *)(w + 0x2FC) != 0 && moby_get_ride_transform(*(char **)(w + 0x2FC)) != 0) {
             FastVecAdd(s, s, w + 0x100);
         }
     Lfin:
@@ -426,7 +426,7 @@ void update_doom_bot_spawner(char *m) {
                 f20 = f20 * f0;
                 v1.v[1] = f20;
                 v1.v[2] = frame_scale * 0.02f;
-                if (*(int *)(P + 0x2FC) != 0 && func_L00_00261448(*(char **)(P + 0x2FC)) != 0) {
+                if (*(int *)(P + 0x2FC) != 0 && moby_get_ride_transform(*(char **)(P + 0x2FC)) != 0) {
                     FastVecAdd(&v1, &v1, P + 0x100);
                 }
                 FastVecAdd(&v0, &v1, m + 0x10);

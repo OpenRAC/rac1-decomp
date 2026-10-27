@@ -11429,6 +11429,253 @@ D_0015EDBC	snd_batch_return_buffers_1	descriptive	config/names_local.tsv	snd_bat
 func_00120978	sce_cd_callback	descriptive	config/names_local.tsv	sceCdCallback: swaps the CD callback pointer after sceCdSync(1), returns the old one	
 func_0011DDA0	Exit	descriptive	config/names_local.tsv	Exit(status) (comment): TLB re-init then the Exit syscall	rfu_dispatch_entry
 D_0013A548	disc_table_level_entries	descriptive	config/names_local.tsv	disc_table (0x137C80) + 0x28C8; 8-byte {sector, ...} entries indexed by level	
+func_001144D0	setlocale_r_stripped_tail	descriptive	config/names_local.tsv	comment: linker dead-stripped _setlocale_r down to its last word	
+func_001144E8	setlocale_stripped_tail	descriptive	config/names_local.tsv	comment: linker dead-stripped setlocale down to its last word	
+func_001FF950	link_hud_bank_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after LinkHudBank	
+func_001FFD98	load_animation_definition_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after load_animation_definition	
+func_001FFE18	hud_set_bar_value_by_id_tail	descriptive	config/names_local.tsv	linker remnant (stack epilogues only) right after Hud_SetBarValueById	
+func_001FFF08	copy_text_to_shared_buffer_tail	descriptive	config/names_local.tsv	linker remnant right after copy_text_to_shared_buffer	
+func_00200190	update_hud_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after update_hud	
+func_002008B0	draw_hud_sprite_flipped_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after draw_hud_sprite_flipped	
+func_00201948	draw_hud_rect_tail	descriptive	config/names_local.tsv	linker remnant (stack epilogues only) right after draw_hud_rect	
+func_00201AE0	draw_framed_text_tail	descriptive	config/names_local.tsv	linker remnant right after draw_framed_text	
+func_00234B98	vu1_add_data_ref_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after VU1_addDataRef	
+func_00234C48	write_vif_unpack_packet_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after write_vif_unpack_packet	
+func_00234D50	vu1_add_gs_register_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after VU1_addGSregister	
+func_00234E78	vu1_set_scissor_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after VU1_setScissor	
+func_00234FA0	vu1_gs_regs_alt_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after vu1_gs_regs_alt	
+func_00235008	vu1_gs_regs_font_tail	descriptive	config/names_local.tsv	linker remnant right after vu1_gs_regs_font	
+func_0020D828	update_moby_voice_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after update_moby_voice	
+func_0020D928	moby_get_frame_value_tail	descriptive	config/names_local.tsv	linker remnant right after MobyGetFrameValue	
+func_0020DC38	transform_scaled_vertex_batch_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after transform_scaled_vertex_batch	
+func_0020E330	draw_mobys_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after DrawMobys	
+func_00217AD0	music_remaining_time_callback_tail	descriptive	config/names_local.tsv	linker remnant right after music_remaining_time_callback	
+func_00217ED8	pad_reset_state_tail	descriptive	config/names_local.tsv	linker remnant right after pad_resetState	
+func_00208858	expand_map_coverage_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after expand_map_coverage	
+func_00208D30	world_to_map_coords_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after world_to_map_coords	
+func_0023C080	audio_dec_delete_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after audioDecDelete	
+func_L00_0028F208	request_grouped_voice_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after request_grouped_voice	
+func_L00_002C6F40	devestator_ammo_update_tail	descriptive	config/names_local.tsv	linker remnant (1 word) right after devestator_ammo_update	
+func_L09_00295BF0	compute_advanced_moby_path_position_tail	descriptive	config/names_local.tsv	linker remnant right after compute_advanced_moby_path_position	
+func_L03_00249488	mobyutil_l03_stripped_tail	descriptive	config/names_local.tsv	linker remnant; file says it follows mobyutil	
+func_L02_002A5218	vendor_l02_stripped_tail	descriptive	config/names_local.tsv	linker remnant; file says it follows vendor	
+func_L01_0026FFC0	mobyutil_l01_stripped_tail	descriptive	config/names_local.tsv	linker remnant; file says it follows mobyutil	
+func_L15_00266900	partupd_l15_stripped_tail	descriptive	config/names_local.tsv	linker remnant; file says it follows partupd	
+func_L00_0024DFC4	memcard_crc16_byte_loop	descriptive	config/names_local.tsv	asm: crc ^= byte<<8, 8 shift steps with poly 0x1F45; second half of MemCard_Crc16 (bnez to it from 0024DFB0)	
+func_L00_0028EC28	sound_stop_slot_state_test_tail	descriptive	config/names_local.tsv	comment: second state test of Sound_StopSlot (not 0/6 -> state 4)	
+func_L00_0028F410	sound_set_entry_value_clear_tail	descriptive	config/names_local.tsv	asm: zeroes +4, +0x18, +0x1C; the value==0 branch of Sound_SetEntryValue	
+func_L00_002EFCE4	split_audio_spans_single_span_tail	descriptive	config/names_local.tsv	asm: stores a/n then zeroes b/m; single-span exit of SplitAudioBufferSpans	
+func_L00_002EFCFC	split_audio_spans_ring_wrap_tail	descriptive	config/names_local.tsv	asm: compares s[16]-s[14] with len, two-span wrap case of SplitAudioBufferSpans	
+func_L04_002E2B90	riser_fast_descending_speed_tail	descriptive	config/names_local.tsv	asm returns -2.55f; the RISER_CLASS_FAST_DESCENDING case of riser_rise_speed	
+func_L04_002E2BA4	riser_default_descending_speed_tail	descriptive	config/names_local.tsv	asm returns -2.05f; the default return of riser_rise_speed	
+func_L05_0031B15C	qwarks_trailer_update_else_tail	descriptive	config/names_local.tsv	asm: byte 0x31=1, flags 0x34 &= 0xFFFE; the else branch of qwarks_trailer_update	
+D_L06_001FEC20	door_lock_glow_corner_vertices	descriptive	config/names_local.tsv	16-byte vec4 entries indexed by quad table, fed to matrix_mul_vec3 in draw_bot_door_lock_glow	
+D_L06_001FECB0	door_lock_glow_corner_uvs	descriptive	config/names_local.tsv	float[][2] indexed by corner index into pk.uv	
+D_L06_001FECF8	door_lock_glow_corner_colors	descriptive	config/names_local.tsv	int per corner index into pk.col	
+D_L06_001FED20	door_lock_glow_quad_corner_indices	descriptive	config/names_local.tsv	int[][4] corner indices per quad, used to index the vertex/uv/color tables	
+D_0013D6C4	map_icon_flags_table	descriptive	config/names_local.tsv	16-byte entries indexed by icon->id; bit0 tested to hide map icon (missionfunc.c:579, map.c:615)	
+D_0013E740	path_mover_ride_sound_default_pitch	descriptive	config/names_local.tsv	stored to data+0x134 and passed to Sound_SetPitchBend when hero rides the moby (wind_lightning_and_taxi.c:1670)	
+D_0013E6D0	path_mover_loop_sound_default_pitch	descriptive	config/names_local.tsv	stored to data+0x130 and passed to Sound_SetPitchBend after Moby_PlaySound (wind_lightning_and_taxi.c:1694)	
+D_L13_00161F08	space_commando_move_ctl_step_scale	descriptive	config/names_local.tsv	ctl.unk24 = it * g_frame_time * random jitter in BlargSpaceCommandoUpdate state 0	
+D_L00_0016145C	light_beam_texture_scroll	descriptive	config/names_local.tsv	light-beam draw callback adds 0.01 per frame, wraps at 1.0, added to quad v	
+D_L00_00161460	light_beam_glow_phase	descriptive	config/names_local.tsv	same callback: +0.01 per frame, resets to 0 at 1.0, drives glow quad alpha/size	
+D_L00_001D7660	light_beam_corner_table	descriptive	config/names_local.tsv	float[][4] corners rotated by matrix_mul_vec3 into beam quads	
+D_L00_001D76F0	light_beam_corner_uvs	descriptive	config/names_local.tsv	float[][2] (u,v) per corner, v gets the scroll offset	
+D_L00_001D7738	light_beam_corner_colors	descriptive	config/names_local.tsv	int colours copied into qd.col per quad corner	
+D_L00_001D7760	light_beam_quad_corner_indices	descriptive	config/names_local.tsv	int[][4] indices into the corner table, per quad	
+D_00131410	cd_init_call_count	descriptive	config/names_local.tsv	incremented in sce_cd_init, printed with bind error (CD_Init %d)	
+D_0013140C	cd_init_rpc_bound	descriptive	config/names_local.tsv	set -1 in sce_cd_init like the other *_rpc_bound flags, 0 after init RPC bound	
+D_00159A68	cd_init_rpc_client	descriptive	config/names_local.tsv	SifRpcClientData passed to sceSifBindRpc/sif_call_rpc in sce_cd_init	
+D_00159AC0	cd_init_rpc_send_buffer	descriptive	config/names_local.tsv	holds mode, sent as 4-byte RPC argument in sce_cd_init	
+D_00153050	cd_bind_error_fmt	descriptive	config/names_local.tsv	string Libcdvd bind err %d CD_Init %d	
+D_00153070	cd_exit_message	descriptive	config/names_local.tsv	string Libcdvd Exit, printed in sce_cd_init mode 5	
+D_00131418	cd_last_callback_num	descriptive	config/names_local.tsv	cd_ncmd_callback copies the callback number into it	
+D_0013F4E0	g_hero_rot	descriptive	config/names_local.tsv	hero+0x90 rot; used with gHeroPos (cam-1) in rotate_hero_about_local_pivot	
+D_001605E0	resident_quad_start_pos	descriptive	config/names_local.tsv	qcopy'd into resident_quad_pos (D_001605F0) at level start	
+D_001D9E70	sky_shell_scroll_dirs	descriptive	config/names_local.tsv	Vec4 table indexed by render mode, scaled into sky_shell_translation	
+D_001D9EC0	sky_shell_base_rot_z_by_mode	descriptive	config/names_local.tsv	f32 table indexed by mode, stored to sky_shell_base_rot_z	
+func_L00_00249F40	ovl_map_filter_l07_5_tail	descriptive	config/names_local.tsv	joined tail of ovl_map_filter_l07_5: x in 51.5..54 and flag set	
+func_L00_0024A12C	ovl_map_filter_l08_0_tail	descriptive	config/names_local.tsv	returns hero_control_mode==15, tail of l08_0	
+func_L00_0024A1E4	ovl_map_filter_l08_2_tail	descriptive	config/names_local.tsv	x>=37.0 tail of l08_2	
+func_L00_0024A25C	test_selected_z_range_tail	descriptive	config/names_local.tsv	x>=39.0 tail of test_selected_z_range	
+func_L00_0024A4DC	ovl_map_filter_l11_2_tail	descriptive	config/names_local.tsv	x<=180 and D_0013D4E7[1], tail of l11_2	
+func_L00_0024A60C	ovl_map_filter_l11_4_tail	descriptive	config/names_local.tsv	x 228..230 range then flag, tail of l11_4	
+func_L00_0024B2A4	map_world_to_uv_tail	descriptive	config/names_local.tsv	scale by 1/512 using map_coefficients, tail of map_world_to_uv	
+func_L00_0024B788	AdvanceCardMenu_tail_flag80	descriptive	config/names_local.tsv	state 21 on flag 0x80, tail of AdvanceCardMenu	
+func_L00_0024B7AC	AdvanceCardMenu_tail_flag100	descriptive	config/names_local.tsv	state 20 on flag 0x100 then others, tail of AdvanceCardMenu	
+func_L00_0024B8F0	CardMenu_AdvanceOnStatus_tail_v0	descriptive	config/names_local.tsv	state 9 when status 0, tail of CardMenu_AdvanceOnStatus	
+func_L00_0024B908	CardMenu_AdvanceOnStatus_tail_v_minus2	descriptive	config/names_local.tsv	state 5 when status -2, tail of CardMenu_AdvanceOnStatus	
+func_L00_0024B940	CardMenu_AdvanceOnCardStatus_tail	descriptive	config/names_local.tsv	state 6 on flag 2, tail of CardMenu_AdvanceOnCardStatus	
+func_L00_0024B980	card_menu_advance_on_ready_flags_tail_flag20	descriptive	config/names_local.tsv	flag 0x20 branch, state 23 or 5	
+func_L00_0024B9B4	card_menu_advance_on_ready_flags_tail_flag8	descriptive	config/names_local.tsv	flag 8 branch, state 7	
+func_L00_0024BA60	SetMenuStateFromCardStatus_tail	descriptive	config/names_local.tsv	stores state 14, tail of SetMenuStateFromCardStatus	
+func_L00_0024BA8C	CardMenu_AdvanceOnSaveByte_tail	descriptive	config/names_local.tsv	flags&6 -> state 10, tail of CardMenu_AdvanceOnSaveByte	
+func_L00_0024BB5C	MarkSelectedCardSlot_tail	descriptive	config/names_local.tsv	state 19 or 12 by size sum <350, tail of MarkSelectedCardSlot	
+func_L00_0024BB90	MarkSelectedCardSlot_tail_store_state	descriptive	config/names_local.tsv	just stores state reg, shared exit	
+func_L00_0024BB98	MarkSelectedCardSlot_tail_state16	descriptive	config/names_local.tsv	state 16 if status >= -1	
+func_L00_0024BC04	CardMenu_AdvanceOnFlags_tail_flag20	descriptive	config/names_local.tsv	flag 0x20, state 24 or 12	
+func_L00_0024BC38	CardMenu_AdvanceOnFlags_tail_flag10	descriptive	config/names_local.tsv	flag 0x10, state 14	
+func_L00_0024BCF0	CardMenu_AdvanceOrAlternate_tail	descriptive	config/names_local.tsv	else branch: clears fields, state 16	
+func_L00_0024BD84	CardMenu_NextStateFromFlags_tail	descriptive	config/names_local.tsv	flag 0x100 state 20, else save byte state 3	
+func_L00_0024BDB8	CardMenu_NextStateFromFlags_tail_state1	descriptive	config/names_local.tsv	stores state 1	
+func_L00_002B5990	update_beam_effect_lifecycle_epilogue_remnant	descriptive	config/names_local.tsv	lone stack-restore (addiu sp,0x110) after update_beam_effect_lifecycle	
+func_L00_002B9AA8	register_pyrocitor_flame_effect_tail	descriptive	config/names_local.tsv	loop tail of register_pyrocitor_flame_effect (find empty slot, store)	
+D_L00_0015F558	visibomb_missile_cam_flag	descriptive	config/names_local.tsv	set to 1 each frame with occlusion-skip flag in visibomb missile update	
+D_L00_001615C0	pyrocitor_light_color_a	descriptive	config/names_local.tsv	lerp_vector endpoint for pyrocitor point light colour	
+D_L00_001615D0	pyrocitor_light_color_b	descriptive	config/names_local.tsv	other lerp_vector endpoint, blended by sin of frame counter	
+D_L00_001615E4	pyrocitor_flame_damping_rate	descriptive	config/names_local.tsv	times frame time gives damping in ApproachWithVelocity for flame length	
+D_L00_001615E8	pyrocitor_flame_initial_particle_count	descriptive	config/names_local.tsv	loop count of first-flagged flame particles	
+D_L00_001615EC	pyrocitor_flame_extra_particle_count	descriptive	config/names_local.tsv	added to initial count for extra flame particles	
+D_L00_001615F0	pyrocitor_flame_base_length	descriptive	config/names_local.tsv	base flame reach, plus speed upgrade, in vec_scale_to_length and length	
+D_L00_001615F4	pyrocitor_flame_spread_at_full_length	descriptive	config/names_local.tsv	lerp end of particle random spread by length ratio	
+D_L00_001615F8	pyrocitor_flame_spread_at_zero_length	descriptive	config/names_local.tsv	lerp start of particle random spread by length ratio	
+D_L00_00161600	pyrocitor_ammo_use_interval_ticks	descriptive	config/names_local.tsv	scale_ticks(...) modulo frame counter gates use_ammo(-1,1)	
+D_L00_001670F0	player_camera_up_axis	descriptive	config/names_local.tsv	player_camera_matrix row 2 (3rd row, cross of r2 x r0 = r1); flame start offset below camera, debug cam vertical move	
+func_L00_002474C4	Map_FindUnsetKeySlot_loop_tail	descriptive	config/names_local.tsv	loop end of Map_FindUnsetKeySlot, returns -1	
+func_L00_00247650	FindMapSlotById_loop_tail	descriptive	config/names_local.tsv	loop end of FindMapSlotById, returns -1	
+func_L00_002477D0	FindIdInList_loop_tail	descriptive	config/names_local.tsv	loop end of FindIdInList, returns -1	
+D_0013D46C	memory_card_op_status	descriptive	config/names_local.tsv	memory_card_state (D_0013D390) +0xDC word, switched on after Menu_RunStateHandler	
+D_L00_0015FEB8	map_reveal_alt_projection_flag	descriptive	config/names_local.tsv	nonzero makes reveal_map_around_position use level+100 projection	
+D_L00_00184318	map_menu_cache_active	descriptive	config/names_local.tsv	map_menu_state+0x28 = .active, reveal returns if 0	
+D_L00_00182CA0	map_filter_range_table	descriptive	config/names_local.tsv	MapFilter[19][16] per level: lower/upper/flags/index	
+D_L00_00184090	map_filter_callback_table	descriptive	config/names_local.tsv	MapFilterCallback[19][8] called when filter flag 0x100.. set	
+D_L00_001845A8	map_filter_unlocked_flags	descriptive	config/names_local.tsv	indexed by filter index when flags&0x80	
+func_L00_001FF088	copy_memory_by_alignment_word_loop	descriptive	config/names_local.tsv	word copy loop used by copy_memory_by_alignment	
+func_L00_001FF0B0	copy_memory_by_alignment_quad_loop	descriptive	config/names_local.tsv	quadword lq/sq copy loop used by copy_memory_by_alignment	
+func_L00_001FF4F0	vec_scale_to_length_zero_tail	descriptive	config/names_local.tsv	stores zero xyz when length is zero, branch target of vec_scale_to_length	
+func_L00_001FF538	vec_set_length_xy_zero_tail	descriptive	config/names_local.tsv	stores zero xy when length is zero, branch target of vec_set_length_xy	
+func_L00_001FF670	vec_reflect_copy_tail	descriptive	config/names_local.tsv	copies vector when dot is negative, branch target of vec_reflect	
+func_L00_001FF968	fast_atan2_zero_tail	descriptive	config/names_local.tsv	returns 0.0f, branch target of fast_atan2	
+func_L00_001FFB78	fast_euler_to_matrix_sincos_tail	descriptive	config/names_local.tsv	shared sin/cos polynomial jumped to from fast_euler_to_matrix	
+func_L00_0020079C	setup_fs_aa_buffer_level_store_tail	descriptive	config/names_local.tsv	sd to +0xE0, continuation of setup_fs_aa_buffer_level	
+func_L00_002007A0	setup_fs_aa_buffer_level_packets_tail	descriptive	config/names_local.tsv	builds GS packets from active_fs_aa_buffer, continuation of setup_fs_aa_buffer_level	
+func_L00_001EB564	Camera_RunQueuedCallbacks_tail	descriptive	config/names_local.tsv	stores 0 to post-update count and pops frame, joined end of Camera_RunQueuedCallbacks	
+func_L00_001EB598	find_camera_record_by_id_loop_tail	descriptive	config/names_local.tsv	slot loop compare (p<end) then lh id, tail of find_camera_record_by_id	
+func_L00_001EB5A8	find_camera_record_by_id_not_found_tail	descriptive	config/names_local.tsv	returns 0 when no slot matches	
+func_L00_001ED460	Camera_UpdateFrame_store_tail	descriptive	config/names_local.tsv	joined piece of Camera_UpdateFrame per its comment	
+func_L00_001ED464	Camera_UpdateFrame_body_tail	descriptive	config/names_local.tsv	joined body: counts frame, runs camera steps per its comment	
+func_L00_001EDBF8	resolve_camera_movement_collisions_tail_store	descriptive	config/names_local.tsv	store 0 remnant ending resolve_camera_movement_collisions	
+D_L00_001670E0	player_camera_side_axis	descriptive	config/names_local.tsv	player_camera_matrix row 1: debug camera strafes along it with pad left/right	
+func_L11_00317518	count_group_class_4de_mobys_in_states_13_to_17_loop_tail	descriptive	config/names_local.tsv	loop checking oclass 0x4DE and state 13..17, continuation of the count function	
+func_L08_00211A68	update_float_countdown_decrement_tail	descriptive	config/names_local.tsv	stores counter minus frame time, returns 0; branch target of update_float_countdown	
+D_0011C478	music_track_table_by_language	descriptive	config/names_local.tsv	indexed arg0*4 + g_game_language*0x258; nonzero entry required to start a track	
+D_0012F870	vfprintf_mb_cur_max	descriptive	config/names_local.tsv	passed as max bytes to _mbtowc_r in format scan (00116FA0.c:225)	
+D_001525E0	vfprintf_blanks_pad	descriptive	config/names_local.tsv	16-byte blank pad source for width padding iovecs	
+D_001525F0	vfprintf_zeroes_pad	descriptive	config/names_local.tsv	16-byte '0' pad source for zero padding iovecs	
+D_00152600	vfprintf_inf_str	descriptive	config/names_local.tsv	asciz "Inf"	
+D_00152608	vfprintf_nan_str	descriptive	config/names_local.tsv	asciz "NaN"	
+D_00152610	vfprintf_hex_digits_lower	descriptive	config/names_local.tsv	digits 0-9a-f (xdigs lowercase)	
+D_00152628	vfprintf_null_str	descriptive	config/names_local.tsv	asciz "(null)"	
+D_00152630	vfprintf_hex_digits_upper	descriptive	config/names_local.tsv	asciz 0123456789ABCDEF, xdigs for %X	
+D_00152648	vfprintf_bad_base_msg	descriptive	config/names_local.tsv	asciz "bug in vfprintf: bad base"	
+D_00152668	vfprintf_zero_char	descriptive	config/names_local.tsv	string "0" emitted as 1-byte iov	
+D_00152670	vfprintf_dot_char	descriptive	config/names_local.tsv	string "." emitted as 1-byte iov	
+func_L00_0020E3B8	update_hero_item_slot_animation_blends	descriptive	config/names_local.tsv	loops 2 item slots: approach weight, allocate/release anim slot, advance_moby_animation_blend	
+D_L00_0017CB80	hero_item_blend_pose_buffers	descriptive	config/names_local.tsv	o+0x38+j*4 = base + i*0x800 + j*0x400: 2 slots x 2 blend pose buffers	
+D_L00_0017A6C0	hero_item_10_17_20_25_source_joints	descriptive	config/names_local.tsv	pack_pose source when is_hero_slot_item_id_10_17_20_or_25	
+D_L00_0017C580	hero_item_10_17_20_25_pose_buffer	descriptive	config/names_local.tsv	pack_pose output, moby+0x68/0x6C point at it, same branch	
+D_L00_0017A750	hero_item_28_29_joints_slot0	descriptive	config/names_local.tsv	pack_pose source when item id 28/29 and j==0	
+D_L00_0017C980	hero_item_28_29_pose_buffer_slot0	descriptive	config/names_local.tsv	pack_pose output for j==0 branch, moby+0x68/0x6C	
+D_L00_0017A768	hero_item_28_29_joints_slot1	descriptive	config/names_local.tsv	pack_pose source when item id 28/29 and j!=0	
+D_L00_0017CA80	hero_item_28_29_pose_buffer_slot1	descriptive	config/names_local.tsv	pack_pose output for j!=0 branch, moby+0x68/0x6C	
+D_L00_00173CF0	slideshow_image_end_times	descriptive	config/names_local.tsv	update_slideshow: ITMR >= table[IIDX]-0x24 advances to the next image (IIDX up to 0x2B)	
+func_L00_002D4348	increment_metal_detector_even_slot_counter_tail	descriptive	config/names_local.tsv	asm: lbu byte, high nibble +1 saturate 15, sb; even-index branch of increment_metal_detector_collection_counter	
+D_L00_00161A6C	k_smoke_alpha_scale	descriptive	config/names_local.tsv	multiplied with timer ratio then truncated to alpha in smoke spawner draw	
+D_L00_00161A70	smoke_quad_vertex_alpha_mask	descriptive	config/names_local.tsv	u8[4] indexed by quad vertex, times alpha<<24 into vertex colour	
+D_L00_00161A78	smoke_mesh_vertex_alpha_mask	descriptive	config/names_local.tsv	u8[8] indexed by mesh vertex index, times mesh alpha into colour	
+D_L00_001E14F0	smoke_particle_quad_positions	descriptive	config/names_local.tsv	float[4][4] positions per quad vertex scaled by width/height	
+D_L00_001E1530	smoke_particle_quad_uvs	descriptive	config/names_local.tsv	u,v pairs per quad vertex, scroll subtracted from u	
+D_L00_001E1550	smoke_box_vertex_positions	descriptive	config/names_local.tsv	indexed via cube face indices, scaled by q->f48/f4C in flag42 box draw	
+D_L00_001E1610	smoke_particle_mesh_vertex_positions	descriptive	config/names_local.tsv	indexed via face indices, scaled by particle width/height in is_mesh branch	
+D_L00_001E16D0	smoke_cube_face_vertex_indices	descriptive	config/names_local.tsv	int[][4] face->vertex indices, 6 faces looped in box draw	
+D_L00_001E1730	smoke_box_uv_v_column	descriptive	config/names_local.tsv	v coord at index*2 of (v,u) pair table in box draw	
+D_L00_001E1734	smoke_box_uv_u_column	descriptive	config/names_local.tsv	u coord at index*2, plus smoke_scroll_offset	
+D_L00_001E1790	smoke_particle_mesh_uv_v_column	descriptive	config/names_local.tsv	v coord at index*2 in particle mesh branch	
+D_L00_001E1794	smoke_particle_mesh_uv_u_column	descriptive	config/names_local.tsv	u coord at index*2, plus particle scroll	
+func_0012DFA0	snd_FlushSoundCommands_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_FlushSoundCommands in 989snd.c	
+func_0012E058	snd_PrepareReturnBuffer_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_PrepareReturnBuffer in 989snd.c	
+func_0012E1B8	snd_BankLoadByLoc_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_BankLoadByLoc in 989snd.c	
+func_0012E2D8	snd_BankLoadFromEE_CB_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_BankLoadFromEE_CB in 989snd.c	
+func_0012E3B0	snd_SetPlaybackMode_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_SetPlaybackMode in 989snd.c	
+func_0012E438	snd_SetGroupVoiceRange_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_SetGroupVoiceRange in 989snd.c	
+func_0012E490	snd_play_sound_vol_pan_pmpb_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_play_sound_vol_pan_pmpb in 989snd.c	
+func_0012E4D8	snd_stop_sound_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_stop_sound in 989snd.c	
+func_0012E5B8	snd_SoundIsStillPlaying_CB_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_SoundIsStillPlaying_CB in 989snd.c	
+func_0012E648	snd_set_sound_params_cb_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_set_sound_params_cb in 989snd.c	
+func_0012ED40	snd_StopAllStreams_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_StopAllStreams in 989snd.c	
+func_0012F098	snd_StreamSafeCdCallback_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_StreamSafeCdCallback in 989snd.c	
+func_0012F160	snd_AutoReverb_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_AutoReverb in 989snd.c	
+func_0012F210	snd_ResetMovieSound_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_ResetMovieSound in 989snd.c	
+func_0012F280	snd_StartMovieSound_tail	descriptive	config/names_local.tsv	LINKER_REMNANT epilogue after snd_StartMovieSound in 989snd.c	
+func_L14_002B02B0	count_moby_group_members_tail	descriptive	config/names_local.tsv	asm: lh/bgez loop over table until negative entry; leftover tail of count_moby_group_members	
+func_L14_002B58E4	is_turret_group_activated_or_empty_scan_tail	descriptive	config/names_local.tsv	asm: walks group list, andi 0x7FFF<<8 moby index; leftover scan loop of is_turret_group_activated_or_empty	
+func_L00_002788C8	draw_pause_menu_pages_tail	descriptive	config/names_local.tsv	asm: stack epilogue after draw_pause_menu_pages	
+func_L00_00278904	Menu_CheckPageInput_tail_pad_mask_d00	descriptive	config/names_local.tsv	asm: tests pad word 0x1C4 & 0xD00, leftover of Menu_CheckPageInput	
+func_L00_00278930	Menu_CheckPageInput_tail_pad_bit_10	descriptive	config/names_local.tsv	asm: tests 0x1C4 & 0x10, leftover of Menu_CheckPageInput	
+func_L00_0027895C	Menu_CheckPageInput_tail_result	descriptive	config/names_local.tsv	asm: sets return -1 or 0, last leftover of Menu_CheckPageInput	
+func_L00_0027A3AC	Menu_SkipFilteredEntries_copy	descriptive	config/names_local.tsv	asm: same 0x134/0x138 flag filter loop over next entries (0x4C) as Menu_SkipFilteredEntries	
+func_L00_0027D454	pause_menu_entry_input_tail_return_neg1	descriptive	config/names_local.tsv	asm: returns -1, leftover of pause_menu_entry_input	
+func_L00_0027D464	pause_menu_entry_input_tail_pad_bit_20	descriptive	config/names_local.tsv	asm: tests 0x1C4 & 0x20 and resets menu state words, leftover of pause_menu_entry_input	
+func_L00_00284E5C	StreamSlot_GetSize_tail	descriptive	config/names_local.tsv	asm: loop end over 5 slots (slti 5), returns -1; leftover of StreamSlot_GetSize	
+func_L00_00284EA0	StreamSlot_SetFlag4_tail	descriptive	config/names_local.tsv	asm: loop end over 5 slots, returns 1; leftover of StreamSlot_SetFlag4	
+func_L00_002864CC	find_moby_by_id_tail	descriptive	config/names_local.tsv	asm: lh 0xB2 compare loop end, returns 0; leftover of find_moby_by_id	
+func_001238A8	sce_mc_init_tail	descriptive	config/names_local.tsv	LINKER_REMNANT right after sce_mc_init	
+func_001241E8	sce_mc_get_info_tail	descriptive	config/names_local.tsv	LINKER_REMNANT right after sce_mc_get_info	
+func_00124338	sce_mc_get_dir_tail	descriptive	config/names_local.tsv	LINKER_REMNANT right after sce_mc_get_dir	
+func_00124A68	sceDbcGetDepNumber_tail	descriptive	config/names_local.tsv	LINKER_REMNANT right after sceDbcGetDepNumber	
+func_00124D10	sce_pad2_create_socket_tail	descriptive	config/names_local.tsv	LINKER_REMNANT right after sce_pad2_create_socket	
+func_00125210	sce_pad2_set_button_order_tail	descriptive	config/names_local.tsv	LINKER_REMNANT right after sce_pad2_set_button_order	
+func_L01_002C05B8	novalis_elevator_update_tail	descriptive	config/names_local.tsv	LINKER_REMNANT right after novalis_elevator_update; asm is stack epilogue	
+D_L01_0020B6D0	gunship_missing_path_message_fmt	descriptive	config/names_local.tsv	printf format given oclass and moby index when path_cursor->path_id == -1	
+D_L01_001607F0	gunship_follow_path_fn_ptr	descriptive	config/names_local.tsv	global assigned (void*)gunship_follow_path	
+func_L10_002CF310	update_linked_moby_hitbox_tail	descriptive	config/names_local.tsv	LINKER_REMNANT right after update_linked_moby_hitbox (state 4 break, return)	
+func_L10_002D8F08	approach_moby_height_tail	descriptive	config/names_local.tsv	asm: compares diff to -0.1f then stores float at +0x18; else-branch of approach_moby_height	
+func_001E94A0	actuator_CalcPower_tail	descriptive	config/names_local.tsv	LINKER_REMNANT right after actuator_CalcPower; asm is stack epilogue 0x20	
+func_001E94C8	actuator_stack_epilogues_tail	descriptive	config/names_local.tsv	asm: four back-to-back stack epilogues (0x40,0xA0,0x10,0x130) at end of actuator.c	
+func_0022EF50	allocate_voice_for_group_entry_tail	descriptive	config/names_local.tsv	LINKER_REMNANT right after allocate_voice_for_group_entry	
+func_0022F120	voice_update_callback_tail	descriptive	config/names_local.tsv	LINKER_REMNANT right after voice_update_callback	
+func_L03_002DDE28	garage_door_update_tail_state_check	descriptive	config/names_local.tsv	asm: beql on state compare then jr; trailing branch of garage_door_update	
+func_L03_002DDED8	garage_door_update_tail_hold_open_z	descriptive	config/names_local.tsv	asm: loads pos z, adds 4.0f (0x40800000), stores at +0x18; case 2 of garage_door_update	
+D_00132F30	mpeg_luma_mc_routines	descriptive	config/names_local.tsv	8 function pointers indexed by (avg<<2)|(xh<<1)|yh, stored in mb_buf luma_func	
+D_00132F50	mpeg_chroma_mc_routines	descriptive	config/names_local.tsv	8 function pointers indexed by (avg<<2)|(xh<<1)|yh, stored in mb_buf chroma_func	
+func_001FBC78	draw_framebuffer_rect_tail	descriptive	config/names_local.tsv	LINKER_REMNANT right after draw_framebuffer_rect	
+func_L05_0023BA64	hero_anim_tilt_lookup_switch_tail	descriptive	config/names_local.tsv	asm: sltiu 0x53 + jump table jtbl_L05_002166A0, loads -0.96 (0xBF75BE0B); the switch of hero_anim_tilt_lookup	
+func_L05_0023BAA0	hero_anim_tilt_lookup_tail_ids_1c_1d_1f	descriptive	config/names_local.tsv	asm: compares float at +0xAA8 with 25.0f (0x41C80000), stores -1.309 (0xBFA78D36); the 0x1C/0x1D/0x1F case	
+func_L14_002B4B84	count_listed_plasmabots_preparing_or_sweeping_beam_copy	descriptive	config/names_local.tsv	asm: groups table D_L14_001AC2C0, class 0x1C compare (lh 0xA6), same counting loop as the C function	
+func_L14_002B4C2C	check_listed_plasmabots_not_starting_path_traversal_tail	descriptive	config/names_local.tsv	asm: loop on class 0x1C and state 2 (lbu 0x20 == 2); loop of check_listed_plasmabots_not_starting_path_traversal	
+D_001A09A0	memcard_save_file_name_buffer	descriptive	config/names_local.tsv	zeroed buffer passed as second %s of "%s/%s" with D_0013D2D0 save dir to build workspace.name	
+func_0011DA90	kFindAddress_tail	descriptive	config/names_local.tsv	LINKER_REMNANT right after kFindAddress; asm is stack epilogue	
+func_L02_0021A2E0	hero_wrench_and_grapple_stack_epilogues_tail	descriptive	config/names_local.tsv	asm: stack epilogues (0x50, 0x90) only, remnant file for hero_wrench_and_grapple	
+func_L00_00268A88	call_kill_part_preserving_ra	descriptive	config/names_local.tsv	asm: saves ra upper half (pcpyld/pcpyud), zeroes vf0, jal func_L00_002688A8 (KillPart)	
+func_L00_0028DA28	vu0_point_screen_cull_loop_tail	descriptive	config/names_local.tsv	asm: bnez loop back to .L0028D9C0 with sb $0,-1($6); end of the cull loop in vu0_point_screen_cull	
+func_L01_002A0190	novalis_shrubproc_stack_epilogues_tail	descriptive	config/names_local.tsv	asm: stack epilogues only (0x90,0x30...) in novalis_shrubproc_remnant.c	
+func_L17_002E4BA0	fleet_vendor_stack_epilogues_tail	descriptive	config/names_local.tsv	asm: stack epilogues only (0x40,0x70) in fleet_vendor_remnant.c	
+func_L04_0027D6D0	eudora_linker_stack_epilogues_tail	descriptive	config/names_local.tsv	asm: stack epilogues only in l04_eudora/linker_remnant.c	
+D_L00_00161668	tesla_target_max_hero_angle_diff	descriptive	config/names_local.tsv	auto-aim: candidate skipped when FastDiffRots(atan2 to candidate, hero yaw) exceeds it	
+D_L00_0016166C	tesla_target_max_camera_angle_diff	descriptive	config/names_local.tsv	auto-aim: skipped when camera-yaw difference exceeds it; also normalises the score	
+D_L00_001616FC	tesla_target_angle_score_weight	descriptive	config/names_local.tsv	auto-aim score = angle term * this + distance term	
+D_L00_00161670	tesla_beam_wave_phase_step	descriptive	config/names_local.tsv	phase of segment n = phase_a + n * this, fed to FastSin	
+D_L00_00161674	tesla_beam_wave_amplitude_start	descriptive	config/names_local.tsv	lerped with the _end value by seg*0.05 to get the wave factor	
+D_L00_00161678	tesla_beam_wave_amplitude_end	descriptive	config/names_local.tsv	end of the per-segment wave amplitude lerp	
+D_L00_00161680	tesla_beam_phase_a_speed	descriptive	config/names_local.tsv	added each frame to tesla_beam_reset_short_a with FastAddRots	
+D_L00_00161688	tesla_beam_phase_b_speed	descriptive	config/names_local.tsv	subtracted each frame from tesla_beam_reset_short_b	
+D_L00_0016169C	tesla_beam_phase_c_speed	descriptive	config/names_local.tsv	added each frame to tesla_beam_reset_short_c	
+D_L00_0016168C	tesla_beam_side_phase_step	descriptive	config/names_local.tsv	side_phase = phase_b + seg * this	
+D_L00_001616A0	tesla_beam_side_amplitude_phase_step	descriptive	config/names_local.tsv	angle = phase_c + seg * this, sin gives side amplitude factor	
+D_L00_00161690	tesla_beam_side_wave_amplitude	descriptive	config/names_local.tsv	multiplies FastSin(angle) for the side wave factor	
+D_L00_00161694	tesla_beam_side_offset_scale	descriptive	config/names_local.tsv	side offset length = this * cos(side_phase)	
+D_L00_001616B4	tesla_beam_wave_jitter_min	descriptive	config/names_local.tsv	lower bound of randf_sym added to the wave height	
+D_L00_001616B8	tesla_beam_wave_jitter_max	descriptive	config/names_local.tsv	upper bound of randf_sym added to the wave height	
+D_L00_00161833	tesla_pulse_initial_alpha_r	descriptive	config/names_local.tsv	loaded as alpha when a tesla pulse is activated	
+func_L00_00261448	moby_get_ride_transform	descriptive	config/names_local.tsv	returns pvar word 2 if flag 0x20; RotateWithMoby uses it as euler+pos transform	
+D_L18_0016215A	electric_bolt_branch_period_1_r	descriptive	config/names_local.tsv	init writes 4; element after branch_periods_r[0]	
+D_L18_0016215C	electric_bolt_branch_period_2_r	descriptive	config/names_local.tsv	init writes 8; same array as branch_periods_r	
+D_L18_0016215E	electric_bolt_branch_period_3_r	descriptive	config/names_local.tsv	init writes 4; same array as branch_periods_r	
+D_L18_00162162	electric_bolt_branch_peak_ticks_1_r	descriptive	config/names_local.tsv	init writes 2; next to branch_peak_ticks_r[0]	
+D_L18_00162164	electric_bolt_branch_peak_ticks_2_r	descriptive	config/names_local.tsv	init writes 4; same array as branch_peak_ticks_r	
+D_L18_00162166	electric_bolt_branch_peak_ticks_3_r	descriptive	config/names_local.tsv	init writes 2; same array as branch_peak_ticks_r	
+D_L00_001E4E90	suck_beam_ring_unit_offsets	descriptive	config/names_local.tsv	20 vectors scaled by ring radius and rotated into the beam frame for ring vertices	
+D_L00_001E6330	suck_beam_segment_turn_angles	descriptive	config/names_local.tsv	per-segment smoothed turn angle via Camera_SmoothAngle, 10 entries	
 func_001E9770	noop_callback_a	descriptive	the NTSC decomp	noop_callback_a at US boot 0x001E93F0 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9788	noop_callback_d	descriptive	the NTSC decomp	noop_callback_d at US boot 0x001E9408 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9790	noop_callback_e	descriptive	the NTSC decomp	noop_callback_e at US boot 0x001E9410 (src/gameplay/state/update_gameplay_frame.c); US function table counterpart	

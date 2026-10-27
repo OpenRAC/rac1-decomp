@@ -1663,7 +1663,7 @@ extern void compute_batalia_bolt_pickup_surface_pose(char *m, float *out, float 
 extern void draw_batalia_bolt_pickup_rotating_quad(char *m);
 extern int coll_line(void *, void *, int, int, int);
 extern unsigned char *GetFlaggedPvarWord(int);
-extern unsigned char *func_L00_00261448(int);
+extern unsigned char *moby_get_ride_transform(int);
 extern void convert_pose_to_reference_local(void *, int, void *, void *, void *, void *);
 extern int transform_attachment_pose(void *, int, void *, void *, void *, void *);
 extern void build_axis_roll_matrix(void *, void *, float);
@@ -1762,7 +1762,7 @@ void update_batalia_bolt_pickup(Moby *m) {
         d->f60 = random_angle_radians();
         d->f64 = m->rot.x;
         compute_batalia_bolt_pickup_surface_pose((char *)m, (float *)&m->pos, (float *)&m->rot);
-        if (linked != 0 && func_L00_00261448(linked) != 0) {
+        if (linked != 0 && moby_get_ride_transform(linked) != 0) {
             d->u7C.i = linked;
             convert_pose_to_reference_local(m, linked, d->v0, d->v10, d->v20, d->v30);
         }
@@ -2054,7 +2054,7 @@ void update_batalia_bolt_pickup(Moby *m) {
                 FastVecSub(d->v40, d->v20, &m->pos);
                 FastVecScale(d->v40, d->v40, inv);
                 if (cl->moby != 0) {
-                    unsigned char *q = func_L00_00261448(cl->moby);
+                    unsigned char *q = moby_get_ride_transform(cl->moby);
 
                     if (q != 0) {
                         FastVecAdd(d->v40, d->v40, q + 0x10);
@@ -2121,7 +2121,7 @@ void update_batalia_bolt_pickup(Moby *m) {
             FastVecScale(d->v40, d->v40, inv);
             d->i68 = n;
             if (d->u7C.i != 0) {
-                unsigned char *q = func_L00_00261448(d->u7C.i);
+                unsigned char *q = moby_get_ride_transform(d->u7C.i);
 
                 if (q != 0) {
                     FastVecAdd(d->v40, d->v40, q + 0x10);

@@ -479,8 +479,8 @@ void _getAllRefs(struct MpegDecoder *d, int bx, int by, int mb_type, int motion_
     }
 }
 
-extern MpegMcFunc D_00132F30[];
-extern MpegMcFunc D_00132F50[];
+extern MpegMcFunc mpeg_luma_mc_routines[];
+extern MpegMcFunc mpeg_chroma_mc_routines[];
 
 void _getRef0(struct MpegDecoder *d, struct MpegRefImage *ref, int sfield, int dfield, int yofs, int h,
                    int bx, int by, int dx, int dy, int fieldpred, int avg) {
@@ -575,7 +575,7 @@ void _getRef0(struct MpegDecoder *d, struct MpegRefImage *ref, int sfield, int d
         }
     }
     fc->step = 8 << fieldpred;
-    d->mb_buf[d->mb_buf_index].luma_func[n] = D_00132F30[code];
+    d->mb_buf[d->mb_buf_index].luma_func[n] = mpeg_luma_mc_routines[code];
     data = ref->data;
     {
         int c0 = (ly << 3) + 0x100;
@@ -587,7 +587,7 @@ void _getRef0(struct MpegDecoder *d, struct MpegRefImage *ref, int sfield, int d
     }
     d->mb_buf[d->mb_buf_index].luma_ref[n] = data + mb * 0x180;
     d->mb_buf[d->mb_buf_index].chroma_ref[n] = data + (mb + ref->unk10) * 0x180;
-    d->mb_buf[d->mb_buf_index].chroma_func[n] = D_00132F50[(avg << 2) | (xh << 1) | yh];
+    d->mb_buf[d->mb_buf_index].chroma_func[n] = mpeg_chroma_mc_routines[(avg << 2) | (xh << 1) | yh];
     d->mb_buf[d->mb_buf_index].fetch_count++;
 }
 

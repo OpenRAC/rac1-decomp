@@ -656,7 +656,7 @@ extern void crate_drop_bolts(void *);
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, float *s);
 extern int GetFlaggedPvarWord(char *);
-extern int func_L00_00261448(char *);
+extern int moby_get_ride_transform(char *);
 extern void update_entity_matrix(char *a, Vx *b, void *c, void *d);
 extern int coll_line(void *, void *, int, int, int);
 extern float FastVecLength(void *);
@@ -743,7 +743,7 @@ void update_crate_stack_motion(char *a) {
                 qcopy(v5, a + 0x10);
                 qcopy(v6, a + 0x40);
                 transform_attachment_pose((int)a, *(char **)(o + 0xF0), v4, (float *)(o + 0xE0), (float *)(a + 0x10), (float *)(a + 0x40));
-                if (*(int *)(func_L00_00261448(*(char **)(o + 0xF0)) + 0x3C) & 4) {
+                if (*(int *)(moby_get_ride_transform(*(char **)(o + 0xF0)) + 0x3C) & 4) {
                     qcopy(o + 0xD0, v4);
                     *(float *)(o + 0xD8) = *(float *)(o + 0xD8) - *(float *)(o + 0xF4);
                 }
@@ -3237,18 +3237,18 @@ extern float smoke_particle_timer_ticks_inv MACRO_ADDR;
 extern float smoke_particle_aux_ticks_inv MACRO_ADDR;
 extern unsigned short smoke_particle_aux_ticks SDATA(D_L00_00161450);
 extern int D_L00_00161A68 SDATA(D_L00_00161A68);
-extern float D_L00_00161A6C SDATA(D_L00_00161A6C);
-extern u8 D_L00_00161A70[4] SDATA(D_L00_00161A70);
-extern u8 D_L00_00161A78[8] SDATA(D_L00_00161A78);
-extern int D_L00_001E16D0[][4];
-extern float D_L00_001E1610[][4];
-extern float D_L00_001E1790[];
-extern float D_L00_001E1794[];
-extern float D_L00_001E14F0[][4];
-extern float D_L00_001E1530[];
-extern float D_L00_001E1550[][4];
-extern float D_L00_001E1730[];
-extern float D_L00_001E1734[];
+extern float k_smoke_alpha_scale SDATA(D_L00_00161A6C);
+extern u8 smoke_quad_vertex_alpha_mask[4] SDATA(D_L00_00161A70);
+extern u8 smoke_mesh_vertex_alpha_mask[8] SDATA(D_L00_00161A78);
+extern int smoke_cube_face_vertex_indices[][4];
+extern float smoke_particle_mesh_vertex_positions[][4];
+extern float smoke_particle_mesh_uv_v_column[];
+extern float smoke_particle_mesh_uv_u_column[];
+extern float smoke_particle_quad_positions[][4];
+extern float smoke_particle_quad_uvs[];
+extern float smoke_box_vertex_positions[][4];
+extern float smoke_box_uv_v_column[];
+extern float smoke_box_uv_u_column[];
 extern void FastVecCross(void *, void *, void *);
 extern void VU1_addGSregister(s32, s64);
 
@@ -3305,35 +3305,35 @@ void draw_smoke_fire_spawner(P *spawner) {
         width = smoke_particle_speed_a[i];
         height = smoke_particle_speed_b[i];
         if (((u8 *)smoke_particle_is_mesh)[i]) {
-            rows = D_L00_001E16D0;
+            rows = smoke_cube_face_vertex_indices;
             quad.primitive = 0x8000000044L;
             one = 1.0f;
             for (k = 2; k < 4; k++) {
                 for (j = 0; j < 4; j++) {
                     index = rows[k][j];
-                    vertex = D_L00_001E1610[index];
+                    vertex = smoke_particle_mesh_vertex_positions[index];
                     quad.positions[j].f[0] = vertex[0];
                     quad.positions[j].f[1] = vertex[1] * width;
                     quad.positions[j].f[2] = vertex[2] * height;
                     quad.positions[j].f[3] = one;
                     transform_vector((Vec4f *)&quad.positions[j], (Vec4f *)&quad.positions[j], transform);
-                    quad.texture_coordinates[j][0] = D_L00_001E1794[index * 2] + smoke_particle_scroll[i];
-                    quad.texture_coordinates[j][1] = D_L00_001E1790[index * 2];
-                    quad.colors[j] = mesh_alpha * D_L00_00161A78[index] | mesh_color;
+                    quad.texture_coordinates[j][0] = smoke_particle_mesh_uv_u_column[index * 2] + smoke_particle_scroll[i];
+                    quad.texture_coordinates[j][1] = smoke_particle_mesh_uv_v_column[index * 2];
+                    quad.colors[j] = mesh_alpha * smoke_mesh_vertex_alpha_mask[index] | mesh_color;
                 }
                 draw_world_quad(&quad, 0, 0);
             }
         } else {
             if (smoke_particle_timer[i]) {
                 FastDecTimer(&smoke_particle_timer[i]);
-                alpha = truncate_float_to_s32((1.0f - IntToFloat(smoke_particle_timer[i]) * smoke_particle_timer_ticks_inv) * D_L00_00161A6C);
+                alpha = truncate_float_to_s32((1.0f - IntToFloat(smoke_particle_timer[i]) * smoke_particle_timer_ticks_inv) * k_smoke_alpha_scale);
             } else if (smoke_particle_life_timer[i]) {
                 if (FastDecTimer(&smoke_particle_life_timer[i])) {
                     reset_smoke_fire_spawner_particle(spawner, i);
                     alpha = 0;
                     smoke_particle_matrix_select[i] = random_integer_below(2);
                 } else {
-                    alpha = truncate_float_to_s32(IntToFloat(smoke_particle_life_timer[i]) * smoke_particle_aux_ticks_inv * D_L00_00161A6C);
+                    alpha = truncate_float_to_s32(IntToFloat(smoke_particle_life_timer[i]) * smoke_particle_aux_ticks_inv * k_smoke_alpha_scale);
                 }
             } else {
                 if (FastDecTimer(&smoke_particle_start_delay[i])) {
@@ -3345,13 +3345,13 @@ void draw_smoke_fire_spawner(P *spawner) {
             quad.primitive = 0x8000000048L;
             one = 1.0f;
             for (particle_quad_vertex_index = 0; particle_quad_vertex_index < 4; particle_quad_vertex_index++) {
-                quad.positions[particle_quad_vertex_index].f[0] = D_L00_001E14F0[particle_quad_vertex_index][0];
-                quad.positions[particle_quad_vertex_index].f[1] = D_L00_001E14F0[particle_quad_vertex_index][1] * width;
-                quad.positions[particle_quad_vertex_index].f[2] = D_L00_001E14F0[particle_quad_vertex_index][2] * height;
+                quad.positions[particle_quad_vertex_index].f[0] = smoke_particle_quad_positions[particle_quad_vertex_index][0];
+                quad.positions[particle_quad_vertex_index].f[1] = smoke_particle_quad_positions[particle_quad_vertex_index][1] * width;
+                quad.positions[particle_quad_vertex_index].f[2] = smoke_particle_quad_positions[particle_quad_vertex_index][2] * height;
                 quad.positions[particle_quad_vertex_index].f[3] = one;
-                quad.texture_coordinates[particle_quad_vertex_index][0] = D_L00_001E1530[particle_quad_vertex_index * 2] - smoke_particle_scroll[i];
-                quad.texture_coordinates[particle_quad_vertex_index][1] = D_L00_001E1530[particle_quad_vertex_index * 2 + 1];
-                quad.colors[particle_quad_vertex_index] = alpha * D_L00_00161A70[particle_quad_vertex_index] | q->col;
+                quad.texture_coordinates[particle_quad_vertex_index][0] = smoke_particle_quad_uvs[particle_quad_vertex_index * 2] - smoke_particle_scroll[i];
+                quad.texture_coordinates[particle_quad_vertex_index][1] = smoke_particle_quad_uvs[particle_quad_vertex_index * 2 + 1];
+                quad.colors[particle_quad_vertex_index] = alpha * smoke_quad_vertex_alpha_mask[particle_quad_vertex_index] | q->col;
                 transform_vector((Vec4f *)&quad.positions[particle_quad_vertex_index], (Vec4f *)&quad.positions[particle_quad_vertex_index], transform);
             }
             draw_world_quad(&quad, 0, 0);
@@ -3364,16 +3364,16 @@ void draw_smoke_fire_spawner(P *spawner) {
     if (q->flag42 == 0) {
         for (k = 0; k < 6; k++) {
             for (j = 0; j < 4; j++) {
-                index = D_L00_001E16D0[k][j];
-                vertex = D_L00_001E1550[index];
+                index = smoke_cube_face_vertex_indices[k][j];
+                vertex = smoke_box_vertex_positions[index];
                 quad.positions[j].f[0] = vertex[0];
                 quad.positions[j].f[1] = vertex[1] * q->f48;
                 quad.positions[j].f[2] = vertex[2] * q->f4C;
                 quad.positions[j].f[3] = 1.0f;
                 transform_vector((Vec4f *)&quad.positions[j], (Vec4f *)&quad.positions[j], facing);
-                quad.texture_coordinates[j][0] = D_L00_001E1734[index * 2] + smoke_scroll_offset;
-                quad.texture_coordinates[j][1] = D_L00_001E1730[index * 2];
-                quad.colors[j] = D_L00_00161A78[index] * 0xFF000000 | mesh_color;
+                quad.texture_coordinates[j][0] = smoke_box_uv_u_column[index * 2] + smoke_scroll_offset;
+                quad.texture_coordinates[j][1] = smoke_box_uv_v_column[index * 2];
+                quad.colors[j] = smoke_mesh_vertex_alpha_mask[index] * 0xFF000000 | mesh_color;
             }
             draw_world_quad(&quad, 0, 0);
         }

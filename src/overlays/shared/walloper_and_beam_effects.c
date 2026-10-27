@@ -60,26 +60,26 @@ extern Vec4 collision_hit_point;
 extern char arc_points[];
 #define arcs_lb ((Vec4 (*)[5])D_L00_001DBD20)
 extern float tesla_beam_length SDATA(D_L00_00161664);
-extern float D_L00_00161668 SDATA(D_L00_00161668);
-extern float D_L00_0016166C SDATA(D_L00_0016166C);
-extern float D_L00_00161670 SDATA(D_L00_00161670);
-extern float D_L00_00161674 SDATA(D_L00_00161674);
-extern float D_L00_00161678 SDATA(D_L00_00161678);
+extern float tesla_target_max_hero_angle_diff SDATA(D_L00_00161668);
+extern float tesla_target_max_camera_angle_diff SDATA(D_L00_0016166C);
+extern float tesla_beam_wave_phase_step SDATA(D_L00_00161670);
+extern float tesla_beam_wave_amplitude_start SDATA(D_L00_00161674);
+extern float tesla_beam_wave_amplitude_end SDATA(D_L00_00161678);
 extern float tesla_beam_reset_short_a SDATA(D_L00_0016167C);
-extern float D_L00_00161680 SDATA(D_L00_00161680);
+extern float tesla_beam_phase_a_speed SDATA(D_L00_00161680);
 extern float tesla_beam_reset_short_b SDATA(D_L00_00161684);
-extern float D_L00_00161688 SDATA(D_L00_00161688);
-extern float D_L00_0016168C SDATA(D_L00_0016168C);
-extern float D_L00_00161690 SDATA(D_L00_00161690);
-extern float D_L00_00161694 SDATA(D_L00_00161694);
+extern float tesla_beam_phase_b_speed SDATA(D_L00_00161688);
+extern float tesla_beam_side_phase_step SDATA(D_L00_0016168C);
+extern float tesla_beam_side_wave_amplitude SDATA(D_L00_00161690);
+extern float tesla_beam_side_offset_scale SDATA(D_L00_00161694);
 extern float tesla_beam_reset_short_c SDATA(D_L00_00161698);
-extern float D_L00_0016169C SDATA(D_L00_0016169C);
-extern float D_L00_001616A0 SDATA(D_L00_001616A0);
-extern float D_L00_001616B4 SDATA(D_L00_001616B4);
-extern float D_L00_001616B8 SDATA(D_L00_001616B8);
+extern float tesla_beam_phase_c_speed SDATA(D_L00_0016169C);
+extern float tesla_beam_side_amplitude_phase_step SDATA(D_L00_001616A0);
+extern float tesla_beam_wave_jitter_min SDATA(D_L00_001616B4);
+extern float tesla_beam_wave_jitter_max SDATA(D_L00_001616B8);
 extern short beam_arc_outer_color;
 extern float D_L00_001616F8 SDATA(D_L00_001616F8);
-extern float D_L00_001616FC SDATA(D_L00_001616FC);
+extern float tesla_target_angle_score_weight SDATA(D_L00_001616FC);
 extern short beam_arc_bolt_slots[] MACRO_ADDR;
 extern short beam_arc_bolt_params[] MACRO_ADDR;
 extern short beam_arc_bolt_params_4[] MACRO_ADDR;
@@ -166,9 +166,9 @@ void build_beam_and_arc_points(u8 *o) {
     char *previous, *side;
     Vec4 *beam;
     float *side_waves;
-    tesla_beam_reset_short_a = FastAddRots(tesla_beam_reset_short_a, D_L00_00161680);
-    tesla_beam_reset_short_b = FastSubRots(tesla_beam_reset_short_b, D_L00_00161688);
-    tesla_beam_reset_short_c = FastAddRots(tesla_beam_reset_short_c, D_L00_0016169C);
+    tesla_beam_reset_short_a = FastAddRots(tesla_beam_reset_short_a, tesla_beam_phase_a_speed);
+    tesla_beam_reset_short_b = FastSubRots(tesla_beam_reset_short_b, tesla_beam_phase_b_speed);
+    tesla_beam_reset_short_c = FastAddRots(tesla_beam_reset_short_c, tesla_beam_phase_c_speed);
     if (!v->target || (enabled && !v->second_target)) {
         if (v->second_target) {
             v->target = v->second_target;
@@ -190,12 +190,12 @@ void build_beam_and_arc_points(u8 *o) {
                 if (tesla_beam_length < distance_w16) continue;
                 length_w3 = FastDiffRots(camera[0x56],
                     fast_atan2(candidate->position.v.x - camera[0x50], candidate->position.v.y - camera[0x51]));
-                if (D_L00_0016166C < length_w3) continue;
+                if (tesla_target_max_camera_angle_diff < length_w3) continue;
                 score = FastDiffRots(
                     fast_atan2(candidate->position.v.x - aim_hero->position.f[0], candidate->position.v.y - aim_hero->position.f[1]),
                     aim_hero->yaw);
-                if (D_L00_00161668 < score) continue;
-                score = ((D_L00_0016166C - length_w3) / D_L00_0016166C) * D_L00_001616FC +
+                if (tesla_target_max_hero_angle_diff < score) continue;
+                score = ((tesla_target_max_camera_angle_diff - length_w3) / tesla_target_max_camera_angle_diff) * tesla_target_angle_score_weight +
                         (tesla_beam_length - distance_w16) / tesla_beam_length;
                 if (best_score < score) {
                     second_score = best_score; second = best;
@@ -261,11 +261,11 @@ next_candidate:;
         previous = (char *)&beam[seg - 1];
         side = (char *)&beam[seg + 20];
         n = (float)seg;
-        factor = D_L00_00161674 + (D_L00_00161678 - D_L00_00161674) *
+        factor = tesla_beam_wave_amplitude_start + (tesla_beam_wave_amplitude_end - tesla_beam_wave_amplitude_start) *
                     (IntToFloat(seg) * 0.05f);
-        phase = normalize_angle(tesla_beam_reset_short_a + n * D_L00_00161670);
+        phase = normalize_angle(tesla_beam_reset_short_a + n * tesla_beam_wave_phase_step);
         wave = factor * FastSin(phase);
-        wave += randf_sym(D_L00_001616B4, D_L00_001616B8);
+        wave += randf_sym(tesla_beam_wave_jitter_min, tesla_beam_wave_jitter_max);
 
         beam[seg].f[2] -= ((float *)tesla_beam_point_state_a)[seg];
         ((float *)tesla_beam_point_state_a)[seg] = wave;
@@ -308,9 +308,9 @@ next_candidate:;
         }
         if (seg < 10) {
             Vec4 *nz, *dst;
-            side_phase = normalize_angle(tesla_beam_reset_short_b + (float)seg * D_L00_0016168C);
-            angle = normalize_angle(tesla_beam_reset_short_c + (float)seg * D_L00_001616A0);
-            factor = D_L00_00161690 * FastSin(angle);
+            side_phase = normalize_angle(tesla_beam_reset_short_b + (float)seg * tesla_beam_side_phase_step);
+            angle = normalize_angle(tesla_beam_reset_short_c + (float)seg * tesla_beam_side_amplitude_phase_step);
+            factor = tesla_beam_side_wave_amplitude * FastSin(angle);
             qcopy(side, &beam[seg]);
             x_s = FastSin(side_phase);
             side_wave = randf_sym(0.0f, 0.1f);
@@ -318,7 +318,7 @@ next_candidate:;
             side_waves[seg] = x_c;
             *(float *)((char *)&beam[seg] + 0x148) += x_c;
             x_a = FastAddRots(fast_atan2(delta.f[0], delta.f[1]), 1.5707964f);
-            x_m = D_L00_00161694 * FastCos(side_phase);
+            x_m = tesla_beam_side_offset_scale * FastCos(side_phase);
             offset.f[0] = FastCos(x_a) * x_m;
             offset.f[1] = FastSin(x_a) * x_m;
             dst = &tesla_beam_point_vectors[seg];

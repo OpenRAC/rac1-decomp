@@ -984,10 +984,10 @@ extern void euler_rotation_basis(void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void draw_world_quad(void *, void *, int);
 extern char referencePosition[];
-extern int D_L06_001FED20[][4];
-extern float D_L06_001FECB0[][2];
-extern char D_L06_001FEC20[];
-extern int D_L06_001FECF8[];
+extern int door_lock_glow_quad_corner_indices[][4];
+extern float door_lock_glow_corner_uvs[][2];
+extern char door_lock_glow_corner_vertices[];
+extern int door_lock_glow_corner_colors[];
 
 void draw_bot_door_lock_glow(char *o) {
     Pkt89B8 pk;
@@ -1015,10 +1015,10 @@ void draw_bot_door_lock_glow(char *o) {
     pk.tag[0] = 0;
     pk.tag[1] = GetEffectTex(0x18);
     for (i = 0; i < 4; i++) {
-        matrix_mul_vec3(v[0], D_L06_001FEC20 + D_L06_001FED20[i][0] * 16, mat);
-        matrix_mul_vec3(v[1], D_L06_001FEC20 + D_L06_001FED20[i][1] * 16, mat);
-        matrix_mul_vec3(v[2], D_L06_001FEC20 + D_L06_001FED20[i][2] * 16, mat);
-        matrix_mul_vec3(v[3], D_L06_001FEC20 + D_L06_001FED20[i][3] * 16, mat);
+        matrix_mul_vec3(v[0], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][0] * 16, mat);
+        matrix_mul_vec3(v[1], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][1] * 16, mat);
+        matrix_mul_vec3(v[2], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][2] * 16, mat);
+        matrix_mul_vec3(v[3], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][3] * 16, mat);
         pk.pos[0][0] = *(float *)(o + 0x10) + v[0][0] * *(float *)(data + 0x24);
         pk.pos[0][1] = *(float *)(o + 0x14) + v[0][1] * *(float *)(data + 0x24);
         pk.pos[0][2] = *(float *)(o + 0x18) + v[0][2];
@@ -1031,18 +1031,18 @@ void draw_bot_door_lock_glow(char *o) {
         pk.pos[3][0] = *(float *)(o + 0x10) + v[3][0] * *(float *)(data + 0x24);
         pk.pos[3][1] = *(float *)(o + 0x14) + v[3][1] * *(float *)(data + 0x24);
         pk.pos[3][2] = *(float *)(o + 0x18) + v[3][2];
-        pk.col[0] = D_L06_001FECF8[D_L06_001FED20[i][0]];
-        pk.col[1] = D_L06_001FECF8[D_L06_001FED20[i][1]];
-        pk.col[2] = D_L06_001FECF8[D_L06_001FED20[i][2]];
-        pk.col[3] = D_L06_001FECF8[D_L06_001FED20[i][3]];
-        pk.uv[0] = D_L06_001FECB0[D_L06_001FED20[i][0]][0];
-        pk.uv[1] = D_L06_001FECB0[D_L06_001FED20[i][0]][1] + *(float *)(data + 0x1C);
-        pk.uv[2] = D_L06_001FECB0[D_L06_001FED20[i][1]][0];
-        pk.uv[3] = D_L06_001FECB0[D_L06_001FED20[i][1]][1] + *(float *)(data + 0x1C);
-        pk.uv[4] = D_L06_001FECB0[D_L06_001FED20[i][2]][0];
-        pk.uv[5] = D_L06_001FECB0[D_L06_001FED20[i][2]][1] + *(float *)(data + 0x1C);
-        pk.uv[6] = D_L06_001FECB0[D_L06_001FED20[i][3]][0];
-        pk.uv[7] = D_L06_001FECB0[D_L06_001FED20[i][3]][1] + *(float *)(data + 0x1C);
+        pk.col[0] = door_lock_glow_corner_colors[door_lock_glow_quad_corner_indices[i][0]];
+        pk.col[1] = door_lock_glow_corner_colors[door_lock_glow_quad_corner_indices[i][1]];
+        pk.col[2] = door_lock_glow_corner_colors[door_lock_glow_quad_corner_indices[i][2]];
+        pk.col[3] = door_lock_glow_corner_colors[door_lock_glow_quad_corner_indices[i][3]];
+        pk.uv[0] = door_lock_glow_corner_uvs[door_lock_glow_quad_corner_indices[i][0]][0];
+        pk.uv[1] = door_lock_glow_corner_uvs[door_lock_glow_quad_corner_indices[i][0]][1] + *(float *)(data + 0x1C);
+        pk.uv[2] = door_lock_glow_corner_uvs[door_lock_glow_quad_corner_indices[i][1]][0];
+        pk.uv[3] = door_lock_glow_corner_uvs[door_lock_glow_quad_corner_indices[i][1]][1] + *(float *)(data + 0x1C);
+        pk.uv[4] = door_lock_glow_corner_uvs[door_lock_glow_quad_corner_indices[i][2]][0];
+        pk.uv[5] = door_lock_glow_corner_uvs[door_lock_glow_quad_corner_indices[i][2]][1] + *(float *)(data + 0x1C);
+        pk.uv[6] = door_lock_glow_corner_uvs[door_lock_glow_quad_corner_indices[i][3]][0];
+        pk.uv[7] = door_lock_glow_corner_uvs[door_lock_glow_quad_corner_indices[i][3]][1] + *(float *)(data + 0x1C);
         draw_world_quad(&pk, 0, 1);
     }
     pk.tag[1] = GetEffectTex(0x1B);

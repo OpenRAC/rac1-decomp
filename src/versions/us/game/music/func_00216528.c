@@ -1,6 +1,6 @@
-extern char D_0011C478[];
+extern char music_track_table_by_language[];
 void music_start_track_30000(int arg0, int arg1, int arg2) {
-    int *p = (int *)(D_0011C478 + (arg0 * 4 + g_game_language * 0x258));
+    int *p = (int *)(music_track_table_by_language + (arg0 * 4 + g_game_language * 0x258));
     char *s;
 
     if (*p == 0) {

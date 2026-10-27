@@ -503,8 +503,8 @@ int cd_scmd_prechk(int arg0) {
     return 1;
 }
 
-extern int D_00131410;
-extern int D_0013140C;
+extern int cd_init_call_count;
+extern int cd_init_rpc_bound;
 extern int D_00131400;
 extern s32 cd_disk_ready_rpc_bound[];
 extern int cd_read_mode_flags;
@@ -512,11 +512,11 @@ extern int cd_poweroff_installing;
 extern int cd_poweroff_installed;
 extern int cd_callback_sema;
 extern int cd_scmd_sema;
-extern char D_00159A68[];
-extern int D_00159AC0[];
+extern char cd_init_rpc_client[];
+extern int cd_init_rpc_send_buffer[];
 extern int cd_scmd_recv_buffer;
-extern char D_00153050[];
-extern char D_00153070[];
+extern char cd_bind_error_fmt[];
+extern char cd_exit_message[];
 extern void sceSifWriteBackDCache(void *, int);
 extern int cd_install_poweroff_handler(void);
 
@@ -537,30 +537,30 @@ int sce_cd_init(int mode) {
     *(volatile int *)&cd_poweroff_installing = 1;
     *(volatile int *)&cd_thread_id = tid;
     {
-        int *p0 = &D_00131400, *p1 = &cd_ncmd_rpc_bound, *p2 = &cd_scmd_rpc_bound, *p3 = cd_disk_ready_rpc_bound, *p6 = &D_0013140C, *p4 = &cd_poweroff_installed, *p5 = &cd_read_mode_flags;
+        int *p0 = &D_00131400, *p1 = &cd_ncmd_rpc_bound, *p2 = &cd_scmd_rpc_bound, *p3 = cd_disk_ready_rpc_bound, *p6 = &cd_init_rpc_bound, *p4 = &cd_poweroff_installed, *p5 = &cd_read_mode_flags;
         /* register pin: retail keeps the -1 in $4 (hi(D_001313FC) then lands in $3). */
         register int m __asm__("$4") = -1;
         *p4 = m; *p0 = m; *p1 = m; *p2 = m; *p3 = m;
         *p5 = 0;
-        D_00131410++;
+        cd_init_call_count++;
         *p6 = m;
     }
     while (1) {
-        r = sceSifBindRpc(D_00159A68, 0x80000592, 0);
+        r = sceSifBindRpc(cd_init_rpc_client, 0x80000592, 0);
         if (r < 0) {
             if (cd_debug_level > 0) {
-                scePrintf(D_00153050, r, D_00131410);
+                scePrintf(cd_bind_error_fmt, r, cd_init_call_count);
             }
             for (i = 0x100000; i != -1; i--)
                 ;
             continue;
         }
-        if (((SifRpcClientData *)D_00159A68)->serve != 0) {
+        if (((SifRpcClientData *)cd_init_rpc_client)->serve != 0) {
             rd = &cd_scmd_recv_buffer;
-            D_00159AC0[0] = mode;
-            D_0013140C = 0;
-            sceSifWriteBackDCache(D_00159AC0, 4);
-            if (sif_call_rpc(D_00159A68, 0, 0, D_00159AC0, 4, rd, 0x10, 0, 0) < 0) {
+            cd_init_rpc_send_buffer[0] = mode;
+            cd_init_rpc_bound = 0;
+            sceSifWriteBackDCache(cd_init_rpc_send_buffer, 4);
+            if (sif_call_rpc(cd_init_rpc_client, 0, 0, cd_init_rpc_send_buffer, 4, rd, 0x10, 0, 0) < 0) {
                 *(volatile int *)&cd_poweroff_installing = 0;
                 return 0;
             }
@@ -584,7 +584,7 @@ int sce_cd_init(int mode) {
     switch (mode) {
     case 5:
         if (cd_debug_level > 0) {
-            scePrintf(D_00153070);
+            scePrintf(cd_exit_message);
         }
         cdvd_exit();
         *(volatile int *)&cd_ncmd_sema = -1;

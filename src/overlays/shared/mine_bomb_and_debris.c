@@ -113,7 +113,7 @@ extern unsigned char *part_type_textures[];
 
 extern float FastVecLength(void *);
 extern unsigned char *GetFlaggedPvarWord(unsigned char *);
-extern unsigned char *func_L00_00261448(unsigned char *);
+extern unsigned char *moby_get_ride_transform(unsigned char *);
 extern int predict_mine_impact(W910 *, M910 *, int);
 extern void euler_to_matrix(void *, void *);
 extern void MobyTransformScaledVertex(char *, int, char *);
@@ -212,7 +212,7 @@ void mine_update(M910 *m) {
     }
     if (v->owner != 0 && v->owner->state != 0xFE && v->owner->state != 0xFD
         && v->owner->cls == 0xBE && v->h36 == 0 && 0.0f < FastVecLength(v)) {
-        if (((unsigned char *)D_G910.ground_moby) == 0 || func_L00_00261448((unsigned char *)D_G910.ground_moby) == 0) {
+        if (((unsigned char *)D_G910.ground_moby) == 0 || moby_get_ride_transform((unsigned char *)D_G910.ground_moby) == 0) {
             predict_mine_impact(v, m, 1);
         } else if (predict_mine_impact(v, m, 0) == 0) {
             predict_mine_impact(v, m, 2);
@@ -357,7 +357,7 @@ void mine_update(M910 *m) {
                                 vec_scale_to_length(&up, &D_H910.nrm, 1.0f);
                             } else {
                                 if (D_H910.moby != 0) {
-                                    hd = (M910 *)func_L00_00261448((unsigned char *)D_H910.moby);
+                                    hd = (M910 *)moby_get_ride_transform((unsigned char *)D_H910.moby);
                                 }
                                 qcopy(&m->pos, &D_H910.pos);
                                 vec_scale_to_length(t, &D_H910.nrm, g_frame_time_sq * 9.7f);
@@ -415,7 +415,7 @@ void mine_update(M910 *m) {
                         m->bBC = 1;
                         v->p4C = 0;
                     } else if (g_coll_hit_moby != 0) {
-                        hd = (M910 *)func_L00_00261448((unsigned char *)g_coll_hit_moby);
+                        hd = (M910 *)moby_get_ride_transform((unsigned char *)g_coll_hit_moby);
                         if (hd != 0) {
                             RotateWithMoby(m, v->p4C, &m->pos, &m->rx, &m->pos, &m->rx);
                         }
@@ -442,7 +442,7 @@ void mine_update(M910 *m) {
                     if (m->pos.f[2] - fz < g_frame_time_sq * 40.0f) {
                         m->pos.f[2] = fz;
                         v->h34 = 0;
-                        if (D_H910.moby != 0 && func_L00_00261448((unsigned char *)D_H910.moby) != 0) {
+                        if (D_H910.moby != 0 && moby_get_ride_transform((unsigned char *)D_H910.moby) != 0) {
                             v->p4C = D_H910.moby;
                         }
                     } else {
@@ -1145,7 +1145,7 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
     g = (Hero *)&D_G910;
     if (g->state.control_mode == 15) {
         FastVecAdd(&vars->vel, &vars->vel, &g->motion.displacement);
-    } else if (((struct BombMoby *)g->ground_moby) != 0 && func_L00_00261448((unsigned char *)((struct BombMoby *)g->ground_moby)) != 0) {
+    } else if (((struct BombMoby *)g->ground_moby) != 0 && moby_get_ride_transform((unsigned char *)((struct BombMoby *)g->ground_moby)) != 0) {
         FastVecAdd(&vars->vel, &vars->vel, &g->motion.displacement);
     } else if (vars->target != 0) {
         short cls = vars->target->oclass;
@@ -1257,7 +1257,7 @@ int predict_throw_landing(void *vp, void *m, int mode) {
         qcopy(&velocity, v);
         if (*(int *)(hero + 0x208C) == 0xF)
             FastVecAdd(&velocity, &velocity, hero + 0x100);
-        if (*(int *)(hero + 0x2FC) != 0 && func_L00_00261448(*(unsigned char **)(hero + 0x2FC)) && mode)
+        if (*(int *)(hero + 0x2FC) != 0 && moby_get_ride_transform(*(unsigned char **)(hero + 0x2FC)) && mode)
             FastVecAdd(&velocity, &velocity, hero + 0x100);
         timer = scale_ticks(300);
     } else {
@@ -1360,8 +1360,8 @@ check_surface:
             break;
         }
     }
-    if (timer && (mode || (g_coll_hit_moby && func_L00_00261448((unsigned char *)g_coll_hit_moby)))) {
-        if (mode != 2 || !g_coll_hit_moby || !func_L00_00261448((unsigned char *)g_coll_hit_moby))
+    if (timer && (mode || (g_coll_hit_moby && moby_get_ride_transform((unsigned char *)g_coll_hit_moby)))) {
+        if (mode != 2 || !g_coll_hit_moby || !moby_get_ride_transform((unsigned char *)g_coll_hit_moby))
             AddDrawCallback((void *)draw_bomb_landing_marker, m);
         if (!object_hit && v->last_hit) {
             last = v->last_hit;
@@ -1496,7 +1496,7 @@ void bomb_update(M_2aedd0 *m) {
         m->flags &= ~0x41;
     }
     if (d->owner->cls == 0xC0 && d->h56 == 0 && FastVecLength(d) > 0.0f) {
-        if (((unsigned char *)D_G910.ground_moby) == 0 || func_L00_00261448((unsigned char *)D_G910.ground_moby) == 0) {
+        if (((unsigned char *)D_G910.ground_moby) == 0 || moby_get_ride_transform((unsigned char *)D_G910.ground_moby) == 0) {
             predict_throw_landing(d, m, 1);
         } else if (predict_throw_landing(d, m, 0) == 0) {
             predict_throw_landing(d, m, 2);

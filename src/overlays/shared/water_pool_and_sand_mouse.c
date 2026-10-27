@@ -3177,8 +3177,8 @@ typedef struct {
 
 extern s32 gunship_path_updates_disabled SDATA(D_L01_00161B90);
 extern char *novalis_mobys MACRO_ADDR;
-extern char D_L01_0020B6D0[];
-extern void *D_L01_001607F0 MACRO_ADDR;
+extern char gunship_missing_path_message_fmt[];
+extern void *gunship_follow_path_fn_ptr MACRO_ADDR;
 extern char voice_pool[];
 
 extern s32 check_scaled_vector_bsphere(struct Moby *, f32);
@@ -3292,7 +3292,7 @@ void gunship_follow_path(struct Moby *moby) {
             if (FastVecDist(&pn->node[0], &pn->node[pn->count - 1]) < 0.5f)
                 pn->count--;
         } else {
-            STUB_printf(D_L01_0020B6D0, moby->oclass, truncate_float_to_s32((f32)(moby - (struct Moby *)novalis_mobys)));
+            STUB_printf(gunship_missing_path_message_fmt, moby->oclass, truncate_float_to_s32((f32)(moby - (struct Moby *)novalis_mobys)));
         }
         moby->update_dist = 0xFF;
         v->unk11E = -1;
@@ -3514,7 +3514,7 @@ void gunship_follow_path(struct Moby *moby) {
                              1, -1, 0);
         }
     }
-    D_L01_001607F0 = (void *)gunship_follow_path;
+    gunship_follow_path_fn_ptr = (void *)gunship_follow_path;
     moby->hit_slot = 0xFF;
     if (v->unk13A == 0)
         return;

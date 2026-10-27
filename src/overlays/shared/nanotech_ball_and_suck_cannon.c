@@ -2542,8 +2542,8 @@ typedef struct Particle41 {
 } Particle41;
 typedef struct { short idx; short angle; float f; float phase; float phase_step; float speed; char *p; } E04_pt3;
 
-extern V41 D_L00_001E4E90[];
-extern float D_L00_001E6330[];
+extern V41 suck_beam_ring_unit_offsets[];
+extern float suck_beam_segment_turn_angles[];
 extern char collision_hit_point[];
 extern float Camera_SmoothAngle(void *,float,float,float,float,float);
 extern float FastAddRots(float, float);
@@ -2629,7 +2629,7 @@ void suck_beam_update(void *moby,void *position) {
     FastVecCross(&frame[0],&frame[2],&frame[1]);
     { int k;
     for(k=0;k<20;k++) {
-        FastVecScale(&tmp_a,&D_L00_001E4E90[k],0.1f);
+        FastVecScale(&tmp_a,&suck_beam_ring_unit_offsets[k],0.1f);
         matrix_mul_vec3(&tmp_a,&tmp_a,frame);
         FastVecAdd(&((V41 *)suck_beam_ring_vertices)[k],suck_beam_points,&tmp_a);
     }
@@ -2643,7 +2643,7 @@ void suck_beam_update(void *moby,void *position) {
         FastVecCross(&tmp_c,&tmp_b,&tmp_a);
         dot=FastVecDot(&tmp_a,&tmp_b);
         { float target=1.5707964f-FastArcSin(dot/(FastVecLength(&tmp_a)*suck_beam_segment_length));
-        turn=Camera_SmoothAngle(&D_L00_001E6330[i],0.0f,target,0.06f,0.2f,0.0f);
+        turn=Camera_SmoothAngle(&suck_beam_segment_turn_angles[i],0.0f,target,0.06f,0.2f,0.0f);
         delta=FastSubRots(target,turn); }
         if(FastAbsF(delta)>0.31415927f)turn=FastAddRots(turn,FastSubRots(delta,0.31415927f));
         build_look_at_matrix(&motion,&tmp_a,turn,&tmp_c);
@@ -2664,7 +2664,7 @@ void suck_beam_update(void *moby,void *position) {
         for(j=0;j<20;j++) {
             angle=(float)i*0.3f+0.1f;
             angle+=FastSin(FastAddRots((*(float *)&suck_beam_init_zero_1)+(float)i*0.7f,0.0f))*0.1f;
-            FastVecScale(&tmp_f,&D_L00_001E4E90[j],angle);
+            FastVecScale(&tmp_f,&suck_beam_ring_unit_offsets[j],angle);
             matrix_mul_vec3(&tmp_f,&tmp_f,&interp);
             FastVecAdd(&((V41 (*)[20])suck_beam_ring_vertices)[i][j],suck_beam_points+i*16,&tmp_f);
         }

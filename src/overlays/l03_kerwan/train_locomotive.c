@@ -1974,7 +1974,7 @@ extern int coll_sphere(float, void *, int, void *);
 extern int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d);
 extern float ProbeGroundHeight(void *, int, float);
 extern unsigned char *GetFlaggedPvarWord(int);
-extern unsigned char *func_L00_00261448(int);
+extern unsigned char *moby_get_ride_transform(int);
 extern void RotatePointAboutAxis(void *, void *, float);
 extern void DeleteMoby(void *);
 extern int g_current_level_index MACRO_ADDR;
@@ -2721,7 +2721,7 @@ void update_kerwan_path_enemy(Moby *m) {
         (*(float (*)[4])&m->pos)[2] = (*(float (*)[4])&m->pos)[2] - 2.0f;
         if ((*(float (*)[4])&m->pos)[2] < g) {
             char *h = kerwan_coll_hit;
-            if (*(int *)(h + 0x18) != 0 && func_L00_00261448(*(int *)(h + 0x18)) != 0) {
+            if (*(int *)(h + 0x18) != 0 && moby_get_ride_transform(*(int *)(h + 0x18)) != 0) {
                 d->i280 = *(Moby **)(h + 0x18) - kerwan_mobys_r;
             } else if (d->i280 != -1) {
                 short cls = (*(unsigned short *)&kerwan_mobys_r[d->i280].oclass);
