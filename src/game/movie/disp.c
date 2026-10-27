@@ -63,7 +63,19 @@ void setImageTag(unsigned long *p, unsigned int image, int w, int h) {
     p[1] = 0;
 }
 ASM_FUNC("asm/handwritten/text", func_0023C7A8); /* vblankHandler */
-ASM_FUNC("asm/handwritten/text", func_0023C910); /* handler_endimage */
+extern int D_001612E8 MACRO_ADDR;
+extern int D_0016130C MACRO_ADDR;
+extern void func_0023E710(int);
+/* shut down: free buffer if set, then sync and enable interrupts */
+int func_0023C910(void) {
+    if (D_001612E8 != 0) {
+        func_0023E710(D_0016130C + 0xD9168);
+        D_001612E8 = 0;
+    }
+    CpuSync();
+    CpuEnableInt(); /* inline asm: ei */
+    return 0;
+}
 extern volatile int movie_display_active MACRO_ADDR;   /* display-active flag, shared with the vblank handler */
 extern volatile int movie_vblank_count MACRO_ADDR;
 extern int sce_gs_sync_v(int);
