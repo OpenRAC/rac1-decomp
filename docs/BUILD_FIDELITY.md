@@ -12,12 +12,35 @@ has at that function's address, and the whole image still links at retail's
 addresses (`tools/build_sn.sh` audits both). Level code is checked the same
 way per function by `tools/overlay_check.py`.
 
-The build uses retail's own compilers:
+The default profiles use retail's own compilers:
 
 | Code | Compiler | Why we know |
 |---|---|---|
 | game code (`src/game/`, most of `src/overlays/`), and the non-SDK `src/core/` objects | SN Systems ProDG GCC 2.95.3, build v1.14 (`ee-gcc2953.exe`) | its save-slot layout, small-data use and scheduling are retail's; see docs/TOOLCHAIN.md |
 | Sony SDK objects (`ee29` in `config/core_text.objects`) and libgcc | Sony EE-GCC 2.9-ee-991111 (and 991111-01 for three libgcc modules) | functions match members of Sony's own `libgcc.a` and SDK archives byte for byte; 2.9-ee emits retail's `sd` saves and tail jumps natively |
+
+### Public frontend for the retained scalar assembly wrappers
+
+`src/game/fastfunc.c` uses the published PS2DEV GCC 3.2.3 frontend, selected
+for its entire object by `gcc323` in `config/text.objects`. Its file flags
+include `-ffast-math`. This is a C reconstruction path for the retained
+assembly wrappers, not evidence that retail used GCC 3.2.3.
+
+`tools/gcc323.py` builds the pinned GNU release with the unmodified published
+PS2DEV patch (sources and hashes in `docs/TOOLCHAIN.md`), then invokes its
+driver to produce assembly. It does not read or alter the resulting assembly.
+The existing assembler/linker pipeline remains in use. No function-specific
+compiler options, register bindings, inline-assembly wrappers, or byte edits
+are introduced.
+
+The measured reason is the scalar `max.s`/`min.s` instruction selection:
+the 2.95 frontend adds a register copy, while this public frontend emits the
+three-operand instruction directly. The two eight-byte C bodies and the
+existing `FastAbsF` and `IntToFloat` bodies match together. The complete
+80-entry object is checked, including its retained assembly and linker
+remnants; matching those entries does not count them as newly decompiled C.
+The floating-point options are confined to this object, and acceptance still
+requires the full image's ordinary byte and address checks.
 
 Everything the compiler emits is assembled as it is, except for the
 assembler and linker behaviours below. Options are given per source file,
