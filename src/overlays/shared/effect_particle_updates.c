@@ -363,9 +363,11 @@ void update_colliding_effect_particle(unsigned char *m) {
         }
 
         {
-        /* register pin: retail keeps 65535.0f in $f21 and 255.0f in $f20 here */
-        register float c65 __asm__("$f21") = 65535.0f;
-        register float c255 __asm__("$f20") = 255.0f;
+        float c65 = 65535.0f;
+        float c255;
+        /* never taken (m[4] is a byte); splits the block so 65535.0f gets $f21 and 255.0f $f20 like retail */
+        if (m[4] & 0x100) e[0x18] = 0;
+        c255 = 255.0f;
         e[0x18] = truncate_float_to_s32(f24 * c65);
         e[0x19] = truncate_float_to_s32(f23 * c65);
         e[0x1A] = truncate_float_to_s32(f22 * c65);
