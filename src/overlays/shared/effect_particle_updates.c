@@ -307,10 +307,11 @@ void update_colliding_effect_particle(unsigned char *m) {
         vec_scale_to_length(v3, coll_hit_normal, 0.055f);
         FastVecAdd(m + 0x10, (char *)coll_hit_normal - 0x20, v3);
     } else {
-        /* inline asm: keeps $s0 live at the else label so reorg fills the beqz delay slot with addiu $a0 like retail */
-        register unsigned char *s0 __asm__("$16");
-        __asm__ volatile("" : : "r"(s0));
-        *(u128_6AB *)(m + 0x10) = *(u128_6AB *)tmp;
+        /* q is never set and both arms are the same: jump2 folds the branch away, but flow2 has
+           already seen $s0 live here, so reorg fills the beqz slot with addiu $a0 like retail. */
+        unsigned char *q;
+        if (q) *(u128_6AB *)(m + 0x10) = *(u128_6AB *)tmp;
+        else *(u128_6AB *)(m + 0x10) = *(u128_6AB *)tmp;
     }
 
     fl = *(int *)(t + 0x70);

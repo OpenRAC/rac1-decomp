@@ -768,7 +768,7 @@ void update_crate_stack_motion(char *a) {
     char *b;
     float lo, hi, dt, c1, c2, c3, x1, x2, y, t, len;
     int r, flags;
-    if (o->D_L00_00161488 == level_frame_counter)
+    if (o->last_frame == level_frame_counter)
         return;
     n = a;
     do {
@@ -788,7 +788,7 @@ void update_crate_stack_motion(char *a) {
             return;
         if (o->flags & 2)
             return;
-        o->D_L00_00161488 = level_frame_counter;
+        o->last_frame = level_frame_counter;
         if (((Moby *)a)->state != 0) {
             g = hero_globals_base + 0xE9D;
             FastVecSub(v3, g, a + 0x10);
@@ -2377,6 +2377,39 @@ extern short D_L00_00161A4C;
 extern short D_L00_00161A58;
 extern short D_L00_00161A5C;
 
+/* Veldin level code: per-frame step of a moby's state 0x20 (retail func_L00_002D6610, 0x364 bytes).
+ * Runs a sub-state machine on a[0x20] (3, 5, 8, 10, 12); when a[0x20] is 12 or the sweep finds
+ * nothing it only stores 0xFF into a[0xA4]. Globals at gp-0x52xx are read as floats. */
+extern char *MobyGetHitMessage(void *, int, int);
+extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
+extern void HeadingFromVector(void *, float *, void *, void *);
+extern void InitKnockback(void *, void *, int, int, int, float);
+extern void RerollEffectCounter(void *, void *);
+extern void StepColorFade(void *, void *);
+extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
+extern int FastDecTimer(void *);
+extern float multiply_global_factor(float);
+
+typedef struct {
+    char pad0[0x20];
+    float hp;               /* 0x20 */
+    char pad24[0x5C];
+    float kb_gravity;       /* 0x80 */
+    float kb_approach;      /* 0x84 */
+    float kb_forward;       /* 0x88 */
+    float kb_up;            /* 0x8C */
+    int kb_amount;          /* 0x90 */
+    int kb_mode;            /* 0x94 */
+    float kb_unk_98;        /* 0x98 */
+    char pad9C[0x11];
+    unsigned char kb_unk_AD; /* 0xAD */
+    char padAE[0xE];
+    float kb_unk_BC;        /* 0xBC */
+} ToadVars;
+extern float toad_kb_gravity SDATA(D_L00_00161A40);
+extern float toad_kb_approach SDATA(D_L00_00161A44);
+extern float toad_kb_forward SDATA(D_L00_00161A48);
+extern float toad_kb_up SDATA(D_L00_00161A4C);
 void process_horny_toad_hit_reaction(void *a0) {
     char *a = (char *)a0;
     char *d;
@@ -2413,30 +2446,20 @@ void process_horny_toad_hit_reaction(void *a0) {
        its return value is the reaction to play, 1 for a wrench hit. */
     if (i10 != 1 && *(unsigned char *)(a + 0x20) != 12 && f14 != 0.0f) {
         char *q1;
-        /* register pin: retail loads the 0x94 value 41 into $t0 ($8). */
-        register int n41 __asm__("$8") = 41;
-        /* register pin: retail loads the frame time and later 0.75 into $f4. */
-        register float ft __asm__("$f4") = g_frame_time_r;
-        register float c75 __asm__("$f4");
-        /* register pin: retail loads the squared frame time first, into $f0. */
-        register float fsq __asm__("$f0") = g_frame_time_sq_r;
-        f6 = *(float *)&D_L00_00161A40 * fsq;
-        f5 = *(float *)&D_L00_00161A44 * fsq;
-        f3 = *(float *)&D_L00_00161A48 * ft;
-        f2 = *(float *)&D_L00_00161A4C * ft;
-        f0 = *(float *)(d + 0x20) - f14;
-        d[0xAD] = 0;
-        f1 = g_frame_time_r + g_frame_time_r;
-        *(int *)(d + 0x94) = n41;
-        *(int *)(d + 0x90) = 512;
-        c75 = 0.75f;
-        *(float *)(d + 0x98) = c75;
-        *(float *)(d + 0x20) = f0;
-        *(float *)(d + 0x80) = f6;
-        *(float *)(d + 0x84) = f5;
-        *(float *)(d + 0x88) = f3;
-        *(float *)(d + 0x8C) = f2;
-        *(float *)(d + 0xBC) = f1;
+        {
+        ToadVars *v = (ToadVars *)d;
+        v->hp -= f14;
+        v->kb_amount = 512;
+        v->kb_unk_98 = 0.75f;
+        v->kb_gravity = toad_kb_gravity * g_frame_time_sq_r;
+        v->kb_approach = toad_kb_approach * g_frame_time_sq_r;
+        v->kb_forward = toad_kb_forward * g_frame_time_r;
+        v->kb_up = toad_kb_up * g_frame_time_r;
+        v->kb_unk_AD = 0;
+        v->kb_mode = 9;
+        v->kb_unk_BC = 2.0f * g_frame_time_r;
+        v->kb_mode |= 0x20;
+        }
         q1 = d + 0x70;
         *(unsigned short *)(a + 0x34) &= 0xEFFF;
 

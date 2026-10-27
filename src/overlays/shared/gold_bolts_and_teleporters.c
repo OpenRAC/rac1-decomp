@@ -726,7 +726,7 @@ void update_cutscene_trigger(char *m) {
         {
             int o = d->camera_point << 7;
             char *t = camera_points_c;
-            qcopy(&d->D_L01_001672C0, (char *)(o + (int)t) + 0x30);
+            qcopy(&d->camera_pos, (char *)(o + (int)t) + 0x30);
             qcopy(&d->camera_rot, (char *)(o + (int)t) + 0x70);
         }
         break;

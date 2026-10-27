@@ -1910,18 +1910,18 @@ void prepare_hoverboard_dummy_path_jump(char *moby) {
     struct HoverDummyVars *data = (struct HoverDummyVars *)((Moby *)moby)->pvars;
     if (data->vertical_vel <= 0.0f) {
         int idx = data->unk_2F4;
-        char *tab = data->D_L11_001B11B0;
+        char *tab = data->path_table;
         int off = idx * 16;
         if (*(float *)(tab + off + 0x1C) == 1.0f) {
             while (1) {
                 char *t;
                 if (*(float *)(tab + off + 0x1C) == 2.0f) break;
                 idx = offset_path_index(tab, idx, 1, 1);
-                tab = data->D_L11_001B11B0;
+                tab = data->path_table;
                 off = idx * 16;
             }
             data->unk_2F0 = idx;
-            qcopy(&data->path_pos, data->D_L11_001B11B0 + (short)idx * 16 + 0x10);
+            qcopy(&data->path_pos, data->path_table + (short)idx * 16 + 0x10);
             data->unk_2E4 = 1;
         }
     }
@@ -2047,7 +2047,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
         ((Moby *)m)->update_dist = 24;
         ((Moby *)m)->flags |= 0x41;
         path = kalebo3_path_table[d->path_index];
-        d->D_L11_001B11B0 = path;
+        d->path_table = path;
         copy_hoverboard_dummy_path_node((Level16VendorVectorMoby *)m, 0, pos);
         qcopy(m + 0x10, pos);
         qcopy(&d->start_pos, m + 0x10);
@@ -2149,15 +2149,15 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
                 while (i < d->unk_2F0) {
                     char *path;
 
-                    next = offset_path_index(d->D_L11_001B11B0, i, 1, 1);
-                    path = d->D_L11_001B11B0;
+                    next = offset_path_index(d->path_table, i, 1, 1);
+                    path = d->path_table;
                     distance += vec_distance_xy(path + (i * 16 + 16), path + (next * 16 + 16));
                     i = next;
                 }
                 {
                     short last = d->unk_2F0;
                     short first = d->unk_2F4;
-                    char *path = d->D_L11_001B11B0;
+                    char *path = d->path_table;
                     float rise = *(float *)(path - (-(last * 16)) + 0x18) - *(float *)(path - (-(first * 16)) + 0x18);
 
                     duration = distance / d->speed;

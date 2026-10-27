@@ -3287,7 +3287,7 @@ void Moby336Update(char *m) {
                 int cnt;
                 initialize_path_descriptor((char *)&d->path_pos);
                 tbl = hoven_paths[d->path_id];
-                d->D_L11_001B11B0 = tbl;
+                d->path_table = tbl;
                 idx = d->start_index;
                 cnt = *(int *)tbl - 1;
                 if (cnt < idx) idx = cnt;
