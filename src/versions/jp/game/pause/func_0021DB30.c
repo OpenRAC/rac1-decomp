@@ -9,7 +9,7 @@ s32 sound_options_menu(struct SoundMenu_1DB30 *menu) {
         return 1;
     }
     if (((s32)g_controller_state_r2.pressed_unmasked) & 0x10) {
-        struct MenuPage_1DB30 *back_page = menu_system_r5.current->back;
+        MenuPage *back_page = menu_system_r5.current->back;
 
         if (back_page != 0) {
             menu_system_r5.next = back_page;
