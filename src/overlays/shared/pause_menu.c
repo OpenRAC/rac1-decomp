@@ -4,6 +4,8 @@
 #include "include_asm.h"
 #include "pad.h"
 #include "vector.h"
+#include "menu.h"
+#include "hero.h"
 
 typedef unsigned int Q_277208 __attribute__((mode(TI), aligned(16)));
 
@@ -350,8 +352,6 @@ void close_pause_menu(void) {
     int i;
     int value;
     int handle;
-    char *obj;
-    void (*callback)(char *, int);
     unsigned char *table;
     char *st = level_menu_system;
 
@@ -361,41 +361,40 @@ void close_pause_menu(void) {
         if (*(int *)(st + 4) != 0) {
             {
                 for (i = 0; i < 14; i++) {
-                    char *s = level_menu_system;
-                    obj = (*(struct { char p[0x44]; char *a[14]; } **)(s + 4))->a[i];
-                    if (obj != 0) {
-                        callback = *(void (**)(char *, int))(obj + 0xC);
-                        if (callback != 0) {
-                            callback(obj, 0);
+                    MenuSystem *s = (MenuSystem *)level_menu_system;
+                    MenuScreen *screen = s->current->screens[i];
+                    if (screen != 0) {
+                        if (screen->leave != 0) {
+                            screen->leave(screen, 0);
                         }
                     }
                 }
             }
             {
-                char *s = level_menu_system;
-                *(int *)(s + 4) = 0;
+                MenuSystem *s = (MenuSystem *)level_menu_system;
+                s->current = 0;
             }
         }
         {
             int i;
             int value = 0x26;
             for (i = 3; i >= 0; i--) {
-                char *s = level_menu_system;
-                char *h = (char *)&hero_globals_base + 0xE1D;
-                if (((int *)(&help_stats_base + 0x45))[3 - i] != ((int *)s)[15 - i]) {
-                    ((int *)(h + 0x20B8))[3 - i] =
-                        ((int *)s)[15 - i] != 0
-                            ? ((int *)s)[15 - i]
+                MenuSystem *s = (MenuSystem *)level_menu_system;
+                struct Hero *h = (struct Hero *)((char *)&hero_globals_base + 0xE1D);
+                if (((int *)(&help_stats_base + 0x45))[3 - i] != s->equipped[3 - i]) {
+                    h->pending_item[3 - i] =
+                        s->equipped[3 - i] != 0
+                            ? s->equipped[3 - i]
                             : value;
                 }
             }
         }
         {
-            char *state = level_menu_system;
+            MenuSystem *state = (MenuSystem *)level_menu_system;
             int value;
             table = texture_group_header;
             value = *(int *)(*(char **)(table + 0x18) + 0x74);
-            *(int *)&g_gs_texture_allocation_start = *(int *)(state + 0x18);
+            *(int *)&g_gs_texture_allocation_start = state->saved_texture_start;
             Hud_SendResidentBank(0, value, 0);
         }
         apply_group_entry_adjustment(2);
