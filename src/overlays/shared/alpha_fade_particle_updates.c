@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "hero.h"
+#include "moby.h"
 
 extern unsigned char *create_part(int);
 extern int truncate_float_to_s32(float);
@@ -717,7 +718,6 @@ extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void PostHitMessage(int, int, int, void *, void *, float);
 typedef float V_272bc0[4] __attribute__((aligned(16)));
-typedef struct { char p0[0x88]; float f88; char p1[0x2080 - 0x8C]; int i2080; } P_272bc0;
 extern unsigned char *particle_pool MACRO_ADDR;
 
 /* part type 58 update: fade in, hold spawning sparks, then fall and fade out. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_00272bc0. */
@@ -725,7 +725,7 @@ void update_color_tween_emitter_particle(struct PartBase *p) {
     V_272bc0 t;
     unsigned char *q;
     unsigned char *c;
-    P_272bc0 *g;
+    struct Hero *g;
     int i;
     float a;
     float k;
@@ -764,12 +764,12 @@ void update_color_tween_emitter_particle(struct PartBase *p) {
         }
         c = hero_globals_base + 0xE9D;
         if (vec_distance_xy(&p->pos, c) < 0.3f) {
-            g = (P_272bc0 *)(c - 0x80);
-            if (g->f88 < p->pos.f[2] + 1.2f) {
+            g = (struct Hero *)(c - 0x80);
+            if (g->motion.pos.f[2] < p->pos.f[2] + 1.2f) {
                 FastVecSub(t, c, &p->pos);
                 vec_scale_to_length(t, t, 1.0f);
                 t[2] = 1.0f;
-                PostHitMessage(g->i2080, *(int *)(q + 0x18), 1, &p->pos, t, *(float *)(q + 0x1C));
+                PostHitMessage((int)g->moby, *(int *)(q + 0x18), 1, &p->pos, t, *(float *)(q + 0x1C));
             }
         }
         break;
@@ -836,7 +836,6 @@ void update_timed_hero_relative_particle(struct PartBase *m) {
         KillPart(m);
     }
 }
-typedef struct { char p0[0x80]; float x, y, z; } G_2730e0;
 extern unsigned char *part_type53_textures_p __asm__("D_L00_001B24D4") NOT_SDA;
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -854,10 +853,10 @@ unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *pos, char *
         qcopy(v, vel);
         *(int *)(v + 7) = mode;
         if (mode == 1) {
-            G_2730e0 *g = (G_2730e0 *)(hero_globals_base + 0xE1D);
-            v[4] = *(float *)(m + 0x10) - g->x;
-            v[5] = *(float *)(m + 0x14) - g->y;
-            v[6] = *(float *)(m + 0x18) - g->z;
+            struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            v[4] = *(float *)(m + 0x10) - g->motion.pos.f[0];
+            v[5] = *(float *)(m + 0x14) - g->motion.pos.f[1];
+            v[6] = *(float *)(m + 0x18) - g->motion.pos.f[2];
         }
         *(int *)(m + 4) = color;
         m[9] = truncate_float_to_s32_r(1.0f) + 0x20;
