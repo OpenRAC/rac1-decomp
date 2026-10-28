@@ -317,82 +317,7 @@ void initialize_transfer_command(void) {
 
 extern s32 g_gs_texture_allocation_start_r __asm__("D_0015EF78") MACRO_ADDR;
 
-struct MenuScreen_19E90;
-
-struct MenuPage_19E90 {
-    s32 moby_anims[14];
-    struct MenuPage_19E90 *back;
-    s32 state;
-    struct MenuScreen_19E90 *focus;
-    struct MenuScreen_19E90 *screens[14];
-    u8 pad_7C[0x4];
-    struct MenuScreen_19E90 *pending_focus;
-    s32 confirmed;
-};
-
-struct MenuSystem_19E90 {
-
-    s32 state;
-    struct MenuPage_19E90 *current;
-    struct MenuPage_19E90 *next;
-    s32 close_request;
-    s32 unk10;
-    s32 timer;
-    s32 saved_texture_start;
-    s32 current_gadget;
-    u8 pad_20[0x10];
-    s32 equipped[4];
-    u8 pad_40[0x60];
-
-    s32 stream_buffer[2];
-    s32 unkA8;
-    s32 unkAC;
-    s32 unkB0[3];
-    s32 read_offset;
-    s32 unkC0;
-    u8 pad_C4[0x4];
-    u8 loaded_animation[2];
-    u8 read_buffer_index;
-    u8 pending_buffer;
-    u32 streamed_animation_base;
-
-    struct MenuPage_19E90 *previous;
-    s32 unkD4;
-    s32 unkD8;
-    s32 unkDC;
-    s32 unkE0;
-    s32 unkE4;
-    u8 pad_E8[0x4];
-    s32 unkEC;
-    struct MenuPage_19E90 *unkF0;
-    s32 unkF4;
-    s32 unkF8;
-
-    s32 unkFC;
-    s32 unk100;
-    s32 unk104;
-    s32 help_text_buffer;
-    s32 unk10C;
-
-    s32 update_count;
-    u8 pad_114[0x4];
-
-    s32 resource_table_toggle;
-    s32 unk11C;
-    s32 unk120;
-
-    s32 close_locked;
-    s32 card_op_pending;
-    s32 card_op_text;
-    u8 pad_130[0x4];
-    s32 unk134;
-    s32 unk138;
-    s32 unk13C;
-    s32 unk140;
-    s32 last_resource_table_toggle;
-};
-
-extern struct MenuSystem_19E90 menu_system_r __asm__("D_001D5F70");
+extern MenuSystem menu_system_r __asm__("D_001D5F70");
 
 struct P_19E90 {
     u8 pad_0[0x10];
@@ -414,7 +339,7 @@ struct O2_19E90 {
     u8 pad_4C[0x28];
     s32 *f74;
 };
-extern struct MenuPage_19E90 pause_menu_start_page_r __asm__("D_001D4948"); /* page made current and next at init */
+extern MenuPage pause_menu_start_page_r __asm__("D_001D4948"); /* page made current and next at init */
 extern u8 menu_light_direction_r[] __asm__("D_0019C250");
 extern u8 D_0019C260_19E90[] __asm__("D_0019C260");
 extern s32 level_resource_buffers_r[] __asm__("D_001941C0");
@@ -546,122 +471,9 @@ extern s32 g_game_mode_r __asm__("D_0015F6E8") MACRO_ADDR;
 
 extern s32 mode_freeze_flags_r __asm__("D_0015EFB4") MACRO_ADDR;
 
-struct MenuScreen_1A1A0;
+extern MemoryCardState memory_card_state_r __asm__("D_0013D390");
 
-struct MenuPage_1A1A0 {
-    s32 moby_anims[14];
-    struct MenuPage_1A1A0 *back;
-    s32 state;
-    struct MenuScreen_1A1A0 *focus;
-    struct MenuScreen_1A1A0 *screens[14];
-    u8 pad_7C[0x4];
-    struct MenuScreen_1A1A0 *pending_focus;
-    s32 confirmed;
-};
-
-struct MenuSystem_1A1A0 {
-
-    s32 state;
-    struct MenuPage_1A1A0 *current;
-    struct MenuPage_1A1A0 *next;
-    s32 close_request;
-    s32 unk10;
-    s32 timer;
-    s32 saved_texture_start;
-    s32 current_gadget;
-    u8 pad_20[0x10];
-    s32 equipped[4];
-    u8 pad_40[0x60];
-
-    s32 stream_buffer[2];
-    s32 unkA8;
-    s32 unkAC;
-    s32 unkB0[3];
-    s32 read_offset;
-    s32 unkC0;
-    u8 pad_C4[0x4];
-    u8 loaded_animation[2];
-    u8 read_buffer_index;
-    u8 pending_buffer;
-    u32 streamed_animation_base;
-
-    struct MenuPage_1A1A0 *previous;
-    s32 unkD4;
-    s32 unkD8;
-    s32 unkDC;
-    s32 unkE0;
-    s32 unkE4;
-    u8 pad_E8[0x4];
-    s32 unkEC;
-    struct MenuPage_1A1A0 *unkF0;
-    s32 unkF4;
-    s32 unkF8;
-
-    s32 unkFC;
-    s32 unk100;
-    s32 unk104;
-    s32 help_text_buffer;
-    s32 unk10C;
-
-    s32 update_count;
-    u8 pad_114[0x4];
-
-    s32 resource_table_toggle;
-    s32 unk11C;
-    s32 unk120;
-
-    s32 close_locked;
-    s32 card_op_pending;
-    s32 card_op_text;
-    u8 pad_130[0x4];
-    s32 unk134;
-    s32 unk138;
-    s32 unk13C;
-    s32 unk140;
-    s32 last_resource_table_toggle;
-    s32 unk148;               /* 0x148: PAL only, counts down to 0 */
-    u8 pad_14C[0x8];
-    s32 unk154;               /* 0x154: PAL only, updates since the memory card went idle */
-};
-
-/* Memory card state at D_0013D390, as far as this function reads it (PAL offsets). */
-struct MemoryCardState_1A1A0 {
-    u8 pad_0[0xDC];
-    s32 state;                /* 0xDC */
-    s32 sub;
-    s32 pending_state;        /* 0xE4 */
-};
-extern struct MemoryCardState_1A1A0 memory_card_state_r __asm__("D_0013D390");
-
-extern struct MenuSystem_1A1A0 menu_system_r2 __asm__("D_001D5F70");
-
-struct MenuScreenWords_1A1A0 {
-    u8 pad_30[0x4];
-    s32 unk34;
-    s32 unk38;
-    s32 unk3C;
-    u8 pad_40[0x10];
-    s32 unk50;
-    s32 unk54;
-    u8 pad_58[0x8];
-};
-
-struct MenuScreen_1A1A0 {
-    s32 (*update)(struct MenuScreen_1A1A0 *);
-    u8 pad_4[0x4];
-    void (*enter)(struct MenuScreen_1A1A0 *, s32);
-    void (*leave)(struct MenuScreen_1A1A0 *, s32);
-    s32 unk10;
-    s32 moby;
-    s32 x;
-    s32 y;
-    s32 width;
-    s32 height;
-    u8 pad_28[0x8];
-    union {
-        struct MenuScreenWords_1A1A0 raw;
-    } data;
-};
+extern MenuSystem menu_system_r2 __asm__("D_001D5F70");
 
 struct Ent3_1A1A0 {
     u8 pad0[0x10];
@@ -689,7 +501,7 @@ extern void reset_active_camera_position_and_basis_r(void) __asm__("func_00219C0
 extern void initialize_menu_preview_scene_r(void) __asm__("func_00219E90");
 extern void update_visible_resident_objects_r() __asm__("func_00213C78");
 extern s32 Moby_PlaySound_r(s32, s32, struct Ent_1A1A0 *) __asm__("func_0022ED80");
-extern void mode_freeze_init_r(s32, struct MenuPage_1A1A0 *, s32) __asm__("func_001FBC80");
+extern void mode_freeze_init_r(s32, MenuPage *, s32) __asm__("func_001FBC80");
 extern void calculate_dma_transfer_address_r(void) __asm__("func_002348B8");
 extern void UpdateFog_r(void) __asm__("func_001F2930");
 extern void MobySetAnimation_r2(struct Ent_1A1A0 *, s32, s32) __asm__("func_00213D28");
@@ -704,9 +516,9 @@ void update_menu_system(void) {
     s32 j;
     s32 k;
     s32 flag;
-    struct MenuScreen_1A1A0 *obj;
-    struct MenuScreen_1A1A0 **objs;
-    struct MenuScreen_1A1A0 *m;
+    MenuScreen *obj;
+    MenuScreen **objs;
+    MenuScreen *m;
 
     menu_system_r2.update_count = menu_system_r2.update_count + 1;
     if (menu_system_r2.update_count > 0x7D00) {
@@ -716,7 +528,7 @@ void update_menu_system(void) {
     if (menu_system_r2.unk148 != 0) {
         menu_system_r2.unk148 = menu_system_r2.unk148 - 1;
     }
-    if (memory_card_state_r.state < 3 && memory_card_state_r.pending_state < 0) {
+    if (memory_card_state_r.state < 3 && memory_card_state_r.err < 0) {
         menu_system_r2.unk154 = menu_system_r2.unk154 + 1;
     } else {
         menu_system_r2.unk154 = 0;
@@ -752,7 +564,7 @@ void update_menu_system(void) {
     if (menu_system_r2.state == 1) {
         menu_system_r2.timer = (menu_system_r2.timer < 1) ? 0 : menu_system_r2.timer - 1;
         if (menu_system_r2.timer == 0) {
-            struct MenuPage_1A1A0 *o8 = menu_system_r2.next;
+            MenuPage *o8 = menu_system_r2.next;
             menu_system_r2.next = 0;
             menu_system_r2.current = o8;
             menu_system_r2.state = o8->state;
@@ -825,8 +637,6 @@ void update_menu_system(void) {
     }
 }
 
-typedef struct { u8 pad0[0x50]; s32 screen_x, screen_y, projected_width, projected_height; } ProjectedPanelFrame;
-typedef struct { u8 pad0[0x78]; ProjectedPanelFrame *frame; } PanelRenderSlot;
 extern s64 capture_texture_tex0 MACRO_ADDR;
 extern void *resident_object_pool MACRO_ADDR;
 extern short panel_clear_color;
@@ -849,10 +659,6 @@ extern void begin_draw_frame(void);
 extern void RestoreMobyClassDists(void);
 extern void DrawMobysCleanUp(void);
 extern void draw_menu_flashing_panel();
-typedef struct RenderPanel RenderPanel;
-struct RenderPanel { u8 pad0[4]; s32 (*draw)(RenderPanel *); u8 pad8[8]; s32 flags; u8 pad14[4]; s32 screen_x, screen_y, projected_width, projected_height; };
-typedef struct { u8 pad0[4]; u8 *current; u8 pad8[0xD0]; s32 unkD8; } MenuSys_p;
-typedef struct { u8 pad0[0x44]; RenderPanel *screens[1]; } MenuScr_p;
 
 /* Per-frame menu render: draws the resident and panel-slot mobys, projects each
    panel's frame to a screen box, runs the panels' draw callbacks (some into an
@@ -870,12 +676,12 @@ void render_level_effects_and_screen_sprites(void) {
     s32 projected_height;
     s32 screen_x;
     s32 screen_y;
-    RenderPanel **panels;
-    PanelRenderSlot *slot;
-    PanelRenderSlot *projected_slot;
-    RenderPanel *panel;
-    ProjectedPanelFrame *projected_frame;
-    ProjectedPanelFrame *panel_frame;
+    MenuScreen **panels;
+    Moby *slot;
+    Moby *projected_slot;
+    MenuScreen *panel;
+    PanelMobyPvars *projected_frame;
+    PanelMobyPvars *panel_frame;
     s32 effect_slot_index;
     s32 projection_slot_index;
     s32 pass;
@@ -910,21 +716,21 @@ void render_level_effects_and_screen_sprites(void) {
     reset_active_camera_position_and_basis();
     BuildViewMatrices();
     for (effect_slot_index = 0; effect_slot_index < slot_count; effect_slot_index++) {
-        if (panel_slot_enabled[effect_slot_index] != 0 && ((PanelRenderSlot **)panel_slots)[effect_slot_index] != 0 &&
-            (effect_slot_index != 6 || ((MenuSys_p *)menu_system)->unkD8 != 0)) {
-            DrawMobyList(((PanelRenderSlot **)panel_slots)[effect_slot_index], 1);
+        if (panel_slot_enabled[effect_slot_index] != 0 && ((Moby **)panel_slots)[effect_slot_index] != 0 &&
+            (effect_slot_index != 6 || ((MenuSystem *)menu_system)->unkD8 != 0)) {
+            DrawMobyList(((Moby **)panel_slots)[effect_slot_index], 1);
         }
     }
 
-    panels = ((MenuSys_p *)menu_system)->current != 0 ? ((MenuScr_p *)((MenuSys_p *)menu_system)->current)->screens : 0;
+    panels = ((MenuSystem *)menu_system)->current != 0 ? ((MenuSystem *)menu_system)->current->screens : 0;
     for (projection_slot_index = 0; projection_slot_index < slot_count;
          projection_slot_index++) {
-        projected_slot = ((PanelRenderSlot **)panel_slots)[projection_slot_index];
+        projected_slot = ((Moby **)panel_slots)[projection_slot_index];
         if (projected_slot == 0 || panel_slot_enabled[projection_slot_index] == 0 ||
-            (projection_slot_index == 6 && ((MenuSys_p *)menu_system)->unkD8 == 0)) {
+            (projection_slot_index == 6 && ((MenuSystem *)menu_system)->unkD8 == 0)) {
             continue;
         }
-        projected_frame = projected_slot->frame;
+        projected_frame = (PanelMobyPvars *)projected_slot->pvars;
         qcopy(&frame_vectors[0], (Vec4 *)projected_frame + 0);
         qcopy(&frame_vectors[1], (Vec4 *)projected_frame + 1);
         qcopy(&frame_vectors[2], (Vec4 *)projected_frame + 2);
@@ -937,10 +743,10 @@ void render_level_effects_and_screen_sprites(void) {
         screen_y++;
         value = projected_width;
         if (panels != 0 && panels[projection_slot_index] != 0) {
-            panels[projection_slot_index]->projected_width = value;
-            panels[projection_slot_index]->projected_height = projected_height;
-            panels[projection_slot_index]->screen_x = screen_x;
-            panels[projection_slot_index]->screen_y = screen_y;
+            panels[projection_slot_index]->width = value;
+            panels[projection_slot_index]->height = projected_height;
+            panels[projection_slot_index]->x = screen_x;
+            panels[projection_slot_index]->y = screen_y;
         }
         projected_frame->screen_x = screen_x;
         projected_frame->screen_y = screen_y;
@@ -956,7 +762,7 @@ void render_level_effects_and_screen_sprites(void) {
 
     for (pass = 0; pass < 2; pass++) {
         for (draw_slot_index = 0; draw_slot_index < slot_count; draw_slot_index++) {
-            slot = ((PanelRenderSlot **)panel_slots)[draw_slot_index];
+            slot = ((Moby **)panel_slots)[draw_slot_index];
             if (slot == 0 || panels == 0) {
                 continue;
             }
@@ -971,7 +777,7 @@ void render_level_effects_and_screen_sprites(void) {
             if (panel_slot_enabled[draw_slot_index] == 0 || panel->draw == 0) {
                 continue;
             }
-            if (draw_slot_index == 6 && ((MenuSys_p *)menu_system)->unkD8 == 0) {
+            if (draw_slot_index == 6 && ((MenuSystem *)menu_system)->unkD8 == 0) {
                 continue;
             }
             if (pass == 0 && !(value & 2)) {
@@ -984,7 +790,7 @@ void render_level_effects_and_screen_sprites(void) {
                 panel->draw(panel);
                 continue;
             }
-            panel_frame = slot->frame;
+            panel_frame = (PanelMobyPvars *)slot->pvars;
             frame_x = panel_frame->screen_x;
             frame_y = panel_frame->screen_y;
             frame_width = panel_frame->projected_width;
@@ -1058,8 +864,8 @@ void render_level_effects_and_screen_sprites(void) {
     SetupGifPaging(0);
     for (final_slot_index = 0; final_slot_index < slot_count; final_slot_index++) {
         if (panel_slot_enabled[final_slot_index] != 0 &&
-            (final_slot_index != 6 || ((MenuSys_p *)menu_system)->unkD8 != 0)) {
-            draw_menu_flashing_panel(((PanelRenderSlot **)panel_slots)[final_slot_index]);
+            (final_slot_index != 6 || ((MenuSystem *)menu_system)->unkD8 != 0)) {
+            draw_menu_flashing_panel(((Moby **)panel_slots)[final_slot_index]);
         }
     }
     DoGifPaging();
@@ -1577,125 +1383,7 @@ int render_configured_text_label(MenuScreen *w) {
 }
 
 
-struct MenuTextItem_1BB90 {
-    s16 text;
-    s16 action;
-    union {
-        s32 value;
-        struct {
-            u16 lo;
-            s16 hi;
-        } half;
-    } param;
-    s16 subtext;
-    s16 fade_timer;
-};
-
-struct MenuTextListData_1BB90 {
-    s32 flags;
-    struct MenuTextItem_1BB90 *items;
-    struct MenuScreen_1BB90 *up;
-    struct MenuScreen_1BB90 *down;
-    s32 selected;
-    s32 scroll;
-};
-
-struct MenuScreen_1BB90 {
-    s32 (*update)(struct MenuScreen_1BB90 *);
-    u8 pad_4[0x4];
-    void (*enter)(struct MenuScreen_1BB90 *, s32);
-    void (*leave)(struct MenuScreen_1BB90 *, s32);
-    s32 unk10;
-    s32 moby;
-    s32 x;
-    s32 y;
-    s32 width;
-    s32 height;
-    u8 pad_28[0x8];
-    union {
-        struct MenuTextListData_1BB90 list;
-    } data;
-};
-
-struct MenuScreen_1BB90;
-
-struct MenuPage_1BB90 {
-    s32 moby_anims[14];
-    struct MenuPage_1BB90 *back;
-    s32 state;
-    struct MenuScreen_1BB90 *focus;
-    struct MenuScreen_1BB90 *screens[14];
-    u8 pad_7C[0x4];
-    struct MenuScreen_1BB90 *pending_focus;
-    s32 confirmed;
-};
-
-struct MenuSystem_1BB90 {
-
-    s32 state;
-    struct MenuPage_1BB90 *current;
-    struct MenuPage_1BB90 *next;
-    s32 close_request;
-    s32 unk10;
-    s32 timer;
-    s32 saved_texture_start;
-    s32 current_gadget;
-    u8 pad_20[0x10];
-    s32 equipped[4];
-    u8 pad_40[0x60];
-
-    s32 stream_buffer[2];
-    s32 unkA8;
-    s32 unkAC;
-    s32 unkB0[3];
-    s32 read_offset;
-    s32 unkC0;
-    u8 pad_C4[0x4];
-    u8 loaded_animation[2];
-    u8 read_buffer_index;
-    u8 pending_buffer;
-    u32 streamed_animation_base;
-
-    struct MenuPage_1BB90 *previous;
-    s32 unkD4;
-    s32 unkD8;
-    s32 unkDC;
-    s32 unkE0;
-    s32 unkE4;
-    u8 pad_E8[0x4];
-    s32 unkEC;
-    struct MenuPage_1BB90 *unkF0;
-    s32 unkF4;
-    s32 unkF8;
-
-    s32 unkFC;
-    s32 unk100;
-    s32 unk104;
-    s32 help_text_buffer;
-    s32 unk10C;
-
-    s32 update_count;
-    u8 pad_114[0x4];
-
-    s32 resource_table_toggle;
-    s32 unk11C;
-    s32 unk120;
-
-    s32 close_locked;
-    s32 card_op_pending;
-    s32 card_op_text;
-    u8 pad_130[0x4];
-    s32 unk134;
-    s32 unk138;
-    s32 unk13C;
-    s32 unk140;
-    s32 last_resource_table_toggle;
-    u8 pad_148[0x8];
-    s32 unk150;               /* 0x150: PAL only: 0 after action 4, 1 after action 5 */
-    s32 unk154;               /* 0x154: PAL only */
-};
-
-extern struct MenuSystem_1BB90 menu_system_r3 __asm__("D_001D5F70");
+extern MenuSystem menu_system_r3 __asm__("D_001D5F70");
 
 extern struct PadState g_controller_state_r __asm__("D_0013CA40");
 /* gp-relative here, so not the plain rnc/globals.h spellings. */
@@ -1720,7 +1408,7 @@ extern s32 Moby_PlaySound_r2(s32, s32, s32) __asm__("func_0022ED80");
    list the pad: close, back, confirm (the selected entry's action: open a page, freeze the
    game for a prompt, close with a value, pick a level or language) and up/down selection.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/ui/menus/fun_0021abf8.c, update_menu_entry_actions. */
-s32 update_menu_entry_actions(struct MenuScreen_1BB90 *menu) {
+s32 update_menu_entry_actions(MenuScreen *menu) {
     s32 focused;
     s32 entry_index;
     s32 entry_count;
@@ -1779,7 +1467,7 @@ s32 update_menu_entry_actions(struct MenuScreen_1BB90 *menu) {
         /* No case 1 in PAL: retail's table sends action 1 to the default. */
         case 3:
             menu_system_r3.next =
-                (struct MenuPage_1BB90 *)menu->data.list.items[menu->data.list.selected].param.value;
+                (MenuPage *)menu->data.list.items[menu->data.list.selected].param.value;
             break;
         case 4:
             Moby_PlaySound_r2(0, 0x11, menu->moby);
@@ -1897,10 +1585,6 @@ typedef struct {
     u8 pad38[8];
     s32 selected_entry;
 } MenuDescriptor;
-typedef struct {
-    u8 pad0[0x40];
-    MenuDescriptor *focus;
-} MenuPage;
 extern MenuPage * current_menu_page_r[] __asm__("D_001D5F74");
 extern u8 normal_font_metrics[];
 extern u8 small_font_metrics[];
@@ -1947,7 +1631,7 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
     font_height = 12;
     font_texture_index = 1;
     glyphs = normal_font_metrics;
-    focused = current_menu_page_r[0]->focus == menu;
+    focused = (MenuDescriptor *)current_menu_page_r[0]->focus == menu;
     if (menu->flags & 4) {
         font_height = 14;
         font_texture_index = 3;
@@ -2146,67 +1830,13 @@ int find_next_pause_page(char *arg0, int arg1) {
     return 0;
 }
 
-typedef struct MenuScreen_C840 MenuScreen_C840;
-
-typedef struct {
-    u16 icon;
-    s16 frame;
-    s16 kind;
-    s16 id;
-    s16 stream_entry;
-} MenuGridCell_C840;
-
-struct MenuScreen_C840 {
-    char pad0[0x14];
-    s32 moby;
-    char pad18[0x18];
-    s32 flags;
-    f32 margin_x;
-    f32 margin_y;
-    s32 selected_cell;
-    s32 rows;
-    s32 cols;
-    MenuGridCell_C840 *cells;
-    MenuScreen_C840 *up;
-    MenuScreen_C840 *down;
-    MenuScreen_C840 *left;
-    MenuScreen_C840 *right;
-};
-
-typedef struct MenuPage_C840 {
-    s32 moby_anims[14];
-    struct MenuPage_C840 *back;
-    s32 state;
-    MenuScreen_C840 *focus;
-    MenuScreen_C840 *screens[14];
-    char pad7C[0x4];
-    MenuScreen_C840 *pending_focus;
-} MenuPage_C840;
-
-typedef struct {
-    s32 state;
-    MenuPage_C840 *current;
-    MenuPage_C840 *next;
-    char padC[0x24];
-    s32 equipped[4];
-    char pad40[0xE4];
-    s32 close_locked;
-    char pad128[0xC];
-    s32 unk134;
-    s32 unk138;
-    char pad13C[0xC];
-    s32 select_cooldown;
-} MenuSystem_C840;
-
 typedef struct {
     char pad0[0x8];
     s32 slot;
     char padC[0x40];
 } MenuItemInfo_C840;
 
-
-
-extern MenuSystem_C840 menu_system_C840 __asm__("D_001D5F70");
+extern MenuSystem menu_system_C840 __asm__("D_001D5F70");
 extern PadState controller_state_C840 __asm__("D_0013CA40");
 extern u8 item_available_C840[] __asm__("D_0013D5C8");
 extern MenuItemInfo_C840 menu_item_info_C840[] __asm__("D_001864D0");
@@ -2215,7 +1845,7 @@ extern s32 item_count_C840(s32) __asm__("func_001E97E8");
 extern s32 play_menu_sound_C840() __asm__("func_0022ED80");
 
 /* Adapted from Lombyte's project (GPL-3.0): src/ui/menus/update_menu_grid_selection.c, update_menu_grid_selection. */
-s32 update_menu_grid_selection(MenuScreen_C840 *grid) {
+s32 update_menu_grid_selection(MenuScreen *grid) {
     s32 column_count;
     s32 row_count;
     s32 cursor;
@@ -2224,12 +1854,12 @@ s32 update_menu_grid_selection(MenuScreen_C840 *grid) {
     s32 column;
     s32 hidden;
     s32 next_rows;
-    MenuPage_C840 *back_page;
+    MenuPage *back_page;
     s32 total;
     s32 next_column_count;
     s32 next_columns;
-    MenuScreen_C840 *next;
-    MenuGridCell_C840 *entry;
+    MenuScreen *next;
+    MenuGridCell *entry;
     s32 slot;
 
     if (menu_system_C840.current->focus != grid) {
@@ -2248,9 +1878,9 @@ s32 update_menu_grid_selection(MenuScreen_C840 *grid) {
         }
     }
 
-    column_count = grid->cols;
-    cursor = grid->selected_cell;
-    row_count = grid->rows;
+    column_count = grid->data.grid.cols;
+    cursor = grid->data.grid.selected_cell;
+    row_count = grid->data.grid.rows;
     row = cursor / column_count;
     column_index = cursor % column_count;
     column = column_index;
@@ -2259,26 +1889,26 @@ s32 update_menu_grid_selection(MenuScreen_C840 *grid) {
        column before the following direction checks. */
     if (controller_state_C840.pressed_unmasked & 0x1000) {
         if (row != 0) {
-            grid->selected_cell -= column_count;
-        } else if (grid->up != 0) {
+            grid->data.grid.selected_cell -= column_count;
+        } else if (grid->data.grid.up != 0) {
             next = grid;
             do {
-                next = next->up;
-                next_rows = next->rows;
-                next_columns = next->cols;
+                next = next->data.grid.up;
+                next_rows = next->data.grid.rows;
+                next_columns = next->data.grid.cols;
                 hidden = 0;
-                if (menu_system_C840.unk134 != 0 && (next->flags & 8)) {
+                if (menu_system_C840.unk134 != 0 && (next->data.grid.flags & 8)) {
                     hidden = 1;
                 }
-                if (menu_system_C840.unk138 != 0 && (next->flags & 4)) {
+                if (menu_system_C840.unk138 != 0 && (next->data.grid.flags & 4)) {
                     hidden = 1;
                 }
             } while (hidden);
             menu_system_C840.current->pending_focus = next;
-            if (next_columns == 5 && grid->cols == 3) {
+            if (next_columns == 5 && grid->data.grid.cols == 3) {
                 column++;
             }
-            if (next_columns == 3 && grid->cols == 5) {
+            if (next_columns == 3 && grid->data.grid.cols == 5) {
                 column--;
                 if (column > 2) {
                     column = 2;
@@ -2286,34 +1916,34 @@ s32 update_menu_grid_selection(MenuScreen_C840 *grid) {
                     column = 0;
                 }
             }
-            next->selected_cell = (next_rows - 1) * next_columns +
+            next->data.grid.selected_cell = (next_rows - 1) * next_columns +
                                             (column < next_columns - 1 ? column : next_columns - 1);
-        } else if (!(grid->flags & 0x8000)) {
-            grid->selected_cell = column_count * (row_count - 1) + cursor;
+        } else if (!(grid->data.grid.flags & 0x8000)) {
+            grid->data.grid.selected_cell = column_count * (row_count - 1) + cursor;
         }
     }
 
     if (controller_state_C840.pressed_unmasked & 0x4000) {
         if (row + 1 < row_count) {
-            grid->selected_cell = grid->selected_cell + column_count;
-        } else if (grid->down != 0) {
+            grid->data.grid.selected_cell = grid->data.grid.selected_cell + column_count;
+        } else if (grid->data.grid.down != 0) {
             next = grid;
             do {
-                next = next->down;
-                next_column_count = next->cols;
+                next = next->data.grid.down;
+                next_column_count = next->data.grid.cols;
                 hidden = 0;
-                if (menu_system_C840.unk134 != 0 && (next->flags & 8)) {
+                if (menu_system_C840.unk134 != 0 && (next->data.grid.flags & 8)) {
                     hidden = 1;
                 }
-                if (menu_system_C840.unk138 != 0 && (next->flags & 4)) {
+                if (menu_system_C840.unk138 != 0 && (next->data.grid.flags & 4)) {
                     hidden = 1;
                 }
             } while (hidden);
             menu_system_C840.current->pending_focus = next;
-            if (next_column_count == 5 && grid->cols == 3) {
+            if (next_column_count == 5 && grid->data.grid.cols == 3) {
                 column++;
             }
-            if (next_column_count == 3 && grid->cols == 5) {
+            if (next_column_count == 3 && grid->data.grid.cols == 5) {
                 column--;
                 if (column > 2) {
                     column = 2;
@@ -2321,43 +1951,43 @@ s32 update_menu_grid_selection(MenuScreen_C840 *grid) {
                     column = 0;
                 }
             }
-            next->selected_cell =
+            next->data.grid.selected_cell =
                 column < next_column_count - 1 ? column : next_column_count - 1;
-        } else if (!(grid->flags & 0x8000)) {
-            grid->selected_cell =
-                grid->selected_cell - grid->cols * (grid->rows - 1);
+        } else if (!(grid->data.grid.flags & 0x8000)) {
+            grid->data.grid.selected_cell =
+                grid->data.grid.selected_cell - grid->data.grid.cols * (grid->data.grid.rows - 1);
         }
     }
 
     if (controller_state_C840.pressed_unmasked & 0x8000) {
         if (column != 0) {
-            grid->selected_cell = grid->selected_cell - 1;
-        } else if (grid->left != 0) {
-            menu_system_C840.current->pending_focus = grid->left;
-        } else if (!(grid->flags & 0x8000)) {
-            grid->selected_cell += grid->cols - 1;
+            grid->data.grid.selected_cell = grid->data.grid.selected_cell - 1;
+        } else if (grid->data.grid.left != 0) {
+            menu_system_C840.current->pending_focus = grid->data.grid.left;
+        } else if (!(grid->data.grid.flags & 0x8000)) {
+            grid->data.grid.selected_cell += grid->data.grid.cols - 1;
         }
     }
 
     if (controller_state_C840.pressed_unmasked & 0x2000) {
         if (column + 1 < column_count) {
-            grid->selected_cell = grid->selected_cell + 1;
-        } else if (grid->right != 0) {
-            menu_system_C840.current->pending_focus = grid->right;
-        } else if (!(grid->flags & 0x8000)) {
-            grid->selected_cell -= grid->cols - 1;
+            grid->data.grid.selected_cell = grid->data.grid.selected_cell + 1;
+        } else if (grid->data.grid.right != 0) {
+            menu_system_C840.current->pending_focus = grid->data.grid.right;
+        } else if (!(grid->data.grid.flags & 0x8000)) {
+            grid->data.grid.selected_cell -= grid->data.grid.cols - 1;
         }
     }
 
-    if (grid->selected_cell != cursor || menu_system_C840.current->pending_focus != 0) {
+    if (grid->data.grid.selected_cell != cursor || menu_system_C840.current->pending_focus != 0) {
         play_menu_sound_C840(1, 0x11, grid->moby);
     }
 
-    if ((controller_state_C840.pressed_unmasked & 0x40) && ((grid->flags ^ 1) & 1)) {
+    if ((controller_state_C840.pressed_unmasked & 0x40) && ((grid->data.grid.flags ^ 1) & 1)) {
         if (menu_system_C840.select_cooldown != 0) {
             return 0;
         }
-        entry = &grid->cells[grid->selected_cell];
+        entry = &grid->data.grid.cells[grid->data.grid.selected_cell];
         if (entry->id != 0 && item_available_C840[entry->id] != 0) {
             slot = menu_item_info_C840[entry->id].slot;
             play_menu_sound_C840(0, 0x11, grid->moby);
@@ -2495,110 +2125,7 @@ struct MapState_1CE60 {
 extern struct MapState_1CE60 level_map_selection_r __asm__("D_001A01F0");
 
 
-struct MenuScreen_1CE60;
-
-struct MenuPage_1CE60 {
-    s32 moby_anims[14];
-    struct MenuPage_1CE60 *back;
-    s32 state;
-    struct MenuScreen_1CE60 *focus;
-    struct MenuScreen_1CE60 *screens[14];
-    u8 pad_7C[0x4];
-    struct MenuScreen_1CE60 *pending_focus;
-    s32 confirmed;
-};
-
-struct MenuSystem_1CE60 {
-
-    s32 state;
-    struct MenuPage_1CE60 *current;
-    struct MenuPage_1CE60 *next;
-    s32 close_request;
-    s32 unk10;
-    s32 timer;
-    s32 saved_texture_start;
-    s32 current_gadget;
-    u8 pad_20[0x10];
-    s32 equipped[4];
-    u8 pad_40[0x60];
-
-    s32 stream_buffer[2];
-    s32 unkA8;
-    s32 unkAC;
-    s32 unkB0[3];
-    s32 read_offset;
-    s32 unkC0;
-    u8 pad_C4[0x4];
-    u8 loaded_animation[2];
-    u8 read_buffer_index;
-    u8 pending_buffer;
-    u32 streamed_animation_base;
-
-    struct MenuPage_1CE60 *previous;
-    s32 unkD4;
-    s32 unkD8;
-    s32 unkDC;
-    s32 unkE0;
-    s32 unkE4;
-    u8 pad_E8[0x4];
-    s32 unkEC;
-    struct MenuPage_1CE60 *unkF0;
-    s32 unkF4;
-    s32 unkF8;
-
-    s32 unkFC;
-    s32 unk100;
-    s32 unk104;
-    s32 help_text_buffer;
-    s32 unk10C;
-
-    s32 update_count;
-    u8 pad_114[0x4];
-
-    s32 resource_table_toggle;
-    s32 unk11C;
-    s32 unk120;
-
-    s32 close_locked;
-    s32 card_op_pending;
-    s32 card_op_text;
-    u8 pad_130[0x4];
-    s32 unk134;
-    s32 unk138;
-    s32 unk13C;
-    s32 unk140;
-    s32 last_resource_table_toggle;
-};
-
-extern struct MenuSystem_1CE60 menu_system_r4 __asm__("D_001D5F70");
-
-struct MenuScreenWords_1CE60 {
-    u8 pad_30[0x4];
-    s32 unk34;
-    s32 unk38;
-    s32 unk3C;
-    u8 pad_40[0x10];
-    s32 unk50;
-    s32 unk54;
-    u8 pad_58[0x8];
-};
-
-struct MenuScreen_1CE60 {
-    s32 (*update)(struct MenuScreen_1CE60 *);
-    u8 pad_4[0x4];
-    void (*enter)(struct MenuScreen_1CE60 *, s32);
-    void (*leave)(struct MenuScreen_1CE60 *, s32);
-    s32 unk10;
-    s32 moby;
-    s32 x;
-    s32 y;
-    s32 width;
-    s32 height;
-    u8 pad_28[0x8];
-    union {
-        struct MenuScreenWords_1CE60 raw;
-    } data_1CE60;
-};
+extern MenuSystem menu_system_r4 __asm__("D_001D5F70");
 
 
 struct MapHdr_1CE60 {
@@ -2656,7 +2183,7 @@ extern void Moby_PlaySound_r3() __asm__("func_0022ED80");
    level, previous/next visited level), then decodes the shown level's map into its textures
    when it changed and keeps the next map streaming into a free slot.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/ui/map/draw_map_screen.c, draw_map_screen. */
-s32 DrawMapScreen(struct MenuScreen_1CE60 *screen) {
+s32 DrawMapScreen(MenuScreen *screen) {
     s32 prev;
     s32 idx;
     s32 t;
@@ -2679,7 +2206,7 @@ s32 DrawMapScreen(struct MenuScreen_1CE60 *screen) {
     struct MapEntry_1CE60 *e;
 
     update_map_zoom_and_pan_r();
-    if (!(screen->data_1CE60.raw.unk34 & 0x40)) {
+    if (!(screen->data.raw.unk34 & 0x40)) {
         prev = level_map_selection_r.level;
         if (g_controller_state_r.pressed_unmasked & 0xD00) {
             if (menu_system_r4.close_locked == 0) {
@@ -2695,10 +2222,10 @@ s32 DrawMapScreen(struct MenuScreen_1CE60 *screen) {
             }
         }
         if (g_controller_state_r.pressed_unmasked & 0x40) {
-            menu_system_r4.next = (struct MenuPage_1CE60 *)mission_menu_page_r;
+            menu_system_r4.next = (MenuPage *)mission_menu_page_r;
         }
         if ((g_controller_state_r.pressed_unmasked & 0x20) && level_map_selection_r.level != 0) {
-            menu_system_r4.unkF0 = (struct MenuPage_1CE60 *)map_menu_page_r;
+            menu_system_r4.unkF0 = (MenuPage *)map_menu_page_r;
             menu_system_r4.unkF4 = 0xB;
             menu_system_r4.close_request = 3;
             menu_system_r4.unkE4 = level_map_selection_r.level;
@@ -2759,7 +2286,7 @@ s32 DrawMapScreen(struct MenuScreen_1CE60 *screen) {
                 compose_bitmap_from_mask_r(pal, pix, pal, buf);
             }
         }
-        if (!(screen->data_1CE60.raw.unk34 & 0x80)) {
+        if (!(screen->data.raw.unk34 & 0x80)) {
             tbase = (u8 *)level_map_selection_r.hdr;
             tex = tbase + hdr->unk10;
             b = tbase + hdr->unk14 + 0x420;
@@ -2879,23 +2406,6 @@ extern LevelG level_map_selection_lv __asm__("D_001A01F0");
 extern unsigned char level_available[];
 
 /* Pause slot-select tick. Adapted from Lombyte's project (GPL-3.0) for PAL: src/ui/menus/fun_0021c4c0.c, FUN_0021c4c0. */
-/* The menu page (MenuPage): back at 0x38, focus at 0x40. */
-struct MenuPage_21D4C0 {
-    s32 moby_anims[14];                  /* 0x00 */
-    struct MenuPage_21D4C0 *back;        /* 0x38: page for the back button; 0 = none */
-    s32 state;                           /* 0x3C */
-    struct Menu *focus;                  /* 0x40: screen with input focus */
-};
-
-/* The menu system at D_001D5F70 (fields used here only). */
-struct MenuSystem_21D4C0 {
-    s32 state;                           /* 0x000 */
-    struct MenuPage_21D4C0 *current;     /* 0x004: active page */
-    struct MenuPage_21D4C0 *next;        /* 0x008: requested page */
-    u8 pad_00C[0x118];
-    s32 close_locked;                    /* 0x124: nonzero blocks back closing the menu */
-};
-
 /* Map selection at D_001A01F0 (fields used here only). */
 struct MapSelection_21D4C0 {
     u8 pad_0[0x224];
@@ -2912,7 +2422,7 @@ int update_menu_mission_list(struct Menu *menu_screen) {
     int *ch;
 
     {
-        struct Menu *owner = ((struct MenuSystem_21D4C0 *)&menu_system_g)->current->focus;
+        struct Menu *owner = (struct Menu *)((MenuSystem *)&menu_system_g)->current->focus;
         old = ((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level;
         if (owner != menu_screen) {
             if (old < 20) {
@@ -2922,7 +2432,7 @@ int update_menu_mission_list(struct Menu *menu_screen) {
         }
     }
     if ((((struct PadState *)&g_controller_state_g)->pressed_unmasked & (PAD_SELECT | PAD_R3 | PAD_START))
-        && ((struct MenuSystem_21D4C0 *)&menu_system_g)->close_locked == 0) {
+        && ((MenuSystem *)&menu_system_g)->close_locked == 0) {
         return 1;
     }
     if (((struct PadState *)&g_controller_state_g)->pressed_unmasked & PAD_R1) {
@@ -2966,9 +2476,9 @@ int update_menu_mission_list(struct Menu *menu_screen) {
         }
     }
     if (((struct PadState *)&g_controller_state_g)->pressed_unmasked & PAD_TRIANGLE) {
-        if (((struct MenuSystem_21D4C0 *)&menu_system_g)->current->back != 0) {
-            ((struct MenuSystem_21D4C0 *)&menu_system_g)->next = ((struct MenuSystem_21D4C0 *)&menu_system_g)->current->back;
-        } else if (((struct MenuSystem_21D4C0 *)&menu_system_g)->close_locked == 0) {
+        if (((MenuSystem *)&menu_system_g)->current->back != 0) {
+            ((MenuSystem *)&menu_system_g)->next = ((MenuSystem *)&menu_system_g)->current->back;
+        } else if (((MenuSystem *)&menu_system_g)->close_locked == 0) {
             return -1;
         }
     }
@@ -3117,82 +2627,7 @@ int set_pause_sound_volume(void) {
     return 0;
 }
 
-struct MenuScreen_1DB30;
-
-struct MenuPage_1DB30 {
-    s32 moby_anims[14];
-    struct MenuPage_1DB30 *back;
-    s32 state;
-    struct MenuScreen_1DB30 *focus;
-    struct MenuScreen_1DB30 *screens[14];
-    u8 pad_7C[0x4];
-    struct MenuScreen_1DB30 *pending_focus;
-    s32 confirmed;
-};
-
-struct MenuSystem_1DB30 {
-
-    s32 state;
-    struct MenuPage_1DB30 *current;
-    struct MenuPage_1DB30 *next;
-    s32 close_request;
-    s32 unk10;
-    s32 timer;
-    s32 saved_texture_start;
-    s32 current_gadget;
-    u8 pad_20[0x10];
-    s32 equipped[4];
-    u8 pad_40[0x60];
-
-    s32 stream_buffer[2];
-    s32 unkA8;
-    s32 unkAC;
-    s32 unkB0[3];
-    s32 read_offset;
-    s32 unkC0;
-    u8 pad_C4[0x4];
-    u8 loaded_animation[2];
-    u8 read_buffer_index;
-    u8 pending_buffer;
-    u32 streamed_animation_base;
-
-    struct MenuPage_1DB30 *previous;
-    s32 unkD4;
-    s32 unkD8;
-    s32 unkDC;
-    s32 unkE0;
-    s32 unkE4;
-    u8 pad_E8[0x4];
-    s32 unkEC;
-    struct MenuPage_1DB30 *unkF0;
-    s32 unkF4;
-    s32 unkF8;
-
-    s32 unkFC;
-    s32 unk100;
-    s32 unk104;
-    s32 help_text_buffer;
-    s32 unk10C;
-
-    s32 update_count;
-    u8 pad_114[0x4];
-
-    s32 resource_table_toggle;
-    s32 unk11C;
-    s32 unk120;
-
-    s32 close_locked;
-    s32 card_op_pending;
-    s32 card_op_text;
-    u8 pad_130[0x4];
-    s32 unk134;
-    s32 unk138;
-    s32 unk13C;
-    s32 unk140;
-    s32 last_resource_table_toggle;
-};
-
-extern struct MenuSystem_1DB30 menu_system_r5 __asm__("D_001D5F70");
+extern MenuSystem menu_system_r5 __asm__("D_001D5F70");
 
 
 struct SoundMenuMixer_1DB30 {
@@ -3240,7 +2675,7 @@ s32 sound_options_menu(struct SoundMenu_1DB30 *menu) {
         return 1;
     }
     if (((s32)g_controller_state_r2.pressed_unmasked) & 0x10) {
-        struct MenuPage_1DB30 *back_page = menu_system_r5.current->back;
+        MenuPage *back_page = menu_system_r5.current->back;
 
         if (back_page != 0) {
             menu_system_r5.next = back_page;
@@ -3689,53 +3124,11 @@ int draw_menu_text_list(Menu *menu) {
 }
 
 typedef struct {
-    u8 pad_0[0x40];
-    f32 w;
-    f32 h;
-} Font;
-typedef struct {
-    u8 pad_0[0x78];
-    Font *font;
-} FontHolder;
-typedef struct {
-    u8 pad_0[0x40];
-    void *owner;
-} MenuFocus;
-typedef struct {
-    u8 pad_0[0x4];
-    MenuFocus *focus;
-    u8 pad_8[0x28];
-    s32 slot[65];
-    s32 unk134;
-    s32 unk138;
-} MenuState;
-typedef struct {
     s32 slot;
     u8 pad_4[0x48];
 } ItemInfo;
-typedef struct {
-    u16 icon;
-    s16 frame;
-    s16 kind;
-    s16 id;
-    u16 pad_8;
-} MenuGridCell;
-typedef struct {
-    u8 pad_0[0x14];
-    FontHolder *holder;
-    u8 pad_18[0x8];
-    s32 w;
-    s32 h;
-    u8 pad_28[0x8];
-    s32 flags;
-    f32 margin_x;
-    f32 margin_y;
-    s32 selected_cell;
-    s32 rows;
-    s32 cols;
-    MenuGridCell *cells;
-} MenuItemGrid;
-extern MenuState D_001D5F70_1E950 __asm__("D_001D5F70");
+
+extern MenuSystem D_001D5F70_1E950 __asm__("D_001D5F70");
 extern ItemInfo item_info_table_slot[];
 extern u8 gSpecialItems[];
 extern u8 item_available_r[] __asm__("D_0013D5C8");
@@ -3750,11 +3143,11 @@ extern s32 GetIconFrame(s32, s32);
 extern void draw_hud_sprite_subpixel(s32, s32, s32, s32, s32, s32);
 extern void draw_hud_rect_blended_r2(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern s32 VU1_addGSregister_r2(s32, s64) __asm__("func_00234C98");
-s32 draw_menu_item_grid(MenuItemGrid *grid);
+s32 draw_menu_item_grid(MenuScreen *grid);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/fun_0021d948.c, draw_menu_item_grid. */
-s32 draw_menu_item_grid(MenuItemGrid *grid) {
-    Font *font;
+s32 draw_menu_item_grid(MenuScreen *grid) {
+    PanelMobyPvars *pvars;
     MenuGridCell *cell;
     s32 focused;
     f32 start_x, column_step, start_y, y, row_step, x;
@@ -3766,49 +3159,49 @@ s32 draw_menu_item_grid(MenuItemGrid *grid) {
     s32 id, frame_offset;
     u32 color;
 
-    font = grid->holder->font;
-    focused = D_001D5F70_1E950.focus->owner == grid;
-    cell = grid->cells;
+    pvars = (PanelMobyPvars *)((Moby *)grid->moby)->pvars;
+    focused = D_001D5F70_1E950.current->focus == grid;
+    cell = grid->data.grid.cells;
     VU1_addGSregister_r2(0x42, 0x8000000044L);
     VU1_addGSregister_r2(0x47, 0xB);
     SetupGifPaging(0);
 
-    if (grid->cols >= 2) {
-        start_x = grid->margin_x;
-        column_step = (*(f32 *)&menu_grid_icon_width) + (font->w - (start_x + start_x) - (*(f32 *)&menu_grid_icon_width) * grid->cols) / (grid->cols - 1);
+    if (grid->data.grid.cols >= 2) {
+        start_x = grid->data.grid.margin_x;
+        column_step = (*(f32 *)&menu_grid_icon_width) + (pvars->width - (start_x + start_x) - (*(f32 *)&menu_grid_icon_width) * grid->data.grid.cols) / (grid->data.grid.cols - 1);
     } else {
         column_step = 0.0f;
-        start_x = (font->w - (*(f32 *)&menu_grid_icon_width)) * 0.5f;
+        start_x = (pvars->width - (*(f32 *)&menu_grid_icon_width)) * 0.5f;
     }
 
-    if (grid->flags & 2) {
+    if (grid->data.grid.flags & 2) {
         row_step = (*(f32 *)&menu_grid_icon_height) + 0.15f;
-        start_y = grid->margin_y;
-    } else if (grid->rows >= 2) {
-        start_y = grid->margin_y;
-        row_step = (*(f32 *)&menu_grid_icon_height) + (font->h - (start_y + start_y) - (*(f32 *)&menu_grid_icon_height) * grid->rows) / (grid->rows - 1);
+        start_y = grid->data.grid.margin_y;
+    } else if (grid->data.grid.rows >= 2) {
+        start_y = grid->data.grid.margin_y;
+        row_step = (*(f32 *)&menu_grid_icon_height) + (pvars->height - (start_y + start_y) - (*(f32 *)&menu_grid_icon_height) * grid->data.grid.rows) / (grid->data.grid.rows - 1);
     } else {
         row_step = 0.0f;
-        start_y = (font->h - (*(f32 *)&menu_grid_icon_height)) * 0.5f;
+        start_y = (pvars->height - (*(f32 *)&menu_grid_icon_height)) * 0.5f;
     }
 
-    largest_dimension = grid->h;
-    if (largest_dimension < grid->w) {
-        largest_dimension = grid->w;
+    largest_dimension = grid->height;
+    if (largest_dimension < grid->width) {
+        largest_dimension = grid->width;
     }
-    scale = (f32)(largest_dimension << 4) / (font->h < font->w ? font->w : font->h);
+    scale = (f32)(largest_dimension << 4) / (pvars->height < pvars->width ? pvars->width : pvars->height);
     icon_width = scale * (*(f32 *)&menu_grid_icon_width);
     icon_height = scale * (*(f32 *)&menu_grid_icon_height);
 
     y = start_y;
-    for (i = 0; i < grid->rows; i++) {
+    for (i = 0; i < grid->data.grid.rows; i++) {
         x = start_x;
-        for (j = 0; j < grid->cols; j++) {
+        for (j = 0; j < grid->data.grid.cols; j++) {
             top = scale * y;
             bottom = top + icon_height;
             left = scale * x;
             right = left + icon_width;
-            if (focused && grid->selected_cell == cell - grid->cells) {
+            if (focused && grid->data.grid.selected_cell == cell - grid->data.grid.cells) {
                 color = ((subtract_integer_with_clamp((game_frame_counter & 0x3F) - 0x20) + 0x40) * 0x10202) | 0x80000000;
                 draw_hud_rect_blended_r2(left - 0x30, top - 0x30, right + 0x30, bottom + 0x30, color, 1);
                 draw_hud_rect_blended_r2(left - 0x10, top - 0x10, right + 0x10, bottom + 0x10, (*(s32 *)&panel_clear_color), 1);
@@ -3817,16 +3210,16 @@ s32 draw_menu_item_grid(MenuItemGrid *grid) {
                 frame_offset = 0;
                 if ((u16)cell->kind == 0) {
                     id = cell->id;
-                    if (D_001D5F70_1E950.slot[item_info_table_slot[id].slot] == id && !(grid->flags & 0x20)) {
+                    if (D_001D5F70_1E950.equipped[item_info_table_slot[id].slot] == id && !(grid->data.grid.flags & 0x20)) {
                         frame_offset = 1;
                     }
                     if (frame_offset == 0) {
                         frame_offset = gold_weapon_purchased[id] ? 4 : 0;
                     }
-                    if (D_001D5F70_1E950.unk134 != 0 && (grid->flags & 8)) {
+                    if (D_001D5F70_1E950.unk134 != 0 && (grid->data.grid.flags & 8)) {
                         frame_offset = 2;
                     }
-                    if (D_001D5F70_1E950.unk138 != 0 && (grid->flags & 4)) {
+                    if (D_001D5F70_1E950.unk138 != 0 && (grid->data.grid.flags & 4)) {
                         frame_offset = 2;
                     }
                 }
@@ -4934,177 +4327,7 @@ void draw_menu_selection_marker(int x, int y, int flag) {
     }
 }
 
-struct MenuScreen_209A0;
-
-struct MenuPage_209A0 {
-    s32 moby_anims[14];
-    struct MenuPage_209A0 *back;
-    s32 state;
-    struct MenuScreen_209A0 *focus;
-    struct MenuScreen_209A0 *screens[14];
-    u8 pad_7C[0x4];
-    struct MenuScreen_209A0 *pending_focus;
-    s32 confirmed;
-};
-
-struct MenuSystem_209A0 {
-
-    s32 state;
-    struct MenuPage_209A0 *current;
-    struct MenuPage_209A0 *next;
-    s32 close_request;
-    s32 unk10;
-    s32 timer;
-    s32 saved_texture_start;
-    s32 current_gadget;
-    u8 pad_20[0x10];
-    s32 equipped[4];
-    u8 pad_40[0x60];
-
-    s32 stream_buffer[2];
-    s32 unkA8;
-    s32 unkAC;
-    s32 unkB0[3];
-    s32 read_offset;
-    s32 unkC0;
-    u8 pad_C4[0x4];
-    u8 loaded_animation[2];
-    u8 read_buffer_index;
-    u8 pending_buffer;
-    u32 streamed_animation_base;
-
-    struct MenuPage_209A0 *previous;
-    s32 unkD4;
-    s32 unkD8;
-    s32 unkDC;
-    s32 unkE0;
-    s32 unkE4;
-    u8 pad_E8[0x4];
-    s32 unkEC;
-    struct MenuPage_209A0 *unkF0;
-    s32 unkF4;
-    s32 unkF8;
-
-    s32 unkFC;
-    s32 unk100;
-    s32 unk104;
-    s32 help_text_buffer;
-    s32 unk10C;
-
-    s32 update_count;
-    u8 pad_114[0x4];
-
-    s32 resource_table_toggle;
-    s32 unk11C;
-    s32 unk120;
-
-    s32 close_locked;
-    s32 card_op_pending;
-    s32 card_op_text;
-    u8 pad_130[0x4];
-    s32 unk134;
-    s32 unk138;
-    s32 unk13C;
-    s32 unk140;
-    s32 last_resource_table_toggle;
-    u8 pad_148[0xC];
-    s32 unk154;               /* 0x154: PAL only */
-};
-
-extern struct MenuSystem_209A0 D_001D5F70_209A0 __asm__("D_001D5F70");
-
-struct MenuGridCell_209A0 {
-    u16 icon;
-    s16 frame;
-    s16 kind;
-    s16 id;
-    s16 stream_entry;
-};
-
-struct MenuItemGridData_209A0 {
-    s32 flags;
-    f32 margin_x;
-    f32 margin_y;
-    s32 selected_cell;
-    s32 rows;
-    s32 cols;
-    struct MenuGridCell_209A0 *cells;
-    struct MenuScreen_209A0 *up;
-    struct MenuScreen_209A0 *down;
-    struct MenuScreen_209A0 *left;
-    struct MenuScreen_209A0 *right;
-};
-
-struct MenuSaveSlotData_209A0 {
-    s32 flags;
-    u8 pad_34[0xC];
-    s32 slot;
-    u8 pad_44[0x4];
-    s32 save_data;
-    s32 step;
-};
-
-struct MenuTextItem_209A0 {
-    s16 text;
-    s16 action;
-    union {
-        s32 value;
-        struct {
-            u16 lo;
-            s16 hi;
-        } half;
-    } param;
-    s16 subtext;
-    s16 fade_timer;
-};
-
-struct MenuTextListData_209A0 {
-    s32 flags;
-    struct MenuTextItem_209A0 *items;
-    struct MenuScreen_209A0 *up;
-    struct MenuScreen_209A0 *down;
-    s32 selected;
-    s32 scroll;
-};
-
-struct MenuStreamEntry_209A0 {
-    s32 sector;
-    s32 sector_count;
-};
-
-struct MenuStreamData_209A0 {
-    struct MenuStreamEntry_209A0 *entries;
-    s32 flags;
-    s32 texture_width;
-    s32 texture_height;
-    s32 *language_base;
-    s32 state;
-    s32 buffer[2];
-    s32 loaded_entry[2];
-    s32 fixed_entry;
-    s32 elapsed_frames;
-    s32 read_offset;
-};
-
-struct MenuScreen_209A0 {
-    s32 (*update)(struct MenuScreen_209A0 *);
-    u8 pad_4[0x4];
-    void (*enter)(struct MenuScreen_209A0 *, s32);
-    void (*leave)(struct MenuScreen_209A0 *, s32);
-    s32 unk10;
-    s32 moby;
-    s32 x;
-    s32 y;
-    s32 width;
-    s32 height;
-    u8 pad_28[0x8];
-    union {
-        struct MenuItemGridData_209A0 grid;
-        struct MenuSaveSlotData_209A0 save;
-        struct MenuTextListData_209A0 list;
-        struct MenuStreamData_209A0 stream;
-    } data;
-};
+extern MenuSystem D_001D5F70_209A0 __asm__("D_001D5F70");
 
 struct MapIcon_209A0;
 struct MapMarker_209A0;
@@ -5180,7 +4403,7 @@ extern s32 clear_menu_stream_buffer_read_active_r(s32) __asm__("func_002270B0");
 /* Resource stream screen update for a single buffer: picks the entry from the screen's flags,
    streams it in, unpacks it and binds the image it holds as the map screen's first texture.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/ui/menus/fun_0021f990.c, FUN_0021f990. */
-s32 update_menu_stream_image(struct MenuScreen_209A0 *stream) {
+s32 update_menu_stream_image(MenuScreen *stream) {
     s32 flags;
     s32 idx;
     s32 r;
@@ -5375,177 +4598,7 @@ int leave_menu_stream_image(void *arg0) {
     return 0;
 }
 
-struct MenuScreen_20DF0;
-
-struct MenuPage_20DF0 {
-    s32 moby_anims[14];
-    struct MenuPage_20DF0 *back;
-    s32 state;
-    struct MenuScreen_20DF0 *focus;
-    struct MenuScreen_20DF0 *screens[14];
-    u8 pad_7C[0x4];
-    struct MenuScreen_20DF0 *pending_focus;
-    s32 confirmed;
-};
-
-struct MenuSystem_20DF0 {
-
-    s32 state;
-    struct MenuPage_20DF0 *current;
-    struct MenuPage_20DF0 *next;
-    s32 close_request;
-    s32 unk10;
-    s32 timer;
-    s32 saved_texture_start;
-    s32 current_gadget;
-    u8 pad_20[0x10];
-    s32 equipped[4];
-    u8 pad_40[0x60];
-
-    s32 stream_buffer[2];
-    s32 unkA8;
-    s32 unkAC;
-    s32 unkB0[3];
-    s32 read_offset;
-    s32 unkC0;
-    u8 pad_C4[0x4];
-    u8 loaded_animation[2];
-    u8 read_buffer_index;
-    u8 pending_buffer;
-    u32 streamed_animation_base;
-
-    struct MenuPage_20DF0 *previous;
-    s32 unkD4;
-    s32 unkD8;
-    s32 unkDC;
-    s32 unkE0;
-    s32 unkE4;
-    u8 pad_E8[0x4];
-    s32 unkEC;
-    struct MenuPage_20DF0 *unkF0;
-    s32 unkF4;
-    s32 unkF8;
-
-    s32 unkFC;
-    s32 unk100;
-    s32 unk104;
-    s32 help_text_buffer;
-    s32 unk10C;
-
-    s32 update_count;
-    u8 pad_114[0x4];
-
-    s32 resource_table_toggle;
-    s32 unk11C;
-    s32 unk120;
-
-    s32 close_locked;
-    s32 card_op_pending;
-    s32 card_op_text;
-    u8 pad_130[0x4];
-    s32 unk134;
-    s32 unk138;
-    s32 unk13C;
-    s32 unk140;
-    s32 last_resource_table_toggle;
-    u8 pad_148[0xC];
-    s32 unk154;               /* 0x154: PAL only */
-};
-
-extern struct MenuSystem_20DF0 D_001D5F70_20DF0 __asm__("D_001D5F70");
-
-struct MenuGridCell_20DF0 {
-    u16 icon;
-    s16 frame;
-    s16 kind;
-    s16 id;
-    s16 stream_entry;
-};
-
-struct MenuItemGridData_20DF0 {
-    s32 flags;
-    f32 margin_x;
-    f32 margin_y;
-    s32 selected_cell;
-    s32 rows;
-    s32 cols;
-    struct MenuGridCell_20DF0 *cells;
-    struct MenuScreen_20DF0 *up;
-    struct MenuScreen_20DF0 *down;
-    struct MenuScreen_20DF0 *left;
-    struct MenuScreen_20DF0 *right;
-};
-
-struct MenuSaveSlotData_20DF0 {
-    s32 flags;
-    u8 pad_34[0xC];
-    s32 slot;
-    u8 pad_44[0x4];
-    s32 save_data;
-    s32 step;
-};
-
-struct MenuTextItem_20DF0 {
-    s16 text;
-    s16 action;
-    union {
-        s32 value;
-        struct {
-            u16 lo;
-            s16 hi;
-        } half;
-    } param;
-    s16 subtext;
-    s16 fade_timer;
-};
-
-struct MenuTextListData_20DF0 {
-    s32 flags;
-    struct MenuTextItem_20DF0 *items;
-    struct MenuScreen_20DF0 *up;
-    struct MenuScreen_20DF0 *down;
-    s32 selected;
-    s32 scroll;
-};
-
-struct MenuStreamEntry_20DF0 {
-    s32 sector;
-    s32 sector_count;
-};
-
-struct MenuStreamData_20DF0 {
-    struct MenuStreamEntry_20DF0 *entries;
-    s32 flags;
-    s32 texture_width;
-    s32 texture_height;
-    s32 *language_base;
-    s32 state;
-    s32 buffer[2];
-    s32 loaded_entry[2];
-    s32 fixed_entry;
-    s32 elapsed_frames;
-    s32 read_offset;
-};
-
-struct MenuScreen_20DF0 {
-    s32 (*update)(struct MenuScreen_20DF0 *);
-    u8 pad_4[0x4];
-    void (*enter)(struct MenuScreen_20DF0 *, s32);
-    void (*leave)(struct MenuScreen_20DF0 *, s32);
-    s32 unk10;
-    s32 moby;
-    s32 x;
-    s32 y;
-    s32 width;
-    s32 height;
-    u8 pad_28[0x8];
-    union {
-        struct MenuItemGridData_20DF0 grid;
-        struct MenuSaveSlotData_20DF0 save;
-        struct MenuTextListData_20DF0 list;
-        struct MenuStreamData_20DF0 stream;
-    } data;
-};
+extern MenuSystem D_001D5F70_20DF0 __asm__("D_001D5F70");
 
 extern MemoryCardState memory_card_state_r3 __asm__("D_0013D390");
 
@@ -5569,7 +4622,7 @@ extern s32 clear_menu_stream_buffer_read_active_r2() __asm__("func_002270B0");
    focus list or grid selection, the save slot's level, a timed cycle, the language), then runs
    the two-buffer read state machine that streams it in and unpacks it.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/fun_0021fdc8.c, update_menu_resource_stream. */
-s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
+s32 update_menu_resource_stream(MenuScreen *stream) {
     LanguageResourceOffsets_20DF0 language_offsets;
     s32 *completed_buffer_slot;
     s32 primary_entry_offset;
@@ -5593,14 +4646,14 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
     s32 primary_read_started;
     s32 secondary_read_started;
     s32 replacement_read_started;
-    struct MenuStreamEntry_20DF0 *primary_entry;
-    struct MenuStreamEntry_20DF0 *primary_entry_alternate;
-    struct MenuStreamEntry_20DF0 *secondary_entry;
-    struct MenuStreamEntry_20DF0 *secondary_entry_alternate;
-    struct MenuStreamEntry_20DF0 *replacement_entry;
-    struct MenuStreamEntry_20DF0 *replacement_entry_alternate;
-    struct MenuScreen_20DF0 *item_selection;
-    struct MenuScreen_20DF0 *group_selection;
+    MenuStreamEntry *primary_entry;
+    MenuStreamEntry *primary_entry_alternate;
+    MenuStreamEntry *secondary_entry;
+    MenuStreamEntry *secondary_entry_alternate;
+    MenuStreamEntry *replacement_entry;
+    MenuStreamEntry *replacement_entry_alternate;
+    MenuScreen *item_selection;
+    MenuScreen *group_selection;
     u8 *item_table_entry;
 
     selection_flags = stream->data.stream.flags;
@@ -5693,13 +4746,13 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
                         primary_read_address += primary_read_offset;
                     }
                     if (stream->data.stream.flags & 0x10) {
-                        primary_entry = (struct MenuStreamEntry_20DF0 *)(primary_entry_offset +
+                        primary_entry = (MenuStreamEntry *)(primary_entry_offset +
                                                                      (s32)stream->data.stream.entries);
                         primary_read_started = start_audio_stream_read_r3(
                             primary_read_address, primary_entry->sector, primary_entry->sector_count);
                     } else {
                         primary_entry_alternate =
-                            (struct MenuStreamEntry_20DF0 *)(primary_entry_offset +
+                            (MenuStreamEntry *)(primary_entry_offset +
                                                          (s32)stream->data.stream.entries);
                         primary_read_started = start_audio_stream_read_r4(
                             primary_read_address, primary_entry_alternate->sector,
@@ -5760,14 +4813,14 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
                             }
                             if (stream->data.stream.flags & 0x10) {
                                 secondary_entry =
-                                    (struct MenuStreamEntry_20DF0 *)(secondary_entry_offset +
+                                    (MenuStreamEntry *)(secondary_entry_offset +
                                                                  (s32)stream->data.stream.entries);
                                 secondary_read_started = start_audio_stream_read_r3(
                                     secondary_read_address, secondary_entry->sector,
                                     secondary_entry->sector_count);
                             } else {
                                 secondary_entry_alternate =
-                                    (struct MenuStreamEntry_20DF0 *)(secondary_entry_offset +
+                                    (MenuStreamEntry *)(secondary_entry_offset +
                                                                  (s32)stream->data.stream.entries);
                                 secondary_read_started = start_audio_stream_read_r4(
                                     secondary_read_address, secondary_entry_alternate->sector,
@@ -5811,14 +4864,14 @@ s32 update_menu_resource_stream(struct MenuScreen_20DF0 *stream) {
                             }
                             if (stream->data.stream.flags & 0x10) {
                                 replacement_entry =
-                                    (struct MenuStreamEntry_20DF0 *)(replacement_entry_offset +
+                                    (MenuStreamEntry *)(replacement_entry_offset +
                                                                  (s32)stream->data.stream.entries);
                                 replacement_read_started = start_audio_stream_read_r3(
                                     replacement_read_address, replacement_entry->sector,
                                     replacement_entry->sector_count);
                             } else {
                                 replacement_entry_alternate =
-                                    (struct MenuStreamEntry_20DF0 *)(replacement_entry_offset +
+                                    (MenuStreamEntry *)(replacement_entry_offset +
                                                                  (s32)stream->data.stream.entries);
                                 replacement_read_started = start_audio_stream_read_r4(
                                     replacement_read_address,
@@ -7460,7 +6513,7 @@ int draw_menu_selection_text(MenuScreen *arg0) {
     int row = b->card[0].slots[*(int *)(*(char **)(*(char **)&((struct MenuSystem *)g)->current + 0x40) + 0x40)].id;
 
     SetupGifPaging(0);
-    if (((struct MemoryCardState_1A1A0 *)b)->state < 3 && ((struct MemoryCardState_1A1A0 *)b)->pending_state < 0
+    if (b->state < 3 && b->err < 0
         && *(int *)(g + 0x154) >= 0xB && b->card[0].type == 2) {
         if (row == -1) {
             FontPrintCenter(arg0->width / 2, arg0->height / 2 - 8,
@@ -7550,10 +6603,10 @@ int saving_data_menu(struct MenuScreen *arg0) {
             char *d = memory_card_state;
             char *e;
 
-            if (((struct MemoryCardState_1A1A0 *)d)->state >= 3) {
+            if (((MemoryCardState *)d)->state >= 3) {
                 return 0;
             }
-            if (((struct MemoryCardState_1A1A0 *)d)->pending_state >= 0) {
+            if (((MemoryCardState *)d)->err >= 0) {
                 return 0;
             }
             if (*(int *)(g3 + 0x154) < 11) {
@@ -7611,10 +6664,10 @@ int saving_data_menu(struct MenuScreen *arg0) {
         int p;
         int x;
 
-        if (((struct MemoryCardState_1A1A0 *)d)->state >= 3) {
+        if (((MemoryCardState *)d)->state >= 3) {
             return 0;
         }
-        if (((struct MemoryCardState_1A1A0 *)d)->pending_state >= 0) {
+        if (((MemoryCardState *)d)->err >= 0) {
             return 0;
         }
         {
@@ -7675,10 +6728,10 @@ int loading_data_menu(struct MenuScreen *arg0) {
     if (((struct MenuSystem *)g)->card_op_pending != 0) {
         char *d = memory_card_state;
 
-        if (((struct MemoryCardState_1A1A0 *)d)->state >= 3) {
+        if (((MemoryCardState *)d)->state >= 3) {
             return 0;
         }
-        if (((struct MemoryCardState_1A1A0 *)d)->pending_state >= 0) {
+        if (((MemoryCardState *)d)->err >= 0) {
             return 0;
         }
         if (*(int *)(g + 0x154) < 11) {
@@ -7743,10 +6796,10 @@ int loading_data_menu(struct MenuScreen *arg0) {
         int p;
         int x;
 
-        if (((struct MemoryCardState_1A1A0 *)d)->state >= 3) {
+        if (((MemoryCardState *)d)->state >= 3) {
             return 0;
         }
-        if (((struct MemoryCardState_1A1A0 *)d)->pending_state >= 0) {
+        if (((MemoryCardState *)d)->err >= 0) {
             return 0;
         }
         {
@@ -7784,9 +6837,9 @@ int loading_data_menu(struct MenuScreen *arg0) {
                     Moby_PlaySound(0, 0x11, arg0->moby);
                     *(int *)(d2 + 0xC8) = 0;
                     *(int *)(d2 + 0x14) = arg0->data.save.slot;
-                    if (((struct MemoryCardState_1A1A0 *)d2)->pending_state < 0) {
+                    if (((MemoryCardState *)d2)->err < 0) {
                         *(int *)(d2 + 0xE8) = 0;
-                        ((struct MemoryCardState_1A1A0 *)d2)->pending_state = 0xD;
+                        ((MemoryCardState *)d2)->err = 0xD;
                     }
                     g2 = (struct MenuSystem *)menu_system;
                     g2->card_op_pending = 1;
@@ -7805,43 +6858,6 @@ int loading_data_menu(struct MenuScreen *arg0) {
 typedef struct __attribute__((packed)) {
     s64 v;
 } Unaligned64_pv;
-struct MenuScreen_pv;
-struct MenuPage_pv {
-    s32 moby_anims[14];
-    struct MenuPage_pv *back;
-    s32 state;
-    struct MenuScreen_pv *focus;
-    struct MenuScreen_pv *screens[14];
-    u8 pad_7C[0x4];
-    struct MenuScreen_pv *pending_focus;
-    s32 confirmed;
-};
-struct MenuSystem_pv {
-    s32 state;
-    struct MenuPage_pv *current;
-    struct MenuPage_pv *next;
-    u8 pad_C[0xC4];
-    struct MenuPage_pv *previous;
-    s32 unkD4;
-    u8 pad_D8[0x4C];
-    s32 close_locked;
-    s32 card_op_pending;
-    s32 card_op_text;
-    u8 pad_130[0x24];
-    s32 ticks;
-};
-struct MenuScreen_pv {
-    s32 (*update)(struct MenuScreen_pv *);
-    u8 pad_4[0x10];
-    s32 moby;
-    u8 pad_18[0x18];
-    s32 flags;
-    u8 pad_34[0xC];
-    s32 slot;
-    u8 pad_44[0x4];
-    s32 save_data;
-    s32 step;
-};
 struct MemoryCardState_pv {
     u8 pad_0[8];
     s32 type;
@@ -7858,7 +6874,7 @@ struct MemoryCardState_pv {
     u8 pad_F0[0xC];
     s32 unkFC;
 };
-#define menu_system_pv (*(struct MenuSystem_pv *)D_001D5F70)
+#define menu_system_pv (*(MenuSystem *)D_001D5F70)
 #define memory_card_state_pv (*(struct MemoryCardState_pv *)D_0013D390)
 #define controller_state_pv (*(struct PadState *)D_0013CA40)
 extern char save_menu_overwrite_confirm_page[];
@@ -7871,36 +6887,36 @@ extern void load_and_initialize_level_chunk(void);
 /* Save slot screen tick: when focused, moves the slot cursor and on confirm
    starts the memory card save (or a level load for flag 0x2000). Plays a sound
    when the slot changes. */
-s32 saving_data_menu2(struct MenuScreen_pv *w) {
+s32 saving_data_menu2(MenuScreen *w) {
     s32 old;
     s32 pad;
     s32 cursor;
     s32 cur;
     s32 f2;
     s32 one;
-    struct MenuPage_pv *back;
+    MenuPage *back;
 
     if (menu_system_pv.current->focus != w) {
         return 0;
     }
-    old = w->slot;
-    if (w->step == 0 && menu_system_pv.previous == ((struct MenuPage_pv *)save_menu_overwrite_confirm_page) && menu_system_pv.previous->confirmed != 0) {
-        w->step = 1;
+    old = w->data.save.slot;
+    if (w->data.save.step == 0 && menu_system_pv.previous == ((MenuPage *)save_menu_overwrite_confirm_page) && menu_system_pv.previous->confirmed != 0) {
+        w->data.save.step = 1;
     }
-    if (w->step == 0 && menu_system_pv.previous == ((struct MenuPage_pv *)save_menu_load_confirm_page) && menu_system_pv.previous->confirmed != 0) {
-        w->step = 1;
+    if (w->data.save.step == 0 && menu_system_pv.previous == ((MenuPage *)save_menu_load_confirm_page) && menu_system_pv.previous->confirmed != 0) {
+        w->data.save.step = 1;
     }
-    if (w->step == 1) {
-        if (w->flags & 0x2000) {
-            load_level_zero_preserving_progress(w->slot);
+    if (w->data.save.step == 1) {
+        if (w->data.save.flags & 0x2000) {
+            load_level_zero_preserving_progress(w->data.save.slot);
         } else {
-            start_memory_card_save(w->save_data, w->slot);
+            start_memory_card_save(w->data.save.save_data, w->data.save.slot);
         }
         menu_system_pv.card_op_pending = 1;
         menu_system_pv.card_op_text = 0x4FB5;
         memory_card_error_latch = 0;
     }
-    w->step = 2;
+    w->data.save.step = 2;
 
     if (menu_system_pv.card_op_pending != 0) {
         if (memory_card_state_pv.state >= 3 || memory_card_state_pv.pending_state >= 0 || menu_system_pv.ticks < 0xB) {
@@ -7952,33 +6968,33 @@ s32 saving_data_menu2(struct MenuScreen_pv *w) {
         return 0;
     }
 
-    if (w->flags & 1) {
+    if (w->data.save.flags & 1) {
         pad = controller_state_pv.raw_pressed;
     } else {
         pad = controller_state_pv.pressed;
     }
-    w->slot = memcard_selected_slot;
+    w->data.save.slot = memcard_selected_slot;
     if ((pad & 0x1000) && memcard_selected_slot != 0) {
-        w->slot = memcard_selected_slot - 1;
+        w->data.save.slot = memcard_selected_slot - 1;
     }
     if (pad & 0x4000) {
-        cur = w->slot;
+        cur = w->data.save.slot;
         if (cur < 4) {
-            w->slot = cur + 1;
+            w->data.save.slot = cur + 1;
         }
     }
-    cursor = w->slot;
+    cursor = w->data.save.slot;
     memcard_selected_slot = cursor;
     if ((pad & 0x40) && memory_card_state_pv.type == 2) {
         if (*(s32 *)((u8 *)&memory_card_state_pv + cursor * 0x1C + 0x20) != -1) {
-            menu_system_pv.next = (w->flags & 0x2000) ? ((struct MenuPage_pv *)save_menu_load_confirm_page) : ((struct MenuPage_pv *)save_menu_overwrite_confirm_page);
-            menu_system_pv.unkD4 = (w->flags & 0x2000) ? 2 : 1;
-            save_confirm_slot = w->slot;
+            menu_system_pv.next = (w->data.save.flags & 0x2000) ? ((MenuPage *)save_menu_load_confirm_page) : ((MenuPage *)save_menu_overwrite_confirm_page);
+            menu_system_pv.unkD4 = (w->data.save.flags & 0x2000) ? 2 : 1;
+            save_confirm_slot = w->data.save.slot;
         } else {
-            w->step = 1;
+            w->data.save.step = 1;
         }
     } else if (pad & 0x20) {
-        if (w->flags & 0x2000) {
+        if (w->data.save.flags & 0x2000) {
             if (memory_card_state_pv.unkFC != 0) {
                 mode_freeze_init(7, 0, 0);
                 goto moved;
@@ -8000,26 +7016,14 @@ cont:
         goto done;
     }
 moved:
-    if (w->slot != old) {
+    if (w->data.save.slot != old) {
         Moby_PlaySound(1, 0x11, w->moby);
     }
 out:
     return 0;
 }
 
-typedef struct {
-    u8 pad_0[0x20];
-    s32 width;
-    u8 pad_24[0x1C];
-    s32 selected_slot;
-} SaveMenu_24C30;
-
-/* Menu system state at D_001D5F70, as far as this function reads it. */
-struct MenuSystem_24C30 {
-    u8 pad_0[0x154];
-    s32 unk154;               /* 0x154: PAL only, updates since the memory card went idle */
-};
-extern struct MenuSystem_24C30 D_001D5F70_24C30 __asm__("D_001D5F70");
+extern MenuSystem D_001D5F70_24C30 __asm__("D_001D5F70");
 
 extern MemoryCardState memory_card_state_r4 __asm__("D_0013D390");
 extern s32 pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
@@ -8043,7 +7047,7 @@ extern s32 sprintf_r2(char *, const char *, ...) __asm__("func_00116248");
 /* Draws the five save slots of the memory card page: the cursor frame around the selected
    one once the card is idle, then per slot "empty" or play time, gold bolts, bolts and date.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/ui/menus/draw_save_slot_list.c, draw_save_slot_list. */
-s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
+s32 draw_save_slot_list(MenuScreen *menu) {
     char text[0x50];
     McSaveSlot *slot;
     s32 color;
@@ -8070,7 +7074,7 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
         inner_top = y - 1;
         inner_bottom = y + 0x31;
         if (memory_card_state_r4.state < 3 && memory_card_state_r4.err < 0 && D_001D5F70_24C30.unk154 >= 0xB &&
-            menu->selected_slot == i) {
+            menu->data.save.slot == i) {
             draw_hud_rect_blended_r4(0, highlight_top, width, highlight_bottom, 0x8020FFFF, 0);
             draw_hud_rect_blended_r4(3, inner_top, inner_right, inner_bottom, panel_clear_color_r, 0);
         }
@@ -8089,7 +7093,7 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
                 play_ticks = slot->time;
                 hours = play_ticks / 216000;
                 minutes = play_ticks / 3600 - hours * 60;
-                color = menu->selected_slot == i ? (s32)0x8020FFFF : (s32)0x80FFA888;
+                color = menu->data.save.slot == i ? (s32)0x8020FFFF : (s32)0x80FFA888;
                 if (hours > 99) {
                     hours = 99;
                     minutes = 59;
@@ -9143,21 +8147,6 @@ int HelperMobyMenu_Init(char *h) {
     return 0;
 }
 
-/* Menu screen words leave_streamed_moby_screen reads (MenuScreen 0x30-0x5F). */
-struct MenuScreenWords_268F0 {
-    u8 pad_30[0xC];
-    s32 unk3C;                 /* 0x3C: stream buffer (release_menu_stream_buffer) */
-    u8 pad_40[0x4];
-    s32 slots[24];             /* 0x44: moby handles, each freed on leave */
-};
-
-typedef struct MenuScreen_268F0 {
-    u8 pad_00[0x30];
-    union {
-        struct MenuScreenWords_268F0 raw;   /* not understood yet */
-    } data;                    /* 0x30 */
-} MenuScreen_268F0;
-
 /* Music stream channel record (0x1C bytes); only state is read here. */
 typedef struct MusicStreamChannel {
     s32 handle;                /* 0x00 */
@@ -9180,7 +8169,7 @@ typedef struct MusicStreamState {
  * %hi/%lo out of a callee-saved register, as retail has it.
  */
 int leave_streamed_moby_screen(void *arg0) {
-    MenuScreen_268F0 *menu = (MenuScreen_268F0 *)arg0;
+    MenuScreen *menu = (MenuScreen *)arg0;
     s32 *slot = menu->data.raw.slots;
     MusicStreamState *music;
     s32 remaining;
@@ -9979,9 +8968,9 @@ void prepare_save_game(int arg0, int arg1) {
     *(int *)(b + 0xF4) = arg0;
     *(int *)(b + 0x14) = arg1;
     *(int *)(b + 0xC8) = 0;
-    if (((struct MemoryCardState_1A1A0 *)b)->pending_state < 0) {
+    if (((MemoryCardState *)b)->err < 0) {
         *(int *)(b + 0xE8) = 0;
-        ((struct MemoryCardState_1A1A0 *)b)->pending_state = 0x13;
+        ((MemoryCardState *)b)->err = 0x13;
     }
 }
 
@@ -10005,20 +8994,14 @@ void start_memory_card_save(int arg0, int arg1) {
         *(int *)(b + 0x14) = arg1;
         *(int *)(b + arg1 * 0x1C + 0x20) = 0;
         *(int *)(b + 0xF4) = arg0;
-        if (((struct MemoryCardState_1A1A0 *)b)->pending_state < 0) {
+        if (((MemoryCardState *)b)->err < 0) {
             *(int *)(b + 0xE8) = 0;
-            ((struct MemoryCardState_1A1A0 *)b)->pending_state = 0x13;
+            ((MemoryCardState *)b)->err = 0x13;
         }
     }
 }
 
-/* Menu system state at D_001D5F70, as far as this function reads it. */
-struct MenuSystem_27DB0 {
-    u8 pad_0[0xE0];
-    s32 unkE0;
-};
-
-extern struct MenuSystem_27DB0 D_001D5F70_27DB0 __asm__("D_001D5F70");
+extern MenuSystem D_001D5F70_27DB0 __asm__("D_001D5F70");
 
 extern MemoryCardState memory_card_state_r5 __asm__("D_0013D390");
 extern u8 gSpecialItems_r[] __asm__("D_0013D490");

@@ -1,4 +1,4 @@
-s32 update_menu_entry_actions(struct MenuScreen_1BB90 *menu) {
+s32 update_menu_entry_actions(MenuScreen *menu) {
     s32 focused;
     s32 entry_index;
     s32 entry_count;
@@ -57,7 +57,7 @@ s32 update_menu_entry_actions(struct MenuScreen_1BB90 *menu) {
         /* No case 1 in PAL: retail's table sends action 1 to the default. */
         case 3:
             menu_system_r3.next =
-                (struct MenuPage_1BB90 *)menu->data.list.items[menu->data.list.selected].param.value;
+                (MenuPage *)menu->data.list.items[menu->data.list.selected].param.value;
             break;
         case 4:
             Moby_PlaySound_r2(0, 0x11, menu->moby);

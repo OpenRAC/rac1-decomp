@@ -1,4 +1,4 @@
-s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
+s32 draw_save_slot_list(MenuScreen *menu) {
     char text[0x50];
     McSaveSlot *slot;
     s32 color;
@@ -25,7 +25,7 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
         inner_top = y - 1;
         inner_bottom = y + 0x31;
         if (memory_card_state_r4.state < 3 && memory_card_state_r4.err < 0 && D_001D5F70_24C30.unk154 >= 0xB &&
-            menu->selected_slot == i) {
+            menu->data.save.slot == i) {
             draw_hud_rect_blended_r4(0, highlight_top, width, highlight_bottom, 0x8020FFFF, 0);
             draw_hud_rect_blended_r4(3, inner_top, inner_right, inner_bottom, panel_clear_color_r, 0);
         }
@@ -44,7 +44,7 @@ s32 draw_save_slot_list(SaveMenu_24C30 *menu) {
                 play_ticks = slot->time;
                 hours = play_ticks / 216000;
                 minutes = play_ticks / 3600 - hours * 60;
-                color = menu->selected_slot == i ? (s32)0x8020FFFF : (s32)0x80FFA888;
+                color = menu->data.save.slot == i ? (s32)0x8020FFFF : (s32)0x80FFA888;
                 if (hours > 99) {
                     hours = 99;
                     minutes = 59;

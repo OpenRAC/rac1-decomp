@@ -15,10 +15,16 @@ struct MenuScreenWords {
     s32 unk34; /* 0x34: flags 0x40 / 0x80 (draw_map_screen) */
     s32 saved_text_count; /* 0x38: previous help_msg_count */
     s32 unk3C; /* 0x3C: stream buffer (FUN_00225660) */
-    u8 pad_40[0x10];
-    s32 load_state; /* 0x50: 0, 1 or 3 */
-    s32 saved_text_table; /* 0x54: previous help_msgs_m */
-    u8 pad_58[0x8];
+    u8 pad_40[0x4];
+    union {
+        struct {
+            u8 pad_44[0xC];
+            s32 load_state; /* 0x50: 0, 1 or 3 */
+            s32 saved_text_table; /* 0x54: previous help_msgs_m */
+            u8 pad_58[0x8];
+        };
+        s32 slots[24]; /* 0x44: moby handles, each freed on leave */
+    };
 };
 
 struct MenuOption {
@@ -133,6 +139,8 @@ struct MenuStreamEntry {
     s32 sector_count; /* 0x4: 0 = nothing to load */
 };
 
+typedef struct MenuStreamEntry MenuStreamEntry;
+
 struct MenuStreamData {
     struct MenuStreamEntry *entries; /* 0x30 */
     s32 flags; /* 0x34: see above */
@@ -169,10 +177,13 @@ struct MenuLabelData {
 
 struct MenuScreen {
     s32 (*update)(struct MenuScreen *); /* 0x00 */
-    u8 pad_4[0x4];
+    s32 (*draw)(struct MenuScreen *);   /* 0x04: per-frame draw callback */
     void (*enter)(struct MenuScreen *, s32); /* 0x08 */
     void (*leave)(struct MenuScreen *, s32); /* 0x0C */
-    s32 unk10; /* 0x10: bit 2 set by FUN_0021d1f8 */
+    union {
+        s32 unk10; /* 0x10: bit 2 set by FUN_0021d1f8 */
+        s32 flags;
+    };
     s32 moby; /* 0x14: its menu moby D_001D5D90[i]; menu sounds play on it */
     s32 x; /* 0x18: left edge */
     s32 y; /* 0x1C: top edge */
@@ -209,6 +220,8 @@ struct MenuPage {
     struct MenuScreen *pending_focus; /* 0x80: becomes focus on the next update */
     s32 confirmed; /* 0x84: confirm page answer, 1 = yes */
 };
+
+typedef struct MenuPage MenuPage;
 
 struct MenuSystem {
     /* Page switching (FUN_002192a8) */
@@ -273,7 +286,19 @@ struct MenuSystem {
     s32 unk13C; /* 0x13C: written by FUN_00218d78 */
     s32 unk140; /* 0x140: oclass at the last resource table select */
     s32 last_resource_table_toggle; /* 0x144: resource_table_toggle at the last select */
+    union {
+        s32 unk148; /* 0x148: PAL only, counts down to 0 */
+        s32 select_cooldown;
+    };
+    u8 pad_14C[0x4];
+    s32 unk150; /* 0x150: PAL only: 0 after action 4, 1 after action 5 */
+    union {
+        s32 unk154; /* 0x154: PAL only, updates since the memory card went idle */
+        s32 ticks;
+    };
 };
+
+typedef struct MenuSystem MenuSystem;
 
 struct MenuGridCell {
     u16 icon; /* 0x0: get_icon_frame icon */
@@ -282,5 +307,19 @@ struct MenuGridCell {
     s16 id; /* 0x6: item id */
     s16 stream_entry; /* 0x8: stream entry shown for this cell (fun_0021fdc8) */
 };
+
+typedef struct MenuGridCell MenuGridCell;
+
+/* PVars layout for the 14 panel mobys in panel_slots (D_001D6120). */
+typedef struct PanelMobyPvars {
+    Vec4 frame_vectors[4];            /* 0x00..0x40: corner vectors */
+    f32 width;                        /* 0x40 */
+    f32 height;                       /* 0x44 */
+    u8 pad_48[0x8];
+    s32 screen_x;                     /* 0x50 */
+    s32 screen_y;                     /* 0x54 */
+    s32 projected_width;              /* 0x58 */
+    s32 projected_height;             /* 0x5C */
+} PanelMobyPvars;
 
 #endif /* MENU_H */
