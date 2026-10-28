@@ -6840,24 +6840,8 @@ int loading_data_menu(struct MenuScreen *arg0) {
 typedef struct __attribute__((packed)) {
     s64 v;
 } Unaligned64_pv;
-struct MemoryCardState_pv {
-    u8 pad_0[8];
-    s32 type;
-    u8 pad_C[8];
-    s32 save_index;
-    u8 pad_18[4];
-    s32 sync_result;
-    u8 pad_20[0xBC];
-    s32 state;
-    u8 pad_E0[4];
-    s32 pending_state;
-    u8 pad_E8[4];
-    s32 err;
-    u8 pad_F0[0xC];
-    s32 unkFC;
-};
 #define menu_system_pv (*(MenuSystem *)D_001D5F70)
-#define memory_card_state_pv (*(struct MemoryCardState_pv *)D_0013D390)
+#define memory_card_state_pv (*(MemoryCardState *)D_0013D390)
 #define controller_state_pv (*(struct PadState *)D_0013CA40)
 extern char save_menu_overwrite_confirm_page[];
 extern char save_menu_load_confirm_page[];
@@ -6901,11 +6885,11 @@ s32 saving_data_menu2(MenuScreen *w) {
     w->data.save.step = 2;
 
     if (menu_system_pv.card_op_pending != 0) {
-        if (memory_card_state_pv.state >= 3 || memory_card_state_pv.pending_state >= 0 || menu_system_pv.ticks < 0xB) {
+        if (memory_card_state_pv.state >= 3 || memory_card_state_pv.err >= 0 || menu_system_pv.ticks < 0xB) {
             return 0;
         }
         menu_system_pv.card_op_pending = 0;
-        if (memory_card_state_pv.err != 0 || memory_card_state_pv.sync_result != 0 || memory_card_error_latch != 0) {
+        if (memory_card_state_pv.err_latch != 0 || memory_card_state_pv.card[0].result != 0 || memory_card_error_latch != 0) {
             if (pause_restart_reset_flag != 0) {
                 mode_freeze_flags_m |= 0x80;
                 mode_freeze_init(8, menu_system_pv.current, memory_card_state_pv.unkFC);
@@ -6919,11 +6903,11 @@ s32 saving_data_menu2(MenuScreen *w) {
             }
         }
         memory_card_state_pv.unkFC = 1;
-        *(s32 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x24) = gBolts;
-        *(s32 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x20) = g_current_level_index_mm;
-        *(s32 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x2C) = game_clock_ticks;
-        *(SaveWord2 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x30) = save_clock_time_s;
-        *(s32 *)((u8 *)&memory_card_state_pv + memory_card_state_pv.save_index * 0x1C + 0x28) = D_0015EF20;
+        memory_card_state_pv.card[0].slots[memory_card_state_pv.card[0].save_index].bolts = gBolts;
+        memory_card_state_pv.card[0].slots[memory_card_state_pv.card[0].save_index].id = g_current_level_index_mm;
+        memory_card_state_pv.card[0].slots[memory_card_state_pv.card[0].save_index].time = game_clock_ticks;
+        *(SaveWord2 *)&memory_card_state_pv.card[0].slots[memory_card_state_pv.card[0].save_index].name = save_clock_time_s;
+        memory_card_state_pv.card[0].slots[memory_card_state_pv.card[0].save_index].gold_bolts = D_0015EF20;
         initialize_global_state_entry(0);
         screen_globals_base[0] = 1;
         return 0;
@@ -6945,8 +6929,8 @@ s32 saving_data_menu2(MenuScreen *w) {
         menu_system_pv.next = menu_system_pv.current->back;
         return 0;
     }
-    if (memory_card_state_pv.state >= 3 || memory_card_state_pv.pending_state >= 0 || menu_system_pv.ticks < 0xB ||
-        memory_card_state_pv.type != 2) {
+    if (memory_card_state_pv.state >= 3 || memory_card_state_pv.err >= 0 || menu_system_pv.ticks < 0xB ||
+        memory_card_state_pv.card[0].type != 2) {
         return 0;
     }
 
@@ -6967,8 +6951,8 @@ s32 saving_data_menu2(MenuScreen *w) {
     }
     cursor = w->data.save.slot;
     memcard_selected_slot = cursor;
-    if ((pad & 0x40) && memory_card_state_pv.type == 2) {
-        if (*(s32 *)((u8 *)&memory_card_state_pv + cursor * 0x1C + 0x20) != -1) {
+    if ((pad & 0x40) && memory_card_state_pv.card[0].type == 2) {
+        if (memory_card_state_pv.card[0].slots[cursor].id != -1) {
             menu_system_pv.next = (w->data.save.flags & 0x2000) ? ((MenuPage *)save_menu_load_confirm_page) : ((MenuPage *)save_menu_overwrite_confirm_page);
             menu_system_pv.unkD4 = (w->data.save.flags & 0x2000) ? 2 : 1;
             save_confirm_slot = w->data.save.slot;
