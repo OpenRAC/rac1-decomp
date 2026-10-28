@@ -37,4 +37,10 @@ typedef struct VendorItemPrice {
     u8 pad_10[8];         /* 0x10 */
 } VendorItemPrice;
 
+/* Level collectible/save state (gold bolts, level-specific items). */
+typedef struct {
+    u8 pad0[0x454];
+    u8 collected[1];
+} LevelState;
+
 #endif /* RECORDS_H */
