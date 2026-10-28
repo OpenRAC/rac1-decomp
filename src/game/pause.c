@@ -420,12 +420,6 @@ typedef struct { char pad[0x44]; char *items[14]; } ObjList;
 /* Pause teardown: calls each object's +0xC handler, then refreshes the
    14 D_001D6120 handles. Retail's register copies come from gcse, so the
    base is re-read inside each block (and inside the loop body). */
-struct PauseMenuScreen {
-    s32 (*update)(struct PauseMenuScreen *);       /* 0x00 */
-    u8 pad_04[0x4];
-    void (*enter)(struct PauseMenuScreen *, s32);  /* 0x08 */
-    void (*leave)(struct PauseMenuScreen *, s32);  /* 0x0C */
-};
 
 /* Closes the menu once it has run 10 updates: calls every screen's leave hook,
    drops the current page, deletes the panel mobys and sets state 0x14 with a 2-frame timer. */
@@ -439,9 +433,9 @@ void close_menu_system(void) {
         int i;
         for (i = 0; i < 14; i++) {
             struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
-            struct PauseMenuScreen *screen = g2->current->screens[i];
+            struct MenuScreen *screen = g2->current->screens[i];
             if (screen != 0) {
-                void (*fn)(struct PauseMenuScreen *, s32) = screen->leave;
+                void (*fn)(struct MenuScreen *, s32) = screen->leave;
                 if (fn != 0) {
                     fn(screen, 0);
                 }
@@ -1795,7 +1789,7 @@ int fade_menu_color(int start, int col1, int col2) {
    own copy is why GCSE leaves its +0x138 load in the loop (only +0x134,
    read first in the body, is hoisted by loop.c), and the last block's
    copy is retail's kept %hi. */
-int find_next_pause_page(char *arg0, int arg1) {
+int find_next_pause_page(MenuScreen *arg0, int arg1) {
     int ok = 0;
     int found = 0;
 
@@ -1804,28 +1798,28 @@ int find_next_pause_page(char *arg0, int arg1) {
     }
     {
         struct MenuSystem *g = (struct MenuSystem *)menu_system;
-        if (g->unk134 != 0 && (*(int *)(arg0 + 0x30) & 8)) {
+        if (g->unk134 != 0 && (arg0->data.grid.flags & 8)) {
             ok = 1;
         }
-        if (g->unk138 != 0 && (*(int *)(arg0 + 0x30) & 4)) {
+        if (g->unk138 != 0 && (arg0->data.grid.flags & 4)) {
             ok = 1;
         }
     }
     while (ok) {
         struct MenuSystem *g = (struct MenuSystem *)menu_system;
         found = 1;
-        arg0 = *(char **)(arg0 + 0x4C);
+        arg0 = arg0->data.grid.up;
         ok = 0;
-        if (g->unk134 != 0 && (*(int *)(arg0 + 0x30) & 8)) {
+        if (g->unk134 != 0 && (arg0->data.grid.flags & 8)) {
             ok = 1;
         }
-        if (g->unk138 != 0 && (*(int *)(arg0 + 0x30) & 4)) {
+        if (g->unk138 != 0 && (arg0->data.grid.flags & 4)) {
             ok = 1;
         }
     }
     if (found) {
         struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
-        *(char **)(*(char **)&g2->current + 0x80) = arg0;
+        g2->current->pending_focus = arg0;
     }
     return 0;
 }
@@ -2512,8 +2506,8 @@ typedef struct {
    advances. The three conditions are one `&&` (one shared exit) and the
    time is compared call-first, as retail evaluates them. */
 int update_menu_item_slots(SelList_0021D7A0 *arg0) {
-    char *q = *(char **)(current_menu_page + 0x40);
-    int item = *(short *)(*(int *)(q + 0x3C) * 10 + *(char **)(q + 0x48) + 6);
+    MenuScreen *q = ((MenuPage *)current_menu_page)->focus;
+    int item = q->data.grid.cells[q->data.grid.selected_cell].id;
     int old = arg0->idx;
     PadState *pad = (PadState *)g_controller_state;
     int i;
@@ -3028,7 +3022,7 @@ int draw_menu_text_list(Menu *menu) {
     size = 12;
     kind = 1;
     font = normal_font_metrics;
-    focused = *(Menu **)(current_menu_page + 0x40) == menu;
+    focused = ((MenuPage *)current_menu_page)->focus == (MenuScreen *)menu;
     if (menu->flags & 4) {
         size = 14;
         kind = 3;
@@ -3368,7 +3362,7 @@ typedef struct ItemPreviewCamera {
 /* Spawns or swaps the 3D preview moby for the selected item cell, in front of the camera. */
 int update_item_preview_moby(char *arg0) {
     ItemPreviewScreen *menu = (ItemPreviewScreen *)arg0;
-    PreviewGridScreen *grid = *(PreviewGridScreen **)(current_menu_page + 0x40);
+    PreviewGridScreen *grid = (PreviewGridScreen *)((MenuPage *)current_menu_page)->focus;
     int item = grid->cells[grid->selected_cell].id;
     short current_preview_class;
     ItemPreviewInfo *rec;
@@ -3745,12 +3739,12 @@ extern int space_load_pending MACRO_ADDR;
 /* Pad handler (func_0021ACD8's family). A separate `char *` local for
    each block that reads the pad word gives retail's pattern: the %hi
    kept in a register and the %lo rebuilt before each use. */
-int Menu_BackInput(char *arg0) {
+int Menu_BackInput(MenuScreen *arg0) {
     PadState *pad = (PadState *)g_controller_state;
     int v = *(int *)&pad->pressed_unmasked;
 
     if (v & 0xD00) {
-        if (*(int *)(arg0 + 0x30) & 0x20) {
+        if (arg0->data.grid.flags & 0x20) {
             selected_level_index = g_current_level_index;
         }
         return -1;
@@ -3758,7 +3752,7 @@ int Menu_BackInput(char *arg0) {
     if (v & 0x10) {
         struct MenuSystem *g;
         int t;
-        if (*(int *)(arg0 + 0x30) & 0x20) {
+        if (arg0->data.grid.flags & 0x20) {
             selected_level_index = g_current_level_index;
         }
         g = (struct MenuSystem *)menu_system;
@@ -4107,8 +4101,8 @@ extern char fmt_number_thousands[]; /* "%d,%03d" */
 int draw_selected_item_ammo(char *arg0) {
     char text[0x50];
     short box[10];
-    char *p = *(char **)(current_menu_page + 0x40);
-    int id = *(short *)(*(int *)(p + 0x3C) * 10 + *(char **)(p + 0x48) + 6);
+    MenuScreen *p = ((MenuPage *)current_menu_page)->focus;
+    int id = p->data.grid.cells[p->data.grid.selected_cell].id;
     int have, total;
     VendorItemPrice *rec;
 
@@ -5898,8 +5892,8 @@ extern int pause_level_sprite_lists[];
 
 /* `D_001D48A8[(unsigned)D_0015EE84 % 19]`; the older near-miss
    predated MACRO_ADDR. */
-int assign_pause_level_sprite_list(char *arg0) {
-    *(int *)(arg0 + 0x34) = pause_level_sprite_lists[(unsigned int)g_current_level_index % 19];
+int assign_pause_level_sprite_list(MenuScreen *screen) {
+    *(int *)((char *)screen + 0x34) = pause_level_sprite_lists[(unsigned int)g_current_level_index % 19];
     return 0;
 }
 
@@ -6034,8 +6028,8 @@ extern void FontPrintCenter(int, int, long, void *, int);
    arguments inline: gcc evaluates them in order, so x and y are computed
    before the nested func_001FE540 call. */
 int draw_selected_menu_item_text(MenuScreen *arg0) {
-    char *p = *(char **)(current_menu_page + 0x40);
-    int row = *(int *)(*(char **)(p + 0x34) + *(int *)(p + 0x40) * 12 + 4);
+    MenuScreen *p = ((MenuPage *)current_menu_page)->focus;
+    int row = p->data.list.items[p->data.list.selected].param.value;
 
     SetupGifPaging(0);
     if (row == -1) {
@@ -6122,10 +6116,10 @@ int process_global_state_flags(void) {
 }
 
 /* Enter hook for the timed text sequence below: resets its scroll, countdown and step. */
-int enter_timed_menu_sequence(void *arg0) {
-    *(int *)((char *)arg0 + 0x40) = 0;
-    *(int *)((char *)arg0 + 0x50) = 0;
-    *(int *)((char *)arg0 + 0x3C) = 0;
+int enter_timed_menu_sequence(MenuScreen *screen) {
+    screen->data.textbox.countdown = 0;
+    screen->data.textbox.step = 0;
+    screen->data.textbox.scroll = 0;
     return 0;
 }
 
@@ -6317,7 +6311,7 @@ int update_timed_menu_sequence(char *arg0) {
    bottom; states 4, 11, 15 and 19 draw the single text id at +0x34. The
    line count's low nibble goes through `& 0xF` (retail's lbu + dsrl) and
    the start subtracts its own variable, which keeps retail's order. */
-int draw_menu_text_box(char *arg0) {
+int draw_menu_text_box(MenuScreen *screen) {
     short box[12];
     int ypos;
     int n;
@@ -6326,16 +6320,16 @@ int draw_menu_text_box(char *arg0) {
     VU1_addGSregister_l(0x47, 0x30000);
     VU1_addGSregister_l(0x42, 0x8000000044L);
     SetupGifPaging(0);
-    pack_image_descriptor(box, arg0);
+    pack_image_descriptor(box, (char *)screen);
     box[9] = 9;
-    box[3] = *(int *)(arg0 + 0x18) + *(int *)(arg0 + 0x20);
-    box[0] = *(int *)(arg0 + 0x1C) + 4;
-    box[1] = *(int *)(arg0 + 0x1C) + *(int *)(arg0 + 0x24) - 4;
-    box[2] = *(int *)(arg0 + 0x18);
-    box[4] = *(int *)(arg0 + 0x18) + (*(int *)(arg0 + 0x20) >> 1);
+    box[3] = screen->x + screen->width;
+    box[0] = screen->y + 4;
+    box[1] = screen->y + screen->height - 4;
+    box[2] = screen->x;
+    box[4] = screen->x + (screen->width >> 1);
     box[10] = 0;
     box[11] = 0;
-    switch (*(int *)(arg0 + 0x50)) {
+    switch (screen->data.textbox.step) {
     case 1:
     case 2:
     case 3:
@@ -6351,26 +6345,26 @@ int draw_menu_text_box(char *arg0) {
     case 16:
     case 17:
     case 18:
-        n = (*(int *)(arg0 + 0x3C) >> 4) - 4;
-        ypos = *(int *)(arg0 + 0x1C) - n;
-        for (i = 0; (*(int **)(arg0 + 0x34))[i] != -1; i++) {
+        n = (screen->data.textbox.scroll >> 4) - 4;
+        ypos = screen->y - n;
+        for (i = 0; screen->data.textbox.text_list[i] != -1; i++) {
             box[5] = ypos;
-            box[11] = (*(int *)(arg0 + 0x3C) >> 4) & 0xF;
+            box[11] = (screen->data.textbox.scroll >> 4) & 0xF;
             font_print_window_regular(box, 0x80FFA888L,
-                          msg_string_id((*(int **)(arg0 + 0x34))[i]), -1);
+                          msg_string_id(screen->data.textbox.text_list[i]), -1);
             ypos += box[7];
             ypos += 10;
         }
-        if (ypos + 0x18 < *(int *)(arg0 + 0x1C) + *(int *)(arg0 + 0x24)) {
-            *(int *)(arg0 + 0x54) = 1;
+        if (ypos + 0x18 < screen->y + screen->height) {
+            screen->data.textbox.scroll_done = 1;
         }
         break;
     case 4:
     case 11:
     case 15:
     case 19:
-        box[5] = *(int *)(arg0 + 0x1C) + 0x20;
-        font_print_window_regular(box, 0x80FFA888L, msg_string_id(*(int *)(arg0 + 0x34)), -1);
+        box[5] = screen->y + 0x20;
+        font_print_window_regular(box, 0x80FFA888L, msg_string_id(screen->data.textbox.text_id), -1);
         break;
     case 0:
         break;
