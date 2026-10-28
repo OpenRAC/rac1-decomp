@@ -26,4 +26,15 @@ typedef struct {
     unsigned char nframes;
 } AnimSeq;
 
+/* Vendor item pricing and ammo capacity records (D_001E02B0). */
+typedef struct VendorItemPrice {
+    s32 price;            /* 0x00: item purchase price */
+    s32 discount_price;   /* 0x04: discount price (Persuader) */
+    u16 ammo_price;       /* 0x08: price per ammo round */
+    u16 ammo_price_alt;   /* 0x0A */
+    u8 pad_0C[2];         /* 0x0C */
+    u16 max_ammo;         /* 0x0E: maximum ammo capacity */
+    u8 pad_10[8];         /* 0x10 */
+} VendorItemPrice;
+
 #endif /* RECORDS_H */

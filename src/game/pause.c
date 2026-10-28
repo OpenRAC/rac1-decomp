@@ -307,12 +307,12 @@ LINKER_REMNANT("asm/remnants/text", func_00219E48);
 
 /* Switches to game mode 3 and puts the menu system in state 0x2D, clearing its +0xC, +0x10 and +0x110 words. */
 void initialize_transfer_command(void) {
-    char *p = menu_system;
+    MenuSystem *p = (MenuSystem *)menu_system;
     g_game_mode = 3;
-    *(int *)p = 0x2D;
-    *(int *)(p + 0xC) = 0;
-    *(int *)(p + 0x10) = 0;
-    *(int *)(p + 0x110) = 0;
+    p->state = 0x2D;
+    p->close_request = 0;
+    p->unk10 = 0;
+    p->update_count = 0;
 }
 
 extern s32 g_gs_texture_allocation_start_r __asm__("D_0015EF78") MACRO_ADDR;
@@ -2916,8 +2916,8 @@ extern void copy_memory_aligned(void *, void *, int);
 /* The slot count at D_001997D0+0x2C, read through its own base pointer:
    retail's loop keeps a separate copy of the D_001997D0 address. */
 static inline int pauseSlotCount(void) {
-    char *b = g_help_state;
-    return *(int *)(b + 0x2C);
+    HelpState *b = (HelpState *)g_help_state;
+    return b->count;
 }
 
 /* Pause sub-state machine at arg0+0x50 (func_00221688's family). State 0
@@ -2949,15 +2949,15 @@ int update_menu_help_text_load(MenuScreen *arg0) {
             int *p = (int *)((char *)tbl + tbl[g_game_language]);
             int n = *p++;
             int sz = *p++;
-            char *b;
+            HelpState *b;
             int *t;
             int i;
 
             copy_memory_aligned(tbl, p, ((sz + 3) & ~3) - 8);
-            b = g_help_state;
+            b = (HelpState *)g_help_state;
             arg0->data.raw.saved_text_table = help_msgs_m;
-            arg0->data.raw.saved_text_count = *(int *)(b + 0x2C);
-            *(int *)(b + 0x2C) = n;
+            arg0->data.raw.saved_text_count = b->count;
+            b->count = n;
             t = *(int **)&g->help_text_buffer;
             help_msgs_m = (int)t;
             for (i = 0; i < pauseSlotCount(); i++) {
@@ -4044,14 +4044,15 @@ extern void font_print_right_c(int, int, long, char *, int) __asm__("func_001F6C
 int DrawGBsShipMenu__maybe(char *arg0) {
     char buf[0x100];
     CameraSystem *t = (CameraSystem *)gCamera;
-    char *o = *(char **)(arg0 + 0x44);
+    MenuScreen *screen = (MenuScreen *)arg0;
+    Moby *o = screen->data.preview.moby;
     int count;
 
-    *(float *)(o + 0x10) = t->pos.f[0] + 8.0f;
-    *(float *)(o + 0x14) = t->pos.f[1] + gold_bolt_marker_y_offset_f;
-    *(float *)(o + 0x18) = t->pos.f[2] - 0.1f;
-    if (*(int *)(arg0 + 0x44) != 0) {
-        DrawMobyList(*(int *)(arg0 + 0x44), 1);
+    o->pos.x = t->pos.f[0] + 8.0f;
+    o->pos.y = t->pos.f[1] + gold_bolt_marker_y_offset_f;
+    o->pos.z = t->pos.f[2] - 0.1f;
+    if (screen->data.preview.moby != 0) {
+        DrawMobyList((int)screen->data.preview.moby, 1);
     }
     SetupGifPaging(0);
     count = 0;
@@ -4065,9 +4066,9 @@ int DrawGBsShipMenu__maybe(char *arg0) {
     }
     sprintf(buf, fmt_gold_bolt_count_line, msg_string_id(0x4F4F), count,
                   msg_string_id(0x4F53), map_gold_bolt_totals[level_map_selection[0x89]]);
-    font_print_right_c(*(int *)(arg0 + 0x20) - 0x10, (g_screen_extent[1] >> 1) - 8,
+    font_print_right_c(screen->width - 0x10, (g_screen_extent[1] >> 1) - 8,
                     0x80000000L, buf, -1);
-    font_print_right_c(*(int *)(arg0 + 0x20) - 0x11, (g_screen_extent[1] >> 1) - 9,
+    font_print_right_c(screen->width - 0x11, (g_screen_extent[1] >> 1) - 9,
                     0x80FFA888L, buf, -1);
     DoGifPaging();
     if (0) {
@@ -4109,17 +4110,17 @@ int draw_selected_item_ammo(char *arg0) {
     char *p = *(char **)(current_menu_page + 0x40);
     int id = *(short *)(*(int *)(p + 0x3C) * 10 + *(char **)(p + 0x48) + 6);
     int have, total;
-    char *rec;
+    VendorItemPrice *rec;
 
     if (((unsigned char *)&item_available)[id] == 0) {
         return 0;
     }
     have = weapon_ammo_counts[id];
-    rec = vendor_item_prices + id * 0x18;
-    total = *(unsigned short *)(rec + 0xE);
+    rec = (VendorItemPrice *)vendor_item_prices + id;
+    total = rec->max_ammo;
     VU1_addGSregister_l(0x42, 0x44);
     VU1_addGSregister_l(0x47, 0xB);
-    if (*(unsigned short *)(rec + 8) == 0) {
+    if (rec->ammo_price == 0) {
         sprintf(text, msg_string_id(0x4F52));
     } else {
         char *q;
@@ -5775,7 +5776,7 @@ extern char *current_menu_page NOT_SDA;
 
 /* Enter hook for the prompt screen: clears the page's +0x84 word and takes a stream buffer. */
 int enter_menu_prompt(struct MenuScreen *arg0) {
-    *(int *)(current_menu_page + 0x84) = 0;
+    ((MenuPage *)current_menu_page)->confirmed = 0;
     arg0->data.prompt.buffer = acquire_menu_stream_buffer(0);
     return 0;
 }
@@ -5911,7 +5912,7 @@ int handle_cyclic_menu_selection_input(struct MenuScreen *arg0) {
     int w, old;
 
     if (*(int *)&pad->pressed_unmasked & 0xD00) {
-        if (*(int *)(menu_system + 0x124) == 0) {
+        if (((MenuSystem *)menu_system)->close_locked == 0) {
             return 1;
         }
     }
@@ -5919,9 +5920,9 @@ int handle_cyclic_menu_selection_input(struct MenuScreen *arg0) {
         PadState *pad2 = (PadState *)g_controller_state;
         if (*(int *)&pad2->pressed_unmasked & 0x10) {
             struct MenuSystem *g = (struct MenuSystem *)menu_system;
-            int t = *(int *)(*(char **)&g->current + 0x38);
+            MenuPage *t = g->current->back;
             if (t != 0) {
-                *(int *)&g->next = t;
+                g->next = t;
                 return 0;
             }
             if (g->close_locked == 0) {
@@ -5953,7 +5954,7 @@ int update_menu_cycle_selection(struct MenuScreen *arg0) {
     int w;
 
     if (*(int *)&pad->pressed_unmasked & 0xD00) {
-        if (*(int *)(menu_system + 0x124) == 0) {
+        if (((MenuSystem *)menu_system)->close_locked == 0) {
             return 1;
         }
     }
@@ -5961,9 +5962,9 @@ int update_menu_cycle_selection(struct MenuScreen *arg0) {
         PadState *pad2 = (PadState *)g_controller_state;
         if (*(int *)&pad2->pressed_unmasked & 0x10) {
             struct MenuSystem *g = (struct MenuSystem *)menu_system;
-            int t = *(int *)(*(char **)&g->current + 0x38);
+            MenuPage *t = g->current->back;
             if (t != 0) {
-                *(int *)&g->next = t;
+                g->next = t;
                 return 0;
             }
             if (g->close_locked == 0) {
@@ -8959,18 +8960,18 @@ extern void save_map_coverage(void *);
 /* Gathers the game state into save buffer arg0 (object positions, map coverage)
    and stores arg0 and arg1 in the memory card state; starts state 0x13 when idle. */
 void prepare_save_game(int arg0, int arg1) {
-    char *b = memory_card_state;
+    MemoryCardState *b = (MemoryCardState *)memory_card_state;
     sce_cd_read_clock(save_clock_time);
     sce_scf_get_local_time_from_rtc(save_clock_time);
     copy_level_object_positions();
     save_map_coverage(level_map_coverage + (g_current_level_index << 11));
     memcard_MakeWholeSave((char *)arg0);
-    *(int *)(b + 0xF4) = arg0;
-    *(int *)(b + 0x14) = arg1;
-    *(int *)(b + 0xC8) = 0;
-    if (((MemoryCardState *)b)->err < 0) {
-        *(int *)(b + 0xE8) = 0;
-        ((MemoryCardState *)b)->err = 0x13;
+    b->padF4 = arg0;
+    b->card[0].x14 = arg1;
+    b->xC8 = 0;
+    if (b->err < 0) {
+        b->errCard = 0;
+        b->err = 0x13;
     }
 }
 
@@ -8989,14 +8990,14 @@ void start_memory_card_save(int arg0, int arg1) {
     sce_scf_get_local_time_from_rtc(save_clock_time);
     memcard_MakeWholeSave((char *)arg0);
     {
-        char *b = memory_card_state;
-        *(int *)(b + 0xC8) = 0;
-        *(int *)(b + 0x14) = arg1;
-        *(int *)(b + arg1 * 0x1C + 0x20) = 0;
-        *(int *)(b + 0xF4) = arg0;
-        if (((MemoryCardState *)b)->err < 0) {
-            *(int *)(b + 0xE8) = 0;
-            ((MemoryCardState *)b)->err = 0x13;
+        MemoryCardState *b = (MemoryCardState *)memory_card_state;
+        b->xC8 = 0;
+        b->card[0].x14 = arg1;
+        b->card[0].slots[arg1].id = 0;
+        b->padF4 = arg0;
+        if (b->err < 0) {
+            b->errCard = 0;
+            b->err = 0x13;
         }
     }
 }
