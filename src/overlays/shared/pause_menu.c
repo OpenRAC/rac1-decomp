@@ -76,10 +76,6 @@ typedef struct {
     float f228;
     int i22C;
 } Cam_277208;
-typedef struct {
-    unsigned char pad0[0xC];
-    unsigned char bC;
-} Cnt_277208;
 
 typedef struct {
     unsigned char pad0[0x224];
@@ -113,7 +109,7 @@ extern short level_vu1_chain_reserved_bytes;
 extern int screen_globals_base[];
 extern int draw_buffer_address MACRO_ADDR;
 extern int g_gs_texture_allocation_start MACRO_ADDR;
-extern char *moby_class_headers[] NOT_SDA;
+extern MobyClass *moby_class_headers[] NOT_SDA;
 extern unsigned char help_stats_base NOT_SDA;
 extern struct HEnt *menu_preview_mobys[];
 extern char player_camera[];
@@ -296,8 +292,8 @@ void initialize_pause_menu(void) {
         }
     }
     select_moby_context(1);
-    (*(Menu_277208 *)level_menu_system).unkCC = ((Cnt_277208 *)moby_class_headers[0])->bC;
-    ((Cnt_277208 *)moby_class_headers[0])->bC += 0x1C;
+    (*(Menu_277208 *)level_menu_system).unkCC = moby_class_headers[0]->seq_count;
+    moby_class_headers[0]->seq_count += 0x1C;
     for (n = 0; n < 4; n++) {
         (*(Menu_277208 *)level_menu_system).unk30[n] = ((int *)(&help_stats_base + 0x45))[n];
     }
@@ -330,7 +326,7 @@ extern unsigned char hero_globals_base NOT_SDA;
 extern int gBolts MACRO_ADDR;
 extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern struct HEnt *menu_preview_mobys[];
-extern char *moby_class_headers[] NOT_SDA;
+extern MobyClass *moby_class_headers[] NOT_SDA;
 extern unsigned char texture_group_header[];
 extern int coll_hit_result[];
 extern void VU1_syncChain(int);
@@ -420,14 +416,14 @@ void close_pause_menu(void) {
             *(int *)s = 0x14;
             *(int *)(s + 0x14) = 2;
             value = *(int *)(s + 0xCC);
-            while (value < ((unsigned char *)moby_class_headers[0])[0xC]) {
-                ((struct { char p[0x48]; char *a[1]; } *)moby_class_headers[0])->a[value] = 0;
+            while (value < moby_class_headers[0]->seq_count) {
+                moby_class_headers[0]->seqs[value] = 0;
                 value++;
             }
         }
         {
             char *s = level_menu_system;
-            ((unsigned char *)moby_class_headers[0])[0xC] = *(unsigned char *)(s + 0xCC);
+            moby_class_headers[0]->seq_count = *(unsigned char *)(s + 0xCC);
         }
         skip_frame = 1;
         {
