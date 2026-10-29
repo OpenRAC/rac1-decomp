@@ -350,6 +350,7 @@ int Stash_SendData(int arg0, int arg1, int arg2, int arg3) {
     }
     dma[0] = arg0;
     dma[1] = h->free;
+    /* Sent size and reserved size may differ. Both use 16-byte units. */
     dma[2] = arg1 * 16;
     dma[3] = 0;
     sce_sif_set_dma(dma, IOP_STASH_FETCH);
@@ -376,6 +377,7 @@ int stash_receive_data(void *dest, unsigned int slot, int offset, int size, int 
     int src;
     int chunk;
 
+    /* -1 selects the full slot size; offset is still applied below. */
     if (size == -1) {
         size = stash_get_reserved_qwords(slot);
     }
@@ -390,6 +392,7 @@ int stash_receive_data(void *dest, unsigned int slot, int offset, int size, int 
     }
     src = stash_entries[slot].ram + offset * 16;
     while (size != 0) {
+        /* Split large reads to fit the RPC transfer limit. */
         chunk = (size > 0xFFFF) ? 0xFFFF : size;
         sif_call_rpc(stash_rpc_client_address, IOP_STASH_FETCH, mode, &src, 0x10, dest, chunk * 16, 0, 0);
         size -= chunk;

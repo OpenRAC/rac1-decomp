@@ -18,6 +18,7 @@ void decompress_and_relocate_vendor_moby_assets(void) {
     int *p;
     char *base;
     int v;
+    /* Compressed data starts 512 KB above the output buffer. */
     v = vendor_menu[6] + 0x80000;
     flush_cache(0);
     fast_decompress(v, vendor_menu[6]);
@@ -26,6 +27,7 @@ void decompress_and_relocate_vendor_moby_assets(void) {
     base = moby_class_headers[g_class_slot_12];
     for (i = 0; i < 16; i++) {
         int e = *p++;
+        /* Zero means no entry. Other offsets use the unpacked buffer base. */
         if (e) {
             *(int *)(base + 0x48 + i * 4) = vendor_menu[6] + e;
             relocateObjectPointers(base, i);
