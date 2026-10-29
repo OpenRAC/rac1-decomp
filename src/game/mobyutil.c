@@ -1329,6 +1329,7 @@ void SamplePathAt(Path *path, int wrap, void *pos, float *rot, int flags, float 
     float roll;
     float roll2;
 
+    /* The whole part selects a path segment; the fraction blends its ends. */
     i = truncate_float_to_s32_r(t);
     if (!wrap && i >= path->count - 2) {
         i = path->count - 2;
@@ -1348,6 +1349,7 @@ void SamplePathAt(Path *path, int wrap, void *pos, float *rot, int flags, float 
     qcopy(&a, &path->pts[i]);
     qcopy(&b, &path->pts[j]);
     lerp_vector(pos, &a, &b, f);
+    /* Position-only requests leave the rotation output untouched. */
     if (flags & 1) {
         return;
     }
@@ -1407,7 +1409,7 @@ int try_set_help_message(int arg0, int arg1) {
     return 0;
 }
 
-/* Sets a help message even when another one shows, and keeps it alive; returns 3 on success. */
+/* Return 1 or 2 for a normal request, or 3 when replacing another owner. */
 int force_help_message(int arg0, int arg1) {
     int busy = try_set_help_message(arg0, arg1);
     if (busy != 0) {
