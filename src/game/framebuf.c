@@ -375,57 +375,57 @@ typedef struct {
     unsigned long FBMSK:32;
 } GsFrame; /* sceGsFrame */
 
-/* Sets up a (1 << a) x (1 << b) render target at GS address c (see
+/* Sets up a (1 << width_log2) x (1 << height_log2) render target at GS address gs_base_address (see
    func_0023A948): records TEX0 for it in D_0015EFD0 (buffer width
-   1 << max(a - 6, 1) pages, PSMCT32, TCC), its size and FBP (c >> 13) in
+   1 << max(width_log2 - 6, 1) pages, PSMCT32, TCC), its size and FBP (gs_base_address >> 13) in
    D_00151880, then appends a packet to D_00161000: a default draw
    environment (sceGsSetDefDrawEnv with ztest 3) patched with the FBP and
    the configured Z buffer, followed by TEST_1 0x30003 and a black sprite
    over the whole target. FBP is set through the sceGsFrame bitfield, the
    form that sign-extends the halfword before masking as retail does. */
-void setup_render_target(int a, int b, int c) {
-    int x;
-    long *q;
-    unsigned long *d;
-    long *r;
+void setup_render_target(int width_log2, int height_log2, int gs_base_address) {
+    int buffer_width_log2;
+    long *target_gif_header;
+    unsigned long *target_draw_environment;
+    long *target_clear_packet;
 
-    x = a - 6;
-    if (x <= 0) {
-        x = 1;
+    buffer_width_log2 = width_log2 - 6;
+    if (buffer_width_log2 <= 0) {
+        buffer_width_log2 = 1;
     }
     /* GS frame pages use 8 KB units; texture blocks use 256-byte units. */
-    fs_aa_buffer_f.fbp = c >> 13;
-    fs_aa_buffer_f.w = 1 << a;
-    fs_aa_buffer_f.h = 1 << b;
-    capture_texture_tex0 = (unsigned long)(c >> 8) | ((unsigned long)(1 << x) << 14)
-               | ((unsigned long)0 << 20) | ((unsigned long)a << 26)
-               | ((unsigned long)b << 30) | ((unsigned long)1 << 34);
+    fs_aa_buffer_f.fbp = gs_base_address >> 13;
+    fs_aa_buffer_f.w = 1 << width_log2;
+    fs_aa_buffer_f.h = 1 << height_log2;
+    capture_texture_tex0 = (unsigned long)(gs_base_address >> 8) | ((unsigned long)(1 << buffer_width_log2) << 14)
+               | ((unsigned long)0 << 20) | ((unsigned long)width_log2 << 26)
+               | ((unsigned long)height_log2 << 30) | ((unsigned long)1 << 34);
     FastMemZero16(g_render_packet_cursor, 0xF0);
     g_render_packet_cursor[0] = 0x1000000E;
     g_render_packet_cursor[1] = 0;
     g_render_packet_cursor[2] = 0;
     g_render_packet_cursor[3] = 0x5000000E;
     g_render_packet_cursor += 4;
-    q = (long *)g_render_packet_cursor;
-    q[0] = 0x1000000000000008L;
-    q[1] = 0xE;
+    target_gif_header = (long *)g_render_packet_cursor;
+    target_gif_header[0] = 0x1000000000000008L;
+    target_gif_header[1] = 0xE;
     g_render_packet_cursor += 4;
-    d = (unsigned long *)g_render_packet_cursor;
-    sce_gs_set_def_draw_env(d, fs_aa_buffer_f.psm, fs_aa_buffer_f.w, fs_aa_buffer_f.h, 3, 0);
-    ((GsFrame *)d)->FBP = fs_aa_buffer_f.fbp;
-    d[2] = fs_aa_buffer_f.zbp | ((unsigned long)(fs_aa_buffer_f.zpsm & 0xF) << 24);
+    target_draw_environment = (unsigned long *)g_render_packet_cursor;
+    sce_gs_set_def_draw_env(target_draw_environment, fs_aa_buffer_f.psm, fs_aa_buffer_f.w, fs_aa_buffer_f.h, 3, 0);
+    ((GsFrame *)target_draw_environment)->FBP = fs_aa_buffer_f.fbp;
+    target_draw_environment[2] = fs_aa_buffer_f.zbp | ((unsigned long)(fs_aa_buffer_f.zpsm & 0xF) << 24);
     g_render_packet_cursor += 0x20;
-    r = (long *)g_render_packet_cursor;
-    r[0] = 0x1000000000000001L;
-    r[1] = 0xE;
-    r[2] = 0x30003;
-    r[3] = 0x47;
-    r[4] = 0x4400000000008001L;
-    r[5] = 0x4410;
-    r[6] = 0x106;
-    r[7] = 0;
-    r[8] = (long)(0x8000 - fs_aa_buffer_f.w * 8) | ((long)(0x8000 - fs_aa_buffer_f.h * 8) << 16);
-    r[9] = (long)(fs_aa_buffer_f.w * 8 + 0x8000) | ((long)(fs_aa_buffer_f.h * 8 + 0x7FF0) << 16);
+    target_clear_packet = (long *)g_render_packet_cursor;
+    target_clear_packet[0] = 0x1000000000000001L;
+    target_clear_packet[1] = 0xE;
+    target_clear_packet[2] = 0x30003;
+    target_clear_packet[3] = 0x47;
+    target_clear_packet[4] = 0x4400000000008001L;
+    target_clear_packet[5] = 0x4410;
+    target_clear_packet[6] = 0x106;
+    target_clear_packet[7] = 0;
+    target_clear_packet[8] = (long)(0x8000 - fs_aa_buffer_f.w * 8) | ((long)(0x8000 - fs_aa_buffer_f.h * 8) << 16);
+    target_clear_packet[9] = (long)(fs_aa_buffer_f.w * 8 + 0x8000) | ((long)(fs_aa_buffer_f.h * 8 + 0x7FF0) << 16);
     g_render_packet_cursor += 0x14;
 }
 

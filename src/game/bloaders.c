@@ -42,50 +42,50 @@ extern void flush_cache(int);
 extern int sceGsExecLoadImage(GsLoadImage *, void *);
 extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 
-/* LoadPifAsPSMT8H: uploads a PIF image (header arg0, CLUT at +0x20 of
+/* LoadPifAsPSMT8H: uploads a PIF image (header image_data, CLUT at +0x20 of
    0x200 bytes when +0x14 is set, else 0x400, then w * h pixels) to GS
    memory: the 16x16 CLUT to block cbp >> 8, the pixels as PSMT8H to
    tbp >> 8 with a buffer width of w / 64 (at least 1), and writes the
-   matching TEX0 (SCE_GS_SET_TEX0 with TCC 1, CLD 4) plus 1, 0 to arg1.
+   matching TEX0 (SCE_GS_SET_TEX0 with TCC 1, CLD 4) plus 1, 0 to texture_registers.
    The descriptor is a zeroed stack struct, so its fields are re-read
    after the calls as retail does. */
-void LoadPifAsPSMT8H(void *arg0, void *arg1, int tbp, int cbp) {
-    PifTex d;
-    GsLoadImage li;
-    PifHeader *pif = arg0;
-    unsigned long *out = arg1;
-    int c;
+void LoadPifAsPSMT8H(void *image_data, void *texture_registers, int tbp, int cbp) {
+    PifTex texture_info;
+    GsLoadImage load_packet;
+    PifHeader *pif = image_data;
+    unsigned long *out = texture_registers;
+    int palette_block;
 
-    FastMemSet(&d, 0, sizeof(d));
-    d.clut = (char *)pif + 0x20;
+    FastMemSet(&texture_info, 0, sizeof(texture_info));
+    texture_info.clut = (char *)pif + 0x20;
     if (pif->psm == 0) {
-        d.clutSize = 0x400;
+        texture_info.clutSize = 0x400;
     } else {
-        d.clutSize = 0x200;
+        texture_info.clutSize = 0x200;
     }
-    c = cbp >> 8;
-    d.tw = log2dim(pif->w);
-    d.th = log2dim(pif->h);
-    d.image = (char *)pif + (d.clutSize + 0x20);
-    d.imageSize = pif->w * pif->h;
-    sceGsSetDefLoadImage(&li, c, 1, pif->psm, 0, 0, 16, 16);
+    palette_block = cbp >> 8;
+    texture_info.tw = log2dim(pif->w);
+    texture_info.th = log2dim(pif->h);
+    texture_info.image = (char *)pif + (texture_info.clutSize + 0x20);
+    texture_info.imageSize = pif->w * pif->h;
+    sceGsSetDefLoadImage(&load_packet, palette_block, 1, pif->psm, 0, 0, 16, 16);
     flush_cache(0);
     /* Finish the palette upload before reusing the transfer descriptor. */
-    sceGsExecLoadImage(&li, d.clut);
+    sceGsExecLoadImage(&load_packet, texture_info.clut);
     wait_for_graphics_pipeline_idle(0, 0);
-    d.tbw = pif->w >> 6;
-    if (d.tbw <= 0) {
-        d.tbw = 1;
+    texture_info.tbw = pif->w >> 6;
+    if (texture_info.tbw <= 0) {
+        texture_info.tbw = 1;
     }
-    d.tbp = tbp >> 8;
-    sceGsSetDefLoadImage(&li, d.tbp, d.tbw, 0x1B, 0, 0, pif->w, pif->h);
+    texture_info.tbp = tbp >> 8;
+    sceGsSetDefLoadImage(&load_packet, texture_info.tbp, texture_info.tbw, 0x1B, 0, 0, pif->w, pif->h);
     flush_cache(0);
-    sceGsExecLoadImage(&li, d.image);
+    sceGsExecLoadImage(&load_packet, texture_info.image);
     wait_for_graphics_pipeline_idle(0, 0);
-    out[0] = (unsigned long)d.tbp | ((unsigned long)d.tbw << 14)
-           | ((unsigned long)0x1B << 20) | ((unsigned long)d.tw << 26)
-           | ((unsigned long)d.th << 30) | ((unsigned long)1 << 34)
-           | ((unsigned long)0 << 35) | ((unsigned long)c << 37)
+    out[0] = (unsigned long)texture_info.tbp | ((unsigned long)texture_info.tbw << 14)
+           | ((unsigned long)0x1B << 20) | ((unsigned long)texture_info.tw << 26)
+           | ((unsigned long)texture_info.th << 30) | ((unsigned long)1 << 34)
+           | ((unsigned long)0 << 35) | ((unsigned long)palette_block << 37)
            | ((unsigned long)pif->psm << 51) | ((unsigned long)0 << 55)
            | ((unsigned long)0 << 56) | ((unsigned long)4 << 61);
     out[1] = 1;

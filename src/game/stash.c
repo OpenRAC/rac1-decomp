@@ -294,7 +294,7 @@ extern Rec10_00234018 stash_entries_alias[] __asm__("D_001DD568");
    then hoists the struct's full address into a register of its own, as
    retail has it, while the client's address stays a constant. */
 void init_stash(void) {
-    StashState_00234018 *s;
+    StashState_00234018 *stash_info;
     int reply[4];
     int i;
 
@@ -305,8 +305,8 @@ void init_stash(void) {
         }
         while (sce_sif_check_stat_rpc(stash_state_alias.cd) != 0) {
         }
-        s = &stash_state_alias;
-        if (*(int *)((char *)s->cd + 0x24) != 0) {
+        stash_info = &stash_state_alias;
+        if (*(int *)((char *)stash_info->cd + 0x24) != 0) {
             break;
         }
         i = 0xFFFF;
@@ -333,33 +333,33 @@ extern StashBlock stash_entries[];
 extern StashInfo stash_state;
 extern int sce_sif_set_dma(void *, int);
 
-/* Stash_SendData: DMA arg1 quadwords from arg0 to the stash's next free
+/* Stash_SendData: DMA transfer_qwords from source_address to the next free
    address (func_00118E20 takes a {src, dst, size, mode} record), reserve
-   arg2 quadwords there, and return the slot. `h->block++` read into the
+   reserved_qwords there, and return the slot. `stash_info->block++` read into the
    slot index is what keeps retail's copy of the old count. */
-int Stash_SendData(int arg0, int arg1, int arg2, int arg3) {
-    StashInfo *h = &stash_state;
+int Stash_SendData(int source_address, int transfer_qwords, int reserved_qwords, int comment_tag) {
+    StashInfo *stash_info = &stash_state;
     int dma[4];
-    int n;
+    int slot_index;
 
-    if (h->size - (h->free - h->base) < arg2 * 16) {
+    if (stash_info->size - (stash_info->free - stash_info->base) < reserved_qwords * 16) {
         return -1;
     }
-    if (h->block == 0x40) {
+    if (stash_info->block == 0x40) {
         return -2;
     }
-    dma[0] = arg0;
-    dma[1] = h->free;
+    dma[0] = source_address;
+    dma[1] = stash_info->free;
     /* Sent size and reserved size may differ. Both use 16-byte units. */
-    dma[2] = arg1 * 16;
+    dma[2] = transfer_qwords * 16;
     dma[3] = 0;
     sce_sif_set_dma(dma, IOP_STASH_FETCH);
-    n = h->block++;
-    stash_entries[n].ram = h->free;
-    stash_entries[n].qwc = arg2;
-    stash_entries[n].comment = arg3;
-    h->free += arg2 * 16;
-    return n;
+    slot_index = stash_info->block++;
+    stash_entries[slot_index].ram = stash_info->free;
+    stash_entries[slot_index].qwc = reserved_qwords;
+    stash_entries[slot_index].comment = comment_tag;
+    stash_info->free += reserved_qwords * 16;
+    return slot_index;
 }
 
 extern int stash_get_reserved_qwords(unsigned int);
@@ -402,9 +402,9 @@ int stash_receive_data(void *dest, unsigned int slot, int offset, int size, int 
     return 0;
 }
 
-int stash_get_reserved_qwords(unsigned int arg0) {
-    if (arg0 >= 0x40) {
+int stash_get_reserved_qwords(unsigned int slot_index) {
+    if (slot_index >= 0x40) {
         return -3;
     }
-    return stash_entries[arg0].qwc;
+    return stash_entries[slot_index].qwc;
 }

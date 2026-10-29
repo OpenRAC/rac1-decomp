@@ -3514,7 +3514,7 @@ void font_queue_vu_state(void) {
 extern void setup_render_target(int, int, int);
 extern short render_target_base_page NOT_SDA;
 
-/* Sets up a (1 << a) x (1 << b) area, as vendor.c's func_0023A948 does:
+/* Sets up a (1 << width_log2) x (1 << height_log2) area, as vendor.c's func_0023A948 does:
    func_001FB608 gets the sizes and a base address, which is D_001519EE
    pages when `flag` is set, else D_0015EF8C less 4 << min(a + b, 16)
    bytes rounded down to a page (8 KB); func_001F3760 gets the sizes and
@@ -3522,23 +3522,23 @@ extern short render_target_base_page NOT_SDA;
    flag, 0x30000 without) and 0x42 are then written. Each arm makes its
    own page-aligned base, so the two trailing `<< 13`s are cross-jumped
    into the one retail has ahead of the argument moves. */
-void configure_graphics_render_target_and_projection(int a, int b, int flag, float f) {
+void configure_graphics_render_target_and_projection(int width_log2, int height_log2, int flag, float f) {
     int base;
 
     if (flag != 0) {
         base = render_target_base_page << 13;
     } else {
-        int t = a + b;
+        int area_log2 = width_log2 + height_log2;
 
-        if (t > 16) {
-            t = 16;
+        if (area_log2 > 16) {
+            area_log2 = 16;
         }
-        base = g_gs_texture_allocation_base - (4 << t);
+        base = g_gs_texture_allocation_base - (4 << area_log2);
         /* Round down to an 8 KB frame-page boundary. */
         base = (base >> 13) << 13;
     }
-    setup_render_target(a, b, base);
-    configure_graphics_projection(1 << a, 1 << b, f, 0.0f, 524288.0f, 255.0f, 0.0f);
+    setup_render_target(width_log2, height_log2, base);
+    configure_graphics_projection(1 << width_log2, 1 << height_log2, f, 0.0f, 524288.0f, 255.0f, 0.0f);
     if (flag != 0) {
         VU1_addGSregister(0x47, 0);
     } else {

@@ -165,35 +165,35 @@ struct Chunk {
 
 /* ParseBin: copy each boot-binary chunk to its destination while chunk ids agree; return the id. Adapted from Lombyte's project (GPL-3.0) for PAL: gameplay/state/parse_bin.c, parse_bin. */
 BinFn ParseBin(void) {
-    unsigned char *p;
-    struct Chunk *c;
+    unsigned char *record_cursor;
+    struct Chunk *chunk_header;
     unsigned char *dst;
     unsigned char *src;
     BinFn id;
 
     id = 0;
     /* The first word is an offset from level_root to the record stream. */
-    p = (unsigned char *)(level_root[0] + (int)level_root);
-    while (c = (struct Chunk *)p, p = (unsigned char *)(c + 1), dst = c->dst, src = p,
-           (id == 0) ? (id = c->id, 1) : (id == c->id)) {
-        if (((c->size & 7) == 0) && (((unsigned int)p & 7) == 0) && (((unsigned int)dst & 7) == 0)) {
-            unsigned char *d = dst;
-            unsigned char *s = p;
-            unsigned char *e = dst + c->size;
-            while (d != e) {
-                *(long *)d = *(long *)s;
-                d += 8;
-                s += 8;
+    record_cursor = (unsigned char *)(level_root[0] + (int)level_root);
+    while (chunk_header = (struct Chunk *)record_cursor, record_cursor = (unsigned char *)(chunk_header + 1), dst = chunk_header->dst, src = record_cursor,
+           (id == 0) ? (id = chunk_header->id, 1) : (id == chunk_header->id)) {
+        if (((chunk_header->size & 7) == 0) && (((unsigned int)record_cursor & 7) == 0) && (((unsigned int)dst & 7) == 0)) {
+            unsigned char *copy_dst = dst;
+            unsigned char *copy_src = record_cursor;
+            unsigned char *copy_end = dst + chunk_header->size;
+            while (copy_dst != copy_end) {
+                *(long *)copy_dst = *(long *)copy_src;
+                copy_dst += 8;
+                copy_src += 8;
             }
         } else {
-            unsigned char *e = dst + c->size;
-            while (dst != e) {
+            unsigned char *copy_end = dst + chunk_header->size;
+            while (dst != copy_end) {
                 *(int *)dst = *(int *)src;
                 dst += 4;
                 src += 4;
             }
         }
-        p += c->size;
+        record_cursor += chunk_header->size;
     }
     /* Return the copied group's entry point, not the next record's id. */
     return id;
