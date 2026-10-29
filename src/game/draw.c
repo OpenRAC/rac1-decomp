@@ -3436,6 +3436,7 @@ void queue_framebuffer_upload(unsigned int source) {
         g_render_packet_cursor = (int *)(packet + 0x70);
         *(unsigned int *)(packet + 0x70) = (unsigned int)(long)(int)(transfer | 0x30000000);
         *(unsigned int *)(PK + 4) = source;
+        /* One unit is 2048 bytes, or eight GS texture blocks. */
         source += (int)(count * 0x800);
         destination += (int)(count * 8);
         *(unsigned int *)(PK + 8) = 0;
@@ -3533,6 +3534,7 @@ void configure_graphics_render_target_and_projection(int a, int b, int flag, flo
             t = 16;
         }
         base = g_gs_texture_allocation_base - (4 << t);
+        /* Round down to an 8 KB frame-page boundary. */
         base = (base >> 13) << 13;
     }
     setup_render_target(a, b, base);

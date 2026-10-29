@@ -602,6 +602,7 @@ void SetupSkyGifPaging(void) {
     int i;
 
     p = g_render_packet_cursor;
+    /* Leave space for the tag filled by DoSkyGifPaging. */
     sky_gif_paging_tag = p;
     p += 0x10;
     g_render_packet_cursor = p;
@@ -634,6 +635,7 @@ void DoSkyGifPaging(void) {
     sky_gif_paging_start = p;
     p += 4;
     g_render_packet_cursor_p = p;
+    /* Link the reserved tag to the texture-upload packets. */
     sky_gif_paging_tag_p[0] = 0x20000000;
     sky_gif_paging_tag_p[1] = (int)g_render_packet_cursor_p;
     sky_gif_paging_tag_p[2] = 0;
