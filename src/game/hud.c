@@ -1138,34 +1138,25 @@ extern void sceGsSetDefLoadImage(void *, int, int, int, int, int, int, int);
 extern void flush_cache(int);
 extern void sceGsExecLoadImage(void *, void *);
 
-/* Hud_sendTexture(char *tex, int x, int y, int levelShift, int sizeShift,
-   int useStackBuf): builds a mip level count (clamped to >=1) and a
-   packed GIF NLOOP for the closing tag, then either (useStackBuf==0)
-   opens a GS packet in D_00161000 and writes straight into it, or
-   builds into a stack buffer; either way calls func_00122630 to fill it
-   with (x, levels, y, 1<<levelShift, 1<<sizeShift), then either closes
-   the GS packet in place or flushes the cache and hands the stack
-   buffer to func_00122958.
-
-   p7 is set before the branch, as retail does in its delay slot, but
-   truncated to short after it, with the other short arguments. */
-void Hud_sendTexture(char *arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
-    char buf[0x60];
-    int nloop2;
+/* Upload texture_data to GS memory, either queued or immediate.
+   Keep load_pixel_format in an int until the cast after the branch. */
+void Hud_sendTexture(char *texture_data, int destination_base, int pixel_format, int width_log2, int height_log2, int immediate) {
+    char stack_packet[0x60];
+    int image_qwords;
     int levels;
-    int p7;
-    short p5, p6, p10, p11;
+    int load_pixel_format;
+    short load_destination, load_buffer_width, load_width, load_height;
     void *dst;
     int *base;
 
-    nloop2 = 1 << (arg3 + arg4 - 4);
-    levels = (1 << arg3) >> 6;
+    image_qwords = 1 << (width_log2 + height_log2 - 4);
+    levels = (1 << width_log2) >> 6;
     if (levels <= 0) {
         levels = 1;
     }
 
-    p7 = arg2;
-    if (arg5 == 0) {
+    load_pixel_format = pixel_format;
+    if (immediate == 0) {
         g_render_packet_cursor[0] = 0x10000006;
         g_render_packet_cursor[1] = 0;
         g_render_packet_cursor[2] = 0;
@@ -1174,27 +1165,27 @@ void Hud_sendTexture(char *arg0, int arg1, int arg2, int arg3, int arg4, int arg
         dst = base + 4;
         g_render_packet_cursor = base + 0x1C;
     } else {
-        dst = buf;
+        dst = stack_packet;
     }
 
-    p5 = arg1;
-    p6 = levels;
-    p7 = (short)p7;
-    p10 = 1 << arg3;
-    p11 = 1 << arg4;
+    load_destination = destination_base;
+    load_buffer_width = levels;
+    load_pixel_format = (short)load_pixel_format;
+    load_width = 1 << width_log2;
+    load_height = 1 << height_log2;
 
-    sceGsSetDefLoadImage(dst, p5, p6, p7, 0, 0, p10, p11);
+    sceGsSetDefLoadImage(dst, load_destination, load_buffer_width, load_pixel_format, 0, 0, load_width, load_height);
 
-    if (arg5 == 0) {
+    if (immediate == 0) {
         int *cur = g_render_packet_cursor;
-        cur[0] = 0x30000000 | nloop2;
-        g_render_packet_cursor[1] = (int)arg0;
+        cur[0] = 0x30000000 | image_qwords;
+        g_render_packet_cursor[1] = (int)texture_data;
         g_render_packet_cursor[2] = 0;
-        g_render_packet_cursor[3] = 0x50000000 | nloop2;
+        g_render_packet_cursor[3] = 0x50000000 | image_qwords;
         g_render_packet_cursor = g_render_packet_cursor + 4;
     } else {
         flush_cache(0);
-        sceGsExecLoadImage(dst, arg0);
+        sceGsExecLoadImage(dst, texture_data);
     }
 }
 

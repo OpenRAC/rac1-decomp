@@ -56,95 +56,89 @@ extern int g_game_mode MACRO_ADDR;
 extern int memory_card_request;
 extern char mode_freeze_info[];
 
-/* Enters the freeze screen for reason arg0: pauses the music unless the
-   game mode (D_0015F6E8) is already 3, saves arg1/arg2 and the old mode in
-   the freeze record D_00193400, sets mode 4, then per reason fetches the
-   message strings (func_001FE540) or starts the timers (func_001F98C0);
-   an unknown reason gets a plain 0x78 countdown. Each case reads the
-   record through its own `char *` local (retail keeps only the %hi and
-   rebuilds the %lo per case); the case bodies are in retail's layout
-   order, and the last store of a block is written last in the source
-   because the scheduler issues it first. */
-void mode_freeze_init(int arg0, int arg1, int arg2) {
-    char *s = mode_freeze_info;
+/* Set freeze state and reason-specific messages or timers.
+   Pause audio unless the game is already in mode 3.
+   arg2 is stored at +0x30; its meaning is unknown. */
+void mode_freeze_init(int reason, int freeze_context, int arg2) {
+    char *freeze_state = mode_freeze_info;
 
-    *(int *)(s + 0x30) = arg2;
+    *(int *)(freeze_state + 0x30) = arg2;
     if (g_game_mode != 3) {
         snd_PauseAllSoundsInGroup(0x1D);
         music_Pause(0);
     }
-    *(int *)(s + 0x18) = arg1;
-    *(int *)(s + 0x14) = g_game_mode;
+    *(int *)(freeze_state + 0x18) = freeze_context;
+    *(int *)(freeze_state + 0x14) = g_game_mode;
     g_game_mode = 4;
-    *(int *)s = arg0;
-    *(int *)(s + 0x2C) = 0;
-    switch (arg0) {
+    *(int *)freeze_state = reason;
+    *(int *)(freeze_state + 0x2C) = 0;
+    switch (reason) {
     case 0: {
-        char *p = mode_freeze_info;
-        *(int *)(p + 8) = msg_string(0x4F6E);
-        *(int *)(p + 0xC) = msg_string(0x524D);
-        *(int *)(p + 0x10) = msg_string(0x524E);
-        *(int *)(p + 4) = 0;
-        *(int *)(p + 0x1C) = 0;
-        *(int *)(p + 0x20) = 0;
-        *(int *)(p + 0x24) = 0;
-        *(int *)(p + 0x28) = 0;
+        char *case_state = mode_freeze_info;
+        *(int *)(case_state + 8) = msg_string(0x4F6E);
+        *(int *)(case_state + 0xC) = msg_string(0x524D);
+        *(int *)(case_state + 0x10) = msg_string(0x524E);
+        *(int *)(case_state + 4) = 0;
+        *(int *)(case_state + 0x1C) = 0;
+        *(int *)(case_state + 0x20) = 0;
+        *(int *)(case_state + 0x24) = 0;
+        *(int *)(case_state + 0x28) = 0;
         break;
     }
     case 2: {
         int v = msg_string(0x524F);
-        char *p = mode_freeze_info;
-        *(int *)(p + 8) = v;
-        *(int *)(p + 0xC) = 0;
-        *(int *)(p + 4) = 0;
+        char *case_state = mode_freeze_info;
+        *(int *)(case_state + 8) = v;
+        *(int *)(case_state + 0xC) = 0;
+        *(int *)(case_state + 4) = 0;
         break;
     }
     case 1:
     case 4: {
-        char *p = mode_freeze_info;
-        *(int *)(p + 8) = msg_string(0x522E);
-        *(int *)(p + 0xC) = msg_string(0x4EE0);
-        *(int *)(p + 0x10) = msg_string(0x524F);
-        *(int *)(p + 4) = 0;
+        char *case_state = mode_freeze_info;
+        *(int *)(case_state + 8) = msg_string(0x522E);
+        *(int *)(case_state + 0xC) = msg_string(0x4EE0);
+        *(int *)(case_state + 0x10) = msg_string(0x524F);
+        *(int *)(case_state + 4) = 0;
         break;
     }
     case 5: {
-        char *p = mode_freeze_info;
+        char *case_state = mode_freeze_info;
         push_help_history(0x4E2B);
-        *(int *)(p + 4) = scale_game_frame_count(0x1E);
-        *(int *)(p + 0x20) = 0;
-        *(int *)(p + 0x24) = scale_game_frame_count(0x1E);
+        *(int *)(case_state + 4) = scale_game_frame_count(0x1E);
+        *(int *)(case_state + 0x20) = 0;
+        *(int *)(case_state + 0x24) = scale_game_frame_count(0x1E);
         break;
     }
     case 7:
     case 8: {
-        char *p = mode_freeze_info;
-        *(int *)(p + 4) = scale_game_frame_count(0x1E);
-        *(int *)(p + 0x20) = -1;
-        *(int *)(p + 0x24) = scale_game_frame_count(0x1E);
+        char *case_state = mode_freeze_info;
+        *(int *)(case_state + 4) = scale_game_frame_count(0x1E);
+        *(int *)(case_state + 0x20) = -1;
+        *(int *)(case_state + 0x24) = scale_game_frame_count(0x1E);
         break;
     }
     case 3: {
-        char *p = mode_freeze_info;
-        *(int *)(p + 4) = scale_game_frame_count(0x1E);
-        *(int *)(p + 0x20) = -1;
-        *(int *)(p + 0x24) = scale_game_frame_count(0x1E);
+        char *case_state = mode_freeze_info;
+        *(int *)(case_state + 4) = scale_game_frame_count(0x1E);
+        *(int *)(case_state + 0x20) = -1;
+        *(int *)(case_state + 0x24) = scale_game_frame_count(0x1E);
         memory_card_request = 3;
-        *(int *)(p + 0x2C) = scale_game_frame_count(0xA);
+        *(int *)(case_state + 0x2C) = scale_game_frame_count(0xA);
         break;
     }
     case 6: {
         int v = scale_game_frame_count(0x1E);
-        char *p = mode_freeze_info;
-        *(int *)(p + 4) = v;
-        *(int *)(p + 0x1C) = 0;
+        char *case_state = mode_freeze_info;
+        *(int *)(case_state + 4) = v;
+        *(int *)(case_state + 0x1C) = 0;
         break;
     }
     default:
-        *(int *)(s + 4) = 0x78;
-        *(int *)(s + 0xC) = 0;
-        *(int *)(s + 0x10) = 0;
-        *(int *)(s + 8) = 0;
+        *(int *)(freeze_state + 4) = 0x78;
+        *(int *)(freeze_state + 0xC) = 0;
+        *(int *)(freeze_state + 0x10) = 0;
+        *(int *)(freeze_state + 8) = 0;
         break;
     }
 }

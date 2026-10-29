@@ -448,13 +448,13 @@ __asm__(".section .text\n\tnop\n");
 LINKER_REMNANT("asm/remnants/text", func_0020D928);
 
 /* Attach a manipulator to the moby, with scales set to 1.0f. */
-void AttachManipulator(char *moby, int arg1, unsigned char *manipulator) {
+void AttachManipulator(char *moby, int slot_index, unsigned char *manipulator) {
     unsigned char *e;
 
     if (manipulator[1] != 0) {
         return;
     }
-    manipulator[0] = (char)arg1;
+    manipulator[0] = (char)slot_index;
     manipulator[1] = 1;
     *(float *)(manipulator + 0x1C) = 1.0f;
     *(float *)(manipulator + 0x20) = 1.0f;
@@ -809,12 +809,13 @@ void DrawMobysSetup(void) {
 
 extern int moby_proc(int, int, int, int);
 
-/* DrawMobyList */
-void DrawMobyList(int arg0, int arg1) {
+/* Draw entries from source_address.
+   arg1 is forwarded unchanged; its meaning is unknown. */
+void DrawMobyList(int source_address, int arg1) {
     VU1_addGSregister(0x47, 0x5360B);
     flush_cache(0);
     RestoreMobyClassDists();
-    moby_anim_head = moby_proc(arg0, moby_anim_head, arg1, 0);
+    moby_anim_head = moby_proc(source_address, moby_anim_head, arg1, 0);
     StashMobyClassDists();
     moby_anim_head -= 0x10;
 }

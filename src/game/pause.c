@@ -237,15 +237,9 @@ extern void update_skill_point_and_gold_weapon_menu_entries(void);
 extern char menu_system[] NOT_SDA;
 extern int g_game_mode MACRO_ADDR;
 
-/* PauseAllSounds: pause entry. Unless D_0018C42C is set (then only
-   D_0015F754 = 1), it computes the pause object's flags (0x134, 0x138,
-   0xD8 "loaded", 0xDC "arg0 is 0x23"), points the D_001CE938/D_001CEAC8
-   records' +0x38/+0x3C at the loaded or unloaded variants, resets the
-   object for arg0 (func_00219E60's body) and D_001A0414, then calls
-   func_0020C7A0 and func_00228160. Each group reads D_001D5F70 through
-   its own `char *` local (retail's saved %hi); func_0012DDC0 and
-   func_0020C7A0 return values, which moves the next temporary to $v1. */
-void PauseAllSounds(int arg0) {
+/* Pause audio and prepare the menu for pause_state.
+   A blocked camera records the pause request and returns early. */
+void PauseAllSounds(int pause_state) {
     snd_PauseAllSoundsInGroup(0x1D);
     music_Pause(0);
     snd_FlushSoundCommands_i();
@@ -272,7 +266,7 @@ void PauseAllSounds(int arg0) {
     {
         struct MenuSystem *g = (struct MenuSystem *)menu_system;
         MenuScreen *a = (MenuScreen *)pause_menu_screen_a;
-        g->unkDC = arg0 == 0x23;
+        g->unkDC = pause_state == 0x23;
         a->data.list.up = g->unkD8 ? (MenuScreen *)pause_menu_screen_optional : (MenuScreen *)pause_menu_screen_b;
     }
     {
@@ -283,7 +277,7 @@ void PauseAllSounds(int arg0) {
     {
         struct MenuSystem *g = (struct MenuSystem *)menu_system;
         g_game_mode = 3;
-        g->state = arg0;
+        g->state = pause_state;
         g->close_request = 0;
         g->unk10 = 0;
         g->update_count = 0;
@@ -865,17 +859,11 @@ void render_level_effects_and_screen_sprites(void) {
     DoGifPaging();
 }
 
-/*
- * Pad handler for the pause page arg0 (g->x4->x40): 1 on the 0xD00
- * buttons while g->x124 is 0; on 0x10, switch to the page's +0x38
- * target, or return -1 when it has none and g->x124 is 0. Written in
- * its family's shape (func_0021F7D0, func_00222DB0): early returns and
- * one `char *` local per block that reads a global.
- */
-int Pause_PageInput(int arg0) {
+/* Handle back and close input only for the focused screen. */
+int Pause_PageInput(int screen_address) {
     struct MenuSystem *g = (struct MenuSystem *)menu_system;
 
-    if ((int)g->current->focus != arg0) {
+    if ((int)g->current->focus != screen_address) {
         return 0;
     }
     {
@@ -1781,7 +1769,7 @@ int fade_menu_color(int start, int col1, int col2) {
     return FastTweenColor(col1, col2, t);
 }
 
-/* Pause page link walk: with arg1 clear, follow menu_screen's +0x4C chain for
+/* Pause page link walk: with reverse clear, follow menu_screen's +0x4C chain for
    as long as the current page is skippable (bit 8 of its +0x30 flags
    while D_001D5F70+0x134 is set, or bit 4 while +0x138 is set), and if
    it moved at all, make the page it stopped on the current one's +0x80.
@@ -1789,11 +1777,11 @@ int fade_menu_color(int start, int col1, int col2) {
    own copy is why GCSE leaves its +0x138 load in the loop (only +0x134,
    read first in the body, is hoisted by loop.c), and the last block's
    copy is retail's kept %hi. */
-int find_next_pause_page(MenuScreen *menu_screen, int arg1) {
+int find_next_pause_page(MenuScreen *menu_screen, int reverse) {
     int ok = 0;
     int found = 0;
 
-    if (arg1 != 0) {
+    if (reverse != 0) {
         return 0;
     }
     {
@@ -3252,31 +3240,29 @@ int set_menu_pause_flag_state(MenuScreen *menu_screen) {
 extern int menu_preview_slot_enabled[];
 extern void DrawMobyList(int, int);
 
-/* Tears down the 24 handles at arg0+0x44, skipping the ones in use.
-   The switch's table is jtbl_001E8AD0; `off` before `slots` and a second
-   slots2/off2 pair give retail's copies. */
-int draw_menu_preview_objects(char *arg0) {
-    int i;
+/* Draw enabled preview slots that pass the animation-state checks. */
+int draw_menu_preview_objects(char *menu_screen) {
+    int slot_index;
 
-    for (i = 0; i < 24; i++) {
-        int off = i * 4;
-        char *slots = (char *)&((MenuScreen *)arg0)->data.stream.state;
-        if (*(int *)(slots + off) == 0) {
+    for (slot_index = 0; slot_index < 24; slot_index++) {
+        int slot_offset = slot_index * 4;
+        char *slots = (char *)&((MenuScreen *)menu_screen)->data.stream.state;
+        if (*(int *)(slots + slot_offset) == 0) {
             continue;
         }
-        if (*(unsigned char *)(arg0 + i + 0xA4) != 0) {
+        if (*(unsigned char *)(menu_screen + slot_index + 0xA4) != 0) {
             continue;
         }
-        if (menu_preview_slot_enabled[i] == 0) {
+        if (menu_preview_slot_enabled[slot_index] == 0) {
             continue;
         }
-        if (i == 7 && *(short *)(*(char **)&((MenuScreen *)arg0)->data.stream.read_offset + 0xA6) == 0x4A) {
-            unsigned char *o = *(unsigned char **)&((MenuScreen *)arg0)->data.stream.state;
-            if (o[0x52] != o[0x53]) {
+        if (slot_index == 7 && *(short *)(*(char **)&((MenuScreen *)menu_screen)->data.stream.read_offset + 0xA6) == 0x4A) {
+            unsigned char *preview_moby = *(unsigned char **)&((MenuScreen *)menu_screen)->data.stream.state;
+            if (preview_moby[0x52] != preview_moby[0x53]) {
                 continue;
             }
         }
-        switch (i) {
+        switch (slot_index) {
         case 1:
         case 2:
         case 3:
@@ -3285,18 +3271,18 @@ int draw_menu_preview_objects(char *arg0) {
         case 10:
         case 11:
         case 12: {
-            unsigned char *o = *(unsigned char **)&((MenuScreen *)arg0)->data.stream.state;
-            if ((*(long *)(o + 0x50) & 0xFFFF0000L) == 0x99990000L
-                && o[0x50] >= 0x4D && o[0x50] < 0x92) {
+            unsigned char *preview_moby = *(unsigned char **)&((MenuScreen *)menu_screen)->data.stream.state;
+            if ((*(long *)(preview_moby + 0x50) & 0xFFFF0000L) == 0x99990000L
+                && preview_moby[0x50] >= 0x4D && preview_moby[0x50] < 0x92) {
                 continue;
             }
             break;
         }
         }
         {
-            char *slots2 = (char *)&((MenuScreen *)arg0)->data.stream.state;
-            int off2 = i * 4;
-            DrawMobyList(*(int *)(slots2 + off2), 1);
+            char *slots2 = (char *)&((MenuScreen *)menu_screen)->data.stream.state;
+            int second_slot_offset = slot_index * 4;
+            DrawMobyList(*(int *)(slots2 + second_slot_offset), 1);
         }
     }
     return 4;
@@ -3307,14 +3293,13 @@ int menu_draw_noop(void) {
     return 0;
 }
 
-/* Enter hook for the preview-pair screen: angle +0x38 = pi, clears +0x34 and
-   both preview moby slots. */
-int enter_item_preview(void *arg0) {
-    MenuScreen *p = (MenuScreen *)((char *)arg0);
-    p->data.preview.rotation_angle = 3.14159274f;
-    p->data.preview.state = 0;
-    p->data.preview.moby = 0;
-    p->data.preview.second_moby = 0;
+/* Initialize the preview-pair screen at a half-turn rotation. */
+int enter_item_preview(void *menu_screen) {
+    MenuScreen *preview_screen = (MenuScreen *)((char *)menu_screen);
+    preview_screen->data.preview.rotation_angle = 3.14159274f;
+    preview_screen->data.preview.state = 0;
+    preview_screen->data.preview.moby = 0;
+    preview_screen->data.preview.second_moby = 0;
     return 0;
 }
 
@@ -8129,14 +8114,9 @@ typedef struct MusicStreamState {
     MusicStreamChannel secondary;  /* 0x50 */
 } MusicStreamState;
 
-/*
- * Exact once the short-loop padding retail's assembler adds is reproduced
- * (tools/fix_short_loops.py); it was the whole residual. Taking the
- * D_001517D0 base into a local declared after the calls keeps its
- * %hi/%lo out of a callee-saved register, as retail has it.
- */
-int leave_streamed_moby_screen(void *arg0) {
-    MenuScreen *menu = (MenuScreen *)arg0;
+/* Delete streamed preview mobys and release the stream buffer. */
+int leave_streamed_moby_screen(void *screen_data) {
+    MenuScreen *menu = (MenuScreen *)screen_data;
     s32 *slot = menu->data.raw.slots;
     MusicStreamState *music;
     s32 remaining;

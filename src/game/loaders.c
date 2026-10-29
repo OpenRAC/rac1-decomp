@@ -640,49 +640,43 @@ extern long resident_material_templates[];
 extern long special_material_template[];
 extern long alternate_special_material_template[];
 
-/* Fills four A+D qwords (low dwords only) at out: a TEX1-style word
-   (MXL bits from the second word of row arg5 of the 3-dword table
-   D_0019E640, MMAG 1, MMIN arg2, K arg1), then arg3 | arg4 << 2 |
-   arg5 << 24, then the row's first and third words. A negative arg5 has
-   no row: -2 and -3 take the rows D_0019E7C0 and D_0019E7D8 (and 5 for
-   the second word), -1 a fixed constant and 0. The row is read before
-   the sign test, as in retail. The OR operands are named locals so fold
-   does not move the 0x20 to the end of the chain. */
-void SetUpVisGifViewer(long *out, int arg1, int arg2, int arg3, int arg4, int arg5) {
-    long f0 = resident_material_templates[arg5 * 3];
-    long f1 = resident_material_templates[arg5 * 3 + 1];
-    long f2 = resident_material_templates[arg5 * 3 + 2];
+/* Fill the packet from the selected material template and control words.
+   Keep OR operands in locals for the matching schedule. */
+void SetUpVisGifViewer(long *out, int draw_control_high_word, int draw_control_bits, int material_control_base, int material_control_shift2, int material_mode) {
+    long template_word0 = resident_material_templates[material_mode * 3];
+    long template_word1 = resident_material_templates[material_mode * 3 + 1];
+    long template_word2 = resident_material_templates[material_mode * 3 + 2];
 
-    if (arg5 >= 0) {
-        long t = ((long)arg2 << 6) | 0x20;
+    if (material_mode >= 0) {
+        long draw_control = ((long)draw_control_bits << 6) | 0x20;
 
-        *out = (f1 & 0x1C) | t | ((long)arg1 << 32);
+        *out = (template_word1 & 0x1C) | draw_control | ((long)draw_control_high_word << 32);
         out += 2;
-        *out = arg3 | ((long)arg4 << 2) | ((long)arg5 << 24);
+        *out = material_control_base | ((long)material_control_shift2 << 2) | ((long)material_mode << 24);
         out += 2;
-        *out = f0;
-        out[2] = f2;
-    } else if (arg5 < -1) {
-        long *tpl = special_material_template;
+        *out = template_word0;
+        out[2] = template_word2;
+    } else if (material_mode < -1) {
+        long *material_template = special_material_template;
 
-        if (arg5 == -3) {
-            tpl = alternate_special_material_template;
+        if (material_mode == -3) {
+            material_template = alternate_special_material_template;
         }
         {
-            long v = (long)arg2 << 6;
-            long u = ((long)arg1 << 32) | 0x20;
-            *out = v | u;
+            long shifted_draw_control = (long)draw_control_bits << 6;
+            long high_draw_control = ((long)draw_control_high_word << 32) | 0x20;
+            *out = shifted_draw_control | high_draw_control;
         }
         out += 2;
         *out = 5;
         out += 2;
-        *out = tpl[0];
-        out[2] = tpl[2];
+        *out = material_template[0];
+        out[2] = material_template[2];
     } else {
         {
-            long v = (long)arg2 << 6;
-            long u = ((long)arg1 << 32) | 0x20;
-            *out = v | u;
+            long shifted_draw_control = (long)draw_control_bits << 6;
+            long high_draw_control = ((long)draw_control_high_word << 32) | 0x20;
+            *out = shifted_draw_control | high_draw_control;
         }
         out += 2;
         *out = 5;
