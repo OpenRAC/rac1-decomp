@@ -1520,15 +1520,15 @@ float interpolate_angle(float a, float b, float c) {
 }
 extern float FastAbsF(float arg0);
 
-/* Damped velocity step: adds b*rate - c*v, then clamps to limit and to |rate|. */
-void advance_damped_scalar_velocity(float *ptr, float rate, float b, float c, float limit) {
-    float v = *ptr + (b * rate - c * (*ptr));
+/* Advances the velocity with a damped spring, then limits the step. */
+void advance_damped_scalar_velocity(float *ptr, float rate, float stiffness, float damping, float limit) {
+    float next_velocity = *ptr + (stiffness * rate - damping * (*ptr));
 
-    *ptr = v;
+    *ptr = next_velocity;
     if (0.0f < limit) {
-        if (limit < v) {
+        if (limit < next_velocity) {
             *ptr = limit;
-        } else if (v < -limit) {
+        } else if (next_velocity < -limit) {
             *ptr = -limit;
         }
     }
@@ -1541,64 +1541,64 @@ void advance_damped_scalar_velocity(float *ptr, float rate, float b, float c, fl
 extern void advance_damped_scalar_velocity(float *ptr, float rate, float b, float c, float limit);
 extern float FastAbsF(float);
 
-/* Moves *p toward t with a damped spring; snaps to t when close and returns the gap. */
-float Spring(float *p, float *v, float t, float u1, float u2, float eps) {
-    float n, d;
-    advance_damped_scalar_velocity(v, t - *p, u1, u2, eps);
-    n = *p + *v;
-    d = t - n;
-    *p = n;
-    if (FastAbsF(d) < eps * 0.01f) {
-        *p = t;
-        *(int *)v = 0;
-        return *v;
+/* Springs the value toward its target, snapping when close. Returns the gap. */
+float Spring(float *value, float *velocity, float target_value, float stiffness, float damping, float eps) {
+    float next_value, gap;
+    advance_damped_scalar_velocity(velocity, target_value - *value, stiffness, damping, eps);
+    next_value = *value + *velocity;
+    gap = target_value - next_value;
+    *value = next_value;
+    if (FastAbsF(gap) < eps * 0.01f) {
+        *value = target_value;
+        *(int *)velocity = 0;
+        return *velocity;
     }
-    return d;
+    return gap;
 }
-/* Angle delta from y to x, forced the long way round to match the sign of n. */
-float compute_directed_angle_delta(int n, float x, float y) {
-    float d = FastSubRots(x, y);
-    if (n == 0 || d * (float)n > 0.0f) return d;
-    if (FastAbsF(d) <= 0.0017453292f) return 0.0f;
-    if (d > 0.0f) return d - 6.2831855f;
-    return d + 6.2831855f;
+/* Returns the angle difference, following the requested direction. */
+float compute_directed_angle_delta(int direction, float target_angle, float current_angle) {
+    float angle_delta = FastSubRots(target_angle, current_angle);
+    if (direction == 0 || angle_delta * (float)direction > 0.0f) return angle_delta;
+    if (FastAbsF(angle_delta) <= 0.0017453292f) return 0.0f;
+    if (angle_delta > 0.0f) return angle_delta - 6.2831855f;
+    return angle_delta + 6.2831855f;
 }
 extern float cb90_alt(float x, int n, float y) __asm__("func_L00_0025CB90");
 
-/* Clamp *p's target toward [-y, y] via func_001FA748, calling func_L00_0025CB90 before and after. */
-float step_angle_toward_target(float *p, int n, float x, float y) {
-    float r = cb90_alt(x, n, *p);
-    if (y < r) {
-        r = y;
-    } else if (r < -y) {
-        r = -y;
+/* Steps the angle toward its target without exceeding max_step. */
+float step_angle_toward_target(float *angle, int direction, float target_angle, float max_step) {
+    float angle_step = cb90_alt(target_angle, direction, *angle);
+    if (max_step < angle_step) {
+        angle_step = max_step;
+    } else if (angle_step < -max_step) {
+        angle_step = -max_step;
     }
-    *p = FastAddRots(*p, r);
-    return cb90_alt(x, n, *p);
+    *angle = FastAddRots(*angle, angle_step);
+    return cb90_alt(target_angle, direction, *angle);
 }
-/* Spring a wrapped angle *P (rate *V) toward target X; returns the remaining angle difference. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_0025bb38.c, FUN_L00_0025bc98. */
-float SpringAngle(float *p, float *v, int n, float x, float b, float c, float d) {
-    float r;
-    if (n == 2) {
-        if ((0.0f < x && *p < 0.0f) || (x < 0.0f && 0.0f < *p)) {
-            if (x < 0.0f) {
-                n = -1;
+/* Springs the angle toward its target and returns the remaining difference. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_0025bb38.c, FUN_L00_0025bc98. */
+float SpringAngle(float *angle, float *angular_velocity, int direction, float target_angle, float stiffness, float damping, float angular_velocity_limit) {
+    float angle_error;
+    if (direction == 2) {
+        if ((0.0f < target_angle && *angle < 0.0f) || (target_angle < 0.0f && 0.0f < *angle)) {
+            if (target_angle < 0.0f) {
+                direction = -1;
             } else {
-                n = 1;
+                direction = 1;
             }
         } else {
-            n = 0;
+            direction = 0;
         }
     }
-    advance_damped_scalar_velocity(v, cb90_alt(x, n, *p), b, c, d);
-    *p = FastAddRots(*p, *v);
-    r = cb90_alt(x, n, *p);
-    if (FastAbsF(r) < d * 0.01f) {
-        *p = x;
-        *(int *)v = 0;
-        return *v;
+    advance_damped_scalar_velocity(angular_velocity, cb90_alt(target_angle, direction, *angle), stiffness, damping, angular_velocity_limit);
+    *angle = FastAddRots(*angle, *angular_velocity);
+    angle_error = cb90_alt(target_angle, direction, *angle);
+    if (FastAbsF(angle_error) < angular_velocity_limit * 0.01f) {
+        *angle = target_angle;
+        *(int *)angular_velocity = 0;
+        return *angular_velocity;
     }
-    return r;
+    return angle_error;
 }
 extern float ApproachValue(float *p, float target, float maxstep);
 extern float step_angle_toward_target(float *p, int n, float x, float y);
@@ -1645,24 +1645,24 @@ unsigned int PackColorRGBA(float r, float g, float b, float a) {
     return x | (y << 8) | (z << 16) | (w << 24);
 }
 /* Swaps the three channel values in pairs selected by the mask bits. */
-void swap_color_channel_words(int *a, int *b, int *c, int mask) {
-    int x, y;
-    if (mask & 1) { x = *b; y = *a; *a = x; *b = y; }
-    if (mask & 2) { x = *c; y = *b; *b = x; *c = y; }
-    if (mask & 4) { x = *a; y = *c; *c = x; *a = y; }
+void swap_color_channel_words(int *first_channel, int *second_channel, int *third_channel, int mask) {
+    int first_value, second_value;
+    if (mask & 1) { first_value = *second_channel; second_value = *first_channel; *first_channel = first_value; *second_channel = second_value; }
+    if (mask & 2) { first_value = *third_channel; second_value = *second_channel; *second_channel = first_value; *third_channel = second_value; }
+    if (mask & 4) { first_value = *first_channel; second_value = *third_channel; *third_channel = first_value; *first_channel = second_value; }
 }
 extern void swap_color_channel_words(int *, int *, int *, int);
 /* Returns the packed color with its RGB channels swapped as the mask selects. */
-unsigned swap_packed_color_channels(unsigned c, int mask) {
-    int v[3];
+unsigned swap_packed_color_channels(unsigned packed_color, int mask) {
+    int channels[3];
     unsigned a;
-    if (mask == 0) return c;
-    v[0] = c & 0xFF;
-    v[1] = ((int)(c & 0xFF00)) >> 8;
-    v[2] = (c >> 16) & 0xFF;
-    a = c >> 24;
-    swap_color_channel_words(&v[0], &v[1], &v[2], mask);
-    return (a << 24) | (v[2] << 16) | (v[1] << 8) | v[0];
+    if (mask == 0) return packed_color;
+    channels[0] = packed_color & 0xFF;
+    channels[1] = ((int)(packed_color & 0xFF00)) >> 8;
+    channels[2] = (packed_color >> 16) & 0xFF;
+    a = packed_color >> 24;
+    swap_color_channel_words(&channels[0], &channels[1], &channels[2], mask);
+    return (a << 24) | (channels[2] << 16) | (channels[1] << 8) | channels[0];
 }
 extern void FastVecSub(void *, void *, void *);
 extern void matrix_from_basis_rows(void *, void *);
@@ -2795,35 +2795,35 @@ void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {
 }
 extern float FastVecLength(void *);
 extern void vec_scale_to_length(void *, void *, float);
-/* Shortens vector a to length x when it is longer. */
-void ClampVectorLength(void *a, float x) {
-    if (x < FastVecLength(a)) {
-        vec_scale_to_length(a, a, x);
+/* Limits the vector length to max_length. */
+void ClampVectorLength(void *vector, float max_length) {
+    if (max_length < FastVecLength(vector)) {
+        vec_scale_to_length(vector, vector, max_length);
     }
 }
 extern int moby_array_start MACRO_ADDR;
 
 /* Adds a moby's index to a counted list unless present or the list is full. */
-void append_unique_moby_index(int a, short *list, short max) {
-    int k = ((a - moby_array_start) << 8) >> 16;
+void append_unique_moby_index(int moby_address, short *list, short max) {
+    int moby_index = ((moby_address - moby_array_start) << 8) >> 16;
     int i;
     for (i = 1; i <= list[0]; i++) {
-        if (list[i] == k) return;
+        if (list[i] == moby_index) return;
     }
     if (list[0] < max) {
         list[0]++;
-        list[list[0]] = k;
+        list[list[0]] = moby_index;
     }
 }
 extern s32 moby_array_start MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math/rotations/0025d238.c, FUN_L00_0025f800. */
-void moby_index_list_remove(s32 p, s16 *a) {
+void moby_index_list_remove(s32 moby_address, s16 *list) {
     s32 i;
-    for (i = 1; i <= a[0]; i++) {
-        if (moby_array_start + (a[i] << 8) == p) {
-            a[i] = a[a[0]];
-            a[0]--;
+    for (i = 1; i <= list[0]; i++) {
+        if (moby_array_start + (list[i] << 8) == moby_address) {
+            list[i] = list[list[0]];
+            list[0]--;
             return;
         }
     }
@@ -2853,11 +2853,11 @@ M25f878 *find_listed_moby_by_data_id(s32 id) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_0026093C);
 extern float random_float_between(float, float);
-/* Adds a random offset in -s..s to each of the vector's X, Y and Z. */
-void add_random_offset_to_vector_xyz(float *v, float s) {
-    v[0] += random_float_between(-s, s);
-    v[1] += random_float_between(-s, s);
-    v[2] += random_float_between(-s, s);
+/* Adds an offset within the half range to each of X, Y and Z. */
+void add_random_offset_to_vector_xyz(float *vector, float half_range) {
+    vector[0] += random_float_between(-half_range, half_range);
+    vector[1] += random_float_between(-half_range, half_range);
+    vector[2] += random_float_between(-half_range, half_range);
 }
 typedef struct { float x, y, z, w; } Vp __attribute__((aligned(16)));
 extern char *level_cylinders MACRO_ADDR;
