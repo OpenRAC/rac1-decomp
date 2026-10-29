@@ -177,10 +177,10 @@ extern int snd_StreamSafeCdBreak_i(void) __asm__("func_0012EFE8");
 /* func_0012EFE8 returns int (989snd.c): with the result in $v0, the
    constant goes to the register retail uses. */
 void request_audio_stream_break(void) {
-    short *p = cd_read_state;
-    if (p[4] != 0) {
+    short *stream_state = cd_read_state;
+    if (stream_state[4] != 0) {
         snd_StreamSafeCdBreak_i();
-        ((char *)p)[0xA] = 1;
+        ((char *)stream_state)[0xA] = 1;
     }
 }
 
@@ -195,14 +195,14 @@ extern int cd_read_wait_frames MACRO_ADDR;
 extern int cd_read_slowdown_applied MACRO_ADDR;
 extern void sce_cd_read(int, int, int, void *);
 
-/* Start a CD stream read of arg2 sectors from arg1 into arg0 at the current spindle speed. */
-int Stream_SubmitRead(int arg0, int arg1, int arg2) {
+/* Read sectors into the destination at the current spindle speed. */
+int Stream_SubmitRead(int destination_address, int first_sector, int sector_count) {
     StreamHdr hdr = stream_read_mode_template;
 
     hdr.b[1] = cd_read_spindle_speed[0];
     cd_read_wait_frames = 0;
     cd_read_slowdown_applied = 0;
-    sce_cd_read(arg1, arg2, arg0, &hdr);
+    sce_cd_read(first_sector, sector_count, destination_address, &hdr);
     return 1;
 }
 
@@ -212,28 +212,28 @@ extern int snd_StreamSafeCdRead(int, int, int, void *);
 /* Start a stream: refuse if one is already running (+0x8) or the length
    is zero, otherwise hand the request to func_0012EE98 with the header
    block at D_001517D0+0x30 and record it. Returns the length in the
-   units the caller wants, arg2 << 11; on a rejected request it reports
+   units the caller wants, sector_count << 11; on a rejected request it reports
    the failure and returns 0. */
-int start_audio_stream_read(int arg0, int arg1, int arg2) {
-    char *d = (char *)cd_read_state;
+int start_audio_stream_read(int destination_address, int first_sector, int sector_count) {
+    char *stream_state = (char *)cd_read_state;
 
-    if (*(short *)(d + 8) != 0) {
+    if (*(short *)(stream_state + 8) != 0) {
         return 0;
     }
-    if (arg2 == 0) {
+    if (sector_count == 0) {
         return 0;
     }
-    if (snd_StreamSafeCdRead(arg1, arg2, arg0, d + 0x30) == 0) {
+    if (snd_StreamSafeCdRead(first_sector, sector_count, destination_address, stream_state + 0x30) == 0) {
         STUB_printf(load_file_start_failed_string);
         raise_kernel_trap();
         return 0;
     }
     /* Save the accepted read. Return bytes, with 2048 bytes per sector. */
-    *(int *)(d + 0x14) = arg0;
-    *(short *)(d + 8) = 1;
-    *(int *)(d + 0xC) = arg1;
-    *(int *)(d + 0x10) = arg2;
-    return arg2 << 11;
+    *(int *)(stream_state + 0x14) = destination_address;
+    *(short *)(stream_state + 8) = 1;
+    *(int *)(stream_state + 0xC) = first_sector;
+    *(int *)(stream_state + 0x10) = sector_count;
+    return sector_count << 11;
 }
 
 /* This caller sets up no arguments at all; func_00217628 is defined
@@ -270,11 +270,11 @@ extern void snd_reenable_command_flush(void);
    its own temporary, and the loop's copy goes to $s1 with the result in
    $s0, as in retail. */
 /* Load */
-int Load(int arg0, int arg1, int arg2) {
-    char *d;
-    int r = start_audio_stream_read(arg0, arg1, arg2);
-    if (r != 0) {
-        while (d = (char *)cd_read_state, *(short *)(d + 0x8) != 0) {
+int Load(int destination_address, int first_sector, int sector_count) {
+    char *stream_state;
+    int read_bytes = start_audio_stream_read(destination_address, first_sector, sector_count);
+    if (read_bytes != 0) {
+        while (stream_state = (char *)cd_read_state, *(short *)(stream_state + 0x8) != 0) {
             sce_gs_sync_v(0);
             music_Update();
             snd_reset_state_and_flush_commands();
@@ -282,14 +282,14 @@ int Load(int arg0, int arg1, int arg2) {
             snd_reenable_command_flush();
         }
     }
-    return r;
+    return read_bytes;
 }
 
 /* Same pump loop as func_002176C8 above, gated on the argument instead
-   of on a call's result: with arg0 set, keep servicing while the
+   of on a call's result: with wait_for_completion set, keep servicing while the
    D_001517D0+8 state word stays nonzero; with it clear, run the four
    service calls exactly once. Either way return the state word. */
-/* With arg0 set, keep pumping the five service calls while the
+/* With wait_for_completion set, keep pumping the five service calls while the
    D_001517D0+8 state word stays nonzero; with it clear, run the four that
    are not func_00122598 once. Either way return the state word.
    The base pointer is assigned IN the loop condition: the exit test that
@@ -302,11 +302,11 @@ struct MusicStreamState {
     s16 read_state;            /* 0x08: 0 idle, 1 reading, 2 on reported CD error */
 };
 
-/* Pump music and stream updates, until the CD read is idle if arg0; return the read state. */
-short update_audio_stream_until_idle(int arg0) {
-    if (arg0 != 0) {
-        struct MusicStreamState *d;
-        while (d = (struct MusicStreamState *)cd_read_state, d->read_state != 0) {
+/* Wait for completion when requested; otherwise service the stream once. */
+short update_audio_stream_until_idle(int wait_for_completion) {
+    if (wait_for_completion != 0) {
+        struct MusicStreamState *stream_state;
+        while (stream_state = (struct MusicStreamState *)cd_read_state, stream_state->read_state != 0) {
             sce_gs_sync_v(0);
             music_Update();
             snd_reset_state_and_flush_commands();
@@ -320,8 +320,8 @@ short update_audio_stream_until_idle(int arg0) {
         snd_reenable_command_flush();
     }
     {
-        struct MusicStreamState *d = (struct MusicStreamState *)cd_read_state;
-        return d->read_state;
+        struct MusicStreamState *stream_state = (struct MusicStreamState *)cd_read_state;
+        return stream_state->read_state;
     }
 }
 
@@ -341,146 +341,146 @@ void finish_audio_stream_read(int callback_value) {
 }
 
 /* Stream callback: move a music channel from state 2 to ready (3) once the voice is valid. */
-void music_channel_ready_callback(int arg0, long arg1) {
-    short *p = (short *)(int)arg1;
-    if (p != 0 && arg0 != 0 && p[5] == 2) {
-        p[5] = 3;
+void music_channel_ready_callback(int voice_handle, long channel_address) {
+    short *channel = (short *)(int)channel_address;
+    if (channel != 0 && voice_handle != 0 && channel[5] == 2) {
+        channel[5] = 3;
     }
 }
 
 extern void music_start_track_by_id(short, short, short);
 
 /* Stream callback: store the voice handle and advance the channel, or restart the secondary track. */
-void music_secondary_start_callback(int arg0, long arg1) {
-    short *p = (short *)(int)arg1;
-    if (p == 0) {
+void music_secondary_start_callback(int voice_handle, long channel_address) {
+    short *channel = (short *)(int)channel_address;
+    if (channel == 0) {
         return;
     }
-    *(int *)p = arg0;
-    if (arg0 != 0) {
-        if (p[5] == 1) {
-            p[5] = 2;
+    *(int *)channel = voice_handle;
+    if (voice_handle != 0) {
+        if (channel[5] == 1) {
+            channel[5] = 2;
         }
     } else {
-        short *b = cd_read_state;
-        music_start_track_by_id(b[0x2A], b[0x2C], b[0x2B]);
+        short *stream_state = cd_read_state;
+        music_start_track_by_id(stream_state[0x2A], stream_state[0x2C], stream_state[0x2B]);
     }
 }
 
 extern void music_PreseekTrack(short, short, short);
 
 /* Stream callback: store the voice handle and advance the channel, or redo the primary preseek. */
-void music_primary_preseek_callback(int arg0, long arg1) {
-    short *p = (short *)(int)arg1;
-    if (p == 0) {
+void music_primary_preseek_callback(int voice_handle, long channel_address) {
+    short *channel = (short *)(int)channel_address;
+    if (channel == 0) {
         return;
     }
-    *(int *)p = arg0;
-    if (arg0 != 0) {
-        if (p[5] == 1) {
-            p[5] = 2;
+    *(int *)channel = voice_handle;
+    if (voice_handle != 0) {
+        if (channel[5] == 1) {
+            channel[5] = 2;
         }
     } else {
-        short *b = cd_read_state;
-        music_PreseekTrack(b[0x1C], b[0x1E], b[0x1D]);
+        short *stream_state = cd_read_state;
+        music_PreseekTrack(stream_state[0x1C], stream_state[0x1E], stream_state[0x1D]);
     }
 }
 
 extern short music_flagged_track_started NOT_SDA;
 
 /* Stream callback: store the voice handle and mark the transition track playing, or reset it. */
-void music_transition_start_callback(int arg0, long arg1) {
-    short *p = (short *)(int)arg1;
-    if (p != 0) {
-        *(int *)p = arg0;
-        if (arg0 != 0) {
-            short state = p[5];
+void music_transition_start_callback(int voice_handle, long channel_address) {
+    short *channel = (short *)(int)channel_address;
+    if (channel != 0) {
+        *(int *)channel = voice_handle;
+        if (voice_handle != 0) {
+            short state = channel[5];
             if (state == 1) {
-                p[5] = 4;
-                if (p[8] != 0) {
+                channel[5] = 4;
+                if (channel[8] != 0) {
                     music_flagged_track_started = state;
                 }
             }
         } else {
-            p[5] = 0;
+            channel[5] = 0;
         }
     }
 }
 
 /* Stream callback: switch a replaced primary track to playing, or reset the channel on failure. */
-void music_primary_replace_callback(int arg0, long arg1) {
-    short *p = (short *)(int)arg1;
-    if (p != 0) {
-        if (arg0 < 0) {
-            *(int *)p = arg0;
+void music_primary_replace_callback(int voice_handle, long channel_address) {
+    short *channel = (short *)(int)channel_address;
+    if (channel != 0) {
+        if (voice_handle < 0) {
+            *(int *)channel = voice_handle;
         }
-        if (arg0 != 0) {
-            if (p[5] == 9) {
-                p[5] = 4;
-                if (p[8] != 0) {
+        if (voice_handle != 0) {
+            if (channel[5] == 9) {
+                channel[5] = 4;
+                if (channel[8] != 0) {
                     music_flagged_track_started = 1;
                 }
             }
         } else {
-            p[5] = 0;
+            channel[5] = 0;
         }
     }
 }
 
 /* Stream callback: store the voice handle and mark the primary track started, or reset it. */
-void music_primary_start_callback(int arg0, long arg1) {
-    short *p = (short *)(int)arg1;
-    if (p != 0) {
-        *(int *)p = arg0;
-        if (arg0 != 0) {
-            if (p[5] == 1) {
-                p[5] = 8;
+void music_primary_start_callback(int voice_handle, long channel_address) {
+    short *channel = (short *)(int)channel_address;
+    if (channel != 0) {
+        *(int *)channel = voice_handle;
+        if (voice_handle != 0) {
+            if (channel[5] == 1) {
+                channel[5] = 8;
             }
         } else {
-            p[5] = 0;
+            channel[5] = 0;
         }
     }
 }
 
 extern char sound_handle_in_use_message[];
 
-/* `*p = arg0` happens on the 0xFFFFFFFF path too (the older decode made
+/* `*channel = voice_handle` happens on the 0xFFFFFFFF path too (the older decode made
    it conditional), and D_001E8C60's message is printed. */
-void set_sound_handle_id(int arg0, long arg1) {
-    short *p = (short *)(int)arg1;
-    if (p != 0) {
-        if (*(unsigned int *)p != 0xFFFFFFFF) {
+void set_sound_handle_id(int voice_handle, long channel_address) {
+    short *channel = (short *)(int)channel_address;
+    if (channel != 0) {
+        if (*(unsigned int *)channel != 0xFFFFFFFF) {
             STUB_printf(sound_handle_in_use_message);
         } else {
-            *(int *)p = arg0;
-            if (arg0 == 0) {
-                p[5] = 7;
+            *(int *)channel = voice_handle;
+            if (voice_handle == 0) {
+                channel[5] = 7;
             }
         }
     }
 }
 
 /* Stream callback: save the remaining time and its quarter, then advance the channel. */
-void music_remaining_time_callback(int arg0, long arg1) {
-    char *p = (char *)(int)arg1;
-    short *b;
-    if (p == 0) {
+void music_remaining_time_callback(int remaining_time, long channel_address) {
+    char *channel = (char *)(int)channel_address;
+    short *stream_state;
+    if (channel == 0) {
         return;
     }
-    *(int *)(p + 0x18) = arg0;
-    if (*(short *)(p + 0x10) == 0) {
+    *(int *)(channel + 0x18) = remaining_time;
+    if (*(short *)(channel + 0x10) == 0) {
         return;
     }
-    b = cd_read_state;
-    if (b[0x10] != 1) {
+    stream_state = cd_read_state;
+    if (stream_state[0x10] != 1) {
         return;
     }
-    if (arg0 == 0) {
+    if (remaining_time == 0) {
         return;
     }
-    b[0x10] = 2;
-    *(int *)((char *)b + 0x24) = *(int *)(p + 0x18);
-    *(int *)((char *)b + 0x28) = *(int *)(p + 0x18) / 4;
+    stream_state[0x10] = 2;
+    *(int *)((char *)stream_state + 0x24) = *(int *)(channel + 0x18);
+    *(int *)((char *)stream_state + 0x28) = *(int *)(channel + 0x18) / 4;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00217AD0);
