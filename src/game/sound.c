@@ -255,16 +255,14 @@ extern void FastVecScale_a(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecSub_a(void *, void *, void *) __asm__("func_001F9BF0");
 extern int coll_line_fix_a(void *, void *, int, int, int) __asm__("func_001EFE10");
 
-/* Jitter the vector at arg0 between 0.5 and 6.0, fold in the reference
-   frame at D_00187180, and if the emitter accepts it, re-derive it from
-   D_00194220, damp to 3/4 and fold the frame in again. */
-void clamp_voice_position_to_collision(void *arg0) {
-    random_spherical_offset(arg0, 0.5f, 6.0f);
-    FastVecAdd_a(arg0, arg0, camera_position_a);
-    if (coll_line_fix_a(camera_position_a, arg0, 0x82, sound_probe_ignore, 0) != 0) {
-        FastVecSub_a(arg0, coll_hit_pos, camera_position_a);
-        FastVecScale_a(arg0, arg0, 0.75f);
-        FastVecAdd_a(arg0, arg0, camera_position_a);
+/* Pick a nearby point and clamp it against collision. */
+void clamp_voice_position_to_collision(void *position) {
+    random_spherical_offset(position, 0.5f, 6.0f);
+    FastVecAdd_a(position, position, camera_position_a);
+    if (coll_line_fix_a(camera_position_a, position, 0x82, sound_probe_ignore, 0) != 0) {
+        FastVecSub_a(position, coll_hit_pos, camera_position_a);
+        FastVecScale_a(position, position, 0.75f);
+        FastVecAdd_a(position, position, camera_position_a);
     }
 }
 
@@ -273,17 +271,16 @@ extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void coll_line_fix(void *, void *, int, int, int);
 
-/* Aim the vector from the frame at D_00187180 toward arg0+0x20, scaled to
-   3/4 and 64, and return the line test from arg1 to its end. The int
-   return keeps retail's argument order for func_001F9BD8. */
-int test_voice_occlusion(void *arg0, void *arg1) {
-    float v[4];
+/* Test the line from listener_position toward the voice.
+   Keep the int return for the matching call order. */
+int test_voice_occlusion(void *voice, void *listener_position) {
+    float test_position[4];
 
-    FastVecSub(v, (char *)arg0 + 0x20, camera_position);
-    FastVecScale(v, v, 0.75f);
-    clamp_vector_length(v, v, 64.0f);
-    FastVecAdd(v, v, camera_position);
-    return coll_line_fix_a(arg1, v, 0x82, *(int *)((char *)arg0 + 0x18), 0);
+    FastVecSub(test_position, (char *)voice + 0x20, camera_position);
+    FastVecScale(test_position, test_position, 0.75f);
+    clamp_vector_length(test_position, test_position, 64.0f);
+    FastVecAdd(test_position, test_position, camera_position);
+    return coll_line_fix_a(listener_position, test_position, 0x82, *(int *)((char *)voice + 0x18), 0);
 }
 
 extern float IntToFloat(int);
@@ -302,20 +299,20 @@ struct VoiceVolumeDefinition {
     u8 attenuation_flags;         /* 0x19: bit 0 selects the squared falloff */
 };
 
-/* Map distance x to a voice volume between near (lo) and far (hi), linear or squared falloff. */
-int calculate_voice_distance_volume(void *arg0, float x, float lo, float hi) {
-    struct VoiceVolumeDefinition *definition = (struct VoiceVolumeDefinition *)arg0;
-    int r;
+/* Map distance to a voice volume between near (lo) and far (hi), linear or squared falloff. */
+int calculate_voice_distance_volume(void *definition_data, float distance, float lo, float hi) {
+    struct VoiceVolumeDefinition *definition = (struct VoiceVolumeDefinition *)definition_data;
+    int volume;
     if (definition->attenuation_flags & 1) {
-        if (x <= lo) r = definition->near_volume;
-        else if (hi <= x) r = definition->far_volume;
-        else r = definition->far_volume + truncate_float_to_s32_i((hi - x) * (hi - x) * IntToFloat(definition->near_volume - definition->far_volume) / ((hi - lo) * (hi - lo)));
+        if (distance <= lo) volume = definition->near_volume;
+        else if (hi <= distance) volume = definition->far_volume;
+        else volume = definition->far_volume + truncate_float_to_s32_i((hi - distance) * (hi - distance) * IntToFloat(definition->near_volume - definition->far_volume) / ((hi - lo) * (hi - lo)));
     } else {
-        if (x <= lo) r = definition->near_volume;
-        else if (hi <= x) r = definition->far_volume;
-        else r = definition->far_volume + truncate_float_to_s32_i((hi - x) * IntToFloat(definition->near_volume - definition->far_volume) / (hi - lo));
+        if (distance <= lo) volume = definition->near_volume;
+        else if (hi <= distance) volume = definition->far_volume;
+        else volume = definition->far_volume + truncate_float_to_s32_i((hi - distance) * IntToFloat(definition->near_volume - definition->far_volume) / (hi - lo));
     }
-    return r;
+    return volume;
 }
 
 extern char camera_position[];
@@ -324,12 +321,12 @@ extern float FastVecDist(int, void *);
    declaring it int would move its next temporary to $v1. */
 extern void calculate_voice_distance_volume_v(void *, float, float, float) __asm__("func_0022DA10");
 
-/* Set a voice's volume from its distance to the camera using its near/far range. */
-void calculate_voice_volume(void *arg0, int arg1) {
-    char *s = (char *)arg0;
-    float v = FastVecDist(arg1, camera_position);
-    float *p = *(float **)(s + 0x8);
-    calculate_voice_distance_volume_v(p, v, p[0], p[1]);
+/* Set a voice'voice volume from its distance to the camera using its near/far range. */
+void calculate_voice_volume(void *voice_data, int position) {
+    char *voice = (char *)voice_data;
+    float distance = FastVecDist(position, camera_position);
+    float *definition_values = *(float **)(voice + 0x8);
+    calculate_voice_distance_volume_v(definition_values, distance, definition_values[0], definition_values[1]);
 }
 
 extern void transform_vector(void *, void *, void *);
@@ -337,18 +334,15 @@ extern float vec_length_xy(void *);
 extern float fast_arc_tan_a(float, float) __asm__("func_001FA058");
 extern void truncate_float_to_s32(float);
 
-/* Build the vector at arg1 in the D_00187180 frame, project it against
-   arg2, and steer by its heading: atan2 of the xy part, negated and
-   converted from radians to degrees (180 * 1/pi), scaled by how far the
-   projection runs past 1.0, clamped to 0..1. arg0 is unused. */
-void calculate_voice_pan(void *arg0, void *arg1, void *arg2) {
-    float v[4];
-    float t;
+/* Transform the source position into listener space and compute pan. */
+void calculate_voice_pan(void *unused, void *position, void *listener_matrix) {
+    float listener_relative_position[4];
+    float pan_scale;
 
-    FastVecSub_a(v, arg1, camera_position_a);
-    transform_vector(v, v, arg2);
-    t = clamp_float(vec_length_xy(v) - 1.0f, 0.0f, 1.0f);
-    truncate_float_to_s32(-fast_arc_tan_a(v[0], v[1]) * 180.0f * t * 0.31830987f);
+    FastVecSub_a(listener_relative_position, position, camera_position_a);
+    transform_vector(listener_relative_position, listener_relative_position, listener_matrix);
+    pan_scale = clamp_float(vec_length_xy(listener_relative_position) - 1.0f, 0.0f, 1.0f);
+    truncate_float_to_s32(-fast_arc_tan_a(listener_relative_position[0], listener_relative_position[1]) * 180.0f * pan_scale * 0.31830987f);
 }
 
 typedef u32 u128_2DBE8 __attribute__((mode(TI), aligned(16)));
@@ -891,25 +885,22 @@ extern int snd_StreamSafeCheckCDIdle(int);
 extern void snd_StreamSafeCdSync(int);
 extern void snd_ResolveBankXREFS(void);
 
-/* Reentrancy-guarded: base+0x44 is held at 1 for the duration. The
-   return value is func_0012E060's, captured in the delay slot of the
-   *next* call. That callee, func_0012EE70 (snd_StreamSafeCheckCDIdle),
-   returns int: a value call resets $v0's readers, which lets the
-   capture sink into its slot. */
-int load_audio_bank_by_location(void *arg0) {
+/* Hold the load guard while loading and resolving the bank.
+   Keep the int view of func_0012EE70 for the matching call order. */
+int load_audio_bank_by_location(void *location) {
     char *base = voice_pool;
-    int r = 0;
+    int result = 0;
 
     if (*(int *)(base + 0x44) == 0) {
         *(int *)(base + 0x44) = 1;
         sce_cd_sync_s(0);
-        r = snd_BankLoadByLoc(arg0, 0);
+        result = snd_BankLoadByLoc(location, 0);
         snd_StreamSafeCheckCDIdle(1);
         snd_StreamSafeCdSync(0);
         snd_ResolveBankXREFS();
         *(int *)(base + 0x44) = 0;
     }
-    return r;
+    return result;
 }
 
 /* 12 bytes of post-endlabel nop padding in retail -- see func_001F6668. */
@@ -1117,52 +1108,51 @@ return_result:
 }
 
 
-/* Starts entry idx of the sound bank arg2 points at; the same shape as
-   its siblings func_0022EE28 and func_0022EEB8. */
-int Moby_PlaySound(int idx, int arg1, int arg2) {
-    char *p;
-    char *tbl;
-    int h;
+/* Play sound idx from the moby's class; return the voice slot or -1. */
+int Moby_PlaySound(int idx, int flags, int moby_address) {
+    char *class_data;
+    char *sound_definitions;
+    int slot_index;
 
-    if (arg2 == 0) {
+    if (moby_address == 0) {
         return -1;
     }
-    p = *(char **)(arg2 + 0x24);
-    if (p == 0) {
+    class_data = *(char **)(moby_address + 0x24);
+    if (class_data == 0) {
         return -1;
     }
-    tbl = *(char **)(p + 0x28);
-    if (tbl == 0) {
+    sound_definitions = *(char **)(class_data + 0x28);
+    if (sound_definitions == 0) {
         return -1;
     }
-    if (idx >= *(unsigned char *)(p + 0xD)) {
+    if (idx >= *(unsigned char *)(class_data + 0xD)) {
         return -1;
     }
-    h = allocate_voice_slot(tbl + idx * 32, arg1, arg2, 0, 0x400);
-    if (h >= 0) {
-        char *rec = voice_pool + h * 0x70;
-        *(int *)(rec + 0x88) = arg2;
+    slot_index = allocate_voice_slot(sound_definitions + idx * 32, flags, moby_address, 0, 0x400);
+    if (slot_index >= 0) {
+        char *rec = voice_pool + slot_index * 0x70;
+        *(int *)(rec + 0x88) = moby_address;
         *(short *)(rec + 0x7E) = idx;
     }
-    return h;
+    return slot_index;
 }
 
 extern char *level_sound_defs MACRO_ADDR;
 
-/* Play bank sound idx on a free voice owned by arg2; return the voice slot or -1. */
-int PlayBankSound(int idx, int arg1, int arg2) {
-    int h;
+/* Play bank sound idx on a free voice owned by owner; return the voice slot or -1. */
+int PlayBankSound(int idx, int flags, int owner) {
+    int slot_index;
 
     if (idx >= bank_sound_count) {
         return -1;
     }
-    h = allocate_voice_slot(level_sound_defs + idx * 32, arg1, arg2, 0, 0x400);
-    if (h >= 0) {
-        char *rec = voice_pool + h * 0x70;
-        *(int *)(rec + 0x88) = arg2;
+    slot_index = allocate_voice_slot(level_sound_defs + idx * 32, flags, owner, 0, 0x400);
+    if (slot_index >= 0) {
+        char *rec = voice_pool + slot_index * 0x70;
+        *(int *)(rec + 0x88) = owner;
         *(short *)(rec + 0x7E) = idx;
     }
-    return h;
+    return slot_index;
 }
 
 extern int level_sound_def_count MACRO_ADDR;
@@ -1282,40 +1272,40 @@ void sound_StopAllSounds(void) {
     } while (p < end);
 }
 
-/* Sound library callback: store the returned handle at arg1 when arg1 is set. */
-void SoundBank_StoreHandle(int arg0, long arg1) {
-    int *p = (int *)(int)arg1;
-    if (p != 0) {
-        *p = arg0;
+/* Sound library callback: store the returned handle at destination_address when destination_address is set. */
+void SoundBank_StoreHandle(int handle, long destination_address) {
+    int *destination = (int *)(int)destination_address;
+    if (destination != 0) {
+        *destination = handle;
     }
 }
 
 /* Voice start callback: store the handle and mark the voice playing, or clear it on failure. */
-void voice_start_callback(int arg0, long arg1) {
-    unsigned char *p = (unsigned char *)(int)arg1;
-    if (p != 0) {
-        *(int *)p = arg0;
-        if (arg0 != 0) {
-            if (p[4] == 1) {
-                p[4] = 2;
+void voice_start_callback(int handle, long slot_address) {
+    unsigned char *voice_slot = (unsigned char *)(int)slot_address;
+    if (voice_slot != 0) {
+        *(int *)voice_slot = handle;
+        if (handle != 0) {
+            if (voice_slot[4] == 1) {
+                voice_slot[4] = 2;
             }
         } else {
-            *(int *)(p + 0x18) = 0;
-            *(int *)(p + 0x1C) = 0;
-            p[4] = 0;
+            *(int *)(voice_slot + 0x18) = 0;
+            *(int *)(voice_slot + 0x1C) = 0;
+            voice_slot[4] = 0;
         }
     }
 }
 
 /* Voice update callback: store the handle, or clear the voice slot when the handle is 0. */
-void voice_update_callback(int arg0, long arg1) {
-    int *p = (int *)(int)arg1;
-    if (p != 0) {
-        *p = arg0;
-        if (arg0 == 0) {
-            *(int *)((char *)p + 0x18) = 0;
-            *(int *)((char *)p + 0x1C) = 0;
-            *(unsigned char *)((char *)p + 4) = 0;
+void voice_update_callback(int handle, long slot_address) {
+    int *voice_slot = (int *)(int)slot_address;
+    if (voice_slot != 0) {
+        *voice_slot = handle;
+        if (handle == 0) {
+            *(int *)((char *)voice_slot + 0x18) = 0;
+            *(int *)((char *)voice_slot + 0x1C) = 0;
+            *(unsigned char *)((char *)voice_slot + 4) = 0;
         }
     }
 }

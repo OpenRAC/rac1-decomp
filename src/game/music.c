@@ -271,30 +271,30 @@ typedef struct {
 } SndStreamBlock;
 
 /* Start music track 60000+ on the secondary stream channel if that channel is free. */
-void music_start_track_60000(int arg0, int arg1, int arg2) {
+void music_start_track_60000(int track, int flags, int volume) {
     SndToc *toc = (SndToc *)disc_table;
-    int i = arg0 - 60000;
-    int h;
-    SndStreamBlock *s;
+    int track_index = track - 60000;
+    int track_location;
+    SndStreamBlock *music_stream_state;
 
-    h = toc->ids60000[i].handle;
-    if (h == 0) {
+    track_location = toc->ids60000[track_index].handle;
+    if (track_location == 0) {
         return;
     }
-    s = (SndStreamBlock *)cd_read_state;
-    if (s->secondary.handle != 0) {
+    music_stream_state = (SndStreamBlock *)cd_read_state;
+    if (music_stream_state->secondary.handle != 0) {
         return;
     }
-    s->secondary.handle = 0xFFFFFFFF;
-    s->secondary.state = 1;
-    s->secondary.track = arg0;
-    s->secondary.flags = arg1;
-    s->secondary.poll_interval = 10;
-    s->secondary.remaining_time = 0xBB80;
-    s->secondary.volume = arg2;
-    s->secondary.crossfade_enabled = 0;
-    snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  music_secondary_start_callback, (long)(unsigned int)&s->secondary);
+    music_stream_state->secondary.handle = 0xFFFFFFFF;
+    music_stream_state->secondary.state = 1;
+    music_stream_state->secondary.track = track;
+    music_stream_state->secondary.flags = flags;
+    music_stream_state->secondary.poll_interval = 10;
+    music_stream_state->secondary.remaining_time = 0xBB80;
+    music_stream_state->secondary.volume = volume;
+    music_stream_state->secondary.crossfade_enabled = 0;
+    snd_PlayVAGStreamByLocEx_CB(track_location, 0, 0, 0, volume, 0, 2, 0, 0x21,
+                  music_secondary_start_callback, (long)(unsigned int)&music_stream_state->secondary);
 }
 
 typedef struct {
@@ -374,26 +374,26 @@ extern char music_player_dialogue[];
 
 /* The same through a per-language table at D_0011C278; volume only
    when the D_0015EF1C flag is set. */
-void music_start_track_30000(int arg0, int arg1, int arg2) {
-    int *p = (int *)(dialogue_track_table_by_lang + (arg0 * 4 + g_game_language * 0x258));
-    char *s;
+void music_start_track_30000(int track, int flags, int volume) {
+    int *track_location = (int *)(dialogue_track_table_by_lang + (track * 4 + g_game_language * 0x258));
+    char *music_stream_state;
 
-    if (*p == 0) {
+    if (*track_location == 0) {
         return;
     }
-    s = (char *)cd_read_state;
-    if (*(int *)(s + 0x50) != 0) {
+    music_stream_state = (char *)cd_read_state;
+    if (*(int *)(music_stream_state + 0x50) != 0) {
         return;
     }
-    *(unsigned int *)(s + 0x50) = 0xFFFFFFFF;
-    *(short *)(s + 0x5A) = 1;
-    *(short *)(s + 0x54) = arg0;
-    *(short *)(s + 0x58) = arg1;
-    *(int *)(s + 0x64) = 10;
-    *(int *)(s + 0x68) = 0xBB80;
-    *(short *)(s + 0x56) = arg2;
-    *(short *)(s + 0x60) = 0;
-    snd_PlayVAGStreamByLocEx_CB(*p, 0, 0, 0, *(unsigned char *)&gHelpDeskVoice_w ? arg2 : 0,
+    *(unsigned int *)(music_stream_state + 0x50) = 0xFFFFFFFF;
+    *(short *)(music_stream_state + 0x5A) = 1;
+    *(short *)(music_stream_state + 0x54) = track;
+    *(short *)(music_stream_state + 0x58) = flags;
+    *(int *)(music_stream_state + 0x64) = 10;
+    *(int *)(music_stream_state + 0x68) = 0xBB80;
+    *(short *)(music_stream_state + 0x56) = volume;
+    *(short *)(music_stream_state + 0x60) = 0;
+    snd_PlayVAGStreamByLocEx_CB(*track_location, 0, 0, 0, *(unsigned char *)&gHelpDeskVoice_w ? volume : 0,
                   0, 2, 0, 0x21, music_secondary_start_callback, (long)(unsigned int)music_player_dialogue);
 }
 
@@ -592,7 +592,7 @@ typedef struct {
 } PreseekStreamState;
 
 /* Preseek a music track on the primary stream channel if that channel is free. */
-void music_PreseekTrack(int arg0, int arg1, int arg2) {
+void music_PreseekTrack(int track, int flags, int volume) {
     PreseekStreamState *music_stream_state = (PreseekStreamState *)cd_read_state;
     u8 *disc_table_base;
     s32 track_location_table_byte_offset;
@@ -602,18 +602,18 @@ void music_PreseekTrack(int arg0, int arg1, int arg2) {
     if (music_stream_state->primary.handle == 0) {
         disc_table_base = (u8 *)disc_table;
         track_location_table_byte_offset = 0x2AA8;
-        entry = (s32 *)(disc_table_base + track_location_table_byte_offset) + arg0;
+        entry = (s32 *)(disc_table_base + track_location_table_byte_offset) + track;
         if (*entry != 0) {
             music_stream_state->primary.state = 1;
-            music_stream_state->primary.track = arg0;
+            music_stream_state->primary.track = track;
             music_stream_state->primary.poll_interval = 10;
             music_stream_state->primary.remaining_time = 0xBB80;
             music_stream_state->primary.handle = 0xFFFFFFFF;
-            music_stream_state->primary.flags = arg1;
-            music_stream_state->primary.volume = arg2;
+            music_stream_state->primary.flags = flags;
+            music_stream_state->primary.volume = volume;
             music_stream_state->primary.crossfade_enabled = 0;
             stream_location = *entry;
-            snd_PlayVAGStreamByLocEx_CB(stream_location, 0, 0, 0, arg2, 0, 1, 0, 0x21,
+            snd_PlayVAGStreamByLocEx_CB(stream_location, 0, 0, 0, volume, 0, 1, 0, 0x21,
                           music_primary_preseek_callback,
                           (long)(unsigned int)&music_stream_state->primary.handle);
         }
