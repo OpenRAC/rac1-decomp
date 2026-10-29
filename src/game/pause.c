@@ -907,13 +907,13 @@ extern int menu_system_close_locked;
 extern void Moby_PlaySound(int, int, int);
 
 /* Pause list handler (func_0021ACD8's family: one `char *` pad local per
-   block). The cursor at arg0+0x3C moves on 0x1000/0x4000 within
-   arg0+0x40, with a func_0022ED80 notify on change; then the scroll
-   (arg0+0x60) is clamped around the cursor and the bar position at
-   arg0+0x5C derived from it, or pinned to 0x52. The re-reads of 0x3C and
+   block). The cursor at menu_screen+0x3C moves on 0x1000/0x4000 within
+   menu_screen+0x40, with a func_0022ED80 notify on change; then the scroll
+   (menu_screen+0x60) is clamped around the cursor and the bar position at
+   menu_screen+0x5C derived from it, or pinned to 0x52. The re-reads of 0x3C and
    0x60 are how retail's reloads come out; the page size q - 2 is formed
    after the clamp, and each arm stores the bar position itself. */
-int update_menu_icon_list(MenuScreen *arg0) {
+int update_menu_icon_list(MenuScreen *menu_screen) {
     {
         PadState *pad = (PadState *)g_controller_state;
         if (*(int *)&pad->pressed_unmasked & 0xD00) {
@@ -939,38 +939,38 @@ int update_menu_icon_list(MenuScreen *arg0) {
     {
         PadState *pad3 = (PadState *)g_controller_state;
         int v = *(int *)&pad3->pressed_unmasked;
-        int old = arg0->data.icons.cursor;
+        int old = menu_screen->data.icons.cursor;
         if ((v & 0x1000) && old != 0) {
-            arg0->data.icons.cursor = old - 1;
+            menu_screen->data.icons.cursor = old - 1;
         }
         if (v & 0x4000) {
-            int c = arg0->data.icons.cursor + 1;
-            if (c < arg0->data.icons.count) {
-                arg0->data.icons.cursor = c;
+            int c = menu_screen->data.icons.cursor + 1;
+            if (c < menu_screen->data.icons.count) {
+                menu_screen->data.icons.cursor = c;
             }
         }
-        if (arg0->data.icons.cursor != old) {
-            Moby_PlaySound(1, 0x11, arg0->moby);
+        if (menu_screen->data.icons.cursor != old) {
+            Moby_PlaySound(1, 0x11, menu_screen->moby);
         }
     }
     {
-        int t = arg0->height * 16;
-        if (t / 0x252 >= arg0->data.icons.count) {
-            arg0->data.icons.first_y = 0x52;
+        int t = menu_screen->height * 16;
+        if (t / 0x252 >= menu_screen->data.icons.count) {
+            menu_screen->data.icons.first_y = 0x52;
         } else {
             int q = (t - 0x28) / 0x252;
             int n;
-            if (arg0->data.stream.read_offset >= arg0->data.icons.cursor) {
-                arg0->data.stream.read_offset = arg0->data.icons.cursor - 1;
-                if (arg0->data.stream.read_offset < 0) {
-                    arg0->data.stream.read_offset = 0;
+            if (menu_screen->data.stream.read_offset >= menu_screen->data.icons.cursor) {
+                menu_screen->data.stream.read_offset = menu_screen->data.icons.cursor - 1;
+                if (menu_screen->data.stream.read_offset < 0) {
+                    menu_screen->data.stream.read_offset = 0;
                 }
             }
             n = q - 2;
-            if (arg0->data.stream.read_offset < arg0->data.icons.cursor - n) {
-                arg0->data.stream.read_offset = arg0->data.icons.cursor - n;
+            if (menu_screen->data.stream.read_offset < menu_screen->data.icons.cursor - n) {
+                menu_screen->data.stream.read_offset = menu_screen->data.icons.cursor - n;
             }
-            arg0->data.icons.first_y = 0x182 - arg0->data.stream.read_offset * 0x252;
+            menu_screen->data.icons.first_y = 0x182 - menu_screen->data.stream.read_offset * 0x252;
         }
     }
     return 0;
@@ -991,17 +991,17 @@ extern void DoGifPaging(void);
    is a 0x200-square image at x, stepping 0x252 down from the scroll
    position at +0x5C; the selected one (+0x3C) gets a pulsing frame. Up
    and down arrows show when the list runs off the top or the bottom. */
-int draw_menu_icon_list(MenuScreen *arg0) {
-    int x = (arg0->width * 16 - 0x200) >> 1;
-    int y = arg0->data.icons.first_y;
+int draw_menu_icon_list(MenuScreen *menu_screen) {
+    int x = (menu_screen->width * 16 - 0x200) >> 1;
+    int y = menu_screen->data.icons.first_y;
     int top = y;
     int i;
 
     SetupGifPaging(0);
-    for (i = 0; i < arg0->data.icons.count; i++) {
-        char *e = *(char **)&arg0->data.icons.list + i * 10;
+    for (i = 0; i < menu_screen->data.icons.count; i++) {
+        char *e = *(char **)&menu_screen->data.icons.list + i * 10;
 
-        if (arg0->data.icons.cursor == i) {
+        if (menu_screen->data.icons.cursor == i) {
             draw_hud_rect_blended(x - 0x30, y - 0x30, x + 0x230, y + 0x230,
                           (unsigned int)((subtract_integer_with_clamp((game_frame_counter & 0x3F) - 0x20) + 0x40)
                                          * 0x10202 | 0x80000000), 1);
@@ -1013,13 +1013,13 @@ int draw_menu_icon_list(MenuScreen *arg0) {
         y += 0x252;
     }
     if (top < 0) {
-        draw_hud_rect_blended(0, 0, arg0->width, 0x14, *(int *)&panel_clear_color, 0);
+        draw_hud_rect_blended(0, 0, menu_screen->width, 0x14, *(int *)&panel_clear_color, 0);
         HudSprite(GetIconFrame(0xE99E, 6), x >> 4, 2, 0x20, 0x10, 0x80);
     }
-    if (arg0->height * 16 < y) {
-        draw_hud_rect_blended(0, arg0->height - 0x14, arg0->width,
-                      arg0->height, *(int *)&panel_clear_color, 0);
-        draw_hud_sprite_flipped(GetIconFrame(0xE99E, 6), x >> 4, arg0->height - 0x12,
+    if (menu_screen->height * 16 < y) {
+        draw_hud_rect_blended(0, menu_screen->height - 0x14, menu_screen->width,
+                      menu_screen->height, *(int *)&panel_clear_color, 0);
+        draw_hud_sprite_flipped(GetIconFrame(0xE99E, 6), x >> 4, menu_screen->height - 0x12,
                       0x20, 0x10, 0x80);
     }
     DoGifPaging();
@@ -1034,8 +1034,8 @@ extern int pause_action_list_mode_m __asm__("D_0015EF90") MACRO_ADDR;
 
 /* D_0015EF90 is read through a MACRO_ADDR alias: retail's one-register
    load. */
-int set_pause_action_list(MenuScreen *arg0) {
-    *(char **)&arg0->data.list.items =
+int set_pause_action_list(MenuScreen *menu_screen) {
+    *(char **)&menu_screen->data.list.items =
         (pause_action_list_mode_m != 0) ? pause_action_list_pal : pause_action_list_short;
     return 0;
 }
@@ -1781,7 +1781,7 @@ int fade_menu_color(int start, int col1, int col2) {
     return FastTweenColor(col1, col2, t);
 }
 
-/* Pause page link walk: with arg1 clear, follow arg0's +0x4C chain for
+/* Pause page link walk: with arg1 clear, follow menu_screen's +0x4C chain for
    as long as the current page is skippable (bit 8 of its +0x30 flags
    while D_001D5F70+0x134 is set, or bit 4 while +0x138 is set), and if
    it moved at all, make the page it stopped on the current one's +0x80.
@@ -1789,7 +1789,7 @@ int fade_menu_color(int start, int col1, int col2) {
    own copy is why GCSE leaves its +0x138 load in the loop (only +0x134,
    read first in the body, is hoisted by loop.c), and the last block's
    copy is retail's kept %hi. */
-int find_next_pause_page(MenuScreen *arg0, int arg1) {
+int find_next_pause_page(MenuScreen *menu_screen, int arg1) {
     int ok = 0;
     int found = 0;
 
@@ -1798,28 +1798,28 @@ int find_next_pause_page(MenuScreen *arg0, int arg1) {
     }
     {
         struct MenuSystem *g = (struct MenuSystem *)menu_system;
-        if (g->unk134 != 0 && (arg0->data.grid.flags & 8)) {
+        if (g->unk134 != 0 && (menu_screen->data.grid.flags & 8)) {
             ok = 1;
         }
-        if (g->unk138 != 0 && (arg0->data.grid.flags & 4)) {
+        if (g->unk138 != 0 && (menu_screen->data.grid.flags & 4)) {
             ok = 1;
         }
     }
     while (ok) {
         struct MenuSystem *g = (struct MenuSystem *)menu_system;
         found = 1;
-        arg0 = arg0->data.grid.up;
+        menu_screen = menu_screen->data.grid.up;
         ok = 0;
-        if (g->unk134 != 0 && (arg0->data.grid.flags & 8)) {
+        if (g->unk134 != 0 && (menu_screen->data.grid.flags & 8)) {
             ok = 1;
         }
-        if (g->unk138 != 0 && (arg0->data.grid.flags & 4)) {
+        if (g->unk138 != 0 && (menu_screen->data.grid.flags & 4)) {
             ok = 1;
         }
     }
     if (found) {
         struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
-        g2->current->pending_focus = arg0;
+        g2->current->pending_focus = menu_screen;
     }
     return 0;
 }
@@ -2591,8 +2591,8 @@ extern char heli_pack_menu_table[];
 extern char no_helipack_menu_table[];
 
 /* Points the screen's menu table (+0x34) at the heli-pack or the plain version. */
-int SelectHeliPackMenuTable(MenuScreen *arg0) {
-    *(char **)&arg0->data.options.list =
+int SelectHeliPackMenuTable(MenuScreen *menu_screen) {
+    *(char **)&menu_screen->data.options.list =
         (gHaveHeliPack != 0) ? heli_pack_menu_table : no_helipack_menu_table;
     return 0;
 }
@@ -2854,12 +2854,12 @@ extern int start_audio_stream_read_3(int, int, int) __asm__("func_00217628");
 /* Enter hook for the help text screen: resets the stream buffers, marks the
    bindings above the buffer limit as taken and starts the help audio stream
    (+0x50 = 1 on success, 3 on failure). */
-int enter_menu_help_text(MenuScreen *arg0) {
+int enter_menu_help_text(MenuScreen *menu_screen) {
     int i;
     struct MenuSystem *g;
     initialize_menu_stream_buffers(1);
-    arg0->data.raw.saved_text_table = 0;
-    arg0->data.raw.saved_text_count = 0;
+    menu_screen->data.raw.saved_text_table = 0;
+    menu_screen->data.raw.saved_text_count = 0;
     g = (struct MenuSystem *)menu_system;
     for (i = 0; i < 5; i++) {
         if (menu_stream_buffers_t[i].key != 0
@@ -2868,16 +2868,16 @@ int enter_menu_help_text(MenuScreen *arg0) {
             menu_stream_buffers_t[i].flags |= 2;
         }
     }
-    arg0->data.raw.load_state = 0;
+    menu_screen->data.raw.load_state = 0;
     if (cd_read_state[4] == 0) {
         if (start_audio_stream_read_3(menu_system_help_text_buffer, disc_table[0x1528 / 4],
                             disc_table[0x152C / 4]) != 0) {
-            arg0->data.raw.load_state = 1;
+            menu_screen->data.raw.load_state = 1;
         } else {
-            arg0->data.raw.load_state = 3;
+            menu_screen->data.raw.load_state = 3;
         }
     }
-    arg0->unk10 |= 4;
+    menu_screen->unk10 |= 4;
     return 0;
 }
 
@@ -2887,15 +2887,15 @@ extern int help_msg_count;
 
 /* Leave hook for the help text screen: breaks a running help audio stream,
    resets the stream buffers and restores the saved help text table. */
-int restore_menu_help_text(MenuScreen *arg0) {
-    if (cd_read_state[4] != 0 && arg0->data.raw.load_state == 1) {
+int restore_menu_help_text(MenuScreen *menu_screen) {
+    if (cd_read_state[4] != 0 && menu_screen->data.raw.load_state == 1) {
         request_audio_stream_break();
     }
     initialize_menu_stream_buffers(1);
     {
-        int v = arg0->data.raw.saved_text_table;
+        int v = menu_screen->data.raw.saved_text_table;
         if (v != 0) {
-            int w = arg0->data.raw.saved_text_count;
+            int w = menu_screen->data.raw.saved_text_count;
             help_msgs_m = v;
             help_msg_count = w;
         }
@@ -2914,25 +2914,25 @@ static inline int pauseSlotCount(void) {
     return b->count;
 }
 
-/* Pause sub-state machine at arg0+0x50 (func_00221688's family). State 0
+/* Pause sub-state machine at menu_screen+0x50 (func_00221688's family). State 0
    runs func_00217628 and moves to 1 or 3; state 1, once D_001517D0[4]
    clears, pulls the controller's record out of the table at
    D_001D5F70+0x108 (func_001F9A00 moves it to the table start), swaps it
    in as D_0015F780 and the D_001997D0+0x2C count (old values kept in
-   arg0+0x54/+0x38), rebases the entries' first words and moves to 2.
+   menu_screen+0x54/+0x38), rebases the entries' first words and moves to 2.
    Cases 2 and 3 are empty; they make gcc's case tree test 1 first, as
    retail does. The reloaded table gets its own variable so that the
    first one stays block-local, and the rebase delta is computed in the
    loop so that loop.c hoists it. */
-int update_menu_help_text_load(MenuScreen *arg0) {
-    switch (arg0->data.raw.load_state) {
+int update_menu_help_text_load(MenuScreen *menu_screen) {
+    switch (menu_screen->data.raw.load_state) {
     case 0:
         if (cd_read_state[4] == 0) {
             if (start_audio_stream_read_3(menu_system_help_text_buffer, disc_table[0x1528 / 4],
                                 disc_table[0x152C / 4]) != 0) {
-                arg0->data.raw.load_state = 1;
+                menu_screen->data.raw.load_state = 1;
             } else {
-                arg0->data.raw.load_state = 3;
+                menu_screen->data.raw.load_state = 3;
             }
         }
         break;
@@ -2949,8 +2949,8 @@ int update_menu_help_text_load(MenuScreen *arg0) {
 
             copy_memory_aligned(tbl, p, ((sz + 3) & ~3) - 8);
             b = (HelpState *)g_help_state;
-            arg0->data.raw.saved_text_table = help_msgs_m;
-            arg0->data.raw.saved_text_count = b->count;
+            menu_screen->data.raw.saved_text_table = help_msgs_m;
+            menu_screen->data.raw.saved_text_count = b->count;
             b->count = n;
             t = *(int **)&g->help_text_buffer;
             help_msgs_m = (int)t;
@@ -2958,8 +2958,8 @@ int update_menu_help_text_load(MenuScreen *arg0) {
                 int d = (int)t - 8;
                 *(int *)((char *)t + i * 0x10) += d;
             }
-            arg0->unk10 &= ~4;
-            arg0->data.raw.load_state = 2;
+            menu_screen->unk10 &= ~4;
+            menu_screen->data.raw.load_state = 2;
         }
         break;
     case 2:
@@ -3243,8 +3243,8 @@ static inline short pauseFlagState(void) {
 /* The select sits in a `static inline short` helper so that it stays a
    branch: jump.c turns an if into movz/movn only when its arm sets a
    full register, and the inline's short return value is a subreg. */
-int set_menu_pause_flag_state(MenuScreen *arg0) {
-    char *p = *(char **)&arg0->data.options.list;
+int set_menu_pause_flag_state(MenuScreen *menu_screen) {
+    char *p = *(char **)&menu_screen->data.options.list;
     *(short *)(p + 2) = pauseFlagState();
     return 0;
 }
@@ -3319,9 +3319,9 @@ int enter_item_preview(void *arg0) {
 }
 
 /* Deletes both preview mobys (+0x44, +0x48) and clears their slots. */
-int clear_menu_preview_pair(MenuScreen *arg0) {
-    arg0->data.preview.moby = (struct Moby *)delete_moby((int)arg0->data.preview.moby);
-    arg0->data.preview.second_moby = (struct Moby *)delete_moby((int)arg0->data.preview.second_moby);
+int clear_menu_preview_pair(MenuScreen *menu_screen) {
+    menu_screen->data.preview.moby = (struct Moby *)delete_moby((int)menu_screen->data.preview.moby);
+    menu_screen->data.preview.second_moby = (struct Moby *)delete_moby((int)menu_screen->data.preview.second_moby);
     return 0;
 }
 
@@ -3417,22 +3417,22 @@ extern void font_print_window_regular(void *, long, void *, int);
 
 /* Draw/teardown callback (func_0021F610's family). The entry address is
    written inline in the index; a `char *e` local leaves an addu swap. */
-int draw_item_preview_screen(MenuScreen *arg0) {
+int draw_item_preview_screen(MenuScreen *menu_screen) {
     short buf[10];
     MenuScreen *p = ((struct MenuPage *)current_menu_page)->focus;
 
     if (((unsigned char *)&item_available)[p->data.grid.cells[p->data.grid.selected_cell].id] == 0) {
         return 0;
     }
-    if (arg0->data.preview.moby != 0) {
-        DrawMobyList((int)arg0->data.preview.moby, 1);
-        if (arg0->data.preview.second_moby != 0) {
-            DrawMobyList((int)arg0->data.preview.second_moby, 1);
+    if (menu_screen->data.preview.moby != 0) {
+        DrawMobyList((int)menu_screen->data.preview.moby, 1);
+        if (menu_screen->data.preview.second_moby != 0) {
+            DrawMobyList((int)menu_screen->data.preview.second_moby, 1);
         }
         return 8;
     }
     SetupGifPaging(0);
-    pack_image_descriptor(buf, arg0);
+    pack_image_descriptor(buf, menu_screen);
     buf[8] = 0x10;
     buf[9] = 3;
     font_print_window_regular(buf, 0x80FFA888L, msg_string_id(0x4F4D), -1);
@@ -3739,12 +3739,12 @@ extern int space_load_pending MACRO_ADDR;
 /* Pad handler (func_0021ACD8's family). A separate `char *` local for
    each block that reads the pad word gives retail's pattern: the %hi
    kept in a register and the %lo rebuilt before each use. */
-int Menu_BackInput(MenuScreen *arg0) {
+int Menu_BackInput(MenuScreen *menu_screen) {
     PadState *pad = (PadState *)g_controller_state;
     int v = *(int *)&pad->pressed_unmasked;
 
     if (v & 0xD00) {
-        if (arg0->data.grid.flags & 0x20) {
+        if (menu_screen->data.grid.flags & 0x20) {
             selected_level_index = g_current_level_index;
         }
         return -1;
@@ -3752,7 +3752,7 @@ int Menu_BackInput(MenuScreen *arg0) {
     if (v & 0x10) {
         struct MenuSystem *g;
         int t;
-        if (arg0->data.grid.flags & 0x20) {
+        if (menu_screen->data.grid.flags & 0x20) {
             selected_level_index = g_current_level_index;
         }
         g = (struct MenuSystem *)menu_system;
@@ -3782,17 +3782,17 @@ extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 extern void FontPrintCenter(int, int, long, void *, int);
 extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
 
-/* DrawQuitGameMenu: a text box (zeroed, then sized from arg0+0x20/0x24)
+/* DrawQuitGameMenu: a text box (zeroed, then sized from menu_screen+0x20/0x24)
    with text 0x4F6D, text 0x4F3F centred 0x40 above the bottom, and the
    two answers 0x5250/0x5254 at 0x28 and 0x14 above it, left-aligned so
    that the wider of the two (func_001F6600) is centred. The three y
    positions are computed before the calls (retail keeps them in saved
    registers); the box's y halfword is stored last, after the other
    fields in order, which gives retail's store schedule. */
-int DrawQuitGameMenu(MenuScreen *arg0) {
+int DrawQuitGameMenu(MenuScreen *menu_screen) {
     short box[12];
-    int w = arg0->width;
-    int h = arg0->height;
+    int w = menu_screen->width;
+    int h = menu_screen->height;
     int cx;
     int y1, y2, y3;
     int a, b, x;
@@ -3820,7 +3820,7 @@ int DrawQuitGameMenu(MenuScreen *arg0) {
     if (b >= a) {
         a = b;
     }
-    x = (arg0->width - a) >> 1;
+    x = (menu_screen->width - a) >> 1;
     func_001F68E8_c(x, y2, 0x80FFA888L, msg_string_id(0x5250), -1);
     func_001F68E8_c(x, y3, 0x80FFA888L, msg_string_id(0x5254), -1);
     DoGifPaging();
@@ -3866,8 +3866,8 @@ int create_rotating_preview_moby(void *owner) {
 extern int delete_moby(int);
 
 /* Deletes the item preview moby (+0x44) and clears its slot. */
-int release_item_preview_moby(MenuScreen *arg0) {
-    arg0->data.preview.moby = (struct Moby *)delete_moby((int)arg0->data.preview.moby);
+int release_item_preview_moby(MenuScreen *menu_screen) {
+    menu_screen->data.preview.moby = (struct Moby *)delete_moby((int)menu_screen->data.preview.moby);
     return 0;
 }
 
@@ -4510,13 +4510,13 @@ extern long transition_overlay_tex0;
 /* Eight register arguments ($a0-$a3, $t0-$t3) then two 64-bit stack
    slots -- both written with `sd`, so they are `long`, not `long long`
    (which would be 128-bit here). */
-int draw_transition_overlay(MenuScreen *arg0) {
-    if (arg0->data.stream.state < 2) {
+int draw_transition_overlay(MenuScreen *menu_screen) {
+    if (menu_screen->data.stream.state < 2) {
         return 0;
     }
     DrawTexturedQuad(0, 0, fs_aa_buffer[0xB0], fs_aa_buffer[0xB1], 0, 0,
-                  arg0->data.stream.texture_width,
-                  arg0->data.stream.texture_height, 0x80808080L, transition_overlay_tex0);
+                  menu_screen->data.stream.texture_width,
+                  menu_screen->data.stream.texture_height, 0x80808080L, transition_overlay_tex0);
     return 0x10;
 }
 
@@ -4983,45 +4983,45 @@ typedef struct {
 extern Tbl137C80 disc_table_t __asm__("D_00137C80");
 extern int g_game_language MACRO_ADDR;
 
-/* Pause sub-state machine at arg0+0x44. States 0 and 2 wait for their
-   request (arg0+0x48 / +0x4C) and for D_001517D0[4] to clear, then run
+/* Pause sub-state machine at menu_screen+0x44. States 0 and 2 wait for their
+   request (menu_screen+0x48 / +0x4C) and for D_001517D0[4] to clear, then run
    func_00217628 with the controller's slot and advance (or go to -1 on
    failure); states 1 and 3 advance once D_001517D0[4] clears. Always
    returns 0. A switch with its cases in source order 0-3 gives retail's
    case tree and block order; reading the slot's two words as fields of a
    struct gives two address adds (one becomes retail's copy). */
-int advance_audio_stream_state(MenuScreen *arg0) {
-    switch (arg0->data.stream.state) {
+int advance_audio_stream_state(MenuScreen *menu_screen) {
+    switch (menu_screen->data.stream.state) {
     case 0:
-        if (arg0->data.stream.buffer[0] != 0 && cd_read_state[4] == 0) {
-            if (start_audio_stream_read_3(arg0->data.stream.buffer[0],
+        if (menu_screen->data.stream.buffer[0] != 0 && cd_read_state[4] == 0) {
+            if (start_audio_stream_read_3(menu_screen->data.stream.buffer[0],
                                 disc_table_t.req0[g_game_language].a,
                                 disc_table_t.req0[g_game_language].b) != 0) {
-                arg0->data.stream.state += 1;
+                menu_screen->data.stream.state += 1;
             } else {
-                arg0->data.stream.state = -1;
+                menu_screen->data.stream.state = -1;
             }
         }
         break;
     case 1:
         if (cd_read_state[4] == 0) {
-            arg0->data.stream.state = 2;
+            menu_screen->data.stream.state = 2;
         }
         break;
     case 2:
-        if (arg0->data.stream.buffer[1] != 0 && cd_read_state[4] == 0) {
-            if (start_audio_stream_read_3(arg0->data.stream.buffer[1],
+        if (menu_screen->data.stream.buffer[1] != 0 && cd_read_state[4] == 0) {
+            if (start_audio_stream_read_3(menu_screen->data.stream.buffer[1],
                                 disc_table_t.req2[g_game_language].a,
                                 disc_table_t.req2[g_game_language].b) != 0) {
-                arg0->data.stream.state += 1;
+                menu_screen->data.stream.state += 1;
             } else {
-                arg0->data.stream.state = -1;
+                menu_screen->data.stream.state = -1;
             }
         }
         break;
     case 3:
         if (cd_read_state[4] == 0) {
-            arg0->data.stream.state = 4;
+            menu_screen->data.stream.state = 4;
         }
         break;
     }
@@ -5036,18 +5036,18 @@ extern long load_texture_file(int);
 /* Sibling of func_00220C90 above: same 0x44 guard and the same
    func_001F5800 draw, twice, with the colour held in one local because
    retail keeps it in a callee-saved register across both calls. */
-int draw_two_texture_panels(MenuScreen *arg0) {
+int draw_two_texture_panels(MenuScreen *menu_screen) {
     long c;
 
-    if (arg0->data.stream.state < 4) {
+    if (menu_screen->data.stream.state < 4) {
         return 0;
     }
     c = 0x80808080L;
     SetupGifPaging(0);
     DrawTexturedQuad(0, 0, 0x100, 0x100, 0, 0, 0x100, 0x100, c,
-                  load_texture_file(arg0->data.stream.buffer[0]));
+                  load_texture_file(menu_screen->data.stream.buffer[0]));
     DrawTexturedQuad(0x100, 0, 0x100, 0x100, 0, 0, 0x100, 0x100, c,
-                  load_texture_file(arg0->data.stream.buffer[1]));
+                  load_texture_file(menu_screen->data.stream.buffer[1]));
     DoGifPaging();
     return 8;
 }
@@ -5256,20 +5256,20 @@ typedef struct {
 } Row14;
 
 /* Pad handler for a row list of toggles (func_002222F8's sibling, one
-   `char *` pad local per block). While the timer at arg0+0x3C runs it
+   `char *` pad local per block). While the timer at menu_screen+0x3C runs it
    counts down and sets D_0015F53C to min(t, 4) / 4. Otherwise, for the
    active item: 0xD00/0x10 leave, 0x1000/0x4000 move the cursor with a
    notify on change, and 0x40 flips the current row's byte, or for a row
    with flag 1 starts the timer and flips D_0016044C (func_001FBC80 once
    it is set). The row is indexed directly at each use (index-first addu)
    and the cursor compare is written new != old, as retail's beq has it. */
-int update_menu_option_list(struct MenuScreen *arg0) {
+int update_menu_option_list(struct MenuScreen *menu_screen) {
     struct MenuSystem *g = (struct MenuSystem *)menu_system;
-    int sel = g->current->focus == arg0;
+    int sel = g->current->focus == menu_screen;
 
-    if (arg0->data.options.fade_timer != 0) {
-        int t = arg0->data.options.fade_timer - 1;
-        arg0->data.options.fade_timer = t;
+    if (menu_screen->data.options.fade_timer != 0) {
+        int t = menu_screen->data.options.fade_timer - 1;
+        menu_screen->data.options.fade_timer = t;
         gFade = (float)(t < 5 ? t : 4) * 0.25f;
         return 0;
     }
@@ -5300,42 +5300,42 @@ int update_menu_option_list(struct MenuScreen *arg0) {
     }
     {
         PadState *pad3 = (PadState *)g_controller_state;
-        int old = arg0->data.options.selection;
+        int old = menu_screen->data.options.selection;
         if ((*(int *)&pad3->pressed_unmasked & 0x1000) && old != 0) {
-            arg0->data.options.selection = old - 1;
+            menu_screen->data.options.selection = old - 1;
         }
         {
             PadState *pad4 = (PadState *)g_controller_state;
             if (*(int *)&pad4->pressed_unmasked & 0x4000) {
-                int c = arg0->data.options.selection;
-                if ((*(Row14 **)&arg0->data.options.list)[c + 1].w0 != 0) {
-                    arg0->data.options.selection = c + 1;
+                int c = menu_screen->data.options.selection;
+                if ((*(Row14 **)&menu_screen->data.options.list)[c + 1].w0 != 0) {
+                    menu_screen->data.options.selection = c + 1;
                 }
             }
         }
         {
             PadState *pad5 = (PadState *)g_controller_state;
             if (*(int *)&pad5->pressed_unmasked & 0x40) {
-                Moby_PlaySound(0, 0x11, arg0->moby);
-                if ((*(Row14 **)&arg0->data.options.list)[arg0->data.options.selection].flags & 1) {
+                Moby_PlaySound(0, 0x11, menu_screen->moby);
+                if ((*(Row14 **)&menu_screen->data.options.list)[menu_screen->data.options.selection].flags & 1) {
                     if (*(unsigned char *)&requested_video_mode_i) {
                         struct MenuSystem *g3 = (struct MenuSystem *)menu_system;
                         mode_freeze_init(6, *(void **)&g3->current, 0);
                     } else {
                         FadeToBlack(4);
-                        arg0->data.options.fade_timer = scale_game_frame_count(0x10);
+                        menu_screen->data.options.fade_timer = scale_game_frame_count(0x10);
                         *(unsigned char *)&requested_video_mode_i = !*(unsigned char *)&requested_video_mode_i;
                     }
                 } else {
-                    unsigned char *buf = (*(Row14 **)&arg0->data.options.list)[arg0->data.options.selection].buf;
+                    unsigned char *buf = (*(Row14 **)&menu_screen->data.options.list)[menu_screen->data.options.selection].buf;
                     if (buf != 0) {
                         buf[0] = !buf[0];
                     }
                 }
             }
         }
-        if (arg0->data.options.selection != old) {
-            Moby_PlaySound(1, 0x11, arg0->moby);
+        if (menu_screen->data.options.selection != old) {
+            Moby_PlaySound(1, 0x11, menu_screen->moby);
         }
     }
     return 0;
@@ -5433,7 +5433,7 @@ typedef struct {
 } Row18;
 
 /* Pad handler for a row list (func_0021ACD8's gate, one `char *` pad
-   local per block): the cursor at arg0+0x38 moves down on 0x1000 and up
+   local per block): the cursor at menu_screen+0x38 moves down on 0x1000 and up
    on 0x4000 while the next row is used, with a func_0022ED80 notify on
    change; the current row's used entries (up to 4) are counted, and 0x40
    cycles the row's byte selector through them. The row is indexed with a
@@ -5441,10 +5441,10 @@ typedef struct {
    no-notify path, where the compare already left it in $v0), and the
    count walks an `int *e = rec->e` set before its first test, which puts
    `rec + 8` in the test's delay slot as retail does. */
-int update_menu_choice_list(struct MenuScreen *arg0) {
+int update_menu_choice_list(struct MenuScreen *menu_screen) {
     struct MenuSystem *g = (struct MenuSystem *)menu_system;
 
-    if (g->current->focus != arg0) {
+    if (g->current->focus != menu_screen) {
         return 0;
     }
     {
@@ -5471,25 +5471,25 @@ int update_menu_choice_list(struct MenuScreen *arg0) {
     }
     {
         PadState *pad3 = (PadState *)g_controller_state;
-        int old = arg0->data.choices.selection;
+        int old = menu_screen->data.choices.selection;
         if ((*(int *)&pad3->pressed_unmasked & 0x1000) && old != 0) {
-            arg0->data.choices.selection = old - 1;
+            menu_screen->data.choices.selection = old - 1;
         }
         {
             PadState *pad4 = (PadState *)g_controller_state;
             if (*(int *)&pad4->pressed_unmasked & 0x4000) {
-                int c = arg0->data.choices.selection;
-                if ((*(Row18 **)&arg0->data.choices.list)[c + 1].w0 != 0) {
-                    arg0->data.choices.selection = c + 1;
+                int c = menu_screen->data.choices.selection;
+                if ((*(Row18 **)&menu_screen->data.choices.list)[c + 1].w0 != 0) {
+                    menu_screen->data.choices.selection = c + 1;
                 }
             }
         }
-        if (old != arg0->data.choices.selection) {
-            Moby_PlaySound(1, 0x11, arg0->moby);
+        if (old != menu_screen->data.choices.selection) {
+            Moby_PlaySound(1, 0x11, menu_screen->moby);
         }
     }
     {
-        Row18 *rec = &(*(Row18 **)&arg0->data.choices.list)[arg0->data.choices.selection];
+        Row18 *rec = &(*(Row18 **)&menu_screen->data.choices.list)[menu_screen->data.choices.selection];
         int n = 0;
         PadState *pad5;
         int *e;
@@ -5505,7 +5505,7 @@ int update_menu_choice_list(struct MenuScreen *arg0) {
             unsigned char *buf = rec->buf;
             if (buf != 0) {
                 buf[0] = (buf[0] + 1) % n;
-                Moby_PlaySound(0, 0x11, arg0->moby);
+                Moby_PlaySound(0, 0x11, menu_screen->moby);
             }
         }
     }
@@ -5725,7 +5725,7 @@ extern void Moby_PlaySound(int, int, int);
 /* Pause sub-menu input on the pad word D_0013CC04. One if/else-if chain
    falling to a single `return 0`; early returns in the 0x10 arm give a
    movn instead. */
-int handle_menu_action_buttons(MenuScreen *arg0) {
+int handle_menu_action_buttons(MenuScreen *menu_screen) {
     int v = pad0_pressed_unmasked;
 
     if (v & 0x10) {
@@ -5740,7 +5740,7 @@ int handle_menu_action_buttons(MenuScreen *arg0) {
         selected_level_index = g_current_level_index;
         return 1;
     } else if (v & 0x40) {
-        Moby_PlaySound(0, 0x11, arg0->moby);
+        Moby_PlaySound(0, 0x11, menu_screen->moby);
         return 1;
     } else if (v & 0x20) {
         struct MenuSystem *g = (struct MenuSystem *)menu_system;
@@ -5748,7 +5748,7 @@ int handle_menu_action_buttons(MenuScreen *arg0) {
         *(int *)&g->unkF0 = *(int *)&g->current;
         g->close_request = 3;
         g->unkF4 = 0xF;
-        Moby_PlaySound(0, 0x11, arg0->moby);
+        Moby_PlaySound(0, 0x11, menu_screen->moby);
     }
     return 0;
 }
