@@ -737,6 +737,7 @@
 #define remove_help_message_for_selector                                           func_L00_00265558
 #define link_and_update_all_mobys                                                  func_L00_002657B8
 #define MusicRequestTrack                                                          func_L00_002664B0
+#define level_music_primary_start_callback                                         func_L00_00267188
 #define pad_pressed_within                                                         func_L00_00267BA8
 #define check_pad_press_separation                                                 func_L00_00267C48
 #define create_part2                                                               func_L00_00268760

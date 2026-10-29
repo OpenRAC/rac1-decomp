@@ -717,7 +717,7 @@ func_L00_002653A0	update_timed_hud_visibility	descriptive	the NTSC decomp	update
 func_L00_00265558	remove_help_message_for_selector	descriptive	the NTSC decomp	remove_help_message_for_selector at US level 00 0x002644E0 (src/overlays/l06/gameplay/entities/fred.c); US function table counterpart	Hud_ClosePopupIfActive,OpenShipMenu
 func_L00_002657B8	link_and_update_all_mobys	descriptive	config/names_local.tsv	asm: links live mobys via +0x28, calls each update at +0x74 then moby_build_matrix	MobyLoadTimeUpdatePass
 func_L00_002664B0	MusicRequestTrack	descriptive	config/names_local.tsv	requests a music track with optional stinger via D_001517D0 (body)	jet_game_state
-func_L00_00267188	MusicStartCallback	candidate	ReRAC doc_names.csv	suggested at US level 01 0x27AF20 (docs/plan/audio.md:188): coined: handle callback sets state 8; fingerprint	
+func_L00_00267188	level_music_primary_start_callback	descriptive	config/names_local.tsv	Level copy of src/game/stream.c music_primary_start_callback: stores handle at +0, state +0xA goes 1 to 8 on success or to 0 on failure; shared in all 19 levels	MusicStartCallback
 func_L00_00267BA8	pad_pressed_within	descriptive	the NTSC decomp	pad_pressed_within at US level 00 0x00266D60 (src/overlays/l01/gameplay/hero/00242930.c); US function table counterpart	PadPressedWithin
 func_L00_00267C48	check_pad_press_separation	descriptive	the NTSC decomp	check_pad_press_separation at US level 00 0x00266E00 (src/overlays/l01/gameplay/hero/00242930.c); US function table counterpart	PadComboWithin
 func_L00_00268760	create_part2	descriptive	the NTSC decomp	create_part2 at US level 00 0x002678C0 (src/overlays/shared/rendering/00269290.c); US function table counterpart	CreatePart2

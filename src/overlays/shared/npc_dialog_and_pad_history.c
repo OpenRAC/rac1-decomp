@@ -14,64 +14,64 @@ extern short music_flagged_track_started NOT_SDA;
 
 /* stores value in the slot passed as a 64-bit argument; a zero value resets the slot's state,
    otherwise a slot in state 1 moves to 4 and, with its flag set, D_001517F0 becomes 1 */
-void Stream_SetSlotValue(int value, long arg) {
-    Slot_2670E0 *s = (Slot_2670E0 *)arg;
+void Stream_SetSlotValue(int value, long slot_address) {
+    Slot_2670E0 *slot = (Slot_2670E0 *)slot_address;
 
-    if (s == 0) {
+    if (slot == 0) {
         return;
     }
-    s->value = value;
+    slot->value = value;
     if (value != 0) {
-        if (s->state == 1) {
-            s->state = 4;
-            if (s->flag != 0) {
+        if (slot->state == 1) {
+            slot->state = 4;
+            if (slot->flag != 0) {
                 music_flagged_track_started = 1;
             }
         }
     } else {
-        s->state = 0;
+        slot->state = 0;
     }
 }
 /* Clear the 16-bit field at offset 0xA; volatile keeps the store before the return delay slot. */
-void stream_slot_clear_state(void *a0, unsigned char *a1) {
-    *(volatile unsigned short *)(a1 + 0xA) = 0;
+void stream_slot_clear_state(void *unused_arg, unsigned char *slot) {
+    *(volatile unsigned short *)(slot + 0xA) = 0;
 }
 /* Stream slot callback: store a negative result, wake a waiting slot (state 9 to 4), or reset it on 0. */
-void stream_slot_wake_waiting(int value, long arg) {
-    Slot_2670E0 *s = (Slot_2670E0 *)arg;
+void stream_slot_wake_waiting(int value, long slot_address) {
+    Slot_2670E0 *slot = (Slot_2670E0 *)slot_address;
 
-    if (s == 0) {
+    if (slot == 0) {
         return;
     }
     if (value < 0) {
-        s->value = value;
+        slot->value = value;
     }
     if (value != 0) {
-        if (s->state == 9) {
-            s->state = 4;
-            if (s->flag != 0) {
+        if (slot->state == 9) {
+            slot->state = 4;
+            if (slot->flag != 0) {
                 music_flagged_track_started = 1;
             }
         }
     } else {
-        s->state = 0;
+        slot->state = 0;
     }
 }
 /* stores value in the slot passed as a 64-bit argument; a zero value resets the slot's state,
    otherwise a slot in state 1 moves to 8 */
-void func_L00_00267188(int value, long arg) {
-    Slot_2670E0 *s = (Slot_2670E0 *)arg;
+void level_music_primary_start_callback(int value, long slot_address) {
+    Slot_2670E0 *slot = (Slot_2670E0 *)slot_address;
 
-    if (s == 0) {
+    if (slot == 0) {
         return;
     }
-    s->value = value;
+    slot->value = value;
     if (value != 0) {
-        if (s->state == 1) {
-            s->state = 8;
+        if (slot->state == 1) {
+            slot->state = 8;
         }
     } else {
-        s->state = 0;
+        slot->state = 0;
     }
 }
 extern int cinematic_mode MACRO_ADDR;

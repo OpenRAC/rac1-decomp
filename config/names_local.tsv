@@ -11182,3 +11182,5 @@ D_L00_001E4E90	suck_beam_ring_unit_offsets	20 vectors scaled by ring radius and 
 D_L00_001E6330	suck_beam_segment_turn_angles	per-segment smoothed turn angle via Camera_SmoothAngle, 10 entries	
 
 func_L08_0027C218	spawn_batalia_colored_effect	src/overlays/l08_batalia/offset_effects.c: creates type 0x2B particle, copies position/vector and RGBA, stores size and scaled lifetime
+
+func_L00_00267188	level_music_primary_start_callback	Level copy of src/game/stream.c music_primary_start_callback: stores handle at +0, state +0xA goes 1 to 8 on success or to 0 on failure; shared in all 19 levels
