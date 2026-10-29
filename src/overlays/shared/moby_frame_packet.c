@@ -18,8 +18,8 @@ typedef struct O0024ed18 {
 } O0024ed18;
 
 /* Finds the index of the keyframe nearest to the given time, or -1. */
-int find_nearest_animation_sequence_entry(char *a, float time) {
-    O0024ed18 *animation_sequence = (O0024ed18 *)a;
+int find_nearest_animation_sequence_entry(char *sequence_data, float time) {
+    O0024ed18 *animation_sequence = (O0024ed18 *)sequence_data;
     s16 scaled_target_position = truncate_float_to_s32_r(time * 16.0f);
     s32 i;
     for (i = 0; i < animation_sequence->n; i++) {
@@ -40,27 +40,27 @@ extern void transform_vector(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
 
 /* places a scaled, camera-relative entry in an object's table */
-void set_moby_local_table_entry(char *a, int idx, void *pos, float x, float y) {
-    float m[16];
-    float v[4];
-    char *e = *(char **)(a + 0x94) + (idx * 32 + 0x10);
-    float s = 1024.0f / *(float *)(a + 0x2C);
-    matrix_from_basis_rows(m, a + 0xC0);
-    FastVecSub(v, pos, a + 0x10);
-    transform_vector(v, v, m);
-    FastVecScale(v, v, s);
-    qcopy(e + 0x10, v);
-    *(float *)(e + 4) = y * s;
-    *(float *)(e + 0x1C) = x * s;
+void set_moby_local_table_entry(char *moby, int idx, void *pos, float x, float y) {
+    float basis_matrix[16];
+    float local_offset[4];
+    char *table_entry = *(char **)(moby + 0x94) + (idx * 32 + 0x10);
+    float local_scale = 1024.0f / *(float *)(moby + 0x2C);
+    matrix_from_basis_rows(basis_matrix, moby + 0xC0);
+    FastVecSub(local_offset, pos, moby + 0x10);
+    transform_vector(local_offset, local_offset, basis_matrix);
+    FastVecScale(local_offset, local_offset, local_scale);
+    qcopy(table_entry + 0x10, local_offset);
+    *(float *)(table_entry + 4) = y * local_scale;
+    *(float *)(table_entry + 0x1C) = x * local_scale;
 }
 /* Shifts every point pair in the class's point lists by dx, dy. */
-void offset_moby_class_point_pairs(unsigned char *a, int dx, int dy) {
-    int i;
-    int n = a[4] + a[5];
-    int *t = *(int **)a;
-    for (i = 0; i < n; i++, t += 4) {
-        unsigned short *e = *(unsigned short **)t;
-        int c = ((unsigned char *)e)[2]; int cnt; e += 2; if (c != 0) { cnt = c; do { e[0] = e[0] + dx; e[1] = e[1] + dy; e += 2; cnt--; } while (cnt != 0); }
+void offset_moby_class_point_pairs(unsigned char *point_lists_data, int dx, int dy) {
+    int list_index;
+    int list_count = point_lists_data[4] + point_lists_data[5];
+    int *list_record = *(int **)point_lists_data;
+    for (list_index = 0; list_index < list_count; list_index++, list_record += 4) {
+        unsigned short *point_data = *(unsigned short **)list_record;
+        int point_count = ((unsigned char *)point_data)[2]; int remaining_points; point_data += 2; if (point_count != 0) { remaining_points = point_count; do { point_data[0] = point_data[0] + dx; point_data[1] = point_data[1] + dy; point_data += 2; remaining_points--; } while (remaining_points != 0); }
     }
 }
 typedef struct Slot {
@@ -79,24 +79,24 @@ extern Slot moby_animation_slots[];
 extern char slot_buffers[];
 
 /* Takes the first free of six animation slots for animation id and links it to the moby. */
-Slot *allocate_moby_animation_slot(char *o, int id) {
-    int i = 0;
-    Slot *s;
-    unsigned char *r;
-    for (i = 0; i < 6 && moby_animation_slots[i].used != 0; i++) {
+Slot *allocate_moby_animation_slot(char *moby, int id) {
+    int slot_index = 0;
+    Slot *animation_slot;
+    unsigned char *animation_data;
+    for (slot_index = 0; slot_index < 6 && moby_animation_slots[slot_index].used != 0; slot_index++) {
     }
-    s = &moby_animation_slots[i];
-    s->used = 1;
-    s->id = id;
+    animation_slot = &moby_animation_slots[slot_index];
+    animation_slot->used = 1;
+    animation_slot->id = id;
     id = (short)id;
-    s->p10 = slot_buffers + i * 0x1500;
-    s->p14 = *(int *)(o + 0x24);
-    r = *(unsigned char **)(*(char **)(*(char **)(o + 0x24) + 0x1C) + id * 4 + 4);
-    s->s2 = r[2];
-    s->p0C = r + (r[0] + 4);
-    s->p1C = *(void **)(o + 0x60);
-    *(Slot **)(o + 0x60) = s;
-    return s;
+    animation_slot->p10 = slot_buffers + slot_index * 0x1500;
+    animation_slot->p14 = *(int *)(moby + 0x24);
+    animation_data = *(unsigned char **)(*(char **)(*(char **)(moby + 0x24) + 0x1C) + id * 4 + 4);
+    animation_slot->s2 = animation_data[2];
+    animation_slot->p0C = animation_data + (animation_data[0] + 4);
+    animation_slot->p1C = *(void **)(moby + 0x60);
+    *(Slot **)(moby + 0x60) = animation_slot;
+    return animation_slot;
 }
 typedef struct ListNode_24f0e8 ListNode_24f0e8;
 struct ListNode_24f0e8 {
@@ -111,18 +111,18 @@ extern void FastMemSet(void *, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/0024eec0.c, FUN_L00_0024f0e8. */
 void release_moby_animation_slot(ListOwner_24f0e8 *owner, ListNode_24f0e8 **slot) {
-    ListNode_24f0e8 *p;
+    ListNode_24f0e8 *previous_node;
 
     if (*slot == 0)
         return;
     if (owner->head == *slot) {
         owner->head = (*slot)->next;
     } else {
-        p = owner->head;
-        while (p->next != 0 && p->next != *slot)
-            p = p->next;
-        if (p->next == *slot)
-            p->next = (*slot)->next;
+        previous_node = owner->head;
+        while (previous_node->next != 0 && previous_node->next != *slot)
+            previous_node = previous_node->next;
+        if (previous_node->next == *slot)
+            previous_node->next = (*slot)->next;
     }
     FastMemSet(*slot, 0, 0x40);
     *slot = 0;
@@ -131,77 +131,77 @@ extern void Moby_BuildFramePacket(void *, int, int, int);
 extern void moby_blend_anim_frames_to_spr(void *);
 
 /* advances an animation blend timer and steps through its frame table */
-void advance_moby_animation_blend(void *unused, unsigned char *a) {
-    float s = *(float *)(a + 0x28);
-    a[5] = 0;
-    if (s != 0.0f && *(float *)(a + 0x2C) != 0.0f) {
-        float t = *(float *)(a + 0x24) + s * *(float *)(a + 0x2C);
-        *(float *)(a + 0x24) = t;
-        if (s > 0.0f) {
-            if (t > 0.99f && t < 1.01f) {
-                *(float *)(a + 0x24) = 1.0f;
+void advance_moby_animation_blend(void *unused, unsigned char *blend_data) {
+    float blend_rate = *(float *)(blend_data + 0x28);
+    blend_data[5] = 0;
+    if (blend_rate != 0.0f && *(float *)(blend_data + 0x2C) != 0.0f) {
+        float blend_position = *(float *)(blend_data + 0x24) + blend_rate * *(float *)(blend_data + 0x2C);
+        *(float *)(blend_data + 0x24) = blend_position;
+        if (blend_rate > 0.0f) {
+            if (blend_position > 0.99f && blend_position < 1.01f) {
+                *(float *)(blend_data + 0x24) = 1.0f;
             }
-            if (*(float *)(a + 0x24) >= 1.0f) {
-                int u = a[7];
+            if (*(float *)(blend_data + 0x24) >= 1.0f) {
+                int u = blend_data[7];
                 do {
                     int o, p, o2;
-                    a[6] = u;
-                    a[5] |= 1;
-                    a[0x20] = a[0x21];
+                    blend_data[6] = u;
+                    blend_data[5] |= 1;
+                    blend_data[0x20] = blend_data[0x21];
                     if ((unsigned char)u) {
-                        *(int *)(a + 0x38) = *(int *)(a + 0x3C);
+                        *(int *)(blend_data + 0x38) = *(int *)(blend_data + 0x3C);
                     }
-                    a[0x22] = a[0x23];
-                    a[0x21]++;
-                    o = a[0x23] * 4;
-                    if (a[0x21] >= *(unsigned char *)(*(int *)(*(unsigned char **)(a + 0x14) + o + 0x48) + 0x10)) {
-                        a[0x21] = 0;
-                        a[5] |= 2;
+                    blend_data[0x22] = blend_data[0x23];
+                    blend_data[0x21]++;
+                    o = blend_data[0x23] * 4;
+                    if (blend_data[0x21] >= *(unsigned char *)(*(int *)(*(unsigned char **)(blend_data + 0x14) + o + 0x48) + 0x10)) {
+                        blend_data[0x21] = 0;
+                        blend_data[5] |= 2;
                     }
                     {
-                        float f = (*(float *)(a + 0x24) - 1.0f) / *(float *)(a + 0x2C);
+                        float f = (*(float *)(blend_data + 0x24) - 1.0f) / *(float *)(blend_data + 0x2C);
                         float g;
-                        o2 = a[0x22] * 4;
-                        p = a[0x20] * 4;
-                        *(float *)(a + 0x24) = f;
-                        g = **(float **)(*(int *)(*(unsigned char **)(a + 0x14) + o2 + 0x48) + p + 0x1C);
-                        *(float *)(a + 0x2C) = g;
-                        *(float *)(a + 0x24) = f * g;
+                        o2 = blend_data[0x22] * 4;
+                        p = blend_data[0x20] * 4;
+                        *(float *)(blend_data + 0x24) = f;
+                        g = **(float **)(*(int *)(*(unsigned char **)(blend_data + 0x14) + o2 + 0x48) + p + 0x1C);
+                        *(float *)(blend_data + 0x2C) = g;
+                        *(float *)(blend_data + 0x24) = f * g;
                     }
-                } while (*(float *)(a + 0x24) >= 1.0f);
+                } while (*(float *)(blend_data + 0x24) >= 1.0f);
             }
         }
     }
-    if (a[6]) {
-        Moby_BuildFramePacket(a, a[0x22], a[0x20], *(int *)(a + 0x38));
+    if (blend_data[6]) {
+        Moby_BuildFramePacket(blend_data, blend_data[0x22], blend_data[0x20], *(int *)(blend_data + 0x38));
     } else {
-        int o = a[0x22] * 4;
-        int p = a[0x20] * 4;
-        *(int *)(a + 0x38) = *(int *)(*(int *)(*(unsigned char **)(a + 0x14) + o + 0x48) + p + 0x1C);
+        int o = blend_data[0x22] * 4;
+        int p = blend_data[0x20] * 4;
+        *(int *)(blend_data + 0x38) = *(int *)(*(int *)(*(unsigned char **)(blend_data + 0x14) + o + 0x48) + p + 0x1C);
     }
-    if (a[7]) {
-        Moby_BuildFramePacket(a, a[0x23], a[0x21], *(int *)(a + 0x3C));
+    if (blend_data[7]) {
+        Moby_BuildFramePacket(blend_data, blend_data[0x23], blend_data[0x21], *(int *)(blend_data + 0x3C));
     } else {
-        int o = a[0x23] * 4;
-        int p = a[0x21] * 4;
-        *(int *)(a + 0x3C) = *(int *)(*(int *)(*(unsigned char **)(a + 0x14) + o + 0x48) + p + 0x1C);
+        int o = blend_data[0x23] * 4;
+        int p = blend_data[0x21] * 4;
+        *(int *)(blend_data + 0x3C) = *(int *)(*(int *)(*(unsigned char **)(blend_data + 0x14) + o + 0x48) + p + 0x1C);
     }
-    moby_blend_anim_frames_to_spr(a);
+    moby_blend_anim_frames_to_spr(blend_data);
 }
 typedef struct { u8 pad[0x20]; u8 b20, b21, b22, b23; s32 i24; f32 f28; f32 f2c; } S;
 typedef struct { u8 pad[0x51]; u8 b51, b52, b53; } A;
 extern void advance_moby_animation_blend_r(void *, void *) __asm__("func_L00_002501C8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_state_0024eec0.c, FUN_L00_0024f3e0. */
-void initialize_moby_animation_blend(A *a0, S *a1, s32 a2, s32 a3, s32 a4, s32 a5) {
-    a1->b22 = a0->b53;
-    a1->b20 = a0->b51;
-    a1->b23 = a2;
-    a1->b21 = a3;
-    a1->i24 = 0;
-    a1->f28 = 1.0f;
-    a1->f2c = 1.0f / (f32)a4;
-    if (a5) advance_moby_animation_blend_r(a0, a1);
+void initialize_moby_animation_blend(A *source, S *destination, s32 target_animation_index, s32 target_frame_index, s32 step_divisor, s32 update_immediately) {
+    destination->b22 = source->b53;
+    destination->b20 = source->b51;
+    destination->b23 = target_animation_index;
+    destination->b21 = target_frame_index;
+    destination->i24 = 0;
+    destination->f28 = 1.0f;
+    destination->f2c = 1.0f / (f32)step_divisor;
+    if (update_immediately) advance_moby_animation_blend_r(source, destination);
 }
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay/state/0024eec0.c, FUN_L00_0024f440. */
 typedef unsigned long u64_50478p;
@@ -296,45 +296,39 @@ int SlotTable_Insert(int value) {
     return -1;
 }
 INCLUDE_ASM("asm/overlays", func_L00_00250700);
-/* Scale the object's local vertex (built via func_002116A0 into a local
-   0x40-byte scratch buffer) by arg0+0x2C in 1/1024 units, writing the
-   scaled result to arg2, then run arg2 through the two per-object
-   transforms at arg0+0xC0 and arg0+0x10.  Same family as func_0020DAF8 in
-   src/game/mobyfunc.c, but the scaling target here is a caller-supplied
-   vec4 (arg2) rather than a field of a caller-supplied 0x40-byte struct.
-   0x3A800000 is exactly 2^-10. */
+/* Joint positions use the moby scale in 1/1024 units before its world transform. */
 
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 
-/* Writes the world position of joint arg1 of moby arg0 to arg2. */
-void Moby_GetJointWorldPos(char *arg0, int arg1, void *arg2) {
-    char buf[0x40];
-    int n;
-    float s;
+/* Writes the joint world position after applying the moby scale and transform. */
+void Moby_GetJointWorldPos(char *moby, int joint_index, void *out_position) {
+    char joint_matrix[0x40];
+    int joint_index_copy;
+    float model_scale;
 
-    s = *(float *)(arg0 + 0x2C) * 0.0009765625f;
-    n = arg1;
-    get_moby_joint_matrices(arg0, 1, &n, buf);
-    FastVecScale(arg2, buf + 0x30, s);
-    matrix_mul_vec3(arg2, arg2, arg0 + 0xC0);
-    FastVecAdd(arg2, arg2, arg0 + 0x10);
+    model_scale = *(float *)(moby + 0x2C) * 0.0009765625f;
+    joint_index_copy = joint_index;
+    get_moby_joint_matrices(moby, 1, &joint_index_copy, joint_matrix);
+    FastVecScale(out_position, joint_matrix + 0x30, model_scale);
+    matrix_mul_vec3(out_position, out_position, moby + 0xC0);
+    FastVecAdd(out_position, out_position, moby + 0x10);
 }
 extern void copy_matrix_rotation(void *, void *);
 
 // Builds a matrix from the object's rotation, then rescales and offsets each entry of an attach list.
-void compute_selected_world_matrices(char *o, int n, int *arg2, char *out) {
-    char buf[0x40];
-    float s;
-    int i;
+void compute_selected_world_matrices(char *moby, int joint_count, int *joint_indices, char *out) {
+    char rotation_matrix[0x40];
+    float model_scale;
+    int joint_index;
 
-    s = *(float *)(o + 0x2C) * 0.0009765625f;
-    copy_matrix_rotation(buf, o + 0xC0);
-    get_moby_joint_matrices(o, n, arg2, out);
-    for (i = 0; i < n; i++) {
-        sce_vu0_mul_matrix(out + i * 0x40, buf, out + i * 0x40);
-        FastVecScale(out + i * 0x40 + 0x30, out + i * 0x40 + 0x30, s);
-        FastVecAdd(out + i * 0x40 + 0x30, out + i * 0x40 + 0x30, o + 0x10);
+    model_scale = *(float *)(moby + 0x2C) * 0.0009765625f;
+    copy_matrix_rotation(rotation_matrix, moby + 0xC0);
+    get_moby_joint_matrices(moby, joint_count, joint_indices, out);
+    for (joint_index = 0; joint_index < joint_count; joint_index++) {
+        sce_vu0_mul_matrix(out + joint_index * 0x40, rotation_matrix, out + joint_index * 0x40);
+        FastVecScale(out + joint_index * 0x40 + 0x30, out + joint_index * 0x40 + 0x30, model_scale);
+        FastVecAdd(out + joint_index * 0x40 + 0x30, out + joint_index * 0x40 + 0x30, moby + 0x10);
     }
 }
 extern char hero_globals_base[];
@@ -347,50 +341,50 @@ extern void STUB_printf();
 extern void pack_render_command_fields(void *, int, int, int, int);
 
 /* Finds the table entry nearest the object's position (within 8 units) and applies its fields to the object and globals. */
-void apply_nearest_environment_sample(char *o) {
+void apply_nearest_environment_sample(char *moby) {
     float vec[4];
     float best = 999999.0f;
-    float d;
-    int idx = -1;
-    int i;
-    int off;
-    char *e1;
-    char *e2;
-    char *e3;
+    float distance;
+    int sample_index = -1;
+    int search_index;
+    int sample_offset;
+    char *render_sample;
+    char *state_sample;
+    char *help_sample;
     char *g;
     unsigned char *h;
 
-    for (i = 0; i < environment_sample_count; i++) {
-        FastVecSub(vec, o + 0x10, environment_samples + i * 0x30);
-        d = FastVecLength(vec);
-        if (d <= 8.0f && d < best) {
-            best = d;
-            idx = i;
+    for (search_index = 0; search_index < environment_sample_count; search_index++) {
+        FastVecSub(vec, moby + 0x10, environment_samples + search_index * 0x30);
+        distance = FastVecLength(vec);
+        if (distance <= 8.0f && distance < best) {
+            best = distance;
+            sample_index = search_index;
         }
     }
-    if (idx == -1) {
+    if (sample_index == -1) {
         STUB_printf(no_environment_sample_msg);
         return;
     }
-    off = idx * 0x30;
-    e1 = (char *)(off + (int)environment_samples);
-    pack_render_command_fields(o, *(int *)(o + 0x80) = (*(int *)(e1 + 0x18) << 16) + (*(int *)(e1 + 0x14) << 8) + *(int *)(e1 + 0x10), 0, 0, 0);
-    *(int *)(o + 0x38) = *(int *)((char *)(off + (int)environment_samples) + 0x1C);
-    e2 = (char *)(off + (int)environment_samples);
-    if (*(unsigned char *)(e2 + 0x27) != 0) {
+    sample_offset = sample_index * 0x30;
+    render_sample = (char *)(sample_offset + (int)environment_samples);
+    pack_render_command_fields(moby, *(int *)(moby + 0x80) = (*(int *)(render_sample + 0x18) << 16) + (*(int *)(render_sample + 0x14) << 8) + *(int *)(render_sample + 0x10), 0, 0, 0);
+    *(int *)(moby + 0x38) = *(int *)((char *)(sample_offset + (int)environment_samples) + 0x1C);
+    state_sample = (char *)(sample_offset + (int)environment_samples);
+    if (*(unsigned char *)(state_sample + 0x27) != 0) {
         g = hero_globals_base + 0x1D;
-        *(int *)(g + 0x64) = *(int *)(e2 + 0x20);
-        g[0x68] = e2[0x24];
-        g[0x69] = e2[0x25];
-        g[0x6A] = e2[0x26];
+        *(int *)(g + 0x64) = *(int *)(state_sample + 0x20);
+        g[0x68] = state_sample[0x24];
+        g[0x69] = state_sample[0x25];
+        g[0x6A] = state_sample[0x26];
         g[0x6B] |= 7;
     }
-    e3 = (char *)(off + (int)environment_samples);
-    if (*(int *)(e3 + 0x28) >= 0) {
+    help_sample = (char *)(sample_offset + (int)environment_samples);
+    if (*(int *)(help_sample + 0x28) >= 0) {
         h = help_stats_base + 0x100B5;
         if (*(short *)(h + 0x3E) == 0) {
             if ((*(int *)(h + 0x20) & 0xFFFFFF) == 0xFF0000) {
-                *(unsigned short *)(h + 0x38) = *(int *)(e3 + 0x28);
+                *(unsigned short *)(h + 0x38) = *(int *)(help_sample + 0x28);
             }
         }
     }

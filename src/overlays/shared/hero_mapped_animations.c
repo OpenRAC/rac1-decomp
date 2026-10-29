@@ -239,20 +239,17 @@ extern char g_hero[];
 extern int lookup_s16_pair_value(int, int *);
 extern int scale_ticks(int);
 
-/* When the animation at D_0013F450 + 0x2278 is set and enabled (+0x227C),
-   starts the sequence func_L00_00232A18 picks for A0; if none is ready and
-   the animation has a previous sequence (+0x53), restarts sequence 0.
-   Retail reloads the animation pointer at each use. */
-void blend_hero_mapped_moby_animation(int a0, int a1, float a2) {
+/* Blends to the mapped animation when enabled, or returns to sequence 0 if no mapping exists. */
+void blend_hero_mapped_moby_animation(int animation_id, int frame_index, float blend_frames) {
     Hero *base = (Hero *)g_hero;
     int buf[4];
     int ok;
 
     if (base->unk2278 != 0) {
         if (base->unk227C != 0) {
-            ok = lookup_s16_pair_value(a0, buf);
+            ok = lookup_s16_pair_value(animation_id, buf);
             if (ok != 0) {
-                MobyBlendAnimation(base->unk2278, buf[0], a1, (int)a2);
+                MobyBlendAnimation(base->unk2278, buf[0], frame_index, (int)blend_frames);
             } else if (*(unsigned char *)(*(char **)&base->unk2278 + 0x53) != 0) {
                 MobyBlendAnimation(base->unk2278, 0, 0, scale_ticks(7));
             }
@@ -329,8 +326,8 @@ extern void blend_hero_slot3_mapped_animation_pair(int, int, float);
 extern void clear_hero_mapped_moby_animation_state(void);
 extern void blend_hero_mapped_moby_animation(int, int, float);
 
-/* Starts animation sequence A0 (slot byte A1) over time T on the object at +0x2080 of the game block. */
-void set_hero_animation(int a0, int a1, float t) {
+/* Starts the requested hero animation at the given frame and updates its mapped animations. */
+void set_hero_animation(int requested_animation_id, int starting_frame_index, float t) {
     struct Hero *g2;
     struct Hero *g3;
     struct Hero *g1 = (struct Hero *)(hero_globals_base + 0xE1D);
@@ -343,10 +340,10 @@ void set_hero_animation(int a0, int a1, float t) {
         *(int *)(obj + 0x54) = 0;
     }
     if (draw_map51_m[1] != 0) {
-        if (a0 == 0x31) {
-            a0 = 0x32;
-        } else if (a0 == 0x32) {
-            a0 = 0x31;
+        if (requested_animation_id == 0x31) {
+            requested_animation_id = 0x32;
+        } else if (requested_animation_id == 0x32) {
+            requested_animation_id = 0x31;
         }
     }
     slot = SlotTable_Insert(obj);
@@ -362,8 +359,8 @@ void set_hero_animation(int a0, int a1, float t) {
         *(unsigned char *)(obj + 0x52) = 0xFF;
         *(unsigned char *)(obj + 0x50) = slot;
     }
-    *(unsigned char *)(obj + 0x51) = a1;
-    *(unsigned char *)(obj + 0x53) = a0;
+    *(unsigned char *)(obj + 0x51) = starting_frame_index;
+    *(unsigned char *)(obj + 0x53) = requested_animation_id;
     update_moby_animation_state(obj);
     g2 = (struct Hero *)(hero_globals_base + 0xE1D);
     g2->anim_speed = 1.0f;
@@ -379,18 +376,18 @@ void set_hero_animation(int a0, int a1, float t) {
     }
     clear_hero_queued_animation();
     g3 = (struct Hero *)(hero_globals_base + 0xE1D);
-    o = a0 * 4;
+    o = requested_animation_id * 4;
     *(unsigned char *)(obj + 0x7C) = *(unsigned char *)(*(int *)(*(int *)(obj + 0x24) + o + 0x48) + 0x11);
     g3->anim_changing = 1;
     if (t < 0.0f) {
         t = *(int *)((char *)&hero_anim_blend_presets + g3->anim_blend_curve * 4);
     }
     if (g3->vehicle_mode == 0) {
-        blend_hero_slot3_mapped_animation_pair(a0, a1, t);
+        blend_hero_slot3_mapped_animation_pair(requested_animation_id, starting_frame_index, t);
     }
     clear_hero_mapped_moby_animation_state();
     if (*(int *)&g3->unk2278 != 0) {
-        blend_hero_mapped_moby_animation(a0, a1, t);
+        blend_hero_mapped_moby_animation(requested_animation_id, starting_frame_index, t);
     }
 }
 
