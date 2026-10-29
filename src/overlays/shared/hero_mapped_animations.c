@@ -9,22 +9,18 @@ extern int select_hero_slot3_animation_pair(int, int *, int *);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern int scale_ticks(int);
 
-/* With both objects at D_0013F450 + 0x1180 and +0x1184 present and the
-   first's byte 0x53 equal to 1, asks func_L00_00232850 for a pair of
-   sequences and starts one on each object (func_00213DE0). Each
-   sequence is read into a local before the func_001F9850 call, as
-   retail holds it in a saved register across it. */
+/* Starts the selected sequence on each slot 3 moby when both are ready. */
 void blend_hero_slot3_animation_pair(void) {
     Hero *base = (Hero *)g_hero;
-    char *a = *(char **)&base->items[3].moby;
-    char *b = *(char **)&base->items[3].moby2;
+    char *first_moby = *(char **)&base->items[3].moby;
+    char *second_moby = *(char **)&base->items[3].moby2;
     int buf[2];
     int seq;
 
-    if (a == 0 || b == 0) {
+    if (first_moby == 0 || second_moby == 0) {
         return;
     }
-    if (*(unsigned char *)(a + 0x53) != 1) {
+    if (*(unsigned char *)(first_moby + 0x53) != 1) {
         return;
     }
     if (select_hero_slot3_animation_pair(0, &buf[0], &buf[1]) == 0) {
@@ -32,9 +28,9 @@ void blend_hero_slot3_animation_pair(void) {
     }
     /* Blend both objects over the same scaled time. */
     seq = buf[0];
-    MobyBlendAnimation(a, seq, 0, scale_ticks(7));
+    MobyBlendAnimation(first_moby, seq, 0, scale_ticks(7));
     seq = buf[1];
-    MobyBlendAnimation(b, seq, 0, scale_ticks(7));
+    MobyBlendAnimation(second_moby, seq, 0, scale_ticks(7));
 }
 typedef struct {
     short seq;
@@ -81,22 +77,13 @@ int lookup_hero_slot3_animation_key(int key, int *out) {
     *out = 0;
     return 0;
 }
-/* Picks the sequences for the pair of objects at D_0013F450 + 0x1180 /
-   +0x1184 while state +0x11A4 is 2. When func_L00_00232850 finds a pair
-   for ID (and ID is nonzero), it starts them with ARG and T, unless the
-   first already plays its sequence. Otherwise, unless the first's
-   current sequence maps to key 0 (func_L00_00232608, checked only when
-   +0x208C is clear), it sends both to sequence 1 with func_001F9850(7),
-   or func_001F9850(0x13) when +0x2090 is 8 and func_L00_0020DB30(3) is 2,
-   as the last func_00213DE0 argument. The pair are
-   two scalars next to the spilled ID, which gives retail's 0x80 frame;
-   the block pointer is re-formed for each stage, as retail does. */
-void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
+/* Blends both slot 3 mobys to a mapped pair, or returns them to sequence 1. */
+void blend_hero_slot3_mapped_animation_pair(int id, int frame_index, float t) {
     Hero *base = (Hero *)g_hero;
     char *blk2;
     char *blk3;
-    char *a;
-    char *b;
+    char *first_moby;
+    char *second_moby;
     int seq0;
     int seq1;
     int ok;
@@ -105,23 +92,23 @@ void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
     if (base->items[3].state != 2) {
         return;
     }
-    a = *(char **)&base->items[3].moby;
-    b = *(char **)&base->items[3].moby2;
-    if (a == 0 || b == 0) {
+    first_moby = *(char **)&base->items[3].moby;
+    second_moby = *(char **)&base->items[3].moby2;
+    if (first_moby == 0 || second_moby == 0) {
         return;
     }
     if (select_hero_slot3_animation_pair(id, &seq0, &seq1) != 0 && id != 0) {
         /* Keep the pair if the first object already uses this sequence. */
-        if (*(unsigned char *)(a + 0x53) == seq0) {
+        if (*(unsigned char *)(first_moby + 0x53) == seq0) {
             return;
         }
-        MobyBlendAnimation(a, seq0, arg, (int)t);
-        MobyBlendAnimation(b, seq1, arg, (int)t);
+        MobyBlendAnimation(first_moby, seq0, frame_index, (int)t);
+        MobyBlendAnimation(second_moby, seq1, frame_index, (int)t);
         return;
     }
     blk2 = g_hero;
     ok = 1;
-    if (*(int *)(blk2 + 0x208C) == 0 && lookup_hero_slot3_animation_key(*(unsigned char *)(a + 0x53), &id) != 0) {
+    if (*(int *)(blk2 + 0x208C) == 0 && lookup_hero_slot3_animation_key(*(unsigned char *)(first_moby + 0x53), &id) != 0) {
         if (id == 0) {
             ok = 0;
         }
@@ -134,28 +121,24 @@ void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
     if (*(int *)(blk3 + 0x2090) == 8 && hero_slot_item_id(3) == 2) {
         seq = scale_ticks(0x13);
     }
-    if (*(unsigned char *)(a + 0x53) != 1) {
-        MobyBlendAnimation(a, 1, 0, seq);
+    if (*(unsigned char *)(first_moby + 0x53) != 1) {
+        MobyBlendAnimation(first_moby, 1, 0, seq);
     }
-    if (*(unsigned char *)(b + 0x53) != 1) {
-        MobyBlendAnimation(b, 1, 0, seq);
+    if (*(unsigned char *)(second_moby + 0x53) != 1) {
+        MobyBlendAnimation(second_moby, 1, 0, seq);
     }
 }
 extern int return_hero_animation_id_unchanged(int);
 extern int rand_range(int, int);
 
-/* Picks at random (func_L00_00258BC8) one of the entries whose seq is ID
-   in the mode's sequence table (see func_L00_00232608) and returns 1 with
-   its key and argument bytes in *KEY and *ARG; with no match, *KEY = 1
-   and it returns 0. `tbl - -n` keeps retail's index-first addu, which
-   `tbl + n` and `&tbl[n]` turn round. */
-int select_hero_slot3_animation_pair(int id, int *key, int *arg) {
+/* Chooses a matching sequence pair at random. Returns 0 when no pair exists. */
+int select_hero_slot3_animation_pair(int id, int *key, int *secondary_sequence) {
     SeqEntry *tbl;
     int list[20];
     int count;
     int want;
     int i;
-    SeqEntry *e;
+    SeqEntry *selected_entry;
 
     count = 0;
     want = return_hero_animation_id_unchanged(id);
@@ -178,9 +161,9 @@ int select_hero_slot3_animation_pair(int id, int *key, int *arg) {
         }
     }
     if (count != 0) {
-        e = tbl - -list[rand_range(0, count - 1)];
-        *key = e->key;
-        *arg = e->unk3;
+        selected_entry = tbl - -list[rand_range(0, count - 1)];
+        *key = selected_entry->key;
+        *secondary_sequence = selected_entry->unk3;
         return 1;
     }
     *key = 1;
@@ -591,85 +574,85 @@ extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
 extern s32 solve_quadratic_equation(f32 *, f32 *, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00231d08.c, FUN_L00_00232b90. */
-f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
-    f32 t[4];
-    Vec4 v;
-    Vec4 t1;
-    Vec4 v2;
-    f32 o[6];
+f32 predict_hero_trajectory_intercept_time(f32 prediction_frames, f32 gravity_acceleration, f32 target_height) {
+    f32 trajectory_endpoint[4];
+    Vec4 collision_start_or_gravity_vector;
+    Vec4 trajectory_work_vector;
+    Vec4 hero_position_copy;
+    f32 trajectory_solver_outputs[6];
     f32 x, y, z;
 
     switch ((&g_hero_r)->mode) {
     case 0:
-        if (c < 0.0f) {
-            FastVecScale(t, &(&g_hero_r)->vE0, a);
-            t[2] -= ((a * a + a) * 0.5f) * b;
-            FastVecAdd(t, t, &(&g_hero_r)->v80);
-            v.q = (&g_hero_r)->v80.q;
-            clip_negative_segment_endpoint_xyz(&v, t);
-            qcopy(&v, &(&g_hero_r)->v80);
-            if (coll_line(&v, t, 0x24, 0, 0) != 0) {
+        if (target_height < 0.0f) {
+            FastVecScale(trajectory_endpoint, &(&g_hero_r)->vE0, prediction_frames);
+            trajectory_endpoint[2] -= ((prediction_frames * prediction_frames + prediction_frames) * 0.5f) * gravity_acceleration;
+            FastVecAdd(trajectory_endpoint, trajectory_endpoint, &(&g_hero_r)->v80);
+            collision_start_or_gravity_vector.q = (&g_hero_r)->v80.q;
+            clip_negative_segment_endpoint_xyz(&collision_start_or_gravity_vector, trajectory_endpoint);
+            qcopy(&collision_start_or_gravity_vector, &(&g_hero_r)->v80);
+            if (coll_line(&collision_start_or_gravity_vector, trajectory_endpoint, 0x24, 0, 0) != 0) {
                 if (compute_gravity_relative_vector_inclination_r((f32 *)coll_hit_normal) <= 0.87266463f) {
-                    c = *(f32 *)(coll_hit_normal - 0x18);
+                    target_height = *(f32 *)(coll_hit_normal - 0x18);
                 }
             }
         }
-        if (c > 0.0f) {
-            if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&g_hero_r)->vE0.f[2] - b * -0.5f, (&g_hero_r)->v80.f[2] - c) > 0
-                && o[0] > 0.0f) {
-                return o[0];
+        if (target_height > 0.0f) {
+            if (solve_quadratic_equation(&trajectory_solver_outputs[0], &trajectory_solver_outputs[1], gravity_acceleration * -0.5f, (&g_hero_r)->vE0.f[2] - gravity_acceleration * -0.5f, (&g_hero_r)->v80.f[2] - target_height) > 0
+                && trajectory_solver_outputs[0] > 0.0f) {
+                return trajectory_solver_outputs[0];
             }
         }
         break;
     case 1:
-        qcopy(&v, &(&g_hero_r)->v270);
-        vec_scale_to_length(&v, &v, b);
-        FastVecScale(&v, &v, -1.0f);
-        FastVecScale(t, &(&g_hero_r)->vE0, a);
-        FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
-        FastVecAdd(t, &t1, t);
-        FastVecAdd(t, &(&g_hero_r)->v80, t);
-        v2.q = (&g_hero_r)->v80.q;
-        clip_negative_segment_endpoint_xyz(&v2, t);
-        if (coll_line(&(&g_hero_r)->v80, t, 0x24, 0, 0) != 0) {
+        qcopy(&collision_start_or_gravity_vector, &(&g_hero_r)->v270);
+        vec_scale_to_length(&collision_start_or_gravity_vector, &collision_start_or_gravity_vector, gravity_acceleration);
+        FastVecScale(&collision_start_or_gravity_vector, &collision_start_or_gravity_vector, -1.0f);
+        FastVecScale(trajectory_endpoint, &(&g_hero_r)->vE0, prediction_frames);
+        FastVecScale(&trajectory_work_vector, &collision_start_or_gravity_vector, ((prediction_frames * prediction_frames + prediction_frames) * 0.5f) * gravity_acceleration);
+        FastVecAdd(trajectory_endpoint, &trajectory_work_vector, trajectory_endpoint);
+        FastVecAdd(trajectory_endpoint, &(&g_hero_r)->v80, trajectory_endpoint);
+        hero_position_copy.q = (&g_hero_r)->v80.q;
+        clip_negative_segment_endpoint_xyz(&hero_position_copy, trajectory_endpoint);
+        if (coll_line(&(&g_hero_r)->v80, trajectory_endpoint, 0x24, 0, 0) != 0) {
             f32 nb;
-            nb = b * -0.5f;
+            nb = gravity_acceleration * -0.5f;
             z = gravity_z_r(&(&g_hero_r)->vE0) - nb;
             x = gravity_z_r(&(&g_hero_r)->v80);
             y = gravity_z_r(&collision_hit_point);
-            if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0
-                && o[2] > 0.0f) {
-                return o[2];
+            if (solve_quadratic_equation(&trajectory_solver_outputs[2], &trajectory_solver_outputs[3], nb, z, x - y) > 0
+                && trajectory_solver_outputs[2] > 0.0f) {
+                return trajectory_solver_outputs[2];
             }
         }
         break;
     case 2:
-        t1.f[2] = 100.0f;
-        t1.f[1] = 100.0f;
-        t1.f[0] = 100.0f;
-        FastVecSub(&v, &(&g_hero_r)->v80, &t1);
-        vec_scale_to_length(&v, &v, b);
-        FastVecScale(&v, &v, -1.0f);
-        FastVecScale(t, &(&g_hero_r)->vE0, a);
-        FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
-        FastVecAdd(t, &t1, t);
-        FastVecAdd(t, &(&g_hero_r)->v80, t);
-        v2.q = (&g_hero_r)->v80.q;
-        clip_negative_segment_endpoint_xyz(&v2, t);
-        if (coll_line(&(&g_hero_r)->v80, t, 0x24, 0, 0) != 0) {
+        trajectory_work_vector.f[2] = 100.0f;
+        trajectory_work_vector.f[1] = 100.0f;
+        trajectory_work_vector.f[0] = 100.0f;
+        FastVecSub(&collision_start_or_gravity_vector, &(&g_hero_r)->v80, &trajectory_work_vector);
+        vec_scale_to_length(&collision_start_or_gravity_vector, &collision_start_or_gravity_vector, gravity_acceleration);
+        FastVecScale(&collision_start_or_gravity_vector, &collision_start_or_gravity_vector, -1.0f);
+        FastVecScale(trajectory_endpoint, &(&g_hero_r)->vE0, prediction_frames);
+        FastVecScale(&trajectory_work_vector, &collision_start_or_gravity_vector, ((prediction_frames * prediction_frames + prediction_frames) * 0.5f) * gravity_acceleration);
+        FastVecAdd(trajectory_endpoint, &trajectory_work_vector, trajectory_endpoint);
+        FastVecAdd(trajectory_endpoint, &(&g_hero_r)->v80, trajectory_endpoint);
+        hero_position_copy.q = (&g_hero_r)->v80.q;
+        clip_negative_segment_endpoint_xyz(&hero_position_copy, trajectory_endpoint);
+        if (coll_line(&(&g_hero_r)->v80, trajectory_endpoint, 0x24, 0, 0) != 0) {
             f32 nb;
-            nb = b * -0.5f;
+            nb = gravity_acceleration * -0.5f;
             z = gravity_z_r(&(&g_hero_r)->vE0) - nb;
             x = gravity_z_r(&(&g_hero_r)->v80);
             y = gravity_z_r(&collision_hit_point);
-            if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0
-                && o[4] > 0.0f) {
-                return o[4];
+            if (solve_quadratic_equation(&trajectory_solver_outputs[4], &trajectory_solver_outputs[5], nb, z, x - y) > 0
+                && trajectory_solver_outputs[4] > 0.0f) {
+                return trajectory_solver_outputs[4];
             }
         }
         break;
     }
-    return a;
+    return prediction_frames;
 }
 extern int cinematic_mode MACRO_ADDR;
 
@@ -807,15 +790,15 @@ void clear_hero_moby_flag_bit0(void) {
         *(unsigned short *)(obj + 0x34) &= ~1;
     }
 }
-/* Stores two floats, an index and a byte, and sets the bits of a byte mask in a flag halfword. */
-void configure_hero_point_effect_emission(float a, float b, short c, unsigned char d, unsigned char e, unsigned char f) {
+/* Sets the point effect count, update limit, random range and flag masks. */
+void configure_hero_point_effect_emission(float random_value_base, float random_value_half_range, short remaining_updates, unsigned char count_per_point, unsigned char flags_to_set, unsigned char flags_to_clear) {
     struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
 
-    base->items[6].unk38 = c;
-    base->items[6].unk3C = d;
-    base->items[6].unk3E = (base->items[6].unk3E & ~f) | e;
-    base->items[6].unk30 = a;
-    base->items[6].unk34 = b;
+    base->items[6].unk38 = remaining_updates;
+    base->items[6].unk3C = count_per_point;
+    base->items[6].unk3E = (base->items[6].unk3E & ~flags_to_clear) | flags_to_set;
+    base->items[6].unk30 = random_value_base;
+    base->items[6].unk34 = random_value_half_range;
 }
 extern float fast_atan2(float, float);
 extern void clear_u64_value(void *);
@@ -1200,22 +1183,21 @@ extern int weapon_ammo_counts[];
 extern int weapon_ammo_used[];
 /* takes amount from the weapon's ammo (the current weapon for -1): 1 when taken or the weapon has no ammo limit, 0 when there is too little */
 int use_ammo(int id, int amount) {
-    AmmoInfo *e;
+    AmmoInfo *ammo_info;
     if (id == -1) id = g_hero_equipped_item_id;
-    e = &item_price_table[id];
-    if (e->max == 0) return 1;
+    ammo_info = &item_price_table[id];
+    if (ammo_info->max == 0) return 1;
     if (weapon_ammo_counts[id] < amount) return 0;
     weapon_ammo_counts[id] -= amount;
     weapon_ammo_used[id] += amount;
     return 1;
 }
 INCLUDE_ASM("asm/overlays", func_L00_00234674);
-/* Adds B rounds to weapon A's ammo (D_0013D530[a]), clamped to the weapon's capacity (D_L00_001C43B0[a].max):
-   returns the overflow that did not fit, 0 when it all fit or the weapon has no ammo limit. */
-int add_ammo(int a, int b) {
-    int *p = &weapon_ammo_counts[a];
-    unsigned short *q = (unsigned short *)((char *)item_price_table + a * 0x18);
-    int v = *p + b;
+/* Adds ammo and clamps it when the weapon has a capacity. Returns overflow. */
+int add_ammo(int weapon_id, int amount) {
+    int *p = &weapon_ammo_counts[weapon_id];
+    unsigned short *q = (unsigned short *)((char *)item_price_table + weapon_id * 0x18);
+    int v = *p + amount;
     unsigned short t = q[7];
     *p = v;
     if (t != 0) {
@@ -1230,10 +1212,10 @@ int add_ammo(int a, int b) {
 }
 /* the weapon's ammo (the current weapon for -1), or 1 when it has no ammo limit */
 int get_ammo(int id) {
-    AmmoInfo *e;
+    AmmoInfo *ammo_info;
     if (id == -1) id = g_hero_equipped_item_id;
-    e = &item_price_table[id];
-    if (e->max == 0) return 1;
+    ammo_info = &item_price_table[id];
+    if (ammo_info->max == 0) return 1;
     return weapon_ammo_counts[id];
 }
 extern void HeroEnterMoveState(int, int);
@@ -1536,35 +1518,35 @@ extern void update_hero_item_mobys(void);
 extern void animate_hero_slot4_and_slot5_visuals(void);
 
 /* in state 2 or 6: flag the matching mobys, update, then clear bit 0 of three mobys */
-void update_hero_slot4_and_slot5_mobys(int a0) {
-    char *d;
+void update_hero_slot4_and_slot5_mobys(int moby_override) {
+    char *moby_collection_base;
     char *base;
-    char *o;
-    char *t;
+    char *listed_moby;
+    char *item_moby;
     int i;
     if (cinematic_mode == 2 || cinematic_mode == 6) {
-        d = cutscene_state;
-        for (i = 0; i < *(short *)(d + 0x44); i++) {
-            o = *(char **)(d + 0x178 + i * 4);
-            if ((unsigned short)(*(unsigned short *)(o + 0xA6) - 0x509) < 2) {
-                *(unsigned short *)(o + 0x34) |= 0x800;
+        moby_collection_base = cutscene_state;
+        for (i = 0; i < *(short *)(moby_collection_base + 0x44); i++) {
+            listed_moby = *(char **)(moby_collection_base + 0x178 + i * 4);
+            if ((unsigned short)(*(unsigned short *)(listed_moby + 0xA6) - 0x509) < 2) {
+                *(unsigned short *)(listed_moby + 0x34) |= 0x800;
             }
         }
-        update_hero_world_matrices(a0);
+        update_hero_world_matrices(moby_override);
         update_hero_item_mobys();
         animate_hero_slot4_and_slot5_visuals();
         base = g_hero;
-        t = *(char **)(base + 0x11D0);
-        if (t != 0) {
-            *(unsigned short *)(t + 0x34) &= 0xFFFE;
+        item_moby = *(char **)(base + 0x11D0);
+        if (item_moby != 0) {
+            *(unsigned short *)(item_moby + 0x34) &= 0xFFFE;
         }
-        t = *(char **)(base + 0x11D4);
-        if (t != 0) {
-            *(unsigned short *)(t + 0x34) &= 0xFFFE;
+        item_moby = *(char **)(base + 0x11D4);
+        if (item_moby != 0) {
+            *(unsigned short *)(item_moby + 0x34) &= 0xFFFE;
         }
-        t = *(char **)(base + 0x1220);
-        if (t != 0) {
-            *(unsigned short *)(t + 0x34) &= 0xFFFE;
+        item_moby = *(char **)(base + 0x1220);
+        if (item_moby != 0) {
+            *(unsigned short *)(item_moby + 0x34) &= 0xFFFE;
         }
     }
 }

@@ -2183,11 +2183,11 @@ extern T hero_world_matrix_joints;
 extern unsigned char hero_globals_base[] NOT_SDA;
 extern void compute_selected_world_matrices(int, int, void *, void *);
 /* update_hero_world_matrices: computes the hero attach matrices for model a. */
-void update_hero_world_matrices(int a) {
-    T t;
-    if (a == 0) a = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
-    t = hero_world_matrix_joints;
-    compute_selected_world_matrices(a, 9, &t, hero_globals_base + 0x18DD);
+void update_hero_world_matrices(int moby_override) {
+    T joint_indices;
+    if (moby_override == 0) moby_override = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+    joint_indices = hero_world_matrix_joints;
+    compute_selected_world_matrices(moby_override, 9, &joint_indices, hero_globals_base + 0x18DD);
 }
 extern unsigned long pack_vector_s16(int, float);
 extern void func_L00_00255B90(int);
