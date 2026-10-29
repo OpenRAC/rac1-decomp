@@ -673,32 +673,31 @@ extern float screen_projection_focal;
 extern CameraSystem gCamera_cam __asm__("D_00187040");
 
 
-/* Projects camera-space point a1 through the camera matrix, divides by
-   depth (D_0018D010 / w) and scales to x16 screen units. func_002346C0
-   in tfragfunc.c builds the same matrix. */
-void project_to_screen(Vec3f *a0, float *a1) {
-    float m[4][4];
-    float m2[4][4];
-    float v[4];
-    float out[4];
+/* Project a world point into screen units of 1/16 pixel.
+   func_002346C0 builds the same matrix. */
+void project_to_screen(Vec3f *screen_point, float *world_point) {
+    float camera_translation[4][4];
+    float projection_matrix[4][4];
+    float scaled_point[4];
+    float projected_point[4];
     float invw;
 
-    set_identity_matrix(m);
-    m[3][0] = -gCamera_cam.pos.f[0] * 1024.0f;
-    m[3][1] = -gCamera_cam.pos.f[1] * 1024.0f;
-    m[3][2] = -gCamera_cam.pos.f[2] * 1024.0f;
-    sce_vu0_mul_matrix(m2, gCamera_cam.view_matrix, m);
+    set_identity_matrix(camera_translation);
+    camera_translation[3][0] = -gCamera_cam.pos.f[0] * 1024.0f;
+    camera_translation[3][1] = -gCamera_cam.pos.f[1] * 1024.0f;
+    camera_translation[3][2] = -gCamera_cam.pos.f[2] * 1024.0f;
+    sce_vu0_mul_matrix(projection_matrix, gCamera_cam.view_matrix, camera_translation);
 
-    FastVecScale(v, a1, 1024.0f);
-    v[3] = 1.0f;
-    transform_vector(out, v, m2);
+    FastVecScale(scaled_point, world_point, 1024.0f);
+    scaled_point[3] = 1.0f;
+    transform_vector(projected_point, scaled_point, projection_matrix);
 
-    invw = screen_projection_focal / out[3];
-    a0->z = out[2] * 0.0009765625f;
-    out[0] = out[0] * invw + 2048.0f;
-    a0->x = out[0] * 16.0f;
-    out[1] = out[1] * invw + 2048.0f;
-    a0->y = out[1] * 16.0f;
+    invw = screen_projection_focal / projected_point[3];
+    screen_point->z = projected_point[2] * 0.0009765625f;
+    projected_point[0] = projected_point[0] * invw + 2048.0f;
+    screen_point->x = projected_point[0] * 16.0f;
+    projected_point[1] = projected_point[1] * invw + 2048.0f;
+    screen_point->y = projected_point[1] * 16.0f;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001F2550);
@@ -2962,19 +2961,19 @@ extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
 
-/* measure_text_width_regular: width of the first arg1 characters of arg0 in the regular font table. */
-int measure_text_width_regular(unsigned char *arg0, int arg1) {
-    return measure_text_width(arg0, arg1, normal_font_metrics);
+/* Measure up to count characters in the regular font. */
+int measure_text_width_regular(unsigned char *str, int count) {
+    return measure_text_width(str, count, normal_font_metrics);
 }
 
-/* measure_text_width_small: width of the first arg1 characters of arg0 in the small font table. */
-int measure_text_width_small(unsigned char *arg0, int arg1) {
-    return measure_text_width(arg0, arg1, small_font_metrics);
+/* Measure up to count characters in the small font. */
+int measure_text_width_small(unsigned char *str, int count) {
+    return measure_text_width(str, count, small_font_metrics);
 }
 
-/* measure_text_width_large: width of the first arg1 characters of arg0 in the large font table. */
-int measure_text_width_large(unsigned char *arg0, int arg1) {
-    return measure_text_width(arg0, arg1, large_font_metrics);
+/* Measure up to count characters in the large font. */
+int measure_text_width_large(unsigned char *str, int count) {
+    return measure_text_width(str, count, large_font_metrics);
 }
 
 /*

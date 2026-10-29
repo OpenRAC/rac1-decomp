@@ -267,8 +267,8 @@ typedef struct {
    first, and the default stores are ordered so that sched1's
    register-pressure tie-break (stores that free a register go first)
    reproduces retail's store order. */
-void InitMobyInstance(void *arg0, int oClass) {
-    MobyI *m = (MobyI *)arg0;
+void InitMobyInstance(void *moby, int oClass) {
+    MobyI *m = (MobyI *)moby;
     unsigned char c;
     int idx;
     MobyIClass *pClass;
@@ -447,37 +447,32 @@ __asm__(".section .text\n\tnop\n");
 
 LINKER_REMNANT("asm/remnants/text", func_0020D928);
 
-/* Attach a fresh node to arg0's list at +0x64, seeded with 1.0f scales. */
-/* AttachManipulator */
-void AttachManipulator(char *arg0, int arg1, unsigned char *arg2) {
+/* Attach a manipulator to the moby, with scales set to 1.0f. */
+void AttachManipulator(char *moby, int arg1, unsigned char *manipulator) {
     unsigned char *e;
 
-    if (arg2[1] != 0) {
+    if (manipulator[1] != 0) {
         return;
     }
-    arg2[0] = (char)arg1;
-    arg2[1] = 1;
-    *(float *)(arg2 + 0x1C) = 1.0f;
-    *(float *)(arg2 + 0x20) = 1.0f;
-    *(float *)(arg2 + 0x24) = 1.0f;
-    *(float *)(arg2 + 0x28) = 1.0f;
+    manipulator[0] = (char)arg1;
+    manipulator[1] = 1;
+    *(float *)(manipulator + 0x1C) = 1.0f;
+    *(float *)(manipulator + 0x20) = 1.0f;
+    *(float *)(manipulator + 0x24) = 1.0f;
+    *(float *)(manipulator + 0x28) = 1.0f;
 
-    e = *(unsigned char **)(*(char **)(*(char **)(arg0 + 0x24) + 0x1C) + arg2[0] * 4 + 4);
-    *(int *)(arg2 + 4) = e[*e + 4] * 0x40 + 0x70000000;
+    e = *(unsigned char **)(*(char **)(*(char **)(moby + 0x24) + 0x1C) + manipulator[0] * 4 + 4);
+    *(int *)(manipulator + 4) = e[*e + 4] * 0x40 + 0x70000000;
 
-    *(int *)(arg2 + 8) = *(int *)(arg0 + 0x64);
-    *(int *)(arg0 + 0x64) = (int)arg2;
+    *(int *)(manipulator + 8) = *(int *)(moby + 0x64);
+    *(int *)(moby + 0x64) = (int)manipulator;
 }
 
-/*
- * DetachManipulator: unlink `node` from the list at arg0+0x64 (next
- * pointer at +8), then clear it with func_001F99B0(node, 0, 0x40).
- * The head is read twice, for the test and again for `cur`: the copy
- * that makes lands in the bnel's slot and leaves retail's two nops.
- */
-void DetachManipulator(void *arg0, void *arg1) {
-    char *base = (char *)arg0;
-    char *node = (char *)arg1;
+/* Unlink and clear the manipulator. Read the head twice to keep the
+   matching branch layout. */
+void DetachManipulator(void *moby, void *manipulator) {
+    char *base = (char *)moby;
+    char *node = (char *)manipulator;
     char *cur;
 
     if (node == 0) {
@@ -499,37 +494,37 @@ void DetachManipulator(void *arg0, void *arg1) {
 
 extern int moby_render_slots[];
 
-/* Returns the render slot holding moby v, or claims a free one; -1 if all 16 are taken. */
-int find_or_allocate_id_slot(int v) {
-    int i = 0;
-    int *p = moby_render_slots;
+/* Find or claim a moby render slot; return -1 if all 16 are taken. */
+int find_or_allocate_id_slot(int moby_address) {
+    int slot_index = 0;
+    int *slot = moby_render_slots;
     do {
-        if (*p == 0 || *p == v) {
-            *p = v;
-            return i;
+        if (*slot == 0 || *slot == moby_address) {
+            *slot = moby_address;
+            return slot_index;
         }
-        i++;
-        p++;
-    } while (i < 0x10);
+        slot_index++;
+        slot++;
+    } while (slot_index < 0x10);
     return -1;
 }
 
 /* Clears render slots whose moby is dead or no longer in its expected state. */
 void prune_moby_references(void) {
     int sentinel = 0xFF;
-    char **p = (char **)moby_render_slots;
-    int i = 0xF;
+    char **slot = (char **)moby_render_slots;
+    int slot_countdown = 0xF;
     do {
-        char *e = *p;
-        i--;
-        if (e != 0) {
-            if ((*(unsigned char *)(e + 0x20) & 0x80) != 0 ||
-                *(unsigned char *)(e + 0x52) != sentinel) {
-                *p = 0;
+        char *moby = *slot;
+        slot_countdown--;
+        if (moby != 0) {
+            if ((*(unsigned char *)(moby + 0x20) & 0x80) != 0 ||
+                *(unsigned char *)(moby + 0x52) != sentinel) {
+                *slot = 0;
             }
         }
-        p++;
-    } while (i >= 0);
+        slot++;
+    } while (slot_countdown >= 0);
 }
 
 /* func_001FA460 is declared above with a single argument, for the
@@ -591,7 +586,7 @@ extern void VU1_texFlush(void);
    D_0016000C the tag slot DrawMobysSetup reserved. Every access goes
    back to the globals, because each store through them could alias. */
 void DmaMobyTextures(void) {
-    int *p = (int *)g_render_packet_cursor;
+    int *chain_start = (int *)g_render_packet_cursor;
 
     g_render_packet_cursor += 0x10;
     ((int *)moby_texture_tag_slot)[0] = 0x20000000;
@@ -607,10 +602,10 @@ void DmaMobyTextures(void) {
     ((int *)g_render_packet_cursor)[2] = 0;
     ((int *)g_render_packet_cursor)[3] = 0;
     g_render_packet_cursor += 0x10;
-    p[0] = 0x20000000;
-    p[1] = g_render_packet_cursor;
-    p[2] = 0;
-    p[3] = 0;
+    chain_start[0] = 0x20000000;
+    chain_start[1] = g_render_packet_cursor;
+    chain_start[2] = 0;
+    chain_start[3] = 0;
 }
 
 extern int moby_class_rectify[];
