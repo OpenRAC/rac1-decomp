@@ -247,10 +247,10 @@ void CreatePointLight(int i) {
 
 extern void DetachPointLight(int);
 
-/* RefreshPointLight */
-void RefreshPointLight(int arg0) {
-    DetachPointLight(arg0);
-    CreatePointLight(arg0);
+/* Rebuild the point light's attachment lists. */
+void RefreshPointLight(int light_index) {
+    DetachPointLight(light_index);
+    CreatePointLight(light_index);
 }
 /* Retail aligns the next function to 16 bytes, and this function's .s
    stub carried one padding word to do it. Decompiling to C drops that
@@ -301,7 +301,7 @@ extern s32 STUB_printf();
 /* Remove one point light from three packed attachment lists. Each 16-bit
    reference stores up to four light IDs in nibbles; deleting one shifts
    the higher IDs down and marks the record free when all are 0xF. */
-void DetachPointLight(s32 arg0) {
+void DetachPointLight(s32 light_index) {
     s16 *firstLinks;
     s16 *thirdLinks;
     s16 *secondLinks;
@@ -323,13 +323,13 @@ void DetachPointLight(s32 arg0) {
     struct LightRecord32A *firstRecord;
     struct PointLightLinks *links;
 
-    firstNibble = arg0 & 0xFFFF;
-    links = (arg0 * 0x30) + point_light_data;
-    secondNibble = (arg0 * 0x10) & 0xFFFF;
-    thirdNibble = (arg0 << 8) & 0xFFFF;
+    firstNibble = light_index & 0xFFFF;
+    links = (light_index * 0x30) + point_light_data;
+    secondNibble = (light_index * 0x10) & 0xFFFF;
+    thirdNibble = (light_index << 8) & 0xFFFF;
     firstLinks = links->unkC + (links->unk0 * 2);
     firstEnd = firstLinks + links->unk2;
-    fourthNibble = (arg0 << 0xC) & 0xFFFF;
+    fourthNibble = (light_index << 0xC) & 0xFFFF;
     if (firstLinks != firstEnd) {
         do {
             firstRecord = ties + (*firstLinks << 5);

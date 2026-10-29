@@ -867,18 +867,16 @@ extern int help_msg_count;
    (cursor into the table walked below). */
 extern short help_msgs;
 
-/* Points the D_0015F780 cursor at entry arg0 of the table D_0015F064
-   indexes into D_0015F060, past its 8-byte header, and keeps the
-   header's first word in D_001997FC. Both table pointers are MACRO_ADDR
-   (one register each), and the index goes first in the addition. */
-void queue_dma_transfer(int arg0) {
-    int *entry = (int *)(arg0 * 4 + help_offset_table);
-    int off = *entry;
-    char *p = (char *)(help_msg_data + off);
+/* Select a help message block and read its entry count.
+   The cursor starts after the eight-byte header. */
+void queue_dma_transfer(int message_index) {
+    int *entry = (int *)(message_index * 4 + help_offset_table);
+    int message_offset = *entry;
+    char *message_data = (char *)(help_msg_data + message_offset);
 
-    help_msg_count = *(int *)p;
-    p += 8;
-    *(char **)&help_msgs = p;
+    help_msg_count = *(int *)message_data;
+    message_data += 8;
+    *(char **)&help_msgs = message_data;
 }
 
 extern char render_sequence[];
@@ -1207,14 +1205,13 @@ extern int bank_sound_count;
 
 extern int bank_sound_count_m __asm__("D_0015F694") MACRO_ADDR;
 
-/* The older register residual was the split load of D_0015F694; read
-   through a MACRO_ADDR alias it is retail's one-register load. */
-int is_active_state_entry(int arg0, int arg1) {
-    if (arg0 >= 0) {
-        char *p = voice_pool + arg0 * 0x70;
-        if (*(short *)(p + 0x7E) == arg1 + bank_sound_count_m) {
-            unsigned char s = p[0x74];
-            if (s == 1 || s == 2) {
+/* Check that the voice matches the group entry and is queued or playing. */
+int is_active_state_entry(int voice_index, int group_entry_index) {
+    if (voice_index >= 0) {
+        char *voice_slot = voice_pool + voice_index * 0x70;
+        if (*(short *)(voice_slot + 0x7E) == group_entry_index + bank_sound_count_m) {
+            unsigned char voice_state = voice_slot[0x74];
+            if (voice_state == 1 || voice_state == 2) {
                 return 1;
             }
         }

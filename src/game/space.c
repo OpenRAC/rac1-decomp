@@ -336,12 +336,9 @@ typedef struct {
 extern FlareCfg level_render_state;
 extern float light_flare_corners[][4][4];
 
-/* Draws a light flare quad at arg0's position (+0x00; the matrix is at
-   +0xC0) when func_001FA9E8 finds it on screen, with the alpha it
-   returns. In D_0015F6E8 mode 6 with flare set 3, the flare fades as
-   D_0013E130's level passes func_001F98C0(150), and its depth comes from
-   func_00214358. The corners are D_001D9B60[set]. */
-void draw_light_flare(char *arg0) {
+/* Draw a visible flare using the instance transform.
+   Mode 6 uses ground height and may apply the level fade. */
+void draw_light_flare(char *flare_data) {
     float a[4];
     Quad_FBE0 q;
     float b[4];
@@ -350,7 +347,7 @@ void draw_light_flare(char *arg0) {
     int i;
 
     alpha = 0;
-    scale_vector(a, arg0, 1.0f / 1024.0f);
+    scale_vector(a, flare_data, 1.0f / 1024.0f);
     if (bsphere_check_alpha(a, &alpha, 32.0f) < 0) {
         return;
     }
@@ -366,18 +363,18 @@ void draw_light_flare(char *arg0) {
     q.gs[3] = 0x8000000044;
     q.gs[0] = 0;
     FastMemCopy(q.uv, quad_default_uvs, 0x20);
-    FastVecScale(b, arg0, 1.0f / 1024.0f);
-    z = *(float *)(arg0 + 0x18) + 0.1f;
+    FastVecScale(b, flare_data, 1.0f / 1024.0f);
+    z = *(float *)(flare_data + 0x18) + 0.1f;
     if (g_game_mode == 6) {
-        z = ProbeGroundHeight(arg0 + 0x10, 0, 0.5f) + 0.1f;
+        z = ProbeGroundHeight(flare_data + 0x10, 0, 0.5f) + 0.1f;
     }
     for (i = 0; i < 4; i++) {
         float *v;
 
         q.rgba[i] = ((alpha >> 1) << 24) | 0x808080;
         v = q.v[i];
-        matrix_mul_vec3(v, light_flare_corners[level_render_state.set][i], arg0 + 0xC0);
-        FastVecAdd(v, v, arg0 + 0x10);
+        matrix_mul_vec3(v, light_flare_corners[level_render_state.set][i], flare_data + 0xC0);
+        FastVecAdd(v, v, flare_data + 0x10);
         v[2] = z;
     }
     draw_world_quad_packet(&q, 0, 0);
@@ -394,9 +391,9 @@ extern int space_load_level MACRO_ADDR;
 extern int space_load_in_progress_m __asm__("D_0015F6FC") MACRO_ADDR;
 extern short space_load_pending; /* SDA, gp -0x7670 */
 
-/* Requests a switch to level arg0 and flags the load as pending. */
-void initialize_global_state_entry(int arg0) {
-    space_load_level = arg0;
+/* Request level_index and mark the load as pending. */
+void initialize_global_state_entry(int level_index) {
+    space_load_level = level_index;
     *(int *)&space_load_pending = 1;
     space_load_in_progress_m = 1;
 }
@@ -661,12 +658,12 @@ extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 extern int frame_size;
 extern long resident_banner_texture MACRO_ADDR;
 
-/* Draws the 256x32 banner texture near the bottom of the screen with alpha arg0. */
-void draw_resident_textured_banner(int arg0) {
+/* Draw the resident banner with the supplied alpha. */
+void draw_resident_textured_banner(int alpha) {
     VU1_addGSregister_l(0x47, 0x31801);
     VU1_addGSregister_l(0x42, ((long)0x8000 << 24) | 0x44);
     DrawTexturedQuad(0x20, frame_size - 0x58, 0x100, 0x20, 0, 0, 0x100, 0x20,
-                  (arg0 << 24) | 0x808080, resident_banner_texture);
+                  (alpha << 24) | 0x808080, resident_banner_texture);
     VU1_addGSregister_l(0x47, 0x5360B);
 }
 

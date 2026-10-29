@@ -172,19 +172,19 @@ __asm__(".section .text\n\tnop\n");
 
 extern int map_slot_use[];
 
-/* Returns a used map slot that holds no map (id -1), searched downward unless arg0 is 0. */
-int find_free_map_slot(int arg0) {
-    int *a = map_slot_use;
-    int *b = map_slot_use + 5;
-    int i = 0;
+/* Find a used slot with no map, searching backward when requested. */
+int find_free_map_slot(int reverse_search) {
+    int *slot_used = map_slot_use;
+    int *slot_map_ids = map_slot_use + 5;
+    int search_index = 0;
     do {
-        int idx = 4 - i;
-        if (arg0 == 0) idx = i;
-        if (a[idx] != 0 && b[idx] == -1) {
-            return idx;
+        int slot_index = 4 - search_index;
+        if (reverse_search == 0) slot_index = search_index;
+        if (slot_used[slot_index] != 0 && slot_map_ids[slot_index] == -1) {
+            return slot_index;
         }
-        i++;
-    } while (i < 5);
+        search_index++;
+    } while (search_index < 5);
     return -1;
 }
 
@@ -296,12 +296,12 @@ void move_map_entry_slot(int a, int b) {
 
 extern int level_map_selection[];
 
-/* Returns the used map slot that holds map arg0, or -1. */
-int find_map_entry_slot(int arg0) {
-    int i;
-    for (i = 0; i < 5; i++) {
-        if (level_map_selection[0x9E + i] != 0 && level_map_selection[0xA3 + i] == arg0) {
-            return i;
+/* Find the used slot holding map_id; return -1 if absent. */
+int find_map_entry_slot(int map_id) {
+    int slot_index;
+    for (slot_index = 0; slot_index < 5; slot_index++) {
+        if (level_map_selection[0x9E + slot_index] != 0 && level_map_selection[0xA3 + slot_index] == map_id) {
+            return slot_index;
         }
     }
     return -1;
@@ -354,14 +354,13 @@ int pick_next_map(void) {
 extern int *menu_level_indices;
 
 
-/* The global is read at both uses in the loop, giving retail's two
-   pointers, and through a MACRO_ADDR alias. */
-int find_id_in_terminated_table(int arg0) {
-    int i;
+/* Find map_id in the menu's level list; return -1 if absent. */
+int find_id_in_terminated_table(int map_id) {
+    int entry_index;
 
-    for (i = 0; menu_level_indices_m[i] != 0 && i < 20; i++) {
-        if (menu_level_indices_m[i] == arg0) {
-            return i;
+    for (entry_index = 0; menu_level_indices_m[entry_index] != 0 && entry_index < 20; entry_index++) {
+        if (menu_level_indices_m[entry_index] == map_id) {
+            return entry_index;
         }
     }
     return -1;
