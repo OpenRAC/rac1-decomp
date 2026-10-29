@@ -345,58 +345,44 @@ int sce_mpeg_add_str_callback(void *mpeg_handle, int stream_type, int stream_cha
 extern void sysbit_marker(void *arg0);
 extern int mpeg_system_header();
 
-/*
- * _pack_header (libmpeg.a:pack.o): ISO/IEC 11172-1 2.4.3.3 pack_header().
- * func_0012AB60 is nextBit ("get n bits"), func_0012ABB0 a marker-bit
- * skip, func_0012AAA8 a 32-bit peek (nextStartCode-style). Reads the pack
- * start code's fixed fields (34 then 3, marker, 15, marker, 15, marker,
- * 9, marker), discarding the SCR/mux_rate pieces except for three: the
- * low bit of the first 3-bit group goes to +0x8, and the three groups
- * combine into +0x4 as (first<<30)|(second<<15)|third. The last field
- * read (3 bits) is pack_stuffing_length: that many stuffing bytes are
- * then skipped. Peeks the next 32 bits; a system_header_start_code
- * (0x1BB) sets +0xC and hands off into func_0012B250 (system_header
- * parsing -- called prototype-less here since retail's call site passes
- * it a second, unused argument, the same K&R situation as func_00129F40
- * elsewhere in this file), otherwise clears +0xC. Always returns 1.
- */
-int mpeg_pack_header(void *arg0, void *arg1) {
-    char *p = (char *)arg1;
+/* Reads pack timing and stuffing, then reads an optional system header. */
+int mpeg_pack_header(void *bitstream, void *pack_header) {
+    char *header_bytes = (char *)pack_header;
     unsigned int first, second, third, stuffing;
     unsigned int i;
 
-    sysbit_get(arg0, 0x22);
-    first = sysbit_get(arg0, 3);
-    sysbit_marker(arg0);
-    second = sysbit_get(arg0, 0xF);
-    sysbit_marker(arg0);
-    third = sysbit_get(arg0, 0xF);
-    sysbit_marker(arg0);
-    *(int *)(p + 0x0) = sysbit_get(arg0, 9);
-    sysbit_get(arg0, 0x1E);
-    stuffing = sysbit_get(arg0, 3);
+    sysbit_get(bitstream, 0x22);
+    first = sysbit_get(bitstream, 3);
+    sysbit_marker(bitstream);
+    second = sysbit_get(bitstream, 0xF);
+    sysbit_marker(bitstream);
+    third = sysbit_get(bitstream, 0xF);
+    sysbit_marker(bitstream);
+    *(int *)(header_bytes + 0x0) = sysbit_get(bitstream, 9);
+    sysbit_get(bitstream, 0x1E);
+    stuffing = sysbit_get(bitstream, 3);
 
-    *(unsigned int *)(p + 0x8) = (first >> 2) & 1;
-    *(unsigned int *)(p + 0x4) = (first << 30) | (second << 15) | third;
+    *(unsigned int *)(header_bytes + 0x8) = (first >> 2) & 1;
+    *(unsigned int *)(header_bytes + 0x4) = (first << 30) | (second << 15) | third;
 
     for (i = 0; i < stuffing; i++) {
-        sysbit_get(arg0, 8);
+        sysbit_get(bitstream, 8);
     }
 
-    if (sysbit_show(arg0, 0x20) == 0x1BB) {
-        *(int *)(p + 0xC) = 1;
-        mpeg_system_header(arg0, p);
+    if (sysbit_show(bitstream, 0x20) == 0x1BB) {
+        *(int *)(header_bytes + 0xC) = 1;
+        mpeg_system_header(bitstream, header_bytes);
     } else {
-        *(int *)(p + 0xC) = 0;
+        *(int *)(header_bytes + 0xC) = 0;
     }
     return 1;
 }
 
-int mpeg_system_header(void *arg0) {
-    sysbit_get(arg0, 0x38);
-    sysbit_get(arg0, 0x28);
-    while (sysbit_show(arg0, 1) == 1) {
-        sysbit_get(arg0, 0x18);
+int mpeg_system_header(void *bitstream) {
+    sysbit_get(bitstream, 0x38);
+    sysbit_get(bitstream, 0x28);
+    while (sysbit_show(bitstream, 1) == 1) {
+        sysbit_get(bitstream, 0x18);
     }
     return 1;
 }
@@ -427,18 +413,18 @@ struct PES_TBL {
 
 /* Parse one MPEG-2 PES packet header from the bit stream into hdr (libmpeg _PES_packet).
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/sdk/library/_PES_packet.c, _PES_packet. */
-int mpeg_pes_packet(int arg0, struct PES_BS *bs, struct PES_HDR *hdr) {
+int mpeg_pes_packet(int parser_context, struct PES_BS *bs, struct PES_HDR *hdr) {
     struct PES_TBL tbl;
     int ctx;
     int flag1;
     int len;         /* PES_header_data_length */
     int base;        /* (int)bs->stamp, captured before the header fields */
     long now;         /* the same stamp, re-read at the sync point */
-    int v7;          /* PTS_DTS_flags */
-    int v8;          /* 4-bit length, indexes tbl */
-    int v5;          /* PES_extension_flag */
+    int pts_dts_flags;
+    int optional_field_length;
+    int extension_flag;
 
-    ctx = arg0;
+    ctx = parser_context;
     hdr->unk28 = (int)bs->stamp;
     tbl = *(struct PES_TBL *)pes_optional_field_bits;
     sysbit_get(bs, 0x18);
@@ -457,13 +443,13 @@ int mpeg_pes_packet(int arg0, struct PES_BS *bs, struct PES_HDR *hdr) {
         sysbit_get(bs, 2);
         hdr->unkC = sysbit_get(bs, 2);
         sysbit_get(bs, 4);
-        v7 = sysbit_get(bs, 2);
+        pts_dts_flags = sysbit_get(bs, 2);
         flag1 = sysbit_get(bs, 1);
-        v8 = sysbit_get(bs, 4);
-        v5 = sysbit_get(bs, 1);
+        optional_field_length = sysbit_get(bs, 4);
+        extension_flag = sysbit_get(bs, 1);
         len = sysbit_get(bs, 8);
         base = bs->stamp;
-        if (v7 & 2) {
+        if (pts_dts_flags & 2) {
             unsigned int a, b, c;
             sysbit_get(bs, 4);
             a = sysbit_get(bs, 3);
@@ -474,7 +460,7 @@ int mpeg_pes_packet(int arg0, struct PES_BS *bs, struct PES_HDR *hdr) {
             sysbit_marker(bs);
             hdr->unk10 = ((long)((a >> 2) & 1) << 0x20) | (long)(unsigned int)(a << 30 | b << 15 | c);
         }
-        if (v7 == 3) {
+        if (pts_dts_flags == 3) {
             unsigned int a, b, c;
             sysbit_get(bs, 4);
             a = sysbit_get(bs, 3);
@@ -488,10 +474,10 @@ int mpeg_pes_packet(int arg0, struct PES_BS *bs, struct PES_HDR *hdr) {
         if (flag1 == 1) {
             sysbit_get(bs, 0x30);
         }
-        if (v8 != 0) {
-            sysbit_get(bs, tbl.v[v8]);
+        if (optional_field_length != 0) {
+            sysbit_get(bs, tbl.v[optional_field_length]);
         }
-        if (v5 == 1) {
+        if (extension_flag == 1) {
             int a1;
             int a2;
             int a3;
@@ -503,22 +489,22 @@ int mpeg_pes_packet(int arg0, struct PES_BS *bs, struct PES_HDR *hdr) {
             a4 = sysbit_get(bs, 1);
             sysbit_get(bs, 3);
             a5 = sysbit_get(bs, 1);
-            if (a1 == v5) {
+            if (a1 == extension_flag) {
                 sysbit_get(bs, 0x30);
                 sysbit_get(bs, 0x30);
                 sysbit_get(bs, 0x20);
             }
-            if (a2 == v5) {
+            if (a2 == extension_flag) {
                 _Error_a(ctx, pes_pack_header_field_flag_msg);
                 return 0;
             }
-            if (a3 == v5) {
+            if (a3 == extension_flag) {
                 sysbit_get(bs, 0x10);
             }
-            if (a4 == v5) {
+            if (a4 == extension_flag) {
                 sysbit_get(bs, 0x10);
             }
-            if (a5 == v5) {
+            if (a5 == extension_flag) {
                 unsigned int i;
                 unsigned int n;
                 sysbit_marker(bs);
@@ -807,13 +793,11 @@ void *dispatch_mpeg_callback(void *mpeg_handle, int *callback_data) {
     return (void *)ret;
 }
 
-/* No declaration needed: the definition above precedes this caller. The
-   extern that used to sit here guessed `void (int, void *)` and now
-   conflicts with the real signature. */
-void dispatch_mpeg_cb_nodata(int arg0) {
-    int local[8];
-    local[0] = 1;
-    dispatch_mpeg_callback(arg0, local);
+/* Dispatches the no-data callback with type 1. */
+void dispatch_mpeg_cb_nodata(int mpeg_handle) {
+    int callback_data[8];
+    callback_data[0] = 1;
+    dispatch_mpeg_callback(mpeg_handle, callback_data);
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012BCF0);
@@ -873,28 +857,12 @@ extern int mpeg_decode_or_skip(void *, int, int);
 extern void _errMessage();
 extern char mpeg_image_buffer_unaligned_msg[];
 
-/*
- * _getpic (libmpeg.a:mpeg.o): fetch and start decoding one picture.
- * The image buffer (inner +0xD8) must be 64-byte aligned; if not, it is
- * reported through _errMessage with the address and the call fails with
- * -1. Otherwise loop: fetch headers (func_00128C90) until one yields no
- * picture (0), the picture counter reaches its target (+0x174 == +0xD4)
- * or the fault flag (+0x848) clears, skipping the fetch when the last
- * decode returned -1. picture_coding_type 1/2/3 call func_0012C058 with
- * that type's running index (+0xA0/+0xA4/+0xA8, I resetting all three)
- * and slot (+0x94/+0x98/+0x9C) and bump the index; type 4 shares the B
- * arm (retail's jump table maps 3 and 4 to one handler); 0 ends the
- * stream through func_0012C200 and sets inner->0; anything above 4 does
- * nothing. Returns 1 once +0x820 or inner->0 is set.
- *
- * pictureType's initializer and lastResult declared first put both in
- * retail's saved registers and hoist lastResult's 0 into the prologue.
- */
-int mpeg_getpic(void *arg0) {
+/* Reads picture headers and decodes or skips a picture. Rejects an unaligned image buffer. */
+int mpeg_getpic(void *mpeg_handle) {
     int pictureType = 1;
     int lastResult = 0;
-    char *w = (char *)arg0;
-    char *inner = *(char **)(w + 0x40);
+    char *handle_bytes = (char *)mpeg_handle;
+    char *inner = *(char **)(handle_bytes + 0x40);
 
     *(int *)inner = 0;
     if ((*(int *)(inner + 0xD8) & 0x3F) != 0) {
@@ -915,23 +883,23 @@ int mpeg_getpic(void *arg0) {
 
         switch (pictureType) {
         case 0:
-            mpeg_flush_last_frame(w);
+            mpeg_flush_last_frame(handle_bytes);
             *(int *)inner = 1;
             break;
         case 1:
             *(int *)(inner + 0xA8) = 0;
             *(int *)(inner + 0xA4) = 0;
             *(int *)(inner + 0xA0) = 0;
-            lastResult = mpeg_decode_or_skip(w, 0, *(int *)(inner + 0x94));
+            lastResult = mpeg_decode_or_skip(handle_bytes, 0, *(int *)(inner + 0x94));
             *(int *)(inner + 0xA0) = *(int *)(inner + 0xA0) + 1;
             break;
         case 2:
-            lastResult = mpeg_decode_or_skip(w, *(int *)(inner + 0xA4), *(int *)(inner + 0x98));
+            lastResult = mpeg_decode_or_skip(handle_bytes, *(int *)(inner + 0xA4), *(int *)(inner + 0x98));
             *(int *)(inner + 0xA4) = *(int *)(inner + 0xA4) + 1;
             break;
         case 3:
         case 4:
-            lastResult = mpeg_decode_or_skip(w, *(int *)(inner + 0xA8), *(int *)(inner + 0x9C));
+            lastResult = mpeg_decode_or_skip(handle_bytes, *(int *)(inner + 0xA8), *(int *)(inner + 0x9C));
             *(int *)(inner + 0xA8) = *(int *)(inner + 0xA8) + 1;
             break;
         }
@@ -951,14 +919,14 @@ extern void mpeg_output_frame(void *, int, int);
 /* _decodeOrSkipFrame (libmpeg): sibling of func_0012C0A0
    (_decodeOrSkipField), for the frame-picture path. Adapted from
    Lombyte's project (GPL-3.0) for PAL. */
-int mpeg_decode_or_skip_frame(void *arg0, int arg1, int arg2) {
-    Wrapper *w = (Wrapper *)arg0;
+int mpeg_decode_or_skip_frame(void *mpeg_handle, int picture_count, int decode_limit) {
+    Wrapper *w = (Wrapper *)mpeg_handle;
     Obj40 *p = w->obj;
     int flag = 0;
     int t;
     int ret;
 
-    if (arg2 == -1 || arg1 < arg2) {
+    if (decode_limit == -1 || picture_count < decode_limit) {
         if (p->unk008 == 0) {
             w->unk08 = 0;
             p->unk008 = 1;
@@ -990,17 +958,13 @@ int mpeg_decode_or_skip_frame(void *arg0, int arg1, int arg2) {
 extern int mpeg_decode_or_skip_field(void *, int, int);
 extern int mpeg_decode_or_skip_frame(void *, int, int);
 
-/* Hands the call on by the inner object's +0x174 mode: func_0012BF40 for
-   mode 3, func_0012C0A0 otherwise, with the caller's arguments.
-
-   Returns its callees' values: retail keeps the frame and calls both, and
-   2.9-ee tail-calls each arm (bare `j`, SIZE 40/68) when it is void. */
-int mpeg_decode_or_skip(void *arg0, int arg1, int arg2) {
-    Obj40 *inner = ((Wrapper *)arg0)->obj;
+/* Routes to the frame or field decoder using the current picture structure. */
+int mpeg_decode_or_skip(void *mpeg_handle, int picture_count, int decode_limit) {
+    Obj40 *inner = ((Wrapper *)mpeg_handle)->obj;
     if (inner->unk174 != 3) {
-        return mpeg_decode_or_skip_field(arg0, arg1, arg2);
+        return mpeg_decode_or_skip_field(mpeg_handle, picture_count, decode_limit);
     } else {
-        return mpeg_decode_or_skip_frame(arg0, arg1, arg2);
+        return mpeg_decode_or_skip_frame(mpeg_handle, picture_count, decode_limit);
     }
 }
 
@@ -1031,10 +995,10 @@ extern int mpeg_dec_picture();
 extern int mpeg_update_ref_image();
 extern void mpeg_output_frame();
 /* _decodeOrSkipField (libmpeg). Adapted from Lombyte's project (GPL-3.0) for PAL. */
-int mpeg_decode_or_skip_field(void *handle, int arg1, int arg2)
+int mpeg_decode_or_skip_field(void *handle, int picture_count, int decode_limit)
 {
-  struct MpegHandle *arg0 = handle;
-  struct MpegFieldDec *p;
+  struct MpegHandle *typed_handle = handle;
+  struct MpegFieldDec *field_decoder;
   int decode;
   unsigned int ref;
   int want;
@@ -1042,40 +1006,40 @@ int mpeg_decode_or_skip_field(void *handle, int arg1, int arg2)
   int ret;
   int gate;
   decode = 0;
-  p = arg0->unk40;
-  p->unk120 = 0;
-  if ((arg2 == (-1)) || (arg1 < arg2))
+  field_decoder = typed_handle->unk40;
+  field_decoder->unk120 = 0;
+  if ((decode_limit == (-1)) || (picture_count < decode_limit))
   {
     decode = 1;
   }
-  if (p->unk8 == 0)
+  if (field_decoder->unk8 == 0)
   {
-    arg0->unk8 = 0;
-    p->unk8 = 1;
+    typed_handle->unk8 = 0;
+    field_decoder->unk8 = 1;
   }
-  r = mpeg_update_ref_image(p, 0);
+  r = mpeg_update_ref_image(field_decoder, 0);
   if ((r != 0) && (decode != 0))
   {
-    mpeg_dec_picture(p);
+    mpeg_dec_picture(field_decoder);
   }
-  p->unk120 = 1;
-  r = mpeg_next_header(p);
+  field_decoder->unk120 = 1;
+  r = mpeg_next_header(field_decoder);
   if (r == 0)
   {
-    mpeg_flush_last_frame(arg0);
-    p->unk0 = 1;
+    mpeg_flush_last_frame(typed_handle);
+    field_decoder->unk0 = 1;
     return 0;
   }
   want = 2;
-  if (p->unkD4 != 1)
+  if (field_decoder->unkD4 != 1)
   {
     want = 1;
   }
-  if (p->unk174 != want)
+  if (field_decoder->unk174 != want)
   {
     return -1;
   }
-  ref = mpeg_update_ref_image(p, 1);
+  ref = mpeg_update_ref_image(field_decoder, 1);
   gate = 0;
   if (ref != 0)
   {
@@ -1088,46 +1052,45 @@ int mpeg_decode_or_skip_field(void *handle, int arg1, int arg2)
     {
       goto out;
     }
-    r = mpeg_dec_picture(p);
+    r = mpeg_dec_picture(field_decoder);
     if (r != 0)
     {
       ret = 1;
     }
   }
   out:
-  mpeg_output_frame(p, p->unk118, p->unk4);
+  mpeg_output_frame(field_decoder, field_decoder->unk118, field_decoder->unk4);
 
-  p->unk120 = 0;
-  arg0->unk8 = p->unk118 - p->unkAC;
-  p->unk118 = p->unk118 + 1;
-  p->unk4 = (unsigned long long) (p->unk4 + 1);
+  field_decoder->unk120 = 0;
+  typed_handle->unk8 = field_decoder->unk118 - field_decoder->unkAC;
+  field_decoder->unk118 = field_decoder->unk118 + 1;
+  field_decoder->unk4 = (unsigned long long) (field_decoder->unk4 + 1);
   if (decode == 0)
   {
-    dispatch_mpeg_cb_nodata((int)arg0);
+    dispatch_mpeg_cb_nodata((int)typed_handle);
   }
   return ret;
 }
 
 extern void mpeg_last_frame(void *);
 
-int mpeg_flush_last_frame(void *arg0) {
-    Wrapper *w = (Wrapper *)arg0;
-    Obj40 *inner = w->obj;
+int mpeg_flush_last_frame(void *mpeg_handle) {
+    Wrapper *handle_bytes = (Wrapper *)mpeg_handle;
+    Obj40 *inner = handle_bytes->obj;
     int ret = 0;
 
     if (inner->unk004 != 0 && inner->unk008 != 0) {
         mpeg_last_frame((void *)inner);
-        w->unk08 = inner->unk118 - inner->unk0AC;
+        handle_bytes->unk08 = inner->unk118 - inner->unk0AC;
         inner->unk004 = 0;
         ret = 1;
     }
     return ret;
 }
 
-/* Tail call: the constant argument setup lands in the jump's delay slot,
-   so the field store precedes it. func_00127378 is defined above. */
-void mpeg_set_mpeg1_mode(void *arg0) {
-    *(int *)((char *)arg0 + 0x848) = 0;
+/* Selects MPEG-1 mode in the decoder and IPU. */
+void mpeg_set_mpeg1_mode(void *mpeg_state) {
+    *(int *)((char *)mpeg_state + 0x848) = 0;
     ipu_set_mpeg1(1);
 }
 
@@ -1155,8 +1118,8 @@ extern s32 _dispRefImage_lf(MpegDecoder_12C278 *, void *, s32) __asm__("func_001
 extern s32 _dispRefImageField_lf(MpegDecoder_12C278 *, void *, void *, s32) __asm__("func_00129F40");
 extern u8 mpeg_second_field_missing_msg_lf[] __asm__("D_00153BB8");
 
-void mpeg_last_frame(void *arg0) {
-    MpegDecoder_12C278 *decoder = (MpegDecoder_12C278 *)arg0;
+void mpeg_last_frame(void *mpeg_state) {
+    MpegDecoder_12C278 *decoder = (MpegDecoder_12C278 *)mpeg_state;
     s32 count;
     count = decoder->frame_count;
     if (decoder->second_field != 0) {
@@ -1220,44 +1183,41 @@ extern char mpeg_error_format[];
    but calling one is fine -- only defining one needs stdarg.h. */
 extern void scePrintf();
 
-void mpeg_print_error(void *arg0) {
-    scePrintf(mpeg_error_format, arg0);
+void mpeg_print_error(void *message) {
+    scePrintf(mpeg_error_format, message);
 }
 
 extern int sprintf_f(char *, char *, int) __asm__("func_00116248");
 
-void _errMessage(void *arg0, char *fmt, int code) {
-    char buf[0x100];
-    sprintf_f(buf, fmt, code);
-    _Error(arg0, buf);
+void _errMessage(void *mpeg_state, char *fmt, int code) {
+    char formatted_message[0x100];
+    sprintf_f(formatted_message, fmt, code);
+    _Error(mpeg_state, formatted_message);
 }
 
 extern void mpeg_print_error(void *);
 
-void _Error(void *arg0, void *arg1) {
-    char *a = (char *)arg0;
-    void *t = *(void **)(a + 0x858);
-    /* the arg0 null test is retail's, after it has already dereferenced
-       arg0 -- one of the "dead-looking guards" that must be written out */
-    if (t != 0 && arg0 != 0 && *(int *)(a + 0xC) != 0) {
-        int buf[4];
-        buf[0] = 0;
-        buf[1] = (int)arg1;
-        dispatch_mpeg_callback(t, buf);
+void _Error(void *mpeg_state, void *message) {
+    char *state_bytes = (char *)mpeg_state;
+    void *mpeg_handle = *(void **)(state_bytes + 0x858);
+    /* The null guard intentionally follows the state access. */
+    if (mpeg_handle != 0 && mpeg_state != 0 && *(int *)(state_bytes + 0xC) != 0) {
+        int callback_data[4];
+        callback_data[0] = 0;
+        callback_data[1] = (int)message;
+        dispatch_mpeg_callback(mpeg_handle, callback_data);
     } else {
-        mpeg_print_error(arg1);
+        mpeg_print_error(message);
     }
 }
 
-/* Store the two sizes and their 16-pixel macroblock counts. (An old note
-   here recorded 4/32 with the 0x4/0x8 stores swapped; the function is
-   exact under both compilers now.) */
-int mpeg_set_frame_size(void *arg0, int arg1, int arg2) {
-    char *p = (char *)arg0;
-    *(int *)(p + 0x4) = arg1;
-    *(int *)(p + 0x8) = arg2;
-    *(int *)(p + 0xC) = arg1 >> 4;
-    *(int *)(p + 0x10) = arg2 >> 4;
+/* Stores frame dimensions and their 16-pixel macroblock counts. */
+int mpeg_set_frame_size(void *frame_layout, int width, int height) {
+    char *layout_bytes = (char *)frame_layout;
+    *(int *)(layout_bytes + 0x4) = width;
+    *(int *)(layout_bytes + 0x8) = height;
+    *(int *)(layout_bytes + 0xC) = width >> 4;
+    *(int *)(layout_bytes + 0x10) = height >> 4;
     return 1;
 }
 
@@ -1271,125 +1231,110 @@ extern char mpeg_default_non_intra_qm[];
 extern void _extensionAndUserData(void *);
 extern void mpeg_init_seq(void *);
 
-/*
- * _sequenceHeader (libmpeg.a:init.o): ISO/IEC 13818-2 6.2.2.1
- * sequence_header(), hardware-VLC variant matching mpeg2decode's
- * gethdr.c almost line for line but reading combined bitfields in one
- * Get_Bits (func_00128A58) call each: a 32-bit fetch for
- * horizontal_size/vertical_size/aspect_ratio_information/frame_rate_code
- * (only the two sizes are kept, at +0x124/+0x128; a vertical_size
- * reading >= 0xAF1 is reported through func_0012C468) and a 30-bit fetch
- * for bit_rate_value/marker_bit/vbv_buffer_size/constrained_parameters_
- * flag (bit_rate_value kept at +0x134, vbv_buffer_size at +0x138).
- * load_intra/non_intra_quantizer_matrix (+0x840/+0x844) gate the IPU
- * matrix load (func_00128590/func_00128560) or, when clear, _setDefaultQM
- * (func_0012C990) with the reference decoder's default table. Ends with
- * extensionAndUserData (func_00128E68) and a tail call into _initSeq
- * (func_0012C608) with the object read back from +0x858.
- */
-void _sequenceHeader(void *arg0) {
-    char *s = (char *)arg0;
-    unsigned int v;
-    int mid;
+/* Reads sequence fields and quantization tables, then initializes the sequence. */
+void _sequenceHeader(void *mpeg_state) {
+    char *state_bytes = (char *)mpeg_state;
+    unsigned int header_bits;
+    int vertical_size;
     unsigned int flag;
 
-    *(unsigned int *)(s + 0xD4) = 0;
+    *(unsigned int *)(state_bytes + 0xD4) = 0;
 
-    v = _nextBit(s, 0x20);
-    *(unsigned int *)(s + 0x124) = v >> 20;
-    mid = (v >> 8) & 0xFFF;
-    *(unsigned int *)(s + 0x128) = mid;
-    if (mid >= 0xAF1) {
-        _Error(s, mpeg_vertical_size_too_large_msg);
+    header_bits = _nextBit(state_bytes, 0x20);
+    *(unsigned int *)(state_bytes + 0x124) = header_bits >> 20;
+    vertical_size = (header_bits >> 8) & 0xFFF;
+    *(unsigned int *)(state_bytes + 0x128) = vertical_size;
+    if (vertical_size >= 0xAF1) {
+        _Error(state_bytes, mpeg_vertical_size_too_large_msg);
     }
 
-    v = _nextBit(s, 0x1E);
-    *(unsigned int *)(s + 0x134) = v >> 12;
-    *(unsigned int *)(s + 0x138) = (v >> 1) & 0x3FF;
+    header_bits = _nextBit(state_bytes, 0x1E);
+    *(unsigned int *)(state_bytes + 0x134) = header_bits >> 12;
+    *(unsigned int *)(state_bytes + 0x138) = (header_bits >> 1) & 0x3FF;
 
-    flag = _nextBit(s, 1);
-    *(unsigned int *)(s + 0x840) = flag;
+    flag = _nextBit(state_bytes, 1);
+    *(unsigned int *)(state_bytes + 0x840) = flag;
     if (flag != 0) {
-        wait_ipu_idle(s);
-        send_ipu_command(s, 0x50000000);
-        wait_ipu_idle(s);
+        wait_ipu_idle(state_bytes);
+        send_ipu_command(state_bytes, 0x50000000);
+        wait_ipu_idle(state_bytes);
     } else {
-        mpeg_set_default_qm(s, 0x50000000, (int)mpeg_default_intra_qm);
+        mpeg_set_default_qm(state_bytes, 0x50000000, (int)mpeg_default_intra_qm);
     }
 
-    flag = _nextBit(s, 1);
-    *(unsigned int *)(s + 0x844) = flag;
+    flag = _nextBit(state_bytes, 1);
+    *(unsigned int *)(state_bytes + 0x844) = flag;
     if (flag != 0) {
-        wait_ipu_idle(s);
-        send_ipu_command(s, 0x58000000);
-        wait_ipu_idle(s);
+        wait_ipu_idle(state_bytes);
+        send_ipu_command(state_bytes, 0x58000000);
+        wait_ipu_idle(state_bytes);
     } else {
-        mpeg_set_default_qm(s, 0x58000000, (int)mpeg_default_non_intra_qm);
+        mpeg_set_default_qm(state_bytes, 0x58000000, (int)mpeg_default_non_intra_qm);
     }
 
-    _extensionAndUserData(s);
-    mpeg_init_seq(*(void **)(s + 0x858));
+    _extensionAndUserData(state_bytes);
+    mpeg_init_seq(*(void **)(state_bytes + 0x858));
 }
 
-void mpeg_init_seq(void *arg0) {
+void mpeg_init_seq(void *mpeg_handle) {
     extern void mpeg_init_ref_image_addrs(unsigned int *, unsigned int *, unsigned int *, unsigned int *,
                               unsigned int *, unsigned int *, unsigned int *, unsigned int *,
                               unsigned int *, int, int, int, int, int);
-    int *a = (int *)arg0;
-    char *s = *(char **)((char *)arg0 + 0x40);
-    int f = *(int *)(s + 0x848);
+    int *handle_words = (int *)mpeg_handle;
+    char *state_bytes = *(char **)((char *)mpeg_handle + 0x40);
+    int mpeg2_mode = *(int *)(state_bytes + 0x848);
     int h, mbw, mbh;
     unsigned int n, t;
     unsigned int *q0, *q1, *q2, *q3, *q4, *q5, *q6, *q7, *q8;
 
-    if (f == 0) {
-        *(int *)(s + 0x174) = 3;
-        *(int *)(s + 0x13C) = 1;
-        *(int *)(s + 0x140) = 1;
-        *(int *)(s + 0x188) = 1;
-        *(int *)(s + 0x17C) = 1;
-        *(int *)(s + 0x144) = 5;
+    if (mpeg2_mode == 0) {
+        *(int *)(state_bytes + 0x174) = 3;
+        *(int *)(state_bytes + 0x13C) = 1;
+        *(int *)(state_bytes + 0x140) = 1;
+        *(int *)(state_bytes + 0x188) = 1;
+        *(int *)(state_bytes + 0x17C) = 1;
+        *(int *)(state_bytes + 0x144) = 5;
     }
-    *(int *)(s + 0x12C) = (*(int *)(s + 0x124) + 0xF) >> 4;
-    if (f != 0 && *(int *)(s + 0x13C) == 0)
-        h = ((*(int *)(s + 0x128) + 0x1F) >> 5) << 1;
+    *(int *)(state_bytes + 0x12C) = (*(int *)(state_bytes + 0x124) + 0xF) >> 4;
+    if (mpeg2_mode != 0 && *(int *)(state_bytes + 0x13C) == 0)
+        h = ((*(int *)(state_bytes + 0x128) + 0x1F) >> 5) << 1;
     else
-        h = (*(int *)(s + 0x128) + 0xF) >> 4;
-    *(int *)(s + 0x130) = h;
+        h = (*(int *)(state_bytes + 0x128) + 0xF) >> 4;
+    *(int *)(state_bytes + 0x130) = h;
     mbh = h << 4;
-    mbw = *(int *)(s + 0x12C) << 4;
+    mbw = *(int *)(state_bytes + 0x12C) << 4;
     {
     unsigned int *p;
-    if (mbw != a[0]) {
-        p = (unsigned int *)(s + 0x528);
+    if (mbw != handle_words[0]) {
+        p = (unsigned int *)(state_bytes + 0x528);
     } else {
-        if (mbh == a[1])
+        if (mbh == handle_words[1])
             return;
-        p = (unsigned int *)(s + 0x528);
+        p = (unsigned int *)(state_bytes + 0x528);
     }
-    a[0] = mbw;
-    a[1] = mbh;
+    handle_words[0] = mbw;
+    handle_words[1] = mbh;
     if ((mbw & 0xF) && (mbw & 0xE))
         p = q8;
     q8 = p;
     t = mbh * 0x180;
-    q0 = (unsigned int *)(s + 0x1E8);
-    q1 = (unsigned int *)(s + 0x250);
-    q2 = (unsigned int *)(s + 0x2B8);
-    q3 = (unsigned int *)(s + 0x320);
-    q4 = (unsigned int *)(s + 0x388);
-    q5 = (unsigned int *)(s + 0x3F0);
-    q6 = (unsigned int *)(s + 0x458);
-    q7 = (unsigned int *)(s + 0x4C0);
+    q0 = (unsigned int *)(state_bytes + 0x1E8);
+    q1 = (unsigned int *)(state_bytes + 0x250);
+    q2 = (unsigned int *)(state_bytes + 0x2B8);
+    q3 = (unsigned int *)(state_bytes + 0x320);
+    q4 = (unsigned int *)(state_bytes + 0x388);
+    q5 = (unsigned int *)(state_bytes + 0x3F0);
+    q6 = (unsigned int *)(state_bytes + 0x458);
+    q7 = (unsigned int *)(state_bytes + 0x4C0);
     n = (mbw * t) >> 8;
-    mpeg_work_area_reset_to_mark(s + 0x108);
-    *(unsigned int *)(s + 0xFC) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
-    *(unsigned int *)(s + 0x100) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
-    *(unsigned int *)(s + 0x104) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
+    mpeg_work_area_reset_to_mark(state_bytes + 0x108);
+    *(unsigned int *)(state_bytes + 0xFC) = reserve_aligned_buffer_space(state_bytes, state_bytes + 0x108, n, 0x40);
+    *(unsigned int *)(state_bytes + 0x100) = reserve_aligned_buffer_space(state_bytes, state_bytes + 0x108, n, 0x40);
+    *(unsigned int *)(state_bytes + 0x104) = reserve_aligned_buffer_space(state_bytes, state_bytes + 0x108, n, 0x40);
     mpeg_init_ref_image_addrs(q0, q1, q2,
                   q3, q4, q5,
                   q6, q7, q8,
-                  *(int *)(s + 0xFC), *(int *)(s + 0x100), *(int *)(s + 0x104), mbw, mbh);
+                  *(int *)(state_bytes + 0xFC), *(int *)(state_bytes + 0x100), *(int *)(state_bytes + 0x104), mbw, mbh);
     mpeg_set_frame_size(q0, mbw, mbh);
     mpeg_set_frame_size(q1, mbw, mbh);
     mpeg_set_frame_size(q2, mbw, mbh);
