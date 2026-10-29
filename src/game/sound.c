@@ -1037,6 +1037,7 @@ check_moby:
 use_extended_pool:
     slot_limit = 0x1E;
 find_free_slot:
+    /* Search only this request's allowed pool; occupied slots are not stolen. */
     for (slot_index = 0; slot_index < slot_limit; slot_index++) {
         if (voice_pool_r.voices[slot_index].state == 0) {
             break;
@@ -1060,6 +1061,8 @@ find_free_slot:
         goto clear_position;
     }
 set_position:
+    /* A moby takes precedence over an explicit position; its sound origin
+       is raised by one unit on the third coordinate. */
     if (moby == 0) {
         goto copy_explicit_position;
     }
@@ -1071,6 +1074,8 @@ copy_explicit_position:
     qcopy(&voice_positions_r[slot_index].value, position);
     goto calculate_volume;
 clear_position:
+    /* With neither position source, set the flags that bypass the spatial
+       volume calculation below and use the requested volume directly. */
     flags |= 0x11;
     clear_u64_value_r(&voice_positions_r[slot_index].value);
 calculate_volume:
@@ -1089,6 +1094,8 @@ check_calculated_volume:
         goto return_result;
     }
     committed_slot = (VoicePoolWindow_2EB08 *)((u8 *)&voice_pool_r + slot_index * 0x70);
+    /* Rejected volumes leave the slot state free. Publish state 7 only
+       after the 0x20 audibility threshold has passed. */
     committed_slot->voice.flags = flags;
     committed_slot->voice.state = 7;
     committed_slot->voice.history_position = 0;
@@ -1260,6 +1267,7 @@ void sound_StopAllSounds(void) {
     snd_reset_state_and_flush_commands_r();
     snd_FlushSoundCommands_r();
     snd_StopAllSounds();
+    /* Drain queued sound commands before clearing the game-side pool. */
     while (snd_FlushSoundCommands_r() != 0) {
     }
     for (i = 0; i < 4; i++) {
@@ -1267,6 +1275,8 @@ void sound_StopAllSounds(void) {
     }
     s = &voice_pool_r2;
     s->x40 = 0;
+    /* Thirty records at stride 0x70: the [1] access skips the pool header
+       on the first iteration, then clears two words in each voice record. */
     p = (s32)s;
     end = p + 0xD20;
     do {
