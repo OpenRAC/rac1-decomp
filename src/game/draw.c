@@ -914,31 +914,31 @@ __asm__(".section .text\n\tnop\n");
 
 extern int ParseOcclGrid(int, int, int);
 
-/* GetOcclGridFromPair(int, int, int, int, int, int, float) */
-int GetOcclGridFromPair(int a0, int a1, int a2, int a3, int a4, int a5, float t) {
-    int r;
-    int b0;
-    int b1;
-    int b2;
+/* Try one point's grid, then the other; t selects the first attempt. */
+int GetOcclGridFromPair(int first_x, int first_y, int first_z, int second_x, int second_y, int second_z, float t) {
+    int grid_address;
+    int fallback_x;
+    int fallback_y;
+    int fallback_z;
 
     if (t < 0.5f) {
-        r = ParseOcclGrid(a0, a1, a2);
-        if (r != 0) {
-            return r;
+        grid_address = ParseOcclGrid(first_x, first_y, first_z);
+        if (grid_address != 0) {
+            return grid_address;
         }
-        b0 = a3;
-        b1 = a4;
-        b2 = a5;
+        fallback_x = second_x;
+        fallback_y = second_y;
+        fallback_z = second_z;
     } else {
-        r = ParseOcclGrid(a3, a4, a5);
-        if (r != 0) {
-            return r;
+        grid_address = ParseOcclGrid(second_x, second_y, second_z);
+        if (grid_address != 0) {
+            return grid_address;
         }
-        b0 = a0;
-        b1 = a1;
-        b2 = a2;
+        fallback_x = first_x;
+        fallback_y = first_y;
+        fallback_z = first_z;
     }
-    return ParseOcclGrid(b0, b1, b2);
+    return ParseOcclGrid(fallback_x, fallback_y, fallback_z);
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -1910,49 +1910,39 @@ static inline char *PagingArena(void) {
     return hud_state;
 }
 
-/* SetupGifPaging(int): marks the D_00161000 packet in D_0015F550 and
-   reserves 0x10 bytes, copies D_0015EF78 to D_0015EF74, clears
-   D_0015F558 and the first dword of the D_0015F55C paging slots, then,
-   when arg0 is 0, clears the +4 half of the arena's 8-byte list entries:
-   the list at D_0019A4E8 + 0x24 (count at +0x44 of the record at +0x18)
-   where it is at least D_0015EF8C >> 8, and all of the list at + 0x28
-   (count at +0x24). The slot loop has its own counter, which loop
-   reversal copies from the count (retail's $v1). The first list reads
-   the arena through a static inline accessor (a fresh pseudo per read
-   gives retail's copy for the loop) with the element offset first
-   (`i * 8 + base`); the second through a block-local pointer, whose
-   %hi retail keeps. */
-void SetupGifPaging(int arg0) {
-    int *p = g_render_packet_cursor;
-    int i;
+/* Reserve the GIF paging tag and reset upload tracking.
+   Unless keeping texture addresses, clear the reusable arena entries. */
+void SetupGifPaging(int keep_texture_addresses) {
+    int *packet_cursor = g_render_packet_cursor;
+    int primary_entry_index;
 
-    gif_paging_head_tag = p;
-    p += 4;
-    g_render_packet_cursor = p;
+    gif_paging_head_tag = packet_cursor;
+    packet_cursor += 4;
+    g_render_packet_cursor = packet_cursor;
     g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;
     pending_texture_upload_count = 0;
     {
-        int k;
+        int texture_index;
 
-        for (k = 0; k < effect_tex_cnt; k++) {
-            effect_texture_definitions[k].unk0 = 0;
+        for (texture_index = 0; texture_index < effect_tex_cnt; texture_index++) {
+            effect_texture_definitions[texture_index].unk0 = 0;
         }
     }
-    if (arg0 == 0) {
-        for (i = 0; i < *(int *)(*(char **)(PagingArena() + 0x18) + 0x44); i++) {
-            unsigned short *el = (unsigned short *)(i * 8
+    if (keep_texture_addresses == 0) {
+        for (primary_entry_index = 0; primary_entry_index < *(int *)(*(char **)(PagingArena() + 0x18) + 0x44); primary_entry_index++) {
+            unsigned short *texture_address = (unsigned short *)(primary_entry_index * 8
                 + *(int *)(PagingArena() + 0x24) + 4);
 
-            if (*el >= (g_gs_texture_allocation_base >> 8)) {
-                *el = 0;
+            if (*texture_address >= (g_gs_texture_allocation_base >> 8)) {
+                *texture_address = 0;
             }
         }
         {
-            char *b = hud_state;
-            int j;
+            char *arena = hud_state;
+            int secondary_entry_index;
 
-            for (j = 0; j < *(int *)(*(char **)(b + 0x18) + 0x24); j++) {
-                *(short *)(*(char **)(b + 0x28) + j * 8 + 4) = 0;
+            for (secondary_entry_index = 0; secondary_entry_index < *(int *)(*(char **)(arena + 0x18) + 0x24); secondary_entry_index++) {
+                *(short *)(*(char **)(arena + 0x28) + secondary_entry_index * 8 + 4) = 0;
             }
         }
     }
@@ -2503,19 +2493,19 @@ extern int depth_buffer_address MACRO_ADDR;
    alpha byte, register 0x4E switched around a full-screen
    func_001F5650 draw. The 64-bit constants are ps2eeas's dli
    sequences (tools/ps2eeas_dli.py). */
-void draw_fogged_fullscreen_sprite(char *arg0) {
-    long v = *(long *)(arg0 + 8);
+void draw_fogged_fullscreen_sprite(char *overlay_data) {
+    long blend_settings = *(long *)(overlay_data + 8);
 
-    if (v != 0) {
-        VU1_addGSregister(0x42, v & 0xFF000000FFL);
+    if (blend_settings != 0) {
+        VU1_addGSregister(0x42, blend_settings & 0xFF000000FFL);
     }
-    if ((*(int *)(arg0 + 4) & 0xFF000000) != 0) {
+    if ((*(int *)(overlay_data + 4) & 0xFF000000) != 0) {
         VU1_addGSregister(0x4E, (depth_buffer_address >> 13) | 0x1000000 | 0x100000000L);
         DrawRectOverlay_FiiiiUl(0, fs_aa_buffer[0xA9], 0, fs_aa_buffer[0xA8],
-                      *(unsigned int *)(arg0 + 4));
+                      *(unsigned int *)(overlay_data + 4));
         VU1_addGSregister(0x4E, 0x1000000 | (depth_buffer_address >> 13));
     }
-    if (*(long *)(arg0 + 8) != 0) {
+    if (*(long *)(overlay_data + 8) != 0) {
         VU1_addGSregister(0x42, 0x8000000044L);
     }
 }
@@ -2528,8 +2518,8 @@ extern int *g_render_packet_cursor MACRO_ADDR;
 extern char first_clear_packet[];
 
 /* Appends a GIF packet that sets GS register 1 from the four bytes a, b, c, d. */
-void emit_rgba_draw_packet(int a, int b, int c, int d) {
-    VU1_addGSregister(1, (long)a | ((long)b << 8) | ((long)c << 16) | ((long)d << 24));
+void emit_rgba_draw_packet(int red, int green, int blue, int alpha) {
+    VU1_addGSregister(1, (long)red | ((long)green << 8) | ((long)blue << 16) | ((long)alpha << 24));
     g_render_packet_cursor[0] = 0x30000014;
     g_render_packet_cursor[1] = (int)first_clear_packet;
     g_render_packet_cursor[2] = 0;
@@ -2557,11 +2547,11 @@ void DrawRectOverlay_FiiiiUl(int y0, int y1, int x0, int x1, unsigned long rgba)
     }
     {
         int *base = g_render_packet_cursor;
-        long *p;
+        long *packet_words;
         g_render_packet_cursor = base + 4;
-        p = (long *)g_render_packet_cursor;
-        p[0] = 0x144;
-        p[1] = rgba;
+        packet_words = (long *)g_render_packet_cursor;
+        packet_words[0] = 0x144;
+        packet_words[1] = rgba;
     }
     {
         int *base = g_render_packet_cursor;
@@ -2571,19 +2561,19 @@ void DrawRectOverlay_FiiiiUl(int y0, int y1, int x0, int x1, unsigned long rgba)
     }
     {
         int *base = g_render_packet_cursor;
-        long *p;
+        long *packet_words;
         g_render_packet_cursor = base + 4;
-        p = (long *)g_render_packet_cursor;
-        p[0] = (x0 * 16 + g_screen_extent[4] - 8)
+        packet_words = (long *)g_render_packet_cursor;
+        packet_words[0] = (x0 * 16 + g_screen_extent[4] - 8)
              | ((long)(y0 * 16 + g_screen_extent[5] - 8) << 16)
              | ((long)0xFFFFF0 << 32);
-        p[1] = (x1 * 16 + g_screen_extent[4] - 8)
+        packet_words[1] = (x1 * 16 + g_screen_extent[4] - 8)
              | ((long)(y0 * 16 + g_screen_extent[5] - 8) << 16)
              | ((long)0xFFFFF0 << 32);
-        p[2] = (x0 * 16 + g_screen_extent[4] - 8)
+        packet_words[2] = (x0 * 16 + g_screen_extent[4] - 8)
              | ((long)(y1 * 16 + g_screen_extent[5] - 8) << 16)
              | ((long)0xFFFFF0 << 32);
-        p[3] = (x1 * 16 + g_screen_extent[4] - 8)
+        packet_words[3] = (x1 * 16 + g_screen_extent[4] - 8)
              | ((long)(y1 * 16 + g_screen_extent[5] - 8) << 16)
              | ((long)0xFFFFF0 << 32);
     }
@@ -2606,7 +2596,7 @@ void DrawTexturedQuad(int x, int y, int w, int h, int u, int v, int uw, int vh,
     int s1 = (u + uw) * 16;
     int s0 = u * 16;
     int vb = v + vh;
-    long *p;
+    long *packet_words;
     int *base;
 
     g_render_packet_cursor[0] = 0x10000007;
@@ -2616,20 +2606,20 @@ void DrawTexturedQuad(int x, int y, int w, int h, int u, int v, int uw, int vh,
     base = g_render_packet_cursor;
     g_render_packet_cursor = base + 4;
     qcopy(base + 4, textured_quad_header);
-    p = (long *)(base + 8);
+    packet_words = (long *)(base + 8);
     g_render_packet_cursor = base + 8;
-    p[0] = tex;
-    p[1] = 0x154;
-    p[2] = rgba;
-    p[3] = (v << 20) + s0;
-    p[4] = x0 | ((long)y0 << 16) | ((long)0xFFFFF0 << 32);
-    p[5] = (v << 20) + s1;
-    p[6] = x1 | ((long)y0 << 16) | ((long)0xFFFFF0 << 32);
-    p[7] = (vb << 20) + s0;
-    p[8] = x0 | ((long)y1 << 16) | ((long)0xFFFFF0 << 32);
-    p[9] = (vb << 20) + s1;
-    p[10] = x1 | ((long)y1 << 16) | ((long)0xFFFFF0 << 32);
-    p[11] = 0;
+    packet_words[0] = tex;
+    packet_words[1] = 0x154;
+    packet_words[2] = rgba;
+    packet_words[3] = (v << 20) + s0;
+    packet_words[4] = x0 | ((long)y0 << 16) | ((long)0xFFFFF0 << 32);
+    packet_words[5] = (v << 20) + s1;
+    packet_words[6] = x1 | ((long)y0 << 16) | ((long)0xFFFFF0 << 32);
+    packet_words[7] = (vb << 20) + s0;
+    packet_words[8] = x0 | ((long)y1 << 16) | ((long)0xFFFFF0 << 32);
+    packet_words[9] = (vb << 20) + s1;
+    packet_words[10] = x1 | ((long)y1 << 16) | ((long)0xFFFFF0 << 32);
+    packet_words[11] = 0;
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x60);
 }
 
@@ -2857,8 +2847,8 @@ LINKER_REMNANT("asm/remnants/text", func_001F62C0);
 
 /* Draws a bevelled frame: the box itself, then three shrinking bars
    above and three below it, all in grey 0x040404 with alpha a. */
-void DrawUIFrame(int x0, int x1, int y0, int y1, int a) {
-    int col = (a << 24) | 0x40404;
+void DrawUIFrame(int x0, int x1, int y0, int y1, int alpha) {
+    int col = (alpha << 24) | 0x40404;
 
     DrawRectOverlay_FiiiiUl(x0, x1, y0, y1, col);
     DrawRectOverlay_FiiiiUl(x0 + 1, x1 - 1, y0 - 2, y0, col);
@@ -2869,47 +2859,45 @@ void DrawUIFrame(int x0, int x1, int y0, int y1, int a) {
     DrawRectOverlay_FiiiiUl(x0 + 4, x1 - 4, y1 + 3, y1 + 4, col);
 }
 
-/* Emits a 9-point cross/star pattern of func_001F5650 draws around
-   (a0, a1, a2, a3), offset by +-1/3/5 along each axis, all sharing the
-   colour/flags word a4. The first call passes a4 with only its top byte
-   kept and the low nibble forced to 4; the rest pass a4 unchanged. */
-void draw_outlined_rect(int a0, int a1, int a2, int a3, int a4) {
+/* Draw the center rectangle and eight surrounding bars.
+   The center keeps alpha and forces the low nibble to 4. */
+void draw_outlined_rect(int y0, int y1, int x0, int x1, int color_flags) {
     int color;
-    int t0, t1, t2;
-    int t_a0m5, t4, t5;
-    int t_a0p3, t6, t_a2m3;
-    int t_a1p3, t3, t_a3p1;
+    int y0_plus_one, x0_plus_three, x1_plus_five;
+    int y0_minus_five, x0_minus_one, x1_minus_three;
+    int y0_plus_three, y1_plus_one, x0_minus_three;
+    int y1_plus_three, y1_minus_three, x1_plus_one;
 
-    color = (a4 & (int)0xFF000000) | 4;
-    DrawRectOverlay_FiiiiUl(a0, a1, a2, a3, color);
+    color = (color_flags & (int)0xFF000000) | 4;
+    DrawRectOverlay_FiiiiUl(y0, y1, x0, x1, color);
 
-    t0 = a0 + 1;
-    t1 = a2 + 3;
-    t2 = a3 + 5;
-    DrawRectOverlay_FiiiiUl(a0 - 1, t0, t1, t2, a4);
+    y0_plus_one = y0 + 1;
+    x0_plus_three = x0 + 3;
+    x1_plus_five = x1 + 5;
+    DrawRectOverlay_FiiiiUl(y0 - 1, y0_plus_one, x0_plus_three, x1_plus_five, color_flags);
 
-    t_a0m5 = a0 - 5;
-    t4 = a2 - 1;
-    t5 = a3 - 3;
-    DrawRectOverlay_FiiiiUl(a0 - 3, t_a0m5, t4, t5, a4);
+    y0_minus_five = y0 - 5;
+    x0_minus_one = x0 - 1;
+    x1_minus_three = x1 - 3;
+    DrawRectOverlay_FiiiiUl(y0 - 3, y0_minus_five, x0_minus_one, x1_minus_three, color_flags);
 
-    t3 = a1 - 3;
-    DrawRectOverlay_FiiiiUl(t_a0m5, t3, t4, a2 + 1, a4);
+    y1_minus_three = y1 - 3;
+    DrawRectOverlay_FiiiiUl(y0_minus_five, y1_minus_three, x0_minus_one, x0 + 1, color_flags);
 
-    t_a0p3 = a0 + 3;
-    t6 = a1 + 1;
-    t_a2m3 = a2 - 3;
-    DrawRectOverlay_FiiiiUl(t_a0p3, t6, t_a2m3, a2 - 5, a4);
+    y0_plus_three = y0 + 3;
+    y1_plus_one = y1 + 1;
+    x0_minus_three = x0 - 3;
+    DrawRectOverlay_FiiiiUl(y0_plus_three, y1_plus_one, x0_minus_three, x0 - 5, color_flags);
 
-    DrawRectOverlay_FiiiiUl(a1 - 1, t6, t_a2m3, t5, a4);
+    DrawRectOverlay_FiiiiUl(y1 - 1, y1_plus_one, x0_minus_three, x1_minus_three, color_flags);
 
-    t_a1p3 = a1 + 3;
-    t_a3p1 = a3 + 1;
-    DrawRectOverlay_FiiiiUl(t_a1p3, a1 + 5, t1, t_a3p1, a4);
+    y1_plus_three = y1 + 3;
+    x1_plus_one = x1 + 1;
+    DrawRectOverlay_FiiiiUl(y1_plus_three, y1 + 5, x0_plus_three, x1_plus_one, color_flags);
 
-    DrawRectOverlay_FiiiiUl(t_a0p3, t_a1p3, a3 - 1, t_a3p1, a4);
+    DrawRectOverlay_FiiiiUl(y0_plus_three, y1_plus_three, x1 - 1, x1_plus_one, color_flags);
 
-    DrawRectOverlay_FiiiiUl(t0, t3, a3 + 3, t2, a4);
+    DrawRectOverlay_FiiiiUl(y0_plus_one, y1_minus_three, x1 + 3, x1_plus_five, color_flags);
 }
 
 /* gp-relative: declared as a 2-byte type purely so -G2 places it in the
@@ -3100,58 +3088,58 @@ extern void emit_textured_rectangle_r(f32, f32, f32, f32, s32, s32, s32, s32, u6
 void process_bgm_display_text_event(u64 color, u8 *s, f32 x, s32 n, s64 tex, struct Glyph *g, f32 y, f32 scale);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/audio/music/process_bgm_display_text_event.c, process_bgm_display_text_event. */
-void process_bgm_display_text_event(u64 color, u8 *str, f32 x, s32 n, s64 tex, struct Glyph *g, f32 y, f32 scale) {
-    u8 *s;
-    s32 i;
+void process_bgm_display_text_event(u64 color, u8 *str, f32 x, s32 character_limit, s64 texture, struct Glyph *glyphs, f32 y, f32 scale) {
+    u8 *cursor;
+    s32 character_count;
     f32 size;
     f32 top;
     f32 dx;
     f32 dy;
-    struct Glyph *e;
-    s32 avg;
-    s32 mk;
+    struct Glyph *overlay_glyph;
+    s32 gray_value;
+    s32 gray_color;
 
     if (font_window_active == 0) {
         font_palette_colors[0] = color;
     }
     size = scale * 16.0f;
-    i = 0;
-    if (n == 0 || *str == 0) {
+    character_count = 0;
+    if (character_limit == 0 || *str == 0) {
         return;
     }
-    s = str;
+    cursor = str;
     do {
-        if ((u8)(*s - 8) < 8) {
+        if ((u8)(*cursor - 8) < 8) {
             if ((*(s32 *)&GlobalStateFlag) != 0) {
                 color &= 0xFF000000;
-                color |= font_palette_colors[*s - 8] & 0xFFFFFF;
+                color |= font_palette_colors[*cursor - 8] & 0xFFFFFF;
             }
-        } else if (g[*s].adv != 0) {
-            top = IntToFloat(g[*s].top) * scale;
-            if ((u8)(*s + 0x80) < 0x28) {
-                e = (struct Glyph *)(((*s + 0x40) << 2) + (s32)g);
-                dx = IntToFloat(e->adv) * scale;
-                dy = IntToFloat(e->top) * scale;
-                emit_textured_rectangle_r(x + dx, y + dy, size, size, e->u, e->v, 16, 16, color, tex);
+        } else if (glyphs[*cursor].adv != 0) {
+            top = IntToFloat(glyphs[*cursor].top) * scale;
+            if ((u8)(*cursor + 0x80) < 0x28) {
+                overlay_glyph = (struct Glyph *)(((*cursor + 0x40) << 2) + (s32)glyphs);
+                dx = IntToFloat(overlay_glyph->adv) * scale;
+                dy = IntToFloat(overlay_glyph->top) * scale;
+                emit_textured_rectangle_r(x + dx, y + dy, size, size, overlay_glyph->u, overlay_glyph->v, 16, 16, color, texture);
             }
-            if (*s < 0x20) {
-                avg = (s32)((color & 0xFF) + ((color >> 8) & 0xFF) + ((color >> 16) & 0xFF)) / 3;
-                mk = (s32)(color & 0xFF000000);
-                mk += avg << 16;
-                mk += avg << 8;
-                avg += mk;
-                emit_textured_rectangle_r(x, y + top, scale * 24.0f, scale * 16.0f, g[*s].u, g[*s].v, 24, 16, avg, tex);
-            } else if (*s > 0x20) {
-                emit_textured_rectangle_r(x, y + top, size, size, g[*s].u, g[*s].v, 16, 16, color, tex);
+            if (*cursor < 0x20) {
+                gray_value = (s32)((color & 0xFF) + ((color >> 8) & 0xFF) + ((color >> 16) & 0xFF)) / 3;
+                gray_color = (s32)(color & 0xFF000000);
+                gray_color += gray_value << 16;
+                gray_color += gray_value << 8;
+                gray_value += gray_color;
+                emit_textured_rectangle_r(x, y + top, scale * 24.0f, scale * 16.0f, glyphs[*cursor].u, glyphs[*cursor].v, 24, 16, gray_value, texture);
+            } else if (*cursor > 0x20) {
+                emit_textured_rectangle_r(x, y + top, size, size, glyphs[*cursor].u, glyphs[*cursor].v, 16, 16, color, texture);
             }
-            x += IntToFloat(g[*s].adv) * scale;
+            x += IntToFloat(glyphs[*cursor].adv) * scale;
         }
-        i++;
-        if (i == n) {
+        character_count++;
+        if (character_count == character_limit) {
             break;
         }
-        s++;
-    } while (*s != 0);
+        cursor++;
+    } while (*cursor != 0);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001F6CE0);

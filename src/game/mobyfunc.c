@@ -534,42 +534,42 @@ extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 
-/* Scale the single vertex block at arg2+0x30 by the object's 0x2C field
+/* Scale the single vertex block at output_matrix+0x30 by the object'position_scale 0x2C field
    in 1/1024 units, then run it through the two per-object transforms at
-   arg0+0xC0 and arg0+0x10. 0x3A800000 is exactly 2^-10. */
-void MobyTransformScaledVertex(char *arg0, int arg1, char *arg2) {
-    char buf[0x40];
-    int n;
-    char *v;
-    float s;
+   moby+0xC0 and moby+0x10. 0x3A800000 is exactly 2^-10. */
+void MobyTransformScaledVertex(char *moby, int joint_index, char *output_matrix) {
+    char rotation_matrix[0x40];
+    int joint_index_copy;
+    char *translation;
+    float position_scale;
 
-    s = *(float *)(arg0 + 0x2C) * 0.0009765625f;
-    n = arg1;
-    get_moby_joint_matrices(arg0, 1, &n, arg2);
-    v = arg2 + 0x30;
-    FastVecScale(v, v, s);
-    copy_matrix_rotation_2(buf, arg0 + 0xC0);
-    sce_vu0_mul_matrix(arg2, buf, arg2);
-    FastVecAdd(v, v, arg0 + 0x10);
+    position_scale = *(float *)(moby + 0x2C) * 0.0009765625f;
+    joint_index_copy = joint_index;
+    get_moby_joint_matrices(moby, 1, &joint_index_copy, output_matrix);
+    translation = output_matrix + 0x30;
+    FastVecScale(translation, translation, position_scale);
+    copy_matrix_rotation_2(rotation_matrix, moby + 0xC0);
+    sce_vu0_mul_matrix(output_matrix, rotation_matrix, output_matrix);
+    FastVecAdd(translation, translation, moby + 0x10);
 }
 
-/* The many-vertex form of the same thing: arg1 blocks of 0x10 bytes
-   starting at arg3, each scaled and transformed in place. */
-void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3) {
-    char *v = arg3;
-    int n = arg1;
-    float s;
+/* The many-vertex form of the same thing: joint_count blocks of 0x10 bytes
+   starting at output_positions, each scaled and transformed in place. */
+void transform_scaled_vertex_batch(char *moby, int joint_count, void *joint_indices, char *output_positions) {
+    char *output_cursor = output_positions;
+    int remaining_count = joint_count;
+    float position_scale;
 
-    s = *(float *)(arg0 + 0x2C) * 0.0009765625f;
-    get_moby_joint_matrices_batch(arg0, arg1, arg2, arg3);
-    if (n > 0) {
+    position_scale = *(float *)(moby + 0x2C) * 0.0009765625f;
+    get_moby_joint_matrices_batch(moby, joint_count, joint_indices, output_positions);
+    if (remaining_count > 0) {
         do {
-            FastVecScale(v, v, s);
-            n--;
-            matrix_mul_vec3(v, v, arg0 + 0xC0);
-            FastVecAdd(v, v, arg0 + 0x10);
-            v += 0x10;
-        } while (n != 0);
+            FastVecScale(output_cursor, output_cursor, position_scale);
+            remaining_count--;
+            matrix_mul_vec3(output_cursor, output_cursor, moby + 0xC0);
+            FastVecAdd(output_cursor, output_cursor, moby + 0x10);
+            output_cursor += 0x10;
+        } while (remaining_count != 0);
     }
 }
 
