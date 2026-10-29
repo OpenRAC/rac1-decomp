@@ -19,6 +19,7 @@ extern void (*gCamPostUpdFuncsLvl[])(void);
 /* Run and clear the level's queued camera post-update callbacks. */
 void Camera_RunQueuedCallbacks(void) {
     int i;
+    /* Callbacks may add more work. Read the count again after each call. */
     for (i = 0; i < gCamPostUpdCountLvl; i++) {
         gCamPostUpdFuncsLvl[i]();
     }
@@ -68,6 +69,7 @@ float Camera_SmoothAngle(float *vel, float from, float to, float stiffness, floa
         else if (*vel < -max)
             *vel = -max;
     }
+    /* Also limit the step to the remaining angle. */
     if (*vel > FastAbsF(t))
         *vel = FastAbsF(t);
     else if (*vel < -FastAbsF(t))
@@ -172,6 +174,7 @@ void SwitchCamera(Camera *next_camera) {
     previous_camera->handoff_state = 0;
     previous_camera->hard_cut = 0;
     player_camera.previous = previous_camera;
+    /* Save the old state before giving the active buffer to the new camera. */
     FastMemCopy(gCamPrevStateLvl, gCamPrevStateLvl - 0x280, 0x280);
     player_camera.previous->state_buf = gCamPrevStateLvl;
     player_camera.current = next_camera;

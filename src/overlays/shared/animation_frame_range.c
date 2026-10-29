@@ -7,6 +7,7 @@
 extern MobyClass *eudora_moby_class_headers[];
 extern float IntToFloat(int);
 
+/* Stored frame times use 1/16-frame units. Values 0xFF and above mean none. */
 /* Return the first frame of animation b of moby class a (0 when b is none). */
 float animation_start(int a, unsigned int b)
 {
