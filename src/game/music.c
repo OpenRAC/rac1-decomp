@@ -638,77 +638,70 @@ typedef struct {
 } MusicPrimaryStream;
 
 /* Start a music track on the primary stream channel if that channel is free. */
-void music_StartTrack(int arg0, int arg1, int arg2) {
-    MusicPrimaryStream *s = (MusicPrimaryStream *)cd_read_state;
+void music_StartTrack(int track, int flags, int volume) {
+    MusicPrimaryStream *music_stream_state = (MusicPrimaryStream *)cd_read_state;
     char *base;
-    int *tbl;
-    long h;
+    int *track_locations;
+    long track_location;
 
-    if (s->handle != 0) {
+    if (music_stream_state->handle != 0) {
         return;
     }
     base = (char *)disc_table;
-    tbl = (int *)(base + 0x2AA8);
-    if (tbl[arg0] == 0) {
+    track_locations = (int *)(base + 0x2AA8);
+    if (track_locations[track] == 0) {
         return;
     }
-    s->state = 1;
-    h = tbl[arg0];
-    s->track = arg0;
-    s->poll_interval = 10;
-    s->remaining_time = 0xBB80;
-    s->handle = 0xFFFFFFFF;
-    s->flags = arg1;
-    s->volume = arg2;
-    s->crossfade_enabled = 0;
-    snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg2, 0, 1, 0, 0x20,
-                  music_primary_start_callback, (long)(unsigned int)&s->handle);
+    music_stream_state->state = 1;
+    track_location = track_locations[track];
+    music_stream_state->track = track;
+    music_stream_state->poll_interval = 10;
+    music_stream_state->remaining_time = 0xBB80;
+    music_stream_state->handle = 0xFFFFFFFF;
+    music_stream_state->flags = flags;
+    music_stream_state->volume = volume;
+    music_stream_state->crossfade_enabled = 0;
+    snd_PlayVAGStreamByLocEx_CB(track_location, 0, 0, 0, volume, 0, 1, 0, 0x20,
+                  music_primary_start_callback, (long)(unsigned int)&music_stream_state->handle);
 }
 
 extern void music_primary_replace_callback(int, long);
 
-/* music_StartTrackBody(int, int, int): when the music record at +0x34 is
-   already playing (its word neither 0 nor -1) and not in state 9, starts
-   track arg0 + 1 of the table at D_00137C80 + 0x2AA8 on it: state 9, the
-   track, arg1 and arg2 recorded, 10 and 48000 stored, then
-   func_0012ED48 with the current word passed on as its eighth argument
-   and 0x24 or 0x20 by arg1's bit 0. The handle is read twice as in
-   func_00216A90 (CSE merges the loads, and the address stays in a
-   register as in retail), and the 0x24/0x20 choice comes before the
-   stores, which keeps arg1 in $a1. */
-void music_StartTrackBody(int arg0, int arg1, int arg2) {
-    char *s = (char *)cd_read_state;
+/* Start the body entry (track + 1) on the playing primary stream.
+   Choose stream flags before the state stores to keep the match. */
+void music_StartTrackBody(int track, int track_flags, int volume) {
+    char *music_stream_state = (char *)cd_read_state;
     char *base;
-    int *tbl;
-    unsigned int cur;
-    long h;
-    int i;
+    int *track_locations;
+    unsigned int current_handle;
+    long track_location;
+    int track_index;
     int flags;
 
-    if (*(short *)(s + 0x3E) == 9) {
+    if (*(short *)(music_stream_state + 0x3E) == 9) {
         return;
     }
-    cur = *(unsigned int *)(s + 0x34);
-    if (cur == 0 || cur == 0xFFFFFFFF) {
+    current_handle = *(unsigned int *)(music_stream_state + 0x34);
+    if (current_handle == 0 || current_handle == 0xFFFFFFFF) {
         return;
     }
     base = (char *)disc_table;
-    tbl = (int *)(base + 0x2AA8);
-    i = arg0 + 1;
-    if (tbl[i] == 0) {
+    track_locations = (int *)(base + 0x2AA8);
+    track_index = track + 1;
+    if (track_locations[track_index] == 0) {
         return;
     }
-    h = tbl[i];
-    flags = (arg1 & 1) ? 0x24 : 0x20;
-    *(short *)(s + 0x38) = arg0;
-    *(short *)(s + 0x3C) = arg1;
-    *(short *)(s + 0x3E) = 9;
-    *(int *)(s + 0x48) = 10;
-    *(int *)(s + 0x4C) = 0xBB80;
-    *(short *)(s + 0x3A) = arg2;
-    *(short *)(s + 0x44) = 0;
-    snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg2, 0, 1, cur, flags,
-                  music_primary_replace_callback, (long)(unsigned int)(s + 0x34));
+    track_location = track_locations[track_index];
+    flags = (track_flags & 1) ? 0x24 : 0x20;
+    *(short *)(music_stream_state + 0x38) = track;
+    *(short *)(music_stream_state + 0x3C) = track_flags;
+    *(short *)(music_stream_state + 0x3E) = 9;
+    *(int *)(music_stream_state + 0x48) = 10;
+    *(int *)(music_stream_state + 0x4C) = 0xBB80;
+    *(short *)(music_stream_state + 0x3A) = volume;
+    *(short *)(music_stream_state + 0x44) = 0;
+    snd_PlayVAGStreamByLocEx_CB(track_location, 0, 0, 0, volume, 0, 1, current_handle, flags,
+                  music_primary_replace_callback, (long)(unsigned int)(music_stream_state + 0x34));
 }
 
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
@@ -745,27 +738,27 @@ typedef struct {
 } MusicTransitionBlock;
 
 /* Start a crossfade transition track on its channel; return 1 if it was started. */
-int music_Transition(int arg0, int arg1, int arg2, int arg3) {
-    MusicTransitionBlock *s = (MusicTransitionBlock *)cd_read_state;
+int music_Transition(int track, int transition_track, int flags, int volume) {
+    MusicTransitionBlock *music_stream_state = (MusicTransitionBlock *)cd_read_state;
     MusicTrackTable *base;
-    s32 *tbl;
-    long h;
+    s32 *track_locations;
+    long track_location;
 
-    if (s->transition.handle == 0) {
+    if (music_stream_state->transition.handle == 0) {
         base = (MusicTrackTable *)disc_table;
-        tbl = base->music_tracks;
-        if (tbl[arg1] != 0) {
-            s->transition.flags = arg2;
-            h = tbl[arg1];
-            s->transition.poll_interval = 10;
-            s->transition.remaining_time = 0xBB80;
-            s->transition.handle = 0xFFFFFFFF;
-            s->transition.track = arg0;
-            s->transition.state = 1;
-            s->transition.crossfade_enabled = 1;
-            s->transition.volume = arg3;
-            snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg3, 0, 1, 0, 0x20,
-                          music_transition_start_callback, (long)(unsigned int)&s->transition.handle);
+        track_locations = base->music_tracks;
+        if (track_locations[transition_track] != 0) {
+            music_stream_state->transition.flags = flags;
+            track_location = track_locations[transition_track];
+            music_stream_state->transition.poll_interval = 10;
+            music_stream_state->transition.remaining_time = 0xBB80;
+            music_stream_state->transition.handle = 0xFFFFFFFF;
+            music_stream_state->transition.track = track;
+            music_stream_state->transition.state = 1;
+            music_stream_state->transition.crossfade_enabled = 1;
+            music_stream_state->transition.volume = volume;
+            snd_PlayVAGStreamByLocEx_CB(track_location, 0, 0, 0, volume, 0, 1, 0, 0x20,
+                          music_transition_start_callback, (long)(unsigned int)&music_stream_state->transition.handle);
         } else {
             return 0;
         }
@@ -775,26 +768,26 @@ int music_Transition(int arg0, int arg1, int arg2, int arg3) {
     return 1;
 }
 
-/* A block-local `char *e` for the final stores (%hi kept, %lo rebuilt),
+/* A block-local `char *pending_state` for the final stores (%hi kept, %lo rebuilt),
    written in the order the rotation rule gives. */
-void Music_QueueTrack(int arg0, int arg1) {
-    char *d = (char *)cd_read_state;
+void Music_QueueTrack(int track, int transition_track) {
+    char *stream_state = (char *)cd_read_state;
 
-    if (*(short *)(d + 0x38) == arg0) {
-        if (*(signed char *)(d + 0x22) == -1) {
+    if (*(short *)(stream_state + 0x38) == track) {
+        if (*(signed char *)(stream_state + 0x22) == -1) {
             return;
         }
     }
-    if (*(short *)(d + 0x3E) == 0) {
-        if (*(short *)(d + 0x76) == 0) {
-            *(short *)(d + 0x38) = arg0;
+    if (*(short *)(stream_state + 0x3E) == 0) {
+        if (*(short *)(stream_state + 0x76) == 0) {
+            *(short *)(stream_state + 0x38) = track;
             return;
         }
     }
     {
-        char *e = (char *)cd_read_state;
-        e[0x22] = arg0;
-        e[0x23] = arg1;
+        char *pending_state = (char *)cd_read_state;
+        pending_state[0x22] = track;
+        pending_state[0x23] = transition_track;
     }
 }
 
@@ -870,8 +863,8 @@ void music_Stop(void) {
 extern short cd_read_state[];
 
 /* music_Pause(int) */
-void music_Pause(int arg0) {
-    if (arg0 != 0) {
+void music_Pause(int pause_secondary) {
+    if (pause_secondary != 0) {
         cd_read_state[0x2F] = 0;
         cd_read_state[0x2E] = -0x8000;
     }
@@ -883,10 +876,10 @@ void music_Pause(int arg0) {
 
 /* music_Unpause(void) */
 void music_Unpause(void) {
-    short *p = cd_read_state;
-    p[0x20] = 4;
-    p[0x3C] = 4;
-    p[0x2E] = 4;
+    short *stream_state = cd_read_state;
+    stream_state[0x20] = 4;
+    stream_state[0x3C] = 4;
+    stream_state[0x2E] = 4;
 }
 
 typedef struct {
