@@ -228,6 +228,8 @@ int start_audio_stream_read(int arg0, int arg1, int arg2) {
         raise_kernel_trap();
         return 0;
     }
+    /* Save destination, start sector, and sector count only after acceptance.
+       The return converts the count to bytes at 2048 bytes per sector. */
     *(int *)(d + 0x14) = arg0;
     *(short *)(d + 8) = 1;
     *(int *)(d + 0xC) = arg1;
@@ -298,7 +300,7 @@ int Load(int arg0, int arg1, int arg2) {
    its base a temp ($v1) sharing the %hi with the guard through $s1. */
 struct MusicStreamState {
     u8 pad_0[0x8];
-    s16 read_state;            /* 0x08: 0 idle, 1 reading, 2 done */
+    s16 read_state;            /* 0x08: 0 idle, 1 reading, 2 on reported CD error */
 };
 
 /* Pump music and stream updates, until the CD read is idle if arg0; return the read state. */
@@ -326,7 +328,9 @@ short update_audio_stream_until_idle(int arg0) {
 
 extern int snd_StreamSafeCdGetError(void);
 
-/* CD read callback: mark the music stream read finished, or done if more data is ready. */
+/* Only callback value 1 updates the read state: clear it on completion,
+   then set it to 2 if the CD error query is nonzero. The blocking pumps
+   above wait for zero, so state 2 does not satisfy their exit condition. */
 void finish_audio_stream_read(int callback_value) {
     struct MusicStreamState *state;
     if (callback_value == 1) {

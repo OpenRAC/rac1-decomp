@@ -339,10 +339,13 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
     s32 cur, old, ncur, nold;
     float mag, ang;
 
+    /* Reports use active-low button bits; game masks use set bits for held buttons. */
     p->raw_held = p->held = ((buf[0] << 8) | buf[1]) ^ 0xFFFF;
     for (i = 15; i >= 0; i--) {
         p->analog[i] = 0;
     }
+    /* Four stick bytes follow the button word. Remove the central 0x30 dead
+       zone around 0x7F, scale the remaining distance, and clamp to unit magnitude. */
     if (len >= 6) {
         for (i = 0; i < 4; i++) {
             s32 d = buf[i + 2] - 0x7F;
@@ -360,6 +363,7 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
             }
         }
     }
+    /* Longer reports add twelve pressure bytes, normalized from 0..255 to 0..1. */
     if (len >= 0x12) {
         for (i = 4; i < 16; i++) {
             p->analog[i] = IntToFloat_r(buf[i + 2]) * 0.003921569f;
@@ -375,6 +379,7 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
         }
         p->raw_held = p->held;
     }
+    /* Despite its name, analog_prev receives this report before input masking. */
     {
         float *dst = p->analog_prev, *src = p->analog;
         for (i = 15; i >= 0; i--) {
@@ -386,6 +391,7 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
     } else {
         p->stick_moved = 0;
     }
+    /* Merge stick directions into held before computing button edges. */
     if (p->analog[2] < 0.0f)
         p->held |= 0x8000;
     if (p->analog[2] > 0.0f)
@@ -428,6 +434,8 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
             p->released_unmasked = (((s32)p->released_unmasked) & ~0x2000) | 0x8000;
         }
     }
+    /* Unmasked snapshots above survive these one-report control filters.
+       Each filter consumes mode by resetting it to zero. */
     if (p->mode == 1) {
         p->held &= ~0x5030;
         p->pressed &= ~0x5030;
@@ -452,6 +460,9 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
     ang = fast_arc_tan_r(v[0], v[1]);
     p->hist_mag[p->hist_idx] = mag;
     p->hist_ang[p->hist_idx] = ang;
+    /* A near-full stick sets the synthetic 0x10000 press after a recent
+       neutral sample or a direction change exceeding about 55 degrees.
+       Samples wrap in 30 slots; search windows use scaled game-frame counts. */
     if (mag > 0.9f) {
         for (j = 1; j < scale_game_frame_count_r(4); j++) {
             float m = p->hist_mag[(p->hist_idx - j + 30) % 30];
