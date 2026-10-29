@@ -1602,6 +1602,8 @@ s32 service_level_archive_load(void) {
     struct LevelArchiveHeader_04C60 *shared_header;
 
     level_index = ship_index_r[0] + 1;
+    /* A submitted read advances the stage immediately. While it is pending,
+       return to the caller; retrying rewinds to that read's submission stage. */
     if (sce_cd_sync_s_r(1) != 0) {
         cd_read_wait_frames_r = cd_read_wait_frames_r + 1;
         if (cd_read_spindle_speed_r == 1) {
@@ -1630,6 +1632,9 @@ s32 service_level_archive_load(void) {
     stage = (s16)level_archive_load_state_r.stage;
     switch (stage) {
     case 0:
+        /* Reserve sound, level and shared buffers downward from 0x1FF8000.
+           Disc sizes are sectors (<< 11); each reservation rounds up to 4 KB.
+           These are staging buffers, not the overlay's final load addresses. */
         if (pal_mode_r != 0) {
             sound_aligned_bytes =
                 ((disc_table_r.sound_archive_alt.size << 11) + 0xFFF) & 0xFFFFF000;
@@ -1653,11 +1658,13 @@ s32 service_level_archive_load(void) {
         level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
         break;
     case 1:
+        /* The shared read has completed; submit this level's archive next. */
         next_disc_entry = (struct LevelArchiveDiscEntry_04C60 *)((u8 *)&disc_table_r + level_index * 8);
         Stream_SubmitRead_r(level_archive_load_state_r.level, *(s32 *)((s32)&disc_table_r + (level_index << 3) + 0x12C8), *(s32 *)((s32)&disc_table_r + (level_index << 3) + 0x12CC));
         level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
         break;
     case 2:
+        /* Finish the disc-read sequence with the selected sound archive. */
         if (pal_mode_r != 0) {
             Stream_SubmitRead_r(level_archive_load_state_r.sound, disc_table_r.sound_archive_alt.sector,
                                 disc_table_r.sound_archive_alt.size);
@@ -1668,6 +1675,8 @@ s32 service_level_archive_load(void) {
         level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
         break;
     case 3:
+        /* Wait for the external busy flag before stopping sounds. Without an
+           existing bank, skip the unload stages and proceed to stage 6. */
         if (level_archive_load_state_r.busy != 0) {
             return 0;
         }
@@ -1680,6 +1689,7 @@ s32 service_level_archive_load(void) {
         }
         break;
     case 4:
+        /* Drain queued sound commands before unloading the old bank. */
         if (snd_FlushSoundCommands_r() != 0) {
             return 0;
         }
@@ -1689,6 +1699,7 @@ s32 service_level_archive_load(void) {
         level_archive_load_state_r.stage = next_stage + 1;
         break;
     case 5:
+        /* Wait for the unload commands, then update bank cross-references. */
         if (snd_FlushSoundCommands_r() != 0) {
             return 0;
         }
@@ -1696,6 +1707,8 @@ s32 service_level_archive_load(void) {
         level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
         break;
     case 6:
+        /* The bank offset is relative to the shared archive header. The load
+           callback replaces the -1 handle sentinel when the request completes. */
         if (snd_FlushSoundCommands_r() != 0) {
             return 0;
         }
@@ -1706,6 +1719,8 @@ s32 service_level_archive_load(void) {
         level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
         break;
     case 7:
+        /* Both the sound command queue and the callback must finish before
+           cross-references can be resolved and completion reported. */
         if (snd_FlushSoundCommands_r() != 0) {
             return 0;
         }
