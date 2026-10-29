@@ -3070,21 +3070,19 @@ void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64
 extern void FontPrint(void *, void *, void *, void *, void *, long,
                           unsigned char *);
 
-/* Same shape as func_001F7560/func_001F75D0 below, one argument wider:
-   mode 1 vs 2, D_001DF3D0 vs D_001DF770. Seven arguments, so EABI puts
-   the fifth through seventh in $8/$9/$10. */
+/* Draw text with the regular font. */
 /* FontPrintLarge */
-void FontPrintLarge(void *a, void *b, void *c, void *d, void *e) {
+void FontPrintLarge(void *x, void *y, void *color, void *text, void *character_limit) {
     long mode = GetEffectTex64(1);
 
-    FontPrint(a, b, c, d, e, mode, normal_font_metrics);
+    FontPrint(x, y, color, text, character_limit, mode, normal_font_metrics);
 }
 
 /* FontPrintSmall */
-void FontPrintSmall(void *a, void *b, void *c, void *d, void *e) {
+void FontPrintSmall(void *x, void *y, void *color, void *text, void *character_limit) {
     long mode = GetEffectTex64(2);
 
-    FontPrint(a, b, c, d, e, mode, small_font_metrics);
+    FontPrint(x, y, color, text, character_limit, mode, small_font_metrics);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001F69E8);
@@ -3161,66 +3159,60 @@ LINKER_REMNANT("asm/remnants/text", func_001F6CE0);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 
-/* func_001F6CF8/func_001F6D88/func_001F6E18 are func_001F68E8's family
-   with a leading measure call: the same mode/table triple (1, 2, 3 and
-   D_001DF3D0, D_001DF770, D_001DFB10), each paired with its own
-   measuring helper, and the first argument stepped back by whatever that
-   helper returns. */
-void font_print_right(char *a, void *b, void *c, unsigned char *d, int e) {
-    char *p = a - measure_text_width_regular(d, e);
+/* Draw text ending at right_x. */
+void font_print_right(char *right_x, void *y, void *color, unsigned char *text, int character_limit) {
+    char *text_x = right_x - measure_text_width_regular(text, character_limit);
     long mode = GetEffectTex64(1);
 
-    FontPrint(p, b, c, d, (void *)e, mode, normal_font_metrics);
+    FontPrint(text_x, y, color, text, (void *)character_limit, mode, normal_font_metrics);
 }
 
 /* Right-aligned FontPrint with the second font. */
-void font_print_right_small(char *a, void *b, void *c, unsigned char *d, int e) {
-    char *p = a - measure_text_width_small(d, e);
+void font_print_right_small(char *right_x, void *y, void *color, unsigned char *text, int character_limit) {
+    char *text_x = right_x - measure_text_width_small(text, character_limit);
     long mode = GetEffectTex64(2);
 
-    FontPrint(p, b, c, d, (void *)e, mode, small_font_metrics);
+    FontPrint(text_x, y, color, text, (void *)character_limit, mode, small_font_metrics);
 }
 
 /* Right-aligned FontPrint with the third font. */
-void font_print_right_large(char *a, void *b, void *c, unsigned char *d, int e) {
-    char *p = a - measure_text_width_large(d, e);
+void font_print_right_large(char *right_x, void *y, void *color, unsigned char *text, int character_limit) {
+    char *text_x = right_x - measure_text_width_large(text, character_limit);
     long mode = GetEffectTex64(3);
 
-    FontPrint(p, b, c, d, (void *)e, mode, large_font_metrics);
+    FontPrint(text_x, y, color, text, (void *)character_limit, mode, large_font_metrics);
 }
 
-/* func_001F6EA8/func_001F6F40/func_001F6FD8 are the func_001F6CF8 triple
-   centred instead of left-aligned: the step-back is half the measured
-   value, and the adjusted position is returned. Typed all-int to match
-   the extern func_001F7288 already declares for func_001F6FD8. */
+/* Center text on center_x and return its left edge.
+   Keep the int types used by func_001F7288. */
 /* FontPrintCenter */
-int FontPrintCenter(int a, int b, int c, int d, int e) {
-    int p = a - (measure_text_width_regular((unsigned char *)d, e) >> 1);
+int FontPrintCenter(int center_x, int y, int color, int text, int character_limit) {
+    int text_x = center_x - (measure_text_width_regular((unsigned char *)text, character_limit) >> 1);
     long mode = GetEffectTex64(1);
 
-    FontPrint((void *)p, (void *)b, (void *)c, (void *)d, (void *)e,
+    FontPrint((void *)text_x, (void *)y, (void *)color, (void *)text, (void *)character_limit,
                   mode, normal_font_metrics);
-    return p;
+    return text_x;
 }
 
 /* FontPrintCenterSmall */
-int FontPrintCenterSmall(int a, int b, int c, int d, int e) {
-    int p = a - (measure_text_width_small((unsigned char *)d, e) >> 1);
+int FontPrintCenterSmall(int center_x, int y, int color, int text, int character_limit) {
+    int text_x = center_x - (measure_text_width_small((unsigned char *)text, character_limit) >> 1);
     long mode = GetEffectTex64(2);
 
-    FontPrint((void *)p, (void *)b, (void *)c, (void *)d, (void *)e,
+    FontPrint((void *)text_x, (void *)y, (void *)color, (void *)text, (void *)character_limit,
                   mode, small_font_metrics);
-    return p;
+    return text_x;
 }
 
 /* FontPrintCenterLarge */
-int FontPrintCenterLarge(int a, int b, int c, int d, int e) {
-    int p = a - (measure_text_width_large((unsigned char *)d, e) >> 1);
+int FontPrintCenterLarge(int center_x, int y, int color, int text, int character_limit) {
+    int text_x = center_x - (measure_text_width_large((unsigned char *)text, character_limit) >> 1);
     long mode = GetEffectTex64(3);
 
-    FontPrint((void *)p, (void *)b, (void *)c, (void *)d, (void *)e,
+    FontPrint((void *)text_x, (void *)y, (void *)color, (void *)text, (void *)character_limit,
                   mode, large_font_metrics);
-    return p;
+    return text_x;
 }
 
 extern void VU1_setScissor(int, int, int, int);
@@ -3232,123 +3224,124 @@ struct FontWindow {
 };
 
 /* FontPrintWindow */
-void FontPrintWindow(void *win_p, long a1, void *text_p, int len, long a4, unsigned char *glyphs)
+void FontPrintWindow(void *win_p, long color, void *text_p, int len, long texture, unsigned char *glyphs)
 {
     struct FontWindow *win = (struct FontWindow *)win_p;
     unsigned char *text = (unsigned char *)text_p;
     short start[32];
-    short endi[32];
-    short colr_arr[32];
-    int W, Wsave, line, i, brk, width, colr, n0, last, balanced;
-    int k, y, flags, adv, c;
+    short line_ends[32];
+    short line_colors[32];
+    int available_width, original_width, line_count, text_index, break_index, width,
+        palette_index, initial_line_count, last_line_width, balanced;
+    int line_index, y, flags, glyph_advance, c;
 
     VU1_setScissor(win->x_min, win->x_max - 1, win->y_min, win->y_max - 1);
     font_window_active = 1;
     if ((win->flags ^ 1) & 1) {
-        W = win->x_max - win->x_anchor;
+        available_width = win->x_max - win->x_anchor;
     } else {
         int l = win->x_anchor;
         int a = win->x_max - l;
-        W = l - win->x_min;
-        if (a < W)
-            W = a;
-        W = W * 2;
+        available_width = l - win->x_min;
+        if (a < available_width)
+            available_width = a;
+        available_width = available_width * 2;
     }
-    Wsave = W;
-    colr = 0;
+    original_width = available_width;
+    palette_index = 0;
     balanced = 0;
-    n0 = 0;
-    last = 0;
+    initial_line_count = 0;
+    last_line_width = 0;
 
     for (;;) {
-        line = 0;
-        i = 0;
+        line_count = 0;
+        text_index = 0;
         if (len != 0 && text[0] != 0) {
             for (;;) {
-                start[line] = i;
-                colr_arr[line] = colr;
+                start[line_count] = text_index;
+                line_colors[line_count] = palette_index;
                 width = 0;
-                brk = i;
+                break_index = text_index;
                 {
-                    while (width < W) {
-                        if (text[i] == 0x20 || text[i] < 0x10)
-                            brk = i;
-                        if (*(int *)&GlobalStateFlag != 0 && (unsigned char)(text[i] - 8) < 8)
-                            colr = text[i] - 8;
-                        if (text[i] < 2)
+                    while (width < available_width) {
+                        if (text[text_index] == 0x20 || text[text_index] < 0x10)
+                            break_index = text_index;
+                        if (*(int *)&GlobalStateFlag != 0 && (unsigned char)(text[text_index] - 8) < 8)
+                            palette_index = text[text_index] - 8;
+                        if (text[text_index] < 2)
                             break;
-                        adv = ((signed char *)glyphs)[text[i] * 4 + 3];
-                        i++;
-                        if (adv != 0)
-                            width += adv;
+                        glyph_advance = ((signed char *)glyphs)[text[text_index] * 4 + 3];
+                        text_index++;
+                        if (glyph_advance != 0)
+                            width += glyph_advance;
                     }
                 }
-                endi[line] = brk;
-                if ((short)brk == start[line])
-                    endi[line] = i;
-                i = endi[line];
-                if (text[i] == 0x20 || text[i] < 0x10)
-                    endi[line] = endi[line] - 1;
-                line++;
-                if (text[i] == 0) {
-                    last = width;
+                line_ends[line_count] = break_index;
+                if ((short)break_index == start[line_count])
+                    line_ends[line_count] = text_index;
+                text_index = line_ends[line_count];
+                if (text[text_index] == 0x20 || text[text_index] < 0x10)
+                    line_ends[line_count] = line_ends[line_count] - 1;
+                line_count++;
+                if (text[text_index] == 0) {
+                    last_line_width = width;
                     break;
                 }
-                i++;
-                if (i == len || text[i] == 0)
+                text_index++;
+                if (text_index == len || text[text_index] == 0)
                     break;
             }
         }
-        if (balanced || line < 2)
+        if (balanced || line_count < 2)
             break;
-        if (n0 == 0)
-            n0 = line;
-        if (n0 < line) {
-            W = Wsave;
+        if (initial_line_count == 0)
+            initial_line_count = line_count;
+        if (initial_line_count < line_count) {
+            available_width = original_width;
             balanced = 1;
             continue;
         }
-        if (last < W / 3) {
-            W -= 16;
+        if (last_line_width < available_width / 3) {
+            available_width -= 16;
             continue;
         }
         break;
     }
 
     {
-        struct FontWindow *dw = win;
-        int cnt, w;
-        dw->out_w = 0;
-        y = dw->y_start;
-        dw->out_h = line * dw->line_h;
-        if (dw->flags & 2)
-            y -= (line * dw->line_h) >> 1;
-        for (k = 0; k < line; k++, y += dw->line_h) {
-            if (y + dw->line_h < dw->y_min)
+        struct FontWindow *draw_window = win;
+        int character_count, line_width;
+        draw_window->out_w = 0;
+        y = draw_window->y_start;
+        draw_window->out_h = line_count * draw_window->line_h;
+        if (draw_window->flags & 2)
+            y -= (line_count * draw_window->line_h) >> 1;
+        for (line_index = 0; line_index < line_count; line_index++, y += draw_window->line_h) {
+            if (y + draw_window->line_h < draw_window->y_min)
                 continue;
-            if (dw->y_max < y)
+            if (draw_window->y_max < y)
                 continue;
-            cnt = endi[k] - start[k] + 1;
-            w = measure_text_width(text + start[k], cnt, glyphs);
-            if (dw->out_w < w)
-                dw->out_w = w;
-            if (dw->flags & 4)
+            character_count = line_ends[line_index] - start[line_index] + 1;
+            line_width = measure_text_width(text + start[line_index], character_count, glyphs);
+            if (draw_window->out_w < line_width)
+                draw_window->out_w = line_width;
+            if (draw_window->flags & 4)
                 continue;
-            font_palette_colors[0] = a1;
-            if (dw->flags & 8) {
+            font_palette_colors[0] = color;
+            if (draw_window->flags & 8) {
                 float fx;
-                if (dw->flags & 1)
-                    fx = (dw->x_anchor - (w >> 1)) + dw->x_sub * 0.0625f;
+                if (draw_window->flags & 1)
+                    fx = (draw_window->x_anchor - (line_width >> 1)) + draw_window->x_sub * 0.0625f;
                 else
-                    fx = dw->x_anchor + dw->x_sub * 0.0625f;
-                process_bgm_display_text_event(font_palette_colors[colr_arr[k]], text + start[k], fx, cnt, a4, (struct Glyph *)glyphs,
-                              y + dw->y_sub * 0.0625f, 1.0f);
-            } else if (dw->flags & 1) {
-                FontPrint((void *)(dw->x_anchor - (w >> 1)), (void *)y, (void *)font_palette_colors[colr_arr[k]],
-                              text + start[k], (void *)cnt, a4, glyphs);
+                    fx = draw_window->x_anchor + draw_window->x_sub * 0.0625f;
+                process_bgm_display_text_event(font_palette_colors[line_colors[line_index]], text + start[line_index], fx, character_count, texture, (struct Glyph *)glyphs,
+                              y + draw_window->y_sub * 0.0625f, 1.0f);
+            } else if (draw_window->flags & 1) {
+                FontPrint((void *)(draw_window->x_anchor - (line_width >> 1)), (void *)y, (void *)font_palette_colors[line_colors[line_index]],
+                              text + start[line_index], (void *)character_count, texture, glyphs);
             } else {
-                FontPrint((void *)(int)dw->x_anchor, (void *)y, (void *)font_palette_colors[colr_arr[k]],
-                              text + start[k], (void *)cnt, a4, glyphs);
+                FontPrint((void *)(int)draw_window->x_anchor, (void *)y, (void *)font_palette_colors[line_colors[line_index]],
+                              text + start[line_index], (void *)character_count, texture, glyphs);
             }
         }
     }
@@ -3358,40 +3351,37 @@ void FontPrintWindow(void *win_p, long a1, void *text_p, int len, long a4, unsig
 
 extern int GetEffectTex(int);
 
-/* func_001F7560 and func_001F75D0 are the same call with a different
-   mode (1 vs 2) and a different table. Six arguments: EABI passes the
-   fifth and sixth in $8/$9, which is why they appear alongside $4-$7
-   rather than on the stack. */
-void font_print_window_regular(void *a, void *b, void *c, void *d) {
+/* Draw text in a window with the regular font. */
+void font_print_window_regular(void *window, void *color, void *text, void *character_limit) {
     int mode = GetEffectTex(1);
 
-    FontPrintWindow(a, b, c, d, mode, normal_font_metrics);
+    FontPrintWindow(window, color, text, character_limit, mode, normal_font_metrics);
 }
 
 /* FontPrintWindow with the second font. */
-void font_print_window_small(void *a, void *b, void *c, void *d) {
+void font_print_window_small(void *window, void *color, void *text, void *character_limit) {
     int mode = GetEffectTex(2);
 
-    FontPrintWindow(a, b, c, d, mode, small_font_metrics);
+    FontPrintWindow(window, color, text, character_limit, mode, small_font_metrics);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001F7640);
 
 /* FontSetWindow */
-void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8) {
-    short *s = (short *)arg0;
-    s[0] = a1;
-    s[1] = a2;
-    s[2] = a3;
-    s[3] = a4;
-    s[4] = a5;
-    s[5] = a6;
-    s[8] = a7;
-    s[9] = a8;
-    s[6] = 0;
-    s[7] = 0;
-    s[10] = 0;
-    s[11] = 0;
+void FontSetWindow(void *window, int y_min, int y_max, int x_min, int x_max, int x_anchor, int y_start, int line_height, int flags) {
+    short *window_fields = (short *)window;
+    window_fields[0] = y_min;
+    window_fields[1] = y_max;
+    window_fields[2] = x_min;
+    window_fields[3] = x_max;
+    window_fields[4] = x_anchor;
+    window_fields[5] = y_start;
+    window_fields[8] = line_height;
+    window_fields[9] = flags;
+    window_fields[6] = 0;
+    window_fields[7] = 0;
+    window_fields[10] = 0;
+    window_fields[11] = 0;
 }
 
 extern int draw_buffer_address MACRO_ADDR;
