@@ -3345,8 +3345,8 @@ typedef struct ItemPreviewCamera {
 } ItemPreviewCamera;
 
 /* Spawns or swaps the 3D preview moby for the selected item cell, in front of the camera. */
-int update_item_preview_moby(char *arg0) {
-    ItemPreviewScreen *menu = (ItemPreviewScreen *)arg0;
+int update_item_preview_moby(char *screen_data) {
+    ItemPreviewScreen *menu = (ItemPreviewScreen *)screen_data;
     PreviewGridScreen *grid = (PreviewGridScreen *)((MenuPage *)current_menu_page)->focus;
     int item = grid->cells[grid->selected_cell].id;
     short current_preview_class;
@@ -3369,7 +3369,7 @@ int update_item_preview_moby(char *arg0) {
             spawned_moby->pos.z = preview_camera_base->pos.z - 0.3f;
             spawned_moby->rot.z = 3.1415927f;
             spawned_moby->update = rotate_item_preview_moby;
-            *(void **)spawned_moby->pvars = arg0;
+            *(void **)spawned_moby->pvars = screen_data;
         }
     } else if (want == -1) {
         menu->moby = (struct Moby *)delete_moby((int)menu->moby);
@@ -3384,7 +3384,7 @@ int update_item_preview_moby(char *arg0) {
             qcopy(&replacement_moby->pos, &old->pos);
             qcopy(&replacement_moby->rot, &old->rot);
             replacement_moby->update = old->update;
-            *(void **)replacement_moby->pvars = arg0;
+            *(void **)replacement_moby->pvars = screen_data;
         }
         delete_moby((int)menu->moby);
         menu->moby = replacement_moby;
@@ -3641,7 +3641,7 @@ typedef struct PreviewScreenWords_21F610 {
 
 /* Draws the item preview moby and the optional second one, only when the
    highlighted item is owned. Returns 0 when it is not. */
-int draw_available_item_preview_mobys(char *arg0) {
+int draw_available_item_preview_mobys(char *screen_data) {
     PreviewGridScreen *grid;
     s32 primary_moby;
     s32 secondary_moby;
@@ -3650,11 +3650,11 @@ int draw_available_item_preview_mobys(char *arg0) {
     if (((unsigned char *)&item_available)[grid->cells[grid->selected_cell].id] == 0) {
         return 0;
     }
-    primary_moby = ((PreviewScreenWords_21F610 *)arg0)->moby;
+    primary_moby = ((PreviewScreenWords_21F610 *)screen_data)->moby;
     if (primary_moby != 0) {
         DrawMobyList(primary_moby, 1);
     }
-    secondary_moby = ((PreviewScreenWords_21F610 *)arg0)->second_moby;
+    secondary_moby = ((PreviewScreenWords_21F610 *)screen_data)->second_moby;
     if (secondary_moby != 0) {
         DrawMobyList(secondary_moby, 1);
     }
@@ -3904,9 +3904,9 @@ extern int sprintf(char *, const char *, ...);
 extern char *libc_strchr(const char *, int);
 extern char *libc_strcpy_r(char *, const char *) __asm__("func_001166FC");
 extern u32 libc_strlen_r(const char *) __asm__("func_00116810");
-/* Returns arg0 + arg1. */
-static inline int add_offset(s32 arg0, int arg1) {
-    return arg0 + arg1;
+/* Returns base_value + offset. */
+static inline int add_offset(s32 base_value, int offset) {
+    return base_value + offset;
 }
 /* Returns a / n. */
 static inline int divide_coordinate(s32 a, int n) {
@@ -4012,7 +4012,7 @@ extern int g_screen_extent[];
 extern int sprintf(char *, const char *, ...);
 extern void font_print_right_c(int, int, long, char *, int) __asm__("func_001F6CF8");
 
-/* DrawGBsShipMenu (maybe): parks the marker object at arg0+0x44 by the
+/* DrawGBsShipMenu (maybe): parks the marker object at screen_data+0x44 by the
    camera focus in D_00187040, draws it, then prints "%s %d %s %d" (texts
    0x4F4F and 0x4F53, the number of D_0014BFC0 flags set for the current
    map, and the map's D_001E0B88 total) twice, as shadow and text. The
@@ -4020,10 +4020,10 @@ extern void font_print_right_c(int, int, long, char *, int) __asm__("func_001F6C
    D_001A01F0's %hi once, straight into the register that is kept for the
    second read, as retail has it (a pointer set before the loop leaves a
    copy). */
-int DrawGBsShipMenu__maybe(char *arg0) {
+int DrawGBsShipMenu__maybe(char *screen_data) {
     char buf[0x100];
     CameraSystem *t = (CameraSystem *)gCamera;
-    MenuScreen *screen = (MenuScreen *)arg0;
+    MenuScreen *screen = (MenuScreen *)screen_data;
     Moby *o = screen->data.preview.moby;
     int count;
 
@@ -4082,7 +4082,7 @@ extern char fmt_number_thousands[]; /* "%d,%03d" */
    appends at text + the first one's length; forming that pointer in each
    arm (`q = text + sprintf(...)`) lets gcc merge the two into one addu at
    the join, as retail has it. */
-int draw_selected_item_ammo(char *arg0) {
+int draw_selected_item_ammo(char *screen_data) {
     char text[0x50];
     short box[10];
     MenuScreen *p = ((MenuPage *)current_menu_page)->focus;
@@ -4114,7 +4114,7 @@ int draw_selected_item_ammo(char *arg0) {
         }
     }
     SetupGifPaging(0);
-    pack_image_descriptor(box, arg0);
+    pack_image_descriptor(box, screen_data);
     box[8] = 0x10;
     box[9] = 3;
     font_print_window_regular(box, 0x80FFA888L, text, -1);
@@ -4139,10 +4139,10 @@ extern void FontPrintSmall_c(int, int, long, void *, int) __asm__("func_001F6968
 
 /* DrawMissionsMenu: the menu's text lines (0x4EEE, 0x4EEF only when
    D_0015EE84 is set, then 0x4EFA, 0x4EFB, 0x4EFC, 0x4EE0) in one column,
-   left-aligned so the widest (func_001F6620) is centred in arg0+0x20 but
-   at least 2 in, and spaced arg0+0x24 / (6 or 7 lines) apart starting a
+   left-aligned so the widest (func_001F6620) is centred in menu_data+0x20 but
+   at least 2 in, and spaced menu_data+0x24 / (6 or 7 lines) apart starting a
    line minus 6 down. */
-int DrawMissionsMenu(char *arg0) {
+int DrawMissionsMenu(char *menu_data) {
     int w;
     int text_width;
     int x;
@@ -4175,11 +4175,11 @@ int DrawMissionsMenu(char *arg0) {
     if (text_width >= w) {
         w = text_width;
     }
-    x = (((Menu *)arg0)->width - w) >> 1;
+    x = (((Menu *)menu_data)->width - w) >> 1;
     if (x < 2) {
         x = 2;
     }
-    step = ((Menu *)arg0)->height / (g_current_level_index != 0 ? 7 : 6);
+    step = ((Menu *)menu_data)->height / (g_current_level_index != 0 ? 7 : 6);
     Font_DisableColorCodes();
     y = step - 6;
     FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EEE), -1);
@@ -4529,8 +4529,8 @@ typedef struct StreamScreen_220D08 {
 } StreamScreen_220D08;
 
 /* Enters a streamed menu image screen: grabs two stream buffers and resets their state. */
-int enter_menu_stream_image(void *arg0) {
-    StreamScreen_220D08 *menu = (StreamScreen_220D08 *)arg0;
+int enter_menu_stream_image(void *screen_data) {
+    StreamScreen_220D08 *menu = (StreamScreen_220D08 *)screen_data;
 
     menu->data.stream.state = 0;
     menu->data.stream.buffer[0] = acquire_menu_stream_buffer(menu->data.stream.flags & 0x200);
@@ -4567,8 +4567,8 @@ typedef struct StreamScreen_220DA0 {
 
 /* Leave hook for the stream image screen: frees both stream buffers and resets
    the loaded entries and state. */
-int leave_menu_stream_image(void *arg0) {
-    StreamScreen_220DA0 *menu = (StreamScreen_220DA0 *)arg0;
+int leave_menu_stream_image(void *screen_data) {
+    StreamScreen_220DA0 *menu = (StreamScreen_220DA0 *)screen_data;
     menu->data.stream.buffer[0] = release_menu_stream_buffer(menu->data.stream.buffer[0]);
     menu->data.stream.buffer[1] = release_menu_stream_buffer(menu->data.stream.buffer[1]);
     menu->data.stream.loaded_entry[0] = -1;
@@ -5170,8 +5170,8 @@ struct MenuItemInfo {
 };
 
 /* Draws the pause/quick-select ring of item icons around the screen center. */
-int draw_pause_ring(char *arg0) {
-    struct PauseState *pause_state = (struct PauseState *)arg0;
+int draw_pause_ring(char *pause_data) {
+    struct PauseState *pause_state = (struct PauseState *)pause_data;
     s32 i;
     s32 flag;
     f32 cx, cy, radius;
@@ -5657,7 +5657,7 @@ typedef struct {
    the dead reference to the 2-byte view keeps `.extern D_001602E0, 2`
    last, so the assembler still uses $gp. A later 4-byte reference in
    this file would undo that. */
-int BuildGalaxyMenu(MenuObj40 *arg0) {
+int BuildGalaxyMenu(MenuObj40 *menu_object) {
     int i;
 
     for (i = 0; i < 20 && gGalaxyList[i] != 0; i++) {
@@ -5667,12 +5667,12 @@ int BuildGalaxyMenu(MenuObj40 *arg0) {
         galaxy_menu_items[i].d = *(unsigned short *)((char *)planet_icon_rows + gGalaxyList[i] * 12 + 4);
     }
     galaxy_menu_items[i].a = 0;
-    arg0->sel = 0;
-    arg0->flags |= 0x8000;
+    menu_object->sel = 0;
+    menu_object->flags |= 0x8000;
     for (i = 0; menu_level_indices_m[i] != 0; i++) {
         char *slots = (char *)level_map_selection;
         if (*(int *)(slots + 0x224) == menu_level_indices_m[i]) {
-            arg0->sel = i;
+            menu_object->sel = i;
             break;
         }
     }
@@ -5699,9 +5699,9 @@ int update_level_selection_map_screen(void) {
 
 /* Draws the level selection map in the screen's box (+0x18 x, +0x1C y,
    +0x20 width, +0x24 height). Returns 2. */
-int draw_level_selection_map_screen(void *arg0) {
-    int *p = (int *)arg0;
-    draw_level_selection_map(p[6], p[6] + p[8], p[7], p[7] + p[9]);
+int draw_level_selection_map_screen(void *screen_data) {
+    int *screen_words = (int *)screen_data;
+    draw_level_selection_map(screen_words[6], screen_words[6] + screen_words[8], screen_words[7], screen_words[7] + screen_words[9]);
     return 2;
 }
 
@@ -6102,7 +6102,7 @@ extern char timed_sequence_page3[];
 extern char timed_sequence_page4[];
 extern char timed_sequence_page5[];
 
-/* A timed text sequence (credits-style): arg0+0x50 is the step, +0x40
+/* A timed text sequence (credits-style): sequence_data+0x50 is the step, +0x40
    a countdown (func_001F98C0-scaled), +0x3C a scroll that advances 10 a
    frame (20 while all four shoulder buttons are held, which also halves
    the countdown), +0x34 the current text (a D_001D5xxx page or a text
@@ -6110,7 +6110,7 @@ extern char timed_sequence_page5[];
    order (4 before 3), and the shared "wait, then next step" tail is
    written out in each case: cross-jumping merges it, leaving each
    case's own argument load in its branch's delay slot. */
-int update_timed_menu_sequence(char *arg0) {
+int update_timed_menu_sequence(char *sequence_data) {
     PadState *pad = (PadState *)g_controller_state;
     struct MenuSystem *g = (struct MenuSystem *)menu_system;
     int fast = (*(long *)&pad->held & 0xF) == 0xF;
@@ -6137,130 +6137,130 @@ int update_timed_menu_sequence(char *arg0) {
             }
         }
     }
-    x = *(int *)(arg0 + 0x40);
-    *(int *)(arg0 + 0x40) = x - 1;
+    x = *(int *)(sequence_data + 0x40);
+    *(int *)(sequence_data + 0x40) = x - 1;
     if (fast) {
-        *(int *)(arg0 + 0x40) = x - 2;
+        *(int *)(sequence_data + 0x40) = x - 2;
     }
-    if (*(int *)(arg0 + 0x40) < 0) {
-        *(int *)(arg0 + 0x40) = 0;
+    if (*(int *)(sequence_data + 0x40) < 0) {
+        *(int *)(sequence_data + 0x40) = 0;
     }
-    switch (*(int *)(arg0 + 0x50)) {
+    switch (*(int *)(sequence_data + 0x50)) {
     case 0:
-        *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
-        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
-        *(int *)(arg0 + 0x3C) = 0;
+        *(int *)(sequence_data + 0x50) = *(int *)(sequence_data + 0x50) + 1;
+        *(int *)(sequence_data + 0x40) = scale_game_frame_count(0xB4);
+        *(int *)(sequence_data + 0x3C) = 0;
         timed_sequence_title_id = 0x50A9;
-        *(char **)(arg0 + 0x34) = timed_sequence_page1;
+        *(char **)(sequence_data + 0x34) = timed_sequence_page1;
         break;
     case 1:
     case 5:
     case 8:
     case 12:
     case 16:
-        if (*(int *)(arg0 + 0x40) != 0) {
+        if (*(int *)(sequence_data + 0x40) != 0) {
             return 0;
         }
-        *(int *)(arg0 + 0x54) = 0;
-        *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
+        *(int *)(sequence_data + 0x54) = 0;
+        *(int *)(sequence_data + 0x50) = *(int *)(sequence_data + 0x50) + 1;
         break;
     case 2:
     case 6:
     case 9:
     case 13:
     case 17:
-        x = *(int *)(arg0 + 0x3C);
-        *(int *)(arg0 + 0x3C) = x + 10;
+        x = *(int *)(sequence_data + 0x3C);
+        *(int *)(sequence_data + 0x3C) = x + 10;
         if (fast) {
-            *(int *)(arg0 + 0x3C) = x + 20;
+            *(int *)(sequence_data + 0x3C) = x + 20;
         }
-        if (*(int *)(arg0 + 0x54) == 0) {
+        if (*(int *)(sequence_data + 0x54) == 0) {
             return 0;
         }
-        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
-        *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
+        *(int *)(sequence_data + 0x40) = scale_game_frame_count(0xB4);
+        *(int *)(sequence_data + 0x50) = *(int *)(sequence_data + 0x50) + 1;
         break;
     case 4:
-        if (*(int *)(arg0 + 0x40) != 0) {
+        if (*(int *)(sequence_data + 0x40) != 0) {
             return 0;
         }
-        *(int *)(arg0 + 0x50) = 5;
-        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
-        *(int *)(arg0 + 0x3C) = 0;
+        *(int *)(sequence_data + 0x50) = 5;
+        *(int *)(sequence_data + 0x40) = scale_game_frame_count(0xB4);
+        *(int *)(sequence_data + 0x3C) = 0;
         timed_sequence_title_id = 0x50D6;
-        *(char **)(arg0 + 0x34) = timed_sequence_page2;
+        *(char **)(sequence_data + 0x34) = timed_sequence_page2;
         break;
     case 3:
-        if (*(int *)(arg0 + 0x40) != 0) {
+        if (*(int *)(sequence_data + 0x40) != 0) {
             return 0;
         }
         timed_sequence_title_id = 0x50D4;
-        *(int *)(arg0 + 0x34) = 0x50D5;
-        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xF0);
-        *(int *)(arg0 + 0x3C) = 0;
-        *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
+        *(int *)(sequence_data + 0x34) = 0x50D5;
+        *(int *)(sequence_data + 0x40) = scale_game_frame_count(0xF0);
+        *(int *)(sequence_data + 0x3C) = 0;
+        *(int *)(sequence_data + 0x50) = *(int *)(sequence_data + 0x50) + 1;
         break;
     case 7:
-        if (*(int *)(arg0 + 0x40) != 0) {
+        if (*(int *)(sequence_data + 0x40) != 0) {
             return 0;
         }
         timed_sequence_title_id = 0x510B;
-        *(char **)(arg0 + 0x34) = timed_sequence_page3;
-        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xF0);
-        *(int *)(arg0 + 0x3C) = 0;
-        *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
+        *(char **)(sequence_data + 0x34) = timed_sequence_page3;
+        *(int *)(sequence_data + 0x40) = scale_game_frame_count(0xF0);
+        *(int *)(sequence_data + 0x3C) = 0;
+        *(int *)(sequence_data + 0x50) = *(int *)(sequence_data + 0x50) + 1;
         break;
     case 10:
-        if (*(int *)(arg0 + 0x40) != 0) {
+        if (*(int *)(sequence_data + 0x40) != 0) {
             return 0;
         }
         timed_sequence_title_id = 0x513B;
-        *(int *)(arg0 + 0x34) = 0x513C;
-        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xF0);
-        *(int *)(arg0 + 0x3C) = 0;
-        *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
+        *(int *)(sequence_data + 0x34) = 0x513C;
+        *(int *)(sequence_data + 0x40) = scale_game_frame_count(0xF0);
+        *(int *)(sequence_data + 0x3C) = 0;
+        *(int *)(sequence_data + 0x50) = *(int *)(sequence_data + 0x50) + 1;
         break;
     case 11:
-        if (*(int *)(arg0 + 0x40) != 0) {
+        if (*(int *)(sequence_data + 0x40) != 0) {
             return 0;
         }
-        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
-        *(int *)(arg0 + 0x3C) = 0;
+        *(int *)(sequence_data + 0x40) = scale_game_frame_count(0xB4);
+        *(int *)(sequence_data + 0x3C) = 0;
         timed_sequence_title_id = 0x513D;
-        *(char **)(arg0 + 0x34) = timed_sequence_page4;
-        *(int *)(arg0 + 0x50) = 12;
+        *(char **)(sequence_data + 0x34) = timed_sequence_page4;
+        *(int *)(sequence_data + 0x50) = 12;
         break;
     case 14:
-        if (*(int *)(arg0 + 0x40) != 0) {
+        if (*(int *)(sequence_data + 0x40) != 0) {
             return 0;
         }
         timed_sequence_title_id = 0;
-        *(int *)(arg0 + 0x34) = 0x5148;
-        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xF0);
-        *(int *)(arg0 + 0x3C) = 0;
-        *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
+        *(int *)(sequence_data + 0x34) = 0x5148;
+        *(int *)(sequence_data + 0x40) = scale_game_frame_count(0xF0);
+        *(int *)(sequence_data + 0x3C) = 0;
+        *(int *)(sequence_data + 0x50) = *(int *)(sequence_data + 0x50) + 1;
         break;
     case 15:
-        if (*(int *)(arg0 + 0x40) != 0) {
+        if (*(int *)(sequence_data + 0x40) != 0) {
             return 0;
         }
-        *(int *)(arg0 + 0x40) = scale_game_frame_count(0xB4);
-        *(int *)(arg0 + 0x3C) = 0;
+        *(int *)(sequence_data + 0x40) = scale_game_frame_count(0xB4);
+        *(int *)(sequence_data + 0x3C) = 0;
         timed_sequence_title_id = 0x5149;
-        *(char **)(arg0 + 0x34) = timed_sequence_page5;
-        *(int *)(arg0 + 0x50) = 16;
+        *(char **)(sequence_data + 0x34) = timed_sequence_page5;
+        *(int *)(sequence_data + 0x50) = 16;
         break;
     case 18:
-        if (*(int *)(arg0 + 0x40) != 0) {
+        if (*(int *)(sequence_data + 0x40) != 0) {
             return 0;
         }
         timed_sequence_title_id = 0;
-        *(int *)(arg0 + 0x34) = 0x517A;
-        *(int *)(arg0 + 0x50) = *(int *)(arg0 + 0x50) + 1;
-        *(int *)(arg0 + 0x40) = scale_game_frame_count(300);
+        *(int *)(sequence_data + 0x34) = 0x517A;
+        *(int *)(sequence_data + 0x50) = *(int *)(sequence_data + 0x50) + 1;
+        *(int *)(sequence_data + 0x40) = scale_game_frame_count(300);
         break;
     case 19:
-        if (*(int *)(arg0 + 0x40) != 0) {
+        if (*(int *)(sequence_data + 0x40) != 0) {
             return 0;
         }
         {
@@ -7208,7 +7208,7 @@ struct MenuPreviewScreen_225358 {
 };
 
 /* Sets up the menu preview stream buffers, animation queue and preview objects. */
-int initialize_menu_preview_objects(char *arg0) {
+int initialize_menu_preview_objects(char *screen_data) {
     struct Moby *object;
     int *resource_buffer_slot;
     int *object_variables;
@@ -7243,7 +7243,7 @@ int initialize_menu_preview_objects(char *arg0) {
         second_attachment_manipulator[1] = 0;
     }
     object = create_menu_preview_moby_a(0);
-    held_flag = ((struct MenuPreviewScreen_225358 *)arg0)->flags + 23;
+    held_flag = ((struct MenuPreviewScreen_225358 *)screen_data)->flags + 23;
     for (j = 23; j >= 0; j--) {
         *held_flag = 0;
         held_flag--;
@@ -7252,7 +7252,7 @@ int initialize_menu_preview_objects(char *arg0) {
         struct RotatingPreviewCamera *camera = (struct RotatingPreviewCamera *)gCamera;
         struct MenuSystem *g;
 
-        ((struct MenuPreviewScreen_225358 *)arg0)->gadget_moby = object;
+        ((struct MenuPreviewScreen_225358 *)screen_data)->gadget_moby = object;
         object->flags = 0;
         object->pos.x = camera->pos.f[0] + 4.0f;
         object->pos.y = camera->pos.f[1];
@@ -7260,7 +7260,7 @@ int initialize_menu_preview_objects(char *arg0) {
         object->rot.z = 3.1415927f;
         object->update = (void (*)(struct Moby *))gadget_moby_update_noop;
         object_variables = (int *)object->pvars;
-        object_variables[0] = (int)arg0;
+        object_variables[0] = (int)screen_data;
         object_variables[1] = 0;
         object_variables[2] = 0;
         g = (struct MenuSystem *)menu_system;
@@ -7270,11 +7270,11 @@ int initialize_menu_preview_objects(char *arg0) {
     }
     object = create_menu_preview_moby_a(0x259);
     if (object != 0) {
-        *(int *)object->pvars = (int)arg0;
+        *(int *)object->pvars = (int)screen_data;
         object->update = (void (*)(struct Moby *))update_menu_preview_animation_pose;
         object->flags = 4;
     }
-    ((struct MenuPreviewScreen_225358 *)arg0)->pose_moby = object;
+    ((struct MenuPreviewScreen_225358 *)screen_data)->pose_moby = object;
     return 0;
 }
 __asm__(".section .text\n\tnop\n");
@@ -7297,14 +7297,14 @@ typedef struct MenuPreviewObjects_225548 {
 
 /* Leave hook for the preview screen: deletes the 24 preview objects, frees the
    two stream buffers and marks no animation loaded. */
-int release_menu_preview_objects(void *arg0) {
+int release_menu_preview_objects(void *screen_data) {
     int *object_slot;
     int *resource_slot;
     int objects_remaining;
     int resources_remaining;
     struct MenuSystem *resources;
 
-    object_slot = &((MenuPreviewObjects_225548 *)arg0)->objects[0];
+    object_slot = &((MenuPreviewObjects_225548 *)screen_data)->objects[0];
     for (objects_remaining = 23; objects_remaining >= 0; objects_remaining--) {
         *object_slot = delete_moby(*object_slot);
         object_slot++;
@@ -8046,10 +8046,10 @@ void *create_menu_preview_moby(int arg0) {
 extern int world_update_time MACRO_ADDR;
 extern void DeleteMoby(void *); /* DeleteMoby */
 
-/* Deletes moby arg0 (if any) and stamps its +0x38 with D_0015F6F0. Always
+/* Deletes moby moby_address (if any) and stamps its +0x38 with D_0015F6F0. Always
    returns 0 so callers can clear their handle with it. */
-int delete_moby(int arg0) {
-    struct Moby *moby = (struct Moby *)arg0;
+int delete_moby(int moby_address) {
+    struct Moby *moby = (struct Moby *)moby_address;
     if (moby == 0) {
         return 0;
     }
@@ -8301,9 +8301,9 @@ s32 update_streamed_moby_animation(MobyAnimationStream_26978 *stream) {
 
 extern void DrawMobyList(int, int);
 
-/* Draws the 24 moby lists held at arg0+0x44. Returns 4. */
-int draw_moby_entries_from_object(void *arg0) {
-    int *p = (int *)((char *)arg0 + 0x44);
+/* Draws the 24 moby lists held at object_data+0x44. Returns 4. */
+int draw_moby_entries_from_object(void *object_data) {
+    int *p = (int *)((char *)object_data + 0x44);
     int i = 0x17;
     do {
         if (*p != 0) {
@@ -8427,34 +8427,34 @@ int release_menu_stream_buffer(int key) {
 
 extern int menu_stream_buffers[];
 
-/* Returns the size of stream buffer arg0 (0x4F000 large, 0x11800 small), or -1. */
-int get_menu_stream_buffer_size(int arg0) {
-    int *e = menu_stream_buffers;
-    int i = 0;
+/* Returns the size of stream buffer buffer_address (0x4F000 large, 0x11800 small), or -1. */
+int get_menu_stream_buffer_size(int buffer_address) {
+    int *buffer_record = menu_stream_buffers;
+    int buffer_record_index = 0;
     do {
-        if (e[0] == arg0) {
-            return (e[1] & 1) ? 0x4F000 : 0x11800;
+        if (buffer_record[0] == buffer_address) {
+            return (buffer_record[1] & 1) ? 0x4F000 : 0x11800;
         }
-        i++;
-        e += 2;
-    } while (i < 5);
+        buffer_record_index++;
+        buffer_record += 2;
+    } while (buffer_record_index < 5);
     return -1;
 }
 
-/* Sets bit 2 (read active) on stream buffer arg0. Returns 0, or 1 if not found. */
-int mark_menu_stream_buffer_read_active(int arg0) {
-    int i = 0;
+/* Sets bit 2 (read active) on stream buffer buffer_address. Returns 0, or 1 if not found. */
+int mark_menu_stream_buffer_read_active(int buffer_address) {
+    int records_checked = 0;
     int *base = menu_stream_buffers;
-    int *e = base + 1;
+    int *flags_field = base + 1;
     do {
-        i++;
-        if (e[-1] != arg0) {
-            e += 2;
+        records_checked++;
+        if (flags_field[-1] != buffer_address) {
+            flags_field += 2;
             continue;
         }
-        e[0] |= 4;
+        flags_field[0] |= 4;
         return 0;
-    } while (i < 5);
+    } while (records_checked < 5);
     return 1;
 }
 
@@ -8462,19 +8462,19 @@ int mark_menu_stream_buffer_read_active(int arg0) {
    Written in exactly that function's shape -- the separate `base` local
    is what stops %lo+4 folding into one addiu, which is what an earlier
    round's revert was missing. */
-int clear_menu_stream_buffer_read_active(int arg0) {
-    int i = 0;
+int clear_menu_stream_buffer_read_active(int buffer_address) {
+    int records_checked = 0;
     int *base = menu_stream_buffers;
-    int *e = base + 1;
+    int *flags_field = base + 1;
     do {
-        i++;
-        if (e[-1] != arg0) {
-            e += 2;
+        records_checked++;
+        if (flags_field[-1] != buffer_address) {
+            flags_field += 2;
             continue;
         }
-        e[0] &= ~4;
+        flags_field[0] &= ~4;
         return 0;
-    } while (i < 5);
+    } while (records_checked < 5);
     return 1;
 }
 
@@ -8742,25 +8742,25 @@ int clear_preview_animation_queue(void) {
 
 /* Builds a text window from a screen's width (+0x20) and height (+0x24):
    size, centre and default spacing. */
-void pack_image_descriptor(void *arg0, char *src) {
-    char *d = (char *)arg0;
-    unsigned short v0, v1;
-    int w0, w1;
+void pack_image_descriptor(void *window_data, char *src) {
+    char *window_fields = (char *)window_data;
+    unsigned short screen_height_value, screen_width_value;
+    int half_width, half_height;
 
-    *(short *)(d + 0) = 0;
-    v0 = *(unsigned short *)(src + 0x24);
-    *(short *)(d + 4) = 0;
-    *(short *)(d + 2) = v0;
-    v1 = *(unsigned short *)(src + 0x20);
-    *(short *)(d + 6) = v1;
-    w0 = *(int *)(src + 0x20);
-    w0 >>= 1;
-    *(short *)(d + 8) = w0;
-    w1 = *(int *)(src + 0x24);
-    *(short *)(d + 0x10) = 0x10;
-    w1 >>= 1;
-    *(short *)(d + 0x12) = 0;
-    *(short *)(d + 0xA) = w1;
+    *(short *)(window_fields + 0) = 0;
+    screen_height_value = *(unsigned short *)(src + 0x24);
+    *(short *)(window_fields + 4) = 0;
+    *(short *)(window_fields + 2) = screen_height_value;
+    screen_width_value = *(unsigned short *)(src + 0x20);
+    *(short *)(window_fields + 6) = screen_width_value;
+    half_width = *(int *)(src + 0x20);
+    half_width >>= 1;
+    *(short *)(window_fields + 8) = half_width;
+    half_height = *(int *)(src + 0x24);
+    *(short *)(window_fields + 0x10) = 0x10;
+    half_height >>= 1;
+    *(short *)(window_fields + 0x12) = 0;
+    *(short *)(window_fields + 0xA) = half_height;
 }
 
 extern char preview_resource_bindings[] NOT_SDA;
