@@ -24,6 +24,7 @@ Never change:
   Every tool, the overlay catalogue and the version maps
   (`config/versions/*/functions.tsv`, `tools/version_check.py`) read the
   address from them.
+- Existing descriptive decompiled names.
 - Recovered names, the original identifiers (`config/symbol_names.txt`,
   tier `recovered` in `config/names.tsv`).
 - Library and SDK names (`memcpy`, `sceGsSync`, `snd_*` ...).
@@ -110,8 +111,8 @@ Small batches, one subsystem each, about 10-20 functions.
 
 1. **Comments** (done for a first pass in #161): loading, input, saves,
    camera, objects, rendering, audio.
-2. **Duplicates**: one batch per header or per struct family.
-3. **Names**: functions and globals with no name, then parameters and locals.
+2. **Names first**: functions and globals with no name, then parameters and locals.
+3. **Duplicates**: one batch per header or per struct family, after naming.
 4. **Fields and constants**: field names and known values.
 5. Repeat 2-4 per subsystem: game services; input, camera and menus;
    player, weapons and gadgets; objects and enemies; level code; rendering,
