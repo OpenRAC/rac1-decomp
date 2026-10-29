@@ -1098,8 +1098,8 @@ int leave_menu_choice_list(void) {
 }
 
 /* Marks no entry selected (+0x44 = -1). */
-int clear_menu_selected_index(void *arg0) {
-    *(int *)((char *)arg0 + 0x44) = -1;
+int clear_menu_selected_index(void *menu_screen) {
+    *(int *)((char *)menu_screen + 0x44) = -1;
     return 0;
 }
 
@@ -2354,13 +2354,13 @@ extern int collect_mission_ids(void *, void *, void *, int);
 
 /* Enter hook for the mission list: rebuilds the list, collects the mission ids into
    scratchpad and loads the selected level's entry into D_001CFBF4 / D_001CFAD8. */
-int enter_menu_mission_list(void *arg0) {
+int enter_menu_mission_list(void *menu_screen) {
     int *p;
 
-    update_mission_list((void *)arg0);
-    *(int *)((char *)arg0 + 0x7C) =
+    update_mission_list((void *)menu_screen);
+    *(int *)((char *)menu_screen + 0x7C) =
         collect_mission_ids((void *)0x70000000, (void *)0, (void *)0x70000100, 1);
-    p = (int *)((char *)arg0 + 0x30);
+    p = (int *)((char *)menu_screen + 0x30);
     p += selected_level_index;
     if (*p != -1) {
         selected_mission_id = ((int *)0x70000000)[*p];
@@ -2505,21 +2505,21 @@ typedef struct {
    leaves any slot it held and is put in the current slot, and the index
    advances. The three conditions are one `&&` (one shared exit) and the
    time is compared call-first, as retail evaluates them. */
-int update_menu_item_slots(SelList_0021D7A0 *arg0) {
+int update_menu_item_slots(SelList_0021D7A0 *selection_list) {
     MenuScreen *q = ((MenuPage *)current_menu_page)->focus;
     int item = q->data.grid.cells[q->data.grid.selected_cell].id;
-    int old = arg0->idx;
+    int old = selection_list->idx;
     PadState *pad = (PadState *)g_controller_state;
     int i;
 
     if (*(int *)&pad->pressed_unmasked & 8) {
-        arg0->idx = (old + 1) % 8;
+        selection_list->idx = (old + 1) % 8;
     }
     if (*(int *)&pad->pressed_unmasked & 4) {
-        arg0->idx = (arg0->idx + 7) % 8;
+        selection_list->idx = (selection_list->idx + 7) % 8;
     }
-    if (arg0->idx != old) {
-        Moby_PlaySound(1, 0x11, arg0->id);
+    if (selection_list->idx != old) {
+        Moby_PlaySound(1, 0x11, selection_list->id);
     }
     if (item != 0 && ((unsigned char *)&item_available)[item] != 0
         && (*(int *)&pad->pressed_unmasked & 0x40)) {
@@ -2533,15 +2533,15 @@ int update_menu_item_slots(SelList_0021D7A0 *arg0) {
         }
         s->mask = s->mask | (1 << g_current_level_index) | 0x80000000;
         for (i = 0; i < 8; i++) {
-            if (arg0->list[i] == item) {
+            if (selection_list->list[i] == item) {
                 break;
             }
         }
         if (i < 8) {
-            arg0->list[i] = 0;
+            selection_list->list[i] = 0;
         }
-        arg0->list[arg0->idx] = item;
-        arg0->idx = (arg0->idx + 1) % 8;
+        selection_list->list[selection_list->idx] = item;
+        selection_list->idx = (selection_list->idx + 1) % 8;
     }
     return 0;
 }
@@ -2556,29 +2556,29 @@ typedef struct {
 
 /* Reload the 8-entry list at +0x30 from D_00141FA0 (the reverse of
    func_0021DA60 below), then leave idx at +0x50 on the first empty entry,
-   wrapped to 0..7. Indexing arg0->list directly in both loops (no local
+   wrapped to 0..7. Indexing selection_list->list directly in both loops (no local
    list pointer) is what gives retail's hoisted base; the scan is a do-while
    guarded by list[0] (a plain while/for rotated differently). */
-int load_selection_list(SelList_0021D9C8 *arg0) {
+int load_selection_list(SelList_0021D9C8 *selection_list) {
     int i;
     for (i = 0; i < 8; i++) {
-        arg0->list[i] = pause_iop_sprite_lists[i];
+        selection_list->list[i] = pause_iop_sprite_lists[i];
     }
-    arg0->idx = 0;
-    if (arg0->list[0] != 0) {
+    selection_list->idx = 0;
+    if (selection_list->list[0] != 0) {
         do {
-            arg0->idx++;
-        } while (arg0->list[arg0->idx] != 0 && arg0->idx < 8);
+            selection_list->idx++;
+        } while (selection_list->list[selection_list->idx] != 0 && selection_list->idx < 8);
     }
-    arg0->idx %= 8;
+    selection_list->idx %= 8;
     return 0;
 }
 
 extern int pause_iop_sprite_lists[];
 
 /* Copies the screen's eight sprite-list words (+0x30) into pause_iop_sprite_lists. */
-int pause_stage_sprite_lists(void *arg0) {
-    int *src = (int *)((char *)arg0 + 0x30);
+int pause_stage_sprite_lists(void *menu_screen) {
+    int *src = (int *)((char *)menu_screen + 0x30);
     int *dst = pause_iop_sprite_lists;
     int i = 7;
     do {
@@ -5757,17 +5757,17 @@ extern int acquire_menu_stream_buffer(int);
 extern char *current_menu_page NOT_SDA;
 
 /* Enter hook for the prompt screen: clears the page's +0x84 word and takes a stream buffer. */
-int enter_menu_prompt(struct MenuScreen *arg0) {
+int enter_menu_prompt(struct MenuScreen *menu_screen) {
     ((MenuPage *)current_menu_page)->confirmed = 0;
-    arg0->data.prompt.buffer = acquire_menu_stream_buffer(0);
+    menu_screen->data.prompt.buffer = acquire_menu_stream_buffer(0);
     return 0;
 }
 
 extern int release_menu_stream_buffer(int);
 
 /* Leave hook for the prompt screen: frees its stream buffer. */
-int leave_menu_prompt(struct MenuScreen *arg0) {
-    arg0->data.prompt.buffer = release_menu_stream_buffer(arg0->data.prompt.buffer);
+int leave_menu_prompt(struct MenuScreen *menu_screen) {
+    menu_screen->data.prompt.buffer = release_menu_stream_buffer(menu_screen->data.prompt.buffer);
     return 0;
 }
 
@@ -5832,11 +5832,11 @@ extern void *msg_string_id(int) __asm__("func_001FE540");
 extern void font_print_window_small(TextBox *, long, char *, int);
 
 /* Draws the two-line prompt box (text 0x4FB3 for D_001D6044 in 0..2,
-   0x4FB5 for 3, else D_001603E8) sized from arg0's +0x20/+0x24. The box
+   0x4FB5 for 3, else D_001603E8) sized from menu_screen's +0x20/+0x24. The box
    is an aggregate initializer: this compiler clears it with a memset
    libcall, fills a temporary and copies that into the local with
    ldl/ldr/sdl/sdr pairs, exactly retail's sequence. */
-int draw_prompt_box(struct MenuScreen *arg0) {
+int draw_prompt_box(struct MenuScreen *menu_screen) {
     char *text;
     int v;
 
@@ -5856,11 +5856,11 @@ int draw_prompt_box(struct MenuScreen *arg0) {
         break;
     }
     {
-        TextBox c = { { 1, arg0->height + 1, 1, arg0->width + 1,
-                        arg0->width >> 1, 5, 0, 0, 0x10, 5 } };
+        TextBox c = { { 1, menu_screen->height + 1, 1, menu_screen->width + 1,
+                        menu_screen->width >> 1, 5, 0, 0, 0x10, 5 } };
 
         font_print_window_small(&c, 0x80000000L, text, -1);
-        c.s[5] = (arg0->height - c.s[7]) >> 1;
+        c.s[5] = (menu_screen->height - c.s[7]) >> 1;
         c.s[9] ^= 4;
         font_print_window_small(&c, 0x80000000L, text, -1);
         c.s[0]--;
@@ -5886,9 +5886,9 @@ int assign_pause_level_sprite_list(MenuScreen *screen) {
 
 extern void Moby_PlaySound(int, int, int);
 
-/* Pause sub-menu with a 30-entry wrapping cursor at arg0+0x40, in
+/* Pause sub-menu with a 30-entry wrapping cursor at menu_screen+0x40, in
    func_0021F7D0's shape. */
-int handle_cyclic_menu_selection_input(struct MenuScreen *arg0) {
+int handle_cyclic_menu_selection_input(struct MenuScreen *menu_screen) {
     PadState *pad = (PadState *)g_controller_state;
     int w, old;
 
@@ -5915,22 +5915,22 @@ int handle_cyclic_menu_selection_input(struct MenuScreen *arg0) {
         PadState *pad3 = (PadState *)g_controller_state;
         w = pad3->pressed;
     }
-    old = arg0->data.list.selected;
+    old = menu_screen->data.list.selected;
     if (w & 0x40) {
-        arg0->data.list.selected = (old + 1) % 30;
+        menu_screen->data.list.selected = (old + 1) % 30;
     } else if (w & 0x20) {
-        arg0->data.list.selected = (old + 29) % 30;
+        menu_screen->data.list.selected = (old + 29) % 30;
     }
-    if (arg0->data.list.selected != old) {
-        Moby_PlaySound(1, 0x11, arg0->moby);
+    if (menu_screen->data.list.selected != old) {
+        Moby_PlaySound(1, 0x11, menu_screen->moby);
     }
     return 0;
 }
 
 extern void Moby_PlaySound(int, int, int);
 
-/* func_00222DB0's twin with a 12-entry cursor at arg0+0x54. */
-int update_menu_cycle_selection(struct MenuScreen *arg0) {
+/* func_00222DB0's twin with a 12-entry cursor at menu_screen+0x54. */
+int update_menu_cycle_selection(struct MenuScreen *menu_screen) {
     PadState *pad = (PadState *)g_controller_state;
     int w;
 
@@ -5958,11 +5958,11 @@ int update_menu_cycle_selection(struct MenuScreen *arg0) {
         w = pad3->pressed;
     }
     if (w & 0x2040) {
-        arg0->data.cycle.selection = (arg0->data.cycle.selection + 1) % 12;
-        Moby_PlaySound(1, 0x11, arg0->moby);
+        menu_screen->data.cycle.selection = (menu_screen->data.cycle.selection + 1) % 12;
+        Moby_PlaySound(1, 0x11, menu_screen->moby);
     } else if (w & 0x8020) {
-        arg0->data.cycle.selection = (arg0->data.cycle.selection + 11) % 12;
-        Moby_PlaySound(1, 0x11, arg0->moby);
+        menu_screen->data.cycle.selection = (menu_screen->data.cycle.selection + 11) % 12;
+        Moby_PlaySound(1, 0x11, menu_screen->moby);
     }
     return 0;
 }
@@ -5977,24 +5977,24 @@ extern int GetFrameTex(int);
 extern void func_00200E38_f(float, float, int, int, int, float, float, float)
     __asm__("func_00200E38");
 
-/* Draws the glyph "\x10" (arg0->0x38 set) or "\x11" and a gauge sprite
+/* Draws the glyph "\x10" (menu_screen->0x38 set) or "\x11" and a gauge sprite
    below it, rotated by pi in the second case. The glyph string is a
    2-byte char struct copied onto the stack (retail's lb/lb/sb/sb). */
-int draw_menu_side_indicator(MenuScreen *arg0) {
+int draw_menu_side_indicator(MenuScreen *menu_screen) {
     Glyph2 buf;
 
     SetupGifPaging(0);
-    if (arg0->data.options.selection != 0) {
+    if (menu_screen->data.options.selection != 0) {
         buf = *(Glyph2 *)menu_side_indicator_left_glyph;
-        func_001F68E8_c(4, arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
-        func_00200E38_f(640.0f, (float)(arg0->height << 3), 0x20, 0x10,
+        func_001F68E8_c(4, menu_screen->height / 2 - 8, 0x80FFA888L, &buf, -1);
+        func_00200E38_f(640.0f, (float)(menu_screen->height << 3), 0x20, 0x10,
                         GetFrameTex(GetIconFrame(0xE99E, 6)), 128.0f,
                         256.0f, 0.0f);
     } else {
         buf = *(Glyph2 *)menu_side_indicator_right_glyph;
-        func_001F68E8_c(arg0->width - 0x18,
-                        arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
-        func_00200E38_f(192.0f, (float)(arg0->height << 3), 0x20, 0x10,
+        func_001F68E8_c(menu_screen->width - 0x18,
+                        menu_screen->height / 2 - 8, 0x80FFA888L, &buf, -1);
+        func_00200E38_f(192.0f, (float)(menu_screen->height << 3), 0x20, 0x10,
                         GetFrameTex(GetIconFrame(0xE99E, 6)), 128.0f,
                         256.0f, 3.14159274f);
     }
@@ -6014,18 +6014,18 @@ extern void FontPrintCenter(int, int, long, void *, int);
    row is read before func_001F4630, and each call is written with its
    arguments inline: gcc evaluates them in order, so x and y are computed
    before the nested func_001FE540 call. */
-int draw_selected_menu_item_text(MenuScreen *arg0) {
+int draw_selected_menu_item_text(MenuScreen *menu_screen) {
     MenuScreen *p = ((MenuPage *)current_menu_page)->focus;
     int row = p->data.list.items[p->data.list.selected].param.value;
 
     SetupGifPaging(0);
     if (row == -1) {
-        FontPrintCenter(arg0->width / 2, arg0->height / 2 - 8,
+        FontPrintCenter(menu_screen->width / 2, menu_screen->height / 2 - 8,
                       0x80FFA888L, msg_string_id(0x5019), -1);
     } else {
-        FontPrintCenter(arg0->width / 2, arg0->height / 3 - 8,
+        FontPrintCenter(menu_screen->width / 2, menu_screen->height / 3 - 8,
                       0x80FFA888L, msg_string_id(planet_icon_rows_i[row].a), -1);
-        FontPrintCenter(arg0->width / 2, arg0->height * 2 / 3 - 8,
+        FontPrintCenter(menu_screen->width / 2, menu_screen->height * 2 / 3 - 8,
                       0x80FFA888L, msg_string_id(planet_icon_rows_i[row].b), -1);
     }
     DoGifPaging();
@@ -6370,19 +6370,19 @@ typedef struct {
 } Box18;
 
 /* ObtainAllGoldWeaponsMenu: two icon + text rows (texts 0x5187, 0x5188)
-   in a box sized from arg0+0x20/0x24. The box is built zeroed in a
+   in a box sized from menu_screen+0x20/0x24. The box is built zeroed in a
    temporary and copied (a struct assignment: retail's ldl/ldr copy). y is
    one variable, 4 and then the bottom of the first text (buf.fE, written
    by func_001F7560) plus 0x10, with each icon at y + 8; it and x stay in
    callee-saved registers across the calls, as in retail. */
-int ObtainAllGoldWeaponsMenu(MenuScreen *arg0) {
+int ObtainAllGoldWeaponsMenu(MenuScreen *menu_screen) {
     Box18 buf;
     Box18 tmp;
     int x, y;
 
     libc_memset(&tmp, 0, 0x18);
-    tmp.f2 = *(unsigned short *)&arg0->height;
-    tmp.f6 = *(unsigned short *)&arg0->width;
+    tmp.f2 = *(unsigned short *)&menu_screen->height;
+    tmp.f6 = *(unsigned short *)&menu_screen->width;
     tmp.f10 = 0x10;
     buf = tmp;
     x = 0x18;
@@ -6489,7 +6489,7 @@ s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu_23B40 *menu) {
    D_001DE0C0 icons at y 4 and 0x14. The row is read before
    func_001F4630; the record is reached as a struct member off the page
    base (retail's base-first add). */
-int draw_menu_selection_text(MenuScreen *arg0) {
+int draw_menu_selection_text(MenuScreen *menu_screen) {
     char *g = menu_system;
     MemoryCardState *b = (MemoryCardState *)memory_card_state;
     int row = b->card[0].slots[*(int *)(*(char **)(*(char **)&((struct MenuSystem *)g)->current + 0x40) + 0x40)].id;
@@ -6498,12 +6498,12 @@ int draw_menu_selection_text(MenuScreen *arg0) {
     if (b->state < 3 && b->err < 0
         && *(int *)(g + 0x154) >= 0xB && b->card[0].type == 2) {
         if (row == -1) {
-            FontPrintCenter(arg0->width / 2, arg0->height / 2 - 8,
+            FontPrintCenter(menu_screen->width / 2, menu_screen->height / 2 - 8,
                           0x80FFA888L, msg_string_id(0x521C), -1);
         } else {
-            FontPrintCenter(arg0->width / 2, 4, 0x80FFA888L,
+            FontPrintCenter(menu_screen->width / 2, 4, 0x80FFA888L,
                           msg_string_id(planet_icon_rows_i[row].a), -1);
-            FontPrintCenter(arg0->width / 2, 0x14, 0x80FFA888L,
+            FontPrintCenter(menu_screen->width / 2, 0x14, 0x80FFA888L,
                           msg_string_id(planet_icon_rows_i[row].b), -1);
         }
     }
@@ -6513,16 +6513,16 @@ int draw_menu_selection_text(MenuScreen *arg0) {
 
 
 /* Enter hook for the save slot screen: resets the stream buffers, takes one and clears +0x4C. */
-int enter_save_slot_screen(MenuScreen *arg0) {
+int enter_save_slot_screen(MenuScreen *menu_screen) {
     initialize_menu_stream_buffers(1);
-    arg0->data.save.save_data = acquire_menu_stream_buffer(0);
-    arg0->data.save.step = 0;
+    menu_screen->data.save.save_data = acquire_menu_stream_buffer(0);
+    menu_screen->data.save.step = 0;
     return 0;
 }
 
 /* Leave hook for the save slot screen: frees its stream buffer. */
-int leave_save_slot_screen(MenuScreen *arg0) {
-    arg0->data.save.save_data = release_menu_stream_buffer(arg0->data.save.save_data);
+int leave_save_slot_screen(MenuScreen *menu_screen) {
+    menu_screen->data.save.save_data = release_menu_stream_buffer(menu_screen->data.save.save_data);
     return 0;
 }
 
@@ -6549,35 +6549,35 @@ extern void prepare_save_game(int, int);
    handling, with slot selection on 0x1000/0x4000 and 0x40 either
    loading the slot (via D_001D28F8) or re-arming. Each branch reaches
    the globals through its own block-scoped pointers. */
-int saving_data_menu(struct MenuScreen *arg0) {
+int saving_data_menu(struct MenuScreen *menu_screen) {
     struct MenuSystem *g = (struct MenuSystem *)menu_system;
     int s;
     int old;
 
-    if (g->current->focus != arg0) {
+    if (g->current->focus != menu_screen) {
         return 0;
     }
-    s = arg0->data.save.step;
+    s = menu_screen->data.save.step;
     if (s == 0) {
         MenuPage *m = g->previous;
         if (m == (MenuPage *)save_overwrite_confirm_page) {
             if (m->confirmed != 0) {
-                arg0->data.save.step = 1;
+                menu_screen->data.save.step = 1;
             }
         }
-        s = arg0->data.save.step;
+        s = menu_screen->data.save.step;
     }
     if (s == 1) {
         struct MenuSystem *g2;
 
-        prepare_save_game(arg0->data.save.save_data, arg0->data.save.slot);
+        prepare_save_game(menu_screen->data.save.save_data, menu_screen->data.save.slot);
         g2 = (struct MenuSystem *)menu_system;
         g2->card_op_text = 0x4FB5;
         g2->card_op_pending = 1;
         memory_card_error_latch = 0;
     }
-    arg0->data.save.step = 2;
-    old = arg0->data.save.slot;
+    menu_screen->data.save.step = 2;
+    old = menu_screen->data.save.slot;
     {
         char *g3 = menu_system;
 
@@ -6661,7 +6661,7 @@ int saving_data_menu(struct MenuScreen *arg0) {
         if (*(int *)(d + 8) != 2) {
             return 0;
         }
-        if (arg0->data.save.flags & 1) {
+        if (menu_screen->data.save.flags & 1) {
             PadState *pad = (PadState *)g_controller_state;
             p = pad->raw_pressed;
         } else {
@@ -6669,14 +6669,14 @@ int saving_data_menu(struct MenuScreen *arg0) {
             p = pad->pressed;
         }
         x = memcard_selected_slot;
-        arg0->data.save.slot = x;
+        menu_screen->data.save.slot = x;
         if ((p & 0x1000) && x != 0) {
-            arg0->data.save.slot = x - 1;
+            menu_screen->data.save.slot = x - 1;
         }
-        if ((p & 0x4000) && arg0->data.save.slot < 4) {
-            arg0->data.save.slot = arg0->data.save.slot + 1;
+        if ((p & 0x4000) && menu_screen->data.save.slot < 4) {
+            menu_screen->data.save.slot = menu_screen->data.save.slot + 1;
         }
-        memcard_selected_slot = arg0->data.save.slot;
+        memcard_selected_slot = menu_screen->data.save.slot;
         if (p & 0x40) {
             char *d2 = memory_card_state;
 
@@ -6686,15 +6686,15 @@ int saving_data_menu(struct MenuScreen *arg0) {
 
                     g2->unkD4 = 0;
                     *(char **)&g2->next = save_overwrite_confirm_page;
-                    save_confirm_slot = arg0->data.save.slot;
+                    save_confirm_slot = menu_screen->data.save.slot;
                 } else {
-                    arg0->data.save.step = 1;
+                    menu_screen->data.save.step = 1;
                 }
             }
         }
     }
-    if (arg0->data.save.slot != old) {
-        Moby_PlaySound(1, 0x11, arg0->moby);
+    if (menu_screen->data.save.slot != old) {
+        Moby_PlaySound(1, 0x11, menu_screen->moby);
     }
     return 0;
 }
@@ -6703,9 +6703,9 @@ extern void initialize_global_state_entry(int arg0);
 extern short screen_globals_base_r[] __asm__("D_0013E15A");
 
 /* Load-slot menu handler (func_00224040's sibling): with a load armed it either aborts or starts the sound fade and loads; otherwise pad handling with slot selection. */
-int loading_data_menu(struct MenuScreen *arg0) {
+int loading_data_menu(struct MenuScreen *menu_screen) {
     char *g = menu_system;
-    int old = arg0->data.save.slot;
+    int old = menu_screen->data.save.slot;
 
     if (((struct MenuSystem *)g)->card_op_pending != 0) {
         char *d = memory_card_state;
@@ -6793,7 +6793,7 @@ int loading_data_menu(struct MenuScreen *arg0) {
         if (*(int *)(d + 8) != 2) {
             return 0;
         }
-        if (arg0->data.save.flags & 1) {
+        if (menu_screen->data.save.flags & 1) {
             PadState *pad = (PadState *)g_controller_state;
             p = pad->raw_pressed;
         } else {
@@ -6801,14 +6801,14 @@ int loading_data_menu(struct MenuScreen *arg0) {
             p = *(int *)&pad->pressed_unmasked;
         }
         x = memcard_selected_slot;
-        arg0->data.save.slot = x;
+        menu_screen->data.save.slot = x;
         if ((p & 0x1000) && x != 0) {
-            arg0->data.save.slot = x - 1;
+            menu_screen->data.save.slot = x - 1;
         }
-        if ((p & 0x4000) && arg0->data.save.slot < 4) {
-            arg0->data.save.slot = arg0->data.save.slot + 1;
+        if ((p & 0x4000) && menu_screen->data.save.slot < 4) {
+            menu_screen->data.save.slot = menu_screen->data.save.slot + 1;
         }
-        memcard_selected_slot = arg0->data.save.slot;
+        memcard_selected_slot = menu_screen->data.save.slot;
         if (p & 0x40) {
             char *d2 = memory_card_state;
 
@@ -6816,9 +6816,9 @@ int loading_data_menu(struct MenuScreen *arg0) {
                 if (*(int *)(d2 + 0x20 + memcard_selected_slot * 0x1C) >= 0) {
                     struct MenuSystem *g2;
 
-                    Moby_PlaySound(0, 0x11, arg0->moby);
+                    Moby_PlaySound(0, 0x11, menu_screen->moby);
                     *(int *)(d2 + 0xC8) = 0;
-                    *(int *)(d2 + 0x14) = arg0->data.save.slot;
+                    *(int *)(d2 + 0x14) = menu_screen->data.save.slot;
                     if (((MemoryCardState *)d2)->err < 0) {
                         *(int *)(d2 + 0xE8) = 0;
                         ((MemoryCardState *)d2)->err = 0xD;
@@ -6831,8 +6831,8 @@ int loading_data_menu(struct MenuScreen *arg0) {
             }
         }
     }
-    if (arg0->data.save.slot != old) {
-        Moby_PlaySound(1, 0x11, arg0->moby);
+    if (menu_screen->data.save.slot != old) {
+        Moby_PlaySound(1, 0x11, menu_screen->moby);
     }
     return 0;
 }
