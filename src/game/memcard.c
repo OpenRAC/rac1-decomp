@@ -122,27 +122,26 @@ extern char memcard_icon_path_c[];
 extern char memcard_slot_path_format[];
 extern void libc_strncpy(void *, void *, int);
 
-/* Builds a 13-byte name/version stamp in D_0013D2D0 from the record's
-   region byte (arg0[0x12]) and the record's date/version fields, then
-   copies that stamp into the six on-disk name buffers. */
-void memcard_get_name(void *arg0) {
-    unsigned char *a = (unsigned char *)arg0;
-    unsigned char region = a[0x12];
-    int i;
+/* Build the 13-byte save name from the version record,
+   then copy it into the on-disk name buffers. */
+void memcard_get_name(void *version_record) {
+    unsigned char *record_bytes = (unsigned char *)version_record;
+    unsigned char region = record_bytes[0x12];
+    int name_index;
 
     if (region == 'E') {
         memcard_save_dir_name[2] = region;
     } else if (region == 'P') {
         memcard_save_dir_name[2] = 'I';
     }
-    for (i = 3; i < 7; i++) {
-        memcard_save_dir_name[i] = a[i + 0xD];
+    for (name_index = 3; name_index < 7; name_index++) {
+        memcard_save_dir_name[name_index] = record_bytes[name_index + 0xD];
     }
-    for (i = 8; i < 0xB; i++) {
-        memcard_save_dir_name[i] = a[i + 0xD];
+    for (name_index = 8; name_index < 0xB; name_index++) {
+        memcard_save_dir_name[name_index] = record_bytes[name_index + 0xD];
     }
-    for (i = 0xB; i < 0xD; i++) {
-        memcard_save_dir_name[i] = a[i + 0xE];
+    for (name_index = 0xB; name_index < 0xD; name_index++) {
+        memcard_save_dir_name[name_index] = record_bytes[name_index + 0xE];
     }
     libc_strncpy(memcard_dir_search_path, memcard_save_dir_name, 0xD);
     libc_strncpy(memcard_icon_path_a, memcard_save_dir_name, 0xD);
@@ -159,9 +158,7 @@ extern int sce_mc_get_dir(int, int, char *, int, int, void *);
 extern char memcard_save_dir_name[];
 extern int memory_card_state_i[] __asm__("D_0013D390");
 
-/* The comparison is bound to a local before the shift:
-   `(a < b) << 1` folds into `a < b ? 2 : 0` (li/slt/movn), not retail's
-   slti/sll. */
+/* Bind the comparison before shifting to keep the matching slti/sll. */
 int check_memory_card(void) {
     int type, free, format, cmd, result;
 
@@ -178,8 +175,8 @@ int check_memory_card(void) {
             sce_gs_sync_v(0);
         }
         if (result <= 0) {
-            int t = free < 350;
-            return t << 1;
+            int insufficient_space = free < 350;
+            return insufficient_space << 1;
         }
     }
     return 0;
@@ -192,38 +189,30 @@ extern int memcard_RestoreData(void *src, int i, int *table);
 extern int STUB_printf();
 extern char memcard_restore_size_mismatch_msg[];
 
-/* The counterpart of func_0020BA00 below: both descriptor sizes are
-   recomputed and checked against the ones stored in the blob, then the
-   blobs are read back in the same order they were written. The read
-   cursor is the parameter, which retail keeps in $s2. */
+/* Check the stored sizes, then restore game data and 20 level blocks. */
 /* memcard_RestoreGame */
-void memcard_RestoreGame(int arg0) {
-    char *p = (char *)arg0;
-    int a;
-    int b;
-    int i;
+void memcard_RestoreGame(int save_address) {
+    char *read_cursor = (char *)save_address;
+    int game_data_size;
+    int level_data_size;
+    int level_index;
 
-    a = memcard_GetDataSize(mc_gamedata);
-    b = memcard_GetDataSize(mc_leveldata);
-    if (*(int *)p != a || *(int *)(p + 4) != b) {
+    game_data_size = memcard_GetDataSize(mc_gamedata);
+    level_data_size = memcard_GetDataSize(mc_leveldata);
+    if (*(int *)read_cursor != game_data_size || *(int *)(read_cursor + 4) != level_data_size) {
         STUB_printf(memcard_restore_size_mismatch_msg);
         return;
     }
-    p += 8;
-    memcard_RestoreData(p, 0, mc_gamedata);
-    p += a;
-    for (i = 0; i < 0x14; i++) {
-        memcard_RestoreData(p, i, mc_leveldata);
-        p += b;
+    read_cursor += 8;
+    memcard_RestoreData(read_cursor, 0, mc_gamedata);
+    read_cursor += game_data_size;
+    for (level_index = 0; level_index < 0x14; level_index++) {
+        memcard_RestoreData(read_cursor, level_index, mc_leveldata);
+        read_cursor += level_data_size;
     }
 }
 
-/*
- * 3/168: the only residual is the allocator holding the loaded pointer
- * in $2 where retail uses $3. Everything else, including saving the
- * three globals across func_00209CE8 and the $at store of D_0015EE84,
- * is instruction-for-instruction retail.
- */
+/* Reload saved data and preserve the audio settings. */
 extern int disc_table[];
 extern void calculate_ring_buffer_bounds(int, void *, void *);
 extern void update_audio_stream_until_idle(int);
@@ -238,22 +227,22 @@ extern int Load_i(int, int, int) __asm__("func_002176C8");
 
 /* func_002176C8 returns int and takes three arguments (stream.c). */
 void load_and_initialize_level_chunk(void) {
-    int a;
-    int b;
-    int s0;
-    int s1;
-    int s2;
+    int load_buffer_address;
+    int unused_buffer_address;
+    int saved_playback_mode;
+    int saved_music_volume;
+    int saved_sound_volume;
 
-    calculate_ring_buffer_bounds(disc_table[5] << 11, &a, &b);
+    calculate_ring_buffer_bounds(disc_table[5] << 11, &load_buffer_address, &unused_buffer_address);
     update_audio_stream_until_idle(1);
-    Load_i(a, disc_table[4], disc_table[5]);
-    s2 = sound_volume;
-    s1 = music_volume;
-    s0 = playback_mode;
-    memcard_RestoreGame(a + *(int *)(a + 0x10));
-    sound_volume = s2;
-    music_volume = s1;
-    playback_mode = s0;
+    Load_i(load_buffer_address, disc_table[4], disc_table[5]);
+    saved_sound_volume = sound_volume;
+    saved_music_volume = music_volume;
+    saved_playback_mode = playback_mode;
+    memcard_RestoreGame(load_buffer_address + *(int *)(load_buffer_address + 0x10));
+    sound_volume = saved_sound_volume;
+    music_volume = saved_music_volume;
+    playback_mode = saved_playback_mode;
     g_current_level_index_m = 0;
 }
 
@@ -1390,14 +1379,14 @@ extern int memcard_PrepData(void *dst, int i, int *table);
    parameter itself -- retail keeps both in $s2. */
 /* memcard_MakeWholeSave */
 void memcard_MakeWholeSave(char *out) {
-    int i;
+    int level_index;
 
     *(int *)out = memcard_GetDataSize(mc_gamedata);
     *(int *)(out + 4) = memcard_GetDataSize(mc_leveldata);
     out += 8;
     out += memcard_PrepData(out, 0, mc_gamedata);
-    for (i = 0; i < 0x14; i++) {
-        out += memcard_PrepData(out, i, mc_leveldata);
+    for (level_index = 0; level_index < 0x14; level_index++) {
+        out += memcard_PrepData(out, level_index, mc_leveldata);
     }
 }
 
@@ -1419,34 +1408,34 @@ void memcard_Init(void) {
 }
 
 /* memcard_GetDataSize */
-int memcard_GetDataSize(int *p) {
-    int n = 8;
-    while (p[0] != 0) {
-        n += 8;
-        n += p[1];
-        p += 4;
-        n = (n + 3) & ~3;
+int memcard_GetDataSize(int *descriptor) {
+    int total_size = 8;
+    while (descriptor[0] != 0) {
+        total_size += 8;
+        total_size += descriptor[1];
+        descriptor += 4;
+        total_size = (total_size + 3) & ~3;
     }
-    return n + 8;
+    return total_size + 8;
 }
 
 /* memcard_Checksum: 0 for more than 0x1800 bytes, else a 16-bit
    shift-register checksum (polynomial 0x1F45). Only the low half of
    the 0xEDB88320 seed (the CRC-32 polynomial) reaches the result. */
 int memcard_Checksum(void *data, int len) {
-    unsigned char *p = data;
+    unsigned char *cursor = data;
     unsigned char *end;
     int crc;
-    int j;
+    int bit_index;
 
     if (len > 0x1800) {
         return 0;
     }
-    end = p + len;
+    end = cursor + len;
     crc = 0xEDB88320;
-    while (p < end) {
-        crc ^= *p++ << 8;
-        for (j = 0; j < 8; j++) {
+    while (cursor < end) {
+        crc ^= *cursor++ << 8;
+        for (bit_index = 0; bit_index < 8; bit_index++) {
             if (crc & 0x8000) {
                 crc = (crc << 1) ^ 0x1F45;
             } else {
@@ -1461,12 +1450,12 @@ int memcard_Checksum(void *data, int len) {
    in the beqz slot, and a load that may trap is never taken from the
    fall-through. */
 int memcard_TestChecksum(char *buf) {
-    int *p = (int *)buf;
-    int len = p[0];
-    int sum = p[1];
+    int *header = (int *)buf;
+    int len = header[0];
+    int sum = header[1];
     int result = 0;
     /* The checksum covers the payload, not this two-word header. */
-    if (sum != 0) result = memcard_Checksum(p + 2, len) == sum;
+    if (sum != 0) result = memcard_Checksum(header + 2, len) == sum;
     return result;
 }
 
@@ -1478,21 +1467,8 @@ extern int memcard_Checksum(void *data, int len);
    the caller's buffer, four-byte aligned, terminated by { -1, 0 }. The
    header it leaves at the front is { payload length, checksum }, and the
    return value is the total including that header. */
-/*
- * Byte mismatch, correct size (0x E8), 39 of 232 bytes: the allocator puts
- * the table cursor in $s1 and the write cursor in $s0, where retail has
- * them the other way round, and it initialises the cursor before the
- * `table[0] != 0` test instead of after it. Everything else is retail's
- * instruction sequence.
- *
- * Spellings tried, all identical output: a separate `int *t = table` local
- * versus advancing the parameter itself; the source address computed at
- * the call versus in a local. That local IS load-bearing for the rest --
- * computing it before the two header stores is what makes the compiler
- * reload table[1] for them, as retail does (1807 -> 517 differing words).
- * The remaining residual is allocator destination choice, the recorded
- * dead end.
- */
+/* Keep the source address in a local before the header stores
+   to preserve the matching load order. */
 struct SaveBlock {
     unsigned char *base;
     int size;
@@ -1511,12 +1487,12 @@ struct SaveHeader {
 int memcard_PrepData(void *dst, int slot, int *table) {
     struct SaveHeader *out = dst;
     struct SaveBlock *blk = table;
-    unsigned char *p;
+    unsigned char *write_cursor;
     int total;
     unsigned char *src;
 
     total = 0;
-    p = (unsigned char *)(out + 1);
+    write_cursor = (unsigned char *)(out + 1);
     if (blk->base != 0) {
         struct SaveBlock *block = blk;
         int mask = -4;
@@ -1525,21 +1501,21 @@ int memcard_PrepData(void *dst, int slot, int *table) {
             /* Each table entry stores one fixed-size block per save slot. */
             src = block->base + slot * block->size;
             total += 8;
-            ((int *)p)[0] = block->id;
-            ((int *)p)[1] = block->size;
-            p += 8;
-            copy_memory_aligned(p, src, block->size);
-            p += block->size;
+            ((int *)write_cursor)[0] = block->id;
+            ((int *)write_cursor)[1] = block->size;
+            write_cursor += 8;
+            copy_memory_aligned(write_cursor, src, block->size);
+            write_cursor += block->size;
             total += block->size;
             /* Keep the next block header on a four-byte boundary. */
-            p = (unsigned char *)(((int)p + 3) & mask);
+            write_cursor = (unsigned char *)(((int)write_cursor + 3) & mask);
             total = (total + 3) & mask;
             block++;
         } while (block->base != 0);
     }
     total += 8;
-    ((int *)p)[1] = 0;
-    ((int *)p)[0] = -1;
+    ((int *)write_cursor)[1] = 0;
+    ((int *)write_cursor)[0] = -1;
     out->checksum = memcard_Checksum(out + 1, total);
     out->size = total;
     return total + 8;
@@ -1612,11 +1588,11 @@ extern int libc_memcmp(const void *, const void *, int); /* memcmp */
 int memcard_RestoreData(void *src, int slot, int *table) {
     unsigned char *buf = src;
     struct RestoreEntry *tbl = (struct RestoreEntry *)table;
-    struct RestoreEntry *e;
+    struct RestoreEntry *entry;
     int errors;
     int total;
-    int i;
-    int n;
+    int entry_index;
+    int copy_size;
     unsigned char *dst;
 
     if (memcard_TestChecksum((char *)buf) == 0) {
@@ -1625,41 +1601,41 @@ int memcard_RestoreData(void *src, int slot, int *table) {
     buf += 8;
     errors = 0;
     total = 8;
-    for (i = 0; tbl[i].data != 0; i++) {
-        tbl[i].status = 0;
+    for (entry_index = 0; tbl[entry_index].data != 0; entry_index++) {
+        tbl[entry_index].status = 0;
     }
     while (((struct RestoreBlock *)buf)->id != -1) {
-        i = 0;
+        entry_index = 0;
         if (tbl[0].data == 0) {
             goto missing;
         }
-        while (tbl[i].id != ((struct RestoreBlock *)buf)->id) {
-            i++;
-            if (tbl[i].data == 0) {
+        while (tbl[entry_index].id != ((struct RestoreBlock *)buf)->id) {
+            entry_index++;
+            if (tbl[entry_index].data == 0) {
                 goto missing;
             }
         }
-        e = (struct RestoreEntry *)(((unsigned int)i << 4) + (unsigned int)tbl);
-        if (e->data != 0) {
+        entry = (struct RestoreEntry *)(((unsigned int)entry_index << 4) + (unsigned int)tbl);
+        if (entry->data != 0) {
             int bsize = ((struct RestoreBlock *)buf)->size;
 
-            dst = e->data + slot * e->size;
+            dst = entry->data + slot * entry->size;
             /* Copy only the bytes that fit. Keep a size mismatch in status. */
-            if (bsize == e->size) {
-                n = e->size;
-                e->status = 1;
-            } else if (bsize < e->size) {
-                n = bsize;
-                e->status = -1;
+            if (bsize == entry->size) {
+                copy_size = entry->size;
+                entry->status = 1;
+            } else if (bsize < entry->size) {
+                copy_size = bsize;
+                entry->status = -1;
             } else {
-                n = e->size;
-                e->status = -2;
+                copy_size = entry->size;
+                entry->status = -2;
             }
-            if (libc_memcmp(dst, ((struct RestoreBlock *)buf)->data, n) != 0) {
+            if (libc_memcmp(dst, ((struct RestoreBlock *)buf)->data, copy_size) != 0) {
                 (*(int *)&memcard_restore_mismatch_count)++;
             }
-            copy_memory_aligned(dst, ((struct RestoreBlock *)buf)->data, n);
-            total += ((n + 3) & ~3) + 8;
+            copy_memory_aligned(dst, ((struct RestoreBlock *)buf)->data, copy_size);
+            total += ((copy_size + 3) & ~3) + 8;
         } else {
         missing:
             errors++;
@@ -1672,8 +1648,8 @@ int memcard_RestoreData(void *src, int slot, int *table) {
         errors++;
     }
     buf += 8;
-    for (i = 0; tbl[i].data != 0 && tbl[i].id != ((struct RestoreBlock *)buf)->id; i++) {
-        if (tbl[i].status <= 0) {
+    for (entry_index = 0; tbl[entry_index].data != 0 && tbl[entry_index].id != ((struct RestoreBlock *)buf)->id; entry_index++) {
+        if (tbl[entry_index].status <= 0) {
             errors++;
         }
     }
