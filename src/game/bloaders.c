@@ -70,6 +70,7 @@ void LoadPifAsPSMT8H(void *arg0, void *arg1, int tbp, int cbp) {
     d.imageSize = pif->w * pif->h;
     sceGsSetDefLoadImage(&li, c, 1, pif->psm, 0, 0, 16, 16);
     flush_cache(0);
+    /* Finish the palette upload before reusing the transfer descriptor. */
     sceGsExecLoadImage(&li, d.clut);
     wait_for_graphics_pipeline_idle(0, 0);
     d.tbw = pif->w >> 6;

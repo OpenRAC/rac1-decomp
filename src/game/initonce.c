@@ -83,6 +83,7 @@ void InitMemSlots(void) {
     int b = a + size;
     int c = b + 0x64000;
     int d = c + 0x30000;
+    /* Reserve two equal chain buffers, then the fixed-size work areas. */
     level_resource_buffers[0] = base;
     level_resource_buffers[5] = d;
     level_resource_buffers[6] = d;
@@ -200,6 +201,7 @@ void InitOnce(void) {
     flush_cache(0);
     fast_decompress(seg, tbl);
     flush_cache(0);
+    /* Module offsets use the unpacked table base, not the disc buffer. */
     LoadIRXModule((void *)(tbl[0x1C] + (int)tbl), (void *)(int)tbl[0x1D]);
     LoadIRXModule((void *)(tbl[0x1E] + (int)tbl), (void *)(int)tbl[0x1F]);
     LoadIRXModule((void *)(tbl[0x20] + (int)tbl), (void *)(int)tbl[0x21]);
