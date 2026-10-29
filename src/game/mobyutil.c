@@ -378,9 +378,9 @@ LINKER_REMNANT("asm/remnants/text", func_00214080);
 
 extern int func_001160D8(void);
 
-/* Returns a random integer from 0 to arg0 - 1. */
-int random_integer_below(int arg0) {
-    return ((func_001160D8() >> 16) & 0x7FFF) % arg0;
+/* Returns a random integer from 0 to upper_bound - 1. */
+int random_integer_below(int upper_bound) {
+    return ((func_001160D8() >> 16) & 0x7FFF) % upper_bound;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_002140F0);
@@ -405,12 +405,12 @@ extern float random_angle_radians(void);
 extern float random_float_between(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
 
-/* Writes a random offset with length between arg1 and arg2 in a random direction. */
-void random_spherical_offset(void *arg0, float arg1, float arg2) {
-    float r1 = random_angle_radians();
-    float r2 = random_angle_radians();
+/* Writes a random offset with length between minimum_radius and maximum_radius in a random direction. */
+void random_spherical_offset(void *output_vector, float minimum_radius, float maximum_radius) {
+    float azimuth = random_angle_radians();
+    float elevation = random_angle_radians();
 
-    BuildSphericalOffset(arg0, random_float_between(arg1, arg2), r1, r2);
+    BuildSphericalOffset(output_vector, random_float_between(minimum_radius, maximum_radius), azimuth, elevation);
 }
 
 /* Cosine interpolation: a + (b - a) * ((1 - cos(t * pi)) * 0.5). */
@@ -870,10 +870,10 @@ struct M2c_temp3 {
     s32 pad;
 };
 extern void fast_vec_normalize_r(f32 *, f32 *, f32) __asm__("func_001F9DC0");
-void normalize_vector_triplet(f32 *arg0);
+void normalize_vector_triplet(f32 *matrix_data);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/math/vectors/normalize_vector_triplet.c, normalize_vector_triplet. */
-void normalize_vector_triplet(f32 *arg0) {
+void normalize_vector_triplet(f32 *matrix_data) {
     struct M2c_temp3 scratch;
     f32 *base;
     f32 *src;
@@ -884,7 +884,7 @@ void normalize_vector_triplet(f32 *arg0) {
     s32 next;
     s32 count;
 
-    base = arg0;
+    base = matrix_data;
     i = 0;
     do {
         next = i + 1;
@@ -954,9 +954,9 @@ extern QuatNext quat_next_axis_table;
 /* Rotation matrix (rows of four floats) to quaternion (x, y, z, w), by
    Shoemake's method: from the trace when it is positive, else from the
    largest diagonal element, working on a packed 3x3 copy. */
-void MatrixToQuaternion(void *arg0, void *arg1) {
-    float *q = arg0;
-    float (*m)[4] = arg1;
+void MatrixToQuaternion(void *output_quaternion, void *matrix_data) {
+    float *q = output_quaternion;
+    float (*m)[4] = matrix_data;
     QuatNext n = quat_next_axis_table;
     float mat[3][3];
     float trace;
@@ -1005,13 +1005,13 @@ extern void copy_matrix_rotation(void *);
 extern void MatrixToQuaternion(void *, void *);
 extern void matrix_copy_rows(void *, void *);
 
-/* func_001FA460 takes two arguments: arg1 is passed on to it untouched,
-   which gives arg1 three references and retail's $s0. */
-void extract_matrix_rotation_quaternion(void *arg0, void *arg1) {
-    char buf[0x40];
-    copy_matrix_rotation_2(buf, arg1);
-    MatrixToQuaternion(arg0, buf);
-    matrix_copy_rows(arg1, buf);
+/* func_001FA460 takes two arguments: matrix_data is passed on to it untouched,
+   which gives matrix_data three references and retail's $s0. */
+void extract_matrix_rotation_quaternion(void *output_quaternion, void *matrix_data) {
+    char rotation_matrix[0x40];
+    copy_matrix_rotation_2(rotation_matrix, matrix_data);
+    MatrixToQuaternion(output_quaternion, rotation_matrix);
+    matrix_copy_rows(matrix_data, rotation_matrix);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00215378);
@@ -1020,14 +1020,14 @@ extern float FastSin(float);  /* sin of a half-angle */
 extern float FastCos(float);  /* cos of a half-angle */
 
 /* Axis-angle -> quaternion: the xyz part is axis scaled by sin(angle/2)
-   (done by func_001F9C30, which writes through arg0), and w at +0xC is
+   (done by func_001F9C30, which writes through output_quaternion), and w at +0xC is
    cos(angle/2). Both trig calls take the same half-angle, which is why
    it lives in $f20 across all three calls. */
-void build_quaternion_from_axis_angle(void *arg0, void *axis, float angle) {
+void build_quaternion_from_axis_angle(void *output_quaternion, void *axis, float angle) {
     float half = angle * 0.5f;
 
-    FastVecScale(arg0, axis, FastSin(half));
-    *(float *)((char *)arg0 + 0xC) = FastCos(half);
+    FastVecScale(output_quaternion, axis, FastSin(half));
+    *(float *)((char *)output_quaternion + 0xC) = FastCos(half);
 }
 
 typedef struct {
@@ -1088,23 +1088,23 @@ typedef struct {
 extern ViewBox *clip_volume_table MACRO_ADDR;
 extern void FastVecSub(void *, void *, void *);
 
-/* Is point arg0 inside box arg1 of the table at D_00160134? The offset
+/* Is point point inside box volume_index of the table at D_00160134? The offset
    from the box's position, taken through its matrix, must lie in
-   [-1, 1] on every axis. 0 for arg1 == -1. */
-int is_point_inside_clip_volume(void *arg0, int arg1) {
-    float d[4];
-    float v[4];
-    ViewBox *m;
+   [-1, 1] on every axis. 0 for volume_index == -1. */
+int is_point_inside_clip_volume(void *point, int volume_index) {
+    float offset[4];
+    float clip_point[4];
+    ViewBox *volume;
 
-    if (arg1 == -1) {
+    if (volume_index == -1) {
         return 0;
     }
-    m = &clip_volume_table[arg1];
-    FastVecSub(d, arg0, m->pos);
-    d[3] = 0.0f;
-    matrix_mul_vec3(v, d, m->mtx);
-    if (v[0] >= -1.0f && v[0] <= 1.0f && v[1] >= -1.0f && v[1] <= 1.0f
-        && v[2] >= -1.0f && v[2] <= 1.0f) {
+    volume = &clip_volume_table[volume_index];
+    FastVecSub(offset, point, volume->pos);
+    offset[3] = 0.0f;
+    matrix_mul_vec3(clip_point, offset, volume->mtx);
+    if (clip_point[0] >= -1.0f && clip_point[0] <= 1.0f && clip_point[1] >= -1.0f && clip_point[1] <= 1.0f
+        && clip_point[2] >= -1.0f && clip_point[2] <= 1.0f) {
         return 1;
     }
     return 0;
@@ -1113,24 +1113,24 @@ int is_point_inside_clip_volume(void *arg0, int arg1) {
 LINKER_REMNANT("asm/remnants/text", func_00215648);
 
 
-/* Conjugate-style sandwich: arg0 = arg2 * (arg1 with w = 0) * a, where
-   a is arg2 negated with its w kept (func_001FA588 is the quaternion
-   multiply). The 16-byte copy of arg1 is qcopy's lq/sq. */
-void rotate_vector_by_quaternion(void *arg0, void *arg1, void *arg2) {
-    float a[4];
-    float b[4];
-    float c[4];
+/* Conjugate-style sandwich: output_vector = quaternion * (vector with w = 0) * conjugate, where
+   conjugate is quaternion negated with its w kept (func_001FA588 is the quaternion
+   multiply). The 16-byte copy of vector is qcopy's lq/sq. */
+void rotate_vector_by_quaternion(void *output_vector, void *vector, void *quaternion) {
+    float conjugate[4];
+    float vector_quaternion[4];
+    float product[4];
 
-    FastVecScale(a, arg2, -1.0f);
-    a[3] = ((float *)arg2)[3];
-    qcopy(b, arg1);
-    b[3] = 0.0f;
-    multiply_quaternions(c, arg2, b);
-    multiply_quaternions(arg0, c, a);
+    FastVecScale(conjugate, quaternion, -1.0f);
+    conjugate[3] = ((float *)quaternion)[3];
+    qcopy(vector_quaternion, vector);
+    vector_quaternion[3] = 0.0f;
+    multiply_quaternions(product, quaternion, vector_quaternion);
+    multiply_quaternions(output_vector, product, conjugate);
 }
 
-extern void build_quaternion_from_axis_angle(void *arg0, void *axis, float angle);
-extern void rotate_vector_by_quaternion(void *arg0, void *arg1, void *arg2);
+extern void build_quaternion_from_axis_angle(void *output_quaternion, void *axis, float angle);
+extern void rotate_vector_by_quaternion(void *output_vector, void *vector, void *quaternion);
 
 /* dst = vec rotated `angle` around axis. A tiny angle skips the rotation
    (dst = vec); otherwise the axis is normalised to unit length and turned
@@ -1224,11 +1224,11 @@ void pack_vector_xyz_with_shared_scale(float *v, int *out) {
 typedef float FVec4[4] __attribute__((aligned(16)));
 extern void FastVectorFromPackedChars(float *, int);
 
-/* Unpack the packed colour *arg1 into a float vector, centre its
-   channels on 127 and scale by alpha/10000 into arg0. The 127 vector is
+/* Unpack the packed colour *packed_value into a float vector, centre its
+   channels on 127 and scale by alpha/10000 into output_vector. The 127 vector is
    a 16-byte aligned (sceVu0FVECTOR-style) local cleared by its
    initializer (one por/sq), then filled. */
-void load_display_text_resource_entry(float *arg0, int *arg1) {
+void load_display_text_resource_entry(float *output_vector, int *packed_value) {
     float v[4];
     FVec4 mid = { 0 };
     float scale;
@@ -1236,44 +1236,44 @@ void load_display_text_resource_entry(float *arg0, int *arg1) {
     mid[0] = 127.0f;
     mid[1] = 127.0f;
     mid[2] = 127.0f;
-    FastVectorFromPackedChars(v, *arg1);
+    FastVectorFromPackedChars(v, *packed_value);
     scale = v[3] * 0.0001f;
     FastVecSub(v, v, mid);
-    FastVecScale(arg0, v, scale);
+    FastVecScale(output_vector, v, scale);
 }
 
 
-/* Rounds arg1 to arg0 decimal places: round(arg1 * 10^arg0) / 10^arg0.
-   arg1 is updated in place throughout, so it stays in $f12 as retail
+/* Rounds value to decimal_places decimal places: round(value * 10^decimal_places) / 10^decimal_places.
+   value is updated in place throughout, so it stays in $f12 as retail
    has it. The nops after the two mtc1s are ps2eeas's
    (tools/ps2eeas_nops.py). */
-float round_float_to_decimal_places(int arg0, float arg1) {
+float round_float_to_decimal_places(int decimal_places, float value) {
     int p = 1;
     float scale;
 
-    if (arg0 > 0) {
+    if (decimal_places > 0) {
         do {
-            arg0--;
+            decimal_places--;
             p *= 10;
-        } while (arg0 != 0);
+        } while (decimal_places != 0);
     }
     scale = (float)p;
-    arg1 += 1.0f / (scale + scale);
-    arg1 *= scale;
-    arg1 = (float)truncate_float_to_s32_r(arg1);
-    return arg1 / scale;
+    value += 1.0f / (scale + scale);
+    value *= scale;
+    value = (float)truncate_float_to_s32_r(value);
+    return value / scale;
 }
 
 extern float MobyGetFrameValue(char *);
 extern float round_float_to_decimal_places(int, float);
 
-/* Returns 1 if the moby's current anim frame lies inside the one-frame window starting at arg1. */
-int IsFrameWithinWindow(char *arg0, float arg1) {
-    float now = MobyGetFrameValue(arg0);
-    float a = round_float_to_decimal_places(4, now - arg1);
-    float b = round_float_to_decimal_places(4, *(float *)(arg0 + 0x58) * *(float *)(arg0 + 0x5C));
+/* Returns 1 if the moby's current anim frame lies inside the one-frame window starting at window_start. */
+int IsFrameWithinWindow(char *moby, float window_start) {
+    float now = MobyGetFrameValue(moby);
+    float frame_offset = round_float_to_decimal_places(4, now - window_start);
+    float window_size = round_float_to_decimal_places(4, *(float *)(moby + 0x58) * *(float *)(moby + 0x5C));
 
-    if (arg1 <= now && a < b) {
+    if (window_start <= now && frame_offset < window_size) {
         return 1;
     }
     return 0;
@@ -1281,16 +1281,16 @@ int IsFrameWithinWindow(char *arg0, float arg1) {
 
 LINKER_REMNANT("asm/remnants/text", func_00215BA8);
 
-/* Spherical-to-cartesian: x is the radius, y and z the two angles.
+/* Spherical-to-cartesian: r is the radius; azimuth and elevation are angles.
    func_001F9F90 is cos, func_001F9FA8 sin (named in the comments at
    func_00212xxx). Each product is spelled trig * r * trig so the two
    calls are issued before the multiplies, the way retail does. */
-void BuildSphericalOffset(void *arg0, float r, float y, float z) {
-    float *out = (float *)arg0;
+void BuildSphericalOffset(void *output_vector, float r, float azimuth, float elevation) {
+    float *out = (float *)output_vector;
 
-    out[0] = FastCos(y) * r * FastCos(z);
-    out[1] = FastSin(y) * r * FastCos(z);
-    out[2] = FastSin(z) * r;
+    out[0] = FastCos(azimuth) * r * FastCos(elevation);
+    out[1] = FastSin(azimuth) * r * FastCos(elevation);
+    out[2] = FastSin(elevation) * r;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00215CA0);
@@ -1382,45 +1382,45 @@ extern int help_message_keepalive MACRO_ADDR;
 extern int help_message_owner MACRO_ADDR;
 extern int help_message_id MACRO_ADDR;
 
-/* Shows help message arg1 (func_001FFE88 of its string) for requester
-   arg0: 2 if arg0 already holds the slot, 1 if the slot was free and
-   arg0 takes it, 0 if someone else holds it. The failure return goes
+/* Shows help message message_id (func_001FFE88 of its string) for requester
+   requester: 2 if requester already holds the slot, 1 if the slot was free and
+   requester takes it, 0 if someone else holds it. The failure return goes
    last, which lets the scheduler put `li $2,1` before the last store. */
-int try_set_help_message(int arg0, int arg1) {
-    int cur = help_message_owner;
+int try_set_help_message(int requester, int message_id) {
+    int current_owner = help_message_owner;
 
-    if (cur == arg0) {
-        if (arg1 != 0) {
-            copy_text_to_shared_buffer(msg_string(arg1));
+    if (current_owner == requester) {
+        if (message_id != 0) {
+            copy_text_to_shared_buffer(msg_string(message_id));
         }
-        help_message_id = arg1;
+        help_message_id = message_id;
         help_message_keepalive = 2;
         return 2;
     }
-    if (cur == 0) {
-        if (arg1 != 0) {
-            copy_text_to_shared_buffer(msg_string(arg1));
+    if (current_owner == 0) {
+        if (message_id != 0) {
+            copy_text_to_shared_buffer(msg_string(message_id));
         }
-        help_message_owner = arg0;
+        help_message_owner = requester;
         help_message_keepalive = 2;
-        help_message_id = arg1;
+        help_message_id = message_id;
         return 1;
     }
     return 0;
 }
 
 /* Return 1 or 2 for a normal request, or 3 when replacing another owner. */
-int force_help_message(int arg0, int arg1) {
-    int busy = try_set_help_message(arg0, arg1);
+int force_help_message(int requester, int message_id) {
+    int busy = try_set_help_message(requester, message_id);
     if (busy != 0) {
         return busy;
     }
-    if (arg1 != 0) {
-        copy_text_to_shared_buffer(msg_string(arg1));
+    if (message_id != 0) {
+        copy_text_to_shared_buffer(msg_string(message_id));
     }
-    help_message_owner = arg0;
+    help_message_owner = requester;
     help_message_keepalive = 2;
-    help_message_id = arg1;
+    help_message_id = message_id;
     return 3;
 }
 
