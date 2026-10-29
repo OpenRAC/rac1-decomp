@@ -1465,6 +1465,7 @@ int memcard_TestChecksum(char *buf) {
     int len = p[0];
     int sum = p[1];
     int result = 0;
+    /* The checksum covers the payload, not this two-word header. */
     if (sum != 0) result = memcard_Checksum(p + 2, len) == sum;
     return result;
 }
@@ -1521,6 +1522,7 @@ int memcard_PrepData(void *dst, int slot, int *table) {
         int mask = -4;
 
         do {
+            /* Each table entry stores one fixed-size block per save slot. */
             src = block->base + slot * block->size;
             total += 8;
             ((int *)p)[0] = block->id;
@@ -1529,6 +1531,7 @@ int memcard_PrepData(void *dst, int slot, int *table) {
             copy_memory_aligned(p, src, block->size);
             p += block->size;
             total += block->size;
+            /* Keep the next block header on a four-byte boundary. */
             p = (unsigned char *)(((int)p + 3) & mask);
             total = (total + 3) & mask;
             block++;
@@ -1641,6 +1644,7 @@ int memcard_RestoreData(void *src, int slot, int *table) {
             int bsize = ((struct RestoreBlock *)buf)->size;
 
             dst = e->data + slot * e->size;
+            /* Copy only the bytes that fit. Keep a size mismatch in status. */
             if (bsize == e->size) {
                 n = e->size;
                 e->status = 1;
@@ -1660,6 +1664,7 @@ int memcard_RestoreData(void *src, int slot, int *table) {
         missing:
             errors++;
         }
+        /* Skip the full stored block, even when fewer bytes were copied. */
         buf += ((((struct RestoreBlock *)buf)->size + 3) & ~3) + 8;
     }
     total += 8;

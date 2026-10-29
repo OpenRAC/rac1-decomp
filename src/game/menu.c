@@ -1472,6 +1472,7 @@ void save_card_state_prompt_create_save(void) {
     flags = mode_freeze_flags;
     if (flags & 0x20) {
         mode_freeze_flags = flags ^ 0x20;
+        /* At boot, cancelling uses a different next state. */
         if (boot_level_active != 0) {
             mode_freeze_state = 0x18;
             return;
@@ -1486,6 +1487,7 @@ void save_card_state_prompt_create_save(void) {
 }
 
 /* Create-save request: when idle, queue the create command and go to state 0xF. */
+/* These menu states queue work; later calls handle the result. */
 void save_card_state_create_save_pending(void) {
     MemoryCardState *s = (MemoryCardState *)memory_card_state;
     if (s->state == 2 && s->err < 0) {
