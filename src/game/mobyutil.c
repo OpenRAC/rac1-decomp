@@ -265,11 +265,11 @@ extern void update_moby_animation_state_a(void *) __asm__("func_0020D6D0");
    The frame count is re-read through the class at each test, as retail
    reloads it after the byte stores. */
 void MobySetAnimation(MobyAnim *m, int seq, int frame) {
-    int n = m->pClass->seqs[seq]->nframes;
+    int frame_count = m->pClass->seqs[seq]->nframes;
 
     m->seq = seq;
-    if (frame >= n) {
-        frame = n - 1;
+    if (frame >= frame_count) {
+        frame = frame_count - 1;
     }
     m->frame = frame;
     m->nextFrame = frame + 1;
@@ -289,89 +289,77 @@ extern float IntToFloat(int arg0);
 extern void capture_moby_blend_pose(void *, int);
 extern char moby_blend_slot_poses[];
 
-/* As func_00213F28 below, for a plain sequence change: clamp the frame
-   to the sequence's last one; if the moby hasn't settled, park the
-   current pose in a D_001B2F80 blend slot (seq 0xFF, frame = slot). Then
-   set the new sequence and frame and arm the blend timer from arg3. */
-void MobyBlendAnimation(MobyAnim *arg0, int arg1, int arg2, int arg3) {
-    int n = arg0->pClass->seqs[arg1]->nframes;
+/* Blend to a sequence and frame, saving the current pose when needed. */
+void MobyBlendAnimation(MobyAnim *moby, int sequence, int target_frame, int blend_duration) {
+    int frame_count = moby->pClass->seqs[sequence]->nframes;
     int slot;
     unsigned char oldSeq;
     float scale;
 
-    if (arg2 >= n) {
-        arg2 = n - 1;
+    if (target_frame >= frame_count) {
+        target_frame = frame_count - 1;
     }
-    if (*(float *)((char *)arg0 + 0x54) > 0.025f ||
-        *(int *)((char *)arg0 + 0x60) != 0 ||
-        *(int *)((char *)arg0 + 0x64) != 0) {
-        slot = find_or_allocate_id_slot((int)arg0);
+    if (*(float *)((char *)moby + 0x54) > 0.025f ||
+        *(int *)((char *)moby + 0x60) != 0 ||
+        *(int *)((char *)moby + 0x64) != 0) {
+        slot = find_or_allocate_id_slot((int)moby);
         if (slot >= 0) {
-            capture_moby_blend_pose(arg0, slot | 0x300);
-            qcopy(moby_blend_slot_poses + slot * 0x10, (char *)arg0 + 0xF0);
-            oldSeq = arg0->seq;
+            capture_moby_blend_pose(moby, slot | 0x300);
+            qcopy(moby_blend_slot_poses + slot * 0x10, (char *)moby + 0xF0);
+            oldSeq = moby->seq;
             if (oldSeq != 0xFF) {
-                *(unsigned char *)((char *)arg0 + 0xA5) = oldSeq;
+                *(unsigned char *)((char *)moby + 0xA5) = oldSeq;
             }
-            arg0->seq = 0xFF;
-            arg0->frame = slot;
+            moby->seq = 0xFF;
+            moby->frame = slot;
         }
     }
-    arg0->nextFrame = arg2;
-    arg0->prevSeq = arg1;
-    update_moby_animation_state_a(arg0);
-    *(float *)((char *)arg0 + 0x58) = 1.0f;
-    scale = 1.0f / IntToFloat(arg3);
-    *(float *)((char *)arg0 + 0x54) = 0.0f;
-    arg0->unk70 = (unsigned char)(arg0->unk70 & 0xFD);
-    arg0->unk5C = scale;
-    *(unsigned char *)((char *)arg0 + 0x7C) =
-        *((unsigned char *)arg0->pClass->seqs[arg1] + 0x11);
+    moby->nextFrame = target_frame;
+    moby->prevSeq = sequence;
+    update_moby_animation_state_a(moby);
+    *(float *)((char *)moby + 0x58) = 1.0f;
+    scale = 1.0f / IntToFloat(blend_duration);
+    *(float *)((char *)moby + 0x54) = 0.0f;
+    moby->unk70 = (unsigned char)(moby->unk70 & 0xFD);
+    moby->unk5C = scale;
+    *(unsigned char *)((char *)moby + 0x7C) =
+        *((unsigned char *)moby->pClass->seqs[sequence] + 0x11);
 }
 
-/* Re-registers this MobyAnim in the shared slot table (D_001B2F40, via
-   func_0020DA68) when it hasn't settled yet (unk54 > 0.025, or unk60/unk64
-   nonzero) or the caller forces it (arg4 & 4): builds a flags byte from
-   arg4 bits 0/1 (0x100/0x200), hands it to func_0020FC38, snapshots this
-   moby's unkF0 vector into the matching D_001B2F80 slot, remembers the
-   old seq in unkA5 (unless it was already 0xFF), then marks seq 0xFF and
-   frame = slot. Either way it then sets nextFrame/prevSeq from arg2/arg1,
-   refreshes frame pointers (func_0020D6D0), arms the timer (unk58 = 1),
-   resets unk54, clears unk70 bit 1, stores 1/func_001FA888(arg3) into
-   unk5C, and copies a not-yet-named byte (offset 0x11) out of
-   pClass->seqs[arg1] into unk7C. */
-void blend_moby_animation_ex(MobyAnim *arg0, int arg1, int arg2, int arg3, int arg4) {
+/* Blend to a sequence and frame. blend_flags controls pose capture;
+   bit 2 forces it. */
+void blend_moby_animation_ex(MobyAnim *moby, int sequence, int target_frame, int blend_duration, int blend_flags) {
     int slot;
     int flags;
     unsigned char oldSeq;
     float scale;
 
-    if (*(float *)((char *)arg0 + 0x54) > 0.025f ||
-        *(int *)((char *)arg0 + 0x60) != 0 ||
-        *(int *)((char *)arg0 + 0x64) != 0 || (arg4 & 4)) {
-        slot = find_or_allocate_id_slot((int)arg0);
+    if (*(float *)((char *)moby + 0x54) > 0.025f ||
+        *(int *)((char *)moby + 0x60) != 0 ||
+        *(int *)((char *)moby + 0x64) != 0 || (blend_flags & 4)) {
+        slot = find_or_allocate_id_slot((int)moby);
         if (slot >= 0) {
-            flags = (arg4 & 1) ? (slot | 0x100) : slot;
-            capture_moby_blend_pose(arg0, (arg4 & 2) ? (flags | 0x200) : flags);
-            qcopy(moby_blend_slot_poses + slot * 0x10, (char *)arg0 + 0xF0);
-            oldSeq = arg0->seq;
+            flags = (blend_flags & 1) ? (slot | 0x100) : slot;
+            capture_moby_blend_pose(moby, (blend_flags & 2) ? (flags | 0x200) : flags);
+            qcopy(moby_blend_slot_poses + slot * 0x10, (char *)moby + 0xF0);
+            oldSeq = moby->seq;
             if (oldSeq != 0xFF) {
-                *(unsigned char *)((char *)arg0 + 0xA5) = oldSeq;
+                *(unsigned char *)((char *)moby + 0xA5) = oldSeq;
             }
-            arg0->seq = 0xFF;
-            arg0->frame = slot;
+            moby->seq = 0xFF;
+            moby->frame = slot;
         }
     }
-    arg0->nextFrame = arg2;
-    arg0->prevSeq = arg1;
-    update_moby_animation_state_a(arg0);
-    *(float *)((char *)arg0 + 0x58) = 1.0f;
-    scale = 1.0f / IntToFloat(arg3);
-    *(float *)((char *)arg0 + 0x54) = 0.0f;
-    arg0->unk70 = (unsigned char)(arg0->unk70 & 0xFD);
-    arg0->unk5C = scale;
-    *(unsigned char *)((char *)arg0 + 0x7C) =
-        *((unsigned char *)arg0->pClass->seqs[arg1] + 0x11);
+    moby->nextFrame = target_frame;
+    moby->prevSeq = sequence;
+    update_moby_animation_state_a(moby);
+    *(float *)((char *)moby + 0x58) = 1.0f;
+    scale = 1.0f / IntToFloat(blend_duration);
+    *(float *)((char *)moby + 0x54) = 0.0f;
+    moby->unk70 = (unsigned char)(moby->unk70 & 0xFD);
+    moby->unk5C = scale;
+    *(unsigned char *)((char *)moby + 0x7C) =
+        *((unsigned char *)moby->pClass->seqs[sequence] + 0x11);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00214080);
@@ -387,18 +375,18 @@ LINKER_REMNANT("asm/remnants/text", func_002140F0);
 
 /* As func_00214158: the old note's C, with the mtc1 nop added by the
    pipeline. */
-float random_float_between(float a, float b) {
-    int v = func_001160D8();
-    float delta = b - a;
-    v = (v >> 16) & 0x7FFF;
-    return a + (float)v * delta * 3.0517578125e-05f;
+float random_float_between(float minimum, float maximum) {
+    int random_bits = func_001160D8();
+    float delta = maximum - minimum;
+    random_bits = (random_bits >> 16) & 0x7FFF;
+    return minimum + (float)random_bits * delta * 3.0517578125e-05f;
 }
 
 /* The C of the old revert note: the nop it lacked is ps2eeas's (after
    an mtc1), which tools/ps2eeas_nops.py now adds. */
 float random_angle_radians(void) {
-    int v = ((func_001160D8() >> 16) & 0xFFF) - 0x800;
-    return (float)v * 3.14159274f * 0.00048828125f;
+    int random_steps = ((func_001160D8() >> 16) & 0xFFF) - 0x800;
+    return (float)random_steps * 3.14159274f * 0.00048828125f;
 }
 
 extern float random_angle_radians(void);
@@ -429,20 +417,17 @@ LINKER_REMNANT("asm/remnants/text", func_002142B8);
 extern int coll_line_fix_a(void *, void *, int, int, int) __asm__("func_001EFE10");
 extern char coll_hit_pos[];
 
-/* Builds two 16-byte copies of *arg0: one with byte offset 8 (a float)
-   forced to 0.01f, the other with its offset-8 float bumped by arg2.
-   Passes both to func_001EFE10 (a collision/line test elsewhere in the
-   file's neighbours); returns D_00194220's float at +8 on success, else
-   0.0f. */
-f32 ProbeGroundHeight(void *arg0, s32 arg1, f32 arg2) {
-    char sp0[16];
-    char sp1[16];
+/* Cast from position + probe_height down to z = 0.01.
+   Return the hit height, or zero if no surface is found. */
+f32 ProbeGroundHeight(void *position, s32 collision_flags, f32 probe_height) {
+    char base_endpoint[16];
+    char probe_endpoint[16];
 
-    qcopy(sp0, arg0);
-    *(f32 *)(sp0 + 8) = 0.01f;
-    qcopy(sp1, arg0);
-    *(f32 *)(sp1 + 8) = *(f32 *)(sp1 + 8) + arg2;
-    if (coll_line_fix_a(sp1, sp0, arg1 | 2, 0, 0) != 0) {
+    qcopy(base_endpoint, position);
+    *(f32 *)(base_endpoint + 8) = 0.01f;
+    qcopy(probe_endpoint, position);
+    *(f32 *)(probe_endpoint + 8) = *(f32 *)(probe_endpoint + 8) + probe_height;
+    if (coll_line_fix_a(probe_endpoint, base_endpoint, collision_flags | 2, 0, 0) != 0) {
         return *(f32 *)(coll_hit_pos + 8);
     }
     return 0.0f;
@@ -795,70 +780,63 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
 LINKER_REMNANT("asm/remnants/text", func_00214CF8);
 
 /* Steps *p toward target by at most maxstep; returns the distance still left. */
-float ApproachValue(float *p, float target, float maxstep) {
-    float d = target - *p;
-    if (maxstep < d) {
-        d = maxstep;
-    } else if (d < -maxstep) {
-        d = -maxstep;
+float ApproachValue(float *value, float target, float maxstep) {
+    float step = target - *value;
+    if (maxstep < step) {
+        step = maxstep;
+    } else if (step < -maxstep) {
+        step = -maxstep;
     }
-    *p = *p + d;
-    return FastAbsF(target - *p);
+    *value = *value + step;
+    return FastAbsF(target - *value);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00214D80);
 
 
-/* Moves *p1 toward `a` with velocity *p2: when *p2 heads away from the
-   target (or it is reached), the velocity eases to 0 by c
-   (func_00214D28) and is added. Otherwise, inside the braking distance
-   (*p2^2 / c / 2) it eases to 0 by c, or by 1.1c once |diff| + |*p2| no
-   longer exceeds that distance; outside it, it eases by b toward
-   +-min(func_001F9B50(2c * diff), d) (func_001F9B50 is a square root).
-   Then, if |*p2| < |diff| the velocity is added and returned, else *p1
-   snaps to `a` and diff is returned. func_001F9B88 is fabsf; the fabs
-   calls are made in retail's order through temporaries. */
-float ApproachWithVelocity(float *p1, float *p2, float a, float b, float c, float d) {
-    float diff = a - *p1;
+/* Move value toward target with acceleration and braking.
+   Snap to target when the next step would reach or pass it. */
+float ApproachWithVelocity(float *value, float *velocity, float target, float acceleration, float deceleration, float maximum_speed) {
+    float diff = target - *value;
 
-    if (*p2 * diff >= 0.0f && diff != 0.0f) {
-        float half = *p2 * *p2 / c * 0.5f;
+    if (*velocity * diff >= 0.0f && diff != 0.0f) {
+        float braking_distance = *velocity * *velocity / deceleration * 0.5f;
 
-        if (FastAbsF(diff) < half) {
-            float s = FastAbsF(diff);
-            s += FastAbsF(*p2);
-            if (half < s) {
-                ApproachValue(p2, 0.0f, c);
+        if (FastAbsF(diff) < braking_distance) {
+            float distance_with_step = FastAbsF(diff);
+            distance_with_step += FastAbsF(*velocity);
+            if (braking_distance < distance_with_step) {
+                ApproachValue(velocity, 0.0f, deceleration);
             } else {
-                ApproachValue(p2, 0.0f, c * 1.1f);
+                ApproachValue(velocity, 0.0f, deceleration * 1.1f);
             }
         } else {
-            float speed = vec_length((c + c) * diff);
+            float speed = vec_length((deceleration + deceleration) * diff);
 
-            if (d < speed) {
-                speed = d;
+            if (maximum_speed < speed) {
+                speed = maximum_speed;
             }
             if (diff < 0.0f) {
-                ApproachValue(p2, -speed, b);
+                ApproachValue(velocity, -speed, acceleration);
             } else {
-                ApproachValue(p2, speed, b);
+                ApproachValue(velocity, speed, acceleration);
             }
         }
         {
-            float m1 = FastAbsF(diff);
-            float m2 = FastAbsF(*p2);
+            float remaining_distance = FastAbsF(diff);
+            float current_speed = FastAbsF(*velocity);
 
-            if (m2 < m1) {
-                *p1 = *p1 + *p2;
-                return *p2;
+            if (current_speed < remaining_distance) {
+                *value = *value + *velocity;
+                return *velocity;
             }
-            *p1 = a;
+            *value = target;
             return diff;
         }
     }
-    ApproachValue(p2, 0.0f, c);
-    *p1 += *p2;
-    return *p2;
+    ApproachValue(velocity, 0.0f, deceleration);
+    *value += *velocity;
+    return *velocity;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00214F50);
@@ -919,27 +897,27 @@ LINKER_REMNANT("asm/remnants/text", func_00215038);
 
 /* A goto into the first `return 0` gives retail's backward beqz; the two
    nops before it are short-loop padding (tools/ps2eeas_nops.py). */
-int suck_get_aim_height(char *arg0) {
-    if (arg0 == 0) {
+int suck_get_aim_height(char *moby) {
+    if (moby == 0) {
     ret0:
         return 0;
     }
-    if ((((Moby *)arg0)->flags & 0x20) == 0) {
+    if ((((Moby *)moby)->flags & 0x20) == 0) {
         goto ret0;
     }
-    return *((int *)((Moby *)arg0)->pvars);
+    return *((int *)((Moby *)moby)->pvars);
 }
 
 /* func_00215048 for the +0x10 field. */
-int read_state_field(char *arg0) {
-    if (arg0 == 0) {
+int read_state_field(char *moby) {
+    if (moby == 0) {
     ret0:
         return 0;
     }
-    if ((((Moby *)arg0)->flags & 0x20) == 0) {
+    if ((((Moby *)moby)->flags & 0x20) == 0) {
         goto ret0;
     }
-    return *(int *)(((char *)((Moby *)arg0)->pvars) + 0x10);
+    return *(int *)(((char *)((Moby *)moby)->pvars) + 0x10);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_002150A8);
@@ -1191,34 +1169,31 @@ LINKER_REMNANT("asm/remnants/text", func_002158E0);
 extern int FastVectorToPackedChars(float *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-/* Packs vector v into one RGBA word at *out (func_001F9F30 converts a
-   float4 to bytes): its largest absolute component sets a scale n,
-   rounded (func_001FA898) from max * 10000 / 63 and clamped to 1..255,
-   which goes in w; x, y, z become v / (n / 10000) + 127. */
-void pack_vector_xyz_with_shared_scale(float *v, int *out) {
-    float buf[4];
-    float a = FastAbsF(v[0]);
-    float b = FastAbsF(v[1]);
-    float c = FastAbsF(v[2]);
-    float m;
-    int n;
-    float s;
+/* Pack xyz into bytes around 127; w holds their shared scale. */
+void pack_vector_xyz_with_shared_scale(float *vector, int *packed_value) {
+    float components[4];
+    float abs_x = FastAbsF(vector[0]);
+    float max_xy = FastAbsF(vector[1]);
+    float abs_z = FastAbsF(vector[2]);
+    float max_component;
+    int packed_scale;
+    float inverse_scale;
 
-    if (b < a) {
-        b = a;
+    if (max_xy < abs_x) {
+        max_xy = abs_x;
     }
-    m = (c < b) ? b : c;
-    n = truncate_float_to_s32_r(m * 10000.0f / 63.0f);
-    n = (n < 0x100) ? n : 0xFF;
-    if (n <= 0) {
-        n = 1;
+    max_component = (abs_z < max_xy) ? max_xy : abs_z;
+    packed_scale = truncate_float_to_s32_r(max_component * 10000.0f / 63.0f);
+    packed_scale = (packed_scale < 0x100) ? packed_scale : 0xFF;
+    if (packed_scale <= 0) {
+        packed_scale = 1;
     }
-    buf[3] = (float)n;
-    s = 1.0f / (buf[3] * 0.0001f);
-    buf[0] = v[0] * s + 127.0f;
-    buf[1] = v[1] * s + 127.0f;
-    buf[2] = v[2] * s + 127.0f;
-    *out = FastVectorToPackedChars(buf);
+    components[3] = (float)packed_scale;
+    inverse_scale = 1.0f / (components[3] * 0.0001f);
+    components[0] = vector[0] * inverse_scale + 127.0f;
+    components[1] = vector[1] * inverse_scale + 127.0f;
+    components[2] = vector[2] * inverse_scale + 127.0f;
+    *packed_value = FastVectorToPackedChars(components);
 }
 
 typedef float FVec4[4] __attribute__((aligned(16)));
