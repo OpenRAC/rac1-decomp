@@ -59,16 +59,19 @@ Reference material must satisfy [CONTRIBUTING.md](../CONTRIBUTING.md), Sources.
 
 ## Phase 1: establish the baseline
 
-1. Run the existing clean build and matching checks in a supported environment.
+1. For executable changes, run the existing clean build and matching checks in
+   a supported environment. For comments-only work, capture preprocessed source
+   before editing and compare it afterward; matching is not a prerequisite.
 2. Record the base commit, toolchain versions, pinned NTSC reference, and
    existing report classifications in the PR description or existing tooling.
 3. Distinguish byte-verified C from classified original assembly/remnants.
    The published 100% code figure includes both; it is not 100% reconstructed C.
 4. Treat initialized-data reconstruction as separate scope.
 
-Exit: reproducible executable and overlay checks, with no unexplained
-regression. A host that cannot launch 32-bit Wine cannot certify this gate.
-Do not change build fidelity rules to work around a host limitation.
+Exit: identical preprocessed source for comments-only batches, or reproducible
+executable and overlay checks for executable changes. A host that cannot launch
+32-bit Wine can still validate comments and documentation. Do not change build
+fidelity rules to work around a host limitation.
 
 ## Phase 2: inventory and choose a pilot
 
@@ -133,7 +136,26 @@ is available. No directory reorganization is scheduled.
 
 ## Validation and PR gates
 
-Run commands from the repository root in the supported build environment:
+Run commands from the repository root. For comments-only source edits, capture
+each affected file before editing and compare the same preprocessor invocation
+afterward. For example, using the available host preprocessor:
+
+~~~sh
+gcc -E -P -Iinclude src/game/loaders.c -o /tmp/loaders.before.i
+# Edit comments only.
+gcc -E -P -Iinclude src/game/loaders.c -o /tmp/loaders.after.i
+cmp /tmp/loaders.before.i /tmp/loaders.after.i
+python tools/names.py check
+git diff --check
+~~~
+
+Review the diff too: identical preprocessing does not check comment accuracy.
+This verifies unchanged preprocessed input for that invocation, not target
+binary matching. Documentation-only edits need whitespace and link checks.
+Neither kind of edit needs Wine or a container to proceed.
+
+For executable changes approved in a separate task, use the supported build
+environment and existing matching workflow:
 
 ~~~sh
 python tools/names.py check
@@ -154,7 +176,8 @@ Each implementation PR must:
 - Cover one coherent explanation batch.
 - Preserve every identifier, type, constant, expression, and declaration.
 - Preserve the verified code-completion baseline and existing classifications.
-- Include required generated report updates through the generator.
+- Include generated report updates through the generator when required by the
+  existing report checks; never hand-edit the report to claim verification.
 - Contain no unrelated formatting, code movement, or generated retail output.
 - Report actual validation results, and identify any checks not run.
 

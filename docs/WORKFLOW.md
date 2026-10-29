@@ -24,6 +24,19 @@ versions, then applies the same post-processing the build expects
 alone. The output was verified byte-identical, so every contributor diffs
 against the same thing.
 
+## Comments and documentation
+
+For readability work, preserve every existing identifier, source-file boundary,
+overlay placement, declaration, expression, and constant. Explain established
+behavior without replacing uncertain names or inventing original developer names.
+[READABILITY_PLAN.md](READABILITY_PLAN.md) describes the scope and sequence.
+
+For comments-only source edits, save preprocessed output before editing and
+compare it afterward with the same flags and include paths. Review the comments
+against the code and check whitespace. This does not require a matching build
+when compiler input is unchanged. It does not establish a new binary-match result.
+Executable changes still follow the full workflow below.
+
 ## 0. Before decompiling anything: is it even game code?
 
 **Check whether a real source exists first.** Libraries were not written
