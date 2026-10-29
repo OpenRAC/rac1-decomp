@@ -197,77 +197,77 @@ extern void ClearPadInput(); /* ClearPadInput(PAD &), defined below */
 extern void process_pad_input(void *, void *, int);
 
 /* UpdatePad(PAD &): latches a few per-frame fields, then asks
-   func_00124EE0 for the port's state. Not 1: the input is cleared and
+   func_00124EE0 for the port'current_profile_state state. Not 1: the input is cleared and
    the pad state machine reset. Otherwise state 0 reads two 4-byte info
    blocks (func_00124DF0 -> +0x180, with +0x1DC = 0x79 when the first word
    is 0xFFFFFFFF, and func_00125218 -> +0x184; more than 4 bytes counts
    as none) and moves to state 1, or 2 when the first block was too
    long; state 1 reads the buttons into func_002181F0 and counts +0x18C
    down; state 2 clears the input and sets +0x18C to 2. The two copy
-   loops per block are as retail has them (0..n, then n..3). */
-void poll_pad_device_state(void *arg0) {
-    PadState *p = arg0;
-    unsigned char buf[0x40];
-    int n, i, s;
+   loops per block are as retail has them (0..report_size, then report_size..3). */
+void poll_pad_device_state(void *pad_data) {
+    PadState *pad = pad_data;
+    unsigned char report[0x40];
+    int report_size, byte_index, current_profile_state;
 
-    p->held = 0;
-    p->prev_held = p->unk348;
-    p->prev_raw_held = p->raw_held;
-    p->raw_held = 0;
-    p->device_state = sce_pad2_get_state(p->socket);
-    if (p->device_state == 1) {
-        switch (s = p->profile_state) {
+    pad->held = 0;
+    pad->prev_held = pad->unk348;
+    pad->prev_raw_held = pad->raw_held;
+    pad->raw_held = 0;
+    pad->device_state = sce_pad2_get_state(pad->socket);
+    if (pad->device_state == 1) {
+        switch (current_profile_state = pad->profile_state) {
         case 0:
-            n = sce_pad2_get_button_profile(p->socket, buf);
-            if (*(unsigned int *)buf == 0xFFFFFFFF) {
-                p->unk1DC = 0x79;
+            report_size = sce_pad2_get_button_profile(pad->socket, report);
+            if (*(unsigned int *)report == 0xFFFFFFFF) {
+                pad->unk1DC = 0x79;
             } else {
-                p->unk1DC = 0;
+                pad->unk1DC = 0;
             }
-            if (n < 5) {
-                for (i = 0; i < n; i++) {
-                    p->profile[i] = buf[i];
+            if (report_size < 5) {
+                for (byte_index = 0; byte_index < report_size; byte_index++) {
+                    pad->profile[byte_index] = report[byte_index];
                 }
-                p->profile_state = 1;
+                pad->profile_state = 1;
             } else {
-                n = 0;
-                p->profile_state = 2;
+                report_size = 0;
+                pad->profile_state = 2;
             }
-            for (i = n; i < 4; i++) {
-                p->profile[i] = buf[i];
+            for (byte_index = report_size; byte_index < 4; byte_index++) {
+                pad->profile[byte_index] = report[byte_index];
             }
-            n = sce_vib_get_profile(p->socket, buf);
-            if (n < 5) {
-                for (i = 0; i < n; i++) {
-                    p->act[i] = buf[i];
+            report_size = sce_vib_get_profile(pad->socket, report);
+            if (report_size < 5) {
+                for (byte_index = 0; byte_index < report_size; byte_index++) {
+                    pad->act[byte_index] = report[byte_index];
                 }
             } else {
-                n = 0;
+                report_size = 0;
             }
-            for (i = n; i < 4; i++) {
-                p->act[i] = buf[i];
+            for (byte_index = report_size; byte_index < 4; byte_index++) {
+                pad->act[byte_index] = report[byte_index];
             }
-            ClearPadInput(p);
-            p->unk18C = 2;
+            ClearPadInput(pad);
+            pad->unk18C = 2;
             break;
         case 1:
-            n = scePad2Read(p->socket, buf);
-            process_pad_input(p, buf, n);
-            if (p->unk18C != 0) {
-                p->unk18C--;
+            report_size = scePad2Read(pad->socket, report);
+            process_pad_input(pad, report, report_size);
+            if (pad->unk18C != 0) {
+                pad->unk18C--;
             }
             break;
         case 2:
-            ClearPadInput(p);
-            p->unk18C = s;
+            ClearPadInput(pad);
+            pad->unk18C = current_profile_state;
             break;
         }
     } else {
-        ClearPadInput(p);
-        p->profile_state = 0;
+        ClearPadInput(pad);
+        pad->profile_state = 0;
     }
-    p->unk188 = 0;
-    p->unk189 = 0;
+    pad->unk188 = 0;
+    pad->unk189 = 0;
 }
 
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */

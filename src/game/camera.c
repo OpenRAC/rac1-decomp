@@ -427,46 +427,46 @@ void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1,
     char perp[16];
     char unit[16];
     char rotated[16];
-    float d1, d2, d3, d4, d5;
+    float axis_component, forward_dot, side_dot, rotated_forward_dot, vertical_dot;
     float lenPerp, lenDiff;
     float angle1, angle2;
-    float a0, a1;
+    float yaw, pitch;
 
     FastVecSub(diff, p0, p1);
-    d1 = FastVecDot(diff, axis);
-    fast_vec_normalize(proj, axis, d1);
+    axis_component = FastVecDot(diff, axis);
+    fast_vec_normalize(proj, axis, axis_component);
     FastVecSub(perp, diff, proj);
 
-    d2 = FastVecDot(dir0, perp);
+    forward_dot = FastVecDot(dir0, perp);
     lenPerp = FastVecLength(perp);
     if (lenPerp == 0.0f) {
         lenPerp = 0.0001f;
     }
-    angle1 = FastArcSin(d2 / lenPerp);
-    a0 = 1.57079637f - angle1;
+    angle1 = FastArcSin(forward_dot / lenPerp);
+    yaw = 1.57079637f - angle1;
 
     fast_vec_normalize(unit, perp, 1.0f);
-    d3 = FastVecDot(dir1, unit);
-    if (d3 < 0.0f) {
-        a0 = -a0;
+    side_dot = FastVecDot(dir1, unit);
+    if (side_dot < 0.0f) {
+        yaw = -yaw;
     }
-    out[0] = a0;
+    out[0] = yaw;
 
-    build_look_at_matrix(rotated, dir0, axis, a0);
-    d4 = FastVecDot(rotated, diff);
+    build_look_at_matrix(rotated, dir0, axis, yaw);
+    rotated_forward_dot = FastVecDot(rotated, diff);
     lenDiff = FastVecLength(diff);
     if (lenDiff == 0.0f) {
         lenDiff = 0.0001f;
     }
-    angle2 = FastArcSin(d4 / lenDiff);
-    a1 = -(1.57079637f - angle2);
+    angle2 = FastArcSin(rotated_forward_dot / lenDiff);
+    pitch = -(1.57079637f - angle2);
 
     fast_vec_normalize(unit, diff, 1.0f);
-    d5 = FastVecDot(axis, unit);
-    if (d5 < 0.0f) {
-        a1 = 1.57079637f - angle2;
+    vertical_dot = FastVecDot(axis, unit);
+    if (vertical_dot < 0.0f) {
+        pitch = 1.57079637f - angle2;
     }
-    out[1] = a1;
+    out[1] = pitch;
 
     out[2] = FastVecLength(diff);
 }

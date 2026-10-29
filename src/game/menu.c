@@ -131,14 +131,14 @@ extern unsigned char menu_item_enabled_2 NOT_SDA;
 /* `if (x) return 1;` in both arms with one shared `return 0;` keeps the
    flag test a beqz with the li in its slot; a result variable or a
    return 0 per arm becomes sltu. */
-int map_filter_l01_4(int arg0, float unused1, float unused2, float arg1) {
+int map_filter_l01_4(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
     int is16 = hero_control_mode_early == 0x10;
 
-    if (arg0 < 0x100) {
+    if (reveal_test_selector < 0x100) {
         if (menu_item_enabled_2 != 0) {
             return 1;
         }
-    } else if (arg1 >= 58.0f && arg1 <= 86.0f && !is16) {
+    } else if (reveal_test_value >= 58.0f && reveal_test_value <= 86.0f && !is16) {
         return 1;
     }
     return 0;
@@ -261,65 +261,59 @@ extern int map_region_enabled_0 NOT_SDA;
 
 /* Menu hit test (func_00207200's family: `a` is the Menu13F450 state test
    shared with func_00207340/func_00207930). Two independent ways to hit:
-   the first box with arg1 >= 0x135 and D_001A04A8 set and arg3 >= 47.7,
+   the first box with projected_y >= 0x135 and D_001A04A8 set and reveal_test_value >= 47.7,
    which can succeed even when `a` is true; or, only when `a` is true,
    all three of a second group of boxes hit. */
-int map_filter_l07_1(int arg0, int arg1, float unused1, float unused2,
-                   float arg3) {
+int map_filter_l07_1(int projected_x, int projected_y, float unused1, float unused2,
+                   float reveal_test_value) {
     Menu13F450 *s = &g_hero;
     int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
 
-    if (point_is_clockwise(arg0, arg1, 0x93, 0x168, 0x182, 0x168) != 0
-        && arg1 >= 0x135 && map_region_enabled_0 != 0 && arg3 >= 47.7f) {
+    if (point_is_clockwise(projected_x, projected_y, 0x93, 0x168, 0x182, 0x168) != 0
+        && projected_y >= 0x135 && map_region_enabled_0 != 0 && reveal_test_value >= 47.7f) {
         return 1;
     }
     if (!a) {
         return 0;
     }
-    if (point_is_clockwise(arg0, arg1, 0xC5, 0x9A, 0x13C, 0xE1) != 0
-        && point_is_clockwise(arg0, arg1, 0xD6, 0xC3, 0x157, 0xC5) != 0
-        && point_is_clockwise(arg0, arg1, 0x107, 0xDA, 0x171, 0xA0) != 0) {
+    if (point_is_clockwise(projected_x, projected_y, 0xC5, 0x9A, 0x13C, 0xE1) != 0
+        && point_is_clockwise(projected_x, projected_y, 0xD6, 0xC3, 0x157, 0xC5) != 0
+        && point_is_clockwise(projected_x, projected_y, 0x107, 0xDA, 0x171, 0xA0) != 0) {
         return 1;
     }
     return 0;
 }
 
-/* Menu hit test. Left of x 0xE9 (arg1 < 0xE9) the point must be inside
-   all four func_00209048 boxes. Otherwise it needs a hit in each of
-   three pairs of boxes, where both boxes of a pair are always tested.
-   Each pair's results are locals of their own block: the first one then
-   lives in one basic block across the second call, so local-alloc gives
-   it $s0 before the arguments are allocated, as retail has it. The two
-   compound conditions (`&&` chain, `!a && !b`) keep the return values
-   as branches instead of an sltu. */
-int map_filter_l07_2(int arg0, int arg1) {
-    if (arg1 < 0xE9) {
-        if (point_is_clockwise(arg0, arg1, 0x132, 0xA0, 0x15F, 0xD8)
-            && point_is_clockwise(arg0, arg1, 0x14D, 0xD8, 0x181, 0x9A)
-            && point_is_clockwise(arg0, arg1, 0x182, 0xB4, 0x137, 0x93)
-            && point_is_clockwise(arg0, arg1, 0x157, 0x8C, 0x130, 0xAA)) {
+/* Test the point against four sides or three pairs of sides.
+   Keep each pair's two calls in separate locals. */
+int map_filter_l07_2(int projected_x, int projected_y) {
+    if (projected_y < 0xE9) {
+        if (point_is_clockwise(projected_x, projected_y, 0x132, 0xA0, 0x15F, 0xD8)
+            && point_is_clockwise(projected_x, projected_y, 0x14D, 0xD8, 0x181, 0x9A)
+            && point_is_clockwise(projected_x, projected_y, 0x182, 0xB4, 0x137, 0x93)
+            && point_is_clockwise(projected_x, projected_y, 0x157, 0x8C, 0x130, 0xAA)) {
             return 1;
         }
         return 0;
     }
     {
-        int a = point_is_clockwise(arg0, arg1, 0x8F, 0x115, 0x148, 0x14B);
-        int b = point_is_clockwise(arg0, arg1, 0xE7, 0x108, 0x127, 0x164);
-        if (a == 0 && b == 0) {
+        int first_side_test = point_is_clockwise(projected_x, projected_y, 0x8F, 0x115, 0x148, 0x14B);
+        int second_side_test = point_is_clockwise(projected_x, projected_y, 0xE7, 0x108, 0x127, 0x164);
+        if (first_side_test == 0 && second_side_test == 0) {
             return 0;
         }
     }
     {
-        int a = point_is_clockwise(arg0, arg1, 0xED, 0x15F, 0x154, 0x10E);
-        int b = point_is_clockwise(arg0, arg1, 0xA2, 0x12B, 0x16F, 0x147);
-        if (a == 0 && b == 0) {
+        int first_side_test = point_is_clockwise(projected_x, projected_y, 0xED, 0x15F, 0x154, 0x10E);
+        int second_side_test = point_is_clockwise(projected_x, projected_y, 0xA2, 0x12B, 0x16F, 0x147);
+        if (first_side_test == 0 && second_side_test == 0) {
             return 0;
         }
     }
     {
-        int a = point_is_clockwise(arg0, arg1, 0x132, 0x163, 0x141, 0xCC);
-        int b = point_is_clockwise(arg0, arg1, 0xC2, 0x108, 0x1A0, 0x12E);
-        if (!a && !b) {
+        int first_side_test = point_is_clockwise(projected_x, projected_y, 0x132, 0x163, 0x141, 0xCC);
+        int second_side_test = point_is_clockwise(projected_x, projected_y, 0xC2, 0x108, 0x1A0, 0x12E);
+        if (!first_side_test && !second_side_test) {
             return 0;
         }
         return 1;
@@ -380,18 +374,18 @@ int map_filter_l07_4(int x1, int y1) {
 extern int map_region_enabled_6 NOT_SDA;
 extern int map_region_enabled_4 NOT_SDA;
 
-/* Hit test in two layouts: arg3 (the third float, $f14) must lie in
-   [73.5, 80] with D_001A04C0 set, or for arg1 >= 0x9D in [51.5, 54] with
+/* Hit test in two layouts: reveal_test_value (the third float, $f14) must lie in
+   [73.5, 80] with D_001A04C0 set, or for reveal_test_selector >= 0x9D in [51.5, 54] with
    D_001A04B8 set. Written as `<`/`>` rejections so they compile to retail's
    c.lt/bc1t; the second arm's `return 0` cross-jumps into the first's. */
-int map_filter_l07_5(void *arg0, int arg1, float unused1, float unused2, float arg3) {
-    if (arg1 < 0x9D) {
-        if (arg3 < 73.5f || arg3 > 80.0f || map_region_enabled_6 == 0) {
+int map_filter_l07_5(void *unused_input, int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+    if (reveal_test_selector < 0x9D) {
+        if (reveal_test_value < 73.5f || reveal_test_value > 80.0f || map_region_enabled_6 == 0) {
             return 0;
         }
         return 1;
     } else {
-        if (arg3 < 51.5f || arg3 > 54.0f || map_region_enabled_4 == 0) {
+        if (reveal_test_value < 51.5f || reveal_test_value > 54.0f || map_region_enabled_4 == 0) {
             return 0;
         }
         return 1;
@@ -405,7 +399,7 @@ extern int point_is_clockwise(int, int, int, int, int, int);
    D_001A04AC set and arg3 >= 47.7; otherwise returns `a` directly when
    arg1 < 0xC1, else `a` unless func_00209048's box test hits (which
    clears it to 0). */
-int map_filter_l07_6(int px, int py, float fparg0, float fparg1, float reveal_test_value) {
+int map_filter_l07_6(int px, int py, float unused1, float unused2, float reveal_test_value) {
     Hero *hero = (Hero *)&g_hero;
     int hit = hero->state.control_mode == 17 || hero->state.control_mode == 18 || hero->base_condition == 1;
     int result;
@@ -449,8 +443,8 @@ extern unsigned char menu_item_enabled_41 NOT_SDA;
 extern int hero_control_mode NOT_SDA;
 
 /* Map filter: above y 0x100 needs hero control mode 15, else menu item flag 41. */
-int map_filter_l08_0(int arg0, int arg1) {
-    if (arg1 >= 0x101) {
+int map_filter_l08_0(int unused_input, int projected_y) {
+    if (projected_y >= 0x101) {
         return hero_control_mode == 0xF;
     }
     return menu_item_enabled_41 != 0;
@@ -459,38 +453,38 @@ int map_filter_l08_0(int arg0, int arg1) {
 /* The two unused float parameters put the threshold's argument in
    $f14 (floats count consecutively from $f12). The nops after the mtc1
    and the compare are ps2eeas's (tools/ps2eeas_nops.py). */
-int map_filter_l08_1(int arg0, float unused1, float unused2, float arg1) {
-    if (arg0 < 0xE0) {
-        return (arg1 >= 47.75f) ? 1 : 0;
+int map_filter_l08_1(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+    if (reveal_test_selector < 0xE0) {
+        return (reveal_test_value >= 47.75f) ? 1 : 0;
     }
-    return (arg1 < 29.0f) ? 1 : 0;
+    return (reveal_test_value < 29.0f) ? 1 : 0;
 }
 
 /* `(a && b) ? 1 : 0` gives retail's bc1f then bc1tl; the other arm is
    a plain `? 1 : 0`. */
-int map_filter_l08_2(int arg0, float unused1, float unused2, float arg1) {
-    if (arg0 < 0xE0) {
-        return (arg1 >= 44.0f && arg1 <= 45.0f) ? 1 : 0;
+int map_filter_l08_2(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+    if (reveal_test_selector < 0xE0) {
+        return (reveal_test_value >= 44.0f && reveal_test_value <= 45.0f) ? 1 : 0;
     }
-    return (arg1 >= 37.0f) ? 1 : 0;
+    return (reveal_test_value >= 37.0f) ? 1 : 0;
 }
 
 /* func_00207D38's twin. */
-int map_filter_l08_3(int arg0, float unused1, float unused2, float arg1) {
-    if (arg0 < 0xE0) {
-        return (arg1 >= 42.0f && arg1 <= 43.0f) ? 1 : 0;
+int map_filter_l08_3(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+    if (reveal_test_selector < 0xE0) {
+        return (reveal_test_value >= 42.0f && reveal_test_value <= 43.0f) ? 1 : 0;
     }
-    return (arg1 >= 39.0f) ? 1 : 0;
+    return (reveal_test_value >= 39.0f) ? 1 : 0;
 }
 
 /* Returning the compare as `? 1 : 0` gives bc1t with the `li 1` in its
    slot; folded into `&&` it becomes bc1tl. The two nops, after the mtc1
    and after the compare, are ps2eeas's (tools/ps2eeas_nops.py). */
-int map_filter_l08_4(int arg0, float unused1, float unused2, float arg1) {
-    if (arg0 >= 0xE0) {
+int map_filter_l08_4(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+    if (reveal_test_selector >= 0xE0) {
         return 0;
     }
-    return (arg1 <= 38.0f) ? 1 : 0;
+    return (reveal_test_value <= 38.0f) ? 1 : 0;
 }
 
 extern unsigned char menu_item_enabled_36 NOT_SDA;
@@ -535,9 +529,9 @@ extern unsigned char menu_item_enabled_68;
 extern unsigned char menu_item_enabled_68_far __asm__("D_0013D4E0") NOT_SDA;
 /* The recorded C was right; the two ps2eeas nops were the only
    residual. */
-int map_filter_l10_0(int arg0, float unused1, float unused2, float arg1) {
-    if (arg0 >= 0xBE) return menu_item_enabled_68_far != 0;
-    return (arg1 >= 58.5f) ? 1 : 0;
+int map_filter_l10_0(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+    if (reveal_test_selector >= 0xBE) return menu_item_enabled_68_far != 0;
+    return (reveal_test_value >= 58.5f) ? 1 : 0;
 }
 
 extern unsigned char menu_item_enabled_64 NOT_SDA;
@@ -574,31 +568,31 @@ int map_filter_l10_5(void) {
 extern unsigned char menu_item_enabled_74 NOT_SDA;
 
 /* Map filter: height band 232-235 plus flag 74 below 0xDD, else height at most 180. */
-int map_filter_l11_0(int arg0, float unused1, float unused2, float arg1) {
-    if (arg0 < 0xDD) {
-        return arg1 >= 232.0f && arg1 <= 235.0f && menu_item_enabled_74 != 0;
+int map_filter_l11_0(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+    if (reveal_test_selector < 0xDD) {
+        return reveal_test_value >= 232.0f && reveal_test_value <= 235.0f && menu_item_enabled_74 != 0;
     }
-    return (arg1 <= 180.0f) ? 1 : 0;
+    return (reveal_test_value <= 180.0f) ? 1 : 0;
 }
 
 extern unsigned char menu_item_enabled_75 NOT_SDA;
 
 /* Map filter: height at least 242 below 0xDD, else height at most 180 plus flag 75. */
-int map_filter_l11_1(int arg0, float unused1, float unused2, float arg1) {
-    if (arg0 < 0xDD) {
-        return (arg1 >= 242.0f) ? 1 : 0;
+int map_filter_l11_1(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+    if (reveal_test_selector < 0xDD) {
+        return (reveal_test_value >= 242.0f) ? 1 : 0;
     }
-    return arg1 <= 180.0f && menu_item_enabled_75 != 0;
+    return reveal_test_value <= 180.0f && menu_item_enabled_75 != 0;
 }
 
 extern unsigned char menu_item_enabled_76 NOT_SDA;
 
 /* Map filter: height band 238-241 below 0xDD, else height at most 180 plus flag 76. */
-int map_filter_l11_2(int arg0, float unused1, float unused2, float arg1) {
-    if (arg0 < 0xDD) {
-        return (arg1 >= 238.0f && arg1 <= 241.0f) ? 1 : 0;
+int map_filter_l11_2(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+    if (reveal_test_selector < 0xDD) {
+        return (reveal_test_value >= 238.0f && reveal_test_value <= 241.0f) ? 1 : 0;
     }
-    return arg1 <= 180.0f && menu_item_enabled_76 != 0;
+    return reveal_test_value <= 180.0f && menu_item_enabled_76 != 0;
 }
 
 extern unsigned char menu_item_enabled_78 NOT_SDA;
@@ -619,11 +613,11 @@ int map_filter_l11_3(int reveal_test_selector, float unused1, float unused2, flo
 extern unsigned char menu_item_enabled_79 NOT_SDA;
 
 /* Map filter: height band 228-230 below 0x15F, else band 233-235 plus flag 79. */
-int map_filter_l11_4(int arg0, float unused1, float unused2, float arg1) {
-    if (arg0 < 0x15F) {
-        return (arg1 >= 228.0f && arg1 <= 230.0f) ? 1 : 0;
+int map_filter_l11_4(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+    if (reveal_test_selector < 0x15F) {
+        return (reveal_test_value >= 228.0f && reveal_test_value <= 230.0f) ? 1 : 0;
     }
-    return arg1 >= 233.0f && arg1 <= 235.0f && menu_item_enabled_79 != 0;
+    return reveal_test_value >= 233.0f && reveal_test_value <= 235.0f && menu_item_enabled_79 != 0;
 }
 
 extern unsigned char menu_item_enabled_77 NOT_SDA;
@@ -633,15 +627,12 @@ int map_filter_l11_5(void) {
     return menu_item_enabled_77 != 0;
 }
 
-/* arg0 is unused; the two unused float parameters put arg3 in $f14
-   (floats count consecutively from $f12, one register each; see
-   func_00207CE0). With `r` defaulting to 1, reorg turns the reset into
-   retail's bc1fl with `r = 0` in its delay slot. The nop after the mtc1
-   is ps2eeas's (tools/ps2eeas_nops.py). */
-int map_filter_l12_0(void *arg0, int arg1, float unused1, float unused2, float arg3) {
+/* Keep the two unused floats to pass reveal_test_value in $f14.
+   Start with 1 to preserve the matching branch. */
+int map_filter_l12_0(void *unused_input, int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
     int r = 1;
 
-    if (arg1 < 0x141 && !(63.5f <= arg3)) {
+    if (reveal_test_selector < 0x141 && !(63.5f <= reveal_test_value)) {
         r = 0;
     }
     return r;
