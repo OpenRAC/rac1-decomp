@@ -431,23 +431,23 @@ int scePrintf(const char *fmt, ...) {
     return ret;
 }
 
-void sif_cmd_set_sreg_handler(void *arg0, void *arg1) {
-    int idx = *(int *)((char *)arg0 + 0x10);
-    int val = *(int *)((char *)arg0 + 0x14);
-    int *arr = *(int **)((char *)arg1 + 0x1C);
-    arr[idx] = val;
+void sif_cmd_set_sreg_handler(void *command_packet, void *command_state) {
+    int register_index = *(int *)((char *)command_packet + 0x10);
+    int value = *(int *)((char *)command_packet + 0x14);
+    int *register_array = *(int **)((char *)command_state + 0x1C);
+    register_array[register_index] = value;
 }
 
-int sif_cmd_change_addr_handler(void *arg0, void *arg1) {
-    int v = *(int *)((char *)arg0 + 0x10);
-    *(int *)((char *)arg1 + 0x8) = v;
-    return v;
+int sif_cmd_change_addr_handler(void *command_packet, void *command_state) {
+    int new_address = *(int *)((char *)command_packet + 0x10);
+    *(int *)((char *)command_state + 0x8) = new_address;
+    return new_address;
 }
 
 extern int sif_sregs[];
 
-int sceSifGetSreg(int arg0) {
-    return sif_sregs[arg0];
+int sceSifGetSreg(int register_index) {
+    return sif_sregs[register_index];
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_0011A770);
@@ -554,29 +554,28 @@ void sceSifExitCmd(void) {
 extern int sif_cmd_data_sys_handlers NOT_SDA;
 extern int sif_cmd_data_usr_handlers NOT_SDA;
 
-/* Sets slot arg0's two words: D_00154F6C's for arg0 >= 0, D_00154F64's
-   below. In func_0011AA68's shape: reassigning arg0 to the table is what
-   puts the base in $a0, as in retail. */
-void sceSifAddCmdHandler(int arg0, int arg1, int arg2) {
-    int off = arg0 << 3;
-    if (arg0 < 0) {
-        arg0 = sif_cmd_data_sys_handlers;
+/* Installs a handler in the system or user command table.
+   command_id is reused for the selected table address. */
+void sceSifAddCmdHandler(int command_id, int handler_address, int handler_context) {
+    int off = command_id << 3;
+    if (command_id < 0) {
+        command_id = sif_cmd_data_sys_handlers;
     } else {
-        arg0 = sif_cmd_data_usr_handlers;
+        command_id = sif_cmd_data_usr_handlers;
     }
-    off += arg0;
-    *(int *)(off + 0) = arg1;
-    *(int *)(off + 4) = arg2;
+    off += command_id;
+    *(int *)(off + 0) = handler_address;
+    *(int *)(off + 4) = handler_context;
 }
 
-void sceSifRemoveCmdHandler(int arg0) {
-    int offset = arg0 << 3;
-    if (arg0 < 0) {
-        arg0 = sif_cmd_data_sys_handlers;
+void sceSifRemoveCmdHandler(int command_id) {
+    int offset = command_id << 3;
+    if (command_id < 0) {
+        command_id = sif_cmd_data_sys_handlers;
     } else {
-        arg0 = sif_cmd_data_usr_handlers;
+        command_id = sif_cmd_data_usr_handlers;
     }
-    offset += arg0;
+    offset += command_id;
     *(int *)offset = 0;
 }
 
@@ -638,23 +637,15 @@ s32 sif_send_cmd_common(u32 packet, s32 mode, SifCmd *cmd, s32 size, u32 src, u3
     return sce_sif_set_dma(tags, num);
 }
 
-/* sceSifSendCmd and isceSifSendCmd: forward to the common sender
-   func_0011AA90 with the mode (0, or 1 from interrupt context) injected
-   as its second argument. EABI passes the first eight integer args in
-   $4-$11, so this forwards seven of them.
+/* Sends the command and optional data through the common sender.
+   The interrupt entry point passes mode 1. */
 
-   Both return the sender's result (it sets $v0 on every path; the packet
-   id). That is what keeps 2.9-ee from turning the call into a bare tail
-   jump (SIZE 40/60 when void), and its schedule is then retail's: the
-   `addiu $sp,$sp,-0x10` fourth, after three argument moves, which
-   2.95.3 could not produce (11/60). */
-
-int sceSifSendCmd(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
-    return sif_send_cmd_common(arg0, 0, arg1, arg2, arg3, arg4, arg5);
+int sceSifSendCmd(int command_id, int packet_address, int packet_size, int source_address, int destination_address, int transfer_size) {
+    return sif_send_cmd_common(command_id, 0, packet_address, packet_size, source_address, destination_address, transfer_size);
 }
 
-int isceSifSendCmd(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5) {
-    return sif_send_cmd_common(arg0, 0x1, arg1, arg2, arg3, arg4, arg5);
+int isceSifSendCmd(int command_id, int packet_address, int packet_size, int source_address, int destination_address, int transfer_size) {
+    return sif_send_cmd_common(command_id, 0x1, packet_address, packet_size, source_address, destination_address, transfer_size);
 }
 
 ASM_FUNC("asm/handwritten/core_text", func_0011AC48);
@@ -749,62 +740,44 @@ void sceSifExitRpc(void) {
 extern int disable_interrupts(void);
 extern void enable_interrupts(void);
 
-/* Claim the first free 0x40-byte slot in the table {next_id, base,
-   count} at arg0, with interrupts held off across the search. A claimed
-   slot records its index and state in +0x10, points +0x14 at itself and
-   takes the next id; id 0 is skipped, so after handing out 1 the
-   counter jumps straight to 2. Returns the slot, or 0 if the table is
-   full.
-
-   Two shapes mattered. `i` must be assigned AFTER the func_0011D960
-   call: initialised in its declaration it is live across the call, so
-   it lands in a third callee-saved register and drags in a save/restore
-   pair, where retail keeps it in $v1.
-
-   And the id fan-in has to be written as an explicit if/ELSE with a
-   separate assignment in each arm. Retail rematerialises `addiu $v1,$0,1`
-   in the taken arm even though $v1 already holds that value, and no
-   form that computes the value once -- including writing the redundant
-   `id = 1;` after the store -- survives: the compiler folds it away and
-   the function comes out 4 bytes short. Giving the two arms their own
-   assignments to `id` keeps both definitions alive. */
-void *get_available_rpc_packet(void *arg0) {
-    char *a = (char *)arg0;
-    int n;
-    char *p;
-    int i;
-    int id;
-    int v;
+/* Claims the first free RPC packet and records its index and ID. Returns 0 when full. */
+void *get_available_rpc_packet(void *rpc_state) {
+    char *state_bytes = (char *)rpc_state;
+    int packet_count;
+    char *packet;
+    int packet_index;
+    int packet_id;
+    int next_packet_id;
 
     disable_interrupts();
-    n = *(int *)(a + 0x8);
-    i = 0;
-    p = *(char **)(a + 0x4);
-    while (i < n) {
-        if ((*(int *)(p + 0x10) & 1) == 0) {
-            *(int *)(p + 0x10) = (i << 16) | 5;
-            v = *(int *)a + 1;
-            *(int *)a = v;
-            if (v == 1) {
-                *(int *)a = v + 1;
-                id = 1;
+    packet_count = *(int *)(state_bytes + 0x8);
+    packet_index = 0;
+    packet = *(char **)(state_bytes + 0x4);
+    while (packet_index < packet_count) {
+        if ((*(int *)(packet + 0x10) & 1) == 0) {
+            *(int *)(packet + 0x10) = (packet_index << 16) | 5;
+            next_packet_id = *(int *)state_bytes + 1;
+            *(int *)state_bytes = next_packet_id;
+            if (next_packet_id == 1) {
+                *(int *)state_bytes = next_packet_id + 1;
+                packet_id = 1;
             } else {
-                id = v;
+                packet_id = next_packet_id;
             }
-            *(char **)(p + 0x14) = p;
-            *(int *)(p + 0x18) = id;
+            *(char **)(packet + 0x14) = packet;
+            *(int *)(packet + 0x18) = packet_id;
             enable_interrupts();
-            return p;
+            return packet;
         }
-        i++;
-        p += 0x40;
+        packet_index++;
+        packet += 0x40;
     }
     enable_interrupts();
     return 0;
 }
 
-void sif_rpc_free_packet(void *arg0) {
-    char *self = (char *)arg0;
+void sif_rpc_free_packet(void *packet) {
+    char *self = (char *)packet;
     unsigned int flags = *(unsigned int *)(self + 0x10);
     *(int *)(self + 0x18) = 0;
     *(unsigned int *)(self + 0x10) = flags & 0xFFFFFFFEu;
@@ -833,14 +806,13 @@ void sif_rpc_free_packet(void *arg0) {
    the new index: that is what gives retail's allocation (remainder in $v0,
    divisor in $v1) and its tail, `addiu` before `sll` and the `addu` in the
    jr delay slot. Storing first and indexing in the return is 20/48. */
-/* The slot address is computed into a local before next = i + 1 is
-   stored. */
-void *sif_rpc_get_fpacket(void *arg0) {
-    char *p = (char *)arg0;
-    int i = *(int *)(p + 0x24) % *(int *)(p + 0x18);
-    char *s = *(char **)(p + 0x14) + i * 0x40;
-    *(int *)(p + 0x24) = i + 1;
-    return s;
+/* Returns the next packet from the rotating RPC buffer. */
+void *sif_rpc_get_fpacket(void *rpc_state) {
+    char *state_bytes = (char *)rpc_state;
+    int packet_index = *(int *)(state_bytes + 0x24) % *(int *)(state_bytes + 0x18);
+    char *packet = *(char **)(state_bytes + 0x14) + packet_index * 0x40;
+    *(int *)(state_bytes + 0x24) = packet_index + 1;
+    return packet;
 }
 
 /*
@@ -921,8 +893,8 @@ void sif_rpc_request_rdata(void *rdata, void *data) {
     isceSifSendCmd(0x80000008, (int)rend, 0x40, r[8], r[9], r[10]);
 }
 
-void *sif_rpc_search_svdata(int key, void *arg1) {
-    void *outer = *(void **)((char *)arg1 + 0x28);
+void *sif_rpc_search_svdata(int key, void *rpc_state) {
+    void *outer = *(void **)((char *)rpc_state + 0x28);
     while (outer != 0) {
         void *inner = *(void **)((char *)outer + 8);
         while (inner != 0) {
@@ -999,52 +971,52 @@ extern void delete_semaphore(int);     /* DeleteSema */
 extern int wait_semaphore(int);      /* WaitSema */
 
 /* sceSifBindRpc. Adapted from Lombyte's project (GPL-3.0) for PAL. */
-int sceSifBindRpc(void *client, int arg1, int arg2) {
-    BindClient *arg0 = client;
+int sceSifBindRpc(void *client, int server_id, int mode) {
+    BindClient *client_data = client;
     int sema_param[6];
-    int temp_2_31;
-    BindPacket *temp_2_15;
+    int semaphore_id;
+    BindPacket *bind_packet;
 
-    arg0->unk10 = 0;
-    arg0->unk24 = 0;
-    temp_2_15 = (BindPacket *)get_available_rpc_packet(sif_rpc_data);
-    if (temp_2_15 == 0) {
+    client_data->unk10 = 0;
+    client_data->unk24 = 0;
+    bind_packet = (BindPacket *)get_available_rpc_packet(sif_rpc_data);
+    if (bind_packet == 0) {
         return -1;
     }
-    arg0->unk4 = temp_2_15->unk18;
-    arg0->unk0 = (int)temp_2_15;
-    temp_2_15->unk20 = arg1;
-    temp_2_15->unk14 = (int)temp_2_15;
-    temp_2_15->unk1C = (int)arg0;
-    if (arg2 & 1) {
+    client_data->unk4 = bind_packet->unk18;
+    client_data->unk0 = (int)bind_packet;
+    bind_packet->unk20 = server_id;
+    bind_packet->unk14 = (int)bind_packet;
+    bind_packet->unk1C = (int)client_data;
+    if (mode & 1) {
         goto block_7;
     }
     sema_param[1] = 1;
     sema_param[2] = 0;
-    temp_2_31 = create_semaphore(sema_param);
-    arg0->unk8 = temp_2_31;
-    if (temp_2_31 >= 0) {
+    semaphore_id = create_semaphore(sema_param);
+    client_data->unk8 = semaphore_id;
+    if (semaphore_id >= 0) {
         goto block_4;
     }
-    sif_rpc_free_packet(temp_2_15);
+    sif_rpc_free_packet(bind_packet);
     return -3;
 block_4:
-    if (sceSifSendCmd(0x80000009, (int)temp_2_15, 0x40, 0, 0, 0) != 0) {
+    if (sceSifSendCmd(0x80000009, (int)bind_packet, 0x40, 0, 0, 0) != 0) {
         goto block_6;
     }
-    sif_rpc_free_packet(temp_2_15);
-    delete_semaphore(arg0->unk8);
+    sif_rpc_free_packet(bind_packet);
+    delete_semaphore(client_data->unk8);
     return -2;
 block_6:
-    wait_semaphore(arg0->unk8);
-    delete_semaphore(arg0->unk8);
+    wait_semaphore(client_data->unk8);
+    delete_semaphore(client_data->unk8);
     return 0;
 block_7:
-    arg0->unk8 = -1;
-    if (sceSifSendCmd(0x80000009, (int)temp_2_15, 0x40, 0, 0, 0) != 0) {
+    client_data->unk8 = -1;
+    if (sceSifSendCmd(0x80000009, (int)bind_packet, 0x40, 0, 0, 0) != 0) {
         return 0;
     }
-    sif_rpc_free_packet(temp_2_15);
+    sif_rpc_free_packet(bind_packet);
     return -2;
 }
 
@@ -1231,13 +1203,13 @@ s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_numbe
    into, a separate `return 1`), and gcc leaves all three branch slots to
    the assembler, which fills them with nops as retail has them. The &&
    form returning 1 merges the exits; early returns give bnel. */
-/* One test for the three failure cases, then return 1. */
-int sce_sif_check_stat_rpc(void *arg0) {
-    char *p = (char *)arg0;
-    char *q = *(char **)p;
+/* Returns 1 while the client's packet is still active. */
+int sce_sif_check_stat_rpc(void *client_data) {
+    char *client_bytes = (char *)client_data;
+    char *pending_packet = *(char **)client_bytes;
 
-    if (q == 0 || *(int *)(p + 4) != *(int *)(q + 0x18) ||
-        !(*(int *)(q + 0x10) & 1)) {
+    if (pending_packet == 0 || *(int *)(client_bytes + 4) != *(int *)(pending_packet + 0x18) ||
+        !(*(int *)(pending_packet + 0x10) & 1)) {
         return 0;
     }
     return 1;
@@ -1302,19 +1274,16 @@ void *fs_new_iob(void) {
     return 0;
 }
 
-/* The out-of-range guard comes first and returns 0: 2.9-ee then branches
-   to the in-range block on the true side of the sltiu, as retail does
-   (bnez). The in-range-first if/else that matched under 2.95.3 is laid
-   out the other way round by 2.9-ee. */
-void *fs_get_iob(unsigned int arg0) {
+/* Returns a file I/O entry when its index is in range, with semaphore protection. */
+void *fs_get_iob(unsigned int iob_index) {
     void *ret;
     fs_iob_sema_make();
     wait_semaphore(fs_iob_sema);
-    if (arg0 >= 0x20) {
+    if (iob_index >= 0x20) {
         signal_semaphore(fs_iob_sema);
         return 0;
     }
-    ret = &fs_iob_table[arg0 * 0x10];
+    ret = &fs_iob_table[iob_index * 0x10];
     signal_semaphore(fs_iob_sema);
     return ret;
 }
@@ -2106,14 +2075,12 @@ int sce_sif_init_iop_heap(void) {
 extern int iop_heap_rpc_reply;
 extern int iop_heap_rpc_arg;
 
-/* Another func_0011B4C8 RPC (see func_001245F8), guarded on the handle
-   D_0012FDAC being valid. Both failure exits share the single `return 0`
-   that the early guard branches to. */
-int sce_sif_alloc_iop_heap(int arg0) {
+/* Allocates IOP memory through RPC. Returns 0 if unavailable or the call fails. */
+int sce_sif_alloc_iop_heap(int size) {
     if (iop_heap_bind_state < 0) {
         return 0;
     }
-    iop_heap_rpc_arg = arg0;
+    iop_heap_rpc_arg = size;
     if (sif_call_rpc(iop_heap_rpc_client, 1, 0, &iop_heap_rpc_arg, 4,
                       &iop_heap_rpc_reply, 4, 0, 0) >= 0) {
         return iop_heap_rpc_reply;
