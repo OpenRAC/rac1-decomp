@@ -341,7 +341,7 @@ void append_gif_transfer_packet(void) {
     }
 }
 
-/* PutDrawBufferSmall(void) */
+/* Queue the small draw buffer. The caller must open a packet first. */
 void PutDrawBufferSmall(void) {
     g_render_packet_cursor[0] = 0x30000009;
     g_render_packet_cursor[1] = ((int)active_fs_aa_buffer + 0xC0) & 0xFFFFFFF;
@@ -393,6 +393,7 @@ void setup_render_target(int a, int b, int c) {
     if (x <= 0) {
         x = 1;
     }
+    /* GS frame pages use 8 KB units; texture blocks use 256-byte units. */
     fs_aa_buffer_f.fbp = c >> 13;
     fs_aa_buffer_f.w = 1 << a;
     fs_aa_buffer_f.h = 1 << b;
@@ -531,6 +532,7 @@ void draw_framebuffer_rect(int x0, int y0, int x1, int y1, int w, int h, unsigne
     ay = (y0 << 4) + 0x8000;
     bx = (x1 << 4) + 0x8000;
     by = (y1 << 4) + 0x8000;
+    /* Half the width and height, in 1/16-pixel units. */
     hw = w << 3;
     hh = h << 3;
     g_render_packet_cursor[0] = 0x10000006;

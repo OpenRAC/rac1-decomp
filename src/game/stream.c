@@ -228,8 +228,7 @@ int start_audio_stream_read(int arg0, int arg1, int arg2) {
         raise_kernel_trap();
         return 0;
     }
-    /* Save destination, start sector, and sector count only after acceptance.
-       The return converts the count to bytes at 2048 bytes per sector. */
+    /* Save the accepted read. Return bytes, with 2048 bytes per sector. */
     *(int *)(d + 0x14) = arg0;
     *(short *)(d + 8) = 1;
     *(int *)(d + 0xC) = arg1;
@@ -328,9 +327,8 @@ short update_audio_stream_until_idle(int arg0) {
 
 extern int snd_StreamSafeCdGetError(void);
 
-/* Only callback value 1 updates the read state: clear it on completion,
-   then set it to 2 if the CD error query is nonzero. The blocking pumps
-   above wait for zero, so state 2 does not satisfy their exit condition. */
+/* Only value 1 ends the read. A CD error sets state 2.
+   The wait loops above stop only at state 0. */
 void finish_audio_stream_read(int callback_value) {
     struct MusicStreamState *state;
     if (callback_value == 1) {
