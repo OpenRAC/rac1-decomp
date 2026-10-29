@@ -670,17 +670,17 @@ void path_sample_at_distance(PointPath *path, s32 *seg_out, f32 *along, Vec4 *ou
 }
 extern void euler_to_matrix(void *, void *);
 extern void matrix_to_euler(void *, void *);
-/* Rotates the matrix at a+0x40 by the Euler angles (x, y, z). */
-void compose_target_euler_rotation(char *a, float x, float y, float z) {
+/* Adds an Euler rotation to the target. */
+void compose_target_euler_rotation(char *target_data, float x, float y, float z) {
     float in[3];
-    float t[16], u[16];
+    float offset_matrix[16], target_matrix[16];
     in[0] = x;
     in[1] = y;
     in[2] = z;
-    euler_to_matrix(t, in);
-    euler_to_matrix(u, a + 0x40);
-    sce_vu0_mul_matrix(u, u, t);
-    matrix_to_euler(u, a + 0x40);
+    euler_to_matrix(offset_matrix, in);
+    euler_to_matrix(target_matrix, target_data + 0x40);
+    sce_vu0_mul_matrix(target_matrix, target_matrix, offset_matrix);
+    matrix_to_euler(target_matrix, target_data + 0x40);
 }
 typedef int q_263680 __attribute__((mode(TI)));
 /* Ring of the last 8 position/rotation samples of a source moby, replayed into up to 4 trailing mobys. */
@@ -696,36 +696,36 @@ struct TransformHistory {
     int n;                            /* 0x138: trailing mobys in use */
     int active;                       /* 0x13C */
 };
-/* Starts a manipulator state in b if it is idle. */
-void initialize_moby_transform_history(int a, struct TransformHistory *b) {
-    if (b->active == 0) {
-        b->src = (struct Moby *)a;
-        b->active = 1;
-        b->count = 0;
-        b->n = 0;
-        b->head = 0;
+/* Starts recording transforms from the source moby when the history is idle. */
+void initialize_moby_transform_history(int source_moby_address, struct TransformHistory *history) {
+    if (history->active == 0) {
+        history->src = (struct Moby *)source_moby_address;
+        history->active = 1;
+        history->count = 0;
+        history->n = 0;
+        history->head = 0;
     }
 }
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 
 /* adds a spawned copy of an object to the owner's list (up to 4) */
-void create_moby_transform_history_entry(struct TransformHistory *o, int a, int b) {
-    if (o->n != 4) {
-        if (b < 9) {
-            Moby *m = CreateMoby_m(o->src->oclass);
+void create_moby_transform_history_entry(struct TransformHistory *history, int alpha, int sample_delay) {
+    if (history->n != 4) {
+        if (sample_delay < 9) {
+            Moby *m = CreateMoby_m(history->src->oclass);
             if (m != 0) {
-                m->draw_dist = o->src->draw_dist;
-                m->spawn_frame = o->src->spawn_frame;
+                m->draw_dist = history->src->draw_dist;
+                m->spawn_frame = history->src->spawn_frame;
                 m->visible = 1;
                 m->flags = 0x80A;
                 m->update_dist = 0;
                 m->collision = 0;
                 if (m->oclass == 0) m->unk72 = 0;
-                m->alpha = a;
-                o->delay[o->n] = b;
-                o->trail_alpha[o->n] = a;
-                o->trail[o->n] = m;
-                o->n = o->n + 1;
+                m->alpha = alpha;
+                history->delay[history->n] = sample_delay;
+                history->trail_alpha[history->n] = alpha;
+                history->trail[history->n] = m;
+                history->n = history->n + 1;
             }
         }
     }
@@ -736,72 +736,72 @@ extern void moby_build_matrix(void *);
 
 /* Pushes the source object's transforms into an 8-entry ring and replays them into the trailing objects, ending them when all faded.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_state_00261968.c, FUN_L00_00262608. */
-void update_moby_transform_history(struct TransformHistory *s, int dec) {
+void update_moby_transform_history(struct TransformHistory *history, int dec) {
     Moby *src;
-    Moby *o;
-    int h, i, k, done;
-    if (!s->active)
+    Moby *trail_moby;
+    int head_index, i, sample_index, done;
+    if (!history->active)
         return;
-    src = s->src;
+    src = history->src;
     if (!src || src->state == 0xFE || src->state == 0xFD) {
-        clear_moby_transform_history(s);
+        clear_moby_transform_history(history);
         return;
     }
-    h = s->head;
-    qcopy(&s->pos[h], &src->pos);
-    qcopy(&s->rot[h], &src->rot);
-    s->head = (h + 1) % 8;
-    if (++s->count > 8)
-        s->count = 8;
-    for (i = 0; i < s->n; i++) {
-        int t;
-        if (s->count >= (t = s->delay[i])) {
-            o = s->trail[i];
-            k = (s->head - t + 8) % 8;
-            o->seq = s->src->seq;
-            o->prev_seq = s->src->prev_seq;
-            o->frame = s->src->frame;
-            o->prev_frame = s->src->prev_frame;
-            o->anim_time = s->src->anim_time;
-            update_moby_animation_state_a(o);
-            qcopy(&o->pos, &s->pos[k]);
-            qcopy(&o->rot, &s->rot[k]);
-            moby_build_matrix(o);
+    head_index = history->head;
+    qcopy(&history->pos[head_index], &src->pos);
+    qcopy(&history->rot[head_index], &src->rot);
+    history->head = (head_index + 1) % 8;
+    if (++history->count > 8)
+        history->count = 8;
+    for (i = 0; i < history->n; i++) {
+        int sample_delay;
+        if (history->count >= (sample_delay = history->delay[i])) {
+            trail_moby = history->trail[i];
+            sample_index = (history->head - sample_delay + 8) % 8;
+            trail_moby->seq = history->src->seq;
+            trail_moby->prev_seq = history->src->prev_seq;
+            trail_moby->frame = history->src->frame;
+            trail_moby->prev_frame = history->src->prev_frame;
+            trail_moby->anim_time = history->src->anim_time;
+            update_moby_animation_state_a(trail_moby);
+            qcopy(&trail_moby->pos, &history->pos[sample_index]);
+            qcopy(&trail_moby->rot, &history->rot[sample_index]);
+            moby_build_matrix(trail_moby);
         }
     }
     if (dec) {
         done = 1;
-        for (i = 0; i < s->n; i++) {
-            Moby *q = s->trail[i];
-            if (q) {
-                int v = q->alpha;
-                int a = v;
-                if (dec < v)
-                    v = dec;
-                a -= v;
-                q->alpha = a;
-                if ((unsigned char)a)
+        for (i = 0; i < history->n; i++) {
+            Moby *fading_moby = history->trail[i];
+            if (fading_moby) {
+                int fade_amount = fading_moby->alpha;
+                int alpha = fade_amount;
+                if (dec < fade_amount)
+                    fade_amount = dec;
+                alpha -= fade_amount;
+                fading_moby->alpha = alpha;
+                if ((unsigned char)alpha)
                     done = 0;
             }
         }
         if (done)
-            clear_moby_transform_history(s);
+            clear_moby_transform_history(history);
     }
 }
 extern void DeleteMoby(int);
 
 /* Deletes every moby in the owner's list and marks it inactive. */
-void clear_moby_transform_history(struct TransformHistory *o) {
+void clear_moby_transform_history(struct TransformHistory *history) {
     int i;
-    if (o->active != 0) {
-        for (i = 0; i < o->n; i++) {
-            int *p = (int *)o->trail + i;
-            if (*p != 0) {
-                DeleteMoby(*p);
-                *p = 0;
+    if (history->active != 0) {
+        for (i = 0; i < history->n; i++) {
+            int *trail_slot = (int *)history->trail + i;
+            if (*trail_slot != 0) {
+                DeleteMoby(*trail_slot);
+                *trail_slot = 0;
             }
         }
-        o->active = 0;
+        history->active = 0;
     }
 }
 LINKER_REMNANT("asm/overlays", func_L00_00263938);
@@ -833,75 +833,75 @@ struct ManipState {
 
 /* Eases a moby's per-axis offsets toward zero and applies them and its scale to the held object, resetting when settled.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_state_00261968.c, FUN_L00_002628d8. */
-void EaseManipulatorOffsets(int m, struct ManipState *p, int c, float fa, float fb) {
-    unsigned char *o = *(unsigned char **)&p->target;
-    float f;
-    if (!o) {
-        *(int *)&p->target = m;
-    } else if ((int)o != m) {
-        if (p->attached && o[0x20] < 0x7F)
-            DetachManipulator((int)o, p);
-        p->attached = 0;
-        *(int *)&p->target = m;
+void EaseManipulatorOffsets(int moby_address, struct ManipState *state, int slot_index, float spring_stiffness, float spring_damping) {
+    unsigned char *previous_target = *(unsigned char **)&state->target;
+    float scale_factor;
+    if (!previous_target) {
+        *(int *)&state->target = moby_address;
+    } else if ((int)previous_target != moby_address) {
+        if (state->attached && previous_target[0x20] < 0x7F)
+            DetachManipulator((int)previous_target, state);
+        state->attached = 0;
+        *(int *)&state->target = moby_address;
     }
-    if (p->goal[0] == 0.0f && p->goal[1] == 0.0f && p->goal[2] == 0.0f
-        && p->goal_scale == 1.0f
-        && FastAbsF(p->euler[0]) < 0.005f
-        && FastAbsF(p->euler[1]) < 0.005f
-        && FastAbsF(p->euler[2]) < 0.005f) {
-        if (p->attached)
-            DetachManipulator(m, p);
+    if (state->goal[0] == 0.0f && state->goal[1] == 0.0f && state->goal[2] == 0.0f
+        && state->goal_scale == 1.0f
+        && FastAbsF(state->euler[0]) < 0.005f
+        && FastAbsF(state->euler[1]) < 0.005f
+        && FastAbsF(state->euler[2]) < 0.005f) {
+        if (state->attached)
+            DetachManipulator(moby_address, state);
         return;
     }
-    SpringAngle((char *)p->euler, (char *)p->euler_vel, p->goal[0], fa, fb, 0.0f, 0);
-    SpringAngle((char *)&p->euler[1], (char *)&p->euler_vel[1], p->goal[1], fa, fb, 0.0f, 0);
-    SpringAngle((char *)&p->euler[2], (char *)&p->euler_vel[2], p->goal[2], fa, fb, 0.0f, 0);
-    if (!p->attached)
-        AttachManipulator(m, c, p);
-    build_quaternion_from_axis_rotations(p->quat, &p->euler[0]);
-    f = p->goal_scale;
-    p->scale[0] = f;
-    p->scale[1] = f;
-    p->scale[2] = f;
-    clear_u64_value(p->goal);
-    p->goal_scale = 1.0f;
+    SpringAngle((char *)state->euler, (char *)state->euler_vel, state->goal[0], spring_stiffness, spring_damping, 0.0f, 0);
+    SpringAngle((char *)&state->euler[1], (char *)&state->euler_vel[1], state->goal[1], spring_stiffness, spring_damping, 0.0f, 0);
+    SpringAngle((char *)&state->euler[2], (char *)&state->euler_vel[2], state->goal[2], spring_stiffness, spring_damping, 0.0f, 0);
+    if (!state->attached)
+        AttachManipulator(moby_address, slot_index, state);
+    build_quaternion_from_axis_rotations(state->quat, &state->euler[0]);
+    scale_factor = state->goal_scale;
+    state->scale[0] = scale_factor;
+    state->scale[1] = scale_factor;
+    state->scale[2] = scale_factor;
+    clear_u64_value(state->goal);
+    state->goal_scale = 1.0f;
 }
 extern float FastAddRots(float, float);
-/* Bobs a's Z with a sine of phase *p, advancing the phase by y. */
-void update_moby_vertical_oscillation(float x, float y, Moby *a, float *p, float *q) {
+/* Applies the sine offset and removes the previous frame's offset. */
+void update_moby_vertical_oscillation(float x, float y, Moby *moby, float *phase, float *previous_offset) {
     float t;
-    *p = FastAddRots(*p, y);
-    a->pos.z -= *q;
-    t = FastSin(*p) * x;
-    *q = t;
-    a->pos.z += t;
+    *phase = FastAddRots(*phase, y);
+    moby->pos.z -= *previous_offset;
+    t = FastSin(*phase) * x;
+    *previous_offset = t;
+    moby->pos.z += t;
 }
 
-/* Writes a Lissajous-style offset to o[0x10] and o[0x11] and advances the angles. */
-void update_moby_rotation_oscillation(float *o, float *a, float *b, float r, float l1, float l2) {
-    o[0x10] = r * FastSin(*a) * FastSin(*b);
-    o[0x11] = r * FastSin(*a) * FastCos(*b);
-    *a = FastAddRots(*a, l1);
-    *b = FastAddRots(*b, l2);
+/* Updates two moby rotation angles and advances their sine phases. */
+void update_moby_rotation_oscillation(float *moby_data, float *first_phase, float *second_phase, float r, float first_phase_step, float second_phase_step) {
+    moby_data[0x10] = r * FastSin(*first_phase) * FastSin(*second_phase);
+    moby_data[0x11] = r * FastSin(*first_phase) * FastCos(*second_phase);
+    *first_phase = FastAddRots(*first_phase, first_phase_step);
+    *second_phase = FastAddRots(*second_phase, second_phase_step);
 }
 extern void BuildSphericalOffset_x(void *, float, float, float) __asm__("func_00215C00");
-/* Set a to b plus the spherical offset built from r, y and z. */
-void fast_add_rotations_cf(void *a, void *b, float r, float y, float z) {
+/* Adds a spherical offset to the source position. */
+void fast_add_rotations_cf(void *out_position, void *source_position, float r, float y, float z) {
     typedef float W[4] __attribute__((aligned(16)));
-    W v;
-    BuildSphericalOffset_x(v, r, y, z);
-    FastVecAdd(a, v, b);
+    W offset;
+    BuildSphericalOffset_x(offset, r, y, z);
+    FastVecAdd(out_position, offset, source_position);
 }
 extern void ShowBanner(int arg0, int arg1);
 extern char planet_unlock_message_ids[];
 typedef struct { int v[19]; } Tbl;
 
-// Shows the banner message for planet index a (clamped to the table), copying the table locally.
-void queue_planet_unlock_message(int a) {
-    Tbl t = *(Tbl *)planet_unlock_message_ids;
-    if (a < 0) a = 0;
-    if (a > 18) a = 18;
-    ShowBanner(t.v[a], scale_ticks(0x49C));
+// Shows the unlock banner for a planet, clamping its index to the table.
+void queue_planet_unlock_message(int planet_index) {
+    Tbl message_table = *(Tbl *)planet_unlock_message_ids;
+    if (planet_index < 0) planet_index = 0;
+    if (planet_index > 18) planet_index = 18;
+    ShowBanner(message_table.v[planet_index], scale_ticks(0x49C));
 }
 LINKER_REMNANT("asm/overlays", func_L00_00264130);
 extern struct Hero g_hero;
@@ -1177,30 +1177,30 @@ void cutscene_set_camera_target(u8 *m) {
 }
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 
-/* Sets a moby's three float fields to x, running its setup call first when it has a flag byte; without the global flag only runs func_0020D9D8 on a flagged moby. */
-void Manipulator_ApplyScale(float x, int a, int b, struct ManipState *m) {
+/* Applies uniform scale while enabled; otherwise detaches the manipulator. */
+void Manipulator_ApplyScale(float x, int moby_address, int slot_index, struct ManipState *state) {
     if (draw_map51_m[3] != 0) {
-        if (m->attached == 0) {
-            AttachManipulator(a, b, m);
+        if (state->attached == 0) {
+            AttachManipulator(moby_address, slot_index, state);
         }
-        m->scale[0] = x;
-        m->scale[1] = x;
-        m->scale[2] = x;
-    } else if (m->attached != 0) {
-        DetachManipulator(a, m);
+        state->scale[0] = x;
+        state->scale[1] = x;
+        state->scale[2] = x;
+    } else if (state->attached != 0) {
+        DetachManipulator(moby_address, state);
     }
 }
-/* sets the float at p + 0x70 to x when the byte at 0x15EEB7 is set, else to 1. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/002630b8.c, FUN_L00_00263b38. */
-void manipulator_set_scale(struct ManipState *p, float x) {
+/* Sets the requested scale while enabled, otherwise resets it to 1. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/002630b8.c, FUN_L00_00263b38. */
+void manipulator_set_scale(struct ManipState *state, float x) {
     if (*(unsigned char *)0x15EEB7) {
-        p->goal_scale = x;
+        state->goal_scale = x;
         return;
     }
-    p->goal_scale = 1.0f;
+    state->goal_scale = 1.0f;
 }
 // Store 1.0 to offset 0x70
-void Manipulator_ResetScale(struct ManipState *arg) {
-    arg->goal_scale = 1.0f;
+void Manipulator_ResetScale(struct ManipState *state) {
+    state->goal_scale = 1.0f;
 }
 LINKER_REMNANT("asm/overlays", func_L00_00264BD8);
 typedef struct {
@@ -1260,21 +1260,21 @@ extern char banner_text_buffer[];
 extern int msg_string(int);
 extern void libc_strcpy(void *, int);
 
-/* Shows message arg0 in the on-screen text box for arg1 ticks. */
-void ShowBanner(int arg0, int arg1) {
-    if (arg1 == -1) {
-        arg1 = scale_ticks(0xB4);
+/* Shows the message for the requested time. A time of -1 uses the default. */
+void ShowBanner(int message_id, int display_ticks) {
+    if (display_ticks == -1) {
+        display_ticks = scale_ticks(0xB4);
     }
-    libc_strcpy(banner_text_buffer, msg_string(arg0));
-    banner_display_ticks = arg1;
+    libc_strcpy(banner_text_buffer, msg_string(message_id));
+    banner_display_ticks = display_ticks;
 }
 extern char banner_text_buffer[] NOT_SDA;
 extern void sprintf(void *, int, int);
-/* Like func_L00_00264DB8, but draws message a with parameter b. */
-void queue_formatted_dialogue_message(int a, int b, int c) {
-    if (c == -1) c = scale_ticks(0xB4);
-    sprintf(banner_text_buffer, msg_string(a), b);
-    banner_display_ticks = c;
+/* Formats a message and shows it for the requested time. */
+void queue_formatted_dialogue_message(int message_id, int format_value, int display_ticks) {
+    if (display_ticks == -1) display_ticks = scale_ticks(0xB4);
+    sprintf(banner_text_buffer, msg_string(message_id), format_value);
+    banner_display_ticks = display_ticks;
 }
 extern float veldin1_zero_vec[] MACRO_ADDR;
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11, float scale, float *v12);
