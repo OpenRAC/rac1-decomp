@@ -1193,12 +1193,8 @@ extern Cfg16 attachment_vertex_indices NOT_SDA;
 extern float FastVecLength(void *);
 extern void FastVecSub_b(void *, void *, void *) __asm__("func_001F9BF0");
 
-/* Run the four-vertex transform over the block hanging off arg0+0x78
-   with a fresh copy of the D_00160FD0 parameters (a plain struct
-   assignment: at alignment 1 this compiler expands the 16 bytes as
-   unaligned ldl/ldr + sdl/sdr pairs, which is retail's shape -- same
-   idiom as func_001FFE88), then record the two resulting lengths at
-   +0x40 and +0x44. */
+/* Transform four attachment vertices and store the two edge lengths.
+   Keep the index copy as a struct for the matching loads. */
 void update_instance_attachment_points_and_lengths(char *moby) {
     float first_edge[4];
     float second_edge[4];

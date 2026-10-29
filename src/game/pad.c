@@ -196,15 +196,8 @@ extern int scePad2Read(int, void *);
 extern void ClearPadInput(); /* ClearPadInput(PAD &), defined below */
 extern void process_pad_input(void *, void *, int);
 
-/* UpdatePad(PAD &): latches a few per-frame fields, then asks
-   func_00124EE0 for the port'current_profile_state state. Not 1: the input is cleared and
-   the pad state machine reset. Otherwise state 0 reads two 4-byte info
-   blocks (func_00124DF0 -> +0x180, with +0x1DC = 0x79 when the first word
-   is 0xFFFFFFFF, and func_00125218 -> +0x184; more than 4 bytes counts
-   as none) and moves to state 1, or 2 when the first block was too
-   long; state 1 reads the buttons into func_002181F0 and counts +0x18C
-   down; state 2 clears the input and sets +0x18C to 2. The two copy
-   loops per block are as retail has them (0..report_size, then report_size..3). */
+/* Poll the device state, load its profiles, and update input.
+   Clear input when the device is disconnected or its profile is invalid. */
 void poll_pad_device_state(void *pad_data) {
     PadState *pad = pad_data;
     unsigned char report[0x40];

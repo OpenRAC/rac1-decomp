@@ -534,9 +534,8 @@ extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 
-/* Scale the single vertex block at output_matrix+0x30 by the object'position_scale 0x2C field
-   in 1/1024 units, then run it through the two per-object transforms at
-   moby+0xC0 and moby+0x10. 0x3A800000 is exactly 2^-10. */
+/* Scale the joint translation by the moby's scale, then apply
+   its world transform. Decoded positions use 1/1024 units. */
 void MobyTransformScaledVertex(char *moby, int joint_index, char *output_matrix) {
     char rotation_matrix[0x40];
     int joint_index_copy;

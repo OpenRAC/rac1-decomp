@@ -714,7 +714,8 @@ extern void downsample_map_coverage(void *dst);
 extern int g_current_level_index MACRO_ADDR;
 
 /* Save map coverage to the output buffer.
-   Downsample if compression does not fit. */
+   Downsample if compression does not fit.
+   Adapted from Lombyte's project (GPL-3.0) for PAL. */
 void save_map_coverage(int output_address) {
     int compressed_size;
 
@@ -896,12 +897,8 @@ extern NibbleBits nibble_popcount_table;
 extern unsigned char *map_coverage_buffer;
 
 
-/* Condenses D_001A01FC's 0x200 rows of 64 bytes (two 4-bit samples
-   each) into a 1-bit image at arg0: every four rows the per-column
-   bit counts (D_001E83B0 is the nibble popcount table, copied onto the
-   stack) are summed, and a column with 8 or more set bits becomes a
-   set bit, packed eight columns to a byte. The first byte is then
-   flagged with 0x02 and bit 0 cleared. */
+/* Downsample map coverage to a one-bit image in output_data.
+   Keep columns with at least eight set samples per four-row group. */
 void downsample_map_coverage(void *output_data) {
     unsigned char *dst = output_data;
     int column_counts[128];

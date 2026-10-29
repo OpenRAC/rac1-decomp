@@ -2510,7 +2510,7 @@ void draw_fogged_fullscreen_sprite(char *overlay_data) {
 extern int *g_render_packet_cursor MACRO_ADDR;
 extern char first_clear_packet[];
 
-/* Appends a GIF packet that sets GS register 1 from the four bytes a, b, c, d. */
+/* Append a GIF packet with the supplied RGBA bytes. */
 void emit_rgba_draw_packet(int red, int green, int blue, int alpha) {
     VU1_addGSregister(1, (long)red | ((long)green << 8) | ((long)blue << 16) | ((long)alpha << 24));
     g_render_packet_cursor[0] = 0x30000014;
@@ -2838,8 +2838,7 @@ void append_rotated_sprite_quad(f32 center_x, f32 center_y, f32 quad_width, f32 
 
 LINKER_REMNANT("asm/remnants/text", func_001F62C0);
 
-/* Draws a bevelled frame: the box itself, then three shrinking bars
-   above and three below it, all in grey 0x040404 with alpha a. */
+/* Draw a grey beveled frame using the given alpha. */
 void DrawUIFrame(int x0, int x1, int y0, int y1, int alpha) {
     int col = (alpha << 24) | 0x40404;
 

@@ -321,7 +321,7 @@ extern float FastVecDist(int, void *);
    declaring it int would move its next temporary to $v1. */
 extern void calculate_voice_distance_volume_v(void *, float, float, float) __asm__("func_0022DA10");
 
-/* Set a voice'voice volume from its distance to the camera using its near/far range. */
+/* Compute volume from the voice's distance to the camera. */
 void calculate_voice_volume(void *voice_data, int position) {
     char *voice = (char *)voice_data;
     float distance = FastVecDist(position, camera_position);

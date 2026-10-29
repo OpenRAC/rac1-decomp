@@ -547,7 +547,7 @@ extern s32 compute_clamped_count_difference(void);
 
 void process_menu_entry(void *arg0, Menu *menu, s32 arg2);
 
-/* Handle menu cursor moves and build the help text for the selected entry (arg2: cursor moved). */
+/* Follow entry links when requested and build the selected help text. */
 void process_menu_entry(void *callback_context, Menu *menu, s32 follow_entry_link) {
     char buf[0x100];
     Suffixes sfx;
