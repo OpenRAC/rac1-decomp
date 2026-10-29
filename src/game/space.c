@@ -2235,12 +2235,16 @@ void initialize_level_runtime(void) {
     gs_texture_allocation_cursor = gs_texture_allocation_base;
     gs_texture_allocation_start = gs_texture_allocation_base;
     fill_transfer_words(D_00194180, 0x87654321, 0x10);
+    /* Clear the previous level's class lookup and material mappings before
+       registering the classes supplied by the newly loaded header. */
     fill_transfer_words(resident_class_slot_by_id_r, -1, 0x800);
     fill_transfer_words(resident_class_material_maps, -1, 0xE00);
     fill_transfer_words(D_001B6180, 0, 0xE0);
     init_view_context();
     update_view_context();
     vu1_init_chain();
+    /* Read into the buffer's +4 MB staging area, wait for disc completion,
+       then unpack into the buffer base before interpreting LevelHeader. */
     submit_audio_stream_io_request(D_001941C0_q.buffer + 0x400000, disc_table_r.unk13B8.sector,
                                    disc_table_r.unk13B8.size);
     fade_to_black(scale_game_frames(0xC));
@@ -2249,6 +2253,8 @@ void initialize_level_runtime(void) {
     archive_size = func_0020B618(D_001941C0_q.buffer + 0x400000, D_001941C0_q.buffer);
     FlushCache(0);
     header = (LevelHeader *)D_001941C0_q.buffer;
+    /* Header tables use offsets from header; payload references below use
+       data_base. Keep these two relocation bases distinct. */
     upload_texture_images((s32)header + header->tex, header->texCount,
                           (s32)header + header->texInfo);
     data_base = (s32)header + header->data_offset;
@@ -2294,6 +2300,8 @@ void initialize_level_runtime(void) {
                        texture_packet);
     texture_cursor = gs_texture_allocation_cursor + 0x2000;
     allocation_cursor = D_001941C0_q.buffer + archive_size;
+    /* Further EE allocations start after the unpacked archive. The GS texture
+       cursor above tracks a separate address space. */
     gs_texture_allocation_cursor = texture_cursor;
     D_001941C0_q.unk18 = (s32)allocation_cursor;
     gs_texture_allocation_start = texture_cursor;
