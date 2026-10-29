@@ -3,8 +3,11 @@
 ## Goal and scope
 
 Make the matching code easier to read and understand while preserving the
-original runtime architecture and PAL v2 output. This is a naming and
-explanation project, not a modernization or PC-port project.
+original runtime architecture, all existing decompiled names, and PAL v2 output.
+This is a comments and explanation project, not a modernization or PC-port
+project. Function, global, parameter, local, field, and type names stay as they
+are, including inferred and address-based names. Any rename requires explicit
+approval in a separate task.
 
 Work in small, independently reviewed batches. Keep functions in their
 current files and translation units. Preserve resident code, shared overlay
@@ -69,65 +72,53 @@ Do not change build fidelity rules to work around a host limitation.
 
 ## Phase 2: inventory and choose a pilot
 
-1. Use existing symbol tables and naming metadata to find unnamed, vague,
-   conflicting, or misleading identifiers.
+1. Use existing symbol tables and naming metadata to find behavior that needs
+   explanation. Keep every existing identifier unchanged.
 2. Group work by current files and gameplay relationships without moving code.
 3. Classify each target as resident, shared overlay, or level-specific.
-4. Record naming evidence and confidence using the existing naming tables.
-   Candidate names remain candidates until evidence supports adoption.
+4. Use existing naming evidence to understand symbols without applying aliases
+   or promoting candidates. Explain uncertainty instead of inventing meaning.
 5. Choose one small, understandable subsystem, roughly 10–20 related functions,
    with manageable dependencies.
 
 Exit: a bounded pilot and a ranked backlog using existing metadata, not a
 second symbol registry or a mass-renaming script.
 
-## Phase 3: function and global names
+## Phase 3: explain functions and globals
 
 1. Inspect callers, callees, accesses, and approved reference sources.
-2. Preserve recovered original names and follow pinned NTSC spelling where
-   the existing mapping establishes it.
-3. Add evidence-backed local proposals to config/names_local.tsv.
-4. Apply the existing alias pipeline from [NAMES.md](NAMES.md):
+2. Preserve recovered, inferred, descriptive, and address-based names alike.
+3. Add concise comments describing established purpose, side effects, units,
+   and lifetime where these are not clear from the existing code.
+4. Keep naming tables, aliases, prototypes, assembly labels, and the NTSC pin
+   unchanged. [NAMES.md](NAMES.md) remains the reference for existing names.
 
-   ~~~sh
-   python tools/names.py local
-   python tools/names.py header
-   python tools/names.py apply-defs
-   python tools/names.py apply
-   python tools/names.py check
-   ~~~
-
-5. Review macro collisions, prototypes, assembly labels, and tool lookups.
-   Readable C aliases must still resolve to the original address symbols.
-
-Exit: accepted names have evidence, lookup works in both directions, and
-the batch preserves exact output. Do not update the NTSC pin in the same batch.
+Exit: comments have evidence, identifiers remain unchanged, and the batch
+preserves compiler input after preprocessing.
 
 ## Phase 4: parameters, locals, and comments
 
-1. Name parameters from their use and caller evidence.
-2. Name locals by established role, units, coordinate space, or lifetime.
-3. Keep neutral names where meaning is uncertain; do not manufacture certainty.
+1. Explain unclear parameters from their use and caller evidence.
+2. Explain established units, coordinate spaces, or lifetimes of unclear locals.
+3. Preserve their names and leave uncertain meaning explicitly uncertain.
 4. Add short comments for non-obvious hardware behavior, overlay lifetimes,
    memory ownership, and loading stages.
 5. Keep expressions, declaration order, types, and control flow unchanged.
 
-Exit: a focused identifier/comment diff with no code-generation regression.
+Exit: a focused comments-only diff with no code-generation regression.
 Complete and review this pilot before expanding to other files.
 
-## Phase 5: proven fields and constants
+## Phase 5: explain fields and constants
 
-1. Recover fields from consistent offsets, allocation sizes, initialization,
-   reads, and writes. Keep unknown portions explicitly unknown.
-2. Verify widths, signedness, size, alignment, and offsets before changing types.
-3. Replace magic values only when their meanings and representations are known.
-4. Avoid declaration merging, type widening, enum representation changes,
-   expression simplification, and cosmetic rewrites that affect matching.
-5. Validate each affected function and translation unit before the full build.
+1. Explain proven offsets, allocation sizes, initialization, reads, and writes.
+   Keep unknown portions explicitly unknown.
+2. Document established widths, signedness, size, alignment, and offsets.
+3. Explain magic values only when their meanings are known; keep literals intact.
+4. Keep all declarations, types, field names, and expressions unchanged.
+5. Compare preprocessed source before and after each comments-only batch.
 
-Exit: evidence-backed field or constant names with unchanged data layout,
-section layout, and exact output. Defer any clearer representation that
-does not match.
+Exit: evidence-backed comments with unchanged identifiers, compiler input,
+data layout, section layout, and exact output.
 
 ## Phase 6: expand by existing subsystem
 
@@ -160,8 +151,8 @@ function match alone does not prove all of its level placements.
 
 Each implementation PR must:
 
-- Cover one coherent naming or explanation batch.
-- Keep naming changes separate from type/constant changes.
+- Cover one coherent explanation batch.
+- Preserve every identifier, type, constant, expression, and declaration.
 - Preserve the verified code-completion baseline and existing classifications.
 - Include required generated report updates through the generator.
 - Contain no unrelated formatting, code movement, or generated retail output.
@@ -174,8 +165,8 @@ WORKFLOW.md; a modified checker is not its own proof.
 
 ## Completion criteria
 
-- Accepted names are evidence-backed and consistent with NAMES.md.
-- Parameters, locals, fields, and comments explain established behavior.
+- All existing names remain unchanged, including decompiled and inferred names.
+- Comments explain established function, variable, field, and constant behavior.
 - Remaining uncertainty stays visible rather than receiving invented names.
 - Original runtime architecture, current source placement, and matching remain
   intact.
