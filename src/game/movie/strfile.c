@@ -27,20 +27,21 @@ int get_state_callback_result(StrFile *f) {
 extern void sce_cd_read(int, int, int, void *);
 extern void sce_cd_sync_s(int);
 
-/* Reads movie sectors and advances the cursor after a synchronous read. */
-int read_cd_stream_sectors(void *arg0, int arg1, int arg2, int arg3) {
+/* Start a movie-sector read. Wait and advance the cursor
+   for synchronous reads. */
+int read_cd_stream_sectors(void *stream_file, int destination_address, int byte_count, int asynchronous) {
     struct { unsigned char retries, speed, pattern, padding; } mode;
-    int r = 0;
-    int n = arg2 >> 11;
+    int bytes_read = 0;
+    int sector_count = byte_count >> 11;
 
     mode.retries = 0x64;
     mode.speed = 0;
     mode.pattern = 0;
-    sce_cd_read(*(int *)((char *)arg0 + 4), n, arg1, &mode);
-    if (arg3 == 0) {
-        *(int *)((char *)arg0 + 4) = *(int *)((char *)arg0 + 4) + n;
+    sce_cd_read(*(int *)((char *)stream_file + 4), sector_count, destination_address, &mode);
+    if (asynchronous == 0) {
+        *(int *)((char *)stream_file + 4) = *(int *)((char *)stream_file + 4) + sector_count;
         sce_cd_sync_s(0);
-        r = arg2;
+        bytes_read = byte_count;
     }
-    return r;
+    return bytes_read;
 }

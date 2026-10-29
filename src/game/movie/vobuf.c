@@ -29,9 +29,9 @@ void voBufCreate(VoBuf *vb, char *frames, char *entries, int capacity) {
 void voBufDelete(VoBuf *vb) {
 }
 /* voBufReset(VoBuf *) */
-void voBufReset(volatile int *arg0) {
-    arg0[3] = 0;
-    arg0[2] = 0;
+void voBufReset(volatile int *buffer_state) {
+    buffer_state[3] = 0;
+    buffer_state[2] = 0;
 }
 /* voBufIsFull(VoBuf *) */
 int voBufIsFull(VoBuf *vb) {

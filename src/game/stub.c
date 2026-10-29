@@ -7,7 +7,7 @@
  * sizes -- see docs/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-void STUB_printf(int arg0, ...) {
+void STUB_printf(int format_address, ...) {
 }
 
 void Profile_Mark(void) {
@@ -46,9 +46,8 @@ void noop_callback_j(void) {
 void noop_callback_k(void) {
 }
 
-/* Takes an argument (callers pass one, e.g. func_001EC210) and ignores
-   it -- the unused parameter costs no codegen, still 0/8. */
-int noop_callback_l(void *arg0) {
+/* Ignore the callback context and return zero. */
+int noop_callback_l(void *unused_context) {
     return 0;
 }
 

@@ -130,8 +130,8 @@ ASM_FUNC("asm/handwritten/text", func_001F9B50);
 
 ASM_FUNC("asm/handwritten/text", func_001F9B70);
 
-float FastAbsF(float arg0) {
-    return __builtin_fabsf(arg0);
+float FastAbsF(float value) {
+    return __builtin_fabsf(value);
 }
 
 /* The whole-file PS2DEV GCC 3.2.3 profile emits the R5900 scalar operation
@@ -281,8 +281,8 @@ ASM_FUNC("asm/handwritten/text", func_001FA7D8);
 
 ASM_FUNC("asm/handwritten/text", func_001FA850);
 
-float IntToFloat(int arg0) {
-    return (float)arg0;
+float IntToFloat(int value) {
+    return (float)value;
 }
 
 /*

@@ -439,12 +439,12 @@ void VU1_addDataRef(void *data, int qwc) {
 
 LINKER_REMNANT("asm/remnants/text", func_00234B98);
 
-/* Append a DMA packet that unpacks qwc quadwords from src to VU1 memory address arg0. */
-void write_vif_unpack_packet(int arg0, void *src, int qwc) {
+/* Append a DMA packet that unpacks qwc quadwords from src to VU1 memory address vu_address. */
+void write_vif_unpack_packet(int vu_address, void *src, int qwc) {
     g_render_packet_cursor[0] = qwc | 0x10000000;
     g_render_packet_cursor[1] = 0;
     g_render_packet_cursor[2] = 0x1000404;
-    g_render_packet_cursor[3] = arg0 | (qwc << 16) | 0x6C000000;
+    g_render_packet_cursor[3] = vu_address | (qwc << 16) | 0x6C000000;
     g_render_packet_cursor += 4;
     FastMemCopy(g_render_packet_cursor, src, qwc * 16);
     g_render_packet_cursor += qwc * 4;
@@ -452,24 +452,17 @@ void write_vif_unpack_packet(int arg0, void *src, int qwc) {
 
 LINKER_REMNANT("asm/remnants/text", func_00234C48);
 
-/* Append an empty DMA cnt tag carrying the VIF code arg0. */
-void vu1_add_vif_code(int arg0) {
+/* Append an empty DMA cnt tag carrying the VIF code vif_code. */
+void vu1_add_vif_code(int vif_code) {
     g_render_packet_cursor[0] = 0x10000000;
     g_render_packet_cursor[1] = 0;
     g_render_packet_cursor[2] = 0;
-    g_render_packet_cursor[3] = arg0;
+    g_render_packet_cursor[3] = vif_code;
     g_render_packet_cursor += 4;
 }
 
-/*
- * VU1_addGSregister(unsigned int, unsigned long). Real name per the
- * Lombyte's project NTSC project (github.com/mateuszklysz/Lombyte's project); their NTSC
- * build's version, VU1_addGSregister__FUiUlb, takes a third `bool` arg
- * and is 4 bytes larger (0xb4 vs this PAL build's 176 bytes) -- PAL
- * evidently dropped the bool, confirmed by every real call site in this
- * codebase using only 2 args.
- */
-void VU1_addGSregister(int arg0, long arg1) {
+/* Append one GS register write; PAL takes two arguments. */
+void VU1_addGSregister(int register_id, long value) {
     g_render_packet_cursor[0] = 0x10000002;
     g_render_packet_cursor[1] = 0;
     g_render_packet_cursor[2] = 0;
@@ -478,8 +471,8 @@ void VU1_addGSregister(int arg0, long arg1) {
     g_render_packet_cursor[5] = 0x10000000;
     g_render_packet_cursor[6] = 0xE;
     g_render_packet_cursor[7] = 0;
-    *(long *)((char *)g_render_packet_cursor + 0x20) = arg1;
-    g_render_packet_cursor[10] = arg0;
+    *(long *)((char *)g_render_packet_cursor + 0x20) = value;
+    g_render_packet_cursor[10] = register_id;
     g_render_packet_cursor[11] = 0;
     g_render_packet_cursor += 0xC;
 }
@@ -648,11 +641,11 @@ typedef struct {
 } Qword;
 extern Qword *g_render_packet_cursor_q __asm__("D_00161000") MACRO_ADDR;
 
-/* Append an interrupting DMA tag with qword count arg0 to the second packet list. */
-void append_dma_tag(int arg0) {
-    Qword *p = g_render_packet_cursor_q++;
-    p->w[0] = arg0 + 0x90000000;
-    p->w[1] = 0;
-    p->w[2] = 0;
-    p->w[3] = 0;
+/* Append an interrupting DMA tag with qword count qword_count to the second packet list. */
+void append_dma_tag(int qword_count) {
+    Qword *tag = g_render_packet_cursor_q++;
+    tag->w[0] = qword_count + 0x90000000;
+    tag->w[1] = 0;
+    tag->w[2] = 0;
+    tag->w[3] = 0;
 }
