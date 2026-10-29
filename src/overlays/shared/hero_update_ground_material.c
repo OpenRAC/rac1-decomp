@@ -12,33 +12,33 @@ extern char novalis_item_defs[];
 extern int hero_slot_item_id(int);
 
 /* Looks up the value of the current help record, or 0/0x54 in the special cases. */
-int get_hero_idle_animation_index(int a) {
+int get_hero_idle_animation_index(int item_lookup_enabled) {
     struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-    char *r;
-    int n;
+    char *item_record;
+    int item_id;
     if (g->vehicle_mode == 3) return 0;
     if (g->health.hp == 1) return 0x54;
-    if (a == 0) return 0;
+    if (item_lookup_enabled == 0) return 0;
     if (g->item_anim_active == 0) return 0;
     if (g->unk20AA == 0) return 0;
     if (g->unk22C8 != 0) return 0;
-    n = hero_slot_item_id(0);
-    r = novalis_item_defs - (-(n * 0x4C));
-    return *(int *)(r + 0x24);
+    item_id = hero_slot_item_id(0);
+    item_record = novalis_item_defs - (-(item_id * 0x4C));
+    return *(int *)(item_record + 0x24);
 }
 extern unsigned char hero_globals_base[];
 extern int request_grouped_voice(int a0, int a1, int a2, int a3, int a4);
 
 // Plays the hero footstep sound, flagging whether the hero's current moby has type 0xAD.
-void request_hero_voice_if_enabled(int a0, int a1, int a2) {
-    if (a2 != 0) {
+void request_hero_voice_if_enabled(int voice_group_index, int voice_pair_index, int call_enabled) {
+    if (call_enabled != 0) {
         struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         char *m = *(char **)&g->items[1].moby;
         int flag = 0;
         if (m != 0) {
             flag = *(short *)(m + 0xA6) == 0xAD;
         }
-        request_grouped_voice(a0, a1, flag, 0, *(int *)&g->moby);
+        request_grouped_voice(voice_group_index, voice_pair_index, flag, 0, *(int *)&g->moby);
     }
 }
 /* functional: medium. Help-menu frame update (state g[0x20A4] 3 = the panel): runs the update chain, picks a random-based colour from sin/cos of D_L01_0015F6B0 mod rand and applies it to the hero's tint (w+0x90), updates the 3 slots, the fade colour (g+0x22E4) and the sound/timer trigger (22DC/22DE). Float/clamp order hand-traced; not run. */

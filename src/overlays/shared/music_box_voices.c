@@ -157,22 +157,22 @@ extern int play_voice(int, int, int, int);
 extern void Sound_StopSlot(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_0030b618.c, FUN_L01_0031a078. */
-void update_listener_following_voice(int a0) {
-    char *p = *(char **)(a0 + 8);
-    int n = *(int *)(p + 4);
-    char *r;
+void update_listener_following_voice(int sound_owner) {
+    char *sound_vars = *(char **)(sound_owner + 8);
+    int slot_index = *(int *)(sound_vars + 4);
+    char *voice_slot;
     int flag;
-    qcopy(voice_positions + n * 0x70, camera_pos);
-    r = voice_positions - 0x90 + n * 0x70;
-    flag = *(int *)(r + 0x8C) == a0 && *(unsigned char *)(r + 0x74) != 0;
+    qcopy(voice_positions + slot_index * 0x70, camera_pos);
+    voice_slot = voice_positions - 0x90 + slot_index * 0x70;
+    flag = *(int *)(voice_slot + 0x8C) == sound_owner && *(unsigned char *)(voice_slot + 0x74) != 0;
     if (*(int *)(camera_pos + 0x254) != 0) {
         if (!flag) {
-            *(int *)(p + 4) = play_voice(*(int *)p, 0x15, a0, 0x400);
+            *(int *)(sound_vars + 4) = play_voice(*(int *)sound_vars, 0x15, sound_owner, 0x400);
         }
     } else {
         if (flag) {
-            Sound_StopSlot(n);
-            *(int *)(p + 4) = -1;
+            Sound_StopSlot(slot_index);
+            *(int *)(sound_vars + 4) = -1;
         }
     }
 }

@@ -12,30 +12,28 @@ struct ShipPickupVars {
 };
 
 extern char hero_globals_base[];
-/* Returns 1 if sound slot i belongs to owner a and is starting or playing. */
-int Sound_IsPlaying(int a, int i) {
-    if (i >= 0) {
-        char *p = hero_globals_base + 0x1D + i * 0x70;
-        if (*(int *)(p + 0x88) == a) {
-            int t = *(unsigned char *)(p + 0x74);
-            if (t == 1 || t == 2) return 1;
+/* Returns 1 if the voice slot belongs to this owner and is starting or playing. */
+int Sound_IsPlaying(int owner, int slot_index) {
+    if (slot_index >= 0) {
+        char *voice_slot = hero_globals_base + 0x1D + slot_index * 0x70;
+        if (*(int *)(voice_slot + 0x88) == owner) {
+            int slot_state = *(unsigned char *)(voice_slot + 0x74);
+            if (slot_state == 1 || slot_state == 2) return 1;
         }
     }
     return 0;
 }
-/* Stops sound slot I: one still starting (state 7) is cleared outright, one in any other state
- * but 0 and 6 is set to 4. The catalogue cuts the second test off as func_L00_0028EC28
- * (config/overlays/joined.tsv). */
-void Sound_StopSlot(int i) {
-    if (i >= 0) {
-        char *e = hero_globals_base + 0x1D + i * 0x70;
-        int t = *(unsigned char *)(e + 0x74);
-        if (t == 7) {
-            *(int *)(e + 0x88) = 0;
-            *(int *)(e + 0x8C) = 0;
-            *(unsigned char *)(e + 0x74) = 0;
-        } else if (t != 0 && t != 6) {
-            *(unsigned char *)(e + 0x74) = 4;
+/* Clears a starting voice or requests a stop. States 0 and 6 stay unchanged. */
+void Sound_StopSlot(int slot_index) {
+    if (slot_index >= 0) {
+        char *voice_slot = hero_globals_base + 0x1D + slot_index * 0x70;
+        int slot_state = *(unsigned char *)(voice_slot + 0x74);
+        if (slot_state == 7) {
+            *(int *)(voice_slot + 0x88) = 0;
+            *(int *)(voice_slot + 0x8C) = 0;
+            *(unsigned char *)(voice_slot + 0x74) = 0;
+        } else if (slot_state != 0 && slot_state != 6) {
+            *(unsigned char *)(voice_slot + 0x74) = 4;
         }
     }
 }
@@ -44,38 +42,38 @@ extern char hero_globals_base[] NOT_SDA;
 extern unsigned char g_class_slot[] NOT_SDA;
 extern char *moby_class_headers[] NOT_SDA;
 
-/* Plays sound i of the class in slot k on owner v; returns the voice slot or -1. */
-int Sound_PlayClassSound(int i, int a1, int v, int k) {
-    char *t = moby_class_headers[g_class_slot[k]];
-    char *e;
-    int r;
-    if (t == 0) {
+/* Plays a class sound for the owner. Returns its voice slot or -1. */
+int Sound_PlayClassSound(int sound_index, int voice_flags, int owner, int class_id) {
+    char *class_data = moby_class_headers[g_class_slot[class_id]];
+    char *voice_slot;
+    int slot_index;
+    if (class_data == 0) {
         return -1;
     }
-    if (i >= *(unsigned char *)(t + 0xD)) {
+    if (sound_index >= *(unsigned char *)(class_data + 0xD)) {
         return -1;
     }
-    r = allocate_voice_slot(*(char **)(t + 0x28) + i * 32, a1, v, 0, 0x400);
-    if (r >= 0) {
-        e = hero_globals_base + 0x1D + r * 0x70;
-        *(int *)(e + 0x88) = v;
-        *(short *)(e + 0x7E) = i;
+    slot_index = allocate_voice_slot(*(char **)(class_data + 0x28) + sound_index * 32, voice_flags, owner, 0, 0x400);
+    if (slot_index >= 0) {
+        voice_slot = hero_globals_base + 0x1D + slot_index * 0x70;
+        *(int *)(voice_slot + 0x88) = owner;
+        *(short *)(voice_slot + 0x7E) = sound_index;
     }
-    return r;
+    return slot_index;
 }
 extern int level_sound_slot_count MACRO_ADDR;
 extern char *level_sound_slots MACRO_ADDR;
-/* Plays level sound a with the given settings; returns the voice slot or -1. */
-int play_voice(int a, int b, int c, int d) {
-    int r;
-    if (a >= level_sound_slot_count) return -1;
-    r = allocate_voice_slot(level_sound_slots + a * 32, b, 0, c + 0x40, d);
-    if (r >= 0) {
-        char *e = hero_globals_base + 0x1D + r * 0x70;
-        *(int *)(e + 0x8C) = c;
-        *(short *)(e + 0x7E) = a;
+/* Plays a level sound with the given flags, owner and volume. Returns its slot or -1. */
+int play_voice(int voice_definition_index, int voice_flags, int sound_owner, int volume) {
+    int slot_index;
+    if (voice_definition_index >= level_sound_slot_count) return -1;
+    slot_index = allocate_voice_slot(level_sound_slots + voice_definition_index * 32, voice_flags, 0, sound_owner + 0x40, volume);
+    if (slot_index >= 0) {
+        char *voice_slot = hero_globals_base + 0x1D + slot_index * 0x70;
+        *(int *)(voice_slot + 0x8C) = sound_owner;
+        *(short *)(voice_slot + 0x7E) = voice_definition_index;
     }
-    return r;
+    return slot_index;
 }
 extern char voice_pool[];
 
@@ -83,40 +81,39 @@ extern unsigned char grouped_voice_level_rows[];
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int grouped_voice_definition_base_index MACRO_ADDR;
 
-/* Starts a sound bank entry chosen by (a0, a1, a2) offset from a
-   level-specific table row, the same shape as func_0022EE28. */
-int request_grouped_voice(int a0, int a1, int a2, int a3, int a4) {
-    int idx = grouped_voice_level_rows[g_current_level_index_m] + a0 * 4 + a1 * 2 + a2 + grouped_voice_definition_base_index;
-    int h;
+/* Chooses a level voice from the group, pair and offset. Returns its slot or -1. */
+int request_grouped_voice(int voice_group_index, int voice_pair_index, int voice_index_offset, int voice_flags, int voice_moby) {
+    int voice_definition_index = grouped_voice_level_rows[g_current_level_index_m] + voice_group_index * 4 + voice_pair_index * 2 + voice_index_offset + grouped_voice_definition_base_index;
+    int slot_index;
 
-    if (idx >= level_sound_slot_count) {
+    if (voice_definition_index >= level_sound_slot_count) {
         return -1;
     }
-    h = allocate_voice_slot(level_sound_slots + idx * 32, a3, a4, 0, 0x400);
-    if (h >= 0) {
-        char *rec = voice_pool + h * 0x70;
-        *(int *)(rec + 0x88) = a4;
-        *(short *)(rec + 0x7E) = idx;
+    slot_index = allocate_voice_slot(level_sound_slots + voice_definition_index * 32, voice_flags, voice_moby, 0, 0x400);
+    if (slot_index >= 0) {
+        char *rec = voice_pool + slot_index * 0x70;
+        *(int *)(rec + 0x88) = voice_moby;
+        *(short *)(rec + 0x7E) = voice_definition_index;
     }
-    return h;
+    return slot_index;
 }
 LINKER_REMNANT("asm/overlays", func_L00_0028F208);
-/* sets the pitch-bend word of sound slot i to v */
-int Sound_SetPitchBend(int i, int v) {
-    char *e = hero_globals_base + 0x1D + i * 0x70;
-    *(int *)(e + 0x84) = v;
+/* Sets the voice slot pitch and returns 1. */
+int Sound_SetPitchBend(int slot_index, int pitch) {
+    char *voice_slot = hero_globals_base + 0x1D + slot_index * 0x70;
+    *(int *)(voice_slot + 0x84) = pitch;
     return 1;
 }
 typedef struct { int k; int v; } TE;
 extern TE lookup_record_key_values[];
 
 /* Finds the record's key in the key/value table and stores the index and value in it. */
-void resolve_lookup_record(short *a) {
-    int i;
-    for (i = 0; lookup_record_key_values[i].k != -1 && lookup_record_key_values[i].k != a[0]; i++) {
+void resolve_lookup_record(short *lookup_record) {
+    int entry_index;
+    for (entry_index = 0; lookup_record_key_values[entry_index].k != -1 && lookup_record_key_values[entry_index].k != lookup_record[0]; entry_index++) {
     }
-    a[1] = i;
-    *(int *)(a + 2) = lookup_record_key_values[i].v;
+    lookup_record[1] = entry_index;
+    *(int *)(lookup_record + 2) = lookup_record_key_values[entry_index].v;
 }
 /* stores a sound value and transitions or clears its entry */
 void Sound_SetEntryValue(int value, long long address) {
