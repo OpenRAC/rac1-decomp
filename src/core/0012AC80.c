@@ -316,24 +316,14 @@ typedef struct {
 typedef struct { char pad[8]; long extra; } Tbl16;
 extern Tbl16 mpeg_stream_type_keys[];
 
-/*
- * sceMpegAddStrCallback (libmpeg.a:pack.o): key = func_0012AC80(arg1,
- * arg2) (a 64-bit stream/type key); linear-search the object's callback
- * table (handlers[7] reused as {table pointer, count} -- raw offsets,
- * not the Handler struct, per this file's warning about that array
- * overlapping) for a matching key, remembering its old callback (0 if
- * none found). Whether found or not (index lands on the match, or one
- * past the end), if there's room (< 0x40 entries), overwrite the slot
- * with the new key/data/callback and the type's extra 8 bytes from
- * D_00132FD8[arg1], and bump the stored count unconditionally. Returns
- * the previous callback.
- */
-int sce_mpeg_add_str_callback(void *arg0, int arg1, int arg2, int arg3, int arg4) {
+/* Registers a stream callback and returns the old callback.
+   The stored count increases even when an existing entry is replaced. */
+int sce_mpeg_add_str_callback(void *mpeg_handle, int stream_type, int stream_channel, int callback_address, int callback_context) {
     int old = 0;
-    char *obj = *(char **)((char *)arg0 + 0x40);
-    StrCbEnt *tbl = *(StrCbEnt **)(obj + 0x44);
-    long key = mpeg_type2id(arg1, arg2);
-    int count = *(int *)(obj + 0x48);
+    char *mpeg_state = *(char **)((char *)mpeg_handle + 0x40);
+    StrCbEnt *tbl = *(StrCbEnt **)(mpeg_state + 0x44);
+    long key = mpeg_type2id(stream_type, stream_channel);
+    int count = *(int *)(mpeg_state + 0x48);
     int i;
 
     for (i = 0; i < count; i++) {
@@ -343,11 +333,11 @@ int sce_mpeg_add_str_callback(void *arg0, int arg1, int arg2, int arg3, int arg4
         }
     }
     if (i < 0x40) {
-        *(int *)(obj + 0x48) = count + 1;
+        *(int *)(mpeg_state + 0x48) = count + 1;
         tbl[i].key = key;
-        tbl[i].data = arg4;
-        tbl[i].cb = arg3;
-        tbl[i].extra = mpeg_stream_type_keys[arg1].extra;
+        tbl[i].data = callback_context;
+        tbl[i].cb = callback_address;
+        tbl[i].extra = mpeg_stream_type_keys[stream_type].extra;
     }
     return old;
 }
@@ -627,57 +617,41 @@ extern void mpeg_work_area_set_mark(void *);
 extern void mpeg_stop_ipu_dma(void);
 extern void mpeg_restart_ipu_dma(void);
 
-/*
- * sceMpegCreate (libmpeg.a:mpeg.o): clear the caller's work area
- * (memset), align it up to 4 and carve the decoder object out of it. Less
- * than 0x10C0 usable bytes is reported through func_0012C468 and returns
- * 0. Otherwise: wrapper->0x40 = the object; a heap descriptor at +0x108
- * (func_0012BD28) covers the space past 0x10C0; the fields are reset
- * (-1 "unset" sentinels or 0); 0x600 bytes are allocated from that heap
- * (func_0012BD60) into +0x44; handler slots +0x1C/+0x24 get the two
- * callback trampolines (func_0012CC70/func_0012CC80); func_0012C2F8,
- * sceMpegReset (func_0012BBA8) and func_0012BBF8 run; the three 0x10-byte
- * entries at +0x1B8 get pointers into nine 0x68-byte regions; and
- * func_0012BD40 closes the heap. Success falls off the end (retail
- * leaves 0x70003600 in $v0).
- *
- * The trampoline store at +0x24 is written before the allocation so it
- * fills that call's delay slot, and the last four stores are in the
- * order that schedules as retail's.
- */
-int sce_mpeg_create(void *arg0, void *workarea, int size) {
-    char *w = (char *)arg0;
-    unsigned int wa = (unsigned int)workarea;
+/* Creates decoder state in the caller's work area. Returns 0 if it is too small.
+   Success has no explicit return, matching the original code. */
+int sce_mpeg_create(void *mpeg_handle, void *workarea, int size) {
+    char *handle_bytes = (char *)mpeg_handle;
+    unsigned int workarea_address = (unsigned int)workarea;
     char *aligned;
-    char *area2;
+    char *work_area_descriptor;
     unsigned int avail;
     int neg1;
 
     libc_memset_p(workarea, 0, size);
 
-    aligned = (char *)(((wa + 3) >> 2) << 2);
-    avail = (unsigned int)size - ((unsigned int)aligned - wa);
+    aligned = (char *)(((workarea_address + 3) >> 2) << 2);
+    avail = (unsigned int)size - ((unsigned int)aligned - workarea_address);
 
     if (avail < 0x10C0) {
         _Error(aligned, mpeg_create_work_area_too_small_msg);
         return 0;
     }
 
-    area2 = aligned + 0x108;
-    *(int *)(w + 0x40) = (int)aligned;
+    work_area_descriptor = aligned + 0x108;
+    *(int *)(handle_bytes + 0x40) = (int)aligned;
     avail -= 0x10C0;
-    mpeg_work_area_init(area2, (int)(aligned + 0x10C0), (int)avail);
+    mpeg_work_area_init(work_area_descriptor, (int)(aligned + 0x10C0), (int)avail);
     neg1 = -1;
 
-    *(int *)(w + 0x0) = 0;
-    *(int *)(w + 0x4) = 0;
-    *(int *)(w + 0x8) = 0;
-    *(long *)(w + 0x10) = -1;
-    *(long *)(w + 0x18) = -1;
-    *(long *)(w + 0x20) = 0;
-    *(long *)(w + 0x28) = -1;
-    *(long *)(w + 0x30) = -1;
-    *(long *)(w + 0x38) = 0;
+    *(int *)(handle_bytes + 0x0) = 0;
+    *(int *)(handle_bytes + 0x4) = 0;
+    *(int *)(handle_bytes + 0x8) = 0;
+    *(long *)(handle_bytes + 0x10) = -1;
+    *(long *)(handle_bytes + 0x18) = -1;
+    *(long *)(handle_bytes + 0x20) = 0;
+    *(long *)(handle_bytes + 0x28) = -1;
+    *(long *)(handle_bytes + 0x30) = -1;
+    *(long *)(handle_bytes + 0x38) = 0;
 
     *(int *)(aligned + 0xB4) = 0;
     *(int *)(aligned + 0xB8) = 0;
@@ -703,7 +677,7 @@ int sce_mpeg_create(void *arg0, void *workarea, int size) {
     *(int *)(aligned + 0x1C) = (int)mpeg_stop_ipu_dma;
     *(int *)(aligned + 0x24) = (int)mpeg_restart_ipu_dma;
 
-    *(int *)(aligned + 0x44) = (int)reserve_aligned_buffer_space(aligned, area2, 0x600, 8);
+    *(int *)(aligned + 0x44) = (int)reserve_aligned_buffer_space(aligned, work_area_descriptor, 0x600, 8);
 
     *(int *)(aligned + 0x48) = 0;
     *(int *)(aligned + 0xFC) = 0;
@@ -718,12 +692,12 @@ int sce_mpeg_create(void *arg0, void *workarea, int size) {
     *(int *)(aligned + 0x94) = neg1;
     *(int *)(aligned + 0x98) = neg1;
     *(int *)(aligned + 0x9C) = neg1;
-    *(int *)(aligned + 0x858) = (int)w;
+    *(int *)(aligned + 0x858) = (int)handle_bytes;
     *(int *)(aligned + 0xB0) = 1;
 
     mpeg_clear_once(aligned);
-    sce_mpeg_reset(w);
-    sce_mpeg_clear_ref_buff(w);
+    sce_mpeg_reset(handle_bytes);
+    sce_mpeg_clear_ref_buff(handle_bytes);
 
     *(int *)(aligned + 0x1B8) = (int)(aligned + 0x1E8);
     *(int *)(aligned + 0x1BC) = (int)(aligned + 0x250);
@@ -735,7 +709,7 @@ int sce_mpeg_create(void *arg0, void *workarea, int size) {
     *(int *)(aligned + 0x1DC) = (int)(aligned + 0x4C0);
     *(int *)(aligned + 0x1E4) = (int)(aligned + 0x528);
 
-    mpeg_work_area_set_mark(area2);
+    mpeg_work_area_set_mark(work_area_descriptor);
 
     *(int *)(aligned + 0x850) = neg1;
     *(int *)(aligned + 0x84C) = 0;
@@ -768,28 +742,22 @@ int sce_mpeg_is_end(char *p) {
     return **(int **)(p + 0x40);
 }
 
-int sce_mpeg_is_ref_buff_empty(void *arg0) {
-    return ((Wrapper *)arg0)->obj->unk004 == 0;
+int sce_mpeg_is_ref_buff_empty(void *mpeg_handle) {
+    return ((Wrapper *)mpeg_handle)->obj->unk004 == 0;
 }
 
 extern void mpeg_clear_each(void *arg0);
 extern void mpeg_set_mpeg1_mode(void *arg0);
 
-/*
- * sceMpegReset (libmpeg.a:mpeg.o): clear the object's decode state
- * (unk000/004/008/0AC, the handler-table slot at +0x80, and +0x118), and
- * the wrapper's own +0x08, then call _clearEach (func_0012C358) and hand
- * the object to func_0012C268 (zero +0x848, kick the IPU chain via
- * func_00127378).
- */
-void sce_mpeg_reset(void *arg0) {
-    char *w = (char *)arg0;
-    char *inner = *(char **)(w + 0x40);
+/* Resets the decoder state and starts its MPEG-1 hardware setup. */
+void sce_mpeg_reset(void *mpeg_handle) {
+    char *handle_bytes = (char *)mpeg_handle;
+    char *inner = *(char **)(handle_bytes + 0x40);
 
     *(int *)(inner + 0x0) = 0;
     *(int *)(inner + 0x4) = 0;
     *(int *)(inner + 0x8) = 0;
-    *(int *)(w + 0x8) = 0;
+    *(int *)(handle_bytes + 0x8) = 0;
     *(int *)(inner + 0xAC) = 0;
     *(int *)(inner + 0x80) = -1;
     mpeg_clear_each(inner);
@@ -797,15 +765,15 @@ void sce_mpeg_reset(void *arg0) {
     mpeg_set_mpeg1_mode(inner);
 }
 
-int sce_mpeg_clear_ref_buff(void *arg0) {
-    char *b = *(char **)((char *)arg0 + 0x40);
-    char *p;
-    p = *(char **)(b + 0x1B8); if (p != 0) *(int *)(p + 0x28) = 0;
-    p = *(char **)(b + 0x1C8); if (p != 0) *(int *)(p + 0x28) = 0;
-    p = *(char **)(b + 0x1D8); if (p != 0) *(int *)(p + 0x28) = 0;
-    p = *(char **)(b + 0x1BC); if (p != 0) *(int *)(p + 0x28) = 0;
-    p = *(char **)(b + 0x1CC); if (p != 0) *(int *)(p + 0x28) = 0;
-    p = *(char **)(b + 0x1DC); if (p != 0) *(int *)(p + 0x28) = 0;
+int sce_mpeg_clear_ref_buff(void *mpeg_handle) {
+    char *mpeg_state = *(char **)((char *)mpeg_handle + 0x40);
+    char *reference_picture;
+    reference_picture = *(char **)(mpeg_state + 0x1B8); if (reference_picture != 0) *(int *)(reference_picture + 0x28) = 0;
+    reference_picture = *(char **)(mpeg_state + 0x1C8); if (reference_picture != 0) *(int *)(reference_picture + 0x28) = 0;
+    reference_picture = *(char **)(mpeg_state + 0x1D8); if (reference_picture != 0) *(int *)(reference_picture + 0x28) = 0;
+    reference_picture = *(char **)(mpeg_state + 0x1BC); if (reference_picture != 0) *(int *)(reference_picture + 0x28) = 0;
+    reference_picture = *(char **)(mpeg_state + 0x1CC); if (reference_picture != 0) *(int *)(reference_picture + 0x28) = 0;
+    reference_picture = *(char **)(mpeg_state + 0x1DC); if (reference_picture != 0) *(int *)(reference_picture + 0x28) = 0;
     return 1;
 }
 
@@ -815,44 +783,24 @@ typedef int (*MpegCbFn)(void *, void *, void *);
 typedef struct { MpegCbFn func; void *data; } MpegCbEnt;
 typedef struct { char pad[0xC]; MpegCbEnt cb[1]; } MpegCbTbl;
 
-/*
- * sceMpegAddCallback: install (callback arg2, data arg3) for type arg1 and
- * return the old callback.
- *
- * Typing the entry as {function pointer, void *} is the lever: 2.9-ee's
- * type-based alias analysis (-fstrict-aliasing is its default) then knows
- * the `data` store cannot alias the `func` load, so sched1 computes
- * `t + 0xC` before `t + off` and the registers fall as in retail. Under
- * 2.95.3 (no type-based aliasing) the same C is 17/36; the old int-offset
- * spelling was 12/36 under both.
- */
-int sce_mpeg_add_callback(void *arg0, int arg1, int arg2, int arg3) {
-    MpegCbTbl *t = *(MpegCbTbl **)((char *)arg0 + 0x40);
+/* Registers a callback and its context for the type. Returns the previous callback. */
+int sce_mpeg_add_callback(void *mpeg_handle, int callback_type, int callback_address, int callback_context) {
+    MpegCbTbl *callback_table = *(MpegCbTbl **)((char *)mpeg_handle + 0x40);
     MpegCbFn old;
-    t->cb[arg1].data = (void *)arg3;
-    old = t->cb[arg1].func;
-    t->cb[arg1].func = (MpegCbFn)arg2;
+    callback_table->cb[callback_type].data = (void *)callback_context;
+    old = callback_table->cb[callback_type].func;
+    callback_table->cb[callback_type].func = (MpegCbFn)callback_address;
     return (int)old;
 }
 
-/*
- * Dispatch the callback registered for *arg1 (the callback data's type
- * field) with its data; returns the callback's result, 0 if none.
- *
- * The table entry is indexed afresh for each use (test `.func`, call
- * `.func(arg0, arg1, .data)`) instead of through one `entry` pointer. CSE
- * merges the two `.func` loads, but the `.data` address is rebuilt after
- * the branch, which is retail's second `addu` in a plain beqz slot, and
- * `ret` then lands in $a3 with the table in $a2. Exact under both
- * compilers (one `entry` pointer is SIZE 84/80; the old spelling 12/80).
- */
-void *dispatch_mpeg_callback(void *arg0, int *arg1) {
+/* Calls the handler for the callback data's type. Returns 0 if no handler exists. */
+void *dispatch_mpeg_callback(void *mpeg_handle, int *callback_data) {
     int ret = 0;
-    if (arg0 != 0) {
-        MpegCbTbl *t = *(MpegCbTbl **)((char *)arg0 + 0x40);
-        if (t != 0) {
-            if (t->cb[*arg1].func != 0) {
-                ret = t->cb[*arg1].func(arg0, arg1, t->cb[*arg1].data);
+    if (mpeg_handle != 0) {
+        MpegCbTbl *callback_table = *(MpegCbTbl **)((char *)mpeg_handle + 0x40);
+        if (callback_table != 0) {
+            if (callback_table->cb[*callback_data].func != 0) {
+                ret = callback_table->cb[*callback_data].func(mpeg_handle, callback_data, callback_table->cb[*callback_data].data);
             }
         }
     }
@@ -870,22 +818,22 @@ void dispatch_mpeg_cb_nodata(int arg0) {
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012BCF0);
 
-void mpeg_work_area_init(void *arg0, int arg1, int arg2) {
-    int *p = (int *)arg0;
-    p[1] = arg2;
-    p[0] = arg1;
-    p[2] = arg1;
-    p[3] = arg1;
+void mpeg_work_area_init(void *allocator_data, int buffer_address, int buffer_size) {
+    int *allocator_fields = (int *)allocator_data;
+    allocator_fields[1] = buffer_size;
+    allocator_fields[0] = buffer_address;
+    allocator_fields[2] = buffer_address;
+    allocator_fields[3] = buffer_address;
 }
 
-void mpeg_work_area_set_mark(void *arg0) {
-    char *p = (char *)arg0;
-    *(int *)(p + 0xC) = *(int *)(p + 0x8);
+void mpeg_work_area_set_mark(void *allocator_data) {
+    char *allocator_bytes = (char *)allocator_data;
+    *(int *)(allocator_bytes + 0xC) = *(int *)(allocator_bytes + 0x8);
 }
 
-void mpeg_work_area_reset_to_mark(void *arg0) {
-    char *p = (char *)arg0;
-    *(int *)(p + 0x8) = *(int *)(p + 0xC);
+void mpeg_work_area_reset_to_mark(void *allocator_data) {
+    char *allocator_bytes = (char *)allocator_data;
+    *(int *)(allocator_bytes + 0x8) = *(int *)(allocator_bytes + 0xC);
 }
 
 extern void _Error(void *, void *);
@@ -1223,60 +1171,30 @@ void mpeg_last_frame(void *arg0) {
     decoder->second_field = 0;
 }
 
-/*
- * Point the object's four scratchpad pointers at 0x70000000 and clear a
- * flag. Exact under 2.9-ee. Under 2.95.3 it was 2 of 24 words off:
- * that compiler saved $ra before $s1 in the prologue, where retail (and
- * 2.9-ee) saves $s1 first -- the prologue-order residual of the core
- * spill rewrite, not a source question.
- *
- * What does matter: `int a = 0x70000000;` must be written
- * BEFORE the call. An earlier round reverted this at 8 bytes short
- * having tried binding the constants to locals declared AFTER the call,
- * which changes nothing because gcc folds them straight back into the
- * stores. Declared before the call, the pseudo's live range crosses the
- * call, so the allocator gives it a CALLEE-SAVED register and the
- * function pays retail's sd/ld $s1 pair -- 8 bytes. gcc still
- * rematerialises the `lui` after the call, exactly as retail does, so
- * the only trace of the earlier definition is the register class.
- *
- * That is the general point: a constant hoisted above a call does not
- * survive as a value (constant propagation puts it back), but it does
- * survive as a register-class decision. Where retail spends a
- * callee-saved register on something that looks like it needs no
- * register at all, the source defined it before the call.
- */
-void mpeg_clear_once(void *arg0) {
-    char *p = (char *)arg0;
-    int a = 0x70000000;
+/* Sets the decoder scratchpad pointers and clears its state flag.
+   Keep scratchpad_base initialized before the call to preserve register allocation. */
+void mpeg_clear_once(void *mpeg_state) {
+    char *state_bytes = (char *)mpeg_state;
+    int scratchpad_base = 0x70000000;
 
     ipu_set_mpeg1(1);
-    *(int *)(p + 0x590) = a;
-    *(int *)(p + 0x594) = 0x70001800;
-    *(int *)(p + 0x6D0) = 0x70001B00;
-    *(int *)(p + 0x6D4) = 0x70003300;
-    *(int *)(p + 0x810) = 0;
+    *(int *)(state_bytes + 0x590) = scratchpad_base;
+    *(int *)(state_bytes + 0x594) = 0x70001800;
+    *(int *)(state_bytes + 0x6D0) = 0x70001B00;
+    *(int *)(state_bytes + 0x6D4) = 0x70003300;
+    *(int *)(state_bytes + 0x810) = 0;
 }
 
 extern void sce_ipu_sync(int, int);
 
-/*
- * _clearEach (libmpeg.a:init.o): per-stream hardware reset shared by
- * sceMpegInit's shape -- flag the bitstream state "in use" (+0x818 = 1),
- * clear its slice-address latch (+0x1B0), then the same SIF-flag toggle
- * (0x1000F590 set/cleared around bit 0x10000, re-reading 0x1000F520 fresh
- * each time) and three DMA channel registers zeroed (0x1000B000/B400/D400),
- * gated IOP kick via func_0011D960/func_0011D9A8, three more registers
- * zeroed (0x1000B020/B420/D420), IPU_CTRL (0x10002010) set to 0x40000000,
- * and a tail call into func_0012CF98(0, 0).
- */
-void mpeg_clear_each(void *arg0) {
-    char *s = (char *)arg0;
-    int r;
+/* Resets stream flags and DMA channels, then resets and waits for the IPU. */
+void mpeg_clear_each(void *mpeg_state) {
+    char *state_bytes = (char *)mpeg_state;
+    int interrupt_state;
 
-    *(int *)(s + 0x818) = 1;
-    *(int *)(s + 0x1B0) = 0;
-    r = disable_interrupts();
+    *(int *)(state_bytes + 0x818) = 1;
+    *(int *)(state_bytes + 0x1B0) = 0;
+    interrupt_state = disable_interrupts();
 
     *(volatile unsigned int *)0x1000F590 =
         *(volatile unsigned int *)0x1000F520 | 0x10000;
@@ -1286,7 +1204,7 @@ void mpeg_clear_each(void *arg0) {
     *(volatile unsigned int *)0x1000F590 =
         *(volatile unsigned int *)0x1000F520 & ~0x10000;
 
-    if (r != 0) {
+    if (interrupt_state != 0) {
         enable_interrupts();
     }
 
