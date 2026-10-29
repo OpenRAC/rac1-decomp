@@ -162,20 +162,20 @@ extern float FastVecDist(void *, void *);
 extern char *novalis_paths[];
 
 // Resets a path object and computes per-segment lengths of its points.
-void initialize_path_descriptor(char *p)
+void initialize_path_descriptor(char *path_descriptor)
 {
-    int i;
-    int off;
-    char *q;
-    p[5] = 0;
-    *(int *)(p + 8) = 0;
-    *(char **)(p + 0x10) = novalis_paths[*(int *)(p + 0x14)];
-    for (i = 0; i < **(int **)(p + 0x10); i++) {
-        q = *(char **)(p + 0x10);
-        off = i << 4;
-        *(float *)(*(char **)(p + 0x10) + off + 0x1C) = FastVecDist(q + (off + 0x10), q + ((((i + 1) % *(int *)q) << 4) + 0x10));
-        *(float *)(*(char **)(p + 0x10) + off + 0x18) += 0.5f;
-        *(float *)(*(char **)(p + 0x10) + off + 0x18) -= 0.5f;
+    int point_index;
+    int point_offset;
+    char *path_data;
+    path_descriptor[5] = 0;
+    *(int *)(path_descriptor + 8) = 0;
+    *(char **)(path_descriptor + 0x10) = novalis_paths[*(int *)(path_descriptor + 0x14)];
+    for (point_index = 0; point_index < **(int **)(path_descriptor + 0x10); point_index++) {
+        path_data = *(char **)(path_descriptor + 0x10);
+        point_offset = point_index << 4;
+        *(float *)(*(char **)(path_descriptor + 0x10) + point_offset + 0x1C) = FastVecDist(path_data + (point_offset + 0x10), path_data + ((((point_index + 1) % *(int *)path_data) << 4) + 0x10));
+        *(float *)(*(char **)(path_descriptor + 0x10) + point_offset + 0x18) += 0.5f;
+        *(float *)(*(char **)(path_descriptor + 0x10) + point_offset + 0x18) -= 0.5f;
     }
 }
 typedef struct {
@@ -186,13 +186,13 @@ typedef struct {
 
 extern float FastAbsF(float);
 
-/* Returns the index of the entry whose distance to arg0 is closest to a target value. */
-int select_point_index_by_distance(void *arg0, List *arg1, float target) {
+/* Selects a point using its distance from the reference position. */
+int select_point_index_by_distance(void *reference_position, List *point_list, float target) {
     int best = 0;
     int i;
     float bestDiff = 1e11f;
-    for (i = 0; i < arg1->count; i++) {
-        float d = FastVecDist(arg1->e[i], arg0);
+    for (i = 0; i < point_list->count; i++) {
+        float d = FastVecDist(point_list->e[i], reference_position);
         if (FastAbsF(d - target) < bestDiff) {
             bestDiff = d;
             best = i;
@@ -207,39 +207,39 @@ typedef struct {
 } List_8C3A8;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_0027f660.c, FUN_L01_0028b5e0. */
-int select_list_point_toward_target(char *a0, List_8C3A8 *list, char *pt, char *out) {
-    int idx0 = -1;
-    int idx1 = -1;
-    float best0 = 10000.0f;
-    float best1 = 10000.0f;
-    float d_init = FastVecDist(a0 + 0x10, pt);
+int select_list_point_toward_target(char *reference_object, List_8C3A8 *list, char *pt, char *out) {
+    int nearest_reference_index = -1;
+    int nearest_target_index = -1;
+    float nearest_reference_distance = 10000.0f;
+    float nearest_target_distance = 10000.0f;
+    float reference_target_distance = FastVecDist(reference_object + 0x10, pt);
     int i;
 
     for (i = 0; i < list->count; i++) {
         float d_pt = FastVecDist(list->e[i], pt);
-        float d_a0 = FastVecDist(list->e[i], a0 + 0x10);
-        if (d_a0 < best0) {
-            best0 = d_a0;
-            idx0 = i;
+        float reference_distance = FastVecDist(list->e[i], reference_object + 0x10);
+        if (reference_distance < nearest_reference_distance) {
+            nearest_reference_distance = reference_distance;
+            nearest_reference_index = i;
         }
-        if (d_pt < d_init) {
-            if (d_pt < best1) {
-                best1 = d_pt;
-                idx1 = i;
+        if (d_pt < reference_target_distance) {
+            if (d_pt < nearest_target_distance) {
+                nearest_target_distance = d_pt;
+                nearest_target_index = i;
             }
         }
     }
-    if (idx1 != -1) {
-        if (idx0 == idx1) {
-            qcopy(out, list->e[idx0]);
-            return idx0;
+    if (nearest_target_index != -1) {
+        if (nearest_reference_index == nearest_target_index) {
+            qcopy(out, list->e[nearest_reference_index]);
+            return nearest_reference_index;
         }
-        if (idx0 < idx1) {
-            qcopy(out, list->e[idx0 + 1]);
-            return idx0 + 1;
+        if (nearest_reference_index < nearest_target_index) {
+            qcopy(out, list->e[nearest_reference_index + 1]);
+            return nearest_reference_index + 1;
         }
-        qcopy(out, list->e[idx0 - 1]);
-        return idx0 - 1;
+        qcopy(out, list->e[nearest_reference_index - 1]);
+        return nearest_reference_index - 1;
     }
     qcopy(out, pt);
     return -1;
@@ -250,15 +250,15 @@ typedef struct { int cur; signed char f4; char pad5[11]; List_0028C578 *list; } 
 // Returns the list entry for a step count, wrapping past the end and counting back from it when negative.
 void *get_path_node(void *effect, int steps) {
     int count = ((Eff_0028C578 *)effect)->f4 < 0 ? 0 : ((Eff_0028C578 *)effect)->list->n - 1;
-    List_0028C578 *l = ((Eff_0028C578 *)effect)->list;
+    List_0028C578 *point_list = ((Eff_0028C578 *)effect)->list;
     if (steps < 0) {
-        return l->e[count + steps + 1];
+        return point_list->e[count + steps + 1];
     }
     if (count < steps) {
         count++;
-        return l->e[steps % count];
+        return point_list->e[steps % count];
     }
-    return l->e[steps];
+    return point_list->e[steps];
 }
 INCLUDE_ASM("asm/overlays", func_L01_0028C5B8);
 INCLUDE_ASM("asm/overlays", func_L01_0028C5D0);
@@ -277,18 +277,18 @@ int resolve_path_node_index(char *effect, int steps) {
 INCLUDE_ASM("asm/overlays", func_L01_0028C618);
 INCLUDE_ASM("asm/overlays", func_L01_0028C628);
 /* Steps the path node index forward, wrapping at the path's last node; returns it. */
-int advance_path_node_index(char *p)
+int advance_path_node_index(char *path_descriptor)
 {
     int max = 0;
     int next;
-    if (p[4] >= 0) {
-        max = **(int **)(p + 0x10) - 1;
+    if (path_descriptor[4] >= 0) {
+        max = **(int **)(path_descriptor + 0x10) - 1;
     }
-    next = *(int *)p + 1;
+    next = *(int *)path_descriptor + 1;
     if (max < next) {
         next %= max + 1;
     }
-    *(int *)p = next;
+    *(int *)path_descriptor = next;
     return next;
 }
 extern void *libc_memset_c(void *, int, unsigned int) __asm__("func_001153FC");
@@ -300,54 +300,54 @@ extern float FastVecLength(void *);
 extern void vec_scale_to_length(void *, void *, float);
 typedef int u128 __attribute__((mode(TI)));
 
-// Blends three neighbouring list entries by (a, b) weights and clamps the result's length.
-void compute_path_node_tangent(void *out, int *l, int idx, float a, float b) {
-    void *p[3];
-    float v1[4];
-    float v2[4];
-    float v3[4];
-    float d1, d2, m, len;
+// Blends neighbouring path directions using tension and bias, then limits the tangent length.
+void compute_path_node_tangent(void *out, int *path_descriptor, int node_index_offset, float tangent_tension, float tangent_bias) {
+    void *neighbor_points[3];
+    float incoming_delta[4];
+    float outgoing_delta[4];
+    float tangent_vector[4];
+    float previous_distance, next_distance, length_limit, len;
     float wa, wb;
-    libc_memset_c(p, 0, 12);
-    p[0] = get_path_node(l, *l + idx - 1);
-    p[1] = get_path_node(l, *l + idx);
-    p[2] = get_path_node(l, *l + idx + 1);
+    libc_memset_c(neighbor_points, 0, 12);
+    neighbor_points[0] = get_path_node(path_descriptor, *path_descriptor + node_index_offset - 1);
+    neighbor_points[1] = get_path_node(path_descriptor, *path_descriptor + node_index_offset);
+    neighbor_points[2] = get_path_node(path_descriptor, *path_descriptor + node_index_offset + 1);
     {
-        wb = (1.0f - a) * (b + 1.0f) * 0.5f;
-        wa = (1.0f - a) * (1.0f - b) * 0.5f;
+        wb = (1.0f - tangent_tension) * (tangent_bias + 1.0f) * 0.5f;
+        wa = (1.0f - tangent_tension) * (1.0f - tangent_bias) * 0.5f;
     }
-    d1 = FastVecDist(p[0], p[1]);
-    d2 = FastVecDist(p[1], p[2]);
-    if (d1 < d2) m = d1; else m = d2;
-    FastVecSub(v1, p[1], p[0]);
-    FastVecScale(v1, v1, wb);
-    FastVecSub(v2, p[2], p[1]);
-    FastVecScale(v2, v2, wa);
-    FastVecAdd(v3, v1, v2);
-    m = m * 1.1f;
-    len = FastVecLength(v3);
-    if (m < len) {
-        vec_scale_to_length(out, v3, m);
+    previous_distance = FastVecDist(neighbor_points[0], neighbor_points[1]);
+    next_distance = FastVecDist(neighbor_points[1], neighbor_points[2]);
+    if (previous_distance < next_distance) length_limit = previous_distance; else length_limit = next_distance;
+    FastVecSub(incoming_delta, neighbor_points[1], neighbor_points[0]);
+    FastVecScale(incoming_delta, incoming_delta, wb);
+    FastVecSub(outgoing_delta, neighbor_points[2], neighbor_points[1]);
+    FastVecScale(outgoing_delta, outgoing_delta, wa);
+    FastVecAdd(tangent_vector, incoming_delta, outgoing_delta);
+    length_limit = length_limit * 1.1f;
+    len = FastVecLength(tangent_vector);
+    if (length_limit < len) {
+        vec_scale_to_length(out, tangent_vector, length_limit);
     } else {
-        *(u128 *)out = *(u128 *)v3;
+        *(u128 *)out = *(u128 *)tangent_vector;
     }
 }
 
 // Cubic Hermite blend of four vectors at parameter t, written to out.
-void evaluate_cubic_hermite_segment(float t, void *out, void *p1, void *p2, void *p3, void *p4) {
-    char tmp[16];
+void evaluate_cubic_hermite_segment(float t, void *out, void *start_position, void *end_position, void *start_tangent, void *end_tangent) {
+    char weighted_vector[16];
     float t2 = t * t;
     float t3 = t2 * t;
-    float b = t2 * 3.0f;
-    float a = t3 + t3;
-    float c = t2 + t2;
-    FastVecScale(out, p1, a - b + 1.0f);
-    FastVecScale(tmp, p3, t3 - c + t);
-    FastVecAdd(out, out, tmp);
-    FastVecScale(tmp, p4, t3 - t2);
-    FastVecAdd(out, out, tmp);
-    FastVecScale(tmp, p2, b - a);
-    FastVecAdd(out, out, tmp);
+    float three_t_squared = t2 * 3.0f;
+    float twice_t_cubed = t3 + t3;
+    float twice_t_squared = t2 + t2;
+    FastVecScale(out, start_position, twice_t_cubed - three_t_squared + 1.0f);
+    FastVecScale(weighted_vector, start_tangent, t3 - twice_t_squared + t);
+    FastVecAdd(out, out, weighted_vector);
+    FastVecScale(weighted_vector, end_tangent, t3 - t2);
+    FastVecAdd(out, out, weighted_vector);
+    FastVecScale(weighted_vector, end_position, three_t_squared - twice_t_cubed);
+    FastVecAdd(out, out, weighted_vector);
 }
 char *PartType41Spawn(float scale, void *pos, int a, int idx, int b, unsigned char flags, short h, unsigned char kind);
 typedef int OvlQuad __attribute__((mode(TI)));
@@ -362,7 +362,7 @@ void compute_path_node_tangent(void *out, int *l, int idx, float a, float b);
 void evaluate_cubic_hermite_segment(float t, void *out, void *p1, void *p2, void *p3, void *p4);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/0027f660.c, FUN_L01_0028bb90. */
-float compute_sampled_spline_path_lengths(float a, float b, T_28b828 *path, int particles, void *moby) {
+float compute_sampled_spline_path_lengths(float tangent_tension, float tangent_bias, T_28b828 *path, int particles, void *moby) {
     Vec4 previousTangent;
     Vec4 nextTangent;
     Vec4 currentNode;
@@ -381,7 +381,7 @@ float compute_sampled_spline_path_lengths(float a, float b, T_28b828 *path, int 
     }
     /* The SN ABI assigns float arguments independently of the integer arguments.
      * Keep the retail argument setup order without changing the shared helper. */
-    ((void (*)(void *, int *, float, float, int))compute_path_node_tangent)(&nextTangent, (int *)path, a, b, 0);
+    ((void (*)(void *, int *, float, float, int))compute_path_node_tangent)(&nextTangent, (int *)path, tangent_tension, tangent_bias, 0);
 
     index = 0;
     while (index < count) {
@@ -399,7 +399,7 @@ float compute_sampled_spline_path_lengths(float a, float b, T_28b828 *path, int 
         segmentLength = 0.0f;
         nextNode.q = *(OvlQuad *)((char *)path->f10 + nextIndex * 16 + 0x10);
         *(int *)path = index;
-        ((void (*)(void *, int *, float, float, int))compute_path_node_tangent)(&nextTangent, (int *)path, a, b, 1);
+        ((void (*)(void *, int *, float, float, int))compute_path_node_tangent)(&nextTangent, (int *)path, tangent_tension, tangent_bias, 1);
         previousPoint.q = currentNode.q;
         step = t;
         do {

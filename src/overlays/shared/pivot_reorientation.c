@@ -8,16 +8,16 @@ extern void FastVecSub(void *, void *, void *);
 extern void transform_vector(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 
-// transforms a vector by two matrices built from a3/a4 and adds the result relative to a0
-void reorient_position_about_pivot(void *a0, void *a1, void *a2, void *a3, void *a4) {
-    float m0[16];
-    float m1[16];
-    float v[4];
-    euler_to_matrix(m0, a3);
-    matrix_from_basis_rows(m0, m0);
-    euler_to_matrix(m1, a4);
-    FastVecSub(v, a0, a2);
-    transform_vector(v, v, m0);
-    transform_vector(v, v, m1);
-    FastVecAdd(a1, v, a2);
+// Reorients the source position around the pivot, from the source rotation to the target rotation.
+void reorient_position_about_pivot(void *source_position, void *out_position, void *pivot, void *source_rotation, void *target_rotation) {
+    float source_matrix[16];
+    float target_matrix[16];
+    float relative_position[4];
+    euler_to_matrix(source_matrix, source_rotation);
+    matrix_from_basis_rows(source_matrix, source_matrix);
+    euler_to_matrix(target_matrix, target_rotation);
+    FastVecSub(relative_position, source_position, pivot);
+    transform_vector(relative_position, relative_position, source_matrix);
+    transform_vector(relative_position, relative_position, target_matrix);
+    FastVecAdd(out_position, relative_position, pivot);
 }
