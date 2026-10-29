@@ -39,6 +39,7 @@ int draw_segmented_hud_meter(unsigned char *p) {
             y = 18;
             if (pal_mode != 0) y = 10;
         }
+        /* Opacity reaches full at 8, then maps to the GS alpha range 0..128. */
         alpha = IntToFloat(p[0x70]) * 0.125f;
         if (alpha > 1.0f) alpha = 1.0f;
         else if (alpha < 0.0f) alpha = 0.0f;
@@ -58,6 +59,7 @@ int draw_segmented_hud_meter(unsigned char *p) {
             fill = (float)*(int *)(p + 0x74) / IntToFloat(*(int *)(p + 8));
             step = 1.0f / IntToFloat(segments);
             limit = remaining * step;
+            /* The first and last segments use separate fill scales. */
             if (limit < fill) {
                 fill -= limit;
                 fill *= *(float *)&blarg_hud_meter_last_segment_fill_scale;

@@ -80,6 +80,7 @@ void build_vendor_menu_rows(s32 skip_unflagged) {
     for (i = 0; i < count; i++) {
         value = vendor_stock[i];
         if (value == 0xFF) continue;
+        /* The low six bits hold the item id; bit 6 selects the flagged path. */
         item = value & 0x3F;
         if (value & 0x40) {
             s32 sound;
@@ -105,6 +106,7 @@ void build_vendor_menu_rows(s32 skip_unflagged) {
         s32 sound;
         if (!item_available[k]) continue;
         if (!item_price_table[k].h8) continue;
+        /* Add available items only if the stock list did not include them. */
         for (j = 0; j < vendor_menu_r2.count; j++) {
             if (vendor_menu_r2.entries[j].item == k) break;
         }
