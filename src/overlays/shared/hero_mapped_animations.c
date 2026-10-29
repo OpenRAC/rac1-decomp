@@ -30,6 +30,7 @@ void blend_hero_slot3_animation_pair(void) {
     if (select_hero_slot3_animation_pair(0, &buf[0], &buf[1]) == 0) {
         return;
     }
+    /* Blend both objects over the same scaled time. */
     seq = buf[0];
     MobyBlendAnimation(a, seq, 0, scale_ticks(7));
     seq = buf[1];
@@ -53,6 +54,7 @@ extern short hero_slot3_item4_seq_table;
    of -1. Stores the entry's seq in *OUT and returns 1, or stores 0 and
    returns 0. Mode 4's table is assigned first and cleared when the mode,
    held in a local, differs: retail's addiu / movn select. */
+/* Use the return value to tell a missing entry from a sequence of zero. */
 int lookup_hero_slot3_animation_key(int key, int *out) {
     SeqEntry *tbl;
     int i;
@@ -109,6 +111,7 @@ void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
         return;
     }
     if (select_hero_slot3_animation_pair(id, &seq0, &seq1) != 0 && id != 0) {
+        /* Keep the pair if the first object already uses this sequence. */
         if (*(unsigned char *)(a + 0x53) == seq0) {
             return;
         }
