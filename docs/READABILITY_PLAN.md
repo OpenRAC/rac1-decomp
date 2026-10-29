@@ -195,3 +195,31 @@ WORKFLOW.md; a modified checker is not its own proof.
   intact.
 - Progress is measured by reviewed readability improvements, not an arbitrary
   target of renaming every address symbol.
+
+## Readability pass coverage
+
+The loading pilot and the subsystem pass use comments only. New comments use
+short, simple English. Existing names, source placement and build settings stay
+unchanged. This records coverage, not a claim that every unknown is understood.
+
+| Area | Source examples | What the comments explain |
+|---|---|---|
+| Resident loading pilot | `src/core/boot.c`, `src/game/loaders.c`, `src/game/space.c` | Overlay records, archive stages, memory bases and buffer lifetime |
+| Startup and transfers | `src/game/initonce.c`, `src/game/stash.c`, `src/game/bloaders.c` | Module offsets, reserved sizes, transfer units and upload order |
+| Input and menus | `src/game/pad.c`, `src/game/menu.c`, `src/game/memcard.c` | Input filters, queued card work and save block sizes |
+| Camera and animation | `src/overlays/shared/camera_switch_and_update.c`, `src/overlays/shared/hero_mapped_animations.c` | State buffers, callback order and paired animations |
+| Objects and level variants | `src/game/mobyutil.c`, `src/overlays/l06_blarg/hero_movement.c`, `src/overlays/l18_veldin2/rockets_and_platforms.c` | Object updates, movement fields and collision checks |
+| Weapons and effects | `src/overlays/shared/morphoray_chicken_and_drones.c`, `src/overlays/shared/effect_particle_updates.c` | Object lifetime, reset fields and particle timing |
+| Rendering and HUD | `src/game/framebuf.c`, `src/game/draw.c`, `src/game/skyfunc.c`, `src/overlays/shared/segmented_hud_meter.c` | Address units, packet links and opacity |
+| Audio | `src/game/stream.c`, `src/game/sound.c` | Read errors, voice slots and shutdown order |
+
+The comparison base is `0f0bfcfe98553a7a0ea9a26db94ff00deecf8be5`,
+the PR's `main` base. The NTSC reference remains pinned to
+`8a5972b31d87a655d7d8d744adc9376441c7dff9` in
+`config/versions/us/ntsc_decomp.txt`.
+
+Each changed C file is compared with that base using the same host preprocessor.
+This checks compiler input for that invocation; it is not a new target build.
+Naming and whitespace checks run too. Unknown fields, assembly-only routines
+and unclear constants keep their current names and notes. Adding more detail
+there requires more evidence, rather than a guessed explanation.
