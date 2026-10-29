@@ -33,6 +33,9 @@ typedef struct {
 } Pulse;
 extern Pulse pulse_waveform_slots[8];
 
+/* Advance all eight slots by one call and combine them into two outputs.
+   Delayed slots still consume life. The return count includes every slot
+   active at entry, even one delayed or expired during this call. */
 int tick_pulse_waveforms(int *out) {
     int aa[3][4];
     int *q2;
@@ -98,6 +101,7 @@ int tick_pulse_waveforms(int *out) {
             break;
         }
         }
+        /* Keep ordinary values and modulation factors in separate averages. */
         if (p->weighted != 0) {
             aa[0][p->slot] = aa[0][p->slot] + v;
             { int *t = q1 + p->slot; *t = *t + 1; }
@@ -110,6 +114,7 @@ int tick_pulse_waveforms(int *out) {
         if (q2[i] != 0) out[i] = out[i] / q2[i];
         if (q1[i] != 0) {
             aa[0][i] = aa[0][i] / q1[i];
+            /* The averaged weighted channel modulates the ordinary average. */
             out[i] = (out[i] * aa[0][i]) / 255;
         }
     }

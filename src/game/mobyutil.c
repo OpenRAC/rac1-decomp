@@ -182,6 +182,8 @@ struct Obj {
    D_00160000 is read at every use, not cached in a local: CSE then
    reproduces retail's load order and its surviving register copy. */
 
+/* The -1 key is also the fallback entry: a missing id uses its values rather
+   than leaving the current resident class slot unchanged. */
 void assign_moby_class_data(int id) {
     struct Obj *class_resource;
     int i = 0;
@@ -203,6 +205,9 @@ extern void advance_moby_animation(void *);
 extern void refresh_moby_spatial_bounds(void *);
 extern void *visible_moby_list MACRO_ADDR;
 
+/* Rebuild the visible list each call. Negative-state entries are skipped;
+   flag 0x40 suppresses animation and flag 0x4 suppresses the bounds refresh.
+   The optional per-object hook runs between those two operations. */
 void update_visible_resident_objects(void) {
     char *m;
 

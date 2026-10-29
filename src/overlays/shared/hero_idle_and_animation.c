@@ -412,6 +412,9 @@ extern int random_integer_below(int);
 /* Runs the hero's random-interval timer (rand_timer). */
 extern struct Hero g_hero_r3 __asm__("D_0013F450");
 
+/* fired is latched: this routine never clears it. A zero range keeps moving
+   the deadline forward; otherwise passing the deadline fires once and sets
+   the next deadline using two independent random draws plus the base delay. */
 void update_hero_random_timer(void) {
     struct Hero *hero_random_timer_owner = &g_hero_r3;
     if (hero_random_timer_owner->rand_timer.fired == 0) {

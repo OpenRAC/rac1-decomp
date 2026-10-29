@@ -305,6 +305,8 @@ extern float FastSin(float);
 extern char *spawn_doom_bot(int, void *, void *);
 extern void DeleteMoby(void *);
 
+/* The spawner owns its moby lifetime: positions outside the 2..1021 range
+   on any axis delete it before state updates or landing prediction run. */
 void update_doom_bot_spawner(Moby *m) {
     struct ThrowVars_2c8440_2C9820 *s;
     float f0, f1, f2, f3, f20, f21, f22, f23;
@@ -537,7 +539,8 @@ void update_doom_bot_spawner(Moby *m) {
         break;
     }
 }
-// resets the fields of a record (if non-null) to their defaults
+/* Reset only the listed fields, not the whole record. The -1 values retain
+   the empty-slot sentinels; unexplained tuning offsets keep their names. */
 void reset_morphoray_chicken_slot_defaults(char *a) {
     if (a != 0) {
         *(int *)&((Moby *)a)->pvars = 0;

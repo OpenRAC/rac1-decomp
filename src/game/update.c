@@ -310,6 +310,9 @@ extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
 extern void transform_vector(void *, void *, void *);
 
+/* Project two positions relative to the camera, divide by homogeneous w,
+   then apply view scale and the final 1/4 scale. x/y include the screen
+   center; w/h are signed differences, not sorted minimum/maximum bounds. */
 void project_graphics_bounds(Vec4 *a, Vec4 *b, int *w, int *h, int *x, int *y) {
     Vec4 p;
     Vec4 o;
@@ -348,6 +351,8 @@ void project_graphics_bounds(Vec4 *a, Vec4 *b, int *w, int *h, int *x, int *y) {
     *h = ((int (*)(float))truncate_float_to_s32)((q->f[1] - p.f[1]) * 0.25f);
 }
 
+/* Floating-output counterpart: keep fractional projected coordinates rather
+   than applying the integer helper's final truncation. */
 void project_graphics_bounds_float(Vec4 *a, Vec4 *b, float *w, float *h, float *x, float *y) {
     Vec4 p;
     Vec4 o;
