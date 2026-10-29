@@ -713,23 +713,22 @@ extern void downsample_map_coverage(void *dst);
    int it stays out. */
 extern int g_current_level_index MACRO_ADDR;
 
-/* Read a sector into arg0 from the open file (D_001A01F0 slot state) or
-   clear it when none is open, and track the largest read per slot in
-   D_0013D668. Adapted from Lombyte's project (GPL-3.0) for PAL. */
-void save_map_coverage(int arg0) {
-    int n;
+/* Save map coverage to the output buffer.
+   Downsample if compression does not fit. */
+void save_map_coverage(int output_address) {
+    int compressed_size;
 
     DebugEnter_Nop();
     if (level_map_selection[0xA] == 0) {
-        FastMemSet((void *)arg0, 0, 0x800);
+        FastMemSet((void *)output_address, 0, 0x800);
         return;
     }
-    n = compress_map_coverage((void *)arg0, 0x800, level_map_selection[5], level_map_selection[3]);
-    if (n == -1) {
-        downsample_map_coverage((void *)arg0);
+    compressed_size = compress_map_coverage((void *)output_address, 0x800, level_map_selection[5], level_map_selection[3]);
+    if (compressed_size == -1) {
+        downsample_map_coverage((void *)output_address);
     }
-    if (max_map_coverage_size[g_current_level_index] < n) {
-        max_map_coverage_size[g_current_level_index] = n;
+    if (max_map_coverage_size[g_current_level_index] < compressed_size) {
+        max_map_coverage_size[g_current_level_index] = compressed_size;
     }
 }
 
@@ -738,7 +737,7 @@ extern void decode_compressed_occlusion_map(void *, unsigned char *, int);
 extern void expand_map_coverage(void *, unsigned char *);
 
 /* Load a saved map coverage chunk, decoding it as compressed or plain by its first bit. */
-void load_map_chunk(void *arg0, unsigned char *arg1, int arg2) {
+void load_map_chunk(void *destination, unsigned char *encoded_map, int span_data_address) {
     /* func_00209040 is empty in retail and takes no arguments; $4/$5/$6
        still hold our own incoming arguments across it, which is why retail
        saves them into $16-$18 rather than reloading. */
@@ -746,10 +745,10 @@ void load_map_chunk(void *arg0, unsigned char *arg1, int arg2) {
     if (!map_coverage_active[0]) {
         return;
     }
-    if (*arg1 & 1) {
-        decode_compressed_occlusion_map(arg0, arg1, arg2);
+    if (*encoded_map & 1) {
+        decode_compressed_occlusion_map(destination, encoded_map, span_data_address);
     } else {
-        expand_map_coverage(arg0, arg1);
+        expand_map_coverage(destination, encoded_map);
     }
 }
 
@@ -903,37 +902,37 @@ extern unsigned char *map_coverage_buffer;
    stack) are summed, and a column with 8 or more set bits becomes a
    set bit, packed eight columns to a byte. The first byte is then
    flagged with 0x02 and bit 0 cleared. */
-void downsample_map_coverage(void *arg0) {
-    unsigned char *dst = arg0;
-    int acc[128];
+void downsample_map_coverage(void *output_data) {
+    unsigned char *dst = output_data;
+    int column_counts[128];
     NibbleBits bits;
     unsigned char *src;
     unsigned char *out;
-    int i, j, k, m;
+    int row_index, column_index, threshold_index, group_start;
 
     bits = nibble_popcount_table;
     src = map_coverage_buffer;
     out = dst;
-    for (i = 0; i < 0x200; i++) {
-        if ((i & 3) == 0) {
-            FastMemSet(acc, 0, 0x200);
+    for (row_index = 0; row_index < 0x200; row_index++) {
+        if ((row_index & 3) == 0) {
+            FastMemSet(column_counts, 0, 0x200);
         }
-        for (j = 0; j < 128; j += 2) {
-            unsigned int b = *src++;
-            acc[j] += bits.n[b & 0xF];
-            acc[j + 1] += bits.n[b >> 4];
+        for (column_index = 0; column_index < 128; column_index += 2) {
+            unsigned int packed_samples = *src++;
+            column_counts[column_index] += bits.n[packed_samples & 0xF];
+            column_counts[column_index + 1] += bits.n[packed_samples >> 4];
         }
-        if (i % 4 == 3) {
-            for (k = 0; k < 128; k++) {
-                if (acc[k] < 8) {
-                    acc[k] = 0;
+        if (row_index % 4 == 3) {
+            for (threshold_index = 0; threshold_index < 128; threshold_index++) {
+                if (column_counts[threshold_index] < 8) {
+                    column_counts[threshold_index] = 0;
                 } else {
-                    acc[k] = 1 << (k % 8);
+                    column_counts[threshold_index] = 1 << (threshold_index % 8);
                 }
             }
-            for (m = 0; m < 128; m += 8) {
-                *out++ = acc[m] | acc[m + 1] | acc[m + 2] | acc[m + 3]
-                       | acc[m + 4] | acc[m + 5] | acc[m + 6] | acc[m + 7];
+            for (group_start = 0; group_start < 128; group_start += 8) {
+                *out++ = column_counts[group_start] | column_counts[group_start + 1] | column_counts[group_start + 2] | column_counts[group_start + 3]
+                       | column_counts[group_start + 4] | column_counts[group_start + 5] | column_counts[group_start + 6] | column_counts[group_start + 7];
             }
         }
     }
@@ -1000,39 +999,39 @@ typedef struct {
 } OrientEntry;
 extern OrientEntry level_map_transforms[];
 
-/* arg2 (a table index, offset by 100 when the +100 variant is wanted)
+/* level (a table index, offset by 100 when the +100 variant is wanted)
    selects a row of D_0019EA70 (19 rows, 0..0x12); -1 means "use
    D_0015EE84"; anything out of [0,0x13) collapses to row 0. Row 6 with
    the +100 variant blends against fixed constants instead of the
    generic per-row formula. */
-void world_to_map_coords(float *out0, float *out1, int arg2, float arg3, float arg4) {
-    int idx;
+void world_to_map_coords(float *map_x, float *map_y, int level, float world_x, float world_y) {
+    int level_index;
     int flag = 0;
 
-    if (arg2 >= 100) {
-        arg2 -= 100;
+    if (level >= 100) {
+        level -= 100;
         flag = 1;
     }
 
-    idx = arg2;
-    if (idx == -1) {
-        idx = g_current_level_index;
+    level_index = level;
+    if (level_index == -1) {
+        level_index = g_current_level_index;
     }
-    if (idx < 0) {
-        idx = 0;
+    if (level_index < 0) {
+        level_index = 0;
     }
-    if (idx >= 0x13) {
-        idx = 0;
+    if (level_index >= 0x13) {
+        level_index = 0;
     }
 
-    if (idx == 6 && flag) {
-        *out0 = (level_map_transforms[6].d * arg4 + 1053.0f) * (1.0f / 512.0f);
-        *out1 = (740.0f - level_map_transforms[6].b * arg3) * (1.0f / 512.0f);
+    if (level_index == 6 && flag) {
+        *map_x = (level_map_transforms[6].d * world_y + 1053.0f) * (1.0f / 512.0f);
+        *map_y = (740.0f - level_map_transforms[6].b * world_x) * (1.0f / 512.0f);
         return;
     }
 
-    *out0 = (level_map_transforms[idx].a + level_map_transforms[idx].b * arg3) * (1.0f / 512.0f);
-    *out1 = (level_map_transforms[idx].c + level_map_transforms[idx].d * arg4) * (1.0f / 512.0f);
+    *map_x = (level_map_transforms[level_index].a + level_map_transforms[level_index].b * world_x) * (1.0f / 512.0f);
+    *map_y = (level_map_transforms[level_index].c + level_map_transforms[level_index].d * world_y) * (1.0f / 512.0f);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00208D30);

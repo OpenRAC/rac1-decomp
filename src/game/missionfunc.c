@@ -233,15 +233,15 @@ extern MissionNode *current_mission_nodes;
 /* Lists the current objectives (the 0x28-byte node list at D_001A2FA0,
    ended by id 0): each node not hidden (flags & 2), with a status, and
    not an optional (flags & 1) one already done (status 2) goes to
-   out[count] as its id (with arg3: 0x5243 when done, else ids[sel]),
+   out[count] as its id (with use_alternate_ids: 0x5243 when done, else ids[sel]),
    sets bit count of *mask when done and puts base + sel in *nums++.
    Bit 31 of *mask says every visible node is done. Returns the count.
    out is indexed by count: loop strength reduction then gives retail's
    pointer and its copy for the second store. */
-int collect_mission_ids(int *out, int *mask, int *nums, int arg3) {
-    MissionNode *p = current_mission_nodes;
+int collect_mission_ids(int *out, int *mask, int *nums, int use_alternate_ids) {
+    MissionNode *node = current_mission_nodes;
     int count = 0;
-    int all = 1;
+    int all_complete = 1;
 
     *out = 0;
     if (mask != 0) {
@@ -250,32 +250,32 @@ int collect_mission_ids(int *out, int *mask, int *nums, int arg3) {
     if (nums != 0) {
         *nums = -1;
     }
-    if (p == 0) {
+    if (node == 0) {
         return 0;
     }
-    while (p->id != 0) {
-        unsigned short f = p->flags;
-        short t = p->status;
+    while (node->id != 0) {
+        unsigned short node_flags = node->flags;
+        short node_status = node->status;
 
-        if (t != 2 && !(f & 2)) {
-            all = 0;
+        if (node_status != 2 && !(node_flags & 2)) {
+            all_complete = 0;
         }
-        if (!(f & 2) && t != 0 && !((f & 1) && t == 2)) {
-            out[count] = p->id;
-            if (arg3 != 0) {
-                out[count] = (p->status == 2) ? 0x5243 : p->ids[p->sel];
+        if (!(node_flags & 2) && node_status != 0 && !((node_flags & 1) && node_status == 2)) {
+            out[count] = node->id;
+            if (use_alternate_ids != 0) {
+                out[count] = (node->status == 2) ? 0x5243 : node->ids[node->sel];
             }
-            if (mask != 0 && p->status == 2) {
+            if (mask != 0 && node->status == 2) {
                 *mask |= 1 << count;
             }
             if (nums != 0) {
-                *nums++ = p->base + p->sel;
+                *nums++ = node->base + node->sel;
             }
             count++;
         }
-        p++;
+        node++;
     }
-    if (mask != 0 && all != 0) {
+    if (mask != 0 && all_complete != 0) {
         *mask |= 0x80000000;
     }
     return count;
@@ -345,10 +345,10 @@ int MissionCond_Items1FAnd21(void) {
     return 0;
 }
 
-/* Returns whether entry arg0 of the D_0013D5C8 table is set. */
-int is_item_available(int arg0) {
+/* Returns whether entry item_index of the D_0013D5C8 table is set. */
+int is_item_available(int item_index) {
     unsigned char *base = (unsigned char *)&item_available;
-    return base[arg0] != 0;
+    return base[item_index] != 0;
 }
 
 /* Two flat `&&` returns over race_gates_r[20/24/22].d; retail's reuse of

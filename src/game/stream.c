@@ -548,7 +548,7 @@ extern s32 compute_clamped_count_difference(void);
 void process_menu_entry(void *arg0, Menu *menu, s32 arg2);
 
 /* Handle menu cursor moves and build the help text for the selected entry (arg2: cursor moved). */
-void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
+void process_menu_entry(void *callback_context, Menu *menu, s32 follow_entry_link) {
     char buf[0x100];
     Suffixes sfx;
     char num[0x20];
@@ -565,7 +565,7 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
     if (menu->unk3C == 0) {
         return;
     }
-    if (arg2 != 0) {
+    if (follow_entry_link != 0) {
         menu->unk4 = menu->unk36;
         menu->unk38 = world_update_time;
         n = e->unk6;
@@ -575,7 +575,7 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
             e = (MenuItem *)(menu->unk3C + n * 0x1C);
             menu->unk8 = *(u8 *)&e->unk10 & 1;
             if (flags & 4) {
-                menu_entry_trigger_state[2] = (s32)arg0;
+                menu_entry_trigger_state[2] = (s32)callback_context;
                 menu_entry_trigger_state[3] = (s32)menu;
                 if (e->unk4 & 0x4000) {
                     noop_callback_n((s16)(e->unk4 ^ 0x4000));
@@ -651,7 +651,7 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
         menu->unk38 = world_update_time_far;
         e = (MenuItem *)(menu->unk3C + next * 0x1C);
         menu->unk8 = *(u8 *)&e->unk10 & 1;
-        process_menu_entry(arg0, menu, 0);
+        process_menu_entry(callback_context, menu, 0);
     }
 }
 

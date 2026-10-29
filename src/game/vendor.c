@@ -441,11 +441,11 @@ extern char fmt_plain_int[];
 extern void sprintf();
 
 /* Formats a number into a string, with a thousands separator from 1000 up. */
-void format_scaled_display_value(void *arg0, int arg1) {
-    if (arg1 >= 1000) {
-        sprintf(arg0, fmt_thousands_grouped_int, arg1 / 1000, arg1 % 1000);
+void format_scaled_display_value(void *destination, int value) {
+    if (value >= 1000) {
+        sprintf(destination, fmt_thousands_grouped_int, value / 1000, value % 1000);
     } else {
-        sprintf(arg0, fmt_plain_int, arg1);
+        sprintf(destination, fmt_plain_int, value);
     }
 }
 
@@ -1171,18 +1171,18 @@ LINKER_REMNANT("asm/remnants/text", func_0023B510);
    linker remnant in front of it were split off. */
 extern void update_instance_attachment_points_and_lengths(char *arg0);
 
-void settle_attachment_weight_and_update(char *arg0) {
-    if (*(unsigned char *)(arg0 + 0x70) & 0x2) {
-        float f0 = *(float *)(arg0 + 0x58);
+void settle_attachment_weight_and_update(char *moby) {
+    if (*(unsigned char *)(moby + 0x70) & 0x2) {
+        float f0 = *(float *)(moby + 0x58);
         float f1 = 0.0f;
         float f2 = 1.0f;
         if (f1 < f0) {
             f2 = f1;
         }
-        *(float *)(arg0 + 0x54) = f2;
-        *(float *)(arg0 + 0x58) = f1;
+        *(float *)(moby + 0x54) = f2;
+        *(float *)(moby + 0x58) = f1;
     }
-    update_instance_attachment_points_and_lengths(arg0);
+    update_instance_attachment_points_and_lengths(moby);
 }
 
 typedef struct {
@@ -1199,16 +1199,16 @@ extern void FastVecSub_b(void *, void *, void *) __asm__("func_001F9BF0");
    unaligned ldl/ldr + sdl/sdr pairs, which is retail's shape -- same
    idiom as func_001FFE88), then record the two resulting lengths at
    +0x40 and +0x44. */
-void update_instance_attachment_points_and_lengths(char *arg0) {
-    float a[4];
-    float b[4];
+void update_instance_attachment_points_and_lengths(char *moby) {
+    float first_edge[4];
+    float second_edge[4];
     Cfg16 cfg;
-    char *p = ((char *)((Moby *)arg0)->pvars);
+    char *attachment_data = ((char *)((Moby *)moby)->pvars);
 
     cfg = attachment_vertex_indices;
-    transform_scaled_vertex_batch(arg0, 4, &cfg, p);
-    FastVecSub_b(a, p + 0x10, p);
-    FastVecSub_b(b, p + 0x20, p);
-    *(float *)(p + 0x40) = FastVecLength(a);
-    *(float *)(p + 0x44) = FastVecLength(b);
+    transform_scaled_vertex_batch(moby, 4, &cfg, attachment_data);
+    FastVecSub_b(first_edge, attachment_data + 0x10, attachment_data);
+    FastVecSub_b(second_edge, attachment_data + 0x20, attachment_data);
+    *(float *)(attachment_data + 0x40) = FastVecLength(first_edge);
+    *(float *)(attachment_data + 0x44) = FastVecLength(second_edge);
 }

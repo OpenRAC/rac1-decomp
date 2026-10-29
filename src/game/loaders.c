@@ -969,26 +969,26 @@ extern int resident_class_original_field_2c[];
 extern void assign_moby_class_data(int);
 extern void prepare_resident_class_render_data(void *, int, int, int);
 
-/* Registers class arg3's data arg0 in the next moby-class slot
+/* Registers class class_id's data class_data in the next moby-class slot
    (D_00160000): class -> slot in D_001B3E40, slot -> class in
-   D_001B3C80, slot -> data in D_001B3580; then func_00213BB8(arg3) and
-   the slot count is bumped. A non-null arg0 also has its +0x2C field
+   D_001B3C80, slot -> data in D_001B3580; then func_00213BB8(class_id) and
+   the slot count is bumped. A non-null class_data also has its +0x2C field
    kept in D_001B6500 and is set up by func_00203B70 once the count is
    bumped. The slot byte is D_00160000 read again as a byte. */
-void register_moby_class(void *arg0, int arg1, int arg2, int arg3) {
-    int idx = resident_moby_class_count;
+void register_moby_class(void *class_data, int indexed_textures, int material_map, int class_id) {
+    int class_slot = resident_moby_class_count;
 
-    resident_class_slot_by_id[arg3] = *(unsigned char *)&resident_moby_class_count;
-    resident_class_id_by_slot[idx] = arg3;
-    moby_class_resources[idx] = arg0;
-    if (arg0 == 0) {
-        assign_moby_class_data(arg3);
+    resident_class_slot_by_id[class_id] = *(unsigned char *)&resident_moby_class_count;
+    resident_class_id_by_slot[class_slot] = class_id;
+    moby_class_resources[class_slot] = class_data;
+    if (class_data == 0) {
+        assign_moby_class_data(class_id);
         resident_moby_class_count = resident_moby_class_count + 1;
     } else {
-        resident_class_original_field_2c[idx] = *(int *)((char *)arg0 + 0x2C);
-        assign_moby_class_data(arg3);
+        resident_class_original_field_2c[class_slot] = *(int *)((char *)class_data + 0x2C);
+        assign_moby_class_data(class_id);
         resident_moby_class_count = resident_moby_class_count + 1;
-        prepare_resident_class_render_data(arg0, arg1, arg2, arg3);
+        prepare_resident_class_render_data(class_data, indexed_textures, material_map, class_id);
     }
 }
 __asm__(".section .text\n\tnop\n");
@@ -1801,18 +1801,18 @@ extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
    spawning (func_0020D348) and initialising the moby the first time; each
    part's pointer table is made absolute. Adapted from Lombyte's project (GPL-3.0) for
    PAL. */
-void update_world_object_animation(void *arg0) {
+void update_world_object_animation(void *unused_context) {
     struct ModelRec *rec;
     struct Moby *mob;
-    int *cp;
-    int *sp;
-    int i;
-    int k;
-    int idx;
-    int id;
-    int off;
-    int endp;
-    int pc;
+    int *part_offsets;
+    int *part_record;
+    int part_index;
+    int pointer_index;
+    int class_part_slot;
+    int class_id;
+    int part_offset;
+    int pvars_address;
+    int part_count;
 
     flush_cache(0);
     fast_decompress_2(render_sequence_t.unk5C, (int)render_sequence_t.rec);
@@ -1820,35 +1820,35 @@ void update_world_object_animation(void *arg0) {
 
     rec = render_sequence_t.rec;
     render_sequence_t.unk38 = 0;
-    cp = rec->part_off;
+    part_offsets = rec->part_off;
     render_sequence_t.unk40 = rec->flags;
-    pc = rec->part_count;
+    part_count = rec->part_count;
     render_sequence_t.unk46 = rec->pad08;
     render_sequence_t.num_parts = rec->num_parts;
     render_sequence_t.unk54 = (int)rec + rec->end_off;
-    if (pc < 0x400) {
+    if (part_count < 0x400) {
         render_sequence_t.unk4C = 0;
     } else {
-        render_sequence_t.unk4C = (int)rec + pc;
+        render_sequence_t.unk4C = (int)rec + part_count;
     }
 
-    for (i = 0; i < render_sequence_t.num_parts; i++) {
-        off = *cp++;
-        sp = (int *)((unsigned char *)rec + off);
-        id = sp[0];
-        sp = (int *)((unsigned char *)sp + 0xC);
-        endp = (int)rec + sp[0];
-        sp = (int *)((unsigned char *)sp + 4);
-        if (g_game_mode == 6 && i == 0 && id == 0x215) {
-            id = D_00160588[level_render_state_g.slot];
+    for (part_index = 0; part_index < render_sequence_t.num_parts; part_index++) {
+        part_offset = *part_offsets++;
+        part_record = (int *)((unsigned char *)rec + part_offset);
+        class_id = part_record[0];
+        part_record = (int *)((unsigned char *)part_record + 0xC);
+        pvars_address = (int)rec + part_record[0];
+        part_record = (int *)((unsigned char *)part_record + 4);
+        if (g_game_mode == 6 && part_index == 0 && class_id == 0x215) {
+            class_id = D_00160588[level_render_state_g.slot];
         }
-        mob = render_sequence_t.slots[i];
+        mob = render_sequence_t.slots[part_index];
         if (mob == 0) {
-            mob = CreateMoby_m(id);
-            idx = ((struct PartList *)mob->pclass)->used;
-            ((struct PartList *)mob->pclass)->used = idx + 1;
-            mob->seq = idx;
-            mob->prev_seq = idx;
+            mob = CreateMoby_m(class_id);
+            class_part_slot = ((struct PartList *)mob->pclass)->used;
+            ((struct PartList *)mob->pclass)->used = class_part_slot + 1;
+            mob->seq = class_part_slot;
+            mob->prev_seq = class_part_slot;
             mob->draw_dist = 0x1FF;
             mob->flags |= 6;
             mob->unk72 = 0xFF;
@@ -1861,14 +1861,14 @@ void update_world_object_animation(void *arg0) {
             if (((struct PartList *)mob->pclass)->flag) {
                 mob->unk73 = 0x18;
             }
-            render_sequence_t.slots[i] = mob;
+            render_sequence_t.slots[part_index] = mob;
         }
-        mob->pvars = (u8 *)endp;
-        ((struct PartList *)mob->pclass)->entries[mob->seq] = sp;
-        for (k = 0; k < ((unsigned char *)sp)[0x10]; k++) {
-            int *w = (int *)((unsigned char *)sp + 0x1C);
+        mob->pvars = (u8 *)pvars_address;
+        ((struct PartList *)mob->pclass)->entries[mob->seq] = part_record;
+        for (pointer_index = 0; pointer_index < ((unsigned char *)part_record)[0x10]; pointer_index++) {
+            int *part_pointers = (int *)((unsigned char *)part_record + 0x1C);
 
-            w[k] = (int)sp + w[k];
+            part_pointers[pointer_index] = (int)part_record + part_pointers[pointer_index];
         }
     }
 }
@@ -1886,11 +1886,11 @@ extern int current_vu_chain_m __asm__("D_0016100C") MACRO_ADDR;
    with the chunk's value as the current one meanwhile. The slot address is
    written base - (-(index * 4)), which keeps retail's base-first addu
    (adapted from Lombyte's project (GPL-3.0) for PAL). */
-void parse_space_scene_chunk(int arg0) {
+void parse_space_scene_chunk(int chunk_index) {
     char *base = (char *)&render_sequence;
-    char *p = base - (-(arg0 * 4));
-    *(int *)(base + 0x5C) = *(int *)(p + 0x60);
-    update_world_object_animation(p);
+    char *chunk_slot = base - (-(chunk_index * 4));
+    *(int *)(base + 0x5C) = *(int *)(chunk_slot + 0x60);
+    update_world_object_animation(chunk_slot);
     *(int *)(base + 0x5C) = vu1_chain_buffer_2 + current_vu_chain_m;
 }
 
