@@ -56,16 +56,15 @@ typedef struct {
 } HudIconRec;
 extern HudIconRec *hud_icon_table;
 
-/* Finds arg0 in the table D_0019A504 points to (ended by id 0xFFFF).
-   The older decode read D_0019A504 as the table itself. */
-int Hud_GetIconIndex(int arg0) {
+/* Find icon_id in the icon table, which ends at id 0xFFFF. */
+int Hud_GetIconIndex(int icon_id) {
     HudIconRec *tab = hud_icon_table;
-    int i = 0;
+    int icon_index = 0;
 
-    while (tab[i].id != 0xFFFF && tab[i].id != arg0) {
-        i++;
+    while (tab[icon_index].id != 0xFFFF && tab[icon_index].id != icon_id) {
+        icon_index++;
     }
-    return i;
+    return icon_index;
 }
 
 extern int hud_state NOT_SDA;
@@ -420,10 +419,10 @@ typedef struct AnimRec {
 } AnimRec;
 
 /* Loads the queued animation and copies its pending values into place. */
-void apply_pending_animation(void *arg0) {
-    struct AnimRec *anim = (struct AnimRec *)arg0;
+void apply_pending_animation(void *animation_data) {
+    struct AnimRec *anim = (struct AnimRec *)animation_data;
 
-    load_animation_definition(arg0, anim->next_id);
+    load_animation_definition(animation_data, anim->next_id);
     anim->a = anim->next_a;
     anim->c = anim->next_c;
     anim->b = anim->next_b;
@@ -431,7 +430,7 @@ void apply_pending_animation(void *arg0) {
     anim->d = anim->next_d;
     anim->fn = anim->next_fn;
     if (anim->fn != 0) {
-        anim->fn(arg0);
+        anim->fn(animation_data);
     }
     anim->pending = 0;
 }
@@ -450,18 +449,18 @@ extern HudRec90 hud_chan_slots[] NOT_SDA;
    match was made against a void view. */
 extern void queue_animation_update_v(int, int, int, int, int, int, int) __asm__("func_001FFB38");
 
-/* Calls func_001FFB38(i, 0xFFFF, 0, 0, 0, 0, 0) on the record whose
-   +0x64 is arg0 and returns 1, or returns 0 when none is. The nop in
+/* Calls func_001FFB38(slot_index, 0xFFFF, 0, 0, 0, 0, 0) on the record whose
+   +0x64 is item_id and returns 1, or returns 0 when none is. The nop in
    the search loop is ps2eeas's short-loop padding. */
-int remove_hud_item(int arg0) {
-    int i;
-    for (i = 0; i < 13; i++) {
-        if (hud_chan_slots[i].unk64 == arg0) {
+int remove_hud_item(int item_id) {
+    int slot_index;
+    for (slot_index = 0; slot_index < 13; slot_index++) {
+        if (hud_chan_slots[slot_index].unk64 == item_id) {
             break;
         }
     }
-    if (i < 13) {
-        queue_animation_update_v(i, 0xFFFF, 0, 0, 0, 0, 0);
+    if (slot_index < 13) {
+        queue_animation_update_v(slot_index, 0xFFFF, 0, 0, 0, 0, 0);
         return 1;
     }
     return 0;
@@ -469,43 +468,40 @@ int remove_hud_item(int arg0) {
 
 extern int Hud_GetIconIndex(int);
 
-/* tbl[7] is volatile: retail re-loads that pointer field before each of
-   the three record accesses rather than caching it, while keeping the
-   r*8 offset in a register. */
-void load_animation_definition(void *arg0, int arg1) {
-    char *self = (char *)arg0;
+/* Keep the volatile table view so each field reloads the pointer. */
+void load_animation_definition(void *animation_data, int icon_id) {
+    char *self = (char *)animation_data;
     volatile int *tbl;
-    int r;
+    int icon_index;
     unsigned short v;
 
-    r = Hud_GetIconIndex(arg1);
+    icon_index = Hud_GetIconIndex(icon_id);
     /* base materialized only after the call, so it lands in a temp
        register rather than a callee-saved one; tbl[7] is volatile because
        retail re-loads that pointer field before each record access. */
     tbl = (volatile int *)&hud_state;
-    v = *(unsigned short *)((char *)tbl[7] + r * 8);
-    *(short *)(self + 0x40) = r;
+    v = *(unsigned short *)((char *)tbl[7] + icon_index * 8);
+    *(short *)(self + 0x40) = icon_index;
     *(int *)(self + 0) = v;
-    *(char *)(self + 0x42) = *(unsigned char *)((char *)tbl[7] + r * 8 + 6);
-    *(int *)(self + 0x44) = *(unsigned short *)((char *)tbl[7] + r * 8 + 4);
+    *(char *)(self + 0x42) = *(unsigned char *)((char *)tbl[7] + icon_index * 8 + 6);
+    *(int *)(self + 0x44) = *(unsigned short *)((char *)tbl[7] + icon_index * 8 + 4);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001FFD98);
 
-/* Stores arg1 into +0x24 of the record whose +0x64 is arg0, and into
-   +0x04 when its +0x68 is 0. Indexing the extern array at each access,
-   not through a cached base pointer, gives retail's per-access %lo. */
-void Hud_SetBarValueById(int arg0, int arg1) {
-    int i;
-    for (i = 0; i < 13; i++) {
-        if (hud_chan_slots[i].unk64 == arg0) {
+/* Update the matching HUD item's queued value, and its current value
+   when no update is pending. */
+void Hud_SetBarValueById(int item_id, int value) {
+    int slot_index;
+    for (slot_index = 0; slot_index < 13; slot_index++) {
+        if (hud_chan_slots[slot_index].unk64 == item_id) {
             break;
         }
     }
-    if (i < 13) {
-        hud_chan_slots[i].unk24 = arg1;
-        if (hud_chan_slots[i].unk68 == 0) {
-            hud_chan_slots[i].unk04 = arg1;
+    if (slot_index < 13) {
+        hud_chan_slots[slot_index].unk24 = value;
+        if (hud_chan_slots[slot_index].unk68 == 0) {
+            hud_chan_slots[slot_index].unk04 = value;
         }
     }
 }
@@ -526,11 +522,11 @@ extern void libc_strcpy(Cfg13 *, void *);
    trailing three bytes done singly, which is exactly retail's shape. */
 extern int libc_strlen_hud(void *) __asm__("func_00116810");
 /* Copies text into the shared message buffer, preloading the too-long label when under 80 chars. */
-void copy_text_to_shared_buffer(void *arg0) {
-    if ((unsigned int)libc_strlen_hud(arg0) < 0x50) {
+void copy_text_to_shared_buffer(void *text) {
+    if ((unsigned int)libc_strlen_hud(text) < 0x50) {
         message_text_buffer = message_too_long_label;
     }
-    libc_strcpy(&message_text_buffer, arg0);
+    libc_strcpy(&message_text_buffer, text);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001FFF08);

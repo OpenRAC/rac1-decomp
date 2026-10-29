@@ -298,8 +298,8 @@ void SetupFS_AA_buffer(int display_width, int display_height, int storage_width,
 extern long background_rgbaq NOT_SDA;
 
 /* Set the background clear colour from 8-bit red, green and blue. */
-void SetBackgroundColor(int arg0, int arg1, int arg2) {
-    background_rgbaq = (long)arg0 | ((long)arg1 << 8) | ((long)arg2 << 16) | 0x80000000L;
+void SetBackgroundColor(int red, int green, int blue) {
+    background_rgbaq = (long)red | ((long)green << 8) | ((long)blue << 16) | 0x80000000L;
 }
 
 extern void *active_fs_aa_buffer MACRO_ADDR;

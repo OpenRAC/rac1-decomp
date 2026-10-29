@@ -1338,16 +1338,9 @@ void UpdateViewContext(void) {
 extern int g_screen_extent[];
 extern float IntToFloat(int);
 
-/* Sets the screen size: the GS viewport record at D_0013E600 gets width,
-   height, their halves and the four <<4 edges around the 0x800 centre;
-   the draw context at D_0018CE00 gets a2 at +0xB0, 32 and 524288 at
-   +0xA0/+0xA4, the half extents as floats (func_001FA888 is int to
-   float) at +0x200/+0x204, four times each at +0x208/+0x20C, and a3..a6
-   at +0x218/+0x21C/+0x228/+0x22C; then UpdateViewContext (func_001F3140).
-   The context is reached through one local pointer, which keeps its
-   full address in $s0 as retail does (indexing the global directly
-   folds +0xB0 into the base and spends $a0 on the %hi). */
-void configure_graphics_projection(int w, int h, float a2, float a3, float a4, float a5, float a6) {
+/* Set the viewport size, field of view, and fog parameters.
+   Keep one local context pointer for the matching address loads. */
+void configure_graphics_projection(int w, int h, float horizontal_fov, float near_fog_distance, float far_fog_distance, float near_fog_intensity, float far_fog_intensity) {
     float *ctx = (float *)view_context;
     int hw = w >> 1;
     int hh = h >> 1;
@@ -1361,7 +1354,7 @@ void configure_graphics_projection(int w, int h, float a2, float a3, float a4, f
     g_screen_extent[5] = (0x800 - hh) << 4;
     g_screen_extent[6] = (hw + 0x800) << 4;
     g_screen_extent[7] = (hh + 0x800) << 4;
-    ctx[0x2C] = a2;
+    ctx[0x2C] = horizontal_fov;
     ctx[0x28] = 32.0f;
     ctx[0x29] = 524288.0f;
     ctx[0x80] = IntToFloat(w) * 0.5f;
@@ -1369,10 +1362,10 @@ void configure_graphics_projection(int w, int h, float a2, float a3, float a4, f
     ctx[0x81] = fh;
     ctx[0x82] = ctx[0x80] * 4.0f;
     ctx[0x83] = fh * 4.0f;
-    ctx[0x86] = a3;
-    ctx[0x87] = a4;
-    ctx[0x8A] = a5;
-    ctx[0x8B] = a6;
+    ctx[0x86] = near_fog_distance;
+    ctx[0x87] = far_fog_distance;
+    ctx[0x8A] = near_fog_intensity;
+    ctx[0x8B] = far_fog_intensity;
     UpdateViewContext();
 }
 
@@ -3491,18 +3484,12 @@ void font_queue_vu_state(void) {
 extern void setup_render_target(int, int, int);
 extern short render_target_base_page NOT_SDA;
 
-/* Sets up a (1 << width_log2) x (1 << height_log2) area, as vendor.c's func_0023A948 does:
-   func_001FB608 gets the sizes and a base address, which is D_001519EE
-   pages when `flag` is set, else D_0015EF8C less 4 << min(a + b, 16)
-   bytes rounded down to a page (8 KB); func_001F3760 gets the sizes and
-   the float setup (f, 0, 524288, 255, 0); GS registers 0x47 (0 with the
-   flag, 0x30000 without) and 0x42 are then written. Each arm makes its
-   own page-aligned base, so the two trailing `<< 13`s are cross-jumped
-   into the one retail has ahead of the argument moves. */
-void configure_graphics_render_target_and_projection(int width_log2, int height_log2, int flag, float f) {
+/* Set a fixed target or allocate one below the texture arena,
+   then apply projection settings. */
+void configure_graphics_render_target_and_projection(int width_log2, int height_log2, int fixed_target, float horizontal_fov) {
     int base;
 
-    if (flag != 0) {
+    if (fixed_target != 0) {
         base = render_target_base_page << 13;
     } else {
         int area_log2 = width_log2 + height_log2;
@@ -3515,8 +3502,8 @@ void configure_graphics_render_target_and_projection(int width_log2, int height_
         base = (base >> 13) << 13;
     }
     setup_render_target(width_log2, height_log2, base);
-    configure_graphics_projection(1 << width_log2, 1 << height_log2, f, 0.0f, 524288.0f, 255.0f, 0.0f);
-    if (flag != 0) {
+    configure_graphics_projection(1 << width_log2, 1 << height_log2, horizontal_fov, 0.0f, 524288.0f, 255.0f, 0.0f);
+    if (fixed_target != 0) {
         VU1_addGSregister(0x47, 0);
     } else {
         VU1_addGSregister(0x47, 0x30000);

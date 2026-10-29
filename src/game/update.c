@@ -397,11 +397,11 @@ LINKER_REMNANT("asm/remnants/text", func_00239180);
 extern char vendor_state[];
 extern char str_scrolling_status_fmt[];
 
-/* Formats arg0 into the scrolling status message and resets its offset. */
-void set_scrolling_status_message(int arg0) {
-    char *b = vendor_state;
-    sprintf(*(int *)(b + 0x2C), str_scrolling_status_fmt, arg0);
-    *(int *)(b + 0x44) = 0;
+/* Formats message_argument into the scrolling status message and resets its offset. */
+void set_scrolling_status_message(int message_argument) {
+    char *state = vendor_state;
+    sprintf(*(int *)(state + 0x2C), str_scrolling_status_fmt, message_argument);
+    *(int *)(state + 0x44) = 0;
 }
 
 typedef struct {

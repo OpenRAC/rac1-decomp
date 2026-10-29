@@ -67,25 +67,21 @@ extern int sce_sif_dma_stat(int modid);
 extern int sif_load_iop_module_buffer(int a, int b, int c);
 extern void sce_sif_free_iop_heap();
 
-/* LoadIRXModule(name, args): starts an IOP module load through an RPC
-   helper, hands func_00118E20 a 4-word tagged buffer, polls the returned
-   id until it is ready, then starts the module and reports the result.
-   The nops before the poll loop's branch are the short-loop padding
-   (tools/fix_short_loops.py); the result test comes before the
-   func_0011CCB0 call, where retail's movz sits in its delay slot. */
-int LoadIRXModule(void *arg0, void *arg1) {
-    int buf[4];
+/* Copy module_data to the IOP heap and load it.
+   Wait for the DMA transfer, then free the heap buffer. */
+int LoadIRXModule(void *module_data, void *module_size) {
+    int transfer_tag[4];
     int result;
     int modid;
     int status;
     int ret = 1;
 
-    result = sce_sif_alloc_iop_heap((int)arg1);
-    buf[0] = (int)arg0;
-    buf[1] = result;
-    buf[2] = (int)arg1;
-    buf[3] = 0;
-    modid = sce_sif_set_dma(buf, 1);
+    result = sce_sif_alloc_iop_heap((int)module_size);
+    transfer_tag[0] = (int)module_data;
+    transfer_tag[1] = result;
+    transfer_tag[2] = (int)module_size;
+    transfer_tag[3] = 0;
+    modid = sce_sif_set_dma(transfer_tag, 1);
     if (modid != 0) {
         while (sce_sif_dma_stat(modid) >= 0) {
         }
