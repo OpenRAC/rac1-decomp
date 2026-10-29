@@ -20,10 +20,10 @@ extern void __sclose(void *arg0);
 extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 
-int _fstat_r(int *errOut, void *arg1, void *arg2) {
+int _fstat_r(int *errOut, void *file_descriptor, void *stat_buffer) {
     int r;
     SbrkErrno = 0;
-    r = libc_glue_fstat(arg1, arg2);
+    r = libc_glue_fstat(file_descriptor, stat_buffer);
     if (r == -1 && SbrkErrno != 0) {
         *errOut = SbrkErrno;
     }

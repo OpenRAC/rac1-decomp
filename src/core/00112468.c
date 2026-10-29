@@ -15,10 +15,10 @@ extern long strtol(int arg0, int arg1, int arg2);
 
 extern int SbrkErrno;
 
-int _close_r(int *errOut, int arg1) {
+int _close_r(int *errOut, int file_descriptor) {
     int r;
     SbrkErrno = 0;
-    r = libc_glue_close(arg1);
+    r = libc_glue_close(file_descriptor);
     if (r == -1 && SbrkErrno != 0) {
         *errOut = SbrkErrno;
     }

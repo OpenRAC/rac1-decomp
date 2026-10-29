@@ -280,22 +280,21 @@ extern int sceTtyRead(int, int);
 extern int sceTtyInit_v(void) __asm__("func_00119CC8");
 
 /* As func_00119008: func_00119CC8 is called with no argument. */
-int libc_glue_read(int arg0, int arg1, int arg2) {
-    if (arg0 == 0) {
+int libc_glue_read(int file_descriptor, int buffer_address, int byte_count) {
+    if (file_descriptor == 0) {
         if (CoreGlobalWord == 0) {
             if (sceTtyInit_v() == 0) {
                 return -1;
             }
             CoreGlobalWord = 1;
         }
-        return sceTtyRead(arg1, arg2);
+        return sceTtyRead(buffer_address, byte_count);
     }
     return -1;
 }
 
-/* Takes an argument its callers pass (e.g. func_00112468) and ignores
-   it; an unused parameter costs no codegen. */
-int libc_glue_close(int arg0) {
+/* Always fails; the descriptor is unused. */
+int libc_glue_close(int file_descriptor) {
     return -1;
 }
 
@@ -311,10 +310,10 @@ int libc_glue_isatty(void) {
     return 1;
 }
 
-int libc_glue_fstat(void *arg0, void *arg1) {
-    char *p = (char *)arg1;
-    *(long *)(p + 0x48) = 0;
-    *(int *)(p + 0x4) = 0x2000;
+int libc_glue_fstat(void *file_descriptor, void *stat_buffer) {
+    char *stat_bytes = (char *)stat_buffer;
+    *(long *)(stat_bytes + 0x48) = 0;
+    *(int *)(stat_bytes + 0x4) = 0x2000;
     return 0;
 }
 

@@ -84,28 +84,18 @@ extern int sce_sif_alloc_iop_heap(int arg0);
 ASM_FUNC("asm/handwritten/core_text", func_001208E8);
 
 
-/* sceCdDelayThread: sleep on an alarm. Same stack-descriptor idiom as
-   func_0011BBF0 (a SemaParam: initCount [2] = 0, maxCount [1] = 1,
-   option [5] = 0). The second argument to func_00118B20 (SetAlarm) is the
-   address of func_001208E4's *second* instruction -- retail builds it as
-   one %hi/%lo pair on `func_001208E4 + 4`, so it is a code address the
-   source names by symbol, not a separate label. `unsigned short arg0` is
-   what puts `andi $17,$4,0xFFFF` in the prologue.
-
-   Exact under 2.9-ee with the stores written initCount, maxCount, option
-   (as func_0011B710). Under 2.95.3 it was 24/104: that build front-loads
-   `sd $31` where retail interleaves the descriptor stores between the
-   `$16` and `$31` saves. */
-void sceCdDelayThread(unsigned short arg0) {
-    int buf[8];
-    int h;
-    buf[2] = 0;
-    buf[1] = 1;
-    buf[5] = 0;
-    h = create_semaphore(buf);
-    set_alarm(arg0, (char *)cd_delay_alarm_handler_base + 4, h);
-    wait_semaphore(h);
-    delete_semaphore(h);
+/* Waits on a semaphore until an alarm fires.
+   The alarm callback starts four bytes past func_001208E4. */
+void sceCdDelayThread(unsigned short alarm_delay) {
+    int semaphore_params[8];
+    int semaphore_id;
+    semaphore_params[2] = 0;
+    semaphore_params[1] = 1;
+    semaphore_params[5] = 0;
+    semaphore_id = create_semaphore(semaphore_params);
+    set_alarm(alarm_delay, (char *)cd_delay_alarm_handler_base + 4, semaphore_id);
+    wait_semaphore(semaphore_id);
+    delete_semaphore(semaphore_id);
 }
 
 extern int sce_cd_sync_s(int);
@@ -113,16 +103,16 @@ extern int disable_interrupts(void);
 extern void enable_interrupts(void);
 extern void *cd_user_callback;
 
-void *sce_cd_callback(void *arg0) {
+void *sce_cd_callback(void *callback) {
     void *old;
-    int r;
+    int interrupt_state;
     if (sce_cd_sync_s(1) != 0) {
         return 0;
     }
-    r = disable_interrupts();
+    interrupt_state = disable_interrupts();
     old = cd_user_callback;
-    cd_user_callback = arg0;
-    if (r != 0) {
+    cd_user_callback = callback;
+    if (interrupt_state != 0) {
         enable_interrupts();
     }
     return old;
@@ -154,8 +144,8 @@ extern volatile int cd_ncmd_busy_v __asm__("D_001313F0");
 extern void *volatile cd_user_callback_v __asm__("D_00159840");
 extern int i_signal_semaphore(int);
 
-void cd_ncmd_callback(int *arg0) {
-    cd_callback_num_v = *arg0;
+void cd_ncmd_callback(int *callback_number) {
+    cd_callback_num_v = *callback_number;
     D_00131418_v = cd_callback_num_v;
     if (cd_callback_num_v == 0xB) {
         cd_callback_num_v = 0;
@@ -189,17 +179,17 @@ typedef struct {
     char buf1[0x40];
 } CdRecv;
 
-void cd_read_end_callback(int arg0) {
-    CdRecv *p = (CdRecv *)(arg0 | 0x20000000);
+void cd_read_end_callback(int result_address) {
+    CdRecv *transfer_result = (CdRecv *)(result_address | 0x20000000);
     int i;
 
-    if (p->n0 > 0) {
-        char *d0 = p->dst0;
-        for (i = 0; i < p->n0; i++) d0[i] = p->buf0[i];
+    if (transfer_result->n0 > 0) {
+        char *first_destination = transfer_result->dst0;
+        for (i = 0; i < transfer_result->n0; i++) first_destination[i] = transfer_result->buf0[i];
     }
-    if (p->n1 > 0) {
-        char *d1 = p->dst1;
-        for (i = 0; i < p->n1; i++) d1[i] = p->buf1[i];
+    if (transfer_result->n1 > 0) {
+        char *second_destination = transfer_result->dst1;
+        for (i = 0; i < transfer_result->n1; i++) second_destination[i] = transfer_result->buf1[i];
     }
     cd_ncmd_callback((int *)&cd_callback_num);
 }
@@ -695,23 +685,23 @@ extern int cd_scmd_recv_buffer;
 extern int cd_scmd_prechk(int);
 extern void sceSifWriteBackDCache(void *, int);
 
-/* sceCdMmode */
-int sce_cd_mmode(int arg0) {
-    int *p = &cd_scmd_send_buffer;
-    int r;
+/* Sets the drive mode through the CD command RPC. */
+int sce_cd_mmode(int drive_mode) {
+    int *command_word = &cd_scmd_send_buffer;
+    int result;
 
     if (cd_scmd_prechk(0x22) == 0) {
         return 0;
     }
-    cd_scmd_send_buffer = arg0;
-    sceSifWriteBackDCache(p, 4);
-    if (sif_call_rpc(cd_scmd_rpc_client, 0x22, 0, p, 4, &cd_scmd_recv_buffer, 4, 0, 0) < 0) {
+    cd_scmd_send_buffer = drive_mode;
+    sceSifWriteBackDCache(command_word, 4);
+    if (sif_call_rpc(cd_scmd_rpc_client, 0x22, 0, command_word, 4, &cd_scmd_recv_buffer, 4, 0, 0) < 0) {
         signal_semaphore(cd_scmd_sema);
         return 0;
     }
-    r = *(int *)((unsigned int)&cd_scmd_recv_buffer | 0x20000000);
+    result = *(int *)((unsigned int)&cd_scmd_recv_buffer | 0x20000000);
     signal_semaphore(cd_scmd_sema);
-    return r;
+    return result;
 }
 
 INCLUDE_ASM("asm/nonmatchings/core_text", func_0012174C);
