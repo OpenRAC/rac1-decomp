@@ -39,10 +39,9 @@ extern void viBufBeginPut(void *, unsigned char **, int *, unsigned char **, int
 extern void viBufEndPut(void *);
 extern int viBufCount(void *);
 
-/* videoDecSetStream(VideoDec *, int, int, int (*)(sceMpeg *, sceMpegCbData *, void *), void *)
- * -- hands its five arguments to func_0012B008 and returns 1. */
-int videoDecSetStream(VideoDec *dec, int a1, int a2, int (*cb)(void *, void *, void *), void *arg) {
-    sce_mpeg_add_str_callback(dec, a1, a2, (int)cb, (int)arg);
+/* Registers a callback for the stream type and channel. Always returns 1. */
+int videoDecSetStream(VideoDec *dec, int stream_type, int stream_channel, int (*cb)(void *, void *, void *), void *arg) {
+    sce_mpeg_add_str_callback(dec, stream_type, stream_channel, (int)cb, (int)arg);
     return 1;
 }
 /* videoDecBeginPut(VideoDec *, unsigned char **, int *, unsigned char **, int *)

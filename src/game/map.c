@@ -137,12 +137,8 @@ long load_texture_file(char *p) {
     return reg;
 }
 
-/* Registers an 8-bit texture: returns its GS TEX0 value (tbp = tex >> 8,
-   tbw = 1 << max(tw - 6, 0), PSMT8, tw, th, tcc 1, cbp = clut >> 8,
-   cld 4) and, while there is room (64 entries), records it in the next
-   D_0018D140 slot. The buffer width is shifted back into w itself: the
-   shift then writes w's register and the constant 1 keeps its own. */
-long register_8bit_texture(int tw, int th, int a2, int a3, int clut, int tex) {
+/* Returns an 8-bit texture's GS TEX0 value and queues its palette and image data if space remains. */
+long register_8bit_texture(int tw, int th, int clut_data_address, int image_data_address, int clut, int tex) {
     int w = tw - 6;
     long reg;
     int tbp = tex >> 8;
@@ -157,10 +153,10 @@ long register_8bit_texture(int tw, int th, int a2, int a3, int clut, int tex) {
         | ((long)cbp << 37) | ((long)4 << 61);
     if (pending_texture_upload_count < 0x40) {
 
-        pending_texture_uploads[pending_texture_upload_count].addr = a2;
+        pending_texture_uploads[pending_texture_upload_count].addr = clut_data_address;
         pending_texture_uploads[pending_texture_upload_count].cbp = cbp;
         pending_texture_uploads[pending_texture_upload_count].unk4 = 0;
-        pending_texture_uploads[pending_texture_upload_count].unk8 = a3;
+        pending_texture_uploads[pending_texture_upload_count].unk8 = image_data_address;
         pending_texture_uploads[pending_texture_upload_count].tw = tw;
         pending_texture_uploads[pending_texture_upload_count].th = th;
         pending_texture_uploads[pending_texture_upload_count].tbp = tbp;

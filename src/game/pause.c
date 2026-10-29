@@ -4060,8 +4060,8 @@ int DrawGBsShipMenu__maybe(char *screen_data) {
 extern float FastAddRots(float, float);
 
 /* Moby update for a rotating preview: spins its +0x40 angle by 0.02 a frame. */
-void rotate_preview_moby_x(Moby *arg0) {
-    arg0->rot.x = FastAddRots(arg0->rot.x, 0.02f);
+void rotate_preview_moby_x(Moby *moby) {
+    moby->rot.x = FastAddRots(moby->rot.x, 0.02f);
 }
 
 /* func_00234C98's second parameter is 64-bit (as in draw.c and
@@ -7707,22 +7707,18 @@ extern PauseClassRec item_info_table_r_r[] __asm__("D_001864D0");
 extern void DetachManipulator(int, void *);
 extern void AttachManipulator(int, int, void *);
 
-/* Moby update with a per-class record: find the class in D_001864D0 (0x4C
-   bytes each, 0x25 of them), refresh the matrix from the record's bone,
-   and either register the moby (+0x18 set) or restart its idle sound;
-   also re-sync the D_001D6160 animation group while its +1 flag is up.
-   The two store groups are in the order that schedules as retail's. */
-void update_menu_preview_class_pose(void *arg0) {
-    PauseMoby *m = arg0;
-    unsigned char *b = arg0;
-    float mtx[16];
+/* Updates the preview pose from its class record and keeps its animation group in sync. */
+void update_menu_preview_class_pose(void *moby_data) {
+    PauseMoby *m = moby_data;
+    unsigned char *moby_bytes = moby_data;
+    float pose_matrix[16];
     int id = *(int *)(*m->cls + 0x44);
     int i;
     int still;
     int sync;
     unsigned char *s;
 
-    if ((b[0x70] & 2) && b[0x53] != 1) {
+    if ((moby_bytes[0x70] & 2) && moby_bytes[0x53] != 1) {
         MobyBlendAnimation(m, 1, 0, 0);
     }
     for (i = 0; i < 0x25; i++) {
@@ -7730,11 +7726,11 @@ void update_menu_preview_class_pose(void *arg0) {
             break;
         }
     }
-    MobyTransformScaledVertex(id, item_info_table_r_r[i].bone, mtx);
-    qcopy(m->pos, &mtx[12]);
+    MobyTransformScaledVertex(id, item_info_table_r_r[i].bone, pose_matrix);
+    qcopy(m->pos, &pose_matrix[12]);
     refresh_moby_spatial_bounds(m);
     still = item_info_table_r_r[i].still == 0;
-    matrix_copy_rows(m->mtx, mtx);
+    matrix_copy_rows(m->mtx, pose_matrix);
     if (!still) {
         normalize_vector_triplet(m->mtx);
     }
@@ -7750,7 +7746,7 @@ void update_menu_preview_class_pose(void *arg0) {
         m->x68 = item_info_table;
         m->x54 = 0;
         m->x6C = item_info_table;
-        *(int *)(b + 0x58) = 0;
+        *(int *)(moby_bytes + 0x58) = 0;
         m->x50 = 0;
     }
     if (sync) {
@@ -7863,36 +7859,33 @@ void update_menu_preview_pose_and_attachments(void *preview) {
 }
 
 
-/* Moby 0x259 update: while flag 0x02 is set, keep its animation on 1 (or,
-   for class 0x25F in state 6, run the 6 animation until its timer +0x20
-   runs out and then blend back to 1), then refresh its matrix from bone 5
-   as func_00225FB8 does. */
-void update_menu_preview_animation_pose(void *arg0) {
-    PauseMoby *m = arg0;
-    unsigned char *b = (unsigned char *)m;
-    float mtx[16];
+/* Updates the preview animation, then rebuilds its pose from bone 5. */
+void update_menu_preview_animation_pose(void *moby_data) {
+    PauseMoby *m = moby_data;
+    unsigned char *moby_bytes = (unsigned char *)m;
+    float pose_matrix[16];
     int id = *(int *)(*m->cls + 0x44);
 
-    if (b[0x70] & 2) {
+    if (moby_bytes[0x70] & 2) {
         if (m->oclass == 0x25F) {
-            if (b[0x52] == 6) {
-                if (--b[0x20] == 0) {
-                    if (b[0x53] != 1) {
+            if (moby_bytes[0x52] == 6) {
+                if (--moby_bytes[0x20] == 0) {
+                    if (moby_bytes[0x53] != 1) {
                         MobyBlendAnimation(m, 1, 0, 10);
                     }
-                } else if (b[0x53] != 6) {
+                } else if (moby_bytes[0x53] != 6) {
                     MobyBlendAnimation(m, 6, 0, 0);
                 }
-            } else if (b[0x53] != 1) {
+            } else if (moby_bytes[0x53] != 1) {
                 MobyBlendAnimation(m, 1, 0, 0);
             }
-        } else if (b[0x53] != 1) {
+        } else if (moby_bytes[0x53] != 1) {
             MobyBlendAnimation(m, 1, 0, 0);
         }
     }
-    MobyTransformScaledVertex(id, 5, mtx);
-    qcopy(m->pos, &mtx[12]);
-    matrix_copy_rows(m->mtx, mtx);
+    MobyTransformScaledVertex(id, 5, pose_matrix);
+    qcopy(m->pos, &pose_matrix[12]);
+    matrix_copy_rows(m->mtx, pose_matrix);
     normalize_vector_triplet(m->mtx);
     moby_anim_sphere_lerp(m);
 }
@@ -8015,32 +8008,26 @@ extern void pack_render_command_fields(void *, int, int, int, int);
 
 extern void *CreateMoby_c(int) __asm__("func_0020D348");
 
-/* Spawns the pickup/marker object for slot arg0, unless the slot is
-   disabled (0xFF in D_001B3E40). A fresh object gets 0xFF/0xFF/1 in the
-   0x30 block, is registered, tinted mid-grey, and flagged 0x18 at +0x73
-   when its descriptor says so. The +0x30 store is through `unsigned
-   char` and comes before the halfword store, so the 0xFF stays in one
-   saved register. CreateMoby takes oClass: passing arg0 on keeps $a0
-   live, which puts the element address in $v0 as retail has it. */
-void *create_menu_preview_moby(int arg0) {
-    char *o;
+/* Creates a preview moby for a resident class and sets its initial render flags. */
+void *create_menu_preview_moby(int class_id) {
+    char *preview_moby;
 
-    if (resident_class_slot_by_id[arg0] == 0xFF) {
+    if (resident_class_slot_by_id[class_id] == 0xFF) {
         return 0;
     }
-    o = (char *)CreateMoby_c(arg0);
-    if (o != 0) {
-        *(unsigned char *)(o + 0x30) = 0xFF;
-        *(short *)(o + 0x32) = 0xFF;
-        *(char *)(o + 0x20) = 0;
-        *(char *)(o + 0x31) = 1;
-        refresh_moby_spatial_bounds(o);
-        pack_render_command_fields(o, 0x202020, 0xE, 0xE, 0);
-        if (*(unsigned char *)(*(int *)(o + 0x24) + 6) != 0) {
-            *(char *)(o + 0x73) = 0x18;
+    preview_moby = (char *)CreateMoby_c(class_id);
+    if (preview_moby != 0) {
+        *(unsigned char *)(preview_moby + 0x30) = 0xFF;
+        *(short *)(preview_moby + 0x32) = 0xFF;
+        *(char *)(preview_moby + 0x20) = 0;
+        *(char *)(preview_moby + 0x31) = 1;
+        refresh_moby_spatial_bounds(preview_moby);
+        pack_render_command_fields(preview_moby, 0x202020, 0xE, 0xE, 0);
+        if (*(unsigned char *)(*(int *)(preview_moby + 0x24) + 6) != 0) {
+            *(char *)(preview_moby + 0x73) = 0x18;
         }
     }
-    return o;
+    return preview_moby;
 }
 
 extern int world_update_time MACRO_ADDR;
@@ -8321,50 +8308,49 @@ void helper_moby_update_noop(void) {
 
 extern int menu_stream_buffers[];
 
-/* Lays out the five menu stream buffers from the menu system's two memory
-   regions: a0 = 0 gives one small (0x11800) buffer, otherwise three small and two
-   large (0x4F000) ones. Unused slots are cleared. */
-void initialize_menu_stream_buffers(int a0) {
+/* Lays out one small buffer when layout_mode is zero, otherwise three small and two large.
+   layout_mode is then reused as the first region's small-buffer count. Clears unused slots. */
+void initialize_menu_stream_buffers(int layout_mode) {
     struct MenuSystem *g = (struct MenuSystem *)menu_system;
-    int v7 = g->help_text_buffer;
-    int v8 = g->unk10C;
-    int f2, t10;
-    int i, end;
+    int first_region_cursor = g->help_text_buffer;
+    int second_region_cursor = g->unk10C;
+    int second_region_small_count, large_buffer_count;
+    int slot_index, buffer_limit;
 
-    if (a0 == 0) {
-        a0 = 1;
-        f2 = 0;
-        t10 = 0;
+    if (layout_mode == 0) {
+        layout_mode = 1;
+        second_region_small_count = 0;
+        large_buffer_count = 0;
     } else {
-        a0 = 2;
-        f2 = 1;
-        t10 = 2;
+        layout_mode = 2;
+        second_region_small_count = 1;
+        large_buffer_count = 2;
     }
-    end = a0;
-    for (i = 0; i < end; i++) {
-        menu_stream_buffers[2 * i] = v7;
-        menu_stream_buffers[2 * i + 1] = 0;
-        v7 += 0x11800;
+    buffer_limit = layout_mode;
+    for (slot_index = 0; slot_index < buffer_limit; slot_index++) {
+        menu_stream_buffers[2 * slot_index] = first_region_cursor;
+        menu_stream_buffers[2 * slot_index + 1] = 0;
+        first_region_cursor += 0x11800;
     }
-    end += f2;
-    for (; i < end; i++) {
-        menu_stream_buffers[2 * i] = v8;
-        menu_stream_buffers[2 * i + 1] = 0;
-        v8 += 0x11800;
+    buffer_limit += second_region_small_count;
+    for (; slot_index < buffer_limit; slot_index++) {
+        menu_stream_buffers[2 * slot_index] = second_region_cursor;
+        menu_stream_buffers[2 * slot_index + 1] = 0;
+        second_region_cursor += 0x11800;
     }
-    end += t10;
-    for (; i < end; i++) {
-        menu_stream_buffers[2 * i] = v7;
-        menu_stream_buffers[2 * i + 1] = 1;
-        v7 += 0x4F000;
+    buffer_limit += large_buffer_count;
+    for (; slot_index < buffer_limit; slot_index++) {
+        menu_stream_buffers[2 * slot_index] = first_region_cursor;
+        menu_stream_buffers[2 * slot_index + 1] = 1;
+        first_region_cursor += 0x4F000;
     }
-    for (; i < end; i++) {
-        menu_stream_buffers[2 * i] = 0;
-        menu_stream_buffers[2 * i + 1] = 0;
+    for (; slot_index < buffer_limit; slot_index++) {
+        menu_stream_buffers[2 * slot_index] = 0;
+        menu_stream_buffers[2 * slot_index + 1] = 0;
     }
-    for (; i < 5; i++) {
-        menu_stream_buffers[2 * i + 1] = 0;
-        menu_stream_buffers[2 * i] = 0;
+    for (; slot_index < 5; slot_index++) {
+        menu_stream_buffers[2 * slot_index + 1] = 0;
+        menu_stream_buffers[2 * slot_index] = 0;
     }
 }
 
@@ -8903,47 +8889,41 @@ extern void sce_scf_get_local_time_from_rtc(void *);
 extern void copy_level_object_positions(void);
 extern void save_map_coverage(void *);
 
-/* Gathers the game state into save buffer arg0 (object positions, map coverage)
-   and stores arg0 and arg1 in the memory card state; starts state 0x13 when idle. */
-void prepare_save_game(int arg0, int arg1) {
-    MemoryCardState *b = (MemoryCardState *)memory_card_state;
+/* Copies object positions and map coverage into the save buffer, then queues the save. */
+void prepare_save_game(int save_buffer_address, int save_slot) {
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
     sce_cd_read_clock(save_clock_time);
     sce_scf_get_local_time_from_rtc(save_clock_time);
     copy_level_object_positions();
     save_map_coverage(level_map_coverage + (g_current_level_index << 11));
-    memcard_MakeWholeSave((char *)arg0);
-    b->padF4 = arg0;
-    b->card[0].x14 = arg1;
-    b->xC8 = 0;
-    if (b->err < 0) {
-        b->errCard = 0;
-        b->err = 0x13;
+    memcard_MakeWholeSave((char *)save_buffer_address);
+    card_state->padF4 = save_buffer_address;
+    card_state->card[0].x14 = save_slot;
+    card_state->xC8 = 0;
+    if (card_state->err < 0) {
+        card_state->errCard = 0;
+        card_state->err = 0x13;
     }
 }
 
 /* func_00209DC0 (memcard.c) takes nothing. */
 extern void load_and_initialize_level_chunk(void);
 
-/* func_00227C78's sibling: runs func_00209DC0, the D_0015EF98 pair and
-   func_0020BA00(arg0), then records arg0/arg1 in D_0013D390 (+0xF4,
-   +0x14), clears +0xC8 and page arg1's first word, and seeds the result
-   (+0xE4 = 0x13) when none is pending. func_00209DC0 is called without
-   arguments: passing arg0 gives it one more reference and so the first
-   callee-saved register, the reverse of retail's. */
-void start_memory_card_save(int arg0, int arg1) {
+/* Builds the save buffer and queues a memory card save for the selected slot. */
+void start_memory_card_save(int save_buffer_address, int save_slot) {
     load_and_initialize_level_chunk();
     sce_cd_read_clock(save_clock_time);
     sce_scf_get_local_time_from_rtc(save_clock_time);
-    memcard_MakeWholeSave((char *)arg0);
+    memcard_MakeWholeSave((char *)save_buffer_address);
     {
-        MemoryCardState *b = (MemoryCardState *)memory_card_state;
-        b->xC8 = 0;
-        b->card[0].x14 = arg1;
-        b->card[0].slots[arg1].id = 0;
-        b->padF4 = arg0;
-        if (b->err < 0) {
-            b->errCard = 0;
-            b->err = 0x13;
+        MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+        card_state->xC8 = 0;
+        card_state->card[0].x14 = save_slot;
+        card_state->card[0].slots[save_slot].id = 0;
+        card_state->padF4 = save_buffer_address;
+        if (card_state->err < 0) {
+            card_state->errCard = 0;
+            card_state->err = 0x13;
         }
     }
 }
@@ -9227,13 +9207,13 @@ extern void emit_setup_strips_of_kind(int, int);
 
 /* Emits a DMA tag pair for packet n of D_001D8120, then sends graphics entry idx
    of D_00160460 through func_002298B0. */
-void emit_selected_graphics_dma_packets(int arg0, int idx, int n) {
+void emit_selected_graphics_dma_packets(int strip_kind, int idx, int n) {
     g_render_packet_cursor[0] = 0x30000003;
     g_render_packet_cursor[1] = (int)(graphics_setup_dma_packets + n * 0x30);
     g_render_packet_cursor[2] = 0x13000000;
     g_render_packet_cursor[3] = 0x50000003;
     g_render_packet_cursor += 4;
-    emit_setup_strips_of_kind(arg0, ((int *)&setup_strip_pass_words)[idx]);
+    emit_setup_strips_of_kind(strip_kind, ((int *)&setup_strip_pass_words)[idx]);
 }
 
 struct DisplayDims_284E8 {

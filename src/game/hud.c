@@ -1335,14 +1335,14 @@ extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
 /* Draw a 3-part stretchable bar: left cap, stretched middle, right cap
  * (mirrored via func_00200650), all using the same GetIconFrame glyph
  * in its two variants. */
-void draw_stretchable_ui_frame(int a0, int a1, int a2, int a3, int a4) {
-    int v0 = GetIconFrame(0x7580, 0);
-    int v1 = GetIconFrame(0x7580, 1);
+void draw_stretchable_ui_frame(int x, int y, int width, int height, int alpha) {
+    int middle_frame = GetIconFrame(0x7580, 0);
+    int cap_frame = GetIconFrame(0x7580, 1);
 
-    HudSprite(v1, a0, a1, 0x20, a3, a4);
-    HudSprite(v0, a0 + 0x20, a1, a2 - 0x40, a3, a4);
-    a0 = a0 + a2;
-    draw_hud_sprite_flipped(v1, a0 - 0x20, a1, 0x20, a3, a4);
+    HudSprite(cap_frame, x, y, 0x20, height, alpha);
+    HudSprite(middle_frame, x + 0x20, y, width - 0x40, height, alpha);
+    x = x + width;
+    draw_hud_sprite_flipped(cap_frame, x - 0x20, y, 0x20, height, alpha);
 }
 
 extern s32 FontPrintCenterLarge_r(s32, s32, u64, s32, s32) __asm__("func_001F6FD8");

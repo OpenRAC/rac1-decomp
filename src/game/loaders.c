@@ -1005,19 +1005,19 @@ extern char object_render_class_material_maps[] NOT_SDA;
 extern int truncate_float_to_s32(float);
 
 /* Registers an object render class: assigns its slot, fixes pointers and sets thresholds. */
-void register_object_render_class(ObjectRenderClass *self, ResidentRenderTextureDefinition *textures, char *src, int a3) {
+void register_object_render_class(ObjectRenderClass *self, ResidentRenderTextureDefinition *textures, char *src, int class_id) {
     int N;
-    int N2;
-    int R;
+    int class_slot;
+    int class_fixed_threshold;
     float f;
-    int k;
-    int j;
+    int lod_index;
+    int packet_index;
     int P;
     int v;
-    char *m;
+    char *class_packet_data;
     char *cur;
     char *dest;
-    int idx;
+    int packet_material_index;
     int local4;
     int local8;
     int local12;
@@ -1032,7 +1032,7 @@ void register_object_render_class(ObjectRenderClass *self, ResidentRenderTexture
     int c9;
     int S8;
     int i;
-    int jj;
+    int lod_entry_index;
     unsigned long D0;
     unsigned long T;
     unsigned long D1;
@@ -1046,45 +1046,45 @@ void register_object_render_class(ObjectRenderClass *self, ResidentRenderTexture
     ResidentRenderTextureDefinition *rec;
     char *E;
 
-    *(short *)(object_render_class_ids + registered_object_render_class_count * 2) = a3;
-    *(unsigned char *)(object_render_class_slot_by_id + a3) = registered_object_render_class_count;
+    *(short *)(object_render_class_ids + registered_object_render_class_count * 2) = class_id;
+    *(unsigned char *)(object_render_class_slot_by_id + class_id) = registered_object_render_class_count;
     *(ObjectRenderClass **)(object_render_classes + registered_object_render_class_count * 4) = self;
     self->class_slot = registered_object_render_class_count;
-    R = truncate_float_to_s32(self->scale * 1024.0f);
-    N2 = registered_object_render_class_count;
-    registered_object_render_class_count = N2 + 1;
-    *(int *)(object_render_class_fixed_thresholds + 4 * N2) = R;
+    class_fixed_threshold = truncate_float_to_s32(self->scale * 1024.0f);
+    class_slot = registered_object_render_class_count;
+    registered_object_render_class_count = class_slot + 1;
+    *(int *)(object_render_class_fixed_thresholds + 4 * class_slot) = class_fixed_threshold;
 
     self->first_instance = 0;
     self->instance_count = 0;
 
-    for (k = 0; k < 3; k++) {
-        if (self->lod_tables[k] != 0) {
-            self->lod_tables[k] += (int)self;
-            for (jj = 0; jj < self->lod_counts[k]; jj++) {
-                ((int *)self->lod_tables[k])[jj * 4] += self->lod_tables[k];
+    for (lod_index = 0; lod_index < 3; lod_index++) {
+        if (self->lod_tables[lod_index] != 0) {
+            self->lod_tables[lod_index] += (int)self;
+            for (lod_entry_index = 0; lod_entry_index < self->lod_counts[lod_index]; lod_entry_index++) {
+                ((int *)self->lod_tables[lod_index])[lod_entry_index * 4] += self->lod_tables[lod_index];
             }
         }
     }
 
     v = self->f0C + (int)self;
-    m = (char *)(self->packets_offset + (int)self);
+    class_packet_data = (char *)(self->packets_offset + (int)self);
     self->f0C = v;
-    self->packets_offset = (int)m;
+    self->packets_offset = (int)class_packet_data;
 
-    dest = object_render_class_material_maps + ((*(unsigned char *)(object_render_class_slot_by_id + a3)) << 4);
+    dest = object_render_class_material_maps + ((*(unsigned char *)(object_render_class_slot_by_id + class_id)) << 4);
     qcopy(dest, src);
 
-    for (j = 0, cur = m; j < self->packet_count; j++, cur += 0x50) {
+    for (packet_index = 0, cur = class_packet_data; packet_index < self->packet_count; packet_index++, cur += 0x50) {
         local4 = *(int *)(cur + 0x10);
-        idx = *(unsigned char *)(dest + j);
+        packet_material_index = *(unsigned char *)(dest + packet_index);
         t23 = *(int *)(cur + 0x14);
         local8 = *(int *)(cur + 0x30);
         local12 = *(int *)(cur + 0x34);
 
         if (textures != 0) {
             int h, w; int f1; long HH, WW; long G;
-            rec = &textures[idx];
+            rec = &textures[packet_material_index];
             t4 = (int)((unsigned int)(unsigned short)rec->width << 16);
             h = t4 >> 22;
             w = t4 >> 23;
@@ -1110,7 +1110,7 @@ void register_object_render_class(ObjectRenderClass *self, ResidentRenderTexture
             WW = ((unsigned long)(long)w << 14) | ((unsigned long)(long)c9 << 20)
                | ((unsigned long)1 << 34) | ((unsigned long)(long)c7 << 40)
                | ((unsigned long)1 << 54);
-            D3 = (unsigned long)(long)local8 | ((unsigned long)(long)local12 << 2) | ((unsigned long)(long)idx << 24);
+            D3 = (unsigned long)(long)local8 | ((unsigned long)(long)local12 << 2) | ((unsigned long)(long)packet_material_index << 24);
 
             *(unsigned long *)(cur + 0x00) = HH;
             *(unsigned long *)(cur + 0x10) = D1;
@@ -1120,13 +1120,13 @@ void register_object_render_class(ObjectRenderClass *self, ResidentRenderTexture
             continue;
         } else {
             unsigned long T2, E1, E3;
-            dw7 = *(unsigned long *)((char *)resident_material_templates + 24 * idx);
-            i = idx * 3;
+            dw7 = *(unsigned long *)((char *)resident_material_templates + 24 * packet_material_index);
+            i = packet_material_index * 3;
             dw4 = *(unsigned long *)((char *)resident_material_templates + ((i + 1) << 3));
             dw8 = *(unsigned long *)((char *)resident_material_templates + ((i + 2) << 3));
             T2 = ((unsigned long)(long)t23 << 6) | 0x20UL;
             E1 = (dw4 & 0x1CUL) | T2 | ((unsigned long)(long)local4 << 32);
-            E3 = (unsigned long)(long)local8 | ((unsigned long)(long)local12 << 2) | ((unsigned long)(long)idx << 24);
+            E3 = (unsigned long)(long)local8 | ((unsigned long)(long)local12 << 2) | ((unsigned long)(long)packet_material_index << 24);
             *(unsigned long *)(cur + 0x00) = dw7;
             *(unsigned long *)(cur + 0x10) = E1;
             *(unsigned long *)(cur + 0x20) = dw8;
