@@ -11180,3 +11180,5 @@ D_L18_00162164	electric_bolt_branch_peak_ticks_2_r	init writes 4; same array as 
 D_L18_00162166	electric_bolt_branch_peak_ticks_3_r	init writes 2; same array as branch_peak_ticks_r	
 D_L00_001E4E90	suck_beam_ring_unit_offsets	20 vectors scaled by ring radius and rotated into the beam frame for ring vertices	
 D_L00_001E6330	suck_beam_segment_turn_angles	per-segment smoothed turn angle via Camera_SmoothAngle, 10 entries	
+
+func_L08_0027C218	spawn_batalia_colored_effect	src/overlays/l08_batalia/offset_effects.c: creates type 0x2B particle, copies position/vector and RGBA, stores size and scaled lifetime

@@ -11683,6 +11683,7 @@
 #define electric_bolt_branch_peak_ticks_3_r                                        D_L18_00162166
 #define suck_beam_ring_unit_offsets                                                D_L00_001E4E90
 #define suck_beam_segment_turn_angles                                              D_L00_001E6330
+#define spawn_batalia_colored_effect                                               func_L08_0027C218
 #define noop_callback_a                                                            func_001E9770
 #define noop_callback_d                                                            func_001E9788
 #define noop_callback_e                                                            func_001E9790

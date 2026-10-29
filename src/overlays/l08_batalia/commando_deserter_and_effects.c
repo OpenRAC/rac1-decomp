@@ -733,7 +733,7 @@ extern void FastVecSub(void*,void*,void*),FastVecAdd(void*,void*,void*),FastVecC
 extern void FastVecScale(void*,void*,float),vec_scale_to_length(void*,void*,float);
 extern float SmoothNoise(float,char*),split_float_fraction(void*,float);
 extern void draw_world_quad(void*,void*,int);
-extern unsigned char *func_L08_0027C218(void*,float,void*,void*,short,unsigned char,unsigned char,unsigned char,unsigned char);
+extern unsigned char *spawn_batalia_colored_effect(void*,float,void*,void*,short,unsigned char,unsigned char,unsigned char,unsigned char);
 extern int rand_range(int,int);
 extern void spawn_effect_particle_with_target_scalar(void*,void*,int,int,float,int);
 
@@ -912,7 +912,7 @@ void draw_flickering_mesh_effect(M45 *moby) {
                     plife=scale_ticks(data->particle_life);
                     pr=data->particle_r; pg=data->particle_g; pb=data->particle_b;
                     pa=truncate_float_to_s32(IntToFloat(data->particle_a)*pfraction);
-                    func_L08_0027C218(moby,psize,&scratch[1],&scratch[0],plife,pr,pg,pb,pa);
+                    spawn_batalia_colored_effect(moby,psize,&scratch[1],&scratch[0],plife,pr,pg,pb,pa);
                 }
             }
             if (FastDecTimer(&data->puff_timer)) {

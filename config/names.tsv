@@ -11676,6 +11676,7 @@ D_L18_00162164	electric_bolt_branch_peak_ticks_2_r	descriptive	config/names_loca
 D_L18_00162166	electric_bolt_branch_peak_ticks_3_r	descriptive	config/names_local.tsv	init writes 2; same array as branch_peak_ticks_r	
 D_L00_001E4E90	suck_beam_ring_unit_offsets	descriptive	config/names_local.tsv	20 vectors scaled by ring radius and rotated into the beam frame for ring vertices	
 D_L00_001E6330	suck_beam_segment_turn_angles	descriptive	config/names_local.tsv	per-segment smoothed turn angle via Camera_SmoothAngle, 10 entries	
+func_L08_0027C218	spawn_batalia_colored_effect	descriptive	config/names_local.tsv	src/overlays/l08_batalia/offset_effects.c: creates type 0x2B particle, copies position/vector and RGBA, stores size and scaled lifetime	spawn_colored_effect
 func_001E9770	noop_callback_a	descriptive	the NTSC decomp	noop_callback_a at US boot 0x001E93F0 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9788	noop_callback_d	descriptive	the NTSC decomp	noop_callback_d at US boot 0x001E9408 (src/gameplay/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9790	noop_callback_e	descriptive	the NTSC decomp	noop_callback_e at US boot 0x001E9410 (src/gameplay/state/update_gameplay_frame.c); US function table counterpart	
@@ -12535,7 +12536,6 @@ D_L18_001625F8	deplanetizer_glow_local_offset_z	descriptive	the NTSC decomp	depl
 D_L18_001625FC	deplanetizer_glow_local_offset_w	descriptive	the NTSC decomp	deplanetizer_glow_local_offset_w at US level 18 0x0016256C (include/rnc/overlay/l18/gameplay/entities/deplanetizer_gun_globals.h); US/PAL address translation (code of both refers to it)	
 D_L18_001D3900	sparkle_quad_corners	descriptive	the NTSC decomp	sparkle_quad_corners at US level 18 0x001D3630 (src/overlays/l18/gameplay/entities/rocket.c); US/PAL address translation (code of both refers to it)	
 D_L18_001D3940	sparkle_quad_uvs	descriptive	the NTSC decomp	sparkle_quad_uvs at US level 18 0x001D3670 (src/overlays/l18/gameplay/entities/rocket.c); US/PAL address translation (code of both refers to it)	
-func_L08_0027C218	spawn_colored_effect	candidate	the NTSC decomp	held-alias: spawn_colored_effect at US level 08 0x0027B450 (src/overlays/l08/rendering/00279f00.c); US function table counterpart	spawn_colored_effect_size_first
 D_0013E6C0	voice_volume_records	candidate	the NTSC decomp	held-alias: voice_volume_records at US boot 0x0013E5C0 (src/audio/voices/allocate_voice_slot.c); US/PAL address translation (code of both refers to it)	voice_volume_records_macro
 D_0015EF20	alternate_animation_sequence	candidate	the NTSC decomp	held-alias: alternate_animation_sequence at US boot 0x0015EE20 (include/rnc/gameplay/state/options.h); US/PAL address translation (code of both refers to it)	alternate_animation_sequence_gp,alternate_animation_sequence_macro
 D_00160600	mode4_render_vector_delta	candidate	the NTSC decomp	held-alias: mode4_render_vector_delta at US boot 0x00160500 (include/rnc/gameplay/state/update_level_gameplay_frame_globals.h); US/PAL address translation (code of both refers to it)	mode4_render_vector_delta_gp
