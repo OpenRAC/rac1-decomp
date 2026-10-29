@@ -50,7 +50,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from libgcc_units import (MODULES, FUNCTIONS as LIBGCC_FUNCTIONS, SEGMENT_SOURCES,
                           object_of)
 from organize_asm import LISTS, entries
-from toolchain import TC, make_sn, sn, start_wineserver
 from levels import NUM_LEVELS, dirname as level_dirname, level_of_dir, title as level_title
 import srcnames
 
@@ -463,22 +462,11 @@ def build() -> None:
     """From-scratch build + link. Refuses on failure: a failed make leaves
     the previous .o behind, whose INCLUDE_ASM stubs still hold retail's
     bytes, and a report built on that would publish fictional matches."""
-    for d in ("build-sn/core", "build-sn/libgcc", "build-sn/game"):
-        for f in Path(d).rglob("*.o") if Path(d).is_dir() else []:
-            f.unlink()
-    for f in Path("build-sn/libgcc").glob("*.o") if Path("build-sn/libgcc").is_dir() else []:
-        f.unlink()
-    start_wineserver()
-    steps = [
-        [f"{TC}/make.exe", "-f", "Makefile.sn"],
-        [sys.executable, "tools/gen_ld.py"],
-        [f"{TC}/ee-ld.exe", "-T", "build-sn/rac1.ld", "build-sn/bss_equs.o", "-o", LINKED_ELF],
-    ]
-    for cmd in steps:
-        r = subprocess.run(cmd, capture_output=True, text=True, env=ensure_env())
-        if r.returncode != 0:
-            sys.stdout.write(r.stdout[-3000:] + r.stderr[-3000:])
-            sys.exit(f"*** {' '.join(cmd[:1])} failed (exit {r.returncode}) -- NOT writing a report")
+    cmd = ["bash", "tools/build_sn.sh"]
+    r = subprocess.run(cmd, capture_output=True, text=True, env=ensure_env())
+    if r.returncode != 0:
+        sys.stdout.write(r.stdout[-3000:] + r.stderr[-3000:])
+        sys.exit(f"*** build_sn.sh failed (exit {r.returncode}) -- NOT writing a report")
 
 
 def match_results(funcs: dict, decompiled: set[str]) -> dict[str, float]:
