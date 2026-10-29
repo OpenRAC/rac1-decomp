@@ -2939,6 +2939,8 @@ void DoSpaceTransition(void) {
         D_0015EF48_m = 0;
         initialize_level_runtime();
         read_file_entry_with_retry(g_current_level_index_m);
+        /* Keep drawing, input, menus and memory-card work running while the
+           transition and the staged archive load advance independently. */
         while (space_load_in_progress_m == 0) {
             VU1_sendChain();
             VU1_swapChain();
@@ -2958,6 +2960,8 @@ void DoSpaceTransition(void) {
                 done = service_level_archive_load();
             }
         }
+        /* The transition can finish before the archive load; drain the latter
+           before waiting for memory-card operations below. */
         if (!done) {
             do {
                 flush_cache(0);

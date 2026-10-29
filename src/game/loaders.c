@@ -1520,6 +1520,9 @@ int load_level_chunk_from_disc(void) {
     int *hdr = disc_table;
     int want = ((hdr[0x13F] << 11) + 0x1057) & 0xFFFFF000;
 
+    /* Stage the file below the fixed upper boundary, with 16-byte alignment.
+       The 0x60-byte prefix is outside the disc read; its first word lets
+       ParseBin find the record stream relative to level_root. */
     level_root = (int *)(((int)D_1FF7FF0 - want) & -0x10);
     *level_root = 0x60;
     Stream_SubmitRead((int)level_root + *level_root, hdr[0x13E], hdr[0x13F]);

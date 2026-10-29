@@ -154,6 +154,8 @@ extern int *level_root MACRO_ADDR;
 
 typedef void (*BinFn)(void);
 
+/* A load record is followed immediately by size bytes for dst. Consecutive
+   records with the same id belong to one entry-point group. See docs/ASSETS.md. */
 struct Chunk {
     unsigned char *dst;
     int size;
@@ -170,6 +172,7 @@ BinFn ParseBin(void) {
     BinFn id;
 
     id = 0;
+    /* The first word is an offset from level_root to the record stream. */
     p = (unsigned char *)(level_root[0] + (int)level_root);
     while (c = (struct Chunk *)p, p = (unsigned char *)(c + 1), dst = c->dst, src = p,
            (id == 0) ? (id = c->id, 1) : (id == c->id)) {
@@ -192,6 +195,7 @@ BinFn ParseBin(void) {
         }
         p += c->size;
     }
+    /* Return the copied group's entry point, not the next record's id. */
     return id;
 }
 
@@ -224,6 +228,8 @@ void func_0012DB18(void) { /* main */
 
     func_0011DFC8();
     entry = startlevel;
+    /* Resident code dispatches the current program, then installs the next
+       entry-point group. Flush caches after copying and before executing it. */
     do {
         entry();
         entry = ParseBin();
