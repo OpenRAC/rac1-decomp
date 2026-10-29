@@ -320,6 +320,9 @@ typedef struct {
 /* Moby update for a homing projectile created by func_L18_002D6738. */
 extern Hero hero __asm__("D_0013F450");
 
+/* Veldin2's rocket variant blends its initial movement toward a target step.
+   Sweep from the previous position to the new one each update, so collision
+   covers the whole movement rather than testing the endpoint alone. */
 void update_rocket_moby(char *moby) {
     L18D *moby_vars = (L18D *)((struct Moby *)moby)->pvars;
     float target_movement_step[4];
@@ -363,6 +366,8 @@ void update_rocket_moby(char *moby) {
         ((struct Moby *)moby)->rot.x = FastAddRots(((struct Moby *)moby)->rot.x, k * 18.849556f);
         moby_vars->c = moby_vars->c + 1;
         movement_collision_result = coll_line(previous_position, &((struct Moby *)moby)->pos, 0, moby, 0);
+        /* Only the selected moby classes retain a moby collision result;
+           terrain hits have no hit moby and keep the original result. */
         if (movement_collision_result) {
             char *collision_filter_moby = veldin2_coll_hit_moby;
             if (collision_filter_moby != 0) {

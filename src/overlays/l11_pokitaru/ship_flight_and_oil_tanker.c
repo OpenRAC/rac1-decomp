@@ -265,6 +265,8 @@ typedef struct {
 /* Per-frame target tracking: drops a dead target, re-picks one and restarts the timer on change. */
 extern Hero hero __asm__("D_0013F450");
 
+/* No ammo clears the target without advancing the lock timer. A changed
+   selection restarts the timer; only an unchanged, non-null target counts down. */
 void update_ship_lock_on_target(int a, char *moby) {
     float v[4];
     float ang = 0.19634955f;

@@ -53,6 +53,8 @@ void append_draw_buffer_upload_packets(int a, int b, int n) {
 LINKER_REMNANT("asm/overlays", func_L00_002A2668);
 /* classifies a point against wrapped ranges and bounds; returns a bitmask. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/runtime_dma_002a13d8.c, FUN_L00_002a13f0. */
 struct WalkAnim;
+/* Four low bits classify inclusive intervals; reversed endpoints wrap across
+   the boundary. Bits 4/5 are fallback tests used only when no interval matched. */
 int walker_gait_mask(struct WalkAnim *anim, float v) {
     int bit = 1;
     int r = 0;

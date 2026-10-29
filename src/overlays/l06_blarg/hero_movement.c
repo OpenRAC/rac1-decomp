@@ -247,7 +247,9 @@ extern float frame_scale MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
-// Eases the follow-camera distance/height/tilt toward targets picked from the current mode.
+/* Despite the retained function name, the fields below are hero collision
+   capsule dimensions. Choose targets from movement mode/state, then ease the
+   top/bottom and spring the radius; nearby wall contact can defer smoothing. */
 extern Hero heroBlock __asm__("D_0013F450");
 
 void CameraL06_UpdateFollowOffsets(void) {
@@ -296,7 +298,8 @@ extern void stick_target(float, int);
 extern float blarg_hero_speed_bands[];
 extern float g_frame_time MACRO_ADDR;
 
-// Resets the screen fade and eases a scale factor toward one of two table targets.
+/* Keep nonpositive target speeds unchanged. Positive input selects one of two
+   speed bands and converts the selected value to a per-frame step. */
 void quantize_hero_input_target_speed(void) {
     struct Hero *x;
     float cur;

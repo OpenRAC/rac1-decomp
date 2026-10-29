@@ -551,7 +551,9 @@ typedef struct PartType09Data {
     int max_alpha;                     /* 0x10 */
 } PartType09Data;
 
-/* updates a particle: kills it when expired, else spins and fades by lifetime */
+/* Kill expired particles before touching their remaining data. Alpha ramps
+   during the first and last quarters of the configured life, holding max_alpha
+   between them; blend selects the grayscale RGB independently of that alpha. */
 void update_rotating_grayscale_effect_particle(struct PartBase *particle) {
     PartType09Data *particle_data = (PartType09Data *)particle->data;
     int faded_alpha;
@@ -1200,6 +1202,8 @@ void update_fading_debris_particle_with_landing_spawn(struct PartBase *m) {
     int c, r, k;
     float f;
 
+    /* Kind 3 consumes an extra timer step under high CPU load. Keep that
+       intentional lifetime reduction separate from the ordinary expiry test. */
     if (p->kind == 3 && cpu_frame_load_r > 0.95f)
         FastDecTimer_r(&m->timer);
     if (FastDecTimer_r(&m->timer)) {
@@ -1224,6 +1228,8 @@ void update_fading_debris_particle_with_landing_spawn(struct PartBase *m) {
         k = p->kind;
         p->vel[2] -= grav[k];
         qcopy(saved, &m->pos);
+        /* vel[3] is the landing-height threshold here, not another velocity
+           component. Only kind 1 spawns a successor; all kinds die on landing. */
         if (m->pos.f[2] < p->vel[3]) {
             if (k == 1) {
                 int u, w, t;

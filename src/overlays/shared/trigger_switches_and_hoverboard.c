@@ -172,6 +172,9 @@ extern void apply_spatial_trigger_to_moby_list_r(struct Moby *, TriggerVars_2f52
 extern void apply_spatial_trigger_to_moby_r(s32, TriggerVars_2f5200 *, s32) __asm__("func_L05_002F62E8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b3840.c, FUN_L05_002f5200. */
+/* Test either the hero or alternate camera position against the union of
+   radius, path polygon and clip volumes. Dispatch on membership changes and
+   on the first update (state 0), not continuously while the target stays in. */
 void update_moby_spatial_trigger(struct Moby *m) {
     TriggerVars_2f5200 *v = (TriggerVars_2f5200 *)m->pvars;
     Vec4 target;
@@ -1033,6 +1036,8 @@ extern char rilgar_zero_vec[] MACRO_ADDR;
 // Moby update: wakes up, then bursts particles when the player is near.
 extern struct Hero hero __asm__("D_0013F450");
 
+/* Initialization does not emit particles. Later updates emit three per call
+   only when the sphere check passes and the hero is in control mode 0x16. */
 void hoverboard_ring_update(char *moby) {
     enum {
         HOVERBOARD_RING_STATE_INIT = 0,
