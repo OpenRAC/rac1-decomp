@@ -108,9 +108,7 @@ typedef struct {
 } Menu13F450;
 extern Menu13F450 g_hero;
 
-/* Menu hit test: arg3 is the third float ($f14). b (state 16) is
-   computed before a, as retail evaluates it; the second if's own
-   `arg1 >= 0xC8` is retail's second test of $a1. */
+/* Tests two reveal ranges, each gated by the hero state. */
 int map_filter_l01_3(void *unused_input, int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
     Hero *hero_ptr = (Hero *)&g_hero;
     int hero_state_blocks_high_range_reveal = hero_ptr->state.control_mode == 16;
@@ -395,10 +393,7 @@ int map_filter_l07_5(void *unused_input, int reveal_test_selector, float unused1
 extern int map_region_enabled_1 NOT_SDA;
 extern int point_is_clockwise(int, int, int, int, int, int);
 
-/* Menu hit test (func_00207200's family): for arg1 >= 0x105, needs
-   D_001A04AC set and arg3 >= 47.7; otherwise returns `a` directly when
-   arg1 < 0xC1, else `a` unless func_00209048's box test hits (which
-   clears it to 0). */
+/* Uses the region flag for the upper range, otherwise tests the hero state and map edge. */
 int map_filter_l07_6(int px, int py, float unused1, float unused2, float reveal_test_value) {
     Hero *hero = (Hero *)&g_hero;
     int hit = hero->state.control_mode == 17 || hero->state.control_mode == 18 || hero->base_condition == 1;
@@ -420,14 +415,12 @@ int map_filter_l07_6(int px, int py, float unused1, float unused2, float reveal_
     return result;
 }
 
-/* Menu hit test (func_00207200's family): hits unless the menu state
-   blocks it, arg3 ($f14) is below 71.5, or the first box is hit, and
-   then only if the second box is not. */
-s32 map_filter_l07_7(s32 px, s32 py, f32 fparg0, f32 fparg1, f32 reveal_test_value) {
+/* Gates reveal on the value threshold, hero state and two edge tests. */
+s32 map_filter_l07_7(s32 px, s32 py, f32 unused1, f32 unused2, f32 reveal_test_value) {
     struct Hero *hero = (struct Hero *)&g_hero;
-    s32 var_4_15 = hero->state.control_mode == 17 || hero->state.control_mode == 18 || hero->base_condition == 1;
+    s32 hero_state_blocks_reveal = hero->state.control_mode == 17 || hero->state.control_mode == 18 || hero->base_condition == 1;
 
-    if (var_4_15) {
+    if (hero_state_blocks_reveal) {
         return 0;
     }
     if (reveal_test_value < 71.5f) {
@@ -597,9 +590,7 @@ int map_filter_l11_2(int reveal_test_selector, float unused1, float unused2, flo
 
 extern unsigned char menu_item_enabled_78 NOT_SDA;
 
-/* The Menu13F450 state test of func_00207340, computed up front (retail
-   evaluates it before the arg0 branch), gates the arg0 < 0x15F arm; the
-   other arm is func_00208160's second test with D_0013D4EA. */
+/* Gates the lower selector range on the hero state; the upper range uses the item flag. */
 int map_filter_l11_3(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
     struct Hero *hero_ptr = (struct Hero *)&g_hero;
     int hero_state_allows_reveal = hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
@@ -1124,40 +1115,8 @@ void copy_level_object_positions(void) {
 void DebugEnter_Nop(void) {
 }
 
-/*
- * Close but not exact (16/36 bytes): 2D cross-product orientation test.
- * arg0 -= arg2; arg1 -= arg3; arg4 -= arg2; arg5 -= arg3;
- * return (arg4*arg1 - arg5*arg0) < 0;
- * Same operations/order/register reuse (in-place subtraction) as
- * retail, confirmed via objdump, but the final sign test compiles to
- * `srl $2,$2,0x1f` here where retail uses `slti $2,$2,0` -- two
- * different instructions computing the identical 0/1 result for
- * "value < 0". Not a scheduling/register question like the usual
- * near-misses, a pure instruction-selection choice for the same
- * boolean-from-sign-bit pattern; not investigated further.
- */
-/*
- * 4/36 (one instruction): 2D cross-product orientation test — is (x2,y2)
- * left of the (x0,y0)->(x1,y1) edge. Every register and all 7 arithmetic
- * instructions match retail exactly; the sole diff is the final sign
- * test, where this compiler emits `srl $2,$2,31` and retail has
- * `slti $2,$2,0`. Identical result, different instruction selection, and
- * it is not steerable from source: `< 0`, `<= -1`, `< 1-1`, a named
- * local, and `?1:0` all canonicalize to the same `srl`; only widening to
- * `long` changes it (to `dsrl32`, which is worse).
- *
- * The subtractions must be written in this order (x2/y2 before x1/y1) —
- * the last-source-statement-emits-first rotation applies to runs of
- * independent *arithmetic* statements, not just stores.
- */
-/* Sign of the 2D cross product (x2-x0,y2-y0) x (x1-x0,y1-y0): true when
-   the second vector is clockwise from the first.
-
-   The `< 0` has to be written as an explicit if/return pair. Returning
-   the comparison directly makes GCC emit the cheap sign-bit extract
-   `srl $v0,$v0,31`; retail has `slti $v0,$v0,0`, which is what you get
-   when the comparison feeds a branch rather than being the return value
-   itself. That one instruction was this function's entire residual. */
+/* Tests whether (x1,y1) is clockwise from (x2,y2) around (x0,y0).
+   Keep the subtraction order and explicit if/return pair for matching code. */
 int point_is_clockwise(int x1, int y1, int x0, int y0, int x2, int y2) {
     int cross;
 
@@ -1183,10 +1142,10 @@ extern void (*menu_state_handlers[])(void);
    D_001A0538. Bits 0x80 and 0x100 of D_0015EFB4 request states 0x15 and
    0x14; D_00161380 counts calls since the state last changed. */
 void Menu_RunStateHandler(void) {
-    MemoryCardState *b = (MemoryCardState *)memory_card_state;
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
     int old;
 
-    if (b->buf != 0 || b->card[0].result != 0) {
+    if (card_state->buf != 0 || card_state->card[0].result != 0) {
         memory_card_error_latch = 1;
     }
     old = mode_freeze_state;
@@ -1224,50 +1183,46 @@ void save_card_state_init(void) {
     memory_card_state_i[0x07] = memory_card_state_i[0x31];
 }
 
-/* Clears the 4 and 2 flag bits of D_0015EFB4, then picks the next
-   state into D_0015EFB0 from the 0x80/0x100/0x200 bits and the
-   D_0013D390 record. The cross-jumped `b` back into the 0x80 arm is
-   one GNU as pads as a short loop and ps2eeas did not;
-   tools/ps2eeas_nops.py writes it as a .word. */
+/* Picks the next card state from request flags and pending results. */
 void save_card_state_good_save(void) {
     int flags = mode_freeze_flags;
-    MemoryCardState *b;
-    int nf;
+    MemoryCardState *card_state;
+    int cleared_flags;
     mode_freeze_flags = flags & ~4;
-    b = (MemoryCardState *)memory_card_state;
-    nf = mode_freeze_flags & ~2;
-    mode_freeze_flags = nf;
-    if (b->field_fc == 0) {
+    card_state = (MemoryCardState *)memory_card_state;
+    cleared_flags = mode_freeze_flags & ~2;
+    mode_freeze_flags = cleared_flags;
+    if (card_state->field_fc == 0) {
         mode_freeze_state = 3;
         return;
     }
     if (flags & 0x80) {
         mode_freeze_state = 0x15;
-        mode_freeze_flags = (nf ^ 0x80) | 0x40;
+        mode_freeze_flags = (cleared_flags ^ 0x80) | 0x40;
         return;
     }
     if (flags & 0x100) {
         mode_freeze_state = 0x14;
-        mode_freeze_flags = (nf ^ 0x100) | 0x40;
+        mode_freeze_flags = (cleared_flags ^ 0x100) | 0x40;
         return;
     }
-    if (b->card[0].result != 0) {
-        b->field_fc = 0;
-        mode_freeze_flags = nf | 1;
+    if (card_state->card[0].result != 0) {
+        card_state->field_fc = 0;
+        mode_freeze_flags = cleared_flags | 1;
         mode_freeze_state = 2;
         return;
     }
     if (flags & 0x200) {
-        mode_freeze_flags = nf ^ 0x200;
+        mode_freeze_flags = cleared_flags ^ 0x200;
         mode_freeze_state = 0x16;
     }
 }
 
 /* Card menu warning state: clear a busy slot, then go to state 3 when flag 1 clears. */
 void save_card_state_warning(void) {
-    MemoryCardState *b = (MemoryCardState *)memory_card_state;
-    char *base = (char *)&b->card[0].request;
-    int idx = b->cur;
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+    char *base = (char *)&card_state->card[0].request;
+    int idx = card_state->cur;
     int *slot = (int *)(base + idx * sizeof(McCard));
     if (*slot == 2) {
         *slot = 0;
@@ -1279,17 +1234,17 @@ void save_card_state_warning(void) {
 
 /* Card menu state 3: reset the pending card requests and the busy slot, then go to state 4. */
 void CardMenu_State03ClearSlots(void) {
-    MemoryCardState *b = (MemoryCardState *)memory_card_state;
-    char *base = (char *)&b->card[0].request;
-    int idx = b->cur;
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+    char *base = (char *)&card_state->card[0].request;
+    int idx = card_state->cur;
     int *slot;
-    b->err = -1;
-    b->errCard = -1;
-    b->card[0].slots[0].id = -1;
-    b->card[0].slots[1].id = -1;
-    b->card[0].slots[2].id = -1;
-    b->card[0].slots[3].id = -1;
-    b->card[0].slots[4].id = -1;
+    card_state->err = -1;
+    card_state->errCard = -1;
+    card_state->card[0].slots[0].id = -1;
+    card_state->card[0].slots[1].id = -1;
+    card_state->card[0].slots[2].id = -1;
+    card_state->card[0].slots[3].id = -1;
+    card_state->card[0].slots[4].id = -1;
     slot = (int *)(base + idx * sizeof(McCard));
     if (*slot == 2) {
         *slot = 0;
@@ -1299,19 +1254,19 @@ void CardMenu_State03ClearSlots(void) {
 
 /* Card menu state 4: once the card is checked, pick state 9 or 5 (unformatted) from its result. */
 void CardMenu_State04AdvanceOnStatus(void) {
-    MemoryCardState *b = (MemoryCardState *)memory_card_state;
-    int v;
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+    int card_result;
     mode_freeze_flags &= ~0x20;
-    if (b->card[0].type != 2) {
+    if (card_state->card[0].type != 2) {
         return;
     }
-    v = b->card[0].result;
-    if (v == 0) {
+    card_result = card_state->card[0].result;
+    if (card_result == 0) {
         mode_freeze_state = 9;
-    } else if (v == -1) {
-        b->card[0].result = 0;
+    } else if (card_result == -1) {
+        card_state->card[0].result = 0;
         mode_freeze_state = 9;
-    } else if (v == -2) {
+    } else if (card_result == -2) {
         mode_freeze_state = 5;
     }
 }
@@ -1354,20 +1309,20 @@ void save_card_state_prompt_format(void) {
 
 /* Card format request: queue the format command if idle, then go to state 8. */
 void save_card_state_format_pending(void) {
-    MemoryCardState *s = (MemoryCardState *)memory_card_state;
-    s->card[0].result = 0;
-    if (s->err < 0) {
-        s->errCard = 0;
-        s->err = 3;
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+    card_state->card[0].result = 0;
+    if (card_state->err < 0) {
+        card_state->errCard = 0;
+        card_state->err = 3;
     }
     mode_freeze_state = 8;
 }
 
 /* Card formatting state: when the format ends, go to state 0xE or to failure state 0x11. */
 void save_card_state_formatting(void) {
-    MemoryCardState *s = (MemoryCardState *)memory_card_state;
-    if (s->state == 2 && s->err < 0) {
-        if (s->buf != 0) {
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+    if (card_state->state == 2 && card_state->err < 0) {
+        if (card_state->buf != 0) {
             mode_freeze_state = 0x11;
             mode_freeze_flags |= 0x40;
             return;
@@ -1389,44 +1344,36 @@ void save_card_state_formatted(void) {
 
 /* Card save check: when idle, queue the save-file scan and go to state 0xB. */
 void save_card_state_check_save(void) {
-    MemoryCardState *s = (MemoryCardState *)memory_card_state;
-    if (s->state == 2 && s->err < 0) {
-        s->err = 7;
-        s->errCard = 0;
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+    if (card_state->state == 2 && card_state->err < 0) {
+        card_state->err = 7;
+        card_state->errCard = 0;
         mode_freeze_state = 0xB;
     }
 }
 
 extern char memory_card_state[];
 
-/* Dispatch-table handler for menu.cpp's D_0013D390 state record. First,
-   guarded by unkDC>=3 || unkE4>=0, clears a per-index slot in the
-   0xB0-byte array (D_0013D390+0xB0 + idx*0xC0) from 1 to 2 -- named as
-   its own `base` local, computed before `idx`, matching the sibling
-   func_00209238's identical slot-lookup shape (that ordering is what
-   makes the allocator put the base pointer in $a0 and the literal 1 in
-   $a1, as retail does; keeping `b` mutated in place puts them the other
-   way round). Then it re-reads the record fresh and sets D_0015EFB0
-   (the next-state word) from unk1C/unkEC/unk14/unkC+unkAC. */
+/* Updates the slot request and chooses the next card state. */
 void CardMenu_State11MarkSlotChoose(void) {
-    MemoryCardState *b = (MemoryCardState *)memory_card_state;
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
     int v;
-    if (b->state >= 3 || b->err >= 0) {
-        char *base = (char *)&b->card[0].request;
-        int idx = b->cur;
+    if (card_state->state >= 3 || card_state->err >= 0) {
+        char *base = (char *)&card_state->card[0].request;
+        int idx = card_state->cur;
         int *slot = (int *)(base + idx * sizeof(McCard));
         if (*slot == 1) {
             *slot = 2;
         }
     }
-    b = (MemoryCardState *)memory_card_state;
-    if (b->card[0].result < -1 || b->buf != 0) {
+    card_state = (MemoryCardState *)memory_card_state;
+    if (card_state->card[0].result < -1 || card_state->buf != 0) {
         mode_freeze_state = 3;
         return;
     }
-    v = b->card[0].x14;
+    v = card_state->card[0].x14;
     if (v == -2) {
-        if (b->card[0].free + b->card[0].used_blocks < 0x15E) {
+        if (card_state->card[0].free + card_state->card[0].used_blocks < 0x15E) {
             mode_freeze_state = 0x13;
         } else {
             mode_freeze_state = 0xC;
@@ -1476,27 +1423,27 @@ void save_card_state_prompt_create_save(void) {
 /* Create-save request: when idle, queue the create command and go to state 0xF. */
 /* These menu states queue work; later calls handle the result. */
 void save_card_state_create_save_pending(void) {
-    MemoryCardState *s = (MemoryCardState *)memory_card_state;
-    if (s->state == 2 && s->err < 0) {
-        s->err = 9;
-        s->errCard = 0;
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+    if (card_state->state == 2 && card_state->err < 0) {
+        card_state->err = 9;
+        card_state->errCard = 0;
         mode_freeze_state = 0xF;
     }
 }
 
 /* Creating-save state: when done, rescan and go to state 0x10, or fail to state 0x12. */
 void save_card_state_creating_save(void) {
-    MemoryCardState *s = (MemoryCardState *)memory_card_state;
-    if (s->state == 2 && s->err < 0) {
-        if (s->buf != 0) {
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+    if (card_state->state == 2 && card_state->err < 0) {
+        if (card_state->buf != 0) {
             mode_freeze_state = 0x12;
             mode_freeze_flags |= 0x40;
             return;
         }
-        s->err = 7;
-        s->xC8 = 0;
-        s->card[0].x14 = 0;
-        s->errCard = 0;
+        card_state->err = 7;
+        card_state->xC8 = 0;
+        card_state->card[0].x14 = 0;
+        card_state->errCard = 0;
         mode_freeze_state = 0x10;
     }
 }
@@ -1506,7 +1453,7 @@ void save_card_state_creating_save(void) {
    `b` is written as a .word too (tools/ps2eeas_nops.py). */
 void CardMenu_State16NextState(void) {
     int flags;
-    MemoryCardState *b;
+    MemoryCardState *card_state;
     if (mode_freeze_flags & 4) {
         mode_freeze_flags &= ~4;
     }
@@ -1524,12 +1471,12 @@ void CardMenu_State16NextState(void) {
         mode_freeze_flags = (flags ^ 0x100) | 0x40;
         return;
     }
-    b = (MemoryCardState *)memory_card_state;
-    if (b->card[0].result != 0) {
+    card_state = (MemoryCardState *)memory_card_state;
+    if (card_state->card[0].result != 0) {
         mode_freeze_state = 3;
         return;
     }
-    if (b->field_fc != 0) {
+    if (card_state->field_fc != 0) {
         mode_freeze_state = 1;
     }
 }
@@ -1537,9 +1484,9 @@ void CardMenu_State16NextState(void) {
 
 /* Format failed state: free the busy slot and go to state 3 once the message closes. */
 void save_card_state_format_failed(void) {
-    MemoryCardState *b = (MemoryCardState *)memory_card_state;
-    char *base = (char *)&b->card[0].request;
-    int idx = b->cur;
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+    char *base = (char *)&card_state->card[0].request;
+    int idx = card_state->cur;
     int *slot = (int *)(base + idx * sizeof(McCard));
     if (*slot == 2) {
         *slot = 0;
@@ -1551,9 +1498,9 @@ void save_card_state_format_failed(void) {
 
 /* Create failed state: free the busy slot and go to state 3 once the message closes. */
 void save_card_state_create_failed(void) {
-    MemoryCardState *b = (MemoryCardState *)memory_card_state;
-    char *base = (char *)&b->card[0].request;
-    int idx = b->cur;
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+    char *base = (char *)&card_state->card[0].request;
+    int idx = card_state->cur;
     int *slot = (int *)(base + idx * sizeof(McCard));
     if (*slot == 2) {
         *slot = 0;
@@ -1572,9 +1519,9 @@ void save_card_state_no_room(void) {
 
 /* Load failed state: free the busy slot and go to state 3 once the message closes. */
 void save_card_state_load_failed(void) {
-    MemoryCardState *b = (MemoryCardState *)memory_card_state;
-    char *base = (char *)&b->card[0].request;
-    int idx = b->cur;
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+    char *base = (char *)&card_state->card[0].request;
+    int idx = card_state->cur;
     int *slot = (int *)(base + idx * sizeof(McCard));
     if (*slot == 2) {
         *slot = 0;
@@ -1586,9 +1533,9 @@ void save_card_state_load_failed(void) {
 
 /* Save failed state: free the busy slot and go to state 3 once the message closes. */
 void save_card_state_save_failed(void) {
-    MemoryCardState *b = (MemoryCardState *)memory_card_state;
-    char *base = (char *)&b->card[0].request;
-    int idx = b->cur;
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+    char *base = (char *)&card_state->card[0].request;
+    int idx = card_state->cur;
     int *slot = (int *)(base + idx * sizeof(McCard));
     if (*slot == 2) {
         *slot = 0;
@@ -1600,10 +1547,10 @@ void save_card_state_save_failed(void) {
 
 /* Card state 22: when idle, finish to state 1 or show the error state 0x15. */
 void CardMenu_State22StartOrFinish(void) {
-    MemoryCardState *b = (MemoryCardState *)memory_card_state;
-    if (b->state < 3 && b->err < 0) {
-        if (b->buf != 0) {
-            b->field_fc = 0;
+    MemoryCardState *card_state = (MemoryCardState *)memory_card_state;
+    if (card_state->state < 3 && card_state->err < 0) {
+        if (card_state->buf != 0) {
+            card_state->field_fc = 0;
             mode_freeze_state = 0x15;
             mode_freeze_flags |= 0x440;
             return;
