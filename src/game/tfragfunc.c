@@ -31,7 +31,7 @@ extern int draw_callback_count;
 extern int draw_callback_args[];
 extern int draw_callback_funcs[];
 extern short GlobalStateFlag;
-extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+extern int measure_text_width(unsigned char *str, int count, void *table);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
