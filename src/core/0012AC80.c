@@ -1413,41 +1413,41 @@ extern char mpeg_unsupported_profile_level_msg[];
  * `horizontal_size = (horizontal_size_extension<<12) | (horizontal_size&0xfff)`
  * et al.
  */
-void _sequenceExtension(void *arg0) {
-    char *s = (char *)arg0;
-    unsigned int v1, v2;
+void _sequenceExtension(void *mpeg_state) {
+    char *state_bytes = (char *)mpeg_state;
+    unsigned int first_extension_bits, second_extension_bits;
     unsigned int chroma_format, h_ext, v_ext, bitrate_ext;
     unsigned int progressive, profile, vbv_ext;
 
-    *(int *)(s + 0x848) = 1;
+    *(int *)(state_bytes + 0x848) = 1;
     ipu_set_mpeg1(0);
 
-    v1 = _nextBit(s, 0x1C);
-    bitrate_ext = (v1 >> 1) & 0xFFF;
-    chroma_format = (v1 >> 17) & 3;
-    v_ext = (v1 >> 13) & 3;
-    h_ext = (v1 >> 15) & 3;
+    first_extension_bits = _nextBit(state_bytes, 0x1C);
+    bitrate_ext = (first_extension_bits >> 1) & 0xFFF;
+    chroma_format = (first_extension_bits >> 17) & 3;
+    v_ext = (first_extension_bits >> 13) & 3;
+    h_ext = (first_extension_bits >> 15) & 3;
 
-    *(unsigned int *)(s + 0x140) = chroma_format;
+    *(unsigned int *)(state_bytes + 0x140) = chroma_format;
     if (chroma_format != 1) {
-        _Error(s, mpeg_chroma_format_not_420_msg);
+        _Error(state_bytes, mpeg_chroma_format_not_420_msg);
     }
 
-    progressive = (v1 >> 19) & 1;
-    *(unsigned int *)(s + 0x13C) = progressive;
-    profile = v1 >> 20;
+    progressive = (first_extension_bits >> 19) & 1;
+    *(unsigned int *)(state_bytes + 0x13C) = progressive;
+    profile = first_extension_bits >> 20;
 
-    v2 = _nextBit(s, 0x10);
-    vbv_ext = v2 >> 8;
+    second_extension_bits = _nextBit(state_bytes, 0x10);
+    vbv_ext = second_extension_bits >> 8;
 
     if (profile != 0x48 && profile != 0x58 && profile != 0x44) {
-        _Error(s, mpeg_unsupported_profile_level_msg);
+        _Error(state_bytes, mpeg_unsupported_profile_level_msg);
     }
 
-    *(int *)(s + 0x124) = (h_ext << 12) | (*(int *)(s + 0x124) & 0xFFF);
-    *(int *)(s + 0x128) = (v_ext << 12) | (*(int *)(s + 0x128) & 0xFFF);
-    *(int *)(s + 0x134) += bitrate_ext << 18;
-    *(int *)(s + 0x138) += vbv_ext << 10;
+    *(int *)(state_bytes + 0x124) = (h_ext << 12) | (*(int *)(state_bytes + 0x124) & 0xFFF);
+    *(int *)(state_bytes + 0x128) = (v_ext << 12) | (*(int *)(state_bytes + 0x128) & 0xFFF);
+    *(int *)(state_bytes + 0x134) += bitrate_ext << 18;
+    *(int *)(state_bytes + 0x138) += vbv_ext << 10;
 }
 
 
@@ -1463,18 +1463,18 @@ void _sequenceExtension(void *arg0) {
  * value call it reset $v0's readers and the +0x148 store lost the
  * scheduler tie to the next call's argument setup, 8/140.)
  */
-void _sequenceDisplayExtension(void *arg0) {
-    char *s = (char *)arg0;
+void _sequenceDisplayExtension(void *mpeg_state) {
+    char *state_bytes = (char *)mpeg_state;
 
-    _nextBit(s, 3);
-    if (_nextBit(s, 1) != 0) {
-        _nextBit(s, 8);
-        _nextBit(s, 8);
-        *(int *)(s + 0x144) = _nextBit(s, 8);
+    _nextBit(state_bytes, 3);
+    if (_nextBit(state_bytes, 1) != 0) {
+        _nextBit(state_bytes, 8);
+        _nextBit(state_bytes, 8);
+        *(int *)(state_bytes + 0x144) = _nextBit(state_bytes, 8);
     }
-    *(int *)(s + 0x148) = _nextBit(s, 0xE);
-    _nextBit(s, 1);
-    *(int *)(s + 0x14C) = _nextBit(s, 0xE);
+    *(int *)(state_bytes + 0x148) = _nextBit(state_bytes, 0xE);
+    _nextBit(state_bytes, 1);
+    *(int *)(state_bytes + 0x14C) = _nextBit(state_bytes, 0xE);
 }
 
 extern char mpeg_sequence_scalable_ext_msg[];
@@ -1482,24 +1482,24 @@ extern char mpeg_unknown_extension_msg[];
 extern char mpeg_picture_spatial_scalable_ext_msg[];
 
 /* Three more of the func_0012C468 family, same shape as func_0012CC60. */
-void _sequenceScalableExtension(void *arg0) {
-    _Error(arg0, mpeg_sequence_scalable_ext_msg);
+void _sequenceScalableExtension(void *mpeg_state) {
+    _Error(mpeg_state, mpeg_sequence_scalable_ext_msg);
 }
 
-void report_unknown_mpeg_extension(void *arg0) {
-    _Error(arg0, mpeg_unknown_extension_msg);
+void report_unknown_mpeg_extension(void *mpeg_state) {
+    _Error(mpeg_state, mpeg_unknown_extension_msg);
 }
 
-void _pictureSpatialScalableExtension(void *arg0) {
-    _Error(arg0, mpeg_picture_spatial_scalable_ext_msg);
+void _pictureSpatialScalableExtension(void *mpeg_state) {
+    _Error(mpeg_state, mpeg_picture_spatial_scalable_ext_msg);
 }
 
 extern char mpeg_picture_temporal_scalable_ext_msg[];
 
 /* Tail call: arg0 passes straight through, arg1 is &D_00153CC8 whose
    %lo half retail schedules into the jump's delay slot. */
-void _pictureTemporalScalableExtension(void *arg0) {
-    _Error(arg0, mpeg_picture_temporal_scalable_ext_msg);
+void _pictureTemporalScalableExtension(void *mpeg_state) {
+    _Error(mpeg_state, mpeg_picture_temporal_scalable_ext_msg);
 }
 
 INCLUDE_ASM("asm/nonmatchings/core_text", func_0012CC6C);
