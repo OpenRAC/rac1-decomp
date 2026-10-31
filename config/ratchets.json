@@ -2,7 +2,7 @@
   "address_names_in_code": 8432,
   "address_names_in_comments": 861,
   "asm_aliases": 3761,
-  "extern_lines": 16906,
+  "extern_lines": 16907,
   "fakematch_tags": 29,
   "float_int_casts": 596,
   "hex_compares": 3827,
