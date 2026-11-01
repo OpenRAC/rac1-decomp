@@ -25,6 +25,19 @@ Run this before a PR. It rebuilds, checks every version and refreshes the report
 bash tools/check_all.sh
 ```
 
+For a batch of changes, use the gate loop. It runs the same checks, and reverts any file that breaks a match. Exit 0
+means it passed. Anything else means stop and read the output.
+
+```sh
+python3 tools/gate_loop.py
+```
+
+To merge a PR once every check of its newest commit has passed:
+
+```sh
+bash tools/land_pr.sh BRANCH
+```
+
 ## Quick checks
 
 These need no build and no disc.
