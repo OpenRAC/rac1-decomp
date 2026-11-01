@@ -14,6 +14,7 @@
 #include "overlays/shared/level_runtime_and_menus.h"
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/hero_state.h"
 
 typedef struct {
     char pad[0x24];
@@ -392,7 +393,7 @@ void restore_hero_from_vehicle_mode(void) {
         g2->anim_frame_rate = 1.0f;
         clear_hero_queued_animation();
         if (g2->state.current != 100 || (level_game_mode_q != 2 && level_game_mode_q != 6)) {
-            HeroL06_TrySetMoveState(0, 1);
+            HeroL06_TrySetMoveState(HERO_STATE_IDLE, 1);
         }
     }
 }
@@ -537,7 +538,7 @@ s32 HeroL06_ResolveCollisionStep(s32 mode) {
     }
     FastVecAdd(&g_hero_r2.motion.pos.q, &g_hero_r2.motion.pos.q, &v);
     mask = 0xD24;
-    if (g_hero_r2.state.current == 0x7F)
+    if (g_hero_r2.state.current == HERO_STATE_SINK)
         mask = 0xD24;
     for (i = 0; i < 8; i++) {
         if (g_hero_r2.gravity_mode != 0) {
@@ -754,13 +755,13 @@ skip:
 void enter_hero_idle_state_for_current_vehicle_mode(void) {
     switch (hero_globals_base[0x2EC1]) {
         case 0:
-            HeroL06_TrySetMoveState(0, 1);
+            HeroL06_TrySetMoveState(HERO_STATE_IDLE, 1);
             break;
         case 1:
-            HeroL06_TrySetMoveState(0x43, 1);
+            HeroL06_TrySetMoveState(HERO_STATE_VEHICLE_MODE_1_IDLE, 1);
             break;
         case 3:
-            HeroL06_TrySetMoveState(0x53, 1);
+            HeroL06_TrySetMoveState(HERO_STATE_VEHICLE_MODE_3_IDLE, 1);
             break;
     }
 }

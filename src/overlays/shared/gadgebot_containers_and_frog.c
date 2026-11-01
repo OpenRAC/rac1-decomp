@@ -19,6 +19,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 /* Blarg frog: hops along its path, chases the hero or a gadgebot and respawns after it is destroyed. */
 struct FrogVars {
@@ -3149,8 +3150,8 @@ void update_hero_trigger_volume_monitor(char *m) {
             if (hero_ptr->vehicle_mode != 0) {
                 FadeToBlack(scale_ticks(10));
                 Hero_OnKilled();
-            } else if (hero_ptr->state.current != 0x77) {
-                HeroL06_TrySetMoveState(0x77, 1);
+            } else if (hero_ptr->state.current != HERO_STATE_FATAL_FALL) {
+                HeroL06_TrySetMoveState(HERO_STATE_FATAL_FALL, 1);
             }
         }
     }

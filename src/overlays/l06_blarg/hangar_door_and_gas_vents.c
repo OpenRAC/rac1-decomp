@@ -19,6 +19,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 /* Hangar door: swings to a target angle, drives seven linked door pieces. */
 struct HangarDoorVars {
@@ -3046,7 +3047,7 @@ extern int *blarg_paths[];
 /* Ends the moby's script. */
 void finish_alien_queen_intro(char *arg) {
     struct AlienQueenVars *data = (struct AlienQueenVars *)((Moby *)arg)->pvars;
-    HeroL06_TrySetMoveState(0, 0);
+    HeroL06_TrySetMoveState(HERO_STATE_IDLE, 0);
     *blarg_paths[data->path] = data->path_len;
     CameraScript2(2);
 }

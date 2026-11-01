@@ -13,6 +13,7 @@
 #include "game/fastfunc.h"
 #include "structs/collision.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 /* Trespasser: set once the pickup was collected. */
 struct TrespasserVars {
     u8 pad_00[0x4];
@@ -844,12 +845,14 @@ void mine_glove_update(struct Moby *moby) {
         vars->held->collision_disable = 1;
     if (vars->held == 0 || vars->held->state == 0xFE || vars->held->state == 0xFD)
         vars->held = 0;
-    if (g_hero_r2.state.current == 1)
-        HeroEnterMoveState(0x1E, 1);
+    if (g_hero_r2.state.current == HERO_STATE_LOOK)
+        HeroEnterMoveState(HERO_STATE_LOOK_RELEASE_WAIT, 1);
     if (fast_dec_timer(&vars->timer58) && !g_hero_r2.item_use_locked) {
         if ((g_hero_r2.item_anim_active && g_hero_r2.item_anim_frames == scale_ticks(0x11)) ||
-            ((pad0_pressed & g_hero_r2.items[0].button_mask) && g_hero_r2.state.current == 0x1E && get_ammo(-1)) ||
-            (g_hero_r2.state.current == 0x23 && g_hero_r2.state_timer == scale_ticks(0x10))) {
+            ((pad0_pressed & g_hero_r2.items[0].button_mask) &&
+             g_hero_r2.state.current == HERO_STATE_LOOK_RELEASE_WAIT && get_ammo(-1)) ||
+            (g_hero_r2.state.current == HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL &&
+             g_hero_r2.state_timer == scale_ticks(0x10))) {
             allocate_hero_voice_for_entry(0x1A, 0);
             use_ammo(-1, 1);
             moby->state = 3;
@@ -963,7 +966,8 @@ void mine_glove_update(struct Moby *moby) {
             vars->timer58 = scale_ticks(0x14);
             break;
         case 4:
-            if (g_hero_r2.state.current != 0x23 && !g_hero_r2.item_anim_active)
+            if (g_hero_r2.state.current != HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL &&
+                !g_hero_r2.item_anim_active)
                 moby->state = 2;
             break;
         case 5:
@@ -1139,12 +1143,14 @@ void bomb_glove_update(struct Moby *moby) {
         vars->held->collision_disable = 1;
     if (vars->held == 0 || vars->held->state == 0xFE || vars->held->state == 0xFD)
         vars->held = 0;
-    if (g_hero_r3.state.current == 1)
-        HeroEnterMoveState(0x1E, 1);
+    if (g_hero_r3.state.current == HERO_STATE_LOOK)
+        HeroEnterMoveState(HERO_STATE_LOOK_RELEASE_WAIT, 1);
     if (fast_dec_timer(&vars->timer) && !g_hero_r3.item_use_locked) {
         if ((g_hero_r3.item_anim_active && g_hero_r3.item_anim_frames == scale_ticks(0x11)) ||
-            ((pad0_pressed & g_hero_r3.items[0].button_mask) && g_hero_r3.state.current == 0x1E && get_ammo(-1)) ||
-            (g_hero_r3.state.current == 0x23 && g_hero_r3.state_timer == scale_ticks(0x10))) {
+            ((pad0_pressed & g_hero_r3.items[0].button_mask) &&
+             g_hero_r3.state.current == HERO_STATE_LOOK_RELEASE_WAIT && get_ammo(-1)) ||
+            (g_hero_r3.state.current == HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL &&
+             g_hero_r3.state_timer == scale_ticks(0x10))) {
             allocate_hero_voice_for_entry(0x1A, 0);
             use_ammo(-1, 1);
             moby->state = 3;
@@ -1282,7 +1288,8 @@ void bomb_glove_update(struct Moby *moby) {
             }
             break;
         case 4:
-            if (g_hero_r3.state.current != 0x23 && !g_hero_r3.item_anim_active)
+            if (g_hero_r3.state.current != HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL &&
+                !g_hero_r3.item_anim_active)
                 moby->state = 2;
             break;
         case 5:
@@ -1917,7 +1924,7 @@ void decoy_update(Moby *moby) {
                     }
                 }
             }
-            if (g_hero_r4.state.current == 0x1E)
+            if (g_hero_r4.state.current == HERO_STATE_LOOK_RELEASE_WAIT)
                 *(int *)((char *)g_hero_r4.moby + 0x94) = 0;
             ok = ((int (*)(void *, void *, float, float, float, int))move_4318)((char *)moby, vars->vel_xy, 0.2f, 0.2f,
                                                                                 0.0f, 0);
@@ -1994,14 +2001,14 @@ void decoy_update(Moby *moby) {
                     }
                 }
             }
-            if (g_hero_r4.state.current == 0x1E) {
+            if (g_hero_r4.state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
                 char *hm = (char *)g_hero_r4.moby;
                 *(int *)(hm + 0x94) = *(int *)(*(char **)(hm + 0x24) + 0x10);
             }
             break;
         case 3:
         case 4:
-            if (g_hero_r4.state.current == 0x31) {
+            if (g_hero_r4.state.current == HERO_STATE_VOICE_SLOT_CLEANUP_IDLE_EXIT) {
                 if (vec_distance_xy(&moby->pos, &g_hero_r4.motion.pos) < 1.5f)
                     spawn_nearby_effect_without_direction(1000.0f, moby, moby, 0x10000, &g_hero_r4.motion.pos);
             }
@@ -2628,8 +2635,8 @@ void func_L00_002C74B8_r(Moby *m) {
 
     if (m == 0)
         return;
-    if (((Hero *)g_hero_r5)->state.current == 1)
-        HeroEnterMoveState_r(30, 1);
+    if (((Hero *)g_hero_r5)->state.current == HERO_STATE_LOOK)
+        HeroEnterMoveState_r(HERO_STATE_LOOK_RELEASE_WAIT, 1);
     d = (void *)m->pvars;
     if (d == 0)
         return;
@@ -2638,7 +2645,8 @@ void func_L00_002C74B8_r(Moby *m) {
         d->hook = spawn_swingshot_hook_r(m, g_frame_time_r * 24.0f);
     if (d->hook)
         hd = (void *)d->hook->pvars;
-    if ((((Hero *)g_hero_r5)->state.current == 1 || ((Hero *)g_hero_r5)->state.current == 30) &&
+    if ((((Hero *)g_hero_r5)->state.current == HERO_STATE_LOOK ||
+         ((Hero *)g_hero_r5)->state.current == HERO_STATE_LOOK_RELEASE_WAIT) &&
         ((Hero *)g_hero_r5)->state_timer >= 2) {
         EffectQueue_Add_r((int)m, 0xFF0000FF, 1.0f, 0, 0x24, 0.0f, -1, 90.0f, 4);
         if (((Hero *)g_hero_r5)->grapple_target_in_sight && ((Hero *)g_hero_r5)->grapple_target)
@@ -2660,7 +2668,7 @@ void func_L00_002C74B8_r(Moby *m) {
                 Moby_GetJointWorldPos_r(m, 0, &d->hook->pos);
                 (*(M3_2C74B8 *)&d->hook->rot_row0) = (*(M3_2C74B8 *)&m->rot_row0);
             }
-            if (((Hero *)g_hero_r5)->state.current == 0x24 ||
+            if (((Hero *)g_hero_r5)->state.current == HERO_STATE_GRAPPLE_TARGET_ENTRY ||
                 (((Hero *)g_hero_r5)->state.control_mode == 0xF && ((Hero *)g_hero_r5)->unk5B4)) {
                 if (hd) {
                     d->size = 0.280000001f;
@@ -2673,7 +2681,7 @@ void func_L00_002C74B8_r(Moby *m) {
                     m->state = 2;
                 }
             }
-            if (((Hero *)g_hero_r5)->state.current == 0x2C && hd) {
+            if (((Hero *)g_hero_r5)->state.current == HERO_STATE_GRAPPLE_SWING_ENTRY && hd) {
                 speed = FastVecDist_r(&((Hero *)g_hero_r5)->swing_target_moby->pos, &d->hook->pos);
                 n = scale_ticks_r(7);
                 if (((Hero *)g_hero_r5)->items[0].ready_frames < scale_ticks_r(30))
@@ -2707,9 +2715,9 @@ void func_L00_002C74B8_r(Moby *m) {
             v10.f.z += 0.5f;
             if (coll_line_r4(&v10, &((Hero *)g_hero_r5)->grapple_target->pos, 2, 0, 0)) {
                 if (0.5f < ((Hero *)g_hero_r5)->ground_distance) {
-                    HeroEnterMoveState_r(6, 1);
+                    HeroEnterMoveState_r(HERO_STATE_FALL, 1);
                 } else {
-                    HeroEnterMoveState_r(0, 0);
+                    HeroEnterMoveState_r(HERO_STATE_IDLE, 0);
                     set_hero_animation_r(hero_idle_sequence_r(0), 0, (float)scale_ticks_r(14));
                 }
                 m->state = 6;
@@ -2733,9 +2741,9 @@ void func_L00_002C74B8_r(Moby *m) {
             v0.f.z += 0.5f;
             if (coll_line_r4(&v0, &((Hero *)g_hero_r5)->grapple_target->pos, 2, 0, 0)) {
                 if (((Hero *)g_hero_r5)->air_frames.s)
-                    HeroEnterMoveState_r(6, 1);
+                    HeroEnterMoveState_r(HERO_STATE_FALL, 1);
                 else
-                    HeroEnterMoveState_r(0, 1);
+                    HeroEnterMoveState_r(HERO_STATE_IDLE, 1);
                 m->state = 6;
                 break;
             }
@@ -2751,19 +2759,19 @@ void func_L00_002C74B8_r(Moby *m) {
                 if (d->hook && 3.5f < FastVecDist_r(&d->hook->pos, &((Hero *)g_hero_r5)->motion.pos)) {
                     if (!(pad_2C74B8.held & ((Hero *)g_hero_r5)->items[0].button_mask)) {
                         ((Hero *)g_hero_r5)->unk988 = 1;
-                        HeroEnterMoveState_r(0, 0);
+                        HeroEnterMoveState_r(HERO_STATE_IDLE, 0);
                         set_hero_animation_r(hero_idle_sequence_r(0), 0, (float)scale_ticks_r(14));
                         m->state = 6;
                     } else {
                         Moby_PlaySound_r(2, 0, m);
                         if (((Hero *)g_hero_r5)->unk978)
-                            HeroEnterMoveState_r(0x26, 1);
+                            HeroEnterMoveState_r(HERO_STATE_CONSTRAIN_TO_TARGET_RADIUS, 1);
                         else
-                            HeroEnterMoveState_r(0x25, 1);
+                            HeroEnterMoveState_r(HERO_STATE_APPROACH_TARGET_MOBY, 1);
                         m->state = 5;
                     }
                 } else {
-                    HeroEnterMoveState_r(0, 1);
+                    HeroEnterMoveState_r(HERO_STATE_IDLE, 1);
                     m->state = 6;
                 }
             }
@@ -2844,7 +2852,7 @@ void func_L00_002C74B8_r(Moby *m) {
             d->size = d->size * (frame_scale_r * -0.600000024f + 1.0f);
             d->spin = d->spin + 0.69813168f;
             AddDrawCallback_r(draw_swingshot_cable_r, m);
-            if (((Hero *)g_hero_r5)->state.current != 0x2C)
+            if (((Hero *)g_hero_r5)->state.current != HERO_STATE_GRAPPLE_SWING_ENTRY)
                 m->state = 13;
             break;
         case 13:
@@ -2873,7 +2881,7 @@ void func_L00_002C74B8_r(Moby *m) {
                     MobyBlendAnimation_r(m, 1, 0, scale_ticks_r(10));
                 m->state = 1;
             }
-            if (((Hero *)g_hero_r5)->state.current == 0x2C && hd) {
+            if (((Hero *)g_hero_r5)->state.current == HERO_STATE_GRAPPLE_SWING_ENTRY && hd) {
                 hd->speed = FastVecDist_r(&((Hero *)g_hero_r5)->swing_target_moby->pos, &d->hook->pos) / 10.0f;
                 d->scale = 1.0f;
                 d->size = 0.0f;
@@ -3242,14 +3250,15 @@ void glove_of_doom_update(struct Moby *moby) {
     if (vars->held == 0 || vars->held->state == 0xFE || vars->held->state == 0xFD) {
         vars->held = 0;
     }
-    if (((Hero *)g_hero_r5)->state.current == 1) {
-        HeroEnterMoveState_r2(0x1E, 1);
+    if (((Hero *)g_hero_r5)->state.current == HERO_STATE_LOOK) {
+        HeroEnterMoveState_r2(HERO_STATE_LOOK_RELEASE_WAIT, 1);
     }
     if (fast_dec_timer_r(&vars->timer) && !((Hero *)g_hero_r5)->item_use_locked) {
         if ((((Hero *)g_hero_r5)->item_anim_active && ((Hero *)g_hero_r5)->item_anim_frames == scale_ticks_r3(0x11)) ||
             ((pad0_pressed_r & ((Hero *)g_hero_r5)->items[0].button_mask) &&
-             ((Hero *)g_hero_r5)->state.current == 0x1E && get_ammo_r(-1)) ||
-            (((Hero *)g_hero_r5)->state.current == 0x23 && ((Hero *)g_hero_r5)->state_timer == scale_ticks_r3(0x10))) {
+             ((Hero *)g_hero_r5)->state.current == HERO_STATE_LOOK_RELEASE_WAIT && get_ammo_r(-1)) ||
+            (((Hero *)g_hero_r5)->state.current == HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL &&
+             ((Hero *)g_hero_r5)->state_timer == scale_ticks_r3(0x10))) {
             allocate_hero_voice_for_entry_r(0x1A, 0);
             use_ammo_r(-1, 1);
             moby->state = 3;
@@ -3294,7 +3303,8 @@ void glove_of_doom_update(struct Moby *moby) {
             vars->timer = scale_ticks_r3(0x14);
             break;
         case 4:
-            if (((Hero *)g_hero_r5)->state.current != 0x23 && !((Hero *)g_hero_r5)->item_anim_active) {
+            if (((Hero *)g_hero_r5)->state.current != HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL &&
+                !((Hero *)g_hero_r5)->item_anim_active) {
                 moby->state = 2;
             }
             break;

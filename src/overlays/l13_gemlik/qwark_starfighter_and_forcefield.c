@@ -27,6 +27,7 @@
 #include "overlays/shared/ripple_patches.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 /* Part attached to a joint of a source moby (spawn_moby_joint_attachment). */
 struct JointAttachVars {
@@ -3440,8 +3441,9 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
                            height_half_span_or_tile_enabled);
             hero_context = (Hero *)g_hero;
             if (hero_context->state.control_mode != 0x14 && hero_context->state.control_mode != 0x19 &&
-                hero_context->state.current != 0x3D && hero_context->state.current != 0x7B &&
-                hero_context->state.current != 0x7C)
+                hero_context->state.current != HERO_STATE_DYING &&
+                hero_context->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT &&
+                hero_context->state.current != HERO_STATE_DEATH_DESCENT)
                 bobbing_platform_vars->angle = FastAddRots(bobbing_platform_vars->angle, bobbing_platform_vars->speed);
             Tiles_9e88_r[bobbing_platform_vars->idx].c1C = gemlik_pool_light.c3C;
             Tiles_9e88_r[bobbing_platform_vars->idx].c1D = gemlik_pool_light.c3D;
@@ -3684,7 +3686,7 @@ void update_lift(char *mobyp) {
         case LIFT_WAIT_AT_TOP_FOR_HERO_TO_LEAVE:
         case LIFT_WAIT_AT_BOTTOM_FOR_HERO_TO_LEAVE:
             if (vars->timer != 0 && fast_dec_timer(&vars->timer)) {
-                HeroEnterMoveState(0, 0);
+                HeroEnterMoveState(HERO_STATE_IDLE, 0);
             }
             if (Sound_IsPlaying(mobyp, vars->voice)) {
                 Sound_StopSlot(vars->voice);

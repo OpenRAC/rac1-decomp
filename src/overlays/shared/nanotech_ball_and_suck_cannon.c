@@ -15,6 +15,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 /* Class 0x326 moby: the moby it is linked to. */
 struct LinkedMobyVars {
     u8 pad_00[0xC];
@@ -1074,7 +1075,7 @@ void compute_suck_cannon_suction_aim_and_origin(Moby *m, float *a, float *b, flo
     struct Hero *g;
     Moby_GetJointWorldPos(m, 0, c);
     g = (struct Hero *)(hero_globals_base + 0xE1D);
-    if (g->state.current == 1 || g->state.current == 0x1E) {
+    if (g->state.current == HERO_STATE_LOOK || g->state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
         char *s = player_camera;
         v[1] = 0;
         v[0] = 1.2f;
@@ -1519,7 +1520,7 @@ void suckcannon_update(M40 *self) {
             if (fast_dec_timer_r(&data->target_timer) || (data->target && ((u8)data->target->state & 0x80)))
                 data->target = 0;
             if (hero40.camera_mode == 1)
-                HeroEnterMoveState(30, 1);
+                HeroEnterMoveState(HERO_STATE_LOOK_RELEASE_WAIT, 1);
             if (hero40.camera_mode == 30 && (hero40.moby->flags & 1) && !hero40.disabled) {
                 char *camera = player_camera;
                 V40 *eye;
@@ -3602,7 +3603,7 @@ void hydrodisplacer_update(Moby *m) {
                         return;
                     }
                     m->state = 2;
-                    HeroEnterMoveState_r(0x3A, 0);
+                    HeroEnterMoveState_r(HERO_STATE_ANIMATION_WAIT_TO_IDLE, 0);
                     if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full != 0) {
                         set_hero_animation_r(0x48, 0, scale_ticks_r3(6));
                     } else {

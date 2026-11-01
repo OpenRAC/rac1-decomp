@@ -10,6 +10,7 @@
 #include "data/executable.h"
 #include "game/fastfunc.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
@@ -63,10 +64,10 @@ void HeroL18_UpdateStateFlags(void) {
     }
     if (g_current_level_index == LEVEL_GEMLIK) {
         struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-        if (p->state.current != 0x7B) {
+        if (p->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
             if (coll_sphere(p->capsule_radius + 0.03f, &p->motion.body_center, 2, 0) != 0) {
                 if (CollType() == 0xB) {
-                    HeroL18_SetMoveState(0x7B, 1);
+                    HeroL18_SetMoveState(HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT, 1);
                     return;
                 }
             }
@@ -101,7 +102,7 @@ void HeroL18_UpdateStateFlags(void) {
         if (p->selector_4 != 0 && p->grounded_frames != 0) {
             t = p->state.control_mode;
             if (t != 0x10 && t != 0x14 && t != 7) {
-                HeroL18_SetMoveState(0x31, 1);
+                HeroL18_SetMoveState(HERO_STATE_VOICE_SLOT_CLEANUP_IDLE_EXIT, 1);
                 return;
             }
         }
@@ -113,13 +114,13 @@ void HeroL18_UpdateStateFlags(void) {
             if (t != 0x68 && t != 0x7B) {
                 if (FastAbsF(p->sink_surface_z - (p->motion.pos.f[2] + 0.25f)) < 1.0f) {
                     if (0.0f < p->sink_surface_z - p->motion.pos.f[2]) {
-                        if (p->state.current != 0x69 || p->past_jump_apex != 0) {
+                        if (p->state.current != HERO_STATE_JUMP_FROM_RESPAWN_WAIT || p->past_jump_apex != 0) {
                             if (p->motion.displacement.f[2] < 0.0f) {
                                 exit_hero_vehicle_mode_if_mode_three();
                                 if (p->health.hp != 0) {
-                                    HeroL18_SetMoveState(0x68, 1);
+                                    HeroL18_SetMoveState(HERO_STATE_WAIT_FOR_JUMP_OR_RESPAWN, 1);
                                 } else {
-                                    HeroL18_SetMoveState(0x7B, 1);
+                                    HeroL18_SetMoveState(HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT, 1);
                                 }
                                 return;
                             }
@@ -132,7 +133,7 @@ void HeroL18_UpdateStateFlags(void) {
     {
         struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (p->selector_11 != 0) {
-            if (p->state.current != 0x7B) {
+            if (p->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
                 if (FastAbsF(p->sink_surface_z - (p->motion.pos.f[2] + 0.25f)) < 1.0f) {
                     if (0.0f < p->sink_surface_z - p->motion.pos.f[2]) {
                         if (p->motion.displacement.f[2] < 0.0f) {
@@ -140,7 +141,7 @@ void HeroL18_UpdateStateFlags(void) {
                                 Hero_OnKilled();
                             } else {
                                 exit_hero_vehicle_mode_if_mode_three();
-                                HeroL18_SetMoveState(0x7B, 1);
+                                HeroL18_SetMoveState(HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT, 1);
                             }
                         }
                     }
@@ -275,7 +276,7 @@ s32 HeroL18_TryTakeHit(s32 arg) {
                     id = 0x82;
                     goto call_ret;
                 }
-                HeroL18_SetMoveState(0x75, 1);
+                HeroL18_SetMoveState(HERO_STATE_WATER_SURFACE_HURT, 1);
             } else if (g_hero.state.control_mode == 0x11) {
                 mob = (u8 *)g_hero.damage_source_moby;
                 if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
@@ -298,9 +299,9 @@ s32 HeroL18_TryTakeHit(s32 arg) {
                         goto call_ret;
                     }
                 }
-                HeroL18_SetMoveState(0x16, 1);
+                HeroL18_SetMoveState(HERO_STATE_HURT, 1);
             } else {
-                HeroL18_SetMoveState(0x16, 1);
+                HeroL18_SetMoveState(HERO_STATE_HURT, 1);
             }
             e = g_frame_time;
             a = e * 5.7f;
@@ -326,7 +327,7 @@ s32 HeroL18_TryTakeHit(s32 arg) {
             clear_u64_value(&v);
             break;
         case 3:
-            HeroL18_SetMoveState(0x56, 1);
+            HeroL18_SetMoveState(HERO_STATE_VEHICLE_MODE_3_HURT, 1);
             hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 2.4f);
             break;
     }

@@ -16,6 +16,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/hero_views.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern unsigned char hero_globals_base[] NOT_SDA;
@@ -627,12 +628,12 @@ int try_apply_hero_water_and_ground_transitions(void) {
         a[2] = rilgar_coll_hit_z - 0.01f;
         if (coll_line(a, b, 2, *(int *)&p->moby, 0) != 0)
             goto done;
-        Hero_TryMoveStateL05(0x34, 1);
+        Hero_TryMoveStateL05(HERO_STATE_SWIM_IDLE, 1);
         return 1;
     }
 done:
     if (ret) {
-        Hero_TryMoveStateL05(0x37, 1);
+        Hero_TryMoveStateL05(HERO_STATE_WATER_SURFACE_ENTRY, 1);
         allocate_hero_voice_for_entry(3, 0);
     }
     return ret;
@@ -729,35 +730,39 @@ int process_hero_primary_item_input(void) {
                     break;
                 }
                 if ((g_controller_state_p2523C8.held & (PAD_R2 | PAD_R1)) ||
-                    ((g_hero_h2523C8.state.current == 1 || g_hero_h2523C8.state.current == 0x1E) &&
+                    ((g_hero_h2523C8.state.current == HERO_STATE_LOOK ||
+                      g_hero_h2523C8.state.current == HERO_STATE_LOOK_RELEASE_WAIT) &&
                      g_hero_h2523C8.state_timer > scale_ticks(0x14))) {
-                    if ((g_hero_h2523C8.state.current == 1 || g_hero_h2523C8.state.current == 0x1E) &&
+                    if ((g_hero_h2523C8.state.current == HERO_STATE_LOOK ||
+                         g_hero_h2523C8.state.current == HERO_STATE_LOOK_RELEASE_WAIT) &&
                         g_hero_h2523C8.state_timer > scale_ticks(0x14)) {
                         launch_hero_wrench();
                         break;
                     }
-                    Hero_TryMoveStateL05_r(0x15, 1);
+                    Hero_TryMoveStateL05_r(HERO_STATE_CROUCH_SWING, 1);
                     break;
                 }
                 if (g_hero_h2523C8.unk308 == 1) {
-                    Hero_TryMoveStateL05_r(0x70, 1);
+                    Hero_TryMoveStateL05_r(HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT, 1);
                 } else {
-                    Hero_TryMoveStateL05_r(0x13, 1);
+                    Hero_TryMoveStateL05_r(HERO_STATE_WRENCH_COMBO, 1);
                 }
                 break;
             }
-            if (g_hero_h2523C8.state.current == 7 || g_hero_h2523C8.state.current == 9 ||
-                g_hero_h2523C8.state.current == 8 || g_hero_h2523C8.state.current == 6 ||
-                (g_hero_h2523C8.state.current == 0xE && g_hero_h2523C8.anim_frame > 32.0f) ||
-                (g_hero_h2523C8.state.current == 0xB && g_hero_h2523C8.unk450 != 3 &&
+            if (g_hero_h2523C8.state.current == HERO_STATE_JUMP ||
+                g_hero_h2523C8.state.current == HERO_STATE_RUN_JUMP ||
+                g_hero_h2523C8.state.current == HERO_STATE_LAND || g_hero_h2523C8.state.current == HERO_STATE_FALL ||
+                (g_hero_h2523C8.state.current == HERO_STATE_DOUBLE_JUMP && g_hero_h2523C8.anim_frame > 32.0f) ||
+                (g_hero_h2523C8.state.current == HERO_STATE_HIGH_JUMP && g_hero_h2523C8.unk450 != 3 &&
                  g_hero_h2523C8.anim_frame > 18.0f) ||
-                (g_hero_h2523C8.state.current == 0xB && g_hero_h2523C8.unk450 == 3 &&
+                (g_hero_h2523C8.state.current == HERO_STATE_HIGH_JUMP && g_hero_h2523C8.unk450 == 3 &&
                  g_hero_h2523C8.anim_frame > 20.0f) ||
-                g_hero_h2523C8.state.current == 0x2D || g_hero_h2523C8.state.current == 0x11) {
+                g_hero_h2523C8.state.current == HERO_STATE_ITEM_RELEASE_FALL || g_hero_h2523C8.state.current == 0x11) {
                 if (g_hero_h2523C8.state_timer > scale_ticks(0xA)) {
                     int t = scale_ticks(0xA);
 
-                    if (g_hero_h2523C8.state.current == 0xB || g_hero_h2523C8.state.current == 0xE) {
+                    if (g_hero_h2523C8.state.current == HERO_STATE_HIGH_JUMP ||
+                        g_hero_h2523C8.state.current == HERO_STATE_DOUBLE_JUMP) {
                         t = scale_ticks(0x12);
                     }
                     if (!pad_pressed_within(mask, t, 0)) {
@@ -765,14 +770,14 @@ int process_hero_primary_item_input(void) {
                     }
                     if ((g_hero_h2523C8.past_jump_apex == 0 && g_hero_h2523C8.ground_distance > 0.1f) ||
                         (g_hero_h2523C8.past_jump_apex != 0 && g_hero_h2523C8.ground_distance > 0.57f) ||
-                        (g_hero_h2523C8.state.current == 8 && g_hero_h2523C8.ground_distance > 0.57f)) {
-                        Hero_TryMoveStateL05_r(0x14, 1);
+                        (g_hero_h2523C8.state.current == HERO_STATE_LAND && g_hero_h2523C8.ground_distance > 0.57f)) {
+                        Hero_TryMoveStateL05_r(HERO_STATE_WRENCH_SLAM, 1);
                         break;
                     }
                     if (g_hero_h2523C8.on_slip_ground != 0) {
                         break;
                     }
-                    Hero_TryMoveStateL05_r(0x13, 1);
+                    Hero_TryMoveStateL05_r(HERO_STATE_WRENCH_COMBO, 1);
                     break;
                 }
             }
@@ -780,7 +785,7 @@ int process_hero_primary_item_input(void) {
                 Rec2C_2523C8 *rec = &rilgar_attack_records_r[g_hero_h2523C8.attack_record];
                 int t;
 
-                if (g_hero_h2523C8.state.current == 0x15) {
+                if (g_hero_h2523C8.state.current == HERO_STATE_CROUCH_SWING) {
                     if (g_hero_h2523C8.state_timer > scale_ticks(0x1E)) {
                         if (g_hero_h2523C8.anim_changing != 0) {
                             break;
@@ -788,7 +793,7 @@ int process_hero_primary_item_input(void) {
                         if (g_hero_h2523C8.anim_frame >= (float)rec->f10 &&
                             (g_controller_state_p2523C8.held & (PAD_R2 | PAD_R1)) &&
                             pad_pressed_within(mask, scale_ticks(0xF), 0)) {
-                            Hero_TryMoveStateL05_r(0x15, 1);
+                            Hero_TryMoveStateL05_r(HERO_STATE_CROUCH_SWING, 1);
                             break;
                         }
                     }
@@ -813,13 +818,13 @@ int process_hero_primary_item_input(void) {
                     break;
                 }
                 if (g_controller_state_p2523C8.held & (PAD_R2 | PAD_R1)) {
-                    Hero_TryMoveStateL05_r(0x15, 1);
+                    Hero_TryMoveStateL05_r(HERO_STATE_CROUCH_SWING, 1);
                     break;
                 }
                 if (g_hero_h2523C8.unk308 == 1) {
-                    Hero_TryMoveStateL05_r(0x70, 1);
+                    Hero_TryMoveStateL05_r(HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT, 1);
                 } else {
-                    Hero_TryMoveStateL05_r(0x13, 1);
+                    Hero_TryMoveStateL05_r(HERO_STATE_WRENCH_COMBO, 1);
                 }
             }
             break;
@@ -834,7 +839,8 @@ int process_hero_primary_item_input(void) {
             }
             if (g_hero_h2523C8.state.control_mode < 2U || g_hero_h2523C8.state.control_mode == 4 ||
                 g_hero_h2523C8.state.control_mode == 2 || g_hero_h2523C8.state.control_mode == 0xF ||
-                g_hero_h2523C8.state.control_mode == 5 || g_hero_h2523C8.state.current == 0x1E) {
+                g_hero_h2523C8.state.control_mode == 5 ||
+                g_hero_h2523C8.state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
                 if (pad_pressed_within(mask, t, 0) || ((g_controller_state_p2523C8.held & mask) &&
                                                        g_hero_h2523C8.items[0].ready_frames > scale_ticks(0xF))) {
                     if (g_hero_h2523C8.swing_target_in_sight != 0) {
@@ -846,13 +852,13 @@ int process_hero_primary_item_input(void) {
                             }
                         }
                         if (g_hero_h2523C8.swing_target_in_sight != 0 && g_hero_h2523C8.grapple_lockout_timer == 0 &&
-                            g_hero_h2523C8.state.current != 0x2C) {
-                            Hero_TryMoveStateL05_r(0x2C, 1);
+                            g_hero_h2523C8.state.current != HERO_STATE_GRAPPLE_SWING_ENTRY) {
+                            Hero_TryMoveStateL05_r(HERO_STATE_GRAPPLE_SWING_ENTRY, 1);
                             break;
                         }
                     }
                     if (g_hero_h2523C8.grapple_target_in_sight != 0 && g_hero_h2523C8.grapple_lockout_timer == 0) {
-                        Hero_TryMoveStateL05_r(0x24, 1);
+                        Hero_TryMoveStateL05_r(HERO_STATE_GRAPPLE_TARGET_ENTRY, 1);
                     }
                 }
             }
@@ -892,7 +898,7 @@ int process_hero_primary_item_input(void) {
             if (g_hero_h2523C8.state.control_mode < 2U || g_hero_h2523C8.state.control_mode == 0xC ||
                 g_hero_h2523C8.state.control_mode == 2 || g_hero_h2523C8.state.control_mode == 4 ||
                 g_hero_h2523C8.state.control_mode == 5 || g_hero_h2523C8.state.control_mode == 0xF ||
-                g_hero_h2523C8.state.current == 0x1E) {
+                g_hero_h2523C8.state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
                 PVar_2523C8 *pv;
 
                 if (((Moby *)g_hero_h2523C8.items[0].moby) == 0) {
@@ -923,11 +929,13 @@ int process_hero_primary_item_input(void) {
         case 20:
         case 24:
         case 25:
-            if ((g_hero_h2523C8.state.control_mode == 0 && g_hero_h2523C8.state.current != 0x1E) ||
+            if ((g_hero_h2523C8.state.control_mode == 0 &&
+                 g_hero_h2523C8.state.current != HERO_STATE_LOOK_RELEASE_WAIT) ||
                 g_hero_h2523C8.state.control_mode == 1 || g_hero_h2523C8.state.control_mode == 0xC ||
                 g_hero_h2523C8.state.control_mode == 5 || g_hero_h2523C8.state.control_mode == 0xF ||
                 (g_hero_h2523C8.state.control_mode == 4 && g_hero_h2523C8.unk4AC != 0) ||
-                (g_hero_h2523C8.state.current == 0x23 && g_hero_h2523C8.anim_frame > 25.0f)) {
+                (g_hero_h2523C8.state.current == HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL &&
+                 g_hero_h2523C8.anim_frame > 25.0f)) {
                 int t;
                 int n;
 
@@ -940,9 +948,9 @@ int process_hero_primary_item_input(void) {
                     ((g_controller_state_p2523C8.held & PAD_CIRCLE) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
                     if (get_ammo(-1)) {
                         if (g_hero_h2523C8.state.control_mode == 0xC || g_hero_h2523C8.state.control_mode == 0 ||
-                            g_hero_h2523C8.state.current == 3 ||
+                            g_hero_h2523C8.state.current == HERO_STATE_STOP ||
                             (g_hero_h2523C8.state.control_mode == 1 && g_hero_h2523C8.stick_magnitude < 0.7f)) {
-                            Hero_TryMoveStateL05_r(0x23, 1);
+                            Hero_TryMoveStateL05_r(HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL, 1);
                         } else {
                             start_equipped_item_animation();
                         }
@@ -957,13 +965,13 @@ int process_hero_primary_item_input(void) {
         case 18:
             if (g_hero_h2523C8.state.control_mode < 2U ||
                 (g_hero_h2523C8.state.control_mode == 4 && g_hero_h2523C8.rail_land_frames != 0)) {
-                if (g_hero_h2523C8.state.current != 1) {
+                if (g_hero_h2523C8.state.current != HERO_STATE_LOOK) {
                     int t = scale_ticks(0xA);
                     int n = g_hero_h2523C8.items[0].ready_frames;
 
                     if (pad_pressed_within(mask, t <= n ? t : n, &out2)) {
                         if (((Moby *)g_hero_h2523C8.items[0].moby) != 0) {
-                            Hero_TryMoveStateL05_r(0x20, 1);
+                            Hero_TryMoveStateL05_r(HERO_STATE_HELD_ITEM_ATTACK, 1);
                             if (((Moby *)g_hero_h2523C8.items[0].moby) != 0) {
                                 Moby_PlaySound(0, 0, (int)((Moby *)g_hero_h2523C8.items[0].moby));
                             }
@@ -1064,7 +1072,8 @@ int process_hero_primary_item_input(void) {
         } break;
     }
     if (g_hero_h2523C8.state_timer == start) {
-        if (hero_slot_item_id(3) == 3 && g_hero_h2523C8.state.current != 0x81 &&
+        if (hero_slot_item_id(3) == 3 &&
+            g_hero_h2523C8.state.current != HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT &&
             (g_hero_h2523C8.unk308 == 0 || item_available_r[0x1C] == 0) && g_hero_h2523C8.pack_disabled == 0) {
             fast_dec_timer_r(&gadget_double_tap_timer);
             if (gadget_double_tap_timer != 0) {
@@ -1072,15 +1081,18 @@ int process_hero_primary_item_input(void) {
                     ((g_hero_h2523C8.state.control_mode == 2 || g_hero_h2523C8.state.control_mode == 4) &&
                      g_hero_h2523C8.grounded_frames != 0)) {
                     if ((g_controller_state_p2523C8.held & PAD_R1) && (g_controller_state_p2523C8.pressed & PAD_R1)) {
-                        Hero_TryMoveStateL05_r(0x81, 1);
+                        Hero_TryMoveStateL05_r(HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT, 1);
                     }
                 }
             }
-            if ((g_controller_state_p2523C8.pressed & PAD_R1) && g_hero_h2523C8.state.current != 0x81) {
+            if ((g_controller_state_p2523C8.pressed & PAD_R1) &&
+                g_hero_h2523C8.state.current != HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
                 gadget_double_tap_timer = scale_ticks(0x1E);
             }
-        } else if (g_hero_h2523C8.state.current != 0x13 && g_hero_h2523C8.state.current != 0x81 &&
-                   g_hero_h2523C8.state.current != 0x15 && g_hero_h2523C8.state.current != 0x16) {
+        } else if (g_hero_h2523C8.state.current != HERO_STATE_WRENCH_COMBO &&
+                   g_hero_h2523C8.state.current != HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT &&
+                   g_hero_h2523C8.state.current != HERO_STATE_CROUCH_SWING &&
+                   g_hero_h2523C8.state.current != HERO_STATE_HURT) {
             g_hero_h2523C8.unk22CA = 0;
         }
     }

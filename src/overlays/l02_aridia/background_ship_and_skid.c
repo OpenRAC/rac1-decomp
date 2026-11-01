@@ -17,6 +17,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/hero_state.h"
 
 /* Skid McMarx (Aridia): dialogue, blink timer and look-at state. Shares the block with McmarxRelocVars below. */
 struct SkidMcMarxVars {
@@ -1045,7 +1046,8 @@ void update_tutorial_hint_triggers(unsigned char *moby) {
                 *(unsigned short *)(b + 0x80) = 0xFFFF;
             }
             h = (struct Hero *)(hero_globals_base + 0xE1D);
-            if (h->state.current != 0x2C && h->state.prev == 0x2C && h->state_timer == 1) {
+            if (h->state.current != HERO_STATE_GRAPPLE_SWING_ENTRY && h->state.prev == HERO_STATE_GRAPPLE_SWING_ENTRY &&
+                h->state_timer == 1) {
                 data[0xC]++;
             }
             if (data[0xC] >= 2) {

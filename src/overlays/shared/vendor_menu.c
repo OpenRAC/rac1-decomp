@@ -21,6 +21,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
 #include "structs/pad.h"
+#include "enums/hero_state.h"
 
 extern int vendor_menu[];
 extern unsigned char g_class_slot_12 NOT_SDA;
@@ -424,7 +425,7 @@ void close_vendor_menu(int exit_cutscene_completed) {
     update_resource_counter();
     skip_frame = 1;
     *(int *)&cinematic_mode = 0;
-    HeroEnterMoveState(0, 1);
+    HeroEnterMoveState(HERO_STATE_IDLE, 1);
     g_hero_field_20a5[0] = 0;
     HeroClearObjectFlags();
     if (vendor_state_base->unk40 == 0) {
@@ -620,7 +621,7 @@ void restore_hero_after_vendor_exit_cutscene(void) {
     MusicModeBlock *mode_block;
     skip_frame = 1;
     *(int *)&cinematic_mode = 0;
-    HeroEnterMoveState(0, 1);
+    HeroEnterMoveState(HERO_STATE_IDLE, 1);
     g_hero_field_20a5[0] = 0;
     HeroClearObjectFlags();
     vendor_state_base = (VendorExitState *)vendor_menu;

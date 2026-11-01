@@ -15,6 +15,7 @@
 #include "data/level_15.h"
 #include "game/hud.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 extern unsigned char hero_globals_base[];
 extern unsigned char gCheats[] MACRO_ADDR;
@@ -237,7 +238,7 @@ void restore_saved_hero_moby_and_clear_vehicle_mode(void) {
     b->anim_frame_rate = 1.0f;
     clear_hero_queued_animation();
     if (b->state.current != 100 || (quartu_game_mode != 2 && quartu_game_mode != 6)) {
-        HeroQuartu_TrySetMoveState(0, 1);
+        HeroQuartu_TrySetMoveState(HERO_STATE_IDLE, 1);
     }
 }
 extern Hero g_hero;
@@ -271,14 +272,14 @@ void update_hero_smoothing_parameters(void) {
     if (g_hero.state.control_mode == 4) {
         if (g_hero.state_timer > g_hero.takeoff_frame && g_hero.past_jump_apex == 0)
             g_hero.capsule_bottom_target = g_hero.unk434;
-    } else if (g_hero.state.current == 6) {
+    } else if (g_hero.state.current == HERO_STATE_FALL) {
         g_hero.capsule_bottom_target = 0.5f;
-    } else if (g_hero.state.current == 4) {
+    } else if (g_hero.state.current == HERO_STATE_CROUCH) {
         g_hero.capsule_top_target = 0.35000002f;
     } else if ((u32)(g_hero.state.control_mode - 0x11) < 2) {
         g_hero.capsule_top_target = 0.0f;
         g_hero.capsule_bottom_target = 0.0f;
-    } else if (g_hero.state.current == 0x7F) {
+    } else if (g_hero.state.current == HERO_STATE_SINK) {
         g_hero.capsule_radius_target = 0.8f;
     }
     if (!g_hero.wall_hit || g_hero.state.prev_control_mode == 0x12 || g_hero.state.control_mode == 0x11 ||
@@ -753,13 +754,13 @@ skip:
 void set_hero_state_for_vehicle_mode(void) {
     switch (hero_globals_base[0x2EC1]) {
         case 0:
-            HeroQuartu_TrySetMoveState(0, 1);
+            HeroQuartu_TrySetMoveState(HERO_STATE_IDLE, 1);
             break;
         case 2:
-            HeroQuartu_TrySetMoveState(0x5A, 1);
+            HeroQuartu_TrySetMoveState(HERO_STATE_VEHICLE_MODE_2_IDLE, 1);
             break;
         case 3:
-            HeroQuartu_TrySetMoveState(0x53, 1);
+            HeroQuartu_TrySetMoveState(HERO_STATE_VEHICLE_MODE_3_IDLE, 1);
             break;
     }
 }

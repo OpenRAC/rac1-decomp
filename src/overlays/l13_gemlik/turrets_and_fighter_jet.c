@@ -24,6 +24,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 /* Volume trigger: while the hero is inside the clip volume it sets the *_in states, outside the *_out states. */
 struct VolumeTriggerVars {
@@ -384,7 +385,7 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
                     m->state = 7;
                 }
                 if (m->command != 0) {
-                    HeroEnterMoveState(0, 0);
+                    HeroEnterMoveState(HERO_STATE_IDLE, 0);
                     CameraScript2(1);
                 }
             }
@@ -3130,7 +3131,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         case 5:
             ((JetPlayer47 *)(hero_globals_base + 0xE1D))->in_craft = 0;
             *(int *)((char *)((JetPlayer47 *)(hero_globals_base + 0xE1D))->moby + 0x98) = 0;
-            HeroEnterMoveState(0, 1);
+            HeroEnterMoveState(HERO_STATE_IDLE, 1);
             CameraScript2(0);
             Hud_SetBarValueById(((JetPlayer47 *)(hero_globals_base + 0xE1D))->weapon, 0);
             qcopy(m->position, d->spawn_position);
@@ -3231,7 +3232,7 @@ void JetFighterUpdateL13(Jet47 *m) {
         case 8:
             ((JetPlayer47 *)(hero_globals_base + 0xE1D))->in_craft = 0;
             *(int *)((char *)((JetPlayer47 *)(hero_globals_base + 0xE1D))->moby + 0x98) = 0;
-            HeroEnterMoveState(0, 1);
+            HeroEnterMoveState(HERO_STATE_IDLE, 1);
             CameraScript2(0);
             if (d->escape_path == -1) {
                 STUB_printf(jet_no_escape_path_msg);

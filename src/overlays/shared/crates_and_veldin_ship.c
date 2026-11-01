@@ -17,6 +17,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 /* Crate: falls, stacks on other crates and rides moving platforms. */
 struct CrateVars {
@@ -1312,18 +1313,19 @@ void decoy_glove_update(unsigned char *moby) {
     *(int *)&d->decoy = 0;
 target_valid:
     g = (struct Hero *)(hero_globals_base + 0xE1D);
-    if (g->state.current == 1)
-        HeroEnterMoveState(0x1E, 1);
+    if (g->state.current == HERO_STATE_LOOK)
+        HeroEnterMoveState(HERO_STATE_LOOK_RELEASE_WAIT, 1);
     if (fast_dec_timer(&d->timer)) {
         if (g->item_use_locked == 0) {
             if (g->item_anim_active && g->item_anim_frames == scale_ticks(0x11))
                 goto L3D10;
             if (*(int *)(pad_globals_base + 0x2604) & g->items[0].button_mask) {
-                if (g->state.current == 0x1E && get_ammo(-1))
+                if (g->state.current == HERO_STATE_LOOK_RELEASE_WAIT && get_ammo(-1))
                     goto L3D10;
             }
             g = (struct Hero *)(hero_globals_base + 0xE1D);
-            if (g->state.current == 0x23 && g->state_timer == scale_ticks(0x10))
+            if (g->state.current == HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL &&
+                g->state_timer == scale_ticks(0x10))
                 goto L3D10;
         }
     }
@@ -1367,7 +1369,7 @@ L3D34:
             break;
         case 4: {
             struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
-            if (h->state.current != 0x23 && h->item_anim_active == 0)
+            if (h->state.current != HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL && h->item_anim_active == 0)
                 ((Moby *)moby)->state = 2;
             break;
         }
@@ -1839,7 +1841,7 @@ extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 /* Starts animation 6 if the hero state is 8 and the moby is not already playing it. */
 void helipack_update(Moby *a) {
-    if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current == 8) {
+    if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current == HERO_STATE_LAND) {
         if (a->prev_seq != 6) {
             MobyBlendAnimation(a, 6, 0, scale_ticks(10));
         }

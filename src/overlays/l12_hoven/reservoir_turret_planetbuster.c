@@ -24,6 +24,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 /* Planetbuster Maximus: sways along its path while its parts, guns and camera cut-in run. */
 struct PlanetbusterVars {
@@ -450,7 +451,7 @@ void update_hoven_help_and_dialogue(char *m) {
         char *h = help_stats_base_e + 0x34D;
         if (*(unsigned short *)(h + 0x368) == 0) {
             Hero *q = (Hero *)(hero_globals_base_e + 0xE1D);
-            if (q->state.current == 0x81) {
+            if (q->state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
                 *(unsigned short *)(h + 0x368) = *(unsigned short *)(h + 0x368) + 1;
             }
             if (scale_ticks(gameplay_event_frame_count_e) / 600 > *(unsigned short *)(h + 0x36A)) {
@@ -468,7 +469,7 @@ void update_hoven_help_and_dialogue(char *m) {
             (*(unsigned short *)(h + 0x370) < 2 &&
              scale_ticks(gameplay_event_frame_count_e) - *(unsigned short *)(h + 0x372) * 600 > scale_ticks(72000))) {
             Hero *q = (Hero *)(hero_globals_base_e + 0xE1D);
-            if (q->state.current == 0x81) {
+            if (q->state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
                 d[1]++;
                 if ((pad_globals_base_e[0x2600 / 4] & 3) && 0.3f < q->stick_magnitude) {
                     d[2]++;

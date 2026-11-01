@@ -16,6 +16,7 @@
 #include "structs/small_records.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 /* Class 0x3F1 shot: flies along vel for ticks, owned by the firing moby. */
 struct ShotVars {
@@ -930,7 +931,8 @@ void thruster_pack_lock_update(Lock_3102C8 *moby) {
         case 1:
             if (((void *)((Hero *)(hero_globals_base_r + 0xE1D))->ground_moby) == moby && gHaveHeliPack_r[1] != 0 &&
                 ((Hero *)(hero_globals_base_r + 0xE1D))->air_frames.s == 0 &&
-                ((Hero *)(hero_globals_base_r + 0xE1D))->state.current == 0x22) {
+                ((Hero *)(hero_globals_base_r + 0xE1D))->state.current ==
+                    HERO_STATE_RISE_THEN_FALL_WITH_AIRBORNE_HIT_QUERY) {
                 if (g_current_level_index_r == LEVEL_POKITARU && moby->bB0 != 0xFF) {
                     int c;
                     int u;

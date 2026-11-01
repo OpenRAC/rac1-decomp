@@ -18,6 +18,7 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 /* Gadget vendor: a ring moby that glows and spins while the hero is near. */
 struct VendorVars {
@@ -1699,7 +1700,7 @@ extern void update_moby_animation_state_p(void *) __asm__("func_0020D6D0");
 void update_wrench_animation_from_hero_state(char *m) {
     struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     int r;
-    if (g->state.current == 0x3B) {
+    if (g->state.current == HERO_STATE_CRANK) {
         int t = *(unsigned char *)(*(char **)&g->moby + 0x53);
         r = 0xB;
         if (t == 0x40)
@@ -1719,7 +1720,7 @@ void update_wrench_animation_from_hero_state(char *m) {
         } else {
             MobyBlendAnimation(m, r, 0, scale_ticks(7));
         }
-    } else if (g->state.prev == 0x3B) {
+    } else if (g->state.prev == HERO_STATE_CRANK) {
         if (g->state_timer == 1) {
             MobyBlendAnimation(m, 1, 0, scale_ticks(0x11));
         }
@@ -2250,7 +2251,7 @@ void wrench_update(Wrench48 *m) {
                 }
             }
             if (reaction) {
-                HeroEnterMoveState(33, 1);
+                HeroEnterMoveState(HERO_STATE_WAIT_FOR_ANIMATION_THEN_IDLE, 1);
                 if (g_coll_hit_moby) {
                     Wrench48 *target = (Wrench48 *)g_coll_hit_moby;
                     wplayer48()->reaction_yaw = fast_atan2(wplayer48()->position[0] - target->position[0],

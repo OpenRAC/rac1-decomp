@@ -7,6 +7,7 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/fastfunc.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 extern unsigned char g_hero[] NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -69,7 +70,7 @@ void HeroL05_ProcessContactType(void) {
         if (GW(0x2084) != 0x7B) {
             if (coll_sphere(GF(0x234) + 0.03f, g + 0xD0, 2, 0)) {
                 if (CollType() == 0xB) {
-                    Hero_TryMoveStateL05(0x7B, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT, 1);
                     return;
                 }
             }
@@ -116,7 +117,7 @@ void HeroL05_ProcessContactType(void) {
         if (GB(0x12E3) != 0 && GW(0x300) != 0) {
             int v = GW(0x208C);
             if (v != 0x10 && v != 0x14 && v != 7) {
-                Hero_TryMoveStateL05(0x31, 1);
+                Hero_TryMoveStateL05(HERO_STATE_VOICE_SLOT_CLEANUP_IDLE_EXIT, 1);
                 return;
             }
         }
@@ -131,7 +132,7 @@ void HeroL05_ProcessContactType(void) {
                         Hero_TryMoveStateL05(0x3C, 1);
                         return;
                     }
-                    Hero_TryMoveStateL05(0x7C, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_DEATH_DESCENT, 1);
                     return;
                 }
             }
@@ -142,7 +143,7 @@ void HeroL05_ProcessContactType(void) {
         if (GB(0x12EC) != 0 && GW(0x2084) != 0x7F) {
             if (FastAbsF(GF(0x2F0) - (GF(0x88) + 0.25f)) < 1.0f && GF(0x2F0) - GF(0x88) > 0.0f && GF(0x108) < 0.0f) {
                 exit_hero_vehicle_mode_if_mode_three();
-                Hero_TryMoveStateL05(0x7F, 1);
+                Hero_TryMoveStateL05(HERO_STATE_SINK, 1);
                 return;
             }
         }
@@ -154,10 +155,10 @@ void HeroL05_ProcessContactType(void) {
                 if ((GW(0x2084) != 0x69 || GH(0x41E) != 0) && GF(0x108) < 0.0f) {
                     exit_hero_vehicle_mode_if_mode_three();
                     if (GW(0x22A8) != 0) {
-                        Hero_TryMoveStateL05(0x68, 1);
+                        Hero_TryMoveStateL05(HERO_STATE_WAIT_FOR_JUMP_OR_RESPAWN, 1);
                         return;
                     }
-                    Hero_TryMoveStateL05(0x7B, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT, 1);
                     return;
                 }
             }
@@ -172,7 +173,7 @@ void HeroL05_ProcessContactType(void) {
                     return;
                 }
                 exit_hero_vehicle_mode_if_mode_three();
-                Hero_TryMoveStateL05(0x7B, 1);
+                Hero_TryMoveStateL05(HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT, 1);
                 return;
             }
         }
@@ -562,7 +563,8 @@ void integrate_hero_motion_with_collisions(void) {
     qcopy(previous.f, position);
     player = (Hero *)((char *)position - 0x80);
     update_hero_attachment(player->ledge_moby, (char *)position + 0x70, (char *)position + 0x10);
-    if (player->state.current == 34 || player->state.current == 20) {
+    if (player->state.current == HERO_STATE_RISE_THEN_FALL_WITH_AIRBORNE_HIT_QUERY ||
+        player->state.current == HERO_STATE_WRENCH_SLAM) {
         float limit;
         float *limited_velocity;
 

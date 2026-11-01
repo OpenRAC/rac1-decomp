@@ -21,6 +21,7 @@
 #include "overlays/shared/ripple_patches.h"
 #include "enums/moby_class.h"
 #include "structs/pad.h"
+#include "enums/hero_state.h"
 
 /* Resort owner (boss): path pointers, rail table, walk target and speeds. */
 struct ResortOwnerVars {
@@ -3107,7 +3108,7 @@ void seesaw_platform_update(struct Moby *m) {
         }
         d->spin = d->spin + change;
         if (FastAbsF_r(m->rot.y) > D_L11_00162014_10058 * 0.017453292f && (u32)g_hero_r2.state.control_mode < 2) {
-            Hero_TrySetMoveStateL11_r(6, 1);
+            Hero_TrySetMoveStateL11_r(HERO_STATE_FALL, 1);
         }
     }
     m->rot.y = FastAddRots_r2(m->rot.y, d->spin);

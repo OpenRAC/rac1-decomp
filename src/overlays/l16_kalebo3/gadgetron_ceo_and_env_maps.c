@@ -16,6 +16,7 @@
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/hero_state.h"
 
 /* Gadgetron CEO challenge room: handles of the jet groups it switches on and off. */
 struct CeoEnvVars {
@@ -403,7 +404,7 @@ void update_two_region_trigger_latch(char *moby) {
         }
         case 1: {
             struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
-            if (h->state.current == 0x42) {
+            if (h->state.current == HERO_STATE_GRIND_COLLISION_RECOVERY) {
                 data->state = 0;
             } else if (is_point_inside_clip_volume(&h->motion.pos, data->clip_b) != 0) {
                 unsigned char *f = (unsigned char *)menu_item_enabled_115 + 0x1;

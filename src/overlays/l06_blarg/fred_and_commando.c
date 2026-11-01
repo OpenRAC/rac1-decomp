@@ -22,6 +22,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
+#include "enums/hero_state.h"
 
 /* Red button sequence controller: switches linked mobys on and off through the scripted cut scene. */
 struct SequenceVars {
@@ -1317,7 +1318,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
                 queue_moby_dialogue_line_r((char *)m, 1);
                 d->timer = truncate_float_to_s32_r2(multiply_global_factor_r(*(float *)&D_L06_00162154_302FE8));
                 CameraScript2_r(2);
-                HeroL06_TrySetMoveState_r(0, 1);
+                HeroL06_TrySetMoveState_r(HERO_STATE_IDLE, 1);
                 scripted_camera_sequence_active_r = 0;
                 return;
             }

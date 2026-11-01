@@ -11,6 +11,7 @@
 #include "data/shared_levels.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
+#include "enums/hero_state.h"
 
 extern void load_display_text_resource_entry(float *arg0, int *arg1);
 extern void FastVecAdd(void *, void *, void *);
@@ -2469,7 +2470,7 @@ char *PartType34Spawn(char *vec, float *pos, float sc, float vy) {
         p->timer = rand_range(a, b);
         if (vy == -1.0f) {
             struct Hero *x = (struct Hero *)(hero_globals_base + 0xE1D);
-            if (x->state.current == 0x31) {
+            if (x->state.current == HERO_STATE_VOICE_SLOT_CLEANUP_IDLE_EXIT) {
                 *(float *)(q + 0x10) = x->motion.pos.f[2] + 0.4f;
             } else {
                 *(float *)(q + 0x10) = x->water_surface_z;

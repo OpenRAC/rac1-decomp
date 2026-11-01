@@ -24,6 +24,7 @@
 #include "structs/collision.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 /* Cutscene trigger: plays a camera sequence when the hero enters its volume. */
 struct CutsceneTriggerVars {
@@ -3005,7 +3006,7 @@ void sandmouse_update(Moby *m) {
                 p->slot = Moby_PlaySound(1, 4, (int)m);
             }
         }
-            Hero_SetMoveState(0, 1);
+            Hero_SetMoveState(HERO_STATE_IDLE, 1);
             m->flags &= 0xFFBE;
             if (p->link != -1) {
                 LNK(p->link)->flags &= 0xFFBE;

@@ -15,6 +15,7 @@
 #include "overlays/shared/ripple_patches.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 /* Colored half-scale moby: owner and fading-particle color. */
 struct HalfScaleMobyVars {
@@ -1931,13 +1932,13 @@ void update_level01_tutorial_hints(Moby *moby) {
                 Help_Request(0x3EC, 0x40);
             }
             if (is_point_inside_clip_volume(&g_hero.motion.pos, data[14]) &&
-                ((u32)g_hero.state.control_mode < 2 || g_hero.state.control_mode == 9) && g_hero.state.current == 1 &&
-                novalis_look_stat_timer == -1 && help_state.state == 0 && help_state.cur == -1 &&
-                help_records[0x40].id != 0 && help_records[0x41].id == 0) {
+                ((u32)g_hero.state.control_mode < 2 || g_hero.state.control_mode == 9) &&
+                g_hero.state.current == HERO_STATE_LOOK && novalis_look_stat_timer == -1 && help_state.state == 0 &&
+                help_state.cur == -1 && help_records[0x40].id != 0 && help_records[0x41].id == 0) {
                 Help_Request(0x3ED, 0x41);
             }
             if (help_records[0x42].id < 2 && is_point_inside_clip_volume(&g_hero.motion.pos, data[12]) &&
-                g_hero.state.prev == 0x3B && g_hero.state_timer == 0) {
+                g_hero.state.prev == HERO_STATE_CRANK && g_hero.state_timer == 0) {
                 for (m = novalis_moby_list; m != 0; m = m->next) {
                     if (m->oclass == MOBY_CLASS_BOLT_CRANK && FastVecDist(&m->pos, &g_hero.motion.pos) < 3.0f &&
                         *(f32 *)m->pvars != 1.0f) {

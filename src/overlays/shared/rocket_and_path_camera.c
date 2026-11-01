@@ -12,6 +12,7 @@
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
     f32 vel_x; /* 0x00 */
@@ -757,7 +758,7 @@ void Camera19_Update(char *moby) {
             *(short *)(moby + 0x7E) = 4;
             orxon_path_camera_active = 0;
             if (*(int *)(e + 0x4C) == 0) {
-                HeroEnterMoveState(0, 1);
+                HeroEnterMoveState(HERO_STATE_IDLE, 1);
             }
         }
         if (*(int *)(e + 0x40) == 0) {

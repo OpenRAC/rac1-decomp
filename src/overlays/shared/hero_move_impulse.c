@@ -7,6 +7,7 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 extern char hero_globals_base[];
 extern char hoven_item_defs[];
@@ -122,7 +123,7 @@ void hero_update_hop_movement(void) {
         } else {
             g_hero_s.ground_speed = 0.0f;
         }
-        if (g_hero_s.state.current == 11) {
+        if (g_hero_s.state.current == HERO_STATE_HIGH_JUMP) {
             if (g_hero_s.past_jump_apex != 0 && g_hero_s.frames_to_land < scale_ticks(0xC)) {
                 ApproachValue(&g_hero_s.high_jump_drift_speed, 0.0f, g_frame_time_sq * 8.0f);
             } else {

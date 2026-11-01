@@ -16,6 +16,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 /* Trespasser puzzle: three rings of 12 slots, marker ring and the rotation state. */
 struct TrespasserPuzzleVars {
@@ -663,7 +664,7 @@ void tresspasser_pad_update(Moby *moby) {
                     aridia_moby_killed_r[(short)moby->save_id >> 5] |= 1 << (moby->save_id & 0x1F);
                 }
                 CameraScript2_r(1);
-                HeroL02_SetMoveState_r(0, 1);
+                HeroL02_SetMoveState_r(HERO_STATE_IDLE, 1);
                 moby->command = 1;
                 moby->state = 4;
             }

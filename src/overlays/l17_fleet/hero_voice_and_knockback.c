@@ -6,6 +6,7 @@
 #include "data/executable.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 typedef struct {
     char pad[0x24];
@@ -162,7 +163,7 @@ s32 HeroL17_TryTakeHit(s32 arg) {
                     id = 0x82;
                     goto call_ret;
                 }
-                HeroL17_SetMoveState(0x75, 1);
+                HeroL17_SetMoveState(HERO_STATE_WATER_SURFACE_HURT, 1);
             } else if (g_hero.state.control_mode == 0x11) {
                 mob = (u8 *)g_hero.damage_source_moby;
                 if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
@@ -185,9 +186,9 @@ s32 HeroL17_TryTakeHit(s32 arg) {
                         goto call_ret;
                     }
                 }
-                HeroL17_SetMoveState(0x16, 1);
+                HeroL17_SetMoveState(HERO_STATE_HURT, 1);
             } else {
-                HeroL17_SetMoveState(0x16, 1);
+                HeroL17_SetMoveState(HERO_STATE_HURT, 1);
             }
             e = g_frame_time;
             a = e * 5.7f;
@@ -202,11 +203,11 @@ s32 HeroL17_TryTakeHit(s32 arg) {
             }
             break;
         case 1:
-            HeroL17_SetMoveState(0x46, 1);
+            HeroL17_SetMoveState(HERO_STATE_VEHICLE_MODE_1_HURT, 1);
             hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 3.0f);
             break;
         case 3:
-            HeroL17_SetMoveState(0x56, 1);
+            HeroL17_SetMoveState(HERO_STATE_VEHICLE_MODE_3_HURT, 1);
             hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 2.4f);
             break;
     }
@@ -253,9 +254,9 @@ void update_hero_smoothing(void) {
                 b->capsule_bottom_target = b->unk434;
             }
         }
-    } else if (b->state.current == 6) {
+    } else if (b->state.current == HERO_STATE_FALL) {
         b->capsule_bottom_target = 0.5f;
-    } else if (b->state.current == 4) {
+    } else if (b->state.current == HERO_STATE_CROUCH) {
         b->capsule_top_target = 0.35000002f;
     } else if ((unsigned)(b->state.control_mode - 0x11) < 2) {
         *(int *)&b->capsule_top_target = 0;
@@ -265,7 +266,7 @@ void update_hero_smoothing(void) {
         b->capsule_bottom_target = 0.9f;
     } else {
         struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-        if (q->state.current == 0x7F) {
+        if (q->state.current == HERO_STATE_SINK) {
             q->capsule_radius_target = 0.8f;
         }
     }

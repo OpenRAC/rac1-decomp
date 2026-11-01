@@ -25,6 +25,7 @@
 #include "game/pause.h"
 #include "enums/moby_class.h"
 #include "structs/pad.h"
+#include "enums/hero_state.h"
 
 extern int level_reset_counter_524 MACRO_ADDR;
 extern int radial_select_auto_close_flag[];
@@ -530,7 +531,7 @@ void finish_cutscene(void) {
             o->flags &= 0xFF7F;
     }
     p = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
-    HeroEnterMoveState(0, 1);
+    HeroEnterMoveState(HERO_STATE_IDLE, 1);
     g = ProbeGroundHeight(p, 0, 0.5f);
     if (2.0f < g) {
         p -= 0x80;

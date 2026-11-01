@@ -19,6 +19,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/ripple_patches.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 /* Extermibot: wakes from its dormant pose, wanders around its home, walks
    its path toward the target and strikes it; Wing_3047E8 is the same block
@@ -3421,7 +3422,7 @@ void WaterSurfaceUpdate(Moby *moby) {
         case 7:
             if (d->f10 >= 0) {
                 Hero *h = (Hero *)(hero_globals_base + 0xE1D);
-                if (h->state.current == 0x6A && h->state_timer == 2) {
+                if (h->state.current == HERO_STATE_DROWN && h->state_timer == 2) {
                     rilgar_flood_slowdown_count++;
                 }
             } else if (d->f0 < moby->pos.z) {
@@ -3458,7 +3459,7 @@ void WaterSurfaceUpdate(Moby *moby) {
             }
             if (d->f10 >= 0) {
                 Hero *h = (Hero *)(hero_globals_base + 0xE1D);
-                if (h->state.current == 0x6A && h->state_timer == 2) {
+                if (h->state.current == HERO_STATE_DROWN && h->state_timer == 2) {
                     rilgar_flood_slowdown_count++;
                 }
             }

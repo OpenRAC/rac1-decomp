@@ -14,6 +14,7 @@
 #include "data/executable.h"
 #include "game/fastfunc.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 extern unsigned char hero_globals_base[];
 extern char novalis_item_defs[];
@@ -302,7 +303,8 @@ void update_hero_blink_and_gold_weapon_tint(void) {
     int blink;
 
     blink = 0;
-    if (g_hero_r.state.current == 0x80 || g_hero_r.state.current == 0x82)
+    if (g_hero_r.state.current == HERO_STATE_DYING_SPEED_LIMITED ||
+        g_hero_r.state.current == HERO_STATE_DYING_ZERO_HEALTH)
         blink = g_hero_r.state_timer < scale_ticks_r(30);
     if (g_current_level_index_r == LEVEL_QUARTU || g_current_level_index_r == LEVEL_FLEET) {
         if (g_hero_r.state.current == 0x76 && g_hero_r.state_timer < scale_ticks_r(20))
@@ -374,10 +376,10 @@ void update_hero_ground_material_effects(void) {
     }
     if (g_current_level_index_r == LEVEL_GEMLIK) {
         struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-        if (q->state.current != 0x7B) {
+        if (q->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
             if (coll_sphere(q->capsule_radius + 0.03f, &q->motion.body_center, 2, 0)) {
                 if (CollType() == 0xB) {
-                    Hero_SetMoveState(0x7B, 1);
+                    Hero_SetMoveState(HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT, 1);
                     return;
                 }
             }
@@ -412,20 +414,20 @@ void update_hero_ground_material_effects(void) {
         if (q->selector_4 != 0 && q->grounded_frames != 0) {
             x = q->state.control_mode;
             if (x != 0x10 && x != 0x14 && x != 7) {
-                Hero_SetMoveState(0x31, 1);
+                Hero_SetMoveState(HERO_STATE_VOICE_SLOT_CLEANUP_IDLE_EXIT, 1);
                 return;
             }
         }
         {
             struct Hero *r = (struct Hero *)((char *)hero_globals_base + 0xE1D);
             if (r->selector_13 != 0) {
-                if (r->state.current == 0x7F)
+                if (r->state.current == HERO_STATE_SINK)
                     return;
                 if (FastAbsF(r->water_surface_z - (r->motion.pos.f[2] + 0.25f)) < 1.0f) {
                     if (r->water_surface_z - r->motion.pos.f[2] > 0.0f) {
                         if (r->motion.displacement.f[2] < 0.0f) {
                             exit_hero_vehicle_mode_if_mode_three();
-                            Hero_SetMoveState(0x7F, 1);
+                            Hero_SetMoveState(HERO_STATE_SINK, 1);
                         }
                     }
                 }
@@ -484,10 +486,11 @@ void update_hero_ledge_probe(void) {
         if ((((Hero *)g_hero_r2)->state.control_mode == 4 &&
              (((Hero *)g_hero_r2)->past_jump_apex != 0 ||
               ((Hero *)g_hero_r2)->motion.velocity.f[2] < g_frame_time_r * 3.5f)) ||
-            ((Hero *)g_hero_r2)->state.control_mode == 2 || ((Hero *)g_hero_r2)->state.current == 8 ||
-            ((Hero *)g_hero_r2)->state.current == 0x1A || ((Hero *)g_hero_r2)->state.current == 0x1B)
+            ((Hero *)g_hero_r2)->state.control_mode == 2 || ((Hero *)g_hero_r2)->state.current == HERO_STATE_LAND ||
+            ((Hero *)g_hero_r2)->state.current == HERO_STATE_LEDGE_SHIMMY_POSITIVE_YAW ||
+            ((Hero *)g_hero_r2)->state.current == HERO_STATE_LEDGE_SHIMMY_NEGATIVE_YAW)
             go = 1;
-        if (((Hero *)g_hero_r2)->state.current == 0xE && ((Hero *)g_hero_r2)->anim_frame < 37.0f)
+        if (((Hero *)g_hero_r2)->state.current == HERO_STATE_DOUBLE_JUMP && ((Hero *)g_hero_r2)->anim_frame < 37.0f)
             go = 0;
     }
     if (!go)
@@ -827,7 +830,7 @@ void exit_hero_vehicle_mode_and_restore_moby(void) {
         if (novalis_game_mode == 6)
             return;
     }
-    Hero_SetMoveState(0, 1);
+    Hero_SetMoveState(HERO_STATE_IDLE, 1);
 }
 typedef int Q_8 __attribute__((mode(TI)));
 typedef struct {
@@ -937,7 +940,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
                     id = 0x82;
                     goto call_ret;
                 }
-                Hero_SetMoveState(0x75, 1);
+                Hero_SetMoveState(HERO_STATE_WATER_SURFACE_HURT, 1);
             } else if (g_hero_r3.state.control_mode == 0x11) {
                 mob = (u8 *)g_hero_r3.damage_source_moby;
                 if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
@@ -960,9 +963,9 @@ s32 HeroL01_TryTakeHit(s32 arg) {
                         goto call_ret;
                     }
                 }
-                Hero_SetMoveState(0x16, 1);
+                Hero_SetMoveState(HERO_STATE_HURT, 1);
             } else {
-                Hero_SetMoveState(0x16, 1);
+                Hero_SetMoveState(HERO_STATE_HURT, 1);
             }
             e = g_frame_time;
             a = e * 5.7f;
@@ -977,7 +980,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
             }
             break;
         case 3:
-            Hero_SetMoveState(0x56, 1);
+            Hero_SetMoveState(HERO_STATE_VEHICLE_MODE_3_HURT, 1);
             hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 2.4f);
             break;
     }
@@ -1010,14 +1013,14 @@ void HeroSetCollisionSize(void) {
     if (g_hero_r4.state.control_mode == 4) {
         if (g_hero_r4.state_timer > g_hero_r4.takeoff_frame && g_hero_r4.past_jump_apex == 0)
             g_hero_r4.capsule_bottom_target = g_hero_r4.unk434;
-    } else if (g_hero_r4.state.current == 6) {
+    } else if (g_hero_r4.state.current == HERO_STATE_FALL) {
         g_hero_r4.capsule_bottom_target = 0.5f;
-    } else if (g_hero_r4.state.current == 4) {
+    } else if (g_hero_r4.state.current == HERO_STATE_CROUCH) {
         g_hero_r4.capsule_top_target = 0.35000002f;
     } else if ((u32)(g_hero_r4.state.control_mode - 0x11) < 2) {
         g_hero_r4.capsule_top_target = 0.0f;
         g_hero_r4.capsule_bottom_target = 0.0f;
-    } else if (g_hero_r4.state.current == 0x7F) {
+    } else if (g_hero_r4.state.current == HERO_STATE_SINK) {
         g_hero_r4.capsule_radius_target = 0.8f;
     }
     if (!g_hero_r4.wall_hit || g_hero_r4.state.prev_control_mode == 0x12 || g_hero_r4.state.control_mode == 0x11 ||
@@ -1486,7 +1489,7 @@ void air_accel(float step) {
                     struct Hero *g2b;
                 heavy:
                     g2b = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-                    if (g2b->state.current == 0xE && g_frame_time < spd)
+                    if (g2b->state.current == HERO_STATE_DOUBLE_JUMP && g_frame_time < spd)
                         spd = g_frame_time;
                 }
             }
@@ -1511,7 +1514,7 @@ void air_accel(float step) {
                 struct Hero *g4 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
                 d += 1.0f;
                 d *= 1.5f;
-                if (g4->state.current == 0x81) {
+                if (g4->state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
                     if (1.7f < d)
                         d = 1.7f;
                     if (d < 1.0f)
@@ -1705,10 +1708,10 @@ skip:
 void request_hero_idle_state_for_vehicle_mode(void) {
     switch ((unsigned char)hero_globals_base[0x2EC1]) {
         case 0:
-            Hero_SetMoveState(0, 1);
+            Hero_SetMoveState(HERO_STATE_IDLE, 1);
             break;
         case 3:
-            Hero_SetMoveState(0x53, 1);
+            Hero_SetMoveState(HERO_STATE_VEHICLE_MODE_3_IDLE, 1);
             break;
     }
 }

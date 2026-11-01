@@ -20,6 +20,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
     u8 pad_00[0x20];
@@ -401,7 +402,7 @@ void func_L07_00314800_r(Moby *moby, ThinkData_314800 *data, Vec_314800 *vec) {
                         MobyBlendAnimation_r(moby, 2, 0, rand_range_r(10, 13));
                     }
                     if (hero_current_state_r == 0x78) {
-                        HeroEnterMoveState_r(0, 1);
+                        HeroEnterMoveState_r(HERO_STATE_IDLE, 1);
                     }
                     if (data->f1F0 != -1) {
                         set_moby_dialogue_record_value_r(moby, 1);
@@ -425,7 +426,7 @@ void func_L07_00314800_r(Moby *moby, ThinkData_314800 *data, Vec_314800 *vec) {
                     RerollEffectCounter_r(moby, data->anim);
                     if (moby->state < 10 && vec->f0 < fv) {
                         if (hero_current_state_r == 0x78) {
-                            HeroEnterMoveState_r(0, 1);
+                            HeroEnterMoveState_r(HERO_STATE_IDLE, 1);
                         }
                         if (moby->prev_seq != 2) {
                             int a = rand_range_r(0, 2);
@@ -1605,7 +1606,7 @@ void snagglebeast_update(unsigned char *m) {
                     int slot;
                     Hero *g = (Hero *)g_hero;
                     d->unk_1C4 = 1;
-                    if (g->state.current != 0x78) {
+                    if (g->state.current != HERO_STATE_CLEAR_VELOCITY) {
                         qcopy(d->rope_start, g_hero + 0x80);
                         qcopy(d->rope_end, g_hero + 0x80);
                         if (((Moby *)m)->pos.z < g->motion.pos.f[2]) {
@@ -1613,7 +1614,7 @@ void snagglebeast_update(unsigned char *m) {
                         } else {
                             d->unk_128 = ((Moby *)m)->pos.z + 2.0f;
                         }
-                        HeroEnterMoveState(0x78, 1);
+                        HeroEnterMoveState(HERO_STATE_CLEAR_VELOCITY, 1);
                         d->phase = 0;
                         d->unk_1AC = 20.0f;
                         d->unk_19E = 0;
@@ -1638,7 +1639,7 @@ void snagglebeast_update(unsigned char *m) {
                         {
                             char *g3 = g_hero;
                             if (*(int *)(g3 + 0x2084) == 0x78)
-                                HeroEnterMoveState(0, 1);
+                                HeroEnterMoveState(HERO_STATE_IDLE, 1);
                         }
                         d->unk_1C7 = 0;
                         if (d->voice != -1) {
@@ -1721,7 +1722,7 @@ void snagglebeast_update(unsigned char *m) {
                 {
                     char *g3 = g_hero;
                     if (*(int *)(g3 + 0x2084) == 0x78)
-                        HeroEnterMoveState(0, 1);
+                        HeroEnterMoveState(HERO_STATE_IDLE, 1);
                 }
                 d->phase_timer = scale_ticks(0x46);
                 d->unk_1C7 = 0;
@@ -1744,7 +1745,7 @@ void snagglebeast_update(unsigned char *m) {
                 {
                     char *g3 = g_hero;
                     if (*(int *)(g3 + 0x2084) == 0x78)
-                        HeroEnterMoveState(0, 1);
+                        HeroEnterMoveState(HERO_STATE_IDLE, 1);
                 }
                 if (d->voice != -1) {
                     char *sl = voice_pool + d->voice * 0x70;

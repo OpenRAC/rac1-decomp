@@ -10,7 +10,7 @@ void update_batalia_item_triggers_and_help(char *m) {
                 data->state = 1;
             break;
         case 1:
-            if (hero_p.state.current == 0x42) {
+            if (hero_p.state.current == HERO_STATE_GRIND_COLLISION_RECOVERY) {
                 data->state = 0;
             } else if (is_point_inside_clip_volume(&hero_p.motion.pos, data->fourth) && unl_p[0xB] == 0) {
                 unl_p[0xB] = 1;

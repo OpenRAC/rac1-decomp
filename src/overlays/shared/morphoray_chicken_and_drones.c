@@ -13,6 +13,7 @@
 #include "game/mobyutil.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 /* Morphoray chicken: AI blocks, a life timer and the color index of the slot it replaced. */
 struct ChickenVars {
@@ -1927,7 +1928,7 @@ void ryno_update(Moby *m) {
                 m->state = 2;
             break;
         case 2:
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current == 1)
+            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current == HERO_STATE_LOOK)
                 hud_2CDAB8(0x1E, 1);
             if ((((PadState *)(pad_globals_base_r + 0x2460))->pressed &
                  ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].button_mask) == 0)
@@ -2003,7 +2004,7 @@ void ryno_update(Moby *m) {
             d->slot = d->slot % 9;
             d->shots++;
             dir.q = 0;
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current == 30) {
+            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
                 dir.f[2] = 1.0f;
                 apply_mat4_2CDAB8(dir.f, dir.f, &view);
             } else {

@@ -18,6 +18,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 /* Sentrybot: patrols a path, turns toward what it notices, raises its
    linked alarm and shoots when it sees the hero. */
@@ -1180,7 +1181,7 @@ void alert_visible_group_sentrybots(void *mobyv) {
     int r;
     char *m;
 
-    if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current == 0x65) {
+    if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current == HERO_STATE_APPROACH_TARGET_POSE) {
         d->alert_timer = 0;
         return;
     }
@@ -3496,7 +3497,7 @@ extern short quartu_alarm_sound_owner;
 /* per-frame update of the level's looping effect: ramp the gauge, then start, run or stop the draw callback */
 void update_sentrybot_alarm_effect(void *moby) {
     struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
-    if (base->state.current == 0x65) {
+    if (base->state.current == HERO_STATE_APPROACH_TARGET_POSE) {
         ApproachValue(&quartu_alarm_intensity, 0.0f, g_frame_time * 2);
         set_sentrybot_alarm_duration(moby, 0);
     } else if (*(int *)&quartu_alarm_raised != 0 &&
