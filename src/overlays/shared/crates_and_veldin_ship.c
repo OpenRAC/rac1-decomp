@@ -2634,15 +2634,15 @@ void process_horny_toad_hit_reaction(void *a0) {
     unsigned short h;
 
     d = *(char **)(a + 0x78);
-    if (*(unsigned char *)(a + 0x20) == 0)
+    if (((Moby *)a)->state == 0)
         return;
 
     if (cinematic_mode_r == 2) {
         a[0x31] = 0;
-        *(unsigned short *)(a + 0x34) |= 1;
+        ((Moby *)a)->flags |= 1;
     } else {
         a[0x31] = 1;
-        *(unsigned short *)(a + 0x34) &= 0xFFFE;
+        ((Moby *)a)->flags &= 0xFFFE;
     }
 
     f20 = 0.0f;
@@ -2653,7 +2653,7 @@ void process_horny_toad_hit_reaction(void *a0) {
 
     /* Whether the hit counts is the resolver's fifth argument (1: none, or one still held off);
        its return value is the reaction to play, 1 for a wrench hit. */
-    if (i10 != 1 && *(unsigned char *)(a + 0x20) != 12 && f14 != 0.0f) {
+    if (i10 != 1 && ((Moby *)a)->state != 12 && f14 != 0.0f) {
         char *q1;
         {
             ToadVars *v = (ToadVars *)d;
@@ -2670,7 +2670,7 @@ void process_horny_toad_hit_reaction(void *a0) {
             v->kb_mode |= 0x20;
         }
         q1 = d + 0x70;
-        *(unsigned short *)(a + 0x34) &= 0xEFFF;
+        ((Moby *)a)->flags &= 0xEFFF;
 
         vec = *(Vx *)(b + 0x10);
         HeadingFromVector(&vec, &t18, d + 0x88, d + 0x8C);
@@ -2683,15 +2683,15 @@ void process_horny_toad_hit_reaction(void *a0) {
             *(float *)(d + 0xC0) = c0;
             *(float *)(d + 0xC4) = c4;
         }
-        *(unsigned char *)(a + 0x20) = 12;
+        ((Moby *)a)->state = 12;
         *(unsigned char *)(d + 0x67) = 0x78;
         RerollEffectCounter(a, d + 0x60);
         func_L00_002584A8_2D19E8((u8 *)a, 0, -1);
     }
-    *(unsigned char *)(a + 0xA4) = 0xFF;
+    ((Moby *)a)->hit_slot = 0xFF;
     StepColorFade(a, d + 0x60);
 
-    if (*(unsigned char *)(a + 0x20) == 3) {
+    if (((Moby *)a)->state == 3) {
         char *p;
         q = d + 0x180;
         k = *(int *)(d + 0x1E4);
@@ -2719,10 +2719,10 @@ void process_horny_toad_hit_reaction(void *a0) {
     }
     *(int *)(d + 0x38) = 0;
 
-    if (*(unsigned char *)(a + 0x20) == 5 || *(unsigned char *)(a + 0x20) == 8) {
+    if (((Moby *)a)->state == 5 || ((Moby *)a)->state == 8) {
         if (*(short *)(d + 0x276) != 0) {
-            *(unsigned char *)(a + 0x20) = 10;
-            if (*(unsigned char *)(a + 0x53) != 4) {
+            ((Moby *)a)->state = 10;
+            if (((Moby *)a)->prev_seq != 4) {
                 MobyBlendAnimation(a, 4, 0, ticks_2D4398(20));
             }
         }

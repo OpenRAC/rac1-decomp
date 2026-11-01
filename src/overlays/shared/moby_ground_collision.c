@@ -3348,7 +3348,7 @@ int FindNearestEligibleMoby(Moby *a, struct TargetLock *o, float best, int *list
 int moby_get_ride_transform(char *m) {
     if (m == 0)
         return 0;
-    if (!(*(unsigned short *)(m + 0x34) & 0x20))
+    if (!(((Moby *)m)->flags & 0x20))
         return 0;
     return *(int *)(*(char **)(m + 0x78) + 8);
 }

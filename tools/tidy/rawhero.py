@@ -65,7 +65,8 @@ def dump():
             if lvl == 0:
                 root = N(0, '', body); stack = [root]; continue
             tm = re.match(r'(.*?)\s*(\w+)$', body)
-            n = N(int(m.group(1)), tm.group(2), tm.group(1))
+            # An unnamed member (`union (anonymous)`) has a type and no name.
+            n = N(int(m.group(1)), tm.group(2), tm.group(1)) if tm else N(int(m.group(1)), '', body)
             del stack[lvl:]; stack[-1].kids.append(n); stack.append(n)
         if stack:
             name = stack[0].typ

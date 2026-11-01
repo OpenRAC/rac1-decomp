@@ -257,7 +257,7 @@ static inline short pick_2D28D0(int c) {
 void rilgar_sharkigator_update(char *moby) {
     extern char g_hero[];
     char *data = *(char **)(moby + 0x78);
-    int state = *(unsigned char *)(moby + 0x20);
+    int state = ((Moby *)moby)->state;
     int one = 1;
     char *path;
     char *point;
@@ -283,10 +283,10 @@ void rilgar_sharkigator_update(char *moby) {
     }
 state_zero: {
     if (*(int *)(data + 0x64) != 0) {
-        *(unsigned char *)(moby + 0x20) = 2;
-        *(unsigned short *)(moby + 0x34) |= 1;
-        *(unsigned char *)(moby + 0x30) = 0xff;
-        *(float *)(data + 0x74) = *(float *)(moby + 0x18);
+        ((Moby *)moby)->state = 2;
+        ((Moby *)moby)->flags |= 1;
+        ((Moby *)moby)->update_dist = 0xff;
+        *(float *)(data + 0x74) = ((Moby *)moby)->pos.z;
         *(int *)(data + 0x7c) = ((int (*)(int))scale_ticks)(30);
         return;
     }
@@ -300,23 +300,23 @@ state_zero: {
         *(int *)(data + 0x68) = ((int (*)(int))random_integer_below)(*(int *)path);
     }
     *(int *)(data + 0x6c) = ((int (*)(int))scale_ticks)(600);
-    if (*(unsigned char *)(moby + 0x53) != 1) {
+    if (((Moby *)moby)->prev_seq != 1) {
         ((void (*)(char *, int, int, int))MobyBlendAnimation)(moby, 1, 0, ((int (*)(int))scale_ticks)(10));
     }
     {
         char *path = ((char **)rilgar_paths)[*(int *)(data + 0x60)];
         height = *(float *)(path + 0x18) - (*(float *)&D_L05_00161450);
     }
-    *(float *)(moby + 0x18) = height;
+    ((Moby *)moby)->pos.z = height;
     *(float *)(data + 0x80) = height;
-    *(unsigned char *)(moby + 0x20) = one;
+    ((Moby *)moby)->state = one;
     return;
 }
 state_one: {
     path = ((char **)rilgar_paths)[*(int *)(data + 0x60)];
     qcopy(v, path + *(int *)(data + 0x68) * 16 + 0x10);
     point = moby + 0x48;
-    height = ((float (*)(float, float))fast_atan2)(v[0] - *(float *)(moby + 0x10), v[1] - *(float *)(moby + 0x14));
+    height = ((float (*)(float, float))fast_atan2)(v[0] - ((Moby *)moby)->pos.x, v[1] - ((Moby *)moby)->pos.y);
     SteerAngleWithVelocity((float *)point, (float *)(data + 0x70), height, g_frame_time_sq * 3.1415927f,
                            g_frame_time_sq * 3.1415927f, g_frame_time * 3.1415927f);
     ((void (*)(float, void *, void *))vec_scale_to_length)(g_frame_time * 3.0f, w, moby + 0xc0);
@@ -359,19 +359,19 @@ state_two: {
             if (*(int *)(data + 0x7c) != 0)
                 return;
             d = rilgar_player_camera;
-            *(float *)(moby + 0x44) = -1.5533431f;
-            *(float *)(moby + 0x48) = ((float (*)(float, float))FastAddRots)(*(float *)(d + 0x158), 1.5707964f);
+            ((Moby *)moby)->rot.y = -1.5533431f;
+            ((Moby *)moby)->rot.z = ((float (*)(float, float))FastAddRots)(*(float *)(d + 0x158), 1.5707964f);
             euler_rotation_basis(moby + 0xc0, moby + 0x40);
             qcopy(moby + 0x10, h + 0x80);
             ((void (*)(float, void *, void *))vec_scale_to_length)((*(float *)&D_L05_00161450), v, moby + 0xe0);
             ((void (*)(void *, void *, void *))FastVecSub)(moby + 0x10, moby + 0x10, v);
             ((Moby *)moby)->pos.z -= 2.0f;
             *(float *)(data + 0x78) = g_frame_time * 10.0f;
-            *(unsigned short *)(moby + 0x34) &= 0xfffe;
-            if (*(unsigned char *)(moby + 0x53) != state)
+            ((Moby *)moby)->flags &= 0xfffe;
+            if (((Moby *)moby)->prev_seq != state)
                 ((void (*)(char *, int, int, int))MobyBlendAnimation)(moby, 2, 0, ((int (*)(int))scale_ticks)(5));
-            *(unsigned char *)(moby + 0xbc) = 0;
-            *(unsigned char *)(moby + 0x20) = 3;
+            ((Moby *)moby)->command = 0;
+            ((Moby *)moby)->state = 3;
             CameraScript(d + 0x140, d + 0x150, 0, 0, 0);
             return;
         }
@@ -392,7 +392,7 @@ state_three: {
     float speed;
     {
         char *h = g_hero;
-        if (HF(0x2F0) < *(float *)(moby + 0x18) || *(float *)(data + 0x78) < 0.0f) {
+        if (HF(0x2F0) < ((Moby *)moby)->pos.z || *(float *)(data + 0x78) < 0.0f) {
             if (HI(0x2084) != 0x72) {
                 qcopy_nc(v, h + 0x80);
                 v[2] = HF(0x2F0);
@@ -434,8 +434,8 @@ state_three: {
     }
     if (*(float *)(data + 0x78) < 0.0f) {
         char *h = g_hero;
-        if (*(float *)(moby + 0x18) < HF(0x2F0) && *(unsigned char *)(moby + 0xbc) == 0) {
-            *(unsigned char *)(moby + 0xbc) = 1;
+        if (((Moby *)moby)->pos.z < HF(0x2F0) && ((Moby *)moby)->command == 0) {
+            ((Moby *)moby)->command = 1;
             ((int (*)(int, int, char *))Moby_PlaySound)(0, 0, moby);
             ((void (*)(float, void *, void *))vec_scale_to_length)((*(float *)&D_L05_00161450), v, moby + 0xe0);
             ((void (*)(void *, void *, void *))FastVecAdd)(v, v, moby + 0x10);
@@ -443,9 +443,9 @@ state_three: {
             ((void (*)(char *, void *))spawn_sharkigator_splash_effects)(moby, (char *)v);
         }
     }
-    if (*(float *)(data + 0x78) < 0.0f && *(float *)(moby + 0x18) < *(float *)(data + 0x74) - 8.0f)
+    if (*(float *)(data + 0x78) < 0.0f && ((Moby *)moby)->pos.z < *(float *)(data + 0x74) - 8.0f)
         Hero_OnKilled();
-    if ((*(unsigned char *)(moby + 0x70) & 2) != 0 && *(unsigned char *)(moby + 0x53) != 1)
+    if ((((Moby *)moby)->anim_flags & 2) != 0 && ((Moby *)moby)->prev_seq != 1)
         ((void (*)(char *, int, int, int))MobyBlendAnimation)(moby, 1, 0, ((int (*)(int))scale_ticks)(10));
 }
 }

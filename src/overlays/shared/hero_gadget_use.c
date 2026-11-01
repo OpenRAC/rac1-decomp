@@ -1205,14 +1205,14 @@ void process_hero_race_object_interactions(void) {
         get_first_moby_in_group((void **)&first, *(int *)(state + 0x44), 0, 0);
         if (first != 0) {
             do {
-                if (*(short *)(first + 0xA6) == 0x473 && fast_subtract_rotations_cf(first + 0xBC) != 0) {
+                if (((Moby *)first)->oclass == 0x473 && fast_subtract_rotations_cf(first + 0xBC) != 0) {
                     FastVecSub(delta, first + 0x10, (char *)hero_globals_base + 0xEED);
                     set_identity_matrix(matrix);
                     matrix_from_basis_rows(matrix, first + 0xC0);
                     transform_vector(delta, delta, matrix);
                     if (FastAbsF(delta[0]) < 0.5f && FastAbsF(delta[1]) < 2.9f && FastAbsF(delta[2]) < 2.9f) {
                         HERO->boost_pad_timer += **(int **)(first + 0x78);
-                        first[0xBC] = scale_ticks(0x3C);
+                        ((Moby *)first)->command = scale_ticks(0x3C);
                         if (HERO->hoverboard_moby != 0)
                             Moby_PlaySound(1, 0, (int)HERO->hoverboard_moby);
                     }
@@ -1237,8 +1237,8 @@ void process_hero_race_object_interactions(void) {
             if (second != 0) {
                 unsigned int color = (blue << 16) | (0x80000000U | (green << 8)) | red;
                 do {
-                    if (*(short *)(second + 0xA6) == 0x474) {
-                        *(unsigned short *)(second + 0x34) |= 0x10;
+                    if (((Moby *)second)->oclass == 0x474) {
+                        ((Moby *)second)->flags |= 0x10;
                         *(unsigned int *)(second + 0x90) = color;
                         if (fast_subtract_rotations_cf(second + 0xBC) != 0) {
                             FastVecSub(delta, second + 0x10, (char *)hero_globals_base + 0xE9D);
@@ -1247,7 +1247,7 @@ void process_hero_race_object_interactions(void) {
                             transform_vector(delta, delta, matrix);
                             if (FastAbsF(delta[0]) < 2.8f && FastAbsF(delta[1]) < 1.25f && FastAbsF(delta[2]) < 1.5f) {
                                 HERO->boost_pad_timer += **(int **)(second + 0x78);
-                                second[0xBC] = scale_ticks(0x3C);
+                                ((Moby *)second)->command = scale_ticks(0x3C);
                                 if (HERO->hoverboard_moby != 0)
                                     Moby_PlaySound(1, 0, (int)HERO->hoverboard_moby);
                             }

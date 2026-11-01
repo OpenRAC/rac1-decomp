@@ -11,9 +11,9 @@
   "local_struct_typedefs": 2850,
   "long_lines": 1274,
   "numbered_names": 274,
-  "oclass_literals": 124,
+  "oclass_literals": 126,
   "offsets_in_comments": 1032,
-  "raw_offset_casts": 7014,
+  "raw_offset_casts": 6947,
   "tab_lines": 55,
   "worker_notes_in_comments": 28
 }

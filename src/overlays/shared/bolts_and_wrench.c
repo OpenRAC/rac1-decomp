@@ -539,18 +539,18 @@ void draw_vendor_effects(char *m) {
         matrix_mul_vec3(q[2], light_beam_corner_table[light_beam_quad_corner_indices[k][2]], mtx);
         matrix_mul_vec3(q[3], light_beam_corner_table[light_beam_quad_corner_indices[k][3]], mtx);
 
-        qd.v[0][0] = *(float *)(m + 0x10) + q[0][0] * *(float *)(p + 0x90);
-        qd.v[0][1] = *(float *)(m + 0x14) + q[0][1] * *(float *)(p + 0x90);
-        qd.v[0][2] = *(float *)(m + 0x18) + q[0][2];
-        qd.v[1][0] = *(float *)(m + 0x10) + q[1][0] * *(float *)(p + 0x90);
-        qd.v[1][1] = *(float *)(m + 0x14) + q[1][1] * *(float *)(p + 0x90);
-        qd.v[1][2] = *(float *)(m + 0x18) + q[1][2];
-        qd.v[2][0] = *(float *)(m + 0x10) + q[2][0] * *(float *)(p + 0x90);
-        qd.v[2][1] = *(float *)(m + 0x14) + q[2][1] * *(float *)(p + 0x90);
-        qd.v[2][2] = *(float *)(m + 0x18) + q[2][2];
-        qd.v[3][0] = *(float *)(m + 0x10) + q[3][0] * *(float *)(p + 0x90);
-        qd.v[3][1] = *(float *)(m + 0x14) + q[3][1] * *(float *)(p + 0x90);
-        qd.v[3][2] = *(float *)(m + 0x18) + q[3][2];
+        qd.v[0][0] = ((Moby *)m)->pos.x + q[0][0] * *(float *)(p + 0x90);
+        qd.v[0][1] = ((Moby *)m)->pos.y + q[0][1] * *(float *)(p + 0x90);
+        qd.v[0][2] = ((Moby *)m)->pos.z + q[0][2];
+        qd.v[1][0] = ((Moby *)m)->pos.x + q[1][0] * *(float *)(p + 0x90);
+        qd.v[1][1] = ((Moby *)m)->pos.y + q[1][1] * *(float *)(p + 0x90);
+        qd.v[1][2] = ((Moby *)m)->pos.z + q[1][2];
+        qd.v[2][0] = ((Moby *)m)->pos.x + q[2][0] * *(float *)(p + 0x90);
+        qd.v[2][1] = ((Moby *)m)->pos.y + q[2][1] * *(float *)(p + 0x90);
+        qd.v[2][2] = ((Moby *)m)->pos.z + q[2][2];
+        qd.v[3][0] = ((Moby *)m)->pos.x + q[3][0] * *(float *)(p + 0x90);
+        qd.v[3][1] = ((Moby *)m)->pos.y + q[3][1] * *(float *)(p + 0x90);
+        qd.v[3][2] = ((Moby *)m)->pos.z + q[3][2];
 
         i0 = light_beam_quad_corner_indices[k][0];
         i1 = light_beam_quad_corner_indices[k][1];
@@ -607,18 +607,18 @@ void draw_vendor_effects(char *m) {
     }
 
     col = ((int)((1.0f - (*(float *)&light_beam_glow_phase)) * 128.0f) << 24) | 0x808080;
-    qd.v[0][0] = *(float *)(m + 0x10) + q[0][0];
-    qd.v[0][1] = *(float *)(m + 0x14) + q[0][1];
-    qd.v[0][2] = *(float *)(m + 0x18) + q[0][2];
-    qd.v[1][0] = *(float *)(m + 0x10) + q[1][0];
-    qd.v[1][1] = *(float *)(m + 0x14) + q[1][1];
-    qd.v[1][2] = *(float *)(m + 0x18) + q[1][2];
-    qd.v[2][0] = *(float *)(m + 0x10) + q[2][0];
-    qd.v[2][1] = *(float *)(m + 0x14) + q[2][1];
-    qd.v[2][2] = *(float *)(m + 0x18) + q[2][2];
-    qd.v[3][0] = *(float *)(m + 0x10) + q[3][0];
-    qd.v[3][1] = *(float *)(m + 0x14) + q[3][1];
-    qd.v[3][2] = *(float *)(m + 0x18) + q[3][2];
+    qd.v[0][0] = ((Moby *)m)->pos.x + q[0][0];
+    qd.v[0][1] = ((Moby *)m)->pos.y + q[0][1];
+    qd.v[0][2] = ((Moby *)m)->pos.z + q[0][2];
+    qd.v[1][0] = ((Moby *)m)->pos.x + q[1][0];
+    qd.v[1][1] = ((Moby *)m)->pos.y + q[1][1];
+    qd.v[1][2] = ((Moby *)m)->pos.z + q[1][2];
+    qd.v[2][0] = ((Moby *)m)->pos.x + q[2][0];
+    qd.v[2][1] = ((Moby *)m)->pos.y + q[2][1];
+    qd.v[2][2] = ((Moby *)m)->pos.z + q[2][2];
+    qd.v[3][0] = ((Moby *)m)->pos.x + q[3][0];
+    qd.v[3][1] = ((Moby *)m)->pos.y + q[3][1];
+    qd.v[3][2] = ((Moby *)m)->pos.z + q[3][2];
     qd.col[0] = col;
     qd.col[1] = col;
     qd.col[2] = col;
@@ -646,7 +646,7 @@ void draw_vendor_effects(char *m) {
         S.f[2] = 0.59f;
         matrix_mul_vec3(S.f, S.f, m + 0xC0);
         FastVecAdd(S.f, S.f, m + 0x10);
-        draw_offset_textured_effect_quad(S.f, *(int *)(m + 0x90) & 0xFFFF0000, 0.1333f, zero);
+        draw_offset_textured_effect_quad(S.f, ((Moby *)m)->glow_color & 0xFFFF0000, 0.1333f, zero);
     }
 }
 extern float FastSin(float);
