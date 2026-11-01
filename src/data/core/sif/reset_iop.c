@@ -8,3 +8,8 @@ u32 tlb_functions_kernel_code[] DATA_SECTION(D_0012FDB8) = {
 u32 tlb_saved_syscall_3_entry[] DATA_SECTION(D_00130130) = {
 #include "data_inc/D_00130130.inc"
 };
+
+#include "data_inc/D_00130138.refs"
+u32 tlb_functions_syscall_table[] DATA_SECTION(D_00130138) = {
+#include "data_inc/D_00130138.inc"
+};

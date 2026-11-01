@@ -4,3 +4,8 @@
 u32 osd_kernel_patch_code[] DATA_SECTION(D_00130428) = {
 #include "data_inc/D_00130428.inc"
 };
+
+#include "data_inc/D_00130BD0.refs"
+u32 osd_syscall_patch_table[] DATA_SECTION(D_00130BD0) = {
+#include "data_inc/D_00130BD0.inc"
+};
