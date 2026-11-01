@@ -2148,7 +2148,7 @@ void extermitank_update(unsigned char *m) {
             d->unk_180 = scale_ticks(0x3C);
             *(int *)&d->turret_pitch = 0;
             {
-                /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+                /* KEPT: the short declaration is for $gp, so volatile has to be in the cast. */
                 float t = *(volatile float *)&extermitank_vars_b58_init;
                 /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
                 d->turret_yaw = *(volatile float *)(m + 0x48);

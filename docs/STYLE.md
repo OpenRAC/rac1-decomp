@@ -75,6 +75,7 @@ Do not:
 | Marker | Meaning |
 |---|---|
 | `/* FAKEMATCH: <reason> */` | The code matches, but it is not what the authors wrote. Tracked in `config/fakematch.tsv`. |
+| `/* KEPT: <reason> */` | Looks like a hack, but someone read it and has a reason it stays. |
 | `INCLUDE_ASM` | Not matched in C yet. |
 | `ASM_FUNC` | Original assembly. It stays assembly. |
 | `LINKER_REMNANT` | Linker leftovers. They stay assembly. |

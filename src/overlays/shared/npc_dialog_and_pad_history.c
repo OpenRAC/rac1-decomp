@@ -42,7 +42,7 @@ void Stream_SetSlotValue(int value, long arg) {
 }
 /* Clear the 16-bit field at offset 0xA; volatile keeps the store before the return delay slot. */
 void stream_slot_clear_state(void *a0, unsigned char *a1) {
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+    /* KEPT: sh, jr, nop: probably a volatile field of a record not known yet. */
     *(volatile unsigned short *)(a1 + 0xA) = 0;
 }
 /* Stream slot callback: store a negative result, wake a waiting slot (state 9 to 4), or reset it on 0. */

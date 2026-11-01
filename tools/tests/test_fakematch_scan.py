@@ -22,6 +22,11 @@ class HitsTest(unittest.TestCase):
         text = 'void f(void) {\n    __asm__ volatile("nop");\n    register float k __asm__("$f4") = 1.0f;\n}\n'
         self.assertEqual(fs.line_hits(text), [])
 
+    def test_a_kept_comment_settles_the_site(self):
+        text = "void f(void) {\n    /* KEPT: the store stays out of the delay slot. */\n    volatile int a;\n}\n"
+        self.assertEqual(fs.line_hits(text), [])
+        self.assertEqual(fs.table_rows("src/a.c", text), [("src/a.c", "f", "kept", "the store stays out of the delay slot")])
+
     def test_comments_stay_out(self):
         self.assertEqual(fs.line_hits("void f(void) {\n    /* volatile if (0) register */\n}\n"), [])
 

@@ -3590,7 +3590,7 @@ void Cam_SetEyeOffset(int add, float a, float b) {
 }
 /* From Lombyte's project (GPL-3.0), FUN_L00_002e8534 (PR #66), adapted to PAL. */
 void cam_set_eye_offset_tail(void *u, char *p, float a) {
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+    /* KEPT: swc1, jr, nop: probably a volatile field of a record not known yet. */
     *(volatile float *)(p + 0xB4) = a;
 }
 /* Sets the float at +0x1CC of the hero camera's state buffer while the current camera's id is 0. */
