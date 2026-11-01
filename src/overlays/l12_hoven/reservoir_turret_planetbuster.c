@@ -1479,17 +1479,13 @@ typedef struct {
     short value;
 } Level12VendorCounterData;
 
-typedef struct {
-    char pad0[0x78];
-    Level12VendorCounterData *data;
-} Level12VendorCounterMoby;
 
 extern int scale_ticks(int);
 extern void emit_rgba_draw_packet(int, int, int, int);
 
 /* Scale and play the vendor cue while its counter is below the limit. */
-void draw_hoven_turret_destruction_fade(Level12VendorCounterMoby *moby) {
-    Level12VendorCounterData *data = moby->data;
+void draw_hoven_turret_destruction_fade(Moby *moby) {
+    Level12VendorCounterData *data = (Level12VendorCounterData *)moby->pvars;
     int count = scale_ticks(0x50);
     int value = data->value;
     if (value < count) {

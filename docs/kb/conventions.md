@@ -157,6 +157,11 @@ These hero views still change bytes or break a version's C when converted to `st
 (`alpha_fade_particle_updates.c`) and `Tab_245610` (`level_gameplay_loading.c`) index from a base pointer, and rewriting
 that as `[28 + i]` changes the code.
 
+Private moby views still left: converting them gives more `*(T *)&m->field` casts than plain fields, so they wait until
+`struct Moby` has the right field types. The largest are in `gates_helicopters_ultramechs.c`, `snow_plow_and_woodcut_bot.c`,
+`pause.c`, `test_dummies_and_conveyors.c`, `elevator_and_birdbot.c`, `turrets_and_fighter_jet.c`, `rocks_and_sandmouse.c`
+and `bolt_thief_and_path_cameras.c`. `tools/tidy/conv.py FILE --target moby --dry` lists them.
+
 *(inferred from the definitions and uses; the pad reason is from the
 header-tidy notes.)* Small `fNN` data views in `help_*.c` (`S141948`,
 `Row13E650` ...) are also still private. Shared hero views are in `include/structs/hero_views.h`.
