@@ -16,9 +16,13 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "structs/hero_views.h"
+#include "data/executable.h"
+#include "data/level_12.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
 
 extern char hero_globals_base[];
-extern float FastAbsF(float);
 
 /* Level 12 pickup/ability state update. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l12/ui_help_0022de30.c, FUN_L12_0022de30. */
 void update_hero_ground_material_flags(void) {
@@ -105,7 +109,7 @@ void update_hero_ground_material_flags(void) {
     }
 }
 extern Hero g_hero_r __asm__("D_0013F450");
-extern f32 g_hero_capsule_top[];
+
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
@@ -404,12 +408,12 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int hoven_frame_count MACRO_ADDR;
-extern short hoven_look_stat_timer;
+
 extern short hoven_look_stat_count;
 extern unsigned char *hoven_water_patches MACRO_ADDR;
 extern int hoven_water_patch_count MACRO_ADDR;
 extern HeroPlayerCameraView hoven_player_camera;
-extern float hoven_camera_yaw;
+
 extern Moby *hoven_nearby_mobys[];
 extern HeroBoneRow hoven_hero_bones[];
 extern HeroAttackRecord hoven_attack_records[];
@@ -441,7 +445,6 @@ extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 extern int clamp_vec_length_xy(float, void *, void *);
 
-extern void Sound_StopSlot(int);
 extern int FastDecTimer(void *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
@@ -450,9 +453,8 @@ extern float FastSubRots(float, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern int PartType34Spawn(void *, void *, float, float);
-extern int random_integer_below(int);
+
 extern int rand_range(int, int);
-extern float random_float_between(float, float);
 
 extern float FastAddRots(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);

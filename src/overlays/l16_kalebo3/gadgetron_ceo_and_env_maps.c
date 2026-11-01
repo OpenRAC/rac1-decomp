@@ -9,6 +9,13 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_16.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Gadgetron CEO challenge room: handles of the jet groups it switches on and off. */
 struct CeoEnvVars {
@@ -51,8 +58,7 @@ extern void activate_gadgetron_ceo_challenge_environment(char *);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int Help_Request(int, int);
-extern void grant_inventory_item(int, int);
-extern void PlayMovieEntryIfIdle(int);
+
 extern int memcard_Save(int, int);
 extern int PlayBankSound(int, int, int);
 extern void ShowBanner(int, int);
@@ -66,14 +72,13 @@ extern int fast_dec_timer(void *);
 extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);
 extern float FastDiffRots(float, float);
-extern float fast_atan2(float, float);
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void EaseManipulatorOffsets(float, float, void *, void *, int);
-extern char kalebo3_camera_pos[];
+
 extern unsigned char race_gates_base[], gHaveMorphORay[];
 extern char menu_item_enabled_115[], help_stats_base[];
 extern int race_best_records_challenge[2] __asm__("D_0015EF68") MACRO_ADDR;
@@ -420,7 +425,7 @@ extern void emit_path_walker_particle(unsigned char *, void *);
 extern void SamplePathAt(void *, float, int, void *, float *, int);
 extern float ApproachValue(float *, float, float);
 extern int FastBSphereCheck(char *, float);
-extern char *kalebo3_path_table[];
+
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float path_walker_gap_range_start SDATA(D_L16_00161F28);
@@ -580,7 +585,7 @@ void emit_path_walker_particle(unsigned char *m, void *v) {
                                                   *(int *)&path_walker_particle_color_end, final_size,
                                                   scale_ticks(0x23));
 }
-extern int random_integer_below(int);
+
 extern float IntToFloat(int);
 extern short *kalebo3_moby_groups[];
 extern char *kalebo3_moby_array MACRO_ADDR;
@@ -702,10 +707,10 @@ extern short elevator_max_speed;
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void transform_vector(void *, void *, void *);
 extern void clear_u64_value(void *);
-extern float FastAbsF(float);
+
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
-extern void Sound_StopSlot(int);
+
 extern void AddDrawCallback(void *, void *);
 extern void DrawRingStack(char *);
 
@@ -970,7 +975,7 @@ void gadgetron_sign_update(unsigned char *moby_bytes) {
 }
 extern char *find_group_class_010e_moby_in_state_6(int);
 extern void request_target_reposition(void *);
-extern int rand_range(int, int);
+
 extern int get_target_reposition_status(void *);
 extern float ProbeGroundHeight(void *, int, float);
 extern void reposition_moby_with_collision_check(void *, void *);

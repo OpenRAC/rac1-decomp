@@ -4,6 +4,7 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "game/lights.h"
+#include "data/shared_levels.h"
 
 extern long GetEffectTex64(int) __asm__("func_001F4868");
 extern void MobyTransformScaledVertex(char *arg0, int arg1, char *arg2);
@@ -198,7 +199,7 @@ void emit_moby_particle_pairs(void *p) {
     }
 }
 extern float IntToFloat(int);
-extern unsigned char level_point_light_data[];
+
 extern unsigned char level_point_lights[];
 extern float level_draw_frame_load MACRO_ADDR;
 extern char level_point_light_link_buffers[];
@@ -277,7 +278,6 @@ int allocate_colored_effect_slot(u128_pt *v, float a, float b_0023e738, float c,
 }
 
 extern unsigned char level_point_lights[];
-extern unsigned char level_point_light_data[];
 
 /* release_point_light_slot: detaches point light index and clears its slots. */
 void release_point_light_slot(int index) {

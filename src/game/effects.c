@@ -2,6 +2,7 @@
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "game/draw.h"
+#include "data/executable.h"
 
 /*
  * effects.cpp in the original source; text 0x1EDFF8-0x1EE9F8.
@@ -207,7 +208,7 @@ typedef struct {
 } GlowQueue;
 
 extern GlowQueue rotated_sprite_queue;
-extern int hero_current_state;
+
 extern int g_screen_extent[];
 extern float IntToFloat(int);
 

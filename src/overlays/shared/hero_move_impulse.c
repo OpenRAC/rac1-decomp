@@ -5,6 +5,7 @@
 #include "structs/vector.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
 
 extern char hero_globals_base[];
 extern char hoven_item_defs[];
@@ -60,8 +61,6 @@ extern void turn_to(int, float, float, float);
 extern void stick_target(int, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
-extern void add_hero_forward_offset(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);

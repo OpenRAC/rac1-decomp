@@ -15,11 +15,15 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "structs/hero_views.h"
+#include "data/executable.h"
+#include "data/level_06.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
 
 extern char hero_globals_base[];
 
 extern void HeroL06_TrySetMoveState(int, int);
-extern float FastAbsF(float);
 
 // Resolves the pending hero action id into input flags, then triggers a state change when its conditions hold.
 void apply_hero_ground_material_response(void) {
@@ -118,7 +122,7 @@ extern Hero g_hero_r __asm__("D_0013F450");
 extern s32 level_game_mode_q MACRO_ADDR;
 extern T_8 blarg_moby_hit_records[];
 extern s32 g_current_level_index MACRO_ADDR;
-extern s32 level_hero_hit_counts[];
+
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
@@ -701,10 +705,10 @@ extern unsigned char item_available[];
 extern char voice_pool[];
 extern S141948 usage_stats;
 extern int gameplay_event_frame_count MACRO_ADDR;
-extern short blarg_usage_event_timer;
+
 extern short blarg_usage_event_count;
 extern HeroPlayerCameraView referencePosition;
-extern float blarg_player_camera_yaw;
+
 extern int *blarg_moby_hits[];
 extern HeroItemDefView blarg_item_defs[];
 extern HeroBoneRow blarg_hero_bones[];
@@ -732,9 +736,8 @@ extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
 extern int clamp_vec_length_xy(float, void *, void *);
 
-extern void Sound_StopSlot(int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float random_float_between(float, float);
+
 extern float FastAddRots(float, float);
 extern float FastVecLength(void *);
 extern float ApproachValue(float *, float, float);

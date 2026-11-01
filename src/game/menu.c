@@ -4,14 +4,14 @@
 #include "structs/misc.h"
 #include "structs/hero.h"
 #include "structs/memcard.h"
+#include "asm_functions/executable.h"
+#include "game/hud.h"
 
 /*
  * menu.cpp in the original source; text 0x2071A8-0x209A60.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern void FastMemCopy(void *, void *, int);
 
 extern void FastMemSet();
 
@@ -991,8 +991,6 @@ extern int marker_half_size MACRO_ADDR;
 
 extern char hud_state_raw[] __asm__("D_0019A4E8");
 extern void draw_hud_rect_blended(int, int, int, int, long, int);
-extern int GetIconFrame(int, int);
-extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
 
 /* Draw the level's map markers inside the given screen rectangle, scaled by map zoom. */
 void draw_map_markers(int left, int top, int right, int bottom) {

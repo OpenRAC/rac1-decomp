@@ -4,6 +4,7 @@
 #include "structs/vector.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
+#include "game/fastfunc.h"
 
 /* Spawner (class 0x75D): picks a target, then throws eggs (class 0x75E) towards it, up to max_eggs alive. */
 struct SpawnerVars {
@@ -1351,7 +1352,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, int, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 extern void StepColorFade(void *, void *);
-extern float FastAbsF(float);
+
 extern void SetDeathBits(void *, int, int);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern char hero_globals_base[];

@@ -16,6 +16,10 @@
 #include "overlays/shared/camera_switch_and_update.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "data/shared_levels.h"
+#include "game/loaders.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 typedef unsigned int Q_277208 __attribute__((mode(TI), aligned(16)));
 
@@ -546,7 +550,7 @@ extern unsigned char level_transition_target_fmt[];
 
 extern void calculate_dma_transfer_address(void);
 extern void select_moby_context(int);
-extern void select_world_object_resource_tables(int, int);
+
 extern void UpdateFog(void);
 extern int STUB_printf();
 extern void prepare_target_level_transition(int);
@@ -1174,9 +1178,9 @@ int Menu_GoNextWithFlag(void) {
     }
     return 0;
 }
-extern void unlock_planet(int);
+
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
+
 extern short unlock_code_input[];
 extern unsigned char unlock_code_key_table[];
 extern short unlock_code_input_count;
@@ -1394,7 +1398,7 @@ typedef struct {
 } B_00284e50;
 extern B_00284e50 current_moby_states;
 extern B_00284e50 checkpoint_moby_states;
-extern int session_moby_killed[];
+
 extern char g_hero[];
 extern char voice_pool[];
 extern unsigned char saved_mission_state[][16] NOT_SDA;

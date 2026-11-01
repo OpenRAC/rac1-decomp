@@ -4,13 +4,13 @@
 #include "structs/misc.h"
 #include "core/00116FA0.h"
 #include "core/00118A40.h"
+#include "data/executable.h"
 
 /*
  * core_text object 0x116070-0x116248. Boundaries are retail's linker fill
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
 
-extern int SbrkErrno;
 extern void *_impure_ptr NOT_SDA;
 
 LINKER_REMNANT("asm/remnants/core_text", func_00116070);

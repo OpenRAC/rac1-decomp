@@ -11,6 +11,11 @@
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/point_lights_and_glows.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_14.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
    aim path, calls the turrets of its group when the beam finds the hero. */
@@ -193,7 +198,7 @@ extern int *oltanis_paths[];
 extern LevelState oltanis_collected_flags_base;
 
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int oltanis_moby_killed_bits[];
+
 extern float g_frame_time MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int FastDecTimer(void *);
@@ -202,9 +207,9 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float FastVecDist(void *, void *);
 extern float multiply_global_factor(float);
 extern float vec_distance_xy(void *, void *);
-extern float FastAbsF(float);
+
 extern int scale_ticks(int);
-extern void Sound_StopSlot(int);
+
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern float IntToFloat(int);
@@ -541,7 +546,7 @@ typedef struct {
 extern int *oltanis_paths[];
 extern s32 truncate_float_to_s32(f32 f);
 extern s32 FastDecTimer_r(s16 *) __asm__("func_001F9938");
-extern void Sound_StopSlot(s32 idx);
+
 float FastAbsF(float input);
 extern void process_blarg_heavy_interceptor_hit_reactions_r(struct Moby *) __asm__("func_L14_002AEAF8");
 extern void initialize_blarg_heavy_interceptor_paths_r(struct Moby *) __asm__("func_L14_002AF688");
@@ -578,8 +583,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecCross(void *, void *, void *);
 extern void build_look_at_matrix(void *, void *, void *, float);
 extern f32 random_float_between(f32, f32);
-extern f32 randf_sym(f32, f32);
-extern int rand_range(int, int);
+
 extern int coll_sphere(float, void *, int, void *);
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern unsigned char *PartType23Spawn_r(void *pos, float r, float lo, float hi, int n, void *vel, float size,
@@ -595,7 +599,7 @@ typedef struct {
     struct Moby *target; /* 0x18 */
 } LockOn_c618;
 extern LockOn_c618 oltanis_coll_hit;
-extern char oltanis_camera_pos[];
+
 extern short interceptor_cull_radius;
 extern Vec4 oltanis_collision_hit_point;
 extern char *g_hero_moby;
@@ -1181,7 +1185,7 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern unsigned long GetEffectTex(s32);
 extern void VU1_addGSregister(s32, s64);
-extern float fast_atan2(float, float);
+
 extern float vec_length_xy(void *);
 extern void draw_world_quad_r(void *, int, int) __asm__("func_L00_001FD1D8");
 
@@ -1281,7 +1285,7 @@ extern void FastVecAdd(void *, void *, void *);
 u64 GetEffectTex(s32);
 extern void VU1_addGSregister(int, long);
 extern void FastVecSub(void *dst, void *a, void *b);
-extern float fast_atan2(float, float);
+
 extern void draw_world_quad(void *, void *, int);
 extern char interceptor_quad_corners[];
 extern short interceptor_glow_forward_offset;
@@ -1635,7 +1639,7 @@ extern void FastVecSub(void *dst, void *a, void *b);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastVecLength(void *a);
-extern float fast_atan2(float, float);
+
 extern float FastSubRots(float, float);
 extern void draw_blarg_heavy_interceptor_camera_pulled_glow(char *);
 
@@ -2688,7 +2692,7 @@ void initialize_minibomber_path_segment_lengths(char *moby) {
     }
     data->use_path_b = 0;
 }
-extern float fast_atan2(float, float);
+
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 
 /* steer a moby's position toward a target and update its velocity */
@@ -2721,7 +2725,7 @@ void ease_minibomber_position_and_heading(char *moby, float *target, float a, fl
 extern float FastSin(float);
 extern float random_float_between(float, float);
 extern char *PartType23Spawn(void *, int, void *, int, float, float, float, float);
-extern float randf_sym(float, float);
+
 extern void build_look_at_matrix(void *, void *, void *, float);
 extern void spawn_two_point_effect_particle(void *, void *);
 extern void mine_camera_blast(void *, void *, int, int);
@@ -2808,7 +2812,6 @@ void func_L14_002B6E80_r(Moby *moby) {
     d->t = 0;
     clear_u64_value(d->off);
 }
-extern void Sound_StopSlot(int);
 
 // Clears a moby's link to its slot entry, releasing the slot if it still points back here.
 void hide_minibomber_and_release_voice(char *moby) {
@@ -2826,7 +2829,7 @@ void hide_minibomber_and_release_voice(char *moby) {
     data->voice = -1;
 }
 extern int *oltanis_paths[];
-extern float fast_atan2(float, float);
+
 extern void FastVecSub(void *, void *, void *);
 void func_L14_002B6F68_r(Moby *moby) __asm__("func_L14_002B6F68");
 
@@ -3037,7 +3040,7 @@ typedef int u128_2BC560 __attribute__((mode(TI)));
 extern float frame_scale MACRO_ADDR;
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 extern float random_float_between(float, float);
-extern float randf_sym(float lo, float hi);
+
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern void moby_build_matrix(void *);
 

@@ -17,6 +17,12 @@
 #include "overlays/shared/sky_particles.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "structs/hero_views.h"
+#include "asm_functions/shared_levels.h"
+#include "data/executable.h"
+#include "data/level_14.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/hero_move_impulse.h"
 
 typedef struct {
     char p0[0xF8];
@@ -28,7 +34,7 @@ typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
 extern PadState g_controller_state;
 extern S141948 usage_stats;
-extern int last_weapon_id;
+
 extern unsigned char item_available[];
 extern int gBolts MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -42,7 +48,7 @@ extern float oltanis_hero_fall_state_height MACRO_ADDR;
 extern int oltanis_shown_help_message MACRO_ADDR;
 extern int oltanis_hero_run_step1_start_frame MACRO_ADDR;
 extern short oltanis_hero_double_tap_timer;
-extern float oltanis_camera_yaw;
+
 extern int oltanis_look_release_reset_word;
 extern HeroBoneScalars oltanis_lean_state;
 extern HeroIdleFidget oltanis_idle_fidgets[];
@@ -59,7 +65,7 @@ extern void hud_keep_visible(int, int);
 extern int FastDecTimer(void *);
 
 extern int hero_slot_item_id(int);
-extern int hero_get_gadget_anim_id(int a);
+
 extern void set_hero_animation(int, int, float);
 extern void MobyBlendAnimation(void *, int, int, int);
 
@@ -101,15 +107,14 @@ extern float ApproachValue(float *p, float target, float maxstep);
 extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *v);
-extern float FastAbsF(float);
-extern float random_float_between(float a, float b);
+
 extern void hero_switch_item(int i);
 extern void release_and_clear_hero_voice_slots(void);
 extern void clear_u64_value(void *);
 extern float FastVecDist(void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern int coll_line(void *, void *, int, int, int);
-extern float fast_atan2(float, float);
+
 extern float randf_sym(float lo, float hi);
 extern float jump_speed_4318(void *a, void *b, void *out, float speed, float g);
 

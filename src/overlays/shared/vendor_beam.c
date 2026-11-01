@@ -5,6 +5,7 @@
  * (docs/reference/BUILD_FIDELITY.md, rule 2). */
 #include "common.h"
 #include "structs/moby.h"
+#include "data/level_14.h"
 
 typedef struct Pkt_03430 {
     float corner[4][4];
@@ -31,7 +32,7 @@ typedef struct {
     float v[8][4];
 } Frame_03430;
 extern char *oltanis_clip_volumes MACRO_ADDR;
-extern char oltanis_camera_pos[];
+
 extern float oltanis_vendor_beam_quad_uvs[][2];
 extern short oltanis_vendor_beam_tex_index;
 extern short vendor_beam_blend_minuend_selector_gp;

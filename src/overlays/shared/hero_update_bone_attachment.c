@@ -10,12 +10,16 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/level_runtime_and_menus.h"
+#include "asm_functions/shared_levels.h"
+#include "data/executable.h"
+#include "data/level_15.h"
+#include "game/hud.h"
 
 extern unsigned char hero_globals_base[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern unsigned char gHaveMorphORay[];
 extern int quartu_frame_count MACRO_ADDR;
-extern short sound_volume_10;
+
 extern float quartu_hero_bones_28_scale, quartu_hero_bones_30_scale;
 extern void advance_hero_animation(void);
 extern void hero_update(void);
@@ -31,8 +35,6 @@ extern float FastSin(float);
 extern int truncate_float_to_s32(float);
 extern unsigned int FastTweenColor(float, unsigned int, unsigned int);
 extern void allocate_hero_voice_for_entry(int, int);
-
-extern void apply_env_zone_lighting(void *);
 
 /* Per-frame hero update: animation, state, voices, vehicle, scale, glow pulse and attachments. */
 void update_hero_and_vehicle_mode_effects(void) {
@@ -193,7 +195,6 @@ void update_hero_bobbing_and_target_position(void) {
     }
 }
 extern int quartu_game_mode MACRO_ADDR;
-extern void Hud_SetBarValueById(int arg0, int arg1);
 
 extern void DeleteMoby(void *);
 extern void release_and_clear_hero_voice_slots(void);
@@ -239,7 +240,7 @@ void restore_saved_hero_moby_and_clear_vehicle_mode(void) {
     }
 }
 extern Hero g_hero;
-extern f32 g_hero_capsule_top[];
+
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
@@ -299,8 +300,7 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern void FastVecScale(void *, void *, float);
 extern int coll_line(void *, void *, int, int, int);
-extern int CollType(void);
-extern float fast_atan2(float, float);
+
 // Steers the hero's aim vectors toward the current target and snaps momentum to it when close enough.
 void adjust_hero_planar_velocity_from_probes(int arg) {
     float a[4] __attribute__((aligned(16)));
@@ -374,7 +374,7 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
     }
 }
 typedef int Q __attribute__((mode(TI)));
-extern u8 quartu_coll_hit_point[];
+
 extern s32 g_current_level_index MACRO_ADDR;
 void clear_u64_value(void *);
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);

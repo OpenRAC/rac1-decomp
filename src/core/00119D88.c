@@ -2,6 +2,8 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
+#include "data/executable.h"
 
 /*
  * core_text object 0x119D88-0x11CCE0. Boundaries are retail's linker fill
@@ -16,7 +18,6 @@
  * like the rest of the SDK (Makefile.sn, EE29_CORE): the sd/ld spills and
  * the frames of func_0011A6C8 and func_0011B770 are that compiler's.
  */
-
 
 /* kputchar (libkernl.a:kprintf.o): wait until the SIO status port
    (0x1000F130) has its busy bit (0x8000) clear, write the character to
@@ -974,7 +975,7 @@ typedef struct {
 
 extern char sif_rpc_data[];
 extern int create_semaphore(void *); /* CreateSema */
-extern void delete_semaphore(int); /* DeleteSema */
+
 extern int wait_semaphore(int); /* WaitSema */
 
 /* sceSifBindRpc. Adapted from Lombyte's project (GPL-3.0) for PAL. */
@@ -1526,7 +1527,6 @@ s32 sceFsInit(void) {
     return 0;
 }
 
-extern char sif_lib_version_string[];
 extern char FsResetBuffer[];
 extern int fs_expected_version;
 

@@ -5,6 +5,7 @@
 #include "structs/pad.h"
 #include "core/989snd.h"
 #include "game/mobyutil.h"
+#include "game/hud.h"
 
 /*
  * stream.cpp in the original source; text 0x217588-0x217F68.
@@ -382,7 +383,7 @@ extern u8 items_acquired[];
 extern u8 gSpecialItems[];
 
 extern void noop_callback_n(s32);
-extern s32 remove_hud_item(s32);
+
 extern void noop_callback_o(s32);
 extern void *msg_string(s32);
 

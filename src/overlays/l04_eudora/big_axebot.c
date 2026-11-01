@@ -11,6 +11,10 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "overlays/shared/smoke_puff_projectiles.h"
+#include "asm_functions/shared_levels.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/sound_playback.h"
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
 struct BlargTrooperVars {
     u8 pad_00[0x20];
@@ -521,7 +525,7 @@ extern float FastVecDist(void *, void *);
 extern void set_ground_height_band(void *);
 extern void FindNearestTargetMoby(char *, float *, float);
 extern float vec_distance_xy(float *, float *);
-extern float fast_atan2(float, float);
+
 extern float MobyGetFrameValue(void *);
 extern int FastDecTimer(void *);
 extern char *MobyGetHitMessage(void *, int, int);
@@ -547,7 +551,7 @@ extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, floa
 
 extern void leg_walker_update(void *, void *, float, float, float);
 extern int IsPointInPolygon(void *, void *, int);
-extern float FastAbsF(float);
+
 extern void PostHitMessage(char *m, float t, int a, int b, void *pos, void *vel);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern int mine_fall(void *, void *);
@@ -1238,7 +1242,7 @@ void func_L04_002C2F00_r(struct Moby *m) {
     Sound_SetPitchBend_r(v->voice, truncate_float_to_s32_r(v->volume));
     Sound_SetPitchBend_r2(v->voice, truncate_float_to_s32_r(v->pitch));
 }
-extern void Sound_StopSlot(int);
+
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int Moby_PlaySound(int, int, char *);
@@ -1570,7 +1574,7 @@ extern float FastNormalizeAngle(float);
 extern int truncate_float_to_s32(float);
 extern float random_float_between(float, float);
 extern void matrix_mul_vec3(void *, void *, void *);
-extern int rand_range(int, int);
+
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 extern float eudora_camera_pos[4];
@@ -2177,7 +2181,7 @@ typedef struct {
     u8 padC[0x14];
     PuffTail tail; /* 0x20 */
 } Puff;
-extern f32 randf_sym(f32, f32);
+
 extern f32 random_angle_radians(void);
 extern Puff *PartType23Spawn(void *, f32, f32, f32, int, void *, f32, int);
 extern void PartType21Spawn(void *, void *, int, int, int, int, f32);
@@ -2997,7 +3001,7 @@ struct Manip;
 struct GifEntry;
 struct AnimSeq;
 extern short g_frame_time_r2 __asm__("D_0015EE6C");
-extern void Sound_StopSlot(s32);
+
 struct Moby;
 extern struct Hero g_hero;
 typedef struct {

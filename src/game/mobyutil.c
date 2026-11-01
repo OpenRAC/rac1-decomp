@@ -4,6 +4,7 @@
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "game/fastfunc.h"
+#include "data/executable.h"
 
 /*
  * mobyutil.cpp in the original source; text 0x213A78-0x2161E0.
@@ -33,7 +34,7 @@ typedef struct {
     int b;
 } Rec0C;
 extern Rec0C moby_class_data_table[];
-extern int resident_moby_class_data[];
+
 extern char *moby_class_resources[];
 extern int resident_moby_class_count MACRO_ADDR;
 
@@ -292,7 +293,6 @@ float CosineInterpolate(float a, float b, float t) {
 LINKER_REMNANT("asm/remnants/text", func_002142B8);
 
 extern int coll_line_fix_a(void *, void *, int, int, int) __asm__("func_001EFE10");
-extern char coll_hit_pos[];
 
 /* Builds two 16-byte copies of *arg0: one with byte offset 8 (a float)
    forced to 0.01f, the other with its offset-8 float bumped by arg2.

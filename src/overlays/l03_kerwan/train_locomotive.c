@@ -8,6 +8,12 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/radial_particle_burst.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_03.h"
+#include "game/draw.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
 
 typedef struct Train292890 {
     u8 pad_00[0x60];
@@ -131,7 +137,7 @@ extern float FastSin(float);
 extern void FastVecAdd(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
 extern float FastAddRots(float, float);
-extern float fast_atan2(float, float);
+
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *);
@@ -450,8 +456,7 @@ extern int fast_dec_timer(int *);
 extern int rand_range(int, int);
 extern int find_nearest_path_point_r(void *, void *, void *, int *, float *, int, float, float,
                                      float) __asm__("func_L00_0025EFC0");
-extern void Sound_StopSlot(int);
-extern void FadeToBlack(int);
+
 extern void set_moby_state_14(unsigned char *);
 
 extern int is_moby_class_23e_in_state_14(char *);
@@ -1046,7 +1051,6 @@ extern int scale_ticks(int);
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern int fast_subtract_rotations_cf(void *);
 extern void spawn_emitter_child_effect(void *, void *, int, int, float, float, int);
-extern char kerwan_camera_pos[];
 
 // Per-class steering update for a level 3 moby: runs its path loops and writes the flag bytes at data+0x12E/0x12F.
 void update_moby_emitter_effects(Moby *moby, float *a1, int a2) {
@@ -1155,7 +1159,7 @@ void update_moby_emitter_effects(Moby *moby, float *a1, int a2) {
     }
 }
 extern float FastSubRots(float, float);
-extern float fast_atan2(float, float);
+
 extern float FastAddRots(float, float);
 extern void FastVecSub(void *, void *, void *);
 extern float vec_length_xy(void *);
@@ -1368,10 +1372,10 @@ extern f32 vec_length_xy(void *);
 void func_L03_0029E1A8_9ED60(struct Moby *m) __asm__("func_L03_0029E1A8");
 void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int flag);
 extern char *kerwan_mobys MACRO_ADDR;
-extern char *kerwan_paths[];
+
 extern char kerwan_red_ship_no_path_msg[];
 extern float IntToFloat(int);
-extern float random_float_between(float, float);
+
 extern int FastBSphereCheck(void *, float);
 extern int truncate_float_to_s32(float);
 extern int get_first_moby_in_group(int *, int, int, int);
@@ -1700,7 +1704,7 @@ typedef struct {
 } Data2c5bb8;
 extern short kerwan_mobys_r2 __asm__("D_L03_00160058");
 extern char kerwan_moby573_spawn_d0_record;
-extern float FastAbsF(float);
+
 extern float multiply_global_factor(float);
 extern float ApproachValue(float *p, float target, float maxstep);
 extern float MobyGetFrameValue(void *);
@@ -1712,7 +1716,7 @@ extern int mine_fall(void *, void *);
 extern int CarriedMobyUpdate(void *, void *);
 extern int FindNearestTargetMoby_r(char *, char *, float) __asm__("func_L00_00260D30");
 extern int is_point_inside_clip_volume_cf(int id);
-extern int random_integer_below(int);
+
 extern void SetDeathBits(void *, int, int);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern void PostHitMessage(void *, void *, int, void *, void *, float);
@@ -2266,7 +2270,6 @@ extern float FastDiffRots(float, float);
 extern void is_value_within_interpolated_window_cf(void *);
 extern int IsFrameWithinWindow(char *, float);
 extern void vec_scale_to_length(void *, void *, float);
-extern void add_vectors(void *, void *, void *);
 
 extern void compute_interpolated_record_value_cf(void *, void *, void *, int, float, float, float);
 extern void record_moby_hit(void *, void *);
@@ -2287,9 +2290,9 @@ extern void DeleteMoby(void *);
 extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char help_stats_base[];
-extern char *kerwan_paths[];
+
 extern char kerwan_coll_hit[];
-extern char kerwan_coll_hit_point[];
+
 extern char kerwan_coll_sphere_pos[];
 extern char kerwan_coll_hit_normal[];
 extern int kerwan_game_mode MACRO_ADDR;

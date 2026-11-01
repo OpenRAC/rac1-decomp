@@ -7,6 +7,17 @@
 #include "structs/moby.h"
 #include "game/draw.h"
 #include "overlays/l06_blarg/hangar_door_and_gas_vents.h"
+#include "asm_functions/shared_levels.h"
+#include "data/executable.h"
+#include "data/level_06.h"
+#include "game/fastfunc.h"
+#include "game/hud.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Hangar door: swings to a target angle, drives seven linked door pieces. */
 struct HangarDoorVars {
@@ -153,7 +164,7 @@ struct SlidePairVars {
 
 extern int level_game_mode_q MACRO_ADDR;
 extern char *blarg_scene_points MACRO_ADDR;
-extern char level_render_state_base[];
+
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
@@ -261,7 +272,7 @@ void update_moby_position_interpolation(unsigned char *moby) {
         }
     }
 }
-extern short *blarg_moby_groups[];
+
 extern char *level_mobys_q MACRO_ADDR;
 
 // Walks a moby index list and, for each moby of one type, sets its state to 2 and a float to 1.0.
@@ -372,7 +383,7 @@ extern short toxic_gas_vent_near_anim_time;
 extern int is_point_inside_clip_volume(void *, int);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-extern void Sound_StopSlot(int);
+
 extern void emit_toxic_gas_vent_sparks(char *);
 extern void check_oscillating_toxic_gas_vent_collisions(char *);
 extern void check_timed_toxic_gas_vent_collisions(char *);
@@ -465,7 +476,7 @@ extern int FastBSphereCheck(char *, float);
 extern void euler_to_matrix(void *, void *);
 extern void transform_vector(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern void rand_vec(float *, float, float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
@@ -1117,9 +1128,9 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern int Help_Request(int, int);
 extern void set_scale_matrix(void *, float);
 extern void sce_vu0_mul_matrix(void *, void *, void *);
-extern float randf_sym(float, float);
+
 extern int FastTweenColor(int, int, float);
-extern int random_integer_below(int);
+
 extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *, char *, int, unsigned char, unsigned char,
                                                                      int, float);
 extern void DeleteMoby(void *);
@@ -2246,7 +2257,7 @@ void transition_moby_group_state_1_to_2(char *arg) {
         } while (*p++ >= 0);
     }
 }
-extern float fast_atan2(float, float);
+
 extern float FastVecDist(void *, void *);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -2765,9 +2776,9 @@ extern short alien_queen_glow_color_a;
 extern short alien_queen_glow_color_b;
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void Hud_SetBarValueById(int, int);
+
 extern void SetDeathBits(void *, int, int);
-extern void jet_reset_camera(void *, void *);
+
 extern void RerollEffectCounter(void *, void *);
 extern void StepColorFade(void *, void *);
 extern float IntToFloat(int);
@@ -2937,7 +2948,6 @@ void update_alien_queen_hit_response_and_recovery(void *moby_) {
     if (data->target == 0)
         data->target = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
 }
-extern float random_float_between(float, float);
 
 /* raise each listed moby's position z by a fixed amount and notify it */
 void activate_listed_state_15_mobys_at_raised_positions(char *moby) {
@@ -2958,7 +2968,7 @@ void activate_listed_state_15_mobys_at_raised_positions(char *moby) {
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void vec_scale_to_length(void *, void *, float);
 extern float vec_distance_xy(void *, void *);
-extern void CameraScript(void *, void *, int, int, int);
+
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern char *blarg_scene_points MACRO_ADDR;
@@ -2986,7 +2996,7 @@ void start_alien_queen_intro(char *moby) {
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern void lerp_vector(void *, void *, void *, float);
-extern float fast_atan2(float, float);
+
 extern float vec_distance_xy(void *, void *);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
@@ -3029,7 +3039,7 @@ int update_alien_queen_intro_camera(char *moby) {
     return 0;
 }
 extern void HeroL06_TrySetMoveState(int, int);
-extern void CameraScript2(int);
+
 extern int *blarg_paths[];
 
 /* Ends the moby's script. */
@@ -3088,7 +3098,7 @@ typedef struct {
 } CirclerVars;
 extern short circler_max_speed;
 extern short alien_queen_walk_accel;
-extern f32 fast_atan2(f32, f32);
+
 extern f32 FastAddRots(f32, f32);
 extern f32 FastSubRots(f32, f32);
 extern f32 FastCos(f32);
@@ -3150,7 +3160,7 @@ extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern struct Moby *CreateMoby(s32);
 extern void set_moby_list_state(int, int);
-extern float FastAbsF(float);
+
 extern short blarg_slide_pair_open_a;
 extern short blarg_slide_pair_open_b;
 extern short blarg_slide_pair_stutter_a;
@@ -3387,9 +3397,9 @@ extern int try_set_help_message(int, int);
 extern void FadeToBlack(int);
 extern void restore_hero_from_vehicle_mode(void);
 extern void MusicRequestTrack(int, int);
-extern void StartCutscene(int);
+
 extern void enter_hero_vehicle_mode_and_set_moby(int, int, int);
-extern float FastAbsF(float);
+
 extern int FastTweenColor(int, int, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");

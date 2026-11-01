@@ -5,6 +5,8 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "overlays/shared/help_message_removal.h"
+#include "asm_functions/executable.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
 
 /* Ship pickup moby: remembers whether the hero is at the ship entry point. */
 struct ShipPickupVars {
@@ -152,16 +154,14 @@ extern int ship_level_exit_requested MACRO_ADDR;
 extern int cinematic_mode MACRO_ADDR;
 
 extern float IntToFloat(int);
-extern float FastCos(float);
+
 extern void AddDrawCallback(void (*)(void), void *);
 extern float vec_distance_xy(void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastVecDist(void *, void *);
 extern int try_set_help_message(int, int);
-extern void StartCutscene(int);
 
-extern void PlayMovieEntryIfIdle(int);
 extern void render_environment_mapped_object(void);
 extern void draw_light_flare(void);
 

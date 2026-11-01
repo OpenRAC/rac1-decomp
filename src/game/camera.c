@@ -9,6 +9,8 @@
 #include "game/camera.h"
 #include "game/effects.h"
 #include "game/mobyutil.h"
+#include "data/executable.h"
+#include "game/fastfunc.h"
 
 /*
  * camera.cpp in the original source; text 0x1EC038-0x1EDFF8.
@@ -57,8 +59,6 @@ void ExecuteCamPostUpdFuncs(void) {
    to whatever follows. Same fallthrough-fragment category as
    func_00113AD8 in core_text. */
 LINKER_REMNANT("asm/remnants/text", func_001EC108);
-
-extern float FastAbsF(float);
 
 /* Cam_InterpValues(from, to, vel, stiffness, damping, max): steps *vel
    toward to - from (a damped spring: stiffness * diff - damping * vel),
@@ -597,7 +597,6 @@ void start_camera_blend(Camera *from) {
     }
 }
 
-extern char camera_rows[];
 extern float frame_scale MACRO_ADDR;
 
 extern void quaternion_to_matrix(void *, void *);
@@ -857,7 +856,7 @@ __asm__(".section .text\n\tnop\n");
 
 extern struct Hero g_hero_r __asm__("D_0013F450");
 extern f32 Cam_InterpValues_r(f32 *vel, f32 from, f32 to, f32 stiffness, f32 damping, f32 max) __asm__("func_001EC120");
-extern float FastAbsF(float input);
+
 extern void FastVecSub(void *out, void *a, void *b);
 extern void FastVecScale(void *out, void *a, f32 s);
 extern f32 FastVecDot(void *a, void *b);
@@ -938,7 +937,6 @@ void update_camera_tracking_state(void) {
     }
 }
 
-extern char coll_hit_pos[];
 extern int g_game_mode MACRO_ADDR;
 extern int coll_line_fix(void *, void *, int, int, int);
 extern int coll_hit_material(void);

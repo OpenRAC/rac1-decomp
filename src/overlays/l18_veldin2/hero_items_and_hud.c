@@ -18,6 +18,13 @@
 #include "overlays/shared/sky_particles.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "structs/hero_views.h"
+#include "asm_functions/shared_levels.h"
+#include "data/executable.h"
+#include "data/level_18.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/variants.h"
 
 typedef struct {
     char p0[0xF8];
@@ -42,7 +49,7 @@ extern Hero g_hero;
 extern PadState g_controller_state;
 extern char voice_pool[];
 extern S141948 usage_stats;
-extern int last_weapon_id;
+
 extern unsigned char item_available[];
 extern int gBolts MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -57,7 +64,7 @@ extern int hero_triangle_hud_activation_inhibit MACRO_ADDR;
 extern int veldin2_hero_run_step1_start_frame MACRO_ADDR;
 extern short veldin2_hero_double_tap_timer;
 extern S167700 veldin2_player_camera;
-extern float veldin2_camera_yaw;
+
 extern int veldin2_look_release_reset_word;
 extern HeroBoneScalars veldin2_hero_bones;
 extern HeroIdleFidget veldin2_idle_fidgets[];
@@ -74,7 +81,7 @@ extern void hud_keep_visible(int, int);
 extern int FastDecTimer(void *);
 
 extern int hero_slot_item_id(int);
-extern int HelpL15_GetRecordValue(int a);
+
 extern void set_hero_animation(int, int, float);
 extern void MobyBlendAnimation(void *, int, int, int);
 
@@ -100,7 +107,6 @@ extern void hero_set_attack_ticks(int id);
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
-extern void Sound_StopSlot(int);
 extern void allocate_hero_voice_for_entry(int, int);
 
 extern float FastAddRots(float, float);
@@ -117,8 +123,7 @@ extern float ApproachValue(float *p, float target, float maxstep);
 extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *v);
-extern float FastAbsF(float);
-extern float random_float_between(float a, float b);
+
 extern void hero_switch_item(int i);
 extern void release_and_clear_hero_voice_slots(void);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
@@ -127,7 +132,7 @@ extern void clear_u64_value(void *);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastVecDist(void *, void *);
 extern int coll_line(void *, void *, int, int, int);
-extern float fast_atan2(float, float);
+
 extern float randf_sym(float lo, float hi);
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 

@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+extern float FastAbsF(float input);
 extern float max_float(float, float);
 
 #endif /* GAME_FASTFUNC_H */

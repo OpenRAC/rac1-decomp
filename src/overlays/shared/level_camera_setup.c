@@ -9,12 +9,13 @@
 #include "structs/hero.h"
 #include "structs/moby.h"
 #include "overlays/shared/camera_switch_and_update.h"
+#include "data/shared_levels.h"
 
 extern CameraSystem player_camera;
 extern char hero_globals_base[];
 extern void vec_scale_to_length(void *, void *, float);
 extern Camera gCameraSlotsLvl[];
-extern int gCameraSlotUsedLvl[];
+
 extern int gCamPostUpdCountLvl MACRO_ADDR;
 extern int gCameraDefCountLvl MACRO_ADDR;
 extern short follow_cam_turn_blend_weight;

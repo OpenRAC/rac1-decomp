@@ -4,14 +4,13 @@
 #include "structs/misc.h"
 #include "game/draw.h"
 #include "game/vuchain.h"
+#include "data/executable.h"
 
 /*
  * tfragfunc.cpp in the original source; text 0x234380-0x2347F0.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern int draw_config[];
 
 extern int STUB_printf();
 
@@ -32,7 +31,6 @@ extern char camera_position[];
  */
 __asm__(".align 4");
 
-extern float tfrag_render_ranges[3];
 extern int tfrag_lod_dists_raw[3];
 extern float fog_params;
 extern float tfrag_lod_blend_matrix[4][4];

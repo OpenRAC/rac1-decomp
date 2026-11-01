@@ -1,6 +1,7 @@
 #include "common.h"
 #include "structs/misc.h"
 #include "game/bloaders.h"
+#include "data/executable.h"
 
 /*
  * bloaders.cpp in the original source; text 0x1E94E8-0x1E9730.
@@ -92,8 +93,6 @@ void LoadPifAsPSMT8H(void *arg0, void *arg1, int tbp, int cbp) {
 
 extern int disc_table[];
 extern int Load(void *, int, int);
-
-extern unsigned char debug_font_buffer[];
 
 extern int depth_buffer_address_m __asm__("D_0015EF88") MACRO_ADDR;
 extern long debug_font_pif_header_m __asm__("D_0015EFC8") MACRO_ADDR;

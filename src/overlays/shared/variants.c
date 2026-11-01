@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/hero.h"
+#include "overlays/shared/hero_animation_slots.h"
 
 typedef struct {
     char pad[0x24];
@@ -9,7 +10,7 @@ typedef struct {
     char pad2[0x24];
 } Rec4C;
 extern unsigned char hero_globals_base[];
-extern int hero_slot_item_id(int);
+
 extern Rec4C quartu_item_defs[];
 
 /* Returns 0 or 0x54 in the early-out cases below, otherwise the v field of D_L15_0017A140[func_L00_0020DB30(0)]. */

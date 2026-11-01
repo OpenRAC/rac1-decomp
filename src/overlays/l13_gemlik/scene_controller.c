@@ -5,6 +5,9 @@
 #include "structs/moby.h"
 #include "structs/hero.h"
 #include "overlays/shared/rocket_and_path_camera.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_13.h"
+#include "game/mobyutil.h"
 
 /* Hit proxy (moby 0x660): forwards the hits it takes to the moby that owns it. */
 struct HitProxyVars {
@@ -242,7 +245,7 @@ void update_gemlik_scene_controller(Moby *moby) {
             break;
     }
 }
-extern char *walker_paths[];
+
 extern int gemlik_moby_array_start_m __asm__("D_L13_00160058") MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern float FastVecDist(void *, void *);
@@ -434,7 +437,7 @@ void forward_moby_hits_to_owner(char *moby) {
 }
 extern int rand_range(int, int);
 extern void set_moby_color(void *, int, int, int);
-extern float random_float_between(float, float);
+
 extern float g_frame_time MACRO_ADDR;
 
 // Creates an effect moby at a position and seeds its random wobble data.
@@ -492,7 +495,7 @@ extern short moby_spark_first_batch_horizontal_acceleration_gp;
 extern short moby_spark_first_batch_vertical_acceleration_base_gp;
 extern char hero_globals_base[];
 extern float g_frame_time_sq MACRO_ADDR;
-extern float fast_atan2(float, float);
+
 extern float FastAddRots(float, float);
 extern float FastCos(float);
 extern float FastSin(float);

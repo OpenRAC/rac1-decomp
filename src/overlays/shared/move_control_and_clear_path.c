@@ -4,6 +4,7 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "data/level_01.h"
 
 // Fills a jump pattern record with its default constants.
 void MoveCtl_Init(char *p) {
@@ -21,7 +22,7 @@ void MoveCtl_Init(char *p) {
     *(float *)(p + 0x2C) = 0.1f;
 }
 LINKER_REMNANT("asm/overlays", func_L01_0026EFA8);
-extern unsigned short *novalis_moby_groups[];
+
 extern char *novalis_mobys MACRO_ADDR;
 typedef struct {
     char pad0[0x20];
@@ -48,7 +49,7 @@ int count_active_moby_group_members(int i, int st) {
     return n;
 }
 INCLUDE_ASM("asm/overlays", func_L01_0026EFDC);
-extern unsigned short *novalis_moby_groups[];
+
 extern char *novalis_mobys MACRO_ADDR;
 
 // Set byte 0xBC of each entry in a negative-terminated index list.
@@ -92,7 +93,7 @@ extern void FastVecCross(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int test_path_segment_strict_crossing(int, void *, void *);
-extern char *novalis_paths[];
+
 typedef int u128 __attribute__((mode(TI)));
 
 // Returns a bitmask of the table's spheres that no listed object touches, testing swept offsets.

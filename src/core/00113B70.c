@@ -1,5 +1,6 @@
 #include "common.h"
 #include "structs/misc.h"
+#include "data/executable.h"
 
 /*
  * core_text object 0x113B70-0x114000. Boundaries are retail's linker fill
@@ -9,7 +10,6 @@
  * _malloc_trim_r; the SDK's libc.a). Built with Sony's 2.9-ee
  * (Makefile.sn, EE29_CORE), like libc.a.
  */
-
 
 /*
  * A version of malloc/free/realloc written by Doug Lea and released to the
@@ -230,8 +230,6 @@ typedef struct {
 } MallocState; /* av_[2] = top */
 
 extern MallocState __malloc_av_;
-extern char *__malloc_sbrk_base; /* malloc_sbrk_base */
-extern int __malloc_current_mallinfo;   /* current_mallinfo.arena (sbrked_mem) */
 
 extern void __malloc_lock(void *); /* MALLOC_LOCK (__malloc_lock, empty) */
 extern void __malloc_unlock(void *); /* MALLOC_UNLOCK (__malloc_unlock, empty) */

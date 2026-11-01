@@ -7,6 +7,14 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/morphoray_chicken_and_drones.h"
+#include "asm_functions/shared_levels.h"
+#include "data/executable.h"
+#include "data/shared_levels.h"
+#include "game/draw.h"
+#include "game/fastfunc.h"
+#include "game/hud.h"
+#include "game/loaders.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 struct Moby;
 extern struct Hero g_hero_r __asm__("D_0013F450");
@@ -34,9 +42,9 @@ static inline void circle_offset(Vec4 *v, f32 ang, f32 r) {
 }
 extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
 extern int coll_line_r(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
-extern int CollType(void);
+
 extern f32 vec_length_xy(void *);
-extern f32 fast_atan2(f32, f32);
+
 extern f32 FastAddRots(f32, f32);
 extern f32 FastDiffRots(f32, f32);
 
@@ -153,7 +161,7 @@ int probe_hero_ledge_edge(Vec4 *pos, f32 *dir) {
 }
 extern float FastVecDist(void *, void *);
 extern float vec_distance_xy(void *, void *);
-extern float FastAbsF(float);
+
 extern int find_nearest_path_point(void *, void *, void *, void *, void *, int, float, float, float);
 typedef struct {
     Vec4 sphere;
@@ -466,7 +474,7 @@ float get_hero_yaw_history(int back) {
 }
 extern char player_camera[];
 extern float FastVecDist(void *, void *);
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
 extern float vec_distance_xy(void *, void *);
 extern int is_moby_in_class_range_500_to_540(void *);
@@ -1155,7 +1163,7 @@ extern int rendered_frame_count MACRO_ADDR;
 extern int g_game_language[] MACRO_ADDR;
 extern unsigned char gHaveMapOMatic[] NOT_SDA;
 extern struct Moby *CreateMoby(int);
-extern void select_world_object_resource_tables(int, int);
+
 extern void FastMemSet(void *, int, int);
 extern void spawn_indexed_class_a7_moby(int);
 extern void MobyBlendAnimation(void *, int, int, int);
@@ -1339,7 +1347,7 @@ void spawn_hero_item_mobies(void) {
 #undef DEFA
 #undef INVA
 #undef INV
-extern float FastAbsF(float);
+
 /* Sum of absolute differences of the first three floats of three 16-byte rows of A and B. */
 float sum_basis_absolute_differences(float *a, float *b) {
     float s = 0.0f;
@@ -1783,7 +1791,6 @@ extern int hero_is_in_special_state();
 extern int allocate_hero_voice_for_entry(int, int);
 extern int FastDecTimer(void *);
 
-extern int rand_range(int, int);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern char help_stats_base[] NOT_SDA;
@@ -2220,7 +2227,6 @@ extern void release_and_clear_hero_voice_slots();
 
 extern void update_hero_collision_capsule_dimensions();
 extern void clear_hero_queued_animation(void);
-extern void apply_env_zone_lighting(void *);
 
 extern void HeroEnterMoveState(int, int);
 
@@ -2264,7 +2270,7 @@ void enter_hero_vehicle_mode(int mode, int id, char *obj) {
     }
     HeroEnterMoveState(id, 1);
 }
-extern void Hud_SetBarValueById(int, int);
+
 extern void release_and_clear_hero_voice_slots(void);
 #define B ((char *)D_0013E633 + 0xE1D)
 
@@ -2354,7 +2360,7 @@ extern Hero g_hero_r4 __asm__("D_0013F450");
 extern s32 cinematic_mode MACRO_ADDR;
 extern T_210ce8 moby_hits[];
 extern s32 g_current_level_index MACRO_ADDR;
-extern s32 level_hero_hit_counts[];
+
 extern s32 hero_hit_count MACRO_ADDR;
 extern u8 gHeroPos[];
 extern f32 g_frame_time MACRO_ADDR;
@@ -2532,7 +2538,6 @@ extern s32 level_mission_death_counts[][16];
 extern s32 mission_death_counts[];
 extern s32 level_15_class_4d_respawn_flag MACRO_ADDR;
 extern void clear_help_record_high_bits(void);
-extern void FadeToBlack(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_00211250. */
 void Hero_OnKilled(void) {
@@ -2731,11 +2736,11 @@ void clear_hero_target_and_ground_speeds(void) {
 }
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern float camera_yaw;
-extern char player_camera_matrix[];
+
 extern void divide_vector_xyz(void *, void *, float);
 extern float compute_hero_ground_aligned_heading(void);
 extern void matrix_mul_vec3(void *, void *, void *);
-extern float fast_atan2(float, float);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float FastAddRots(float, float);
 
@@ -2867,7 +2872,7 @@ typedef struct {
     float x, y, z, w;
 } Vp __attribute__((aligned(16)));
 extern void transform_vector(void *, void *, void *);
-extern float fast_atan2(float, float);
+
 extern float SpringAngle(char *, char *, int, float, float, float, float);
 
 /* Turns the matrix toward the heading between two points with a stepped angle. */

@@ -4,6 +4,13 @@
 #include "structs/vector.h"
 #include "structs/hero.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "asm_functions/shared_levels.h"
+#include "data/executable.h"
+#include "data/shared_levels.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/sound_playback.h"
 
 extern char g_hero[];
 extern int select_hero_slot3_animation_pair(int, int *, int *);
@@ -42,7 +49,6 @@ typedef struct {
     unsigned char unk3;
 } SeqEntry;
 
-extern int hero_slot_item_id(int);
 extern SeqEntry hero_slot3_item2_seq_table[];
 extern SeqEntry hero_slot3_item3_seq_table[];
 /* A table like the others, but retail reaches it through $gp, which
@@ -139,8 +145,6 @@ void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
         MobyBlendAnimation(b, 1, 0, seq);
     }
 }
-
-extern int rand_range(int, int);
 
 /* Picks at random (func_L00_00258BC8) one of the entries whose seq is ID
    in the mode's sequence table (see func_L00_00232608) and returns 1 with
@@ -459,7 +463,7 @@ typedef struct {
 extern f32 hero_anim_blend_curves[][25];
 extern int cinematic_mode MACRO_ADDR;
 extern int Moby_PlaySound(int, int, Moby *);
-extern void Sound_StopSlot(int);
+
 extern float MobyGetFrameValue(Moby *);
 extern void clear_hero_mapped_moby_animation_state(void);
 
@@ -579,7 +583,6 @@ extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
 extern s32 coll_line(void *, void *, s32, s32, s32);
 extern f32 compute_gravity_relative_vector_inclination_r(void *) __asm__("func_L00_002345B0");
 extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
-extern s32 solve_quadratic_equation(f32 *, f32 *, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00231d08.c, FUN_L00_00232b90. */
 f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
@@ -808,7 +811,7 @@ void configure_hero_point_effect_emission(float a, float b, short c, unsigned ch
     base->items[6].unk30 = a;
     base->items[6].unk34 = b;
 }
-extern float fast_atan2(float, float);
+
 extern void clear_u64_value(void *);
 extern void euler_to_matrix(void *, void *);
 extern void transform_vector(void *, void *, void *);
@@ -1161,7 +1164,6 @@ float predict_hero_trajectory_z(float *pos, float *vel, int *steps, float step) 
     return 0.0f;
 }
 extern float vec_length_xy(void *);
-extern float fast_atan2(float, float);
 
 /* Returns func_L00_001FF860 (handwritten, apparently an atan2) of V's z
    and its xy length (func_001F9CE8): V's pitch. In view modes 1 and 2
@@ -1255,7 +1257,7 @@ void request_hero_target_pose(float *pos, int arg, float t) {
         HeroEnterMoveState(0x65, 1);
     }
 }
-extern int hero_current_state;
+
 /* 1 when the word at 0x1414D4 is 101 or 102, 2 when it is 103, else 0 */
 int get_hero_target_pose_status(void) {
     switch (hero_current_state) {
@@ -1566,7 +1568,7 @@ void update_hero_slot4_and_slot5_mobys(int a0) {
 }
 extern short hero_scale;
 extern int g_current_level_index MACRO_ADDR;
-extern char hero_scale_manipulator[];
+
 extern char hero_globals_base[] NOT_SDA;
 extern float FastAddRots(float, float);
 extern int FastTweenColor(int, int, float);
@@ -1658,7 +1660,6 @@ void configure_moby_from_source_bone4(int id, char *moby) {
     *(int *)(moby + 0x50) = 0;
 }
 extern float ProbeGroundHeight(void *, int, float);
-extern float FastAbsF(float);
 
 /* Probes 0.75 behind the position at D_0013F450 + 0x80 along the first
    matrix row (+0x0), half a unit up, for the ground height

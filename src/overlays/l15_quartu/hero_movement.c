@@ -20,12 +20,17 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "structs/hero_views.h"
+#include "asm_functions/shared_levels.h"
+#include "data/executable.h"
+#include "data/level_15.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/variants.h"
 
 extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-extern int CollType(void);
-extern float FastAbsF(float);
 
 extern void HeroQuartu_TrySetMoveState(int, int);
 
@@ -174,7 +179,7 @@ extern Hero g_hero;
 extern s32 quartu_game_mode MACRO_ADDR;
 extern T_210ce8 quartu_moby_hits[];
 extern s32 g_current_level_index MACRO_ADDR;
-extern s32 level_hero_hit_counts[];
+
 extern s32 hero_hit_count MACRO_ADDR;
 extern u8 gHeroPos[];
 extern f32 g_frame_time MACRO_ADDR;
@@ -378,12 +383,12 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int quartu_frame_count MACRO_ADDR;
-extern short quartu_usage_event_timer;
+
 extern short quartu_usage_event_count;
 extern unsigned char *quartu_pool_draw_tiles MACRO_ADDR;
 extern int quartu_pool_draw_count MACRO_ADDR;
 extern HeroPlayerCameraView quartu_player_camera;
-extern float quartu_camera_yaw;
+
 extern Moby *quartu_coll_sphere_moby_hits[];
 extern HeroBoneRow quartu_hero_bones[];
 extern HeroAttackRecord quartu_attack_records[];
@@ -401,7 +406,7 @@ extern int fast_dec_timer(int *);
 extern int scale_ticks(int);
 
 extern void set_hero_animation(int, int, float);
-extern int HelpL15_GetRecordValue(int);
+
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
 
 extern void HeroMoveDownAlongNormal(float *, float *, float);
@@ -409,7 +414,6 @@ extern void HeroMoveDownAlongNormal(float *, float *, float);
 extern float vec_length_xy(void *);
 extern int clamp_vec_length_xy(float, void *, void *);
 
-extern void Sound_StopSlot(int);
 extern int FastDecTimer(void *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
@@ -418,9 +422,8 @@ extern float FastSubRots(float, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern int PartType34Spawn(void *, void *, float, float);
-extern int random_integer_below(int);
+
 extern int rand_range(int, int);
-extern float random_float_between(float, float);
 
 extern void BuildSphericalOffset(void *, float, float, float);
 
@@ -429,7 +432,7 @@ extern float ApproachValue(float *, float, float);
 extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
-extern float fast_atan2(float, float);
+
 extern float FastVecDist(void *, void *);
 extern int solve_quadratic_equation(float *, float *, float, float, float);
 extern float step_angle_toward_target(float *, int, float, float);
@@ -465,8 +468,6 @@ extern int is_moby_in_class_range_500_to_540(int);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 
 extern float FastVecDot(void *, void *);
-
-extern void add_vectors(void *, void *, void *);
 
 extern int MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 

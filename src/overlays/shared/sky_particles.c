@@ -2,6 +2,9 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/vector.h"
+#include "asm_functions/shared_levels.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
 
 typedef struct {
     unsigned char b0, b1, b2, b3;
@@ -22,7 +25,7 @@ typedef struct {
 } Sky;
 extern Sky *D_sky __asm__("D_L00_001605DC") MACRO_ADDR;
 extern int func_001160D8(void);
-extern int random_integer_below(int);
+
 extern float random_angle_radians(void);
 extern float IntToFloat(int);
 extern float FastCos(float);
@@ -93,7 +96,7 @@ extern G_289108 *sky_data_g __asm__("D_L00_001605DC") MACRO_ADDR;
 extern float IntToFloat(int);
 extern float FastCos(float);
 extern float FastSin(float);
-extern float FastAbsF(float);
+
 extern int func_001160D8(void);
 
 /* Steps each shrub sparkle entry: type 0 spins and scales a direction, type 1 randomises a colour. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00288ec0.c, FUN_L00_00289108. */
@@ -301,7 +304,7 @@ void sky_shells_rotate_two(void) {
     fast_euler_to_matrix(sky_shell_matrix, v);
     SkyDrawShell(2);
 }
-extern void fast_euler_to_matrix(void *, void *);
+
 /* draws sky shells with two animated rotation offsets */
 void draw_sky_shells_with_fast_and_slow_rotation(void) {
     float v[4] __attribute__((aligned(16)));
@@ -393,7 +396,7 @@ extern u8 sky_pair_particle_positions[];
 extern void SkyDrawShell(s32);
 extern s32 func_001160D8(void);
 extern f32 random_angle_radians(void);
-extern s32 random_integer_below(s32);
+
 extern f32 IntToFloat(s32);
 extern f32 FastCos(f32);
 extern f32 FastSin(f32);
@@ -581,7 +584,6 @@ void draw_sky_shells_with_modulo_40000_rotation(void) {
     SkyDrawShell(2);
 }
 extern int level_frame_counter MACRO_ADDR;
-extern void fast_euler_to_matrix(void *, void *);
 
 /* Draws the sky shells with one extra shell placed at a pseudo-random angle. */
 void draw_sky_shells_with_modulo_25000_rotation(void) {

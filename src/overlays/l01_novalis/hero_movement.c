@@ -16,6 +16,11 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "structs/hero_views.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_01.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
 
 typedef int Q_2343F8 __attribute__((mode(TI)));
 
@@ -386,7 +391,7 @@ extern short novalis_look_stat_count;
 extern unsigned char *pool_draw_tiles MACRO_ADDR;
 extern int pool_draw_count MACRO_ADDR;
 extern HeroPlayerCameraView novalis_player_camera;
-extern float novalis_player_camera_yaw;
+
 extern Moby *novalis_coll_sphere_moby_hits[];
 extern HeroBoneRow novalis_lean_state[];
 extern HeroAttackRecord novalis_attack_records[];
@@ -398,7 +403,6 @@ extern void stick_target(float, int);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern int fast_dec_timer(int *);
 
-extern float FastAbsF(float);
 extern void set_hero_animation(int, int, float);
 extern int get_hero_idle_animation_index(int);
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
@@ -411,7 +415,6 @@ extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
 extern int clamp_vec_length_xy(float, void *, void *);
 
-extern void Sound_StopSlot(int);
 extern int FastDecTimer(void *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
@@ -419,9 +422,8 @@ extern float SpringAngle(void *, float, void *, int, float, float, float);
 extern float FastSubRots(float, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int PartType34Spawn(void *, void *, float, float);
-extern int random_integer_below(int);
+
 extern int rand_range(int, int);
-extern float random_float_between(float, float);
 
 extern float FastAddRots(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
@@ -429,7 +431,7 @@ extern void BuildSphericalOffset(void *, float, float, float);
 extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
-extern float fast_atan2(float, float);
+
 extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_distance_xy(void *, void *);
 extern float Spring(float *, float *, float, float, float, float);

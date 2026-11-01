@@ -3,11 +3,13 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
 
 extern unsigned char *create_part(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float random_float_between(float, float);
+
 extern int scale_ticks(int);
 extern unsigned char *umbris_part_type65_textures;
 
@@ -38,7 +40,6 @@ extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastVecDist(void *, void *);
 extern float FastVecLength(void *a);
-extern float FastAbsF(float);
 
 typedef int u128 __attribute__((mode(TI)));
 

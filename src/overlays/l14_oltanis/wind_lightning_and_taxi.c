@@ -13,6 +13,15 @@
 #include "overlays/shared/ship_pickup_and_rocket.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
 #include "overlays/shared/trigger_switches_and_hoverboard.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_14.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Ribbon effect: two ribbon paths (0x00 and 0xA0) and the texture scroll. */
 struct RibbonVars {
@@ -152,7 +161,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecSub(void *, void *, void *);
 extern void transform_vector(void *, void *, void *);
-extern char oltanis_camera_pos[];
 
 /* Draws a two-layer textured ribbon along the points in path. */
 void draw_ribbon_effect_path(void *m, void *path, int outer_alpha, int inner_alpha, int point_count) {
@@ -657,7 +665,7 @@ extern void FastVecCross(void *, void *, void *);
 extern float randf_sym(float, float);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
-extern float random_float_between(float, float);
+
 extern int truncate_float_to_s32(float);
 extern int scale_ticks(int);
 typedef struct {
@@ -729,7 +737,7 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern int FastDecTimer(short *);
 extern float IntToFloat(int);
-extern float FastAbsF(float);
+
 extern float FastDiffRots(float, float);
 extern void AddDrawCallback(void (*)(struct Moby *), struct Moby *);
 extern short wind_spark_max_alpha;
@@ -824,7 +832,7 @@ typedef struct {
     unsigned long a, b, c, d;
 } Pk_m;
 extern short wind_spark_color;
-extern char oltanis_camera_pos[];
+
 extern float wind_spark_quad_corners[4][4];
 extern unsigned long GetEffectTex_r(s32) __asm__("func_001F4868");
 extern void VU1_addGSregister(s32, s64);
@@ -915,7 +923,7 @@ extern f32 g_frame_time MACRO_ADDR;
 extern void STUB_printf(const char *, short);
 extern void DeleteMoby(void *);
 extern float FastVecDist(void *, void *);
-extern int random_integer_below(int);
+
 extern int Spline_AdvanceByDistance_r(void *, float *, int *, float *, int, float) __asm__("func_L00_0025E860");
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern L14MineHit *MobyGetHitMessage(void *, int, int);
@@ -1002,7 +1010,7 @@ void update_looping_path_moby(struct Moby *m) {
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
 extern float vec_length_xy(void *);
-extern float fast_atan2(float, float);
+
 extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void moby_build_matrix(void *);
@@ -1047,13 +1055,12 @@ extern float vec_distance_xy(void *, void *);
 extern f32 FastVecLength(void *);
 extern void vec_scale_to_length(void *, void *, f32);
 extern void vec_set_length_xy(void *, void *, f32);
-extern f32 random_float_between(f32, f32);
+
 extern int rand_range(int, int);
 extern s32 scale_ticks(s32);
 extern int coll_line(void *, void *, int, void *, void *);
 extern void InitDirectionalHitQuery(void *, struct Moby *, s32, void *, f32);
 
-extern void vec_reflect(void *, void *, void *);
 extern char *PartType27Spawn(char *, char *, int c, int d, float f);
 extern struct {
     u8 pad0[0x18];
@@ -1157,7 +1164,6 @@ extern short lightning_spot_height_offset;
 extern int lightning_arc_remaining_frames MACRO_ADDR;
 extern float lightning_arc_start_pos[] MACRO_ADDR;
 extern float lightning_arc_end_pos[] MACRO_ADDR;
-extern void StartCutscene(int);
 
 extern void show_tracked_moby(void);
 extern int fast_dec_timer(void *);
@@ -2073,7 +2079,6 @@ typedef struct {
     short field124;
 } Level14VendorData;
 
-
 /* Select the vendor moby's state from its value and mark it initialized. */
 void enable_elevator_alternate_route(Moby *moby) {
     Level14VendorData *data = (Level14VendorData *)moby->pvars;
@@ -2087,7 +2092,7 @@ typedef struct {
     short field124;
 } Level14VendorData_F0A30;
 extern s32 level_moby_killed_r2[][64] __asm__("D_0014C290");
-extern int oltanis_moby_killed_bits[];
+
 void func_L14_002F0A30_r(Moby *m) __asm__("func_L14_002F0A30");
 
 /* Clears the moby's state byte and its data's field 0x124, then sets its save bit in the per-level table and in the level's own bit table. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ef5a8. */
@@ -2124,7 +2129,7 @@ void rebuild_elevator_world_path(char *moby) {
     x->path_constrain_pending = *(unsigned short *)&data->link_path;
 }
 extern short g_frame_time_s __asm__("D_0015EE6C");
-extern float FastAbsF(float);
+
 extern float FastAddRots(float, float);
 extern float FastSin(float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -2201,7 +2206,7 @@ extern float FastSubRots(float, float);
 
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
-extern void Sound_StopSlot(int);
+
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern int oltanis_frame_count MACRO_ADDR;
 extern int oltanis_shown_help_message MACRO_ADDR;
@@ -2614,11 +2619,9 @@ void request_taxi_stop_prompt(char *moby) {
 
 extern void set_ground_height_band(void *);
 extern int DialogRequest_Init(void *, void *);
-extern void jet_clear_persistent(int);
-extern void jet_reset_camera(void *, void *);
+
 extern int Npc_TryStartDialog(void *, void *);
 
-extern void ShowBanner(int arg0, int arg1);
 extern void grant_inventory_item(int, int);
 extern void enable_elevator_alternate_route_r(void *) __asm__("func_L14_002F0A00");
 extern void mark_elevator_collected(void *);
@@ -2632,7 +2635,7 @@ extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern LevelState oltanis_collected_flags_base_r2 __asm__("D_L14_001BBCC0");
 extern char qwark_oltanis_dialogue_name[];
 extern char *oltanis_mobys_r __asm__("D_L14_00160098") MACRO_ADDR;
-extern int oltanis_moby_killed_bits[];
+
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char help_stats_base_r[] __asm__("D_0014171B") NOT_SDA;
@@ -3014,7 +3017,6 @@ void spawn_enemy_fighter_exhaust(struct Moby *m) {
         size -= 20000.0f;
     }
 }
-extern float fast_atan2(float, float);
 
 typedef struct {
     u8 pad0[0x60];
@@ -3479,7 +3481,6 @@ extern short fighter921_spring_damping;
 extern short fighter921_max_bank;
 extern short fighter921_bank_yaw_range;
 
-extern void Sound_StopSlot(int);
 extern void DeleteMoby(void *);
 extern void FastVecSub(void *, void *, void *);
 

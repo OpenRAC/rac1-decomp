@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/mobyutil.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern unsigned char *create_part(int);
@@ -53,7 +54,6 @@ void create_spark_particle(int owner, float *pos, int snd, unsigned char arg, un
     }
 }
 extern char *novalis_part_type56_textures;
-extern int random_integer_below(int);
 
 /* Spawns a particle at a, with a random tint, offset b and scale f. */
 unsigned char *pool_bubble(void *a, void *b, float f) {
@@ -75,7 +75,6 @@ unsigned char *pool_bubble(void *a, void *b, float f) {
     return r;
 }
 extern char *novalis_part_type57_textures;
-extern float random_float_between(float, float);
 
 // Spawns a particle at a with offset b, a random tint and scale f, with extra parameter g at +0x34.
 unsigned char *pool_bubbles(void *a, void *b, float f, float g) {

@@ -12,6 +12,15 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/move_control_and_clear_path.h"
+#include "asm_functions/level_08.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_11.h"
+#include "game/fastfunc.h"
+#include "game/hud.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Player ship: steering, lock-on target, reticle and hit-point bar. */
 struct ShipVars {
@@ -174,7 +183,7 @@ void draw_ship_radar_moby_icon(char *rot, char *from, char *moby, int icon, long
         DrawTexturedQuad(x - t->x, y - t->y, t->w, t->h, t->u, t->v, t->w, t->h, color, GetEffectTex(t->tex));
     }
 }
-extern short *pokitaru_moby_groups[];
+
 extern int pokitaru_mobys_m __asm__("D_L11_00160058") MACRO_ADDR;
 extern void count_active_and_visible_listed_mobys(void *, void *, void *);
 extern float compute_ship_target_reticle_distance_squared(void *, void *);
@@ -320,7 +329,7 @@ extern void *msg_string_id(int) __asm__("func_001FE540");
 extern int FontPrintCenterLarge_c(int, int, long, void *, int) __asm__("func_001F6FD8");
 extern float normalize_angle(float);
 extern int scale_ticks(int);
-extern float FastAbsF(float);
+
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 extern int Help_Request(int, int);
 typedef struct {
@@ -924,23 +933,20 @@ void update_player_ship_flight(void *a0, void *a1) {
     wings_313D00(moby, o, r, -angle_add_313D00(o->f24, -(o->f70 / 7.0f) - 0.1f));
 }
 extern int Hero_TrySetMoveStateL11(int, int);
-extern void vec_reflect(void *, void *, void *);
-extern float jet_distance(void *, void *);
+
 extern int try_set_help_message(int, int);
 extern int Help_Request(int a, int b);
 extern void MusicRequestTrack(int, int);
-extern void CameraScript(void *, void *, int, int, int);
+
 extern void update_player_ship_flight(void *, void *);
 extern int count_listed_blarg_ships_in_state_5(int);
 extern char *activate_listed_blarg_ship(int idx);
-extern void CameraScript2(int);
-extern void Hud_SetBarValueById(int, int);
+
 extern void moby_anim_sphere_lerp(void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void Sound_StopSlot(int);
 
 extern int STUB_printf();
-extern void jet_clear_persistent(int);
+
 extern void emit_type_74_particles_from_moby_joints(void *, void *);
 extern int Sound_IsPlaying(void *, int);
 extern void clear_u64_value(void *);
@@ -949,7 +955,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
                             int, int, int, int);
 extern char *MobyGetHitMessage(void *, int, int);
 extern float vec_length_xy(void *);
-extern float fast_atan2(float, float);
+
 extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);
 extern char help_stats_base[];
@@ -961,7 +967,7 @@ extern int g_current_level_index MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char *path_points_14b0 MACRO_ADDR;
-extern float camera_pos_b358[];
+
 extern float pokitaru_view_cot_half_fov_a[] __asm__("D_L11_0016D570");
 extern char *pokitaru_palette_data_base MACRO_ADDR;
 extern float pokitaru_fade_level MACRO_ADDR;
@@ -1393,7 +1399,7 @@ void jet_fighter_update(Moby *moby) {
 }
 extern void FastVecSub(void *, void *, void *);
 extern float vec_length_xy(void *);
-extern float fast_atan2(float, float);
+
 extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);
 extern unsigned char g_hero[];
@@ -1547,8 +1553,7 @@ extern int truncate_float_to_s32(float);
 extern void MoveCtl_Init(void *);
 extern int func_001160D8(void);
 extern void MobyBlendAnimation(void *, int, int, int);
-extern float random_float_between(float, float);
-extern int random_integer_below(int);
+
 extern float random_angle_radians(void);
 extern float ProbeGroundHeight(void *, int, float);
 
@@ -2685,7 +2690,7 @@ void oil_tanker_front_update(char *moby) {
         }
     }
 }
-extern float fast_atan2(float, float);
+
 extern float vec_distance_xy(float *, float *);
 extern float FastSubRots(float, float);
 extern float FastAddRots(float, float);
@@ -2996,11 +3001,11 @@ extern float pokitaru_zero_vec[] MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern int random_integer_below(int);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
 extern void rand_vec(float *, float, float);
-extern float random_float_between(float, float);
+
 extern char *spawn_class_5f4_moby_with_random_rotation_5(void *, void *, void *, int,
                                                          float) __asm__("func_L11_0031C210");
 extern void SpawnExplosionFx(void *, void *, int, float, float);
@@ -3048,7 +3053,7 @@ void update_oil_tanker_link_effects_and_destruction(Moby *m) {
     }
 }
 extern void FastVecSub(void *, void *, void *);
-extern float random_float_between(float, float);
+
 extern float g_frame_time MACRO_ADDR;
 
 // Resets the moby state and sets two random speeds scaled by the frame time.
@@ -3780,14 +3785,13 @@ void Pokitaru_BreakOnHitUpdate(char *m) {
             break;
     }
 }
-extern void add_uv_scroll_offset(void *, int, int, void *);
+
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int pokitaru_layered_scrolled_uvs[];
 extern int pokitaru_layered_uv_scroll[];
-extern short pokitaru_layered_mesh_vertex_counts;
+
 extern short pokitaru_layered_mesh_positions;
 extern short pokitaru_layered_uv_sources;
-extern short pokitaru_layered_mesh_colors;
 
 // Runs four setup calls over parallel tables, offset by the argument.
 void emit_level11_layered_effect_batches_with_pair_offset(int arg) {

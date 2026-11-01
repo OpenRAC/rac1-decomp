@@ -10,6 +10,10 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_update_ledge_grab.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_06.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 typedef struct {
     int a;
@@ -20,7 +24,6 @@ typedef struct {
 extern void clear_moby_transform_history(char *o);
 
 extern int scale_ticks(int);
-extern int rand_range(int, int);
 
 extern int get_hero_help_value(int a);
 extern void clear_u64_value(void *);
@@ -33,15 +36,12 @@ extern float FastDiffRots(float, float);
 
 extern int allocate_hero_voice_for_entry(int, int);
 
-extern float fast_atan2(float, float);
 extern float FastVecDist(void *, void *);
-extern float randf_sym(float lo, float hi);
 
 extern void initialize_moby_transform_history(int a, char *b);
 extern void create_moby_transform_history_entry(char *o, int a, int b);
 
 extern int truncate_float_to_s32(float);
-extern void update_hero_target_heading(float a, float b, float c);
 
 extern int is_wrench_moby(char *);
 extern float FastAddRots(float, float);
@@ -68,7 +68,7 @@ extern char hero_globals_base[];
 extern char help_stats_base[];
 extern char item_usage[];
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern short blarg_usage_event_timer;
+
 extern short blarg_hero_run_step_start_frames;
 extern short blarg_hero_state_f_jump_velocity_keys;
 extern char blarg_hero_state_d_jump_velocity_keys[];

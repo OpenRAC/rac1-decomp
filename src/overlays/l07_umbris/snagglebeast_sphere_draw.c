@@ -7,6 +7,8 @@
 #include "callees.h"
 #include "structs/vector.h"
 #include "structs/moby.h"
+#include "asm_functions/shared_levels.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 /* Snagglebeast sphere effect: only the draw state is read here. */
 struct SnaggleSphereVars {
@@ -19,8 +21,7 @@ extern u64 GetEffectTex(int);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float split_float_fraction(void *, float);
-extern float normalize_angle(float);
+
 extern void BuildSphericalOffset(void *, float, float, float);
 extern float FastAddRots(float, float);
 extern void FastVecAdd(void *, void *, void *);

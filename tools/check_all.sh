@@ -24,6 +24,11 @@ python3 tools/gen_progress_report.py --check
 python3 tools/move_src.py --check
 python3 tools/overlay_remnants.py --check
 python3 tools/check_docs.py
+# A header git ignores builds here but not in a fresh clone.
+if git ls-files -o -i --exclude-standard include | grep .; then
+    echo "*** git ignores these headers"
+    exit 1
+fi
 python3 tools/check_no_retail.py
 python3 tools/check_syntax.py
 python3 tools/ratchets.py --check

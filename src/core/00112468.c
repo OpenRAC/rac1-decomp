@@ -1,5 +1,7 @@
 #include "common.h"
 #include "structs/misc.h"
+#include "core/001154C0.h"
+#include "data/executable.h"
 
 /*
  * core_text object 0x112468-0x1138A8. Boundaries are retail's linker fill
@@ -9,9 +11,6 @@
  * _dtoa_r), back to back. Built with Sony's 2.9-ee (Makefile.sn,
  * EE29_CORE), like libc.a.
  */
-
-
-extern int SbrkErrno;
 
 int _close_r(int *errOut, int arg1) {
     int r;
@@ -144,7 +143,7 @@ extern char dtoa_zero_string[];
 extern _Bigint *_Balloc(struct _reent *, s32);
 extern void _Bfree(struct _reent *, _Bigint *);
 extern _Bigint *__d2b(struct _reent *, f64, s32 *, s32 *);
-extern s32 __hi0bits(u32);
+
 extern _Bigint *__i2b(struct _reent *, s32);
 extern _Bigint *__multiply(struct _reent *, _Bigint *, _Bigint *);
 extern _Bigint *__pow5mult(struct _reent *, _Bigint *, s32);

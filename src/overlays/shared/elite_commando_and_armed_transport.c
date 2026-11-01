@@ -6,6 +6,11 @@
 #include "structs/moby.h"
 #include "structs/hero.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_16.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/sound_playback.h"
 
 /* One aimed joint of the elite commando: manipulator block plus the eased pitch and yaw. */
 struct EliteJointAim {
@@ -133,7 +138,7 @@ struct GrindrailBarrierVars {
 
 extern char *CreateMoby(int);
 extern int scale_ticks(int);
-extern float fast_atan2(float, float);
+
 extern float vec_length_xy(void *);
 
 // Creates a class 0x31 moby that looks along a direction, copying owner data and position.
@@ -168,7 +173,7 @@ extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern int Sound_PlayClassSound(int, int, int, int);
 extern void spawn_rocket_trail_spark(char *);
 extern void FastVecSub(void *, void *, void *);
-extern float fast_atan2(float, float);
+
 extern float vec_length_xy(void *);
 extern float FastAddRots(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
@@ -231,7 +236,7 @@ void HomingProjectileUpdate(char *m) {
 }
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 extern float FastVecLength(void *);
-extern float random_float_between(float, float);
+
 extern short class_32_spawn_max_yaw_deg;
 extern short class_32_spawn_max_pitch_deg;
 
@@ -277,7 +282,7 @@ extern void update_blarg_elite_commando_damage_and_pursuit(char *);
 extern float random_angle_radians(void);
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
-extern int random_integer_below(int);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
@@ -305,8 +310,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern int kalebo3_game_mode MACRO_ADDR;
 extern int kalebo3_cutscene_scene_id;
-extern char *kalebo3_path_table[];
-extern char kalebo3_camera_pos[];
+
 extern short blarg_elite_commando_bobbing_and_voice_enabled_gp;
 extern short blarg_elite_commando_joint_aim_enabled_gp;
 extern short blarg_elite_commando_joint_sparks_enabled_gp;
@@ -809,7 +813,7 @@ float advance_blarg_elite_commando_base_position(char *moby, float *target) {
 }
 extern short *kalebo3_moby_groups[];
 extern char *kalebo3_moby_array MACRO_ADDR;
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor_timer(float) __asm__("func_001F9878");
 extern int truncate_float_to_s32_timer(float) __asm__("func_001FA898");
 typedef struct {
@@ -846,7 +850,7 @@ void randomize_blarg_elite_commando_group_pursuit_timers(void *arg, int lower, i
             goto next;
     }
 }
-extern float fast_atan2(float, float);
+
 extern float FastSubRots(float, float);
 /* Blend the commando's walk animation (forward, left or right) by the angle to its path point. */
 void select_blarg_elite_commando_movement_animation(char *moby) {
@@ -877,7 +881,7 @@ void select_blarg_elite_commando_movement_animation(char *moby) {
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void clear_u64_value(void *);
-extern int rand_range(int, int);
+
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
 extern void spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
 extern short blarg_elite_commando_extra_glow_gate;
@@ -941,7 +945,7 @@ void emit_blarg_elite_commando_death_particles(void *m) {
 extern void matrix_from_basis_rows(void *, void *);
 extern void FastVecSub(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
-extern float fast_atan2(float, float);
+
 extern float vec_length_xy(void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
@@ -1007,7 +1011,7 @@ void update_blarg_elite_commando_joint_aim(char *m) {
     EaseManipulatorOffsets(m, (char *)&d->joints[1], 2, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
     EaseManipulatorOffsets(m, (char *)&d->joints[2], 3, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
 }
-extern float random_float_between(float, float);
+
 extern void MobyTransformScaledVertex(void *, int, void *);
 extern void clear_u64_value(void *);
 extern void rand_vec(float *, float, float);
@@ -1248,10 +1252,10 @@ void armed_transport_update(char *m) {
 }
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern void Sound_StopSlot(int);
+
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern float randf_sym(float, float);
+
 extern void RerollEffectCounter(void *, void *);
 extern void StepColorFade(void *, void *);
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);

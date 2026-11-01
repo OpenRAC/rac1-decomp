@@ -10,6 +10,11 @@
 #include "overlays/shared/follow_camera.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/point_lights_and_glows.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_10.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
 /* Cycling platform: rises, waits, drops and waits again. */
 struct CyclingPlatformVars {
     u8 pad_00[0x20];
@@ -362,7 +367,7 @@ void magnetboots_update(Moby *m) {
 }
 extern LevelState orxon_collected_flags_base;
 extern unsigned char help_stats_base[] NOT_SDA;
-extern int orxon_moby_killed[];
+
 extern int g_current_level_index MACRO_ADDR;
 extern char hero_globals_base[];
 extern unsigned char saved_mission_state[];
@@ -493,7 +498,7 @@ void update_hero_relocation_trigger(char *m) {
 typedef unsigned int Q_2BFBB8 __attribute__((mode(TI), aligned(16)));
 
 #define D_0013E633_2BFBB8 ((char *)D_0013E633)
-extern char orxon_player_camera[];
+
 #define D_L10_00167180_2BFBB8 D_L10_00167180
 extern int orxon_frame_count MACRO_ADDR;
 #define D_L10_0015F6B0_2BFBB8 (*(int *)&D_L10_0015F6B0)
@@ -510,17 +515,17 @@ extern float g_frame_time MACRO_ADDR;
 #define func_001F9850_2BFBB8 ((int (*)(int))func_001F9850)
 extern float vec_distance_xy(void *, void *);
 #define func_001F9D48_2BFBB8 ((float (*)(void *, void *))func_001F9D48)
-extern float random_float_between(float, float);
+
 #define func_002140F8_2BFBB8 ((float (*)(float, float))func_002140F8)
 #define func_00214158_2BFBB8 ((float (*)(void))func_00214158)
-extern int random_integer_below(int);
+
 #define func_002140B0_2BFBB8 ((int (*)(int))func_002140B0)
 #define func_L00_00258BC8_2BFBB8 ((int (*)(int, int))func_L00_00258BC8)
 extern float FastCos(float);
 #define func_001F9F90_2BFBB8 ((float (*)(float))func_001F9F90)
 extern float FastSin(float);
 #define func_001F9FA8_2BFBB8 ((float (*)(float))func_001F9FA8)
-extern void add_vectors(void *, void *, void *);
+
 #define func_L00_001FF240_2BFBB8 ((void (*)(void *, void *, void *))func_L00_001FF240)
 extern void vec_scale_to_length(void *, void *, float);
 #define func_L00_001FF4B0_2BFBB8 ((void (*)(void *, void *, float))func_L00_001FF4B0)
@@ -729,7 +734,7 @@ extern void *spawn_splitting_effect_particle_with_collision_response_and_fade(ch
 extern void FastVecAdd(void *, void *, void *);
 extern int Sound_IsPlaying(void *, int);
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
-extern void Sound_StopSlot(int);
+
 extern float g_frame_time MACRO_ADDR;
 
 // Update for a swirling effect moby: spawns particles along an axis and manages a sound slot.
@@ -1019,13 +1024,13 @@ INCLUDE_ASM("asm/overlays", func_L10_002D8F08);
 void MobySetPosZ(char *a, float f) {
     *(float *)(a + 0x18) = f;
 }
-extern float random_float_between(float, float);
+
 typedef int OvlQuad __attribute__((mode(TI)));
 void approach_moby_height(struct Moby *a, float t);
 extern int coll_line(void *, void *, int, int, int);
 extern void vec_set_length_xy(void *, void *, float);
 extern void vec_scale_to_length(void *, void *, float);
-extern void vec_reflect(void *, void *, void *);
+
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern int FastDecTimer(void *);
 extern int FindNearestTargetMoby(float, void *, void *);
@@ -1042,7 +1047,6 @@ struct GroundHitRecord {
     Vec4 normal; /* 0x40 */
 };
 
-extern char ground_hit[];
 extern char orxon_ground_hit_normal[];
 extern OvlQuad orxon_camera_pos;
 extern struct Moby *g_hero_moby;
@@ -1126,7 +1130,7 @@ void update_height_adjusted_projectile(struct Moby *moby) {
         DeleteMoby(moby);
 }
 extern char *CreateMoby(int);
-extern float random_float_between(float, float);
+
 extern int scale_ticks(int);
 extern void moby_build_matrix(void *);
 extern float g_frame_time MACRO_ADDR;
@@ -1153,15 +1157,14 @@ char *spawn_bombthrower_grass_projectile(int owner, char *pos, char *vec) {
     }
     return (char *)moby;
 }
-extern char ground_hit[];
+
 extern char orxon_ground_hit_normal[];
 extern int coll_line(void *, void *, int, int, int);
 extern void vec_scale_to_length(void *, void *, float);
-extern void vec_reflect(void *, void *, void *);
+
 extern float FastVecDot(void *a, void *b);
 extern float FastCos(float);
 extern float FastSin(float);
-extern float fast_atan2(float, float);
 
 extern float ProbeGroundHeight(void *, int, float);
 extern float FastVecLength(void *a);
@@ -1485,7 +1488,7 @@ extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
 extern float FastVecDist(void *, void *);
 extern void PathSampleAtDistance_f(float, float, void *, int *, float *, void *) __asm__("func_L00_002633D8");
 extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
-extern int random_integer_below(int);
+
 extern void spawn_path_spark_effect(char *, float *, int *, float, float, float);
 extern int Sound_PlayClassSound_v(int, int, void *, int) __asm__("func_L00_0028EF68");
 
@@ -1561,7 +1564,7 @@ void update_path_spark_emitter(char *m) {
 typedef int u128_2DA3C0 __attribute__((mode(TI)));
 extern void matrix_from_basis_rows(void *, void *);
 extern void FastVecSub(void *, void *, void *);
-extern float FastAbsF(float);
+
 extern short lab_door_half_width;
 extern short lab_door_half_depth;
 
@@ -1664,7 +1667,7 @@ void lab_door_update(unsigned char *m) {
 extern void set_moby_color(void *, int, int, int);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern float ProbeGroundHeight(void *, int, float);
-extern float FastAbsF(float);
+
 extern char nearby_mobys[];
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern unsigned char saved_mission_state[];
@@ -1759,7 +1762,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
                             int, int, int, int);
 extern int Sound_PlayClassSound_v(int, int, void *, int) __asm__("func_L00_0028EF68");
 extern void matrix_mul_vec3(void *, void *, void *);
-extern void add_vectors(void *, void *, void *);
+
 extern void spawn_debris_moby(void *, void *, unsigned int, float, int, float, float, float, int);
 
 /* Orxon moby update: destroys itself when its item is taken, else fires its effect once per pass. */
@@ -2755,7 +2758,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
     if (data->f100 == 0)
         data->f100 = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
 }
-extern short *orxon_moby_groups[];
+
 typedef struct {
     char p0[0x10];
     float x;

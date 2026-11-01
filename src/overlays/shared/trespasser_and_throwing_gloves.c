@@ -8,6 +8,9 @@
 #include "structs/moby.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "data/executable.h"
+#include "data/shared_levels.h"
+#include "game/fastfunc.h"
 /* Trespasser: set once the pickup was collected. */
 struct TrespasserVars {
     u8 pad_00[0x4];
@@ -1729,7 +1732,7 @@ ret0:
     /* a second return 0 block, as in retail */
     return 0;
 }
-extern float FastAbsF(float);
+
 extern float vec_length_xy(void *);
 extern float Spring(float *, float, float *, float, float, float);
 extern float ProbeGroundHeight(void *, int, float);
@@ -2200,7 +2203,7 @@ typedef struct {
     char pad2[8];
 } FxWeaponInfo;
 extern char menu_item_enabled_115[];
-extern char level_render_state_base[];
+
 extern char item_defs_r[] __asm__("D_L00_00179BC0");
 extern FxVec coll_resolved_pos;
 extern FxVec collision_hit_point;
@@ -2448,7 +2451,7 @@ typedef struct {
     char pad2[0x14];
 } Rec_2C6F48;
 extern char menu_item_enabled_115[];
-extern char level_render_state_base[];
+
 extern Rec_2C6F48 item_defs_r2[] __asm__("D_L00_00179BC0");
 extern float frame_scale MACRO_ADDR;
 extern int ammo_pickup_sound_frame MACRO_ADDR;
@@ -3351,7 +3354,7 @@ void spawn_moby_collision_particles(void *mm) {
     }
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
-extern int glove_of_doom_ring[];
+
 extern short glove_of_doom_ring_index;
 
 // Spawns a moby of class 0xE6 at a position, registers it in a 20-entry ring.

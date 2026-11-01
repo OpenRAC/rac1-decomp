@@ -2,6 +2,8 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "core/001236F0.h"
+#include "asm_functions/executable.h"
+#include "core/00119D88.h"
 
 /*
  * core_text object 0x1236F0-0x125218. Boundaries are retail's linker fill
@@ -19,7 +21,6 @@ extern void flush_cache(int);
 extern void signal_semaphore(int);
 
 extern void scePrintf();
-extern int sce_sif_check_stat_rpc(void *);
 
 typedef struct {
     char pad[0x24];
@@ -714,7 +715,7 @@ extern void sync_dcache_range(void *, void *);
    A call that returns a value changes how the lookup after it is
    allocated. */
 extern int enable_interrupts_i(void) __asm__("func_0011D9A8");
-extern void *memcpy(void *, const void *, unsigned int);
+
 extern char str_dbc_get_dep_number_error[];
 
 /*

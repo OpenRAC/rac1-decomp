@@ -4,16 +4,14 @@
 #include "structs/misc.h"
 #include "game/draw.h"
 #include "game/vuchain.h"
+#include "asm_functions/executable.h"
+#include "data/executable.h"
 
 /*
  * tiefunc.cpp in the original source; text 0x236958-0x236F00.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern void FastMemCopy(void *, void *, int);
-
-extern int draw_config[];
 
 extern int STUB_printf();
 

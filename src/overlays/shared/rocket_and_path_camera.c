@@ -7,6 +7,10 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_10.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
     f32 vel_x; /* 0x00 */
@@ -38,7 +42,7 @@ extern int fast_dec_timer(int *);
 extern int scale_ticks(int);
 extern float IntToFloat(int);
 extern int FastTweenColor(int, int, float);
-extern float FastAbsF(float);
+
 extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
 extern char orxon_camera_pos[];
@@ -77,7 +81,7 @@ void emit_moby_sprite_particles(char *m) {
 }
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 extern float FastVecDist(void *, void *);
-extern float fast_atan2(float, float);
+
 extern float vec_length_xy(void *);
 extern void moby_build_matrix(void *);
 extern char hero_globals_base[];
@@ -125,11 +129,11 @@ typedef struct {
 
 extern unsigned char g_hero[];
 extern char gHeroPos[];
-extern char ground_hit[];
+
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float FastVecLength(void *);
-extern float lensq_cc2e8(void *);
+
 extern float FastAddRots(float, float);
 extern float ProbeGroundHeight(void *, int, float);
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
@@ -138,7 +142,6 @@ extern void vec_set_length_xy(void *, void *, float);
 extern void clear_u64_value(void *);
 extern float SpringTurn(float, float, float, float, float, float *);
 extern void BuildSphericalOffset(float, float, float, void *);
-extern int rand_range(int, int);
 
 extern int Moby_PlaySound(int, int, void *);
 extern int coll_line(void *, void *, int, int, int);
@@ -457,7 +460,7 @@ void activate_descriptor(int i) {
 }
 extern char *orxon_paths[];
 extern int is_point_inside_clip_volume(void *, int);
-extern int test_point_in_transformed_unit_cylinder(void *, int);
+
 extern int test_point_in_transformed_unit_sphere(float *, int);
 extern int IsPointInPolygon(float *, float *, int);
 
@@ -491,7 +494,6 @@ extern void HeroEnterMoveState(int, int);
 extern char *orxon_camera_descriptors MACRO_ADDR;
 extern char *orxon_paths[];
 extern char orxon_view_params[];
-extern char orxon_player_camera[];
 
 /* The vendor camera record: the table row at D_L10_0015F050 holds a pointer to it at +0x1C. */
 typedef struct CamPathRec {

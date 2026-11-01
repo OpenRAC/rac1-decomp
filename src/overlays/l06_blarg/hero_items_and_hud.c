@@ -17,6 +17,11 @@
 #include "overlays/shared/sky_particles.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "structs/hero_views.h"
+#include "asm_functions/shared_levels.h"
+#include "data/executable.h"
+#include "data/level_06.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
 
 typedef struct {
     char p0[0xF8];
@@ -28,7 +33,7 @@ typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
 extern PadState g_controller_state;
 extern S141948 usage_stats;
-extern int last_weapon_id;
+
 extern unsigned char item_available[];
 extern int gBolts MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -42,7 +47,7 @@ extern float blarg_hero_fall_state_height MACRO_ADDR;
 extern int blarg_shown_help_message MACRO_ADDR;
 extern int landing_run_animation_start_frame MACRO_ADDR;
 extern short blarg_hero_double_tap_timer;
-extern float blarg_player_camera_yaw;
+
 extern int blarg_hero_state_1e_clear_word;
 extern HeroBoneScalars blarg_hero_bones;
 extern HeroIdleFidget blarg_idle_fidgets[];
@@ -102,14 +107,13 @@ extern float ApproachValue(float *p, float target, float maxstep);
 extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *v);
-extern float FastAbsF(float);
-extern float random_float_between(float a, float b);
+
 extern void hero_switch_item(int i);
 extern void release_and_clear_hero_voice_slots(void);
 extern float FastVecDist(void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern int coll_line(void *, void *, int, int, int);
-extern float fast_atan2(float, float);
+
 extern float randf_sym(float lo, float hi);
 extern float jump_speed_4318(void *a, void *b, void *out, float speed, float g);
 

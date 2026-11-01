@@ -5,14 +5,16 @@
 #include "game/draw.h"
 #include "game/skyfunc.h"
 #include "game/vuchain.h"
+#include "core/00116070.h"
+#include "data/executable.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
 
 /*
  * skyfunc.cpp in the original source; text 0x22BEB0-0x22CEB8.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern int draw_config[];
 
 extern float FastCos(float);
 extern float FastSin(float);
@@ -132,14 +134,13 @@ struct SkyEffect {
 };
 extern struct LevelSkyEffectData *level_sky_effect_data_r2 __asm__("D_0016055C") MACRO_ADDR;
 extern u8 sky_matrix[];
-extern void srand(s32);
-extern f32 FastAbsF(f32);
+
 extern f32 FastCos(f32);
 extern f32 FastSin(f32);
 extern void set_identity_matrix(u8 *);
 extern f32 FastAddRots(f32, f32);
 extern f32 IntToFloat(s32);
-extern s32 random_integer_below(s32);
+
 extern f32 random_angle_radians();
 extern void SkyDrawShell(s32);
 extern void SkySpriteProc();

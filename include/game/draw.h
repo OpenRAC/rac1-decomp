@@ -6,6 +6,8 @@
 #include "common.h"
 
 extern void DrawDebugProfiler(void);
+extern void DrawUIFrame(int, int, int, int, int);
+extern void FadeToBlack(int);
 extern int FontPrintCenterLarge(int a, int b, int c, int d, int e);
 extern void Font_DisableColorCodes(void);
 extern void Font_EnableColorCodes(void);

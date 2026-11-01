@@ -7,6 +7,15 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
 #include "overlays/shared/trigger_switches_and_hoverboard.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_05.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/helicopter_gunship_and_spawners.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Electric gate: its trigger and the sound voice slot it claims. */
 struct ElectricGateWatchVars {
@@ -100,7 +109,6 @@ typedef struct {
     char rest[0x1170];
 } Ent;
 extern Ent water_records[];
-extern float FastAbsF(float);
 
 /* records, for entry arg, which of the 48 entries sit one grid step away */
 void record_grid_entry_neighbor_indices(int arg) {
@@ -141,7 +149,7 @@ extern void AddDrawCallback(void *, void *);
 extern float FastVecDist(void *, void *);
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 extern void draw_electric_gate_beams(char *);
-extern char rilgar_camera_pos[];
+
 extern char hero_globals_base[];
 extern short electric_gate_last_draw_frame;
 extern int rilgar_frame_count MACRO_ADDR;
@@ -528,16 +536,16 @@ typedef struct {
     Lid_0030FCC0 *lid;
 } Data_0030FCC0;
 extern int Sound_IsPlaying(void *, int);
-extern void Sound_StopSlot(int);
+
 extern int scale_ticks(int);
 extern float random_angle_radians(void);
-extern float randf_sym(float lo, float hi);
+
 extern void update_drain_cover_tilt(char *obj, float a, float b);
 extern void emit_drain_cover_particles(char *obj, float a, float b);
 extern float vec_distance_xy(void *, void *);
 extern int fast_dec_timer(void *);
 extern void clear_u64_value(void *);
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float FastCos(float);
@@ -548,7 +556,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
-extern float fast_atan2(float, float);
+
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern void update_entity_matrix(char *a, void *b, void *c, void *d);
 extern Lid_0030FCC0 *CreateMoby_r(int) __asm__("func_0020D348");
@@ -737,7 +745,7 @@ void drain_cover_update(Moby *moby) {
 }
 extern void clear_u64_value(void *);
 extern float IntToFloat(int);
-extern float random_float_between(float, float);
+
 extern float random_angle_radians(void);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -836,7 +844,7 @@ typedef u32 u128_10A90 __attribute__((mode(TI), aligned(16)));
 extern void *MobyGetHitMessage(struct Moby *, int, int);
 extern struct Moby *CreateMoby(int);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
-extern int random_integer_below(int);
+
 extern void FastVecScale(void *, void *, float);
 extern void rand_vec(void *, float, float);
 extern int truncate_float_to_s32(float);
@@ -1206,15 +1214,14 @@ extern LiftPose *rilgar_level_cuboids_r2 __asm__("D_L05_001601AC") MACRO_ADDR;
 extern void FastVecScale(void *, void *, f32);
 extern f32 ApproachValue(f32 *, f32, f32);
 extern f32 ApproachWithVelocity_r(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_00214D88");
-extern void Sound_StopSlot(s32);
+
 extern f32 FastAddRots(f32, f32);
 extern f32 FastSubRots(f32, f32);
 extern f32 vec_distance_xy(void *, void *);
 extern s32 fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern void CameraScript(void *, void *, s32, s32, s32);
-extern void CameraScript2(s32);
+
 extern void lift_camera_view_r(void *, void *, void *) __asm__("func_L05_003173A8");
 extern void place_marker_ring_r(void *) __asm__("func_L05_00317438");
 
@@ -1407,7 +1414,6 @@ void lift_camera_view(char *a, char *b, char *c) {
 extern float FastCos(float);
 extern float FastSin(float);
 extern float FastAddRots(float, float);
-extern char *rilgar_paths[];
 
 // Fill a ring of points (radius 3.5) around the moby from an angle step, rotating each by the moby's matrix.
 void place_marker_ring(char *moby) {
@@ -1425,10 +1431,9 @@ void place_marker_ring(char *moby) {
         ang = FastAddRots(ang, step);
     }
 }
-extern char rilgar_camera_pos[];
+
 extern char rilgar_ocean_grid[];
 extern int is_point_inside_clip_volume(void *, int);
-extern void draw_textured_grid(char *);
 
 // Scans 8 data slots; if none of the set ones passes a check, calls a helper.
 void draw_ocean_grid_outside_clip_volumes(char *moby) {
@@ -1654,7 +1659,7 @@ typedef struct {
 extern int rilgar_cinematic_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern G rilgar_cutscene_state;
-extern unsigned char rilgar_big_head_manipulator[];
+
 extern short g_breast_growth_count;
 extern void AttachManipulator(char *, int, void *);
 extern void update_hoverboard_girl_boobs_animation(char *, int);
@@ -1741,7 +1746,7 @@ extern int Npc_TryStartDialog(void *, void *);
 
 extern void Hero_ResetToPosition();
 extern void MusicRequestTrack();
-extern void ShowBanner(int, int);
+
 extern int memcard_Save(int, int);
 extern float FastDiffRots(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
@@ -2046,10 +2051,9 @@ extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(char *);
 extern int Npc_TryStartDialog(void *, void *);
 
-extern void unlock_planet(int);
 extern int memcard_Save(int, int);
 extern void DeleteMoby(void *);
-extern int random_integer_below(int);
+
 extern void MobyBlendAnimation(void *, int, int, int);
 extern float FastDiffRots(float, float);
 extern float FastVecLength(void *);
@@ -2216,8 +2220,7 @@ void qwarks_bouncer_update(char *m) {
 
 extern void set_ground_height_band(void *);
 extern float ProbeGroundHeight(void *, int, float);
-extern void grant_inventory_item(int, int);
-extern void ShowBanner(int, int);
+
 extern float FastVecLength(void *);
 extern float FastSubRots(float, float);
 extern char shady_salesman_dialogue_name[];
@@ -2445,7 +2448,7 @@ extern void lerp_vector(void *, void *, void *, float);
 extern float FastSubRots(float, float);
 
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
-extern void Sound_StopSlot(int);
+
 extern void FastVecSub(void *, void *, void *);
 extern void matrix_from_basis_rows(void *, void *);
 extern void transform_vector(void *, void *, void *);
@@ -2660,7 +2663,7 @@ void PickNearestTargetSlot(char *moby) {
     qcopy(&data->blend_pos, (void *)(idx + (int)g + 0x30));
     qcopy(&data->blend_rot, (void *)(idx + (int)g + 0x70));
 }
-extern char *rilgar_paths[];
+
 extern unsigned char saved_mission_state[][16];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/unclassified_0030d6a0.c, FUN_L05_003193a8. */
@@ -2717,7 +2720,7 @@ void qwarks_trailer_update(char *moby) {
 }
 INCLUDE_ASM("asm/overlays", func_L05_0031B15C);
 extern void Help_Request(int, int);
-extern void collect_moby_and_clear_path_keys(void *);
+
 #define hero (hero_a[0])
 #define D_001413DC (D_001413DC_a[0])
 #define D_0013D464 (D_0013D464_a[0])

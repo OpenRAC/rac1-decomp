@@ -3,6 +3,8 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "game/mobyutil.h"
+#include "asm_functions/shared_levels.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 LINKER_REMNANT("asm/overlays", func_L03_00249488);
 extern void FastVecCross(void *, void *, void *);
@@ -45,13 +47,13 @@ void trooper_set_knockback(float *p, float a, float b) {
     p[6] = (a + a) / x;
     p[5] = (a + a) / (x * x);
 }
-extern float randf_sym(float, float);
+
 extern void build_look_at_matrix(void *, void *, void *, float);
 extern float random_float_between(float, float);
-extern int rand_range(int, int);
+
 extern int random_integer_below(int);
 extern int scale_ticks(int);
-extern void add_vectors(void *, void *, void *);
+
 extern unsigned char *PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 extern int truncate_float_to_s32(float);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);

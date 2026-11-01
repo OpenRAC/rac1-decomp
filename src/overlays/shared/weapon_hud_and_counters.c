@@ -8,6 +8,11 @@
 #include "game/draw.h"
 #include "game/initonce.h"
 #include "game/vuchain.h"
+#include "asm_functions/shared_levels.h"
+#include "data/executable.h"
+#include "data/shared_levels.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 typedef struct {
     char pad[0x50];
@@ -465,7 +470,7 @@ void update_numeric_hud_element_direct_value(HudElem *e) {
     }
     update_hud_animation_frame((char *)e + 0x40);
 }
-extern float random_float_between(float, float);
+
 extern float hud_star_particles[][4];
 extern short star_init_limit0_gp;
 extern short star_init_limit1_gp;
@@ -1102,7 +1107,7 @@ extern int D_L00_0015FB54_38530 SDATA(D_L00_0015FB54);
 extern Ent_38530 **hud_selector_slot_tables_r __asm__("D_L00_0015FB78") MACRO_ADDR;
 extern int quick_select_last_state MACRO_ADDR;
 extern int quick_select_close_frame MACRO_ADDR;
-extern float fast_atan2(float, float);
+
 extern int remove_hud_item(int);
 typedef struct {
     u8 p0[0xA0];
@@ -1515,7 +1520,6 @@ extern int radial_select_default_left_slot;
 extern int radial_select_default_right_slot;
 extern int radial_select_default_up_slot;
 extern int radial_select_default_down_slot;
-extern int radial_select_choice[];
 
 /* Updates radial HUD selection and fades, closing it when the display fade reaches zero. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_text_002377b8.c, FUN_L00_00238b80. */
 void update_hud_radial_selector_selection_and_visibility(Obj *o) {
@@ -2060,7 +2064,7 @@ typedef struct {
 } HudElem_3A788;
 extern s32 truncate_float_to_s32(f32);
 extern void draw_hud_sprite_flipped(s32, s32, s32, s32, s32, s32);
-extern s32 hero_current_state;
+
 extern s32 pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
 extern s32 gBolts MACRO_ADDR;
 extern s32 g_game_language MACRO_ADDR;
@@ -2375,7 +2379,7 @@ int draw_weapon_ammo_hud_panel(char *m) {
     return ((HudElem *)m)->w;
 }
 LINKER_REMNANT("asm/overlays", func_L00_0023B430);
-extern int random_integer_below(int);
+
 extern char *hud_anim_sequences;
 extern int level_frame_counter MACRO_ADDR;
 
@@ -2725,7 +2729,7 @@ extern int g_gs_texture_allocation_base MACRO_ADDR;
 extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern int game_clock_ticks MACRO_ADDR;
-extern char coll_hit_moby_record[];
+
 extern char g_class_slot[];
 extern char moby_class_slot_records[];
 extern char moby_class_slot_flags[];
@@ -2744,7 +2748,6 @@ extern void UpdateViewContext(void);
 extern void register_part_types(void);
 
 extern void init_level_item_inventory(void);
-extern void unlock_planet(int);
 
 /* The level's start-up: runs the resident and level init steps in turn,
    copies D_0015EF8C into D_0015EF74 / D_0015EF78, fills ten level
@@ -2788,12 +2791,11 @@ void init_level_runtime_state(void) {
  *   Would unblock: making the int-constant pseudos rank before the byte-constant pseudos without changing the sche
  */
 extern unsigned char vendor_stock[] MACRO_ADDR;
-extern int level_item_ids[];
+
 extern void append_level_item_if_absent(int idx);
 extern unsigned char discount_purchase_pricing[] NOT_SDA;
 extern unsigned char gHaveHeliPack[] NOT_SDA;
 extern unsigned char help_stats_base[] NOT_SDA;
-extern void grant_inventory_item(int, int);
 
 /* Initialise the vendor stock list: fixed defaults once the level is at least 19, else prune unknown entries. */
 void init_level_item_inventory(void) {
@@ -2848,7 +2850,7 @@ void init_level_item_inventory(void) {
         append_level_item_if_absent(g_current_level_index);
     }
 }
-extern int level_item_ids[];
+
 extern unsigned char vendor_stock[] MACRO_ADDR;
 
 /* Adds the id D_L00_001C4198[IDX] to the 0xFF-terminated byte list at

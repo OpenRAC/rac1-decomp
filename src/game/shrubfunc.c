@@ -4,14 +4,13 @@
 #include "structs/misc.h"
 #include "game/draw.h"
 #include "game/vuchain.h"
+#include "data/executable.h"
 
 /*
  * shrubfunc.cpp in the original source; text 0x229C08-0x229F00.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern int draw_config[];
 
 extern int STUB_printf();
 

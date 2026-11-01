@@ -8,6 +8,11 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/point_lights_and_glows.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
+#include "asm_functions/executable.h"
+#include "data/level_07.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Umbris taxi platform: slides along a path between its two ends when the hero rides it. */
 struct TaxiPlatformVars {
@@ -118,9 +123,7 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void HeroEnterMoveState(int, int);
 extern float multiply_global_factor(float);
 extern float vec_distance_xy(void *, void *);
-extern float FastAbsF(float);
-extern int scale_ticks(int);
-extern void Sound_StopSlot(int);
+
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 
@@ -129,7 +132,7 @@ extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void update_entity_matrix(void *, void *, void *, void *);
-extern char *umbris_paths[];
+
 extern float g_frame_time MACRO_ADDR;
 extern char hero_globals_base[];
 
@@ -968,7 +971,7 @@ typedef struct {
 
 extern float FastVecLength(void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern float random_float_between(float, float);
+
 extern int rand_range(int, int);
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern void spawn_projectile_expiry_particle_r(void *, void *) __asm__("func_L07_0029B070");
@@ -1077,7 +1080,7 @@ typedef struct {
     f32 spin_y; /* 0x18 */
     f32 spin_z; /* 0x1C */
 } DebrisVars_0CFA8;
-extern f32 FastAddRots(f32, f32);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 extern struct Moby *debris_target_r __asm__("D_L07_00173F58");
@@ -1193,7 +1196,7 @@ extern char gHaveHeliPack[];
 extern char discount_purchase_pricing[];
 extern void RipplePatchesInit_r(void *, int) __asm__("func_L01_002B8C00");
 extern void RescaleFloatTable_r(float) __asm__("func_L01_002B90A8");
-extern float FastCos(float);
+
 extern float FastSin(float);
 extern void RipplePatch_ToFixedPoint_r(void *, void *) __asm__("func_L01_002B8E20");
 extern void pool_ripple_r(void *, int, float, float, float, float) __asm__("func_L01_002B9440");
@@ -1202,7 +1205,7 @@ extern void set_moby_list_state_r(int, int) __asm__("func_L01_0026F090");
 extern int matches_first_moby_in_group_r(void *, int, int, int) __asm__("func_L07_00282EB0");
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
-extern int random_integer_below(int);
+
 extern void RippleDisturb_r(void *, int, int, float, float, float, float) __asm__("func_L00_002A5158");
 extern int is_point_inside_clip_volume_r2(void *, int) __asm__("func_00215570");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
@@ -1448,7 +1451,7 @@ typedef int Q30E370 __attribute__((mode(TI)));
 extern void matrix_mul_vec3(void *, void *, void *);
 extern int g_current_level_index MACRO_ADDR;
 extern char help_stats_base[];
-extern int umbris_indicator_states[];
+
 extern char *level_mobys MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 
@@ -1628,9 +1631,9 @@ extern void AttachManipulator(char *, int, void *);
 extern void RerollEffectCounter(void *, short *);
 extern void transform_vector(void *, void *, void *);
 extern void euler_to_matrix(void *, void *);
-extern float FastAddRots(float, float);
+
 extern float FastSubRots(float, float);
-extern float FastDiffRots(float, float);
+
 extern void axis_rotation_2d48(void *, int, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float jump_speed_4318(void *, void *, void *, float, float);
@@ -2315,7 +2318,6 @@ extern char umbris_sharkigator_no_path_msg[];
 extern char umbris_sharkigator_no_other_path_msg[];
 extern char umbris_sharkigator_no_target_moby_msg[];
 extern char umbris_sharkigator_no_point_msg[];
-extern void qcopy(void *, void *);
 
 // Resolves the indices stored in an object's data block into pointers; logs and fails on -1.
 int initialize_sharkigator(char *moby, char *d) {
@@ -2368,7 +2370,7 @@ int initialize_sharkigator(char *moby, char *d) {
     return 0;
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern float FastCos(float);
+
 extern float FastSin(float);
 extern int coll_sphere(float, void *, int, void *);
 struct WalkerPath {
@@ -2387,7 +2389,7 @@ struct WalkerData {
     f32 heading; /* 0x13C */
     f32 turnStep; /* 0x140 */
 };
-extern float FastAddRots(float, float);
+
 extern int IsPointInPolygon(void *, void *, int);
 extern int coll_line_r3(void *, void *, int, struct Moby *, int) __asm__("func_L00_001EFFF0");
 
@@ -2447,8 +2449,7 @@ void advance_sharkigator_swim_movement(char *a, char *b, float f12, float f13, f
         FastVecScale(q, q, 0.5f);
     }
 }
-extern float FastDiffRots(float, float);
-extern float FastCos(float);
+
 extern float FastSin(float);
 
 /* steers a speed toward a target angle and writes the velocity along the moby's heading; returns 1 when speeding up */
@@ -3354,7 +3355,7 @@ void update_command_triggered_falling_platform(Moby *m) {
     update_entity_matrix_r(d->a60, &v1, &v2, &m->rot);
 }
 extern void set_moby_color(void *, int, int, int);
-extern float random_float_between(float, float);
+
 extern float normalize_angle(float);
 
 /* Falling leaf: drops off its branch after a random delay, swaying, then falls faster and vanishes near the ground. */

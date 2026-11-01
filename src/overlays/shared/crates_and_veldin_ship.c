@@ -9,6 +9,12 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/point_lights_and_glows.h"
+#include "asm_functions/shared_levels.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/pause_menu.h"
 
 /* Crate: falls, stacks on other crates and rides moving platforms. */
 struct CrateVars {
@@ -528,10 +534,9 @@ extern int subtract_integer_with_clamp(int);
 extern int Sound_PlayClassSound(int, int, void *, int);
 extern void Moby_PlaySound(int, int, int);
 extern int is_moby_in_class_range_500_to_540(void *);
-extern unsigned char *spawn_spinning_fade_in_out_effect_particle(void *pos, int spin, int col, float range, float f1,
-                                                                 float f2, float f3, float scale);
+
 extern void FastVecSub(void *, void *, void *);
-extern float fast_atan2(float, float);
+
 extern float FastSubRots(float, float);
 extern int truncate_float_to_s32(float);
 extern f32 FastNormalizeAngle(f32);
@@ -817,7 +822,7 @@ extern char hero_globals_base[];
 extern int is_moby_in_class_range_500_to_540(void *);
 extern void FastVecSub(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
-extern float FastAbsF(float);
+
 extern void break_crate(void *, int, int);
 extern void crate_drop_bolts(void *);
 extern float ApproachValue(float *p, float target, float maxstep);
@@ -992,7 +997,7 @@ extern Vec_2d19b0 ship_world_vertices[];
 extern f32 ship_reflection_uvs[][2];
 extern f32 ship_previous_uvs[][2];
 extern u64 GetEffectTex(s32);
-extern f32 FastAbsF(f32);
+
 extern s32 scale_ticks(s32);
 extern s32 fast_dec_timer(s32 *);
 extern f32 IntToFloat(s32);
@@ -2294,14 +2299,14 @@ extern char *moby_array_start MACRO_ADDR;
 extern Path_5AC0 *level_paths_r3[] __asm__("D_L00_001B0830");
 
 extern void process_horny_toad_hit_reaction(void *);
-extern void collect_moby_and_clear_path_keys(void *);
+
 extern float FastVecDist(void *, void *);
 extern void set_ground_height_band(void *);
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 extern int CarriedMobyUpdate(void *, void *);
-extern float fast_atan2(float, float);
+
 extern float SteerAngleWithVelocity_r(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
 extern float move_horny_toad_toward_position(unsigned char *m, float *t, float vel);
 extern int rand_range(int, int);
@@ -2714,7 +2719,7 @@ void process_horny_toad_hit_reaction(void *a0) {
         }
     }
 }
-extern float fast_atan2(float, float);
+
 extern float FastAddRots(float, float);
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
 extern float ApproachWithVelocity(float *, float, float, float, float, float *);
@@ -3025,10 +3030,7 @@ extern void initialize_moby_particle_effect(char *);
 extern void update_infobot_particle_effect(char *);
 extern s32 RotateWithMoby(struct Moby *, struct Moby *, void *, void *, void *, void *);
 extern void unlock_planet(s32);
-extern void jet_clear_persistent(s32);
-extern void jet_reset_camera(void *, void *);
-extern void StartCutscene(s32);
-extern void PlayMovieEntryIfIdle(s32);
+
 extern void queue_planet_unlock_message(s32);
 extern void set_moby_dialogue_record_value(struct Moby *, s32);
 extern void memcard_Save(s32, s32);
@@ -3037,7 +3039,7 @@ extern f32 FastVecDist(void *, void *);
 extern void FastVecScale(void *, void *, f32);
 extern void vec_scale_to_length(void *, void *, f32);
 extern f32 FastVecLength(void *);
-extern f32 fast_atan2(f32, f32);
+
 extern f32 FastCos(f32);
 extern f32 FastSin(f32);
 extern f32 FastAddRots(f32, f32);
@@ -3379,7 +3381,7 @@ extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern int fast_dec_timer(int *);
-extern float FastAbsF(float);
+
 extern int FastTweenColor(int, int, float);
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 extern unsigned char *PartType59Spawn(void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode, float f);

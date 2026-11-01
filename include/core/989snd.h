@@ -6,6 +6,7 @@
 #include "common.h"
 
 extern void snd_ContinueAllSoundsInGroup(int);
+extern void snd_PauseAllSoundsInGroup(int);
 extern void snd_StreamSafeCdCallback(void *);
 extern void snd_reenable_command_flush(void);
 extern void snd_reset_state_and_flush_commands(void);

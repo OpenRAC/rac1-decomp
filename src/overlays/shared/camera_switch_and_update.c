@@ -7,6 +7,9 @@
 #include "game/camera.h"
 #include "game/effects.h"
 #include "game/mobyutil.h"
+#include "asm_functions/shared_levels.h"
+#include "data/shared_levels.h"
+#include "game/fastfunc.h"
 
 /* The level copies of the camera tables (include/structs/camera.h). */
 extern Camera gCameraSlotsLvl[];
@@ -51,7 +54,6 @@ INCLUDE_ASM("asm/overlays", func_L00_001EB598);
 INCLUDE_ASM("asm/overlays", func_L00_001EB5A8);
 LINKER_REMNANT("asm/overlays", func_L00_001EB5B0);
 
-extern float FastAbsF(float);
 extern float FastAddRots(float, float);
 
 /* steers *p toward a target with damping, clamps it, then calls FA748 */
@@ -191,7 +193,6 @@ void SwitchCamera(Camera *next_camera) {
     previous_position[2] = position->z;
 }
 
-extern int gCameraSlotUsedLvl[];
 extern void Camera_runSetupToNewCam(void *);
 extern int Camera_ActivationCheckPriority(Camera *, Camera *);
 extern void Camera_handleCollWithHero(Camera *);
@@ -534,7 +535,7 @@ void compute_position_from_spherical_offset(float *out, float *polar, void *orig
 typedef float W[4] __attribute__((aligned(16)));
 
 extern float vec_length_xy(float *);
-extern float fast_atan2(float, float);
+
 extern void FastSubRots(float, float);
 extern float FastVecLength(float *);
 extern void FastVecSub_3(float *, float *, float *) __asm__("func_001F9BF0");

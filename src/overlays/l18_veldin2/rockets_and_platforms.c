@@ -8,6 +8,14 @@
 #include "game/draw.h"
 #include "overlays/shared/electric_water.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_18.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Seeker bolt (class 0x29): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
 struct SeekerBoltVars {
@@ -193,14 +201,14 @@ extern void matrix_mul_vec3(void *, void *, void *);
 extern int scale_ticks(int);
 extern int FastDecTimer(void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern float fast_atan2(float, float);
+
 extern void InitDirectionalHitQuery(char *arg, int a, int b, void *src, float scale);
 extern int coll_line(void *, void *, int, void *, void *);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void DeleteMoby(void *);
 extern void rand_vec(float *, float, float);
-extern float random_float_between(float, float);
+
 extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
                                       float w, float pw);
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
@@ -934,7 +942,7 @@ extern float ProbeGroundHeight(void *, int, float);
 extern void moby_build_matrix(void *);
 extern int fast_dec_timer(int *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern int veldin2_cinematic_step;
+
 extern short green_thruster_lock_scale;
 extern short green_thruster_lock_active_height;
 extern short green_thruster_lock_idle_height;
@@ -1171,7 +1179,6 @@ typedef struct {
     int mode;
 } Level18VendorActionData;
 
-
 /* Initialize the vendor action mode and scale. */
 void moby_init_action_mode(Moby *moby) {
     Level18VendorActionData *data = (Level18VendorActionData *)moby->pvars;
@@ -1192,13 +1199,13 @@ extern f32 ApproachValue(f32 *, f32, f32);
 extern short red_thruster_lock_scale;
 extern short red_thruster_lock_wait_height;
 extern short red_thruster_lock_raised_height;
-extern short drek_boss_camera_move_request;
+
 extern short gameplay_event_frame_count;
 extern unsigned char menu_item_enabled_115 NOT_SDA;
 extern struct UsageStat help_records[];
 extern void draw_pulsing_timer_hud_r(void) __asm__("func_L18_002D9488");
 extern char voice_pool[];
-extern void Sound_StopSlot(s32);
+
 extern int Help_Request(int, int);
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 
@@ -1295,7 +1302,6 @@ void request_thruster_pack_lock_red_wait(unsigned char *arg, int value) {
         data->voice = allocate_voice_for_group_entry(0x12, 0, arg);
     }
 }
-extern void Sound_StopSlot(int);
 
 /* Deactivates a moby in state 2 and stops its sound/effect slot. */
 void end_thruster_pack_lock_red_wait(unsigned char *arg) {
@@ -1340,7 +1346,7 @@ extern short timer_frame_left;
 extern short timer_frame_right;
 extern short timer_frame_color;
 extern void DrawUIFrame(int, int, int, int, int);
-extern int random_integer_below(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 #define W(x) (*(int *)&(x))
@@ -1417,11 +1423,11 @@ extern short floating_platform_tilt_rate_degrees_config_84_zero_gp;
 extern short sinking_platform_trigger_radius;
 extern short floating_platform_motion_scale_input_start_gp;
 extern short floating_platform_motion_scale_input_end_gp;
-extern short sinking_platform_fall_count;
+
 extern void spawn_floating_platform_sparks_r(struct Moby *) __asm__("func_L18_002D9CA8");
 extern void HeroL18_SetMoveState(int, int);
 extern void update_entity_matrix(void *, void *, void *, void *);
-extern int rand_range(int, int);
+
 extern float random_angle_radians(void);
 extern int Moby_PlaySound_r2(int, int, struct Moby *) __asm__("func_0022ED80");
 
@@ -2247,11 +2253,11 @@ void draw_class_274_ring_effect(void *moby_v) {
 }
 extern float ApproachValue(float *p, float target, float maxstep);
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void CameraScript(void *, void *, int, int, int);
+
 extern int Help_Request(int a, int b);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern void CameraScript2(int);
+
 extern float FastSubRots(float, float);
 extern int veldin2_position_transition_flag;
 extern float veldin2_screen_fade MACRO_ADDR;
@@ -2394,7 +2400,6 @@ typedef struct {
     float value;
 } Level18VendorFloatData;
 
-
 /* Read the vendor moby's current float value. */
 float get_position_and_rotation_transition_progress(Moby *moby) {
     return ((Level18VendorFloatData *)moby->pvars)->value;
@@ -2432,12 +2437,12 @@ typedef struct {
 extern Blk24 hit_burst_start_colors;
 extern Blk24 hit_burst_end_colors;
 extern unsigned char help_stats_base[];
-extern float randf_sym(float lo, float hi);
+
 extern int coll_sphere(float, void *, int, void *);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern float FastAbsF(float);
+
 extern void PartType11Spawn(void *, void *, u32, u32, f32, s32, s32, f32, s32, s32);
-extern void spawn_particle_alt_9768(void *pos, void *vel, int color, int tag, int life, float size);
+
 void set_moby_group_state_two(char *arg);
 
 /* Update function of a debris moby: spawn, burst into sparks and particles, fall. */
@@ -2999,10 +3004,9 @@ typedef struct {
 
 extern void FastVecCross(void *, void *, void *);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
-extern float normalize_angle(float);
-extern float randf_sym(float lo, float hi);
+
 extern void BuildSphericalOffset(void *, float, float, float);
-extern int rand_range(int, int);
+
 extern void spawn_ec290(void *, int, float, float, int, int, int, void *, float) __asm__("func_L00_00272F00");
 extern char hero_gravity_dir[];
 extern short electric_bolt_wave_phase;

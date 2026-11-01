@@ -4,6 +4,12 @@
 #include "structs/hero.h"
 #include "structs/moby.h"
 #include "game/draw.h"
+#include "asm_functions/shared_levels.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 /* Blarg space commando: takes hits, fires a beam at the hero. */
 struct SpaceCommandoVars {
     u8 pad_00[0x20];
@@ -136,7 +142,7 @@ extern f32 FastVecDist(void *, void *);
 extern f32 vec_distance_xy(void *, void *);
 extern f32 FastCos(f32);
 extern f32 FastSin(f32);
-extern f32 fast_atan2(f32, f32);
+
 extern f32 FastDiffRots(f32, f32);
 extern s32 truncate_float_to_s32(f32);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
@@ -153,7 +159,7 @@ extern void SteerAngleWithVelocity(f32 *, f32, f32 *, f32, f32, f32);
 extern s32 mine_fall(struct Moby *, Vec4 *);
 extern void spawn_explosion(struct Moby *, Vec4 *, void *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32,
                             s32, s32, s32);
-extern s32 SegmentCrossPolyline(s32, void *, void *, void *);
+
 extern void resolve_point_path_segment_xy_clearance(s32, void *, void *, f32);
 extern void Manipulator_ApplyScale(struct Moby *, s32, void *, f32);
 extern void SpawnBreakFragment_r(struct Moby *, s32, void *, void *, s32, s32, f32, f32 *, f32 *,
@@ -460,17 +466,17 @@ void blarg_space_commando_update(struct Moby *moby) {
     }
 }
 extern void update_blarg_space_commando_beam(void *);
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern int scale_ticks(int);
-extern float fast_atan2(float, float);
+
 extern void PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
+
 extern void InitKnockback(void *, void *, float, int, int, int);
-extern float randf_sym(float lo, float hi);
+
 extern float random_angle_radians(void);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -480,7 +486,7 @@ extern void SetDeathBits(void *, int, int);
 extern void StepColorFade(void *, void *);
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
 extern float vec_distance_xy(void *, void *);
-extern float FastAbsF(float);
+
 extern int *blarg_paths[];
 extern float g_frame_time MACRO_ADDR;
 extern short g_current_level_index;
@@ -804,7 +810,7 @@ extern f32 space_commando_beam_uvs[4][2];
 extern void VU1_addGSregister(s32, s64);
 extern u64 GetEffectTex(s32);
 extern void set_identity_matrix(void *);
-extern float random_float_between(float, float);
+
 extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, f32);
 extern u32 FastTweenColor_r(f32, s32, s32) __asm__("func_001FA8A8");
@@ -1020,7 +1026,7 @@ extern void DrawUIFrame(int, int, int, int, int);
 extern float FastSin(float);
 extern int FastTweenColor(int, int, float);
 extern int scale_ticks(int);
-extern int random_integer_below(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 #define W(x) (*(int *)&(x))
@@ -1200,7 +1206,6 @@ void draw_bot_door_lock_glow(char *o) {
 }
 extern void Moby_PlaySound(int, int, int);
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
-extern void jet_clear_persistent(int idx);
 
 /* state transitions of a moby depending on its id at 0xA6 */
 void activate_bot_door_lock_target(unsigned char *a, unsigned char *m) {
@@ -1242,7 +1247,7 @@ extern short level_mobys_q;
 extern int truncate_float_to_s32(float);
 extern float FastVecDist(void *, void *);
 extern void AddDrawCallback(void *, void *);
-extern void add_vectors(void *, void *, void *);
+
 extern void PartType41Spawn(void *, void *, int, unsigned int, int, int, int, float);
 /* Return color with blue placed in the blue channel. */
 static inline unsigned int or_blue_channel_p(int blue, unsigned int color) {

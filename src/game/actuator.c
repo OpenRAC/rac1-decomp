@@ -1,5 +1,6 @@
 #include "common.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * actuator.cpp in the original source; text 0x1E9080-0x1E94E8.
@@ -24,7 +25,6 @@ typedef struct {
 extern L00Entry actuator_wave[8];
 extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);
-extern f32 FastCos(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/start_001eaa08.c, FUN_L00_001eaa08. */
 s32 actuator_CalcPower(s32 *p1) {

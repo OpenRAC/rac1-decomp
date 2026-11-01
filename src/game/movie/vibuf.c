@@ -1,5 +1,6 @@
 #include "common.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * movie/vibuf.cpp in the original source; text 0x23CEC8-0x23DE98.
@@ -278,7 +279,6 @@ int viBufStopDMA(ViBuf *vb) {
 }
 extern int getFIFOindex(ViBuf *, unsigned int);
 
-
 /* (i - start) taken modulo count lies in [0, len) */
 #define VB_IN_RANGE(i, start, len, count) \
     ((((i) + (count) - (start)) % (count)) >= 0 && (((i) + (count) - (start)) % (count)) < (len))
@@ -357,7 +357,6 @@ int viBufRestartDMA(ViBuf *vb) {
     signal_semaphore(vb->sema);
     return 1;
 }
-extern void delete_semaphore(int);     /* DeleteSema */
 
 /* viBufDelete(ViBuf *) -- stops DMA channel 4 (setD4_CHCR(5)), zeroes its MADR/QWC/TADR
  * and deletes the buffer's semaphore. Returns 1. */

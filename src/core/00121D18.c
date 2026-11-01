@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "core/00119D88.h"
 
 /*
  * core_text object 0x121D18-0x122140. Boundaries are retail's linker fill
@@ -11,11 +12,10 @@
  * EE29_CORE), like the prebuilt libgraph.a.
  */
 
-
 extern void scePrintf();
 
 extern int sceOpen(void *path, int mode);
-extern int sceRead(int fd, void *buf, int len);
+
 extern void sceClose(int fd);
 extern int libc_atoi(void *arg0);
 extern char romver_path[];

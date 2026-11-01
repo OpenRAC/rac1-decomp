@@ -15,6 +15,12 @@
 #include "overlays/shared/sky_particles.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "structs/hero_views.h"
+#include "data/executable.h"
+#include "data/level_03.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/sound_playback.h"
 
 typedef struct {
     char p0[0xF8];
@@ -32,7 +38,7 @@ extern Hero g_hero;
 extern PadState g_controller_state;
 extern char voice_pool[];
 extern S141948 usage_stats;
-extern int last_weapon_id;
+
 extern unsigned char item_available[];
 extern int gBolts MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -46,7 +52,7 @@ extern float kerwan_hero_fall_state_height MACRO_ADDR;
 extern int kerwan_help_message_selector MACRO_ADDR;
 extern int kerwan_hero_run_step1_start_frame MACRO_ADDR;
 extern short kerwan_hero_double_tap_timer;
-extern float kerwan_camera_yaw;
+
 extern int kerwan_hero_state_1e_clear_word;
 extern HeroBoneScalars kerwan_hero_bones;
 extern HeroIdleFidget kerwan_idle_fidgets[];
@@ -69,7 +75,6 @@ extern float multiply_global_factor(float);
 extern int HeroL03_SetMoveState(int, int);
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
-extern int rand_range(int, int);
 
 extern void stick_target(int, float);
 
@@ -87,7 +92,6 @@ extern void hero_set_attack_ticks(int id);
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
-extern void Sound_StopSlot(int);
 extern int test_hero_animation_frame_window(float t);
 extern void allocate_hero_voice_for_entry(int, int);
 
@@ -105,8 +109,7 @@ extern float ApproachValue(float *p, float target, float maxstep);
 extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *v);
-extern float FastAbsF(float);
-extern float random_float_between(float a, float b);
+
 extern void hero_switch_item(int i);
 extern void release_and_clear_hero_voice_slots(void);
 

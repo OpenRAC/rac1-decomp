@@ -19,6 +19,7 @@ extern void update_hero_delayed_voice_requests(void);
 extern void update_hero_lean_and_sway_parameters(void);
 extern void update_hero_motion_response_parameters(void);
 extern void update_hero_planar_movement_velocity(void);
+extern void update_hero_target_heading(float a, float b, float c);
 extern void update_hero_tilt(void);
 extern void update_hero_transformed_negative_z_angle_parameters(void);
 

@@ -6,8 +6,8 @@
 #include "common.h"
 #include "include_asm.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "asm_functions/executable.h"
 
-extern int scale_ticks(int);
 extern float IntToFloat(int);
 extern float FastSin(float);
 extern int FastTweenColor(int, int, float);

@@ -10,6 +10,13 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "asm_functions/shared_levels.h"
+#include "data/executable.h"
+#include "game/draw.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/candidate_adjacency_masks.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Blarg frog: hops along its path, chases the hero or a gadgebot and respawns after it is destroyed. */
 struct FrogVars {
@@ -83,12 +90,12 @@ extern struct Hero g_hero_r __asm__("D_0013F450");
 extern int Moby_PlaySound(int, int, int);
 extern unsigned char *spawn_spinning_fade_in_out_effect_particle(void *, int, int, float, float, float, float, float);
 extern void FastVecSub(void *, void *, void *);
-extern float randf_sym(float, float);
+
 extern float random_float_between(float, float);
 extern float random_angle_radians(void);
 extern float FastCos(float);
 extern float FastSin(float);
-extern float fast_atan2(float, float);
+
 extern int scale_ticks(int);
 extern char *g_hero_moby;
 extern float g_frame_time MACRO_ADDR;
@@ -249,7 +256,7 @@ extern short blarg_gadgebot_container_alpha_fix;
 extern short blarg_gadgebot_container_texture;
 extern short blarg_gadgebot_container_color;
 extern short blarg_gadgebot_container_normal_scale;
-extern float FastAbsF(float);
+
 extern float vec_length(float);
 extern void transform_vector(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -794,7 +801,7 @@ extern void select_hero_or_gadgebot_target(char *, char **, f32);
 extern int IsPointInPolygon(void *, void *, int);
 extern float vec_distance_xy(void *, void *);
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
-extern float FastAbsF(float);
+
 extern struct MobyHit *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern struct Moby *g_hero_moby_r __asm__("D_001414D0");
@@ -1126,7 +1133,7 @@ void spawn_moby_directional_spark_bursts(struct Moby *moby, Vec4 *dir) {
 extern float random_angle_radians(void);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void rand_vec(float *, float, float);
-extern int rand_range(int, int);
+
 extern int scale_ticks(int);
 
 extern float g_frame_time MACRO_ADDR;
@@ -1343,7 +1350,7 @@ typedef struct {
 
 extern Hero g_hero;
 extern unsigned char hero_vehicle_mode[];
-extern int radial_select_choice[];
+
 extern unsigned char saved_mission_state[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -1359,22 +1366,22 @@ extern GbStats blarg_gadgebot_command_count_base;
 extern int *blarg_paths[];
 
 extern float vec_distance_xy(void *, void *);
-extern float FastAbsF(float);
+
 extern void handle_gadgebot_hit_knockback(void *);
 extern void AttachManipulator(char *, int, void *);
 extern float ApproachValue(float *p, float target, float maxstep);
 extern void DetachManipulator(void *, void *);
 extern float ProbeGroundHeight(void *, int, float);
-extern void build_symmetric_adjacency_masks(int *list, int n, int idx);
+
 extern int compute_clear_path_point_mask(float, int *, int, int, void *);
 extern void update_gadgebot_glow_effects(char *);
 
 extern int IsPointInPolygon(void *, void *, int);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
-extern float randf_sym(float lo, float hi);
+
 extern int follow_path(int *, int, int, void *, void *, void *, float);
 extern void resolve_point_path_segment_xy_clearance(float, int, void *, void *);
-extern float fast_atan2(float, float);
+
 extern float FastAddRots(float, float);
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
 extern int move_w(void *, void *, void *, void *, float);
@@ -1393,7 +1400,7 @@ extern char *spawn_source_attached_fading_effect_particle(float, char *, int, in
 extern int mine_fall(void *, void *);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern float random_float_between(float, float);
-extern void add_vectors(void *, void *, void *);
+
 extern void PartType53Spawn(void *, int, float, float, int, int, int, float, void *);
 extern int process_gadgebot_interactions(void *, int);
 extern float FastVecDist(void *, void *);
@@ -2119,7 +2126,7 @@ void GadgebotUpdate(Moby *moby) {
     d->f2F0.q = d->f2E0.q;
     d->f2E0.q = *(u128 *)(*(float (*)[4]) & moby->pos);
 }
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
 extern char referencePosition[];
 /* scores a target moby by distance, heading differences and flags */
@@ -2593,7 +2600,6 @@ int func_L06_002F4720_r(char *moby, int flag) {
     }
     return iter.out;
 }
-extern float fast_atan2(float, float);
 
 /* Scores a candidate target and keeps it if it beats the best so far. */
 void consider_moby_target_candidate(char *a, char *b, char *c, int *out, float *best, float thresh) {
@@ -3084,7 +3090,6 @@ void update_energy_sphere_holder_beam_effects(char *m) {
     }
 }
 extern int is_point_inside_clip_volume(void *, int);
-extern void FadeToBlack(int);
 
 extern void HeroL06_TrySetMoveState(int, int);
 
@@ -3142,7 +3147,7 @@ void update_hero_trigger_volume_monitor(char *m) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_energy_sphere_destruction_particles(char *m);
 extern int Moby_PlaySound(int, int, int);
-extern void Sound_StopSlot(int);
+
 extern void set_moby_color(void *, int, int, int);
 extern float FastAddRots(float, float);
 extern int Sound_IsPlaying(void *, int);

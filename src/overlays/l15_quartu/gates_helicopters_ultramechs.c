@@ -10,6 +10,13 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/radial_particle_burst.h"
 #include "overlays/shared/rocket_and_path_camera.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Quartu helicopter: hit response, knockback and recoil. */
 struct HelicopterVars {
@@ -84,7 +91,7 @@ extern float FastSin(float);
 extern void FastVecAdd(void *, void *, void *);
 extern int Moby_PlaySound(int, int, int);
 extern int is_point_inside_clip_volume(void *, int);
-extern void Sound_StopSlot(int);
+
 extern unsigned char hero_globals_base[];
 extern unsigned char help_stats_base[] NOT_SDA;
 #define D_0013F3D0 (D_0013E633 + 0xE9D)
@@ -531,9 +538,9 @@ extern void add_vectors(void *, void *, void *);
 extern void clear_u64_value(void *);
 extern float FastCos(float);
 extern float FastSin(float);
-extern float random_float_between(float, float);
+
 extern float random_angle_radians(void);
-extern int random_integer_below(int);
+
 extern int rand_range(int, int);
 extern int DefaultVtbl_DeleteMoby(float, int, int);
 extern int scale_ticks(int);
@@ -698,12 +705,12 @@ extern int g_current_level_index MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecScale(void *, void *, float);
 extern float FastVecLength(void *);
-extern float random_float_between(float, float);
+
 extern float FastCos(float);
 extern float FastSin(float);
 extern void add_vectors(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
-extern int random_integer_below(int);
+
 extern int rand_range(int, int);
 extern void *spawn_debris_moby(void *, void *, int, float, int, float, float, float, int);
 extern void clear_u64_value(void *);
@@ -1353,7 +1360,7 @@ extern char *create_class_55b_moby_from_source(char *a0);
 extern void FindNearestTargetMoby(void *, float *, float);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
 extern void AttachManipulator(char *, int, unsigned char *);
-extern int count_active_moby_group_members(int, int);
+
 extern void find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
 extern float IntToFloat(int);
 extern int IsPointInPolygon(void *, void *, int);
@@ -1362,7 +1369,7 @@ extern char *spawn_homing_spark_projectile(char *a, char *pos, int c, int d, flo
 extern void start_blarg_commander_knockback(void *, struct Moby *);
 extern void DetachManipulator(void *, void *);
 extern void set_ground_height_band(void *);
-extern float FastAbsF(float);
+
 extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *, void *);
 extern void matrix_from_basis_rows(void *, void *);
@@ -1778,7 +1785,7 @@ extern void RerollEffectCounter(void *m, short *p);
 extern float FastSubRots(float, float);
 extern float FastCos(float);
 extern float FastSin(float);
-extern float FastAbsF(float);
+
 extern int scale_ticks(int);
 extern void StepColorFade(void *, void *);
 
@@ -1969,12 +1976,12 @@ typedef struct {
 } UPaths;
 
 extern void process_ultramech_hits_and_update_target(void *);
-extern void Sound_StopSlot(int);
+
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern int func_001160D8(void);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
-extern int count_active_moby_group_members(int, int);
+
 extern int IsPointInPolygon(void *, void *, int);
 extern float FastVecDist(void *, void *);
 extern void FastVecSub(void *, void *, void *);
@@ -2009,8 +2016,7 @@ extern void *SpawnBreakFragment(void *, int, void *, void *, int, int, float, vo
 
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
-extern float random_float_between(float, float);
-extern int random_integer_below(int);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern int rand_range(int, int);
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
@@ -2857,7 +2863,7 @@ void PoisonVesselUpdate(Moby *moby) {
 extern void initialize_moby_particle_effect(char *);
 extern void DeleteMoby(void *);
 extern void emit_moby_sprite_particles(char *);
-extern void StartCutscene(int);
+
 extern void ShowBanner(int, int);
 extern void grant_inventory_item(int, int);
 extern int memcard_Save(int, int);
@@ -3115,13 +3121,10 @@ extern unsigned char saved_mission_state[];
 extern short quartu_alarm_on;
 extern char *quartu_cuboids MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
-extern void jet_clear_persistent(int idx);
-
-extern void PlayMovieEntryIfIdle(int);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void unlock_planet(int);
-extern void jet_reset_camera(void *a0, void *a1);
+
 extern void queue_planet_unlock_message(int a);
 extern int memcard_Save(int slot, int flags);
 extern void AddDrawCallback(void (*)(void), void *);

@@ -10,6 +10,15 @@
 #include "overlays/shared/gadgebot_containers_and_frog.h"
 #include "overlays/shared/point_lights_and_glows.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "asm_functions/level_06.h"
+#include "data/level_07.h"
+#include "game/fastfunc.h"
+#include "game/hud.h"
+#include "overlays/shared/candidate_adjacency_masks.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
     u8 pad_00[0x20];
@@ -141,7 +150,7 @@ extern int truncate_float_to_s32(float);
 extern int scale_ticks(int);
 extern u64 GetEffectTex(int);
 extern void draw_world_quad(void *, int, int);
-extern float normalize_angle(float);
+
 extern float FastCos(float);
 extern float FastSin(float);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -466,7 +475,6 @@ void add_random_xy_offset(float *out, float value) {
 extern void *collect_snagglebeast_navigation_ids(void *, void *, void *);
 extern int follow_path(void *, void *, int, float, void *, void *, void *);
 extern int select_point_index_by_distance(void *, void *, float);
-extern char *umbris_paths[];
 
 /* Finds where a path leaves the object's current segment and copies the point out. */
 void select_snagglebeast_chase_waypoint(char *m, char *a, void *b, void *c) {
@@ -579,7 +587,7 @@ float func_L07_00315108_r(struct ChaserAnim_315108 *a, struct ChaserSpeed_315108
 }
 extern float fast_atan2(float, float);
 extern float FastDiffRots(float, float);
-extern int rand_range(int, int);
+
 extern void MobyBlendAnimation(void *, int, int, int);
 
 /* latches onto a target when it is turned toward enough, then picks a turn animation */
@@ -675,14 +683,14 @@ extern void process_snagglebeast_damage(void *, void *, void *);
 extern void FindNearestTargetMoby(void *, void *, float);
 extern int fast_subtract_rotations_cf(void *);
 extern int FastDecTimer(void *);
-extern float FastAbsF(float);
+
 extern int truncate_float_to_s32(float);
 extern void suck_beam_queue_draw(int);
 extern int Moby_PlaySound(int, int, int);
-extern void Sound_StopSlot(int);
+
 extern void AddDrawCallback(void (*)(), void *);
 extern int queue_animation_update(int, int, int, int, int, int, int);
-extern void build_symmetric_adjacency_masks(int *, int, int);
+
 extern void suck_reset(void *);
 extern int func_001160D8(void);
 extern int fast_dec_timer(int *);
@@ -710,8 +718,6 @@ extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(v
 extern void RerollEffectCounter(void *, short *);
 extern void set_moby_dialogue_record_value(void *, int);
 extern void SetDeathBits(void *, int, int);
-extern void jet_clear_persistent(int);
-extern void jet_reset_camera(void *, void *);
 
 extern float FastAddRots(float, float);
 extern float update_snagglebeast_rope(void *, void *);
@@ -720,7 +726,7 @@ extern void rand_vec(float *, float, float);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern float jump_speed_4318(void *, void *, void *, float, float);
 extern char *spawn_on_path(void *, int, int, int);
-extern void Hud_SetBarValueById(int, int);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 
@@ -732,7 +738,7 @@ extern void draw_collision_clipped_moby_beam();
 extern void draw_and_probe_snagglebeast_rope_attack();
 
 extern void Hud_UpdateCounter();
-extern void draw_segmented_hud_meter_base();
+
 extern char debris_far_point[];
 extern float frame_scale MACRO_ADDR;
 extern char voice_pool[];

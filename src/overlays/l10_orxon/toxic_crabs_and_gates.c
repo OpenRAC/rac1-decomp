@@ -9,6 +9,12 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/radial_particle_burst.h"
 #include "overlays/shared/rocket_and_path_camera.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_10.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 /* Configurable spark emitter: one burst source at the moby, or one per point of a path. */
 struct ParticleEmitterVars {
@@ -112,7 +118,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern char *orxon_mobys_c __asm__("D_L10_00160058") MACRO_ADDR;
 extern int orxon_frame_count MACRO_ADDR;
 extern float orxon_zero_vec[] MACRO_ADDR;
-extern char ground_hit[];
+
 extern char orxon_camera_pos[];
 extern short toxic_crab_scale;
 extern short toxic_crab_death_knockback_gravity_gp;
@@ -126,7 +132,7 @@ extern void emit_moby_particles(void *);
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern float FastVecDist(void *, void *);
 extern int coll_line(void *, void *, int, void *, void *);
-extern float FastAbsF(float);
+
 extern s32 is_moby_in_class_range_500_to_540(s32);
 extern s32 truncate_float_to_s32(f32);
 extern void MoveCtl_Init(char *p);
@@ -134,11 +140,11 @@ extern void MobyBlendAnimation(void *, int, int, int);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern int scale_ticks(int);
 extern void activate_waiting_moby_group_members(unsigned char *m);
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern int fast_dec_timer(void *);
 extern float vec_distance_xy(void *, void *);
-extern float fast_atan2(float, float);
+
 extern float ApproachValue(float *p, float target, float maxstep);
 extern float FastDiffRots(float, float);
 extern float compute_toxic_crab_group_approach_angle(char *self);
@@ -147,15 +153,15 @@ extern float FastSin(float);
 extern void FastVecAdd(void *, void *, void *);
 extern void clear_u64_value(void *);
 extern int move_w(void *, void *, void *, void *, float);
-extern int random_integer_below(int);
+
 extern float MobyGetFrameValue(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 extern float FastAddRots(float, float);
 extern int mine_fall(void *, void *);
-extern void add_vectors(void *, void *, void *);
+
 extern float ProbeGroundHeight(void *, int, float);
-extern int CollType(void);
+
 extern void trooper_set_knockback(float *p, float a, float b);
 
 extern void InitKnockback_b(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
@@ -166,7 +172,7 @@ extern void SetDeathBits(void *, int, int);
 
 extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
-extern float randf_sym(float lo, float hi);
+
 extern void DeleteMoby(void *);
 extern void set_ground_height_band(void *);
 
@@ -1133,7 +1139,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
 }
 extern unsigned char hero_globals_base[];
 extern short toxic_crab_group_spread_deg;
-extern short *orxon_moby_groups[];
+
 typedef struct {
     char p0[0x10];
     float x;
@@ -1143,7 +1149,7 @@ typedef struct {
     char p2[0xDF];
 } Ent;
 extern Ent *orxon_mobys MACRO_ADDR;
-extern float fast_atan2(float, float);
+
 extern float FastVecDist(void *, void *);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -1710,7 +1716,7 @@ void emit_moby_directional_particles(char *m) {
 }
 extern void set_moby_dialogue_record_value(void *, int);
 extern int try_set_help_message(int, int);
-extern void StartCutscene(int);
+
 extern int memcard_Save(int, int);
 extern void ShowBanner(int, int);
 extern unsigned char special_items_base[];
@@ -1965,7 +1971,7 @@ typedef struct {
     u8 collected[1];
 } LevelState_e9648;
 extern LevelState_e9648 orxon_collected_flags_base;
-extern int orxon_moby_killed[];
+
 /* functional: medium. Per-frame update of a pickup/homing moby (states 0 idle, 1 wait, 2 chase one of up to three target mobys, 3 collect: delete the targets and set the saved-collected bits); the meaning of func_L09_00308F58 and of the 0x4/0x8/0xC/0x14 data slots is guessed, the operations follow the assembly. */
 extern float SpringTurn(float *, float, float, float, float, float);
 extern int spawn_class_4ea_projectile(void *, void *, void *, int);
@@ -2509,7 +2515,7 @@ extern short orxon_smoke_time_spread, orxon_smoke_start_color_a, orxon_smoke_sta
     orxon_smoke_end_color_b;
 extern short orxon_smoke_interval_min, orxon_smoke_interval_max;
 extern int FastDecTimer(void *);
-extern float random_float_between(float, float);
+
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
 /* Emits a smoke particle from pos on its timer, when the camera is near and the spot is visible. */

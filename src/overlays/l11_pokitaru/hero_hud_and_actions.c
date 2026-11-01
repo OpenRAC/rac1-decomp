@@ -15,6 +15,11 @@
 #include "overlays/shared/sky_particles.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "structs/hero_views.h"
+#include "data/executable.h"
+#include "data/level_11.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 typedef struct {
     char p0[0xF8];
@@ -25,7 +30,7 @@ typedef struct {
 extern Hero g_hero;
 extern PadState g_controller_state;
 extern S141948 usage_stats;
-extern int last_weapon_id;
+
 extern unsigned char item_available[];
 extern int gBolts MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -39,8 +44,7 @@ extern float pokitaru_hero_fall_state_height MACRO_ADDR;
 extern int pokitaru_shown_help_message MACRO_ADDR;
 extern int pokitaru_hero_run_step1_start_frame MACRO_ADDR;
 extern short pokitaru_hero_double_tap_timer;
-extern float pokitaru_camera_yaw;
-extern int pokitaru_render_setup_packet_default;
+
 extern HeroBoneScalars pokitaru_hero_bones;
 extern HeroIdleFidget pokitaru_idle_fidgets[];
 extern HeroItemDefView pokitaru_item_defs[];
@@ -62,7 +66,6 @@ extern float multiply_global_factor(float);
 extern int Hero_TrySetMoveStateL11(int, int);
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
-extern int rand_range(int, int);
 
 extern void stick_target(int, float);
 
@@ -96,8 +99,7 @@ extern float ApproachValue(float *p, float target, float maxstep);
 extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *v);
-extern float FastAbsF(float);
-extern float random_float_between(float a, float b);
+
 extern void hero_switch_item(int i);
 extern void release_and_clear_hero_voice_slots(void);
 

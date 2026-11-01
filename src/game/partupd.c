@@ -2,14 +2,13 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
+#include "game/mobyutil.h"
 
 /*
  * partupd.cpp in the original source; text 0x219780-0x219C08.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern float random_float_between(float, float);
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 struct Sub {
@@ -40,7 +39,7 @@ extern u8 *particle_texture_ptrs[];
 extern u8 *particle_texture_ptrs_23[];
 extern struct Obj *create_part(s32);
 extern s32 truncate_float_to_s32(f32);
-extern f32 random_float_between(f32, f32);
+
 extern void pack_vector_xyz_with_shared_scale(void *, void *);
 extern void load_display_text_resource_entry(void *, void *);
 

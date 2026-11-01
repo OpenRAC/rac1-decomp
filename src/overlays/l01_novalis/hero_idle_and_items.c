@@ -12,6 +12,9 @@
 #include "overlays/shared/hero_update_ground_material.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/vendor_menu.h"
+#include "asm_functions/shared_levels.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 typedef struct {
     int a;
@@ -22,7 +25,6 @@ typedef struct {
 extern void clear_moby_transform_history(char *o);
 
 extern int scale_ticks(int);
-extern int rand_range(int, int);
 
 extern int get_hero_idle_animation_index(int a);
 extern void clear_u64_value(void *);
@@ -34,9 +36,6 @@ extern void stick_target(float, int);
 extern float FastDiffRots(float, float);
 
 extern int allocate_hero_voice_for_entry(int, int);
-
-extern float fast_atan2(float, float);
-extern float randf_sym(float lo, float hi);
 
 extern void initialize_moby_transform_history(int a, char *b);
 extern void create_moby_transform_history_entry(char *o, int a, int b);
@@ -52,7 +51,6 @@ extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern void RippleDisturb(int, int, int, float, float, float, float);
 
-extern float FastAbsF(float);
 extern void gravity_set_z(float *dst, float *src, float z);
 extern void FastMemSet(void *, int, int);
 extern int novalis_game_mode MACRO_ADDR;

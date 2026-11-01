@@ -7,6 +7,7 @@
 #include "structs/misc.h"
 #include "game/stash.h"
 #include "game/tfragfunc.h"
+#include "data/executable.h"
 
 /*
  * loaders.cpp in the original source; text 0x202AA8-0x205520.
@@ -916,7 +917,7 @@ extern int resident_moby_class_count MACRO_ADDR;
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 extern short resident_class_id_by_slot[];
 extern char *moby_class_resources[] NOT_SDA;
-extern int resident_class_original_field_2c[];
+
 extern void assign_moby_class_data(int);
 extern void prepare_resident_class_render_data(void *, int, int, int);
 
@@ -1412,7 +1413,7 @@ typedef struct {
     short xE;
 } GlyphSrc_04918;
 extern int tfrag_render_record_count MACRO_ADDR;
-extern float tfrag_render_ranges[3];
+
 extern char *tfrag_render_records MACRO_ADDR;
 
 /* Sets up the tfrag render records: stores their count and LOD distances from hdr, relocates each

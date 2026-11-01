@@ -6,6 +6,10 @@
 #include "structs/hero.h"
 #include "game/draw.h"
 #include "game/vuchain.h"
+#include "asm_functions/shared_levels.h"
+#include "core/00119D88.h"
+#include "game/framebuf.h"
+#include "game/hud.h"
 
 typedef struct {
     s32 a, b, c, d;
@@ -509,10 +513,10 @@ extern float level_fog_far_intensity MACRO_ADDR;
 extern char *occlusion_grid MACRO_ADDR;
 extern s32 cinematic_mode MACRO_ADDR;
 extern s32 sound_update(void);
-extern void SetBackgroundColor(s32, s32, s32);
+
 extern void FastVecSub(void *, void *, void *);
 extern float vec_length_xy(void *);
-extern float fast_atan2(float, float);
+
 extern float FastSubRots(float, float);
 extern float IntToFloat(s32);
 extern void UpdateViewContext(void);
@@ -520,11 +524,10 @@ extern void UpdateFog(void);
 extern s32 sprintf(char *, const char *, ...);
 extern double func_00120778(float);
 extern s32 sceOpen(char *, s32, ...);
-extern s32 sceLseek(s32, s32, s32);
+
 extern s32 libc_strlen(char *);
-extern s32 sceWrite(s32, void *, s32);
+
 extern s32 sceClose(s32);
-extern s32 sceRead(s32, void *, s32);
 
 // Handles rendering debug menu navigation, display settings and point files.
 void update_debug_menu(void) {
@@ -1480,7 +1483,6 @@ void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e) {
 }
 extern int measure_text_width_regular(unsigned char *, int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void draw_stretchable_ui_frame(int, int, int, int, int);
 
 extern void FontPrintLarge_c(int, int, long, void *, int) __asm__("func_001F68E8");
 

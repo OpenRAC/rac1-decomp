@@ -10,6 +10,10 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/point_lights_and_glows.h"
+#include "data/executable.h"
+#include "game/framebuf.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/sound_playback.h"
 /* Saved fog settings, restored when the effect ends. */
 struct FogSaveVars {
     u8 pad_00[0x30];
@@ -1434,7 +1438,7 @@ void func_L00_002B5C98_r(Moby *m) {
         data->glow = 0;
     }
 }
-extern void SetBackgroundColor(int, int, int);
+
 extern int level_globals_saved_m __asm__("D_L00_0015F40C") MACRO_ADDR;
 extern float level_fog_near_distance_m __asm__("D_L00_0015F548") MACRO_ADDR;
 extern float level_fog_far_distance_m __asm__("D_L00_0015F54C") MACRO_ADDR;
@@ -1663,8 +1667,7 @@ void update_attached_moby_transform(Moby *m, unsigned char *o) {
     FastVecAdd(*(unsigned char **)(o + 0x20) + 0x10, &r, &m->pos);
     moby_anim_sphere_lerp(*(unsigned char **)(o + 0x20));
 }
-extern unsigned char *spawn_spinning_fade_in_out_effect_particle(void *pos, int spin, int col, float range, float f1,
-                                                                 float f2, float f3, float scale);
+
 extern void FastVecSub(void *, void *, void *);
 extern void clear_u64_value(void *);
 extern float FastVecLength(void *);
@@ -2168,7 +2171,7 @@ extern void MobyBlendAnimation_r3(Moby *, s32, s32, s32) __asm__("func_00213DE0"
 extern s32 Moby_PlaySound_r2(s32, s32, Moby *) __asm__("func_0022ED80");
 extern s32 truncate_float_to_s32(f32);
 extern void apply_taunter_to_nearby_mobies(Moby *, f32);
-extern void Sound_StopSlot(s32);
+
 extern void update_taunter_effect_slots(Moby *);
 extern Hero g_hero_r4 __asm__("D_0013F450");
 extern u32 g_controller_state[];
@@ -2483,7 +2486,7 @@ extern Light_2B8AE8 level_point_lights[];
 extern V_2B8AE8 veldin1_zero_vec MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern f32 spin_particle_speed_decay MACRO_ADDR;
-extern int hero_current_state;
+
 extern char player_camera_up_axis[];
 extern char collision_hit_point[];
 extern Order_2B8AE8 gold_weapon_purchased;
@@ -2517,7 +2520,6 @@ extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
 extern void spawn_color_decaying_effect_particle(void *, void *, int);
 
-extern void Sound_StopSlot(int);
 extern void euler_rotation_basis(void *, void *);
 extern void multiply_matrix3x3(void *, void *, void *);
 extern void moby_build_matrix(Moby *);

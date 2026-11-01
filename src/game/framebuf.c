@@ -4,6 +4,7 @@
 #include "structs/misc.h"
 #include "core/00121D18.h"
 #include "core/00122200.h"
+#include "data/executable.h"
 
 /*
  * framebuf.cpp in the original source; text 0x1FAA28-0x1FBC80.
@@ -90,12 +91,8 @@ extern void *active_fs_aa_buffer MACRO_ADDR;
 extern int display_buffer_address MACRO_ADDR;
 extern int draw_buffer_address MACRO_ADDR;
 extern int depth_buffer_address MACRO_ADDR;
-extern char first_clear_packet[];
+
 extern char second_clear_packet[];
-extern char fs_aa_draw_packet[];
-extern char fs_aa_transfer_packet[];
-extern char fs_aa_resample_packet[];
-extern char fs_aa_clear_packet[];
 
 #define FA ((FsAa_FAB40 *)D_0015EFB8)
 
@@ -293,8 +290,6 @@ void PutDrawBufferLarge(void) {
     }
 }
 
-extern char fs_aa_clear_packet[];
-
 /* Appends a DMA tag pair (0x30000015 / &D_00152140 / 0 / 0x50000015) to
    the packet buffer D_00161000 points at, if there is one. */
 void append_gif_transfer_packet(void) {
@@ -394,8 +389,6 @@ void setup_render_target(int a, int b, int c) {
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
 __asm__(".section .text\n\tnop\n");
 
-extern char fs_aa_draw_packet[];
-
 /* AA_BlurPass(void) */
 void AA_BlurPass(void) {
     g_render_packet_cursor[0] = 0x30000026;
@@ -404,8 +397,6 @@ void AA_BlurPass(void) {
     g_render_packet_cursor[3] = 0x50000026;
     g_render_packet_cursor += 4;
 }
-
-extern char fs_aa_transfer_packet[];
 
 /* Append a DMA tag that calls the frame AA transfer packet to the render packet. */
 void append_palette_transfer_packet(void) {

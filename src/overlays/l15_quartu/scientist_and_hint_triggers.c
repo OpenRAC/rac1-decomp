@@ -8,31 +8,37 @@
 #include "game/draw.h"
 #include "overlays/shared/blarg_commander.h"
 #include "overlays/shared/hero_update_bone_attachment.h"
+#include "asm_functions/level_15.h"
+#include "asm_functions/shared_levels.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/pause_menu.h"
 
 extern void initialize_moby_grounding(char *);
 extern int DialogRequest_Init(void *, void *);
 extern void DeleteMoby(void *);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int Npc_TryStartDialog(void *, void *);
-extern void jet_clear_persistent(int);
-extern void jet_reset_camera(void *, void *);
-extern int count_active_moby_group_members(int, int);
+
 extern int scale_ticks(int);
 extern int fast_dec_timer(void *);
 
 extern void MobySetAnimation(void *, int, int);
-extern void unlock_planet(int);
+
 extern void MusicRequestTrack(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void StartCutscene(int);
-extern void PlayMovieEntryIfIdle(int);
-extern void queue_planet_unlock_message(int);
+
 extern int memcard_Save(int, int);
 extern float vec_distance_xy(float *, float *);
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
 extern float FastVecLength(void *a);
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
 extern float FastAddRots(float, float);
@@ -663,7 +669,7 @@ extern float multiply_global_factor(float);
 extern float FastAddRots(float, float);
 extern float FastSin(float);
 extern void get_moby_color(void *, void *, void *, void *);
-extern float fast_fmod(float, float);
+
 extern float FastNormalizeAngle(float x);
 
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
@@ -853,7 +859,7 @@ int can_spawn_codebot_slot_effect(int index) {
     return *(short *)(data + 0x14) == 3;
 }
 INCLUDE_ASM("asm/overlays", func_L15_002F8D9C);
-extern int test_point_in_transformed_unit_cylinder(void *p, int i);
+
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int test_point_in_transformed_unit_sphere(float *p, int idx);
 extern int IsPointInPolygon(float *p, float *v, int n);
@@ -896,10 +902,10 @@ extern void FastVecSub(void *dst, void *a, void *b);
 extern float FastVecDot(void *a, void *b);
 extern void FastVecScale(void *, void *, float);
 extern float FastVecLength(void *a);
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
 extern float FastArcSin(float x);
-extern float FastAbsF(float);
+
 extern char *quartu_camera_descriptors MACRO_ADDR;
 extern char *quartu_cuboids MACRO_ADDR;
 extern char quartu_player_camera_field_190[];
@@ -1039,4 +1045,3 @@ void func_L15_002F9D38_r(char *m) {
         Cam_SetEyeOffset_r(0, *(float *)(s + 0x44), 0.005f);
 }
 extern char *quartu_camera_moby;
-extern void update_moby_follow_camera(void *);

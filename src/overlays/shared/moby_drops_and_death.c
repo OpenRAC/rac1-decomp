@@ -3,6 +3,8 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "data/shared_levels.h"
+#include "game/mobyutil.h"
 
 ASM_FUNC("asm/overlays", func_L00_00251A78);
 ASM_FUNC("asm/overlays", func_L00_00251B58);
@@ -32,7 +34,7 @@ typedef struct {
     unsigned char tail[8];
 } ItemCount_258250;
 extern ItemCount_258250 item_price_table[];
-extern int random_integer_below(int);
+
 extern unsigned char vendor_stock[] MACRO_ADDR;
 extern unsigned char item_available[];
 extern int weapon_ammo_counts[];
@@ -121,7 +123,7 @@ extern int free_moby_slot_count MACRO_ADDR;
 extern int level_moby_killed[][64];
 extern unsigned char saved_mission_state[][16];
 extern short bolt_source_stats[][64][2];
-extern int session_moby_killed[];
+
 typedef struct {
     unsigned char p[0x454];
     unsigned char a[1];

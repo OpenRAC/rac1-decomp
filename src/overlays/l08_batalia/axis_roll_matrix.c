@@ -2,11 +2,12 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "asm_functions/shared_levels.h"
 
 extern void set_identity_matrix(void *);
-extern float fast_atan2(float, float);
+
 extern void euler_to_matrix(void *, void *);
-extern void fast_euler_to_matrix(void *, void *);
+
 extern void transform_vector(void *, void *, void *);
 extern void matrix_from_basis_rows(void *, void *);
 extern void matrix_copy_rows(void *, void *);

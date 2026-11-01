@@ -3,6 +3,8 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 extern struct Hero g_hero_r __asm__("D_0013F450");
 typedef int OvlQuad_B0068 __attribute__((mode(TI)));
@@ -83,7 +85,7 @@ typedef struct {
     s32 unk24;
     s32 unk28;
 } ShotVars;
-extern float random_float_between(float, float);
+
 extern float FastVecDist(void *, void *);
 extern float g_frame_time MACRO_ADDR;
 typedef struct {
@@ -115,7 +117,7 @@ extern void vec_reflect(void *, void *, void *);
 extern f32 FastVecLength(void *);
 extern void vec_scale_to_length(void *, void *, f32);
 extern s32 scale_ticks(s32);
-extern s32 rand_range(s32, s32);
+
 extern void PartType27Spawn(void *, void *, u32, s32, f32);
 
 /* Update of the class 0xB8 shot (spawned by FUN_L04_002aee30): moves along its direction, plays its sound once it starts moving away from the hero within 3 units, dies off the arena, and on a hit (probing for its owner's targets until the timer runs out) bursts into five sparks and is removed.

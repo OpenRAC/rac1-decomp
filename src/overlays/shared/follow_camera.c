@@ -8,6 +8,12 @@
 #include "structs/camera.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/point_lights_and_glows.h"
+#include "asm_functions/shared_levels.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 /* Hydrodisplacer effect emitter: only a spawn countdown. */
 struct HydroEffectVars {
@@ -142,7 +148,7 @@ INCLUDE_ASM("asm/overlays", func_L00_002E17D4);
 extern char g_hero[];
 extern int scripted_camera_move_active MACRO_ADDR;
 extern short gFadeLvl;
-extern void CameraScript2(int);
+
 extern void HeroEnterMoveState(int, int);
 /* Level camera hook for moby A: when the moby's state is 4, clears D_L00_0015F504 and the fade level and runs camera
    script 3; then, if the hero's control mode is 0x13, puts the hero back into move state 0. */
@@ -210,12 +216,10 @@ extern void STUB_printf();
 extern void DeleteMoby(void *);
 extern void emit_moby_color_cycling_particles_r(void *) __asm__("func_L00_002E1C38");
 extern f32 vec_distance_xy(void *, void *);
-extern f32 FastAbsF(f32);
-extern void StartCutscene(s32);
-extern void ShowBanner(s32, s32);
+
 extern void grant_inventory_item(s32, s32);
 extern void Help_Request(s32, s32);
-extern void jet_clear_persistent(s32);
+
 extern void memcard_Save(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e03a0. */
@@ -292,7 +296,7 @@ extern float g_debug_camera[];
 extern void FastVecSub(float *, float *, float *);
 extern void FastVecAdd(void *, void *, void *);
 extern float IntToFloat(int);
-extern float FastAbsF(float);
+
 extern int FastTweenColor(int, int, float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode);
@@ -1079,7 +1083,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, float, in
                             int, int, int, int);
 extern int coll_sphere_s(void *, float, int, void *) __asm__("func_L00_001F10E0");
 extern float FastVecDot(void *, void *);
-extern void vec_reflect(void *, void *, void *);
+
 extern void FastVecCross(void *, void *, void *);
 extern void build_quaternion_from_axis_angle(void *arg0, void *axis, float angle);
 extern void quaternion_to_matrix(void *, void *);
@@ -1660,7 +1664,7 @@ extern short follow_cam_target_angle_min;
 extern short follow_cam_target_angle_max;
 extern short follow_cam_slam_target_lerp;
 extern void lerp_vector(float, void *, void *, void *);
-extern float FastAbsF(float);
+
 extern float IntToFloat(int);
 extern int coll_sphere(float, void *, int, void *);
 extern int FastDecTimer(void *);
@@ -3165,7 +3169,7 @@ typedef float V4[4] __attribute__((aligned(16)));
 extern int coll_sphere_b(void *, int, void *, float) __asm__("func_L00_001F10E0");
 extern int reject_follow_camera_first_step_backward_hit_f(void *, int, float *, float) __asm__("func_L00_002E8E78");
 extern int adjust_follow_camera_orbit_probe_for_collisions(void *, void *, int, float, float);
-extern float FastAbsF(float);
+
 extern int gCamSphereMaskLvl MACRO_ADDR;
 extern V4 collision_hit_point;
 extern short follow_cam_min_distance_gp;
@@ -3641,7 +3645,6 @@ extern float FastArcSin(float x);
 extern void FastVecCross(void *, void *, void *);
 extern float FastSubRots(float, float);
 extern float CubicInterpolate(float a, float b, float c, float d, float t);
-extern float FastAbsF(float);
 
 /* Measures the signed angle between two offsets of an object's data relative to an axis, and (within the limit) stores a scaled blend in the object's data. */
 float update_follow_camera_angle_blend_from_direction(char *a0, float *a1, float lim) {
@@ -3795,7 +3798,7 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) {
     }
 }
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
-extern float fast_atan2(float, float);
+
 extern float FastAddRots(float, float);
 extern short follow_cam_turn_stiffness;
 extern short follow_cam_turn_damping;
@@ -4049,7 +4052,7 @@ void follow_camera_build_view(int a_) {
     vec_scale_to_length(p10, p10, 1.0f);
     FastVecCross(p20, p10, p);
 }
-extern float FastAbsF(float);
+
 extern void Cam_SetDistanceGoal(float, float, int);
 extern char hero_globals_base[] NOT_SDA;
 extern short follow_cam_distance_stiffness;

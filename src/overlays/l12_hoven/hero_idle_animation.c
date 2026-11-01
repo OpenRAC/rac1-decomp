@@ -10,6 +10,11 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/hero_update_ground_material.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_12.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/hero_move_impulse.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 typedef struct {
     int a;
@@ -20,9 +25,7 @@ typedef struct {
 extern void clear_moby_transform_history(char *o);
 
 extern int scale_ticks(int);
-extern int rand_range(int, int);
 
-extern int hero_get_gadget_anim_id(int a);
 extern void clear_u64_value(void *);
 extern void set_hero_animation(int, int, float);
 extern void MobyBlendAnimation(void *, int, int, int);
@@ -33,9 +36,7 @@ extern float FastDiffRots(float, float);
 
 extern int allocate_hero_voice_for_entry(int, int);
 
-extern float fast_atan2(float, float);
 extern float FastVecDist(void *, void *);
-extern float randf_sym(float lo, float hi);
 
 extern void initialize_moby_transform_history(int a, char *b);
 extern void create_moby_transform_history_entry(char *o, int a, int b);
@@ -51,7 +52,6 @@ extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern void RippleDisturb(int, int, int, float, float, float, float);
 
-extern float FastAbsF(float);
 extern void gravity_set_z(float *dst, float *src, float z);
 extern int hoven_cinematic_mode MACRO_ADDR;
 extern int hoven_water_patches MACRO_ADDR;
@@ -67,7 +67,7 @@ extern char hero_globals_base[];
 extern char help_stats_base[];
 extern char item_usage[];
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern short hoven_look_stat_timer;
+
 extern short hoven_hero_idle_anim_modes;
 extern short hoven_hero_state_f_jump_velocity_keys;
 extern char hoven_hero_state_d_jump_velocity_keys[];

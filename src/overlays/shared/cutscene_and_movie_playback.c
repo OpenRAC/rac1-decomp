@@ -19,6 +19,10 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "data/shared_levels.h"
+#include "game/draw.h"
+#include "game/fastfunc.h"
+#include "game/pause.h"
 
 extern int level_reset_counter_524 MACRO_ADDR;
 extern int radial_select_auto_close_flag[];
@@ -132,7 +136,6 @@ extern char level_profile_mark_after_parts[];
 extern char level_profile_mark_after_camera[];
 extern char level_profile_mark_after_sound[];
 
-extern void PauseAllSounds(int);
 extern void update_timed_hud_visibility(void);
 extern int show_health_hud_r(void) __asm__("func_L00_00235790");
 extern void hud_keep_visible(int, int);
@@ -334,10 +337,7 @@ extern int lvl_vu_chain_buffer_size MACRO_ADDR;
 extern float big_head_cutscene_fov_scale MACRO_ADDR;
 extern char cutscene_state[];
 extern char extra_scale_manipulator[];
-extern char hero_scale_manipulator[];
-extern char cheat_scale_manipulator[];
-extern char cheat_scale_manipulator_class_555[];
-extern char cheat_scale_manipulator_class_1a3[];
+
 extern int lvl_resource_buffers[];
 extern unsigned char player_camera[];
 extern char *active_scene_trigger_target;
@@ -348,7 +348,7 @@ extern void FastMemSet(void *, int, int);
 
 extern void start_cutscene_chunk_read(int);
 extern int scale_ticks(int);
-extern void FadeToBlack(int);
+
 extern void sound_update(void);
 extern void Music_ContinueStreamIfReady(void);
 extern int update_audio_stream_until_idle(int);
@@ -438,13 +438,12 @@ void StartCutscene(int arg) {
     }
 }
 extern void calculate_dma_transfer_address(void);
-extern void FadeToBlack(int);
+
 extern void reset_frame_counters(void);
 extern void UpdateViewContext(void);
 extern void DeleteMoby(void *);
 extern int HeroEnterMoveState(int, int);
 extern float ProbeGroundHeight(void *, int, float);
-extern float FastAbsF(float);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
 

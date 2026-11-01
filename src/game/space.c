@@ -15,6 +15,10 @@
 #include "game/sound.h"
 #include "game/vuchain.h"
 #include "structs/disc.h"
+#include "data/executable.h"
+#include "game/fastfunc.h"
+#include "game/loaders.h"
+#include "game/mobyutil.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -28,7 +32,6 @@ extern void FastMemCopy(void *, void *, int);
 
 extern void FastMemSet();
 
-extern short draw_enable_mask;
 extern void append_gif_transfer_packet(void);
 
 extern int GetEffectTex(int);
@@ -51,8 +54,6 @@ extern int g_hero_moby NOT_SDA;
 extern void flush_cache(int);
 
 extern int func_001160D8(void);
-
-extern float random_float_between(float, float);
 
 extern void fast_vec_normalize(void *, void *, float);
 
@@ -612,7 +613,6 @@ extern void update_moby_animation_state(void *);
 extern void refresh_moby_spatial_bounds(void *);
 extern void MobyTransformScaledVertex();
 extern float IntToFloat(int);
-extern void parse_space_scene_chunk(s32);
 
 void update_level_gameplay_frame(void) {
     LevelFrame_V4 first_position;
@@ -923,7 +923,7 @@ void render_level_frame(void) {
 
 extern float flare_spark_offsets[][6][4];
 extern float g_frame_time MACRO_ADDR;
-extern int random_integer_below(int);
+
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 /* Spawns six particles around a moby: random velocity and a position taken from the flare corner table, transformed by the moby's matrices. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/effects/fun_0022f5b0.c, FUN_0022f5b0. */
@@ -1895,7 +1895,7 @@ extern s32 g_gs_texture_allocation_start MACRO_ADDR;
 extern s32 g_game_language MACRO_ADDR;
 extern u8 coll_output_aux_buffer[];
 extern u8 resident_class_material_maps[0xE00];
-extern s32 resident_class_original_field_2c[];
+
 struct CommonArchiveMemory;
 extern struct CommonArchiveMemory level_resource_buffers;
 extern struct DiscTable disc_table;
@@ -1938,7 +1938,7 @@ extern void ParseParticleTexs(s32 hdr, s32 base, s32 src, s32 count);
 extern s32 upload_mip_texture(s32, void *);
 extern void FastMemZero16(void *, s32);
 extern void ResetDrawGlobals(void);
-extern void parse_space_scene_chunk(s32 index);
+
 extern void snd_BankLoadFromEE_CB(s32 cmd, void *arg, s64 data);
 extern void SoundBank_StoreHandle();
 #define sequence (*(f32 *)&D_0015F53C)
@@ -2732,7 +2732,7 @@ extern float env_map_uvs[][2];
 extern float env_map_saved_uvs[][2];
 extern u64 GetEffectTex_r2(int) __asm__("func_001F4868");
 extern void fast_dec_timer(s32 *);
-extern float FastAbsF(float);
+
 extern float FastVecDot(void *, void *);
 extern float IntToFloat(int);
 extern void MobyTransformScaledVertex(EnvironmentMappedObject *, int, void *);

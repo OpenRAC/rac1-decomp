@@ -10,6 +10,14 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/smoke_puff_projectiles.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_12.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/ripple_patches.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Hoven troll walker (same class as TrollVars_e3528 below, which is defined after these functions). */
 struct HovenTrollVars {
@@ -87,16 +95,16 @@ extern float g_frame_time MACRO_ADDR;
 extern char hoven_camera_pos[];
 extern char hoven_ripple_patches[];
 extern int STUB_printf();
-extern void RipplePatchesInit(void *, int);
+
 extern void RescaleFloatTable(float s);
-extern float fast_atan2(float, float);
+
 extern float FastCos(float);
 extern float FastSin(float);
 extern void RipplePatch_ToFixedPoint(float *in, int *out);
 extern void initialize_level_12_slot_grid_neighbors(int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void Group_CopyZToTableSlots(char *moby);
-extern float FastAbsF(float);
+
 extern int random_integer_below(int);
 extern float random_float_between(float, float);
 extern void RippleDisturb(void *, int, int, float, float, float, float);
@@ -273,7 +281,6 @@ typedef struct {
     char rest[0x1170];
 } Ent_002C0940;
 extern Ent_002C0940 hoven_ripple_patches_e[] __asm__("D_L12_001CC1C0");
-extern float FastAbsF(float);
 
 /* clears entry arg's eight neighbour links, then records which of the 17 entries sit one grid step away */
 void initialize_level_12_slot_grid_neighbors(int arg) {
@@ -955,7 +962,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int IsPointInPolygon(void *, void *, int);
 extern float FastVecDist(void *, void *);
-extern char *hoven_paths[];
 
 // steers a moby along a path using its velocity and returns a status code
 int move_hoven_anklebiter_toward_heading(char *moby, float target) {
@@ -1375,15 +1381,13 @@ typedef struct {
 extern Moby *hoven_mobys_r __asm__("D_L12_00160058") MACRO_ADDR;
 extern Path_2E51E8 *hoven_paths_r2[] __asm__("D_L12_001B0C30");
 extern int count_active_moby_group_members(int, int);
-extern float fast_atan2(float, float);
 
 extern void steer_platform_toward_target_r(void *, void *, void *, int, int) __asm__("func_L12_002E4F18");
 extern float FastAddRots(float, float);
-extern float FastAbsF(float);
-extern void LerpVec4(void *, void *, void *, float);
+
 extern int fast_dec_timer(int *arg0);
 extern float FastVecLength(void *a);
-extern int coll_point_query_stub(void *, int, int, void *, int);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 extern void DeleteMoby(void *);
@@ -1627,8 +1631,7 @@ extern void initialize_moby_grounding(void *);
 extern int Npc_TryStartDialog(void *, void *);
 
 extern void ShowBanner(int, int);
-extern void jet_clear_persistent(int);
-extern void jet_reset_camera(void *, void *);
+
 extern int memcard_Save(int, int);
 extern float FastDiffRots(float, float);
 extern float multiply_global_factor(float);
@@ -1844,8 +1847,7 @@ extern void process_blarg_trooper_damage_and_alerts(char *moby);
 extern void FindNearestTargetMoby(char *, float *, float);
 extern void MoveCtl_Init(void *);
 extern int func_001160D8(void);
-extern int rand_range(int, int);
-extern float randf_sym(float, float);
+
 extern float ProbeGroundHeight(void *, int, float);
 
 extern int test_point_within_moby_limits(void *, void *, float, float, float);
@@ -2490,7 +2492,7 @@ void process_blarg_trooper_damage_and_alerts(char *moby) {
     ((struct Moby *)moby)->hit_slot = 0xFF;
     StepColorFade(moby, vars->anim);
 }
-extern float fast_atan2(float, float);
+
 extern float FastSubRots(float, float);
 
 // Steers a moby's two turn-rate fields from the clamped heading error to a point.
@@ -2511,7 +2513,6 @@ typedef struct {
     char pad0[0x248];
     void *child;
 } Level12VendorData;
-
 
 extern void SetDeathBits(Moby *, int, int);
 extern void DeleteMoby(void *);
@@ -2557,7 +2558,7 @@ void ease_blarg_trooper_height_to_ground(char *moby) {
 }
 extern f32 g_frame_time_sq MACRO_ADDR;
 typedef int OvlQuad __attribute__((mode(TI)));
-extern char *hoven_paths[];
+
 extern void SteerAngleWithVelocity(void *, void *, float, float, float, float);
 extern void move_moby_along_heading(void *, void *);
 
@@ -2645,7 +2646,7 @@ extern int g_current_level_index MACRO_ADDR;
 extern void Manipulator_ApplyScale(float, void *, int, void *);
 extern void process_blarg_helicopter_hits(char *);
 typedef int (*Fn_ED80)(int, int, void *);
-extern void Sound_StopSlot(int);
+
 extern void start_blarg_commander_knockback(void *, void *);
 extern char *create_class_55b_moby_from_source(void *);
 extern void cache_consecutive_point_distances(int);
@@ -3137,7 +3138,7 @@ void update_blarg_helicopter_motion_tilt(char *moby) {
         SpringTurn((float *)(data + 0x98), m->rot.x, target_rotation_x, k1, rotation_x_damping, rotation_x_step_limit);
 }
 void func_L12_002EC180_EC2E8(struct Moby *moby) __asm__("func_L12_002EC180");
-extern char *hoven_paths[];
+
 extern void FindNearestTargetMoby(char *, float *, float);
 extern float SpringTurn(float *, float, float, float, float, float);
 typedef struct {
@@ -3190,7 +3191,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void Moby_PlaySound(int, int, int);
 extern void RerollEffectCounter(void *m, short *p);
-extern float FastAbsF(float);
+
 extern void StepColorFade(void *, void *);
 
 typedef struct MobyHitRecord {
@@ -3278,7 +3279,7 @@ typedef struct Helper_2EC8F0 {
 } Helper_2EC8F0;
 
 extern void attach_shared_manipulator_to_matching_class_moby(char *);
-extern void grant_inventory_item(int, int);
+
 extern Helper_2EC8F0 *CreateMoby_r2(int) __asm__("func_0020D348");
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern unsigned char race_gates_base_r[] __asm__("D_0013D605");

@@ -1,6 +1,8 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
+#include "data/executable.h"
 
 /*
  * core_text object 0x11CCE0-0x11D0D0. Boundaries are retail's linker fill
@@ -13,12 +15,8 @@
  * EE29_CORE), like the prebuilt libkernl.a.
  */
 
-
-extern char sif_lib_version_string[];
-
 extern int sceSifBindRpc();
 extern int sif_call_rpc();
-extern void *memcpy(void *, const void *, unsigned int);
 
 extern int lf_bind_state;
 extern char lf_rpc_client[];

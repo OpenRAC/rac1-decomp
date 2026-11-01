@@ -2,6 +2,8 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "core/001208E8.h"
+#include "core/00119D88.h"
+#include "data/executable.h"
 
 /*
  * core_text object 0x1208E8-0x121750. Boundaries are retail's linker fill
@@ -143,9 +145,6 @@ void cd_read_end_callback(int arg0) {
 }
 
 extern int cd_callback_sema;
-extern int cd_ncmd_sema;
-extern int cd_scmd_sema;
-extern int cd_ncmd_busy;
 
 struct SemaParam_120B28 {
     s32 currentCount;
@@ -268,15 +267,13 @@ extern int sceSifBindRpc(void *, unsigned int, int);
 extern void scePrintf();
 extern void signal_semaphore(int);
 
-extern int cd_ncmd_sema;
 extern int cd_ncmd_current;
-extern int cd_debug_level;
+
 extern int cd_ncmd_rpc_bound;
 extern int cd_thread_id;
 extern char cd_thread_status[];
 extern char cd_ncmd_sema_fail_msg[];
 extern char cd_ncmd_bind_error_msg[];
-extern char cd_ncmd_rpc_client[];
 
 /* _sceCd_scmd_prechk (libcdvd.a cdvd000.o) */
 int cd_ncmd_prechk(int arg0) {
@@ -356,7 +353,6 @@ int cd_ncmd_disk_ready(void) {
 }
 
 extern char cd_ncmd_wait_msg[];
-extern int cd_debug_level;
 
 /* sceCdSyncS */
 int sce_cd_sync_s(int arg0) {
@@ -375,9 +371,7 @@ int sce_cd_sync_s(int arg0) {
     return 0;
 }
 
-extern int sce_sif_check_stat_rpc(void *);
 extern char cd_scmd_wait_msg[];
-extern char cd_scmd_rpc_client[];
 
 /* sceCdSync */
 int cd_scmd_sync(int arg0) {
@@ -393,7 +387,6 @@ int cd_scmd_sync(int arg0) {
     return sce_sif_check_stat_rpc(cd_scmd_rpc_client);
 }
 
-extern int cd_scmd_sema;
 extern int cd_scmd_current;
 extern char cd_scmd_sema_fail_msg[];
 extern char cd_scmd_bind_error_msg[];
@@ -448,10 +441,10 @@ extern int cd_read_mode_flags;
 extern int cd_poweroff_installing;
 extern int cd_poweroff_installed;
 extern int cd_callback_sema;
-extern int cd_scmd_sema;
+
 extern char cd_init_rpc_client[];
 extern int cd_init_rpc_send_buffer[];
-extern int cd_scmd_recv_buffer;
+
 extern char cd_bind_error_fmt[];
 extern char cd_exit_message[];
 extern void sceSifWriteBackDCache(void *, int);
@@ -634,7 +627,6 @@ s32 sce_cd_disk_ready(s32 mode) {
 }
 
 extern int cd_scmd_send_buffer;
-extern int cd_scmd_recv_buffer;
 
 extern void sceSifWriteBackDCache(void *, int);
 

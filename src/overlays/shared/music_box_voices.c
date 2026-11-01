@@ -2,6 +2,9 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/hero.h"
+#include "data/level_01.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/sound_playback.h"
 
 typedef struct {
     int cls;
@@ -122,7 +125,7 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
 }
 extern void FastVecSub(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
-extern float FastAbsF(float);
+
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void set_requested_state_and_mark_changes(int a, int b, int c, int d, int e);
@@ -154,9 +157,6 @@ void update_requested_state_from_box_position(char *moby) {
     }
 }
 extern char voice_positions[];
-extern char camera_pos[];
-extern int play_voice(int, int, int, int);
-extern void Sound_StopSlot(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_0030b618.c, FUN_L01_0031a078. */
 void update_listener_following_voice(int a0) {
@@ -180,7 +180,7 @@ void update_listener_following_voice(int a0) {
 }
 extern void FastVecSub(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
-extern float FastAbsF(float);
+
 extern void MusicRequestTrack(int, int);
 
 /* sound instance update: fade/stop test against a listener distance */

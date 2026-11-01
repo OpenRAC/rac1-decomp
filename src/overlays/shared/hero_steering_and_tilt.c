@@ -11,6 +11,9 @@
 #include "overlays/shared/camera_switch_and_update.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "asm_functions/shared_levels.h"
+#include "data/executable.h"
+#include "game/fastfunc.h"
 
 extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -181,7 +184,7 @@ void hero_move_state_velocity(void) {
 }
 extern void stick_target(int, float);
 extern char *find_best_hero_heading_target(float, float, float, float);
-extern float fast_atan2(float, float);
+
 extern char hero_globals_base[];
 
 /* tracks the nearest target for the camera and stores the heading toward it */
@@ -296,8 +299,7 @@ extern void Hero_SetTiltSpringParams(f32, f32);
 extern void set_first_hero_easing_parameters_r(f32, f32) __asm__("func_L00_0020A858");
 extern void set_first_hero_easing_parameters_r2(f32, f32) __asm__("func_L00_0020A858");
 extern void set_first_hero_easing_parameters_r3(f32, f32) __asm__("func_L00_0020A858");
-extern f32 FastAbsF(f32);
-extern f32 fast_atan2(f32, f32);
+
 extern f32 FastSubRots(f32, f32);
 extern f32 FastSin(f32);
 extern f32 FastCos(f32);
@@ -436,7 +438,7 @@ void adjust_hero_pose_targets_from_motion(void) {
         (lean_state_r.f[(0xB68) / 4]) = -x * 0.3f;
     }
 }
-extern float FastAbsF(float);
+
 extern char D_L00_0017A780[];
 extern float g_frame_time MACRO_ADDR;
 #define PF(o) (*(float *)(g + (o)))
@@ -545,9 +547,8 @@ typedef struct {
 } LeanState;
 extern LeanState lean_state_r2 __asm__("D_L00_0017A780");
 extern f32 lean_state_18_scale[];
-extern short sound_volume_10;
+
 extern u8 gCheats_r[] __asm__("D_0015EEB0") MACRO_ADDR;
-extern f32 FastAbsF(f32);
 
 /* In hero state 2, sets the lean values from motion.unk188 (clamped to +-1.4); needs the moby in item slot 3.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00214658.c, FUN_L00_00215ef8. */
@@ -594,7 +595,6 @@ extern char hero_globals_base[] NOT_SDA;
 extern void euler_to_matrix(void *, void *);
 extern void matrix_from_basis_rows(void *, void *);
 extern void transform_vector(void *, void *, void *);
-extern float fast_atan2(float, float);
 
 /* Writes the elevation and -azimuth of the vector in, rotated into the hero moby's frame. */
 void compute_rotated_vector_angles(Vx *in, float *out) {
@@ -611,7 +611,7 @@ void compute_rotated_vector_angles(Vx *in, float *out) {
 }
 extern float FastVecDot(void *a, void *b);
 extern void FastVecCross(void *, void *, void *);
-extern void fast_euler_to_matrix(void *, void *);
+
 extern float SpringAngle(char *, char *, int, float, float, float, float);
 
 typedef struct {
@@ -824,10 +824,9 @@ extern f32 FastVecDot(void *, void *);
 extern f32 FastVecLength(void *);
 extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, f32);
-extern f32 fast_atan2(f32, f32);
+
 extern void FastVecScale(void *, void *, f32);
 extern void clip_hero_velocity_against_probed_surfaces(s32);
-extern f32 FastAbsF(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_002167d0. */
 void update_hero_planar_movement_velocity(void) {

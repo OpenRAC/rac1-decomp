@@ -4,6 +4,10 @@
 #include "structs/hero.h"
 #include "structs/moby.h"
 #include "game/mobyutil.h"
+#include "asm_functions/shared_levels.h"
+#include "data/executable.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
 struct BoltThiefVars {
@@ -928,7 +932,7 @@ extern float FastAddRots(float, float);
 extern void DeleteMoby(void *);
 extern int random_integer_below(int);
 extern void clear_u64_value(void *);
-extern int rand_range(int, int);
+
 extern void PartType11Spawn_r(void *, void *, int, int, int, int, int, int, float, float) __asm__("func_L00_0026B890");
 extern float random_angle_radians(void);
 extern float FastSin(float);
@@ -1153,7 +1157,7 @@ void spawn_gunship_parts(char *m) {
 }
 extern void FastVecAdd(void *, void *, void *);
 extern float FastAddRots(float, float);
-extern float fast_atan2(float, float);
+
 extern short g_frame_time_g __asm__("D_0015EE6C");
 extern short gunship_rotor_spin_speed;
 
@@ -1297,7 +1301,7 @@ void process_gunship_part_hits(struct Moby *moby) {
         Moby_PlaySound(state, 0, moby);
 }
 void func_L08_002E30E8_E3860(struct Moby *moby) __asm__("func_L08_002E30E8");
-extern f32 fast_atan2(f32, f32);
+
 typedef struct {
     struct Moby *part; /* moved along with the anchor's joint */
     struct Moby *anchor;
@@ -1920,7 +1924,7 @@ extern unsigned char *moby_get_ride_transform(int);
 extern void convert_pose_to_reference_local(void *, int, void *, void *, void *, void *);
 extern int transform_attachment_pose(void *, int, void *, void *, void *, void *);
 extern void build_axis_roll_matrix(void *, void *, float);
-extern float FastAbsF(float);
+
 extern float step_angle_toward_target(float *, float, float, int);
 extern void rand_vec(void *, float, float);
 extern unsigned char *PartType53Spawn(float *pos, int a, float f0, float f1, int col, int mode, int b, float *vel,
@@ -1931,7 +1935,7 @@ extern void draw_bolt_counter_hud_panel_r(void) __asm__("func_L00_0023A788");
 extern int queue_animation_update(s32, s32, void *, void *, void *, void *, s32);
 extern void multiply_matrix3x3(void *, void *, void *);
 extern int coll_sphere(float, void *, int, void *);
-extern void vec_reflect(void *, void *, void *);
+
 extern float IntToFloat(int);
 
 extern void euler_to_matrix(float *, float *);
@@ -1964,7 +1968,7 @@ extern KillFlags_4BE8 batalia_checkpoint_level_state;
 extern unsigned char batalia_mission_group_state[] MACRO_ADDR;
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
 extern BoltSourceStats_4BE8 bolt_source_stats[][64];
-extern s32 level_bolts[];
+
 extern int batalia_coll_hit_moby_r __asm__("D_L08_001746D8");
 extern unsigned char gold_bolts_collected[][4];
 

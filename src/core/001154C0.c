@@ -1,5 +1,6 @@
 #include "common.h"
 #include "structs/misc.h"
+#include "core/001154C0.h"
 
 /*
  * core_text object 0x1154C0-0x116070. Boundaries are retail's linker fill
@@ -11,7 +12,6 @@
  * to their last word (func_00115EE0, func_00116068).
  * Built with Sony's 2.9-ee (Makefile.sn, EE29_CORE), like libc.a.
  */
-
 
 void __malloc_lock(void) {
 }
@@ -476,7 +476,6 @@ typedef union {
 
 extern void *_Balloc(void *ptr, int k);  /* Balloc */
 extern int __lo0bits(unsigned int *y);     /* lo0bits */
-extern int __hi0bits(unsigned int x);      /* hi0bits */
 
 Bigint_1154D0 *__d2b(void *ptr, double _d, int *e, int *bits) {
     DUnion_115EE8 d;

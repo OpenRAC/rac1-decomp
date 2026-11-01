@@ -5,6 +5,9 @@
 #include "structs/moby.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/move_control_and_clear_path.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_09.h"
+#include "game/mobyutil.h"
 
 extern float FastSubRots(float, float);
 extern float FastAddRots(float, float);
@@ -15,7 +18,7 @@ void interpolate_rotation_angle(float *dst, float a, float b, float scale) {
     *dst = v;
     *dst = FastAddRots(v, a);
 }
-extern char *gaspar_paths[];
+
 extern float g_frame_time MACRO_ADDR;
 extern float FastVecDist(void *, void *);
 extern void FastVecAdd(void *, void *, void *);
@@ -46,11 +49,11 @@ typedef struct {
 extern short gaspar_shuttle_climb_scale;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, f32);
-extern float fast_atan2(float, float);
+
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern void axis_rotation_2d48(void *, int, float);
 extern float vec_distance_xy(void *, void *);
-extern int random_integer_below(int);
+
 extern void add_random_offset_to_vector_xyz(void *, f32);
 extern void spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
 

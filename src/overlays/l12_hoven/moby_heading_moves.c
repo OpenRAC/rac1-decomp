@@ -4,6 +4,9 @@
 #include "structs/vector.h"
 #include "structs/moby.h"
 #include "game/mobyutil.h"
+#include "asm_functions/shared_levels.h"
+#include "data/level_12.h"
+#include "game/fastfunc.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern f32 FastCos(f32);
@@ -21,9 +24,9 @@ s32 move_moby_along_heading(struct Moby *m, void *ctl) {
     ahead.f[1] += FastSin(m->rot.z) * 100.0f;
     return move_w(m, ctl, &ahead, &out, 1.0f);
 }
-extern float FastAbsF(float);
+
 extern float FastVecDist(void *, void *);
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
 
 /* tests whether a point lies within height, distance and heading limits of a moby */
@@ -66,7 +69,6 @@ void update_moby_bone_attachment(unsigned char *parent, unsigned char *child, in
         *(unsigned short *)(child + 0x34) &= 0xFFBE;
     *(unsigned short *)(child + 0x34) |= 6;
 }
-extern char *hoven_paths[];
 
 // Fills in the per-segment lengths of path record number idx.
 void cache_consecutive_point_distances(int idx) {
