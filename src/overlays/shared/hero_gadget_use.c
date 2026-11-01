@@ -12,7 +12,7 @@
 #include "overlays/shared/morphoray_chicken_and_drones.h"
 #include "overlays/shared/vendor_menu.h"
 #include "asm_functions/shared_levels.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/hero_views.h"
 #include "enums/level.h"

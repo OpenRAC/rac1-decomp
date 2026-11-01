@@ -3,8 +3,8 @@
 #include "include_asm.h"
 #include "structs/vector.h"
 #include "asm_functions/shared_levels.h"
-#include "game/fastfunc.h"
-#include "game/mobyutil.h"
+#include "game/math/fastfunc.h"
+#include "game/moby/mobyutil.h"
 
 typedef struct {
     unsigned char b0, b1, b2, b3;

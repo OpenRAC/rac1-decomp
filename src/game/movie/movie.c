@@ -3,7 +3,7 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "game/movie/movie.h"
-#include "game/pad.h"
+#include "game/system/pad.h"
 #include "asm_functions/executable.h"
 
 extern int decoder_buffer_address MACRO_ADDR;

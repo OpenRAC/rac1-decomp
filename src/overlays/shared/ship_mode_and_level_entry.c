@@ -9,8 +9,8 @@
 #include "asm_functions/executable.h"
 #include "data/executable.h"
 #include "data/shared_levels.h"
-#include "game/loaders.h"
-#include "game/music.h"
+#include "game/system/loaders.h"
+#include "game/audio/music.h"
 #include "enums/level.h"
 
 extern short ship_level_entry_active;

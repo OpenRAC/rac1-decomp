@@ -284,7 +284,7 @@ and stop, rather than spending the budget on it:
 
 - A 128-bit zero store at a non-zero offset (`sq $zero,16(p)`): C adds a
   `por` first, and `qzero()` stores at offset 0 only
-  (`src/game/fastfunc.c`, func_001F9BC0).
+  (`src/game/math/fastfunc.c`, func_001F9BC0).
 - A register allocation that three different wordings leave unchanged
   (`WORKER.md`'s stop rule).
 - Hand-written code: trapping `add`/`addi`, `$at` used as an ordinary

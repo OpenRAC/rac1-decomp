@@ -7,7 +7,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "asm_functions/shared_levels.h"
 #include "data/level_18.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
 

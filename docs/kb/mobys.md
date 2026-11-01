@@ -22,7 +22,7 @@ in-game and must be kept.
 
 ## Memory: the moby array and pvars
 
-(`src/game/mobyfunc.c:141-200`)
+(`src/game/moby/mobyfunc.c:141-200`)
 
 - One array of 0x100-byte slots. `CreateMoby` searches `D_0016001C` ..
   `D_00160020`; `D_00160018` is the slot-index base (`InitMobyInstance`
@@ -39,12 +39,12 @@ in-game and must be kept.
 
 ### Registering a class (level load)
 
-`register_moby_class` (`func_00203E78`, `src/game/loaders.c:973`; takes
+`register_moby_class` (`func_00203E78`, `src/game/system/loaders.c:973`; takes
 the class data, two more arguments and the oClass):
 
 1. Next slot `D_00160000`: fills `D_001B3E40` (oClass -> slot),
    `D_001B3C80` (slot -> oClass), `D_001B3580` (slot -> data).
-2. `func_00213BB8` (`assign_moby_class_data`, `src/game/mobyutil.c:175`)
+2. `func_00213BB8` (`assign_moby_class_data`, `src/game/moby/mobyutil.c:175`)
    looks oClass up in the `{key, a, b}` table `D_001E8F00` (key -1 ends):
    `a` (update function) -> `D_001B3900[slot]`, `b` (6-word table) ->
    `MobyClass.callbacks`.
@@ -53,7 +53,7 @@ the class data, two more arguments and the oClass):
 
 ### Spawning
 
-`CreateMoby` (`func_0020D348(oClass)`, `src/game/mobyfunc.c:188`):
+`CreateMoby` (`func_0020D348(oClass)`, `src/game/moby/mobyfunc.c:188`):
 
 - Takes the first slot with `state >= 0xFE` **and**
   `D_0015F6F0 >= spawn_frame` (`D_0015F6F0` = frame clock).
@@ -83,7 +83,7 @@ The 0x38 store puts 0x40 bytes at 0x3D-0x3F, so 0x38 may hold more than a
 `u64 spawn_frame` (inferred; `DeleteMoby` overwrites all 8 bytes).
 
 Spawners then fill per-use fields. Example: `func_00226720`
-(`spawn_hand_gadget_moby`, `src/game/pause.c:8919`) returns 0 if
+(`spawn_hand_gadget_moby`, `src/game/ui/pause.c:8919`) returns 0 if
 `D_001B3E40[oClass] == 0xFF`; else creates the moby, sets `update_dist =
 draw_dist = 0xFF`, `state = 0`, `visible = 1`, runs the post pass
 `func_0020ED48` once, tints it (`func_0020E340(o, 0x202020, ...)`), and
@@ -136,7 +136,7 @@ for (m = func_0020E6B8(); m != NULL; m = m->next) {   /* head also saved in a $g
   animation/matrix passes. Both read 0x50-0x53; post also reads `unk71`
   and 0xA8. Exact jobs inferred.
 - Also called from pause code (`src/overlays/shared/pause_menu.c:436`,
-  `src/game/pause.c`): some menus keep mobys ticking.
+  `src/game/ui/pause.c`): some menus keep mobys ticking.
 - Changes a moby makes to another are seen by later mobys in the same
   frame.
 

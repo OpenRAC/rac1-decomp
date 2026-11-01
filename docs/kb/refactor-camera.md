@@ -21,7 +21,7 @@ worker rules in `build-sn/refactor/WORKER_BRIEF.md`.
 
 | File | What | C functions |
 |---|---|---|
-| `src/game/camera.c` | the executable's camera unit (`camera.cpp`, text 0x1EC038-0x1EDFF8) | 22 |
+| `src/game/gameplay/camera.c` | the executable's camera unit (`camera.cpp`, text 0x1EC038-0x1EDFF8) | 22 |
 | `src/overlays/shared/camera_switch_and_update.c` | the level copy, shared by all 19 levels (canonical addresses in level 00) | 15 (+7 stubs) |
 | `src/overlays/shared/level_camera_setup.c` | `Camera_InitSlots`, in a file of its own for `-fno-force-mem` (BUILD_FIDELITY.md, "Flags") | 1 |
 | `src/overlays/shared/camera_update_callbacks.c` | `RegisterUniqueCallback` (canonical in level 02) | 1 |
@@ -31,7 +31,7 @@ The executable's `main` only runs before the first level loads; each level
 carries its own build of the game program ([architecture.md](architecture.md#2-level-overlays)).
 So there are two copies of the camera code and of its state:
 
-- the executable's, at `D_00187040` and friends (`src/game/camera.c`);
+- the executable's, at `D_00187040` and friends (`src/game/gameplay/camera.c`);
 - the level build's, at `D_L00_00166D80` and friends in level 00 (other
   levels pack it elsewhere: level 01 at `D_L01_00167180`, level 02 at
   `D_L02_00167300` ...). Shared level code names the level-00 symbol and
@@ -196,7 +196,7 @@ hero), `next_kind` (what the switch asked for), then two halves:
 
 ## 4. The functions
 
-Executable (`src/game/camera.c`), in address order. Callers are from the
+Executable (`src/game/gameplay/camera.c`), in address order. Callers are from the
 retail assembly (`jal`); "level" lists the level copy.
 
 | Address | Name | What | Callers | State |

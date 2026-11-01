@@ -4,7 +4,7 @@
 #include "structs/hero.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "data/shared_levels.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 #include "enums/hero_state.h"
 
 ASM_FUNC("asm/overlays", func_L00_00251A78);

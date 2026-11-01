@@ -10,7 +10,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "data/executable.h"
 #include "data/shared_levels.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "structs/collision.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"

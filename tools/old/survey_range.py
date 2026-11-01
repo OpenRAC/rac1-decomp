@@ -11,7 +11,7 @@ spill style as information only, never as "blocked". An earlier survey of
 range A got this wrong and wrote off 95 functions on that basis.
 
 Usage: python tools/old/survey_range.py <src_file> <segment> <start_hex> <end_hex>
-  e.g. python tools/old/survey_range.py src/game/actuator.c text 0x1E9080 0x1F9B00
+  e.g. python tools/old/survey_range.py src/game/gameplay/actuator.c text 0x1E9080 0x1F9B00
 """
 import re
 import sys

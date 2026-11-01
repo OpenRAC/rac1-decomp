@@ -18,7 +18,7 @@
 #include "structs/hero_views.h"
 #include "data/executable.h"
 #include "data/level_02.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"

@@ -3,7 +3,7 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "asm_functions/executable.h"
-#include "game/hud.h"
+#include "game/ui/hud.h"
 #include "enums/level.h"
 
 typedef struct {

@@ -10,7 +10,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "asm_functions/shared_levels.h"
 #include "data/level_02.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "overlays/shared/camera_modes_and_scripts.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "overlays/shared/moby_ground_collision.h"

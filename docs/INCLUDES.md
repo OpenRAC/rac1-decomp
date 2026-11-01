@@ -28,7 +28,7 @@ Each source file can have a header at the same path:
 
 | Source | Header |
 |---|---|
-| `src/game/draw.c` | `include/game/draw.h` |
+| `src/game/render/draw.c` | `include/game/draw.h` |
 | `src/overlays/shared/sky_particles.c` | `include/overlays/shared/sky_particles.h` |
 
 These hold prototypes for functions that the source file defines. `tools/tidy/move_protos.py` writes them.

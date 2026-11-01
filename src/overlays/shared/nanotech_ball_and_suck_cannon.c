@@ -11,7 +11,7 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "data/shared_levels.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"

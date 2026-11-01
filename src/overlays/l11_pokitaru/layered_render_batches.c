@@ -2,7 +2,7 @@
 #include "common.h"
 #include "structs/moby.h"
 #include "include_asm.h"
-#include "game/draw.h"
+#include "game/render/draw.h"
 #include "overlays/shared/homing_missile_and_water_sheet.h"
 #include "overlays/shared/scoutbot_and_paratrooper.h"
 #include "asm_functions/level_08.h"

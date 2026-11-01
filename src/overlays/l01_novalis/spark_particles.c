@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "overlays/shared/moby_ground_collision.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern unsigned char *create_part(int);

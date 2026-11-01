@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/hero.h"
-#include "game/map.h"
+#include "game/ui/map.h"
 #include "data/shared_levels.h"
 
 extern int hero_control_mode;

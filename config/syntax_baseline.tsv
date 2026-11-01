@@ -1,8 +1,8 @@
 # C files clang cannot parse yet, and how many errors each has (tools/check_syntax.py).
 # GCC 2.95 accepts them. Fix them, then run --update. A count may only go down.
-src/game/draw.c	1
+src/game/render/draw.c	1
 src/game/movie/movie.c	1
-src/game/pause.c	2
+src/game/ui/pause.c	2
 src/overlays/l05_rilgar/sharkigator_and_faucet.c	1
 src/overlays/l07_umbris/snagglebeast.c	1
 src/overlays/l08_batalia/commando_deserter_and_effects.c	2

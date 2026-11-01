@@ -9,8 +9,8 @@
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "asm_functions/level_02.h"
 #include "asm_functions/shared_levels.h"
-#include "game/fastfunc.h"
-#include "game/mobyutil.h"
+#include "game/math/fastfunc.h"
+#include "game/moby/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 

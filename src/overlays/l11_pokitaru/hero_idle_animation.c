@@ -12,7 +12,7 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "asm_functions/shared_levels.h"
 #include "data/level_11.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/hero_state.h"
 

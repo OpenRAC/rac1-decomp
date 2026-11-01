@@ -210,7 +210,7 @@ function match fine — `func_0023BF48` and `func_0023E450` both call the
 varargs `func_001E9730` and are exact. This paragraph used to add that
 only *defining* one was blocked, for lack of `stdarg.h`. That was wrong
 too: `func_001E9730` itself is exact as `void func_001E9730(int arg0,
-...) {}` in `src/game/stub.c`. The ellipsis alone makes the compiler
+...) {}` in `src/game/system/stub.c`. The ellipsis alone makes the compiler
 emit retail's full argument-shadow spill (`$5`-`$11` and
 `$f12`/`$f14`/`$f16`/`$f18`), no body needed. Only a definition that
 actually *reads* its variable arguments (`va_arg`) would need a
@@ -659,7 +659,7 @@ the stubs in `src/` rather than here.
 
 **Update 2026-09-22: superseded by the next section.** The two forms
 are one assembler macro, not two declarations. With `D_0015EFB0`
-declared `MACRO_ADDR` (`src/game/menu.c`), `func_00209418` and all six
+declared `MACRO_ADDR` (`src/game/ui/menu.c`), `func_00209418` and all six
 casualties it describes (`func_002094E0`, `func_00209698`,
 `func_00209808`, `func_00209858`, `func_002098C8`, `func_00209918`) are
 exact, and the monolithic `src/text.c` has since been split per
@@ -1347,7 +1347,7 @@ padding were measured, and all three fail:
 
 So this class needs an assembler that inserts the padding, not a different
 C spelling. The decoded source for `func_00225548` is kept above its stub
-in `src/game/pause.c`, ready if that ever changes.
+in `src/game/ui/pause.c`, ready if that ever changes.
 
 ## Real function names (259), from the NTSC decomp
 

@@ -4,11 +4,11 @@
 #include "structs/vector.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
-#include "game/stash.h"
+#include "game/system/stash.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/shared_levels.h"
-#include "game/fastfunc.h"
-#include "game/mobyutil.h"
+#include "game/math/fastfunc.h"
+#include "game/moby/mobyutil.h"
 #include "enums/level.h"
 
 extern unsigned char *create_part(int);

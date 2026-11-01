@@ -3,10 +3,10 @@
 #include "include_asm.h"
 #include "structs/vector.h"
 #include "structs/moby.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 #include "asm_functions/shared_levels.h"
 #include "data/level_12.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern f32 FastCos(f32);

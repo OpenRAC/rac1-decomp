@@ -4,12 +4,12 @@
 #include "structs/moby.h"
 #include "structs/vector.h"
 #include "structs/hero.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/shared/follow_camera.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "asm_functions/shared_levels.h"
-#include "game/space.h"
+#include "game/system/space.h"
 #include "overlays/shared/moby_ground_collision.h"
 
 extern int cinematic_mode MACRO_ADDR;

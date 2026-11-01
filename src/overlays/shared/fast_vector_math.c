@@ -5,7 +5,7 @@
 #include "core/gs/def_draw_env.h"
 #include "asm_functions/executable.h"
 #include "data/executable.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "structs/gs.h"
 
 ASM_FUNC("asm/overlays", func_L00_001FEF78);

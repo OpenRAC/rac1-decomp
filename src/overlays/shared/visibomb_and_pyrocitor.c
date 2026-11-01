@@ -11,7 +11,7 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/point_lights_and_glows.h"
 #include "data/executable.h"
-#include "game/framebuf.h"
+#include "game/render/framebuf.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"

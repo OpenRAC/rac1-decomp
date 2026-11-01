@@ -1,0 +1,20 @@
+#ifndef GAME_MOBY_MOBYUTIL_H
+#define GAME_MOBY_MOBYUTIL_H
+
+/* Functions defined in src/game/moby/mobyutil.c. */
+
+#include "common.h"
+
+extern float CosineInterpolate(float, float, float);
+extern void blend_moby_animation_ex(void *, int, int, int, int);
+extern s32 compute_clamped_count_difference(void);
+extern void extract_matrix_rotation_quaternion(void *, void *);
+extern int force_help_message(int arg0, int arg1);
+extern void matrix_to_euler(void *, void *);
+extern void normalize_vector_triplet(void *);
+extern float random_float_between(float, float);
+extern s32 random_integer_below(s32);
+extern void random_spherical_offset(void *, float, float);
+extern void rotate_vector_by_quaternion(void *arg0, void *arg1, void *arg2);
+
+#endif /* GAME_MOBY_MOBYUTIL_H */

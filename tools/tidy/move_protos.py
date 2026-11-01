@@ -5,7 +5,7 @@ Move function prototypes that several files declare the same way into one header
   python3 tools/tidy/move_protos.py            # dry run: show counts
   python3 tools/tidy/move_protos.py --write
 
-A function defined in src/game/draw.c goes in include/game/draw.h. A function with no C definition goes in
+A function defined in src/game/render/draw.c goes in include/game/draw.h. A function with no C definition goes in
 include/asm_functions/<part>.h, and data goes in include/data/<part>.h, where <part> is the file of include/names/ its
 name is in. A declaration moves only if:
   - every file declares the same type, and two or more files do. Spelling does not count: s32 is int, and
@@ -82,7 +82,7 @@ def is_function(name, text):
 
 
 def header_of(source):
-    """src/game/draw.c -> game/draw.h"""
+    """src/game/render/draw.c -> game/draw.h"""
     return source[len("src/"):-len(".c")] + ".h"
 
 

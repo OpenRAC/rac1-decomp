@@ -14,7 +14,7 @@
 #include "overlays/shared/numeric_hud_sprites.h"
 #include "asm_functions/shared_levels.h"
 #include "data/level_16.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"

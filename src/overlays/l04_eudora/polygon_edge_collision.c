@@ -3,7 +3,7 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
-#include "game/skyfunc.h"
+#include "game/render/skyfunc.h"
 #include "overlays/shared/sky_particles.h"
 #include "asm_functions/shared_levels.h"
 #include "data/level_04.h"

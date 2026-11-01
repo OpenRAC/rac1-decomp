@@ -8,7 +8,7 @@
 #include "overlays/shared/follow_camera.h"
 #include "asm_functions/shared_levels.h"
 #include "data/level_14.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"

@@ -9,7 +9,7 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/vendor_menu.h"
 #include "asm_functions/shared_levels.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/collision.h"
 #include "enums/moby_class.h"

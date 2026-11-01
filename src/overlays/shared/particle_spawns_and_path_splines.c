@@ -4,8 +4,8 @@
 #include "include_asm.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "data/level_01.h"
-#include "game/fastfunc.h"
-#include "game/mobyutil.h"
+#include "game/math/fastfunc.h"
+#include "game/moby/mobyutil.h"
 
 extern unsigned char *create_part(int);
 

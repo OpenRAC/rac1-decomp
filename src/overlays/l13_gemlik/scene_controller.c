@@ -7,7 +7,7 @@
 #include "overlays/shared/rocket_and_path_camera.h"
 #include "asm_functions/shared_levels.h"
 #include "data/level_13.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 #include "enums/moby_class.h"
 
 /* Hit proxy (moby 0x660): forwards the hits it takes to the moby that owns it. */

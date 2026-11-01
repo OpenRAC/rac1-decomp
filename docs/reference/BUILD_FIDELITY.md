@@ -21,7 +21,7 @@ The default profiles use retail's own compilers:
 
 ### Public frontend for the retained scalar assembly wrappers
 
-`src/game/fastfunc.c` uses the published PS2DEV GCC 3.2.3 frontend, selected
+`src/game/math/fastfunc.c` uses the published PS2DEV GCC 3.2.3 frontend, selected
 for its entire object by `gcc323` in `config/text.objects`. Its file flags
 include `-ffast-math`. This is a C reconstruction path for the retained
 assembly wrappers, not evidence that retail used GCC 3.2.3.
@@ -174,7 +174,7 @@ What that meant for the nine functions that had per-function flags
 | func_L18_002FAEF8 | `-mno-split-addresses` | 7 of 12 | its own file, `bone_glow_quads.c` |
 | func_L00_002E9D78 | `-fno-schedule-insns` | 12 of 53 | its own file, `shared/follow_camera_angle_blend.c` |
 | func_L00_001ED6D8 | `-fno-force-mem` | 8 of 10 | its own file, `shared/level_camera_setup.c` |
-| func_002282D0 (`src/game/pause.c`) | `-mno-split-addresses` | 43 of 124 | retail assembly: pause.c's boundaries are retail's object (from the NTSC split), so the flag cannot be the file's |
+| func_002282D0 (`src/game/ui/pause.c`) | `-mno-split-addresses` | 43 of 124 | retail assembly: pause.c's boundaries are retail's object (from the NTSC split), so the flag cannot be the file's |
 | func_0011CB40 (`src/core/kernel/kprintf.c`, `sceSifInitIopHeap`) | `-fno-schedule-insns` | 18 of 45 | retail assembly: the functions around it in Sony's IOP heap code break with the flag, so nothing shows it was an object of its own |
 
 The two split-off shared files are new units of one function each in the

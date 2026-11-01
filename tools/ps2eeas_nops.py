@@ -89,7 +89,7 @@ from elftools.elf.elffile import ELFFile
 MIN_SPAN = 6
 # Objects whose retail code is hand-written noreorder assembly: rule 3
 # does not apply to their functions.
-NOREORDER_OBJECTS = {"build-sn/game/fastfunc.o"}
+NOREORDER_OBJECTS = {"build-sn/game/math/fastfunc.o"}
 
 
 def noreorder_ranges():
