@@ -2231,17 +2231,10 @@ struct Menu {
     int count;
 };
 typedef struct {
-    char pad0[4];
-    struct Owner *cur;
-    int unk8;
-    char padC[0x118];
-    int unk124;
-} PauseG;
-typedef struct {
     char pad0[0x224];
     int level;
 } LevelG;
-extern PauseG menu_system_g __asm__("D_001D5F70") NOT_SDA;
+extern MenuSystem menu_system_g __asm__("D_001D5F70") NOT_SDA;
 extern PadState g_controller_state_g __asm__("D_0013CA40");
 extern LevelG level_map_selection_lv __asm__("D_001A01F0");
 extern unsigned char level_available[];
@@ -7196,24 +7189,6 @@ typedef struct HandGadgetDefinition {
     s32 oclass;
     u8 pad14[0x38];
 } HandGadgetDefinition;
-typedef struct HandGadgetSelection {
-    u8 pad00[0x1C];
-    s32 current_gadget;
-    u8 pad20[0x10];
-    s32 selected_gadget;
-    s32 attachment_gadget;
-    s32 animation_gadget;
-    s32 pose_gadget;
-    u8 pad40[0x8C];
-    s32 animation_base;
-    u8 padD0[0x48];
-    s32 active_decode_buffer;
-    s32 active_resource_class;
-    s32 requested_resource_class;
-    u8 pad124[0x1C];
-    s32 last_requested_resource_class;
-    s32 last_resource_request_state;
-} HandGadgetSelection;
 typedef struct HandGadgetManipulator {
     u8 pad0;
     u8 active;
@@ -7241,7 +7216,7 @@ extern HandGadgetDefinition item_info_table_r2[] __asm__("D_001864D0");
 extern u8 *moby_class_resources_r2[] __asm__("D_001B3580");
 extern u8 resident_class_slot_by_id[];
 extern HandGadgetAnimation gadget_animations[];
-extern HandGadgetSelection D_001D5F70_255F8 __asm__("D_001D5F70");
+extern MenuSystem D_001D5F70_255F8 __asm__("D_001D5F70");
 extern HandGadgetManipulator class_pose_manipulator_r __asm__("D_001D6160");
 extern HandGadgetManipulator first_attachment_manipulator_r __asm__("D_001D61A0");
 extern HandGadgetManipulator second_attachment_manipulator_r __asm__("D_001D61E0");
@@ -7286,9 +7261,9 @@ s32 LoadHandGadget(HandGadgetState *hand) {
     loaded_gadget = 0;
     moby = hand->class_pose_moby;
     previous_selected_class = (moby != 0) ? (moby->oclass) : (-1);
-    selected_gadget = D_001D5F70_255F8.selected_gadget;
+    selected_gadget = D_001D5F70_255F8.equipped[0];
     selected_class = item_info_table_r2[selected_gadget].oclass;
-    selected_class_ready = selected_class == D_001D5F70_255F8.requested_resource_class;
+    selected_class_ready = selected_class == D_001D5F70_255F8.unk120;
     if ((previous_selected_class != selected_class) && selected_class_ready) {
         delete_moby_r2(moby);
         if (class_pose_manipulator_r.active) {
@@ -7297,12 +7272,12 @@ s32 LoadHandGadget(HandGadgetState *hand) {
         if ((g_hero_r.items[0].item_id != 0) && (selected_gadget != g_hero_r.items[0].item_id)) {
             noop_callback_q(0, 0);
         }
-        active_decode_buffer = D_001D5F70_255F8.active_decode_buffer == 0;
+        active_decode_buffer = D_001D5F70_255F8.resource_table_toggle == 0;
         select_world_object_resource_tables(selected_class, -1);
-        D_001D5F70_255F8.active_resource_class = selected_class;
-        D_001D5F70_255F8.active_decode_buffer = active_decode_buffer;
-        D_001D5F70_255F8.last_requested_resource_class = selected_class;
-        D_001D5F70_255F8.last_resource_request_state = active_decode_buffer;
+        D_001D5F70_255F8.unk11C = selected_class;
+        D_001D5F70_255F8.resource_table_toggle = active_decode_buffer;
+        D_001D5F70_255F8.unk140 = selected_class;
+        D_001D5F70_255F8.last_resource_table_toggle = active_decode_buffer;
         moby_class_resources_r2[resident_class_slot_by_id[selected_class]][0xD] = 0;
         moby = create_menu_preview_moby_r3(selected_class);
         if (moby != 0) {
@@ -7324,13 +7299,13 @@ s32 LoadHandGadget(HandGadgetState *hand) {
     }
     moby = hand->animation_moby;
     previous_animation_class = (moby != 0) ? (moby->oclass) : (-1);
-    requested_class = item_info_table_r2[D_001D5F70_255F8.animation_gadget].oclass;
+    requested_class = item_info_table_r2[D_001D5F70_255F8.equipped[2]].oclass;
     if (previous_animation_class != requested_class) {
         moby = delete_moby_r2(moby);
         if (requested_class != (-1)) {
             moby = create_menu_preview_moby_r3(requested_class);
             if (moby != 0) {
-                loaded_gadget = D_001D5F70_255F8.animation_gadget;
+                loaded_gadget = D_001D5F70_255F8.equipped[2];
                 *((void **)moby->pvars) = hand;
                 (*(void **)&moby->update) = update_menu_preview_animation_transform;
                 moby->flags = 4;
@@ -7340,7 +7315,7 @@ s32 LoadHandGadget(HandGadgetState *hand) {
     }
     moby = hand->first_attachment_moby;
     previous_attachment_class = (moby != 0) ? (moby->oclass) : (-1);
-    requested_class = item_info_table_r2[D_001D5F70_255F8.attachment_gadget].oclass;
+    requested_class = item_info_table_r2[D_001D5F70_255F8.equipped[1]].oclass;
     if (previous_attachment_class != requested_class) {
         moby = delete_moby_r2(moby);
         if (first_attachment_manipulator_r.active) {
@@ -7352,7 +7327,7 @@ s32 LoadHandGadget(HandGadgetState *hand) {
         if (requested_class != (-1)) {
             moby = create_menu_preview_moby_r3(requested_class);
             if (moby != 0) {
-                loaded_gadget = D_001D5F70_255F8.attachment_gadget;
+                loaded_gadget = D_001D5F70_255F8.equipped[1];
                 *((void **)moby->pvars) = hand;
                 (*(void **)&moby->update) = update_menu_preview_pose_and_attachments;
                 moby->flags = 4;
@@ -7380,7 +7355,7 @@ s32 LoadHandGadget(HandGadgetState *hand) {
     }
     moby = hand->pose_moby;
     previous_pose_class = (moby != 0) ? (moby->oclass) : (-1);
-    requested_class = item_info_table_r2[D_001D5F70_255F8.pose_gadget].oclass;
+    requested_class = item_info_table_r2[D_001D5F70_255F8.equipped[3]].oclass;
     if (previous_pose_class != requested_class) {
         moby = delete_moby_r2(moby);
         if (requested_class != (-1)) {
@@ -7475,7 +7450,7 @@ s32 LoadHandGadget(HandGadgetState *hand) {
         D_001D5F70_255F8.current_gadget = loaded_gadget;
         clear_preview_animation_queue();
         queue_preview_animation(
-            gadget_animations[loaded_gadget].primary_animation + D_001D5F70_255F8.animation_base, 0,
+            gadget_animations[loaded_gadget].primary_animation + ((s32)D_001D5F70_255F8.streamed_animation_base), 0,
             gadget_animations[loaded_gadget].delay_frames, loaded_gadget,
             gadget_animations[loaded_gadget].item_animation, gadget_animations[loaded_gadget].attachment0_class,
             gadget_animations[loaded_gadget].attachment0_animation, gadget_animations[loaded_gadget].attachment1_class,
@@ -7484,7 +7459,7 @@ s32 LoadHandGadget(HandGadgetState *hand) {
             gadget_animations[loaded_gadget].resource_count);
         if (gadget_animations[loaded_gadget].delay_frames != 0) {
             queue_preview_animation(gadget_animations[loaded_gadget].secondary_animation +
-                                        D_001D5F70_255F8.animation_base,
+                                        ((s32)D_001D5F70_255F8.streamed_animation_base),
                                     2, 0, loaded_gadget, 1, -1, 0, -1, 0, -1, 0, 0, 0);
         }
     }
@@ -8320,22 +8295,7 @@ typedef struct {
     int arg[13];
 } Rec38_q;
 extern Rec38_q preview_animation_requests_q[] __asm__("D_001D6250");
-typedef struct {
-    u8 pad0[0x30];
-    s32 items[3];
-    u8 pad3C[0x64];
-    s32 buf[2];
-    u8 padA8[0x14];
-    s32 readOff;
-    u8 padC0[8];
-    u8 loaded[2];
-    u8 idx;
-    u8 pending;
-    u32 base;
-    u8 padD0[0x7C];
-    s32 streamed;
-} Pv_q;
-extern Pv_q menu_system_q[] __asm__("D_001D5F70");
+extern MenuSystem menu_system_q[] __asm__("D_001D5F70");
 extern struct Hdr16_1CE60 cd_read_state_q[] __asm__("D_001517D0");
 extern Rec38_q current_preview_animation_request_q[] __asm__("D_001D6410");
 extern int preview_animation_request_count MACRO_ADDR;
@@ -8382,53 +8342,53 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
             }
         }
         {
-            if (menu_system_q[0].pending != 0) {
+            if (menu_system_q[0].pending_buffer != 0) {
                 if (cd_read_state_q[0].unk8 == 0) {
-                    int n = menu_system_q[0].pending - 1;
-                    int *slot = menu_system_q[0].buf + n;
+                    int n = menu_system_q[0].pending_buffer - 1;
+                    int *slot = menu_system_q[0].stream_buffer + n;
                     int buf = *slot;
-                    fast_decompress(buf + menu_system_q[0].readOff, buf);
-                    menu_system_q[0].readOff = 0;
+                    fast_decompress(buf + menu_system_q[0].read_offset, buf);
+                    menu_system_q[0].read_offset = 0;
                     clear_menu_stream_buffer_read_active(buf);
-                    menu_system_q[0].loaded[n] = menu_system_q[0].streamed;
-                    if (preview_animation_requests_q[0].arg[0] == menu_system_q[0].streamed) {
+                    menu_system_q[0].loaded_animation[n] = (*(s32 *)&menu_system_q[0].pad_14C);
+                    if (preview_animation_requests_q[0].arg[0] == (*(s32 *)&menu_system_q[0].pad_14C)) {
                         preview_animation_requests_q[0].unk00 = 2;
                     }
-                    ((Cls_q *)moby_class_resources[0])->anim[menu_system_q[0].streamed] = *slot;
-                    relocateObjectPointers(moby_class_resources[0], menu_system_q[0].streamed);
-                    menu_system_q[0].pending = 0;
+                    ((Cls_q *)moby_class_resources[0])->anim[(*(s32 *)&menu_system_q[0].pad_14C)] = *slot;
+                    relocateObjectPointers(moby_class_resources[0], (*(s32 *)&menu_system_q[0].pad_14C));
+                    menu_system_q[0].pending_buffer = 0;
                 }
             }
         }
-        if (menu_system_q[0].pending == 0 && cd_read_state_q[0].unk8 == 0 && preview_animation_request_count > 0 &&
-            preview_animation_requests_q[0].unk00 == 0) {
-            int idx = menu_system_q[0].idx;
-            unsigned char *ld = menu_system_q[0].loaded;
+        if (menu_system_q[0].pending_buffer == 0 && cd_read_state_q[0].unk8 == 0 &&
+            preview_animation_request_count > 0 && preview_animation_requests_q[0].unk00 == 0) {
+            int idx = menu_system_q[0].read_buffer_index;
+            unsigned char *ld = menu_system_q[0].loaded_animation;
             unsigned int want = preview_animation_requests_q[0].arg[0];
             if (ld[idx] == want || ld[idx == 0] == want) {
                 preview_animation_requests_q[0].unk00 = 2;
-            } else if (want < menu_system_q[0].base) {
+            } else if (want < menu_system_q[0].streamed_animation_base) {
                 preview_animation_requests_q[0].unk00 = 3;
             } else {
-                int k = want - menu_system_q[0].base;
-                int buf = menu_system_q[0].buf[idx];
+                int k = want - menu_system_q[0].streamed_animation_base;
+                int buf = menu_system_q[0].stream_buffer[idx];
                 int sz = disc_table_q[0].e[k].b << 11;
                 int addr = buf + get_menu_stream_buffer_size(buf) - sz;
-                menu_system_q[0].readOff = addr - buf;
+                menu_system_q[0].read_offset = addr - buf;
                 if (start_audio_stream_read(addr, disc_table_q[0].e[k].a, disc_table_q[0].e[k].b) == 0) {
                     raise_kernel_trap();
                 }
                 mark_menu_stream_buffer_read_active(buf);
-                menu_system_q[0].pending = menu_system_q[0].idx + 1;
-                ld[menu_system_q[0].idx] = 0xFF;
+                menu_system_q[0].pending_buffer = menu_system_q[0].read_buffer_index + 1;
+                ld[menu_system_q[0].read_buffer_index] = 0xFF;
                 preview_animation_requests_q[0].unk00 = 1;
-                menu_system_q[0].streamed = preview_animation_requests_q[0].arg[0];
+                (*(s32 *)&menu_system_q[0].pad_14C) = preview_animation_requests_q[0].arg[0];
             }
         }
         if (preview_animation_request_count > 0 && (unsigned int)(preview_animation_requests_q[0].unk00 - 2) < 2) {
             int item = preview_animation_requests_q[0].arg[3];
-            if (item != 0 && menu_system_q[0].items[0] != item && menu_system_q[0].items[2] != item &&
-                menu_system_q[0].items[1] != item) {
+            if (item != 0 && menu_system_q[0].equipped[0] != item && menu_system_q[0].equipped[2] != item &&
+                menu_system_q[0].equipped[1] != item) {
                 result = 0;
                 advance_preview_animation_queue();
             } else if (preview_animation_requests_q[0].arg[1] == 0) {
@@ -8449,10 +8409,10 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
             load_preview_resource_bindings(current_preview_animation_request_q[0].arg[11],
                                            current_preview_animation_request_q[0].arg[12]);
             blend_moby_animation_ex(moby, current_preview_animation_request_q[0].arg[0], 0, 10, 5);
-            if (current_preview_animation_request_q[0].arg[0] == menu_system_q[0].loaded[0]) {
-                menu_system_q[0].idx = 1;
-            } else if (current_preview_animation_request_q[0].arg[0] == menu_system_q[0].loaded[1]) {
-                menu_system_q[0].idx = 0;
+            if (current_preview_animation_request_q[0].arg[0] == menu_system_q[0].loaded_animation[0]) {
+                menu_system_q[0].read_buffer_index = 1;
+            } else if (current_preview_animation_request_q[0].arg[0] == menu_system_q[0].loaded_animation[1]) {
+                menu_system_q[0].read_buffer_index = 0;
             }
             if (item_info_table_r[current_preview_animation_request_q[0].arg[3]].item_type == 2) {
                 if (m2 != 0) {
@@ -8605,28 +8565,13 @@ void pack_image_descriptor(void *arg0, char *src) {
 extern char *moby_class_resources[] NOT_SDA;
 
 typedef struct {
-    u8 pad0[0x30];
-    s32 active_items[3];
-    u8 pad3C[0x64];
-    s32 buffer_address[2];
-    s32 resource_first;
-    s32 resource_count;
-    s32 resource_buffer_address[3];
-    s32 read_offset;
-    u8 padC0[8];
-    u8 loaded_animation[2];
-    u8 read_buffer_index;
-    u8 pending_buffer;
-    u32 streamed_animation_base;
-} PreviewAnimationStreamState;
-typedef struct {
     s32 class_id;
     s32 animation_index;
 } PreviewResourceBinding;
 extern u8 moby_class_resources_r3[] __asm__("D_001B3580");
 extern u8 resident_class_slot_by_id[];
 extern u8 preview_resource_bindings_r[] __asm__("D_001D5D58");
-extern PreviewAnimationStreamState D_001D5F70_27A70 __asm__("D_001D5F70");
+extern MenuSystem D_001D5F70_27A70 __asm__("D_001D5F70");
 void clear_preview_resource_bindings(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/item_preview/clear_preview_resource_bindings.c, clear_preview_resource_bindings. */
@@ -8641,8 +8586,8 @@ void clear_preview_resource_bindings(void) {
     register s32 resource_count;
     register s32 resource_end;
 
-    resource_index = D_001D5F70_27A70.resource_first;
-    if (resource_index < (resource_index + D_001D5F70_27A70.resource_count)) {
+    resource_index = D_001D5F70_27A70.unkA8;
+    if (resource_index < (resource_index + D_001D5F70_27A70.unkAC)) {
         u8 *class_slots = resident_class_slot_by_id;
         u8 *class_resources = moby_class_resources_r3;
         u8 *bindings = preview_resource_bindings_r;
@@ -8656,12 +8601,12 @@ void clear_preview_resource_bindings(void) {
             animation_address = class_resource_address + (binding->animation_index * 4);
             *(s32 *)(animation_address + 0x48) = 0;
             binding += 1;
-            resource_first = D_001D5F70_27A70.resource_first;
-            resource_count = D_001D5F70_27A70.resource_count;
+            resource_first = D_001D5F70_27A70.unkA8;
+            resource_count = D_001D5F70_27A70.unkAC;
             resource_end = resource_first + resource_count;
         } while (resource_index < resource_end);
     }
-    D_001D5F70_27A70.resource_count = 0;
+    D_001D5F70_27A70.unkAC = 0;
 }
 
 extern u8 preview_resource_ids_r[] __asm__("D_001D60C8");
@@ -8695,8 +8640,8 @@ void load_preview_resource_bindings(s32 first_resource, s32 resource_count) {
 
     count = resource_count;
     resource_index = 0;
-    D_001D5F70_27A70.resource_first = first_resource;
-    D_001D5F70_27A70.resource_count = count;
+    D_001D5F70_27A70.unkA8 = first_resource;
+    D_001D5F70_27A70.unkAC = count;
     if (resource_index < count) {
         resource_offset = first_resource * 4;
         binding = ((PreviewResourceBinding *)preview_resource_bindings_r) + first_resource;
@@ -8717,7 +8662,7 @@ void load_preview_resource_bindings(s32 first_resource, s32 resource_count) {
             compressed_size = stash_get_reserved_qwords_r(resource_id) * 0x10;
             buffer_offset = (resource_index + buffer_skip) * 4;
             resource_index += 1;
-            buffer_address = *((s32 *)((u8 *)D_001D5F70_27A70.resource_buffer_address + buffer_offset));
+            buffer_address = *((s32 *)((u8 *)D_001D5F70_27A70.unkB0 + buffer_offset));
             read_address = (buffer_address + get_menu_stream_buffer_size_r3(buffer_address)) - compressed_size;
             stash_receive_data_r2(read_address, resource_id, 0, -1, 0);
             fast_decompress_r4(read_address, buffer_address);
