@@ -9,9 +9,6 @@
  * (Makefile.sn, EE29_CORE), like libc.a.
  */
 
-/* Declarations in scope here before the split. */
-extern long strtol(int arg0, int arg1, int arg2);
-extern int SbrkErrno;
 
 extern void *_impure_ptr NOT_SDA;
 

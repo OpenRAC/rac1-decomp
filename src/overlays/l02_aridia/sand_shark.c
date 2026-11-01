@@ -1138,7 +1138,6 @@ typedef struct {
     int i29C; /* 0x29C */
 } Vars_2D70C0;
 
-
 extern float sand_shark_death_knockback_vertical_speed_gp SDATA(D_L02_00161998);
 extern float sand_shark_death_knockback_horizontal_speed_gp SDATA(D_L02_0016199C);
 extern float sand_shark_death_knockback_gravity_gp SDATA(D_L02_001619A4);
@@ -1276,7 +1275,7 @@ void launch_sand_shark(unsigned char *moby, void *position, float *direction) {
     ((struct Moby *)moby)->rot.z = fast_atan2(direction[0], direction[1]);
     moby_build_matrix(moby);
 }
-extern void *store_moby_in_suck_cannon(void *);
+
 extern int D_L02_00160058_g SDATA(D_L02_00160058);
 
 // Checks a moby's associated object; sets state 9 and decrements a counter, or restores state 1.

@@ -47,7 +47,7 @@ Camera *find_camera_record_by_id(int id) {
 INCLUDE_ASM("asm/overlays", func_L00_001EB598);
 INCLUDE_ASM("asm/overlays", func_L00_001EB5A8);
 LINKER_REMNANT("asm/overlays", func_L00_001EB5B0);
-extern float FastSubRots_f(float, float) __asm__("func_001FA790");
+
 extern float FastAbsF(float);
 extern float FastAddRots(float, float);
 
@@ -517,7 +517,6 @@ void init_camera_system(void) {
     u[1] = t[1];
     u[2] = t[2];
 }
-extern void clear_u64_value(void *);
 
 extern float FastCos(float);
 extern float FastSin(float);
@@ -532,7 +531,7 @@ void compute_position_from_spherical_offset(float *out, float *polar, void *orig
     FastVecAdd(out, out, origin);
 }
 typedef float W[4] __attribute__((aligned(16)));
-extern void FastVecSub(float *);
+
 extern float vec_length_xy(float *);
 extern float fast_atan2(float, float);
 extern void FastSubRots(float, float);

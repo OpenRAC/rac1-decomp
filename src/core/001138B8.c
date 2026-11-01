@@ -10,10 +10,6 @@
  * libc.a; both are newlib's own text.
  */
 
-/* Declarations in scope here before the split. */
-extern long strtol(int arg0, int arg1, int arg2);
-extern int SbrkErrno;
-extern void *_impure_ptr NOT_SDA;
 
 /* newlib's stdio types (sys/reent.h, 1999-2000), under local names. */
 struct __sbuf_nl {

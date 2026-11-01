@@ -597,7 +597,6 @@ void update_rotating_grayscale_effect_particle(struct PartBase *particle) {
     }
     particle->color = (faded_alpha << 24) + (particle->blend == 0x48 ? 0x4F4F4F : 0x7F7F7F);
 }
-extern short frame_scale_g __asm__("D_0015EE60");
 
 typedef struct PartType10Data {
     Vec4 vel; /* 0x00 */
@@ -3080,15 +3079,10 @@ void *spawn_splitting_effect_particle_with_collision_and_fade(char *a, char *b, 
 }
 void func_001F9BD8_717E8b(void *, void *, void *) __asm__("func_001F9BD8");
 void func_L00_002688A8_717E8b(void *) __asm__("func_L00_002688A8");
-extern void KillPart_r4(void *) __asm__("func_L00_002688A8");
-extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
+
 typedef float f32_26c558;
 extern f32_26c558 frame_scale_r2 __asm__("D_0015EE60") MACRO_ADDR;
-extern void FastVecAdd_r4(void *, void *, void *) __asm__("func_001F9BD8");
-extern void KillPart_r5(void *) __asm__("func_L00_002688A8");
-extern void FastVecAdd_r5(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_L00_002688A8_717E8e(void *) __asm__("func_L00_002688A8");
-extern void func_L00_002688A8_717E8f(void *) __asm__("func_L00_002688A8");
+
 void func_L00_002688A8_717E8g(void *) __asm__("func_L00_002688A8");
 void func_001F9BD8_717E8f(void *, void *, void *) __asm__("func_001F9BD8");
 extern void KillPart_717E8h(void *) __asm__("func_L00_002688A8");

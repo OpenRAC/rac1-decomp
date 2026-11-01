@@ -2514,7 +2514,7 @@ extern short sandmouse_aim_height;
 extern short sandmouse_fire_interval;
 extern short novalis_game_mode_r __asm__("D_L01_0015F6A8");
 extern Vec4 gHeroPos;
-extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
+
 extern void Moby_GetJointWorldPos_r2(void *, int, void *) __asm__("func_L00_00250800");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_0030b618.c, FUN_L01_0030d5f0. */
@@ -3416,7 +3416,6 @@ typedef struct {
     char p74[0x10];
     short f84;
 } Cam_316730;
-
 
 extern Ent50_316730 *novalis_camera_descriptors MACRO_ADDR;
 extern Ent7EC_316730 *novalis_rails MACRO_ADDR;

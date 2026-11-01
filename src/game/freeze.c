@@ -10,41 +10,12 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-/* Declarations in scope here before the split. */
-extern char voice_pool[];
-extern int bank_sound_count;
-extern void FastMemCopy(void *, void *, int);
-extern char backup_cam[];
-extern char gCamBackupState[];
-extern void *cur_cam NOT_SDA;
-extern DispatchRec camera_types[];
-extern int draw_config[];
-extern void FastMemSet();
-extern void BuildOcclVisibility(void);
-extern int occl_update NOT_SDA;
-extern char occl_visibility[];
-extern long gs_display_settings[3];
+
 extern int space_load_in_progress MACRO_ADDR;
-extern short draw_enable_mask;
-extern void append_gif_transfer_packet(void);
-extern void DrawDebugProfiler(void);
-extern int draw_callback_count;
-extern int draw_callback_args[];
-extern int draw_callback_funcs[];
-extern short GlobalStateFlag;
-extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
+
 extern unsigned char normal_font_metrics[];
-extern unsigned char small_font_metrics[];
-extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
-extern int measure_text_width_regular(unsigned char *, int);
-extern int measure_text_width_small(unsigned char *, int);
+
 extern int GetEffectTex(int);
-extern void PutDrawBufferLarge(void);
-extern void InitViewContext(void);
-extern void UpdateViewContext(void);
-extern int bit_swap_lut[];
-extern long background_rgbaq NOT_SDA;
 
 extern void snd_PauseAllSoundsInGroup(int);
 extern void music_Pause(int);
@@ -242,7 +213,7 @@ extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, s64);
 extern void VU1_addGSregister(s32, s64);
 extern void *libc_strncpy(void *, char *, s32);
 extern s32 sprintf(char *, const char *, ...);
-extern void libc_memset(void *, s32, s32);
+
 /* Draws a freeze-mode message box sized to its text and centred on screen, fading with the box timer. */
 static __inline__ void draw_box_p(char *text, s32 left, s32 mid, s32 right, struct TextRegionP box) {
     s32 tint;

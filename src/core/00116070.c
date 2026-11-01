@@ -8,17 +8,9 @@
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
 
-/* Declarations in scope here before the split. */
-extern long strtol(int arg0, int arg1, int arg2);
+
 extern int SbrkErrno;
 extern void *_impure_ptr NOT_SDA;
-extern int __sread(void *arg0, void *arg1, void *arg2);
-extern int __swrite(void *arg0, void *arg1, void *arg2);
-extern long __sseek(void *arg0, void *arg1, void *arg2);
-extern void __sclose(void *arg0);
-extern void libc_fflush(void);
-extern void _fwalk(void *, void *);
-extern char locale_lconv[];
 
 LINKER_REMNANT("asm/remnants/core_text", func_00116070);
 
@@ -103,7 +95,6 @@ s32 double_is_not_nan(f64 x) {
     return 1 - (s32)(((u32)(hx | (-hx))) >> 31);
 }
 
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/math/classify_float_bits.c, ClassifyDoubleNaN. */
 s32 libc_isnan(f64 x) {
     s32 hx;
@@ -120,7 +111,6 @@ s32 libc_isnan(f64 x) {
     hx = 0x7ff00000 - hx;
     return (u32)hx >> 31;
 }
-
 
 int _sbrk_r(int *errOut, int arg1) {
     unsigned int r;

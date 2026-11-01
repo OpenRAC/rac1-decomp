@@ -9,62 +9,12 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-/* Declarations in scope here before the split. */
-extern char voice_pool[];
-extern int bank_sound_count;
+
 extern void FastMemCopy(void *, void *, int);
-extern char backup_cam[];
-extern char gCamBackupState[];
-extern void *cur_cam NOT_SDA;
-extern DispatchRec camera_types[];
-extern int draw_config[];
-extern void FastMemSet();
-extern void BuildOcclVisibility(void);
-extern int occl_update NOT_SDA;
-extern char occl_visibility[];
-extern long gs_display_settings[3];
-extern int space_load_in_progress;
-extern short draw_enable_mask;
-extern void append_gif_transfer_packet(void);
-extern void DrawDebugProfiler(void);
-extern int draw_callback_count;
-extern int draw_callback_args[];
-extern int draw_callback_funcs[];
-extern short GlobalStateFlag;
-extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char normal_font_metrics[];
-extern unsigned char small_font_metrics[];
-extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
-extern int measure_text_width_regular(unsigned char *, int);
-extern int measure_text_width_small(unsigned char *, int);
-extern int GetEffectTex(int);
-extern void PutDrawBufferLarge(void);
-extern void InitViewContext(void);
-extern void UpdateViewContext(void);
-extern int bit_swap_lut[];
-extern long background_rgbaq NOT_SDA;
-extern int Help_FindIndex(void);
-extern char s_paradox_this_message_does_not[];
-extern short help_msgs;
-extern int hud_heap_base NOT_SDA;
-extern int hud_state NOT_SDA;
-extern int Hud_GetIconIndex(int);
+
 typedef struct {
     char b[0x13];
 } Cfg13;
-extern Cfg13 message_text_buffer NOT_SDA;
-extern Cfg13 message_too_long_label NOT_SDA;
-extern int libc_strlen(void);
-extern void libc_strcpy(Cfg13 *, void *);
-extern short ResourceCounter;
-extern void draw_stretchable_ui_frame(int, int, int, int, int);
-extern void CreatePointLight(int);
-extern void DetachPointLight(int);
-extern void update_world_object_animation(void *);
-extern int render_sequence NOT_SDA;
-extern int vu1_chain_buffer_2 NOT_SDA;
-extern int current_vu_chain;
 
 extern int log2dim(int);
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
@@ -347,9 +297,6 @@ int pick_next_map(void) {
     } while (step != 4);
     return -1;
 }
-
-extern int *menu_level_indices;
-
 
 /* The global is read at both uses in the loop, giving retail's two
    pointers, and through a MACRO_ADDR alias. */

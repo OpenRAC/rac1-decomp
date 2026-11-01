@@ -334,10 +334,7 @@ void update_color_tween_particle(struct PartBase *m) {
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern void KillPart_r(void *) __asm__("func_L00_002688A8");
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
-extern void KillPart_r2(void *) __asm__("func_L00_002688A8");
+
 typedef struct {
     u8 pad[0xA];
     s16 xa;
@@ -353,8 +350,7 @@ void func_L00_002688A8_72BC0d(void *) __asm__("func_L00_002688A8");
 s32 func_L00_001EFFF0_72BC0(void *, void *, s32, s32, s32) __asm__("func_L00_001EFFF0");
 s32 func_001F9938_72BC0c(void *) __asm__("func_001F9938");
 void func_L00_002688A8_72BC0e(void *) __asm__("func_L00_002688A8");
-extern int FastDecTimer_r(void *) __asm__("func_001F9938");
-extern void KillPart_r3(void *) __asm__("func_L00_002688A8");
+
 void func_L00_002688A8_72BC0g(void *) __asm__("func_L00_002688A8");
 void func_001F9BD8_72BC0e(void *, void *, void *) __asm__("func_001F9BD8");
 void func_001F9BD8_72BC0f(void *, void *, void *) __asm__("func_001F9BD8");
@@ -362,11 +358,7 @@ void func_L00_002688A8_72BC0h(void *) __asm__("func_L00_002688A8");
 void func_001F9BD8_72BC0g(void *, void *, void *) __asm__("func_001F9BD8");
 s32 func_001F9938_72BC0e(void *) __asm__("func_001F9938");
 void func_L00_002688A8_72BC0i(void *) __asm__("func_L00_002688A8");
-extern void KillPart_72BC0j(void *) __asm__("func_L00_002688A8");
-extern void FastVecAdd_72BC0h(void *, void *, void *) __asm__("func_001F9BD8");
-extern void KillPart_72BC0k(void *) __asm__("func_L00_002688A8");
-extern void KillPart_72BC0l(void *) __asm__("func_L00_002688A8");
-extern void KillPart_72BC0m(void *) __asm__("func_L00_002688A8");
+
 int func_001F9938_72BC0f(void *) __asm__("func_001F9938");
 void func_L00_002688A8_72BC0n() __asm__("func_L00_002688A8");
 void func_001F9BD8_72BC0i(void *, void *, void *) __asm__("func_001F9BD8");

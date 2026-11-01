@@ -566,7 +566,6 @@ void advance_hero_animation(void) {
     ((Hero *)g_hero)->anim_changing = m->seq != m->prev_seq;
 }
 
-
 typedef int V4q_32b90 __attribute__((mode(TI), aligned(16)));
 typedef struct {
     char pad000[0x80];
@@ -1288,34 +1287,13 @@ typedef struct {
     char p0[0x3C];
     int i3C;
 } Plat_234800;
-extern char hero_globals_base_r[] __asm__("D_0013E633");
-extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
-extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern void scale_ticks_v_234800(int) __asm__("func_001F9850");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
-extern Plat_234800 *GetFlaggedPvarWord_r(void *) __asm__("func_L00_0025D390");
-extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
-extern float FastAddRots_r(float, float) __asm__("func_001FA748");
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern void RotateWithMoby_r(int, void *, void *, void *, void *, void *) __asm__("func_L00_00261478");
-extern int convert_pose_to_reference_local_r(int, void *, void *, void *, void *, void *) __asm__("func_L00_002616E0");
-extern void transform_attachment_pose_r(int, void *, void *, void *, void *, void *) __asm__("func_L00_00261568");
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
-extern void vec_set_length_xy_r(void *, void *, float) __asm__("func_L00_001FF500");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern float FastSubRots_r(float, float) __asm__("func_001FA790");
 
 typedef struct {
     char p0[0x3C];
     int i3C;
 } Plat_234800_34800;
 extern void scale_ticks_r2(int) __asm__("func_001F9850");
-extern Plat_234800_34800 *GetFlaggedPvarWord(void *);
+
 extern Plat_234800_34800 *moby_get_ride_transform(void *);
 extern float FastVecLength(void *);
 extern float FastAddRots(float, float);

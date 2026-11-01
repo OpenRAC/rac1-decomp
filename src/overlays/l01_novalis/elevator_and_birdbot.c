@@ -174,7 +174,7 @@ extern void transform_vector(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void create_spark_particle(void *, void *, f32, f32, f32, f32, f32, f32, f32, f32, f32, s32, u8, u8, u8);
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+
 f32 func_001FA748_BE2C8b(f32 a, f32 b) __asm__("func_001FA748");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;

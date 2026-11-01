@@ -113,7 +113,6 @@ struct GunshipPathVars {
     f32 pitch_offset; /* 0x134 */
 };
 
-
 extern float ripple_uv_table[];
 extern float ripple_uv_table_r[] __asm__("D_L01_001CB0E0");
 
@@ -223,7 +222,6 @@ void update_animated_offset_pairs(float *m) {
         }
     }
 }
-extern void RippleDisturb(void *, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002b7ef0.c, FUN_L01_002b8288. */
 extern void RippleDisturb_pt(float, float, float, float, void *, int, int) __asm__("func_L00_002A5158");

@@ -186,7 +186,7 @@ struct RibbonEffectVars {
 extern char hero_globals_base[];
 extern int *oltanis_paths[];
 extern LevelState oltanis_collected_flags_base;
-extern unsigned char help_stats_base[] NOT_SDA;
+
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int oltanis_moby_killed_bits[];
 extern float g_frame_time MACRO_ADDR;
@@ -2177,7 +2177,6 @@ typedef struct Class_2B5938 {
     int f10;
 } Class_2B5938;
 
-
 typedef struct Data_2B5938 {
     char pad00[0x40];
     float f40[2]; /* 0x40 */
@@ -3405,7 +3404,7 @@ void reset_racer_group_to_hero_path_position(struct Moby *m) {
     }
 }
 extern int race_paths MACRO_ADDR;
-extern short D_L14_00161B08_s;
+
 typedef int u128_67e8 __attribute__((mode(TI)));
 typedef struct {
     char pad00[0x64];

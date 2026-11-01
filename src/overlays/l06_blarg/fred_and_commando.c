@@ -931,7 +931,6 @@ extern char blarg_help_popup_state[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern unsigned char race_gates_base[];
 extern int race_gates_47_flag;
-extern Hero hero_globals_base_r __asm__("D_0013E633");
 
 /* Update of moby class 1105 (fred): steps the conversation and camera states, then turns the head toward the hero. */
 extern Hero g_hero;
@@ -1223,7 +1222,6 @@ typedef struct {
     int i164;
     int i168;
 } Snd_302FE8;
-
 
 /* Update for moby class 1108 on level 06: six-state machine that spawns, animates and retires the moby.
  * The three vectors are one set at function level (va, vc, vb: retail's sp+0, 0x10, 0x20). State 3 keeps the

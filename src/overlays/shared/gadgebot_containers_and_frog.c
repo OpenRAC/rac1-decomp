@@ -1166,7 +1166,7 @@ typedef struct {
     unsigned char unk70; /* 0x70 */
 } MobyAnim_EBA10;
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern int process_moby_suck_cannon_suction_r(void *) __asm__("func_L00_002DCDA8");
+
 void func_00213DE0_EBA10(MobyAnim_EBA10 *arg0, int arg1, int arg2, int arg3) __asm__("func_00213DE0");
 
 /* Grabbed check: while FUN_L00_002db8f8 holds the moby, park it in state 0x10 (remembering the state it came from) unless it is in a state that cannot be grabbed; once released, drop it back to state 8.
@@ -1191,7 +1191,7 @@ int update_moby_grab_state(struct Moby *moby, void *position, void *target) {
     }
     return r;
 }
-extern int store_moby_in_suck_cannon(void *);
+
 extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 
@@ -1231,14 +1231,12 @@ s32 cancel_moby_suction_and_save_state(unsigned char *p) {
 }
 typedef int u128 __attribute__((mode(TI)));
 
-
 typedef struct {
     char p0[0x10];
     int f10;
     char p14[0x10];
     float f24;
 } GbClass;
-
 
 typedef struct {
     int i00;
@@ -1323,7 +1321,6 @@ typedef struct {
     char p0[0x14];
     int f14;
 } GbOwnerVars;
-
 
 typedef struct {
     char p0[0x18];

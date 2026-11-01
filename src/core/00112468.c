@@ -10,8 +10,6 @@
  * EE29_CORE), like libc.a.
  */
 
-/* Declarations in scope here before the split. */
-extern long strtol(int arg0, int arg1, int arg2);
 
 extern int SbrkErrno;
 

@@ -423,7 +423,7 @@ struct CannonData52_2E16A0 {
 };
 extern Hero hero52 __asm__("D_0013F450");
 extern char hero_globals_base_r[] __asm__("D_0013E633");
-extern char pad_globals_base_r[] __asm__("D_0013A5E0");
+
 extern unsigned char visited52[][16] __asm__("D_0014C150");
 extern int invert52 MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
@@ -1914,7 +1914,7 @@ extern void set_batalia_bolt_pickup_surface_rotation(char *a, float *v);
 extern void compute_batalia_bolt_pickup_surface_pose(char *m, float *out, float *rot);
 extern void draw_batalia_bolt_pickup_rotating_quad(char *m);
 extern int coll_line(void *, void *, int, int, int);
-extern unsigned char *GetFlaggedPvarWord(int);
+
 extern unsigned char *moby_get_ride_transform(int);
 extern void convert_pose_to_reference_local(void *, int, void *, void *, void *, void *);
 extern int transform_attachment_pose(void *, int, void *, void *, void *, void *);
