@@ -50,6 +50,18 @@ python3 tools/move_src.py src/core/00116FA0.c src/core/libc/stdio.c
 
 After a move, the ELF's SHA changes because file names are stored in it. Compare the loaded bytes, or run `check_all.sh`.
 
+## Format
+
+```sh
+python3 tools/format.py
+```
+
+To hide formatting commits in `git blame`:
+
+```sh
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+```
+
 ## More
 
 - Toolchain: [reference/TOOLCHAIN.md](reference/TOOLCHAIN.md)
