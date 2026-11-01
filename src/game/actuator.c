@@ -148,9 +148,9 @@ void initialize_streaming_state(void) {
     texture_alloc_counter = 0;
     *(int *)&g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;
 }
-__asm__(".section .text
-	nop
-	nop
-");
+__asm__(".section .text\n"
+        "\tnop\n"
+        "\tnop\n"
+        "");
 
 LINKER_REMNANT("asm/remnants/text", func_001E94C8);

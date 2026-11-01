@@ -2825,6 +2825,7 @@ typedef struct {
     float speed;
     char *p;
 } E04_pt3;
+extern void AddDrawCallback();
 
 extern V41 suck_beam_ring_unit_offsets[];
 extern float suck_beam_segment_turn_angles[];

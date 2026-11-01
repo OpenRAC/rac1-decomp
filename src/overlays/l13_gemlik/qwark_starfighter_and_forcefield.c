@@ -1973,6 +1973,7 @@ bounds:
         moby->pos.z < 2.0f || moby->pos.z > 1021.0f)
         remove_p(moby);
 }
+extern void clear_u64_value();
 
 #undef hit_lookup_p
 #undef moby_pos_p

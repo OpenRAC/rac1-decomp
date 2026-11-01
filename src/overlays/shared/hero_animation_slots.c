@@ -3359,6 +3359,8 @@ d1:
         }
     }
 }
+
+extern void FastVecSub();
 extern float FastVecDot(void *, void *);
 extern float FastVecLength(void *);
 extern float Spring_r(float *p, float t, float *v, float u1, float u2, float eps) __asm__("func_L00_0025C918");

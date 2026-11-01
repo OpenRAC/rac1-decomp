@@ -91,6 +91,8 @@ char *select_homing_missile_target(float *pos, float *aim, float r1, float r2, f
     }
     return best;
 }
+
+extern char *CreateMoby();
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float vec_length_xy(void *);
 extern float fast_atan2(float, float);

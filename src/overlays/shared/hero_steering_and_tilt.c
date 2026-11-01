@@ -688,6 +688,8 @@ void compute_hero_reference_tilt_rotation(V_c *v, M_c *m, void *p, float a, floa
     else
         matrix_to_euler(m, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot);
 }
+
+extern void FastVecSub();
 typedef int U128 __attribute__((mode(TI)));
 extern float g_frame_scale_sq MACRO_ADDR;
 extern void FastVecScale(void *, void *, float);

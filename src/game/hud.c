@@ -296,11 +296,11 @@ int Hud_HeapAlloc(int size) {
  * func_00202790 and func_002208F8, both of which were exact and are
  * instruction-for-instruction identical apart from their jal targets.
  */
-__asm__(".section .text
-	nop
-	nop
-	nop
-");
+__asm__(".section .text\n"
+        "\tnop\n"
+        "\tnop\n"
+        "\tnop\n"
+        "");
 
 extern char hud_chan_slots_raw[] __asm__("D_00199C60") NOT_SDA;
 extern int g_game_mode MACRO_ADDR;
@@ -312,8 +312,7 @@ extern void apply_pending_animation(void *arg0);
    func_001FFC48 to reload the bank when a bit of (arg0's high nibbles &
    the record's +0x04 flags) is set. Sibling of func_001FFCB0/func_001FFD30
    in this file, which use the same record layout. */
-int queue_animation_update(int arg0, int arg1, int arg2, int arg3, int arg4,
-                 int arg5, int arg6) {
+int queue_animation_update(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6) {
     int idx = arg0 & 0xF;
     HudBank *p = (HudBank *)(hud_chan_slots_raw + idx * 0x90);
     int masked0 = arg0 & 0xFFF0;
@@ -492,7 +491,7 @@ void copy_text_to_shared_buffer(void *arg0) {
 
 LINKER_REMNANT("asm/remnants/text", func_001FFF08);
 
-extern short ResourceCounter;   /* SDA (gp -0x7330) */
+extern short ResourceCounter; /* SDA (gp -0x7330) */
 
 /* Counts the resource counter down by one until it reaches 0. */
 void update_resource_counter(void) {
@@ -934,9 +933,8 @@ struct SpriteDepthState {
 extern SpriteCursor render_packet_cursor __asm__("D_00161000") MACRO_ADDR;
 
 void append_power_of_two_textured_screen_sprite(long texture_register_value, s32 screen_x, s32 screen_y,
-                                                s32 texture_width_log2, s32 texture_height_log2,
-                                                s32 screen_width, s32 screen_height, s32 texture_u,
-                                                s32 texture_v, s32 alpha) {
+                                                s32 texture_width_log2, s32 texture_height_log2, s32 screen_width,
+                                                s32 screen_height, s32 texture_u, s32 texture_v, s32 alpha) {
     struct SpritePacket *tag;
     u64 *packet_words;
     struct SpriteDepthState *arena = (struct SpriteDepthState *)hud_state_raw;
@@ -1036,8 +1034,7 @@ typedef struct {
 } HudDepthView;
 
 /* HUD sprite packet with explicit UV corners, adapted from Lombyte's project (GPL-3.0). */
-void draw_hud_sprite_rect(int tex, int x0, int y0, int x1, int y1,
-                   int u0, int v0, int u1, int v1, int alpha) {
+void draw_hud_sprite_rect(int tex, int x0, int y0, int x1, int y1, int u0, int v0, int u1, int v1, int alpha) {
     int *base;
     long *p;
     HudDepthView *arena;
@@ -1177,8 +1174,7 @@ extern int *g_render_packet_cursor MACRO_ADDR;
    func_002017C8's, instead of 0x41): same 1-tag + 3-quadword PACKED GIF
    packet with a FIXED mask 0x00FFFFF000000000 in the vertices' upper 32
    bits instead of a Z parameter. */
-void draw_hud_rect_blended(int arg0, int arg1, int arg2, int arg3, long arg4,
-                    int arg5) {
+void draw_hud_rect_blended(int arg0, int arg1, int arg2, int arg3, long arg4, int arg5) {
     int *base;
 
     g_render_packet_cursor[0] = 0x10000003;
@@ -1216,8 +1212,7 @@ extern int *g_render_packet_cursor MACRO_ADDR;
    or the same with argX/argY scaled by 16 and offset -0x10 when arg6==0
    (tile coordinates). D_00161000 is re-read at every use (never cached
    across a store to it), matching this file's other packet builders. */
-void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg4,
-                    int arg5, int arg6) {
+void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg4, int arg5, int arg6) {
     int *base;
 
     g_render_packet_cursor[0] = 0x10000003;

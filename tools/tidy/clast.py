@@ -14,6 +14,7 @@ PRELUDE = S / 'prelude.h'
 
 SUBS = [  # same length
     (r'\bunsigned long long\b', '_ULL16____________'),
+    (r'\blong double\b', '_LD_double_'),
     (r'\blong long\b', '_LL16____'),
     (r'\bunsigned long\b', '_UL8_________'),
     (r'\bsigned long\b', '_SL8_______'),
@@ -21,7 +22,7 @@ SUBS = [  # same length
 ]
 PRELUDE.write_text('typedef unsigned __int128 _ULL16____________;\ntypedef __int128 _LL16____;\n'
                    'typedef unsigned long long _UL8_________;\ntypedef long long _SL8_______;\n'
-                   'typedef long long _L8_;\n')
+                   'typedef long long _L8_;\ntypedef long double _LD_double_;\n')
 UNSUB = {b: re.sub(r'\\b', '', a) for a, b in SUBS}
 
 

@@ -268,6 +268,10 @@ char *spawn_class_32_moby(char *owner, char *vec, void *pos, void *vel, int c) {
     }
     return m;
 }
+
+extern void emit_blarg_elite_commando_death_particles();
+extern void update_blarg_elite_commando_joint_aim();
+extern void emit_blarg_elite_commando_joint_sparks();
 extern void update_blarg_elite_commando_damage_and_pursuit(char *);
 
 extern float random_angle_radians(void);

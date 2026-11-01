@@ -8,8 +8,10 @@ Parse every C file with clang, for a MIPS target. This needs no toolchain and no
 It catches broken headers, moved declarations and bad splits. It cannot prove a match: use
 tools/check_all.sh for that.
 
-GCC 2.95 accepts some things clang does not, such as a global redeclared with another type. Those files
-are listed in the baseline, and each file's count may only go down.
+GCC 2.95 accepts some things clang does not, such as a global redeclared with another type inside a function.
+Those files are listed in the baseline, and each file's count may only go down. Do not fix one just to please
+clang: `extern char x;` and `extern char x[];` address a global differently at -G2, so the difference can be
+what makes the function match.
 
 Version fragments (src/versions/) are spliced into their shared file, so they are not parsed on their own.
 """
