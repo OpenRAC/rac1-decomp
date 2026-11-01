@@ -31,6 +31,10 @@ def row(new, header, definition, names, bodies):
 
 
 MERGES = [
+    row("IntPair", "structs/small_records.h", "int a; int b;", "Pair8|Pair", ["int a, b;"]),
+    row("QuadUv", "structs/small_records.h", "float u; float v;", "UV_2bb0b0", ["float u, v;"]),
+    row("UvScrollFactors", "structs/small_records.h", "float f[4];", "Quad4", ["float f[4];"]),
+    row("IntVec6", "structs/small_records.h", "int v[6];", "V6", ["int v[6];"]),
     row("HeroIdleFidget", HERO, "char p0[0x44]; int f44; int f48; char p1[0x10]; float f5C; int f60; char p2[0xC];",
         "Rec70", ["char p0[0x44]; int f44; int f48; char p1[0x10]; float f5C; int f60; char p2[0xC];"]),
     row("HeroPlayerCameraView", HERO,
@@ -52,9 +56,21 @@ MERGES = [
                   "char p0[0xC]; int fC; char p1[4]; int f14; int f18; char p2[0x10];",
                   "char p0[0xC]; int fC; int f10; int f14; int f18; char p2[0x10];"]),
     # 0x4C bytes: every field any level reads.
-    row("HeroItemDefView", HERO, "char p0[0x18]; int f18; char p1C[8]; int f24; char p28[0x24];",
-        "Rec4C", ["char p0[0x24]; int f24; char p1[0x24];", "char p0[0x18]; int f18; char p1C[0x30];"]),
+    row("HeroItemDefView", HERO, "char p0[0x18]; int f18; char p1C[4]; int f20; int f24; char p28[0x24];",
+        "Rec4C|Rec20", ["char p0[0x24]; int f24; char p1[0x24];", "char p0[0x18]; int f18; char p1C[0x30];",
+                        "char pad[0x20]; int f20; char pad2[0x28];"]),
 ]
+
+
+# Types with good names already: moved as written, into a header per topic. Listed in dependency order.
+VERBATIM = {
+    "core/newlib_types.h": ["__sbuf_nl", "_atexit_nl", "_reent_nl", "FILE_nl", "Bigint_1154D0", "MallocChunk"],
+    "structs/gs.h": ["GifTag_FAB40", "GsFbp_FAB40", "FsAa_FAB40"],
+    "structs/swarm.h": ["SwarmPath", "SwarmPathFollower"],
+    "structs/anim.h": ["AnimClass", "MobyAnim"],
+    "structs/level_records.h": ["FogPreset", "MusicCdReadMode", "QuadPkt"],
+}
+VERBATIM_INCLUDES = '#include "common.h"\n#include "structs/vector.h"\n#include "structs/records.h"\n'
 
 
 def statement_body(text, start, end):
@@ -95,6 +111,54 @@ def rename_code(text, renames):
         last = m.end()
     out.append(pattern.sub(lambda w: renames[w.group(1)], text[last:]))
     return "".join(out)
+
+
+def verbatim_blocks(text):
+    """{name: (start, stop, whole statement)} for the types in VERBATIM defined in this file."""
+    wanted = {name for names in VERBATIM.values() for name in names}
+    found = {}
+    for start, end, names in pt.find_types(text):
+        hit = names & wanted
+        if len(hit) == 1:
+            found[next(iter(hit))] = (start, pe.trailing_comment_end(text, end), text[start:end])
+    return found
+
+
+def apply_verbatim(sources):
+    """Move VERBATIM types. A file takes a header only if the header's other names do not appear in it."""
+    text_of = {}
+    headers = {}
+    for header, names in VERBATIM.items():
+        statements = {}
+        users = {}
+        for rel, text in sources.items():
+            blocks = verbatim_blocks(text)
+            mine = [n for n in names if n in blocks]
+            if not mine:
+                continue
+            words = set(pe.WORD.findall(pe.without_comments(text)))
+            if (set(names) - set(mine)) & words:
+                continue
+            for name in mine:
+                statements.setdefault(name, blocks[name][2])
+            users[rel] = mine
+        if len(users) < 2:
+            continue
+        same = all(re.sub(r"\s+", " ", pe.mask(verbatim_blocks(sources[rel])[n][2])) ==
+                   re.sub(r"\s+", " ", pe.mask(statements[n])) for rel, mine in users.items() for n in mine)
+        if not same:
+            continue
+        headers[header] = [statements[n] for n in names if n in statements]
+        for rel, mine in users.items():
+            text = text_of.get(rel, sources[rel])
+            for name in mine:
+                start, stop, _ = verbatim_blocks(text)[name]
+                text = text[:start] + text[stop:]
+            text = re.sub(r"\n{3,}", "\n\n", text)
+            first = re.search(r"^#include [^\n]*\n(?:#include [^\n]*\n)*", text, re.M)
+            at = first.end() if first else 0
+            text_of[rel] = text[:at] + f'#include "{header}"\n' + text[at:]
+    return headers, text_of
 
 
 def apply_to_source(text):
@@ -150,10 +214,25 @@ def main():
                 changed = rename_code(old, renames)
                 if changed != old:
                     fragment.write_text(changed, errors="surrogateescape")
+    sources = {rel: (ROOT / rel).read_text(errors="surrogateescape") for rel in pe.sources(["src"])}
+    headers, text_of = apply_verbatim(sources)
+    for header, statements in headers.items():
+        print(f"{len(statements):4} types: {header}")
+    print(f"     verbatim: {len(text_of)} files")
+    if write:
+        for rel, text in text_of.items():
+            (ROOT / rel).write_text(text, errors="surrogateescape")
+        for header, statements in headers.items():
+            guard = re.sub(r"\W", "_", header).upper()
+            target = ROOT / "include" / header
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(f"#ifndef {guard}\n#define {guard}\n\n{VERBATIM_INCLUDES}\n" +
+                              "\n\n".join(statements) + f"\n\n#endif /* {guard} */\n")
     if write:
         by_header = collections.defaultdict(list)
         for merge in MERGES:
-            if counts[merge["new"]]:
+            # A header that exists keeps every type: other files already use them.
+            if counts[merge["new"]] or (ROOT / "include" / merge["header"]).exists():
                 by_header[merge["header"]].append(merge)
         for header, merges in by_header.items():
             target = ROOT / "include" / header
