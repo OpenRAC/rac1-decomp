@@ -99,7 +99,7 @@ struct FighterJetSteerVars {
     s32 camera_point; /* 0x12C: index in fleet_camera_points */
 };
 
-/* Magnet elevator (class 1380). */
+/* Magnet elevator. */
 struct MagnetElevatorVars {
     u8 pad_00[0x80];
     s32 path_index; /* 0x80: index in fleet_paths */
@@ -642,7 +642,7 @@ void process_dreks_fleet_turret_hits(char *m) {
     }
 }
 
-/* What a class 0x733 craft (moby 1843) keeps of its path: func_L17_002F5C18 follows it from these. */
+/* What a Blarg Ship craft (moby 1843) keeps of its path: func_L17_002F5C18 follows it from these. */
 typedef struct {
     char pad0[0x60];
     int path;
@@ -657,7 +657,7 @@ typedef struct {
     float pos[1][4];
 } FleetPath;
 
-/* Counts the class 0x733 craft in this moby's group, then spreads them evenly over its path: each gets the path, a node and that node's position. */
+/* Counts the Blarg Ship craft in this moby's group, then spreads them evenly over its path: each gets the path, a node and that node's position. */
 void distribute_class_733_group_mobys_along_path(char *moby) {
     Vars347 *v = ((Vars347 *)((Moby *)moby)->pvars);
     short count = 0;
@@ -2478,7 +2478,7 @@ typedef struct {
     unsigned char b20A4;
     unsigned char b20A5;
 } Glob1379;
-/* Updates a fighter jet (moby class 1379): waits for the hero, boards, flies, exits or fades out, then clamps its position. */
+/* Updates a fighter jet (moby Fighter Jet): waits for the hero, boards, flies, exits or fades out, then clamps its position. */
 void FighterJetUpdate(Moby1379 *moby) {
     State1379 *d;
     char *r;
@@ -3187,7 +3187,7 @@ extern int mine_fall(void *, void *);
 extern void SetDeathBits(void *, int, int);
 extern short class1382_move_params;
 
-/* UpdateMoby for class 1382: hides or shows the moby by its clip volumes, then runs its state machine. */
+/* UpdateMoby for Robot Dog: hides or shows the moby by its clip volumes, then runs its state machine. */
 void Moby1382Update(unsigned char *m) {
     Vars1382 *d;
     unsigned char *tgt;

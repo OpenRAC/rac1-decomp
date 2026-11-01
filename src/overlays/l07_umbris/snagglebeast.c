@@ -19,6 +19,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
     u8 pad_00[0x20];
@@ -2525,8 +2526,9 @@ void func_L07_0031A410_r(struct Moby *moby) {
     health = &vars->health;
     hit = hit_lookup_p(moby, 0x230000, 0);
     hit_test_p(moby, hit, health, 0, &touching, 0, 0, 4);
-    if (touching >= 2 && hit != 0 && (*(struct Moby **)(hit + 0x20))->oclass != 0x456 &&
-        (*(struct Moby **)(hit + 0x20))->oclass != 0x365 && (*(struct Moby **)(hit + 0x20))->oclass != 0x367) {
+    if (touching >= 2 && hit != 0 && (*(struct Moby **)(hit + 0x20))->oclass != MOBY_CLASS_HOMING_MINE &&
+        (*(struct Moby **)(hit + 0x20))->oclass != 0x365 &&
+        (*(struct Moby **)(hit + 0x20))->oclass != MOBY_CLASS_BOLTCRATE_POSSIBLY_FOR_METAL_DETECTOR) {
         clear_p(dir.f);
         boom_p(moby, &dir, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 1, -1, 0);
         snd_p(moby, 0, -1);
@@ -2595,8 +2597,8 @@ void func_L07_0031A410_r(struct Moby *moby) {
             qcopy(&probe, &moby->pos);
             probe.f[2] += 0.75f;
             if (probe_p(0.75f, &probe, 0x10, moby, contact) && debris_p != 0 && debris_p->oclass != 0x363 &&
-                debris_p->oclass != 0x456 && debris_p->oclass != 0x458 && debris_p->oclass != 0x365 &&
-                debris_p->oclass != 0x367) {
+                debris_p->oclass != MOBY_CLASS_HOMING_MINE && debris_p->oclass != MOBY_CLASS_MINE_1112 &&
+                debris_p->oclass != 0x365 && debris_p->oclass != MOBY_CLASS_BOLTCRATE_POSSIBLY_FOR_METAL_DETECTOR) {
                 boom_p(moby, &dir, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 1, -1, 0);
                 remove_p(moby);
                 return;
@@ -2775,8 +2777,8 @@ void update_swooper(struct Moby *moby) {
     }
     hit = hit_31AAB0(moby, 0x230000, 0);
     ComputeHitResponse_r2(moby, hit, collision, 0, &touching, 0, 0, 4);
-    if (touching >= 2 && hit != 0 && hit->moby->oclass != 0x363 && hit->moby->oclass != 0x458 &&
-        hit->moby->oclass != 0x367) {
+    if (touching >= 2 && hit != 0 && hit->moby->oclass != 0x363 && hit->moby->oclass != MOBY_CLASS_MINE_1112 &&
+        hit->moby->oclass != MOBY_CLASS_BOLTCRATE_POSSIBLY_FOR_METAL_DETECTOR) {
         debris_31AAB0(moby, &vars->velocity, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 1, -1, 0);
         SetDeathBits_r2(moby, 0, -1);
         remove_31AAB0(moby, spawner_vars);
@@ -2854,9 +2856,9 @@ void update_swooper(struct Moby *moby) {
             qcopy(&probe, &moby->pos);
             probe.f[2] += 0.75f;
             if (probe_31AAB0(0.75f, &probe, 0x10, moby, contact) && debris_target_r != 0 &&
-                debris_target_r->oclass != 0x363 && debris_target_r->oclass != 0x456 &&
-                debris_target_r->oclass != 0x458 && debris_target_r->oclass != 0x365 &&
-                debris_target_r->oclass != 0x367) {
+                debris_target_r->oclass != 0x363 && debris_target_r->oclass != MOBY_CLASS_HOMING_MINE &&
+                debris_target_r->oclass != MOBY_CLASS_MINE_1112 && debris_target_r->oclass != 0x365 &&
+                debris_target_r->oclass != MOBY_CLASS_BOLTCRATE_POSSIBLY_FOR_METAL_DETECTOR) {
                 debris_31AAB0(moby, &vars->velocity, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 1, -1,
                               0);
                 remove_31AAB0(moby, spawner_vars);
@@ -2917,7 +2919,8 @@ void process_breakable_prop_hit(struct Moby *m) {
 
     h = hit_31B318(m, 0x30000, 0);
     if (h != 0 && h->moby != 0 &&
-        ((h->moby->oclass == 0x415 && h->moby->state == 8) || (h->moby->oclass == 0x452 && h->moby->state == 9)) &&
+        ((h->moby->oclass == 0x415 && h->moby->state == 8) ||
+         (h->moby->oclass == MOBY_CLASS_SNAGGLEBEAST && h->moby->state == 9)) &&
         h->kind == 1.000123f) {
         ext.x = v->size.x;
         ext.y = v->size.y;
@@ -2990,7 +2993,7 @@ extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
 extern Moby *level_mobys_r __asm__("D_L07_00160058") MACRO_ADDR;
 extern char gHeroPos_r[] __asm__("D_0013F4D0");
 
-/* Machine-gun turret update (moby class 1126): wakes when hit, sweeps between its two marker mobys
+/* Machine-gun turret update (moby Machinegun Turret): wakes when hit, sweeps between its two marker mobys
    and fires bursts, then sinks and rises again. */
 void GunMoby_HandleHit(Moby *moby) {
     float pos[4];

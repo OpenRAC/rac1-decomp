@@ -15,6 +15,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Path mover (class 0x382): rides a rail path, turning its matrix with it. */
 struct PathMoverVars {
@@ -699,7 +700,7 @@ extern float vec_length_xy(void *);
 
 extern void InitKnockback(void *, void *, int, int, int, float);
 
-/* Spawns a projectile moby (class 0x273) at pos, heading along dir, owned by parent p.
+/* Spawns a projectile moby (Mine) at pos, heading along dir, owned by parent p.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002cc888. */
 char *spawn_mine_layer_projectile(char *parent_moby, void *pos, float *launch_velocity) {
     struct Moby *spawned_moby = (struct Moby *)CreateMoby(0x273);
@@ -737,10 +738,10 @@ char *spawn_mine_layer_projectile(char *parent_moby, void *pos, float *launch_ve
     spawned_moby->state = 1;
     return (char *)spawned_moby;
 }
-/* whether the moby is a taxi (class 0x330) in states 2 to 6 */
+/* whether the moby is a taxi in states 2 to 6 */
 s32 is_taxi_in_round_trip_phase(u8 *object) {
     struct Moby *m = (struct Moby *)object;
-    if (m->oclass != 0x330)
+    if (m->oclass != MOBY_CLASS_TAXI_816)
         return 0;
     return m->state >= 2 && m->state < 7;
 }
@@ -1354,7 +1355,7 @@ extern void DeleteMoby(void *);
 extern f32 FastDiffRots(f32, f32);
 #define LINK_HELPER(M, V)                                                  \
     t = (struct Moby *)((V->link << 8) + (int)D_L03_00160058);             \
-    if (t->oclass == 0x3F4) {                                              \
+    if (t->oclass == MOBY_CLASS_TAXI_1012) {                               \
         flag = (s32 *)(t->pvars + 0x8C);                                   \
         *flag = 1;                                                         \
         record_moby_context_bytes(flag, 4, M, 2, kerwan_saved_moby_bytes); \
@@ -1452,7 +1453,7 @@ void helga_update(struct Moby *m) {
                     }
                     if (v->link != -1) {
                         t = (struct Moby *)((v->link << 8) + (int)kerwan_mobys);
-                        if (t->oclass == 0x3F4) {
+                        if (t->oclass == MOBY_CLASS_TAXI_1012) {
                             u8 *tv = t->pvars;
                             *(s32 *)(tv + 0x7C) = 0;
                             *(s32 *)(tv + 0x8C) = 0;
@@ -1465,7 +1466,7 @@ void helga_update(struct Moby *m) {
                 }
             } else if (v->talk.unk36 == 2 && v->link != -1) {
                 t = (struct Moby *)((v->link << 8) + (int)kerwan_mobys);
-                if (t->oclass == 0x3F4) {
+                if (t->oclass == MOBY_CLASS_TAXI_1012) {
                     u8 *tv = t->pvars;
                     *(s32 *)(tv + 0x7C) = 0;
                     *(s32 *)(tv + 0x8C) = 0;
@@ -1756,7 +1757,7 @@ void big_al_update(struct Moby *m) {
             }
             if (stage[m->mission + (g_current_level_index << 4)] == 0xFF && v->link != -1) {
                 t = (struct Moby *)((v->link << 8) + (int)kerwan_mobys);
-                if (t->oclass == 0x3F4) {
+                if (t->oclass == MOBY_CLASS_TAXI_1012) {
                     *(s32 *)(t->pvars + 0x8C) = 1;
                 }
             }
@@ -1772,7 +1773,7 @@ void big_al_update(struct Moby *m) {
             if (flag2() != 0) {
                 if (v->reward != -1) {
                     t = (struct Moby *)((v->reward << 8) + (int)kerwan_mobys);
-                    if (t->oclass == 0x3E5 && t->state == 0) {
+                    if (t->oclass == MOBY_CLASS_GARAGE_DOOR && t->state == 0) {
                         t->state = 1;
                         kerwan_current_level_state
                             .collected[(s16)((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->save_id] =
@@ -1812,7 +1813,7 @@ void big_al_update(struct Moby *m) {
                 jet_clear_persistent(m->mission);
                 if (v->link != -1) {
                     t = (struct Moby *)((v->link << 8) + (int)kerwan_mobys);
-                    if (t->oclass == 0x3F4) {
+                    if (t->oclass == MOBY_CLASS_TAXI_1012) {
                         *(s32 *)(t->pvars + 0x8C) = 1;
                     }
                 }
@@ -1828,7 +1829,7 @@ void big_al_update(struct Moby *m) {
             ShowBanner(0xBC7, -1);
             if (v->reward != -1) {
                 t = (struct Moby *)((v->reward << 8) + (int)kerwan_mobys);
-                if (t->oclass == 0x3E5 && t->state == 0) {
+                if (t->oclass == MOBY_CLASS_GARAGE_DOOR && t->state == 0) {
                     t->state = 1;
                     kerwan_current_level_state
                         .collected[(s16)((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->save_id] =
@@ -1910,7 +1911,7 @@ void big_al_update(struct Moby *m) {
     EaseManipulatorOffsets(m, &v->body, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
 /* functional: high. Only registers, scheduling, the frame layout and the order of independent stores differ from retail; the reads, writes, calls, their arguments and order, and the float multiply order are retail's (the unset w lanes of the two state-3 vectors are never written, as in retail). */
-/* Level 3 (Kerwan) Robot Qwark (moby class 914) update. A hero close enough
+/* Level 3 (Kerwan) Robot Qwark (moby Robot Qwark) update. A hero close enough
  * (< 26) while m[0x31] is set triggers func_L00_0025B178 and m[0x7F] = 21.
  * If its saved bit (level table or per-save bitfield) is set it goes to state
  * 3. A hit of type 3 while the bit is clear plays the first-time cutscene
@@ -2053,10 +2054,10 @@ void robot_qwark_update(unsigned char *m) {
 }
 INCLUDE_ASM("asm/overlays", func_L03_002DDE38);
 INCLUDE_ASM("asm/overlays", func_L03_002DDE9C);
-/* whether the moby is a taxi (class 0x3F4), active, with its pvars word at +0x7C equal to 1. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002dcb30. */
+/* whether the moby is a taxi, active, with its pvars word at +0x7C equal to 1. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002dcb30. */
 int is_rail_lift_started(struct Moby *moby) {
     char *data = (char *)moby->pvars;
-    if (moby->oclass != 0x3F4) {
+    if (moby->oclass != MOBY_CLASS_TAXI_1012) {
         return 0;
     }
     if (moby->state && *(int *)(data + 0x7C) == 1) {

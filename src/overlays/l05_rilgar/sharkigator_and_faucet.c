@@ -18,6 +18,7 @@
 #include "overlays/shared/candidate_adjacency_masks.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/ripple_patches.h"
+#include "enums/moby_class.h"
 
 /* Extermibot: wakes from its dormant pose, wanders around its home, walks
    its path toward the target and strikes it; Wing_3047E8 is the same block
@@ -648,7 +649,7 @@ typedef struct {
     /* 0x368 */ float f368;
 } Data_2D8388;
 
-/* Update of the scenery ship (moby class 79) on level 05. State 0 fits the turn angles of its path (stored in
+/* Update of the scenery ship (moby Scenery Ship) on level 05. State 0 fits the turn angles of its path (stored in
  * each point's w, scaled so the sharpest turn is 60 degrees); state 1 moves it along the path and records
  * three trail points per frame in the ring buffers of the data block; state 2 spawns three explosions and
  * deletes it. */
@@ -891,7 +892,7 @@ void draw_group_scenery_ship_trails(char *moby) {
     list = rilgar_moby_groups[(unsigned char)moby[0x21]];
     do {
         member = (char *)(((*list & 0x7fff) << 8) + *(int *)&moby_pool_4f60);
-        if (((Moby *)member)->oclass == 0x4f && (unsigned char)member[0x20] == 1) {
+        if (((Moby *)member)->oclass == MOBY_CLASS_SCENERY_SHIP && (unsigned char)member[0x20] == 1) {
             int frame;
             data = ((char *)((Moby *)member)->pvars);
             qcopy_nc(center, member + 0x10);
@@ -1096,7 +1097,7 @@ void spawn_amoeboid_hit_sparks(void *m, void *dir) {
 extern char *CreateMoby(int);
 extern void moby_build_matrix(void *);
 
-/* Spawns a class 0x1B7 moby at the owner's position; returns it, or 0 if the pool is full. */
+/* Spawns a Hoverboard moby at the owner's position; returns it, or 0 if the pool is full. */
 char *spawn_racer_child(char *owner) {
     char *moby = CreateMoby(0x1B7);
     if (moby != 0) {
@@ -1668,11 +1669,11 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
         qcopy(v0, ((float *)&m->pos));
         v0[2] = v0[2] + 0.5f;
         if (r->who != 0) {
-            if (r->who->oclass == 0x47) {
+            if (r->who->oclass == MOBY_CLASS_WRENCH) {
                 qcopy(v10, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center);
             } else if ((*(struct Moby **)&r->who->pclass != 0 &&
                         *(short *)((u8 *)((struct Moby *)r->who->pclass) + 0x46) == 5) ||
-                       r->who->oclass == 0xBA) {
+                       r->who->oclass == MOBY_CLASS_DOOM_BOT) {
                 qcopy(v10, v0);
             } else {
                 qcopy(v10, ((float *)&r->who->pos));
@@ -2834,7 +2835,7 @@ typedef struct {
     int f50;
 } ChildData_308D68;
 
-/* Update function of moby class 717 (skid_mcmarx): a hoverboard racer that follows its path, jumps, and steers. */
+/* Update function of moby Skid Mcmarx (skid_mcmarx): a hoverboard racer that follows its path, jumps, and steers. */
 void SkidMcMarxUpdate(Moby *moby) {
     float v0[4];
     float v1[4];
@@ -3401,7 +3402,8 @@ void WaterSurfaceUpdate(Moby *moby) {
                 if (vec_distance_xy(((float *)&moby->pos), ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f) <
                     10.0f) {
                     Hero *h = (Hero *)(hero_globals_base + 0xE1D);
-                    if (h->ground_moby != 0 && h->air_frames.s == 0 && h->ground_moby->oclass == 0x33E) {
+                    if (h->ground_moby != 0 && h->air_frames.s == 0 &&
+                        h->ground_moby->oclass == MOBY_CLASS_FLOOR_BUTTON) {
                         d->f1C = 0;
                         moby->state = 8;
                         rilgar_flood_stage = 0;
@@ -3500,7 +3502,7 @@ void synchronize_group_water_heights(char *moby) {
     do {
         int idx = *p & 0x7FFF;
         char *m = (char *)(idx * 256 + (int)base);
-        if (((Moby *)m)->oclass == 0x33F) {
+        if (((Moby *)m)->oclass == MOBY_CLASS_WATER_831) {
             char *d2 = ((char *)((Moby *)m)->pvars);
             char *q;
             float f;

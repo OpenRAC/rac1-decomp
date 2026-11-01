@@ -20,6 +20,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Homing spark: chases a target moby, easing its speed and aim. */
 struct HomingSparkVars {
@@ -63,7 +64,7 @@ struct ConveyorVars {
     s32 sound_slot; /* 0x74 */
 };
 
-/* Test dummy (class 0x21D). */
+/* Test dummy. */
 struct TestDummyVars {
     u8 pad_00[0xFC];
     f32 speed_vel; /* 0xFC */
@@ -586,7 +587,7 @@ typedef struct {
     L16FallingData *data; /* 0x78 */
 } L16FallingMoby;
 
-/* Update a thrown bomb (class 0x119): fly and bounce off what it hits and off the ground, rest, then burst. */
+/* Update a thrown bomb: fly and bounce off what it hits and off the ground, rest, then burst. */
 void update_thrown_bomb(L16FallingMoby *m) {
     float previous[4], normal[4];
     L16FallingData *d = m->data;
@@ -647,7 +648,7 @@ extern char *CreateMoby_m(int) __asm__("func_0020D348");
 
 extern void moby_build_matrix(void *);
 
-// Spawns a class 0x119 moby and initialises its data, position and angles.
+// Spawns a Bomb moby and initialises its data, position and angles.
 unsigned char *spawn_thrown_bomb(int a, void *pos, float *dir, int c, float f) {
     unsigned char *moby = (unsigned char *)CreateMoby_m(0x119);
     if (moby != 0) {
@@ -885,7 +886,7 @@ void update_conveyor_group_motion_transforms(int index, void *arg) {
     if (p) {
         do {
             Moby *moby = (Moby *)(kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8));
-            if (moby->oclass == 0x1D7) {
+            if (moby->oclass == MOBY_CLASS_CONVEYOR_BELT_471) {
                 update_entity_matrix(((char *)moby->pvars) + 0x20, arg, &moby->rot, &moby->rot);
             }
         } while (*p++ >= 0);
@@ -1072,8 +1073,8 @@ extern unsigned char *spawn_thrown_bomb_r(int, void *, float *, float, int) __as
 extern int MobySphereHitDirectional_r(int, float, void *, int, float, float, int, int,
                                       int) __asm__("func_L00_0025A8E8");
 
-/* Updates the test dummy (moby class 541): walks its path, throws at or sprays its target, bursts and respawns. */
-/* Updates the test dummy (moby class 541): walks its path, throws at or sprays its target, bursts and respawns. */
+/* Updates the test dummy (moby Test Dummy): walks its path, throws at or sprays its target, bursts and respawns. */
+/* Updates the test dummy (moby Test Dummy): walks its path, throws at or sprays its target, bursts and respawns. */
 
 void test_dummy_update(unsigned char *moby) {
     enum {
@@ -1505,7 +1506,7 @@ void update_test_dummy_damage_and_respawn(void *moby) {
 }
 extern int *kalebo3_moby_groups[];
 
-// For each listed moby of class 0x21D: sets its state bytes and clears bit 0 of its flags.
+// For each listed Test Dummy moby: sets its state bytes and clears bit 0 of its flags.
 void activate_test_dummy_group(int idx) {
     short *p = (short *)kalebo3_moby_groups[idx];
     if (p != 0) {
@@ -1569,7 +1570,7 @@ void update_test_dummy_group_glow_phases(char *moby) {
         do {
         again:
             m = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + (int)kalebo3_moby_array);
-            if (((Moby *)m)->oclass != 0x21D)
+            if (((Moby *)m)->oclass != MOBY_CLASS_TEST_DUMMY)
                 goto again;
             data = (struct TestDummyVars *)((Moby *)m)->pvars;
             data->glow_frame = kalebo3_frame_count;
@@ -1593,7 +1594,7 @@ typedef struct {
     short type;
 } L16BeamMoby;
 
-/* Draw callback queued by func_L16_002D0238: one textured quad per live test dummy (class 0x21D) of the
+/* Draw callback queued by func_L16_002D0238: one textured quad per live test dummy of the
    group, its colour pulsing with the dummy's phase, its frame built from the direction to the target. */
 void draw_test_dummy_group_glows(L16BeamMoby *moby) {
     L16RibbonPacket packet;
@@ -2493,7 +2494,7 @@ void *set_class_0287_group_activation_and_find_nearest(int index, int secondary)
         return 0;
     while (1) {
         moby = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
-        if (((Moby *)moby)->oclass != 0x287)
+        if (((Moby *)moby)->oclass != MOBY_CLASS_DOOR_647)
             continue;
         d = FastVecDist(kalebo3_camera_pos, &((Moby *)moby)->pos);
         if (d < distance) {
@@ -2522,7 +2523,7 @@ void *activate_class_0287_group_and_find_nearest(int index, int secondary) {
         return 0;
     while (1) {
         moby = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
-        if (((Moby *)moby)->oclass != 0x287)
+        if (((Moby *)moby)->oclass != MOBY_CLASS_DOOR_647)
             continue;
         d = FastVecDist(kalebo3_camera_pos, &((Moby *)moby)->pos);
         data = ((int *)((Moby *)moby)->pvars);
@@ -2575,7 +2576,7 @@ void test_dummy_door_update(char *moby) {
         }
     }
 }
-/* The linked moby of class 0x28A nearest a position, within 37 units. */
+/* The linked Test Dummy Door moby nearest a position, within 37 units. */
 void *find_nearest_test_dummy_door(int index, void *position) {
     short *p = (short *)kalebo3_moby_groups[index];
     char *nearest = 0;

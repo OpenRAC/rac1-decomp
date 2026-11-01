@@ -176,7 +176,7 @@ extern int allocate_colored_effect_slot_r(void *, float, float, float, float, fl
 extern void release_point_light_slot_r(int) __asm__("func_L00_0023F1D0");
 extern int FastDecTimer_r(short *) __asm__("func_001F9938");
 
-/* Devastator (class 157) update: tracks the aimed target, draws the reticle, picks a target and fires,
+/* Devastator update: tracks the aimed target, draws the reticle, picks a target and fires,
    keeps its usage statistics and moves the muzzle light. */
 void func_L00_002B33E8_r(Moby *m) __asm__("func_L00_002B33E8");
 void func_L00_002B33E8_r(Moby *m) {
@@ -1235,7 +1235,7 @@ extern float IntToFloat_r2(int) __asm__("func_001FA888");
 extern int allocate_colored_effect_slot_r2(void *, float, float, float, float, float) __asm__("func_L00_0023F0D0");
 extern void release_point_light_slot_r2(int) __asm__("func_L00_0023F1D0");
 
-/* Blaster (class 168) update: aims (reticle in first person, auto-aim otherwise), fires a shot with its sparks,
+/* Blaster update: aims (reticle in first person, auto-aim otherwise), fires a shot with its sparks,
    keeps the usage statistics, returns to idle and moves the muzzle light. */
 void func_L00_002B5C98_r(Moby *m) __asm__("func_L00_002B5C98");
 void func_L00_002B5C98_r(Moby *m) {
@@ -1842,7 +1842,7 @@ extern void SendRadialMessageToMobys_r(void *, void *, void *, int, int, int, in
                                        float) __asm__("func_L00_0025BA50");
 extern void add_random_offset_to_vector_xyz_r(void *, float) __asm__("func_L00_00260958");
 
-/* visibomb_missile update (moby class 172): drift, homing toward the target, arming countdown. */
+/* visibomb_missile update (moby Visibomb Missile): drift, homing toward the target, arming countdown. */
 void visibomb_missile_update(Moby *m) {
     V_2B7430 v20;
     V_2B7430 k30;
@@ -2968,7 +2968,7 @@ extern void start_equipped_item_animation_r2(void) __asm__("func_L00_0020EB60");
 extern void cancel_hero_item_animation_r2(void) __asm__("func_L00_0020ED30");
 extern void release_point_light_slot_r3(int) __asm__("func_L00_0023F1D0");
 
-/* Tesla claw (class 177) update: tracks up to two targets while fire is held, extends the claw tip, runs its
+/* Tesla claw update: tracks up to two targets while fire is held, extends the claw tip, runs its
    firing states and statistics, and moves its light. */
 void func_L00_002B9AD8_r(Moby *m) __asm__("func_L00_002B9AD8");
 void func_L00_002B9AD8_r(Moby *m) {

@@ -7,6 +7,7 @@
 #include "overlays/shared/help_message_removal.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
+#include "enums/moby_class.h"
 
 /* Ship pickup moby: remembers whether the hero is at the ship entry point. */
 struct ShipPickupVars {
@@ -178,7 +179,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
         if (((Moby *)m)->visible != 0) {
             ((Moby *)m)->command += 2;
             v = (int)(FastCos(IntToFloat((unsigned char)((Moby *)m)->command - 0x80) * 0.024543693f) * 50.0f) + 0x96;
-            if (((Moby *)m)->oclass == 0x215) {
+            if (((Moby *)m)->oclass == MOBY_CLASS_PURPLE_SHIP_533) {
                 ((Moby *)m)->glow_color = (v >> 1) | (v << 8) | (v << 16);
             } else {
                 ((Moby *)m)->glow_color = v | (v << 8) | (v << 16);

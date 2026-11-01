@@ -10,6 +10,7 @@
 #include "data/level_14.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/moby_class.h"
 /* Plasmabot: follows its path, tracks the hero, fires a sweeping plasma beam. */
 struct PlasmabotVars {
     u8 pad_00[0x20];
@@ -1122,14 +1123,14 @@ void Group_ResetClass28Timers(int idx) {
             do {
                 char *moby = oltanis_mobys + ((*(unsigned short *)p & 0x7FFF) << 8);
                 struct PlasmabotVars *data = (struct PlasmabotVars *)((Moby *)moby)->pvars;
-                if (((Moby *)moby)->oclass == 0x1C) {
+                if (((Moby *)moby)->oclass == MOBY_CLASS_PLASMABOT_28) {
                     data->beam_timer = scale_ticks(*(int *)&plasmabot_beam_cooldown_frames);
                 }
             } while (*p++ >= 0);
         }
     }
 }
-/* counts class 28 objects in states five and six */
+/* counts Plasmabot objects in states five and six */
 int count_listed_plasmabots_preparing_or_sweeping_beam(int index) {
     int count = 0;
     unsigned short *ids;
@@ -1145,14 +1146,14 @@ int count_listed_plasmabots_preparing_or_sweeping_beam(int index) {
         Moby *m;
         id = *ids;
         m = (Moby *)(base + (id & 0x7FFF) * 256);
-        if (m->oclass == 28 && (unsigned char)((unsigned char)*(char *)&m->state - 5) <= 1)
+        if (m->oclass == MOBY_CLASS_PLASMABOT_28 && (unsigned char)((unsigned char)*(char *)&m->state - 5) <= 1)
             ++count;
         ++ids;
     } while ((short)id >= 0);
     return count;
 }
 INCLUDE_ASM("asm/overlays", func_L14_002B4B84);
-/* Returns 0 if the group holds a class 0x1C moby in state 2, else 1. */
+/* Returns 0 if the group holds a Plasmabot moby in state 2, else 1. */
 int check_listed_plasmabots_not_starting_path_traversal(unsigned char *m) {
     unsigned short *p;
     if (*(volatile unsigned char *)&((Moby *)m)->group == 0xFF ||
@@ -1957,7 +1958,8 @@ void update_floating_mine(struct Moby *moby) {
             scratch.info.unk3A = 7;
             scratch.info.unk3B = 0xFF;
             ComputeHitResponse_r(moby, hit, &scratch.info, 0, &count, 0, 0, 4);
-            if ((count >= 2 && hit != 0 && hit->moby->oclass != 0x283) || g_hero.coll_hit_moby == (u8 *)moby) {
+            if ((count >= 2 && hit != 0 && hit->moby->oclass != MOBY_CLASS_MINE_643) ||
+                g_hero.coll_hit_moby == (u8 *)moby) {
                 clear_u64_value(vel);
                 Moby_PlaySound(0, 0, moby);
                 if (g_hero.coll_hit_moby == (u8 *)moby)
@@ -2002,7 +2004,7 @@ void update_floating_mine(struct Moby *moby) {
 }
 extern float random_float_between(float, float);
 
-/* Spawns moby class 0x3A5 at the given position, owned by owner, with three randomised angle values. */
+/* Spawns moby Mine at the given position, owned by owner, with three randomised angle values. */
 unsigned char *spawn_floating_mine(unsigned char *owner, char *pos) {
     unsigned char *m = CreateMoby(0x3A5);
     if (m != 0) {

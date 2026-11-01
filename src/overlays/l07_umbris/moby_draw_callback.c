@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/moby.h"
+#include "enums/moby_class.h"
 
 
 typedef struct {
@@ -19,7 +20,7 @@ extern void AddDrawCallback(void (*)(void *), void *);
 /* Register the level draw callback for the target moby in state four. */
 void register_level07_moby_draw_callback(void) {
     if (g_current_level_index == 7 && umbris_cutscene_state.state == 4 && umbris_cutscene_state.moby != 0 &&
-        umbris_cutscene_state.moby->oclass == 0x214) {
+        umbris_cutscene_state.moby->oclass == MOBY_CLASS_RED_SHIP) {
         AddDrawCallback(render_environment_mapped_object, umbris_cutscene_state.moby);
     }
 }

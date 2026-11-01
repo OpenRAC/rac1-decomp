@@ -19,6 +19,7 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/level_gameplay_loading.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/moby_class.h"
 
 extern int vendor_menu[];
 extern unsigned char g_class_slot_12 NOT_SDA;
@@ -1779,7 +1780,7 @@ void func_L00_0029D988_r(void) {
                 if (mb->b7F) {
                     d_00213700(mb);
                 }
-                if (mb->oclass == 0) {
+                if (mb->oclass == MOBY_CLASS_RATCHET) {
                     d_00234b38(mb);
                 }
             }

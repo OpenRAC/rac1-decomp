@@ -18,6 +18,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Elevator with a rotating ring: volume, speed and lift offset. */
 struct ElevatorRingVars {
@@ -264,7 +265,7 @@ extern float sand_shark_sink_depth SDATA(D_L02_001619AC);
 extern short sand_shark_puff_start_color;
 extern short sand_shark_puff_end_color;
 
-/* pvars of moby class 580 (sand_shark), the fields its update function touches. */
+/* pvars of moby Sand Shark (sand_shark), the fields its update function touches. */
 typedef struct Vars_2D5250 {
     char pad000[0x20];
     float f20; /* 0x020 */
@@ -968,7 +969,7 @@ void extend_group_sand_shark_timers(char *arg) {
         p = (short *)aridia_moby_groups[((unsigned char *)arg)[0x21]];
         do {
             char *o = (char *)aridia_mobys_m + ((*(unsigned short *)p & 0x7FFF) << 8);
-            if (((Moby *)o)->oclass == 0x244) {
+            if (((Moby *)o)->oclass == MOBY_CLASS_SAND_SHARK) {
                 struct Vars_2D5250 *d = (struct Vars_2D5250 *)((Moby *)o)->pvars;
                 float f = multiply_global_factor(random_float_between(240.0f, 300.0f));
                 if ((float)d->t25E < f) {
@@ -1384,7 +1385,7 @@ extern int aridia_bot_spray_ticks_min SDATA(D_L02_00161B20);
 extern int aridia_bot_spray_ticks_max SDATA(D_L02_00161B24);
 extern float aridia_bot_spray_spread SDATA(D_L02_00161B28);
 
-/* The data record of moby class 612 (moby + 0x78); fields named by offset where their meaning is not known. */
+/* The data record of moby Constructorbot (moby + 0x78); fields named by offset where their meaning is not known. */
 typedef struct {
     /* 0x000 */ char pad000[0x20];
     /* 0x020 */ float f20;
@@ -2423,7 +2424,7 @@ char *select_inactive_group_sand_shark_for_nest(char *m) {
     mobys = (Moby *)aridia_mobys_m;
     do {
         int i = *(unsigned short *)group_ids & 0x7FFF;
-        if (mobys[i].oclass == 0x244 && mobys[i].state == 0x1A) {
+        if (mobys[i].oclass == MOBY_CLASS_SAND_SHARK && mobys[i].state == 0x1A) {
             mobys[i].parent = owner;
             if (owner->unkB4 < mobys[i].unkB4) {
                 mobys[i].unkB4 = owner->unkB4;
@@ -3394,7 +3395,7 @@ void sandshark_egg_update(char *moby) {
  * Not built into anything: the retail assembly stays in the source file
  * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
- *   Rock moby (class 762) update, level 02: two sampling loops (200 and 49 passes) that fill three Vec4 scratch bu
+ *   Rock moby (Rocks) update, level 02: two sampling loops (200 and 49 passes) that fill three Vec4 scratch bu
  *   Left: retail keeps a second pointer to the scratch vector across the loop boundary (daddu $18,$20 plus nop bef
  *   Unblock: the source's exact pointer variables for the scratch vectors. The struct copy of aridia_rocks_debris_colors_r (ldl/
  */
@@ -3423,7 +3424,7 @@ typedef struct {
     int b[3];
 } Int3;
 
-/* Rock moby (class 762) update: runs two sampling loops over random directions, feeding the result to the level's helpers. */
+/* Rock moby (Rocks) update: runs two sampling loops over random directions, feeding the result to the level's helpers. */
 void rocks_update(unsigned char *moby) {
     enum { ROCKS_INITIALIZE = 0, ROCKS_WAIT_FOR_HIT = 1 };
     float C[4];

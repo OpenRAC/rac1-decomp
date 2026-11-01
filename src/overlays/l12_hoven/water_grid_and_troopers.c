@@ -18,6 +18,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/ripple_patches.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Hoven troll walker (same class as TrollVars_e3528 below, which is defined after these functions). */
 struct HovenTrollVars {
@@ -1394,7 +1395,7 @@ extern void DeleteMoby(void *);
 extern float vec_distance_xy(void *, void *);
 extern void update_entity_matrix(char *, void *, void *, void *);
 
-/* Update of the Hoven flying platform (class 240): follows or eases along its path, bobs, falls, and reports its motion. */
+/* Update of the Hoven flying platform: follows or eases along its path, bobs, falls, and reports its motion. */
 void HovenPlatformUpdate(Moby *moby) {
     float oldPos[4];
     float oldRot[4];
@@ -1687,7 +1688,7 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern short hoven_cinematic_mode_r __asm__("D_L12_0015F6A8");
 extern char *hoven_camera_points MACRO_ADDR;
 
-/* Miner (class 282) update on level 12: runs its conversation states, steers its body and head toward the player and keeps its helper moby attached. */
+/* Miner update on level 12: runs its conversation states, steers its body and head toward the player and keeps its helper moby attached. */
 void miner_update(Moby *m) {
     Scratch_2E7FC8 scratch;
     Data_2E7FC8 *d = (Data_2E7FC8 *)m->pvars;
@@ -3231,9 +3232,9 @@ void process_blarg_helicopter_hits(char *m) {
     hit_record = MobyGetHitMessage(moby, 0x330000, 0);
     hit_reaction_code = ComputeHitResponse(moby, hit_record, &vars->health, 0, &hit_processing_status, &fv, 0, 4);
     if (hit_processing_status != 1 && moby->state != 6 && hit_record->hit_moby->oclass != 0xB8 &&
-        hit_record->hit_moby->oclass != 0x199) {
+        hit_record->hit_moby->oclass != MOBY_CLASS_ROCKET_409) {
         float remaining_health;
-        if (hit_record->hit_moby->oclass == 0x1CA)
+        if (hit_record->hit_moby->oclass == MOBY_CLASS_ROCKET_458)
             fv = 10.0f;
         remaining_health = vars->health - fv;
         vars->health = remaining_health;

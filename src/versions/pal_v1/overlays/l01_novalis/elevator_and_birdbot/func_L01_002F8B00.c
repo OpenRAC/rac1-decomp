@@ -89,7 +89,7 @@ void bomber_jet_update(Moby *m) {
                     for (j = 0; j < 4; j++) {
                         if (d->turrets[j] != -1) {
                             Moby *o = (Moby *)(novalis_mobys_r3 + (d->turrets[j] << 8));
-                            if (o != 0 && o->oclass == 0x1CB && o->state != 0xFE && o->state != 0xFD) {
+                            if (o != 0 && o->oclass == MOBY_CLASS_BIRDBOT && o->state != 0xFE && o->state != 0xFD) {
                                 Turret_F8B00 *t = (void *)o->pvars;
                                 t->f1E8 = 1;
                                 t->f1EC = scale_ticks(2);
@@ -123,7 +123,7 @@ void bomber_jet_update(Moby *m) {
                     for (j = 0; j < 4; j++) {
                         if (d->turrets[j] != -1) {
                             Moby *o = (Moby *)((d->turrets[j] << 8) + novalis_mobys_r3);
-                            if (o->oclass == 0x1CB) {
+                            if (o->oclass == MOBY_CLASS_BIRDBOT) {
                                 Turret_F8B00 *t = (void *)o->pvars;
                                 t->f1E8 = 1;
                                 t->f1EC = scale_ticks(2);

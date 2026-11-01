@@ -8,6 +8,7 @@
 #include "asm_functions/shared_levels.h"
 #include "data/level_13.h"
 #include "game/mobyutil.h"
+#include "enums/moby_class.h"
 
 /* Hit proxy (moby 0x660): forwards the hits it takes to the moby that owns it. */
 struct HitProxyVars {
@@ -161,7 +162,7 @@ void update_gemlik_scene_controller(Moby *moby) {
                 goto s13;
             {
                 Moby *e = &gemlik_moby_array_start_r[data->f14];
-                if (e != 0 && e->oclass == 0x184 && e->state != 0xFE && e->state != 0xFD)
+                if (e != 0 && e->oclass == MOBY_CLASS_UNMARKED_COUNTED_TARGET && e->state != 0xFE && e->state != 0xFD)
                     break;
             }
             if (data->f10 != -1) {
@@ -215,7 +216,7 @@ void update_gemlik_scene_controller(Moby *moby) {
                 goto s12;
             {
                 Moby *e = &gemlik_moby_array_start_r[data->f10];
-                if (e != 0 && e->oclass == 0x45 && e->state != 0xFE && e->state != 0xFD)
+                if (e != 0 && e->oclass == MOBY_CLASS_FIGHTER_JET_69 && e->state != 0xFE && e->state != 0xFD)
                     break;
             }
             memcard_Save_r(0, -1);

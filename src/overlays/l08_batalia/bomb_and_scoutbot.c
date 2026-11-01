@@ -12,7 +12,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/collision.h"
 
-/* Bomb (class 0xF8): thrown or dropped, bounces, fuse timer, explodes. */
+/* Bomb: thrown or dropped, bounces, fuse timer, explodes. */
 struct BombVars {
     s16 color_fade; /* 0x00: StepColorFade block */
     u8 pad_02[0x5];
@@ -28,7 +28,7 @@ struct BombVars {
     s32 owner; /* 0x30: thrower moby, not hit by its own bomb */
 };
 
-/* Bomber tank (class 253): two part mobys, path driving, aiming and firing. */
+/* Bomber tank: two part mobys, path driving, aiming and firing. */
 struct BomberTankVars {
     u8 pad_00[0x20];
     f32 health; /* 0x20: hit response block, ComputeHitResponse */
@@ -68,7 +68,7 @@ struct BomberTankVars {
     f32 aim_pitch; /* 0x178 */
 };
 
-/* Bomber tank shot (class 0x1A9): flies ballistically, bounces, owner is not hit. */
+/* Bomber tank shot (Bomb): flies ballistically, bounces, owner is not hit. */
 struct BomberShotVars {
     Vec4A velocity; /* 0x00 */
     s32 life; /* 0x10 */
@@ -282,7 +282,7 @@ extern char *CreateMoby(int);
 extern int scale_ticks(int);
 
 extern void moby_build_matrix(void *);
-/* Spawns a moby of class 0xF8 at a position and facing derived from a vector. */
+/* Spawns a Bomb moby at a position and facing derived from a vector. */
 char *spawn_bomb_with_velocity(int arg, char *pos, char *vec) {
     char *m = CreateMoby(0xF8);
     if (m != 0) {
@@ -353,7 +353,7 @@ extern char batalia_coll_hit_point_r[] __asm__("D_L08_001746E0");
 extern blk16 batalia_bomb_spark_colors;
 extern short batalia_bomb_gravity;
 
-/* Bomb (class 248) update: fuse, bounce and blast state machine on the moby's state byte */
+/* Bomb update: fuse, bounce and blast state machine on the moby's state byte */
 void update_bomb(char *moby) {
     union Coll_36F8 c;
     blk16 t70;
@@ -535,7 +535,7 @@ extern void scatter_bomber_tank_linked_debris_r(void *) __asm__("func_L08_002D70
 extern void spawn_bomber_tank_joint_particles(char *moby, int a1, int count);
 extern char *spawn_bomber_tank_projectile(char *src, char *pos, char *vec);
 
-/* Bomber tank (class 253) update: spawns its two parts, then a state machine for driving, firing and the group's debris. */
+/* Bomber tank update: spawns its two parts, then a state machine for driving, firing and the group's debris. */
 void update_bomber_tank(Moby *moby) {
     float old[4];
     float rot[4];
@@ -2315,7 +2315,7 @@ void try_set_shuttle_departure_help_message(char *moby) {
 extern char *CreateMoby(int);
 extern int scale_ticks(int);
 
-/* Spawns a moby of class 0x1A9 at a position, with a random spin and a heading from a vector. */
+/* Spawns a Bomb moby at a position, with a random spin and a heading from a vector. */
 char *spawn_bomber_tank_projectile(char *src, char *pos, char *vec) {
     char *moby = CreateMoby(0x1A9);
     struct BomberShotVars *data;

@@ -20,6 +20,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
 #include "structs/swarm.h"
+#include "enums/moby_class.h"
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
 struct HeightFollowerVars {
@@ -328,7 +329,7 @@ void update_moby_height_from_driver(char *m) {
                 break;
             o = (char *)((i << 8) + *(int *)&batalia_mobys);
         }
-            if (((Moby *)o)->oclass == 0x267 || ((Moby *)o)->oclass == 0x23F) {
+            if (((Moby *)o)->oclass == MOBY_CLASS_TRESSPASSER_PAD || ((Moby *)o)->oclass == 0x23F) {
                 if (((Moby *)o)->state != 4)
                     break;
                 g2 = special_items_base + 0x13B;
@@ -1260,9 +1261,9 @@ typedef struct L16WatchPlayer {
     f32 aim[4]; /* 0xD0 */
 } L16WatchPlayer;
 
-/* Commando (moby class 1130) update: a state machine on the byte at +0x20 (states 0 to 3; state 3 deletes the
+/* Commando (moby Commando) update: a state machine on the byte at +0x20 (states 0 to 3; state 3 deletes the
  * moby), then the relative's aiming tail on the countdowns at data + 0x188 and 0x18C. */
-/* Commando (moby class 1130) update: a state machine on the byte at +0x20 (states 0 to 3; state 3 deletes the
+/* Commando (moby Commando) update: a state machine on the byte at +0x20 (states 0 to 3; state 3 deletes the
  * moby), then the relative's aiming tail on the countdowns at data + 0x188 and 0x18C. */
 
 void commando_update(char *m) {
@@ -1449,7 +1450,7 @@ void attach_batalia_deserter_class_manipulator(char *moby) {
 extern void attach_batalia_deserter_class_manipulator(char *moby);
 extern char batalia_deserter_dialogue_name[];
 
-/* Deserter (moby class 1144) update: a state machine on the byte at +0x20 (states 0 to 2; state 2 deletes the
+/* Deserter (moby Batalia Deserter) update: a state machine on the byte at +0x20 (states 0 to 2; state 2 deletes the
  * moby when its path ends), then the commando's aiming tail on the countdowns at data + 0x194 and 0x198. */
 typedef struct DeserterData_2EAF48 {
     u8 pad_00[0x24]; /* 0x00: dialog block at +0x20, passed as a pointer */

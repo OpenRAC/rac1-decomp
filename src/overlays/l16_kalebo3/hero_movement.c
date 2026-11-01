@@ -24,6 +24,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 typedef int u128 __attribute__((mode(TI)));
 typedef float FVec4[4] __attribute__((aligned(16)));
@@ -1176,7 +1177,7 @@ void Hero_UpdateStatePhysics(void) {
                     FastVecScale(vec[1], g_hero.motion.displacement.f, 7.0f);
                     for (i = 0; i < hits; i++) {
                         if (is_moby_in_class_range_500_to_540((int)kalebo3_coll_sphere_moby_hits[i]) ||
-                            ((Moby *)kalebo3_coll_sphere_moby_hits[i])->oclass == 0x85) {
+                            ((Moby *)kalebo3_coll_sphere_moby_hits[i])->oclass == MOBY_CLASS_AMOEBOID) {
                             PostHitMessage(kalebo3_coll_sphere_moby_hits[i], (int)g_hero.moby, 0x10000,
                                            g_hero.motion.pos.f, vec[1], 1.0f);
                         }

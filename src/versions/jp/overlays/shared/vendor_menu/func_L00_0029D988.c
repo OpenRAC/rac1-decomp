@@ -407,7 +407,7 @@ void func_L00_0029D988_r(void) {
                 if (mb->b7F) {
                     d_00213700(mb);
                 }
-                if (mb->oclass == 0) {
+                if (mb->oclass == MOBY_CLASS_RATCHET) {
                     d_00234b38(mb);
                 }
             }

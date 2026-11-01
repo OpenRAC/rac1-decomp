@@ -15,6 +15,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "enums/moby_class.h"
 
 typedef int w128 __attribute__((mode(TI)));
 typedef struct {
@@ -654,7 +655,7 @@ void FloatingPlatformUpdate(char *m) {
             }
             if (*(int *)(d + 0x230) != -1) {
                 char *o = eudora_mobys_b + (*(int *)(d + 0x230) << 8);
-                if (((Moby *)o)->oclass == 0x118) {
+                if (((Moby *)o)->oclass == MOBY_CLASS_BOLT_CRANK) {
                     off = *((float *)((Moby *)o)->pvars) * 15.0f;
                 }
             } else {
@@ -810,7 +811,7 @@ extern WBAngles eudora_woodcut_bot_angles;
 extern int *eudora_paths[];
 extern float eudora_zero_vector[] MACRO_ADDR;
 
-// Update function of the woodcut bot (moby class 563): damage reaction, saw attack, patrol/chase state machine, recoil and gravity.
+// Update function of the woodcut bot (moby Woodcut Bot): damage reaction, saw attack, patrol/chase state machine, recoil and gravity.
 void woodcut_bot_update(Moby *m) {
     int excited = 0;
     WBData *d = (WBData *)m->pvars;
@@ -1400,7 +1401,7 @@ typedef int u128 __attribute__((mode(TI)));
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 extern void moby_build_matrix(void *);
 
-// Spawns a class 0x23A moby copying fields from another and placing it at a position.
+// Spawns a Axe moby copying fields from another and placing it at a position.
 void *spawn_class_23a_moby(char *src, char *pos) {
     char tmp[16];
     char *p = tmp;
@@ -1706,10 +1707,11 @@ void upper_door_update(CollectMoby2BB8 *m) {
                 if (o == -1)
                     break;
                 q = (CollectMoby2BB8 *)((o << 8) + (unsigned int)D_L04_00160058_pickups);
-                if (!((q->oclass == 0x267 && q->state == 4) || (q->oclass == 0x4A6 && q->state == 2)))
+                if (!((q->oclass == MOBY_CLASS_TRESSPASSER_PAD && q->state == 4) ||
+                      (q->oclass == MOBY_CLASS_LIEUTENANT && q->state == 2)))
                     break;
             }
-            if (m->oclass == 0x44D || m->oclass == 0x5FC)
+            if (m->oclass == MOBY_CLASS_UPPER_DOOR_1101 || m->oclass == MOBY_CLASS_UPPER_DOOR_1532)
                 Sound_PlayClassSound(0, 0, (int)m, 0x44D);
             m->state = 2;
             d->timer = scale_ticks(0x3C);
@@ -1722,7 +1724,7 @@ void upper_door_update(CollectMoby2BB8 *m) {
                 level_moby_killed[g_current_level_index][(short)id1 >> 5] |= 1 << (id1 & 0x1F);
                 id2 = m->id;
                 eudora_moby_killed_bits[(short)id2 >> 5] |= 1 << (id2 & 0x1F);
-                if (m->oclass == 0x44D)
+                if (m->oclass == MOBY_CLASS_UPPER_DOOR_1101)
                     Moby_PlaySound(1, 0, (int)m);
                 m->state = 3;
             }
@@ -2037,7 +2039,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                         if (h->state.prev == 0x3B && h->state_timer == 0) {
                             Moby *m;
                             for (m = eudora_moby_list_r; m != 0; m = m->next) {
-                                if (m->oclass == 0x118 &&
+                                if (m->oclass == MOBY_CLASS_BOLT_CRANK &&
                                     FastVecDist(((float *)&m->pos),
                                                 &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) <
                                         3.0f &&
@@ -2073,22 +2075,24 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
             }
 
             if (data->f48 != -1) {
-                if (eudora_mobys_r[data->f48].oclass == 0x267 && eudora_mobys_r[data->f48].state == 4) {
+                if (eudora_mobys_r[data->f48].oclass == MOBY_CLASS_TRESSPASSER_PAD &&
+                    eudora_mobys_r[data->f48].state == 4) {
                     menu_item_enabled_16 = 1;
                 }
             }
             if (data->f4C != -1) {
-                if (eudora_mobys_r[data->f4C].oclass == 0x267 && eudora_mobys_r[data->f4C].state == 4) {
+                if (eudora_mobys_r[data->f4C].oclass == MOBY_CLASS_TRESSPASSER_PAD &&
+                    eudora_mobys_r[data->f4C].state == 4) {
                     menu_item_enabled_17 = 1;
                 }
             }
             if (data->f40 != -1) {
-                if (eudora_mobys_r[data->f40].oclass == 0x118 && eudora_mobys_r[data->f40].state == 5) {
+                if (eudora_mobys_r[data->f40].oclass == MOBY_CLASS_BOLT_CRANK && eudora_mobys_r[data->f40].state == 5) {
                     menu_item_enabled_18 = 1;
                 }
             }
             if (data->f44 != -1) {
-                if (eudora_mobys_r[data->f44].oclass == 0x118 && eudora_mobys_r[data->f44].state == 5) {
+                if (eudora_mobys_r[data->f44].oclass == MOBY_CLASS_BOLT_CRANK && eudora_mobys_r[data->f44].state == 5) {
                     menu_item_enabled_19 = 1;
                 }
             }
@@ -2110,7 +2114,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                         }
                     }
                 } else {
-                    if (data->f48 != -1 && eudora_mobys_r[data->f48].oclass == 0x267 &&
+                    if (data->f48 != -1 && eudora_mobys_r[data->f48].oclass == MOBY_CLASS_TRESSPASSER_PAD &&
                         eudora_mobys_r[data->f48].state == 4) {
                         Help_2E57F8 *h = (Help_2E57F8 *)(help_stats_base + 0x22D);
                         unsigned int c = h[0x11].count;
@@ -2174,7 +2178,8 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                 if (b[0x46].count == 0 || b[0x47].count == 0) {
                     Hero *h = (Hero *)(hero_globals_base + 0xE1D);
                     Moby *p;
-                    if (h->state.current == 0x72 && (p = h->ground_moby) != 0 && p->oclass == 0x267 &&
+                    if (h->state.current == 0x72 && (p = h->ground_moby) != 0 &&
+                        p->oclass == MOBY_CLASS_TRESSPASSER_PAD &&
                         is_point_inside_clip_volume((char *)h + 0x80, data->f4) != 0) {
                         if (b[0x46].count == 0) {
                             Help_Request(0x7DB, 0x46);

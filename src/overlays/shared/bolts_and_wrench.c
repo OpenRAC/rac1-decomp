@@ -17,6 +17,7 @@
 #include "game/fastfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Gadget vendor: a ring moby that glows and spins while the hero is near. */
 struct VendorVars {
@@ -377,7 +378,7 @@ int fetch_and_add_global_accumulator(int a) {
 extern void *CreateMoby(int oClass);
 extern void moby_build_matrix(void *);
 
-/* Spawns a moby of class 0x3EF, sets its +0x30 byte and ORs 0x41 into
+/* Spawns a Camera Object moby, sets its +0x30 byte and ORs 0x41 into
    its +0x34 flags, copies the caller's 16-byte position/orientation
    vector into its +0x10, and hands it to func_L00_00251E30. Returns
    the new moby, or NULL if the spawn failed. */
@@ -969,16 +970,16 @@ void bolt_update(Moby *m) {
             d->h6E = rand_range_r(0, scale_ticks_r(0x258));
             d->h6C = -1;
             switch (m->oclass) {
-                case 13:
+                case BOLT_CLASS_ONE:
                     m->scale = ((Class_A7078 *)m->pclass)->scale * 0.65f;
                     break;
-                case 14:
+                case BOLT_CLASS_FIVE:
                     m->scale = ((Class_A7078 *)m->pclass)->scale * 0.7f;
                     break;
-                case 15:
+                case BOLT_CLASS_TWENTY:
                     m->scale = ((Class_A7078 *)m->pclass)->scale * 0.75f;
                     break;
-                case 16:
+                case BOLT_CLASS_FIFTY:
                     m->scale = ((Class_A7078 *)m->pclass)->scale * 0.6f;
                     break;
             }
@@ -992,13 +993,13 @@ void bolt_update(Moby *m) {
             quaternion_to_rotation_basis_r(d->quat, u.s.m);
             multiply_matrix3x3_r(((float *)&m->rot_row0), u.s.m, ((float *)&m->rot_row0));
             switch (m->oclass) {
-                case 13:
+                case BOLT_CLASS_ONE:
                     r = 0.15f;
                     break;
-                case 14:
+                case BOLT_CLASS_FIVE:
                     r = 0.23f;
                     break;
-                case 15:
+                case BOLT_CLASS_TWENTY:
                     r = 0.23f;
                     break;
                 default:
@@ -1121,7 +1122,7 @@ void bolt_update(Moby *m) {
         }
         case 4: {
             int flag = 0;
-            if (d->target->oclass == 0) {
+            if (d->target->oclass == MOBY_CLASS_RATCHET) {
                 FastVecSub_r(u.s.a, ((float *)&m->pos),
                              &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->ground_point);
                 transform_vector_r(u.s.a, u.s.a,
@@ -1227,16 +1228,16 @@ void collect_bolt(struct Moby *bolt) {
 
     switch (bolt->oclass) {
         default:
-        case 0:
+        case MOBY_CLASS_RATCHET:
             value = 1;
             break;
-        case 0xE:
+        case BOLT_CLASS_FIVE:
             value = 5;
             break;
-        case 0xF:
+        case BOLT_CLASS_TWENTY:
             value = 20;
             break;
-        case 0x10:
+        case BOLT_CLASS_FIFTY:
             value = 50;
             break;
     }

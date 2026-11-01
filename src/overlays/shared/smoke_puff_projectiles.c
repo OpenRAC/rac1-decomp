@@ -5,6 +5,7 @@
 #include "structs/moby.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/moby_class.h"
 
 extern struct Hero g_hero_r __asm__("D_0013F450");
 typedef int OvlQuad_B0068 __attribute__((mode(TI)));
@@ -156,7 +157,7 @@ void update_class_b8_projectile(struct Moby *m) {
     probe = 0;
     if (m->command == 0) {
         pr.self = m;
-        if (v->owner->oclass == 0xFF || v->owner->oclass == 0x4B1) {
+        if (v->owner->oclass == 0xFF || v->owner->oclass == MOBY_CLASS_TURRET) {
             pr.mask = 0x50001;
             pr.radius = 3.0f;
         } else {
@@ -254,7 +255,7 @@ typedef int u128 __attribute__((mode(TI)));
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
 extern void moby_build_matrix(void *);
 
-/* Spawns moby class 0x1F3, copies the 16-byte position from b and a few
+/* Spawns moby Gun, copies the 16-byte position from b and a few
    fields from a into it, hands the new moby to func_L00_00251E30. */
 char *spawn_moby_attachment(char *a, char *b) {
     u128 v = *(u128 *)b;

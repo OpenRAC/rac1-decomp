@@ -23,6 +23,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Volume trigger: while the hero is inside the clip volume it sets the *_in states, outside the *_out states. */
 struct VolumeTriggerVars {
@@ -48,7 +49,7 @@ struct BlargTurretVars {
     f32 shot_time; /* 0x68: passed to spawn_gemlik_projectile */
 };
 
-/* Blarg turret child (class 0x24): follows its parent turret. */
+/* Blarg turret child (Blarg Gunner): follows its parent turret. */
 struct TurretChildVars {
     char *hit_block; /* 0x00: points at health */
     u8 pad_04[0x8];
@@ -539,7 +540,7 @@ extern void rand_vec_r(float *, float, float) __asm__("func_L00_00258DB0");
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
-/* Update for moby class 29 (blarg_turret) on level 13: turns toward its target and fires its gun moby. */
+/* Update for moby Blarg Turret (blarg_turret) on level 13: turns toward its target and fires its gun moby. */
 void blarg_turret_update(Moby *m) {
     Data_2B5368 *data = (void *)m->pvars;
     Moby *t;
@@ -548,7 +549,7 @@ void blarg_turret_update(Moby *m) {
 
     update_blarg_turret_target_and_state_r(m);
     t = data->target;
-    if (data->gun != 0 && data->gun->oclass == 0x24 && (*(signed char *)&data->gun->state) >= 0) {
+    if (data->gun != 0 && data->gun->oclass == MOBY_CLASS_BLARG_GUNNER && (*(signed char *)&data->gun->state) >= 0) {
         Manipulator_ApplyScale_r(2.7f, data->gun, 1, data->fx);
     }
     switch ((unsigned char)m->state) {
@@ -576,8 +577,9 @@ void blarg_turret_update(Moby *m) {
             }
             SteerAngleWithVelocity_r(&m->rot.z, data->f54, &data->f60, g_frame_time_sq_r * 12.566371f,
                                      g_frame_time_sq_r * 12.566371f, g_frame_time_r * 12.566371f);
-            if (data->gun == 0 || data->gun->oclass != 0x24 || (unsigned char)data->gun->state == 0xFE ||
-                (unsigned char)data->gun->state == 0xFD || (unsigned char)data->gun->state == 2) {
+            if (data->gun == 0 || data->gun->oclass != MOBY_CLASS_BLARG_GUNNER ||
+                (unsigned char)data->gun->state == 0xFE || (unsigned char)data->gun->state == 0xFD ||
+                (unsigned char)data->gun->state == 2) {
                 if (m->prev_seq != 0) {
                     MobyBlendAnimation_r(m, 0, 0, rand_range_r(7, 13));
                 }
@@ -609,8 +611,9 @@ void blarg_turret_update(Moby *m) {
                 SteerAngleWithVelocity_r(&m->rot.z, r, &data->f60, g_frame_time_sq_r * 12.566371f,
                                          g_frame_time_sq_r * 12.566371f, g_frame_time_r * 12.566371f);
                 fire_blarg_turret_projectile_r(m);
-                if (data->gun == 0 || data->gun->oclass != 0x24 || (unsigned char)data->gun->state == 0xFE ||
-                    (unsigned char)data->gun->state == 0xFD || (unsigned char)data->gun->state == 2) {
+                if (data->gun == 0 || data->gun->oclass != MOBY_CLASS_BLARG_GUNNER ||
+                    (unsigned char)data->gun->state == 0xFE || (unsigned char)data->gun->state == 0xFD ||
+                    (unsigned char)data->gun->state == 2) {
                     if (m->prev_seq != 0) {
                         MobyBlendAnimation_r(m, 0, 0, rand_range_r(7, 13));
                     }
@@ -637,7 +640,8 @@ void blarg_turret_update(Moby *m) {
             break;
     }
     gun = data->gun;
-    if (gun != 0 && gun->oclass == 0x24 && (unsigned char)gun->state != 0xFE && (unsigned char)gun->state != 0xFD) {
+    if (gun != 0 && gun->oclass == MOBY_CLASS_BLARG_GUNNER && (unsigned char)gun->state != 0xFE &&
+        (unsigned char)gun->state != 0xFD) {
         qcopy(&gun->rot, &m->rot);
         (*(Vec4A *)&gun->rot_row0) = (*(Vec4A *)&m->rot_row0);
         (*(Vec4A *)&gun->rot_row1) = (*(Vec4A *)&m->rot_row1);
@@ -696,7 +700,7 @@ void update_blarg_turret_target_and_state(unsigned char *moby) {
 extern char *CreateMoby(int);
 extern void moby_build_matrix(void *);
 
-/* Spawns a class 0x24 child moby that copies its parent's placement and scale. */
+/* Spawns a Blarg Gunner child moby that copies its parent's placement and scale. */
 char *spawn_blarg_turret_child(char *parent) {
     Moby *m = (Moby *)CreateMoby(0x24);
     if (m) {
@@ -2087,7 +2091,7 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
             case 0x3EB:
             case 0x504:
                 project_to_screen(v, &((Moby *)m)->pos);
-                if (((Moby *)m)->oclass != 0x184) {
+                if (((Moby *)m)->oclass != MOBY_CLASS_UNMARKED_COUNTED_TARGET) {
                     if (((Moby *)m)->visible != 0) {
                         {
                             float x = (v[0] - scr[4]) * 0.0625f;
@@ -2103,7 +2107,7 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                         }
                     }
                 }
-                if (((Moby *)m)->oclass != 0x191) {
+                if (((Moby *)m)->oclass != MOBY_CLASS_UNCOUNTED_MARKED_TARGET) {
                     if (((Moby *)m)->visible == 0) {
                         char *np = (char *)&((Moby *)m)->pos;
                         int c;
@@ -2148,7 +2152,7 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                         }
                     }
                     draw_fighter_jet_radar_icon(a3, a2, m, 0, 0x75808080, *(int *)(p + 0x104));
-                    if (((Moby *)m)->oclass != 0x191) {
+                    if (((Moby *)m)->oclass != MOBY_CLASS_UNCOUNTED_MARKED_TARGET) {
                         *(int *)(p + 0xE8) = *(int *)(p + 0xE8) + 1;
                     }
                 }

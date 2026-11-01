@@ -7,7 +7,7 @@
 #include "asm_functions/level_01.h"
 #include "game/mobyutil.h"
 
-/* Blarg commander shot (class 0x55B): thrown by the commander, falls with mine_fall and bursts. */
+/* Blarg commander shot (Blarg Commander): thrown by the commander, falls with mine_fall and bursts. */
 struct CommanderShotVars {
     u8 pad_00[0x10];
     s32 mine_ptr; /* 0x10: address of mine_state */

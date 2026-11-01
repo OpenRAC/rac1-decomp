@@ -18,6 +18,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Tethered mine: hangs on a tether with four chain links, scales down with distance and blows up when hit. */
 struct TetheredMineVars {
@@ -2128,12 +2129,12 @@ enum { CAVE_DOOR_STATE_INITIALIZE = 0, CAVE_DOOR_STATE_UPDATE_ROTATION = 1 };
 
 /* The cave door's pvars block (Moby.pvars at 0x78). */
 typedef struct CaveDoorVars_2BA898 {
-    s32 target; /* 0x00 index of the moby whose class 0x118 drives it, -1 none */
+    s32 target; /* 0x00 index of the moby whose Bolt Crank drives it, -1 none */
     f32 angle; /* 0x04 angle the door starts from (its rot.x) */
     f32 speed; /* 0x08 rotation speed, converted to radians on init */
 } CaveDoorVars_2BA898;
 
-/* Cave door: rotate between its rest angle and the open angle by the linked class 0x118 moby's value. */
+/* Cave door: rotate between its rest angle and the open angle by the linked Bolt Crank moby's value. */
 void cave_door_update(char *m) {
     Moby *self = (Moby *)m;
     CaveDoorVars_2BA898 *cave_door_vars;
@@ -2150,7 +2151,7 @@ void cave_door_update(char *m) {
         case CAVE_DOOR_STATE_UPDATE_ROTATION:
             if (cave_door_vars->target != -1) {
                 target_moby = &(*(Moby **)&novalis_mobys)[cave_door_vars->target];
-                if (target_moby->oclass == 0x118) {
+                if (target_moby->oclass == MOBY_CLASS_BOLT_CRANK) {
                     mv = (f32 *)target_moby->pvars;
                     target_moby->update_dist = 0xFF;
                     self->rot.x = FastAddRots(
@@ -2280,7 +2281,7 @@ void door_half_update(Moby *self) {
             if (v->target == -1 || v->end_x == 0.0f || v->end_y == 0.0f)
                 break;
             driver = &novalis_mobys_r[v->target];
-            if (driver->oclass != 0x118)
+            if (driver->oclass != MOBY_CLASS_BOLT_CRANK)
                 break;
 
             progress = (f32 *)((void *)driver->pvars);
@@ -2507,13 +2508,13 @@ void stationary_ship_update(Moby *m) {
             novalis_mobys_r2[v->riders[j]].rot.z =
                 fast_atan2(g_hero_r.motion.pos.f[0] - m->pos.x, g_hero_r.motion.pos.f[1] - m->pos.y);
             switch (novalis_mobys_r2[v->riders[j]].oclass) {
-                case 0x154:
+                case MOBY_CLASS_CIRCULAR_SAW_ENEMY:
                     novalis_mobys_r2[v->riders[j]].state = 2;
                     break;
-                case 0x1AB:
+                case MOBY_CLASS_BLARG_TROOPER_427:
                     novalis_mobys_r2[v->riders[j]].state = 4;
                     break;
-                case 0x1CB:
+                case MOBY_CLASS_BIRDBOT:
                     rv = (CarrierRiderVars *)((void *)novalis_mobys_r2[v->riders[j]].pvars);
                     rv->dropped = 1;
                     rv->drop_timer = scale_ticks(0x1E);
@@ -2826,7 +2827,7 @@ void bomber_jet_update(Moby *m) {
                     for (j = 0; j < 4; j++) {
                         if (d->turrets[j] != -1) {
                             Moby *o = (Moby *)(novalis_mobys_r3 + (d->turrets[j] << 8));
-                            if (o != 0 && o->oclass == 0x1CB && o->state != 0xFE && o->state != 0xFD) {
+                            if (o != 0 && o->oclass == MOBY_CLASS_BIRDBOT && o->state != 0xFE && o->state != 0xFD) {
                                 Turret_F8B00 *t = (void *)o->pvars;
                                 t->f1E8 = 1;
                                 t->f1EC = scale_ticks(2);
@@ -2860,7 +2861,7 @@ void bomber_jet_update(Moby *m) {
                     for (j = 0; j < 4; j++) {
                         if (d->turrets[j] != -1) {
                             Moby *o = (Moby *)((d->turrets[j] << 8) + novalis_mobys_r3);
-                            if (o->oclass == 0x1CB) {
+                            if (o->oclass == MOBY_CLASS_BIRDBOT) {
                                 Turret_F8B00 *t = (void *)o->pvars;
                                 t->f1E8 = 1;
                                 t->f1EC = scale_ticks(2);

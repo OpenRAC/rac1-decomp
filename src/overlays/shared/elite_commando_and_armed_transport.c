@@ -141,7 +141,7 @@ extern int scale_ticks(int);
 
 extern float vec_length_xy(void *);
 
-// Creates a class 0x31 moby that looks along a direction, copying owner data and position.
+// Creates a Rocket moby that looks along a direction, copying owner data and position.
 char *spawn_blarg_elite_commando_rocket(char *owner, float *pos, char *vec) {
     char *moby = CreateMoby(0x31);
     if (moby != 0) {
@@ -240,7 +240,7 @@ extern float FastVecLength(void *);
 extern short class_32_spawn_max_yaw_deg;
 extern short class_32_spawn_max_pitch_deg;
 
-/* spawn a moby of class 0x32 thrown along a vector with random spin */
+/* spawn a Rocket moby thrown along a vector with random spin */
 char *spawn_class_32_moby(char *owner, char *vec, void *pos, void *vel, int c) {
     char *m = (char *)CreateMoby_m(0x32);
     struct HomingProjectileVars *d;
@@ -1588,7 +1588,7 @@ extern char hero_globals_base[];
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern void Moby_PlaySound(int, int, int);
 
-/* picks the nearest moby in a list (skipping class 0x5A3) and acts on it */
+/* picks the nearest moby in a list (skipping Grindrail Barrier) and acts on it */
 void group_trigger_nearest(int idx) {
     short *p = kalebo3_moby_groups[idx];
     char *best = 0;

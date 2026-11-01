@@ -73,7 +73,7 @@ extern float IntToFloat(int);
 extern unsigned char *batalia_part_type77_textures;
 
 typedef int U128 __attribute__((mode(TI)));
-// Spawns a class 0x4D particle moby at a position.
+// Spawns a Mine particle moby at a position.
 void spawn_effect_with_initial_motion(char *a, char *b, int c, float f) {
     unsigned char *m = create_part(0x4D);
     char *q;

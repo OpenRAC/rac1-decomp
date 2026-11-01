@@ -12,6 +12,7 @@
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/collision.h"
+#include "enums/moby_class.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
@@ -372,7 +373,7 @@ typedef struct Q_221ee0 {
     f32 f20; /* 0x20 max target distance, 0 = default 16 */
 } Q_221ee0;
 
-// picks the nearest eligible moby of class 0x323 near the player and stores it as the target Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00221310.c, FUN_L00_00221ee0.
+// picks the nearest eligible Swingshot Swinging Versatarget moby near the player and stores it as the target Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00221310.c, FUN_L00_00221ee0.
 void select_hero_grapple_swing_target(void) {
     Hero *g, *gb, *g0, *g2;
     Moby *m;
@@ -388,7 +389,7 @@ void select_hero_grapple_swing_target(void) {
     g0->swing_target_in_sight = 0;
     bestd = 1e8f;
     for (m = (Moby *)suck_moby_list; m != 0; m = m->next) {
-        if (m->oclass != 0x323)
+        if (m->oclass != MOBY_CLASS_SWINGSHOT_SWINGING_VERSATARGET)
             continue;
         q = (Q_221ee0 *)m->pvars;
         if (q->i0 == 0)
@@ -452,7 +453,7 @@ typedef struct {
     f32 max_range; /* 0x20: target range; 0 means 30 */
 } TargetPvars;
 
-/* Picks the nearest free helper moby of class 0x2F6 in reach of the hero as the target; returns whether one is in sight. */
+/* Picks the nearest free helper Swingshot Versatarget moby in reach of the hero as the target; returns whether one is in sight. */
 int select_hero_grapple_target(void) {
     Hero *hero_target_check_base;
     Hero *hero_angle_state_base;
@@ -477,7 +478,7 @@ int select_hero_grapple_target(void) {
     bestd = 1e8f;
     hero_target_check_base->grapple_target_in_sight = 0;
     for (candidate_moby = (struct Moby *)suck_moby_list; candidate_moby != 0; candidate_moby = candidate_moby->next) {
-        if (candidate_moby->oclass != 0x2F6)
+        if (candidate_moby->oclass != MOBY_CLASS_SWINGSHOT_VERSATARGET)
             continue;
         if (candidate_moby->flags & 1)
             continue;

@@ -71,7 +71,7 @@ extern int *quartu_part_type71_textures;
 extern void pack_vector_xyz_with_shared_scale(float *, int *);
 extern void load_display_text_resource_entry(float *, int *);
 
-// spawns a particle moby (class 0x47) at a position and fills in its two sub-records
+// spawns a particle moby (Wrench) at a position and fills in its two sub-records
 unsigned char *create_type_47_particle(void *pos, float *p, float *c, int d, int e, int f, int g, int h, char *owner) {
     unsigned char *r = create_part(0x47);
     if (r != 0) {

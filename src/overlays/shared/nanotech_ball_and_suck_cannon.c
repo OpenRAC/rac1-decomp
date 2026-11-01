@@ -13,6 +13,7 @@
 #include "data/shared_levels.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 /* Class 0x326 moby: the moby it is linked to. */
 struct LinkedMobyVars {
     u8 pad_00[0xC];
@@ -70,7 +71,7 @@ void update_linked_moby_transform_and_lifetime(char *self) {
     if (fast_dec_timer_r(moby_data->v8) != 0 || tesla_arc_range_m * 1.1f <= moby_data->f4)
         goto kill;
     o = (Moby *)moby_data->o;
-    if (o == 0 || o->oclass != 0xB9 || o->state == 0xFE || o->state == 0xFD) {
+    if (o == 0 || o->oclass != MOBY_CLASS_MORPHORAY_185 || o->state == 0xFE || o->state == 0xFD) {
     kill:
         DeleteMoby(self);
         return;
@@ -92,7 +93,7 @@ int is_moby_in_state_one(unsigned char *m) {
     return m[0x20] == 1;
 }
 extern char *CreateMoby(int);
-/* Spawns a class 0x326 moby linked to and placed at moby a. */
+/* Spawns a Nanotech Ball moby linked to and placed at moby a. */
 char *create_linked_class_0326_moby(char *a) {
     char *m;
     if (*(char *)&((Moby *)a)->state < 0)
@@ -2489,7 +2490,7 @@ int CarriedMobyUpdate(Moby *self, char *q) {
                     FastVecSub_r2(&m->v50, &((Coll_2DDEA0 *)coll_hit_result_r)->v20, &self->pos);
                 }
                 if (((Coll_2DDEA0 *)coll_hit_result_r)->hit != 0 &&
-                    ((Coll_2DDEA0 *)coll_hit_result_r)->hit->oclass == 0)
+                    ((Coll_2DDEA0 *)coll_hit_result_r)->hit->oclass == MOBY_CLASS_RATCHET)
                     r30 = 0;
                 if (m->state == 6) {
                     self->flags &= 0x7FFF;
@@ -3305,7 +3306,7 @@ extern void axis_rotation_2d48(void *, int, float);
 extern float g_frame_time MACRO_ADDR;
 extern short vendor_orb_spin_speed_deg;
 
-/* UpdateMoby for class 1143: init then slowly spin/ease its value */
+/* UpdateMoby for Vendor Orb: init then slowly spin/ease its value */
 void vendor_orb_update(unsigned char *m) {
     struct VendorOrbVars *p = (struct VendorOrbVars *)((Moby *)m)->pvars;
     switch (((Moby *)m)->state) {
@@ -3467,7 +3468,7 @@ void hydrodisplacer_update(Moby *m) {
             }
             if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby == 0 ||
                 ((Hero *)(hero_globals_base_r2 + 0xE1D))->air_frames.s != 0 ||
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass != 0x155) {
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass != MOBY_CLASS_HYDRODISPLACER_FAUCET) {
                 break;
             }
             if (test_hydrodisplacer_activation_flag_r(m) == 0 ||
@@ -3487,7 +3488,7 @@ void hydrodisplacer_update(Moby *m) {
             char *q;
 
             if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby == 0 ||
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass != 0x155) {
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass != MOBY_CLASS_HYDRODISPLACER_FAUCET) {
                 end_hydrodisplacer_interaction_r(m);
                 return;
             }
@@ -3534,7 +3535,7 @@ void hydrodisplacer_update(Moby *m) {
         }
         case 4:
             if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby == 0 ||
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass != 0x155) {
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass != MOBY_CLASS_HYDRODISPLACER_FAUCET) {
                 end_hydrodisplacer_interaction_r(m);
                 return;
             }
@@ -3611,7 +3612,8 @@ void hydrodisplacer_update(Moby *m) {
             break;
         case 5:
             if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby != 0 &&
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass == 0x155 && fast_dec_timer_r3(d) == 0) {
+                ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass == MOBY_CLASS_HYDRODISPLACER_FAUCET &&
+                fast_dec_timer_r3(d) == 0) {
                 break;
             }
             end_hydrodisplacer_interaction_r(m);

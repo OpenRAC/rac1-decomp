@@ -22,6 +22,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "structs/collision.h"
+#include "enums/moby_class.h"
 
 /* Cutscene trigger: plays a camera sequence when the hero enters its volume. */
 struct CutsceneTriggerVars {
@@ -660,7 +661,7 @@ extern G fx_cutscene;
 extern unsigned char novalis_big_head_cheat_manipulator[];
 extern void AttachManipulator(char *, int, void *);
 
-/* Arms the marker record once for mobys of class 0x398 or 0x1BF, while the level flag is 2. */
+/* Arms the marker record once for Qwark Rilgar mobys or 0x1BF, while the level flag is 2. */
 void attach_cutscene_fixed_scale_manipulator(void) {
     if (novalis_game_mode == 2 && gCheats[0] != 0) {
         int i;
@@ -1191,13 +1192,13 @@ void update_target_outside_zone_timeout(char *m) {
     {
         for (candidate_moby = (struct Moby *)novalis_moby_list; candidate_moby != 0;
              candidate_moby = candidate_moby->next) {
-            if (candidate_moby->oclass == 0xAC) {
+            if (candidate_moby->oclass == MOBY_CLASS_VISIBOMB_MISSILE) {
                 target_moby = candidate_moby;
                 break;
             }
         }
     }
-    if (target_moby == 0 || target_moby->oclass != 0xAC) {
+    if (target_moby == 0 || target_moby->oclass != MOBY_CLASS_VISIBOMB_MISSILE) {
     fail:
         zone_vars->count = 0;
         return;
@@ -2914,7 +2915,8 @@ void sandmouse_update(Moby *m) {
                             break;
                     }
                     compute_sand_mouse_approach_target(m, p);
-                    if (*(Moby **)&h->items[2].moby != 0 && (*(Moby **)&h->items[2].moby)->oclass == 0x1B1 &&
+                    if (*(Moby **)&h->items[2].moby != 0 &&
+                        (*(Moby **)&h->items[2].moby)->oclass == MOBY_CLASS_SONIC_SUMMONER &&
                         (*(Moby **)&h->items[2].moby)->state != 0xFE && (*(Moby **)&h->items[2].moby)->state != 0xFD) {
                         (*(Moby **)&h->items[2].moby)->state = 1;
                     }

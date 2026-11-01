@@ -22,6 +22,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 extern char hero_globals_base[];
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -862,7 +863,7 @@ void HeroL11_UpdateMovement(void) {
         case 0x38:
         case 0x39:
         case 0x3A:
-            if (g_hero.ground_moby != 0 && g_hero.ground_moby->oclass == 0x155) {
+            if (g_hero.ground_moby != 0 && g_hero.ground_moby->oclass == MOBY_CLASS_HYDRODISPLACER_FAUCET) {
                 float d;
                 float lim;
 

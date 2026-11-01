@@ -22,6 +22,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Planetbuster Maximus: sways along its path while its parts, guns and camera cut-in run. */
 struct PlanetbusterVars {
@@ -258,7 +259,7 @@ extern float vec_length_xy(void *);
 extern int scale_ticks(int);
 extern void moby_build_matrix(void *);
 
-/* Rocket pvars (class 0x199). */
+/* Rocket pvars (Rocket). */
 struct HovenRocketVars {
     f32 dir[4]; /* 0x00: flight direction */
     s32 owner; /* 0x10 */
@@ -868,9 +869,9 @@ void update_hoven_turret_target_alignment_timer(void *moby) {
             qcopy(&position, &target->pos);
             yaw_limit = 0.12217305f;
             pitch_limit = yaw_limit;
-            if (target->oclass == 0x146)
+            if (target->oclass == MOBY_CLASS_BLARG_HELICOPTER_326)
                 position.f[2] += 1.5f;
-            if (target->oclass == 0x4FE) {
+            if (target->oclass == MOBY_CLASS_PLANETBUSTER_MAXIMUS_PART_1278) {
                 yaw_limit = 0.034906585f;
                 pitch_limit = 0.05235988f;
                 position.f[2] += 1.5f;
@@ -1006,7 +1007,7 @@ extern int memcard_Save_r(int, int) __asm__("func_0020BFC8");
 extern void draw_hoven_turret_hud();
 extern void draw_hoven_turret_destruction_fade();
 
-/* Update of moby class 1267 (Hoven turret): waits for the hero, is manned and aimed with the stick, fires, and burns out when destroyed. */
+/* Update of moby Hoven Turret (Hoven turret): waits for the hero, is manned and aimed with the stick, fires, and burns out when destroyed. */
 void hoven_turret_update(Moby *moby) {
     Data_304920 *d = *(Data_304920 **)&moby->pvars;
 
@@ -1552,7 +1553,8 @@ void update_homing_mine(struct Moby *moby) {
     FindNearestTargetMoby_r(moby, target, 8.0f);
     source = MobyGetHitMessage_r(moby, 0x230000, 0);
     ComputeHitResponse(moby, source, damage, 0, &hits, 0, 0, 4);
-    if (vec_distance_xy(&moby->pos, target) < 0.25f || (hits >= 2 && source != 0 && source->moby->oclass != 0x4F5)) {
+    if (vec_distance_xy(&moby->pos, target) < 0.25f ||
+        (hits >= 2 && source != 0 && source->moby->oclass != MOBY_CLASS_MINE_1269)) {
         spawn_explosion_r(moby, hoven_zero_vec, 0, 0.0f, 0.0f, 3, 3, 5, 1.0f, 0.5f, 4.0f, 0.7f, 2, 7.0f, 0, 0, -1, 0);
         SetDeathBits(moby, 0, -1);
         DeleteMoby_r(moby);
@@ -1614,7 +1616,7 @@ void update_homing_mine(struct Moby *moby) {
                 qcopy(&probe, &moby->pos);
                 probe.f[2] += 0.4f;
                 if (!coll_sphere_mobys(&probe, 0x10, moby, hit_info, 0.4f) || hit_moby == 0 ||
-                    hit_moby->oclass == 0x4F5 || hit_moby == moby->parent) {
+                    hit_moby->oclass == MOBY_CLASS_MINE_1269 || hit_moby == moby->parent) {
                     qcopy(&probe, &moby->pos);
                     probe.f[2] += 0.35f;
                     if (coll_sphere(&probe, 0, moby, 0.35f))
@@ -2048,7 +2050,7 @@ void update_planetbuster_maximus_detached_parts(char *moby) {
             obj->rot.x = FastAddRots(obj->rot.x, *(float *)(data + 0x450 + i * 16));
             SpringAngle(&obj->rot.y, -1.5707964f, (float *)(data + 0x450 + i * 16) + 1, 0,
                         *(float *)(data + 0x45C + i * 16), 0.3f, 0.0f);
-        } else if (obj->oclass == 0x4FA) {
+        } else if (obj->oclass == MOBY_CLASS_PLANETBUSTER_MAXIMUS_PART_1274) {
             float t;
             obj->rot.x = FastAddRots(obj->rot.x, g_frame_time * -0.87266463f);
             t = FastAddRots(obj->rot.y, *(float *)(data + 0x454 + i * 16));
@@ -2092,7 +2094,7 @@ void update_planetbuster_maximus_glow_color(char *moby) {
         } else {
             other = (struct Moby *)((char *)hoven_mobys_r + ((unsigned int)*(int *)(data + i * 0x30 + 0x20) << 8));
         }
-        if (other->oclass == 0x4FE)
+        if (other->oclass == MOBY_CLASS_PLANETBUSTER_MAXIMUS_PART_1278)
             continue;
         {
             period = scale_ticks(0xAA);

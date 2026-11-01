@@ -15,6 +15,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/moby_class.h"
 
 /* Configurable spark emitter: one burst source at the moby, or one per point of a path. */
 struct ParticleEmitterVars {
@@ -176,7 +177,7 @@ extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, f
 extern void DeleteMoby(void *);
 extern void set_ground_height_band(void *);
 
-/* Update for the toxic crab (moby class 1202): line-of-sight test, then a 13-state walk/chase/attack/death machine. */
+/* Update for the toxic crab (moby Toxic Crab): line-of-sight test, then a 13-state walk/chase/attack/death machine. */
 void toxic_crab_update(Moby *m) {
     int see = 0;
     Crab2E30F8 *d = (Crab2E30F8 *)m->pvars;
@@ -1014,11 +1015,11 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
                 v21 = 11;
                 B = 0.0f;
             }
-        } else if ((q = r->f20) != 0 && q->oclass != 0x359) {
+        } else if ((q = r->f20) != 0 && q->oclass != MOBY_CLASS_GADGEBOT_857) {
             *(u128_2E52B0 *)&vA = *(u128_2E52B0 *)((V_2E52B0 *)&q->pos);
             *(u128_2E52B0 *)&vB = *(u128_2E52B0 *)((V_2E52B0 *)&m->pos);
             vB.z += 1.0f;
-            if (r->f20->oclass == 0xBA || r->f20->oclass == 0)
+            if (r->f20->oclass == MOBY_CLASS_DOOM_BOT || r->f20->oclass == MOBY_CLASS_RATCHET)
                 vA.z += 0.25f;
             if (coll_line_r(&vA, &vB, 0x12, m, 0) != 0) {
                 FastVecSub_r(&dst, &vB, &vA);
@@ -1308,7 +1309,7 @@ extern void ClampVectorLength(void *, float);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 
-/* Update for the blarg ship (moby class 1229): rise, follow its path, hover and fire at the target, fly off or explode. */
+/* Update for the blarg ship (moby Blarg Ship): rise, follow its path, hover and fire at the target, fly off or explode. */
 void BlargShipUpdate(Ship_5E48 *m) {
     ShipD_5E48 *d = m->d;
     Ship_5E48 *tgt;
@@ -1915,7 +1916,7 @@ void update_conditional_help_messages(Moby *m) {
             }
             flag = 0;
             for (p = orxon_moby_list_r; p != 0; p = p->next) {
-                if (p->oclass == 0x359 && p->state != 1)
+                if (p->oclass == MOBY_CLASS_GADGEBOT_857 && p->state != 1)
                     flag = 1;
             }
             if (flag == 0)
@@ -1936,7 +1937,7 @@ void update_conditional_help_messages(Moby *m) {
                 break;
             if (d->f20 == -1)
                 break;
-            if (orxon_mobys_r[d->f20].oclass != 0x3F7)
+            if (orxon_mobys_r[d->f20].oclass != MOBY_CLASS_LAB_DOOR)
                 break;
             if (orxon_mobys_r[d->f20].state == 4)
                 break;
@@ -2251,7 +2252,7 @@ extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
 
-// Level 10 gate_2 update: four-state machine on m[0x20], moby class 1424.
+// Level 10 gate_2 update: four-state machine on m[0x20], moby Gate 2.
 void gate_2_update(Moby *m) {
     GateVars_2EAD50 *d = (GateVars_2EAD50 *)m->pvars;
     float v[3];

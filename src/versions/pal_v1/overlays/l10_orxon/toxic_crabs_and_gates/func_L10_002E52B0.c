@@ -70,11 +70,11 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
                 v21 = 11;
                 B = 0.0f;
             }
-        } else if ((q = r->f20) != 0 && q->oclass != 0x359) {
+        } else if ((q = r->f20) != 0 && q->oclass != MOBY_CLASS_GADGEBOT_857) {
             *(u128_2E52B0 *)&vA = *(u128_2E52B0 *)((V_2E52B0 *)&q->pos);
             *(u128_2E52B0 *)&vB = *(u128_2E52B0 *)((V_2E52B0 *)&m->pos);
             vB.z += 1.0f;
-            if (r->f20->oclass == 0xBA || r->f20->oclass == 0)
+            if (r->f20->oclass == MOBY_CLASS_DOOM_BOT || r->f20->oclass == MOBY_CLASS_RATCHET)
                 vA.z += 0.25f;
             if (coll_line_r(&vA, &vB, 0x12, m, 0) != 0) {
                 FastVecSub_r(&dst, &vB, &vA);

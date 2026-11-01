@@ -9,6 +9,7 @@
 #include "data/level_18.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/moby_class.h"
 
 /* Moby that drags a child moby along with it. */
 struct ChildCarrierVars {
@@ -972,7 +973,7 @@ extern char gadgebot_params_block;
 extern short gadgebot_sequence_2_start_frame_gp;
 extern char gadgebot_start_moby_byte73;
 
-/* Moby update for the class 0x772 enemy. */
+/* Moby update for the Gadgebot enemy. */
 void Moby1906Update(unsigned char *m) {
     char tmp[16];
     struct GadgebotVars *e = (struct GadgebotVars *)((Moby *)m)->pvars;
@@ -1169,7 +1170,7 @@ extern int FindNearestEligibleMoby(float, void *, void *, int, int, int *, int);
 #include "structs/hero.h"
 #define hero (*(Hero *)(D_0013E633 + 0xE1D))
 
-/* Shared per-frame handler of the class 0x772 enemy. */
+/* Shared per-frame handler of the Gadgebot enemy. */
 void update_gadgebot_damage_target_and_glow(void *m_) {
     struct Moby *moby = m_;
     SentryVars_5C0 *sentry_vars = (SentryVars_5C0 *)moby->pvars;
@@ -1280,7 +1281,7 @@ extern float FastCos(float);
 extern void move_4318(int, int, float, float, float, int);
 extern void resolve_point_path_segment_xy_clearance(float, void *, void *, void *);
 
-/* Steers a class 0x772 enemy toward src and returns the distance to it. */
+/* Steers a Gadgebot enemy toward src and returns the distance to it. */
 float move_gadgebot_toward_target(char *self, float *src) {
     QVec a;
     float v[4];
@@ -1330,7 +1331,7 @@ int launch_first_idle_group_class_0772_moby(int group, void *from, void *to, flo
     table = veldin2_moby_table;
     for (;;) {
         moby = &table[*p & 0x7FFF];
-        if (moby->oclass == 0x772) {
+        if (moby->oclass == MOBY_CLASS_GADGEBOT_1906) {
             if (moby->state == 8) {
                 LaunchedMobyVars *v = (LaunchedMobyVars *)moby->pvars;
                 moby->flags &= ~0x41;
@@ -1351,7 +1352,7 @@ int launch_first_idle_group_class_0772_moby(int group, void *from, void *to, flo
             return 0;
     }
 }
-/* Counts the class 0x772 mobys in list idx that are not inactive. */
+/* Counts the Gadgebot mobys in list idx that are not inactive. */
 short count_group_class_0772_mobys_not_in_state_8(int idx) {
     unsigned short *p = veldin2_moby_groups[idx];
     short n = 0;

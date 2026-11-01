@@ -13,6 +13,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Umbris taxi platform: slides along a path between its two ends when the hero rides it. */
 struct TaxiPlatformVars {
@@ -2069,7 +2070,7 @@ void update_growing_ballistic_moby(char *m) {
         coll_sphere_f(0.1f, &moby->pos, 0, *(int *)(moby_data + 0x10)) != 0) {
         struct Moby *class_filter_moby = (struct Moby *)debris_target_p;
         if (class_filter_moby == 0 || (class_filter_moby->oclass != 0x415 && class_filter_moby->oclass != 0x419 &&
-                                       class_filter_moby->oclass != 0x452)) {
+                                       class_filter_moby->oclass != MOBY_CLASS_SNAGGLEBEAST)) {
             if (moby->visible != 0) {
                 spawn_explosion_alt(moby, moby_data, 0, 2.0f, 1.0f, 0, 3, 5, 0.0f, 0.0f, 1000.0f, 1.2f, 0, 10.0f, 0, 1,
                                     -1, 0);
@@ -2586,7 +2587,7 @@ struct Tgt_3109D0 {
     int kind;
 };
 
-/* Update function of the sharkigator (class 1059): tracks the hero, swims its path, lunges and bites. */
+/* Update function of the sharkigator: tracks the hero, swims its path, lunges and bites. */
 void SharkigatorUpdate(unsigned char *moby) {
     char *data;
     struct Tgt_3109D0 tgt;

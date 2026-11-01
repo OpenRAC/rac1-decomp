@@ -22,6 +22,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 extern char hero_globals_base[];
 
@@ -1124,7 +1125,7 @@ void Hero_UpdateStatePhysicsL12(void) {
         case 0x38:
         case 0x39:
         case 0x3A:
-            if (g_hero.ground_moby != 0 && g_hero.ground_moby->oclass == 0x155) {
+            if (g_hero.ground_moby != 0 && g_hero.ground_moby->oclass == MOBY_CLASS_HYDRODISPLACER_FAUCET) {
                 float d;
                 float lim;
 

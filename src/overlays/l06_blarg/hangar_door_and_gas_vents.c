@@ -18,6 +18,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Hangar door: swings to a target angle, drives seven linked door pieces. */
 struct HangarDoorVars {
@@ -352,7 +353,7 @@ void set_moby_list_state_15(int index) {
         }
     } while (*p++ >= 0);
 }
-/* Returns 1 if no class 0x33B moby in group index is alive, else 0. */
+/* Returns 1 if no Frog moby in group index is alive, else 0. */
 int check_all_listed_class_33b_states_fe_fd_or_10(int index) {
     unsigned short *p = (unsigned short *)blarg_moby_groups[index];
     char *base;
@@ -1658,7 +1659,7 @@ extern float D_L06_00161F64_91A8 SDATA(D_L06_00161F64);
 extern int D_L06_00161F6C_91A8 SDATA(D_L06_00161F6C);
 extern int D_L06_00161F70_91A8 SDATA(D_L06_00161F70);
 
-// Update function of the alien snapper (moby class 1048): spawn setup, hide/leap/land along a path, chase and bite the hero, knockback and death.
+// Update function of the alien snapper (moby Alien Snapper): spawn setup, hide/leap/land along a path, chase and bite the hero, knockback and death.
 void alien_snapper_update(Moby *moby) {
     SnapperVars_91A8 *v = (SnapperVars_91A8 *)moby->pvars;
     Moby *target;
@@ -2151,7 +2152,7 @@ void update_alien_snapper_hit_response_and_targeting(Moby *moby) {
     fast_dec_timer_r(&data->f1AC);
     dmg = 0.0f;
     target = MobyGetHitMessage_r(moby, 0x330000, 0);
-    if (target != 0 && target->owner != 0 && target->owner->oclass == 0x418) {
+    if (target != 0 && target->owner != 0 && target->owner->oclass == MOBY_CLASS_ALIEN_SNAPPER) {
         target = 0;
     }
     r = ComputeHitResponse_r(moby, target, &data->health, 0, &hit, &dmg, 0, 4);
@@ -2818,9 +2819,9 @@ void update_alien_queen_hit_response_and_recovery(void *moby_) {
                 case 0x131:
                     dmg *= 0.666f;
                     break;
-                case 0xB0:
+                case MOBY_CLASS_PYROCITOR:
                 case 0x79:
-                case 0x33B:
+                case MOBY_CLASS_FROG:
                     dmg *= 1.5f;
                     break;
             }
@@ -3458,7 +3459,7 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
                 }
                 moby->state = 3;
                 d->f90 = 0;
-            } else if (((Hero *)(hero_globals_base + 0xE1D))->moby->oclass == 0x57) {
+            } else if (((Hero *)(hero_globals_base + 0xE1D))->moby->oclass == MOBY_CLASS_CLANK) {
                 moby->state = 3;
                 d->f84 = 1;
             }

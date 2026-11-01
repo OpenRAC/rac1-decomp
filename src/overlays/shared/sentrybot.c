@@ -16,6 +16,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Sentrybot: patrols a path, turns toward what it notices, raises its
    linked alarm and shoots when it sees the hero. */
@@ -1148,7 +1149,7 @@ int can_sentrybot_advance_patrol(void *mm) {
         return 1;
     do {
         char *o = (char *)(((*p & 0x7FFF) << 8) + quartu_moby_array_m);
-        if (((Moby *)o)->oclass == 0x2C && o != 0 && ((unsigned char *)o)[0x20] != 0xFE &&
+        if (((Moby *)o)->oclass == MOBY_CLASS_SENTRYBOT && o != 0 && ((unsigned char *)o)[0x20] != 0xFE &&
             ((unsigned char *)o)[0x20] != 0xFD && ((unsigned char *)o)[0xBC] == 0) {
             struct SentrybotVars *d = (struct SentrybotVars *)((Moby *)o)->pvars;
             if (d->at_point == 0 && d->patrol_path != -1 && d->patrol_point >= *(int *)(m + 0x13C))
@@ -1167,7 +1168,7 @@ typedef struct {
 extern void set_sentrybot_attention_target(char *, char *);
 extern int quartu_moby_array MACRO_ADDR;
 
-/* after the spawn gate, find the class 0x2C moby in the moby's list and reset its state */
+/* after the spawn gate, find the Sentrybot moby in the moby's list and reset its state */
 void alert_visible_group_sentrybots(void *mobyv) {
     char *moby = mobyv;
     float a[4];
@@ -1362,7 +1363,7 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
         if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->vehicle_mode == 0)
             alert_visible_group_sentrybots(moby);
         data->health -= impact;
-        if (hit->other->oclass == 0x47)
+        if (hit->other->oclass == MOBY_CLASS_WRENCH)
             code = 3;
         if (data->health <= 0.0f)
             code = 1;
@@ -2364,7 +2365,7 @@ typedef struct GroupMobyData {
     char *frame_stamp; /* 0x6C */
 } GroupMobyData;
 
-/* Shared level 15/17 moby update (class 77): steers the moby toward its target and runs its state machine. */
+/* Shared level 15/17 moby update (Mine): steers the moby toward its target and runs its state machine. */
 extern struct Hero g_hero;
 
 /* Group moby state machine: emits sparks, then homes in on the hero; explodes when it is hit,
@@ -3165,7 +3166,7 @@ void MovingMobyUpdate(struct Moby *moby) {
     s32 reversed;
     s32 next_state;
 
-    reversed = moby->oclass == 0xc4 || moby->oclass == 0x7a6;
+    reversed = moby->oclass == MOBY_CLASS_DOOR_196 || moby->oclass == MOBY_CLASS_UNDERWATER_DOOR;
     if (vars->trigger == -1 && (vars->start_volume == -1 || vars->stop_volume == -1)) {
         DeleteMoby(moby);
         return;
@@ -3279,7 +3280,7 @@ extern int D_L15_00161B44_gp SDATA(D_L15_00161B44);
 extern int activate_first_inactive_group_moby(int idx, void *pos);
 extern void update_sentrybot_alarm_effect(void *arg);
 
-/* Sentrybot alarm update (moby class 408, levels 15 and 17): turn, watch for the hero, raise the alarm. */
+/* Sentrybot alarm update (moby Sentrybot Alarm, levels 15 and 17): turn, watch for the hero, raise the alarm. */
 void sentrybot_alarm_update(Moby *m) {
     L15AlarmData *d = (void *)m->pvars;
     float f;
@@ -3456,7 +3457,7 @@ void set_sentrybot_alarm_duration(char *m, int a) {
     if (p) {
         do {
             char *o = (char *)(((*(unsigned short *)p & 0x7FFF) << 8) + quartu_moby_array_m);
-            if (((Moby *)o)->oclass == 0x198) {
+            if (((Moby *)o)->oclass == MOBY_CLASS_SENTRYBOT_ALARM) {
                 struct L15AlarmData *e = (struct L15AlarmData *)((Moby *)o)->pvars;
                 e->f8 = flag;
                 e->timer = scale_ticks(a);

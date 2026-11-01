@@ -18,6 +18,7 @@
 #include "data/executable.h"
 #include "data/shared_levels.h"
 #include "structs/collision.h"
+#include "enums/moby_class.h"
 
 extern char help_popup_state[] NOT_SDA;
 typedef struct {
@@ -175,7 +176,7 @@ extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern s32 scale_ticks(s32);
 extern s32 rand_range(s32, s32);
 
-/* Clears the hero, binds it to the first moby of class 0 (snapped to the ground, its position and yaw copied in, the camera start set from it unless D_L00_00160540), resets the 31 manipulator records and the eight sound voices, and sets the starting hit points and timers. The item ids are read into save[] before and after the clear and never written back.
+/* Clears the hero, binds it to the first Ratchet moby (snapped to the ground, its position and yaw copied in, the camera start set from it unless D_L00_00160540), resets the 31 manipulator records and the eight sound voices, and sets the starting hit points and timers. The item ids are read into save[] before and after the clear and never written back.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00204c60.c, FUN_L00_00204c60. */
 void initialize_hero(void) {
     s32 save[7];
@@ -191,7 +192,7 @@ void initialize_hero(void) {
 
     for (i = 0; &moby_array_start[i] < level_mobys_end; i++) {
         m = &moby_array_start[i];
-        if (m->oclass == 0) {
+        if (m->oclass == MOBY_CLASS_RATCHET) {
             g_hero_r.moby = m;
             z = ProbeGroundHeight_r(&m->pos, 0, 0.5f);
             if (z > 0.0f)

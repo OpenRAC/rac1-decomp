@@ -11,6 +11,7 @@
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
+#include "enums/moby_class.h"
 
 /* Morphoray chicken: AI blocks, a life timer and the color index of the slot it replaced. */
 struct ChickenVars {
@@ -43,7 +44,7 @@ struct HomingShotVars {
     void *trail[17]; /* 0x2C: trail particle handles */
 };
 
-/* Ryno rocket (class 0x1C9): steers towards target with a random wobble. */
+/* Ryno rocket: steers towards target with a random wobble. */
 struct RynoRocketVars {
     Vec4A aim_pos; /* 0x00: target position, z raised by aim_height */
     Vec4A start_pos; /* 0x10 */
@@ -292,7 +293,7 @@ ret0:
     /* a second return 0 block, as in retail */
     return 0;
 }
-/* Bomb (class 230) update: steers the bomb's position toward its target and runs its state machine (idle, arm, flight, detonate). Written from the assembly. */
+/* Bomb update: steers the bomb's position toward its target and runs its state machine (idle, arm, flight, detonate). Written from the assembly. */
 extern unsigned char gold_weapon_purchased_20 NOT_SDA;
 extern char coll_resolved_pos[];
 extern int coll_hit_result[];
@@ -591,7 +592,7 @@ extern short morphoray_chicken_next_slot;
 extern char morphoray_chicken_ai_params;
 extern unsigned char screen_globals_base[];
 
-// spawns a moby of class 0x10E from a source moby and records it in a 20-entry ring
+// spawns a Morphoray Chicken moby from a source moby and records it in a 20-entry ring
 char *spawn_morphoray_chicken(char *src) {
     float v[4] __attribute__((aligned(16)));
     float t[4] __attribute__((aligned(16)));
@@ -771,7 +772,7 @@ typedef struct {
     int i7C;
 } Vars_2CABC0;
 
-/* Update for moby class 270 (morphoray chicken): wanders, pecks and flees from the hero, grows, and bursts into feathers when its health runs out. */
+/* Update for moby Morphoray Chicken (morphoray chicken): wanders, pecks and flees from the hero, grows, and bursts into feathers when its health runs out. */
 void update_morphoray_chicken(Moby *m) {
     Vec4A T;
     Vec4A v;
@@ -1487,7 +1488,7 @@ void update_homing_shot(Moby *m) {
             d->f14 = 0.0f;
             vec_scale_to_length_r(&b, collision_hit_point_r + 0x20, 0.05f);
             FastVecAdd_r2(&*(Vec4A *)&m->pos, collision_hit_point_r, &b);
-            if (g_hero_item_slot0_moby_r != 0 && g_hero_item_slot0_moby_r->oclass == 0xA8 &&
+            if (g_hero_item_slot0_moby_r != 0 && g_hero_item_slot0_moby_r->oclass == MOBY_CLASS_BLASTER &&
                 g_hero_item_slot0_moby_r->state != 0xFE && g_hero_item_slot0_moby_r->state != 0xFD) {
                 Moby_PlaySound_r(4, 0, g_hero_item_slot0_moby_r);
             }
@@ -1864,7 +1865,7 @@ extern float length_2CDAB8(float *) __asm__("func_001F9CE8");
 extern unsigned char *missile_2CDAB8(Moby *, float *, Moby *, float, float, float) __asm__("func_L00_002CE390");
 extern int rand_2CDAB8(void) __asm__("func_001160D8");
 
-/* Ryno (class 454) update: target lock and reticle while held, then the eight-missile salvo state machine. */
+/* Ryno update: target lock and reticle while held, then the eight-missile salvo state machine. */
 void ryno_update(Moby *m) {
     Mat3_2CDAB8 cam;
     Mat4_2CDAB8 view;
@@ -2656,7 +2657,7 @@ extern void spawn_explosion_r(void *, void *, void *, f32, f32, s32, s32, s32, f
 extern struct Moby *select_nearest_drone_target_r(void *, void *) __asm__("func_L00_002CF3D8");
 extern void ensure_drone_attached_particles_r(void *) __asm__("func_L00_002CF328");
 
-/* Drone update (class 0x1DF): while orbiting (state 2) the drones circle the hero and every few frames the one
+/* Drone update (Drone): while orbiting (state 2) the drones circle the hero and every few frames the one
    closest to the nearest unclaimed target is sent after it (state 3), hitting it on contact; a drone whose target is
    gone fades out (state 4) and frees its slot (state 5). Adapted from Lombyte's project (GPL-3.0) for PAL:
    src/overlays/shared/gameplay/entities/bomb.c, FUN_L00_002ce358, which carries this file's earlier near miss
@@ -2695,7 +2696,7 @@ void update_drone(struct Moby *updated_moby) {
             for (k = 0; k < 6; k++) {
                 drone = ((DroneSlots_2CF808 *)&hero_2CF808)->slots[k];
                 if (drone != 0) {
-                    if (drone->oclass == 0x1DF) {
+                    if (drone->oclass == MOBY_CLASS_DRONE) {
                         if (drone->state == 0xFE) {
                             ((DroneSlots_2CF808 *)&hero_2CF808)->slots[k] = 0;
                         } else if (drone->state == 0xFD) {
@@ -2831,7 +2832,8 @@ state2: {
     }
     qcopy(&collision_data[0], &updated_moby->pos);
     if (coll_sphere_r(0.2f, &collision_data[0], 0, updated_moby)) {
-        if (((struct Moby *)coll_hit_2CF808.moby) && ((struct Moby *)coll_hit_2CF808.moby)->oclass == 0 &&
+        if (((struct Moby *)coll_hit_2CF808.moby) &&
+            ((struct Moby *)coll_hit_2CF808.moby)->oclass == MOBY_CLASS_RATCHET &&
             ((struct Moby *)coll_hit_2CF808.moby)->state != 0xFE &&
             ((struct Moby *)coll_hit_2CF808.moby)->state != 0xFD)
             goto update_rotations;
@@ -2903,7 +2905,7 @@ state3: {
         qcopy(&collision_data[0], &updated_moby->pos);
         if (coll_sphere_r(0.25f, &collision_data[0], 0, updated_moby)) {
             struct Moby *hm = (struct Moby *)coll_hit_2CF808.moby;
-            if (!hm || hm->state == 0xFE || hm->state == 0xFD || hm != v->target || hm->oclass == 0) {
+            if (!hm || hm->state == 0xFE || hm->state == 0xFD || hm != v->target || hm->oclass == MOBY_CLASS_RATCHET) {
                 qcopy(&updated_moby->pos, &coll_pos_2CF808);
             } else {
                 s32 cat2 = hm->pclass ? *(u8 *)((u8 *)hm->pclass + 0x46) : 0;
@@ -3129,7 +3131,7 @@ void crate_update(struct Moby *moby) {
     switch (moby->state) {
         case CRATE_STATE_INITIALIZE:
             clear_u64_value(&crate_vars->unk40);
-            if (g_current_level_index == 0x12 && moby->oclass == 0x1FF && crate_vars->unkC8 != 0) {
+            if (g_current_level_index == 0x12 && moby->oclass == MOBY_CLASS_AMMO_CRATE && crate_vars->unkC8 != 0) {
                 moby->state = 6;
                 moby->flags |= 0x41;
                 moby->collision = 0;
@@ -3142,17 +3144,18 @@ void crate_update(struct Moby *moby) {
                 ground_attached_update(moby);
             }
             crate_vars->flags |= 0x14;
-            if (moby->oclass == 0x1FF) {
+            if (moby->oclass == MOBY_CLASS_AMMO_CRATE) {
                 crate_vars->unkC6 = 100;
-            } else if (moby->oclass == 0x1F5) {
+            } else if (moby->oclass == MOBY_CLASS_NANOTECH_CRATE) {
                 create_linked_class_0326_moby(moby);
             }
             break;
 
         case CRATE_STATE_PROCESS_HITS:
-            if (moby->oclass == 0x1F9 && (g_hero_r.unk240 == (s32)moby || g_hero_r.coll_hit_moby == (u8 *)moby ||
-                                          (g_hero_r.ground_moby == moby && g_hero_r.air_frames.s == 0) ||
-                                          g_hero_r.ledge_moby == (s32)moby || touched)) {
+            if (moby->oclass == MOBY_CLASS_OOM_OOM_BOX &&
+                (g_hero_r.unk240 == (s32)moby || g_hero_r.coll_hit_moby == (u8 *)moby ||
+                 (g_hero_r.ground_moby == moby && g_hero_r.air_frames.s == 0) || g_hero_r.ledge_moby == (s32)moby ||
+                 touched)) {
                 moby->command = 0;
                 moby->state = 5;
                 break;
@@ -3161,10 +3164,10 @@ void crate_update(struct Moby *moby) {
                 break;
             }
             doHit = 1;
-            if (moby->oclass == 0x1F6 && !(other->hit.s.flags & 0x20000)) {
+            if (moby->oclass == MOBY_CLASS_METAL_CRATE && !(other->hit.s.flags & 0x20000)) {
                 doHit = 0;
             }
-            if (moby->oclass == 0x1F9) {
+            if (moby->oclass == MOBY_CLASS_OOM_OOM_BOX) {
                 moby->state = 5;
                 if (other->hit.s.flags & 0x20000) {
                     moby->command = 1;
@@ -3203,7 +3206,7 @@ void crate_update(struct Moby *moby) {
             if (doHit == 0) {
                 break;
             }
-            break_crate(moby, moby->oclass == 0x1F9, other);
+            break_crate(moby, moby->oclass == MOBY_CLASS_OOM_OOM_BOX, other);
             if (crate_vars->unkC8 != 0 && other != 0 && other->hit.s.moby != 0) {
                 s16 hit_moby_class_id = other->hit.s.moby->oclass;
 
@@ -3227,7 +3230,7 @@ void crate_update(struct Moby *moby) {
             break;
 
         case CRATE_STATE_BROKEN:
-            if (moby->oclass == 0x1F9 && crate_vars->unkCA <= scale_ticks(20)) {
+            if (moby->oclass == MOBY_CLASS_OOM_OOM_BOX && crate_vars->unkCA <= scale_ticks(20)) {
                 f32 burst_radius_scale;
 
                 burst.moby = moby;

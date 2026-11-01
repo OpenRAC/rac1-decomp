@@ -15,6 +15,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 /* Cycling platform: rises, waits, drops and waits again. */
 struct CyclingPlatformVars {
     u8 pad_00[0x20];
@@ -133,7 +134,7 @@ extern int Moby_PlaySound(int, int, int);
 extern int scale_ticks(int);
 typedef int u128 __attribute__((mode(TI)));
 extern char cycling_platform_no_vars_fmt[];
-// Update for class 1033: oscillates its height between two limits with timed pauses.
+// Update for Platform: oscillates its height between two limits with timed pauses.
 void update_cycling_platform(char *m) {
     struct CyclingPlatformVars *d = (struct CyclingPlatformVars *)((Moby *)m)->pvars;
     if (((char *)d) == 0) {
@@ -1100,7 +1101,7 @@ void update_height_adjusted_projectile(struct Moby *moby) {
     if (coll_line(old, &moby->pos, 0, *(int *)&data->owner, (int)hit)) {
         struct GroundHitRecord *collision = (struct GroundHitRecord *)ground_hit;
         struct Moby *other = *(struct Moby **)&collision->D_L12_00174358;
-        if (other == 0 || other->oclass != 0x359) {
+        if (other == 0 || other->oclass != MOBY_CLASS_GADGEBOT_857) {
             qcopy(&moby->pos, &collision->pos);
             if (data->hit_flag_ptr != 0) {
                 if (other != 0) {
@@ -1711,7 +1712,7 @@ void Moby1031Update(char *m) {
                 f32 ground_height = ProbeGroundHeight(&(*list)->pos, 0, 0.5f);
                 if (contact->moby == moby) {
                     if (FastAbsF(ground_height - (*list)->pos.z) < 0.1f) {
-                        if ((*list)->oclass != 0x3EF)
+                        if ((*list)->oclass != MOBY_CLASS_CAMERA_OBJECT)
                             pressed = 1;
                     }
                 }
@@ -2304,7 +2305,8 @@ void block_cave_update(char *m) {
         if (table_entry->owner == moby) {
             if (table_entry->flags & 0x20000) {
                 struct Moby *other_moby = table_entry->other;
-                if (other_moby->oclass == 0xAC || other_moby->oclass == 0x99) {
+                if (other_moby->oclass == MOBY_CLASS_VISIBOMB_MISSILE ||
+                    other_moby->oclass == MOBY_CLASS_GOLD_DEVASTATOR_MISSILE) {
                     FastVecSub(relative_position, &moby->pos, &other_moby->pos);
                     matrix_from_basis_rows(transposed_rotation_matrix, &moby->rot_row0);
                     transform_vector(relative_position, relative_position, transposed_rotation_matrix);
@@ -2419,7 +2421,7 @@ extern V_2E0630 orxon_camera_pos_r __asm__("D_L10_001672C0");
 extern Path_2E0630 *orxon_paths_r[] __asm__("D_L10_001B0C30");
 extern V_2E0630 orxon_coll_hit_point_r __asm__("D_L10_00174360");
 
-/* Update function for moby class 1196 (screamer) on level 10: follows its path, turns to its target, wanders. */
+/* Update function for moby Screamer (screamer) on level 10: follows its path, turns to its target, wanders. */
 void screamer_update(Moby *m) {
     float v[6];
     D_2E0630 *d = (D_2E0630 *)m->pvars;

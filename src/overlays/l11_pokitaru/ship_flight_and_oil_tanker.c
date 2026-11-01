@@ -21,6 +21,7 @@
 #include "overlays/shared/camera_modes_and_scripts.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Player ship: steering, lock-on target, reticle and hit-point bar. */
 struct ShipVars {
@@ -78,7 +79,7 @@ struct OilTankerLinkVars {
     void *chain[8]; /* 0x70 */
 };
 
-/* Energy sphere (class 0x511): flies along vel, glowing, until a hit or the timer ends. */
+/* Energy sphere: flies along vel, glowing, until a hit or the timer ends. */
 struct EnergySphereVars {
     Vec4A vel; /* 0x00 */
     u8 glow_phase[4]; /* 0x10 */
@@ -90,7 +91,7 @@ struct EnergySphereVars {
     s32 life; /* 0x28 */
 };
 
-/* Listed blarg ship (class 0x527): flies in beside the player. */
+/* Listed blarg ship: flies in beside the player. */
 struct BlargShipVars {
     u8 pad_00[0x6C];
     f32 turn_speed; /* 0x6C */
@@ -1070,7 +1071,7 @@ typedef struct {
     unsigned char b20A4;
     unsigned char b20A5;
 } Glob_3146E0;
-/* Updates the jet fighter (moby class 1242): waits for the hero, boards, flies, exits or fades out, then clamps its position. */
+/* Updates the jet fighter (moby Jet Fighter): waits for the hero, boards, flies, exits or fades out, then clamps its position. */
 void jet_fighter_update(Moby *moby) {
     State_3146E0 *d;
     char *r;
@@ -1576,7 +1577,7 @@ extern void matrix_mul_vec3(void *, void *, void *);
 extern float FastCos(float);
 extern float FastSin(float);
 
-/* Update for the class 0x4DE creature: spawns on a path or a carrier moby, wanders, chases and attacks the target, jumps between path points, and smokes while it dies.
+/* Update for the Puffoid creature: spawns on a path or a carrier moby, wanders, chases and attacks the target, jumps between path points, and smokes while it dies.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/0030c788.c, FUN_L11_00314318. */
 void puffoid_update(struct Moby *moby) {
     CreatureVars_4318 *d = (CreatureVars_4318 *)moby->pvars;
@@ -2164,7 +2165,7 @@ void update_puffoid_damage_and_path_goal(Moby *m) {
     kind = ComputeHitResponse_r(m, h, &d->hp, 0, &hit, &dmg, 0, 4);
     if (hit != 1 && m->state != 0xB) {
         d->hp -= dmg;
-        if (h->owner->oclass == 0x47) {
+        if (h->owner->oclass == MOBY_CLASS_WRENCH) {
             kind = 3;
         }
         if (d->hp <= 0.0f) {
@@ -2300,7 +2301,7 @@ void update_moby_target_heading_and_conditional_movement(char *m, float *p) {
     }
 }
 extern char *pokitaru_mobys MACRO_ADDR;
-/* Counts the class 0x4DE mobys in this moby's group that are in states 13..17. */
+/* Counts the Puffoid mobys in this moby's group that are in states 13..17. */
 short count_group_class_4de_mobys_in_states_13_to_17(struct Moby *self_) {
     struct Moby *self = (struct Moby *)self_;
     unsigned short *p;
@@ -2316,7 +2317,7 @@ short count_group_class_4de_mobys_in_states_13_to_17(struct Moby *self_) {
     base = pokitaru_mobys;
     for (;;) {
         struct Moby *moby = (struct Moby *)(base + ((*p & 0x7FFF) << 8));
-        if (moby->oclass == 0x4DE) {
+        if (moby->oclass == MOBY_CLASS_PUFFOID) {
             if (moby->state >= 13) {
                 if (moby->state < 18)
                     n++;
@@ -2967,7 +2968,7 @@ void distribute_group_class_527_mobys_along_path(void *mp, int table_index) {
     do {
         entry = *list;
         idx = entry & 0x7FFF;
-        if (((Moby *)pokitaru_mobys_m)[idx].oclass == 0x527)
+        if (((Moby *)pokitaru_mobys_m)[idx].oclass == MOBY_CLASS_BLARG_SHIP_1319)
             count++;
         list++;
     } while ((short)entry >= 0);
@@ -2979,7 +2980,7 @@ void distribute_group_class_527_mobys_along_path(void *mp, int table_index) {
         Moby *m;
         idx = *list & 0x7FFF;
         m = (Moby *)((idx << 8) + (u32)pokitaru_mobys_m);
-        if (m->oclass == 0x527) {
+        if (m->oclass == MOBY_CLASS_BLARG_SHIP_1319) {
             struct L11ChainVars_19510 *data = (struct L11ChainVars_19510 *)m->pvars;
             qcopy_nc(&m->pos, table + offset * 16 + 0x10);
             data->count = offset;
@@ -3507,7 +3508,7 @@ void FlyingCraftUpdate(unsigned char *moby) {
 extern char *pokitaru_mobys_r2 __asm__("D_L11_00160058") MACRO_ADDR;
 short func_L11_0031BBC8_r(int idx) __asm__("func_L11_0031BBC8");
 
-/* Counts the mobys of class 0x527 in state 5 on id list idx. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/00315968.c, FUN_L11_0031a758. */
+/* Counts the Blarg Ship mobys in state 5 on id list idx. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/00315968.c, FUN_L11_0031a758. */
 short func_L11_0031BBC8_r(int idx) {
     short *p = pokitaru_moby_groups[idx];
     short found = 0;

@@ -14,6 +14,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 typedef struct Train292890 {
     u8 pad_00[0x60];
@@ -462,7 +463,7 @@ extern void set_moby_state_14(unsigned char *);
 extern int is_moby_class_23e_in_state_14(char *);
 extern void clear_u64_value(void *);
 
-/* Update of the Metropolis train locomotive (moby class 822): waits for the hero, rides its path, hands over to the next path. */
+/* Update of the Metropolis train locomotive (moby Metropolis Train Locomotive): waits for the hero, rides its path, hands over to the next path. */
 void metropolis_train_locomotive_update(Moby *moby) {
     float v[4];
     int idx;
@@ -609,8 +610,10 @@ void metropolis_train_locomotive_update(Moby *moby) {
                                           ((Cam_294040 *)kerwan_player_camera_r)->f140.z);
             }
             if (((Hero *)(hero_globals_base + 0xE1D))->ground_moby != 0) {
-                if (((Hero *)(hero_globals_base + 0xE1D))->ground_moby->oclass == 0x336 ||
-                    ((Hero *)(hero_globals_base + 0xE1D))->ground_moby->oclass == 0x4BA) {
+                if (((Hero *)(hero_globals_base + 0xE1D))->ground_moby->oclass ==
+                        MOBY_CLASS_METROPOLIS_TRAIN_LOCOMOTIVE ||
+                    ((Hero *)(hero_globals_base + 0xE1D))->ground_moby->oclass ==
+                        MOBY_CLASS_METROPOLIS_TRAIN_CARRIAGE) {
                     set_moby_dialogue_record_value(((Hero *)(hero_globals_base + 0xE1D))->ground_moby, 3);
                 }
             }
@@ -1067,7 +1070,7 @@ void update_moby_emitter_effects(Moby *moby, float *a1, int a2) {
     if (moby->flags & 1)
         return;
     switch ((short)*(unsigned short *)&moby->oclass) {
-        case 0x74:
+        case MOBY_CLASS_TWO_JOINT_PARTICLE_EMITTER:
             if (a2 != 0)
                 return;
             FastVecScale(vp, vp, 0.35f);
@@ -1081,10 +1084,10 @@ void update_moby_emitter_effects(Moby *moby, float *a1, int a2) {
                 spawn_effect_particle_with_target_scalar(v1, v2, 0x8040C0F0, 0x808080, 84000.0f, r);
             }
             return;
-        case 0x73:
-        case 0x75:
-        case 0x78:
-        case 0x84:
+        case MOBY_CLASS_TEN_PARTICLE_BURST_EMITTER:
+        case MOBY_CLASS_JOINT_ZERO_TEN_PARTICLE_EMITTER:
+        case MOBY_CLASS_GRAY_JOINT_ZERO_TEN_PARTICLE_EMITTER:
+        case MOBY_CLASS_TEN_GRAY_PARTICLE_BURST_EMITTER:
             if (a2 != 0)
                 return;
             if (!fast_subtract_rotations_cf(&data->emit_timer_a))
@@ -1107,7 +1110,7 @@ void update_moby_emitter_effects(Moby *moby, float *a1, int a2) {
             r2 = scale_ticks(0x14);
             data->emit_timer_a = rand_range(r, r2);
             return;
-        case 0x76:
+        case MOBY_CLASS_FIFTEEN_PARTICLE_BURST_EMITTER:
             if (a2 != 0)
                 return;
             if (!fast_subtract_rotations_cf(&data->emit_timer_a))
@@ -1130,8 +1133,8 @@ void update_moby_emitter_effects(Moby *moby, float *a1, int a2) {
             r2 = scale_ticks(0x14);
             data->emit_timer_a = rand_range(r, r2);
             return;
-        case 0x4B:
-        case 0x77:
+        case MOBY_CLASS_ALTERNATE_COLOR_CHILD_EFFECT_EMITTER:
+        case MOBY_CLASS_DEFAULT_COLOR_CHILD_EFFECT_EMITTER:
             fast_subtract_rotations_cf(&data->emit_timer_b);
             if (a2 != 0 && data->emit_timer_b == 0)
                 return;
@@ -1145,7 +1148,7 @@ void update_moby_emitter_effects(Moby *moby, float *a1, int a2) {
                 unsigned char *p;
                 int s17 = 0xA040;
                 int s18 = 0xA080;
-                if (moby->oclass == 0x4B) {
+                if (moby->oclass == MOBY_CLASS_ALTERNATE_COLOR_CHILD_EFFECT_EMITTER) {
                     s17 = 0x30A0;
                     s18 = 0x90A0;
                 }
@@ -1261,7 +1264,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
     hit = MobyGetHitMessage(moby, 0xA30000, 0);
     if (hit != 0 && *(unsigned short *)(hit + 0x28) != 0x102) {
         clear_u64_value(spot);
-        if (((Moby *)moby)->oclass == 0x4B) {
+        if (((Moby *)moby)->oclass == MOBY_CLASS_ALTERNATE_COLOR_CHILD_EFFECT_EMITTER) {
             spot[0] = FastCos(((Moby *)moby)->rot.z) * -2.747f;
             spot[1] = FastSin(((Moby *)moby)->rot.z) * -2.747f;
             spot[2] = 0.0f;
@@ -1336,7 +1339,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
                                       g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
                 break;
         }
-        if (((Moby *)moby)->oclass == 0x31B && gSkillPoints_r[4] == 0) {
+        if (((Moby *)moby)->oclass == MOBY_CLASS_BLIMP && gSkillPoints_r[4] == 0) {
             gSkillPoints_r[4] = 1;
             PlayBankSound_r(1, 0, 0);
             ShowBanner_r(0x53DB, -1);
@@ -1624,7 +1627,7 @@ char *func_L03_002BC038_r(Moby *parent, int unused, int color, int a3, int a4, f
     }
     return m;
 }
-/* Return 1 when moby is a live class 0x23D moby in state 5. */
+/* Return 1 when moby is a live Robot Dog moby in state 5. */
 int is_moby_class_23d_in_state_5(unsigned char *moby) {
     if (moby && moby[0x20] != 0xFE && moby[0x20] != 0xFD && *(short *)(moby + 0xA6) == 0x23D && moby[0x20] == 5) {
         return 1;

@@ -18,6 +18,7 @@
 #include "overlays/shared/helicopter_gunship_and_spawners.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Airship part: placed at its source's position. */
 struct AirshipPartVars {
@@ -414,7 +415,7 @@ void update_airship_part(Moby *moby) {
                 return;
             }
             moby->draw_dist = 0x3FF;
-            if (moby->oclass == 0x4A0) {
+            if (moby->oclass == MOBY_CLASS_AIRSHIP_PART_1184) {
                 if (d->h28 != 0) {
                     int i;
                     moby->draw_dist = 0xFF;
@@ -446,14 +447,14 @@ void update_airship_part(Moby *moby) {
         }
         case 1:
         case 2: {
-            if (moby->oclass == 0x4A0) {
+            if (moby->oclass == MOBY_CLASS_AIRSHIP_PART_1184) {
                 update_moby_vertical_oscillation(d->f48, d->f4C * 0.017453292f * g_frame_time, (char *)moby, &d->f40,
                                                  &d->f44);
                 update_moby_rotation_oscillation(moby, (char *)&d->f50, (char *)&d->f54, d->f58 * 0.017453292f,
                                                  d->f5C * 0.017453292f * g_frame_time,
                                                  d->f60 * 0.017453292f * g_frame_time);
             }
-            if (moby->oclass != 0x4A0 && d->parent != 0 && d->parent->state != 3) {
+            if (moby->oclass != MOBY_CLASS_AIRSHIP_PART_1184 && d->parent != 0 && d->parent->state != 3) {
                 Moby *p = d->parent;
                 qcopy(((f32 *)&moby->rot), ((f32 *)&p->rot));
                 euler_to_matrix(rotm, ((f32 *)&p->rot));
@@ -467,7 +468,7 @@ void update_airship_part(Moby *moby) {
                 moby->command = d->parent->command;
             }
             if (moby->state == 2) {
-                if (moby->oclass == 0x4A0) {
+                if (moby->oclass == MOBY_CLASS_AIRSHIP_PART_1184) {
                     moby->rot.x = FastAddRots(moby->rot.x, G161444_3858 * 0.017453292f * g_frame_time);
                 }
                 if (FastDecTimer(&d->h2A) != 0) {
@@ -494,7 +495,7 @@ void update_airship_part(Moby *moby) {
             }
             SetDeathBits(moby, 0x200, -1);
             SpawnExplosionFx(moby, ((f32 *)&moby->pos), -1, 4.0f, 13.0f);
-            if (moby->oclass == 0x4A0) {
+            if (moby->oclass == MOBY_CLASS_AIRSHIP_PART_1184) {
                 Moby_PlaySound(2, 0, (int)moby);
             }
             Moby_GetJointWorldPos(moby, 0, vec);
@@ -1282,10 +1283,10 @@ void display_update(struct Moby *moby) {
     if (moby->oclass < 0x514) {
         next = 0x512;
         switch (moby->oclass) {
-            case 0x512:
+            case MOBY_CLASS_DISPLAY_DAMAGED_1298:
                 next = 0x513;
                 break;
-            case 0x513:
+            case MOBY_CLASS_DISPLAY_DAMAGED_1299:
                 qcopy(center, &moby->pos);
                 moby->pos.z += 4.0f;
                 SetDeathBits_r(moby, 0, -1);
@@ -1309,7 +1310,7 @@ void display_update(struct Moby *moby) {
     FastVecSub(push, gaspar_camera_pos, center);
     vec_scale_to_length(push, push, 2.0f);
     spread = 4.0f;
-    if (moby->oclass != 0x114) {
+    if (moby->oclass != MOBY_CLASS_DISPLAY) {
         spread = 2.0f;
     }
     for (i = 0; i < 20; i++) {
@@ -1326,7 +1327,7 @@ void display_update(struct Moby *moby) {
         FastVecAdd(vel, vel, pull);
         vec_scale_to_length(vel, vel, falloff * (random_float_between(6.0f, 10.0f) * g_frame_time));
         FastVecAdd(pos, pos, push);
-        if (moby->oclass == 0x514 || random_integer_below(4) == 0) {
+        if (moby->oclass == MOBY_CLASS_DISPLAY_DAMAGED_1300 || random_integer_below(4) == 0) {
             spawn_tumbling_debris_r(moby, (Vec4 *)pos, (Vec4 *)vel, i & 1, random_float_between(1.0f, 2.0f));
         }
         if (i % 3 == 0) {
@@ -1336,7 +1337,7 @@ void display_update(struct Moby *moby) {
     FastVecScale(pos, hit + 0x10, 0.5f);
     FastVecAdd(center, center, push);
     spawn_explosion(moby, hit + 0x10, center, 0.0f, 0.0f, 10, 3, 16, 3.0f, 2.0f, 1.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
-    if (moby->oclass == 0x514 || replaced) {
+    if (moby->oclass == MOBY_CLASS_DISPLAY_DAMAGED_1300 || replaced) {
         DeleteMoby_r(moby);
     }
 }
@@ -1751,7 +1752,7 @@ extern float D_L09_00161A90_2F9A50 SDATA(D_L09_00161A90);
 extern float D_L09_00161A94_2F9A50 SDATA(D_L09_00161A94);
 extern float D_L09_00161A98_2F9A50 SDATA(D_L09_00161A98);
 
-// Platform moby (class 664) update on level 9: steers its height and tilt from the hero standing on it.
+// Platform moby (Platform) update on level 9: steers its height and tilt from the hero standing on it.
 void Moby664Update(Moby *moby) {
     PlatVars_2F9A50 *data = (*(PlatVars_2F9A50 **)&moby->pvars);
     Vec4A m0;
@@ -2157,7 +2158,8 @@ void func_L09_00304EE0_r(Moby *moby, VendorVars_304EE0 *vars, f32 *health) {
                 if (vars->link != -1) {
                     link = &(*(Moby **)&gaspar_mobys_r)[vars->link];
                     if (link != 0 && link->state != 0xFE && link->state != 0xFD &&
-                        (link->oclass == 0x494 || link->oclass == 0x49D || link->oclass == 0x4A0)) {
+                        (link->oclass == MOBY_CLASS_REFUELING_STATION || link->oclass == MOBY_CLASS_AIRSHIP_PART_1181 ||
+                         link->oclass == MOBY_CLASS_AIRSHIP_PART_1184)) {
                         link->command = 1;
                     }
                 }
@@ -2302,7 +2304,8 @@ void handle_linked_moby_damage(Moby *moby, VendorVars2_05378 *vars, f32 *health)
                 if (vars->link != -1) {
                     link = &(*(Moby **)&D_L09_00160058_05378)[vars->link];
                     if (link != 0 && link->state != 0xFE && link->state != 0xFD &&
-                        (link->oclass == 0x494 || link->oclass == 0x49D || link->oclass == 0x4A0)) {
+                        (link->oclass == MOBY_CLASS_REFUELING_STATION || link->oclass == MOBY_CLASS_AIRSHIP_PART_1181 ||
+                         link->oclass == MOBY_CLASS_AIRSHIP_PART_1184)) {
                         link->command = 1;
                     }
                 }
@@ -2310,7 +2313,8 @@ void handle_linked_moby_damage(Moby *moby, VendorVars2_05378 *vars, f32 *health)
                 if (vars->link2 != -1) {
                     link = &(*(Moby **)&D_L09_00160058_05378)[vars->link];
                     if (link != 0 && link->state != 0xFE && link->state != 0xFD &&
-                        (link->oclass == 0x494 || link->oclass == 0x49D || link->oclass == 0x4A0)) {
+                        (link->oclass == MOBY_CLASS_REFUELING_STATION || link->oclass == MOBY_CLASS_AIRSHIP_PART_1181 ||
+                         link->oclass == MOBY_CLASS_AIRSHIP_PART_1184)) {
                         link->command = 1;
                     }
                 }
@@ -2383,7 +2387,7 @@ extern Moby *gaspar_mobys_r2 __asm__("D_L09_00160058") MACRO_ADDR;
 extern char chain_link_no_hull_msg[];
 extern char chain_link_no_next_msg[];
 
-/* Airship chain link (class 1181) update: finds the parts it hangs between, swings between them, and on its trigger drops, wakes its neighbours and bursts. */
+/* Airship chain link (Airship Part) update: finds the parts it hangs between, swings between them, and on its trigger drops, wakes its neighbours and bursts. */
 void airship_chain_link_update(Moby *m) {
     Data_305710 *d = (*(Data_305710 **)&m->pvars);
     float v20[4];
@@ -2445,7 +2449,7 @@ void airship_chain_link_update(Moby *m) {
                     d->loose = 0;
                 }
             }
-            if (d->loose == 0 && hull != 0 && next != 0 && next->oclass == 0x49D) {
+            if (d->loose == 0 && hull != 0 && next != 0 && next->oclass == MOBY_CLASS_AIRSHIP_PART_1181) {
                 if ((*(Data_305710 **)&next->pvars)->loose != 0) {
                     dist = vec_distance_xy(((f32 *)&m->pos), ((f32 *)&hull->pos));
                     m->rot.y =
@@ -2456,7 +2460,7 @@ void airship_chain_link_update(Moby *m) {
                 } else {
                     FastVecSub(v20, ((f32 *)&hull->pos), ((f32 *)&m->pos));
                     vec_scale_to_length(v20, v20, (FastVecLength(v20) - 1.3f) * 0.7f);
-                    if (next->oclass == 0x49D && next->state != 0xFE && next->state != 0xFD) {
+                    if (next->oclass == MOBY_CLASS_AIRSHIP_PART_1181 && next->state != 0xFE && next->state != 0xFD) {
                         FastVecSub(v30, ((f32 *)&next->pos), ((f32 *)&m->pos));
                         vec_scale_to_length(v30, v30, (FastVecLength(v30) - 1.3f) * 0.7f);
                         FastVecAdd(v40, v20, v30);
@@ -2514,7 +2518,8 @@ void airship_chain_link_update(Moby *m) {
                 if (d->hull != -1) {
                     Moby *o = &gaspar_mobys_r2[d->hull];
                     if (o != 0 && o->state != 0xFE && o->state != 0xFD &&
-                        (o->oclass == 0x494 || o->oclass == 0x49D || o->oclass == 0x4A0)) {
+                        (o->oclass == MOBY_CLASS_REFUELING_STATION || o->oclass == MOBY_CLASS_AIRSHIP_PART_1181 ||
+                         o->oclass == MOBY_CLASS_AIRSHIP_PART_1184)) {
                         o->update_dist = 0xFF;
                         o->command = 1;
                     }
@@ -2522,7 +2527,8 @@ void airship_chain_link_update(Moby *m) {
                 if (d->next != -1) {
                     Moby *o = &gaspar_mobys_r2[d->next];
                     if (o != 0 && o->state != 0xFE && o->state != 0xFD &&
-                        (o->oclass == 0x494 || o->oclass == 0x49D || o->oclass == 0x4A0)) {
+                        (o->oclass == MOBY_CLASS_REFUELING_STATION || o->oclass == MOBY_CLASS_AIRSHIP_PART_1181 ||
+                         o->oclass == MOBY_CLASS_AIRSHIP_PART_1184)) {
                         o->update_dist = 0xFF;
                         o->command = 1;
                     }
@@ -3034,7 +3040,7 @@ void barrier_update(Moby *m) {
         vec_scale_to_length_r3(a60, r->pos, f * f * 8.0f);
         FastVecAdd_r4(a50, a50, a60);
         vec_scale_to_length_r3(a50, a50, f * (random_float_between_r3(5.0f, 8.0f) * g_frame_time_r2));
-        if (m->oclass == 0x508) {
+        if (m->oclass == MOBY_CLASS_BARRIER_1288) {
             int odd = i & 1;
             spawn_tumbling_debris_r2(m, a40, a50, odd, random_float_between_r3(1.0f, 1.3f));
         }
@@ -3045,11 +3051,11 @@ void barrier_update(Moby *m) {
     }
     FastVecScale_r4(a40, r->pos, 0.5f);
     spawn_explosion_r(m, r->pos, a20, 0.0f, 0.0f, 10, 3, 16, 3.0f, 2.0f, 1.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
-    if (m->oclass == 0x508) {
+    if (m->oclass == MOBY_CLASS_BARRIER_1288) {
         if (d->idx != -1)
             ((Flags_309688 *)(special_items_base_r + 0x13B + d->idx))->f43 = 1;
     }
-    if (m->oclass == 0x508 || flag)
+    if (m->oclass == MOBY_CLASS_BARRIER_1288 || flag)
         DeleteMoby_r3(m);
 }
 extern void FastVecScale_r5(void *, void *, float) __asm__("func_001F9C30");

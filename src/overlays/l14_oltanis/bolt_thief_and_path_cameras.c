@@ -19,6 +19,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Moby that points at a linked moby by index. */
 struct LinkedRemovalVars {
@@ -336,7 +337,7 @@ extern int mine_fall(void *, void *);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern void StepColorFade(void *, void *);
 
-/* Bolt thief update (moby class 923, level 14): hit knockback, turn to the hero, walk a path, then fall back. */
+/* Bolt thief update (moby Bolt Thief, level 14): hit knockback, turn to the hero, walk a path, then fall back. */
 void BoltThiefUpdate(L14Moby *m) {
     L14Data *d = m->data;
     char *hit;
@@ -577,7 +578,7 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char gemlik_available[] NOT_SDA;
 extern unsigned char help_stats_base[] NOT_SDA;
 
-/* Update function of moby class 924: a state machine on the byte at +0x20 (state 0 waits until the moby may
+/* Update function of moby Sam: a state machine on the byte at +0x20 (state 0 waits until the moby may
  * start, state 1 tracks the hero and fills D_L14_0016D060, state 2 marks the moby done and deletes it, as state
  * 3 does), then the aiming tail on the countdowns at data + 0x160 and 0x164. */
 void sam_update(char *m) {
@@ -1598,7 +1599,7 @@ extern float D_L14_00162364_308368 SDATA(D_L14_00162364);
 extern float D_L14_00162368_308368 SDATA(D_L14_00162368);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
-/* Blarg heavy interceptor update (class 1417): hit reaction, then a state machine (0 set up on its path,
+/* Blarg heavy interceptor update (Blarg Heavy Interceptor): hit reaction, then a state machine (0 set up on its path,
  * 1 wait for the trigger volume, 2 chase with its thruster part, 3 respawn), then its engine sound. */
 void update_flying_car(Moby *m) {
     Data_308368 *d = (void *)m->pvars;
@@ -1705,7 +1706,7 @@ void update_flying_car(Moby *m) {
                         } else {
                             Part_308368 *pd = (void *)o->pvars;
                             pd->f20 = 0.0f;
-                            if (o->oclass == 0x323) {
+                            if (o->oclass == MOBY_CLASS_SWINGSHOT_SWINGING_VERSATARGET) {
                                 pd->f20 = 40.0f;
                                 pd->f24 = 0.01f;
                                 pd->f28 = 0.2f;

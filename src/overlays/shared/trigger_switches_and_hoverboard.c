@@ -13,6 +13,7 @@
 #include "data/level_05.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/moby_class.h"
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
     u8 pad_00[0x18];
@@ -70,7 +71,7 @@ extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 extern int scale_ticks(int);
 extern float g_frame_time MACRO_ADDR;
 
-// Spawns a class 0x5C3 moby with its owner, position, spin and lifetime.
+// Spawns a Rocket moby with its owner, position, spin and lifetime.
 char *create_class_5c3_moby(int owner, char *pos, int arg, float f0, float f1) {
     Moby *moby = (Moby *)((char *)CreateMoby_m(0x5C3));
     if (moby != 0) {
@@ -345,7 +346,7 @@ typedef struct HoverboardVars {
 } HoverboardVars;
 
 /* func_L05_002F9BA0 -- src/overlays/shared/vendor_002CF2C0.c (functional C for the port, not a match)
- * Hoverboard moby update (class 439, levels 05 and 16). State 0: when Ratchet comes within 5.5 (and
+ * Hoverboard moby update (Hoverboard, levels 05 and 16). State 0: when Ratchet comes within 5.5 (and
  * the story flag D_L05_0015F6B0 is at least 4, and he is not in movement group 0x15 or 0x16) it
  * becomes his board (hero +0x86C), plays sound 0x6B, saves its position as home (pvars +0x10) and
  * goes to state 1. State 1: may play the 0x138F hint line; when Ratchet leaves group 0x16 it goes
@@ -612,7 +613,7 @@ extern int rilgar_wobble_quad_start_color SDATA(D_L05_00161DC4);
 extern int rilgar_wobble_quad_end_color SDATA(D_L05_00161DC8);
 extern int rilgar_wobble_quad_texture SDATA(D_L05_00161DCC);
 
-/* Draw callback of the class 0x337 wobbling effect (update_moby_wobble above):
+/* Draw callback of the Lamp wobbling effect (update_moby_wobble above):
    builds a basis from the moby (rotation from its pvars phase, direction toward
    D_L05_001672C0) and draws ten pairs of textured quads that widen with each
    step. Adapted from Lombyte's project (GPL-3.0), FUN_L05_0030c220. */
@@ -1200,7 +1201,7 @@ void update_moby_glow_and_contact_explosion(struct Moby *moby) {
     FastVecScale(&tip, &moby->rot_row2, (*(f32 *)&rilgar_glow_tip_offset));
     FastVecAdd(&tip, &moby->pos, &tip);
     if (!(*(s32 *)(hit + 0x24) & 0x800000) && !(FastVecDist(&tip, hit) <= 0.8f)) {
-        if ((*(struct Moby **)(hit + 0x20))->oclass != 0x47) {
+        if ((*(struct Moby **)(hit + 0x20))->oclass != MOBY_CLASS_WRENCH) {
             return;
         }
         if (!(FastVecDist(&tip, &(*(struct Moby **)(hit + 0x20))->pos) <= 0.8f)) {

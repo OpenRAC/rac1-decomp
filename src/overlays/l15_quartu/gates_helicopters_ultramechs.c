@@ -18,6 +18,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
+#include "enums/moby_class.h"
 
 /* Quartu helicopter: hit response, knockback and recoil. */
 struct HelicopterVars {
@@ -46,7 +47,7 @@ struct SideDriftVars {
     s32 flags; /* 0x9C: bit 2 set at init */
 };
 
-/* Poison vessel (class 0x4E9). */
+/* Poison vessel. */
 struct PoisonVesselVars {
     u8 pad_00[0x10];
     s32 unk_10; /* 0x10 */
@@ -119,13 +120,13 @@ void update_sliding_gate(struct Moby *m) {
             d->travel = 0;
             if (d->trigger != -1) {
                 struct Moby *other = (struct Moby *)((char *)(s32)quartu_moby_array + d->trigger * 0x100);
-                if (other->oclass == 0x4b9) {
+                if (other->oclass == MOBY_CLASS_UNDERWATER_RING) {
                     if (other->state == 4) {
                         trigger_active = 1;
                         goto check_lock;
                     }
                 }
-                if (other->oclass == 0x596) {
+                if (other->oclass == MOBY_CLASS_CODEBOT_SLOT) {
                     trigger_active = other->state == 4;
                 }
             }
@@ -450,7 +451,7 @@ void update_swinging_door(struct Moby *moby) {
             }
         }
     } else {
-        if (quartu_moby_array_r[vars->trigger].oclass == 0x49B) {
+        if (quartu_moby_array_r[vars->trigger].oclass == MOBY_CLASS_THRUSTER_PACK_LOCK) {
             open = quartu_moby_array_r[vars->trigger].state == 2;
         }
     }
@@ -891,7 +892,7 @@ typedef struct UpdateVars_2938 {
     f32 direction; /* 0x90 */
 } UpdateVars_2938;
 
-/* Construction arm update (moby class 221, level 15): a state machine on moby[0x20]. */
+/* Construction arm update (moby Construction Arm, level 15): a state machine on moby[0x20]. */
 void construction_arm_update(char *moby) {
     enum {
         CONSTRUCTION_ARM_INITIALIZE = 0,
@@ -1380,7 +1381,7 @@ extern void axis_rotation_2d48(void *, int, float);
 extern short helicopter_bob_amplitude;
 extern short helicopter_bob_period;
 
-/* Update function of the helicopter (moby class 233): waits, flies its path, hovers near and fires at its target, tilts and bobs, aims its turret, and dies. */
+/* Update function of the helicopter (moby Helicopter): waits, flies its path, hovers near and fires at its target, tilts and bobs, aims its turret, and dies. */
 void helicopter_update(HMoby_6950 *m) {
     extern UPath_6950 *quartu_paths[];
     extern ULevelState quartu_moby_state_bytes_base;
@@ -2044,7 +2045,7 @@ extern short ultramech_fire_anim_speed;
 extern short ultramech_debris_speed;
 extern short ultramech_debris_lift;
 
-/* Update function of the ultramech (moby class 491): waits for the player, follows its path, turns, fires and strafes, with jet particles while it moves. */
+/* Update function of the ultramech (moby Ultramech Unlimited): waits for the player, follows its path, turns, fires and strafes, with jet particles while it moves. */
 void ultramech_unlimited_update(UMoby *m) {
     Vec4 v10;
     Vec4 v20;
@@ -2717,7 +2718,7 @@ extern char *CreateMoby(int);
 extern void clear_u64_value(void *);
 extern void moby_build_matrix(void *, void *);
 
-/* Creates a class 0x4E9 moby at vector and returns it, or 0 if none is free. */
+/* Creates a Poison Vessel moby at vector and returns it, or 0 if none is free. */
 char *spawn_poison_vessel(void *unused, void *vector) {
     Moby *moby = (Moby *)CreateMoby(0x4E9);
     if (moby != 0) {
@@ -2781,7 +2782,7 @@ extern void SendRadialMessageToMobys_r(void *, void *, void *, int, int, int, in
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 
-/* Poison vessel update (moby class 1257): tracks its target and fires its effect. */
+/* Poison vessel update (moby Poison Vessel): tracks its target and fires its effect. */
 void PoisonVesselUpdate(Moby *moby) {
     Vec4 s20;
     Vec4 s30;
@@ -3270,7 +3271,7 @@ extern char *CreateMoby_c(int) __asm__("func_0020D348");
 extern void copy_hero_moby_field_38_u(void *) __asm__("func_L00_0025E210");
 extern void moby_build_matrix_u(void *) __asm__("func_L00_00251E30");
 
-/* Spawns a class 0x594 moby: position from the first quad, the second quad stored at +0x40.
+/* Spawns a Codebot moby: position from the first quad, the second quad stored at +0x40.
  * Same shape as func_L04_002D48B8; the 0xFF store has to go through unsigned char. */
 char *spawn_codebot_slot_effect(char *pos, char *vec) {
     char tmp[32] __attribute__((aligned(16)));

@@ -15,6 +15,7 @@
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "enums/moby_class.h"
 
 /* Hydrodisplacer effect emitter: only a spawn countdown. */
 struct HydroEffectVars {
@@ -794,7 +795,7 @@ void draw_beam_strand_with_glow(int texture_id, int glow_texture_id, void *point
     quads[0].texture_coordinates[2][1] = zero;
     quads[0].texture_coordinates[3][1] = 1.0f;
     half_width = 0.6f;
-    if (((struct Moby *)beam_slot_ids[slot])->oclass == 0x1C)
+    if (((struct Moby *)beam_slot_ids[slot])->oclass == MOBY_CLASS_PLASMABOT_28)
         half_width = 0.3f;
     width.q = 0;
     glow_width.q = 0;
