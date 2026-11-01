@@ -12,40 +12,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "structs/hero_views.h"
 
-typedef struct {
-    char p0[0x44];
-    int f44;
-    int f48;
-    char p1[0x10];
-    float f5C;
-    int f60;
-    char p2[0xC];
-} Rec70;
-typedef struct {
-    char p0[0x24];
-    int f24;
-    char p1[0x24];
-} Rec4C;
-typedef struct {
-    char p0[0xC];
-    int fC;
-    int f10;
-    int f14;
-    int f18;
-    char p2[0x10];
-} Rec2C;
-typedef struct {
-    char p0[0x254];
-    float f254;
-    float f258;
-} S17A780;
-typedef struct {
-    char p0[0xC];
-    float fC;
-    char p1[8];
-    float f18;
-} S17BEB8;
 typedef struct {
     char p0[0xF8];
     unsigned short fF8;
@@ -86,11 +54,11 @@ extern short veldin1_hero_double_tap_timer;
 extern S166D80 player_camera;
 extern float camera_yaw;
 extern int level_render_setup_packet_default;
-extern S17A780 D_L00_0017A780;
-extern Rec70 idle_fidgets[];
-extern Rec4C item_defs[];
-extern Rec2C attack_records[];
-extern S17BEB8 hero_speed_bands;
+extern HeroBoneScalars D_L00_0017A780;
+extern HeroIdleFidget idle_fidgets[];
+extern HeroItemDefView item_defs[];
+extern HeroAttackRecord attack_records[];
+extern HeroSpeedBands hero_speed_bands;
 
 extern int hero_check_damage(int);
 
@@ -321,7 +289,7 @@ void hero_update_transitions(void) {
                             r = return_hero_animation_id_unchanged(moby[0x53]);
                             if (r == hero_idle_sequence(0) && flag) {
                                 if (pick_idle_fidget(&sp20)) {
-                                    Rec70 *rec;
+                                    HeroIdleFidget *rec;
 
                                     g_hero.fidget_index = sp20;
                                     rec = &idle_fidgets[sp20];
@@ -772,7 +740,7 @@ void hero_update_transitions(void) {
                             }
                         }
                         {
-                            Rec2C *rec = &attack_records[g_hero.attack_record];
+                            HeroAttackRecord *rec = &attack_records[g_hero.attack_record];
                             int t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
                             if ((float)rec->f14 < g_hero.anim_frame && g_hero.anim_changing == 0 &&
                                 !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {
@@ -2375,7 +2343,7 @@ void hero_update_transitions(void) {
                             break;
                         }
                         {
-                            Rec2C *rec = &attack_records[g_hero.attack_record];
+                            HeroAttackRecord *rec = &attack_records[g_hero.attack_record];
                             int t;
 
                             if (g_hero.anim_changing == 0 && (float)rec->f18 < g_hero.anim_frame) {

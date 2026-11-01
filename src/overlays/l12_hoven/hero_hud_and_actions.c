@@ -15,40 +15,8 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sky_particles.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "structs/hero_views.h"
 
-typedef struct {
-    char p0[0x44];
-    int f44;
-    int f48;
-    char p1[0x10];
-    float f5C;
-    int f60;
-    char p2[0xC];
-} Rec70;
-typedef struct {
-    char p0[0x24];
-    int f24;
-    char p1[0x24];
-} Rec4C;
-typedef struct {
-    char p0[0xC];
-    int fC;
-    char p1[4];
-    int f14;
-    int f18;
-    char p2[0x10];
-} Rec2C;
-typedef struct {
-    char p0[0x254];
-    float f254;
-    float f258;
-} S17AB80;
-typedef struct {
-    char p0[0xC];
-    float fC;
-    char p1[8];
-    float f18;
-} S17C2B8;
 typedef struct {
     char p0[0xF8];
     unsigned short fF8;
@@ -74,11 +42,11 @@ extern int hoven_hero_run_step1_start_frame MACRO_ADDR;
 extern short hoven_hero_double_tap_timer;
 extern float hoven_camera_yaw;
 extern int hoven_look_release_reset_word;
-extern S17AB80 hoven_hero_bones;
-extern Rec70 hoven_idle_fidgets[];
-extern Rec4C hoven_item_defs[];
-extern Rec2C hoven_attack_records[];
-extern S17C2B8 D_L12_X_f;
+extern HeroBoneScalars hoven_hero_bones;
+extern HeroIdleFidget hoven_idle_fidgets[];
+extern HeroItemDefView hoven_item_defs[];
+extern HeroAttackRecord hoven_attack_records[];
+extern HeroSpeedBands D_L12_X_f;
 
 extern int scale_ticks(int);
 extern int queue_animation_update(int, int, int, int, int, int, int);
@@ -268,7 +236,7 @@ void HeroL12_UpdateStateTransitions(void) {
                             r = return_hero_animation_id_unchanged(moby[0x53]);
                             if (r == hero_get_gadget_anim_id(0) && flag) {
                                 if (pick_idle_fidget(&sp20)) {
-                                    Rec70 *rec;
+                                    HeroIdleFidget *rec;
 
                                     g_hero.fidget_index = sp20;
                                     rec = &hoven_idle_fidgets[sp20];
@@ -715,7 +683,7 @@ void HeroL12_UpdateStateTransitions(void) {
                             }
                         }
                         {
-                            Rec2C *rec = &hoven_attack_records[g_hero.attack_record];
+                            HeroAttackRecord *rec = &hoven_attack_records[g_hero.attack_record];
                             int t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
                             if ((float)rec->f14 < g_hero.anim_frame && g_hero.anim_changing == 0 &&
                                 !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {

@@ -15,40 +15,8 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sky_particles.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "structs/hero_views.h"
 
-typedef struct {
-    char p0[0x44];
-    int f44;
-    int f48;
-    char p1[0x10];
-    float f5C;
-    int f60;
-    char p2[0xC];
-} Rec70;
-typedef struct {
-    char p0[0x24];
-    int f24;
-    char p1[0x24];
-} Rec4C;
-typedef struct {
-    char p0[0xC];
-    int fC;
-    int f10;
-    int f14;
-    int f18;
-    char p2[0x10];
-} Rec2C;
-typedef struct {
-    char p0[0x254];
-    float f254;
-    float f258;
-} S17B000;
-typedef struct {
-    char p0[0xC];
-    float fC;
-    char p1[8];
-    float f18;
-} S17C738;
 typedef struct {
     char p0[0xF8];
     unsigned short fF8;
@@ -82,11 +50,11 @@ extern int fleet_hero_run_start_anim_mode MACRO_ADDR;
 extern short fleet_hero_double_tap_timer;
 extern float fleet_camera_yaw;
 extern int fleet_look_release_reset_word;
-extern S17B000 fleet_lean_state;
-extern Rec70 fleet_idle_fidgets[];
-extern Rec4C fleet_item_defs[];
-extern Rec2C fleet_attack_records[];
-extern S17C738 fleet_hero_speed_bands;
+extern HeroBoneScalars fleet_lean_state;
+extern HeroIdleFidget fleet_idle_fidgets[];
+extern HeroItemDefView fleet_item_defs[];
+extern HeroAttackRecord fleet_attack_records[];
+extern HeroSpeedBands fleet_hero_speed_bands;
 
 extern int HeroL17_TryTakeHit(int);
 
@@ -315,7 +283,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             r = return_hero_animation_id_unchanged(moby[0x53]);
                             if (r == select_hero_help_value(0) && flag) {
                                 if (pick_idle_fidget(&sp20)) {
-                                    Rec70 *rec;
+                                    HeroIdleFidget *rec;
 
                                     g_hero.fidget_index = sp20;
                                     rec = &fleet_idle_fidgets[sp20];
@@ -766,7 +734,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             }
                         }
                         {
-                            Rec2C *rec = &fleet_attack_records[g_hero.attack_record];
+                            HeroAttackRecord *rec = &fleet_attack_records[g_hero.attack_record];
                             int t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
                             if ((float)rec->f14 < g_hero.anim_frame && g_hero.anim_changing == 0 &&
                                 !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {
@@ -2370,7 +2338,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             break;
                         }
                         {
-                            Rec2C *rec = &fleet_attack_records[g_hero.attack_record];
+                            HeroAttackRecord *rec = &fleet_attack_records[g_hero.attack_record];
                             int t;
 
                             if (g_hero.anim_changing == 0 && (float)rec->f18 < g_hero.anim_frame) {

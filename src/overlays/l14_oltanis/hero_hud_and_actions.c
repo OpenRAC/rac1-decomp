@@ -16,40 +16,8 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sky_particles.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "structs/hero_views.h"
 
-typedef struct {
-    char p0[0x44];
-    int f44;
-    int f48;
-    char p1[0x10];
-    float f5C;
-    int f60;
-    char p2[0xC];
-} Rec70;
-typedef struct {
-    char p0[0x24];
-    int f24;
-    char p1[0x24];
-} Rec4C;
-typedef struct {
-    char p0[0xC];
-    int fC;
-    int f10;
-    int f14;
-    int f18;
-    char p2[0x10];
-} Rec2C;
-typedef struct {
-    char p0[0x254];
-    float f254;
-    float f258;
-} S17AE80;
-typedef struct {
-    char p0[0xC];
-    float fC;
-    char p1[8];
-    float f18;
-} S17C5B8;
 typedef struct {
     char p0[0xF8];
     unsigned short fF8;
@@ -76,11 +44,11 @@ extern int oltanis_hero_run_step1_start_frame MACRO_ADDR;
 extern short oltanis_hero_double_tap_timer;
 extern float oltanis_camera_yaw;
 extern int oltanis_look_release_reset_word;
-extern S17AE80 oltanis_lean_state;
-extern Rec70 oltanis_idle_fidgets[];
-extern Rec4C oltanis_item_defs[];
-extern Rec2C oltanis_attack_records[];
-extern S17C5B8 oltanis_hero_speed_bands;
+extern HeroBoneScalars oltanis_lean_state;
+extern HeroIdleFidget oltanis_idle_fidgets[];
+extern HeroItemDefView oltanis_item_defs[];
+extern HeroAttackRecord oltanis_attack_records[];
+extern HeroSpeedBands oltanis_hero_speed_bands;
 
 extern int process_hero_hit_reaction(int);
 
@@ -288,7 +256,7 @@ void HeroOltanis_UpdateStateTransitions(void) {
                             r = return_hero_animation_id_unchanged(moby[0x53]);
                             if (r == hero_get_gadget_anim_id(0) && flag) {
                                 if (pick_idle_fidget(&sp20)) {
-                                    Rec70 *rec;
+                                    HeroIdleFidget *rec;
 
                                     g_hero.fidget_index = sp20;
                                     rec = &oltanis_idle_fidgets[sp20];
@@ -591,7 +559,7 @@ void HeroOltanis_UpdateStateTransitions(void) {
                             }
                         }
                         {
-                            Rec2C *rec = &oltanis_attack_records[g_hero.attack_record];
+                            HeroAttackRecord *rec = &oltanis_attack_records[g_hero.attack_record];
                             int t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
                             if ((float)rec->f14 < g_hero.anim_frame && g_hero.anim_changing == 0 &&
                                 !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {
