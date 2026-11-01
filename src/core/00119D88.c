@@ -1110,12 +1110,10 @@ extern s32 sceSifSendCmd();
 extern s32 sceSifWriteBackDCache_r() __asm__("func_0011AD70");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/rpc/sce_sif_call_rpc.c, sceSifCallRpc. */
-extern s32 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32 rpc_number, s32 mode,
-                                 s32 send_buf, s32 send_size, s32 recv_buf, s32 recv_size,
-                                 s32 end_func, s32 end_data) __asm__("func_0011B4C8");
-s32 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32 rpc_number, s32 mode, s32 send_buf,
-                          s32 send_size, s32 recv_buf, s32 recv_size, s32 end_func,
-                          s32 end_data) {
+extern s32 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32 rpc_number, s32 mode, s32 send_buf, s32 send_size,
+                           s32 recv_buf, s32 recv_size, s32 end_func, s32 end_data) __asm__("func_0011B4C8");
+s32 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32 rpc_number, s32 mode, s32 send_buf, s32 send_size,
+                    s32 recv_buf, s32 recv_size, s32 end_func, s32 end_data) {
     s32 semaphore_parameters[6];
     struct SifRpcPacket_1B4C8 *packet;
     s32 semaphore_id;

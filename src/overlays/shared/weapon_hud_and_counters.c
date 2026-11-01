@@ -3,6 +3,7 @@
 #include "structs/moby.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "structs/usage_stats.h"
 #include "structs/pad.h"
 #include "structs/hero.h"
 #include "game/draw.h"
@@ -1110,12 +1111,6 @@ extern int quick_select_close_frame MACRO_ADDR;
 
 extern int remove_hud_item(int);
 typedef struct {
-    u8 p0[0xA0];
-    u16 hA0;
-    u16 hA2;
-    int wA4;
-} Stats;
-typedef struct {
     u8 p0[8];
     u16 h8;
     u8 pA[4];
@@ -1123,7 +1118,7 @@ typedef struct {
     u8 p10[8];
 } Route;
 extern Hero g_hero_r __asm__("D_0013F450");
-extern Stats usage_stats;
+extern MoveUsageTable usage_stats;
 extern Route item_price_table_r[] __asm__("D_L00_001C43B0");
 extern int weapon_ammo_counts[];
 extern u8 hud_item_selector_close_timer[];
@@ -1246,12 +1241,12 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
             Route *rr;
             int ri = id;
             if (g_hero_r.items[0].item_id != id) {
-                if (usage_stats.hA0 < 0xFFFF)
-                    usage_stats.hA0++;
+                if (usage_stats.e[20].count < 0xFFFF)
+                    usage_stats.e[20].count++;
             }
-            if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.hA2)
-                usage_stats.hA2 = scale_ticks(gameplay_event_frame_count) / 600;
-            usage_stats.wA4 = usage_stats.wA4 | (1 << g_current_level_index) | 0x80000000;
+            if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.e[20].best_minutes)
+                usage_stats.e[20].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
+            usage_stats.e[20].level_mask = usage_stats.e[20].level_mask | (1 << g_current_level_index) | 0x80000000;
             if (id == 0x18)
                 g_hero_r.unk1FF5 = 1;
             else

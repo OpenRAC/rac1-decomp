@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "structs/usage_stats.h"
 #include "structs/vector.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
@@ -3728,12 +3729,6 @@ typedef struct {
     unsigned char pad20[4];
     float f24;
 } S_2E9E60;
-typedef struct {
-    unsigned char pad0[0x40];
-    unsigned short u40;
-    unsigned short u42;
-    int i44;
-} G_2E9E60;
 extern float g_controller_state_analog_r[] __asm__("D_0013CB40");
 extern int opt_cam_invert_r __asm__("D_0015EEE0") MACRO_ADDR;
 extern int invert52_r __asm__("D_0015EEDC") MACRO_ADDR;
@@ -3741,7 +3736,7 @@ extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern f32 D_L00_0015F044_2E9E60 SDATA(D_L00_0015F044);
 extern s32 D_L00_00161E5C_2E9E60 SDATA(D_L00_00161E5C);
 extern s32 D_L00_00161E60_2E9E60 SDATA(D_L00_00161E60);
-extern G_2E9E60 usage_stats_r __asm__("D_00141948");
+extern MoveUsageTable usage_stats_r __asm__("D_00141948");
 extern int scale_ticks_r4(int) __asm__("func_001F9850");
 
 void func_L00_002E9E60_r(char *o, float *a, float *b) __asm__("func_L00_002E9E60");
@@ -3749,7 +3744,7 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) __asm__("func_L00_002E9E60
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002e89b0.c, FUN_L00_002e89b0. */
 void func_L00_002E9E60_r(char *o, float *a, float *b) {
     S_2E9E60 *s = (S_2E9E60 *)(*(char **)(o + 0x70) + 0x1A8);
-    G_2E9E60 *g;
+    MoveUsageTable *g;
 
     if (s->flags & 1) {
         *a = 0.0f;
@@ -3768,17 +3763,17 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) {
     } else {
         s->f14 = D_L00_0015F044_2E9E60;
         g = &usage_stats_r;
-        if (g->u40 < 3) {
+        if (g->e[8].count < 3) {
             D_L00_00161E5C_2E9E60++;
             if (D_L00_00161E60_2E9E60 == 0 && scale_ticks_r4(0x3C) < D_L00_00161E5C_2E9E60) {
-                if (g->u40 <= 0xFFFE) {
-                    g->u40++;
+                if (g->e[8].count <= 0xFFFE) {
+                    g->e[8].count++;
                 }
-                if (scale_ticks_r4(gameplay_event_frame_count_r) / 600 > g->u42) {
-                    g->u42 = scale_ticks_r4(gameplay_event_frame_count_r) / 600;
+                if (scale_ticks_r4(gameplay_event_frame_count_r) / 600 > g->e[8].best_minutes) {
+                    g->e[8].best_minutes = scale_ticks_r4(gameplay_event_frame_count_r) / 600;
                 }
                 D_L00_00161E60_2E9E60 = 1;
-                g->i44 = g->i44 | (1 << g_current_level_index_r) | 0x80000000;
+                g->e[8].level_mask = g->e[8].level_mask | (1 << g_current_level_index_r) | 0x80000000;
             }
         }
     }
