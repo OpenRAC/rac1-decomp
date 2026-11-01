@@ -506,6 +506,7 @@ struct GameState {
 extern struct GameState level_menu_system;
 extern s32 g_current_level_index MACRO_ADDR;
 
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern struct DiscTable disc_table;
 typedef struct {
     u8 pad0[0x24];
@@ -533,6 +534,7 @@ typedef struct {
     u8 pad2a4[4];
     s32 last_transfer_bytes;
 } RenderArchiveState;
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern RenderArchiveState map_menu_state;
 extern u8 gHaveMapOMatic NOT_SDA;
 void Profile_Mark(void);

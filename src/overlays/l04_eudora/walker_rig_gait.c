@@ -435,7 +435,7 @@ void rig_animate(struct Moby *moby, LegRig_93F08 *rig, int flags) {
             leg->lower_turn = FastSubRots(twist, leg->upper_turn);
             leg->lower_turn_speed = 0.0f;
         }
-        /* Fakematch: the later fields are read through the rig shifted by one leg stride. */
+        /* FAKEMATCH: the later fields are read through the rig shifted by one leg stride. */
         row = (LegRig_93F08 *)((char *)rig + i * sizeof(LegRigLeg_93F08));
         if (leg->upper_turn < leg->angle_min)
             leg->upper_turn = leg->angle_min;

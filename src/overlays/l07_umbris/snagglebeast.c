@@ -2399,6 +2399,7 @@ typedef struct {
     char *moby;
 } L07Ent;
 
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern L07Ent rope_particles[];
 
 extern char rope_previous_points[];

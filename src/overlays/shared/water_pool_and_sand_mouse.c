@@ -2770,7 +2770,9 @@ none:
         if (other->state != 12 || other->oclass != type)
             goto advance;
         {
+            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
             u8 *other_data = *(u8 *volatile *)&other->pvars;
+            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
             u8 unk30 = ((volatile Moby *)self)->update_dist;
             struct AmoeboidVars *self_data = (struct AmoeboidVars *)self->pvars;
             other->update_dist = unk30;
@@ -3476,7 +3478,7 @@ void gunship_follow_path(struct Moby *moby) {
             break;
         case 13:
         case 17:
-            /* Fakematch: duplicating the reset preserves retail's voice-call argument scheduling. */
+            /* FAKEMATCH: duplicating the reset preserves retail's voice-call argument scheduling. */
             if (v->unk138 != -1) {
                 if (!FastDecTimer(&v->unk138))
                     break;
@@ -3706,7 +3708,7 @@ void gunship_follow_path(struct Moby *moby) {
             FastVecAdd(&off[0], &off[0], current_position);
             v->unk13A = scale_ticks(600);
             dir = &off[1];
-            /* Fakematch: the never-taken call keeps gcse from propagating &off[1] into the call, so dir
+            /* FAKEMATCH: the never-taken call keeps gcse from propagating &off[1] into the call, so dir
                gets a1 before the class tests and &off[1] gets s0, as in retail. */
             if (never)
                 dir = (QVec *)scale_ticks(0);

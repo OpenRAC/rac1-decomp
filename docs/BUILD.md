@@ -33,6 +33,7 @@ These need no build and no disc.
 python3 tools/gen_progress_report.py --check
 python3 tools/move_src.py --check
 python3 tools/check_docs.py
+python3 tools/fakematch_scan.py --check
 python3 tools/check_no_retail.py
 python3 tools/check_syntax.py
 python3 tools/ratchets.py --check

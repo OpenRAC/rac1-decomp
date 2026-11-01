@@ -3132,6 +3132,7 @@ typedef struct {
     int pad2[3];
     char *p;
 } E04;
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern E04 suck_beam_particles[];
 extern char suck_beam_points[];
 extern char suck_beam_points_base[];

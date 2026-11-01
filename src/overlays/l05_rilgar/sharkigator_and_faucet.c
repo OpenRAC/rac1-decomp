@@ -2147,7 +2147,9 @@ void extermitank_update(unsigned char *m) {
             d->unk_180 = scale_ticks(0x3C);
             *(int *)&d->turret_pitch = 0;
             {
+                /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
                 float t = *(volatile float *)&extermitank_vars_b58_init;
+                /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
                 d->turret_yaw = *(volatile float *)(m + 0x48);
                 d->unk_58 = truncate_float_to_s32(t);
             }
@@ -2353,6 +2355,7 @@ void extermitank_update(unsigned char *m) {
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern struct Hero g_hero;
 struct AnimSeq_065D0;
 typedef struct {

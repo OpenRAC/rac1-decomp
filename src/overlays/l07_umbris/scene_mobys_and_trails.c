@@ -52,7 +52,7 @@ void update_moby_offset_motion(struct Moby *moby) {
         vars->target = -1;
     spawn_id = moby->mission;
     force_end = 0;
-    /* Fakematch: the 0xFF compare needs its own variable for retail register order. */
+    /* FAKEMATCH: the 0xFF compare needs its own variable for retail register order. */
     no_spawn = 0xff;
     force_start = 0;
     if (umbris_mission_group_state[spawn_id] == no_spawn) {

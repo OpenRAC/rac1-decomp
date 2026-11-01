@@ -1145,7 +1145,9 @@ void draw_bot_door_lock_glow(char *o) {
     {
         float c[4][4] __attribute__((aligned(16)));
         /* register pin: retail keeps 1.4f in $f5 and 1.1f in $f4 (local-alloc gives the reverse). */
+        /* FAKEMATCH: the register keyword steers register allocation. */
         register float k14 __asm__("$f5") = 1.4f;
+        /* FAKEMATCH: the register keyword steers register allocation. */
         register float k11 __asm__("$f4") = 1.1f;
         *(u128 *)c[0] = 0;
         c[0][0] = (-*(float *)(data + 0x20) * 1.2f) * *(float *)(data + 0x24);

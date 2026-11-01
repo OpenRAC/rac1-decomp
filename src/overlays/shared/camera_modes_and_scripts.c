@@ -1067,7 +1067,7 @@ void update_target_tracking_camera_position(Camera *cam) {
             turn = angle + 1;
             best = 1000.0f;
             current_target = (char *)hero_2ED320.swing_target_moby;
-            /* Fakematch: a dead compare with 10.0f loads that constant early, which fixes the
+            /* FAKEMATCH: a dead compare with 10.0f loads that constant early, which fixes the
              * register order of the loop constants and of turn. */
             if (target == 10.0f) {
             }

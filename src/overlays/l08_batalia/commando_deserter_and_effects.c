@@ -882,6 +882,7 @@ void draw_flickering_mesh_effect(M45 *moby) {
         {
             float y, x, theta, wave, noise, angle0, angle1, shape, drop, a, b, normal_angle0, normal_angle1;
             float sway0, sway1, lift, weight, swing, turn0, turn1;
+            /* FAKEMATCH: the register keyword steers register allocation. */
             register int j;
             int i;
             for (i = 0; i <= data->ny; phase += phase_step, amp += amp_step, amp2 += amp2_step, phase0 += phase0_step,
@@ -1653,6 +1654,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern float FastSubRots(float, float);
 extern s32 g_current_level_index MACRO_ADDR;
 extern char batalia_plumber_dialogue_name[];
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern char *batalia_mobys MACRO_ADDR;
 
 /* Update function: calls func_L08_003078B0, then a switch on the state byte at +0x20 (states 0, 1, 2 and 5;

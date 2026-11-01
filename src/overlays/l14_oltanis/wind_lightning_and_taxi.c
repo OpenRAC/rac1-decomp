@@ -793,7 +793,7 @@ void update_wind_sparks(struct Moby *m) {
             {
                 int s = truncate_float_to_s32(((float)opacity - 0.0f) * first + 0.0f);
                 *shade = s;
-                /* Fakematch: storing the shade again is a no-op that reload's cse drops; the
+                /* FAKEMATCH: storing the shade again is a no-op that reload's cse drops; the
                  * extra uses rank `shade` above `m` for register allocation as in retail. */
                 if (s != 0) {
                     *shade = s;
@@ -1428,12 +1428,17 @@ extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
 extern void draw_world_quad(void *, void *, int);
 extern float CubicInterpolate(float, float, float, float, float);
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern short lightning_arc_point_timers[];
 extern unsigned char lightning_arc_fade_alpha[] MACRO_ADDR;
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern V_2EF078 lightning_arc_points[];
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern short lightning_branch_point_timers[];
 extern int lightning_branch_starts[] MACRO_ADDR;
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern V_2EF078 lightning_branch_points[];
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern int lightning_grow_ticks SDATA(D_L14_00161D40);
 extern int lightning_arc_outer_base_color_gp SDATA(D_L14_00161D48);
 extern int lightning_arc_inner_base_color_gp SDATA(D_L14_00161D4C);

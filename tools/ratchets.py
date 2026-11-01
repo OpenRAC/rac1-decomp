@@ -34,6 +34,7 @@ METRICS = {
     "offsets_in_comments": ("comments", r"\+\s*0x[0-9A-Fa-f]+"),
     "worker_notes_in_comments": ("comments", r"\b(?:regalloc|permuter|functional:)|\bmatch(?:es|ed)? (?:now|retail)\b"),
     "numbered_names": ("code", r"\b(?:Moby|Class)\d{2,}\w*\b|\b\w*_class_[0-9a-f]+(?:_\w*)?\b(?<!_class_data)"),
+    "fakematch_tags": ("comments", r"FAKEMATCH:"),
     "long_lines": ("raw", r"^.{121,}$"),
     "tab_lines": ("raw", r"^.*\t.*$"),
 }

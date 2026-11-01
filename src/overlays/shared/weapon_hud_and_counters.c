@@ -144,6 +144,7 @@ extern short moby_context_index;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/hud/00234fd0.c, FUN_L00_00235668. */
 void select_moby_context(int state) {
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     int oldState = (*(volatile int *)&moby_context_index);
     if (state != oldState) {
         int old70, old74, old78, old7C, oldDC, oldE0, oldE8;
@@ -157,7 +158,9 @@ void select_moby_context(int state) {
         old78 = alt_moby_array_last;
         oldE8 = moby_spawn_pvar_pool;
         old7C = alt_moby_spawn_pvar_pool;
+        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
         (*(volatile int *)&moby_context_index) = oldState ^ 1;
+        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
         *(volatile int *)&moby_array_start = old70;
         level_mobys_end = old74;
         moby_array_last = old78;
@@ -2489,6 +2492,7 @@ typedef struct {
     char pad10[8];
 } WeaponRec;
 
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern WeaponRec item_price_table[];
 extern char menu_item_enabled_115[];
 extern short weapon_hud_suspended;

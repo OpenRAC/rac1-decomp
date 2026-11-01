@@ -475,6 +475,7 @@ extern C_298840 cutscene_state;
 
 extern struct {
     int x0, x4, x8;
+    /* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 } lvl_resource_buffers;
 extern s32 gFadeLvl MACRO_ADDR;
 void VU1_syncChain(s32);
