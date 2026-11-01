@@ -27,8 +27,7 @@ struct Moby;
 
 #define CAMERA_AT(type, field, off) \
     typedef char camera_at_##type##_##field[((unsigned long)&((type *)0)->field == (off)) ? 1 : -1]
-#define CAMERA_SIZE(type, size) \
-    typedef char camera_size_##type[(sizeof(type) == (size)) ? 1 : -1]
+#define CAMERA_SIZE(type, size) typedef char camera_size_##type[(sizeof(type) == (size)) ? 1 : -1]
 
 /* Three floats with 4-byte alignment. */
 typedef struct {
