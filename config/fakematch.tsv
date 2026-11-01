@@ -50,10 +50,8 @@ src/game/ui/pause.c	-	padding	retail's padding between functions
 src/game/ui/pause.c	-	padding	retail's padding between functions
 src/game/ui/pause.c	-	padding	retail's padding between functions
 src/game/ui/pause.c	-	padding	retail's padding between functions
-src/game/ui/pause.c	-	redeclared	a redeclaration with another type can steer how the global is addressed
 src/game/ui/pause.c	BuildGalaxyMenu	if_zero	a dead if (0) block changes the code around it
 src/game/ui/pause.c	DrawGBsShipMenu__maybe	if_zero	a dead if (0) block changes the code around it
-src/game/ui/pause.c	draw_checking_memory_card_data_menu	redeclared	a redeclaration with another type can steer how the global is addressed
 src/game/ui/pause.c	update_item_preview_transform	volatile	volatile on an ordinary variable forces a load or store order
 src/game/ui/vendor.c	-	padding	retail's padding between functions
 src/game/ui/vendor.c	-	padding	retail's padding between functions
@@ -62,7 +60,6 @@ src/game/ui/vendor.c	-	padding	retail's padding between functions
 src/overlays/l04_eudora/snow_plow_and_woodcut_bot.c	leaf_update	volatile	volatile on an ordinary variable forces a load or store order
 src/overlays/l04_eudora/snow_plow_and_woodcut_bot.c	leaf_update	volatile	volatile on an ordinary variable forces a load or store order
 src/overlays/l04_eudora/walker_rig_gait.c	rig_animate	marked	the later fields are read through the rig shifted by one leg stride
-src/overlays/l05_rilgar/sharkigator_and_faucet.c	-	redeclared	a redeclaration with another type can steer how the global is addressed
 src/overlays/l05_rilgar/sharkigator_and_faucet.c	extermitank_update	volatile	volatile on an ordinary variable forces a load or store order
 src/overlays/l05_rilgar/sharkigator_and_faucet.c	extermitank_update	volatile	volatile on an ordinary variable forces a load or store order
 src/overlays/l06_blarg/hangar_door_and_gas_vents.c	update_moby_pair_transforms	volatile	volatile on an ordinary variable forces a load or store order
@@ -79,7 +76,6 @@ src/overlays/l14_oltanis/wind_lightning_and_taxi.c	-	redeclared	a redeclaration 
 src/overlays/l14_oltanis/wind_lightning_and_taxi.c	-	redeclared	a redeclaration with another type can steer how the global is addressed
 src/overlays/l14_oltanis/wind_lightning_and_taxi.c	-	redeclared	a redeclaration with another type can steer how the global is addressed
 src/overlays/l14_oltanis/wind_lightning_and_taxi.c	update_wind_sparks	marked	storing the shade again is a no-op that reload's cse drops; the
-src/overlays/l15_quartu/gates_helicopters_ultramechs.c	-	redeclared	a redeclaration with another type can steer how the global is addressed
 src/overlays/l15_quartu/gates_helicopters_ultramechs.c	steer_helicopter	volatile	volatile on an ordinary variable forces a load or store order
 src/overlays/l15_quartu/gates_helicopters_ultramechs.c	steer_helicopter	volatile	volatile on an ordinary variable forces a load or store order
 src/overlays/l15_quartu/gates_helicopters_ultramechs.c	steer_helicopter	volatile	volatile on an ordinary variable forces a load or store order
@@ -91,9 +87,7 @@ src/overlays/shared/electric_water.c	-	redeclared	a redeclaration with another t
 src/overlays/shared/follow_camera.c	cam_set_eye_offset_tail	volatile	volatile on an ordinary variable forces a load or store order
 src/overlays/shared/level_runtime_and_menus.c	-	redeclared	a redeclaration with another type can steer how the global is addressed
 src/overlays/shared/level_runtime_and_menus.c	-	redeclared	a redeclaration with another type can steer how the global is addressed
-src/overlays/shared/linked_moby_transforms.c	-	redeclared	a redeclaration with another type can steer how the global is addressed
 src/overlays/shared/moby_drops_and_death.c	-	redeclared	a redeclaration with another type can steer how the global is addressed
-src/overlays/shared/nanotech_ball_and_suck_cannon.c	-	redeclared	a redeclaration with another type can steer how the global is addressed
 src/overlays/shared/npc_dialog_and_pad_history.c	get_dialogue_entry	redeclared	a redeclaration with another type can steer how the global is addressed
 src/overlays/shared/npc_dialog_and_pad_history.c	stream_slot_clear_state	volatile	volatile on an ordinary variable forces a load or store order
 src/overlays/shared/plasmabot.c	check_listed_plasmabots_not_starting_path_traversal	volatile	volatile on an ordinary variable forces a load or store order

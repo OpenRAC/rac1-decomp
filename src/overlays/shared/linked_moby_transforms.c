@@ -12,6 +12,8 @@ extern void transform_vector(void *, void *, void *);
 extern char *hoven_mobys MACRO_ADDR;
 
 // Transforms an array of n 0x30-byte entries into the space of a moby, skipping empty slots.
+extern void euler_to_matrix(float *, float *);
+
 void capture_linked_moby_relative_transforms(char *moby, char *arr, int n) {
     float m0[12];
     float m1[16];
@@ -32,8 +34,6 @@ void capture_linked_moby_relative_transforms(char *moby, char *arr, int n) {
         }
     }
 }
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
-extern void euler_to_matrix(float *, float *);
 extern void FastVecAdd(void *, void *, void *);
 extern void moby_build_matrix(void *);
 

@@ -1356,7 +1356,8 @@ typedef struct {
     int n;
     int pad[3];
     Vec4 pt[1];
-} UPath_6950;
+} UPath;
+extern UPath *quartu_paths[];
 
 extern void process_helicopter_hits();
 typedef int u128_6950 __attribute__((mode(TI)));
@@ -1386,7 +1387,6 @@ extern short helicopter_bob_period;
 
 /* Update function of the helicopter (moby Helicopter): waits, flies its path, hovers near and fires at its target, tilts and bobs, aims its turret, and dies. */
 void helicopter_update(HMoby_6950 *m) {
-    extern UPath_6950 *quartu_paths[];
     extern ULevelState quartu_moby_state_bytes_base;
     Vec4 oldpos;
     HGoal_6950 goal;
@@ -1431,7 +1431,7 @@ void helicopter_update(HMoby_6950 *m) {
     near:
         FindNearestTargetMoby(m, goal.pos.f, d->f1A0);
     } else {
-        UPath_6950 *path;
+        UPath *path;
         d->f1A0 = d->f19C;
         path = quartu_paths[d->w194];
         FindNearestEligibleMoby(d->f19C, m, &goal, 0, 0, path->pt, path->n);
@@ -1463,7 +1463,7 @@ void helicopter_update(HMoby_6950 *m) {
             m->b30 = 0xFF;
             m->h32 = 0x80;
             if (d->w1AC != -1) {
-                UPath_6950 *path;
+                UPath *path;
                 int i;
                 path = quartu_paths[d->w1AC];
                 for (i = 0; i < path->n - 2; i++) {
@@ -1529,7 +1529,7 @@ void helicopter_update(HMoby_6950 *m) {
                 d->child->flags &= 0xFFBE;
             break;
         case 2: {
-            UPath_6950 *path;
+            UPath *path;
             path = quartu_paths[d->w1AC];
             find_nearest_path_point(path, &m->pos, &v90, &seg, &frac, 0, 999.0f, 5.0f, 0.0f);
             dist = IntToFloat(seg) * path->pt[0].f[3] + frac + 2.0f;
@@ -1589,7 +1589,7 @@ void helicopter_update(HMoby_6950 *m) {
             break;
         }
         case 3: {
-            UPath_6950 *path;
+            UPath *path;
             int i;
             float best = 9999.999f;
             path = quartu_paths[d->w194];
@@ -1620,7 +1620,7 @@ void helicopter_update(HMoby_6950 *m) {
             break;
         }
         case 4: {
-            UPath_6950 *path;
+            UPath *path;
             path = quartu_paths[d->w194];
             v80.q = m->pos.q;
             v90.q = tp->pos.q;
@@ -1897,11 +1897,6 @@ float compute_ultramech_flocking_steering_point(void *m_, void *out, float r) {
     return fast_atan2(((float *)out)[0] - *(float *)(m + 0x10), ((float *)out)[1] - *(float *)(m + 0x14));
 }
 typedef int u128 __attribute__((mode(TI)));
-typedef struct {
-    int n;
-    int pad[3];
-    Vec4 pt[1];
-} UPath;
 typedef struct UData UData;
 typedef struct UMoby UMoby;
 struct UMoby {
@@ -2030,8 +2025,6 @@ extern void MobySphereHitDirectional(int, float, void *, int, float, float, int,
 extern unsigned char hero_globals_base[];
 extern unsigned char hero_vehicle_mode[];
 extern unsigned char help_stats_base[] NOT_SDA;
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
-extern UPath *quartu_paths[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;

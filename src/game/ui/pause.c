@@ -4075,9 +4075,10 @@ typedef struct {
     unsigned short f[12];
 } TextBox_p;
 
+extern void font_print_window_small(void *, long, void *, int);
+
 /* Draws a pause-style list of text rows with a selection marker and a footer line; returns 2. */
 int MissionMenu_DrawObjectives(char *arg) {
-    extern void font_print_window_small(unsigned short *, long, void *, int);
     TextBox_p t;
     TextBox_p s;
     int mask;
@@ -4754,8 +4755,6 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
     char *text;
     int state = menu->state;
     long texture;
-    /* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
-    extern void font_print_window_small(FontWindow_21380 *, long, char *, int);
     int first;
     unsigned char *tp;
 
@@ -5673,8 +5672,6 @@ extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
 extern void *msg_string_id(int) __asm__("func_001FE540");
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
-extern void font_print_window_small(TextBox *, long, char *, int);
 
 /* Draws the two-line prompt box (text 0x4FB3 for D_001D6044 in 0..2,
    0x4FB5 for 3, else D_001603E8) sized from arg0's +0x20/+0x24. The box

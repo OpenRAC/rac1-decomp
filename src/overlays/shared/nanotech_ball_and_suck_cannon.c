@@ -2831,6 +2831,7 @@ typedef struct {
     float speed;
     char *p;
 } E04_pt3;
+extern E04_pt3 suck_beam_particles[];
 extern void AddDrawCallback();
 
 extern V41 suck_beam_ring_unit_offsets[];
@@ -2846,7 +2847,6 @@ extern void lerp_vector(void *, void *, void *, float);
 extern Particle41 *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 
 void suck_beam_update(void *moby, void *position) {
-    extern E04_pt3 suck_beam_particles[];
     V41 step, up, orient[3], ray_end, start, end, axis, tmp_a, tmp_b, frame[3], tmp_c, motion, tmp_d, tmp_e, interp,
         cross_c, basis_c, tmp_f, unused_a, unused_b;
     V41 *orientation;
@@ -3125,15 +3125,6 @@ void suck_beam_queue_draw(int arg0) {
         AddDrawCallback(suck_beam_draw_mesh, arg0);
     }
 }
-typedef struct {
-    short idx;
-    short pad;
-    float f;
-    int pad2[3];
-    char *p;
-} E04;
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
-extern E04 suck_beam_particles[];
 extern char suck_beam_points[];
 extern char suck_beam_points_base[];
 extern short suck_beam_scroll_speed;
