@@ -122,24 +122,24 @@ extern char g_controller_state_r[] __asm__("D_0013CA40");
 extern char g_debug_menu_r[] __asm__("D_L00_0016C158");
 extern char player_camera_r[] __asm__("D_L00_00166D80");
 extern char player_camera_matrix_r[] __asm__("D_L00_001670D0");
-extern char D_L00_001670E0_1F3E20[] __asm__("D_L00_001670E0");
-extern char D_L00_001670F0_1F3E20[] __asm__("D_L00_001670F0");
-extern char camera_rotation_r[] __asm__("D_L00_00166ED0");
+extern char D_L00_001670E0[];
+extern char D_L00_001670F0[];
+extern char D_L00_00166ED0[];
 extern char hero_globals_base_r[] __asm__("D_0013E633");
-extern void UpdateAllCamerasLvl_r(void) __asm__("func_L00_001EBDA0");
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+extern void func_L00_001EBDA0(void);
+extern void func_L00_001FF4B0(void *, void *, float);
+extern void func_001F9BD8(void *, void *, void *);
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern void set_identity_matrix_r(void *) __asm__("func_001FA190");
-extern void copy_matrix_rotation_r(void *, void *) __asm__("func_001FA460");
+extern void func_001FA190(void *);
+extern void func_001FA460(void *, void *);
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern void matrix_copy_rows_r(void *, void *) __asm__("func_001FA480");
+extern void func_001FA480(void *, void *);
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern void euler_to_matrix_r(void *, void *) __asm__("func_001FA218");
-extern void reset_follow_camera_state_from_position_r(void *) __asm__("func_L00_002E80A8");
+extern void func_L00_002E80A8(void *);
 
 /* Free-camera controls (debug camera): pad buttons move the camera (in the free-look matrix when the hero's
    camera mode is 2, else on the ground plane), turn it about three axes with eased speeds, and when the camera
@@ -155,7 +155,7 @@ void update_debug_camera(void) {
         return;
     }
     if (((Cam *)g_debug_menu_r)->f8 & 8) {
-        UpdateAllCamerasLvl_r();
+        UpdateAllCamerasLvl();
     }
     if (((PadState *)g_controller_state_r)->stick_moved != 0) {
         return;
@@ -164,8 +164,8 @@ void update_debug_camera(void) {
     if ((((PadDwords *)g_controller_state_r)->held_pressed.l & 3) != 3) {
         if (((PadDwords *)g_controller_state_r)->held_pressed.i & 0x1000) {
             if (k) {
-                vec_scale_to_length_r(s, player_camera_matrix_r, ((Cam *)g_debug_menu_r)->f70);
-                FastVecAdd_r(player_camera_matrix_r - 0x210, player_camera_matrix_r - 0x210, s);
+                vec_scale_to_length(s, player_camera_matrix_r, ((Cam *)g_debug_menu_r)->f70);
+                FastVecAdd(player_camera_matrix_r - 0x210, player_camera_matrix_r - 0x210, s);
             } else {
                 ((View *)player_camera_r)->f140 +=
                     FastCos_r(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
@@ -176,7 +176,7 @@ void update_debug_camera(void) {
         }
         if (((PadDwords *)g_controller_state_r)->held_pressed.i & 0x4000) {
             if (k) {
-                vec_scale_to_length_r(s, player_camera_matrix_r, ((Cam *)g_debug_menu_r)->f70);
+                vec_scale_to_length(s, player_camera_matrix_r, ((Cam *)g_debug_menu_r)->f70);
                 FastVecSub_r(player_camera_matrix_r - 0x210, player_camera_matrix_r - 0x210, s);
             } else {
                 ((View *)player_camera_r)->f140 -=
@@ -188,8 +188,8 @@ void update_debug_camera(void) {
         }
         if (((PadDwords *)g_controller_state_r)->held_pressed.i & 1) {
             if (k) {
-                vec_scale_to_length_r(s, D_L00_001670E0_1F3E20, ((Cam *)g_debug_menu_r)->f70);
-                FastVecAdd_r(D_L00_001670E0_1F3E20 - 0x220, D_L00_001670E0_1F3E20 - 0x220, s);
+                vec_scale_to_length(s, player_camera_side_axis, ((Cam *)g_debug_menu_r)->f70);
+                FastVecAdd(player_camera_side_axis - 0x220, player_camera_side_axis - 0x220, s);
             } else {
                 ((View *)player_camera_r)->f140 -=
                     FastSin_r(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
@@ -200,8 +200,8 @@ void update_debug_camera(void) {
         }
         if (((PadDwords *)g_controller_state_r)->held_pressed.i & 2) {
             if (k) {
-                vec_scale_to_length_r(s, D_L00_001670E0_1F3E20, ((Cam *)g_debug_menu_r)->f70);
-                FastVecSub_r(D_L00_001670E0_1F3E20 - 0x220, D_L00_001670E0_1F3E20 - 0x220, s);
+                vec_scale_to_length(s, player_camera_side_axis, ((Cam *)g_debug_menu_r)->f70);
+                FastVecSub_r(player_camera_side_axis - 0x220, player_camera_side_axis - 0x220, s);
             } else {
                 ((View *)player_camera_r)->f140 +=
                     FastSin_r(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
@@ -241,14 +241,14 @@ void update_debug_camera(void) {
         if (k) {
             a = FastSin_r(((Cam *)g_debug_menu_r)->f80);
             b = FastCos_r(((Cam *)g_debug_menu_r)->f80);
-            set_identity_matrix_r(s + 4);
+            set_identity_matrix(s + 4);
             s[5] = -a;
             s[8] = a;
             s[4] = b;
             s[9] = b;
-            copy_matrix_rotation_r(s + 20, player_camera_matrix_r);
+            copy_matrix_rotation(s + 20, player_camera_matrix_r);
             sce_vu0_mul_matrix_r(s + 20, s + 20, s + 4);
-            matrix_copy_rows_r(player_camera_matrix_r, s + 20);
+            matrix_copy_rows(player_camera_matrix_r, s + 20);
         } else {
             ((View *)player_camera_r)->f158 =
                 FastSubRots_r(((View *)player_camera_r)->f158, ((Cam *)g_debug_menu_r)->f80);
@@ -276,14 +276,14 @@ void update_debug_camera(void) {
         if (k) {
             b = FastSin_r(((Cam *)g_debug_menu_r)->f7C);
             a = FastCos_r(((Cam *)g_debug_menu_r)->f7C);
-            set_identity_matrix_r(s);
+            set_identity_matrix(s);
             s[0] = a;
             s[2] = b;
             s[8] = -b;
             s[10] = a;
-            copy_matrix_rotation_r(s + 16, player_camera_matrix_r);
+            copy_matrix_rotation(s + 16, player_camera_matrix_r);
             sce_vu0_mul_matrix_r(s + 16, s + 16, s);
-            matrix_copy_rows_r(player_camera_matrix_r, s + 16);
+            matrix_copy_rows(player_camera_matrix_r, s + 16);
         } else {
             ((View *)player_camera_r)->f154 =
                 FastSubRots_r(((View *)player_camera_r)->f154, ((Cam *)g_debug_menu_r)->f7C);
@@ -310,14 +310,14 @@ void update_debug_camera(void) {
         }
         a = FastSin_r(((Cam *)g_debug_menu_r)->f78);
         b = FastCos_r(((Cam *)g_debug_menu_r)->f78);
-        set_identity_matrix_r(s);
+        set_identity_matrix(s);
         s[6] = -a;
         s[9] = a;
         s[5] = b;
         s[10] = b;
-        copy_matrix_rotation_r(s + 16, player_camera_matrix_r);
+        copy_matrix_rotation(s + 16, player_camera_matrix_r);
         sce_vu0_mul_matrix_r(s + 36, s + 16, s);
-        matrix_copy_rows_r(player_camera_matrix_r, s + 36);
+        matrix_copy_rows(player_camera_matrix_r, s + 36);
     } else {
         float t = ((Cam *)g_debug_menu_r)->f78 / 1.5f;
 
@@ -351,17 +351,17 @@ void update_debug_camera(void) {
         }
     }
     if (k) {
-        vec_scale_to_length_r(s, D_L00_001670F0_1F3E20, ((Cam *)g_debug_menu_r)->f74);
-        FastVecAdd_r(D_L00_001670F0_1F3E20 - 0x230, D_L00_001670F0_1F3E20 - 0x230, s);
+        vec_scale_to_length(s, player_camera_up_axis, ((Cam *)g_debug_menu_r)->f74);
+        FastVecAdd(player_camera_up_axis - 0x230, player_camera_up_axis - 0x230, s);
     } else {
         ((View *)player_camera_r)->f148 += ((Cam *)g_debug_menu_r)->f74;
     }
     if (!k) {
-        euler_to_matrix_r(s, camera_rotation_r);
-        vec_scale_to_length_r(s, s, 1.0f);
-        vec_scale_to_length_r(s + 4, s + 4, 1.0f);
-        vec_scale_to_length_r(s + 8, s + 8, 1.0f);
-        matrix_copy_rows_r(camera_rotation_r + 0x200, s);
+        euler_to_matrix_r(s, camera_rotation);
+        vec_scale_to_length(s, s, 1.0f);
+        vec_scale_to_length(s + 4, s + 4, 1.0f);
+        vec_scale_to_length(s + 8, s + 8, 1.0f);
+        matrix_copy_rows(camera_rotation + 0x200, s);
     }
     if (((Cam *)g_debug_menu_r)->f14 == 2) {
         if (((View *)player_camera_r)->p180 != 0) {
@@ -378,7 +378,7 @@ void update_debug_camera(void) {
             dst[0] = src[0];
             dst[1] = src[1];
             dst[2] = src[2];
-            reset_follow_camera_state_from_position_r(((View *)player_camera_r)->p180);
+            reset_follow_camera_state_from_position(((View *)player_camera_r)->p180);
         }
     }
 }
@@ -1488,7 +1488,7 @@ void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e) {
 extern int measure_text_width_regular(unsigned char *, int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern void FontPrintLarge_c(int, int, long, void *, int) __asm__("func_001F68E8");
+extern void func_001F68E8(int, int, long, void *, int);
 
 /* draw a two-layer shadowed text label at x,y with alignment mode */
 void draw_timed_text_line(int x, int y, int mode, unsigned char *p, float scale, float alpha) {
@@ -1512,8 +1512,8 @@ void draw_timed_text_line(int x, int y, int mode, unsigned char *p, float scale,
     Font_DisableColorCodes();
     c = (int)(alpha * 128.0f) << 24;
     d = c + 0xE0E0E0;
-    FontPrintLarge_c(l + 1, y - 7, (unsigned int)c, p, -1);
-    FontPrintLarge_c(l, y - 8, d, p, -1);
+    FontPrintLarge(l + 1, y - 7, (unsigned int)c, p, -1);
+    FontPrintLarge(l, y - 8, d, p, -1);
     Font_EnableColorCodes();
 }
 typedef void (*LabelFn)(int, int, int, float, float, unsigned char *);

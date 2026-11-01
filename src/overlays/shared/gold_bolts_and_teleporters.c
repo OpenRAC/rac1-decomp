@@ -126,7 +126,7 @@ extern void ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern s32 find_nearest_path_point_r(void *, void *, void *, s32 *, f32 *, s32, f32, f32,
                                      f32) __asm__("func_L00_0025EFC0");
 extern s32 Spline_AdvanceByDistance_r(void *, void *, s32 *, f32 *, s32, f32) __asm__("func_L00_0025E860");
-extern f32 Spring_r(f32 *value, f32 target, f32 *speed, f32 accel, f32 decel, f32 max) __asm__("func_L00_0025C918");
+extern f32 func_L00_0025C918(f32 *value, f32 target, f32 *speed, f32 accel, f32 decel, f32 max);
 
 /* Grind rail: measures its paths once, then while the hero is in control mode 0x10 snaps it to the nearest path point
    in range and pulls it along, faster on level 1 the more rail is left.
@@ -220,7 +220,7 @@ void update_rail_hero_motion(struct Moby *m) {
         rate = g_frame_time_r * 5.0f;
         pull.f[2] = 0.0f;
         drag = -vec_length_xy_r(&pull);
-        Spring_r(&drag, 0.0f, &g_hero_r.rail_pull_step, g_frame_scale_sq_r * 0.008f, g_frame_scale_sq_r * 0.3f, rate);
+        Spring(&drag, 0.0f, &g_hero_r.rail_pull_step, g_frame_scale_sq_r * 0.008f, g_frame_scale_sq_r * 0.3f, rate);
         {
             f32 len = FastVecLength_r(&pull);
             if (len < g_hero_r.rail_pull_step) {
@@ -1020,7 +1020,7 @@ void the_plumber_update(char *m) {
     EaseManipulatorOffsets(m, plumber_vars->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
 extern char gHeroPos_r[] __asm__("D_0013F4D0");
-extern s32 level_moby_killed_r[][64] __asm__("D_0014C290");
+extern s32 D_0014C290[][64];
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
 extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
@@ -1034,13 +1034,13 @@ typedef struct {
     s32 spawn_slot; /* 0x18: slot in the level's D_0014C050 row, -1 for none */
 } PickupVars;
 extern LevelState novalis_checkpoint_level_state_r __asm__("D_L01_001BB9C0");
-extern LevelState novalis_current_level_state_r __asm__("D_L01_001BAD60");
+extern LevelState D_L01_001BAD60;
 extern s32 moby_killed_r[] __asm__("D_L01_001BAC60");
 extern u8 saved_mission_state_r[] __asm__("D_0014C150");
-extern u8 hero_vehicle_mode_r __asm__("D_001414F4") NOT_SDA;
-extern u32 hero_control_mode_r __asm__("D_001414DC");
+extern u8 D_001414F4 NOT_SDA;
+extern u32 D_001414DC;
 extern f32 FastAbsF_r(f32) __asm__("func_001F9B88");
-extern f32 ProbeGroundHeight_r(void *, s32, f32) __asm__("func_00214358");
+extern f32 func_00214358(void *, s32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002f6328.c, FUN_L01_00300220. */
 void spawn_point_update(struct Moby *moby) {
@@ -1060,14 +1060,14 @@ void spawn_point_update(struct Moby *moby) {
     if (vars->spawn_slot != -1 && saved_mission_state_r[vars->spawn_slot + g_current_level_index_r * 16] != 0xFF) {
         return;
     }
-    if ((vars->flags & 2) && hero_vehicle_mode_r != 1) {
+    if ((vars->flags & 2) && hero_vehicle_mode != 1) {
         return;
     }
-    if ((vars->flags & 4) && hero_vehicle_mode_r != 3 && hero_vehicle_mode_r != 0) {
+    if ((vars->flags & 4) && hero_vehicle_mode != 3 && hero_vehicle_mode != 0) {
         return;
     }
     if (vars->flags & 0x10) {
-        state = hero_control_mode_r;
+        state = hero_control_mode;
         if (state > 1 && state != 9) {
             return;
         }
@@ -1081,20 +1081,20 @@ void spawn_point_update(struct Moby *moby) {
         vars->in_volume = 0;
     }
     if (armed || novalis_checkpoint_level_state_r.collected[(s16)moby->save_id] != 0 ||
-        ((level_moby_killed_r[g_current_level_index_r][(s16)moby->save_id >> 5] >> (moby->save_id & 0x1F)) & 1)) {
+        ((level_moby_killed[g_current_level_index_r][(s16)moby->save_id >> 5] >> (moby->save_id & 0x1F)) & 1)) {
         if (vars->armed == 0 || vars->rearm != 0) {
             armed = 1;
             vars->armed = armed;
             jet_clear_persistent_r(moby->mission);
             qcopy(&pos, &moby->pos);
-            pos.z = ProbeGroundHeight_r(&pos, 0, 0.5f);
+            pos.z = ProbeGroundHeight(&pos, 0, 0.5f);
             if (FastAbsF_r(moby->pos.z - pos.z) > 2.0f) {
                 pos.z = moby->pos.z;
             }
             jet_reset_camera_r(&pos, &moby->rot);
-            novalis_current_level_state_r.collected[(s16)moby->save_id] = 0;
+            novalis_current_level_state.collected[(s16)moby->save_id] = 0;
             novalis_checkpoint_level_state_r.collected[(s16)moby->save_id] = 0;
-            level_moby_killed_r[g_current_level_index_r][(s16)moby->save_id >> 5] &= ~(armed << (moby->save_id & 0x1F));
+            level_moby_killed[g_current_level_index_r][(s16)moby->save_id >> 5] &= ~(armed << (moby->save_id & 0x1F));
             moby_killed_r[(s16)moby->save_id >> 5] &= ~(armed << (moby->save_id & 0x1F));
         }
     } else {
@@ -2423,7 +2423,7 @@ void compute_sandmouse_follow_goal(void *unused, float *p) {
     FastVecAdd(p, p, &g->motion.pos);
     p[2] = p[2] + 1.0f;
 }
-extern char *novalis_moby_ptr_list_r[] __asm__("D_L01_001AC180");
+extern char *D_L01_001AC180[];
 extern char novalis_coll_hit_r[] __asm__("D_L01_00174340");
 extern float *GetFlaggedPvarWord_r(void *) __asm__("func_L00_0025D390");
 extern int coll_line_r2(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
@@ -2440,7 +2440,7 @@ void *select_sandmouse_projectile_target(void *moby, void *from, void *reference
     s32 i;
     struct Moby *candidate_moby;
 
-    for (i = 0; (candidate_moby = (struct Moby *)novalis_moby_ptr_list_r[i]) != 0; i++) {
+    for (i = 0; (candidate_moby = (struct Moby *)novalis_moby_ptr_list[i]) != 0; i++) {
         CollisionHit *collision_hit = (CollisionHit *)novalis_coll_hit_r;
         Hero *hero_ptr = (Hero *)(hero_globals_base + 0xE1D);
         f32 *hp;
@@ -2596,8 +2596,7 @@ extern f32 FastVecLength_r2(void *) __asm__("func_001F9CB8");
 extern f32 FastCos_r(f32) __asm__("func_001F9F90");
 extern f32 FastSin_r(f32) __asm__("func_001F9FA8");
 extern void MobySpringTurn_r(struct Moby *, f32 *, f32, f32, f32, f32) __asm__("func_L00_002592B0");
-extern s32 move_moby_with_collision_integer_radius_r(struct Moby *, Vec4 *, f32, f32, s32,
-                                                     s32) __asm__("func_L00_00259B08");
+extern s32 func_L00_00259B08(struct Moby *, Vec4 *, f32, f32, s32, s32);
 extern f32 normalize_angle_r(f32) __asm__("func_L00_0025F368");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030b618.c, FUN_L01_0030d880. */
@@ -2652,7 +2651,7 @@ void update_sandmouse_hover_movement(struct Moby *m, struct HoverVars *p) {
                 clamp_vec_length_r(&p->vel, &p->vel, g_frame_time_r * 2.7f);
             }
             t = &sand_mouse_move_ctl_r;
-            hit = move_moby_with_collision_integer_radius_r(m, &p->vel, 1.0f, t->unk30, t->unk0, 0);
+            hit = move_moby_with_collision_integer_radius(m, &p->vel, 1.0f, t->unk30, t->unk0, 0);
             len = FastVecLength_r2(&p->vel);
             if (hit == 0) {
                 p->stuck = 0;

@@ -121,7 +121,7 @@ struct SharkigatorVars {
 };
 
 extern int FastDecTimer(void *);
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 
 extern void HeroEnterMoveState(int, int);
 extern float multiply_global_factor(float);
@@ -166,8 +166,7 @@ void update_taxi_platform(unsigned char *moby) {
         }
         data->progress = f;
         pts = path + 0x10;
-        qcopy(((unsigned char *)&((Moby *)moby)->pos),
-              truncate_float_to_s32_r(f) ? pts + (*(int *)path - 1) * 16 : pts);
+        qcopy(((unsigned char *)&((Moby *)moby)->pos), truncate_float_to_s32(f) ? pts + (*(int *)path - 1) * 16 : pts);
         data->wait_timer = 0;
         *(int *)&data->speed = 0;
         *(int *)&data->rise = 0;
@@ -258,7 +257,7 @@ void update_taxi_platform(unsigned char *moby) {
                     data->voice = -1;
                 }
                 f20 = IntToFloat(*(int *)path - 1);
-                i = truncate_float_to_s32_r(f20 * data->progress);
+                i = truncate_float_to_s32(f20 * data->progress);
                 f20 = IntToFloat(*(int *)path - 1);
                 t = IntToFloat(i);
                 f20 *= data->progress;
@@ -327,7 +326,7 @@ void update_mission_gated_taxi_platform(unsigned char *moby) {
         }
         data->progress = f;
         pts = path + 0x10;
-        qcopy(&m->pos, truncate_float_to_s32_r(f) ? pts + (*(int *)path - 1) * 16 : pts);
+        qcopy(&m->pos, truncate_float_to_s32(f) ? pts + (*(int *)path - 1) * 16 : pts);
         data->wait_timer = 0;
         *(int *)&data->speed = 0;
         *(int *)&data->rise = 0;
@@ -418,7 +417,7 @@ void update_mission_gated_taxi_platform(unsigned char *moby) {
                     data->voice = -1;
                 }
                 segment_fraction_work_value = IntToFloat(*(int *)path - 1);
-                i = truncate_float_to_s32_r(segment_fraction_work_value * data->progress);
+                i = truncate_float_to_s32(segment_fraction_work_value * data->progress);
                 segment_fraction_work_value = IntToFloat(*(int *)path - 1);
                 t = IntToFloat(i);
                 segment_fraction_work_value *= data->progress;
@@ -475,24 +474,24 @@ typedef struct Flags {
     unsigned char f2A;
 } Flags;
 
-extern unsigned char menu_item_enabled_25_r[] __asm__("D_0013D4B5");
-extern unsigned char special_items_base_r[] __asm__("D_0013D355");
+extern unsigned char D_0013D4B5[];
+extern unsigned char D_0013D355[];
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern Moby *level_mobys_r __asm__("D_L07_00160058") MACRO_ADDR;
-extern int umbris_scene_state_r __asm__("D_L07_0015F6A8") MACRO_ADDR;
+extern int D_L07_0015F6A8 MACRO_ADDR;
 extern Anim *scene_points_r __asm__("D_L07_0016016C") MACRO_ADDR;
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
-extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
-extern void MusicRequestTrack_r(int, int) __asm__("func_L00_002664B0");
+extern void func_L00_00217718(void *, void *, int, int);
+extern void func_L00_002664B0(int, int);
 extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern void clear_bit_grid_rectangle_r(int x, int y0, int w, int h) __asm__("func_L07_00270BE0");
+extern void func_L07_00270BE0(int x, int y0, int w, int h);
 extern void unlock_planet_r(int) __asm__("func_L00_00261848");
-extern int memcard_Save_r(int, int) __asm__("func_0020BFC8");
+extern int func_0020BFC8(int, int);
 extern void initialize_global_state_entry_r(int) __asm__("func_0022F4A0");
 
 /* Update for moby class 436 on level 07: steps the moby's state byte through its table of cases. */
@@ -502,15 +501,15 @@ void update_umbris_scene_progression(Moby *moby) {
 
     switch (moby->state) {
         case 0:
-            if (menu_item_enabled_25_r[4] != 0 && data->f8 != -1) {
+            if (menu_item_enabled_25[4] != 0 && data->f8 != -1) {
                 DeleteMoby_r(&level_mobys_r[data->f8]);
             }
-            if (umbris_scene_state_r == 0)
+            if (umbris_scene_state == 0)
                 moby->state = 1;
             break;
         case 1:
-            if (((Flags *)(special_items_base_r + 0x13B))->f28 == 0) {
-                ((Flags *)(special_items_base_r + 0x13B))->f28 = 1;
+            if (((Flags *)(special_items_base + 0x13B))->f28 == 0) {
+                ((Flags *)(special_items_base + 0x13B))->f28 = 1;
                 moby->state = 2;
                 StartCutscene_r(0);
             } else {
@@ -518,18 +517,18 @@ void update_umbris_scene_progression(Moby *moby) {
             }
             break;
         case 2:
-            if (umbris_scene_state_r != 2)
+            if (umbris_scene_state != 2)
                 moby->state = 3;
             break;
         case 3:
             moby->state = 4;
             break;
         case 4:
-            if (((Flags *)(special_items_base_r + 0x13B))->f29 == 0) {
+            if (((Flags *)(special_items_base + 0x13B))->f29 == 0) {
                 if (data->f0 != -1) {
                     if (is_point_inside_clip_volume_r(&((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos,
                                                       data->f0) != 0) {
-                        ((Flags *)(special_items_base_r + 0x13B))->f29 = 1;
+                        ((Flags *)(special_items_base + 0x13B))->f29 = 1;
                         if (data->fC != -1) {
                             Moby *e = &level_mobys_r[data->fC];
                             e->flags |= 0x41;
@@ -552,7 +551,7 @@ void update_umbris_scene_progression(Moby *moby) {
             }
             break;
         case 5:
-            if (umbris_scene_state_r == 2)
+            if (umbris_scene_state == 2)
                 break;
             if (data->fC != -1) {
                 Moby *e = &level_mobys_r[data->fC];
@@ -562,10 +561,10 @@ void update_umbris_scene_progression(Moby *moby) {
             StartCutscene_r(2);
             break;
         case 6:
-            if (umbris_scene_state_r == 2)
+            if (umbris_scene_state == 2)
                 break;
             if (data->f18 != -1) {
-                Hero_ResetToPosition_r(scene_points_r[data->f18].f30, scene_points_r[data->f18].f70, 0, 1);
+                Hero_ResetToPosition(scene_points_r[data->f18].f30, scene_points_r[data->f18].f70, 0, 1);
             }
             moby->state = 7;
             break;
@@ -578,19 +577,18 @@ void update_umbris_scene_progression(Moby *moby) {
                 Moby *e = &level_mobys_r[data->f14];
                 e->flags &= 0xFFBE;
             }
-            MusicRequestTrack_r(2, 4);
+            MusicRequestTrack(2, 4);
             moby->state = 8;
             break;
         case 8:
-            if (((Flags *)(special_items_base_r + 0x13B))->f2A == 0) {
+            if (((Flags *)(special_items_base + 0x13B))->f2A == 0) {
                 Moby *e;
                 if (data->fC == -1 || (e = &level_mobys_r[data->fC]) == 0 || e->state == 0xFE || e->state == 0xFD) {
                     if (data->f4 != -1) {
                         if (is_point_inside_clip_volume_r(&((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos,
                                                           data->f4) != 0) {
-                            Hero_ResetToPosition_r(scene_points_r[data->f1C].f30, scene_points_r[data->f1C].f70, 0x72,
-                                                   1);
-                            ((Flags *)(special_items_base_r + 0x13B))->f2A = 1;
+                            Hero_ResetToPosition(scene_points_r[data->f1C].f30, scene_points_r[data->f1C].f70, 0x72, 1);
+                            ((Flags *)(special_items_base + 0x13B))->f2A = 1;
                             moby->state = 9;
                             StartCutscene_r(3);
                         }
@@ -607,21 +605,21 @@ void update_umbris_scene_progression(Moby *moby) {
             }
             break;
         case 9:
-            if (umbris_scene_state_r == 2)
+            if (umbris_scene_state == 2)
                 break;
             moby->state = 10;
             PlayMovieEntryIfIdle_r(8);
             break;
         case 10:
-            if (umbris_scene_state_r == 2)
+            if (umbris_scene_state == 2)
                 break;
             moby->state = 11;
             StartCutscene_r(4);
         case 11:
-            if (umbris_scene_state_r == 2)
+            if (umbris_scene_state == 2)
                 break;
             if (data->f1C != -1) {
-                Hero_ResetToPosition_r(scene_points_r[data->f1C].f30, scene_points_r[data->f1C].f70, 0, 1);
+                Hero_ResetToPosition(scene_points_r[data->f1C].f30, scene_points_r[data->f1C].f70, 0, 1);
             }
             if (data->f10 != -1) {
                 Moby *e = &level_mobys_r[data->f10];
@@ -630,9 +628,9 @@ void update_umbris_scene_progression(Moby *moby) {
                 FastVecAdd_r(&e->pos, &((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos, v);
                 DeleteMoby_r(e);
             }
-            clear_bit_grid_rectangle_r(0x87, 0xC, 0x56, 0x3C);
+            clear_bit_grid_rectangle(0x87, 0xC, 0x56, 0x3C);
             unlock_planet_r(8);
-            memcard_Save_r(0, 8);
+            memcard_Save(0, 8);
             initialize_global_state_entry_r(8);
             moby->state = 12;
             break;
@@ -679,9 +677,9 @@ struct AnimTimer {
     f32 frames;
     s16 length;
 };
-extern void moby_set_coll_cell_range_r(struct Moby *, u32) __asm__("func_L00_00251B58");
+extern void func_L00_00251B58(struct Moby *, u32);
 extern void copy_hero_moby_field_38_r(struct Moby *) __asm__("func_L00_0025E210");
-extern struct AnimTimer *GetFlaggedPvarWord_r(struct Moby *) __asm__("func_L00_0025D390");
+extern struct AnimTimer *func_L00_0025D390(struct Moby *);
 
 /* resets a spawned moby from its class defaults and restarts its animation.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/002cd2b0.c, FUN_L07_0030af40. */
@@ -697,7 +695,7 @@ void reset_moby_from_class_defaults(struct Moby *m) {
     m->update_dist = 0xFF;
     m->draw_dist = 0xFF;
     m->visible = 1;
-    moby_set_coll_cell_range_r(m, 0x80807F7F);
+    moby_set_coll_cell_range(m, 0x80807F7F);
     ((struct SpawnMobyView *)m)->unk36 = 0x7F80;
     m->unk72 = 0xFF;
     m->hit_slot = 0xFF;
@@ -705,7 +703,7 @@ void reset_moby_from_class_defaults(struct Moby *m) {
     m->collision = ((struct SpawnClassView *)m->pclass)->unk10;
     copy_hero_moby_field_38_r(m);
     moby_build_matrix_r(m);
-    t = GetFlaggedPvarWord_r(m);
+    t = GetFlaggedPvarWord(m);
     if (t != 0)
         t->frames = t->length;
 }
@@ -1198,22 +1196,22 @@ extern unsigned short umbris_water_grid_override_value SDATA(D_L07_00161BC4);
 extern char gHaveHeliPack[];
 extern char discount_purchase_pricing[];
 extern void RipplePatchesInit_r(void *, int) __asm__("func_L01_002B8C00");
-extern void RescaleFloatTable_r(float) __asm__("func_L01_002B90A8");
+extern void func_L01_002B90A8(float);
 
 extern float FastSin(float);
-extern void RipplePatch_ToFixedPoint_r(void *, void *) __asm__("func_L01_002B8E20");
-extern void pool_ripple_r(void *, int, float, float, float, float) __asm__("func_L01_002B9440");
+extern void func_L01_002B8E20(void *, void *);
+extern void func_L01_002B9440(void *, int, float, float, float, float);
 extern void initialize_level07_water_grid_neighbors_r(int) __asm__("func_L07_0030E128");
 extern void set_moby_list_state_r(int, int) __asm__("func_L01_0026F090");
-extern int matches_first_moby_in_group_r(void *, int, int, int) __asm__("func_L07_00282EB0");
-extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
+extern int func_L07_00282EB0(void *, int, int, int);
+extern float func_00214D28(float *, float, float);
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 
-extern void RippleDisturb_r(void *, int, int, float, float, float, float) __asm__("func_L00_002A5158");
+extern void func_L00_002A5158(void *, int, int, float, float, float, float);
 extern int is_point_inside_clip_volume_r2(void *, int) __asm__("func_00215570");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
-extern int check_scaled_vector_bsphere_r(void *, float) __asm__("func_L01_00276680");
-extern void RippleSimClock_r(void *, int) __asm__("func_L01_002B9198");
+extern int func_L01_00276680(void *, float);
+extern void func_L01_002B9198(void *, int);
 extern void render_level07_water_grids_r(void) __asm__("func_L07_0030E100");
 
 /* Water plate update: the first plate sets up the 36-plate wave grid; each plate rises and sinks with its switch,
@@ -1242,7 +1240,7 @@ void WaterPlateUpdate(Moby *m) {
                 Dir *dir;
                 int (*p)[4];
                 RipplePatchesInit_r(umbris_water_grids_r, 0x24);
-                RescaleFloatTable_r(1.0f);
+                RescaleFloatTable(1.0f);
                 cab = &umbris_water_ripple_params;
                 dir = &umbris_moby_lights;
                 cab->f0 = 16.0f;
@@ -1270,7 +1268,7 @@ void WaterPlateUpdate(Moby *m) {
                 umbris_pool_draw_tex = umbris_water_patch_coords;
                 umbris_water_ripple_params_0 = 0;
                 for (i = 0; i < 0x24; i++) {
-                    RipplePatch_ToFixedPoint_r(&umbris_water_grids_r[i], p[i]);
+                    RipplePatch_ToFixedPoint(&umbris_water_grids_r[i], p[i]);
                     umbris_water_grids_r[d->idx].h1E = umbris_water_grid_saved_states[d->idx];
                 }
                 for (k = 0; k < 0x24; k++) {
@@ -1279,7 +1277,7 @@ void WaterPlateUpdate(Moby *m) {
                     for (j = 0; j < 2; j++) {
                         float x = r->x + random_float_between(-6.0f, 6.0f);
                         float y = r->y + random_float_between(-6.0f, 6.0f);
-                        pool_ripple_r(t, 0x24, x, y, 2.0f, 0.2f);
+                        pool_ripple(t, 0x24, x, y, 2.0f, 0.2f);
                     }
                 }
                 for (n = 0; n < 0x24; n++) {
@@ -1301,33 +1299,33 @@ void WaterPlateUpdate(Moby *m) {
         case 2:
             if (m->command & 4) {
                 set_moby_list_state_r(m->group, 1);
-            } else if (matches_first_moby_in_group_r(m, m->group, 1, 0) && m->command != 1) {
-                ApproachValue_r(&m->pos.z, d->lo, g_frame_time * 4.0f);
+            } else if (matches_first_moby_in_group(m, m->group, 1, 0) && m->command != 1) {
+                ApproachValue(&m->pos.z, d->lo, g_frame_time * 4.0f);
                 MobyGroup_SetByteBC_r(m->group, 1);
             } else if (m->command == 1) {
-                ApproachValue_r(&m->pos.z, d->lo, g_frame_time * 4.0f);
+                ApproachValue(&m->pos.z, d->lo, g_frame_time * 4.0f);
             }
             if (random_integer_below(200) == 0) {
                 float x = umbris_water_grids_r[d->idx].x + random_float_between(-4.0f, 4.0f);
                 float y = random_float_between(-4.0f, 4.0f);
                 Rec *r = &umbris_water_grids_r[d->idx];
-                RippleDisturb_r(r, 1, 1, x, r->y + y, 1.0f, -0.05f);
+                RippleDisturb(r, 1, 1, x, r->y + y, 1.0f, -0.05f);
             }
             break;
         case 1:
             if (m->command & 8) {
                 set_moby_list_state_r(m->group, 2);
-            } else if (matches_first_moby_in_group_r(m, m->group, 1, 0) && m->command != 2) {
-                ApproachValue_r(&m->pos.z, d->hi, g_frame_time * 4.0f);
+            } else if (matches_first_moby_in_group(m, m->group, 1, 0) && m->command != 2) {
+                ApproachValue(&m->pos.z, d->hi, g_frame_time * 4.0f);
                 MobyGroup_SetByteBC_r(m->group, 2);
             } else if (m->command == 2) {
-                ApproachValue_r(&m->pos.z, d->hi, g_frame_time * 4.0f);
+                ApproachValue(&m->pos.z, d->hi, g_frame_time * 4.0f);
             }
             if (random_integer_below(200) == 0) {
                 float x = umbris_water_grids_r[d->idx].x + random_float_between(-4.0f, 4.0f);
                 float y = random_float_between(-4.0f, 4.0f);
                 Rec *r = &umbris_water_grids_r[d->idx];
-                RippleDisturb_r(r, 1, 1, x, r->y + y, 1.0f, -0.05f);
+                RippleDisturb(r, 1, 1, x, r->y + y, 1.0f, -0.05f);
             }
             break;
         case 3:
@@ -1373,7 +1371,7 @@ void WaterPlateUpdate(Moby *m) {
     }
     umbris_water_grids_r[d->idx].z = m->pos.z;
     on = 0.0f;
-    if ((*(int *)&m->collision) != 0 && check_scaled_vector_bsphere_r(m, 48.0f) != -1) {
+    if ((*(int *)&m->collision) != 0 && check_scaled_vector_bsphere(m, 48.0f) != -1) {
         if (!(m->state >= 3 && m->state <= 7) || (m->pos.z > d->lo && m->pos.z < d->hi)) {
             on = 1.0f;
         }
@@ -1384,7 +1382,7 @@ void WaterPlateUpdate(Moby *m) {
         umbris_water_grids_r[d->idx].h1E = umbris_water_grid_saved_states[d->idx];
     }
     if (d->idx == 0) {
-        RippleSimClock_r(umbris_water_grids_r, 0x24);
+        RippleSimClock(umbris_water_grids_r, 0x24);
         AddDrawCallback(render_level07_water_grids_r, m);
     }
     if (d->idx == water_grid_override_index) {
@@ -1999,9 +1997,9 @@ void update_fading_ring_effect(unsigned char *m) {
     ((Moby *)m)->scale = *(float *)(d + 8);
     r = (*(float *)(d + 8) - *(float *)d) / (*(float *)(d + 4) - *(float *)d);
     if (r < 0.2f) {
-        ((Moby *)m)->alpha = truncate_float_to_s32_r(r * 5.0f * 127.0f);
+        ((Moby *)m)->alpha = truncate_float_to_s32(r * 5.0f * 127.0f);
     } else if (r > 0.8f) {
-        ((Moby *)m)->alpha = truncate_float_to_s32_r((1.0f - r) * 5.0f * 127.0f);
+        ((Moby *)m)->alpha = truncate_float_to_s32((1.0f - r) * 5.0f * 127.0f);
     } else {
         ((Moby *)m)->alpha = 0x80;
     }
@@ -2691,7 +2689,7 @@ void SharkigatorUpdate(unsigned char *moby) {
             f = 1.0f;
         }
         if (umbris_frame_count % 45 == *(short *)&((Moby *)moby)->save_id && random_integer_below(2) == 0) {
-            RippleDisturb_r(umbris_pool_draw_tiles, umbris_pool_draw_count, 1, F(moby, 0x10), F(moby, 0x14), f, s);
+            RippleDisturb(umbris_pool_draw_tiles, umbris_pool_draw_count, 1, F(moby, 0x10), F(moby, 0x14), f, s);
         }
         if (umbris_frame_count % ((func_001160D8() & 7) + 20) == 0) {
             float size = random_float_between(1.5f, 2.4f);
@@ -3027,8 +3025,8 @@ void SharkigatorUpdate(unsigned char *moby) {
                 FastVecScale(&((struct SharkigatorVars *)data)->velocity, &((struct SharkigatorVars *)data)->velocity,
                              0.5f);
             }
-            ((struct SharkigatorVars *)data)->bite_a = truncate_float_to_s32_r(8.0f);
-            ((struct SharkigatorVars *)data)->bite_b = truncate_float_to_s32_r(9.6f);
+            ((struct SharkigatorVars *)data)->bite_a = truncate_float_to_s32(8.0f);
+            ((struct SharkigatorVars *)data)->bite_b = truncate_float_to_s32(9.6f);
             if (!inside) {
                 if (((Moby *)moby)->prev_seq != 4) {
                     MobyBlendAnimation(moby, 4, 0, 10);
@@ -3165,9 +3163,9 @@ extern float random_angle_radians_r(void) __asm__("func_00214158");
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
-extern float FastVecDot_r(void *, void *) __asm__("func_001F9C78");
-extern void reorient_position_about_pivot_r(void *, void *, void *, void *, void *) __asm__("func_L07_00289960");
-extern float step_angle_toward_target_r(float *, int, float, float) __asm__("func_L00_0025CC58");
+extern float func_001F9C78(void *, void *);
+extern void func_L07_00289960(void *, void *, void *, void *, void *);
+extern float func_L00_0025CC58(float *, int, float, float);
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern void update_entity_matrix_r(void *, void *, void *, void *) __asm__("func_L00_002617B0");
 extern char *level_mobys_r2 __asm__("D_L07_00160058") MACRO_ADDR;
@@ -3321,20 +3319,20 @@ void update_command_triggered_falling_platform(Moby *m) {
                 float c2;
                 fast_dec_timer_r2(&d->fAC);
                 FastVecSub_r2(&v3, &((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos, &m->pos);
-                c = FastVecDot_r(&v3, &m->rot_row0);
-                c2 = FastVecDot_r(&v3, &m->rot_row1);
+                c = FastVecDot(&v3, &m->rot_row0);
+                c2 = FastVecDot(&v3, &m->rot_row1);
                 c = c * 0.03f;
                 f21 = FastAddRots_r(FastAddRots_r(f21, c2 * -0.03f), c);
                 v4 = (*(V_3126A8 *)&m->rot);
                 v5 = (*(V_3126A8 *)&m->pos);
-                reorient_position_about_pivot_r(&((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos, &v6,
-                                                &m->pos, &v4, &m->rot);
+                reorient_position_about_pivot(&((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos, &v6,
+                                              &m->pos, &v4, &m->rot);
                 FastVecSub_r2(&((Hero *)(hero_globals_base_r2 + 0xE1D))->motion.platform_delta, &v6,
                               &((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos);
                 ((Hero *)(hero_globals_base_r2 + 0xE1D))->motion.platform_delta.f[2] += m->pos.z - v5.z;
             }
-            step_angle_toward_target_r(&m->rot.x, 0, f21, g_frame_time_r * 0.17453292f);
-            step_angle_toward_target_r(&m->rot.y, 0, f22, g_frame_time_r * 0.17453292f);
+            step_angle_toward_target(&m->rot.x, 0, f21, g_frame_time_r * 0.17453292f);
+            step_angle_toward_target(&m->rot.y, 0, f22, g_frame_time_r * 0.17453292f);
             if (m->rot.x > 0.5235988f)
                 m->rot.x = 0.5235988f;
             if (m->rot.x < -0.5235988f)
@@ -3629,16 +3627,15 @@ extern void FastVecSub_r3(void *, void *, void *) __asm__("func_001F9BF0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern int coll_line_r4(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern void FastVecCross_r(void *, void *, void *) __asm__("func_001F9CA0");
+extern void func_001F9CA0(void *, void *, void *);
 extern int func_001160D8_313800(void) __asm__("func_001160D8");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern void *func_L00_00273868_313800(float *pos, unsigned char a1, unsigned char a2, unsigned char a3,
-                                      unsigned char a4, unsigned char a5, void *a6, float f0,
-                                      float f1) __asm__("func_L00_00273868");
+extern void *func_L00_00273868(float *pos, unsigned char a1, unsigned char a2, unsigned char a3, unsigned char a4,
+                               unsigned char a5, void *a6, float f0, float f1);
 extern long GetEffectTex_r(int) __asm__("func_001F4868");
 extern void draw_world_quad_r(void *, int, int) __asm__("func_L00_001FD1D8");
 extern int umbris_frame_count_r __asm__("D_L07_0015F6B0") MACRO_ADDR;
-extern char beam_cross_axis_r[] __asm__("D_L07_001670D0");
+extern char D_L07_001670D0[];
 extern char umbris_coll_hit_point_r[] __asm__("D_L07_00173F60");
 
 /* Umbris: sets up the effect vectors from the moby's data block and emits the GS packet. */
@@ -3666,13 +3663,13 @@ void draw_collision_clipped_moby_beam(Moby *arg) {
         flag = 0;
     }
     FastVecSub_r3(v40, v30, v0);
-    FastVecCross_r(v20, beam_cross_axis_r, v40);
+    FastVecCross(v20, beam_cross_axis, v40);
     vec_scale_to_length_r(v20, v20, 0.25f);
     FastVecAdd_r3(v10, v20, v0);
     if (flag) {
-        func_L00_00273868_313800(v0, 0, scale_ticks_r2((func_001160D8_313800() & 1) + 0x2D),
-                                 scale_ticks_r2((func_001160D8_313800() & 7) + 0x37), 1,
-                                 scale_ticks_r2((func_001160D8_313800() & 3) + 0xD), arg, 1.0f, 1.0f);
+        spawn_color_tween_emitter_particle(v0, 0, scale_ticks_r2((func_001160D8_313800() & 1) + 0x2D),
+                                           scale_ticks_r2((func_001160D8_313800() & 7) + 0x37), 1,
+                                           scale_ticks_r2((func_001160D8_313800() & 3) + 0xD), arg, 1.0f, 1.0f);
         if (p->f15C != 0.0f) {
             FastVecSub_r3(c2, v0, p->f150);
             vec_scale_to_length_r(c2, c2, 0.2f);
@@ -3687,12 +3684,13 @@ void draw_collision_clipped_moby_beam(Moby *arg) {
                     qcopy(m, umbris_coll_hit_point_r);
                 }
                 if (k == 2) {
-                    func_L00_00273868_313800(m, 0, scale_ticks_r2((func_001160D8_313800() & 1) + 0x2D),
-                                             scale_ticks_r2((func_001160D8_313800() & 7) + 0x37), 1,
-                                             scale_ticks_r2((func_001160D8_313800() & 3) + 0xD), arg, 1.0f, 1.0f);
+                    spawn_color_tween_emitter_particle(m, 0, scale_ticks_r2((func_001160D8_313800() & 1) + 0x2D),
+                                                       scale_ticks_r2((func_001160D8_313800() & 7) + 0x37), 1,
+                                                       scale_ticks_r2((func_001160D8_313800() & 3) + 0xD), arg, 1.0f,
+                                                       1.0f);
                 } else {
-                    func_L00_00273868_313800(m, 1, scale_ticks_r2(0x2D), scale_ticks_r2(0x37), 1, scale_ticks_r2(0xD),
-                                             arg, 1.0f, 1.0f);
+                    spawn_color_tween_emitter_particle(m, 1, scale_ticks_r2(0x2D), scale_ticks_r2(0x37), 1,
+                                                       scale_ticks_r2(0xD), arg, 1.0f, 1.0f);
                 }
             }
         }

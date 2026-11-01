@@ -375,28 +375,27 @@ extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern unsigned char *PartType44Spawn_r(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
-                                        float w, float pw) __asm__("func_L00_00272158");
-extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
-extern float random_angle_radians_r(void) __asm__("func_00214158");
-extern void build_look_at_matrix_r(void *dst, void *vec, void *axis, float angle) __asm__("func_002156E0");
-extern unsigned char *PartType21Spawn_r(void *pos, void *dir, int c, int d, int n, int k,
-                                        float f) __asm__("func_L00_0026DA50");
+extern unsigned char *func_L00_00272158(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
+                                        float w, float pw);
+extern void func_001F9EC0(void *, void *, void *);
+extern float func_00214158(void);
+extern void func_002156E0(void *dst, void *vec, void *axis, float angle);
+extern unsigned char *func_L00_0026DA50(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern float SteerAngleWithVelocity_r(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
+extern float func_001F9D48(void *, void *);
+extern float func_L00_0025CE58(float *, float, float *, float, float, float);
 extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
 extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
-extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
+extern int func_L00_001EFFF0(void *, void *, int, void *, int);
+extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
+                              float, int, int, int, int);
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
-extern Tex gemlik_part_type_textures_r __asm__("D_L13_001B2680");
-extern Vec4A gemlik_coll_hit_point_r __asm__("D_L13_001741E0");
+extern float D_0015EE70 MACRO_ADDR;
+extern Tex D_L13_001B2680;
+extern Vec4A D_L13_001741E0;
 
 /* Update for the rocket: smoke trail, steering toward its target, collision and expiry. */
 void update_ship_rocket(Moby *m) {
@@ -419,26 +418,26 @@ void update_ship_rocket(Moby *m) {
     vec_scale_to_length_r(&vel, &vel, random_float_between_r(0.1f, 0.2f) * g_frame_time_r);
     vec_scale_to_length_r(&tmp, d, -random_float_between_r(g_frame_time_r * 0.1f, g_frame_time_r));
     FastVecAdd_r(&vel, &vel, &tmp);
-    p = PartType44Spawn_r(&*(Vec4A *)&m->pos, (float *)&vel, scale_ticks_r(6), 0x7F, 0xB0B0B0, 3, 40000.0f, 1000.0f,
-                          1.0f, -0.0004f, 0.0f);
+    p = PartType44Spawn(&*(Vec4A *)&m->pos, (float *)&vel, scale_ticks_r(6), 0x7F, 0xB0B0B0, 3, 40000.0f, 1000.0f, 1.0f,
+                        -0.0004f, 0.0f);
     if (p != 0) {
         p[3] = 0x48;
     }
     for (t = 0.0f; t < 1.0f; t += 0.33333334f) {
         vec_scale_to_length_r(&tmp, d, random_float_between_r(t, t + 0.33333334f) * d->speed);
         FastVecAdd_r(&tmp, &tmp, &*(Vec4A *)&m->pos);
-        p = PartType44Spawn_r(&tmp, (float *)&vel, scale_ticks_r(0x3C), 0x7F, 0x606060, 3, 40000.0f, 1000.0f, 1.0f,
-                              -0.0002f, 0.0f);
+        p = PartType44Spawn(&tmp, (float *)&vel, scale_ticks_r(0x3C), 0x7F, 0x606060, 3, 40000.0f, 1000.0f, 1.0f,
+                            -0.0002f, 0.0f);
         if (p != 0) {
-            Tex *tex = &gemlik_part_type_textures_r;
+            Tex *tex = &gemlik_part_type_textures;
             p[2] = *tex->p5C;
             p[3] = 0x48;
         }
         *(Q_2E8040 *)&dir = 0;
         dir.z = 0.02f;
-        matrix_mul_vec3_r(&dir, &dir, &*(Vec4A *)&m->rot_row0);
-        build_look_at_matrix_r(&dir, &dir, &*(Vec4A *)&m->rot_row0, random_angle_radians_r());
-        p = PartType21Spawn_r(&tmp, &dir, 0x4F007FFF, 0x1FFFFFFF, scale_ticks_r(5), 1, 20000.0f);
+        matrix_mul_vec3(&dir, &dir, &*(Vec4A *)&m->rot_row0);
+        build_look_at_matrix(&dir, &dir, &*(Vec4A *)&m->rot_row0, random_angle_radians());
+        p = PartType21Spawn(&tmp, &dir, 0x4F007FFF, 0x1FFFFFFF, scale_ticks_r(5), 1, 20000.0f);
         if (p != 0) {
             p[3] = 0x48;
         }
@@ -450,14 +449,14 @@ void update_ship_rocket(Moby *m) {
     if (d->target != 0 && d->target->oclass == d->target_uid && d->target->state != 0xFE && d->target->state != 0xFD &&
         FastVecDist_r(&d->tpos, &*(Vec4A *)&d->target->pos) < 3.0f) {
         m->rot.z = fast_atan2_r(d->target->pos.x - m->pos.x, d->target->pos.y - m->pos.y);
-        m->rot.y = -fast_atan2_r(vec_distance_xy_r(&*(Vec4A *)&m->pos, &*(Vec4A *)&d->target->pos),
-                                 d->target->pos.z - m->pos.z);
+        m->rot.y =
+            -fast_atan2_r(vec_distance_xy(&*(Vec4A *)&m->pos, &*(Vec4A *)&d->target->pos), d->target->pos.z - m->pos.z);
         qcopy(&d->tpos, &*(Vec4A *)&d->target->pos);
     } else {
-        SteerAngleWithVelocity_r(&m->rot.z, m->rot.z, &d->yawv, g_frame_time_sq_r * 251.32741f,
-                                 g_frame_time_sq_r * 251.32741f, g_frame_time_r * 2513.2742f);
-        SteerAngleWithVelocity_r(&m->rot.y, m->rot.y, &d->pitchv, g_frame_time_sq_r * 251.32741f,
-                                 g_frame_time_sq_r * 251.32741f, g_frame_time_r * 2513.2742f);
+        SteerAngleWithVelocity(&m->rot.z, m->rot.z, &d->yawv, g_frame_time_sq * 251.32741f,
+                               g_frame_time_sq * 251.32741f, g_frame_time_r * 2513.2742f);
+        SteerAngleWithVelocity(&m->rot.y, m->rot.y, &d->pitchv, g_frame_time_sq * 251.32741f,
+                               g_frame_time_sq * 251.32741f, g_frame_time_r * 2513.2742f);
         d->target = 0;
     }
     BuildSphericalOffset_r(d, d->speed, m->rot.z, -m->rot.y);
@@ -468,9 +467,9 @@ void update_ship_rocket(Moby *m) {
         return;
     }
     Moby_GetJointWorldPos_r(m, 1, &hitpos);
-    if (coll_line_r(&old, &hitpos, 0, d->owner, 0) != 0) {
-        qcopy(&tmp, &gemlik_coll_hit_point_r);
-        spawn_explosion_r(m, d, &tmp, 2.0f, 10.0f, 10, 3, 0x10, 4.0f, 2.0f, 9.0f, 1.0f, 0, 20.0f, 0, 1, -1, 0);
+    if (coll_line(&old, &hitpos, 0, d->owner, 0) != 0) {
+        qcopy(&tmp, &gemlik_coll_hit_point);
+        spawn_explosion(m, d, &tmp, 2.0f, 10.0f, 10, 3, 0x10, 4.0f, 2.0f, 9.0f, 1.0f, 0, 20.0f, 0, 1, -1, 0);
         DeleteMoby_r(m);
         return;
     }

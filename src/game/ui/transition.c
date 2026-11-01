@@ -668,57 +668,57 @@ extern s64 intro_overlay_tex0_r __asm__("D_0015F048") MACRO_ADDR;
 extern s32 intro_overlay_timer_r __asm__("D_0015F058") MACRO_ADDR;
 extern s32 help_msg_data_r __asm__("D_0015F060") MACRO_ADDR;
 extern s32 help_offset_table_r __asm__("D_0015F064") MACRO_ADDR;
-extern s32 level_texture_payload_address_r __asm__("D_0015F560") MACRO_ADDR;
+extern s32 D_0015F560 MACRO_ADDR;
 extern TextEntry *help_msgs_r __asm__("D_0015F780") MACRO_ADDR;
-extern s32 resident_moby_class_count_r __asm__("D_00160000") MACRO_ADDR;
-extern s32 resident_indexed_texture_count_r __asm__("D_00160008") MACRO_ADDR;
-extern s32 registered_shrub_render_class_count_r __asm__("D_001604CC") MACRO_ADDR;
-extern s32 shrub_render_texture_definition_count_r __asm__("D_001604EC") MACRO_ADDR;
-extern s32 tfrag_texture_definition_count_r __asm__("D_00160F94") MACRO_ADDR;
-extern s32 current_vu_chain_r __asm__("D_0016100C") MACRO_ADDR;
-extern s32 registered_object_render_class_count_r __asm__("D_0016104C") MACRO_ADDR;
-extern s32 object_render_texture_definition_count_r __asm__("D_00161064") MACRO_ADDR;
-extern u8 moby_class_472_sound_defs_r[] __asm__("D_001862E0");
-extern u8 level_init_cleared_block_r[] __asm__("D_00186410");
+extern s32 D_00160000 MACRO_ADDR;
+extern s32 D_00160008 MACRO_ADDR;
+extern s32 D_001604CC MACRO_ADDR;
+extern s32 D_001604EC MACRO_ADDR;
+extern s32 D_00160F94 MACRO_ADDR;
+extern s32 D_0016100C MACRO_ADDR;
+extern s32 D_0016104C MACRO_ADDR;
+extern s32 D_00161064 MACRO_ADDR;
+extern u8 D_001862E0[];
+extern u8 D_00186410[];
 extern SoundBanks render_sequence_r __asm__("D_0018CC20");
-extern LoadState level_resource_buffers_r __asm__("D_001941C0");
+extern LoadState D_001941C0;
 extern u8 coll_output_aux_buffer_r[] __asm__("D_00194280");
 extern HelpState g_help_state_r __asm__("D_001997D0");
-extern u64 special_material_template_r[] __asm__("D_0019E7C0");
-extern MobyClass *moby_class_resources_r[] __asm__("D_001B3580");
-extern u8 resident_class_slot_by_id_r[] __asm__("D_001B3E40");
-extern s32 resident_indexed_texture_addrs_r[] __asm__("D_001B5D00");
+extern u64 D_0019E7C0[];
+extern MobyClass *D_001B3580[];
+extern u8 D_001B3E40[];
+extern s32 D_001B5D00[];
 extern s32 resident_class_original_field_2c_r[] __asm__("D_001B6500");
-extern u8 resident_class_material_maps_r[] __asm__("D_001B6C00");
-extern s32 shrub_render_texture_addrs_r[] __asm__("D_001D8840");
-extern s32 tfrag_texture_size_table_r[] __asm__("D_001E0C00");
-extern s32 object_render_texture_addrs_r[] __asm__("D_001E2900");
-extern void calculate_dma_transfer_address_r(void) __asm__("func_002348B8");
+extern u8 D_001B6C00[];
+extern s32 D_001D8840[];
+extern s32 D_001E0C00[];
+extern s32 D_001E2900[];
+extern void func_002348B8(void);
 extern void FastMemSet_r(void *, s32, s32) __asm__("func_001F99B0");
 extern void flush_cache_r(s32) __asm__("func_00118D80");
 extern void queue_dma_transfer_r(s32) __asm__("func_001EB300");
-extern void wait_for_graphics_pipeline_idle_r(s32, s32) __asm__("func_00120858");
+extern void func_00120858(s32, s32);
 extern s32 initialize_level_render_state_r(u8 *) __asm__("func_001E9EC8");
 extern void InitViewContext_r(void) __asm__("func_001F3008");
 extern void UpdateViewContext_r(void) __asm__("func_001F3140");
-extern char log2dim_r(s32) __asm__("func_001F9968");
+extern char func_001F9968(s32);
 extern void InitMemSlots_r(void) __asm__("func_00201E10");
-extern void ParseParticleTexs_r(u8 *, u8 *, u8 *, s32) __asm__("func_00202F00");
-extern void unpack_point_records_r(u8 *, s32) __asm__("func_00203038");
-extern void relocate_sky_definition_r(u8 *) __asm__("func_00203118");
-extern void upload_texture_images_r(u8 *, s32, u8 *) __asm__("func_00203958");
-extern void register_moby_class_r(u8 *, u8 *, u8 *, s32) __asm__("func_00203E78");
-extern void register_object_render_class_r(u8 *, u8 *, u8 *, s32) __asm__("func_00203F68");
-extern void register_shrub_render_class_r(u8 *, u8 *, u8 *, u8 *, s32) __asm__("func_00204340");
-extern void initialize_tfrag_render_data_r(u8 *, u8 *) __asm__("func_00204918");
+extern void func_00202F00(u8 *, u8 *, u8 *, s32);
+extern void func_00203038(u8 *, s32);
+extern void func_00203118(u8 *);
+extern void func_00203958(u8 *, s32, u8 *);
+extern void func_00203E78(u8 *, u8 *, u8 *, s32);
+extern void func_00203F68(u8 *, u8 *, u8 *, s32);
+extern void func_00204340(u8 *, u8 *, u8 *, u8 *, s32);
+extern void func_00204918(u8 *, u8 *);
 extern void parse_space_scene_chunk_r(s32) __asm__("func_00205220");
-extern s32 fast_decompress_r(u8 *, u8 *) __asm__("func_0020C468");
-extern void start_audio_stream_read_r(u8 *, s32, s32) __asm__("func_00217628");
+extern s32 func_0020C468(u8 *, u8 *);
+extern void func_00217628(u8 *, s32, s32);
 extern unsigned int Load_r(s32, s32, s32) __asm__("func_002176C8");
-extern void update_audio_stream_until_idle_r(s32) __asm__("func_00217748");
+extern void func_00217748(s32);
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
-extern s32 sceGsSetDefLoadImage_r(void *, s16, s16, s16, s16, s16, s16, s16) __asm__("func_00122630");
-extern s32 sceGsExecLoadImage_r(void *, u8 *) __asm__("func_00122958");
+extern s32 func_00122630(void *, s16, s16, s16, s16, s16, s16, s16);
+extern s32 func_00122958(void *, u8 *);
 
 /* Loads the space-transition wad to 0x1400000 and unpacks it at the level arena: textures and
    their tables, the three kinds of moby classes, sound and help text tables, the loading image;
@@ -751,108 +751,107 @@ void transition_load_wad(void) {
     s64 u;
     intro_overlay_timer_r = 0;
     i = 0;
-    calculate_dma_transfer_address_r();
+    calculate_dma_transfer_address();
     InitMemSlots_r();
-    current_vu_chain_r = 0x100000;
+    current_vu_chain = 0x100000;
     g_gs_texture_allocation_base_r = 0x2C0000;
     g_gs_texture_allocation_start_r = 0x2C0000;
     g_gs_texture_allocation_cursor_r = 0x2C0000;
     FastMemSet_r(coll_output_aux_buffer_r, 0x87654321, 0x10);
-    FastMemSet_r(resident_class_slot_by_id_r, -1, k_800);
-    FastMemSet_r(resident_class_material_maps_r, -1, 0xE00);
+    FastMemSet_r(resident_class_slot_by_id, -1, k_800);
+    FastMemSet_r(resident_class_material_maps, -1, 0xE00);
     FastMemSet_r(resident_class_original_field_2c_r, 0, 0xE0);
     InitViewContext_r();
     UpdateViewContext_r();
     VU1_initChain_r();
-    start_audio_stream_read_r((u8 *)0x1400000, disc_table_r.unk14E8.sector, disc_table_r.unk14E8.size);
-    update_audio_stream_until_idle_r(1);
+    start_audio_stream_read((u8 *)0x1400000, disc_table_r.unk14E8.sector, disc_table_r.unk14E8.size);
+    update_audio_stream_until_idle(1);
     flush_cache_r(0);
-    size = fast_decompress_r((u8 *)0x1400000, level_resource_buffers_r.hdr);
+    size = fast_decompress((u8 *)0x1400000, level_resource_buffers.hdr);
     flush_cache_r(0);
-    hdr = (WadHeader *)level_resource_buffers_r.hdr;
-    upload_texture_images_r(((u8 *)hdr) + hdr->x0, hdr->x8, ((u8 *)hdr) + hdr->xC);
+    hdr = (WadHeader *)level_resource_buffers.hdr;
+    upload_texture_images(((u8 *)hdr) + hdr->x0, hdr->x8, ((u8 *)hdr) + hdr->xC);
     t = ((s64)((g_gs_texture_allocation_base_r + hdr->x70) >> 8)) | 0x1D308000;
     u = (((s64)((g_gs_texture_allocation_base_r + hdr->x74) >> 8)) << 37) | (((s64)0xB800) << 19);
     data = ((u8 *)hdr) + hdr->data;
     base = data + hdr->x60;
-    special_material_template_r[0] = (t | u) | (((s64)(-1)) << 63);
-    special_material_template_r[1] = 0xFFA0000000E0;
-    special_material_template_r[2] = 0x0040000400004000;
+    special_material_template[0] = (t | u) | (((s64)(-1)) << 63);
+    special_material_template[1] = 0xFFA0000000E0;
+    special_material_template[2] = 0x0040000400004000;
     tex = (WadTex *)(((u8 *)hdr) + hdr->x34);
-    if ((tfrag_texture_definition_count_r = hdr->n30) > 0) {
+    if ((tfrag_texture_definition_count = hdr->n30) > 0) {
         do {
-            tfrag_texture_size_table_r[i] = (((s32)base) + tex[i].offset) + (log2dim_r(tex[i].x4) << 28);
+            tfrag_texture_size_table[i] = (((s32)base) + tex[i].offset) + (log2dim(tex[i].x4) << 28);
             i++;
-        } while (i < tfrag_texture_definition_count_r);
+        } while (i < tfrag_texture_definition_count);
     }
     k = 0;
     tex = (new_var2 = (WadTex *)(((u8 *)hdr) + hdr->x3C));
-    if ((resident_indexed_texture_count_r = hdr->n38) > 0) {
+    if ((resident_indexed_texture_count = hdr->n38) > 0) {
         do {
-            resident_indexed_texture_addrs_r[k] = (((s32)base) + tex[k].offset) + (log2dim_r(tex[k].x4) << 28);
+            resident_indexed_texture_addrs[k] = (((s32)base) + tex[k].offset) + (log2dim(tex[k].x4) << 28);
             k++;
-        } while (k < resident_indexed_texture_count_r);
+        } while (k < resident_indexed_texture_count);
     }
     k = 0;
     tex = (new_var2 = (WadTex *)(((u8 *)hdr) + hdr->x44));
-    if ((object_render_texture_definition_count_r = hdr->n40) > 0) {
+    if ((object_render_texture_definition_count = hdr->n40) > 0) {
         do {
-            object_render_texture_addrs_r[k] = (((s32)base) + tex[k].offset) + (log2dim_r(tex[k].x4) << 28);
+            object_render_texture_addrs[k] = (((s32)base) + tex[k].offset) + (log2dim(tex[k].x4) << 28);
             k++;
-        } while (k < object_render_texture_definition_count_r);
+        } while (k < object_render_texture_definition_count);
     }
     k = 0;
     tex = (new_var2 = (WadTex *)(((u8 *)hdr) + hdr->x4C));
-    if ((shrub_render_texture_definition_count_r = hdr->n48) > 0) {
+    if ((shrub_render_texture_definition_count = hdr->n48) > 0) {
         do {
-            shrub_render_texture_addrs_r[k] = (((s32)base) + tex[k].offset) + (log2dim_r(tex[k].x4) << 28);
+            shrub_render_texture_addrs[k] = (((s32)base) + tex[k].offset) + (log2dim(tex[k].x4) << 28);
             k++;
-        } while (k < shrub_render_texture_definition_count_r);
+        } while (k < shrub_render_texture_definition_count);
     }
-    initialize_tfrag_render_data_r(data + hdr->x10, ((u8 *)hdr) + hdr->x34);
-    relocate_sky_definition_r(data + hdr->x14);
+    initialize_tfrag_render_data(data + hdr->x10, ((u8 *)hdr) + hdr->x34);
+    relocate_sky_definition(data + hdr->x14);
     c20 = (WadClass20_EABE8 *)(((u8 *)hdr) + hdr->x1C);
-    resident_moby_class_count_r = 0;
-    registered_object_render_class_count_r = 0;
-    registered_shrub_render_class_count_r = 0;
+    resident_moby_class_count = 0;
+    registered_object_render_class_count = 0;
+    registered_shrub_render_class_count = 0;
     for (k = 0; k < hdr->n18; k++) {
-        register_moby_class_r((c20->offset != 0) ? (data + c20->offset) : (0), ((u8 *)hdr) + hdr->x3C, c20->x10,
-                              c20->x4);
+        register_moby_class((c20->offset != 0) ? (data + c20->offset) : (0), ((u8 *)hdr) + hdr->x3C, c20->x10, c20->x4);
         c20++;
     }
 
     c20 = (WadClass20_EABE8 *)(((u8 *)hdr) + hdr->x24);
     for (k = 0; k < hdr->n20; k++) {
-        register_object_render_class_r(data + c20->offset, ((u8 *)hdr) + hdr->x44, c20->x10, c20->x4);
+        register_object_render_class(data + c20->offset, ((u8 *)hdr) + hdr->x44, c20->x10, c20->x4);
         c20++;
     }
 
     c30 = (WadClass30_EABE8 *)(((u8 *)hdr) + hdr->x2C);
     for (k = 0; k < hdr->n28; k++) {
-        register_shrub_render_class_r(data + c30->offset, ((u8 *)hdr) + hdr->x4C, c30->x10, c30->x20, c30->x4);
+        register_shrub_render_class(data + c30->offset, ((u8 *)hdr) + hdr->x4C, c30->x10, c30->x20, c30->x4);
         c30++;
     }
 
-    level_texture_payload_address_r = (s32)(data + hdr->x68);
-    unpack_point_records_r(((u8 *)hdr) + hdr->x5C, hdr->x58);
+    level_texture_payload_address = (s32)(data + hdr->x68);
+    unpack_point_records(((u8 *)hdr) + hdr->x5C, hdr->x58);
     new_var3 = data + hdr->x64;
     new_var4 = hdr->x54;
-    ParseParticleTexs_r(((u8 *)hdr) + (new_var = hdr->x6C), new_var3, ((u8 *)hdr) + new_var4, hdr->x50);
-    sceGsSetDefLoadImage_r(li, (g_gs_texture_allocation_cursor_r << 8) >> 16, 4, 0, 0, 0, 0x100, 0x80);
+    ParseParticleTexs(((u8 *)hdr) + (new_var = hdr->x6C), new_var3, ((u8 *)hdr) + new_var4, hdr->x50);
+    sceGsSetDefLoadImage(li, (g_gs_texture_allocation_cursor_r << 8) >> 16, 4, 0, 0, 0, 0x100, 0x80);
     flush_cache_r(0);
-    sceGsExecLoadImage_r(li, data + hdr->x84);
-    wait_for_graphics_pipeline_idle_r(0, 0);
-    level_resource_buffers_r.x18 = ((s32)level_resource_buffers_r.hdr) + size;
+    sceGsExecLoadImage(li, data + hdr->x84);
+    wait_for_graphics_pipeline_idle(0, 0);
+    level_resource_buffers.x18 = ((s32)level_resource_buffers.hdr) + size;
     v = g_gs_texture_allocation_cursor_r;
     intro_overlay_tex0_r = ((v >> 8) | 0x20010000) | (((s64)0xB800) << 19);
     g_gs_texture_allocation_cursor_r = v + 0x20000;
     g_gs_texture_allocation_start_r = v + 0x20000;
-    level_resource_buffers_r.x1C = initialize_level_render_state_r(data + hdr->x7C);
+    level_resource_buffers.x1C = initialize_level_render_state_r(data + hdr->x7C);
     FastMemSet_r(&render_sequence_r, 0, 0x1C0);
-    FastMemSet_r(level_init_cleared_block_r, 0, 0x40);
-    render_sequence_r.x58 = level_resource_buffers_r.x1C;
-    render_sequence_r.x5C = (level_resource_buffers_r.x1C += 0x40000);
-    level_resource_buffers_r.x1C += 0x40000;
+    FastMemSet_r(level_init_cleared_block, 0, 0x40);
+    render_sequence_r.x58 = level_resource_buffers.x1C;
+    render_sequence_r.x5C = (level_resource_buffers.x1C += 0x40000);
+    level_resource_buffers.x1C += 0x40000;
     snd = (WadSound *)(data + hdr->x80);
     cnt = 0;
     if (snd->size != 0) {
@@ -865,10 +864,10 @@ void transition_load_wad(void) {
         } while ((cnt < 0x46) && (snd->size != 0));
     }
     parse_space_scene_chunk_r(0);
-    help_msg_data_r = level_resource_buffers_r.x1C;
-    Load_r(level_resource_buffers_r.x1C, disc_table_r.help_text.sector, disc_table_r.help_text.size);
+    help_msg_data_r = level_resource_buffers.x1C;
+    Load_r(level_resource_buffers.x1C, disc_table_r.help_text.sector, disc_table_r.help_text.size);
     help_offset_table_r = help_msg_data_r;
-    level_resource_buffers_r.x1C = help_msg_data_r + (disc_table_r.help_text.size << 11);
+    level_resource_buffers.x1C = help_msg_data_r + (disc_table_r.help_text.size << 11);
     for (k = 0; k < 8; k++) {
         queue_dma_transfer_r(k);
         j = 0;
@@ -885,10 +884,10 @@ void transition_load_wad(void) {
     }
 
     queue_dma_transfer_r(0);
-    cnt = (new_var = resident_class_slot_by_id_r[0x472]);
+    cnt = (new_var = resident_class_slot_by_id[0x472]);
     if (cnt >= 0) {
-        moby_class_resources_r[cnt]->sound_defs = (s32)moby_class_472_sound_defs_r;
-        (*(u8 *)&moby_class_resources_r[cnt]->pad_D) = 5;
+        moby_class_resources[cnt]->sound_defs = (s32)moby_class_472_sound_defs;
+        (*(u8 *)&moby_class_resources[cnt]->pad_D) = 5;
     }
 }
 
@@ -1231,14 +1230,14 @@ void Transition_DefaultDraw(s32 *arg0) {
 
 extern char voice_pool[];
 
-extern int bank_sound_count_m __asm__("D_0015F694") MACRO_ADDR;
+extern int D_0015F694 MACRO_ADDR;
 
 /* The older register residual was the split load of bank_sound_count; read
    through a MACRO_ADDR alias it is retail's one-register load. */
 int is_active_state_entry(int arg0, int arg1) {
     if (arg0 >= 0) {
         char *p = voice_pool + arg0 * 0x70;
-        if (*(short *)(p + 0x7E) == arg1 + bank_sound_count_m) {
+        if (*(short *)(p + 0x7E) == arg1 + bank_sound_count) {
             unsigned char s = p[0x74];
             if (s == 1 || s == 2) {
                 return 1;
@@ -1277,15 +1276,15 @@ typedef struct {
     s32 f3C;
 } TransferState_BB48;
 
-extern s32 current_level_BB48 __asm__("D_0015EE84") MACRO_ADDR;
-extern s32 saved_EEE8_BB48 __asm__("D_0015EEE8") MACRO_ADDR;
-extern WadHeader_BB48 *volatile wad_buf_BB48[] __asm__("D_001941C8");
+extern s32 D_0015EE84 MACRO_ADDR;
+extern s32 D_0015EEE8 MACRO_ADDR;
+extern WadHeader_BB48 *volatile D_001941C8[];
 extern DiscTable disc_table_BB48 __asm__("D_00137C80");
-extern WadHeader_BB48 *level_root_BB48 __asm__("D_0015EF4C") MACRO_ADDR;
-extern s32 space_load_pending_BB48 __asm__("D_0015F690") MACRO_ADDR;
-extern s32 space_load_in_progress_BB48 __asm__("D_0015F6FC") MACRO_ADDR;
+extern WadHeader_BB48 *D_0015EF4C MACRO_ADDR;
+extern s32 D_0015F690 MACRO_ADDR;
+extern s32 D_0015F6FC MACRO_ADDR;
 extern s32 dma_index_BB48 __asm__("D_0015EE88") MACRO_ADDR;
-extern SoundCue_BB48 sound_cues_BB48[] __asm__("D_001863B0");
+extern SoundCue_BB48 D_001863B0[];
 extern TransferState_BB48 transfer_BB48 __asm__("D_0018CC20");
 extern s32 game_mode_BB48 __asm__("D_0015F6E8") MACRO_ADDR;
 extern f32 sequence_BB48 __asm__("D_0015F53C") MACRO_ADDR;
@@ -1297,42 +1296,42 @@ extern s32 pal_mode_BB48 __asm__("D_0015EE80") MACRO_ADDR;
 extern s32 tex_start_BB48 __asm__("D_0015EF78") MACRO_ADDR;
 extern s32 tex_cursor_BB48 __asm__("D_0015EF74") MACRO_ADDR;
 extern volatile s32 tex_base_BB48 __asm__("D_0015EF8C") MACRO_ADDR;
-extern s32 frame_counter_BB48 __asm__("D_0015F538") MACRO_ADDR;
+extern s32 D_0015F538 MACRO_ADDR;
 
 extern void load_and_init_BB48(void) __asm__("func_00209DC0");
 extern void transition_load_wad_BB48(void) __asm__("func_001EABE8");
 extern s32 load_BB48(u8 *dst, s32 sector, s32 size) __asm__("func_002176C8");
-extern void init_resource_BB48(void) __asm__("func_001FFA90");
-extern void init_sif_rpc_BB48(void) __asm__("func_00233FF8");
-extern void init_stash_BB48(void) __asm__("func_00234018");
-extern void init_hud_BB48(void) __asm__("func_001FF6B8");
-extern void load_hud_banks_BB48(void) __asm__("func_002032D0");
-extern s32 sync_v_BB48(s32) __asm__("func_00122598");
+extern void func_001FFA90(void);
+extern void func_00233FF8(void);
+extern void func_00234018(void);
+extern void func_001FF6B8(void);
+extern void func_002032D0(void);
+extern s32 func_00122598(s32);
 extern s32 scale_frames_BB48(s32) __asm__("func_001F98C0");
 extern s32 snd_reset_BB48(void) __asm__("func_0012EC40");
-extern s32 snd_flush_BB48(void) __asm__("func_0012DDC0");
+extern s32 func_0012DDC0(void);
 extern void snd_reenable_command_flush_r(void) __asm__("func_0012EC30");
 extern void vu1_send_chain_BB48(void) __asm__("func_002349B8");
 extern void swap_chain_BB48(void) __asm__("func_00234948");
 extern void put_draw_small_BB48(void) __asm__("func_001FB598");
-extern void append_palette_BB48(void) __asm__("func_001FB8A8");
+extern void func_001FB8A8(void);
 extern void put_draw_large_BB48(void) __asm__("func_001FB498");
 extern s32 memcard_update_BB48(void) __asm__("func_00209E68");
-extern s32 run_state_handler_BB48(void) __asm__("func_00209070");
+extern s32 func_00209070(void);
 extern void update_pad_BB48(void) __asm__("func_00218908");
 extern void queue_dma_BB48(s32) __asm__("func_001EB300");
 extern s32 is_active_BB48(s32, s32) __asm__("func_001EBAF0");
-extern s32 alloc_voice_BB48(s32, s32, s32) __asm__("func_0022EEB8");
-extern void release_voice_BB48(s32) __asm__("func_0022EAB0");
+extern s32 func_0022EEB8(s32, s32, s32);
+extern void func_0022EAB0(s32);
 extern void update_gameplay_BB48(void) __asm__("func_001EB458");
 extern void default_draw_BB48(void) __asm__("func_001EB7C0");
-extern void start_level_BB48(s32) __asm__("func_001E9808");
+extern void func_001E9808(s32);
 extern void parse_space_scene_BB48(s32) __asm__("func_00205220");
 extern void vu1_init_chain_BB48(void) __asm__("func_002348E8");
 extern void fade_to_black_BB48(s32) __asm__("func_001F4E08");
 extern s32 reset_vif1_gif_BB48(void) __asm__("func_001207B8");
 extern void reset_graph_BB48(s16, s16, s16, s16) __asm__("func_00121B78");
-extern void set_pal_mode_BB48(void) __asm__("func_001F3890");
+extern void func_001F3890(void);
 extern void vu1_sync_chain_BB48(s32) __asm__("func_00234AC8");
 
 /* Adapted from Lombyte's project (GPL-3.0): src/gameplay/state/transition_do_transition.c, transition_do_transition. */
@@ -1349,18 +1348,18 @@ void transition_do_transition(void) {
     u32 alignment_mask = 0xFFFFFFF0;
     DiscTable *tbl;
 
-    current_level_BB48 = 0;
+    g_current_level_index = 0;
     *(volatile u32 *)0x10000010 = 0x83;
     *(volatile u32 *)0x10000000 = 0;
-    saved = saved_EEE8_BB48;
+    saved = playback_mode;
     load_and_init_BB48();
-    saved_EEE8_BB48 = saved;
+    playback_mode = saved;
     transition_load_wad_BB48();
     tbl = &disc_table_BB48;
-    p = (u8 *)wad_buf_BB48[0];
+    p = (u8 *)vu1_chain_buffer_2[0];
     hdr = (WadHeader_BB48 *)p;
     p = (u8 *)hdr + 0x60;
-    level_root_BB48 = hdr;
+    level_root = hdr;
     first_size = load_BB48(p, ((DiscFile_BB48 *)((DiscFile_BB48 *)&tbl->wad_chunks[1]))->sector,
                            ((DiscFile_BB48 *)((DiscFile_BB48 *)&tbl->wad_chunks[1]))->size);
     hdr->chunk[1].size = first_size;
@@ -1380,59 +1379,60 @@ void transition_do_transition(void) {
     p += ((u32)hdr->chunk[5].size + 0xF) & alignment_mask;
     hdr->chunk[0].size = load_BB48(p, tbl->wad_chunks[0].sector, tbl->wad_chunks[0].size);
     hdr->chunk[0].off = p - (u8 *)hdr;
-    init_resource_BB48();
-    init_sif_rpc_BB48();
-    init_stash_BB48();
-    init_hud_BB48();
-    load_hud_banks_BB48();
+    Hud_HeapReset();
+    initialize_sif_rpc();
+    init_stash();
+    init_hud();
+    LoadHudBanks();
     for (n = *(volatile u32 *)0x10000000 / 0x109; n < scale_frames_BB48(0xB4); n++) {
-        sync_v_BB48(0);
+        sce_gs_sync_v(0);
     }
     snd_reset_BB48();
-    while (snd_flush_BB48() != 0) {
+    while (snd_FlushSoundCommands() != 0) {
     }
     snd_reenable_command_flush_r();
     level = 1;
     wait = 0;
-    while (space_load_pending_BB48 == 0) {
+    while (space_load_pending == 0) {
         vu1_send_chain_BB48();
         swap_chain_BB48();
         put_draw_small_BB48();
-        append_palette_BB48();
+        append_palette_transfer_packet();
         put_draw_large_BB48();
         memcard_update_BB48();
-        run_state_handler_BB48();
+        Menu_RunStateHandler();
         update_pad_BB48();
         queue_dma_BB48(dma_index_BB48);
-        space_load_in_progress_BB48 = 0;
-        for (i = 0; sound_cues_BB48[i].start != -1; i++) {
-            if (sound_cues_BB48[i].end == -1) {
-                if (transfer_BB48.time < sound_cues_BB48[i].start) {
-                    sound_cues_BB48[i].voice = -1;
+        space_load_in_progress = 0;
+        for (i = 0; transition_sound_cues[i].start != -1; i++) {
+            if (transition_sound_cues[i].end == -1) {
+                if (transfer_BB48.time < transition_sound_cues[i].start) {
+                    transition_sound_cues[i].voice = -1;
                     continue;
                 }
-                if (sound_cues_BB48[i].voice != -1) {
+                if (transition_sound_cues[i].voice != -1) {
                     continue;
                 }
-            } else if (transfer_BB48.time < sound_cues_BB48[i].start || sound_cues_BB48[i].end < transfer_BB48.time) {
+            } else if (transfer_BB48.time < transition_sound_cues[i].start ||
+                       transition_sound_cues[i].end < transfer_BB48.time) {
                 goto stop;
-            } else if (is_active_BB48(sound_cues_BB48[i].voice, sound_cues_BB48[i].sound) != 0) {
+            } else if (is_active_BB48(transition_sound_cues[i].voice, transition_sound_cues[i].sound) != 0) {
                 continue;
             }
-            sound_cues_BB48[i].voice = alloc_voice_BB48(sound_cues_BB48[i].sound, 0, 0);
+            transition_sound_cues[i].voice = allocate_voice_for_group_entry(transition_sound_cues[i].sound, 0, 0);
             continue;
         stop:
-            if (is_active_BB48(sound_cues_BB48[i].voice, sound_cues_BB48[i].sound) != 0) {
-                release_voice_BB48(sound_cues_BB48[i].voice);
+            if (is_active_BB48(transition_sound_cues[i].voice, transition_sound_cues[i].sound) != 0) {
+                sound_KillChannel(transition_sound_cues[i].voice);
             }
-            sound_cues_BB48[i].voice = -1;
+            transition_sound_cues[i].voice = -1;
         }
         update_gameplay_BB48();
         default_draw_BB48();
         if (game_mode_BB48 != 0) {
             wait = 0;
         } else if (++wait >= scale_frames_BB48(0x5DC)) {
-            start_level_BB48(level);
+            start_level(level);
             wait = 0;
             level = (level + 1) % 4;
             if (level == 0) {
@@ -1455,12 +1455,12 @@ void transition_do_transition(void) {
             reset_graph_BB48(0, 1, pal_mode_BB48 != 0 ? 3 : 2, 0);
             old = tex_start_BB48;
             sequence_BB48 = 1.0f;
-            set_pal_mode_BB48();
+            SetPalMode();
             tex_start_BB48 = old;
         }
         vu1_sync_chain_BB48(1);
-        sync_v_BB48(0);
-        frame_counter_BB48++;
+        sce_gs_sync_v(0);
+        game_frame_counter++;
     }
     if (pal_mode_BB48 == 0) {
         tex_base_BB48 = 0x280000;

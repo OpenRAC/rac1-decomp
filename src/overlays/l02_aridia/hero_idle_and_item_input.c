@@ -73,7 +73,7 @@ extern float frame_scale MACRO_ADDR;
 extern char hero_globals_base[];
 extern char help_stats_base[];
 extern char item_usage[];
-extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 
 extern short aridia_hero_run_step_start_frames;
 extern short aridia_hero_state_f_jump_velocity_keys;
@@ -1021,7 +1021,7 @@ int HeroL02_SetMoveState(int a, int b) {
                         if (q->unk450 == 2)
                             q->unk450 = 0;
                         id = q->unk450 + 0x1C;
-                        if (draw_map51_m[1] != 0) {
+                        if (draw_map51[1] != 0) {
                             if (id == 0x1C) {
                                 id = 0x1D;
                             } else if (id == 0x1D) {
@@ -1566,7 +1566,7 @@ extern HeroSpeedBands aridia_hero_speed_bands;
 extern int HeroL02_TryKnockback(int);
 
 extern int queue_animation_update(int, int, int, int, int, int, int);
-extern int show_health_hud_r(void) __asm__("func_L00_00235790");
+extern int func_L00_00235790(void);
 extern void hud_keep_visible(int, int);
 extern int FastDecTimer(void *);
 
@@ -1575,7 +1575,7 @@ extern int hero_slot_item_id(int);
 extern float multiply_global_factor(float);
 extern int HeroL02_SetMoveState(int a, int b);
 
-extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
+extern int func_001F9908(int *);
 
 extern int pad_pressed_within(int, int, int *);
 
@@ -1642,7 +1642,7 @@ void HeroL02_UpdateStateTransitions(void) {
                     queue_animation_update(3, 0, (int)initialize_eight_slot_hud_selector,
                                            (int)update_hud_item_selector_selection_and_visibility,
                                            (int)draw_hud_item_selector_panel, 0, 0);
-                    id = show_health_hud_r();
+                    id = show_health_hud();
                     hud_keep_visible(id, scale_ticks(0xB4));
                     id = queue_animation_update(2, 0x754E, (int)initialize_bolt_counter_hud,
                                                 (int)update_bolt_counter_hud_animation_and_visibility,
@@ -1764,7 +1764,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         if (scale_ticks(0xA) < g_hero.state_timer) {
                             if (((unsigned char *)g_hero.items[3].moby2) != 0 &&
                                 ((unsigned char *)g_hero.items[3].moby2)[0x53] == 1) {
-                                if (fast_dec_timer_r(&g_hero.slot3_anim_timer)) {
+                                if (fast_dec_timer(&g_hero.slot3_anim_timer)) {
                                     if (0.55850536f > aridia_lean_state.f258 && aridia_lean_state.f254 < 0.34906584f &&
                                         g_hero.items[3].state == 2) {
                                         g_hero.slot3_anim_timer = rand_range(scale_ticks(0x6E), scale_ticks(0x10E));
@@ -2672,7 +2672,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         {
                             int both = 0;
 
-                            fast_dec_timer_r((int *)&aridia_hero_double_tap_timer);
+                            fast_dec_timer((int *)&aridia_hero_double_tap_timer);
                             if (*(int *)&aridia_hero_double_tap_timer != 0) {
                                 both = 1;
                                 if (!((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1))) {

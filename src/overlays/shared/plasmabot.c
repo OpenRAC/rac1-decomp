@@ -855,7 +855,7 @@ extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, 
 extern int release_beam_slot_by_id(char *);
 extern int scale_ticks(int);
 
-extern void InitKnockback_i(void *, void *, float, int, int, int) __asm__("func_L00_0025D5B0");
+extern void func_L00_0025D5B0(void *, void *, float, int, int, int);
 extern int truncate_float_to_s32(float);
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
@@ -909,7 +909,7 @@ void process_plasmabot_hit_reaction(char *m) {
                 d->unk_7C = g;
                 d->hit_fx_a = 11.0f;
                 d->hit_fx_b = 29.0f;
-                InitKnockback_i(m, p60, fast_atan2(*(float *)(h + 0x10), *(float *)(h + 0x14)), 7, 1, 0);
+                InitKnockback(m, p60, fast_atan2(*(float *)(h + 0x10), *(float *)(h + 0x14)), 7, 1, 0);
             }
                 d->flash = 0xFA;
                 break;
@@ -933,7 +933,7 @@ void process_plasmabot_hit_reaction(char *m) {
                     d->hit_fx_b = 15.0f;
                 }
                 y = fast_atan2(*(float *)(h + 0x10), *(float *)(h + 0x14));
-                InitKnockback_i(m, &d->color_fade, y, 8, scale_ticks(5), 0);
+                InitKnockback(m, &d->color_fade, y, 8, scale_ticks(5), 0);
                 d->flash = 0xFA;
                 if (((unsigned char *)hero_globals_base_x)[0x2EC1] == 2) {
                     SetDeathBits(m, 0x200, -1);
@@ -2052,12 +2052,12 @@ typedef struct {
     char pad14[0x610];
     float f624;
 } D1224;
-extern short vendor_beam_update_disabled_s __asm__("D_L14_0016219C");
-extern short vendor_beam_damage_disabled_s __asm__("D_L14_001621A8");
-extern short vendor_beam_pulse_budget_s __asm__("D_L14_00162188");
-extern short vendor_beam_anim_disabled_s __asm__("D_L14_001621A0");
+extern short D_L14_0016219C;
+extern short D_L14_001621A8;
+extern short D_L14_00162188;
+extern short D_L14_001621A0;
 extern short vendor_beam_fade_end_ticks_s __asm__("D_L14_00162198");
-extern short vendor_beam_draw_disabled_s __asm__("D_L14_001621A4");
+extern short D_L14_001621A4;
 extern char *oltanis_clip_volumes_t __asm__("D_L14_001601AC") MACRO_ADDR;
 extern int FastBSphereCheck(void *, float);
 extern void start_vendor_beam_pulse(char *);
@@ -2081,7 +2081,7 @@ void update_vendor_beam(unsigned char *m) {
             return;
         }
     }
-    if (*(int *)&vendor_beam_update_disabled_s != 0) {
+    if (*(int *)&vendor_beam_update_disabled != 0) {
         return;
     }
     s = ((Moby *)m)->state;
@@ -2095,9 +2095,9 @@ void update_vendor_beam(unsigned char *m) {
             d->sA = 1;
             break;
         case 1:
-            if (*(int *)&vendor_beam_pulse_budget_s != 0) {
+            if (*(int *)&vendor_beam_pulse_budget != 0) {
                 if (d->s12 == 0) {
-                    *(int *)&vendor_beam_pulse_budget_s = *(int *)&vendor_beam_pulse_budget_s - 1;
+                    *(int *)&vendor_beam_pulse_budget = *(int *)&vendor_beam_pulse_budget - 1;
                     start_vendor_beam_pulse((char *)m);
                 }
             }
@@ -2123,17 +2123,17 @@ void update_vendor_beam(unsigned char *m) {
             }
             break;
     }
-    if (*(int *)&vendor_beam_damage_disabled_s == 0) {
+    if (*(int *)&vendor_beam_damage_disabled == 0) {
         if (vec_distance_xy(&((Moby *)m)->pos, hero_globals_base + 0xE9D) < 10.0f) {
             apply_vendor_beam_damage((char *)m);
         }
     }
     if (d->s12 != 0) {
-        if (*(int *)&vendor_beam_anim_disabled_s == 0) {
+        if (*(int *)&vendor_beam_anim_disabled == 0) {
             update_vendor_beam_animation((char *)m);
         }
         if (*(int *)&vendor_beam_fade_end_ticks_s < d->s12) {
-            if (*(int *)&vendor_beam_draw_disabled_s != 0) {
+            if (*(int *)&vendor_beam_draw_disabled != 0) {
                 return;
             }
             AddDrawCallback(draw_vendor_beam, m);
@@ -2377,7 +2377,7 @@ typedef struct {
     s32 one;
 } VendorBeamReq;
 
-extern char gHeroPos_r[] __asm__("D_0013F4D0");
+extern char D_0013F4D0[];
 extern VendorBeamFrame_3039C0 *oltanis_clip_volumes_r __asm__("D_L14_001601AC") MACRO_ADDR;
 extern u8 oltanis_collision_hit_point_r[] __asm__("D_L14_00174660");
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
@@ -2388,7 +2388,7 @@ extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecScale_r2(void *, void *, f32) __asm__("func_001F9C30");
 extern void vec_scale_to_length_r3(void *, void *, f32) __asm__("func_L00_001FF4B0");
-extern f32 FastVecDot_r(void *, void *) __asm__("func_001F9C78");
+extern f32 func_001F9C78(void *, void *);
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
 /* Sweeps the beam's two end lines; anything they cross takes damage pushed away from the beam.
@@ -2415,9 +2415,9 @@ void apply_vendor_beam_damage(char *self) {
     dir.f[0] = FastCos_r2(m->rot.z);
     dir.f[1] = FastSin_r2(m->rot.z);
     dir.f[2] = 0.0f;
-    FastVecSub_r2(&to_hero, gHeroPos_r, &m->pos);
+    FastVecSub_r2(&to_hero, gHeroPos, &m->pos);
     to_hero.f[2] = 0.0f;
-    dot = FastVecDot_r(&dir, &to_hero);
+    dot = FastVecDot(&dir, &to_hero);
     if (FastVecLength_r(&to_hero) != 0.0f) {
         if (dot < 0.0f)
             FastVecScale_r2(&dir, &dir, -1.0f);

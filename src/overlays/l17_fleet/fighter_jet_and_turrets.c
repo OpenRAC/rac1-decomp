@@ -124,7 +124,7 @@ extern float FastCos(float);
 extern float FastVecLength(void *);
 extern int FastBSphereCheck(char *, float);
 extern float FastVecDot(void *, void *);
-extern void InitDirectionalHitQuery_alt(char *arg, int a, int b, float scale, void *src) __asm__("func_L00_0025A8C0");
+extern void func_L00_0025A8C0(char *arg, int a, int b, float scale, void *src);
 extern float random_float_between(float, float);
 extern void FastVecScale(void *, void *, float);
 
@@ -296,8 +296,8 @@ void update_fleet_beam(char *m) {
             vec_scale_to_length(axis_aligned_hero_offset, beam_moby->rot_row0,
                                 FastVecDot(beam_moby->rot_row0, hero_offset));
             FastVecSub(hero_offset, hero_offset, axis_aligned_hero_offset);
-            InitDirectionalHitQuery_alt((char *)hit_descriptor_and_vector_scratch, (int)beam_moby, 0x10001, 1.0f,
-                                        hero_offset);
+            InitDirectionalHitQuery((char *)hit_descriptor_and_vector_scratch, (int)beam_moby, 0x10001, 1.0f,
+                                    hero_offset);
             coll_line(&beam_moby->pos, beam_vars->p20, 9, beam_moby, hit_descriptor_and_vector_scratch);
             signed_beam_length = FastVecLength(beam_vars->p30);
             *(v128 *)beam_endpoint_position_scratch = *(v128 *)beam_vars->p10;
@@ -951,7 +951,7 @@ extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, 
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern float random_angle_radians(void);
 extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
-extern int coll_sphere_mobys_alt(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
+extern int func_L00_001F2BE8(float, void *, int, void *, void *);
 extern float resolve_camera_surface_height(float *, void *);
 extern char *PartType34Spawn(char *vec, float *pos, float sc, float vy);
 extern short fleet_bobber_height;
@@ -990,12 +990,12 @@ void update_fleet_bobbing_moby(char *m) {
             update_moby_vertical_oscillation(*(float *)&fleet_bobber_height,
                                              *(float *)&fleet_bobber_rate_deg * 0.017453292f * g_frame_time, m,
                                              &data->osc_phase, &data->osc_vel);
-            InitDirectionalHitQuery_alt(w, (int)m, 0x10001, 1.0f, v);
+            InitDirectionalHitQuery(w, (int)m, 0x10001, 1.0f, v);
             qcopy(pos, m + 0x10);
             pos[2] = pos[2] + 0.75f;
             g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
             if (*(char **)&g->coll_hit_moby == m || *(char **)&g->unk240 == m ||
-                coll_sphere_mobys_alt(1.0f, pos, 0x10, m, w)) {
+                coll_sphere_mobys(1.0f, pos, 0x10, m, w)) {
                 if (fleet_coll_hit_moby != 0 && *(short *)(fleet_coll_hit_moby + 0xA6) != 0x343) {
                     spawn_explosion_alt(m, v, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 1, 7.0f, 0, 1, -1, 0);
                     ((Moby *)m)->pos.z = ((Moby *)m)->pos.z + 1.0f;
@@ -1244,7 +1244,7 @@ void update_drone_flight_and_sparks(Moby *moby) {
             create_drone_flight_trail_record((char *)f, 1, step);
             create_drone_flight_trail_record((char *)a, 0, step);
             b[2] = b[2] + 0.25f;
-            InitDirectionalHitQuery_alt((char *)w, (int)moby, 1, 6.0f, ((char *)d));
+            InitDirectionalHitQuery((char *)w, (int)moby, 1, 6.0f, ((char *)d));
             *(short *)((char *)w + 0x1A) = moby->oclass;
             qcopy(&moby->pos, a);
             r = fleet_coll_hit_result;

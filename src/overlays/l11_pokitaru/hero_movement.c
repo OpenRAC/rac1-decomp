@@ -28,7 +28,7 @@
 #include "enums/hero_state.h"
 
 extern char hero_globals_base[];
-extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int D_0015EE84 MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 
 extern void Hero_TrySetMoveStateL11(int, int);
@@ -72,7 +72,7 @@ void update_hero_surface_condition_flags(void) {
         base_condition_hero_ptr = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         base_condition_hero_ptr->base_condition = 1;
     }
-    if (g_current_level_index_m == LEVEL_GEMLIK) {
+    if (g_current_level_index == LEVEL_GEMLIK) {
         struct Hero *collision_hero_ptr = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (collision_hero_ptr->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
             if (coll_sphere(collision_hero_ptr->capsule_radius + 0.03f, &collision_hero_ptr->motion.body_center, 2,
@@ -299,7 +299,7 @@ void HeroL11_UpdateMovement(void) {
                                 usage_stats.e[18].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.e[18].level_mask =
-                                usage_stats.e[18].level_mask | (1 << g_current_level_index_m) | 0x80000000;
+                                usage_stats.e[18].level_mask | (1 << g_current_level_index) | 0x80000000;
                             *(int *)&pokitaru_look_stat_timer = -1;
                             (*(int *)&pokitaru_look_stat_count)++;
                         }
@@ -578,7 +578,7 @@ void HeroL11_UpdateMovement(void) {
                         usage_stats.e[11].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                     usage_stats.e[11].level_mask =
-                        usage_stats.e[11].level_mask | (1 << g_current_level_index_m) | 0x80000000;
+                        usage_stats.e[11].level_mask | (1 << g_current_level_index) | 0x80000000;
                 } else {
                     g_hero.swim_hard_press_frames = 0;
                 }

@@ -465,12 +465,12 @@ int map_filter_l09_2(void) {
     return menu_item_enabled_57 != 0;
 }
 
-extern unsigned char menu_item_enabled_68_far __asm__("D_0013D4E0") NOT_SDA;
+extern unsigned char D_0013D4E0 NOT_SDA;
 /* The recorded C was right; the two ps2eeas nops were the only
    residual. */
 int map_filter_l10_0(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 >= 0xBE)
-        return menu_item_enabled_68_far != 0;
+        return menu_item_enabled_68 != 0;
     return (arg1 >= 58.5f) ? 1 : 0;
 }
 
@@ -884,7 +884,7 @@ void downsample_map_coverage(void *arg0) {
     dst[0] = (dst[0] & 0xFE) | 2;
 }
 
-extern void *msg_string_id(int) __asm__("func_001FE540");
+extern void *func_001FE540(int);
 extern char menu_item_price_fmt[]; /* "%d" */
 extern char menu_token_error_text[]; /* "error" */
 extern char vendor_item_prices[];
@@ -906,7 +906,7 @@ void FormatMenuItemText(int bank, unsigned char *dst) {
     char *t;
 
     t = (char *)level_map_selection;
-    src = msg_string_id(*(short *)(*(char **)(t + 0x20) + bank * 0x28 + 0xA));
+    src = msg_string(*(short *)(*(char **)(t + 0x20) + bank * 0x28 + 0xA));
     p = buf;
     if (src == 0) {
         return;
@@ -990,7 +990,7 @@ typedef struct {
 
 extern int marker_half_size MACRO_ADDR;
 
-extern char hud_state_raw[] __asm__("D_0019A4E8");
+extern char D_0019A4E8[];
 extern void draw_hud_rect_blended(int, int, int, int, long, int);
 
 /* Draw the level's map markers inside the given screen rectangle, scaled by map zoom. */
@@ -1021,7 +1021,7 @@ void draw_map_markers(int left, int top, int right, int bottom) {
                 (float
                      *)(st +
                         0x2D); /* the zoom scale table, at 0xB4 of the same block (the assembly's marker_scale_by_level) */
-            char *arena = hud_state_raw;
+            char *arena = hud_state;
             unsigned char *e =
                 (unsigned char *)(*(char **)(arena + 0x24) + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
             float scale = (2.0f * sc[st[0x89]] + 5.0f) / 13.0f;

@@ -526,7 +526,7 @@ void restore_camera_vectors(void) {
 /* The final mode store goes through this alias: written through
    cam_trans_state itself, gcse keeps the entry's %hi alive in a saved register
    across the calls, where retail rebuilds it. */
-extern short cam_trans_state_h __asm__("D_001872B0") NOT_SDA;
+extern short D_001872B0 NOT_SDA;
 
 extern int scale_game_frame_count(int);
 extern float IntToFloat(int);
@@ -579,7 +579,7 @@ void start_camera_blend(Camera *from) {
             restore_camera_vectors();
         }
     }
-    cam_trans_state_h = 3; /* blend.phase */
+    cam_trans_state = 3; /* blend.phase */
     r->kind = r->next_kind;
     if (r->kind == 0) {
         CamBlendLerp *a = &r->lerp;
@@ -1060,7 +1060,7 @@ void advance_timed_camera_control(void) {
 }
 
 extern int text_screen_active;
-extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 
 extern void refresh_camera_control_flags(void);
 
@@ -1126,7 +1126,7 @@ frozen:
     apply_camera_shake(&v[1], 1);
     update_camera_underwater_flag();
     update_camera_environment_from_regions((char *)v - 0x20); /* &gCamera.pos */
-    if (draw_map51_m[0] != 0) {
+    if (draw_map51[0] != 0) {
         FastVecCross((char *)v + 0x200, (char *)v + 0x210, (char *)v + 0x1F0); /* matrix[1] = matrix[2] x matrix[0] */
     }
 }

@@ -747,25 +747,25 @@ extern void draw_pokitaru_ocean_r(void) __asm__("func_L11_0030BCD8");
 extern UV_30C728 wave_offset_r[] __asm__("D_L11_00161E98") MACRO_ADDR;
 extern float camera_pos_b358_r[] __asm__("D_L11_00167840");
 extern char pokitaru_player_camera_r[] __asm__("D_L11_00167700");
-extern unsigned char pokitaru_water_tint_r_r[] __asm__("D_L11_00161280") MACRO_ADDR;
-extern unsigned char pokitaru_water_tint_g_r[] __asm__("D_L11_00161281") MACRO_ADDR;
-extern unsigned char pokitaru_water_tint_b_r[] __asm__("D_L11_00161282") MACRO_ADDR;
-extern unsigned char pokitaru_water_tint_a_r[] __asm__("D_L11_00161283") MACRO_ADDR;
-extern unsigned char pokitaru_water_tint2_r_r[] __asm__("D_L11_00161284") MACRO_ADDR;
-extern unsigned char pokitaru_water_tint2_g_r[] __asm__("D_L11_00161285") MACRO_ADDR;
-extern unsigned char pokitaru_water_tint2_b_r[] __asm__("D_L11_00161286") MACRO_ADDR;
+extern unsigned char D_L11_00161280[] MACRO_ADDR;
+extern unsigned char D_L11_00161281[] MACRO_ADDR;
+extern unsigned char D_L11_00161282[] MACRO_ADDR;
+extern unsigned char D_L11_00161283[] MACRO_ADDR;
+extern unsigned char D_L11_00161284[] MACRO_ADDR;
+extern unsigned char D_L11_00161285[] MACRO_ADDR;
+extern unsigned char D_L11_00161286[] MACRO_ADDR;
 extern V4_30C728 D_L11_001628C0_30C728 SDATA(D_L11_001628C0);
 extern float D_L11_00161E88_30C728[2] SDATA(D_L11_00161E88);
-extern float pokitaru_ocean_base_height_r __asm__("D_L11_00161EAC") MACRO_ADDR;
-extern UV_30C728 pokitaru_wave_scroll_speed_r[] __asm__("D_L11_001D9DC0");
+extern float D_L11_00161EAC MACRO_ADDR;
+extern UV_30C728 D_L11_001D9DC0[];
 extern int D_L11_0016135C_30C728 __asm__("D_L11_0016135C") MACRO_ADDR;
 extern float D_L11_00161360_30C728 __asm__("D_L11_00161360") MACRO_ADDR;
 extern float D_L11_00161364_30C728 __asm__("D_L11_00161364") MACRO_ADDR;
-extern float pokitaru_ocean_tide_z_r __asm__("D_L11_00161368") MACRO_ADDR;
+extern float D_L11_00161368 MACRO_ADDR;
 extern float D_L11_0016136C_30C728 __asm__("D_L11_0016136C") MACRO_ADDR;
 extern float pokitaru_ocean_height_r __asm__("D_L11_00161EA8") MACRO_ADDR;
 extern int level_frame_r __asm__("D_L11_0015F6B0") MACRO_ADDR;
-extern float frame_delta_time_r __asm__("D_0015EE7C") MACRO_ADDR;
+extern float D_0015EE7C MACRO_ADDR;
 
 /* Ocean update: scrolls the two wave layers with the camera and the time, keeps their offsets in -1..1 and sets the
    level's tide values. */
@@ -784,17 +784,17 @@ void ocean_pokitaru_update(Moby *moby) {
             wave_offset_r[k].v = 0.0f;
         }
         qcopy(D_L11_001628C0_30C728, camera_pos_b358_r);
-        pokitaru_ocean_base_height_r = d->level;
+        pokitaru_ocean_base_height = d->level;
         return;
     }
     if (180.0f < ((Cam_30C728 *)pokitaru_player_camera_r)->pos[2]) {
-        pokitaru_water_tint_r_r[0] = 0x28;
-        pokitaru_water_tint_g_r[0] = 0x90;
-        pokitaru_water_tint_b_r[0] = 0x90;
-        pokitaru_water_tint2_g_r[0] = 0x90;
-        pokitaru_water_tint2_r_r[0] = 0x28;
-        pokitaru_water_tint_a_r[0] = 0x40;
-        pokitaru_water_tint2_b_r[0] = 0x90;
+        pokitaru_water_tint_r[0] = 0x28;
+        pokitaru_water_tint_g[0] = 0x90;
+        pokitaru_water_tint_b[0] = 0x90;
+        pokitaru_water_tint2_g[0] = 0x90;
+        pokitaru_water_tint2_r[0] = 0x28;
+        pokitaru_water_tint_a[0] = 0x40;
+        pokitaru_water_tint2_b[0] = 0x90;
     }
     FastVecSub_r(src, ((Cam_30C728 *)pokitaru_player_camera_r)->pos, D_L11_001628C0_30C728);
     qcopy(D_L11_001628C0_30C728, ((Cam_30C728 *)pokitaru_player_camera_r)->pos);
@@ -824,15 +824,15 @@ void ocean_pokitaru_update(Moby *moby) {
             wave_offset_r[k].v = wave_offset_r[k].v + 1.0f;
         }
     }
-    tide = pokitaru_ocean_base_height_r + FastSin_r(IntToFloat_r(level_frame_r % 360) * 0.017444445f - 3.14f) * 0.25f;
+    tide = pokitaru_ocean_base_height + FastSin_r(IntToFloat_r(level_frame_r % 360) * 0.017444445f - 3.14f) * 0.25f;
     D_L11_0016135C_30C728 = 1;
     D_L11_00161360_30C728 = 512.0f;
     D_L11_00161364_30C728 = 512.0f;
     D_L11_0016136C_30C728 = 1024.0f;
     pokitaru_ocean_height_r = tide;
-    pokitaru_ocean_tide_z_r = tide;
+    pokitaru_ocean_tide_z = tide;
     for (k = 0; k < 2; k++) {
-        float sum = wave_offset_r[k].u + pokitaru_wave_scroll_speed_r[k].u * frame_delta_time_r;
+        float sum = wave_offset_r[k].u + pokitaru_wave_scroll_speed[k].u * frame_delta_time;
         wave_offset_r[k].u = sum;
         if (1.0f < sum) {
             wave_offset_r[k].u = sum - 1.0f;
@@ -840,7 +840,7 @@ void ocean_pokitaru_update(Moby *moby) {
         if (wave_offset_r[k].u < -1.0f) {
             wave_offset_r[k].u = wave_offset_r[k].u + 1.0f;
         }
-        sum = wave_offset_r[k].v + pokitaru_wave_scroll_speed_r[k].v * frame_delta_time_r;
+        sum = wave_offset_r[k].v + pokitaru_wave_scroll_speed[k].v * frame_delta_time;
         wave_offset_r[k].v = sum;
         if (1.0f < sum) {
             wave_offset_r[k].v = sum - 1.0f;
@@ -896,15 +896,15 @@ typedef struct {
 } Lock;
 
 extern char hero_globals_base_r[] __asm__("D_0013E633");
-extern unsigned char gHaveHeliPack_r[] __asm__("D_0013D5CA");
+extern unsigned char D_0013D5CA[];
 extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
-extern LvState pokitaru_checkpoint_level_state_r __asm__("D_L11_001BBF40");
-extern LvState pokitaru_current_level_state_r __asm__("D_L11_001BB2E0");
-extern unsigned char pokitaru_mission_group_state_r[] __asm__("D_L11_0015FD08");
-extern void Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern int Help_Request_r(int a, int b) __asm__("func_L00_00203F20");
+extern LvState D_L11_001BBF40;
+extern LvState D_L11_001BB2E0;
+extern unsigned char D_L11_0015FD08[];
+extern void func_0022ED80(int, int, void *);
+extern int func_L00_00203F20(int a, int b);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 
@@ -920,13 +920,13 @@ void thruster_pack_lock_update(Lock *moby) {
             ((Stats *)(help_stats_base_r + 0x34D))->best = 0;
             *(unsigned short *)(d + 0x3E) |= 8;
             if (e == 0xB && moby->bB0 != 0xFF) {
-                if (pokitaru_checkpoint_level_state_r.collected[(short)moby->uid] != 0 ||
+                if (pokitaru_checkpoint_level_state.collected[(short)moby->uid] != 0 ||
                     ((*(int *)(help_stats_base_r + 0xAB75 + (((short)moby->uid >> 5) * 4 + (e << 8))) >>
                       (moby->uid & 0x1F)) &
                      1)) {
                     moby->state = 2;
                     moby->z = moby->z - 1.5f;
-                    Moby_PlaySound_r(0, 0, moby);
+                    Moby_PlaySound(0, 0, moby);
                     return;
                 }
             }
@@ -934,24 +934,24 @@ void thruster_pack_lock_update(Lock *moby) {
             break;
         }
         case 1:
-            if (((void *)((Hero *)(hero_globals_base_r + 0xE1D))->ground_moby) == moby && gHaveHeliPack_r[1] != 0 &&
+            if (((void *)((Hero *)(hero_globals_base_r + 0xE1D))->ground_moby) == moby && gHaveHeliPack[1] != 0 &&
                 ((Hero *)(hero_globals_base_r + 0xE1D))->air_frames.s == 0 &&
                 ((Hero *)(hero_globals_base_r + 0xE1D))->state.current ==
                     HERO_STATE_RISE_THEN_FALL_WITH_AIRBORNE_HIT_QUERY) {
                 if (g_current_level_index_r == LEVEL_POKITARU && moby->bB0 != 0xFF) {
                     int c;
                     int u;
-                    pokitaru_current_level_state_r.collected[(short)moby->uid] = moby->bB0 + 2;
+                    pokitaru_current_level_state.collected[(short)moby->uid] = moby->bB0 + 2;
                     c = moby->bB0;
                     u = c & 0xFF;
-                    if (c == 0xFF || (pokitaru_mission_group_state_r[u] != 0xFF &&
+                    if (c == 0xFF || (pokitaru_mission_group_state[u] != 0xFF &&
                                       (help_stats_base_r + 0xAA35)[u + (g_current_level_index_r << 4)] == 0xFF)) {
-                        pokitaru_checkpoint_level_state_r.collected[(short)moby->uid] = c + 2;
+                        pokitaru_checkpoint_level_state.collected[(short)moby->uid] = c + 2;
                     }
                 }
                 moby->state = 2;
                 moby->z = moby->z - 1.5f;
-                Moby_PlaySound_r(0, 0, moby);
+                Moby_PlaySound(0, 0, moby);
             }
             if (moby->bB0 == 0xFF) {
                 return;
@@ -962,12 +962,12 @@ void thruster_pack_lock_update(Lock *moby) {
             if (!((unsigned int)*(int *)(hero_globals_base_r + 0xE9D + 0x200C) < 2)) {
                 return;
             }
-            if (gHaveHeliPack_r[1] == 0) {
+            if (gHaveHeliPack[1] == 0) {
                 int r =
                     scale_ticks_r(gameplay_event_frame_count_r) - ((Stats *)(help_stats_base_r + 0x34D))->best2 * 600;
                 if ((int)((float)scale_ticks_r(0x12) * 60.0f) < r ||
                     ((Stats *)(help_stats_base_r + 0x34D))->best2 * 600 == 0) {
-                    Help_Request_r(0x2B02, 0x71);
+                    Help_Request(0x2B02, 0x71);
                     return;
                 }
                 {
@@ -982,7 +982,7 @@ void thruster_pack_lock_update(Lock *moby) {
                     scale_ticks_r(gameplay_event_frame_count_r) - ((Stats *)(help_stats_base_r + 0x34D))->best * 600;
                 if ((int)((float)scale_ticks_r(0x12) * 60.0f) < r ||
                     ((Stats *)(help_stats_base_r + 0x34D))->best * 600 == 0) {
-                    Help_Request_r(0x2B01, 0x6C);
+                    Help_Request(0x2B01, 0x6C);
                     return;
                 }
                 {
@@ -1495,20 +1495,20 @@ typedef struct {
     float f7C;
     float speed;
 } Data_0031B8A8;
-extern Path_0031B8A8 *path_table_r[] __asm__("D_L11_001B11B0");
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
+extern Path_0031B8A8 *D_L11_001B11B0[];
+extern void func_001F9BC0(void *);
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
-extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08");
-extern void euler_to_matrix_r(void *, void *) __asm__("func_001FA218");
+extern void func_001F9C08(void *, void *, void *, float);
+extern void func_001FA218(void *, void *);
 extern float FastSin_r2(float) __asm__("func_001F9FA8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern float ApproachWithVelocity_r(float *, float *, float, float, float, float) __asm__("func_00214D88");
+extern float func_00214D88(float *, float *, float, float, float, float);
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 
@@ -1524,7 +1524,7 @@ void update_moby_path_transform(Moby *moby) {
     float G[4];
     float vel;
     Data_0031B8A8 *data = (Data_0031B8A8 *)moby->pvars;
-    Path_0031B8A8 *path = path_table_r[data->path];
+    Path_0031B8A8 *path = path_table[data->path];
     int i = data->idx;
     int n;
     float a, b, pitch, d;
@@ -1533,7 +1533,7 @@ void update_moby_path_transform(Moby *moby) {
     n = path->count;
     qcopy(B, path->pts[(i + 1) % n]);
     qcopy(C, path->pts[(i + 2) % n]);
-    clear_u64_value_r(rot);
+    clear_u64_value(rot);
     a = fast_atan2_r(A[0] - B[0], A[1] - B[1]);
     b = fast_atan2_r(B[0] - C[0], B[1] - C[1]);
     pitch = fast_atan2_r(vec_distance_xy_r2(A, B), B[2] - A[2]);
@@ -1544,16 +1544,16 @@ void update_moby_path_transform(Moby *moby) {
         moby->rot.z = FastAddRots_r(moby->rot.z, 3.14159f);
         moby->rot.y = -moby->rot.y;
     }
-    lerp_vector_r(E, A, B, data->t);
-    euler_to_matrix_r(mtx, rot);
+    lerp_vector(E, A, B, data->t);
+    euler_to_matrix(mtx, rot);
     vec_scale_to_length_r(G, mtx[1], data->radius * FastSin_r2(data->ang));
     FastVecAdd_r(E, E, G);
     vec_scale_to_length_r(G, mtx[2], data->radius * FastCos_r(data->ang));
     FastVecAdd_r(E, E, G);
     vel = 0.0f;
     d = FastVecDist_r(&moby->pos, E);
-    ApproachWithVelocity_r(&vel, &data->speed, d, g_frame_time_sq_r * 10.0f, g_frame_time_sq_r * 10.0f,
-                           g_frame_time_e * 20.0f);
+    ApproachWithVelocity(&vel, &data->speed, d, g_frame_time_sq_r * 10.0f, g_frame_time_sq_r * 10.0f,
+                         g_frame_time_e * 20.0f);
     FastVecSub_r2(G, E, &moby->pos);
     vec_scale_to_length_r(G, G, data->speed);
     FastVecAdd_r(&moby->pos, &moby->pos, G);

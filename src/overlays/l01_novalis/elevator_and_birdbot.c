@@ -79,11 +79,11 @@ typedef struct {
     s32 frame; /* 0x50 */
     u8 pad54[0xC];
 } ScrollLayer;
-extern union PacketCursor l01_packet_r __asm__("D_L01_00161240") MACRO_ADDR;
-extern u8 water_setup_dma_block_r[] __asm__("D_L01_001CAF00");
+extern union PacketCursor D_L01_00161240 MACRO_ADDR;
+extern u8 D_L01_001CAF00[];
 extern s32 FastBSphereCheck_r(void *, f32) __asm__("func_L00_00200290");
-extern u64 GetEffectTex_r(s32) __asm__("func_001F4868");
-extern void build_overlay_layer_wave_vertices_r(ScrollLayer *) __asm__("func_L01_002635C8");
+extern u64 func_001F4868(s32);
+extern void func_L01_002635C8(ScrollLayer *);
 extern void emit_textured_strip_packet_r(s32, s32, s32, s32, s32, s32) __asm__("func_L01_0021F9C8");
 
 void func_L01_002BA898_r(s32 count, ScrollLayer *l) __asm__("func_L01_002BA898");
@@ -122,30 +122,30 @@ void func_L01_002BA898_r(s32 count, ScrollLayer *l) {
         vis = FastBSphereCheck_r(l->bounds, 400.0f);
         if (vis == -1)
             continue;
-        l01_packet_r.tag->tag = 0x30000007;
-        l01_packet_r.tag->addr = (u32)water_setup_dma_block_r;
-        l01_packet_r.tag->vif0 = 0;
-        l01_packet_r.tag->vif1 = 0x50000007;
-        l01_packet_r.tag++;
-        l01_packet_r.tag->tag = 0x10000005;
-        l01_packet_r.tag->addr = 0;
-        l01_packet_r.tag->vif0 = 0;
-        l01_packet_r.tag->vif1 = 0x50000005;
-        tag = l01_packet_r.tag;
+        l01_packet.tag->tag = 0x30000007;
+        l01_packet.tag->addr = (u32)water_setup_dma_block;
+        l01_packet.tag->vif0 = 0;
+        l01_packet.tag->vif1 = 0x50000007;
+        l01_packet.tag++;
+        l01_packet.tag->tag = 0x10000005;
+        l01_packet.tag->addr = 0;
+        l01_packet.tag->vif0 = 0;
+        l01_packet.tag->vif1 = 0x50000005;
+        tag = l01_packet.tag;
         q = (u64 *)(tag + 1);
-        l01_packet_r.tag = tag + 1;
+        l01_packet.tag = tag + 1;
         q[0] = 0x4000000000008001;
         q[1] = 0xEEEE;
         q[2] = ((u64)l->alpha0 << 32) | 100;
         q[3] = 0x42;
         q[4] = ((u64)l->alpha1 << 32) | 100;
         q[5] = 0x43;
-        q[6] = GetEffectTex_r(l->tex0);
+        q[6] = GetEffectTex(l->tex0);
         q[7] = 6;
-        q[8] = GetEffectTex_r(l->tex1);
+        q[8] = GetEffectTex(l->tex1);
         q[9] = 7;
-        l01_packet_r.tag = tag + 6;
-        build_overlay_layer_wave_vertices_r(l);
+        l01_packet.tag = tag + 6;
+        build_overlay_layer_wave_vertices(l);
         emit_textured_strip_packet_r(l->shape, 0x70000000, 0x70003000, 0x70001000, 0x70002000, 1 - vis);
     }
 }
@@ -2628,7 +2628,7 @@ typedef struct {
     float len;
 } BeamVars;
 
-extern BeamMoby *CreateMoby_b(int) __asm__("func_0020D348");
+extern BeamMoby *func_0020D348(int);
 
 extern float FastVecLength(void *);
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
@@ -2651,7 +2651,7 @@ BeamMoby *spawn_beam(void *owner, u128_t *pos, u128_t *dir, u128_t *color, int k
     p.q = *pos;
     d.q = *dir;
     c.q = *color;
-    m = CreateMoby_b(0x2AE);
+    m = CreateMoby(0x2AE);
     if (m != 0) {
         v = (BeamVars *)m->vars;
         v->owner = owner;
@@ -3024,21 +3024,21 @@ typedef struct {
     HoverVars *pvars;
 } HoverMoby;
 extern Hero g_hero_r2 __asm__("D_0013F450");
-extern short water_lily_spring_velocity_adjustment_scale_r __asm__("D_L01_00161C80");
-extern short water_lily_spring_damping_r __asm__("D_L01_00161C84");
-extern short water_lily_hero_separation_radius_r __asm__("D_L01_00161C88");
-extern short water_lily_max_horizontal_speed_r __asm__("D_L01_00161C8C");
-extern short water_lily_collision_radius_r __asm__("D_L01_00161C90");
+extern short D_L01_00161C80;
+extern short D_L01_00161C84;
+extern short D_L01_00161C88;
+extern short D_L01_00161C8C;
+extern short D_L01_00161C90;
 extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern f32 spring_axis_to_r(f32 *, f32, f32 *, f32, f32, f32) __asm__("func_L01_002F95A0");
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern f32 FastAbsF_r(f32) __asm__("func_001F9B88");
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern void MoveKeepingOverGround_r(void *, void *, void *, s32, f32, f32, f32, f32) __asm__("func_L00_002594C8");
+extern void func_L00_002594C8(void *, void *, void *, s32, f32, f32, f32, f32);
 extern f32 FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
-extern f32 resolve_camera_surface_height_r(void *, s32) __asm__("func_00214440");
+extern f32 func_00214440(void *, s32);
 /* Hovering enemy update: springs its position toward a home point on each axis, keeps its distance to the player, and steers toward a target with the shared turn helper. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f8268. */
 void water_lily_update(HoverMoby *m) {
     HoverVars *v;
@@ -3064,33 +3064,33 @@ void water_lily_update(HoverMoby *m) {
             break;
         case 1:
             spring_axis_to_r(&m->pos.v.x, v->home_x, &v->vel_x,
-                             *(float *)&water_lily_spring_velocity_adjustment_scale_r * g_frame_time_sq_r,
-                             *(float *)&water_lily_spring_damping_r, 3.0f);
+                             *(float *)&water_lily_spring_velocity_adjustment_scale * g_frame_time_sq_r,
+                             *(float *)&water_lily_spring_damping, 3.0f);
             spring_axis_to_r(&m->pos.v.y, v->home_y, &v->vel_y,
-                             *(float *)&water_lily_spring_velocity_adjustment_scale_r * g_frame_time_sq_r,
-                             *(float *)&water_lily_spring_damping_r, 3.0f);
-            if (vec_distance_xy_r(&m->pos, &g_hero_r2.motion.pos) < *(float *)&water_lily_hero_separation_radius_r) {
+                             *(float *)&water_lily_spring_velocity_adjustment_scale * g_frame_time_sq_r,
+                             *(float *)&water_lily_spring_damping, 3.0f);
+            if (vec_distance_xy_r(&m->pos, &g_hero_r2.motion.pos) < *(float *)&water_lily_hero_separation_radius) {
                 if (FastAbsF_r(m->pos.v.z - g_hero_r2.motion.pos.f[2]) < 0.7f) {
                     ang = fast_atan2_r(m->pos.v.x - g_hero_r2.motion.pos.f[0], m->pos.v.y - g_hero_r2.motion.pos.f[1]);
-                    m->pos.v.x = FastCos_r(ang) * *(float *)&water_lily_hero_separation_radius_r;
-                    m->pos.v.y = FastSin_r(ang) * *(float *)&water_lily_hero_separation_radius_r;
+                    m->pos.v.x = FastCos_r(ang) * *(float *)&water_lily_hero_separation_radius;
+                    m->pos.v.y = FastSin_r(ang) * *(float *)&water_lily_hero_separation_radius;
                     m->pos.v.x += g_hero_r2.motion.pos.f[0];
                     m->pos.v.y += g_hero_r2.motion.pos.f[1];
                 }
             }
-            MoveKeepingOverGround_r(m, &tgt, &m->pos, 3, 0.1f, *(float *)&water_lily_collision_radius_r, 600.0f,
-                                    1.5707964f);
+            MoveKeepingOverGround(m, &tgt, &m->pos, 3, 0.1f, *(float *)&water_lily_collision_radius, 600.0f,
+                                  1.5707964f);
             m->pos.v.x = tgt.v.x;
             m->pos.v.y = tgt.v.y;
             m->pos.v.z = old.v.z;
-            if (FastVecDist_r(&old, &m->pos) > *(float *)&water_lily_max_horizontal_speed_r * g_frame_time_r2) {
+            if (FastVecDist_r(&old, &m->pos) > *(float *)&water_lily_max_horizontal_speed * g_frame_time_r2) {
                 FastVecSub_r(&d, &m->pos, &old);
                 step.q = d.q;
-                vec_scale_to_length_r(&step, &step, *(float *)&water_lily_max_horizontal_speed_r * g_frame_time_r2);
+                vec_scale_to_length_r(&step, &step, *(float *)&water_lily_max_horizontal_speed * g_frame_time_r2);
                 FastVecAdd_r3(&d, &old, &step);
                 m->pos.q = d.q;
             }
-            dz = resolve_camera_surface_height_r(&m->pos, 0) - m->pos.v.z;
+            dz = resolve_camera_surface_height(&m->pos, 0) - m->pos.v.z;
             lim = g_frame_time_r2 * 3.0f;
             if (dz > lim) {
                 dz = lim;

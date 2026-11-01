@@ -224,7 +224,7 @@ typedef struct {
     short u;
     short v;
 } LoadPoint;
-extern LoadPoint effect_texture_definitions_p[] __asm__("D_0018D540");
+extern LoadPoint D_0018D540[];
 extern short log2dim_s(int) __asm__("func_001F9968");
 
 /* Unpack count point records (x, y, u, v words, 12.4 fixed point for
@@ -240,11 +240,11 @@ void unpack_point_records(int *src, int count) {
         y = *src++;
         u = *src++;
         v = *src++;
-        effect_texture_definitions_p[effect_tex_cnt].x = x >> 4;
-        effect_texture_definitions_p[effect_tex_cnt].y = y >> 4;
-        effect_texture_definitions_p[effect_tex_cnt].u = log2dim_s(u);
-        effect_texture_definitions_p[effect_tex_cnt].v = log2dim_s(v);
-        effect_texture_definitions_p[effect_tex_cnt].flags = 0;
+        effect_texture_definitions[effect_tex_cnt].x = x >> 4;
+        effect_texture_definitions[effect_tex_cnt].y = y >> 4;
+        effect_texture_definitions[effect_tex_cnt].u = log2dim_s(u);
+        effect_texture_definitions[effect_tex_cnt].v = log2dim_s(v);
+        effect_texture_definitions[effect_tex_cnt].flags = 0;
     }
 }
 
@@ -278,7 +278,7 @@ typedef struct {
     char *unk1C;
     struct SkyShellL *shells[1]; /* 0x20 */
 } SkyDefL;
-extern SkyDefL *level_sky_effect_data_s __asm__("D_0016055C") MACRO_ADDR;
+extern SkyDefL *D_0016055C MACRO_ADDR;
 
 /* Relocates the sky definition s just loaded (its pointers are offsets
    from s) and makes it the current one (level_sky_effect_data): the page table and
@@ -292,7 +292,7 @@ extern SkyDefL *level_sky_effect_data_s __asm__("D_0016055C") MACRO_ADDR;
 void relocate_sky_definition(SkyDefL *s) {
     int i;
 
-    level_sky_effect_data_s = s;
+    level_sky_effect_data = s;
     s->unk04 = 1;
     s->pages = (SkyPageL *)((char *)s->pages + (int)s);
     s->unk14 = s->unk14 + (int)s;
@@ -301,30 +301,30 @@ void relocate_sky_definition(SkyDefL *s) {
         s->unk1C = s->unk1C + (int)s;
     }
     {
-        int *src = (int *)level_sky_effect_data_s->pages;
+        int *src = (int *)level_sky_effect_data->pages;
 
-        for (i = 0; i < level_sky_effect_data_s->npages; i++) {
+        for (i = 0; i < level_sky_effect_data->npages; i++) {
             int a = *src++;
             int b = *src++;
             int c = *src++;
             int d = *src++;
 
-            level_sky_effect_data_s->pages[i].unk0A = a >> 4;
-            level_sky_effect_data_s->pages[i].unk08 = b >> 4;
-            level_sky_effect_data_s->pages[i].unk0C = log2dim(c);
-            level_sky_effect_data_s->pages[i].unk0E = log2dim(d);
-            level_sky_effect_data_s->pages[i].tag = 0;
+            level_sky_effect_data->pages[i].unk0A = a >> 4;
+            level_sky_effect_data->pages[i].unk08 = b >> 4;
+            level_sky_effect_data->pages[i].unk0C = log2dim(c);
+            level_sky_effect_data->pages[i].unk0E = log2dim(d);
+            level_sky_effect_data->pages[i].tag = 0;
         }
     }
     {
         int j;
 
-        for (j = 0; j < level_sky_effect_data_s->count; j++) {
+        for (j = 0; j < level_sky_effect_data->count; j++) {
             SkyShellL *sh;
             int k;
 
-            level_sky_effect_data_s->shells[j] = (SkyShellL *)((char *)level_sky_effect_data_s->shells[j] + (int)s);
-            sh = level_sky_effect_data_s->shells[j];
+            level_sky_effect_data->shells[j] = (SkyShellL *)((char *)level_sky_effect_data->shells[j] + (int)s);
+            sh = level_sky_effect_data->shells[j];
             for (k = 0; k < sh->count; k++) {
                 SkyShellItemL *it = (SkyShellItemL *)sh + k;
 
@@ -789,7 +789,7 @@ typedef struct {
     s32 nested_tables[1];
 } ResidentClassRenderHeader;
 extern u8 resident_class_slot_by_id_r[] __asm__("D_001B3E40");
-extern MaterialMap resident_class_material_maps_r[] __asm__("D_001B6C00");
+extern MaterialMap D_001B6C00[];
 extern void build_indexed_resident_render_packet_r(ResidentRenderPacket *, void *, s32, s32, s32, s32,
                                                    s32) __asm__("func_002035B0");
 extern void SetUpVisGifViewer_r(ResidentRenderPacket *packet, s32 draw_high, s32 draw_shift, s32 material_base,
@@ -885,7 +885,7 @@ void func_00203B70_r(ResidentClassRenderHeader *header, u8 *textures, u8 *materi
     }
 
     class_slot = resident_class_slot_by_id_r[class_id];
-    slot_materials = &resident_class_material_maps_r[class_slot];
+    slot_materials = &resident_class_material_maps[class_slot];
     qcopy(slot_materials, material_map);
     group = (ResidentRenderGroup *)header->groups;
     for (group_index = 0; group_index < group_count; group_index++, group++) {
@@ -1515,10 +1515,10 @@ struct LevelArchiveHeader {
 };
 
 extern struct DiscTable disc_table_r __asm__("D_00137C80");
-extern s16 ship_index_r[] __asm__("D_0013E156");
-extern s32 cd_read_spindle_speed_r __asm__("D_0015EE58") MACRO_ADDR;
-extern u32 sound_bank_handle_r __asm__("D_0015EE5C") MACRO_ADDR;
-extern s32 pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
+extern s16 D_0013E156[];
+extern s32 D_0015EE58 MACRO_ADDR;
+extern u32 D_0015EE5C MACRO_ADDR;
+extern s32 D_0015EE80 MACRO_ADDR;
 /* The load's state is one small-data object: the stage at its start is reached in one
    instruction (through $gp in a delay slot), the members behind it never are. */
 struct LevelArchiveLoad {
@@ -1528,20 +1528,20 @@ struct LevelArchiveLoad {
     u8 *sound; /* sound_archive_base */
     u8 *level; /* level_archive_base */
 };
-extern struct LevelArchiveLoad level_archive_load_state_r __asm__("D_0015EF48") MACRO_ADDR;
-extern s32 cd_read_wait_frames_r __asm__("D_0015EFBC") MACRO_ADDR;
-extern s32 cd_read_slowdown_applied_r __asm__("D_0015EFC0") MACRO_ADDR;
+extern struct LevelArchiveLoad D_0015EF48 MACRO_ADDR;
+extern s32 D_0015EFBC MACRO_ADDR;
+extern s32 D_0015EFC0 MACRO_ADDR;
 extern u8 D_1FF8000_04C60[] __asm__("D_1FF8000");
-extern void SoundBank_StoreHandle_r() __asm__("func_0022F090");
-extern s32 snd_FlushSoundCommands_r() __asm__("func_0012DDC0");
-extern void snd_BankLoadFromEE_CB_r(s32, s32, u64) __asm__("func_0012E1C8");
-extern void snd_ResolveBankXREFS_r() __asm__("func_0012E2E8");
-extern s32 snd_UnloadBank_r(s32) __asm__("func_0012E318");
-extern void snd_StopAllSounds_r() __asm__("func_0012E4F8");
+extern void func_0022F090();
+extern s32 func_0012DDC0();
+extern void func_0012E1C8(s32, s32, u64);
+extern void func_0012E2E8();
+extern s32 func_0012E318(s32);
+extern void func_0012E4F8();
 extern s32 Stream_SubmitRead_r(void *, u32, u32) __asm__("func_002175C8");
-extern s32 sce_cd_break_r() __asm__("func_001219C8");
+extern s32 func_001219C8();
 extern s32 sce_cd_get_error_r() __asm__("func_00121930");
-extern s32 sce_cd_sync_s_r(s32) __asm__("func_00120F30");
+extern s32 func_00120F30(s32);
 
 /* One step of the level archive load: waits for the disc, steps back a stage on a read
    error or a 720-frame stall, then by stage reads the shared, level and sound archives
@@ -1564,36 +1564,36 @@ s32 service_level_archive_load(void) {
     s32 level_index;
     struct LevelArchiveHeader *shared_header;
 
-    level_index = ship_index_r[0] + 1;
-    if (sce_cd_sync_s_r(1) != 0) {
-        cd_read_wait_frames_r = cd_read_wait_frames_r + 1;
-        if (cd_read_spindle_speed_r == 1) {
-            if (cd_read_wait_frames_r >= 0x2D1) {
-                cd_read_slowdown_applied_r = cd_read_spindle_speed_r;
-                retry_stage = level_archive_load_state_r.stage - 1;
-                cd_read_spindle_speed_r = 0;
+    level_index = ship_index[0] + 1;
+    if (sce_cd_sync_s(1) != 0) {
+        cd_read_wait_frames = cd_read_wait_frames + 1;
+        if (cd_read_spindle_speed == 1) {
+            if (cd_read_wait_frames >= 0x2D1) {
+                cd_read_slowdown_applied = cd_read_spindle_speed;
+                retry_stage = level_archive_load_state.stage - 1;
+                cd_read_spindle_speed = 0;
                 if ((u16)retry_stage < 3) {
-                    level_archive_load_state_r.stage = retry_stage;
+                    level_archive_load_state.stage = retry_stage;
                 }
-                sce_cd_break_r();
+                sce_cd_break();
             }
         }
         return 0;
     }
     if (sce_cd_get_error_r() != 0) {
-        if (cd_read_slowdown_applied_r == 0) {
-            cd_read_slowdown_applied_r = 1;
-            retry_stage = level_archive_load_state_r.stage - 1;
-            cd_read_spindle_speed_r = 0;
+        if (cd_read_slowdown_applied == 0) {
+            cd_read_slowdown_applied = 1;
+            retry_stage = level_archive_load_state.stage - 1;
+            cd_read_spindle_speed = 0;
             if ((u16)retry_stage < 3) {
-                level_archive_load_state_r.stage = retry_stage;
+                level_archive_load_state.stage = retry_stage;
             }
         }
     }
-    stage = (s16)level_archive_load_state_r.stage;
+    stage = (s16)level_archive_load_state.stage;
     switch (stage) {
         case 0:
-            if (pal_mode_r != 0) {
+            if (pal_mode != 0) {
                 sound_aligned_bytes = ((disc_table_r.sound_archive_alt.size << 11) + 0xFFF) & 0xFFFFF000;
             } else {
                 sound_aligned_bytes = ((disc_table_r.sound_archive.size << 11) + 0xFFF) & 0xFFFFF000;
@@ -1607,75 +1607,75 @@ s32 service_level_archive_load(void) {
             sound_aligned_bytes = ((archive_start_or_sectors << 11) + 0xFFF) & 0xFFFFF000;
             shared_archive_buffer = level_archive_buffer - sound_aligned_bytes;
             archive_start_or_bytes = disc_table_r.shared_archive.sector;
-            level_archive_load_state_r.level = level_archive_buffer;
-            level_archive_load_state_r.sound = sound_archive_buffer;
-            level_archive_load_state_r.shared = (struct LevelArchiveHeader *)shared_archive_buffer;
+            level_archive_load_state.level = level_archive_buffer;
+            level_archive_load_state.sound = sound_archive_buffer;
+            level_archive_load_state.shared = (struct LevelArchiveHeader *)shared_archive_buffer;
             Stream_SubmitRead_r(shared_archive_buffer, archive_start_or_bytes, archive_start_or_sectors);
-            level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
+            level_archive_load_state.stage = level_archive_load_state.stage + 1;
             break;
         case 1:
             next_disc_entry = (struct LevelArchiveDiscEntry *)((u8 *)&disc_table_r + level_index * 8);
-            Stream_SubmitRead_r(level_archive_load_state_r.level,
+            Stream_SubmitRead_r(level_archive_load_state.level,
                                 *(s32 *)((s32)&disc_table_r + (level_index << 3) + 0x12C8),
                                 *(s32 *)((s32)&disc_table_r + (level_index << 3) + 0x12CC));
-            level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
+            level_archive_load_state.stage = level_archive_load_state.stage + 1;
             break;
         case 2:
-            if (pal_mode_r != 0) {
-                Stream_SubmitRead_r(level_archive_load_state_r.sound, disc_table_r.sound_archive_alt.sector,
+            if (pal_mode != 0) {
+                Stream_SubmitRead_r(level_archive_load_state.sound, disc_table_r.sound_archive_alt.sector,
                                     disc_table_r.sound_archive_alt.size);
             } else {
-                Stream_SubmitRead_r(level_archive_load_state_r.sound, disc_table_r.sound_archive.sector,
+                Stream_SubmitRead_r(level_archive_load_state.sound, disc_table_r.sound_archive.sector,
                                     disc_table_r.sound_archive.size);
             }
-            level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
+            level_archive_load_state.stage = level_archive_load_state.stage + 1;
             break;
         case 3:
-            if (level_archive_load_state_r.busy != 0) {
+            if (level_archive_load_state.busy != 0) {
                 return 0;
             }
-            snd_StopAllSounds_r();
-            if (sound_bank_handle_r != 0) {
-                next_stage = level_archive_load_state_r.stage;
-                level_archive_load_state_r.stage = next_stage + 1;
+            snd_StopAllSounds();
+            if (sound_bank_handle != 0) {
+                next_stage = level_archive_load_state.stage;
+                level_archive_load_state.stage = next_stage + 1;
             } else {
-                level_archive_load_state_r.stage = 6;
+                level_archive_load_state.stage = 6;
             }
             break;
         case 4:
-            if (snd_FlushSoundCommands_r() != 0) {
+            if (snd_FlushSoundCommands() != 0) {
                 return 0;
             }
-            snd_UnloadBank_r(sound_bank_handle_r);
-            next_stage = level_archive_load_state_r.stage;
-            sound_bank_handle_r = 0;
-            level_archive_load_state_r.stage = next_stage + 1;
+            snd_UnloadBank(sound_bank_handle);
+            next_stage = level_archive_load_state.stage;
+            sound_bank_handle = 0;
+            level_archive_load_state.stage = next_stage + 1;
             break;
         case 5:
-            if (snd_FlushSoundCommands_r() != 0) {
+            if (snd_FlushSoundCommands() != 0) {
                 return 0;
             }
-            snd_ResolveBankXREFS_r();
-            level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
+            snd_ResolveBankXREFS();
+            level_archive_load_state.stage = level_archive_load_state.stage + 1;
             break;
         case 6:
-            if (snd_FlushSoundCommands_r() != 0) {
+            if (snd_FlushSoundCommands() != 0) {
                 return 0;
             }
-            shared_header = level_archive_load_state_r.shared;
-            sound_bank_handle_r = 0xFFFFFFFFU;
-            snd_BankLoadFromEE_CB_r(shared_header->sound_bank_offset + (s32)shared_header, (s32)SoundBank_StoreHandle_r,
-                                    (u32)&sound_bank_handle_r);
-            level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
+            shared_header = level_archive_load_state.shared;
+            sound_bank_handle = 0xFFFFFFFFU;
+            snd_BankLoadFromEE_CB(shared_header->sound_bank_offset + (s32)shared_header, (s32)SoundBank_StoreHandle,
+                                  (u32)&sound_bank_handle);
+            level_archive_load_state.stage = level_archive_load_state.stage + 1;
             break;
         case 7:
-            if (snd_FlushSoundCommands_r() != 0) {
+            if (snd_FlushSoundCommands() != 0) {
                 return 0;
             }
-            if ((u32)sound_bank_handle_r == 0xFFFFFFFFU) {
+            if ((u32)sound_bank_handle == 0xFFFFFFFFU) {
                 return 0;
             }
-            snd_ResolveBankXREFS_r();
+            snd_ResolveBankXREFS();
             return 1;
     }
     return 0;
@@ -1731,12 +1731,12 @@ struct TransferState {
 };
 
 extern struct TransferState render_sequence_t __asm__("D_0018CC20") NOT_SDA;
-extern struct GlobalIndex level_render_state_g __asm__("D_0013E130");
-extern struct Hero g_hero_r __asm__("D_0013F450");
+extern struct GlobalIndex D_0013E130;
+extern struct Hero D_0013F450;
 extern int g_game_mode MACRO_ADDR;
 extern int D_00160588[];
 extern int fast_decompress_2(int, int) __asm__("func_0020C468");
-extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
+extern struct Moby *func_0020D348(int);
 
 /* update_world_object_animation: relocate the model record loaded for the
    current chunk (render_sequence+0x58) and hook each of its parts to a moby,
@@ -1782,11 +1782,11 @@ void update_world_object_animation(void *arg0) {
         endp = (int)rec + sp[0];
         sp = (int *)((unsigned char *)sp + 4);
         if (g_game_mode == 6 && i == 0 && id == 0x215) {
-            id = D_00160588[level_render_state_g.slot];
+            id = D_00160588[level_render_state.slot];
         }
         mob = render_sequence_t.slots[i];
         if (mob == 0) {
-            mob = CreateMoby_m(id);
+            mob = CreateMoby(id);
             idx = ((struct PartList *)mob->pclass)->used;
             ((struct PartList *)mob->pclass)->used = idx + 1;
             mob->seq = idx;
@@ -1795,10 +1795,10 @@ void update_world_object_animation(void *arg0) {
             mob->flags |= 6;
             mob->unk72 = 0xFF;
             mob->collision = 0;
-            if (((struct ColorSrc *)g_hero_r.moby) == 0) {
+            if (((struct ColorSrc *)g_hero.moby) == 0) {
                 mob->spawn_frame = 0x38383800000000;
             } else {
-                mob->spawn_frame = ((struct ColorSrc *)g_hero_r.moby)->color;
+                mob->spawn_frame = ((struct ColorSrc *)g_hero.moby)->color;
             }
             if (((struct PartList *)mob->pclass)->flag) {
                 mob->unk73 = 0x18;
@@ -1821,7 +1821,7 @@ extern void update_world_object_animation(void *);
 extern int render_sequence NOT_SDA;
 extern int vu1_chain_buffer_2 NOT_SDA;
 
-extern int current_vu_chain_m __asm__("D_0016100C") MACRO_ADDR;
+extern int D_0016100C MACRO_ADDR;
 
 /* parse_space_scene_chunk(int): run update_world_object_animation on chunk index's slot,
    with the chunk's value as the current one meanwhile. The slot address is
@@ -1832,7 +1832,7 @@ void parse_space_scene_chunk(int arg0) {
     char *p = base - (-(arg0 * 4));
     *(int *)(base + 0x5C) = *(int *)(p + 0x60);
     update_world_object_animation(p);
-    *(int *)(base + 0x5C) = vu1_chain_buffer_2 + current_vu_chain_m;
+    *(int *)(base + 0x5C) = vu1_chain_buffer_2 + current_vu_chain;
 }
 
 typedef struct {

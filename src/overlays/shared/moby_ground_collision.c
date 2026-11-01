@@ -177,7 +177,7 @@ int probe_vertical_ground_collision(Vs *p, int x, int y, float f, float g) {
     return r;
 }
 extern unsigned char D_94C8_40[] __asm__("D_L00_00173F40");
-extern Vec4 D_94C8_60 __asm__("D_L00_00173F60");
+extern Vec4 D_L00_00173F60;
 extern Vec4 coll_resolved_pos;
 extern float probe_ground_height_flag20_f(void *) __asm__("func_L00_0025A748");
 extern void FastVecSub(void *, void *, void *);
@@ -185,7 +185,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line_p(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 extern float vec_length_xy(void *);
 extern float fast_atan2(float, float);
-extern int coll_sphere_l(void *, float, int, void *) __asm__("func_L00_001F10E0");
+extern int func_L00_001F10E0(void *, float, int, void *);
 extern float vec_distance_xy_f(void *, void *) __asm__("func_001F9D48");
 
 /* Moves pos toward to while keeping it over the ground and out of walls; returns 0 if it was snapped back. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/math_interpolation_00257ef0.c, FUN_L00_00258490. */
@@ -245,13 +245,13 @@ int MoveKeepingOverGround(void *ign, Vec4 *to, Vec4 *pos, int flags, float h, fl
     }
     if (!(flags & 2)) {
         zz = h + r;
-        q60 = (unsigned char *)&D_94C8_60;
+        q60 = (unsigned char *)&collision_hit_point;
         q40 = q60 - 0x20;
         i = 0;
         do {
             qcopy(&t, pos);
             t.f[2] += zz;
-            if (!coll_sphere_l(&t, r, 0x24, ign)) {
+            if (!coll_sphere(&t, r, 0x24, ign)) {
                 break;
             }
             ang = fast_atan2(vec_distance_xy_f(pos, q60), *(float *)(q40 + 0x28) - pos->f[2]);
@@ -299,7 +299,7 @@ int move_4318(char *m, char *v, int flags, float a, float b, float c) {
         FastVecAdd(&t2, &t3, p);
         t2.a[2] += a;
         if (coll_line(&t1, &t2, fl, (int)m, 0)) {
-            FastVecSub(p, (char *)&D_94C8_60, &t3);
+            FastVecSub(p, (char *)&collision_hit_point, &t3);
             r = 1;
             ((Moby *)m)->pos.z -= a;
         }
@@ -307,7 +307,7 @@ int move_4318(char *m, char *v, int flags, float a, float b, float c) {
     for (i = 0, q = (char *)&((Moby *)m)->pos; i < 6; i++) {
         qcopy(&t1, q);
         t1.a[2] += a;
-        if (coll_sphere_l(&t1, b, fl | 4, m)) {
+        if (coll_sphere(&t1, b, fl | 4, m)) {
             qcopy(q, &coll_resolved_pos);
             r |= 1;
             ((Moby *)m)->pos.z -= a;
@@ -533,7 +533,7 @@ extern unsigned short *level_moby_groups[];
 extern char *moby_group_iter_moby MACRO_ADDR;
 extern char *moby_group_iter_moby_r __asm__("D_L00_001601D4") MACRO_ADDR;
 extern unsigned short *moby_group_iter_entry_r __asm__("D_L00_001601CC") MACRO_ADDR;
-extern short moby_group_iter_index_r[] __asm__("D_L00_001601D0") MACRO_ADDR;
+extern short D_L00_001601D0[] MACRO_ADDR;
 extern char *moby_array_start_r __asm__("D_L00_00160098") MACRO_ADDR;
 int get_next_moby_in_group(char **, char *);
 
@@ -555,7 +555,7 @@ int get_first_moby_in_group(char **out, int idx, int a, int b) {
     if (v == 0)
         return -1;
     h = *v & 0x7FFF;
-    moby_group_iter_index_r[0] = h;
+    moby_group_iter_index[0] = h;
     e = moby_array_start_r + (h << 8);
     moby_group_iter_moby = e;
     *out = e;
@@ -597,8 +597,8 @@ int func_L00_0025A2F0_r(int *out, unsigned char *m, int a2, int a3) {
             do {
                 moby_group_iter_entry_r2++;
                 p = moby_group_iter_entry_r2;
-                moby_group_iter_index_r[0] = *(unsigned short *)p & 0x7FFF;
-                moby_group_iter_moby_r2 = (unsigned char *)(moby_array_start_r2 + (moby_group_iter_index_r[0] << 8));
+                moby_group_iter_index[0] = *(unsigned short *)p & 0x7FFF;
+                moby_group_iter_moby_r2 = (unsigned char *)(moby_array_start_r2 + (moby_group_iter_index[0] << 8));
                 k = *p;
             } while (k >= 0 && m != moby_group_iter_moby_r2);
             if (k < 0) {
@@ -617,8 +617,8 @@ int func_L00_0025A2F0_r(int *out, unsigned char *m, int a2, int a3) {
         short n;
 
         moby_group_iter_entry_r2 = p + 1;
-        moby_group_iter_index_r[0] = *(unsigned short *)moby_group_iter_entry_r2 & 0x7FFF;
-        moby_group_iter_moby_r2 = (unsigned char *)(moby_array_start_r2 + (moby_group_iter_index_r[0] << 8));
+        moby_group_iter_index[0] = *(unsigned short *)moby_group_iter_entry_r2 & 0x7FFF;
+        moby_group_iter_moby_r2 = (unsigned char *)(moby_array_start_r2 + (moby_group_iter_index[0] << 8));
         *out = (int)moby_group_iter_moby_r2;
         neg = (signed char)moby_group_iter_moby_r2[0x20] < 0;
         if ((a2 == 0 && a3 == 0 && !neg) || (a2 != 0 && (a3 == 0 || neg))) {
@@ -1049,7 +1049,7 @@ extern short hit_damage_by_reaction_class;
 extern float hit_push_scale_table[][8];
 extern unsigned char hit_reaction_table[][4];
 extern Q_25a478 *GetFlaggedPvarWord_q(void *) __asm__("func_L00_0025D390");
-extern Q_25a478 *read_state_field_q(void *) __asm__("func_00215078");
+extern Q_25a478 *func_00215078(void *);
 extern int FastDecTimer(void *);
 extern void vec_set_length_xy(float *, float *, float);
 
@@ -1262,11 +1262,11 @@ int ComputeHitResponse(O_25a478 *obj, P_25a478 *p, Q_25a478 *q, unsigned int fla
     if (fp)
         *fp = p->f2C;
     if (r == 4) {
-        o = read_state_field_q(obj);
+        o = read_state_field(obj);
         if (o)
             o->b2E = 1;
     } else {
-        Q_25a478 *o2 = read_state_field_q(obj);
+        Q_25a478 *o2 = read_state_field(obj);
         if (o2)
             o2->b2E = 0;
     }
@@ -1354,16 +1354,16 @@ float jump_speed_4318(float *a, float *b, float *out, float speed, float g) {
     }
     return -((a[2] - b[2]) + g * (t * t) * 0.5f) / t;
 }
-extern void f_54218_BCF8(void *, int, int) __asm__("func_L00_00254218");
+extern void func_L00_00254218(void *, int, int);
 extern void f_vadd_BCF8(void *, void *, void *) __asm__("func_001F9BD8");
 extern void f_vsub_BCF8(void *, void *, void *) __asm__("func_001F9BF0");
 extern void f_vscale_BCF8(float, void *, void *) __asm__("func_001F9C30");
-extern void f_vscale3_BCF8(float, void *, void *) __asm__("func_001F9C48");
-extern void f_25328_BCF8(float, void *, void *) __asm__("func_00125328");
+extern void func_001F9C48(float, void *, void *);
+extern void func_00125328(float, void *, void *);
 extern float f_vlen_BCF8(void *) __asm__("func_001F9CB8");
 extern float f_sqrt_BCF8(float) __asm__("func_001F9B50");
 extern void f_vrot_BCF8(void *, void *, void *) __asm__("func_001F9EC0");
-extern void f_FF328_BCF8(float, void *, void *) __asm__("func_L00_001FF328");
+extern void func_L00_001FF328(float, void *, void *);
 extern float f_cos_BCF8(float) __asm__("func_001F9F90");
 extern float f_sin_BCF8(float) __asm__("func_001F9FA8");
 extern float f_randf_BCF8(float, float) __asm__("func_002140F8");
@@ -1395,7 +1395,7 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
         if (!entry)
             return 0;
         if (*(short *)(entry + 2))
-            f_54218_BCF8(entity, *(short *)(entry + 2), 0);
+            moby_joints_to_scratchpad(entity, *(short *)(entry + 2), 0);
         if (*(int *)(entry + 4) <= 0)
             return 0;
         count = 0;
@@ -1421,7 +1421,7 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                         case SHAPE_INDEXED_CENTER_SPHERE: {
                             if (type < 2) {
                                 qcopy(&first, (void *)((entry + 0x10)));
-                                f_vscale3_BCF8(((Moby *)entity)->scale * 0.0009765625f, &first, &first);
+                                scale_vector(((Moby *)entity)->scale * 0.0009765625f, &first, &first);
                                 radius = first.f[3];
                             } else {
                                 qcopy(&first, (void *)((0x70000000 + (*(int *)list << 4))));
@@ -1446,10 +1446,10 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                             break;
                         }
                         case SHAPE_ENDPOINT_SEGMENT_WITH_BALL_OFFSET: {
-                            f_25328_BCF8(((Moby *)entity)->scale * 0.0009765625f, &first,
-                                         (void *)(0x70000000 + (*(short *)list << 4)));
-                            f_25328_BCF8(((Moby *)entity)->scale * 0.0009765625f, &second,
-                                         (void *)(0x70000000 + (*(short *)(list + 2) << 4)));
+                            sceVu0ScaleVector(((Moby *)entity)->scale * 0.0009765625f, &first,
+                                              (void *)(0x70000000 + (*(short *)list << 4)));
+                            sceVu0ScaleVector(((Moby *)entity)->scale * 0.0009765625f, &second,
+                                              (void *)(0x70000000 + (*(short *)(list + 2) << 4)));
                             f_vsub_BCF8(&third, &first, &second);
                             radius = f_vlen_BCF8(&third);
                             extent = *(float *)(list + 8) * ((Moby *)entity)->scale * 0.0009765625f;
@@ -1494,7 +1494,7 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                     extent = *(float *)(entry + 0xc) * ((Moby *)entity)->scale;
                 }
                 extent *= 0.0009765625f;
-                f_FF328_BCF8(1024.0f, &first, &first);
+                divide_vector_xyz(1024.0f, &first, &first);
                 for (;;) {
                     second.f[0] = f_randf_BCF8(-extent, extent);
                     second.f[1] = f_randf_BCF8(-extent, extent);
@@ -1514,7 +1514,7 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                 f_vscale_BCF8(((Moby *)entity)->scale, &first, &first);
                 radius = first.f[3] * ((Moby *)entity)->scale;
                 extent = *(float *)(entry + 4) * ((Moby *)entity)->scale;
-                f_FF328_BCF8(1024.0f, &first, &first);
+                divide_vector_xyz(1024.0f, &first, &first);
                 radius *= 0.0009765625f;
                 extent *= 0.0009765625f;
                 weight = f_randf_BCF8(0.0f, radius * radius);
@@ -1531,13 +1531,13 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
             case SHAPE_ENDPOINT_SEGMENT_WITH_BALL_OFFSET: {
                 float extent, weight;
                 list = entry + 4;
-                f_25328_BCF8(((Moby *)entity)->scale, &first, (void *)(0x70000000 + (*(short *)list << 4)));
-                f_25328_BCF8(((Moby *)entity)->scale, &second, (void *)(0x70000000 + (*(short *)(list + 2) << 4)));
+                sceVu0ScaleVector(((Moby *)entity)->scale, &first, (void *)(0x70000000 + (*(short *)list << 4)));
+                sceVu0ScaleVector(((Moby *)entity)->scale, &second, (void *)(0x70000000 + (*(short *)(list + 2) << 4)));
                 f_vsub_BCF8(&third, &second, &first);
                 weight = f_randf_BCF8(0.0f, 1.0f);
                 f_vscale_BCF8(weight, &third, &third);
                 f_vadd_BCF8(&fourth, &third, &first);
-                f_FF328_BCF8(1024.0f, &fourth, &fourth);
+                divide_vector_xyz(1024.0f, &fourth, &fourth);
                 extent = *(float *)(entry + 0xc) * ((Moby *)entity)->scale;
                 extent = extent * 0.0009765625f;
                 do {
@@ -2122,9 +2122,9 @@ int mine_fall(char *moby, struct FallState *st) {
     t = FastVecLength(&st->vel_x);
     if ((float)st->unk_20 * sc < t) {
         coll_line_p(v0, v20, 36, moby, 0);
-        qcopy(v20, &D_94C8_60);
+        qcopy(v20, &collision_hit_point);
     }
-    if (coll_sphere_l(v20, IntToFloat(st->unk_20) * sc, 36, moby) != 0) {
+    if (coll_sphere(v20, IntToFloat(st->unk_20) * sc, 36, moby) != 0) {
         flags |= 2;
         g = &coll_resolved_pos;
         qcopy(((char *)&((Moby *)moby)->pos), g);
@@ -2659,15 +2659,15 @@ typedef struct {
     float f[11];
 } Fl;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-extern float level_draw_frame_load_r __asm__("D_L00_0015F6B8") MACRO_ADDR;
-extern float cpu_frame_load_r __asm__("D_L00_0015F6B4") MACRO_ADDR;
-extern char g_debug_camera_r[] __asm__("D_L00_00166EC0");
+extern float D_L00_0015F6B8 MACRO_ADDR;
+extern float D_L00_0015F6B4 MACRO_ADDR;
+extern char D_L00_00166EC0[];
 extern char player_camera_r[] __asm__("D_L00_00166D80");
-extern char beam_explosion_blast_params_r[] __asm__("D_L00_001B05D0");
-extern char beam_explosion_alt_color_blast_params_r[] __asm__("D_L00_001B0620");
+extern char D_L00_001B05D0[];
+extern char D_L00_001B0620[];
 extern S6_25F4A8 color_swapped_burst_colors_r __asm__("D_L00_001E93B0");
 extern S6_25F4A8 color_swapped_burst_fade_colors_r __asm__("D_L00_001E93C8");
-extern int free_moby_slot_count_r __asm__("D_L00_0016007C") MACRO_ADDR;
+extern int D_L00_0016007C MACRO_ADDR;
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern float random_angle_radians_r(void) __asm__("func_00214158");
@@ -2679,9 +2679,7 @@ extern unsigned swap_packed_color_channels_r(unsigned, int) __asm__("func_L00_00
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void initialize_hit_descriptor_r(void *, void *, int, float) __asm__("func_L00_0025A890");
 extern int coll_sphere_mobys_r2(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_r(void *, void *, int, int, int, int,
-                                                                                 int, int,
-                                                                                 float) __asm__("func_L00_0026CA10");
+extern void *func_L00_0026CA10(void *, void *, int, int, int, int, int, int, float);
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
@@ -2708,7 +2706,7 @@ void spawn_explosion(char *m, void *unused, char *pos, float fA, float fB, int n
 
     *(u128_25F4A8 *)&v0 = 0;
     v0.f[2] = g_frame_time_r * 8.0f * fF;
-    f3 = level_draw_frame_load_r + cpu_frame_load_r;
+    f3 = level_draw_frame_load + cpu_frame_load;
     *(u128_25F4A8 *)&vb = *(u128_25F4A8 *)&v0;
     if (s18 == -1) {
         s18 = 0;
@@ -2740,13 +2738,13 @@ void spawn_explosion(char *m, void *unused, char *pos, float fA, float fB, int n
             BuildSphericalOffset_r(&dir, fF * (random_float_between_r(7.0f, 10.5f) * g_frame_time_r), b, a);
             dir.f[2] += g_frame_time_r * 3.0f;
             dist = fF * 40000.0f;
-            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_r(
+            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(
                 pos, &dir, swap_packed_color_channels_r(0x4F007FFF, flag),
                 swap_packed_color_channels_r(0x1F00007F, flag),
                 rand_range_r(scale_ticks_r(0x3C), scale_ticks_r(0x78)) - s18 * 10, 1, -1, -1, dist);
         }
     }
-    FastVecSub_r2(&v0, g_debug_camera_r, pos);
+    FastVecSub_r2(&v0, g_debug_camera, pos);
     dist = FastVecLength_r(&v0);
     {
         if (s16 != 0) {
@@ -2767,11 +2765,11 @@ void spawn_explosion(char *m, void *unused, char *pos, float fA, float fB, int n
                 SpawnFallingSpark_r(pos, &d2, rand_range_r(scale_ticks_r(0x3C), scale_ticks_r(0x5A)), 0, 0);
             }
             s16 = s16 - 1;
-            if (free_moby_slot_count_r < 11) {
+            if (free_moby_slot_count < 11) {
                 s16 = 0;
             } else {
-                if (free_moby_slot_count_r - 10 < s16)
-                    s16 = free_moby_slot_count_r - 10;
+                if (free_moby_slot_count - 10 < s16)
+                    s16 = free_moby_slot_count - 10;
             }
             for (i = 0; i < s16; i++) {
                 float a;
@@ -2848,7 +2846,7 @@ void spawn_explosion(char *m, void *unused, char *pos, float fA, float fB, int n
             r3 = 60;
         }
         u = r3 & 0xFF;
-        if (cpu_frame_load_r < 0.95f && fE < dist) {
+        if (cpu_frame_load < 0.95f && fE < dist) {
             spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks_r(0x10), r1, 0x96, r2, 0x20);
             spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks_r(0x16), u, 0x7F, 0x50, 0x20);
         }
@@ -2878,18 +2876,18 @@ void spawn_explosion(char *m, void *unused, char *pos, float fA, float fB, int n
             v.f[3] = fG;
             if (FastBSphereCheck_r(&v, 100.0f) != -1) {
                 if (0.0f < fG) {
-                    ((Fl *)beam_explosion_blast_params_r)->f[9] = fG;
-                    ((Fl *)beam_explosion_blast_params_r)->f[10] = fG;
-                    ((Fl *)beam_explosion_blast_params_r)->f[8] = fG;
+                    ((Fl *)beam_explosion_blast_params)->f[9] = fG;
+                    ((Fl *)beam_explosion_blast_params)->f[10] = fG;
+                    ((Fl *)beam_explosion_blast_params)->f[8] = fG;
                 } else {
-                    ((Fl *)beam_explosion_blast_params_r)->f[9] = 15.0f;
-                    ((Fl *)beam_explosion_blast_params_r)->f[10] = 15.0f;
-                    ((Fl *)beam_explosion_blast_params_r)->f[8] = 15.0f;
+                    ((Fl *)beam_explosion_blast_params)->f[9] = 15.0f;
+                    ((Fl *)beam_explosion_blast_params)->f[10] = 15.0f;
+                    ((Fl *)beam_explosion_blast_params)->f[8] = 15.0f;
                 }
                 if (flag) {
-                    mine_camera_blast_r(beam_explosion_alt_color_blast_params_r, pos, 0, 0);
+                    mine_camera_blast_r(beam_explosion_alt_color_blast_params, pos, 0, 0);
                 } else {
-                    mine_camera_blast_r(beam_explosion_blast_params_r, pos, 0, 0);
+                    mine_camera_blast_r(beam_explosion_blast_params, pos, 0, 0);
                 }
             }
         }
@@ -3225,7 +3223,7 @@ int FindNearestTargetMoby(Moby *a, struct TargetLock *o, float best) {
     o->result = res;
     return res;
 }
-extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
+extern int func_00215570(void *, int);
 extern int IsPointInPolygon_r(void *, void *, int) __asm__("func_L00_0025A778");
 
 /* Picks the nearest eligible moby to A within BEST that passes the id list or the volume test, fills the record O and
@@ -3249,7 +3247,7 @@ int FindNearestEligibleMoby(Moby *a, struct TargetLock *o, float best, int *list
         res = 2;
     } else if (n > 0) {
         for (k = 0; k < n - 1; k++) {
-            if (is_point_inside_clip_volume_r(g_hero + 0x80, list[k]) != 0) {
+            if (is_point_inside_clip_volume(g_hero + 0x80, list[k]) != 0) {
                 m = 0;
                 res = 2;
                 break;
@@ -3279,7 +3277,7 @@ int FindNearestEligibleMoby(Moby *a, struct TargetLock *o, float best, int *list
             ok = 0;
         } else if (n > 0) {
             for (k = 0; k < n - 1; k++) {
-                if (is_point_inside_clip_volume_r(&p->pos, list[k]) != 0) {
+                if (is_point_inside_clip_volume(&p->pos, list[k]) != 0) {
                     ok = 0;
                     break;
                 }
@@ -3312,7 +3310,7 @@ int FindNearestEligibleMoby(Moby *a, struct TargetLock *o, float best, int *list
             ok = 0;
         } else if (n > 0) {
             for (k = 0; k < n - 1; k++) {
-                if (is_point_inside_clip_volume_r(&q->pos, list[k]) != 0) {
+                if (is_point_inside_clip_volume(&q->pos, list[k]) != 0) {
                     ok = 0;
                     break;
                 }

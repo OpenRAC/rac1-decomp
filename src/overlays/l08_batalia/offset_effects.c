@@ -8,7 +8,7 @@ extern unsigned char *create_part(int);
 extern void FastVecSub(void *dst, void *a, void *b);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *dst, void *a, void *b);
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 
 extern char batalia_hero_pos[];
 extern unsigned char *batalia_part_type39_textures;
@@ -29,7 +29,7 @@ unsigned char *spawn_moby_offset_effect(char *a) {
         vec_scale_to_length(v, v, *(float *)&batalia_offset_effect_push_dist);
         FastVecAdd(m + 0x10, p, v);
         *(int *)(m + 4) = *(int *)&batalia_offset_effect_color;
-        m[9] = truncate_float_to_s32_r(4.0f) + 0x40;
+        m[9] = truncate_float_to_s32(4.0f) + 0x40;
         m[3] = 0x48;
         m[1] = 0;
         m[2] = *batalia_part_type39_textures;
@@ -58,7 +58,7 @@ unsigned char *func_L08_0027C218(int owner, void *pos, void *vec, short ticks, u
         q[0x16] = b;
         q[0x17] = a;
         *(int *)(m + 4) = (b << 16) | (g << 8) | r;
-        m[9] = truncate_float_to_s32_r(4.0f) + 0x40;
+        m[9] = truncate_float_to_s32(4.0f) + 0x40;
         m[3] = 0x48;
         m[1] = 0;
         m[8] = func_001160D8();
@@ -83,7 +83,7 @@ void spawn_effect_with_initial_motion(char *a, char *b, int c, float f) {
         qcopy(m + 0x10, a);
         q = (char *)m + 0x20;
         *(int *)(m + 4) = 0x50504040;
-        m[9] = truncate_float_to_s32_r(2.0f) + 0x40;
+        m[9] = truncate_float_to_s32(2.0f) + 0x40;
         m[3] = 0x48;
         m[1] = 0;
         m[2] = *batalia_part_type77_textures;

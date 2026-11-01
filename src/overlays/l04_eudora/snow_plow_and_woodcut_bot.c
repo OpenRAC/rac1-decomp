@@ -607,7 +607,7 @@ void snow_plow_update(VehicleMoby *m) {
 extern char *eudora_mobys_b __asm__("D_L04_00160058") MACRO_ADDR;
 extern short eudora_floating_platform_spin_rate_deg;
 extern float g_frame_time_b __asm__("D_0015EE6C") MACRO_ADDR;
-extern float g_frame_scale_sq_b __asm__("D_0015EE64") MACRO_ADDR;
+extern float D_0015EE64 MACRO_ADDR;
 extern void DeleteMoby(void *);
 
 extern float random_angle_radians(void);
@@ -650,7 +650,7 @@ void FloatingPlatformUpdate(char *m) {
                 float *p = (float *)(d + 0x224) + i;
                 float a =
                     FastAddRots(*p, *(float *)&eudora_floating_platform_spin_rate_deg * 0.017453292f * g_frame_time_b);
-                float g = g_frame_scale_sq_b;
+                float g = g_frame_scale_sq;
                 *p = a;
                 *(float *)(d + 0x108 + i * 0x80) = a;
                 EaseManipulatorOffsets(m, d + 0xA0 + i * 0x80, i, g * 0.03f, g * 0.3f);
@@ -1401,7 +1401,7 @@ void woodcut_bot_update(Moby *m) {
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
+extern struct Moby *func_0020D348(int);
 extern void moby_build_matrix(void *);
 
 // Spawns a Axe moby copying fields from another and placing it at a position.
@@ -1410,7 +1410,7 @@ void *spawn_axe_moby(char *src, char *pos) {
     char *p = tmp;
     char *m;
     *(u128 *)tmp = *(u128 *)pos;
-    m = (char *)CreateMoby_m(0x23A);
+    m = (char *)CreateMoby(0x23A);
     if (m != 0) {
         *(unsigned char *)(m + 0x30) = 0xFF;
         *(unsigned short *)(m + 0x32) = *(unsigned short *)(src + 0x32);
@@ -1975,7 +1975,7 @@ extern unsigned char discount_purchase_pricing[];
 extern int eudora_help_popup_state[] NOT_SDA;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int hero_death_count MACRO_ADDR;
-extern Moby *eudora_moby_list_r __asm__("D_L04_00160064") MACRO_ADDR;
+extern Moby *D_L04_00160064 MACRO_ADDR;
 extern Moby *eudora_mobys_r __asm__("D_L04_00160058") MACRO_ADDR;
 extern unsigned char item_available_20 NOT_SDA;
 extern unsigned char item_available_26 NOT_SDA;
@@ -2043,7 +2043,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                         Hero *h = (Hero *)(hero_globals_base + 0xE1D);
                         if (h->state.prev == HERO_STATE_CRANK && h->state_timer == 0) {
                             Moby *m;
-                            for (m = eudora_moby_list_r; m != 0; m = m->next) {
+                            for (m = eudora_moby_list; m != 0; m = m->next) {
                                 if (m->oclass == MOBY_CLASS_BOLT_CRANK &&
                                     FastVecDist(((float *)&m->pos),
                                                 &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) <

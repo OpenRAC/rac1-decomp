@@ -69,23 +69,23 @@ typedef struct Cam {
 
 extern int gemlik_game_mode_r __asm__("D_L13_0015F6A8") MACRO_ADDR;
 extern Moby *gemlik_moby_array_start_r __asm__("D_L13_00160058") MACRO_ADDR;
-extern Anim *gemlik_scene_points_r __asm__("D_L13_0016016C") MACRO_ADDR;
-extern float gemlik_fade_level_r __asm__("D_L13_0015F4FC") MACRO_ADDR;
-extern int gemlik_scripted_camera_active_r __asm__("D_L13_0015F504") MACRO_ADDR;
-extern unsigned char gemlik_mission_group_state_r[] __asm__("D_L13_0015FD08") MACRO_ADDR;
-extern unsigned char g_hero_field_20a5_r[] __asm__("D_001414F5") NOT_SDA;
-extern unsigned char special_items_base_r[] __asm__("D_0013D355");
+extern Anim *D_L13_0016016C MACRO_ADDR;
+extern float D_L13_0015F4FC MACRO_ADDR;
+extern int D_L13_0015F504 MACRO_ADDR;
+extern unsigned char D_L13_0015FD08[] MACRO_ADDR;
+extern unsigned char D_001414F5[] NOT_SDA;
+extern unsigned char D_0013D355[];
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern char level_render_state_base_r[] __asm__("D_0013DE6E");
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
-extern int is_point_inside_clip_volume_r(void *arg0, int arg1) __asm__("func_00215570");
+extern int func_00215570(void *arg0, int arg1);
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
-extern void MusicRequestTrack_r(int, int) __asm__("func_L00_002664B0");
+extern void func_L00_00217718(void *, void *, int, int);
+extern void func_L00_002664B0(int, int);
 extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
 extern void unlock_planet_r(int) __asm__("func_L00_00261848");
-extern void initialize_moby_state_record_r(void *) __asm__("func_L00_0028FB78");
-extern int memcard_Save_r(int, int) __asm__("func_0020BFC8");
+extern void func_L00_0028FB78(void *);
+extern int func_0020BFC8(int, int);
 
 /* Update function for moby class 1353 on level 13: runs the state machine in moby->state. */
 void update_gemlik_scene_controller(Moby *moby) {
@@ -97,8 +97,8 @@ void update_gemlik_scene_controller(Moby *moby) {
                 moby->state = 1;
             break;
         case 1:
-            if (((Flags *)(special_items_base_r + 0x13B))->f64 == 0) {
-                ((Flags *)(special_items_base_r + 0x13B))->f64 = 1;
+            if (((Flags *)(special_items_base + 0x13B))->f64 == 0) {
+                ((Flags *)(special_items_base + 0x13B))->f64 = 1;
                 moby->state = 2;
                 StartCutscene_r(0);
             } else {
@@ -113,11 +113,11 @@ void update_gemlik_scene_controller(Moby *moby) {
             moby->state = 4;
             break;
         case 4:
-            if (((Flags *)(special_items_base_r + 0x13B))->f65 == 0) {
+            if (((Flags *)(special_items_base + 0x13B))->f65 == 0) {
                 if (data->f0 != -1) {
-                    if (is_point_inside_clip_volume_r(
+                    if (is_point_inside_clip_volume(
                             &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, data->f0) != 0) {
-                        ((Flags *)(special_items_base_r + 0x13B))->f65 = 1;
+                        ((Flags *)(special_items_base + 0x13B))->f65 = 1;
                         if (data->f14 != -1) {
                             Moby *e = &gemlik_moby_array_start_r[data->f14];
                             e->flags |= 0x41;
@@ -144,11 +144,11 @@ void update_gemlik_scene_controller(Moby *moby) {
             }
             if (data->f8 != -1 && data->f10 != -1) {
                 Moby *e = &gemlik_moby_array_start_r[data->f10];
-                qcopy_nc(&e->pos, gemlik_scene_points_r[data->f8].f30);
-                Hero_ResetToPosition_r(gemlik_scene_points_r[data->f8].f30, gemlik_scene_points_r[data->f8].f70, 0, 1);
-                g_hero_field_20a5_r[0] = 1;
+                qcopy_nc(&e->pos, gemlik_scene_points[data->f8].f30);
+                Hero_ResetToPosition(gemlik_scene_points[data->f8].f30, gemlik_scene_points[data->f8].f70, 0, 1);
+                g_hero_field_20a5[0] = 1;
                 ((MobyData *)e->pvars)->f7C = 0.99f;
-                gemlik_fade_level_r = 0.99f;
+                gemlik_fade_level = 0.99f;
                 e->state = 2;
             }
             moby->state = 6;
@@ -157,7 +157,7 @@ void update_gemlik_scene_controller(Moby *moby) {
             moby->state = 7;
             break;
         case 7:
-            if (((Flags *)(special_items_base_r + 0x13B))->f66 != 0)
+            if (((Flags *)(special_items_base + 0x13B))->f66 != 0)
                 goto s12;
             if (data->f14 == -1)
                 goto s13;
@@ -170,13 +170,13 @@ void update_gemlik_scene_controller(Moby *moby) {
                 Moby *e = &gemlik_moby_array_start_r[data->f10];
                 e->flags |= 2;
             }
-            Hero_ResetToPosition_r(gemlik_scene_points_r[data->f8].f30, gemlik_scene_points_r[data->f8].f70, 0x72, 1);
-            ((Flags *)(special_items_base_r + 0x13B))->f66 = 1;
+            Hero_ResetToPosition(gemlik_scene_points[data->f8].f30, gemlik_scene_points[data->f8].f70, 0x72, 1);
+            ((Flags *)(special_items_base + 0x13B))->f66 = 1;
             if (data->f20 != -1) {
                 Moby *e = &gemlik_moby_array_start_r[data->f20];
                 e->flags |= 0x41;
             }
-            MusicRequestTrack_r(0, 5);
+            MusicRequestTrack(0, 5);
             moby->state = 8;
             StartCutscene_r(2);
             break;
@@ -203,13 +203,13 @@ void update_gemlik_scene_controller(Moby *moby) {
             if (data->f20 != -1) {
                 Moby *e = &gemlik_moby_array_start_r[data->f20];
                 e->flags &= 0xFFBE;
-                initialize_moby_state_record_r(e);
+                initialize_moby_state_record(e);
                 ((Cam *)(level_render_state_base_r + 0x2C2))->f60 = 464.66f;
                 ((Cam *)(level_render_state_base_r + 0x2C2))->f64 = 580.68f;
                 ((Cam *)(level_render_state_base_r + 0x2C2))->f68 = 316.72f;
                 ((Cam *)(level_render_state_base_r + 0x2C2))->f78 = 2.77f;
             }
-            gemlik_scripted_camera_active_r = 0;
+            gemlik_scripted_camera_active = 0;
             moby->state = 11;
             break;
         case 11:
@@ -220,7 +220,7 @@ void update_gemlik_scene_controller(Moby *moby) {
                 if (e != 0 && e->oclass == MOBY_CLASS_FIGHTER_JET_69 && e->state != 0xFE && e->state != 0xFD)
                     break;
             }
-            memcard_Save_r(0, -1);
+            memcard_Save(0, -1);
             moby->state = 12;
             break;
         s12:
@@ -232,7 +232,7 @@ void update_gemlik_scene_controller(Moby *moby) {
             break;
         case 13:
             if (data->f10 != -1) {
-                if (gemlik_mission_group_state_r[gemlik_moby_array_start_r[data->f10].mission] != 0xFF)
+                if (gemlik_mission_group_state[gemlik_moby_array_start_r[data->f10].mission] != 0xFF)
                     break;
                 if (data->f20 != -1) {
                     DeleteMoby_r(&gemlik_moby_array_start_r[data->f20]);
@@ -502,7 +502,7 @@ extern float FastAddRots(float, float);
 extern float FastCos(float);
 extern float FastSin(float);
 extern float multiply_global_factor(float);
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern void FastVecAdd(void *, void *, void *);
 extern float IntToFloat(int);
@@ -560,13 +560,13 @@ void update_moby_motion_and_emit_sparks(char *moby) {
             t = random_float_between(*(float *)&moby_spark_first_batch_frame_count_base_gp,
                                      *(float *)&moby_spark_first_batch_frame_count_base_gp +
                                          *(float *)&moby_spark_first_batch_frame_count_base_gp);
-            spark_frame_count = truncate_float_to_s32_r(multiply_global_factor(t));
+            spark_frame_count = truncate_float_to_s32(multiply_global_factor(t));
             t = random_float_between(*(float *)&moby_spark_first_batch_second_frame_count_base_gp,
                                      *(float *)&moby_spark_first_batch_second_frame_count_base_gp * 1.20000005f);
-            second_spark_frame_count = truncate_float_to_s32_r(multiply_global_factor(t));
+            second_spark_frame_count = truncate_float_to_s32(multiply_global_factor(t));
             t = random_float_between(*(float *)&moby_spark_first_batch_third_frame_count_base_gp,
                                      *(float *)&moby_spark_first_batch_third_frame_count_base_gp * 1.20000005f);
-            third_spark_frame_count = truncate_float_to_s32_r(multiply_global_factor(t));
+            third_spark_frame_count = truncate_float_to_s32(multiply_global_factor(t));
             PartType02Spawn(&position, &velocity, &acceleration, *(int *)&gemlik_spark1_start_color,
                             *(int *)&gemlik_spark1_end_color, spark_frame_count, second_spark_frame_count,
                             third_spark_frame_count, -1);
@@ -602,13 +602,13 @@ void update_moby_motion_and_emit_sparks(char *moby) {
             r = random_float_between(*(float *)&moby_spark_second_batch_frame_count_base_gp,
                                      *(float *)&moby_spark_second_batch_frame_count_base_gp +
                                          *(float *)&moby_spark_second_batch_frame_count_base_gp);
-            spark_frame_count = truncate_float_to_s32_r(multiply_global_factor(r));
+            spark_frame_count = truncate_float_to_s32(multiply_global_factor(r));
             r = random_float_between(*(float *)&moby_spark_second_batch_second_frame_count_base_gp,
                                      *(float *)&moby_spark_second_batch_second_frame_count_base_gp * 1.20000005f);
-            second_spark_frame_count = truncate_float_to_s32_r(multiply_global_factor(r));
+            second_spark_frame_count = truncate_float_to_s32(multiply_global_factor(r));
             r = random_float_between(*(float *)&moby_spark_second_batch_third_frame_count_base_gp,
                                      *(float *)&moby_spark_second_batch_third_frame_count_base_gp * 1.20000005f);
-            third_spark_frame_count = truncate_float_to_s32_r(multiply_global_factor(r));
+            third_spark_frame_count = truncate_float_to_s32(multiply_global_factor(r));
             PartType02Spawn(&second_pos, &velocity, &acceleration, *(int *)&gemlik_spark2_start_color,
                             *(int *)&gemlik_spark2_end_color, spark_frame_count, second_spark_frame_count,
                             third_spark_frame_count, -1);

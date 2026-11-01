@@ -26,14 +26,14 @@ extern unsigned char gSpecialItems[];
 extern void finish_audio_stream_read(int);
 extern short cd_read_state[];
 
-extern int snd_StreamSafeCdBreak_i(void) __asm__("func_0012EFE8");
+extern int func_0012EFE8(void);
 
 /* snd_StreamSafeCdBreak returns int (989snd.c): with the result in $v0, the
    constant goes to the register retail uses. */
 void request_audio_stream_break(void) {
     short *p = cd_read_state;
     if (p[4] != 0) {
-        snd_StreamSafeCdBreak_i();
+        snd_StreamSafeCdBreak();
         ((char *)p)[0xA] = 1;
     }
 }
@@ -378,7 +378,7 @@ extern s32 g_game_language MACRO_ADDR;
 extern Weapon vendor_item_prices[];
 extern s32 gBolts MACRO_ADDR;
 
-extern u8 stream_item_flags[] __asm__("D_0013D5C8");
+extern u8 D_0013D5C8[];
 extern u8 items_acquired[];
 extern u8 gSpecialItems[];
 
@@ -466,11 +466,11 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
             ok = !(gBolts < vendor_item_prices[e->unkA].unk0);
             break;
         case 2:
-            ok = stream_item_flags[e->unkA] != 0;
+            ok = item_available[e->unkA] != 0;
             break;
         case 3:
             ok = 0;
-            if (stream_item_flags[e->unkA] != 0) {
+            if (item_available[e->unkA] != 0) {
                 ok = items_acquired[e->unkA] == 0;
             }
             break;

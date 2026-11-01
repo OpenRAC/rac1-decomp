@@ -86,7 +86,7 @@ typedef struct Data_2EDAA0 {
     float level;
 } Data_2EDAA0;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-extern float hoven_fade_level_r __asm__("D_L12_0015F4FC") MACRO_ADDR;
+extern float D_L12_0015F4FC MACRO_ADDR;
 extern float D_L12_00161A4C_2EDAA0 SDATA(D_L12_00161A4C);
 extern int D_L12_00161A50_2EDAA0 SDATA(D_L12_00161A50);
 extern float D_L12_00161A54_2EDAA0 SDATA(D_L12_00161A54);
@@ -102,7 +102,7 @@ extern float D_L12_00161A80_2EDAA0 SDATA(D_L12_00161A80);
 extern float D_L12_00161A84_2EDAA0 SDATA(D_L12_00161A84);
 extern float D_L12_00161A88_2EDAA0 SDATA(D_L12_00161A88);
 
-extern float random_angle_radians_r(void) __asm__("func_00214158");
+extern float func_00214158(void);
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
@@ -112,7 +112,7 @@ extern void rand_vec_r(float *, float, float) __asm__("func_L00_00258DB0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern char *PartType02Spawn_r(void *, void *, void *, int, int, int, int, int, int) __asm__("func_00219780");
+extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern void draw_water_reservoir_r(char *) __asm__("func_L12_002EDE40");
 
@@ -132,7 +132,7 @@ void water_reservoir_update(Moby *moby) {
         case 0:
             moby->state = 1;
             moby->command = 2;
-            data->angle = random_angle_radians_r();
+            data->angle = random_angle_radians();
             data->level = 5.0f;
             break;
         case 1:
@@ -147,7 +147,7 @@ void water_reservoir_update(Moby *moby) {
             break;
     }
 
-    if (hoven_fade_level_r == 0.0f) {
+    if (hoven_fade_level == 0.0f) {
         if (fast_dec_timer_r(&data->timer) == 0) {
             if (moby->command & 1) {
                 f20 = IntToFloat_r(data->timer) / IntToFloat_r(D_L12_00161A50_2EDAA0);
@@ -178,8 +178,8 @@ void water_reservoir_update(Moby *moby) {
                 }
                 v40[3] = random_float_between_r(D_L12_00161A60_2EDAA0, D_L12_00161A64_2EDAA0);
                 v50[3] = random_float_between_r(D_L12_00161A60_2EDAA0, D_L12_00161A64_2EDAA0);
-                PartType02Spawn_r(v10, v40, v50, D_L12_00161A74_2EDAA0, D_L12_00161A74_2EDAA0, D_L12_00161A68_2EDAA0,
-                                  scale_ticks_r(D_L12_00161A6C_2EDAA0), D_L12_00161A70_2EDAA0, D_L12_00161A78_2EDAA0);
+                PartType02Spawn(v10, v40, v50, D_L12_00161A74_2EDAA0, D_L12_00161A74_2EDAA0, D_L12_00161A68_2EDAA0,
+                                scale_ticks_r(D_L12_00161A6C_2EDAA0), D_L12_00161A70_2EDAA0, D_L12_00161A78_2EDAA0);
             }
         }
         if ((moby->command & 1) && data->timer == 0) {
@@ -526,7 +526,7 @@ typedef struct Data_303CA8 {
     int count; /* 0x232C */
     int f2330;
 } Data_303CA8;
-extern void euler_to_matrix_r(void *, void *) __asm__("func_001FA218");
+extern void func_001FA218(void *, void *);
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern int GetEffectTex_r(int) __asm__("func_001F4868");
@@ -534,11 +534,11 @@ extern float IntToFloat_r2(int) __asm__("func_001FA888");
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern void draw_world_quad_r(void *, void *, int) __asm__("func_L00_001FD1D8");
 extern Moby *hoven_mobys_r __asm__("D_L12_00160058") MACRO_ADDR;
-extern float target_link_strip_rotations_r[][4] __asm__("D_L12_001FB870");
-extern float target_link_strip_uvs_r[] __asm__("D_L12_001FB7D0");
-extern float target_link_strip_corners_r[][4] __asm__("D_L12_001FB7F0");
+extern float D_L12_001FB870[][4];
+extern float D_L12_001FB7D0[];
+extern float D_L12_001FB7F0[][4];
 extern int oscillating_link_strip_reset_ticks_r __asm__("D_L12_00161E84") MACRO_ADDR;
-extern int oscillating_link_strip_fade_pivot_ticks_r __asm__("D_L12_00161E88") MACRO_ADDR;
+extern int D_L12_00161E88 MACRO_ADDR;
 extern int D_L12_00161E4C_303CA8 SDATA(D_L12_00161E4C);
 extern int D_L12_00161E50_303CA8 SDATA(D_L12_00161E50);
 extern int D_L12_00161E54_303CA8 SDATA(D_L12_00161E54);
@@ -562,13 +562,13 @@ void draw_oscillating_target_link_strips(Moby *moby) {
     int i, j, k, n, d, idx;
 
     data = *(Data_303CA8 **)&moby->pvars;
-    euler_to_matrix_r(m, ((float *)&moby->rot));
+    euler_to_matrix(m, ((float *)&moby->rot));
     pos = ((float *)&moby->pos);
     row = &mats[0][12];
     for (i = 0; i < 2; i++) {
         float *cp = mats[i];
 
-        euler_to_matrix_r(cp, target_link_strip_rotations_r[i]);
+        euler_to_matrix(cp, target_link_strip_rotations[i]);
         sce_vu0_mul_matrix_r(cp, m, cp);
         if (!(i & 1) && data->target != -1) {
             qcopy(vec, ((float *)&hoven_mobys_r[data->target].pos));
@@ -589,16 +589,16 @@ void draw_oscillating_target_link_strips(Moby *moby) {
         int c;
 
         for (c = 0; c < 4; c++) {
-            *uv = target_link_strip_uvs_r[c * 2 + 1];
+            *uv = target_link_strip_uvs[c * 2 + 1];
             uv += 2;
         }
     }
     for (idx = 0; idx < 4; idx++) {
-        if (oscillating_link_strip_fade_pivot_ticks_r < data->phase[idx]) {
-            t = IntToFloat_r2(data->phase[idx] - oscillating_link_strip_fade_pivot_ticks_r) /
-                IntToFloat_r2(oscillating_link_strip_reset_ticks_r - oscillating_link_strip_fade_pivot_ticks_r);
+        if (oscillating_link_strip_fade_pivot_ticks < data->phase[idx]) {
+            t = IntToFloat_r2(data->phase[idx] - oscillating_link_strip_fade_pivot_ticks) /
+                IntToFloat_r2(oscillating_link_strip_reset_ticks_r - oscillating_link_strip_fade_pivot_ticks);
         } else {
-            t = 1.0f - IntToFloat_r2(data->phase[idx]) / IntToFloat_r2(oscillating_link_strip_fade_pivot_ticks_r);
+            t = 1.0f - IntToFloat_r2(data->phase[idx]) / IntToFloat_r2(oscillating_link_strip_fade_pivot_ticks);
         }
         quad[1].c[0] = quad[1].c[1] = quad[1].c[2] = quad[1].c[3] =
             FastTweenColor_r(D_L12_00161E6C_303CA8, D_L12_00161E70_303CA8, t);
@@ -609,10 +609,10 @@ void draw_oscillating_target_link_strips(Moby *moby) {
                 u = u - 1.0f;
             }
             for (k = 0; k < 4; k++) {
-                quad[1].uv[k * 2] = target_link_strip_uvs_r[k * 2] + u + D_L12_00161E78_303CA8;
+                quad[1].uv[k * 2] = target_link_strip_uvs[k * 2] + u + D_L12_00161E78_303CA8;
             }
             for (n = 0; n < 4; n++) {
-                FastVecAdd_r2(&quad[1].v[n * 4], target_link_strip_corners_r[n], data->ring[idx][j + (n >> 1)]);
+                FastVecAdd_r2(&quad[1].v[n * 4], target_link_strip_corners[n], data->ring[idx][j + (n >> 1)]);
             }
             for (d = 0; d < 2; d++) {
                 draw_world_quad_r(&quad[1], mats[d], 0);
@@ -725,7 +725,7 @@ extern void LerpVec4_r(void *, void *, void *, float) __asm__("func_L00_0025C710
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecScale_r2(void *, void *, float) __asm__("func_001F9C30");
-extern int FastBSphereCheck_r(void *, float) __asm__("func_L00_00200290");
+extern int func_L00_00200290(void *, float);
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern void update_oscillating_target_link_strips_r(void *) __asm__("func_L12_00304038");
 extern void InitDirectionalHitQuery_r(void *, void *, int, float, void *) __asm__("func_L00_0025A8C0");
@@ -733,7 +733,7 @@ extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_00
 extern Row *hoven_paths_r[] __asm__("D_L12_001B0C30");
 extern char hoven_camera_pos_r[] __asm__("D_L12_001672C0");
 extern float hoven_zero_vec_r[] __asm__("D_L12_0015F660") MACRO_ADDR;
-extern float gHeroPos_r[] __asm__("D_0013F4D0");
+extern float D_0013F4D0[];
 
 /* Level 12 vendor moby update: steers toward its target, then calls the vendor helpers. */
 void update_oscillating_target_link(Moby *moby) {
@@ -751,7 +751,7 @@ void update_oscillating_target_link(Moby *moby) {
     }
     switch (moby->state) {
         case 0:
-            oscillating_link_strip_fade_pivot_ticks_r = 0x16;
+            oscillating_link_strip_fade_pivot_ticks = 0x16;
             oscillating_link_strip_reset_ticks_r = 0x2D;
             data->f231C = -1;
             data->f2304 = 0xB;
@@ -783,14 +783,14 @@ void update_oscillating_target_link(Moby *moby) {
             tmp0.q = row->v10;
             tmp1.q = row->v20;
             LerpVec4_r(((float *)&moby->pos), &tmp0, &tmp1, a);
-            if (vec_distance_xy_r(((float *)&moby->pos), gHeroPos_r) > 64.0f) {
+            if (vec_distance_xy_r(((float *)&moby->pos), gHeroPos) > 64.0f) {
                 return;
             }
             if (moby->visible == 0 && hoven_mobys_r[data->target].visible == 0) {
                 FastVecAdd_r3(&tmp0, ((float *)&moby->pos), ((float *)&hoven_mobys_r[data->target].pos));
                 FastVecScale_r2(&tmp0, &tmp0, half);
                 tmp0.f[3] = 16.0f;
-                if (FastBSphereCheck_r(&tmp0, 32.0f) == -1) {
+                if (FastBSphereCheck(&tmp0, 32.0f) == -1) {
                     return;
                 }
             }
@@ -950,7 +950,7 @@ typedef struct {
 } Hit_304920;
 
 extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
-extern int vendor_stock_r[] __asm__("D_0015EED0") MACRO_ADDR;
+extern int D_0015EED0[] MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
@@ -1006,7 +1006,7 @@ extern char *PartType27Spawn(void *, void *, int, int, float);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 
-extern int memcard_Save_r(int, int) __asm__("func_0020BFC8");
+extern int func_0020BFC8(int, int);
 extern void draw_hoven_turret_hud();
 extern void draw_hoven_turret_destruction_fade();
 
@@ -1152,7 +1152,7 @@ void hoven_turret_update(Moby *moby) {
 
                 joy[0] = ((Hero *)(hero_globals_base_e + 0xE1D))->stick_x;
                 y = ((Hero *)(hero_globals_base_e + 0xE1D))->stick_y;
-                if (vendor_stock_r[3] == 0) {
+                if (vendor_stock[3] == 0) {
                     y = -y;
                 }
                 joy[1] = y;
@@ -1261,7 +1261,7 @@ void hoven_turret_update(Moby *moby) {
             break;
         case 8:
             if (hoven_cinematic_mode != 2) {
-                memcard_Save_r(0, -1);
+                memcard_Save(0, -1);
                 moby->state = 6;
             }
             break;
@@ -1275,9 +1275,9 @@ void hoven_turret_update(Moby *moby) {
 extern void VU1_addGSregister(int, long);
 extern long GetEffectTex_r2(int) __asm__("func_001F4868");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float FastNormalizeAngle_r(float) __asm__("func_001FA7D8");
+extern float func_001FA7D8(float);
 extern float IntToFloat_r3(int) __asm__("func_001FA888");
-extern void draw_geometry_quad_5188_r(void *, void *, void *, long, int) __asm__("func_L02_0020BF88");
+extern void func_L02_0020BF88(void *, void *, void *, long, int);
 extern short hoven_turret_hud_frame_color;
 extern short hoven_turret_hud_frame_vertex_3_uv;
 extern short hoven_turret_hud_frame_vertex_0_uv;
@@ -1377,7 +1377,7 @@ void draw_hoven_turret_hud(Moby *moby) {
         xy[3] +=
             (u32)((truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_y * 16.0f) << 16) - (int)0x80000000);
         xy[3] += (truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_x) << 4) + 0x8000;
-        draw_geometry_quad_5188_r(xy, uv, col, tex, 1);
+        draw_geometry_quad_5188(xy, uv, col, tex, 1);
     }
     tex = GetEffectTex_r2(6);
     uv[0] = *(int *)&hoven_turret_hud_health_dial_vertex_0_uv;
@@ -1405,7 +1405,7 @@ void draw_hoven_turret_hud(Moby *moby) {
             col[1] = c2;
             col[0] = c2;
         }
-        a0 = FastNormalizeAngle_r((float)j * 0.19634955f);
+        a0 = FastNormalizeAngle((float)j * 0.19634955f);
         a1 = FastAddRots(a0, 0.19634955f);
         x0 = truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_ring_radius_x * FastSin(a0));
         y0 = truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_ring_radius_y * -FastCos(a0));
@@ -1427,7 +1427,7 @@ void draw_hoven_turret_hud(Moby *moby) {
         xy[3] +=
             (u32)((truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_y * 16.0f) << 16) - (int)0x80000000);
         xy[3] += (truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_x) << 4) + 0x8000;
-        draw_geometry_quad_5188_r(xy, uv, col, tex, 1);
+        draw_geometry_quad_5188(xy, uv, col, tex, 1);
     }
     if (scale_ticks(0xF) < d->f88) {
         c = FastTweenColor(0x5000FFFF, 0x500000FF, IntToFloat_r3(d->f88 - scale_ticks(0xF)) / (float)scale_ticks(0xF));
@@ -1446,44 +1446,44 @@ void draw_hoven_turret_hud(Moby *moby) {
     xy[2] = 0xFFFFF000000000L;
     xy[1] = 0xFFFFF000000000L;
     xy[0] = 0xFFFFF000000000L;
-    a = FastNormalizeAngle_r(FastAddRots(moby->rot.z * 4.0f, 0.0f));
+    a = FastNormalizeAngle(FastAddRots(moby->rot.z * 4.0f, 0.0f));
     xy[0] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
                    (int)0x80000000);
     xy[0] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
-    a = FastNormalizeAngle_r(FastAddRots(moby->rot.z * 4.0f, 1.5707964f));
+    a = FastNormalizeAngle(FastAddRots(moby->rot.z * 4.0f, 1.5707964f));
     xy[1] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
                    (int)0x80000000);
     xy[1] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
-    a = FastNormalizeAngle_r(FastAddRots(moby->rot.z * 4.0f, -1.5707964f));
+    a = FastNormalizeAngle(FastAddRots(moby->rot.z * 4.0f, -1.5707964f));
     xy[2] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
                    (int)0x80000000);
     xy[2] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
-    a = FastNormalizeAngle_r(FastAddRots(moby->rot.z * 4.0f, 3.1415927f));
+    a = FastNormalizeAngle(FastAddRots(moby->rot.z * 4.0f, 3.1415927f));
     xy[3] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
                    (int)0x80000000);
     xy[3] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
-    draw_geometry_quad_5188_r(xy, uv, col, GetEffectTex(*(int *)&hoven_turret_hud_yaw_indicator_texture_index), 1);
+    draw_geometry_quad_5188(xy, uv, col, GetEffectTex(*(int *)&hoven_turret_hud_yaw_indicator_texture_index), 1);
     xy[3] = 0xFFFFF000000000L;
     xy[2] = 0xFFFFF000000000L;
     xy[1] = 0xFFFFF000000000L;
     xy[0] = 0xFFFFF000000000L;
-    a = FastNormalizeAngle_r(FastAddRots(d->f74 * 8.0f, 0.0f));
+    a = FastNormalizeAngle(FastAddRots(d->f74 * 8.0f, 0.0f));
     xy[0] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
                    (int)0x80000000);
     xy[0] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
-    a = FastNormalizeAngle_r(FastAddRots(d->f74 * 8.0f, 1.5707964f));
+    a = FastNormalizeAngle(FastAddRots(d->f74 * 8.0f, 1.5707964f));
     xy[1] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
                    (int)0x80000000);
     xy[1] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
-    a = FastNormalizeAngle_r(FastAddRots(d->f74 * 8.0f, -1.5707964f));
+    a = FastNormalizeAngle(FastAddRots(d->f74 * 8.0f, -1.5707964f));
     xy[2] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
                    (int)0x80000000);
     xy[2] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
-    a = FastNormalizeAngle_r(FastAddRots(d->f74 * 8.0f, 3.1415927f));
+    a = FastNormalizeAngle(FastAddRots(d->f74 * 8.0f, 3.1415927f));
     xy[3] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
                    (int)0x80000000);
     xy[3] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
-    draw_geometry_quad_5188_r(xy, uv, col, GetEffectTex(*(int *)&hoven_turret_hud_pitch_indicator_texture_index), 1);
+    draw_geometry_quad_5188(xy, uv, col, GetEffectTex(*(int *)&hoven_turret_hud_pitch_indicator_texture_index), 1);
 }
 typedef struct {
     char pad0[0xAC];
@@ -1877,7 +1877,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                             int c;
                             qcopy(v0, m + 0x10);
                             v0[2] += random_float_between(0.1f, 0.5f);
-                            ang = random_angle_radians_r();
+                            ang = random_angle_radians();
                             s = random_float_between(0.1f, 0.8f);
                             v0[0] += FastCos(ang) * s;
                             v0[1] += FastSin(ang) * s;
@@ -1906,7 +1906,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                     int c;
                     qcopy(v0, m + 0x10);
                     v0[2] += 0.7f;
-                    ang = random_angle_radians_r();
+                    ang = random_angle_radians();
                     s = random_float_between(0.1f, 0.4f);
                     v0[0] += FastCos(ang) * s;
                     v0[1] += FastSin(ang) * s;
@@ -1923,7 +1923,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                 for (j = 0; j < 3; j++) {
                     int c;
                     qcopy(v0, m + 0x10);
-                    ang = random_angle_radians_r();
+                    ang = random_angle_radians();
                     s = random_float_between(0.1f, 0.8f);
                     v0[0] += FastCos(ang) * s;
                     v0[1] += FastSin(ang) * s;

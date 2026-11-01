@@ -101,9 +101,9 @@ typedef struct {
     Vec4 point[1];
 } PathPoints_eb20_9FCF0;
 extern void FastVecSub_r(Vec4 *out, void *a, void *b) __asm__("func_001F9BF0");
-extern f32 FastVecLength_r(Vec4 *v) __asm__("func_001F9CB8");
+extern f32 func_001F9CB8(Vec4 *v);
 extern void vec_scale_to_length_r(Vec4 *out, Vec4 *v, f32 len) __asm__("func_L00_001FF4B0");
-extern f32 FastVecDot_r(Vec4 *a, Vec4 *b) __asm__("func_001F9C78");
+extern f32 func_001F9C78(Vec4 *a, Vec4 *b);
 extern void FastVecAdd_r(Vec4 *out, Vec4 *a, Vec4 *b) __asm__("func_001F9BD8");
 /* Next point index on a looping path in direction dir, wrapping at both ends. */
 static inline s32 path_next_eb20_9FCF0(PathPoints_eb20_9FCF0 *path, s32 i, s32 dir) {
@@ -127,10 +127,10 @@ s32 Path_AdvanceMoby(struct Moby *m, PathPoints_eb20_9FCF0 *path, s32 i, s32 dir
 
     next = path_next_eb20_9FCF0(path, i, dir);
     FastVecSub_r(&seg, &path->point[next], &path->point[i]);
-    len = FastVecLength_r(&seg);
+    len = FastVecLength(&seg);
     vec_scale_to_length_r(&seg, &seg, 1.0f);
     FastVecSub_r(&rel, &m->pos, &path->point[i]);
-    along = FastVecDot_r(&rel, &seg) + dist;
+    along = FastVecDot(&rel, &seg) + dist;
     if (len < along) {
         i = next;
         next = path_next_eb20_9FCF0(path, i, dir);
@@ -1184,7 +1184,7 @@ extern s32 Moby_PlaySound_r(s32, s32, struct Moby *m) __asm__("func_0022ED80");
 extern void Sound_StopSlot_r(s32 voice) __asm__("func_L00_0028EBF0");
 extern f32 IntToFloat_r(s32) __asm__("func_001FA888");
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
-extern f32 ApproachValue_r(f32 *value, f32 target, f32 step) __asm__("func_00214D28");
+extern f32 func_00214D28(f32 *value, f32 target, f32 step);
 extern void Sound_SetPitchBend_r(s32 voice, s32 volume) __asm__("func_L00_0028F210");
 extern void Sound_SetPitchBend_r2(s32 voice, s32 pitch) __asm__("func_L00_0028F210");
 struct Moby;
@@ -1240,8 +1240,8 @@ void func_L04_002C2F00_r(struct Moby *m) {
         v->voice = -1;
         return;
     }
-    ApproachValue_r(&v->volume, volume, IntToFloat_r(0x400) * g_frame_time_r * 2.0f);
-    ApproachValue_r(&v->pitch, pitch, g_frame_time_r * 8.0f);
+    ApproachValue(&v->volume, volume, IntToFloat_r(0x400) * g_frame_time_r * 2.0f);
+    ApproachValue(&v->pitch, pitch, g_frame_time_r * 8.0f);
     Sound_SetPitchBend_r(v->voice, truncate_float_to_s32_r(v->volume));
     Sound_SetPitchBend_r2(v->voice, truncate_float_to_s32_r(v->pitch));
 }
@@ -2898,11 +2898,11 @@ typedef struct {
     f32 scale; /* 0x24 */
 } MobyClassHeader;
 extern char *eudora_mobys_r __asm__("D_L04_00160058") MACRO_ADDR;
-extern u8 eudora_class_slot_by_id_r[] __asm__("D_L04_00198040");
-extern struct MobyClass *eudora_moby_class_headers_r[] __asm__("D_L04_00197780");
+extern u8 D_L04_00198040[];
+extern struct MobyClass *D_L04_00197780[];
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern void MobyBlendAnimation_r(struct Moby *, s32, s32, s32) __asm__("func_00213DE0");
-extern void update_moby_animation_state_r(struct Moby *) __asm__("func_0020D6D0");
+extern void func_0020D6D0(struct Moby *);
 extern s32 Sound_IsPlaying_r2(struct Moby *, s32) __asm__("func_L00_0028EB98");
 extern s32 Moby_PlaySound_r2(s32, s32, struct Moby *) __asm__("func_0022ED80");
 struct Moby;
@@ -2929,11 +2929,11 @@ void eudora_bridge_update(struct Moby *m) {
             v->voice = -1;
             if (m->oclass == MOBY_CLASS_EUDORA_BRIDGE) {
                 m->oclass = 0x41C;
-                m->class_slot = eudora_class_slot_by_id_r[0x41C];
-                m->pclass = eudora_moby_class_headers_r[m->class_slot];
+                m->class_slot = eudora_class_slot_by_id[0x41C];
+                m->pclass = eudora_moby_class_headers[m->class_slot];
                 m->unk71 = 0xFF;
                 m->scale = ((MobyClassHeader *)m->pclass)->scale;
-                update_moby_animation_state_r(m);
+                update_moby_animation_state(m);
                 m->unk72 = ((MobyClassHeader *)m->pclass)->unkE;
                 m->collision = ((MobyClassHeader *)m->pclass)->unk10;
                 moby_anim_sphere_lerp_r(m);
@@ -2962,11 +2962,11 @@ void eudora_bridge_update(struct Moby *m) {
                     Moby_PlaySound_r2(1, 0, m);
                     if (m->oclass == MOBY_CLASS_BRIDGE_1052 && *pos == 1.0f) {
                         m->oclass = 0x1B0;
-                        m->class_slot = eudora_class_slot_by_id_r[0x1B0];
-                        m->pclass = eudora_moby_class_headers_r[m->class_slot];
+                        m->class_slot = eudora_class_slot_by_id[0x1B0];
+                        m->pclass = eudora_moby_class_headers[m->class_slot];
                         m->unk71 = 0xFF;
                         m->scale = ((MobyClassHeader *)m->pclass)->scale;
-                        update_moby_animation_state_r(m);
+                        update_moby_animation_state(m);
                         m->unk72 = ((MobyClassHeader *)m->pclass)->unkE;
                         m->collision = ((MobyClassHeader *)m->pclass)->unk10;
                         moby_anim_sphere_lerp_r(m);

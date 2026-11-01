@@ -290,28 +290,28 @@ typedef struct {
     char pad10[0x8];
 } Ent;
 
-extern int is_point_inside_clip_volume_r(void *arg0, int arg1) __asm__("func_00215570");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern int Spline_AdvanceByDistance_r(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
+extern int func_00215570(void *arg0, int arg1);
+extern float func_001FA888(int);
+extern int func_001FA898(float);
+extern float func_001F9D10(void *, void *);
+extern int func_L00_0025E860(void *, void *, int *, float *, float, int);
+extern float func_001F9D48(void *, void *);
 extern int func_00120778_31E6B0(float) __asm__("func_00120778");
-extern char *spawn_on_path_r(void *, int, int, int) __asm__("func_L00_002C6608");
+extern char *func_L00_002C6608(void *, int, int, int);
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern void STUB_printf_r(char *, ...) __asm__("func_001E9730");
+extern void func_001E9730(char *, ...);
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-extern char ammo_spawner_missing_link_fmt_r[] __asm__("D_L07_00211DE0");
-extern char ammo_spawner_deleted_fmt_r[] __asm__("D_L07_00211E20");
-extern char ammo_spawner_count_fmt_r[] __asm__("D_L07_00211E40");
-extern char ammo_spawner_place_fmt_r[] __asm__("D_L07_00211E68");
-extern char ammo_spawner_remainder_fmt_r[] __asm__("D_L07_00211E98");
+extern char D_L07_00211DE0[];
+extern char D_L07_00211E20[];
+extern char D_L07_00211E40[];
+extern char D_L07_00211E68[];
+extern char D_L07_00211E98[];
 extern Path *umbris_paths_r[] __asm__("D_L07_001B0830");
-extern char umbris_item_price_table_r[] __asm__("D_L07_001C43B0");
+extern char D_L07_001C43B0[];
 extern int D_L07_00161D30_31E6B0 SDATA(D_L07_00161D30);
 extern Moby256_31E6B0 *level_mobys_r __asm__("D_L07_00160058") MACRO_ADDR;
-extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
-extern unsigned char menu_item_enabled_115_r[] __asm__("D_0013D50F");
+extern unsigned char D_0013E633[];
+extern unsigned char D_0013D50F[];
 
 // Update for moby class 1142 on level 07: measures its path once, then places sparks for the listed counters.
 void update_equalizer_ammo_spawner(SparkMoby *moby) {
@@ -333,15 +333,15 @@ void update_equalizer_ammo_spawner(SparkMoby *moby) {
         }
         bad = 0;
         if (d->vol == -1) {
-            STUB_printf_r(ammo_spawner_missing_link_fmt_r);
+            STUB_printf(ammo_spawner_missing_link_fmt);
             bad = 1;
         }
         if (d->path == -1) {
-            STUB_printf_r(ammo_spawner_missing_link_fmt_r);
+            STUB_printf(ammo_spawner_missing_link_fmt);
             bad = 1;
         }
         if (bad) {
-            STUB_printf_r(ammo_spawner_deleted_fmt_r, moby->oclass);
+            STUB_printf(ammo_spawner_deleted_fmt, moby->oclass);
             DeleteMoby_r(moby);
             return;
         }
@@ -349,7 +349,7 @@ void update_equalizer_ammo_spawner(SparkMoby *moby) {
         for (j = 0; j < umbris_paths_r[d->path]->count; j++) {
             int nj = (j + 1) % umbris_paths_r[d->path]->count;
             umbris_paths_r[d->path]->nodes[j].len =
-                FastVecDist_r(&umbris_paths_r[d->path]->nodes[j], &umbris_paths_r[d->path]->nodes[nj]);
+                FastVecDist(&umbris_paths_r[d->path]->nodes[j], &umbris_paths_r[d->path]->nodes[nj]);
             d->total = d->total + umbris_paths_r[d->path]->nodes[j].len;
         }
         moby->state = 1;
@@ -357,14 +357,14 @@ void update_equalizer_ammo_spawner(SparkMoby *moby) {
         int done;
         int i, k, m, n, rem;
         float have, max, ratio, at, a, b, v, c, near, step;
-        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                          d->vol) == 0) {
+        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->vol) ==
+            0) {
             return;
         }
         for (i = 0; (&D_L07_00161D30_31E6B0)[i] != -1; i++) {
             k = (&D_L07_00161D30_31E6B0)[i];
-            have = IntToFloat_r(((int *)(menu_item_enabled_115_r + 0x21))[k]);
-            max = IntToFloat_r(((Ent *)umbris_item_price_table_r)[k].max);
+            have = IntToFloat(((int *)(menu_item_enabled_115 + 0x21))[k]);
+            max = IntToFloat(((Ent *)umbris_item_price_table)[k].max);
             ratio = have / max;
             at = random_float_between_r(0.0f, d->total);
             if (d->lo / 100.0f <= ratio && ratio < d->hi / 100.0f) {
@@ -374,7 +374,7 @@ void update_equalizer_ammo_spawner(SparkMoby *moby) {
                 b = max * (d->pb / 100.0f);
                 c = a - have;
                 v = d->mode == 0 ? (c < b ? c : b) : (b < c ? c : b);
-                n = truncate_float_to_s32_r(v + 0.5f);
+                n = truncate_float_to_s32(v + 0.5f);
                 q = n / d->div;
                 m = n;
                 fbz = 0;
@@ -383,7 +383,7 @@ void update_equalizer_ammo_spawner(SparkMoby *moby) {
                 if (q != 0) {
                     m = q;
                 }
-                STUB_printf_r(ammo_spawner_count_fmt_r, n, m);
+                STUB_printf(ammo_spawner_count_fmt, n, m);
                 if (n > 0) {
                     near = 12.0f;
                     step = 10.0f;
@@ -391,24 +391,24 @@ void update_equalizer_ammo_spawner(SparkMoby *moby) {
                         rem = n - m;
                         done = 0;
                         do {
-                            Spline_AdvanceByDistance_r(p, vec, &ia, (float *)&fbz, at, 1);
+                            Spline_AdvanceByDistance(p, vec, &ia, (float *)&fbz, at, 1);
                             if (d->target == -1) {
                                 done = 1;
-                            } else if (near < vec_distance_xy_r(level_mobys_r[d->target].pos, vec)) {
+                            } else if (near < vec_distance_xy(level_mobys_r[d->target].pos, vec)) {
                                 done = 1;
                             } else {
                                 at = at + step;
                             }
                         } while (done == 0);
                         n = rem;
-                        STUB_printf_r(ammo_spawner_place_fmt_r, k, m, func_00120778_31E6B0(vec[0]),
-                                      func_00120778_31E6B0(vec[1]), func_00120778_31E6B0(vec[2]),
-                                      func_00120778_31E6B0(at));
-                        spawn_on_path_r(vec, k, m, 0);
+                        STUB_printf(ammo_spawner_place_fmt, k, m, func_00120778_31E6B0(vec[0]),
+                                    func_00120778_31E6B0(vec[1]), func_00120778_31E6B0(vec[2]),
+                                    func_00120778_31E6B0(at));
+                        spawn_on_path(vec, k, m, 0);
                         at = at + random_float_between_r(d->total / step, 2.0f);
                         if (rem < m) {
                             m = rem;
-                            STUB_printf_r(ammo_spawner_remainder_fmt_r, rem);
+                            STUB_printf(ammo_spawner_remainder_fmt, rem);
                         }
                     } while (rem > 0);
                 }
@@ -425,7 +425,7 @@ extern void cutscene_set_camera_target(int);
 extern int scale_ticks(int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern char *PartType23Spawn_c(void *, int, void *, int, float, float, float, float) __asm__("func_L00_0026DEA0");
+extern char *func_L00_0026DEA0(void *, int, void *, int, float, float, float, float);
 extern int umbris_scene_state MACRO_ADDR;
 extern char umbris_cutscene_state_c[] __asm__("D_L07_0016C960");
 extern float umbris_zero_vec[] MACRO_ADDR;
@@ -475,7 +475,7 @@ void update_scene_moby_effect_bursts(char *m) {
                         char *q;
                         if (random_integer_below(2) != 0)
                             v = -v;
-                        p = PartType23Spawn_c(buf, v, umbris_zero_vec, col, 0.6f, 1.0f, 1.01f, d);
+                        p = PartType23Spawn(buf, v, umbris_zero_vec, col, 0.6f, 1.0f, 1.01f, d);
                         if (p != 0) {
                             q = p + 0x20;
                             *(short *)(p + 0xA) = scale_ticks(rand_range(0x3C, 0x5A));

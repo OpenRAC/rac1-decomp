@@ -94,8 +94,8 @@ void LoadPifAsPSMT8H(void *arg0, void *arg1, int tbp, int cbp) {
 extern int disc_table[];
 extern int Load(void *, int, int);
 
-extern int depth_buffer_address_m __asm__("D_0015EF88") MACRO_ADDR;
-extern long debug_font_pif_header_m __asm__("D_0015EFC8") MACRO_ADDR;
+extern int D_0015EF88 MACRO_ADDR;
+extern long D_0015EFC8 MACRO_ADDR;
 
 /*
  * LoadDebugFont: forwards the disc_table[2]/[3] stream position to
@@ -110,8 +110,8 @@ void LoadDebugFont(void) {
     long localbuf[3];
 
     Load(debug_font_buffer, disc_table[2], disc_table[3]);
-    LoadPifAsPSMT8H(debug_font_buffer, localbuf, depth_buffer_address_m + 0xC0000, 0x3FFC00);
-    debug_font_pif_header_m = localbuf[0];
+    LoadPifAsPSMT8H(debug_font_buffer, localbuf, depth_buffer_address + 0xC0000, 0x3FFC00);
+    debug_font_pif_header = localbuf[0];
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001E9728);

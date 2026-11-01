@@ -292,10 +292,10 @@ void update_hero_frame(void) {
 extern struct Hero g_hero_r __asm__("D_0013F450");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
-extern unsigned char gold_weapon_purchased_r[] __asm__("D_0013E620");
-extern void get_moby_color_r(struct Moby *, int *, int *, int *) __asm__("func_L00_00251358");
-extern void set_moby_color_r(struct Moby *, int, int, int) __asm__("func_L00_00251328");
-extern void copy_hero_color_to_item_mobys_r(void) __asm__("func_L00_002078E0");
+extern unsigned char D_0013E620[];
+extern void func_L00_00251358(struct Moby *, int *, int *, int *);
+extern void func_L00_00251328(struct Moby *, int, int, int);
+extern void func_L00_002078E0(void);
 extern void update_item_tint_from_hero_r(struct Moby *, struct Moby *) __asm__("func_L00_00207948");
 
 /* Blinks the hero's moby colour for the first 30 frames of states 0x80 and 0x82 (and of state 0x76 for 20 frames in
@@ -315,7 +315,7 @@ void update_hero_blink_and_gold_weapon_tint(void) {
             blink = 1;
     }
     if (blink) {
-        get_moby_color_r(g_hero_r.moby, &r, &g, &b);
+        get_moby_color(g_hero_r.moby, &r, &g, &b);
         if (g_hero_r.state_timer % 4 < 3) {
             r = 0;
             g = 0;
@@ -325,10 +325,10 @@ void update_hero_blink_and_gold_weapon_tint(void) {
             g = 0x90;
             b = 0xF0;
         }
-        set_moby_color_r(g_hero_r.moby, r, g, b);
-        copy_hero_color_to_item_mobys_r();
+        set_moby_color(g_hero_r.moby, r, g, b);
+        copy_hero_color_to_item_mobys();
     }
-    if (g_hero_r.items[0].item_id >= 0 && gold_weapon_purchased_r[g_hero_r.items[0].item_id] != 0 &&
+    if (g_hero_r.items[0].item_id >= 0 && gold_weapon_purchased[g_hero_r.items[0].item_id] != 0 &&
         g_hero_r.items[0].moby != 0)
         update_item_tint_from_hero_r(g_hero_r.items[0].moby, g_hero_r.moby);
 }
@@ -458,8 +458,7 @@ extern char g_hero_r2[] __asm__("D_0013F450");
 extern char novalis_coll_hit_r[] __asm__("D_L01_00174340");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern void predict_position_with_vertical_drop_r(void *a, void *b, void *c, int d,
-                                                  float f) __asm__("func_L00_0025A540");
+extern void func_L00_0025A540(void *a, void *b, void *c, int d, float f);
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
@@ -513,8 +512,8 @@ void update_hero_ledge_probe(void) {
     if (((Hero *)g_hero_r2)->state.control_mode == 4)
         speed = ((Hero *)g_hero_r2)->jump_gravity;
     r = scale_ticks_r2(2);
-    predict_position_with_vertical_drop_r(v0, ((Hero *)g_hero_r2)->motion.pos.f,
-                                          ((Hero *)g_hero_r2)->motion.resolved_velocity.f, r, speed);
+    predict_position_with_vertical_drop(v0, ((Hero *)g_hero_r2)->motion.pos.f,
+                                        ((Hero *)g_hero_r2)->motion.resolved_velocity.f, r, speed);
     found = 0;
     v0[0] += FastCos_r(((Hero *)g_hero_r2)->motion.rot.f[2]) * ((Hero *)g_hero_r2)->capsule_radius;
     v0[1] += FastSin_r(((Hero *)g_hero_r2)->motion.rot.f[2]) * ((Hero *)g_hero_r2)->capsule_radius;

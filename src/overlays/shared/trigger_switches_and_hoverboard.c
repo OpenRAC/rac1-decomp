@@ -603,9 +603,9 @@ extern long f_tex_0D678(int) __asm__("func_001F4868");
 extern int f_tween_0D678(int, int, float) __asm__("func_001FA8A8");
 extern void f_draw_0D678(void *, float *, int) __asm__("func_L00_001FD1D8");
 extern float rilgar_camera_pos_r2[] __asm__("D_L05_001672C0");
-extern float rilgar_wobble_quad_uvs_r[][2] __asm__("D_L05_001D6B00");
-extern float rilgar_wobble_quad_a_verts_r[][4] __asm__("D_L05_001D6B20");
-extern float rilgar_wobble_quad_b_verts_r[][4] __asm__("D_L05_001D6B60");
+extern float D_L05_001D6B00[][2];
+extern float D_L05_001D6B20[][4];
+extern float D_L05_001D6B60[][4];
 extern int rilgar_wobble_quad_blend_a SDATA(D_L05_00161DB4);
 extern int rilgar_wobble_quad_blend_b SDATA(D_L05_00161DB8);
 extern int rilgar_wobble_quad_blend_c SDATA(D_L05_00161DBC);
@@ -664,8 +664,8 @@ void draw_moby_wobble_quads(unsigned char *m) {
     quad_b.control[3] = flags;
     quad_a.control[3] = flags;
     for (k = 0; k < 4; k++) {
-        float u = rilgar_wobble_quad_uvs_r[k][0];
-        float v = rilgar_wobble_quad_uvs_r[k][1];
+        float u = rilgar_wobble_quad_uvs[k][0];
+        float v = rilgar_wobble_quad_uvs[k][1];
         quad_a.texcoord[k][0] = u;
         quad_a.texcoord[k][1] = v;
         quad_b.texcoord[k][0] = u;
@@ -676,8 +676,8 @@ void draw_moby_wobble_quads(unsigned char *m) {
         j = 0;
         do {
             vertex_a = quad_a.vertex[j];
-            qcopy(vertex_a, rilgar_wobble_quad_a_verts_r[j]);
-            qcopy(quad_b.vertex[j], rilgar_wobble_quad_b_verts_r[j]);
+            qcopy(vertex_a, rilgar_wobble_quad_a_verts[j]);
+            qcopy(quad_b.vertex[j], rilgar_wobble_quad_b_verts[j]);
             phase = (float)(i + (j & 1)) * 0.1f;
             sign = 1.0f;
             if (j > 1)
@@ -1559,7 +1559,7 @@ typedef struct {
     CameraPreset *preset; /* 0x1C */
 } CameraPresetRow;
 extern CameraPresetRow *rilgar_camera_descriptors_r __asm__("D_L05_0015F050") MACRO_ADDR;
-extern s32 g_hero_moby_r[] __asm__("D_001414D0");
+extern s32 D_001414D0[];
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 
 void func_L05_0032ABF0_r(Camera_32ABF0 *cam) __asm__("func_L05_0032ABF0");
@@ -1588,7 +1588,7 @@ void func_L05_0032ABF0_r(Camera_32ABF0 *cam) {
     clear_u64_value_r(&d->unk1C0);
     focus = &cam->orbit->focus;
     focus->state = 5;
-    focus->unk44 = g_hero_moby_r[0];
+    focus->unk44 = g_hero_moby[0];
     focus->dist = d->dist;
     focus->max_angle = 0.209439516f;
     focus->unk58 = 0.00174532924f;
@@ -1786,7 +1786,7 @@ typedef struct {
 
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern Row *rilgar_camera_descriptors_r2 __asm__("D_L05_0015F050") MACRO_ADDR;
-extern float rilgar_coll_resolved_pos_z_r __asm__("D_L05_00174378");
+extern float D_L05_00174378;
 extern float D_L05_00162268_32B1F8 SDATA(D_L05_00162268);
 extern void vec_scale_32B1F8(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void vec_sub_32B1F8(void *, void *, void *) __asm__("func_001F9BF0");
@@ -1856,7 +1856,7 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
         while (n < 6) {
             if (collide_32B1F8(0.5f, &probe, 18, 0) != 0) {
                 e->height =
-                    spring_32B1F8(e->height, rilgar_coll_resolved_pos_z_r - focus.z, &cur->vel, 0.05f, 0.2f, 0.0f);
+                    spring_32B1F8(e->height, rilgar_coll_resolved_pos_z - focus.z, &cur->vel, 0.05f, 0.2f, 0.0f);
                 break;
             }
             n++;

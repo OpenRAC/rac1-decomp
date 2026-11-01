@@ -7,7 +7,7 @@
 #include "game/render/lights.h"
 #include "data/shared_levels.h"
 
-extern long GetEffectTex64(int) __asm__("func_001F4868");
+extern long func_001F4868(int);
 extern void MobyTransformScaledVertex(char *arg0, int arg1, char *arg2);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern void FastVecCross(void *, void *, void *);
@@ -38,7 +38,7 @@ void glow_quads_draw(char *moby) {
     float sc;
     long tex;
 
-    tex = GetEffectTex64(0xE);
+    tex = GetEffectTex(0xE);
     pk.c[0] = 0x3FF08080;
     pk.c[1] = 0x3FF08080;
     pk.c[2] = 0x3FF08030;
@@ -158,17 +158,16 @@ void glow_quads_draw(char *moby) {
     draw_world_quad(q, m, 1);
 }
 typedef int ti_23e008 __attribute__((mode(TI)));
-extern float frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
-extern void getpos_23e008(void *, int, void *) __asm__("func_L00_00250800");
+extern float D_0015EE60 MACRO_ADDR;
+extern void func_L00_00250800(void *, int, void *);
 extern float rndf_23e008(float, float) __asm__("func_002140F8");
 extern int rndi_23e008(int) __asm__("func_002140B0");
-extern float rnda_23e008(void) __asm__("func_00214158");
-extern void dir_23e008(void *, float, float, float) __asm__("func_00215C00");
+extern float func_00214158(void);
+extern void func_00215C00(void *, float, float, float);
 extern float rnd_23e008(float, float) __asm__("func_L00_00258C80");
 extern int fr_23e008(int) __asm__("func_001F9850");
-extern unsigned char *emit_23e008(float *, int, float, float, float, int, int, int,
-                                  void *) __asm__("func_L00_00272F00");
-extern int rf_23e008(float) __asm__("func_001FA898");
+extern unsigned char *func_L00_00272F00(float *, int, float, float, float, int, int, int, void *);
+extern int func_001FA898(float);
 /* Spawns a burst of directed particles with randomised speeds from the frame time. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_0023db30.c, FUN_L00_0023e008. */
 void emit_moby_particle_pairs(void *p) {
     ti_23e008 dir[1];
@@ -176,27 +175,27 @@ void emit_moby_particle_pairs(void *p) {
     float pos[4] __attribute__((aligned(16)));
     int i;
     unsigned char *r;
-    getpos_23e008(p, 0, pos);
+    Moby_GetJointWorldPos(p, 0, pos);
     for (i = 3; i >= 0; i--) {
         float s = rndf_23e008(0.15f, 0.5f);
         int k = rndi_23e008(2);
         float a, b;
         if (k == 0)
             k--;
-        a = rnda_23e008();
+        a = random_angle_radians();
         b = rndf_23e008(0.34906584f, 1.53588974f);
-        dir_23e008(dir, rndf_23e008(0.05f, 0.2f) * frame_scale_r, a, b);
+        BuildSphericalOffset(dir, rndf_23e008(0.05f, 0.2f) * frame_scale, a, b);
         qcopy(old, pos);
         pos[0] += rnd_23e008(0.0f, 0.15f);
         pos[1] += rnd_23e008(0.0f, 0.15f);
         pos[2] += rnd_23e008(0.0f, 0.15f);
-        r = emit_23e008(pos, fr_23e008(0x3C), s * 0.1f, s, 0.009f, 0x7F7F2020, 0, k, dir);
+        r = PartType53Spawn(pos, fr_23e008(0x3C), s * 0.1f, s, 0.009f, 0x7F7F2020, 0, k, dir);
         if (r)
-            r[9] = rf_23e008(4.0f) + 0x70;
+            r[9] = truncate_float_to_s32(4.0f) + 0x70;
         k = -k;
-        r = emit_23e008(pos, fr_23e008(0x3C), s * 0.07f, s * 0.7f, 0.009f, 0x7F7F7F7F, 1, k, dir);
+        r = PartType53Spawn(pos, fr_23e008(0x3C), s * 0.07f, s * 0.7f, 0.009f, 0x7F7F7F7F, 1, k, dir);
         if (r)
-            r[9] = rf_23e008(4.0f) + 0x70;
+            r[9] = truncate_float_to_s32(4.0f) + 0x70;
     }
 }
 extern float IntToFloat(int);

@@ -117,7 +117,7 @@ void update_moby_scene_visibility_and_height_reflection(M *moby) {
 extern short rocket_tank_shot_speed;
 extern short rocket_tank_shot_speed_b __asm__("D_L18_0016250C");
 extern void update_rocket_tank_damage_and_aim(void *);
-extern char *CreateMoby_m(int) __asm__("func_0020D348");
+extern char *func_0020D348(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void moby_build_matrix(void *);
 extern int IsFrameWithinWindow(char *, float);
@@ -167,7 +167,7 @@ void rocket_tank_update(M1454 *m) {
             d->w124 = scale_ticks(240);
             d->w120 = 0;
             if (d->c138 == 0) {
-                char *c = CreateMoby_m(0x14B);
+                char *c = CreateMoby(0x14B);
                 d->c138 = c;
                 c[0x30] = 0x40;
                 *(short *)(d->c138 + 0x32) = 0x40;
@@ -187,7 +187,7 @@ void rocket_tank_update(M1454 *m) {
                 moby_build_matrix(d->c138);
             }
             if (d->c13c == 0) {
-                char *c = CreateMoby_m(0x14B);
+                char *c = CreateMoby(0x14B);
                 d->c13c = c;
                 c[0x30] = 0x40;
                 *(short *)(d->c13c + 0x32) = 0x40;
@@ -262,8 +262,8 @@ void rocket_tank_update(M1454 *m) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
-extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
+extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
+                              float, int, int, int, int);
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
                                 float *v11, float *v12);
 extern void SetDeathBits(void *, int, int);
@@ -295,8 +295,7 @@ void update_rocket_tank_damage_and_aim(void *mv) {
             qcopy(v, m + 0x10);
             v[2] = v[2] + 1.0f;
             pa = (float *)(m + 0x10);
-            spawn_explosion_alt(m, d->explosion, v, 0.0f, 0.0f, 20, 8, 20, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1,
-                                0);
+            spawn_explosion(m, d->explosion, v, 0.0f, 0.0f, 20, 8, 20, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
             dv = veldin2_zero_vec;
             SpawnBreakFragment(m, 0x700, pa, m + 0x40, 0, 0, 0.0f, dv, dv, dv);
             SpawnBreakFragment(m, 0x701, pa, m + 0x40, 0, 0, 0.0f, dv, dv, dv);

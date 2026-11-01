@@ -244,8 +244,8 @@ extern Hero g_hero_r2 __asm__("D_0013F450") NOT_SDA;
 extern q_2eb938 gHeroPos_r __asm__("D_0013F4D0") NOT_SDA;
 extern E_2eb938 *camera_descriptors_r __asm__("D_L00_0015F050") MACRO_ADDR;
 extern char *g_current_follow_cam_r __asm__("D_L00_00166F00") NOT_SDA;
-extern char camera_view_r[] __asm__("D_L00_00166F10") NOT_SDA;
-extern char *find_camera_collision_volume_for_point_r(void *, f32) __asm__("func_L00_001EE530");
+extern char D_L00_00166F10[] NOT_SDA;
+extern char *func_L00_001EE530(void *, f32);
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern f32 FastCos_r(f32) __asm__("func_001F9F90");
 extern f32 FastSin_r(f32) __asm__("func_001F9FA8");
@@ -284,7 +284,7 @@ int camera_transition_update(u8 *m, char *a1) {
         if (s != 0 && s != 10 && s != 14 && s != 2)
             goto off;
         *(q_2eb938 *)&v = gHeroPos_r;
-        r = find_camera_collision_volume_for_point_r(&v, 0.25f);
+        r = find_camera_collision_volume_for_point(&v, 0.25f);
         if (r && (*(s32 *)(r + 0x18) & 1))
             return 0;
         q->i24 = 0;
@@ -309,7 +309,7 @@ int camera_transition_update(u8 *m, char *a1) {
     if (q->h22 == 0)
         goto tail;
     q->h22 = 0;
-    b = camera_view_r;
+    b = camera_view;
     b2 = b - 0x190;
     vec = b + 0x30;
     FastVecScale_r(&v, vec, FastVecDot_r(vec, *(char **)(b2 + 0x180)));
@@ -996,13 +996,13 @@ typedef int OvlQuad_2ED320 __attribute__((mode(TI)));
 extern Hero hero_2ED320 __asm__("D_0013F450");
 extern CamGlobals cam_globals_2ED320 __asm__("D_L00_00166D80");
 extern s32 current_level_2ED320 __asm__("D_0015EE84") MACRO_ADDR;
-extern f32 frame_time_2ED320 __asm__("D_0015EE6C") MACRO_ADDR;
-extern void approach_2ED320(float, float, float *) __asm__("func_00214D28");
+extern f32 D_0015EE6C MACRO_ADDR;
+extern void func_00214D28(float, float, float *);
 extern void FastVecSub_2ED320(void *, void *, void *) __asm__("func_001F9BF0");
 extern void normalize_2ED320(float, void *, void *) __asm__("func_L00_001FF4B0");
 extern void FastVecScale_2ED320(float, void *, void *) __asm__("func_001F9C30");
 extern void FastVecAdd_2ED320(void *, void *, void *) __asm__("func_001F9BD8");
-extern int coll_line_2ED320(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
+extern int func_L00_001EFFF0(void *, void *, int, int, int);
 extern int coll_sphere_2ED320(float, void *, int, int) __asm__("func_L00_001F10E0");
 extern float FastVecDot_2ED320(void *, void *) __asm__("func_001F9C78");
 extern float FastVecLength_2ED320(void *) __asm__("func_001F9CB8");
@@ -1010,9 +1010,9 @@ extern float rope_spring_turn_2ED320(void *, float, float, float, float, float) 
 extern float FastArcTan_2ED320(float, float) __asm__("func_L00_001FF860");
 extern f32 FastCos_2ED320(f32) __asm__("func_001F9F90");
 extern f32 FastSin_2ED320(f32) __asm__("func_001F9FA8");
-extern unsigned short *neighbour_lists_2ED320[] __asm__("D_L00_001ABBC0");
-extern char *mobys_2ED320 __asm__("D_L00_00160098") MACRO_ADDR;
-extern OvlQuad_2ED320 coll_pos_2ED320 __asm__("D_L00_00173F60");
+extern unsigned short *D_L00_001ABBC0[];
+extern char *D_L00_00160098 MACRO_ADDR;
+extern OvlQuad_2ED320 D_L00_00173F60;
 extern float rope_turn_k_2ED320 SDATA(D_L00_00161EA8);
 
 /* Follow camera on a rope or a swing: eases the distance, height and lag toward the hero's rope state, turns the
@@ -1049,16 +1049,16 @@ void update_target_tracking_camera_position(Camera *cam) {
         target = 4.64f;
         rate = 2.0f;
     }
-    approach_2ED320(target, frame_time_2ED320 * 8.0f,
-                    (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0xa0));
-    approach_2ED320(rate, frame_time_2ED320 * 4.0f,
-                    (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0xb0));
+    ApproachValue(target, g_frame_time * 8.0f,
+                  (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0xa0));
+    ApproachValue(rate, g_frame_time * 4.0f,
+                  (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0xb0));
     if (current_level_2ED320 == 14 && hero_2ED320.state.current == HERO_STATE_GRAPPLE_SWING_ENTRY)
-        approach_2ED320(rate + 0.25f, frame_time_2ED320 * 8.0f,
-                        (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0x8c));
+        ApproachValue(rate + 0.25f, g_frame_time * 8.0f,
+                      (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0x8c));
     else
-        approach_2ED320(rate - 0.5f, frame_time_2ED320 * 8.0f,
-                        (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0x8c));
+        ApproachValue(rate - 0.5f, g_frame_time * 8.0f,
+                      (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0x8c));
 
     if (hero_2ED320.state.current == HERO_STATE_GRAPPLE_SWING_ENTRY) {
         if ((current_level_2ED320 != 14 && current_level_2ED320 != 7 && current_level_2ED320 != 9) ||
@@ -1074,10 +1074,10 @@ void update_target_tracking_camera_position(Camera *cam) {
              * register order of the loop constants and of turn. */
             if (target == 10.0f) {
             }
-            neighbours = neighbour_lists_2ED320[*(unsigned char *)(current_target + 0x21)];
+            neighbours = level_moby_groups[*(unsigned char *)(current_target + 0x21)];
             if (neighbours != 0) {
                 do {
-                    candidate = mobys_2ED320 + (*neighbours & 0x7fff) * 0x100;
+                    candidate = moby_array_start + (*neighbours & 0x7fff) * 0x100;
                     if (candidate != current_target &&
                         (*(short *)(candidate + 0xa6) == 0x323 || *(short *)(candidate + 0xa6) == 0x2f6)) {
                         FastVecSub_2ED320(offset, candidate + 0x10, current_target + 0x10);
@@ -1121,9 +1121,9 @@ void update_target_tracking_camera_position(Camera *cam) {
     normalize_2ED320(-*distance, position, follow + 0x30);
     position[2] += distance[4];
     FastVecAdd_2ED320(position, position, &hero_2ED320.motion.pos);
-    if (coll_line_2ED320(&cam->pos, position, 0x12, 0, 0) != 0) {
-        FastVecSub_2ED320(offset, &coll_pos_2ED320, &cam->pos);
-        collision_position = &coll_pos_2ED320;
+    if (coll_line(&cam->pos, position, 0x12, 0, 0) != 0) {
+        FastVecSub_2ED320(offset, &collision_hit_point, &cam->pos);
+        collision_position = &collision_hit_point;
         length = FastVecLength_2ED320(offset);
         if (length > 0.5f) {
             FastVecScale_2ED320((length - 0.5f) / length, offset, offset);

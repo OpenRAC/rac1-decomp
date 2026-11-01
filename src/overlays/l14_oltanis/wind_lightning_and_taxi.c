@@ -558,10 +558,10 @@ typedef struct Push {
     float fC;
     float f10; /* 0x10 */
 } Push;
-extern Push wind_push_vector_r __asm__("D_L14_00162300") MACRO_ADDR;
-extern char wind_control_no_vol0_msg_r[] __asm__("D_L14_001FCCF0");
-extern char wind_control_no_node_msg_r[] __asm__("D_L14_001FCD50");
-extern char wind_control_no_vol500_msg_r[] __asm__("D_L14_001FCDA8");
+extern Push D_L14_00162300 MACRO_ADDR;
+extern char D_L14_001FCCF0[];
+extern char D_L14_001FCD50[];
+extern char D_L14_001FCDA8[];
 extern char *oltanis_clip_volumes_r __asm__("D_L14_001601AC") MACRO_ADDR;
 extern int D_L14_00161CD4_2EC3E8 SDATA(D_L14_00161CD4);
 extern float D_L14_00161CD8_2EC3E8 SDATA(D_L14_00161CD8);
@@ -577,17 +577,17 @@ void update_wind_control(Moby *m) {
     if (m->state == 0) {
         m->state = 1;
         if (d->vol0 < 0) {
-            STUB_printf_r(wind_control_no_vol0_msg_r, (*(short *)&m->save_id));
+            STUB_printf_r(wind_control_no_vol0_msg, (*(short *)&m->save_id));
             DeleteMoby_r(m);
             return;
         }
         if (d->node < 0) {
-            STUB_printf_r(wind_control_no_node_msg_r, (*(short *)&m->save_id));
+            STUB_printf_r(wind_control_no_node_msg, (*(short *)&m->save_id));
             DeleteMoby_r(m);
             return;
         }
         if (d->vol500 < 0) {
-            STUB_printf_r(wind_control_no_vol500_msg_r, (*(short *)&m->save_id));
+            STUB_printf_r(wind_control_no_vol500_msg, (*(short *)&m->save_id));
             DeleteMoby_r(m);
             return;
         }
@@ -607,10 +607,10 @@ void update_wind_control(Moby *m) {
     if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
                                       d->vol500)) {
         Hero *h;
-        wind_push_vector_r.x = FastCos_r(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
-        wind_push_vector_r.y = FastSin_r(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
-        wind_push_vector_r.z = 0.0f;
-        wind_push_vector_r.f10 = 1.0f;
+        wind_push_vector.x = FastCos_r(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
+        wind_push_vector.y = FastSin_r(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
+        wind_push_vector.z = 0.0f;
+        wind_push_vector.f10 = 1.0f;
         update_wind_sparks_r(m);
         h = (Hero *)(hero_globals_base_r + 0xE1D);
         if (h->unk308 == 0 && h->unk2284 != 0xD && (h->on_ice_ground != 0 || h->frames_off_ground.s != 0) &&
@@ -1012,7 +1012,7 @@ void update_looping_path_moby(struct Moby *m) {
             break;
     }
 }
-extern char *CreateMoby_m(int) __asm__("func_0020D348");
+extern char *func_0020D348(int);
 extern float vec_length_xy(void *);
 
 extern int scale_ticks(int);
@@ -1021,7 +1021,7 @@ extern void moby_build_matrix(void *);
 
 /* Spawn a projectile moby at a, aimed along b, with two parameters. */
 char *spawn_flying_bolt(void *a, float *b, int c, int d) {
-    char *m = CreateMoby_m(0x2A9);
+    char *m = CreateMoby(0x2A9);
     if (m) {
         struct L14BoltVars *data;
         *(int *)&((Moby *)m)->rot.x = 0;
@@ -1701,10 +1701,10 @@ void spawn_lightning_arc_particle_pairs(float *pos, int n) {
 extern void initialize_elevator_path_state_r(char *) __asm__("func_L14_002F03E8");
 extern void update_elevator_idle_glow_r(char *) __asm__("func_L14_002F0B78");
 extern int is_point_inside_clip_volume_r2(void *, int) __asm__("func_00215570");
-extern float FastVecDot_r(void *, void *) __asm__("func_001F9C78");
+extern float func_001F9C78(void *, void *);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-extern int Sound_SetPitchBend_r(int, int) __asm__("func_L00_0028F210");
+extern int func_L00_0028F210(int, int);
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern int advance_elevator_along_path_r(char *) __asm__("func_L14_002F05D8");
@@ -1722,10 +1722,10 @@ extern unsigned char oltanis_collected_flags_base_r[] __asm__("D_L14_001BBCC0");
 extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
 extern unsigned char level_moby_killed_r[] __asm__("D_0014C290");
 extern char g_hero_r2[] __asm__("D_0013F450");
-extern char gHeroPos_r[] __asm__("D_0013F4D0");
-extern int D_0013E740_2EFD38 __asm__("D_0013E740");
-extern int D_0013E6D0_2EFD38 __asm__("D_0013E6D0");
-extern char *g_hero_ground_moby_r __asm__("D_0013F74C");
+extern char D_0013F4D0[];
+extern int D_0013E740;
+extern int D_0013E6D0;
+extern char *D_0013F74C;
 typedef struct {
     char b[0x70];
 } Voice;
@@ -1813,7 +1813,7 @@ void elevator_685_update(char *moby) {
             update_elevator_idle_glow_r(moby);
             v = data->call_a;
             if (v >= 0) {
-                if (is_point_inside_clip_volume_r2(gHeroPos_r, v) != 0) {
+                if (is_point_inside_clip_volume_r2(gHeroPos, v) != 0) {
                     ((unsigned char *)moby)[0xBC] = 0;
                     data->dir = -1.0f;
                     data->point = 0;
@@ -1821,29 +1821,29 @@ void elevator_685_update(char *moby) {
                 }
             }
             v = data->call_b;
-            if (v >= 0 && is_point_inside_clip_volume_r2(gHeroPos_r, v) != 0) {
+            if (v >= 0 && is_point_inside_clip_volume_r2(gHeroPos, v) != 0) {
                 ((unsigned char *)moby)[0xBC] = 0;
                 data->point = *(int *)oltanis_paths_r2[data->path_from] - 2;
                 data->point_dist = *(float *)(oltanis_paths_r2[data->path_from] + (data->point << 4) + 0x1C);
                 data->dir = 1.0f;
             }
             v = data->call_c;
-            if (v >= 0 && is_point_inside_clip_volume_r2(gHeroPos_r, v) != 0) {
+            if (v >= 0 && is_point_inside_clip_volume_r2(gHeroPos, v) != 0) {
                 ((unsigned char *)moby)[0xBC] = 1;
                 data->point = *(int *)oltanis_paths_r2[data->path_to] - 2;
                 data->point_dist = *(float *)(oltanis_paths_r2[data->path_to] + (data->point << 4) + 0x1C);
                 data->dir = 1.0f;
             }
             if (((char *)((Hero *)g_hero_r2)->ground_moby) == moby && ((Hero *)g_hero_r2)->frames_off_ground.s == 0) {
-                if (0.0f < FastVecDot_r(moby + 0xE0, ((char *)((Hero *)g_hero_r2)->moby) + 0xE0)) {
+                if (0.0f < FastVecDot(moby + 0xE0, ((char *)((Hero *)g_hero_r2)->moby) + 0xE0)) {
                     f0 = vec_distance_xy_r(((Hero *)g_hero_r2)->motion.pos.f, moby + 0x10);
                     if (f0 < 1.0f) {
                         r = Moby_PlaySound_r(1, 0, (int)moby);
                         if (r >= 0) {
                             if (data->pitch_alt < 0) {
-                                data->pitch_alt = D_0013E740_2EFD38;
+                                data->pitch_alt = path_mover_ride_sound_default_pitch;
                             }
-                            Sound_SetPitchBend_r(r, data->pitch_alt);
+                            Sound_SetPitchBend(r, data->pitch_alt);
                         }
                         f1v = data->dir;
                         if (f1v == -1.0f) {
@@ -1865,9 +1865,9 @@ void elevator_685_update(char *moby) {
                 data->voice = Moby_PlaySound_r(0, 4, (int)moby);
                 if (data->voice != 0) {
                     if (data->pitch_base < 0) {
-                        data->pitch_base = D_0013E6D0_2EFD38;
+                        data->pitch_base = path_mover_loop_sound_default_pitch;
                     }
-                    Sound_SetPitchBend_r(data->voice, data->pitch_base);
+                    Sound_SetPitchBend(data->voice, data->pitch_base);
                 }
             }
             ((Moby *)moby)->glow_color = FastTweenColor_r(((Moby *)moby)->glow_color, 0x80808040, 0.1f);
@@ -1893,7 +1893,7 @@ void elevator_685_update(char *moby) {
                 }
                 data->pitch = truncate_float_to_s32_r2(t30);
                 if (data->voice >= 0) {
-                    Sound_SetPitchBend_r(data->voice, data->pitch);
+                    Sound_SetPitchBend(data->voice, data->pitch);
                 }
                 rebuild_elevator_world_path_r(moby);
             } else {
@@ -1906,17 +1906,17 @@ void elevator_685_update(char *moby) {
                 data->voice = -1;
                 s = Moby_PlaySound_r(1, 0, (int)moby);
                 if (s >= 0) {
-                    Sound_SetPitchBend_r(s, data->pitch_alt / 3);
+                    Sound_SetPitchBend(s, data->pitch_alt / 3);
                 }
                 ((unsigned char *)moby)[0x20] = 4;
-                if (g_hero_ground_moby_r != moby) {
+                if (g_hero_ground_moby != moby) {
                     ((unsigned char *)moby)[0x20] = 1;
                 }
             }
             break;
         case 4:
             update_elevator_idle_glow_r(moby);
-            if (g_hero_ground_moby_r != moby) {
+            if (g_hero_ground_moby != moby) {
                 ((unsigned char *)moby)[0x20] = 1;
             }
             break;
@@ -1927,7 +1927,7 @@ void elevator_685_update(char *moby) {
     if (((unsigned char *)moby)[0x20] != 2) {
         if (((unsigned char *)moby)[0x20] != 0) {
             settle_elevator_at_path_endpoint_r(moby);
-            if (g_hero_ground_moby_r == moby) {
+            if (g_hero_ground_moby == moby) {
                 FastVecSub_r(v20, moby + 0x10, v0);
                 update_entity_matrix_r(data->entity, v20, v10, moby + 0x40);
             }
@@ -2207,7 +2207,7 @@ extern void request_taxi_stop_prompt(char *);
 extern Moby *find_group_moby_by_tag(char *, int);
 extern void matrix_from_basis_rows(void *, void *);
 extern void Cam_SetDistanceGoal(float x, float y, int flag);
-extern float ApproachWithVelocity_r(float, float, float, float, float *, float *) __asm__("func_00214D88");
+extern float func_00214D88(float, float, float, float, float *, float *);
 extern void SamplePathAt_r(int *, int, void *, float *, int, float) __asm__("func_00215CA8");
 extern void SamplePathAt_r2(float, int *, int, void *, float *, int) __asm__("func_00215CA8");
 extern void lerp_vector(void *, void *, void *, float);
@@ -2223,7 +2223,7 @@ extern Pose *oltanis_clip_volumes_r2 __asm__("D_L14_001601AC") MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 
 /* Taxi update: waits at a station, flies the hero between stations along a path, and manages its sound. */
-extern PadState g_controller_state_r __asm__("D_0013CA40");
+extern PadState D_0013CA40;
 
 void TaxiUpdate(Moby *moby) {
     enum {
@@ -2265,7 +2265,7 @@ void TaxiUpdate(Moby *moby) {
                 if (FastAbsF(hero_relative_position[1]) < 1.2f) {
                     prepare_taxi_route((char *)moby);
                     request_taxi_stop_prompt((char *)moby);
-                    if ((g_controller_state_r.pressed & button) && oltanis_shown_help_message == 4) {
+                    if ((g_controller_state.pressed & button) && oltanis_shown_help_message == 4) {
                         Moby *m;
                         moby->state = 3;
                         m = find_group_moby_by_tag((char *)moby, taxi_vars->dst);
@@ -2342,8 +2342,8 @@ void TaxiUpdate(Moby *moby) {
             if (g->ground_moby == moby && g->air_frames.s == 0) {
                 Cam_SetDistanceGoal(7.0f, 0.002f, 0);
             }
-            ApproachWithVelocity_r(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, &taxi_vars->t,
-                                   &taxi_vars->v);
+            ApproachWithVelocity(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, &taxi_vars->t,
+                                 &taxi_vars->v);
             qcopy_nc(blend_from_position_or_rotation_matrix,
                      oltanis_clip_volumes_r2[taxi_vars->station[taxi_vars->cur]].pos);
             qcopy_nc(blend_from_rotation, oltanis_clip_volumes_r2[taxi_vars->station[taxi_vars->cur]].dir);
@@ -2362,8 +2362,8 @@ void TaxiUpdate(Moby *moby) {
         }
         case TAXI_STATE_BLEND_SAVED_POSE_TO_PATH_START: {
             float hermite_blend_fraction;
-            ApproachWithVelocity_r(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, &taxi_vars->t,
-                                   &taxi_vars->v);
+            ApproachWithVelocity(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, &taxi_vars->t,
+                                 &taxi_vars->v);
             qcopy(blend_from_position_or_rotation_matrix, taxi_vars->pos2);
             qcopy(blend_from_rotation, taxi_vars->rot2);
             SamplePathAt_r(taxi_vars->path, wrap, blend_to_position, blend_to_rotation, flags, 0.0f);
@@ -2397,8 +2397,8 @@ void TaxiUpdate(Moby *moby) {
         }
         case TAXI_STATE_BLEND_PATH_END_TO_STOP: {
             Hero *g;
-            ApproachWithVelocity_r(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.25f, &taxi_vars->t,
-                                   &taxi_vars->v);
+            ApproachWithVelocity(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.25f, &taxi_vars->t,
+                                 &taxi_vars->v);
             qcopy_nc(blend_to_position, oltanis_clip_volumes_r2[taxi_vars->station[taxi_vars->dst]].pos);
             qcopy_nc(blend_to_rotation, oltanis_clip_volumes_r2[taxi_vars->station[taxi_vars->dst]].dir);
             SamplePathAt_r(taxi_vars->path, wrap, blend_from_position_or_rotation_matrix, blend_from_rotation, flags,
@@ -2422,7 +2422,7 @@ void TaxiUpdate(Moby *moby) {
                 transform_vector(hero_relative_position, hero_relative_position, taxi_inverse_rotation_matrix);
                 if (FastAbsF(hero_relative_position[1]) < 1.2f) {
                     request_taxi_stop_prompt((char *)moby);
-                    if (g_controller_state_r.pressed & button) {
+                    if (g_controller_state.pressed & button) {
                         qcopy(taxi_vars->pos2, taxi_vars->pos);
                         qcopy(taxi_vars->rot2, taxi_vars->rot);
                         initialize_taxi_stop_from_position((char *)moby);
@@ -3562,7 +3562,7 @@ extern void FastVecScale_r2(void *, void *, float) __asm__("func_001F9C30");
 extern void func_L00_0025F4A8_2FF040(void *, void *, void *, float, float, int, int, int, float, float, float, int,
                                      float, float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int Sound_IsPlaying_r4(void *, int) __asm__("func_L00_0028EB98");
-extern void spawn_moby_offset_puffs_r(struct Moby *) __asm__("func_L14_002FF358");
+extern void func_L14_002FF358(struct Moby *);
 extern int Moby_PlaySound_r5(int, int, int) __asm__("func_0022ED80");
 extern void DeleteMoby_r4(void *) __asm__("func_0020D678");
 extern s32 scale_ticks_r4(s32) __asm__("func_001F9850");
@@ -3633,7 +3633,7 @@ void FlyerUpdate(struct Moby *moby) {
             moby->rot.z = interpolate_angle_r(moby->rot.z, fast_atan2_r3(diff.x, diff.y), D_L14_0016207C_2FF040);
             FastVecScale_r2(&step, &moby->rot_row0, speed);
             FastVecAdd_r3((u8 *)&moby->pos, (u8 *)&moby->pos, (u8 *)&step);
-            spawn_moby_offset_puffs_r(moby);
+            spawn_moby_offset_puffs(moby);
             if (Sound_IsPlaying_r4(moby, vars->sound) == 0) {
                 vars->sound = Moby_PlaySound_r5(1, 4, (int)moby);
             }

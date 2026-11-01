@@ -413,7 +413,7 @@ void prune_moby_references(void) {
 
 /* copy_matrix_rotation is declared above with a single argument, for the
    extract_matrix_rotation_quaternion site; this one passes a source as well. */
-extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
+extern void func_001FA460(void *, void *);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -432,7 +432,7 @@ void MobyTransformScaledVertex(char *arg0, int arg1, char *arg2) {
     get_moby_joint_matrices(arg0, 1, &n, arg2);
     v = arg2 + 0x30;
     FastVecScale(v, v, s);
-    copy_matrix_rotation_2(buf, arg0 + 0xC0);
+    copy_matrix_rotation(buf, arg0 + 0xC0);
     sce_vu0_mul_matrix(arg2, buf, arg2);
     FastVecAdd(v, v, arg0 + 0x10);
 }

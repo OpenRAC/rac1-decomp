@@ -705,8 +705,7 @@ extern int update_alternating_joint_emission_burst(void *, char *, float *);
 extern int IsFrameWithinWindow(void *, float);
 extern unsigned char *spawn_moby_class_1046(int, void *, int, float, float, float, float, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void configure_timed_point_light_f(void *, void *, int, void *, short, unsigned int, int,
-                                          float) __asm__("func_L07_00313298");
+extern void func_L07_00313298(void *, void *, int, void *, short, unsigned int, int, float);
 extern float random_angle_radians(void);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void spawn_white_particle_with_payload(void *, void *);
@@ -1120,7 +1119,7 @@ void snagglebeast_update(unsigned char *m) {
                 d->turn_vel = 0;
                 spawn_moby_class_1046((int)m, &va, 0x3A, 1.0f, 25.0f, 2.0f, g_frame_time * 8.0f, 1.0f);
                 Moby_GetJointWorldPos(m, (d->phase & 1) + 5, &va);
-                configure_timed_point_light_f(m, ((unsigned char *)d), 1, &va, scale_ticks(0x1E), 0x800060FF, 0, 10.0f);
+                configure_timed_point_light(m, ((unsigned char *)d), 1, &va, scale_ticks(0x1E), 0x800060FF, 0, 10.0f);
                 va.f[2] = ((Moby *)m)->pos.z;
                 for (i = 0; i < 55; i++) {
                     float r1 = random_angle_radians();
@@ -1158,7 +1157,7 @@ void snagglebeast_update(unsigned char *m) {
                 break;
             if (d->phase_timer < scale_ticks(0x3C) / 2) {
                 Moby_GetJointWorldPos(m, 2, &va);
-                configure_timed_point_light_f(m, ((unsigned char *)d), 2, &va, scale_ticks(0x1E), 0x800060FF, 0, 10.0f);
+                configure_timed_point_light(m, ((unsigned char *)d), 2, &va, scale_ticks(0x1E), 0x800060FF, 0, 10.0f);
                 if ((umbris_frame_count & 7) == 0)
                     spawn_moby_point_offset_particle((char *)m, 2, 0.0f, 0.2f);
                 if (((umbris_frame_count - 4) & 7) == 0)
@@ -1823,8 +1822,8 @@ void snagglebeast_update(unsigned char *m) {
                     FastVecSub(&va, d->rope_end, d->rope_start);
                     vec_scale_to_length(&va, &va, frame_scale);
                     FastVecAdd(d->rope_start, d->rope_start, &va);
-                    configure_timed_point_light_f(m, ((unsigned char *)d), 3, d->rope_start, scale_ticks(0x1E),
-                                                  0x800060FF, 0, 10.0f);
+                    configure_timed_point_light(m, ((unsigned char *)d), 3, d->rope_start, scale_ticks(0x1E),
+                                                0x800060FF, 0, 10.0f);
                     if (d->phase != 0) {
                         if (fast_dec_timer(&d->phase_timer))
                             d->phase = 5;
@@ -1999,9 +1998,9 @@ extern int D_L07_00161C00_319080 SDATA(D_L07_00161C00);
 extern float D_L07_00161C0C_319080 SDATA(D_L07_00161C0C);
 extern int D_L07_00161C10_319080 SDATA(D_L07_00161C10);
 extern int D_L07_00161C14_319080 SDATA(D_L07_00161C14);
-extern float rope_swing_target_angle_r __asm__("D_L07_00161C40") MACRO_ADDR;
-extern char snagglebeast_rope_sway_from_r[] __asm__("D_L07_00161C20") MACRO_ADDR;
-extern char snagglebeast_rope_sway_to_r[] __asm__("D_L07_00161C30") MACRO_ADDR;
+extern float D_L07_00161C40 MACRO_ADDR;
+extern char D_L07_00161C20[] MACRO_ADDR;
+extern char D_L07_00161C30[] MACRO_ADDR;
 extern RopeVec_319080 rope_previous_points_r[] __asm__("D_L07_0020DDB0");
 extern RopeVec_319080 snagglebeast_rope_centers_r[] __asm__("D_L07_0020DDC0");
 extern short snagglebeast_rope_row_alpha_r[] __asm__("D_L07_0020DE88");
@@ -2010,7 +2009,7 @@ extern void norm_319080(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void add_319080(void *, void *, void *) __asm__("func_001F9BD8");
 extern void clear_319080(void *) __asm__("func_001F9BC0");
 extern float rand_319080(void) __asm__("func_00214158");
-extern void look_319080(void *, void *, void *, float) __asm__("func_002156E0");
+extern void func_002156E0(void *, void *, void *, float);
 
 /* Starts the rope when one is pending: lays nine points out from the anchor along the moby's
  * axis, then resets the swing state and, once, clears every entry's link.
@@ -2040,7 +2039,7 @@ void initialize_snagglebeast_rope(char *moby, void *anchor) {
         add_319080(snagglebeast_rope_centers_r[i], rope_previous_points_r[i], step);
         snagglebeast_rope_row_alpha_r[i] = 0;
     }
-    clear_319080(snagglebeast_rope_sway_from_r);
+    clear_319080(snagglebeast_rope_sway_from);
     c.q = 0;
     d.q = 0;
     c.f[2] = 0.1f;
@@ -2048,8 +2047,8 @@ void initialize_snagglebeast_rope(char *moby, void *anchor) {
     d.f[0] = 1.0f;
     d.f[3] = 1.0f;
     r = rand_319080();
-    look_319080(snagglebeast_rope_sway_to_r, pc, pd, r);
-    rope_swing_target_angle_r = r;
+    build_look_at_matrix(snagglebeast_rope_sway_to, pc, pd, r);
+    rope_swing_target_angle = r;
     D_L07_00161C0C_319080 = 0.006f;
     D_L07_00161C10_319080 = 0;
     D_L07_00161C14_319080 = 0;
@@ -2146,9 +2145,9 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
     FastVecCross(v20, v10, &((Moby *)moby)->rot_row1);
     norm_319080(v20, v20, 1.0f);
     qcopy(snagglebeast_rope_centers_r, anchor);
-    matrix_mul_vec3(v30, snagglebeast_rope_sway_from_r, &((Moby *)moby)->rot_row0);
+    matrix_mul_vec3(v30, snagglebeast_rope_sway_from, &((Moby *)moby)->rot_row0);
     add_319080(v30, v30, v10);
-    matrix_mul_vec3(v40, snagglebeast_rope_sway_to_r, &((Moby *)moby)->rot_row0);
+    matrix_mul_vec3(v40, snagglebeast_rope_sway_to, &((Moby *)moby)->rot_row0);
     add_319080(v40, v40, v10);
     {
         float t = (float)D_L07_00161C10_319080 / IntToFloat(scale_ticks(60));
@@ -2158,7 +2157,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
         v10[2] = v30[2] + (v40[2] - v30[2]) * t;
     }
     if (D_L07_00161C10_319080 >= scale_ticks(60)) {
-        qcopy(snagglebeast_rope_sway_from_r, snagglebeast_rope_sway_to_r);
+        qcopy(snagglebeast_rope_sway_from, snagglebeast_rope_sway_to);
         norm_319080(v50, &((Moby *)moby)->rot_row0, 2.8f);
         *(u128_319080 *)v60 = 0;
         *(u128_319080 *)v70 = 0;
@@ -2167,9 +2166,9 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
         v70[0] = 1.0f;
         v70[3] = 1.0f;
         {
-            float r3 = FastAddRots(rope_swing_target_angle_r, random_float_between(45.0f, 315.0f) * 0.017453292f);
-            look_319080(snagglebeast_rope_sway_to_r, v60, v70, r3);
-            rope_swing_target_angle_r = r3;
+            float r3 = FastAddRots(rope_swing_target_angle, random_float_between(45.0f, 315.0f) * 0.017453292f);
+            build_look_at_matrix(snagglebeast_rope_sway_to, v60, v70, r3);
+            rope_swing_target_angle = r3;
         }
         D_L07_00161C10_319080 = 0;
     }
@@ -2207,7 +2206,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
             if (FastAbsF(df) > 0.31415927f) {
                 sm = FastAddRots(sm, FastSubRots(df, 0.31415927f));
             }
-            look_319080(vC0, v60, vB0, sm);
+            build_look_at_matrix(vC0, v60, vB0, sm);
             norm_319080(vD0, vC0, 2.8f);
             lerp_vector(vC0, vC0, vD0, 1.0f);
             {
@@ -2723,7 +2722,7 @@ extern void debris_31AAB0(void *, void *, void *, float, float, int, int, int, f
                           int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void SetDeathBits_r2(void *, int, int) __asm__("func_L00_002584A8");
 extern void clamp_vec_length_r(void *, void *, f32) __asm__("func_L00_001FF548");
-extern f32 SpringTurn_r(f32 *, f32, f32, f32, f32, f32) __asm__("func_L00_00259148");
+extern f32 func_L00_00259148(f32 *, f32, f32, f32, f32, f32);
 extern s32 tick_31AAB0(s32 *) __asm__("func_001F9908");
 extern s32 coll_sphere_r(f32, void *, s32, struct Moby *) __asm__("func_L00_001F10E0");
 extern void jet_animate_r(struct Moby *, f32) __asm__("func_L00_0025B040");
@@ -2833,8 +2832,8 @@ void update_swooper(struct Moby *moby) {
                         &vars->turn_speed, g_frame_time_sq_r * 3.1415927f, g_frame_time_r * 3.1415927f,
                         g_frame_time_r * 6.2831855f);
             pitch = atan2_31AAB0(distxy_31AAB0(&moby->pos, &sight.pos), sight.pos.f[2] - moby->pos.z);
-            moby->rot.y = SpringTurn_r(&vars->pitch_speed, moby->rot.y, pitch, g_frame_time_sq_r * 3.1415927f,
-                                       g_frame_time_r * 3.1415927f, g_frame_time_r * 6.2831855f);
+            moby->rot.y = SpringTurn(&vars->pitch_speed, moby->rot.y, pitch, g_frame_time_sq_r * 3.1415927f,
+                                     g_frame_time_r * 3.1415927f, g_frame_time_r * 6.2831855f);
             sub_31AAB0(&dir, &sight.pos, &moby->pos);
             if (moby->command != 0) {
                 dir.f[2] = 0.0f;
@@ -2890,8 +2889,7 @@ typedef struct {
 extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
 extern void break_rotate_31B318(void *, void *, void *) __asm__("func_001F9EC0");
 extern void break_rand_vec_31B318(void *, f32, f32) __asm__("func_L00_00258DB0");
-extern struct Moby *break_spawn_shard_31B318(void *, void *, s32, f32, s32, f32, f32, f32,
-                                             s32) __asm__("func_L01_002F9908");
+extern struct Moby *func_L01_002F9908(void *, void *, s32, f32, s32, f32, f32, f32, s32);
 extern MobyHit_31B318 *hit_31B318(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
 extern float rand_31B318(float, float) __asm__("func_002140F8");
 extern void add_31B318(void *, void *, void *) __asm__("func_001F9BD8");
@@ -2932,7 +2930,7 @@ void process_breakable_prop_hit(struct Moby *m) {
                 vel.z = vel.z + (g_frame_time_r2 + g_frame_time_r2);
             cls = i % 3 + 0x2B8;
             scale = rand_31B318(0.41f, 0.5f);
-            break_spawn_shard_31B318(&p, &vel, cls, scale, randi_31B318(0x32, 0x50), 1.0f, 1.0f, 0.75f, 0);
+            spawn_debris_moby(&p, &vel, cls, scale, randi_31B318(0x32, 0x50), 1.0f, 1.0f, 0.75f, 0);
         }
         debris_31B318(m, &h->pos, h, 3.0f, 1.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
         delete_31B318(m);
@@ -2980,7 +2978,7 @@ extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern void *spawn_machinegun_turret_projectile_r(void *, void *, void *, int) __asm__("func_L07_0030C918");
+extern void *func_L07_0030C918(void *, void *, void *, int);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
@@ -3090,7 +3088,7 @@ void GunMoby_HandleHit(Moby *moby) {
                     vel[1] = FastSin_r(moby->rot.z) * (g_frame_time_r2 * 15.0f);
                     vel[2] = 0.0f;
                     Moby_PlaySound_r2(0, 0, moby);
-                    spawn_machinegun_turret_projectile_r(pos, vel, moby, data->kind);
+                    spawn_machinegun_turret_projectile(pos, vel, moby, data->kind);
                 }
                 if (data->burst != 0) {
                     if (FastDecTimer_r(&data->shot)) {

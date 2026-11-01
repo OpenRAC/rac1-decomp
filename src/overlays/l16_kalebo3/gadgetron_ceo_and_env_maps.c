@@ -555,8 +555,7 @@ extern short path_walker_particle_target_scalar_scale;
 extern void FastVecScale(void *, void *, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern float random_angle_radians(void);
-extern void spawn_effect_particle_with_target_scalar_emit(void *, void *, int, int, float,
-                                                          int) __asm__("func_L00_0026DD70");
+extern void func_L00_0026DD70(void *, void *, int, int, float, int);
 
 /* Emits a particle near an active moby when the target is close. */
 void emit_path_walker_particle(unsigned char *m, void *v) {
@@ -584,9 +583,8 @@ void emit_path_walker_particle(unsigned char *m, void *v) {
     FastVecAdd(velocity, velocity, out);
     final_size = *(float *)&path_walker_particle_target_scalar_scale;
     final_size *= 210000.0f;
-    spawn_effect_particle_with_target_scalar_emit(offset, velocity, *(int *)&path_walker_particle_color_start,
-                                                  *(int *)&path_walker_particle_color_end, final_size,
-                                                  scale_ticks(0x23));
+    spawn_effect_particle_with_target_scalar(offset, velocity, *(int *)&path_walker_particle_color_start,
+                                             *(int *)&path_walker_particle_color_end, final_size, scale_ticks(0x23));
 }
 
 extern float IntToFloat(int);

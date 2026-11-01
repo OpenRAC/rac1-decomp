@@ -14,7 +14,7 @@
 #include "enums/level.h"
 
 extern void VU1_addGSregister(int, long);
-extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int D_0015EE84 MACRO_ADDR;
 extern int depth_buffer_address MACRO_ADDR;
 
 extern void draw_sky_shells_with_particles_and_rotating_shell(void);
@@ -25,7 +25,7 @@ extern void b8f8_b(void) __asm__("func_L00_0028B8F8");
 /* Draws the sky shells for the current level. */
 void draw_level_sky(void) {
     SetupSkyGifPaging();
-    switch (g_current_level_index_m) {
+    switch (g_current_level_index) {
         case LEVEL_VELDIN1:
             draw_sky_shells_with_particles_and_rotating_shell();
             break;
@@ -139,14 +139,14 @@ void apply_level_specific_cutscene_moby_effects(void) {
     f32 buf[4];
     f32 v[4];
 
-    if (g_current_level_index_m == LEVEL_VELDIN1) {
+    if (g_current_level_index == LEVEL_VELDIN1) {
         for (i = 0; i < cutscene_state.count; i++) {
             if (cutscene_state.mobys[i]->oclass == MOBY_CLASS_VELDIN_SHIP) {
                 AddDrawCallback((void *)render_environment_mapped_object, (void *)cutscene_state.mobys[i]);
             }
         }
     }
-    if (g_current_level_index_m == LEVEL_ARIDIA) {
+    if (g_current_level_index == LEVEL_ARIDIA) {
         for (j = 0; j < cutscene_state.count; j++) {
             mb = cutscene_state.mobys[j];
             if (mb->oclass == MOBY_CLASS_SONIC_SUMMONER) {
@@ -154,8 +154,8 @@ void apply_level_specific_cutscene_moby_effects(void) {
             }
         }
     }
-    if (g_current_level_index_m == LEVEL_KERWAN && cutscene_state.state == 5 &&
-        scale_ticks(900) < cutscene_state.timer && cutscene_state.timer < scale_ticks(1100)) {
+    if (g_current_level_index == LEVEL_KERWAN && cutscene_state.state == 5 && scale_ticks(900) < cutscene_state.timer &&
+        cutscene_state.timer < scale_ticks(1100)) {
         src = cutscene_state.unk184;
         if (src != 0) {
             for (n = 0; n < 4; n++) {
@@ -170,18 +170,18 @@ void apply_level_specific_cutscene_moby_effects(void) {
             }
         }
     }
-    if (g_current_level_index_m == LEVEL_UMBRIS && cutscene_state.state == 4 && cutscene_state.unk188 != 0 &&
+    if (g_current_level_index == LEVEL_UMBRIS && cutscene_state.state == 4 && cutscene_state.unk188 != 0 &&
         cutscene_state.unk188->oclass == MOBY_CLASS_RED_SHIP) {
         AddDrawCallback((void *)render_environment_mapped_object, (void *)cutscene_state.unk188);
     }
-    if (g_current_level_index_m == LEVEL_OLTANIS && cutscene_state.state == 0) {
+    if (g_current_level_index == LEVEL_OLTANIS && cutscene_state.state == 0) {
         m = cutscene_state.unk17C;
         if (m != 0 && (u32)(cutscene_state.timer - 0x1C) < 6) {
             emit_moby_particle_pairs(m);
             AddDrawCallback((void *)glow_quads_draw, (void *)m);
         }
     }
-    if (g_current_level_index_m == LEVEL_QUARTU && (u32)(cutscene_state.state - 3) < 2) {
+    if (g_current_level_index == LEVEL_QUARTU && (u32)(cutscene_state.state - 3) < 2) {
         for (k = 0; k < cutscene_state.count; k++) {
             apply_env_zone_lighting(cutscene_state.mobys[k]);
         }

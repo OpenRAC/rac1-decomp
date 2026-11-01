@@ -1850,13 +1850,13 @@ extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
 extern int orxon_cinematic_mode_r __asm__("D_L10_0015F6A8") MACRO_ADDR;
 extern Moby *orxon_mobys_r __asm__("D_L10_00160058") MACRO_ADDR;
-extern Moby *orxon_moby_list_r __asm__("D_L10_00160064") MACRO_ADDR;
-extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
+extern Moby *D_L10_00160064 MACRO_ADDR;
+extern int D_0015EFA4 MACRO_ADDR;
 extern int D_L10_00161FB8_2E9978 SDATA(D_L10_00161FB8);
 extern char orxon_help_state_r[] __asm__("D_L10_00179910");
 extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern unsigned char gHaveHeliPack_r[] __asm__("D_0013D5CA");
-extern unsigned char race_gates_base_r[] __asm__("D_0013D605");
+extern unsigned char D_0013D605[];
 extern char special_items_base_r[] __asm__("D_0013D355");
 
 /* Level 10 moby update (class 1344): tracks nearby targets and fires the level's event messages. */
@@ -1900,7 +1900,7 @@ void update_conditional_help_messages(Moby *m) {
                     }
                 }
             }
-            if (orxon_cinematic_mode_r == 0 && race_gates_base_r[7] != 0 && ((Msg *)orxon_help_state_r)->f0 == 0 &&
+            if (orxon_cinematic_mode_r == 0 && race_gates_base[7] != 0 && ((Msg *)orxon_help_state_r)->f0 == 0 &&
                 ((Msg *)orxon_help_state_r)->f24 == -1 && *(unsigned short *)(help_stats_base_r + 0x4FD) == 0) {
                 Help_Request_r(0x2711, 0x36);
             }
@@ -1913,7 +1913,7 @@ void update_conditional_help_messages(Moby *m) {
                 Help_Request_r(0x2715, 0x5C);
             }
             flag = 0;
-            for (p = orxon_moby_list_r; p != 0; p = p->next) {
+            for (p = orxon_moby_list; p != 0; p = p->next) {
                 if (p->oclass == MOBY_CLASS_GADGEBOT_857 && p->state != 1)
                     flag = 1;
             }
@@ -1940,24 +1940,23 @@ void update_conditional_help_messages(Moby *m) {
             if (orxon_mobys_r[d->f20].state == 4)
                 break;
             if (((Save_2E9978 *)(help_stats_base_r + 0x34D))->f358 != 0) {
-                sub = scale_ticks_r2(gameplay_event_frame_count_r) -
+                sub = scale_ticks_r2(gameplay_event_frame_count) -
                       ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A * 600;
                 if ((int)((float)scale_ticks_r2(0x12) * 60.0f) < sub ||
                     ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A * 600 == 0) {
                     Help_Request_r(0x2718, 0x6B);
                     break;
                 }
-                if (scale_ticks_r2(gameplay_event_frame_count_r) / 600 >
+                if (scale_ticks_r2(gameplay_event_frame_count) / 600 >
                     ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A) {
                     ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A =
-                        scale_ticks_r2(gameplay_event_frame_count_r) / 600;
+                        scale_ticks_r2(gameplay_event_frame_count) / 600;
                 }
                 break;
             }
             ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f358++;
-            if (scale_ticks_r2(gameplay_event_frame_count_r) / 600 >
-                ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A) {
-                ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A = scale_ticks_r2(gameplay_event_frame_count_r) / 600;
+            if (scale_ticks_r2(gameplay_event_frame_count) / 600 > ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A) {
+                ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35A = scale_ticks_r2(gameplay_event_frame_count) / 600;
             }
             ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35C =
                 ((Save_2E9978 *)(help_stats_base_r + 0x34D))->f35C | (1 << g_current_level_index_m) | 0x80000000;
@@ -2239,7 +2238,7 @@ typedef struct {
     int door; /* 0x1C: index of the linked moby */
 } GateVars;
 
-extern unsigned char level_available_base_r[] __asm__("D_0013DE4B");
+extern unsigned char D_0013DE4B[];
 extern Moby *orxon_mobys_r2 __asm__("D_L10_00160058") MACRO_ADDR;
 extern int orxon_moby_killed_r[] __asm__("D_L10_001BAC60");
 extern LevelState orxon_collected_flags_base_r __asm__("D_L10_001BB9C0");
@@ -2250,7 +2249,7 @@ extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern float multiply_global_factor_r2(float) __asm__("func_001F9878");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+extern float func_001FA888(int);
 extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
 
 // Level 10 gate_2 update: four-state machine on m[0x20], moby Gate 2.
@@ -2294,7 +2293,7 @@ void gate_2_update(Moby *m) {
                 if (d->door > 0) {
                     orxon_mobys_r2[d->door].flags &= 0xFFFD;
                 }
-            } else if (level_available_base_r[9] != 0) {
+            } else if (level_available_base[9] != 0) {
                 if (d->door > 0) {
                     orxon_mobys_r2[d->door].flags &= 0xFFFD;
                 }
@@ -2311,10 +2310,10 @@ void gate_2_update(Moby *m) {
         }
         case 2:
             v[0] = FastCos_r(FastAddRots_r(m->rot.z, 3.14159265f)) * 1.5f *
-                   IntToFloat_r(truncate_float_to_s32_r2(multiply_global_factor_r2(90.0f)) - d->timer) /
+                   IntToFloat(truncate_float_to_s32_r2(multiply_global_factor_r2(90.0f)) - d->timer) /
                    multiply_global_factor_r2(90.0f);
             v[1] = FastSin_r(FastAddRots_r(m->rot.z, 3.14159265f)) * 1.5f *
-                   IntToFloat_r(truncate_float_to_s32_r2(multiply_global_factor_r2(90.0f)) - d->timer) /
+                   IntToFloat(truncate_float_to_s32_r2(multiply_global_factor_r2(90.0f)) - d->timer) /
                    multiply_global_factor_r2(90.0f);
             v[2] = 0.0f;
             FastVecAdd_r(&out, &d->home, v);

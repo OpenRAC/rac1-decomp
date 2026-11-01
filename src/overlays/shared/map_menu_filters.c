@@ -39,7 +39,7 @@ int ovl_map_filter_l01_4_tail(float a, float b, float x) {
     }
     return 0;
 }
-extern Hero g_hero_r __asm__("D_0013F450");
+extern Hero D_0013F450;
 
 /* item < 256: whether the hero is in control mode 0x11 or 0x12 or has base condition 1;
    else x >= 95.0f (the joined tail) */
@@ -48,8 +48,7 @@ int ovl_map_filter_l01_5(int item, float a, float b, float x) {
 
     if (item < 256) {
         r = 0;
-        if (g_hero_r.state.control_mode == 0x11 || g_hero_r.state.control_mode == 0x12 ||
-            g_hero_r.base_condition == 1) {
+        if (g_hero.state.control_mode == 0x11 || g_hero.state.control_mode == 0x12 || g_hero.base_condition == 1) {
             r = 1;
         }
         return r;
@@ -152,7 +151,7 @@ extern unsigned char menu_item_enabled_78[];
 int ovl_map_filter_l11_3(int item, float a, float b, float x) {
     int r = 0;
 
-    if (g_hero_r.state.control_mode == 0x11 || g_hero_r.state.control_mode == 0x12 || g_hero_r.base_condition == 1) {
+    if (g_hero.state.control_mode == 0x11 || g_hero.state.control_mode == 0x12 || g_hero.base_condition == 1) {
         r = 1;
     }
     if (item < 351) {
@@ -238,11 +237,11 @@ int ensure_menu_cache_entry(int key) {
     map_menu_state.e[0].stamp = rendered_frame_count;
     return miss;
 }
-extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int D_0015EE84 MACRO_ADDR;
 
 /* stores a value into a table slot chosen by the current index */
 void store_current_level_table_value(int a, int b) {
-    int i = g_current_level_index_m;
+    int i = g_current_level_index;
     if (i < 19) {
         b += dialogue_entry_level_starts[i];
         dialogue_entry_ids[b] = a;
@@ -265,7 +264,7 @@ void map_world_to_uv(float *p1, float *p2, int k, float t, float u) {
         seven = 1;
     }
     if (k == -1) {
-        k = g_current_level_index_m;
+        k = g_current_level_index;
     }
     if (k < 0) {
         k = 0;

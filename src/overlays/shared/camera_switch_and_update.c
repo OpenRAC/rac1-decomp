@@ -96,7 +96,7 @@ extern u8 gCamPrevStateLvl[];
 extern void Camera_runSetupToNewCam(void *);
 extern void FastMemCopy(void *, void *, s32);
 extern s32 truncate_float_to_s32(f32);
-extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
+extern s32 D_0015EE84 MACRO_ADDR;
 
 /* Switches the active camera to next_camera: picks the blend from the old camera's transition_state and the new one's info->blend_kind (1 eased, 5 orbit, 3/6 hand-off), then installs it and swaps the state buffers. Level copy of switch_active_camera_record. Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/fun_001ebf10.c, switch_active_camera_record. */
 void SwitchCamera(Camera *next_camera) {
@@ -158,7 +158,7 @@ void SwitchCamera(Camera *next_camera) {
             } else {
                 player_camera.blend.lerp.pos_rate_cfg = 0.018f;
                 player_camera.blend.lerp.rot_rate_cfg = 0.018f;
-                if (g_current_level_index_r == LEVEL_NOVALIS) {
+                if (g_current_level_index == LEVEL_NOVALIS) {
                     player_camera.blend.lerp.pos_rate_cfg = 0.01f;
                     player_camera.blend.lerp.rot_rate_cfg = 0.01f;
                 }
@@ -264,7 +264,7 @@ void Camera_CaptureHeroRelativeView(void) {
 /* The final mode store goes through this alias, as in start_camera_blend: written
    through camera_blend_phase itself, gcse keeps the entry's %hi alive in a saved
    register across the calls, where retail rebuilds it. */
-extern short camera_blend_phase_h __asm__("D_L00_00166FF0") NOT_SDA;
+extern short D_L00_00166FF0 NOT_SDA;
 
 extern void Camera_CaptureHeroRelativeView(void);
 extern void save_camera_vectors(void);
@@ -316,7 +316,7 @@ void Camera_CaptureTransform(Camera *from) {
             restore_camera_vectors();
         }
     }
-    camera_blend_phase_h = 3; /* blend.phase */
+    camera_blend_phase = 3; /* blend.phase */
     r->kind = r->next_kind;
     if (r->kind == 0) {
         CamBlendLerp *a = &r->lerp;
@@ -407,7 +407,7 @@ INCLUDE_ASM("asm/overlays", func_L00_001ED380);
 INCLUDE_ASM("asm/overlays", func_L00_001ED3D4);
 extern int cinematic_mode MACRO_ADDR;
 extern int vendor_menu_field_40;
-extern unsigned char draw_map51_r[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 
 extern void Camera_PickCollisionMasksLvl(void);
 
@@ -474,7 +474,7 @@ frozen:
     apply_camera_shake((char *)&v[1], 1);
     update_camera_underwater_flag();
     update_camera_environment_from_regions((char *)v - 0x20); /* &player_camera.pos */
-    if (draw_map51_r[0] != 0) {
+    if (draw_map51[0] != 0) {
         FastVecCross((char *)v + 0x200, (char *)v + 0x210, (char *)v + 0x1F0); /* matrix[1] = matrix[2] x matrix[0] */
     }
 }
@@ -560,7 +560,7 @@ int compute_spherical_offset_from_positions(float *polar, float *pos, float *ori
 extern void FastVecSub_3(float *, float *, float *) __asm__("func_001F9BF0");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void divide_vector_xyz(float *, float *, float);
-extern int coll_sphere_f(void *, int, void *, float) __asm__("func_L00_001F10E0");
+extern int func_L00_001F10E0(void *, int, void *, float);
 extern W coll_resolved_pos;
 extern short gCamSphereMaskLvl;
 
@@ -593,7 +593,7 @@ void resolve_camera_movement_collisions(float *pos, float r) {
         q = coll_resolved_pos;
         FastVecAdd(pos, pos, d);
         base = (struct Hero *)(hero_globals_base + 0xE1D);
-        for (j = 0; j < 6 && coll_sphere_f(pos, *(int *)&gCamSphereMaskLvl, *(void **)&base->moby, r); j++) {
+        for (j = 0; j < 6 && coll_sphere(pos, *(int *)&gCamSphereMaskLvl, *(void **)&base->moby, r); j++) {
             qcopy(pos, q);
             {
                 Camera *t = player_camera.current;

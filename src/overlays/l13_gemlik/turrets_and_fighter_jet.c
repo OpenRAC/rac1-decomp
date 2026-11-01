@@ -103,7 +103,7 @@ extern void DeleteMoby(void *);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void set_moby_list_state(int list, int state);
 extern unsigned char hero_globals_base[];
-extern char *gemlik_moby_array_start_m __asm__("D_L13_00160058") MACRO_ADDR;
+extern char *D_L13_00160058 MACRO_ADDR;
 extern char volume_trigger_bad_target_msg[];
 
 // Switches linked mobys and lists between two state sets when the watched moby's test changes.
@@ -120,7 +120,7 @@ void update_moby_volume_trigger(Moby *moby) {
             {
                 int uid = data->moby_ids[0];
                 if (uid != -1) {
-                    char *m = gemlik_moby_array_start_m + (uid << 8);
+                    char *m = gemlik_moby_array_start + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
@@ -137,7 +137,7 @@ void update_moby_volume_trigger(Moby *moby) {
             {
                 int uid = data->moby_ids[1];
                 if (uid != -1) {
-                    char *m = gemlik_moby_array_start_m + (uid << 8);
+                    char *m = gemlik_moby_array_start + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
@@ -154,7 +154,7 @@ void update_moby_volume_trigger(Moby *moby) {
             {
                 int uid = data->moby_ids[2];
                 if (uid != -1) {
-                    char *m = gemlik_moby_array_start_m + (uid << 8);
+                    char *m = gemlik_moby_array_start + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
@@ -171,7 +171,7 @@ void update_moby_volume_trigger(Moby *moby) {
             {
                 int uid = data->moby_ids[3];
                 if (uid != -1) {
-                    char *m = gemlik_moby_array_start_m + (uid << 8);
+                    char *m = gemlik_moby_array_start + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
@@ -196,7 +196,7 @@ void update_moby_volume_trigger(Moby *moby) {
             {
                 int uid = data->moby_ids[0];
                 if (uid != -1) {
-                    char *m = gemlik_moby_array_start_m + (uid << 8);
+                    char *m = gemlik_moby_array_start + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
@@ -213,7 +213,7 @@ void update_moby_volume_trigger(Moby *moby) {
             {
                 int uid = data->moby_ids[1];
                 if (uid != -1) {
-                    char *m = gemlik_moby_array_start_m + (uid << 8);
+                    char *m = gemlik_moby_array_start + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
@@ -230,7 +230,7 @@ void update_moby_volume_trigger(Moby *moby) {
             {
                 int uid = data->moby_ids[2];
                 if (uid != -1) {
-                    char *m = gemlik_moby_array_start_m + (uid << 8);
+                    char *m = gemlik_moby_array_start + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
@@ -247,7 +247,7 @@ void update_moby_volume_trigger(Moby *moby) {
             {
                 int uid = data->moby_ids[3];
                 if (uid != -1) {
-                    char *m = gemlik_moby_array_start_m + (uid << 8);
+                    char *m = gemlik_moby_array_start + (uid << 8);
                     if (m != 0) {
                         unsigned char st = m[0x20];
                         if (st != 0xFE) {
@@ -529,7 +529,7 @@ extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
-extern float SteerAngleWithVelocity_r(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
+extern float func_L00_0025CE58(void *, float, void *, float, float, float);
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
@@ -538,7 +538,7 @@ extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-extern void rand_vec_r(float *, float, float) __asm__("func_L00_00258DB0");
+extern void func_L00_00258DB0(float *, float, float);
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
@@ -577,8 +577,8 @@ void blarg_turret_update(Moby *m) {
                 }
                 m->state = 3;
             }
-            SteerAngleWithVelocity_r(&m->rot.z, data->f54, &data->f60, g_frame_time_sq_r * 12.566371f,
-                                     g_frame_time_sq_r * 12.566371f, g_frame_time_r * 12.566371f);
+            SteerAngleWithVelocity(&m->rot.z, data->f54, &data->f60, g_frame_time_sq_r * 12.566371f,
+                                   g_frame_time_sq_r * 12.566371f, g_frame_time_r * 12.566371f);
             if (data->gun == 0 || data->gun->oclass != MOBY_CLASS_BLARG_GUNNER ||
                 (unsigned char)data->gun->state == 0xFE || (unsigned char)data->gun->state == 0xFD ||
                 (unsigned char)data->gun->state == 2) {
@@ -610,8 +610,8 @@ void blarg_turret_update(Moby *m) {
                     r = -lim;
                 }
                 r = FastAddRots_r(r, data->f54);
-                SteerAngleWithVelocity_r(&m->rot.z, r, &data->f60, g_frame_time_sq_r * 12.566371f,
-                                         g_frame_time_sq_r * 12.566371f, g_frame_time_r * 12.566371f);
+                SteerAngleWithVelocity(&m->rot.z, r, &data->f60, g_frame_time_sq_r * 12.566371f,
+                                       g_frame_time_sq_r * 12.566371f, g_frame_time_r * 12.566371f);
                 fire_blarg_turret_projectile_r(m);
                 if (data->gun == 0 || data->gun->oclass != MOBY_CLASS_BLARG_GUNNER ||
                     (unsigned char)data->gun->state == 0xFE || (unsigned char)data->gun->state == 0xFD ||
@@ -626,15 +626,15 @@ void blarg_turret_update(Moby *m) {
             break;
         case 4: {
             Vec4A v;
-            rand_vec_r(&v.x, 0.5f, 1.0f);
+            rand_vec(&v.x, 0.5f, 1.0f);
             SetDeathBits_r(m, 0, -1);
             spawn_explosion_r(m, &v, &m->pos, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
             DeleteMoby_r(m);
             return;
         }
         case 5:
-            SteerAngleWithVelocity_r(&m->rot.z, data->f54, &data->f60, g_frame_time_sq_r * 12.566371f,
-                                     g_frame_time_sq_r * 12.566371f, g_frame_time_r * 25.132742f);
+            SteerAngleWithVelocity(&m->rot.z, data->f54, &data->f60, g_frame_time_sq_r * 12.566371f,
+                                   g_frame_time_sq_r * 12.566371f, g_frame_time_r * 25.132742f);
             data->f64 -= 1.0f;
             if (data->f64 <= 0.0f) {
                 m->state = 4;
@@ -2469,7 +2469,7 @@ void fire_fighter_jet_rocket(char *moby, char *obj) {
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern char *gemlik_scene_points_c __asm__("D_L13_0016016C") MACRO_ADDR;
-extern char *gemlik_player_camera_c __asm__("D_L13_00167180");
+extern char *D_L13_00167180;
 extern short jet_camera_home_target;
 extern char gemlik_coll_hit_result[];
 extern char jet_camera_mode_warning_msg[];
@@ -2718,7 +2718,7 @@ void PlayerFighterFlight(void *a0, void *a1) {
         ang[2] = o->f28;
         ang[1] = o->f24;
         set_camera_rotation(ang);
-        if (*(short *)(gemlik_player_camera_c + 0x86) != 5) {
+        if (*(short *)(gemlik_player_camera + 0x86) != 5) {
             STUB_printf(jet_camera_mode_warning_msg);
             CameraScript(w, ang, 0, 0, 0);
         }

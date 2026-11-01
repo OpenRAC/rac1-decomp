@@ -368,10 +368,10 @@ extern float g_frame_scale_sq_r __asm__("D_0015EE64") MACRO_ADDR;
 int func_L00_00205728_00205780(int) __asm__("func_L00_00205728");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern void DetachManipulator_r(int, void *) __asm__("func_0020D9D8");
-extern float SpringAngle_r(void *, void *, float, float, float, float, int) __asm__("func_L00_0025CCF0");
-extern float Spring_r(float *, float *, float, float, float, float) __asm__("func_L00_0025C918");
+extern float func_L00_0025CCF0(void *, void *, float, float, float, float, int);
+extern float func_L00_0025C918(float *, float *, float, float, float, float);
 extern void AttachManipulator_r(int, int, void *) __asm__("func_0020D960");
-extern void build_quaternion_from_axis_rotations_r(void *, void *) __asm__("func_L00_0025AFA8");
+extern void func_L00_0025AFA8(void *, void *);
 extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
 
 /* Settles one held-object record: at rest it only releases it, otherwise it eases the offsets and angles and applies
@@ -401,18 +401,18 @@ void update_hero_easing_record(char *p) {
             m->tgt[2] = -m->tgt[2];
             m->rot[1] = -m->rot[1];
         }
-        SpringAngle_r(&m->pos[0], &m->vel[0], m->tgt[0], m->fA4 * g_frame_scale_sq_r, m->fA8 * g_frame_scale_sq_r, 0.0f,
-                      2);
-        SpringAngle_r(&m->pos[1], &m->vel[1], m->tgt[1], m->fA4 * g_frame_scale_sq_r, m->fA8 * g_frame_scale_sq_r, 0.0f,
-                      2);
-        SpringAngle_r(&m->pos[2], &m->vel[2], m->tgt[2], m->fA4 * g_frame_scale_sq_r, m->fA8 * g_frame_scale_sq_r, 0.0f,
-                      2);
-        Spring_r(&m->rot[0], &m->rvel[0], m->rtgt[0], m->fA4, m->fA8, 0.0f);
-        Spring_r(&m->rot[1], &m->rvel[1], m->rtgt[1], m->fA4, m->fA8, 0.0f);
-        Spring_r(&m->rot[2], &m->rvel[2], m->rtgt[2], m->fA4, m->fA8, 0.0f);
+        SpringAngle(&m->pos[0], &m->vel[0], m->tgt[0], m->fA4 * g_frame_scale_sq_r, m->fA8 * g_frame_scale_sq_r, 0.0f,
+                    2);
+        SpringAngle(&m->pos[1], &m->vel[1], m->tgt[1], m->fA4 * g_frame_scale_sq_r, m->fA8 * g_frame_scale_sq_r, 0.0f,
+                    2);
+        SpringAngle(&m->pos[2], &m->vel[2], m->tgt[2], m->fA4 * g_frame_scale_sq_r, m->fA8 * g_frame_scale_sq_r, 0.0f,
+                    2);
+        Spring(&m->rot[0], &m->rvel[0], m->rtgt[0], m->fA4, m->fA8, 0.0f);
+        Spring(&m->rot[1], &m->rvel[1], m->rtgt[1], m->fA4, m->fA8, 0.0f);
+        Spring(&m->rot[2], &m->rvel[2], m->rtgt[2], m->fA4, m->fA8, 0.0f);
         if (m->active == 0)
             AttachManipulator_r(v, m->hA0, m);
-        build_quaternion_from_axis_rotations_r(m->mat, m->pos);
+        build_quaternion_from_axis_rotations(m->mat, m->pos);
         qcopy(m->f30, m->rot);
         m->scl[0] = m->scale;
         m->scl[1] = m->scale;
@@ -843,7 +843,7 @@ extern void update_hero_scalar_pulse(void);
 extern void apply_hero_and_item_scale_sequence(void);
 extern void update_hero_glow_and_extra_manipulators(void);
 extern void update_hero_bone_attachment(void);
-extern void *CreateMoby_r(int) __asm__("func_0020D348");
+extern void *func_0020D348(int);
 extern void enqueue_hero_glow_draw_callback_once(void);
 void matrix_mul_vec3(void *, void *, void *);
 extern float ApproachValue(float *p, float target, float maxstep);
@@ -853,7 +853,7 @@ extern int FastTweenColor(int, int, float);
 void func_001F9BC0_c(void *) __asm__("func_001F9BC0");
 void euler_to_matrix(void *, void *);
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern int Moby_PlaySound_r(void *, int, void *) __asm__("func_0022ED80");
+extern int func_0022ED80(void *, int, void *);
 
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
@@ -942,7 +942,7 @@ void update_hero_in_vehicle_mode(void) {
         lean_state_25_scale = sound_volume_r[10];
         update_hero_glow_and_extra_manipulators();
         if (G_HERO->unk1624 == 0) {
-            G_HERO->unk1624 = (char *)CreateMoby_r(0x4B4);
+            G_HERO->unk1624 = (char *)CreateMoby(0x4B4);
             if (G_HERO->unk1624 != 0) {
                 *(int *)(G_HERO->unk1624 + 0x90) = 0x801432D7;
                 G_HERO->unk2300 = 0x301432D7;
@@ -1010,7 +1010,7 @@ void update_hero_in_vehicle_mode(void) {
         }
         G_HERO->unk2300 = FastTweenColor(G_HERO->unk2300, col, frame_scale * 0.1f);
         if (G_HERO->unk1620 == 0) {
-            m = (char *)CreateMoby_r(0x47A);
+            m = (char *)CreateMoby(0x47A);
             G_HERO->unk1620 = m;
             if (m == 0)
                 goto skip;
@@ -1044,7 +1044,7 @@ void update_hero_in_vehicle_mode(void) {
         }
     skip:
         if (G_HERO->unk22C0 != 0) {
-            Moby_PlaySound_r(G_HERO->unk22C0 + 0x10, 0, G_HERO->moby);
+            Moby_PlaySound(G_HERO->unk22C0 + 0x10, 0, G_HERO->moby);
             G_HERO->unk22FE = (short)(int)G_HERO->unk22C0;
             G_HERO->unk22FC = scale_ticks(0x39);
         }
@@ -1142,7 +1142,7 @@ typedef struct {
     Moby *owner;
 } SoundVoiceEntry;
 
-extern char voice_pool_r[] __asm__("D_0013E650");
+extern char D_0013E650[];
 extern void Sound_StopSlot_a(int) __asm__("func_L00_0028EBF0");
 /* Clears the hero's eight sound-slot indexes (hero + 0x2218), first calling Sound_StopSlot(row) for
    a slot whose voice row (voice_pool, stride 0x70) still belongs to the moby the sound plays on (hero.moby
@@ -1167,20 +1167,20 @@ void release_and_clear_hero_voice_slots(void) {
         m = *(Moby **)(off + (int)mb);
         if (m != 0) {
             if (k != none) {
-                if (((SoundVoiceEntry *)(voice_pool_r + k * 0x70))->owner != m) {
+                if (((SoundVoiceEntry *)(voice_pool + k * 0x70))->owner != m) {
                     *p = none;
                     continue;
                 }
-                c = ((SoundVoiceEntry *)(voice_pool_r + k * 0x70))->on;
+                c = ((SoundVoiceEntry *)(voice_pool + k * 0x70))->on;
                 goto test;
             }
         } else {
             if (k != none) {
-                if (((SoundVoiceEntry *)(voice_pool_r + k * 0x70))->owner != hp->moby) {
+                if (((SoundVoiceEntry *)(voice_pool + k * 0x70))->owner != hp->moby) {
                     *p = none;
                     continue;
                 }
-                c = ((SoundVoiceEntry *)(voice_pool_r + k * 0x70))->on;
+                c = ((SoundVoiceEntry *)(voice_pool + k * 0x70))->on;
             test:
                 if (c != 0) {
                     Sound_StopSlot_a(k);
@@ -2274,7 +2274,7 @@ typedef unsigned int u128_002090d0 __attribute__((mode(TI), aligned(16)));
 typedef struct {
     Vec4A r[4];
 } Mtx_002090d0;
-extern Vec4A D_0013F4E0_002090d0 __asm__("D_0013F4E0");
+extern Vec4A D_0013F4E0;
 void func_001FA218_002090d0(Mtx_002090d0 *, Vec4A *) __asm__("func_001FA218");
 void func_001F9EE8_002090d0(Vec4A *, Vec4A *, Mtx_002090d0 *) __asm__("func_001F9EE8");
 void func_001FA540_002090d0(Mtx_002090d0 *, Mtx_002090d0 *, Mtx_002090d0 *) __asm__("func_001FA540");
@@ -2293,7 +2293,7 @@ void rotate_hero_about_local_pivot(float *inf, float x, float y, float z) {
         Mtx_002090d0 r;
         Vec4A e;
     } L_002090d0;
-    Vec4A *cam = &D_0013F4E0_002090d0;
+    Vec4A *cam = &g_hero_rot;
     *(u128_002090d0 *)&L_002090d0.p = *in;
     func_001FA218_002090d0(&L_002090d0.m, cam);
     func_001F9EE8_002090d0(&L_002090d0.a, &L_002090d0.p, &L_002090d0.m);
@@ -3062,7 +3062,7 @@ extern void configure_hero_point_effect_emission_r(s32, s32, s32, s32, f32, f32)
 extern s32 scale_ticks_c(s32) __asm__("func_001F9850");
 extern void Moby_GetJointWorldPos_r2(void *, s32, void *) __asm__("func_L00_00250800");
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
-extern void spawn_jittered_effect_particle_with_optional_basis_r(void *, void *, f32) __asm__("func_L00_0026ED30");
+extern void func_L00_0026ED30(void *, void *, f32);
 /* Hero movement check: tests the six stick/velocity thresholds against the pad and the state word, then runs the transition tests. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_0020b1d8. */
 void update_hero_easing_targets_and_point_effects(void) {
     u8 buf[0x10] __attribute__((aligned(16)));
@@ -3115,13 +3115,13 @@ void update_hero_easing_targets_and_point_effects(void) {
         D_0013F450_20b1d8.items[6].unk38--;
         Moby_GetJointWorldPos_r2(D_0013F450_20b1d8.moby, 0x16, buf);
         for (i = 0; i < D_0013F450_20b1d8.items[6].unk3C; i++)
-            spawn_jittered_effect_particle_with_optional_basis_r(
+            spawn_jittered_effect_particle_with_optional_basis(
                 buf, q,
                 D_0013F450_20b1d8.items[6].unk30 +
                     random_float_between_r(-D_0013F450_20b1d8.items[6].unk34, D_0013F450_20b1d8.items[6].unk34));
         Moby_GetJointWorldPos_r2(D_0013F450_20b1d8.moby, 0x17, buf);
         for (i = 0; i < D_0013F450_20b1d8.items[6].unk3C; i++)
-            spawn_jittered_effect_particle_with_optional_basis_r(
+            spawn_jittered_effect_particle_with_optional_basis(
                 buf, q,
                 D_0013F450_20b1d8.items[6].unk30 +
                     random_float_between_r(-D_0013F450_20b1d8.items[6].unk34, D_0013F450_20b1d8.items[6].unk34));
@@ -3131,8 +3131,8 @@ void update_hero_easing_targets_and_point_effects(void) {
 typedef unsigned int u128_20b5b8 __attribute__((mode(TI)));
 extern u8 D_0013F450_20b5b8[] __asm__("D_0013F450");
 extern f32 g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
-extern Vec4 coll_hit_normal_r[] __asm__("D_L00_00173F80");
-extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
+extern Vec4 D_L00_00173F80[];
+extern f32 func_L00_002342F8(void *);
 extern s32 scale_ticks_r2(s32) __asm__("func_001F9850");
 extern s32 probe_hero_ledge_edge_r(void *, void *) __asm__("func_L00_0020CDF0");
 extern s32 probe_hero_forward_collision_r(s32, f32, f32) __asm__("func_L00_0020A8B8");
@@ -3162,7 +3162,7 @@ void probe_hero_airborne_wall_contact(void) {
     if (g->ground_distance < 0.4f) {
         return;
     }
-    if (gravity_z_r(&g->motion.velocity) < g_frame_time_r2 * -20.0f) {
+    if (gravity_z(&g->motion.velocity) < g_frame_time_r2 * -20.0f) {
         return;
     }
     if (g->ledge_found != 0) {
@@ -3208,7 +3208,7 @@ void probe_hero_airborne_wall_contact(void) {
     if (n == 0xC) {
         return;
     }
-    pz = (u8 *)coll_hit_normal_r;
+    pz = (u8 *)coll_hit_normal;
     if (compute_gravity_relative_vector_inclination_r(pz) < 1.3089969f) {
         return;
     }
@@ -3452,17 +3452,16 @@ extern char D_0013F450_20C568[] __asm__("D_0013F450");
 extern char coll_hit_result_r[] __asm__("D_L00_00173F40");
 extern float g_frame_time_r3 __asm__("D_0015EE6C") MACRO_ADDR;
 extern int scale_ticks_r3(int) __asm__("func_001F9850");
-extern void predict_position_with_vertical_drop_r(void *a, void *b, void *c, int d,
-                                                  float f) __asm__("func_L00_0025A540");
+extern void func_L00_0025A540(void *a, void *b, void *c, int d, float f);
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r2(float) __asm__("func_001F9FA8");
 extern int coll_line_r2(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
 extern int CollType_r2(void) __asm__("func_L00_001F3958");
-extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
+extern float func_001F9CE8(void *);
 extern float fast_atan2_r3(float, float) __asm__("func_L00_001FF860");
 extern Obj *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
 extern Obj *moby_get_ride_transform(char *);
-extern int coll_capsule_r(float, float, void *, int, int) __asm__("func_L00_001F1D20");
+extern int func_L00_001F1D20(float, float, void *, int, int);
 extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
 extern float FastDiffRots_r2(float, float) __asm__("func_001FA850");
 
@@ -3528,8 +3527,8 @@ void check_ledge_grab(void) {
     if (((Hero *)D_0013F450_20C568)->state.control_mode == 4)
         speed = ((Hero *)D_0013F450_20C568)->jump_gravity;
     r = scale_ticks_r3(2);
-    predict_position_with_vertical_drop_r(v0, ((Hero *)D_0013F450_20C568)->motion.pos.f,
-                                          ((Hero *)D_0013F450_20C568)->motion.resolved_velocity.f, r, speed);
+    predict_position_with_vertical_drop(v0, ((Hero *)D_0013F450_20C568)->motion.pos.f,
+                                        ((Hero *)D_0013F450_20C568)->motion.resolved_velocity.f, r, speed);
     found = 0;
     v0[0] += FastCos_r(((Hero *)D_0013F450_20C568)->motion.rot.f[2]) * ((Hero *)D_0013F450_20C568)->capsule_radius;
     v0[1] += FastSin_r2(((Hero *)D_0013F450_20C568)->motion.rot.f[2]) * ((Hero *)D_0013F450_20C568)->capsule_radius;
@@ -3544,7 +3543,7 @@ void check_ledge_grab(void) {
             hit = CollType_r2();
             if (hit != 9 && hit != 12 && hit != 0) {
                 if (fast_atan2_r3(((Hit_20C568 *)coll_hit_result_r)->v40[2],
-                                  vec_length_xy_r(((Hit_20C568 *)coll_hit_result_r)->v40)) < 0.3490658402442932f)
+                                  vec_length_xy(((Hit_20C568 *)coll_hit_result_r)->v40)) < 0.3490658402442932f)
                     found = 1;
             }
         }
@@ -3576,7 +3575,7 @@ void check_ledge_grab(void) {
         return;
     qcopy(v40, ((Hit_20C568 *)coll_hit_result_r)->v20);
     v40[2] += 0.6f;
-    if (coll_capsule_r(0.45f, 0.6f, v40, 4, (int)((Hero *)D_0013F450_20C568)->moby)) {
+    if (coll_capsule(0.45f, 0.6f, v40, 4, (int)((Hero *)D_0013F450_20C568)->moby)) {
         ((Hero *)D_0013F450_20C568)->ledge_flags |= 1;
     } else {
         ((Hero *)D_0013F450_20C568)->ledge_flags &= 0xFFFFFFFE;

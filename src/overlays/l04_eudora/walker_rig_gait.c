@@ -172,7 +172,7 @@ void initialize_leg_rig(struct Moby *moby, LegRig_p *rig) {
     rig->mode = 5;
     STUB_printf(rig_size_message, 0x250);
 }
-extern int walker_gait_mask_t(int *a, float v) __asm__("func_L00_002A2680");
+extern int func_L00_002A2680(int *a, float v);
 
 // Finds the entry of arg1's 13-pointer table whose first word equals arg0's byte at 0x52, then calls on it or returns
 // a byte.
@@ -187,7 +187,7 @@ int rig_pick_mode(char *arg0, char *arg1, float t) {
     }
     if (found == 0)
         return (unsigned char)arg1[0xB6];
-    return walker_gait_mask_t(found, t);
+    return walker_gait_mask(found, t);
 }
 
 typedef struct {
@@ -212,16 +212,16 @@ typedef struct {
     Vec4f v40; /* 0x40 */
 } StTab;
 
-extern float ProbeGroundHeight_r(void *, int, float) __asm__("func_00214358");
-extern void clear_u64_value_r(float *) __asm__("func_001F9BC0");
+extern float func_00214358(void *, int, float);
+extern void func_001F9BC0(float *);
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+extern void func_001F9BD8(void *, void *, void *);
 extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern void FastVecCross_r(void *, void *, void *) __asm__("func_001F9CA0");
-extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
+extern float func_001F9FA8(float);
+extern void func_001F9CA0(void *, void *, void *);
+extern float func_001F9CE8(void *);
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern char eudora_coll_hit_r[] __asm__("D_L04_00174040");
+extern char D_L04_00174040[];
 
 /* Steers a moby from the arg block: height and push terms, returns 2 when the tilt is past pi/4. */
 int update_leg_rig_height_and_tilt(Moby *m, Steer *a) {
@@ -240,7 +240,7 @@ int update_leg_rig_height_and_tilt(Moby *m, Steer *a) {
     dz = 0.0f;
     n = dz;
     if (a->flags & 4) {
-        h = ProbeGroundHeight_r(&m->pos, 0, 0.5f);
+        h = ProbeGroundHeight(&m->pos, 0, 0.5f);
         if (m->pos.z < h - 0.05f) {
             dz = m->pos.z - h;
         } else {
@@ -252,7 +252,7 @@ int update_leg_rig_height_and_tilt(Moby *m, Steer *a) {
         }
         a->tilt = 0.0f;
     } else {
-        clear_u64_value_r(push);
+        clear_u64_value(push);
         sum = 0.0f;
         for (j = 0; j < 4; j++) {
             Vec4f *e = &a->pts[j];
@@ -260,10 +260,10 @@ int update_leg_rig_height_and_tilt(Moby *m, Steer *a) {
                 h = probe_leg_rig_ground_height((float *)e);
                 sum += h;
                 if (0.0f < h) {
-                    t = FastAbsF_r(((StTab *)eudora_coll_hit_r)->v40.x);
-                    t = t + FastAbsF_r(((StTab *)eudora_coll_hit_r)->v40.y);
-                    if (t < FastAbsF_r(((StTab *)eudora_coll_hit_r)->v40.z)) {
-                        FastVecAdd_r(push, push, &((StTab *)eudora_coll_hit_r)->v40);
+                    t = FastAbsF_r(((StTab *)eudora_coll_hit)->v40.x);
+                    t = t + FastAbsF_r(((StTab *)eudora_coll_hit)->v40.y);
+                    if (t < FastAbsF_r(((StTab *)eudora_coll_hit)->v40.z)) {
+                        FastVecAdd(push, push, &((StTab *)eudora_coll_hit)->v40);
                         n += 4.0f;
                         dz += h - e->z;
                     }
@@ -273,7 +273,7 @@ int update_leg_rig_height_and_tilt(Moby *m, Steer *a) {
             bit <<= 2;
         }
         if (sum == 0.0f) {
-            h = ProbeGroundHeight_r(&m->pos, 0, 0.5f);
+            h = ProbeGroundHeight(&m->pos, 0, 0.5f);
             if (0.0f < h) {
                 n += 4.0f;
                 dz += h - m->pos.z;
@@ -281,11 +281,11 @@ int update_leg_rig_height_and_tilt(Moby *m, Steer *a) {
         }
         if (push[0] != 0.0f || push[1] != 0.0f || push[2] != 0.0f) {
             dir[0] = FastCos_r(m->rot.z);
-            dir[1] = FastSin_r(m->rot.z);
+            dir[1] = FastSin(m->rot.z);
             dir[2] = 0.0f;
-            FastVecCross_r(dir, dir, push);
-            FastVecCross_r(dir, dir, push);
-            a->tilt = fast_atan2_r(vec_length_xy_r(dir), dir[2]);
+            FastVecCross(dir, dir, push);
+            FastVecCross(dir, dir, push);
+            a->tilt = fast_atan2_r(vec_length_xy(dir), dir[2]);
         } else {
             a->tilt = 0.0f;
         }
@@ -468,7 +468,7 @@ extern void rig_animate_r(char *, char *, int, float) __asm__("func_L04_00293F08
 extern int update_leg_rig_height_and_tilt_r(char *, char *) __asm__("func_L04_002939E8");
 extern void FastVecSub(void *dst, void *a, void *b);
 extern void divide_vector_xyz(void *, void *, float);
-extern void WalkCycleStep_r(char *, char *, float, float, float, int) __asm__("func_L00_002A2900");
+extern void func_L00_002A2900(char *, char *, float, float, float, int);
 extern void rig_probe_setup(void *, int, int *, float *, float *, float *);
 extern int coll_capsule(float, float, void *, int, void *);
 extern float FastDiffRots(float, float);
@@ -531,12 +531,12 @@ int leg_walker_update(Moby *m, char *s, float speed, float ang, float accel) {
         mask = flags | (*(unsigned char *)(s + 0xB6) & 0x30);
         cnt = 0.0f;
         one = 1.0f;
-        clear_u64_value_r(v80);
+        clear_u64_value(v80);
         bit = 1;
         for (i = 0; i < 6; i++) {
             if (mask & bit) {
                 cnt = cnt + one;
-                FastVecAdd_r(v80, v80, s + i * 0x10);
+                FastVecAdd(v80, v80, s + i * 0x10);
                 FastVecSub(v80, v80, &v20[i * 4]);
             }
             bit <<= 1;
@@ -544,13 +544,13 @@ int leg_walker_update(Moby *m, char *s, float speed, float ang, float accel) {
         divide_vector_xyz(v80, v80, cnt);
     } else {
         v80[0] = FastCos_r(*(float *)(s + 0x6C)) * *(float *)(s + 0xC0);
-        v80[1] = FastSin_r(*(float *)(s + 0x6C)) * *(float *)(s + 0xC0);
+        v80[1] = FastSin(*(float *)(s + 0x6C)) * *(float *)(s + 0xC0);
         v80[2] = 0.0f;
     }
     for (i = 0; i < 6; i++) {
-        FastVecAdd_r(s + i * 0x10, &v20[i * 4], v80);
+        FastVecAdd(s + i * 0x10, &v20[i * 4], v80);
     }
-    FastVecAdd_r(&m->pos, &m->pos, v80);
+    FastVecAdd(&m->pos, &m->pos, v80);
 
     changed = (flags ^ *(unsigned char *)(s + 0xB6)) & flags;
     *(unsigned char *)(s + 0xB6) = flags;
@@ -567,7 +567,7 @@ int leg_walker_update(Moby *m, char *s, float speed, float ang, float accel) {
     }
 
     res = update_leg_rig_height_and_tilt_r((char *)m, s);
-    WalkCycleStep_r((char *)m, s, speed, ang, accel, changed);
+    WalkCycleStep((char *)m, s, speed, ang, accel, changed);
 
     if (!(*(unsigned short *)(s + 0xEE) & 4)) {
         rig_probe_setup(m, 0, &a90, (float *)buf, &a94, &a98);
@@ -587,8 +587,8 @@ int leg_walker_update(Moby *m, char *s, float speed, float ang, float accel) {
             res |= 1;
         }
         FastVecSub(v20, buf, &m->pos);
-        FastVecAdd_r(&m->pos, buf, buf + 4);
-        if (vec_length_xy_r(v20) < *(float *)(s + 0xC0) * 0.5f)
+        FastVecAdd(&m->pos, buf, buf + 4);
+        if (vec_length_xy(v20) < *(float *)(s + 0xC0) * 0.5f)
             res |= 2;
     }
 

@@ -634,7 +634,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern float FastCos(float);
 extern int FastDecTimer(void *);
 
-extern void spawn_2d8fa0(void *, int, float, float, int, int, int, void *, float) __asm__("func_L00_00272F00");
+extern void func_L00_00272F00(void *, int, float, float, int, int, int, void *, float);
 extern char hero_globals_base[];
 extern char hero_gravity_dir_r[] __asm__("D_0013F6E0");
 extern short electric_water_bolt_wave_point_phase;
@@ -664,7 +664,7 @@ extern short first_side_arc_fade_level_r[] __asm__("D_L15_00161D48") MACRO_ADDR;
 extern short electric_water_side_arc_regrow_delays[] MACRO_ADDR;
 extern short electric_water_side_arc_fade_ticks[] MACRO_ADDR;
 extern float quartu_camera_pos_r[] __asm__("D_L15_00167440");
-extern float quartu_zero_vec_r[] __asm__("D_L15_0015F660") MACRO_ADDR;
+extern float D_L15_0015F660[] MACRO_ADDR;
 
 /* Quartu arc emitter: rebuilds the 20-point bolt and its mirror between the data block's end points, regrows or
    jitters four side arcs, then spawns three particles. */
@@ -846,16 +846,16 @@ void update_electric_water_bolt_effect(Moby *moby) {
     if (random_integer_below(2))
         r = -r;
     f20 = random_float_between(0.2f, 0.6f);
-    spawn_2d8fa0(&data->a, scale_ticks(15), f20 * 0.3f, f20, *(int *)&quartu_beam_arc_outer_color_r | 0x7F000000, 0, r,
-                 &s[5], 0.0f);
+    PartType53Spawn(&data->a, scale_ticks(15), f20 * 0.3f, f20, *(int *)&quartu_beam_arc_outer_color_r | 0x7F000000, 0,
+                    r, &s[5], 0.0f);
     r = -r;
-    spawn_2d8fa0(&data->a, scale_ticks(15), f20 * 0.15f, f20 * 0.5f, 0x307F7F7F, 0, r, &s[5], 0.0f);
+    PartType53Spawn(&data->a, scale_ticks(15), f20 * 0.15f, f20 * 0.5f, 0x307F7F7F, 0, r, &s[5], 0.0f);
     r = rand_range(1, 8);
     if (random_integer_below(2))
         r = -r;
     f20 = random_float_between(0.15f, 3.0f);
-    spawn_2d8fa0(&data->c, scale_ticks(12), f20 * 0.1f, f20, *(int *)&quartu_beam_arc_outer_color_r | 0x7F000000, 0, r,
-                 quartu_zero_vec_r, 0.0f);
+    PartType53Spawn(&data->c, scale_ticks(12), f20 * 0.1f, f20, *(int *)&quartu_beam_arc_outer_color_r | 0x7F000000, 0,
+                    r, quartu_zero_vec, 0.0f);
 }
 extern char electric_water_bolt_points[];
 extern char electric_water_side_arc_points[];
@@ -919,9 +919,9 @@ typedef struct {
     UV2d8e48 uv[4];
     long unk70, tex, unk80, unk88;
 } Q2d8e48;
-extern short electric_water_glow_core_color_r __asm__("D_L15_00161D2C");
-extern short electric_water_glow_core_size_r __asm__("D_L15_00161D34");
-extern short electric_water_glow_halo_size_r __asm__("D_L15_00161D38");
+extern short D_L15_00161D2C;
+extern short D_L15_00161D34;
+extern short D_L15_00161D38;
 /* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern V2d8e48 D_L15_00167440 __asm__("D_L15_00167440") NOT_SDA;
 extern V2d8e48 D_0013F6E0 __asm__("D_0013F6E0");
@@ -933,9 +933,9 @@ extern void vscl_2d8e48(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void cross_2d8e48(void *, void *, void *) __asm__("func_001F9CA0");
 extern void vmul_2d8e48(float, void *, void *) __asm__("func_001F9C30");
 extern void xform_2d8e48(void *, void *, void *) __asm__("func_001F9EE8");
-extern long tex_2d8e48(int) __asm__("func_001F4868");
+extern long func_001F4868(int);
 extern float rnd_2d8e48(float, float) __asm__("func_L00_00258C80");
-extern void draw_2d8e48(void *, void *, int) __asm__("func_L00_001FD1D8");
+extern void func_L00_001FD1D8(void *, void *, int);
 /* Draw callback: builds a camera-facing matrix from the moby's position and draws two quads, each with a jittered scale. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002d6810.c, FUN_L15_002d8e48. */
 void draw_electric_water_bolt_start_quads(char *mv) {
     Q2d8e48 quad;
@@ -945,7 +945,7 @@ void draw_electric_water_bolt_start_quads(char *mv) {
     float s;
     int i;
     pos = ((V2d8e48 *)((Moby *)mv)->pvars);
-    quad.tex = tex_2d8e48(0xB);
+    quad.tex = GetEffectTex(0xB);
     pos = (V2d8e48 *)((char *)pos + 0xF0);
     quad.unk88 = 0x8000000048L;
     quad.unk80 = 0xFF9000000260L;
@@ -959,32 +959,32 @@ void draw_electric_water_bolt_start_quads(char *mv) {
     cross_2d8e48(&mat[1], &mat[0], &hero_gravity_dir);
     vscl_2d8e48(&mat[1], &mat[1], -1.0f);
     cross_2d8e48(&mat[2], &mat[1], &mat[0]);
-    c = *(unsigned int *)&electric_water_glow_core_color_r;
+    c = *(unsigned int *)&electric_water_glow_core_color;
     quad.color[3] = c;
     quad.color[2] = c;
     quad.color[1] = c;
     quad.color[0] = c;
-    s = *(float *)&electric_water_glow_core_size_r + rnd_2d8e48(0.0f, 0.025f);
+    s = *(float *)&electric_water_glow_core_size + rnd_2d8e48(0.0f, 0.025f);
     for (i = 0; i < 4; i++) {
         vmul_2d8e48(s, &quad.corner[i], &electric_water_glow_quad_corners[i]);
         xform_2d8e48(&quad.corner[i], &quad.corner[i], &mat[0]);
         quad.uv[i].u = electric_water_glow_quad_uvs[i].u;
         quad.uv[i].v = electric_water_glow_quad_uvs[i].v;
     }
-    draw_2d8e48(&quad, 0, 0);
+    draw_world_quad(&quad, 0, 0);
     c = *(unsigned int *)&quartu_beam_arc_outer_color_r;
     quad.color[3] = c;
     quad.color[2] = c;
     quad.color[1] = c;
     quad.color[0] = c;
-    s = *(float *)&electric_water_glow_halo_size_r + rnd_2d8e48(0.0f, 0.05f);
+    s = *(float *)&electric_water_glow_halo_size + rnd_2d8e48(0.0f, 0.05f);
     for (i = 0; i < 4; i++) {
         vmul_2d8e48(s, &quad.corner[i], &electric_water_glow_quad_corners[i]);
         xform_2d8e48(&quad.corner[i], &quad.corner[i], &mat[0]);
         quad.uv[i].u = electric_water_glow_quad_uvs[i].u;
         quad.uv[i].v = electric_water_glow_quad_uvs[i].v;
     }
-    draw_2d8e48(&quad, 0, 0);
+    draw_world_quad(&quad, 0, 0);
 }
 extern int test_linked_moby_turn_trigger(void *);
 
@@ -1328,7 +1328,7 @@ void codebot_update(unsigned char *moby) {
 }
 #include "structs/pad.h"
 extern Hero g_hero_r __asm__("D_0013F450");
-extern PadState g_controller_state_r __asm__("D_0013CA40");
+extern PadState D_0013CA40;
 extern void try_set_help_message(int, int);
 
 extern void MobySetAnimation(void *, int, int);
@@ -1400,7 +1400,7 @@ void giant_clank_pad_update(char *m) {
                 if (g_current_level_index != LEVEL_VELDIN2)
                     try_set_help_message(4, 0x3AA5);
             }
-            if ((g_controller_state_r.pressed & PAD_TRIANGLE) == 0)
+            if ((g_controller_state.pressed & PAD_TRIANGLE) == 0)
                 return;
             if (quartu_help_message_selector != 4)
                 return;

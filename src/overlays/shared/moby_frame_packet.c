@@ -5,7 +5,7 @@
 #include "include_asm.h"
 #include "game/moby/mobyfunc.h"
 
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 
 typedef struct O0024ed18Key {
     u8 pad_00[4];
@@ -22,7 +22,7 @@ typedef struct O0024ed18 {
 /* Finds the index of the keyframe nearest to the given time, or -1. */
 int find_nearest_animation_sequence_entry(char *a, float time) {
     O0024ed18 *animation_sequence = (O0024ed18 *)a;
-    s16 scaled_target_position = truncate_float_to_s32_r(time * 16.0f);
+    s16 scaled_target_position = truncate_float_to_s32(time * 16.0f);
     s32 i;
     for (i = 0; i < animation_sequence->n; i++) {
         if (scaled_target_position < animation_sequence->k[i]->h) {
@@ -264,8 +264,8 @@ typedef struct {
     Model_50478p *first, *second;
 } Object_50478p;
 extern void section(void *, int) __asm__("func_001F99D8");
-extern void FUN_001f9838_50478p(void *, void *, int) __asm__("func_L00_001FF040");
-extern void FUN_00118a80_50478p(int) __asm__("func_00118D80");
+extern void func_L00_001FF040(void *, void *, int);
+extern void func_00118D80(int);
 
 /* Defined under a local name: this unit already declares FUN_L00_0024f440
  * with a generic prototype for its callers. */
@@ -299,7 +299,7 @@ void func_L00_00250478_r(Object_50478p *obj, int i, int j, Packet_50478p *out) {
         out->hE = s->hE;
         n = s->qwc * 16 - nb * 8;
         if (n != 0)
-            FUN_001f9838_50478p(&((u64 *)out)[na + 2], from, n);
+            copy_memory_by_alignment(&((u64 *)out)[na + 2], from, n);
     }
     ix = obj->second->map + 4;
     src = s->q;
@@ -315,7 +315,7 @@ void func_L00_00250478_r(Object_50478p *obj, int i, int j, Packet_50478p *out) {
     q = (u64 *)((char *)out + out->h6 * 16);
     if (*q == 0)
         *q = 1;
-    FUN_00118a80_50478p(0);
+    flush_cache(0);
 }
 extern char slot_table_values[];
 

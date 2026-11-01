@@ -106,7 +106,7 @@ extern char pause_menu_screen_optional[];
 extern int selected_level_index;
 extern int pause_entry_cleared_word;
 extern int update_mission_list_i(void) __asm__("func_0020C7A0");
-extern int snd_FlushSoundCommands_i(void) __asm__("func_0012DDC0");
+extern int func_0012DDC0(void);
 extern void update_skill_point_and_gold_weapon_menu_entries(void);
 extern char menu_system[] NOT_SDA;
 extern int g_game_mode MACRO_ADDR;
@@ -122,7 +122,7 @@ extern int g_game_mode MACRO_ADDR;
 void PauseAllSounds(int arg0) {
     snd_PauseAllSoundsInGroup(0x1D);
     music_Pause(0);
-    snd_FlushSoundCommands_i();
+    snd_FlushSoundCommands();
     if (camera_position_publication_suppressed != 0) {
         pause_blocked_by_camera = 1;
         return;
@@ -212,20 +212,20 @@ struct O2_19E90 {
     u8 pad_4C[0x28];
     s32 *f74;
 };
-extern MenuPage pause_menu_start_page_r __asm__("D_001D4948"); /* page made current and next at init */
-extern u8 menu_light_direction_r[] __asm__("D_0019C250");
+extern MenuPage D_001D4948; /* page made current and next at init */
+extern u8 D_0019C250[];
 extern u8 D_0019C260_19E90[] __asm__("D_0019C260");
-extern s32 level_resource_buffers_r[] __asm__("D_001941C0");
+extern s32 D_001941C0[];
 extern s32 game_frame_counter_r __asm__("D_0015F538") MACRO_ADDR;
-extern s32 current_vu_chain_r __asm__("D_0016100C") MACRO_ADDR;
+extern s32 D_0016100C MACRO_ADDR;
 extern void D_0023B578_19E90() __asm__("D_0023B578");
 extern struct CameraSystem gCamera_r2 __asm__("D_00187040");
 extern struct O2_19E90 *panel_slots_r[] __asm__("D_001D6120");
-extern u8 menu_light_direction_init_r __asm__("D_001602C0") MACRO_ADDR;
-extern u8 menu_light_color_init_r __asm__("D_001602D0") MACRO_ADDR;
-extern s32 FastVecScale_r(s32, s32, f32) __asm__("func_001F9C30");
-extern void VU1_syncChain_r(s32) __asm__("func_00234AC8");
-extern s32 sce_gs_sync_v_r(s32) __asm__("func_00122598");
+extern u8 D_001602C0 MACRO_ADDR;
+extern u8 D_001602D0 MACRO_ADDR;
+extern s32 func_001F9C30(s32, s32, f32);
+extern void func_00234AC8(s32);
+extern s32 func_00122598(s32);
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
 extern struct O2_19E90 *create_menu_preview_moby_r() __asm__("func_00226720");
 extern s32 MobySetAnimation_r() __asm__("func_00213D28");
@@ -239,23 +239,23 @@ void initialize_menu_preview_scene(void) {
     s32 i;
     s32 a, b, c, d;
     menu_system_r.state = 2;
-    menu_system_r.current = &pause_menu_start_page_r;
-    menu_system_r.next = &pause_menu_start_page_r;
+    menu_system_r.current = &pause_menu_start_page;
+    menu_system_r.next = &pause_menu_start_page;
     menu_system_r.close_locked = 0;
-    FastVecScale_r((s32)menu_light_direction_r, (s32)&menu_light_direction_init_r, 1.0f);
-    qcopy(menu_light_direction_r - 0x10, &menu_light_color_init_r);
-    qzero(menu_light_direction_r + 0x20);
+    FastVecScale((s32)menu_light_direction, (s32)&menu_light_direction_init, 1.0f);
+    qcopy(menu_light_direction - 0x10, &menu_light_color_init);
+    qzero(menu_light_direction + 0x20);
     qzero(D_0019C260_19E90);
-    VU1_syncChain_r(1);
-    sce_gs_sync_v_r(0);
-    a = level_resource_buffers_r[1] + 0xA0000;
-    b = level_resource_buffers_r[2] + 0xA0000;
+    VU1_syncChain(1);
+    sce_gs_sync_v(0);
+    a = level_resource_buffers[1] + 0xA0000;
+    b = level_resource_buffers[2] + 0xA0000;
     c = a + 0x30000;
     d = b + 0xE0000;
     menu_system_r.unkFC = c + 0xC1000;
     game_frame_counter_r++;
     menu_system_r.unk100 = d + 0x11800;
-    current_vu_chain_r = 0xA0000;
+    current_vu_chain = 0xA0000;
     menu_system_r.unk104 = a;
     menu_system_r.unk10 = b;
     menu_system_r.help_text_buffer = c;
@@ -358,17 +358,17 @@ struct Ent {
 };
 
 extern s16 cd_read_active_r[] __asm__("D_001517D8");
-extern s32 vu1_chain_reserved_bytes_r __asm__("D_0015F698") MACRO_ADDR;
+extern s32 D_0015F698 MACRO_ADDR;
 extern s32 space_load_in_progress_r __asm__("D_0015F6FC") MACRO_ADDR;
 extern struct Ent *panel_slots_r2[] __asm__("D_001D6120");
 
 extern void reset_active_camera_position_and_basis_r(void) __asm__("func_00219C08");
 extern void initialize_menu_preview_scene_r(void) __asm__("func_00219E90");
-extern void update_visible_resident_objects_r() __asm__("func_00213C78");
+extern void func_00213C78();
 extern s32 Moby_PlaySound_r(s32, s32, struct Ent *) __asm__("func_0022ED80");
 extern void mode_freeze_init_r(s32, MenuPage *, s32) __asm__("func_001FBC80");
-extern void calculate_dma_transfer_address_r(void) __asm__("func_002348B8");
-extern void UpdateFog_r(void) __asm__("func_001F2930");
+extern void func_002348B8(void);
+extern void func_001F2930(void);
 extern void MobySetAnimation_r2(struct Ent *, s32, s32) __asm__("func_00213D28");
 extern void close_menu_system_r(void) __asm__("func_0021A0B0");
 
@@ -408,9 +408,9 @@ void update_menu_system(void) {
         if (cd_read_active_r[0] != 0) {
             return;
         }
-        vu1_chain_reserved_bytes_r = 0x1E000;
-        calculate_dma_transfer_address_r();
-        UpdateFog_r();
+        vu1_chain_reserved_bytes = 0x1E000;
+        calculate_dma_transfer_address();
+        UpdateFog();
         space_load_in_progress_r = 1;
         menu_system_r2.help_text_buffer = 0;
         menu_system_r2.unk10C = 0;
@@ -496,7 +496,7 @@ void update_menu_system(void) {
             }
         }
     }
-    update_visible_resident_objects_r();
+    update_visible_resident_objects();
     if (menu_system_r2.close_request != 0) {
         close_menu_system_r();
     }
@@ -888,13 +888,12 @@ int draw_menu_icon_list(MenuScreen *arg0) {
 extern char pause_action_list_pal[];
 extern char pause_action_list_short[];
 
-extern int pause_action_list_mode_m __asm__("D_0015EF90") MACRO_ADDR;
+extern int D_0015EF90 MACRO_ADDR;
 
 /* pause_action_list_mode is read through a MACRO_ADDR alias: retail's one-register
    load. */
 int set_pause_action_list(MenuScreen *arg0) {
-    *(char **)&arg0->data.list.items =
-        (pause_action_list_mode_m != 0) ? pause_action_list_pal : pause_action_list_short;
+    *(char **)&arg0->data.list.items = (pause_action_list_mode != 0) ? pause_action_list_pal : pause_action_list_short;
     return 0;
 }
 
@@ -1447,7 +1446,7 @@ extern void VU1_addGSregister_r(s32, long) __asm__("func_00234C98");
 extern void SetupGifPaging(s32);
 extern s32 GetEffectTex(s32);
 
-extern s32 measure_text_width_r(char *, s32, u8 *) __asm__("func_001F65B0");
+extern s32 func_001F65B0(char *, s32, u8 *);
 extern void FontPrint_r(s32, s32, long, char *, s32, s32, u8 *) __asm__("func_001F6668");
 extern char *msg_string_r(s32) __asm__("func_001FE540");
 extern s32 fade_menu_color(s32, s32, s32);
@@ -1517,7 +1516,7 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
             entry_index = 0;
             selection_index = 0;
             do {
-                text_width = measure_text_width_r(msg_string_r(scan_entry[entry_index].text_id), -1, glyphs);
+                text_width = measure_text_width(msg_string_r(scan_entry[entry_index].text_id), -1, glyphs);
                 entry_index++;
                 selection_index++;
                 maximum_text_width = (maximum_text_width < text_width) ? (text_width) : (maximum_text_width);
@@ -1563,7 +1562,7 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
             if (menu->items[entry_index].enabled == 2) {
                 text_id = msg_string_r(0x4F54);
             }
-            x = half_width - (measure_text_width_r(text_id, -1, glyphs) >> 1);
+            x = half_width - (measure_text_width(text_id, -1, glyphs) >> 1);
             if (menu->flags & 0x40) {
                 x = 4;
             } else if (menu->flags & 0x4000) {
@@ -1993,24 +1992,24 @@ struct Hdr16_1CE60 {
 };
 
 extern struct Hdr16_1CE60 cd_read_state_r __asm__("D_001517D0");
-extern u8 mission_menu_page_r[] __asm__("D_001CF9F8");
-extern u8 map_menu_page_r[] __asm__("D_001CF798");
+extern u8 D_001CF9F8[];
+extern u8 D_001CF798[];
 extern s32 *menu_level_indices_r __asm__("D_001602E0") MACRO_ADDR;
-extern u8 gHaveMapOMatic_r[] __asm__("D_0013D5E9");
-extern u8 level_visit_state_r[] __asm__("D_0013DE60");
+extern u8 D_0013D5E9[];
+extern u8 D_0013DE60[];
 extern u8 level_map_coverage_r[] __asm__("D_00141FC0");
-extern struct MapEntry map_screen_disc_entries_r[] __asm__("D_001384A0");
-extern struct MapEntry map_screen_disc_entries_alt_r[] __asm__("D_00138538");
+extern struct MapEntry D_001384A0[];
+extern struct MapEntry D_00138538[];
 
-extern s32 update_map_zoom_and_pan_r() __asm__("func_00205C70");
-extern s32 find_id_in_terminated_table_r(s32 id) __asm__("func_00205A50");
-extern s32 find_map_entry_slot_r() __asm__("func_002058D0");
-extern s32 pick_map_slot_to_evict_r() __asm__("func_00205AA8");
-extern void move_map_entry_slot_r() __asm__("func_00205830");
-extern s32 promote_first_available_map_entry_r() __asm__("func_00205790");
-extern s32 pick_next_map_r() __asm__("func_00205918");
-extern void compose_bitmap_from_mask_r() __asm__("func_00205C08");
-extern void decode_map_mask_r() __asm__("func_00206F40");
+extern s32 func_00205C70();
+extern s32 func_00205A50(s32 id);
+extern s32 func_002058D0();
+extern s32 func_00205AA8();
+extern void func_00205830();
+extern s32 func_00205790();
+extern s32 func_00205918();
+extern void func_00205C08();
+extern void func_00206F40();
 extern s32 update_mission_list_r() __asm__("func_0020C7A0");
 extern s32 acquire_menu_stream_buffer_r() __asm__("func_00226EA8");
 extern s32 release_menu_stream_buffer_r() __asm__("func_00226F68");
@@ -2018,9 +2017,9 @@ extern s32 start_audio_stream_read_r() __asm__("func_00217628");
 extern s32 stash_receive_data_r() __asm__("func_00234238");
 extern s32 fast_decompress_r() __asm__("func_0020C468");
 extern s64 register_8bit_texture_r() __asm__("func_00205660");
-extern void load_map_chunk_r() __asm__("func_002083E0");
+extern void func_002083E0();
 extern void flush_pending_texture_uploads_r() __asm__("func_0020C2F8");
-extern void update_map_icons_r() __asm__("func_0020CDE0");
+extern void func_0020CDE0();
 extern void Moby_PlaySound_r3() __asm__("func_0022ED80");
 
 /* Map screen of the pause menu: pad input (close, back, the mission page, warp to the shown
@@ -2049,7 +2048,7 @@ s32 DrawMapScreen(MenuScreen *screen) {
     s32 k;
     struct MapEntry *e;
 
-    update_map_zoom_and_pan_r();
+    update_map_zoom_and_pan();
     if (!(screen->data.raw.unk34 & 0x40)) {
         prev = level_map_selection_r.level;
         if (g_controller_state_r.pressed_unmasked & 0xD00) {
@@ -2066,17 +2065,17 @@ s32 DrawMapScreen(MenuScreen *screen) {
             }
         }
         if (g_controller_state_r.pressed_unmasked & 0x40) {
-            menu_system_r4.next = (MenuPage *)mission_menu_page_r;
+            menu_system_r4.next = (MenuPage *)mission_menu_page;
         }
         if ((g_controller_state_r.pressed_unmasked & 0x20) && level_map_selection_r.level != 0) {
-            menu_system_r4.unkF0 = (MenuPage *)map_menu_page_r;
+            menu_system_r4.unkF0 = (MenuPage *)map_menu_page;
             menu_system_r4.unkF4 = 0xB;
             menu_system_r4.close_request = 3;
             menu_system_r4.unkE4 = level_map_selection_r.level;
             Moby_PlaySound_r3(0, 0x11, screen->moby);
             return 0;
         }
-        idx = find_id_in_terminated_table_r(level_map_selection_r.level);
+        idx = find_id_in_terminated_table(level_map_selection_r.level);
         if (idx >= 0) {
             if (g_controller_state_r.pressed_unmasked & 8) {
                 if (idx < 0x13) {
@@ -2099,14 +2098,14 @@ s32 DrawMapScreen(MenuScreen *screen) {
     }
 
     id = level_map_selection_r.level;
-    if (gHaveMapOMatic_r[0] != 0) {
+    if (gHaveMapOMatic[0] != 0) {
         id += 0x100;
     }
-    slot = find_map_entry_slot_r(id);
+    slot = find_map_entry_slot(id);
     if (level_map_selection_r.level != level_map_selection_r.loaded && slot != -1) {
-        n = pick_map_slot_to_evict_r();
+        n = pick_map_slot_to_evict();
         if (level_map_selection_r.slot[0] != 0 && n > 0) {
-            move_map_entry_slot_r(n, 0);
+            move_map_entry_slot(n, 0);
             if (slot == 0) {
                 slot = n;
             }
@@ -2120,14 +2119,14 @@ s32 DrawMapScreen(MenuScreen *screen) {
             base = (u8 *)level_map_selection_r.hdr;
             a = base + hdr->unk0 + 8;
             if (level_map_selection_r.level == g_current_level_index_r) {
-                compose_bitmap_from_mask_r(pal, pix, pal, level_map_selection_r.mask);
+                compose_bitmap_from_mask(pal, pix, pal, level_map_selection_r.mask);
             } else {
-                if (level_visit_state_r[level_map_selection_r.level] != 0) {
-                    load_map_chunk_r(buf, level_map_coverage_r + (level_map_selection_r.level << 11), base + hdr->unk4);
+                if (level_visit_state[level_map_selection_r.level] != 0) {
+                    load_map_chunk(buf, level_map_coverage_r + (level_map_selection_r.level << 11), base + hdr->unk4);
                 } else {
-                    decode_map_mask_r(buf, a, a, base);
+                    decode_map_mask(buf, a, a, base);
                 }
-                compose_bitmap_from_mask_r(pal, pix, pal, buf);
+                compose_bitmap_from_mask(pal, pix, pal, buf);
             }
         }
         if (!(screen->data.raw.unk34 & 0x80)) {
@@ -2151,7 +2150,7 @@ s32 DrawMapScreen(MenuScreen *screen) {
         }
         level_map_selection_r.slot[0] = (s32)pix;
         level_map_selection_r.loaded = level_map_selection_r.level;
-        update_map_icons_r(level_map_selection_r.level, 0);
+        update_map_icons(level_map_selection_r.level, 0);
     }
 
     if (cd_read_state_r.unk8 == 0) {
@@ -2163,9 +2162,9 @@ s32 DrawMapScreen(MenuScreen *screen) {
     }
     pick = -1;
     if (cd_read_state_r.unk8 == 0) {
-        pick = promote_first_available_map_entry_r();
+        pick = promote_first_available_map_entry();
         if (pick != -1) {
-            next = pick_next_map_r();
+            next = pick_next_map();
             if (next != -1) {
                 k = (g_current_level_index_r + level_map_selection_r.unk230 == 0) ? 0 : 0x100;
                 if (k == next) {
@@ -2174,9 +2173,9 @@ s32 DrawMapScreen(MenuScreen *screen) {
                     level_map_selection_r.slot_size[pick] = level_map_selection_r.unk234;
                 } else {
                     if (next & 0x100) {
-                        e = &map_screen_disc_entries_alt_r[next ^ 0x100];
+                        e = &map_screen_disc_entries_alt[next ^ 0x100];
                     } else {
-                        e = &map_screen_disc_entries_r[next];
+                        e = &map_screen_disc_entries[next];
                     }
                     start_audio_stream_read_r(level_map_selection_r.slot[pick], e->a, e->b);
                     menu_system_r4.pending_buffer = 1;
@@ -2187,10 +2186,10 @@ s32 DrawMapScreen(MenuScreen *screen) {
             }
         }
     }
-    slot = find_map_entry_slot_r(id);
+    slot = find_map_entry_slot(id);
     if (level_map_selection_r.level != level_map_selection_r.loaded) {
         if (cd_read_state_r.unk8 == 0 && slot == -1 && pick == slot) {
-            pick_map_slot_to_evict_r(level_map_selection_r.loaded);
+            pick_map_slot_to_evict(level_map_selection_r.loaded);
         }
     }
     return 0;
@@ -2706,7 +2705,7 @@ int enter_menu_help_text(MenuScreen *arg0) {
 }
 
 /* help_msgs is SDA elsewhere; pause.cpp stores it through $at. */
-extern int help_msgs_m __asm__("D_0015F780") MACRO_ADDR;
+extern int D_0015F780 MACRO_ADDR;
 extern int help_msg_count;
 
 /* Leave hook for the help text screen: breaks a running help audio stream,
@@ -2720,7 +2719,7 @@ int restore_menu_help_text(MenuScreen *arg0) {
         int v = arg0->data.raw.saved_text_table;
         if (v != 0) {
             int w = arg0->data.raw.saved_text_count;
-            help_msgs_m = v;
+            help_msgs = v;
             help_msg_count = w;
         }
     }
@@ -2773,11 +2772,11 @@ int update_menu_help_text_load(MenuScreen *arg0) {
 
                 copy_memory_aligned(tbl, p, ((sz + 3) & ~3) - 8);
                 b = (HelpState *)g_help_state;
-                arg0->data.raw.saved_text_table = help_msgs_m;
+                arg0->data.raw.saved_text_table = help_msgs;
                 arg0->data.raw.saved_text_count = b->count;
                 b->count = n;
                 t = *(int **)&g->help_text_buffer;
-                help_msgs_m = (int)t;
+                help_msgs = (int)t;
                 for (i = 0; i < pauseSlotCount(); i++) {
                     int d = (int)t - 8;
                     *(int *)((char *)t + i * 0x10) += d;
@@ -4213,7 +4212,7 @@ struct ClutImage {
 
 extern MemoryCardState memory_card_state_r2 __asm__("D_0013D390");
 
-extern s32 log2dim_r(s32) __asm__("func_001F9968");
+extern s32 func_001F9968(s32);
 extern s64 register_8bit_texture_r2(s32, s32, u8 *, u8 *, s32, s32) __asm__("func_00205660");
 extern void flush_pending_texture_uploads_r2(void) __asm__("func_0020C2F8");
 extern void fast_decompress_r2(u8 *, s32) __asm__("func_0020C468");
@@ -4320,8 +4319,8 @@ s32 update_menu_stream_image(MenuScreen *stream) {
             b = (struct ClutImage *)stream->data.stream.buffer[0];
             p20 = b->clut;
             p420 = b->pixels;
-            x = log2dim_r(b->width);
-            y = log2dim_r(b->height);
+            x = log2dim(b->width);
+            y = log2dim(b->height);
             level_map_selection_r2.tex0 = register_8bit_texture_r2(
                 x, y, p20, p420, level_map_selection_r2.tex_clut_vram, level_map_selection_r2.tex0_vram);
             flush_pending_texture_uploads_r2();
@@ -4424,7 +4423,7 @@ extern MemoryCardState memory_card_state_r3 __asm__("D_0013D390");
 typedef struct {
     s32 values[6];
 } LanguageResourceOffsets;
-extern LanguageResourceOffsets language_resource_offsets_r __asm__("D_001E8B00");
+extern LanguageResourceOffsets D_001E8B00;
 
 extern u8 gSkillPoints_r[] __asm__("D_0013D510");
 extern s32 scale_game_frame_count_r2() __asm__("func_001F98C0");
@@ -4526,7 +4525,7 @@ s32 update_menu_resource_stream(MenuScreen *stream) {
         } else if (selection_flags & 0x400) {
             resource_index = (s32)((s32)stream->data.stream.elapsed_frames / scale_game_frame_count_r2(0x12C)) % 19;
         } else if (selection_flags & 0x1000) {
-            language_offsets = language_resource_offsets_r;
+            language_offsets = language_resource_offsets;
             resource_index = *stream->data.stream.language_base + language_offsets.values[g_game_language_r];
         } else {
             item_selection = D_001D5F70_20DF0.current->focus;
@@ -5629,7 +5628,7 @@ int leave_menu_prompt(struct MenuScreen *arg0) {
  */
 /* mode_freeze_state is SDA elsewhere; pause.cpp reaches it through the
    assembler macro. */
-extern int mode_freeze_state_m __asm__("D_0015EFB0") MACRO_ADDR;
+extern int D_0015EFB0 MACRO_ADDR;
 extern int pad0_pressed;
 
 /* variation: separate "g" local per arm (shadowed), not shared across
@@ -5640,7 +5639,7 @@ extern char menu_system[] NOT_SDA;
 /* Prompt input: outside modes 1 and 0x10 just goes back; otherwise pad bit 0x20
    confirms (page +0x84 = 1) and 0x10 cancels, both going back. */
 int Menu_ConfirmPromptInput(void) {
-    if (mode_freeze_state_m != 0x10 && mode_freeze_state_m != 1) {
+    if (mode_freeze_state != 0x10 && mode_freeze_state != 1) {
         struct MenuSystem *g = (struct MenuSystem *)menu_system;
         g->next = g->current->back;
         return 0;
@@ -5816,7 +5815,7 @@ extern int GetFrameTex(int);
 /* x, y first: arguments are evaluated in order, so the y conversion runs
    before the nested texture calls and is kept in $f20 across them, as in
    retail (and in draw_map_overlay, the other caller). */
-extern void func_00200E38_f(float, float, int, int, int, float, float, float) __asm__("func_00200E38");
+extern void func_00200E38(float, float, int, int, int, float, float, float);
 
 /* Draws the glyph "\x10" (arg0->0x38 set) or "\x11" and a gauge sprite
    below it, rotated by pi in the second case. The glyph string is a
@@ -5828,13 +5827,13 @@ int draw_menu_side_indicator(MenuScreen *arg0) {
     if (arg0->data.options.selection != 0) {
         buf = *(Glyph2 *)menu_side_indicator_left_glyph;
         func_001F68E8_c(4, arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
-        func_00200E38_f(640.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex(GetIconFrame(0xE99E, 6)), 128.0f,
-                        256.0f, 0.0f);
+        draw_rotated_sprite(640.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex(GetIconFrame(0xE99E, 6)),
+                            128.0f, 256.0f, 0.0f);
     } else {
         buf = *(Glyph2 *)menu_side_indicator_right_glyph;
         func_001F68E8_c(arg0->width - 0x18, arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
-        func_00200E38_f(192.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex(GetIconFrame(0xE99E, 6)), 128.0f,
-                        256.0f, 3.14159274f);
+        draw_rotated_sprite(192.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex(GetIconFrame(0xE99E, 6)),
+                            128.0f, 256.0f, 3.14159274f);
     }
     DoGifPaging();
     return 2;
@@ -6467,7 +6466,7 @@ int saving_data_menu(struct MenuScreen *arg0) {
             }
         }
     }
-    if (mode_freeze_state_m != 0x10 && mode_freeze_state_m != 1) {
+    if (mode_freeze_state != 0x10 && mode_freeze_state != 1) {
         struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
         g2->next = g2->current->back;
         return 0;
@@ -6599,7 +6598,7 @@ int loading_data_menu(struct MenuScreen *arg0) {
             }
         }
     }
-    if (mode_freeze_state_m != 0x10 && mode_freeze_state_m != 1) {
+    if (mode_freeze_state != 0x10 && mode_freeze_state != 1) {
         struct MenuSystem *g2 = (struct MenuSystem *)menu_system;
         g2->next = g2->current->back;
         return 0;
@@ -6759,7 +6758,7 @@ s32 saving_data_menu2(MenuScreen *w) {
             return -1;
         }
     }
-    if (mode_freeze_state_m != 0x10 && mode_freeze_state_m != 1) {
+    if (mode_freeze_state != 0x10 && mode_freeze_state != 1) {
         menu_system_pv.next = menu_system_pv.current->back;
         return 0;
     }
@@ -7829,7 +7828,7 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
    error. */
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 
-extern void *CreateMoby_c(int) __asm__("func_0020D348");
+extern void *func_0020D348(int);
 
 /* Spawns the pickup/marker object for slot arg0, unless the slot is
    disabled (0xFF in resident_class_slot_by_id). A fresh object gets 0xFF/0xFF/1 in the
@@ -7844,7 +7843,7 @@ void *create_menu_preview_moby(int arg0) {
     if (resident_class_slot_by_id[arg0] == 0xFF) {
         return 0;
     }
-    o = (char *)CreateMoby_c(arg0);
+    o = (char *)CreateMoby(arg0);
     if (o != 0) {
         *(unsigned char *)(o + 0x30) = 0xFF;
         *(short *)(o + 0x32) = 0xFF;
@@ -8303,7 +8302,7 @@ typedef struct {
 extern Rec38_q preview_animation_requests_q[] __asm__("D_001D6250");
 extern MenuSystem menu_system_q[] __asm__("D_001D5F70");
 extern struct Hdr16_1CE60 cd_read_state_q[] __asm__("D_001517D0");
-extern Rec38_q current_preview_animation_request_q[] __asm__("D_001D6410");
+extern Rec38_q D_001D6410[];
 extern int preview_animation_request_count MACRO_ADDR;
 typedef struct {
     u8 pad0[0x48];
@@ -8343,8 +8342,8 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
     {
         if (*(unsigned char *)(moby + 0x70) & 2) {
             flagA = 1;
-            if (current_preview_animation_request_q[0].arg[2] == 0 ||
-                --current_preview_animation_request_q[0].arg[2] == 0) {
+            if (current_preview_animation_request[0].arg[2] == 0 ||
+                --current_preview_animation_request[0].arg[2] == 0) {
                 flagB = 1;
             }
         }
@@ -8410,34 +8409,34 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
             }
         }
         if (result != 0) {
-            current_preview_animation_request_q[0] = preview_animation_requests_q[0];
+            current_preview_animation_request[0] = preview_animation_requests_q[0];
             advance_preview_animation_queue();
             clear_preview_resource_bindings();
-            load_preview_resource_bindings(current_preview_animation_request_q[0].arg[11],
-                                           current_preview_animation_request_q[0].arg[12]);
-            blend_moby_animation_ex(moby, current_preview_animation_request_q[0].arg[0], 0, 10, 5);
-            if (current_preview_animation_request_q[0].arg[0] == menu_system_q[0].loaded_animation[0]) {
+            load_preview_resource_bindings(current_preview_animation_request[0].arg[11],
+                                           current_preview_animation_request[0].arg[12]);
+            blend_moby_animation_ex(moby, current_preview_animation_request[0].arg[0], 0, 10, 5);
+            if (current_preview_animation_request[0].arg[0] == menu_system_q[0].loaded_animation[0]) {
                 menu_system_q[0].read_buffer_index = 1;
-            } else if (current_preview_animation_request_q[0].arg[0] == menu_system_q[0].loaded_animation[1]) {
+            } else if (current_preview_animation_request[0].arg[0] == menu_system_q[0].loaded_animation[1]) {
                 menu_system_q[0].read_buffer_index = 0;
             }
-            if (item_info_table_r[current_preview_animation_request_q[0].arg[3]].item_type == 2) {
+            if (item_info_table_r[current_preview_animation_request[0].arg[3]].item_type == 2) {
                 if (m2 != 0) {
-                    blend_moby_animation_ex(m2, current_preview_animation_request_q[0].arg[4], 0, 10, 5);
+                    blend_moby_animation_ex(m2, current_preview_animation_request[0].arg[4], 0, 10, 5);
                 }
                 if (m1 != 0) {
                     MobySetAnimation_q(m1, 1, 0);
                 }
             } else if (m1 != 0) {
-                blend_moby_animation_ex(m1, current_preview_animation_request_q[0].arg[4], 0, 10, 5);
+                blend_moby_animation_ex(m1, current_preview_animation_request[0].arg[4], 0, 10, 5);
             }
             *o0 = (char *)delete_moby((int)*o0);
             *o1 = (char *)delete_moby((int)*o1);
             *o2 = (char *)delete_moby((int)*o2);
-            if (current_preview_animation_request_q[0].arg[5] != -1) {
-                if ((*o0 = create_menu_preview_moby(current_preview_animation_request_q[0].arg[5])) != 0) {
-                    MobySetAnimation_q(*o0, current_preview_animation_request_q[0].arg[6], 0);
-                    MobyBlendAnimation(*o0, current_preview_animation_request_q[0].arg[6], 0, 10);
+            if (current_preview_animation_request[0].arg[5] != -1) {
+                if ((*o0 = create_menu_preview_moby(current_preview_animation_request[0].arg[5])) != 0) {
+                    MobySetAnimation_q(*o0, current_preview_animation_request[0].arg[6], 0);
+                    MobyBlendAnimation(*o0, current_preview_animation_request[0].arg[6], 0, 10);
                     *(short *)(*o0 + 0x34) = 0;
                     p = *o0;
                     qcopy(p + 0x10, moby + 0x10);
@@ -8449,10 +8448,10 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
                     *(void **)(*o0 + 0x74) = attachment_update_callback;
                 }
             }
-            if (current_preview_animation_request_q[0].arg[7] != -1) {
-                if ((*o1 = create_menu_preview_moby(current_preview_animation_request_q[0].arg[7])) != 0) {
-                    MobySetAnimation_q(*o1, current_preview_animation_request_q[0].arg[8], 0);
-                    MobyBlendAnimation(*o1, current_preview_animation_request_q[0].arg[8], 0, 10);
+            if (current_preview_animation_request[0].arg[7] != -1) {
+                if ((*o1 = create_menu_preview_moby(current_preview_animation_request[0].arg[7])) != 0) {
+                    MobySetAnimation_q(*o1, current_preview_animation_request[0].arg[8], 0);
+                    MobyBlendAnimation(*o1, current_preview_animation_request[0].arg[8], 0, 10);
                     *(short *)(*o1 + 0x34) = 0;
                     p = *o1;
                     qcopy(p + 0x10, moby + 0x10);
@@ -8464,10 +8463,10 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
                     *(void **)(*o1 + 0x74) = attachment_update_callback;
                 }
             }
-            if (current_preview_animation_request_q[0].arg[9] != -1) {
-                if ((*o2 = create_menu_preview_moby(current_preview_animation_request_q[0].arg[9])) != 0) {
-                    MobySetAnimation_q(*o2, current_preview_animation_request_q[0].arg[10], 0);
-                    MobyBlendAnimation(*o2, current_preview_animation_request_q[0].arg[10], 0, 10);
+            if (current_preview_animation_request[0].arg[9] != -1) {
+                if ((*o2 = create_menu_preview_moby(current_preview_animation_request[0].arg[9])) != 0) {
+                    MobySetAnimation_q(*o2, current_preview_animation_request[0].arg[10], 0);
+                    MobyBlendAnimation(*o2, current_preview_animation_request[0].arg[10], 0, 10);
                     *(short *)(*o2 + 0x34) = 0;
                     p = *o2;
                     qcopy(p + 0x10, moby + 0x10);
@@ -8577,7 +8576,7 @@ typedef struct {
 } PreviewResourceBinding;
 extern u8 moby_class_resources_r3[] __asm__("D_001B3580");
 extern u8 resident_class_slot_by_id[];
-extern u8 preview_resource_bindings_r[] __asm__("D_001D5D58");
+extern u8 D_001D5D58[];
 extern MenuSystem D_001D5F70_27A70 __asm__("D_001D5F70");
 void clear_preview_resource_bindings(void);
 
@@ -8597,7 +8596,7 @@ void clear_preview_resource_bindings(void) {
     if (resource_index < (resource_index + D_001D5F70_27A70.unkAC)) {
         u8 *class_slots = resident_class_slot_by_id;
         u8 *class_resources = moby_class_resources_r3;
-        u8 *bindings = preview_resource_bindings_r;
+        u8 *bindings = preview_resource_bindings;
 
         binding_base = bindings;
         binding = (PreviewResourceBinding *)((resource_index * 8) + binding_base);
@@ -8616,9 +8615,9 @@ void clear_preview_resource_bindings(void) {
     D_001D5F70_27A70.unkAC = 0;
 }
 
-extern u8 preview_resource_ids_r[] __asm__("D_001D60C8");
+extern u8 D_001D60C8[];
 extern u8 resident_class_slot_by_id_r[] __asm__("D_001B3E40") MACRO_ADDR;
-extern s32 stash_get_reserved_qwords_r() __asm__("func_00234350");
+extern s32 func_00234350();
 extern void relocateObjectPointers_r() __asm__("func_00203B18");
 extern s32 fast_decompress_r4() __asm__("func_0020C468");
 extern s32 get_menu_stream_buffer_size_r3() __asm__("func_00227018");
@@ -8651,7 +8650,7 @@ void load_preview_resource_bindings(s32 first_resource, s32 resource_count) {
     D_001D5F70_27A70.unkAC = count;
     if (resource_index < count) {
         resource_offset = first_resource * 4;
-        binding = ((PreviewResourceBinding *)preview_resource_bindings_r) + first_resource;
+        binding = ((PreviewResourceBinding *)preview_resource_bindings) + first_resource;
         do {
             buffer_skip = 0;
             class_slot = resident_class_slot_by_id_r[binding->class_id];
@@ -8664,9 +8663,9 @@ void load_preview_resource_bindings(s32 first_resource, s32 resource_count) {
                 }
             }
             binding += 1;
-            resource_id = *((s32 *)(preview_resource_ids_r + resource_offset));
+            resource_id = *((s32 *)(preview_resource_ids + resource_offset));
             resource_offset += 4;
-            compressed_size = stash_get_reserved_qwords_r(resource_id) * 0x10;
+            compressed_size = stash_get_reserved_qwords(resource_id) * 0x10;
             buffer_offset = (resource_index + buffer_skip) * 4;
             resource_index += 1;
             buffer_address = *((s32 *)((u8 *)D_001D5F70_27A70.unkB0 + buffer_offset));
@@ -8735,16 +8734,16 @@ extern s32 weapon_ammo_counts_r[] __asm__("D_0013D530");
 extern u8 gold_weapon_purchased_r[] __asm__("D_0013E620");
 extern u8 gold_bolts_collected_r[] __asm__("D_0014BFC0");
 extern s32 pause_iop_sprite_lists_r[] __asm__("D_00141FA0");
-extern u8 vendor_stock_r[] __asm__("D_0015EED0") MACRO_ADDR;
-extern s32 hero_max_health_r __asm__("D_0015EEA0") MACRO_ADDR;
+extern u8 D_0015EED0[] MACRO_ADDR;
+extern s32 D_0015EEA0 MACRO_ADDR;
 extern u8 gCheats_r[] __asm__("D_0015EEB0") MACRO_ADDR;
 extern u8 selector_available_r[] __asm__("D_0015EEC0") MACRO_ADDR;
 extern s32 gBolts_r __asm__("D_0015EE98") MACRO_ADDR;
-extern u8 gHelpDeskVoice_r[] __asm__("D_0015EF1C") MACRO_ADDR;
-extern u8 gHelpDeskText_r[] __asm__("D_0015EF1D") MACRO_ADDR;
+extern u8 D_0015EF1C[] MACRO_ADDR;
+extern u8 D_0015EF1D[] MACRO_ADDR;
 extern s32 D_0015EF20_27DB0 __asm__("D_0015EF20") MACRO_ADDR;
 extern u8 save_clock_time_r[] __asm__("D_0015EF98") MACRO_ADDR;
-extern s32 preserved_item_available_indices_r[] __asm__("D_001D5F20");
+extern s32 D_001D5F20[];
 
 extern void copy_memory_aligned_r(void *dst, void *src, s32 size) __asm__("func_001F9A00");
 extern void load_and_initialize_level_chunk_r(void) __asm__("func_00209DC0");
@@ -8773,7 +8772,7 @@ void load_level_zero_preserving_progress(s32 slot) {
     copy_memory_aligned_r((void *)0x70000060, weapon_ammo_counts_r, 0x94);
     copy_memory_aligned_r((void *)0x70000100, gold_bolts_collected_r, 0x50);
     copy_memory_aligned_r((void *)0x70000150, pause_iop_sprite_lists_r, 0x20);
-    copy_memory_aligned_r((void *)0x70000170, vendor_stock_r, 0xC);
+    copy_memory_aligned_r((void *)0x70000170, vendor_stock, 0xC);
     copy_memory_aligned_r((void *)0x70000180, gSkillPoints_r, 0x20);
     copy_memory_aligned_r((void *)0x700001A0, gCheats_r, 0xC);
     copy_memory_aligned_r((void *)0x700001B0, selector_available_r, 0xC);
@@ -8784,8 +8783,8 @@ void load_level_zero_preserving_progress(s32 slot) {
     bytes = (u8 *)0x70000030;
     load_and_initialize_level_chunk_r();
     copy_memory_aligned_r(gold_weapon_purchased_r, (void *)0x70000000, 0x28);
-    for (j = 0; preserved_item_available_indices_r[j] != -1; j++) {
-        item_available_r[preserved_item_available_indices_r[j]] = bytes[preserved_item_available_indices_r[j]];
+    for (j = 0; preserved_item_available_indices[j] != -1; j++) {
+        item_available_r[preserved_item_available_indices[j]] = bytes[preserved_item_available_indices[j]];
     }
     copy_memory_aligned_r(weapon_ammo_counts_r, (void *)0x70000060, 0x94);
     copy_memory_aligned_r(gold_bolts_collected_r, (void *)0x70000100, 0x50);
@@ -8793,22 +8792,22 @@ void load_level_zero_preserving_progress(s32 slot) {
         s32 item = items[i];
         pause_iop_sprite_lists_r[i] = item_available_r[item] ? item : 0;
     }
-    copy_memory_aligned_r(vendor_stock_r, (void *)0x70000170, 0xC);
+    copy_memory_aligned_r(vendor_stock, (void *)0x70000170, 0xC);
     copy_memory_aligned_r(gSkillPoints_r, (void *)0x70000180, 0x20);
     copy_memory_aligned_r(gCheats_r, (void *)0x700001A0, 0xC);
     copy_memory_aligned_r(selector_available_r, (void *)0x700001B0, 0xC);
     gBolts_r = saved;
     if (flag4) {
         gSpecialItems_r[4] = 1;
-        hero_max_health_r = 5;
+        hero_max_health = 5;
     }
     if (flag5) {
         gSpecialItems_r[5] = 1;
-        hero_max_health_r = 8;
+        hero_max_health = 8;
     }
     D_0015EF20_27DB0 = count + 1;
-    gHelpDeskVoice_r[0] = 0;
-    gHelpDeskText_r[0] = 0;
+    gHelpDeskVoice[0] = 0;
+    gHelpDeskText[0] = 0;
     sce_cd_read_clock_r(save_clock_time_r);
     sce_scf_get_local_time_from_rtc_r(save_clock_time_r);
     if (slot >= 0) {
@@ -8883,7 +8882,7 @@ void update_skill_point_and_gold_weapon_menu_entries(void) {
         *(int *)(h + 0x1C) = c ? 0x4FD7 : 0x4FDB;
         *(int *)(h + 0x20) = c ? 0x4FD8 : 0x4FDB;
     }
-    if (pause_action_list_mode_m != 0) {
+    if (pause_action_list_mode != 0) {
         char *g = reward_menu_items;
         *(short *)(g + 0x60) = 0;
     }
@@ -8916,8 +8915,8 @@ extern void FastVecCross(void *, void *, void *);
 typedef u32 u128_282D0 __attribute__((mode(TI), aligned(16)));
 extern f32 direction_unit[] MACRO_ADDR;
 extern f32 direction_perpendicular[] MACRO_ADDR;
-extern f32 direction_scaled_r[] __asm__("D_00160490") MACRO_ADDR;
-extern void fast_vec_normalize_r(f32 *, f32 *, f32) __asm__("func_001F9DC0");
+extern f32 D_00160490[] MACRO_ADDR;
+extern void func_001F9DC0(f32 *, f32 *, f32);
 typedef union {
     u128_282D0 q;
     f32 v[4];
@@ -8929,10 +8928,10 @@ void prepare_scaled_direction_and_perpendicular(PauseVec *dir, f32 scale) {
     f32 *v = d.v;
 
     d.q = dir->q;
-    fast_vec_normalize_r(direction_unit, v, 1.0f);
-    direction_scaled_r[0] = direction_unit[0] * scale;
-    direction_scaled_r[1] = direction_unit[1] * scale;
-    direction_scaled_r[2] = direction_unit[2] * scale;
+    fast_vec_normalize(direction_unit, v, 1.0f);
+    direction_scaled[0] = direction_unit[0] * scale;
+    direction_scaled[1] = direction_unit[1] * scale;
+    direction_scaled[2] = direction_unit[2] * scale;
     if (v[0] < v[1]) {
         if (v[0] < v[2]) {
             direction_perpendicular[0] = v[0];
@@ -8953,7 +8952,7 @@ void prepare_scaled_direction_and_perpendicular(PauseVec *dir, f32 scale) {
         direction_perpendicular[2] = v[2];
     }
     FastVecCross(direction_perpendicular, direction_perpendicular, direction_unit);
-    fast_vec_normalize_r(direction_perpendicular, direction_perpendicular, 1.0f);
+    fast_vec_normalize(direction_perpendicular, direction_perpendicular, 1.0f);
 }
 
 /*

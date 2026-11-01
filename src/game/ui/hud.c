@@ -481,10 +481,10 @@ extern void libc_strcpy(Cfg13 *, void *);
 /* The struct copy is a plain assignment: at alignment 1 this compiler
    expands the 0x13 bytes as unaligned ldl/ldr + sdl/sdr pairs with the
    trailing three bytes done singly, which is exactly retail's shape. */
-extern int libc_strlen_hud(void *) __asm__("func_00116810");
+extern int func_00116810(void *);
 /* Copies text into the shared message buffer, preloading the too-long label when under 80 chars. */
 void copy_text_to_shared_buffer(void *arg0) {
-    if ((unsigned int)libc_strlen_hud(arg0) < 0x50) {
+    if ((unsigned int)libc_strlen(arg0) < 0x50) {
         message_text_buffer = message_too_long_label;
     }
     libc_strcpy(&message_text_buffer, arg0);
@@ -611,7 +611,7 @@ int GetIconFrame(int iconId, int sub) {
 
 __asm__(".section .text\n\tnop\n");
 
-extern s32 g_gs_texture_allocation_cursor_r __asm__("D_0015EF74") MACRO_ADDR;
+extern s32 D_0015EF74 MACRO_ADDR;
 struct TextureUpload {
     s32 clut_data; /* 0x00: EE address of the CLUT (fun_00204cf0: texture CLUT pointer) */
     s16 unk4; /* 0x04: every writer stores 0 */
@@ -635,9 +635,9 @@ struct FrameImagePage {
     u8 width_log2;
     u8 height_log2;
 };
-extern s32 g_gs_texture_allocation_base_r __asm__("D_0015EF8C") MACRO_ADDR;
-extern s32 pending_texture_upload_count_r __asm__("D_0015F558") MACRO_ADDR;
-extern struct TextureUpload pending_texture_uploads_r[] __asm__("D_0018D140");
+extern s32 D_0015EF8C MACRO_ADDR;
+extern s32 D_0015F558 MACRO_ADDR;
+extern struct TextureUpload D_0018D140[];
 struct FrameTextureTables {
     u8 pad00[0x20];
     s32 frame_references_address;
@@ -677,24 +677,24 @@ u64 func_00200248_r(s32 frame_id) {
 
     if (palette_page->gs_block_offset == 0 || image_page->gs_block_offset == 0) {
         /* Retail fills this first packet even when the queue is already full. */
-        packet_offset = pending_texture_upload_count_r * 0x10;
+        packet_offset = pending_texture_upload_count * 0x10;
         palette_source_address = palette_page->source_address;
-        initial_packet = pending_texture_uploads_r + pending_texture_upload_count_r;
+        initial_packet = pending_texture_uploads + pending_texture_upload_count;
         initial_packet->clut_data = palette_source_address;
         initial_packet->unk4 = 0;
         initial_packet->cbp = 0x3FF0;
-        *(s32 *)((u8 *)pending_texture_uploads_r + packet_offset + 8) = palette_page->source_address;
+        *(s32 *)((u8 *)pending_texture_uploads + packet_offset + 8) = palette_page->source_address;
         initial_packet->tw = 5;
         initial_packet->th = 5;
         initial_packet->tbp = 0x3FF0;
     }
 
     if (palette_page->gs_block_offset == 0) {
-        palette_page->gs_block_offset = g_gs_texture_allocation_cursor_r >> 8;
-        g_gs_texture_allocation_cursor_r += 0x400;
-        if (pending_texture_upload_count_r < 0x40) {
+        palette_page->gs_block_offset = g_gs_texture_allocation_cursor >> 8;
+        g_gs_texture_allocation_cursor += 0x400;
+        if (pending_texture_upload_count < 0x40) {
             queued_transfer = 1;
-            palette_packet = pending_texture_uploads_r + pending_texture_upload_count_r;
+            palette_packet = pending_texture_uploads + pending_texture_upload_count;
             palette_packet->clut_data = palette_page->source_address;
             palette_packet->unk4 = 0;
             palette_packet->cbp = palette_page->gs_block_offset;
@@ -704,17 +704,17 @@ u64 func_00200248_r(s32 frame_id) {
     if (image_page->gs_block_offset == 0) {
         height_log2 = image_page->height_log2;
         width_log2 = image_page->width_log2;
-        allocation_cursor = g_gs_texture_allocation_cursor_r;
+        allocation_cursor = g_gs_texture_allocation_cursor;
         image_page->gs_block_offset = allocation_cursor >> 8;
         if (height_log2 < width_log2) {
             height_log2 += width_log2 - height_log2;
         }
-        g_gs_texture_allocation_cursor_r = allocation_cursor + (1 << (height_log2 * 2));
-        image_upload_count = pending_texture_upload_count_r;
+        g_gs_texture_allocation_cursor = allocation_cursor + (1 << (height_log2 * 2));
+        image_upload_count = pending_texture_upload_count;
         if (image_upload_count < 0x40) {
             queued_transfer = 1;
-            packet = pending_texture_uploads_r + image_upload_count;
-            *(s32 *)((u8 *)pending_texture_uploads_r + image_upload_count * 0x10 + 8) = image_page->source_address;
+            packet = pending_texture_uploads + image_upload_count;
+            *(s32 *)((u8 *)pending_texture_uploads + image_upload_count * 0x10 + 8) = image_page->source_address;
             packet->tw = image_page->width_log2;
             packet->th = image_page->height_log2;
             packet->tbp = image_page->gs_block_offset;
@@ -722,7 +722,7 @@ u64 func_00200248_r(s32 frame_id) {
     }
 
     if (queued_transfer != 0) {
-        pending_texture_upload_count_r += 1;
+        pending_texture_upload_count += 1;
     }
 
     return_shift = image_page->width_log2 - 6;
@@ -730,7 +730,7 @@ u64 func_00200248_r(s32 frame_id) {
         return_shift = 0;
     }
     return_mode = 0x13;
-    if (image_page->gs_block_offset < (g_gs_texture_allocation_base_r >> 8)) {
+    if (image_page->gs_block_offset < (g_gs_texture_allocation_base >> 8)) {
         return_mode = 0x1B;
     }
     return_shift = 1 << return_shift;

@@ -148,7 +148,7 @@ typedef struct {
 } Cam;
 extern s32 queued_dialogue_id;
 extern s16 dialogue_playback_phase NOT_SDA;
-extern u8 gCheats_r[] __asm__("D_0015EEB0") MACRO_ADDR;
+extern u8 D_0015EEB0[] MACRO_ADDR;
 extern short resident_stream_resume_frames_s4;
 extern short resident_stream_resume_frames_s5;
 extern short resident_stream_resume_frames_s6;
@@ -172,7 +172,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
     s32 r;
     s32 a;
 
-    if (gCheats_r[0] != 0) {
+    if (gCheats[0] != 0) {
         if (resident_cheat_scale_manip.active == 0) {
             AttachManipulator(m, 0, &resident_cheat_scale_manip);
         }

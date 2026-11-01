@@ -28,7 +28,7 @@ typedef struct {
 } Particle5F0A0;
 typedef int u128 __attribute__((mode(TI)));
 extern unsigned char *create_part(int);
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 extern void FastVecSub(void *dst, void *a, void *b);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
@@ -57,7 +57,7 @@ void spawn_owner_target_particle(int a0, void *a1, char *a2) {
             p->velocity.bits = scratch.pos;
             p->color = a0;
             p->rgb = a0 & 0xFFFFFF;
-            p->alpha = truncate_float_to_s32_r(4.0f) + 0x70;
+            p->alpha = truncate_float_to_s32(4.0f) + 0x70;
             p->type = 0x44;
             p->flags = 2;
             {
@@ -82,10 +82,10 @@ unsigned char *create_type_47_particle(void *pos, float *p, float *c, int d, int
         q = (int *)(r + 0x20);
         q2 = (int *)(r + 0x24);
         *(int *)(r + 4) = d;
-        r[9] = truncate_float_to_s32_r(4.0f) + 0x40;
+        r[9] = truncate_float_to_s32(4.0f) + 0x40;
         r[3] = 0x44;
         r[1] = 0;
-        *(float *)(r + 0xC) = truncate_float_to_s32_r(p[3] * 210000.0f);
+        *(float *)(r + 0xC) = truncate_float_to_s32(p[3] * 210000.0f);
         r[8] = random_integer_below(0xFF);
         r[2] = *(unsigned char *)quartu_part_type71_textures;
         *(short *)(r + 0xA) = f;

@@ -6,14 +6,14 @@
 #include "overlays/shared/sky_particles.h"
 #include "enums/level.h"
 
-extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int D_0015EE84 MACRO_ADDR;
 
 extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Orxon sky: phase-rotated shells in level 10, static shells otherwise. */
 void SkyFrameDraw(void) {
     SetupSkyGifPaging();
-    if (g_current_level_index_m == LEVEL_ORXON) {
+    if (g_current_level_index == LEVEL_ORXON) {
         draw_sky_shells_with_scaled_phase_rotation();
     } else {
         update_sky_shells_static();

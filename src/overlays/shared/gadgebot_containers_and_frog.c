@@ -1069,7 +1069,7 @@ extern s32 D_L06_00161CF0_2EB5C8 SDATA(D_L06_00161CF0);
 extern f32 D_L06_00161CF4_2EB5C8 SDATA(D_L06_00161CF4);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
-extern void add_random_offset_to_vector_xyz_r(void *, float) __asm__("func_L00_00260958");
+extern void func_L00_00260958(void *, float);
 extern float random_angle_radians_r(void) __asm__("func_00214158");
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 extern void FastVecScale_r(void *, void *, f32) __asm__("func_001F9C30");
@@ -1079,7 +1079,7 @@ extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int FastTweenColor_r2(int, int, float) __asm__("func_001FA8A8");
 extern f32 multiply_global_factor_r(f32) __asm__("func_001F9878");
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
-extern char *PartType02Spawn_r(void *, void *, void *, int, int, int, int, int, int) __asm__("func_00219780");
+extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
 
 /* Throws blarg_frog_spark_burst_count bursts of sparks from around the moby: each burst gets a random heading, speed
    and rise on
@@ -1101,7 +1101,7 @@ void spawn_moby_directional_spark_bursts(struct Moby *moby, Vec4 *dir) {
         origin = &moby->pos;
         dst = &pos;
         qcopy_nc(dst, origin);
-        add_random_offset_to_vector_xyz_r(&pos, D_L06_00161CB0_2EB5C8);
+        add_random_offset_to_vector_xyz(&pos, D_L06_00161CB0_2EB5C8);
         pos.f[2] += 0.25f;
         angle = random_angle_radians_r();
         speed = random_float_between_r(D_L06_00161CBC_2EB5C8, D_L06_00161CC0_2EB5C8);
@@ -1121,8 +1121,8 @@ void spawn_moby_directional_spark_bursts(struct Moby *moby, Vec4 *dir) {
             float n;
             vel.f[3] = size * D_L06_00161CD0_2EB5C8;
             accel.f[3] = size * D_L06_00161CD4_2EB5C8;
-            add_random_offset_to_vector_xyz_r(&pos, D_L06_00161CB4_2EB5C8);
-            add_random_offset_to_vector_xyz_r(&accel, D_L06_00161CB8_2EB5C8 * g_frame_time_r);
+            add_random_offset_to_vector_xyz(&pos, D_L06_00161CB4_2EB5C8);
+            add_random_offset_to_vector_xyz(&accel, D_L06_00161CB8_2EB5C8 * g_frame_time_r);
             color0 =
                 FastTweenColor_r2(D_L06_00161CD8_2EB5C8, D_L06_00161CE0_2EB5C8, random_float_between_r(0.0f, 1.0f));
             color1 =
@@ -1130,7 +1130,7 @@ void spawn_moby_directional_spark_bursts(struct Moby *moby, Vec4 *dir) {
             life = scale_ticks_r(D_L06_00161CE8_2EB5C8);
             fade = scale_ticks_r(D_L06_00161CEC_2EB5C8);
             n = (float)D_L06_00161CF0_2EB5C8;
-            PartType02Spawn_r(
+            PartType02Spawn(
                 &pos, &vel, &accel, color0, color1, life, fade,
                 truncate_float_to_s32_r(multiply_global_factor_r(random_float_between_r(n * 0.5f, n * 2.5f))), -1);
         }
@@ -1189,9 +1189,9 @@ void func_00213DE0_EBA10(MobyAnim_EBA10 *arg0, int arg1, int arg2, int arg3) __a
 /* Grabbed check: while FUN_L00_002db8f8 holds the moby, park it in state 0x10 (remembering the state it came from)
    unless it is in a state that cannot be grabbed; once released, drop it back to state 8.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002ea5e0. */
-extern int process_moby_suck_cannon_suction_EBA10_3(void *, void *, void *) __asm__("func_L00_002DCDA8");
+extern int func_L00_002DCDA8(void *, void *, void *);
 int update_moby_grab_state(struct Moby *moby, void *position, void *target) {
-    int r = process_moby_suck_cannon_suction_EBA10_3(moby, position, target);
+    int r = process_moby_suck_cannon_suction(moby, position, target);
     if (r != 0) {
         if (moby->state == 8 || moby->state == 9 || moby->state == 0xC || moby->state == 0xD || moby->state == 0x10) {
             if (moby->state != 0x10) {
@@ -1214,12 +1214,12 @@ extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 
 // Switches moby state between 0x10 and 8 depending on a check result.
-extern int store_moby_in_suck_cannon_r(void *, void *, void *, float) __asm__("func_L00_002DCFD0");
+extern int func_L00_002DCFD0(void *, void *, void *, float);
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
 int CarriedMoby_PlaceState16(Moby *moby, void *v, void *t, float h) {
-    int r = store_moby_in_suck_cannon_r(moby, v, t, h);
+    int r = store_moby_in_suck_cannon(moby, v, t, h);
     if (r != 0) {
         if (moby->state != 0x10) {
             moby->command = moby->state;
@@ -2446,7 +2446,7 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
 /* Level 6 hit/collision callback of the spark emitters (classes 0x15F 0x3B1 0x515 spray two bursts of 10 sparks around
    the hero context ctx and spawn through Sound_PlayClassSound/00272F00; 0x400 and 0x516 only set ctx state 8); from
    the staged near miss, compared with the assembly through equiv.py. */
-extern float FastNormalizeAngle_r(f32) __asm__("func_001FA7D8");
+extern float func_001FA7D8(f32);
 extern char *level_mobys_q_r2 __asm__("D_L06_00160058") MACRO_ADDR;
 typedef int u128_F4058 __attribute__((mode(TI)));
 
@@ -2519,7 +2519,7 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, Moby *moby, int 
             }
 
             g = level_mobys_q_r2 + (*(int *)st << 8);
-            f20 = FastNormalizeAngle_r(IntToFloat(v58) * 60.0f * 0.017453292f);
+            f20 = FastNormalizeAngle(IntToFloat(v58) * 60.0f * 0.017453292f);
             vB[0] = FastCos(FastAddRots(*(float *)(g + 0x48), f20));
             vB[1] = FastSin_r(FastAddRots(*(float *)(g + 0x48), f20));
             vB[2] = 0.0f;
@@ -2654,7 +2654,7 @@ typedef struct {
 } Best;
 extern short D_L06_00161D78_F4908 SDATA(D_L06_00161D78);
 extern short D_L06_00161D74_F4908 SDATA(D_L06_00161D74);
-extern char *blarg_gadgebot_target_cache_r[] __asm__("D_L06_001DB1B0");
+extern char *D_L06_001DB1B0[];
 extern char *blarg_moby_list_r3[] __asm__("D_L06_001AC500");
 
 /* Picks the best target for moby among this frame's live class-0x359 mobys and the hero (current is the target it has
@@ -2672,15 +2672,14 @@ void select_hero_or_gadgebot_target(char *moby, char **current, f32 range) {
                 (u8) * (char *)&((Moby *)m)->state != 9) {
                 s32 n = (*(s32 *)&D_L06_00161D74_F4908);
                 (*(s32 *)&D_L06_00161D74_F4908) = n + 1;
-                blarg_gadgebot_target_cache_r[n] = m;
+                blarg_gadgebot_target_cache[n] = m;
             }
         }
     }
     best.score = 999999.0f;
     best.moby = 0;
     for (i = 0; i < (*(s32 *)&D_L06_00161D74_F4908); i++) {
-        func_L06_002F4818_F4908(moby, *current, blarg_gadgebot_target_cache_r[i], (int *)&best.moby, &best.score,
-                                range);
+        func_L06_002F4818_F4908(moby, *current, blarg_gadgebot_target_cache[i], (int *)&best.moby, &best.score, range);
     }
     func_L06_002F4818_F4908(moby, *current, (char *)g_hero_r2.moby, (int *)&best.moby, &best.score, range);
     *current = best.moby;
@@ -2691,8 +2690,8 @@ extern int scale_ticks_r3(int) __asm__("func_001F9850");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 typedef unsigned int Q_2F4A70 __attribute__((mode(TI), aligned(16)));
 extern char *g_hero_moby_r2 __asm__("D_001414D0");
-extern void trooper_set_knockback_r(void *, float, float) __asm__("func_L03_00251A58");
-extern void HeadingFromVector_r(void *, float *, void *, void *) __asm__("func_L00_0025BBA0");
+extern void func_L03_00251A58(void *, float, float);
+extern void func_L00_0025BBA0(void *, float *, void *, void *);
 extern void InitKnockback_r(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 extern void Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
@@ -2717,9 +2716,9 @@ void func_L06_002F4A70_r(unsigned char *moby) {
                 state[0xBD] = 0;
                 *(int *)(state + 0xA4) = 9;
                 *(float *)(state + 0x90) = 4.0f / (float)frames_sq;
-                trooper_set_knockback_r(state + 0x80, 2.0f, 0.5f);
+                trooper_set_knockback(state + 0x80, 2.0f, 0.5f);
                 pos = *(Q_2F4A70 *)(target + 0x10);
-                HeadingFromVector_r(&pos, &ang, state + 0x98, state + 0x9C);
+                HeadingFromVector(&pos, &ang, state + 0x98, state + 0x9C);
                 InitKnockback_r(moby, state + 0x80, 4, 5, 2, ang);
                 {
                     float v = g_frame_time_r2 + g_frame_time_r2;
@@ -3060,8 +3059,7 @@ extern short blarg_holder_beam_color_a, blarg_holder_beam_color_b, energy_sphere
 extern short blarg_holder_spark_life_ticks;
 extern void clear_u64_value(void *);
 extern int truncate_float_to_s32_g(float) __asm__("func_001FA898");
-extern unsigned char *PartType59Spawn_g(void *, int, unsigned char, int, int, int, int,
-                                        float) __asm__("func_L00_00273E08");
+extern unsigned char *func_L00_00273E08(void *, int, unsigned char, int, int, int, int, float);
 extern void spawn_moving_hero_relative_alpha_fade_particle_g(void *, void *, int, int, int, int,
                                                              float) __asm__("func_L00_00273F80");
 
@@ -3100,8 +3098,8 @@ void update_energy_sphere_holder_beam_effects(char *m) {
         }
         f = IntToFloat(scale_ticks(0xFF) - d->t[i]) / (float)scale_ticks(0xFF);
         c = FastTweenColor(*(int *)&blarg_holder_beam_color_a, *(int *)&blarg_holder_beam_color_b, FastAbsF(0.5f - f));
-        PartType59Spawn_g(pos, c, truncate_float_to_s32_g(d->ph[i]), *(int *)&blarg_holder_beam_texture,
-                          *(int *)&energy_sphere_holder_beam_particle_variant_flag_gp, 2, 0, d->sz[i]);
+        PartType59Spawn(pos, c, truncate_float_to_s32_g(d->ph[i]), *(int *)&blarg_holder_beam_texture,
+                        *(int *)&energy_sphere_holder_beam_particle_variant_flag_gp, 2, 0, d->sz[i]);
         FastVecAdd(pos, pos, step);
     }
     if ((blarg_frame_count & 3) == 3 && ((unsigned char *)m)[0x31] != 0) {

@@ -34,7 +34,7 @@ __asm__(".align 4");
 extern int tfrag_lod_dists_raw[3];
 extern float fog_params;
 extern float tfrag_lod_blend_matrix[4][4];
-extern int truncate_float_to_s32_i(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 
 /* SetTfragDists(void): the three LOD distances as fixed point (x1024), and
    the matrix mapping distance to the two blend weights. The store order is
@@ -45,9 +45,9 @@ extern int truncate_float_to_s32_i(float) __asm__("func_001FA898");
 void SetTfragDists(void) {
     float a, b, c, ab, bc;
 
-    tfrag_lod_dists_raw[0] = truncate_float_to_s32_i(tfrag_render_ranges[0] * 1024.0f);
-    tfrag_lod_dists_raw[1] = truncate_float_to_s32_i(tfrag_render_ranges[1] * 1024.0f);
-    tfrag_lod_dists_raw[2] = truncate_float_to_s32_i(tfrag_render_ranges[2] * 1024.0f);
+    tfrag_lod_dists_raw[0] = truncate_float_to_s32(tfrag_render_ranges[0] * 1024.0f);
+    tfrag_lod_dists_raw[1] = truncate_float_to_s32(tfrag_render_ranges[1] * 1024.0f);
+    tfrag_lod_dists_raw[2] = truncate_float_to_s32(tfrag_render_ranges[2] * 1024.0f);
     a = tfrag_render_ranges[0] * fog_params;
     b = tfrag_render_ranges[1] * fog_params;
     c = tfrag_render_ranges[2] * fog_params;

@@ -2150,13 +2150,12 @@ typedef struct {
 } Part29FF90;
 
 extern void spawn_owner_target_particle(int a0, void *a1, char *a2);
-extern void PartType05Spawn_r(void *, unsigned char, unsigned char, unsigned char, float, float,
-                              int) __asm__("func_L00_0026AA10");
+extern void func_L00_0026AA10(void *, unsigned char, unsigned char, unsigned char, float, float, int);
 extern int allocate_packed_color_point_light_slot(float *pos, float radius, float intensity, int color);
 
 extern int coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
-extern char *spawn_source_attached_fading_effect_particle_r(float, char *, int, int, int) __asm__("func_L00_0026E940");
+extern char *func_L00_0026E940(float, char *, int, int, int);
 
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_r(void *, void *, int, int, float, int,
                                                                                  int, int,
@@ -2249,8 +2248,8 @@ void update_charged_blast(Moby29FF90 *moby) {
                     s = IntToFloat(d->f10) / multiply_global_factor(30.0f);
                     if (s > 1.0f)
                         s = 1.0f;
-                    PartType05Spawn_r(&quartu_lights[d->light].f10, rand_range(0xF, 0x2F), rand_range(0x2F, 0x3F),
-                                      rand_range(0x3F, 0x7F), s * 4.0f * 210000.0f, 0.0f, scale_ticks(0x14));
+                    PartType05Spawn(&quartu_lights[d->light].f10, rand_range(0xF, 0x2F), rand_range(0x2F, 0x3F),
+                                    rand_range(0x3F, 0x7F), s * 4.0f * 210000.0f, 0.0f, scale_ticks(0x14));
                     (quartu_lights + d->light)->f0 = random_float_between(
                         (quartu_lights + d->light)->f0 * 0.8f, (quartu_lights + d->light)->f1C * 2.0f / 7.0f);
                     (quartu_lights + d->light)->f4 =
@@ -2298,10 +2297,10 @@ void update_charged_blast(Moby29FF90 *moby) {
             *(u128_29FF90 *)v2 = *(u128_29FF90 *)moby->pos;
             SendRadialMessageToMobys(moby, v2, quartu_coll_sphere_moby_hits, n, 0, 0x8B0000, 2, 1, 20.0f, 1.0f, 1.0f);
             cnt = scale_ticks(0x3C) - d->f14 < scale_ticks(5) ? scale_ticks(0x3C) - d->f14 : scale_ticks(5);
-            spawn_source_attached_fading_effect_particle_r(r * 0.5f * 210000.0f, (char *)moby,
-                                                           (0x4F << 24) | (rand_range(0x3F, 0x7F) << 16) |
-                                                               (rand_range(0x2F, 0x3F) << 8) | rand_range(0xF, 0x2F),
-                                                           cnt, -1);
+            spawn_source_attached_fading_effect_particle(r * 0.5f * 210000.0f, (char *)moby,
+                                                         (0x4F << 24) | (rand_range(0x3F, 0x7F) << 16) |
+                                                             (rand_range(0x2F, 0x3F) << 8) | rand_range(0xF, 0x2F),
+                                                         cnt, -1);
             random_spherical_offset(w, r * g_frame_time, r * 2.0f * g_frame_time);
             col = (0x7F << 24) | (rand_range(0x3F, 0x7F) << 16) | (rand_range(0x2F, 0x3F) << 8) | rand_range(0xF, 0x2F);
             spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_r(
@@ -2525,8 +2524,8 @@ extern int GetEffectTex(int);
 extern void clear_u64_value(float *);
 extern void euler_to_matrix(float *, float *);
 extern void draw_world_quad(void *, void *, int);
-extern float quartu_group_effect_quad_uvs_x[] __asm__("D_L15_001CE490");
-extern float quartu_group_effect_quad_verts_x[] __asm__("D_L15_001CE390");
+extern float D_L15_001CE490[];
+extern float D_L15_001CE390[];
 extern int quartu_moby_groups_x[] __asm__("D_L15_001AC140");
 extern char quartu_player_camera_x[] __asm__("D_L15_00167300");
 extern int quartu_moby_array_m_x __asm__("D_L15_00160058") MACRO_ADDR;
@@ -2556,7 +2555,7 @@ void draw_group_moby_effect_quads(char *moby) {
     quad_words[3] = 0x8000000044L;
     quad_words[0] = 0;
     {
-        float *source = quartu_group_effect_quad_uvs_x;
+        float *source = quartu_group_effect_quad_uvs;
         float *v = &uv[0][1];
         float *u = &uv[0][0];
         for (i = 3; i >= 0; i--) {
@@ -2587,7 +2586,7 @@ void draw_group_moby_effect_quads(char *moby) {
                 k = 0;
                 do {
                     colors[k] = *(int *)(&quartu_hero_seeker_spark_height_x + 2 + j * 2);
-                    qcopy_nc(vertices[k], quartu_group_effect_quad_verts_x + j * 16 + k * 4);
+                    qcopy_nc(vertices[k], quartu_group_effect_quad_verts + j * 16 + k * 4);
                     k++;
                 } while (k < 4);
                 draw_world_quad(vertices, rotation, 0);
@@ -2607,7 +2606,7 @@ typedef struct {
 } Voice;
 extern KillFlags_2A3DD0 quartu_collected_flags_base_r __asm__("D_L15_001BBB40");
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
-extern int level_moby_killed_r[][64] __asm__("D_0014C290");
+extern int D_0014C290[][64];
 extern unsigned char voice_pool_r[] __asm__("D_0013E650");
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
@@ -2627,17 +2626,16 @@ extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
 extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void matrix_from_basis_rows_r(void *, void *) __asm__("func_001FA4A0");
+extern void func_001FA4A0(void *, void *);
 extern void mark_moby_killed_and_release_owned_voice_r(void *) __asm__("func_L15_002A47B8");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern void AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
 extern void draw_spark_emitter_effect_quads_r(void) __asm__("func_L15_002A4318");
-extern unsigned char *create_type_47_particle_r(void *, void *, void *, int, int, int, int, int,
-                                                void *) __asm__("func_L15_002655D0");
+extern unsigned char *func_L15_002655D0(void *, void *, void *, int, int, int, int, int, void *);
 
 /* True when save bit id of the current level is still clear. */
 static inline int save_flag_clear_2A3DD0(unsigned short id) {
-    return ((level_moby_killed_r[g_current_level_index_r][(short)id >> 5] >> (id & 0x1F)) & 1) == 0;
+    return ((level_moby_killed[g_current_level_index_r][(short)id >> 5] >> (id & 0x1F)) & 1) == 0;
 }
 
 /* Level 15 moby update (class 78), three states: 0 picks the first state from the kill and save flags,
@@ -2679,7 +2677,7 @@ void update_spark_emitter_moby(Moby *moby) {
                 }
                 FastVecSub_r(V, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center,
                              &moby->pos);
-                matrix_from_basis_rows_r(W, &moby->rot_row0);
+                matrix_from_basis_rows(W, &moby->rot_row0);
                 transform_vector_r(V, V, W);
                 V[0] = 0.0f;
                 z = V[0];
@@ -2717,7 +2715,7 @@ void update_spark_emitter_moby(Moby *moby) {
                     fa = truncate_float_to_s32_r2((float)(scale_ticks_r(30) / 4));
                     fb = truncate_float_to_s32_r2((float)(scale_ticks_r(30) / 2));
                     fc = truncate_float_to_s32_r2((float)(scale_ticks_r(30) / 4));
-                    create_type_47_particle_r(A, B, C, col, 0x60808080, fa, fb, fc, moby);
+                    create_type_47_particle(A, B, C, col, 0x60808080, fa, fb, fc, moby);
                 } while (i >= 0);
                 if (FastAbsF_r(V[1]) < hi && z < V[2] && V[2] < hi) {
                     matrix_mul_vec3_r(&d->spark_pos, V, &moby->rot_row0);

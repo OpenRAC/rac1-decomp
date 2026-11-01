@@ -82,7 +82,7 @@ void emit_moby_sprite_particles(char *m) {
         FastVecAdd_r(d, d, e);
     }
 }
-extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
+extern struct Moby *func_0020D348(int);
 extern float FastVecDist(void *, void *);
 
 extern float vec_length_xy(void *);
@@ -91,7 +91,7 @@ extern char hero_globals_base[];
 
 /* spawn a Rocket moby with position, velocity vector and aim angles */
 char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
-    Moby *m = (Moby *)((char *)CreateMoby_m(0x333));
+    Moby *m = (Moby *)((char *)CreateMoby(0x333));
     struct RocketVars *d;
     if (m) {
         m->scale = m->scale * scale;
@@ -292,7 +292,7 @@ extern void matrix_from_basis_rows(void *, void *);
 extern void transform_vector(void *, void *, void *);
 extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_moby_animated_quad_layers(unsigned char *);
-extern unsigned char help_stats_base_q[] __asm__("D_0014171B") NOT_SDA;
+extern unsigned char D_0014171B[] NOT_SDA;
 
 /* UpdateMoby_1378 (names.tsv role). State 0 sets flag bit 0 and goes to state 1. In state 1,
  * when the hero (hero_globals_base + 0xE9D) is within 8.0: takes the vector from the moby to the point
@@ -323,7 +323,7 @@ void update_hero_flag_from_moby_local_box(unsigned char *m) {
                         hero[0x224B] = 0;
                     }
                 } else if (0.0f < v[1]) {
-                    help_stats_base_q[0] = 0;
+                    help_stats_base[0] = 0;
                 }
             }
             AddDrawCallback(draw_moby_animated_quad_layers, m);

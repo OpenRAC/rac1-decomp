@@ -125,7 +125,7 @@ extern char special_items_base[];
 extern char special_items_base_b[] __asm__("D_0013D355");
 extern unsigned char help_stats_base[] NOT_SDA;
 extern int cinematic_mode MACRO_ADDR;
-extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
+extern int D_0015EFB4 MACRO_ADDR;
 extern int cinematic_mode_frames MACRO_ADDR;
 extern int level_menu_system_field_f0;
 extern int g_current_level_index MACRO_ADDR;
@@ -141,7 +141,7 @@ extern char level_profile_mark_after_camera[];
 extern char level_profile_mark_after_sound[];
 
 extern void update_timed_hud_visibility(void);
-extern int show_health_hud_r(void) __asm__("func_L00_00235790");
+extern int func_L00_00235790(void);
 extern void hud_keep_visible(int, int);
 extern int queue_animation_update(int, int, int, int, int, int, int);
 
@@ -160,7 +160,7 @@ extern void update_debug_camera(void);
 extern void update_hero_from_debug_camera(void);
 extern void UpdateAllPointLights(void);
 extern void update_resident_packed_direction(void);
-extern int update_hud_elements_r(int) __asm__("func_L00_0023B610");
+extern int func_L00_0023B610(int);
 extern void Help_Update(void);
 
 /* per-frame update of the in-level game: pause and cutscene triggers, then the subsystem updates. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_00295100.c, FUN_L00_00297f78. */
@@ -177,7 +177,7 @@ void handle_pause_input(void) {
         g_debug_menu.wA0 = ((PadS *)(pad_globals_base + 0x2460))->w1A0 & ~0x200;
     }
     lvl = cinematic_mode;
-    if (lvl == 0 && (mode_freeze_flags_m & 0x401) && cinematic_mode_frames >= 8 &&
+    if (lvl == 0 && (mode_freeze_flags & 0x401) && cinematic_mode_frames >= 8 &&
         ((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1D) {
         mode_freeze_init(3, 0, 0);
         return;
@@ -258,7 +258,7 @@ void handle_pause_input(void) {
         ((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1D &&
         ((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x32) {
         int x;
-        x = show_health_hud_r();
+        x = show_health_hud();
         hud_keep_visible(x, scale_ticks(0xB4));
         x = queue_animation_update(2, 0x754E, (int)initialize_bolt_counter_hud,
                                    (int)update_bolt_counter_hud_animation_and_visibility,
@@ -309,7 +309,7 @@ void handle_pause_input(void) {
     Profile_Mark_a(level_profile_mark_after_sound, 6);
     UpdateAllPointLights();
     update_resident_packed_direction();
-    update_hud_elements_r(1);
+    update_hud_elements(1);
     Help_Update();
     if ((g_debug_menu.w8 & 2) || ((g_debug_menu.w8 & 0x10) && (((PadS *)(pad_globals_base + 0x2460))->w1A4 & 0x200)))
         update_game_frame_and_idle_counters();
@@ -571,7 +571,7 @@ extern char render_view_params[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float big_head_cutscene_fov_scale MACRO_ADDR;
 extern char g_debug_camera[];
-extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 extern short big_head_cutscene_camera_pullback;
 
 typedef struct CutsceneCamKey {
@@ -634,7 +634,7 @@ unsigned char apply_cutscene_camera_key(void) {
     cc->matrix[0].z = -m[10];
     cc->matrix[1].z = -m[2];
     cc->matrix[2].z = m[6];
-    if (draw_map51_m[0] != 0) {
+    if (draw_map51[0] != 0) {
         FastVecCross(c + 0x220, c + 0x230, c + 0x210);
     }
     if (gCheats[0] != 0) {
@@ -966,7 +966,7 @@ typedef struct {
     int buf1;
 } MovieLoad;
 extern MovieLoad queued_movie_request_m __asm__("D_L00_00161108") MACRO_ADDR;
-extern int g_gs_texture_allocation_start_r[6] __asm__("D_0015EF78") MACRO_ADDR;
+extern int D_0015EF78[6] MACRO_ADDR;
 extern int level_texture_data_base MACRO_ADDR;
 extern int movie_work_buffer;
 extern char movie_gs_overflow_message[];
@@ -991,7 +991,7 @@ void prepare_movie_playback(int sector, int size, int arg2) {
     big = pal_mode != 0 ? 0xE : 0xD;
     small = pal_mode != 0 ? 0xE : 0x11;
     src = queued_movie_request_m.buf1;
-    gs_addr = g_gs_texture_allocation_start_r[4];
+    gs_addr = g_gs_texture_allocation_start[4];
     i = 0;
     while (i < big) {
         sceGsSetDefLoadImage(image, gs_addr >> 8, 2, 1, 0, 0, 0x80, 0x80);
@@ -1002,7 +1002,7 @@ void prepare_movie_playback(int sector, int size, int arg2) {
         src += 0xC000;
         wait_for_graphics_pipeline_idle(0, 0);
     }
-    gs_addr = g_gs_texture_allocation_start_r[0];
+    gs_addr = g_gs_texture_allocation_start[0];
     j = 0;
     while (j < small) {
         sceGsSetDefLoadImage(image, gs_addr >> 8, 1, 0, 0, 0, 0x40, 0x40);
@@ -1034,7 +1034,7 @@ void movie_exit_to_gameplay(void) {
     ((void (*)(int, int))wait_for_graphics_pipeline_idle)(0, 0);
     sceGsSyncVCallback(vsync_callback);
     destination = movie_request_decoder_state;
-    source = g_gs_texture_allocation_start_r[4];
+    source = g_gs_texture_allocation_start[4];
     big = pal_mode != 0 ? 0xE : 0xD;
     small = pal_mode != 0 ? 0xE : 0x11;
     i = 0;
@@ -1047,7 +1047,7 @@ void movie_exit_to_gameplay(void) {
         destination += 0xc000;
         ((void (*)(int, int))wait_for_graphics_pipeline_idle)(0, 0);
     }
-    source = g_gs_texture_allocation_start_r[0];
+    source = g_gs_texture_allocation_start[0];
     j = 0;
     while (j < small) {
         sceGsSetDefStoreImage(sp, (source << 8) >> 16, 1, 0, 0, 0, 0x40, 0x40);

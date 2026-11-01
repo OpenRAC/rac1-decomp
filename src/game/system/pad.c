@@ -140,13 +140,13 @@ struct PadOptions {
     u8 mirror;                /* draw_map51 */
     u8 pad5[7];
 };
-extern struct PadOptions gCheats_r __asm__("D_0015EEB0") MACRO_ADDR;
+extern struct PadOptions D_0015EEB0 MACRO_ADDR;
 extern PadState g_controller_state_r __asm__("D_0013CA40");
 extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
-extern float vec_length_xy_r(float *) __asm__("func_001F9CE8");
+extern float func_001F9CE8(float *);
 extern float fast_arc_tan_r(float, float) __asm__("func_001FA058");
 extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
-extern float IntToFloat_r(s32) __asm__("func_001FA888");
+extern float func_001FA888(s32);
 
 void func_002181F0_r(PadState *p, u8 *buf, s32 len) __asm__("func_002181F0");
 
@@ -171,7 +171,7 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
             if (d < 0)
                 d = -d;
             if (d >= 0x30) {
-                float f = IntToFloat_r(d - 0x30) / IntToFloat_r(0x4C);
+                float f = IntToFloat(d - 0x30) / IntToFloat(0x4C);
                 p->analog[i] = f;
                 if (f > 1.0f) {
                     p->analog[i] = 1.0f;
@@ -184,10 +184,10 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
     }
     if (len >= 0x12) {
         for (i = 4; i < 16; i++) {
-            p->analog[i] = IntToFloat_r(buf[i + 2]) * 0.003921569f;
+            p->analog[i] = IntToFloat(buf[i + 2]) * 0.003921569f;
         }
     }
-    if (gCheats_r.mirror) {
+    if (gCheats.mirror) {
         p->analog[2] = -p->analog[2];
         p->analog[0] = -p->analog[0];
         if (p->held & 0x8000) {
@@ -231,7 +231,7 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
     p->released_unmasked = p->released;
     p->held_unmasked = p->held;
     p->unk348 = p->held;
-    if (gCheats_r.mirror) {
+    if (gCheats.mirror) {
         p->analog_prev[2] = -p->analog_prev[2];
         p->analog_prev[0] = -p->analog_prev[0];
         if (((s32)p->held_unmasked) & 0x8000) {
@@ -270,7 +270,7 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
     }
     v[0] = p->analog[2];
     v[1] = p->analog[3];
-    mag = vec_length_xy_r(v);
+    mag = vec_length_xy(v);
     ang = fast_arc_tan_r(v[0], v[1]);
     p->hist_mag[p->hist_idx] = mag;
     p->hist_ang[p->hist_idx] = ang;

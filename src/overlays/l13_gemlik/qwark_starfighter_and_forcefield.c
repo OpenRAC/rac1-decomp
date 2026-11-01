@@ -129,19 +129,19 @@ struct GeometryQuad {
     u64 primitive;
 };
 
-extern int gemlik_frame_count_r __asm__("D_L13_0015F6B0") MACRO_ADDR;
+extern int D_L13_0015F6B0 MACRO_ADDR;
 extern char gemlik_reference_axis_r[] __asm__("D_L13_00160700") MACRO_ADDR;
-extern u64 GetEffectTex_r(int) __asm__("func_001F4868");
+extern u64 func_001F4868(int);
 extern void Moby_GetJointWorldPos_r(struct Moby *, int, void *) __asm__("func_L00_00250800");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548");
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
-extern void FastVecCross_r(void *, void *, void *) __asm__("func_001F9CA0");
+extern void func_001F9CA0(void *, void *, void *);
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void draw_world_quad_r(void *, int, int) __asm__("func_L00_001FD1D8");
+extern void func_L00_001FD1D8(void *, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l13/gameplay/entities/002ea8c8.c, FUN_L13_002ea8c8. */
 void draw_starfighter_tractor_beam(struct Moby *moby) {
@@ -163,7 +163,7 @@ void draw_starfighter_tractor_beam(struct Moby *moby) {
     float one = 1.0f;
     u64 texture;
 
-    texture = GetEffectTex_r(0x34);
+    texture = GetEffectTex(0x34);
     quad.colors[3] = 0x40808080;
     quad.colors[2] = 0x40808080;
     quad.colors[1] = 0x40808080;
@@ -192,13 +192,13 @@ void draw_starfighter_tractor_beam(struct Moby *moby) {
     vec_scale_to_length_r(direction, direction, step);
     qcopy(position, start);
     distance = zero;
-    vec_scale_to_length_r(offset, direction, IntToFloat_r(gemlik_frame_count_r % 20) / 20.0f);
+    vec_scale_to_length_r(offset, direction, IntToFloat_r(gemlik_frame_count % 20) / 20.0f);
     FastVecSub_r(position, position, offset);
     while (distance < length) {
         width = (distance * 0.0f) / (length + length) + 0.5f;
-        FastVecCross_r(side, direction, gemlik_reference_axis_r);
+        FastVecCross(side, direction, gemlik_reference_axis_r);
         vec_scale_to_length_r(side, side, width);
-        FastVecCross_r(up, direction, side);
+        FastVecCross(up, direction, side);
         vec_scale_to_length_r(up, up, width);
         FastVecSub_r(edge, position, up);
         FastVecSub_r(&quad.positions[0], edge, side);
@@ -213,7 +213,7 @@ void draw_starfighter_tractor_beam(struct Moby *moby) {
             quad.colors[1] = color;
             quad.colors[0] = color;
         }
-        draw_world_quad_r(&quad, 0, 1);
+        draw_world_quad(&quad, 0, 1);
         distance += step;
         FastVecAdd_r(position, position, direction);
     }
@@ -571,7 +571,7 @@ extern void MobySpringTurn(void *moby, float *vel, float target, float k, float 
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
 extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern void emit_randomized_moby_joint_effects_2(void *, void *) __asm__("func_L13_002E9F90");
+extern void func_L13_002E9F90(void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 
@@ -590,7 +590,7 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern char *gemlik_moby_array_start_m __asm__("D_L13_00160058") MACRO_ADDR;
+extern char *D_L13_00160058 MACRO_ADDR;
 extern char hero_globals_base[] NOT_SDA;
 extern char hero_globals_base_snd[] __asm__("D_0013E633") NOT_SDA;
 extern unsigned char help_stats_base[] NOT_SDA;
@@ -1019,7 +1019,7 @@ void update_qwarks_starfighter(QwarksStarfighterPart388 *moby) {
                 FastVecAdd(offset, offset, joint);
                 SpawnExplosionFx(moby, offset, -1, size_ratio * 1.6f, 13.0f);
             }
-            emit_randomized_moby_joint_effects_2(moby, data);
+            emit_randomized_moby_joint_effects(moby, data);
             {
                 char *dialog = (char *)help_stats_base + 0x100B5;
                 if (*(int *)(dialog + 0x50) == 0 && *(int *)(dialog + 0x1C) == -1) {
@@ -1052,10 +1052,10 @@ void update_qwarks_starfighter(QwarksStarfighterPart388 *moby) {
                 spawn_explosion(moby, &data->f70, 0, 0.0f, 0.0f, 0x1E, 8, 0x20, 5.0f, 3.0f, 0.0f, 7, 1.0f, 0.0f, 1, 5,
                                 -1, 0);
             }
-            emit_randomized_moby_joint_effects_2(moby, data);
+            emit_randomized_moby_joint_effects(moby, data);
             if (fast_dec_timer(&data->iF8) != 0) {
                 QwarksStarfighterPart388 *owner =
-                    (QwarksStarfighterPart388 *)(gemlik_moby_array_start_m + (data->i134 << 8));
+                    (QwarksStarfighterPart388 *)(gemlik_moby_array_start + (data->i134 << 8));
                 owner->state = 8;
                 owner->flags |= 2;
                 if (data->light120 != -1) {
@@ -1228,7 +1228,7 @@ void update_qwarks_starfighter(QwarksStarfighterPart388 *moby) {
     data->b10F = 0;
 
     {
-        QwarksStarfighterPart388 *owner = (QwarksStarfighterPart388 *)(gemlik_moby_array_start_m + (data->i134 << 8));
+        QwarksStarfighterPart388 *owner = (QwarksStarfighterPart388 *)(gemlik_moby_array_start + (data->i134 << 8));
         if (moby->state != 6) {
             if (owner == 0 || owner->cls_id != 0x45 || owner->state == 0xFE || owner->state == 0xFD ||
                 owner->state == 7) {
@@ -1488,7 +1488,7 @@ void forcefield_update(Moby *moby) {
             break;
         case 1:
             if (d->link != -1) {
-                char *p = gemlik_moby_array_start_m + (d->link << 8);
+                char *p = gemlik_moby_array_start + (d->link << 8);
                 if (p == 0 || (unsigned char)p[0x20] == 0xFE || (unsigned char)p[0x20] == 0xFD ||
                     (*(int *)(help_stats_base + 0xAB75 +
                               (((short)*(unsigned short *)(p + 0xB2) >> 5) * 4 + (g_current_level_index_m << 8))) >>
@@ -1561,7 +1561,7 @@ void update_linked_moby_statistics_and_hero_volume_flag(char *moby) {
             int idx = data->link;
             char *m;
             if (idx != -1) {
-                m = gemlik_moby_array_start_m + (idx << 8);
+                m = gemlik_moby_array_start + (idx << 8);
                 if (m != 0 && *(short *)(m + 0xA6) == 0xAA) {
                     int s = (unsigned char)m[0x20];
                     if (s == 0xFE)
@@ -1610,7 +1610,7 @@ void update_moby_state_relay(Moby *moby) {
     int found;
     int i;
     if (idx != -1) {
-        m = gemlik_moby_array_start_m + (idx << 8);
+        m = gemlik_moby_array_start + (idx << 8);
     }
     switch (data->phase) {
         case 0:
@@ -1634,7 +1634,7 @@ void update_moby_state_relay(Moby *moby) {
             if (found) {
                 int idx2 = data->target;
                 if (idx2 != -1) {
-                    char *o = *(char **)&gemlik_moby_array_start_m + (idx2 << 8);
+                    char *o = *(char **)&gemlik_moby_array_start + (idx2 << 8);
                     if (data->b_target_state != -1)
                         o[0x20] = data->b_target_state;
                     if (data->b_target_command != -1)
@@ -1658,7 +1658,7 @@ void update_moby_state_relay(Moby *moby) {
             if (found) {
                 int idx2 = data->target;
                 if (idx2 != -1) {
-                    char *o = *(char **)&gemlik_moby_array_start_m + (idx2 << 8);
+                    char *o = *(char **)&gemlik_moby_array_start + (idx2 << 8);
                     if (data->a_target_state != -1)
                         o[0x20] = data->a_target_state;
                     if (data->a_target_command != -1)
@@ -1685,7 +1685,7 @@ void update_controller_linked_gate(Moby *m) {
     int close;
     int step;
     if (d->link != -1) {
-        c = gemlik_moby_array_start_m + (d->link << 8);
+        c = gemlik_moby_array_start + (d->link << 8);
     }
     open = 0;
     close = 0;
@@ -3155,7 +3155,7 @@ typedef struct Glob {
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float D_L13_00161F0C_30A9B0 SDATA(D_L13_00161F0C);
 extern char gemlik_coll_hit_result_r[] __asm__("D_L13_001741C0");
-extern char DrawBeam_r[] __asm__("func_L06_00300AB0");
+extern char func_L06_00300AB0[];
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
@@ -3168,7 +3168,7 @@ extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern void InitDirectionalHitQuery_r(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern void AddDrawCallback_r(void *, void *) __asm__("func_001F49B0");
 extern void spawn_point_table_sparks_r(Moby *moby) __asm__("func_L13_0030B080");
-extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
+extern float func_00214D28(float *, float, float);
 
 /* Gemlik moby update: counts its timer down, then relaxes the 16 points of its rope toward the anchor (pulled
  * down, kept off the ground and away from the moby) and checks each segment between two settled points. */
@@ -3220,12 +3220,12 @@ void update_gemlik_trail(Moby *m) {
         qcopy(&v40, &d->pt[i]);
         v40.z = v40.z - 3.0f;
         if (coll_line_r(&v30, &v40, 2, 0, 0) && f20 < v0.z) {
-            ApproachValue_r(&v0.z, ((Glob *)gemlik_coll_hit_result_r)->f28 + 0.35f, g_frame_time_r * 4.0f);
+            ApproachValue(&v0.z, ((Glob *)gemlik_coll_hit_result_r)->f28 + 0.35f, g_frame_time_r * 4.0f);
         }
         if (1.0f <= d->pt[i].w && coll_line_r(&d->pt[i], &v0, 2, 0, 0)) {
             v0.w = 0.98f;
         } else if (v0.w < 1.0f) {
-            ApproachValue_r(&v0.w, 0.0f, g_frame_time_r + g_frame_time_r);
+            ApproachValue(&v0.w, 0.0f, g_frame_time_r + g_frame_time_r);
         }
         qcopy(&d->pt[i], &v0);
     }
@@ -3242,7 +3242,7 @@ void update_gemlik_trail(Moby *m) {
             coll_line_r(&d->pt[j], &d->pt[j + 1], 0, m, &u.rec);
         }
     }
-    AddDrawCallback_r(DrawBeam_r, m);
+    AddDrawCallback_r(DrawBeam, m);
     spawn_point_table_sparks_r(m);
 }
 extern float random_angle_radians(void);
@@ -3796,11 +3796,11 @@ int count_eligible_mobies_in_list(int idx, int arg) {
     p = q;
     do {
         int id = *p & 0x7FFF;
-        char *m = (char *)(id << 8) + (int)gemlik_moby_array_start_m;
+        char *m = (char *)(id << 8) + (int)gemlik_moby_array_start;
         if (m[0x20] >= 0) {
             char *f = get_moby_suck_cannon_record(m);
             if (f == 0 || *(short *)(f + 0x68) < 4) {
-                if (arg == -1 || *(unsigned char *)((char *)(id << 8) + (int)gemlik_moby_array_start_m + 0x20) != arg) {
+                if (arg == -1 || *(unsigned char *)((char *)(id << 8) + (int)gemlik_moby_array_start + 0x20) != arg) {
                     count++;
                 }
             }

@@ -323,7 +323,7 @@ void sync_hero_mapped_moby_animation_frames(void) {
     obj->id[1] = obj->model->banks[obj->bank[1]]->ids[obj->seq[1]];
 }
 extern char hero_globals_base[];
-extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 extern char hero_anim_slot_positions[];
 extern short hero_anim_blend_presets;
 extern int SlotTable_Insert(void *);
@@ -349,7 +349,7 @@ void set_hero_animation(int a0, int a1, float t) {
     if (g1->anim_flags & 2) {
         *(int *)(obj + 0x54) = 0;
     }
-    if (draw_map51_m[1] != 0) {
+    if (draw_map51[1] != 0) {
         if (a0 == 0x31) {
             a0 = 0x32;
         } else if (a0 == 0x32) {
@@ -1692,15 +1692,14 @@ extern char health_hud_bank_data[];
 extern void initialize_hud_element_with_counters(void);
 extern void update_health_hud_animation_and_visibility(void);
 extern void draw_health_hud_panel(void);
-extern int queue_animation_update_p(int, int, void *, void *, void *, void *, int) __asm__("func_001FFB38");
+extern int func_001FFB38(int, int, void *, void *, void *, void *, int);
 
 /* Registers HUD bank 1 (queue_animation_update, id 0x7535) with the three level
    callbacks and the data at health_hud_bank_data. queue_animation_update is declared with
    int parameters in hud.c; the alias passes pointers. */
 void show_health_hud(void) {
-    queue_animation_update_p(1, 0x7535, initialize_hud_element_with_counters,
-                             update_health_hud_animation_and_visibility, draw_health_hud_panel, health_hud_bank_data,
-                             8);
+    queue_animation_update(1, 0x7535, initialize_hud_element_with_counters, update_health_hud_animation_and_visibility,
+                           draw_health_hud_panel, health_hud_bank_data, 8);
 }
 
 extern char g_hero[];

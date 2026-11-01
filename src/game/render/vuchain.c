@@ -37,8 +37,8 @@ void VU0_loadMicroProgram(long *prog) {
     }
 }
 
-extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int current_vu_chain_m __asm__("D_0016100C") MACRO_ADDR;
+extern int D_0015EE84 MACRO_ADDR;
+extern int D_0016100C MACRO_ADDR;
 extern int vu_chain_table[];
 
 /* Advances the index at current_vu_chain, wrapping at 0x13. The old note had
@@ -46,11 +46,11 @@ extern int vu_chain_table[];
    idx = 0`. Both globals are MACRO_ADDR, which gives the one-register
    load and the $gp store in the jr slot. */
 void calculate_dma_transfer_address(void) {
-    int idx = g_current_level_index_m;
+    int idx = g_current_level_index;
     if (idx >= 0x13) {
         idx = 0;
     }
-    current_vu_chain_m = vu_chain_table[idx];
+    current_vu_chain = vu_chain_table[idx];
 }
 
 /*
@@ -70,7 +70,7 @@ extern int vu1_chain_safe_end MACRO_ADDR;
 extern int vu1_chain_buffers[2];
 extern int level_resource_buffers[];
 
-extern int vu1_chain_reserved_bytes_m __asm__("D_0015F698") MACRO_ADDR;
+extern int D_0015F698 MACRO_ADDR;
 
 /* `end` reads g_render_packet_cursor back right after storing it (CSE folds the
    load away), which changes how the stores are scheduled: that, not
@@ -83,7 +83,7 @@ void VU1_initChain(void) {
     vu1_chain_buffers[1] = level_resource_buffers[2];
     vu1_chain_buffer_index = 0;
     g_render_packet_cursor = (int *)base;
-    end = (int)g_render_packet_cursor + current_vu_chain_m - vu1_chain_reserved_bytes_m;
+    end = (int)g_render_packet_cursor + current_vu_chain - vu1_chain_reserved_bytes;
     render_packet_end = end;
     vu1_chain_safe_end = end - 0x2000;
 }
@@ -97,7 +97,7 @@ void VU1_swapChain(void) {
     previous_render_packet_cursor = (int)g_render_packet_cursor;
     vu1_chain_buffer_index = idx;
     g_render_packet_cursor = (int *)base;
-    end = (int)g_render_packet_cursor + current_vu_chain_m - vu1_chain_reserved_bytes_m;
+    end = (int)g_render_packet_cursor + current_vu_chain - vu1_chain_reserved_bytes;
     render_packet_end = end;
     vu1_chain_safe_end = end - 0x2000;
 }
@@ -121,7 +121,7 @@ void VU1_sendChain(void) {
     err = 0;
     if (vu1_chain_peak_bytes < size) {
         vu1_chain_peak_bytes = size;
-        if (current_vu_chain_m < size) {
+        if (current_vu_chain < size) {
             STUB_printf(vu1_chain_overflow_msg);
             err = 1;
         }
