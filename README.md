@@ -3,6 +3,7 @@
 [![Website](https://img.shields.io/badge/Website-openrac.dev-ff8a00?logo=googlechrome&logoColor=white)](https://openrac.dev)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-5865F2?logo=discord&logoColor=white)](https://discord.gg/Sfd2B54PDG)
 [![Progress report](https://github.com/OpenRAC/rac1-decomp/actions/workflows/progress.yml/badge.svg)](https://github.com/OpenRAC/rac1-decomp/actions/workflows/progress.yml)
+[![CI](https://github.com/OpenRAC/rac1-decomp/actions/workflows/ci.yml/badge.svg)](https://github.com/OpenRAC/rac1-decomp/actions/workflows/ci.yml)
 [![Code](https://bytematch.dev/OpenRAC/rac1-decomp.svg?mode=shield&label=Code&measure=matched_code_percent)](https://bytematch.dev/OpenRAC/rac1-decomp)
 [![Functions](https://bytematch.dev/OpenRAC/rac1-decomp.svg?mode=shield&label=Functions&measure=matched_functions)](https://bytematch.dev/OpenRAC/rac1-decomp)
 

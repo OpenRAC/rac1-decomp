@@ -1,0 +1,111 @@
+name: CI
+
+# Checks that need no disc and no toolchain. The match itself is checked locally: bash tools/check_all.sh
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  syntax:
+    name: C parses
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get install -y --no-install-recommends clang
+      - run: clang --version | head -1
+      - run: python tools/check_syntax.py
+
+  tests:
+    name: Tool tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -q pyelftools
+      - run: python -m unittest discover -s tools/tests -p 'test_*.py'
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: No retail data
+        run: python tools/check_no_retail.py
+      - name: Names table and header agree
+        run: python tools/names.py check
+      - name: Overlay files
+        run: |
+          python tools/overlay_rename.py --check
+          python tools/overlay_remnants.py --check
+      - name: Source paths
+        run: python tools/move_src.py --check
+      - name: Doc links
+        run: python tools/check_docs.py
+      - name: Counts did not go up
+        run: python tools/ratchets.py --check
+
+  docs:
+    name: Doxygen site
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y --no-install-recommends doxygen
+      - run: doxygen docs/Doxyfile
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build-docs/html
+
+  deploy-docs:
+    name: Publish the site
+    # Turn this on after enabling GitHub Pages: repository variable PAGES_ENABLED=true.
+    if: github.event_name == 'push' && vars.PAGES_ENABLED == 'true'
+    needs: docs
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4
+
+  pr-comment:
+    name: PR comment
+    # A fork's token cannot write comments.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: write
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Post the counts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "### Refactor counts"
+            echo
+            python tools/ratchets.py --markdown
+          } > comment.md
+          gh pr comment "${{ github.event.pull_request.number }}" --body-file comment.md --edit-last --create-if-none

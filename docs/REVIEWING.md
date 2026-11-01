@@ -8,5 +8,5 @@
 6. Types used by two files are in `include/`.
 7. Hacks carry a `FAKEMATCH` comment with a reason, and are in `config/fakematch.tsv`.
 8. Provenance and licence lines are unchanged.
-9. No generated file is edited by hand. No retail bytes or disc data.
+9. No generated file is edited by hand. No retail bytes or disc data, even as text.
 10. Mass mechanical commits are listed in `.git-blame-ignore-revs`.
