@@ -813,10 +813,6 @@ typedef struct {
     unsigned char saved_state;
 } Level18VendorMoby;
 
-/* src/overlays/shared/vendor_002D9438.c defines this with two parameters, and
-   retail sets only $a0 at this call site, so the second one is ours, passed
-   straight through. */
-
 extern int store_moby_in_suck_cannon_h(Level18VendorMoby *, void *, void *, float) __asm__("func_L00_002DCFD0");
 /* Switch to state four while active, then restore the saved state. */
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
