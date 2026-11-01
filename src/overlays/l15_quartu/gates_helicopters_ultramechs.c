@@ -1164,14 +1164,11 @@ void steer_helicopter(struct Moby *moby, Vec4 *goal, Vec4 *look) {
     vars->delta.q = delta.q;
     add_vectors(&delta, &vars->delta, &scaled);
     move_moby_with_sphere_collision(1.0f, 2.0f, moby, &vars->delta, 0);
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-    height = *(volatile float *)&vars->height;
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-    pos_x = *(volatile float *)&moby->pos.x;
+    height = *(float *)&vars->height;
+    pos_x = *(float *)&moby->pos.x;
     /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     *(volatile float *)&moby->pos.z = height;
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-    pos_y = *(volatile float *)&moby->pos.y;
+    pos_y = *(float *)&moby->pos.y;
     /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     dy = *(volatile float *)&look_at->f[1];
     /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */

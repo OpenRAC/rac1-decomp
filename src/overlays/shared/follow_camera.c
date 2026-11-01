@@ -3462,8 +3462,7 @@ fin:
 }
 /* Empty function that only reserves 0x50 bytes of stack. Adapted from Lombyte's project (GPL-3.0), FUN_L00_002e8378; the volatile buffer is what keeps the frame. */
 void run_follow_camera_noop(int a) {
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-    volatile char buf[0x50];
+    char buf[0x50];
 }
 typedef struct {
     u8 pad[0x220];

@@ -88,7 +88,6 @@ void update_visible_resident_objects(void) {
                 /* inline asm: hook call (beq/move/jal with empty slots). The original used inline asm here too: GCC 2.95 reorg leaves both slots empty only next to asm (see reorg.c stop_search_p). */
                 {
                     int r;
-                    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
                     __asm__ volatile("beq %1,$0,1f\n\tmove $4,%2\n\tjal $31,%1\n1:"
                                      : "=r"(r)
                                      : "r"(*(void (**)(void *))(m + 0x74)), "r"(m)

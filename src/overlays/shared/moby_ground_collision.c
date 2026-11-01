@@ -2560,10 +2560,8 @@ s32 find_nearest_path_point(s32 *path, OvlQuad *point, OvlQuad *nearest, s32 *se
                                                     (OvlQuad *)(path + 4 + best_segment * 4), height_tolerance);
         *segment = previous;
         /* Retail reads the segment vertex before the projected point. */
-        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-        work[1] = *(volatile OvlQuad *)(path + 4 + previous * 4);
-        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-        work[2] = *(volatile OvlQuad *)nearest;
+        work[1] = *(OvlQuad *)(path + 4 + previous * 4);
+        work[2] = *(OvlQuad *)nearest;
         *fraction = DistanceWithHeightTolerance_r(&work[1], &work[2], 0.0f);
         previous_distance = distance;
     }

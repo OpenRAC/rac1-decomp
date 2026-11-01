@@ -18,6 +18,10 @@ class HitsTest(unittest.TestCase):
     def test_a_struct_field_outside_a_function_stays_out(self):
         self.assertEqual(fs.line_hits("struct S {\n    volatile int wr;\n};\n"), [])
 
+    def test_inline_asm_stays_out(self):
+        text = 'void f(void) {\n    __asm__ volatile("nop");\n    register float k __asm__("$f4") = 1.0f;\n}\n'
+        self.assertEqual(fs.line_hits(text), [])
+
     def test_comments_stay_out(self):
         self.assertEqual(fs.line_hits("void f(void) {\n    /* volatile if (0) register */\n}\n"), [])
 

@@ -882,8 +882,7 @@ void draw_flickering_mesh_effect(M45 *moby) {
         {
             float y, x, theta, wave, noise, angle0, angle1, shape, drop, a, b, normal_angle0, normal_angle1;
             float sway0, sway1, lift, weight, swing, turn0, turn1;
-            /* FAKEMATCH: the register keyword steers register allocation. */
-            register int j;
+            int j;
             int i;
             for (i = 0; i <= data->ny; phase += phase_step, amp += amp_step, amp2 += amp2_step, phase0 += phase0_step,
                 phase1 += phase1_step, i++) {

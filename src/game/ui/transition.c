@@ -1361,10 +1361,8 @@ void transition_do_transition(void) {
     hdr = (WadHeader_BB48 *)p;
     p = (u8 *)hdr + 0x60;
     level_root_BB48 = hdr;
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-    first_size = load_BB48(p, ((volatile DiscFile_BB48 *)((DiscFile_BB48 *)&tbl->wad_chunks[1]))->sector,
-                           /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-                           ((volatile DiscFile_BB48 *)((DiscFile_BB48 *)&tbl->wad_chunks[1]))->size);
+    first_size = load_BB48(p, ((DiscFile_BB48 *)((DiscFile_BB48 *)&tbl->wad_chunks[1]))->sector,
+                           ((DiscFile_BB48 *)((DiscFile_BB48 *)&tbl->wad_chunks[1]))->size);
     hdr->chunk[1].size = first_size;
     hdr->chunk[1].off = p - (u8 *)hdr;
     p += ((u32)first_size + 0xF) & alignment_mask;

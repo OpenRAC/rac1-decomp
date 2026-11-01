@@ -430,8 +430,7 @@ extern int Hud_GetIconIndex(int);
    r*8 offset in a register. */
 void load_animation_definition(void *arg0, int arg1) {
     char *self = (char *)arg0;
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-    volatile int *tbl;
+    int *tbl;
     int r;
     unsigned short v;
 
@@ -439,8 +438,7 @@ void load_animation_definition(void *arg0, int arg1) {
     /* base materialized only after the call, so it lands in a temp
        register rather than a callee-saved one; tbl[7] is volatile because
        retail re-loads that pointer field before each record access. */
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-    tbl = (volatile int *)&hud_state;
+    tbl = (int *)&hud_state;
     v = *(unsigned short *)((char *)tbl[7] + r * 8);
     *(short *)(self + 0x40) = r;
     *(int *)(self + 0) = v;

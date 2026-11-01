@@ -30,8 +30,7 @@ void draw_sky_shells_with_particles_and_rotating_shell(void) {
     VU1_addGSregister(0x42, 0x8000000044L);
     SkyDrawShell(2);
     qzero(&rot);
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-    rot.f[2] = (f32)(*(volatile int *)&level_frame_counter & 0x7FFF) * 1.9174760e-4f - 3.1415927f;
+    rot.f[2] = (f32)(*(int *)&level_frame_counter & 0x7FFF) * 1.9174760e-4f - 3.1415927f;
     fast_euler_to_matrix(sky_shell_matrix, &rot);
     SkyDrawShell(3);
     set_identity_matrix(sky_shell_matrix);
