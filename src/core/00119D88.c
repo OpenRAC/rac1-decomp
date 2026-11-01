@@ -1140,9 +1140,9 @@ extern s32_1B4C8 sceSifSendCmd();
 extern s32_1B4C8 sceSifWriteBackDCache_r() __asm__("func_0011AD70");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/rpc/sce_sif_call_rpc.c, sceSifCallRpc. */
-s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_number, s32_1B4C8 mode, s32_1B4C8 send_buf,
-                          s32_1B4C8 send_size, s32_1B4C8 recv_buf, s32_1B4C8 recv_size, s32_1B4C8 end_func,
-                          s32_1B4C8 end_data) __asm__("func_0011B4C8");
+extern s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_number, s32_1B4C8 mode,
+                                 s32_1B4C8 send_buf, s32_1B4C8 send_size, s32_1B4C8 recv_buf, s32_1B4C8 recv_size,
+                                 s32_1B4C8 end_func, s32_1B4C8 end_data) __asm__("func_0011B4C8");
 s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_number, s32_1B4C8 mode, s32_1B4C8 send_buf,
                           s32_1B4C8 send_size, s32_1B4C8 recv_buf, s32_1B4C8 recv_size, s32_1B4C8 end_func,
                           s32_1B4C8 end_data) {
@@ -2135,9 +2135,11 @@ int sce_sif_alloc_iop_heap(int arg0) {
    NO argument at all -- retail's call has a bare nop in its delay slot --
    which a prototype would reject. A K&R definition creates no prototype,
    so both functions compile as retail's source evidently did. */
+/* clang-format off */
 int func_0011CC38(arg0)
 int arg0;
 {
+    /* clang-format on */
     if (iop_heap_bind_state < 0) {
         return 0;
     }
