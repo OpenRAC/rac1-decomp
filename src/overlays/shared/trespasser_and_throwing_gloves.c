@@ -858,8 +858,9 @@ void mine_glove_update(struct Moby *moby) {
     if (vars->held != 0 && !g_hero_r2.item_use_locked) {
         out = (float *)vars->held->pvars;
         arc.q = 0;
-        arc.f[0] = g_frame_time * (D_0013E620_2DD8.unk11 ? ((g_controller_state_r.held & 5) ? 12.0f : 4.0f)
-                                                         : ((g_controller_state_r.held & 5) ? 6.0f : 4.0f));
+        arc.f[0] =
+            g_frame_time * (D_0013E620_2DD8.unk11 ? ((g_controller_state_r.held & (PAD_L2 | PAD_L1)) ? 12.0f : 4.0f)
+                                                  : ((g_controller_state_r.held & (PAD_L2 | PAD_L1)) ? 6.0f : 4.0f));
         launch = arc;
         matrix_mul_vec3(&launch, &launch, g_hero_r2.basis);
         pos.f[0] =
@@ -872,10 +873,10 @@ void mine_glove_update(struct Moby *moby) {
         angle = fast_atan2(launch.f[0], launch.f[1]);
         FastVecScale(&target, &launch, inv_frame_scale * 60.0f);
         FastVecAdd(&target, &target, &pos);
-        if (g_controller_state_r.held & 5) {
+        if (g_controller_state_r.held & (PAD_L2 | PAD_L1)) {
             probe.q = 0;
-            probe.f[2] = D_0013E620_2DD8.unk11 ? ((g_controller_state_r.held & 5) ? 12.0f : 4.0f)
-                                               : ((g_controller_state_r.held & 5) ? 6.0f : 4.0f);
+            probe.f[2] = D_0013E620_2DD8.unk11 ? ((g_controller_state_r.held & (PAD_L2 | PAD_L1)) ? 12.0f : 4.0f)
+                                               : ((g_controller_state_r.held & (PAD_L2 | PAD_L1)) ? 6.0f : 4.0f);
             arc = probe;
             hit = 0;
             transform_vector(&arc, &arc, matrix);
@@ -887,8 +888,9 @@ void mine_glove_update(struct Moby *moby) {
             if (slope < -1.39626336f)
                 slope = -1.39626336f;
             BuildSphericalOffset(&arc,
-                                 D_0013E620_2DD8.unk11 ? ((g_controller_state_r.held & 5) ? 12.0f : 4.0f)
-                                                       : ((g_controller_state_r.held & 5) ? 6.0f : 4.0f),
+                                 D_0013E620_2DD8.unk11
+                                     ? ((g_controller_state_r.held & (PAD_L2 | PAD_L1)) ? 12.0f : 4.0f)
+                                     : ((g_controller_state_r.held & (PAD_L2 | PAD_L1)) ? 6.0f : 4.0f),
                                  angle, slope);
             {
                 float distance = vec_length_xy(&arc);
@@ -898,10 +900,11 @@ void mine_glove_update(struct Moby *moby) {
                 else
                     horizontal = z / 0.01f;
             }
-            root = vec_length(g_frame_time_sq_r * 9.8f *
-                              (D_0013E620_2DD8.unk11 ? ((g_controller_state_r.held & 5) ? 12.0f : 4.0f)
-                                                     : ((g_controller_state_r.held & 5) ? 6.0f : 4.0f)) *
-                              0.5f);
+            root =
+                vec_length(g_frame_time_sq_r * 9.8f *
+                           (D_0013E620_2DD8.unk11 ? ((g_controller_state_r.held & (PAD_L2 | PAD_L1)) ? 12.0f : 4.0f)
+                                                  : ((g_controller_state_r.held & (PAD_L2 | PAD_L1)) ? 6.0f : 4.0f)) *
+                           0.5f);
             radius = (root + root) * root * (1.0f - horizontal) / (g_frame_time_sq_r * 9.8f);
             vertical = horizontal * radius;
             if (0.0f < radius) {
@@ -924,8 +927,9 @@ void mine_glove_update(struct Moby *moby) {
             }
         }
         compute_mine_launch_velocity(g_frame_time_sq_r * 9.8f, 1.0f,
-                                     D_0013E620_2DD8.unk11 ? ((g_controller_state_r.held & 5) ? 12.0f : 4.0f)
-                                                           : ((g_controller_state_r.held & 5) ? 6.0f : 4.0f),
+                                     D_0013E620_2DD8.unk11
+                                         ? ((g_controller_state_r.held & (PAD_L2 | PAD_L1)) ? 12.0f : 4.0f)
+                                         : ((g_controller_state_r.held & (PAD_L2 | PAD_L1)) ? 6.0f : 4.0f),
                                      pos.f, target.f, out);
     }
     switch (moby->state) {
@@ -1161,11 +1165,12 @@ void bomb_glove_update(struct Moby *moby) {
         pos.f[2] += 0.490819991f;
         angle = fast_atan2(launch.f[0], launch.f[1]);
         {
-            f32 speed = (g_controller_state.held & 5) ? IntToFloat(gGoldBombGlove[0]) * 2.5f + 8.5f : 8.5f;
+            f32 speed =
+                (g_controller_state.held & (PAD_L2 | PAD_L1)) ? IntToFloat(gGoldBombGlove[0]) * 2.5f + 8.5f : 8.5f;
             FastVecScale(&target, &launch, speed);
         }
         FastVecAdd(&target, &target, &pos);
-        if ((g_controller_state.held & 5) && !g_hero_r3.item_use_locked) {
+        if ((g_controller_state.held & (PAD_L2 | PAD_L1)) && !g_hero_r3.item_use_locked) {
             temporary.arc.q = 0;
             temporary.arc.f[2] = 1.0f;
             transform_vector(&temporary.arc, &temporary.arc, matrix);
@@ -1178,7 +1183,8 @@ void bomb_glove_update(struct Moby *moby) {
             if (slope < -1.39626336f)
                 slope = -1.39626336f;
             {
-                f32 speed = (g_controller_state.held & 5) ? IntToFloat(gGoldBombGlove[0]) * 2.5f + 8.5f : 8.5f;
+                f32 speed =
+                    (g_controller_state.held & (PAD_L2 | PAD_L1)) ? IntToFloat(gGoldBombGlove[0]) * 2.5f + 8.5f : 8.5f;
                 BuildSphericalOffset(&temporary.arc, speed, angle, slope);
             }
             qcopy(&direction, &g_debug_camera_r2);
@@ -1192,7 +1198,9 @@ void bomb_glove_update(struct Moby *moby) {
             }
             gravity = g_frame_time_sq * 11.0f;
             root = vec_length(
-                gravity * ((g_controller_state.held & 5) ? IntToFloat(gGoldBombGlove[0]) * 2.5f + 8.5f : 8.5f) * 0.5f);
+                gravity *
+                ((g_controller_state.held & (PAD_L2 | PAD_L1)) ? IntToFloat(gGoldBombGlove[0]) * 2.5f + 8.5f : 8.5f) *
+                0.5f);
             radius = (root + root) * root * (1.0f - horizontal) / (g_frame_time_sq * 11.0f);
             vertical = horizontal * radius;
             if (0.0f < radius) {
@@ -1240,7 +1248,7 @@ void bomb_glove_update(struct Moby *moby) {
             }
         }
         gravity = g_frame_time_sq * 11.0f;
-        speed = (g_controller_state.held & 5) ? IntToFloat(gGoldBombGlove[0]) * 2.5f + 8.5f : 8.5f;
+        speed = (g_controller_state.held & (PAD_L2 | PAD_L1)) ? IntToFloat(gGoldBombGlove[0]) * 2.5f + 8.5f : 8.5f;
         func_L00_002C3790_C39D0((Vec4 *)&pos, (Vec4 *)&target, out, gravity, 0.00000999999975f, speed);
     }
     switch (moby->state) {

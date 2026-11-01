@@ -2013,11 +2013,11 @@ void HeroL14_UpdateStatePhysics(void) {
                 b = a;
             }
             stick_target(g_hero.stick_magnitude * b, 0);
-            if (g_hero.stick_magnitude > 0.2f && !(g_controller_state.held & 3)) {
+            if (g_hero.stick_magnitude > 0.2f && !(g_controller_state.held & (PAD_L2 | PAD_R2))) {
                 turn_to(0, g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f,
                         g_frame_time * 5.934119f * g_hero.stick_magnitude);
             }
-            if (g_controller_state.held & 3) {
+            if (g_controller_state.held & (PAD_L2 | PAD_R2)) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;

@@ -1396,7 +1396,7 @@ void giant_clank_pad_update(char *m) {
                 if (g_current_level_index != 0x12)
                     try_set_help_message(4, 0x3AA5);
             }
-            if ((g_controller_state_r.pressed & 0x10) == 0)
+            if ((g_controller_state_r.pressed & PAD_TRIANGLE) == 0)
                 return;
             if (quartu_help_message_selector != 4)
                 return;

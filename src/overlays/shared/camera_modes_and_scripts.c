@@ -1965,7 +1965,7 @@ void volume_camera_aim(void *cam_) {
             params->timer = 0;
             return;
         }
-        if (!(pad_held & 5)) {
+        if (!(pad_held & (PAD_L2 | PAD_L1))) {
             goto run;
         }
     }
