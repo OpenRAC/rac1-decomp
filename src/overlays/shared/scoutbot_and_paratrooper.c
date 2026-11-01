@@ -730,8 +730,7 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
     int i, a, b, c;
     char *moby;
     char *data;
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-    float *volatile particle_position_ptr;
+    float *particle_position_ptr;
     float *velocity_ptr, *offset_ptr, *matrix_row_ptr;
 
     *(u128_E9288 *)position_copy = *(u128_E9288 *)position;
@@ -744,8 +743,7 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
         *(int *)(data + 0x14) = owner;
         *(int *)(data + 0x10) = value;
         set_moby_color(moby, 0xa0, 0xa0, 0xa0);
-        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-        *(volatile int *)(moby + 0x40) = 0;
+        *(int *)(moby + 0x40) = 0;
         ((Moby *)moby)->update_dist = 0xff;
         ((Moby *)moby)->draw_dist = 0xff;
         ((Moby *)moby)->visible = 1;
@@ -754,11 +752,9 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
         qcopy(moby + 0x10, position_copy);
         qcopy(data, rotation_copy);
         if (batalia_frame_count & 1)
-            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-            *(volatile int *)(data + 0x1c) = 1;
+            *(int *)(data + 0x1c) = 1;
         else
-            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-            *(volatile int *)(data + 0x1c) = -1;
+            *(int *)(data + 0x1c) = -1;
         euler_to_matrix(matrix, moby + 0x40);
         i = 0;
         if ((float)i < (*(float *)&homing_shot_launch_puffs)) {

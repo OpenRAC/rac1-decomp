@@ -3556,8 +3556,7 @@ void update_item_preview_transform(struct Moby *moby) {
     cosine = FastCos(moby->rot.z);
     negated_forward_offset = -forward_offset;
     sine = FastSin(moby->rot.z);
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-    (*(volatile f32 *)&moby->pos.x) += negated_forward_offset * sine + side_offset * cosine;
+    (*(f32 *)&moby->pos.x) += negated_forward_offset * sine + side_offset * cosine;
     moby->pos.y += forward_offset * cosine + side_offset * sine;
 }
 
@@ -8584,22 +8583,15 @@ void clear_preview_resource_bindings(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/item_preview/clear_preview_resource_bindings.c, clear_preview_resource_bindings. */
 void clear_preview_resource_bindings(void) {
-    /* FAKEMATCH: the register keyword steers register allocation. */
-    register s32 class_slot;
-    /* FAKEMATCH: the register keyword steers register allocation. */
-    register s32 class_resource_address;
+    s32 class_slot;
+    s32 class_resource_address;
     s32 resource_index;
-    /* FAKEMATCH: the register keyword steers register allocation. */
-    register u8 *binding_base;
+    u8 *binding_base;
     PreviewResourceBinding *binding;
-    /* FAKEMATCH: the register keyword steers register allocation. */
-    register s32 animation_address;
-    /* FAKEMATCH: the register keyword steers register allocation. */
-    register s32 resource_first;
-    /* FAKEMATCH: the register keyword steers register allocation. */
-    register s32 resource_count;
-    /* FAKEMATCH: the register keyword steers register allocation. */
-    register s32 resource_end;
+    s32 animation_address;
+    s32 resource_first;
+    s32 resource_count;
+    s32 resource_end;
 
     resource_index = D_001D5F70_27A70.unkA8;
     if (resource_index < (resource_index + D_001D5F70_27A70.unkAC)) {

@@ -47,6 +47,8 @@ LEFT_OUT = ("src/core/", "src/libgcc/", "src/game/movie/")
 HARDWARE = re.compile(r"\b0x1[0-9A-Fa-f]{7}\b")
 VOLATILE = re.compile(r"\bvolatile\b")
 REGISTER = re.compile(r"\bregister\b")
+# Inline asm is left alone (docs/STYLE.md): `__asm__ volatile` and a register pinned for it are not hacks to remove.
+ASM_STATEMENT = re.compile(r"\b__asm__\b|\basm\b")
 IF_ZERO = re.compile(r"\bif\s*\(\s*0\s*\)")
 MARKED = re.compile(r"/\*\s*Fakematch:", re.I)
 DEFINITION = re.compile(r"^[A-Za-z_][^;{}=\n]*?\b(\w+)\s*\([^;{}]*\)\s*\{", re.M)
@@ -86,8 +88,9 @@ def line_hits(text):
     for number, line in enumerate(lines, 1):
         inside = function_at(functions, number) != "-"
         if VOLATILE.search(line) and not HARDWARE.search(text.split("\n")[number - 1]) and inside:
-            hits.append((number, "volatile"))
-        if REGISTER.search(line) and inside:
+            if not ASM_STATEMENT.search(line):
+                hits.append((number, "volatile"))
+        if REGISTER.search(line) and inside and not ASM_STATEMENT.search(line):
             hits.append((number, "register"))
         if IF_ZERO.search(line):
             hits.append((number, "if_zero"))

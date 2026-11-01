@@ -2882,14 +2882,12 @@ Moby *spawn_rocket_435_projectile(void *pos, Moby *target, void *velocity, float
         distance = vec_distance_xy_r2(reference, &moby->pos);
         reference = (float *)((char *)reference - 0x140);
         moby->rot.y = -fast_atan2(distance, reference[82] - moby->pos.z);
-        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-        *(volatile float *)&moby->rot.z = fast_atan2(reference[80] - moby->pos.x, reference[81] - moby->pos.y);
+        *(float *)&moby->rot.z = fast_atan2(reference[80] - moby->pos.x, reference[81] - moby->pos.y);
         scale = moby->pclass->scale;
         scale *= batalia_1b3_projectile_scale;
         moby->update_dist = 0xFF;
         moby->visible = 1;
-        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-        *(volatile u8 *)&moby->state = 1;
+        *(u8 *)&moby->state = 1;
         moby->draw_dist = 0xFF;
         moby->scale = scale;
         set_moby_color(moby, batalia_1b3_projectile_red, batalia_1b3_projectile_green, batalia_1b3_projectile_blue);

@@ -144,8 +144,7 @@ extern short moby_context_index;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/hud/00234fd0.c, FUN_L00_00235668. */
 void select_moby_context(int state) {
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-    int oldState = (*(volatile int *)&moby_context_index);
+    int oldState = (*(int *)&moby_context_index);
     if (state != oldState) {
         int old70, old74, old78, old7C, oldDC, oldE0, oldE8;
         oldDC = moby_array_start;

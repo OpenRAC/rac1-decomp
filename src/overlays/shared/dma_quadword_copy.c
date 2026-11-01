@@ -5,9 +5,7 @@
 ASM_FUNC("asm/overlays", func_L00_0024E798);
 /* Empty function: its body is two nops. */
 void miscproc_empty_function(void) {
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     __asm__ volatile("nop");
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     __asm__ volatile("nop");
 }
 ASM_FUNC("asm/overlays", func_L00_0024EBF8);
