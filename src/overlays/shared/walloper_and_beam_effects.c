@@ -9,6 +9,8 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "asm_functions/shared_levels.h"
 #include "game/fastfunc.h"
+#include "structs/small_records.h"
+#include "structs/level_records.h"
 
 /* Tesla beam: draw state read by the beam and arc effects. */
 struct BeamArcVars {
@@ -806,13 +808,11 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
 typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V_2bb0b0;
-typedef struct {
-    float u, v;
-} UV_2bb0b0;
+
 typedef struct {
     V_2bb0b0 corner[4];
     unsigned int color[4];
-    UV_2bb0b0 uv[4];
+    QuadUv uv[4];
     long unk70, tex, unk80, unk88;
 } Q_2bb0b0;
 extern void FastVecSub(void *, void *, void *);
@@ -824,7 +824,7 @@ extern void FastVecScale(void *, void *, float);
 extern void transform_vector(void *, void *, void *);
 extern float g_debug_camera[];
 extern V_2bb0b0 beam_anchor_quad_corners[];
-extern UV_2bb0b0 beam_anchor_quad_uvs[];
+extern QuadUv beam_anchor_quad_uvs[];
 extern short beam_anchor_quad_color;
 extern short beam_anchor_quad_size;
 extern short beam_anchor_outer_quad_size;
@@ -2332,12 +2332,7 @@ void draw_scrolling_ribbon_colored(P_2BF380 *m, int a, int b, float sx, float sy
     VU1_addGSregister(0x47, 0x5360B);
 }
 extern V_t tesla_quad_corners[];
-typedef struct {
-    float v[4][4];
-    int rgba[4];
-    float uv[4][2];
-    long gs[4];
-} QuadPkt;
+
 extern int tesla_pulse_active[3] MACRO_ADDR;
 extern float tesla_pulse_alpha[3] MACRO_ADDR;
 extern float tesla_pulse_size[3] MACRO_ADDR;

@@ -16,7 +16,7 @@ further down.
 |---|---|
 | `include/` | `common.h` (includes `types.h`, `macros.h` and `names.h`), `callees.h`, `include_asm.h` |
 | `include/enums/` | Named numbers: moby classes, hero states, camera modes |
-| `include/structs/` | Shared records: `moby.h`, `hero.h`, `camera.h`, `disc.h` |
+| `include/structs/` | Shared records: `moby.h`, `hero.h`, `camera.h`, `disc.h`, `collision.h`, `usage_stats.h`, `hero_views.h`, `small_records.h` |
 | `include/pvars/` | Moby private data |
 | `include/core/`, `include/game/`, `include/overlays/` | Function headers |
 | `include/asm_functions/` | Functions with no C definition, one file per part of `include/names/` |

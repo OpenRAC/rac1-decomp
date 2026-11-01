@@ -5,6 +5,7 @@
 #include "structs/misc.h"
 #include "game/fastfunc.h"
 #include "data/executable.h"
+#include "structs/anim.h"
 
 /*
  * mobyutil.cpp in the original source; text 0x213A78-0x2161E0.
@@ -107,25 +108,6 @@ void update_visible_resident_objects(void) {
 
 LINKER_REMNANT("asm/remnants/text", func_00213D10);
 
-typedef struct {
-    char _pad00[0x48];
-    AnimSeq *seqs[1]; /* 0x48 */
-} AnimClass;
-typedef struct {
-    char _pad00[0x24];
-    AnimClass *pClass; /* 0x24 */
-    char _pad28[0x50 - 0x28];
-    unsigned char frame; /* 0x50 */
-    unsigned char nextFrame; /* 0x51 */
-    unsigned char seq; /* 0x52 */
-    unsigned char prevSeq; /* 0x53 */
-    char _pad54[0x5C - 0x54];
-    float unk5C; /* 0x5C */
-    char _pad60[0x68 - 0x60];
-    float *frameData; /* 0x68 */
-    char _pad6C[4];
-    unsigned char unk70; /* 0x70 */
-} MobyAnim;
 extern void update_moby_animation_state_a(void *) __asm__("func_0020D6D0");
 
 /* Sets moby m's animation to sequence seq at frame (clamped to the

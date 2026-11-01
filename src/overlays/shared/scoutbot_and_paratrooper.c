@@ -11,6 +11,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
+#include "structs/small_records.h"
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
 struct FireBoltVars {
@@ -924,15 +925,13 @@ collision:
     }
     DeleteMoby(moby);
 }
-typedef struct {
-    int a, b;
-} Pair;
+
 extern int batalia_mesh13_uv_sources[];
 
 extern int batalia_mesh13_positions[];
 
 extern char batalia_scrolled_uvs[];
-extern Pair batalia_uv_scroll[];
+extern IntPair batalia_uv_scroll[];
 
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 
@@ -946,14 +945,12 @@ void draw_scrolled_mesh_batch(int a) {
                               batalia_scrolled_uvs, 1);
     }
 }
-typedef struct {
-    int a, b;
-} Pair8;
+
 extern int batalia_mesh11_uv_sources[];
 
 extern int batalia_mesh11_positions[];
 
-extern Pair8 scroll_pos_x[] MACRO_ADDR;
+extern IntPair scroll_pos_x[] MACRO_ADDR;
 
 /* Places the level's 11 effect pieces from their tables (a relative of func_L11_0031FCC8). */
 void Moby600_DrawQuads11(int a) {
@@ -969,7 +966,7 @@ extern int batalia_mesh8_uv_sources[];
 
 extern int batalia_mesh8_positions[];
 
-extern Pair batalia_mesh8_scroll_offset[] MACRO_ADDR;
+extern IntPair batalia_mesh8_scroll_offset[] MACRO_ADDR;
 
 /* Runs the two per-entry update calls over an 8-entry table. */
 void emit_pair_offset_render_batch(int a) {

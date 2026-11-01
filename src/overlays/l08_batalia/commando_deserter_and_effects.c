@@ -18,6 +18,8 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "structs/small_records.h"
+#include "structs/swarm.h"
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
 struct HeightFollowerVars {
@@ -476,9 +478,6 @@ void draw_layered_mesh_effect(void) {
 typedef struct {
     int a, b;
 } PairA;
-typedef struct {
-    int a, b;
-} Pair8;
 
 extern int FastBSphereCheck(char *, float);
 extern void FastVecSub(void *, void *, void *);
@@ -492,7 +491,7 @@ extern void draw_layered_mesh_effect(void);
 extern PairA batalia_uv_scroll[];
 extern PairA layered_mesh_sine_phase_p[] __asm__("D_L08_00161EB8") MACRO_ADDR;
 extern float scroll_pos_y[] MACRO_ADDR;
-extern Pair8 scroll_pos_x[] MACRO_ADDR;
+extern IntPair scroll_pos_x[] MACRO_ADDR;
 
 extern PairA batalia_mesh8_scroll_offset[] MACRO_ADDR;
 extern float layered_mesh_effect_center_y MACRO_ADDR;
@@ -570,19 +569,7 @@ void update_layered_mesh_effect(unsigned char *moby) {
 }
 extern f32 g_frame_time MACRO_ADDR;
 typedef u32 u128_F5980 __attribute__((mode(TI), aligned(16)));
-typedef struct {
-    s32 count;
-    u8 pad4[0xC];
-    Vec4 points[1];
-} SwarmPath;
-typedef struct {
-    s32 point;
-    s8 direction;
-    u8 pad5[0xB];
-    SwarmPath *path;
-    s32 path_id; /* index into D_L08_001B0CB0 */
-    u8 pad18[0x18];
-} SwarmPathFollower;
+
 extern char gHeroPos[];
 extern f32 batalia_zero_vec[] MACRO_ADDR;
 extern s32 MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
@@ -2052,11 +2039,9 @@ void queue_batalia_six_textured_batches(int x) {
                               batalia_textured_mesh6_colors_r[i], batalia_textured_scrolled_uvs, 1);
     }
 }
-typedef struct {
-    int a, b;
-} Pair;
+
 extern char batalia_textured_scrolled_uvs[];
-extern Pair batalia_textured_mesh2_scroll_offset[] MACRO_ADDR;
+extern IntPair batalia_textured_mesh2_scroll_offset[] MACRO_ADDR;
 extern short batalia_textured_mesh2_counts;
 extern short batalia_textured_mesh2_positions;
 extern short batalia_textured_mesh2_uv_sources;
@@ -2128,9 +2113,9 @@ extern char batalia_textured_mesh8_colors[];
 extern char batalia_textured_mesh8_counts[];
 extern char batalia_textured_mesh6_colors[];
 extern char batalia_textured_mesh6_counts[];
-extern Pair batalia_textured_mesh8_scroll_offset[];
+extern IntPair batalia_textured_mesh8_scroll_offset[];
 extern char batalia_textured_mesh8_scroll_offset_1[];
-extern Pair batalia_textured_mesh6_scroll_offset[] MACRO_ADDR;
+extern IntPair batalia_textured_mesh6_scroll_offset[] MACRO_ADDR;
 extern short batalia_effect_reference_position_x;
 extern float batalia_effect_reference_position_y MACRO_ADDR;
 extern float batalia_effect_reference_position_z MACRO_ADDR;

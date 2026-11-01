@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "game/framebuf.h"
 #include "game/update.h"
+#include "structs/level_records.h"
 
 extern void *libc_memset(void *, int, int);
 extern void DrawMobyList(int, int);
@@ -132,12 +133,6 @@ purchase:
         font_print_window_small((void *)&box, 0x80f0f0f0L, msg_string(0x523D), -1);
     }
 }
-typedef struct {
-    float v[4][4];
-    int rgba[4];
-    float uv[4][2];
-    long gs[4];
-} QuadPkt;
 
 extern float vendor_inset_quad_margins[][4];
 extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);

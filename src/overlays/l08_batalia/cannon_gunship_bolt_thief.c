@@ -8,6 +8,7 @@
 #include "data/executable.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "structs/swarm.h"
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
 struct BoltThiefVars {
@@ -1309,19 +1310,7 @@ typedef struct {
     int anchor_joint;
 } PartLink;
 void func_L08_002E33F0_E3860(struct Moby *m) __asm__("func_L08_002E33F0");
-typedef struct {
-    s32 count;
-    u8 pad4[0xC];
-    Vec4 points[1];
-} SwarmPath;
-typedef struct {
-    s32 point;
-    s8 direction;
-    u8 pad5[0xB];
-    SwarmPath *path;
-    s32 path_id; /* index into D_L08_001B0CB0 */
-    u8 pad18[0x18];
-} SwarmPathFollower;
+
 typedef struct {
     u8 pad0[0x60];
     struct Moby *shots[8];

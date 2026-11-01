@@ -18,6 +18,7 @@
 #include "game/hud.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
+#include "structs/level_records.h"
 
 /* Class 0x53 shot: flies along velocity until the timer ends. */
 typedef struct ProjectileVars_2C32D0 {
@@ -2864,12 +2865,7 @@ struct MusicStreamChannel {
     s32 poll_interval; /* 0x14 */
     s32 remaining_time; /* 0x18: set by music_remaining_time_callback */
 };
-struct MusicCdReadMode {
-    u8 trycount; /* 0x20 from reset_music */
-    u8 spindlctrl;
-    u8 datapattern;
-    u8 pad;
-};
+
 struct MusicStreamState {
     s32 unk0; /* 0x00: cleared by reset_music */
     u8 pad_4[0x4];

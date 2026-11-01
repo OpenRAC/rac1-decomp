@@ -10,6 +10,7 @@ import merge_types as mt  # noqa: E402
 def size_and_fields(body):
     """Size and {field: (offset, element size)} of a body of char arrays, ints and floats."""
     offset, fields = 0, {}
+    body = re.sub(r"\b(int|float) (\w+), (\w+);", r"\1 \2; \1 \3;", body)
     for field in body.split(";"):
         m = re.fullmatch(r"\s*(char|int|float)\s+(\w+)(?:\[(\w+)\])?\s*", field)
         if not m:
@@ -38,7 +39,8 @@ class MergeTableTest(unittest.TestCase):
         for merge in mt.MERGES:
             _, fields = size_and_fields(merge["definition"])
             for name, (offset, _) in fields.items():
-                self.assertEqual(int(name[1:], 16), offset, f"{merge['new']}.{name}")
+                if re.fullmatch(r"f[0-9A-F]+", name):
+                    self.assertEqual(int(name[1:], 16), offset, f"{merge['new']}.{name}")
 
 
 class ApplyTest(unittest.TestCase):
@@ -71,7 +73,7 @@ class ApplyTest(unittest.TestCase):
         self.assertIn("Adapted", new)
 
     def test_header_text(self):
-        merge = mt.MERGES[0]
+        merge = next(m for m in mt.MERGES if m["new"] == "HeroIdleFidget")
         text = mt.header_text(mt.HERO, [merge])
         self.assertIn("#ifndef STRUCTS_HERO_VIEWS_H", text)
         self.assertIn("} HeroIdleFidget;", text)

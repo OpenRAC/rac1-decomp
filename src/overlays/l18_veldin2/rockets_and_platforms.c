@@ -16,6 +16,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
+#include "structs/small_records.h"
 
 /* Seeker bolt (class 0x29): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
 struct SeekerBoltVars {
@@ -3235,18 +3236,16 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
 typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V_2bb0b0;
-typedef struct {
-    float u, v;
-} UV_2bb0b0;
+
 typedef struct {
     V_2bb0b0 corner[4];
     unsigned int color[4];
-    UV_2bb0b0 uv[4];
+    QuadUv uv[4];
     long unk70, tex, unk80, unk88;
 } Q_2bb0b0;
 extern void transform_vector(void *, void *, void *);
 extern V_2bb0b0 electric_bolt_glow_quad_corners[];
-extern UV_2bb0b0 electric_bolt_glow_quad_uvs[];
+extern QuadUv electric_bolt_glow_quad_uvs[];
 extern short electric_bolt_glow_core_color;
 extern short electric_bolt_glow_core_size;
 extern short electric_bolt_color;

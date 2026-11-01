@@ -14,6 +14,7 @@
 #include "game/framebuf.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/sound_playback.h"
+#include "structs/small_records.h"
 /* Saved fog settings, restored when the effect ends. */
 struct FogSaveVars {
     u8 pad_00[0x30];
@@ -1679,11 +1680,9 @@ extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float,
 extern void spawn_glow_particle(void *, void *, void *, int, int, int, int, int, float);
 extern char g_debug_camera[];
 extern float g_frame_time MACRO_ADDR;
-typedef struct {
-    int v[6];
-} V6;
-extern V6 glow_burst_spark_colors_a;
-extern V6 glow_burst_spark_colors_b;
+
+extern IntVec6 glow_burst_spark_colors_a;
+extern IntVec6 glow_burst_spark_colors_b;
 extern float cpu_frame_load MACRO_ADDR;
 
 /* spawns a burst of sparks and glow flashes at a moby, scaled by its distance from the origin marker */
@@ -1691,8 +1690,8 @@ void spawn_moby_particle_and_glow_burst(Moby *m, int flag) {
     float tmp[4];
     float d[4];
     float n[4];
-    V6 A;
-    V6 B;
+    IntVec6 A;
+    IntVec6 B;
     float len, extra, sc;
     int count, i, j;
 

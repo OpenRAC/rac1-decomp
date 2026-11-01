@@ -13,6 +13,7 @@
 #include "game/vuchain.h"
 #include "core/00119D88.h"
 #include "data/executable.h"
+#include "structs/level_records.h"
 
 /*
  * draw.cpp in the original source; text 0x1F0F30-0x1F7C60.
@@ -97,10 +98,7 @@ LINKER_REMNANT("asm/remnants/text", func_001F1088);
 LINKER_REMNANT("asm/remnants/text", func_001F10A0);
 
 /* A fog preset: an RGB byte triple and four floats. */
-typedef struct {
-    unsigned char r, g, b, pad;
-    float f[4];
-} FogPreset;
+
 typedef struct {
     char pad0[0x1A0];
     int held;        /* 0x1A0 */

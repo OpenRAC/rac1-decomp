@@ -7,6 +7,7 @@
 #include "overlays/shared/scoutbot_and_paratrooper.h"
 #include "asm_functions/level_08.h"
 #include "data/level_11.h"
+#include "structs/small_records.h"
 
 extern void VU1_addGSregister(int, long);
 
@@ -182,14 +183,12 @@ void emit_render_batches_with_pair_offset(int arg) {
                               pokitaru_faded_mesh_colors[i], pokitaru_faded_scrolled_uvs, 1);
     }
 }
-typedef struct {
-    int a, b;
-} Pair8;
+
 extern int oil_tanker_mesh_uv_sources[];
 extern int oil_tanker_mesh_vertex_counts[];
 extern int oil_tanker_mesh_positions[];
 extern int oil_tanker_mesh_colors[];
-extern Pair8 pokitaru_faded_scroll_entries[] MACRO_ADDR;
+extern IntPair pokitaru_faded_scroll_entries[] MACRO_ADDR;
 
 /* Places the level's 9 effect pieces from their tables (a relative of func_L11_0031FCC8). */
 void emit_oil_tanker_render_batches_with_pair_offset(int a) {

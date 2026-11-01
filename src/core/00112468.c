@@ -2,6 +2,7 @@
 #include "structs/misc.h"
 #include "core/001154C0.h"
 #include "data/executable.h"
+#include "core/newlib_types.h"
 
 /*
  * core_text object 0x112468-0x1138A8. Boundaries are retail's linker fill
@@ -27,12 +28,6 @@ int _close_r(int *errOut, int arg1) {
  * (trimming b's leading zero limbs), then bump q by one more if b is
  * still >= S (the estimate can undershoot by 1), subtracting S again. */
 extern int __mcmp(void *, void *); /* cmp */
-
-typedef struct Bigint_1154D0 {
-    struct Bigint_1154D0 *next;
-    int k, maxwds, sign, wds;
-    unsigned int x[1];
-} Bigint_1154D0;
 
 #define STOREINC(xc, hi, lo) \
     (((unsigned short *)(xc))[1] = (unsigned short)(hi), ((unsigned short *)(xc))[0] = (unsigned short)(lo), (xc)++)
