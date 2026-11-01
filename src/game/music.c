@@ -1,8 +1,8 @@
 #include "common.h"
 #include "callees.h"
-#include "records.h"
-#include "structs.h"
-#include "music.h"
+#include "structs/records.h"
+#include "structs/misc.h"
+#include "structs/music.h"
 #include "core/989snd.h"
 
 /*

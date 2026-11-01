@@ -13,7 +13,7 @@ Reading the tables:
 - Notes come from header comments. `FUN_Lxx_...` / lowercase names there
   are NTSC-decomp (US) labels; see [Addresses](#addresses-pal-vs-us).
 
-## Vectors (`include/vector.h`)
+## Vectors (`include/structs/vector.h`)
 
 | Type | Size / align | Layout | Use |
 |---|---|---|---|
@@ -32,7 +32,7 @@ Alignment:
 - `Vec4f` vs `Vec4` changes codegen (struct padding, whether gcc uses
   `lq`), so both exist.
 
-## Moby (`include/moby.h`)
+## Moby (`include/structs/moby.h`)
 
 One 0x100-byte record per live object. Lifecycle: [mobys.md](mobys.md).
 
@@ -99,7 +99,7 @@ sizeof = 0x100
 - `class_slot`'s note cites level table `D_L00_00197300`; the executable
   keeps slot -> class header in `D_001B3580[slot]`
   (`src/game/loaders.c:973`). Same data or not: unchecked.
-- **Do not take offsets from `MobyInstance` (`include/structs.h`) or
+- **Do not take offsets from `MobyInstance` (`include/structs/misc.h`) or
   `docs/reference/PVARS.md`**: they put update/pvars/oClass at 0xA8/0xAC/0xBC,
   contradicted by matched code (0x74/0x78/0xA6). Likely another game's
   layout (inferred).
@@ -117,7 +117,7 @@ sizeof = 0x100
 
 The class header's `flags` (+0x44) is ORed in on creation.
 
-## MobyClass (`include/moby.h`)
+## MobyClass (`include/structs/moby.h`)
 
 Pointed at by `Moby.pclass`. Real size unknown; only fields matched code
 reads are named.
@@ -144,12 +144,12 @@ sizeof = 0x4C
   0x18), +0x0C (sequence mode; 1 with a one-frame sequence stops the
   animation), +0x0E (copied to `Moby.unk72`).
 
-## Hero (`include/hero.h`)
+## Hero (`include/structs/hero.h`)
 
 Ratchet: one 0x2300-byte singleton at **`D_0013F450`** (122 files).
 `D_0013F4D0` = hero + 0x80 = `motion.pos` (`gHeroPos` in names.tsv).
 
-- `hero.h` says `D_0013F350`: that is the US address.
+- `structs/hero.h` says `D_0013F350`: that is the US address.
 - `D_0013E633 + 0xE1D` (e.g. `src/overlays/shared/cutscene_and_movie_playback.c:144`)
   is the same object, a compiler address-materialisation artifact.
 
@@ -169,7 +169,7 @@ Layout overview (offsets absolute in `Hero`):
 | 0x2084 | `HeroState state` | 0x20 | state machine |
 | 0x22A8 | `HeroHealth health` | 0xC | hit points |
 
-Named fields (all fields: `include/hero.h`):
+Named fields (all fields: `include/structs/hero.h`):
 
 | Offset | Type | Field | Notes |
 |---|---|---|---|
@@ -286,7 +286,7 @@ sizeof = 0x110
 sizeof = 0x20
 
 `hero_set_state` copies `current`/`control_mode`/`state_timer` into
-`prev*`, zeroes `step` and `state_timer`, clears `trail` (hero.h).
+`prev*`, zeroes `step` and `state_timer`, clears `trail` (structs/hero.h).
 
 ### HeroHealth (hero + 0x22A8)
 
@@ -328,10 +328,10 @@ sizeof = 0xC
 
 sizeof = 0x50
 
-- 7 slots, not the "four" hero.h says: matched code uses `items[6]`
+- 7 slots, not the "four" structs/hero.h says: matched code uses `items[6]`
   (`func_L00_002B33E8`). The item-switch arrays (0x20B8..0x2128) are 7
   long too.
-- hero.h: `FUN_L00_0020fca8(i, v)` releases slot i (state 3);
+- structs/hero.h: `FUN_L00_0020fca8(i, v)` releases slot i (state 3);
   `..._0020d460` / `..._0020d498` return a ready slot's moby / item id.
 
 ### HeroManipulator (hero + 0xD30 + i * 0x40)
@@ -354,9 +354,9 @@ HeroManipulator = the first 0x40 bytes of the 0xB0-byte `HeroEase`.
 targets, `kind` (+0xA2), `accel`, `max_speed`, `scale`, and rebuilds
 `quat`/`scale3`/`translation` each frame; `attach_manipulator` hands that
 part to the moby. `MobyTrail`, `HeroRandTimer`, `HeroVelocityKey`: see
-hero.h.
+structs/hero.h.
 
-## PadState (`include/pad.h`)
+## PadState (`include/structs/pad.h`)
 
 0x350-byte singleton **`D_0013CA40`** (71 files; overlays also use
 `D_0013A5E0 + 0x2460`, e.g. `src/overlays/shared/hero_gadget_use.c:128`).
@@ -481,7 +481,7 @@ Flag byte `D_0015EEB4` = `D_0015EEB0 + 4` (`gCheatMirroredLevels`, cheat
 flag 4): the mirrored-levels cheat, not a pad setting. When set,
 `analog[0]`/`analog[2]` are negated and 0x8000/0x2000 swapped in
 `held`/`raw_held`; the `_unmasked` copies and `analog_prev` undo it.
-pad.h gives the US address `D_0015EDB4`.
+structs/pad.h gives the US address `D_0015EDB4`.
 
 ### Stick history and flick detector
 
@@ -515,7 +515,7 @@ Only when `rep_rate != 0`. While `held` is nonzero and equals `prev_held`,
 
 A device state other than 1 clears input and resets to 0.
 
-## Small shared records (`include/records.h`)
+## Small shared records (`include/structs/records.h`)
 
 | Record | Size | Layout | Used for |
 |---|---|---|---|
@@ -530,9 +530,9 @@ PAL memory-map sheet); the rest come from source comments.
 
 | Address | What | Evidence |
 |---|---|---|
-| `D_0013F450` | the hero (`Hero`, 0x2300 bytes) | hero.h; 122 files |
+| `D_0013F450` | the hero (`Hero`, 0x2300 bytes) | structs/hero.h; 122 files |
 | `D_0013F4D0` | hero + 0x80 = `motion.pos`, "gHeroPos" | names.tsv |
-| `D_0013CA40` | the pad (`PadState`, 0x350 bytes) | pad.h, `src/game/pad.c` |
+| `D_0013CA40` | the pad (`PadState`, 0x350 bytes) | structs/pad.h, `src/game/pad.c` |
 | `D_0013A5E0` | base symbol overlay code addresses globals from: `+0x2460` = the pad; `+0x2600`, `+0x2604`, `+0x2634`, `+0x2610` are also used (flags at +0x2600 tested for 0x2/0x8 in `func_L00_00229348`, `src/overlays/shared/hero_vehicle_and_collision.c`). What lives at 0x0013A5E0 itself is not established. | grep `D_0013A5E0 +` |
 | `D_0015EE84` | current level index (0..18 for the 19 level overlays, inferred; s32, also read as s16) | `#define current_level_index` in `src/game/space.c:1693`; `1 << D_0015EE84` level masks in vendor code; `% 19` table index in `src/game/pause.c` |
 | `D_0015EEB0` | cheat flags, 8 bytes ("gCheats"); `D_0015EEB4` = mirrored levels | names.tsv; `src/game/pad.c` |

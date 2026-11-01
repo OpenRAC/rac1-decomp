@@ -20,8 +20,8 @@
  */
 
 #include "common.h"
-#include "vector.h"
-#include "camera_modes.h"
+#include "structs/vector.h"
+#include "enums/camera_mode.h"
 
 struct Moby;
 

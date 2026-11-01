@@ -3,7 +3,7 @@
 A moby is any game object: Ratchet's model, enemies, bolts, crates,
 gadgets, projectiles, platforms, effects, invisible level logic. Field
 tables: [data-structures.md](data-structures.md#moby-includemobyh) (use
-`include/moby.h`, not `MobyInstance`/`PVARS.md` offsets). Slot reuse
+`include/structs/moby.h`, not `MobyInstance`/`PVARS.md` offsets). Slot reuse
 delay, update order and the pre/post-pass flag tests are observable
 in-game and must be kept.
 
@@ -17,7 +17,7 @@ in-game and must be kept.
 - `class_slot` (u8, 0x22): per-level registration slot.
   `D_001B3E40[oClass]` -> slot (0xFF = not loaded); `D_001B3C80[slot]` ->
   oClass.
-- Per-class pvars layouts in `include/moby_pvars.h` come from outside
+- Per-class pvars layouts in `include/pvars/moby_pvars.h` come from outside
   tooling and are unverified; check each against the asm.
 
 ## Memory: the moby array and pvars
@@ -179,7 +179,7 @@ for (m = func_0020E6B8(); m != NULL; m = m->next) {   /* head also saved in a $g
 | `anim_flags`, `anim_trigger_count` | 0x70, 0x7E | |
 | `manips` | 0x64 | joint manipulators |
 
-`seqs[i]` -> `AnimSeq` (`include/records.h`, u8 `nframes` at +0x10);
+`seqs[i]` -> `AnimSeq` (`include/structs/records.h`, u8 `nframes` at +0x10);
 `MobyClass.seq_count` (+0x0C) bounds `seq`. Entry points (names.tsv,
 mixed tiers): `set_moby_animation` (`func_00213D28`),
 `blend_moby_animation[_ex]` (`func_00213DE0`/`func_00213F28`),
@@ -290,7 +290,7 @@ More retail strings per level: [datamining.md](datamining.md#5-per-level-strings
 
 - **Start from the role** in `config/overlays/names.tsv`. Don't
   specialise a function shared by many classes.
-- **Include `moby.h`, `hero.h`, `pad.h`, `vector.h`**, not private copies
+- **Include `structs/moby.h`, `structs/hero.h`, `structs/pad.h`, `structs/vector.h`**, not private copies
   (see commits d19de34f, d8808743). pvars still need a local struct for
   the 0x80 bytes, cast from `moby->pvars` (u8 *).
 - **Get signedness/width right.** `state` is read signed by the loop

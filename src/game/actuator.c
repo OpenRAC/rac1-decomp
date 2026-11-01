@@ -1,5 +1,5 @@
 #include "common.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 /*
  * actuator.cpp in the original source; text 0x1E9080-0x1E94E8.

@@ -2,7 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
-#include "hero.h"
+#include "structs/hero.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/weapon_hud_and_counters.h"

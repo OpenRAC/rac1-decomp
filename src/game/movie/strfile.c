@@ -1,5 +1,5 @@
 #include "common.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 /*
  * movie/strfile.cpp in the original source; text 0x23CE18-0x23CEC8.

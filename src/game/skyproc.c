@@ -1,7 +1,7 @@
 #include "common.h"
 #include "callees.h"
-#include "records.h"
-#include "structs.h"
+#include "structs/records.h"
+#include "structs/misc.h"
 
 /*
  * skyproc.cpp in the original source; text 0x22CEB8-0x22D8C0.

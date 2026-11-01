@@ -1,7 +1,7 @@
 #include "common.h"
-#include "pad.h"
+#include "structs/pad.h"
 #include "callees.h"
-#include "structs.h"
+#include "structs/misc.h"
 #include "game/movie/movie.h"
 #include "game/pad.h"
 

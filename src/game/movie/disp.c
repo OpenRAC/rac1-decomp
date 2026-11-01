@@ -1,5 +1,5 @@
 #include "common.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 /*
  * movie/disp.cpp in the original source; text 0x23C5E0-0x23C9C0.

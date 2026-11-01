@@ -2,8 +2,8 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
-#include "vector.h"
-#include "moby.h"
+#include "structs/vector.h"
+#include "structs/moby.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 
 /* Moby that drags a child moby along with it. */
@@ -1163,7 +1163,7 @@ extern void StepColorFade(void *, void *);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, int *, int);
 #define F(x) (*(float *)&x)
 
-#include "hero.h"
+#include "structs/hero.h"
 #define hero (*(Hero *)(D_0013E633 + 0xE1D))
 
 /* Shared per-frame handler of the class 0x772 enemy. */

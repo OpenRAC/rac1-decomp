@@ -1,6 +1,6 @@
 #include "common.h"
 #include "callees.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 /*
  * core_text object 0x1252A0-0x125630. Boundaries are retail's linker fill

@@ -4,10 +4,10 @@
  * with it (18 of 36 change), so it was another object in retail
  * (docs/reference/BUILD_FIDELITY.md, rule 2). */
 #include "common.h"
-#include "records.h"
-#include "vector.h"
-#include "hero.h"
-#include "moby.h"
+#include "structs/records.h"
+#include "structs/vector.h"
+#include "structs/hero.h"
+#include "structs/moby.h"
 
 extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);

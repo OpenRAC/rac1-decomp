@@ -2,9 +2,9 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
-#include "vector.h"
-#include "moby.h"
-#include "hero.h"
+#include "structs/vector.h"
+#include "structs/moby.h"
+#include "structs/hero.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 
 /* One aimed joint of the elite commando: manipulator block plus the eased pitch and yaw. */

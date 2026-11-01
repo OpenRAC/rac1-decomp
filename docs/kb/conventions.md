@@ -117,16 +117,16 @@ Use these, not private struct copies (fields: [data-structures.md](data-structur
 | Header | Contents |
 |---|---|
 | `include/common.h` | `s8`..`u64`, `f32`, `f64`; `NOT_SDA`, `MACRO_ADDR`, `SDATA`; `qcopy`, `qcopy_nc`, `qzero`, `CpuSync`, `CpuSyncP`, `CpuEnableInt`, `CpuDisableInt`; includes `names.h` |
-| `include/moby.h` | `struct Moby` (0x100 bytes; `update` 0x74, `pvars` 0x78, `oclass` 0xA6) and `struct MobyClass` |
-| `include/hero.h` | `struct Hero` (`D_0013F450`) and its records (`HeroMotion`, `HeroState`, `HeroItemSlot`, `HeroManipulator`, `HeroHealth`, `HeroEase`, `HeroRandTimer`, `HeroVelocityKey`, `MobyTrail`) |
-| `include/pad.h` | `struct PadState` (0x350 bytes, `D_0013CA40`) |
-| `include/vector.h` | `Vec4f`, `Vec4A` (16-byte aligned), `Vec4` (union moved with one `lq`/`sq`), `VecQuad` (128-bit integer) |
+| `include/structs/moby.h` | `struct Moby` (0x100 bytes; `update` 0x74, `pvars` 0x78, `oclass` 0xA6) and `struct MobyClass` |
+| `include/structs/hero.h` | `struct Hero` (`D_0013F450`) and its records (`HeroMotion`, `HeroState`, `HeroItemSlot`, `HeroManipulator`, `HeroHealth`, `HeroEase`, `HeroRandTimer`, `HeroVelocityKey`, `MobyTrail`) |
+| `include/structs/pad.h` | `struct PadState` (0x350 bytes, `D_0013CA40`) |
+| `include/structs/vector.h` | `Vec4f`, `Vec4A` (16-byte aligned), `Vec4` (union moved with one `lq`/`sq`), `VecQuad` (128-bit integer) |
 | `include/structs/disc.h` | `struct DiscTable` (`disc_table`, `D_00137C80`) and `struct DiscFile` |
-| `include/records.h` | `DispatchRec` (0x14-byte function-pointer entry), `PadSlots`, `AnimSeq` |
+| `include/structs/records.h` | `DispatchRec` (0x14-byte function-pointer entry), `PadSlots`, `AnimSeq` |
 | `include/callees.h` | prototypes of engine functions that three or more files declared the same way |
-| `include/structs.h`, `include/moby_pvars.h` | older shared structs; `moby_pvars.h` (class pvars adapted from Wrench) is not included by any source file today |
+| `include/structs/misc.h`, `include/pvars/moby_pvars.h` | older shared structs; `pvars/moby_pvars.h` (class pvars adapted from Wrench) is not included by any source file today |
 
-`moby.h`, `hero.h`, `pad.h` and `vector.h` are adapted from Lombyte's headers
+`structs/moby.h`, `structs/hero.h`, `structs/pad.h` and `structs/vector.h` are adapted from Lombyte's headers
 (MIT; see `THIRD_PARTY_NOTICES.md`). `unkNNN` / `pad_NNN` fields are unknown,
 not unused.
 
@@ -178,7 +178,7 @@ header-tidy notes.)* Small `fNN` data views in `help_*.c` (`S141948`,
   pass. Ported code ends its comment with e.g.
   `Adapted from Lombyte (GPL-3.0) for PAL: src/textbin/world/startlevel.c, startlevel.`
   or `... for PAL by OpenRAC's tools/port.py: <file>, <name>.`; headers
-  (`include/moby.h`, `include/hero.h`) carry the same. Names inside them
+  (`include/structs/moby.h`, `include/structs/hero.h`) carry the same. Names inside them
   (`FUN_L04_002aee30`) are the source project's US names.
 - Old stub comments are often wrong ([LEVERS.md](../agents/LEVERS.md) "Rules").
 
@@ -240,7 +240,7 @@ python3 tools/claims.py unlock <owner>                    # right after
 
 `src/overlays/shared/smoke_puff_projectiles.c`: a generated header ("Shared code
 following vendor", i.e. link position); includes (`common.h`,
-`include_asm.h`, `hero.h`, `moby.h`, often `pad.h`, `callees.h`); then per
+`include_asm.h`, `structs/hero.h`, `structs/moby.h`, often `structs/pad.h`, `callees.h`); then per
 landing its declarations (early ones aliases like `D_0013F450_B0068`, local
 types like `ShotVars_B0068`; later ones often plain names) followed by its
 function; `INCLUDE_ASM` stubs for the rest. A symbol may appear under two C

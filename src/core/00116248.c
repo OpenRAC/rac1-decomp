@@ -1,6 +1,6 @@
 #include <stdarg.h>
 #include "common.h"
-#include "structs.h"
+#include "structs/misc.h"
 #include "core/00116FA0.h"
 
 /*

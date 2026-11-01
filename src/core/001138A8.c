@@ -1,5 +1,5 @@
 #include "common.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 /*
  * core_text object 0x1138A8-0x1138B8. Boundaries are retail's linker fill

@@ -1,6 +1,6 @@
 #include "common.h"
 #include "callees.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 /*
  * boot.cpp (0x12DA38-0x12DB68): ParseBin and main. crt0 calls func_0012DB18

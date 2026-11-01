@@ -172,9 +172,9 @@ prints them.
 
 Field tables: [data-structures.md](data-structures.md).
 
-- **Hero**: global `D_0013F450`, `struct Hero` (`include/hero.h`).
+- **Hero**: global `D_0013F450`, `struct Hero` (`include/structs/hero.h`).
   `D_0013F4D0` (`gHeroPos`) is the position block.
-- **Pad**: `D_0013CA40`, `struct PadState` (0x350 bytes, `include/pad.h`).
+- **Pad**: `D_0013CA40`, `struct PadState` (0x350 bytes, `include/structs/pad.h`).
 - **Hero code is level code.** The largest functions are per-level builds of
   the hero state machine, all matched C:
 
@@ -225,8 +225,8 @@ Readable names come from `config/names.tsv` / `include/names.h`.
 | Update function of moby class N | `config/overlays/names.tsv` role `UpdateMoby_N`, class names in `tools/extract/moby_classes.tsv` (recipe in [section 2](#the-dispatch-tables-which-function-updates-moby-class-n)) |
 | A moby's private state | `Moby.pvars` (0x78) cast to the class's struct in the update function's file; [mobys.md](mobys.md), [PVARS.md](../reference/PVARS.md) |
 | Mobys | `CreateMoby` (`func_0020D348`), `DeleteMoby` (`func_0020D678`), `InitMobyInstance`, `MobyAnimProc` in `src/game/mobyfunc.c`, `mobyproc.c`, `mobyutil.c` (loop `func_00213C78`); `MobyProc` (`func_L00_002569F8`) in level code |
-| Hero movement and states | `src/overlays/shared/hero_water_and_ground_motion.c`, `hero_item_input_and_hud.c` and their per-level copies (`src/overlays/l1[678]_*/help_*.c`); `include/hero.h` |
-| Controller input | `UpdatePad` (`func_00218908`), `ClearPadInput` in `src/game/pad.c`; `include/pad.h` (`D_0013CA40`) |
+| Hero movement and states | `src/overlays/shared/hero_water_and_ground_motion.c`, `hero_item_input_and_hud.c` and their per-level copies (`src/overlays/l1[678]_*/help_*.c`); `include/structs/hero.h` |
+| Controller input | `UpdatePad` (`func_00218908`), `ClearPadInput` in `src/game/pad.c`; `include/structs/pad.h` (`D_0013CA40`) |
 | HUD | `HudDraw` (`func_001FFFB8`), `HudSprite`, `Hud_*` in `src/game/hud.c`; banks in `src/game/loaders.c` (`LoadHudBanks`); level `HudFrame` (`func_L00_0023BAB8`) |
 | Camera | `UpdateAllCameras` (`func_001EC7C8`), `UpdateCamera` (`func_001EDE50`), `camera_update` (`func_001ED080`, candidate), `Camera_*` in `src/game/camera.c`; per-level cameras via `camvtbl` roles `InitCamera_<id>` / `UpdateCamera_<id>`; `src/overlays/shared/camera_*.c` |
 | Sound and music | `sound_update` (`func_0022DD68`), `sound_*` in `src/game/sound.c`; `music_*` in `src/game/music.c`; level `sndvtbl` roles `SoundFunc_<id>`; 989snd `snd_*` in `src/core/` |

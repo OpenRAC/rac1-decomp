@@ -2,7 +2,7 @@
 /* Kept in a separate translation unit: this rotor reads the pool pointer with full addressing,
  * while vendor_0030EB68.c also has small-data declarations of that symbol. */
 #include "common.h"
-#include "moby.h"
+#include "structs/moby.h"
 extern float FastSubRots(float, float);
 extern float FastAddRots(float, float);
 

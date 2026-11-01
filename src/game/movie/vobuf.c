@@ -1,5 +1,5 @@
 #include "common.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 typedef struct VoBuf {
     char *frames;        /* 0x0, ring of 0xD0000-byte frames */

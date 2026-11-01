@@ -4,7 +4,7 @@
  * with it (func_L14_00300130 changes), so it was another object in retail
  * (docs/reference/BUILD_FIDELITY.md, rule 2). */
 #include "common.h"
-#include "moby.h"
+#include "structs/moby.h"
 
 typedef struct Pkt_03430 {
     float corner[4][4];

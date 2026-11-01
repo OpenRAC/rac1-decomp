@@ -10,12 +10,12 @@
  * include/rnc/gameplay/entities/moby.h at 88c78925, refreshed from the
  * NTSC decomp (the same project, GPL-3.0) at 4e1f255e. Its layout and
  * field names come from the matched code it cites; the PAL code is the
- * same structure. Class IDs: moby_class_id.h. See THIRD_PARTY_NOTICES.md.
+ * same structure. Class IDs: enums/moby_class.h. See THIRD_PARTY_NOTICES.md.
  */
 
 #include "common.h"
-#include "vector.h"
-#include "moby_class_id.h"
+#include "structs/vector.h"
+#include "enums/moby_class.h"
 
 
 struct Manip;

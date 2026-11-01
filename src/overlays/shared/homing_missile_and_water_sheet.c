@@ -2,9 +2,9 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
-#include "moby.h"
-#include "vector.h"
-#include "hero.h"
+#include "structs/moby.h"
+#include "structs/vector.h"
+#include "structs/hero.h"
 #include "game/draw.h"
 
 /* Class 0x3F1 shot: flies along vel for ticks, owned by the firing moby. */

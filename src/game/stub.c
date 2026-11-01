@@ -1,5 +1,5 @@
 #include "common.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 /*
  * stub.cpp in the original source; text 0x1E9730-0x1E9808.

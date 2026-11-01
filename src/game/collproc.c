@@ -1,6 +1,6 @@
 #include "common.h"
-#include "records.h"
-#include "structs.h"
+#include "structs/records.h"
+#include "structs/misc.h"
 
 /*
  * collproc.cpp in the original source; text 0x1EFD70-0x1F0F30.

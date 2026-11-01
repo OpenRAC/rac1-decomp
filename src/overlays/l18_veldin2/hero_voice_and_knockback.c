@@ -2,8 +2,8 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
-#include "vector.h"
-#include "hero.h"
+#include "structs/vector.h"
+#include "structs/hero.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 

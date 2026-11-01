@@ -1,5 +1,5 @@
 #include "common.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 /*
  * core_text object 0x1207B8-0x1208E8. It follows libgcc's fp-bit.o, which

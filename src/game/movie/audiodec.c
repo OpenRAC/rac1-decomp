@@ -1,6 +1,6 @@
 #include "common.h"
 #include "callees.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 extern int snd_init_movie_sound(int, int, int, int, int, int);
 extern char *movie_adpcm_staging_buf MACRO_ADDR;

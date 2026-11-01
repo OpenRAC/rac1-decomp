@@ -2,10 +2,10 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
-#include "vector.h"
-#include "moby.h"
-#include "hero.h"
-#include "camera.h"
+#include "structs/vector.h"
+#include "structs/moby.h"
+#include "structs/hero.h"
+#include "structs/camera.h"
 #include "overlays/shared/moby_ground_collision.h"
 
 extern void load_display_text_resource_entry(float *arg0, int *arg1);

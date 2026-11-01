@@ -1,6 +1,6 @@
 #include "common.h"
 #include "callees.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 /*
  * permcb.cpp (0x12F308-0x12F348). Name from the NTSC split.

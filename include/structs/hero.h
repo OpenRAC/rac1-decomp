@@ -9,7 +9,7 @@
  *
  * Adapted from Lombyte's project (GPL-3.0), the US decompilation:
  * include/rnc/gameplay/hero.h at 42adb529, refreshed from the NTSC decomp
- * (the same project, GPL-3.0) at 4e1f255e; state IDs in hero_state.h. Its
+ * (the same project, GPL-3.0) at 4e1f255e; state IDs in enums/hero_state.h. Its
  * layout and field names come from the matched code it cites; the PAL code
  * is the same structure.
  * Function and data names in the comments are Lombyte's, from the US build.
@@ -17,8 +17,8 @@
  */
 
 #include "common.h"
-#include "vector.h"
-#include "hero_state.h"
+#include "structs/vector.h"
+#include "enums/hero_state.h"
 
 struct Moby;
 

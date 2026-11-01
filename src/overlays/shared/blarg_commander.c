@@ -2,7 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
-#include "moby.h"
+#include "structs/moby.h"
 #include "game/draw.h"
 
 /* Blarg commander shot (class 0x55B): thrown by the commander, falls with mine_fall and bursts. */

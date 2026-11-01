@@ -1,6 +1,6 @@
 #include "common.h"
 #include "callees.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 /*
  * crt0 (0x12D868-0x12DA38): the program entry point. The ELF's e_entry is

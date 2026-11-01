@@ -1,5 +1,5 @@
 #include "common.h"
-#include "structs.h"
+#include "structs/misc.h"
 #include "core/0012AC80.h"
 #include "game/movie/movie.h"
 

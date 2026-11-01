@@ -1,7 +1,7 @@
 #include "common.h"
 #include "callees.h"
-#include "records.h"
-#include "structs.h"
+#include "structs/records.h"
+#include "structs/misc.h"
 
 /*
  * shadowproc.cpp in the original source; text 0x228A58-0x229C08.

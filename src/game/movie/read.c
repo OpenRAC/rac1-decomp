@@ -1,5 +1,5 @@
 #include "common.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 extern char *decoder_state MACRO_ADDR;
 extern char str_pts_buffer_overflow[];
