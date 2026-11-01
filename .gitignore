@@ -87,3 +87,6 @@ progress/functional.json
 
 # tools/behave build output
 tools/behave/target/
+
+# Doxygen output
+build-docs/

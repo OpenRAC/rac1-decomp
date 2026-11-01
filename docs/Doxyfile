@@ -1,0 +1,22 @@
+# The code site. Run from the repository root: doxygen docs/Doxyfile
+PROJECT_NAME           = "Ratchet & Clank decomp"
+OUTPUT_DIRECTORY       = build-docs
+INPUT                  = include src docs/README.md docs/STYLE.md
+USE_MDFILE_AS_MAINPAGE = docs/README.md
+RECURSIVE              = YES
+FILE_PATTERNS          = *.c *.h *.md
+EXCLUDE                = src/versions src/libgcc include/names.h
+OPTIMIZE_OUTPUT_FOR_C  = YES
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = YES
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+HAVE_DOT               = NO
+SOURCE_BROWSER         = NO
+SEARCHENGINE           = YES
+QUIET                  = YES
+WARNINGS               = NO
+WARN_IF_UNDOCUMENTED   = NO
+ENABLE_PREPROCESSING   = NO
+# Comments at the start of a line describe the function below. Make Doxygen read them.
+INPUT_FILTER           = "sed -E 's#^/\*([^*])#/**\1#'"
