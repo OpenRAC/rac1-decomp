@@ -1601,19 +1601,7 @@ void restore_teleporter_visibility_and_collision(char *moby) {
     } while (count >= 0);
 }
 extern void DeleteMoby(void *);
-typedef struct {
-    char pad0[0x88];
-    float timer;
-    char pad1[0x2FC - 0x8C];
-    char *current;
-    char pad2[0x30E - 0x300];
-    short active;
-    char pad3[0x2084 - 0x310];
-    int mode;
-    char pad4[0x22DA - 0x2088];
-    unsigned short index;
-} Globals;
-extern Globals g_hero;
+extern Hero g_hero;
 
 /* Deletes itself if its pvar is -1; later copies the pvar into the hero's index field. */
 void copy_pokitaru_pvar_to_hero(unsigned char *moby) {
@@ -1626,8 +1614,8 @@ void copy_pokitaru_pvar_to_hero(unsigned char *moby) {
                 DeleteMoby(moby);
             break;
         case 1:
-            if (g_hero.timer > 194.0f && g_hero.mode != 0x32) {
-                g_hero.index = *(unsigned short *)&state->index;
+            if (g_hero.motion.pos.f[2] > 194.0f && g_hero.state.current != 0x32) {
+                g_hero.path_constrain_pending = *(unsigned short *)&state->index;
             }
             break;
     }
@@ -1947,8 +1935,8 @@ int try_activate_pokitaru_gate(unsigned char *moby) {
     char *current;
     if (moby[0x20] != 1)
         return 0;
-    current = g_hero.current;
-    if (current != (char *)moby || g_hero.active)
+    current = (char *)g_hero.ground_moby;
+    if (current != (char *)moby || g_hero.air_frames.s)
         return 0;
     current[0x20] = 2;
     if (((unsigned char *)current)[0x53]) {

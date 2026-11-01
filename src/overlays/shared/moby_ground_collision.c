@@ -1044,11 +1044,7 @@ typedef struct {
     unsigned char pad0[0x10];
     float x, y;
 } O_25a478;
-typedef struct {
-    unsigned char pad0[0x80];
-    float x, y;
-} G_25a478;
-extern G_25a478 G_25a478v __asm__("D_0013F450");
+extern Hero G_25a478v __asm__("D_0013F450");
 extern unsigned char hero_globals_base[];
 extern short hit_damage_by_reaction_class;
 extern float hit_push_scale_table[][8];
@@ -1108,8 +1104,8 @@ int ComputeHitResponse(O_25a478 *obj, P_25a478 *p, Q_25a478 *q, unsigned int fla
         kind = p->kind;
         p->u.s.f1C = 5627.9248f;
         if (kind == 0x47) {
-            v.f[0] = FastCos(fast_atan2(obj->x - G_25a478v.x, obj->y - G_25a478v.y));
-            v.f[1] = FastSin(fast_atan2(obj->x - G_25a478v.x, obj->y - G_25a478v.y));
+            v.f[0] = FastCos(fast_atan2(obj->x - G_25a478v.motion.pos.f[0], obj->y - G_25a478v.motion.pos.f[1]));
+            v.f[1] = FastSin(fast_atan2(obj->x - G_25a478v.motion.pos.f[0], obj->y - G_25a478v.motion.pos.f[1]));
             v.f[2] = 1.0f;
             vec_scale_to_length(&v, &v, FastVecLength(pv) * 0.7f);
             FastVecScale(pv, pv, 0.3f);

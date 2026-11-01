@@ -149,31 +149,6 @@ void HeroL18_UpdateStateFlags(void) {
 }
 typedef int Q_210ce8 __attribute__((mode(TI)));
 typedef struct {
-    u8 pad0[0x98];
-    f32 f98;
-    u8 pad9C[0x128 - 0x9C];
-    f32 f128;
-    u8 pad12C[0x1C0 - 0x12C];
-    s32 i1C0;
-    u8 pad1C4[0x30E - 0x1C4];
-    s16 h30E;
-    u8 pad310[0x5BE - 0x310];
-    s16 h5BE;
-    u8 pad5C0[0x12E7 - 0x5C0];
-    u8 b12E7;
-    u8 pad12E8[0x1630 - 0x12E8];
-    s32 i1630;
-    u8 pad1634[0x2080 - 0x1634];
-    u8 *p2080;
-    s32 i2084;
-    u8 pad2088[4];
-    s32 i208C;
-    u8 pad2090[0x20A4 - 0x2090];
-    u8 b20A4;
-    u8 pad20A5[0x2280 - 0x20A5];
-    u8 *p2280;
-} G_210ce8;
-typedef struct {
     u8 pad0[0x10];
     Q_210ce8 v10;
     u8 *p20;
@@ -185,7 +160,7 @@ typedef struct {
     u8 *p34;
     u8 pad38[8];
 } T_210ce8;
-extern G_210ce8 g_hero;
+extern Hero g_hero;
 extern s32 veldin2_cinematic_mode MACRO_ADDR;
 extern T_210ce8 veldin2_moby_hits[];
 extern s32 g_current_level_index MACRO_ADDR;
@@ -217,23 +192,23 @@ s32 HeroL18_TryTakeHit(s32 arg) {
     f32 a, b, e;
     Vec4 v;
 
-    if (g_hero.i208C == 0x14) {
+    if (g_hero.state.control_mode == 0x14) {
         return 0;
     }
-    if (g_hero.i208C == 7) {
+    if (g_hero.state.control_mode == 7) {
         return 0;
     }
-    if (g_hero.i2084 == 0x32) {
+    if (g_hero.state.current == 0x32) {
         return 0;
     }
-    if (g_hero.i1C0 != 0) {
+    if (g_hero.invulnerable_frames != 0) {
         return 0;
     }
     if (veldin2_cinematic_mode != 0) {
         return 0;
     }
-    g_hero.p2280 = 0;
-    m = g_hero.p2080;
+    g_hero.damage_source_moby = 0;
+    m = (u8 *)g_hero.moby;
     if (m[0xA4] == 0xFF) {
         return 0;
     }
@@ -241,7 +216,7 @@ s32 HeroL18_TryTakeHit(s32 arg) {
     if (tbl->p34 != m) {
         return 0;
     }
-    if (g_hero.b20A4 == 2) {
+    if (g_hero.vehicle_mode == 2) {
         if (!(tbl->i24 & 2)) {
             return 0;
         }
@@ -249,16 +224,16 @@ s32 HeroL18_TryTakeHit(s32 arg) {
         return 0;
     }
     level_hero_hit_counts[g_current_level_index]++;
-    g_hero.p2280 = tbl->p20;
+    g_hero.damage_source_moby = (struct Moby *)tbl->p20;
     hero_hit_count++;
-    if (g_hero.i208C == 0xF) {
-        g_hero.h5BE = 1;
+    if (g_hero.state.control_mode == 0xF) {
+        g_hero.unk5BE = 1;
         return 0;
     }
-    if (g_hero.b20A4 == 2) {
-        g_hero.i1630 -= truncate_float_to_s32(tbl->f2C);
-        if (g_hero.i1630 < 0) {
-            g_hero.i1630 = 0;
+    if (g_hero.vehicle_mode == 2) {
+        g_hero.vehicle_hp -= truncate_float_to_s32(tbl->f2C);
+        if (g_hero.vehicle_hp < 0) {
+            g_hero.vehicle_hp = 0;
         }
     }
     if (arg == 0) {
@@ -274,47 +249,47 @@ s32 HeroL18_TryTakeHit(s32 arg) {
     } else if (tbl->p20 != 0) {
         FastVecSub(&v, gHeroPos, tbl->p20 + 0x10);
     } else {
-        v.f[0] = FastCos(FastAddRots(g_hero.f98, 3.1415927f));
-        v.f[1] = FastSin(FastAddRots(g_hero.f98, 3.1415927f));
+        v.f[0] = FastCos(FastAddRots(g_hero.motion.rot.f[2], 3.1415927f));
+        v.f[1] = FastSin(FastAddRots(g_hero.motion.rot.f[2], 3.1415927f));
         v.i[2] = 0;
     }
-    switch (g_hero.b20A4) {
+    switch (g_hero.vehicle_mode) {
         case 0:
-            mob = g_hero.p2280;
+            mob = (u8 *)g_hero.damage_source_moby;
             if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x4EB || *(s16 *)(mob + 0xA6) == 0x558)) {
                 id = 0x80;
             call_ret:
                 HeroL18_SetMoveState(id, 1);
                 return 1;
             }
-            if (g_hero.i208C == 0x16) {
+            if (g_hero.state.control_mode == 0x16) {
                 HeroL18_SetMoveState(0x6D, 1);
-                g_hero.f128 = g_frame_time * 7.0f;
+                g_hero.motion.resolved_velocity_z.f[2] = g_frame_time * 7.0f;
                 return 1;
             }
-            if (g_hero.i208C == 0x12) {
-                mob = g_hero.p2280;
+            if (g_hero.state.control_mode == 0x12) {
+                mob = (u8 *)g_hero.damage_source_moby;
                 if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
                     id = 0x82;
                     goto call_ret;
                 }
                 HeroL18_SetMoveState(0x75, 1);
-            } else if (g_hero.i208C == 0x11) {
-                mob = g_hero.p2280;
+            } else if (g_hero.state.control_mode == 0x11) {
+                mob = (u8 *)g_hero.damage_source_moby;
                 if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
                     id = 0x82;
                     goto call_ret;
                 }
                 if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
-                    mob = g_hero.p2280;
+                    mob = (u8 *)g_hero.damage_source_moby;
                     if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B ||
                                      *(s16 *)(mob + 0xA6) == 0x29D)) {
                         allocate_hero_voice_for_entry(0x1C, 0);
                     }
                 }
                 HeroL18_SetMoveState(0x76, 1);
-            } else if (g_hero.i208C == 3) {
-                mob = g_hero.p2280;
+            } else if (g_hero.state.control_mode == 3) {
+                mob = (u8 *)g_hero.damage_source_moby;
                 if (mob != 0) {
                     id = 0x82;
                     if (*(s16 *)(mob + 0xA6) == 0x28F) {
@@ -328,7 +303,7 @@ s32 HeroL18_TryTakeHit(s32 arg) {
             e = g_frame_time;
             a = e * 5.7f;
             b = e * 2.4f;
-            if (g_hero.b12E7 != 0) {
+            if (g_hero.on_magnet_ground != 0) {
                 a = 0.0f;
                 b = e * 1.7f;
             }
@@ -338,10 +313,10 @@ s32 HeroL18_TryTakeHit(s32 arg) {
             }
             break;
         case 2:
-            if ((tbl->i24 & 4) || g_hero.i1630 <= 0) {
+            if ((tbl->i24 & 4) || g_hero.vehicle_hp <= 0) {
                 HeroL18_SetMoveState(0x5D, 1);
                 remove_tracked_class_5f3_moby();
-                if (g_hero.h30E == 0) {
+                if (g_hero.air_frames.s == 0) {
                     hero_knockback(&v, flag, g_frame_time * 7.0f, g_frame_time * 3.5f);
                     break;
                 }

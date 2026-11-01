@@ -2389,23 +2389,12 @@ keep:
     }
 }
 typedef struct {
-    unsigned char pad0[0x80];
-    float v80[4];
-    unsigned char pad90[8];
-    float f98;
-    unsigned char pad9c[0x1FF5 - 0x9C];
-    unsigned char b1FF5;
-    unsigned char b1FF6;
-    unsigned char pad1ff7[0x2080 - 0x1FF7];
-    unsigned char *p2080;
-} P_2cdcc0;
-typedef struct {
     unsigned char pad0[0xC0];
     unsigned short hC0;
     unsigned short hC2;
     unsigned int wC4;
 } S_2cdcc0;
-extern P_2cdcc0 g_hero;
+extern Hero g_hero;
 extern S_2cdcc0 item_usage;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
@@ -2419,18 +2408,18 @@ unsigned char *spawn_hero_drone(unsigned char *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002c8440.c, FUN_L00_002cdcc0. */
 void replenish_hero_drones(void) {
-    P_2cdcc0 *p = &g_hero;
+    Hero *p = &g_hero;
     S_2cdcc0 *s;
     float d[4] __attribute__((aligned(16)));
     float v[4] __attribute__((aligned(16)));
     unsigned char *m;
     int i;
-    p->b1FF5 = 0;
+    p->unk1FF5 = 0;
     if (get_ammo(0x18)) {
-        d[0] = FastCos(p->f98) * 0.25f;
-        d[1] = FastSin(p->f98) * 0.25f;
+        d[0] = FastCos(p->motion.rot.f[2]) * 0.25f;
+        d[1] = FastSin(p->motion.rot.f[2]) * 0.25f;
         d[2] = 0.25f;
-        if (p->b1FF6 < 6) {
+        if (p->ammo_used < 6) {
             use_ammo(0x18, 1);
             s = &item_usage;
             if (s->hC0 < 0xFFFF) {
@@ -2441,9 +2430,9 @@ void replenish_hero_drones(void) {
             }
             s->wC4 = s->wC4 | (1 << g_current_level_index) | 0x80000000;
 
-            FastVecAdd(v, p->v80, p->p2080 + 0xE0);
-            FastVecAdd(v, v, p->p2080 + 0xC0);
-            for (i = p->b1FF6; i < 6; i++) {
+            FastVecAdd(v, p->motion.pos.f, ((unsigned char *)p->moby) + 0xE0);
+            FastVecAdd(v, v, ((unsigned char *)p->moby) + 0xC0);
+            for (i = p->ammo_used; i < 6; i++) {
                 m = spawn_hero_drone(m, v);
                 if (m) {
                     qcopy(((void *)((Moby *)m)->pvars), d);

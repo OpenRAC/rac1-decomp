@@ -147,6 +147,11 @@ pass. A cast into a `pad_` field means the field should be named in the header
 | `HeroManip4_5FF0` | `src/overlays/shared/hero_idle_and_animation.c` | four more manipulators after `manipulators[7]` at hero+0xEF0, plus a random-delay timer; `struct Hero` lays this out differently |
 | `Pad_2D9F08` | `src/overlays/shared/trespasser_pad_and_background_ships.c` | reads `held` and `pressed` as one doubleword (`b1C0`); `PadState`'s separate `s32` fields would change the load |
 
+These hero views still change bytes or break a version's C when converted to `struct Hero`:
+`LevelObjectState_230A90` (`src/game/space.c`), `G_pp_t` (`bolts_and_wrench.c`), `G_2CF6A0`
+(`morphoray_chicken_and_drones.c`), `Hero40` (`nanotech_ball_and_suck_cannon.c`) and `G_6570`
+(`heavy_interceptor_and_turrets.c`).
+
 *(inferred from the definitions and uses; the pad reason is from the
 header-tidy notes.)* Small `fNN` data views in `help_*.c` (`S141948`,
 `Row13E650` ...) are also still private. Shared hero views are in `include/structs/hero_views.h`.

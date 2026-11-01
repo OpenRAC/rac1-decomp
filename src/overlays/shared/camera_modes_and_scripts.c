@@ -117,24 +117,12 @@ typedef struct {
     float a, va, b, vb, ang, z, vz;
 } S_9f38;
 typedef struct {
-    u8 pad0[0x14C];
-    float f14C;
-    u8 pad1[0x308 - 0x150];
-    s16 s308;
-    u8 pad2[0x2080 - 0x30A];
-    u8 *p2080;
-    u8 pad3[0x2090 - 0x2084];
-    int i2090;
-    u8 pad4[0x20A5 - 0x2094];
-    u8 b20A5;
-} P350;
-typedef struct {
     u8 pad0[0x100];
     float f100, f104, f108, f10C;
     u8 pad1[0x1A0 - 0x110];
     int i1A0;
 } C940;
-extern P350 g_hero_r __asm__("D_0013F450");
+extern Hero g_hero_r __asm__("D_0013F450");
 extern C940 g_controller_state;
 extern CameraSystem player_camera_r __asm__("D_L00_00166D80");
 extern int invert52 MACRO_ADDR;
@@ -164,9 +152,9 @@ void update_hero_aligned_camera_from_input(Camera *o) {
     float t, r, k;
     st = *(S_9f38 **)&o->state_buf;
     func_L00_002EB170_EB3E8(o);
-    vec_scale_to_length(&up, g_hero_r.p2080 + 0xE0, 1.0f);
-    if (player_camera_r.blend.phase == 0 && g_hero_r.b20A5 == 0)
-        g_hero_r.b20A5 = 1;
+    vec_scale_to_length(&up, ((u8 *)g_hero_r.moby) + 0xE0, 1.0f);
+    if (player_camera_r.blend.phase == 0 && g_hero_r.unk20A5 == 0)
+        g_hero_r.unk20A5 = 1;
     t = -g_controller_state.f108;
     if (t == 0.0f)
         t = -g_controller_state.f100;
@@ -182,8 +170,8 @@ void update_hero_aligned_camera_from_input(Camera *o) {
                                     (*(float *)&hero_aligned_cam_input_max_step), &st->va);
     if (r != 0.0f)
         build_look_at_matrix(o->basis, o->basis, &up, k * r);
-    if (g_hero_r.f14C != 0.0f && g_hero_r.s308 == 0)
-        build_look_at_matrix(o->basis, o->basis, &up, g_hero_r.f14C);
+    if (g_hero_r.motion.platform_carry.f[3] != 0.0f && g_hero_r.unk308 == 0)
+        build_look_at_matrix(o->basis, o->basis, &up, g_hero_r.motion.platform_carry.f[3]);
     t = -g_controller_state.f10C;
     if (t == 0.0f)
         t = -g_controller_state.f104;
@@ -191,7 +179,7 @@ void update_hero_aligned_camera_from_input(Camera *o) {
         t = IntToFloat((g_controller_state.i1A0 >> 12) & 1);
     if (t == 0.0f)
         t = -IntToFloat((g_controller_state.i1A0 >> 14) & 1);
-    if (player_camera_r.blend.phase != 0 && g_hero_r.i2090 == 2)
+    if (player_camera_r.blend.phase != 0 && g_hero_r.state.prev == 2)
         t = 0.0f;
     if (invert52 == 0)
         t = -t;
@@ -219,7 +207,7 @@ void update_hero_aligned_camera_from_input(Camera *o) {
         d.f[2] = z;
         vec_scale_to_length(&d, &d, st->z);
         FastVecAdd(&o->pos, &o->pos, &d);
-        if (coll_sphere(&o->pos, 0x12, g_hero_r.p2080, 0.3f))
+        if (coll_sphere(&o->pos, 0x12, (u8 *)g_hero_r.moby, 0.3f))
             st->z = func_001EC120_EB3E8(st->z, z, 0.005f, 0.2f, z, &st->vz);
         n = FastAddRots(st->ang, a);
         if (FastAbsF(n) > 1.4660766f) {
@@ -250,15 +238,7 @@ typedef struct {
     u8 p0[0x1C];
     Q_2eb938 *q;
 } E_2eb938;
-typedef struct {
-    u8 p0[0x98];
-    f32 f98;
-    u8 p1[0x2080 - 0x9C];
-    char *p2080;
-    u8 p2[0x2284 - 0x2084];
-    s32 i2284;
-} P_2eb938;
-extern P_2eb938 g_hero_r2 __asm__("D_0013F450") NOT_SDA;
+extern Hero g_hero_r2 __asm__("D_0013F450") NOT_SDA;
 extern q_2eb938 gHeroPos_r __asm__("D_0013F4D0") NOT_SDA;
 extern E_2eb938 *camera_descriptors_r __asm__("D_L00_0015F050") MACRO_ADDR;
 extern char *g_current_follow_cam_r __asm__("D_L00_00166F00") NOT_SDA;
@@ -287,12 +267,12 @@ int camera_transition_update(u8 *m, char *a1) {
     V_2eb938 v;
     V_2eb938 d1, d2;
     f32 l, x;
-    P_2eb938 *g;
+    Hero *g;
     char *b, *b2, *vec;
 
     q = camera_descriptors_r[*(s16 *)(m + 0x84)].q;
     g = &P;
-    st = g->i2284;
+    st = g->unk2284;
     if (st == *(s16 *)(m + 0x86) || st == 0x51) {
         o = g_current_follow_cam_r;
         t = *(s16 *)(a1 + 0x86);
@@ -313,8 +293,8 @@ int camera_transition_update(u8 *m, char *a1) {
                 m[0x7C] = 5;
             return 1;
         }
-        v.f[0] = FastCos_r(P.f98);
-        v.f[1] = FastSin_r(P.f98);
+        v.f[0] = FastCos_r(P.motion.rot.f[2]);
+        v.f[1] = FastSin_r(P.motion.rot.f[2]);
         *(s32 *)&v.f[2] = 0;
         set_follow_camera_angle_blend_from_direction_r(&v, 0.06981316953897476f, v.f[2]);
         goto tail;
@@ -332,8 +312,8 @@ int camera_transition_update(u8 *m, char *a1) {
     vec = b + 0x30;
     FastVecScale_r(&v, vec, FastVecDot_r(vec, *(char **)(b2 + 0x180)));
     FastVecSub_r(&d1, *(char **)(b2 + 0x180), &v);
-    FastVecScale_r(&v, vec, FastVecDot_r(vec, g->p2080 + 0xC0));
-    FastVecSub_r(&d2, g->p2080 + 0xC0, &v);
+    FastVecScale_r(&v, vec, FastVecDot_r(vec, ((char *)g->moby) + 0xC0));
+    FastVecSub_r(&d2, ((char *)g->moby) + 0xC0, &v);
     l = FastVecLength_r(&d2);
     if (l != 0.0f) {
         l *= FastVecLength_r(&d1);
@@ -349,8 +329,8 @@ int camera_transition_update(u8 *m, char *a1) {
 tail:
     if (q->i24) {
         fast_dec_timer_r(&q->i24);
-        v.f[0] = FastCos_r(P.f98);
-        v.f[1] = FastSin_r(P.f98);
+        v.f[0] = FastCos_r(P.motion.rot.f[2]);
+        v.f[1] = FastSin_r(P.motion.rot.f[2]);
         *(s32 *)&v.f[2] = 0;
         set_follow_camera_angle_blend_from_direction_r(&v, 0.13962633907794952f, v.f[2]);
     }

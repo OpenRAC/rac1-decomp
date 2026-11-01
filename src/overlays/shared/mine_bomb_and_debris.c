@@ -2323,19 +2323,10 @@ typedef struct {
     s32 w38;
 } O;
 typedef struct {
-    char p0[0x80];
-    f32 x80;
-    f32 x84;
-    char p1[0x2E4 - 0x88];
-    f32 f2E4;
-    char p2[0x2080 - 0x2E8];
-    char *cam;
-} P;
-typedef struct {
     char p0[0xB];
     u8 bB;
 } E;
-extern P g_hero;
+extern Hero g_hero;
 extern E gold_weapon_purchased;
 extern s32 coll_hit_result[0x1C];
 extern f32 fast_atan2(f32, f32);
@@ -2357,7 +2348,7 @@ void select_gold_devastator_missile_target(char *self, O *out, char *skip) {
     f32 best, yaw, pitch, dist, ang, z, angh, angv;
     char *spos;
     char *opos;
-    P *g;
+    Hero *g;
 
     i = 0;
     best = 10000.0f;
@@ -2404,9 +2395,9 @@ void select_gold_devastator_missile_target(char *self, O *out, char *skip) {
         angv = fast_atan2(vec_distance_xy(spos, &v), v.f[2] - *(f32 *)(self + 0x18));
         dist = FastVecDist(spos, &v);
         if (dist < 2.5f) {
-            char *cam = g->cam;
-            if (FastDiffRots(*(f32 *)(cam + 0x48),
-                             fast_atan2(*(f32 *)(o + 0x10) - g->x80, *(f32 *)(o + 0x14) - g->x84)) < 1.0471976f) {
+            char *cam = (char *)g->moby;
+            if (FastDiffRots(*(f32 *)(cam + 0x48), fast_atan2(*(f32 *)(o + 0x10) - g->motion.pos.f[0],
+                                                              *(f32 *)(o + 0x14) - g->motion.pos.f[1])) < 1.0471976f) {
                 if (FastAbsF(angv) < 0.7853982f)
                     return;
             }
@@ -2414,7 +2405,7 @@ void select_gold_devastator_missile_target(char *self, O *out, char *skip) {
         if (best < dist)
             goto next;
         ang = IntToFloat(gold_weapon_purchased.bB) * 0.6981317f;
-        BuildSphericalOffset(&lv, dist, yaw, pitch + g->f2E4 * 0.5f);
+        BuildSphericalOffset(&lv, dist, yaw, pitch + g->ground_pitch.f * 0.5f);
         FastVecAdd(&lv, &lv, spos);
         z = FastArcSin(FastVecDist(&lv, &v) / (dist + dist));
         ang = ang + 1.5707964f;
@@ -2486,12 +2477,6 @@ typedef union {
     } vectors;
 } MissilePhase1688;
 typedef struct {
-    char pad0[0x100];
-    Vec4 previous;
-    char pad110[0x30];
-    Vec4 current;
-} HeroMotion1688;
-typedef struct {
     char pad0[0x18];
     M910 *moby;
     int kind;
@@ -2500,7 +2485,7 @@ typedef struct {
     Vec4 normal, velocity_end, velocity_start;
 } Impact1688;
 extern Impact1688 impact1688 __asm__("D_L00_00173F40");
-extern HeroMotion1688 hero_motion1688 __asm__("D_0013F450");
+extern Hero hero_motion1688 __asm__("D_0013F450");
 extern B910 devastator_blast_fx;
 extern B910 devastator_gold_blast_fx;
 extern Colors1688 devastator_blast_colors;
@@ -2568,7 +2553,7 @@ void gold_devastator_missile_update(M910 *m) {
     {
         float turn = IntToFloat(d->turn_time);
         turn = turn / IntToFloat(d->turn_period);
-        FastVecAdd(phase.collision.dir, &hero_motion1688.current, &hero_motion1688.previous);
+        FastVecAdd(phase.collision.dir, &hero_motion1688.motion.platform_carry, &hero_motion1688.motion.displacement);
         hero_vel = phase.vectors.direction;
         FastVecScale(&hero_vel, &hero_vel, turn);
     }
@@ -2690,11 +2675,11 @@ void gold_devastator_missile_update(M910 *m) {
     phase.collision.b8 = 3;
     phase.collision.cls = m->cls;
     phase.collision.b9 = 1;
-    if (collision1688(&previous, (&m->pos), 0, g_hero.cam, &phase.collision)) {
+    if (collision1688(&previous, (&m->pos), 0, (char *)g_hero.moby, &phase.collision)) {
         Impact1688 *hit = &impact1688;
         Vec4 *hit_normal;
         if (hit->moby) {
-            if (hit->moby != (M910 *)g_hero.cam && hit->moby != d->owner) {
+            if (hit->moby != (M910 *)((char *)g_hero.moby) && hit->moby != d->owner) {
                 m->bBC = 2;
                 qcopy((&m->pos), &hit->position);
                 FastVecSub(&surface_motion, &hit->velocity_end, &hit->velocity_start);
@@ -2715,7 +2700,7 @@ void gold_devastator_missile_update(M910 *m) {
             vec_scale_to_length(&blast_velocity, &blast_velocity, g_frame_time + g_frame_time);
             vec_scale_to_length(&normal, hit_normal, 1.0f);
         }
-    } else if (fast_dec_timer(&d->life) || d->limit < vec_distance_xy((&m->pos), &g_hero.x80)) {
+    } else if (fast_dec_timer(&d->life) || d->limit < vec_distance_xy((&m->pos), &g_hero.motion.pos.f[0])) {
         qcopy(&normal, &devastator_default_normal);
         qcopy(&surface_motion, &devastator_default_surface_motion);
         rotate1688(&surface_motion, &surface_motion, m->mtx);

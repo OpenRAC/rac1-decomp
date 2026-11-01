@@ -2506,18 +2506,7 @@ void emit_hero_periodic_surface_particles(int n, int lim) {
         }
     }
 }
-typedef struct {
-    unsigned char pad0[0x80];
-    float f80;
-    float f84;
-    float f88;
-    unsigned char pad8C[0x100 - 0x8C];
-    Vec4 v100;
-    unsigned char pad110[0x2080 - 0x110];
-    void *p2080;
-    int i2084;
-} P_209a40;
-extern P_209a40 D_0013F450_0A0B8 __asm__("D_0013F450");
+extern Hero D_0013F450_0A0B8 __asm__("D_0013F450");
 extern int PartType34Spawn(void *, void *, float, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00203b18.c, FUN_L00_00209a40. */
@@ -2525,31 +2514,31 @@ void emit_hero_randomized_motion_effects(int n, int mode) {
     float pos[4];
     Vec4 v;
     int i;
-    P_209a40 *p;
+    Hero *p;
     Vec4 *src;
 
     for (i = 0; i < n; i++) {
         p = &D_0013F450_0A0B8;
-        src = &p->v100;
+        src = &p->motion.displacement;
         if (mode == 0) {
-            pos[0] = p->f80 + random_float_between(-0.1f, 0.1f);
-            pos[1] = p->f84 + random_float_between(-0.1f, 0.1f);
-            pos[2] = p->f88 + random_float_between(-0.5f, 0.1f);
+            pos[0] = p->motion.pos.f[0] + random_float_between(-0.1f, 0.1f);
+            pos[1] = p->motion.pos.f[1] + random_float_between(-0.1f, 0.1f);
+            pos[2] = p->motion.pos.f[2] + random_float_between(-0.5f, 0.1f);
         } else if (mode == 1) {
             if (!(i & 1)) {
-                Moby_GetJointWorldPos(p->p2080, 0, pos);
+                Moby_GetJointWorldPos((void *)p->moby, 0, pos);
             } else {
-                Moby_GetJointWorldPos(p->p2080, 0xE, pos);
+                Moby_GetJointWorldPos((void *)p->moby, 0xE, pos);
             }
         } else if (mode == 2) {
             if (!(i & 1)) {
-                Moby_GetJointWorldPos(p->p2080, 0x17, pos);
+                Moby_GetJointWorldPos((void *)p->moby, 0x17, pos);
             } else {
-                Moby_GetJointWorldPos(p->p2080, 0x16, pos);
+                Moby_GetJointWorldPos((void *)p->moby, 0x16, pos);
             }
         }
         qcopy(&v, src);
-        if (p->i2084 == 0x34) {
+        if (p->state.current == 0x34) {
             FastVecScale(&v, &v, 1.15f);
         } else {
             FastVecScale(&v, &v, 0.7f);

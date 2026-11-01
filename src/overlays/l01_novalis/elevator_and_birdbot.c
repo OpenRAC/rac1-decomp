@@ -3006,11 +3006,7 @@ typedef struct {
     u8 pad21[0x57];
     HoverVars *pvars;
 } HoverMoby;
-typedef struct {
-    u8 pad0[0x80];
-    HoverVec pos;
-} HoverPlayer;
-extern HoverPlayer g_hero_r2 __asm__("D_0013F450");
+extern Hero g_hero_r2 __asm__("D_0013F450");
 extern short water_lily_spring_velocity_adjustment_scale_r __asm__("D_L01_00161C80");
 extern short water_lily_spring_damping_r __asm__("D_L01_00161C84");
 extern short water_lily_hero_separation_radius_r __asm__("D_L01_00161C88");
@@ -3029,7 +3025,7 @@ extern f32 resolve_camera_surface_height_r(void *, s32) __asm__("func_00214440")
 /* Hovering enemy update: springs its position toward a home point on each axis, keeps its distance to the player, and steers toward a target with the shared turn helper. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f8268. */
 void water_lily_update(HoverMoby *m) {
     HoverVars *v;
-    HoverPlayer *pl;
+    Hero *pl;
     HoverVec old;
     HoverVec tgt;
     HoverVec step;
@@ -3056,13 +3052,13 @@ void water_lily_update(HoverMoby *m) {
             spring_axis_to_r(&m->pos.v.y, v->home_y, &v->vel_y,
                              *(float *)&water_lily_spring_velocity_adjustment_scale_r * g_frame_time_sq_r,
                              *(float *)&water_lily_spring_damping_r, 3.0f);
-            if (vec_distance_xy_r(&m->pos, &g_hero_r2.pos) < *(float *)&water_lily_hero_separation_radius_r) {
-                if (FastAbsF_r(m->pos.v.z - g_hero_r2.pos.v.z) < 0.7f) {
-                    ang = fast_atan2_r(m->pos.v.x - g_hero_r2.pos.v.x, m->pos.v.y - g_hero_r2.pos.v.y);
+            if (vec_distance_xy_r(&m->pos, &g_hero_r2.motion.pos) < *(float *)&water_lily_hero_separation_radius_r) {
+                if (FastAbsF_r(m->pos.v.z - g_hero_r2.motion.pos.f[2]) < 0.7f) {
+                    ang = fast_atan2_r(m->pos.v.x - g_hero_r2.motion.pos.f[0], m->pos.v.y - g_hero_r2.motion.pos.f[1]);
                     m->pos.v.x = FastCos_r(ang) * *(float *)&water_lily_hero_separation_radius_r;
                     m->pos.v.y = FastSin_r(ang) * *(float *)&water_lily_hero_separation_radius_r;
-                    m->pos.v.x += g_hero_r2.pos.v.x;
-                    m->pos.v.y += g_hero_r2.pos.v.y;
+                    m->pos.v.x += g_hero_r2.motion.pos.f[0];
+                    m->pos.v.y += g_hero_r2.motion.pos.f[1];
                 }
             }
             MoveKeepingOverGround_r(m, &tgt, &m->pos, 3, 0.1f, *(float *)&water_lily_collision_radius_r, 600.0f,

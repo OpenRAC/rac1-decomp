@@ -1707,18 +1707,13 @@ typedef struct {
     u8 pad21[0x57];
     void *pvars;
 } SpawnerMoby;
-typedef struct {
-    u8 pad0[0x80];
-    f32 x;
-    f32 y;
-} PlayerPosView;
 extern s32 count_active_moby_group_members_r(s32, s32) __asm__("func_L01_0026EFB8");
 extern ClonedMoby *initialize_beehive_spawn_moby_r(ClonedMoby *) __asm__("func_L01_00303700");
 extern f32 fast_atan2_r2(f32, f32) __asm__("func_L00_001FF860");
 extern f32 FastAddRots_r(f32, f32) __asm__("func_001FA748");
 extern void InitKnockback_r(void *, void *, s32, s32, s32, f32) __asm__("func_L00_0025D5B0");
 extern short beehive_max_spawns_r __asm__("D_L01_00161F20");
-extern PlayerPosView g_hero_r __asm__("D_0013F450");
+extern Hero g_hero_r __asm__("D_0013F450");
 /* Enemy-spawner update: state 0 arms it, state 1 spawns one child toward the player while under the count limit and aims its AI path. func_L00_0025D5B0 takes the angle as its last argument. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_003021b8. */
 void beehive_update(SpawnerMoby *m) {
     SpawnerVars *v = m->pvars;
@@ -1752,8 +1747,10 @@ void beehive_update(SpawnerMoby *m) {
                 nv->fB4 = 13.0f;
                 nv->w78 = 0;
                 nv->w7C = 0;
-                InitKnockback_r(n, nv->path, 5, 8, 0,
-                                FastAddRots_r(fast_atan2_r2(g_hero_r.x - m->x, g_hero_r.y - m->y), 3.1415927f));
+                InitKnockback_r(
+                    n, nv->path, 5, 8, 0,
+                    FastAddRots_r(fast_atan2_r2(g_hero_r.motion.pos.f[0] - m->x, g_hero_r.motion.pos.f[1] - m->y),
+                                  3.1415927f));
                 n->state = 9;
             }
             break;
