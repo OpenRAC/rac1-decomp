@@ -1,6 +1,6 @@
 #include "common.h"
 #include "structs/misc.h"
-#include "core/0012AC80.h"
+#include "core/mpeg/demux.h"
 #include "game/movie/movie.h"
 
 /* Retail-disassembly reconstruction of decoder buffer operations. */

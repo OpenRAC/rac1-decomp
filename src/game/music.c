@@ -3,7 +3,7 @@
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "structs/music.h"
-#include "core/989snd.h"
+#include "core/sound/989snd.h"
 #include "asm_functions/executable.h"
 #include "structs/level_records.h"
 

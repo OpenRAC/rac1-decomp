@@ -4,7 +4,7 @@
 #include "structs/moby.h"
 #include "structs/hero.h"
 #include "include_asm.h"
-#include "core/989snd.h"
+#include "core/sound/989snd.h"
 #include "game/hud.h"
 #include "game/mobyfunc.h"
 #include "game/music.h"

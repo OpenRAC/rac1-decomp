@@ -7,7 +7,7 @@
 #include "game/draw.h"
 #include "game/vuchain.h"
 #include "asm_functions/shared_levels.h"
-#include "core/00119D88.h"
+#include "core/kernel/kprintf.h"
 #include "game/framebuf.h"
 #include "game/hud.h"
 

@@ -2,7 +2,7 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
-#include "core/00119D88.h"
+#include "core/kernel/kprintf.h"
 
 /*
  * stash.cpp in the original source; text 0x233FF8-0x234380.

@@ -2,7 +2,7 @@
 #include "structs/disc.h"
 #include "structs/pad.h"
 #include "structs/misc.h"
-#include "core/permcb.h"
+#include "core/startup/permcb.h"
 #include "game/memcard.h"
 #include "game/music.h"
 #include "game/sound.h"

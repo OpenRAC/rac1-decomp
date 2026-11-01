@@ -86,7 +86,7 @@ the tool and not without it.
 | `tools/check_macro_slots.py` | a one-instruction global access the compiler put in a branch delay slot comes out `$gp`-relative, as retail's toolchain assembled it; anything else in a slot fails the build | of 524 `$gp` accesses in compiled retail code to globals also reached through `lui`, 505 sit in a delay slot | 460 (1,398,252 bytes, 37.7%) |
 | `tools/fix_orphan_hi.py` | the high half of a `%hi` whose `%lo` the optimiser removed, which retail's linker filled and ours resolves wrongly | retail has the right high half in such `lui`s (func_001E9808) | none by the per-function check, which masks relocated fields; the linked image needs it |
 | `tools/fix_macro_load_delay.py` | the load-delay nop the assembler of `989snd.o` and `wad.o` put after a two-instruction macro load whose result is used next | retail's code in those objects (func_0012E060 has it, func_0012DDC0's one-instruction loads do not) | none of today's matches |
-| `tools/fix_volatile_slot.py` | a volatile store fills a following call slot; the whole-object `gas210` profile also permits verified based word loads in a reorder window | retail (func_0012C990, func_00128F90); original GNU 2.10-ee-001003-1 directly reproduces all six C functions in src/core/00121750.c | 3 (1,200 bytes) |
+| `tools/fix_volatile_slot.py` | a volatile store fills a following call slot; the whole-object `gas210` profile also permits verified based word loads in a reorder window | retail (func_0012C990, func_00128F90); original GNU 2.10-ee-001003-1 directly reproduces all six C functions in src/core/cdvd/read.c | 3 (1,200 bytes) |
 | `tools/fix_jump_tables.py` | a switch's jump table placed at retail's table address (section placement only; no instruction changes); configured core tables also keep retail's padding between tables | retail's `jtbl_` symbols; core tables at 0x1528B0 and 0x1529E0 are separated by twelve 0xCD fill bytes | 20 level functions (249,656 bytes); core placement preserves all 1,209 executable C matches and removes twelve image-only data mismatches |
 | `tools/strip_dead.py` | retail's linker removing unreferenced libgcc functions (the first `floor(size/8)*8` bytes go, a 4-mod-8 function leaves its last word) | reproduces every odd spot in retail's libgcc from GCC's own source (`src/libgcc/README.md`) | the libgcc objects `dp-bit.o`, `fp-bit.o` and `L__main` |
 
@@ -175,7 +175,7 @@ What that meant for the nine functions that had per-function flags
 | func_L00_002E9D78 | `-fno-schedule-insns` | 12 of 53 | its own file, `shared/follow_camera_angle_blend.c` |
 | func_L00_001ED6D8 | `-fno-force-mem` | 8 of 10 | its own file, `shared/level_camera_setup.c` |
 | func_002282D0 (`src/game/pause.c`) | `-mno-split-addresses` | 43 of 124 | retail assembly: pause.c's boundaries are retail's object (from the NTSC split), so the flag cannot be the file's |
-| func_0011CB40 (`src/core/00119D88.c`, `sceSifInitIopHeap`) | `-fno-schedule-insns` | 18 of 45 | retail assembly: the functions around it in Sony's IOP heap code break with the flag, so nothing shows it was an object of its own |
+| func_0011CB40 (`src/core/kernel/kprintf.c`, `sceSifInitIopHeap`) | `-fno-schedule-insns` | 18 of 45 | retail assembly: the functions around it in Sony's IOP heap code break with the flag, so nothing shows it was an object of its own |
 
 The two split-off shared files are new units of one function each in the
 progress report; the level ones stay in their level's unit.
@@ -255,7 +255,7 @@ the functions that are exact only with the step.
 
 ### Core jump-table padding (2026-10-18)
 
-`src/core/00119D88.c` reconstructs several contiguous SDK members in one
+`src/core/kernel/kprintf.c` reconstructs several contiguous SDK members in one
 translation unit. Its compiler-generated `.rodata` includes tables at
 `jtbl_001528B0` and `jtbl_001529E0`. The first table ends at `0x1529D4`;
 retail has twelve `0xCD` bytes before the second table. A single input

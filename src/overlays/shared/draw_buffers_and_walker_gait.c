@@ -3,8 +3,8 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "structs/moby.h"
-#include "core/00122818.h"
-#include "core/00122AD8.h"
+#include "core/gs/load_image.h"
+#include "core/gs/store_image.h"
 #include "asm_functions/shared_levels.h"
 
 extern void flush_cache(int);

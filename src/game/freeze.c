@@ -3,7 +3,7 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
-#include "core/989snd.h"
+#include "core/sound/989snd.h"
 #include "game/help.h"
 #include "game/hud.h"
 #include "game/memcard.h"

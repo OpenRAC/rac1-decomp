@@ -11,7 +11,7 @@
 #include "game/pause.h"
 #include "game/stream.h"
 #include "overlays/shared/camera_switch_and_update.h"
-#include "core/00116070.h"
+#include "core/libc/printf_rand.h"
 #include "data/shared_levels.h"
 #include "game/framebuf.h"
 #include "enums/level.h"
