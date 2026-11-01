@@ -52,7 +52,7 @@ extern void wait_vblank_start(void);
 extern long wait_vblank_csr(void);
 
 /* Returns the current field, bit 13 of the GS CSR (read directly at
-   0x12001000, or through func_00118F60), when the display is
+   0x12001000, or through wait_vblank_csr), when the display is
    interlaced, and 1 otherwise. In the second arm the bit is taken from
    the call's result before the interlace test, as retail does. */
 int sce_gs_sync_v(void) {

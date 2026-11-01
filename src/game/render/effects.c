@@ -124,9 +124,9 @@ extern float FastAddRots(float, float);
 /*
  * Spawns a burst of particle effects around (arg1, arg2) using the source
  * object's unk10 (a size, scaled by 40.0f) and unk18 (looked up through
- * func_001F4868 to get a handle passed on to func_001F5E60). unk2C picks
+ * GetEffectTex to get a handle passed on to append_rotated_sprite_quad). unk2C picks
  * the pattern: 0 -- a fan of unk26 particles, stepping the angle (unk1C)
- * by unk28 each time (func_001FA748 adds and wraps the angle); 1 -- four
+ * by unk28 each time (FastAddRots adds and wraps the angle); 1 -- four
  * particles offset from the point along and across the current angle;
  * 2 -- a single particle. Matching the case order (1, then 0 vs
  * negative, then 2 vs default) needed a real switch so gcc's own
@@ -216,8 +216,8 @@ extern float IntToFloat(int);
 extern void spawn_particle_burst(void *, float, float);
 
 /* Draws every queued glow whose moby is live (not in state 0xFE/0xFD):
-   at its projected screen position (func_001F2418, then relative to the
-   D_0013E600 offset in 1/16 units) or, for off-screen ones, at the
+   at its projected screen position (project_to_screen, then relative to the
+   g_screen_extent offset in 1/16 units) or, for off-screen ones, at the
    screen centre; then empties the queue. Nothing in level 0x72. */
 void render_queued_rotated_sprites(void) {
     float centre[4];

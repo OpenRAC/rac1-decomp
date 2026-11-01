@@ -13,7 +13,7 @@
  * sceCdCallback, the N/S command pre-checks, sceCdSync/SyncS, sceCdInit,
  * sceCdDiskReady, sceCdMmode ...). Built with Sony's 2.9-ee (Makefile.sn,
  * EE29_CORE), like the prebuilt libcdvd.a it matches. The module sees
- * most of its globals as volatile (func_001209D8).
+ * most of its globals as volatile (cd_ncmd_callback).
  */
 
 extern int create_semaphore(void *);
@@ -23,15 +23,15 @@ extern void sceSifAddCmdHandler(int arg0, int arg1, int arg2);
 ASM_FUNC("asm/handwritten/core_text", func_001208E8);
 
 /* sceCdDelayThread: sleep on an alarm. Same stack-descriptor idiom as
-   func_0011BBF0 (a SemaParam: initCount [2] = 0, maxCount [1] = 1,
-   option [5] = 0). The second argument to func_00118B20 (SetAlarm) is the
-   address of func_001208E4's *second* instruction -- retail builds it as
-   one %hi/%lo pair on `func_001208E4 + 4`, so it is a code address the
+   fs_call_sema_init (a SemaParam: initCount [2] = 0, maxCount [1] = 1,
+   option [5] = 0). The second argument to set_alarm (SetAlarm) is the
+   address of cd_delay_alarm_handler_base's *second* instruction -- retail builds it as
+   one %hi/%lo pair on `cd_delay_alarm_handler_base + 4`, so it is a code address the
    source names by symbol, not a separate label. `unsigned short arg0` is
    what puts `andi $17,$4,0xFFFF` in the prologue.
 
    Exact under 2.9-ee with the stores written initCount, maxCount, option
-   (as func_0011B710). Under 2.95.3 it was 24/104: that build front-loads
+   (as fs_iob_sema_make). Under 2.95.3 it was 24/104: that build front-loads
    `sd $31` where retail interleaves the descriptor stores between the
    `$16` and `$31` saves. */
 void sceCdDelayThread(unsigned short arg0) {
@@ -68,19 +68,19 @@ void *sce_cd_callback(void *arg0) {
 
 /*
  * _sceCd_cd_callback: the N-command completion callback. Latch *arg0 into
- * D_00131414 and D_00131418; status 0xB clears D_00131414/D_001313F0 and
- * returns; otherwise signal the D_001313E8 semaphore (func_00118CA0,
- * iSignalSema, int return) and D_001313E0 too if D_001313D4 and the
- * handler D_00159840 are set, else clear D_001313F0; finally clear
- * D_00131414.
+ * cd_callback_num and cd_last_callback_num; status 0xB clears cd_callback_num/cd_ncmd_busy and
+ * returns; otherwise signal the cd_ncmd_sema semaphore (i_signal_semaphore,
+ * iSignalSema, int return) and cd_callback_sema too if cd_callback_thread_id and the
+ * handler cd_user_callback are set, else clear cd_ncmd_busy; finally clear
+ * cd_callback_num.
  *
  * Every global it touches is read and written as `volatile`, through
  * `__asm__` aliases (the file's plain `extern int` declarations below
- * stay as they are). That gives retail's two reloads of D_00131414, the
+ * stay as they are). That gives retail's two reloads of cd_callback_num, the
  * bare `nop`s after both jal (the semaphore-id loads cannot go into the
  * slots) and the unfilled `b` slot; with fewer volatiles the size
  * changes. Exact under 2.9-ee only: 2.95.3's GCSE copies the %hi of
- * D_00131414 into $16 (`lui $2` + `move $16,$2`) where retail loads
+ * cd_callback_num into $16 (`lui $2` + `move $16,$2`) where retail loads
  * `lui $16` directly (SIZE 164/160).
  */
 extern volatile int cd_callback_num_v __asm__("D_00131414");
@@ -113,8 +113,8 @@ LINKER_REMNANT("asm/remnants/core_text", func_00120A78);
 
 /* libcdvd S-command completion callback: through the uncached view of the
    receive block, copies n0 bytes of buf0 to dst0 and n1 bytes of buf1 to
-   dst1, then finishes like the N-command callback (func_001209D8 on
-   D_00131414). Each destination is loaded once inside its own `if`, which
+   dst1, then finishes like the N-command callback (cd_ncmd_callback on
+   cd_callback_num). Each destination is loaded once inside its own `if`, which
    gives retail's doubled count test. */
 extern int cd_callback_num;
 
@@ -162,7 +162,7 @@ extern s32 create_semaphore_r(struct SemaParam_120B28 *) __asm__("func_00118C70"
 
 /* cmd_sem_init: unless both command semaphores already exist, create them
    (count 1, max 1) and the completion semaphore (count 0) through
-   func_00118C70 (CreateSema), then clear D_001313F0.
+   create_semaphore (CreateSema), then clear cd_ncmd_busy.
    Adapted from Lombyte's project (GPL-3.0): src/sdk/library/cmd_sem_init.c, cmd_sem_init. */
 void cd_sema_init(void) {
     struct SemaParam_120B28 sema;
@@ -191,8 +191,8 @@ extern void sceSifRemoveCmdHandler(int);
 
 /*
  * cdvd_exit (libcdvd.a cdvd000.o): if the callback thread exists
- * (D_001313D4, cb_thid), set the callback number (D_00131414,
- * sceCdCbfunc_num) to -1 and SignalSema its semaphore (D_001313E0,
+ * (cd_callback_thread_id, cb_thid), set the callback number (cd_callback_num,
+ * sceCdCbfunc_num) to -1 and SignalSema its semaphore (cd_callback_sema,
  * cb_semid); DeleteSema the N-command, S-command and callback
  * semaphores; then remove SIF command handler 0x80000012 with interrupts
  * off, re-enabling them if DIntr said they were on.
@@ -222,8 +222,8 @@ void cdvd_exit(void) {
 
 LINKER_REMNANT("asm/remnants/core_text", func_00120C58);
 
-/* Interrupt handler registered by func_00120CA0. If a handler is set
-   (D_00159844) and the flag D_001313E4 is clear, calls it with D_00159848
+/* Interrupt handler registered by cd_install_poweroff_handler. If a handler is set
+   (cd_poweroff_callback) and the flag cd_poweroff_installing is clear, calls it with cd_poweroff_callback_arg
    as its argument. The linker remnant in front of it was split off. */
 extern int cd_poweroff_callback;
 extern int cd_poweroff_callback_arg;
@@ -322,8 +322,8 @@ extern void signal_semaphore(int);
 extern int cd_ncmd_recv_buffer;
 
 /*
- * sceCdNcmdDiskReady, sibling of func_00121930 (and of the func_0011CBC8
- * pair): open the service, run one func_0011B4C8 RPC, then release the
+ * sceCdNcmdDiskReady, sibling of sce_cd_get_error (and of the sce_sif_alloc_iop_heap
+ * pair): open the service, run one sif_call_rpc RPC, then release the
  * lock and hand back the reply. The reply is read back through the
  * uncached mirror of the DMA buffer (| 0x20000000), which is why the
  * address is spelled as an integer or.
@@ -569,7 +569,8 @@ extern void sceSifInitRpc();
 extern void sceSifWriteBackDCache();
 extern s32 sif_call_rpc();
 
-/* libcdvd disk-ready query (the sceCdDiskReady pattern): take the S-command semaphore, bind the 0x8000059A server once, send mode and return the server's status word. Mode 8 reports -1 on failure, every other mode 6.
+/* libcdvd disk-ready query (the sceCdDiskReady pattern): take the S-command semaphore, bind the 0x8000059A server
+   once, send mode and return the server's status word. Mode 8 reports -1 on failure, every other mode 6.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00121190.c, FUN_00121190. */
 s32 sce_cd_disk_ready(s32 mode) {
     s32 response;

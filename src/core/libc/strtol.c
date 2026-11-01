@@ -91,7 +91,7 @@ long _strtol_r(void *rptr, int nptr_, int endptr_, int base) {
 
 extern long _strtol_r(void *, int, int, int);
 
-/* newlib's strtol: _strtol_r (func_00116D30) on _REENT. */
+/* newlib's strtol: _strtol_r on _REENT. */
 long strtol(int arg0, int arg1, int arg2) {
     return _strtol_r(_impure_ptr, arg0, arg1, arg2);
 }

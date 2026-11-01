@@ -194,9 +194,9 @@ s32 map_filter_l07_0(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z) {
 
 extern int map_region_enabled_0 NOT_SDA;
 
-/* Menu hit test (func_00207200's family: `a` is the Hero state test
-   shared with func_00207340/func_00207930). Two independent ways to hit:
-   the first box with arg1 >= 0x135 and D_001A04A8 set and arg3 >= 47.7,
+/* Menu hit test (map_filter_l01_3's family: `a` is the Hero state test
+   shared with map_filter_l01_5/map_filter_l07_3). Two independent ways to hit:
+   the first box with arg1 >= 0x135 and map_region_enabled_0 set and arg3 >= 47.7,
    which can succeed even when `a` is true; or, only when `a` is true,
    all three of a second group of boxes hit. */
 int map_filter_l07_1(int arg0, int arg1, float unused1, float unused2, float arg3) {
@@ -219,7 +219,7 @@ int map_filter_l07_1(int arg0, int arg1, float unused1, float unused2, float arg
 }
 
 /* Menu hit test. Left of x 0xE9 (arg1 < 0xE9) the point must be inside
-   all four func_00209048 boxes. Otherwise it needs a hit in each of
+   all four point_is_clockwise boxes. Otherwise it needs a hit in each of
    three pairs of boxes, where both boxes of a pair are always tested.
    Each pair's results are locals of their own block: the first one then
    lives in one basic block across the second call, so local-alloc gives
@@ -265,7 +265,7 @@ __asm__(".section .text\n\tnop\n");
 
 extern int map_region_enabled_5 NOT_SDA;
 
-/* Menu hit test in two layouts (func_00207200's family). The first arm
+/* Menu hit test in two layouts (map_filter_l01_3's family). The first arm
    needs its own `return 0`: jump.c then sets v0 = 1 before the test
    there too, which gives retail's registers and lets the arm be
    cross-jumped into the second one. */
@@ -289,8 +289,8 @@ int map_filter_l07_3(int px, int py, float unused1, float unused2, float reveal_
 
 extern int map_region_enabled_3 NOT_SDA;
 
-/* Same hit test as func_002071A8, run against two boxes: nonzero when
-   D_001A04B4 is set and either box is hit. Retail sets the result before
+/* Same hit test as Menu_IsPointInFixedQuad, run against two boxes: nonzero when
+   map_region_enabled_3 is set and either box is hit. Retail sets the result before
    each test (0, 1, 0, then 1 on the fall-through), so the C does the same.
    The last store goes through a short: jump.c folds `r = 0; if (b) r = 1;`
    into an sltu only when the store sets a whole register, and a subreg
@@ -316,8 +316,8 @@ extern int map_region_enabled_6 NOT_SDA;
 extern int map_region_enabled_4 NOT_SDA;
 
 /* Hit test in two layouts: arg3 (the third float, $f14) must lie in
-   [73.5, 80] with D_001A04C0 set, or for arg1 >= 0x9D in [51.5, 54] with
-   D_001A04B8 set. Written as `<`/`>` rejections so they compile to retail's
+   [73.5, 80] with map_region_enabled_6 set, or for arg1 >= 0x9D in [51.5, 54] with
+   map_region_enabled_4 set. Written as `<`/`>` rejections so they compile to retail's
    c.lt/bc1t; the second arm's `return 0` cross-jumps into the first's. */
 int map_filter_l07_5(void *arg0, int arg1, float unused1, float unused2, float arg3) {
     if (arg1 < 0x9D) {
@@ -336,9 +336,9 @@ int map_filter_l07_5(void *arg0, int arg1, float unused1, float unused2, float a
 extern int map_region_enabled_1 NOT_SDA;
 extern int point_is_clockwise(int, int, int, int, int, int);
 
-/* Menu hit test (func_00207200's family): for arg1 >= 0x105, needs
-   D_001A04AC set and arg3 >= 47.7; otherwise returns `a` directly when
-   arg1 < 0xC1, else `a` unless func_00209048's box test hits (which
+/* Menu hit test (map_filter_l01_3's family): for arg1 >= 0x105, needs
+   map_region_enabled_1 set and arg3 >= 47.7; otherwise returns `a` directly when
+   arg1 < 0xC1, else `a` unless point_is_clockwise's box test hits (which
    clears it to 0). */
 int map_filter_l07_6(int px, int py, float fparg0, float fparg1, float reveal_test_value) {
     Hero *hero = (Hero *)&g_hero;
@@ -361,7 +361,7 @@ int map_filter_l07_6(int px, int py, float fparg0, float fparg1, float reveal_te
     return result;
 }
 
-/* Menu hit test (func_00207200's family): hits unless the menu state
+/* Menu hit test (map_filter_l01_3's family): hits unless the menu state
    blocks it, arg3 ($f14) is below 71.5, or the first box is hit, and
    then only if the second box is not. */
 s32 map_filter_l07_7(s32 px, s32 py, f32 fparg0, f32 fparg1, f32 reveal_test_value) {
@@ -410,7 +410,7 @@ int map_filter_l08_2(int arg0, float unused1, float unused2, float arg1) {
     return (arg1 >= 37.0f) ? 1 : 0;
 }
 
-/* func_00207D38's twin. */
+/* map_filter_l08_2's twin. */
 int map_filter_l08_3(int arg0, float unused1, float unused2, float arg1) {
     if (arg0 < 0xE0) {
         return (arg1 >= 42.0f && arg1 <= 43.0f) ? 1 : 0;
@@ -537,9 +537,9 @@ int map_filter_l11_2(int arg0, float unused1, float unused2, float arg1) {
 
 extern unsigned char menu_item_enabled_78 NOT_SDA;
 
-/* The Hero state test of func_00207340, computed up front (retail
+/* The Hero state test of map_filter_l01_5, computed up front (retail
    evaluates it before the arg0 branch), gates the arg0 < 0x15F arm; the
-   other arm is func_00208160's second test with D_0013D4EA. */
+   other arm is map_filter_l11_4's second test with menu_item_enabled_78. */
 int map_filter_l11_3(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
     struct Hero *hero_ptr = (struct Hero *)&g_hero;
     int hero_state_allows_reveal =
@@ -570,7 +570,7 @@ int map_filter_l11_5(void) {
 
 /* arg0 is unused; the two unused float parameters put arg3 in $f14
    (floats count consecutively from $f12, one register each; see
-   func_00207CE0). With `r` defaulting to 1, reorg turns the reset into
+   map_filter_l08_1). With `r` defaulting to 1, reorg turns the reset into
    retail's bc1fl with `r = 0` in its delay slot. The nop after the mtc1
    is ps2eeas's (tools/ps2eeas_nops.py). */
 int map_filter_l12_0(void *arg0, int arg1, float unused1, float unused2, float arg3) {
@@ -596,7 +596,7 @@ typedef float FVec4[4] __attribute__((aligned(16)));
 extern float vec_distance_xy(float *, float *);
 
 /* True when (x, y) is within 35 of the point (161.5, 249), or always
-   while D_001A04A8 is set. Both vectors are 16-byte aligned like the
+   while map_region_enabled_0 is set. Both vectors are 16-byte aligned like the
    SDK's sceVu0FVECTOR; a partial initializer then clears the whole
    quadword with one por/sq (a plain float[4] gets a memset call). */
 int map_filter_l15_0(int x, int y) {
@@ -651,15 +651,15 @@ extern int compress_map_coverage(void *dst, int size, int a, int b);
 extern void downsample_map_coverage(void *dst);
 
 /* The same object, twice. gp is 0x00166D00, so the `lw $4,-0x7E7C($28)`
-   in retail's delay slot and the `lui/%lo(D_0015EE84)` a few
+   in retail's delay slot and the `lui/%lo(g_current_level_index)` a few
    instructions later are the SAME address; retail reaches it both ways
    inside one function. Declared small it lands in SDA at -G2, declared
    int it stays out. */
 extern int g_current_level_index MACRO_ADDR;
 
-/* Read a sector into arg0 from the open file (D_001A01F0 slot state) or
+/* Read a sector into arg0 from the open file (level_map_selection slot state) or
    clear it when none is open, and track the largest read per slot in
-   D_0013D668. Adapted from Lombyte's project (GPL-3.0) for PAL. */
+   max_map_coverage_size. Adapted from Lombyte's project (GPL-3.0) for PAL. */
 void save_map_coverage(int arg0) {
     int n;
 
@@ -683,7 +683,7 @@ extern void expand_map_coverage(void *, unsigned char *);
 
 /* Load a saved map coverage chunk, decoding it as compressed or plain by its first bit. */
 void load_map_chunk(void *arg0, unsigned char *arg1, int arg2) {
-    /* func_00209040 is empty in retail and takes no arguments; $4/$5/$6
+    /* DebugEnter_Nop is empty in retail and takes no arguments; $4/$5/$6
        still hold our own incoming arguments across it, which is why retail
        saves them into $16-$18 rather than reloading. */
     DebugEnter_Nop();
@@ -697,7 +697,8 @@ void load_map_chunk(void *arg0, unsigned char *arg1, int arg2) {
     }
 }
 
-/* Decodes the run-length compressed 1-bit occlusion map into 0x8000 bytes at dst: runs are expanded one byte per bit in the scratchpad, packed eight to a byte and copied out 0x400 bytes at a time. */
+/* Decodes the run-length compressed 1-bit occlusion map into 0x8000 bytes at dst: runs are expanded one byte per bit
+   in the scratchpad, packed eight to a byte and copied out 0x400 bytes at a time. */
 void decode_compressed_occlusion_map(void *dst, unsigned char *ctrl, int spans) {
     unsigned char *dst_end;
     unsigned char *end;
@@ -840,9 +841,9 @@ typedef struct {
 extern NibbleBits nibble_popcount_table;
 extern unsigned char *map_coverage_buffer;
 
-/* Condenses D_001A01FC's 0x200 rows of 64 bytes (two 4-bit samples
+/* Condenses map_coverage_buffer's 0x200 rows of 64 bytes (two 4-bit samples
    each) into a 1-bit image at arg0: every four rows the per-column
-   bit counts (D_001E83B0 is the nibble popcount table, copied onto the
+   bit counts (nibble_popcount_table is the nibble popcount table, copied onto the
    stack) are summed, and a column with 8 or more set bits becomes a
    set bit, packed eight columns to a byte. The first byte is then
    flagged with 0x02 and bit 0 cleared. */
@@ -891,12 +892,12 @@ extern int sprintf_3(void *, char *, int) __asm__("func_00116248");
 extern int sprintf_2(void *, char *) __asm__("func_00116248");
 
 /* Copies the text of menu entry `bank` (text id at +0xA of its 0x28-byte
-   record in the table at D_001A01F0[8]) into dst, expanding the first
-   '%' escape: "%b" becomes the entry's D_001E02B0 value (the record's
+   record in the table at level_map_selection[8]) into dst, expanding the first
+   '%' escape: "%b" becomes the entry's vendor_item_prices value (the record's
    +0xC item, first int of its 0x18-byte row) printed with "%d", any
    other letter becomes "error". The strings are unsigned char (one lbu
    serves both the test and the copy), and each block that reads
-   D_001A01F0 has its own char * local, which gives retail's kept %hi
+   level_map_selection has its own char * local, which gives retail's kept %hi
    and rebuilt %lo. */
 void FormatMenuItemText(int bank, unsigned char *dst) {
     unsigned char buf[16];
@@ -944,8 +945,8 @@ typedef struct {
 extern OrientEntry level_map_transforms[];
 
 /* arg2 (a table index, offset by 100 when the +100 variant is wanted)
-   selects a row of D_0019EA70 (19 rows, 0..0x12); -1 means "use
-   D_0015EE84"; anything out of [0,0x13) collapses to row 0. Row 6 with
+   selects a row of level_map_transforms (19 rows, 0..0x12); -1 means "use
+   g_current_level_index"; anything out of [0,0x13) collapses to row 0. Row 6 with
    the +100 variant blends against fixed constants instead of the
    generic per-row formula. */
 void world_to_map_coords(float *out0, float *out1, int arg2, float arg3, float arg4) {
@@ -1017,7 +1018,9 @@ void draw_map_markers(int left, int top, int right, int bottom) {
             int tex = GetIconFrame(m->icon, m->sub);
             int *st = level_map_selection;
             float *sc =
-                (float *)(st + 0x2D); /* the zoom scale table, at 0xB4 of the same block (the assembly's D_001A02A4) */
+                (float
+                     *)(st +
+                        0x2D); /* the zoom scale table, at 0xB4 of the same block (the assembly's marker_scale_by_level) */
             char *arena = hud_state_raw;
             unsigned char *e =
                 (unsigned char *)(*(char **)(arena + 0x24) + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
@@ -1037,8 +1040,8 @@ extern void *menu_action_messages[];
 extern char race_gates[];
 
 /* Copies three floats (+0x10, +0x14, +0x48) of each of level
-   D_0015EE84's objects in D_00199578 into the 16-byte slots at
-   D_0013D6B8; the index range is D_001E06B8[i]..[i + 1]. Binding the
+   g_current_level_index's objects in menu_action_messages into the 16-byte slots at
+   race_gates; the index range is level_object_index_ranges[i]..[i + 1]. Binding the
    two bases to locals in retail's order orders their %hi halves. */
 void copy_level_object_positions(void) {
     int i = g_current_level_index;
@@ -1125,9 +1128,9 @@ extern int memory_card_error_latch MACRO_ADDR;
 extern int menu_state_frame_count MACRO_ADDR;
 extern void (*menu_state_handlers[])(void);
 
-/* Calls the handler for the state in D_0015EFB0 from the table at
-   D_001A0538. Bits 0x80 and 0x100 of D_0015EFB4 request states 0x15 and
-   0x14; D_00161380 counts calls since the state last changed. */
+/* Calls the handler for the state in mode_freeze_state from the table at
+   menu_state_handlers. Bits 0x80 and 0x100 of mode_freeze_flags request states 0x15 and
+   0x14; menu_state_frame_count counts calls since the state last changed. */
 void Menu_RunStateHandler(void) {
     MemoryCardState *b = (MemoryCardState *)memory_card_state;
     int old;
@@ -1157,9 +1160,9 @@ extern char memory_card_state[];
    tools/check_macro_slots.py). */
 extern int memory_card_status;
 
-/* Word view of the D_0013D390 record: indexing an int array here, rather
+/* Word view of the memory_card_state record: indexing an int array here, rather
    than casting byte offsets off a char pointer, is what lets GCC keep the
-   record address's lui/addiu pair together before the D_0015EFB0 store. */
+   record address's lui/addiu pair together before the mode_freeze_state store. */
 extern int memory_card_state_i[] __asm__("D_0013D390");
 
 /* Sets menu state 3, clears the record's word at +0xFC and copies +0xC4
@@ -1170,9 +1173,9 @@ void save_card_state_init(void) {
     memory_card_state_i[0x07] = memory_card_state_i[0x31];
 }
 
-/* Clears the 4 and 2 flag bits of D_0015EFB4, then picks the next
-   state into D_0015EFB0 from the 0x80/0x100/0x200 bits and the
-   D_0013D390 record. The cross-jumped `b` back into the 0x80 arm is
+/* Clears the 4 and 2 flag bits of mode_freeze_flags, then picks the next
+   state into mode_freeze_state from the 0x80/0x100/0x200 bits and the
+   memory_card_state record. The cross-jumped `b` back into the 0x80 arm is
    one GNU as pads as a short loop and ps2eeas did not;
    tools/ps2eeas_nops.py writes it as a .word. */
 void save_card_state_good_save(void) {
@@ -1345,14 +1348,14 @@ void save_card_state_check_save(void) {
 
 extern char memory_card_state[];
 
-/* Dispatch-table handler for menu.cpp's D_0013D390 state record. First,
+/* Dispatch-table handler for menu.cpp's memory_card_state state record. First,
    guarded by unkDC>=3 || unkE4>=0, clears a per-index slot in the
-   0xB0-byte array (D_0013D390+0xB0 + idx*0xC0) from 1 to 2 -- named as
+   0xB0-byte array (memory_card_state+0xB0 + idx*0xC0) from 1 to 2 -- named as
    its own `base` local, computed before `idx`, matching the sibling
-   func_00209238's identical slot-lookup shape (that ordering is what
+   save_card_state_warning's identical slot-lookup shape (that ordering is what
    makes the allocator put the base pointer in $a0 and the literal 1 in
    $a1, as retail does; keeping `b` mutated in place puts them the other
-   way round). Then it re-reads the record fresh and sets D_0015EFB0
+   way round). Then it re-reads the record fresh and sets mode_freeze_state
    (the next-state word) from unk1C/unkEC/unk14/unkC+unkAC. */
 void CardMenu_State11MarkSlotChoose(void) {
     MemoryCardState *b = (MemoryCardState *)memory_card_state;
@@ -1445,8 +1448,8 @@ void save_card_state_creating_save(void) {
     }
 }
 
-/* func_00209188's sibling: clears the 4 and 2 bits, then the same
-   0x80/0x100 arms and the D_0013D390 record's tests. Its cross-jumped
+/* save_card_state_good_save's sibling: clears the 4 and 2 bits, then the same
+   0x80/0x100 arms and the memory_card_state record's tests. Its cross-jumped
    `b` is written as a .word too (tools/ps2eeas_nops.py). */
 void CardMenu_State16NextState(void) {
     int flags;

@@ -8,7 +8,7 @@
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  *
  * Two Sony libraries back to back, both built with Sony's 2.9-ee
- * (Makefile.sn, EE29_CORE): libgraph's sceGsSyncVCallback (func_00123168,
+ * (Makefile.sn, EE29_CORE): libgraph's sceGsSyncVCallback (sceGsSyncVCallback,
  * the last of libgraph's modules, which end 8-byte aligned so no fill
  * separates them) and the start of libdma ("libdma: sync timeout";
  * sceDmaGetChan, sceDmaReset, sceDmaPutEnv, sceDmaPause, ...).
@@ -27,15 +27,15 @@ extern void enable_intc_atomic(int);
 
 /*
  * libgraph's sceGsSyncVCallback: install (or, called with arg0 == 0,
- * uninstall) the V-sync handler at offset 8/0xC of D_00132E40
- * (func_00121D08's sceGsGetGParam -- the same global func_00122140 reads
- * the mode flag from), under DisableIntc/EnableIntc (func_00119328/
- * func_00119390) of INTC 2 (VBLANK start) around the AddIntcHandler/
- * RemoveIntcHandler syscalls (func_00118A90/func_00118AA0). Returns the
+ * uninstall) the V-sync handler at offset 8/0xC of CoreDataTable
+ * (sceGsGetGParam's sceGsGetGParam -- the same global sce_gs_put_disp_env reads
+ * the mode flag from), under DisableIntc/EnableIntc (disable_intc_atomic/
+ * enable_intc_atomic) of INTC 2 (VBLANK start) around the AddIntcHandler/
+ * RemoveIntcHandler syscalls (add_intc_handler/remove_intc_handler). Returns the
  * previous handler.
  *
  * Exact under 2.9-ee as written. Under 2.95.3 it was 8/0xA0: that
- * compiler set up a0 (lvl) before a1 (arg0) for the func_00118A90 call
+ * compiler set up a0 (lvl) before a1 (arg0) for the add_intc_handler call
  * whatever the spelling, where retail (and 2.9-ee) has a1 first.
  */
 int sceGsSyncVCallback(void *arg0) {
@@ -65,8 +65,8 @@ extern char dma_sync_timeout_msg[];
 
 /*
  * Wait for a DMA channel: spin while CHCR.STR (bit 8 of *arg0) is set;
- * after 0x1000000 polls report through func_0011A6C8(D_001534E0,
- * "libdma: sync timeout") and sceDmaPause (func_00123650) the channel on
+ * after 0x1000000 polls report through scePrintf(dma_sync_timeout_msg,
+ * "libdma: sync timeout") and sceDmaPause the channel on
  * every further poll.
  *
  * The countdown starts at 0x1000000 and is decremented before the test:
@@ -126,13 +126,13 @@ int sce_dma_get_chan(unsigned int arg0) {
 
 /*
  * sceDmaReset(mode): ret = D_CTRL.DMAE; for each of the ten channels
- * whose flag (D_001534F8[i]) is set, zero chcr/tadr/madr/as1/as0/sadr of
- * the channel's registers (D_00132E70[i]); D_STAT = 0xFF1F, then
- * D_STAT &= 0xFF1F0000; zero a 0x14-byte sceDmaEnv (func_001232A8) and
- * sceDmaPutEnv it (func_001233E8); if mode == 1 set DMAE. Exact under
+ * whose flag (DmaChannelsUsed[i]) is set, zero chcr/tadr/madr/as1/as0/sadr of
+ * the channel's registers (DmaChannels[i]); D_STAT = 0xFF1F, then
+ * D_STAT &= 0xFF1F0000; zero a 0x14-byte sceDmaEnv (dma_memclr) and
+ * sceDmaPutEnv it (sceDmaPutEnv); if mode == 1 set DMAE. Exact under
  * both compilers.
  *
- * Levers (build-sn/try/func_00123308/RESULT.md):
+ * Levers (build-sn/try/sceDmaReset/RESULT.md):
  *  - an index loop: loop.c strength-reduces it into the two pointers and
  *    the down-counter itself, in retail's init order (the old
  *    hand-written two-pointer loop swapped them);
@@ -247,7 +247,7 @@ LINKER_REMNANT("asm/remnants/core_text", func_001235C0);
 extern int dma_scratchpad_address(int);
 extern void dma_wait_channel(void *);
 
-/* Reset the record at p with func_00123208, keep func_00123280(arg1) in
+/* Reset the record at p with dma_wait_channel, keep dma_scratchpad_address(arg1) in
    p[12] unless it holds -1, clear p[8], and set flags 0x105 in p[0] with
    bits 2-3 cleared. The -1 test is unsigned, as retail builds 0xFFFFFFFF. */
 void sce_dma_send(int *p, int arg1) {
@@ -264,10 +264,10 @@ void sce_dma_send(int *p, int arg1) {
 LINKER_REMNANT("asm/remnants/core_text", func_00123630);
 
 /*
- * sceDmaPause: DI (func_0011D960), force D_ENABLEW.CPND (0x10000) if
+ * sceDmaPause: DI (disable_interrupts), force D_ENABLEW.CPND (0x10000) if
  * D_ENABLER has it clear, read D_CTRL (a volatile read for its side
  * effect only), clear the channel's CHCR.STR (bit 8), restore
- * D_ENABLEW, EI (func_0011D9A8) if DI said interrupts were on, and
+ * D_ENABLEW, EI (enable_interrupts) if DI said interrupts were on, and
  * return the old CHCR.
  *
  * Exact under 2.9-ee. The mask has to be an unsigned constant

@@ -1,5 +1,5 @@
 /* Starts at 0x002FAEF8 (was vendor_002FAEF8.c). */
-/* Level 18 (Veldin (return)): func_L18_002FAEF8 in a file of its own, built with -mno-split-addresses
+/* Level 18 (Veldin (return)): draw_moby_color_cycling_bone_glows in a file of its own, built with -mno-split-addresses
  * (config/file_cflags.txt). GCC 2.95 takes options per translation unit,
  * and the functions of the file it came from do not build with this one
  * (docs/reference/BUILD_FIDELITY.md, "Flags"). */

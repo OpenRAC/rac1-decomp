@@ -1,7 +1,7 @@
 /* Starts at 0x00303430 (was vendor_00303430.c). */
-/* Level 14 code: func_L14_00303430 in a file of its own, built with -fno-sched-spec
+/* Level 14 code: draw_vendor_beam in a file of its own, built with -fno-sched-spec
  * (config/file_cflags.txt). The functions of vendor_002B2A28.c do not build
- * with it (func_L14_00300130 changes), so it was another object in retail
+ * with it (emit_moby_offset_particles changes), so it was another object in retail
  * (docs/reference/BUILD_FIDELITY.md, rule 2). */
 #include "common.h"
 #include "structs/moby.h"

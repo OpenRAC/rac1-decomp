@@ -1,5 +1,5 @@
 /* Starts at 0x002E0538 (was ribbons_002E0538.c). */
-/* Level 14 code: func_L14_002E0538 in a file of its own, built with -fno-gcse
+/* Level 14 code: animate_ribbon_effect_paths in a file of its own, built with -fno-gcse
  * (config/file_cflags.txt). The functions of vendor_002E0538.c do not build
  * with it (18 of 36 change), so it was another object in retail
  * (docs/reference/BUILD_FIDELITY.md, rule 2). */
@@ -43,7 +43,7 @@ typedef struct RibbonVars {
     f32 ring_step;                      /* 0x1F0 */
 } RibbonVars;
 
-// Per-frame update for the level 14 moby: refreshes its ring table and hands the table to func_001F49B0.
+// Per-frame update for the level 14 moby: refreshes its ring table and hands the table to AddDrawCallback.
 void animate_ribbon_effect_paths(char *moby) {
     RibbonVars *d = (RibbonVars *)((struct Moby *)moby)->pvars;
     RibbonPoint *o;

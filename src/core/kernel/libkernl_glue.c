@@ -226,16 +226,16 @@ long wait_vblank_csr(void) {
     return result;
 }
 
-/* func_00119CC8 takes no argument (it sets $a0 itself before its first
-   call); the file's `extern int func_00119CC8(int)` below is wrong. */
+/* sceTtyInit takes no argument (it sets $a0 itself before its first
+   call); the file's `extern int sceTtyInit(int)` below is wrong. */
 extern int sceTtyInit_v(void) __asm__("func_00119CC8");
 extern int sceTtyWrite(int, int);
 
 /* Deci2 tty write for fd 1/2: open the tty channel on first use
-   (func_00119CC8), then write. Calling the opener with no argument is
+   (sceTtyInit), then write. Calling the opener with no argument is
    what leaves retail's `jal; nop`: the `a0 = arg1` in the bnez slot is
    the write's argument, stolen from the branch target. */
-/* func_00119CC8 takes no argument; passing one puts a redundant move in
+/* sceTtyInit takes no argument; passing one puts a redundant move in
    the jal slot and swaps $s0/$s1. */
 int libc_glue_write(int fd, int buf, int len) {
     if (fd == 1 || fd == 2) {
@@ -254,7 +254,7 @@ extern int sceTtyRead(int, int);
 
 extern int sceTtyInit_v(void) __asm__("func_00119CC8");
 
-/* As func_00119008: func_00119CC8 is called with no argument. */
+/* As libc_glue_write: sceTtyInit is called with no argument. */
 int libc_glue_read(int arg0, int arg1, int arg2) {
     if (arg0 == 0) {
         if (CoreGlobalWord == 0) {
@@ -268,13 +268,13 @@ int libc_glue_read(int arg0, int arg1, int arg2) {
     return -1;
 }
 
-/* Takes an argument its callers pass (e.g. func_00112468) and ignores
+/* Takes an argument its callers pass (e.g. _close_r) and ignores
    it; an unused parameter costs no codegen. */
 int libc_glue_close(int arg0) {
     return -1;
 }
 
-/* Takes the three arguments its callers pass (e.g. func_00114518) and
+/* Takes the three arguments its callers pass (e.g. _lseek_r) and
    ignores them; unused parameters cost no codegen. */
 int libc_glue_lseek(void *a, void *b, void *c) {
     return -1;

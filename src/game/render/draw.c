@@ -49,9 +49,9 @@ extern short font_text_slot_index;
 extern char font_text_format[];
 extern int sprintf();
 
-/* Queues one text item: D_0018AC00[n] = {x, y, colour, pool position},
-   then sprintf(pool, "%s", str) (D_0015F108 is "%s") advances the
-   D_0015F100 string pool past the copy. Indexing the table at every
+/* Queues one text item: font_text_slots[n] = {x, y, colour, pool position},
+   then sprintf(pool, "%s", str) (font_text_format is "%s") advances the
+   font_text_cursor string pool past the copy. Indexing the table at every
    store gives retail's two addu forms; a `DrawTextRec *` local folds
    them into one register and comes out 12 bytes short. */
 void print_debug_text(int x, int y, int color, char *str) {
@@ -69,10 +69,10 @@ LINKER_REMNANT("asm/remnants/text", func_001F0FF0);
 
 extern int font_char_widths[];
 
-/* Draws `str` centred on x: sums the per-character widths in D_00189EC0
+/* Draws `str` centred on x: sums the per-character widths in font_char_widths
    (indexed by char - 0x20, anything past the table using entry 0x20),
    moves x left by half the total and queues the text with
-   func_001F0F78. Returns the adjusted x. `idx = ch` followed by the
+   print_debug_text. Returns the adjusted x. `idx = ch` followed by the
    out-of-range override gives retail's sltiu 0x60 + movn; the reverse
    (default first, then `if (ch < 0x60)`) becomes sltu + movz. */
 int print_debug_text_centered(int x, int y, int color, char *str) {
@@ -674,7 +674,7 @@ extern float screen_projection_focal;
 extern CameraSystem gCamera_cam __asm__("D_00187040");
 
 /* Projects camera-space point a1 through the camera matrix, divides by
-   depth (D_0018D010 / w) and scales to x16 screen units. func_002346C0
+   depth (screen_projection_focal / w) and scales to x16 screen units. DrawTfrag
    in tfragfunc.c builds the same matrix. */
 void project_to_screen(Vec3f *a0, float *a1) {
     float m[4][4];
@@ -722,12 +722,12 @@ extern void SetPalMode(void);
 
 extern volatile int vif_chain_flags_v __asm__("D_00160FE0") MACRO_ADDR;
 
-/* Render setup: raises D_0015F6FC, clears D_00160FE0, runs the setup calls,
-   picks func_00121B78's mode from D_0015EE80 (retail's movz), then runs
-   func_001F3890 with D_0015EF78 saved around it and D_00161000 cleared.
-   The D_00160FE0 flag is volatile: retail keeps its store out of
-   func_002350A8's delay slot, where the plain MACRO_ADDR store would go.
-   The two stores that do sit in delay slots (D_00161000, D_0015EF78) are
+/* Render setup: raises space_load_in_progress, clears vif_chain_flags, runs the setup calls,
+   picks sceGsResetGraph's mode from pal_mode (retail's movz), then runs
+   SetPalMode with g_gs_texture_allocation_start saved around it and g_render_packet_cursor cleared.
+   The vif_chain_flags flag is volatile: retail keeps its store out of
+   DMAC_VIF1_Disable's delay slot, where the plain MACRO_ADDR store would go.
+   The two stores that do sit in delay slots (g_render_packet_cursor, g_gs_texture_allocation_start) are
    MACRO_ADDR and come out $gp-relative there. */
 void reset_graphics(void) {
     int flag;
@@ -763,7 +763,7 @@ typedef struct {
 } SceneG;
 extern SceneG gCamera_g __asm__("D_00187040");
 
-/* Builds the view matrices in the camera block from the rotation set up in D_00187390 or the three rotation angles, then copies the result to D_0018D080. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/view/fun_001f2260.c, FUN_001f2260. */
+/* Builds the view matrices in the camera block from the rotation set up in camera_rows or the three rotation angles, then copies the result to sky_view_mtx. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/view/fun_001f2260.c, FUN_001f2260. */
 void BuildViewMatrices(void) {
     float m[4][4];
     SceneG *g;
@@ -840,11 +840,11 @@ extern int part_clip_dist MACRO_ADDR;
 extern int level_fog_mode MACRO_ADDR;
 extern void UpdateViewContext(void);
 
-/* UpdateFog(void): copies the fog preset (the fixed D_001611C4 when
-   D_001873D4 is set, else the current D_0015F584) into the draw context
-   at D_0018CE00+0x218, sets the mode word D_001601BC (0x40000 or
-   0x1F4000), runs UpdateViewContext (func_001F3140) and clears
-   D_0015F598. The presets and the two words it writes are MACRO_ADDR:
+/* UpdateFog(void): copies the fog preset (the fixed water_fog_color_red when
+   use_alt_fog is set, else the current fog_color_red) into the draw context
+   at view_context+0x218, sets the mode word part_clip_dist (0x40000 or
+   0x1F4000), runs UpdateViewContext and clears
+   level_fog_mode. The presets and the two words it writes are MACRO_ADDR:
    retail reads each field with the one-register macro, and the mode
    word's store fits the branch delay slot ($gp-relative there). */
 void UpdateFog(void) {
@@ -875,7 +875,7 @@ __asm__(".section .text\n\tnop\n");
 extern char *occl_grid_data MACRO_ADDR;
 
 /* ParseOcclGrid(x, y, z): walks the three-level occlusion grid at
-   D_0015F720. Each level is {u16 start, u16 count, u16 entry[count]};
+   occl_grid_data. Each level is {u16 start, u16 count, u16 entry[count]};
    the coordinate minus start must fall in [0, count), and its entry is
    the next level's offset in words from the grid (levels 1 and 2, 0 =
    empty) or, at the last level, a 128-byte cell index from the root
@@ -1052,12 +1052,12 @@ extern short fs_aa_buffer[];
 extern int g_screen_extent[];
 extern float IntToFloat(int);
 
-/* InitViewContext: the same set-up as configure_graphics_projection (func_001F3760) for
-   the display's size, D_00151880[0xA8]/[0xA9], with fixed extras. The
-   GS viewport record D_0013E600 gets width, height, their halves and the
-   four <<4 edges around the 0x800 centre. The draw context D_0018CE00
+/* InitViewContext: the same set-up as configure_graphics_projection for
+   the display's size, fs_aa_buffer[0xA8]/[0xA9], with fixed extras. The
+   GS viewport record g_screen_extent gets width, height, their halves and the
+   four <<4 edges around the 0x800 centre. The draw context view_context
    gets 32, 745472 and 0.63 at +0xA0/+0xA4/+0xB0, the half extents as
-   floats (func_001FA888 is int to float) at +0x200/+0x204, four times
+   floats (IntToFloat is int to float) at +0x200/+0x204, four times
    each at +0x208/+0x20C, and 0, 524288, 255, 0 at +0x218/+0x21C/+0x228/
    +0x22C. The size is read into `short` locals (lhu, then sll/sra) through
    a base pointer that stays in $s1, and the height is read again from
@@ -1157,7 +1157,7 @@ extern void copy_memory_aligned(void *, void *, s32);
 #define set_tfrag_dists func_00234380
 
 /* Rebuilds the view state from the field of view, screen size and fog
-   endpoints: the clip constants at D_0018D0C0, the fog multiplier and the
+   endpoints: the clip constants at view_clip_constants, the fog multiplier and the
    fog packet registers, the projection matrices and the screen scale and
    bias vectors that the renderers copy into their packets. */
 void UpdateViewContext(void) {
@@ -1347,12 +1347,12 @@ void UpdateViewContext(void) {
 extern int g_screen_extent[];
 extern float IntToFloat(int);
 
-/* Sets the screen size: the GS viewport record at D_0013E600 gets width,
+/* Sets the screen size: the GS viewport record at g_screen_extent gets width,
    height, their halves and the four <<4 edges around the 0x800 centre;
-   the draw context at D_0018CE00 gets a2 at +0xB0, 32 and 524288 at
-   +0xA0/+0xA4, the half extents as floats (func_001FA888 is int to
+   the draw context at view_context gets a2 at +0xB0, 32 and 524288 at
+   +0xA0/+0xA4, the half extents as floats (IntToFloat is int to
    float) at +0x200/+0x204, four times each at +0x208/+0x20C, and a3..a6
-   at +0x218/+0x21C/+0x228/+0x22C; then UpdateViewContext (func_001F3140).
+   at +0x218/+0x21C/+0x228/+0x22C; then UpdateViewContext.
    The context is reached through one local pointer, which keeps its
    full address in $s0 as retail does (indexing the global directly
    folds +0xB0 into the base and spends $a0 on the %hi). */
@@ -1886,7 +1886,7 @@ void DrawDebugProfiler(void) {
 
 extern void DrawDebugProfiler(void);
 
-/* D_0015F6FC is read through a MACRO_ADDR alias: retail's one-register
+/* space_load_in_progress is read through a MACRO_ADDR alias: retail's one-register
    lui $2 / lw $2 (an older note filed it as an allocator question). */
 void prepare_debug_profiler_render(void) {
     if (space_load_in_progress_m == 0) {
@@ -1916,12 +1916,12 @@ static inline char *PagingArena(void) {
     return hud_state;
 }
 
-/* SetupGifPaging(int): marks the D_00161000 packet in D_0015F550 and
-   reserves 0x10 bytes, copies D_0015EF78 to D_0015EF74, clears
-   D_0015F558 and the first dword of the D_0015F55C paging slots, then,
+/* SetupGifPaging(int): marks the g_render_packet_cursor packet in gif_paging_head_tag and
+   reserves 0x10 bytes, copies g_gs_texture_allocation_start to g_gs_texture_allocation_cursor, clears
+   pending_texture_upload_count and the first dword of the effect_tex_cnt paging slots, then,
    when arg0 is 0, clears the +4 half of the arena's 8-byte list entries:
-   the list at D_0019A4E8 + 0x24 (count at +0x44 of the record at +0x18)
-   where it is at least D_0015EF8C >> 8, and all of the list at + 0x28
+   the list at hud_state + 0x24 (count at +0x44 of the record at +0x18)
+   where it is at least g_gs_texture_allocation_base >> 8, and all of the list at + 0x28
    (count at +0x24). The slot loop has its own counter, which loop
    reversal copies from the count (retail's $v1). The first list reads
    the arena through a static inline accessor (a fresh pseudo per read
@@ -1972,9 +1972,9 @@ extern int gif_paging_texture_flush_enabled;
 extern void flush_pending_texture_uploads(void);
 
 /* DoGifPaging: pushes two 4-word GIF tags (0x20000000 in the first word)
-   onto the D_00161000 packet, D_0015F554 marking where it started and
-   D_0015F550's tag pointing at the second one; between the two, when
-   D_0018A3DC is set, func_0020C2F8 and func_00234E80 add their own.
+   onto the g_render_packet_cursor packet, gif_paging_tail_tag marking where it started and
+   gif_paging_head_tag's tag pointing at the second one; between the two, when
+   gif_paging_texture_flush_enabled is set, flush_pending_texture_uploads and VU1_texFlush add their own.
    The first advance goes through a local advanced in place, which keeps
    the old and new pointer in one register as retail does. */
 void DoGifPaging(void) {
@@ -2169,10 +2169,10 @@ extern long GetEffectTex64(int) __asm__("func_001F4868");
 extern void fast_vec_normalize(void *dst, void *src, float len);
 extern void draw_world_quad_packet(void *, int, int);
 
-/* Builds a 4-row matrix per light in D_0018E440 (count D_0015F574):
+/* Builds a 4-row matrix per light in effect_quad_entries (count effect_quad_count):
    each row starts as the light's position and is pushed along the
-   corner D_0018CBA0[k], projected off the normalised light direction,
-   scaled by the position's w; func_001F7EF8 draws it. The packet header,
+   corner effect_quad_corners[k], projected off the normalised light direction,
+   scaled by the position's w; draw_world_quad_packet draws it. The packet header,
    colours and UVs are filled on the stack but never sent. Both copies
    are qcopy (retail's lq/sq stay inside the loop), and the inner loop
    needs its own counter, not the one the setup loop used. */
@@ -2223,11 +2223,11 @@ extern int game_frame_counter MACRO_ADDR;
 extern char second_clear_packet[];
 
 /* FadeToBlack(frames): `frames` VU1 chains, each drawing a
-   full-screen quad (D_0013CED0's GS packet) with its alpha ramped down
+   full-screen quad (second_clear_packet's GS packet) with its alpha ramped down
    from 0x80 by (n << 7) / (n + 1) of the count still to go. It takes no
-   colour: retail writes $a1 before it reads it. Each chain is bracketed by func_00234AC8/func_00122598 and a
-   D_0015F538 bump. func_00122598 (sceGsSyncV) returns int: declared that
-   way, the bump's temporary moves to $v1 as in retail. D_0015F538 is
+   colour: retail writes $a1 before it reads it. Each chain is bracketed by VU1_syncChain/sce_gs_sync_v and a
+   game_frame_counter bump. sce_gs_sync_v (sceGsSyncV) returns int: declared that
+   way, the bump's temporary moves to $v1 as in retail. game_frame_counter is
    MACRO_ADDR so each bump reloads it in one register. */
 void FadeToBlack(int frames) {
     int n;
@@ -2291,13 +2291,13 @@ extern void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5, in
 extern void font_print_window_regular_l(void *, long, char *, int) __asm__("func_001F7560");
 extern void DrawUIFrame(int, int, int, int, int);
 
-/* Draws the subtitle showing at the current time (D_0018CC20+0x34): the
+/* Draws the subtitle showing at the current time (render_sequence+0x34): the
    list at +0x4C holds 16-byte entries (start, end, and one string offset
    into the list per language; a negative start ends it). The language
-   D_0015EE88 picks the string (2..5 map to 1..4, anything else to 0). The
-   text is measured in a FontSetWindow buffer (func_001F7648/7560), its
-   box is kept 0x14 above the bottom of the screen (D_0013E600[1]), the
-   frame is drawn (func_001F62C8) and the text printed with the measure
+   g_game_language picks the string (2..5 map to 1..4, anything else to 0). The
+   text is measured in a FontSetWindow buffer (FontSetWindow/7560), its
+   box is kept 0x14 above the bottom of the screen (g_screen_extent[1]), the
+   frame is drawn (DrawUIFrame) and the text printed with the measure
    flag (4) cleared. The list is tested and then read again for the
    loop, which gives retail's copy of it; the clamp test is written
    bottom-first, which gives retail's registers. */
@@ -2344,12 +2344,12 @@ void draw_subtitles(void) {
 extern char rect_overlay_gif_regs_a[];
 extern char rect_overlay_gif_regs_b[];
 
-/* Letterbox bars: while D_0015F544 is set the bar height D_0015F548
+/* Letterbox bars: while letterbox_enabled is set the bar height letterbox_bar_height
    grows to 24, otherwise it shrinks to 0. While it is non-zero, append
-   a GIF packet (the D_00160920/D_00160930 register descriptors, PRIM
+   a GIF packet (the rect_overlay_gif_regs_a/rect_overlay_gif_regs_b register descriptors, PRIM
    0x104) drawing two full-width strips, the height in 16ths reaching in
-   from the top and bottom of the D_0013E600 viewport, the same packet
-   steps as func_001F5650. */
+   from the top and bottom of the g_screen_extent viewport, the same packet
+   steps as DrawRectOverlay_FiiiiUl. */
 void draw_letterbox_bars(void) {
     int h;
 
@@ -2484,7 +2484,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* GS register writes around an overlay: blend register 0x42 from the
    64-bit word at +8 while it is set, and when the colour at +4 has an
    alpha byte, register 0x4E switched around a full-screen
-   func_001F5650 draw. The 64-bit constants are ps2eeas's dli
+   DrawRectOverlay_FiiiiUl draw. The 64-bit constants are ps2eeas's dli
    sequences (tools/ps2eeas_dli.py). */
 void draw_fogged_fullscreen_sprite(char *arg0) {
     long v = *(long *)(arg0 + 8);
@@ -2519,9 +2519,9 @@ void emit_rgba_draw_packet(int a, int b, int c, int d) {
 }
 
 /* DrawRectOverlay: append a GIF packet drawing the rectangle x0..x1,
-   y0..y1 (in 16ths, offset by the viewport origin D_0013E600[4]/[5]
+   y0..y1 (in 16ths, offset by the viewport origin g_screen_extent[4]/[5]
    - 8) as a PRIM 0x144 sprite pair in colour rgba: the tag, the
-   D_00160920 and D_00160930 register descriptors (ids 0x8001/0x8004),
+   rect_overlay_gif_regs_a and rect_overlay_gif_regs_b register descriptors (ids 0x8001/0x8004),
    then four XYZ values at Z 0xFFFFF0. Each packet step has its own
    block-scoped base pointer, which gives retail's registers. */
 void DrawRectOverlay_FiiiiUl(int y0, int y1, int x0, int x1, unsigned long rgba) {
@@ -2610,8 +2610,8 @@ void DrawTexturedQuad(int x, int y, int w, int h, int u, int v, int uw, int vh, 
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-/* func_001F5800 with a float screen rectangle: each corner is rounded
-   (func_001FA898) from 16ths before the viewport offset. */
+/* DrawTexturedQuad with a float screen rectangle: each corner is rounded
+   (truncate_float_to_s32) from 16ths before the viewport offset. */
 void append_subpixel_textured_screen_quad(float x, float y, float w, float h, int u, int v, int uw, int vh,
                                           unsigned long rgba, unsigned long tex) {
     int x0 = truncate_float_to_s32_r(x * 16.0f) + g_screen_extent[4] - 8;
@@ -2650,7 +2650,7 @@ void append_subpixel_textured_screen_quad(float x, float y, float w, float h, in
 
 extern char textured_rect_gif_regs[];
 
-/* func_001F5988, skipped when the rectangle lies outside 0x7000..0x9000
+/* append_subpixel_textured_screen_quad, skipped when the rectangle lies outside 0x7000..0x9000
    (12.4), with a CLAMP register (REGION_CLAMP to the texel rectangle)
    after the PRIM and a closing (5, 0) pair. */
 void emit_textured_rectangle(float x, float y, float w, float h, int u, int v, int uw, int vh, unsigned long rgba,
@@ -2839,7 +2839,7 @@ void DrawUIFrame(int x0, int x1, int y0, int y1, int a) {
     DrawRectOverlay_FiiiiUl(x0 + 4, x1 - 4, y1 + 3, y1 + 4, col);
 }
 
-/* Emits a 9-point cross/star pattern of func_001F5650 draws around
+/* Emits a 9-point cross/star pattern of DrawRectOverlay_FiiiiUl draws around
    (a0, a1, a2, a3), offset by +-1/3/5 along each axis, all sharing the
    colour/flags word a4. The first call passes a4 with only its top byte
    kept and the low nibble forced to 4; the rest pass a4 unchanged. */
@@ -2887,19 +2887,19 @@ void draw_outlined_rect(int a0, int a1, int a2, int a3, int a4) {
    as the 4-byte word it really is. gp base 0x166D00 - 0x7764 = 0x15F59C. */
 extern int GlobalStateFlag MACRO_ADDR;
 
-/* Sets the word flag at D_0015F59C to 1. */
+/* Sets the word flag at GlobalStateFlag to 1. */
 void Font_EnableColorCodes(void) {
     *(int *)&GlobalStateFlag = 1;
 }
 
-/* Clears the word flag at D_0015F59C. */
+/* Clears the word flag at GlobalStateFlag. */
 void Font_DisableColorCodes(void) {
     *(int *)&GlobalStateFlag = 0;
 }
 
 /* String width: sums the signed width byte (+3 of each 4-byte entry of
    `table`, indexed by character) over at most `count` characters of `str`,
-   stopping at the NUL. Called by func_001F6600/20/40 with the three font
+   stopping at the NUL. Called by measure_text_width_regular/20/40 with the three font
    tables. A do-while behind an entry test, with `p = str` set inside the
    if: the body's `*p` then sits after the loop label, so CSE keeps it
    apart from the entry test's `*str`, and `i = 0` is not folded into the
@@ -2944,12 +2944,12 @@ int measure_text_width_large(unsigned char *arg0, int arg1) {
 }
 
 /*
- * Retail has 8 bytes of nop padding between func_001F6640 and
- * func_001F6668, and it lives *after* `endlabel` in
- * asm/nonmatchings/text/func_001F6640.s -- so the INCLUDE_ASM stub was
+ * Retail has 8 bytes of nop padding between measure_text_width_large and
+ * FontPrint, and it lives *after* `endlabel` in
+ * asm/nonmatchings/text/measure_text_width_large.s -- so the INCLUDE_ASM stub was
  * supplying it, and replacing that stub with C silently dropped it,
  * shifting every later function in the segment by -8 and corrupting
- * their `jal` targets (func_001F7B40 read 1/44 while being
+ * their `jal` targets (begin_draw_frame read 1/44 while being
  * instruction-for-instruction identical to retail). Emitted explicitly
  * to preserve the layout.
  *
@@ -3034,8 +3034,8 @@ void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64
 
 extern void FontPrint(void *, void *, void *, void *, void *, long, unsigned char *);
 
-/* Same shape as func_001F7560/func_001F75D0 below, one argument wider:
-   mode 1 vs 2, D_001DF3D0 vs D_001DF770. Seven arguments, so EABI puts
+/* Same shape as font_print_window_regular/font_print_window_small below, one argument wider:
+   mode 1 vs 2, normal_font_metrics vs small_font_metrics. Seven arguments, so EABI puts
    the fifth through seventh in $8/$9/$10. */
 /* FontPrintLarge */
 void FontPrintLarge(void *a, void *b, void *c, void *d, void *e) {
@@ -3125,9 +3125,9 @@ LINKER_REMNANT("asm/remnants/text", func_001F6CE0);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 
-/* func_001F6CF8/func_001F6D88/func_001F6E18 are func_001F68E8's family
+/* font_print_right/font_print_right_small/font_print_right_large are FontPrintLarge's family
    with a leading measure call: the same mode/table triple (1, 2, 3 and
-   D_001DF3D0, D_001DF770, D_001DFB10), each paired with its own
+   normal_font_metrics, small_font_metrics, large_font_metrics), each paired with its own
    measuring helper, and the first argument stepped back by whatever that
    helper returns. */
 void font_print_right(char *a, void *b, void *c, unsigned char *d, int e) {
@@ -3153,10 +3153,10 @@ void font_print_right_large(char *a, void *b, void *c, unsigned char *d, int e) 
     FontPrint(p, b, c, d, (void *)e, mode, large_font_metrics);
 }
 
-/* func_001F6EA8/func_001F6F40/func_001F6FD8 are the func_001F6CF8 triple
+/* FontPrintCenter/FontPrintCenterSmall/FontPrintCenterLarge are the font_print_right triple
    centred instead of left-aligned: the step-back is half the measured
    value, and the adjusted position is returned. Typed all-int to match
-   the extern func_001F7288 already declares for func_001F6FD8. */
+   the extern func_001F7288 already declares for FontPrintCenterLarge. */
 /* FontPrintCenter */
 int FontPrintCenter(int a, int b, int c, int d, int e) {
     int p = a - (measure_text_width_regular((unsigned char *)d, e) >> 1);
@@ -3318,7 +3318,7 @@ void FontPrintWindow(void *win_p, long a1, void *text_p, int len, long a4, unsig
 
 extern int GetEffectTex(int);
 
-/* func_001F7560 and func_001F75D0 are the same call with a different
+/* font_print_window_regular and font_print_window_small are the same call with a different
    mode (1 vs 2) and a different table. Six arguments: EABI passes the
    fifth and sixth in $8/$9, which is why they appear alongside $4-$7
    rather than on the stack. */
@@ -3413,8 +3413,8 @@ extern void vu1_gs_regs_font(void);
 
 /* Build the VU1 setup packet: load microprogram 7 if another is
    resident, then a DIRECT/UNPACK chain with the two camera matrices
-   (each scaled to 1024 and biased in z by D_0015F448), the screen scale
-   and offsets from D_0018CE00, and the GIF register setup; the DMA tag's
+   (each scaled to 1024 and biased in z by font_depth_bias), the screen scale
+   and offsets from view_context, and the GIF register setup; the DMA tag's
    qword count is patched in at the end. */
 void font_queue_vu_state(void) {
     float m[16];
@@ -3471,10 +3471,10 @@ void font_queue_vu_state(void) {
 
 extern short render_target_base_page NOT_SDA;
 
-/* Sets up a (1 << a) x (1 << b) area, as vendor.c's func_0023A948 does:
-   func_001FB608 gets the sizes and a base address, which is D_001519EE
-   pages when `flag` is set, else D_0015EF8C less 4 << min(a + b, 16)
-   bytes rounded down to a page (8 KB); func_001F3760 gets the sizes and
+/* Sets up a (1 << a) x (1 << b) area, as vendor.c's configure_capture_target does:
+   setup_render_target gets the sizes and a base address, which is render_target_base_page
+   pages when `flag` is set, else g_gs_texture_allocation_base less 4 << min(a + b, 16)
+   bytes rounded down to a page (8 KB); configure_graphics_projection gets the sizes and
    the float setup (f, 0, 524288, 255, 0); GS registers 0x47 (0 with the
    flag, 0x30000 without) and 0x42 are then written. Each arm makes its
    own page-aligned base, so the two trailing `<< 13`s are cross-jumped
@@ -3514,8 +3514,8 @@ void begin_draw_frame(void) {
     UpdateViewContext();
 }
 
-/* Two prototypes for one symbol: func_001F55C0 passes a 64-bit value
-   (retail shifts it with dsll), func_001F7B70 passes plain ints
+/* Two prototypes for one symbol: emit_rgba_draw_packet passes a 64-bit value
+   (retail shifts it with dsll), draw_debug_font passes plain ints
    (addiu, not daddiu). */
 extern int font_quad_count MACRO_ADDR;
 extern short font_depth_bias; /* SDA, gp -0x78B8 */
@@ -3523,7 +3523,7 @@ extern void prepare_font_quads(void);
 extern void font_queue_vu_state(void);
 extern void draw_font_quad_packets(void);
 
-/* Optional extra draw pass, enabled by D_0015F578. */
+/* Optional extra draw pass, enabled by font_quad_count. */
 void draw_debug_font(void) {
     if (font_quad_count != 0) {
         VU1_addGSregister(8, 5);
@@ -3541,7 +3541,7 @@ void draw_debug_font(void) {
 
 extern int bit_swap_lut[];
 
-/* initialize_alpha_lookup_table: fills the alpha lookup table D_0018E840. */
+/* initialize_alpha_lookup_table: fills the alpha lookup table bit_swap_lut. */
 void initialize_alpha_lookup_table(void) {
     int i;
     for (i = 0; i < 0x100; i++) {

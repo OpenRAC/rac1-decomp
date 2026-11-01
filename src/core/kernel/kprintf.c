@@ -10,13 +10,13 @@
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  *
  * Sony's EE kernel library (libkernl), several of its modules back to
- * back: the kernel printf (scePrintf, func_0011A6C8, over the print core
- * func_0011A0A0), sifcmd (the command handler table and sceSifSendCmd),
+ * back: the kernel printf (scePrintf, scePrintf, over the print core
+ * kprintf_format), sifcmd (the command handler table and sceSifSendCmd),
  * sifrpc (the 0x40-byte packet table, sceSifBindRpc, sceSifCallRpc =
- * func_0011B4C8), the IOP file stubs (sceOpen, sceClose, sceRead, ... over
+ * sif_call_rpc), the IOP file stubs (sceOpen, sceClose, sceRead, ... over
  * a 32-entry fd table) and the IOP heap stubs. Built with Sony's 2.9-ee
  * like the rest of the SDK (Makefile.sn, EE29_CORE): the sd/ld spills and
- * the frames of func_0011A6C8 and func_0011B770 are that compiler's.
+ * the frames of scePrintf and fs_new_iob are that compiler's.
  */
 
 /* kputchar (libkernl.a:kprintf.o): wait until the SIO status port
@@ -43,8 +43,8 @@ extern int deci2_putchar_count;
 extern char deci2_putchar_buffer[];
 
 /* deci2Putchar (libkernl.a:kprintf.o): the kprintf hook used for the
-   deci2 debug console. Buffers characters into D_00154E00 (a 0x80-byte
-   line buffer) counted by D_0012FCFC, flushing (func_00119840) and
+   deci2 debug console. Buffers characters into deci2_putchar_buffer (a 0x80-byte
+   line buffer) counted by deci2_putchar_count, flushing (kputs) and
    resetting the count once it reaches 0x7E; on '\n' it also flushes
    immediately (appending the '\n' first) instead of just buffering it. */
 void deci2Putchar(int c) {
@@ -111,18 +111,18 @@ extern long func_0011E6D8(double);
 extern void kprintf(const char *, ...);
 
 /* printfloat (libkernl.a:kprintf.o): the kprintf %f formatter. Prints a
-   leading '-' through the putchar hook (D_0012FD00) if negative, then
+   leading '-' through the putchar hook (kprintf_putchar_hook) if negative, then
    normalises the magnitude into [0.1, 1.0) by repeated *10 (if it
    started below 0.1) or /10 (if at or above 1.0), counting the power of
    ten removed in exp10, scales the mantissa to an integer (*1000000,
-   func_0011E6D8, then ftoi = func_00119EA8) and prints it as "0.%d",
+   func_0011E6D8, then ftoi = kprintf_ftoi) and prints it as "0.%d",
    followed by the exponent as "e+%d" or "e%d" (%d supplies the '-' for
    a negative exponent itself).
 
    The magnitude is checked, then rescaled, in nested `if (v < 0.1)
    { while (v < 0.1) ... }`: retail keeps a separate 0.1 for each. Its
    three format strings and its constants open this object's .rodata
-   (D_00152880-D_001528A8), followed by _printf's jump table
+   (printfloat_mantissa_format-printfloat_mantissa_scale), followed by _printf's jump table
    (jtbl_001528B0): the strings are literals so that the table lands
    16-aligned at its retail address (config/core_rodata.txt). */
 void printfloat(double v) {
@@ -155,7 +155,7 @@ void printfloat(double v) {
 
 /* _printf: the SDK libc formatter behind printf/sprintf: walks fmt, takes
    each argument from the 8-byte slots at ap and writes characters through
-   the output hook at D_0012FD00, with interrupts held off around it.
+   the output hook at kprintf_putchar_hook, with interrupts held off around it.
    Adapted from Lombyte's project (GPL-3.0): src/sdk/debug/printf_impl.c, _printf. */
 
 extern s32 DIntr_A0A0(void) __asm__("func_0011D960");
@@ -365,12 +365,12 @@ int kprintf_format(const char *fmt, va_list ap) {
 }
 
 /* The print core: walks fmt with the va_list, writing through the hook
-   D_0012FD00, and returns the count. */
+   kprintf_putchar_hook, and returns the count. */
 extern int kprintf_format(const char *, va_list);
 
 /*
  * A real varargs forwarder: va_start, hand fmt and the va_list to
- * func_0011A0A0, va_end. Its frame is printf's (func_00116078, also
+ * kprintf_format, va_end. Its frame is printf's (func_00116078, also
  * 2.9-ee): $ra at 0 and the $5-$11 save area at 0x58, which is where ap
  * points. Exact under 2.9-ee; under the game's 2.95.3 a varargs
  * definition also spills $f12-$f18 (SIZE 72/56), which is why this was
@@ -386,8 +386,8 @@ void kprintf(const char *fmt, ...) {
 
 /*
  * The varargs twin of the function above (likely scePrintf): swap the
- * print hook D_0012FD00 for func_00119DC0 (the deci2 console writer),
- * pass fmt and the va_list to func_0011A0A0, restore the hook. Exact
+ * print hook kprintf_putchar_hook for deci2Putchar (the deci2 console writer),
+ * pass fmt and the va_list to kprintf_format, restore the hook. Exact
  * under 2.9-ee; under 2.95.3 the frame comes out 0x90 against retail's
  * 0xB0 (the $f12-$f18 save again, as with sprintf, 00116248.c).
  */
@@ -523,7 +523,7 @@ extern int sif_cmd_init_done;
 extern int disable_dmac_atomic_i(int) __asm__("func_001193F8");
 extern int remove_dmac_handler_i(int, int) __asm__("func_00118AD0");
 
-/* func_001193F8 and func_00118AD0 both return int; their results decide
+/* disable_dmac_atomic and remove_dmac_handler both return int; their results decide
    which registers the globals' addresses get. */
 void sceSifExitCmd(void) {
     disable_dmac_atomic_i(0x5);
@@ -534,8 +534,8 @@ void sceSifExitCmd(void) {
 extern int sif_cmd_data_sys_handlers NOT_SDA;
 extern int sif_cmd_data_usr_handlers NOT_SDA;
 
-/* Sets slot arg0's two words: D_00154F6C's for arg0 >= 0, D_00154F64's
-   below. In func_0011AA68's shape: reassigning arg0 to the table is what
+/* Sets slot arg0's two words: sif_cmd_data_usr_handlers's for arg0 >= 0, sif_cmd_data_sys_handlers's
+   below. In sceSifRemoveCmdHandler's shape: reassigning arg0 to the table is what
    puts the base in $a0, as in retail. */
 void sceSifAddCmdHandler(int arg0, int arg1, int arg2) {
     int off = arg0 << 3;
@@ -619,7 +619,7 @@ s32 sif_send_cmd_common(u32 packet, s32 mode, SifCmd *cmd, s32 size, u32 src, u3
 }
 
 /* sceSifSendCmd and isceSifSendCmd: forward to the common sender
-   func_0011AA90 with the mode (0, or 1 from interrupt context) injected
+   sif_send_cmd_common with the mode (0, or 1 from interrupt context) injected
    as its second argument. EABI passes the first eight integer args in
    $4-$11, so this forwards seven of them.
 
@@ -642,7 +642,7 @@ ASM_FUNC("asm/handwritten/core_text", func_0011AC48);
 ASM_FUNC("asm/handwritten/core_text", func_0011AD70);
 
 /*
- * The last word of sceSifWriteBackDCache (func_0011AD70, hand-written): a bare
+ * The last word of sceSifWriteBackDCache (sceSifWriteBackDCache, hand-written): a bare
  * `jr $31` whose delay slot is the next object's first instruction. The SDK's
  * libkernl.a gives the function 176 bytes in sifcmd.o (0x11AD70..0x11AE20),
  * this word included, after its own `last:` label's `jr $31; nop`
@@ -736,7 +736,7 @@ extern void enable_interrupts(void);
    counter jumps straight to 2. Returns the slot, or 0 if the table is
    full.
 
-   Two shapes mattered. `i` must be assigned AFTER the func_0011D960
+   Two shapes mattered. `i` must be assigned AFTER the disable_interrupts
    call: initialised in its declaration it is live across the call, so
    it lands in a third callee-saved register and drags in a save/restore
    pair, where retail keeps it in $v1.
@@ -829,9 +829,9 @@ void *sif_rpc_get_fpacket(void *arg0) {
  * call) runs the client's end callback, 0x80000009 (RPC bind) copies the
  * server, buff and cbuff back into it. Then, whatever the id was,
  * iSignalSema the client's semaphore if it has one, free its packet
- * (func_0011B090) and clear the pointer. Exact under both compilers.
+ * (sif_rpc_free_packet) and clear the pointer. Exact under both compilers.
  *
- * Two levers (build-sn/try/func_0011B0E0/RESULT.md):
+ * Two levers (build-sn/try/sif_rpc_request_end/RESULT.md):
  *  - Retail's dispatch is gcc's case-node decision tree rooted at
  *    0x8000000A, which a two-case switch never builds (at two nodes it
  *    stays a chain). The switch has a third case above 0x8000000A that
@@ -879,11 +879,11 @@ void sif_rpc_request_end(char *p) {
 
 /* _request_rdata (libkernl.a:sifrpc.o): the sifcmd system handler for
    SIF_CMD_RPC_RDATA (0x8000000c). Grabs a free response packet
-   (func_0011B0B0 = _rpc_get_fpacket), copies the requester's pkt_addr
+   (sif_rpc_get_fpacket = _rpc_get_fpacket), copies the requester's pkt_addr
    and recvbuf pointer (rdata's words 5 and 7) into the response, tags
    the response SIF_CMD_RPC_RDATA (word 8), then forwards the
    requester's src/dest/size (words 8/9/10) to the IOP as
-   isceSifSendCmd(SIF_CMD_RPC_END, ...) (func_0011AC08). Void: the
+   isceSifSendCmd(SIF_CMD_RPC_END, ...) (isceSifSendCmd). Void: the
    trailing call is a tail jump. Both copied fields have to be read into
    their own locals before either store: that is what puts pkt_addr in
    $a1 and recvbuf in $a0, matching retail (any other shape -- inline
@@ -918,20 +918,20 @@ void *sif_rpc_search_svdata(int key, void *arg1) {
 
 /* _request_bind (libkernl.a:sifrpc.o): the sifcmd system handler for
    SIF_CMD_RPC_BIND (0x80000009). Grabs a free response packet
-   (func_0011B0B0 = _rpc_get_fpacket), copies the requester's pkt_addr
+   (sif_rpc_get_fpacket = _rpc_get_fpacket), copies the requester's pkt_addr
    and cd (bind's words 5 and 7) into it, tags it SIF_CMD_RPC_BIND,
    looks up the requested service id (bind's word 8, search_svdata =
-   func_0011B1F8) and fills in the server/buf/cbuf fields (words 9-11)
+   sif_rpc_search_svdata) and fills in the server/buf/cbuf fields (words 9-11)
    from it if found, zeroing them otherwise, then forwards to the IOP as
-   isceSifSendCmd(SIF_CMD_RPC_END, ...) (func_0011AC08). Matches
+   isceSifSendCmd(SIF_CMD_RPC_END, ...) (isceSifSendCmd). Matches
    ps2sdk's _request_bind field-for-field (sifrpc.c).
 
    Two shapes mattered: pkt_addr and cd need their own locals declared
    in that order (pkt_addr first) even though cd is stored first --
-   reversed, the two loads swap registers (func_0011B198's lever again);
+   reversed, the two loads swap registers (sif_rpc_request_rdata's lever again);
    and the not-found case has to be the `if` arm, sd-found the `else`
    (retail branches on `sd == 0` being false, i.e. `bnel`; writing the
-   found case first inverts the branch, as in func_0011B438). */
+   found case first inverts the branch, as in sif_rpc_request_call). */
 void sif_rpc_request_bind(void *bind, void *data) {
     int *b = (int *)bind;
     int *rend = (int *)sif_rpc_get_fpacket(data);
@@ -1038,7 +1038,7 @@ extern void iWakeupThread(int thread_id);
    then copies the request's fields into the server object (pkt_addr,
    client/cd, rpc_number, size/send_size, recvbuf, rsize/recv_size,
    rmode, rid/rec_id), and finally wakes the queue's worker thread
-   (iWakeupThread, func_00119678) unless it is already running or has
+   (iWakeupThread, iWakeupThread) unless it is already running or has
    none. Matches ps2sdk's _request_call field-for-field (sifrpc.c).
 
    Three shapes mattered: the empty-queue arm has to come first (retail
@@ -1046,7 +1046,7 @@ extern void iWakeupThread(int thread_id);
    copied fields (pkt_addr, client) need their own locals, both declared
    right there (not hoisted to the top, which pulls their loads into the
    queue-splice code) and both declared before either store -- the same
-   allocator lever as func_0011B198 -- or the pair's load/store order
+   allocator lever as sif_rpc_request_rdata -- or the pair's load/store order
    swaps or its two registers trade places. */
 void sif_rpc_request_call(void *request, void *data) {
     int *req = (int *)request;
@@ -1226,10 +1226,10 @@ extern int fs_iob_sema;
 extern int fs_iob_sema_2;
 
 /*
- * One-shot init: if D_0012FDA0 is still -1, fill a semaphore descriptor
+ * One-shot init: if fs_iob_sema is still -1, fill a semaphore descriptor
  * (the kernel's SemaParam: initCount [2] = 1, maxCount [1] = 1, option
- * [5] = 0) and create two semaphores from it via func_00118C70
- * (CreateSema), storing them into D_0012FDA0 and D_0012FDA4.
+ * [5] = 0) and create two semaphores from it via create_semaphore
+ * (CreateSema), storing them into fs_iob_sema and fs_iob_sema_2.
  *
  * Under 2.9-ee the store order decides which store lands in the first
  * call's delay slot: written initCount, maxCount, option it is exact
@@ -1250,16 +1250,16 @@ void fs_iob_sema_make(void) {
 extern char fs_iob_table[];
 
 /*
- * Claim the first free slot of the 32-entry, 0x10-byte table D_00157E80
- * -- the table func_0011B7F8 below indexes -- under the
- * func_00118CB0/func_00118C90 lock (WaitSema/SignalSema). A slot is free
+ * Claim the first free slot of the 32-entry, 0x10-byte table fs_iob_table
+ * -- the table fs_get_iob below indexes -- under the
+ * wait_semaphore/signal_semaphore lock (WaitSema/SignalSema). A slot is free
  * when its +4 word is zero; claiming it writes 0x10000000 there and
  * returns the slot, and a full table returns 0. Both exits drop the lock
  * first.
  *
  * Exact under 2.9-ee with the C that 2.95.3 compiled one instruction
  * short: retail spends a third callee-saved register ($17 holds
- * %hi(D_0012FDA0) for the whole function), which is 2.9-ee's allocation;
+ * %hi(fs_iob_sema) for the whole function), which is 2.9-ee's allocation;
  * 2.95.3 parked the %hi in $4 instead.
  */
 void *fs_new_iob(void) {
@@ -1456,7 +1456,7 @@ ASM_FUNC("asm/handwritten/core_text", func_0011BC80);
 
 /* CD/DVD init step: install the two RPC-side handlers, bind the RPC server
  * at 0x80000001 (retrying until it has an address), clear the 32-slot table
- * D_00157E80, then send command 0xFF and copy back the reply word and the
+ * fs_iob_table, then send command 0xFF and copy back the reply word and the
  * flag that says whether the reply was 2. Returns 0 on success, -1 when the
  * bind failed, 0xFFFEFFFF when the RPC failed. */
 struct RpcCb {
@@ -1525,8 +1525,8 @@ s32 sceFsInit(void) {
 extern char FsResetBuffer[];
 extern int fs_expected_version;
 
-/* Three-way compare-and-confirm: the slot D_001580A8 has to agree with
-   the scratch buffer D_0012FCEC, then with the handle D_0012FDA8, and
+/* Three-way compare-and-confirm: the slot FsResetBuffer has to agree with
+   the scratch buffer sif_lib_version_string, then with the handle fs_expected_version, and
    finally the two of those with each other. Only the last comparison's
    result is reported, as a 0/1.
 
@@ -2054,10 +2054,11 @@ extern int sceSifBindRpc(void *, int, int);
 extern char iop_heap_rpc_client[];
 extern int iop_heap_bind_state;
 
-/* sceSifInitIopHeap: bind the RPC client D_00158140 to IOP server
+/* sceSifInitIopHeap: bind the RPC client iop_heap_rpc_client to IOP server
    0x80000003, busy-waiting until the server answers; -1 if binding fails.
    Built with -fno-schedule-insns (config/func_cflags.txt), the flag
-/* func_0011CB40: matched only with -fno-schedule-insns, which the rest of its object does not build with (docs/reference/BUILD_FIDELITY.md, "Removed"). */
+/* sce_sif_init_iop_heap: matched only with -fno-schedule-insns, which the rest of its object does not build with
+   (docs/reference/BUILD_FIDELITY.md, "Removed"). */
 int sce_sif_init_iop_heap(void) {
     int k;
     int r;
@@ -2080,8 +2081,8 @@ int sce_sif_init_iop_heap(void) {
 extern int iop_heap_rpc_reply;
 extern int iop_heap_rpc_arg;
 
-/* Another func_0011B4C8 RPC (see func_001245F8), guarded on the handle
-   D_0012FDAC being valid. Both failure exits share the single `return 0`
+/* Another sif_call_rpc RPC (see sce_dbc_get_mod_version), guarded on the handle
+   iop_heap_bind_state being valid. Both failure exits share the single `return 0`
    that the early guard branches to. */
 int sce_sif_alloc_iop_heap(int arg0) {
     if (iop_heap_bind_state < 0) {
@@ -2095,10 +2096,10 @@ int sce_sif_alloc_iop_heap(int arg0) {
     }
 }
 
-/* Sibling of func_0011CBC8 with command id 2 and -1 as the RPC failure
+/* Sibling of sce_sif_alloc_iop_heap with command id 2 and -1 as the RPC failure
    result, so the two failure exits cannot share a return.
 
-   Defined old-style ON PURPOSE. func_0011CCB0 just below calls this with
+   Defined old-style ON PURPOSE. sce_sif_free_iop_heap just below calls this with
    NO argument at all -- retail's call has a bare nop in its delay slot --
    which a prototype would reject. A K&R definition creates no prototype,
    so both functions compile as retail's source evidently did. */

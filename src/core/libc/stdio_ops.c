@@ -26,11 +26,11 @@ extern int _lseek_r(int *errOut, void *a, void *b, void *c);
    where it is defined: an inconsistency retail could have, because these two
    functions lived in different translation units and nothing cross-checks
    them at link time. We merge the whole segment into one file, so the two
-   views are reconciled with an asm-labelled alias -- func_00116108 keeps its
+   views are reconciled with an asm-labelled alias -- reentrant_read keeps its
    int definition (it stays byte-exact; widening it is impossible anyway,
    since its own `r == -1` would become an unsupported 64-bit compare) and
    the call site goes through a declaration that spells the return type the
-   way retail's header did. Emits a plain `jal func_00116108`. */
+   way retail's header did. Emits a plain `jal reentrant_read`. */
 extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
 
 int __sread(void *arg0, void *arg1, void *arg2) {
@@ -44,9 +44,9 @@ int __sread(void *arg0, void *arg1, void *arg2) {
     return r;
 }
 
-/* newlib's __swrite. Same cross-TU `long` prototype as func_001162B8
+/* newlib's __swrite. Same cross-TU `long` prototype as __sread
    above -- see that note. Here the narrowing lands on the return value
-   itself: retail's trailing dsll32/dsra32 pair is func_001188C8's 64-bit
+   itself: retail's trailing dsll32/dsra32 pair is _write_r's 64-bit
    result being handed back through this function's int return type. */
 extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
 

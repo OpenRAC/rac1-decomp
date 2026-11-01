@@ -60,7 +60,8 @@ typedef struct {
     int total;         /* 0x10 */
 } CscRec_2A558;
 
-/* libmpeg chunked DMA copy: arm the channel-3 callback with a progress record, start the transfer, wait for all chunks. */
+/* libmpeg chunked DMA copy: arm the channel-3 callback with a progress record, start the transfer, wait for all
+   chunks. */
 void do_csc2(void *arg0, unsigned int arg1, int arg2) {
     char *p = (char *)arg0;
     int event[8];
@@ -205,7 +206,7 @@ int sysbit_show(void *arg0, int n) {
     return (int)(acc >> (64 - n));
 }
 
-/* The bitstream reader's state (func_0012AA70 sets it up). */
+/* The bitstream reader's state (sysbit_init sets it up). */
 typedef struct {
     unsigned long acc; /* 0x00: the next bits, top-aligned */
     unsigned char *start0; /* 0x08 */
@@ -239,15 +240,15 @@ long sysbit_flush(void *arg0, int n) {
     return p->total += n;
 }
 
-/* Get n bits: peek them (func_0012AAA8), then consume them
-   (func_0012AAC8). */
+/* Get n bits: peek them (sysbit_show), then consume them
+   (sysbit_flush). */
 int sysbit_get(void *arg0, int arg1) {
     int r = sysbit_show(arg0, arg1);
     sysbit_flush(arg0, arg1);
     return r;
 }
 
-/* Get one bit, as func_0012AB60. */
+/* Get one bit, as sysbit_get. */
 int sysbit_marker(void *arg0) {
     int r;
     r = sysbit_show(arg0, 1);

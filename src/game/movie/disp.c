@@ -9,7 +9,7 @@
  */
 
 /* setImageTag (recovered name), written from the retail assembly: writes a DMA/GIF tag chain into p.
- * A 4-qword header (the destination from D_0015EF84 >> 8), then one 0x60-byte entry per 16x16
+ * A 4-qword header (the destination from draw_buffer_address >> 8), then one 0x60-byte entry per 16x16
  * block of a (w >> 4) x (h >> 4) grid, each pointing at the next 0x400 bytes of image, then a
  * 0x20-byte trailer and the end tag. */
 extern int draw_buffer_address MACRO_ADDR;

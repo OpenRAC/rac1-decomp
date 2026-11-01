@@ -25,7 +25,7 @@ extern int BuildShrubTextureDma(int);
 
 /* DmaShrubTextures: DmaMobyTextures' splice around the shrub texture
    upload, which also warns past 0x400000 bytes and keeps the largest
-   size seen in D_001604F8. */
+   size seen in max_shrub_texture_dma_size. */
 void DmaShrubTextures(void) {
     int *p = (int *)g_render_packet_cursor;
     int size;
@@ -99,7 +99,7 @@ extern void ShrubProc(void);
 extern void DmaShrubTextures(void);
 
 /* DrawShrubs. The packet pointer goes through a local advanced in place;
-   `D_00161000 += 0x10` is 4 bytes short (its store lands in the jal
+   `g_render_packet_cursor += 0x10` is 4 bytes short (its store lands in the jal
    delay slot as a $gp store). */
 void DrawShrubs(void) {
     int p = g_render_packet_cursor;

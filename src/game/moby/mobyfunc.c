@@ -21,8 +21,8 @@ extern void FastMemSet();
 
 extern int STUB_printf();
 
-/* A moby instance: 0x100 bytes, in one array from D_0016001C to
-   D_00160020. state 0xFE is a free slot and 0xFF marks the free tail
+/* A moby instance: 0x100 bytes, in one array from moby_instance_end to
+   moby_instance_perm_end. state 0xFE is a free slot and 0xFF marks the free tail
    (taking that slot moves the mark to the next one); a freed slot is not
    reused before frame unk38 (DeleteMoby sets it two frames ahead). */
 typedef struct {
@@ -140,12 +140,12 @@ typedef struct {
 } MobyI;
 
 /* InitMobyInstance: clears the 0x100-byte moby, fills its defaults (class
-   byte from D_001B3E40[oClass], colours, its slot index from the moby
-   array base D_00160018), flags a class with no D_001B3900 entry, then
-   copies the class record D_001B3580[class] (or marks the moby dead when
+   byte from resident_class_slot_by_id[oClass], colours, its slot index from the moby
+   array base resident_object_pool), flags a class with no resident_moby_class_data entry, then
+   copies the class record moby_class_resources[class] (or marks the moby dead when
    there is none) and applies the animation-sequence rules after
-   func_0020D6D0. The moby is a real struct so its non-byte stores are "in
-   struct" and D_00160018's load can move above them; the class load comes
+   update_moby_animation_state. The moby is a real struct so its non-byte stores are "in
+   struct" and resident_object_pool's load can move above them; the class load comes
    first, and the default stores are ordered so that sched1's
    register-pressure tie-break (stores that free a register go first)
    reproduces retail's store order. */
@@ -248,7 +248,7 @@ void DeleteMoby(MobyDel *m) {
 }
 
 /* Refresh a moby's animation frame pointers from its class's sequence
-   table: seq 0xFF (none) points frameData into D_001AAF40 instead.
+   table: seq 0xFF (none) points frameData into debug_font_buffer instead.
    Reaching the table as mc->seqs[i] (an array member behind a
    class-pointer local) is load-bearing: CSE shares mc + 0x48 across the
    three uses, the adds come out base-first, and local-alloc ties the
@@ -351,7 +351,7 @@ void AttachManipulator(char *arg0, int arg1, unsigned char *arg2) {
 
 /*
  * DetachManipulator: unlink `node` from the list at arg0+0x64 (next
- * pointer at +8), then clear it with func_001F99B0(node, 0, 0x40).
+ * pointer at +8), then clear it with FastMemSet(node, 0, 0x40).
  * The head is read twice, for the test and again for `cur`: the copy
  * that makes lands in the bnel's slot and leaves retail's two nops.
  */
@@ -411,8 +411,8 @@ void prune_moby_references(void) {
     } while (i >= 0);
 }
 
-/* func_001FA460 is declared above with a single argument, for the
-   func_00215328 site; this one passes a source as well. */
+/* copy_matrix_rotation is declared above with a single argument, for the
+   extract_matrix_rotation_quaternion site; this one passes a source as well. */
 extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
@@ -465,8 +465,8 @@ extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern void upload_used_moby_textures(int);
 
 /* DmaMobyTextures: splices the texture uploads into the DMA chain with
-   "next" tags (0x20000000). D_00161000 is the packet write pointer and
-   D_0016000C the tag slot DrawMobysSetup reserved. Every access goes
+   "next" tags (0x20000000). g_render_packet_cursor is the packet write pointer and
+   moby_texture_tag_slot the tag slot DrawMobysSetup reserved. Every access goes
    back to the globals, because each store through them could alias. */
 void DmaMobyTextures(void) {
     int *p = (int *)g_render_packet_cursor;
@@ -502,9 +502,9 @@ typedef struct {
     int entry;
 } MobyJoint;
 
-/* PatchMobyGifs: for each class in the negative-terminated D_001B6880
+/* PatchMobyGifs: for each class in the negative-terminated moby_class_rectify
    list, walk its joints; each tag looks up two 14-bit values in
-   D_001B6100 and ORs the non-zero ones into the low bits of the +0x30 /
+   moby_gs_loc_stash and ORs the non-zero ones into the low bits of the +0x30 /
    +0x40 words of successive GIF entries. The outer pointer is advanced
    through a `next` named at the top of the body (retail computes p + 1
    there), and the joint loop tests and breaks before its increment: in
@@ -583,12 +583,12 @@ extern char graphics_setup_command_stream[];
 extern void build_shadow_command_stream(void);
 extern void submit_graphics_setup_command_stream(void *);
 
-/* The same splice as DmaMobyTextures, around func_00228A58/func_00228860,
-   at the tag slot D_00160040; with D_0016003C clear the slot becomes a
+/* The same splice as DmaMobyTextures, around build_shadow_command_stream/submit_graphics_setup_command_stream,
+   at the tag slot graphics_setup_tag_slot; with graphics_setup_dma_chain_enabled clear the slot becomes a
    plain "cnt" tag (0x10000000) instead. The write pointer goes through
    a temporary that is advanced in place (t += 0x10): that breaks CSE's
    p == t equivalence, which is what keeps retail's `daddu $16,$2,$0`
-   copy. `p = D_00161000; D_00161000 += 0x10;` is 4 bytes short. */
+   copy. `p = g_render_packet_cursor; g_render_packet_cursor += 0x10;` is 4 bytes short. */
 void configure_graphics_setup_dma_chain(void) {
     int *p;
     int t;
@@ -627,8 +627,8 @@ extern char normal_lut[];
 extern int render_packet_end MACRO_ADDR;
 extern int vu1_chain_safe_end MACRO_ADDR;
 
-/* ProcessMobyAnimData(void). Both globals are MACRO_ADDR: D_0015F718
-   loads with retail's one-register lui $4 / lw $4, and D_0015F71C's
+/* ProcessMobyAnimData(void). Both globals are MACRO_ADDR: render_packet_end
+   loads with retail's one-register lui $4 / lw $4, and vu1_chain_safe_end's
    load, scheduled into the jal delay slot, becomes $gp-relative. */
 void ProcessMobyAnimData(void) {
     flush_cache(0);
@@ -666,9 +666,9 @@ extern int moby_anim_head MACRO_ADDR;
 extern int vu1_chain_limit MACRO_ADDR;
 
 /* DrawMobysSetup(void). What an older note here called a dead
-   `&D_0015FFD0` and an unexplained `li $5,1` are the arguments of the
-   profiling marker func_001F2560. The packet pointer goes through a
-   local advanced in place, as in DrawShrubs. func_00234C98's second
+   `&draw_mobys_profile_label` and an unexplained `li $5,1` are the arguments of the
+   profiling marker ProfileMarker_Begin. The packet pointer goes through a
+   local advanced in place, as in DrawShrubs. VU1_addGSregister's second
    parameter being `long` is what orders its arguments like retail. */
 void DrawMobysSetup(void) {
     int p;
@@ -708,8 +708,8 @@ extern char draw_mobys_cleanup_profile_label[];
 extern int moby_word_fill_table_bytes MACRO_ADDR;
 
 /* DrawMobysCleanUp. The empty profiling markers take (void *, int);
-   DmaMobyTextures and func_00212508 take nothing. With the arguments
-   right, D_0015FFF0 is a plain array, not MACRO_ADDR. */
+   DmaMobyTextures and apply_moby_word_fill_table take nothing. With the arguments
+   right, draw_mobys_cleanup_profile_label is a plain array, not MACRO_ADDR. */
 void DrawMobysCleanUp(void) {
     ProfileMarker_Begin(moby_texture_dma_profile_label, 3);
     DmaMobyTextures();

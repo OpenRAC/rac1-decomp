@@ -16,11 +16,11 @@ extern int sif_load_iop_module_buffer(int a, int b, int c);
 extern void sce_sif_free_iop_heap();
 
 /* LoadIRXModule(name, args): starts an IOP module load through an RPC
-   helper, hands func_00118E20 a 4-word tagged buffer, polls the returned
+   helper, hands sce_sif_set_dma a 4-word tagged buffer, polls the returned
    id until it is ready, then starts the module and reports the result.
    The nops before the poll loop's branch are the short-loop padding
    (tools/fix_short_loops.py); the result test comes before the
-   func_0011CCB0 call, where retail's movz sits in its delay slot. */
+   sce_sif_free_iop_heap call, where retail's movz sits in its delay slot. */
 int LoadIRXModule(void *arg0, void *arg1) {
     int buf[4];
     int result;

@@ -23,7 +23,7 @@ extern char romver_path[];
 /* Read a small text file a byte at a time into a 0x100-byte stack buffer,
  * stopping at a NUL or the buffer limit, then strtol() the tail starting
  * 9 bytes before the end and compare it against a build number. Same
- * open/read/close triplet as func_0012D2A0 above. */
+ * open/read/close triplet as scf_read_romver above. */
 int checkModelVersion(void) {
     int fd;
     char buf[0x100];

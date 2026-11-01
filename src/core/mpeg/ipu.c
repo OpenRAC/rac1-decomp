@@ -10,10 +10,10 @@
  * Sony SDK code, built with Sony's 2.9-ee (Makefile.sn, EE29_CORE). Up to
  * 0x12D068: IPU DMA helpers for libmpeg (the CHCR writes of channels 3/4
  * under a D_ENABLE hold). From 0x12D2A0: libscf -- the rom0:ROMVER record,
- * sceScfGetTimeZone (func_0012D3F0), sceScfGetSummerTime (func_0012D448),
+ * sceScfGetTimeZone (sce_scf_get_time_zone), sceScfGetSummerTime (sce_scf_get_summer_time),
  * the BCD<->binary sceCdCLOCK helpers and sceScfGetLocalTimefromRTC
- * (func_0012D818). Its day/hour helpers end in conditional tail calls
- * (func_0012D730, func_0012D760), which only 2.9-ee emits.
+ * (sce_scf_get_local_time_from_rtc). Its day/hour helpers end in conditional tail calls
+ * (scf_add_hour, scf_sub_hour), which only 2.9-ee emits.
  */
 
 extern int disable_interrupts(void);
@@ -25,7 +25,7 @@ extern void sce_ipu_restart_dma(unsigned int *);
 
 /*
  * Write a CHCR value to IPU DMA channel 3 (fromIPU, 0x1000B000) or 4
- * (toIPU, 0x1000B400): with interrupts off (func_0011D960/func_0011D9A8),
+ * (toIPU, 0x1000B400): with interrupts off (disable_interrupts/enable_interrupts),
  * set D_ENABLEW.CPND (0x1000F590 = D_ENABLER | 0x10000) to hold the DMAC,
  * store the value, release the hold. The final EI is a tail call.
  *
@@ -51,9 +51,9 @@ void set_d4_chcr(unsigned int chcr) {
 }
 
 /* sceIpuStopDMA: request the IPU-in (D4/toIPU) DMA channel to stop
- * (func_0012CCF8(1)), save its MADR/TADR/QWC/CHCR into env[0..3], wait for
+ * (set_d4_chcr(1)), save its MADR/TADR/QWC/CHCR into env[0..3], wait for
  * the IPU's queued-command count (IPU_CTRL bits 4-7) to drain, stop the
- * IPU-out (D3/fromIPU) channel (func_0012CC90(0)) and save its
+ * IPU-out (D3/fromIPU) channel (set_d3_chcr(0)) and save its
  * MADR/QWC/CHCR plus IPU_BP and IPU_CTRL into env[4..8]. */
 extern void set_d4_chcr(unsigned int);
 extern void set_d3_chcr(unsigned int);
@@ -74,7 +74,7 @@ void sce_ipu_stop_dma(unsigned int *env) {
     env[8] = *(volatile unsigned int *)0x10002010;
 }
 
-/* sceIpuRestartDMA: given the env sceIpuStopDMA (func_0012CD60) filled,
+/* sceIpuRestartDMA: given the env sceIpuStopDMA (sce_ipu_stop_dma) filled,
  * work out how many quadwords the IPU's bitstream pointer (env[7], IPU_BP)
  * had already consumed (its FIFO+chain counts, bits 8-10/16-17) and fold
  * that back into the saved D4 MADR/QWC; restart D3 (fromIPU) first if it
@@ -83,7 +83,7 @@ void sce_ipu_stop_dma(unsigned int *env) {
  * corrected MADR/QWC if there is anything left to transfer.
  *
  * The masked BP value needs its own local right after the load: masking
- * `bp` again at the store keeps it alive across func_0012CC90 and moves
+ * `bp` again at the store keeps it alive across set_d3_chcr and moves
  * qwc4 and madr4 into the wrong saved registers. */
 
 void sce_ipu_restart_dma(unsigned int *env) {
@@ -140,7 +140,7 @@ int sce_ipu_sync(int arg0) {
  * (called from sceIpuInit, which immediately follows at 0x12D068): write
  * chcr to IPU DMA channel 4's CHCR (toIPU, 0x1000B400) with interrupts off
  * and D_ENABLEW.CPND (0x1000F590 = D_ENABLER | 0x10000) held around it.
- * Byte-identical to func_0012CCF8 (setD4_CHCR's other copy, already
+ * Byte-identical to set_d4_chcr (setD4_CHCR's other copy, already
  * matched) since it is the same source compiled into a different object.
  */
 void set_d4_chcr_ipuinit(unsigned int chcr) {
@@ -201,17 +201,17 @@ void sce_ipu_init(void) {
 }
 
 /*
- * Fill the 14-byte rom0:ROMVER record at D_001331D8 once (open
- * D_00153D00 "rom0:ROMVER" read-only, read 0xE bytes, close; failures are
- * reported through func_0011A6C8) and hand the buffer back either way.
- * (The second func_0011A6C8 gets only the format string: $a1 still holds
+ * Fill the 14-byte rom0:ROMVER record at RomNameStateData once (open
+ * scf_romver_path "rom0:ROMVER" read-only, read 0xE bytes, close; failures are
+ * reported through scePrintf) and hand the buffer back either way.
+ * (The second scePrintf gets only the format string: $a1 still holds
  * the buffer from the read call and retail never resets it, which is why
- * func_0011A6C8 stays unprototyped here.)
+ * scePrintf stays unprototyped here.)
  *
  * Exact under 2.9-ee. It was blocked under 2.95.3 (152/160 against 156):
- * that compiler's GCSE copies the kept %hi(D_001331D8) into a saved
+ * that compiler's GCSE copies the kept %hi(RomNameStateData) into a saved
  * register (`move $19,$2`), where 2.9-ee loads the lui straight into $17
- * as retail does. D_001331D8 is `signed char` (the declaration below),
+ * as retail does. RomNameStateData is `signed char` (the declaration below),
  * hence the cast on the return.
  */
 extern int sceOpen(void *, int);
@@ -255,14 +255,14 @@ int scf_is_t10k(void) {
  * "relocation truncated to fit: R_MIPS_GPREL16". A plain incomplete
  * array gives retail's exact split-across-delay-slots shape; the only
  * residual is the allocator putting the address in $3 rather than
- * reusing $2, plus one more register choice in func_0012D448
- * (5/96 and 6/104 differing bytes). func_0012D448 also needed its arms
+ * reusing $2, plus one more register choice in sce_scf_get_summer_time
+ * (5/96 and 6/104 differing bytes). sce_scf_get_summer_time also needed its arms
  * the other way round -- the early `return 0` written last, so the
  * zero case is the one that branches over.
  */
 extern unsigned char ScfLanguage[];
 
-/* One return, the `== 0` arm first, and `v` unsigned (as func_0012D3F0). */
+/* One return, the `== 0` arm first, and `v` unsigned (as sce_scf_get_time_zone). */
 int sce_scf_get_language(void) {
     int buf[4];
     unsigned int v;
@@ -288,7 +288,7 @@ LINKER_REMNANT("asm/remnants/core_text", func_0012D3E0);
 extern short scf_t10k_time_zone NOT_SDA;
 
 /* `r` assigned in both arms and returned once: a direct `return
-   D_001331D0;` loads straight into $v0 and moves the address to $v1. */
+   scf_t10k_time_zone;` loads straight into $v0 and moves the address to $v1. */
 int sce_scf_get_time_zone(void) {
     unsigned int local;
     unsigned int bits;
@@ -314,7 +314,7 @@ extern unsigned char scf_t10k_summer_time[];
 
 extern int GetOsdConfigParam2_i(void *, int, int) __asm__("func_00118DC0");
 
-/* One return, and func_00118DC0 returns int. */
+/* One return, and GetOsdConfigParam2 returns int. */
 int sce_scf_get_summer_time(void) {
     unsigned char buf[16];
     int r;
@@ -342,7 +342,7 @@ int scf_bin_to_bcd(int arg0) {
  * REVERTED (size mismatch: ours 28 bytes, retail 32). Semantics certain
  * -- BCD byte to binary:
  *
- *   int func_0012D4E0(int arg0) {
+ *   int scf_bcd_to_bin(int arg0) {
  *       unsigned int v = arg0 & 0xFF;
  *       return (v - (v >> 4) * 6) & 0xFF;
  *   }
@@ -384,7 +384,7 @@ void decode_bcd_time_fields(unsigned char *p) {
 extern int scf_bin_to_bcd(int);
 
 /* The inverse conversion, same shape; exact under 2.9-ee for the same
-   reason as func_0012D500 (4/104 under 2.95.3). */
+   reason as decode_bcd_time_fields (4/104 under 2.95.3). */
 void encode_bcd_time_fields(unsigned char *p) {
     p[7] = scf_bin_to_bcd(p[7]);
     p[6] = scf_bin_to_bcd(p[6]);
@@ -402,7 +402,7 @@ extern Cfg12 MonthLengths NOT_SDA;
 /*
  * Tick the sceCdCLOCK at s (binary fields: [5] day, [6] month, [7] year)
  * forward by one day, with a working copy of the 12-byte month-length
- * table D_00153D40 (February stretched to 29 when year & 3 == 0), the
+ * table MonthLengths (February stretched to 29 when year & 3 == 0), the
  * month rolling 12 -> 1 and the year 99 -> 0.
  *
  * The leap test reads the year into an int. Retail loads the year twice
@@ -442,7 +442,7 @@ void scf_add_day(unsigned char *s) {
  * the day counting down to 0 rolls the month back (1 -> 12) and the year
  * with it (0 -> 99), then the day is reloaded from the table.
  *
- * Levers: the leap test on an int copy of the year, as in func_0012D5D0
+ * Levers: the leap test on an int copy of the year, as in scf_add_day
  * (2.9-ee's GCSE otherwise reuses the first year load: 61/164);
  * `s[5] = s[5] - 1;` before the leap block (a block boundary gives
  * retail's reload of s[5]); the month as `if (--s[6] == 0)` (stores the
@@ -474,7 +474,7 @@ void scf_sub_day(unsigned char *s) {
 
 /*
  * Advance the hour ([3]); at 24 it wraps to 0 and the day ticks forward.
- * Retail's call is a bare tail `j func_0012D5D0` on the wrap path only,
+ * Retail's call is a bare tail `j scf_add_day` on the wrap path only,
  * with a plain `jr $ra` on the other: a conditional sibling call, which
  * 2.9-ee emits from this plain C. (Under 2.95.3, which has no sibling
  * calls, it was 8 bytes over.)
@@ -501,9 +501,9 @@ void scf_sub_hour(unsigned char *s) {
 
 /*
  * Shift the sceCdCLOCK at s by diff minutes: BCD to binary
- * (func_0012D500), add diff to the minutes, carry whole hours down or up
+ * (decode_bcd_time_fields), add diff to the minutes, carry whole hours down or up
  * through the hour helpers, store the minutes, binary back to BCD
- * (func_0012D568, a tail call). Note the upper bound is `> 60`, not
+ * (encode_bcd_time_fields, a tail call). Note the upper bound is `> 60`, not
  * `>= 60`: retail's test is `slti 0x3D`.
  *
  * The `min >= 0` arm has to come first: retail lays the carry-up loop
@@ -531,8 +531,8 @@ void scf_adjust_clock_minutes(unsigned char *s, int diff) {
 
 /*
  * sceScfGetLocalTimefromRTC: shift the RTC clock (Japan time, UTC+9) by
- * the configured time zone (func_0012D3F0, minutes) and summer time
- * (func_0012D448, hours), i.e. by tz - 540 + st * 60 minutes. Written in
+ * the configured time zone (sce_scf_get_time_zone, minutes) and summer time
+ * (sce_scf_get_summer_time, hours), i.e. by tz - 540 + st * 60 minutes. Written in
  * that order: `tz + st * 60 - 540` associates differently (19/72).
  */
 void sce_scf_get_local_time_from_rtc(unsigned char *s) {
@@ -542,5 +542,5 @@ void sce_scf_get_local_time_from_rtc(unsigned char *s) {
     scf_adjust_clock_minutes(s, tz - 540 + st * 60);
 }
 
-/* 8 bytes of post-endlabel nop padding in retail -- see func_001F6668. */
+/* 8 bytes of post-endlabel nop padding in retail -- see FontPrint. */
 __asm__(".section .text\n\tnop\n\tnop\n");

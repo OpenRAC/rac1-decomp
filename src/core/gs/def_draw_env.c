@@ -6,8 +6,8 @@
  * core_text object 0x122200-0x1224B0. Boundaries are retail's linker fill
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  *
- * Sony's libgraph: graph005.o (sceGszbufaddr, func_00122200) and
- * graph006.o (sceGsSetDefDrawEnv, func_001222C8), back to back. Built with
+ * Sony's libgraph: graph005.o (sceGszbufaddr, sceGszbufaddr) and
+ * graph006.o (sceGsSetDefDrawEnv, sce_gs_set_def_draw_env), back to back. Built with
  * Sony's 2.9-ee (Makefile.sn, EE29_CORE).
  */
 
@@ -18,7 +18,7 @@ extern void *sceGsGetGParam(void);
  * sceGszbufaddr-style size: fbw = (w + 63) / 64 pages across; fbh =
  * (h + 63) / 64 for a psm with bit 1 set, else (h + 31) / 32; returned as
  * a short, doubled unless the first 8 bytes of sceGsGetGParam()
- * (func_00121D08) masked with 0x0000FFFF0000FFFF equal 1 (interlace mode
+ * (sceGsGetGParam) masked with 0x0000FFFF0000FFFF equal 1 (interlace mode
  * 1, field mode 0).
  *
  * The old decode's "clamps" are plain signed divisions by 64 and 32:
@@ -64,7 +64,7 @@ extern short sceGszbufaddr(short psm, short w, short h); /* sceGszbufaddr */
 
 /* sceGsSetDefDrawEnv (libgraph.h): fills in a default drawing
  * environment for a psm/w/h framebuffer. zbuf1's page count reuses
- * func_00122200 (the same page-count helper FRAME's own fbw comes from)
+ * sceGszbufaddr (the same page-count helper FRAME's own fbw comes from)
  * on the color psm/w/h, since the Z buffer is laid out right after the
  * color buffer; ztest==0 disables Z (mask writes, ZTE/ZTST forced on).
  * prmodecont/colclamp are read-modify-write: only their AC/CLAMP bit is

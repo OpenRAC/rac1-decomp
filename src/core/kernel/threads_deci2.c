@@ -8,7 +8,7 @@
  *
  * Sony's EE kernel library (libkernl), three members of libkernl.a back to
  * back: intr.o (DisableIntc/EnableIntc/DisableDmac/EnableDmac), thread.o
- * (topThread, InitThread = func_001195A0, iWakeupThread) and deci2.o
+ * (topThread, InitThread = InitThread, iWakeupThread) and deci2.o
  * (sceDeci2Open ... kputs). Built with Sony's 2.9-ee (Makefile.sn,
  * EE29_CORE), like the prebuilt archive it matches.
  */
@@ -71,13 +71,13 @@ void topThread(void *arg0) {
 
 /*
  * InitThread: start the kernel-side service thread once. Bail with -1 if
- * the thread id D_0012FCF8 is already > 0; CreateSema (func_00118C70,
- * maxCount 0xFF, initCount 0) into D_00154600; CreateThread
- * (func_00118B50) with entry topThread (func_001194C8), stack D_00154200,
- * stackSize 0x400, gpReg &_gp (D_00166D00), initPriority 0, its id into
- * D_0012FCF8 (DeleteSema and -1 on failure); clear D_00154608[0..1],
- * StartThread(tid, D_00154608), ChangeThreadPriority(GetThreadId(), 1);
- * return D_0012FCF8 (re-read). Exact under 2.9-ee.
+ * the thread id top_thread_id is already > 0; CreateSema (create_semaphore,
+ * maxCount 0xFF, initCount 0) into top_thread_semaphore; CreateThread
+ * (create_thread) with entry topThread, stack top_thread_stack,
+ * stackSize 0x400, gpReg &_gp (gp_base), initPriority 0, its id into
+ * top_thread_id (DeleteSema and -1 on failure); clear top_thread_queue[0..1],
+ * StartThread(tid, top_thread_queue), ChangeThreadPriority(GetThreadId(), 1);
+ * return top_thread_id (re-read). Exact under 2.9-ee.
  *
  * Levers: Sony's real kernel.h structs -- ThreadParam is 12 ints with
  * `status` first (entry at +4, stack +8, stackSize +0xC, gpReg +0x10,
@@ -160,14 +160,14 @@ LINKER_REMNANT("asm/remnants/core_text", func_00119710);
 
 extern int deci2_open_work_area;
 /* Deci2Call (syscall 0x7C) returns the result; the file's later
-   `extern void func_00118E90(int, void *)` drops it, hence the alias. */
+   `extern void Deci2Call(int, void *)` drops it, hence the alias. */
 extern int Deci2Call_ret(int, void *) __asm__("func_00118E90");
 
 /* libkernel sceDeci2Open(protocol, opt, handler): Deci2Call(1, {protocol,
-   opt, handler, uncached &D_00154A10}). Returning the call's value is
+   opt, handler, uncached &deci2_open_work_area}). Returning the call's value is
    what gives retail's schedule (tag complete before the stores, the &buf
    move ahead of the $ra save); the void spelling is 30/68. */
-/* sceDeci2Open: returns Deci2Call's int result (func_00118E90 is
+/* sceDeci2Open: returns Deci2Call's int result (Deci2Call is
    Deci2Call, declared void in this file, so it is reached through an
    alias). */
 int sceDeci2Open(unsigned short arg0, void *arg1, void *arg2) {

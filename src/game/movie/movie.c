@@ -38,9 +38,9 @@ extern int decode_mode MACRO_ADDR;
 extern int challenge_mode MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-/* pad state at D_0013CA40: two words read at 0x1A0/0x1A4 */
+/* pad state at g_controller_state: two words read at 0x1A0/0x1A4 */
 extern PadState g_controller_state;
-/* global block at D_0013E650: word at 0x5C */
+/* global block at voice_pool: word at 0x5C */
 typedef struct MvGlobals {
     char pad0[0x5C];
     int f5C;
@@ -72,7 +72,7 @@ extern void snd_FlushSoundCommands(void);
 /* No recovered name. Playback loop: feeds file data (*file bytes) through the
  * read buffer at `rb` into the video decoder `vd`, starts audio and display once
  * the output buffer fills, aborts on a pad combination, then drains the decoder.
- * D_00161314 records the step reached. Returns 1 if aborted. */
+ * movie_play_step records the step reached. Returns 1 if aborted. */
 int read_mpeg(char *vd, char *rb, int *file) {
     int aborted = 0;
     int started = 0;
@@ -177,7 +177,7 @@ int read_mpeg(char *vd, char *rb, int *file) {
 }
 extern int rotate_thread_ready_queue(int);
 
-/* switchThread -- calls func_00118BC0(1). */
+/* switchThread -- calls rotate_thread_ready_queue(1). */
 void switchThread(void) {
     rotate_thread_ready_queue(1);
 }
@@ -297,8 +297,8 @@ void termAll(void) {
 extern void STUB_printf(char *, ...);
 extern char movie_error_message[];
 
-/* ErrMessage -- passes the message to func_001E9730 (STUB_printf) with the string at
- * D_001612F8 as its first argument. */
+/* ErrMessage -- passes the message to STUB_printf with the string at
+ * movie_error_message as its first argument. */
 void ErrMessage(char *fmt) {
     STUB_printf(movie_error_message, fmt);
 }

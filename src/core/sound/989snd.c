@@ -221,8 +221,8 @@ extern short snd_current_buffer_index;
 
 /* snd_GotReturns: true once the pending IOP reply record's sentinel word
  * and its per-slot echo both read back -1, after taking the returns
- * semaphore (D_0015ECC0). D_0015ED80 is a pointer to that record, not a
- * plain flag; D_0015ED84 is the slot index within it. The slot address
+ * semaphore (sound_command_client). snd_current_buffer is a pointer to that record, not a
+ * plain flag; snd_current_buffer_index is the slot index within it. The slot address
  * is left as one inlined expression (no separate idx/slot locals) --
  * that is what gets retail's addu operand order and epilogue merge. */
 int snd_GotReturns(void) {
@@ -270,8 +270,8 @@ extern char snd_non_idle_error_string[];
 extern int snd_FlushSoundCommands(void);
 
 /* IOP command 3 with two words, waiting for the reply word in
-   D_0015EE00; 0 (and a message) when a stream is pending, the CD is
-   busy or the RPC fails (error 0x106 in D_0015ED88). */
+   snd_cd_callback_arg; 0 (and a message) when a stream is pending, the CD is
+   busy or the RPC fails (error 0x106 in snd_cd_load_error). */
 unsigned int snd_BankLoadByLoc(int arg0, int arg1) {
     *(int *)&snd_cd_load_error = 0;
     if (*(int *)&snd_cd_callback_pending != 0) {
@@ -312,8 +312,8 @@ extern char snd_bank_load_from_ee_progress_string[];
 extern char snd_bank_load_from_ee_cd_busy_string[];
 
 /* Start an IOP stream (command 0x57) for arg0, unless one is already
-   pending (D_0015EDC8) or the CD is busy (func_0012EF48); the reply word
-   lands in D_0015EE00. */
+   pending (snd_cd_callback_pending) or the CD is busy (snd_StreamSafeCdSync); the reply word
+   lands in snd_cd_callback_arg. */
 void snd_BankLoadFromEE_CB(int arg0, int arg1, long arg2) {
     *(int *)&snd_cd_load_error = 0;
     if (*(int *)&snd_cd_callback_pending != 0) {
@@ -645,7 +645,7 @@ void snd_reset_state_and_flush_commands(void) {
 }
 
 /* gp-relative, no retail symbol: gp 0x166D00 - 0x7F74 = 0x15ED8C
-   (streaming-enabled flag, same as func_0012F030/func_0012F068's) and
+   (streaming-enabled flag, same as snd_StreamSafeCdGetError/snd_StreamSafeCdCallback's) and
    gp 0x166D00 - 0x7F38 = 0x15EDC8 (drain-commands-first flag). */
 extern short snd_cd_stream_active;
 
@@ -735,7 +735,7 @@ void snd_StreamSafeCheckCDIdle(int arg0) {
 }
 
 /* gp-relative, no retail symbol: gp 0x166D00 - 0x7F74 = 0x15ED8C
-   (streaming-enabled flag, see func_0012F030/func_0012F068). */
+   (streaming-enabled flag, see snd_StreamSafeCdGetError/snd_StreamSafeCdCallback). */
 extern short snd_cd_sync_pending;
 
 typedef struct {
@@ -809,7 +809,7 @@ int snd_StreamSafeCdBreak(void) {
 }
 
 /* snd_StreamSafeCdGetError: returns the last CD error while VAG streaming
- * owns the drive (the cached value at D_00137C00.error), otherwise defers
+ * owns the drive (the cached value at sound_read_work.error), otherwise defers
  * to sceCdGetError. The field access (not a byte-offset cast) plus
  * volatile is what makes retail's separate lui+addiu base and its
  * duplicated epilogue restore come out of this compiler. */
@@ -821,7 +821,7 @@ int snd_StreamSafeCdGetError(void) {
 }
 
 /* gp-relative, no retail symbol: gp 0x166D00 - 0x7F74 = 0x15ED8C
-   (streaming-enabled flag, same as func_0012F030's) and
+   (streaming-enabled flag, same as snd_StreamSafeCdGetError's) and
    gp 0x166D00 - 0x7F70 = 0x15ED90 (cached callback value). */
 extern short snd_cd_status_callback;
 extern int sce_cd_callback(void);

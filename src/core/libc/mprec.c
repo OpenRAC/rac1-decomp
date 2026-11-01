@@ -94,7 +94,7 @@ extern void *libc_memcpy(void *dest, void *src, unsigned int n); /* memcpy */
 /* newlib mprec.c multadd(ptr,b,m,a): b = b*m+a in place (16-bit limbs
  * packed two to a 32-bit word, Pack_32); if the carry out of the top
  * limb doesn't fit, Balloc a wider Bigint, Bcopy the sign/wds/digits
- * over (memcpy from &b->sign, which is what func_00115248 is here),
+ * over (memcpy from &b->sign, which is what libc_memcpy is here),
  * Bfree the old one, and append the carry as one more digit. */
 void *__multadd(void *ptr, void *arg1, int m, int a) {
     unsigned int *x;
@@ -287,7 +287,7 @@ Bigint_1154D0 *__multiply(void *ptr, Bigint_1154D0 *a, Bigint_1154D0 *b) {
 
 /* newlib mprec.c pow5mult(ptr,b,k): multiplies Bigint b by 5^k using a
  * squaring ladder cached in ptr->_p5s (the first four bits of k via the
- * {5,25,125} table D_001524B8, the rest by repeated squaring of 625). */
+ * {5,25,125} table pow5mult_p05, the rest by repeated squaring of 625). */
 extern void *__multadd(void *ptr, void *b, int m, int a); /* multadd */
 extern int pow5mult_p05[3];
 

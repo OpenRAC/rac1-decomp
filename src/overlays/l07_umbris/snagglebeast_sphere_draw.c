@@ -1,5 +1,5 @@
 /* Starts at 0x00313D28 (was effect_00313D28.c). */
-/* Level 07 code: func_L07_00313D28 in a file of its own, built with
+/* Level 07 code: draw_snagglebeast_sphere_quad_strips in a file of its own, built with
  * -mno-split-addresses (config/file_cflags.txt). The functions of
  * vendor_00313D28.c do not build with it (11 change), so it was another
  * object in retail (docs/reference/BUILD_FIDELITY.md, rule 2). */

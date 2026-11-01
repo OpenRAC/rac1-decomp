@@ -64,7 +64,7 @@ LINKER_REMNANT("asm/remnants/text", func_001EC108);
 
 /* Cam_InterpValues(from, to, vel, stiffness, damping, max): steps *vel
    toward to - from (a damped spring: stiffness * diff - damping * vel),
-   clamps it to +-max and to +-func_001F9B88(to - from), and returns
+   clamps it to +-max and to +-FastAbsF(to - from), and returns
    from + *vel. The nop between the first compare and its bc1f is ps2eeas's
    (tools/ps2eeas_nops.py). */
 float Cam_InterpValues(float from, float to, float *vel, float stiffness, float damping, float max) {
@@ -94,7 +94,7 @@ LINKER_REMNANT("asm/remnants/text", func_001EC208);
 
 extern void DeleteMoby(void *); /* DeleteMoby */
 
-/* Camera_handleCollWithHero: spawns (via func_001E97C8) or deletes the
+/* Camera_handleCollWithHero: spawns (via noop_callback_l) or deletes the
    moby kept at follow.hero_coll_moby, depending on the camera's id: camera
    id 0 keeps the hero collision moby, any other id deletes it. The `== 0`
    arm comes first, and DeleteMoby takes the moby as its argument. */
@@ -119,7 +119,7 @@ void Camera_handleCollWithHero(Camera *cam) {
    (base, index); a char-pointer form emits `addu $2,$3,$2` (index,
    base) and no amount of reordering the C addition changes it, because
    GCC canonicalises the PLUS before operand order is chosen. Indexing
-   a typed array puts the base first. See func_001EC270/func_001EC780. */
+   a typed array puts the base first. See Camera_runSetupToNewCam/Camera_Exit. */
 extern CameraType camera_types[];
 
 /* Camera_runSetupToNewCam: calls the camera type's activate hook
@@ -474,7 +474,7 @@ void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1, 
 /* capture_camera_orientation: the hero moby's axes go into blend.orbit.fwd
    and blend.orbit.up, its yaw/pitch/distance to the hero into blend.orbit
    (yaw, pitch, dist), and blend.orbit.rot is copied from saved_rot. The
-   builds three unit vectors from D_0013F450's +0x2080 pointer table
+   builds three unit vectors from g_hero's +0x2080 pointer table
    (+0xC0/+0xD0/+0xE0 offsets, re-read at each call as retail does). */
 void capture_camera_orientation(void) {
     char *g = g_hero;
@@ -500,7 +500,7 @@ extern char g_hero_platform_carry[];
 
 /* save_camera_vectors: with no blend running (kind 0), copies the
    lerp position into orbit.pos and the lerp rotation into orbit.saved_rot;
-   for next_kind 2 the hero's platform movement (D_0013F590) is added to
+   for next_kind 2 the hero's platform movement (g_hero_platform_carry) is added to
    orbit.pos first. Mirror of restore_camera_vectors. */
 void save_camera_vectors(void) {
     CamBlend *b = &gCamera.blend;
@@ -524,7 +524,7 @@ void restore_camera_vectors(void) {
 }
 
 /* The final mode store goes through this alias: written through
-   D_001872B0 itself, gcse keeps the entry's %hi alive in a saved register
+   cam_trans_state itself, gcse keeps the entry's %hi alive in a saved register
    across the calls, where retail rebuilds it. */
 extern short cam_trans_state_h __asm__("D_001872B0") NOT_SDA;
 
@@ -609,7 +609,7 @@ extern void matrix_copy_rows(void *, void *);
    reached 1, it moves lerp.from_pos toward to's position by the eased factor,
    copies that to gCamera.pos unless the debug free camera is active, slerps
    the rotation from lerp.from_rot into lerp.rot and loads it as the view
-   matrix, then advances both blends by their rates times D_0015EE60, capped
+   matrix, then advances both blends by their rates times frame_scale, capped
    at 1. Returns 1 once both are complete. */
 int step_camera_blend(Camera *to, CamBlendLerp *lerp) {
     float m[4];
@@ -819,11 +819,11 @@ extern void FastVecAdd(void *dst, void *a, void *b);
 /* apply_camera_shake(s, along_row0): one shake channel (gCamera.shake[0] or
    [1]). With the active camera (gCamera.current) in state 6 both counters are
    cleared; with the countdown at 0 only frames_max is. Otherwise the countdown
-   is decremented (func_001F9908, saturating) and offset = amplitude *
-   cos(wrap(2 * count)) * (count / longest)^2 (func_001FA888 int->float,
-   func_001FA7D8 wrap to [-pi, pi], func_001F9F90 cos) scales one of two
+   is decremented (fast_dec_timer, saturating) and offset = amplitude *
+   cos(wrap(2 * count)) * (count / longest)^2 (IntToFloat int->float,
+   FastNormalizeAngle wrap to [-pi, pi], FastCos cos) scales one of two
    directions (matrix[2] for along_row0 0, else matrix[0]) into gCamera.pos
-   (func_001F9DC0 scale, func_001F9BD8 add). The countdown-zero exit is the else
+   (fast_vec_normalize scale, FastVecAdd add). The countdown-zero exit is the else
    arm after the main path (retail's `b L800` over it), and the state-6 stores
    are written frames then frames_max so the scheduler emits frames_max first
    and cross-jumping leaves them alone. */
@@ -949,7 +949,7 @@ extern float resolve_camera_surface_height(void *, int);
    (gCamera.pos) from 0.75 above to 0.75 below (up to six hits); on the
    first hit that is not a water surface, set gCamera.underwater when the
    eye is below the surface height + 0.04. Off for camera id 6 or while
-   D_0015F6E8 is set. */
+   g_game_mode is set. */
 void update_camera_underwater_flag(void) {
     CameraSystem *cam = &gCamera;
     float a[4];
@@ -989,12 +989,12 @@ extern int cam_coll_mode MACRO_ADDR;
 
 /* refresh_camera_control_flags: the probe masks from the hero's state and ground.
    cam_coll_flag is 0x14, or 0x34 in hero states 0x11/0x12 or mode 0x73 of
-   D_0013F450, back to 0x14 when its +0x2F0 height is below gCamera.pos.z
+   g_hero, back to 0x14 when its +0x2F0 height is below gCamera.pos.z
    (except in state 0x11); cam_coll_flag_prev keeps the value before bit 0x80
    is set. cam_coll_mode is 0xB4 ORed with follow.coll_bits, which the first set
-   flag of D_0013F450's 0x12E5, 0x12EB, 0x12E6, 0x12EC, 0x12E4 overrides. Each
+   flag of g_hero's 0x12E5, 0x12EB, 0x12E6, 0x12EC, 0x12E4 overrides. Each
    arm ORs the new mode in itself (the constants fold per arm, as in retail),
-   and each block reads D_0013F450 through its own local (%hi kept, %lo
+   and each block reads g_hero through its own local (%hi kept, %lo
    rebuilt). */
 extern Hero g_hero_HERO __asm__("D_0013F450");
 
@@ -1043,7 +1043,7 @@ void refresh_camera_control_flags(void) {
 extern float gFade MACRO_ADDR;
 
 /* Takes gCamera.follow.fade_rate off gFade each frame; both stop at 0.
-   gFade (D_0015F53C) is a MACRO_ADDR float: $gp-relative in the delay
+   gFade is a MACRO_ADDR float: $gp-relative in the delay
    slots, lui $1 in the body. */
 void advance_timed_camera_control(void) {
     CameraSystem *c = &gCamera;
@@ -1072,7 +1072,7 @@ extern void copy_matrix_rotation(void *, void *);
    from the current camera (blend phase 3 blends it through
    update_camera_blend) and refresh its Euler angles; run the two shake
    channels, the underwater test and the environment update, and, with
-   D_0015EEB4 (mirrored levels) set, rebuild matrix[1] as a cross
+   draw_map51 (mirrored levels) set, rebuild matrix[1] as a cross
    product. The blend reset and the shake calls go through local
    pointers to their sub-blocks, as retail keeps them in registers. */
 void update_camera(void) {

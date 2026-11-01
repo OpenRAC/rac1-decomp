@@ -26,11 +26,11 @@ extern float FastAddRots(float, float);
 
 LINKER_REMNANT("asm/remnants/text", func_0022BEB0);
 
-/* Sky shell draw loop (a variant of func_0022C5A0): shell 0 re-reads the
-   base transform; shells 1-5 scroll their float by D_00160500 times a
+/* Sky shell draw loop (a variant of draw_sky_shells): shell 0 re-reads the
+   base transform; shells 1-5 scroll their float by sky_shell_scroll_step times a
    per-shell rate, get a per-shell spin and scale, rebuild the sky transform
-   from D_001D9A70, scale its three rows, copy D_00160560 into the
-   translation, and every shell is drawn by func_0022C9A8. Each case does
+   from sky_matrix, scale its three rows, copy sky_shell_translation into the
+   translation, and every shell is drawn by SkyDrawShell. Each case does
    its own add and store, and the shell table is indexed through its own
    pointer, which gives retail's base-first address add. */
 extern char *level_sky_effect_data_r __asm__("D_0016055C") MACRO_ADDR;
@@ -366,7 +366,7 @@ extern SkyDef *level_sky_effect_data MACRO_ADDR;
 
 /*
  * SetupSkyGifPaging(void): reserves 0x10 bytes of the VU1 chain at
- * D_00160570 and clears the tag of each of the sky's GIF pages. Retail
+ * sky_gif_paging_tag and clears the tag of each of the sky's GIF pages. Retail
  * loads the page count before the two global stores: read as a struct
  * field through a pointer it cannot alias a scalar global (gcc's
  * fixed_scalar_and_varying_struct_p), where a cast access would keep it
@@ -395,12 +395,12 @@ extern int *sky_gif_paging_tag_p __asm__("D_00160570") MACRO_ADDR;
 extern int *sky_gif_paging_start MACRO_ADDR;
 extern void flush_pending_texture_uploads(void);
 
-/* DoSkyGifPaging: DoGifPaging's twin (func_001F4748) for the sky. Pushes
-   two 4-word GIF tags (0x20000000 in the first word) onto the D_00161000
-   packet, D_00160574 marking where it started and D_00160570's tag
-   pointing at the second; in between, when D_0018A3B0[1] is set,
-   func_0020C2F8 and func_00234E80 add their own. Then restores
-   D_0015EF74 from D_0015EF78. The first advance goes through a local
+/* DoSkyGifPaging: DoGifPaging's twin (DoGifPaging) for the sky. Pushes
+   two 4-word GIF tags (0x20000000 in the first word) onto the g_render_packet_cursor
+   packet, sky_gif_paging_start marking where it started and sky_gif_paging_tag's tag
+   pointing at the second; in between, when draw_config[1] is set,
+   flush_pending_texture_uploads and VU1_texFlush add their own. Then restores
+   g_gs_texture_allocation_cursor from g_gs_texture_allocation_start. The first advance goes through a local
    advanced in place, which keeps the old and new pointer in one register
    as retail does. */
 void DoSkyGifPaging(void) {

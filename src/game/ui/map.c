@@ -39,9 +39,9 @@ typedef struct {
 
 /* Loads a 256-colour texture file p (width at +8, height at +0xC, CLUT
    at +0x20, pixels after it): the CLUT and the pixels take the next VRAM
-   space at D_0015EF74 (cbp, then tbp 0x400 later, then the allocator
+   space at g_gs_texture_allocation_cursor (cbp, then tbp 0x400 later, then the allocator
    moves on by 1 << (tw + th)), and the texture is registered and its GS
-   TEX0 value returned as in func_00205660. The allocator update comes
+   TEX0 value returned as in register_8bit_texture. The allocator update comes
    before the TEX0 value and the buffer width is shifted back into w:
    both decide which of tw and the constant 1 local-alloc serves first. */
 long load_texture_file(char *p) {
@@ -85,7 +85,7 @@ long load_texture_file(char *p) {
 /* Registers an 8-bit texture: returns its GS TEX0 value (tbp = tex >> 8,
    tbw = 1 << max(tw - 6, 0), PSMT8, tw, th, tcc 1, cbp = clut >> 8,
    cld 4) and, while there is room (64 entries), records it in the next
-   D_0018D140 slot. The buffer width is shifted back into w itself: the
+   pending_texture_uploads slot. The buffer width is shifted back into w itself: the
    shift then writes w's register and the constant 1 keeps its own. */
 long register_8bit_texture(int tw, int th, int a2, int a3, int clut, int tex) {
     int w = tw - 6;
@@ -135,19 +135,19 @@ int find_free_map_slot(int arg0) {
 
 extern void move_map_entry_slot(int a, int b);
 
-/* D_001A01F0 typed as the object it is, so that the two 5/6-entry int
+/* level_map_selection typed as the object it is, so that the two 5/6-entry int
    arrays at +0x278 and +0x28C are members rather than constants added
-   to an index. See the note on func_00205790 -- this is what makes it
+   to an index. See the note on promote_first_available_map_entry -- this is what makes it
    match. Aliased rather than renamed because the rest of this file
    still reaches the same symbol as a flat int array. */
 extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 
 /*
- * Allocate a slot. func_00205728(1) gets first refusal; if it returns
+ * Allocate a slot. find_free_map_slot(1) gets first refusal; if it returns
  * nonzero that IS the answer. Otherwise scan slots 1..4 for one that is
- * neither flagged 0x1000 nor empty, and hand it to func_00205830, which
+ * neither flagged 0x1000 nor empty, and hand it to move_map_entry_slot, which
  * compacts entry `i` down onto entry 0. Falling out of the loop at i==5
- * still calls func_00205830(0, 5) -- retail shares that call site with
+ * still calls move_map_entry_slot(0, 5) -- retail shares that call site with
  * the break, so the source must too.
  *
  * Byte-exact, registers included, and it took three things:
@@ -162,10 +162,10 @@ extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
  *    0x27C. A plain `while` starting at i = 1 produces it for free.
  *
  * 3. TYPE THE BASE AS A STRUCT. Three spellings, against retail's 160:
- *      D_001A01F0[0xA3 + i]              172  adds the constant to the
+ *      level_map_selection[0xA3 + i]              172  adds the constant to the
  *                                             index and THEN shifts,
  *                                             once per array
- *      int *p = D_001A01F0 + i; p[0xA3]  164  right inside the loop,
+ *      int *p = level_map_selection + i; p[0xA3]  164  right inside the loop,
  *                                             but the constant-folded
  *                                             i==1 peel then needs its
  *                                             own `addu $3,$3,4`
@@ -179,7 +179,7 @@ extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
  *    `sll idx,2` / `addu base` / `lw CONST(reg)`, that CONST is a
  *    member offset, so declare the member.
  *
- *    It does not contradict the base-pointer rule on func_00205830
+ *    It does not contradict the base-pointer rule on move_map_entry_slot
  *    below, where three arrays come off one live base in straight-line
  *    code and naming the base wins. The rule covering both is: describe
  *    the memory, not the arithmetic.
@@ -215,12 +215,12 @@ extern int level_map_selection[];
 extern int level_map_selection[];
 
 /* Same three parallel arrays func_002054E0 walks: 0x278/4 = 0x9E,
-   0x28C/4 = 0xA3 and 0x2A4/4 = 0xA9 into D_001A01F0. Moves entry `b`
+   0x28C/4 = 0xA3 and 0x2A4/4 = 0xA9 into level_map_selection. Moves entry `b`
    onto entry `a` and frees `b`.
 
    Where the pointers are derived is load-bearing. Naming the unoffset
    `base` keeps the symbol's address live and derives each array with
-   its own addiu (`&D_001A01F0[0x9E]` folds the offset into %lo and
+   its own addiu (`&level_map_selection[0x9E]` folds the offset into %lo and
    loses an instruction). `flags` is derived only after the call, as in
    retail: deriving it up front with the others swaps a*4 and b*4
    between $s1 and $s2. */
@@ -255,9 +255,9 @@ extern unsigned char gHaveMapOMatic NOT_SDA;
 /* The MACRO_ADDR view declared further down, needed here already. */
 extern int *menu_level_indices_m __asm__("D_001602E0") MACRO_ADDR;
 
-/* Picks the map to load next: the current map id (D_001A01F0+0x224,
-   +0x100 when D_0013D5E9 is set) unless func_002058D0 finds it already
-   in a slot, otherwise the nearest entry of the 20-id list D_001602E0
+/* Picks the map to load next: the current map id (level_map_selection+0x224,
+   +0x100 when gHaveMapOMatic is set) unless find_map_entry_slot finds it already
+   in a slot, otherwise the nearest entry of the 20-id list menu_level_indices
    around the current one (+1, -1, +2, -2, +3, -3) that is not loaded;
    -1 if none. The two bounds tests are nested so that fold does not
    merge them into one unsigned compare, and the step update is the
@@ -310,14 +310,14 @@ int find_id_in_terminated_table(int arg0) {
 
 extern int subtract_integer_with_clamp(int); /* abs */
 
-/* Picks the map slot to reuse (D_001A01F0's five slots: in use at
+/* Picks the map slot to reuse (level_map_selection's five slots: in use at
    [0x9E + i], map id at [0xA3 + i], active slot [0xA8]). With no current
    map (+0x224 == 0) a used, inactive slot holding no map (-1) is looked
    for from the top first. Then the slots are scanned from the bottom:
    such a slot is taken, or else the one whose map is furthest from the
-   current map in the D_001602E0 list (func_00205A50) is freed; 1 if the
+   current map in the menu_level_indices list (find_id_in_terminated_table) is freed; 1 if the
    current map is not in the list.
-   The slots are indexed off the global itself, as in func_002058D0, so
+   The slots are indexed off the global itself, as in find_map_entry_slot, so
    that loop.c keeps one pointer per loop; the final store goes through
    the struct view, which adds the base first. */
 int pick_map_slot_to_evict(void) {
@@ -389,8 +389,8 @@ void compose_bitmap_from_mask(unsigned char *dst, unsigned char *a, unsigned cha
 extern void DebugEnter_Nop(void);
 extern char g_controller_state[];
 
-/* Map screen pan/zoom update: returns 1 while the pad word (D_0013CA40
-   +0x1A4) has 0x500 set, 0 when the map object D_001A01F0 has nothing open
+/* Map screen pan/zoom update: returns 1 while the pad word (g_controller_state
+   +0x1A4) has 0x500 set, 0 when the map object level_map_selection has nothing open
    (+0x24) or no slot (+0x228 < 0). Otherwise scales the slot's zoom (+0xB4
    floats) by 1 - speed*0.02 and clamps it to [0.65, 4], pans x/y (+0x104 /
    +0x154, 16.15 fixed point) by the pad velocities times 3000000/zoom, and
@@ -990,7 +990,7 @@ void draw_map_overlay(void) {
 }
 
 /* Builds the map's 1-bit coverage mask: each of the 256 rows is decoded
-   into the scratchpad (func_00207090), then every 4-bit pixel that is
+   into the scratchpad (decode_map_rle_row), then every 4-bit pixel that is
    not 0 sets its bit, 32 pixels to a word, one word every 16 words of
    the output, 16 rows side by side (dst + row % 16 + row / 16 * 512).
    The remainder is computed before the quotient (retail's surviving

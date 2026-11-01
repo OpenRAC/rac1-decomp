@@ -10,9 +10,9 @@
  *
  * Six Sony SDK archive members back to back (each ends 8-byte aligned, so
  * no fill separates them): libcdvd's cdvd005.o (sceCdRead), cdvd015.o
- * (sceCdGetError, func_00121930), cdvd018.o (sceCdBreak, func_001219C8)
+ * (sceCdGetError, sce_cd_get_error), cdvd018.o (sceCdBreak, sce_cd_break)
  * and cdvd039.o (sceCdReadClock), then libgraph's graph001.o
- * (sceGsResetGraph, sceGsGetGParam = func_00121D08). Built with Sony's
+ * (sceGsResetGraph, sceGsGetGParam = sceGsGetGParam). Built with Sony's
  * 2.9-ee (Makefile.sn, EE29_CORE), like the prebuilt archives they match.
  */
 
@@ -25,8 +25,8 @@ extern void scePrintf();
 extern int cd_ncmd_disk_ready(void);
 
 /* sceCdRead: queue one CD/DVD read request (lba, sectors, buffer, mode)
- * in the request block at D_001314C0 and start it through the RPC
- * func_0011B4C8. Returns 1 when the RPC was accepted, 0 otherwise.
+ * in the request block at cd_read_request and start it through the RPC
+ * sif_call_rpc. Returns 1 when the RPC was accepted, 0 otherwise.
  * The volatile state clears precede the semaphore read; the verified
  * GNU 2.10-ee profile fills SignalSema's call slot with that word load.
  * Sector size by mode->datapattern: 1 -> 0x918, 2 -> 0x924, else 0x800. */
@@ -103,7 +103,7 @@ int sce_cd_read(int lba, int sectors, void *buf, unsigned char *mode) {
     return 1;
 }
 
-/* sceCdGetError, func_00120E98's sibling: S-command 3, RPC 4, and -1
+/* sceCdGetError, cd_ncmd_disk_ready's sibling: S-command 3, RPC 4, and -1
    rather than 0 as the failure result.
 
    The RPC failure is handled first (SignalSema, return -1), then the
@@ -127,14 +127,14 @@ int sce_cd_get_error(void) {
 
 extern volatile int cd_callback_num;
 
-/* sceCdBreak, sibling of func_00121930: S-command 0x1E, RPC 0x16 on
-   D_00132E08 under the D_001313EC semaphore, with the D_00131414 busy flag
+/* sceCdBreak, sibling of sce_cd_get_error: S-command 0x1E, RPC 0x16 on
+   cd_scmd_rpc_client under the cd_scmd_sema semaphore, with the cd_callback_num busy flag
    set around it; returns the reply word read uncached. The volatile flag
    and semaphore reads stay out of the delay slots, where reorg never puts
    a volatile access (this module sees its globals as volatile, as
    cdvd000.o does).
 
-   As in func_00121930, the RPC failure path comes first: with the success
+   As in sce_cd_get_error, the RPC failure path comes first: with the success
    path first 2.9-ee merges the two `return 0` tails (SIZE 176/184). */
 int sce_cd_break(void) {
     int r;
@@ -162,7 +162,7 @@ typedef struct {
 
 /* sceCdReadClock: S-command 0xF, RPC 1 with a 0x10-byte reply; the
    8-byte clock after the status word is copied out uncached. Failure
-   path first, as in func_00121930. */
+   path first, as in sce_cd_get_error. */
 int sce_cd_read_clock(CdClock *out) {
     int r;
 

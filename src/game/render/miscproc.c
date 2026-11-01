@@ -11,8 +11,8 @@
 
 /*
  * Not a decompile target: hand-written assembly, like the rest of this
- * DMAC block (func_0020C268/func_0020C2F8 are explicitly marked
- * "Handwritten function" by spimdisasm; this one and func_0020C230 use
+ * DMAC block (InitDma/flush_pending_texture_uploads are explicitly marked
+ * "Handwritten function" by spimdisasm; this one and DmaToSprSync use
  * the same idioms but escaped that heuristic). It keeps the base
  * address 0x1000D400 live in $1/$at across all four stores -- $at is
  * assembler-reserved on MIPS and GCC will never allocate it -- and

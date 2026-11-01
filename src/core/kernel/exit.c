@@ -29,15 +29,15 @@ int exit_kCopy(char *dst, char *src, unsigned int n) {
     return 0;
 }
 
-/* Tail call: retail is `j func_0011D4A0` + nop, with no frame at all.
+/* Tail call: retail is `j InitTLB` + nop, with no frame at all.
    2.9-ee emits it natively for a void function that ends in a call. */
 void exit_reinit_tlb(void) {
     InitTLB();
 }
 
 /*
- * Exit(status): re-init the TLB (func_0011DD98), then the _Exit syscall
- * (func_00118A60) with the status, as a bare tail jump. Exact under
+ * Exit(status): re-init the TLB (exit_reinit_tlb), then the _Exit syscall
+ * (kernel_exit) with the status, as a bare tail jump. Exact under
  * 2.9-ee, which emits "call, then tail call" itself; under 2.95.3 it was
  * 4 bytes over (2.95.3 has no sibling calls). The status lives in $16
  * across the first call.

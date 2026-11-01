@@ -7,8 +7,8 @@
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  *
  * Sony's EE kernel library (libkernl): the IOP reset (sceSifRebootIop,
- * func_0011D248, "rom0:UDNL "), the boot-time kernel patch/poke sequence
- * (func_0011D3C8) and the TLB setup (func_0011D4A0/func_0011D4E0,
+ * sce_sif_reboot_iop, "rom0:UDNL "), the boot-time kernel patch/poke sequence
+ * (InitTLBFunctions) and the TLB setup (InitTLB/init_tlb_32mb,
  * "# TLB spad=0 kernel=1:%d ..."). Built with Sony's 2.9-ee
  * (Makefile.sn, EE29_CORE).
  */
@@ -43,7 +43,7 @@ extern u32 sce_sif_set_reg(u32 reg, u32 val);
 extern void sceSifWriteBackDCache(void *p, s32 size);
 extern u32 sce_sif_set_dma(SifDmaData *dma, s32 count);
 
-/* sceSifResetIop: like sceSifRebootIop (func_0011D248) but with a caller
+/* sceSifResetIop: like sceSifRebootIop (sce_sif_reboot_iop) but with a caller
    -supplied argument string and reboot mode. Adapted from Lombyte's project (GPL-3.0)
    for PAL. */
 s32 sceSifResetIop(const char *arg, s32 mode) {
@@ -132,7 +132,7 @@ ASM_FUNC("asm/handwritten/core_text", func_0011D360);
  *
  * Exact under 2.9-ee. Retail leaves the loop branch's delay slot empty,
  * and that is 2.9-ee itself: it pads the short loop with nops in its own
- * output and leaves the bnez unfilled (as in libdma's func_001232A8).
+ * output and leaves the bnez unfilled (as in libdma's dma_memclr).
  * Under 2.95.3 reorg fills the slot with the `addiu $4,$4,4` bump, 52
  * bytes against 56, which is what kept this a stub.
  */
@@ -159,21 +159,21 @@ extern int tlb_saved_syscall_3_entry;
 /*
  * Exact (it was a 2/0xC4 near-miss until the int/void fix below). Boot-time
  * hardware init: three explicit (addr, value) pokes through
- * func_0011D3B8, a func_0011D360 block copy of D_0012FDB8 (0x330 bytes)
+ * set_syscall, a kcopy block copy of tlb_functions_kernel_code (0x330 bytes)
  * to a fixed load address, an interrupt-disable/enable bracket, then a
- * loop over 5 more 8-byte table entries where func_0011D3A8 reads the
- * entry's current value back before func_0011D3B8 rewrites it. All
+ * loop over 5 more 8-byte table entries where get_entry_address reads the
+ * entry's current value back before set_syscall rewrites it. All
  * three callees are handwritten syscall wrappers (0x74/0x5A/0x5B).
  *
  * The loop counter has to be `unsigned int`, same tell as
- * func_0011DCB8 (see that comment): as `int` this compiler reverses
+ * InitExecPS2 (see that comment): as `int` this compiler reverses
  * the up-count into a down-count-from-5 with `bgezl`, giving retail's
  * `addiu s2,zero,0x1`/`sltiu ...,0x8` only with `unsigned`. What's
  * left is a single instruction's destination register ($v0 vs $v1) on
  * the loop-continuation test -- tried caching `p->a` in a local
  * instead of re-reading it for both calls, which regressed badly
  * (605 words), and reordering the locals, which did nothing; the fix was
- * func_0011D3B8's return type (below).
+ * set_syscall's return type (below).
  */
 typedef struct {
     int a;
@@ -182,7 +182,7 @@ typedef struct {
 
 extern void set_syscall_v(int, int) __asm__("func_0011D3B8");
 
-/* func_0011D3B8 returns nothing: declared int, its result register
+/* set_syscall returns nothing: declared int, its result register
    pushed the loop test to $v1. */
 int InitTLBFunctions(void) {
     int *t = tlb_functions_syscall_table;
@@ -216,8 +216,8 @@ extern int init_tlb_32mb(void);
 extern int kernel_init_tlb(void);
 
 /* Set up the TLB for the machine's memory size: the 32 MB layout
-   (func_0011D4E0) when func_00118EA0 reports 0x2000000, the kernel's own
-   routine (func_00118EB0) otherwise. Returns its callees' values: retail
+   (init_tlb_32mb) when get_memory_size reports 0x2000000, the kernel's own
+   routine (kernel_init_tlb) otherwise. Returns its callees' values: retail
    keeps the frame and calls both, and 2.9-ee turns both arms into tail
    jumps (44 bytes against 64) when it is void. */
 int InitTLB(void) {

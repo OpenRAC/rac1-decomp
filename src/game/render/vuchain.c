@@ -41,7 +41,7 @@ extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int current_vu_chain_m __asm__("D_0016100C") MACRO_ADDR;
 extern int vu_chain_table[];
 
-/* Advances the index at D_0016100C, wrapping at 0x13. The old note had
+/* Advances the index at current_vu_chain, wrapping at 0x13. The old note had
    the condition backwards: `slti; movz x,$0,t` is `if (idx >= 0x13)
    idx = 0`. Both globals are MACRO_ADDR, which gives the one-register
    load and the $gp store in the jr slot. */
@@ -54,8 +54,8 @@ void calculate_dma_transfer_address(void) {
 }
 
 /*
- * The VU1 chain state. D_00161000 (the write pointer), D_00161010 (the
- * buffer index) and the two limits D_0015F718/D_0015F71C are all reached
+ * The VU1 chain state. g_render_packet_cursor (the write pointer), vu1_chain_buffer_index (the
+ * buffer index) and the two limits render_packet_end/vu1_chain_safe_end are all reached
  * with retail's one-instruction macro form, so they are MACRO_ADDR: the
  * assembler expands them through $at, or through $gp where the access
  * lands in a delay slot.
@@ -72,7 +72,7 @@ extern int level_resource_buffers[];
 
 extern int vu1_chain_reserved_bytes_m __asm__("D_0015F698") MACRO_ADDR;
 
-/* `end` reads D_00161000 back right after storing it (CSE folds the
+/* `end` reads g_render_packet_cursor back right after storing it (CSE folds the
    load away), which changes how the stores are scheduled: that, not
    any order of the four stores, gives retail's. */
 void VU1_initChain(void) {
@@ -108,7 +108,7 @@ extern char vu1_chain_overflow_msg[];
 extern int *sce_dma_get_chan(int);
 extern void sce_dma_send(int *, int);
 
-/* VU1_sendChain. D_00160FE0 is volatile, so its store stays out of the
+/* VU1_sendChain. vif_chain_flags is volatile, so its store stays out of the
    delay slot (reorg never moves a volatile access there). */
 void VU1_sendChain(void) {
     int size;
@@ -160,7 +160,7 @@ void VU1_syncChain(int mask) {
 }
 
 /*
- * VU1_addDataRef(void *, int). Retail reloads D_00161000 before every
+ * VU1_addDataRef(void *, int). Retail reloads g_render_packet_cursor before every
  * field write -- the writes could alias the pointer itself -- which is
  * exactly what writing through the global (rather than through a local
  * copy) produces.
@@ -225,15 +225,15 @@ LINKER_REMNANT("asm/remnants/text", func_00234D50);
 extern int g_screen_extent[];
 
 /* VU1_setScissor(x0, x1, y0, y1): clamps the rectangle to the screen
-   (D_0013E600[0]/[1] are its width and height) and queues it as GS
+   (g_screen_extent[0]/[1] are its width and height) and queues it as GS
    register 0x40 (SCISSOR_1: x0 | x1 << 16 | y0 << 32 | y1 << 48) in the
-   same packet VU1_addGSregister (func_00234C98) builds. Each clamp is a
+   same packet VU1_addGSregister builds. Each clamp is a
    `cond ? bound : arg` select assigned back to the argument, and the
    fields are sign-extended to 64 bits, not zero-extended. */
 /* VU1_setScissor(x0, x1, y0, y1): clamps the rectangle to the screen
-   (D_0013E600[0]/[1] are its width and height) and queues it as GS
+   (g_screen_extent[0]/[1] are its width and height) and queues it as GS
    register 0x40 (SCISSOR_1: x0 | x1 << 16 | y0 << 32 | y1 << 48) in the
-   same packet VU1_addGSregister (func_00234C98) builds. */
+   same packet VU1_addGSregister builds. */
 void VU1_setScissor(int x0, int x1, int y0, int y1) {
     x0 = x0 < 0 ? 0 : x0;
     x1 = x1 > g_screen_extent[0] - 1 ? g_screen_extent[0] - 1 : x1;
@@ -313,7 +313,7 @@ extern void print_register_values_and_halt(void);
 
 /*
  * DMAC_VIF1_Enable(void): unless the handlers are installed, set CIM1 in
- * D_STAT and install func_00235118 (channel 1) and func_00235218 (0xF),
+ * D_STAT and install vif1_dma_interrupt_handler (channel 1) and print_register_values_and_halt (0xF),
  * then enable channel 1. The D_STAT read is volatile but the store is
  * plain: a volatile store stops reorg's try_merge_delay_insns at it and
  * leaves a second copy of the handler's lui on the fall-through path.
@@ -370,7 +370,7 @@ void print_register_values_and_halt(void) {
 }
 
 /*
- * Append one quadword to the packet at D_00161000. This one wants the
+ * Append one quadword to the packet at g_render_packet_cursor. This one wants the
  * pointer typed as a quadword: stepping an `int *` by 4 folds the copy
  * retail keeps (`daddu $5,$2,$0`) into the increment and comes out one
  * instruction short, so the same symbol is declared a second time under

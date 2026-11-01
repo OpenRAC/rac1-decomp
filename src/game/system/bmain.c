@@ -45,9 +45,9 @@ extern void sceGsSyncVCallback(void (*)(void));
 extern void Hud_sendTexture(int, int, int, int, int, int);
 
 /* Start level `level`: pick its two load parameters from the level
-   table in D_00137C80 (the alternate set while D_0015EE80 is set), stop
-   sound and wait for the loader (func_00209E68) to go idle, then load it
-   (func_0023B670) and reset the display state. */
+   table in disc_table (the alternate set while pal_mode is set), stop
+   sound and wait for the loader (memcard_update_state) to go idle, then load it
+   (Movie_Play) and reset the display state. */
 void start_level(int level) {
     int a;
     int b;

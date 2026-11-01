@@ -24,7 +24,7 @@ extern char memcard_icon_path_c[];
 extern char memcard_slot_path_format[];
 extern void libc_strncpy(void *, void *, int);
 
-/* Builds a 13-byte name/version stamp in D_0013D2D0 from the record's
+/* Builds a 13-byte name/version stamp in memcard_save_dir_name from the record's
    region byte (arg0[0x12]) and the record's date/version fields, then
    copies that stamp into the six on-disk name buffers. */
 void memcard_get_name(void *arg0) {
@@ -94,7 +94,7 @@ extern int memcard_RestoreData(void *src, int i, int *table);
 extern int STUB_printf();
 extern char memcard_restore_size_mismatch_msg[];
 
-/* The counterpart of func_0020BA00 below: both descriptor sizes are
+/* The counterpart of memcard_MakeWholeSave below: both descriptor sizes are
    recomputed and checked against the ones stored in the blob, then the
    blobs are read back in the same order they were written. The read
    cursor is the parameter, which retail keeps in $s2. */
@@ -123,7 +123,7 @@ void memcard_RestoreGame(int arg0) {
 /*
  * 3/168: the only residual is the allocator holding the loaded pointer
  * in $2 where retail uses $3. Everything else, including saving the
- * three globals across func_00209CE8 and the $at store of D_0015EE84,
+ * three globals across memcard_RestoreGame and the $at store of g_current_level_index,
  * is instruction-for-instruction retail.
  */
 extern int disc_table[];
@@ -138,7 +138,7 @@ extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
 extern int Load_i(int, int, int) __asm__("func_002176C8");
 
-/* func_002176C8 returns int and takes three arguments (stream.c). */
+/* Load returns int and takes three arguments (stream.c). */
 void load_and_initialize_level_chunk(void) {
     int a;
     int b;
@@ -1350,7 +1350,7 @@ extern int memcard_GetDataSize(int *p);
 extern int memcard_PrepData(void *dst, int i, int *table);
 
 /* Serialise both descriptor tables into the caller's buffer: the two
-   sizes first, then one blob for D_001A05C0 and twenty for D_001A08C0,
+   sizes first, then one blob for mc_gamedata and twenty for mc_leveldata,
    each call returning how far to advance. The write cursor is the
    parameter itself -- retail keeps both in $s2. */
 /* memcard_MakeWholeSave */
@@ -1652,19 +1652,19 @@ extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
 extern char memcard_game_data_buffer[];
 extern char memcard_level_data_buffer[];
 
-/* memcard_Save(slot, flags): starts the save (func_00121A80/func_0012D818
-   on D_0015EF98, func_00208FA0, func_00208338 on the D_00141FC0 page for
-   D_0015EE84). With no valid card slot (D_0013D390+0xC8, its record's
+/* memcard_Save(slot, flags): starts the save (sce_cd_read_clock/sce_scf_get_local_time_from_rtc
+   on save_clock_time, copy_level_object_positions, save_map_coverage on the level_map_coverage page for
+   g_current_level_index). With no valid card slot (memory_card_state+0xC8, its record's
    +0x14) it returns whether `slot` is 0. Otherwise it ORs `slot` into the
    pending mask (+0xFC); unless nothing is pending, a save is running
    (+0xDC >= 3) or a result is waiting (+0xE4 >= 0), it stamps +0xD0 with
-   D_0015EE84 (temporarily switching D_0015EE84 to `flags` and setting that
-   D_0013DE60 byte), fills entry e[+0x14] (four globals and the 8-byte
-   name), serialises both tables (func_0020BBC8), restores the byte and
-   D_0015EE84, and sets result 0xF. Returns whether the result is 0xF.
-   D_0015EF98 is MACRO_ADDR (retail rebuilds its address at each use), the
+   g_current_level_index (temporarily switching g_current_level_index to `flags` and setting that
+   level_visit_state byte), fills entry e[+0x14] (four globals and the 8-byte
+   name), serialises both tables (memcard_PrepData), restores the byte and
+   g_current_level_index, and sets result 0xF. Returns whether the result is 0xF.
+   save_clock_time is MACRO_ADDR (retail rebuilds its address at each use), the
    name field is reached from a `q + 0x30` base, and each block reads
-   D_0013D390 through its own `char *` local (retail keeps only the %hi). */
+   memory_card_state through its own `char *` local (retail keeps only the %hi). */
 int memcard_Save(int slot, int flags) {
     unsigned char saved;
 

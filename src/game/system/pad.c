@@ -20,12 +20,12 @@ extern void ClearPadInput(); /* ClearPadInput(PAD &), defined below */
 extern void process_pad_input(void *, void *, int);
 
 /* UpdatePad(PAD &): latches a few per-frame fields, then asks
-   func_00124EE0 for the port's state. Not 1: the input is cleared and
+   sce_pad2_get_state for the port's state. Not 1: the input is cleared and
    the pad state machine reset. Otherwise state 0 reads two 4-byte info
-   blocks (func_00124DF0 -> +0x180, with +0x1DC = 0x79 when the first word
-   is 0xFFFFFFFF, and func_00125218 -> +0x184; more than 4 bytes counts
+   blocks (sce_pad2_get_button_profile -> +0x180, with +0x1DC = 0x79 when the first word
+   is 0xFFFFFFFF, and sce_vib_get_profile -> +0x184; more than 4 bytes counts
    as none) and moves to state 1, or 2 when the first block was too
-   long; state 1 reads the buttons into func_002181F0 and counts +0x18C
+   long; state 1 reads the buttons into process_pad_input and counts +0x18C
    down; state 2 clears the input and sets +0x18C to 2. The two copy
    loops per block are as retail has them (0..n, then n..3). */
 void poll_pad_device_state(void *arg0) {
@@ -132,12 +132,12 @@ void ClearPadInput(PadClr *p) {
     }
 }
 
-/* A 12-byte small-data block (func_00227DB0 saves it whole); the byte at +4 mirrors left and
+/* A 12-byte small-data block (load_level_zero_preserving_progress saves it whole); the byte at +4 mirrors left and
    right. A member behind the start of the object is a two-instruction access for the
    compiler, so it never lands in a delay slot. */
 struct PadOptions_181F0 {
     s32 unk0;
-    u8 mirror;                /* D_0015EEB4 */
+    u8 mirror;                /* draw_map51 */
     u8 pad5[7];
 };
 extern struct PadOptions_181F0 gCheats_r __asm__("D_0015EEB0") MACRO_ADDR;

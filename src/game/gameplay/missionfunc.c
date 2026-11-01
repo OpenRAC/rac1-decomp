@@ -18,14 +18,14 @@ extern unsigned char level_visit_state[];
 extern char mission_list_state[];
 
 /* Per-frame objective update over the 0x28-byte node list of the current
-   pad slot (D_001A2EF0[D_001A01F0[0x89]], kept at D_001A2F90+0x10):
-   status +0x24 = 0 when a gated node (+0x10 & 4) has its D_0013DE60 byte
-   clear or its first condition (func_0020C940) fails, else 2 or 1 by the
+   pad slot (planet_mission_lists[level_map_selection[0x89]], kept at mission_list_state+0x10):
+   status +0x24 = 0 when a gated node (+0x10 & 4) has its level_visit_state byte
+   clear or its first condition (check_mission_condition) fails, else 2 or 1 by the
    second condition; then each +0x1C callback's result goes to +0x26; then
-   the count of status-1 nodes without +0x10 & 2 goes to D_001A2F90+0xC.
+   the count of status-1 nodes without +0x10 & 2 goes to mission_list_state+0xC.
    Returns whether that count is 0. The head is stored and then read back
    (CSE forwards it, leaving retail's copy into $s0 after the null test),
-   and each block reads D_001A2F90 through its own `char *` local. */
+   and each block reads mission_list_state through its own `char *` local. */
 int update_mission_list(void) {
     char *node;
 
@@ -124,7 +124,7 @@ typedef struct {
 } MissionNode;
 extern MissionNode *current_mission_nodes;
 
-/* Lists the current objectives (the 0x28-byte node list at D_001A2FA0,
+/* Lists the current objectives (the 0x28-byte node list at current_mission_nodes,
    ended by id 0): each node not hidden (flags & 2), with a status, and
    not an optional (flags & 1) one already done (status 2) goes to
    out[count] as its id (with arg3: 0x5243 when done, else ids[sel]),
@@ -179,7 +179,7 @@ __asm__(".section .text\n\tnop\n");
 extern int race_gates_24_status NOT_SDA;
 extern unsigned char menu_item_enabled_12 NOT_SDA;
 
-/* Predicate: true when D_0013D844 and the flag byte D_0013D4A8 are both set. */
+/* Predicate: true when race_gates_24_status and the flag byte menu_item_enabled_12 are both set. */
 int MissionCond_Obj18AndSpecial18(void) {
     if (race_gates_24_status != 0 && menu_item_enabled_12 != 0)
         return 1;
@@ -188,7 +188,7 @@ int MissionCond_Obj18AndSpecial18(void) {
 
 extern int race_gates_47_flag NOT_SDA;
 
-/* Predicate: true when D_0013D9B4 and special items 0x20 and 0x21 are all set. */
+/* Predicate: true when race_gates_47_flag and special items 0x20 and 0x21 are all set. */
 int MissionCond_Obj2FAndSpecials(void) {
     if (race_gates_47_flag != 0 && gSpecialItems[0x20] != 0 && gSpecialItems[0x21] != 0)
         return 1;
@@ -198,7 +198,7 @@ int MissionCond_Obj2FAndSpecials(void) {
 extern unsigned char gHaveHeliPack NOT_SDA;
 extern int race_gates NOT_SDA;
 
-/* Predicate: true when both mission words at D_0013D6B8 are non-zero. */
+/* Predicate: true when both mission words at race_gates are non-zero. */
 int MissionCond_Obj3FAnd40(void) {
     char *base = (char *)&race_gates;
     if (*(int *)(base + 0x40C) != 0 && *(int *)(base + 0x3FC) != 0)
@@ -209,7 +209,7 @@ int MissionCond_Obj3FAnd40(void) {
 extern int race_gates_66_status NOT_SDA;
 extern unsigned char menu_item_enabled_73 NOT_SDA;
 
-/* Predicate: true when D_0013DAE4 and the flag byte D_0013D4E5 are both set. */
+/* Predicate: true when race_gates_66_status and the flag byte menu_item_enabled_73 are both set. */
 int MissionCond_Obj42AndSpecial55(void) {
     if (race_gates_66_status != 0 && menu_item_enabled_73 != 0)
         return 1;
@@ -219,7 +219,7 @@ int MissionCond_Obj42AndSpecial55(void) {
 extern int race_gates_70_status NOT_SDA;
 extern unsigned char menu_item_enabled_85 NOT_SDA;
 
-/* Predicate: true when D_0013DB24 and the flag byte D_0013D4F1 are both set. */
+/* Predicate: true when race_gates_70_status and the flag byte menu_item_enabled_85 are both set. */
 int MissionCond_Obj46AndSpecial61(void) {
     if (race_gates_70_status != 0 && menu_item_enabled_85 != 0)
         return 1;
@@ -229,7 +229,7 @@ int MissionCond_Obj46AndSpecial61(void) {
 extern int race_gates_87_status NOT_SDA;
 extern unsigned char race_gates_base NOT_SDA;
 
-/* Predicate: true when D_0013DC34 and the flag byte D_0013D605 are both set. */
+/* Predicate: true when race_gates_87_status and the flag byte race_gates_base are both set. */
 int MissionCond_Obj57AndItem3D(void) {
     if (race_gates_87_status != 0 && race_gates_base != 0)
         return 1;
@@ -238,7 +238,7 @@ int MissionCond_Obj57AndItem3D(void) {
 
 extern int item_available NOT_SDA;
 
-/* Predicate: true when two entries of the D_0013D5C8 table are both set. */
+/* Predicate: true when two entries of the item_available table are both set. */
 int MissionCond_Items1FAnd21(void) {
     unsigned char *base = (unsigned char *)&item_available;
     if (base[0x21] != 0 && base[0x1F] != 0)
@@ -246,7 +246,7 @@ int MissionCond_Items1FAnd21(void) {
     return 0;
 }
 
-/* Returns whether entry arg0 of the D_0013D5C8 table is set. */
+/* Returns whether entry arg0 of the item_available table is set. */
 int is_item_available(int arg0) {
     unsigned char *base = (unsigned char *)&item_available;
     return base[arg0] != 0;
@@ -266,7 +266,7 @@ int get_map_point_mission_status(void) {
 
 extern unsigned char menu_item_enabled_20 NOT_SDA;
 
-/* Returns 0 when D_0013D9B4 is clear, else 2 or 1 depending on D_0013D4B0. */
+/* Returns 0 when race_gates_47_flag is clear, else 2 or 1 depending on menu_item_enabled_20. */
 int MissionCond_Obj2FVariant(void) {
     if (race_gates_47_flag != 0) {
         return menu_item_enabled_20 ? 2 : 1;
@@ -276,7 +276,7 @@ int MissionCond_Obj2FVariant(void) {
 
 extern unsigned char gemlik_available NOT_SDA;
 
-/* Predicate: true when both D_0013D4F1 and D_0013DE55 are set. */
+/* Predicate: true when both menu_item_enabled_85 and gemlik_available are set. */
 int MissionCond_Special61AndFlag0D(void) {
     if (menu_item_enabled_85 != 0 && gemlik_available != 0)
         return 1;
@@ -285,7 +285,7 @@ int MissionCond_Special61AndFlag0D(void) {
 
 extern unsigned char gHaveMorphORay NOT_SDA;
 
-/* Returns 2 when the Morph-o-Ray is owned, else whether D_0013DC34 is set. */
+/* Returns 2 when the Morph-o-Ray is owned, else whether race_gates_87_status is set. */
 int get_morph_o_ray_status(void) {
     if (gHaveMorphORay != 0)
         return 2;
@@ -299,7 +299,7 @@ int has_hologuise(void) {
     return gHaveHologuise != 0;
 }
 
-/* Returns 2 or the state of another entry of the D_0013D5C8 table, depending on the first. */
+/* Returns 2 or the state of another entry of the item_available table, depending on the first. */
 int Mission_GetHologuiseOrMapStatus(void) {
     unsigned char *base = (unsigned char *)&item_available;
     if (base[0x1F] != 0)
@@ -344,7 +344,7 @@ struct TextRegion_0CDE0 {
 };
 /* One entry of a level's map icon list; the list ends at the first entry with flags bit 4. */
 struct MapIcon_0CDE0 {
-    s16 id;             /* 0x00: moby index (current level) or D_0013D6B8 index; -1..-9 are fixed positions */
+    s16 id;             /* 0x00: moby index (current level) or race_gates index; -1..-9 are fixed positions */
     s16 link;           /* 0x02: -1 always active, else the link's active word decides */
     u16 flags;          /* 0x04: 0x4 ends the list, 0x10 label shown */
     u16 texture_id;     /* 0x06 */
@@ -361,7 +361,7 @@ struct MapIcon_0CDE0 {
     f32 angle;          /* 0x20 */
     s32 active;         /* 0x24 */
 };
-/* Map screen state at D_001A01F0, as far as this function reads it. */
+/* Map screen state at level_map_selection, as far as this function reads it. */
 struct MapState_0CDE0 {
     u8 pad0[0x20];
     struct MapIcon_0CDE0 *icons; /* 0x020: icon list of the shown level */

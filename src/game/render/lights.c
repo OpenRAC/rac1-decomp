@@ -22,8 +22,8 @@ extern void CreatePointLight(int);
 
 /* Per-frame light update: the ambient colour (0.8 grey, -0.3) and a key
    light 0.8 rad behind the camera heading, tilted down; then every
-   active point light (0x30-byte records at D_0019C4C0, positions from
-   D_0019C2C0) that has moved more than 8 units is re-placed and either
+   active point light (0x30-byte records at point_light_data, positions from
+   point_lights) that has moved more than 8 units is re-placed and either
    created (state 1 -> 2) or refreshed (state 2). */
 void UpdateAllPointLights(void) {
     char *l = dir_lights;

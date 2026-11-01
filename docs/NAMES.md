@@ -18,7 +18,7 @@ Readable names sit on top, as macros:
 
 C writes the readable name in function definitions and inside function
 bodies, and the address name everywhere else (declarations and prototypes,
-`__asm__` labels, `_r` definitions, comments that cite a symbol). The
+`__asm__` labels, `_r` definitions). Comments use the readable name too, except in provenance notes. The
 preprocessor turns one into the other, so the objects are byte for byte
 the same either way. Tools that find definitions by address read source
 through `tools/srcnames.py`, which maps readable names back.

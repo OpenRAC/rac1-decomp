@@ -23,8 +23,8 @@ typedef struct {
 
 /* Push a GS display-environment struct's quadword fields to the GS
  * privileged registers, picking the register set (and whether f8 is
- * used at all) by the field/mode flag at offset 6 of D_00132E40
- * (func_00121D08's return). */
+ * used at all) by the field/mode flag at offset 6 of CoreDataTable
+ * (sceGsGetGParam's return). */
 void sce_gs_put_disp_env(GsDispEnv122140 *env) {
     void *info = sceGsGetGParam();
 

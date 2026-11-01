@@ -24,7 +24,7 @@ extern int current_vu_chain MACRO_ADDR;
 extern int level_resource_buffers[];
 
 /*
- * InitMemSlots(void): the memory slot table D_001941C0, from the
+ * InitMemSlots(void): the memory slot table level_resource_buffers, from the
  * 16 KB-aligned end of the image up.
  *
  * The store order is the scheduler's, and it is predictable: before
@@ -57,7 +57,7 @@ extern void sce_cd_init(int);
 extern void sce_cd_disk_ready(int);
 extern int sce_sif_reboot_iop(void *);
 extern int sce_sif_sync_iop(void);
-extern int STUB_printf(); /* debug-log stub: void func_001E9730(int, ...) */
+extern int STUB_printf(); /* debug-log stub: void STUB_printf(int, ...) */
 extern void enable_cache(int);
 extern void sceSifInitRpc(int);
 extern int disable_interrupts(void); /* DIntr */

@@ -13,7 +13,8 @@ extern int mpeg_restart_video_dma(void);
 extern int get_mpeg_timestamp(int, char *);
 extern void movie_reset(void *) __asm__("func_0023E000");
 extern int viBufCreate(void *, void *, void *, int, void *, int);
-/* videoDecCreate(VideoDec *, unsigned char *, int, unsigned long long *, unsigned long long *, int, TimeStamp *, int) */
+/* videoDecCreate(VideoDec *, unsigned char *, int, unsigned long long *, unsigned long long *, int, TimeStamp *, int)
+   */
 int videoDecCreate(char *dec, unsigned char *data, int size, void *input, void *tags, int count, void *stamps,
                    int stampCount) {
     sce_mpeg_create(dec, data, size);
@@ -43,7 +44,7 @@ extern void viBufBeginPut(void *, unsigned char **, int *, unsigned char **, int
 extern int viBufCount(void *);
 
 /* videoDecSetStream(VideoDec *, int, int, int (*)(sceMpeg *, sceMpegCbData *, void *), void *)
- * -- hands its five arguments to func_0012B008 and returns 1. */
+ * -- hands its five arguments to sce_mpeg_add_str_callback and returns 1. */
 int videoDecSetStream(VideoDec *dec, int a1, int a2, int (*cb)(void *, void *, void *), void *arg) {
     sce_mpeg_add_str_callback(dec, a1, a2, (int)cb, (int)arg);
     return 1;
