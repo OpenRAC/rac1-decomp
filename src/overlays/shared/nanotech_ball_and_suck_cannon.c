@@ -14,6 +14,7 @@
 #include "game/fastfunc.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 /* Class 0x326 moby: the moby it is linked to. */
 struct LinkedMobyVars {
     u8 pad_00[0xC];
@@ -3213,7 +3214,7 @@ void draw_offset_textured_effect_quad(void *, void *, f32, f32);
 void draw_red_orb_group_effect_quads(Moby *p) {
     u8 *it[2] __attribute__((aligned(16)));
     f32 s = 1.2f;
-    if (g_current_level_index == 0 || g_current_level_index == 0x12) {
+    if (g_current_level_index == LEVEL_VELDIN1 || g_current_level_index == LEVEL_VELDIN2) {
         s = 1.0f;
     }
     get_first_moby_in_group(it, p->group, 0, 0);
@@ -3280,7 +3281,7 @@ void red_orb_update(char *m) {
             g = (c >> 8) & 0xFF;
             r = c & 0xFF;
             hi = 0x38;
-            if (g_current_level_index_m == 0 || g_current_level_index_m == 0x12)
+            if (g_current_level_index_m == LEVEL_VELDIN1 || g_current_level_index_m == LEVEL_VELDIN2)
                 hi = 0x20;
             *(int *)(p + 4) = (hi << 24) | (b << 16) | (g << 8) | r;
             enqueue_red_orb_group_draw_if_cache_changed(m);

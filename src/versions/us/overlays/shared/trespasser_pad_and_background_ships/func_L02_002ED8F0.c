@@ -51,7 +51,7 @@ void background_ship_1_update(char *moby) {
             if ((float)*(int *)t < *(float *)(d + 0x64)) {
                 *(float *)(d + 0x64) = *(float *)(d + 0x64) - (float)*(int *)t;
             }
-            if (g_current_level_index_r == 9) {
+            if (g_current_level_index_r == LEVEL_GASPAR) {
                 SamplePathAt((int *)t, 1, moby + 0x10, (float *)(moby + 0x40), 0, *(float *)(d + 0x64));
             } else {
                 SamplePathAt((int *)t, 0, moby + 0x10, (float *)(moby + 0x40), 0, *(float *)(d + 0x64));
@@ -74,7 +74,7 @@ void background_ship_1_update(char *moby) {
             }
             break;
         case 2:
-            if (g_current_level_index_r == 2) {
+            if (g_current_level_index_r == LEVEL_ARIDIA) {
                 aridia_skill_ship_kills = aridia_skill_ship_kills + 1;
                 if (aridia_skill_ship_kills >= 3) {
                     unsigned char *p = menu_item_enabled_115 + 1;
@@ -85,7 +85,7 @@ void background_ship_1_update(char *moby) {
                     }
                 }
             }
-            if (g_current_level_index_r == 9) {
+            if (g_current_level_index_r == LEVEL_GASPAR) {
                 if (*(int *)(hero_globals_base + 0x2EA1) == 0x32) {
                     gaspar_skill_ship_kills = gaspar_skill_ship_kills + 1;
                     if (gaspar_skill_ship_kills >= 5) {

@@ -14,6 +14,7 @@
 #include "data/shared_levels.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/level.h"
 
 typedef struct {
     char pad[0x50];
@@ -915,8 +916,8 @@ int draw_hud_text_panel(char *e) {
         pt = &point;
         if (FastVecDist(gHeroPos, pt) < 5.0f) {
             race_record_panel_end_y = y + 100;
-            elapsed = race_best_times[g_current_level_index == 0x10 ? 1 : 0];
-            score = race_best_records[g_current_level_index == 0x10 ? 1 : 0];
+            elapsed = race_best_times[g_current_level_index == LEVEL_KALEBO3 ? 1 : 0];
+            score = race_best_records[g_current_level_index == LEVEL_KALEBO3 ? 1 : 0];
             if (elapsed != 0) {
                 interval = pal_mode != 0 ? 3000 : 3600;
                 per = interval / 60;
@@ -2771,7 +2772,7 @@ void init_level_runtime_state(void) {
     register_part_types();
     DMAC_VIF1_Enable();
     init_level_item_inventory();
-    if (g_current_level_index != 0) {
+    if (g_current_level_index != LEVEL_VELDIN1) {
         unlock_planet(g_current_level_index);
     }
     game_clock_ticks += 0xB4;

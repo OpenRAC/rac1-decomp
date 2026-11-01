@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "overlays/shared/point_lights_and_glows.h"
+#include "enums/level.h"
 
 typedef struct {
     char pad0[0x30];
@@ -20,7 +21,7 @@ extern void AddDrawCallback(void (*)(void *), void *);
 /* Attach the callback during the six active phases of this level event. */
 void update_level14_event_moby_effects(void) {
     void *moby;
-    if (g_current_level_index != 14 || oltanis_cutscene_state.state != 0) {
+    if (g_current_level_index != LEVEL_OLTANIS || oltanis_cutscene_state.state != 0) {
         return;
     }
     moby = oltanis_cutscene_state.moby;

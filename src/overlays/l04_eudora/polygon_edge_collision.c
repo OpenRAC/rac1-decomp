@@ -7,6 +7,7 @@
 #include "overlays/shared/sky_particles.h"
 #include "asm_functions/shared_levels.h"
 #include "data/level_04.h"
+#include "enums/level.h"
 
 extern float vec_distance_xy(void *, void *);
 
@@ -326,7 +327,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Eudora sky shells (rotating in level 4, static elsewhere) and restore GS test and Z. */
 void DrawEudoraSky(void) {
     SetupSkyGifPaging();
-    if (g_current_level_index_m == 4) {
+    if (g_current_level_index_m == LEVEL_EUDORA) {
         draw_sky_shells_with_fast_and_slow_rotation();
     } else {
         update_sky_shells_static();

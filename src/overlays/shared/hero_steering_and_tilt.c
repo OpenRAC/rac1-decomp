@@ -14,6 +14,7 @@
 #include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "game/fastfunc.h"
+#include "enums/level.h"
 
 extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -97,7 +98,8 @@ void hero_move_state_velocity(void) {
         g_hero_s.motion.velocity.f[0] = FastCos(g_hero_s.motion.rot.f[2]) * g_hero_s.ledge_jump_speed;
         g_hero_s.motion.velocity.f[1] = FastSin(g_hero_s.motion.rot.f[2]) * g_hero_s.ledge_jump_speed;
     } else if (state == 11 || state == 12) {
-        if (g_current_level_index != 0xE && hero_slot_item_id(3) == 3 && g_hero_s.state_timer == scale_ticks(5)) {
+        if (g_current_level_index != LEVEL_OLTANIS && hero_slot_item_id(3) == 3 &&
+            g_hero_s.state_timer == scale_ticks(5)) {
             allocate_hero_voice_for_entry(1, 0);
         }
         g_hero_s.motion.move_yaw = g_hero_s.takeoff_yaw;
@@ -1192,7 +1194,7 @@ void spawn_hero_radial_particle_burst(void) {
         b = truncate_float_to_s32(random_float_between(21000.0f, 31500.002f) / 1000.0f);
         s = random_float_between(g_frame_time * 0.15f, g_frame_time * 0.7f);
         qcopy(pos, q);
-        if (g_current_level_index != 6) {
+        if (g_current_level_index != LEVEL_BLARG) {
             pos[0].f[2] = *(float *)(g + 0x2F4);
         }
         i--;

@@ -11,6 +11,7 @@
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 /* Plasmabot: follows its path, tracks the hero, fires a sweeping plasma beam. */
 struct PlasmabotVars {
     u8 pad_00[0x20];
@@ -1942,7 +1943,7 @@ void update_floating_mine(struct Moby *moby) {
             }
             break;
         case 1: {
-            if (g_current_level_index == 16) {
+            if (g_current_level_index == LEVEL_KALEBO3) {
                 if (vars->rest_z < 0.0f)
                     vars->rest_z = ProbeGroundHeight(0.5f, &moby->pos, 0) + 0.7f;
                 Spring_r(&moby->pos.z, &vars->z_speed, vars->rest_z, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f,

@@ -11,6 +11,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/level.h"
 
 extern int vendor_stock[] MACRO_ADDR;
 extern short follow_cam_setting_values;
@@ -1712,7 +1713,7 @@ int volume_camera_swing_check(char *m) {
         if (params->timer == 0) {
             struct Hero *hero_data = (struct Hero *)(hero_globals_base + 0xE1D);
             if (hero_data->frames_off_ground.s != 0) {
-                if (*(int *)&g_current_level_index != 14)
+                if (*(int *)&g_current_level_index != LEVEL_OLTANIS)
                     return 0;
                 if (hero_data->unk2284 != 13)
                     return 0;

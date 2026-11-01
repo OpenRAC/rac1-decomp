@@ -16,6 +16,7 @@
 #include "data/level_16.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/level.h"
 
 typedef int u128 __attribute__((mode(TI)));
 typedef struct {
@@ -502,7 +503,7 @@ int Hero_TryMoveState(int a, int b) {
                 char *q = hero_globals_base + 0xE1D;
                 if (((struct Hero *)q)->state.prev_control_mode != 0x16) {
                     char *m;
-                    if (g_current_level_index == 5) {
+                    if (g_current_level_index == LEVEL_RILGAR) {
                         ((struct Hero *)q)->motion.pos.f[0] = 247.0f;
                         ((struct Hero *)q)->motion.pos.f[1] = 287.0f;
                         ((struct Hero *)q)->motion.pos.f[2] = 76.0f;

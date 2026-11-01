@@ -9,6 +9,7 @@
 #include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "game/fastfunc.h"
+#include "enums/level.h"
 
 extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
@@ -60,7 +61,7 @@ void HeroL18_UpdateStateFlags(void) {
         struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         p->selector_3 = 1;
     }
-    if (g_current_level_index == 0xD) {
+    if (g_current_level_index == LEVEL_GEMLIK) {
         struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (p->state.current != 0x7B) {
             if (coll_sphere(p->capsule_radius + 0.03f, &p->motion.body_center, 2, 0) != 0) {
@@ -281,7 +282,7 @@ s32 HeroL18_TryTakeHit(s32 arg) {
                     id = 0x82;
                     goto call_ret;
                 }
-                if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
+                if (g_current_level_index == LEVEL_QUARTU || g_current_level_index == LEVEL_FLEET) {
                     mob = (u8 *)g_hero.damage_source_moby;
                     if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B ||
                                      *(s16 *)(mob + 0xA6) == 0x29D)) {

@@ -5,6 +5,7 @@
 #include "overlays/shared/sky_particles.h"
 #include "asm_functions/executable.h"
 #include "game/hud.h"
+#include "enums/level.h"
 
 // Ticks two small counters up or down depending on a random roll; copies a value.
 void update_hud_counter_transition(char *m) {
@@ -165,7 +166,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draws the Aridia sky shells and sets the GS test and depth registers. */
 void Sky_DrawLevel02(void) {
     SetupSkyGifPaging();
-    if (g_current_level_index_m == 2) {
+    if (g_current_level_index_m == LEVEL_ARIDIA) {
         draw_four_sky_shells_with_animated_particles();
     } else {
         update_sky_shells_static();

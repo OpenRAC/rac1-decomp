@@ -10,6 +10,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "enums/level.h"
 /* Blarg space commando: takes hits, fires a beam at the hero. */
 struct SpaceCommandoVars {
     u8 pad_00[0x20];
@@ -533,7 +534,7 @@ void process_blarg_space_commando_hits(char *m) {
     t = MobyGetHitMessage(m, 0x330000, 0);
     r = ComputeHitResponse(m, t, &d->health, 0, &hit, &dt, 0, 4);
     if (hit != 1 && (unsigned char)*(char *)&((Moby *)m)->state != 0x10) {
-        if (*(int *)&g_current_level_index == 0xA && t != 0 && *(char **)(t + 0x20) != 0 &&
+        if (*(int *)&g_current_level_index == LEVEL_ORXON && t != 0 && *(char **)(t + 0x20) != 0 &&
             *(short *)(*(char **)(t + 0x20) + 0xA6) == 0x31A && gSkillPoints[0x11] == 0) {
             gSkillPoints[0x11] = 1;
             PlayBankSound(1, 0, 0);

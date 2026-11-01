@@ -12,6 +12,7 @@
 #include "overlays/shared/hero_update_ground_material.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/vendor_menu.h"
+#include "enums/level.h"
 
 LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
 extern char hero_globals_base[];
@@ -265,7 +266,7 @@ void hero_update_hop_velocity(void) {
         g_hero.motion.velocity.f[0] = FastCos(g_hero.motion.rot.f[2]) * g_hero.ledge_jump_speed;
         g_hero.motion.velocity.f[1] = FastSin(g_hero.motion.rot.f[2]) * g_hero.ledge_jump_speed;
     } else if (state == 11 || state == 12) {
-        if (g_current_level_index != 14) {
+        if (g_current_level_index != LEVEL_OLTANIS) {
             if (hero_slot_item_id(3) == 3) {
                 if (g_hero.state_timer == scale_ticks(5)) {
                     allocate_hero_voice_for_entry(1, 0);

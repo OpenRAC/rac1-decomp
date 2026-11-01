@@ -23,6 +23,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/level.h"
 
 typedef u32 u128_05E28 __attribute__((mode(TI), aligned(16)));
 struct LedgeSpot {
@@ -1604,12 +1605,12 @@ void HeroL03_UpdateStatePhysics(void) {
             }
         } break;
         case 0x31:
-            if (g_current_level_index == 0xF) {
+            if (g_current_level_index == LEVEL_QUARTU) {
                 release_voice_slot_cf(2, (int)g_hero.moby, 0x1D);
             } else {
                 release_voice_slot_cf(2, (int)g_hero.moby, 6);
             }
-            if (g_current_level_index != 0xF) {
+            if (g_current_level_index != LEVEL_QUARTU) {
 
                 emit_hero_randomized_motion_effects(4, 2);
                 vec[0][0] = g_hero.motion.pos.f[0] + random_float_between(-0.25f, 0.25f);

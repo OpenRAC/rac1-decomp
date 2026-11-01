@@ -23,6 +23,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/level.h"
 
 typedef struct {
     int a;
@@ -1305,7 +1306,7 @@ int HeroL02_SetMoveState(int a, int b) {
             struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
             p->state.control_mode = 0x19;
             p->unk2284 = 0;
-            if (g_current_level_index == 0xF)
+            if (g_current_level_index == LEVEL_QUARTU)
                 spawn_hero_radial_particle_burst();
             p->collision_off_frames = 0x2710;
             allocate_hero_voice_for_entry(9, 0);
@@ -1847,7 +1848,7 @@ void HeroL02_UpdateStateTransitions(void) {
                                 }
                             }
                             if (ok && 0.22f < g_hero.stick_magnitude) {
-                                if (g_current_level_index_m == 0xC) {
+                                if (g_current_level_index_m == LEVEL_HOVEN) {
                                     int slot = g_hero.ground_sound_class;
                                     request_hero_voice_if_enabled(slot, 0, 0);
                                     request_hero_voice_if_enabled(slot, 1, 0);
@@ -2644,9 +2645,9 @@ void HeroL02_UpdateStateTransitions(void) {
                         }
                         break;
                     case 119:
-                        if ((g_current_level_index_m == 3 && 5.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 6 && 50.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 0x10 &&
+                        if ((g_current_level_index_m == LEVEL_KERWAN && 5.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_BLARG && 50.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_KALEBO3 &&
                              (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 &&
                                                                  g_hero.motion.displacement.f[2] >= 0.0f))) ||
                             g_hero.state_timer > scale_ticks(0x78)) {

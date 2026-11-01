@@ -6,6 +6,7 @@
 #include "structs/vector.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/fastfunc.h"
+#include "enums/level.h"
 
 extern unsigned char g_hero[] NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -63,7 +64,7 @@ void HeroL05_ProcessContactType(void) {
         char *g = g_hero;
         GB(0x12E6) = 1;
     }
-    if (g_current_level_index_m == 0xD) {
+    if (g_current_level_index_m == LEVEL_GEMLIK) {
         char *g = g_hero;
         if (GW(0x2084) != 0x7B) {
             if (coll_sphere(GF(0x234) + 0.03f, g + 0xD0, 2, 0)) {
@@ -269,7 +270,7 @@ void HeroL05_GroundProbe(void) {
             goto d1;
         }
         r = coll_sound_class();
-        if (g_current_level_index == 1 || g_current_level_index == 0x12) {
+        if (g_current_level_index == LEVEL_NOVALIS || g_current_level_index == LEVEL_VELDIN2) {
             r = 3;
         }
         g_hero_r.ground_sound_class = r;

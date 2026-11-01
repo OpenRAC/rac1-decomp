@@ -4,6 +4,7 @@
 #include "asm_functions/executable.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/level.h"
 
 extern void clear_u64_value(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
@@ -27,7 +28,7 @@ void emit_level3_state5_moby_effects(void) {
     char *g;
     char *moby;
     int i;
-    if (g_current_level_index != 3)
+    if (g_current_level_index != LEVEL_KERWAN)
         return;
     g = (char *)&kerwan_cutscene_state;
     if (*(int *)(g + 0x30) != 5)

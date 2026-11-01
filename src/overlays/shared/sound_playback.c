@@ -8,6 +8,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Ship pickup moby: remembers whether the hero is at the ship entry point. */
 struct ShipPickupVars {
@@ -212,7 +213,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
         if (d->near_entry != 0) {
             int r = try_set_help_message(2, 0x53E9) != 0;
             if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && r) {
-                if (g_current_level_index_m == 10 &&
+                if (g_current_level_index_m == LEVEL_ORXON &&
                     ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->vehicle_mode == 1) {
                     ((Moby *)m)->state = 0x2A;
                     ((Moby *)m)->flags |= 0x41;

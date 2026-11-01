@@ -23,6 +23,7 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 extern char hero_globals_base[];
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -69,7 +70,7 @@ void update_hero_surface_condition_flags(void) {
         base_condition_hero_ptr = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         base_condition_hero_ptr->base_condition = 1;
     }
-    if (g_current_level_index_m == 0xD) {
+    if (g_current_level_index_m == LEVEL_GEMLIK) {
         struct Hero *collision_hero_ptr = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (collision_hero_ptr->state.current != 0x7B) {
             if (coll_sphere(collision_hero_ptr->capsule_radius + 0.03f, &collision_hero_ptr->motion.body_center, 2,

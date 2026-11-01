@@ -23,6 +23,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/collision.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 /* Novalis elevator: rides its path while the hero stands on it. */
 struct NovalisElevatorVars {
     u8 pad_00[0x20];
@@ -3564,7 +3565,7 @@ void gunship_follow_path(struct Moby *moby) {
                 moby->state = 3;
                 return;
             }
-            if (g_current_level_index == 3 || g_current_level_index == 9)
+            if (g_current_level_index == LEVEL_KERWAN || g_current_level_index == LEVEL_GASPAR)
                 v->unk13A = 0;
             moby->state = 1;
             return;
@@ -3683,7 +3684,7 @@ void gunship_follow_path(struct Moby *moby) {
             v->unk121 = scale_ticks(7);
         v->unk121--;
     }
-    if (g_current_level_index != 3 && g_current_level_index != 9)
+    if (g_current_level_index != LEVEL_KERWAN && g_current_level_index != LEVEL_GASPAR)
         return;
     {
         HitInfo *hit = (HitInfo *)MobyGetHitMessage(moby, 0x210000, 0);

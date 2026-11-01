@@ -43,7 +43,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
         if (*(short *)(d + 0xC) != 0) {
             int r = try_set_help_message(2, 0x53E4) != 0;
             if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && r) {
-                if (g_current_level_index_m == 10 && *(unsigned char *)(hero_globals_base + 0x2EC1) == 1) {
+                if (g_current_level_index_m == LEVEL_ORXON && *(unsigned char *)(hero_globals_base + 0x2EC1) == 1) {
                     m[0x20] = 0x2A;
                     *(unsigned short *)(m + 0x34) |= 0x41;
                     StartCutscene(9);

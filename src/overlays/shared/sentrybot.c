@@ -17,6 +17,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Sentrybot: patrols a path, turns toward what it notices, raises its
    linked alarm and shoots when it sees the hero. */
@@ -3499,7 +3500,7 @@ void update_sentrybot_alarm_effect(void *moby) {
         ApproachValue(&quartu_alarm_intensity, 0.0f, g_frame_time * 2);
         set_sentrybot_alarm_duration(moby, 0);
     } else if (*(int *)&quartu_alarm_raised != 0 &&
-               (*(int *)&g_current_level_index != 0xF || 240.0f < base->motion.pos.f[1])) {
+               (*(int *)&g_current_level_index != LEVEL_QUARTU || 240.0f < base->motion.pos.f[1])) {
         ApproachValue(&quartu_alarm_intensity, 1.0f, g_frame_time * 2);
     } else {
         ApproachValue(&quartu_alarm_intensity, 0.0f, g_frame_time * 2);

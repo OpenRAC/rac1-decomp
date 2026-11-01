@@ -5,6 +5,7 @@
 #include "game/skyfunc.h"
 #include "overlays/shared/sky_particles.h"
 #include "asm_functions/level_01.h"
+#include "enums/level.h"
 
 LINKER_REMNANT("asm/overlays", func_L09_0021E3E8);
 typedef struct Strip_21E410 {
@@ -164,7 +165,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Gaspar sky: rotating shells in level 9, static shells otherwise, then GS setup. */
 void Sky_DrawLevel09(void) {
     SetupSkyGifPaging();
-    if (g_current_level_index_m == 9) {
+    if (g_current_level_index_m == LEVEL_GASPAR) {
         draw_sky_shells_with_modulo_25000_rotation();
     } else {
         update_sky_shells_static();

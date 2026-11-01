@@ -14,6 +14,7 @@
 #include "core/00116070.h"
 #include "data/shared_levels.h"
 #include "game/framebuf.h"
+#include "enums/level.h"
 
 typedef struct G137C80_240398 {
     char pad[0x12CC];
@@ -1550,7 +1551,7 @@ char *load_level_gameplay(int arg0) {
     if (0.0f < ship[0]) {
         Moby *m;
 
-        if (g_current_level_index == 13 && level_render_state.f26 == 2) {
+        if (g_current_level_index == LEVEL_GEMLIK && level_render_state.f26 == 2) {
             if (ship_level_entry_active != 0) {
                 for (m = moby_array_start; m->state != 0xFF; m++) {
                     if (m->oclass == first_class_ids[level_render_state.f26]) {
@@ -1752,12 +1753,12 @@ char *load_level_gameplay(int arg0) {
         *(long *)((int *)&level_render_state.f0->spawn_frame) = *(long *)((int *)&g_hero.moby->spawn_frame);
     }
     switch (g_current_level_index) {
-        case 2:
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 10:
+        case LEVEL_ARIDIA:
+        case LEVEL_RILGAR:
+        case LEVEL_BLARG:
+        case LEVEL_UMBRIS:
+        case LEVEL_BATALIA:
+        case LEVEL_ORXON:
             level_render_setup_packet = level_render_setup_packet_alt;
             break;
         default:

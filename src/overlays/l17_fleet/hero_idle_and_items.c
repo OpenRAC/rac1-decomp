@@ -16,6 +16,7 @@
 #include "game/fastfunc.h"
 #include "overlays/l17_fleet/hero_voice_and_knockback.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/level.h"
 
 typedef struct {
     int a;
@@ -1176,11 +1177,11 @@ int HeroL17_SetMoveState(int a, int b) {
                     u->unk498 = scale_ticks(2);
                     u->jump_max_frames = scale_ticks(0x78);
                     hero_change_health(1);
-                    if (g_current_level_index == 0xA) {
+                    if (g_current_level_index == LEVEL_ORXON) {
                         HeroL17_SetMoveState(0x7C, 1);
                         return 0;
                     }
-                    if (g_current_level_index != 6) {
+                    if (g_current_level_index != LEVEL_BLARG) {
                         if (u->state.prev == 0x3C || u->state.prev2 == 0x3C || u->health.hp == 0) {
                             struct Hero *w = (struct Hero *)((char *)hero_globals_base + 0xE1D);
                             w->sink_jump_count = w->sink_jump_count + 1;
@@ -1862,7 +1863,7 @@ int HeroL17_SetMoveState(int a, int b) {
             struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
             p->state.control_mode = 0x19;
             p->unk2284 = 0;
-            if (g_current_level_index == 0xF)
+            if (g_current_level_index == LEVEL_QUARTU)
                 spawn_hero_radial_particle_burst();
             p->collision_off_frames = 0x2710;
             allocate_hero_voice_for_entry(9, 0);
@@ -1872,7 +1873,7 @@ int HeroL17_SetMoveState(int a, int b) {
             break;
         }
         case 0x7C: {
-            if (g_current_level_index == 6) {
+            if (g_current_level_index == LEVEL_BLARG) {
                 int c0;
                 int c1;
                 int c2;

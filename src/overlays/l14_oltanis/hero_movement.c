@@ -25,6 +25,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/level.h"
 
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
@@ -57,7 +58,7 @@ void resolve_hero_surface_reactions(void) {
             }
         }
     }
-    if (g_current_level_index_m == 0xD) {
+    if (g_current_level_index_m == LEVEL_GEMLIK) {
         struct Hero *q = &hero;
         if (q->state.current != 0x7B) {
             if (coll_sphere(q->capsule_radius + 0.03f, &q->motion.body_center, 2, 0)) {

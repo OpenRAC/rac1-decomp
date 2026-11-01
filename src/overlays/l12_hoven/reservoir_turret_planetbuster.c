@@ -23,6 +23,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Planetbuster Maximus: sways along its path while its parts, guns and camera cut-in run. */
 struct PlanetbusterVars {
@@ -360,7 +361,7 @@ void HovenShotUpdate(struct Moby *moby) {
                 moby->state = 2;
                 break;
             }
-            if (g_current_level_index_e == 12 && hero_current_state == 50 && vars->owner != 0) {
+            if (g_current_level_index_e == LEVEL_HOVEN && hero_current_state == 50 && vars->owner != 0) {
                 if ((signed char)vars->owner->state < 0) {
                     DeleteMoby(moby);
                     return;
@@ -384,7 +385,7 @@ void HovenShotUpdate(struct Moby *moby) {
             if (coll_line(&moby->pos, old_pos, 0, moby, 0) || coll_sphere(&moby->pos, 0, (struct Moby *)moby, f20)) {
                 if (hoven_coll_hit.moby != 0 && hoven_coll_hit.moby != (int)vars->owner) {
                     damage = 1;
-                    if (g_current_level_index_e == 12 && hero_current_state == 50) {
+                    if (g_current_level_index_e == LEVEL_HOVEN && hero_current_state == 50) {
                         damage = hoven_turret_attempts >= 16 ? 2 : 3;
                     }
                     InitDirectionalHitQuery(&hit, moby, 0x10003, damage, vars);
@@ -408,7 +409,7 @@ void HovenShotUpdate(struct Moby *moby) {
             FastVecSub(old_pos, &moby->pos, hoven_camera_pos);
             vec_scale_to_length(old_pos, old_pos, 0.4f);
             FastVecAdd(&moby->pos, &moby->pos, old_pos);
-            if (g_current_level_index_e == 12 && hero_current_state == 50) {
+            if (g_current_level_index_e == LEVEL_HOVEN && hero_current_state == 50) {
                 char *camera = hoven_camera_pos - 0x140;
                 spawn_explosion(moby, hoven_zero_vec, 0, 0.0f, 0.0f, 3, 3, 5, 0.3f, 0.2f, 0.0f, -1, 0.15f, 0.0f, 0, 0,
                                 -1, 0);

@@ -14,6 +14,7 @@
 #include "data/executable.h"
 #include "data/level_15.h"
 #include "game/hud.h"
+#include "enums/level.h"
 
 extern unsigned char hero_globals_base[];
 extern unsigned char gCheats[] MACRO_ADDR;
@@ -462,7 +463,7 @@ void HeroL15_ResetMotionState(void) {
             goto d1;
         }
         r = coll_sound_class();
-        if (g_current_level_index == 1 || g_current_level_index == 0x12) {
+        if (g_current_level_index == LEVEL_NOVALIS || g_current_level_index == LEVEL_VELDIN2) {
             r = 3;
         }
         g_hero_r.ground_sound_class = r;

@@ -19,6 +19,7 @@
 #include "game/fastfunc.h"
 #include "game/loaders.h"
 #include "game/mobyutil.h"
+#include "enums/level.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -454,7 +455,7 @@ void draw_resident_textured_quad(void) {
     q.gs[2] = 0xFF9000000260;
     q.gs[3] = 0x8000000044;
     FastMemCopy(q.uv, quad_default_uvs, 0x20);
-    if ((unsigned)g_current_level_index_m < 0x13)
+    if ((unsigned)g_current_level_index_m < LEVEL_COUNT)
         s = resident_quad_level_scales[g_current_level_index_m];
     for (i = 0; i < 4; i++) {
         q.rgba[i] = 0x80808080;
@@ -654,8 +655,8 @@ void update_level_gameplay_frame(void) {
     if (gFade < 0.0f) {
         gFade = 0.0f;
     }
-    if (((*(LevelFrame_LGS *)&render_sequence)).time == 1 && g_current_level_index_m != 0 &&
-        (g_current_level_index_m != 1 || level_available[3] != 0)) {
+    if (((*(LevelFrame_LGS *)&render_sequence)).time == 1 && g_current_level_index_m != LEVEL_VELDIN1 &&
+        (g_current_level_index_m != LEVEL_NOVALIS || level_available[3] != 0)) {
         snd_reenable_command_flush();
         snd_play_sound_vol_pan_pmpb(sound_bank_handle, ((*(LevelFrame_LRS *)&level_render_state)).mode, 0x400, 0, 0, 0,
                                     0, D_0013E6C0);
@@ -672,8 +673,8 @@ void update_level_gameplay_frame(void) {
                 DeleteMoby(expired_object);
             }
         }
-        if (g_current_level_index_m != 0 && (g_current_level_index_m != 1 || level_available[3] != 0) &&
-            D_0015EF48_m < 3) {
+        if (g_current_level_index_m != LEVEL_VELDIN1 &&
+            (g_current_level_index_m != LEVEL_NOVALIS || level_available[3] != 0) && D_0015EF48_m < 3) {
             ((*(LevelFrame_LRS *)&level_render_state)).state = 0;
         }
         if (((*(LevelFrame_LRS *)&level_render_state)).state < 2) {
@@ -780,7 +781,8 @@ void update_level_gameplay_frame(void) {
             qcopy(&((*(LevelFrame_LRS *)&level_render_state)).secondary_history_positions[history_slot],
                   &second_transform.rows[3]);
             if (((*(LevelFrame_LRS *)&level_render_state)).mode == 4) {
-                if (g_current_level_index_m == 0 || (g_current_level_index_m == 1 && level_available[3] == 0)) {
+                if (g_current_level_index_m == LEVEL_VELDIN1 ||
+                    (g_current_level_index_m == LEVEL_NOVALIS && level_available[3] == 0)) {
                     object->flags |= 1;
                     ((*(LevelFrame_LRS *)&level_render_state)).history_count = 0;
                 }
@@ -885,7 +887,8 @@ void render_level_frame(void) {
     DrawMobys();
     append_dma_tag(0x02080000);
     SetupGifPaging(1);
-    if ((g_current_level_index_r != 0) && ((g_current_level_index_r != 1) || (level_available_base[0] != 0))) {
+    if ((g_current_level_index_r != LEVEL_VELDIN1) &&
+        ((g_current_level_index_r != LEVEL_NOVALIS) || (level_available_base[0] != 0))) {
         build_resident_indexed_texture_warp_meshes(render_sequence_slots[0]);
     }
     if ((level_render_state_r2.mode == 4) && (render_sequence_time[0] >= 0x3D)) {
@@ -895,7 +898,8 @@ void render_level_frame(void) {
         }
         draw_resident_textured_banner(overlay_alpha);
     }
-    if ((g_current_level_index_r != 0) && ((g_current_level_index_r != 1) || (level_available_base[0] != 0))) {
+    if ((g_current_level_index_r != LEVEL_VELDIN1) &&
+        ((g_current_level_index_r != LEVEL_NOVALIS) || (level_available_base[0] != 0))) {
         render_environment_mapped_object_r(render_sequence_slots[0]);
     }
     if ((memory_card_state_r.state >= 3) || (memory_card_state_r.err >= 0)) {
@@ -1380,7 +1384,7 @@ void update_resident_gameplay_state(void) {
                 resident_call_0020ED48(object);
                 if (object->class_id == 0) {
                     if (resident_data_0013E130.state == 0) {
-                        if (g_current_level_index_r == 10 && resident_data_0013D5C8[6] == 0) {
+                        if (g_current_level_index_r == LEVEL_ORXON && resident_data_0013D5C8[6] == 0) {
                             object->unk7F = 0;
                         } else if (resident_data_0018CC20.time <= resident_call_001F98C0(0x3E)) {
                             object->unk7F = 0x18;
@@ -1388,7 +1392,7 @@ void update_resident_gameplay_state(void) {
                             object->unk7F = 0;
                         }
                     } else if (resident_call_001F98C0(360) < resident_data_0018CC20.time) {
-                        if (g_current_level_index_r == 10 && resident_data_0013D5C8[6] == 0) {
+                        if (g_current_level_index_r == LEVEL_ORXON && resident_data_0013D5C8[6] == 0) {
                             object->unk7F = 0;
                         } else {
                             object->unk7F = 0x18;
@@ -1417,8 +1421,8 @@ void update_resident_gameplay_state(void) {
                 }
                 if (object->class_id == 0) {
                     resident_call_001E9790(object);
-                    if ((g_current_level_index_r == 10 && resident_data_0013D5C8[6] != 0) ||
-                        g_current_level_index_r == 13) {
+                    if ((g_current_level_index_r == LEVEL_ORXON && resident_data_0013D5C8[6] != 0) ||
+                        g_current_level_index_r == LEVEL_GEMLIK) {
                         if (resident_data_0013E130.attachment == 0) {
                             resident_data_0013E130.attachment = resident_call_0020D348(0x509);
                             resident_data_0013E130.attachment->selected_index = 0x40;
@@ -2603,7 +2607,7 @@ void DoSpaceTransition(void) {
         g_current_level_index_m = space_load_level;
         play_level_loading_slides(lvl, 3, 4, scale_game_frame_count(240), 1);
         play_level_transition_movie(2);
-    } else if (g_current_level_index_m == 0 && space_load_level == 1 && level_visit_state[1] == 0) {
+    } else if (g_current_level_index_m == LEVEL_VELDIN1 && space_load_level == 1 && level_visit_state[1] == 0) {
         FadeToBlack(scale_game_frame_count(6));
         play_level_loading_slides(lvl, 5, 6, scale_game_frame_count(240), 0);
         play_level_transition_movie(3);
@@ -2619,7 +2623,7 @@ void DoSpaceTransition(void) {
             play_level_loading_slides(lvl, 9, 10, scale_game_frame_count(240), 0);
             play_level_transition_movie(6);
         }
-        if (g_current_level_index_m == 7 && level_visit_state[7] != 2 && level_available_b.f8 != 0) {
+        if (g_current_level_index_m == LEVEL_UMBRIS && level_visit_state[7] != 2 && level_available_b.f8 != 0) {
             FadeToBlack(scale_game_frame_count(12));
             play_level_loading_slides(lvl, 11, 11, scale_game_frame_count(240), 0);
             play_level_transition_movie(7);
@@ -2629,7 +2633,7 @@ void DoSpaceTransition(void) {
             play_level_loading_slides(lvl, 12, 13, scale_game_frame_count(240), 0);
             play_level_transition_movie(8);
         }
-        if (g_current_level_index_m == 14 && level_visit_state[14] != 2 && level_available_b.fF != 0) {
+        if (g_current_level_index_m == LEVEL_OLTANIS && level_visit_state[14] != 2 && level_available_b.fF != 0) {
             FadeToBlack(scale_game_frame_count(12));
             play_level_loading_slides(lvl, 14, 14, scale_game_frame_count(240), 0);
             play_level_transition_movie(9);
@@ -2639,12 +2643,12 @@ void DoSpaceTransition(void) {
             play_level_loading_slides(lvl, 15, 16, scale_game_frame_count(240), 0);
             play_level_transition_movie(10);
         }
-        if ((unsigned int)g_current_level_index_m < 19) {
+        if ((unsigned int)g_current_level_index_m < LEVEL_COUNT) {
             ok = 1;
-            if (g_current_level_index_m == 7 && level_available_b.f8 == 0) {
+            if (g_current_level_index_m == LEVEL_UMBRIS && level_available_b.f8 == 0) {
                 ok = 0;
             }
-            if (g_current_level_index_m == 14 && level_available_b.fF == 0) {
+            if (g_current_level_index_m == LEVEL_OLTANIS && level_available_b.fF == 0) {
                 ok = 0;
             }
             if (ok) {

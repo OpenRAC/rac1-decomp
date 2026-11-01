@@ -11,6 +11,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/level.h"
 
 /* One aimed joint of the elite commando: manipulator block plus the eased pitch and yaw. */
 struct EliteJointAim {
@@ -550,7 +551,8 @@ void blarg_elite_commando_update(char *m) {
     if (*(int *)&blarg_elite_commando_joint_sparks_enabled_gp &&
         ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode != 22)
         emit_blarg_elite_commando_joint_sparks(m);
-    if (g_current_level_index == 18 && kalebo3_game_mode == 2 && (unsigned int)(kalebo3_cutscene_scene_id - 3) < 3U)
+    if (g_current_level_index == LEVEL_VELDIN2 && kalebo3_game_mode == 2 &&
+        (unsigned int)(kalebo3_cutscene_scene_id - 3) < 3U)
         DeleteMoby(m);
 }
 extern char *MobyGetHitMessage(void *, int, int);
@@ -695,7 +697,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
             case 1:
             case 2: {
                 char *source;
-                if (g_current_level_index == 18 && d->reward_hits) {
+                if (g_current_level_index == LEVEL_VELDIN2 && d->reward_hits) {
                     ++*(int *)&elite_commando_reward_hit_count;
                     if (*(int *)&elite_commando_reward_hit_count >= 10) {
                         if (((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded == 0) {

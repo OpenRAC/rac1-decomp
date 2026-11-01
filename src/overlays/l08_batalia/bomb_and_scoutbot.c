@@ -11,6 +11,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "structs/collision.h"
+#include "enums/level.h"
 
 /* Bomb: thrown or dropped, bounces, fuse timer, explodes. */
 struct BombVars {
@@ -888,7 +889,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
                 d->health = 6.0f;
                 d->flags &= 0xFFFD;
             } else {
-                if (g_current_level_index_r == 8) {
+                if (g_current_level_index_r == LEVEL_BATALIA) {
                     int k = d->part_id;
                     if (k != 0 && t != 0 && t->moby != 0 && t->moby->oclass == 0x661) {
                         if (k == one)
@@ -1414,7 +1415,7 @@ void update_hero_water_entry_effects(struct Moby *moby) {
         prepare_scaled_table_with_byte_128_r(batalia_water_plane_r, 0.6666667f);
     }
     AddDrawCallback_r(register_audio_stream_callback_r, moby);
-    if (g_current_level_index_r != 8)
+    if (g_current_level_index_r != LEVEL_BATALIA)
         return;
     if (!(g_hero_r2.motion.pos.f[2] < batalia_water_plane_r[2]))
         return;

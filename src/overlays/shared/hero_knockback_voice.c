@@ -4,6 +4,7 @@
 #include "structs/hero.h"
 #include "structs/vector.h"
 #include "data/executable.h"
+#include "enums/level.h"
 
 typedef int Q_8 __attribute__((mode(TI)));
 typedef struct {
@@ -124,7 +125,7 @@ s32 handle_hero_hit(s32 arg) {
                     id = 0x82;
                     goto call_ret;
                 }
-                if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
+                if (g_current_level_index == LEVEL_QUARTU || g_current_level_index == LEVEL_FLEET) {
                     mob = (u8 *)g_hero.damage_source_moby;
                     if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B ||
                                      *(s16 *)(mob + 0xA6) == 0x29D)) {

@@ -15,6 +15,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "structs/small_records.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Class 0x3F1 shot: flies along vel for ticks, owned by the firing moby. */
 struct ShotVars {
@@ -930,7 +931,7 @@ void thruster_pack_lock_update(Lock_3102C8 *moby) {
             if (((void *)((Hero *)(hero_globals_base_r + 0xE1D))->ground_moby) == moby && gHaveHeliPack_r[1] != 0 &&
                 ((Hero *)(hero_globals_base_r + 0xE1D))->air_frames.s == 0 &&
                 ((Hero *)(hero_globals_base_r + 0xE1D))->state.current == 0x22) {
-                if (g_current_level_index_r == 0xB && moby->bB0 != 0xFF) {
+                if (g_current_level_index_r == LEVEL_POKITARU && moby->bB0 != 0xFF) {
                     int c;
                     int u;
                     pokitaru_current_level_state_r.collected[(short)moby->uid] = moby->bB0 + 2;
@@ -1434,7 +1435,7 @@ void update_moby_hit_stats_and_state(Moby *m) {
             *(unsigned short *)(st + 0x157EA) = scale_ticks(gameplay_event_frame_count) / 600;
         }
         *(int *)(st + 0x157EC) = *(int *)(st + 0x157EC) | (1 << g_current_level_index_r) | 0x80000000;
-        if (g_current_level_index_r == 0xB && *(char **)(info + 0x20) != 0 &&
+        if (g_current_level_index_r == LEVEL_POKITARU && *(char **)(info + 0x20) != 0 &&
             *(short *)(*(char **)(info + 0x20) + 0xA6) == 0xAC) {
             if (++skill_point_18_kill_count >= 3 && gSkillPoints[0x12] == 0) {
                 gSkillPoints[0x12] = 1;

@@ -12,6 +12,7 @@
 #include "structs/small_records.h"
 #include "structs/level_records.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Tesla beam: draw state read by the beam and arc effects. */
 struct BeamArcVars {
@@ -1650,7 +1651,7 @@ void MorphorayUpdate(Moby *m) {
             D_L00_001617BC_2BDAF0 = 10000 - truncate_float_to_s32_r2(p->left * 10000.0f / p->total);
         }
         if (p->target != 0 && p->left <= 0.0f) {
-            if (g_current_level_index_r == 5 && p->target->oclass == MOBY_CLASS_EXTERMITANK &&
+            if (g_current_level_index_r == LEVEL_RILGAR && p->target->oclass == MOBY_CLASS_EXTERMITANK &&
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 == 0) {
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 = 1;
                 PlayBankSound_r(1, 0, 0);

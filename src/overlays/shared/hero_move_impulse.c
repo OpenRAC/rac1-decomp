@@ -6,6 +6,7 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "enums/level.h"
 
 extern char hero_globals_base[];
 extern char hoven_item_defs[];
@@ -110,7 +111,8 @@ void hero_update_hop_movement(void) {
         g_hero_s.motion.velocity.f[0] = FastCos(g_hero_s.motion.rot.f[2]) * g_hero_s.ledge_jump_speed;
         g_hero_s.motion.velocity.f[1] = FastSin(g_hero_s.motion.rot.f[2]) * g_hero_s.ledge_jump_speed;
     } else if (state == 11 || state == 12) {
-        if (g_current_level_index != 0xE && hero_slot_item_id(3) == 3 && g_hero_s.state_timer == scale_ticks(5)) {
+        if (g_current_level_index != LEVEL_OLTANIS && hero_slot_item_id(3) == 3 &&
+            g_hero_s.state_timer == scale_ticks(5)) {
             allocate_hero_voice_for_entry(1, 0);
         }
         g_hero_s.motion.move_yaw = g_hero_s.takeoff_yaw;

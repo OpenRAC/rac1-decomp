@@ -23,6 +23,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 extern char hero_globals_base[];
 
@@ -252,7 +253,7 @@ void Hero_ProbeGround(void) {
             goto d1;
         }
         collision_sound_class = coll_sound_class();
-        if (g_current_level_index == 1 || g_current_level_index == 0x12) {
+        if (g_current_level_index == LEVEL_NOVALIS || g_current_level_index == LEVEL_VELDIN2) {
             collision_sound_class = 3;
         }
         g_hero.ground_sound_class = collision_sound_class;

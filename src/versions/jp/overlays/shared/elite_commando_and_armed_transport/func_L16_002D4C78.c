@@ -62,7 +62,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
             case 1:
             case 2: {
                 char *source;
-                if (g_current_level_index == 18 && d->reward_hits) {
+                if (g_current_level_index == LEVEL_VELDIN2 && d->reward_hits) {
                     ++*(int *)&elite_commando_reward_hit_count;
                     if (*(int *)&elite_commando_reward_hit_count >= 10) {
                         if (((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded == 0) {

@@ -15,6 +15,7 @@
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Trespasser puzzle: three rings of 12 slots, marker ring and the rotation state. */
 struct TrespasserPuzzleVars {
@@ -2006,7 +2007,7 @@ void background_ship_1_update(char *moby) {
             if ((float)*(int *)t < d->path_pos) {
                 d->path_pos = d->path_pos - (float)*(int *)t;
             }
-            if (g_current_level_index_r == 9) {
+            if (g_current_level_index_r == LEVEL_GASPAR) {
                 SamplePathAt((int *)t, 1, &((Moby *)moby)->pos, &((Moby *)moby)->rot.x, 0, d->path_pos);
             } else {
                 SamplePathAt((int *)t, 0, &((Moby *)moby)->pos, &((Moby *)moby)->rot.x, 0, d->path_pos);
@@ -2029,7 +2030,7 @@ void background_ship_1_update(char *moby) {
             }
             break;
         case 2:
-            if (g_current_level_index_r == 2) {
+            if (g_current_level_index_r == LEVEL_ARIDIA) {
                 aridia_skill_ship_kills = aridia_skill_ship_kills + 1;
                 if (aridia_skill_ship_kills >= 3) {
                     unsigned char *p = menu_item_enabled_115 + 1;
@@ -2040,7 +2041,7 @@ void background_ship_1_update(char *moby) {
                     }
                 }
             }
-            if (g_current_level_index_r == 9) {
+            if (g_current_level_index_r == LEVEL_GASPAR) {
                 if (*(int *)(hero_globals_base + 0x2EA1) == 0x32) {
                     gaspar_skill_ship_kills = gaspar_skill_ship_kills + 1;
                     if (gaspar_skill_ship_kills >= 5) {
@@ -2236,7 +2237,7 @@ void background_ship_2_update(char *moby) {
             int m1;
             ((Moby *)moby)->update_dist = 0xFF;
             ((Moby *)moby)->draw_dist = 0xFF;
-            if (g_current_level_index_r == 10) {
+            if (g_current_level_index_r == LEVEL_ORXON) {
                 ((Moby *)moby)->scale = ((Moby *)moby)->scale * 0.5f;
             }
             m1 = -1;
@@ -2263,7 +2264,7 @@ void background_ship_2_update(char *moby) {
             break;
         }
         case 1:
-            if (*(unsigned char *)(hero_globals_base + 0x2EC1) == 1 && g_current_level_index_r == 10) {
+            if (*(unsigned char *)(hero_globals_base + 0x2EC1) == 1 && g_current_level_index_r == LEVEL_ORXON) {
                 DeleteMoby(moby);
                 return;
             }
@@ -2272,7 +2273,7 @@ void background_ship_2_update(char *moby) {
                 d->voice = Moby_PlaySound_r_r(1, 4, (int)moby);
             }
             p2 = *(float *)&background_ship_2_speed * g_frame_time;
-            if (g_current_level_index_r == 10) {
+            if (g_current_level_index_r == LEVEL_ORXON) {
                 p2 = p2 * 0.25f;
             }
             d->path_pos = d->path_pos + p2 / d->first_leg;
@@ -2292,7 +2293,7 @@ void background_ship_2_update(char *moby) {
                 *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((Moby *)moby)->pclass + 0x10);
             }
             if (((Moby *)moby)->visible != 0) {
-                if (g_current_level_index_r != 10) {
+                if (g_current_level_index_r != LEVEL_ORXON) {
                     spawn_background_ship_2_joint_sparks(moby, tv);
                 } else {
                     spawn_background_ship_2_level_10_joint_sparks(moby, tv);
@@ -2306,7 +2307,7 @@ void background_ship_2_update(char *moby) {
             }
             break;
         case 2:
-            if (g_current_level_index_r == 2) {
+            if (g_current_level_index_r == LEVEL_ARIDIA) {
                 aridia_skill_ship_kills = aridia_skill_ship_kills + 1;
                 if (aridia_skill_ship_kills >= 3) {
                     unsigned char *p = menu_item_enabled_115 + 1;
@@ -2317,7 +2318,7 @@ void background_ship_2_update(char *moby) {
                     }
                 }
             }
-            if (g_current_level_index_r == 9) {
+            if (g_current_level_index_r == LEVEL_GASPAR) {
                 if (*(int *)(hero_globals_base + 0x2EA1) == 0x32) {
                     gaspar_skill_ship_kills = gaspar_skill_ship_kills + 1;
                     if (gaspar_skill_ship_kills >= 5) {

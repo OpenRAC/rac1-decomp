@@ -15,6 +15,7 @@
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/variants.h"
+#include "enums/level.h"
 
 typedef struct {
     int a;
@@ -1516,7 +1517,7 @@ int HeroQuartu_TrySetMoveState(int a, int b) {
             struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
             p->state.control_mode = 0x19;
             p->unk2284 = 0;
-            if (g_current_level_index == 0xF)
+            if (g_current_level_index == LEVEL_QUARTU)
                 spawn_hero_radial_particle_burst();
             p->collision_off_frames = 0x2710;
             allocate_hero_voice_for_entry(9, 0);

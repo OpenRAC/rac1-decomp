@@ -73,7 +73,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
                 d->health = 6.0f;
                 d->flags &= 0xFFFD;
             } else {
-                if (g_current_level_index_r == 8) {
+                if (g_current_level_index_r == LEVEL_BATALIA) {
                     int k = d->part_id;
                     if (k != 0 && t != 0 && t->moby != 0 && t->moby->oclass == 0x661) {
                         if (k == one)

@@ -84,8 +84,8 @@ int draw_hud_text_panel(char *e) {
         pt = &point;
         if (FastVecDist(gHeroPos, pt) < 5.0f) {
             race_record_panel_end_y = y + 100;
-            elapsed = race_best_times[g_current_level_index == 0x10 ? 1 : 0];
-            score = race_best_records[g_current_level_index == 0x10 ? 1 : 0];
+            elapsed = race_best_times[g_current_level_index == LEVEL_KALEBO3 ? 1 : 0];
+            score = race_best_records[g_current_level_index == LEVEL_KALEBO3 ? 1 : 0];
             if (elapsed != 0) {
                 interval = pal_mode != 0 ? 3000 : 3600;
                 per = interval / 60;

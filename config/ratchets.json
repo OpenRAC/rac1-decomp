@@ -4,7 +4,7 @@
   "asm_aliases": 7497,
   "extern_lines": 31508,
   "float_int_casts": 2403,
-  "hex_compares": 5955,
+  "hex_compares": 5778,
   "ids_in_comments": 110,
   "include_asm": 206,
   "local_struct_typedefs": 2850,

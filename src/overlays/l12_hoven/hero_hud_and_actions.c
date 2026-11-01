@@ -23,6 +23,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/hero_move_impulse.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/level.h"
 
 extern Hero g_hero;
 extern PadState g_controller_state;
@@ -361,7 +362,7 @@ void HeroL12_UpdateStateTransitions(void) {
                                 }
                             }
                             if (ok && 0.22f < g_hero.stick_magnitude) {
-                                if (g_current_level_index_m == 0xC) {
+                                if (g_current_level_index_m == LEVEL_HOVEN) {
                                     int slot = g_hero.ground_sound_class;
                                     emit_hero_animation_voice_and_ground_particle(slot, 0, 0);
                                     emit_hero_animation_voice_and_ground_particle(slot, 1, 0);
@@ -548,7 +549,7 @@ void HeroL12_UpdateStateTransitions(void) {
                         break;
                     case 118:
                         if (g_hero.health.hp <= 0) {
-                            if (g_current_level_index_m == 0xF || g_current_level_index_m == 0x11) {
+                            if (g_current_level_index_m == LEVEL_QUARTU || g_current_level_index_m == LEVEL_FLEET) {
                                 HeroL12_SetMoveState(0x82, 1);
                                 break;
                             }
@@ -1361,9 +1362,9 @@ void HeroL12_UpdateStateTransitions(void) {
                         }
                         break;
                     case 119:
-                        if ((g_current_level_index_m == 3 && 5.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 6 && 50.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 0x10 &&
+                        if ((g_current_level_index_m == LEVEL_KERWAN && 5.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_BLARG && 50.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_KALEBO3 &&
                              (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 &&
                                                                  g_hero.motion.displacement.f[2] >= 0.0f))) ||
                             g_hero.state_timer > scale_ticks(0x78)) {
@@ -2038,7 +2039,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draws the Hoven sky shells (three rotation speeds on level 12), then restores GS registers. */
 void DrawSkyL12(void) {
     SetupSkyGifPaging();
-    if (g_current_level_index_m == 12) {
+    if (g_current_level_index_m == LEVEL_HOVEN) {
         draw_sky_shells_with_slow_medium_and_fast_rotation();
     } else {
         update_sky_shells_static();

@@ -7,6 +7,7 @@
 #include "game/fastfunc.h"
 #include "structs/collision.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
 struct SpawnerVars {
@@ -1371,7 +1372,7 @@ void process_spawner_hit_record(char *moby, char *d) {
             d[0x67] = 0x5A;
             RerollEffectCounter(moby, (short *)(d + 0x60));
         } else {
-            if (g_current_level_index_m == 0xD &&
+            if (g_current_level_index_m == LEVEL_GEMLIK &&
                 FastAbsF(((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos.f[2] - 248.0f) < 4.0f) {
                 SetDeathBits(moby, 0x200, -1);
             } else {

@@ -19,6 +19,7 @@
 #include "data/shared_levels.h"
 #include "structs/collision.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 extern char help_popup_state[] NOT_SDA;
 typedef struct {
@@ -736,7 +737,7 @@ void emit_hero_animation_voice_and_ground_particle(int a, int b, int c) {
             f = *(short *)(p + 0xA6) == 0xAD;
         request_grouped_voice(a, b, f, 0, *(int *)&q->moby);
     }
-    if (g_current_level_index_m == 12) {
+    if (g_current_level_index_m == LEVEL_HOVEN) {
         g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (g->ground_sound_class == 0 && *(int *)&g->ground_moby == 0) {
             float k = 0.15f;
@@ -1569,8 +1570,8 @@ void update_hero_color_and_item_tint(void) {
     if (g_hero_r5.state.current == 0x80 || g_hero_r5.state.current == 0x82) {
         blink = g_hero_r5.state_timer < scale_ticks(0x1e);
     }
-    if ((g_current_level_index == 0xf || g_current_level_index == 0x11) && g_hero_r5.state.current == 0x76 &&
-        g_hero_r5.state_timer < scale_ticks(0x14)) {
+    if ((g_current_level_index == LEVEL_QUARTU || g_current_level_index == LEVEL_FLEET) &&
+        g_hero_r5.state.current == 0x76 && g_hero_r5.state_timer < scale_ticks(0x14)) {
         blink = 1;
     }
     if (blink) {
@@ -3291,7 +3292,7 @@ void apply_hero_selected_flags_and_state_transitions(void) {
         struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         g->selector_3 = 1;
     }
-    if (g_current_level_index_m == 0xD) {
+    if (g_current_level_index_m == LEVEL_GEMLIK) {
         struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (g->state.current != 0x7B) {
             if (coll_sphere(g->capsule_radius + 0.03f, &g->motion.body_center, 2, 0)) {

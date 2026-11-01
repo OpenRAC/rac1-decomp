@@ -23,6 +23,7 @@
 #include "data/level_06.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
+#include "enums/level.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -392,7 +393,7 @@ void HeroL06_UpdateStateTransitions(void) {
                                 }
                             }
                             if (ok && 0.22f < g_hero.stick_magnitude) {
-                                if (g_current_level_index_m == 0xC) {
+                                if (g_current_level_index_m == LEVEL_HOVEN) {
                                     int slot = g_hero.ground_sound_class;
                                     request_hero_voice_if_enabled(slot, 0, 0);
                                     request_hero_voice_if_enabled(slot, 1, 0);
@@ -943,8 +944,8 @@ void HeroL06_UpdateStateTransitions(void) {
                         } else {
                             int ice = 0;
 
-                            if (g_current_level_index_m == 0x10 && g_hero.wall_hit != 0 && g_hero.coll_hit_moby != 0 &&
-                                *(short *)(g_hero.coll_hit_moby + 0xA6) == 0x101) {
+                            if (g_current_level_index_m == LEVEL_KALEBO3 && g_hero.wall_hit != 0 &&
+                                g_hero.coll_hit_moby != 0 && *(short *)(g_hero.coll_hit_moby + 0xA6) == 0x101) {
                                 ice = 1;
                                 g_hero.coll_hit_moby[0xBC] = 1;
                             }
@@ -953,7 +954,7 @@ void HeroL06_UpdateStateTransitions(void) {
                                 ice || g_hero.unk5BE != 0) {
                                 int ok = 1;
 
-                                if (g_current_level_index_m != 0x10) {
+                                if (g_current_level_index_m != LEVEL_KALEBO3) {
                                     qcopy(v0, g_hero.rail_point.f);
                                     v0[2] += 2.0f;
                                     v1[0] = FastCos(g_hero.rail_dir_yaw) * 5.0f;
@@ -1000,7 +1001,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         if (g_hero.state.current == 0x28) {
                             int can = 1;
 
-                            if (g_current_level_index_m == 8) {
+                            if (g_current_level_index_m == LEVEL_BATALIA) {
                                 *(u128 *)v0 = 0;
                                 v0[0] = 342.0f;
                                 v0[1] = 111.1f;
@@ -1443,9 +1444,9 @@ void HeroL06_UpdateStateTransitions(void) {
                         }
                         break;
                     case 119:
-                        if ((g_current_level_index_m == 3 && 5.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 6 && 50.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 0x10 &&
+                        if ((g_current_level_index_m == LEVEL_KERWAN && 5.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_BLARG && 50.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_KALEBO3 &&
                              (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 &&
                                                                  g_hero.motion.displacement.f[2] >= 0.0f))) ||
                             g_hero.state_timer > scale_ticks(0x78)) {
@@ -1910,7 +1911,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             HeroL06_TrySetMoveState(6, 1);
                             break;
                         }
-                        if (g_current_level_index_m == 0x10 && 0.0f > g_hero.motion.velocity.f[2] &&
+                        if (g_current_level_index_m == LEVEL_KALEBO3 && 0.0f > g_hero.motion.velocity.f[2] &&
                             g_hero.health.hp == 0 && g_hero.state.prev_control_mode == 0xF) {
                             HeroL06_TrySetMoveState(0x77, 1);
                             break;
@@ -2128,7 +2129,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         }
                         break;
                     case 69:
-                        if (g_current_level_index_m == 6 && 115.0f > g_hero.motion.pos.f[2]) {
+                        if (g_current_level_index_m == LEVEL_BLARG && 115.0f > g_hero.motion.pos.f[2]) {
                             goto respawn;
                         }
                         if (g_hero.air_frames.s == 0) {
@@ -2524,7 +2525,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Blarg sky: three shells with particles in level 6, static shells otherwise. */
 void render_sky_with_gif_paging(void) {
     SetupSkyGifPaging();
-    if (g_current_level_index_m == 6) {
+    if (g_current_level_index_m == LEVEL_BLARG) {
         draw_three_sky_shells_with_three_particle_types();
     } else {
         update_sky_shells_static();
