@@ -17,30 +17,6 @@
  * the frames of func_0011A6C8 and func_0011B770 are that compiler's.
  */
 
-/* Declarations in scope here before the split. */
-extern long strtol(int arg0, int arg1, int arg2);
-extern int SbrkErrno;
-extern void *_impure_ptr NOT_SDA;
-extern int __sread(void *arg0, void *arg1, void *arg2);
-extern int __swrite(void *arg0, void *arg1, void *arg2);
-extern long __sseek(void *arg0, void *arg1, void *arg2);
-extern void __sclose(void *arg0);
-extern void libc_fflush(void);
-extern void _fwalk(void *, void *);
-extern char locale_lconv[];
-extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
-extern int _close_r(int *errOut, int arg1);
-extern int __sfvwrite(int, void *);
-extern void __sinit(void *);
-extern void _vfprintf_r(void *, void *, int, int);
-extern int libc_glue_write();
-extern int CoreGlobalWord NOT_SDA;
-extern void Deci2Call(int arg0, void *arg1);
-extern void *InitBlockData NOT_SDA;
-extern int func_001160D8(void);
 
 /* kputchar (libkernl.a:kprintf.o): wait until the SIO status port
    (0x1000F130) has its busy bit (0x8000) clear, write the character to
@@ -185,7 +161,6 @@ extern s32 DIntr_A0A0(void) __asm__("func_0011D960");
 extern s32 EnableInterrupts_A0A0(void) __asm__("func_0011D9A8");
 extern void printfloat_A0A0(double) __asm__("func_00119F38");
 extern void (*kprintf_putchar_hook_r[])(s32) __asm__("D_0012FD00");
-
 
 int kprintf_format(const char *fmt, va_list ap) {
     char buf[32];
@@ -388,7 +363,6 @@ int kprintf_format(const char *fmt, va_list ap) {
     }
 }
 
-
 /* The print core: walks fmt with the va_list, writing through the hook
    D_0012FD00, and returns the count. */
 extern int kprintf_format(const char *, va_list);
@@ -542,8 +516,6 @@ void sceSifInitCmd(void) {
     sceSifSendCmd(0x80000002, (int)&sif_init_packet, 0x14, 0, 0, 0);
 }
 
-extern void disable_dmac_atomic(int);
-extern void remove_dmac_handler(int, int);
 extern int sif_cmd_dmac_handler_id;
 extern int sif_cmd_init_done;
 

@@ -1,8 +1,8 @@
 {
-  "address_names_in_code": 11925,
+  "address_names_in_code": 11788,
   "address_names_in_comments": 2804,
-  "asm_aliases": 7690,
-  "extern_lines": 38281,
+  "asm_aliases": 7555,
+  "extern_lines": 35394,
   "float_int_casts": 2403,
   "hex_compares": 6314,
   "ids_in_comments": 316,
@@ -11,7 +11,7 @@
   "long_lines": 1273,
   "numbered_type_names": 483,
   "oclass_literals": 492,
-  "offsets_in_comments": 1051,
+  "offsets_in_comments": 1050,
   "raw_offset_casts": 7015,
   "tab_lines": 60,
   "worker_notes_in_comments": 28

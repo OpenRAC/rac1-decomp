@@ -11,25 +11,8 @@
  * EE29_CORE), like libc.a.
  */
 
-/* Declarations in scope here before the split. */
-extern long strtol(int arg0, int arg1, int arg2);
+
 extern int SbrkErrno;
-extern void *_impure_ptr NOT_SDA;
-extern int __sread(void *arg0, void *arg1, void *arg2);
-extern int __swrite(void *arg0, void *arg1, void *arg2);
-extern long __sseek(void *arg0, void *arg1, void *arg2);
-extern void __sclose(void *arg0);
-extern void libc_fflush(void);
-extern void _fwalk(void *, void *);
-extern char locale_lconv[];
-extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
-extern int _close_r(int *errOut, int arg1);
-extern int __sfvwrite(int, void *);
-extern void __sinit(void *);
-extern void _vfprintf_r(void *, void *, int, int);
 
 extern int libc_glue_write();
 

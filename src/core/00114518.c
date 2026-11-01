@@ -12,17 +12,10 @@
  * EE29_CORE), like libc.a; _mbtowc_r is newlib's own text.
  */
 
-/* Declarations in scope here before the split. */
-extern long strtol(int arg0, int arg1, int arg2);
+
 extern int SbrkErrno;
-extern void *_impure_ptr NOT_SDA;
-extern int __sread(void *arg0, void *arg1, void *arg2);
-extern int __swrite(void *arg0, void *arg1, void *arg2);
+
 extern long __sseek(void *arg0, void *arg1, void *arg2);
-extern void __sclose(void *arg0);
-extern void libc_fflush(void);
-extern void _fwalk(void *, void *);
-extern char locale_lconv[];
 
 int _lseek_r(int *errOut, void *a, void *b, void *c) {
     int r;

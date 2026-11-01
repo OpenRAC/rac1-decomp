@@ -14,103 +14,10 @@
  * func_00128860) are 2.9-ee's rematerialised constants.
  */
 
-/* Declarations in scope here before the split. */
-extern long strtol(int arg0, int arg1, int arg2);
-extern int SbrkErrno;
-extern void *_impure_ptr NOT_SDA;
-extern int __sread(void *arg0, void *arg1, void *arg2);
-extern int __swrite(void *arg0, void *arg1, void *arg2);
-extern long __sseek(void *arg0, void *arg1, void *arg2);
-extern void __sclose(void *arg0);
-extern void libc_fflush(void);
-extern void _fwalk(void *, void *);
-extern char locale_lconv[];
-extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
-extern int _close_r(int *errOut, int arg1);
-extern int __sfvwrite(int, void *);
-extern void __sinit(void *);
-extern void _vfprintf_r(void *, void *, int, int);
-extern int libc_glue_write();
-extern int CoreGlobalWord NOT_SDA;
-extern void Deci2Call(int arg0, void *arg1);
-extern void *InitBlockData NOT_SDA;
-extern int sif_sregs[];
-extern void disable_dmac_atomic(int);
-extern void remove_dmac_handler(int, int);
-extern int sif_cmd_dmac_handler_id;
-extern int sif_cmd_init_done;
-extern int sif_cmd_data_sys_handlers NOT_SDA;
-extern int sif_cmd_data_usr_handlers NOT_SDA;
-extern void sif_send_cmd_common(int, int, int, int, int, int, int);
-extern void sceSifExitCmd(void);
-extern int RpcCommandState NOT_SDA;
+
 extern int disable_interrupts(void);
 extern void enable_interrupts(void);
-extern int create_semaphore(void *);
-extern int fs_iob_sema;
-extern int fs_iob_sema_2;
-extern char fs_iob_table[];
-extern int fs_call_sema;
-extern void fs_call_sema_init(void);
-extern int fs_call_sema NOT_SDA;
-extern char sif_lib_version_string[];
-extern char FsResetBuffer[];
-extern int fs_expected_version;
-extern void libc_memset(void *, int, int);
-extern int FsResetState;
-extern int iop_heap_bind_state;
-extern char iop_heap_rpc_client[];
-extern int iop_heap_rpc_reply;
-extern int iop_heap_rpc_arg;
-extern char lf_iop_version[];
-extern int lf_expected_version;
-extern int _sceSifLoadModuleBuffer(int arg0, int arg1, int arg2, void *arg3);
-extern void tty_reset_init_flag(void);
-extern void init_tlb_32mb(void);
-extern void kernel_init_tlb(void);
-extern int FirstSemaphore;
-extern int SecondSemaphore;
-extern int osd_syscall_patch_table[];
-extern char osd_kernel_patch_code[];
-extern int PatchIsNeeded(void);
-extern void flush_cache(int);
-extern int sce_cd_sync_s(int);
-extern void *cd_user_callback;
-extern int cd_callback_sema;
-extern int cd_ncmd_sema;
-extern int cd_scmd_sema;
-extern int cd_ncmd_busy;
-extern int cd_poweroff_installing;
-extern int cd_poweroff_installed;
-extern int sif_call_rpc();
-extern int cd_ncmd_prechk(int);
-extern void signal_semaphore(int);
-extern char cd_ncmd_rpc_client[];
-extern int cd_ncmd_recv_buffer;
-extern void scePrintf();
-extern int sce_sif_check_stat_rpc(void *);
-extern char cd_scmd_wait_msg[];
-extern char cd_scmd_rpc_client[];
-extern int cd_debug_level;
-extern int cd_scmd_prechk(int);
-extern int cd_scmd_recv_buffer;
-extern char CoreDataTable[];
-extern void sceDmaPause(void *);
-extern char dma_sync_timeout_msg[];
-extern int DmaChannels[];
-extern int sce_mc_open(int, int, int, int);
-extern int mc_current_command;
-extern int *mc_get_info_type_out;
-extern int *mc_get_info_free_out;
-extern int *mc_get_info_format_out;
-extern char RpcQueueData[];
-extern int RpcReceiveData;
-extern void debug_print_stub(void *);
-extern char str_dbc_set_work_addr_error[];
-extern int sceDbcGetDepNumber(int);
+
 typedef struct {
     char unk_00[4];
     int unk_04;
@@ -118,8 +25,6 @@ typedef struct {
     char *unk_0C;
     char unk_10[0x320];
 } Ent330;
-extern Ent330 pad2_sockets[];
-extern void sync_dcache_range(void *a, void *b);
 
 struct MpegDecoder;
 struct sceMpeg {
@@ -735,7 +640,6 @@ void dualPrimeVector(void *arg0, int DMV[][2], int *dmvector, int mvx, int mvy) 
     }
 }
 
-
 extern char str_mpeg_invalid_mb_addr_inc[];
 extern int _peepBit(void *, int);
 extern void _flushBuf(void *, int);
@@ -1193,7 +1097,6 @@ void decode_motion_vector(int *pred, int r_size, int motion_code, int motion_res
     *pred = full_pel_vector ? (vec << 1) : vec;
 }
 
-
 /* motionVectors (libmpeg.a:mpc.o): ISO/IEC 13818-2 6.2.5.2/6.3.17.2/7.6.3
  * motion_vectors(), matching mpeg2decode reference source (motion.c)
  * almost line for line, with the bitstream-state pointer threaded through
@@ -1302,7 +1205,6 @@ long wait_ipu_cmd_result(void *arg0) {
     }
     return v;
 }
-
 
 #define IPU_CMD ((volatile unsigned long *)0x10002000)
 #define IPU_CTRL ((volatile unsigned int *)0x10002010)
@@ -1495,7 +1397,6 @@ int _nextBit(void *arg0, int n) {
     return result;
 }
 
-
 void next_start_code(void *arg0) {
     int pad;
 
@@ -1611,7 +1512,6 @@ extern void _pictureCodingExtension(void *);
 extern void _pictureSpatialScalableExtension(void *);
 extern void _pictureTemporalScalableExtension(void *);
 
-
 /* _extensionAndUserData (libmpeg.a:mpc.o): extension_and_user_data */
 void _extensionAndUserData(void *arg0) {
     char *s = (char *)arg0;
@@ -1689,7 +1589,6 @@ void _pictureCodingExtension(void *arg) {
     }
 }
 
-
 void extra_bit_information(void *arg0) {
     while (_nextBit(arg0, 1) != 0) {
         _flushBuf(arg0, 8);
@@ -1730,7 +1629,6 @@ void update_temp_track_data(void *arg0, int arg1) {
     }
     s->true_framenum_max = max;
 }
-
 
 /* groupOfPicturesHeader (libmpeg.a:mpc.o): ISO/IEC 13818-2 6.2.2.6
  * group_of_pictures_header(). The reference decoder's "if (ld == &base)"
@@ -1830,7 +1728,6 @@ void picture_display_extension(void *arg0) {
         _nextBit(s, 1);
     }
 }
-
 
 /* copyrightExtension (libmpeg.a:mpc.o) -- ISO/IEC 13818-2 6.2.3.6: skip the
  * copyright_extension() fields with func_00128A58 (nextBit, "get n bits").
@@ -2378,7 +2275,6 @@ void dma_ref_image(void *arg0) {
         enable_interrupts();
     }
 }
-
 
 /* receiveDataFromIPU (libmpeg.a:mpc.o): kicks off an IPU->main-memory DMA
  * receive. func_0011D960 presumably starts/queries the DMA channel; its
