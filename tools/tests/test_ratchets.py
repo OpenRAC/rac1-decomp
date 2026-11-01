@@ -27,6 +27,11 @@ class MetricTest(unittest.TestCase):
         self.assertEqual(ratchets.COMMENT.findall(text), ["/* class 0x3EF */", "// Moby_1"])
         self.assertNotIn("class", ratchets.COMMENT.sub(" ", text))
 
+    def test_asm_aliases_ignore_line_breaks(self):
+        self.assertEqual(count("asm_aliases", 'extern int a __asm__("D_1");'), 1)
+        self.assertEqual(count("asm_aliases", 'extern int a\n    __asm__("D_1");'), 1)
+        self.assertEqual(count("asm_aliases", 'extern int a;\n__asm__(".section .text");'), 0)
+
     def test_address_names(self):
         self.assertEqual(count("address_names_in_code", "func_001F4E08(D_L07_0020CB00);"), 2)
         self.assertEqual(count("address_names_in_code", "hero_set_move_state(g_x);"), 0)

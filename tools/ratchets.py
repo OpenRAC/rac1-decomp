@@ -27,7 +27,7 @@ METRICS = {
     "oclass_literals": ("code", r"oclass\s*[!=]=\s*(?:0x)?[0-9A-Fa-f]+"),
     "extern_lines": ("code", r"^\s*extern\b"),
     "local_struct_typedefs": ("code", r"^\s*typedef\s+struct\b"),
-    "asm_aliases": ("code", r"\bextern\b[^;\n]*__asm__\s*\("),
+    "asm_aliases": ("code", r"\bextern\b[^;]*?__asm__\s*\("),
     "address_names_in_code": ("code", r"\b(?:func|D|FUN|Data)_(?:L\d+_)?[0-9A-Fa-f]{5,}\b"),
     "include_asm": ("code", r"^\s*INCLUDE_ASM\s*\("),
     "ids_in_comments": ("comments", r"\bMoby_\d+\b|\bclass\s+(?:0x[0-9A-Fa-f]+|\d+)\b"),
