@@ -7,12 +7,12 @@
   "hex_compares": 6314,
   "ids_in_comments": 316,
   "include_asm": 206,
-  "local_struct_typedefs": 3031,
+  "local_struct_typedefs": 2980,
   "long_lines": 1273,
   "numbered_type_names": 470,
   "oclass_literals": 492,
   "offsets_in_comments": 1048,
-  "raw_offset_casts": 7015,
+  "raw_offset_casts": 7014,
   "tab_lines": 60,
   "worker_notes_in_comments": 28
 }

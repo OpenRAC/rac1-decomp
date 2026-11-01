@@ -460,13 +460,7 @@ typedef struct {
     s32 a, b, c;
 } Context_1F4918;
 extern Context_1F4918 render_view_params;
-typedef struct {
-    char pad[0x80];
-    float x, y, z, w;
-    char pad90[8];
-    float angle;
-} Hero_1F4918;
-extern Hero_1F4918 g_hero;
+extern Hero g_hero;
 extern char menu_item_enabled_115[];
 extern int screen_globals_base[];
 extern u8 level_fog_color_red[] MACRO_ADDR;
@@ -616,15 +610,16 @@ void update_debug_menu(void) {
                                 break;
                             case 2:
                                 ((DebugMenu_1F4918 *)g_debug_menu)->draw_bits = 0;
-                                FastVecSub(buf.points.vec, &g_hero.x, &((CameraSystem *)player_camera)->pos.f[0]);
+                                FastVecSub(buf.points.vec, &g_hero.motion.pos.f[0],
+                                           &((CameraSystem *)player_camera)->pos.f[0]);
                                 ((DebugMenu_1F4918 *)g_debug_menu)->distance = vec_length_xy(buf.points.vec);
                                 ((DebugMenu_1F4918 *)g_debug_menu)->angle =
                                     FastSubRots(fast_atan2(buf.points.vec[0], buf.points.vec[1]),
                                                 ((CameraSystem *)player_camera)->rot.f[2]);
                                 ((DebugMenu_1F4918 *)g_debug_menu)->height =
-                                    g_hero.z - ((CameraSystem *)player_camera)->pos.f[2];
+                                    g_hero.motion.pos.f[2] - ((CameraSystem *)player_camera)->pos.f[2];
                                 ((DebugMenu_1F4918 *)g_debug_menu)->rot =
-                                    FastSubRots(g_hero.angle, ((CameraSystem *)player_camera)->rot.f[2]);
+                                    FastSubRots(g_hero.motion.rot.f[2], ((CameraSystem *)player_camera)->rot.f[2]);
                                 break;
                             case 3:
                                 ((DebugMenu_1F4918 *)g_debug_menu)->draw_bits = 6;

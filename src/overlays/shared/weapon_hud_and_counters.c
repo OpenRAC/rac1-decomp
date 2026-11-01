@@ -1116,14 +1116,6 @@ extern int quick_select_close_frame MACRO_ADDR;
 extern float fast_atan2(float, float);
 extern int remove_hud_item(int);
 typedef struct {
-    u8 p0[0x10B8];
-    int w10B8;
-    u8 p10BC[0x1FF5 - 0x10BC];
-    u8 b1FF5;
-    u8 p1FF6[0x20B8 - 0x1FF6];
-    int w20B8;
-} Progress;
-typedef struct {
     u8 p0[0xA0];
     u16 hA0;
     u16 hA2;
@@ -1136,7 +1128,7 @@ typedef struct {
     u16 hE;
     u8 p10[8];
 } Route;
-extern Progress g_hero_r __asm__("D_0013F450");
+extern Hero g_hero_r __asm__("D_0013F450");
 extern Stats usage_stats;
 extern Route item_price_table_r[] __asm__("D_L00_001C43B0");
 extern int weapon_ammo_counts[];
@@ -1259,7 +1251,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
         if (sel >= 0 && (id = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][sel].f18) != 0) {
             Route *rr;
             int ri = id;
-            if (g_hero_r.w10B8 != id) {
+            if (g_hero_r.items[0].item_id != id) {
                 if (usage_stats.hA0 < 0xFFFF)
                     usage_stats.hA0++;
             }
@@ -1267,9 +1259,9 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
                 usage_stats.hA2 = scale_ticks(gameplay_event_frame_count) / 600;
             usage_stats.wA4 = usage_stats.wA4 | (1 << g_current_level_index) | 0x80000000;
             if (id == 0x18)
-                g_hero_r.b1FF5 = 1;
+                g_hero_r.unk1FF5 = 1;
             else
-                g_hero_r.w20B8 = id;
+                g_hero_r.pending_item[0] = id;
             rr = &item_price_table_r[ri];
             if (rr->h8 && rr->hE < weapon_ammo_counts[id])
                 weapon_ammo_counts[id] = rr->hE;

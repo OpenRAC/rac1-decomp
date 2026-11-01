@@ -1,4 +1,5 @@
 #include "common.h"
+#include "hero.h"
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
@@ -516,15 +517,6 @@ typedef struct {
     s32 texture_address; /* 0x240 */
 } MapOverlayState_205E70;
 
-typedef struct {
-    u8 pad0[0x80];
-    f32 x; /* 0x80 */
-    f32 y; /* 0x84 */
-    u8 pad88[0x10];
-    f32 angle; /* 0x98 */
-    u8 pad9C[0x1FF0];
-    s32 mode; /* 0x208C */
-} MapPlayerState_205E70;
 
 typedef struct {
     s16 pad0;
@@ -557,7 +549,7 @@ typedef struct {
 extern struct TagPtr_205E70 map_data_00161000 __asm__("D_00161000") MACRO_ADDR;
 extern struct ScreenOffsets_205E70 map_data_0013E600 __asm__("D_0013E600");
 extern MapOverlayState_205E70 map_data_001A01F0 __asm__("D_001A01F0");
-extern MapPlayerState_205E70 map_data_0013F450 __asm__("D_0013F450");
+extern Hero map_data_0013F450 __asm__("D_0013F450");
 extern MapTextureTables_205E70 map_data_0019A4E8 __asm__("D_0019A4E8");
 extern MapIdFlags_205E70 map_data_0013D6C4[] __asm__("D_0013D6C4");
 extern u16 map_data_001519D2[] __asm__("D_001519D2");
@@ -963,18 +955,18 @@ void draw_map_overlay(void) {
 
             image_index = get_icon_frame(0xE99A, 5);
             s = ((m->zoom[m->selected_map] * 4.0f + 10.0f) * 0.75f) / 13.0f;
-            angle = map_data_0013F450.angle;
-            flip = map_data_0013F450.mode == 0xF;
+            angle = map_data_0013F450.motion.rot.f[2];
+            flip = map_data_0013F450.state.control_mode == 0xF;
             if (flip) {
                 angle = fast_add_rotations(angle, 1.5707964f);
             }
             if (map_data_0015FE20 != 0) {
                 world_to_map_coords_r(&label_buffer.f[0], &label_buffer.f[1], map_data_0015EE84 + 100,
-                                      map_data_0013F450.x, map_data_0013F450.y);
+                                      map_data_0013F450.motion.pos.f[0], map_data_0013F450.motion.pos.f[1]);
                 angle = fast_add_rotations(angle, 1.5707964f);
             } else {
-                world_to_map_coords_xy_205E70(map_data_0013F450.x, map_data_0013F450.y, &label_buffer.f[0],
-                                              &label_buffer.f[1], map_current_level_205E70);
+                world_to_map_coords_xy_205E70(map_data_0013F450.motion.pos.f[0], map_data_0013F450.motion.pos.f[1],
+                                              &label_buffer.f[0], &label_buffer.f[1], map_current_level_205E70);
             }
             label_buffer.f[0] = (f32)rx0 + label_buffer.f[0] * (f32)(rx1 - rx0);
             label_buffer.f[1] = (f32)ry0 + label_buffer.f[1] * (f32)(ry1 - ry0);

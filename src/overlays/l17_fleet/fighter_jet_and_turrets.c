@@ -3099,17 +3099,7 @@ void magnet_elevator_update(char *moby) {
     FastVecAdd(delta, delta, moby + 0x10);
     update_entity_matrix(state + 0x20, delta, rot, moby + 0x40);
 }
-typedef struct {
-    char pad0[0xD0];
-    float x, y;
-    char pad1[0x2FC - 0xD8];
-    void *current;
-    char pad2[8];
-    short active;
-    char pad3[0x22DA - 0x30A];
-    unsigned short index;
-} CameraGlobals;
-extern CameraGlobals g_hero;
+extern Hero g_hero;
 extern void vec_set_length_xy(void *, void *, float);
 
 /* Builds the magnet elevator camera spot 2.5 units toward the camera, facing the hero. */
@@ -3119,7 +3109,8 @@ void build_magnet_elevator_camera_pose(char *moby, char *temp, char *state) {
     *(float *)(temp + 8) = 1.5f;
     FastVecAdd(temp, temp, moby + 0x10);
     clear_u64_value(state);
-    *(float *)(state + 8) = fast_atan2(g_hero.x - *(float *)temp, g_hero.y - *(float *)(temp + 4));
+    *(float *)(state + 8) = fast_atan2(g_hero.motion.body_center.f[0] - *(float *)temp,
+                                       g_hero.motion.body_center.f[1] - *(float *)(temp + 4));
     *(int *)(state + 4) = 0;
 }
 extern char fleet_magnet_elevator_path_offsets[];
@@ -3127,7 +3118,7 @@ extern char fleet_magnet_elevator_path_offsets[];
 /* While the hero rides this magnet elevator, rebuilds its 11-point path in world space. */
 void rebuild_magnet_elevator_world_path(char *moby) {
     struct MagnetElevatorVars *state = (struct MagnetElevatorVars *)((Moby *)moby)->pvars;
-    if (g_hero.active && g_hero.current == moby) {
+    if (g_hero.unk308 && ((void *)g_hero.ground_moby) == moby) {
         char *vec = *(char **)(fleet_paths + state->path_index * 4) + 0x10;
         char *point = moby + 0xC0;
         int i;
@@ -3137,7 +3128,7 @@ void rebuild_magnet_elevator_world_path(char *moby) {
             *(float *)(vec + 0xC) = 1.0f;
             vec += 0x10;
         }
-        g_hero.index = *(unsigned short *)&state->path_index;
+        g_hero.path_constrain_pending = *(unsigned short *)&state->path_index;
     }
 }
 typedef int u128_2F0678 __attribute__((mode(TI)));

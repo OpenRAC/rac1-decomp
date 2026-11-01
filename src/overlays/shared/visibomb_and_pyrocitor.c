@@ -781,11 +781,7 @@ typedef struct X {
     u8 p7C[0x44];
     V4 vC0;
 } X;
-typedef struct {
-    u8 p0[0x2084];
-    s32 i2084;
-} G_B4F40;
-extern G_B4F40 g_hero;
+extern Hero g_hero;
 extern short level_frame_counter;
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 random_angle_radians(void);
@@ -825,7 +821,7 @@ void emit_beam_trail_particles(X *x) {
     l0.f[2] = -random_float_between(0.01f, 0.03f);
     matrix_mul_vec3(&l0, &l0, &x->vC0);
     qcopy(&a, &x->v10);
-    if (g_hero.i2084 == 0x81) {
+    if (g_hero.state.current == 0x81) {
         if ((*(s32 *)&D_L00_0015F6B0_B4F40b) % 3 == 0) {
             PartType21Spawn(&a, &l0, 0x4F007FFF, 0x1FFFFFFF, scale_ticks(10), 1, 10000.0f);
         }
@@ -856,12 +852,12 @@ void emit_beam_trail_particles(X *x) {
     l0.f[1] = 0.0f;
     matrix_mul_vec3(&l0, &l0, &x->vC0);
     l0.f[2] = 0.025f;
-    if (g_hero.i2084 == 8) {
+    if (g_hero.state.current == 8) {
         col = 0xA0A0A0;
         q = 1.0165f;
         l0.f[2] -= g_frame_time * 5.0f;
     }
-    if (g_hero.i2084 == 0x81) {
+    if (g_hero.state.current == 0x81) {
         col = 0xA0A0A0;
         q = 1.037f;
         l0.f[2] -= g_frame_time * 3.0f;
@@ -872,7 +868,7 @@ void emit_beam_trail_particles(X *x) {
     if (g->f0C) {
         s = FastVecDist_r2(&g->v10, &a) * 0.16667f;
         FastVecSub_r2(&d, &g->v10, &a);
-        m = g_hero.i2084;
+        m = g_hero.state.current;
         n = 4;
         if (m == 8)
             n = 2;
@@ -907,23 +903,6 @@ char *spawn_indexed_class_a7_moby(int a) {
     return m;
 }
 typedef struct {
-    char pad000[0x198];
-    s32 i198;
-    char pad19C[0x30E - 0x19C];
-    s16 i30E;
-    char pad310[0x41E - 0x310];
-    s16 i41E;
-    char pad420[0xAA8 - 0x420];
-    f32 fAA8;
-    char padAAC[0x1180 - 0xAAC];
-    s32 i1180;
-    char pad1184[0x11A8 - 0x1184];
-    s32 i11A8;
-    char pad11AC[0x2080 - 0x11AC];
-    void *p2080;
-    s32 i2084;
-} G_4198;
-typedef struct {
     s32 i0;
     char pad4[4];
     s32 i8;
@@ -950,7 +929,7 @@ typedef struct {
     char pad36[0x42];
     V_4198 *v;
 } O_4198;
-extern G_4198 g_hero_r __asm__("D_0013F450");
+extern Hero g_hero_r __asm__("D_0013F450");
 extern s32 scale_ticks_r2(s32) __asm__("func_001F9850");
 extern s32 fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern void AddDrawCallback_r(void *, void *) __asm__("func_001F49B0");
@@ -966,27 +945,27 @@ void update_beam_effect_lifecycle(void *p) {
     s32 st;
     s32 lim;
 
-    if ((&g_hero_r)->i11A8 == 3) {
+    if ((&g_hero_r)->items[3].item_id == 3) {
         if (o->state == 1 || o->state == 3) {
-            st = (&g_hero_r)->i2084;
+            st = (&g_hero_r)->state.current;
             if ((u32)(st - 0xB) < 4 ||
-                (st == 0x1C && ((u8 *)(&g_hero_r)->p2080)[0x52] == ((u8 *)(&g_hero_r)->p2080)[0x53] &&
-                 (&g_hero_r)->fAA8 >= 6.0f && (&g_hero_r)->fAA8 <= 16.0f)) {
-                if (!(&g_hero_r)->i41E)
+                (st == 0x1C && ((u8 *)((void *)(&g_hero_r)->moby))[0x52] == ((u8 *)((void *)(&g_hero_r)->moby))[0x53] &&
+                 (&g_hero_r)->anim_frame >= 6.0f && (&g_hero_r)->anim_frame <= 16.0f)) {
+                if (!(&g_hero_r)->past_jump_apex)
                     flag = 1;
             }
-            if ((&g_hero_r)->i2084 == 0x10) {
-                if ((&g_hero_r)->i198 < scale_ticks_r2(0x2C)) {
-                    flag = 1;
-                }
-            }
-            if ((&g_hero_r)->i2084 == 0x22) {
-                if ((&g_hero_r)->i198 < scale_ticks_r2(0xF) ||
-                    (scale_ticks_r2(0x21) < (&g_hero_r)->i198 && (&g_hero_r)->i30E != 0)) {
+            if ((&g_hero_r)->state.current == 0x10) {
+                if ((&g_hero_r)->state_timer < scale_ticks_r2(0x2C)) {
                     flag = 1;
                 }
             }
-            if ((&g_hero_r)->i2084 == 8 || (&g_hero_r)->i2084 == 0x81) {
+            if ((&g_hero_r)->state.current == 0x22) {
+                if ((&g_hero_r)->state_timer < scale_ticks_r2(0xF) ||
+                    (scale_ticks_r2(0x21) < (&g_hero_r)->state_timer && (&g_hero_r)->air_frames.s != 0)) {
+                    flag = 1;
+                }
+            }
+            if ((&g_hero_r)->state.current == 8 || (&g_hero_r)->state.current == 0x81) {
                 flag = 1;
             }
         }
@@ -1019,7 +998,7 @@ void update_beam_effect_lifecycle(void *p) {
             v->f24 += v->f34;
             v->f28 += v->f38;
             v->f2C += v->f3C;
-            v->i8 = (&g_hero_r)->i1180;
+            v->i8 = (s32)(&g_hero_r)->items[3].moby;
             AddDrawCallback_r(draw_joint_aligned_beam_effect_r, o);
             if (fast_dec_timer_r2(v) != 0) {
                 o->state = 3;
@@ -1031,7 +1010,7 @@ void update_beam_effect_lifecycle(void *p) {
             }
             break;
         case 3:
-            v->i8 = (&g_hero_r)->i1180;
+            v->i8 = (s32)(&g_hero_r)->items[3].moby;
             AddDrawCallback_r(draw_joint_aligned_beam_effect_r, o);
             if (flag == 0) {
                 o->state = 4;
@@ -1053,7 +1032,7 @@ void update_beam_effect_lifecycle(void *p) {
                 v->f24 -= v->f34;
                 v->f28 -= v->f38;
                 v->f2C -= v->f3C;
-                v->i8 = (&g_hero_r)->i1180;
+                v->i8 = (s32)(&g_hero_r)->items[3].moby;
                 AddDrawCallback_r(draw_joint_aligned_beam_effect_r, o);
             }
             break;
@@ -1548,11 +1527,7 @@ typedef struct {
     s32 i2084;
 } G;
 typedef int q_2b58d8 __attribute__((mode(TI)));
-typedef struct {
-    unsigned char p[0x2080];
-    void *w2080;
-} G_2b58d8;
-extern G_2b58d8 g_hero_r2 __asm__("D_0013F450");
+extern Hero g_hero_r2 __asm__("D_0013F450");
 extern int visibomb_view_active_flag_r __asm__("D_L00_0017E608") __attribute__((section(".data")));
 extern int visibomb_occlusion_skip_flag_r __asm__("D_L00_0015F6E8") __attribute__((section(".sdata")));
 extern short visibomb_missile_cruise_speed_r __asm__("D_L00_0016156C");
@@ -1622,8 +1597,8 @@ int spawn_visibomb_missile(void *a_, void *pos_, float fa, float fb) {
         t.q = *(q_2b58d8 *)((unsigned char *)a_ + 0x10);
         t.f[2] = ((Vec4 *)pos_)->f[2];
         if (func_L00_001EFFF0_2b58d8(&t, (Vec4 *)pos_, 0, ({
-                G_2b58d8 *g2 = &g_hero_r2;
-                g2->w2080;
+                Hero *g2 = &g_hero_r2;
+                ((void *)g2->moby);
             }),
                                      0)) {
             ((Moby *)m)->command = 1;
@@ -2199,15 +2174,7 @@ extern s32 truncate_float_to_s32(f32);
 extern void apply_taunter_to_nearby_mobies(Moby *, f32);
 extern void Sound_StopSlot(s32);
 extern void update_taunter_effect_slots(Moby *);
-typedef struct {
-    u8 p0[0x10A0];
-    u32 w10A0;
-    u8 p10A4[0x10];
-    u32 w10B4;
-    u8 p10B8[0x20AC - 0x10B8];
-    u8 b20AC;
-} GS;
-extern GS g_hero_r4 __asm__("D_0013F450");
+extern Hero g_hero_r4 __asm__("D_0013F450");
 extern u32 g_controller_state[];
 extern u32 pad_held[];
 extern u8 voice_pool[];
@@ -2255,16 +2222,17 @@ void taunter_update(Moby *m) {
     }
     if ((u8)v != 2)
         goto end;
-    if (m->prev_seq == 3 && g_hero_r4.b20AC == 0) {
+    if (m->prev_seq == 3 && g_hero_r4.item_use_locked == 0) {
         taunter_effect_emission_disabled = 0;
         o->cnt18++;
     } else {
         o->cnt18 = 0;
     }
     if (Sound_IsPlaying(m, o->anim) == 0) {
-        b = g_controller_state[0x1A4 / 4] & g_hero_r4.w10A0;
-        if ((b != 0 || ((g_controller_state[0x1A0 / 4] & g_hero_r4.w10A0) != 0 && o->retry >= 0x11)) &&
-            g_hero_r4.b20AC == 0) {
+        b = g_controller_state[0x1A4 / 4] & ((u32)g_hero_r4.items[0].button_mask);
+        if ((b != 0 ||
+             ((g_controller_state[0x1A0 / 4] & ((u32)g_hero_r4.items[0].button_mask)) != 0 && o->retry >= 0x11)) &&
+            g_hero_r4.item_use_locked == 0) {
             if (b != 0) {
                 o->frame = scale_ticks(rand_range(0xF, 0x2D));
             }
@@ -2290,7 +2258,8 @@ void taunter_update(Moby *m) {
             goto end;
         }
         if (o->anim < 0) {
-            if ((g_controller_state[0x1A0 / 4] & g_hero_r4.w10A0) != 0 && g_hero_r4.b20AC == 0)
+            if ((g_controller_state[0x1A0 / 4] & ((u32)g_hero_r4.items[0].button_mask)) != 0 &&
+                g_hero_r4.item_use_locked == 0)
                 o->retry++;
             else
                 o->retry = 0;
@@ -2300,8 +2269,8 @@ void taunter_update(Moby *m) {
         }
     } else {
         o->retry++;
-        if ((pad_held[0] & g_hero_r4.w10A0) != 0 || scale_ticks(0x1E) >= o->cnt18) {
-            if (g_hero_r4.b20AC == 0)
+        if ((pad_held[0] & ((u32)g_hero_r4.items[0].button_mask)) != 0 || scale_ticks(0x1E) >= o->cnt18) {
+            if (g_hero_r4.item_use_locked == 0)
                 goto L7340;
         }
     }
@@ -2320,7 +2289,7 @@ L7340:
     if (!((*(s32 *)&D_L00_0015F6B0_B8208b) & 3))
         apply_taunter_to_nearby_mobies(m, o->radius);
 end:
-    if ((s32)(g_hero_r4.w10B4 ^ 3) != 0)
+    if ((s32)(((u32)g_hero_r4.items[0].state) ^ 3) != 0)
         update_taunter_effect_slots(m);
 }
 typedef struct {

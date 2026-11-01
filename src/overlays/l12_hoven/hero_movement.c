@@ -104,43 +104,7 @@ void update_hero_ground_material_flags(void) {
         }
     }
 }
-typedef struct {
-    u8 pad0[0x80];
-    f32 v80[4];
-    u8 pad90[0x108];
-    s32 i198;
-    u8 pad19C[0x74];
-    f32 v210[4];
-    f32 f220;
-    f32 f224;
-    f32 f228;
-    f32 f22C;
-    f32 f230;
-    f32 f234;
-    f32 f238;
-    u8 pad23C[0x1B];
-    u8 b257;
-    u8 pad258[0xA8];
-    s32 i300;
-    u8 pad304[0x11A];
-    s16 s41E;
-    s32 i420;
-    u8 pad424[0x10];
-    f32 f434;
-    u8 pad438[0xEAA];
-    u8 b12E2;
-    u8 pad12E3;
-    u8 b12E4;
-    u8 pad12E5[0xD9F];
-    s32 i2084;
-    u8 pad2088[0x4];
-    s32 i208C;
-    u8 pad2090[0x4];
-    s32 i2094;
-    u8 pad2098[0xC];
-    u8 b20A4;
-} P231ae0;
-extern P231ae0 g_hero_r __asm__("D_0013F450");
+extern Hero g_hero_r __asm__("D_0013F450");
 extern f32 g_hero_capsule_top[];
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
@@ -151,42 +115,43 @@ void func_L00_0025C918_33130(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_L00
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/ui_help_0022de30.c, FUN_L12_00232b18. */
 void update_hero_smoothing_targets_and_values(void) {
-    switch (g_hero_r.b20A4) {
+    switch (g_hero_r.vehicle_mode) {
         case 0:
-            g_hero_r.f228 = 0.8f;
-            g_hero_r.f22C = 0.7f;
-            g_hero_r.f230 = 0.45f;
+            g_hero_r.capsule_top_target = 0.8f;
+            g_hero_r.capsule_bottom_target = 0.7f;
+            g_hero_r.capsule_radius_target = 0.45f;
             break;
         case 3:
-            g_hero_r.f228 = 0.8f;
-            g_hero_r.f22C = 0.6f;
-            g_hero_r.f230 = 0.45f;
+            g_hero_r.capsule_top_target = 0.8f;
+            g_hero_r.capsule_bottom_target = 0.6f;
+            g_hero_r.capsule_radius_target = 0.45f;
             break;
     }
-    if (g_hero_r.i208C == 4) {
-        if (g_hero_r.i198 > g_hero_r.i420 && g_hero_r.s41E == 0)
-            g_hero_r.f22C = g_hero_r.f434;
-    } else if (g_hero_r.i2084 == 6) {
-        g_hero_r.f22C = 0.5f;
-    } else if (g_hero_r.i2084 == 4) {
-        g_hero_r.f228 = 0.35000002f;
-    } else if ((u32)(g_hero_r.i208C - 0x11) < 2) {
-        g_hero_r.f228 = 0.0f;
-        g_hero_r.f22C = 0.0f;
-    } else if (g_hero_r.b12E2 && g_hero_r.i300) {
-        g_hero_r.f228 = 0.8f;
-        g_hero_r.f22C = 0.9f;
-    } else if (g_hero_r.i2084 == 0x7F) {
-        g_hero_r.f230 = 0.8f;
+    if (g_hero_r.state.control_mode == 4) {
+        if (g_hero_r.state_timer > g_hero_r.takeoff_frame && g_hero_r.past_jump_apex == 0)
+            g_hero_r.capsule_bottom_target = g_hero_r.unk434;
+    } else if (g_hero_r.state.current == 6) {
+        g_hero_r.capsule_bottom_target = 0.5f;
+    } else if (g_hero_r.state.current == 4) {
+        g_hero_r.capsule_top_target = 0.35000002f;
+    } else if ((u32)(g_hero_r.state.control_mode - 0x11) < 2) {
+        g_hero_r.capsule_top_target = 0.0f;
+        g_hero_r.capsule_bottom_target = 0.0f;
+    } else if (g_hero_r.on_ice_ground && g_hero_r.grounded_frames) {
+        g_hero_r.capsule_top_target = 0.8f;
+        g_hero_r.capsule_bottom_target = 0.9f;
+    } else if (g_hero_r.state.current == 0x7F) {
+        g_hero_r.capsule_radius_target = 0.8f;
     }
-    if (!g_hero_r.b257 || g_hero_r.i2094 == 0x12 || g_hero_r.i208C == 0x11 || g_hero_r.b12E4 ||
-        vec_distance_xy(g_hero_r.v210, g_hero_r.v80) > g_hero_r.f234 * 0.5f) {
+    if (!g_hero_r.wall_hit || g_hero_r.state.prev_control_mode == 0x12 || g_hero_r.state.control_mode == 0x11 ||
+        g_hero_r.base_condition ||
+        vec_distance_xy(g_hero_r.wall_contact_point.f, g_hero_r.motion.pos.f) > g_hero_r.capsule_radius * 0.5f) {
         f32 *q = g_hero_capsule_top;
-        P231ae0 *b = (P231ae0 *)((u8 *)q - 0x220);
-        func_00214D28_33130(b->f228, frame_scale * 0.02f, q);
-        func_00214D28_33130(b->f22C, frame_scale * 0.02f, q + 1);
-        func_L00_0025C918_33130(q + 5, q + 6, b->f230, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f,
-                                g_frame_time * 4.0f);
+        Hero *b = (Hero *)((u8 *)q - 0x220);
+        func_00214D28_33130(b->capsule_top_target, frame_scale * 0.02f, q);
+        func_00214D28_33130(b->capsule_bottom_target, frame_scale * 0.02f, q + 1);
+        func_L00_0025C918_33130(q + 5, q + 6, b->capsule_radius_target, g_frame_scale_sq * 0.02f,
+                                g_frame_scale_sq * 0.3f, g_frame_time * 4.0f);
     }
 }
 typedef int Q __attribute__((mode(TI)));

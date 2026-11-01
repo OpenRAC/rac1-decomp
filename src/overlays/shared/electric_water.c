@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "moby.h"
+#include "hero.h"
 #include "game/draw.h"
 #include "overlays/shared/electric_water.h"
 #include "overlays/shared/hero_update_bone_attachment.h"
@@ -50,27 +51,13 @@ typedef struct {
     int pad[3];
 } Hit_2D7C00;
 typedef struct {
-    unsigned char pad0[0x80];
-    Q_2D7C00 pos;
-    unsigned char pad90[0xD0 - 0x90];
-    Q_2D7C00 body;
-    unsigned char padE0[0x2F0 - 0xE0];
-    float waterLevel;
-    unsigned char pad2F4[0x2FC - 0x2F4];
-    unsigned char *standing;
-    unsigned char pad300[0x30E - 0x300];
-    short airTicks;
-    unsigned char pad310[0x2080 - 0x310];
-    unsigned char *moby;
-} Hero_2D7C00;
-typedef struct {
     float f0, f4, f8;
     int iC;
     Q_2D7C00 pos;
     unsigned char pad20[0x1C - 0x20 + 0x20];
 } Light_2D7C00;
 
-extern Hero_2D7C00 g_hero;
+extern Hero g_hero;
 extern char gHeroPos[];
 extern unsigned char voice_pool[];
 extern unsigned char *quartu_moby_array MACRO_ADDR;
@@ -313,8 +300,8 @@ void electric_water_update(unsigned char *m) {
                     RELEASE_2D7C00(vars);
                 }
                 vars->owner = (struct Moby *)g_hero.moby;
-                vars->voice0 = Sound_PlayClassSound(0, 4, g_hero.moby, 0x28F);
-                vars->voice1 = Sound_PlayClassSound(1, 4, g_hero.moby, 0x28F);
+                vars->voice0 = Sound_PlayClassSound(0, 4, (unsigned char *)g_hero.moby, 0x28F);
+                vars->voice1 = Sound_PlayClassSound(1, 4, (unsigned char *)g_hero.moby, 0x28F);
                 if (vars->shock_count == 0) {
                     vars->saved_fog[0] = quartu_fog_near_distance;
                     vars->saved_fog[1] = quartu_fog_far_distance;
@@ -336,9 +323,9 @@ void electric_water_update(unsigned char *m) {
                 theta = random_angle_radians();
                 phi = random_angle_radians();
                 BuildSphericalOffset(&vars->bolt_aim, radius, theta, phi);
-                add_vectors(unused_vector_argument, &vars->bolt_aim, &g_hero.body);
+                add_vectors(unused_vector_argument, &vars->bolt_aim, &g_hero.motion.body_center.q);
                 vars->bolt_end = vars->bolt_aim;
-                vars->bolt_start = g_hero.body;
+                vars->bolt_start = g_hero.motion.body_center.q;
                 initialize_electric_water_bolt_effect((char *)moby);
                 update_electric_water_bolt_effect(moby);
                 AddDrawCallback(draw_electric_water_bolt_effect, moby);
@@ -354,7 +341,7 @@ void electric_water_update(unsigned char *m) {
                 hit.v[2] = 1.0f;
                 hit.v[3] = 5627.9248f;
                 hit.b28 = 0;
-                record_moby_hit(g_hero.moby, &hit);
+                record_moby_hit((unsigned char *)g_hero.moby, &hit);
                 if (moby->state == ELECTRIC_WATER_OFF) {
                     quartu_fog_near_distance = vars->saved_fog[0];
                     quartu_fog_far_distance = vars->saved_fog[1];
@@ -438,8 +425,8 @@ void electric_water_update(unsigned char *m) {
                 if (vars->switches[i] == -1) {
                     continue;
                 }
-                if (g_hero.standing != MOBYP_2D7C00(vars->switches[i]) ||
-                    ((struct Moby *)g_hero.standing)->oclass != 0x33E || g_hero.airTicks != 0) {
+                if (((unsigned char *)g_hero.ground_moby) != MOBYP_2D7C00(vars->switches[i]) ||
+                    ((struct Moby *)g_hero.ground_moby)->oclass != 0x33E || g_hero.air_frames.s != 0) {
                     continue;
                 }
                 if (vars->armed != 0) {
@@ -453,8 +440,9 @@ void electric_water_update(unsigned char *m) {
             }
             vars->armed = armed;
             if (FastDecTimer(&vars->off_timer) == 0) {
-                if (is_point_inside_clip_volume(&g_hero.pos, vars->reset_area_a) == 0 || g_hero.airTicks != 0) {
-                    if (is_point_inside_clip_volume(&g_hero.pos, vars->reset_area_b) == 0) {
+                if (is_point_inside_clip_volume(&g_hero.motion.pos.q, vars->reset_area_a) == 0 ||
+                    g_hero.air_frames.s != 0) {
+                    if (is_point_inside_clip_volume(&g_hero.motion.pos.q, vars->reset_area_b) == 0) {
                         break;
                     }
                 }
@@ -478,11 +466,11 @@ void electric_water_update(unsigned char *m) {
 
     {
         char *pos = gHeroPos;
-        Hero_2D7C00 *g = (Hero_2D7C00 *)(pos - 0x80);
+        Hero *g = (Hero *)(pos - 0x80);
         for (level_area = 0; level_area < 4; level_area++) {
             if (is_point_inside_clip_volume(pos, vars->water_level_areas[level_area]) != 0 &&
                 hero_is_in_special_state() != 0) {
-                g->waterLevel = *(float *)(CUB_2D7C00(vars->water_level_areas[level_area]) + 0x38);
+                g->water_surface_z = *(float *)(CUB_2D7C00(vars->water_level_areas[level_area]) + 0x38);
             }
         }
     }
@@ -1303,7 +1291,7 @@ void codebot_update(unsigned char *moby) {
                 break;
             case CODEBOT_CHECK_HERO_PROXIMITY:
                 update_collectible_sprite_effect(moby);
-                if (FastVecDist(&m->pos, &((Hero_2D7C00 *)&g_hero)->pos) < 3.0f) {
+                if (FastVecDist(&m->pos, &((Hero *)&g_hero)->motion.pos.q) < 3.0f) {
                     if (((HeroStateWord_2D7C00 *)&g_hero)->current != 0x32) {
                         m->flags |= 0x41;
                         StartCutscene(1);
@@ -1328,7 +1316,6 @@ void codebot_update(unsigned char *moby) {
         }
     }
 }
-#include "hero.h"
 #include "pad.h"
 extern Hero g_hero_r __asm__("D_0013F450");
 extern PadState g_controller_state_r __asm__("D_0013CA40");

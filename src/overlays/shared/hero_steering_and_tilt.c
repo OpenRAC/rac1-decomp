@@ -798,43 +798,13 @@ typedef union {
     f32 f[4];
 } V4 __attribute__((aligned(16)));
 typedef struct {
-    char p0[0x88];
-    f32 f88;
-    char p8C[0x98 - 0x8C];
-    f32 f98;
-    char p9C[0xE0 - 0x9C];
-    f32 fE0[4];
-    char pF0[0x160 - 0xF0];
-    f32 f160;
-    char p164[0x180 - 0x164];
-    f32 f180;
-    char p184[0x190 - 0x184];
-    f32 f190;
-    char p194[0x198 - 0x194];
-    s32 i198;
-    char p19C[0x2D8 - 0x19C];
-    f32 f2D8;
-    char p2DC[0x2E4 - 0x2DC];
-    f32 f2E4;
-    char p2E8[0x3B0 - 0x2E8];
-    f32 f3B0;
-    f32 f3B4;
-    char p3B8[0x920 - 0x3B8];
-    V4 f920;
-    f32 f930;
-    char p934[0x2084 - 0x934];
-    s32 i2084;
-    char p2088[0x229C - 0x2088];
-    f32 f229C;
-} G_167d0;
-typedef struct {
     char p0[0x270];
     f32 f270;
     f32 f274;
     char p278[0x2E0 - 0x278];
     f32 f2E0;
 } H;
-extern G_167d0 g_hero_r3 __asm__("D_0013F450");
+extern Hero g_hero_r3 __asm__("D_0013F450");
 extern char hero_velocity[];
 extern char g_hero_resolved_velocity_xy[];
 extern f32 g_frame_time MACRO_ADDR;
@@ -859,43 +829,43 @@ extern f32 FastAbsF(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_002167d0. */
 void update_hero_planar_movement_velocity(void) {
-    G_167d0 *m;
+    Hero *m;
     H *q;
     V4 *r;
     V4 v0, v1, v2, v3, v4;
-    G_167d0 *g;
+    Hero *g;
     f32 f20, f21, f22, a, b, c, d, e, h, k;
 
     stick_target(0, 1.0f);
     f20 = 0.2f;
     turn_to(0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * f20, g_frame_time * 3.66519141f);
-    if (g_hero_r3.i2084 == 0x13) {
-        if (g_hero_r3.f229C < f20) {
-            g_hero_r3.f180 = g_hero_r3.f98;
+    if (g_hero_r3.state.current == 0x13) {
+        if (g_hero_r3.stick_magnitude < f20) {
+            g_hero_r3.motion.move_yaw = g_hero_r3.motion.rot.f[2];
         }
-        g_hero_r3.f190 = 0.4f;
-    } else if (g_hero_r3.i2084 == 0x15) {
-        g_hero_r3.f190 = 0.0f;
+        g_hero_r3.target_speed = 0.4f;
+    } else if (g_hero_r3.state.current == 0x15) {
+        g_hero_r3.target_speed = 0.0f;
     }
     f20 = 5.9f;
-    v0.f[0] = FastCos(g_hero_r3.f180) * g_hero_r3.f190 * (g_frame_time * f20);
-    h = FastSin(g_hero_r3.f180) * g_hero_r3.f190;
+    v0.f[0] = FastCos(g_hero_r3.motion.move_yaw) * g_hero_r3.target_speed * (g_frame_time * f20);
+    h = FastSin(g_hero_r3.motion.move_yaw) * g_hero_r3.target_speed;
     v0.f[2] = 0.0f;
     d = g_frame_time;
     f20 = d * f20;
     v0.f[1] = h * f20;
     qcopy(&v1, &v0);
     f21 = v0.f[2];
-    if (f21 < g_hero_r3.f930) {
+    if (f21 < g_hero_r3.unk930) {
         build_scaled_hero_move_impulse(0.7f, d * f21);
-        qcopy(&v2, &g_hero_r3.f920);
-        FastVecAdd(&v0, &v0, &g_hero_r3.f920);
-        clear_u64_value(&g_hero_r3.f920);
+        qcopy(&v2, &g_hero_r3.move_impulse);
+        FastVecAdd(&v0, &v0, &g_hero_r3.move_impulse);
+        clear_u64_value(&g_hero_r3.move_impulse);
     }
-    f20 = -(g_hero_r3.fE0[0] * v0.f[0] + g_hero_r3.fE0[1] * v0.f[1]);
+    f20 = -(g_hero_r3.motion.velocity.f[0] * v0.f[0] + g_hero_r3.motion.velocity.f[1] * v0.f[1]);
     if (f21 < f20) {
         f20 = f20 / vec_length_xy(&v0);
-        f20 = f20 / vec_length_xy(g_hero_r3.fE0);
+        f20 = f20 / vec_length_xy(g_hero_r3.motion.velocity.f);
     }
     if (1.0f < f20) {
         f20 = 1.0f;
@@ -903,18 +873,19 @@ void update_hero_planar_movement_velocity(void) {
     if (f20 < f21) {
         f20 = f21;
     }
-    f21 = g_frame_time_sq * 2.45f * g_hero_r3.f190;
+    f21 = g_frame_time_sq * 2.45f * g_hero_r3.target_speed;
     f21 = f21 + (g_frame_time_sq + g_frame_time_sq) * f20;
     if (g_controller_state_no_direction[0]) {
         f21 = g_frame_time_sq * 1.1f;
     }
-    if (g_hero_r3.i2084 == 0x13 && g_hero_r3.i198 < scale_ticks(0xF) && g_hero_r3.f160 < g_frame_time * 3.0f) {
+    if (g_hero_r3.state.current == 0x13 && g_hero_r3.state_timer < scale_ticks(0xF) &&
+        g_hero_r3.motion.speed_xy < g_frame_time * 3.0f) {
         f21 = g_frame_time_sq * 11.0f;
     }
-    if (g_frame_time * 5.9f < g_hero_r3.f160) {
+    if (g_frame_time * 5.9f < g_hero_r3.motion.speed_xy) {
         f21 = g_frame_time_sq * 13.0f;
     }
-    e = g_hero_r3.f930;
+    e = g_hero_r3.unk930;
     f22 = 0.0f;
     if (f22 < e) {
         f20 = -FastVecDot(&v1, &v2);
@@ -926,7 +897,7 @@ void update_hero_planar_movement_velocity(void) {
         a = (b - f20) / b;
         c = g_frame_time_sq * 3.0f;
         b = c * a;
-        if (g_hero_r3.f229C < 0.3f) {
+        if (g_hero_r3.stick_magnitude < 0.3f) {
             if (b < c) {
                 b = c;
             }
@@ -962,19 +933,19 @@ void update_hero_planar_movement_velocity(void) {
     }
     qcopy(&v3, hero_velocity);
     v3.f[2] = 0.0f;
-    m = (G_167d0 *)(hero_velocity - 0xE0);
-    m->f3B0 = FastVecDot(&v3, &v0);
+    m = (Hero *)(hero_velocity - 0xE0);
+    m->unk3B0 = FastVecDot(&v3, &v0);
     k = FastVecLength(&v0);
     if (0.0f < k) {
-        m->f3B0 = m->f3B0 / (k * (g_frame_time * 5.9f));
+        m->unk3B0 = m->unk3B0 / (k * (g_frame_time * 5.9f));
     }
     clip_hero_velocity_against_probed_surfaces(0);
-    if (m->f3B4 < 0.0174532924f && 0.0872664601f < m->f2E4) {
-        FastVecScale(hero_velocity, hero_velocity, FastCos(m->f2E4));
+    if (m->unk3B4.f < 0.0174532924f && 0.0872664601f < m->ground_pitch.f) {
+        FastVecScale(hero_velocity, hero_velocity, FastCos(m->ground_pitch.f));
     }
-    g_hero_r3.f3B4 = g_hero_r3.f2E4;
-    if (FastAbsF(g_hero_r3.f88 - g_hero_r3.f2D8) < 0.15f) {
-        g_hero_r3.f88 = g_hero_r3.f2D8;
+    g_hero_r3.unk3B4.f = g_hero_r3.ground_pitch.f;
+    if (FastAbsF(g_hero_r3.motion.pos.f[2] - g_hero_r3.ground_z.f) < 0.15f) {
+        g_hero_r3.motion.pos.f[2] = g_hero_r3.ground_z.f;
     }
 }
 extern int Moby_PlaySound(int, int, int);
@@ -1099,23 +1070,7 @@ void Hero_ResetToPosition(void *a, void *b, int c, int d) {
         init_camera_system();
     apply_nearest_environment_sample(*(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby);
 }
-typedef struct {
-    unsigned char pad0[0x80];
-    Vec4 v80;
-    unsigned char pad90[0x1F8 - 0x90];
-    short s1F8;
-    unsigned char pad1FA[0x270 - 0x1FA];
-    Vec4 v270;
-    unsigned char pad280[0x10];
-    Vec4 v290;
-    unsigned char pad2A0[0x2DC - 0x2A0];
-    float f2DC;
-    unsigned char pad2E0[0x30E - 0x2E0];
-    short s30E;
-    unsigned char pad310[0x20B3 - 0x310];
-    unsigned char b20B3;
-} P_2163f0;
-extern P_2163f0 g_hero_r5 __asm__("D_0013F450");
+extern Hero g_hero_r5 __asm__("D_0013F450");
 typedef struct {
     char pad[0x2218];
     int a[8];

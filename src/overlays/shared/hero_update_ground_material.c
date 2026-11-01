@@ -829,29 +829,6 @@ void exit_hero_vehicle_mode_and_restore_moby(void) {
 }
 typedef int Q_8 __attribute__((mode(TI)));
 typedef struct {
-    u8 pad0[0x98];
-    f32 f98;
-    u8 pad9C[0x128 - 0x9C];
-    f32 f128;
-    u8 pad12C[0x1C0 - 0x12C];
-    s32 i1C0;
-    u8 pad1C4[0x30E - 0x1C4];
-    s16 h30E;
-    u8 pad310[0x5BE - 0x310];
-    s16 h5BE;
-    u8 pad5C0[0x12E7 - 0x5C0];
-    u8 b12E7;
-    u8 pad12E8[0x2080 - 0x12E8];
-    u8 *p2080;
-    s32 i2084;
-    u8 pad2088[4];
-    s32 i208C;
-    u8 pad2090[0x20A4 - 0x2090];
-    u8 b20A4;
-    u8 pad20A5[0x2280 - 0x20A5];
-    u8 *p2280;
-} G_8;
-typedef struct {
     u8 pad0[0x10];
     Q_8 v10;
     u8 *p20;
@@ -863,7 +840,7 @@ typedef struct {
     u8 *p34;
     u8 pad38[8];
 } T_8;
-extern G_8 g_hero_r3 __asm__("D_0013F450");
+extern Hero g_hero_r3 __asm__("D_0013F450");
 extern s32 novalis_game_mode MACRO_ADDR;
 extern T_8 novalis_moby_hit_records[];
 extern s32 g_current_level_index MACRO_ADDR;
@@ -891,23 +868,23 @@ s32 HeroL01_TryTakeHit(s32 arg) {
     f32 a, b, e;
     Vec4 v;
 
-    if (g_hero_r3.i208C == 0x14) {
+    if (g_hero_r3.state.control_mode == 0x14) {
         return 0;
     }
-    if (g_hero_r3.i208C == 7) {
+    if (g_hero_r3.state.control_mode == 7) {
         return 0;
     }
-    if (g_hero_r3.i2084 == 0x32) {
+    if (g_hero_r3.state.current == 0x32) {
         return 0;
     }
-    if (g_hero_r3.i1C0 != 0) {
+    if (g_hero_r3.invulnerable_frames != 0) {
         return 0;
     }
     if (novalis_game_mode != 0) {
         return 0;
     }
-    g_hero_r3.p2280 = 0;
-    m = g_hero_r3.p2080;
+    g_hero_r3.damage_source_moby = 0;
+    m = (u8 *)g_hero_r3.moby;
     if (((Moby *)m)->hit_slot == 0xFF) {
         return 0;
     }
@@ -919,7 +896,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
         return 0;
     }
     level_hero_hit_counts[g_current_level_index]++;
-    g_hero_r3.p2280 = tbl->p20;
+    g_hero_r3.damage_source_moby = (struct Moby *)tbl->p20;
     hero_hit_count++;
     if (arg == 0) {
         return 1;
@@ -934,47 +911,47 @@ s32 HeroL01_TryTakeHit(s32 arg) {
     } else if (tbl->p20 != 0) {
         FastVecSub(&v, (u8 *)&g_hero_r3 + 0x80, tbl->p20 + 0x10);
     } else {
-        v.f[0] = FastCos(FastAddRots(g_hero_r3.f98, 3.1415927f));
-        v.f[1] = FastSin(FastAddRots(g_hero_r3.f98, 3.1415927f));
+        v.f[0] = FastCos(FastAddRots(g_hero_r3.motion.rot.f[2], 3.1415927f));
+        v.f[1] = FastSin(FastAddRots(g_hero_r3.motion.rot.f[2], 3.1415927f));
         v.i[2] = 0;
     }
-    switch (g_hero_r3.b20A4) {
+    switch (g_hero_r3.vehicle_mode) {
         case 0:
-            mob = g_hero_r3.p2280;
+            mob = (u8 *)g_hero_r3.damage_source_moby;
             if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x4EB || *(s16 *)(mob + 0xA6) == 0x558)) {
                 id = 0x80;
             call_ret:
                 Hero_SetMoveState(id, 1);
                 return 1;
             }
-            if (g_hero_r3.i208C == 0x16) {
+            if (g_hero_r3.state.control_mode == 0x16) {
                 Hero_SetMoveState(0x6D, 1);
-                g_hero_r3.f128 = g_frame_time * 7.0f;
+                g_hero_r3.motion.resolved_velocity_z.f[2] = g_frame_time * 7.0f;
                 return 1;
             }
-            if (g_hero_r3.i208C == 0x12) {
-                mob = g_hero_r3.p2280;
+            if (g_hero_r3.state.control_mode == 0x12) {
+                mob = (u8 *)g_hero_r3.damage_source_moby;
                 if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
                     id = 0x82;
                     goto call_ret;
                 }
                 Hero_SetMoveState(0x75, 1);
-            } else if (g_hero_r3.i208C == 0x11) {
-                mob = g_hero_r3.p2280;
+            } else if (g_hero_r3.state.control_mode == 0x11) {
+                mob = (u8 *)g_hero_r3.damage_source_moby;
                 if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
                     id = 0x82;
                     goto call_ret;
                 }
                 if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
-                    mob = g_hero_r3.p2280;
+                    mob = (u8 *)g_hero_r3.damage_source_moby;
                     if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B ||
                                      *(s16 *)(mob + 0xA6) == 0x29D)) {
                         allocate_hero_voice_for_entry(0x1C, 0);
                     }
                 }
                 Hero_SetMoveState(0x76, 1);
-            } else if (g_hero_r3.i208C == 3) {
-                mob = g_hero_r3.p2280;
+            } else if (g_hero_r3.state.control_mode == 3) {
+                mob = (u8 *)g_hero_r3.damage_source_moby;
                 if (mob != 0) {
                     id = 0x82;
                     if (*(s16 *)(mob + 0xA6) == 0x28F) {
@@ -988,7 +965,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
             e = g_frame_time;
             a = e * 5.7f;
             b = e * 2.4f;
-            if (g_hero_r3.b12E7 != 0) {
+            if (g_hero_r3.on_magnet_ground != 0) {
                 a = 0.0f;
                 b = e * 1.7f;
             }
@@ -1006,43 +983,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
     FastVecAdd(hero_velocity + 0x20, hero_velocity + 0x20, &v);
     return 1;
 }
-typedef struct {
-    u8 pad0[0x80];
-    f32 v80[4];
-    u8 pad90[0x108];
-    s32 i198;
-    u8 pad19C[0x74];
-    f32 v210[4];
-    f32 f220;
-    f32 f224;
-    f32 f228;
-    f32 f22C;
-    f32 f230;
-    f32 f234;
-    f32 f238;
-    u8 pad23C[0x1B];
-    u8 b257;
-    u8 pad258[0xA8];
-    s32 i300;
-    u8 pad304[0x11A];
-    s16 s41E;
-    s32 i420;
-    u8 pad424[0x10];
-    f32 f434;
-    u8 pad438[0xEAA];
-    u8 b12E2;
-    u8 pad12E3;
-    u8 b12E4;
-    u8 pad12E5[0xD9F];
-    s32 i2084;
-    u8 pad2088[0x4];
-    s32 i208C;
-    u8 pad2090[0x4];
-    s32 i2094;
-    u8 pad2098[0xC];
-    u8 b20A4;
-} P231ae0;
-extern P231ae0 g_hero_r4 __asm__("D_0013F450");
+extern Hero g_hero_r4 __asm__("D_0013F450");
 extern f32 g_hero_capsule_top[];
 extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
@@ -1052,38 +993,40 @@ void Spring(f32 *, f32 *, f32, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00231ae0. */
 void HeroSetCollisionSize(void) {
-    switch (g_hero_r4.b20A4) {
+    switch (g_hero_r4.vehicle_mode) {
         case 0:
-            g_hero_r4.f228 = 0.8f;
-            g_hero_r4.f22C = 0.7f;
-            g_hero_r4.f230 = 0.45f;
+            g_hero_r4.capsule_top_target = 0.8f;
+            g_hero_r4.capsule_bottom_target = 0.7f;
+            g_hero_r4.capsule_radius_target = 0.45f;
             break;
         case 3:
-            g_hero_r4.f228 = 0.8f;
-            g_hero_r4.f22C = 0.6f;
-            g_hero_r4.f230 = 0.45f;
+            g_hero_r4.capsule_top_target = 0.8f;
+            g_hero_r4.capsule_bottom_target = 0.6f;
+            g_hero_r4.capsule_radius_target = 0.45f;
             break;
     }
-    if (g_hero_r4.i208C == 4) {
-        if (g_hero_r4.i198 > g_hero_r4.i420 && g_hero_r4.s41E == 0)
-            g_hero_r4.f22C = g_hero_r4.f434;
-    } else if (g_hero_r4.i2084 == 6) {
-        g_hero_r4.f22C = 0.5f;
-    } else if (g_hero_r4.i2084 == 4) {
-        g_hero_r4.f228 = 0.35000002f;
-    } else if ((u32)(g_hero_r4.i208C - 0x11) < 2) {
-        g_hero_r4.f228 = 0.0f;
-        g_hero_r4.f22C = 0.0f;
-    } else if (g_hero_r4.i2084 == 0x7F) {
-        g_hero_r4.f230 = 0.8f;
+    if (g_hero_r4.state.control_mode == 4) {
+        if (g_hero_r4.state_timer > g_hero_r4.takeoff_frame && g_hero_r4.past_jump_apex == 0)
+            g_hero_r4.capsule_bottom_target = g_hero_r4.unk434;
+    } else if (g_hero_r4.state.current == 6) {
+        g_hero_r4.capsule_bottom_target = 0.5f;
+    } else if (g_hero_r4.state.current == 4) {
+        g_hero_r4.capsule_top_target = 0.35000002f;
+    } else if ((u32)(g_hero_r4.state.control_mode - 0x11) < 2) {
+        g_hero_r4.capsule_top_target = 0.0f;
+        g_hero_r4.capsule_bottom_target = 0.0f;
+    } else if (g_hero_r4.state.current == 0x7F) {
+        g_hero_r4.capsule_radius_target = 0.8f;
     }
-    if (!g_hero_r4.b257 || g_hero_r4.i2094 == 0x12 || g_hero_r4.i208C == 0x11 || g_hero_r4.b12E4 ||
-        vec_distance_xy(g_hero_r4.v210, g_hero_r4.v80) > g_hero_r4.f234 * 0.5f) {
+    if (!g_hero_r4.wall_hit || g_hero_r4.state.prev_control_mode == 0x12 || g_hero_r4.state.control_mode == 0x11 ||
+        g_hero_r4.base_condition ||
+        vec_distance_xy(g_hero_r4.wall_contact_point.f, g_hero_r4.motion.pos.f) > g_hero_r4.capsule_radius * 0.5f) {
         f32 *q = g_hero_capsule_top;
-        P231ae0 *b = (P231ae0 *)((u8 *)q - 0x220);
-        ApproachValue(b->f228, frame_scale_r * 0.02f, q);
-        ApproachValue(b->f22C, frame_scale_r * 0.02f, q + 1);
-        Spring(q + 5, q + 6, b->f230, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.0f);
+        Hero *b = (Hero *)((u8 *)q - 0x220);
+        ApproachValue(b->capsule_top_target, frame_scale_r * 0.02f, q);
+        ApproachValue(b->capsule_bottom_target, frame_scale_r * 0.02f, q + 1);
+        Spring(q + 5, q + 6, b->capsule_radius_target, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f,
+               g_frame_time * 4.0f);
     }
 }
 extern char hero_globals_base_r[] __asm__("D_0013E633");
@@ -1231,78 +1174,7 @@ void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
 void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
 f32 FastAbsF(f32);
-typedef struct {
-    u8 pad88[0x88];
-    f32 xF88;
-    u8 pad234[0x1a8];
-    f32 xF234;
-    u8 pad270[0x38];
-    s32 xI270;
-    s32 xI274;
-    f32 xF278;
-    u8 pad298[0x1c];
-    f32 xF298;
-    u8 pad2c0[0x24];
-    union {
-        f32 f[2];
-        s32 i[2];
-    } a2c0;
-    union {
-        f32 f[2];
-        s32 i[2];
-    } a2c8;
-    union {
-        f32 f[2];
-        s32 i[2];
-    } a2d0;
-    union {
-        f32 F;
-        s32 I;
-    } u2d8;
-    f32 xF2dc;
-    union {
-        f32 F;
-        s32 I;
-    } u2e0;
-    union {
-        f32 F;
-        s32 I;
-    } u2e4;
-    union {
-        f32 F;
-        s32 I;
-    } u2e8;
-    f32 xF2ec;
-    f32 xF2f0;
-    f32 xF2f4;
-    s32 xI2f8;
-    s32 xI2fc;
-    s32 xI300;
-    u8 pad30a[0x6];
-    s16 xH30a;
-    union {
-        s16 H;
-        u16 U;
-    } u30c;
-    union {
-        s16 H;
-        u16 U;
-    } u30e;
-    u8 pada80[0x770];
-    s32 xIa80;
-    u8 pad12e0[0x85c];
-    s16 xH12e0;
-    u8 pad12ed[0xb];
-    u8 xB12ed;
-    u8 pad2080[0xd92];
-    s32 xI2080;
-    s32 xI2084;
-    u8 pad208c[0x4];
-    s32 xI208c;
-    u8 pad20b3[0x23];
-    u8 xB20b3;
-} GS;
-extern GS g_hero;
+extern Hero g_hero;
 typedef struct {
     u8 pad0[0x18];
     s32 i18;
@@ -1329,106 +1201,106 @@ void HeroGroundProbe(void) {
     s32 k;
     f32 g;
 
-    g_hero.xF278 = 1.0f;
-    g_hero.u30e.U++;
-    g_hero.u30c.U++;
-    g_hero.xI270 = 0;
-    g_hero.xI274 = 0;
-    g_hero.u2e0.I = 0;
-    g_hero.u2d8.I = 0;
+    g_hero.ground_normal.f[2] = 1.0f;
+    g_hero.air_frames.u++;
+    g_hero.frames_off_ground.u++;
+    g_hero.ground_normal.i[0] = 0;
+    g_hero.ground_normal.i[1] = 0;
+    g_hero.ground_slope.i = 0;
+    g_hero.ground_z.i = 0;
     func_001F9BC0_333D8((u8 *)&g_hero + 0x2A0);
-    g_hero.xH30a = 0;
-    g_hero.xF2dc = 32.0f;
-    g_hero.xI2fc = 0;
-    if (g_hero.xI2f8 != 0) {
-        g_hero.xI2f8++;
+    g_hero.on_flagged_ground_moby = 0;
+    g_hero.ground_distance = 32.0f;
+    g_hero.ground_moby = 0;
+    if (g_hero.in_water_frames != 0) {
+        g_hero.in_water_frames++;
     }
     k = 0;
-    if (g_hero.xB20b3)
+    if (g_hero.gravity_mode)
         k = 1;
-    g = g_hero.xF234 * 2.2f;
-    if (g_hero.xI208c == 2) {
-        g = g_hero.xF234 * 2.9f;
+    g = g_hero.capsule_radius * 2.2f;
+    if (g_hero.state.control_mode == 2) {
+        g = g_hero.capsule_radius * 2.9f;
     }
     hero_get_collision_ray_endpoints(&v10, &v0, k, g, -48.0f);
-    if (coll_line(&v10, &v0, 2, g_hero.xI2080, 0) == 0) {
+    if (coll_line(&v10, &v0, 2, (s32)g_hero.moby, 0) == 0) {
         goto tail;
     }
     r = coll_sound_class();
     if (r == -1) {
         r = 3;
     }
-    g_hero.xB12ed = r;
-    g_hero.xH12e0 = CollType();
-    if (g_hero.xH12e0 == 0) {
-        g_hero.xF2f0 = resolve_camera_surface_height(novalis_coll_hit_point, (u8 *)&g_hero + 0x280);
-        if (g_hero.xF88 < g_hero.xF2f0 && g_hero.xI2f8 <= 0) {
-            g_hero.xI2f8 = 1;
+    g_hero.ground_sound_class = r;
+    g_hero.ground_type = CollType();
+    if (g_hero.ground_type == 0) {
+        g_hero.water_surface_z = resolve_camera_surface_height(novalis_coll_hit_point, (u8 *)&g_hero + 0x280);
+        if (g_hero.motion.pos.f[2] < g_hero.water_surface_z && g_hero.in_water_frames <= 0) {
+            g_hero.in_water_frames = 1;
         }
-        if (coll_line(&v10, &v0, 0x24, g_hero.xI2080, 0) == 0) {
+        if (coll_line(&v10, &v0, 0x24, (s32)g_hero.moby, 0) == 0) {
             goto d1;
         }
         r = coll_sound_class();
         if (g_current_level_index == 1 || g_current_level_index == 0x12) {
             r = 3;
         }
-        g_hero.xB12ed = r;
+        g_hero.ground_sound_class = r;
     }
-    if (g_hero.xH12e0 == 0xD) {
-        g_hero.xF2f0 = novalis_coll_hit_r3.v20.f[2];
+    if (g_hero.ground_type == 0xD) {
+        g_hero.water_surface_z = novalis_coll_hit_r3.v20.f[2];
         v10.f[2] = novalis_coll_hit_r3.v20.f[2] - 0.01f;
-        if (coll_line(&v10, &v0, 4, g_hero.xI2080, 0) == 0) {
+        if (coll_line(&v10, &v0, 4, (s32)g_hero.moby, 0) == 0) {
             goto d1;
         }
     }
-    if (g_hero.xH12e0 == 0xB) {
-        g_hero.xF2f4 = novalis_coll_hit_r3.v20.f[2];
+    if (g_hero.ground_type == 0xB) {
+        g_hero.sink_surface_z = novalis_coll_hit_r3.v20.f[2];
         goto d1;
     }
     if (novalis_coll_hit_r3.i18 != 0) {
         if (is_moby_in_class_range_500_to_540(novalis_coll_hit_r3.i18)) {
-            g_hero.xH30a = 1;
+            g_hero.on_flagged_ground_moby = 1;
         }
         p = GetFlaggedPvarWord(novalis_coll_hit_r3.i18);
         if (p != 0 && (*(u16 *)(p + 0x1E) & 8)) {
-            g_hero.xH30a = 1;
+            g_hero.on_flagged_ground_moby = 1;
         }
     }
     if (novalis_coll_hit_r3.i1C > 0) {
         qcopy((u8 *)&g_hero + 0x2A0, &novalis_coll_hit_r3.v20);
-        g_hero.u2d8.F = novalis_coll_hit_r3.v20.f[2];
-        g_hero.xF2dc = FastVecDist((u8 *)&g_hero + 0x80, ((u8 *)&g_hero + 0x2A0));
-        g_hero.xI2fc = novalis_coll_hit_r3.i18;
+        g_hero.ground_z.f = novalis_coll_hit_r3.v20.f[2];
+        g_hero.ground_distance = FastVecDist((u8 *)&g_hero + 0x80, ((u8 *)&g_hero + 0x2A0));
+        g_hero.ground_moby = (struct Moby *)novalis_coll_hit_r3.i18;
         sceVu0Normalize((u8 *)&g_hero + 0x270, (u8 *)&novalis_coll_hit_r3.f40);
-        g_hero.u2e0.F = compute_gravity_relative_vector_inclination((u8 *)&novalis_coll_hit_r3.f40);
-        g_hero.xF2ec = fast_atan2(novalis_coll_hit_r3.f40, novalis_coll_hit_r3.f44);
+        g_hero.ground_slope.f = compute_gravity_relative_vector_inclination((u8 *)&novalis_coll_hit_r3.f40);
+        g_hero.downhill_yaw = fast_atan2(novalis_coll_hit_r3.f40, novalis_coll_hit_r3.f44);
         FastVecSub(&v20, ((u8 *)&g_hero + 0x2A0), (u8 *)&g_hero + 0x80);
         if (0.0f < FastVecDot(&v20, (u8 *)&g_hero + 0x270)) {
-            g_hero.xF2dc = -g_hero.xF2dc;
+            g_hero.ground_distance = -g_hero.ground_distance;
         }
-        if (g_hero.xF2dc < 0.02f) {
-            g_hero.u30c.H = 0;
-            if (g_hero.u2e0.F <= 0.87266463f || g_hero.xB20b3 == 1 || g_hero.xI208c == 0x16) {
-                g_hero.u30e.H = 0;
-                g_hero.xIa80 = novalis_coll_hit_r3.i18;
+        if (g_hero.ground_distance < 0.02f) {
+            g_hero.frames_off_ground.s = 0;
+            if (g_hero.ground_slope.f <= 0.87266463f || g_hero.gravity_mode == 1 || g_hero.state.control_mode == 0x16) {
+                g_hero.air_frames.s = 0;
+                g_hero.last_landed_moby = novalis_coll_hit_r3.i18;
             }
         }
     }
 tail:
-    if (g_hero.u30e.H != 0) {
-        g_hero.xI300 = 0;
+    if (g_hero.air_frames.s != 0) {
+        g_hero.grounded_frames = 0;
     } else {
-        g_hero.xI300++;
+        g_hero.grounded_frames++;
         qcopy((u8 *)&g_hero + 0x2B0, (u8 *)&g_hero + 0x2A0);
     }
-    if (g_hero.xF88 > g_hero.xF2f0) {
-        g_hero.xI2f8 = 0;
+    if (g_hero.motion.pos.f[2] > g_hero.water_surface_z) {
+        g_hero.in_water_frames = 0;
     }
 d1:
     func_001F9BC0_333D8(((u8 *)&g_hero + 0x290));
-    switch (g_hero.xB20b3) {
+    switch (g_hero.gravity_mode) {
         case 0:
-            g_hero.xF298 = -1.0f;
+            g_hero.gravity_dir.f[2] = -1.0f;
             break;
         case 1:
             qcopy((u8 *)&g_hero + 0x290, ((u8 *)&g_hero + 0x290) - 0x20);
@@ -1439,27 +1311,27 @@ d1:
             vec_scale_to_length(((u8 *)&g_hero + 0x290), ((u8 *)&g_hero + 0x290), 1.0f);
             break;
     }
-    g_hero.u2e4.I = 0;
-    g_hero.u2e8.I = 0;
-    g_hero.a2d0.i[0] = 0;
-    g_hero.a2d0.i[1] = 0;
-    g_hero.a2c8.i[0] = 0;
-    g_hero.a2c8.i[1] = 0;
-    g_hero.a2c0.i[0] = 0;
-    g_hero.a2c0.i[1] = 0;
-    if (g_hero.xI208c == 0xF || g_hero.xI208c == 0x15 || g_hero.xI208c == 6 || g_hero.xI208c == 4 ||
-        g_hero.xI208c == 5 || g_hero.xI208c == 3) {
+    g_hero.ground_pitch.i = 0;
+    g_hero.unk2E8.i = 0;
+    g_hero.unk2D0.i[0] = 0;
+    g_hero.unk2D0.i[1] = 0;
+    g_hero.unk2C8.i[0] = 0;
+    g_hero.unk2C8.i[1] = 0;
+    g_hero.unk2C0.i[0] = 0;
+    g_hero.unk2C0.i[1] = 0;
+    if (g_hero.state.control_mode == 0xF || g_hero.state.control_mode == 0x15 || g_hero.state.control_mode == 6 ||
+        g_hero.state.control_mode == 4 || g_hero.state.control_mode == 5 || g_hero.state.control_mode == 3) {
         return;
     }
-    if (!(g_hero.xF2dc < 0.25f)) {
+    if (!(g_hero.ground_distance < 0.25f)) {
         return;
     }
     compute_rotated_vector_angles((u8 *)&g_hero + 0x270, &v20);
     if (-0.78539819f < v20.f[1] && v20.f[1] < 0.78539819f) {
-        g_hero.u2e4.F = v20.f[1];
+        g_hero.ground_pitch.f = v20.f[1];
     }
     if (-0.78539819f < v20.f[0] && v20.f[0] < 0.78539819f) {
-        g_hero.u2e8.F = v20.f[0];
+        g_hero.unk2E8.f = v20.f[0];
     }
     for (i = 0; i < 2; i++) {
         a = 1.5707964f;
@@ -1468,24 +1340,24 @@ d1:
         }
         transform_hero_polar_offset_to_world(&v30, 0.2f, a, 0.45f);
         transform_hero_polar_offset_to_world(&v40, 0.2f, a, -0.45f);
-        if (coll_line(&v30, &v0, 0x22, g_hero.xI2080, 0)) {
-            f = novalis_coll_hit_r3.v20.f[2] - g_hero.u2d8.F;
-            g_hero.a2c0.f[i] = f;
+        if (coll_line(&v30, &v0, 0x22, (s32)g_hero.moby, 0)) {
+            f = novalis_coll_hit_r3.v20.f[2] - g_hero.ground_z.f;
+            g_hero.unk2C0.f[i] = f;
             if (0.4f < FastAbsF(f)) {
-                g_hero.a2c0.f[i] = 0.0f;
+                g_hero.unk2C0.f[i] = 0.0f;
             }
             sceVu0Normalize(&v60, (u8 *)&novalis_coll_hit_r3.f40);
             compute_rotated_vector_angles(&v60, &v50);
             if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
-                g_hero.a2c8.f[i] = v50.f[1];
+                g_hero.unk2C8.f[i] = v50.f[1];
             }
             if (-0.78539819f < v50.f[0] && v50.f[0] < 0.78539819f) {
-                g_hero.a2d0.f[i] = v50.f[0];
+                g_hero.unk2D0.f[i] = v50.f[0];
             }
         } else {
-            g_hero.a2c0.i[i] = 0;
-            g_hero.a2c8.f[i] = g_hero.u2e4.F;
-            g_hero.a2d0.f[i] = g_hero.u2e8.F;
+            g_hero.unk2C0.i[i] = 0;
+            g_hero.unk2C8.f[i] = g_hero.ground_pitch.f;
+            g_hero.unk2D0.f[i] = g_hero.unk2E8.f;
         }
     }
 }

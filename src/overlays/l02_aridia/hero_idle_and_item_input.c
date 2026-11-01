@@ -3319,17 +3319,7 @@ void HeroL02_UpdateStateTransitions(void) {
     }
 }
 typedef int V4q_32b90 __attribute__((mode(TI), aligned(16)));
-typedef struct {
-    char pad000[0x80];
-    Vec4 v80;
-    char pad090[0x50];
-    Vec4 vE0;
-    char pad0F0[0x180];
-    Vec4 v270;
-    char pad280[0x1E33];
-    u8 mode;
-} G_32b90;
-extern G_32b90 g_hero_r __asm__("D_0013F450");
+extern Hero g_hero_r __asm__("D_0013F450");
 extern u8 aridia_coll_hit_normal[];
 extern f32 aridia_coll_hit_point;
 extern void FastVecSub(void *, void *, void *);
@@ -3351,15 +3341,15 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
     f32 o[6];
     f32 x, y, z;
 
-    switch ((&g_hero_r)->mode) {
+    switch ((&g_hero_r)->gravity_mode) {
         case 0:
             if (c < 0.0f) {
-                FastVecScale(t, &(&g_hero_r)->vE0, a);
+                FastVecScale(t, &(&g_hero_r)->motion.velocity, a);
                 t[2] -= ((a * a + a) * 0.5f) * b;
-                FastVecAdd(t, t, &(&g_hero_r)->v80);
-                v.q = (&g_hero_r)->v80.q;
+                FastVecAdd(t, t, &(&g_hero_r)->motion.pos);
+                v.q = (&g_hero_r)->motion.pos.q;
                 clip_negative_segment_endpoint_xyz(&v, t);
-                qcopy(&v, &(&g_hero_r)->v80);
+                qcopy(&v, &(&g_hero_r)->motion.pos);
                 if (coll_line(&v, t, 0x324, 0, 0) != 0) {
                     if (compute_gravity_relative_vector_inclination((f32 *)aridia_coll_hit_normal) <= 0.87266463f) {
                         c = *(f32 *)(aridia_coll_hit_normal - 0x18);
@@ -3367,28 +3357,28 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
                 }
             }
             if (c > 0.0f) {
-                if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&g_hero_r)->vE0.f[2] - b * -0.5f,
-                                             (&g_hero_r)->v80.f[2] - c) > 0 &&
+                if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&g_hero_r)->motion.velocity.f[2] - b * -0.5f,
+                                             (&g_hero_r)->motion.pos.f[2] - c) > 0 &&
                     o[0] > 0.0f) {
                     return o[0];
                 }
             }
             break;
         case 1:
-            qcopy(&v, &(&g_hero_r)->v270);
+            qcopy(&v, &(&g_hero_r)->ground_normal);
             vec_scale_to_length(&v, &v, b);
             FastVecScale(&v, &v, -1.0f);
-            FastVecScale(t, &(&g_hero_r)->vE0, a);
+            FastVecScale(t, &(&g_hero_r)->motion.velocity, a);
             FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
             FastVecAdd(t, &t1, t);
-            FastVecAdd(t, &(&g_hero_r)->v80, t);
-            v2.q = (&g_hero_r)->v80.q;
+            FastVecAdd(t, &(&g_hero_r)->motion.pos, t);
+            v2.q = (&g_hero_r)->motion.pos.q;
             clip_negative_segment_endpoint_xyz(&v2, t);
-            if (coll_line(&(&g_hero_r)->v80, t, 0x324, 0, 0) != 0) {
+            if (coll_line(&(&g_hero_r)->motion.pos, t, 0x324, 0, 0) != 0) {
                 f32 nb;
                 nb = b * -0.5f;
-                z = gravity_z_r(&(&g_hero_r)->vE0) - nb;
-                x = gravity_z_r(&(&g_hero_r)->v80);
+                z = gravity_z_r(&(&g_hero_r)->motion.velocity) - nb;
+                x = gravity_z_r(&(&g_hero_r)->motion.pos);
                 y = gravity_z_r(&aridia_coll_hit_point);
                 if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0 && o[2] > 0.0f) {
                     return o[2];
@@ -3399,20 +3389,20 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
             t1.f[2] = 100.0f;
             t1.f[1] = 100.0f;
             t1.f[0] = 100.0f;
-            FastVecSub(&v, &(&g_hero_r)->v80, &t1);
+            FastVecSub(&v, &(&g_hero_r)->motion.pos, &t1);
             vec_scale_to_length(&v, &v, b);
             FastVecScale(&v, &v, -1.0f);
-            FastVecScale(t, &(&g_hero_r)->vE0, a);
+            FastVecScale(t, &(&g_hero_r)->motion.velocity, a);
             FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
             FastVecAdd(t, &t1, t);
-            FastVecAdd(t, &(&g_hero_r)->v80, t);
-            v2.q = (&g_hero_r)->v80.q;
+            FastVecAdd(t, &(&g_hero_r)->motion.pos, t);
+            v2.q = (&g_hero_r)->motion.pos.q;
             clip_negative_segment_endpoint_xyz(&v2, t);
-            if (coll_line(&(&g_hero_r)->v80, t, 0x324, 0, 0) != 0) {
+            if (coll_line(&(&g_hero_r)->motion.pos, t, 0x324, 0, 0) != 0) {
                 f32 nb;
                 nb = b * -0.5f;
-                z = gravity_z_r(&(&g_hero_r)->vE0) - nb;
-                x = gravity_z_r(&(&g_hero_r)->v80);
+                z = gravity_z_r(&(&g_hero_r)->motion.velocity) - nb;
+                x = gravity_z_r(&(&g_hero_r)->motion.pos);
                 y = gravity_z_r(&aridia_coll_hit_point);
                 if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0 && o[4] > 0.0f) {
                     return o[4];

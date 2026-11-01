@@ -1,4 +1,5 @@
 #include "common.h"
+#include "hero.h"
 #include "moby.h"
 #include "callees.h"
 #include "records.h"
@@ -1704,10 +1705,6 @@ struct ColorSrc {
     unsigned long color; /* 0x38 */
 };
 
-struct RenderGlobals {
-    unsigned char pad00[0x2080];
-    struct ColorSrc *color_src; /* 0x2080 */
-};
 
 struct GlobalIndex {
     unsigned char pad00[0x26];
@@ -1746,7 +1743,7 @@ struct TransferState {
 
 extern struct TransferState render_sequence_t __asm__("D_0018CC20") NOT_SDA;
 extern struct GlobalIndex level_render_state_g __asm__("D_0013E130");
-extern struct RenderGlobals g_hero_r __asm__("D_0013F450");
+extern struct Hero g_hero_r __asm__("D_0013F450");
 extern int g_game_mode MACRO_ADDR;
 extern int D_00160588[];
 extern int fast_decompress_2(int, int) __asm__("func_0020C468");
@@ -1809,10 +1806,10 @@ void update_world_object_animation(void *arg0) {
             mob->flags |= 6;
             mob->unk72 = 0xFF;
             mob->collision = 0;
-            if (g_hero_r.color_src == 0) {
+            if (((struct ColorSrc *)g_hero_r.moby) == 0) {
                 mob->spawn_frame = 0x38383800000000;
             } else {
-                mob->spawn_frame = g_hero_r.color_src->color;
+                mob->spawn_frame = ((struct ColorSrc *)g_hero_r.moby)->color;
             }
             if (((struct PartList *)mob->pclass)->flag) {
                 mob->unk73 = 0x18;

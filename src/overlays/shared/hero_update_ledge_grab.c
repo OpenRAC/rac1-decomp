@@ -493,35 +493,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     }
 }
 typedef unsigned int u128_22a1d0 __attribute__((mode(TI), aligned(16)));
-typedef struct {
-    u8 pad0[0x80];
-    u128_22a1d0 pos;
-    u8 pad90[0x1CC - 0x90];
-    s32 w1CC;
-    u8 pad1D0[0x1F8 - 0x1D0];
-    s16 h1F8;
-    u8 pad1FA[6];
-    u128_22a1d0 q200;
-    u128_22a1d0 q210;
-    f32 f220;
-    f32 f224;
-    u8 pad228[0xC];
-    f32 f234;
-    u8 pad238[4];
-    s32 w23C;
-    u8 pad240[0x17];
-    u8 b257;
-    u8 pad258[0x2080 - 0x258];
-    s32 w2080;
-    s32 w2084;
-    u8 pad2088[4];
-    s32 w208C;
-    u8 pad2090[0x20B3 - 0x2090];
-    u8 b20B3;
-    u8 pad20B4[0x22DA - 0x20B4];
-    s16 h22DA;
-} G_22a1d0;
-extern G_22a1d0 g_hero_r2 __asm__("D_0013F450");
+extern Hero g_hero_r2 __asm__("D_0013F450");
 extern f32 frame_scale MACRO_ADDR;
 extern u128_22a1d0 blarg_coll_resolved_pos[];
 extern void clear_u64_value(void *);
@@ -544,58 +516,58 @@ s32 HeroL06_ResolveCollisionStep(s32 mode) {
     s32 i;
     u128_22a1d0 *c;
     f32 h;
-    if (g_hero_r2.w1CC != 0) {
+    if (g_hero_r2.collision_off_frames != 0) {
         return 1;
     }
-    qcopy(&old, &g_hero_r2.pos);
+    qcopy(&old, &g_hero_r2.motion.pos.q);
     clear_u64_value(&v);
-    if (g_hero_r2.h22DA != 0) {
+    if (g_hero_r2.path_constrain_pending != 0) {
         Hero_ConstrainToPath();
-        g_hero_r2.h22DA = 0;
+        g_hero_r2.path_constrain_pending = 0;
     }
-    if (g_hero_r2.w208C != 0x11) {
-        if (g_hero_r2.b20B3 != 0 || g_hero_r2.h1F8 != 0) {
-            if (g_hero_r2.b20B3 == 1 || g_hero_r2.h1F8 != 0) {
+    if (g_hero_r2.state.control_mode != 0x11) {
+        if (g_hero_r2.gravity_mode != 0 || g_hero_r2.unk1F8 != 0) {
+            if (g_hero_r2.gravity_mode == 1 || g_hero_r2.unk1F8 != 0) {
                 HeroOffsetAlongViewZ(&v, &v, 0.6f);
             } else {
-                HeroMoveDownAlongNormal(&v, &v, -g_hero_r2.f224);
+                HeroMoveDownAlongNormal(&v, &v, -g_hero_r2.capsule_bottom);
             }
         } else {
-            v.f[2] = g_hero_r2.f224;
+            v.f[2] = g_hero_r2.capsule_bottom;
         }
     }
-    FastVecAdd(&g_hero_r2.pos, &g_hero_r2.pos, &v);
+    FastVecAdd(&g_hero_r2.motion.pos.q, &g_hero_r2.motion.pos.q, &v);
     mask = 0xD24;
-    if (g_hero_r2.w2084 == 0x7F)
+    if (g_hero_r2.state.current == 0x7F)
         mask = 0xD24;
     for (i = 0; i < 8; i++) {
-        if (g_hero_r2.b20B3 != 0) {
-            if (!coll_sphere(&g_hero_r2.pos, mask, g_hero_r2.w2080, frame_scale * 0.4f))
+        if (g_hero_r2.gravity_mode != 0) {
+            if (!coll_sphere(&g_hero_r2.motion.pos.q, mask, (s32)g_hero_r2.moby, frame_scale * 0.4f))
                 break;
-        } else if (g_hero_r2.w208C == 0xF) {
-            if (!coll_sphere(&g_hero_r2.pos, mask, g_hero_r2.w2080, frame_scale * 0.45f))
+        } else if (g_hero_r2.state.control_mode == 0xF) {
+            if (!coll_sphere(&g_hero_r2.motion.pos.q, mask, (s32)g_hero_r2.moby, frame_scale * 0.45f))
                 break;
         } else {
             s32 a;
-            h = g_hero_r2.f220 - g_hero_r2.f224;
+            h = g_hero_r2.capsule_top - g_hero_r2.capsule_bottom;
             if (h < 0.05f) {
                 h = 0.05f;
             }
-            a = coll_capsule(&g_hero_r2.pos, mask, g_hero_r2.f234, g_hero_r2.w2080, h);
-            if (!(a | coll_sphere_hero_groups(&g_hero_r2.pos, g_hero_r2.f234)))
+            a = coll_capsule(&g_hero_r2.motion.pos.q, mask, g_hero_r2.capsule_radius, (s32)g_hero_r2.moby, h);
+            if (!(a | coll_sphere_hero_groups(&g_hero_r2.motion.pos.q, g_hero_r2.capsule_radius)))
                 break;
         }
         c = blarg_coll_resolved_pos;
-        qcopy(&g_hero_r2.pos, c);
-        qcopy(&g_hero_r2.q200, c + 1);
-        qcopy(&g_hero_r2.q210, c - 1);
-        g_hero_r2.b257 = 1;
-        g_hero_r2.w23C = ((s32 *)c)[-6];
+        qcopy(&g_hero_r2.motion.pos.q, c);
+        qcopy(&g_hero_r2.wall_contact_normal.q, c + 1);
+        qcopy(&g_hero_r2.wall_contact_point.q, c - 1);
+        g_hero_r2.wall_hit = 1;
+        g_hero_r2.coll_hit_moby = (u8 *)(((s32 *)c)[-6]);
     }
-    FastVecSub(&g_hero_r2.pos, &g_hero_r2.pos, &v);
-    FastVecSub(&w, &g_hero_r2.pos, &old);
+    FastVecSub(&g_hero_r2.motion.pos.q, &g_hero_r2.motion.pos.q, &v);
+    FastVecSub(&w, &g_hero_r2.motion.pos.q, &old);
     h = FastVecLength(&w);
-    if (g_hero_r2.f234 * 1.5f < h) {
+    if (g_hero_r2.capsule_radius * 1.5f < h) {
         if (mode == 0xF) {
             if (512.0f < w.f[0])
                 w.f[0] = 512.0f;
@@ -609,8 +581,8 @@ s32 HeroL06_ResolveCollisionStep(s32 mode) {
                 w.f[2] = 512.0f;
             else if (w.f[2] < -512.0f)
                 w.f[2] = -512.0f;
-            vec_scale_to_length(&w, &w, g_hero_r2.f234);
-            FastVecAdd(&g_hero_r2.pos, &old, &w);
+            vec_scale_to_length(&w, &w, g_hero_r2.capsule_radius);
+            FastVecAdd(&g_hero_r2.motion.pos.q, &old, &w);
         }
         return -1;
     }
@@ -794,17 +766,7 @@ void enter_hero_idle_state_for_current_vehicle_mode(void) {
     }
 }
 typedef int V4q_32b90 __attribute__((mode(TI), aligned(16)));
-typedef struct {
-    char pad000[0x80];
-    Vec4 v80;
-    char pad090[0x50];
-    Vec4 vE0;
-    char pad0F0[0x180];
-    Vec4 v270;
-    char pad280[0x1E33];
-    u8 mode;
-} G_32b90;
-extern G_32b90 g_hero_r4 __asm__("D_0013F450");
+extern Hero g_hero_r4 __asm__("D_0013F450");
 extern u8 blarg_coll_hit_normal[];
 extern f32 blarg_collision_hit_point;
 extern void FastVecScale(void *, void *, f32);
@@ -822,15 +784,15 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
     f32 o[6];
     f32 x, y, z;
 
-    switch ((&g_hero_r4)->mode) {
+    switch ((&g_hero_r4)->gravity_mode) {
         case 0:
             if (c < 0.0f) {
-                FastVecScale(t, &(&g_hero_r4)->vE0, a);
+                FastVecScale(t, &(&g_hero_r4)->motion.velocity, a);
                 t[2] -= ((a * a + a) * 0.5f) * b;
-                FastVecAdd(t, t, &(&g_hero_r4)->v80);
-                v.q = (&g_hero_r4)->v80.q;
+                FastVecAdd(t, t, &(&g_hero_r4)->motion.pos);
+                v.q = (&g_hero_r4)->motion.pos.q;
                 clip_negative_segment_endpoint_xyz(&v, t);
-                qcopy(&v, &(&g_hero_r4)->v80);
+                qcopy(&v, &(&g_hero_r4)->motion.pos);
                 if (coll_line(&v, t, 0xd24, 0, 0) != 0) {
                     if (compute_gravity_relative_vector_inclination((f32 *)blarg_coll_hit_normal) <= 0.87266463f) {
                         c = *(f32 *)(blarg_coll_hit_normal - 0x18);
@@ -838,28 +800,28 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
                 }
             }
             if (c > 0.0f) {
-                if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&g_hero_r4)->vE0.f[2] - b * -0.5f,
-                                             (&g_hero_r4)->v80.f[2] - c) > 0 &&
+                if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&g_hero_r4)->motion.velocity.f[2] - b * -0.5f,
+                                             (&g_hero_r4)->motion.pos.f[2] - c) > 0 &&
                     o[0] > 0.0f) {
                     return o[0];
                 }
             }
             break;
         case 1:
-            qcopy(&v, &(&g_hero_r4)->v270);
+            qcopy(&v, &(&g_hero_r4)->ground_normal);
             vec_scale_to_length(&v, &v, b);
             FastVecScale(&v, &v, -1.0f);
-            FastVecScale(t, &(&g_hero_r4)->vE0, a);
+            FastVecScale(t, &(&g_hero_r4)->motion.velocity, a);
             FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
             FastVecAdd(t, &t1, t);
-            FastVecAdd(t, &(&g_hero_r4)->v80, t);
-            v2.q = (&g_hero_r4)->v80.q;
+            FastVecAdd(t, &(&g_hero_r4)->motion.pos, t);
+            v2.q = (&g_hero_r4)->motion.pos.q;
             clip_negative_segment_endpoint_xyz(&v2, t);
-            if (coll_line(&(&g_hero_r4)->v80, t, 0xd24, 0, 0) != 0) {
+            if (coll_line(&(&g_hero_r4)->motion.pos, t, 0xd24, 0, 0) != 0) {
                 f32 nb;
                 nb = b * -0.5f;
-                z = gravity_z(&(&g_hero_r4)->vE0) - nb;
-                x = gravity_z(&(&g_hero_r4)->v80);
+                z = gravity_z(&(&g_hero_r4)->motion.velocity) - nb;
+                x = gravity_z(&(&g_hero_r4)->motion.pos);
                 y = gravity_z(&blarg_collision_hit_point);
                 if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0 && o[2] > 0.0f) {
                     return o[2];
@@ -870,20 +832,20 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
             t1.f[2] = 100.0f;
             t1.f[1] = 100.0f;
             t1.f[0] = 100.0f;
-            FastVecSub(&v, &(&g_hero_r4)->v80, &t1);
+            FastVecSub(&v, &(&g_hero_r4)->motion.pos, &t1);
             vec_scale_to_length(&v, &v, b);
             FastVecScale(&v, &v, -1.0f);
-            FastVecScale(t, &(&g_hero_r4)->vE0, a);
+            FastVecScale(t, &(&g_hero_r4)->motion.velocity, a);
             FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
             FastVecAdd(t, &t1, t);
-            FastVecAdd(t, &(&g_hero_r4)->v80, t);
-            v2.q = (&g_hero_r4)->v80.q;
+            FastVecAdd(t, &(&g_hero_r4)->motion.pos, t);
+            v2.q = (&g_hero_r4)->motion.pos.q;
             clip_negative_segment_endpoint_xyz(&v2, t);
-            if (coll_line(&(&g_hero_r4)->v80, t, 0xd24, 0, 0) != 0) {
+            if (coll_line(&(&g_hero_r4)->motion.pos, t, 0xd24, 0, 0) != 0) {
                 f32 nb;
                 nb = b * -0.5f;
-                z = gravity_z(&(&g_hero_r4)->vE0) - nb;
-                x = gravity_z(&(&g_hero_r4)->v80);
+                z = gravity_z(&(&g_hero_r4)->motion.velocity) - nb;
+                x = gravity_z(&(&g_hero_r4)->motion.pos);
                 y = gravity_z(&blarg_collision_hit_point);
                 if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0 && o[4] > 0.0f) {
                     return o[4];

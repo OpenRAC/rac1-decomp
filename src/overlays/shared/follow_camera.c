@@ -2894,13 +2894,7 @@ void follow_camera_setup(Camera *m) {
     f->f4 = a->fB0;
     m->transition_state = 0;
 }
-typedef struct {
-    unsigned char p0[0x208C];
-    int w208C;
-    unsigned char p1[0x20A4 - 0x2090];
-    unsigned char b20A4;
-} G_2e7138;
-extern G_2e7138 g_hero_r2 __asm__("D_0013F450");
+extern Hero g_hero_r2 __asm__("D_0013F450");
 extern float g_controller_state_analog;
 extern short follow_cam_collision_pull_in_speed;
 float FastVecLength(void *);
@@ -2917,7 +2911,7 @@ int update_follow_camera_orbit_after_collision(unsigned char *m, void *b, int c,
     struct FollowCamOrbitB *B = (struct FollowCamOrbitB *)(q + 0x1D0);
     unsigned char *C = q + 0x40;
     float len, dist, k;
-    G_2e7138 *G;
+    Hero *G;
     len = FastVecLength(A);
     func_001F9BF0_E85E8(A, b, q + 0x90);
     if (B->unk_38) {
@@ -2925,12 +2919,12 @@ int update_follow_camera_orbit_after_collision(unsigned char *m, void *b, int c,
         return d;
     }
     dist = FastVecLength(A);
-    if (g_hero_r2.b20A4 != 2 && FastAbsF(g_controller_state_analog) > 0.05f && d) {
+    if (g_hero_r2.vehicle_mode != 2 && FastAbsF(g_controller_state_analog) > 0.05f && d) {
         dist -= (*(float *)&follow_cam_collision_pull_in_speed) * frame_scale;
         B->unk_34 = func_001F9850_E85E8(0x884);
     }
     k = (*(float *)&follow_cam_min_eye_distance);
-    if (!c && g_hero_r2.w208C != 2 && len < dist) {
+    if (!c && g_hero_r2.state.control_mode != 2 && len < dist) {
         FastVecScale(A, A, len / dist);
         B->unk_30 = A->distance - len;
         return d;

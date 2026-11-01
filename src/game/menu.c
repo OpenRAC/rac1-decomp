@@ -43,13 +43,7 @@ int map_filter_l02_0(void) {
     return menu_item_enabled_9 != 0;
 }
 
-typedef struct {
-    char _pad0[0x12E4];
-    unsigned char unk12E4;
-    char _pad12E5[0x208C - 0x12E5];
-    int unk208C;
-} Menu13F450;
-extern Menu13F450 g_hero;
+extern Hero g_hero;
 
 /* Menu hit test: arg3 is the third float ($f14). b (state 16) is
    computed before a, as retail evaluates it; the second if's own
@@ -144,13 +138,7 @@ int map_filter_l06_0(void) {
 }
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-struct RegionPlayerState {
-    u8 pad0[0x12E4];
-    u8 region_mode;
-    u8 pad12E5[0x208C - 0x12E5];
-    s32 active_state;
-};
-extern struct RegionPlayerState g_hero_r __asm__("D_0013F450");
+extern struct Hero g_hero_r __asm__("D_0013F450");
 extern s32 region_enabled[];
 union RegionVector {
     u128 region_center;
@@ -191,7 +179,7 @@ s32 map_filter_l07_0(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z) {
         return 0;
     } else {
         special_state = 0;
-        if ((u32)(g_hero_r.active_state - 0x11) < 2 || g_hero_r.region_mode == 1) {
+        if ((u32)(g_hero_r.state.control_mode - 0x11) < 2 || g_hero_r.base_condition == 1) {
             special_state = 1;
         }
         if (special_state && point_is_clockwise(projected_x, projected_y, 0x12B, 0xB8, 0x13A, 0xF2) &&
@@ -206,14 +194,14 @@ s32 map_filter_l07_0(s32 projected_x, s32 projected_y, f32 x, f32 y, f32 z) {
 
 extern int map_region_enabled_0 NOT_SDA;
 
-/* Menu hit test (func_00207200's family: `a` is the Menu13F450 state test
+/* Menu hit test (func_00207200's family: `a` is the Hero state test
    shared with func_00207340/func_00207930). Two independent ways to hit:
    the first box with arg1 >= 0x135 and D_001A04A8 set and arg3 >= 47.7,
    which can succeed even when `a` is true; or, only when `a` is true,
    all three of a second group of boxes hit. */
 int map_filter_l07_1(int arg0, int arg1, float unused1, float unused2, float arg3) {
-    Menu13F450 *s = &g_hero;
-    int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
+    Hero *s = &g_hero;
+    int a = s->state.control_mode == 17 || s->state.control_mode == 18 || s->base_condition == 1;
 
     if (point_is_clockwise(arg0, arg1, 0x93, 0x168, 0x182, 0x168) != 0 && arg1 >= 0x135 && map_region_enabled_0 != 0 &&
         arg3 >= 47.7f) {
@@ -549,7 +537,7 @@ int map_filter_l11_2(int arg0, float unused1, float unused2, float arg1) {
 
 extern unsigned char menu_item_enabled_78 NOT_SDA;
 
-/* The Menu13F450 state test of func_00207340, computed up front (retail
+/* The Hero state test of func_00207340, computed up front (retail
    evaluates it before the arg0 branch), gates the arg0 < 0x15F arm; the
    other arm is func_00208160's second test with D_0013D4EA. */
 int map_filter_l11_3(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
