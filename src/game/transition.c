@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/disc.h"
 #include "callees.h"
 #include "moby.h"
 #include "structs.h"
@@ -583,19 +584,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr) {
     return p;
 }
 
-struct DiscFile_EABE8 {
-    s32 sector;
-    s32 size;
-};
-
-struct DiscTable_EABE8 {
-    u8 pad_0[0x14E8];
-    struct DiscFile_EABE8 unk14E8;         /* 0x14E8: the transition wad */
-    u8 pad_14F0[0x38];
-    struct DiscFile_EABE8 help_text;       /* 0x1528 */
-};
-
-extern struct DiscTable_EABE8 disc_table_r __asm__("D_00137C80");
+extern struct DiscTable disc_table_r __asm__("D_00137C80");
 
 typedef struct {
     s32 x0;
@@ -1275,11 +1264,6 @@ typedef struct {
 } DiscFile_BB48;
 
 typedef struct {
-    char pad0[0x14F8];
-    DiscFile_BB48 wad_chunks[6];
-} DiscTable_BB48;
-
-typedef struct {
     s32 start;
     s32 end;
     s32 sound;
@@ -1296,7 +1280,7 @@ typedef struct {
 extern s32 current_level_BB48 __asm__("D_0015EE84") MACRO_ADDR;
 extern s32 saved_EEE8_BB48 __asm__("D_0015EEE8") MACRO_ADDR;
 extern WadHeader_BB48 *volatile wad_buf_BB48[] __asm__("D_001941C8");
-extern DiscTable_BB48 disc_table_BB48 __asm__("D_00137C80");
+extern DiscTable disc_table_BB48 __asm__("D_00137C80");
 extern WadHeader_BB48 *level_root_BB48 __asm__("D_0015EF4C") MACRO_ADDR;
 extern s32 space_load_pending_BB48 __asm__("D_0015F690") MACRO_ADDR;
 extern s32 space_load_in_progress_BB48 __asm__("D_0015F6FC") MACRO_ADDR;
@@ -1363,7 +1347,7 @@ void transition_do_transition(void) {
     s32 saved;
     s32 first_size;
     u32 alignment_mask = 0xFFFFFFF0;
-    DiscTable_BB48 *tbl;
+    DiscTable *tbl;
 
     current_level_BB48 = 0;
     *(volatile u32 *)0x10000010 = 0x83;
@@ -1377,8 +1361,8 @@ void transition_do_transition(void) {
     hdr = (WadHeader_BB48 *)p;
     p = (u8 *)hdr + 0x60;
     level_root_BB48 = hdr;
-    first_size = load_BB48(p, ((volatile DiscFile_BB48 *)&tbl->wad_chunks[1])->sector,
-                           ((volatile DiscFile_BB48 *)&tbl->wad_chunks[1])->size);
+    first_size = load_BB48(p, ((volatile DiscFile_BB48 *)((DiscFile_BB48 *)&tbl->wad_chunks[1]))->sector,
+                           ((volatile DiscFile_BB48 *)((DiscFile_BB48 *)&tbl->wad_chunks[1]))->size);
     hdr->chunk[1].size = first_size;
     hdr->chunk[1].off = p - (u8 *)hdr;
     p += ((u32)first_size + 0xF) & alignment_mask;

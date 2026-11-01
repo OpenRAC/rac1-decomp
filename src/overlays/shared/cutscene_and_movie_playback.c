@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "structs/disc.h"
 #include "moby.h"
 #include "hero.h"
 #include "vector.h"
@@ -885,16 +886,8 @@ void update_cutscene_playback(void) {
 }
 extern int pal_mode MACRO_ADDR;
 extern int g_game_language MACRO_ADDR;
-typedef struct {
-    int b;
-    int a;
-} LevelLoad;
-typedef struct {
-    char pad0[0x1808];
-    LevelLoad normal[19];
-    LevelLoad alt[19];
-} Globals137C80;
-extern Globals137C80 disc_table_g __asm__("D_00137C80");
+
+extern DiscTable disc_table_g __asm__("D_00137C80");
 
 extern void prepare_movie_playback(int, int, int);
 
@@ -905,11 +898,11 @@ void PlayMovieEntryIfIdle(int idx) {
     if (idx < 0)
         return;
     if (pal_mode != 0) {
-        b = disc_table_g.alt[idx].b;
-        a = disc_table_g.alt[idx].a;
+        b = disc_table_g.unk18A0[idx].sector;
+        a = disc_table_g.unk18A0[idx].size;
     } else {
-        b = disc_table_g.normal[idx].b;
-        a = disc_table_g.normal[idx].a;
+        b = disc_table_g.unk1808[idx].sector;
+        a = disc_table_g.unk1808[idx].size;
     }
     base = (struct Hero *)(hero_globals_base + 0xE1D);
     if (base->health.hp == 0) {
@@ -918,16 +911,8 @@ void PlayMovieEntryIfIdle(int idx) {
         prepare_movie_playback(b, a, g_game_language);
     }
 }
-typedef struct {
-    int b;
-    int a;
-} LL7;
-typedef struct {
-    char pad0[0x1A28];
-    LL7 x[5];
-    LL7 y[19];
-} G7;
-extern G7 disc_table_q __asm__("D_00137C80");
+
+extern DiscTable disc_table_q __asm__("D_00137C80");
 
 /* Plays the movie of table entry i (set chosen by a flag). Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00295100.c, FUN_L00_002994f8. */
 void queue_language_zero_movie(int i) {
@@ -935,24 +920,16 @@ void queue_language_zero_movie(int i) {
     if (i < 0)
         return;
     if (pal_mode) {
-        b = disc_table_q.y[i].b;
-        a = disc_table_q.y[i].a;
+        b = disc_table_q.unk1A50[i].sector;
+        a = disc_table_q.unk1A50[i].size;
     } else {
-        b = disc_table_q.x[i].b;
-        a = disc_table_q.x[i].a;
+        b = disc_table_q.unk1A28[i].sector;
+        a = disc_table_q.unk1A28[i].size;
     }
     prepare_movie_playback(b, a, 0);
 }
-typedef struct {
-    int b;
-    int a;
-} LL7_29A8D0;
-typedef struct {
-    char pad0[0x1938];
-    LL7_29A8D0 x[12];
-    LL7_29A8D0 y[19];
-} G7_29A8D0;
-extern G7_29A8D0 disc_table_q_29A8D0 __asm__("D_00137C80");
+
+extern DiscTable disc_table_q_29A8D0 __asm__("D_00137C80");
 
 /* Plays the movie of table entry i (set chosen by a flag). Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00295100.c, FUN_L00_00299560. */
 void queue_movie_with_game_language(int i) {
@@ -960,11 +937,11 @@ void queue_movie_with_game_language(int i) {
     if (i < 0)
         return;
     if (pal_mode) {
-        b = disc_table_q_29A8D0.y[i].b;
-        a = disc_table_q_29A8D0.y[i].a;
+        b = disc_table_q_29A8D0.movies_alt[i].sector;
+        a = disc_table_q_29A8D0.movies_alt[i].size;
     } else {
-        b = disc_table_q_29A8D0.x[i].b;
-        a = disc_table_q_29A8D0.x[i].a;
+        b = disc_table_q_29A8D0.movies[i].sector;
+        a = disc_table_q_29A8D0.movies[i].size;
     }
     prepare_movie_playback(b, a, g_game_language);
 }

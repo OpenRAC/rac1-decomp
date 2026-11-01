@@ -14,6 +14,7 @@
 #include "game/pad.h"
 #include "game/sound.h"
 #include "game/vuchain.h"
+#include "structs/disc.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -1897,7 +1898,6 @@ extern u8 resident_class_material_maps[0xE00];
 extern s32 resident_class_original_field_2c[];
 struct CommonArchiveMemory;
 extern struct CommonArchiveMemory level_resource_buffers;
-struct DiscTable;
 extern struct DiscTable disc_table;
 extern u64 special_material_template[3];
 extern s32 resident_indexed_texture_count MACRO_ADDR;
@@ -2154,16 +2154,7 @@ void initialize_level_runtime(void) {
     snd_resolve_bank_xrefs();
 }
 
-typedef struct {
-    int sector;
-    int size;
-} WadEntry;
-typedef struct {
-    char _pad0[0x1938];
-    WadEntry movie[12]; /* 0x1938 */
-    WadEntry movie2[12]; /* 0x1998 */
-} WadToc;
-extern WadToc disc_table_t __asm__("D_00137C80");
+extern DiscTable disc_table_t __asm__("D_00137C80");
 extern int pal_mode MACRO_ADDR;
 extern int g_game_language MACRO_ADDR;
 extern int level_resource_buffer_base;
@@ -2181,11 +2172,11 @@ void play_level_transition_movie(int id) {
     int buf;
 
     if (pal_mode != 0) {
-        sector = disc_table_t.movie2[id].sector;
-        size = disc_table_t.movie2[id].size;
+        sector = disc_table_t.movies_alt[id].sector;
+        size = disc_table_t.movies_alt[id].size;
     } else {
-        sector = disc_table_t.movie[id].sector;
-        size = disc_table_t.movie[id].size;
+        sector = disc_table_t.movies[id].sector;
+        size = disc_table_t.movies[id].size;
     }
     voice_pool[0x6B] |= 8;
     buf = level_resource_buffer_base;
@@ -2259,58 +2250,7 @@ extern s32 g_gs_texture_allocation_start MACRO_ADDR;
 typedef struct {
     u64 q[12];
 } sceGsLoadImage __attribute__((aligned(16)));
-struct DiscFile {
-    s32 sector;
-    s32 size;
-};
-struct DiscTable {
-    u8 pad_0[0x8];
-    struct DiscFile debug_font; /* 0x8 */
-    struct DiscFile memcard_data; /* 0x10, read by memcard_update_state and memcard_restore_game */
-    struct DiscFile animation_streams[49]; /* 0x18, streamed animations by archive index */
-    struct DiscFile music_10000[37]; /* 0x1A0, music tracks 10000.. */
-    struct DiscFile unk2C8[6]; /* 0x2C8, one per language */
-    struct DiscFile unk2F8[6]; /* 0x2F8, one per language */
-    u8 pad_328[0x1D0];
-    struct DiscFile level_chunk; /* 0x4F8, read by load_level_chunk_from_disc */
-    u8 pad_500[0x3B8];
-    /* 0x8B8: render archive sector/length records; extent reaches the next
-       known field, not a proven count of valid archives. */
-    struct DiscFile render_archives[201];
-    s32 music_50000[40][6]; /* 0xF00, tracks 50000.., one location per language */
-    struct DiscFile unk12C0; /* 0x12C0 */
-    struct DiscFile level_archives[24]; /* 0x12C8, by level index */
-    struct DiscFile loading_slides[6]; /* 0x1388, one per language */
-    struct DiscFile unk13B8; /* 0x13B8 */
-    struct DiscFile music_40000[36]; /* 0x13C0, music tracks 40000.. */
-    s32 sound_bank; /* 0x14E0, passed to load_audio_bank_by_location */
-    s32 pad_14E4;
-    struct DiscFile unk14E8; /* 0x14E8 */
-    u8 pad_14F0[0x8];
-    struct DiscFile wad_chunks[6]; /* 0x14F8, level wad chunks */
-    struct DiscFile help_text; /* 0x1528, per-language archive read by update_menu_help_text_load */
-    struct DiscFile unk1530[14]; /* 0x1530, overlays: x of an x/y pair picked by D_0015ED80 */
-    struct DiscFile unk15A0[14]; /* 0x15A0, the y half of the 0x1530 pair */
-    struct DiscFile animation_table; /* 0x1610, read with animation_asset_read_active set */
-    struct DiscFile music_60000[62]; /* 0x1618, music tracks 60000.. */
-    struct DiscFile unk1808[19]; /* 0x1808, overlays: x of an x/y pair picked by D_0015ED80 */
-    struct DiscFile unk18A0[19]; /* 0x18A0, the y half of the 0x1808 pair */
-    struct DiscFile movies[12]; /* 0x1938, level transition movies */
-    struct DiscFile movies_alt[12]; /* 0x1998, picked by the video mode flag */
-    struct DiscFile unk19F8[3]; /* 0x19F8, overlays: x/y pair picked by D_0015ED80 */
-    struct DiscFile unk1A10[3]; /* 0x1A10, the y half of the 0x19F8 pair */
-    struct DiscFile unk1A28[5]; /* 0x1A28, overlays: x/y pair picked by D_0015ED80 */
-    struct DiscFile unk1A50[5]; /* 0x1A50, the y half of the 0x1A28 pair */
-    struct DiscFile start_movies[4]; /* 0x1A78, played by start_level */
-    struct DiscFile start_movies_alt[4]; /* 0x1A98, while D_0015ED80 is set */
-    u8 pad_1AB8[0xEB0];
-    struct DiscFile shared_archive; /* 0x2968 */
-    struct DiscFile sound_archive; /* 0x2970 */
-    struct DiscFile sound_archive_alt; /* 0x2978, while D_0015ED80 is set */
-    u8 pad_2980[0x8];
-    struct DiscFile music_20000[36]; /* 0x2988, music tracks 20000.. */
-    s32 music_tracks[1]; /* 0x2AA8, by track number */
-};
+
 extern struct DiscTable disc_table;
 struct CommonArchiveMemory {
     u8 pad_0[0x14];
