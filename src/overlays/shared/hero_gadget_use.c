@@ -678,7 +678,7 @@ extern int Help_Request(int a, int b);
 extern float FastDiffRots(float, float);
 extern float vec_distance_xy(void *, void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void create_class_5c3_moby(void *, void *, void *, float, float);
+extern void create_rocket_1475_moby(void *, void *, void *, float, float);
 extern Moby *moby_pool_4f60_r __asm__("D_L05_00160098") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
@@ -1058,7 +1058,7 @@ int process_hero_primary_item_input(void) {
             stats->fDC = stats->fDC | (1 << g_current_level_index_r) | 0x80000000;
             Moby_PlaySound(0, 0, (int)m);
             Moby_GetJointWorldPos(m, 0, v);
-            create_class_5c3_moby(m, v, best, g_hero_h2523C8.motion.rot.f[2], g_hero_h2523C8.motion.rot.f[1]);
+            create_rocket_1475_moby(m, v, best, g_hero_h2523C8.motion.rot.f[2], g_hero_h2523C8.motion.rot.f[1]);
         } break;
     }
     if (g_hero_h2523C8.state_timer == start) {

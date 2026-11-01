@@ -2525,7 +2525,7 @@ extern s32 hero_death_count MACRO_ADDR;
 extern s32 level_hero_death_counts[];
 extern s32 level_mission_death_counts[][16];
 extern s32 mission_death_counts[];
-extern s32 level_15_class_4d_respawn_flag MACRO_ADDR;
+extern s32 level_15_mine_77_respawn_flag MACRO_ADDR;
 extern void clear_help_record_high_bits(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_00211250. */
@@ -2537,7 +2537,7 @@ void Hero_OnKilled(void) {
     hero_death_count++;
     if (((char *)g_hero_r5.damage_source_moby) != 0 &&
         *(s16 *)(((char *)g_hero_r5.damage_source_moby) + 0xA6) == 0x4D && lvl == 15) {
-        level_15_class_4d_respawn_flag = 1;
+        level_15_mine_77_respawn_flag = 1;
     }
     clear_help_record_high_bits();
     m = (char *)g_hero_r5.damage_source_moby;

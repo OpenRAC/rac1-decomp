@@ -354,7 +354,7 @@ void set_moby_list_state_15(int index) {
     } while (*p++ >= 0);
 }
 /* Returns 1 if no Frog moby in group index is alive, else 0. */
-int check_all_listed_class_33b_states_fe_fd_or_10(int index) {
+int check_all_listed_frog_states_fe_fd_or_10(int index) {
     unsigned short *p = (unsigned short *)blarg_moby_groups[index];
     char *base;
     char *moby;
@@ -2366,7 +2366,7 @@ extern void activate_listed_state_15_mobys_at_raised_positions_q(void *) __asm__
 extern int update_alien_queen_first_recovery_camera_q(void *) __asm__("func_L06_002FCA98");
 extern void clear_moby_list_state_18_q(int) __asm__("func_L06_002FADE0");
 extern void update_alien_queen_orbit_movement_q(void *) __asm__("func_L06_002FD0B8");
-extern int check_all_listed_class_33b_states_fe_fd_or_10_q(int) __asm__("func_L06_002EB2D0");
+extern int check_all_listed_frog_states_fe_fd_or_10_q(int) __asm__("func_L06_002EB2D0");
 extern int count_active_moby_group_members_q(int, int) __asm__("func_L01_0026EFB8");
 extern float fast_atan2_q(float, float) __asm__("func_L00_001FF860");
 extern float FastDiffRots_q(float, float) __asm__("func_001FA850");
@@ -2543,7 +2543,7 @@ void alien_queen_update(unsigned char *moby) {
         case 6:
             update_alien_queen_orbit_movement_q(moby);
             if (((unsigned char)((Moby *)moby)->state == 4 &&
-                 check_all_listed_class_33b_states_fe_fd_or_10_q(data->unk_F0) != 0) ||
+                 check_all_listed_frog_states_fe_fd_or_10_q(data->unk_F0) != 0) ||
                 ((unsigned char)((Moby *)moby)->state == 6 &&
                  count_active_moby_group_members_q(data->list_f4, -1) == 0)) {
                 ((Moby *)moby)->state = 8;

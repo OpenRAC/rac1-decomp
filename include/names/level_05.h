@@ -66,7 +66,7 @@
 #define create_particle_with_velocity_and_lifetime              func_L05_0029CA28
 #define create_particle_with_velocity_and_randomized_parameters func_L05_0029CCB8
 #define spawn_sharkigator_surface_effects                       func_L05_002D3078
-#define create_class_5c3_moby                                   func_L05_002D53B0
+#define create_rocket_1475_moby                                 func_L05_002D53B0
 #define advance_scenery_ship_along_path                         func_L05_002D8AD8
 #define handle_amoeboid_hits                                    func_L05_002DC1E8
 #define spawn_amoeboid_particles                                func_L05_002DC2A8
@@ -104,7 +104,7 @@
 #define request_moby_variant_help_message                       func_L05_0031ABA0
 #define transform_moby_vector_table_to_world_space              func_L05_0031ADF8
 #define qwarks_trailer_update                                   func_L05_0031B138
-#define spawn_moby_class_5ea_from_source                        func_L05_0031E670
+#define spawn_lamp_destroyed_from_source                        func_L05_0031E670
 #define update_selected_moby_effects                            func_L05_0031EAD8
 #define update_hero_follow_camera_focus                         func_L05_0032A868
 #define set_camera_follow_parameters                            func_L05_0032A9D0

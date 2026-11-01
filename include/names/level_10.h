@@ -13,7 +13,7 @@
 #define bombthrower_grass_update                                    func_L10_002D9FC0
 #define update_path_spark_emitter                                   func_L10_002DA0F0
 #define test_point_in_lab_door_local_xy_bounds                      func_L10_002DA3C0
-#define Moby1031Update                                              func_L10_002DA678
+#define button_1031_update                                          func_L10_002DA678
 #define handle_moby_destruction                                     func_L10_002DB278
 #define update_data_processor_linked_effect                         func_L10_002DB688
 #define render_data_processor_linked_effect                         func_L10_002DBA50
@@ -37,10 +37,10 @@
 #define emit_moby_sprite_particles                                  func_L10_00299AF0
 #define gadgebot_telepot_pad_update                                 func_L10_002BFBB8
 #define create_rocket                                               func_L10_002CD578
-#define Moby819Update                                               func_L10_002CD6A8
+#define rocket_819_update                                           func_L10_002CD6A8
 #define approach_moby_height                                        func_L10_002D8ED8
 #define spawn_bombthrower_grass_projectile                          func_L10_002D9418
-#define Moby938Update                                               func_L10_002D9988
+#define bomb_938_update                                             func_L10_002D9988
 #define lab_door_update                                             func_L10_002DA468
 #define spawn_path_spark_effect                                     func_L10_002DE630
 #define spawn_fixed_height_destruction_moby                         func_L10_002DEC08

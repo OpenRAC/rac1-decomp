@@ -151,7 +151,7 @@ extern void Sound_PlayClassSound(int, int, void *, int);
 extern void DeleteMoby(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00298940.c, FUN_L10_002cc2e8. */
-void Moby819Update(Moby *m) {
+void rocket_819_update(Moby *m) {
     Shot_cc2e8 *d = ((Shot_cc2e8 *)m->pvars);
     float pos0[4] __attribute__((aligned(16)));
     float c[4] __attribute__((aligned(16)));

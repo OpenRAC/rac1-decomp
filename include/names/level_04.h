@@ -55,7 +55,7 @@
 #define initialize_woodcut_bot_movement_data               func_L04_002D27F8
 #define emit_woodcut_bot_death_effects                     func_L04_002D29E8
 #define woodcut_bot_update                                 func_L04_002D2A98
-#define spawn_class_23a_moby                               func_L04_002D48B8
+#define spawn_axe_moby                                     func_L04_002D48B8
 #define leaf_update                                        func_L04_002D9270
 #define lieutenant_update                                  func_L04_002E4458
 #define dispatch_mode_selected_slot                        func_L04_002E6780

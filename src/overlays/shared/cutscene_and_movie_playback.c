@@ -389,7 +389,7 @@ void StartCutscene(int arg) {
     FastMemSet(hero_scale_manipulator, 0, 0x40);
     FastMemSet(cheat_scale_manipulator, 0, 0x40);
     FastMemSet(cheat_scale_manipulator_class_555, 0, 0x40);
-    FastMemSet(cheat_scale_manipulator_class_1a3, 0, 0x40);
+    FastMemSet(cheat_scale_manipulator_giant_clank, 0, 0x40);
     *(int *)(cutscene_state + 0x30) = arg;
     v = lvl_vu_chain_buffer_size - 0x3C000;
     one = 1.0f;

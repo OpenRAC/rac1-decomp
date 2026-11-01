@@ -1628,7 +1628,7 @@ char *func_L03_002BC038_r(Moby *parent, int unused, int color, int a3, int a4, f
     return m;
 }
 /* Return 1 when moby is a live Robot Dog moby in state 5. */
-int is_moby_class_23d_in_state_5(unsigned char *moby) {
+int is_robot_dog_573_in_state_5(unsigned char *moby) {
     if (moby && moby[0x20] != 0xFE && moby[0x20] != 0xFD && *(short *)(moby + 0xA6) == 0x23D && moby[0x20] == 5) {
         return 1;
     }
@@ -1736,7 +1736,7 @@ extern void SpawnBreakFragment_r(char *, int, float *, void *, int, int, float, 
 
 /* Kerwan enemy update: waits at home, walks its path or chases the target picked by FUN_L03_0024e830 (its partner moby data->0x248 is a class 0x23E), attacks in range, returns home, dies (states 8, 9, 21).
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/00292578.c, FUN_L03_002c5bb8. */
-void Moby573Update(Moby *moby) {
+void robot_dog_573_update(Moby *moby) {
     Tgt2c5bb8 tgt;
     float dir[4];
     float push[4];
@@ -2094,7 +2094,7 @@ int is_moby_class_23e_in_state_9(unsigned char *moby) {
     }
     return 0;
 }
-extern int is_moby_class_23d_in_state_5(unsigned char *);
+extern int is_robot_dog_573_in_state_5(unsigned char *);
 extern int is_moby_class_23e_in_state_9(unsigned char *);
 
 /* scans class instances for either predicate */
@@ -2106,7 +2106,7 @@ int is_point_inside_clip_volume_cf(int id) {
     while (item != 0) {
         if (is_moby_class_23e_in_state_9(item))
             return 1;
-        if (is_moby_class_23d_in_state_5(item))
+        if (is_robot_dog_573_in_state_5(item))
             return 1;
         get_next_moby_in_group((int *)&item, (int)item, 0, 0);
     }

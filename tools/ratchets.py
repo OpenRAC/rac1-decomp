@@ -33,7 +33,7 @@ METRICS = {
     "address_names_in_comments": ("comments", r"\b(?:func|D|FUN|Data)_(?:L\d+_)?[0-9A-Fa-f]{5,}\b"),
     "offsets_in_comments": ("comments", r"\+\s*0x[0-9A-Fa-f]+"),
     "worker_notes_in_comments": ("comments", r"\b(?:regalloc|permuter|functional:)|\bmatch(?:es|ed)? (?:now|retail)\b"),
-    "numbered_type_names": ("code", r"\b(?:Moby|Class)\d{2,}\w*\b|\b\w+_class_\d+\w*\b|\bClass\d+Vars\w*\b"),
+    "numbered_names": ("code", r"\b(?:Moby|Class)\d{2,}\w*\b|\b\w*_class_[0-9a-f]+(?:_\w*)?\b(?<!_class_data)"),
     "long_lines": ("raw", r"^.{121,}$"),
     "tab_lines": ("raw", r"^.*\t.*$"),
 }

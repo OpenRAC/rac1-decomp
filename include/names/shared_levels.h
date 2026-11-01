@@ -975,7 +975,7 @@
 #define test_moby_linked_record_word8                                        func_L00_0025A868
 #define clip_negative_segment_endpoint_xyz                                   func_L00_0025E290
 #define is_nonnull_moby_outside_table_or_class_range_500_to_540_or_class_502 func_L00_0025F3C0
-#define is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df                            func_L00_0025F450
+#define is_bomb_glove_ammo_cc_de_3ee_d6_e1_d5_or_df                          func_L00_0025F450
 #define FindNearestTargetMoby                                                func_L00_00260D30
 #define music_set_active_track_value                                         func_L00_002666C8
 #define Npc_TryStartDialog                                                   func_L00_00267290
@@ -2048,7 +2048,7 @@
 #define big_head_cutscene_fov_scale                                          D_L00_0015F67C
 #define controller_idle_frames                                               D_L00_001610B0
 #define cheat_scale_manipulator_class_555                                    D_L00_0017C500
-#define cheat_scale_manipulator_class_1a3                                    D_L00_0017C4C0
+#define cheat_scale_manipulator_giant_clank                                  D_L00_0017C4C0
 #define level_profile_mark_after_mobys                                       D_L00_001610B8
 #define level_profile_mark_after_hero                                        D_L00_001610C8
 #define level_profile_mark_after_parts                                       D_L00_001610D8
@@ -2535,6 +2535,7 @@
 #define moby_get_ride_transform                                              func_L00_00261448
 #define suck_beam_ring_unit_offsets                                          D_L00_001E4E90
 #define suck_beam_segment_turn_angles                                        D_L00_001E6330
+#define level_15_mine_77_respawn_flag                                        D_L00_0015F684
 #define draw_timed_text                                                      func_L00_001FCC50
 #define fast_subtract_rotations_cf                                           func_L00_001FEF78
 #define divide_vector_xyz                                                    func_L00_001FF328
@@ -2588,7 +2589,6 @@
 #define iso_version_suffix                                                   D_L00_0015F0F0
 #define occlusion_samples_file_name                                          D_L00_0015F0F8
 #define grouped_voice_definition_base_index                                  D_L00_0015F654
-#define level_15_class_4d_respawn_flag                                       D_L00_0015F684
 #define occlusion_sample_count                                               D_L00_0015F6F4
 #define slideshow                                                            D_L00_0015F700
 #define star_init_limit0_gp                                                  D_L00_0015F830

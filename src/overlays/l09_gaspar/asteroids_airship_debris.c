@@ -1753,7 +1753,7 @@ extern float D_L09_00161A94_2F9A50 SDATA(D_L09_00161A94);
 extern float D_L09_00161A98_2F9A50 SDATA(D_L09_00161A98);
 
 // Platform moby (Platform) update on level 9: steers its height and tilt from the hero standing on it.
-void Moby664Update(Moby *moby) {
+void platform_664_update(Moby *moby) {
     PlatVars_2F9A50 *data = (*(PlatVars_2F9A50 **)&moby->pvars);
     Vec4A m0;
     Vec4A rot;
@@ -3273,7 +3273,7 @@ extern int advance_shuttle_along_path(struct Moby *);
 #define vector_distance ((f32 (*)(void *, void *))func_001F9D48)
 #define FUN_L09_0030a298 func_L09_0030B648
 /* Moby update for a flyer that follows a node path. */
-void Moby1766Update(struct Moby *moby) {
+void shuttle_1766_update(struct Moby *moby) {
     PathFlyerVars_00309c08 *vars = (PathFlyerVars_00309c08 *)moby->pvars;
     PathNodes_00309c08 *path = (PathNodes_00309c08 *)gaspar_paths[vars->path];
     Vec4 *position = (Vec4 *)&moby->pos;

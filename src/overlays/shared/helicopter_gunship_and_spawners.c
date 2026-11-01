@@ -25,7 +25,7 @@ struct ParentFollowEffectVars {
     f32 offset_step; /* 0x14: added to offset each frame */
 };
 
-/* Class 0x221 bouncing bomb spawned by an owner spawner (also driven by Moby545Update). */
+/* Class 0x221 bouncing bomb spawned by an owner spawner (also driven by bomb_545_update). */
 struct BouncingBombVars {
     Vec4A velocity; /* 0x00 */
     char *owner; /* 0x10: spawner moby */
@@ -769,7 +769,7 @@ typedef struct {
 extern CHit_2C5AE0 kerwan_coll_hit;
 
 /* bomb update: drifts toward its owner's position, claims a child, and clamps its scale */
-void Moby545Update(char *moby) {
+void bomb_545_update(char *moby) {
     struct BouncingBombVars *d;
     char *pos;
     char *o;

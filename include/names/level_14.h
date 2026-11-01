@@ -24,7 +24,7 @@
 #define spawn_flying_bolt                                                        func_L14_002EE150
 #define update_path_lightning_controller                                         func_L14_002EE6E0
 #define update_branched_lightning_arc                                            func_L14_002EE990
-#define Moby685Update                                                            func_L14_002EFD38
+#define elevator_685_update                                                      func_L14_002EFD38
 #define advance_elevator_along_path                                              func_L14_002F05D8
 #define settle_elevator_at_path_endpoint                                         func_L14_002F0868
 #define TaxiUpdate                                                               func_L14_002F19C0
@@ -93,7 +93,7 @@
 #define interpolate_racer_to_path_start                                          func_L14_002D77E0
 #define reset_racer_group_to_hero_path_position                                  func_L14_002D7880
 #define update_racer_path_and_weapon                                             func_L14_002D7AF8
-#define Moby211_AdvanceOnPath                                                    func_L14_002D84A8
+#define plasmabot_211_advance_on_path                                            func_L14_002D84A8
 #define draw_racer_glow_quads                                                    func_L14_002D8500
 #define plasmabot_hatch_update                                                   func_L14_002DAA70
 #define update_tilting_platform                                                  func_L14_002DF5F8

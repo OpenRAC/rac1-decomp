@@ -46,13 +46,13 @@
 #define resolve_hero_trajectory_parameter                                func_L02_002368E8
 #define update_hud_counter_transition                                    func_L02_0023D600
 #define Sky_DrawLevel02                                                  func_L02_00240980
-#define set_level02_class_1b1_moby_flag_0800                             func_L02_00240A00
+#define set_level02_sonic_summoner_moby_flag_0800                        func_L02_00240A00
 #define initialize_moby_grounding                                        func_L02_0025D750
 #define prepare_scaled_float_table_with_target_byte                      func_L02_002A5238
 #define emit_sand_shark_dust_puffs_along_segment                         func_L02_002D4E50
 #define emit_sand_shark_dust_segment                                     func_L02_002D5098
 #define emit_sand_shark_dust_burst                                       func_L02_002D51D0
-#define select_group_class_29c_moby                                      func_L02_002D6A90
+#define select_group_sand_shark_nest_moby                                func_L02_002D6A90
 #define extend_group_sand_shark_timers                                   func_L02_002D6B60
 #define handle_sand_shark_damage_and_targeting                           func_L02_002D70C0
 #define launch_sand_shark                                                func_L02_002D7550

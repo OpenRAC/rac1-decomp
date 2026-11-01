@@ -1741,7 +1741,7 @@ extern char voice_pool_r[] __asm__("D_0013E650");
  * Hero, hero position, voice slots and the flag tables are separate symbols (D_0013F450, D_0013F4D0, D_0013E650,
  * D_0014C150, D_0014C290, ...), not offsets of D_0013E633. The read of data+0x130 in state 3 is a struct member:
  * a member load may be scheduled above the store to the stack float t30, a cast load may not. */
-void Moby685Update(char *moby) {
+void elevator_685_update(char *moby) {
     struct ElevatorVars *data;
     char *tbl;
     float f1v;
@@ -2798,7 +2798,7 @@ typedef struct L14FlightPathVars {
     f32 f80;
     f32 f84;
     f32 f88;
-} Class908Vars_FD578;
+} Jet908Vars;
 
 extern int MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0025B478");
 extern void SpawnExplosionFx_r(float, float, struct Moby *, void *, int) __asm__("func_L00_00260108");
@@ -2829,7 +2829,7 @@ extern char *oltanis_paths_r3[] __asm__("D_L14_001B0F30");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fc0f0. */
 void update_enemy_fighter(struct Moby *moby) {
-    Class908Vars_FD578 *data = (Class908Vars_FD578 *)moby->pvars;
+    Jet908Vars *data = (Jet908Vars *)moby->pvars;
     int hit = MobyGetHitMessage_r(moby, 0x800000, 0);
     int index;
     int path_index;

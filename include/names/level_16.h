@@ -5,11 +5,11 @@
 #define Hero_TryMoveState                                     func_L16_0021EA88
 #define Hero_ChooseStateTransition                            func_L16_00227818
 #define HomingProjectileUpdate                                func_L16_002A1C50
-#define spawn_class_32_moby                                   func_L16_002A1F78
+#define spawn_rocket_50_moby                                  func_L16_002A1F78
 #define update_path_following_rocket                          func_L16_002C5030
 #define spawn_thrown_bomb                                     func_L16_002C75D0
 #define update_spinning_moby_sprite_effect                    func_L16_002CA848
-#define Moby471Update                                         func_L16_002CAC40
+#define conveyor_belt_471_update                              func_L16_002CAC40
 #define draw_conveyor_belt_strips                             func_L16_002CB098
 #define test_dummy_update                                     func_L16_002CF180
 #define update_test_dummy_damage_and_respawn                  func_L16_002CFDB8
@@ -19,7 +19,7 @@
 #define advance_hoverboard_dummy_path_node                    func_L16_002D0DC0
 #define test_dummy_on_hoverboard_update                       func_L16_002D1868
 #define blarg_elite_commando_update                           func_L16_002D40B8
-#define Moby647Update                                         func_L16_002D6DA8
+#define door_647_update                                       func_L16_002D6DA8
 #define test_dummy_door_update                                func_L16_002D7080
 #define find_nearest_test_dummy_door                          func_L16_002D7178
 #define update_triggered_group_objective                      func_L16_002D72C0
@@ -66,8 +66,8 @@
 #define emit_blarg_elite_commando_death_particles             func_L16_002D55C0
 #define update_blarg_elite_commando_joint_aim                 func_L16_002D5958
 #define emit_blarg_elite_commando_joint_sparks                func_L16_002D5CD0
-#define set_class_0287_group_activation_and_find_nearest      func_L16_002D6E98
-#define activate_class_0287_group_and_find_nearest            func_L16_002D6F90
+#define set_door_647_group_activation_and_find_nearest        func_L16_002D6E98
+#define activate_door_647_group_and_find_nearest              func_L16_002D6F90
 #define refresh_test_dummy_door_timer                         func_L16_002D7248
 #define request_target_reposition                             func_L16_002E2248
 #define update_armed_transport_damage_and_targeting           func_L16_002E3FC8
@@ -96,7 +96,7 @@
 #define update_paired_joint_particle_trails                   func_L16_002E9278
 #define ElevatorPlatformUpdate                                func_L16_002E93F8
 #define gadgetron_sign_update                                 func_L16_002E9D48
-#define find_group_class_010e_moby_in_state_6                 func_L16_002E9F80
+#define find_group_morphoray_chicken_moby_in_state_6          func_L16_002E9F80
 #define compute_level16_reflection_map_coordinates            func_L16_002EA010
 #define env_map_a_draw                                        func_L16_002EA1B8
 #define update_level16_three_mesh_render_state                func_L16_002EA2F8
@@ -152,7 +152,7 @@
 #define test_dummy_glow_pulse_color_start                     D_L16_00161AA0
 #define test_dummy_glow_pulse_color_end                       D_L16_00161AA4
 #define linked_pair_ribbon_uvs                                D_L16_001D3480
-#define class_0287_group_activation_value                     D_L16_00161B40
+#define door_647_group_activation_value                       D_L16_00161B40
 #define help_desk_hero_reset_pose                             D_L16_001D9990
 #define kalebo3_level_cuboids                                 D_L16_001601AC
 #define chomper_knockback_gravity                             D_L16_00161F14
@@ -248,8 +248,8 @@
 #define grindrail_barrier_ring_uvs                            D_L16_001D9A50
 #define grindrail_barrier_core_uvs                            D_L16_001D9A70
 #define grindrail_barrier_ring_base_color                     D_L16_00161EDC
-#define class_32_spawn_max_yaw_deg                            D_L16_001614A8
-#define class_32_spawn_max_pitch_deg                          D_L16_001614AC
+#define rocket_50_spawn_max_yaw_deg                           D_L16_001614A8
+#define rocket_50_spawn_max_pitch_deg                         D_L16_001614AC
 #define blarg_elite_commando_bobbing_and_voice_enabled_gp     D_L16_00161B34
 #define blarg_elite_commando_joint_aim_enabled_gp             D_L16_00161B38
 #define blarg_elite_commando_joint_sparks_enabled_gp          D_L16_00161B3C

@@ -2524,7 +2524,7 @@ typedef union {
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern char *activate_smaller_amoeboid(void *);
-extern char *find_nearest_class_26f_moby_in_list(char *, int);
+extern char *find_nearest_extermibot_moby_in_list(char *, int);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern float FastSubRots(float, float);
 extern void InitKnockback(void *, void *, float, int, int, int);
@@ -2703,7 +2703,7 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
     }
     c = d->unk_248;
     if (c >= 0) {
-        cand = find_nearest_class_26f_moby_in_list(m, c);
+        cand = find_nearest_extermibot_moby_in_list(m, c);
         if (cand != 0) {
             dist = vec_distance_xy(&((Moby *)m)->pos, cand + 0x10);
             if (dist < d->unk_228) {
@@ -2795,7 +2795,7 @@ extern int novalis_mobys_m __asm__("D_L01_00160058") MACRO_ADDR;
 
 /* Returns the closest moby of type 0x26F with flag 0x1000 set and state below 0x7F, from the id list
  * D_L01_001ABFC0[idx], within a 120.0 limit; 0 if there is none. */
-char *find_nearest_class_26f_moby_in_list(char *self, int idx) {
+char *find_nearest_extermibot_moby_in_list(char *self, int idx) {
     short *list = (short *)novalis_moby_groups[idx];
     float best = 120.0f;
     char *res = 0;

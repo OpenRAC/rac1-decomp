@@ -401,7 +401,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
 /* Moby update for a missile that homes on its target. */
-void Moby1034Update(struct Moby *moby) {
+void rocket_1034_update(struct Moby *moby) {
     Missile *data = (Missile *)moby->pvars;
     Vec4f *pos;
     Vec4 previous_pos, spray, offset, velocity, random;

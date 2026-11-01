@@ -973,7 +973,7 @@ void gadgetron_sign_update(unsigned char *moby_bytes) {
             break;
     }
 }
-extern char *find_group_class_010e_moby_in_state_6(int);
+extern char *find_group_morphoray_chicken_moby_in_state_6(int);
 extern void request_target_reposition(void *);
 
 extern int get_target_reposition_status(void *);
@@ -996,7 +996,7 @@ void update_target_reposition_cycle(char *moby) {
             break;
         case 1:
             if (vec_distance_xy(g, target + 0x10) > 3.0f) {
-                if (find_group_class_010e_moby_in_state_6(*(int *)data) != 0) {
+                if (find_group_morphoray_chicken_moby_in_state_6(*(int *)data) != 0) {
                     if (fast_dec_timer(&((struct RepositionCycleVars *)data)->timer)) {
                         moby[0x20] = 2;
                         request_target_reposition(target);
@@ -1014,7 +1014,7 @@ void update_target_reposition_cycle(char *moby) {
                 case 2:
                     moby[0x20] = 1;
                     {
-                        char *other = find_group_class_010e_moby_in_state_6(*(int *)data);
+                        char *other = find_group_morphoray_chicken_moby_in_state_6(*(int *)data);
                         if (other != 0) {
                             qcopy(pos, target + 0x10);
                             pos[2] += 1.0f;
@@ -1030,7 +1030,7 @@ void update_target_reposition_cycle(char *moby) {
 extern int is_moby_in_state_6(void *);
 
 // Finds the first moby of type 0x10E in a level's id list that passes the check.
-char *find_group_class_010e_moby_in_state_6(int idx) {
+char *find_group_morphoray_chicken_moby_in_state_6(int idx) {
     short *p = kalebo3_moby_groups[idx];
     char *moby;
     if (p == 0)

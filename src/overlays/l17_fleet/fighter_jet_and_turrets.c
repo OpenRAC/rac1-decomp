@@ -2407,7 +2407,7 @@ typedef struct {
     unsigned short a6;
     char pada8[8];
     unsigned char b0;
-} Moby1379;
+} FighterJet1379;
 typedef struct {
     char pad0[0x20];
     float v20[4];
@@ -2479,7 +2479,7 @@ typedef struct {
     unsigned char b20A5;
 } Glob1379;
 /* Updates a fighter jet (moby Fighter Jet): waits for the hero, boards, flies, exits or fades out, then clamps its position. */
-void FighterJetUpdate(Moby1379 *moby) {
+void FighterJetUpdate(FighterJet1379 *moby) {
     State1379 *d;
     char *r;
     float v[4];
@@ -3188,7 +3188,7 @@ extern void SetDeathBits(void *, int, int);
 extern short class1382_move_params;
 
 /* UpdateMoby for Robot Dog: hides or shows the moby by its clip volumes, then runs its state machine. */
-void Moby1382Update(unsigned char *m) {
+void robot_dog_1382_update(unsigned char *m) {
     Vars1382 *d;
     unsigned char *tgt;
     int r;

@@ -1,5 +1,5 @@
 void update_enemy_fighter(struct Moby *moby) {
-    Class908Vars_FD578 *data = (Class908Vars_FD578 *)moby->pvars;
+    Jet908Vars *data = (Jet908Vars *)moby->pvars;
     int hit = MobyGetHitMessage_r(moby, 0x800000, 0);
     int index;
     int path_index;

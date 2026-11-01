@@ -72,7 +72,7 @@ extern int scale_ticks(int);
 extern float g_frame_time MACRO_ADDR;
 
 // Spawns a Rocket moby with its owner, position, spin and lifetime.
-char *create_class_5c3_moby(int owner, char *pos, int arg, float f0, float f1) {
+char *create_rocket_1475_moby(int owner, char *pos, int arg, float f0, float f1) {
     Moby *moby = (Moby *)((char *)CreateMoby_m(0x5C3));
     if (moby != 0) {
         char *d = ((char *)moby->pvars);
@@ -1147,7 +1147,7 @@ extern void PartType53Spawn(void *, s32, f32, f32, s32, s32, s32, void *, f32);
 extern struct Spark_c8e0 *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, s32);
 
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
-extern char *spawn_moby_class_5ea_from_source(unsigned char *);
+extern char *spawn_lamp_destroyed_from_source(unsigned char *);
 void draw_moby_glow_sprite(char *m);
 
 /* Mine update: sets its glow, fades it out with camera distance and blows up into debris, smoke and sparks when something touches it.
@@ -1209,7 +1209,7 @@ void update_moby_glow_and_contact_explosion(struct Moby *moby) {
         }
     }
     Moby_PlaySound(0, 0, moby);
-    spawn_moby_class_5ea_from_source((unsigned char *)moby);
+    spawn_lamp_destroyed_from_source((unsigned char *)moby);
     debris = SpawnBreakFragment(g_frame_time_sq * 12.0f, moby, 0x5ED, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
                                 rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
     if (debris != 0) {
@@ -1339,7 +1339,7 @@ extern char *CreateMoby(int);
 extern void moby_build_matrix(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_0031abe0.c, FUN_L05_0031d160. */
-char *spawn_moby_class_5ea_from_source(unsigned char *a0) {
+char *spawn_lamp_destroyed_from_source(unsigned char *a0) {
     Moby *m = (Moby *)((unsigned char *)CreateMoby(0x5EA));
     if (m != 0) {
         m->update_dist = ((Moby *)a0)->update_dist;

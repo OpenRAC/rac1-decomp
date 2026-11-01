@@ -237,11 +237,11 @@ void HomingProjectileUpdate(char *m) {
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 extern float FastVecLength(void *);
 
-extern short class_32_spawn_max_yaw_deg;
-extern short class_32_spawn_max_pitch_deg;
+extern short rocket_50_spawn_max_yaw_deg;
+extern short rocket_50_spawn_max_pitch_deg;
 
 /* spawn a Rocket moby thrown along a vector with random spin */
-char *spawn_class_32_moby(char *owner, char *vec, void *pos, void *vel, int c) {
+char *spawn_rocket_50_moby(char *owner, char *vec, void *pos, void *vel, int c) {
     char *m = (char *)CreateMoby_m(0x32);
     struct HomingProjectileVars *d;
     float len, x, t, y;
@@ -259,10 +259,10 @@ char *spawn_class_32_moby(char *owner, char *vec, void *pos, void *vel, int c) {
         d->unk_30 = c;
         d->timer = c;
         len = FastVecLength(vec);
-        x = *(float *)&class_32_spawn_max_yaw_deg;
+        x = *(float *)&rocket_50_spawn_max_yaw_deg;
         d->length = len;
         t = random_float_between(-x, x) * 0.017453292f;
-        y = *(float *)&class_32_spawn_max_pitch_deg;
+        y = *(float *)&rocket_50_spawn_max_pitch_deg;
         d->yaw_rate = t;
         d->pitch_rate = random_float_between(0.0f, y) * 0.017453292f;
         d->unk_34 = 0;
@@ -1221,7 +1221,7 @@ void armed_transport_update(char *m) {
             FastVecSub(rotation.f, &d->target, vector.f);
             vec_scale_to_length(rotation.f, rotation.f, *(float *)&armed_transport_shot_speed * g_frame_time);
             Moby_PlaySound_update(1, 0, m);
-            spawn_class_32_moby(m, (char *)rotation.f, vector.f, &d->target, scale_ticks(45));
+            spawn_rocket_50_moby(m, (char *)rotation.f, vector.f, &d->target, scale_ticks(45));
             m[0x20] = 6;
             d->timer_b = scale_ticks(180);
             break;

@@ -41,9 +41,9 @@
 #define update_parent_following_effect                           func_L03_002BC140
 #define sample_random_transformed_point                          func_L03_002BFF68
 #define spawn_class_221_moby                                     func_L03_002C59A0
-#define Moby545Update                                            func_L03_002C5AE0
-#define is_moby_class_23d_in_state_5                             func_L03_002C6F40
-#define Moby573Update                                            func_L03_002C6F80
+#define bomb_545_update                                          func_L03_002C5AE0
+#define is_robot_dog_573_in_state_5                              func_L03_002C6F40
+#define robot_dog_573_update                                     func_L03_002C6F80
 #define update_robot_dog_hit_reaction                            func_L03_002C7DE8
 #define is_moby_class_23e_in_state_14                            func_L03_002C8028
 #define set_moby_state_14                                        func_L03_002C8058

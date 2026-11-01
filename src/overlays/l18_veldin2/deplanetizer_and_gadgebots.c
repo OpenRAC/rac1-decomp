@@ -974,7 +974,7 @@ extern short gadgebot_sequence_2_start_frame_gp;
 extern char gadgebot_start_moby_byte73;
 
 /* Moby update for the Gadgebot enemy. */
-void Moby1906Update(unsigned char *m) {
+void gadgebot_1906_update(unsigned char *m) {
     char tmp[16];
     struct GadgebotVars *e = (struct GadgebotVars *)((Moby *)m)->pvars;
     unsigned char *s0;
@@ -1157,7 +1157,7 @@ extern short gadgebot_death_fall_base_horizontal_speed_gp;
 extern short gadgebot_death_fall_base_vertical_speed_gp;
 extern int veldin2_paths[];
 extern char hero_globals_base[];
-extern void draw_group_class_0772_joint_glows(unsigned char *);
+extern void draw_group_gadgebot_1906_joint_glows(unsigned char *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
 extern void HeadingFromVector(void *, float *, void *, void *);
@@ -1191,7 +1191,7 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
     }
     if (moby->state != 7 && (*(int *)&veldin2_frame_count) != (*(int *)&gadgebot_glows_queued_frame)) {
         (*(int *)&gadgebot_glows_queued_frame) = (*(int *)&veldin2_frame_count);
-        AddDrawCallback((void *)draw_group_class_0772_joint_glows, moby);
+        AddDrawCallback((void *)draw_group_gadgebot_1906_joint_glows, moby);
     }
     speed = F(gadgebot_glow_spin_rate);
     if (moby->state == 4 || moby->state == 5) {
@@ -1321,7 +1321,7 @@ extern float jump_speed_4318(void *, void *, float, float, int);
 
 /* Launches the first idle (state 8) class-0x772 moby of group `group` from `from` towards `to` at `speed`. Returns 1 when one was launched.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/vendor/002f88e8.c, FUN_L18_002fc668. */
-int launch_first_idle_group_class_0772_moby(int group, void *from, void *to, float speed) {
+int launch_first_idle_group_gadgebot_1906_moby(int group, void *from, void *to, float speed) {
     unsigned short *p = (unsigned short *)veldin2_moby_groups_r[group];
     struct Moby *table;
     struct Moby *moby;
@@ -1353,7 +1353,7 @@ int launch_first_idle_group_class_0772_moby(int group, void *from, void *to, flo
     }
 }
 /* Counts the Gadgebot mobys in list idx that are not inactive. */
-short count_group_class_0772_mobys_not_in_state_8(int idx) {
+short count_group_gadgebot_1906_mobys_not_in_state_8(int idx) {
     unsigned short *p = veldin2_moby_groups[idx];
     short n = 0;
     int base;
@@ -1450,7 +1450,7 @@ extern unsigned short *veldin2_moby_groups[];
 extern short gadgebot_joint_glow_alpha;
 
 /* For each listed moby of matching type, spawns effects at five points. */
-void draw_group_class_0772_joint_glows(unsigned char *moby) {
+void draw_group_gadgebot_1906_joint_glows(unsigned char *moby) {
     unsigned short *p = veldin2_moby_groups[moby[0x21]];
     if (p != 0) {
         while (1) {
@@ -1476,7 +1476,7 @@ extern int process_moby_suck_cannon_suction_pos(void *, void *, void *, float) _
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
-int Moby1906HitCheck(char *a, void *pos, void *target, float h) {
+int gadgebot_1906_hit_check(char *a, void *pos, void *target, float h) {
     int r = process_moby_suck_cannon_suction_pos(a, pos, target, h);
     if (r == 0) {
         if (*(unsigned char *)(a + 0x20) == 7)

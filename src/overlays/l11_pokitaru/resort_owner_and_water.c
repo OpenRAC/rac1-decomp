@@ -1349,7 +1349,7 @@ extern int AddDrawCallback(void (*)(char *), char *);
 
 /* L11 twin of FUN_L01_00308bd8: a three-part switch moby that, once the hero stands on it in mission state 0xB and presses the button, swings its parts open and moves the linked moby (or its fallback) along.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/entities/002cb668.c, FUN_L11_002f2518. */
-void Moby318Update(struct Moby *moby) {
+void teleporter_318_update(struct Moby *moby) {
     struct TeleporterVars *data = (struct TeleporterVars *)moby->pvars;
 
     switch (moby->state) {

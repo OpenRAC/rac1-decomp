@@ -135,7 +135,7 @@ struct HoverDummyVars {
 };
 
 /* Moby 647: eases a value toward a target. */
-struct Moby647Vars {
+struct Door647Vars {
     Vec4A pos; /* 0x00 */
     f32 vel; /* 0x10 */
     f32 target; /* 0x14 */
@@ -784,7 +784,7 @@ extern void update_conveyor_group_voice(unsigned char *);
 extern void update_conveyor_group_motion_transforms(int, void *);
 
 /* Updates a linked moby's movement and follows it while its state is active. */
-void Moby471Update(unsigned char *m) {
+void conveyor_belt_471_update(unsigned char *m) {
     struct ConveyorVars *d = (struct ConveyorVars *)((Moby *)m)->pvars;
     float vec[4];
     float target;
@@ -2456,8 +2456,8 @@ extern void FastVecAdd(void *, void *, void *);
 extern float g_frame_time_sq MACRO_ADDR;
 
 /* Move the moby toward a target along a slerped path until the parameter reaches its goal. */
-void Moby647Update(Moby *moby) {
-    struct Moby647Vars *d = (struct Moby647Vars *)moby->pvars;
+void door_647_update(Moby *moby) {
+    struct Door647Vars *d = (struct Door647Vars *)moby->pvars;
     char *pos;
     char buf[16];
     switch (moby->state) {
@@ -2480,9 +2480,9 @@ void Moby647Update(Moby *moby) {
             break;
     }
 }
-extern float class_0287_group_activation_value SDATA(D_L16_00161B40);
+extern float door_647_group_activation_value SDATA(D_L16_00161B40);
 /* Activate the linked mobys and return the one nearest the challenge target. */
-void *set_class_0287_group_activation_and_find_nearest(int index, int secondary) {
+void *set_door_647_group_activation_and_find_nearest(int index, int secondary) {
     short *p = (short *)kalebo3_moby_groups[index];
     char *nearest = 0;
     float distance = 1000.0f;
@@ -2503,7 +2503,7 @@ void *set_class_0287_group_activation_and_find_nearest(int index, int secondary)
         }
         data = ((float *)((Moby *)moby)->pvars);
         ((Moby *)moby)->state = 1;
-        g = class_0287_group_activation_value;
+        g = door_647_group_activation_value;
         data[5] = g;
         if (secondary)
             data[6] = g;
@@ -2512,7 +2512,7 @@ void *set_class_0287_group_activation_and_find_nearest(int index, int secondary)
     }
 }
 /* Activate the linked mobys, clearing their timers, and return the one nearest the challenge target. */
-void *activate_class_0287_group_and_find_nearest(int index, int secondary) {
+void *activate_door_647_group_and_find_nearest(int index, int secondary) {
     short *p = (short *)kalebo3_moby_groups[index];
     char *nearest = 0;
     float distance = 1000.0f;
@@ -2613,8 +2613,8 @@ void refresh_test_dummy_door_timer(char *m) {
     d->timer = scale_ticks(5);
 }
 extern void DeleteMoby(void *);
-extern void *set_class_0287_group_activation_and_find_nearest(int, int);
-extern void *activate_class_0287_group_and_find_nearest(int, int);
+extern void *set_door_647_group_activation_and_find_nearest(int, int);
+extern void *activate_door_647_group_and_find_nearest(int, int);
 extern int is_point_inside_clip_volume(void *, int);
 extern int fast_dec_timer(int *);
 
@@ -2662,7 +2662,7 @@ void update_triggered_group_objective(char *m) {
                 moby->collision = 0;
             } else {
                 moby->state = 1;
-                set_class_0287_group_activation_and_find_nearest(scene_data->helper, 1);
+                set_door_647_group_activation_and_find_nearest(scene_data->helper, 1);
             }
             break;
         case SCENE_STATE_WAIT_FOR_TRIGGER: {
@@ -2674,7 +2674,7 @@ void update_triggered_group_objective(char *m) {
             if (scene_data->camera >= 0)
                 *(unsigned short *)(player + 0x225A) = *(unsigned short *)&scene_data->camera;
             CameraScript(kalebo3_camera_pos, kalebo3_camera_pos + 0x10, 1, 0, 0);
-            helper = activate_class_0287_group_and_find_nearest(scene_data->helper, 0);
+            helper = activate_door_647_group_and_find_nearest(scene_data->helper, 0);
             goto notify;
         }
         case SCENE_STATE_WAIT_TO_HIDE:
@@ -2707,7 +2707,7 @@ void update_triggered_group_objective(char *m) {
             MobySphereHitDirectional((int)m, 5.0f, kalebo3_level_cuboids_m + (scene_data->pose << 7) + 0x30, 0x10000,
                                      50.0f, 1.0f, 0, 1, 0);
             ((L16ObjectiveEntry *)(special_items_base + 0x13B + scene_data->objective))->complete = 1;
-            helper = set_class_0287_group_activation_and_find_nearest(scene_data->helper, 0);
+            helper = set_door_647_group_activation_and_find_nearest(scene_data->helper, 0);
         notify:
             if (helper)
                 Moby_PlaySound(1, 0, helper);
@@ -2717,7 +2717,7 @@ void update_triggered_group_objective(char *m) {
         case SCENE_STATE_HIDDEN_WAIT_FOR_TRIGGER:
             if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
                                             scene_data->trigger)) {
-                activate_class_0287_group_and_find_nearest(scene_data->helper, 0);
+                activate_door_647_group_and_find_nearest(scene_data->helper, 0);
                 activate_test_dummy_group(scene_data->path);
                 moby->state = 6;
             }
@@ -2728,7 +2728,7 @@ void update_triggered_group_objective(char *m) {
                 *(unsigned short *)(player + 0x225A) = *(unsigned short *)&scene_data->camera;
             if (!count_active_moby_group_members(scene_data->path, -1)) {
                 moby->state = 4;
-                helper = set_class_0287_group_activation_and_find_nearest(scene_data->helper, 0);
+                helper = set_door_647_group_activation_and_find_nearest(scene_data->helper, 0);
                 if (helper)
                     Moby_PlaySound(1, 0, helper);
                 ((L16ObjectiveEntry *)(special_items_base + 0x13B + scene_data->objective))->complete = 1;

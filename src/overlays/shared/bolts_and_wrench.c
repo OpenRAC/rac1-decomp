@@ -1849,7 +1849,7 @@ void process_mobies_near_returning_wrench(char *a) {
                         return;
                 }
             } else {
-                if (is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(m) != 0) {
+                if (is_bomb_glove_ammo_cc_de_3ee_d6_e1_d5_or_df(m) != 0) {
                     if (FastVecDist(m + 0x10, a + 0x10) < 2.7f) {
                         if (try_collect_ammo_pickup(m))
                             return;
@@ -1955,7 +1955,7 @@ typedef struct {
 typedef struct {
     int pad0, side;
     char pad8[0x14];
-    int first_frame, D_L00_00161488;
+    int first_frame, last_frame;
     char pad24[8];
 } WAttack48;
 typedef struct {

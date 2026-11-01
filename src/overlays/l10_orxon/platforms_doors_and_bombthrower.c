@@ -1100,7 +1100,7 @@ void update_height_adjusted_projectile(struct Moby *moby) {
     }
     if (coll_line(old, &moby->pos, 0, *(int *)&data->owner, (int)hit)) {
         struct GroundHitRecord *collision = (struct GroundHitRecord *)ground_hit;
-        struct Moby *other = *(struct Moby **)&collision->D_L12_00174358;
+        struct Moby *other = *(struct Moby **)&collision->hit_moby;
         if (other == 0 || other->oclass != MOBY_CLASS_GADGEBOT_857) {
             qcopy(&moby->pos, &collision->pos);
             if (data->hit_flag_ptr != 0) {
@@ -1190,7 +1190,7 @@ int resolve_bouncing_projectile_collision(Moby *m, char *c, float *a2) {
     if (*(short *)(c + 0x14) == 0) {
         if (coll_line(v0, &m->pos, 0x10, (int)m, 0)) {
             g = (struct GroundHitRecord *)ground_hit;
-            w6 = g->D_L12_00174358;
+            w6 = g->hit_moby;
             if (w6 != 0) {
                 FastVecSub(&g->normal, &m->pos, (void *)(w6 + 0x10));
                 qcopy(&m->pos, &g->pos);
@@ -1299,7 +1299,7 @@ typedef struct {
 } Shot_2D9988;
 
 /* Moby 938 pvars. */
-struct Moby938Vars {
+struct Bomb938Vars {
     f32 unk_00; /* 0x00 */
     f32 unk_04; /* 0x04 */
     f32 unk_08; /* 0x08 */
@@ -1311,8 +1311,8 @@ struct Moby938Vars {
  * another class catches it, plays its sound, and dies when it leaves the 1..511 box.
  * The velocity z clear and the vector source are struct members so they schedule like retail's; the 2-or-3
  * state store is written in both arms (`== 0` test first) and cross-jumped; flag21 is set once. */
-void Moby938Update(char *m) {
-    struct Moby938Vars *data;
+void bomb_938_update(char *m) {
+    struct Bomb938Vars *data;
     char *r16;
     int state;
     int flag21;
@@ -1324,7 +1324,7 @@ void Moby938Update(char *m) {
     float s68, s6c, s70;
     int rA, rB;
 
-    data = (struct Moby938Vars *)((char *)((Moby *)m)->pvars);
+    data = (struct Bomb938Vars *)((char *)((Moby *)m)->pvars);
     if (((Moby *)m)->pos.x < 1.0f || 511.0f < ((Moby *)m)->pos.x || ((Moby *)m)->pos.y < 1.0f ||
         511.0f < ((Moby *)m)->pos.y || ((Moby *)m)->pos.z < 1.0f || 511.0f < ((Moby *)m)->pos.z) {
         DeleteMoby_r(m);
@@ -1687,7 +1687,7 @@ typedef struct GroundHit {
 } GroundHit;
 
 // Updates a button and its linked object from nearby activating objects.
-void Moby1031Update(char *m) {
+void button_1031_update(char *m) {
     struct Moby *moby = (struct Moby *)m;
     FloorPlateVars *plate_vars = (FloorPlateVars *)moby->pvars;
     struct Moby *door;

@@ -116,7 +116,7 @@ extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void Moby_GetJointWorldPos_r(void *, s32, void *) __asm__("func_L00_00250800");
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
 extern void SpawnExplosionFx_r(void *, void *, s32, f32, f32) __asm__("func_L00_00260108");
-extern struct Moby *spawn_class_1b3_projectile_r(void *, struct Moby *, void *, f32, f32) __asm__("func_L08_002DF758");
+extern struct Moby *spawn_rocket_435_projectile_r(void *, struct Moby *, void *, f32, f32) __asm__("func_L08_002DF758");
 extern void spawn_joint_linked_moby_parts_r(struct Moby *) __asm__("func_L08_002EA930");
 extern void process_linked_moby_part_hits_r(struct Moby *) __asm__("func_L08_002EAB30");
 extern void update_commando_parts_r(struct Moby *) __asm__("func_L08_002EADF0");
@@ -203,7 +203,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
                 yaw = -0.34f;
             }
             vec_scale_to_length_r(&velocity, &step, (D_L08_00161DC4_2EAF48 + D_L08_00161DC4_2EAF48) * g_frame_time_r);
-            shot = spawn_class_1b3_projectile_r(&muzzle, target, &velocity, pitch, yaw);
+            shot = spawn_rocket_435_projectile_r(&muzzle, target, &velocity, pitch, yaw);
             shot->scale = shot->pclass->scale / 5.0f;
             target_vars = (SwarmTargetVars_2EAF48 *)target->pvars;
             for (slot = 0; slot < 8; slot++) {
@@ -245,7 +245,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
             pitch = random_float_between_r(-0.5235988f, -0.2617994f);
             yaw = random_angle_radians_r();
             vec_scale_to_length_r(&velocity, &step, (D_L08_00161DC4_2EAF48 + D_L08_00161DC4_2EAF48) * g_frame_time_r);
-            bolt = spawn_class_1b3_projectile_r(&muzzle, 0, &velocity, pitch, yaw);
+            bolt = spawn_rocket_435_projectile_r(&muzzle, 0, &velocity, pitch, yaw);
             if (bolt != 0) {
                 bolt->rot.z = vars->parts[3].moby->rot.z;
                 bolt->state = 5;
@@ -1799,7 +1799,7 @@ void the_plumber_batalia_update(char *m) {
 }
 
 // Sets the vendor state or closes the active interaction.
-void Moby1283SetMode(char *moby, int mode) {
+void the_plumber_batalia_set_mode(char *moby, int mode) {
     struct VendorVars *data = (struct VendorVars *)((Moby *)moby)->pvars;
     moby[0x20] = 1;
     if (mode != 0) {

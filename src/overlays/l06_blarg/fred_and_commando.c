@@ -910,7 +910,7 @@ extern void set_moby_and_links_to_states_8_and_9(char *);
 extern void set_moby_and_links_to_states_4_and_5(char *);
 extern float ProbeGroundHeight(void *, int, float);
 extern int DialogRequest_Init(void *, void *);
-extern int check_all_listed_class_33b_states_fe_fd_or_10(int);
+extern int check_all_listed_frog_states_fe_fd_or_10(int);
 extern int FastDecTimer(void *);
 extern int Npc_TryStartDialog(void *, void *);
 
@@ -999,7 +999,7 @@ void fred_update(Moby *moby) {
             } else {
                 fred_vars->fC = 3.7f;
             }
-            if (check_all_listed_class_33b_states_fe_fd_or_10(fred_vars->f170) != 0) {
+            if (check_all_listed_frog_states_fe_fd_or_10(fred_vars->f170) != 0) {
                 if (FastDecTimer(&fred_vars->f174) != 0 && Npc_TryStartDialog(moby, fred_vars) != 0) {
                     moby->state = 2;
                     if (fred_vars->f176 != 0) {

@@ -1511,7 +1511,7 @@ void update_moby_pulsing_glow_effects(char *m) {
     }
     p = cheat_scale_manipulator;
     if (*(short *)(m + 0xA6) == 0x1A3) {
-        p = cheat_scale_manipulator_class_1a3;
+        p = cheat_scale_manipulator_giant_clank;
     } else if (*(short *)(m + 0xA6) == 0x555) {
         p = cheat_scale_manipulator_class_555;
     }

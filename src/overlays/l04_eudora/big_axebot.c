@@ -570,7 +570,7 @@ extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *);
 extern void matrix_copy_rows(void *, void *);
 
-extern void *spawn_class_23a_moby(void *, void *);
+extern void *spawn_axe_moby(void *, void *);
 
 extern unsigned char hero_globals_base[];
 extern float eudora_camera_pos[4];
@@ -1123,7 +1123,7 @@ void big_axebot_update(M_B7B0 *moby) {
         float p[4];
 
         Moby_GetJointWorldPos(moby, 0xB, p);
-        data->f424 = spawn_class_23a_moby(moby, p);
+        data->f424 = spawn_axe_moby(moby, p);
     }
 }
 struct Manip_2C2F00;

@@ -9,10 +9,10 @@
 #define FighterJetUpdate                                                   func_L17_002EEB08
 #define move_robot_dog_toward_position                                     func_L17_002F1858
 #define update_robot_dog_aim_joint                                         func_L17_002F1BB0
-#define Moby1448Update                                                     func_L17_002F3450
+#define shuttle_1448_update                                                func_L17_002F3450
 #define update_shuttle_travel_and_camera                                   func_L17_002F3CC0
 #define update_fleet_camera_box_watcher                                    func_L17_002F4210
-#define Moby1843Update                                                     func_L17_002F5C18
+#define blarg_ship_1843_update                                             func_L17_002F5C18
 #define Moby1873Update                                                     func_L17_002F6DA0
 #define update_hit_triggered_fragment_and_placement_spawner                func_L17_002F6ED0
 #define compute_vertex_to_reference_sphere_map_uvs                         func_L17_002F7C78
@@ -39,7 +39,7 @@
 #define PlayerShipUpdate                                                   func_L17_002EDE50
 #define magnet_elevator_update                                             func_L17_002EFDC0
 #define rebuild_magnet_elevator_world_path                                 func_L17_002F0580
-#define Moby1382Update                                                     func_L17_002F0678
+#define robot_dog_1382_update                                              func_L17_002F0678
 #define update_robot_dog_hit_reaction_and_target_detection                 func_L17_002F1558
 #define enemy_stun_update                                                  func_L17_002F19B8
 #define cancel_suck_cannon_suction_and_set_state_12                        func_L17_002F1B50

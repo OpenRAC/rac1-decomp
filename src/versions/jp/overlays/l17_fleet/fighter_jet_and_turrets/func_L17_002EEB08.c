@@ -1,4 +1,4 @@
-void FighterJetUpdate(Moby1379 *moby) {
+void FighterJetUpdate(FighterJet1379 *moby) {
     State1379 *d;
     char *r;
     float v[4];

@@ -555,7 +555,7 @@ void draw_rocket_target_pulse_quad(char *moby) {
 }
 extern short D_L18_00161A6C __asm__("D_0015EE6C");
 extern float D_L18_6C_m __asm__("D_0015EE6C") MACRO_ADDR;
-extern void update_class_238_detonation(void *);
+extern void update_mine_568_detonation(void *);
 extern float FastCos(float);
 extern float vec_distance_xy(void *, void *);
 extern float FastVecDist(void *, void *);
@@ -572,11 +572,11 @@ extern short class238_move_params;
 extern int g_hero_moby NOT_SDA;
 
 /* Moby update for a launchable object (Mine) fired by func_L18_002D70E8. */
-void update_class_238_moby(unsigned char *raw) {
+void update_mine_568_moby(unsigned char *raw) {
     struct Moby *moby = (struct Moby *)raw;
     struct LaunchedMobyVars *data = (struct LaunchedMobyVars *)moby->pvars;
     float v[4];
-    update_class_238_detonation(raw);
+    update_mine_568_detonation(raw);
     switch (moby->state) {
         case 0:
             moby->collision = 0;
@@ -681,7 +681,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void Moby_PlaySound(int, int, int);
 /* Launches a dormant Mine moby from list idx toward p7; returns it or 0. */
-char *launch_class_238_moby_from_list(float f, int a0, int idx, float *p6, float *p7, int a8) {
+char *launch_mine_568_moby_from_list(float f, int a0, int idx, float *p6, float *p7, int a8) {
     float v[4];
     float r;
     float g;
@@ -1112,7 +1112,7 @@ typedef struct {
 } L18Pos;
 
 /* Returns the Thruster Pack Lock Green moby in list idx whose bearing from a differs most from b's, or 0. */
-void *find_class_247_moby_with_largest_xy_angle_in_list(float *a, float *b, int idx) {
+void *find_thruster_pack_lock_green_moby_with_largest_xy_angle_in_list(float *a, float *b, int idx) {
     short *p = (short *)veldin2_moby_groups[idx];
     char *best = 0;
     float bestd = 0.0f;
@@ -1137,7 +1137,7 @@ void *find_class_247_moby_with_largest_xy_angle_in_list(float *a, float *b, int 
 /* Of the Thruster Pack Lock Green mobys in list idx, the one nearest to pos (within
    255 units), or 0. The second spelling of the table base keeps the
    address out of the loop's $gp-relative reload in the bc1f delay slot. */
-char *find_nearest_class_247_moby_in_list(void *pos, int idx) {
+char *find_nearest_thruster_pack_lock_green_moby_in_list(void *pos, int idx) {
     short *p = (short *)veldin2_moby_groups[idx];
     char *best = 0;
     float bestd = 255.0f;
@@ -1159,7 +1159,7 @@ char *find_nearest_class_247_moby_in_list(void *pos, int idx) {
 }
 
 // Sets the data fields 0x30 and 0x24 of each listed moby whose class is 0x247.
-void set_class_247_list_data_fields(int idx) {
+void set_thruster_pack_lock_green_list_data_fields(int idx) {
     short *p = (short *)veldin2_moby_groups[idx];
     if (p != 0) {
         char *base = veldin2_moby_table_m;
