@@ -2096,8 +2096,7 @@ void update_moving_fade_in_out_effect_particle(struct PartBase *m) {
     m->spin = (int)(q->phase * 255.0f);
     FastVecAdd_r2(&m->pos, &m->pos, &q->dv);
 }
-typedef float f32_26c558_26F248;
-extern f32_26c558_26F248 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
+extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 typedef struct PartType29Data {
     Moby *moby;
     f32 f4;
@@ -3079,9 +3078,7 @@ void *spawn_splitting_effect_particle_with_collision_and_fade(char *a, char *b, 
 }
 void func_001F9BD8_717E8b(void *, void *, void *) __asm__("func_001F9BD8");
 void func_L00_002688A8_717E8b(void *) __asm__("func_L00_002688A8");
-
-typedef float f32_26c558;
-extern f32_26c558 frame_scale_r2 __asm__("D_0015EE60") MACRO_ADDR;
+extern f32 frame_scale_r2 __asm__("D_0015EE60") MACRO_ADDR;
 
 void func_L00_002688A8_717E8g(void *) __asm__("func_L00_002688A8");
 void func_001F9BD8_717E8f(void *, void *, void *) __asm__("func_001F9BD8");

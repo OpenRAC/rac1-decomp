@@ -1077,54 +1077,51 @@ void sif_rpc_request_call(void *request, void *data) {
         return;
     iWakeupThread(base[0]);
 }
-
-typedef unsigned char u8_1B4C8;
-typedef signed int s32_1B4C8;
 struct SifRpcClient_1B4C8 {
-    volatile s32_1B4C8 packet;
-    volatile s32_1B4C8 request_id;
-    s32_1B4C8 semaphore_id;
-    u8_1B4C8 pad_C[0x8];
-    s32_1B4C8 server_buffer;
-    u8_1B4C8 pad_18[0x4];
-    s32_1B4C8 end_callback;
-    volatile s32_1B4C8 end_argument;
-    s32_1B4C8 server;
+    volatile s32 packet;
+    volatile s32 request_id;
+    s32 semaphore_id;
+    u8 pad_C[0x8];
+    s32 server_buffer;
+    u8 pad_18[0x4];
+    s32 end_callback;
+    volatile s32 end_argument;
+    s32 server;
 };
 struct SifRpcPacket_1B4C8 {
-    u8_1B4C8 pad_0[0x14];
-    s32_1B4C8 packet_address;
-    s32_1B4C8 request_id;
-    s32_1B4C8 client;
-    s32_1B4C8 rpc_number;
-    s32_1B4C8 send_size;
-    s32_1B4C8 receive_address;
-    s32_1B4C8 receive_size;
-    s32_1B4C8 completion_mode;
-    s32_1B4C8 server;
+    u8 pad_0[0x14];
+    s32 packet_address;
+    s32 request_id;
+    s32 client;
+    s32 rpc_number;
+    s32 send_size;
+    s32 receive_address;
+    s32 receive_size;
+    s32 completion_mode;
+    s32 server;
 };
-extern u8_1B4C8 sif_rpc_data_r[] __asm__("D_00156900");
-extern s32_1B4C8 create_semaphore();
-extern s32_1B4C8 delete_semaphore_r() __asm__("func_00118C80");
-extern s32_1B4C8 wait_semaphore();
-extern s32_1B4C8 get_available_rpc_packet_r() __asm__("func_0011AFE8");
-extern s32_1B4C8 sif_rpc_free_packet_r() __asm__("func_0011B090");
-extern s32_1B4C8 sceSifSendCmd();
-extern s32_1B4C8 sceSifWriteBackDCache_r() __asm__("func_0011AD70");
+extern u8 sif_rpc_data_r[] __asm__("D_00156900");
+extern s32 create_semaphore();
+extern s32 delete_semaphore_r() __asm__("func_00118C80");
+extern s32 wait_semaphore();
+extern s32 get_available_rpc_packet_r() __asm__("func_0011AFE8");
+extern s32 sif_rpc_free_packet_r() __asm__("func_0011B090");
+extern s32 sceSifSendCmd();
+extern s32 sceSifWriteBackDCache_r() __asm__("func_0011AD70");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/rpc/sce_sif_call_rpc.c, sceSifCallRpc. */
-extern s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_number, s32_1B4C8 mode,
-                                 s32_1B4C8 send_buf, s32_1B4C8 send_size, s32_1B4C8 recv_buf, s32_1B4C8 recv_size,
-                                 s32_1B4C8 end_func, s32_1B4C8 end_data) __asm__("func_0011B4C8");
-s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_number, s32_1B4C8 mode, s32_1B4C8 send_buf,
-                          s32_1B4C8 send_size, s32_1B4C8 recv_buf, s32_1B4C8 recv_size, s32_1B4C8 end_func,
-                          s32_1B4C8 end_data) {
-    s32_1B4C8 semaphore_parameters[6];
+extern s32 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32 rpc_number, s32 mode,
+                                 s32 send_buf, s32 send_size, s32 recv_buf, s32 recv_size,
+                                 s32 end_func, s32 end_data) __asm__("func_0011B4C8");
+s32 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32 rpc_number, s32 mode, s32 send_buf,
+                          s32 send_size, s32 recv_buf, s32 recv_size, s32 end_func,
+                          s32 end_data) {
+    s32 semaphore_parameters[6];
     struct SifRpcPacket_1B4C8 *packet;
-    s32_1B4C8 semaphore_id;
-    s32_1B4C8 skip_cache_writeback;
-    s32_1B4C8 request_id;
-    s32_1B4C8 allocation_failure_result;
+    s32 semaphore_id;
+    s32 skip_cache_writeback;
+    s32 request_id;
+    s32 allocation_failure_result;
     packet = (struct SifRpcPacket_1B4C8 *)get_available_rpc_packet_r(sif_rpc_data_r);
     allocation_failure_result = -1;
     if (packet == 0) {
@@ -1133,16 +1130,16 @@ s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_numbe
     request_id = packet->request_id;
     skip_cache_writeback = mode & 2;
     client->end_argument = end_data;
-    client->packet = (s32_1B4C8)packet;
+    client->packet = (s32)packet;
     client->request_id = request_id;
     client->end_callback = end_func;
     packet->rpc_number = rpc_number;
     packet->send_size = send_size;
     packet->receive_address = recv_buf;
     packet->receive_size = recv_size;
-    packet->packet_address = (s32_1B4C8)packet;
+    packet->packet_address = (s32)packet;
     packet->server = client->server;
-    packet->client = (s32_1B4C8)client;
+    packet->client = (s32)client;
     if (!skip_cache_writeback) {
         if (send_buf == recv_buf) {
             sceSifWriteBackDCache_r(send_buf, (send_size >= recv_size) ? (send_size) : (recv_size));

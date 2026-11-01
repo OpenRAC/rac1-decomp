@@ -346,21 +346,20 @@ void emit_moby_color_cycling_particles(char *p) {
         FastVecAdd(v, v, &v[4]);
     }
 }
-typedef int s32_2e1f28;
-extern s32_2e1f28 beam_slot_states[] MACRO_ADDR;
-extern s32_2e1f28 beam_strand_wave_phase[] MACRO_ADDR;
-extern s32_2e1f28 beam_strand_twist_phase[] MACRO_ADDR;
-extern s32_2e1f28 beam_strand_sway_phase[] MACRO_ADDR;
-extern s32_2e1f28 beam_origin_light_slots[] MACRO_ADDR;
-extern s32_2e1f28 beam_tip_light_slots[] MACRO_ADDR;
-extern s32_2e1f28 beam_light_flags[] MACRO_ADDR;
-extern s32_2e1f28 beam_spark_style[] MACRO_ADDR;
-extern s32_2e1f28 beam_texture_scroll[] MACRO_ADDR;
-extern s32_2e1f28 beam_slot_ids[] MACRO_ADDR;
+extern s32 beam_slot_states[] MACRO_ADDR;
+extern s32 beam_strand_wave_phase[] MACRO_ADDR;
+extern s32 beam_strand_twist_phase[] MACRO_ADDR;
+extern s32 beam_strand_sway_phase[] MACRO_ADDR;
+extern s32 beam_origin_light_slots[] MACRO_ADDR;
+extern s32 beam_tip_light_slots[] MACRO_ADDR;
+extern s32 beam_light_flags[] MACRO_ADDR;
+extern s32 beam_spark_style[] MACRO_ADDR;
+extern s32 beam_texture_scroll[] MACRO_ADDR;
+extern s32 beam_slot_ids[] MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e1f28. */
-s32_2e1f28 register_beam_slot(s32_2e1f28 id, s32_2e1f28 a, s32_2e1f28 b) {
-    s32_2e1f28 i, j;
+s32 register_beam_slot(s32 id, s32 a, s32 b) {
+    s32 i, j;
     for (i = 0; i < 3; i++) {
         if (beam_slot_ids[i] == id)
             return 1;

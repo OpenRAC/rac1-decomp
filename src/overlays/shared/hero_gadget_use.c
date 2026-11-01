@@ -1161,7 +1161,6 @@ void update_hero_hoverboard_trick_animations(void) {
         }
     }
 }
-typedef unsigned char u8_a;
 extern int get_first_moby_in_group(void **, int, int, int);
 extern int get_next_moby_in_group(void **, void *, int, int);
 extern void FastVecSub(float *, void *, void *);
@@ -1178,10 +1177,10 @@ extern void apply_hero_item_slot_selection(int);
 
 /* Per-frame check of the three moby groups linked from the hero's moby state. */
 void process_hero_race_object_interactions(void) {
-    u8_a *state;
-    u8_a *first;
-    u8_a *second;
-    u8_a *third;
+    u8 *state;
+    u8 *first;
+    u8 *second;
+    u8 *third;
     float delta[4];
     float matrix[16];
     int *ap;
@@ -1190,7 +1189,7 @@ void process_hero_race_object_interactions(void) {
 
     if (HERO->hoverboard_moby == 0)
         return;
-    state = *(u8_a **)(HERO->hoverboard_moby + 0x78);
+    state = *(u8 **)(HERO->hoverboard_moby + 0x78);
     if (*(int *)(state + 0x44) != -1) {
         get_first_moby_in_group((void **)&first, *(int *)(state + 0x44), 0, 0);
         if (first != 0) {
@@ -1257,8 +1256,8 @@ void process_hero_race_object_interactions(void) {
                     FastVecDist((char *)hero_globals_base + 0xEED, third + 0x10) < 1.5f) {
                     struct Hero *g = HERO;
                     third[0xBC] = scale_ticks(300);
-                    if (*(int *)((u8_a *)g + 0x10B8) != 0x24) {
-                        *(int *)((u8_a *)g + 0x20B8) = 0x24;
+                    if (*(int *)((u8 *)g + 0x10B8) != 0x24) {
+                        *(int *)((u8 *)g + 0x20B8) = 0x24;
                         g->item_use_locked = 0;
                         apply_hero_item_slot_selection(0);
                         g->item_use_locked = 1;
@@ -1266,7 +1265,7 @@ void process_hero_race_object_interactions(void) {
                     g->race_ammo++;
                     if (g->race_ammo > 3)
                         g->race_ammo = 3;
-                    *(int *)((u8_a *)g + 0x20B8) = 0x24;
+                    *(int *)((u8 *)g + 0x20B8) = 0x24;
                     ap[36]++;
                 }
                 get_next_moby_in_group((void **)&third, third, 0, 0);
