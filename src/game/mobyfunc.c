@@ -1,8 +1,8 @@
 #include "common.h"
-#include "moby.h"
+#include "structs/moby.h"
 #include "callees.h"
-#include "records.h"
-#include "structs.h"
+#include "structs/records.h"
+#include "structs/misc.h"
 #include "game/draw.h"
 #include "game/vuchain.h"
 

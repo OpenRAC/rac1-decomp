@@ -1,11 +1,11 @@
 #include "common.h"
-#include "vector.h"
+#include "structs/vector.h"
 #include "callees.h"
-#include "records.h"
-#include "structs.h"
-#include "camera.h"
-#include "hero.h"
-#include "moby.h"
+#include "structs/records.h"
+#include "structs/misc.h"
+#include "structs/camera.h"
+#include "structs/hero.h"
+#include "structs/moby.h"
 #include "game/camera.h"
 #include "game/effects.h"
 #include "game/mobyutil.h"
@@ -16,7 +16,7 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-/* The camera block and the debug free camera (include/camera.h). */
+/* The camera block and the debug free camera (include/structs/camera.h). */
 extern CameraSystem gCamera;
 extern DebugFreeCam occl_cam_state;
 

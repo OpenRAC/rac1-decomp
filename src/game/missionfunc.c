@@ -1,8 +1,8 @@
 #include "common.h"
-#include "hero.h"
+#include "structs/hero.h"
 #include "callees.h"
-#include "records.h"
-#include "structs.h"
+#include "structs/records.h"
+#include "structs/misc.h"
 
 /*
  * missionfunc.cpp in the original source; text 0x20C7A0-0x20D348.

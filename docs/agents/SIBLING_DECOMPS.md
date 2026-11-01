@@ -352,7 +352,7 @@ What carries over:
   the layout of private state variables (`pvars`) for ~20 moby classes (Plumber,
   Skid McMarx, Big Al, Novalis lift, etc.) and shared NPC dialogue systems
   (`npcVars`, `npcStep`, `npcstring`). These are adapted into
-  [`include/moby_pvars.h`](../../include/moby_pvars.h) and documented in
+  [`include/pvars/moby_pvars.h`](../../include/pvars/moby_pvars.h) and documented in
   [`docs/reference/PVARS.md`](../reference/PVARS.md).
 - **Asset and level formats**: Level data headers, WAD compression, terrain
   (`tfrag`), ties, shrubs, sky, and occlusion bounds ([`docs/reference/ASSETS.md`](../reference/ASSETS.md)).

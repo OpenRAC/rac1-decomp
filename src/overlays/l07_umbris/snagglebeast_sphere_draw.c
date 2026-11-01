@@ -5,8 +5,8 @@
  * object in retail (docs/reference/BUILD_FIDELITY.md, rule 2). */
 #include "common.h"
 #include "callees.h"
-#include "vector.h"
-#include "moby.h"
+#include "structs/vector.h"
+#include "structs/moby.h"
 
 /* Snagglebeast sphere effect: only the draw state is read here. */
 struct SnaggleSphereVars {

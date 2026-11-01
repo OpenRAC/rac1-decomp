@@ -1,7 +1,7 @@
 #include <stdarg.h>
 #include "common.h"
 #include "callees.h"
-#include "structs.h"
+#include "structs/misc.h"
 #include "core/00116FA0.h"
 #include "core/00118A40.h"
 

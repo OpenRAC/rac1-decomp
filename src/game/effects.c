@@ -1,6 +1,6 @@
 #include "common.h"
-#include "records.h"
-#include "structs.h"
+#include "structs/records.h"
+#include "structs/misc.h"
 #include "game/draw.h"
 
 /*

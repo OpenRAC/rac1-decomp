@@ -413,7 +413,7 @@ numbers (**untested**).
 | `/usr/local/989snd/ee/989snd.c` | 989 Studios sound library (EE side, RPC to the IOP) |
 | `cdrom0:\IOPRP243.IMG;1` | IOP replacement image loaded by `InitOnce` (IOP 2.4.3, **inferred** from the name) |
 
-Pad stack: libpad2 + libdbc (`scePad2CreateSocket`, `pad.h`) + libvib, not
+Pad stack: libpad2 + libdbc (`scePad2CreateSocket`, `structs/pad.h`) + libvib, not
 old libpad (**inferred**).
 
 ---
@@ -482,11 +482,11 @@ Functions per level (all / level-unique / unique bytes): smallest 00
 
 - **`RaC1GadgetId`**: its 29 values don't match retail ids (`D_0013D5C8` /
   `GiveItem`: 0-0x24, Heli-Pack 2, Morph-o-Ray 0x15, Magneboots 0x1C,
-  Hologuise 0x1F, Persuader 0x23; §1.3). The enum in `include/structs.h` is
+  Hologuise 0x1F, Persuader 0x23; §1.3). The enum in `include/structs/misc.h` is
   unused.
 - **"Recovered from unstripped debug types"**: the ELF has no debug
   sections (§4), so that `MobyInstance` is reconstructed. Use
-  `include/moby.h`.
+  `include/structs/moby.h`.
 - **`camera.c` (0x001E7A50)**: no such string; that row is the
   `Camera_CollPrimTest` warning. `hud.cpp`, `loaders.cpp`, `map.cpp` do
   exist.

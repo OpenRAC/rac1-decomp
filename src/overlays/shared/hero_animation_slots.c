@@ -2,8 +2,8 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
-#include "vector.h"
-#include "hero.h"
+#include "structs/vector.h"
+#include "structs/hero.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/morphoray_chicken_and_drones.h"
@@ -1134,7 +1134,7 @@ void update_hero_held_items_and_orientation(void) {
         }
     }
 }
-#include "moby.h"
+#include "structs/moby.h"
 typedef struct {
     unsigned char pad0[0x8];
     int slot;
@@ -2639,7 +2639,7 @@ void update_hero_collision_capsule_dimensions(void) {
     Spring(p + 5, p + 6, t->capsule_radius_target, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f,
            g_frame_time * 4.0f);
 }
-#include "pad.h"
+#include "structs/pad.h"
 extern Hero D_0013F450_211D28 __asm__("D_0013F450");
 extern struct PadState g_controller_state_r __asm__("D_0013CA40");
 extern char resolve_hero_gravity_mode_a(void) __asm__("func_L00_00233CC0");

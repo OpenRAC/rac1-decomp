@@ -1,6 +1,6 @@
 #include "common.h"
 #include "callees.h"
-#include "structs.h"
+#include "structs/misc.h"
 #include "core/00125630.h"
 #include "core/0012AC80.h"
 

@@ -22,7 +22,7 @@ access), not observable results, outside the matched C where possible.
 | [data-structures.md](data-structures.md) | Field tables for `Moby`, `MobyClass`, `PadState`, hero records; vectors; pad bits and input; globals |
 | [mobys.md](mobys.md) | Moby lifecycle, save ids, pvars, animation fields, class-to-update tables, class ids named by debug strings |
 | [datamining.md](datamining.md) | Retail leftovers: debug menu, profiler, dev paths, NPC names, designer errors, button-code decoder, memory budget, SDK versions |
-| [refactor-camera.md](refactor-camera.md) | Camera system map: state, layouts (`include/camera.h`), functions and callers, names, and the byte-neutral rules for turning its raw offsets into fields |
+| [refactor-camera.md](refactor-camera.md) | Camera system map: state, layouts (`include/structs/camera.h`), functions and callers, names, and the byte-neutral rules for turning its raw offsets into fields |
 
 Older, more detailed documents:
 [OVERLAYS.md](../OVERLAYS.md), [ASSETS.md](../reference/ASSETS.md), [NAMES.md](../NAMES.md),
@@ -34,12 +34,12 @@ Older, more detailed documents:
 
 Not fixed yet:
 
-- `docs/reference/PVARS.md` and `MobyInstance` in `include/structs.h` put the moby's update pointer,
-  pvars and oClass at 0xA8 / 0xAC / 0xBC. The matched code and `include/moby.h` use
-  0x74 / 0x78 / 0xA6. Use `moby.h`. PVARS.md's level numbers are also off (Pokitaru is 11;
+- `docs/reference/PVARS.md` and `MobyInstance` in `include/structs/misc.h` put the moby's update pointer,
+  pvars and oClass at 0xA8 / 0xAC / 0xBC. The matched code and `include/structs/moby.h` use
+  0x74 / 0x78 / 0xA6. Use `structs/moby.h`. PVARS.md's level numbers are also off (Pokitaru is 11;
   see [OVERLAYS.md](../OVERLAYS.md#levels)).
-- Some header comments carry US addresses: `include/hero.h` names the hero `D_0013F350`
-  (PAL: `D_0013F450`), and `include/pad.h` names the mirror flag `D_0015EDB4`
+- Some header comments carry US addresses: `include/structs/hero.h` names the hero `D_0013F350`
+  (PAL: `D_0013F450`), and `include/structs/pad.h` names the mirror flag `D_0015EDB4`
   (PAL: `D_0015EEB4`).
 - Fixed: `func_001E9808` was named `showDebugFont` from the NTSC decomp, but its body starts a
   level; it is now `StartLevel` via `config/names_local.tsv`.

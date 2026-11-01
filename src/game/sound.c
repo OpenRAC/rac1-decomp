@@ -1,9 +1,9 @@
 #include "common.h"
-#include "vector.h"
+#include "structs/vector.h"
 #include "callees.h"
-#include "records.h"
-#include "hero.h"
-#include "structs.h"
+#include "structs/records.h"
+#include "structs/hero.h"
+#include "structs/misc.h"
 #include "game/mobyutil.h"
 
 /*

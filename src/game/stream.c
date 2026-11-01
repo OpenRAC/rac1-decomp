@@ -1,8 +1,8 @@
 #include "common.h"
 #include "callees.h"
-#include "records.h"
-#include "structs.h"
-#include "pad.h"
+#include "structs/records.h"
+#include "structs/misc.h"
+#include "structs/pad.h"
 #include "core/989snd.h"
 #include "game/mobyutil.h"
 
@@ -517,7 +517,7 @@ extern void sce_pad2_init(int);
 extern int sce_pad2_create_socket(void *, void *);
 
 /* Minimal layouts for init_pads: the port/slot socket parameter (NTSC name unknown)
-   and the leading part of PadState from pad.h, up to the fields init_pads writes. */
+   and the leading part of PadState from structs/pad.h, up to the fields init_pads writes. */
 typedef struct {
     s32 port;
     s32 slot;

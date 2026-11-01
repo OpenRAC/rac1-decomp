@@ -1,9 +1,9 @@
 #include "common.h"
 #include "callees.h"
-#include "records.h"
-#include "structs.h"
-#include "hero.h"
-#include "memcard.h"
+#include "structs/records.h"
+#include "structs/misc.h"
+#include "structs/hero.h"
+#include "structs/memcard.h"
 
 /*
  * menu.cpp in the original source; text 0x2071A8-0x209A60.

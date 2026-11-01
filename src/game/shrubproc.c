@@ -1,7 +1,7 @@
 #include "common.h"
 #include "callees.h"
-#include "records.h"
-#include "structs.h"
+#include "structs/records.h"
+#include "structs/misc.h"
 
 /*
  * shrubproc.cpp in the original source; text 0x229F00-0x22BEB0.

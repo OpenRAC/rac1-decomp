@@ -14,24 +14,24 @@ import clast, layout
 from pathlib import Path
 
 TARGETS = {
-    'moby': {'header': 'moby.h',
+    'moby': {'header': 'structs/moby.h',
              'recs': {'Moby': 'struct Moby', 'MobyClass': 'struct MobyClass'},
              'alias': {'Moby': r'(Moby|\w*Moby)(_[0-9A-Fa-f_]+)?'},
              'clone': 'Vec4f', 'clone_name': r'V\w*'},
-    'hero': {'header': 'hero.h',
+    'hero': {'header': 'structs/hero.h',
              'recs': {n: 'struct ' + n for n in ('Hero', 'HeroState', 'HeroMotion', 'HeroItemSlot', 'HeroRandTimer',
                                                  'HeroHealth', 'HeroEase', 'HeroVelocityKey', 'MobyTrail', 'HeroManipulator')},
              'alias': {'Hero': r'(Hero|\w*MovementPlayer|HopPlayer|HeroPos|Hero52|Hero6E0)(_[0-9A-Fa-f_]+)?'},
              'clone': 'Vec4', 'clone_name': r'Vec4(_[0-9A-Fa-f]+)?'},
-    'pad': {'header': 'pad.h', 'recs': {'PadState': 'struct PadState'},
+    'pad': {'header': 'structs/pad.h', 'recs': {'PadState': 'struct PadState'},
             'alias': {'PadState': r'(Pad|PadState)(_[0-9A-Fa-f_]+)?'}, 'clone': None, 'clone_name': r'(?!)'},
-    'camera': {'header': 'camera.h', 'recs': {'CameraSystem': 'struct CameraSystem', 'Camera': 'struct Camera'},
+    'camera': {'header': 'structs/camera.h', 'recs': {'CameraSystem': 'struct CameraSystem', 'Camera': 'struct Camera'},
                'clone': None, 'clone_name': r'(?!)'},
     'disc': {'header': 'structs/disc.h', 'recs': {'DiscTable': 'struct DiscTable', 'DiscFile': 'struct DiscFile'},
              'clone': None, 'clone_name': r'(?!)'},
-    'vecf': {'header': 'vector.h', 'recs': {},
+    'vecf': {'header': 'structs/vector.h', 'recs': {},
              'clone': 'Vec4f', 'clone_name': r'(?!.*(Quat|Col|Rgb|Mat))(V\w*|\w*Vec\w*)'},
-    'vec': {'header': 'vector.h', 'recs': {},
+    'vec': {'header': 'structs/vector.h', 'recs': {},
             'clone': 'Vec4', 'clone_name': r'(?!.*(Quat|Col|Rgb|Mat))(V\w*|\w*Vec\w*)'},
 }
 

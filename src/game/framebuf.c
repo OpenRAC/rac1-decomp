@@ -1,7 +1,7 @@
 #include "common.h"
 #include "callees.h"
-#include "records.h"
-#include "structs.h"
+#include "structs/records.h"
+#include "structs/misc.h"
 #include "core/00121D18.h"
 #include "core/00122200.h"
 

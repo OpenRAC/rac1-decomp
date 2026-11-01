@@ -4,11 +4,21 @@
 
 1. `common.h` first. It brings in the types and `names.h`.
 2. `include_asm.h`, if the file has stubs.
-3. Shared headers, such as `moby.h` and `hero.h`.
+3. Shared headers, such as `structs/moby.h` and `structs/hero.h`.
 4. Function headers, such as `game/draw.h`.
 
 Do not sort them. The `names.h` macros depend on the order. New includes go in the block at the top of the file, not
 further down.
+
+## Folders
+
+| Folder | What it holds |
+|---|---|
+| `include/` | `common.h` (includes `types.h`, `macros.h` and `names.h`), `callees.h`, `include_asm.h` |
+| `include/enums/` | Named numbers: moby classes, hero states, camera modes |
+| `include/structs/` | Shared records: `moby.h`, `hero.h`, `camera.h`, `disc.h` |
+| `include/pvars/` | Moby private data |
+| `include/core/`, `include/game/`, `include/overlays/` | Function headers |
 
 ## Function headers
 

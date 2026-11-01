@@ -1,5 +1,5 @@
 #include "common.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 /* Three metadata words following the 0x50000-byte data ring. */
 typedef struct ReadBufState {

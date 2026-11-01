@@ -1,7 +1,7 @@
 /* Functions of common level code added after the first split; stubs added by tools/overlay_variants.py, replaced by C as functions are matched. */
 #include "common.h"
 #include "include_asm.h"
-#include "hero.h"
+#include "structs/hero.h"
 
 typedef struct {
     char pad[0x24];

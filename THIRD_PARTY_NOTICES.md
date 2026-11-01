@@ -780,7 +780,7 @@ One more is this project's own port of a function it has from Lombyte: `func_L00
 `src/overlays/shared/camera_001EB508.c` is the level programs' copy of `func_001EC2B8` (Lombyte's
 `switch_active_camera_record`), with the same C under the level's symbols.
 
-`include/moby.h`, the shared definition of the moby (the game's 0x100-byte object), its class header and
+`include/structs/moby.h`, the shared definition of the moby (the game's 0x100-byte object), its class header and
 the vector type, is adapted from Lombyte's `include/rnc/gameplay/entities/moby.h` at 88c78925, whose layout
 and field names come from the matched code it cites.
 
@@ -851,13 +851,13 @@ there. In parentheses, Lombyte's name.
 - `src/overlays/shared/vendor_002D9438.c`: `func_L00_002DACC0` (`FUN_L00_002d9810`)
 - `src/overlays/shared/vendor_002EB0D8.c`: `func_L00_002ED320` (`FUN_L00_002ebe70`)
 
-`include/hero.h` (the hero and the records inside it) and `include/vector.h` (the 16-byte vector) are
+`include/structs/hero.h` (the hero and the records inside it) and `include/structs/vector.h` (the 16-byte vector) are
 adapted from Lombyte's `include/rnc/gameplay/hero.h` and `include/rnc/math/vector.h` at 42adb529, while
-Lombyte was MIT licensed. `include/pad.h` (the controller state) is adapted from its
-`include/rnc/input/pad_state.h` at the same commit. On 2026-10-22 `include/moby.h`, `include/hero.h` and
-`include/pad.h` took the NTSC decomp's later changes at 4e1f255e (GPL-3.0 since its a1379f57): two
-hero fields, the pad button bits and the function names in their comments. `include/hero_state.h`,
-`include/moby_class_id.h` and `include/camera_modes.h` (enumerations only) are its
+Lombyte was MIT licensed. `include/structs/pad.h` (the controller state) is adapted from its
+`include/rnc/input/pad_state.h` at the same commit. On 2026-10-22 `include/structs/moby.h`, `include/structs/hero.h` and
+`include/structs/pad.h` took the NTSC decomp's later changes at 4e1f255e (GPL-3.0 since its a1379f57): two
+hero fields, the pad button bits and the function names in their comments. `include/enums/hero_state.h`,
+`include/enums/moby_class.h` and `include/enums/camera_mode.h` (enumerations only) are its
 `include/rnc/gameplay/hero_state.h`, `include/rnc/gameplay/entities/moby_class_id.h` and
 `include/rnc/gameplay/camera/camera_modes.h` at 4e1f255e.
 
@@ -1019,7 +1019,7 @@ provides reverse-engineered asset decoders, level modding tools, and C++ type
 definitions for moby instance private variables (`pvars`). The following adapt
 its source code and reverse-engineering findings:
 
-- `include/moby_pvars.h`: moby instance private variable (pvar) layouts, NPC
+- `include/pvars/moby_pvars.h`: moby instance private variable (pvar) layouts, NPC
   state machine structs (`npcVars`, `npcStep`, `npcstring`), and IK / procedural
   structures (`Manipulator`, `Tweaker`), adapted from
   `data/overlay/src/game_common/` and `data/overlay/src/game_rac/` for C

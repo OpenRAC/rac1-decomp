@@ -1,8 +1,8 @@
 #include "common.h"
 #include "callees.h"
-#include "records.h"
-#include "moby.h"
-#include "structs.h"
+#include "structs/records.h"
+#include "structs/moby.h"
+#include "structs/misc.h"
 
 /*
  * update.cpp in the original source; text 0x238D88-0x239628.
@@ -23,7 +23,7 @@ extern void truncate_float_to_s32(float);
 void DebugProfiler_Hook(void) {
 }
 
-#include "vector.h"
+#include "structs/vector.h"
 typedef struct {
     char unk_000[0x190];
     float scale[2];

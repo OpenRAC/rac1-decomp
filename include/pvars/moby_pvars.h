@@ -14,7 +14,7 @@
 #define MOBY_PVARS_H
 
 #include "common.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 /* Link identifier types (references to level entities / tables) */
 typedef s32 mobylink;

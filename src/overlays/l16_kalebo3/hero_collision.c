@@ -2,8 +2,8 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
-#include "hero.h"
-#include "vector.h"
+#include "structs/hero.h"
+#include "structs/vector.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 
 extern char hero_globals_base[];

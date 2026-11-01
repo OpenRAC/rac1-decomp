@@ -5,9 +5,9 @@
  * (docs/reference/BUILD_FIDELITY.md, "Flags"). */
 #include "common.h"
 #include "include_asm.h"
-#include "camera.h"
-#include "hero.h"
-#include "moby.h"
+#include "structs/camera.h"
+#include "structs/hero.h"
+#include "structs/moby.h"
 #include "overlays/shared/camera_switch_and_update.h"
 
 extern CameraSystem player_camera;

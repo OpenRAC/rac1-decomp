@@ -1,8 +1,8 @@
 #include "common.h"
-#include "pad.h"
+#include "structs/pad.h"
 #include "callees.h"
-#include "records.h"
-#include "structs.h"
+#include "structs/records.h"
+#include "structs/misc.h"
 
 /*
  * pad.cpp in the original source; text 0x217F68-0x218928.

@@ -1,7 +1,7 @@
 #include <stdarg.h>
 #include "common.h"
 #include "callees.h"
-#include "structs.h"
+#include "structs/misc.h"
 
 /*
  * core_text object 0x119D88-0x11CCE0. Boundaries are retail's linker fill

@@ -1,8 +1,8 @@
 #include "common.h"
-#include "vector.h"
+#include "structs/vector.h"
 #include "callees.h"
-#include "records.h"
-#include "structs.h"
+#include "structs/records.h"
+#include "structs/misc.h"
 
 /*
  * drawquad.cpp in the original source; text 0x1F7C60-0x1F9810.
