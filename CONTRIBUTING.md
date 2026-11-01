@@ -1,6 +1,10 @@
 ## Contributing
 
-The full procedure is in [`docs/WORKFLOW.md`](docs/WORKFLOW.md). In short:
+All 5116 functions match, so most work now makes the code easier to read. Start with
+[`docs/README.md`](docs/README.md) to see where things are and what is left. Any change must keep the match:
+run `bash tools/check_all.sh` before a PR.
+
+To match a function, the full procedure is in [`docs/WORKFLOW.md`](docs/WORKFLOW.md). In short:
 
 1. Pick a function. `python tools/rank_candidates.py` lists promising ones;
    `python tools/triage.py` sorts everything not yet exact into work queues
@@ -17,11 +21,8 @@ The full procedure is in [`docs/WORKFLOW.md`](docs/WORKFLOW.md). In short:
    a function match. For a side-by-side view, `sh tools/diff.sh
    func_XXXXXXXX` (or `tools\diff.bat` on Windows) runs
    [asm-differ](https://github.com/simonlindholm/asm-differ).
-4. Verify from scratch with `bash tools/build_sn.sh` (or
-   `python tools/build_sn.py` on Windows).
-5. Regenerate the progress report with
-   `python tools/gen_progress_report.py`, and commit it together with your
-   change. CI fails if the report is out of date.
+4. Verify from scratch with `bash tools/check_all.sh`. It rebuilds, checks every version and refreshes the
+   progress report. Commit the report with your change: CI fails if it is out of date.
 
 On macOS and Linux, prefix each of these with `bash tools/docker/run.sh`.
 m2c and asm-differ are used from local clones (not vendored):
