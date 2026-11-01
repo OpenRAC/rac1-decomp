@@ -487,7 +487,7 @@ extern PairA batalia_uv_scroll[];
 extern PairA layered_mesh_sine_phase_p[] __asm__("D_L08_00161EB8") MACRO_ADDR;
 extern float scroll_pos_y[] MACRO_ADDR;
 extern Pair8 scroll_pos_x[] MACRO_ADDR;
-extern float D_L08_00161EB4 MACRO_ADDR;
+
 extern PairA batalia_mesh8_scroll_offset[] MACRO_ADDR;
 extern float layered_mesh_effect_center_y MACRO_ADDR;
 extern float layered_mesh_effect_center_z MACRO_ADDR;
@@ -1698,7 +1698,6 @@ typedef struct {
     s32 moving_timer; /* 0x174 */
     s32 target_timer; /* 0x178 */
 } BataliaPlumberData;
-
 
 /* The Plumber on Batalia: dialog, then the cannon scene, movie or hero kill by dialog result. */
 void the_plumber_batalia_update(char *m) {

@@ -537,19 +537,11 @@ extern int scale_ticks(int);
 extern float IntToFloat(int);
 extern float FastSin(float);
 extern int FastTweenColor(int, int, float);
-extern void MobyTransformScaledVertex(void *, int, void *);
+
 extern void FastVecScale(void *, void *, float);
 extern void FastVecSub(void *, void *, void *);
 extern void draw_offset_textured_effect_quad(void *, int, float, float);
 extern int veldin2_frame_count MACRO_ADDR;
-extern int drek_boss_rider_glow_period;
-extern int drek_boss_rider_glow_color_a;
-extern int drek_boss_rider_glow_color_b;
-extern float drek_boss_rider_glow_offset;
-extern float drek_boss_rider_glow_size;
-extern float drek_boss_rider_glow_offset_b __asm__("D_L18_001624E4");
-extern float drek_boss_rider_glow_size_b __asm__("D_L18_001624E0");
-extern short veldin2_bone_glow_axis_offset;
 
 typedef unsigned int u128_9c20 __attribute__((mode(TI)));
 typedef struct {

@@ -2348,7 +2348,6 @@ int Moby_ParkIfGrabbed(struct Moby *moby, void *position, void *target) {
     }
     return r;
 }
-extern void *store_moby_in_suck_cannon(void *);
 
 extern void *store_moby_in_suck_cannon_pos(void *, void *, void *, float) __asm__("func_L00_002DCFD0");
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy

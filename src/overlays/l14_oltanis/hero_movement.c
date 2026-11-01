@@ -7,7 +7,6 @@
 #include "hero.h"
 #include "moby.h"
 
-extern unsigned char hero_globals_base[];
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 extern int CollType(void);

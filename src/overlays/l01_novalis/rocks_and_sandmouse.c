@@ -238,7 +238,7 @@ typedef struct {
 } BurstLevelState;
 extern BurstLevelState novalis_checkpoint_level_state;
 extern BurstColors bridge_piece_debris_colors;
-extern void *MobyGetHitMessage_r(void *, s32, s32) __asm__("func_L00_0025B478");
+
 extern void DeleteMoby(void *);
 extern f32 random_angle_radians(void);
 extern s32 random_integer_below(s32);
@@ -248,17 +248,14 @@ extern void vec_scale_to_length(void *, void *, f32);
 extern void FastVecAdd(void *, void *, void *);
 extern int rand_range(int lo, int hi);
 extern void spawn_debris_moby(void *, void *, u32, s32, f32, f32, f32, f32, s32);
-extern f32 random_angle_radians_r(void) __asm__("func_00214158");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+
 void func_0020D678_FB158b(void *) __asm__("func_0020D678");
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
-extern f32 FastCos_r(f32) __asm__("func_001F9F90");
-extern f32 FastSin_r(f32) __asm__("func_001F9FA8");
+
 void *func_L00_0025B478_FB158b(void *, s32, s32) __asm__("func_L00_0025B478");
 void func_0020D678_FB158c(void *) __asm__("func_0020D678");
 extern float FastCos_r2(float) __asm__("func_001F9F90");
 extern float FastSin_r2(float) __asm__("func_001F9FA8");
-extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern void FastVecAdd_r4(void *, void *, void *) __asm__("func_001F9BD8");
 extern int rand_range_r(int lo, int hi) __asm__("func_L00_00258BC8");
 extern f32 random_angle_radians_r2(void) __asm__("func_00214158");
@@ -953,7 +950,6 @@ typedef struct PendulumVars {
     f32 swing; /* 0x70 */
     s32 sound; /* 0x74 */
 } PendulumVars;
-
 
 /* hinged bridge: swings with a sound while triggered and poses the bridge moby from its pivot */
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002fb8a8.
@@ -2366,7 +2362,6 @@ extern void FastVecScale(void *, void *, float);
 extern float FastVecLength(void *);
 extern float novalis_env_map_scroll_u MACRO_ADDR;
 extern float novalis_env_map_scroll_v MACRO_ADDR;
-
 
 /* Projects each of n point/normal pairs onto a 2D texture coordinate. */
 void generate_level01_environment_map_uvs(int vertex_count, char *normals, char *verts, int unused, float *uv) {

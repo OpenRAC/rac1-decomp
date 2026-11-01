@@ -2221,7 +2221,6 @@ extern int oltanis_frame_count MACRO_ADDR;
 extern int oltanis_shown_help_message MACRO_ADDR;
 extern Pose_2F19C0 *oltanis_clip_volumes_r2 __asm__("D_L14_001601AC") MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 
 /* Taxi update: waits at a station, flies the hero between stations along a path, and manages its sound. */
 extern PadState g_controller_state_r __asm__("D_0013CA40");

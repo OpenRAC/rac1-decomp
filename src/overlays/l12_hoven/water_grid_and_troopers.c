@@ -313,7 +313,7 @@ void initialize_level_12_slot_grid_neighbors(int arg) {
         }
     }
 }
-extern int process_moby_suck_cannon_suction(void *);
+
 extern void MobyGroup_SetByteBC(int, int);
 
 extern int process_moby_suck_cannon_suction_pos(void *, void *, void *) __asm__("func_L00_002DCDA8");
@@ -332,7 +332,7 @@ int GroupMoby_UpdateActiveState(Moby *moby, void *pos, void *target) {
     }
     return active;
 }
-extern int store_moby_in_suck_cannon(void *);
+
 extern int store_moby_in_suck_cannon_pos(void *, void *, void *, float) __asm__("func_L00_002DCFD0");
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as

@@ -1606,7 +1606,7 @@ extern int hero_slot_item_id(int);
 extern int pick_idle_fidget(int *);
 extern float multiply_global_factor(float);
 extern int HeroL02_SetMoveState(int a, int b);
-extern void fast_dec_timer(int *arg0);
+
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern void blend_hero_slot3_animation_pair(void);
 extern int try_start_hero_jump(int, int);

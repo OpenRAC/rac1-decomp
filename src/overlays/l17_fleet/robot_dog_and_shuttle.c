@@ -233,7 +233,7 @@ int move_robot_dog_toward_position(char *moby, float *target, float speed) {
     move_4318((int)moby, (int)tmp, 0.5f, 0.5f, 0.0f, 0);
     return vec_distance_xy(moby + 0x10, target) < 0.2f;
 }
-extern int process_moby_suck_cannon_suction(void *);
+
 extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 
@@ -1381,7 +1381,7 @@ void draw_fleet_backdrop_quads(char *moby) {
 extern int is_point_inside_clip_volume(void *, int);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void draw_fleet_backdrop_quads(char *);
-extern short fleet_hero_fall_state_height;
+
 extern float fleet_hero_fall_state_height_m __asm__("D_L17_0015F718") MACRO_ADDR;
 typedef int u128 __attribute__((mode(TI)));
 extern short fleet_backdrop_bend_length;

@@ -33,7 +33,6 @@ typedef struct Car292890 {
     f32 fC4; /* 0xC4: coupling length */
 } Car292890;
 
-
 /* Spline-following moby family (red ship and its emitter helpers): hermite path, springs, timers. */
 struct SplineMobyVars {
     u8 pad_00[0x2B];
@@ -211,7 +210,6 @@ extern void DeleteMoby(void *);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char kerwan_train_motion_error_msg[];
-
 
 // Steers this moby and its partner toward each other, then walks the chain of mobys through 0xC0.
 void update_metropolis_train_motion(char *moby) {
@@ -2279,7 +2277,7 @@ extern float IntToFloat(int);
 extern int coll_sphere(float, void *, int, void *);
 extern int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d);
 extern float ProbeGroundHeight(void *, int, float);
-extern unsigned char *GetFlaggedPvarWord(int);
+
 extern unsigned char *moby_get_ride_transform(int);
 extern void RotatePointAboutAxis(void *, void *, float);
 extern void DeleteMoby(void *);

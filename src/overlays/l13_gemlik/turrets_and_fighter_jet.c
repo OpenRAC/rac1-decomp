@@ -868,7 +868,6 @@ typedef struct {
     void *value;
 } Level13VendorMoby;
 
-
 /* Release the vendor moby's attached object and clear its reference. */
 void release_robosquawker_particle(Level13VendorMoby *moby) {
     if (moby->value != 0) {
@@ -2866,8 +2865,7 @@ extern int *jet_palette47 SDATA(D_L13_00161450);
 extern short jet_boarding_group_ids_b;
 extern void clamp_vec_length(void *, void *, float);
 extern void vec_reflect(void *, void *, void *);
-extern void jet_explosion47(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                            int, int, int, int) __asm__("func_L00_0025F4A8");
+
 extern void jet_group_state(int, int, int, int);
 extern void jet_group_switch(short *, int, int, int);
 extern void jet_group_flag(int, int);

@@ -779,7 +779,6 @@ void func_L18_002D7310_r(unsigned char *m) {
 }
 struct Manip_D74F8;
 struct GifEntry_D74F8;
-extern int process_moby_suck_cannon_suction_r(void *) __asm__("func_L00_002DCDA8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d6108. */
 extern int process_moby_suck_cannon_suction_D74F8_pos(void *, void *, void *) __asm__("func_L00_002DCDA8");
@@ -817,7 +816,6 @@ typedef struct {
 /* src/overlays/shared/vendor_002D9438.c defines this with two parameters, and
    retail sets only $a0 at this call site, so the second one is ours, passed
    straight through. */
-extern int store_moby_in_suck_cannon(Level18VendorMoby *, void *);
 
 extern int store_moby_in_suck_cannon_h(Level18VendorMoby *, void *, void *, float) __asm__("func_L00_002DCFD0");
 /* Switch to state four while active, then restore the saved state. */

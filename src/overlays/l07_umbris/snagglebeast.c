@@ -100,7 +100,6 @@ struct SnagglebeastVars {
     Vec4 scale_manip; /* 0x2A0 */
 };
 
-
 extern void draw_snagglebeast_sphere_quad_strips(char *, int, float, float, float, float, float);
 
 /* Starts the effect with an angle ramped from the moby's timer, capped at pi. */
@@ -2389,7 +2388,7 @@ typedef struct {
 } L07Ent;
 
 extern L07Ent rope_particles[];
-extern L07Ent snagglebeast_rope_centers[];
+
 extern char rope_previous_points[];
 extern char snagglebeast_rope_centers_v[] __asm__("D_L07_0020DDC0");
 extern short row_phase_step_gp;

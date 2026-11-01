@@ -153,7 +153,7 @@ extern void add_vectors(void *, void *, void *);
 extern float ProbeGroundHeight(void *, int, float);
 extern int CollType(void);
 extern void trooper_set_knockback(float *p, float a, float b);
-extern void InitKnockback(float, void *, void *, int, int, int);
+
 extern void InitKnockback_b(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 extern void MobySpringTurn_b(char *moby, float target, float k, float d, float max,
                              float *vel) __asm__("func_L00_002592B0");
@@ -2226,7 +2226,6 @@ typedef struct {
     char pad18[0x4];
     int door; /* 0x1C: index of the linked moby */
 } GateVars_2EAD50;
-
 
 extern unsigned char level_available_base_r[] __asm__("D_0013DE4B");
 extern Moby *orxon_mobys_r2 __asm__("D_L10_00160058") MACRO_ADDR;

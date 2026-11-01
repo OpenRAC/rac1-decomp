@@ -103,7 +103,7 @@ extern int return_hero_animation_id_unchanged(int);
 extern int pick_idle_fidget(int *);
 extern float multiply_global_factor(float);
 extern int HeroL17_SetMoveState(int, int);
-extern void fast_dec_timer(int *arg0);
+
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern int rand_range(int, int);
 extern void blend_hero_slot3_animation_pair(void);
@@ -152,8 +152,7 @@ extern float FastAbsF(float);
 extern float random_float_between(float a, float b);
 extern void hero_switch_item(int i);
 extern void release_and_clear_hero_voice_slots(void);
-extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
-extern void *spawn_class_593_moby(int unused, void *pos, int c, float scale, float a, float b);
+
 extern void clear_u64_value(void *);
 extern int test_hero_animation_frame_window(float t);
 extern void emit_randomized_sparkle_pairs(void *, int);
