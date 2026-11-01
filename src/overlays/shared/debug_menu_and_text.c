@@ -4,12 +4,12 @@
 #include "structs/camera.h"
 #include "structs/pad.h"
 #include "structs/hero.h"
-#include "game/draw.h"
-#include "game/vuchain.h"
+#include "game/render/draw.h"
+#include "game/render/vuchain.h"
 #include "asm_functions/shared_levels.h"
 #include "core/kernel/kprintf.h"
-#include "game/framebuf.h"
-#include "game/hud.h"
+#include "game/render/framebuf.h"
+#include "game/ui/hud.h"
 
 typedef struct {
     s32 a, b, c, d;
@@ -1297,7 +1297,7 @@ void frame_roll_counter(void) {
     *(int *)(p + 0x368) = t;
 }
 /* ParseOcclGrid(x, y, z): walks the three-level occlusion grid at
-   D_L00_0015F6E0, the same function as the core's func_001F2A38 (src/game/draw.c).
+   D_L00_0015F6E0, the same function as the core's func_001F2A38 (src/game/render/draw.c).
    Each level is {u16 start, u16 count, u16 entry[count]}; the coordinate minus
    start must fall in [0, count). Retail's function is 0xD4 bytes: this stub's
    0x84 bytes, the func_L00_001F767C piece (0x48) and the shared return

@@ -5,7 +5,7 @@
 #include "structs/moby.h"
 #include "asm_functions/shared_levels.h"
 #include "data/level_04.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 
 extern float eudora_coll_hit_z;
 extern int coll_line(void *, void *, int, int, int);

@@ -234,7 +234,7 @@ Tento přístup nejen zlepšuje čitelnost, ale přímo ovlivňuje generovaný k
 
 ## 4. Referenční ukázka dekompilace (Gold Standard)
 
-Příklad úspěšně dekompilované funkce `func_001FF7F0` (`LinkHudBank`) ze souboru `src/game/hud.c`:
+Příklad úspěšně dekompilované funkce `func_001FF7F0` (`LinkHudBank`) ze souboru `src/game/ui/hud.c`:
 
 ```c
 typedef struct {

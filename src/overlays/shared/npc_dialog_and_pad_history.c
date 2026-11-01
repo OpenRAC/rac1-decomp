@@ -3,12 +3,12 @@
 #include "include_asm.h"
 #include "structs/pad.h"
 #include "structs/hero.h"
-#include "game/stream.h"
+#include "game/audio/stream.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "data/shared_levels.h"
-#include "game/hud.h"
+#include "game/ui/hud.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
 
 typedef struct {

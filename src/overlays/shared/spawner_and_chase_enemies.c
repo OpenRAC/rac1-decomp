@@ -4,7 +4,7 @@
 #include "structs/vector.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "structs/collision.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"

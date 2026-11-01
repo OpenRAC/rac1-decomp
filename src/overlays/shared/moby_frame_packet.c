@@ -2,7 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
-#include "game/mobyfunc.h"
+#include "game/moby/mobyfunc.h"
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -335,7 +335,7 @@ INCLUDE_ASM("asm/overlays", func_L00_00250700);
    0x40-byte scratch buffer) by arg0+0x2C in 1/1024 units, writing the
    scaled result to arg2, then run arg2 through the two per-object
    transforms at arg0+0xC0 and arg0+0x10.  Same family as func_0020DAF8 in
-   src/game/mobyfunc.c, but the scaling target here is a caller-supplied
+   src/game/moby/mobyfunc.c, but the scaling target here is a caller-supplied
    vec4 (arg2) rather than a field of a caller-supplied 0x40-byte struct.
    0x3A800000 is exactly 2^-10. */
 

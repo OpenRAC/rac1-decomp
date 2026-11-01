@@ -14,7 +14,7 @@
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "asm_functions/shared_levels.h"
 #include "data/executable.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"

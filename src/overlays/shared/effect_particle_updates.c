@@ -9,8 +9,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/shared_levels.h"
 #include "data/shared_levels.h"
-#include "game/fastfunc.h"
-#include "game/mobyutil.h"
+#include "game/math/fastfunc.h"
+#include "game/moby/mobyutil.h"
 #include "enums/hero_state.h"
 
 extern void load_display_text_resource_entry(float *arg0, int *arg1);

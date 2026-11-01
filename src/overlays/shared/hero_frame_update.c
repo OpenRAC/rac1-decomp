@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/hero.h"
-#include "game/draw.h"
+#include "game/render/draw.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_mapped_animations.h"

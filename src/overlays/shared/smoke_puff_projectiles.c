@@ -3,7 +3,7 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
 

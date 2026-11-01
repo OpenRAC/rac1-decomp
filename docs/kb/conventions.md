@@ -149,7 +149,7 @@ pass. A cast into a `pad_` field means the field should be named in the header
 | `Pad_2D9F08` | `src/overlays/shared/trespasser_pad_and_background_ships.c` | reads `held` and `pressed` as one doubleword (`b1C0`); `PadState`'s separate `s32` fields would change the load |
 
 These hero views still change bytes or break a version's C when converted to `struct Hero`:
-`LevelObjectState_230A90` (`src/game/space.c`), `G_pp_t` (`bolts_and_wrench.c`), `G_2CF6A0`
+`LevelObjectState_230A90` (`src/game/system/space.c`), `G_pp_t` (`bolts_and_wrench.c`), `G_2CF6A0`
 (`morphoray_chicken_and_drones.c`), `Hero40` (`nanotech_ball_and_suck_cannon.c`) and `G_6570`
 (`heavy_interceptor_and_turrets.c`). So do these camera and pad views: `SceneG` (`draw.c`), `P` and `PadStateWords`
 (`cutscene_and_movie_playback.c`), `Input_1F4918` (`debug_menu_and_text.c`), `G` (`hero_steering_and_tilt.c`) and `PadD`

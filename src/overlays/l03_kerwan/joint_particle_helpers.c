@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "asm_functions/executable.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
 

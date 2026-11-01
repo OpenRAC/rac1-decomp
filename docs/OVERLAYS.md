@@ -241,7 +241,7 @@ so removed tails cannot remain variant names or parents.
   InitCamera_7 at offset `+0x10`, referenced by `camvtbl` in levels 0, 1
   and 8. The 12-byte remnant entry excludes its final alignment nop;
   the independent eight-byte return-zero function is three additional
-  placements of the existing exact `func_001E97C8` in `src/game/stub.c`.
+  placements of the existing exact `func_001E97C8` in `src/game/system/stub.c`.
 
 - `func_L00_00261448` (48 bytes, all 19 levels) is one function: the 16-byte
   `func_L00_0025D390` prefix, `func_L00_00261458` and the return-zero tail

@@ -13,7 +13,7 @@
 #include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "data/level_15.h"
-#include "game/hud.h"
+#include "game/ui/hud.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
 

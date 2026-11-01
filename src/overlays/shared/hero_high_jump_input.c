@@ -7,7 +7,7 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "asm_functions/shared_levels.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
 

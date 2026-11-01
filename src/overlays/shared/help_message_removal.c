@@ -1,7 +1,7 @@
 /* Shared level code following mobyutil. Starts at 0x00265558 (was mobyutil_00265558.c). */
 #include "common.h"
 #include "include_asm.h"
-#include "game/hud.h"
+#include "game/ui/hud.h"
 
 extern int timed_hud_visible MACRO_ADDR;
 extern int timed_hud_frames_left MACRO_ADDR;

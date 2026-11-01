@@ -4,16 +4,16 @@
 #include "include_asm.h"
 #include "structs/vector.h"
 #include "structs/hero.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/morphoray_chicken_and_drones.h"
 #include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "data/shared_levels.h"
-#include "game/draw.h"
-#include "game/fastfunc.h"
-#include "game/hud.h"
-#include "game/loaders.h"
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
+#include "game/ui/hud.h"
+#include "game/system/loaders.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/collision.h"
 #include "structs/hero_views.h"
@@ -2948,7 +2948,7 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern void BuildSphericalOffset(void *, float, float, float);
 
-/* D_0013E633 + 0xE1D lands on D_0013F450 (see src/game/camera.c). */
+/* D_0013E633 + 0xE1D lands on D_0013F450 (see src/game/gameplay/camera.c). */
 extern char g_hero[];
 
 /* Builds a direction vector into D_0013F450+0xE0: either func_00215C00's
@@ -3576,7 +3576,7 @@ int resolve_hero_current_position_collisions(int arg) {
  * two slots.
  *
  * D_0013F450 is D_0013E633 + 0xE1D, the big shared blob already declared
- * this way in src/game/camera.c and src/game/pause.c.
+ * this way in src/game/gameplay/camera.c and src/game/ui/pause.c.
  */
 extern char g_hero[];
 extern int resolve_hero_current_position_collisions(int index);

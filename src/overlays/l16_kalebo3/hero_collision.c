@@ -6,7 +6,7 @@
 #include "structs/vector.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "data/level_16.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
 

@@ -10,7 +10,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/point_lights_and_glows.h"
 #include "asm_functions/shared_levels.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"

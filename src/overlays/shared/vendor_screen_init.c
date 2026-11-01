@@ -7,8 +7,8 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "core/sound/989snd.h"
-#include "game/loaders.h"
-#include "game/music.h"
+#include "game/system/loaders.h"
+#include "game/audio/music.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/level_gameplay_loading.h"
 

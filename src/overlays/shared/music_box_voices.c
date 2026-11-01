@@ -3,7 +3,7 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "data/level_01.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "overlays/shared/sound_playback.h"
 
 typedef struct {

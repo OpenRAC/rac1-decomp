@@ -3,9 +3,9 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "structs/moby.h"
-#include "game/draw.h"
+#include "game/render/draw.h"
 #include "asm_functions/level_01.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 
 /* Blarg commander shot (Blarg Commander): thrown by the commander, falls with mine_fall and bursts. */
 struct CommanderShotVars {

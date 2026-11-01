@@ -7,11 +7,11 @@
 #include "structs/collision.h"
 #include "structs/camera.h"
 #include "structs/vector.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "data/executable.h"
 #include "data/shared_levels.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "enums/moby_class.h"
 
@@ -70,7 +70,7 @@ extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 
 /* Vector cosine interpolation: dst = a + (b - a) * ((1 - cos(t * pi)) * 0.5).
-   Scalar analogue matched at src/game/mobyutil.c:func_00214220. */
+   Scalar analogue matched at src/game/moby/mobyutil.c:func_00214220. */
 void interpolate_vector_xyz_cosine_eased(void *dst, void *a, void *b, float t) {
     float tmp[4];
     float ease;

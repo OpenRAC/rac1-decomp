@@ -8,7 +8,7 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "asm_functions/shared_levels.h"
 #include "data/executable.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
 

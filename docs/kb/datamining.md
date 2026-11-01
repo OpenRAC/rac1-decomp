@@ -65,7 +65,7 @@ never match; all four are in the no-effect range. **verified**
 
 | Codes | Effect | Target (verified) | Meaning |
 |---|---|---|---|
-| 0x00-0x24 | `D_0013D5C8[c] = 1; D_0013D5F0[c] = 1` | 37-byte per-item arrays | item owned / item obtained (**verified**: `GiveItem` `func_L00_002618D8` in `moby_ground_collision.c` sets the same two arrays; `func_0020C940` in `src/game/missionfunc.c` tests them as condition types 2 and 3) |
+| 0x00-0x24 | `D_0013D5C8[c] = 1; D_0013D5F0[c] = 1` | 37-byte per-item arrays | item owned / item obtained (**verified**: `GiveItem` `func_L00_002618D8` in `moby_ground_collision.c` sets the same two arrays; `func_0020C940` in `src/game/gameplay/missionfunc.c` tests them as condition types 2 and 3) |
 | 0x25-0x36 | `UnlockPlanet(c - 0x24)` (`func_L00_00261848`) | `D_0013DE48[1..18]` + `gGalaxyList` | planets 1-18, Novalis to Veldin (return) (**verified** call; planet order from `docs/OVERLAYS.md`) |
 | 0x37-0x3C | `gSpecialItems[c - 0x37] = 1` (`D_0013D490`) | first 6 special-item flags | index 0 is the Zoomerator in the memory map that `config/names.tsv` cites (**inferred** for 1-5) |
 | 0x3D-0x5A | if `gSkillPoints[c - 0x3D] == 0`: set it, `func_0022EE28(1,0,0)`, `ShowBanner(0x53DB, -1)` | 30 skill-point flags (`D_0013D510`) | the same three steps the game uses for every real skill-point award (e.g. `l08_batalia/commando_deserter_and_effects.c:1338`, `shared/hero_gadget_use.c:1469`) (**verified**) |
@@ -257,7 +257,7 @@ Value tables: `D_L00_00160CD8` (off/on), `D_L00_00160D00` (control modes),
 
 ### 3.1 `printf` is a stub
 
-`func_001E9730` (`STUB_printf`, `src/game/stub.c`, matched) is
+`func_001E9730` (`STUB_printf`, `src/game/system/stub.c`, matched) is
 `void f(int, ...) {}`: 22 callers in the ELF, plus every level (memory map,
 `Transition to level %d`, `loaded irx modules`, `Unsupported language %d`,
 ...). An emulator breakpoint there would show all diagnostics
@@ -421,10 +421,10 @@ old libpad (**inferred**).
 ## 9. File system, region and language
 
 - **Boot reads `SYSTEM.CNF`** (**verified**): `InitOnce` (`func_00201E88`,
-  `src/game/initonce.c`) reads LBA 0x121:
+  `src/game/system/initonce.c`) reads LBA 0x121:
   `BOOT2 = cdrom0:\SCES_509.16;1\r\nVER = 2.00\r\nVMODE = PAL`.
   PAL flag `D_0015EE80 = D_0015EF90 = (buf[0x33] != 'N')`. `func_00209A60`
-  (`src/game/memcard.c`) fills `/BA****-*****RATCHET` (byte 0x12 `E`
+  (`src/game/system/memcard.c`) fills `/BA****-*****RATCHET` (byte 0x12 `E`
   replaces `A`, `P` would give `I`; product letters/digits copied): save
   folder `BESCES-50916RATCHET` with `icon.sys`, `static.ico`, `save%d.bin`.
 - **IRX order** (**verified**, matched): `LoadIRXModule` on entries 0x1C,
@@ -435,7 +435,7 @@ old libpad (**inferred**).
   `D_0015EE88`: English 1 → 0, French 2 → 2, Spanish 3 → 4, German 4 → 3,
   Italian 5 → 5; anything else prints `Unsupported language %d\n` and uses
   English 0. Six-slot per-language tables are indexed `language - 1`
-  clamped to 0 (`src/game/space.c:1842`).
+  clamped to 0 (`src/game/system/space.c:1842`).
 - **Movies** (**verified** names, referenced from every level's data):
   `\DEMOLOGO.NTS`, `\INFOBOT2.PSS`..`\INFOBOT4.PSS`, `\REPORTER.PSS;1`,
   `\INFOBOT7.PSS;1`, `\IBOT5_F/G/S/I.PSS;1` (languages **inferred** from the

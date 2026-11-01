@@ -46,7 +46,7 @@ Not fixed yet:
 - `docs/reference/ASM_CLASSIFICATION.md` counts 212 handwritten functions; `config/handwritten_asm.txt`
   lists 245 (the 33 VU0 helpers added on 2026-10-17 are not counted).
 - `docs/reference/DATAMINED_REVERSE_ENGINEERING.md` calls the camera unit `camera.c` (no such string
-  exists; the header of `src/game/camera.c` says the original was `camera.cpp`), its
+  exists; the header of `src/game/gameplay/camera.c` says the original was `camera.cpp`), its
   `RaC1GadgetId` enum does not match retail item ids, and its `MobyInstance` layout cannot come
   from debug symbols: this ELF has no debug sections. See [datamining.md](datamining.md) §12.
 - String addresses in `config/strings.tsv` for the literal/data ranges are ELF-image

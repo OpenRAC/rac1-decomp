@@ -6,13 +6,13 @@
 #include "structs/usage_stats.h"
 #include "structs/pad.h"
 #include "structs/hero.h"
-#include "game/draw.h"
-#include "game/initonce.h"
-#include "game/vuchain.h"
+#include "game/render/draw.h"
+#include "game/system/initonce.h"
+#include "game/render/vuchain.h"
 #include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "data/shared_levels.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
 
@@ -181,7 +181,7 @@ extern HudBank hud_elements[];
 extern int queue_animation_update(int, int, int, int, int, int, int);
 extern void apply_pending_animation(void *);
 
-/* The level's HUD bank reset, a shorter func_001FF6B8 (src/game/hud.c):
+/* The level's HUD bank reset, a shorter func_001FF6B8 (src/game/ui/hud.c):
    for each of the 13 bank records at D_L00_0017DD50, func_001FFB38(i,
    0xFFFF, 0, 0, 0, 0, 1), +0x7C = 0, +0x6C = -6, then reloads it with
    func_001FFC48. */
@@ -2589,7 +2589,7 @@ extern int *dma_packet_cursor MACRO_ADDR;
 extern int g_screen_extent[];
 extern long GetFrameTex(int);
 
-/* The level's func_00200468 (src/game/hud.c) with the UV given: draws
+/* The level's func_00200468 (src/game/ui/hud.c) with the UV given: draws
    texture TEX as a sprite at (x, y), w x h, with ALPHA, through the
    packet pointer D_L00_00161280, the far UV being (w, h) itself rather
    than the texture's full size. The arena pointer is taken after the

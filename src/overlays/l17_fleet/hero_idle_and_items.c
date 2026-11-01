@@ -13,7 +13,7 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "asm_functions/shared_levels.h"
 #include "data/level_17.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "overlays/l17_fleet/hero_voice_and_knockback.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"

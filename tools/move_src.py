@@ -24,10 +24,12 @@ OBJECT_LISTS = ["config/text.objects", "config/core_text.objects"]
 FLAGS = "config/file_cflags.txt"
 NAMES = "config/overlays/file_names.tsv"
 # Text that names source paths. Generated reports are not here: their generators rewrite them.
-REFS = ["config/*.txt", "config/*.objects", "config/versions/*/map.tsv", "docs/**/*.md", "notes/**/*",
+REFS = ["config/*.txt", "config/*.objects", "config/*.tsv", "config/versions/*/map.tsv", "docs/**/*.md", "notes/**/*",
         "nonmatching/**/*", "tools/**/*.py", "tools/**/*.sh", "src/**/*.c", "include/**/*.h", "*.md",
         "Makefile.sn", "rac1.ld.sh"]
-SKIP = {"tools/move_src.py", "tools/tests/test_move_src.py"}
+# The NTSC project's own paths, and tables generated from them, are not ours to rewrite.
+SKIP = {"tools/move_src.py", "tools/tests/test_move_src.py", "config/modules.tsv", "config/names_ntsc.tsv",
+        "config/names.tsv"}
 
 
 def check_move(root, old, new):

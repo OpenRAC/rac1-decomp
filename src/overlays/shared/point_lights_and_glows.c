@@ -3,7 +3,7 @@
 #include "structs/vector.h"
 #include "callees.h"
 #include "include_asm.h"
-#include "game/lights.h"
+#include "game/render/lights.h"
 #include "data/shared_levels.h"
 
 extern long GetEffectTex64(int) __asm__("func_001F4868");

@@ -3,7 +3,7 @@ extern void euler_to_matrix();
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 
 extern void matrix_from_basis_rows(void *, void *);
 extern void FastVecSub(void *, void *, void *);

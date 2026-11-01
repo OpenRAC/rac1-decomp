@@ -5,7 +5,7 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 
 /* functional: high. The NTSC decomp's matched C for the same instructions (FUN_L07_0031a9e8), carried to PAL's

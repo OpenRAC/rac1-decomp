@@ -5,11 +5,11 @@
 #include "structs/vector.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "asm_functions/shared_levels.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "enums/moby_class.h"
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {

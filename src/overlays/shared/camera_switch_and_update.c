@@ -4,12 +4,12 @@
 #include "structs/camera.h"
 #include "structs/vector.h"
 #include "structs/hero.h"
-#include "game/camera.h"
-#include "game/effects.h"
-#include "game/mobyutil.h"
+#include "game/gameplay/camera.h"
+#include "game/render/effects.h"
+#include "game/moby/mobyutil.h"
 #include "asm_functions/shared_levels.h"
 #include "data/shared_levels.h"
-#include "game/fastfunc.h"
+#include "game/math/fastfunc.h"
 #include "enums/level.h"
 
 /* The level copies of the camera tables (include/structs/camera.h). */

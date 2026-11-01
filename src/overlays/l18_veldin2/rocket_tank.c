@@ -7,7 +7,7 @@
 #include "overlays/shared/radial_particle_burst.h"
 #include "asm_functions/shared_levels.h"
 #include "data/level_18.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 
 /* Rocket tank: aims its turret at the hero, drives along a path and owns two child mobys. */
 struct RocketTankVars {

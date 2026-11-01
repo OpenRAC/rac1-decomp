@@ -7552,7 +7552,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/actuator.c",
+    "source_path": "src/game/gameplay/actuator.c",
     "progress_categories": [
      "executable",
      "game"
@@ -7605,7 +7605,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/bloaders.c",
+    "source_path": "src/game/system/bloaders.c",
     "progress_categories": [
      "executable",
      "game"
@@ -7820,7 +7820,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/stub.c",
+    "source_path": "src/game/system/stub.c",
     "progress_categories": [
      "executable",
      "game"
@@ -7864,7 +7864,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/bmain.c",
+    "source_path": "src/game/system/bmain.c",
     "progress_categories": [
      "executable",
      "game"
@@ -7980,7 +7980,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/transition.c",
+    "source_path": "src/game/ui/transition.c",
     "progress_categories": [
      "executable",
      "game"
@@ -8240,7 +8240,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/camera.c",
+    "source_path": "src/game/gameplay/camera.c",
     "progress_categories": [
      "executable",
      "game"
@@ -8329,7 +8329,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/effects.c",
+    "source_path": "src/game/render/effects.c",
     "progress_categories": [
      "executable",
      "game"
@@ -8364,7 +8364,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/cmecpu.c",
+    "source_path": "src/game/render/cmecpu.c",
     "progress_categories": [
      "executable",
      "game"
@@ -8417,7 +8417,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/collproc.c",
+    "source_path": "src/game/render/collproc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -9208,7 +9208,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/draw.c",
+    "source_path": "src/game/render/draw.c",
     "progress_categories": [
      "executable",
      "game"
@@ -9324,7 +9324,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/drawquad.c",
+    "source_path": "src/game/render/drawquad.c",
     "progress_categories": [
      "executable",
      "game"
@@ -10070,7 +10070,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/fastfunc.c",
+    "source_path": "src/game/math/fastfunc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -10222,7 +10222,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/framebuf.c",
+    "source_path": "src/game/render/framebuf.c",
     "progress_categories": [
      "executable",
      "game"
@@ -10275,7 +10275,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/freeze.c",
+    "source_path": "src/game/gameplay/freeze.c",
     "progress_categories": [
      "executable",
      "game"
@@ -10427,7 +10427,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/help.c",
+    "source_path": "src/game/ui/help.c",
     "progress_categories": [
      "executable",
      "game"
@@ -10795,7 +10795,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/hud.c",
+    "source_path": "src/game/ui/hud.c",
     "progress_categories": [
      "executable",
      "game"
@@ -10830,7 +10830,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/init.c",
+    "source_path": "src/game/system/init.c",
     "progress_categories": [
      "executable",
      "game"
@@ -10883,7 +10883,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/initonce.c",
+    "source_path": "src/game/system/initonce.c",
     "progress_categories": [
      "executable",
      "game"
@@ -10945,7 +10945,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/lights.c",
+    "source_path": "src/game/render/lights.c",
     "progress_categories": [
      "executable",
      "game"
@@ -11169,7 +11169,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/loaders.c",
+    "source_path": "src/game/system/loaders.c",
     "progress_categories": [
      "executable",
      "game"
@@ -11321,7 +11321,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/map.c",
+    "source_path": "src/game/ui/map.c",
     "progress_categories": [
      "executable",
      "game"
@@ -12175,7 +12175,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/menu.c",
+    "source_path": "src/game/ui/menu.c",
     "progress_categories": [
      "executable",
      "game"
@@ -12327,7 +12327,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/memcard.c",
+    "source_path": "src/game/system/memcard.c",
     "progress_categories": [
      "executable",
      "game"
@@ -12416,7 +12416,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/miscproc.c",
+    "source_path": "src/game/render/miscproc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -12604,7 +12604,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/missionfunc.c",
+    "source_path": "src/game/gameplay/missionfunc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -12909,7 +12909,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/mobyfunc.c",
+    "source_path": "src/game/moby/mobyfunc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -13088,7 +13088,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/mobyproc.c",
+    "source_path": "src/game/render/mobyproc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -13672,7 +13672,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/mobyutil.c",
+    "source_path": "src/game/moby/mobyutil.c",
     "progress_categories": [
      "executable",
      "game"
@@ -13878,7 +13878,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/music.c",
+    "source_path": "src/game/audio/music.c",
     "progress_categories": [
      "executable",
      "game"
@@ -14075,7 +14075,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/stream.c",
+    "source_path": "src/game/audio/stream.c",
     "progress_categories": [
      "executable",
      "game"
@@ -14137,7 +14137,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/pad.c",
+    "source_path": "src/game/system/pad.c",
     "progress_categories": [
      "executable",
      "game"
@@ -14226,7 +14226,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/partproc.c",
+    "source_path": "src/game/render/partproc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -14270,7 +14270,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/partupd.c",
+    "source_path": "src/game/render/partupd.c",
     "progress_categories": [
      "executable",
      "game"
@@ -15700,7 +15700,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/pause.c",
+    "source_path": "src/game/ui/pause.c",
     "progress_categories": [
      "executable",
      "game"
@@ -15780,7 +15780,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/shadowproc.c",
+    "source_path": "src/game/render/shadowproc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -15833,7 +15833,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/shrubfunc.c",
+    "source_path": "src/game/render/shrubfunc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -15886,7 +15886,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/shrubproc.c",
+    "source_path": "src/game/render/shrubproc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -16002,7 +16002,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/skyfunc.c",
+    "source_path": "src/game/render/skyfunc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -16091,7 +16091,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/skyproc.c",
+    "source_path": "src/game/render/skyproc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -16297,7 +16297,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/sound.c",
+    "source_path": "src/game/audio/sound.c",
     "progress_categories": [
      "executable",
      "game"
@@ -16512,7 +16512,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/space.c",
+    "source_path": "src/game/system/space.c",
     "progress_categories": [
      "executable",
      "game"
@@ -16583,7 +16583,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/stash.c",
+    "source_path": "src/game/system/stash.c",
     "progress_categories": [
      "executable",
      "game"
@@ -16645,7 +16645,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/tfragfunc.c",
+    "source_path": "src/game/render/tfragfunc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -16905,7 +16905,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/vuchain.c",
+    "source_path": "src/game/render/vuchain.c",
     "progress_categories": [
      "executable",
      "game"
@@ -16967,7 +16967,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/tfragproc.c",
+    "source_path": "src/game/render/tfragproc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -17047,7 +17047,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/tiefunc.c",
+    "source_path": "src/game/render/tiefunc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -17100,7 +17100,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/tieproc.c",
+    "source_path": "src/game/render/tieproc.c",
     "progress_categories": [
      "executable",
      "game"
@@ -17189,7 +17189,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/update.c",
+    "source_path": "src/game/system/update.c",
     "progress_categories": [
      "executable",
      "game"
@@ -17395,7 +17395,7 @@
    ],
    "metadata": {
     "complete": true,
-    "source_path": "src/game/vendor.c",
+    "source_path": "src/game/ui/vendor.c",
     "progress_categories": [
      "executable",
      "game"

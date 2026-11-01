@@ -8,7 +8,7 @@
  *
  * Types only, like the other shared headers: a file declares the globals
  * it uses itself (`extern CameraSystem D_00187040;`, readable name gCamera).
- * The executable's camera code (src/game/camera.c) and the level copy of it
+ * The executable's camera code (src/game/gameplay/camera.c) and the level copy of it
  * (src/overlays/shared/camera_*.c) share these layouts; only the addresses
  * differ (executable D_00187040, level 00 D_L00_00166D80, other levels
  * packed elsewhere).

@@ -7,7 +7,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "asm_functions/shared_levels.h"
 #include "data/level_09.h"
-#include "game/mobyutil.h"
+#include "game/moby/mobyutil.h"
 
 extern float FastSubRots(float, float);
 extern float FastAddRots(float, float);
