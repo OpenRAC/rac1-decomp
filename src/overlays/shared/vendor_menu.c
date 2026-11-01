@@ -142,6 +142,10 @@ void build_vendor_menu_rows(s32 skip_unflagged) {
         vendor_menu_r2.count++;
     }
 }
+extern struct {
+    int x0, x4, x8;
+} lvl_resource_buffers;
+
 typedef u32 Q_pv __attribute__((mode(TI), aligned(16)));
 typedef struct {
     s32 item;
@@ -258,7 +262,6 @@ extern s32 g_game_language MACRO_ADDR;
 extern f32 frame_scale MACRO_ADDR;
 /* Opens the vendor menu. */
 void open_vendor_menu(VendorMoby_pv *m) {
-    extern s32 lvl_resource_buffers[];
     s32 i;
     Vec4 *v;
     s32 half;
@@ -314,8 +317,8 @@ void open_vendor_menu(VendorMoby_pv *m) {
     }
     skip_frame = 1;
     VP.f0 = 0;
-    VP.f10 = lvl_resource_buffers[2] + 0x60000;
-    VP.f14 = lvl_resource_buffers[1] + 0x60000;
+    VP.f10 = lvl_resource_buffers.x8 + 0x60000;
+    VP.f14 = lvl_resource_buffers.x4 + 0x60000;
     VP.f8 = 0;
     VP.moby = (char *)m;
     Moby_PlaySound(3, 0, m);
@@ -473,10 +476,6 @@ typedef struct {
 } C_298840;
 extern C_298840 cutscene_state;
 
-extern struct {
-    int x0, x4, x8;
-    /* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
-} lvl_resource_buffers;
 extern s32 gFadeLvl MACRO_ADDR;
 void VU1_syncChain(s32);
 void calculate_dma_transfer_address(void);

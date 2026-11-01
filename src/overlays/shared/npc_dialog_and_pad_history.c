@@ -199,7 +199,7 @@ int Npc_TryStartDialog(char *p, char *q) {
 extern s32 g_current_level_index MACRO_ADDR;
 
 /* Find the dialogue entry index of p within the current level's range; -1 if not found. */
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
+/* KEPT: the callers pass one argument, the definition takes two. */
 s32 get_dialogue_entry(s32 p, s32 unused) {
     s32 n = g_current_level_index;
     s32 lo;

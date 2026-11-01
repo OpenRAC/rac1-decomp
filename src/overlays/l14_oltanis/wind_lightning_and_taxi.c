@@ -1241,6 +1241,9 @@ void update_path_lightning_controller(char *m) {
         *(int *)&lightning_arc_built = 0;
     }
 }
+extern float lightning_arc_points[40][4];
+extern float lightning_branch_points[3][16][4];
+
 extern unsigned char lightning_arc_fade_alpha[] MACRO_ADDR;
 extern int lightning_arc_alpha_pulse_offset MACRO_ADDR;
 extern float lightning_arc_alpha_pulse_phase MACRO_ADDR;
@@ -1264,9 +1267,7 @@ void update_branched_lightning_arc(char *moby) {
     extern short lightning_arc_max_offset;
     extern short lightning_arc_life_min;
     extern short lightning_arc_life_max;
-    extern float lightning_arc_points[40][4];
     extern unsigned short lightning_arc_point_timers[40];
-    extern float lightning_branch_points[3][16][4];
     extern unsigned short lightning_branch_point_timers[3][16];
     extern float lightning_arc_points_38[];
     Vec4f delta;
@@ -1428,17 +1429,13 @@ extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
 extern void draw_world_quad(void *, void *, int);
 extern float CubicInterpolate(float, float, float, float, float);
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
+/* KEPT: signed and unsigned give lh and lhu. */
 extern short lightning_arc_point_timers[];
 extern unsigned char lightning_arc_fade_alpha[] MACRO_ADDR;
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
-extern V_2EF078 lightning_arc_points[];
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
+/* KEPT: signed and unsigned give lh and lhu. */
 extern short lightning_branch_point_timers[];
 extern int lightning_branch_starts[] MACRO_ADDR;
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
-extern V_2EF078 lightning_branch_points[];
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
+/* KEPT: short and SDATA select how each function addresses this global. */
 extern int lightning_grow_ticks SDATA(D_L14_00161D40);
 extern int lightning_arc_outer_base_color_gp SDATA(D_L14_00161D48);
 extern int lightning_arc_inner_base_color_gp SDATA(D_L14_00161D4C);

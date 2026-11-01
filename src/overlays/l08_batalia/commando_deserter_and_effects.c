@@ -1653,7 +1653,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern float FastSubRots(float, float);
 extern s32 g_current_level_index MACRO_ADDR;
 extern char batalia_plumber_dialogue_name[];
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
+/* KEPT: short and MACRO_ADDR select how each function addresses this global. */
 extern char *batalia_mobys MACRO_ADDR;
 
 /* Update function: calls func_L08_003078B0, then a switch on the state byte at +0x20 (states 0, 1, 2 and 5;

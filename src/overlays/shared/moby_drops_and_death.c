@@ -118,7 +118,7 @@ int ChooseDropItem(unsigned char *m, int *item) {
         return t == 0 ? two : one;
     }
 }
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
+/* KEPT: short and MACRO_ADDR select how each function addresses this global. */
 extern int g_current_level_index MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern int free_moby_slot_count MACRO_ADDR;

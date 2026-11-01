@@ -1275,6 +1275,15 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
     }
 }
 typedef struct {
+    char pad0[8];
+    unsigned short unk8;
+    char padA[4];
+    unsigned short unkE;
+    char pad10[8];
+} WeaponRec;
+extern WeaponRec item_price_table[];
+
+typedef struct {
     int id;
     char pad[0x14];
     int item;
@@ -1321,7 +1330,6 @@ extern char menu_item_enabled_115[];
 #define GF(x) (*(float *)&(x))
 /* Draw the quick select panel: opening fade, pulsing marker, item icons and the selected name. */
 int draw_hud_item_selector_panel(HudElem *rec) {
-    extern char item_price_table[];
     char *wr;
     int x, y, half_w, half_h, alpha;
     int marker_alpha;
@@ -1396,7 +1404,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
         {
             int id;
             id = *(int *)((char *)help_stats_base_i + 0x885 + selected * 4);
-            wr = item_price_table + id * 24;
+            wr = (char *)item_price_table + id * 24;
             if (*(unsigned short *)(wr + 8) != 0) {
                 int shadow, item;
                 item = *(int *)(menu_item_enabled_115 + 0x21 + id * 4);
@@ -1454,7 +1462,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
             int id;
             char *wr;
             id = *(int *)((char *)help_stats_base_i + 0x885 + selected * 4);
-            wr = item_price_table + id * 24;
+            wr = (char *)item_price_table + id * 24;
             if (*(unsigned short *)(wr + 8) != 0)
                 text_y += GI(hud_item_selector_title_with_ammo_y_offset);
             else if (prefix_length != 0)
@@ -2483,16 +2491,7 @@ int update_hud_elements(int call) {
     } while ((int)e < (int)(hud_elements_r + 13));
     return n;
 }
-typedef struct {
-    char pad0[8];
-    unsigned short unk8;
-    char padA[4];
-    unsigned short unkE;
-    char pad10[8];
-} WeaponRec;
 
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
-extern WeaponRec item_price_table[];
 extern char menu_item_enabled_115[];
 extern short weapon_hud_suspended;
 extern int D_hud_pair[2] __asm__("D_L00_0015FA44") MACRO_ADDR;

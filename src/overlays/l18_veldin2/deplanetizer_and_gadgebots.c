@@ -905,7 +905,7 @@ typedef struct {
     char pad2[0x178 - 0x34];
     char *arr[5];
 } ML;
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
+/* KEPT: the views place n at 0x30 and 0x34: this record is not understood yet. */
 extern ML veldin2_cutscene_state;
 typedef struct {
     char pad[0x20];

@@ -131,7 +131,7 @@ def add_tags(text, hits):
     for number, kind in sorted(set(hits), reverse=True):
         indent = re.match(r"\s*", lines[number - 1]).group(0)
         above = lines[number - 2] if number >= 2 else ""
-        if TAG in above or TAG in lines[number - 1]:
+        if TAG in above or TAG in lines[number - 1] or KEPT in above:
             continue
         lines.insert(number - 1, f"{indent}/* {TAG} {REASONS[kind]}. */")
         added += 1
