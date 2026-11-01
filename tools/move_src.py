@@ -63,6 +63,9 @@ def substitutions(old, new):
         (rf"\bbuild-sn/{re.escape(a)}\.o\b", f"build-sn/{b}.o"),
         # A version's own copies live in a folder named after the shared file.
         (rf"\bsrc/versions/([A-Za-z0-9_]+)/{re.escape(a)}(?=/)", rf"src/versions/\1/{b}"),
+        # Its header (tools/tidy/move_protos.py), and the guard named after it.
+        (rf'"{re.escape(a)}\.h"', f'"{b}.h"'),
+        (rf"\b{re.sub(r'[^A-Za-z0-9]', '_', a).upper()}_H\b", f"{re.sub(r'[^A-Za-z0-9]', '_', b).upper()}_H"),
     ]
     if old.startswith("src/core/"):
         # Makefile.sn names a few core objects by their pattern stem.
@@ -151,6 +154,14 @@ def move_version_dirs(root, old, new):
     return moved
 
 
+def move_header(root, old, new):
+    """Move include/<old stem>.h with its source, if it has one."""
+    src, dst = root / "include" / f"{stem(old)}.h", root / "include" / f"{stem(new)}.h"
+    if src.exists():
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["git", "mv", str(src), str(dst)], cwd=root, check=True)
+
+
 def move(root, old, new, dry_run=False):
     why = check_move(root, old, new)
     if why:
@@ -162,6 +173,7 @@ def move(root, old, new, dry_run=False):
     (root / new).parent.mkdir(parents=True, exist_ok=True)
     subprocess.run(["git", "mv", old, new], cwd=root, check=True)
     versions = move_version_dirs(root, old, new)
+    move_header(root, old, new)
     changed = update_refs(root, old, new, False)
     update_names_table(root, old, new)
     save_alias(root, old, new)
