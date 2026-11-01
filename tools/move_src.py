@@ -27,7 +27,7 @@ NAMES = "config/overlays/file_names.tsv"
 REFS = ["config/*.txt", "config/*.objects", "config/versions/*/map.tsv", "docs/**/*.md", "notes/**/*",
         "nonmatching/**/*", "tools/**/*.py", "tools/**/*.sh", "src/**/*.c", "include/**/*.h", "*.md",
         "Makefile.sn", "rac1.ld.sh"]
-SKIP = {"tools/move_src.py"}
+SKIP = {"tools/move_src.py", "tools/tests/test_move_src.py"}
 
 
 def check_move(root, old, new):
